@@ -231,6 +231,54 @@ export const ARCHIPEO = {
         beaten: 'Mon pelage se rallume. La pointe est à toi, et à Boussole.',
       },
     },
+    'history-5e-middle-ages': {
+      challenge: 'Le Griffon d’émail dit doucement : « Mes émaux sont éteints. Tu as lu toutes les chroniques du bourg : dis-moi en quel siècle vient chaque chose. »',
+      guardianSays: {
+        hit: 'Un émail de ma poitrine s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Regarde la frise, relis le document, et reprends.',
+        beaten: 'Mes émaux se rallument. Le bourg est à toi, et à Vélin.',
+      },
+    },
+    'geography-5e-resources': {
+      challenge: 'La Libellule de jade dit doucement : « Les nervures de mes ailes sont éteintes. Tu as suivi l’eau de tout le delta : dis-moi comment on partage les ressources. »',
+      guardianSays: {
+        hit: 'Une nervure de mes ailes s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, compare les nombres, et reprends.',
+        beaten: 'Mes ailes se rallument. Le delta est à toi, et à Sillon.',
+      },
+    },
+    'history-4e-revolutions': {
+      challenge: 'Le Paon de faïence dit doucement : « Les yeux de ma roue sont éteints. Tu as lu toutes les pages de l’imprimerie : dis-moi ce que chaque révolution a changé. »',
+      guardianSays: {
+        hit: 'Un œil de ma roue s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Regarde la frise, relis le document, et reprends.',
+        beaten: 'Ma roue se rallume. L’imprimerie est à toi, et à Typo.',
+      },
+    },
+    'geography-4e-globalization': {
+      challenge: 'Le Poulpe de corail dit doucement : « Mes ventouses sont éteintes. Tu as vu passer tous les bateaux de l’escale : dis-moi comment le monde échange. »',
+      guardianSays: {
+        hit: 'Une ventouse s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Mes bras se rallument. L’escale est à toi, et à Fret.',
+      },
+    },
+    'history-3e-twentieth-century': {
+      challenge: 'La Colombe d’albâtre dit doucement : « Mes plumes sont éteintes. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. »',
+      guardianSays: {
+        hit: 'Une plume s’allume, doucement. C’est juste.',
+        miss: 'Rien ne s’éteint. Regarde la frise, relis qui parle, et reprends.',
+        beaten: 'Mes plumes se rallument, jusqu’au rameau vert. Le kiosque est à toi, et à Mémo.',
+      },
+    },
+    'geography-3e-france': {
+      challenge: 'Le Cerf de lauze dit doucement : « Les lauzes de ma poitrine sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru tout le plateau. Dis-moi comment vit le territoire. »',
+      guardianSays: {
+        hit: 'Une lauze de ma poitrine s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Mes lauzes se rallument. Le plateau est à toi, et à Jalon.',
+      },
+    },
     'life-earth-sciences-6e-living-world': {
       challenge: 'Le Cerf des sous-bois dit doucement : « Mon manteau de mousse est éteint. Tu as observé tout le vivant de la vallée : aide-moi à le classer. »',
       guardianSays: {
@@ -253,6 +301,78 @@ export const ARCHIPEO = {
         hit: 'Un bouton de ma poitrine s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Relis le schéma, cherche à quoi sert l’objet, et reprends.',
         beaten: 'Mes boutons se rallument. Le hangar est à toi, et à Pince.',
+      },
+    },
+    'life-earth-sciences-5e-active-planet': {
+      challenge: 'La Tortue d’ocre dit doucement : « Les écailles de ma carapace sont éteintes. Tu as relevé le temps de toute la prairie : dis-moi comment change la Terre. »',
+      guardianSays: {
+        hit: 'Une écaille de ma carapace s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Ma carapace se rallume. La prairie est à toi, et à Humus.',
+      },
+    },
+    'physics-chemistry-5e-matter-universe': {
+      challenge: 'Le Flamant de sel dit doucement : « Les grains de sel de mes ailes sont éteints. Tu as fait tous les mélanges de la saline : aide-moi à séparer mes mélanges. »',
+      guardianSays: {
+        hit: 'Un grain de sel s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Regarde la mesure, cherche le mot du rappel, et reprends.',
+        beaten: 'Mes ailes se rallument. La saline est à toi, et à Perle.',
+      },
+    },
+    'technology-5e-design': {
+      challenge: 'Le Cheval à bascule dit doucement : « Les taches de ma robe sont éteintes. Tu as vu tous les objets de la menuiserie : dis-moi pourquoi ils sont faits comme ça. »',
+      guardianSays: {
+        hit: 'Une tache de ma robe s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le cahier des charges, cherche la fonction, et reprends.',
+        beaten: 'Ma robe se rallume. La menuiserie est à toi, et à Rabot.',
+      },
+    },
+    'life-earth-sciences-4e-cells-evolution': {
+      challenge: 'La Girafe d’ambre dit doucement : « Les taches de mon cou sont éteintes. Tu as vu grandir tout ce qui vit à la source : dis-moi comment le vivant se transmet. »',
+      guardianSays: {
+        hit: 'Une tache de mon cou s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, regarde les parents et les petits, et reprends.',
+        beaten: 'Mon cou se rallume. La source est à toi, et à Nectar.',
+      },
+    },
+    'physics-chemistry-4e-signals-circuits': {
+      challenge: 'La Cloche de cobalt dit doucement : « Mon fil de cuivre est éteint. Tu as écouté toute la vigie : dis-moi comment voyagent la lumière et le son. »',
+      guardianSays: {
+        hit: 'Un bout de mon fil s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Regarde le schéma du circuit, suis le fil, et reprends.',
+        beaten: 'Mon fil se rallume, de la cloche jusqu’à la lampe. La vigie est à toi, et à Radar.',
+      },
+    },
+    'technology-4e-modeling': {
+      challenge: 'Le Grand-bi d’érable dit doucement : « Les rayons de ma roue sont éteints. Tu as essayé toutes les maquettes du bassin : dis-moi comment l’énergie passe d’une pièce à l’autre. »',
+      guardianSays: {
+        hit: 'Un rayon de ma roue s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le schéma, compare le modèle et l’objet, et reprends.',
+        beaten: 'Ma roue se rallume. Le bassin est à toi, et à Manivelle.',
+      },
+    },
+    'life-earth-sciences-3e-human-body': {
+      challenge: 'Le Dauphin de turquoise dit doucement : « Les reflets de mon dos sont éteints. Tu as fait le tour du verger : dis-moi comment le corps reste en bonne santé. »',
+      guardianSays: {
+        hit: 'Un reflet de mon dos s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Mon dos se rallume. Le verger est à toi, et à Olive.',
+      },
+    },
+    'physics-chemistry-3e-motion-energy': {
+      challenge: 'Le Kangourou de rubis dit doucement : « Les ressorts de mes pattes sont éteints. Tu as essayé tout le tremplin : dis-moi ce qui fait bouger chaque chose. »',
+      guardianSays: {
+        hit: 'Un ressort de mes pattes s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Regarde la flèche de la force, relis l’unité, et reprends.',
+        beaten: 'Mes ressorts se rallument. Le tremplin est à toi, et à Virage.',
+      },
+    },
+    'technology-3e-digital': {
+      challenge: 'L’Abeille de topaze dit doucement : « Les cases de mes ailes sont éteintes. Tu as suivi tous les chemins de la ruche : dis-moi comment voyagent les données. »',
+      guardianSays: {
+        hit: 'Une case de mes ailes s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document ligne par ligne, et reprends.',
+        beaten: 'Les cases de mes ailes se rallument. La ruche est à toi, et à Navette.',
       },
     },
     'lv2-3e-travel': {
@@ -340,9 +460,24 @@ export const ARCHIPEO = {
     'english-3e-grammar': 'petit chevalier',
     'history-6e-antiquity': 'ourson des fouilles',
     'geography-6e-living': 'pélican des ports',
+    'history-5e-middle-ages': 'lapin enlumineur',
+    'geography-5e-resources': 'ibis des rizières',
+    'history-4e-revolutions': 'souris imprimeuse',
+    'geography-4e-globalization': 'crabe grutier',
+    'history-3e-twentieth-century': 'marmotte bibliothécaire',
+    'geography-3e-france': 'fourmi arpenteuse',
     'life-earth-sciences-6e-living-world': 'escargot jardinier',
     'physics-chemistry-6e-matter-energy': 'poulpe chimiste',
     'technology-6e-objects': 'fourmi bricoleuse',
+    'life-earth-sciences-5e-active-planet': 'ver de terre météorologue',
+    'physics-chemistry-5e-matter-universe': 'canard saunier',
+    'technology-5e-design': 'pic-vert menuisier',
+    'life-earth-sciences-4e-cells-evolution': 'colibri butineur',
+    'physics-chemistry-4e-signals-circuits': 'suricate guetteur',
+    'technology-4e-modeling': 'otarie maquettiste',
+    'life-earth-sciences-3e-human-body': 'koala soigneur',
+    'physics-chemistry-3e-motion-energy': 'tatou rouleur',
+    'technology-3e-digital': 'chenille tisseuse',
   },
   libelles: {
     dejaFait: 'Déjà rallumé. Tu veux rejouer ?',

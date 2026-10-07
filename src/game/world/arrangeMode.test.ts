@@ -77,8 +77,8 @@ describe('un lieu : caler, décaler, tourner, poser', () => {
     const w = partie();
     const c = chooseIsland(w, VOLCAN)!;
     if (c.genre !== 'lieu') throw new Error('lieu');
-    const t = turnChoice(c);
-    if (t.genre !== 'lieu') throw new Error('lieu');
+    const t = turnChoice(w, c);
+    if (t?.genre !== 'lieu') throw new Error('lieu');
     expect(t.spot).toEqual({ ...c.spot, turn: (c.spot.turn + 1) % 4 });
     expect(choiceFits(w, t)).toBe(isFreeSpot(w, VOLCAN, t.spot));
     // Sur une place libre, tourné : « Poser » le pose, et la phrase le dit.
@@ -90,6 +90,18 @@ describe('un lieu : caler, décaler, tourner, poser', () => {
     if (!r.ok) throw new Error(r.reason);
     expect(spotOf(r.world, VOLCAN)).toEqual(libre.spot);
     expect(poseSentence(r.world, libre)).toMatch(/^Volcan des décimaux : /);
+  });
+
+  it('« Tourner » ne fait pas pivoter le fantôme d’un lieu qui, tourné, n’a aucune place libre (HG-3, consultant UX UI)', () => {
+    // Le Glacier des relatifs (5e) et la Gare du futur (4e) depuis HG-3, la Grammaire (5e) et le Refuge des carnets (3e)
+    // depuis SC-3 : `SANS_PLACE` (arrange.test.ts). La ligne dit alors le refus (Arranging.tsx).
+    const w = partie();
+    for (const id of ['maths-5e-signed-numbers', 'english-5e-grammar', 'english-4e-grammar', 'lv2-3e-travel'] as BiomeId[]) {
+      const c = chooseIsland(w, id);
+      if (c?.genre !== 'lieu') throw new Error(id);
+      expect(freeSpots(w, id, ((c.spot.turn + 1) % 4) as 0 | 1 | 2 | 3), id).toEqual([]);
+      expect(turnChoice(w, c), id).toBeNull();
+    }
   });
 
   it('les places autour qui colleraient le lieu à un voisin portent l’icône de « Réunir » (choix 2a)', () => {

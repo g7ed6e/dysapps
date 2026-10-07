@@ -812,7 +812,9 @@ export function WorldPage() {
       // Une île pâle : comme un toucher, avec la découverte la première fois.
       if (objet.genre === 'ile') return ouvrirLIlePaleRef.current(objet.id);
       setSheetOpen(false);
-      setFiche({ objet, seq: ++ficheSeq.current, saut: true });
+      // Une créature : sa phrase, comme d'un toucher (sans elle, la bulle de Jalon restait vide sur les captures, HG-3).
+      const phrase = objet.genre === 'creature' ? creatureLineRef.current(objet.id) : undefined;
+      setFiche({ objet, seq: ++ficheSeq.current, saut: true, ...(phrase ? { phrase } : {}) });
     };
     window.__dysappsFiche = ouvrir;
     return () => {
@@ -972,15 +974,22 @@ export function WorldPage() {
   const ouvrageLabel = (b: BridgeDef) =>
     `${KIND_NAME[linkKind(b, state.world.links)]} entre ${thePlace(getBiome(b.from)?.name ?? b.from)} et ${thePlace(getBiome(b.to)?.name ?? b.to)} (${b.cost} blocs)`;
 
+  /** Ce que dit une créature touchée : une de ses phrases ; le bâtiment fini, la créature y habite : une fois sur deux, elle le dit. */
+  const creatureLine = (id: BiomeId): string => {
+    const t = textes.creatures[id];
+    if (!t) return '';
+    const home = partiesDe(id).length > 0 && prochainePartie(id, state.world.parts) === null;
+    const lines = home && Math.random() < 0.5 ? [t.home] : t.lines;
+    return lines[Math.floor(Math.random() * lines.length)];
+  };
+  const creatureLineRef = useRef(creatureLine);
+  creatureLineRef.current = creatureLine;
   /** Une créature ou un Gardien touchés : leur fiche ; la créature y dit une phrase (plus de bulle en haut). */
   const onCreature = (id: BiomeId, kind: 'creature' | 'guardian') => {
     const biome = getBiome(id);
     if (!biome) return;
     if (kind === 'guardian') return ouvrirFiche({ genre: 'gardien', id });
-    // Le bâtiment fini (toutes ses parties posées), la créature y habite : une fois sur deux, elle le dit.
-    const home = partiesDe(id).length > 0 && prochainePartie(id, state.world.parts) === null;
-    const lines = home && Math.random() < 0.5 ? [textes.creatures[id].home] : textes.creatures[id].lines;
-    ouvrirFiche({ genre: 'creature', id }, { phrase: lines[Math.floor(Math.random() * lines.length)] });
+    ouvrirFiche({ genre: 'creature', id }, { phrase: creatureLine(id) });
   };
   // Les bulles du haut (la Carte, les phrases du voyage, du village, d'une créature), une condition chacune.
   const ligneDuVoyage = voyage?.mode === 'cinema';
@@ -1112,7 +1121,7 @@ export function WorldPage() {
         {vueDeplacee && !voyage && !bulleEnHaut && (
           // Un rond avec le visage du joueur, sans mot (mot du mainteneur, 4 octobre 2026, pour Blocland ; choix « 1a » du
           // même jour pour Archipéo) ; ses couleurs suivent l'univers (styles/global.css, `world-recentrer-tete`).
-          <button type="button" className="button world-recentrer world-recentrer-tete" onClick={recentrer} aria-label="Recentrer">
+          <button type="button" className="button world-recentrer world-recentrer-tete" data-couvre="etiquettes" onClick={recentrer} aria-label="Recentrer">
             <AvatarFace visage={visageDuJoueur(habillage)} />
           </button>
         )}

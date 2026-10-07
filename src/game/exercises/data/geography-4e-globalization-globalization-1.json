@@ -1,0 +1,238 @@
+{
+  "id": "geography-4e-globalization-globalization-1",
+  "biome": "geography-4e-globalization",
+  "type": "globalization",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-4e-globalization-globalization-1-0",
+      "prompt": "Les échanges qui relient tous les pays du monde, c’est la … .",
+      "spoken": "Les échanges qui relient tous les pays du monde, c’est la (mot manquant) .",
+      "choices": [
+        "colonisation",
+        "urbanisation",
+        "mondialisation"
+      ],
+      "answer": "mondialisation",
+      "hint": "Dans le mot, on entend « monde ».",
+      "explanation": "La mondialisation : les marchandises, les personnes et les informations circulent entre tous les pays du monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la mondialisation",
+          "lines": [
+            "Mondialisation : les échanges qui relient les pays du monde.",
+            "Flux : ce qui circule, des marchandises, des personnes, des informations.",
+            "Conteneur : une grande boîte en métal pour les marchandises.",
+            "Canal : une voie d’eau creusée pour relier deux mers.",
+            "Détroit : un passage de mer étroit entre deux terres.",
+            "Firme transnationale : une entreprise présente dans beaucoup de pays."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-1-1",
+      "prompt": "Les marchandises et les informations qui circulent entre les pays sont des … .",
+      "spoken": "Les marchandises et les informations qui circulent entre les pays sont des (mot manquant) .",
+      "choices": [
+        "frontières",
+        "flux",
+        "ports"
+      ],
+      "answer": "flux",
+      "hint": "Cherche « ce qui circule » dans le rappel.",
+      "explanation": "Un flux, c’est ce qui circule. Les ports sont les lieux où passent les flux de marchandises.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la mondialisation",
+          "lines": [
+            "Mondialisation : les échanges qui relient les pays du monde.",
+            "Flux : ce qui circule, des marchandises, des personnes, des informations.",
+            "Conteneur : une grande boîte en métal pour les marchandises.",
+            "Canal : une voie d’eau creusée pour relier deux mers.",
+            "Détroit : un passage de mer étroit entre deux terres.",
+            "Firme transnationale : une entreprise présente dans beaucoup de pays."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-1-2",
+      "prompt": "La plupart des marchandises du monde voyagent en … .",
+      "spoken": "La plupart des marchandises du monde voyagent en (mot manquant) .",
+      "choices": [
+        "avion",
+        "camion",
+        "bateau"
+      ],
+      "answer": "bateau",
+      "hint": "Un seul navire peut porter des milliers de conteneurs.",
+      "explanation": "Plus de 8 marchandises sur 10 voyagent par la mer, dans d’énormes navires. C’est le moyen le moins cher.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la mondialisation",
+          "lines": [
+            "Mondialisation : les échanges qui relient les pays du monde.",
+            "Flux : ce qui circule, des marchandises, des personnes, des informations.",
+            "Conteneur : une grande boîte en métal pour les marchandises.",
+            "Canal : une voie d’eau creusée pour relier deux mers.",
+            "Détroit : un passage de mer étroit entre deux terres.",
+            "Firme transnationale : une entreprise présente dans beaucoup de pays."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-1-3",
+      "prompt": "Le canal de Suez, en Égypte, relie la Méditerranée et la mer … .",
+      "spoken": "Le canal de Suez, en Égypte, relie la Méditerranée et la mer (mot manquant) .",
+      "choices": [
+        "Noire",
+        "Rouge",
+        "du Nord"
+      ],
+      "answer": "Rouge",
+      "hint": "C’est la mer entre l’Égypte et l’Arabie.",
+      "explanation": "Le canal de Suez relie la Méditerranée et la mer Rouge : les navires vont d’Europe en Asie sans faire le tour de l’Afrique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la mondialisation",
+          "lines": [
+            "Mondialisation : les échanges qui relient les pays du monde.",
+            "Flux : ce qui circule, des marchandises, des personnes, des informations.",
+            "Conteneur : une grande boîte en métal pour les marchandises.",
+            "Canal : une voie d’eau creusée pour relier deux mers.",
+            "Détroit : un passage de mer étroit entre deux terres.",
+            "Firme transnationale : une entreprise présente dans beaucoup de pays."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-1-4",
+      "prompt": "Le canal de Panama relie l’océan Atlantique et l’océan … .",
+      "spoken": "Le canal de Panama relie l’océan Atlantique et l’océan (mot manquant) .",
+      "choices": [
+        "Pacifique",
+        "Indien",
+        "Arctique"
+      ],
+      "answer": "Pacifique",
+      "hint": "C’est l’océan de l’autre côté de l’Amérique.",
+      "explanation": "Le canal de Panama, en Amérique centrale, relie l’Atlantique et le Pacifique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la mondialisation",
+          "lines": [
+            "Mondialisation : les échanges qui relient les pays du monde.",
+            "Flux : ce qui circule, des marchandises, des personnes, des informations.",
+            "Conteneur : une grande boîte en métal pour les marchandises.",
+            "Canal : une voie d’eau creusée pour relier deux mers.",
+            "Détroit : un passage de mer étroit entre deux terres.",
+            "Firme transnationale : une entreprise présente dans beaucoup de pays."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-1-5",
+      "prompt": "Le premier port à conteneurs de France est … .",
+      "spoken": "Le premier port à conteneurs de France est (mot manquant) .",
+      "choices": [
+        "Marseille",
+        "Le Havre",
+        "Bordeaux"
+      ],
+      "answer": "Le Havre",
+      "hint": "Il est au bord de la Manche, à l’embouchure de la Seine.",
+      "explanation": "Le Havre, au bord de la Manche, est le premier port à conteneurs de France. Marseille, au bord de la Méditerranée, est un grand port surtout pour le pétrole.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la mondialisation",
+          "lines": [
+            "Mondialisation : les échanges qui relient les pays du monde.",
+            "Flux : ce qui circule, des marchandises, des personnes, des informations.",
+            "Conteneur : une grande boîte en métal pour les marchandises.",
+            "Canal : une voie d’eau creusée pour relier deux mers.",
+            "Détroit : un passage de mer étroit entre deux terres.",
+            "Firme transnationale : une entreprise présente dans beaucoup de pays."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-1-6",
+      "prompt": "Le détroit qui sépare la France de l’Angleterre s’appelle … .",
+      "spoken": "Le détroit qui sépare la France de l’Angleterre s’appelle (mot manquant) .",
+      "choices": [
+        "le Bosphore",
+        "le Pas-de-Calais",
+        "le détroit de Gibraltar"
+      ],
+      "answer": "le Pas-de-Calais",
+      "hint": "Calais est une ville française de la côte nord.",
+      "explanation": "Le Pas-de-Calais sépare la France de l’Angleterre. Gibraltar sépare l’Espagne du Maroc.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la mondialisation",
+          "lines": [
+            "Mondialisation : les échanges qui relient les pays du monde.",
+            "Flux : ce qui circule, des marchandises, des personnes, des informations.",
+            "Conteneur : une grande boîte en métal pour les marchandises.",
+            "Canal : une voie d’eau creusée pour relier deux mers.",
+            "Détroit : un passage de mer étroit entre deux terres.",
+            "Firme transnationale : une entreprise présente dans beaucoup de pays."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-1-7",
+      "prompt": "Une entreprise qui a des usines et des magasins dans beaucoup de pays est une firme … .",
+      "spoken": "Une entreprise qui a des usines et des magasins dans beaucoup de pays est une firme (mot manquant) .",
+      "choices": [
+        "nationale",
+        "familiale",
+        "transnationale"
+      ],
+      "answer": "transnationale",
+      "hint": "« Trans » veut dire « à travers » : à travers les frontières.",
+      "explanation": "Une firme transnationale travaille dans beaucoup de pays, comme les grandes marques de téléphones ou de voitures.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la mondialisation",
+          "lines": [
+            "Mondialisation : les échanges qui relient les pays du monde.",
+            "Flux : ce qui circule, des marchandises, des personnes, des informations.",
+            "Conteneur : une grande boîte en métal pour les marchandises.",
+            "Canal : une voie d’eau creusée pour relier deux mers.",
+            "Détroit : un passage de mer étroit entre deux terres.",
+            "Firme transnationale : une entreprise présente dans beaucoup de pays."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-4e-globalization",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

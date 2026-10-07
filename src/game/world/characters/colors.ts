@@ -57,4 +57,15 @@ export const SENTINELLE = {
   rallumee: 0xdaa66a,
   orbite: 0x45423d,
   cendre: 0x6b6862,
+  /**
+   * Le rameau de la Colombe d'albâtre (HG-3) : éteint, une pierre à peine verte ; rallumé, il reste vert (`feuillage`),
+   * quand tout le reste passe au Sable (DA, relecture des planches : « jusqu'au rameau vert »).
+   */
+  rameau: 0x868a7c,
+  feuillage: 0x5a9a3e,
+  /**
+   * Le rocher de la Tortue d'ocre (SC-3) : une pierre grise un peu plus froide et plus sombre que la statue, qui ne se
+   * rallume pas : rallumée, la tortue passe au Sable et se détache de son rocher (DA, relecture des captures SC-3).
+   */
+  roche: 0x7c7f80,
 } as const satisfies Record<string, Couleur>;

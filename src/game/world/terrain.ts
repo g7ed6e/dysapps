@@ -4,7 +4,7 @@
 // ce fichier réexporte : on importe le terrain d'ici. Le décor (arbres, repères, cascades, habillage de la mer) est
 // dessiné par ./decor.ts, et posé ici.
 
-import { type BiomeId, BIOMES, BLOC, BLOCKS } from '../biomes';
+import { type BiomeId, BIOMES, BLOC, BLOCKS, SCIENCE_SUBJECTS } from '../biomes';
 import type { World } from '../engine';
 import type { VoxelCube } from './cube';
 import { type ArchipelagoId, archipelagoOfIsland, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, tirage, turnInWorld } from './map';
@@ -32,7 +32,7 @@ import { joinsBetween } from './terrain/joins';
 import { seaDecorShown } from './terrain/sea';
 
 export { avatarHome, DEPTH, fade, FIN_DU_PLATEAU_DES_ECOLES, groundHeight, ISLAND, islandCenter, islandOrigin, LAYOUT_PAD, origineDe } from './terrain/base';
-export { type CadreDeCases, cadreDeLaLiaison, cadreDeTraversee, cameraDeLIle, DISTANCE_DE_LA_VUE_DE_L_ILE, HORS_DE_LA_COLONNE, ileDeLaVueGlissee, islandAt, overviewBounds, projectionDeLaVueDeLIle, versLaCamera, VIEW_YAW_MAX, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, VUE_DE_L_ILE_PANNEAU_OUVERT, worldBounds } from './terrain/view';
+export { bornesDesLieux, type CadreDeCases, cadreDeLaLiaison, cadreDeTraversee, cameraDeLIle, DISTANCE_DE_LA_VUE_DE_L_ILE, HORS_DE_LA_COLONNE, ileDeLaVueGlissee, islandAt, overviewBounds, projectionDeLaVueDeLIle, versLaCamera, VIEW_YAW_MAX, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, VUE_DE_L_ILE_PANNEAU_OUVERT, worldBounds } from './terrain/view';
 export { type BorneVue, cacheUneBorne, PLACES_DES_BORNES_DES_ECOLES, placesDesBornes, PORTEE_DEVANT_LA_BORNE, questStations, rangeeDevantLesBornes } from './terrain/markers';
 export { avatarRoute, BAC_LONG, boardingRoute, bridgePath, casesDeLOuvrage, placesDeLaFleche, portsDAttache, premierCoude, routeAt, routeLengths, tablier } from './terrain/links';
 export { ASSEMBLAGE_SIZE, type Atelier, atelierModel, cacheUnLieu, casesDesLieux, HALLE, lieuxVus, placeDoor, placeSpot, schoolModel, TROPHY_AT, TROPHY_SIZE, TROPHY_SLOTS, trophyModel, VILLAGE_PLACES } from './terrain/village';
@@ -156,7 +156,8 @@ function poserLIle(
   // Les cœurs en herbe ; le Jardin des heures aussi (DA, LV2-4) : l'osier, son bloc, reste aux bordures, aux paniers et
   // à la serre ; et le Refuge des carnets (DA, LV2-5) : le bardeau reste aux murs ; la Fouille des siècles et la Pointe
   // des paysages (HG-2) : la mosaïque et le chaume restent aux plans, au décor et aux commandes, l'archipel le plus chargé
-  // garde un sol calme ; de même la Vallée du vivant, le Laboratoire des éléments et le Hangar des inventions (SC-2).
+  // garde un sol calme ; de même les six îles d'histoire-géographie de 5e à 3e (HG-3), toutes les îles de la matière, et
+  // toutes les îles de sciences (SC-2 en 6e, SC-3 de la 5e à la 3e).
   const grassy =
     biome.id === 'french-6e-phonology' ||
     biome.id === 'french-6e-grammar-spelling' ||
@@ -166,11 +167,8 @@ function poserLIle(
     biome.id === 'french-5e-homophones' ||
     biome.id === 'lv2-4e-daily-life' ||
     biome.id === 'lv2-3e-travel' ||
-    biome.id === 'history-6e-antiquity' ||
-    biome.id === 'geography-6e-living' ||
-    biome.id === 'life-earth-sciences-6e-living-world' ||
-    biome.id === 'physics-chemistry-6e-matter-energy' ||
-    biome.id === 'technology-6e-objects';
+    biome.subject === 'history-geography' ||
+    SCIENCE_SUBJECTS.includes(biome.subject);
   const h = (x: number, y: number) => groundHeight(index, x, y);
   // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
   // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.

@@ -447,6 +447,8 @@ export function creerCamera(
       }
       camera.position.copy(camPos);
       camera.lookAt(camTarget);
+      // Le monde vu de plus loin que son cadrage : la brume recule d'autant (./mist.ts).
+      instant.recul = zoomVu < 1 ? camPos.distanceTo(camTarget) * (1 - zoomVu) : 0;
     },
     dispose: () => {},
   };

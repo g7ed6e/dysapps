@@ -6,6 +6,7 @@ import { HABILLAGES, type Habillage } from '../skin';
 import { toutConstruit } from '../world/budget';
 import { maillageDeLaConstruction } from '../world/construction';
 import { buildMesh } from '../world/mesher';
+import { buildBlockMesh, chunkFaceCount } from '../world/blockMesh';
 import { hiddenBottomLevel } from '../world/sea';
 import { worldCubes } from '../world/terrain';
 import { KITS } from '../world/architecture';
@@ -26,6 +27,9 @@ import { maillageDuFondu } from '../world/fadeMesh';
 function monde(habillage: Habillage): Monde {
   return { scene: new THREE.Scene(), archipel: '6e', habillage, surface: null, etendue: { minX: 0, maxX: 10, minY: 0, maxY: 10 }, centre: { x: 5, y: 5 }, largeur: 10, liaisons: () => [] };
 }
+
+/** Les triangles du terrain en une seule texture, les faces voisines fondues (world/blockMesh.ts). */
+const fondus = (cubes: VoxelCube[]) => chunkFaceCount(buildBlockMesh(cubes, { fondre: true })) * 2;
 
 describe('Le rendu de Blocland ne montre aucune pièce d’architecture', () => {
   const { progress, world: village } = toutConstruit();
@@ -54,32 +58,42 @@ describe('Le rendu de Blocland ne montre aucune pièce d’architecture', () => 
       if (o instanceof THREE.Mesh && o.geometry.getAttribute('position').count > 0) maillages.push(o);
     });
     // Aucun attribut de motif, aucun shader peint : la construction d'Archipéo (three/construction.ts) peint ses murs
-    // dans `onBeforeCompile` ; les matériaux de Blocland n'y ajoutent la zone du mode « Aménager » (GD-9,
-    // three/arrange.ts : le lieu choisi soulevé, le geste de la pose) que le temps que le mode est ouvert : hors du
-    // mode, le programme est celui d'avant.
+    // dans `onBeforeCompile` ; les matériaux de Blocland n'y lisent que la texture des blocs (three/textures.ts), et n'y
+    // ajoutent la zone du mode « Aménager » (GD-9, three/arrange.ts : le lieu choisi soulevé, le geste de la pose) que
+    // le temps que le mode est ouvert : hors du mode, le programme est celui d'avant.
     expect(maillages.length).toBeGreaterThan(0);
     for (const o of maillages) {
       expect(o.geometry.getAttribute('motif')).toBeUndefined();
       const mats = ([] as THREE.Material[]).concat(o.material);
       for (const x of mats) {
         expect(x).not.toBeInstanceOf(THREE.ShaderMaterial);
-        expect(Object.hasOwn(x, 'onBeforeCompile'), 'hors du mode').toBe(false);
-        expect(x.customProgramCacheKey()).not.toBe('amenager');
+        expect(x.customProgramCacheKey(), 'hors du mode').toBe('blocs');
       }
     }
     const mats = maillages.flatMap((o) => ([] as THREE.Material[]).concat(o.material));
     // Le mode ouvert : l'ajout est posé sur chaque matériau des blocs ; refermé, il part.
+    // Exactement les triangles du monde en blocs, les faces voisines fondues (world/blockMesh.ts), sans les dessous
+    // sous l'eau.
+    const dessous = { hiddenBottomsUpTo: hiddenBottomLevel('6e') };
+    const tri = (o: THREE.Object3D) => {
+      let n = 0;
+      o.traverse((x) => {
+        if (x instanceof THREE.Mesh) n += (x.geometry.index?.count ?? 0) / 3;
+      });
+      return n;
+    };
+    const terrain = m.scene.children[0];
+    expect(tri(terrain)).toBe(chunkFaceCount(buildBlockMesh(cubes, { ...dessous, fondre: true })) * 2);
     ouvrirLeModeDansLesMateriaux(true);
-    for (const x of mats) expect(x.customProgramCacheKey()).toBe('amenager');
+    for (const x of mats) expect(x.customProgramCacheKey()).toBe('blocsamenager');
+    // Dans le mode, le terrain se refait sans fondre ses faces (le lieu choisi se soulève sommet par sommet) : cube pour
+    // cube, les triangles du mailleur (world/mesher.ts).
+    c.animer!(0, 0.016, false);
+    expect(tri(terrain)).toBe(buildMesh(cubes, [], dessous).reduce((n, g) => n + g.indices.length / 3, 0));
     ouvrirLeModeDansLesMateriaux(false);
-    for (const x of mats) {
-      expect(Object.hasOwn(x, 'onBeforeCompile')).toBe(false);
-      expect(x.customProgramCacheKey()).not.toBe('amenager');
-    }
-    // Exactement les triangles du monde en blocs (world/mesher.ts), cube pour cube, sans les dessous sous l'eau.
-    const tri = (g: THREE.BufferGeometry) => (g.index ? g.index.count : g.getAttribute('position').count) / 3;
-    const attendus = buildMesh(cubes, [], { hiddenBottomsUpTo: hiddenBottomLevel('6e') }).reduce((n, g) => n + g.indices.length / 3, 0);
-    expect(maillages.reduce((n, o) => n + tri(o.geometry), 0)).toBe(attendus);
+    for (const x of mats) expect(x.customProgramCacheKey()).toBe('blocs');
+    c.animer!(0, 0.016, false);
+    expect(tri(terrain)).toBe(chunkFaceCount(buildBlockMesh(cubes, { ...dessous, fondre: true })) * 2);
     c.dispose();
   });
 });
@@ -98,7 +112,7 @@ describe('Le geste de pose de Blocland (GD-1, point 4)', () => {
     });
     return n;
   };
-  const attendus = () => buildMesh(apres).reduce((t, g) => t + g.indices.length / 3, 0);
+  const attendus = () => fondus(apres);
   const scene = () => {
     const m = monde(HABILLAGES.blocland);
     const c = creerCubes(m, { rivage: () => {} } as unknown as Large, lumiere, { now: 0 } as Instant);
@@ -168,8 +182,8 @@ describe('La pose d’une partie en vague (GD-6, Blocland)', () => {
     const { m, c, terrain, moments } = scene();
     const objets = m.scene.children.length;
     // Rien de la partie avant le premier cube ; pas plus de maillages que le monde tout posé.
-    expect(dessines(terrain)).toBe(buildMesh(sol).reduce((t, g) => t + g.indices.length / 3, 0));
-    expect(maillages(terrain).length).toBeLessThanOrEqual(buildMesh(apres).length + 1);
+    expect(dessines(terrain)).toBe(fondus(sol));
+    expect(maillages(terrain).length).toBeLessThanOrEqual(buildBlockMesh(apres).length + 1);
     let hautMax = 0;
     for (let i = 0; i < 400 && !moments.includes('finie'); i++) {
       c.animer!(0, 0.03, false);
@@ -187,7 +201,7 @@ describe('La pose d’une partie en vague (GD-6, Blocland)', () => {
     // La page donne le monde avec la partie : le terrain tout posé, sans la vague.
     c.arreterLaVague();
     c.poser(apres);
-    expect(dessines(terrain)).toBe(buildMesh(apres).reduce((t, g) => t + g.indices.length / 3, 0));
+    expect(dessines(terrain)).toBe(fondus(apres));
     c.dispose();
   });
 
@@ -205,7 +219,7 @@ describe('La pose d’une partie en vague (GD-6, Blocland)', () => {
     for (let i = 0; i < 25; i++) c.animer!(0, 0.03, false);
     c.arreterLaVague();
     c.poser(apres);
-    expect(dessines(terrain)).toBe(buildMesh(apres).reduce((t, g) => t + g.indices.length / 3, 0));
+    expect(dessines(terrain)).toBe(fondus(apres));
     for (let i = 0; i < 200; i++) c.animer!(0, 0.03, false);
     expect(moments).not.toContain('finie');
     c.dispose();

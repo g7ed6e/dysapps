@@ -102,6 +102,24 @@ import fouilleCour from './plans/history-6e-antiquity-3.json';
 import pointeQuartier from './plans/geography-6e-living-1.json';
 import pointeChamps from './plans/geography-6e-living-2.json';
 import pointeQuai from './plans/geography-6e-living-3.json';
+import bourgLogis from './plans/history-5e-middle-ages-1.json';
+import bourgToit from './plans/history-5e-middle-ages-2.json';
+import bourgCour from './plans/history-5e-middle-ages-3.json';
+import deltaMoulin from './plans/geography-5e-resources-1.json';
+import deltaToit from './plans/geography-5e-resources-2.json';
+import deltaCour from './plans/geography-5e-resources-3.json';
+import imprimerieHalle from './plans/history-4e-revolutions-1.json';
+import imprimerieToit from './plans/history-4e-revolutions-2.json';
+import imprimerieCour from './plans/history-4e-revolutions-3.json';
+import escaleEntrepot from './plans/geography-4e-globalization-1.json';
+import escaleToit from './plans/geography-4e-globalization-2.json';
+import escaleCour from './plans/geography-4e-globalization-3.json';
+import kiosqueBibliotheque from './plans/history-3e-twentieth-century-1.json';
+import kiosqueToit from './plans/history-3e-twentieth-century-2.json';
+import kiosqueCour from './plans/history-3e-twentieth-century-3.json';
+import territoiresMairie from './plans/geography-3e-france-1.json';
+import territoiresToit from './plans/geography-3e-france-2.json';
+import territoiresPlace from './plans/geography-3e-france-3.json';
 import valleeSerre from './plans/life-earth-sciences-6e-living-world-1.json';
 import valleeToit from './plans/life-earth-sciences-6e-living-world-2.json';
 import valleeJardin from './plans/life-earth-sciences-6e-living-world-3.json';
@@ -111,6 +129,33 @@ import laboratoireCour from './plans/physics-chemistry-6e-matter-energy-3.json';
 import hangarAtelier from './plans/technology-6e-objects-1.json';
 import hangarToit from './plans/technology-6e-objects-2.json';
 import hangarCour from './plans/technology-6e-objects-3.json';
+import prairiePlan1 from './plans/life-earth-sciences-5e-active-planet-1.json';
+import prairiePlan2 from './plans/life-earth-sciences-5e-active-planet-2.json';
+import prairiePlan3 from './plans/life-earth-sciences-5e-active-planet-3.json';
+import salinePlan1 from './plans/physics-chemistry-5e-matter-universe-1.json';
+import salinePlan2 from './plans/physics-chemistry-5e-matter-universe-2.json';
+import salinePlan3 from './plans/physics-chemistry-5e-matter-universe-3.json';
+import menuiseriePlan1 from './plans/technology-5e-design-1.json';
+import menuiseriePlan2 from './plans/technology-5e-design-2.json';
+import menuiseriePlan3 from './plans/technology-5e-design-3.json';
+import sourcePlan1 from './plans/life-earth-sciences-4e-cells-evolution-1.json';
+import sourcePlan2 from './plans/life-earth-sciences-4e-cells-evolution-2.json';
+import sourcePlan3 from './plans/life-earth-sciences-4e-cells-evolution-3.json';
+import vigiePlan1 from './plans/physics-chemistry-4e-signals-circuits-1.json';
+import vigiePlan2 from './plans/physics-chemistry-4e-signals-circuits-2.json';
+import vigiePlan3 from './plans/physics-chemistry-4e-signals-circuits-3.json';
+import bassinPlan1 from './plans/technology-4e-modeling-1.json';
+import bassinPlan2 from './plans/technology-4e-modeling-2.json';
+import bassinPlan3 from './plans/technology-4e-modeling-3.json';
+import vergerPlan1 from './plans/life-earth-sciences-3e-human-body-1.json';
+import vergerPlan2 from './plans/life-earth-sciences-3e-human-body-2.json';
+import vergerPlan3 from './plans/life-earth-sciences-3e-human-body-3.json';
+import tremplinPlan1 from './plans/physics-chemistry-3e-motion-energy-1.json';
+import tremplinPlan2 from './plans/physics-chemistry-3e-motion-energy-2.json';
+import tremplinPlan3 from './plans/physics-chemistry-3e-motion-energy-3.json';
+import ruchePlan1 from './plans/technology-3e-digital-1.json';
+import ruchePlan2 from './plans/technology-3e-digital-2.json';
+import ruchePlan3 from './plans/technology-3e-digital-3.json';
 
 export interface PlanCell {
   x: number;
@@ -294,6 +339,24 @@ const PLAN_FILES = [
   pointeQuartier,
   pointeChamps,
   pointeQuai,
+  bourgLogis,
+  bourgToit,
+  bourgCour,
+  deltaMoulin,
+  deltaToit,
+  deltaCour,
+  imprimerieHalle,
+  imprimerieToit,
+  imprimerieCour,
+  escaleEntrepot,
+  escaleToit,
+  escaleCour,
+  kiosqueBibliotheque,
+  kiosqueToit,
+  kiosqueCour,
+  territoiresMairie,
+  territoiresToit,
+  territoiresPlace,
   valleeSerre,
   valleeToit,
   valleeJardin,
@@ -303,6 +366,33 @@ const PLAN_FILES = [
   hangarAtelier,
   hangarToit,
   hangarCour,
+  prairiePlan1,
+  prairiePlan2,
+  prairiePlan3,
+  salinePlan1,
+  salinePlan2,
+  salinePlan3,
+  menuiseriePlan1,
+  menuiseriePlan2,
+  menuiseriePlan3,
+  sourcePlan1,
+  sourcePlan2,
+  sourcePlan3,
+  vigiePlan1,
+  vigiePlan2,
+  vigiePlan3,
+  bassinPlan1,
+  bassinPlan2,
+  bassinPlan3,
+  vergerPlan1,
+  vergerPlan2,
+  vergerPlan3,
+  tremplinPlan1,
+  tremplinPlan2,
+  tremplinPlan3,
+  ruchePlan1,
+  ruchePlan2,
+  ruchePlan3,
 ] as (Omit<PlanDef, 'cells' | 'origin' | 'reward'> & { reward: { xp: number } })[];
 
 /**

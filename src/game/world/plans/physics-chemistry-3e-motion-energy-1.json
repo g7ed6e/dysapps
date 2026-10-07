@@ -1,0 +1,9 @@
+{
+  "id": "physics-chemistry-3e-motion-energy-1",
+  "biome": "physics-chemistry-3e-motion-energy",
+  "name": "Le gymnase de Virage",
+  "reward": {
+    "xp": 40
+  },
+  "done": "Mon gymnase ! On va pouvoir bouger. Merci, bâtisseur."
+}

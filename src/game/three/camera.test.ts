@@ -172,7 +172,10 @@ describe('La Carte dans la place libre (DA-31)', () => {
       const d0 = islandDef(dest);
       // Les voisines : celles qu'un pont relie (GD-9, `neighboursOf`), à moins de 45 cases. Elles restent à l'écran ; aux
       // Anciens Ateliers, dessinés en deux rangs (GD-9), une voisine du rang d'en face sort de la place libre.
-      for (const def of mapOf('4e').filter((d) => neighboursOf(dest).includes(d.id) && Math.hypot(d.core.x - d0.core.x, d.core.y - d0.core.y) < 45)) {
+      // Depuis HG-3, un troisième rang (l'Imprimerie et l'Escale, 16 cases au sud du deuxième) : l'Atelier et l'Escale, à 44
+      // cases l'un de l'autre du nord au sud, ne tiennent pas ensemble dans cette place de 180 px ; seules les voisines à
+      // moins de 40 cases du nord au sud (toutes celles d'avant, 28 au plus) s'y vérifient.
+      for (const def of mapOf('4e').filter((d) => neighboursOf(dest).includes(d.id) && Math.hypot(d.core.x - d0.core.x, d.core.y - d0.core.y) < 45 && Math.abs(d.core.y - d0.core.y) < 40)) {
         const q = centre(def.id, c, T);
         // Les Anciens Ateliers sont dessinés en deux rangs (GD-9) : une voisine du rang d'en face déborde la place
         // libre d'une demi-île (une trentaine de pixels au plancher), en haut comme en bas.
@@ -335,6 +338,8 @@ describe('La Carte dans la place libre (DA-31)', () => {
     cam.zoomer(1e-3, { x: 0, y: 0 });
     cam.animer!(0.2, 0.016, true);
     expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d0 / ZOOM_DU_MONDE.loin, 3);
+    // Vu de plus loin, la brume recule d'autant que la caméra.
+    expect(instant.recul).toBeCloseTo(d0 / ZOOM_DU_MONDE.loin - d0, 3);
     // Une autre île : le décalage s'efface, le zoom reste.
     cam.zoomer(2, { x: 0, y: 0 });
     derniers.current = { ...derniers.current, focus: { island: 'french-6e-grammar-spelling', seq: 2 } };
@@ -359,6 +364,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     cam.recentrer(true);
     cam.animer!(0.5, 0.016, true);
     expect(cam.decale()).toBe(false);
+    expect(instant.recul).toBe(0);
     expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d1 * (2 * ZOOM_DU_MONDE.loin), 3);
   });
 

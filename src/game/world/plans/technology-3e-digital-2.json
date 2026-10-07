@@ -1,0 +1,9 @@
+{
+  "id": "technology-3e-digital-2",
+  "biome": "technology-3e-digital",
+  "name": "Le toit du poste",
+  "reward": {
+    "xp": 50
+  },
+  "done": "Un toit et une lanterne : mes messages partent même la nuit."
+}

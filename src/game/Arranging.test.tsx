@@ -32,12 +32,12 @@ const nom = (id: string) => NOMS[id] ?? id;
 let dernier: Amenagement;
 let monde: World;
 
-function Banc({ reduit, depart, dire = () => {} }: { reduit: boolean; depart: World; dire?: (texte: string) => void }) {
+function Banc({ reduit, depart, dire = () => {}, a: archipel = '6e' }: { reduit: boolean; depart: World; dire?: (texte: string) => void; a?: '6e' | '5e' | '4e' | '3e' }) {
   const [world, setWorld] = useState<World>(depart);
   monde = world;
   const a = useAmenagement({
     world,
-    a: '6e',
+    a: archipel,
     arrange: (next) => {
       const { layout: _l, ...reste } = world;
       setWorld({ ...reste, links: next.links, ...(next.layout ? { layout: next.layout } : {}) });
@@ -84,6 +84,20 @@ describe('le mode « Aménager »', () => {
     // Plus de « C’est posé » : la ligne dit où il regarde, le son de la pose suffit.
     expect(screen.getByRole('status').textContent).not.toMatch(/C’est posé/);
     expect(screen.getByRole('status').textContent).not.toBe('');
+  });
+
+  it('« Tourner » un lieu qui, tourné, n’a aucune place libre : le fantôme ne tourne pas, la ligne le refuse (HG-3)', () => {
+    const GLACIER = 'maths-5e-signed-numbers' as const;
+    render(<SettingsProvider><Banc reduit depart={depart()} a="5e" /></SettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    act(() => void dernier.intention({ genre: 'ile', id: GLACIER }));
+    const avant = dernier.choix;
+    if (avant?.genre !== 'lieu') throw new Error('lieu');
+    fireEvent.click(within(screen.getByRole('group', { name: 'Déplacer' })).getByRole('button', { name: 'Tourner' }));
+    // Une croix et deux ou trois mots, comme les autres refus ; le fantôme garde son orientation.
+    expect(dernier.ligne).toEqual({ genre: 'refus', icone: 'close', texte: 'Pas de place' });
+    expect(screen.getByRole('status').textContent).toBe('Pas de place.');
+    expect(dernier.choix).toEqual(avant);
   });
 
   it('choisir, caler, décaler, poser d’un coup (moins d’animations), défaire, puis « Annuler » remet le plan comme à l’entrée', () => {

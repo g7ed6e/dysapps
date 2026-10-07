@@ -1,0 +1,240 @@
+{
+  "id": "life-earth-sciences-3e-human-body-digestion-microbes-1",
+  "biome": "life-earth-sciences-3e-human-body",
+  "type": "digestion-microbes",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-1-0",
+      "prompt": "Après la bouche, les aliments descendent par l’…",
+      "spoken": "Après la bouche, les aliments descendent par l’ (mot manquant) ",
+      "choices": [
+        "œsophage",
+        "estomac",
+        "intestin"
+      ],
+      "answer": "œsophage",
+      "hint": "Relis la ligne « Le trajet des aliments » du rappel.",
+      "explanation": "Après la bouche, les aliments passent par l’œsophage, un tuyau qui descend jusqu’à l’estomac.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La digestion",
+          "lines": [
+            "Le trajet des aliments : bouche, œsophage, estomac, intestin grêle, gros intestin.",
+            "Les dents coupent ; les sucs digestifs découpent les aliments en nutriments.",
+            "Les nutriments passent dans le sang, dans l’intestin grêle.",
+            "Ce qui n’est pas digéré sort par le gros intestin.",
+            "Le microbiote : les milliards de bactéries utiles de l’intestin.",
+            "Une alimentation variée apporte tous les nutriments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-1-1",
+      "prompt": "Les sucs digestifs découpent les aliments en tout petits morceaux : les …",
+      "spoken": "Les sucs digestifs découpent les aliments en tout petits morceaux : les  (mot manquant) ",
+      "choices": [
+        "microbes",
+        "nutriments",
+        "déchets"
+      ],
+      "answer": "nutriments",
+      "hint": "Relis la ligne « Les dents coupent » du rappel.",
+      "explanation": "Les sucs digestifs découpent les aliments en nutriments, assez petits pour passer dans le sang.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La digestion",
+          "lines": [
+            "Le trajet des aliments : bouche, œsophage, estomac, intestin grêle, gros intestin.",
+            "Les dents coupent ; les sucs digestifs découpent les aliments en nutriments.",
+            "Les nutriments passent dans le sang, dans l’intestin grêle.",
+            "Ce qui n’est pas digéré sort par le gros intestin.",
+            "Le microbiote : les milliards de bactéries utiles de l’intestin.",
+            "Une alimentation variée apporte tous les nutriments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-1-2",
+      "prompt": "Les nutriments passent dans le sang au niveau de l’…",
+      "spoken": "Les nutriments passent dans le sang au niveau de l’ (mot manquant) ",
+      "choices": [
+        "estomac",
+        "œsophage",
+        "intestin grêle"
+      ],
+      "answer": "intestin grêle",
+      "hint": "Relis la ligne « Les nutriments » du rappel.",
+      "explanation": "C’est dans l’intestin grêle, long de plusieurs mètres, que les nutriments passent dans le sang. Le sang les porte ensuite à toutes les cellules.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La digestion",
+          "lines": [
+            "Le trajet des aliments : bouche, œsophage, estomac, intestin grêle, gros intestin.",
+            "Les dents coupent ; les sucs digestifs découpent les aliments en nutriments.",
+            "Les nutriments passent dans le sang, dans l’intestin grêle.",
+            "Ce qui n’est pas digéré sort par le gros intestin.",
+            "Le microbiote : les milliards de bactéries utiles de l’intestin.",
+            "Une alimentation variée apporte tous les nutriments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-1-3",
+      "prompt": "Deux tubes, à la température du corps\nTube 1 : de l’amidon et de l’eau. Une heure plus tard : encore de l’amidon.\nTube 2 : de l’amidon et de la salive. Une heure plus tard : l’amidon a disparu, il y a du sucre.",
+      "question": "Que montre cette expérience ?",
+      "spoken": "Deux tubes, à la température du corps. Tube 1, de l’amidon et de l’eau. Une heure plus tard, encore de l’amidon. Tube 2, de l’amidon et de la salive. Une heure plus tard, l’amidon a disparu, il y a du sucre.",
+      "choices": [
+        "l’eau transforme l’amidon",
+        "l’amidon disparaît tout seul",
+        "la salive transforme l’amidon en sucre"
+      ],
+      "answer": "la salive transforme l’amidon en sucre",
+      "hint": "Une seule chose change entre les deux tubes. Laquelle ?",
+      "explanation": "Seule la salive change entre les deux tubes. Dans le tube 2, l’amidon est devenu du sucre : la salive est un suc digestif. Le tube 1 montre que l’eau seule ne fait rien.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La digestion",
+          "lines": [
+            "Le trajet des aliments : bouche, œsophage, estomac, intestin grêle, gros intestin.",
+            "Les dents coupent ; les sucs digestifs découpent les aliments en nutriments.",
+            "Les nutriments passent dans le sang, dans l’intestin grêle.",
+            "Ce qui n’est pas digéré sort par le gros intestin.",
+            "Le microbiote : les milliards de bactéries utiles de l’intestin.",
+            "Une alimentation variée apporte tous les nutriments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-1-4",
+      "prompt": "Les bactéries utiles qui vivent dans notre intestin forment …",
+      "spoken": "Les bactéries utiles qui vivent dans notre intestin forment  (mot manquant) ",
+      "choices": [
+        "les sucs digestifs",
+        "le microbiote",
+        "les globules blancs"
+      ],
+      "answer": "le microbiote",
+      "hint": "Relis la ligne « Le microbiote » du rappel.",
+      "explanation": "Le microbiote, ce sont les bactéries utiles de l’intestin. Elles aident à digérer et protègent contre d’autres microbes. Les sucs digestifs découpent les aliments ; les globules blancs détruisent les microbes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La digestion",
+          "lines": [
+            "Le trajet des aliments : bouche, œsophage, estomac, intestin grêle, gros intestin.",
+            "Les dents coupent ; les sucs digestifs découpent les aliments en nutriments.",
+            "Les nutriments passent dans le sang, dans l’intestin grêle.",
+            "Ce qui n’est pas digéré sort par le gros intestin.",
+            "Le microbiote : les milliards de bactéries utiles de l’intestin.",
+            "Une alimentation variée apporte tous les nutriments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-1-5",
+      "prompt": "Le déjeuner de la cantine\nPoisson et riz.\nHaricots verts.\nYaourt.\nPomme.",
+      "question": "Pourquoi ce repas est-il équilibré ?",
+      "spoken": "Le déjeuner de la cantine. Poisson et riz. Haricots verts. Yaourt. Pomme.",
+      "choices": [
+        "il a seulement des légumes",
+        "il est varié",
+        "il est très sucré"
+      ],
+      "answer": "il est varié",
+      "hint": "Compte les groupes d’aliments différents.",
+      "explanation": "Le repas mêle un poisson, un féculent, un légume, un produit laitier et un fruit : il est varié. Il apporte ainsi tous les nutriments.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La digestion",
+          "lines": [
+            "Le trajet des aliments : bouche, œsophage, estomac, intestin grêle, gros intestin.",
+            "Les dents coupent ; les sucs digestifs découpent les aliments en nutriments.",
+            "Les nutriments passent dans le sang, dans l’intestin grêle.",
+            "Ce qui n’est pas digéré sort par le gros intestin.",
+            "Le microbiote : les milliards de bactéries utiles de l’intestin.",
+            "Une alimentation variée apporte tous les nutriments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-1-6",
+      "prompt": "Ce qui n’est pas digéré sort du corps par le …",
+      "spoken": "Ce qui n’est pas digéré sort du corps par le  (mot manquant) ",
+      "choices": [
+        "gros intestin",
+        "intestin grêle",
+        "estomac"
+      ],
+      "answer": "gros intestin",
+      "hint": "Relis la ligne « Ce qui n’est pas digéré » du rappel.",
+      "explanation": "Ce qui n’est pas digéré, comme une partie des fibres, passe dans le gros intestin puis sort du corps. Les nutriments, eux, sont passés dans le sang plus tôt.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La digestion",
+          "lines": [
+            "Le trajet des aliments : bouche, œsophage, estomac, intestin grêle, gros intestin.",
+            "Les dents coupent ; les sucs digestifs découpent les aliments en nutriments.",
+            "Les nutriments passent dans le sang, dans l’intestin grêle.",
+            "Ce qui n’est pas digéré sort par le gros intestin.",
+            "Le microbiote : les milliards de bactéries utiles de l’intestin.",
+            "Une alimentation variée apporte tous les nutriments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-1-7",
+      "prompt": "En mâchant, les dents coupent les aliments en petits …",
+      "spoken": "En mâchant, les dents coupent les aliments en petits  (mot manquant) ",
+      "choices": [
+        "nutriments",
+        "microbes",
+        "morceaux"
+      ],
+      "answer": "morceaux",
+      "hint": "Relis la ligne « Les dents coupent » du rappel : qui fait quoi ?",
+      "explanation": "Les dents coupent les aliments en petits morceaux. Ce sont les sucs digestifs qui les découpent ensuite en nutriments, bien plus petits.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La digestion",
+          "lines": [
+            "Le trajet des aliments : bouche, œsophage, estomac, intestin grêle, gros intestin.",
+            "Les dents coupent ; les sucs digestifs découpent les aliments en nutriments.",
+            "Les nutriments passent dans le sang, dans l’intestin grêle.",
+            "Ce qui n’est pas digéré sort par le gros intestin.",
+            "Le microbiote : les milliards de bactéries utiles de l’intestin.",
+            "Une alimentation variée apporte tous les nutriments."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien raisonné !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-3e-human-body",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

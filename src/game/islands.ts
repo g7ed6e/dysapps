@@ -1573,6 +1573,741 @@ export const ILES = [
     ]
   },
   {
+    "id": "history-5e-middle-ages",
+    "name": "Bourg des chroniques",
+    "module": "Histoire, du Moyen Âge aux Temps modernes",
+    "subject": "history-geography",
+    "classe": "5e",
+    "description": "Byzance, l’Empire carolingien et l’islam, les seigneurs, les paysans et les villes de l’Occident féodal, puis les grandes découvertes, la Renaissance, les réformes et le roi absolu : se repérer dans le temps et lire un document.",
+    "block": "history-5e-middle-ages",
+    "guardian": "le Griffon d’émail",
+    "icon": "feather",
+    "creature": {
+      "name": "Vélin"
+    },
+    "exercises": [
+      {
+        "id": "christendoms-islam",
+        "title": "Chrétientés et islam",
+        "description": "Byzance, l’Empire de Charlemagne, la naissance et l’expansion de l’islam, les croisades : des mondes en contact, du VIe au XIIIe siècle.",
+        "programme": [
+          "c4.hg.histoire.chretientes-islam",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document"
+        ]
+      },
+      {
+        "id": "feudal-west",
+        "title": "L’Occident féodal",
+        "description": "Les seigneurs et les paysans, la ville et les bourgeois, l’Église et ses cathédrales, le roi de France qui affirme son pouvoir, du XIe au XVe siècle.",
+        "programme": [
+          "c4.hg.histoire.occident-feodal",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue"
+        ]
+      },
+      {
+        "id": "new-worlds",
+        "title": "Vers les Temps modernes",
+        "description": "Les grandes découvertes, l’Humanisme et la Renaissance, les réformes, du prince de la Renaissance au roi absolu, au XVIe et au XVIIe siècle.",
+        "programme": [
+          "c4.hg.histoire.europe-xvie-xviie",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "geography-5e-resources",
+    "name": "Delta des ressources",
+    "module": "Géographie, des ressources pour 8 milliards d’humains",
+    "subject": "history-geography",
+    "classe": "5e",
+    "description": "La population du monde et l’inégal développement, l’énergie, l’eau et l’alimentation à gérer, les risques et le changement climatique : les mots de la géographie et des documents courts.",
+    "block": "geography-5e-resources",
+    "guardian": "la Libellule de jade",
+    "icon": "droplets",
+    "creature": {
+      "name": "Sillon"
+    },
+    "exercises": [
+      {
+        "id": "population",
+        "title": "Population et développement",
+        "description": "Les naissances, les décès et l’espérance de vie, des populations jeunes et des populations qui vieillissent, et le développement inégal des pays.",
+        "programme": [
+          "c4.hg.geographie.demographie-developpement",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "resources",
+        "title": "Des ressources à gérer",
+        "description": "L’énergie, l’eau et l’alimentation : des ressources limitées, à partager, à économiser et à renouveler.",
+        "programme": [
+          "c4.hg.geographie.ressources",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "risks",
+        "title": "Risques et changement climatique",
+        "description": "Séismes, inondations, sécheresses et canicules : prévenir les risques, et s’adapter au changement climatique.",
+        "programme": [
+          "c4.hg.geographie.risques-changement-global",
+          "c4.hg.espace.localiser",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.cartes",
+          "c4.hg.demarches.raisonner"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "life-earth-sciences-5e-active-planet",
+    "name": "Prairie des climats",
+    "module": "La planète Terre et l’action humaine",
+    "subject": "life-earth-sciences",
+    "classe": "5e",
+    "description": "La Terre active, ses séismes et ses volcans, la météo et le climat, puis les ressources et ce que l’humain change dans les milieux, avec un document court sous les yeux.",
+    "block": "life-earth-sciences-5e-active-planet",
+    "guardian": "la Tortue d’ocre",
+    "icon": "cloud-sun",
+    "creature": {
+      "name": "Humus"
+    },
+    "exercises": [
+      {
+        "id": "active-earth",
+        "title": "La Terre active",
+        "description": "Les couches de la Terre, les plaques qui bougent, les séismes et les volcans, puis les risques et comment s’en protéger.",
+        "programme": [
+          "c4.sv.terre.geologie",
+          "c4.sv.demarches.langages",
+          "c4.sv.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "weather-climate",
+        "title": "Météo et climat",
+        "description": "Distinguer la météo et le climat, comprendre ce qui fait bouger l’air et l’eau, puis le climat qui change et les risques météo.",
+        "programme": [
+          "c4.sv.terre.climat",
+          "c4.sv.demarches.langages",
+          "c4.sv.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "human-impact",
+        "title": "Ressources et action humaine",
+        "description": "Les ressources que l’humain prend dans la nature, celles qui s’épuisent, puis ce qu’il change dans les écosystèmes et les gestes qui les protègent.",
+        "programme": [
+          "c4.sv.terre.action-humaine",
+          "c4.sv.demarches.raisonner",
+          "c4.sv.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "physics-chemistry-5e-matter-universe",
+    "name": "Saline des mélanges",
+    "module": "La matière, de la goutte aux étoiles",
+    "subject": "physics-chemistry",
+    "classe": "5e",
+    "description": "Les molécules et les changements d’état, les corps purs, les mélanges et la masse volumique, puis l’Univers, le système solaire et l’atome.",
+    "block": "physics-chemistry-5e-matter-universe",
+    "guardian": "le Flamant de sel",
+    "icon": "scale",
+    "creature": {
+      "name": "Perle"
+    },
+    "exercises": [
+      {
+        "id": "changes-of-state",
+        "title": "États et molécules",
+        "description": "Les molécules dans un solide, un liquide et un gaz, puis les changements d’état : le palier, la masse qui se conserve, le volume qui change.",
+        "programme": [
+          "c4.pc.matiere.etats",
+          "c4.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "mixtures-density",
+        "title": "Mélanges et masse volumique",
+        "description": "Corps purs et mélanges, dissoudre et mélanger deux liquides, puis la masse, le volume et la masse volumique : ce qui flotte et ce qui coule.",
+        "programme": [
+          "c4.pc.matiere.etats",
+          "c4.pc.demarches.experimenter",
+          "c4.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "universe-atoms",
+        "title": "L’Univers et l’atome",
+        "description": "Du système solaire aux galaxies, l’année-lumière, puis l’atome, son noyau et ses électrons, et les atomes nés dans les étoiles.",
+        "programme": [
+          "c4.pc.matiere.univers",
+          "c4.pc.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "technology-5e-design",
+    "name": "Menuiserie des objets",
+    "module": "Design et objets responsables",
+    "subject": "technology",
+    "classe": "5e",
+    "description": "Du besoin au cahier des charges, une solution technique pour chaque fonction, puis la vie d’un objet, de sa fabrication à son recyclage.",
+    "block": "technology-5e-design",
+    "guardian": "le Cheval à bascule",
+    "icon": "drafting-compass",
+    "creature": {
+      "name": "Rabot"
+    },
+    "exercises": [
+      {
+        "id": "specifications",
+        "title": "Du besoin au cahier des charges",
+        "description": "Le besoin et le problème technique, puis le cahier des charges : fonctions, contraintes et normes.",
+        "programme": [
+          "c4.te.design.besoin",
+          "c4.te.demarches.langages"
+        ]
+      },
+      {
+        "id": "technical-solutions",
+        "title": "Une solution pour chaque fonction",
+        "description": "Associer une solution technique à chaque fonction, puis choisir la solution qui respecte le cahier des charges.",
+        "programme": [
+          "c4.te.design.solutions",
+          "c4.te.design.besoin"
+        ]
+      },
+      {
+        "id": "life-cycle",
+        "title": "La vie d’un objet",
+        "description": "Le cycle de vie d’un objet, de la matière au recyclage, puis l’énergie qu’il consomme et son impact sur la planète.",
+        "programme": [
+          "c4.te.demarches.responsable",
+          "c4.te.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "history-4e-revolutions",
+    "name": "Imprimerie des révolutions",
+    "module": "Histoire, du XVIIIe siècle à la France du XIXe siècle",
+    "subject": "history-geography",
+    "classe": "4e",
+    "description": "Le commerce atlantique et la traite, les Lumières, la Révolution et l’Empire, puis l’industrie, les colonies et la République : se repérer dans le temps et lire un document.",
+    "block": "history-4e-revolutions",
+    "guardian": "le Paon de faïence",
+    "icon": "factory",
+    "creature": {
+      "name": "Typo"
+    },
+    "exercises": [
+      {
+        "id": "enlightenment",
+        "title": "Le XVIIIe siècle, Lumières et révolutions",
+        "description": "Le commerce atlantique et la traite, les Lumières, la Révolution française et l’Empire.",
+        "programme": [
+          "c4.hg.histoire.xviiie-revolutions",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue"
+        ]
+      },
+      {
+        "id": "industrial-europe",
+        "title": "L’Europe et le monde au XIXe siècle",
+        "description": "La révolution industrielle, les usines et les ouvriers, puis la colonisation.",
+        "programme": [
+          "c4.hg.histoire.europe-monde-xixe",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue"
+        ]
+      },
+      {
+        "id": "french-society",
+        "title": "La France au XIXe siècle",
+        "description": "La conquête du suffrage universel, la Troisième République et l’école, la place des femmes.",
+        "programme": [
+          "c4.hg.histoire.france-xixe",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue",
+          "c4.hg.demarches.raisonner"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "geography-4e-globalization",
+    "name": "Escale des échanges",
+    "module": "Géographie, un monde de villes et d’échanges",
+    "subject": "history-geography",
+    "classe": "4e",
+    "description": "Les villes qui grandissent, les migrants et les touristes, les mers, les ports et les échanges de la mondialisation : les mots de la géographie et des documents courts.",
+    "block": "geography-4e-globalization",
+    "guardian": "le Poulpe de corail",
+    "icon": "container",
+    "creature": {
+      "name": "Fret"
+    },
+    "exercises": [
+      {
+        "id": "urbanization",
+        "title": "L’urbanisation du monde",
+        "description": "Des villes de plus en plus grandes et nombreuses, leurs quartiers, leurs inégalités.",
+        "programme": [
+          "c4.hg.geographie.urbanisation",
+          "c4.hg.espace.localiser",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "mobilities",
+        "title": "Les mobilités humaines",
+        "description": "Les migrants, les réfugiés et les touristes : ceux qui traversent les frontières, et pourquoi.",
+        "programme": [
+          "c4.hg.geographie.mobilites",
+          "c4.hg.espace.localiser",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue",
+          "c4.hg.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "globalization",
+        "title": "Mers, ports et mondialisation",
+        "description": "Les échanges entre les pays du monde, les navires et les conteneurs, les ports, les canaux et les détroits.",
+        "programme": [
+          "c4.hg.geographie.mondialisation",
+          "c4.hg.espace.localiser",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.cartes",
+          "c4.hg.demarches.raisonner"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "life-earth-sciences-4e-cells-evolution",
+    "name": "Source des espèces",
+    "module": "Le vivant et son évolution",
+    "subject": "life-earth-sciences",
+    "classe": "4e",
+    "description": "La cellule et la nutrition des plantes et des animaux, la reproduction et les gènes, puis la biodiversité et l’évolution des espèces, avec un document ou une expérience sous les yeux.",
+    "block": "life-earth-sciences-4e-cells-evolution",
+    "guardian": "la Girafe d’ambre",
+    "icon": "flower",
+    "creature": {
+      "name": "Nectar"
+    },
+    "exercises": [
+      {
+        "id": "cells-nutrition",
+        "title": "Cellules et nutrition",
+        "description": "La cellule, unité du vivant, puis comment les plantes fabriquent leur matière et comment les animaux s’en nourrissent et respirent.",
+        "programme": [
+          "c4.sv.vivant.nutrition",
+          "c4.sv.demarches.langages",
+          "c4.sv.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "heredity",
+        "title": "Reproduction et gènes",
+        "description": "Reproduction sexuée et asexuée, les populations qui grandissent ou diminuent, puis les chromosomes, les gènes et l’ADN, qui font de chacun un être unique.",
+        "programme": [
+          "c4.sv.vivant.genetique",
+          "c4.sv.demarches.langages",
+          "c4.sv.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "species-evolution",
+        "title": "Biodiversité et évolution",
+        "description": "La biodiversité, les espèces qui apparaissent et disparaissent, les liens de parenté, puis la sélection naturelle qui fait évoluer les espèces.",
+        "programme": [
+          "c4.sv.vivant.evolution",
+          "c4.sv.demarches.raisonner",
+          "c4.sv.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "physics-chemistry-4e-signals-circuits",
+    "name": "Vigie des signaux",
+    "module": "Lumière, son, circuits et réactions",
+    "subject": "physics-chemistry",
+    "classe": "4e",
+    "description": "La lumière et le son qui se propagent, les circuits en série et en dérivation, l’intensité, la tension et la loi d’Ohm, puis les transformations chimiques et leurs atomes.",
+    "block": "physics-chemistry-4e-signals-circuits",
+    "guardian": "la Cloche de cobalt",
+    "icon": "audio-waveform",
+    "creature": {
+      "name": "Radar"
+    },
+    "exercises": [
+      {
+        "id": "light-sound",
+        "title": "Lumière et son",
+        "description": "La lumière va en ligne droite et très vite ; le son a besoin de matière pour avancer, sa fréquence fait un son aigu ou grave, et un son trop fort abîme l’oreille.",
+        "programme": [
+          "c4.pc.signaux.lumiere-son",
+          "c4.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "electric-circuits",
+        "title": "Circuits et loi d’Ohm",
+        "description": "Série et dérivation, l’intensité et la tension et leurs lois, la résistance et la loi d’Ohm, et la sécurité.",
+        "programme": [
+          "c4.pc.energie.circuits",
+          "c4.pc.demarches.experimenter",
+          "c4.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "chemical-reactions",
+        "title": "Transformations chimiques",
+        "description": "Reconnaître une transformation chimique, la combustion, les réactifs et les produits, puis les atomes qui se regroupent, la masse qui se conserve et l’équation de réaction.",
+        "programme": [
+          "c4.pc.matiere.transformations",
+          "c4.pc.demarches.experimenter",
+          "c4.pc.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "technology-4e-modeling",
+    "name": "Bassin des maquettes",
+    "module": "Modéliser et simuler",
+    "subject": "technology",
+    "classe": "4e",
+    "description": "Comment un objet reçoit et transforme l’énergie, comment il capte et traite l’information, et ce que dit une simulation.",
+    "block": "technology-4e-modeling",
+    "guardian": "le Grand-bi d’érable",
+    "icon": "workflow",
+    "creature": {
+      "name": "Manivelle"
+    },
+    "exercises": [
+      {
+        "id": "energy-chain",
+        "title": "La chaîne d’énergie",
+        "description": "Alimenter, distribuer, convertir et transmettre : le chemin de l’énergie dans un objet, puis son schéma.",
+        "programme": [
+          "c4.te.modelisation.fonctionnement",
+          "c4.te.demarches.langages"
+        ]
+      },
+      {
+        "id": "information-chain",
+        "title": "La chaîne d’information",
+        "description": "Acquérir, traiter et communiquer : capteurs, carte programmable et actionneurs, puis les deux chaînes ensemble.",
+        "programme": [
+          "c4.te.modelisation.fonctionnement",
+          "c4.te.demarches.langages"
+        ]
+      },
+      {
+        "id": "simulation",
+        "title": "Lire une simulation",
+        "description": "Ce qu’est un modèle et une simulation, puis lire un résultat (tableau, courbe) et le comparer au cahier des charges.",
+        "programme": [
+          "c4.te.modelisation.simuler",
+          "c4.te.design.besoin",
+          "c4.te.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "history-3e-twentieth-century",
+    "name": "Kiosque des témoins",
+    "module": "Histoire, de 1914 à nos jours",
+    "subject": "history-geography",
+    "classe": "3e",
+    "description": "Les guerres totales en Europe, le monde depuis 1945, puis la République refondée : se repérer dans le temps, lire un document et dire qui parle.",
+    "block": "history-3e-twentieth-century",
+    "guardian": "la Colombe d’albâtre",
+    "icon": "newspaper",
+    "creature": {
+      "name": "Mémo"
+    },
+    "exercises": [
+      {
+        "id": "total-wars",
+        "title": "Les guerres totales",
+        "description": "L’Europe de 1914 à 1945 : la Première Guerre mondiale, les régimes totalitaires, la Seconde Guerre mondiale, la France défaite et occupée.",
+        "programme": [
+          "c4.hg.histoire.guerres-totales",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue"
+        ]
+      },
+      {
+        "id": "world-since-1945",
+        "title": "Le monde depuis 1945",
+        "description": "La décolonisation et les nouveaux États, la guerre froide, la construction européenne.",
+        "programme": [
+          "c4.hg.histoire.monde-depuis-1945",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document"
+        ]
+      },
+      {
+        "id": "republic",
+        "title": "Une République repensée",
+        "description": "Refonder la République de 1944 à 1947, la cinquième République, femmes et hommes dans la société des années 1950 aux années 1980.",
+        "programme": [
+          "c4.hg.histoire.republique-repensee",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "geography-3e-france",
+    "name": "Plateau des territoires",
+    "module": "Géographie, la France et l’Union européenne",
+    "subject": "history-geography",
+    "classe": "3e",
+    "description": "Les villes, les espaces productifs et les campagnes de la France, aménager le territoire et l’outre-mer, puis la France dans l’Union européenne et dans le monde : les mots de la géographie et des documents courts.",
+    "block": "geography-3e-france",
+    "guardian": "le Cerf de lauze",
+    "icon": "route",
+    "creature": {
+      "name": "Jalon"
+    },
+    "exercises": [
+      {
+        "id": "territories",
+        "title": "Les territoires de la France",
+        "description": "Les aires urbaines, les espaces productifs et les espaces de faible densité de la France d’aujourd’hui.",
+        "programme": [
+          "c4.hg.geographie.dynamiques-france",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "planning",
+        "title": "Aménager le territoire",
+        "description": "Pourquoi et comment aménager : répondre aux inégalités entre territoires, et les territoires ultramarins.",
+        "programme": [
+          "c4.hg.geographie.amenager",
+          "c4.hg.espace.localiser",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "france-eu",
+        "title": "La France et l’Union européenne",
+        "description": "L’Union européenne, un nouveau territoire de référence, puis la France et l’Europe dans le monde.",
+        "programme": [
+          "c4.hg.geographie.france-ue",
+          "c4.hg.espace.localiser",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "life-earth-sciences-3e-human-body",
+    "name": "Verger de la santé",
+    "module": "Le corps humain et la santé",
+    "subject": "life-earth-sciences",
+    "classe": "3e",
+    "description": "L’effort, le cerveau et le sommeil, la digestion et les défenses contre les microbes, puis la puberté et la reproduction humaine, avec un document ou une expérience sous les yeux.",
+    "block": "life-earth-sciences-3e-human-body",
+    "guardian": "le Dauphin de turquoise",
+    "icon": "apple",
+    "creature": {
+      "name": "Olive"
+    },
+    "exercises": [
+      {
+        "id": "effort-brain",
+        "title": "Effort, cerveau et sommeil",
+        "description": "Ce que change un effort dans les muscles, le cœur et la respiration, puis le trajet d’un message nerveux, et ce que le sommeil, les écrans, l’alcool et le tabac changent au cerveau.",
+        "programme": [
+          "c4.sv.corps.effort-nerveux",
+          "c4.sv.demarches.langages",
+          "c4.sv.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "digestion-microbes",
+        "title": "Digestion et microbes",
+        "description": "Le trajet des aliments et ce qu’ils deviennent, le microbiote, puis les microbes, les défenses du corps, les vaccins, les antiseptiques et les antibiotiques.",
+        "programme": [
+          "c4.sv.corps.digestion-microbes",
+          "c4.sv.demarches.raisonner",
+          "c4.sv.demarches.langages"
+        ]
+      },
+      {
+        "id": "puberty-reproduction",
+        "title": "Puberté et reproduction",
+        "description": "Ce qui change à la puberté, les cellules et les organes de la reproduction, puis la fécondation, la grossesse et ce que permet la contraception.",
+        "programme": [
+          "c4.sv.corps.reproduction",
+          "c4.sv.vivant.genetique",
+          "c4.sv.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "physics-chemistry-3e-motion-energy",
+    "name": "Tremplin des forces",
+    "module": "Mouvement, forces, énergie",
+    "subject": "physics-chemistry",
+    "classe": "3e",
+    "description": "Décrire un mouvement et calculer une vitesse, les forces, le poids et la gravitation, les formes d’énergie, la puissance et le kilowattheure, puis le pH, les acides et les bases.",
+    "block": "physics-chemistry-3e-motion-energy",
+    "guardian": "le Kangourou de rubis",
+    "icon": "gauge",
+    "creature": {
+      "name": "Virage"
+    },
+    "exercises": [
+      {
+        "id": "motion-forces",
+        "title": "Mouvements et forces",
+        "description": "Décrire un mouvement par rapport à une référence, uniforme, accéléré ou ralenti, calculer une vitesse, puis les forces, le poids, la masse et la gravitation.",
+        "programme": [
+          "c4.pc.mouvement.decrire",
+          "c4.pc.mouvement.forces",
+          "c4.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "energy-power",
+        "title": "Énergie et puissance",
+        "description": "Les formes d’énergie, ce qui les convertit et ce qui se perd en chaleur, puis la puissance électrique, l’énergie consommée et le kilowattheure.",
+        "programme": [
+          "c4.pc.energie.formes",
+          "c4.pc.energie.circuits",
+          "c4.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "acids-bases",
+        "title": "Acides et bases",
+        "description": "Le pH des solutions de tous les jours, acides, neutres et basiques, puis les précautions, la réaction d’un acide avec le fer et le test du gaz qui se forme.",
+        "programme": [
+          "c4.pc.matiere.acides-bases",
+          "c4.pc.matiere.transformations",
+          "c4.pc.demarches.experimenter"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "technology-3e-digital",
+    "name": "Ruche des réseaux",
+    "module": "Informatique, réseaux et société",
+    "subject": "technology",
+    "classe": "3e",
+    "description": "Ce qui compose un réseau et comment les données y voyagent, les objets connectés et les données personnelles, puis lire un programme simple.",
+    "block": "technology-3e-digital",
+    "guardian": "l’Abeille de topaze",
+    "icon": "network",
+    "creature": {
+      "name": "Navette"
+    },
+    "exercises": [
+      {
+        "id": "computer-networks",
+        "title": "Le réseau informatique",
+        "description": "Les éléments d’un réseau et l’adresse de chaque appareil, puis internet, les protocoles et le stockage des données.",
+        "programme": [
+          "c4.te.informatique.reseaux",
+          "c4.te.demarches.responsable"
+        ]
+      },
+      {
+        "id": "connected-objects",
+        "title": "Objets connectés et données personnelles",
+        "description": "Comment les objets évoluent et changent la société, les objets connectés, puis protéger ses données personnelles.",
+        "programme": [
+          "c4.te.objets.evolution",
+          "c4.te.informatique.reseaux"
+        ]
+      },
+      {
+        "id": "algorithms",
+        "title": "Lire un programme",
+        "description": "Un algorithme et un programme : séquence, boucle et événement, puis condition et variable, dans un programme court à lire.",
+        "programme": [
+          "c4.te.modelisation.fonctionnement",
+          "c4.te.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
     "id": "lv2-5e-introductions",
     "name": "Relais des voyageurs",
     "module": "Se présenter, compter, décrire",

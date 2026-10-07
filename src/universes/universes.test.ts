@@ -60,7 +60,7 @@ describe('les textes d’univers', () => {
         return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
-    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('e572da6f17dd28b1e24eb7e6543944dc8cab55604100a11cfaea9ac804160b10');
+    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('aabbf268ae26ed026500058fd85c4f533f672b8f165545a615351466bc5dd459');
     const l = t.libelles;
     expect([l.dejaFait, l.etoiles, l.etoilesSur3(2), l.resistance(2, 6), l.dejaFaitArene('Le Grand Chêne')]).toEqual([
       'Déjà rallumé. On rejoue ?',
@@ -175,8 +175,9 @@ describe('les textes communs (J8, U4)', () => {
     for (const u of UNIVERS) {
       const t = textesDe(u);
       // Les îles venues après U4 (le Jardin des heures, LV2-4 ; le Refuge des carnets, LV2-5 ; la Fouille des siècles et la
-      // Pointe des paysages, HG-2 ; la Vallée du vivant, le Laboratoire des éléments et le Hangar des inventions, SC-2)
-      // n'ont pas de réplique « d'avant » : hors de l'empreinte.
+      // Pointe des paysages, HG-2 ; la Vallée du vivant, le Laboratoire des éléments et le Hangar des inventions, SC-2 ;
+      // les six îles d'histoire-géographie de 5e, 4e et 3e, HG-3 ; les neuf îles de sciences de 5e, 4e et 3e, SC-3) n'ont
+      // pas de réplique « d'avant » : hors de l'empreinte.
       const APRES_U4: readonly string[] = [
         'lv2-4e-daily-life',
         'lv2-3e-travel',
@@ -185,6 +186,21 @@ describe('les textes communs (J8, U4)', () => {
         'life-earth-sciences-6e-living-world',
         'physics-chemistry-6e-matter-energy',
         'technology-6e-objects',
+        'history-5e-middle-ages',
+        'geography-5e-resources',
+        'history-4e-revolutions',
+        'geography-4e-globalization',
+        'history-3e-twentieth-century',
+        'geography-3e-france',
+        'life-earth-sciences-5e-active-planet',
+        'physics-chemistry-5e-matter-universe',
+        'technology-5e-design',
+        'life-earth-sciences-4e-cells-evolution',
+        'physics-chemistry-4e-signals-circuits',
+        'technology-4e-modeling',
+        'life-earth-sciences-3e-human-body',
+        'physics-chemistry-3e-motion-energy',
+        'technology-3e-digital',
       ];
       const r = Object.fromEntries(BIOMES.filter((b) => !APRES_U4.includes(b.id)).map((b) => [ANCIEN_LIEU[b.id], t.creatures[b.id]]));
       expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('ee5d7b2fcc1a7a49749e0a41c5077b279215383439d33d63e023e6b85b618ccf');

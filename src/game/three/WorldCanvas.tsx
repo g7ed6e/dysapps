@@ -65,6 +65,12 @@ interface Scene3D {
 /** Pas de créatures : une seule liste vide, pour que les signes des objets ne se recalculent pas à chaque rendu. */
 const SANS_CREATURES: NonNullable<WorldViewProps['creatures']> = [];
 
+/**
+ * À l'ouverture de sa fiche, le milieu d'un Gardien reste à tant (en part du petit côté de la vue) du bord de la place
+ * libre, sinon la caméra le recentre : un Gardien fait jusqu'à 9 cases de large, une centaine de pixels sur la tablette.
+ */
+const MARGE_D_UN_GARDIEN = 0.15;
+
 export default function WorldCanvas({
   archipelago,
   cubes,
@@ -372,10 +378,13 @@ export default function WorldCanvas({
       const vue = el.getBoundingClientRect();
       const ecran = cadrage.auBut(point, vue.width, vue.height);
       const f = feuille.getBoundingClientRect();
-      // Hors de la vue (« Relier », « Y aller »), il est aussi caché.
-      const horsDeLaVue = !ecran || ecran.x < 0 || ecran.y < 0 || ecran.x > vue.width || ecran.y > vue.height;
-      if (!horsDeLaVue && !sousLaFiche(ecran, { x0: f.left - vue.left, y0: f.top - vue.top, x1: f.right - vue.left, y1: f.bottom - vue.top })) return;
+      // Hors de la vue (« Relier », « Y aller »), il est aussi caché. Un Gardien, grand, se voit entier : son milieu à
+      // plus de `MARGE_D_UN_GARDIEN` du bord de la place libre (à l'Escale, au bord de la vue de l'île, il était coupé
+      // dans le coin, HG-3).
       const { libre } = lirePlaceLibre(el);
+      const m = objet.genre === 'gardien' ? MARGE_D_UN_GARDIEN * Math.min(vue.width, vue.height) : 0;
+      const horsDeLaVue = !ecran || (m ? ecran.x < libre.x0 + m || ecran.y < libre.y0 + m || ecran.x > libre.x1 - m || ecran.y > libre.y1 - m : ecran.x < 0 || ecran.y < 0 || ecran.x > vue.width || ecran.y > vue.height);
+      if (!horsDeLaVue && !sousLaFiche(ecran, { x0: f.left - vue.left, y0: f.top - vue.top, x1: f.right - vue.left, y1: f.bottom - vue.top })) return;
       const w = Math.max(1, el.clientWidth);
       const h = Math.max(1, el.clientHeight);
       cadrage.recadrer(point, { x: ((libre.x0 + libre.x1) / w) - 1, y: 1 - (libre.y0 + libre.y1) / h });

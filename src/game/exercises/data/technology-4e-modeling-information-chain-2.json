@@ -1,0 +1,227 @@
+{
+  "id": "technology-4e-modeling-information-chain-2",
+  "biome": "technology-4e-modeling",
+  "type": "information-chain",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-4e-modeling-information-chain-2-0",
+      "prompt": "Le store automatique\nUn capteur mesure le soleil.\nLa carte programmable décide.\nElle donne l’ordre au moteur.\nLe moteur descend le store.",
+      "question": "Quel élément fait le lien entre les deux chaînes ?",
+      "spoken": "Le store automatique. Un capteur mesure le soleil. La carte programmable décide. Elle donne l’ordre au moteur. Le moteur descend le store.",
+      "choices": [
+        "le capteur",
+        "la carte programmable",
+        "le store"
+      ],
+      "answer": "la carte programmable",
+      "hint": "Relis la ligne « Elle donne un ordre » du rappel : qui donne l’ordre ?",
+      "explanation": "La carte programmable reçoit l’information du capteur et donne l’ordre au moteur : elle relie la chaîne d’information à la chaîne d’énergie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les deux chaînes ensemble",
+          "lines": [
+            "La chaîne d’information décide : acquérir, traiter, communiquer.",
+            "Elle donne un ordre à la chaîne d’énergie.",
+            "La chaîne d’énergie agit : alimenter, distribuer, convertir, transmettre.",
+            "Exemple : le capteur voit la nuit, la carte donne l’ordre, la lampe s’allume."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-2-1",
+      "prompt": "Le moteur qui descend le store fait partie de …",
+      "spoken": "Le moteur qui descend le store fait partie de  (mot manquant) ",
+      "choices": [
+        "la chaîne d’information",
+        "les deux chaînes",
+        "la chaîne d’énergie"
+      ],
+      "answer": "la chaîne d’énergie",
+      "hint": "Le moteur agit : quelle chaîne agit ?",
+      "explanation": "Le moteur convertit l’énergie et agit : il fait partie de la chaîne d’énergie. Il reçoit l’ordre de la chaîne d’information, mais il n’en fait pas partie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les deux chaînes ensemble",
+          "lines": [
+            "La chaîne d’information décide : acquérir, traiter, communiquer.",
+            "Elle donne un ordre à la chaîne d’énergie.",
+            "La chaîne d’énergie agit : alimenter, distribuer, convertir, transmettre.",
+            "Exemple : le capteur voit la nuit, la carte donne l’ordre, la lampe s’allume."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-2-2",
+      "prompt": "Le distributeur de gel pour les mains\nUn capteur voit la main.\nLa carte donne l’ordre.\nUne petite pompe pousse le gel.",
+      "question": "La pompe fait partie de quelle chaîne ?",
+      "spoken": "Le distributeur de gel pour les mains. Un capteur voit la main. La carte donne l’ordre. Une petite pompe pousse le gel.",
+      "choices": [
+        "la chaîne d’information",
+        "la chaîne d’énergie",
+        "aucune chaîne"
+      ],
+      "answer": "la chaîne d’énergie",
+      "hint": "La pompe agit : elle pousse le gel.",
+      "explanation": "La pompe est un actionneur : elle agit, dans la chaîne d’énergie. Le capteur et la carte sont dans la chaîne d’information.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les deux chaînes ensemble",
+          "lines": [
+            "La chaîne d’information décide : acquérir, traiter, communiquer.",
+            "Elle donne un ordre à la chaîne d’énergie.",
+            "La chaîne d’énergie agit : alimenter, distribuer, convertir, transmettre.",
+            "Exemple : le capteur voit la nuit, la carte donne l’ordre, la lampe s’allume."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-2-3",
+      "prompt": "La carte du feu de circulation décide quand passer au vert : elle … l’information.",
+      "spoken": "La carte du feu de circulation décide quand passer au vert : elle  (mot manquant)  l’information.",
+      "choices": [
+        "acquiert",
+        "traite",
+        "communique"
+      ],
+      "answer": "traite",
+      "hint": "Décider, c’est quelle fonction ?",
+      "explanation": "Décider, selon le programme, c’est traiter l’information. Les lampes du feu, elles, communiquent aux voitures.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les deux chaînes ensemble",
+          "lines": [
+            "La chaîne d’information décide : acquérir, traiter, communiquer.",
+            "Elle donne un ordre à la chaîne d’énergie.",
+            "La chaîne d’énergie agit : alimenter, distribuer, convertir, transmettre.",
+            "Exemple : le capteur voit la nuit, la carte donne l’ordre, la lampe s’allume."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-2-4",
+      "prompt": "Le réveil lumineux\nL’heure du réveil est réglée.\nLa carte compare avec l’heure qu’il est.\nÀ l’heure réglée, elle donne l’ordre d’allumer la lampe.",
+      "question": "Que fait la carte ?",
+      "spoken": "Le réveil lumineux. L’heure du réveil est réglée. La carte compare avec l’heure qu’il est. À l’heure réglée, elle donne l’ordre d’allumer la lampe.",
+      "choices": [
+        "elle alimente la lampe",
+        "elle acquiert l’information",
+        "elle traite l’information"
+      ],
+      "answer": "elle traite l’information",
+      "hint": "Comparer et décider : quelle fonction ?",
+      "explanation": "La carte compare deux heures et décide d’allumer : elle traite l’information. C’est la pile ou la prise qui alimente la lampe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les deux chaînes ensemble",
+          "lines": [
+            "La chaîne d’information décide : acquérir, traiter, communiquer.",
+            "Elle donne un ordre à la chaîne d’énergie.",
+            "La chaîne d’énergie agit : alimenter, distribuer, convertir, transmettre.",
+            "Exemple : le capteur voit la nuit, la carte donne l’ordre, la lampe s’allume."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-2-5",
+      "prompt": "Quand le détecteur de fumée sonne fort, il … l’information.",
+      "spoken": "Quand le détecteur de fumée sonne fort, il  (mot manquant)  l’information.",
+      "choices": [
+        "communique",
+        "acquiert",
+        "traite"
+      ],
+      "answer": "communique",
+      "hint": "Le son prévient les gens : quelle fonction ?",
+      "explanation": "Sonner, c’est donner l’alerte aux gens : le détecteur communique l’information. Il l’avait d’abord acquise, en sentant la fumée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les deux chaînes ensemble",
+          "lines": [
+            "La chaîne d’information décide : acquérir, traiter, communiquer.",
+            "Elle donne un ordre à la chaîne d’énergie.",
+            "La chaîne d’énergie agit : alimenter, distribuer, convertir, transmettre.",
+            "Exemple : le capteur voit la nuit, la carte donne l’ordre, la lampe s’allume."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-2-6",
+      "prompt": "La barrière du parking\nUn lecteur lit le ticket.\nLa carte vérifie le ticket.\nUn moteur lève la barrière.",
+      "question": "Quel élément acquiert l’information ?",
+      "spoken": "La barrière du parking. Un lecteur lit le ticket. La carte vérifie le ticket. Un moteur lève la barrière.",
+      "choices": [
+        "le lecteur",
+        "la carte",
+        "le moteur"
+      ],
+      "answer": "le lecteur",
+      "hint": "Qui prend l’information sur le ticket ?",
+      "explanation": "Le lecteur lit le ticket : il acquiert l’information. La carte la traite, et le moteur agit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les deux chaînes ensemble",
+          "lines": [
+            "La chaîne d’information décide : acquérir, traiter, communiquer.",
+            "Elle donne un ordre à la chaîne d’énergie.",
+            "La chaîne d’énergie agit : alimenter, distribuer, convertir, transmettre.",
+            "Exemple : le capteur voit la nuit, la carte donne l’ordre, la lampe s’allume."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-2-7",
+      "prompt": "Le schéma de la serre automatique\nCase 1 : le capteur de chaleur.\nCase 2 : la carte programmable.\nCase 3 : le moteur de la fenêtre.",
+      "question": "Dans quel ordre passe l’information ?",
+      "spoken": "Le schéma de la serre automatique. Case 1, le capteur de chaleur. Case 2, la carte programmable. Case 3, le moteur de la fenêtre.",
+      "choices": [
+        "de la case 3 vers la case 1",
+        "de la case 1 vers la case 3",
+        "de la case 2 vers la case 1"
+      ],
+      "answer": "de la case 1 vers la case 3",
+      "hint": "Qui reçoit l’information en premier ?",
+      "explanation": "Le capteur acquiert, la carte traite, puis l’ordre va au moteur : l’information passe de la case 1 vers la case 3.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les deux chaînes ensemble",
+          "lines": [
+            "La chaîne d’information décide : acquérir, traiter, communiquer.",
+            "Elle donne un ordre à la chaîne d’énergie.",
+            "La chaîne d’énergie agit : alimenter, distribuer, convertir, transmettre.",
+            "Exemple : le capteur voit la nuit, la carte donne l’ordre, la lampe s’allume."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-4e-modeling",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

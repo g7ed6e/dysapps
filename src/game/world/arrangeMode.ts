@@ -18,6 +18,7 @@ import {
   GUARDIAN_FACING_TEXT,
   guardianFacing,
   guardianOf,
+  hasFreeSpot,
   isFixedPlace,
   isFreeGuardianSpot,
   isFreeSpot,
@@ -273,10 +274,14 @@ export const canTurn = (c: ArrangeChoice | null): boolean => c?.genre === 'lieu'
 
 /**
  * « Tourner » un lieu choisi : son fantôme pivote d'un quart de tour, à sa place, même si elle est prise (choix 3 du
- * mainteneur : le fantôme montre alors une croix grise, jamais un saut ailleurs sur la carte).
+ * mainteneur : le fantôme montre alors une croix grise, jamais un saut ailleurs sur la carte). `null` si le lieu, tourné,
+ * n'a aucune place libre dans son archipel (le Glacier des relatifs au 5e, la Gare du futur au 4e) : le fantôme ne
+ * tourne pas, la ligne le refuse comme les autres refus (consultant UX UI, HG-3).
  */
-export function turnChoice(c: Extract<ArrangeChoice, { genre: 'lieu' }>): ArrangeChoice {
-  return { ...c, spot: { ...c.spot, turn: ((c.spot.turn + 1) % 4) as LayoutTurn } };
+export function turnChoice(world: World, c: Extract<ArrangeChoice, { genre: 'lieu' }>): ArrangeChoice | null {
+  const turn = ((c.spot.turn + 1) % 4) as LayoutTurn;
+  if (!hasFreeSpot(world, c.id, turn)) return null;
+  return { ...c, spot: { ...c.spot, turn } };
 }
 
 /** « Poser » : l'action du choix. */

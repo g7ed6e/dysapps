@@ -1,0 +1,241 @@
+{
+  "id": "physics-chemistry-5e-matter-universe-universe-atoms-1",
+  "biome": "physics-chemistry-5e-matter-universe",
+  "type": "universe-atoms",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-1-0",
+      "prompt": "Le Soleil n’est pas une planète : c’est une …",
+      "spoken": "Le Soleil n’est pas une planète : c’est une  (mot manquant) ",
+      "choices": [
+        "galaxie",
+        "étoile",
+        "lune"
+      ],
+      "answer": "étoile",
+      "hint": "Relis la ligne « Le Soleil » du rappel.",
+      "explanation": "Le Soleil est une étoile : il produit sa propre lumière. La Terre est une planète qui tourne autour de lui.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Terre aux galaxies",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "Le système solaire : le Soleil et ses huit planètes.",
+            "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
+            "La lumière parcourt 300 000 kilomètres en une seconde.",
+            "Une année-lumière : la distance que la lumière parcourt en un an.",
+            "L’année-lumière est une distance, pas une durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-1-1",
+      "prompt": "Le Soleil et les huit planètes qui tournent autour forment le …",
+      "spoken": "Le Soleil et les huit planètes qui tournent autour forment le  (mot manquant) ",
+      "choices": [
+        "système solaire",
+        "ciel étoilé",
+        "cosmos"
+      ],
+      "answer": "système solaire",
+      "hint": "Relis la ligne « Le système solaire » du rappel.",
+      "explanation": "Le Soleil et ses huit planètes forment le système solaire. Il n’est qu’une toute petite partie de l’Univers.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Terre aux galaxies",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "Le système solaire : le Soleil et ses huit planètes.",
+            "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
+            "La lumière parcourt 300 000 kilomètres en une seconde.",
+            "Une année-lumière : la distance que la lumière parcourt en un an.",
+            "L’année-lumière est une distance, pas une durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-1-2",
+      "prompt": "Notre galaxie, qui contient le système solaire, s’appelle la …",
+      "spoken": "Notre galaxie, qui contient le système solaire, s’appelle la  (mot manquant) ",
+      "choices": [
+        "Grande Ourse",
+        "Lune",
+        "Voie lactée"
+      ],
+      "answer": "Voie lactée",
+      "hint": "Relis la ligne « Une galaxie » du rappel.",
+      "explanation": "Notre galaxie est la Voie lactée : des milliards d’étoiles, dont le Soleil. La Grande Ourse n’est qu’un groupe de quelques étoiles qu’on voit dans le ciel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Terre aux galaxies",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "Le système solaire : le Soleil et ses huit planètes.",
+            "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
+            "La lumière parcourt 300 000 kilomètres en une seconde.",
+            "Une année-lumière : la distance que la lumière parcourt en un an.",
+            "L’année-lumière est une distance, pas une durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-1-3",
+      "prompt": "L’année-lumière sert à mesurer une …",
+      "spoken": "L’année-lumière sert à mesurer une  (mot manquant) ",
+      "choices": [
+        "durée",
+        "distance",
+        "vitesse"
+      ],
+      "answer": "distance",
+      "hint": "Relis la ligne « L’année-lumière est une distance » du rappel.",
+      "explanation": "Malgré son nom, l’année-lumière est une distance : le chemin que fait la lumière en un an. Elle sert pour les étoiles, très loin de nous.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Terre aux galaxies",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "Le système solaire : le Soleil et ses huit planètes.",
+            "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
+            "La lumière parcourt 300 000 kilomètres en une seconde.",
+            "Une année-lumière : la distance que la lumière parcourt en un an.",
+            "L’année-lumière est une distance, pas une durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-1-4",
+      "prompt": "Distances depuis la Terre\nLa Lune : environ 1 seconde-lumière.\nLe Soleil : environ 8 minutes-lumière.\nL’étoile la plus proche après le Soleil : environ 4 années-lumière.",
+      "question": "Lequel est le plus loin de la Terre ?",
+      "spoken": "Distances depuis la Terre. La Lune, environ une seconde-lumière. Le Soleil, environ huit minutes-lumière. L’étoile la plus proche après le Soleil, environ quatre années-lumière.",
+      "choices": [
+        "la Lune",
+        "le Soleil",
+        "l’étoile la plus proche"
+      ],
+      "answer": "l’étoile la plus proche",
+      "hint": "Une année est bien plus longue qu’une minute.",
+      "explanation": "La lumière met 4 ans à venir de cette étoile, 8 minutes du Soleil, 1 seconde de la Lune : l’étoile est de loin la plus éloignée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Terre aux galaxies",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "Le système solaire : le Soleil et ses huit planètes.",
+            "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
+            "La lumière parcourt 300 000 kilomètres en une seconde.",
+            "Une année-lumière : la distance que la lumière parcourt en un an.",
+            "L’année-lumière est une distance, pas une durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-1-5",
+      "prompt": "La lumière du Soleil\nElle part du Soleil.\nElle arrive sur la Terre environ 8 minutes plus tard.",
+      "question": "La lumière du Soleil qui nous éclaire est partie depuis combien de temps ?",
+      "spoken": "La lumière du Soleil. Elle part du Soleil. Elle arrive sur la Terre environ huit minutes plus tard.",
+      "choices": [
+        "à l’instant",
+        "depuis 8 minutes",
+        "depuis 8 ans"
+      ],
+      "answer": "depuis 8 minutes",
+      "hint": "Relis la dernière ligne du document.",
+      "explanation": "La lumière va très vite, mais le Soleil est loin : elle met environ 8 minutes pour arriver. On voit le Soleil comme il était il y a 8 minutes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Terre aux galaxies",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "Le système solaire : le Soleil et ses huit planètes.",
+            "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
+            "La lumière parcourt 300 000 kilomètres en une seconde.",
+            "Une année-lumière : la distance que la lumière parcourt en un an.",
+            "L’année-lumière est une distance, pas une durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-1-6",
+      "prompt": "La lumière parcourt 300 000 kilomètres en une …",
+      "spoken": "La lumière parcourt 300 000 kilomètres en une  (mot manquant) ",
+      "choices": [
+        "heure",
+        "seconde",
+        "année"
+      ],
+      "answer": "seconde",
+      "hint": "Relis la ligne « La lumière » du rappel.",
+      "explanation": "La lumière parcourt 300 000 kilomètres en une seconde : rien ne va plus vite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Terre aux galaxies",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "Le système solaire : le Soleil et ses huit planètes.",
+            "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
+            "La lumière parcourt 300 000 kilomètres en une seconde.",
+            "Une année-lumière : la distance que la lumière parcourt en un an.",
+            "L’année-lumière est une distance, pas une durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-1-7",
+      "prompt": "Trois objets du ciel\nLa Terre\nLe système solaire\nLa Voie lactée",
+      "question": "Lequel contient les deux autres ?",
+      "spoken": "Trois objets du ciel. La Terre. Le système solaire. La Voie lactée.",
+      "choices": [
+        "la Terre",
+        "le système solaire",
+        "la Voie lactée"
+      ],
+      "answer": "la Voie lactée",
+      "hint": "Relis la ligne « Une galaxie » du rappel.",
+      "explanation": "La Terre est dans le système solaire, et le système solaire est dans la Voie lactée : la galaxie contient les deux autres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Terre aux galaxies",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "Le système solaire : le Soleil et ses huit planètes.",
+            "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
+            "La lumière parcourt 300 000 kilomètres en une seconde.",
+            "Une année-lumière : la distance que la lumière parcourt en un an.",
+            "L’année-lumière est une distance, pas une durée."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-5e-matter-universe",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

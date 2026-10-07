@@ -1,0 +1,230 @@
+{
+  "id": "geography-4e-globalization-globalization-2",
+  "biome": "geography-4e-globalization",
+  "type": "globalization",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-4e-globalization-globalization-2-0",
+      "prompt": "Le voyage d’un tee-shirt\nLe coton : cultivé en Inde\nLa couture : au Bangladesh\nLa vente : en France",
+      "question": "Que montre ce voyage ?",
+      "spoken": "Le voyage d’un tee-shirt. Le coton : cultivé en Inde. La couture : au Bangladesh. La vente : en France.",
+      "choices": [
+        "tout est fait en France",
+        "les pays du monde sont reliés",
+        "le tee-shirt ne voyage pas"
+      ],
+      "answer": "les pays du monde sont reliés",
+      "hint": "Combien de pays comptes-tu ?",
+      "explanation": "Trois pays pour un seul tee-shirt : la mondialisation relie les pays qui produisent et ceux qui achètent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Une ligne, une information.",
+            "D’où vient ce qui circule ? Où va-t-il ?",
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-2-1",
+      "prompt": "Un porte-conteneurs géant\nPlus de 20 000 conteneurs à bord\nDe Shanghai, en Chine, à Rotterdam, aux Pays-Bas",
+      "question": "Entre quels continents voyage ce navire ?",
+      "spoken": "Un porte-conteneurs géant. Plus de vingt mille conteneurs à bord. De Shanghai, en Chine, à Rotterdam, aux Pays-Bas.",
+      "choices": [
+        "de l’Asie à l’Europe",
+        "de l’Europe à l’Amérique",
+        "de l’Afrique à l’Asie"
+      ],
+      "answer": "de l’Asie à l’Europe",
+      "hint": "La Chine et les Pays-Bas : sur quels continents ?",
+      "explanation": "Shanghai est en Asie, Rotterdam en Europe. Ce sont deux des plus grands ports du monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Une ligne, une information.",
+            "D’où vient ce qui circule ? Où va-t-il ?",
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-2-2",
+      "prompt": "Fos-sur-Mer, près de Marseille\nDes usines et des raffineries\nElles sont au bord des quais.\nLes navires y arrivent chaque jour.",
+      "question": "Pourquoi les usines sont-elles au bord du port ?",
+      "spoken": "Fos-sur-Mer, près de Marseille. Des usines et des raffineries. Elles sont au bord des quais. Les navires y arrivent chaque jour.",
+      "choices": [
+        "pour la vue sur la mer",
+        "pour recevoir et envoyer par bateau",
+        "pour attirer les touristes"
+      ],
+      "answer": "pour recevoir et envoyer par bateau",
+      "hint": "Que transportent les navires ?",
+      "explanation": "Près des quais, les usines reçoivent le pétrole et les matières premières, et envoient leurs produits, sans long trajet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Une ligne, une information.",
+            "D’où vient ce qui circule ? Où va-t-il ?",
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-2-3",
+      "prompt": "Le canal de Suez, en Égypte\nIl relie la Méditerranée et la mer Rouge.\nLes navires ne font plus le tour de l’Afrique.",
+      "question": "Pourquoi ce canal est-il utile ?",
+      "spoken": "Le canal de Suez, en Égypte. Il relie la Méditerranée et la mer Rouge. Les navires ne font plus le tour de l’Afrique.",
+      "choices": [
+        "il raccourcit le trajet Europe-Asie",
+        "il apporte l’eau du Nil",
+        "il sert aux touristes"
+      ],
+      "answer": "il raccourcit le trajet Europe-Asie",
+      "hint": "Relis la ligne qui commence par « Les navires ».",
+      "explanation": "Sans le canal, il faut faire le tour de l’Afrique. Avec lui, le trajet entre l’Europe et l’Asie est bien plus court.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Une ligne, une information.",
+            "D’où vient ce qui circule ? Où va-t-il ?",
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-2-4",
+      "prompt": "Mars 2021, canal de Suez\nUn porte-conteneurs géant bloque le canal.\nDes centaines de navires attendent.",
+      "question": "Que montre cet événement ?",
+      "spoken": "Mars deux mille vingt et un, canal de Suez. Un porte-conteneurs géant bloque le canal. Des centaines de navires attendent.",
+      "choices": [
+        "le canal ne sert à rien",
+        "les navires vont plus vite",
+        "le commerce dépend de quelques passages"
+      ],
+      "answer": "le commerce dépend de quelques passages",
+      "hint": "Un seul navire bloqué : combien de navires attendent ?",
+      "explanation": "Un seul navire bloqué, et des centaines attendent : le commerce mondial dépend de quelques passages, comme les canaux et les détroits.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Une ligne, une information.",
+            "D’où vient ce qui circule ? Où va-t-il ?",
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-2-5",
+      "prompt": "La France et la mer\nGrâce à ses îles d’outre-mer,\nla France a une des plus grandes zones de mer du monde.",
+      "question": "Pourquoi la France a-t-elle une si grande zone de mer ?",
+      "spoken": "La France et la mer. Grâce à ses îles d’outre-mer, la France a une des plus grandes zones de mer du monde.",
+      "choices": [
+        "grâce à ses montagnes",
+        "grâce à ses îles d’outre-mer",
+        "grâce à ses grandes villes"
+      ],
+      "answer": "grâce à ses îles d’outre-mer",
+      "hint": "Relis la ligne qui commence par « Grâce à ».",
+      "explanation": "Autour de chaque île d’outre-mer, la France exploite la mer : sa zone de mer s’étend sur tous les océans.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Une ligne, une information.",
+            "D’où vient ce qui circule ? Où va-t-il ?",
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-2-6",
+      "prompt": "Au large de la Somalie\nDes pirates attaquent des navires de commerce.\nDes navires de guerre les protègent.",
+      "question": "Quelle menace pèse sur cette route maritime ?",
+      "spoken": "Au large de la Somalie. Des pirates attaquent des navires de commerce. Des navires de guerre les protègent.",
+      "choices": [
+        "la piraterie",
+        "la glace",
+        "le manque de ports"
+      ],
+      "answer": "la piraterie",
+      "hint": "Relis la ligne qui contient « attaquent ».",
+      "explanation": "Les pirates attaquent les navires : c’est la piraterie. Des navires de guerre protègent cette route entre l’Europe et l’Asie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Une ligne, une information.",
+            "D’où vient ce qui circule ? Où va-t-il ?",
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-globalization-2-7",
+      "prompt": "Les dix plus grands ports à conteneurs du monde\nPlus de la moitié sont en Chine.\nAucun n’est en Afrique.",
+      "question": "Dans quel pays sont la plupart de ces ports ?",
+      "spoken": "Les dix plus grands ports à conteneurs du monde. Plus de la moitié sont en Chine. Aucun n’est en Afrique.",
+      "choices": [
+        "aux États-Unis",
+        "en France",
+        "en Chine"
+      ],
+      "answer": "en Chine",
+      "hint": "Relis la ligne qui commence par « Plus de la moitié ».",
+      "explanation": "Plus de la moitié des grands ports à conteneurs sont en Chine : elle vend ses produits dans le monde entier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Une ligne, une information.",
+            "D’où vient ce qui circule ? Où va-t-il ?",
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-4e-globalization",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

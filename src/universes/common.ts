@@ -340,6 +340,36 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     lines: ['Je regarde le paysage de loin avant de répondre : prends ton temps, toi aussi.', 'Du chaume pour mon quartier : lis un document.', 'Ville, champs, littoral : chaque paysage a ses habitants.'],
     home: 'Mon quartier est complet : la ville, les champs et la mer.',
   },
+  'history-5e-middle-ages': {
+    greeting: 'Bonjour, bâtisseur ! Ici, on écrit les chroniques du Moyen Âge. Chaque bonne réponse te donne un bloc d’enluminure. Une enluminure, c’est une page peinte à la main, avec des traits d’or.',
+    lines: ['Une page à la fois, un siècle à la fois.', 'De l’enluminure pour mon logis : réponds à une question.', 'Un siècle, c’est cent ans. Le rappel te dit où il commence.'],
+    home: 'Mon logis est fini. Mes pages enluminées ont leur place.',
+  },
+  'geography-5e-resources': {
+    greeting: 'Bonjour, bâtisseur ! Au delta, on partage l’eau, l’énergie et la nourriture. Chaque bonne réponse te donne un bloc de rizière. Une rizière, c’est un champ plein d’eau où pousse le riz.',
+    lines: ['Je marche dans l’eau du delta : elle nourrit les champs.', 'De la rizière pour mon moulin : lis un document.', 'Les nombres sont arrondis : on les compare, on ne calcule pas.'],
+    home: 'Mon moulin est fini. L’eau du delta est partagée.',
+  },
+  'history-4e-revolutions': {
+    greeting: 'Bonjour, bâtisseur ! À l’imprimerie, on imprime les nouvelles des révolutions. Chaque bonne réponse te donne un bloc de fonte. La fonte, c’est un métal lourd, coulé dans un moule.',
+    lines: ['Une date, une nouvelle : je les range dans l’ordre.', 'De la fonte pour ma halle : réponds à une question.', 'Un document dit qui l’a écrit. Regarde la première ligne.'],
+    home: 'Ma halle est finie. Les presses peuvent tourner.',
+  },
+  'geography-4e-globalization': {
+    greeting: 'Bonjour, bâtisseur ! À l’escale, les bateaux arrivent du monde entier. Chaque bonne réponse te donne un conteneur. Un conteneur, c’est une grande boîte en métal qui voyage sur les bateaux.',
+    lines: ['Je lève les conteneurs un par un, sans me presser.', 'Des conteneurs pour mon entrepôt : lis un document.', 'Port, canal, détroit : les mots du rappel t’aident.'],
+    home: 'Mon entrepôt est fini. Le monde entier fait escale ici.',
+  },
+  'history-3e-twentieth-century': {
+    greeting: 'Bonjour, bâtisseur. Ici, on garde la parole des témoins. Chaque bonne réponse te donne un bloc de reliure. Une reliure, c’est la couverture solide d’un livre.',
+    lines: ['Chaque document a un auteur. Je regarde d’abord qui parle.', 'De la reliure pour ma bibliothèque : lis un témoignage.', 'On se souvient pour comprendre. Prends ton temps.'],
+    home: 'Ma bibliothèque est prête. On peut venir lire et se souvenir, au calme.',
+  },
+  'geography-3e-france': {
+    greeting: 'Bonjour, bâtisseur ! Sur le plateau, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré.',
+    lines: ['J’arpente le plateau pas à pas : un jalon, puis un autre.', 'Du grès rose pour ma mairie : lis un document.', 'Ville, campagne, outre-mer : chaque territoire compte.'],
+    home: 'Ma mairie est finie. Tout le plateau peut y venir.',
+  },
   'life-earth-sciences-6e-living-world': {
     greeting: 'Bonjour, bâtisseur ! Ici, on regarde le vivant : les plantes, les bêtes et la Terre. Chaque bonne réponse te donne un fossile. Un fossile, c’est la trace d’un être vivant très ancien, gardée dans la pierre.',
     lines: ['Un escargot ne se presse jamais : toi non plus, prends ton temps.', 'Des fossiles pour ma serre : réponds à une question.', 'On classe un être vivant selon ce qu’il a, pas selon ce qu’il fait.'],
@@ -354,6 +384,51 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     greeting: 'Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle.',
     lines: ['Un objet a une fonction : à quoi sert-il ?', 'Du carton pour mon atelier : réponds à une question.', 'Chaque outil a sa place. Chaque mot du rappel aussi.'],
     home: 'Mon atelier est complet. Chaque outil a sa place.',
+  },
+  'life-earth-sciences-5e-active-planet': {
+    greeting: 'Bonjour, bâtisseur ! Ici, on regarde la Terre : ses roches, son climat, ses ressources. Chaque bonne réponse te donne une strate. Une strate, c’est une couche de roche.',
+    lines: ['Je laboure doucement, une couche après l’autre. Prends ton temps, toi aussi.', 'Des strates pour ma station : lis un document.', 'Le sol est vivant : regarde bien qui l’habite.'],
+    home: 'Ma station est finie. Je note le temps qu’il fait, chaque jour.',
+  },
+  'physics-chemistry-5e-matter-universe': {
+    greeting: 'Bonjour, bâtisseur ! À la saline, on mélange, on sépare, on pèse. Chaque bonne réponse te donne du sel. Le sel, c’est ce qui reste quand l’eau de mer s’en va.',
+    lines: ['Coin-coin ! Regarde de près : un grain de sel, c’est un petit cube.', 'Du sel pour mon chalet : fais une expérience.', 'Avant de répondre, regarde bien l’unité.'],
+    home: 'Mon chalet est fini. Mes bassins sont pleins de sel.',
+  },
+  'technology-5e-design': {
+    greeting: 'Bonjour, bâtisseur ! À la menuiserie, on dessine un objet avant de le fabriquer. Chaque bonne réponse te donne du bambou. Le bambou, c’est une grande herbe très solide.',
+    lines: ['Toc, toc ! Je mesure deux fois avant de couper.', 'Du bambou pour ma scierie : réponds à une question.', 'Un objet répond à un besoin. Cherche lequel.'],
+    home: 'Ma scierie est finie. Mes plans sont punaisés au mur.',
+  },
+  'life-earth-sciences-4e-cells-evolution': {
+    greeting: 'Bonjour, bâtisseur ! À la source, on regarde comment le vivant se transmet et change. Chaque bonne réponse te donne un pétale.',
+    lines: ['Je butine fleur après fleur, sans me presser.', 'Des pétales pour ma pépinière : réponds à une question.', 'Un petit ressemble à ses parents, mais pas tout à fait.'],
+    home: 'Ma pépinière est prête. Chaque graine a son rang.',
+  },
+  'physics-chemistry-4e-signals-circuits': {
+    greeting: 'Bonjour, bâtisseur ! À la vigie, on guette les signaux : la lumière, le son, le courant. Chaque bonne réponse te donne une bobine. Une bobine, c’est du fil de cuivre enroulé.',
+    lines: ['Je me tiens debout et je guette. Un signal à la fois.', 'Des bobines pour mon pavillon : réponds à une question.', 'Un circuit, c’est une boucle : suis-la jusqu’au bout.'],
+    home: 'Mon pavillon est fini. Mon mât se voit de loin.',
+  },
+  'technology-4e-modeling': {
+    greeting: 'Bonjour, bâtisseur ! Au bassin, on fait des maquettes pour comprendre les machines. Chaque bonne réponse te donne du liège. Le liège, c’est une écorce très légère : il flotte.',
+    lines: ['Je tourne ma manivelle tout doucement : un tour à la fois.', 'Du liège pour mon usine : réponds à une question.', 'Un schéma se lit case par case, dans l’ordre.'],
+    home: 'Mon usine est finie. Toutes mes maquettes tournent.',
+  },
+  'life-earth-sciences-3e-human-body': {
+    greeting: 'Bonjour, bâtisseur ! Au verger, on prend soin du corps : bouger, dormir, bien manger. Chaque bonne réponse te donne du savon.',
+    lines: ['Je mange doucement, et je fais des pauses. Toi aussi.', 'Du savon pour mon infirmerie : réponds à une question.', 'Le rappel a les mots qu’il faut : relis-le.'],
+    home: 'Mon infirmerie est prête. Ici, on vient se reposer.',
+  },
+  'physics-chemistry-3e-motion-energy': {
+    greeting: 'Salut, bâtisseur ! Au tremplin, on regarde ce qui fait bouger les choses : les forces et l’énergie. Chaque bonne réponse te donne un ressort.',
+    lines: ['Je me roule en boule, et hop, je file ! Toi, prends ton temps.', 'Des ressorts pour mon gymnase : réponds à une question.', 'Une force, ça pousse ou ça tire. Regarde dans quel sens.'],
+    home: 'Mon gymnase est fini. Le tremplin est ouvert à tous.',
+  },
+  'technology-3e-digital': {
+    greeting: 'Bonjour, bâtisseur ! À la ruche, les messages voyagent d’un point à l’autre, comme dans un réseau. Chaque bonne réponse te donne de la cire. Les abeilles font leurs cases en cire.',
+    lines: ['Je tisse mon fil d’un piquet à l’autre : chaque piquet a son adresse.', 'De la cire pour mon poste : réponds à une question.', 'Un programme se lit ligne par ligne, dans l’ordre.'],
+    home: 'Mon poste est fini. Mes messages partent partout.',
   },
   'lv2-3e-travel': {
     greeting:

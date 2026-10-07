@@ -1,0 +1,9 @@
+{
+  "id": "history-4e-revolutions-2",
+  "biome": "history-4e-revolutions",
+  "name": "Le toit de la halle",
+  "reward": {
+    "xp": 50
+  },
+  "done": "Le toit est posé. Le papier reste au sec, les presses peuvent tourner."
+}

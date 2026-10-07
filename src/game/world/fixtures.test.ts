@@ -1,7 +1,7 @@
 // Les petites constructions des commandes (GD-7, PR 3) : chaque forme tient les limites du directeur artistique, et se
 // pose sur son île à côté de la créature sans rien chevaucher.
 import { DEFAULT_SETTINGS, retenirReglages, type Lv2Choice } from '../../core/settings';
-import { BIOMES, BLOCKS, type BlockId } from '../biomes';
+import { BIOMES, BLOC, BLOCKS, type BlockId } from '../biomes';
 import { BRIDGES, VOYAGES } from './archipelago';
 import { COMMANDES } from './requests';
 import { PETITES_CONSTRUCTIONS, casesDeLaPetiteConstruction, eauDeLaPetiteConstruction, estPosee } from './fixtures';
@@ -52,7 +52,8 @@ describe.each(COMMANDES.map((c) => [c.fixture, c] as const))('%s', (_id, c) => {
       expect(k.y).toBeGreaterThanOrEqual(0);
       expect(k.z).toBeGreaterThanOrEqual(0);
       expect(k.y).toBeLessThanOrEqual(2);
-      expect(k.z).toBeLessThanOrEqual(2);
+      // Trois de haut au plus, sauf la salière de Rabot : trois sels en colonne et son toit (DA, relecture des captures SC-3).
+      expect(k.z).toBeLessThanOrEqual(c.fixture === 'technology-5e-design-fixture-1' ? 3 : 2);
     }
     // 3 × 3 au plus, sauf le bac à eau de Bloquette, une ligne de 4 cases (forme validée par le directeur artistique).
     expect(Math.max(...cases.map((k) => k.x))).toBeLessThanOrEqual(c.fixture === 'french-6e-grammar-spelling-fixture-1' ? 3 : 2);
@@ -272,4 +273,17 @@ describe.each(ARCHIPELAGO_IDS.map((a) => [a]))('%s, Archipéo : les petites cons
       expect(niveaux.size, c.fixture).toBe(1);
     }
   });
+});
+
+it('au 4e, la fonte et l’ardoise, deux gris sombres, ne se touchent jamais, commandes posées (HG-3, DA)', () => {
+  const partie = toutConstruitAvecLesCommandes();
+  const cubes = worldCubes('4e', partie.progress, partie.world);
+  const de = (b: BlockId) => new Set([BLOCKS[b].side, BLOCKS[b].texture].filter(Boolean));
+  const [fonte, ardoise] = [de(BLOC.fonte), de(BLOC.ardoise)];
+  const fontes = cubes.filter((c) => fonte.has(c.texture ?? c.color));
+  const contacts = cubes
+    .filter((c) => ardoise.has(c.texture ?? c.color))
+    .filter((a) => fontes.some((f) => Math.abs(a.x - f.x) <= 1 && Math.abs(a.y - f.y) <= 1 && Math.abs(a.z - f.z) <= 1));
+  expect(fontes.length).toBeGreaterThan(0);
+  expect(contacts.map((c) => `${c.x},${c.y},${c.z}`)).toEqual([]);
 });

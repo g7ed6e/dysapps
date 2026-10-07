@@ -1,7 +1,7 @@
 // Les cadrages de la caméra : les vues (île, suivi, Carte, voyage), le cadrage de la Carte selon la place libre et la
 // destination, celui de la traversée, et le décalage qui vise un point au-dessus du sol.
 import * as THREE from 'three';
-import { type CadreDeCases, DISTANCE_DE_LA_VUE_DE_L_ILE, islandCenter, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
+import { bornesDesLieux, type CadreDeCases, DISTANCE_DE_LA_VUE_DE_L_ILE, islandCenter, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
 import type { PlaceLue, Rect } from '../../freeSpace';
 import type { BiomeId } from '../../biomes';
 import type { ArchipelagoId } from '../../world/archipelago';
@@ -49,17 +49,24 @@ export const AUTOUR_DE_LA_DESTINATION = { haut: 124, bas: 64, cote: 110 };
 export const ZOOM_DE_LA_CARTE = { ile: 2 / 3 };
 
 /**
- * Le zoom du monde (hors de la Carte), autour du cadrage géré (1) : au plus loin, la caméra recule d'un tiers en plus
- * (l'île et ses voisines, sans aller chercher tout l'archipel, que montre la Carte) ; au plus près, elle est deux fois
- * et demie plus proche (le bonhomme et les blocs en gros plan, sans passer sous la brume ni dans le sol).
+ * Le zoom du monde (hors de la Carte), autour du cadrage géré (1) : au plus loin, la caméra recule trois fois plus
+ * (presque tout l'archipel en vue : le mainteneur trouvait ×0,75 trop court, 7 octobre 2026 ; plus loin, la vue ne
+ * montre rien de plus, et son coût reste sous celui de la Carte, qui dessine tout l'archipel) ; au plus près, elle est
+ * deux fois et demie plus proche (le bonhomme et les blocs en gros plan, sans passer sous la brume ni dans le sol).
  */
-export const ZOOM_DU_MONDE = { loin: 0.75, pres: 2.5 };
+export const ZOOM_DU_MONDE = { loin: 0.3, pres: 2.5 };
 
 /** La largeur d'une île, en cases (environ, world/terrain.ts) : la mesure du zoom le plus proche. */
 export const LARGEUR_D_UNE_ILE = 22;
 
 /** Entre l'archipel entier et le bord de la place libre. */
 const MARGE_DE_LA_CARTE = 12;
+
+/** À combien de cases au-dessus du sol de son île flotte le nom d'une île (three/labels.ts). */
+export const HAUTEUR_DES_NOMS = 12;
+
+/** La moitié de la hauteur de l'étiquette d'une île sur la Carte (le nom et l'état, 18 px, labelCanvas.ts), en pixels CSS. */
+const DEMI_HAUTEUR_D_UN_NOM = 31;
 
 /** Sans page autour (un aperçu, un test) : une vue de tablette, moins la bande des boutons du bas. */
 export const HAUTEUR_DE_TABLETTE = 688;
@@ -145,6 +152,39 @@ export function cadrageDeLaCarte(
     }
     return r;
   };
+  /** À l'écran, les lieux d'aujourd'hui (îlots et port compris) et leurs noms (`HAUTEUR_DES_NOMS` au-dessus de chaque île). */
+  const lieux = () => {
+    const b = bornesDesLieux(archipel);
+    const r = { y0: Infinity, y1: -Infinity };
+    for (const x of [b.minX, b.maxX])
+      for (const y of [b.minY, b.maxY]) {
+        v.set(x, altitude, y).project(cam);
+        const q = ((1 - v.y) / 2) * h;
+        r.y0 = Math.min(r.y0, q);
+        r.y1 = Math.max(r.y1, q);
+      }
+    for (const def of mapOf(archipel)) {
+      const p = islandCenter(def.id);
+      v.set(p.x + 0.5, p.z + HAUTEUR_DES_NOMS, p.y + 0.5).project(cam);
+      r.y0 = Math.min(r.y0, ((1 - v.y) / 2) * h - DEMI_HAUTEUR_D_UN_NOM);
+    }
+    return r;
+  };
+  /**
+   * À l'écran, le cadre des îles : en largeur, leurs cœurs (le milieu de chaque île, sous son nom) ; en hauteur, les lieux
+   * d'aujourd'hui et leurs noms (`lieux`).
+   */
+  const ilesALEcran = () => {
+    const r = { x0: Infinity, x1: -Infinity, ...lieux() };
+    for (const def of mapOf(archipel)) {
+      const p = islandCenter(def.id);
+      v.set(p.x + 0.5, p.z, p.y + 0.5).project(cam);
+      const q = ((v.x + 1) / 2) * w;
+      r.x0 = Math.min(r.x0, q);
+      r.x1 = Math.max(r.x1, q);
+    }
+    return r;
+  };
   const lw = libre.x1 - libre.x0 - 2 * MARGE_DE_LA_CARTE;
   const lh = libre.y1 - libre.y0 - 2 * MARGE_DE_LA_CARTE;
   const centreDesTerres = () => target.set((e.minX + e.maxX) / 2, sol, (e.minY + e.maxY) / 2);
@@ -180,25 +220,63 @@ export function cadrageDeLaCarte(
   // Au plancher, un cadre plus haut que la place s'aligne sur son haut : le nom au-dessus de la flèche reste entier.
   const r0 = (placer(d), cadre(tout));
   if (r0.y1 - r0.y0 > lh) vise.y = libre.y0 + MARGE_DE_LA_CARTE + (r0.y1 - r0.y0) / 2;
-  for (let i = 0; i < 4; i++) {
-    const m0 = milieu();
-    target.x += 1;
-    const mx = milieu();
-    target.x -= 1;
-    target.z += 1;
-    const mz = milieu();
-    target.z -= 1;
-    // Le déplacement à l'écran d'une case vers l'est (x) et vers le nord (z), puis la case à viser.
-    const a = mx.x - m0.x;
-    const b = mz.x - m0.x;
-    const cc = mx.y - m0.y;
-    const dd = mz.y - m0.y;
-    const det = a * dd - b * cc;
-    if (Math.abs(det) < 1e-9) break;
-    const ex = vise.x - m0.x;
-    const ey = vise.y - m0.y;
-    target.x += (dd * ex - b * ey) / det;
-    target.z += (a * ey - cc * ex) / det;
+  const glisser = () => {
+    for (let i = 0; i < 4; i++) {
+      const m0 = milieu();
+      target.x += 1;
+      const mx = milieu();
+      target.x -= 1;
+      target.z += 1;
+      const mz = milieu();
+      target.z -= 1;
+      // Le déplacement à l'écran d'une case vers l'est (x) et vers le nord (z), puis la case à viser.
+      const a = mx.x - m0.x;
+      const b = mz.x - m0.x;
+      const cc = mx.y - m0.y;
+      const dd = mz.y - m0.y;
+      const det = a * dd - b * cc;
+      if (Math.abs(det) < 1e-9) break;
+      const ex = vise.x - m0.x;
+      const ey = vise.y - m0.y;
+      target.x += (dd * ex - b * ey) / det;
+      target.z += (a * ey - cc * ex) / det;
+    }
+  };
+  glisser();
+  if (!auPlancher && r0.y1 - r0.y0 <= lh) {
+    // Les lieux occupent rarement tout le cadre de leur région : au 5e et au 4e, ils sont au nord, et le sud du cadre
+    // laissait 250 px de mer vide sous eux sur la tablette, leurs noms à 5 px du haut (UX UI, HG-3). Les lieux et leurs
+    // noms glissent au milieu de la place, haut et bas à égalité, tant que le cadre, la destination et ce qui l'entoure
+    // restent dedans (GD-9 : on aménage partout dans la région, la vue d'ensemble la montre toute).
+    placer(d);
+    const r = cadre(true);
+    const l = lieux();
+    const voulu = (libre.y0 + libre.y1) / 2 - (l.y0 + l.y1) / 2;
+    const ecart = Math.min(libre.y1 - MARGE_DE_LA_CARTE - r.y1, Math.max(libre.y0 + MARGE_DE_LA_CARTE - r.y0, voulu));
+    if (Math.abs(ecart) > 0.5) {
+      vise.y += ecart;
+      glisser();
+    }
+  }
+  if (auPlancher && dest && h > w) {
+    // Au plancher, la destination au centre laissait sortir le bord de l'archipel alors qu'il tenait dans la place : en
+    // portrait 800 × 1280, au 3e, la Ruche des réseaux et le Refuge des carnets sortaient à gauche, 450 px vides en haut
+    // (référent dys, SC-3). En portrait, les îles et leurs noms glissent au milieu de la place, dans chaque sens où elles
+    // y tiennent (en largeur, le milieu de chacune), tant que la destination et ce qui l'entoure restent dedans. En
+    // paysage (la tablette, panneau ouvert), la destination reste au centre : les noms tus mesurés y restent ceux d'avant
+    // (three/mapLabels.test.ts).
+    placer(d);
+    const l = ilesALEcran();
+    const r = cadre(false);
+    const M = MARGE_DE_LA_CARTE;
+    const centrer = (tient: boolean, voulu: number, bas: number, haut: number) => (tient && bas <= haut ? Math.min(haut, Math.max(bas, voulu)) : 0);
+    const ex = centrer(l.x1 - l.x0 <= lw, (libre.x0 + libre.x1) / 2 - (l.x0 + l.x1) / 2, libre.x0 + M - r.x0, libre.x1 - M - r.x1);
+    const ey = centrer(l.y1 - l.y0 <= lh, (libre.y0 + libre.y1) / 2 - (l.y0 + l.y1) / 2, libre.y0 + M - r.y0, libre.y1 - M - r.y1);
+    if (Math.abs(ex) > 0.5 || Math.abs(ey) > 0.5) {
+      vise.x += ex;
+      vise.y += ey;
+      glisser();
+    }
   }
   placer(d);
   return { target: target.clone(), pos: cam.position.clone(), echelle: h / (2 * d * tan), auPlancher };

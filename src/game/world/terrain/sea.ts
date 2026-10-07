@@ -24,7 +24,14 @@ import { chosenGuardian, layoutCache, type Rectangle } from '../placement';
  * une côte cachait le bord de son rond) ; elle ne l'est que tant que la clairière choisie est celle-là. Depuis les îles
  * de sciences (SC-2), le Hangar des inventions au coin de devant, à l'ouest, une clairière s'ouvre derrière la Tour du
  * lecteur, qui la cache tout entière depuis le port : en -12, 73 au village tout construit, en -9, 76 sans liaison (les
- * liaisons posées la déplacent). Elle passe à 47, 85, au même rang, dans la passe entre la Ferme et la Forêt.
+ * liaisons posées la déplacent). Elle passe à 47, 85, au même rang, dans la passe entre la Ferme et la Forêt. Au 5e,
+ * depuis le cadre élargi de 24 cases (HG-3), la clairière de 29, 345 se cache derrière les îles de l'ouest : la baleine
+ * nage en 97, 313, au nord du port : la seule clairière (un rond de 4 cases) qui s'y voit entière. Depuis les îles de
+ * sciences (SC-3), les cadres des 5e et 4e s'approfondissent et les clairières qu'on voit depuis le port se cachent
+ * derrière les îles (three/whales.test.ts). Au 5e, celle de 131, 420 (131, 417 sans liaison) nage au nord du port, en
+ * 97, 304 ; celle de 29, 420 nage dans une autre clairière, au sud, en 93, 429 (DA, relecture des captures : les
+ * deux baleines nageaient l'une contre l'autre, en 97, 304 et 98, 314) : ronde de 5 cases, à plus de cent cases de la
+ * première, entière dans la vue du port. Au 4e, celle de 41, 715 (29, 706 sans liaison) passe en 82, 705.
  */
 export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
   '6e': [
@@ -32,7 +39,58 @@ export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly
     { de: { x: -9, y: 76 }, vers: { x: 47, y: 85 } },
     { de: { x: -12, y: 73 }, vers: { x: 47, y: 85 } },
   ],
+  '5e': [
+    { de: { x: 131, y: 420 }, vers: { x: 97, y: 304 } },
+    { de: { x: 131, y: 417 }, vers: { x: 97, y: 304 } },
+    { de: { x: 29, y: 420 }, vers: { x: 93, y: 429 } },
+  ],
+  '4e': [
+    { de: { x: 41, y: 715 }, vers: { x: 82, y: 705 } },
+    { de: { x: 29, y: 706 }, vers: { x: 82, y: 705 } },
+  ],
 };
+
+/**
+ * La distance d'un point à la case la plus proche de `cells` (cases entières), la même qu'en les parcourant toutes,
+ * mais en ne regardant que les anneaux de cases autour du point, du plus proche au plus loin : rien sur l'anneau à
+ * k cases n'est à moins de k − ½, on s'arrête dès qu'on a trouvé mieux. Les parcourir toutes, pour chaque clairière
+ * possible, prenait plus d'une seconde au 6e (le test du passage de la baleine dépassait son délai en CI).
+ */
+function distanceToNearest(cells: readonly { x: number; y: number }[]): (x: number, y: number) => number {
+  if (!cells.length) return () => Infinity;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const c of cells) {
+    // Une case non entière ne s'écrirait pas dans la grille : les clairières grandiraient sans bruit.
+    if (!Number.isInteger(c.x) || !Number.isInteger(c.y)) throw new Error(`case non entière : ${c.x}, ${c.y}`);
+    x0 = Math.min(x0, c.x);
+    y0 = Math.min(y0, c.y);
+    x1 = Math.max(x1, c.x);
+    y1 = Math.max(y1, c.y);
+  }
+  const w = x1 - x0 + 1;
+  const filled = new Uint8Array(w * (y1 - y0 + 1));
+  for (const c of cells) filled[(c.y - y0) * w + (c.x - x0)] = 1;
+  return (x, y) => {
+    const cx = Math.round(x);
+    const cy = Math.round(y);
+    const far = Math.max(Math.abs(cx - x0), Math.abs(cx - x1), Math.abs(cy - y0), Math.abs(cy - y1));
+    let best = Infinity;
+    for (let k = 0; k <= far && best > k - 0.5; k++)
+      for (let dx = -k; dx <= k; dx++) {
+        const px = cx + dx;
+        if (px < x0 || px > x1) continue;
+        // Sur les bords de l'anneau, toute la colonne ; ailleurs, ses deux bouts.
+        const step = Math.abs(dx) === k ? 1 : 2 * k;
+        for (let dy = -k; dy <= k; dy += step) {
+          const py = cy + dy;
+          if (py < y0 || py > y1 || !filled[(py - y0) * w + (px - x0)]) continue;
+          const d = Math.hypot(px - x, py - y);
+          if (d < best) best = d;
+        }
+      }
+    return best;
+  };
+}
 
 const whaleCache = layoutCache<string, { x: number; y: number; r: number }[]>();
 
@@ -62,14 +120,7 @@ export function whaleSpots(a: ArchipelagoId, links: readonly string[]): { x: num
   for (const br of posees) land.push(...bridgePath(br, links));
   for (const c of seaDecor(a)) land.push(c);
   const b = worldBounds(a);
-  const clearance = (x: number, y: number) => {
-    let best = Infinity;
-    for (const c of land) {
-      const d = Math.hypot(c.x - x, c.y - y);
-      if (d < best) best = d;
-    }
-    return best;
-  };
+  const clearance = distanceToNearest(land);
   // Les baleines préfèrent le large : on note chaque clairière par sa largeur et son éloignement du centre.
   const cx = (b.minX + b.maxX) / 2;
   const cy = (b.minY + b.maxY) / 2;

@@ -1,0 +1,241 @@
+{
+  "id": "physics-chemistry-3e-motion-energy-motion-forces-1",
+  "biome": "physics-chemistry-3e-motion-energy",
+  "type": "motion-forces",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-1-0",
+      "prompt": "Assise dans le train, Maya est immobile par rapport à son …",
+      "spoken": "Assise dans le train, Maya est immobile par rapport à son  (mot manquant) ",
+      "choices": [
+        "siège",
+        "quai",
+        "village"
+      ],
+      "answer": "siège",
+      "hint": "Relis la ligne « Assis dans le bus » du rappel.",
+      "explanation": "Maya ne bouge pas par rapport à son siège, qui avance avec le train. Par rapport au quai, elle est en mouvement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire un mouvement",
+          "lines": [
+            "Un mouvement se décrit par rapport à un objet de référence.",
+            "Assis dans le bus : immobile par rapport au bus, en mouvement par rapport à la route.",
+            "Uniforme : la vitesse ne change pas. Accéléré : elle augmente. Ralenti : elle diminue.",
+            "La vitesse : on divise la distance par la durée.",
+            "Des kilomètres et des heures : la vitesse est en kilomètres par heure (km/h).",
+            "La distance : on multiplie la vitesse par la durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-1-1",
+      "prompt": "Par rapport aux arbres du bord de la voie, Maya est en …",
+      "spoken": "Par rapport aux arbres du bord de la voie, Maya est en  (mot manquant) ",
+      "choices": [
+        "repos",
+        "retard",
+        "mouvement"
+      ],
+      "answer": "mouvement",
+      "hint": "Les arbres restent sur place, le train avance.",
+      "explanation": "Les arbres ne bougent pas, et Maya s’en éloigne avec le train : par rapport aux arbres, elle est en mouvement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire un mouvement",
+          "lines": [
+            "Un mouvement se décrit par rapport à un objet de référence.",
+            "Assis dans le bus : immobile par rapport au bus, en mouvement par rapport à la route.",
+            "Uniforme : la vitesse ne change pas. Accéléré : elle augmente. Ralenti : elle diminue.",
+            "La vitesse : on divise la distance par la durée.",
+            "Des kilomètres et des heures : la vitesse est en kilomètres par heure (km/h).",
+            "La distance : on multiplie la vitesse par la durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-1-2",
+      "prompt": "Sur l’autoroute toute droite, la voiture roule toujours à la même vitesse : son mouvement est rectiligne et …",
+      "spoken": "Sur l’autoroute toute droite, la voiture roule toujours à la même vitesse : son mouvement est rectiligne et  (mot manquant) ",
+      "choices": [
+        "accéléré",
+        "uniforme",
+        "ralenti"
+      ],
+      "answer": "uniforme",
+      "hint": "Relis la ligne « Uniforme » du rappel.",
+      "explanation": "Une vitesse qui ne change pas, c’est un mouvement uniforme. En ligne droite, il est rectiligne uniforme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire un mouvement",
+          "lines": [
+            "Un mouvement se décrit par rapport à un objet de référence.",
+            "Assis dans le bus : immobile par rapport au bus, en mouvement par rapport à la route.",
+            "Uniforme : la vitesse ne change pas. Accéléré : elle augmente. Ralenti : elle diminue.",
+            "La vitesse : on divise la distance par la durée.",
+            "Des kilomètres et des heures : la vitesse est en kilomètres par heure (km/h).",
+            "La distance : on multiplie la vitesse par la durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-1-3",
+      "prompt": "Les images d’une bille qui tombe\nEntre deux images, toujours la même durée.\nLes écarts entre les images sont de plus en plus grands.",
+      "question": "Comment est le mouvement de la bille ?",
+      "spoken": "Les images d’une bille qui tombe. Entre deux images, toujours la même durée. Les écarts entre les images sont de plus en plus grands.",
+      "choices": [
+        "uniforme",
+        "accéléré",
+        "ralenti"
+      ],
+      "answer": "accéléré",
+      "hint": "En une même durée, la bille va-t-elle plus loin ?",
+      "explanation": "En une même durée, la bille parcourt une distance de plus en plus grande : sa vitesse augmente, le mouvement est accéléré.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire un mouvement",
+          "lines": [
+            "Un mouvement se décrit par rapport à un objet de référence.",
+            "Assis dans le bus : immobile par rapport au bus, en mouvement par rapport à la route.",
+            "Uniforme : la vitesse ne change pas. Accéléré : elle augmente. Ralenti : elle diminue.",
+            "La vitesse : on divise la distance par la durée.",
+            "Des kilomètres et des heures : la vitesse est en kilomètres par heure (km/h).",
+            "La distance : on multiplie la vitesse par la durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-1-4",
+      "prompt": "Le trajet de Léo à vélo\nDistance : 30 km (kilomètres).\nDurée : 2 h (heures).",
+      "question": "Quelle est sa vitesse moyenne ?",
+      "spoken": "Le trajet de Léo à vélo. Distance, 30 kilomètres. Durée, 2 heures.",
+      "choices": [
+        "15 kilomètres par heure",
+        "28 kilomètres par heure",
+        "60 kilomètres par heure"
+      ],
+      "answer": "15 kilomètres par heure",
+      "hint": "Relis la ligne « La vitesse » du rappel.",
+      "explanation": "On divise la distance par la durée : 30 divisé par 2, 15 kilomètres par heure.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire un mouvement",
+          "lines": [
+            "Un mouvement se décrit par rapport à un objet de référence.",
+            "Assis dans le bus : immobile par rapport au bus, en mouvement par rapport à la route.",
+            "Uniforme : la vitesse ne change pas. Accéléré : elle augmente. Ralenti : elle diminue.",
+            "La vitesse : on divise la distance par la durée.",
+            "Des kilomètres et des heures : la vitesse est en kilomètres par heure (km/h).",
+            "La distance : on multiplie la vitesse par la durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-1-5",
+      "prompt": "Le car de la sortie scolaire\nIl roule à 50 km/h (kilomètres par heure), sans changer de vitesse.\nIl roule pendant 2 h (heures).",
+      "question": "Quelle distance parcourt-il ?",
+      "spoken": "Le car de la sortie scolaire. Il roule à 50 kilomètres par heure, sans changer de vitesse. Il roule pendant 2 heures.",
+      "choices": [
+        "25 kilomètres",
+        "52 kilomètres",
+        "100 kilomètres"
+      ],
+      "answer": "100 kilomètres",
+      "hint": "Relis la ligne « La distance » du rappel.",
+      "explanation": "On multiplie la vitesse par la durée : 50 fois 2, 100 kilomètres. Chaque heure, le car fait 50 kilomètres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire un mouvement",
+          "lines": [
+            "Un mouvement se décrit par rapport à un objet de référence.",
+            "Assis dans le bus : immobile par rapport au bus, en mouvement par rapport à la route.",
+            "Uniforme : la vitesse ne change pas. Accéléré : elle augmente. Ralenti : elle diminue.",
+            "La vitesse : on divise la distance par la durée.",
+            "Des kilomètres et des heures : la vitesse est en kilomètres par heure (km/h).",
+            "La distance : on multiplie la vitesse par la durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-1-6",
+      "prompt": "La voiture freine avant le passage piéton : son mouvement est …",
+      "spoken": "La voiture freine avant le passage piéton : son mouvement est  (mot manquant) ",
+      "choices": [
+        "uniforme",
+        "accéléré",
+        "ralenti"
+      ],
+      "answer": "ralenti",
+      "hint": "En freinant, la vitesse diminue.",
+      "explanation": "La vitesse diminue : le mouvement est ralenti.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire un mouvement",
+          "lines": [
+            "Un mouvement se décrit par rapport à un objet de référence.",
+            "Assis dans le bus : immobile par rapport au bus, en mouvement par rapport à la route.",
+            "Uniforme : la vitesse ne change pas. Accéléré : elle augmente. Ralenti : elle diminue.",
+            "La vitesse : on divise la distance par la durée.",
+            "Des kilomètres et des heures : la vitesse est en kilomètres par heure (km/h).",
+            "La distance : on multiplie la vitesse par la durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-1-7",
+      "prompt": "Pour calculer une vitesse, on divise la distance par la …",
+      "spoken": "Pour calculer une vitesse, on divise la distance par la  (mot manquant) ",
+      "choices": [
+        "masse",
+        "durée",
+        "trajectoire"
+      ],
+      "answer": "durée",
+      "hint": "Relis la ligne « La vitesse » du rappel.",
+      "explanation": "La vitesse, c’est la distance divisée par la durée : des kilomètres par heure, des mètres par seconde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire un mouvement",
+          "lines": [
+            "Un mouvement se décrit par rapport à un objet de référence.",
+            "Assis dans le bus : immobile par rapport au bus, en mouvement par rapport à la route.",
+            "Uniforme : la vitesse ne change pas. Accéléré : elle augmente. Ralenti : elle diminue.",
+            "La vitesse : on divise la distance par la durée.",
+            "Des kilomètres et des heures : la vitesse est en kilomètres par heure (km/h).",
+            "La distance : on multiplie la vitesse par la durée."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-3e-motion-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

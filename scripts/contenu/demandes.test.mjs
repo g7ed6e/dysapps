@@ -105,7 +105,7 @@ describe('les commandes des habitants en Markdown', () => {
     const demandes = JSON.parse(sortie.get(DEMANDES));
     expect(readFileSync(DEMANDES, 'utf8')).toBe(sortie.get(DEMANDES));
     const scolaires = ilesDuJeu().filter((b) => b.subject !== 'lv2');
-    expect(scolaires).toHaveLength(33);
+    expect(scolaires).toHaveLength(48);
     expect(demandes.map((d) => d.biome)).toEqual(scolaires.map((b) => b.id));
     expect(new Set(demandes.map((d) => d.id)).size).toBe(demandes.length);
     expect(new Set(demandes.map((d) => d.fixture)).size).toBe(demandes.length);

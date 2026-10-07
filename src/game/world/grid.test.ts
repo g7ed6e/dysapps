@@ -87,6 +87,7 @@ describe('La disposition en grille', () => {
     }
   });
 
+  // Chaque paire d'îles de chaque archipel, deux fois (42 îles depuis HG-3 et SC-2) : plus long que les 5 s par défaut.
   it('les trajets d’île en île : le chemin et la durée d’avant, sur le sol', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const { g, ground } = grilleDe(a);
@@ -142,7 +143,7 @@ describe('La disposition en grille', () => {
           if (door) expect(g.versMonde(g.placeDe({ genre: 'lieu', id: place, ile: school })!)).toEqual(door);
         }
     }
-  });
+  }, 30_000);
 
   it('la durée d’une marche : six cases par seconde, quelle que soit sa longueur', () => {
     const court = [{ x: 0, y: 0, z: 0 }, { x: 3, y: 4, z: 0 }];

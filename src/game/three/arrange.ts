@@ -67,19 +67,33 @@ function injecter(shader: THREE.WebGLProgramParametersWithUniforms): void {
     .replace('void main() {', `void main() {\n{ vec3 p = vAmWp; if (${DANS_LA_ZONE} && p.y > uAmCut) discard; }`);
 }
 
-const CLE_DU_MODE = () => 'amenager';
+/** Le programme d'un matériau avant l'ajout du mode (la texture des blocs, ./textures.ts), pour l'y remettre. */
+const avantLeMode = new WeakMap<THREE.Material, { hook: THREE.Material['onBeforeCompile'] | undefined; cle: (() => string) | undefined }>();
 
 /** Pose ou retire l'ajout du mode sur un matériau ; il se recompile (le programme reste en cache dans le moteur). */
 function reglerLeMateriau(m: THREE.Material, oui: boolean): void {
-  const pose = m.onBeforeCompile === injecter;
+  const pose = avantLeMode.has(m);
   if (pose === oui) return;
   if (oui) {
-    m.onBeforeCompile = injecter;
-    m.customProgramCacheKey = CLE_DU_MODE;
+    // L'ajout du mode vient après le programme propre du matériau, s'il en a un.
+    const propre = Object.prototype.hasOwnProperty.call(m, 'onBeforeCompile') ? m.onBeforeCompile : undefined;
+    const cle = Object.prototype.hasOwnProperty.call(m, 'customProgramCacheKey') ? m.customProgramCacheKey : undefined;
+    avantLeMode.set(m, { hook: propre, cle });
+    m.onBeforeCompile = propre
+      ? (shader, renderer) => {
+          propre.call(m, shader, renderer);
+          injecter(shader);
+        }
+      : injecter;
+    m.customProgramCacheKey = () => `${cle?.() ?? ''}amenager`;
   } else {
-    // Le matériau redevient celui d'avant : ses méthodes reviennent à celles de Three.js.
+    // Le matériau redevient celui d'avant : son programme propre, ou celui de Three.js.
+    const avant = avantLeMode.get(m);
+    avantLeMode.delete(m);
     delete (m as Partial<THREE.Material>).onBeforeCompile;
     delete (m as Partial<THREE.Material>).customProgramCacheKey;
+    if (avant?.hook) m.onBeforeCompile = avant.hook;
+    if (avant?.cle) m.customProgramCacheKey = avant.cle;
   }
   m.needsUpdate = true;
 }
@@ -95,10 +109,26 @@ export function avecLAmenagement<M extends THREE.Material>(m: M): M {
   return m;
 }
 
+/** Ceux qui veulent savoir quand le mode s'ouvre ou se ferme (le terrain, qui ne fond pas ses faces dans le mode). */
+const veilleurs = new Set<(oui: boolean) => void>();
+
+/** Le mode est-il ouvert dans les matériaux des blocs ? */
+export function modeOuvertDansLesMateriaux(): boolean {
+  return modeOuvert;
+}
+
+/** Appelle `f` à chaque ouverture ou fermeture du mode ; rend de quoi ne plus l'appeler. */
+export function suivreLeMode(f: (oui: boolean) => void): () => void {
+  veilleurs.add(f);
+  return () => veilleurs.delete(f);
+}
+
 /** Ouvre ou ferme le mode dans les matériaux des blocs (une seule scène du monde à la fois). */
 export function ouvrirLeModeDansLesMateriaux(oui: boolean): void {
+  const change = modeOuvert !== oui;
   modeOuvert = oui;
   for (const m of materiauxDesBlocs) reglerLeMateriau(m, oui);
+  if (change) for (const f of veilleurs) f(oui);
 }
 
 /** La scène se défait : le mode se ferme dans les matériaux, et la liste se vide (ils restent au cache de ./textures.ts). */

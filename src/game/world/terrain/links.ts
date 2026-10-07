@@ -1,5 +1,5 @@
 // Les ouvrages entre les îles (ponts, rampes, bacs), leurs abords, et les chemins du bonhomme qui les empruntent.
-import { type BiomeId, BLOC, BLOCKS } from '../../biomes';
+import { type BiomeDef, type BiomeId, BLOC, BLOCKS, getBiome, SCIENCE_SUBJECTS } from '../../biomes';
 import { type BridgeDef, type BridgeKind, bridgesOf, LINKS_BEFORE_GD9, bridgeState, otherEnd } from '../archipelago';
 import { coeurDe, CORE, inCoeurDOrigine, inCore, isLand, islandDef, type IslandDef, startingIsland, margesDuCoeur } from '../map';
 import { groundLevelAt } from '../ground';
@@ -153,6 +153,34 @@ export function amorcesDuDessin(id: BiomeId): { ouvrage: BridgeDef; depart: bool
         tracesDeDepart.set(b.id, cases);
       }
       return { ouvrage: b, depart: b.from === id, cases: cases.map((c) => ({ x: c.x - o.x, y: c.y - o.y, dx: c.dx, dy: c.dy })) };
+    });
+}
+
+/** Une île venue après GD-9 : d'histoire-géographie (HG-2, HG-3), ou de sciences hors des Premiers Rivages (SC-3). */
+const isIslandAddedAfterGd9 = (b: Pick<BiomeDef, 'subject' | 'classe'> | undefined): boolean =>
+  !!b && (b.subject === 'history-geography' || (b.classe !== '6e' && SCIENCE_SUBJECTS.includes(b.subject)));
+
+/** Les tracés de départ des liaisons vers les îles venues après GD-9, mémorisés : la carte de départ ne change pas. */
+const tracesVersLesIlesVenues = new Map<string, readonly Readonly<{ x: number; y: number }>[]>();
+
+/**
+ * Les abords des liaisons d'un lieu vers les îles d'histoire-géographie (HG-2, HG-3) et vers les îles de sciences de 5e à
+ * 3e (SC-3), venues après GD-9, tracées sur la carte de départ, dans le repère du lieu : le modelé dessiné d'Archipéo, en
+ * pause, les garde bas lui aussi (la liaison du Relais des voyageurs au Bourg des chroniques longe la crête du Relais,
+ * celle de l'Observatoire des textes au Kiosque des témoins ses gradins ; drawnModel/3e.ts, 5e.ts). Rien du monde de
+ * Blocland ne les lit.
+ */
+export function amorcesVersLesIlesVenues(id: BiomeId): { x: number; y: number }[] {
+  const o = startingIsland(id).core;
+  return bridgesOf(id)
+    .filter((b) => isIslandAddedAfterGd9(getBiome(otherEnd(b, id))))
+    .flatMap((b) => {
+      let cases = tracesVersLesIlesVenues.get(b.id);
+      if (!cases) {
+        cases = casesDeLOuvrage(b, [], startingIsland).map((c) => ({ x: c.x, y: c.y }));
+        tracesVersLesIlesVenues.set(b.id, cases);
+      }
+      return cases.map((c) => ({ x: c.x - o.x, y: c.y - o.y }));
     });
 }
 

@@ -106,9 +106,9 @@ function readLanding(v: unknown): LayoutLanding | null {
  */
 export const LAYOUT_LAST_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: number; y: number }>>> = {
   '6e': { x: 48, y: 36 },
-  '5e': { x: 36, y: 28 },
-  '4e': { x: 42, y: 28 },
-  '3e': { x: 52, y: 28 },
+  '5e': { x: 42, y: 35 },
+  '4e': { x: 42, y: 35 },
+  '3e': { x: 52, y: 30 },
 };
 
 /**
@@ -118,9 +118,9 @@ export const LAYOUT_LAST_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: numb
  */
 export const LAYOUT_LAST_ISLET_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: number; y: number }>>> = {
   '6e': { x: 44, y: 33 },
-  '5e': { x: 32, y: 25 },
-  '4e': { x: 38, y: 25 },
-  '3e': { x: 48, y: 25 },
+  '5e': { x: 38, y: 32 },
+  '4e': { x: 38, y: 32 },
+  '3e': { x: 48, y: 27 },
 };
 
 /** Une mission du lieu : la clé d'une borne est « lieu:mission », la mission parmi celles du lieu (toutes LV2 comprises). */
