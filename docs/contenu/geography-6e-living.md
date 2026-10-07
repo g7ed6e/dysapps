@@ -67,10 +67,10 @@ Pour tous les items :
    - indice : Les cabanes sont faites de bidons, de tôle, de planches.
    - explication : Un bidonville : des cabanes faites avec des matériaux de récupération. Il y en a à Mumbai ou à Lagos. Une banlieue n’est pas un bidonville.
 6. énoncé : Ceux qui font chaque jour le trajet entre la maison et le travail sont des … .
-   - choix : navetteurs · touristes · migrants
+   - choix : navetteurs · touristes · retraités
    - réponse : navetteurs
    - indice : Ils vont et viennent, comme une navette.
-   - explication : Un navetteur fait l’aller et le retour chaque jour. Un migrant, lui, change de pays ou de région pour y vivre.
+   - explication : Un navetteur fait l’aller et le retour chaque jour. On dit aussi un migrant pendulaire : il va et vient, comme le pendule d’une horloge.
 7. énoncé : Une ville … pollue moins et pense aux habitants de demain.
    - choix : étalée · ancienne · durable
    - réponse : durable
@@ -135,9 +135,9 @@ Pour tous les items :
    - réponse : un écoquartier
    - indice : Vélo, plantes, soleil : c’est bon pour quoi ?
    - explication : Un écoquartier pollue peu et respecte la nature : c’est un morceau de ville durable.
-7. énoncé : "Les trains de banlieue de Mumbai\nPlus de 7 millions de voyageurs par jour\nDes wagons pleins aux heures de pointe"
+7. énoncé : "Les trains de banlieue de Mumbai\nEnviron 7 millions de voyageurs par jour\nDes wagons pleins aux heures de pointe"
    - question : Que montre ce document ?
-   - lu : Les trains de banlieue de Mumbai. Plus de sept millions de voyageurs par jour. Des wagons pleins aux heures de pointe.
+   - lu : Les trains de banlieue de Mumbai. Environ sept millions de voyageurs par jour. Des wagons pleins aux heures de pointe.
    - choix : tout le monde roule en voiture · les trains sont trop pleins · Mumbai a peu d’habitants
    - réponse : les trains sont trop pleins
    - indice : Relis la dernière ligne.
@@ -343,7 +343,7 @@ Pour tous les items :
 7. énoncé : Une région presque vide d’habitants est un … humain.
    - choix : désert · foyer · littoral
    - réponse : désert
-   - indice : Regarde la dernière ligne du rappel.
+   - indice : Cherche « presque personne » dans le rappel.
    - explication : Un désert humain : presque personne n’y vit. Le contraire est un foyer de peuplement.
 8. énoncé : Plus de la moitié des humains vivent en … .
    - choix : campagne · montagne · ville

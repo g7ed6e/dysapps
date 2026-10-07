@@ -147,11 +147,11 @@
       "choices": [
         "navetteurs",
         "touristes",
-        "migrants"
+        "retraités"
       ],
       "answer": "navetteurs",
       "hint": "Ils vont et viennent, comme une navette.",
-      "explanation": "Un navetteur fait l’aller et le retour chaque jour. Un migrant, lui, change de pays ou de région pour y vivre.",
+      "explanation": "Un navetteur fait l’aller et le retour chaque jour. On dit aussi un migrant pendulaire : il va et vient, comme le pendule d’une horloge.",
       "aid": {
         "kind": "rule-card",
         "props": {

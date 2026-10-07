@@ -176,7 +176,7 @@ Pour tous les items :
   - En haut, le plus ancien ; en bas, le plus récent.
   - 1945 : l’ONU est créée.
   - De 1947 à 1991 : la guerre froide.
-  - 1957 : le traité de Rome, début de la construction européenne.
+  - 1957 : le traité de Rome crée la Communauté économique européenne.
   - 1962 : l’Algérie devient indépendante.
   - 1989 : le mur de Berlin tombe.
 
@@ -218,12 +218,12 @@ Pour tous les items :
    - réponse : 1962
    - indice : Cherche l’Algérie dans la frise.
    - explication : La guerre d’Algérie dure de 1954 à 1962. L’Algérie devient indépendante en 1962.
-8. énoncé : En 1957, six pays signent le traité de … : c’est le début de la construction européenne.
-   - lu : En mille neuf cent cinquante-sept, six pays signent le traité de (mot manquant) : c’est le début de la construction européenne.
+8. énoncé : En 1957, six pays signent le traité de … : il crée la Communauté économique européenne.
+   - lu : En mille neuf cent cinquante-sept, six pays signent le traité de (mot manquant) : il crée la Communauté économique européenne.
    - choix : Versailles · Rome · Maastricht
    - réponse : Rome
    - indice : Cherche 1957 dans la frise.
-   - explication : Le traité de Rome, en 1957, unit six pays, dont la France et l’Allemagne. Le traité de Versailles date de 1919 ; celui de Maastricht, de 1992.
+   - explication : Le traité de Rome, en 1957, crée la Communauté économique européenne. Elle unit six pays, dont la France et l’Allemagne de l’Ouest. Le traité de Versailles date de 1919 ; celui de Maastricht, de 1992.
 
 ### Niveau 2 · `history-3e-twentieth-century-world-since-1945-2`
 
@@ -232,16 +232,16 @@ Pour tous les items :
 Pour tous les items :
 - aide « Lire un document d’histoire » :
   - La première ligne dit ce qu’est le document et sa date.
-  - À l’ouest : les États-Unis et leurs alliés.
-  - À l’est : l’Union soviétique et ses alliés, communistes.
+  - Le camp de l’Ouest : les États-Unis et leurs alliés.
+  - Le camp de l’Est : l’Union soviétique et ses alliés, communistes.
   - Un pays indépendant décide seul de ses lois.
 
-1. énoncé : "L’Europe en 1950\nÀ l’ouest : les États-Unis et leurs alliés, en démocratie\nÀ l’est : l’Union soviétique et ses alliés, communistes"
+1. énoncé : "Le monde en 1950\nLe camp de l’Ouest : les États-Unis et leurs alliés\nLe camp de l’Est : l’Union soviétique et ses alliés, communistes"
    - question : Quel pays dirige le camp de l’Est ?
-   - lu : L’Europe en mille neuf cent cinquante. À l’ouest : les États-Unis et leurs alliés, en démocratie. À l’est : l’Union soviétique et ses alliés, communistes.
+   - lu : Le monde en mille neuf cent cinquante. Le camp de l’Ouest : les États-Unis et leurs alliés. Le camp de l’Est : l’Union soviétique et ses alliés, communistes.
    - choix : les États-Unis · la France · l’Union soviétique
    - réponse : l’Union soviétique
-   - indice : Lis la ligne qui commence par « À l’est ».
+   - indice : Lis la ligne qui commence par « Le camp de l’Est ».
    - explication : Le camp de l’Est, communiste, est dirigé par l’Union soviétique. Le camp de l’Ouest est dirigé par les États-Unis.
 2. énoncé : "Berlin, 9 novembre 1989\nLe mur s’ouvre.\nLes Berlinois de l’Est passent à l’Ouest.\nLa foule fait la fête."
    - question : Que se passe-t-il ce jour-là ?
@@ -316,7 +316,7 @@ Pour tous les items :
   - 1944 : les femmes obtiennent le droit de vote.
   - 1945 : la Sécurité sociale est créée.
   - 1958 : la cinquième République, avec de Gaulle.
-  - 1962 : les électeurs élisent eux-mêmes le président.
+  - 1962 : on décide par référendum que les électeurs éliront le président.
   - 1981 : François Mitterrand est élu ; la peine de mort est abolie.
 
 1. énoncé : En 1944, les femmes obtiennent le droit de … .
@@ -343,12 +343,12 @@ Pour tous les items :
    - réponse : président
    - indice : De Gaulle occupe cette place à partir de 1959.
    - explication : La Constitution de 1958 donne un grand pouvoir au président de la République. Le maire dirige une commune, le préfet représente l’État dans un département.
-5. énoncé : Depuis 1962, le président est élu directement par les … .
-   - lu : Depuis mille neuf cent soixante-deux, le président est élu directement par les (mot manquant).
+5. énoncé : Depuis le référendum de 1962, le président est élu directement par les … .
+   - lu : Depuis le référendum de mille neuf cent soixante-deux, le président est élu directement par les (mot manquant).
    - choix : députés · électeurs · maires
    - réponse : électeurs
    - indice : Cherche 1962 dans la frise.
-   - explication : Depuis 1962, tous les électeurs élisent le président : c’est le suffrage universel direct. En 1958, de Gaulle avait été élu par des élus, pas par tous les électeurs.
+   - explication : En 1962, un référendum décide que tous les électeurs éliront le président : c’est le suffrage universel direct. En 1958, de Gaulle avait été élu par des élus, pas par tous les électeurs.
 6. énoncé : En 1981, le pouvoir passe de la droite à la gauche avec François Mitterrand : c’est une … .
    - lu : En mille neuf cent quatre-vingt-un, le pouvoir passe de la droite à la gauche avec François Mitterrand : c’est une (mot manquant).
    - choix : alternance · cohabitation · révolution
@@ -392,12 +392,12 @@ Pour tous les items :
    - réponse : la Résistance
    - indice : Lis la première ligne : qui parle ?
    - explication : Le Conseil national de la Résistance réunit les résistants. Il prépare la France d’après la guerre : la Sécurité sociale naît en 1945.
-3. énoncé : "Paris, 4 septembre 1958\nDe Gaulle présente une nouvelle Constitution.\nLes Français l’approuvent par référendum."
+3. énoncé : "Septembre 1958\nLe 4, de Gaulle présente une nouvelle Constitution.\nLe 28, les Français l’approuvent par référendum."
    - question : Comment cette Constitution est-elle approuvée ?
-   - lu : Paris, le quatre septembre mille neuf cent cinquante-huit. De Gaulle présente une nouvelle Constitution. Les Français l’approuvent par référendum.
+   - lu : Septembre mille neuf cent cinquante-huit. Le quatre, de Gaulle présente une nouvelle Constitution. Le vingt-huit, les Français l’approuvent par référendum.
    - choix : par un vote des députés · par un référendum · par une décision du président
    - réponse : par un référendum
-   - indice : Relis la ligne qui commence par « Les Français ».
+   - indice : Relis la dernière ligne.
    - explication : Les Français approuvent la Constitution par référendum : chaque électeur répond oui ou non. Elle fonde la cinquième République.
 4. énoncé : "La France, en 1986\nPrésident : François Mitterrand, de gauche\nPremier ministre : Jacques Chirac, de droite"
    - question : Comment appelle-t-on cette situation ?

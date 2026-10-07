@@ -137,9 +137,9 @@
     },
     {
       "key": "history-5e-middle-ages-new-worlds-2-5",
-      "prompt": "Ce que pense Luther, en 1517\nOn ne gagne pas le paradis en payant l’Église.\nSeule la Bible dit ce qu’il faut croire.",
+      "prompt": "Ce que pense Luther\nOn ne gagne pas le paradis en payant l’Église.\nSeule la Bible dit ce qu’il faut croire.",
       "question": "Que critique Luther ?",
-      "spoken": "Ce que pense Luther, en mille cinq cent dix-sept. On ne gagne pas le paradis en payant l’Église. Seule la Bible dit ce qu’il faut croire.",
+      "spoken": "Ce que pense Luther. On ne gagne pas le paradis en payant l’Église. Seule la Bible dit ce qu’il faut croire.",
       "choices": [
         "l’argent payé à l’Église pour le paradis",
         "la Bible",

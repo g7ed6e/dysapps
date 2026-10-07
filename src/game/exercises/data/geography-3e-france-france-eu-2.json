@@ -59,9 +59,9 @@
     },
     {
       "key": "geography-3e-france-france-eu-2-2",
-      "prompt": "Les avions Airbus\nDes pièces viennent de France, d’Allemagne, d’Espagne et du Royaume-Uni.\nLes avions sont assemblés à Toulouse.",
+      "prompt": "Les avions Airbus\nDes pièces viennent de France, d’Allemagne, d’Espagne et du Royaume-Uni.\nBeaucoup d’avions sont assemblés à Toulouse.",
       "question": "Que montre ce document ?",
-      "spoken": "Les avions Airbus. Des pièces viennent de France, d’Allemagne, d’Espagne et du Royaume-Uni. Les avions sont assemblés à Toulouse.",
+      "spoken": "Les avions Airbus. Des pièces viennent de France, d’Allemagne, d’Espagne et du Royaume-Uni. Beaucoup d’avions sont assemblés à Toulouse.",
       "choices": [
         "une entreprise seulement française",
         "une usine de voitures",
@@ -69,7 +69,7 @@
       ],
       "answer": "des pays d’Europe qui travaillent ensemble",
       "hint": "Combien de pays fabriquent les pièces ?",
-      "explanation": "Les pièces viennent de plusieurs pays d’Europe et sont assemblées à Toulouse : ces pays travaillent ensemble pour fabriquer les avions.",
+      "explanation": "Les pièces viennent de plusieurs pays d’Europe. Beaucoup d’avions sont assemblés à Toulouse : ces pays travaillent ensemble pour les fabriquer.",
       "aid": {
         "kind": "rule-card",
         "props": {

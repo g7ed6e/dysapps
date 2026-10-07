@@ -59,16 +59,16 @@
     },
     {
       "key": "history-3e-twentieth-century-republic-2-2",
-      "prompt": "Paris, 4 septembre 1958\nDe Gaulle présente une nouvelle Constitution.\nLes Français l’approuvent par référendum.",
+      "prompt": "Septembre 1958\nLe 4, de Gaulle présente une nouvelle Constitution.\nLe 28, les Français l’approuvent par référendum.",
       "question": "Comment cette Constitution est-elle approuvée ?",
-      "spoken": "Paris, le quatre septembre mille neuf cent cinquante-huit. De Gaulle présente une nouvelle Constitution. Les Français l’approuvent par référendum.",
+      "spoken": "Septembre mille neuf cent cinquante-huit. Le quatre, de Gaulle présente une nouvelle Constitution. Le vingt-huit, les Français l’approuvent par référendum.",
       "choices": [
         "par un vote des députés",
         "par un référendum",
         "par une décision du président"
       ],
       "answer": "par un référendum",
-      "hint": "Relis la ligne qui commence par « Les Français ».",
+      "hint": "Relis la dernière ligne.",
       "explanation": "Les Français approuvent la Constitution par référendum : chaque électeur répond oui ou non. Elle fonde la cinquième République.",
       "aid": {
         "kind": "rule-card",

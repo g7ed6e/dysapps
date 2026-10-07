@@ -25,7 +25,7 @@
             "En haut, le plus ancien ; en bas, le plus récent.",
             "1945 : l’ONU est créée.",
             "De 1947 à 1991 : la guerre froide.",
-            "1957 : le traité de Rome, début de la construction européenne.",
+            "1957 : le traité de Rome crée la Communauté économique européenne.",
             "1962 : l’Algérie devient indépendante.",
             "1989 : le mur de Berlin tombe."
           ]
@@ -52,7 +52,7 @@
             "En haut, le plus ancien ; en bas, le plus récent.",
             "1945 : l’ONU est créée.",
             "De 1947 à 1991 : la guerre froide.",
-            "1957 : le traité de Rome, début de la construction européenne.",
+            "1957 : le traité de Rome crée la Communauté économique européenne.",
             "1962 : l’Algérie devient indépendante.",
             "1989 : le mur de Berlin tombe."
           ]
@@ -79,7 +79,7 @@
             "En haut, le plus ancien ; en bas, le plus récent.",
             "1945 : l’ONU est créée.",
             "De 1947 à 1991 : la guerre froide.",
-            "1957 : le traité de Rome, début de la construction européenne.",
+            "1957 : le traité de Rome crée la Communauté économique européenne.",
             "1962 : l’Algérie devient indépendante.",
             "1989 : le mur de Berlin tombe."
           ]
@@ -106,7 +106,7 @@
             "En haut, le plus ancien ; en bas, le plus récent.",
             "1945 : l’ONU est créée.",
             "De 1947 à 1991 : la guerre froide.",
-            "1957 : le traité de Rome, début de la construction européenne.",
+            "1957 : le traité de Rome crée la Communauté économique européenne.",
             "1962 : l’Algérie devient indépendante.",
             "1989 : le mur de Berlin tombe."
           ]
@@ -133,7 +133,7 @@
             "En haut, le plus ancien ; en bas, le plus récent.",
             "1945 : l’ONU est créée.",
             "De 1947 à 1991 : la guerre froide.",
-            "1957 : le traité de Rome, début de la construction européenne.",
+            "1957 : le traité de Rome crée la Communauté économique européenne.",
             "1962 : l’Algérie devient indépendante.",
             "1989 : le mur de Berlin tombe."
           ]
@@ -160,7 +160,7 @@
             "En haut, le plus ancien ; en bas, le plus récent.",
             "1945 : l’ONU est créée.",
             "De 1947 à 1991 : la guerre froide.",
-            "1957 : le traité de Rome, début de la construction européenne.",
+            "1957 : le traité de Rome crée la Communauté économique européenne.",
             "1962 : l’Algérie devient indépendante.",
             "1989 : le mur de Berlin tombe."
           ]
@@ -187,7 +187,7 @@
             "En haut, le plus ancien ; en bas, le plus récent.",
             "1945 : l’ONU est créée.",
             "De 1947 à 1991 : la guerre froide.",
-            "1957 : le traité de Rome, début de la construction européenne.",
+            "1957 : le traité de Rome crée la Communauté économique européenne.",
             "1962 : l’Algérie devient indépendante.",
             "1989 : le mur de Berlin tombe."
           ]
@@ -196,8 +196,8 @@
     },
     {
       "key": "history-3e-twentieth-century-world-since-1945-1-7",
-      "prompt": "En 1957, six pays signent le traité de … : c’est le début de la construction européenne.",
-      "spoken": "En mille neuf cent cinquante-sept, six pays signent le traité de (mot manquant) : c’est le début de la construction européenne.",
+      "prompt": "En 1957, six pays signent le traité de … : il crée la Communauté économique européenne.",
+      "spoken": "En mille neuf cent cinquante-sept, six pays signent le traité de (mot manquant) : il crée la Communauté économique européenne.",
       "choices": [
         "Versailles",
         "Rome",
@@ -205,7 +205,7 @@
       ],
       "answer": "Rome",
       "hint": "Cherche 1957 dans la frise.",
-      "explanation": "Le traité de Rome, en 1957, unit six pays, dont la France et l’Allemagne. Le traité de Versailles date de 1919 ; celui de Maastricht, de 1992.",
+      "explanation": "Le traité de Rome, en 1957, crée la Communauté économique européenne. Elle unit six pays, dont la France et l’Allemagne de l’Ouest. Le traité de Versailles date de 1919 ; celui de Maastricht, de 1992.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -214,7 +214,7 @@
             "En haut, le plus ancien ; en bas, le plus récent.",
             "1945 : l’ONU est créée.",
             "De 1947 à 1991 : la guerre froide.",
-            "1957 : le traité de Rome, début de la construction européenne.",
+            "1957 : le traité de Rome crée la Communauté économique européenne.",
             "1962 : l’Algérie devient indépendante.",
             "1989 : le mur de Berlin tombe."
           ]

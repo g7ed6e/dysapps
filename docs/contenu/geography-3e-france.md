@@ -191,10 +191,10 @@ Pour tous les items :
    - indice : Des territoires qui ne sont pas égaux.
    - explication : Inégalité : un écart entre des territoires, de richesse, d’emplois ou de services. Aménager sert aussi à les réduire.
 4. énoncé : La région, le département et la … sont des collectivités qui aménagent le territoire.
-   - choix : préfecture · commune · mairie
+   - choix : préfecture · commune · capitale
    - réponse : commune
    - indice : Le maire la dirige.
-   - explication : La commune, le département et la région aménagent le territoire, avec l’État. La mairie est le bâtiment de la commune ; la préfecture, celui de l’État dans le département.
+   - explication : La commune, le département et la région aménagent le territoire, avec l’État. La préfecture, c’est l’État dans le département ; une capitale est une ville.
 5. énoncé : Pour que les habitants des campagnes trouvent un médecin, des communes ouvrent des maisons de … .
    - choix : retraite · quartier · santé
    - réponse : santé
@@ -376,13 +376,13 @@ Pour tous les items :
    - réponse : il traverse une frontière
    - indice : Il habite dans un pays, il travaille dans un autre.
    - explication : Il habite en France et travaille au Luxembourg : chaque jour, il traverse une frontière. C’est un flux de personnes dans l’Union.
-3. énoncé : "Les avions Airbus\nDes pièces viennent de France, d’Allemagne, d’Espagne et du Royaume-Uni.\nLes avions sont assemblés à Toulouse."
+3. énoncé : "Les avions Airbus\nDes pièces viennent de France, d’Allemagne, d’Espagne et du Royaume-Uni.\nBeaucoup d’avions sont assemblés à Toulouse."
    - question : Que montre ce document ?
-   - lu : Les avions Airbus. Des pièces viennent de France, d’Allemagne, d’Espagne et du Royaume-Uni. Les avions sont assemblés à Toulouse.
+   - lu : Les avions Airbus. Des pièces viennent de France, d’Allemagne, d’Espagne et du Royaume-Uni. Beaucoup d’avions sont assemblés à Toulouse.
    - choix : une entreprise seulement française · une usine de voitures · des pays d’Europe qui travaillent ensemble
    - réponse : des pays d’Europe qui travaillent ensemble
    - indice : Combien de pays fabriquent les pièces ?
-   - explication : Les pièces viennent de plusieurs pays d’Europe et sont assemblées à Toulouse : ces pays travaillent ensemble pour fabriquer les avions.
+   - explication : Les pièces viennent de plusieurs pays d’Europe. Beaucoup d’avions sont assemblés à Toulouse : ces pays travaillent ensemble pour les fabriquer.
 4. énoncé : "La France, en 2024\nLe pays le plus visité du monde\nEnviron 100 millions de touristes étrangers"
    - question : Que montre ce document ?
    - lu : La France, en deux mille vingt-quatre. Le pays le plus visité du monde. Environ cent millions de touristes étrangers.

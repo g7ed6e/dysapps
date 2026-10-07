@@ -7,17 +7,17 @@
   "items": [
     {
       "key": "geography-5e-resources-risks-2-0",
-      "prompt": "Le Japon, en mars 2011\nUn très fort séisme sous la mer\nPuis une vague géante frappe la côte.\nPlus de 15 000 morts",
-      "question": "Comment s’appelle cette vague géante ?",
-      "spoken": "Le Japon, en mars deux mille onze. Un très fort séisme sous la mer. Puis une vague géante frappe la côte. Plus de quinze mille morts.",
+      "prompt": "Le Japon, en mars 2011\nUne vague géante frappe la côte.\nElle inonde la centrale nucléaire de Fukushima.\nLa centrale a un grave accident.",
+      "question": "Quel accident a lieu à Fukushima ?",
+      "spoken": "Le Japon, en mars deux mille onze. Une vague géante frappe la côte. Elle inonde la centrale nucléaire de Fukushima. La centrale a un grave accident.",
       "choices": [
-        "un cyclone",
-        "un tsunami",
-        "une crue"
+        "un feu de forêt",
+        "une épidémie",
+        "un accident nucléaire"
       ],
-      "answer": "un tsunami",
-      "hint": "La vague vient après un séisme sous la mer.",
-      "explanation": "Un séisme sous la mer peut causer une vague géante : un tsunami. En 2011, il a frappé la côte du Japon.",
+      "answer": "un accident nucléaire",
+      "hint": "Relis la ligne qui parle de la centrale.",
+      "explanation": "La vague a inondé la centrale nucléaire de Fukushima : un grave accident a suivi. Un accident dans une centrale, c’est un risque technologique.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -69,7 +69,7 @@
       ],
       "answer": "il est bas et la mer monte",
       "hint": "Relis la ligne « Un pays bas » et la ligne « Le niveau de la mer ».",
-      "explanation": "Un pays bas, la mer qui monte : c’est l’aléa. Des millions d’habitants : ce sont les enjeux. Le risque est grand.",
+      "explanation": "La mer qui monte et les inondations : c’est l’aléa. Les millions d’habitants de ces terres basses : ce sont les enjeux. Le risque est grand.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -111,17 +111,17 @@
     },
     {
       "key": "geography-5e-resources-risks-2-4",
-      "prompt": "Un exercice dans une école de Tokyo\nL’alarme sonne : « Séisme ! »\nLes élèves se cachent sous les tables.\nPuis ils sortent dans la cour.",
-      "question": "Que fait cette école ?",
-      "spoken": "Un exercice dans une école de Tokyo. L’alarme sonne : « Séisme ! » Les élèves se cachent sous les tables. Puis ils sortent dans la cour.",
+      "prompt": "Rouen, en septembre 2019\nUn grand incendie dans l’usine Lubrizol\nUne fumée noire passe sur la ville.\nLes écoles ferment pour la journée.",
+      "question": "Pourquoi les écoles ferment-elles ?",
+      "spoken": "Rouen, en septembre deux mille dix-neuf. Un grand incendie dans l’usine Lubrizol. Une fumée noire passe sur la ville. Les écoles ferment pour la journée.",
       "choices": [
-        "elle répare après un séisme",
-        "elle ignore le risque",
-        "elle se prépare au risque"
+        "parce que la ville n’a plus d’électricité",
+        "pour protéger les élèves de la fumée",
+        "parce que les pompiers ont besoin des écoles"
       ],
-      "answer": "elle se prépare au risque",
-      "hint": "Relis la première ligne : c’est un exercice.",
-      "explanation": "C’est un exercice, avant tout séisme : l’école se prépare. C’est de la prévention.",
+      "answer": "pour protéger les élèves de la fumée",
+      "hint": "Relis la ligne qui parle de la fumée.",
+      "explanation": "L’incendie d’une usine est un risque industriel. On ferme les écoles pour protéger les élèves de la fumée.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -189,17 +189,17 @@
     },
     {
       "key": "geography-5e-resources-risks-2-7",
-      "prompt": "Deux séismes de même force\nDans un pays riche : des immeubles faits pour résister\nDans un pays pauvre : des maisons qui s’effondrent",
-      "question": "Pourquoi les dégâts ne sont-ils pas les mêmes ?",
-      "spoken": "Deux séismes de même force. Dans un pays riche : des immeubles faits pour résister. Dans un pays pauvre : des maisons qui s’effondrent.",
+      "prompt": "Toulouse, en septembre 2001\nUne usine chimique explose.\nElle était tout près des maisons.\nDepuis, on évite de construire près de ces usines.",
+      "question": "Que fait-on depuis pour réduire le risque ?",
+      "spoken": "Toulouse, en septembre deux mille un. Une usine chimique explose. Elle était tout près des maisons. Depuis, on évite de construire près de ces usines.",
       "choices": [
-        "le séisme est plus fort dans le pays pauvre",
-        "le pays pauvre a moins d’habitants",
-        "les maisons sont plus solides dans le pays riche"
+        "on construit de nouvelles maisons autour",
+        "on évite de construire près de ces usines",
+        "on ferme toutes les usines"
       ],
-      "answer": "les maisons sont plus solides dans le pays riche",
-      "hint": "La première ligne dit que la force est la même.",
-      "explanation": "Même aléa, dégâts différents : le pays riche construit des immeubles qui résistent. Face au risque, les pays sont inégaux.",
+      "answer": "on évite de construire près de ces usines",
+      "hint": "Relis la ligne qui commence par « Depuis ».",
+      "explanation": "Moins de maisons près des usines dangereuses, c’est moins d’enjeux menacés. C’est de la prévention.",
       "aid": {
         "kind": "rule-card",
         "props": {

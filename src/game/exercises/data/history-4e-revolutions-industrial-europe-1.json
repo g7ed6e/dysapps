@@ -7,16 +7,16 @@
   "items": [
     {
       "key": "history-4e-revolutions-industrial-europe-1-0",
-      "prompt": "La révolution industrielle commence d’abord au … .",
-      "spoken": "La révolution industrielle commence d’abord au (mot manquant) .",
+      "prompt": "La révolution industrielle commence d’abord en … .",
+      "spoken": "La révolution industrielle commence d’abord en (mot manquant) .",
       "choices": [
-        "Royaume-Uni",
+        "Grande-Bretagne",
         "France",
-        "Japon"
+        "Allemagne"
       ],
-      "answer": "Royaume-Uni",
+      "answer": "Grande-Bretagne",
       "hint": "C’est le pays des premières machines à vapeur.",
-      "explanation": "La révolution industrielle commence au Royaume-Uni, à la fin du XVIIIe siècle, puis gagne la France et l’Allemagne au XIXe siècle.",
+      "explanation": "La révolution industrielle commence en Grande-Bretagne, à la fin du XVIIIe siècle, puis gagne la France et l’Allemagne au XIXe siècle.",
       "aid": {
         "kind": "rule-card",
         "props": {

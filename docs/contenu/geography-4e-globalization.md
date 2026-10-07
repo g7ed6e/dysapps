@@ -345,10 +345,10 @@ Pour tous les items :
    - indice : Il est au bord de la Manche, à l’embouchure de la Seine.
    - explication : Le Havre, au bord de la Manche, est le premier port à conteneurs de France. Marseille, au bord de la Méditerranée, est un grand port surtout pour le pétrole.
 7. énoncé : Le détroit qui sépare la France de l’Angleterre s’appelle … .
-   - choix : le Bosphore · le Pas-de-Calais · le détroit de Gibraltar
-   - réponse : le Pas-de-Calais
+   - choix : le Bosphore · le pas de Calais · le détroit de Gibraltar
+   - réponse : le pas de Calais
    - indice : Calais est une ville française de la côte nord.
-   - explication : Le Pas-de-Calais sépare la France de l’Angleterre. Gibraltar sépare l’Espagne du Maroc.
+   - explication : Le pas de Calais sépare la France de l’Angleterre. Gibraltar sépare l’Espagne du Maroc.
 8. énoncé : Une entreprise qui a des usines et des magasins dans beaucoup de pays est une firme … .
    - choix : nationale · familiale · transnationale
    - réponse : transnationale
@@ -379,7 +379,7 @@ Pour tous les items :
    - choix : de l’Asie à l’Europe · de l’Europe à l’Amérique · de l’Afrique à l’Asie
    - réponse : de l’Asie à l’Europe
    - indice : La Chine et les Pays-Bas : sur quels continents ?
-   - explication : Shanghai est en Asie, Rotterdam en Europe. Ce sont deux des plus grands ports du monde.
+   - explication : Shanghai est en Asie, Rotterdam en Europe. Shanghai est le premier port à conteneurs du monde. Rotterdam est le premier port d’Europe.
 3. énoncé : "Fos-sur-Mer, près de Marseille\nDes usines et des raffineries\nElles sont au bord des quais.\nLes navires y arrivent chaque jour."
    - question : Pourquoi les usines sont-elles au bord du port ?
    - lu : Fos-sur-Mer, près de Marseille. Des usines et des raffineries. Elles sont au bord des quais. Les navires y arrivent chaque jour.

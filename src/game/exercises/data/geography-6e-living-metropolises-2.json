@@ -163,9 +163,9 @@
     },
     {
       "key": "geography-6e-living-metropolises-2-6",
-      "prompt": "Les trains de banlieue de Mumbai\nPlus de 7 millions de voyageurs par jour\nDes wagons pleins aux heures de pointe",
+      "prompt": "Les trains de banlieue de Mumbai\nEnviron 7 millions de voyageurs par jour\nDes wagons pleins aux heures de pointe",
       "question": "Que montre ce document ?",
-      "spoken": "Les trains de banlieue de Mumbai. Plus de sept millions de voyageurs par jour. Des wagons pleins aux heures de pointe.",
+      "spoken": "Les trains de banlieue de Mumbai. Environ sept millions de voyageurs par jour. Des wagons pleins aux heures de pointe.",
       "choices": [
         "tout le monde roule en voiture",
         "les trains sont trop pleins",

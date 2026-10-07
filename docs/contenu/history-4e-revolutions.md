@@ -149,7 +149,7 @@ Pour tous les items :
    - choix : des lois pour les nobles seulement · la fin de l’Empire · les mêmes lois pour tous
    - réponse : les mêmes lois pour tous
    - indice : Relis la ligne qui contient « lois ».
-   - explication : Le Code civil donne les mêmes lois à tous les Français. Il garde une idée de la Révolution : l’égalité devant la loi.
+   - explication : Le Code civil donne les mêmes lois à tous les Français. Il garde une idée de la Révolution : l’égalité devant la loi. Mais la femme mariée doit obéir à son mari.
 8. énoncé : "Trois événements\n1789 : la prise de la Bastille\n1792 : la République\n1804 : l’Empire"
    - question : Quel événement est le plus récent ?
    - lu : Trois événements. Mille sept cent quatre-vingt-neuf : la prise de la Bastille. Mille sept cent quatre-vingt-douze : la République. Mille huit cent quatre : l’Empire.
@@ -184,11 +184,11 @@ Pour tous les items :
   - 1830 : la France commence la conquête de l’Algérie.
   - Fin du XIXe siècle : les Européens se partagent l’Afrique.
 
-1. énoncé : La révolution industrielle commence d’abord au … .
-   - choix : Royaume-Uni · France · Japon
-   - réponse : Royaume-Uni
+1. énoncé : La révolution industrielle commence d’abord en … .
+   - choix : Grande-Bretagne · France · Allemagne
+   - réponse : Grande-Bretagne
    - indice : C’est le pays des premières machines à vapeur.
-   - explication : La révolution industrielle commence au Royaume-Uni, à la fin du XVIIIe siècle, puis gagne la France et l’Allemagne au XIXe siècle.
+   - explication : La révolution industrielle commence en Grande-Bretagne, à la fin du XVIIIe siècle, puis gagne la France et l’Allemagne au XIXe siècle.
 2. énoncé : Au XIXe siècle, la machine à vapeur marche surtout grâce au … .
    - lu : Au dix-neuvième siècle, la machine à vapeur marche surtout grâce au (mot manquant).
    - choix : charbon · pétrole · vent

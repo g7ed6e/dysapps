@@ -173,12 +173,12 @@
       "spoken": "Le détroit qui sépare la France de l’Angleterre s’appelle (mot manquant) .",
       "choices": [
         "le Bosphore",
-        "le Pas-de-Calais",
+        "le pas de Calais",
         "le détroit de Gibraltar"
       ],
-      "answer": "le Pas-de-Calais",
+      "answer": "le pas de Calais",
       "hint": "Calais est une ville française de la côte nord.",
-      "explanation": "Le Pas-de-Calais sépare la France de l’Angleterre. Gibraltar sépare l’Espagne du Maroc.",
+      "explanation": "Le pas de Calais sépare la France de l’Angleterre. Gibraltar sépare l’Espagne du Maroc.",
       "aid": {
         "kind": "rule-card",
         "props": {

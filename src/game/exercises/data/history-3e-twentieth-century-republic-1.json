@@ -26,7 +26,7 @@
             "1944 : les femmes obtiennent le droit de vote.",
             "1945 : la Sécurité sociale est créée.",
             "1958 : la cinquième République, avec de Gaulle.",
-            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1962 : on décide par référendum que les électeurs éliront le président.",
             "1981 : François Mitterrand est élu ; la peine de mort est abolie."
           ]
         }
@@ -53,7 +53,7 @@
             "1944 : les femmes obtiennent le droit de vote.",
             "1945 : la Sécurité sociale est créée.",
             "1958 : la cinquième République, avec de Gaulle.",
-            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1962 : on décide par référendum que les électeurs éliront le président.",
             "1981 : François Mitterrand est élu ; la peine de mort est abolie."
           ]
         }
@@ -80,7 +80,7 @@
             "1944 : les femmes obtiennent le droit de vote.",
             "1945 : la Sécurité sociale est créée.",
             "1958 : la cinquième République, avec de Gaulle.",
-            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1962 : on décide par référendum que les électeurs éliront le président.",
             "1981 : François Mitterrand est élu ; la peine de mort est abolie."
           ]
         }
@@ -107,7 +107,7 @@
             "1944 : les femmes obtiennent le droit de vote.",
             "1945 : la Sécurité sociale est créée.",
             "1958 : la cinquième République, avec de Gaulle.",
-            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1962 : on décide par référendum que les électeurs éliront le président.",
             "1981 : François Mitterrand est élu ; la peine de mort est abolie."
           ]
         }
@@ -115,8 +115,8 @@
     },
     {
       "key": "history-3e-twentieth-century-republic-1-4",
-      "prompt": "Depuis 1962, le président est élu directement par les … .",
-      "spoken": "Depuis mille neuf cent soixante-deux, le président est élu directement par les (mot manquant).",
+      "prompt": "Depuis le référendum de 1962, le président est élu directement par les … .",
+      "spoken": "Depuis le référendum de mille neuf cent soixante-deux, le président est élu directement par les (mot manquant).",
       "choices": [
         "députés",
         "électeurs",
@@ -124,7 +124,7 @@
       ],
       "answer": "électeurs",
       "hint": "Cherche 1962 dans la frise.",
-      "explanation": "Depuis 1962, tous les électeurs élisent le président : c’est le suffrage universel direct. En 1958, de Gaulle avait été élu par des élus, pas par tous les électeurs.",
+      "explanation": "En 1962, un référendum décide que tous les électeurs éliront le président : c’est le suffrage universel direct. En 1958, de Gaulle avait été élu par des élus, pas par tous les électeurs.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -134,7 +134,7 @@
             "1944 : les femmes obtiennent le droit de vote.",
             "1945 : la Sécurité sociale est créée.",
             "1958 : la cinquième République, avec de Gaulle.",
-            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1962 : on décide par référendum que les électeurs éliront le président.",
             "1981 : François Mitterrand est élu ; la peine de mort est abolie."
           ]
         }
@@ -161,7 +161,7 @@
             "1944 : les femmes obtiennent le droit de vote.",
             "1945 : la Sécurité sociale est créée.",
             "1958 : la cinquième République, avec de Gaulle.",
-            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1962 : on décide par référendum que les électeurs éliront le président.",
             "1981 : François Mitterrand est élu ; la peine de mort est abolie."
           ]
         }
@@ -188,7 +188,7 @@
             "1944 : les femmes obtiennent le droit de vote.",
             "1945 : la Sécurité sociale est créée.",
             "1958 : la cinquième République, avec de Gaulle.",
-            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1962 : on décide par référendum que les électeurs éliront le président.",
             "1981 : François Mitterrand est élu ; la peine de mort est abolie."
           ]
         }
@@ -215,7 +215,7 @@
             "1944 : les femmes obtiennent le droit de vote.",
             "1945 : la Sécurité sociale est créée.",
             "1958 : la cinquième République, avec de Gaulle.",
-            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1962 : on décide par référendum que les électeurs éliront le président.",
             "1981 : François Mitterrand est élu ; la peine de mort est abolie."
           ]
         }

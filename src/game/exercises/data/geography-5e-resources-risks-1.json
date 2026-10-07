@@ -7,24 +7,25 @@
   "items": [
     {
       "key": "geography-5e-resources-risks-1-0",
-      "prompt": "Un tremblement de terre s’appelle aussi un … .",
-      "spoken": "Un tremblement de terre s’appelle aussi un (mot manquant) .",
+      "prompt": "Un incendie ou une explosion dans une usine est un risque … .",
+      "spoken": "Un incendie ou une explosion dans une usine est un risque (mot manquant) .",
       "choices": [
-        "tsunami",
-        "séisme",
-        "cyclone"
+        "climatique",
+        "industriel",
+        "sanitaire"
       ],
-      "answer": "séisme",
-      "hint": "La première ligne du rappel en donne un exemple.",
-      "explanation": "Un séisme est un tremblement de terre. Un tsunami est la grande vague qu’un séisme peut causer sous la mer.",
+      "answer": "industriel",
+      "hint": "Les usines, c’est l’industrie.",
+      "explanation": "Une usine qui brûle ou qui explose : c’est un risque industriel, comme à Rouen en 2019.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les mots du risque",
           "lines": [
-            "Aléa : ce qui peut arriver, comme un séisme ou une crue.",
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -34,24 +35,25 @@
     },
     {
       "key": "geography-5e-resources-risks-1-1",
-      "prompt": "Une très grande vague, causée par un séisme sous la mer, est un … .",
-      "spoken": "Une très grande vague, causée par un séisme sous la mer, est un (mot manquant) .",
+      "prompt": "La sirène d’alerte sonne : il faut se mettre à l’abri … .",
+      "spoken": "La sirène d’alerte sonne : il faut se mettre à l’abri (mot manquant) .",
       "choices": [
-        "tsunami",
-        "cyclone",
-        "volcan"
+        "dans un parc",
+        "dans un bâtiment",
+        "dans une voiture"
       ],
-      "answer": "tsunami",
-      "hint": "Ce mot vient du japonais.",
-      "explanation": "Un tsunami est une vague géante causée par un séisme sous la mer. Un cyclone est une tempête très violente.",
+      "answer": "dans un bâtiment",
+      "hint": "Un lieu solide, dont on peut fermer portes et fenêtres.",
+      "explanation": "Quand la sirène d’alerte sonne, on entre dans un bâtiment et on ferme portes et fenêtres. Dehors ou dans une voiture, on est moins protégé.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les mots du risque",
           "lines": [
-            "Aléa : ce qui peut arriver, comme un séisme ou une crue.",
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -76,9 +78,10 @@
         "props": {
           "title": "Les mots du risque",
           "lines": [
-            "Aléa : ce qui peut arriver, comme un séisme ou une crue.",
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -103,9 +106,10 @@
         "props": {
           "title": "Les mots du risque",
           "lines": [
-            "Aléa : ce qui peut arriver, comme un séisme ou une crue.",
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -130,9 +134,10 @@
         "props": {
           "title": "Les mots du risque",
           "lines": [
-            "Aléa : ce qui peut arriver, comme un séisme ou une crue.",
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -157,9 +162,10 @@
         "props": {
           "title": "Les mots du risque",
           "lines": [
-            "Aléa : ce qui peut arriver, comme un séisme ou une crue.",
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -184,9 +190,10 @@
         "props": {
           "title": "Les mots du risque",
           "lines": [
-            "Aléa : ce qui peut arriver, comme un séisme ou une crue.",
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -196,24 +203,25 @@
     },
     {
       "key": "geography-5e-resources-risks-1-7",
-      "prompt": "Au Japon, les élèves s’entraînent à se protéger d’un … : ils se cachent sous les tables.",
-      "spoken": "Au Japon, les élèves s’entraînent à se protéger d’un (mot manquant) : ils se cachent sous les tables.",
+      "prompt": "Avec la chaleur et la sécheresse, en été, les forêts risquent de … .",
+      "spoken": "Avec la chaleur et la sécheresse, en été, les forêts risquent de (mot manquant) .",
       "choices": [
-        "cyclone",
-        "incendie",
-        "séisme"
+        "geler",
+        "brûler",
+        "être inondées"
       ],
-      "answer": "séisme",
-      "hint": "Sous une table, on est à l’abri de ce qui tombe.",
-      "explanation": "Pendant un séisme, des objets tombent : on se cache sous une table. Au Japon, les séismes sont fréquents, alors on s’y prépare.",
+      "answer": "brûler",
+      "hint": "Que devient une forêt très sèche, près d’une flamme ?",
+      "explanation": "Chaleur et sécheresse dessèchent les arbres : un feu de forêt part plus vite. Avec le réchauffement climatique, ce risque augmente.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Les mots du risque",
           "lines": [
-            "Aléa : ce qui peut arriver, comme un séisme ou une crue.",
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."

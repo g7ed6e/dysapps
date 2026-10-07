@@ -7,16 +7,16 @@
   "items": [
     {
       "key": "history-3e-twentieth-century-world-since-1945-2-0",
-      "prompt": "L’Europe en 1950\nÀ l’ouest : les États-Unis et leurs alliés, en démocratie\nÀ l’est : l’Union soviétique et ses alliés, communistes",
+      "prompt": "Le monde en 1950\nLe camp de l’Ouest : les États-Unis et leurs alliés\nLe camp de l’Est : l’Union soviétique et ses alliés, communistes",
       "question": "Quel pays dirige le camp de l’Est ?",
-      "spoken": "L’Europe en mille neuf cent cinquante. À l’ouest : les États-Unis et leurs alliés, en démocratie. À l’est : l’Union soviétique et ses alliés, communistes.",
+      "spoken": "Le monde en mille neuf cent cinquante. Le camp de l’Ouest : les États-Unis et leurs alliés. Le camp de l’Est : l’Union soviétique et ses alliés, communistes.",
       "choices": [
         "les États-Unis",
         "la France",
         "l’Union soviétique"
       ],
       "answer": "l’Union soviétique",
-      "hint": "Lis la ligne qui commence par « À l’est ».",
+      "hint": "Lis la ligne qui commence par « Le camp de l’Est ».",
       "explanation": "Le camp de l’Est, communiste, est dirigé par l’Union soviétique. Le camp de l’Ouest est dirigé par les États-Unis.",
       "aid": {
         "kind": "rule-card",
@@ -24,8 +24,8 @@
           "title": "Lire un document d’histoire",
           "lines": [
             "La première ligne dit ce qu’est le document et sa date.",
-            "À l’ouest : les États-Unis et leurs alliés.",
-            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Le camp de l’Ouest : les États-Unis et leurs alliés.",
+            "Le camp de l’Est : l’Union soviétique et ses alliés, communistes.",
             "Un pays indépendant décide seul de ses lois."
           ]
         }
@@ -50,8 +50,8 @@
           "title": "Lire un document d’histoire",
           "lines": [
             "La première ligne dit ce qu’est le document et sa date.",
-            "À l’ouest : les États-Unis et leurs alliés.",
-            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Le camp de l’Ouest : les États-Unis et leurs alliés.",
+            "Le camp de l’Est : l’Union soviétique et ses alliés, communistes.",
             "Un pays indépendant décide seul de ses lois."
           ]
         }
@@ -76,8 +76,8 @@
           "title": "Lire un document d’histoire",
           "lines": [
             "La première ligne dit ce qu’est le document et sa date.",
-            "À l’ouest : les États-Unis et leurs alliés.",
-            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Le camp de l’Ouest : les États-Unis et leurs alliés.",
+            "Le camp de l’Est : l’Union soviétique et ses alliés, communistes.",
             "Un pays indépendant décide seul de ses lois."
           ]
         }
@@ -102,8 +102,8 @@
           "title": "Lire un document d’histoire",
           "lines": [
             "La première ligne dit ce qu’est le document et sa date.",
-            "À l’ouest : les États-Unis et leurs alliés.",
-            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Le camp de l’Ouest : les États-Unis et leurs alliés.",
+            "Le camp de l’Est : l’Union soviétique et ses alliés, communistes.",
             "Un pays indépendant décide seul de ses lois."
           ]
         }
@@ -128,8 +128,8 @@
           "title": "Lire un document d’histoire",
           "lines": [
             "La première ligne dit ce qu’est le document et sa date.",
-            "À l’ouest : les États-Unis et leurs alliés.",
-            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Le camp de l’Ouest : les États-Unis et leurs alliés.",
+            "Le camp de l’Est : l’Union soviétique et ses alliés, communistes.",
             "Un pays indépendant décide seul de ses lois."
           ]
         }
@@ -154,8 +154,8 @@
           "title": "Lire un document d’histoire",
           "lines": [
             "La première ligne dit ce qu’est le document et sa date.",
-            "À l’ouest : les États-Unis et leurs alliés.",
-            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Le camp de l’Ouest : les États-Unis et leurs alliés.",
+            "Le camp de l’Est : l’Union soviétique et ses alliés, communistes.",
             "Un pays indépendant décide seul de ses lois."
           ]
         }
@@ -180,8 +180,8 @@
           "title": "Lire un document d’histoire",
           "lines": [
             "La première ligne dit ce qu’est le document et sa date.",
-            "À l’ouest : les États-Unis et leurs alliés.",
-            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Le camp de l’Ouest : les États-Unis et leurs alliés.",
+            "Le camp de l’Est : l’Union soviétique et ses alliés, communistes.",
             "Un pays indépendant décide seul de ses lois."
           ]
         }
@@ -206,8 +206,8 @@
           "title": "Lire un document d’histoire",
           "lines": [
             "La première ligne dit ce qu’est le document et sa date.",
-            "À l’ouest : les États-Unis et leurs alliés.",
-            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Le camp de l’Ouest : les États-Unis et leurs alliés.",
+            "Le camp de l’Est : l’Union soviétique et ses alliés, communistes.",
             "Un pays indépendant décide seul de ses lois."
           ]
         }
