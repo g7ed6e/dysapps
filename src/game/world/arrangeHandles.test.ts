@@ -1,22 +1,14 @@
 // Les poignées du mode « Modifier le plan » dans le monde (GD-9, intention du directeur artistique du 6 octobre 2026) :
 // chacune de son côté, sur l'eau, à une place du bord de l'emprise du choix ; « Tourner » au coin nord-est et seulement
 // pour ce qui tourne ; indisponible au bord de la carte ; sans se toucher à aucune échelle ; leur forme sous le budget
-// (400 triangles, un appel), sans le jaune des places libres ; la croix grise d'une place prise ; les petits radeaux
-// des bouts de liaison.
+// (400 triangles, un appel), sans le jaune des places libres ; la croix grise d'une place prise.
 import { describe, expect, it } from 'vitest';
-import { DIRECTION_STEP, placeIn, routesIn, spotOf } from './arrange';
-import { getBridge } from './archipelago';
+import { currentLandings, DIRECTION_STEP, routesIn, spotOf } from './arrange';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import {
   bordDeLaCroix,
-  BUDGET_DES_BOUTS,
   BUDGET_DES_POIGNEES,
   POIGNEE_MIN_PX,
-  RECUL_MAX_DU_BOUT,
-  reculsDesBouts,
-  coutDesBouts,
-  formeDesBouts,
-  linkEndHandles,
   ECHELLES,
   CLES_DES_POIGNEES,
   COTE_DU_RADEAU,
@@ -26,10 +18,10 @@ import {
   placerALEchelle,
   sortDeLaPlace,
 } from './arrangeHandles';
-import { choiceFits, chooseGuardian, chooseIsland, chooseLinkEnd, chooseStation, stepChoice } from './arrangeMode';
+import { type ArrangeChoice, choiceFits, chooseGuardian, chooseIsland, chooseStation } from './arrangeMode';
 import { arrangeView } from './arrangeView';
 import { toutConstruit } from './budget';
-import { isLandInWorld, mapOf } from './map';
+import { mapOf } from './map';
 import { questStations } from './terrain/markers';
 
 const { world } = toutConstruit();
@@ -37,35 +29,27 @@ const lieux = mapOf('6e').map((d) => d.id);
 const unLieu = lieux.map((id) => chooseIsland(world, id)).find((c) => c !== null)!;
 
 describe('les poignées autour du choix', () => {
-  it('un lieu : les quatre flèches de leur côté, « Tourner » au coin nord-est, toutes hors de l’emprise du fantôme', () => {
+  it('un lieu : seul « Tourner », au coin nord-est, hors de l’emprise du fantôme ; aucune flèche (« trop de boutons », 7 octobre 2026)', () => {
     const v = arrangeView(world, unLieu);
     const p = v.poignees!;
-    expect(p.liste.map((q) => q.cle)).toEqual(CLES_DES_POIGNEES);
+    expect(p.liste.map((q) => q.cle)).toEqual(['tourner']);
     const r = v.cadre!.rect;
-    for (const q of p.liste) {
-      const x = p.cx + q.ox;
-      const y = p.cy + q.oy;
-      const demi = COTE_DU_RADEAU / 2;
-      // Hors de l'emprise, d'au moins une place.
-      const dehors = x + demi <= r.x0 - 1 + 1e-9 || x - demi >= r.x1 + 1 - 1e-9 || y + demi <= r.y0 - 1 + 1e-9 || y - demi >= r.y1 + 1 - 1e-9;
-      expect(dehors, q.cle).toBe(true);
-      if (q.cle === 'tourner') {
-        expect(Math.sign(q.ox)).toBe(DIRECTION_STEP.est.dx);
-        expect(Math.sign(q.oy)).toBe(DIRECTION_STEP.nord.dy);
-      } else {
-        const s = DIRECTION_STEP[q.cle];
-        expect(Math.sign(q.ox)).toBe(s.dx);
-        expect(Math.sign(q.oy)).toBe(s.dy);
-      }
-    }
+    const [q] = p.liste;
+    const x = p.cx + q.ox;
+    const y = p.cy + q.oy;
+    const demi = COTE_DU_RADEAU / 2;
+    // Hors de l'emprise, d'au moins une place.
+    expect(x + demi <= r.x0 - 1 + 1e-9 || x - demi >= r.x1 + 1 - 1e-9 || y + demi <= r.y0 - 1 + 1e-9 || y - demi >= r.y1 + 1 - 1e-9).toBe(true);
+    expect(Math.sign(q.ox)).toBe(DIRECTION_STEP.est.dx);
+    expect(Math.sign(q.oy)).toBe(DIRECTION_STEP.nord.dy);
   });
 
-  it('une flèche au bord de la carte est indisponible ; les autres servent', () => {
+  it('aucun lieu ne montre de flèche ; « Tourner » sert toujours', () => {
     for (const id of lieux) {
       const c = chooseIsland(world, id);
       if (!c) continue;
       const p = arrangeView(world, c).poignees!;
-      for (const q of p.liste) if (q.cle !== 'tourner') expect(q.dispo, `${id} ${q.cle}`).toBe(stepChoice(world, c, q.cle) !== null);
+      expect(p.liste.every((q) => q.cle === 'tourner' && q.dispo), id).toBe(true);
     }
   });
 
@@ -224,80 +208,17 @@ describe('une place prise (choix 3 du mainteneur)', () => {
 });
 
 describe('une arrivée ou une borne choisie', () => {
-  it('seulement les flèches qui mènent quelque part : aucun radeau gris qui se lirait comme une dalle', () => {
+  it('aucune poignée : elle se déplace en touchant la côte de son lieu (« trop de boutons », 7 octobre 2026)', () => {
     for (const a of ARCHIPELAGO_IDS)
-      for (const b of linkEndHandles(world, a)) {
-        const c = chooseLinkEnd(world, b.link, b.end)!;
-        const p = arrangeView(world, c).poignees!;
-        expect(p.liste.every((q) => q.dispo), `${b.link} ${b.end}`).toBe(true);
-        expect(p.liste.map((q) => q.cle)).toEqual(CLES_DES_POIGNEES.filter((k) => k !== 'tourner' && stepChoice(world, c, k) !== null));
+      for (const [link, t] of routesIn(world, a)) {
+        const l = t ? currentLandings(world, link) : null;
+        if (!l) continue;
+        for (const end of ['from', 'to'] as const) {
+          const c: ArrangeChoice = { genre: 'arrivee', link, end, landing: l[end] };
+          const p = arrangeView(world, c).poignees!;
+          expect(p.liste, `${link} ${end}`).toEqual([]);
+        }
       }
-  });
-});
-
-describe('les poignées des bouts de liaison (choix 1a du mainteneur)', () => {
-  it('deux par liaison posée, chacune au bout de son ponton, sur l’eau, hors de la terre de son lieu', () => {
-    for (const a of ARCHIPELAGO_IDS) {
-      const bouts = linkEndHandles(world, a);
-      const tracees = [...routesIn(world, a).values()].filter(Boolean).length;
-      expect(bouts.length, a).toBe(2 * tracees);
-      for (const b of bouts) {
-        const l = getBridge(b.link)!;
-        const id = b.end === 'from' ? l.from : l.to;
-        expect(isLandInWorld(placeIn(world, id), Math.floor(b.x), Math.floor(b.y)), `${b.link} ${b.end}`).toBe(false);
-        expect(chooseLinkEnd(world, b.link, b.end)?.genre).toBe('arrivee');
-      }
-    }
-  });
-
-  it('le sens de chaque ponton, de sa côte vers le large, une case', () => {
-    for (const b of linkEndHandles(world, '6e')) expect(Math.abs(b.dx) + Math.abs(b.dy), `${b.link} ${b.end}`).toBe(1);
-  });
-
-  it('deux bouts trop proches à l’écran reculent chacun le long de son ponton, jamais plus que le recul permis', () => {
-    // Deux bouts face à face sur un bras d'eau étroit (1 case = 6 px) : 4 cases d'écart, 24 px.
-    const bouts = [
-      { x: 0, dx: 1 },
-      { x: 4, dx: -1 },
-    ];
-    const ecran = (i: number, r: number) => ({ x: (bouts[i].x - bouts[i].dx * r) * 6, y: 0 });
-    // Un radeau de 2 cases.
-    const r = reculsDesBouts(2, ecran, 48, 2);
-    expect(r[0]).toBeGreaterThan(0);
-    expect(r[0]).toBe(r[1]);
-    expect(Math.abs(ecran(0, r[0]).x - ecran(1, r[1]).x)).toBeGreaterThanOrEqual(48);
-    expect(Math.max(...r)).toBeLessThanOrEqual(RECUL_MAX_DU_BOUT * 2);
-    // Au coin d'un même lieu : l'un pointe au nord au-dessus de l'autre, qui pointe à l'ouest ; reculer le premier les
-    // rapprocherait, c'est l'autre qui recule.
-    const coin = [
-      { x: 0, y: 0, dx: 0, dy: -1 },
-      { x: 0, y: 4, dx: -1, dy: 0 },
-    ];
-    const ecranDuCoin = (i: number, rr: number) => ({ x: (coin[i].x - coin[i].dx * rr) * 6, y: (coin[i].y - coin[i].dy * rr) * 6 });
-    const rc = reculsDesBouts(2, ecranDuCoin, 48, 4);
-    expect(rc[0]).toBe(0);
-    expect(rc[1]).toBeGreaterThan(0);
-    // Côte à côte sur la même côte (même sens) : reculer ne les écarte pas, ils restent ; leurs boutons se partagent la place.
-    const cote = (i: number, rr: number) => ({ x: i * 12, y: rr * 6 });
-    expect(reculsDesBouts(2, cote, 48)).toEqual([0, 0]);
-    // Loin l'un de l'autre : rien ne bouge.
-    expect(reculsDesBouts(2, (i) => ({ x: i * 100, y: 0 }), 48)).toEqual([0, 0]);
-  });
-
-  it('un petit radeau clair à bord sombre et sa prise, 6 triangles, jamais le jaune ; toutes sous 480 triangles (BUDGET_DES_BOUTS), un appel', () => {
-    const jaune = Array.from(Float32Array.from([0xff / 255, 0xc2 / 255, 0x1a / 255]));
-    for (const style of ['blocs', 'peint'] as const) {
-      const f = formeDesBouts(3, style);
-      expect(f.index.length / 3).toBe(18);
-      expect(f.debuts).toHaveLength(4);
-      for (let i = 0; i < f.couleurs.length; i += 3) expect([f.couleurs[i], f.couleurs[i + 1], f.couleurs[i + 2]]).not.toEqual(jaune);
-    }
-    for (const a of ARCHIPELAGO_IDS) {
-      const c = coutDesBouts(linkEndHandles(world, a).length);
-      expect(c.triangles, a).toBeLessThanOrEqual(BUDGET_DES_BOUTS.triangles);
-      expect(c.drawCalls, a).toBe(1);
-    }
-    expect(coutDesBouts(0)).toEqual({ triangles: 0, drawCalls: 0 });
   });
 });
 

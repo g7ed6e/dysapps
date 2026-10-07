@@ -88,4 +88,12 @@ GD-7 s'amende : l'étoile du point de départ et ses prix disparaissent ; l'él�
 
 Relus le 7 octobre 2026 (expert frontend : Bloquant ; les cinq autres relecteurs : À ajuster), puis corrigés en une passe, à relire : le traceur des liaisons et le décor lisent la vraie place de l'îlot détaché ; les retouches du dessin sont dans [Le rendu](../../rendu/style.md).
 
+7 octobre 2026, mainteneur, après avoir essayé le mode : « il y a trop de boutons », à faire comme les jeux mobiles de construction de base ; s'il y a désaccord, il tranche. Sur la Carte, ce qui précède change ainsi :
+
+- **Plus de flèches autour du choix** : on déplace en glissant ou en touchant la place voulue. Seul « Tourner » reste près d'un lieu ou d'un Gardien choisi. Les quatre flèches ne restent que pour une liaison à reposer, qui ne se glisse pas.
+- **Plus de petits radeaux aux bouts des liaisons** (choix 1a du 6 octobre) : une arrivée se choisit en touchant son ouvrage près de son bout, puis se déplace en touchant la côte de son lieu.
+- **Toucher pose** : toucher une place libre y pose le choix tout de suite, comme le lever du doigt (2a) ; sur une place prise, il y reste, sous la croix grise.
+- **La barre** n'a plus que « Annuler » et « Valider » ; « Réunir » s'y ajoute seulement quand le lieu choisi peut se réunir à un voisin, « Poser » seulement pour une liaison à reposer. « Défaire » quitte la Carte.
+- **Le clavier et la vue simple ne changent pas** : les flèches décalent le choix d'un cran, Entrée le pose ; la vue simple garde la croix des flèches, « Tourner », « Défaire » et « Poser ».
+
 [GD-8](archives/GD-8.md) ne change pas : la pierre grise, le rallumage épreuve par épreuve et le fondu, où que se tienne le Gardien.

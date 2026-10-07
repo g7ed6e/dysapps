@@ -14,7 +14,6 @@ import {
   chooseGuardian,
   chooseIsland,
   chooseLanding,
-  chooseLinkEnd,
   chooseRelink,
   chooseStation,
   choiceSentence,
@@ -197,9 +196,6 @@ describe('un Gardien, une borne, une arrivée, une liaison à reposer', () => {
     const autre = DIRECTIONS.map((d) => stepChoice(w, c!, d)).find(Boolean);
     if (autre) expect(poseChoice(w, autre).ok).toBe(true);
     expect(choiceSentence(w, c!)).toMatch(/^L’arrivée, sur la côte (nord|sud|est|ouest) /);
-    // La poignée d'un bout (choix 1a) choisit la même arrivée ; les flèches la mènent le long de la côte, d'un cran.
-    expect(chooseLinkEnd(w, lien, c!.genre === 'arrivee' ? c!.end : 'from')).toEqual(c);
-    expect(chooseLinkEnd(w, 'inconnue', 'from')).toBeNull();
   });
 
   it('une liaison séparée se repose entre deux voisins, gratuitement', () => {

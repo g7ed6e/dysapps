@@ -9,18 +9,15 @@
 // Indisponible (au bord de la carte) : le radeau gris pierre, la pointe disparaît (la tige seule) ; une arrivée ou une
 // borne, qui ne vont que le long de leur côte ou de leur rangée, ne montrent pas leurs flèches indisponibles. Le choix sur une
 // place prise (choix 3 du mainteneur, 6 octobre 2026) : une croix grise, bordée de sombre, au milieu de son emprise.
-// Sans choix, chaque bout de liaison posée porte un petit radeau (choix 1a) : le toucher choisit cette arrivée. Rien à
-// lire dans le monde : les boutons HTML transparents posés par-dessus (ArrangeHandles.tsx) portent les noms.
+// Rien à lire dans le monde : les boutons HTML transparents posés par-dessus (ArrangeHandles.tsx) portent les noms.
 // Ici : où se tient chaque poignée (à une place du bord de l'emprise du choix, jamais plus loin, par-dessus la terre si
 // l'eau n'est pas là), sa forme (sommets et couleurs, en cases, dans le repère de Three : x, hauteur, y) et ce
 // qu'elle coûte. Code pur, sans Three.js ; la 3D les dessine en un seul maillage (three/arrangeHandles.ts).
 import type { World } from '../engine/state';
-import { getBridge } from './archipelago';
-import { currentLandings, DIRECTION_STEP, placeIn, routesIn } from './arrange';
-import { type ArrangeChoice, canTurn, choiceFits, landingInWorld, landingTip, stepChoice } from './arrangeMode';
-import type { ArchipelagoId } from './map';
+import { DIRECTION_STEP } from './arrange';
+import { type ArrangeChoice, canTurn, choiceFits, stepChoice } from './arrangeMode';
 import type { Rectangle } from './placement';
-import type { CleDePoignee, LinkEndHandle, PoigneeDuMonde, PoigneesDuChoix } from './view';
+import type { CleDePoignee, PoigneeDuMonde, PoigneesDuChoix } from './view';
 
 /** Le côté d'un radeau, en cases (à l'échelle 1). */
 export const COTE_DU_RADEAU = 3;
@@ -80,6 +77,10 @@ export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z:
   const ry = (r.y1 - r.y0) / 2;
   const liste: PoigneeDuMonde[] = [];
   for (const cle of CLES_DES_POIGNEES) {
+    // Peu de boutons (mainteneur, 7 octobre 2026 : « il y a trop de boutons », inspiré des jeux de base mobiles) : on
+    // déplace en glissant ou en touchant la place voulue ; seul « Tourner » reste près du choix. Les flèches ne restent
+    // que pour un ouvrage à reposer, qui ne se glisse pas (et au clavier, sans bouton).
+    if (cle !== 'tourner' && c.genre !== 'liaison') continue;
     if (cle === 'tourner' && !canTurn(c)) continue;
     const dispo = sert(world, c, cle);
     // Une arrivée ou une borne ne va que le long de sa côte ou de sa rangée : une flèche qui ne mène nulle part n'y est
@@ -109,84 +110,8 @@ export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z:
     z,
     liste,
     emprise,
-    ...(c.genre === 'arrivee' ? { bout: true } : {}),
     ...(choiceFits(world, c) ? {} : { prise: { bras: brasDeLaCroix(rx, ry) } }),
   };
-}
-
-// ---------- Les bouts des liaisons (6 octobre 2026, choix 1a du mainteneur) ----------
-
-/**
- * Les poignées des bouts des liaisons posées d'une région : chaque bout au bout de son ponton, sur l'eau, à la hauteur
- * de l'eau de son lieu. Montrées dans le mode quand rien n'est choisi ; toucher l'une choisit cette arrivée.
- */
-export function linkEndHandles(world: World, a: ArchipelagoId): LinkEndHandle[] {
-  const out: LinkEndHandle[] = [];
-  for (const [link, t] of routesIn(world, a)) {
-    const b = getBridge(link);
-    const l = t && b ? currentLandings(world, link) : null;
-    if (!l || !b) continue;
-    for (const end of ['from', 'to'] as const) {
-      const id = end === 'from' ? b.from : b.to;
-      const p = landingTip(world, id, l[end]);
-      const c = landingInWorld(world, id, l[end]);
-      out.push({ link, end, x: p.x + 0.5, y: p.y + 0.5, z: placeIn(world, id).altitude, dx: p.x - c.x, dy: p.y - c.y });
-    }
-  }
-  return out;
-}
-
-/** Le plus long recul d'un bout le long de son ponton, vers sa côte, en côtés de son petit radeau. */
-export const RECUL_MAX_DU_BOUT = 1.5;
-/** Le pas du recul, en côtés de son petit radeau. */
-const PAS_DU_RECUL = 0.25;
-
-/**
- * Les bouts trop proches à l'écran (deux bouts d'une liaison courte, de part et d'autre d'un bras d'eau étroit ; deux
- * bouts au coin d'un même lieu) : à chaque pas, celui des deux (ou les deux) qui les écarte le plus recule le long de
- * son ponton, vers sa côte, tant qu'ils sont à moins de `min` pixels et que reculer les écarte vraiment ; jamais plus
- * de `RECUL_MAX_DU_BOUT` côtés de radeau (`cote`, en cases, le côté du radeau à l'échelle de la vue). Deux bouts côte à
- * côte sur la même côte ne s'écartent pas en reculant : ils restent, et leurs boutons se partagent la place à
- * mi-distance (ArrangeHandles.tsx). `ecran(i, recul)` : où se tient le bout `i` reculé de `recul` cases, en pixels (ou
- * rien, hors de la vue). Rend le recul de chaque bout, en cases. Pur.
- */
-export function reculsDesBouts(n: number, ecran: (i: number, recul: number) => { x: number; y: number } | null, min: number, cote = 1): number[] {
-  const reculs = new Array<number>(n).fill(0);
-  const max = RECUL_MAX_DU_BOUT * cote;
-  const pas = PAS_DU_RECUL * cote;
-  const distance = (i: number, ri: number, j: number, rj: number) => {
-    const a = ecran(i, ri);
-    const b = ecran(j, rj);
-    return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : Infinity;
-  };
-  for (let tour = 0; tour < Math.ceil(2 * RECUL_MAX_DU_BOUT / PAS_DU_RECUL); tour++) {
-    let bouge = false;
-    for (let i = 0; i < n; i++)
-      for (let j = i + 1; j < n; j++) {
-        const d = distance(i, reculs[i], j, reculs[j]);
-        if (d >= min) continue;
-        const ri = Math.min(max, reculs[i] + pas);
-        const rj = Math.min(max, reculs[j] + pas);
-        // Les deux, l'un, ou l'autre : ce qui les écarte le plus.
-        const essais: [number, number][] = [
-          [ri, rj],
-          [ri, reculs[j]],
-          [reculs[i], rj],
-        ];
-        let mieux: [number, number] | null = null;
-        let dMieux = d + 0.1;
-        for (const [a, b] of essais) {
-          if (a === reculs[i] && b === reculs[j]) continue;
-          const e = distance(i, a, j, b);
-          if (e > dMieux) [mieux, dMieux] = [[a, b], e];
-        }
-        if (!mieux) continue;
-        [reculs[i], reculs[j]] = mieux;
-        bouge = true;
-      }
-    if (!bouge) break;
-  }
-  return reculs;
 }
 
 /**
@@ -481,15 +406,13 @@ function croixGrise(t: Traceur, bras: number, style: StyleDesPoignees): void {
 }
 
 /**
- * La forme de toutes les poignées d'un choix, dans un seul maillage (un appel de dessin) ; puis, au milieu du choix, le
- * petit radeau d'un bout de liaison choisi (`bout`), et la croix grise d'une place prise (`prise`), par-dessus : une
- * pièce de plus chacun dans `debuts`, dans cet ordre.
+ * La forme de toutes les poignées d'un choix, dans un seul maillage (un appel de dessin) ; puis, au milieu du choix, la
+ * croix grise d'une place prise (`prise`), par-dessus : une pièce de plus dans `debuts`.
  */
 export function formeDesPoignees(
   liste: readonly Pick<PoigneeDuMonde, 'cle' | 'dispo'>[],
   style: StyleDesPoignees,
   prise?: PoigneesDuChoix['prise'],
-  bout = false,
 ): FormeDesPoignees {
   const t = new Traceur();
   const debuts: number[] = [];
@@ -497,10 +420,6 @@ export function formeDesPoignees(
     debuts.push(t.pos.length / 3);
     if (style === 'blocs') poigneeEnCubes(t, p);
     else poigneePeinte(t, p);
-  }
-  if (bout) {
-    debuts.push(t.pos.length / 3);
-    petitRadeau(t, style);
   }
   if (prise) {
     debuts.push(t.pos.length / 3);
@@ -516,48 +435,5 @@ export const BUDGET_DES_POIGNEES = { triangles: 400, drawCalls: 1 } as const;
 /** Ce que coûtent les poignées d'un choix (et la croix d'une place prise) : un appel de dessin pour toutes, seulement pendant un choix. */
 export function coutDesPoignees(p: PoigneesDuChoix | null | undefined, style: StyleDesPoignees): { triangles: number; drawCalls: number } {
   if (!p?.liste.length) return { triangles: 0, drawCalls: 0 };
-  return { triangles: formeDesPoignees(p.liste, style, p.prise, p.bout).index.length / 3, drawCalls: 1 };
-}
-
-/** Le côté du petit radeau d'un bout de liaison, en cases (à l'échelle 1), et sa poignée sombre au milieu. */
-export const COTE_DU_BOUT = 2;
-const PRISE_DU_BOUT = 0.7;
-
-/**
- * La forme des poignées des bouts de liaison (choix 1a du mainteneur), du même style que les radeaux des flèches : un
- * petit radeau clair à bord sombre (Blocland : crème ; Archipéo : Brume bordé de Nuit océan), une prise sombre au
- * milieu, à plat. 6 triangles par bout, tous dans un seul maillage (un appel), seulement quand rien n'est choisi.
- */
-export function formeDesBouts(n: number, style: StyleDesPoignees): FormeDesPoignees {
-  const t = new Traceur();
-  const debuts: number[] = [];
-  for (let i = 0; i < n; i++) {
-    debuts.push(t.pos.length / 3);
-    petitRadeau(t, style);
-  }
-  debuts.push(t.pos.length / 3);
-  return { positions: Float32Array.from(t.pos), couleurs: Float32Array.from(t.col), index: Uint16Array.from(t.idx), debuts };
-}
-
-/** Le petit radeau d'un bout de liaison : son bord sombre, son dessus clair, sa prise sombre au milieu (6 triangles). */
-function petitRadeau(t: Traceur, style: StyleDesPoignees): void {
-  const k = COULEURS_DES_POIGNEES[style];
-  const d = COTE_DU_BOUT / 2;
-  const c = d - BORD_DU_RADEAU * 1.5;
-  const m = PRISE_DU_BOUT / 2;
-  t.dessus(-d, -d, d, d, RADEAU_HAUT - 0.02, k.bord);
-  t.dessus(-c, -c, c, c, RADEAU_HAUT, k.clair);
-  t.dessus(-m, -m, m, m, RADEAU_HAUT + 0.02, k.fleche);
-}
-
-/**
- * Le plafond des bouts de liaison, dans leur maillage à eux : 480 triangles, un appel de dessin. Au pire, autant de
- * liaisons qu'un graphe planaire en a : 3 n − 6 entre n lieux, deux bouts chacune, 6 triangles par bout ; au 6e, quinze
- * lieux depuis les îles de sciences (SC-2) : 468 triangles, au-dessus des 400 des poignées d'un choix.
- */
-export const BUDGET_DES_BOUTS = { triangles: 480, drawCalls: 1 } as const;
-
-/** Ce que coûtent les poignées des bouts de liaison : un appel pour toutes, sans choix en cours seulement. */
-export function coutDesBouts(n: number): { triangles: number; drawCalls: number } {
-  return n ? { triangles: formeDesBouts(n, 'blocs').index.length / 3, drawCalls: 1 } : { triangles: 0, drawCalls: 0 };
+  return { triangles: formeDesPoignees(p.liste, style, p.prise).index.length / 3, drawCalls: 1 };
 }

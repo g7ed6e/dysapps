@@ -150,10 +150,6 @@ const SHOTS = [
   { name: 'fiche-relier', state: EARLY_MINE, go: '/adventure/french-6e-phonology', act: relierDepuisUneAutreIle('maths-6e-fractions') },
   // Aménager sa région (GD-9) : sur la Carte, le mode ouvert, un lieu choisi et son fantôme calé sur une place libre.
   { name: 'amenager', state: MID, go: '/adventure/map', act: amenager('maths-6e-fractions', { x: 150, y: 100 }) },
-  // Choix 1a du mainteneur (6 octobre 2026) : le mode ouvert sans choix, un petit radeau au bout de chaque ouvrage ;
-  // puis l'arrivée d'un bout choisie par sa poignée, les flèches autour d'elle.
-  { name: 'amenager-bouts', state: MID, go: '/adventure/map', act: amenagerOuvrir },
-  { name: 'amenager-arrivee', state: MID, go: '/adventure/map', act: amenagerUnBout },
   // Choix 1b du mainteneur (7 octobre 2026) : le lieu glissé au doigt, tenu sur une place libre (la grille sur l'eau,
   // l'empreinte jaune sur son socle), puis sur une place prise (les cases grises barrées) ; et un Gardien posé au plus
   // loin au sud de son lieu, son lieu choisi (la ligne en pointillés entre eux, choix 4a).
@@ -183,8 +179,7 @@ const SHOTS = [
   // Pour les relectures, sur demande : le mode au téléphone, la question de « Réunir », et le geste tenu au milieu du
   // démontage (on ne doit voir aucun creux dans la couche qui reste).
   { name: 'telephone-amenager', state: MID, go: '/adventure/map', size: PHONE, act: amenager('maths-6e-fractions', { x: 150, y: 100 }), surDemande: true },
-  // Au téléphone : les petits radeaux des bouts, et une place prise en grand texte (la ligne du haut garde sa hauteur).
-  { name: 'telephone-amenager-bouts', state: MID, go: '/adventure/map', size: PHONE, act: amenagerOuvrir, surDemande: true },
+  // Au téléphone : une place prise en grand texte (la ligne du haut garde sa hauteur).
   { name: 'telephone-amenager-place-prise', state: MID, go: '/adventure/map', size: PHONE, settings: { fontSize: 28 }, act: amenagerPlacePrise('maths-6e-fractions', ['Est', 'Nord', 'Ouest', 'Sud']), surDemande: true },
   // Au téléphone en grand texte, « Modifier le plan » propose d'abord la liste : la liste ouverte dans son panneau.
   { name: 'telephone-amenager-liste', state: MID, go: '/adventure/map', size: PHONE, settings: { fontSize: 28 }, act: amenagerEnListe, surDemande: true },
@@ -269,9 +264,7 @@ SHOTS.push(
   { ...archipeo({ base: 'amenager-glisse-prise', name: 'archipeo-amenager-glisse-prise-nuit' }), nuit: true, surDemande: true },
   { ...archipeo({ base: 'amenager-gardien-detache', name: 'archipeo-amenager-gardien-detache' }), surDemande: true },
   { ...archipeo({ base: 'amenager-gardien-detache', name: 'archipeo-amenager-gardien-detache-nuit' }), nuit: true, surDemande: true },
-  // Le plan sans choix (les radeaux Brume des bouts) et une place prise (la croix grise), de jour et de nuit.
-  { ...archipeo({ base: 'amenager-bouts', name: 'archipeo-amenager-bouts' }), surDemande: true },
-  { ...archipeo({ base: 'amenager-bouts', name: 'archipeo-amenager-bouts-nuit' }), nuit: true, surDemande: true },
+  // Une place prise (la croix grise), de jour et de nuit.
   { ...archipeo({ base: 'amenager-place-prise', name: 'archipeo-amenager-place-prise' }), surDemande: true },
   { ...archipeo({ base: 'amenager-place-prise', name: 'archipeo-amenager-place-prise-nuit' }), nuit: true, surDemande: true },
   { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste-nuit' }), act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 450), settings: { univers: 'archipeo' }, nuit: true, surDemande: true },
@@ -340,22 +333,6 @@ function amenager(ile, point) {
     await page.evaluate((point) => window.__dysappsAmenager?.({ genre: 'mer', point }), point);
     await page.waitForTimeout(2500);
   };
-}
-/** Ouvre le mode « Aménager » sur la Carte, sans rien choisir : les poignées des bouts des ouvrages se montrent. */
-async function amenagerOuvrir(page) {
-  await fermerLesBandeaux(page);
-  await page.getByRole('button', { name: /^Modifier le plan/ }).click();
-  await page.waitForTimeout(500);
-  await fermerLesBandeaux(page);
-  const rester = page.getByRole('button', { name: /Rester sur la Carte/ });
-  if (await rester.count()) await rester.click();
-  await page.waitForTimeout(2500);
-}
-/** Ouvre le mode et touche la poignée du premier bout d'ouvrage (un vrai toucher sur son bouton) : son arrivée est choisie. */
-async function amenagerUnBout(page) {
-  await amenagerOuvrir(page);
-  await page.getByRole('group', { name: 'Déplacer une arrivée' }).getByRole('button').first().click();
-  await page.waitForTimeout(2500);
 }
 /** Choisit un lieu, puis touche une flèche, cran par cran (au plus 12 par direction), jusqu'à une place prise. */
 function amenagerPlacePrise(ile, fleches) {
