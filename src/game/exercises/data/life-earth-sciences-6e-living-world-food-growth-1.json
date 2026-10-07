@@ -98,7 +98,7 @@
       ],
       "answer": "le froid ralentit la moisissure",
       "hint": "Les deux tranches sont dans un sac. Qu’est-ce qui change entre elles ?",
-      "explanation": "Une seule chose change : le froid. La tranche au réfrigérateur n’a pas moisi : le froid ralentit les moisissures. Ce sont des micro-organismes : un par un, ils sont trop petits pour être vus à l’œil nu ; très nombreux, ils forment des taches.",
+      "explanation": "Une seule chose change : le froid. Le froid ralentit les moisissures. Ce sont des micro-organismes : très nombreux, ils forment des taches.",
       "aid": {
         "kind": "rule-card",
         "props": {

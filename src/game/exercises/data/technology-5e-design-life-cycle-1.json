@@ -193,7 +193,7 @@
     {
       "key": "technology-5e-design-life-cycle-1-7",
       "prompt": "L’étiquette du lave-linge\nClasse énergie : A.\nLes classes vont de A à G.\nA consomme le moins.",
-      "question": "Consomme-t-il plus ou moins que les autres lave-linge ?",
+      "question": "Consomme-t-il plus, moins ou autant que ceux des classes B à G ?",
       "spoken": "L’étiquette du lave-linge. Classe énergie, A. Les classes vont de A à G. A consomme le moins.",
       "choices": [
         "moins",

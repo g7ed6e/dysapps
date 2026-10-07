@@ -192,7 +192,7 @@ Pour tous les items :
    - choix : le sac fait pousser la moisissure · le froid ralentit la moisissure · le pain moisit toujours
    - réponse : le froid ralentit la moisissure
    - indice : Les deux tranches sont dans un sac. Qu’est-ce qui change entre elles ?
-   - explication : Une seule chose change : le froid. La tranche au réfrigérateur n’a pas moisi : le froid ralentit les moisissures. Ce sont des micro-organismes : un par un, ils sont trop petits pour être vus à l’œil nu ; très nombreux, ils forment des taches.
+   - explication : Une seule chose change : le froid. Le froid ralentit les moisissures. Ce sont des micro-organismes : très nombreux, ils forment des taches.
 5. énoncé : Le yaourt est fabriqué avec du lait, grâce à des …
    - choix : sucres · bactéries · vitamines
    - réponse : bactéries
@@ -321,7 +321,7 @@ Pour tous les items :
    - indice : Compare les températures : laquelle est douce ?
    - explication : Sur Vénus, il fait bien trop chaud ; sur Mars, bien trop froid. Sur la Terre, la température est douce : l’eau reste liquide et la vie est possible.
 4. énoncé : La couche d’air qui entoure la Terre s’appelle l’…
-   - choix : atmosphère · hémisphère · horizon
+   - choix : atmosphère · équateur · horizon
    - réponse : atmosphère
    - indice : Relis la ligne « L’atmosphère » du rappel.
    - explication : L’atmosphère est la couche d’air autour de la Terre. Elle contient l’air que nous respirons. Elle garde aussi une partie de la chaleur du Soleil.

@@ -207,7 +207,7 @@
       ],
       "answer": "géologiques",
       "hint": "Relis la ligne « L’histoire de la Terre » du rappel.",
-      "explanation": "L’histoire de la Terre se découpe en ères géologiques. Chacune dure des dizaines de millions d’années, ou plus. Une période glaciaire, elle, est un moment froid, bien plus court.",
+      "explanation": "L’histoire de la Terre se découpe en ères géologiques. Chacune dure des dizaines de millions d’années, ou plus. Les glaciations, elles, sont des moments froids, bien plus courts.",
       "aid": {
         "kind": "rule-card",
         "props": {

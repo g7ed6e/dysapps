@@ -83,7 +83,7 @@ Pour tous les items :
    - choix : géologiques · glaciaires · volcaniques
    - réponse : géologiques
    - indice : Relis la ligne « L’histoire de la Terre » du rappel.
-   - explication : L’histoire de la Terre se découpe en ères géologiques. Chacune dure des dizaines de millions d’années, ou plus. Une période glaciaire, elle, est un moment froid, bien plus court.
+   - explication : L’histoire de la Terre se découpe en ères géologiques. Chacune dure des dizaines de millions d’années, ou plus. Les glaciations, elles, sont des moments froids, bien plus courts.
 
 ### Niveau 2 · `life-earth-sciences-5e-active-planet-active-earth-2`
 
@@ -131,7 +131,7 @@ Pour tous les items :
    - choix : volcaniques · sédimentaires · précieuses
    - réponse : sédimentaires
    - indice : Relis la ligne « Le sable et la boue » du rappel.
-   - explication : Les débris déposés en couches forment des roches sédimentaires, comme le calcaire ou le grès. Les roches volcaniques, elles, viennent de la lave refroidie.
+   - explication : Le sable et la boue déposés en couches forment des roches sédimentaires, comme le grès, fait de grains de sable. Les roches volcaniques, elles, viennent de la lave refroidie.
 7. énoncé : "Consignes en cas de séisme\nÀ l’intérieur : s’abriter sous une table solide.\nÀ l’extérieur : s’éloigner des bâtiments et des fils électriques.\nAprès : sortir à pied, par l’escalier."
    - question : Tu es dans la rue quand le sol tremble. Que fais-tu ?
    - lu : Consignes en cas de séisme. À l’intérieur, s’abriter sous une table solide. À l’extérieur, s’éloigner des bâtiments et des fils électriques. Après, sortir à pied, par l’escalier.
@@ -347,7 +347,7 @@ Pour tous les items :
    - choix : érosion · arrosage · engrais
    - réponse : érosion
    - indice : Le vent et la pluie emportent la terre. Comment s’appelle cette usure ?
-   - explication : Les racines des haies retiennent la terre que le vent et la pluie emporteraient : elles protègent le sol de l’érosion. Le sol met très longtemps à se former.
+   - explication : L’érosion, c’est l’usure du sol par le vent et la pluie, qui emportent la terre. Les racines des haies retiennent cette terre : elles protègent le sol. Le sol met très longtemps à se former.
 
 ### Niveau 2 · `life-earth-sciences-5e-active-planet-human-impact-2`
 

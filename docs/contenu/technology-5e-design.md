@@ -353,7 +353,7 @@ Pour tous les items :
    - indice : La bouteille n’est plus une bouteille : sa matière sert à autre chose.
    - explication : On refait de la matière avec la bouteille usée : c’est recycler. Réparer, c’est remettre en état le même objet.
 8. énoncé : "L’étiquette du lave-linge\nClasse énergie : A.\nLes classes vont de A à G.\nA consomme le moins."
-   - question : Consomme-t-il plus ou moins que les autres lave-linge ?
+   - question : Consomme-t-il plus, moins ou autant que ceux des classes B à G ?
    - lu : L’étiquette du lave-linge. Classe énergie, A. Les classes vont de A à G. A consomme le moins.
    - choix : moins · plus · autant
    - réponse : moins

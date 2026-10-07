@@ -269,7 +269,7 @@ function programmeLine(ids, d, from) {
 }
 
 function programmesPage(d) {
-  const { PROGRAMME, DOMAINES, DISCIPLINES, SOURCES } = d.programme;
+  const { PROGRAMME, DOMAINES, DISCIPLINES, SOURCES, INFORMATIONS_PUBLIQUES } = d.programme;
   const { EXCLUSIONS, coverage } = d;
   const disciplines = Object.keys(DISCIPLINES);
   const status = (e) => (coverage.has(e.id) ? 'travaillee' : EXCLUSIONS[e.id]?.kind ?? 'sans');
@@ -343,7 +343,7 @@ function programmesPage(d) {
     '',
     '## Sources et licence {#sources}',
     '',
-    `Les programmes viennent du jeu de données [${SOURCES.c3.dataset}](${SOURCES.c3.datasetUrl}) publié sur data.gouv.fr par le ministère de l’Éducation nationale, sous ${SOURCES.c3.licence.name} ([texte de la licence](${SOURCES.c3.licence.url})) : réutilisation libre, avec mention de la source et de la date. Quand une discipline suit un programme plus récent, publié au Bulletin officiel ou sur éduscol, ses domaines citent ce texte ; ce sont des informations publiques, réutilisables librement avec la même mention ([code des relations entre le public et l’administration](${SOURCES['c3-2023'].licence.url})).`,
+    `Les programmes viennent du jeu de données [${SOURCES.c3.dataset}](${SOURCES.c3.datasetUrl}) publié sur data.gouv.fr par le ministère de l’Éducation nationale, sous ${SOURCES.c3.licence.name} ([texte de la licence](${SOURCES.c3.licence.url})) : réutilisation libre, avec mention de la source et de la date. Quand une discipline suit un programme plus récent, publié au Bulletin officiel ou sur éduscol, ses domaines citent ce texte ; ce sont des informations publiques, réutilisables librement avec la même mention ([code des relations entre le public et l’administration](${INFORMATIONS_PUBLIQUES.url})).`,
     '',
     ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl}) : ${s.pages} pages, ${s.legal}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
     '',

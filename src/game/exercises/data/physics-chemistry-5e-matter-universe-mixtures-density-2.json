@@ -90,9 +90,9 @@
     },
     {
       "key": "physics-chemistry-5e-matter-universe-mixtures-density-2-3",
-      "prompt": "Deux cailloux de la même roche\nCaillou A : 10 mL (millilitres), 30 g (grammes).\nCaillou B : 20 mL, deux fois plus de volume.",
+      "prompt": "Deux cailloux de la même roche\nVolume du caillou A : 10 mL (millilitres).\nMasse du caillou A : 30 g (grammes).\nVolume du caillou B : 20 mL, deux fois plus.",
       "question": "Quelle est la masse du caillou B ?",
-      "spoken": "Deux cailloux de la même roche. Caillou A, dix millilitres, trente grammes. Caillou B, vingt millilitres, deux fois plus de volume.",
+      "spoken": "Deux cailloux de la même roche. Volume du caillou A, dix millilitres. Masse du caillou A, trente grammes. Volume du caillou B, vingt millilitres, deux fois plus.",
       "choices": [
         "40 grammes",
         "50 grammes",

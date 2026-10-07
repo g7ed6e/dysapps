@@ -316,13 +316,13 @@ Pour tous les items :
    - réponse : actionneur
    - indice : Le moteur prend-il une information, ou fait-il bouger le robot ?
    - explication : Le moteur fait bouger le robot : il agit, c’est un actionneur. Le capteur, lui, prend une information.
-3. énoncé : "Le lampadaire de la rue\nLe détecteur repère qu’un passant arrive.\nLe boîtier de contrôle décide d’allumer.\nLa lampe s’allume."
+3. énoncé : "Le lampadaire de la rue\nLe détecteur repère qu’un passant arrive.\nLe programme du lampadaire décide d’allumer.\nLa lampe s’allume."
    - question : Quel élément prend l’information ?
-   - lu : Le lampadaire de la rue. Le détecteur repère qu’un passant arrive. Le boîtier de contrôle décide d’allumer. La lampe s’allume.
-   - choix : le détecteur · le boîtier de contrôle · la lampe
+   - lu : Le lampadaire de la rue. Le détecteur repère qu’un passant arrive. Le programme du lampadaire décide d’allumer. La lampe s’allume.
+   - choix : le détecteur · le programme · la lampe
    - réponse : le détecteur
    - indice : Relis la ligne « Un capteur » du rappel.
-   - explication : Le détecteur prend l’information : c’est le capteur. Le boîtier de contrôle décide, puis la lampe s’allume. On part de l’information pour arriver à l’action.
+   - explication : Le détecteur prend l’information : c’est le capteur. Le programme décide, puis la lampe s’allume. On part de l’information pour arriver à l’action.
 4. énoncé : Pour trouver des pages sur les volcans, on tape des mots-clés dans un …
    - choix : tableur · traitement de texte · moteur de recherche
    - réponse : moteur de recherche
@@ -353,7 +353,7 @@ Pour tous les items :
    - choix : le capteur · le programme · les moteurs
    - réponse : le programme
    - indice : Relis la ligne « Le programme » du rappel.
-   - explication : Le capteur repère le mur, puis le programme décide de tourner. Enfin, les moteurs font tourner le robot. C’est la chaîne d’information et d’action.
+   - explication : Le capteur repère le mur, puis le programme décide de tourner. Enfin, les moteurs font tourner le robot.
 
 ### Niveau 2 · `technology-6e-objects-information-networks-2`
 

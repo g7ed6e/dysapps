@@ -226,17 +226,17 @@ Pour tous les items :
 Pour tous les items :
 - aide « Tension et loi d’Ohm » :
   - En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.
-  - Branchées aux bornes de la pile, les branches en dérivation ont toutes sa tension.
+  - En dérivation, chaque branche reliée directement aux bornes de la pile a la même tension qu’elle.
   - La résistance, en ohms : elle freine le courant.
   - La loi d’Ohm : la tension est égale à la résistance fois l’intensité.
   - On l’écrit U = R × I : U en volts, R en ohms, I en ampères.
   - Pour trouver la résistance : on divise la tension par l’intensité.
 
-1. énoncé : Branchées aux bornes de la pile, les branches en dérivation ont toutes la même tension que la …
+1. énoncé : En dérivation, chaque branche reliée directement aux deux bornes a la même tension que la …
    - choix : lampe · résistance · pile
    - réponse : pile
-   - indice : Relis la ligne « Branchées aux bornes de la pile » du rappel.
-   - explication : En dérivation, chaque branche est reliée aux deux bornes de la pile : elle a la même tension qu’elle.
+   - indice : Relis la ligne « En dérivation » du rappel.
+   - explication : En dérivation, chaque branche est reliée aux deux bornes de la pile par des fils seuls : elle a la même tension qu’elle.
 2. énoncé : "Le circuit en série\nTension de la pile : 9 V (volts).\nTension de la lampe : 5 V.\nTension du moteur : on la cherche."
    - question : Quelle est la tension du moteur ?
    - lu : Le circuit en série. Tension de la pile, 9 volts. Tension de la lampe, 5 volts. Tension du moteur, on la cherche.

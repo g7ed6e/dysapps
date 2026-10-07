@@ -10,7 +10,7 @@ import { SOURCES } from './sources';
 import type { Cycle, Discipline, ProgrammeDomaine, ProgrammeEntry, ProgrammeSource } from './types';
 
 export type { Cycle, Discipline, Exclusion, ExclusionKind, ProgrammeDomaine, ProgrammeEntry, ProgrammeSource, SourceId } from './types';
-export { SOURCES, LICENCE_OUVERTE } from './sources';
+export { SOURCES, LICENCE_OUVERTE, INFORMATIONS_PUBLIQUES } from './sources';
 
 /** Les disciplines, dans l'ordre du portail, avec le libellé et l'abréviation des identifiants (c3.fr.…). */
 export const DISCIPLINES: Record<Discipline, { label: string; short: string }> = {

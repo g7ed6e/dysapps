@@ -7,8 +7,8 @@
   "items": [
     {
       "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-0",
-      "prompt": "L’élément le plus abondant dans l’Univers est un gaz très léger : l’…",
-      "spoken": "L’élément le plus abondant dans l’Univers est un gaz très léger : l’ (mot manquant) ",
+      "prompt": "Dans l’Univers, l’élément qu’on trouve le plus est un gaz très léger : l’…",
+      "spoken": "Dans l’Univers, l’élément qu’on trouve le plus est un gaz très léger : l’ (mot manquant) ",
       "choices": [
         "hydrogène",
         "oxygène",
@@ -23,7 +23,7 @@
           "title": "L’Univers et ses éléments",
           "lines": [
             "L’Univers est né il y a près de 14 milliards d’années.",
-            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Le Soleil et ses planètes sont nés il y a environ 4 milliards et demi d’années.",
             "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
             "La Terre est faite surtout de fer et d’oxygène.",
             "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
@@ -34,9 +34,9 @@
     },
     {
       "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-1",
-      "prompt": "Les éléments les plus abondants\nDans l’Univers : l’hydrogène et l’hélium.\nDans la Terre : le fer et l’oxygène.",
+      "prompt": "Ce qu’on trouve le plus\nDans l’Univers : l’hydrogène et l’hélium.\nDans la Terre : le fer et l’oxygène.",
       "question": "De quoi la Terre est-elle faite surtout ?",
-      "spoken": "Les éléments les plus abondants. Dans l’Univers, l’hydrogène et l’hélium. Dans la Terre, le fer et l’oxygène.",
+      "spoken": "Ce qu’on trouve le plus. Dans l’Univers, l’hydrogène et l’hélium. Dans la Terre, le fer et l’oxygène.",
       "choices": [
         "d’hydrogène et d’hélium",
         "de fer et d’oxygène",
@@ -51,7 +51,7 @@
           "title": "L’Univers et ses éléments",
           "lines": [
             "L’Univers est né il y a près de 14 milliards d’années.",
-            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Le Soleil et ses planètes sont nés il y a environ 4 milliards et demi d’années.",
             "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
             "La Terre est faite surtout de fer et d’oxygène.",
             "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
@@ -79,7 +79,7 @@
           "title": "L’Univers et ses éléments",
           "lines": [
             "L’Univers est né il y a près de 14 milliards d’années.",
-            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Le Soleil et ses planètes sont nés il y a environ 4 milliards et demi d’années.",
             "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
             "La Terre est faite surtout de fer et d’oxygène.",
             "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
@@ -106,7 +106,7 @@
           "title": "L’Univers et ses éléments",
           "lines": [
             "L’Univers est né il y a près de 14 milliards d’années.",
-            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Le Soleil et ses planètes sont nés il y a environ 4 milliards et demi d’années.",
             "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
             "La Terre est faite surtout de fer et d’oxygène.",
             "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
@@ -118,7 +118,7 @@
     {
       "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-4",
       "prompt": "Deux étoiles vues de la Terre\nÉtoile A : à 10 années-lumière.\nÉtoile B : à 100 années-lumière.",
-      "question": "La lumière de quelle étoile a voyagé le plus longtemps pour arriver jusqu’à nous ?",
+      "question": "La lumière de quelle étoile a voyagé le plus longtemps, ou est-ce pareil ?",
       "spoken": "Deux étoiles vues de la Terre. Étoile A, à dix années-lumière. Étoile B, à cent années-lumière.",
       "choices": [
         "l’étoile A",
@@ -134,7 +134,7 @@
           "title": "L’Univers et ses éléments",
           "lines": [
             "L’Univers est né il y a près de 14 milliards d’années.",
-            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Le Soleil et ses planètes sont nés il y a environ 4 milliards et demi d’années.",
             "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
             "La Terre est faite surtout de fer et d’oxygène.",
             "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
@@ -161,7 +161,7 @@
           "title": "L’Univers et ses éléments",
           "lines": [
             "L’Univers est né il y a près de 14 milliards d’années.",
-            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Le Soleil et ses planètes sont nés il y a environ 4 milliards et demi d’années.",
             "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
             "La Terre est faite surtout de fer et d’oxygène.",
             "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
@@ -188,7 +188,7 @@
           "title": "L’Univers et ses éléments",
           "lines": [
             "L’Univers est né il y a près de 14 milliards d’années.",
-            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Le Soleil et ses planètes sont nés il y a environ 4 milliards et demi d’années.",
             "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
             "La Terre est faite surtout de fer et d’oxygène.",
             "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
@@ -216,7 +216,7 @@
           "title": "L’Univers et ses éléments",
           "lines": [
             "L’Univers est né il y a près de 14 milliards d’années.",
-            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Le Soleil et ses planètes sont nés il y a environ 4 milliards et demi d’années.",
             "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
             "La Terre est faite surtout de fer et d’oxygène.",
             "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",

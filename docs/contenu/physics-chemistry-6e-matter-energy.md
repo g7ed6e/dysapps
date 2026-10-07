@@ -188,18 +188,18 @@ Pour tous les items :
    - réponse : elle augmente
    - indice : Chaque seconde, la bille va-t-elle plus loin ou moins loin ?
    - explication : En un même temps, la bille parcourt une distance de plus en plus grande : sa vitesse augmente.
-4. énoncé : "Le trajet d’Inès à vélo, mesuré depuis le trottoir\nPremière seconde : 5 m\nDeuxième seconde : 5 m\nTroisième seconde : 5 m"
+4. énoncé : "Le trajet d’Inès à vélo, vu du trottoir\nPremière seconde : 5 m\nDeuxième seconde : 5 m\nTroisième seconde : 5 m"
    - question : Que fait la vitesse d’Inès ?
-   - lu : Le trajet d’Inès à vélo, mesuré depuis le trottoir. Première seconde, cinq mètres. Deuxième seconde, cinq mètres. Troisième seconde, cinq mètres.
+   - lu : Le trajet d’Inès à vélo, vu du trottoir. Première seconde, cinq mètres. Deuxième seconde, cinq mètres. Troisième seconde, cinq mètres.
    - choix : elle augmente · elle diminue · elle reste la même
    - réponse : elle reste la même
    - indice : Les distances changent-elles d’une ligne à l’autre ?
    - explication : Chaque seconde, Inès parcourt la même distance : sa vitesse reste la même.
-5. énoncé : Vue du trottoir, la voiture freine avant le feu rouge : sa vitesse …
+5. énoncé : Vu du trottoir, le camion freine avant le feu rouge : sa vitesse …
    - choix : diminue · augmente · reste la même
    - réponse : diminue
    - indice : Freiner, c’est aller moins vite.
-   - explication : En freinant, la voiture va de moins en moins vite : sa vitesse diminue.
+   - explication : En freinant, le camion va de moins en moins vite : sa vitesse diminue.
 6. énoncé : "Le compteur du bus\nIl donne la vitesse du bus par rapport à la route.\nL’aiguille est sur le nombre 30.\nSous les nombres, il est écrit : km/h."
    - question : À quelle vitesse roule le bus ?
    - lu : Le compteur du bus. Il donne la vitesse du bus par rapport à la route. L’aiguille est sur le nombre trente. Sous les nombres, il est écrit kilomètres par heure.
@@ -207,7 +207,7 @@ Pour tous les items :
    - réponse : 30 kilomètres par heure
    - indice : Relis la dernière ligne du rappel.
    - explication : km/h veut dire kilomètres par heure : c’est l’unité de la vitesse. 30 kilomètres seuls, ce serait une distance.
-7. énoncé : Vu par un observateur, le chemin suivi par un objet qui bouge s’appelle sa …
+7. énoncé : Le chemin suivi par un objet qui bouge s’appelle sa …
    - choix : vitesse · trajectoire · distance
    - réponse : trajectoire
    - indice : Relis la ligne « La trajectoire » du rappel.

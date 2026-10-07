@@ -186,7 +186,7 @@
       ],
       "answer": "microbe",
       "hint": "Relis la ligne « Le vaccin » du rappel.",
-      "explanation": "Le vaccin présente au corps un microbe rendu inoffensif, ou un morceau de ce microbe, ou de quoi en fabriquer un morceau. Le corps le mémorise : s’il rencontre le vrai microbe, il réagit vite.",
+      "explanation": "Le vaccin présente au corps un microbe rendu inoffensif, ou un morceau de ce microbe. Certains vaccins font fabriquer ce morceau par le corps. Le corps le mémorise : s’il rencontre le vrai microbe, il réagit vite.",
       "aid": {
         "kind": "rule-card",
         "props": {

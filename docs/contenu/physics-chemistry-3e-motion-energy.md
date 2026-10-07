@@ -304,7 +304,8 @@ Pour tous les items :
   - pH égal à 7 : la solution est neutre.
   - pH plus grand que 7 : la solution est basique.
   - Plus le pH est petit, plus la solution est acide.
-  - Acide : plus d’ions hydrogène que d’ions hydroxyde. Basique : l’inverse.
+  - Acide : plus d’ions hydrogène que d’ions hydroxyde.
+  - Basique : plus d’ions hydroxyde que d’ions hydrogène.
 
 1. énoncé : Le jus de citron a un pH de 2 : il est …
    - lu : Le jus de citron a un pé-ache de 2, il est (mot manquant).
@@ -340,7 +341,7 @@ Pour tous les items :
 6. énoncé : Dans une solution basique, les ions hydroxyde sont … nombreux que les ions hydrogène.
    - choix : plus · moins · aussi
    - réponse : plus
-   - indice : Relis la ligne « Acide » du rappel.
+   - indice : Relis la ligne « Basique » du rappel.
    - explication : Dans une solution basique, les ions hydroxyde sont plus nombreux que les ions hydrogène. Dans une solution acide, c’est l’inverse. Dans une solution neutre, il y en a autant.
 7. énoncé : "Du papier pH dans une boisson\nLe papier devient orange.\nSur l’échelle des couleurs de la boîte, orange veut dire pH 4."
    - question : Comment est la boisson ?

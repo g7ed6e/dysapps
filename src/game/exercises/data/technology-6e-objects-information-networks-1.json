@@ -61,17 +61,17 @@
     },
     {
       "key": "technology-6e-objects-information-networks-1-2",
-      "prompt": "Le lampadaire de la rue\nLe détecteur repère qu’un passant arrive.\nLe boîtier de contrôle décide d’allumer.\nLa lampe s’allume.",
+      "prompt": "Le lampadaire de la rue\nLe détecteur repère qu’un passant arrive.\nLe programme du lampadaire décide d’allumer.\nLa lampe s’allume.",
       "question": "Quel élément prend l’information ?",
-      "spoken": "Le lampadaire de la rue. Le détecteur repère qu’un passant arrive. Le boîtier de contrôle décide d’allumer. La lampe s’allume.",
+      "spoken": "Le lampadaire de la rue. Le détecteur repère qu’un passant arrive. Le programme du lampadaire décide d’allumer. La lampe s’allume.",
       "choices": [
         "le détecteur",
-        "le boîtier de contrôle",
+        "le programme",
         "la lampe"
       ],
       "answer": "le détecteur",
       "hint": "Relis la ligne « Un capteur » du rappel.",
-      "explanation": "Le détecteur prend l’information : c’est le capteur. Le boîtier de contrôle décide, puis la lampe s’allume. On part de l’information pour arriver à l’action.",
+      "explanation": "Le détecteur prend l’information : c’est le capteur. Le programme décide, puis la lampe s’allume. On part de l’information pour arriver à l’action.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -209,7 +209,7 @@
       ],
       "answer": "le programme",
       "hint": "Relis la ligne « Le programme » du rappel.",
-      "explanation": "Le capteur repère le mur, puis le programme décide de tourner. Enfin, les moteurs font tourner le robot. C’est la chaîne d’information et d’action.",
+      "explanation": "Le capteur repère le mur, puis le programme décide de tourner. Enfin, les moteurs font tourner le robot.",
       "aid": {
         "kind": "rule-card",
         "props": {

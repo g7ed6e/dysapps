@@ -89,9 +89,9 @@
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-3",
-      "prompt": "Le trajet d’Inès à vélo, mesuré depuis le trottoir\nPremière seconde : 5 m\nDeuxième seconde : 5 m\nTroisième seconde : 5 m",
+      "prompt": "Le trajet d’Inès à vélo, vu du trottoir\nPremière seconde : 5 m\nDeuxième seconde : 5 m\nTroisième seconde : 5 m",
       "question": "Que fait la vitesse d’Inès ?",
-      "spoken": "Le trajet d’Inès à vélo, mesuré depuis le trottoir. Première seconde, cinq mètres. Deuxième seconde, cinq mètres. Troisième seconde, cinq mètres.",
+      "spoken": "Le trajet d’Inès à vélo, vu du trottoir. Première seconde, cinq mètres. Deuxième seconde, cinq mètres. Troisième seconde, cinq mètres.",
       "choices": [
         "elle augmente",
         "elle diminue",
@@ -117,8 +117,8 @@
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-4",
-      "prompt": "Vue du trottoir, la voiture freine avant le feu rouge : sa vitesse …",
-      "spoken": "Vue du trottoir, la voiture freine avant le feu rouge : sa vitesse  (mot manquant) ",
+      "prompt": "Vu du trottoir, le camion freine avant le feu rouge : sa vitesse …",
+      "spoken": "Vu du trottoir, le camion freine avant le feu rouge : sa vitesse  (mot manquant) ",
       "choices": [
         "diminue",
         "augmente",
@@ -126,7 +126,7 @@
       ],
       "answer": "diminue",
       "hint": "Freiner, c’est aller moins vite.",
-      "explanation": "En freinant, la voiture va de moins en moins vite : sa vitesse diminue.",
+      "explanation": "En freinant, le camion va de moins en moins vite : sa vitesse diminue.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -172,8 +172,8 @@
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-6",
-      "prompt": "Vu par un observateur, le chemin suivi par un objet qui bouge s’appelle sa …",
-      "spoken": "Vu par un observateur, le chemin suivi par un objet qui bouge s’appelle sa  (mot manquant) ",
+      "prompt": "Le chemin suivi par un objet qui bouge s’appelle sa …",
+      "spoken": "Le chemin suivi par un objet qui bouge s’appelle sa  (mot manquant) ",
       "choices": [
         "vitesse",
         "trajectoire",

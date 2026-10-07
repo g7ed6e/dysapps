@@ -271,7 +271,7 @@ Pour tous les items :
    - choix : médicament · globule · microbe
    - réponse : microbe
    - indice : Relis la ligne « Le vaccin » du rappel.
-   - explication : Le vaccin présente au corps un microbe rendu inoffensif, ou un morceau de ce microbe, ou de quoi en fabriquer un morceau. Le corps le mémorise : s’il rencontre le vrai microbe, il réagit vite.
+   - explication : Le vaccin présente au corps un microbe rendu inoffensif, ou un morceau de ce microbe. Certains vaccins font fabriquer ce morceau par le corps. Le corps le mémorise : s’il rencontre le vrai microbe, il réagit vite.
 8. énoncé : "Deux boîtes de culture, à la même température\nBoîte 1 : on pose un doigt pas lavé.\nBoîte 2 : on pose un doigt lavé au savon.\nTrois jours plus tard : boîte 1, beaucoup de taches de bactéries ; boîte 2, très peu."
    - question : Que montre cette expérience ?
    - lu : Deux boîtes de culture, à la même température. Boîte 1, on pose un doigt pas lavé. Boîte 2, on pose un doigt lavé au savon. Trois jours plus tard, boîte 1, beaucoup de taches de bactéries. Boîte 2, très peu.
@@ -355,7 +355,7 @@ Pour tous les items :
 Pour tous les items :
 - aide « La reproduction humaine » :
   - Fécondation : un spermatozoïde et un ovule s’unissent, dans une trompe.
-  - La cellule-œuf se divise ; quelques jours plus tard, l’embryon s’installe dans l’utérus : la nidation.
+  - La cellule-œuf devient un embryon. Il s’installe dans l’utérus : la nidation.
   - L’embryon grandit dans l’utérus : la grossesse dure environ 9 mois.
   - Le placenta fait les échanges entre la mère et l’embryon.
   - La contraception permet de choisir le moment d’avoir un enfant.

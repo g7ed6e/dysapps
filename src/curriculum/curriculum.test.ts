@@ -67,6 +67,7 @@ it('les libellés sont courts, sans apostrophe droite ni barre verticale, avec u
     }
     const d = domaineOf(e)!;
     const source = sourceOf(d);
+    if (d.source) expect(d.source.startsWith(`c${d.cycle}`), `${d.id} : source d’un autre cycle`).toBe(true);
     expect(e.page, e.id).toBeGreaterThanOrEqual(1);
     expect(e.page, e.id).toBeLessThanOrEqual(source.pages);
     expect(e.page, `${e.id} : avant la page du domaine`).toBeGreaterThanOrEqual(d.page);

@@ -164,7 +164,8 @@ Pour tous les items :
 
 Pour tous les items :
 - aide « Corps purs et mélanges » :
-  - Corps pur : une seule espèce chimique. Mélange : plusieurs constituants.
+  - Corps pur : une seule espèce chimique, comme l’eau pure.
+  - Mélange : plusieurs constituants.
   - Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.
   - Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.
   - Saturée : la solution ne peut plus rien dissoudre.
@@ -245,9 +246,9 @@ Pour tous les items :
    - réponse : 10 millilitres
    - indice : De combien l’eau est-elle montée ?
    - explication : Le caillou pousse l’eau, qui monte de 50 à 60 millilitres : 60 moins 50, le caillou a un volume de 10 millilitres.
-4. énoncé : "Deux cailloux de la même roche\nCaillou A : 10 mL (millilitres), 30 g (grammes).\nCaillou B : 20 mL, deux fois plus de volume."
+4. énoncé : "Deux cailloux de la même roche\nVolume du caillou A : 10 mL (millilitres).\nMasse du caillou A : 30 g (grammes).\nVolume du caillou B : 20 mL, deux fois plus."
    - question : Quelle est la masse du caillou B ?
-   - lu : Deux cailloux de la même roche. Caillou A, dix millilitres, trente grammes. Caillou B, vingt millilitres, deux fois plus de volume.
+   - lu : Deux cailloux de la même roche. Volume du caillou A, dix millilitres. Masse du caillou A, trente grammes. Volume du caillou B, vingt millilitres, deux fois plus.
    - choix : 40 grammes · 50 grammes · 60 grammes
    - réponse : 60 grammes
    - indice : Relis la ligne « Une même matière » du rappel.
@@ -356,20 +357,20 @@ Pour tous les items :
 Pour tous les items :
 - aide « L’Univers et ses éléments » :
   - L’Univers est né il y a près de 14 milliards d’années.
-  - Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.
+  - Le Soleil et ses planètes sont nés il y a environ 4 milliards et demi d’années.
   - Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.
   - La Terre est faite surtout de fer et d’oxygène.
   - Le carbone, l’oxygène et le fer sont nés dans des étoiles.
   - Une molécule : des atomes liés ensemble.
 
-1. énoncé : L’élément le plus abondant dans l’Univers est un gaz très léger : l’…
+1. énoncé : Dans l’Univers, l’élément qu’on trouve le plus est un gaz très léger : l’…
    - choix : hydrogène · oxygène · azote
    - réponse : hydrogène
    - indice : Relis la ligne « Dans l’Univers » du rappel.
    - explication : L’Univers contient surtout de l’hydrogène, puis de l’hélium. L’oxygène et l’azote y sont bien plus rares.
-2. énoncé : "Les éléments les plus abondants\nDans l’Univers : l’hydrogène et l’hélium.\nDans la Terre : le fer et l’oxygène."
+2. énoncé : "Ce qu’on trouve le plus\nDans l’Univers : l’hydrogène et l’hélium.\nDans la Terre : le fer et l’oxygène."
    - question : De quoi la Terre est-elle faite surtout ?
-   - lu : Les éléments les plus abondants. Dans l’Univers, l’hydrogène et l’hélium. Dans la Terre, le fer et l’oxygène.
+   - lu : Ce qu’on trouve le plus. Dans l’Univers, l’hydrogène et l’hélium. Dans la Terre, le fer et l’oxygène.
    - choix : d’hydrogène et d’hélium · de fer et d’oxygène · de carbone et d’azote
    - réponse : de fer et d’oxygène
    - indice : Relis la ligne « Dans la Terre » du document.
@@ -387,7 +388,7 @@ Pour tous les items :
    - indice : Relis la ligne « Une molécule » du rappel.
    - explication : Des atomes liés ensemble forment une molécule, comme la molécule d’eau. La cellule, c’est en sciences de la vie : elle contient des milliards de molécules.
 5. énoncé : "Deux étoiles vues de la Terre\nÉtoile A : à 10 années-lumière.\nÉtoile B : à 100 années-lumière."
-   - question : La lumière de quelle étoile a voyagé le plus longtemps pour arriver jusqu’à nous ?
+   - question : La lumière de quelle étoile a voyagé le plus longtemps, ou est-ce pareil ?
    - lu : Deux étoiles vues de la Terre. Étoile A, à dix années-lumière. Étoile B, à cent années-lumière.
    - choix : l’étoile A · l’étoile B · pareil pour les deux
    - réponse : l’étoile B
