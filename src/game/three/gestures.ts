@@ -549,7 +549,13 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     cubesDuMonde.viser(hit && rappels.current.build ? cubesDuMonde.casesTouchees(hit).next : null);
   };
   const onLeave = () => cubesDuMonde.viser(null);
+  // Un appui long sur le monde, au doigt, est le début d'un glissé, jamais une sélection : iPadOS y montrerait sa loupe
+  // et ne laisserait pas partir le glissé. Les gestes passent par les événements de pointeur, qui restent.
+  const onTouchStart = (e: TouchEvent) => {
+    if (e.cancelable) e.preventDefault();
+  };
 
+  canvas.addEventListener('touchstart', onTouchStart, { passive: false });
   canvas.addEventListener('pointerdown', onDown);
   canvas.addEventListener('pointerup', onUp);
   canvas.addEventListener('pointermove', onHover);
@@ -557,6 +563,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
   canvas.addEventListener('pointercancel', onCancel);
   canvas.addEventListener('wheel', onWheel, { passive: false });
   return () => {
+    canvas.removeEventListener('touchstart', onTouchStart);
     canvas.removeEventListener('pointerdown', onDown);
     canvas.removeEventListener('pointerup', onUp);
     canvas.removeEventListener('pointermove', onHover);

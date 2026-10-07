@@ -2855,6 +2855,14 @@ figure.class-table {
 .voxel-canvas canvas {
   display: block;
 }
+/* Un appui long pour glisser (une île, un Gardien, la vue) n'est pas une sélection : sans cela, iPadOS montre sa loupe
+   de sélection et le glissé ne part pas. */
+.voxel-canvas,
+.voxel-canvas canvas {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
 .view-toggle {
   display: flex;
   flex-wrap: wrap;
