@@ -2,7 +2,10 @@
 // matériau d'une face (cache), la texture d'une nappe de brume.
 import * as THREE from 'three';
 import { isPlainTint, type FaceSide, type MeshGroup } from '../world/mesher';
-import { blockMaterial, tintedMaterial, vertexTintedMaterial, type TextureKind } from './textures';
+import { buildBlockMesh, GLOW, type BlockChunk } from '../world/blockMesh';
+import { buildMesh } from '../world/mesher';
+import type { VoxelCube } from '../world/cube';
+import { blockMaterial, blockPassMaterial, tintedMaterial, vertexTintedMaterial, type TextureKind } from './textures';
 import type { Surface } from './surface';
 import { avecLAmenagement, HAUTEUR_DU_SOULEVEMENT } from './arrange';
 
@@ -27,8 +30,6 @@ export function mistTexture(): THREE.Texture | null {
 
 const ghostCache = new Map<string, THREE.Material>();
 
-/** Blocs qui brillent d'eux-mêmes (surtout la nuit). */
-const GLOW: Partial<Record<TextureKind, [number, number]>> = { lanterne: [0xffb830, 0.55], lave: [0xff5a00, 0.6] };
 
 /** Matériau d'une face : les blocs texturés partagent les matériaux (cache), le reste est une couleur grainée. */
 function materialFor(texture: string | undefined, face: FaceSide, color: string | undefined, ghost = false, muted = false): THREE.Material {
@@ -73,6 +74,24 @@ export function meshOf(g: MeshGroup, surface: Surface | null = null): THREE.Mesh
   // Les blocs savent le mode « Aménager » (le lieu choisi soulevé, le geste de la pose : ./arrange.ts).
   const mesh = new THREE.Mesh(geo, surface?.material(g) ?? avecLAmenagement(materialFor(g.texture, g.face, g.color, g.ghost, g.muted)));
   if (g.ghost) mesh.renderOrder = 1;
+  return trieParLaVue(mesh);
+}
+
+/**
+ * Un morceau du maillage des blocs en une seule texture (world/blockMesh.ts) : un appel de dessin, quelles que soient
+ * ses textures et ses couleurs.
+ */
+export function blockMeshOf(g: BlockChunk): THREE.Mesh {
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(g.positions, 3));
+  geo.setAttribute('normal', new THREE.Float32BufferAttribute(g.normals, 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(g.uvs, 2));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(g.colors, 3));
+  geo.setAttribute('aLayer', new THREE.Float32BufferAttribute(g.layers, 1));
+  geo.setAttribute('aGlow', new THREE.Float32BufferAttribute(g.glows, 3));
+  geo.setIndex(g.indices);
+  const mesh = new THREE.Mesh(geo, avecLAmenagement(blockPassMaterial(g.pass)));
+  if (g.pass === 'ghost') mesh.renderOrder = 1;
   return trieParLaVue(mesh);
 }
 
@@ -125,4 +144,18 @@ export function meshesOf(groups: MeshGroup[], surface: Surface | null = null): T
   geo.setIndex(indices);
   meshes.push(trieParLaVue(new THREE.Mesh(geo, avecLAmenagement(vertexTintedMaterial()))));
   return meshes;
+}
+
+/**
+ * Un modèle en cubes (un personnage, le navire) en maillages : dans Blocland, en une seule texture, ses faces fondues,
+ * un appel de dessin par passe (world/blockMesh.ts) ; avec `surface` (lot R1), un groupe par matériau (`meshesOf`).
+ */
+export function modelMeshes(cubes: VoxelCube[], surface: Surface | null = null): THREE.Mesh[] {
+  if (surface) return meshesOf(buildMesh(cubes), surface);
+  return buildBlockMesh(cubes, { fondre: true, morceau: Infinity }).map(blockMeshOf);
+}
+
+/** Ajoute des maillages à un groupe ; aucun pour un modèle vide (`add()` sans rien se plaint dans la console). */
+export function addMeshes(parent: THREE.Object3D, meshes: readonly THREE.Mesh[]): void {
+  if (meshes.length) parent.add(...meshes);
 }
