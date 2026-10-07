@@ -609,31 +609,32 @@ const BOULON = fromLayers(
 );
 
 // Humus : un ver de terre laboureur dressé en S (DA, SC-3), rose-brun, des anneaux plus clairs ; à côté de lui, son
-// petit râteau debout, le manche de bois, les dents de fer au sol.
+// petit râteau debout, plus court que lui (relecture des captures : un manche de six cubes faisait lampadaire) : les
+// deux dents de fer au sol, la traverse, un manche de bois de trois cubes.
 const HUMUS = fromLayers(
   [
-    ['.......', '....FFF', '.RA....'],
-    ['.......', '..R..W.', '..R....'],
+    ['.......', '....F.F', '.RA....'],
+    ['.......', '..R.FFF', '..R....'],
     ['.......', '..A..W.', '.......'],
     ['.......', '.RR..W.', '.......'],
     ['.......', '.AR..W.', '.......'],
-    ['..A....', '..R..W.', '.......'],
-    ['.KRK...', '.RRR.W.', '.......'],
+    ['..A....', '..R....', '.......'],
+    ['.KRK...', '.RRR...', '.......'],
     ['.......', '..R....', '.......'],
   ],
   { R: '#b07468', A: '#d8a49a', W: '#8a6236', F: '#5c6470', K: '#1f1a16' },
 );
 
-// Perle : un canard saunier (DA, SC-3), blanc, le bec et les pattes orangés ; son râteau à sel en bois debout à côté.
+// Perle : un canard saunier (DA, SC-3), blanc, le bec et les pattes orangés ; son râteau à sel en bois debout à côté,
+// la traverse au sol, un manche de trois cubes, plus court que lui (relecture des captures).
 const PERLE = fromLayers(
   [
-    ['......', '.O.O.B', '......', '......', '......'],
+    ['.....B', '.O.O.B', '.....B', '......', '......'],
     ['......', 'WWWWWB', 'WWWWW.', 'WWWWW.', '......'],
     ['......', 'WWWWWB', 'WWWWW.', 'WWWWW.', '......'],
     ['......', 'WWWWWB', 'WWWWW.', 'WWWWW.', '.WWW..'],
-    ['.WOW..', '.WWW.B', '.WWW..', '......', '......'],
-    ['.KWK..', '.WWW.B', '.WWW..', '......', '......'],
-    ['.....B', '.....B', '.....B', '......', '......'],
+    ['.WOW..', '.WWW..', '.WWW..', '......', '......'],
+    ['.KWK..', '.WWW..', '.WWW..', '......', '......'],
   ],
   { W: '#f2efe6', O: '#e0902a', B: '#8a6236', K: '#1f1a16' },
 );
@@ -653,30 +654,34 @@ const RABOT = fromLayers(
   { G: '#5e8a3a', C: '#c0392b', T: '#a87a4a', W: '#8a6236', K: '#1f1a16' },
 );
 
-// Nectar : un colibri butineur (DA, SC-3), vert, la gorge rose, le long bec sombre qui avance, les ailes claires levées
-// de chaque côté.
+// Nectar : un colibri butineur (DA, SC-3), posé, de profil (son flanc côté y = 0, celui de la caméra de la Source) :
+// le corps vert, la gorge rose sur le devant, la petite tête et ses yeux sur les flancs, le long bec fin de deux cubes
+// brun bois qui avance ; les ailes bleu-vert levées en V au-dessus du dos, la queue derrière. Repris de zéro à la
+// relecture des captures (DA, consultant de Blocland) : plus de tête carrée de face, plus de bouche.
 const NECTAR = fromLayers(
   [
-    ['.....', '.....', '..K..', '.....', '.....', '.....', '.....'],
-    ['.....', '.....', '.GGG.', '.GGG.', '.GGG.', '..G..', '..G..'],
-    ['.....', '.PPP.', '.GGG.', '.GGG.', '.GGG.', '.....', '.....'],
-    ['.....', '.PPP.', 'VGGGV', 'VGGGV', '.GGG.', '.....', '.....'],
-    ['..K..', '.GGG.', 'VGGGV', 'VGGGV', '.....', '.....', '.....'],
-    ['.....', '.KGK.', 'VGGGV', 'VGGGV', '.....', '.....', '.....'],
+    ['........', '....B.B.', '........'],
+    ['....GGG.', '....GGG.', '....GGG.'],
+    ['...PGGG.', '...PGGGG', '...PGGG.'],
+    ['...PGGG.', '...PGGG.', '...PGGG.'],
+    ['..GG....', 'BBGG.V..', '..GG....'],
+    ['..KG....', '..GGV.V.', '..KG....'],
+    ['........', '...V...V', '........'],
   ],
-  { G: '#3a9a6a', P: '#e07aa0', V: '#a8dcc4', K: '#1f1a16' },
+  { G: '#3a9a6a', P: '#e07aa0', V: '#3f8fb8', B: '#8a6236', K: '#1f1a16' },
 );
 
-// Radar : un suricate guetteur debout (DA, SC-3), couleur sable, le ventre clair, le masque et les oreilles sombres, les
-// pattes de devant écartées ; la queue au sol, son bout sombre.
+// Radar : un suricate guetteur debout (DA, SC-3), couleur sable, le ventre clair plaqué sur le devant du corps (relecture
+// des captures : détaché devant lui, il se lisait comme un poteau), le masque et les oreilles sombres, les pattes de
+// devant écartées ; la queue au sol, son bout sombre.
 const RADAR = fromLayers(
   [
     ['.....', '.S.S.', '.....', '..S..', '..S..', '..S..'],
-    ['..C..', '.SSS.', '.SSS.', '.....', '.....', '..D..'],
-    ['..C..', '.SSS.', '.SSS.', '.....', '.....', '.....'],
-    ['..C..', '.SSS.', '.SSS.', '.....', '.....', '.....'],
-    ['S.C.S', 'SSSSS', '.SSS.', '.....', '.....', '.....'],
-    ['.....', '.SSS.', '.SSS.', '.....', '.....', '.....'],
+    ['.....', '.SCS.', '.SSS.', '.....', '.....', '..D..'],
+    ['.....', '.SCS.', '.SSS.', '.....', '.....', '.....'],
+    ['.....', '.SCS.', '.SSS.', '.....', '.....', '.....'],
+    ['S...S', 'SSCSS', '.SSS.', '.....', '.....', '.....'],
+    ['.....', '.SCS.', '.SSS.', '.....', '.....', '.....'],
     ['.SDS.', '.SSS.', '.SSS.', '.....', '.....', '.....'],
     ['.DSD.', '.SSS.', '.SSS.', '.....', '.....', '.....'],
     ['.....', '.D.D.', '.....', '.....', '.....', '.....'],
@@ -727,18 +732,17 @@ const VIRAGE = fromLayers(
   { A: '#a8845e', B: '#6e5238', P: '#e0b8a0', K: '#1f1a16' },
 );
 
-// Navette : une chenille tisseuse vert tendre (DA, SC-3), dressée, ses anneaux clairs ; à côté, sa petite navette de bois
-// et sa bobine de fil, au ras du sol.
+// Navette : une chenille tisseuse vert tendre (DA, SC-3), couchée de profil (son flanc côté y = 0) : six anneaux au sol,
+// clairs et foncés en alternance, la tête relevée de deux cubes au bout, l'œil sur le flanc, deux antennes ; devant elle,
+// au ras du sol, sa petite navette de bois et sa bobine de fil (relecture des captures : dressée, elle se lisait comme
+// une colonne). Dans le monde, tournée de flanc vers la caméra de la Ruche (`QUARTS_DE_TOUR_DE_LA_CREATURE`).
 const NAVETTE = fromLayers(
   [
-    ['......', '.VVV.W', '.LLL..', '.VVV..', '.LLL..'],
-    ['......', '.VVV.F', '.LLL..', '.VVV..', '.LLL..'],
-    ['.VVV..', '.VVV.W', '......', '......', '......'],
-    ['.VVVWW', '.VVV..', '......', '......', '......'],
-    ['.LLL..', '.LLL..', '......', '......', '......'],
-    ['.LLL..', '.LLL..', '......', '......', '......'],
-    ['.KVK..', '.VVV..', '......', '......', '......'],
-    ['......', '.V.V..', '......', '......', '......'],
+    ['.WWW.F.', 'VLVLVLV', 'VLVLVLV'],
+    ['.......', 'VLVLVLV', 'VLVLVLV'],
+    ['.......', 'K......', 'V......'],
+    ['.......', 'V......', 'V......'],
+    ['.......', 'K......', 'K......'],
   ],
   { V: '#9ac860', L: '#c8e48e', W: '#8a6236', F: '#e8e0cc', K: '#1f1a16' },
 );

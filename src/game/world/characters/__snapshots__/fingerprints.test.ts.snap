@@ -43,7 +43,7 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
   "marche": "319 4a4ff7b3",
   "mine": "241 d3def54b",
   "phare": "268 40b9051e",
-  "physics-chemistry-3e-motion-energy": "257 9795b11f",
+  "physics-chemistry-3e-motion-energy": "257 179b72e6",
   "physics-chemistry-4e-signals-circuits": "245 815a9330",
   "physics-chemistry-5e-matter-universe": "207 8adff781",
   "physics-chemistry-6e-matter-energy": "216 a2bdfa75",
@@ -53,7 +53,7 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
   "riviere": "248 2aa1c2bb",
   "studio": "278 485c007e",
   "technology-3e-digital": "274 26c8b021",
-  "technology-4e-modeling": "225 6cb9412c",
+  "technology-4e-modeling": "249 5730bbcb",
   "technology-5e-design": "220 464c81f5",
   "technology-6e-objects": "258 d3656fec",
   "textes": "318 1f141df2",
@@ -66,16 +66,16 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
 exports[`Empreintes des personnages en facettes > les fusions, archipel par archipel (tout construit) 1`] = `
 {
   "3e": {
-    "creatures": "3181 5a258f79 e4e35a7d",
-    "gardiens": "2771 ad58d2e1",
+    "creatures": "3181 45b7178b 5826a98f",
+    "gardiens": "2771 f65b834c",
   },
   "4e": {
-    "creatures": "2990 f9c29fcc d4b7c02e",
-    "gardiens": "2652 1b8d4a27",
+    "creatures": "3014 4a983f60 ee0ec2ac",
+    "gardiens": "2652 dca1b304",
   },
   "5e": {
     "creatures": "2963 3a05f06d 7ccc22cd",
-    "gardiens": "2775 cc442b45",
+    "gardiens": "2761 8ba00113",
   },
   "6e": {
     "creatures": "3635 29a10646 8b92a535",
@@ -114,7 +114,7 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "jardin": "258 1f00506c",
   "life-earth-sciences-3e-human-body": "213 2ba0210c",
   "life-earth-sciences-4e-cells-evolution": "213 61e2cc34",
-  "life-earth-sciences-5e-active-planet": "200 069fb70b",
+  "life-earth-sciences-5e-active-planet": "186 2b71a754",
   "life-earth-sciences-6e-living-world": "227 fbd8aafe",
   "manoir": "198 eb770b39",
   "marais": "265 5cb2305e",
@@ -131,7 +131,7 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "riviere": "190 08403a77",
   "studio": "262 0e836ac3",
   "technology-3e-digital": "255 5e93f67e",
-  "technology-4e-modeling": "286 c253603b",
+  "technology-4e-modeling": "286 bf9cdd79",
   "technology-5e-design": "232 b7cb387f",
   "technology-6e-objects": "209 8e58555f",
   "textes": "224 97bdbfba",

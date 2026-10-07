@@ -6,7 +6,7 @@ import type { FacettesDePersonnage, V3 } from './painted';
 import { toutConstruit } from '../budget';
 import { GRUE } from '../decor/4e';
 import { PHARES } from '../decor/lighthouse';
-import { bossIsletCenter, guardianPlacements } from '../terrain';
+import { bossIsletCenter, guardianPlacements, versLaCamera } from '../terrain';
 import { fusionDesGardiens, pointDePose } from './merges';
 import {
   allumage,
@@ -79,9 +79,14 @@ const SANS_VISAGE: BiomeId[] = ['english-5e-grammar', 'english-4e-grammar', 'eng
 const YEUX_DE_COTE: BiomeId[] = ['history-3e-twentieth-century'];
 /**
  * Les sentinelles basses : leur haut, en blocs. La Diligence, plus longue que haute (retouche du directeur artistique) ;
- * le Soleil de cuivre, sans mât (DA, LV2-4), qui repose sur son rayon du bas.
+ * le Soleil de cuivre, sans mât (DA, LV2-4), qui repose sur son rayon du bas ; la Tortue d'ocre, couchée à plat sur son
+ * rocher, plus basse que les autres (DA, relecture des captures SC-3).
  */
-const BASSES: Partial<Record<BiomeId, [number, number]>> = { 'lv2-5e-introductions': [5, 5.5], 'lv2-4e-daily-life': [5.8, 6.3] };
+const BASSES: Partial<Record<BiomeId, [number, number]>> = {
+  'lv2-5e-introductions': [5, 5.5],
+  'lv2-4e-daily-life': [5.8, 6.3],
+  'life-earth-sciences-5e-active-planet': [3.9, 4.4],
+};
 /** Les sentinelles basses plus longues que hautes. */
 const LONGUES: BiomeId[] = ['lv2-5e-introductions'];
 
@@ -254,8 +259,17 @@ describe('Les Gardiens en sentinelles', () => {
 
 describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligence)', () => {
   const tournees = BIOMES.filter((b) => STATUES[b.id].tour);
-  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche ; la Colombe d’albâtre, de trois quarts', () =>
-    expect(tournees.map((b) => b.id).sort()).toEqual(['history-3e-twentieth-century', 'lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions']));
+  it('la Diligence, et le Soleil, le Papillon de cuivre et le Grand-bi d’érable, qu’on ne doit pas voir par la tranche ; la Colombe d’albâtre, de trois quarts', () =>
+    expect(tournees.map((b) => b.id).sort()).toEqual(['history-3e-twentieth-century', 'lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions', 'technology-4e-modeling']));
+
+  it('le Grand-bi d’érable, dans le monde : la plaque de son guidon, ses yeux, face à la caméra du Bassin (DA, relecture des captures SC-3)', () => {
+    const f = sentinellePeinte('technology-4e-modeling');
+    const v = versLaCamera('technology-4e-modeling');
+    const [cx, cz] = [v[0], v[1]].map((x) => x / Math.hypot(v[0], v[1]));
+    const orbites = [...f.teintes.keys()].filter((t) => f.teintes[t] === SENTINELLE.orbite);
+    expect(orbites.length).toBeGreaterThanOrEqual(2);
+    for (const t of orbites) expect(cx * f.normals[t * 9] + cz * f.normals[t * 9 + 2]).toBeGreaterThan(0.95);
+  });
 
   it('le Soleil de cuivre, dans le monde : de face (à 33° au plus) pour la caméra du Jardin (72°), du Théâtre (20 à 42°) et du rallumage (85°) ; dans les cinq cases', () => {
     const f = sentinellePeinte('lv2-4e-daily-life');

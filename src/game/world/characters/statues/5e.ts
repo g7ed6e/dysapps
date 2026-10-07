@@ -190,37 +190,41 @@ const RACINE_DES_AILES_DU_GRIFFON: [number, number] = [0.7, 0.4];
 // nécessaire (budget de l'archipel).
 
 /**
- * La Tortue d'ocre, en tortue de mer qui grimpe sur son rocher : le rocher derrière elle, la carapace en dôme penchée
- * vers l'élève (ses écailles se voient), les nageoires posées de part et d'autre, la tête levée qui regarde l'élève.
+ * La Tortue d'ocre, en tortue de mer couchée à plat sur son rocher (DA, relecture des captures : grimpée, elle se lisait
+ * debout) : le rocher bas dessous, plus bas que la carapace ; la carapace en dôme bas et large, à peine penchée vers
+ * l'élève (moins de 20°), ses écailles sur le plat du dôme ; les quatre nageoires posées de part et d'autre ; la tête
+ * courte, vers l'avant. Une sentinelle basse, plus basse que les autres (`BASSES` des tests).
  */
 const ROCHER_DE_LA_TORTUE: Anneau[] = [
-  [1, 1.4, 1.0, 0.3],
-  [3.2, 1.15, 0.9, 0.5],
-  [5.2, 0.7, 0.6, 0.8],
+  [1, 1.75, 1.45, 0.45],
+  [1.9, 1.55, 1.3, 0.5],
+  [2.5, 1.0, 0.9, 0.55],
 ];
 /** La carapace, dans son repère : de son ventre (y = 0) au plat du dôme, le long de son dos (Y local). */
 const CARAPACE_DE_LA_TORTUE: Anneau[] = [
-  [0, 1.1, 1.45],
-  [0.35, 1.15, 1.5],
-  [0.75, 0.8, 1.05],
-  [0.9, 0.5, 0.65],
+  [0, 1.55, 1.85],
+  [0.4, 1.65, 1.95],
+  [1.2, 1.2, 1.4],
+  [1.7, 0.6, 0.75],
 ];
-/** Le milieu du ventre de la carapace, et son penché : le dos regarde l'élève, à 20° au-dessus de l'horizontale. */
-const MILIEU_DE_LA_CARAPACE: V3 = [0, 4.3, -0.15];
-const PENCHE_DE_LA_CARAPACE = Math.PI / 2 - 0.35;
+/** Le milieu du ventre de la carapace, posé sur le rocher, et son penché vers l'élève : 9°. */
+const MILIEU_DE_LA_CARAPACE: V3 = [0, 2.3, 0.3];
+const PENCHE_DE_LA_CARAPACE = 0.15;
 const repereDeLaCarapace = () => repere(MILIEU_DE_LA_CARAPACE, -PENCHE_DE_LA_CARAPACE, 0, 0);
-/** Le plat du dôme, où sont les écailles : un repère dont −Z sort du dos. */
+/** Le plat du dôme, où sont les écailles : un repère dont −Z sort du dos, vers le ciel et un peu vers l'élève. */
 const repereDesEcailles = () => {
   const h = CARAPACE_DE_LA_TORTUE[CARAPACE_DE_LA_TORTUE.length - 1][0];
-  const [s, c] = [Math.sin(0.35), Math.cos(0.35)];
-  return repere([MILIEU_DE_LA_CARAPACE[0], MILIEU_DE_LA_CARAPACE[1] + h * s, MILIEU_DE_LA_CARAPACE[2] - h * c], 0.35, 0, 0);
+  const [s, c] = [Math.sin(PENCHE_DE_LA_CARAPACE), Math.cos(PENCHE_DE_LA_CARAPACE)];
+  return repere([MILIEU_DE_LA_CARAPACE[0], MILIEU_DE_LA_CARAPACE[1] + h * c, MILIEU_DE_LA_CARAPACE[2] - h * s], Math.PI / 2 - PENCHE_DE_LA_CARAPACE, 0, 0);
 };
+/** La tête, couchée vers l'avant (−Z) : de sa base, dans la carapace, à son museau ; le rayon vertical en second. */
 const TETE_DE_LA_TORTUE: Anneau[] = [
-  [6.9, 0.4, 0.45],
-  [7.6, 0.42, 0.48],
-  [8, 0.2, 0.25],
+  [0, 0.36, 0.3],
+  [0.4, 0.38, 0.32],
+  [0.7, 0.26, 0.22],
 ];
-const Z_DE_LA_TETE_DE_LA_TORTUE = -0.75;
+const BASE_DE_LA_TETE: V3 = [0, 2.95, -1.4];
+const MUSEAU_DE_LA_TORTUE = BASE_DE_LA_TETE[2] - TETE_DE_LA_TORTUE[TETE_DE_LA_TORTUE.length - 1][0];
 
 /** Le Flamant de sel, sur une patte : le corps en œuf, le cou en S, la tête et le bec courbé vers le bas. */
 const CORPS_DU_FLAMANT: Anneau[] = [
@@ -726,28 +730,17 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
     sculpture: (T, a) => {
       fuseau(T, ROCHER_DE_LA_TORTUE, 4, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
       fuseau(pose(T, repereDeLaCarapace()), CARAPACE_DE_LA_TORTUE, 5, a.moussue((k, j) => k === 0 && j % 3 === 0));
-      // Le cou, du haut de la carapace à la tête levée.
-      tube(
-        T,
-        [
-          [0, 5.6, 0.1],
-          [0, 6.5, -0.35],
-          [0, 7.1, Z_DE_LA_TETE_DE_LA_TORTUE],
-        ],
-        [0.3, 0.28, 0.26],
-        3,
-        a.pierre,
-      );
-      fuseau(T, TETE_DE_LA_TORTUE, 4, a.pierre, { z: Z_DE_LA_TETE_DE_LA_TORTUE, bas: false });
-      // Les nageoires, plates, posées de part et d'autre : les deux grandes en haut, les deux petites en bas.
+      // La tête, couchée vers l'avant : son profil le long de −Z, sa base dans la carapace.
+      fuseau(pose(T, repere(BASE_DE_LA_TETE, -Math.PI / 2, 0, 0)), TETE_DE_LA_TORTUE, 4, a.pierre, { bas: false });
+      // Les nageoires, plates, posées sur le rocher de part et d'autre : les deux grandes devant, les deux petites derrière.
       for (const s of [-1, 1]) {
         tube(
           T,
           [
-            [s * 1.0, 4.9, -0.35],
-            [s * 2.15, 4.3, -0.2],
+            [s * 1.3, 2.5, -0.8],
+            [s * 2.35, 2.05, -1.25],
           ],
-          [0.1, 0.03],
+          [0.12, 0.03],
           3,
           a.pierre,
           3,
@@ -755,8 +748,8 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
         tube(
           T,
           [
-            [s * 0.95, 3.4, -0.3],
-            [s * 1.65, 2.75, -0.3],
+            [s * 1.2, 2.45, 1.2],
+            [s * 1.85, 2.0, 1.75],
           ],
           [0.08, 0.03],
           3,
@@ -764,7 +757,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
           3,
         );
       }
-      orbites(T, a, 0, 7.5, devant(TETE_DE_LA_TORTUE, 4, 7.5, Z_DE_LA_TETE_DE_LA_TORTUE).z, 0.2, 0.12);
+      orbites(T, a, 0, BASE_DE_LA_TETE[1] + 0.06, MUSEAU_DE_LA_TORTUE, 0.12, 0.1);
     },
     // Trois écailles sur le plat du dôme, serrées : une seule lueur.
     veines: (T, a) => {

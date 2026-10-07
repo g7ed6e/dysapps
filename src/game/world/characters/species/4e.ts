@@ -324,7 +324,7 @@ export const ESPECES_4E = {
     },
   },
   // Les habitants de sciences (SC-3) : Archipéo est en pause (2 octobre 2026), ils n'ont que le strict nécessaire, une
-  // signature chacun (budget de l'archipel). Nectar est un colibri naturaliste, Radar un suricate guetteur, Manivelle une
+  // signature chacun (budget de l'archipel). Nectar est un colibri butineur (carnet de naturaliste), Radar un suricate guetteur, Manivelle une
   // otarie maquettiste (DA, SC-3).
   'life-earth-sciences-4e-cells-evolution': {
     nom: 'Nectar',
@@ -389,9 +389,14 @@ export const ESPECES_4E = {
       for (const c of [-1, 1]) pave(pose(T, repere([c * 0.25, 0, 0.3], 0, c * 0.5, 0)), -0.08, 0, -0.05, 0.08, 0.04, 0.38, k.dom);
     },
     outil: {
-      // La coque de maquette, de bois, tenue par sa quille.
+      // La coque de maquette, de bois, tenue par sa quille ; une petite manivelle de laiton sort de son flanc, l'axe puis
+      // le bras qui monte (consultant d'Archipéo, relecture des captures : sans elle, rien ne la nommait).
       pose: [0, 0, 0],
-      dessiner: (T, k) => fuseau(pose(T, repere([0, 0.1, 0], Math.PI / 2, 0, 0)), [[-0.22, 0], [-0.1, 0.09, 0.06], [0.14, 0.1, 0.07], [0.22, 0]], 5, k.bois),
+      dessiner: (T, k) => {
+        fuseau(pose(T, repere([0, 0.1, 0], Math.PI / 2, 0, 0)), [[-0.22, 0], [-0.1, 0.09, 0.06], [0.14, 0.1, 0.07], [0.22, 0]], 5, k.bois);
+        pave(T, 0.06, 0.085, -0.015, 0.16, 0.115, 0.015, k.laiton);
+        pave(T, 0.13, 0.115, -0.015, 0.16, 0.22, 0.015, k.laiton);
+      },
     },
   },
 } satisfies Partial<Record<BiomeId, Espece>>;

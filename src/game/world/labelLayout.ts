@@ -684,6 +684,12 @@ const ESSAIS_DE_LA_RECHERCHE = 2_000;
 const RETOURS_PAR_NOM = 4;
 
 /**
+ * Combien de places la recherche d'un nom tu de moins essaie au plus par nom, pour chaque nom laissé de côté (voir
+ * `chercherToutesLesPlaces`) : au 3e, en OpenDyslexic 32 px, elle trouve en 15 essais.
+ */
+const RETOURS_D_UN_NOM_DE_MOINS = 40;
+
+/**
  * Ce que la recherche complète de la Carte (`chercherToutesLesPlaces`) dépense pendant le placement d'un cadrage, à
  * partager entre tous les placements de ce cadrage (`VueDesEtiquettes.recherche`) : `essais`, les places essayées, sous
  * un seul plafond (`ESSAIS_DE_LA_RECHERCHE`) ; `places`, les places dont on a vérifié qu'elles tiennent (`tientSeule`) ; `deja`, ce que
@@ -899,8 +905,31 @@ function chercherToutesLesPlaces(d: DemandeDeRecherche): void {
   if (voulue) ajouter(voulue.i, voulue.at);
   if (destination !== undefined && ici) ajouter(destination, ici);
   const une = essayer(large, Infinity);
-  // Rien qui montre tous les noms (ou le plafond du cadrage atteint) : rien ne change, et l'échec est retenu.
-  if (!une) return appliquer(null);
+  if (!une) {
+    // Rien qui montre tous les noms : un nom tu de moins vaut mieux que rien (référent dys, SC-3 : au 3e, en OpenDyslexic
+    // 32 px, le Kiosque des témoins, le Plateau des territoires et l'Observatoire des données se taisaient ensemble,
+    // faute d'une place pour les trois). Chaque nom tu, celui qui a le moins de places d'abord, est laissé de côté à son
+    // tour ; les autres se cherchent une place ensemble, celles sous leur île d'abord (la Carte laisse de la place en bas,
+    // sous les îles, et la recherche par la plus proche s'y perdait en centaines de milliers d'essais), en
+    // `RETOURS_D_UN_NOM_DE_MOINS` places essayées au plus par nom, à part du plafond du cadrage (les placements suivants du
+    // même cadrage gardent leurs essais). Seulement quand deux noms au moins se taisent : laisser de côté le seul nom tu
+    // ne montrerait rien de plus. Sinon, rien ne change, et l'échec est retenu.
+    const aLaisser = tus.filter((i) => !fixables.has(i)).sort((i, j) => placesDe(i).length - placesDe(j).length || i - j);
+    if (aLaisser.length < 2) return appliquer(null);
+    const tous = noms;
+    const essais = recherche.essais;
+    let trouvees: Map<number, LabelBox> | null = null;
+    for (const k of aLaisser) {
+      noms = tous.filter((i) => i !== k);
+      const parLeBas = new Map(noms.map((i) => [i, [...(large.get(i) ?? placesDe(i))].sort((p, q) => q.y - p.y)]));
+      recherche.essais = 0;
+      trouvees = essayer(parLeBas, RETOURS_D_UN_NOM_DE_MOINS);
+      if (trouvees) break;
+    }
+    noms = tous;
+    recherche.essais = essais;
+    return appliquer(trouvees ? [...trouvees] : null);
+  }
   const contraintes: Map<number, LabelBox[]>[] = [];
   if (voulue) contraintes.push(new Map([[voulue.i, [voulue.at]]]));
   if (destination !== undefined && ici) {

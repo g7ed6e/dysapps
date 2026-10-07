@@ -22,6 +22,8 @@ const REED = '#8fae4f';
 export const CRYSTAL = '#5cd0c8';
 const FLOWERS = ['#e8557a', '#f2c14e', '#f7f2e8', '#b56cd8'];
 const MUSHROOM = '#d9453f';
+/** La paille foncée d'un anneau sur deux de la ruche de la Ruche des réseaux (3e). */
+const SKEP = '#c49a48';
 
 /**
  * Pose un cube ; `decor` nomme l'élément de décor dont il fait partie (un arbre, un buisson, un repère…), « genre@x,y »,
@@ -412,11 +414,12 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(9, 3, h(9, 3) + 3, BLOCKS[BLOC.tuile].side);
   },
   'life-earth-sciences-3e-human-body': (put, h) => {
-    // Un arbre fruitier : deux fruits rouges pendus sous le feuillage.
-    const base = h(9, 3);
-    tree(put, 9, 3, base, 2);
-    put(10, 2, base + 2, MUSHROOM, 'arbre@9,3');
-    put(8, 4, base + 2, MUSHROOM, 'arbre@9,3');
+    // Un arbre fruitier : deux fruits rouges pendus sous le feuillage. Trois cases à gauche de l'axe qui va de la caméra à
+    // la porte de l'infirmerie, qu'il cachait (DA, relecture des captures).
+    const base = h(6, 3);
+    tree(put, 6, 3, base, 2);
+    put(7, 2, base + 2, MUSHROOM, 'arbre@6,3');
+    put(5, 4, base + 2, MUSHROOM, 'arbre@6,3');
   },
   'physics-chemistry-3e-motion-energy': (put, h) => {
     // Un plan incliné de deux marches, une balle au pied.
@@ -426,9 +429,20 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(9, 3, h(9, 3) + 1, FLOWERS[0]);
   },
   'technology-3e-digital': (put, h) => {
-    // Une ruche de paille : deux cubes de paille l'un sur l'autre.
-    put(9, 3, h(9, 3) + 1, HAY);
-    put(9, 3, h(9, 3) + 2, HAY);
+    // Une ruche de paille en dôme, sans abeille (DA, relecture des captures : deux cubes faisaient une colonne lisse) :
+    // trois anneaux de paille qui rétrécissent, clair, foncé, clair (la base de 3 × 3, la croix, le sommet d'un cube) ;
+    // l'entrée sombre en bas, du côté de la caméra de l'île (l'est).
+    const base = h(9, 3);
+    for (let x = 8; x <= 10; x++) for (let y = 2; y <= 4; y++) put(x, y, base + 1, x === 10 && y === 3 ? DARK : HAY);
+    for (const [x, y] of [
+      [9, 3],
+      [8, 3],
+      [10, 3],
+      [9, 2],
+      [9, 4],
+    ])
+      put(x, y, base + 2, SKEP);
+    put(9, 3, base + 3, HAY);
   },
   'english-5e-vocabulary': (put, h) => {
     // Un étal : deux poteaux, un auvent de tuiles, une caisse de bois devant ; une pile de tuiles au sol.

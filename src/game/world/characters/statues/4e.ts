@@ -169,6 +169,13 @@ const POTEAUX_DU_PORTIQUE = 1.35;
 const BAS_DE_LA_POUTRE = 6.95;
 const LAMPE = { x: 2.12, z: -0.3, bas: 7.12, haut: 7.6 } as const;
 
+/**
+ * Le tour du Grand-bi (DA, relecture des captures SC-3) : dessiné de profil face à −Z, il se voyait par la tranche depuis
+ * l'est, d'où le regardent la caméra du Bassin (0,72 ; −0,16, `viewYaw` −32°) et celle qui glisse vers lui au rallumage ;
+ * tourné vers elles comme la Diligence, sa grande roue et ses rayons de face. Au défi, sa caméra de trois quarts
+ * (Guardians.tsx, `cameraDirection` [−0,55 ; −0,85]) le voit déjà de face : il y reste droit.
+ */
+const TOURS_DU_GRAND_BI = { monde: deFacePour(0.72, -0.16), defi: 0 };
 /** Le Grand-bi d'érable, de profil face à l'élève : la grande roue (centre, rayon), la petite roue derrière. */
 const GRANDE_ROUE = { x: -0.05, y: 3.45, r: 2.3, epaisseur: 0.1 } as const;
 const PETITE_ROUE = { x: 1.9, y: 1.55, r: 0.45 } as const;
@@ -624,6 +631,7 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
   'technology-4e-modeling': {
     nom: 'le Grand-bi d’érable',
     allume: 'les rayons de sa roue',
+    tour: TOURS_DU_GRAND_BI,
     sculpture: (T, a) => {
       anneau(T, [GRANDE_ROUE.x, GRANDE_ROUE.y, 0], GRANDE_ROUE.r, GRANDE_ROUE.epaisseur, a.pierre, [0, 0, 0], 10, 3);
       anneau(T, [PETITE_ROUE.x, PETITE_ROUE.y, 0], PETITE_ROUE.r, GRANDE_ROUE.epaisseur, a.pierre, [0, 0, 0], 6, 3);

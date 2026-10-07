@@ -250,11 +250,11 @@ const ETATS = { blocland: 'Bâtie', archipeo: 'Restaurée' };
  */
 const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
   '5e:lv2-5e-introductions': ['geography-5e-resources'],
-  // Depuis les îles de sciences (SC-3), mesurés : au 4e vers l'Escale, l'Imprimerie ; au 3e, le Refuge (avancé à hauteur
-  // du Château), vers les Fonctions et vers l'Observatoire des textes.
+  // Depuis les îles de sciences (SC-3), mesurés : au 4e vers l'Escale, l'Imprimerie ; au 3e, vers le Plateau, la Ruche.
+  // En portrait, les îles glissent au milieu de la place quand elles y tiennent (`cadrageDeLaCarte`, référent dys, SC-3) :
+  // le Refuge, qui se taisait vers les Fonctions et vers l'Observatoire des textes, garde son nom.
   '4e:geography-4e-globalization': ['history-4e-revolutions'],
-  '3e:maths-3e-functions': ['lv2-3e-travel'],
-  '3e:french-3e-close-reading': ['lv2-3e-travel'],
+  '3e:geography-3e-france': ['technology-3e-digital'],
 };
 
 /**
@@ -265,7 +265,9 @@ const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
  */
 const TUS_EN_OD32: Record<string, string[]> = {
   'history-6e-antiquity': ['french-6e-letter-confusion', 'english-6e-grammar', 'geography-6e-living'],
-  'french-6e-phonology': ['history-6e-antiquity', 'life-earth-sciences-6e-living-world'],
+  // (Deux noms tus avant qu'un nom tu de moins vaille mieux que rien, `chercherToutesLesPlaces`, SC-3 : la Vallée du
+  // vivant retrouve le sien.)
+  'french-6e-phonology': ['history-6e-antiquity'],
 };
 
 /**
@@ -328,13 +330,13 @@ const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string,
 /**
  * Le téléphone 390 × 844, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX UI). La
  * Carte y cadre la destination (la Forêt des sons) : sept îles se voient avec leur nom, sept autres sont hors du cadre,
- * la Fouille comprise. Un seul nom se tait, en bas à droite, au bord de l'écran : le Volcan des décimaux ; dans la page,
- * le bonhomme sur la Forêt, c'est son voisin le Hangar des inventions (les noms du test, un peu plus larges, laissent
- * l'autre se taire). Le même nombre avant la règle du médaillon (preview, 161ded36) et après.
+ * la Fouille comprise. Un seul nom se tait, en bas à droite, au bord de l'écran : le Hangar des inventions (le Volcan des
+ * décimaux jusqu'à SC-3 : les îles glissent depuis au milieu de la place, en hauteur, quand elles y tiennent,
+ * `cadrageDeLaCarte`). Le même nombre avant la règle du médaillon (preview, 161ded36) et après.
  */
 const TUS_AU_TELEPHONE: Record<string, string[]> = {
-  'history-6e-antiquity': ['maths-6e-decimals'],
-  'french-6e-phonology': ['maths-6e-decimals'],
+  'history-6e-antiquity': ['technology-6e-objects'],
+  'french-6e-phonology': ['technology-6e-objects'],
 };
 
 /** La destination que le jeu donne au village tout construit, le bonhomme sur l'île `ici` (`nextDestination`). */
@@ -548,4 +550,25 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     },
     60_000,
   );
+
+  it('3e, le bonhomme sur le Verger de la santé (les captures de SC-3), deux univers : en OpenDyslexic 32 px sur la tablette, un nom tu au plus ; en portrait 800 × 1280, chaque île dans le cadre avec son nom (référent dys, SC-3)', () => {
+    const ici: BiomeId = 'life-earth-sciences-3e-human-body';
+    const destination = destinationDuJeu(ici);
+    for (const [univers, mot] of Object.entries(ETATS)) {
+      // Le Kiosque des témoins, le Plateau des territoires et l'Observatoire des données s'y taisaient ensemble : faute
+      // de place pour les trois, l'Observatoire des données seul se tait (`chercherToutesLesPlaces`, un nom tu de moins).
+      const od = laCarte('3e', mot, 'opendyslexic', CHASSE_OD32, destination, true, TABLETTE_OD32, ici);
+      expect(od.tus, `${univers}, OpenDyslexic 32 px`).toEqual(['maths-3e-statistics']);
+      for (const m of od.montrees) {
+        expect(m.x - m.w / 2, m.id).toBeGreaterThanOrEqual(0);
+        expect(m.x + m.w / 2, m.id).toBeLessThanOrEqual(TABLETTE_OD32.taille.w);
+        for (const z of [...TABLETTE_OD32.zones, od.fanion]) expect(couvre(m, z), `${univers}, ${m.id}`).toBe(false);
+      }
+      // En portrait, la Ruche des réseaux et le Refuge des carnets sortaient à gauche, 450 px vides en haut : les îles
+      // glissent au milieu de la place (`cadrageDeLaCarte`).
+      const debout = laCarte('3e', mot, 'atkinson-hyperlegible', 1, destination, true, PORTRAIT_800, ici);
+      expect(debout.tus, `${univers}, 800 × 1280`).toEqual([]);
+      expect(debout.vues.length, `${univers}, 800 × 1280`).toBe(islandsOf('3e').length);
+    }
+  }, 60_000);
 });

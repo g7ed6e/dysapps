@@ -771,22 +771,27 @@ const AUTOMATE = fromLayers(
 );
 
 // La Tortue d'ocre (DA, SC-3) : une tortue terrestre géante debout sur ses quatre pattes, la tête levée au bout d'un cou
-// en marches ; la carapace en dôme, ses écailles carrées d'ocre cernées de brun ; la tête et les pattes olive. Quatre
-// couleurs, les yeux compris.
+// en marches ; la carapace en dôme, en damier d'écailles : des carrés d'ocre de 2 × 2 dans une grille brune, vus d'en
+// haut comme de face (retouche du DA et du consultant de Blocland : des bandes la faisaient tonneau). Le bas du dôme,
+// brun, la cerne. La tête et les pattes olive. Quatre couleurs, les yeux compris.
+const OCRE = '#c8913a';
+const CERNE = '#7a5230';
+/** Une case de la carapace : brune sur les lignes de la grille (tous les trois cubes, en x et en y) et au bas du dôme. */
+const ecaille = (c: CubeDeModele): string => (c.z === 2 || c.x % 3 === 0 || (c.y - 2) % 3 === 0 ? CERNE : OCRE);
 const TORTUE = fromLayers(
   [
     ['.........', '.........', 'VV.....VV', 'VV.....VV', '.........', '.........', 'VV.....VV', 'VV.....VV'],
     ['.........', '.........', 'VV.....VV', 'VV.....VV', '.........', '.........', 'VV.....VV', 'VV.....VV'],
-    ['.........', '.........', 'BBBBBBBBB', 'BBBBBBBBB', 'BBBBBBBBB', 'BBBBBBBBB', 'BBBBBBBBB', 'BBBBBBBBB'],
-    ['.........', '....V....', 'OBOOBOOBO', 'OBOOBOOBO', 'OBOOBOOBO', 'OBOOBOOBO', 'OBOOBOOBO', 'OBOOBOOBO'],
-    ['.........', '....V....', '.BOOBOOB.', '.BOOBOOB.', '.BOOBOOB.', '.BOOBOOB.', '.BOOBOOB.', '.BOOBOOB.'],
-    ['....V....', '.........', '.........', '..BOBOB..', '..BOBOB..', '..BOBOB..', '..BOBOB..', '..BOBOB..'],
-    ['....V....', '.........', '.........', '.........', '...OBO...', '...OBO...', '...OBO...', '.........'],
+    ['.........', '.........', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS'],
+    ['.........', '....V....', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS'],
+    ['.........', '....V....', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.'],
+    ['....V....', '.........', '.........', '..SSSSS..', '..SSSSS..', '..SSSSS..', '..SSSSS..', '..SSSSS..'],
+    ['....V....', '.........', '.........', '.........', '...SSS...', '...SSS...', '...SSS...', '.........'],
     ['...VVV...', '...VVV...', '.........', '.........', '.........', '.........', '.........', '.........'],
     ['...KVK...', '...VVV...', '.........', '.........', '.........', '.........', '.........', '.........'],
   ],
-  { O: '#c8913a', B: '#7a5230', V: '#7d8a4a', K: '#1f1a16' },
-);
+  { S: OCRE, V: '#7d8a4a', K: '#1f1a16' },
+).map((c) => (c.color === OCRE ? { ...c, color: ecaille(c) } : c));
 
 // Le Flamant de sel (DA, SC-3) : debout sur une patte, l'autre repliée sous lui, le cou en S ; le corps rose pâle, les
 // ailes rose vif sur ses flancs, leurs pointes relevées derrière ; le bec crème courbé vers le bas, son bout noir ; douze
@@ -811,6 +816,7 @@ const FLAMANT = fromLayers(
 
 // Le Cheval à bascule (DA, SC-3) : de profil, ses patins courbes en marches ; la robe crème semée de taches rouges, la
 // crinière et la queue brunes (le bois des patins), la selle bleue ; onze cubes de haut. Cinq couleurs, l'œil compris.
+// Dans le monde, tourné de flanc vers la caméra de la Menuiserie (`QUARTS_DE_TOUR_DU_GARDIEN`), ses patins vus.
 const CHEVAL_A_BASCULE = fromLayers(
   [
     ['..MMMMM..', '.........', '..MMMMM..'],
@@ -828,8 +834,10 @@ const CHEVAL_A_BASCULE = fromLayers(
   { W: '#efe2c4', T: '#c0463a', M: '#6b4a2e', S: '#3f6aa8', K: '#1f1a16' },
 );
 
-// La Girafe d'ambre (DA, SC-3) : debout, de profil, le cou de 2 × 2 en pile, treize cubes de haut ; le fond crème
-// semé de taches carrées d'ambre ; les sabots, la queue et les ossicônes brun sombre. Quatre couleurs, l'œil compris.
+// La Girafe d'ambre (DA, SC-3) : debout, de profil, le cou de 2 × 2 en pile, onze cubes de haut, comme les plus grands
+// des autres Gardiens (relecture des captures : à treize, sa tête et son cou emplissaient le premier plan de la vue de
+// la Source) ; le fond crème semé de taches carrées d'ambre ; les sabots, la queue et les ossicônes brun sombre. Quatre
+// couleurs, l'œil compris.
 const GIRAFE = fromLayers(
   [
     ['.D..D...', '.D..D...'],
@@ -841,8 +849,6 @@ const GIRAFE = fromLayers(
     ['CCCACC..', 'CCCACC..'],
     ['....CA..', '....CA..'],
     ['....AC..', '....AC..'],
-    ['....CC..', '....CC..'],
-    ['....CA..', '....CA..'],
     ['....CCKC', '....CCCC'],
     ['....D...', '....D...'],
   ],
@@ -872,7 +878,8 @@ const CLOCHE = fromLayers(
 
 // Le Grand-bi d'érable (DA, SC-3) : de profil, la grande roue avant en anneau de neuf cubes et ses rayons, la petite roue
 // arrière ; les roues rouge érable, le cadre et les rayons brun sombre, la selle crème, deux yeux sur la plaque crème du
-// guidon. Onze de haut ; onze de large (la grande roue et la petite, de profil), dans son îlot.
+// guidon. Onze de haut ; onze de large (la grande roue et la petite, de profil), dans son îlot. Dans le monde, tourné de
+// flanc vers la caméra du Bassin (`QUARTS_DE_TOUR_DU_GARDIEN`) : la grande roue et ses rayons de face.
 const GRAND_BI = fromLayers(
   [
     ['...........', '..RRRRR.RRR', '...........'],
@@ -928,17 +935,19 @@ const KANGOUROU = fromLayers(
 );
 
 // L'Abeille de topaze (DA, SC-3) : posée, de profil, sur six pattes ; les rayures topaze et brunes, deux paires d'ailes
-// claires levées, leurs cases cernées de gris, deux antennes. Sans dard. Cinq couleurs, l'œil compris.
+// levées, leurs cases très claires, le gris seulement pour leur cerne (relecture des captures), deux antennes. Sans
+// dard. Cinq couleurs, l'œil compris. Dans le monde, tournée de flanc vers la caméra de la Ruche
+// (`QUARTS_DE_TOUR_DU_GARDIEN`).
 const ABEILLE = fromLayers(
   [
     ['........', '..B.B.B.', '........', '..B.B.B.'],
     ['........', '.BTBTBTB', '.BTBTBTB', '.BTBTBTB'],
     ['........', 'BBTBTBTB', 'BBTBTBTB', 'BBTBTBTB'],
     ['........', 'KBTBTBTB', 'BBTBTBTB', 'BBTBTBTB'],
-    ['........', 'BBGGGGG.', 'BB......', 'BBGGGGG.'],
-    ['........', 'B.GAAGAG', '........', 'B.GAAGAG'],
-    ['........', 'BGAAG.GG', '........', 'BGAAG.GG'],
-    ['........', '..GG....', '........', '..GG....'],
+    ['........', 'BBAAAAA.', 'BB......', 'BBAAAAA.'],
+    ['........', 'BGAAGAAG', '........', 'BGAAGAAG'],
+    ['........', '.GAG.GAG', '........', '.GAG.GAG'],
+    ['........', '..G...G.', '........', '..G...G.'],
   ],
   { T: '#e0a83a', B: '#5a3c1e', A: '#eef4f2', G: '#8e989c', K: '#1f1a16' },
 );

@@ -382,9 +382,21 @@ export const ESPECES_3E = {
       pointe(T, [0, 0.8, 0.3], 0.07, 0.5, k.marque, [2.4, 0, 0], 3);
     },
     outil: {
-      // Le chronomètre de laiton.
+      // Une balle de cuir (consultant d'Archipéo, relecture des captures : un chronomètre disait la course contre la
+      // montre, DP-12) ; autant de facettes que lui.
       pose: [0, 0, 0],
-      dessiner: (T, k) => disque(pose(T, repere([0, 0.05, 0], Math.PI / 2, 0, 0)), 0, 0.1, 0.04, k.laiton, 6),
+      dessiner: (T, k) =>
+        fuseau(
+          T,
+          [
+            [-0.13, 0],
+            [-0.065, 0.113],
+            [0.065, 0.113],
+            [0.13, 0],
+          ],
+          5,
+          k.cuir,
+        ),
     },
   },
   'technology-3e-digital': {

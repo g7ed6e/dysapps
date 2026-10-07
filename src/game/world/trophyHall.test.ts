@@ -182,7 +182,7 @@ describe('La salle des trophées (GD-3)', () => {
   });
 
   it('au Marché des proportions, Bazar tourne d’un quart, le visage du côté de la caméra (x croissants), pour tenir derrière la salle ; son Gardien ne tourne pas', () => {
-    expect(QUARTS_DE_TOUR_DE_LA_CREATURE).toEqual({ 'maths-5e-proportionality': 1 });
+    expect(QUARTS_DE_TOUR_DE_LA_CREATURE['maths-5e-proportionality']).toBe(1);
     expect(QUARTS_DE_TOUR['maths-5e-proportionality']).toBeUndefined();
     expect(gardienDuMonde('maths-5e-proportionality')).toEqual(GUARDIAN_CUBES['maths-5e-proportionality']);
     const tournee = creatureDuMonde('maths-5e-proportionality');

@@ -43,7 +43,12 @@ export const QUARTS_DE_TOUR: Partial<Record<BiomeId, number>> = { 'lv2-3e-travel
  * 3e) n'est pas tournée : la caméra de son île pivote à fond vers l'est (`viewYaw`, −40°) et la regarde déjà de profil ;
  * un quart de tour la lui montrerait de face (voir `JALON`, ../characters/creatures.ts).
  */
-export const QUARTS_DE_TOUR_DE_LA_CREATURE: Partial<Record<BiomeId, number>> = { 'maths-5e-proportionality': 1 };
+export const QUARTS_DE_TOUR_DE_LA_CREATURE: Partial<Record<BiomeId, number>> = {
+  'maths-5e-proportionality': 1,
+  // Navette, couchée de profil (SC-3) : la caméra de la Ruche regarde de l'est (`viewYaw`, −40°) ; tournée, elle lui
+  // montre son flanc et ses anneaux, pas sa tête de face.
+  'technology-3e-digital': 1,
+};
 
 function tourner(cubes: CubeDeModele[], quarts = 0): CubeDeModele[] {
   let out = cubes;
@@ -60,7 +65,16 @@ function tourner(cubes: CubeDeModele[], quarts = 0): CubeDeModele[] {
  * trois quarts de tour, elle montre son flanc, la tête vers l'ouest, l'œil, le bec et le rameau du côté de la caméra
  * (DA, relecture des planches, HG-3).
  */
-const QUARTS_DE_TOUR_DU_GARDIEN: Partial<Record<BiomeId, number>> = { 'history-3e-twentieth-century': 3 };
+const QUARTS_DE_TOUR_DU_GARDIEN: Partial<Record<BiomeId, number>> = {
+  'history-3e-twentieth-century': 3,
+  // À la Menuiserie, au Bassin et à la Ruche (SC-3), la caméra de l'île regarde de l'est (`viewYaw`, −32 à −40°) : de
+  // face, le Cheval à bascule, le Grand-bi et l'Abeille se voyaient par la tranche ou de dos ; tournés d'un quart de
+  // tour, ils lui montrent leur flanc, l'œil de son côté (DA et consultant de Blocland, relecture des captures ; même
+  // règle que la Colombe d'albâtre).
+  'technology-5e-design': 1,
+  'technology-4e-modeling': 1,
+  'technology-3e-digital': 1,
+};
 
 const personnagesTournes = new Map<string, CubeDeModele[]>();
 
