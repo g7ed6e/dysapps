@@ -9,6 +9,13 @@
 export const SEUIL_DU_GLISSE = 10;
 
 /**
+ * En pixels CSS : le glissé du choix, dans le mode « Aménager » (GD-9, choix 1b du mainteneur), ne part qu'au-delà,
+ * plus loin que celui de la Carte : un doigt qui retouche le choix pour le lâcher et bouge un peu ne le pose pas
+ * ailleurs. Entre les deux seuils, rien ne bouge encore, ni le choix, ni la Carte.
+ */
+export const SEUIL_DU_CHOIX = 24;
+
+/**
  * La marque d'un appui relayé à la scène par un bouton posé par-dessus (la poignée d'un bout de liaison,
  * ArrangeHandles.tsx) : le doigt y est parti en glissé, la vue glisse avec lui, et le lever n'ouvre rien.
  */
@@ -26,6 +33,22 @@ export interface Etendue {
   maxX: number;
   minY: number;
   maxY: number;
+}
+
+/**
+ * Dans le mode « Aménager », un choix en cours : qui glisse sous un doigt parti de l'appui de (dx, dy) ? Parti d'ailleurs
+ * que du choix, la Carte, dès `SEUIL_DU_GLISSE` ; parti du choix, le choix, au-delà de `SEUIL_DU_CHOIX` seulement ; d'ici
+ * là, rien (`attendre`).
+ */
+export function quiGlisse(dx: number, dy: number, partiDuChoix: boolean): 'attendre' | 'carte' | 'choix' {
+  if (!glisseCommence(dx, dy)) return 'attendre';
+  if (!partiDuChoix) return 'carte';
+  return choixCommence(dx, dy) ? 'choix' : 'attendre';
+}
+
+/** Le doigt a assez bougé depuis l'appui pour glisser le choix du mode « Aménager » (`SEUIL_DU_CHOIX`). */
+export function choixCommence(dx: number, dy: number): boolean {
+  return Math.hypot(dx, dy) >= SEUIL_DU_CHOIX;
 }
 
 /** Le doigt a assez bougé depuis l'appui pour que ce soit un glissé. */

@@ -84,6 +84,10 @@ const MID = {
   },
   progress: { xp: 1450, totalAnswers: 310, correctAnswers: 250, sessionsCompleted: 28, structuresCompleted: 6, challengesWon: 2, bestStreak: 9, badges: badges(9) },
 };
+/** Au milieu des Premiers Rivages, le Gardien de la Rivière des fractions détaché de son lieu, au sud (choix 4a), */
+const DETACHE = { '6e': { guardians: { 'maths-6e-fractions': { side: 'front', step: 0, turn: 0, spot: { x: 34, y: 2 } } } } };
+/** et le bonhomme sur la Rivière des fractions, dont le Gardien est prêt. */
+const MID_FRACTIONS_DETACHE = { ...MID, game: { ...MID.game, world: { ...MID.game.world, layout: DETACHE, place: 'maths-6e-fractions' } } };
 /** Les Premiers Rivages reconstruits : tout est ouvert et bâti, le navire a pris la mer. */
 const DONE6 = {
   game: {
@@ -150,6 +154,21 @@ const SHOTS = [
   // puis l'arrivée d'un bout choisie par sa poignée, les flèches autour d'elle.
   { name: 'amenager-bouts', state: MID, go: '/adventure/map', act: amenagerOuvrir },
   { name: 'amenager-arrivee', state: MID, go: '/adventure/map', act: amenagerUnBout },
+  // Choix 1b du mainteneur (7 octobre 2026) : le lieu glissé au doigt, tenu sur une place libre (la grille sur l'eau,
+  // l'empreinte jaune sur son socle), puis sur une place prise (les cases grises barrées) ; et un Gardien posé au plus
+  // loin au sud de son lieu, son lieu choisi (la ligne en pointillés entre eux, choix 4a).
+  { name: 'amenager-glisse', state: MID, go: '/adventure/map', act: amenagerGlisse('maths-6e-fractions'), surDemande: true },
+  { name: 'amenager-glisse-prise', state: MID, go: '/adventure/map', act: amenagerGlisse('maths-6e-fractions', { cherche: 'prise' }), surDemande: true },
+  // Une place prise pendant le glissé, en grand texte, en tablette et au téléphone : la ligne du haut et l'empreinte.
+  { name: 'tablette-amenager-glisse-prise-grand-texte', state: MID, go: '/adventure/map', settings: { fontSize: 28 }, act: amenagerGlisse('maths-6e-fractions', { cherche: 'prise' }), surDemande: true },
+  { name: 'telephone-amenager-glisse-prise-grand-texte', state: MID, go: '/adventure/map', size: PHONE, settings: { fontSize: 28 }, act: amenagerGlisse('maths-6e-fractions', { cherche: 'prise' }), surDemande: true },
+  { name: 'amenager-gardien-detache', state: MID, go: '/adventure/map', act: amenagerGlisse('maths-6e-fractions', { gardien: true, cherche: 'loin', directions: [[0, -1]], poser: true }), surDemande: true },
+  // Le glissé en tablette portrait et au téléphone ; la fiche du Gardien détaché en grand texte ; un Gardien détaché prêt,
+  // le bonhomme sur son lieu (sa bulle reste visible, au bord de l'écran si son îlot est hors de vue).
+  { name: 'tablette-portrait-amenager-glisse', state: MID, go: '/adventure/map', size: { width: 800, height: 1280 }, act: amenagerGlisse('maths-6e-fractions'), surDemande: true },
+  { name: 'telephone-amenager-glisse', state: MID, go: '/adventure/map', size: PHONE, act: amenagerGlisse('maths-6e-fractions'), surDemande: true },
+  { name: 'fiche-gardien-detache', state: MID_FRACTIONS_DETACHE, go: '/adventure', settings: { fontSize: 28 }, act: sansBandeau(ouvrirLaFiche({ genre: 'gardien', id: 'maths-6e-fractions' })), surDemande: true },
+  { name: 'bulle-gardien-detache', state: MID_FRACTIONS_DETACHE, go: '/adventure', act: sansBandeau(attendre(500)), surDemande: true },
   // Choix 3 : une flèche mène le fantôme d'un cran sur une place prise : la croix grise, « Place prise », Poser éteint.
   { name: 'amenager-place-prise', state: MID, go: '/adventure/map', act: amenagerPlacePrise('maths-6e-fractions', ['Est', 'Nord', 'Ouest', 'Sud']) },
   // La même de nuit, pour relire le contraste de la croix sur l'eau.
@@ -244,6 +263,12 @@ SHOTS.push(
   { ...archipeo({ base: 'reunir', name: 'archipeo-reunir' }), surDemande: true },
   // « Modifier le plan » ouvert dans Archipéo, la Rivière des fractions choisie : son nom sur son fantôme, une fois.
   { ...archipeo({ base: 'amenager', name: 'archipeo-modifier-le-plan' }), surDemande: true },
+  // Le lieu glissé au doigt dans Archipéo (choix 1b) : la grille et l'empreinte aux couleurs peintes.
+  { ...archipeo({ base: 'amenager-glisse', name: 'archipeo-amenager-glisse' }), surDemande: true },
+  { ...archipeo({ base: 'amenager-glisse-prise', name: 'archipeo-amenager-glisse-prise' }), surDemande: true },
+  { ...archipeo({ base: 'amenager-glisse-prise', name: 'archipeo-amenager-glisse-prise-nuit' }), nuit: true, surDemande: true },
+  { ...archipeo({ base: 'amenager-gardien-detache', name: 'archipeo-amenager-gardien-detache' }), surDemande: true },
+  { ...archipeo({ base: 'amenager-gardien-detache', name: 'archipeo-amenager-gardien-detache-nuit' }), nuit: true, surDemande: true },
   // Le plan sans choix (les radeaux Brume des bouts) et une place prise (la croix grise), de jour et de nuit.
   { ...archipeo({ base: 'amenager-bouts', name: 'archipeo-amenager-bouts' }), surDemande: true },
   { ...archipeo({ base: 'amenager-bouts', name: 'archipeo-amenager-bouts-nuit' }), nuit: true, surDemande: true },
@@ -348,6 +373,51 @@ function amenagerPlacePrise(ile, fleches) {
     await page.waitForTimeout(2500);
   };
 }
+/**
+ * Choix 1b du mainteneur (7 octobre 2026) : choisit un lieu (ou son Gardien), le prend au doigt et le glisse, cran par
+ * cran dans chaque direction de `directions`, jusqu'à une place libre (au moins `loin` crans), prise (`cherche`), ou la
+ * place libre la plus lointaine (`cherche: 'loin'`) ; le doigt reste posé : la grille et l'empreinte se voient.
+ * `poser` : lever le doigt là (le lieu ou le Gardien s'y pose), puis `puis` : choisir le lieu (`'lieu'`, la ligne en
+ * pointillés vers son Gardien détaché) ou le Gardien (`'gardien'`). Le glissé
+ * passe par `window.__dysappsGlisser`, comme un vrai doigt sur le choix.
+ */
+function amenagerGlisse(ile, { gardien = false, cherche = 'libre', loin = 2, directions = [[1, 0], [0, 1], [-1, 0], [0, -1]], poser = false, puis = 'lieu' } = {}) {
+  return async (page) => {
+    await fermerLesBandeaux(page);
+    await page.getByRole('button', { name: /^Modifier le plan/ }).click();
+    await page.waitForTimeout(500);
+    await fermerLesBandeaux(page);
+    const rester = page.getByRole('button', { name: /Rester sur la Carte/ });
+    if (await rester.count()) await rester.click();
+    const choisir = (g) => page.evaluate(({ ile, g }) => window.__dysappsAmenager?.(g ? { genre: 'creature', id: ile, gardien: true } : { genre: 'ile', id: ile }), { ile, g });
+    await choisir(gardien);
+    await page.waitForTimeout(800);
+    await page.evaluate(({ ile, gardien }) => window.__dysappsGlisser?.().prendre({ x: 0, y: 0 }, gardien ? { gardien: ile } : { lieu: ile }), { ile, gardien });
+    const suivre = (p) => page.evaluate((p) => window.__dysappsGlisser?.().suivre(p), p);
+    let plusLoin = null;
+    trouve: for (const [dx, dy] of directions) {
+      for (let k = 1; k <= 14; k++) {
+        await suivre({ x: dx * 4 * k, y: dy * 4 * k });
+        await page.waitForTimeout(250);
+        const ligne = (await page.locator('.arrange-signes').textContent()) ?? '';
+        const prise = ligne.includes('Place prise');
+        if (cherche === 'loin' && !prise) plusLoin = { x: dx * 4 * k, y: dy * 4 * k };
+        if (cherche === 'prise' ? prise : cherche === 'libre' && !prise && k >= loin) break trouve;
+      }
+    }
+    if (plusLoin) await suivre(plusLoin);
+    if (poser) {
+      await page.evaluate(() => window.__dysappsGlisser?.().lacher(true));
+      // L'heure de la page est figée : la minuterie de la descente (un cube, avec le « clac ») ne part qu'en la faisant avancer.
+      await page.clock.runFor(400);
+      await page.waitForTimeout(1500);
+      if (puis === 'lieu') await choisir(false);
+      else if (puis === 'gardien') await choisir(true);
+      await page.waitForTimeout(1000);
+    }
+    await page.waitForTimeout(2500);
+  };
+}
 /** Ouvre le mode « Aménager » sur la Carte et choisit un lieu, laissé à sa place. */
 function amenagerChoisir(ile) {
   return async (page) => {
@@ -391,6 +461,13 @@ async function amenagerEnListe(page) {
 async function fermerLesBandeaux(page) {
   const bandeau = page.locator('.celebration button[aria-label="Fermer"]');
   while (await bandeau.count()) await bandeau.first().click();
+}
+/** Ferme les bandeaux (un succès débloqué), puis fait `act`. */
+function sansBandeau(act) {
+  return async (page) => {
+    await fermerLesBandeaux(page);
+    await act(page);
+  };
 }
 /** Attend `ms`, sans autre geste. */
 function attendre(ms) {

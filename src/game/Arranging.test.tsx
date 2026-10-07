@@ -14,8 +14,9 @@ import { Icon } from '../components/Icon';
 import { ArrangeHandles } from './ArrangeHandles';
 import { HABILLAGES } from './world/skin';
 import { toutConstruit } from './world/budget';
-import { joinedWith, linksToRelink, NO_MORE_ROOM, spotOf } from './world/arrange';
-import { GESTE_DU_LIEU } from './world/arrangeGesture';
+import { freeGuardianSpots, freeSpots, guardianOf, isletMiddle, joinedWith, linksToRelink, NO_MORE_ROOM, placeIn, spotOf } from './world/arrange';
+import { frameOf } from './world/footprint';
+import { DESCENTE_MS, GESTE_DU_LIEU } from './world/arrangeGesture';
 import { applyLayout } from './world/appliedLayout';
 import { thePlace } from './world/placeArticle';
 
@@ -181,6 +182,94 @@ describe('le mode « Aménager »', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
     expect(spotOf(monde, VOLCAN)).toEqual(avant);
     expect(dernier.ouvert).toBe(false);
+  });
+
+  it('glisser le lieu choisi au doigt (choix 1b, 2a, 3a) : seul un glissé parti de lui le prend ; levé sur une place libre, il est posé avec son « clac »', () => {
+    vi.useFakeTimers();
+    const dit: string[] = [];
+    render(<SettingsProvider><Banc reduit={false} depart={depart()} dire={(t) => dit.push(t)} /></SettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    // Rien de choisi : aucun glissé ne prend rien (la vue glisse).
+    const ici = placeIn(monde, VOLCAN).core;
+    expect(dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { lieu: VOLCAN })).toBe(false);
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    const depart0 = spotOf(monde, VOLCAN);
+    // Un glissé parti de la mer au loin : la vue glisse, le lieu reste.
+    let pris = true;
+    act(() => void (pris = dernier.glisser.prendre({ x: ici.x + 80, y: ici.y + 80 }, {})));
+    expect(pris).toBe(false);
+    expect(dernier.glisse).toBe(false);
+    // Parti de sa terre : il suit le doigt ; la grille et l'empreinte se dessinent, les flèches se cachent.
+    act(() => void (pris = dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { lieu: VOLCAN })));
+    expect(pris).toBe(true);
+    expect(dernier.glisse).toBe(true);
+    expect(dernier.vue?.poignees).toBeUndefined();
+    expect(dernier.vue?.cases.some((k) => k.genre === 'grille')).toBe(true);
+    expect(screen.queryByRole('button', { name: 'Nord' })).toBeNull();
+    const libre = freeSpots(monde, VOLCAN).find((q) => Math.abs(q.x - depart0.x) + Math.abs(q.y - depart0.y) > 3)!;
+    const c = frameOf('6e');
+    const dits = dit.length;
+    act(() => dernier.glisser.suivre({ x: c.x0 + libre.x * 4 + 8, y: c.y0 + libre.y * 4 + 8 }));
+    expect(dernier.choix).toMatchObject({ genre: 'lieu', spot: libre });
+    // La ligne suit, sans la voix : elle parle au lever.
+    expect(dit.length).toBe(dits);
+    act(() => dernier.glisser.lacher(true));
+    // Posé tout de suite, à sa nouvelle place, sans le démontage couche par couche : il redescend d'un cube, puis le
+    // « clac » et la voix ; les flèches sont parties avec le choix.
+    expect(spotOf(monde, VOLCAN)).toEqual(libre);
+    expect(dernier.geste).toMatchObject({ phase: 'descend', dureeMs: DESCENTE_MS });
+    expect(dit.length).toBe(dits);
+    act(() => void vi.advanceTimersByTime(DESCENTE_MS));
+    expect(dernier.geste).toBeNull();
+    expect(dit.length).toBe(dits + 1);
+    expect(dernier.glisse).toBe(false);
+    vi.useRealTimers();
+    // ↶ rattrape.
+    fireEvent.click(screen.getByRole('button', { name: /Défaire/ }));
+    expect(spotOf(monde, VOLCAN)).toEqual(depart0);
+  });
+
+  it('levé sur une place prise, le lieu glissé reste là : croix grise, « Poser » éteint (choix 2a) ; interrompu, rien n’est posé', () => {
+    render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    const depart0 = spotOf(monde, VOLCAN);
+    const ici = placeIn(monde, VOLCAN).core;
+    const voisin = placeIn(monde, TOUR).core;
+    act(() => void dernier.glisser.prendre({ x: ici.x + 4, y: ici.y + 4 }, { lieu: VOLCAN }));
+    act(() => dernier.glisser.suivre({ x: voisin.x + 4, y: voisin.y + 4 }));
+    expect(dernier.vue?.cases.some((k) => k.genre === 'conflit')).toBe(true);
+    expect(dernier.vue?.cases.some((k) => k.genre === 'barre')).toBe(true);
+    act(() => dernier.glisser.lacher(true));
+    expect(spotOf(monde, VOLCAN)).toEqual(depart0);
+    expect(dernier.placePrise).toBe(true);
+    expect(dernier.vue?.poignees?.prise).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Poser' })).toBeDisabled();
+    // Un glissé interrompu (un second doigt) : rien n'est posé, même sur une place libre.
+    const libre = freeSpots(monde, VOLCAN).find((q) => Math.abs(q.x - depart0.x) + Math.abs(q.y - depart0.y) > 3)!;
+    const c = frameOf('6e');
+    const fantome = dernier.choix?.genre === 'lieu' ? dernier.choix.spot : depart0;
+    act(() => void dernier.glisser.prendre({ x: c.x0 + fantome.x * 4 + 8, y: c.y0 + fantome.y * 4 + 8 }, {}));
+    act(() => dernier.glisser.suivre({ x: c.x0 + libre.x * 4 + 8, y: c.y0 + libre.y * 4 + 8 }));
+    act(() => dernier.glisser.lacher(false));
+    expect(spotOf(monde, VOLCAN)).toEqual(depart0);
+    expect(dernier.choix).toMatchObject({ genre: 'lieu', spot: libre });
+  });
+
+  it('un Gardien se glisse loin de son lieu (choix 4a) : posé au lever, son îlot détaché', () => {
+    render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    act(() => void dernier.intention({ genre: 'creature', id: VOLCAN, gardien: true }));
+    const ici = isletMiddle(monde, VOLCAN, guardianOf(monde, VOLCAN));
+    act(() => void dernier.glisser.prendre(ici, { gardien: VOLCAN }));
+    expect(dernier.glisse).toBe(true);
+    const loin = freeGuardianSpots(monde, VOLCAN).filter((g) => g.spot).map((g) => isletMiddle(monde, VOLCAN, g)).find((m) => Math.hypot(m.x - ici.x, m.y - ici.y) > 30)!;
+    act(() => dernier.glisser.suivre(loin));
+    expect(dernier.vue?.cases.some((k) => k.genre === 'lien')).toBe(true);
+    act(() => dernier.glisser.lacher(true));
+    expect(guardianOf(monde, VOLCAN).spot).toBeDefined();
+    // Avec moins d'animations : posé d'un coup, sans descente.
+    expect(dernier.geste).toBeNull();
   });
 
   it('« Valider » pose le choix en cours et garde le plan ; Échap n’annule jamais ; « Annuler » demande, sauf sans changement', () => {

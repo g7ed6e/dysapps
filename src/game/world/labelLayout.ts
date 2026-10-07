@@ -33,6 +33,22 @@ function overlap(a: LabelBox, b: LabelBox, gap: number): number {
   return ox > 0 && oy > 0 ? ox * oy : 0;
 }
 
+/**
+ * Le rectangle à l'écran qui couvre des points (les coins d'une zone du monde projetés), en boîte d'étiquette (son centre,
+ * sa taille).
+ */
+export function boiteDesPoints(points: readonly { x: number; y: number }[]): LabelBox {
+  const xs = points.map((p) => p.x);
+  const ys = points.map((p) => p.y);
+  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+  return { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: x1 - x0, h: y1 - y0 };
+}
+
+/** Une étiquette (sa boîte à l'écran) recoupe-t-elle une zone à l'écran ? Pendant un glissé du choix, elle s'estompe. */
+export function recoupe(etiquette: LabelBox, zone: LabelBox): boolean {
+  return overlap(etiquette, zone, 0) > 0;
+}
+
 function clamp(v: number, lo: number, hi: number): number {
   return lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, v));
 }

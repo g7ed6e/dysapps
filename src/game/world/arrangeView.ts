@@ -2,14 +2,22 @@
 // contour en pointillés, à fleur d'eau ; les places libres autour de lui seulement ; les liaisons retracées en
 // pointillés comme elles le seraient après la pose ; celles qui ne tiendraient plus, barrées, avec une croix au-dessus
 // (une icône : la couleur n'est jamais seule) ; les places qui colleraient le lieu à un voisin, où la page pose l'icône
-// de « Réunir » (6 octobre 2026, choix 2a du mainteneur) ; le lieu choisi, soulevé ; et le point que la vue suit. La 3D le dessine
-// en un seul maillage (three/arrange.ts). Code pur, sans Three.js.
+// de « Réunir » (6 octobre 2026, choix 2a du mainteneur) ; le lieu choisi, soulevé ; et le point que la vue suit. Pendant
+// le glissé seulement (7 octobre 2026, choix 1b du mainteneur), la grille de la région autour du fantôme (9 × 9 places) et
+// l'empreinte du choix à la place des places libres : claire à bord plein sur une place libre, ses cases en conflit en
+// gris pierre barrées d'une croix (jamais la couleur seule). L'îlot d'un Gardien détaché (choix 4a) et son lieu se
+// relient d'une ligne en pointillés quand l'un d'eux est choisi. La 3D le dessine en un seul maillage (three/arrange.ts).
+// Code pur, sans Three.js.
 import type { BiomeId } from '../biomes';
 import { BIOMES } from '../biomes';
 import type { World } from '../engine/state';
 import { getBridge } from './archipelago';
 import {
+  detachedIsletTooCloseTo,
+  DIRECTION_STEP,
   freeGuardianSpots,
+  isDetached,
+  othersFootprintsOf,
   freeLandings,
   freeSpots,
   freeStationSpots,
@@ -22,13 +30,14 @@ import {
   placeIn,
   relinkBetween,
   routesIn,
+  sameGuardianPlace,
 } from './arrange';
 import { type ArrangeChoice, landingInWorld, placeOfChoice, stationInWorld } from './arrangeMode';
 import { coutDesPoignees, poigneesDuChoix, type StyleDesPoignees } from './arrangeHandles';
-import { footprintOf, guardianIsletRectangle, landRectangle, poseOfSpot } from './footprint';
+import { footprintOf, frameOf, gapBetween, GAP_BETWEEN_PLACES, guardianIsletRectangle, landRectangle, poseOfSpot } from './footprint';
 import { joinShape } from './join';
-import { archipelagoOfIsland, type IslandDef, isLandInWorld } from './map';
-import type { Rectangle } from './placement';
+import { type ArchipelagoId, archipelagoOfIsland, type IslandDef, isLandInWorld } from './map';
+import { type Rectangle, STEP } from './placement';
 import type { ArrangeCell, ArrangeView } from './view';
 import { groundHeight } from './terrain/base';
 
@@ -59,6 +68,135 @@ function place(p: { x: number; y: number }, z: number, l: number, out: ArrangeCe
   out.push({ x: p.x, y: p.y, z, genre: 'place', l });
 }
 
+/** La grille montrée pendant le glissé : tant de places de côté autour du fantôme (choix 1b du mainteneur). */
+const GRILLE_DU_GLISSE = 9;
+
+/**
+ * La part d'une place de la grille que prend son carré : la grille, petite et discrète (un repère, pas un signe) ;
+ * l'empreinte, presque toute la place, son socle sombre débordant de son dessus jaune d'un bord épais.
+ */
+const CARRE_DE_LA_GRILLE = 0.4;
+const SOCLE_DE_L_EMPREINTE = 0.95;
+const DESSUS_DE_L_EMPREINTE = 0.7;
+
+/** Un rectangle de cases ramené aux places de la grille (au pas de `STEP`, depuis le coin du cadre) qu'il touche. */
+function placesTouchees(c: Readonly<Rectangle>, r: Rectangle): { i0: number; j0: number; i1: number; j1: number } {
+  return { i0: Math.floor((r.x0 - c.x0) / STEP), j0: Math.floor((r.y0 - c.y0) / STEP), i1: Math.ceil((r.x1 - c.x0) / STEP), j1: Math.ceil((r.y1 - c.y0) / STEP) };
+}
+
+/** Deux rectangles de cases se recouvrent-ils ? */
+function seRecouvrent(r: Rectangle, q: Rectangle): boolean {
+  return r.x0 < q.x1 && q.x0 < r.x1 && r.y0 < q.y1 && q.y0 < r.y1;
+}
+
+/**
+ * La grille et l'empreinte du glissé (choix 1b du mainteneur), sur l'eau à la hauteur `z` : les places de la grille de
+ * la région à `GRILLE_DU_GLISSE / 2` pas au plus du milieu du fantôme, en petits carrés crème, sur l'eau seulement (rien
+ * sous `terres` : les emprises des lieux, et celle du choix à sa place d'avant) ; sous le fantôme (`emprise`, ses
+ * rectangles), l'empreinte : chaque place qu'il couvre, en carré jaune plein bordé de sombre (le signe « libre » des
+ * places libres), ou, trop près d'un autre lieu (`GAP_BETWEEN_PLACES`) ou hors du cadre, en gris pierre barré d'une croix
+ * (deux barres en biais), sur la terre aussi. Un seul langage au sol : il remplace les places libres jaunes pendant le
+ * geste. Rend la zone de la grille, où les étiquettes des autres lieux s'estompent.
+ */
+function grilleDuGlisse(
+  a: ArchipelagoId,
+  milieu: { x: number; y: number },
+  emprise: readonly Rectangle[],
+  obstacles: readonly Rectangle[],
+  terres: readonly Rectangle[],
+  z: number,
+  out: ArrangeCell[],
+): Rectangle {
+  const c = frameOf(a);
+  const n = Math.floor(GRILLE_DU_GLISSE / 2);
+  const mi = Math.floor((milieu.x - c.x0) / STEP);
+  const mj = Math.floor((milieu.y - c.y0) / STEP);
+  const bloc = (i: number, j: number): Rectangle => ({ x0: c.x0 + i * STEP, y0: c.y0 + j * STEP, x1: c.x0 + (i + 1) * STEP, y1: c.y0 + (j + 1) * STEP });
+  const empreinte = new Map<string, boolean>();
+  for (const r of emprise) {
+    const t = placesTouchees(c, r);
+    for (let i = t.i0; i < t.i1; i++)
+      for (let j = t.j0; j < t.j1; j++) {
+        const b = bloc(i, j);
+        // La part du fantôme dans cette place : trop près d'un autre lieu, ou hors du cadre, elle est en conflit.
+        const part = { x0: Math.max(b.x0, r.x0), y0: Math.max(b.y0, r.y0), x1: Math.min(b.x1, r.x1), y1: Math.min(b.y1, r.y1) };
+        const dehors = part.x0 < c.x0 || part.y0 < c.y0 || part.x1 > c.x1 || part.y1 > c.y1;
+        const conflit = dehors || obstacles.some((o) => gapBetween(part, o) < GAP_BETWEEN_PLACES);
+        const cle = `${i},${j}`;
+        empreinte.set(cle, (empreinte.get(cle) ?? false) || conflit);
+      }
+  }
+  // Le carré d'une place, centré sur elle (une case du dessin est centrée sur x + 0,5).
+  const centre = (i: number) => i * STEP + STEP / 2 - 0.5;
+  const carre = (i: number, j: number, genre: ArrangeCell['genre'], l: number) => out.push({ x: c.x0 + centre(i), y: c.y0 + centre(j), z, genre, l: STEP * l });
+  for (let i = mi - n; i <= mi + n; i++)
+    for (let j = mj - n; j <= mj + n; j++) {
+      if (empreinte.has(`${i},${j}`)) continue;
+      const b = bloc(i, j);
+      if (b.x0 < c.x0 || b.y0 < c.y0 || b.x1 > c.x1 || b.y1 > c.y1 || terres.some((t) => seRecouvrent(b, t))) continue;
+      carre(i, j, 'grille', CARRE_DE_LA_GRILLE);
+    }
+  const conflits: [number, number][] = [];
+  for (const [cle, conflit] of empreinte) {
+    const [i, j] = cle.split(',').map(Number);
+    if (conflit) {
+      carre(i, j, 'conflit', SOCLE_DE_L_EMPREINTE);
+      conflits.push([i, j]);
+    } else {
+      carre(i, j, 'socle', SOCLE_DE_L_EMPREINTE);
+      carre(i, j, 'empreinte', DESSUS_DE_L_EMPREINTE);
+    }
+  }
+  // Les croix après les carrés : dessinées par-dessus (le dessin du mode n'écrit pas la profondeur).
+  for (const [i, j] of conflits) for (const angle of [Math.PI / 4, -Math.PI / 4]) out.push({ x: c.x0 + centre(i), y: c.y0 + centre(j), z, genre: 'barre', l: STEP * 0.95, angle });
+  return { x0: c.x0 + (mi - n) * STEP, y0: c.y0 + (mj - n) * STEP, x1: c.x0 + (mi + n + 1) * STEP, y1: c.y0 + (mj + n + 1) * STEP };
+}
+
+/** L'écart, en cases, entre deux points de la ligne d'un Gardien détaché ; leur côté (le point, son bord sombre). */
+const PAS_DE_LA_LIGNE = 3;
+const POINT_DE_LA_LIGNE = 1.4;
+const BORD_DE_LA_LIGNE = 2.2;
+
+/**
+ * La ligne en pointillés entre un Gardien détaché et son lieu (choix 4a du mainteneur), à la hauteur `z` : des points
+ * blancs bordés de sombre, un tous les `PAS_DE_LA_LIGNE` cases, dessinés au-dessus des poignées. Elle part du coin de la
+ * terre du lieu le plus proche de l'îlot, jamais du coin nord-est, où se pose « Tourner », et va au bord de l'îlot.
+ */
+function ligneDuGardien(terre: Rectangle, ilot: Rectangle, z: number, out: ArrangeCell[]): void {
+  const m = { x: (ilot.x0 + ilot.x1) / 2, y: (ilot.y0 + ilot.y1) / 2 };
+  const ne = DIRECTION_STEP.est;
+  const nord = DIRECTION_STEP.nord;
+  const coins = [
+    { x: terre.x0, y: terre.y0 },
+    { x: terre.x1 - 1, y: terre.y0 },
+    { x: terre.x0, y: terre.y1 - 1 },
+    { x: terre.x1 - 1, y: terre.y1 - 1 },
+  ].filter((k) => !((ne.dx > 0 ? k.x === terre.x1 - 1 : k.x === terre.x0) && (nord.dy > 0 ? k.y === terre.y1 - 1 : k.y === terre.y0)));
+  const de = closestPoint(coins, m);
+  const vers = auBord(ilot, de);
+  const n = Math.max(Math.abs(vers.x - de.x), Math.abs(vers.y - de.y));
+  for (let k = 0; k <= n; k += PAS_DE_LA_LIGNE) {
+    const p = { x: Math.round(de.x + ((vers.x - de.x) * k) / Math.max(1, n)), y: Math.round(de.y + ((vers.y - de.y) * k) / Math.max(1, n)) };
+    out.push({ ...p, z, genre: 'socle', l: BORD_DE_LA_LIGNE, dessus: true });
+    out.push({ ...p, z, genre: 'lien', l: POINT_DE_LA_LIGNE, dessus: true });
+  }
+}
+
+/** Le milieu du bord nord d'une emprise (le nord vers les y qui montent), où se pose le nom du choix pendant le glissé. */
+function auNord(r: Rectangle, z: number): { x: number; y: number; z: number } {
+  return { x: (r.x0 + r.x1) / 2, y: DIRECTION_STEP.nord.dy > 0 ? r.y1 : r.y0, z };
+}
+
+/** Le point le plus proche d'un point, parmi d'autres. */
+function closestPoint(ps: readonly { x: number; y: number }[], p: { x: number; y: number }): { x: number; y: number } {
+  return ps.reduce((best, q) => (Math.hypot(q.x - p.x, q.y - p.y) < Math.hypot(best.x - p.x, best.y - p.y) ? q : best));
+}
+
+/** Le point d'un rectangle le plus proche d'un point (sur son bord, ou le point lui-même s'il est dedans). */
+function auBord(r: Rectangle, p: { x: number; y: number }): { x: number; y: number } {
+  return { x: Math.min(r.x1 - 1, Math.max(r.x0, p.x)), y: Math.min(r.y1 - 1, Math.max(r.y0, p.y)) };
+}
+
 /**
  * Ce que coûte le dessin d'un choix (three/arrange.ts) : chaque case est un carré plat de deux triangles, toutes dans
  * un seul maillage instancié (un appel de dessin, seulement pendant un choix) ; et les poignées, dans un autre maillage
@@ -67,8 +205,10 @@ function place(p: { x: number; y: number }, z: number, l: number, out: ArrangeCe
  */
 export function arrangeViewCost(v: ArrangeView | null, style: StyleDesPoignees = 'blocs'): { triangles: number; drawCalls: number } {
   const n = v?.cases.length ?? 0;
+  const dessus = v?.cases.filter((k) => k.dessus).length ?? 0;
   const p = coutDesPoignees(v?.poignees, style);
-  return { triangles: 2 * n + p.triangles, drawCalls: (n ? 1 : 0) + p.drawCalls };
+  // Ce qui passe au-dessus des poignées (la ligne d'un Gardien détaché) : un maillage à part, un appel de plus.
+  return { triangles: 2 * n + p.triangles, drawCalls: (n > dessus ? 1 : 0) + (dessus ? 1 : 0) + p.drawCalls };
 }
 
 /** Une croix de cinq cubes, au-dessus d'une case : l'icône d'une liaison qui ne tiendrait plus. */
@@ -106,6 +246,11 @@ function solDeLaBorne(def: IslandDef, p: { x: number; y: number }): number {
   return def.altitude + groundHeight(BIOMES.findIndex((b) => b.id === def.id), p.x, p.y) + 1;
 }
 
+/** Le milieu du cœur d'un lieu posé (`def`), en cases du monde. */
+function middleOfGroup(def: IslandDef): { x: number; y: number } {
+  return { x: def.core.x + 8, y: def.core.y + 8 };
+}
+
 /** Le rectangle qui couvre des rectangles. */
 function union(rs: readonly Rectangle[]): Rectangle {
   return { x0: Math.min(...rs.map((r) => r.x0)), y0: Math.min(...rs.map((r) => r.y0)), x1: Math.max(...rs.map((r) => r.x1)), y1: Math.max(...rs.map((r) => r.y1)) };
@@ -126,14 +271,16 @@ const DEMI_CHOIX = 1.5;
  * Le dessin du mode pour un choix, dans un monde, avec ses poignées (./arrangeHandles.ts) posées sur l'eau autour de
  * l'emprise du fantôme (ou, sans fantôme, du point suivi).
  */
-export function arrangeView(world: World, c: ArrangeChoice): ArrangeView {
-  const v = dessinDuChoix(world, c);
+export function arrangeView(world: World, c: ArrangeChoice, glisse = false): ArrangeView {
+  const v = dessinDuChoix(world, c, glisse);
+  // Pendant le glissé, les flèches se cachent (choix 1b du mainteneur) : elles reviennent au lever du doigt.
+  if (glisse) return v;
   const fantome = v.cases.filter((k) => k.genre === 'fantome');
   const r = v.cadre?.rect ?? (fantome.length ? union(fantome.map((q) => ({ x0: q.x, y0: q.y, x1: q.x + 1, y1: q.y + 1 }))) : { x0: v.suivre.x - DEMI_CHOIX, y0: v.suivre.y - DEMI_CHOIX, x1: v.suivre.x + DEMI_CHOIX, y1: v.suivre.y + DEMI_CHOIX });
   return { ...v, poignees: poigneesDuChoix(world, c, r, placeIn(world, placeOfChoice(c)).altitude) };
 }
 
-function dessinDuChoix(world: World, c: ArrangeChoice): ArrangeView {
+function dessinDuChoix(world: World, c: ArrangeChoice, glisse: boolean): ArrangeView {
   const out: ArrangeCell[] = [];
   const lieu = placeOfChoice(c);
   const ici = placeIn(world, lieu);
@@ -145,16 +292,33 @@ function dessinDuChoix(world: World, c: ArrangeChoice): ArrangeView {
       const groupe = groupAt(world, c.id, c.spot);
       for (const g of groupe) {
         contourDeLaTerre(g.def, eau, out);
-        contourDuRectangle(guardianIsletRectangle(g.def, guardianOf(world, g.id)), eau, out);
+        // Son Gardien détaché reste où il est (choix 5a du mainteneur) : son îlot n'est pas dans le fantôme.
+        if (!isDetached(guardianOf(world, g.id))) contourDuRectangle(guardianIsletRectangle(g.def, guardianOf(world, g.id)), eau, out);
       }
       const forme = groupe.length === 2 ? joinShape(groupe[0].def, groupe[1].def) : null;
       if (forme) contourDuRectangle(forme.zone, eau, out);
       const debut = out.length;
+      // Le lien vers son Gardien détaché (choix 4a) : une ligne en pointillés, du fantôme à son îlot.
+      const sonGardien = guardianOf(world, c.id);
+      if (isDetached(sonGardien)) ligneDuGardien(landRectangle(groupe[0].def), guardianIsletRectangle(groupe[0].def, sonGardien), eau, out);
+      let zoneDuGlisse: Rectangle | undefined;
+      let nomAuNord: ArrangeView['nomAuNord'];
+      if (glisse) {
+        const emprise: Rectangle[] = groupe.flatMap((g) => footprintOf(g.id, g.def, guardianOf(world, g.id)).filter((p) => p.genre === 'terre' || (p.genre === 'ilot' && !isDetached(guardianOf(world, g.id)))));
+        if (forme) emprise.push(forme.zone);
+        const autres = othersFootprintsOf(world, a, groupe.map((g) => g.id));
+        const obstacles = [...autres, ...groupe.flatMap((g) => detachedIsletTooCloseTo(world, g.id))];
+        // Sur l'eau seulement : ni sous les autres lieux, ni sous le lieu soulevé à sa place d'avant.
+        const terres = [...autres, ...groupe.flatMap((g) => footprintOf(g.id, placeIn(world, g.id), guardianOf(world, g.id)))];
+        zoneDuGlisse = grilleDuGlisse(a, middleOfGroup(groupe[0].def), emprise, obstacles, terres, eau, out);
+        nomAuNord = auNord(union(emprise), eau);
+      }
       // Pour chaque voisin auquel il se collerait, la place la plus proche du fantôme : une seule icône par voisin (des
       // places voisines, d'un pas l'une de l'autre, empileraient leurs icônes à l'écran).
       const parVoisin = new Map<BiomeId, { d: number; x: number; y: number }>();
       const reunionsA = joinsAround(world, c.id);
-      for (const s of freeSpots(world, c.id, c.spot.turn, { ...c.spot, pas: PAS_AUTOUR })) {
+      // Pendant le glissé, la grille prend la place des places libres jaunes.
+      for (const s of glisse ? [] : freeSpots(world, c.id, c.spot.turn, { ...c.spot, pas: PAS_AUTOUR })) {
         if (Math.max(Math.abs(s.x - c.spot.x), Math.abs(s.y - c.spot.y)) > PAS_AUTOUR || (s.x === c.spot.x && s.y === c.spot.y)) continue;
         const p = poseOfSpot(a, s);
         place({ x: p.x + 8, y: p.y + 8 }, eau, 3, out);
@@ -177,18 +341,34 @@ function dessinDuChoix(world: World, c: ArrangeChoice): ArrangeView {
       // La vue garde entier le fantôme : les deux lieux réunis et leur réunion, pas seulement son milieu.
       const fantome = out.slice(0, debut);
       const cadre = fantome.length ? { rect: union(fantome.map((q) => ({ x0: q.x, y0: q.y, x1: q.x + 1, y1: q.y + 1 }))), z: eau, seq: 0 } : undefined;
-      return { cases: out, souleve: union(zone ? [...ici2, zone] : ici2), suivre: milieu(fantome, eau), barrees: relink, ...(cadre ? { cadre } : {}), ...(reunions.length ? { reunions } : {}) };
+      return { cases: out, souleve: union(zone ? [...ici2, zone] : ici2), suivre: milieu(fantome, eau), barrees: relink, ...(cadre ? { cadre } : {}), ...(reunions.length ? { reunions } : {}), ...(zoneDuGlisse ? { zoneDuGlisse } : {}), ...(nomAuNord ? { nomAuNord } : {}) };
     }
     case 'gardien': {
       const r = guardianIsletRectangle(ici, c.place);
       contourDuRectangle(r, eau, out);
-      for (const g of freeGuardianSpots(world, c.id)) {
-        if (g.side === c.place.side && g.step === c.place.step) continue;
+      const m = { x: (r.x0 + r.x1) / 2, y: (r.y0 + r.y1) / 2 };
+      // Détaché (choix 4a du mainteneur) : une ligne en pointillés de son îlot à son lieu.
+      if (isDetached(c.place)) ligneDuGardien(landRectangle(ici), r, eau, out);
+      let zoneDuGlisse: Rectangle | undefined;
+      if (glisse) {
+        const a = archipelagoOfIsland(c.id);
+        const parts = footprintOf(c.id, ici, c.place);
+        const autres = othersFootprintsOf(world, a, [c.id]);
+        // L'îlot détaché se tient loin de tout lieu, le sien compris ; contre son lieu, loin des autres.
+        const obstacles = [...autres, ...(isDetached(c.place) ? parts.filter((p) => p.genre !== 'ilot') : [])];
+        // Sur l'eau seulement : ni sous les lieux (le sien compris), ni sous l'îlot à sa place d'avant.
+        const terres = [...autres, ...footprintOf(c.id, ici, guardianOf(world, c.id))];
+        zoneDuGlisse = grilleDuGlisse(a, m, [r], obstacles, terres, eau, out);
+      }
+      const nomAuNord = glisse ? auNord(r, eau) : undefined;
+      // Les places libres autour de l'îlot seulement (la région entière en compte des centaines) ; la grille pendant le glissé.
+      for (const g of glisse ? [] : freeGuardianSpots(world, c.id, { ...m, r: 2 * STEP })) {
+        if (sameGuardianPlace(g, c.place)) continue;
         const q = guardianIsletRectangle(ici, g);
         place({ x: Math.floor((q.x0 + q.x1) / 2), y: Math.floor((q.y0 + q.y1) / 2) }, eau, 2, out);
       }
       const avant = footprintOf(c.id, ici, guardianOf(world, c.id)).find((p) => p.genre === 'ilot')!;
-      return { cases: out, souleve: avant, suivre: { x: (r.x0 + r.x1) / 2, y: (r.y0 + r.y1) / 2, z: eau }, barrees: [] };
+      return { cases: out, souleve: avant, suivre: { x: (r.x0 + r.x1) / 2, y: (r.y0 + r.y1) / 2, z: eau }, barrees: [], ...(zoneDuGlisse ? { zoneDuGlisse } : {}), ...(nomAuNord ? { nomAuNord } : {}) };
     }
     case 'borne': {
       const p = stationInWorld(world, c.key, c.place);

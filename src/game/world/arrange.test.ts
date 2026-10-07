@@ -12,6 +12,9 @@ import {
   DIRECTION_STEP,
   DIRECTIONS,
   freeGuardianSpots,
+  guardianPlaces,
+  placeIn,
+  spotNear,
   freeLandings,
   freeSpots,
   freeStationSpots,
@@ -46,7 +49,7 @@ import {
   turnIsland,
 } from './arrange';
 import { toutConstruit } from './budget';
-import { fittingPlaces, frameOf, guardianIsletRectangle, posesOfLayout } from './footprint';
+import { detachedIsletCorner, fittingPlaces, footprintOf, frameOf, gapBetween, guardianIsletRectangle, placedIsland, posesOfLayout, poseOfSpot } from './footprint';
 import { startingIsland } from './map';
 import { placesOf, startingPlaces } from './routing';
 import { LAYOUT_LAST_SPOT, sanitizeLayout } from './savedLayout';
@@ -244,7 +247,7 @@ describe('les Gardiens autour de leur lieu', () => {
     const w = partie();
     const places = freeGuardianSpots(w, VOLCAN);
     expect(places).toContainEqual({ side: 'front', step: 0 });
-    const ailleurs = places.find((g) => g.side !== 'front')!;
+    const ailleurs = places.find((g) => g.side !== 'front' && !g.spot)!;
     expect(ailleurs).toBeDefined();
     const w2 = apres(moveGuardian(w, VOLCAN, ailleurs));
     const g = guardianOf(w2, VOLCAN);
@@ -256,10 +259,10 @@ describe('les Gardiens autour de leur lieu', () => {
     // Le calage et les flèches restent sur les places libres.
     const proche = nearestGuardianSpot(w, VOLCAN, { x: 0, y: 0 })!;
     expect(places).toContainEqual(proche);
-    // Les flèches avancent d'un cran le long de son lieu, libre ou pris (choix 3) : toujours contre sa terre.
+    // Les flèches avancent d'un cran, libre ou pris (choix 3) : contre sa terre, ou détaché (choix 4a), jamais sur place.
     for (const dir of DIRECTIONS) {
       const n = stepGuardianSpot(w, VOLCAN, { side: 'front', step: 0 }, dir);
-      if (n) expect(Math.abs(n.step) <= 8 && (n.side !== 'front' || n.step !== 0)).toBe(true);
+      if (n) expect(Boolean(n.spot) || (Math.abs(n.step) <= 8 && (n.side !== 'front' || n.step !== 0))).toBe(true);
     }
     expect(isFreeGuardianSpot(w, VOLCAN, { side: 'front', step: 0 })).toBe(true);
     // Une place qui n'est pas contre son lieu : refusée.
@@ -275,6 +278,107 @@ describe('les Gardiens autour de leur lieu', () => {
     }
     expect(vus).toEqual(['cote', 'ile', 'cote', 'mer']);
     expect(w.layout).toBeUndefined();
+  });
+});
+
+describe('les Gardiens détachés de leur lieu (7 octobre 2026, choix 4a, 5a du mainteneur)', () => {
+  /** Une place détachée libre loin de la terre du Volcan (plus de 12 cases d'eau). */
+  const auLoin = (w: World) => {
+    const terre = footprintOf(VOLCAN, placeIn(w, VOLCAN)).find((p) => p.genre === 'terre')!;
+    return freeGuardianSpots(w, VOLCAN).find((g) => g.spot && gapBetween(guardianIsletRectangle(placeIn(w, VOLCAN), g), terre) > 12)!;
+  };
+
+  it('son îlot se pose n’importe où dans la région, sur l’eau, à 4 cases au moins de tout lieu', () => {
+    const w = partie();
+    const loin = auLoin(w);
+    expect(loin).toBeDefined();
+    const w2 = apres(moveGuardian(w, VOLCAN, loin));
+    const g = guardianOf(w2, VOLCAN);
+    expect(g.spot).toEqual(loin.spot);
+    const ilot = guardianIsletRectangle(placeIn(w2, VOLCAN), g);
+    const k = detachedIsletCorner('6e', loin.spot!);
+    expect(ilot).toEqual({ x0: k.x, y0: k.y, x1: k.x + 13, y1: k.y + 12 });
+    // Loin de tout lieu, le sien compris ; dans le cadre de sa région.
+    for (const id of placesOf('6e')) for (const p of footprintOf(id, placeIn(w2, id), guardianOf(w2, id))) if (p.genre !== 'ilot' || id !== VOLCAN) expect(gapBetween(ilot, p), id).toBeGreaterThanOrEqual(4);
+    // La disposition tient : la région ne revient pas à la carte de départ, et se relit telle quelle.
+    expect(fittingPlaces('6e', w2.layout?.['6e']?.islands ?? {}, w2.layout?.['6e']?.guardians ?? {})).not.toBeNull();
+    expect(sanitizeLayout(JSON.parse(JSON.stringify(w2.layout)))).toEqual(w2.layout);
+    // Trop près d'un lieu : refusé.
+    const pres = guardianPlaces(w, VOLCAN).find((x) => x.spot && !isFreeGuardianSpot(w, VOLCAN, x));
+    expect(pres && moveGuardian(w, VOLCAN, pres)).toEqual({ ok: false, reason: 'occupee' });
+    // Il revient contre son lieu, devant, au pas 0 : la disposition est vide.
+    expect(apres(moveGuardian(w2, VOLCAN, { side: 'front', step: 0 })).layout).toBeUndefined();
+  });
+
+  it('quand son lieu bouge ou tourne, il reste où il est (choix 5a) ; contre son lieu, il le suit', () => {
+    const w = partie();
+    const w2 = apres(moveGuardian(w, VOLCAN, auLoin(w)));
+    const avant = guardianIsletRectangle(placeIn(w2, VOLCAN), guardianOf(w2, VOLCAN));
+    const ou = freeSpots(w2, VOLCAN).find((x) => x.x !== spotOf(w2, VOLCAN).x)!;
+    const w3 = apres(moveIsland(w2, VOLCAN, ou));
+    expect(guardianIsletRectangle(placeIn(w3, VOLCAN), guardianOf(w3, VOLCAN))).toEqual(avant);
+    const w4 = apres(turnIsland(w3, VOLCAN));
+    expect(guardianIsletRectangle(placeIn(w4, VOLCAN), guardianOf(w4, VOLCAN))).toEqual(avant);
+    // Son lieu ne se pose jamais à moins de 4 cases de son îlot.
+    for (const s2 of freeSpots(w2, VOLCAN)) {
+      const terre = footprintOf(VOLCAN, placedIsland(VOLCAN, poseOfSpot('6e', s2))).find((p) => p.genre === 'terre')!;
+      expect(gapBetween(terre, avant)).toBeGreaterThanOrEqual(4);
+    }
+    // Contre son lieu (côté, pas) : son îlot suit (le comportement d'avant).
+    const ilotDeDepart = guardianIsletRectangle(placeIn(w, VOLCAN), guardianOf(w, VOLCAN));
+    const w5 = apres(moveIsland(w, VOLCAN, freeSpots(w, VOLCAN).find((x) => x.x !== spotOf(w, VOLCAN).x)!));
+    expect(guardianIsletRectangle(placeIn(w5, VOLCAN), guardianOf(w5, VOLCAN))).not.toEqual(ilotDeDepart);
+  });
+
+  it('garde son orientation dans le monde, et dit ce qu’il regarde depuis son îlot', () => {
+    const w = partie();
+    const w2 = apres(moveGuardian(w, VOLCAN, auLoin(w)));
+    expect(guardianOf(w2, VOLCAN).turn).toBe(0);
+    const g = guardianOf(apres(turnGuardian(w2, VOLCAN)), VOLCAN);
+    expect(g.turn).toBe(1);
+    expect(['mer', 'ile', 'cote']).toContain(guardianFacing(g, { dx: 0, dy: 1 }));
+    // De face (orientation 0, il regarde vers le bas de la grille) : son lieu au-dessous, il le regarde.
+    expect(guardianFacing({ ...g, turn: 0 }, { dx: 0, dy: -10 })).toBe('ile');
+    expect(guardianFacing({ ...g, turn: 0 }, { dx: 0, dy: 10 })).toBe('mer');
+  });
+
+  it('une place détachée qui ne tient plus le ramène devant son lieu, sans rien perdre d’autre', () => {
+    const w = partie();
+    const loin = auLoin(w);
+    const w2 = apres(moveGuardian(w, VOLCAN, loin));
+    // Une sauvegarde abîmée : l'îlot posé sur la terre de son lieu.
+    const s0 = startingSpot(VOLCAN);
+    const abimee: World = { ...w2, layout: { ...w2.layout, '6e': { ...w2.layout!['6e'], guardians: { [VOLCAN]: { side: 'front', step: 0, turn: 2, spot: { x: s0.x, y: s0.y } } } } } };
+    const lue = settleNewPlaces(abimee);
+    expect(guardianOf(lue, VOLCAN)).toEqual({ side: 'front', step: 0, turn: 2 });
+    // Son lieu tourné d'un quart : il regardait le monde vers 2, il regarde encore par là, compté depuis son lieu.
+    const tourne = apres(turnIsland(w2, VOLCAN));
+    const abimeeTournee: World = { ...tourne, layout: { ...tourne.layout, '6e': { ...tourne.layout!['6e'], guardians: { [VOLCAN]: { side: 'front', step: 0, turn: 2, spot: { x: s0.x, y: s0.y } } } } } };
+    expect(placeIn(abimeeTournee, VOLCAN).quarts).toBe(1);
+    expect(guardianOf(settleNewPlaces(abimeeTournee), VOLCAN)).toEqual({ side: 'front', step: 0, turn: 1 });
+    // Hors de la grille, à la lecture : de même, et la région reste.
+    const hors = sanitizeLayout({ '6e': { islands: { [VOLCAN]: { x: 2, y: 3, turn: 0 } }, guardians: { [VOLCAN]: { side: 'left', step: 2, turn: 1, spot: { x: -1, y: 4 } } } } });
+    expect(hors?.['6e']?.guardians?.[VOLCAN]).toEqual({ side: 'front', step: 0, turn: 1 });
+    expect(hors?.['6e']?.islands?.[VOLCAN]).toEqual({ x: 2, y: 3, turn: 0 });
+    // Son lieu tourné, hors de la grille à la lecture : la même orientation que par `settleNewPlaces` (2 − 1 = 1).
+    const horsTourne = sanitizeLayout({ '6e': { islands: { [VOLCAN]: { ...spotOf(tourne, VOLCAN) } }, guardians: { [VOLCAN]: { side: 'front', step: 0, turn: 2, spot: { x: -1, y: 4 } } } } });
+    expect(horsTourne?.['6e']?.guardians?.[VOLCAN]).toEqual(guardianOf(settleNewPlaces(abimeeTournee), VOLCAN));
+    // Une sauvegarde d'avant (sans `spot`) se lit sans rien perdre.
+    const avant = { '6e': { guardians: { [VOLCAN]: { side: 'left', step: 2, turn: 1 } } } };
+    expect(sanitizeLayout(avant)).toEqual(avant);
+    // « Carte de départ » le ramène devant son lieu.
+    expect(backToStartingMap(w2, '6e')?.layout).toBeUndefined();
+  });
+});
+
+describe('le glissé d’un lieu (7 octobre 2026, choix 1b du mainteneur)', () => {
+  it('se cale sur la place de la grille la plus proche du point, libre ou prise, jamais hors de la grille', () => {
+    const w = partie();
+    const ici = spotOf(w, VOLCAN);
+    const c = frameOf('6e');
+    expect(spotNear(w, VOLCAN, { x: c.x0 + ici.x * 4 + 8 + 1, y: c.y0 + ici.y * 4 + 8 - 1 }, 0)).toEqual(ici);
+    expect(spotNear(w, VOLCAN, { x: c.x0 + ici.x * 4 + 8 + 9, y: c.y0 + ici.y * 4 + 8 }, 0)).toEqual({ ...ici, x: ici.x + 2 });
+    expect(spotNear(w, VOLCAN, { x: -1e4, y: 1e4 }, 1)).toEqual({ x: 0, y: LAYOUT_LAST_SPOT['6e'].y, turn: 1 });
   });
 });
 

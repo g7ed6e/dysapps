@@ -11,7 +11,7 @@ import { visageDuJoueur } from '../world/characters/face';
 import { CASE, PLAQUE, caseALEcran, dessinerLaCase } from './signs';
 import { tenirDansLaPlace, type PlaceLue } from '../freeSpace';
 import { reperesDe } from '../world/framing';
-import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerDAbordSimplement, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { boiteDesPoints, boitesDuTrace, placerAvecLaFlecheDOuvrage, placerDAbordSimplement, recoupe, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
 import { HAUTEUR_DES_NOMS } from './camera/framings';
 import { lecteurDeZones } from '../coveredZones';
@@ -73,8 +73,17 @@ export interface Etiquettes extends PartieDeLaScene {
    * son fantôme, three/arrange.ts) ; l'écart des autres ne change pas.
    */
   cacher(id: string | null): void;
+  /**
+   * Pendant le glissé du choix (7 octobre 2026, choix 1b du mainteneur) : la zone de la grille, en cases du monde, à la
+   * hauteur `z` ; toute étiquette dont le rectangle à l'écran recoupe celui de la zone s'estompe (`ESTOMPEE`) ; rien :
+   * toutes reviennent.
+   */
+  estomper(zone: { x0: number; y0: number; x1: number; y1: number; z: number } | null): void;
   vider(): void;
 }
+
+/** L'opacité d'une étiquette estompée pendant le glissé du choix : son nom se devine, la grille se lit. */
+const ESTOMPEE = 0.25;
 
 /**
  * Les étiquettes, dans l'élément `el` (sa taille en pixels CSS) ; `donnees` : ce que montre la flèche de la destination
@@ -469,9 +478,39 @@ export function creerEtiquettes(
   };
   /** Le lieu dont l'étiquette se tait (le lieu choisi du mode « Modifier le plan »). */
   let cachee: string | null = null;
-  /** Chaque étiquette montrée, sauf celle qui se tait : à chaque image, sans rien allouer. */
+  /** La zone du glissé, où les étiquettes s'estompent. */
+  let estompee: { x0: number; y0: number; x1: number; y1: number; z: number } | null = null;
+  const coinDeLaZone = new THREE.Vector3();
+  const centreALEcran = new THREE.Vector3();
+  /**
+   * Chaque étiquette montrée, sauf celle qui se tait ; estompée si son rectangle à l'écran recoupe celui de la zone du
+   * glissé (ses quatre coins projetés) : à chaque image, la caméra pouvant glisser pendant le glissé.
+   */
   const montrerLesEtiquettes = () => {
-    for (const c of labelsGroup.children) c.visible = Boolean(c.userData.montree) && c.userData.id !== cachee;
+    const W = Math.max(1, el.clientWidth);
+    const H = Math.max(1, el.clientHeight);
+    const z = estompee;
+    const zone = z
+      ? boiteDesPoints(
+          [
+            [z.x0, z.y0],
+            [z.x1, z.y0],
+            [z.x0, z.y1],
+            [z.x1, z.y1],
+          ].map(([x, y]) => toScreen(coinDeLaZone.set(x, z.z, y), camera, W, H)),
+        )
+      : null;
+    for (const c of labelsGroup.children) {
+      c.visible = Boolean(c.userData.montree) && c.userData.id !== cachee;
+      const sprite = c as THREE.Sprite;
+      let dans = false;
+      if (zone && c.visible) {
+        const px = c.userData.px as { w: number; h: number };
+        const p = toScreen(centreALEcran.copy(c.position), camera, W, H);
+        dans = recoupe({ x: p.x + (0.5 - sprite.center.x) * px.w, y: p.y - (0.5 - sprite.center.y) * px.h, w: px.w, h: px.h }, zone);
+      }
+      sprite.material.opacity = dans ? ESTOMPEE : 1;
+    }
   };
 
   const vider = () => {
@@ -516,6 +555,9 @@ export function creerEtiquettes(
     },
     cacher: (id) => {
       cachee = id;
+    },
+    estomper: (zone) => {
+      estompee = zone;
     },
     bulleAuBordSous: (x, y) => bulleALEcran.visible && Math.abs(x - bulleALEcran.x) <= bulleALEcran.w / 2 && Math.abs(y - bulleALEcran.y) <= bulleALEcran.h / 2,
     animer: (t, _dt, reduit) => {

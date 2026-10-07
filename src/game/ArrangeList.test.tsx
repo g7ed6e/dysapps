@@ -9,7 +9,7 @@ import { SettingsProvider } from '../core/SettingsContext';
 import { ArrangeList } from './ArrangeList';
 import { BloclandProvider } from './BloclandContext';
 import { applyLayout } from './world/appliedLayout';
-import { islandsOf } from './world/archipelago';
+import { isBiomeUnlocked, islandsOf } from './world/archipelago';
 import { freeSpots, isFixedPlace, spotOf } from './world/arrange';
 import type { BiomeId } from './biomes';
 import { EMPTY_STATE } from './engine/state';
@@ -78,7 +78,8 @@ describe('Aménager en vue simple', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     const lieux = islandsOf('6e');
     const avant = lignes();
-    expect(avant).toHaveLength(lieux.length * 2);
+    // Le Gardien d'un lieu encore fermé n'a pas de ligne (choix 6a du mainteneur) : au départ, ceux des lieux ouverts.
+    expect(avant).toHaveLength(lieux.length + lieux.filter((b) => isBiomeUnlocked(b.id, EMPTY_STATE.world.links)).length);
     expect(avant[0]).toBe(lieux[0].name);
     // Le Gardien : le bouclier et la même ligne de signes, son île pour repère.
     expect(avant[1]).toBe(lieux[0].name);
@@ -119,10 +120,11 @@ describe('Aménager en vue simple', () => {
     expect(avant).not.toMatch(/son île/);
     expect(li.querySelector('.signes-de-place')).not.toBeNull();
     fireEvent.click(within(li).getByRole('button', { name: `Déplacer le Gardien ${ofPlace(b.name)}` }));
-    // Les flèches le mènent jusqu'à un autre côté de son île (quelques pas le long du même côté d'abord).
+    // Les flèches le mènent jusqu'à un autre côté de son île (quelques pas le long du même côté d'abord) ; vers l'est,
+    // ses places détachées sont prises (choix 4a : trop près des lieux voisins), on part vers l'ouest.
     const cote = (t: string | null | undefined) => /: (?:au|à l’) ([a-z-]+) /.exec(t ?? '')?.[1];
     const depart = cote(avant);
-    tour: for (const nom of ['Est', 'Ouest', 'Nord']) {
+    tour: for (const nom of ['Ouest', 'Est', 'Nord']) {
       for (let i = 0; i < 8; i++) {
         fireEvent.click(screen.getByRole('button', { name: new RegExp(nom) }));
         const t = screen.getByRole('status').textContent;

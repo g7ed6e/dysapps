@@ -133,12 +133,21 @@ export interface DeplacementDeLIlot {
   vers: { x: number; y: number };
   /** La direction vers la terre de son lieu, depuis l'îlot. */
   versLaTerre: { dx: number; dy: number };
+  /** Détaché de son lieu (choix 4a du mainteneur) : ni pas japonais, ni rien qui suive son lieu. */
+  detache?: boolean;
 }
 
 export function deplacementDeLIlot(def: IslandDef): DeplacementDeLIlot | null {
   const g = chosenGuardian(def.id);
-  if (!g || (g.side === 'front' && g.step === 0)) return null;
+  if (!g || (g.side === 'front' && g.step === 0 && !g.at)) return null;
   const o = origineDeLIlot(def);
+  if (g.at) {
+    // Détaché (choix 4a) : posé de face à sa place du monde, quoi que fasse son lieu. Le terrain tourne l'îlot avec son
+    // lieu (`def.quarts`) : on le tourne d'autant à rebours, et son milieu est ramené dans le repère du lieu pas tourné.
+    const q = ((4 - def.quarts) % 4) as Quarts;
+    const m = turnPoint(g.at.x + ISLET_W / 2 - def.core.x, g.at.y + ISLET_H / 2 - def.core.y, q);
+    return { q, de: { x: o.x + ISLET_W / 2, y: o.y + ISLET_H / 2 }, vers: { x: def.core.x + m.x, y: def.core.y + m.y }, versLaTerre: { dx: 0, dy: 1 }, detache: true };
+  }
   const r = rectangleDeLIlotAutour(def, g);
   const versLaTerre = VERS_LA_TERRE[g.side];
   const q = ([0, 1, 2, 3] as Quarts[]).find((k) => {

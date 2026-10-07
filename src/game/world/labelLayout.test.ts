@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { boitesDuTrace, ecarterDesObstacles, PLACES_DE_LA_FLECHE_MAX, placerAvecLaFlecheDOuvrage, entiere, layoutLabels, montrees, placerEtiquettes, replierLesSignes, separateMark, type LabelBox } from './labelLayout';
+import { boiteDesPoints, boitesDuTrace, recoupe, ecarterDesObstacles, PLACES_DE_LA_FLECHE_MAX, placerAvecLaFlecheDOuvrage, entiere, layoutLabels, montrees, placerEtiquettes, replierLesSignes, separateMark, type LabelBox } from './labelLayout';
 import { drawIslandLabel, measureIslandLabel } from './labelCanvas';
 
 const overlaps = (a: LabelBox, b: LabelBox) => Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
@@ -473,6 +473,24 @@ describe('replierLesSignes', () => {
     const r = replierLesSignes([box(150)], [130], placer);
     expect(r.visibles).toEqual([false]);
     expect(r.sansSigne).toEqual([false]);
+  });
+});
+
+describe('l’estompage pendant le glissé du choix (GD-9)', () => {
+  it('estompe toute étiquette dont le rectangle à l’écran recoupe celui de la zone, pas celle dont seul le lieu en est loin', () => {
+    // La zone de la grille, ses quatre coins projetés (un trapèze, vu en biais) : leur rectangle.
+    const zone = boiteDesPoints([
+      { x: 200, y: 300 },
+      { x: 400, y: 300 },
+      { x: 180, y: 450 },
+      { x: 420, y: 450 },
+    ]);
+    expect(zone).toEqual({ x: 300, y: 375, w: 240, h: 150 });
+    // Le centre du lieu est hors de la zone, mais l'étiquette déborde dessus : elle s'estompe.
+    expect(recoupe({ x: 130, y: 320, w: 160, h: 40 }, zone)).toBe(true);
+    // Juste à côté, sans la toucher : elle reste.
+    expect(recoupe({ x: 90, y: 320, w: 160, h: 40 }, zone)).toBe(false);
+    expect(recoupe({ x: 300, y: 270, w: 160, h: 40 }, zone)).toBe(false);
   });
 });
 

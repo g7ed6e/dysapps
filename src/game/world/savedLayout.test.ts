@@ -7,7 +7,8 @@ import { archipelagoOfIsland } from './archipelagos';
 import { frameOf, fittingPlaces, posesOfLayout } from './footprint';
 import { startingIsland } from './map';
 import { STEP } from './placement';
-import { type Layout, LAYOUT_LAST_SPOT, sanitizeLayout } from './savedLayout';
+import { type Layout, LAYOUT_LAST_ISLET_SPOT, LAYOUT_LAST_SPOT, sanitizeLayout } from './savedLayout';
+import { ISLET_H, ISLET_W } from './terrain/islets';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 
 const lien6e = BRIDGES.find((b) => archipelagoOfIsland(b.from) === '6e')!.id;
@@ -35,6 +36,8 @@ describe('la disposition de la sauvegarde', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const c = frameOf(a);
       expect(LAYOUT_LAST_SPOT[a], a).toEqual({ x: (c.x1 - c.x0) / STEP, y: (c.y1 - c.y0) / STEP });
+      // L'îlot détaché d'un Gardien tient entier dans le cadre jusqu'à sa dernière place.
+      expect(LAYOUT_LAST_ISLET_SPOT[a], a).toEqual({ x: Math.floor((c.x1 - c.x0 - ISLET_W) / STEP), y: Math.floor((c.y1 - c.y0 - ISLET_H) / STEP) });
     }
   });
 

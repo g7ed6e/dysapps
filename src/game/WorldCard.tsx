@@ -77,6 +77,8 @@ interface Props {
   commandeEnCoursDePose?: string | null;
   /** « Relier » d'une île pâle : la fiche de cet ouvrage ; `autreDepart` : depuis « Partir d'une autre île » (la caméra cadre sa liaison). */
   onVoirOuvrage: (id: string, autreDepart?: boolean) => void;
+  /** « Y aller » de la fiche d'un Gardien pas encore prêt : son lieu et ses missions, comme un toucher sur son lieu. */
+  onAllerAuLieu?: (id: BiomeId) => void;
 }
 
 /** La fiche de l'objet touché ; la page la remonte à chaque ouverture (`key`). */
@@ -234,8 +236,12 @@ function FicheDeLaBorne({ id, onClose }: Props & { id: string }) {
   );
 }
 
-/** Le Gardien : ce qu'il attend (une phrase), ou « Rallumer » quand il est prêt, déjà rallumé avec ses étoiles (GD-8). */
-function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
+/**
+ * Le Gardien : ce qu'il attend (une phrase), ou « Rallumer » quand il est prêt, déjà rallumé avec ses étoiles (GD-8).
+ * Son îlot peut se tenir loin de son lieu (7 octobre 2026, choix 4a du mainteneur) : la fiche nomme son lieu (son icône et
+ * son nom) ; « Rallumer » ouvre le défi d'ici, sans trajet du bonhomme ; pas encore prêt, « Y aller » mène à son lieu.
+ */
+function FicheDuGardien({ ile, onClose, onAllerAuLieu }: Props & { ile: BiomeId }) {
   const { state } = useBlocland();
   const textes = useTextes();
   const biome = getBiome(ile);
@@ -252,10 +258,17 @@ function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
       icone={pret ? 'flame' : 'lock'}
       // Éteint (en pierre, ou la sentinelle éteinte d'Archipéo) tant qu'il n'est pas rallumé, en couleurs ensuite (GD-8).
       portrait={portraitEnMedaillon('guardian', ile, 'flame', () => <VoxelScene cubes={vaincu ? GUARDIAN_CUBES[ile] : statueDe(GUARDIAN_CUBES[ile])} s={12} pad={2} className="creature guardian-svg" />, vaincu ? 1 : 0)}
-      lecture={`${titre}. ${phrase}`}
+      lecture={`${titre}. ${biome.name}. ${phrase}`}
       onClose={onClose}
       actions={
-        pret && (
+        !pret ? (
+          unlocked &&
+          onAllerAuLieu && (
+            <button type="button" className="button" onClick={() => onAllerAuLieu(ile)}>
+              <Icon name="play" /> Y aller
+            </button>
+          )
+        ) : (
           <Link to={`/adventure/${ile}/challenge`} className="button primary">
             {vaincu ? (
               <>
@@ -270,6 +283,10 @@ function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
         )
       }
     >
+      {/* Son lieu, en signes : son icône et son nom (son îlot peut se tenir loin de lui). */}
+      <p className="world-fiche-lieu">
+        <Icon name={biome.icon} /> {biome.name}
+      </p>
       {pret && vaincu && <Stars count={stars} label={textes.libelles.etoiles} />}
       <Phrase text={phrase} />
     </Fiche>

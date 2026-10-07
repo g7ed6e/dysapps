@@ -223,3 +223,11 @@ describe('le portrait en médaillon (P2, PR 2, Blocland)', () => {
     expect(medaillon()).toHaveAttribute('aria-hidden', 'true');
   });
 });
+
+it('le Gardien : sa fiche nomme son lieu une seule fois, avec son icône (choix 4a)', () => {
+  sauver({ progress: { ...joue(FORET) } });
+  ouvrir({ objet: { genre: 'gardien', id: FORET }, seq: 1, saut: false });
+  const f = screen.getByRole('dialog', { name: 'Le Grand Chêne' });
+  expect(f.textContent!.split('Forêt des sons')).toHaveLength(2);
+  expect(f.querySelector('.world-fiche-lieu svg')).toHaveAttribute('aria-hidden', 'true');
+});

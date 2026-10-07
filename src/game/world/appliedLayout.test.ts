@@ -7,12 +7,13 @@ import type { BiomeId } from '../biomes';
 import { sanitizeState, EMPTY_STATE } from '../engine';
 import type { World } from '../engine/state';
 import { applyLayout } from './appliedLayout';
-import { freeSpots, isFixedPlace, linksToRelink, moveIsland, routesIn, startingSpot } from './arrange';
+import { freeGuardianSpots, freeSpots, isFixedPlace, linksToRelink, moveGuardian, moveIsland, placeIn, routesIn, startingSpot } from './arrange';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import { placesOf } from './routing';
 import { toutConstruitAvecLesCommandes } from './budget';
 import { PLAFOND_DU_MONDE_EN_BLOCS, worstCaseOfRegion } from './budget';
-import { monumentIslet, poseOfSpot } from './footprint';
+import { detachedIsletCorner, footprintOf, gapBetween, guardianIsletRectangle, isletInWorld, monumentIslet, poseOfSpot } from './footprint';
+import { placeDeLaBrume } from './decor/mist';
 import { grilleDe } from './grid';
 import { placedLinksOf } from './linkGeometry';
 import { islandDef, startingIsland } from './map';
@@ -20,7 +21,7 @@ import { MONUMENT_ISLET, monumentsOf } from './monuments';
 import { layoutVersion, ORIENTATIONS, type Quarts, turnCell, turnPoint } from './placement';
 import type { Layout, LayoutTurn } from './savedLayout';
 import { HABILLAGES } from './skin';
-import { creaturePlacements, guardianPlacements, islandCenter, questStations, viewYaw, worldCubes } from './terrain';
+import { creaturePlacements, guardianPlacements, islandCenter, questStations, viewYaw, whaleSpots, worldCubes } from './terrain';
 import { monumentCenter } from './terrain/monuments';
 
 afterEach(() => {
@@ -183,5 +184,26 @@ describe('le budget, des lieux déplacés et tournés (GD-9)', () => {
     const pire = worstCaseOfRegion(a);
     expect(pire.triangles).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
     expect(pire.drawCalls).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
+  });
+});
+
+describe('le décor lit la vraie place de l’îlot d’un Gardien détaché (choix 4a du mainteneur)', () => {
+  it('la brume et les baleines évitent sa nouvelle place', () => {
+    const w = partie.world;
+    const terre = footprintOf(TOUR, placeIn(w, TOUR)).find((p) => p.genre === 'terre')!;
+    const loin = freeGuardianSpots(w, TOUR).filter((g) => g.spot).sort((g, h) => gapBetween(guardianIsletRectangle(placeIn(w, TOUR), h), terre) - gapBetween(guardianIsletRectangle(placeIn(w, TOUR), g), terre))[0];
+    const r = moveGuardian(w, TOUR, loin);
+    if (!r.ok) throw new Error('place');
+    const avant = isletInWorld(islandDef(TOUR));
+    applyLayout(r.world.layout);
+    const apres = isletInWorld(islandDef(TOUR));
+    const k = detachedIsletCorner('6e', loin.spot!);
+    expect(apres).toEqual({ x0: k.x, y0: k.y, x1: k.x + 13, y1: k.y + 12 });
+    expect(apres).not.toEqual(avant);
+    // La brume n'a plus sa place sur l'îlot, à sa nouvelle place.
+    const brume = placeDeLaBrume('6e', w.links);
+    expect(brume(apres.x0 + 6, apres.y0 + 6)).toBe(false);
+    // Aucune baleine n'y fait surface.
+    for (const b of whaleSpots('6e', w.links)) expect(b.x >= apres.x0 - 1 && b.x < apres.x1 + 1 && b.y >= apres.y0 - 1 && b.y < apres.y1 + 1).toBe(false);
   });
 });

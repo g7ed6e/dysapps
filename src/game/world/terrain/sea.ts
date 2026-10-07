@@ -1,14 +1,13 @@
 // Le large : les baleines, le décor de la mer et les nappes de brume.
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, islandDef, landBox, landCells, startingIsland, mapOf } from '../map';
-import { BIOMES } from '../../biomes';
 import { dockBox } from '../harbor';
 import { BRIDGES, getArchipelago } from '../archipelago';
-import { footprintOf, monumentIslet } from '../footprint';
+import { footprintOf, isletInWorld, monumentIslet } from '../footprint';
 import { linkBetweenJoined, LONG_LENGTH, RegionRouter } from '../routing';
 import { MONUMENT_ISLET, monumentsOf } from '../monuments';
 import type { VoxelCube } from '../cube';
 import { semerLaMer } from '../decor';
-import { bossIsletOrigin, ISLET_H, ISLET_W, rectangleDeLIlot } from './islets';
+import { rectangleDeLIlot } from './islets';
 import { bridgePath } from './links';
 import { placedLinksOf } from '../linkGeometry';
 import { bornesDeDepart, worldBounds } from './view';
@@ -112,8 +111,8 @@ export function whaleSpots(a: ArchipelagoId, links: readonly string[]): { x: num
   const land: { x: number; y: number }[] = [];
   for (const def of mapOf(a)) {
     for (const c of landCells(def)) land.push(c);
-    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
-    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) land.push({ x: o.x + x, y: o.y + y });
+    const r = isletInWorld(def);
+    for (let x = r.x0; x < r.x1; x++) for (let y = r.y0; y < r.y1; y++) land.push({ x, y });
   }
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) land.push({ x, y });

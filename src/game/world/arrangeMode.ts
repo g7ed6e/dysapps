@@ -6,7 +6,7 @@
 import { thePlace } from './placeArticle';
 import { type BiomeId, getBiome } from '../biomes';
 import type { World } from '../engine/state';
-import { getBridge } from './archipelago';
+import { getBridge, isBiomeUnlocked } from './archipelago';
 import { SIDE_OF } from './appliedLayout';
 import {
   type ArrangeResult,
@@ -22,6 +22,10 @@ import {
   isFixedPlace,
   isFreeGuardianSpot,
   isFreeSpot,
+  isletMiddle,
+  guardianPlaceNear,
+  type GuardianPlaceAt,
+  spotNear,
   landingSpots,
   type LinkEnd,
   moveGuardian,
@@ -41,15 +45,13 @@ import {
   stepSpot,
   turnGuardian,
 } from './arrange';
-import { toWorld } from './map';
+import { archipelagoOfIsland, toWorld } from './map';
+import { poseOfSpot } from './footprint';
 import { turnedSide, type Quarts, type Side } from './placement';
 import { type LinkPhrases, linkPhrases } from './linkWord';
 import { guardianSentence, ofPlace, placeSentence, type PlaceName } from './placeSentence';
 import { anchorInWorld, possibleLandings } from './routing';
-import type { LayoutGuardian, LayoutLanding, LayoutSpot, LayoutTurn } from './savedLayout';
-
-/** La place d'un Gardien le long de son lieu (son côté et son pas). */
-type GuardianPlace = Pick<LayoutGuardian, 'side' | 'step'>;
+import type { GuardianPlace, LayoutLanding, LayoutSpot, LayoutTurn } from './savedLayout';
 
 /** Ce que l'élève a choisi dans le mode, et où se tient son fantôme. */
 export type ArrangeChoice =
@@ -70,10 +72,14 @@ export function chooseIsland(world: World, id: BiomeId): ArrangeChoice | null {
   return { genre: 'lieu', id, spot: spotOf(world, id) };
 }
 
-/** Toucher un Gardien : son îlot part de sa place. */
-export function chooseGuardian(world: World, id: BiomeId): ArrangeChoice {
+/**
+ * Toucher un Gardien : son îlot part de sa place (contre son lieu, ou détaché : choix 4a du mainteneur) ; `null` pour le
+ * Gardien d'un lieu encore fermé, caché et qui ne se déplace pas avant l'ouverture (choix 6a).
+ */
+export function chooseGuardian(world: World, id: BiomeId): ArrangeChoice | null {
+  if (!isBiomeUnlocked(id, world.links)) return null;
   const g = guardianOf(world, id);
-  return { genre: 'gardien', id, place: { side: g.side, step: g.step } };
+  return { genre: 'gardien', id, place: { side: g.side, step: g.step, ...(g.spot ? { spot: g.spot } : {}) } };
 }
 
 /** Toucher une borne (clé « lieu:mission ») : elle part de sa place ; `null` si elle n'existe pas. */
@@ -134,6 +140,12 @@ export function stationInWorld(world: World, key: string, p: { x: number; y: num
   return toWorld(placeIn(world, id), p.x, p.y);
 }
 
+/** Le milieu du cœur d'un lieu posé à une place, en cases du monde. */
+function middleOfSpot(id: BiomeId, spot: LayoutSpot): { x: number; y: number } {
+  const p = poseOfSpot(archipelagoOfIsland(id), spot);
+  return { x: p.x + 8, y: p.y + 8 };
+}
+
 /** Le lieu d'un choix. */
 export function placeOfChoice(c: ArrangeChoice): BiomeId {
   if (c.genre === 'lieu' || c.genre === 'gardien') return c.id;
@@ -171,6 +183,33 @@ export function snapChoice(world: World, c: ArrangeChoice, point: { x: number; y
     case 'liaison':
       return c;
   }
+}
+
+// ---------- Glisser (7 octobre 2026, choix 1b, 2a et 3a du mainteneur) ----------
+
+/** Le milieu d'un choix qui se glisse au doigt (un lieu, l'îlot d'un Gardien), en cases du monde ; `null` pour les autres. */
+export function choiceMiddle(world: World, c: ArrangeChoice): { x: number; y: number } | null {
+  if (c.genre === 'lieu') return middleOfSpot(c.id, c.spot);
+  if (c.genre === 'gardien') return isletMiddle(world, c.id, c.place);
+  return null;
+}
+
+/**
+ * Le doigt glisse le choix, son milieu voulu en `point` (en cases du monde) : le fantôme se cale sur la place de la grille
+ * la plus proche, libre ou prise (sur une place prise, l'empreinte le montre en gris pierre, barrée) ; le même choix au
+ * bord de la carte, ou pour un choix qui ne se glisse pas. `placesDuGardien` : les places de l'îlot du Gardien glissé,
+ * calculées une fois au départ du glissé (`guardianPlacesAt`).
+ */
+export function dragChoice(world: World, c: ArrangeChoice, point: { x: number; y: number }, placesDuGardien?: readonly GuardianPlaceAt[]): ArrangeChoice {
+  if (c.genre === 'lieu') {
+    const s = spotNear(world, c.id, point, c.spot.turn);
+    return s ? { ...c, spot: s } : c;
+  }
+  if (c.genre === 'gardien') {
+    const g = guardianPlaceNear(world, c.id, point, placesDuGardien);
+    return g ? { ...c, place: g } : c;
+  }
+  return c;
 }
 
 /**
@@ -264,7 +303,12 @@ export function poseChoice(world: World, c: ArrangeChoice): ArrangeResult {
 /** Tourner un Gardien choisi : un quart de tour, tout de suite (↶ le défait), et sa phrase. */
 export function turnGuardianNow(world: World, id: BiomeId): { result: ArrangeResult; sentence: string } {
   const result = turnGuardian(world, id);
-  const sentence = result.ok ? GUARDIAN_FACING_TEXT[guardianFacing(guardianOf(result.world, id))] : '';
+  if (!result.ok) return { result, sentence: '' };
+  // Détaché (choix 4a) : ce qu'il regarde se lit depuis son îlot vers son lieu.
+  const g = guardianOf(result.world, id);
+  const ilot = isletMiddle(result.world, id, g);
+  const lieu = placeIn(result.world, id).core;
+  const sentence = GUARDIAN_FACING_TEXT[guardianFacing(g, { dx: lieu.x + 8 - ilot.x, dy: lieu.y + 8 - ilot.y })];
   return { result, sentence };
 }
 

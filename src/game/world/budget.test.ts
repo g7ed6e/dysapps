@@ -2,8 +2,10 @@ import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
 import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
-import { chooseGuardian, chooseIsland } from './arrangeMode';
+import { chooseGuardian, chooseIsland, choiceMiddle, dragChoice } from './arrangeMode';
 import { arrangeView, arrangeViewCost } from './arrangeView';
+import { freeGuardianSpots, moveGuardian, placeIn } from './arrange';
+import { gapBetween, guardianIsletRectangle, landRectangle } from './footprint';
 import { BUDGET_DES_BOUTS, BUDGET_DES_POIGNEES, coutDesBouts, coutDesPoignees, linkEndHandles } from './arrangeHandles';
 import { buildMesh } from './mesher';
 import { worldCubes } from './terrain';
@@ -245,6 +247,57 @@ it('GD-9 : au pire de chaque région, le dessin d’un choix du mode « Aménage
     expect(plus.drawCalls, a).toBeLessThanOrEqual(2);
   }
 }, 20_000);
+
+it('GD-9, choix 1b : pendant le glissé, la grille et l’empreinte (un seul appel, à la place des places libres et des poignées) tiennent sous le plafond', () => {
+  const { world } = toutConstruit();
+  for (const a of ARCHIPELAGO_IDS) {
+    const pire = worstCaseOfRegion(a);
+    let sol = 0;
+    let plus = { triangles: 0, drawCalls: 0 };
+    for (const id of mapOf(a).map((d) => d.id))
+      for (const c of [chooseIsland(world, id), chooseGuardian(world, id)].filter((c) => c !== null)) {
+        const m = choiceMiddle(world, c)!;
+        // Sur sa place, sur une place voisine, et vers un voisin (une place prise, ses cases barrées).
+        for (const [dx, dy] of [[0, 0], [12, 0], [0, -12], [-20, 8], [30, 0]]) {
+          const v = arrangeView(world, dragChoice(world, c, { x: m.x + dx, y: m.y + dy }), true);
+          sol = Math.max(sol, 2 * v.cases.filter((k) => k.genre === 'grille' || k.genre === 'empreinte' || k.genre === 'socle' || k.genre === 'conflit' || k.genre === 'barre').length);
+          const cout = arrangeViewCost(v);
+          if (cout.triangles > plus.triangles) plus = cout;
+        }
+      }
+    // Mesuré le 7 octobre 2026, après les relectures : 370 à 382 triangles au pire selon la région (la grille sur l'eau
+    // seulement, l'empreinte sur son socle, ses croix) ; 406 au 3e une fois ses îles de sciences et d'histoire-géographie
+    // arrivées (#371, #378), d'où 420 : le directeur artistique visait « 300 à 400 », sous la marge d'environ 1 000.
+    expect(sol, a).toBeLessThanOrEqual(420);
+    expect(plus.drawCalls, a).toBe(1);
+    expect(pire.triangles + plus.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+  }
+}, 30_000);
+
+it('GD-9, choix 4a : la ligne d’un Gardien détaché vers son lieu, au-dessus des poignées, un appel de plus, sous le plafond', () => {
+  const { world } = toutConstruit();
+  for (const a of ARCHIPELAGO_IDS) {
+    const pire = worstCaseOfRegion(a);
+    let plus = { triangles: 0, drawCalls: 0 };
+    for (const id of mapOf(a).map((d) => d.id)) {
+      // Son Gardien posé le plus loin possible de lui, dans sa région.
+      const terre = landRectangle(placeIn(world, id));
+      const loin = freeGuardianSpots(world, id)
+        .filter((g) => g.spot)
+        .sort((g, h) => gapBetween(guardianIsletRectangle(placeIn(world, id), h), terre) - gapBetween(guardianIsletRectangle(placeIn(world, id), g), terre))[0];
+      if (!loin) continue;
+      const r = moveGuardian(world, id, loin);
+      if (!r.ok) continue;
+      for (const c of [chooseIsland(r.world, id), chooseGuardian(r.world, id)].filter((c) => c !== null)) {
+        const cout = arrangeViewCost(arrangeView(r.world, c));
+        if (cout.triangles > plus.triangles) plus = cout;
+      }
+    }
+    // Les cases, la ligne au-dessus des poignées, les poignées : trois appels, pendant un choix seulement.
+    expect(plus.drawCalls, a).toBe(3);
+    expect(pire.triangles + plus.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+  }
+}, 60_000);
 
 it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tourner ») : un appel, 400 triangles au plus, seulement pendant un choix', () => {
   const { world } = toutConstruit();
