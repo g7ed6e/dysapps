@@ -6,7 +6,7 @@ import { chooseGuardian, chooseIsland, choiceMiddle, dragChoice } from './arrang
 import { arrangeView, arrangeViewCost } from './arrangeView';
 import { freeGuardianSpots, moveGuardian, placeIn } from './arrange';
 import { gapBetween, guardianIsletRectangle, landRectangle } from './footprint';
-import { BUDGET_DES_BOUTS, BUDGET_DES_POIGNEES, coutDesBouts, coutDesPoignees, linkEndHandles } from './arrangeHandles';
+import { BUDGET_DES_POIGNEES, coutDesPoignees } from './arrangeHandles';
 import { buildMesh } from './mesher';
 import { worldCubes } from './terrain';
 import { SHORT_LENGTH, LONG_LENGTH } from './routing';
@@ -302,7 +302,6 @@ it('GD-9, choix 4a : la ligne d’un Gardien détaché vers son lieu, au-dessus 
 it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tourner ») : un appel, 400 triangles au plus, seulement pendant un choix', () => {
   const { world } = toutConstruit();
   expect(BUDGET_DES_POIGNEES).toEqual({ triangles: 400, drawCalls: 1 });
-  expect(BUDGET_DES_BOUTS).toEqual({ triangles: 480, drawCalls: 1 });
   for (const a of ARCHIPELAGO_IDS)
     for (const id of mapOf(a).map((d) => d.id))
       for (const c of [chooseIsland(world, id), chooseGuardian(world, id)].filter((c) => c !== null)) {
@@ -318,18 +317,6 @@ it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tour
   // Hors d'un choix, rien.
   expect(arrangeViewCost(null)).toEqual({ triangles: 0, drawCalls: 0 });
 }, 20_000);
-
-it('GD-9, choix 1a : les poignées des bouts de liaison, sans choix, un appel et 480 triangles au plus, même au pire (autant de liaisons qu’un graphe planaire en a)', () => {
-  const { world } = toutConstruit();
-  for (const a of ARCHIPELAGO_IDS) {
-    const c = coutDesBouts(linkEndHandles(world, a).length);
-    expect(c.triangles, a).toBeLessThanOrEqual(BUDGET_DES_BOUTS.triangles);
-    expect(c.drawCalls, a).toBe(1);
-    // Au pire : 3 n − 6 liaisons entre n lieux, deux bouts chacune.
-    const n = mapOf(a).length;
-    expect(coutDesBouts(2 * (3 * n - 6)).triangles, a).toBeLessThanOrEqual(BUDGET_DES_BOUTS.triangles);
-  }
-});
 
 it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus)', () => {
   const { progress, world } = toutConstruit();

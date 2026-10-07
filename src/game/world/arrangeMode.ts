@@ -1,6 +1,6 @@
 // Le mode « Aménager » (GD-9, L5) : ce que l'élève a choisi (un lieu, un Gardien, une borne, une arrivée, une liaison à
-// reposer), où se tient son fantôme, et ce que font les gestes de la barre du mode : toucher la mer (le fantôme se cale
-// sur la place libre la plus proche), les flèches (un cran, même sur une place prise, que le fantôme montre d'une croix
+// reposer), où se tient son fantôme, et ce que font les gestes de la barre du mode : toucher une place du lieu d'une borne ou
+// d'une arrivée (elle s'y cale, sur la place libre la plus proche), les flèches (un cran, même sur une place prise, que le fantôme montre d'une croix
 // grise ; « Plus de place par là » au bord de la carte ; 6 octobre 2026, choix 3 du mainteneur), « Tourner », « Poser ». La phrase écrite et lue dit toujours où. Les actions elles-mêmes sont dans ./arrange.ts ; ici, le choix
 // en cours et son fantôme ; un lieu réuni emmène son voisin et leur réunion. Code pur, sans Three.js.
 import { thePlace } from './placeArticle';
@@ -100,12 +100,6 @@ export function chooseLanding(world: World, link: string, point: { x: number; y:
   return { genre: 'arrivee', link, end: bout, landing: l[bout] };
 }
 
-/** Toucher la poignée d'un bout de liaison (6 octobre 2026, choix 1a du mainteneur) : l'arrivée de ce bout. */
-export function chooseLinkEnd(world: World, link: string, end: LinkEnd): ArrangeChoice | null {
-  const l = currentLandings(world, link);
-  return l ? { genre: 'arrivee', link, end, landing: l[end] } : null;
-}
-
 /** Choisir une liaison à reposer : la première liaison où elle se pose (la plus courte). */
 export function chooseRelink(world: World, link: string): ArrangeChoice {
   return { genre: 'liaison', link, to: relinkChoices(world, link)[0] ?? null };
@@ -120,18 +114,6 @@ export function landingInWorld(world: World, id: BiomeId, l: LayoutLanding): { x
   if (!local) return toWorld(def, 8, 8);
   const a = anchorInWorld(def, local);
   return { x: a.x, y: a.y };
-}
-
-/**
- * Le bout du ponton d'une arrivée dans le monde : la case d'eau devant sa case de côte, vers le large (là où le
- * ponton de deux cubes finit, et où se pose la poignée de ce bout de liaison).
- */
-export function landingTip(world: World, id: BiomeId, l: LayoutLanding): { x: number; y: number } {
-  const p = landingInWorld(world, id, l);
-  const core = placeIn(world, id).core;
-  const ex = p.x - (core.x + 8);
-  const ey = p.y - (core.y + 8);
-  return Math.abs(ex) > Math.abs(ey) ? { x: p.x + Math.sign(ex), y: p.y } : { x: p.x, y: p.y + Math.sign(ey) };
 }
 
 /** La case d'une borne dans le monde (son lieu à sa place dans `world`), depuis sa place dans le repère du lieu. */
@@ -157,8 +139,9 @@ export function placeOfChoice(c: ArrangeChoice): BiomeId {
 // ---------- Les gestes de la barre ----------
 
 /**
- * Toucher la mer (un point en cases du monde) : le fantôme se cale sur la place libre la plus proche ; le même choix
- * s'il n'y en a aucune. Une liaison à reposer ne se cale pas : on choisit ses voisins dans la liste.
+ * Un point touché (en cases du monde) : le fantôme se cale sur la place libre la plus proche ; le même choix s'il n'y en a
+ * aucune. Seules une borne ou une arrivée se calent ainsi au toucher (la mer touchée relâche le choix, mainteneur,
+ * 7 octobre 2026) ; un lieu ou un Gardien se glissent. Une liaison à reposer ne se cale pas : on choisit ses voisins dans la liste.
  */
 export function snapChoice(world: World, c: ArrangeChoice, point: { x: number; y: number }): ArrangeChoice {
   switch (c.genre) {

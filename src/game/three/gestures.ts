@@ -17,7 +17,7 @@ import type { Signes } from './signs';
 import type { Cubes } from './cubes';
 import type { Amarre, Navire } from './ship';
 import type { Camera } from './camera';
-import { glisseCommence, pointDuPlan, quiGlisse, RELAYE_DEPUIS_UN_BOUTON, SEUIL_DU_GLISSE } from './drag';
+import { glisseCommence, pointDuPlan, quiGlisse, SEUIL_DU_GLISSE } from './drag';
 
 /** Le doigt posé sur le monde : son pointeur, où, et le point du sol saisi une fois le seuil passé (sinon `null`). */
 interface Appui {
@@ -30,11 +30,6 @@ interface Appui {
   cy: number;
   /** Un second doigt s'est posé (la vue se pince) : lever les doigts n'ouvre rien. */
   pince?: boolean;
-  /**
-   * Un glissé parti d'un bouton posé sur la scène (la poignée d'un bout de liaison, GD-9), relayé ici une fois le doigt
-   * parti (`RELAYE_DEPUIS_UN_BOUTON`) : c'est un glissé, lever le doigt n'ouvre rien.
-   */
-  relaye?: boolean;
   /**
    * Le mode « Aménager », un choix en cours : au départ du glissé, le doigt est-il parti du choix (choix 3a du
    * mainteneur) ? `undefined` : pas encore décidé ; `null` : non, la vue glisse ; sinon la hauteur du plan où il le glisse.
@@ -177,7 +172,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (down && !pince && e.pointerType === 'touch' && e.pointerId !== down.id && zoomPermis()) return pincer(e, down);
     // Un seul doigt : le second, posé pendant que le premier touche ou glisse, ne fait rien.
     if (down || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    down = { id: e.pointerId, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, ancre: null, ...(RELAYE_DEPUIS_UN_BOUTON in e ? { relaye: true } : {}) };
+    down = { id: e.pointerId, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, ancre: null };
     // Le glissé continue même si le doigt sort du canvas (sur un bouton, un panneau).
     try {
       canvas.setPointerCapture(e.pointerId);
@@ -283,8 +278,8 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     appui.cx = e.clientX;
     appui.cy = e.clientY;
     // Le mode « Aménager », un choix en cours (GD-9) : un glissé parti du choix le glisse au doigt (7 octobre 2026, choix
-    // 1b et 3a du mainteneur) ; tout autre glissé fait glisser la vue. Un glissé relayé d'un bouton (une poignée) aussi.
-    if (appui.tient === undefined && !appui.relaye && derniers.current.amenager === 'choix') {
+    // 1b et 3a du mainteneur) ; tout autre glissé fait glisser la vue.
+    if (appui.tient === undefined && derniers.current.amenager === 'choix') {
       if (!glisseCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
       // Parti d'ailleurs que du choix : la Carte glisse dès `SEUIL_DU_GLISSE`. Parti du choix : il ne part qu'au-delà
       // d'un seuil plus grand (`SEUIL_DU_CHOIX`), et d'ici là la Carte non plus (`quiGlisse`).
@@ -409,7 +404,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (pinceAvec(e.pointerId)) return finDuPincement(e);
     if (!down || e.pointerId !== down.id) return;
     const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
-    const glisse = down.ancre !== null || Boolean(down.pince) || Boolean(down.relaye);
+    const glisse = down.ancre !== null || Boolean(down.pince);
     // Le choix glissé, lâché : posé tout de suite sur une place libre (choix 2a du mainteneur).
     lacherLeChoix(down, true);
     lacher(e);
