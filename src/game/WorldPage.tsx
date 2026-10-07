@@ -931,7 +931,7 @@ export function WorldPage() {
       setFiche(null);
       return flaner(id, sol, enRoute);
     }
-    if (!mapOpen && !voyage && !ouverte) return ouvrirLIlePale(id);
+    if (!voyage && !ouverte) return ouvrirLIlePale(id);
     if (island?.id === id && !sheetOpen) return onCreature(id, 'creature');
     setFiche(null);
     // Une autre île ouverte : l'effet du changement d'île l'y emmène, jusqu'à la case touchée.

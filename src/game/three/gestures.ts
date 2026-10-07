@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { estUnBiome, type BiomeId } from '../biomes';
 import type { ArchipelagoId } from '../world/archipelago';
-import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, islandInDirection, recentrerApres, toucheRetenue, walkPose, type GroundTap, type Touche, type VoyageRun } from '../world/scene';
+import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, ileSurLaCarte, islandInDirection, recentrerApres, toucheRetenue, walkPose, type GroundTap, type Touche, type VoyageRun } from '../world/scene';
 import { lirePlaceLibre } from '../freeSpace';
 import type { RappelsDeLaVue } from '../world/view';
 import { borneDe, cleDeLaCreature, SIGNE, zoneDuToucher, type ObjetTouche, type ToucherDirect } from '../world/affordance';
@@ -511,8 +511,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
       return questIdOf(creature.object)?.biome ?? creatureIdOf(creature.object)?.id ?? null;
     }
     if (!hit) return null;
-    const tap = groundTap(archRef.current, { ...cubesDuMonde.casesTouchees(hit), ground: { x: hit.point.x, y: hit.point.z } }, tags.current, { quest: false, bridge: true, build: false });
-    return tap.kind === 'island' ? tap.id : null;
+    return ileSurLaCarte(archRef.current, { ...cubesDuMonde.casesTouchees(hit), ground: { x: hit.point.x, y: hit.point.z } }, tags.current);
   };
   /**
    * Un toucher dans le mode « Aménager » (GD-9) : un Gardien, une borne, une liaison posée (son arrivée la plus proche),
