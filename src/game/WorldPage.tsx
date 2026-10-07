@@ -1112,7 +1112,7 @@ export function WorldPage() {
         {vueDeplacee && !voyage && !bulleEnHaut && (
           // Un rond avec le visage du joueur, sans mot (mot du mainteneur, 4 octobre 2026, pour Blocland ; choix « 1a » du
           // même jour pour Archipéo) ; ses couleurs suivent l'univers (styles/global.css, `world-recentrer-tete`).
-          <button type="button" className="button world-recentrer world-recentrer-tete" onClick={recentrer} aria-label="Recentrer">
+          <button type="button" className="button world-recentrer world-recentrer-tete" data-couvre="etiquettes" onClick={recentrer} aria-label="Recentrer">
             <AvatarFace visage={visageDuJoueur(habillage)} />
           </button>
         )}

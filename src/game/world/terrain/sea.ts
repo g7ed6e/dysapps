@@ -51,6 +51,48 @@ export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly
   ],
 };
 
+/**
+ * La distance d'un point à la case la plus proche de `cells` (cases entières), la même qu'en les parcourant toutes,
+ * mais en ne regardant que les anneaux de cases autour du point, du plus proche au plus loin : rien sur l'anneau à
+ * k cases n'est à moins de k − ½, on s'arrête dès qu'on a trouvé mieux. Les parcourir toutes, pour chaque clairière
+ * possible, prenait plus d'une seconde au 6e (le test du passage de la baleine dépassait son délai en CI).
+ */
+function distanceToNearest(cells: readonly { x: number; y: number }[]): (x: number, y: number) => number {
+  if (!cells.length) return () => Infinity;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const c of cells) {
+    // Une case non entière ne s'écrirait pas dans la grille : les clairières grandiraient sans bruit.
+    if (!Number.isInteger(c.x) || !Number.isInteger(c.y)) throw new Error(`case non entière : ${c.x}, ${c.y}`);
+    x0 = Math.min(x0, c.x);
+    y0 = Math.min(y0, c.y);
+    x1 = Math.max(x1, c.x);
+    y1 = Math.max(y1, c.y);
+  }
+  const w = x1 - x0 + 1;
+  const filled = new Uint8Array(w * (y1 - y0 + 1));
+  for (const c of cells) filled[(c.y - y0) * w + (c.x - x0)] = 1;
+  return (x, y) => {
+    const cx = Math.round(x);
+    const cy = Math.round(y);
+    const far = Math.max(Math.abs(cx - x0), Math.abs(cx - x1), Math.abs(cy - y0), Math.abs(cy - y1));
+    let best = Infinity;
+    for (let k = 0; k <= far && best > k - 0.5; k++)
+      for (let dx = -k; dx <= k; dx++) {
+        const px = cx + dx;
+        if (px < x0 || px > x1) continue;
+        // Sur les bords de l'anneau, toute la colonne ; ailleurs, ses deux bouts.
+        const step = Math.abs(dx) === k ? 1 : 2 * k;
+        for (let dy = -k; dy <= k; dy += step) {
+          const py = cy + dy;
+          if (py < y0 || py > y1 || !filled[(py - y0) * w + (px - x0)]) continue;
+          const d = Math.hypot(px - x, py - y);
+          if (d < best) best = d;
+        }
+      }
+    return best;
+  };
+}
+
 const whaleCache = layoutCache<string, { x: number; y: number; r: number }[]>();
 
 /**
@@ -79,14 +121,7 @@ export function whaleSpots(a: ArchipelagoId, links: readonly string[]): { x: num
   for (const br of posees) land.push(...bridgePath(br, links));
   for (const c of seaDecor(a)) land.push(c);
   const b = worldBounds(a);
-  const clearance = (x: number, y: number) => {
-    let best = Infinity;
-    for (const c of land) {
-      const d = Math.hypot(c.x - x, c.y - y);
-      if (d < best) best = d;
-    }
-    return best;
-  };
+  const clearance = distanceToNearest(land);
   // Les baleines préfèrent le large : on note chaque clairière par sa largeur et son éloignement du centre.
   const cx = (b.minX + b.maxX) / 2;
   const cy = (b.minY + b.maxY) / 2;
