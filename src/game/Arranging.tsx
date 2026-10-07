@@ -670,7 +670,7 @@ export function useAmenagement({
       let c = choixRef.current;
       if (!c || !partDuChoix(c, point, touche)) {
         const autre = autreAPrendre(touche);
-        if (!autre) return false;
+        if (!autre || !choiceMiddle(worldRef.current, autre)) return false;
         // Choisi sans rien dire : la voix parle au lever du doigt.
         choisir(autre, undefined, true);
         c = autre;

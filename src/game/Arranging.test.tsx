@@ -279,6 +279,10 @@ describe('le mode « Aménager »', () => {
     expect(dernier.glisse).toBe(true);
     act(() => dernier.glisser.lacher(true));
     expect(dernier.choix).toMatchObject({ genre: 'lieu', id: TOUR });
+    // Un Gardien ouvert se prend de même.
+    act(() => void dernier.glisser.prendre(isletMiddle(monde, VOLCAN, guardianOf(monde, VOLCAN)), { gardien: VOLCAN }));
+    expect(dernier.choix).toMatchObject({ genre: 'gardien', id: VOLCAN });
+    act(() => dernier.glisser.lacher(false));
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
     const depart0 = spotOf(monde, VOLCAN);
     // Un glissé parti de la mer au loin : la vue glisse, le lieu reste.
