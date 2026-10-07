@@ -3,7 +3,7 @@ lieu : french-5e-homophones
 module : Homophones grammaticaux
 matière : french
 classe : 5e
-description : Ses ou ces, leur ou leurs, sans ou s’en : choisir le bon mot, la règle sous les yeux.
+description : Des mots qui se disent pareil : choisis le bon, la règle sous les yeux.
 gardien : le Sphinx des routes
 icône : compass
 créature : Sema
@@ -15,12 +15,12 @@ créature : Sema
 
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
-- description : Ses / ces, la / là / l’a, leur / leurs, peu, c’est / s’est.
+- description : Deux mots qui se disent pareil : choisis le bon.
 - compétences : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale
 
 ## Aiguillage · `choices`
 
-- description : Ma ou m’a, sans ou s’en, dans ou d’en, puis leur ou leurs, mon ou m’ont, puis la, l’a ou là.
+- description : Le bon mot dans la phrase, la règle sous les yeux.
 - compétences : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c4.fr.5e.grammaire.accords · c3.fr.langue.orthographe-grammaticale
 - bravo : Bonne route !
 - erreur : {explanation}
@@ -157,13 +157,13 @@ Pour tous les items :
 
 ### Niveau 3 · `french-5e-homophones-choices-3`
 
-- consigne : Choisis la, l’a ou là. La règle est affichée : lis-la avant de répondre.
+- consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
 - programme : c4.fr.5e.grammaire.classes-de-mots · c4.fr.5e.grammaire.accords · c4.fr.5e.vocabulaire.orthographe
 
 Pour tous les items :
 - aide « La, l’a, là » :
   - l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).
-  - Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.
+  - Avec avoir, le participe s’accorde avec le COD placé avant : la tarte, il l’a mangée.
   - la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).
   - là = à cet endroit : on peut dire « ici ».
 
@@ -172,7 +172,7 @@ Pour tous les items :
    - choix : la · l’a · là
    - réponse : l’a
    - indice : Remplace par « l’avait ».
-   - explication : « Paul l’avait écrite » fonctionne : c’est « l’a ». Le COD l’ (la lettre) est placé avant : le participe s’accorde, écrite.
+   - explication : « Paul l’avait écrite » fonctionne : c’est « l’a ». « l’ », c’est la lettre : elle est placée avant, donc on écrit écrite, avec un e.
 2. clé : la-boite
    - énoncé : Pose … boîte sur la table.
    - choix : la · l’a · là
@@ -190,19 +190,19 @@ Pour tous les items :
    - choix : la · l’a · là
    - réponse : l’a
    - indice : Remplace par « l’avait ».
-   - explication : « Le vent l’avait ouverte » fonctionne : c’est « l’a ». Le COD l’ (la porte) est placé avant : le participe s’accorde, ouverte.
+   - explication : « Le vent l’avait ouverte » fonctionne : c’est « l’a ». « l’ », c’est la porte : elle est placée avant, donc on écrit ouverte, avec un e.
 5. clé : la-chanson
-   - énoncé : Cette chanson, je … connais par cœur.
+   - énoncé : Cette chanson, Léa … chante souvent.
    - choix : la · l’a · là
    - réponse : la
-   - indice : Remplace par « l’avait » : est-ce que ça marche avec « je connais » ?
-   - explication : « Je la connais » : « la » remplace la chanson, devant le verbe. On ne peut pas dire « je l’avait connais » : ce n’est pas « l’a ».
+   - indice : Remplace par « l’avait » : est-ce que ça marche ?
+   - explication : « Léa l’avait chante » ne veut rien dire : c’est « la », devant le verbe chante. « la » remplace la chanson.
 6. clé : la-veste
    - énoncé : Ta veste ? Maman … lavée hier.
    - choix : la · l’a · là
    - réponse : l’a
    - indice : Remplace par « l’avait ».
-   - explication : « Maman l’avait lavée » fonctionne : c’est « l’a ». Le COD l’ (ta veste) est placé avant : le participe s’accorde, lavée.
+   - explication : « Maman l’avait lavée » fonctionne : c’est « l’a ». « l’ », c’est ta veste : elle est placée avant, donc on écrit lavée, avec un e.
 7. clé : la-viens
    - énoncé : Viens …, près de moi.
    - choix : la · l’a · là
@@ -214,7 +214,7 @@ Pour tous les items :
    - choix : la · l’a · là
    - réponse : l’a
    - indice : Remplace par « l’avait ».
-   - explication : « Inès l’avait prise » fonctionne : c’est « l’a ». Le COD l’ (la photo) est placé avant : le participe s’accorde, prise.
+   - explication : « Inès l’avait prise » fonctionne : c’est « l’a ». « l’ », c’est la photo : elle est placée avant, donc on écrit prise.
 
 ## Bifurcation · `homophone-sentences`
 
@@ -352,7 +352,7 @@ Pour tous les items :
    - choix : l’a / là · la / là · l’a / la
    - réponse : l’a / là
    - indice : « l’avait » : l’a. « ici » : là.
-   - explication : Il l’a (l’avait) posée là (ici). Le COD l’ (la clé) est placé avant : le participe s’accorde, posée.
+   - explication : Il l’a (l’avait) posée là (ici). « l’ », c’est la clé : elle est placée avant, donc on écrit posée, avec un e.
 
 ## Les plans
 

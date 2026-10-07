@@ -32,7 +32,7 @@
         "props": {
           "title": "Écart, et ces, ses",
           "lines": [
-            "Soustraire un négatif, c’est ajouter : 4 − (−3) = 4 + 3.",
+            "Soustraire un négatif, c’est ajouter : 5 − (−2) = 5 + 2.",
             "ces = on montre (ces livres-là). ses = les siens, les siennes."
           ]
         }
@@ -105,7 +105,7 @@
           "title": "Le plus froid, et a, à",
           "lines": [
             "Entre deux négatifs, le plus petit est le plus loin de 0 : −5 est plus petit que −1.",
-            "a = avait. à = petit mot devant un lieu (à Paris)."
+            "a = avait. à = petit mot devant un lieu (à Lyon)."
           ]
         }
       }
@@ -200,7 +200,7 @@
         "props": {
           "title": "Reculer, et ma, m’a",
           "lines": [
-            "Soustraire, c’est reculer sur la droite graduée : 1 − 4 = −3.",
+            "Soustraire, c’est reculer sur la droite graduée : 1 − 3 = −2.",
             "m’a = m’avait. ma = devant un nom (ma sœur)."
           ]
         }
@@ -273,7 +273,7 @@
           "title": "Comparer, et son, sont",
           "lines": [
             "Même numérateur : plus le dénominateur est grand, plus la part est petite.",
-            "son = le sien, la sienne (son amie). sont = étaient."
+            "son = le sien, la sienne (son livre). sont = étaient."
           ]
         }
       }

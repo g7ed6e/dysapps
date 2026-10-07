@@ -172,7 +172,7 @@
    - indice : De moins 3 à 0, puis de 0 à 4 : compte les bonds. Puis : ces ou ses ?
    - explication : 4 − (−3) = 4 + 3 = 7 degrés. « ces » montre (ces moments-là) ; « ses » veut dire les siens. 1, c’est 4 − 3 : le signe moins a été oublié.
    - aide « Écart, et ces, ses » :
-     - Soustraire un négatif, c’est ajouter : 4 − (−3) = 4 + 3.
+     - Soustraire un négatif, c’est ajouter : 5 − (−2) = 5 + 2.
      - ces = on montre (ces livres-là). ses = les siens, les siennes.
 2. énoncé : "Lina place le nombre −2\nsur la droite graduée."
    - question : Quelle phrase est juste ?
@@ -203,7 +203,7 @@
    - explication : −8 est plus petit que −2 : il fait plus froid à Oslo. On ne peut pas dire « plus froid avait Oslo » : on écrit à, avec un accent. Paris, c’est croire que −2 est plus petit parce que 2 est plus petit que 8.
    - aide « Le plus froid, et a, à » :
      - Entre deux négatifs, le plus petit est le plus loin de 0 : −5 est plus petit que −1.
-     - a = avait. à = petit mot devant un lieu (à Paris).
+     - a = avait. à = petit mot devant un lieu (à Lyon).
 5. énoncé : "Le thermomètre indique −5 °C.\nLa température monte de 3 degrés."
    - question : Quelle phrase est juste ?
    - lu : Le thermomètre indique moins 5 degrés. La température monte de 3 degrés.
@@ -242,7 +242,7 @@
    - indice : De 2, recule de 5 bonds. Puis remplace par « m’avait ».
    - explication : 2 − 5 = −3 : de 2, on recule de 5 bonds, et on passe sous 0. On peut dire « ma sœur m’avait montré » : on écrit m’a. « ma » va devant un nom (ma sœur). 3, c’est 5 − 2 : le signe moins a été oublié.
    - aide « Reculer, et ma, m’a » :
-     - Soustraire, c’est reculer sur la droite graduée : 1 − 4 = −3.
+     - Soustraire, c’est reculer sur la droite graduée : 1 − 3 = −2.
      - m’a = m’avait. ma = devant un nom (ma sœur).
 9. énoncé : "Deux amis partagent une tarte.\nChacun en prend un quart."
    - question : Quelle phrase est juste ?
@@ -273,7 +273,7 @@
     - explication : Un tiers est plus grand qu’un quart : partagé en 3, chaque part est plus grande qu’en 4. Jade a lu plus qu’Emma. On ne peut pas dire « plus que étaient amie » : on écrit son, comme « sa copine ». « Emma a lu plus », c’est croire qu’un quart est plus grand parce que 4 est plus grand que 3.
     - aide « Comparer, et son, sont » :
       - Même numérateur : plus le dénominateur est grand, plus la part est petite.
-      - son = le sien, la sienne (son amie). sont = étaient.
+      - son = le sien, la sienne (son livre). sont = étaient.
 12. énoncé : "Léo a 12 billes.\nIl perd un tiers de ses billes."
     - question : Quelle phrase est juste ?
     - lu : Léo a 12 billes. Il perd un tiers de ses billes.

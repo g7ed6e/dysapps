@@ -234,11 +234,13 @@ Pour tous les items :
 
 Pour tous les items :
 - aide « Reconnaître le temps » :
-  - Présent : ce qui se passe maintenant (nous prenons). Imparfait : -ais, -ait, -ions, -aient.
-  - Passé composé : avoir ou être au présent + participe (ils ont couru).
-  - Plus-que-parfait : avoir ou être à l’imparfait + participe (nous avions fini).
-  - Passé simple : il chanta, elle ouvrit, ils prirent.
-  - Futur : -rai, -ras, -ra, -rez. Conditionnel : -rais, -rait, -rions.
+  - Présent : -e, -es, -ons, -ez, -ent, ou -s, -s, -t.
+  - Imparfait : -ais, -ait, -ions, -iez, -aient.
+  - Passé simple : -a, -it, -ut, -èrent, -irent.
+  - Futur : -rai, -ras, -ra, -rons, -rez, -ront.
+  - Conditionnel : -rais, -rait, -rions, -riez, -raient.
+  - Passé composé : avoir ou être au présent + participe (j’ai mangé).
+  - Plus-que-parfait : avoir ou être à l’imparfait + participe (j’avais mangé).
 
 1. clé : french-5e-conjugation-subjunctive-2-0
    - énoncé : « Nous chanterions volontiers. »

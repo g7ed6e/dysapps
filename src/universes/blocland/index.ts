@@ -138,7 +138,7 @@ export const BLOCLAND = {
       challenge: 'Le Hibou lexicographe ferme son dictionnaire : « Mes plumes sont toutes grises. Tu as ouvert tous mes tiroirs : démontons les mots. »',
       guardianSays: {
         hit: 'Hou… Juste. Un bloc de mes plumes redevient brun.',
-        miss: 'Mes couleurs restent. Relis la règle affichée, et reprends.',
+        miss: 'Mes couleurs restent. Relis l’aide sous la question, et reprends.',
         beaten: 'Hou ! Je me rallume, des lunettes au livre rouge. Le cabinet est à toi, et à Plume.',
       },
     },

@@ -3,7 +3,7 @@ lieu : french-4e-vocabulary
 module : Vocabulaire
 matière : french
 classe : 4e
-description : Racines, préfixes et suffixes, sens propre et figuré, synonymes et registres, puis mais ou mes, si ou s’y, et le subjonctif.
+description : Racines, préfixes et suffixes, sens propre et figuré, synonymes et registres, puis les petits mots qui se disent pareil, et le subjonctif.
 gardien : le Hibou lexicographe
 icône : library
 créature : Plume
@@ -515,7 +515,7 @@ Pour tous les items :
 
 ## Liens · `conjunctions`
 
-- description : Mais ou mes, ni ou n’y, si ou s’y, quel ou qu’elle, puis le subjonctif après « bien que », « pour que » et « avant que ».
+- description : Des petits mots qui se disent pareil, puis le subjonctif après « bien que », « pour que », « avant que ».
 - compétences : c4.fr.langue.orthographe-lexicale · c4.fr.langue.classes-de-mots · c3.fr.langue.classes-de-mots · c4.fr.langue.temps-a-memoriser · c4.fr.langue.morphologie-verbale
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -595,7 +595,7 @@ Pour tous les items :
 - programme : c4.fr.langue.orthographe-lexicale · c4.fr.langue.classes-de-mots · c3.fr.langue.classes-de-mots
 
 Pour tous les items :
-- aide « Ni, n’y, si, s’y, quel, qu’elle » :
+- aide « Les petits mots qui se disent pareil » :
   - ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).
   - si = condition ou oui. s’y = se + y (il s’y met).
   - quel / quelle : devant un nom (quel jour, quelle heure).

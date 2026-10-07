@@ -52,7 +52,8 @@ describe('les textes d’univers', () => {
     // L'empreinte des textes des Gardiens et des espèces de Blocland, réécrits par son consultant pour GD-8 (décision du
     // mainteneur, 4 octobre 2026 : « rallumer » plutôt que « vaincre ») : un mot changé la change. Les libellés sont écrits
     // en entier ci-dessous ; le mot des grandes étapes, les noms des archipels et des rôles, que GD-1 a changés, ont
-    // leurs propres cas plus bas.
+    // leurs propres cas plus bas. Le Hibou renvoie à l’aide sous la question (programmes 2025-2026 : Sens et Nuances
+    // affichent un rappel, pas une règle).
     const t = textesDe('blocland');
     const textes = Object.fromEntries(
       BIOMES.map((b) => {
@@ -60,7 +61,7 @@ describe('les textes d’univers', () => {
         return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
-    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('aabbf268ae26ed026500058fd85c4f533f672b8f165545a615351466bc5dd459');
+    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('fc6dd81a8400ae299cda5e95f3f053ff7e9b5efbbcaf149c608724683619ae77');
     const l = t.libelles;
     expect([l.dejaFait, l.etoiles, l.etoilesSur3(2), l.resistance(2, 6), l.dejaFaitArene('Le Grand Chêne')]).toEqual([
       'Déjà rallumé. On rejoue ?',
@@ -170,7 +171,8 @@ describe('les textes communs (J8, U4)', () => {
   it('les répliques des créatures sont celles d’avant, plus les répliques ajoutées par les lots de contenu, dans les deux univers', () => {
     // L'empreinte des répliques telles qu'elles étaient dans biomes.ts avant U4 (île par île : greeting, lines, home),
     // avec la réplique d'Astra des Voix des textes (#203), celle de Kroa du Gué des temps (#230), celle de Cléa de l’Écho des pronominaux (#238), celle de Fi des Faisceaux (#247), celle de Bloquette du Troupeau (C-3), celle de Rouxel des Facettes (C-6),
-    // celle de Nénu de « Galets en colonnes » (C-1) et celle de Lavi de « Nombres géants » (C-2).
+    // celle de Nénu de « Galets en colonnes » (C-1) et celle de Lavi de « Nombres géants » (C-2) ; avec les programmes de 2025-2026,
+    // celles de Braise (la règle des signes) et de Plume (mais), et la réplique de Kroa au subjonctif remplacée.
     // Quand un univers aura ses propres répliques, l'empreinte ne vaudra plus que pour Blocland.
     for (const u of UNIVERS) {
       const t = textesDe(u);
@@ -203,7 +205,7 @@ describe('les textes communs (J8, U4)', () => {
         'technology-3e-digital',
       ];
       const r = Object.fromEntries(BIOMES.filter((b) => !APRES_U4.includes(b.id)).map((b) => [ANCIEN_LIEU[b.id], t.creatures[b.id]]));
-      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('ee5d7b2fcc1a7a49749e0a41c5077b279215383439d33d63e023e6b85b618ccf');
+      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('0be60613941ce7a8b97423e62b53c3b1925d43a137b642c8793d011ab86dba84');
     }
   });
 

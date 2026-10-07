@@ -457,7 +457,7 @@ export const ILES = [
     "module": "Homophones grammaticaux",
     "subject": "french",
     "classe": "5e",
-    "description": "Ses ou ces, leur ou leurs, sans ou s’en : choisir le bon mot, la règle sous les yeux.",
+    "description": "Des mots qui se disent pareil : choisis le bon, la règle sous les yeux.",
     "block": "french-5e-homophones",
     "guardian": "le Sphinx des routes",
     "icon": "compass",
@@ -468,7 +468,7 @@ export const ILES = [
       {
         "id": "pairs",
         "title": "Panneaux",
-        "description": "Ses / ces, la / là / l’a, leur / leurs, peu, c’est / s’est.",
+        "description": "Deux mots qui se disent pareil : choisis le bon.",
         "programme": [
           "c4.fr.5e.vocabulaire.orthographe",
           "c4.fr.5e.grammaire.classes-de-mots",
@@ -478,7 +478,7 @@ export const ILES = [
       {
         "id": "choices",
         "title": "Aiguillage",
-        "description": "Ma ou m’a, sans ou s’en, dans ou d’en, puis leur ou leurs, mon ou m’ont, puis la, l’a ou là.",
+        "description": "Le bon mot dans la phrase, la règle sous les yeux.",
         "programme": [
           "c4.fr.5e.vocabulaire.orthographe",
           "c4.fr.5e.grammaire.classes-de-mots",
@@ -701,7 +701,7 @@ export const ILES = [
     "module": "Vocabulaire",
     "subject": "french",
     "classe": "4e",
-    "description": "Racines, préfixes et suffixes, sens propre et figuré, synonymes et registres, puis mais ou mes, si ou s’y, et le subjonctif.",
+    "description": "Racines, préfixes et suffixes, sens propre et figuré, synonymes et registres, puis les petits mots qui se disent pareil, et le subjonctif.",
     "block": "french-4e-vocabulary",
     "guardian": "le Hibou lexicographe",
     "icon": "library",
@@ -740,7 +740,7 @@ export const ILES = [
       {
         "id": "conjunctions",
         "title": "Liens",
-        "description": "Mais ou mes, ni ou n’y, si ou s’y, quel ou qu’elle, puis le subjonctif après « bien que », « pour que » et « avant que ».",
+        "description": "Des petits mots qui se disent pareil, puis le subjonctif après « bien que », « pour que », « avant que ».",
         "programme": [
           "c4.fr.langue.orthographe-lexicale",
           "c4.fr.langue.classes-de-mots",
@@ -833,7 +833,7 @@ export const ILES = [
       },
       {
         "id": "ratio-sharing",
-        "title": "Partages",
+        "title": "Cargaisons",
         "description": "Partage une cargaison en deux ou trois parts selon un ratio.",
         "programme": [
           "c4.ma.b.ratio"

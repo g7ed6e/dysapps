@@ -18,10 +18,11 @@ const EDUCATION = 'https://www.education.gouv.fr/sites/default/files/';
 /** La page du BO que lie le calendrier d'éduscol pour les langues vivantes du collège. */
 const BO_LV_2025 = 'https://www.education.gouv.fr/bo/2025/Hebdo22/MENE2504621A';
 /**
- * La page du BO du français et des maths du cycle 4 : son titre a été lu dans une recherche ; l'adresse suit le modèle de
- * celles que lie le calendrier (bo/<année>/Hebdo<n>/<NOR>), la page refuse les robots (403).
+ * Le français et les maths du cycle 4 de 2026 : la référence au BO vient du titre de sa page, lu dans une recherche ;
+ * l'adresse de cette page n'a pas été lue (403) et n'est pas écrite : le lien va au PDF, comme pour les textes de 2025.
  */
-const BO_2026 = 'https://www.education.gouv.fr/bo/2026/Hebdo10/MENE2602912A';
+const PDF_FR_2026 = `${EDUCATION}document/Annexe%201%20%E2%80%93%20Programme%20de%20fran%C3%A7ais%20pour%20le%20cycle%204-480713.pdf`;
+const PDF_MA_2026 = `${EDUCATION}document/Annexe%202%20%E2%80%93%20Programme%20de%20math%C3%A9matiques%20pour%20le%20cycle%204-480716.pdf`;
 const LEGAL_2026 = 'Arrêté du 18 février 2026, Bulletin officiel n° 10 du 5 mars 2026';
 const BO_NON_LU = 'Bulletin officiel : référence non lue (le PDF ne l’écrit pas)';
 
@@ -116,10 +117,10 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
   },
   'c4-fr-2026': {
     id: 'c4-fr-2026',
-    dataset: 'Bulletin officiel n° 10 du 5 mars 2026 (MENE2602912A)',
-    datasetUrl: BO_2026,
+    dataset: 'Programme de français pour le cycle 4 (education.gouv.fr), lié par le calendrier des nouveaux programmes d’éduscol',
+    datasetUrl: PDF_FR_2026,
     title: 'Programme de français du cycle 4 (annexe 1), en vigueur en 5e depuis la rentrée 2026 (en 4e en 2027, en 3e en 2028)',
-    pdfUrl: `${EDUCATION}document/Annexe%201%20%E2%80%93%20Programme%20de%20fran%C3%A7ais%20pour%20le%20cycle%204-480713.pdf`,
+    pdfUrl: PDF_FR_2026,
     pages: 19,
     licence: INFORMATIONS_PUBLIQUES,
     legal: LEGAL_2026,
@@ -128,10 +129,10 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
   },
   'c4-ma-2026': {
     id: 'c4-ma-2026',
-    dataset: 'Bulletin officiel n° 10 du 5 mars 2026 (MENE2602912A)',
-    datasetUrl: BO_2026,
+    dataset: 'Programme de mathématiques pour le cycle 4 (education.gouv.fr), lié par le calendrier des nouveaux programmes d’éduscol',
+    datasetUrl: PDF_MA_2026,
     title: 'Programme de mathématiques du cycle 4 (annexe 2), en vigueur en 5e depuis la rentrée 2026 (en 4e en 2027, en 3e en 2028)',
-    pdfUrl: `${EDUCATION}document/Annexe%202%20%E2%80%93%20Programme%20de%20math%C3%A9matiques%20pour%20le%20cycle%204-480716.pdf`,
+    pdfUrl: PDF_MA_2026,
     pages: 20,
     licence: INFORMATIONS_PUBLIQUES,
     legal: LEGAL_2026,

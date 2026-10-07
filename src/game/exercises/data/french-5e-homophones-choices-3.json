@@ -3,7 +3,7 @@
   "biome": "french-5e-homophones",
   "type": "choices",
   "level": 3,
-  "instruction": "Choisis la, l’a ou là. La règle est affichée : lis-la avant de répondre.",
+  "instruction": "Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.",
   "programme": [
     "c4.fr.5e.grammaire.classes-de-mots",
     "c4.fr.5e.grammaire.accords",
@@ -21,14 +21,14 @@
       ],
       "answer": "l’a",
       "hint": "Remplace par « l’avait ».",
-      "explanation": "« Paul l’avait écrite » fonctionne : c’est « l’a ». Le COD l’ (la lettre) est placé avant : le participe s’accorde, écrite.",
+      "explanation": "« Paul l’avait écrite » fonctionne : c’est « l’a ». « l’ », c’est la lettre : elle est placée avant, donc on écrit écrite, avec un e.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "La, l’a, là",
           "lines": [
             "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
-            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la tarte, il l’a mangée.",
             "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
             "là = à cet endroit : on peut dire « ici »."
           ]
@@ -53,7 +53,7 @@
           "title": "La, l’a, là",
           "lines": [
             "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
-            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la tarte, il l’a mangée.",
             "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
             "là = à cet endroit : on peut dire « ici »."
           ]
@@ -78,7 +78,7 @@
           "title": "La, l’a, là",
           "lines": [
             "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
-            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la tarte, il l’a mangée.",
             "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
             "là = à cet endroit : on peut dire « ici »."
           ]
@@ -96,14 +96,14 @@
       ],
       "answer": "l’a",
       "hint": "Remplace par « l’avait ».",
-      "explanation": "« Le vent l’avait ouverte » fonctionne : c’est « l’a ». Le COD l’ (la porte) est placé avant : le participe s’accorde, ouverte.",
+      "explanation": "« Le vent l’avait ouverte » fonctionne : c’est « l’a ». « l’ », c’est la porte : elle est placée avant, donc on écrit ouverte, avec un e.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "La, l’a, là",
           "lines": [
             "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
-            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la tarte, il l’a mangée.",
             "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
             "là = à cet endroit : on peut dire « ici »."
           ]
@@ -112,23 +112,23 @@
     },
     {
       "key": "la-chanson",
-      "prompt": "Cette chanson, je … connais par cœur.",
-      "spoken": "Cette chanson, je  (mot manquant)  connais par cœur.",
+      "prompt": "Cette chanson, Léa … chante souvent.",
+      "spoken": "Cette chanson, Léa  (mot manquant)  chante souvent.",
       "choices": [
         "la",
         "l’a",
         "là"
       ],
       "answer": "la",
-      "hint": "Remplace par « l’avait » : est-ce que ça marche avec « je connais » ?",
-      "explanation": "« Je la connais » : « la » remplace la chanson, devant le verbe. On ne peut pas dire « je l’avait connais » : ce n’est pas « l’a ».",
+      "hint": "Remplace par « l’avait » : est-ce que ça marche ?",
+      "explanation": "« Léa l’avait chante » ne veut rien dire : c’est « la », devant le verbe chante. « la » remplace la chanson.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "La, l’a, là",
           "lines": [
             "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
-            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la tarte, il l’a mangée.",
             "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
             "là = à cet endroit : on peut dire « ici »."
           ]
@@ -146,14 +146,14 @@
       ],
       "answer": "l’a",
       "hint": "Remplace par « l’avait ».",
-      "explanation": "« Maman l’avait lavée » fonctionne : c’est « l’a ». Le COD l’ (ta veste) est placé avant : le participe s’accorde, lavée.",
+      "explanation": "« Maman l’avait lavée » fonctionne : c’est « l’a ». « l’ », c’est ta veste : elle est placée avant, donc on écrit lavée, avec un e.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "La, l’a, là",
           "lines": [
             "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
-            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la tarte, il l’a mangée.",
             "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
             "là = à cet endroit : on peut dire « ici »."
           ]
@@ -178,7 +178,7 @@
           "title": "La, l’a, là",
           "lines": [
             "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
-            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la tarte, il l’a mangée.",
             "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
             "là = à cet endroit : on peut dire « ici »."
           ]
@@ -196,14 +196,14 @@
       ],
       "answer": "l’a",
       "hint": "Remplace par « l’avait ».",
-      "explanation": "« Inès l’avait prise » fonctionne : c’est « l’a ». Le COD l’ (la photo) est placé avant : le participe s’accorde, prise.",
+      "explanation": "« Inès l’avait prise » fonctionne : c’est « l’a ». « l’ », c’est la photo : elle est placée avant, donc on écrit prise.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "La, l’a, là",
           "lines": [
             "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
-            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la tarte, il l’a mangée.",
             "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
             "là = à cet endroit : on peut dire « ici »."
           ]
