@@ -17,7 +17,7 @@ import type { Signes } from './signs';
 import type { Cubes } from './cubes';
 import type { Amarre, Navire } from './ship';
 import type { Camera } from './camera';
-import { glisseCommence, pointDuPlan, quiGlisse, SEUIL_DU_GLISSE } from './drag';
+import { glisseCommence, pointDuPlan, quiGlisse, SEUIL_DU_CHOIX, SEUIL_DU_GLISSE } from './drag';
 
 /** Le doigt posé sur le monde : son pointeur, où, et le point du sol saisi une fois le seuil passé (sinon `null`). */
 interface Appui {
@@ -405,11 +405,14 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (!down || e.pointerId !== down.id) return;
     const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
     const glisse = down.ancre !== null || Boolean(down.pince);
+    // Parti d'un lieu ou d'un Gardien du mode « Aménager », un doigt qui a un peu bougé sans le prendre (sous
+    // `SEUIL_DU_CHOIX`) : ni la Carte ni le choix n'ont bougé, c'est un toucher (un doigt peu précis le choisit quand même).
+    const toucherQuiTremble = !glisse && down.depuis !== undefined && moved < SEUIL_DU_CHOIX;
     // Le choix glissé, lâché : posé tout de suite sur une place libre (choix 2a du mainteneur).
     lacherLeChoix(down, true);
     lacher(e);
     // Après un glissé (ou un doigt qui a bougé pendant une marche ou un voyage), lever le doigt n'ouvre rien.
-    if (glisse || moved >= SEUIL_DU_GLISSE) return;
+    if (glisse || (moved >= SEUIL_DU_GLISSE && !toucherQuiTremble)) return;
     // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
     if (voyageRef.current) return rappels.current.onVoyageSkip?.();
     if (derniers.current.amenager !== 'non') return toucherEnAmenageant(e);
