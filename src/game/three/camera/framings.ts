@@ -43,18 +43,20 @@ export const PLANCHER_DE_LA_CARTE = 3.4;
 export const AUTOUR_DE_LA_DESTINATION = { haut: 124, bas: 64, cote: 110 };
 
 /**
- * Le zoom de la Carte, au plus près : une île (`LARGEUR_D_UNE_ILE` cases) y remplit les deux tiers du petit côté de la
- * place libre. Au plus loin, le cadrage d'ouverture (jamais sous le plancher).
+ * Le zoom de la Carte, au plus près : une île (`LARGEUR_D_UNE_ILE` cases) y remplit la moitié du petit côté de la place
+ * libre, deux îles environ en vue : la Carte reste une vue de l'archipel, le gros plan est au monde (piste A du
+ * mainteneur, 7 octobre 2026). Au plus loin, le cadrage d'ouverture (jamais sous le plancher).
  */
-export const ZOOM_DE_LA_CARTE = { ile: 2 / 3 };
+export const ZOOM_DE_LA_CARTE = { ile: 1 / 2 };
 
 /**
- * Le zoom du monde (hors de la Carte), autour du cadrage géré (1) : au plus loin, la caméra recule trois fois plus
- * (presque tout l'archipel en vue : le mainteneur trouvait ×0,75 trop court, 7 octobre 2026 ; plus loin, la vue ne
- * montre rien de plus, et son coût reste sous celui de la Carte, qui dessine tout l'archipel) ; au plus près, elle est
- * deux fois et demie plus proche (le bonhomme et les blocs en gros plan, sans passer sous la brume ni dans le sol).
+ * Le zoom du monde (hors de la Carte), autour du cadrage géré (1) : au plus loin, la caméra recule un peu moins de
+ * deux fois plus, l'île et ses voisines en vue, jamais l'archipel entier, qui est à la Carte (piste A du mainteneur,
+ * 7 octobre 2026 : le monde pour jouer, la Carte pour s'orienter ; ×0,3 montrait presque tout l'archipel, comme la
+ * Carte) ; au plus près, elle est deux fois et demie plus proche (le bonhomme et les blocs en gros plan, sans passer
+ * sous la brume ni dans le sol).
  */
-export const ZOOM_DU_MONDE = { loin: 0.3, pres: 2.5 };
+export const ZOOM_DU_MONDE = { loin: 0.6, pres: 2.5 };
 
 /** La largeur d'une île, en cases (environ, world/terrain.ts) : la mesure du zoom le plus proche. */
 export const LARGEUR_D_UNE_ILE = 22;
