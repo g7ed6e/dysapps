@@ -117,7 +117,6 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
       'Trois pommes, six euros. Une pomme ? Passe par un seul, toujours.',
       'Cinquante pour cent, c’est la moitié. Même pour les raisins.',
       'Mon échoppe est en toile. Chaque compte juste en tend un morceau.',
-      'Deux navires, une cargaison : compte d’abord les parts, puis ce que vaut une part.',
       'Sur ma carte, un centimètre, c’est tout un bout de mer. J’ai vérifié… deux fois.',
     ],
     home: 'Mon échoppe est montée ! Cent pour cent finie, pas une remise.',
@@ -134,7 +133,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
   },
   'french-5e-conjugation': {
     greeting:
-      'Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le futur, et le subjonctif dans les roseaux. Chaque verbe juste, c’est de la tourbe pour le village.',
+      'Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le présent, le futur. Chaque verbe juste, c’est de la tourbe pour le village.',
     lines: [
       'Hier je nageais, hier j’ai nagé : l’un dure, l’autre est fini.',
       'Demain je nagerai. Si j’avais des ailes, je volerais.',
@@ -202,6 +201,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
       'La médiane coupe la série rangée en deux moitiés.',
       'Mon dôme est en quartz. Chaque calcul en polit une facette.',
       'Dans mon carnet de relevés, chaque barre porte son effectif. Additionne-les tous : c’est l’effectif total.',
+      'Trois parts pour moi, deux pour toi : compte d’abord toutes les parts, puis ce que vaut une part.',
     ],
     home: 'Mon dôme de quartz est fini ! En moyenne, un bloc par calcul ; en médiane, pareil.',
   },

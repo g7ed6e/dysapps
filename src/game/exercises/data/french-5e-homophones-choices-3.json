@@ -3,204 +3,209 @@
   "biome": "french-5e-homophones",
   "type": "choices",
   "level": 3,
-  "instruction": "Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.",
+  "instruction": "Choisis la, l’a ou là. La règle est affichée : lis-la avant de répondre.",
+  "programme": [
+    "c4.fr.5e.grammaire.classes-de-mots",
+    "c4.fr.5e.grammaire.accords",
+    "c4.fr.5e.vocabulaire.orthographe"
+  ],
   "items": [
     {
-      "key": "french-5e-homophones-choices-3-0",
-      "prompt": "J’ai cherché partout, … je n’ai rien trouvé.",
-      "spoken": "J’ai cherché partout,  (mot manquant)  je n’ai rien trouvé.",
+      "key": "la-lettre",
+      "prompt": "Cette lettre, Paul … écrite hier.",
+      "spoken": "Cette lettre, Paul  (mot manquant)  écrite hier.",
       "choices": [
-        "mais",
-        "mes",
-        "met"
+        "la",
+        "l’a",
+        "là"
       ],
-      "answer": "mais",
-      "hint": "Remplace par « pourtant ».",
-      "explanation": "« J’ai cherché partout, pourtant je n’ai rien trouvé » fonctionne : c’est « mais ».",
+      "answer": "l’a",
+      "hint": "Remplace par « l’avait ».",
+      "explanation": "« Paul l’avait écrite » fonctionne : c’est « l’a ». Le COD l’ (la lettre) est placé avant : le participe s’accorde, écrite.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Mais, mes, met, m’est",
+          "title": "La, l’a, là",
           "lines": [
-            "mais = pourtant (petit, mais courageux).",
-            "mes = pluriel de « mon » (mon ami, mes amis) : on peut dire « tes ».",
-            "met = verbe mettre (il met, il mettait).",
-            "m’est = me + est (cela m’est égal, cela t’est égal)."
+            "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
+            "là = à cet endroit : on peut dire « ici »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-3-1",
-      "prompt": "… parents arrivent ce soir.",
-      "spoken": " (mot manquant)  parents arrivent ce soir.",
+      "key": "la-boite",
+      "prompt": "Pose … boîte sur la table.",
+      "spoken": "Pose  (mot manquant)  boîte sur la table.",
       "choices": [
-        "Mais",
-        "Mes",
-        "Met"
+        "la",
+        "l’a",
+        "là"
       ],
-      "answer": "Mes",
-      "hint": "Remplace par « tes » : tes parents.",
-      "explanation": "On peut dire « tes parents » : c’est « mes », le pluriel de « mon ».",
+      "answer": "la",
+      "hint": "Le mot est devant un nom.",
+      "explanation": "« la boîte » : « la » est devant le nom boîte. On ne peut pas dire « pose l’avait boîte ».",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Mais, mes, met, m’est",
+          "title": "La, l’a, là",
           "lines": [
-            "mais = pourtant (petit, mais courageux).",
-            "mes = pluriel de « mon » (mon ami, mes amis) : on peut dire « tes ».",
-            "met = verbe mettre (il met, il mettait).",
-            "m’est = me + est (cela m’est égal, cela t’est égal)."
+            "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
+            "là = à cet endroit : on peut dire « ici »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-3-2",
-      "prompt": "Il … la table avant le dîner.",
-      "spoken": "Il  (mot manquant)  la table avant le dîner.",
+      "key": "la-sac",
+      "prompt": "Mon sac est …, sous la chaise.",
+      "spoken": "Mon sac est  (mot manquant) , sous la chaise.",
       "choices": [
-        "mes",
-        "m’est",
-        "met"
+        "la",
+        "l’a",
+        "là"
       ],
-      "answer": "met",
-      "hint": "Remplace par « mettait ».",
-      "explanation": "« Il mettait la table » fonctionne : c’est le verbe mettre, « met ».",
+      "answer": "là",
+      "hint": "Remplace par « ici ».",
+      "explanation": "« Mon sac est ici » fonctionne : c’est « là », l’endroit, avec un accent.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Mais, mes, met, m’est",
+          "title": "La, l’a, là",
           "lines": [
-            "mais = pourtant (petit, mais courageux).",
-            "mes = pluriel de « mon » (mon ami, mes amis) : on peut dire « tes ».",
-            "met = verbe mettre (il met, il mettait).",
-            "m’est = me + est (cela m’est égal, cela t’est égal)."
+            "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
+            "là = à cet endroit : on peut dire « ici »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-3-3",
-      "prompt": "Tu peux prendre … crayons de couleur.",
-      "spoken": "Tu peux prendre  (mot manquant)  crayons de couleur.",
+      "key": "la-porte",
+      "prompt": "La porte ? Le vent … ouverte.",
+      "spoken": "La porte ? Le vent  (mot manquant)  ouverte.",
       "choices": [
-        "mes",
-        "met",
-        "mais"
+        "la",
+        "l’a",
+        "là"
       ],
-      "answer": "mes",
-      "hint": "Remplace par « tes » : tes crayons.",
-      "explanation": "On peut dire « tes crayons » : c’est « mes », le pluriel de « mon ».",
+      "answer": "l’a",
+      "hint": "Remplace par « l’avait ».",
+      "explanation": "« Le vent l’avait ouverte » fonctionne : c’est « l’a ». Le COD l’ (la porte) est placé avant : le participe s’accorde, ouverte.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Mais, mes, met, m’est",
+          "title": "La, l’a, là",
           "lines": [
-            "mais = pourtant (petit, mais courageux).",
-            "mes = pluriel de « mon » (mon ami, mes amis) : on peut dire « tes ».",
-            "met = verbe mettre (il met, il mettait).",
-            "m’est = me + est (cela m’est égal, cela t’est égal)."
+            "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
+            "là = à cet endroit : on peut dire « ici »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-3-4",
-      "prompt": "Elle … toujours son casque à vélo.",
-      "spoken": "Elle  (mot manquant)  toujours son casque à vélo.",
+      "key": "la-chanson",
+      "prompt": "Cette chanson, je … connais par cœur.",
+      "spoken": "Cette chanson, je  (mot manquant)  connais par cœur.",
       "choices": [
-        "mais",
-        "met",
-        "m’est"
+        "la",
+        "l’a",
+        "là"
       ],
-      "answer": "met",
-      "hint": "Remplace par « mettait ».",
-      "explanation": "« Elle mettait son casque » fonctionne : c’est le verbe mettre, « met ».",
+      "answer": "la",
+      "hint": "Remplace par « l’avait » : est-ce que ça marche avec « je connais » ?",
+      "explanation": "« Je la connais » : « la » remplace la chanson, devant le verbe. On ne peut pas dire « je l’avait connais » : ce n’est pas « l’a ».",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Mais, mes, met, m’est",
+          "title": "La, l’a, là",
           "lines": [
-            "mais = pourtant (petit, mais courageux).",
-            "mes = pluriel de « mon » (mon ami, mes amis) : on peut dire « tes ».",
-            "met = verbe mettre (il met, il mettait).",
-            "m’est = me + est (cela m’est égal, cela t’est égal)."
+            "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
+            "là = à cet endroit : on peut dire « ici »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-3-5",
-      "prompt": "Le film était long, … il était très drôle.",
-      "spoken": "Le film était long,  (mot manquant)  il était très drôle.",
+      "key": "la-veste",
+      "prompt": "Ta veste ? Maman … lavée hier.",
+      "spoken": "Ta veste ? Maman  (mot manquant)  lavée hier.",
       "choices": [
-        "met",
-        "mes",
-        "mais"
+        "la",
+        "l’a",
+        "là"
       ],
-      "answer": "mais",
-      "hint": "Remplace par « pourtant ».",
-      "explanation": "« Le film était long, pourtant il était très drôle » fonctionne : c’est « mais ».",
+      "answer": "l’a",
+      "hint": "Remplace par « l’avait ».",
+      "explanation": "« Maman l’avait lavée » fonctionne : c’est « l’a ». Le COD l’ (ta veste) est placé avant : le participe s’accorde, lavée.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Mais, mes, met, m’est",
+          "title": "La, l’a, là",
           "lines": [
-            "mais = pourtant (petit, mais courageux).",
-            "mes = pluriel de « mon » (mon ami, mes amis) : on peut dire « tes ».",
-            "met = verbe mettre (il met, il mettait).",
-            "m’est = me + est (cela m’est égal, cela t’est égal)."
+            "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
+            "là = à cet endroit : on peut dire « ici »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-3-6",
-      "prompt": "Ce qu’il pense … égal.",
-      "spoken": "Ce qu’il pense  (mot manquant)  égal.",
+      "key": "la-viens",
+      "prompt": "Viens …, près de moi.",
+      "spoken": "Viens  (mot manquant) , près de moi.",
       "choices": [
-        "m’est",
-        "mais",
-        "mes"
+        "la",
+        "l’a",
+        "là"
       ],
-      "answer": "m’est",
-      "hint": "Remplace par « t’est » : cela t’est égal.",
-      "explanation": "« Cela m’est égal » : me + est, comme « cela t’est égal ».",
+      "answer": "là",
+      "hint": "Remplace par « ici ».",
+      "explanation": "« Viens ici » fonctionne : c’est « là », l’endroit, avec un accent.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Mais, mes, met, m’est",
+          "title": "La, l’a, là",
           "lines": [
-            "mais = pourtant (petit, mais courageux).",
-            "mes = pluriel de « mon » (mon ami, mes amis) : on peut dire « tes ».",
-            "met = verbe mettre (il met, il mettait).",
-            "m’est = me + est (cela m’est égal, cela t’est égal)."
+            "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
+            "là = à cet endroit : on peut dire « ici »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-3-7",
-      "prompt": "Cette histoire … arrivée l’an dernier.",
-      "spoken": "Cette histoire  (mot manquant)  arrivée l’an dernier.",
+      "key": "la-photo",
+      "prompt": "Cette photo, Inès … prise à la mer.",
+      "spoken": "Cette photo, Inès  (mot manquant)  prise à la mer.",
       "choices": [
-        "mais",
-        "m’est",
-        "met"
+        "la",
+        "l’a",
+        "là"
       ],
-      "answer": "m’est",
-      "hint": "Remplace par « t’est » : elle t’est arrivée.",
-      "explanation": "« Cette histoire m’est arrivée » : me + est, comme « elle t’est arrivée ».",
+      "answer": "l’a",
+      "hint": "Remplace par « l’avait ».",
+      "explanation": "« Inès l’avait prise » fonctionne : c’est « l’a ». Le COD l’ (la photo) est placé avant : le participe s’accorde, prise.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Mais, mes, met, m’est",
+          "title": "La, l’a, là",
           "lines": [
-            "mais = pourtant (petit, mais courageux).",
-            "mes = pluriel de « mon » (mon ami, mes amis) : on peut dire « tes ».",
-            "met = verbe mettre (il met, il mettait).",
-            "m’est = me + est (cela m’est égal, cela t’est égal)."
+            "l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).",
+            "Avec avoir, le participe s’accorde avec le COD placé avant : la lettre, il l’a écrite.",
+            "la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).",
+            "là = à cet endroit : on peut dire « ici »."
           ]
         }
       }

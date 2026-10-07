@@ -3,7 +3,7 @@ lieu : maths-5e-proportionality
 module : Proportionnalité
 matière : maths
 classe : 5e
-description : Tableaux de proportionnalité, pourcentages, vitesses, échelles et partages, avec le tableau ou le schéma toujours affiché.
+description : Tableaux de proportionnalité, pourcentages, vitesses et échelles, avec le tableau ou le schéma toujours affiché.
 gardien : le Colporteur
 icône : ruler
 créature : Bazar
@@ -15,8 +15,8 @@ créature : Bazar
 
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
-- description : Complète un tableau de proportionnalité, puis partage une cargaison entre les navires selon un ratio.
-- compétences : c4.ma.5e.proportionnalite.proportionnalite · c3.ma.proportionnalite.proportionnalite · c4.ma.b.ratio
+- description : Complète un tableau de proportionnalité, en passant par l’unité, puis par le coefficient.
+- compétences : c4.ma.5e.proportionnalite.proportionnalite · c3.ma.proportionnalite.proportionnalite
 
 ## Remises · `percentages`
 

@@ -3,7 +3,7 @@ lieu : maths-5e-signed-numbers
 module : Nombres relatifs et fractions
 matière : maths
 classe : 5e
-description : Comparer et calculer avec des nombres négatifs, la droite sous les yeux, puis avec des fractions.
+description : Comparer, additionner et soustraire des nombres négatifs, la droite sous les yeux, puis des fractions.
 gardien : le Mammouth de givre
 icône : mountain
 créature : Frimas
@@ -25,19 +25,12 @@ créature : Frimas
 - description : Additionne et soustrais des relatifs avec le bond sur la droite.
 - compétences : c4.ma.5e.nombres.calcul-relatifs
 
-## Crevasses · `subtracting`
-
-> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
-
-- description : Multiplie et divise avec la règle des signes affichée.
-- compétences : c4.ma.a.calcul-relatifs
-
 ## Icebergs des fractions · `fractions`
 
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
-- description : Compare, puis additionne, soustrais, multiplie et divise des fractions : la règle reste affichée.
-- compétences : c4.ma.5e.nombres.fractions · c4.ma.5e.nombres.calcul-fractions · c4.ma.a.calcul-fractions
+- description : Compare, puis additionne et soustrais des fractions : la règle reste affichée.
+- compétences : c4.ma.5e.nombres.fractions · c4.ma.5e.nombres.calcul-fractions
 
 ## Les plans
 

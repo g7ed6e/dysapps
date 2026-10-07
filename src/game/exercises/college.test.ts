@@ -85,10 +85,10 @@ it('les pourcentages : nouveau prix cohérent', () => {
   }
 });
 
-it('Glacier et Marché : neuf et six exercices, huit items avec aide et explication', () => {
+it('Glacier et Marché : six et six exercices, huit items avec aide et explication', () => {
   const glacier = COLLEGE_EXERCISES.filter((e) => e.biome === 'maths-5e-signed-numbers');
   const marche = COLLEGE_EXERCISES.filter((e) => e.biome === 'maths-5e-proportionality');
-  expect(glacier).toHaveLength(9);
+  expect(glacier).toHaveLength(6);
   expect(marche).toHaveLength(6);
   for (const def of [...glacier, ...marche]) {
     expect(def.items).toHaveLength(8);
@@ -121,7 +121,9 @@ it('Forge et Atelier : exposants lisibles, notation scientifique et équations c
   }
   const forge = COLLEGE_EXERCISES.filter((e) => e.biome === 'maths-4e-powers');
   const atelier = COLLEGE_EXERCISES.filter((e) => e.biome === 'maths-4e-algebra');
-  expect(forge).toHaveLength(7);
+  // Sept exercices de puissances, puis les trois du Fourneau (relatifs et fractions, venus de la 5e).
+  expect(forge).toHaveLength(10);
+  expect(forge.filter((e) => e.type === 'subtracting').map((e) => e.level)).toEqual([1, 2, 3]);
   expect(atelier).toHaveLength(9);
   for (const def of [...forge, ...atelier]) {
     expect(def.items).toHaveLength(8);
@@ -429,7 +431,8 @@ it('Icebergs des fractions : une seule bonne réponse, calculée depuis l’éno
   const seen = { sumTrap: 0, unsimplified: 0, wrongInverse: 0, cross: 0 };
   for (let s = 0; s < 200; s++) {
     for (const level of [1, 2, 3]) {
-      const def = byId(`maths-5e-signed-numbers-fractions-${level}`);
+      // Comparer, additionner et soustraire au Glacier (5e) ; multiplier et diviser au Fourneau de la Forge (4e).
+      const def = byId(level < 3 ? `maths-5e-signed-numbers-fractions-${level}` : 'maths-4e-powers-subtracting-3');
       expect(def.instruction).not.toMatch(/[/×÷]/);
       for (const item of def.generate!(`${def.id}#glace${s}`)) {
         const list = (item.choices as string[]).map(String);

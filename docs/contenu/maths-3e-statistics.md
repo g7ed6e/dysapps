@@ -3,7 +3,7 @@ lieu : maths-3e-statistics
 module : Statistiques et probabilités
 matière : maths
 classe : 3e
-description : Moyenne, médiane, étendue d’une petite série, probabilités simples, diagrammes et fréquences, les barres sous les yeux.
+description : Moyenne, médiane, étendue, probabilités, diagrammes et fréquences, puis partager selon un ratio.
 gardien : le Comptable des étoiles
 icône : star
 créature : Stat
@@ -31,6 +31,13 @@ créature : Stat
 
 - description : Lis un diagramme ou un tableau, puis calcule une fréquence, en fraction et en pourcentage.
 - compétences : c4.ma.b.lire-donnees · c4.ma.b.effectifs-frequences
+
+## Partages · `ratio-sharing`
+
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
+
+- description : Partage une cargaison en deux ou trois parts selon un ratio.
+- compétences : c4.ma.b.ratio
 
 ## Les plans
 

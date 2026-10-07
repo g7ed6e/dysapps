@@ -13,12 +13,16 @@ import {
   translatePlaceId,
   translateResourceId,
 } from './legacyIds';
+import { movedExerciseId, movedItemId, movedPath } from './movedIds';
 
 /**
  * Le format de la partie (`dysapps:game`) : 2 depuis les champs neutres, 3 depuis les identifiants neutres (lieux,
- * ressources, parties, missions, exercices). Une partie sans numéro est d'avant.
+ * ressources, parties, missions, exercices), 4 depuis les exercices déplacés par les programmes de 2025-2026
+ * (movedIds.ts). Une partie sans numéro est d'avant.
  */
-export const GAME_VERSION = 3;
+export const GAME_VERSION = 4;
+/** Le format des identifiants neutres : une partie à ce format, ou à un format plus récent, ne repasse pas par legacyIds. */
+const NEUTRAL_IDS_VERSION = 3;
 
 function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -124,9 +128,50 @@ function translateIds(game: Record<string, unknown>): void {
   }
 }
 
+/** Deux progressions d'un même exercice réunies : les meilleures étoiles, le meilleur score, les parties cumulées. */
+function mergeProgress(a: unknown, b: unknown): unknown {
+  if (!isRecord(a) || !isRecord(b)) return isRecord(a) ? a : b;
+  const n = (v: unknown) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+  return { ...a, stars: Math.max(n(a.stars), n(b.stars)), attempts: n(a.attempts) + n(b.attempts), best: Math.max(n(a.best), n(b.best)) };
+}
+
 /**
- * La partie aux mots neutres : ses champs, puis, si elle est d'avant le format 3, ses identifiants. Les données
- * inconnues (anciennes formes comme `build` ou `placed`) passent telles quelles.
+ * Les exercices déplacés par les programmes de 2025-2026 (format 4, movedIds.ts) : leurs étoiles et leur file de
+ * révision passent au nouvel identifiant, sans rien perdre. Si le nouvel identifiant a déjà une progression (un onglet
+ * resté ouvert sur la version d'avant), les deux se réunissent. Les niveaux adaptés (`types`) ne bougent pas : les
+ * missions déplacées gardent leur type (`subtracting`), les autres repartent du niveau 1, qui est leur premier niveau.
+ * Le stock, les parties posées et les liaisons ne dépendent pas des exercices : ils restent tels quels.
+ */
+function moveExercises(game: Record<string, unknown>): void {
+  if (isRecord(game.progress)) {
+    const out: Record<string, unknown> = {};
+    for (const [id, p] of Object.entries(game.progress)) {
+      const to = movedExerciseId(id);
+      if (to === '__proto__') continue;
+      out[to] = Object.hasOwn(out, to) ? mergeProgress(out[to], p) : p;
+    }
+    game.progress = out;
+  }
+  if (Array.isArray(game.spaced)) {
+    const seen = new Set<string>();
+    game.spaced = game.spaced.flatMap((s: unknown) => {
+      if (!isRecord(s) || typeof s.itemId !== 'string') return [s];
+      const itemId = movedItemId(s.itemId);
+      // Un même item deux fois (déjà déplacé par un autre onglet) : la première entrée reste.
+      if (seen.has(itemId)) return [];
+      seen.add(itemId);
+      return [{ ...s, itemId }];
+    });
+  }
+}
+
+/** Le numéro de format d'une partie, 0 si elle n'en a pas. */
+const versionOf = (game: Record<string, unknown>): number => (typeof game.version === 'number' ? game.version : 0);
+
+/**
+ * La partie aux mots neutres : ses champs, puis, si elle est d'avant le format 3, ses identifiants, puis, d'avant le
+ * format 4, ses exercices déplacés. Les données inconnues (anciennes formes comme `build` ou `placed`) passent telles
+ * quelles.
  */
 export function translateGame(input: unknown): unknown {
   if (!isRecord(input)) return input;
@@ -144,16 +189,18 @@ export function translateGame(input: unknown): unknown {
       });
     out.world = world;
   }
-  if (out.version !== GAME_VERSION) translateIds(out);
+  const version = versionOf(out);
+  if (version < NEUTRAL_IDS_VERSION) translateIds(out);
+  if (version < GAME_VERSION) moveExercises(out);
   return out;
 }
 
 /** Les Gardiens déjà vus rallumés, par lieu. */
 const translateGuardiansSeen = (v: unknown): unknown => mapKeys(v, translatePlaceId);
 
-/** « Ma dernière mission » : l'adresse de la dernière page ouverte. */
+/** « Ma dernière mission » : l'adresse de la dernière page ouverte, sous les mots neutres, puis la mission déplacée. */
 function translateResume(v: unknown): unknown {
-  return isRecord(v) && typeof v.path === 'string' ? { ...v, path: translatePath(v.path) } : v;
+  return isRecord(v) && typeof v.path === 'string' ? { ...v, path: movedPath(translatePath(v.path)) } : v;
 }
 
 /** La progression (XP, compteurs, succès) aux mots neutres. */

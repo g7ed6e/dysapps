@@ -295,6 +295,8 @@ Les parties se posent toujours dans le même ordre, celui du dessin, quelle que 
 - une île à **trois missions** : une partie par plan (les murs, le toit, la cour) ;
 - une île à **deux missions** (la Mine des lettres) : les murs, puis le toit et la cour ensemble (« Le toit et la cour de la forge »).
 
+Quand une île gagne ou perd une mission (avec les programmes de 2025-2026, la Forge, le Cabinet et l’Observatoire des données en ont quatre, le Glacier trois), rien de ce qui est posé ne se défait : un bâtiment fini reste fini. Une mission qui change d’île garde ses étoiles et ses questions à revoir.
+
 Ce qui reste à poser est dessiné en **fantômes bleutés** dans le monde. Rien ne se pose à la main : toucher un fantôme du bâtiment y fait marcher le bonhomme, comme sur le sol.
 
 ![La cabane de Mousso en cours : les murs posés en bois, le reste en fantômes bleutés.](/captures/plan-en-cours.jpg)

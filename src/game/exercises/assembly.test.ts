@@ -18,14 +18,6 @@ for (const r of RECETTES) {
 }
 const EXERCISES = await loadAllExercises();
 
-/**
- * En attente, comme les missions qu'elles reprennent (src/game/curriculum.test.ts, EN_ATTENTE) : les questions du bloc
- * de 5e qui multiplient des relatifs ou citent des conjonctions gardent leur compétence de 2020, de la 4e et de la 3e.
- */
-const EN_ATTENTE: Record<string, readonly string[]> = {
-  'compound-5e': ['c4.ma.a.calcul-relatifs', 'c4.fr.langue.orthographe-lexicale'],
-};
-
 /** La matière (au sens du programme) de l'île qui donne un bloc. */
 function matiereDuBloc(bloc: string): string | undefined {
   return ILES.find((i) => i.block === bloc)?.subject;
@@ -95,9 +87,7 @@ describe.each(RECETTES.map((r) => [r.bloc, r] as const))('les questions du bloc 
     for (const e of entries) expect(matieres, `${bloc} cite ${e.id}, d’une autre matière`).toContain(e.discipline);
     // Au moins une compétence de la classe de l'archipel ; les autres d'une classe d'avant, jamais d'une classe d'après.
     const classe = recette.archipelago;
-    for (const e of entries)
-      if (!citable(e, classe))
-        expect(EN_ATTENTE[bloc] ?? [], `${bloc} (${classe}) cite ${e.id}, au programme de ${e.classes.join(', ')}`).toContain(e.id);
+    for (const e of entries) expect(citable(e, classe), `${bloc} (${classe}) cite ${e.id}, au programme de ${e.classes.join(', ')}`).toBeTruthy();
     expect(
       entries.some((e) => citable(e, classe) === 'classe'),
       `${bloc} ne cite aucune compétence de sa classe (${classe})`,

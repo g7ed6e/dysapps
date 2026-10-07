@@ -95,7 +95,6 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.fr.5e.grammaire.constituants': A_COUVRIR('Sujet, COD, COI, attribut, compléments circonstanciels : aucune quête de 5e encore.'),
   'c4.fr.5e.grammaire.oral-ecrit': A_COUVRIR('Grammaire de l’oral et de l’écrit, registres : aucune quête de 5e encore.'),
   'c4.fr.5e.grammaire.paroles-rapportees': A_COUVRIR('Discours direct et indirect : aucune quête de 5e encore.'),
-  'c4.fr.5e.grammaire.accords': A_COUVRIR('Chaînes d’accord et participe passé (COD placé avant) en 5e : l’île des accords est en 4e ; aucune quête de 5e encore.'),
   // ---------- Cycle 4, maths ----------
   'c4.ma.c.aires-volumes': A_COUVRIR('Aires et volumes du cycle 4 : pas encore de figure dessinée pour cela.'),
   'c4.ma.c.agrandissement': A_COUVRIR('Effet d’un agrandissement sur les aires et les volumes : aucune mission ne l’aborde.'),

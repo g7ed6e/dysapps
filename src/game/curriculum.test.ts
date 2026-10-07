@@ -16,23 +16,6 @@ function disciplineDe(b: (typeof BIOMES)[number], mission: string): string {
 
 const EXERCISES = await loadAllExercises();
 
-/**
- * En attente de la seconde moitié du lot « programmes 2025-2026 » : des missions de 5e qui travaillent une notion que
- * les textes de 2026 placent en 4e (multiplier des relatifs ou des fractions, le subjonctif, les conjonctions de
- * subordination, le ratio). Elles gardent leur compétence de 2020, réservée à la 4e et à la 3e, jusqu'à ce que la notion
- * parte en 4e ou que la mission change d'île (docs/conception/cadrage-contenu.md, « Programmes 2025-2026 ») ; la liste
- * se vide alors, et le test refuse toute nouvelle entrée qui ne servirait plus.
- */
-const EN_ATTENTE: Record<string, readonly string[]> = {
-  'french-5e-conjugation/subjunctive': ['c4.fr.langue.temps-a-memoriser', 'c4.fr.langue.morphologie-verbale'],
-  'french-5e-homophones/pairs': ['c4.fr.langue.orthographe-lexicale'],
-  'french-5e-homophones/choices': ['c4.fr.langue.orthographe-lexicale'],
-  'french-5e-homophones/homophone-sentences': ['c4.fr.langue.orthographe-lexicale'],
-  'maths-5e-signed-numbers/subtracting': ['c4.ma.a.calcul-relatifs'],
-  'maths-5e-signed-numbers/fractions': ['c4.ma.a.calcul-fractions'],
-  'maths-5e-proportionality/proportion-tables': ['c4.ma.b.ratio'],
-};
-
 /** Qui travaille quoi : missions des îles, missions du portail, exercices qui précisent leur programme. */
 function coverage(): Map<string, string[]> {
   const map = new Map<string, string[]>();
@@ -44,7 +27,6 @@ function coverage(): Map<string, string[]> {
 }
 
 it('chaque mission d’une île cite au moins une compétence, existante, sans doublon, de sa matière et de sa classe', () => {
-  const attentesServies = new Set<string>();
   for (const b of BIOMES) {
     for (const q of b.exercises) {
       const where = `${b.id}/${q.id}`;
@@ -58,17 +40,11 @@ it('chaque mission d’une île cite au moins une compétence, existante, sans d
       for (const e of entries) {
         expect(e.discipline, `${where} cite ${e.id}, d’une autre matière`).toBe(disciplineDe(b, q.id));
         // Une compétence de sa classe, ou d'une classe d'avant (consolidation) ; jamais d'une classe d'après.
-        if (citable(e, b.classe)) continue;
-        expect(EN_ATTENTE[where] ?? [], `${where} (${b.classe}) cite ${e.id}, au programme de ${e.classes.join(', ')}`).toContain(e.id);
-        attentesServies.add(`${where} ${e.id}`);
+        expect(citable(e, b.classe), `${where} (${b.classe}) cite ${e.id}, au programme de ${e.classes.join(', ')}`).toBeTruthy();
       }
-      // Une mission en attente peut n'avoir que sa notion de 4e (la règle des signes du produit, le subjonctif).
-      if (!EN_ATTENTE[where])
-        expect(entries.some((e) => citable(e, b.classe) === 'classe'), `${where} ne cite aucune compétence de sa classe (${b.classe})`).toBe(true);
+      expect(entries.some((e) => citable(e, b.classe) === 'classe'), `${where} ne cite aucune compétence de sa classe (${b.classe})`).toBe(true);
     }
   }
-  const attentes = Object.entries(EN_ATTENTE).flatMap(([where, ids]) => ids.map((id) => `${where} ${id}`));
-  expect(attentes.filter((a) => !attentesServies.has(a)), 'EN_ATTENTE : retirer ce qui ne sert plus').toEqual([]);
 });
 
 it('chaque mission du portail qui cite le programme cite des compétences existantes, de sa matière', () => {

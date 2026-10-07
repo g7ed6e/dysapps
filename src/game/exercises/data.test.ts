@@ -273,8 +273,8 @@ it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle a
       .filter((e) => e.type === 'pairs')
       .map((e) => e.id)
       .sort(),
-  ).toEqual(['ces', 'cest', 'la', 'leur', 'ou', 'peu', 'quand'].map((s) => `french-5e-homophones-pairs-${s}`).sort());
-  expect(defs.length).toBe(50);
+  ).toEqual(['ces', 'cest', 'la', 'leur', 'peu'].map((s) => `french-5e-homophones-pairs-${s}`).sort());
+  expect(defs.length).toBe(51);
   for (const def of defs)
     for (const it of def.items) {
       expect(it.choices).toContain(it.answer);

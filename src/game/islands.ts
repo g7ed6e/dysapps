@@ -372,7 +372,7 @@ export const ILES = [
     "module": "Nombres relatifs et fractions",
     "subject": "maths",
     "classe": "5e",
-    "description": "Comparer et calculer avec des nombres négatifs, la droite sous les yeux, puis avec des fractions.",
+    "description": "Comparer, additionner et soustraire des nombres négatifs, la droite sous les yeux, puis des fractions.",
     "block": "maths-5e-signed-numbers",
     "guardian": "le Mammouth de givre",
     "icon": "mountain",
@@ -398,21 +398,12 @@ export const ILES = [
         ]
       },
       {
-        "id": "subtracting",
-        "title": "Crevasses",
-        "description": "Multiplie et divise avec la règle des signes affichée.",
-        "programme": [
-          "c4.ma.a.calcul-relatifs"
-        ]
-      },
-      {
         "id": "fractions",
         "title": "Icebergs des fractions",
-        "description": "Compare, puis additionne, soustrais, multiplie et divise des fractions : la règle reste affichée.",
+        "description": "Compare, puis additionne et soustrais des fractions : la règle reste affichée.",
         "programme": [
           "c4.ma.5e.nombres.fractions",
-          "c4.ma.5e.nombres.calcul-fractions",
-          "c4.ma.a.calcul-fractions"
+          "c4.ma.5e.nombres.calcul-fractions"
         ]
       }
     ]
@@ -423,7 +414,7 @@ export const ILES = [
     "module": "Proportionnalité",
     "subject": "maths",
     "classe": "5e",
-    "description": "Tableaux de proportionnalité, pourcentages, vitesses, échelles et partages, avec le tableau ou le schéma toujours affiché.",
+    "description": "Tableaux de proportionnalité, pourcentages, vitesses et échelles, avec le tableau ou le schéma toujours affiché.",
     "block": "maths-5e-proportionality",
     "guardian": "le Colporteur",
     "icon": "ruler",
@@ -434,11 +425,10 @@ export const ILES = [
       {
         "id": "proportion-tables",
         "title": "Étals",
-        "description": "Complète un tableau de proportionnalité, puis partage une cargaison entre les navires selon un ratio.",
+        "description": "Complète un tableau de proportionnalité, en passant par l’unité, puis par le coefficient.",
         "programme": [
           "c4.ma.5e.proportionnalite.proportionnalite",
-          "c3.ma.proportionnalite.proportionnalite",
-          "c4.ma.b.ratio"
+          "c3.ma.proportionnalite.proportionnalite"
         ]
       },
       {
@@ -467,7 +457,7 @@ export const ILES = [
     "module": "Homophones grammaticaux",
     "subject": "french",
     "classe": "5e",
-    "description": "Ses ou ces, quel ou qu’elle, sans ou s’en : choisir le bon mot, la règle sous les yeux.",
+    "description": "Ses ou ces, leur ou leurs, sans ou s’en : choisir le bon mot, la règle sous les yeux.",
     "block": "french-5e-homophones",
     "guardian": "le Sphinx des routes",
     "icon": "compass",
@@ -478,23 +468,22 @@ export const ILES = [
       {
         "id": "pairs",
         "title": "Panneaux",
-        "description": "Ses / ces, ou / où, la / là / l’a, leur / leurs, quand, peu, c’est / s’est.",
+        "description": "Ses / ces, la / là / l’a, leur / leurs, peu, c’est / s’est.",
         "programme": [
           "c4.fr.5e.vocabulaire.orthographe",
           "c4.fr.5e.grammaire.classes-de-mots",
-          "c3.fr.langue.orthographe-grammaticale",
-          "c4.fr.langue.orthographe-lexicale"
+          "c3.fr.langue.orthographe-grammaticale"
         ]
       },
       {
         "id": "choices",
         "title": "Aiguillage",
-        "description": "Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt, mais / mes / met / m’est…",
+        "description": "Ma ou m’a, sans ou s’en, dans ou d’en, puis leur ou leurs, mon ou m’ont, puis la, l’a ou là.",
         "programme": [
           "c4.fr.5e.vocabulaire.orthographe",
           "c4.fr.5e.grammaire.classes-de-mots",
-          "c3.fr.langue.orthographe-grammaticale",
-          "c4.fr.langue.orthographe-lexicale"
+          "c4.fr.5e.grammaire.accords",
+          "c3.fr.langue.orthographe-grammaticale"
         ]
       },
       {
@@ -504,8 +493,7 @@ export const ILES = [
         "programme": [
           "c4.fr.5e.vocabulaire.orthographe",
           "c4.fr.5e.grammaire.classes-de-mots",
-          "c3.fr.langue.orthographe-grammaticale",
-          "c4.fr.langue.orthographe-lexicale"
+          "c3.fr.langue.orthographe-grammaticale"
         ]
       }
     ]
@@ -516,7 +504,7 @@ export const ILES = [
     "module": "Conjugaison",
     "subject": "french",
     "classe": "5e",
-    "description": "Présent, imparfait, passé composé, passé simple, futur, conditionnel, subjonctif : le bon temps, la règle affichée.",
+    "description": "Imparfait, passé composé, passé simple, futur, conditionnel : reconnaître et choisir le bon temps, la règle affichée.",
     "block": "french-5e-conjugation",
     "guardian": "l’Hydre des marais",
     "icon": "footprints",
@@ -543,12 +531,12 @@ export const ILES = [
         ]
       },
       {
-        "id": "subjunctive",
-        "title": "Roseaux du subjonctif",
-        "description": "Le subjonctif présent, puis reconnaître le temps d’un verbe.",
+        "id": "tense-recognition",
+        "title": "Reflets",
+        "description": "Reconnais le temps d’un verbe, puis son mode : indicatif ou impératif. Le tableau des temps est sous les yeux.",
         "programme": [
-          "c4.fr.langue.temps-a-memoriser",
-          "c4.fr.langue.morphologie-verbale",
+          "c4.fr.5e.grammaire.temps-modes",
+          "c4.fr.5e.grammaire.formes-verbales",
           "c3.fr.langue.reconnaitre-verbe"
         ]
       },
@@ -570,7 +558,7 @@ export const ILES = [
     "module": "Puissances et racines",
     "subject": "maths",
     "classe": "4e",
-    "description": "Puissances de 10, notation scientifique, puissances, racines carrées, nombres premiers.",
+    "description": "Puissances, notation scientifique, racines carrées, nombres premiers, puis multiplier et diviser des relatifs et des fractions.",
     "block": "maths-4e-powers",
     "guardian": "le Titan d’acier",
     "icon": "zap",
@@ -603,6 +591,15 @@ export const ILES = [
           "c4.ma.a.carres-racine",
           "c4.ma.a.divisibilite-premiers",
           "c4.ma.5e.nombres.divisibilite"
+        ]
+      },
+      {
+        "id": "subtracting",
+        "title": "Fourneau",
+        "description": "Multiplie et divise des relatifs avec la règle des signes affichée, puis des fractions.",
+        "programme": [
+          "c4.ma.a.calcul-relatifs",
+          "c4.ma.a.calcul-fractions"
         ]
       }
     ]
@@ -704,7 +701,7 @@ export const ILES = [
     "module": "Vocabulaire",
     "subject": "french",
     "classe": "4e",
-    "description": "Racines grecques et latines, préfixes et suffixes, sens propre et figuré, champ lexical, synonymes, registres et intensité.",
+    "description": "Racines, préfixes et suffixes, sens propre et figuré, synonymes et registres, puis mais ou mes, si ou s’y, et le subjonctif.",
     "block": "french-4e-vocabulary",
     "guardian": "le Hibou lexicographe",
     "icon": "library",
@@ -738,6 +735,18 @@ export const ILES = [
           "c4.fr.langue.reseaux-de-mots",
           "c4.fr.langue.oral-ecrit",
           "c3.fr.langue.synonymie"
+        ]
+      },
+      {
+        "id": "conjunctions",
+        "title": "Liens",
+        "description": "Mais ou mes, ni ou n’y, si ou s’y, quel ou qu’elle, puis le subjonctif après « bien que », « pour que » et « avant que ».",
+        "programme": [
+          "c4.fr.langue.orthographe-lexicale",
+          "c4.fr.langue.classes-de-mots",
+          "c3.fr.langue.classes-de-mots",
+          "c4.fr.langue.temps-a-memoriser",
+          "c4.fr.langue.morphologie-verbale"
         ]
       }
     ]
@@ -789,7 +798,7 @@ export const ILES = [
     "module": "Statistiques et probabilités",
     "subject": "maths",
     "classe": "3e",
-    "description": "Moyenne, médiane, étendue d’une petite série, probabilités simples, diagrammes et fréquences, les barres sous les yeux.",
+    "description": "Moyenne, médiane, étendue, probabilités, diagrammes et fréquences, puis partager selon un ratio.",
     "block": "maths-3e-statistics",
     "guardian": "le Comptable des étoiles",
     "icon": "star",
@@ -820,6 +829,14 @@ export const ILES = [
         "programme": [
           "c4.ma.b.lire-donnees",
           "c4.ma.b.effectifs-frequences"
+        ]
+      },
+      {
+        "id": "ratio-sharing",
+        "title": "Partages",
+        "description": "Partage une cargaison en deux ou trois parts selon un ratio.",
+        "programme": [
+          "c4.ma.b.ratio"
         ]
       }
     ]
@@ -984,7 +1001,7 @@ export const ILES = [
   {
     "id": "english-6e-grammar",
     "name": "Horloge des verbes",
-    "module": "Grammaire : to be, have got, présent simple",
+    "module": "Grammaire : to be, have, présent simple",
     "subject": "english",
     "classe": "6e",
     "description": "Am, is ou are ; have ou has ; le s de he, she, it : les verbes de base, la règle sous les yeux.",
@@ -1006,8 +1023,8 @@ export const ILES = [
       },
       {
         "id": "have-got",
-        "title": "Have got",
-        "description": "Have got ou has got, pour dire ce qu’on a.",
+        "title": "Have ou has",
+        "description": "Have ou has, pour dire ce qu’on a ; puis do et does pour la question et la négation.",
         "programme": [
           "c3.en.langue.groupe-verbal"
         ]
