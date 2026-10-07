@@ -4,7 +4,7 @@
 // reposer. Absent ou invalide, c'est la carte de départ ; une région dont les lieux sont invalides est oubliée seule,
 // les autres restent ; une borne, une arrivée, un raccourci ou une liaison à reposer invalide n'oublie qu'elle-même.
 // Ici, la forme de la donnée (des règles, sans le monde) ; qu'une disposition tienne sur la grille (dans son cadre, ses
-// lieux assez écartés) se vérifie quand on la pose (`posesOfLayout`, ./footprint.ts). Aucun écran ne l'écrit
+// lieux assez écartés, l'îlot détaché d'un Gardien loin de tout lieu) se vérifie quand on la pose (`posesOfLayout`, ./footprint.ts). Aucun écran ne l'écrit
 // encore (le geste « Aménager » vient avec la PR 2). Code pur, sans Three.js.
 import { BIOMES, getBiome, type BiomeId } from '../biomes';
 import { getBridge } from './archipelago';
@@ -26,12 +26,21 @@ export interface LayoutSpot {
   turn: LayoutTurn;
 }
 
-/** La place d'un Gardien : le côté de son lieu où se tient son îlot, sa place le long de ce côté (en pas), son orientation. */
+/**
+ * La place d'un Gardien : le côté de son lieu où se tient son îlot, sa place le long de ce côté (en pas), son orientation.
+ * Détaché de son lieu (GD-9, 7 octobre 2026, choix 4a du mainteneur) : `spot`, la place du coin de son îlot sur la grille
+ * de la région, en pas depuis le coin de son cadre ; `side` et `step` ne comptent plus (devant, au pas 0). Absente : il
+ * se tient contre son lieu (`side`, `step`), comme avant.
+ */
 export interface LayoutGuardian {
   side: LayoutSide;
   step: number;
   turn: LayoutTurn;
+  spot?: { x: number; y: number };
 }
+
+/** Où se tient l'îlot d'un Gardien, sans son orientation : contre son lieu (`side`, `step`), ou détaché (`spot`). */
+export type GuardianPlace = Pick<LayoutGuardian, 'side' | 'step' | 'spot'>;
 
 /** L'arrivée d'une liaison sur un lieu : le côté du lieu (dans son repère) et la place le long de ce côté, en pas. */
 export interface LayoutLanding {
@@ -43,7 +52,7 @@ export interface LayoutLanding {
 export interface RegionLayout {
   /** La place et l'orientation de chaque lieu déplacé. */
   islands?: Partial<Record<BiomeId, LayoutSpot>>;
-  /** Le côté, la place et l'orientation de chaque Gardien déplacé. */
+  /** Le côté, la place (ou la place détachée, `spot`) et l'orientation de chaque Gardien déplacé. */
   guardians?: Partial<Record<BiomeId, LayoutGuardian>>;
   /** La place de chaque borne déplacée (clé « lieu:mission »), en cases du repère de son lieu. */
   stations?: Record<string, { x: number; y: number }>;
@@ -112,7 +121,8 @@ function isStationKey(a: ArchipelagoId, key: string): boolean {
 /**
  * La disposition d'une région, lue et vérifiée, ou `null` si rien n'en reste (la carte de départ). Les lieux et les
  * lieux réunis vont ensemble : une entrée invalide de `islands`, `joined` ou `guardians` fait oublier toute la région. Une
- * entrée invalide de `stations`, `landings`, `shortcuts` ou `relink` n'oublie qu'elle-même.
+ * entrée invalide de `stations`, `landings`, `shortcuts` ou `relink` n'oublie qu'elle-même ; la place détachée invalide
+ * d'un Gardien (`spot`) le ramène seulement devant son lieu.
  */
 function readRegion(a: ArchipelagoId, raw: unknown): RegionLayout | null {
   if (!isRecord(raw)) return null;
@@ -144,9 +154,19 @@ function readRegion(a: ArchipelagoId, raw: unknown): RegionLayout | null {
   if (raw.guardians !== undefined) {
     if (!isRecord(raw.guardians)) return null;
     const guardians: Partial<Record<BiomeId, LayoutGuardian>> = {};
+    const max = LAYOUT_LAST_SPOT[a];
     for (const [id, g] of Object.entries(raw.guardians)) {
       if (!isIslandOf(a, id) || !isRecord(g) || !isSide(g.side) || !isInt(g.step) || Math.abs(g.step) > 8 || !isTurn(g.turn)) return null;
-      guardians[id] = { side: g.side, step: g.step, turn: g.turn };
+      if (g.spot === undefined) {
+        guardians[id] = { side: g.side, step: g.step, turn: g.turn };
+        continue;
+      }
+      // Détaché (choix 4a) : une place hors de la grille de la région n'en est pas une ; l'îlot revient devant son lieu,
+      // et rien d'autre ne s'oublie.
+      const s = g.spot;
+      const x = isRecord(s) && isInt(s.x) && s.x >= 0 && s.x <= max.x ? s.x : null;
+      const y = isRecord(s) && isInt(s.y) && s.y >= 0 && s.y <= max.y ? s.y : null;
+      guardians[id] = x !== null && y !== null ? { side: 'front', step: 0, turn: g.turn, spot: { x, y } } : { side: 'front', step: 0, turn: g.turn };
     }
     if (Object.keys(guardians).length) out.guardians = guardians;
   }

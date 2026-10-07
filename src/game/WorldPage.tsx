@@ -66,7 +66,7 @@ import { villageStage } from './world/villageStage';
 import { dispositionEnGrille, type BoutsDuTrajet } from './world/grid';
 import type { Entite, Intention, ObjetDeLaFiche, Point } from './world/layout';
 import { resteDuTrajet } from './world/arrival';
-import type { Bonhomme } from './world/view';
+import type { Bonhomme, GlisserLeChoix } from './world/view';
 import { partiesDe, prochainePartie } from './world/parts';
 import { Loading } from '../components/Loading';
 import {
@@ -110,6 +110,8 @@ declare global {
     __dysappsFiche?: (objet: ObjetDeLaFiche) => void;
     /** Un toucher dans le mode « Aménager », pour les captures (en développement, ou avec `?mesures`). */
     __dysappsAmenager?: (i: Intention) => void;
+    /** Un glissé du choix dans le mode « Aménager », tenu sans lever, pour les captures (même garde). */
+    __dysappsGlisser?: () => GlisserLeChoix;
   }
 }
 
@@ -820,12 +822,17 @@ export function WorldPage() {
 
   // Pour les captures (en développement, ou avec `?mesures`) : un toucher dans le mode « Aménager », sans viser la scène.
   const intentionRef = useRef<(i: Intention) => void>(() => {});
+  const glisserRef = useRef<GlisserLeChoix>(amenagement.glisser);
+  glisserRef.current = amenagement.glisser;
   useEffect(() => {
     if (!(import.meta.env.DEV || mesuresDemandees())) return;
     const toucher = (i: Intention) => intentionRef.current(i);
     window.__dysappsAmenager = toucher;
+    const glisser = () => glisserRef.current;
+    window.__dysappsGlisser = glisser;
     return () => {
       if (window.__dysappsAmenager === toucher) delete window.__dysappsAmenager;
+      if (window.__dysappsGlisser === glisser) delete window.__dysappsGlisser;
     };
   }, []);
 
@@ -1052,7 +1059,7 @@ export function WorldPage() {
             liaisonCadree={fiche?.cadrer && fiche.objet.genre === 'ouvrage' ? fiche.objet.id : null}
             // Dans le mode « Aménager », « Poser » ou ✓ Valider est le seul élément mis en avant.
             marker={enAmenageant ? null : marker}
-            amenager={enAmenageant ? { vue: amenagement.vue, bouts: amenagement.boutsDuMonde, cadre: amenagement.cadre, ecran: suiviDuChoix.suivre, touchers: suiviDuChoix.touchers } : null}
+            amenager={enAmenageant ? { vue: amenagement.vue, bouts: amenagement.boutsDuMonde, cadre: amenagement.cadre, ecran: suiviDuChoix.suivre, touchers: suiviDuChoix.touchers, glisser: amenagement.glisser } : null}
             geste={amenagement.geste}
             imageDeLaCarte={imageDeLaCarte}
             vehicle={vehicle}
@@ -1204,6 +1211,10 @@ export function WorldPage() {
               onLivree={poserLaCommande}
               commandeEnCoursDePose={vague?.commande ?? null}
               onVoirOuvrage={voirOuvrage}
+              onAllerAuLieu={(id) => {
+                setFiche(null);
+                onIsland(id);
+              }}
             />
           </div>
         )}

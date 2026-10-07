@@ -2,7 +2,7 @@ import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
 import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
-import { chooseGuardian, chooseIsland } from './arrangeMode';
+import { chooseGuardian, chooseIsland, choiceMiddle, dragChoice } from './arrangeMode';
 import { arrangeView, arrangeViewCost } from './arrangeView';
 import { BUDGET_DES_BOUTS, BUDGET_DES_POIGNEES, coutDesBouts, coutDesPoignees, linkEndHandles } from './arrangeHandles';
 import { buildMesh } from './mesher';
@@ -239,6 +239,30 @@ it('GD-9 : au pire de chaque région, le dessin d’un choix du mode « Aménage
     expect(plus.drawCalls, a).toBeLessThanOrEqual(2);
   }
 }, 20_000);
+
+it('GD-9, choix 1b : pendant le glissé, la grille et l’empreinte (un seul appel, à la place des places libres et des poignées) tiennent sous le plafond', () => {
+  const { world } = toutConstruit();
+  for (const a of ARCHIPELAGO_IDS) {
+    const pire = worstCaseOfRegion(a);
+    let sol = 0;
+    let plus = { triangles: 0, drawCalls: 0 };
+    for (const id of mapOf(a).map((d) => d.id))
+      for (const c of [chooseIsland(world, id), chooseGuardian(world, id)].filter((c) => c !== null)) {
+        const m = choiceMiddle(world, c)!;
+        // Sur sa place, sur une place voisine, et vers un voisin (une place prise, ses cases barrées).
+        for (const [dx, dy] of [[0, 0], [12, 0], [0, -12], [-20, 8], [30, 0]]) {
+          const v = arrangeView(world, dragChoice(world, c, { x: m.x + dx, y: m.y + dy }), true);
+          sol = Math.max(sol, 2 * v.cases.filter((k) => k.genre === 'grille' || k.genre === 'empreinte' || k.genre === 'conflit' || k.genre === 'barre').length);
+          const cout = arrangeViewCost(v);
+          if (cout.triangles > plus.triangles) plus = cout;
+        }
+      }
+    // Mesuré le 7 octobre 2026 : 394 à 418 triangles au pire selon la région (9 × 9 places, l'empreinte et ses croix).
+    expect(sol, a).toBeLessThanOrEqual(420);
+    expect(plus.drawCalls, a).toBe(1);
+    expect(pire.triangles + plus.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+  }
+}, 30_000);
 
 it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tourner ») : un appel, 400 triangles au plus, seulement pendant un choix', () => {
   const { world } = toutConstruit();

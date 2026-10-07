@@ -118,10 +118,31 @@ const ALLURE: Readonly<Record<ArrangeCellKind, { l: number; couleur: number }>> 
   liaison: { l: 0.7, couleur: 0xffffff },
   barree: { l: 0.7, couleur: 0xd8432f },
   croix: { l: 0.85, couleur: 0xd8432f },
+  // Le glissé (choix 1b du mainteneur) : la grille en carrés plats crème, l'empreinte claire, le conflit en gris pierre
+  // barré de sombre (la croix dit « prise » avec la couleur).
+  grille: { l: 1, couleur: 0xf2e6c8 },
+  empreinte: { l: 1, couleur: 0xffffff },
+  conflit: { l: 1, couleur: 0x8c877d },
+  barre: { l: 1, couleur: 0x2f2b26 },
+  // La ligne en pointillés d'un Gardien détaché vers son lieu (choix 4a).
+  lien: { l: 0.7, couleur: 0xffffff },
 };
+
+/** Archipéo (rattrapage du jeu commun) : la grille en Brume (#E5EBE3), la croix en Nuit océan (#142B38). */
+const ALLURE_PEINTE: Readonly<Partial<Record<ArrangeCellKind, { l: number; couleur: number }>>> = {
+  grille: { l: 1, couleur: 0xe5ebe3 },
+  conflit: { l: 1, couleur: 0x8e958f },
+  barre: { l: 1, couleur: 0x142b38 },
+};
+
+/** Une barre de croix : sa longueur (sur la diagonale d'une place) et sa largeur, en part du côté de la place. */
+const BARRE = { long: 1.25, large: 0.16 };
 
 /** Au-dessus du dessus de la case : le carré ne se mêle jamais au sol ni à l'eau. */
 const AU_DESSUS = 0.04;
+
+/** L'axe vertical de la scène : une barre de croix tourne autour de lui. */
+const HAUT = new THREE.Vector3(0, 1, 0);
 
 /** La texture des carrés : blanche, bordée d'un contour sombre de deux pixels sur seize (générée ici, rien d'importé). */
 function textureBordee(): THREE.DataTexture {
@@ -255,6 +276,9 @@ export function creerAmenagement(
   const matiere = new THREE.MeshBasicMaterial({ map: bordure, transparent: true, opacity: 0.92, depthWrite: false });
   let cases: THREE.InstancedMesh | null = null;
   const m = new THREE.Matrix4();
+  const tourne = new THREE.Quaternion();
+  const ici3 = new THREE.Vector3();
+  const echelle = new THREE.Vector3();
   const couleur = new THREE.Color();
   // Le voile de brume d'Archipéo : un plan au-dessus du lieu, qui glisse de l'ancienne place à la nouvelle, un appel de
   // dessin le temps du geste.
@@ -494,9 +518,15 @@ export function creerAmenagement(
       dessin.raycast = () => {};
       dessin.renderOrder = 2;
       vue.cases.forEach((c, i) => {
-        const a = ALLURE[c.genre];
+        const a = (!blocs && ALLURE_PEINTE[c.genre]) || ALLURE[c.genre];
         const l = a.l * (c.l ?? 1);
-        m.makeScale(l, 1, l).setPosition(c.x + 0.5, c.z + 1 + AU_DESSUS, c.y + 0.5);
+        if (c.angle !== undefined) {
+          // Une barre de croix, tournée sur l'eau, un peu au-dessus de sa place (dessinée après elle).
+          tourne.setFromAxisAngle(HAUT, c.angle);
+          ici3.set(c.x + 0.5, c.z + 1 + AU_DESSUS, c.y + 0.5);
+          echelle.set(l * BARRE.long, 1, l * BARRE.large);
+          m.compose(ici3, tourne, echelle);
+        } else m.makeScale(l, 1, l).setPosition(c.x + 0.5, c.z + 1 + AU_DESSUS, c.y + 0.5);
         dessin.setMatrixAt(i, m);
         dessin.setColorAt(i, couleur.setHex(a.couleur));
       });

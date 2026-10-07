@@ -6,9 +6,9 @@
 // Code pur, sans Three.js.
 import { getBridge } from './archipelago';
 import { ARCHIPELAGO_IDS } from './archipelagos';
-import { fittingPlaces, posesOfLayout } from './footprint';
+import { fittingPlaces, frameOf, posesOfLayout } from './footprint';
 import { setLinkLayout } from './linkGeometry';
-import { type GuardianPose, layoutVersion, placeFixtures, placeIslands, placeJoins, type Side } from './placement';
+import { type GuardianPose, layoutVersion, placeFixtures, placeIslands, placeJoins, type Side, STEP } from './placement';
 import type { BiomeId } from '../biomes';
 import type { LinkLandings } from './routing';
 import type { Layout, LayoutSide } from './savedLayout';
@@ -40,7 +40,16 @@ function fixturesOf(layout: Layout | undefined): [Map<BiomeId, GuardianPose>, Ma
   for (const a of ARCHIPELAGO_IDS) {
     const r = layout?.[a];
     if (!r) continue;
-    for (const [id, g] of Object.entries(r.guardians ?? {})) if (g) gardiens.set(id as BiomeId, { side: g.side, step: g.step, turn: g.turn });
+    const c = frameOf(a);
+    for (const [id, g] of Object.entries(r.guardians ?? {}))
+      if (g)
+        gardiens.set(id as BiomeId, {
+          side: g.side,
+          step: g.step,
+          turn: g.turn,
+          // Détaché (choix 4a) : le coin de son îlot dans le monde.
+          ...(g.spot ? { spot: g.spot, at: { x: c.x0 + g.spot.x * STEP, y: c.y0 + g.spot.y * STEP } } : {}),
+        });
     for (const [k, p] of Object.entries(r.stations ?? {})) bornes.set(k, { x: p.x, y: p.y });
   }
   return [gardiens, bornes];

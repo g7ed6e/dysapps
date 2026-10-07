@@ -159,8 +159,9 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [liaisonCadree, bridges.join(',')]);
   const modeDAmenager = amenager ? (amenager.vue ? 'choix' : 'mode') : 'non';
-  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd, amenager: modeDAmenager });
-  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd, amenager: modeDAmenager };
+  const glisserLeChoix = amenager?.glisser ?? null;
+  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd, amenager: modeDAmenager, glisserLeChoix });
+  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd, amenager: modeDAmenager, glisserLeChoix };
   // Le passage de la baleine : demandé par `whalePass`, joué une fois par `seq` (même si la scène est refaite).
   const passSeqRef = useRef<number | null>(null);
   // Les liaisons posées (GD-9), lues par la scène quand elle se construit et à chaque trajet : elle n'est pas refaite pour elles.

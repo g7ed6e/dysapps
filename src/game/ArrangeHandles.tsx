@@ -169,7 +169,8 @@ export function ArrangeHandles({ amenagement, suivi }: { amenagement: Amenagemen
   const boite = useRef<HTMLDivElement>(null);
   const [relai] = useState(relaiDuGlisse);
   const lesBouts = !choix && !geste && bouts?.length ? bouts : null;
-  const visible = (Boolean(choix) && !geste) || lesBouts !== null;
+  // Pendant le glissé, les flèches se cachent (choix 1b du mainteneur) : elles reviennent au lever du doigt.
+  const visible = (Boolean(choix) && !geste && !amenagement.glisse) || lesBouts !== null;
   const poignees = choix ? (vue?.poignees?.liste ?? []) : [];
   // Les places qui colleraient le lieu choisi à un voisin (choix 2a) : l'icône de « Réunir » posée dessus.
   const nReunions = choix ? (vue?.reunions?.length ?? 0) : 0;

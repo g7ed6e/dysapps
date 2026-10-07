@@ -9,6 +9,8 @@ import { isLandInWorld, mapOf } from './map';
 import {
   type ArrangeChoice,
   choiceFits,
+  choiceMiddle,
+  dragChoice,
   chooseGuardian,
   chooseIsland,
   chooseLanding,
@@ -141,13 +143,15 @@ describe('un lieu : caler, décaler, tourner, poser', () => {
 describe('un Gardien, une borne, une arrivée, une liaison à reposer', () => {
   it('un Gardien se cale autour de son lieu, se pose, et tourne avec sa phrase', () => {
     const w = partie();
-    const c = snapChoice(w, chooseGuardian(w, VOLCAN), { x: 0, y: 1000 });
+    const c = snapChoice(w, chooseGuardian(w, VOLCAN)!, { x: 0, y: 1000 });
     if (c.genre !== 'gardien') throw new Error('gardien');
-    expect(c.place.side).not.toBe('front');
+    // La place libre la plus proche du point : contre son lieu ou détachée (choix 4a), jamais celle d'où il part.
+    expect(c.place.spot !== undefined || c.place.side !== 'front' || c.place.step !== 0).toBe(true);
     expect(choiceSentence(w, c)).toMatch(/^Le Gardien du Volcan des décimaux : .+ de son île\.$/);
     const r = poseChoice(w, c);
     if (!r.ok) throw new Error(r.reason);
     expect(guardianOf(r.world, VOLCAN).side).toBe(c.place.side);
+    expect(guardianOf(r.world, VOLCAN).spot).toEqual(c.place.spot);
     const t = turnGuardianNow(r.world, VOLCAN);
     expect(t.sentence).toMatch(/^Il regarde/);
     expect(arrangeView(w, c).cases.some((x) => x.genre === 'fantome')).toBe(true);
@@ -200,5 +204,78 @@ describe('un Gardien, une borne, une arrivée, une liaison à reposer', () => {
       expect(p.ok).toBe(true);
       if (p.ok) expect(linksToRelink(p.world, '6e')).not.toContain(relink[0]);
     }
+  });
+});
+
+describe('glisser au doigt (7 octobre 2026, choix 1b, 2a, 3a, 6a du mainteneur)', () => {
+  /** Le coût de la grille et de l'empreinte d'un dessin : deux triangles par carré, barres comprises. */
+  const coutDuSol = (v: ReturnType<typeof arrangeView>) => 2 * v.cases.filter((k) => ['grille', 'empreinte', 'conflit', 'barre'].includes(k.genre)).length;
+
+  it('un lieu suit le doigt place par place, libre ou prise ; la grille et l’empreinte se dessinent, les flèches se cachent', () => {
+    const w = partie();
+    const c = chooseIsland(w, VOLCAN)!;
+    if (c.genre !== 'lieu') throw new Error('lieu');
+    const m = choiceMiddle(w, c)!;
+    // Sur sa place : rien ne bouge.
+    expect(dragChoice(w, c, { x: m.x + 1, y: m.y - 1 })).toEqual(c);
+    // Une place libre plus loin, puis une place prise (sur un voisin) : le fantôme y va quand même.
+    const libre = freeSpots(w, VOLCAN).find((s) => Math.abs(s.x - c.spot.x) + Math.abs(s.y - c.spot.y) > 3)!;
+    const versLibre = dragChoice(w, c, choiceMiddle(w, { ...c, spot: libre })!);
+    expect(versLibre).toEqual({ ...c, spot: libre });
+    expect(choiceFits(w, versLibre)).toBe(true);
+    const voisin = mapOf('6e').find((d) => d.id !== VOLCAN)!.id;
+    const surVoisin = dragChoice(w, c, { x: placeIn(w, voisin).core.x + 8, y: placeIn(w, voisin).core.y + 8 });
+    if (surVoisin.genre !== 'lieu') throw new Error('lieu');
+    expect(choiceFits(w, surVoisin)).toBe(false);
+    // Pendant le glissé : la grille (9 × 9 places autour), l'empreinte, pas de places jaunes ni de poignées.
+    const v = arrangeView(w, versLibre, true);
+    expect(v.poignees).toBeUndefined();
+    expect(v.cases.some((k) => k.genre === 'place')).toBe(false);
+    expect(v.cases.filter((k) => k.genre === 'grille').length).toBeGreaterThan(30);
+    expect(v.cases.some((k) => k.genre === 'empreinte')).toBe(true);
+    expect(v.cases.some((k) => k.genre === 'conflit')).toBe(false);
+    // Sur une place prise : les cases en conflit en gris pierre, chacune barrée de deux barres (jamais la couleur seule).
+    const vp = arrangeView(w, surVoisin, true);
+    const conflits = vp.cases.filter((k) => k.genre === 'conflit').length;
+    expect(conflits).toBeGreaterThan(0);
+    expect(vp.cases.filter((k) => k.genre === 'barre').length).toBe(2 * conflits);
+    // Hors du glissé : rien de tout cela, les flèches reviennent.
+    const hors = arrangeView(w, versLibre);
+    expect(hors.poignees).toBeDefined();
+    expect(hors.cases.some((k) => k.genre === 'grille' || k.genre === 'empreinte')).toBe(false);
+  });
+
+  it('la grille et l’empreinte tiennent sous ~400 triangles pour chaque lieu et chaque Gardien, libre ou en conflit', () => {
+    const w = partie();
+    let pire = 0;
+    for (const id of mapOf('6e').map((d) => d.id)) {
+      const choix = [chooseIsland(w, id), chooseGuardian(w, id)].filter((c) => c !== null);
+      for (const c of choix) {
+        const m = choiceMiddle(w, c)!;
+        for (const [dx, dy] of [[0, 0], [12, 0], [0, -12], [-20, 8]]) pire = Math.max(pire, coutDuSol(arrangeView(w, dragChoice(w, c, { x: m.x + dx, y: m.y + dy }), true)));
+      }
+    }
+    expect(pire).toBeGreaterThan(0);
+    expect(pire).toBeLessThanOrEqual(420);
+  });
+
+  it('un Gardien se glisse comme un lieu, détaché loin de son lieu : une ligne en pointillés les relie', () => {
+    const w = partie();
+    const c = chooseGuardian(w, VOLCAN)!;
+    const m = choiceMiddle(w, c)!;
+    const loin = dragChoice(w, c, { x: m.x + 40, y: m.y + 8 });
+    if (loin.genre !== 'gardien') throw new Error('gardien');
+    expect(loin.place.spot).toBeDefined();
+    expect(arrangeView(w, loin).cases.filter((k) => k.genre === 'lien').length).toBeGreaterThan(3);
+    // Contre son lieu, pas de ligne.
+    expect(arrangeView(w, c).cases.some((k) => k.genre === 'lien')).toBe(false);
+  });
+
+  it('le Gardien d’un lieu encore fermé ne se choisit pas (choix 6a)', () => {
+    const w = partie();
+    const ferme: World = { ...w, links: [] };
+    const lieu = mapOf('6e').find((d) => !startingPlaces('6e').includes(d.id))!.id;
+    expect(chooseGuardian(ferme, lieu)).toBeNull();
+    expect(chooseGuardian(w, lieu)).not.toBeNull();
   });
 });

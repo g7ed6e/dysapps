@@ -150,6 +150,12 @@ const SHOTS = [
   // puis l'arrivée d'un bout choisie par sa poignée, les flèches autour d'elle.
   { name: 'amenager-bouts', state: MID, go: '/adventure/map', act: amenagerOuvrir },
   { name: 'amenager-arrivee', state: MID, go: '/adventure/map', act: amenagerUnBout },
+  // Choix 1b du mainteneur (7 octobre 2026) : le lieu glissé au doigt, tenu sur une place libre (la grille et
+  // l'empreinte claire), puis sur une place prise (les cases grises barrées) ; et un Gardien posé loin de son lieu, choisi
+  // son lieu choisi (la ligne en pointillés entre eux, choix 4a).
+  { name: 'amenager-glisse', state: MID, go: '/adventure/map', act: amenagerGlisse('maths-6e-fractions'), surDemande: true },
+  { name: 'amenager-glisse-prise', state: MID, go: '/adventure/map', act: amenagerGlisse('maths-6e-fractions', { cherche: 'prise' }), surDemande: true },
+  { name: 'amenager-gardien-detache', state: MID, go: '/adventure/map', act: amenagerGlisse('maths-6e-fractions', { gardien: true, loin: 4, directions: [[0, -1]], poser: true }), surDemande: true },
   // Choix 3 : une flèche mène le fantôme d'un cran sur une place prise : la croix grise, « Place prise », Poser éteint.
   { name: 'amenager-place-prise', state: MID, go: '/adventure/map', act: amenagerPlacePrise('maths-6e-fractions', ['Est', 'Nord', 'Ouest', 'Sud']) },
   // La même de nuit, pour relire le contraste de la croix sur l'eau.
@@ -244,6 +250,8 @@ SHOTS.push(
   { ...archipeo({ base: 'reunir', name: 'archipeo-reunir' }), surDemande: true },
   // « Modifier le plan » ouvert dans Archipéo, la Rivière des fractions choisie : son nom sur son fantôme, une fois.
   { ...archipeo({ base: 'amenager', name: 'archipeo-modifier-le-plan' }), surDemande: true },
+  // Le lieu glissé au doigt dans Archipéo (choix 1b) : la grille et l'empreinte aux couleurs peintes.
+  { ...archipeo({ base: 'amenager-glisse', name: 'archipeo-amenager-glisse' }), surDemande: true },
   // Le plan sans choix (les radeaux Brume des bouts) et une place prise (la croix grise), de jour et de nuit.
   { ...archipeo({ base: 'amenager-bouts', name: 'archipeo-amenager-bouts' }), surDemande: true },
   { ...archipeo({ base: 'amenager-bouts', name: 'archipeo-amenager-bouts-nuit' }), nuit: true, surDemande: true },
@@ -344,6 +352,42 @@ function amenagerPlacePrise(ile, fleches) {
         if (ligne.includes('Place prise')) return page.waitForTimeout(2500);
         if (ligne.includes('Plus de place')) break;
       }
+    }
+    await page.waitForTimeout(2500);
+  };
+}
+/**
+ * Choix 1b du mainteneur (7 octobre 2026) : choisit un lieu (ou son Gardien), le prend au doigt et le glisse, cran par
+ * cran dans chaque direction de `directions`, jusqu'à une place libre (au moins `loin` crans) ou prise (`cherche`) ; le
+ * doigt reste posé : la grille et l'empreinte se voient. `poser` : lever le doigt là (le lieu ou le Gardien s'y pose),
+ * puis choisir le lieu. Le glissé passe par `window.__dysappsGlisser`, comme un vrai doigt sur le choix.
+ */
+function amenagerGlisse(ile, { gardien = false, cherche = 'libre', loin = 2, directions = [[1, 0], [0, 1], [-1, 0], [0, -1]], poser = false } = {}) {
+  return async (page) => {
+    await fermerLesBandeaux(page);
+    await page.getByRole('button', { name: /^Modifier le plan/ }).click();
+    await page.waitForTimeout(500);
+    await fermerLesBandeaux(page);
+    const rester = page.getByRole('button', { name: /Rester sur la Carte/ });
+    if (await rester.count()) await rester.click();
+    const choisir = () => page.evaluate(({ ile, gardien }) => window.__dysappsAmenager?.(gardien ? { genre: 'creature', id: ile, gardien: true } : { genre: 'ile', id: ile }), { ile, gardien });
+    await choisir();
+    await page.waitForTimeout(800);
+    await page.evaluate(({ ile, gardien }) => window.__dysappsGlisser?.().prendre({ x: 0, y: 0 }, gardien ? { gardien: ile } : { lieu: ile }), { ile, gardien });
+    trouve: for (const [dx, dy] of directions) {
+      for (let k = 1; k <= 14; k++) {
+        await page.evaluate((p) => window.__dysappsGlisser?.().suivre(p), { x: dx * 4 * k, y: dy * 4 * k });
+        await page.waitForTimeout(250);
+        const ligne = (await page.locator('.arrange-signes').textContent()) ?? '';
+        const prise = ligne.includes('Place prise');
+        if (cherche === 'prise' ? prise : !prise && k >= loin) break trouve;
+      }
+    }
+    if (poser) {
+      await page.evaluate(() => window.__dysappsGlisser?.().lacher(true));
+      await page.waitForTimeout(1500);
+      // Son lieu choisi : la ligne en pointillés vers le Gardien détaché, sans les flèches du Gardien par-dessus.
+      await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
     }
     await page.waitForTimeout(2500);
   };

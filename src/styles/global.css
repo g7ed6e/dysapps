@@ -6512,6 +6512,14 @@ button.island-quest {
 .world-fiche-phrase {
   margin: 0.2rem 0;
 }
+/* La fiche d'un Gardien nomme son lieu (choix 4a du mainteneur, 7 octobre 2026) : son icône et son nom, en gras. */
+.world-fiche-lieu {
+  margin: 0.2rem 0;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
 .world-fiche-texte .stars {
   display: inline-flex;
   margin: 0.2rem 0;

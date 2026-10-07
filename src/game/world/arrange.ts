@@ -12,10 +12,10 @@ import type { World } from '../engine/state';
 import { BRIDGES, type BridgeDef, getBridge, isBiomeUnlocked, reachableIslands } from './archipelago';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, CORE, type IslandDef, startingIsland } from './map';
 import { SIDE_OF, LAYOUT_SIDE_OF } from './appliedLayout';
-import { fittingPlaces, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, LINK_GAP, placedIsland, poseOfSpot, spotInSteps, tooSmallGaps } from './footprint';
-import { STEP, type Quarts, type Rectangle, SIDES, turnedSide } from './placement';
+import { detachedIsletTooClose, fittingPlaces, type FootprintPart, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, LINK_GAP, placedIsland, poseOfSpot, spotInSteps, tooSmallGaps } from './footprint';
+import { STEP, type Quarts, type Rectangle, SIDES, TOWARDS_SEA, turnedSide } from './placement';
 import { LONG_LENGTH, possibleLandings, RegionRouter, type LinkLandings, type LinkRoute, startingPlaces, placesOf } from './routing';
-import { LAYOUT_LAST_SPOT, type LayoutGuardian, type LayoutLanding, type LayoutSide, type LayoutSpot, type LayoutTurn, type RegionLayout } from './savedLayout';
+import { type GuardianPlace, LAYOUT_LAST_SPOT, type LayoutGuardian, type LayoutLanding, type LayoutSide, type LayoutSpot, type LayoutTurn, type RegionLayout } from './savedLayout';
 import { reefsOutside } from './terrain/sea';
 import { zoneDesPlans } from './plans';
 import { AVATAR_HOME } from './terrain/base';
@@ -23,6 +23,7 @@ import { portesDesLieux } from './terrain/village';
 import { creatureDuMonde, creatureSpot } from './terrain/creatures';
 import { joinShape, type JoinShape } from './join';
 import { QUEST_ROW, startingStations } from './terrain/markers';
+import { ISLET_H, ISLET_W } from './terrain/islets';
 
 // ---------- Les mots communs ----------
 
@@ -131,7 +132,7 @@ export function joinsIn(world: World, a: ArchipelagoId): { pair: [BiomeId, Biome
 }
 
 /** Les rectangles de l'emprise d'un lieu dans un monde (son Gardien à sa place). */
-function footprintIn(world: World, id: BiomeId, def: IslandDef = placeIn(world, id), gardien: LayoutGuardian | undefined = regionOf(world, archipelagoOfIsland(id)).guardians?.[id]): Rectangle[] {
+function footprintIn(world: World, id: BiomeId, def: IslandDef = placeIn(world, id), gardien: LayoutGuardian | undefined = regionOf(world, archipelagoOfIsland(id)).guardians?.[id]): FootprintPart[] {
   return footprintOf(id, def, gardien);
 }
 
@@ -155,6 +156,17 @@ function othersFootprints(world: World, a: ArchipelagoId, sauf: BiomeId | readon
       .filter((j) => !j.pair.some((id) => hors.includes(id)))
       .map((j) => j.shape.zone),
   ];
+}
+
+/** Les emprises des autres lieux d'une région, et leurs réunions (`othersFootprints`), pour le dessin du glissé. */
+export function othersFootprintsOf(world: World, a: ArchipelagoId, sauf: readonly BiomeId[]): Rectangle[] {
+  return othersFootprints(world, a, sauf);
+}
+
+/** L'îlot détaché du Gardien d'un lieu (choix 4a), dont le lieu doit se tenir loin ; rien s'il est contre son lieu. */
+export function detachedIsletTooCloseTo(world: World, id: BiomeId): Rectangle[] {
+  const g = guardianOf(world, id);
+  return g.spot ? [footprintOf(id, placeIn(world, id), g).find((p) => p.genre === 'ilot')!] : [];
 }
 
 /** Les emprises des autres lieux d'une région que `sauf` (et des réunions sans lui), chacune avec ses lieux. */
@@ -316,6 +328,8 @@ function fitsAt(world: World, id: BiomeId, spot: LayoutSpot, autres: readonly Re
     const def = placedIsland(g.id, poseOfSpot(a, g.spot));
     const rs = footprintOf(g.id, def, guardianOf(world, g.id));
     if (!inFrame(a, rs) || !farEnough(rs, autres)) return false;
+    // Son Gardien détaché reste où il est (choix 5a du mainteneur) : le lieu se pose loin de son îlot, comme de tout lieu.
+    if (detachedIsletTooClose(rs).length && isDetached(guardianOf(world, g.id))) return false;
     defs.push(def);
   }
   if (defs.length < 2) return true;
@@ -405,6 +419,21 @@ export function nextIn<T>(items: readonly T[], at: (t: T) => { x: number; y: num
 }
 
 /**
+ * La place de la grille d'un lieu (à l'orientation `turn`) dont le milieu est le plus près d'un point, libre ou prise (le
+ * doigt qui glisse le lieu, 7 octobre 2026, choix 1b du mainteneur) ; `null` si, là, lui ou le lieu qui lui est réuni
+ * sortirait de la grille.
+ */
+export function spotNear(world: World, id: BiomeId, point: { x: number; y: number }, turn: LayoutTurn): LayoutSpot | null {
+  const a = archipelagoOfIsland(id);
+  const c = frameOf(a);
+  const max = LAYOUT_LAST_SPOT[a];
+  const borne = (v: number, m: number) => Math.min(m, Math.max(0, v));
+  const spot: LayoutSpot = { x: borne(Math.round((point.x - 8 - c.x0) / STEP), max.x), y: borne(Math.round((point.y - 8 - c.y0) / STEP), max.y), turn };
+  for (const g of companions(world, id, spot)) if (g.spot.x < 0 || g.spot.y < 0 || g.spot.x > max.x || g.spot.y > max.y) return null;
+  return spot;
+}
+
+/**
  * Le cran suivant d'un lieu dans une direction (les flèches ; 6 octobre 2026, choix 3 du mainteneur) : une place de la
  * grille plus loin, libre ou prise (le fantôme y montre alors une croix grise, et « Poser » s'éteint), jamais la place
  * libre suivante plus loin sur la carte ; `null` seulement au bord de la carte : « Plus de place par là ». Deux lieux
@@ -447,7 +476,7 @@ export function moveIsland(world: World, id: BiomeId, spot: LayoutSpot): Arrange
  * alors à la carte de départ, comme avant).
  */
 export function settleNewPlaces(world: World): World {
-  let w = world;
+  let w = settleDetachedGuardians(world);
   for (const a of ARCHIPELAGO_IDS) {
     const r = regionOf(w, a);
     if (!r.islands || fittingPlaces(a, r.islands, r.guardians ?? {})) continue;
@@ -578,7 +607,17 @@ function facingSide(turn: LayoutTurn): LayoutSide {
 /** Ce que regarde un Gardien : la mer (le large de son côté), son île, ou le long de la côte. */
 export type GuardianFacing = 'mer' | 'ile' | 'cote';
 
-export function guardianFacing(g: LayoutGuardian): GuardianFacing {
+/**
+ * Ce que regarde un Gardien. Détaché de son lieu (choix 4a du mainteneur), son orientation est celle du monde : `versSonLieu`,
+ * la direction de son îlot vers son lieu (dans le monde), dit s'il regarde son île, la mer (à l'opposé) ou à côté.
+ */
+export function guardianFacing(g: LayoutGuardian, versSonLieu?: { dx: number; dy: number }): GuardianFacing {
+  if (g.spot && versSonLieu) {
+    const regard = TOWARDS_SEA[turnedSide('devant', g.turn as Quarts)];
+    const [ax, ay] = Math.abs(versSonLieu.dx) >= Math.abs(versSonLieu.dy) ? [Math.sign(versSonLieu.dx), 0] : [0, Math.sign(versSonLieu.dy)];
+    if (regard.dx === ax && regard.dy === ay) return 'ile';
+    return regard.dx === -ax && regard.dy === -ay ? 'mer' : 'cote';
+  }
   const f = facingSide(g.turn);
   if (f === g.side) return 'mer';
   const oppose = LAYOUT_SIDE_OF[turnedSide(SIDE_OF[g.side], 2)];
@@ -595,39 +634,63 @@ export const GUARDIAN_FACING_TEXT: Readonly<Record<GuardianFacing, string>> = {
 /** Les places le long d'un côté, en pas (`LayoutGuardian.step`, au plus 8 de chaque côté). */
 const GUARDIAN_STEPS = Array.from({ length: 17 }, (_, i) => i - 8);
 
+/** L'îlot d'un Gardien est-il détaché de son lieu (choix 4a du mainteneur) ? */
+export function isDetached(g: GuardianPlace): boolean {
+  return g.spot !== undefined;
+}
+
+/** Deux places d'un îlot de Gardien sont-elles la même ? */
+export function sameGuardianPlace(g: GuardianPlace, h: GuardianPlace): boolean {
+  if (g.spot || h.spot) return g.spot?.x === h.spot?.x && g.spot?.y === h.spot?.y;
+  return g.side === h.side && g.step === h.step;
+}
+
 /** Le rectangle de l'îlot d'un Gardien à une place, dans le monde (son lieu à sa place). */
-function isletAt(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'>): Rectangle {
+function isletAt(world: World, id: BiomeId, g: GuardianPlace): Rectangle {
   return footprintOf(id, placeIn(world, id), g).find((p) => p.genre === 'ilot')!;
 }
 
 /** Le milieu de l'îlot d'un Gardien à une place. */
-function isletMiddle(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'>): { x: number; y: number } {
+export function isletMiddle(world: World, id: BiomeId, g: GuardianPlace): { x: number; y: number } {
   const r = isletAt(world, id, g);
   return { x: (r.x0 + r.x1) / 2, y: (r.y0 + r.y1) / 2 };
 }
 
 /**
- * Une place libre pour l'îlot d'un Gardien : contre son lieu (l'îlot longe au moins 4 cases de sa terre), dans le
- * cadre, loin des autres lieux, à l'écart de la terre, des grandes constructions et du quai de son lieu,
- * et des liaisons posées (aucune ne se défait).
+ * De quoi dire, place par place, si l'îlot d'un Gardien s'y pose (ce qui ne dépend pas de la place se calcule une fois :
+ * les emprises des autres lieux, les liaisons posées). Contre son lieu : l'îlot longe au moins 4 cases de sa terre, à
+ * l'écart de ses grandes constructions et de son quai. Détaché (choix 4a du mainteneur) : au moins `GAP_BETWEEN_PLACES`
+ * cases d'eau de tout lieu, le sien compris. Toujours : dans le cadre, loin des autres lieux, et aucune liaison posée ne
+ * passe dessus (aucune ne se défait).
  */
-export function isFreeGuardianSpot(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'>): boolean {
+function guardianSpotTest(world: World, id: BiomeId): (g: GuardianPlace) => boolean {
   const a = archipelagoOfIsland(id);
-  const parts = footprintOf(id, placeIn(world, id), g);
-  const ilot = parts.find((p) => p.genre === 'ilot')!;
-  if (!againstItsLand(world, id, g)) return false;
-  if (!inFrame(a, [ilot]) || !farEnough([ilot], othersFootprints(world, a, id))) return false;
-  // Les grandes constructions et le quai de son lieu : au moins une case d'eau.
-  if (parts.some((p) => p.genre !== 'ilot' && p.genre !== 'terre' && gapBetween(p, ilot) < 1)) return false;
-  // Les liaisons posées restent : aucune ne passe sur l'îlot (ni à moins de `LINK_GAP` cases).
-  for (const t of routesIn(world, a).values())
-    for (const c of t?.cases ?? []) if (c.x >= ilot.x0 - LINK_GAP && c.x < ilot.x1 + LINK_GAP && c.y >= ilot.y0 - LINK_GAP && c.y < ilot.y1 + LINK_GAP) return false;
-  return true;
+  const def = placeIn(world, id);
+  const autres = othersFootprints(world, a, id);
+  const cases = [...routesIn(world, a).values()].flatMap((t) => t?.cases ?? []);
+  return (g) => {
+    const parts = footprintOf(id, def, g);
+    const ilot = parts.find((p) => p.genre === 'ilot')!;
+    if (!inFrame(a, [ilot]) || !farEnough([ilot], autres)) return false;
+    if (g.spot) {
+      if (detachedIsletTooClose(parts).length) return false;
+    } else {
+      if (!againstLand(parts)) return false;
+      // Les grandes constructions et le quai de son lieu : au moins une case d'eau.
+      if (parts.some((p) => p.genre !== 'ilot' && p.genre !== 'terre' && gapBetween(p, ilot) < 1)) return false;
+    }
+    // Les liaisons posées restent : aucune ne passe sur l'îlot (ni à moins de `LINK_GAP` cases).
+    return !cases.some((c) => c.x >= ilot.x0 - LINK_GAP && c.x < ilot.x1 + LINK_GAP && c.y >= ilot.y0 - LINK_GAP && c.y < ilot.y1 + LINK_GAP);
+  };
 }
 
-/** L'îlot d'un Gardien à une place est-il contre son lieu (l'îlot et la terre se font face sur au moins 4 cases) ? */
-function againstItsLand(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'>): boolean {
-  const parts = footprintOf(id, placeIn(world, id), g);
+/** Une place libre pour l'îlot d'un Gardien (`guardianSpotTest`). */
+export function isFreeGuardianSpot(world: World, id: BiomeId, g: GuardianPlace): boolean {
+  return guardianSpotTest(world, id)(g);
+}
+
+/** L'îlot et la terre d'une emprise se font-ils face sur au moins 4 cases (l'îlot contre son lieu) ? */
+function againstLand(parts: readonly FootprintPart[]): boolean {
   const ilot = parts.find((p) => p.genre === 'ilot')!;
   const terre = parts.find((p) => p.genre === 'terre')!;
   const face = Math.min(ilot.x1, terre.x1) - Math.max(ilot.x0, terre.x0);
@@ -635,26 +698,66 @@ function againstItsLand(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side
   return Math.max(face, faceY) >= 4;
 }
 
-/** Les places libres de l'îlot d'un Gardien autour de son lieu (sa place du moment comprise). */
-export function freeGuardianSpots(world: World, id: BiomeId): Pick<LayoutGuardian, 'side' | 'step'>[] {
-  const out: Pick<LayoutGuardian, 'side' | 'step'>[] = [];
-  for (const cote of SIDES) for (const step of GUARDIAN_STEPS) if (isFreeGuardianSpot(world, id, { side: LAYOUT_SIDE_OF[cote], step })) out.push({ side: LAYOUT_SIDE_OF[cote], step });
+/**
+ * Toutes les places de l'îlot d'un Gardien, libres ou prises : celles contre son lieu (un côté, un pas), puis les places
+ * détachées de la grille de sa région où l'îlot tient dans le cadre, à 4 cases au moins de sa terre (choix 4a du
+ * mainteneur) ; `autour` : seulement à
+ * `r` cases au plus d'un point (le milieu de l'îlot).
+ */
+export function guardianPlaces(world: World, id: BiomeId, autour?: { x: number; y: number; r: number }): GuardianPlace[] {
+  const a = archipelagoOfIsland(id);
+  const def = placeIn(world, id);
+  const out: GuardianPlace[] = [];
+  const pres = (g: GuardianPlace) => {
+    if (!autour) return true;
+    const m = isletMiddle(world, id, g);
+    return Math.max(Math.abs(m.x - autour.x), Math.abs(m.y - autour.y)) <= autour.r;
+  };
+  for (const cote of SIDES)
+    for (const step of GUARDIAN_STEPS) {
+      const g: GuardianPlace = { side: LAYOUT_SIDE_OF[cote], step };
+      if (againstLand(footprintOf(id, def, g)) && pres(g)) out.push(g);
+    }
+  const c = frameOf(a);
+  const [w, h] = [Math.floor((c.x1 - c.x0 - ISLET_W) / STEP), Math.floor((c.y1 - c.y0 - ISLET_H) / STEP)];
+  // Le milieu de l'îlot à une place détachée, depuis le coin du cadre : de quoi ne parcourir que les places autour.
+  const [mx, my] = [c.x0 + ISLET_W / 2, c.y0 + ISLET_H / 2];
+  const [x0, x1] = autour ? [Math.max(0, Math.ceil((autour.x - autour.r - mx) / STEP)), Math.min(w, Math.floor((autour.x + autour.r - mx) / STEP))] : [0, w];
+  const [y0, y1] = autour ? [Math.max(0, Math.ceil((autour.y - autour.r - my) / STEP)), Math.min(h, Math.floor((autour.y + autour.r - my) / STEP))] : [0, h];
+  // Une place détachée trop près de sa propre terre n'est une place ni contre son lieu, ni détachée : elle n'en est pas une
+  // (les flèches et le doigt passent de l'une à l'autre sans s'y arrêter).
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      const g: GuardianPlace = { side: 'front', step: 0, spot: { x, y } };
+      if (!detachedIsletTooClose(footprintOf(id, def, g)).length) out.push(g);
+    }
   return out;
 }
 
-/** La place libre de l'îlot d'un Gardien la plus proche d'un point touché sur la mer autour de son lieu. */
-export function nearestGuardianSpot(world: World, id: BiomeId, point: { x: number; y: number }): Pick<LayoutGuardian, 'side' | 'step'> | null {
+/** Les places libres de l'îlot d'un Gardien (sa place du moment comprise) ; `autour` : près d'un point seulement. */
+export function freeGuardianSpots(world: World, id: BiomeId, autour?: { x: number; y: number; r: number }): GuardianPlace[] {
+  const libre = guardianSpotTest(world, id);
+  return guardianPlaces(world, id, autour).filter(libre);
+}
+
+/** La place libre de l'îlot d'un Gardien la plus proche d'un point touché sur la mer de sa région. */
+export function nearestGuardianSpot(world: World, id: BiomeId, point: { x: number; y: number }): GuardianPlace | null {
   return closest(freeGuardianSpots(world, id), (g) => isletMiddle(world, id, g), point);
 }
 
+/** La place de l'îlot d'un Gardien la plus proche d'un point, libre ou prise (le doigt qui glisse l'îlot, choix 1b). */
+export function guardianPlaceNear(world: World, id: BiomeId, point: { x: number; y: number }): GuardianPlace | null {
+  return closest(guardianPlaces(world, id, { ...point, r: 2 * STEP }), (g) => isletMiddle(world, id, g), point);
+}
+
 /**
- * Le cran suivant de l'îlot d'un Gardien dans une direction (choix 3 du mainteneur) : la place la plus proche de ce
- * côté parmi toutes celles contre son lieu, libre ou prise ; `null` : « Plus de place par là ».
+ * Le cran suivant de l'îlot d'un Gardien dans une direction (choix 3 du mainteneur, 6 octobre 2026) : la place la plus
+ * proche de ce côté, contre son lieu ou détachée (choix 4a), libre ou prise ; `null` : « Plus de place par là ».
  */
-export function stepGuardianSpot(world: World, id: BiomeId, from: Pick<LayoutGuardian, 'side' | 'step'>, dir: Direction): Pick<LayoutGuardian, 'side' | 'step'> | null {
-  const contre: Pick<LayoutGuardian, 'side' | 'step'>[] = [];
-  for (const cote of SIDES) for (const step of GUARDIAN_STEPS) if (againstItsLand(world, id, { side: LAYOUT_SIDE_OF[cote], step })) contre.push({ side: LAYOUT_SIDE_OF[cote], step });
-  return nextIn(contre, (g) => isletMiddle(world, id, g), isletMiddle(world, id, from), dir);
+export function stepGuardianSpot(world: World, id: BiomeId, from: GuardianPlace, dir: Direction): GuardianPlace | null {
+  const ici = isletMiddle(world, id, from);
+  // Assez loin pour passer de l'autre côté de son lieu (sa terre et son eau) d'un seul cran.
+  return nextIn(guardianPlaces(world, id, { ...ici, r: 12 * STEP }), (g) => isletMiddle(world, id, g), ici, dir);
 }
 
 /** Le monde avec un Gardien à une place (à sa place de départ, il quitte la disposition). */
@@ -662,22 +765,27 @@ function withGuardian(world: World, id: BiomeId, g: LayoutGuardian): World {
   const a = archipelagoOfIsland(id);
   const r = regionOf(world, a);
   const guardians = { ...r.guardians };
-  if (g.side === 'front' && g.step === 0 && g.turn === 0) delete guardians[id];
+  if (g.side === 'front' && g.step === 0 && g.turn === 0 && !g.spot) delete guardians[id];
   else guardians[id] = g;
   return withRegion(world, a, { ...r, guardians });
 }
 
 /**
- * Déplace l'îlot d'un Gardien autour de son lieu, sur une place libre ; il garde ce qu'il regarde (la mer, son île,
- * la côte) en changeant de côté. Éteint ou rallumé, il garde son état (rien d'autre ne change).
+ * Déplace l'îlot d'un Gardien sur une place libre : contre son lieu, il garde ce qu'il regarde (la mer, son île, la côte)
+ * en changeant de côté ; détaché de son lieu ou qui s'y rattache (choix 4a du mainteneur), il garde son orientation dans
+ * le monde. Éteint ou rallumé, il garde son état (rien d'autre ne change).
  */
-export function moveGuardian(world: World, id: BiomeId, to: Pick<LayoutGuardian, 'side' | 'step'>): ArrangeResult {
+export function moveGuardian(world: World, id: BiomeId, to: GuardianPlace): ArrangeResult {
   if (!getBiome(id)) return { ok: false, reason: 'inconnu' };
   if (!isFreeGuardianSpot(world, id, to)) return { ok: false, reason: 'occupee' };
   const g = guardianOf(world, id);
+  const quarts = placeIn(world, id).quarts;
+  const tour = (n: number) => (((n % 4) + 4) % 4) as LayoutTurn;
+  if (to.spot) return { ok: true, world: withGuardian(world, id, { side: 'front', step: 0, turn: g.spot ? g.turn : tour(g.turn + quarts), spot: { ...to.spot } }), relink: [] };
+  if (g.spot) return { ok: true, world: withGuardian(world, id, { side: to.side, step: to.step, turn: tour(g.turn - quarts) }), relink: [] };
   // Le quart de tour qui mène de son côté d'avant au nouveau : il tourne d'autant.
   const q = ([0, 1, 2, 3] as Quarts[]).find((k) => turnedSide(SIDE_OF[g.side], k) === SIDE_OF[to.side])!;
-  return { ok: true, world: withGuardian(world, id, { side: to.side, step: to.step, turn: ((g.turn + q) % 4) as LayoutTurn }), relink: [] };
+  return { ok: true, world: withGuardian(world, id, { side: to.side, step: to.step, turn: tour(g.turn + q) }), relink: [] };
 }
 
 /** Tourne un Gardien d'un quart de tour sur son îlot (sur la grille, rien en biais). */
@@ -685,6 +793,25 @@ export function turnGuardian(world: World, id: BiomeId): ArrangeResult {
   if (!getBiome(id)) return { ok: false, reason: 'inconnu' };
   const g = guardianOf(world, id);
   return { ok: true, world: withGuardian(world, id, { ...g, turn: ((g.turn + 1) % 4) as LayoutTurn }), relink: [] };
+}
+
+/**
+ * Les Gardiens détachés dont l'îlot ne tient plus à sa place (une sauvegarde abîmée, un lieu entré au jeu depuis) :
+ * chacun revient devant son lieu, de face comme il était, et rien d'autre ne bouge (choix 4a du mainteneur).
+ */
+function settleDetachedGuardians(world: World): World {
+  let w = world;
+  for (const a of ARCHIPELAGO_IDS) {
+    const r = regionOf(w, a);
+    for (const [id, g] of Object.entries(r.guardians ?? {}) as [BiomeId, LayoutGuardian][]) {
+      if (!g.spot) continue;
+      const parts = footprintIn(w, id);
+      const ilot = parts.find((p) => p.genre === 'ilot')!;
+      if (inFrame(a, [ilot]) && farEnough([ilot], othersFootprints(w, a, id)) && !detachedIsletTooClose(parts).length) continue;
+      w = withGuardian(w, id, { side: 'front', step: 0, turn: g.turn });
+    }
+  }
+  return w;
 }
 
 // ---------- Les bornes ----------
@@ -853,7 +980,7 @@ function ecartsDeLaCarteDeDepart(world: World, a: ArchipelagoId): string {
     const d = startingSpot(id as BiomeId);
     return s && (s.x !== d.x || s.y !== d.y || s.turn !== d.turn);
   });
-  const guardians = Object.entries(r.guardians ?? {}).filter(([, g]) => g && (g.side !== 'front' || g.step !== 0 || g.turn !== 0));
+  const guardians = Object.entries(r.guardians ?? {}).filter(([, g]) => g && (g.side !== 'front' || g.step !== 0 || g.turn !== 0 || g.spot));
   const stations = Object.entries(r.stations ?? {}).filter(([key, p]) => {
     const [id, mission] = key.split(':') as [BiomeId, string];
     const d = startingStations(id).find((st) => st.typeId === mission);
@@ -875,7 +1002,8 @@ export function startingMapState(world: World, a: ArchipelagoId): 'pareille' | '
 }
 
 /**
- * Revient à la carte de départ dans une région (le menu, « Carte de départ ») : sa disposition est vidée, et les liaisons
+ * Revient à la carte de départ dans une région (le menu, « Carte de départ ») : sa disposition est vidée (chaque Gardien
+ * revient devant son lieu, détaché ou non : choix 4a du mainteneur), et les liaisons
  * à reposer redeviennent des liaisons posées. Aucune n'est perdue : les liaisons de la partie ne changent pas. Deux lieux
  * réunis ne se séparent plus (GD-9, point 10) : ils restent où ils sont, avec leurs Gardiens, et un lieu dont la place
  * de départ toucherait leur réunion reste aussi où il est ; `null` si la carte ainsi faite ne tient pas.
@@ -889,7 +1017,9 @@ export function backToStartingMap(world: World, a: ArchipelagoId): World | null 
   const guardians: NonNullable<RegionLayout['guardians']> = {};
   for (const id of reunis) {
     if (r.islands?.[id]) islands[id] = r.islands[id];
-    if (r.guardians?.[id]) guardians[id] = r.guardians[id];
+    // Un Gardien détaché (choix 4a) revient devant son lieu, même réuni.
+    const g = r.guardians?.[id];
+    if (g && !g.spot) guardians[id] = g;
   }
   const sansLesAutres = withRegion(world, a, { islands, guardians, joined });
   const occupe = othersFootprints(sansLesAutres, a, placesOf(a).filter((id) => !reunis.has(id)));

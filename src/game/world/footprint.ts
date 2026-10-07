@@ -9,8 +9,8 @@ import { ARCHIPELAGO_IDS } from './archipelagos';
 import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, isthmusOf, startingIsland } from './map';
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
 import { STEP, type PlacePose, type Rectangle, turnRectangle } from './placement';
-import type { Layout, LayoutGuardian, LayoutSpot } from './savedLayout';
-import { rectangleDeLIlot, rectangleDeLIlotAutour } from './terrain/islets';
+import type { GuardianPlace, Layout, LayoutGuardian, LayoutSpot } from './savedLayout';
+import { ISLET_H, ISLET_W, rectangleDeLIlot, rectangleDeLIlotAutour } from './terrain/islets';
 
 /**
  * Le cadre de chaque région, en cases du monde : la Carte le montre tout entier, la mer et ses écueils y sont semés une
@@ -79,6 +79,12 @@ export interface FootprintPart extends Rectangle {
   genre: 'terre' | 'ilot' | 'monument' | 'quai';
 }
 
+/** Le coin, dans le monde, de l'îlot détaché d'un Gardien à une place de la grille de sa région (en pas). */
+export function detachedIsletCorner(a: ArchipelagoId, spot: { x: number; y: number }): { x: number; y: number } {
+  const c = REGION_FRAMES[a];
+  return { x: c.x0 + spot.x * STEP, y: c.y0 + spot.y * STEP };
+}
+
 /**
  * Le rectangle de l'îlot du Gardien d'un lieu dans le monde, son îlot déplacé autour de lui (GD-9, `LayoutGuardian`) :
  * sur un des quatre côtés du lieu (dans son repère), à la même distance de sa terre qu'aujourd'hui (`ISLET_GAP`), et à
@@ -86,7 +92,10 @@ export interface FootprintPart extends Rectangle {
  * autres côtés, au droit du bord avant ou gauche du cœur). Devant, au pas 0, c'est sa place de la carte de départ
  * (`rectangleDeLIlot`). Le lieu tourné, l'îlot tourne avec lui.
  */
-export function guardianIsletRectangle(def: IslandDef, g: Pick<LayoutGuardian, 'side' | 'step'>): Rectangle {
+export function guardianIsletRectangle(def: IslandDef, g: GuardianPlace & { at?: { x: number; y: number } }): Rectangle {
+  // Détaché de son lieu (choix 4a du mainteneur) : à sa place de la grille de la région, de face, quoi que fasse son lieu.
+  const coin = g.at ?? (g.spot ? detachedIsletCorner(archipelagoOfIsland(def.id), g.spot) : null);
+  if (coin) return { x0: coin.x, y0: coin.y, x1: coin.x + ISLET_W, y1: coin.y + ISLET_H };
   const r = rectangleDeLIlotAutour(def, g);
   const t = turnRectangle({ x0: r.x0 - def.core.x, y0: r.y0 - def.core.y, x1: r.x1 - def.core.x, y1: r.y1 - def.core.y }, def.quarts);
   return { x0: def.core.x + t.x0, y0: def.core.y + t.y0, x1: def.core.x + t.x1, y1: def.core.y + t.y1 };
@@ -97,7 +106,7 @@ export function guardianIsletRectangle(def: IslandDef, g: Pick<LayoutGuardian, '
  * place, ou autour du lieu là où `gardien` le met), de ses grandes constructions, du quai (le port ne bouge pas : il est
  * au point de départ).
  */
-export function footprintOf(id: BiomeId, def: IslandDef = islandDef(id), gardien?: Pick<LayoutGuardian, 'side' | 'step'>): FootprintPart[] {
+export function footprintOf(id: BiomeId, def: IslandDef = islandDef(id), gardien?: GuardianPlace): FootprintPart[] {
   const a = getArchipelago(archipelagoOfIsland(id));
   const out: FootprintPart[] = [
     { lieu: id, genre: 'terre', ...landRectangle(def) },
@@ -177,12 +186,14 @@ export function tooSmallGaps(
   a: ArchipelagoId,
   lieux: readonly IslandDef[],
   bouge: (id: BiomeId) => boolean = () => true,
-  gardien: (id: BiomeId) => Pick<LayoutGuardian, 'side' | 'step'> | undefined = () => undefined,
+  gardien: (id: BiomeId) => GuardianPlace | undefined = () => undefined,
 ): TooSmallGap[] {
   const out: TooSmallGap[] = [];
   const c = frameOf(a);
   const parts = lieux.map((d) => footprintOf(d.id, d, gardien(d.id)));
   parts.forEach((ps, i) => {
+    // L'îlot détaché d'un Gardien (choix 4a) se tient loin de tout lieu, le sien compris.
+    if (gardien(lieux[i].id)?.spot) for (const e of detachedIsletTooClose(ps)) out.push(e);
     if (bouge(lieux[i].id))
       for (const p of ps) {
         const dehors = Math.min(p.x0 - c.x0, p.y0 - c.y0, c.x1 - p.x1, c.y1 - p.y1);
@@ -199,6 +210,17 @@ export function tooSmallGaps(
     }
   });
   return out;
+}
+
+/**
+ * L'îlot détaché d'un Gardien (choix 4a du mainteneur) trop près des autres parts de l'emprise de son propre lieu (sa
+ * terre, ses grandes constructions, son quai) : moins de `GAP_BETWEEN_PLACES` cases d'eau. Contre son lieu (`side`,
+ * `step`), l'îlot se tient à `ISLET_GAP` cases, et ceci ne le regarde pas.
+ */
+export function detachedIsletTooClose(parts: readonly FootprintPart[]): TooSmallGap[] {
+  const ilot = parts.find((p) => p.genre === 'ilot');
+  if (!ilot) return [];
+  return parts.filter((p) => p !== ilot && gapBetween(ilot, p) < GAP_BETWEEN_PLACES).map((p) => ({ place: ilot.lieu, other: p.lieu, kind: 'ilot' as const, gap: gapBetween(ilot, p) }));
 }
 
 /**

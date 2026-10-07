@@ -144,6 +144,10 @@ export interface GuardianPose {
   side: 'front' | 'right' | 'back' | 'left';
   step: number;
   turn: Quarts;
+  /** Détaché de son lieu (choix 4a du mainteneur) : la place de son îlot sur la grille de la région, en pas. */
+  spot?: { x: number; y: number };
+  /** Détaché : le coin de son îlot dans le monde, en cases (le même que `spot`, compté depuis le cadre de sa région). */
+  at?: { x: number; y: number };
 }
 
 /** Les Gardiens et les bornes déplacés (GD-9) : un Gardien ou une borne absent est à sa place de la carte de départ. */
@@ -169,7 +173,7 @@ export function placeFixtures(g: ReadonlyMap<BiomeId, GuardianPose>, b: Readonly
     g.size === gardiens.size &&
     [...g].every(([id, p]) => {
       const q = gardiens.get(id);
-      return q !== undefined && q.side === p.side && q.step === p.step && q.turn === p.turn;
+      return q !== undefined && q.side === p.side && q.step === p.step && q.turn === p.turn && q.at?.x === p.at?.x && q.at?.y === p.at?.y;
     }) &&
     b.size === bornes.size &&
     [...b].every(([k, p]) => {

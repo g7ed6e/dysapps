@@ -35,6 +35,11 @@ interface Appui {
    * parti (`RELAYE_DEPUIS_UN_BOUTON`) : c'est un glissé, lever le doigt n'ouvre rien.
    */
   relaye?: boolean;
+  /**
+   * Le mode « Aménager », un choix en cours : au départ du glissé, le doigt est-il parti du choix (choix 3a du
+   * mainteneur) ? `undefined` : pas encore décidé ; `null` : non, la vue glisse ; sinon la hauteur du plan où il le glisse.
+   */
+  tient?: { hauteur: number } | null;
 }
 
 /** Ce que les gestes lisent de la scène : ses parties, les rappels de la vue, et ce que la vue permet. */
@@ -114,7 +119,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     pointer.set(((x - rect.left) / rect.width) * 2 - 1, -((y - rect.top) / rect.height) * 2 + 1);
     ray.setFromCamera(pointer, camera);
   };
-  const aim = (e: PointerEvent) => {
+  const aim = (e: { clientX: number; clientY: number }) => {
     viser(e.clientX, e.clientY);
     const creature = ray.intersectObjects([...personnages.creatures.children, ...bornes.missions.children, navire.groupe], true)[0];
     const grounds = ray.intersectObjects(cubesDuMonde.cibles(), false);
@@ -180,6 +185,8 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
    */
   let pince: { a: { id: number; x: number; y: number }; b: { id: number; x: number; y: number }; ecart: number; mx: number; my: number } | null = null;
   const pincer = (e: PointerEvent, premier: Appui) => {
+    // Un second doigt pendant que le premier glisse le choix : le choix reste là où il est, la vue se pince.
+    lacherLeChoix(premier, false);
     const a = { id: premier.id, x: premier.cx, y: premier.cy };
     const b = { id: e.pointerId, x: e.clientX, y: e.clientY };
     pince = { a, b, ecart: Math.max(1, Math.hypot(b.x - a.x, b.y - a.y)), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
@@ -234,27 +241,48 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     const plan = pointDuPlan(ray.ray.origin, ray.ray.direction, cadrage.cible.y, loinMax);
     return plan ? new THREE.Vector3(plan.x, cadrage.cible.y, plan.z) : null;
   };
-  /** Le dernier pas de la grille où le doigt qui glisse a calé le fantôme (mode « Aménager ») : un calage par pas. */
-  let dernierCalage = '';
   /** Le point de la mer sous le doigt (au niveau de l'eau), en cases du monde, ou rien (l'horizon). */
   const merSous = (x: number, y: number) => {
     const p = solSous(x, y, 0);
     return p ? { x: p.x, y: p.z } : null;
   };
-  /** Le doigt posé bouge : passé le seuil (et si c'est permis), la vue glisse avec lui. */
+  /**
+   * Le mode « Aménager », un choix en cours : le doigt parti en (x, y) est-il parti du choix (choix 3a du mainteneur) ?
+   * Ce qu'il touchait (le Gardien, la terre d'un lieu, ou la mer) est demandé à la page ; oui : la hauteur du point pris,
+   * où le choix se glisse ensuite.
+   */
+  const prendreLeChoix = (x: number, y: number): { hauteur: number } | null => {
+    const g = derniers.current.glisserLeChoix;
+    if (derniers.current.amenager !== 'choix' || !g) return null;
+    const { creature, hit } = aim({ clientX: x, clientY: y });
+    const found = creature ? creatureIdOf(creature.object) : null;
+    if (creature && found) return g.prendre({ x: creature.point.x, y: creature.point.z }, found.kind === 'guardian' ? { gardien: found.id } : { lieu: found.id }) ? { hauteur: creature.point.y } : null;
+    if (hit) {
+      const tap = tapSur(hit);
+      const lieu = tap.kind === 'island' ? tap.id : tap.kind === 'place' ? tap.island : undefined;
+      return g.prendre({ x: hit.point.x, y: hit.point.z }, lieu ? { lieu } : {}) ? { hauteur: hit.point.y } : null;
+    }
+    const p = merSous(x, y);
+    return p && g.prendre(p, {}) ? { hauteur: 0 } : null;
+  };
+  /** Le doigt posé bouge : passé le seuil (et si c'est permis), la vue glisse avec lui ; ou le choix, s'il est parti de lui. */
   const glisser = (e: PointerEvent, appui: Appui) => {
     appui.cx = e.clientX;
     appui.cy = e.clientY;
-    // Le mode « Aménager », un choix en cours (GD-9) : glisser est un raccourci, le fantôme se cale sous le doigt.
-    if (derniers.current.amenager === 'choix' && rappels.current.onPickSea) {
-      if (!appui.ancre && !glisseCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
-      appui.ancre ??= new THREE.Vector3();
-      const p = merSous(e.clientX, e.clientY);
-      const cle = p ? `${Math.floor(p.x / 4)},${Math.floor(p.y / 4)}` : '';
-      if (p && cle !== dernierCalage) {
-        dernierCalage = cle;
-        rappels.current.onPickSea(p);
+    // Le mode « Aménager », un choix en cours (GD-9) : un glissé parti du choix le glisse au doigt (7 octobre 2026, choix
+    // 1b et 3a du mainteneur) ; tout autre glissé fait glisser la vue. Un glissé relayé d'un bouton (une poignée) aussi.
+    if (appui.tient === undefined && !appui.relaye && derniers.current.amenager === 'choix') {
+      if (!glisseCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
+      appui.tient = prendreLeChoix(appui.x, appui.y);
+      if (appui.tient) {
+        appui.ancre = new THREE.Vector3();
+        cubesDuMonde.viser(null);
+        canvas.style.cursor = 'grabbing';
       }
+    }
+    if (appui.tient) {
+      const p = solSous(e.clientX, e.clientY, appui.tient.hauteur);
+      if (p) derniers.current.glisserLeChoix?.suivre({ x: p.x, y: p.z });
       return;
     }
     let ancre = appui.ancre;
@@ -271,8 +299,15 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (p) cadrage.glisser(ancre.x - p.x, ancre.z - p.z);
     signaler();
   };
+  /** Le choix glissé est lâché : posé au lever du doigt (`poser`), laissé là si le geste est interrompu. */
+  const lacherLeChoix = (appui: Appui, poser: boolean) => {
+    if (!appui.tient) return;
+    appui.tient = null;
+    derniers.current.glisserLeChoix?.lacher(poser);
+  };
   const lacher = (e: PointerEvent) => {
     if (canvas.hasPointerCapture?.(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+    if (down) lacherLeChoix(down, false);
     down = null;
     pince = null;
     cadrage.glissant = false;
@@ -350,6 +385,8 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (!down || e.pointerId !== down.id) return;
     const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
     const glisse = down.ancre !== null || Boolean(down.pince) || Boolean(down.relaye);
+    // Le choix glissé, lâché : posé tout de suite sur une place libre (choix 2a du mainteneur).
+    lacherLeChoix(down, true);
     lacher(e);
     // Après un glissé (ou un doigt qui a bougé pendant une marche ou un voyage), lever le doigt n'ouvre rien.
     if (glisse || moved >= SEUIL_DU_GLISSE) return;
