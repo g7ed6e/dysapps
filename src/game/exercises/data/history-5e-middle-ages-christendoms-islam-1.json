@@ -43,7 +43,7 @@
       ],
       "answer": "Coran",
       "hint": "La Bible est le livre des chrétiens.",
-      "explanation": "Le Coran est le livre sacré de l’islam. La Bible est le livre sacré des chrétiens. La Torah est au cœur de la Bible des juifs.",
+      "explanation": "Le Coran est le livre sacré de l’islam. La Bible est le livre sacré des chrétiens. La Torah est la première partie de la Bible des juifs.",
       "aid": {
         "kind": "rule-card",
         "props": {

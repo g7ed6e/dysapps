@@ -17,7 +17,7 @@
       ],
       "answer": "un accident nucléaire",
       "hint": "Relis la ligne qui parle de la centrale.",
-      "explanation": "La vague a inondé la centrale nucléaire de Fukushima : un grave accident a suivi. Une centrale nucléaire est une technologie : c’est un risque technologique.",
+      "explanation": "La vague a inondé la centrale nucléaire de Fukushima : un grave accident a suivi. Un accident dans une centrale, c’est un risque technologique.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -115,9 +115,9 @@
       "question": "Pourquoi les écoles ferment-elles ?",
       "spoken": "Rouen, en septembre deux mille dix-neuf. Un grand incendie dans l’usine Lubrizol. Une fumée noire passe sur la ville. Les écoles ferment pour la journée.",
       "choices": [
-        "à cause d’une inondation",
+        "parce que la ville n’a plus d’électricité",
         "pour protéger les élèves de la fumée",
-        "parce que ce sont les vacances"
+        "parce que les pompiers ont besoin des écoles"
       ],
       "answer": "pour protéger les élèves de la fumée",
       "hint": "Relis la ligne qui parle de la fumée.",
@@ -189,11 +189,11 @@
     },
     {
       "key": "geography-5e-resources-risks-2-7",
-      "prompt": "Toulouse, en septembre 2001\nL’usine chimique AZF explose.\nElle était tout près des maisons.\nDepuis, on évite de construire près de ces usines.",
+      "prompt": "Toulouse, en septembre 2001\nUne usine chimique explose.\nElle était tout près des maisons.\nDepuis, on évite de construire près de ces usines.",
       "question": "Que fait-on depuis pour réduire le risque ?",
-      "spoken": "Toulouse, en septembre deux mille un. L’usine chimique AZF explose. Elle était tout près des maisons. Depuis, on évite de construire près de ces usines.",
+      "spoken": "Toulouse, en septembre deux mille un. Une usine chimique explose. Elle était tout près des maisons. Depuis, on évite de construire près de ces usines.",
       "choices": [
-        "on construit plus de maisons autour",
+        "on construit de nouvelles maisons autour",
         "on évite de construire près de ces usines",
         "on ferme toutes les usines"
       ],

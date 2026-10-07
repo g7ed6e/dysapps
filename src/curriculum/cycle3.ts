@@ -18,9 +18,8 @@ export const DOMAINES_C3: readonly ProgrammeDomaine[] = [
   { id: 'c3-en-dialoguer', cycle: 3, discipline: 'english', title: 'Langues vivantes : réagir et dialoguer', page: 37 },
   { id: 'c3-en-culture', cycle: 3, discipline: 'english', title: 'Langues vivantes : connaissances culturelles', page: 38 },
   { id: 'c3-en-langue', cycle: 3, discipline: 'english', title: 'Langues vivantes : grammaire et phonologie', page: 39 },
-  // Histoire et géographie : les pages n'ont pas pu être vérifiées dans le PDF (téléchargement refusé depuis
-  // l'environnement de travail, 5 octobre 2026) ; à relire avant la première île. Seule la classe de 6e est
-  // résumée : le CM1 et le CM2 ne sont pas dans l'application.
+  // Histoire et géographie : pages et libellés vérifiés dans le PDF cité par sources.ts (7 octobre 2026). Seule la
+  // classe de 6e est résumée : le CM1 et le CM2 ne sont pas dans l'application.
   { id: 'c3-hg-temps', cycle: 3, discipline: 'history-geography', title: 'Histoire et géographie : se repérer dans le temps', page: 67 },
   { id: 'c3-hg-espace', cycle: 3, discipline: 'history-geography', title: 'Histoire et géographie : se repérer dans l’espace', page: 67 },
   { id: 'c3-hg-demarches', cycle: 3, discipline: 'history-geography', title: 'Histoire et géographie : raisonner, comprendre un document, pratiquer différents langages', page: 67 },
@@ -179,7 +178,7 @@ export const ENTRIES_C3 = [
   { id: 'c3.en.langue.phrase', cycle: 3, discipline: 'english', domaine: 'c3-en-langue', attendu: EN_GRAMMAIRE, competence: 'Types et formes de phrase (déclarative, interrogative, exclamative, impérative, négative) ; ordre des mots ; mots de liaison ; quelques subordonnants', page: 39 },
   { id: 'c3.en.langue.phonologie', cycle: 3, discipline: 'english', domaine: 'c3-en-langue', attendu: EN_PHONO, competence: 'Percevoir et reproduire les phonèmes spécifiques, l’accent tonique, le rythme et les schémas intonatifs', page: 40 },
   { id: 'c3.en.langue.phonie-graphie', cycle: 3, discipline: 'english', domaine: 'c3-en-langue', attendu: EN_PHONO, competence: 'Lien phonie-graphie : percevoir la relation entre graphèmes et phonèmes spécifiques à la langue ; l’alphabet', page: 40 },
-  // ---------- Histoire et géographie (6e ; pages à vérifier) ----------
+  // ---------- Histoire et géographie (6e) ----------
   { id: 'c3.hg.temps.periodes', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-temps', attendu: HG_TEMPS, competence: 'Situer chronologiquement des grandes périodes historiques ; mémoriser les repères historiques liés au programme', page: 67 },
   { id: 'c3.hg.temps.ordonner', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-temps', attendu: HG_TEMPS, competence: 'Ordonner des faits les uns par rapport aux autres et les situer dans une époque ou une période donnée', page: 67 },
   { id: 'c3.hg.temps.frise', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-temps', attendu: HG_TEMPS, competence: 'Utiliser des documents donnant à voir une représentation du temps (dont les frises chronologiques), à différentes échelles, et le lexique relatif au découpage du temps', page: 67 },

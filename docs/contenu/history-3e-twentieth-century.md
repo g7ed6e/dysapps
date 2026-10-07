@@ -232,8 +232,8 @@ Pour tous les items :
 Pour tous les items :
 - aide « Lire un document d’histoire » :
   - La première ligne dit ce qu’est le document et sa date.
-  - À l’ouest : les États-Unis et leurs alliés.
-  - À l’est : l’Union soviétique et ses alliés, communistes.
+  - Le camp de l’Ouest : les États-Unis et leurs alliés.
+  - Le camp de l’Est : l’Union soviétique et ses alliés, communistes.
   - Un pays indépendant décide seul de ses lois.
 
 1. énoncé : "Le monde en 1950\nLe camp de l’Ouest : les États-Unis et leurs alliés\nLe camp de l’Est : l’Union soviétique et ses alliés, communistes"
@@ -348,7 +348,7 @@ Pour tous les items :
    - choix : députés · électeurs · maires
    - réponse : électeurs
    - indice : Cherche 1962 dans la frise.
-   - explication : En 1962, un référendum décide que tous les électeurs éliront le président : c’est le suffrage universel direct. La première fois, c’est en 1965. En 1958, de Gaulle avait été élu par des élus, pas par tous les électeurs.
+   - explication : En 1962, un référendum décide que tous les électeurs éliront le président : c’est le suffrage universel direct. En 1958, de Gaulle avait été élu par des élus, pas par tous les électeurs.
 6. énoncé : En 1981, le pouvoir passe de la droite à la gauche avec François Mitterrand : c’est une … .
    - lu : En mille neuf cent quatre-vingt-un, le pouvoir passe de la droite à la gauche avec François Mitterrand : c’est une (mot manquant).
    - choix : alternance · cohabitation · révolution

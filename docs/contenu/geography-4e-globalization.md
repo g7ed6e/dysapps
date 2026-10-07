@@ -379,7 +379,7 @@ Pour tous les items :
    - choix : de l’Asie à l’Europe · de l’Europe à l’Amérique · de l’Afrique à l’Asie
    - réponse : de l’Asie à l’Europe
    - indice : La Chine et les Pays-Bas : sur quels continents ?
-   - explication : Shanghai est en Asie, Rotterdam en Europe. Shanghai est le premier port à conteneurs du monde, Rotterdam le premier port d’Europe.
+   - explication : Shanghai est en Asie, Rotterdam en Europe. Shanghai est le premier port à conteneurs du monde. Rotterdam est le premier port d’Europe.
 3. énoncé : "Fos-sur-Mer, près de Marseille\nDes usines et des raffineries\nElles sont au bord des quais.\nLes navires y arrivent chaque jour."
    - question : Pourquoi les usines sont-elles au bord du port ?
    - lu : Fos-sur-Mer, près de Marseille. Des usines et des raffineries. Elles sont au bord des quais. Les navires y arrivent chaque jour.

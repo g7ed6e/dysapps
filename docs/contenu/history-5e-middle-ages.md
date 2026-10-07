@@ -50,7 +50,7 @@ Pour tous les items :
    - choix : Bible · Coran · Torah
    - réponse : Coran
    - indice : La Bible est le livre des chrétiens.
-   - explication : Le Coran est le livre sacré de l’islam. La Bible est le livre sacré des chrétiens. La Torah est au cœur de la Bible des juifs.
+   - explication : Le Coran est le livre sacré de l’islam. La Bible est le livre sacré des chrétiens. La Torah est la première partie de la Bible des juifs.
 3. énoncé : Les musulmans se réunissent pour prier dans une … .
    - choix : église · synagogue · mosquée
    - réponse : mosquée

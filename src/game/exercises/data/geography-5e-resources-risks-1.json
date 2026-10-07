@@ -16,7 +16,7 @@
       ],
       "answer": "industriel",
       "hint": "Les usines, c’est l’industrie.",
-      "explanation": "Une usine qui brûle ou qui explose : c’est un risque industriel. En 2019, à Rouen, l’usine Lubrizol a brûlé.",
+      "explanation": "Une usine qui brûle ou qui explose : c’est un risque industriel, comme à Rouen en 2019.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -25,6 +25,7 @@
             "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -34,15 +35,15 @@
     },
     {
       "key": "geography-5e-resources-risks-1-1",
-      "prompt": "La sirène d’alerte sonne : il faut se mettre à l’abri dans un … .",
-      "spoken": "La sirène d’alerte sonne : il faut se mettre à l’abri dans un (mot manquant) .",
+      "prompt": "La sirène d’alerte sonne : il faut se mettre à l’abri … .",
+      "spoken": "La sirène d’alerte sonne : il faut se mettre à l’abri (mot manquant) .",
       "choices": [
-        "parc",
-        "bâtiment",
-        "voiture"
+        "dans un parc",
+        "dans un bâtiment",
+        "dans une voiture"
       ],
-      "answer": "bâtiment",
-      "hint": "Où est-on le mieux protégé : dedans ou dehors ?",
+      "answer": "dans un bâtiment",
+      "hint": "Un lieu solide, dont on peut fermer portes et fenêtres.",
       "explanation": "Quand la sirène d’alerte sonne, on entre dans un bâtiment et on ferme portes et fenêtres. Dehors ou dans une voiture, on est moins protégé.",
       "aid": {
         "kind": "rule-card",
@@ -52,6 +53,7 @@
             "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -79,6 +81,7 @@
             "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -106,6 +109,7 @@
             "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -133,6 +137,7 @@
             "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -160,6 +165,7 @@
             "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -187,6 +193,7 @@
             "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."
@@ -214,6 +221,7 @@
             "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
             "Enjeux : les personnes et les biens menacés.",
             "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
             "Prévention : se préparer avant la catastrophe.",
             "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
             "S’adapter : changer sa façon de vivre ou de construire."

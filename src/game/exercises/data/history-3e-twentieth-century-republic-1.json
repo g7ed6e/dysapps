@@ -124,7 +124,7 @@
       ],
       "answer": "électeurs",
       "hint": "Cherche 1962 dans la frise.",
-      "explanation": "En 1962, un référendum décide que tous les électeurs éliront le président : c’est le suffrage universel direct. La première fois, c’est en 1965. En 1958, de Gaulle avait été élu par des élus, pas par tous les électeurs.",
+      "explanation": "En 1962, un référendum décide que tous les électeurs éliront le président : c’est le suffrage universel direct. En 1958, de Gaulle avait été élu par des élus, pas par tous les électeurs.",
       "aid": {
         "kind": "rule-card",
         "props": {

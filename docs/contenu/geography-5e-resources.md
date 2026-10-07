@@ -82,7 +82,7 @@ Pour tous les items :
    - choix : diminue · reste pareille · augmente
    - réponse : augmente
    - indice : Plus de bébés qui arrivent que de personnes qui meurent.
-   - explication : Plus de naissances que de décès : sans compter les départs et les arrivées, il y a chaque année plus d’habitants. La population augmente.
+   - explication : Plus de naissances que de décès : il y a chaque année plus d’habitants. La population augmente. Ici, on ne compte pas les gens qui partent ou qui arrivent.
 
 ### Niveau 2 · `geography-5e-resources-population-2`
 
@@ -309,6 +309,7 @@ Pour tous les items :
   - Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.
   - Enjeux : les personnes et les biens menacés.
   - Risque : un aléa là où il y a des enjeux.
+  - Risque industriel : un accident dans une usine.
   - Prévention : se préparer avant la catastrophe.
   - Réchauffement climatique : la Terre se réchauffe, la mer monte.
   - S’adapter : changer sa façon de vivre ou de construire.
@@ -317,11 +318,11 @@ Pour tous les items :
    - choix : climatique · industriel · sanitaire
    - réponse : industriel
    - indice : Les usines, c’est l’industrie.
-   - explication : Une usine qui brûle ou qui explose : c’est un risque industriel. En 2019, à Rouen, l’usine Lubrizol a brûlé.
-2. énoncé : La sirène d’alerte sonne : il faut se mettre à l’abri dans un … .
-   - choix : parc · bâtiment · voiture
-   - réponse : bâtiment
-   - indice : Où est-on le mieux protégé : dedans ou dehors ?
+   - explication : Une usine qui brûle ou qui explose : c’est un risque industriel, comme à Rouen en 2019.
+2. énoncé : La sirène d’alerte sonne : il faut se mettre à l’abri … .
+   - choix : dans un parc · dans un bâtiment · dans une voiture
+   - réponse : dans un bâtiment
+   - indice : Un lieu solide, dont on peut fermer portes et fenêtres.
    - explication : Quand la sirène d’alerte sonne, on entre dans un bâtiment et on ferme portes et fenêtres. Dehors ou dans une voiture, on est moins protégé.
 3. énoncé : Quand un fleuve déborde, il provoque une … .
    - choix : sécheresse · éruption · inondation
@@ -371,7 +372,7 @@ Pour tous les items :
    - choix : un feu de forêt · une épidémie · un accident nucléaire
    - réponse : un accident nucléaire
    - indice : Relis la ligne qui parle de la centrale.
-   - explication : La vague a inondé la centrale nucléaire de Fukushima : un grave accident a suivi. Une centrale nucléaire est une technologie : c’est un risque technologique.
+   - explication : La vague a inondé la centrale nucléaire de Fukushima : un grave accident a suivi. Un accident dans une centrale, c’est un risque technologique.
 2. énoncé : "Description de la carte des risques d’une ville\nEn bleu : les zones qui peuvent être inondées\nDans ces zones, on ne construit plus de maisons."
    - question : Pourquoi ne construit-on plus de maisons dans ces zones ?
    - lu : Description de la carte des risques d’une ville. En bleu : les zones qui peuvent être inondées. Dans ces zones, on ne construit plus de maisons.
@@ -396,7 +397,7 @@ Pour tous les items :
 5. énoncé : "Rouen, en septembre 2019\nUn grand incendie dans l’usine Lubrizol\nUne fumée noire passe sur la ville.\nLes écoles ferment pour la journée."
    - question : Pourquoi les écoles ferment-elles ?
    - lu : Rouen, en septembre deux mille dix-neuf. Un grand incendie dans l’usine Lubrizol. Une fumée noire passe sur la ville. Les écoles ferment pour la journée.
-   - choix : à cause d’une inondation · pour protéger les élèves de la fumée · parce que ce sont les vacances
+   - choix : parce que la ville n’a plus d’électricité · pour protéger les élèves de la fumée · parce que les pompiers ont besoin des écoles
    - réponse : pour protéger les élèves de la fumée
    - indice : Relis la ligne qui parle de la fumée.
    - explication : L’incendie d’une usine est un risque industriel. On ferme les écoles pour protéger les élèves de la fumée.
@@ -414,10 +415,10 @@ Pour tous les items :
    - réponse : le réchauffement climatique
    - indice : Lis la ligne qui commence par « La cause ».
    - explication : Avec le réchauffement climatique, les glaciers des Alpes fondent. La mer de Glace devient plus mince chaque année.
-8. énoncé : "Toulouse, en septembre 2001\nL’usine chimique AZF explose.\nElle était tout près des maisons.\nDepuis, on évite de construire près de ces usines."
+8. énoncé : "Toulouse, en septembre 2001\nUne usine chimique explose.\nElle était tout près des maisons.\nDepuis, on évite de construire près de ces usines."
    - question : Que fait-on depuis pour réduire le risque ?
-   - lu : Toulouse, en septembre deux mille un. L’usine chimique AZF explose. Elle était tout près des maisons. Depuis, on évite de construire près de ces usines.
-   - choix : on construit plus de maisons autour · on évite de construire près de ces usines · on ferme toutes les usines
+   - lu : Toulouse, en septembre deux mille un. Une usine chimique explose. Elle était tout près des maisons. Depuis, on évite de construire près de ces usines.
+   - choix : on construit de nouvelles maisons autour · on évite de construire près de ces usines · on ferme toutes les usines
    - réponse : on évite de construire près de ces usines
    - indice : Relis la ligne qui commence par « Depuis ».
    - explication : Moins de maisons près des usines dangereuses, c’est moins d’enjeux menacés. C’est de la prévention.

@@ -36,9 +36,7 @@ export const DOMAINES_C4: readonly ProgrammeDomaine[] = [
   { id: 'c4-es-ecrire', cycle: 4, discipline: 'spanish', title: 'Langues vivantes : écrire et réagir à l’écrit', page: 42 },
   { id: 'c4-es-culture', cycle: 4, discipline: 'spanish', title: 'Langues vivantes : connaissances culturelles', page: 43 },
   { id: 'c4-es-langue', cycle: 4, discipline: 'spanish', title: 'Langues vivantes : grammaire, lexique et phonologie', page: 44 },
-  // Histoire et géographie : le programme a été écrit de mémoire et ses pages estimées (le site du ministère et celui
-  // de data.gouv.fr sont refusés depuis l'environnement de travail, 6 octobre 2026) ; à relire dans le PDF avant la
-  // première île de 5e. Le texte répartit les thèmes par classe : chaque thème est une compétence, donc une mission.
+  // Histoire et géographie : pages et libellés vérifiés dans le PDF cité par sources.ts (7 octobre 2026). Le texte répartit les thèmes par classe : chaque thème est une compétence, donc une mission.
   // L'enseignement moral et civique, qui suit dans le PDF, n'est pas dans l'application (hors périmètre).
   { id: 'c4-hg-temps', cycle: 4, discipline: 'history-geography', title: 'Histoire et géographie : se repérer dans le temps', page: 78 },
   { id: 'c4-hg-espace', cycle: 4, discipline: 'history-geography', title: 'Histoire et géographie : se repérer dans l’espace', page: 79 },
@@ -258,7 +256,7 @@ export const ENTRIES_C4 = [
   { id: 'c4.es.langue.modaux-passif', cycle: 4, discipline: 'spanish', domaine: 'c4-es-langue', attendu: LV_LANGUE, competence: 'Les modaux ; le passif', page: 44 },
   { id: 'c4.es.langue.phrase-complexe', cycle: 4, discipline: 'spanish', domaine: 'c4-es-langue', attendu: LV_LANGUE, competence: 'Énoncés simples et complexes : coordination, subordination, relatifs, discours indirect, interrogation indirecte, connecteurs', page: 44 },
   { id: 'c4.es.langue.phonologie', cycle: 4, discipline: 'spanish', domaine: 'c4-es-langue', attendu: LV_LANGUE, competence: 'Phonologie : régularités de la langue orale, variations ; viser la fluidité et l’intelligibilité, non l’accent natif', page: 44 },
-  // ---------- Histoire et géographie (5e, 4e, 3e ; libellés et pages à vérifier) ----------
+  // ---------- Histoire et géographie (5e, 4e, 3e) ----------
   { id: 'c4.hg.temps.reperes', cycle: 4, discipline: 'history-geography', domaine: 'c4-hg-temps', attendu: HG_TEMPS, competence: 'Situer un fait dans une époque ou une période donnée ; mettre en relation des faits d’une époque ou d’une période donnée', page: 78 },
   { id: 'c4.hg.temps.ordonner', cycle: 4, discipline: 'history-geography', domaine: 'c4-hg-temps', attendu: HG_TEMPS, competence: 'Ordonner des faits les uns par rapport aux autres ; identifier des continuités et des ruptures chronologiques pour s’approprier la périodisation de l’histoire', page: 78 },
   { id: 'c4.hg.espace.localiser', cycle: 4, discipline: 'history-geography', domaine: 'c4-hg-espace', attendu: HG_ESPACE, competence: 'Nommer et localiser les grands repères géographiques ; nommer, localiser et caractériser un lieu dans un espace géographique et des espaces plus complexes', page: 79 },

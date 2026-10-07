@@ -70,7 +70,7 @@ Pour tous les items :
    - choix : navetteurs · touristes · retraités
    - réponse : navetteurs
    - indice : Ils vont et viennent, comme une navette.
-   - explication : Un navetteur fait l’aller et le retour chaque jour. On dit aussi un migrant pendulaire : il va et vient, comme le balancier d’une pendule.
+   - explication : Un navetteur fait l’aller et le retour chaque jour. On dit aussi un migrant pendulaire : il va et vient, comme le pendule d’une horloge.
 7. énoncé : Une ville … pollue moins et pense aux habitants de demain.
    - choix : étalée · ancienne · durable
    - réponse : durable
