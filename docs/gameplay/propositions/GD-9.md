@@ -90,9 +90,9 @@ Relus le 7 octobre 2026 (expert frontend : Bloquant ; les cinq autres relecteurs
 
 7 octobre 2026, mainteneur, après avoir essayé le mode : « il y a trop de boutons », à faire comme les jeux mobiles de construction de base ; s'il y a désaccord, il tranche. Sur la Carte, ce qui précède change ainsi :
 
-- **Plus de flèches autour du choix** : on déplace en glissant ou en touchant la place voulue. Seul « Tourner » reste près d'un lieu ou d'un Gardien choisi. Les quatre flèches ne restent que pour une liaison à reposer, qui ne se glisse pas.
-- **Plus de petits radeaux aux bouts des liaisons** (choix 1a du 6 octobre) : une arrivée se choisit en touchant son ouvrage près de son bout, puis se déplace en touchant la côte de son lieu.
-- **Toucher pose** : toucher une place libre y pose le choix tout de suite, comme le lever du doigt (2a) ; sur une place prise, il y reste, sous la croix grise.
+- **Plus de flèches autour du choix** : on déplace un lieu ou un Gardien en le glissant. Seul « Tourner » reste près d'un lieu ou d'un Gardien choisi. Les quatre flèches ne restent que pour une liaison à reposer, qui ne se glisse pas.
+- **Plus de petits radeaux aux bouts des liaisons** (choix 1a du 6 octobre) : une arrivée se choisit en touchant son ouvrage près de son bout, puis se pose en touchant une autre place de la côte de son lieu.
+- **Toucher la mer relâche le choix** (carte de décision du mainteneur, « Relâcher, comme le jeu »), sans rien déplacer ni poser. Une borne ou une arrivée, qui ne se glissent pas, se posent en touchant une autre place de leur lieu : sur une place libre, tout de suite ; sur une place prise, elle y reste, sous la croix grise.
 - **La barre** n'a plus que « Annuler » et « Valider » ; « Réunir » s'y ajoute seulement quand le lieu choisi peut se réunir à un voisin, « Poser » seulement pour une liaison à reposer. « Défaire » quitte la Carte.
 - **Le clavier et la vue simple ne changent pas** : les flèches décalent le choix d'un cran, Entrée le pose ; la vue simple garde la croix des flèches, « Tourner », « Défaire » et « Poser ».
 

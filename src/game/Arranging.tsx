@@ -15,7 +15,7 @@ import { sonDePose } from './sound';
 import { mesuresDemandees } from './rendering';
 import type { Habillage } from './skin';
 import { type ArchipelagoId, archipelagoOfIsland } from './world/archipelagos';
-import { type Direction, groupAt, guardianOf, type GuardianPlaceAt, guardianPlacesAt, isDetached, joinCandidates, joinedWith, joinIslands, joinsIn, linksToRelink, NO_MORE_ROOM, placeIn, sameGuardianPlace, spotOf } from './world/arrange';
+import { type Direction, groupAt, guardianOf, type GuardianPlaceAt, guardianPlacesAt, isDetached, joinCandidates, joinedWith, joinIslands, joinsIn, linksToRelink, NO_MORE_ROOM, placeIn, sameGuardianPlace, spotOf, stationOf, currentLandings } from './world/arrange';
 import {
   type ArrangeChoice,
   choiceFits,
@@ -689,14 +689,16 @@ export function useAmenagement({
     },
   };
   /**
-   * Le choix calé sur la place touchée (la mer, la côte d'un lieu) : sur une place libre, il s'y pose tout de suite,
-   * comme au lever du doigt qui le glisse (mainteneur, 7 octobre 2026 : « il y a trop de boutons », plus de « Poser ») ;
-   * sur une place prise, il y reste, croix grise.
+   * Une borne ou une arrivée, qu'on ne glisse pas : calée sur la place touchée de son lieu, elle s'y pose tout de suite
+   * (mainteneur, 7 octobre 2026 : « il y a trop de boutons », plus de « Poser ») ; sur une place prise, elle y reste,
+   * croix grise ; à sa place d'avant, rien n'est posé (ni son, ni pas à défaire).
    */
   const caleEtPose = (c: ArrangeChoice, point: { x: number; y: number }) => {
-    const s = snapChoice(worldRef.current, c, point);
-    if (s.genre === 'liaison' || !choiceFits(worldRef.current, s)) return choisir(s);
+    const w = worldRef.current;
+    const s = snapChoice(w, c, point);
+    if (s.genre === 'liaison' || dejaEnPlace(w, s) || !choiceFits(w, s)) return choisir(s);
     choixRef.current = s;
+    setChoix(s);
     poserIci(true);
   };
   /** Un point touché sur un lieu est-il hors de son emprise (la mer à côté, un écueil) ? */
@@ -718,8 +720,10 @@ export function useAmenagement({
     const w = worldRef.current;
     switch (i.genre) {
       case 'mer':
-        if (choix) caleEtPose(choix, i.point);
-        else direTexte('Touche d’abord un lieu, un gardien, une borne ou une liaison.');
+        // Toucher la mer relâche le choix, comme dans les jeux de base mobiles (mainteneur, 7 octobre 2026) : on
+        // déplace en glissant ; la vue simple et le clavier restent pour qui ne glisse pas.
+        if (choix) return relacher();
+        direTexte('Touche d’abord un lieu, un gardien, une borne ou une liaison.');
         return true;
       case 'ile': {
         const p = i.sol ? versMonde(i.sol) : null;
@@ -728,10 +732,7 @@ export function useAmenagement({
           caleEtPose(choix, p);
           return true;
         }
-        if (p && choix && horsDuLieu(i.id, p)) {
-          caleEtPose(choix, p);
-          return true;
-        }
+        if (p && choix && horsDuLieu(i.id, p)) return relacher();
         // Le lieu choisi, retouché sur sa terre : il est relâché, comme avec Échap (sans clavier aussi).
         if (choix?.genre === 'lieu' && choix.id === i.id) return relacher();
         const c = chooseIsland(w, i.id);
@@ -786,7 +787,7 @@ export function useAmenagement({
         return;
       }
       // Entrée pose le choix décalé aux flèches (le bouton « Poser » n'est plus sur la Carte).
-      if (e.key === 'Enter' && choix && !enCours.current && (e.target as Element | null)?.closest?.('button') == null) {
+      if (e.key === 'Enter' && !e.repeat && choix && !enCours.current && !question && !aConfirmer && !(e.target as Element | null)?.closest?.('button, a, [role="button"], summary')) {
         e.preventDefault();
         poserIci();
         return;
@@ -852,6 +853,19 @@ function sameChoicePlace(c: ArrangeChoice, d: ArrangeChoice): boolean {
   if (c.genre === 'lieu' && d.genre === 'lieu') return sameSpot(c.spot, d.spot);
   if (c.genre === 'gardien' && d.genre === 'gardien') return sameGuardianPlace(c.place, d.place);
   return c === d;
+}
+
+/** Une borne ou une arrivée calée est-elle déjà à sa place dans le monde ? */
+function dejaEnPlace(w: World, c: ArrangeChoice): boolean {
+  if (c.genre === 'borne') {
+    const p = stationOf(w, c.key);
+    return Boolean(p && p.x === c.place.x && p.y === c.place.y);
+  }
+  if (c.genre === 'arrivee') {
+    const l = currentLandings(w, c.link)?.[c.end];
+    return Boolean(l && l.side === c.landing.side && l.step === c.landing.step);
+  }
+  return false;
 }
 
 /** Le lieu à l'autre bout d'une liaison, vu depuis son bout `end`. */

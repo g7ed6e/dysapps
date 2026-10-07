@@ -1,6 +1,7 @@
 // Les poignées du mode « Modifier le plan » (GD-9), dessinées dans le monde (mot du mainteneur, 6 octobre 2026 : « Il
-// faut intégrer les boutons dans le dessin », « Pour rotation et translation ») : les quatre flèches et « Tourner », sur
-// des radeaux posés sur l'eau autour du choix (intention du directeur artistique du 6 octobre 2026). Dans Blocland, un
+// faut intégrer les boutons dans le dessin », « Pour rotation et translation ») : « Tourner » près d'un lieu ou d'un
+// Gardien choisi, et les quatre flèches autour d'un ouvrage à reposer seulement (mainteneur, 7 octobre 2026 : « il y a
+// trop de boutons »), sur des radeaux posés sur l'eau (intention du directeur artistique du 6 octobre 2026). Dans Blocland, un
 // radeau carré en damier crème jointif (3 × 3 carrés de deux crèmes proches, sans joint sombre, sur un bord sombre),
 // une flèche en cubes dessus (une tige longue, la pointe large en triangle à marches, sans biais) ; « Tourner » : un arc
 // ouvert, sa pointe en marches (↷). Dans Archipéo (rattrapage), un radeau de trois planches, une flèche peinte à plat ;

@@ -3813,13 +3813,13 @@ figure.class-table {
   font-size: max(18px, 1rem);
 }
 /* ===== Le mode « Aménager » (GD-9), sur la Carte : la barre du mode à place fixe, en bas, à la place de la barre du
-   monde (↶, « Poser », puis « Annuler » et « Valider », qui ferment le mode ; décision du mainteneur, 6 octobre 2026) ;
-   les boutons gardent leur place, éteints quand ils ne font rien ; 48 px au moins (« Poser », « Annuler » et
-   « Valider » : 56 px). Un seul bouton mis en avant (`primary`) : « Poser » pendant un choix, ✓ Valider sinon ;
-   la place de « Réunir », entre « Poser » et « Annuler », réservée dès qu'un lieu est choisi (éteint quand il ne sert
-   pas) ; « Garder » prend la place d'« Annuler » quand il demande confirmation, l'« Annuler » qui confirme à celle de
-   « Réunir ». Les flèches et « Tourner » sont dessinées dans le monde,
-   leurs boutons transparents par-dessus (`.arrange-handles`) ; en vue simple, la croix reste dans la barre. ===== */
+   monde : « Annuler » et « Valider », qui ferment le mode (mainteneur, 7 octobre 2026 : « il y a trop de boutons ») ;
+   « Réunir » à leur gauche quand il sert, « Poser » pour un ouvrage à reposer ; 48 px au moins (« Poser »,
+   « Annuler » et « Valider » : 56 px). Un seul bouton mis en avant (`primary`) : « Poser » pendant le choix d'un
+   ouvrage à reposer, ✓ Valider sinon ; « Garder » prend la place d'« Annuler » quand il demande confirmation,
+   l'« Annuler » qui confirme se pose juste avant. « Tourner » (et les flèches d'un ouvrage à reposer) sont dessinés
+   dans le monde, leurs boutons transparents par-dessus (`.arrange-handles`) ; en vue simple, la croix des flèches,
+   ↶ et « Poser » restent dans la barre. ===== */
 .arrange-bar {
   position: absolute;
   left: 0.6rem;
@@ -3936,8 +3936,8 @@ figure.class-table {
   padding: 4px 12px;
   line-height: 1.2;
 }
-/* Au téléphone : ↶, « Poser » et la place de « Réunir » sur une rangée, « Annuler » et « Valider » dessous, sur toute la largeur ; en vue
-   simple, la croix à gauche des outils. La barre ne monte jamais plus haut que la moitié de l'écran. */
+/* Au téléphone : les outils (« Réunir », « Poser » ; en vue simple ↶ et la croix à gauche) sur une rangée,
+   « Annuler » et « Valider » dessous, sur toute la largeur. La barre ne monte jamais plus haut que la moitié de l'écran. */
 .arrange-bar.arrange-bar-telephone {
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
@@ -3962,6 +3962,13 @@ figure.class-table {
 .arrange-bar-telephone .arrange-bar-outils,
 .arrange-bar-telephone .arrange-bar-fin {
   flex-wrap: nowrap;
+}
+/* Sur la Carte, rien à gauche le plus souvent (ni « Réunir », ni « Poser ») : la rangée vide ne laisse pas d'écart. */
+.arrange-bar.arrange-bar-telephone:not(.arrange-bar-croix):has(> .arrange-bar-outils:empty) {
+  grid-template-areas: 'fin';
+}
+.arrange-bar.arrange-bar-telephone > .arrange-bar-outils:empty {
+  display: none;
 }
 /* Au téléphone, chaque rangée prend toute la largeur : « Annuler » et « Valider » s'y partagent leurs places fixes. */
 .arrange-bar.arrange-bar-telephone > .arrange-bar-outils,

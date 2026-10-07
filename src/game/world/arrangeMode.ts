@@ -1,6 +1,6 @@
 // Le mode « Aménager » (GD-9, L5) : ce que l'élève a choisi (un lieu, un Gardien, une borne, une arrivée, une liaison à
-// reposer), où se tient son fantôme, et ce que font les gestes de la barre du mode : toucher la mer (le fantôme se cale
-// sur la place libre la plus proche), les flèches (un cran, même sur une place prise, que le fantôme montre d'une croix
+// reposer), où se tient son fantôme, et ce que font les gestes de la barre du mode : toucher une place du lieu d'une borne ou
+// d'une arrivée (elle s'y cale, sur la place libre la plus proche), les flèches (un cran, même sur une place prise, que le fantôme montre d'une croix
 // grise ; « Plus de place par là » au bord de la carte ; 6 octobre 2026, choix 3 du mainteneur), « Tourner », « Poser ». La phrase écrite et lue dit toujours où. Les actions elles-mêmes sont dans ./arrange.ts ; ici, le choix
 // en cours et son fantôme ; un lieu réuni emmène son voisin et leur réunion. Code pur, sans Three.js.
 import { thePlace } from './placeArticle';
@@ -139,8 +139,9 @@ export function placeOfChoice(c: ArrangeChoice): BiomeId {
 // ---------- Les gestes de la barre ----------
 
 /**
- * Toucher la mer (un point en cases du monde) : le fantôme se cale sur la place libre la plus proche ; le même choix
- * s'il n'y en a aucune. Une liaison à reposer ne se cale pas : on choisit ses voisins dans la liste.
+ * Un point touché (en cases du monde) : le fantôme se cale sur la place libre la plus proche ; le même choix s'il n'y en a
+ * aucune. Seules une borne ou une arrivée se calent ainsi au toucher (la mer touchée relâche le choix, mainteneur,
+ * 7 octobre 2026) ; un lieu ou un Gardien se glissent. Une liaison à reposer ne se cale pas : on choisit ses voisins dans la liste.
  */
 export function snapChoice(world: World, c: ArrangeChoice, point: { x: number; y: number }): ArrangeChoice {
   switch (c.genre) {

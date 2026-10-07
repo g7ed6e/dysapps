@@ -1,8 +1,8 @@
 // Le mode « Aménager » à l'écran (GD-9, point 1) : « Modifier le plan » l'ouvre ; choisir un lieu ; peu de boutons sur
 // la Carte (mainteneur, 7 octobre 2026 : « il y a trop de boutons ») : la barre n'a que « Annuler » et « Valider »,
 // « Réunir » près d'un voisin, « Poser » pour un ouvrage à reposer ; autour du choix, « Tourner » seul (les flèches pour
-// un ouvrage). Toucher la mer cale le choix et le pose sur une place libre ; glissé au doigt, il se pose au lever ; au
-// clavier, les flèches le décalent jusqu'à « Plus de place par là » et Entrée le pose (avec son geste, qu'un toucher
+// un ouvrage). Toucher la mer relâche le choix ; glissé au doigt, il se pose au lever ; une borne se pose en touchant
+// une place de son lieu ; au clavier, les flèches le décalent jusqu'à « Plus de place par là » et Entrée le pose (avec son geste, qu'un toucher
 // termine ; d'un coup avec moins d'animations). La vue simple garde sa croix, « Tourner », ↶ et « Poser ». « Valider » ou
 // « Annuler » (et Échap) ferment le mode ; la pastille des liaisons à reposer, et le mot expliqué la première fois ; la
 // ligne de signes (piste A), dite en mots.
@@ -17,9 +17,12 @@ import { Icon } from '../components/Icon';
 import { ArrangeHandles } from './ArrangeHandles';
 import { HABILLAGES } from './world/skin';
 import { toutConstruit } from './world/budget';
-import { freeGuardianSpots, freeSpots, guardianOf, isletMiddle, joinedWith, linksToRelink, NO_MORE_ROOM, placeIn, spotOf } from './world/arrange';
+import { freeGuardianSpots, freeSpots, guardianOf, isletMiddle, joinedWith, linksToRelink, nearestFreeSpot, NO_MORE_ROOM, placeIn, spotOf } from './world/arrange';
 import { frameOf } from './world/footprint';
 import { DESCENTE_MS, GESTE_DU_LIEU } from './world/arrangeGesture';
+import { stationInWorld } from './world/arrangeMode';
+import { startingStations } from './world/terrain/markers';
+import { freeStationSpots, stationOf } from './world/arrange';
 import { applyLayout } from './world/appliedLayout';
 import { thePlace } from './world/placeArticle';
 
@@ -89,6 +92,19 @@ const depart = () => toutConstruit().world;
 /** Une touche du clavier, sur la fenêtre (hors d'un bouton). */
 const touche = (key: string) => fireEvent.keyDown(window, { key });
 /** Les boutons de la barre du bas, dans l'ordre, par leur nom. */
+/**
+ * Le lieu choisi, glissé au doigt jusqu'à la place libre la plus proche de `point` (en cases du monde), puis lâché :
+ * toucher la mer ne le déplace plus, elle le relâche (mainteneur, 7 octobre 2026).
+ */
+const glisseVers = (id: string, point: { x: number; y: number }) => {
+  const libre = nearestFreeSpot(monde, id as never, point)!;
+  const ici = placeIn(monde, id as never).core;
+  const c = frameOf('6e');
+  act(() => void dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { lieu: id as never }));
+  act(() => dernier.glisser.suivre({ x: c.x0 + libre.x * 4 + 8, y: c.y0 + libre.y * 4 + 8 }));
+  act(() => dernier.glisser.lacher(true));
+  return libre;
+};
 const boutonsDeLaBarre = () => Array.from(document.querySelectorAll('.arrange-bar button')).map((b) => b.getAttribute('aria-label') ?? b.textContent?.trim());
 
 describe('le mode « Aménager »', () => {
@@ -120,7 +136,7 @@ describe('le mode « Aménager »', () => {
     expect(dernier.choix).toEqual(avant);
   });
 
-  it('choisir, décaler au clavier, poser à Entrée (moins d’animations), défaire, poser en touchant la mer, puis « Annuler » remet le plan comme à l’entrée', () => {
+  it('choisir, décaler au clavier, poser à Entrée (moins d’animations), défaire, la mer touchée relâche, glisser pose, puis « Annuler » remet le plan comme à l’entrée', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     expect(screen.getByRole('status').textContent).toMatch(/Touche un lieu/);
@@ -183,10 +199,15 @@ describe('le mode « Aménager »', () => {
     expect(dernier.peutDefaire).toBe(true);
     act(() => dernier.defaire());
     expect(spotOf(monde, VOLCAN)).toEqual(avant);
-    // Toucher la mer, une place libre (le coin du fond, à l'ouest, loin de tout voisin à réunir) : le lieu s'y cale et
-    // s'y pose tout de suite ; le choix est relâché.
+    // Toucher la mer relâche le choix, sans rien bouger ni poser.
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
     act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 120 } }));
+    expect(dernier.choix).toBeNull();
+    expect(spotOf(monde, VOLCAN)).toEqual(avant);
+    expect(dernier.peutDefaire).toBe(false);
+    // Glissé jusqu'à une place libre (le coin du fond, à l'ouest, loin de tout voisin à réunir) : posé au lever du doigt.
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    glisseVers(VOLCAN, { x: 0, y: 120 });
     expect(spotOf(monde, VOLCAN)).not.toEqual(avant);
     expect(dernier.choix).toBeNull();
     expect(dernier.ligne?.genre).toBe('place');
@@ -333,7 +354,7 @@ describe('le mode « Aménager »', () => {
     const entree = spotOf(monde, VOLCAN);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
-    // Décalé au clavier jusqu'à une place libre, sans le poser (toucher la mer le poserait tout de suite).
+    // Décalé au clavier jusqu'à une place libre, sans le poser.
     touche('ArrowLeft');
     for (let i = 0; i < 60 && dernier.placePrise; i++) touche('ArrowLeft');
     expect(spotOf(monde, VOLCAN)).toEqual(entree);
@@ -345,8 +366,8 @@ describe('le mode « Aménager »', () => {
     // Échap : il désélectionne le choix, puis ne fait plus rien ; il n'annule jamais.
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
-    // La mer touchée, une place libre : posé tout de suite.
-    act(() => void dernier.intention({ genre: 'mer', point: { x: 190, y: 140 } }));
+    // Glissé sur une place libre : posé au lever du doigt.
+    glisseVers(VOLCAN, { x: 190, y: 140 });
     const deplacee = spotOf(monde, VOLCAN);
     expect(deplacee).not.toEqual(posee);
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
@@ -429,7 +450,7 @@ describe('le mode « Aménager »', () => {
     expect(dernier.choix?.genre === 'lieu' && dernier.choix.id).toBe(TOUR);
   });
 
-  it('posé en touchant la mer sur une place à l’icône de « Réunir », le lieu reste choisi et « Réunir » apparaît (choix 2a)', () => {
+  it('posé au doigt sur une place à l’icône de « Réunir », le lieu reste choisi et « Réunir » apparaît (choix 2a)', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     // La Tour, éloignée de la Ferme, puis rapprochée sur une place qui l'y colle.
@@ -437,10 +458,50 @@ describe('le mode « Aménager »', () => {
     const icone = dernier.vue!.reunions?.[0];
     expect(icone).toBeDefined();
     const avant = spotOf(monde, TOUR);
-    act(() => void dernier.intention({ genre: 'mer', point: { x: icone!.x, y: icone!.y } }));
+    glisseVers(TOUR, { x: icone!.x, y: icone!.y });
     expect(spotOf(monde, TOUR)).not.toEqual(avant);
     expect(dernier.choix?.genre).toBe('lieu');
     expect(screen.getByRole('button', { name: 'Réunir' })).toBeEnabled();
+  });
+
+  it('une borne, qu’on ne glisse pas, se pose en touchant une place de son lieu ; à sa place d’avant, rien n’est posé', () => {
+    render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    const mission = startingStations(VOLCAN)[0].typeId;
+    const cle = `${VOLCAN}:${mission}`;
+    const sol = (p: { x: number; y: number }) => {
+      const m = stationInWorld(monde, cle, p);
+      return { ile: VOLCAN, local: { x: m.x, y: m.y, z: 0 } };
+    };
+    act(() => void dernier.intention({ genre: 'borne', ile: VOLCAN, mission }));
+    expect(dernier.choix?.genre).toBe('borne');
+    const avant = stationOf(monde, cle)!;
+    // Sa place touchée : rien n'est posé, rien à défaire.
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN, sol: sol(avant) }));
+    expect(stationOf(monde, cle)).toEqual(avant);
+    expect(dernier.peutDefaire).toBe(false);
+    // Une autre place libre de la bande : posée tout de suite.
+    const libre = freeStationSpots(monde, cle).find((q) => q.x !== avant.x || q.y !== avant.y)!;
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN, sol: sol(libre) }));
+    expect(stationOf(monde, cle)).toEqual(libre);
+    expect(dernier.peutDefaire).toBe(true);
+  });
+
+  it('Entrée ne pose rien pendant la question de « Réunir »', () => {
+    render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
+    const icone = dernier.vue!.reunions![0];
+    glisseVers(TOUR, { x: icone.x, y: icone.y });
+    const ici = spotOf(monde, TOUR);
+    const pas = dernier.peutDefaire;
+    fireEvent.click(screen.getByRole('button', { name: 'Réunir' }));
+    const q = () => screen.queryByRole('group', { name: `Réunir ${thePlace(nom(TOUR))} ?` });
+    expect(q()).not.toBeNull();
+    touche('Enter');
+    expect(q()).not.toBeNull();
+    expect(spotOf(monde, TOUR)).toEqual(ici);
+    expect(dernier.peutDefaire).toBe(pas);
   });
 
   it('« Valider » sur une place prise : le choix reste à sa place d’avant, rien de posé ne se perd', () => {
@@ -448,7 +509,7 @@ describe('le mode « Aménager »', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
     // Le coin libre du fond, à l'ouest : le coin de devant porte le Hangar des inventions depuis SC-2.
-    act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 120 } }));
+    glisseVers(VOLCAN, { x: 0, y: 120 });
     const posee = spotOf(monde, VOLCAN);
     // Un choix qui ne se pose pas (un lieu fixe se refuse ; on force ici un choix sur la place d'un autre lieu).
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
@@ -460,7 +521,7 @@ describe('le mode « Aménager »', () => {
     expect(spotOf(monde, VOLCAN)).toEqual(posee);
   });
 
-  it('le geste de la pose dure 1,5 s au plus, et un toucher le termine ; la mer touchée pose comme le lever du doigt', () => {
+  it('le geste de la pose dure 1,5 s au plus, et un toucher le termine ; le lever du doigt fait redescendre d’un cube', () => {
     vi.useFakeTimers();
     render(<SettingsProvider><Banc reduit={false} depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
@@ -494,10 +555,10 @@ describe('le mode « Aménager »', () => {
     act(() => void dernier.finirLeGeste());
     expect(dernier.geste).toBeNull();
     expect(spotOf(monde, VOLCAN)).not.toEqual(ici);
-    // La mer touchée, une place libre : posé tout de suite, comme au lever du doigt (il redescend d'un cube).
+    // Lâché au doigt sur une place libre : il redescend d'un cube.
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
     const la = spotOf(monde, VOLCAN);
-    act(() => void dernier.intention({ genre: 'mer', point: { x: 190, y: 140 } }));
+    glisseVers(VOLCAN, { x: 190, y: 140 });
     expect(spotOf(monde, VOLCAN)).not.toEqual(la);
     expect(dernier.geste).toMatchObject({ phase: 'descend', dureeMs: DESCENTE_MS });
     act(() => void vi.advanceTimersByTime(DESCENTE_MS));
@@ -508,7 +569,7 @@ describe('le mode « Aménager »', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
-    act(() => void dernier.intention({ genre: 'mer', point: { x: 200, y: 200 } }));
+    glisseVers(VOLCAN, { x: 200, y: 200 });
     const n = linksToRelink(monde, '6e').length;
     expect(n).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: 'Valider' }));

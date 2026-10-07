@@ -337,9 +337,9 @@ export function ArrangeBar({ amenagement, className, croix = false }: { amenagem
             <Icon name="poser" /> <span>Poser</span>
           </button>
         )}
-        {/* La place de « Réunir », entre « Poser » et « Annuler », réservée dès qu'un lieu est choisi (sur la Carte ; la
-            vue simple l'a dans sa liste) : le bouton y est éteint quand il ne sert pas. Quand « Annuler » demande
-            confirmation, l'« Annuler » qui confirme se pose à cette place, à côté de « Garder ». */}
+        {/* « Réunir », à gauche d'« Annuler », seulement quand le lieu choisi peut se réunir à un voisin (sur la Carte ;
+            la vue simple l'a dans sa liste). Quand « Annuler » demande confirmation, l'« Annuler » qui confirme se pose
+            à cette place, à côté de « Garder ». */}
         {amenagement.aConfirmer ? (
           <button type="button" className="button arrange-confirmer" onClick={amenagement.confirmerLAnnulation}>
             <Icon name="close" /> <span>Annuler</span>
@@ -372,7 +372,7 @@ export function ArrangeBar({ amenagement, className, croix = false }: { amenagem
             <Icon name="close" /> <span>Annuler</span>
           </button>
         )}
-        <button type="button" className={`button bouton-cta arrange-valider${(croix && choix) || enQuestion || amenagement.aConfirmer ? '' : ' primary'}`} onClick={amenagement.valider}>
+        <button type="button" className={`button bouton-cta arrange-valider${((croix || choix?.genre === 'liaison') && choix) || enQuestion || amenagement.aConfirmer ? '' : ' primary'}`} onClick={amenagement.valider}>
           <Icon name="check" /> <span>Valider</span>
         </button>
       </div>

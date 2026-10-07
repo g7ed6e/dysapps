@@ -44,7 +44,7 @@ describe('choisir', () => {
 });
 
 describe('un lieu : caler, décaler, tourner, poser', () => {
-  it('toucher la mer cale le fantôme sur une place libre ; les flèches avancent d’un cran, libre ou pris, jusqu’au bord', () => {
+  it('un point touché cale le fantôme sur une place libre ; les flèches avancent d’un cran, libre ou pris, jusqu’au bord', () => {
     const w = partie();
     const c = chooseIsland(w, VOLCAN)!;
     const cale = snapChoice(w, c, { x: 0, y: 0 });
