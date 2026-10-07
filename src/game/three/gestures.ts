@@ -253,12 +253,12 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     return p ? { x: p.x, y: p.z } : null;
   };
   /**
-   * Le mode « Aménager », un choix en cours : le doigt parti en (x, y) est-il parti du choix (choix 3a du mainteneur) ?
+   * Le mode « Aménager » : le doigt parti en (x, y) est-il parti du choix, ou d'un lieu ou d'un Gardien à prendre ?
    * Ce qu'il touchait (le Gardien, la terre d'un lieu, ou la mer) est demandé à la page, sans rien prendre encore.
    */
   const cibleDuChoix = (x: number, y: number): CibleDuChoix | null => {
     const g = derniers.current.glisserLeChoix;
-    if (derniers.current.amenager !== 'choix' || !g) return null;
+    if (derniers.current.amenager === 'non' || !g) return null;
     const { creature, hit } = aim({ clientX: x, clientY: y });
     const found = creature ? creatureIdOf(creature.object) : null;
     let cible: CibleDuChoix | null = null;
@@ -277,9 +277,9 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
   const glisser = (e: PointerEvent, appui: Appui) => {
     appui.cx = e.clientX;
     appui.cy = e.clientY;
-    // Le mode « Aménager », un choix en cours (GD-9) : un glissé parti du choix le glisse au doigt (7 octobre 2026, choix
-    // 1b et 3a du mainteneur) ; tout autre glissé fait glisser la vue.
-    if (appui.tient === undefined && derniers.current.amenager === 'choix') {
+    // Le mode « Aménager » (GD-9) : un glissé parti du choix, ou d'un autre lieu ou Gardien qu'il choisit alors, le glisse
+    // au doigt (7 octobre 2026, choix 1b du mainteneur, puis « prendre directement ») ; parti de la mer, la vue glisse.
+    if (appui.tient === undefined && derniers.current.amenager !== 'non') {
       if (!glisseCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
       // Parti d'ailleurs que du choix : la Carte glisse dès `SEUIL_DU_GLISSE`. Parti du choix : il ne part qu'au-delà
       // d'un seuil plus grand (`SEUIL_DU_CHOIX`), et d'ici là la Carte non plus (`quiGlisse`).

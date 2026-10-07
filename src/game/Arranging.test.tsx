@@ -20,8 +20,9 @@ import { HABILLAGES } from './world/skin';
 import { toutConstruit } from './world/budget';
 import { freeGuardianSpots, freeSpots, freeStationSpots, guardianOf, isletMiddle, joinedWith, linksToRelink, nearestFreeSpot, NO_MORE_ROOM, placeIn, spotOf, stationOf } from './world/arrange';
 import { frameOf } from './world/footprint';
+import { mapOf } from './world/map';
 import { DESCENTE_MS, GESTE_DU_LIEU } from './world/arrangeGesture';
-import { stationInWorld } from './world/arrangeMode';
+import { chooseIsland, stationInWorld } from './world/arrangeMode';
 import { startingStations } from './world/terrain/markers';
 import { applyLayout } from './world/appliedLayout';
 import { thePlace } from './world/placeArticle';
@@ -263,14 +264,21 @@ describe('le mode « Aménager »', () => {
     expect(spotOf(monde, VOLCAN)).toEqual(avant);
   });
 
-  it('glisser le lieu choisi au doigt (choix 1b, 2a, 3a) : seul un glissé parti de lui le prend ; levé sur une place libre, il est posé avec son « clac »', () => {
+  it('glisser un lieu au doigt (choix 1b, 2a) : un glissé parti d’un lieu le prend, même pas encore choisi ; levé sur une place libre, il est posé avec son « clac »', () => {
     vi.useFakeTimers();
     const dit: string[] = [];
     render(<SettingsProvider><Banc reduit={false} depart={depart()} dire={(t) => dit.push(t)} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
-    // Rien de choisi : aucun glissé ne prend rien (la vue glisse).
+    // Rien de choisi : un glissé parti d'un lieu fixe ne prend rien (la vue glisse) ; parti d'un autre lieu, il le choisit
+    // et le prend directement (mainteneur, 7 octobre 2026), lâché sans bouger, il reste choisi.
     const ici = placeIn(monde, VOLCAN).core;
-    expect(dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { lieu: VOLCAN })).toBe(false);
+    const port = mapOf('6e').find((d) => !chooseIsland(monde, d.id))!.id;
+    expect(dernier.glisser.prendre({ x: 0, y: 0 }, { lieu: port })).toBe(false);
+    act(() => void dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { lieu: TOUR }));
+    expect(dernier.choix).toMatchObject({ genre: 'lieu', id: TOUR });
+    expect(dernier.glisse).toBe(true);
+    act(() => dernier.glisser.lacher(true));
+    expect(dernier.choix).toMatchObject({ genre: 'lieu', id: TOUR });
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
     const depart0 = spotOf(monde, VOLCAN);
     // Un glissé parti de la mer au loin : la vue glisse, le lieu reste.

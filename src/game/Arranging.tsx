@@ -651,14 +651,30 @@ export function useAmenagement({
     }
     return false;
   };
+  /**
+   * Un glissé parti d'un autre lieu ou d'un autre Gardien que le choix (ou sans choix) : il le prend directement, comme
+   * dans les jeux de base mobiles (mainteneur, 7 octobre 2026) ; un lieu fixe ou un Gardien caché ne se prennent pas.
+   */
+  const autreAPrendre = (touche: { lieu?: BiomeId; gardien?: BiomeId }): ArrangeChoice | null => {
+    const w = worldRef.current;
+    if (touche.gardien) return chooseGuardian(w, touche.gardien);
+    return touche.lieu ? chooseIsland(w, touche.lieu) : null;
+  };
   const glisser: GlisserLeChoix = {
     partDuChoix(point, touche) {
       const c = choixRef.current;
-      return Boolean(ouvert && c && partDuChoix(c, point, touche));
+      return Boolean(ouvert && ((c && partDuChoix(c, point, touche)) || autreAPrendre(touche)));
     },
     prendre(point, touche) {
-      const c = choixRef.current;
-      if (!ouvert || !c || enCours.current || question || aConfirmer || !partDuChoix(c, point, touche)) return false;
+      if (!ouvert || enCours.current || question || aConfirmer) return false;
+      let c = choixRef.current;
+      if (!c || !partDuChoix(c, point, touche)) {
+        const autre = autreAPrendre(touche);
+        if (!autre) return false;
+        // Choisi sans rien dire : la voix parle au lever du doigt.
+        choisir(autre, undefined, true);
+        c = autre;
+      }
       const m = choiceMiddle(worldRef.current, c);
       if (!m) return false;
       prise.current = { dx: m.x - point.x, dy: m.y - point.y };
