@@ -1,12 +1,14 @@
 // La pose d'une partie en vague (GD-6, Blocland, piste B) : l'ordre, le rythme borné à six secondes, le maillage partagé.
 import { BIOMES } from '../biomes';
-import { PLAFOND_DU_MONDE_EN_BLOCS, sceneCost, toutConstruit } from './budget';
+import { PLAFOND_DU_MONDE_EN_BLOCS, sceneCost, terrainChunks, toutConstruit } from './budget';
+import { buildBlockMesh, chunkFaceCount } from './blockMesh';
+import { hiddenBottomLevel } from './sea';
 import { ARCHIPELAGO_IDS } from './map';
-import { buildMesh, faceCount } from './mesher';
+import { buildMesh } from './mesher';
 import { partiesDe } from './parts';
 import { GESTE_DE_POSE } from './pose';
 import { casesDesPlansDansLeMonde, worldCubes } from './terrain';
-import { maillageAvecLaVague } from './waveMesh';
+import { maillageAvecLaVague, vagueEnBlocs } from './waveMesh';
 import { VAGUE, couchesPosees, cubesDeLaVague, cubesPartis, hauteurDansLaVague, planDeLaVague, sansLaPartie } from './wave';
 
 const mur = (w: number, h: number, d = 1) => {
@@ -113,20 +115,23 @@ it('trouve dans le monde les cases de chaque partie, et le monde sans elles les 
   }
 }, 30_000);
 
-it('reste dans le plafond du monde en blocs pendant la vague (PLAFOND_DU_MONDE_EN_BLOCS : 100 000 triangles, 180 appels)', () => {
+it('reste dans le plafond du monde en blocs pendant la vague (PLAFOND_DU_MONDE_EN_BLOCS : 100 000 triangles, 120 appels)', () => {
   const { progress, world } = toutConstruit();
   for (const a of ARCHIPELAGO_IDS) {
     // L'archipel tout construit, sauf la partie qui se pose en vague : la pire de ses parties.
     const scene = sceneCost(a);
     const cubes = worldCubes(a, progress, world, false);
-    const terrain = buildMesh(cubes);
+    const terrain = terrainChunks(a);
+    const dessous = { hiddenBottomsUpTo: hiddenBottomLevel(a), fondre: true };
     for (const b of BIOMES.filter((x) => x.classe === a))
       for (const partie of partiesDe(b.id)) {
         const cases = casesDesPlansDansLeMonde(partie.cases);
         const vague = cubesDeLaVague(cubes, cases);
-        const groupes = maillageAvecLaVague(sansLaPartie(cubes, cases), vague, planDeLaVague(vague));
-        const triangles = scene.triangles - faceCount(terrain) * 2 + faceCount(groupes.map((g) => g.groupe)) * 2;
-        const appels = scene.drawCalls - terrain.length + groupes.length;
+        // Le terrain sans la partie, fondu, et la vague à part, un maillage par passe (three/cubes.ts).
+        const sans = buildBlockMesh(sansLaPartie(cubes, cases), dessous);
+        const enVague = vagueEnBlocs(vague, planDeLaVague(vague)).map((v) => v.morceau);
+        const triangles = scene.triangles - chunkFaceCount(terrain) * 2 + chunkFaceCount([...sans, ...enVague]) * 2;
+        const appels = scene.drawCalls - terrain.length + sans.length + enVague.length;
         expect(triangles, partie.nom).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
         expect(appels, partie.nom).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
       }

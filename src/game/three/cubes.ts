@@ -13,7 +13,8 @@ import { buildMesh, type MeshOptions } from '../world/mesher';
 import { hiddenBottomLevel } from '../world/sea';
 import { gesteFini, hauteurDuGeste } from '../world/pose';
 import { avanceeDuFondu, couchesPosees, cubesPartis, hauteurDansLaVague, planDeLaVague, type PlanDeLaVague } from '../world/wave';
-import { maillageAvecLaVague, type QueueDeLaVague } from '../world/waveMesh';
+import { maillageAvecLaVague, vagueEnBlocs, type QueueDeLaVague } from '../world/waveMesh';
+import { buildBlockMesh } from '../world/blockMesh';
 import { couleurDuFondu, maillageDuFondu, type FonduDeLaPose } from '../world/fadeMesh';
 import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendering';
@@ -22,7 +23,8 @@ import { creerConstruction, creerMateriaux, type MateriauxDeConstruction } from 
 import { creerDecor } from './decor';
 import type { Large } from './offshore';
 import type { Lumiere } from './light';
-import { meshOf } from './meshes';
+import { blockMeshOf, meshOf } from './meshes';
+import { modeOuvertDansLesMateriaux, suivreLeMode } from './arrange';
 import type { Instant, Monde, PartieDeLaScene } from './scenePart';
 import { creerSol } from './ground';
 
@@ -138,6 +140,13 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
 
   /** Blocland : les dessous sous l'eau (ou sous le plancher de nuages) ne sont pas dessinés. */
   const dessous: MeshOptions = { hiddenBottomsUpTo: hiddenBottomLevel(archipel) };
+  /**
+   * Blocland (sans option de style du lot R1) : le terrain en une seule texture, par morceaux du monde, ses faces voisines
+   * fondues (world/blockMesh.ts) ; sauf dans « Modifier le plan », qui soulève un lieu sommet par sommet : une face fondue
+   * à cheval sur son bord s'étirerait. Le terrain se refait à l'ouverture et à la fermeture du mode.
+   */
+  const enBlocs = !sol && !surface;
+  const neplusSuivreLeMode = enBlocs ? suivreLeMode(() => (aRefaire = true)) : () => {};
 
   const viderLeTerrain = () => {
     for (const child of [...terrain.children]) {
@@ -151,6 +160,25 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     viderLeTerrain();
     derniers = cubes;
     aRefaire = false;
+    if (enBlocs) {
+      for (const g of buildBlockMesh(cubes, { ...dessous, fondre: !modeOuvertDansLesMateriaux() })) terrain.add(blockMeshOf(g));
+      if (!vague) return;
+      // La vague à part, un maillage par passe : ses sommets bougent, le terrain non.
+      vague.queues = [];
+      for (const { morceau, vague: queue } of vagueEnBlocs(vague.cubes, vague.plan)) {
+        const mesh = blockMeshOf(morceau);
+        terrain.add(mesh);
+        // Les cubes de la vague descendent de haut, hors de la sphère englobante : ces maillages-là se dessinent toujours.
+        mesh.frustumCulled = false;
+        const position = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+        position.setUsage(THREE.DynamicDrawUsage);
+        const repos = new Float32Array(queue.rangDuSommet.length);
+        for (let i = 0; i < repos.length; i++) repos[i] = position.getY(queue.premierSommet + i);
+        vague.queues.push({ mesh, queue, repos });
+      }
+      placerLaVague(vague.ecoule ?? 0);
+      return;
+    }
     if (!sol && vague) {
       // La vague à la fin des maillages du terrain : ses sommets bougent, le terrain non.
       vague.queues = [];
@@ -344,7 +372,8 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     enclencher: (cube) => {
       finirLeGeste();
       const bloc = new THREE.Group();
-      for (const g of buildMesh([cube])) bloc.add(meshOf(g, surface));
+      if (enBlocs) for (const g of buildBlockMesh([cube], { morceau: Infinity })) bloc.add(blockMeshOf(g));
+      else for (const g of buildMesh([cube])) bloc.add(meshOf(g, surface));
       bloc.position.y = hauteurDuGeste(0);
       scene.add(bloc);
       geste = { bloc, ecoule: null, enAttente: null };
@@ -399,6 +428,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       }
     },
     dispose: () => {
+      neplusSuivreLeMode();
       vague = null;
       if (geste) geste.enAttente = null;
       finirLeGeste();

@@ -87,7 +87,7 @@ export type Painter = (x: number, y: number, r: () => number) => [number, number
 const STAR = ['....##....', '....##....', '...####...', '##########', '.########.', '..######..', '..######..', '.###..###.', '.##....##.', '..........'];
 
 /** Mélange entre deux couleurs, avec un grain aléatoire. */
-export const grain =
+const grain =
   (a: string, b: string): Painter =>
   (_x, _y, r) => {
     const t = r();
@@ -1127,6 +1127,23 @@ export const faded =
     return fadeRgb(cr, cg, cb);
   };
 
+/** Les pixels d'un peintre (RGBA, ligne par ligne depuis le haut), d'une graine donnée : sans canvas. */
+export function pixelsFor(painter: Painter, seed: number): Uint8ClampedArray {
+  const data = new Uint8ClampedArray(SIZE * SIZE * 4);
+  const r = mulberry32(seed);
+  for (let y = 0; y < SIZE; y++) {
+    for (let x = 0; x < SIZE; x++) {
+      const [cr, cg, cb] = painter(x, y, r);
+      const i = (y * SIZE + x) * 4;
+      data[i] = cr;
+      data[i + 1] = cg;
+      data[i + 2] = cb;
+      data[i + 3] = 255;
+    }
+  }
+  return data;
+}
+
 export function canvasFor(painter: Painter, seed: number): HTMLCanvasElement | null {
   const canvas = document.createElement('canvas');
   canvas.width = SIZE;
@@ -1134,17 +1151,7 @@ export function canvasFor(painter: Painter, seed: number): HTMLCanvasElement | n
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
   const image = ctx.createImageData(SIZE, SIZE);
-  const r = mulberry32(seed);
-  for (let y = 0; y < SIZE; y++) {
-    for (let x = 0; x < SIZE; x++) {
-      const [cr, cg, cb] = painter(x, y, r);
-      const i = (y * SIZE + x) * 4;
-      image.data[i] = cr;
-      image.data[i + 1] = cg;
-      image.data[i + 2] = cb;
-      image.data[i + 3] = 255;
-    }
-  }
+  image.data.set(pixelsFor(painter, seed));
   ctx.putImageData(image, 0, 0);
   return canvas;
 }
@@ -1153,9 +1160,25 @@ export function canvasFor(painter: Painter, seed: number): HTMLCanvasElement | n
 const FACE_SEED = { side: 11, top: 23, bottom: 37 } as const;
 export type TextureFace = keyof typeof FACE_SEED;
 
-/** Le canvas d'une face de bloc texturé (délavée pour une île verrouillée). */
-export function faceCanvas(kind: TextureKind, face: TextureFace, muted = false): HTMLCanvasElement | null {
+/** Le peintre d'une face de bloc texturé (délavé pour une île verrouillée). */
+function facePainter(kind: TextureKind, face: TextureFace, muted: boolean): Painter {
   const p = PAINTERS[kind];
   const painter = face === 'top' ? p.top : face === 'side' ? p.side : (p.bottom ?? p.top);
-  return canvasFor(muted ? faded(painter) : painter, FACE_SEED[face]);
+  return muted ? faded(painter) : painter;
 }
+
+/** Le canvas d'une face de bloc texturé (délavée pour une île verrouillée). */
+export function faceCanvas(kind: TextureKind, face: TextureFace, muted = false): HTMLCanvasElement | null {
+  return canvasFor(facePainter(kind, face, muted), FACE_SEED[face]);
+}
+
+/** Les pixels d'une face de bloc texturé, les mêmes que ceux de `faceCanvas`. */
+export function facePixels(kind: TextureKind, face: TextureFace, muted = false): Uint8ClampedArray {
+  return pixelsFor(facePainter(kind, face, muted), FACE_SEED[face]);
+}
+
+/** Toutes les sortes de textures, dans un ordre fixe (les couches de la texture des blocs, world/blockMesh.ts). */
+export const TEXTURE_KINDS = Object.keys(PAINTERS) as TextureKind[];
+
+/** Le grain des couleurs unies : les pixels de sa texture, et sa graine. */
+export const GRAIN_DES_TEINTES = { peintre: grain('#d8d8d8', '#ffffff'), graine: 5 } as const;

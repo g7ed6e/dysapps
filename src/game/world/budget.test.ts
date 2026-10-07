@@ -30,11 +30,12 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
   expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 74_900, drawCalls: 40 });
 });
 
-it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : aucun appel de plus, sous le plafond', () => {
+it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : un appel de plus au plus, sous le plafond', () => {
   for (const a of ARCHIPELAGO_IDS) {
     const sans = sceneCost(a);
     const avec = sceneCost(a, true);
-    expect(avec.drawCalls, a).toBe(sans.drawCalls);
+    // Dans les morceaux du terrain (world/blockMesh.ts) : une petite construction n'en ouvre un que s'il n'y avait rien.
+    expect(avec.drawCalls, a).toBeLessThanOrEqual(sans.drawCalls + 1);
     expect(avec.triangles, a).toBeGreaterThan(sans.triangles);
     expect(avec.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
   }
@@ -67,8 +68,8 @@ it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la
     // 6 octobre 2026), ailleurs depuis SC-3 (37 194 aux Anciens Ateliers, sous 37 450).
     expect(sol.triangles, a).toBeLessThanOrEqual(renderBudgetOf(a).triangles / 2);
     // Et les modèles de la scène (sans la mer ni la faune, que le monde en blocs ne compte pas) ne dessinent pas plus
-    // que le monde en blocs.
-    const blocs = sceneCost(a);
+    // que le monde en blocs cube par cube, comme avant la piste 2 du budget (Blocland en une texture dessine moins).
+    const blocs = sceneCost(a, false, false);
     expect(triangles - mer.triangles - faune.triangles, a).toBeLessThanOrEqual(blocs.triangles);
     expect(drawCalls - mer.drawCalls - faune.drawCalls, a).toBeLessThan(blocs.drawCalls);
   }
@@ -205,8 +206,8 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
     });
 });
 
-it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026)', () => {
-  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 100_000, drawCalls: 180 });
+it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026), puis 120 avec une seule texture pour les blocs (piste 2, 7 octobre 2026)', () => {
+  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 100_000, drawCalls: 120 });
 });
 
 it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus long, et toutes les réunions), chaque région tient sous le plafond', () => {

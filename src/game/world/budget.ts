@@ -12,7 +12,8 @@ import { ARCHIPELAGOS, grantAccess, linkWholeRegion, VOYAGES } from './archipela
 import { ALTITUDE, type ArchipelagoId, DANS_LE_CIEL, mapOf } from './map';
 import { appelsDuSol, champDuSol, landMesh, poseDuDecor, trianglesDuSol } from './landMesh';
 import { modelerLeSol } from './drawnModel';
-import { buildMesh, drawCallsOf, faceCount, type MeshGroup } from './mesher';
+import { buildMesh, drawCallsOf, faceCount } from './mesher';
+import { buildBlockMesh, chunkFaceCount, type BlockChunk } from './blockMesh';
 import { hiddenBottomLevel } from './sea';
 import { MONUMENTS } from './monuments';
 import { PLANS, planCells } from './plans';
@@ -79,9 +80,13 @@ export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls
  * couleurs des personnages en cubes (#372, choix du mainteneur « Fondre puis relever », 6 octobre 2026) : les triangles
  * n'ont pas à être relevés, les appels sont ramenés aux valeurs mesurées avec une petite marge. Aux Premiers Rivages,
  * avec les sciences : 81 154 triangles et 167 appels tout construit (81 646 avec les commandes posées), 168 avec les
- * bulles, 97 732 triangles au pire de la région aménagée. La mesure sur tablette reste à faire.
+ * bulles, 97 732 triangles au pire de la région aménagée. Les appels ramenés à 120 par la piste 2 du budget (une seule
+ * texture pour les blocs, les faces voisines fondues, « Ok démarre piste 2 », mainteneur, 7 octobre 2026) : aux Premiers
+ * Rivages, 33 340 triangles et 100 appels tout construit, 102 au pire de la région aménagée. Les triangles restent à
+ * 100 000 : pendant « Modifier le plan », le terrain se dessine face par face (97 860 triangles au pire aux Premiers
+ * Rivages, 99 150 aux Anciens Ateliers). La mesure sur tablette reste à faire.
  */
-export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 100_000, drawCalls: 180 } as const;
+export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 100_000, drawCalls: 120 } as const;
 
 /** Un poste du budget d'Archipéo : une part de la scène, et le lot qui la dessine. */
 export type Poste = 'sol' | 'mer' | 'faune' | 'decor' | 'construction' | 'commandes' | 'bornes' | 'navire' | 'bonhomme' | 'creatures' | 'gardiens' | 'scene';
@@ -253,28 +258,55 @@ export function toutConstruitAvecLesCommandes() {
 }
 
 /**
- * Les modèles en blocs de la scène d'un archipel tout construit, chacun en groupes de `buildMesh`. `commandes` : avec
- * les petites constructions des commandes posées. Le terrain sans ses dessous sous l'eau (three/cubes.ts) ; `tints` :
- * un modèle dont les couleurs unies se dessinent ensemble (les personnages, three/meshes.ts `meshesOf`).
+ * Le terrain d'un archipel tout construit comme Blocland le dessine (three/cubes.ts) : en une seule texture, par
+ * morceaux du monde, ses faces voisines fondues, sans ses dessous sous l'eau (world/blockMesh.ts). Un appel de dessin par
+ * morceau et par passe : le compte de la Carte, où tous les morceaux sont à l'écran.
  */
-export function sceneModels(a: ArchipelagoId, commandes = false): { name: string; groups: MeshGroup[]; tints?: true }[] {
-  const { progress, world: village } = commandes ? toutConstruitAvecLesCommandes() : toutConstruit();
+export function terrainChunks(a: ArchipelagoId, commandes = false, partie = commandes ? toutConstruitAvecLesCommandes() : toutConstruit()): BlockChunk[] {
+  const { progress, world: village } = partie;
+  return buildBlockMesh(worldCubes(a, progress, village, false), { hiddenBottomsUpTo: hiddenBottomLevel(a), fondre: true });
+}
+
+/**
+ * Les autres modèles en blocs de la scène d'un archipel tout construit (les personnages, le navire), chacun comme
+ * Blocland le dessine : en une seule texture, ses faces fondues, un appel de dessin par passe (three/meshes.ts
+ * `modelMeshes`). `commandes` : avec les petites constructions des commandes posées.
+ */
+export function sceneModels(a: ArchipelagoId, commandes = false, partie = commandes ? toutConstruitAvecLesCommandes() : toutConstruit()): { name: string; chunks: BlockChunk[] }[] {
+  const enBlocs = (cubes: VoxelCube[]) => buildBlockMesh(cubes, { fondre: true, morceau: Infinity });
+  return modelesEnCubes(a, partie).map((m) => ({ name: m.name, chunks: enBlocs(m.cubes) }));
+}
+
+/** Les personnages et le navire d'un archipel tout construit, en cubes ; `tints` : les couleurs unies dessinées ensemble. */
+function modelesEnCubes(a: ArchipelagoId, partie: ReturnType<typeof toutConstruit>): { name: string; cubes: VoxelCube[]; tints?: true }[] {
+  const { progress, world: village } = partie;
   const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
   return [
-    { name: 'terrain', groups: buildMesh(worldCubes(a, progress, village, false), [], { hiddenBottomsUpTo: hiddenBottomLevel(a) }) },
-    ...[...creaturePlacements(a, village.links), ...guardianPlacements(a, progress, village.links)].map((c) => ({ name: c.id, groups: buildMesh(c.cubes), tints: true as const })),
-    { name: 'coque', groups: buildMesh(ship.filter((c) => c.z < MAST_TOP)) },
-    { name: 'ballon', groups: buildMesh(ship.filter((c) => c.z >= MAST_TOP)) },
-    ...AVATAR_PARTS.map((p) => ({ name: p.name, groups: buildMesh(p.cubes), tints: true as const })),
+    ...[...creaturePlacements(a, village.links), ...guardianPlacements(a, progress, village.links)].map((c) => ({ name: c.id, cubes: c.cubes, tints: true as const })),
+    { name: 'coque', cubes: ship.filter((c) => c.z < MAST_TOP) },
+    { name: 'ballon', cubes: ship.filter((c) => c.z >= MAST_TOP) },
+    ...AVATAR_PARTS.map((p) => ({ name: p.name, cubes: p.cubes, tints: true as const })),
   ];
 }
 
-/** Triangles et appels de dessin des modèles en blocs d'un archipel tout construit. */
-export function sceneCost(a: ArchipelagoId, commandes = false): { triangles: number; drawCalls: number } {
-  const models = sceneModels(a, commandes);
+/**
+ * Triangles et appels de dessin des modèles en blocs d'un archipel tout construit, terrain compris, comme Blocland les
+ * dessine. `uneTexture` faux : comme avant la piste 2 du budget, un appel par texture et par face (les couleurs unies
+ * d'un personnage ensemble), cube par cube : la mesure à laquelle le rendu Archipéo se compare.
+ */
+export function sceneCost(a: ArchipelagoId, commandes = false, uneTexture = true): { triangles: number; drawCalls: number } {
+  // La partie toute construite, une fois (elle se calcule lentement).
+  const partie = commandes ? toutConstruitAvecLesCommandes() : toutConstruit();
+  if (uneTexture) {
+    const chunks = [...terrainChunks(a, commandes, partie), ...sceneModels(a, commandes, partie).flatMap((m) => m.chunks)];
+    return { triangles: chunkFaceCount(chunks) * 2, drawCalls: chunks.length };
+  }
+  const { progress, world: village } = partie;
+  const terrain = buildMesh(worldCubes(a, progress, village, false), [], { hiddenBottomsUpTo: hiddenBottomLevel(a) });
+  const modeles = modelesEnCubes(a, partie).map((m) => ({ groups: buildMesh(m.cubes), tints: m.tints }));
   return {
-    triangles: models.reduce((n, m) => n + faceCount(m.groups) * 2, 0),
-    drawCalls: models.reduce((n, m) => n + (m.tints ? drawCallsOf(m.groups) : m.groups.length), 0),
+    triangles: (faceCount(terrain) + modeles.reduce((n, m) => n + faceCount(m.groups), 0)) * 2,
+    drawCalls: terrain.length + modeles.reduce((n, m) => n + (m.tints ? drawCallsOf(m.groups) : m.groups.length), 0),
   };
 }
 
@@ -395,12 +427,15 @@ export function linkTriangles(a: ArchipelagoId, kind: BridgeKind, longueur: numb
  * des raccourcis entre lieux ouverts (36 cases au plus, `SHORT_LINK`) — et les réunions : un lieu ne se réunit qu'à un
  * seul autre (lieux ÷ 2 au plus), chacune au plus large (`joinTriangles`). Une réunion est un côté du même graphe
  * planaire que les liaisons (elle ne croise aucune liaison, et aucune liaison ne relie deux lieux réunis) : chacune
- * prend la place d'un raccourci.
+ * prend la place d'un raccourci. Les triangles comptés face par face, comme le terrain se dessine pendant « Modifier le
+ * plan » (three/cubes.ts : il n'y fond pas ses faces), le pire moment ; les appels, les mêmes dans le mode et hors de lui
+ * (un par morceau du monde et par passe).
  */
 export function worstCaseOfRegion(a: ArchipelagoId): { base: number; liaisons: number; reunions: number; triangles: number; drawCalls: number } {
   const { progress, world } = toutConstruitAvecLesCommandes();
   const terrain = worldCubes(a, progress, world, false);
-  const scene = sceneCost(a, true);
+  const scene = sceneCost(a, true, false);
+  const appels = sceneCost(a, true).drawCalls;
   const signes = signesCost();
   const dessous = { hiddenBottomsUpTo: hiddenBottomLevel(a) };
   const liaisonsDAujourdhui = (faceCount(buildMesh(terrain, [], dessous)) - faceCount(buildMesh(terrain.filter((c) => !c.bridge), [], dessous))) * 2;
@@ -411,7 +446,7 @@ export function worstCaseOfRegion(a: ArchipelagoId): { base: number; liaisons: n
   const nReunions = Math.floor(lieux / 2);
   const liaisons = (lieux - 1) * longue + (maxLinks(lieux) - (lieux - 1) - nReunions) * raccourci;
   const reunions = nReunions * joinTriangles(a);
-  return { base, liaisons, reunions, triangles: base + liaisons + reunions, drawCalls: scene.drawCalls + signes.drawCalls };
+  return { base, liaisons, reunions, triangles: base + liaisons + reunions, drawCalls: appels + signes.drawCalls };
 }
 
 /**
