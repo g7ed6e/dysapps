@@ -140,8 +140,9 @@ export function TitleScreen() {
       if (depart.current?.id === e.pointerId) depart.current = null;
     },
   };
-  // « Ma dernière mission » seulement quand l'appli s'ouvre sur l'accueil (un lien direct vers une page y mène déjà).
-  const resume = launchedAt === '/' ? lastPlace() : null;
+  // « Ma dernière mission » seulement quand l'appli s'ouvre sur l'accueil (un lien direct vers une page y mène déjà), et
+  // seulement vers un lieu ouvert.
+  const resume = launchedAt === '/' ? lastPlace(blocland?.state.world.links) : null;
 
   const close = (to?: string, section?: string) => {
     try {

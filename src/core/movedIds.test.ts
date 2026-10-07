@@ -1,10 +1,12 @@
 // La migration en avant des programmes de 2025-2026 (format 4) : une partie du format 3 garde ses étoiles, sa file de
 // révision et tout ce qu'elle a, quand ses exercices changent de lieu ; chaque déplacement mène à un exercice qui existe,
 // et chaque item déplacé y garde sa clé.
+import type { BiomeId } from '../game/biomes';
 import { sanitizeState } from '../game/engine';
 import { loadAllExercises } from '../game/exercises';
+import { grantAccess, isBiomeUnlocked, voyageId } from '../game/world/archipelago';
 import { GAME_VERSION, migrateStorage, translateGame } from './migration';
-import { MOVED_EXERCISES, MOVED_ITEMS, MOVED_PATHS, movedItemId, movedPath } from './movedIds';
+import { MOVED_EXERCISES, MOVED_ITEMS, MOVED_PATHS, movedExerciseId, movedItemId, movedPath } from './movedIds';
 
 const EXERCISES = await loadAllExercises();
 const byId = new Map(EXERCISES.map((e) => [e.id, e]));
@@ -143,4 +145,25 @@ it('chaque déplacement mène à un exercice qui existe, et chaque item déplac�
     const [, , biome, type] = to.split('/');
     expect(EXERCISES.some((e) => e.biome === biome && e.type === type), to).toBe(true);
   }
+});
+
+it('un exercice arrivé d’un autre lieu n’ouvre pas son lieu : ni voyage, ni étape du Bloc-Navire, et les étoiles restent', () => {
+  // Un élève de 5e : ses lieux de 5e ouverts, rien au-delà.
+  const links = grantAccess([], ['maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation']);
+  const cases: [string, BiomeId][] = [
+    ['maths-5e-signed-numbers-subtracting-1', 'maths-4e-powers'],
+    ['french-5e-conjugation-subjunctive-1', 'french-4e-vocabulary'],
+    ['maths-5e-proportionality-proportion-tables-3', 'maths-3e-statistics'],
+  ];
+  for (const [ancien, lieu] of cases) {
+    const s = sanitizeState({ version: 3, progress: { [ancien]: P(3, 2, 1) }, world: { parts: {}, log: [], links } });
+    expect(isBiomeUnlocked(lieu, s.world.links), ancien).toBe(false);
+    expect(s.world.links, ancien).toEqual(links);
+    expect(s.world.links).not.toContain(voyageId('4e'));
+    expect(s.world.links).not.toContain(voyageId('3e'));
+    expect(s.progress[movedExerciseId(ancien)], ancien).toEqual(P(3, 2, 1));
+  }
+  // Déplacé dans son propre lieu (des Roseaux aux Reflets du Marais), l'exercice compte encore : le Marais reste ouvert.
+  const marais = sanitizeState({ version: 3, progress: { 'french-5e-conjugation-subjunctive-2': P(2, 1, 0.8) }, world: { parts: {}, log: [], links: [] } });
+  expect(isBiomeUnlocked('french-5e-conjugation', marais.world.links)).toBe(true);
 });

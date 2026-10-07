@@ -322,7 +322,7 @@ function poserLIle(
     for (const t of taperLayers(land)) if (!taken.has(cleDeCube(t.x, t.y, -DEPTH - t.d))) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS[BLOC.pierre].side);
   // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une petite île, son arène et ses pas japonais. Une
   // sentinelle (lot 6) est là dès l'ouverture de l'île, sans les pas japonais tant qu'elle attend.
-  const guardian = guardianStatus(biome, progress, village.links, sentinelles);
+  const guardian = guardianStatus(biome, progress, village.links, sentinelles, village.challengesKeptOpen);
   if (guardian !== 'hidden') bossIslet(biome, guardian === 'beaten', cubes, guardian !== 'waiting');
   if (unlocked && withCreatures) {
     const spot = creatureSpot(biome.id);

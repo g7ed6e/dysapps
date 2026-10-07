@@ -83,7 +83,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
   const unlocked = isBiomeUnlocked(biome.id, state.world.links);
   // « Pas de LV2 » : un seul message, lu à l'ouverture, à la place de l'accueil et du prochain objectif.
   const greeting = accueilDeLIle(state, biome.id, sansLv2, textes);
-  const bossReady = unlocked && isBossOpen(biome, state.progress);
+  const bossReady = unlocked && isBossOpen(biome, state.progress, state.world.challengesKeptOpen);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
   const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.archipels, textes.libelles) : null;
   const port = unlocked && archipelagoOf(biome.id).port === biome.id;

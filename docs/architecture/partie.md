@@ -92,4 +92,5 @@ flowchart TD
 
 - Une sauvegarde n’est jamais perdue : une vieille forme est traduite en avant, jamais effacée avant que la nouvelle soit écrite et relue. Un refus d’écrire (stockage plein) laisse l’ancienne.
 - `core/storage.ts` range tout sous le préfixe `dysapps:` et peut geler la sauvegarde : plus rien ne s’écrit jusqu’au prochain chargement de la page. La sauvegarde dans un fichier et sa restauration sont dans `core/saveFile.ts`.
+- Une partie d’avant le format 4 suit les exercices déplacés par les programmes de 2025-2026 (`core/movedIds.ts`) ; ses défis ouverts avant le déplacement sont lus à ce moment-là, sur la progression d’avant (`core/movedChallenges.ts`), et gardés dans `world.challengesKeptOpen`. Les parties dues se rattrapent même sur un lieu fermé : le monde ne dessine les bâtiments que des lieux ouverts.
 - Le détail des clés et des traductions est dans [Les fichiers](fichiers.md#le-socle-commun-srccore).

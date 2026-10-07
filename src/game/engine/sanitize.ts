@@ -1,7 +1,9 @@
 // La lecture d'une sauvegarde : une partie d'avant les mots neutres se lit traduite (core/migration.ts), puis chaque
 // champ est vérifié et complété ; une vieille sauvegarde (plans v1, ponts, Bloc-Navire…) est remise au format du jour.
 import { GAME_VERSION, translateGame } from '../../core/migration';
-import { type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome } from '../biomes';
+import { MOVED_EXERCISES } from '../../core/movedIds';
+import { isBossBeaten } from '../bossCore';
+import { type BiomeDef, type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome } from '../biomes';
 import { getPlan, planCells } from '../world/plans';
 import { getStage, stageFor } from '../world/vehicle';
 import { getMonument } from '../world/monuments';
@@ -23,6 +25,28 @@ function isRecord(v: unknown): v is Record<string, unknown> {
  * côté de lieu de large, quelques cases de long) ; au-delà, la sauvegarde est abîmée et le reste est ignoré.
  */
 const MAX_JOIN_KEYS = 512;
+
+/** Le lieu d'un exercice : celui dont l'identifiant le préfixe (`french-6e-phonology-…`, les lieux contiennent des tirets). */
+const placeOf = (exerciseId: string): BiomeDef | undefined => BIOMES.find((b) => exerciseId.startsWith(`${b.id}-`));
+
+let arrivedCache: ReadonlySet<string> | undefined;
+
+/**
+ * Les exercices arrivés d'un autre lieu avec les programmes de 2025-2026 (core/movedIds.ts) : leurs étoiles les ont
+ * suivis, mais n'ouvrent pas leur nouveau lieu (décision proposée par le directeur artistique, 7 octobre 2026). Il
+ * s'ouvre par les liaisons et le passage, comme les autres : sans cela, une étoile de 5e arrivée à la Forge donnerait
+ * aussi le voyage vers la 4e et l'étape du Bloc-Navire, sans défi. Un exercice déplacé dans son propre lieu (le Marais)
+ * compte encore. La table est calculée à la première lecture : les lieux (`BIOMES`) sont alors chargés, quel que soit
+ * l'ordre des imports.
+ */
+function arrivedFromAnotherPlace(): ReadonlySet<string> {
+  arrivedCache ??= new Set(
+    Object.entries(MOVED_EXERCISES)
+      .filter(([from, to]) => placeOf(from)?.id !== placeOf(to)?.id)
+      .map(([, to]) => to),
+  );
+  return arrivedCache;
+}
 
 const num = (v: unknown, fallback = 0) => (Number.isFinite(Number(v)) ? Number(v) : fallback);
 
@@ -149,12 +173,13 @@ export function sanitizeState(input: unknown): GameState {
   const rawIds = Array.isArray(world.links) ? world.links.filter((id): id is string => typeof id === 'string') : null;
   let links = rawIds ? [...new Set(rawIds.filter((id) => Boolean(getBridge(id) ?? getVoyage(id))))] : bridgesFromLegacyProgress(progress);
   if (rawIds && rawIds.some((id) => !getBridge(id) && !getVoyage(id))) links = grantAccess(links, legacyReachable(rawIds));
-  // Une île où l'on a déjà joué ou vaincu le Gardien reste ouverte, quoi qu'il arrive aux ouvrages.
+  // Une île où l'on a déjà joué ou vaincu le Gardien reste ouverte, quoi qu'il arrive aux ouvrages ; un exercice arrivé
+  // d'un autre lieu n'ouvre pas le sien (`arrivedFromAnotherPlace`).
+  const arrived = arrivedFromAnotherPlace();
   const played = new Set<BiomeId>();
   for (const [id, p] of Object.entries(progress)) {
-    if (p.stars < 1) continue;
-    // L'exercice commence par l'identifiant de son lieu, qui contient lui-même des tirets (`french-6e-phonology-…`).
-    const biome = BIOMES.find((b) => id.startsWith(`${b.id}-`));
+    if (p.stars < 1 || arrived.has(id)) continue;
+    const biome = placeOf(id);
     if (biome) played.add(biome.id);
   }
   links = grantAccess(links, played);
@@ -185,6 +210,14 @@ export function sanitizeState(input: unknown): GameState {
       if (requests.filter((r) => archipelDeLaCommande(getCommande(r)!) === archipelDeLaCommande(c)).length >= MAX_COMMANDES_OUVERTES) continue;
       requests.push(c.id);
     }
+  // Les défis restés ouverts après le déplacement (core/movedChallenges.ts) : des lieux connus, sans doublon, dont le
+  // défi n'est pas encore réussi ; une fois le Gardien rallumé, le lieu n'a plus rien à y faire.
+  const challengesKeptOpen: BiomeId[] = [];
+  if (Array.isArray(world.challengesKeptOpen))
+    for (const id of world.challengesKeptOpen) {
+      const biome = typeof id === 'string' ? getBiome(id) : undefined;
+      if (biome && !challengesKeptOpen.includes(biome.id) && !isBossBeaten(biome.id, progress)) challengesKeptOpen.push(biome.id);
+    }
   return {
     version: GAME_VERSION,
     progress,
@@ -194,7 +227,7 @@ export function sanitizeState(input: unknown): GameState {
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluency,
-    world: { parts, log, links, ...(place ? { place } : {}), ...(requests.length ? { requests } : {}), ...(layout ? { layout } : {}) },
+    world: { parts, log, links, ...(place ? { place } : {}), ...(requests.length ? { requests } : {}), ...(layout ? { layout } : {}), ...(challengesKeptOpen.length ? { challengesKeptOpen } : {}) },
     ...(Object.keys(assemblyDraw).length ? { assemblyDraw } : {}),
   };
 }

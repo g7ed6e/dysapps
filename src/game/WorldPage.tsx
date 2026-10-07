@@ -212,7 +212,7 @@ export function WorldPage() {
   const creatures = useMemo(
     () => [
       ...creaturePlacements(a, state.world.links),
-      ...guardianPlacements(a, state.progress, state.world.links, sentinelles).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false, cubes: statueDe(c.cubes) } : c)),
+      ...guardianPlacements(a, state.progress, state.world.links, sentinelles, state.world.challengesKeptOpen).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false, cubes: statueDe(c.cubes) } : c)),
     ],
     // La disposition (GD-9) : la place des créatures et des Gardiens suit leur lieu.
     // eslint-disable-next-line react-hooks/exhaustive-deps

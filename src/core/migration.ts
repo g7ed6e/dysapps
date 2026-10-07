@@ -13,6 +13,7 @@ import {
   translatePlaceId,
   translateResourceId,
 } from './legacyIds';
+import { challengesOpenBeforeMove } from './movedChallenges';
 import { movedExerciseId, movedItemId, movedPath } from './movedIds';
 
 /**
@@ -165,13 +166,27 @@ function moveExercises(game: Record<string, unknown>): void {
   }
 }
 
+/**
+ * Les défis ouverts avant le déplacement (format 4, movedChallenges.ts) : lus sur la progression d'avant, ils restent
+ * ouverts jusqu'à ce qu'ils soient réussis. La liste des lieux va dans le monde (`challengesKeptOpen`), seulement s'il
+ * y en a ; une partie neuve n'en a jamais.
+ */
+function keepChallengesOpen(game: Record<string, unknown>): void {
+  if (!isRecord(game.progress)) return;
+  const open = challengesOpenBeforeMove(game.progress);
+  if (!open.length) return;
+  const world = isRecord(game.world) ? game.world : {};
+  const before = Array.isArray(world.challengesKeptOpen) ? world.challengesKeptOpen.filter((id): id is string => typeof id === 'string') : [];
+  game.world = { ...world, challengesKeptOpen: [...new Set([...before, ...open])] };
+}
+
 /** Le numéro de format d'une partie, 0 si elle n'en a pas. */
 const versionOf = (game: Record<string, unknown>): number => (typeof game.version === 'number' ? game.version : 0);
 
 /**
  * La partie aux mots neutres : ses champs, puis, si elle est d'avant le format 3, ses identifiants, puis, d'avant le
- * format 4, ses exercices déplacés. Les données inconnues (anciennes formes comme `build` ou `placed`) passent telles
- * quelles.
+ * format 4, ses défis ouverts (`keepChallengesOpen`) et ses exercices déplacés. Les données inconnues (anciennes
+ * formes comme `build` ou `placed`) passent telles quelles.
  */
 export function translateGame(input: unknown): unknown {
   if (!isRecord(input)) return input;
@@ -191,7 +206,10 @@ export function translateGame(input: unknown): unknown {
   }
   const version = versionOf(out);
   if (version < NEUTRAL_IDS_VERSION) translateIds(out);
-  if (version < GAME_VERSION) moveExercises(out);
+  if (version < GAME_VERSION) {
+    keepChallengesOpen(out);
+    moveExercises(out);
+  }
   return out;
 }
 

@@ -110,7 +110,7 @@ export function etatsDesObjets(state: GameState, a: ArchipelagoId): EtatsDesObje
   const etape = stageBuildingAt(getArchipelago(a).port, links);
   const monde = { progress: state.progress, plans: state.world.parts };
   return {
-    gardiensPrets: iles.filter((b) => guardianStatus(b, state.progress, links) === 'ready').map((b) => b.id),
+    gardiensPrets: iles.filter((b) => guardianStatus(b, state.progress, links, false, state.world.challengesKeptOpen) === 'ready').map((b) => b.id),
     navirePret: Boolean(etape && (nextFillable(state, etape) || canLaunch(state, etape).ok)),
     chantiersPrets: [
       ...BRIDGES.filter((b) => ici.has(b.from) && buildBridge(b.id, links, state.stock, monde).ok).map((b) => b.id),

@@ -8,7 +8,6 @@ import {
   buildBridge as buildBridgePure,
   completeExercise,
   completePortalQuest,
-  dueItems,
   fillPlanCell as fillPlanCellPure,
   launchVehicle as launchVehiclePure,
   moveAvatar,
@@ -32,6 +31,7 @@ import type { VehicleStage } from './world/vehicle';
 import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { useTextes } from '../universes';
+import { dueCountOnOpenPlaces } from './review';
 import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
 import { applyLayout } from './world/appliedLayout';
@@ -52,7 +52,7 @@ interface BloclandContextValue {
   complete: (def: ExerciseDef, results: ItemResult[]) => Completion;
   /** Une mission du portail (l'école du village) terminée, score entre 0 et 1 : des blocs de l'île de l'école. */
   completePortal: (score: number, firstTime: boolean) => PortalCompletion;
-  /** Items à revoir aujourd'hui. */
+  /** Items à revoir aujourd'hui, sur les lieux ouverts. */
   dueCount: number;
   /** Exercices terminés dans cette session. */
   sessionCount: number;
@@ -251,7 +251,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const pauseAfterNext = sessionCount + 1 >= SESSION_MAX_EXERCISES || Date.now() - sessionStart.current > SESSION_MAX_MINUTES * 60_000;
-  const dueCount = useMemo(() => dueItems(state.spaced, todayISO()).length, [state.spaced]);
+  // Les items des lieux ouverts seulement, comme les révisions proposées (review.ts).
+  const dueCount = useMemo(() => dueCountOnOpenPlaces(state.spaced, state.world.links, todayISO()), [state.spaced, state.world.links]);
 
   const value = useMemo(
     () => ({

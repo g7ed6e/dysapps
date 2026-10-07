@@ -35,7 +35,7 @@ export function HomePage() {
   const textes = useTextes();
   const rank = levelFromXp(progress.xp);
   const firstTime = progress.totalAnswers === 0;
-  const resume = lastPlace();
+  const resume = lastPlace(state.world.links);
   const reviews = questsToReview(state.spaced, state.world.links);
   const here = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
   // Les commandes (GD-7) ne se suggèrent que dans un univers qui les montre (`commandes` dans ses textes).
