@@ -33,7 +33,11 @@ export interface BlockMeshOptions extends MeshOptions {
   morceau?: number;
 }
 
-/** Le côté d'un morceau par défaut, en cases (mesuré : scripts/rendu/mesures.mjs). */
+/**
+ * Le côté d'un morceau par défaut, en cases. Aux Premiers Rivages tout construits : 190 morceaux à 16 cases, 106 à 24,
+ * 62 à 32, 35 à 48, pour ~27 400 triangles fondus dans tous les cas ; 32 garde l'élimination hors champ utile sans
+ * multiplier les appels.
+ */
 const COTE_D_UN_MORCEAU = 32;
 
 const FACES: readonly FaceSide[] = ['side', 'top', 'bottom'];
@@ -106,7 +110,9 @@ function calculerLAllure(c: VoxelCube, face: FaceSide): Omit<Allure, 'id'> {
   if (!c.texture) return { pass: 'opaque', layer: GRAIN_LAYER, color: linearRgb(c.color), glow: NOIR };
   const lueur = c.muted ? undefined : GLOW[c.texture as TextureKind];
   const glow: [number, number, number] = lueur ? (linearRgb(lueur[0]).map((v) => v * lueur[1]) as [number, number, number]) : NOIR;
-  return { pass: c.texture === 'verre' ? 'glass' : 'opaque', layer: layerOf(c.texture, face, c.muted), color: BLANC, glow };
+  // Un bloc lumineux garde sa texture de côté sur toutes ses faces, comme son matériau d'avant.
+  const layer = layerOf(c.texture, lueur ? 'side' : face, c.muted);
+  return { pass: c.texture === 'verre' ? 'glass' : 'opaque', layer, color: BLANC, glow };
 }
 
 /** Les axes de la grille (0 = x, 1 = y, 2 = z) dans le repère Three (X = x, Y = z, Z = y). */
