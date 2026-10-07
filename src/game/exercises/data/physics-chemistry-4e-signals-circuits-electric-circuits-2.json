@@ -7,15 +7,15 @@
   "items": [
     {
       "key": "physics-chemistry-4e-signals-circuits-electric-circuits-2-0",
-      "prompt": "En dérivation, chaque branche a la même tension que la …",
-      "spoken": "En dérivation, chaque branche a la même tension que la  (mot manquant) ",
+      "prompt": "Branchées aux bornes de la pile, les branches en dérivation ont toutes la même tension que la …",
+      "spoken": "Branchées aux bornes de la pile, les branches en dérivation ont toutes la même tension que la  (mot manquant) ",
       "choices": [
         "lampe",
         "résistance",
         "pile"
       ],
       "answer": "pile",
-      "hint": "Relis la ligne « En dérivation » du rappel.",
+      "hint": "Relis la ligne « Branchées aux bornes de la pile » du rappel.",
       "explanation": "En dérivation, chaque branche est reliée aux deux bornes de la pile : elle a la même tension qu’elle.",
       "aid": {
         "kind": "rule-card",
@@ -23,7 +23,7 @@
           "title": "Tension et loi d’Ohm",
           "lines": [
             "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
-            "En dérivation, chaque branche a la même tension que la pile.",
+            "Branchées aux bornes de la pile, les branches en dérivation ont toutes sa tension.",
             "La résistance, en ohms : elle freine le courant.",
             "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
             "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
@@ -51,7 +51,7 @@
           "title": "Tension et loi d’Ohm",
           "lines": [
             "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
-            "En dérivation, chaque branche a la même tension que la pile.",
+            "Branchées aux bornes de la pile, les branches en dérivation ont toutes sa tension.",
             "La résistance, en ohms : elle freine le courant.",
             "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
             "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
@@ -78,7 +78,7 @@
           "title": "Tension et loi d’Ohm",
           "lines": [
             "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
-            "En dérivation, chaque branche a la même tension que la pile.",
+            "Branchées aux bornes de la pile, les branches en dérivation ont toutes sa tension.",
             "La résistance, en ohms : elle freine le courant.",
             "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
             "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
@@ -105,7 +105,7 @@
           "title": "Tension et loi d’Ohm",
           "lines": [
             "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
-            "En dérivation, chaque branche a la même tension que la pile.",
+            "Branchées aux bornes de la pile, les branches en dérivation ont toutes sa tension.",
             "La résistance, en ohms : elle freine le courant.",
             "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
             "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
@@ -133,7 +133,7 @@
           "title": "Tension et loi d’Ohm",
           "lines": [
             "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
-            "En dérivation, chaque branche a la même tension que la pile.",
+            "Branchées aux bornes de la pile, les branches en dérivation ont toutes sa tension.",
             "La résistance, en ohms : elle freine le courant.",
             "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
             "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
@@ -161,7 +161,7 @@
           "title": "Tension et loi d’Ohm",
           "lines": [
             "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
-            "En dérivation, chaque branche a la même tension que la pile.",
+            "Branchées aux bornes de la pile, les branches en dérivation ont toutes sa tension.",
             "La résistance, en ohms : elle freine le courant.",
             "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
             "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
@@ -189,7 +189,7 @@
           "title": "Tension et loi d’Ohm",
           "lines": [
             "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
-            "En dérivation, chaque branche a la même tension que la pile.",
+            "Branchées aux bornes de la pile, les branches en dérivation ont toutes sa tension.",
             "La résistance, en ohms : elle freine le courant.",
             "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
             "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
@@ -216,7 +216,7 @@
           "title": "Tension et loi d’Ohm",
           "lines": [
             "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
-            "En dérivation, chaque branche a la même tension que la pile.",
+            "Branchées aux bornes de la pile, les branches en dérivation ont toutes sa tension.",
             "La résistance, en ohms : elle freine le courant.",
             "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
             "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",

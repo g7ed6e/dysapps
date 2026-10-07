@@ -353,12 +353,12 @@ Pour tous les items :
    - indice : La bouteille n’est plus une bouteille : sa matière sert à autre chose.
    - explication : On refait de la matière avec la bouteille usée : c’est recycler. Réparer, c’est remettre en état le même objet.
 8. énoncé : "L’étiquette du lave-linge\nClasse énergie : A.\nLes classes vont de A à G.\nA consomme le moins."
-   - question : Ce lave-linge consomme-t-il beaucoup d’énergie ?
+   - question : Consomme-t-il plus ou moins que les autres lave-linge ?
    - lu : L’étiquette du lave-linge. Classe énergie, A. Les classes vont de A à G. A consomme le moins.
-   - choix : très peu · beaucoup · on ne peut pas savoir
-   - réponse : très peu
+   - choix : moins · plus · autant
+   - réponse : moins
    - indice : Relis la dernière ligne du document.
-   - explication : La classe A est celle qui consomme le moins : ce lave-linge consomme peu d’énergie.
+   - explication : La classe A est celle qui consomme le moins : ce lave-linge consomme moins d’énergie que ceux des classes B à G.
 
 ### Niveau 2 · `technology-5e-design-life-cycle-2`
 

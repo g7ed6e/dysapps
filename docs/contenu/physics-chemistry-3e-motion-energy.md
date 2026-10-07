@@ -139,7 +139,7 @@ Pour tous les items :
    - réponse : 2 newtons
    - indice : Un centimètre de flèche, c’est un newton.
    - explication : La flèche mesure 2 centimètres, et chaque centimètre vaut un newton : la force vaut 2 newtons. La flèche monte : la force est dirigée vers le haut.
-8. énoncé : Le poids d’un objet est toujours dirigé vers le …
+8. énoncé : Sur la Terre, le poids d’un objet est dirigé vers le …
    - choix : haut · nord · centre de la Terre
    - réponse : centre de la Terre
    - indice : Relis la ligne « Le poids » du rappel.
@@ -304,7 +304,7 @@ Pour tous les items :
   - pH égal à 7 : la solution est neutre.
   - pH plus grand que 7 : la solution est basique.
   - Plus le pH est petit, plus la solution est acide.
-  - Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde.
+  - Acide : plus d’ions hydrogène que d’ions hydroxyde. Basique : l’inverse.
 
 1. énoncé : Le jus de citron a un pH de 2 : il est …
    - lu : Le jus de citron a un pé-ache de 2, il est (mot manquant).
@@ -337,11 +337,11 @@ Pour tous les items :
    - réponse : acide
    - indice : Relis la ligne « Plus le pH est petit » du rappel.
    - explication : Un pH petit, c’est une solution très acide. En montant vers 7, elle l’est de moins en moins.
-6. énoncé : Une solution basique contient beaucoup d’ions …
-   - choix : hydrogène · hydroxyde · oxygène
-   - réponse : hydroxyde
+6. énoncé : Dans une solution basique, les ions hydroxyde sont … nombreux que les ions hydrogène.
+   - choix : plus · moins · aussi
+   - réponse : plus
    - indice : Relis la ligne « Acide » du rappel.
-   - explication : Une solution basique contient beaucoup d’ions hydroxyde. Une solution acide, beaucoup d’ions hydrogène.
+   - explication : Dans une solution basique, les ions hydroxyde sont plus nombreux que les ions hydrogène. Dans une solution acide, c’est l’inverse. Dans une solution neutre, il y en a autant.
 7. énoncé : "Du papier pH dans une boisson\nLe papier devient orange.\nSur l’échelle des couleurs de la boîte, orange veut dire pH 4."
    - question : Comment est la boisson ?
    - lu : Du papier pé-ache dans une boisson. Le papier devient orange. Sur l’échelle des couleurs de la boîte, orange veut dire pé-ache 4.

@@ -7,81 +7,83 @@
   "items": [
     {
       "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-0",
-      "prompt": "Au centre de l’atome, il y a le …",
-      "spoken": "Au centre de l’atome, il y a le  (mot manquant) ",
+      "prompt": "L’élément le plus abondant dans l’Univers est un gaz très léger : l’…",
+      "spoken": "L’élément le plus abondant dans l’Univers est un gaz très léger : l’ (mot manquant) ",
       "choices": [
-        "noyau",
-        "électron",
-        "vide"
+        "hydrogène",
+        "oxygène",
+        "azote"
       ],
-      "answer": "noyau",
-      "hint": "Relis la ligne « Un atome » du rappel.",
-      "explanation": "Le noyau est au centre de l’atome ; les électrons se déplacent autour.",
+      "answer": "hydrogène",
+      "hint": "Relis la ligne « Dans l’Univers » du rappel.",
+      "explanation": "L’Univers contient surtout de l’hydrogène, puis de l’hélium. L’oxygène et l’azote y sont bien plus rares.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’atome et les éléments",
+          "title": "L’Univers et ses éléments",
           "lines": [
-            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
-            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
-            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
-            "Une molécule : des atomes liés ensemble.",
-            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
-            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+            "L’Univers est né il y a près de 14 milliards d’années.",
+            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
+            "La Terre est faite surtout de fer et d’oxygène.",
+            "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
+            "Une molécule : des atomes liés ensemble."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-1",
-      "prompt": "Autour du noyau se déplacent les …",
-      "spoken": "Autour du noyau se déplacent les  (mot manquant) ",
+      "prompt": "Les éléments les plus abondants\nDans l’Univers : l’hydrogène et l’hélium.\nDans la Terre : le fer et l’oxygène.",
+      "question": "De quoi la Terre est-elle faite surtout ?",
+      "spoken": "Les éléments les plus abondants. Dans l’Univers, l’hydrogène et l’hélium. Dans la Terre, le fer et l’oxygène.",
       "choices": [
-        "molécules",
-        "électrons",
-        "étoiles"
+        "d’hydrogène et d’hélium",
+        "de fer et d’oxygène",
+        "de carbone et d’azote"
       ],
-      "answer": "électrons",
-      "hint": "Relis la ligne « Un atome » du rappel.",
-      "explanation": "Les électrons se déplacent autour du noyau. Les molécules, elles, sont faites de plusieurs atomes.",
+      "answer": "de fer et d’oxygène",
+      "hint": "Relis la ligne « Dans la Terre » du document.",
+      "explanation": "La Terre est faite surtout de fer et d’oxygène. L’Univers, lui, contient surtout de l’hydrogène et de l’hélium, comme le Soleil.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’atome et les éléments",
+          "title": "L’Univers et ses éléments",
           "lines": [
-            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
-            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
-            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
-            "Une molécule : des atomes liés ensemble.",
-            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
-            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+            "L’Univers est né il y a près de 14 milliards d’années.",
+            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
+            "La Terre est faite surtout de fer et d’oxygène.",
+            "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
+            "Une molécule : des atomes liés ensemble."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-2",
-      "prompt": "Presque toute la masse de l’atome est dans son …",
-      "spoken": "Presque toute la masse de l’atome est dans son  (mot manquant) ",
+      "prompt": "Trois dates\nL’Univers naît : il y a près de 14 milliards d’années.\nLe Soleil naît : il y a environ 4 milliards et demi d’années.\nLes derniers dinosaures disparaissent : il y a 66 millions d’années.",
+      "question": "Qu’est-ce qui est arrivé en premier ?",
+      "spoken": "Trois dates. L’Univers naît, il y a près de quatorze milliards d’années. Le Soleil naît, il y a environ quatre milliards et demi d’années. Les derniers dinosaures disparaissent, il y a soixante-six millions d’années.",
       "choices": [
-        "électron",
-        "vide",
-        "noyau"
+        "la naissance de l’Univers",
+        "la naissance du Soleil",
+        "la fin des dinosaures"
       ],
-      "answer": "noyau",
-      "hint": "Relis la ligne « Le noyau » du rappel.",
-      "explanation": "Le noyau est tout petit, mais il porte presque toute la masse de l’atome. Les électrons sont très légers.",
+      "answer": "la naissance de l’Univers",
+      "hint": "Compare les nombres : des milliards, ou des millions ?",
+      "explanation": "Près de 14 milliards d’années, c’est la date la plus ancienne : l’Univers est né bien avant le Soleil. Un million est mille fois plus petit qu’un milliard : les dinosaures sont bien plus récents.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’atome et les éléments",
+          "title": "L’Univers et ses éléments",
           "lines": [
-            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
-            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
-            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
-            "Une molécule : des atomes liés ensemble.",
-            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
-            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+            "L’Univers est né il y a près de 14 milliards d’années.",
+            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
+            "La Terre est faite surtout de fer et d’oxygène.",
+            "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
+            "Une molécule : des atomes liés ensemble."
           ]
         }
       }
@@ -101,70 +103,69 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’atome et les éléments",
+          "title": "L’Univers et ses éléments",
           "lines": [
-            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
-            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
-            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
-            "Une molécule : des atomes liés ensemble.",
-            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
-            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+            "L’Univers est né il y a près de 14 milliards d’années.",
+            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
+            "La Terre est faite surtout de fer et d’oxygène.",
+            "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
+            "Une molécule : des atomes liés ensemble."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-4",
-      "prompt": "La molécule d’eau\nSa formule : H₂O.\nH, c’est l’hydrogène. O, c’est l’oxygène.\nLe petit 2 compte les atomes d’hydrogène.",
-      "question": "Combien d’atomes d’hydrogène dans une molécule d’eau ?",
-      "spoken": "La molécule d’eau. Sa formule, H deux O. H, c’est l’hydrogène. O, c’est l’oxygène. Le petit deux compte les atomes d’hydrogène.",
+      "prompt": "Deux étoiles vues de la Terre\nÉtoile A : à 10 années-lumière.\nÉtoile B : à 100 années-lumière.",
+      "question": "La lumière de quelle étoile a voyagé le plus longtemps pour arriver jusqu’à nous ?",
+      "spoken": "Deux étoiles vues de la Terre. Étoile A, à dix années-lumière. Étoile B, à cent années-lumière.",
       "choices": [
-        "1",
-        "2",
-        "3"
+        "l’étoile A",
+        "l’étoile B",
+        "pareil pour les deux"
       ],
-      "answer": "2",
-      "hint": "Relis la dernière ligne du document.",
-      "explanation": "Le petit 2 après le H dit qu’il y a 2 atomes d’hydrogène. Le O, sans petit chiffre, compte pour un seul atome d’oxygène.",
+      "answer": "l’étoile B",
+      "hint": "Une année-lumière, c’est le chemin que fait la lumière en un an.",
+      "explanation": "La lumière de l’étoile B a voyagé 100 ans, celle de l’étoile A 10 ans. On voit l’étoile B comme elle était il y a 100 ans.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’atome et les éléments",
+          "title": "L’Univers et ses éléments",
           "lines": [
-            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
-            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
-            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
-            "Une molécule : des atomes liés ensemble.",
-            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
-            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+            "L’Univers est né il y a près de 14 milliards d’années.",
+            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
+            "La Terre est faite surtout de fer et d’oxygène.",
+            "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
+            "Une molécule : des atomes liés ensemble."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-5",
-      "prompt": "La molécule de dioxyde de carbone\nSa formule : CO₂.\nC, c’est le carbone. O, c’est l’oxygène.\nLe petit 2 compte les atomes d’oxygène.",
-      "question": "Combien d’atomes en tout dans cette molécule ?",
-      "spoken": "La molécule de dioxyde de carbone. Sa formule, C O deux. C, c’est le carbone. O, c’est l’oxygène. Le petit deux compte les atomes d’oxygène.",
+      "prompt": "La Terre et les autres planètes sont nées presque en même temps que …",
+      "spoken": "La Terre et les autres planètes sont nées presque en même temps que  (mot manquant) ",
       "choices": [
-        "2",
-        "3",
-        "4"
+        "le Soleil",
+        "l’Univers",
+        "la Voie lactée"
       ],
-      "answer": "3",
-      "hint": "Compte le carbone, puis les oxygènes.",
-      "explanation": "Un atome de carbone et 2 atomes d’oxygène : 1 plus 2, 3 atomes en tout.",
+      "answer": "le Soleil",
+      "hint": "Relis la ligne « Le Soleil et ses planètes » du rappel.",
+      "explanation": "Le Soleil et ses planètes sont nés d’un même nuage de gaz et de poussières, il y a environ 4 milliards et demi d’années. La Voie lactée et l’Univers sont bien plus vieux.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’atome et les éléments",
+          "title": "L’Univers et ses éléments",
           "lines": [
-            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
-            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
-            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
-            "Une molécule : des atomes liés ensemble.",
-            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
-            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+            "L’Univers est né il y a près de 14 milliards d’années.",
+            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
+            "La Terre est faite surtout de fer et d’oxygène.",
+            "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
+            "Une molécule : des atomes liés ensemble."
           ]
         }
       }
@@ -179,47 +180,47 @@
         "comète"
       ],
       "answer": "étoile",
-      "hint": "Relis la ligne « Des atomes » du rappel.",
+      "hint": "Relis la ligne « Le carbone » du rappel.",
       "explanation": "Les atomes de carbone se sont formés au cœur d’étoiles, il y a des milliards d’années. Ils sont passés ensuite par la Terre, les plantes, puis notre corps.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’atome et les éléments",
+          "title": "L’Univers et ses éléments",
           "lines": [
-            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
-            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
-            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
-            "Une molécule : des atomes liés ensemble.",
-            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
-            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+            "L’Univers est né il y a près de 14 milliards d’années.",
+            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
+            "La Terre est faite surtout de fer et d’oxygène.",
+            "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
+            "Une molécule : des atomes liés ensemble."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-7",
-      "prompt": "Si l’atome était grand comme un stade\nLe noyau serait une bille, au centre du terrain.\nLes électrons seraient autour des tribunes.",
-      "question": "Qu’y a-t-il surtout dans un atome ?",
-      "spoken": "Si l’atome était grand comme un stade. Le noyau serait une bille, au centre du terrain. Les électrons seraient autour des tribunes.",
+      "prompt": "Distances depuis la Terre\nLa Lune : environ 380 000 kilomètres.\nLe Soleil : environ 150 millions de kilomètres.\nL’étoile la plus proche après le Soleil : environ 4 années-lumière.",
+      "question": "Pourquoi donne-t-on la distance de l’étoile en années-lumière ?",
+      "spoken": "Distances depuis la Terre. La Lune, environ trois cent quatre-vingt mille kilomètres. Le Soleil, environ cent cinquante millions de kilomètres. L’étoile la plus proche après le Soleil, environ quatre années-lumière.",
       "choices": [
-        "des noyaux",
-        "du vide",
-        "de l’eau"
+        "elle est très loin",
+        "elle est très chaude",
+        "elle est très grosse"
       ],
-      "answer": "du vide",
-      "hint": "Entre la bille et les tribunes, qu’y a-t-il ?",
-      "explanation": "Entre le noyau et les électrons, il n’y a rien : l’atome est surtout fait de vide.",
+      "answer": "elle est très loin",
+      "hint": "L’année-lumière est une unité de distance.",
+      "explanation": "En kilomètres, la distance de cette étoile serait un nombre immense : environ 40 000 milliards. L’année-lumière sert à dire de très grandes distances avec un petit nombre.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’atome et les éléments",
+          "title": "L’Univers et ses éléments",
           "lines": [
-            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
-            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
-            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
-            "Une molécule : des atomes liés ensemble.",
-            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
-            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+            "L’Univers est né il y a près de 14 milliards d’années.",
+            "Le Soleil et ses planètes sont nés d’un même nuage, il y a environ 4 milliards et demi d’années.",
+            "Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.",
+            "La Terre est faite surtout de fer et d’oxygène.",
+            "Le carbone, l’oxygène et le fer sont nés dans des étoiles.",
+            "Une molécule : des atomes liés ensemble."
           ]
         }
       }

@@ -177,11 +177,11 @@ Pour tous les items :
    - réponse : capteur
    - indice : Il repère quelqu’un qui passe.
    - explication : Le détecteur repère un mouvement : c’est un capteur. La lampe qui s’allume ensuite est l’actionneur.
-2. énoncé : Le thermostat mesure la température de la pièce : il … l’information.
+2. énoncé : Le capteur du thermostat mesure la température de la pièce : il … l’information.
    - choix : traite · acquiert · communique
    - réponse : acquiert
    - indice : Relis la ligne « Acquérir » du rappel.
-   - explication : Mesurer la température, c’est prendre l’information : le thermostat l’acquiert, grâce à son capteur.
+   - explication : Mesurer la température, c’est prendre l’information : le capteur l’acquiert.
 3. énoncé : "La porte automatique du magasin\nUn capteur voit le client arriver.\nLa carte programmable reçoit le signal.\nElle donne l’ordre d’ouvrir."
    - question : Quel élément traite l’information ?
    - lu : La porte automatique du magasin. Un capteur voit le client arriver. La carte programmable reçoit le signal. Elle donne l’ordre d’ouvrir.

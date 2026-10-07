@@ -1533,7 +1533,7 @@ export const ILES = [
     "module": "Les objets techniques",
     "subject": "technology",
     "classe": "6e",
-    "description": "À quoi sert un objet et comment il marche, de quoi il est fait et ce qu’il devient, comment il stocke et transmet l’information, et comment il a changé.",
+    "description": "À quoi sert un objet et comment il marche, de quoi il est fait et ce qu’il devient, comment il prend une information et agit, et comment il a changé.",
     "block": "technology-6e-objects",
     "guardian": "l’Automate de laiton",
     "icon": "ruler",
@@ -1563,7 +1563,7 @@ export const ILES = [
       {
         "id": "information-networks",
         "title": "L’information et les objets",
-        "description": "Stocker et transmettre l’information, les réseaux, chercher et ranger avec le numérique, puis comment les objets ont changé.",
+        "description": "Les capteurs et les actionneurs d’un objet programmable, chercher et ranger avec le numérique, puis comment les objets ont changé.",
         "programme": [
           "c3.te.objets.information",
           "c3.te.demarches.numerique",
@@ -1733,7 +1733,7 @@ export const ILES = [
     "module": "La matière, de la goutte aux étoiles",
     "subject": "physics-chemistry",
     "classe": "5e",
-    "description": "Les molécules et les changements d’état, les corps purs, les mélanges et la masse volumique, puis l’Univers, le système solaire et l’atome.",
+    "description": "Les molécules et les changements d’état, les corps purs et les mélanges, la masse et le volume, puis l’Univers, le système solaire et ses éléments.",
     "block": "physics-chemistry-5e-matter-universe",
     "guardian": "le Flamant de sel",
     "icon": "scale",
@@ -1752,8 +1752,8 @@ export const ILES = [
       },
       {
         "id": "mixtures-density",
-        "title": "Mélanges et masse volumique",
-        "description": "Corps purs et mélanges, dissoudre et mélanger deux liquides, puis la masse, le volume et la masse volumique : ce qui flotte et ce qui coule.",
+        "title": "Mélanges, masse et volume",
+        "description": "Corps purs et mélanges, dissoudre et mélanger deux liquides, puis la masse et le volume : ce qui flotte et ce qui coule.",
         "programme": [
           "c4.pc.matiere.etats",
           "c4.pc.demarches.experimenter",
@@ -1762,8 +1762,8 @@ export const ILES = [
       },
       {
         "id": "universe-atoms",
-        "title": "L’Univers et l’atome",
-        "description": "Du système solaire aux galaxies, l’année-lumière, puis l’atome, son noyau et ses électrons, et les atomes nés dans les étoiles.",
+        "title": "L’Univers et ses éléments",
+        "description": "Du système solaire aux galaxies, l’année-lumière, puis l’âge de l’Univers, ses éléments et les atomes nés dans les étoiles.",
         "programme": [
           "c4.pc.matiere.univers",
           "c4.pc.demarches.langages"

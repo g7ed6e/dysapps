@@ -7,26 +7,26 @@
   "items": [
     {
       "key": "technology-6e-objects-information-networks-1-0",
-      "prompt": "La clé USB sert à … des fichiers.",
-      "spoken": "La clé USB sert à  (mot manquant)  des fichiers.",
+      "prompt": "Le détecteur de présence repère qu’une personne arrive : c’est un …",
+      "spoken": "Le détecteur de présence repère qu’une personne arrive : c’est un  (mot manquant) ",
       "choices": [
-        "imprimer",
-        "stocker",
-        "dessiner"
+        "capteur",
+        "actionneur",
+        "générateur"
       ],
-      "answer": "stocker",
-      "hint": "Relis la première ligne du rappel.",
-      "explanation": "La clé USB garde les fichiers : elle sert à les stocker. On peut l’emporter et la brancher sur un autre ordinateur.",
+      "answer": "capteur",
+      "hint": "Relis la ligne « Un capteur » du rappel.",
+      "explanation": "Le détecteur prend une information : quelqu’un arrive. C’est un capteur. Un actionneur, lui, agit, comme un moteur.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’information et les réseaux",
+          "title": "L’information et les objets",
           "lines": [
-            "Stocker : garder l’information. Transmettre : l’envoyer.",
-            "Un réseau : des objets reliés qui échangent des informations.",
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
             "Le navigateur : le logiciel qui ouvre les sites.",
-            "Le moteur de recherche : il trouve les pages qui parlent de tes mots.",
-            "Pour chercher, on tape quelques mots-clés.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
             "Range tes fichiers dans des dossiers, avec un nom clair."
           ]
         }
@@ -34,26 +34,26 @@
     },
     {
       "key": "technology-6e-objects-information-networks-1-1",
-      "prompt": "La montre connectée envoie les pas comptés au téléphone, sans fil : elle … l’information.",
-      "spoken": "La montre connectée envoie les pas comptés au téléphone, sans fil : elle  (mot manquant)  l’information.",
+      "prompt": "Le robot avance grâce à son moteur : le moteur est un …",
+      "spoken": "Le robot avance grâce à son moteur : le moteur est un  (mot manquant) ",
       "choices": [
-        "transmet",
-        "stocke",
-        "efface"
+        "capteur",
+        "actionneur",
+        "programme"
       ],
-      "answer": "transmet",
-      "hint": "La montre envoie l’information à un autre objet.",
-      "explanation": "Envoyer l’information à un autre objet, c’est la transmettre. Ici, sans fil.",
+      "answer": "actionneur",
+      "hint": "Le moteur prend-il une information, ou fait-il bouger le robot ?",
+      "explanation": "Le moteur fait bouger le robot : il agit, c’est un actionneur. Le capteur, lui, prend une information.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’information et les réseaux",
+          "title": "L’information et les objets",
           "lines": [
-            "Stocker : garder l’information. Transmettre : l’envoyer.",
-            "Un réseau : des objets reliés qui échangent des informations.",
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
             "Le navigateur : le logiciel qui ouvre les sites.",
-            "Le moteur de recherche : il trouve les pages qui parlent de tes mots.",
-            "Pour chercher, on tape quelques mots-clés.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
             "Range tes fichiers dans des dossiers, avec un nom clair."
           ]
         }
@@ -61,27 +61,27 @@
     },
     {
       "key": "technology-6e-objects-information-networks-1-2",
-      "prompt": "La salle informatique du collège\nLes ordinateurs sont reliés à une même imprimante.\nIls partagent aussi un dossier d’exposés.",
-      "question": "Pourquoi dit-on que c’est un réseau ?",
-      "spoken": "La salle informatique du collège. Les ordinateurs sont reliés à une même imprimante. Ils partagent aussi un dossier d’exposés.",
+      "prompt": "Le lampadaire de la rue\nLe détecteur repère qu’un passant arrive.\nLe boîtier de contrôle décide d’allumer.\nLa lampe s’allume.",
+      "question": "Quel élément prend l’information ?",
+      "spoken": "Le lampadaire de la rue. Le détecteur repère qu’un passant arrive. Le boîtier de contrôle décide d’allumer. La lampe s’allume.",
       "choices": [
-        "les ordinateurs sont neufs",
-        "les ordinateurs sont reliés et échangent",
-        "les ordinateurs sont dans la même salle"
+        "le détecteur",
+        "le boîtier de contrôle",
+        "la lampe"
       ],
-      "answer": "les ordinateurs sont reliés et échangent",
-      "hint": "Relis la ligne « Un réseau » du rappel.",
-      "explanation": "Un réseau, ce sont des objets reliés qui échangent des informations. Être dans la même salle ne suffit pas.",
+      "answer": "le détecteur",
+      "hint": "Relis la ligne « Un capteur » du rappel.",
+      "explanation": "Le détecteur prend l’information : c’est le capteur. Le boîtier de contrôle décide, puis la lampe s’allume. On part de l’information pour arriver à l’action.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’information et les réseaux",
+          "title": "L’information et les objets",
           "lines": [
-            "Stocker : garder l’information. Transmettre : l’envoyer.",
-            "Un réseau : des objets reliés qui échangent des informations.",
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
             "Le navigateur : le logiciel qui ouvre les sites.",
-            "Le moteur de recherche : il trouve les pages qui parlent de tes mots.",
-            "Pour chercher, on tape quelques mots-clés.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
             "Range tes fichiers dans des dossiers, avec un nom clair."
           ]
         }
@@ -102,13 +102,13 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’information et les réseaux",
+          "title": "L’information et les objets",
           "lines": [
-            "Stocker : garder l’information. Transmettre : l’envoyer.",
-            "Un réseau : des objets reliés qui échangent des informations.",
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
             "Le navigateur : le logiciel qui ouvre les sites.",
-            "Le moteur de recherche : il trouve les pages qui parlent de tes mots.",
-            "Pour chercher, on tape quelques mots-clés.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
             "Range tes fichiers dans des dossiers, avec un nom clair."
           ]
         }
@@ -129,13 +129,13 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’information et les réseaux",
+          "title": "L’information et les objets",
           "lines": [
-            "Stocker : garder l’information. Transmettre : l’envoyer.",
-            "Un réseau : des objets reliés qui échangent des informations.",
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
             "Le navigateur : le logiciel qui ouvre les sites.",
-            "Le moteur de recherche : il trouve les pages qui parlent de tes mots.",
-            "Pour chercher, on tape quelques mots-clés.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
             "Range tes fichiers dans des dossiers, avec un nom clair."
           ]
         }
@@ -157,13 +157,13 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’information et les réseaux",
+          "title": "L’information et les objets",
           "lines": [
-            "Stocker : garder l’information. Transmettre : l’envoyer.",
-            "Un réseau : des objets reliés qui échangent des informations.",
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
             "Le navigateur : le logiciel qui ouvre les sites.",
-            "Le moteur de recherche : il trouve les pages qui parlent de tes mots.",
-            "Pour chercher, on tape quelques mots-clés.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
             "Range tes fichiers dans des dossiers, avec un nom clair."
           ]
         }
@@ -185,13 +185,13 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’information et les réseaux",
+          "title": "L’information et les objets",
           "lines": [
-            "Stocker : garder l’information. Transmettre : l’envoyer.",
-            "Un réseau : des objets reliés qui échangent des informations.",
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
             "Le navigateur : le logiciel qui ouvre les sites.",
-            "Le moteur de recherche : il trouve les pages qui parlent de tes mots.",
-            "Pour chercher, on tape quelques mots-clés.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
             "Range tes fichiers dans des dossiers, avec un nom clair."
           ]
         }
@@ -199,26 +199,27 @@
     },
     {
       "key": "technology-6e-objects-information-networks-1-7",
-      "prompt": "Internet relie des ordinateurs du monde entier : c’est un immense …",
-      "spoken": "Internet relie des ordinateurs du monde entier : c’est un immense  (mot manquant) ",
+      "prompt": "Le robot de la classe\nSon capteur repère un mur devant lui.\nSon programme dit : « si un mur est devant, alors tourner ».\nSes moteurs font tourner le robot.",
+      "question": "Quel élément décide de tourner ?",
+      "spoken": "Le robot de la classe. Son capteur repère un mur devant lui. Son programme dit, si un mur est devant, alors tourner. Ses moteurs font tourner le robot.",
       "choices": [
-        "logiciel",
-        "réseau",
-        "fichier"
+        "le capteur",
+        "le programme",
+        "les moteurs"
       ],
-      "answer": "réseau",
-      "hint": "Relis la ligne « Un réseau » du rappel.",
-      "explanation": "Internet est un réseau : des millions d’ordinateurs reliés, qui échangent des informations.",
+      "answer": "le programme",
+      "hint": "Relis la ligne « Le programme » du rappel.",
+      "explanation": "Le capteur repère le mur, puis le programme décide de tourner. Enfin, les moteurs font tourner le robot. C’est la chaîne d’information et d’action.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "L’information et les réseaux",
+          "title": "L’information et les objets",
           "lines": [
-            "Stocker : garder l’information. Transmettre : l’envoyer.",
-            "Un réseau : des objets reliés qui échangent des informations.",
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
             "Le navigateur : le logiciel qui ouvre les sites.",
-            "Le moteur de recherche : il trouve les pages qui parlent de tes mots.",
-            "Pour chercher, on tape quelques mots-clés.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
             "Range tes fichiers dans des dossiers, avec un nom clair."
           ]
         }

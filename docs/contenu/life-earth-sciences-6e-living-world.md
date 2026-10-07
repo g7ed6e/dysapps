@@ -112,13 +112,13 @@ Pour tous les items :
    - réponse : les coquillages
    - indice : Quelle couche s’est déposée en premier ?
    - explication : Les couches se déposent les unes sur les autres : celle du bas est la plus ancienne. Les coquillages sont donc les plus anciens. La couche du haut n’est pas la plus ancienne.
-4. énoncé : "Les attributs de trois animaux\nRequin : squelette interne, nageoires\nDauphin : squelette interne, nageoires, poils, mamelles\nVache : squelette interne, poils, mamelles"
+4. énoncé : "Les attributs de trois animaux\nRequin : squelette interne, nageoires\nDauphin : squelette interne, nageoires, mamelles\nVache : squelette interne, poils, mamelles"
    - question : Qui est le plus proche parent du dauphin ?
-   - lu : Les attributs de trois animaux. Requin, squelette interne, nageoires. Dauphin, squelette interne, nageoires, poils, mamelles. Vache, squelette interne, poils, mamelles.
+   - lu : Les attributs de trois animaux. Requin, squelette interne, nageoires. Dauphin, squelette interne, nageoires, mamelles. Vache, squelette interne, poils, mamelles.
    - choix : le requin · la vache · aucun des deux
    - réponse : la vache
-   - indice : Qui a, comme le dauphin, des poils et des mamelles ?
-   - explication : Le dauphin a des poils et des mamelles, comme la vache : ce sont deux mammifères. Le requin lui ressemble et vit dans la mer, mais ce n’est pas un mammifère.
+   - indice : Qui a, comme le dauphin, des mamelles ?
+   - explication : Le dauphin a des mamelles, comme la vache : ce sont deux mammifères. Le requin lui ressemble et vit dans la mer, mais ce n’est pas un mammifère.
 5. énoncé : Des espèces apparaissent, d’autres disparaissent : au cours du temps, la biodiversité …
    - choix : change · reste la même · s’arrête
    - réponse : change
@@ -167,7 +167,7 @@ Pour tous les items :
   - Les aliments donnent de l’énergie et font grandir le corps.
   - Féculents : pain, riz, pommes de terre.
   - Produits laitiers : lait, fromage.
-  - Micro-organismes : des êtres vivants trop petits pour être vus.
+  - Micro-organismes : des êtres vivants trop petits pour être vus à l’œil nu, un par un.
   - Certains abîment les aliments, d’autres servent à en fabriquer.
   - Le froid les ralentit ; la cuisson en tue beaucoup.
 
@@ -180,7 +180,7 @@ Pour tous les items :
    - choix : micro-organismes · vitamines · aliments
    - réponse : micro-organismes
    - indice : Qu’y a-t-il sur les mains, qu’on ne voit pas ?
-   - explication : Les mains portent des micro-organismes, trop petits pour être vus. Certains rendent malade : le savon et l’eau les enlèvent.
+   - explication : Les mains portent des micro-organismes, trop petits pour être vus à l’œil nu. Certains rendent malade : le savon et l’eau les enlèvent.
 3. énoncé : Pour garder la viande plus longtemps, on la range au …
    - choix : placard · soleil · réfrigérateur
    - réponse : réfrigérateur
@@ -192,7 +192,7 @@ Pour tous les items :
    - choix : le sac fait pousser la moisissure · le froid ralentit la moisissure · le pain moisit toujours
    - réponse : le froid ralentit la moisissure
    - indice : Les deux tranches sont dans un sac. Qu’est-ce qui change entre elles ?
-   - explication : Une seule chose change : le froid. La tranche au réfrigérateur n’a pas moisi : le froid ralentit les moisissures, qui sont des micro-organismes.
+   - explication : Une seule chose change : le froid. La tranche au réfrigérateur n’a pas moisi : le froid ralentit les moisissures. Ce sont des micro-organismes : un par un, ils sont trop petits pour être vus à l’œil nu ; très nombreux, ils forment des taches.
 5. énoncé : Le yaourt est fabriqué avec du lait, grâce à des …
    - choix : sucres · bactéries · vitamines
    - réponse : bactéries
@@ -201,7 +201,7 @@ Pour tous les items :
 6. énoncé : La pâte à pain gonfle grâce à des micro-organismes : les …
    - choix : levures · moisissures · vitamines
    - réponse : levures
-   - indice : Ce micro-organisme utile s’achète en sachet chez le boulanger.
+   - indice : Ce micro-organisme utile s’achète en sachet, au rayon pâtisserie.
    - explication : Les levures font gonfler la pâte à pain. Les moisissures, elles, abîment les aliments ; les vitamines ne sont pas vivantes.
 7. énoncé : "Étiquette d’un pot de compote\nÀ conserver au frais après ouverture.\nÀ consommer dans les 3 jours."
    - question : Tu as ouvert le pot. Où le ranges-tu ?
@@ -213,10 +213,10 @@ Pour tous les items :
 8. énoncé : "Le repas du soir de Nina\nEntrée : salade de tomates\nPlat : poisson et riz\nDessert : à choisir"
    - question : Quel dessert ajoute un produit laitier au repas ?
    - lu : Le repas du soir de Nina. Entrée, salade de tomates. Plat, poisson et riz. Dessert, à choisir.
-   - choix : une pomme · une part de gâteau · un yaourt
+   - choix : une pomme · une compote · un yaourt
    - réponse : un yaourt
    - indice : Les produits laitiers sont faits avec du lait.
-   - explication : Le yaourt est fait avec du lait : c’est un produit laitier. La pomme est un fruit, le gâteau un produit sucré.
+   - explication : Le yaourt est fait avec du lait : c’est un produit laitier. La pomme est un fruit ; la compote aussi est faite de fruits.
 
 ### Niveau 2 · `life-earth-sciences-6e-living-world-food-growth-2`
 
@@ -297,8 +297,8 @@ Pour tous les items :
 Pour tous les items :
 - aide « La Terre » :
   - Le Soleil est une étoile. La Terre est une planète qui tourne autour.
-  - La Terre tourne aussi sur elle-même : le jour, puis la nuit.
-  - Un tour du Soleil dure un an. L’axe penché fait les saisons.
+  - Sur Terre, la vie est possible grâce à l’eau liquide.
+  - L’atmosphère, la couche d’air autour de la Terre, garde une température douce.
   - Météo : le temps qu’il fait un jour.
   - Climat : le temps habituel d’une région, sur des années.
   - Volcan : il rejette de la lave. Séisme : le sol tremble.
@@ -308,23 +308,23 @@ Pour tous les items :
    - réponse : étoile
    - indice : Il brille de sa propre lumière.
    - explication : Le Soleil est une étoile : il produit sa propre lumière. La Terre est une planète qui tourne autour de lui.
-2. énoncé : La Terre tourne sur elle-même : cela fait le jour et la …
-   - choix : saison · nuit · pluie
-   - réponse : nuit
-   - indice : Le côté tourné vers le Soleil est éclairé. Et l’autre côté ?
-   - explication : En tournant sur elle-même, la Terre montre au Soleil un côté, puis l’autre : c’est le jour, puis la nuit.
-3. énoncé : "Deux idées pour expliquer l’été\nLéo : en été, la Terre est plus près du Soleil.\nSami : en été, les rayons arrivent plus droit et les journées sont plus longues."
-   - question : Quelle idée est juste ?
-   - lu : Deux idées pour expliquer l’été. Léo, en été, la Terre est plus près du Soleil. Sami, en été, les rayons arrivent plus droit et les journées sont plus longues.
-   - choix : celle de Léo · celle de Sami · aucune des deux
-   - réponse : celle de Sami
-   - indice : Relis la ligne « Un tour » du rappel : qu’est-ce qui fait les saisons ?
-   - explication : Les saisons viennent de l’axe penché de la Terre, pas de sa distance au Soleil. En été, les rayons arrivent plus droit et les jours sont plus longs.
-4. énoncé : La Terre fait le tour du Soleil en une …
-   - choix : journée · semaine · année
-   - réponse : année
-   - indice : Relis la ligne « Un tour » du rappel.
-   - explication : La Terre met un an à faire le tour du Soleil. En une journée, elle fait un tour sur elle-même.
+2. énoncé : Les êtres vivants ont besoin d’eau à l’état …
+   - choix : solide · liquide · gazeux
+   - réponse : liquide
+   - indice : Relis la ligne « Sur Terre » du rappel.
+   - explication : La vie a besoin d’eau liquide. Sur Terre, il y en a dans les océans, les lacs et les rivières. Sur Mars, l’eau est surtout gelée.
+3. énoncé : "Trois planètes du système solaire\nVénus : plus près du Soleil, plus de 400 °C.\nLa Terre : en moyenne 15 °C, de l’eau liquide.\nMars : plus loin du Soleil, environ 60 °C sous zéro."
+   - question : Sur quelle planète la température permet-elle la vie ?
+   - lu : Trois planètes du système solaire. Vénus, plus près du Soleil, plus de quatre cents degrés. La Terre, en moyenne quinze degrés, de l’eau liquide. Mars, plus loin du Soleil, environ soixante degrés sous zéro.
+   - choix : sur Vénus · sur la Terre · sur Mars
+   - réponse : sur la Terre
+   - indice : Compare les températures : laquelle est douce ?
+   - explication : Sur Vénus, il fait bien trop chaud ; sur Mars, bien trop froid. Sur la Terre, la température est douce : l’eau reste liquide et la vie est possible.
+4. énoncé : La couche d’air qui entoure la Terre s’appelle l’…
+   - choix : atmosphère · hémisphère · horizon
+   - réponse : atmosphère
+   - indice : Relis la ligne « L’atmosphère » du rappel.
+   - explication : L’atmosphère est la couche d’air autour de la Terre. Elle contient l’air que nous respirons. Elle garde aussi une partie de la chaleur du Soleil.
 5. énoncé : "Bulletin du jour\nCe matin : pluie et vent.\nCet après-midi : éclaircies.\nTempérature : 14 °C"
    - question : De quoi parle ce bulletin ?
    - lu : Bulletin du jour. Ce matin, pluie et vent. Cet après-midi, éclaircies. Température, 14 degrés.

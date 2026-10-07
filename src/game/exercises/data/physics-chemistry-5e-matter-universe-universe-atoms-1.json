@@ -23,7 +23,7 @@
           "title": "De la Terre aux galaxies",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "Le système solaire : le Soleil et ses huit planètes.",
+            "Le système solaire : le Soleil et tout ce qui tourne autour, dont huit planètes.",
             "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
             "La lumière parcourt 300 000 kilomètres en une seconde.",
             "Une année-lumière : la distance que la lumière parcourt en un an.",
@@ -34,8 +34,8 @@
     },
     {
       "key": "physics-chemistry-5e-matter-universe-universe-atoms-1-1",
-      "prompt": "Le Soleil et les huit planètes qui tournent autour forment le …",
-      "spoken": "Le Soleil et les huit planètes qui tournent autour forment le  (mot manquant) ",
+      "prompt": "Le Soleil et tout ce qui tourne autour, dont huit planètes, forment le …",
+      "spoken": "Le Soleil et tout ce qui tourne autour, dont huit planètes, forment le  (mot manquant) ",
       "choices": [
         "système solaire",
         "ciel étoilé",
@@ -43,14 +43,14 @@
       ],
       "answer": "système solaire",
       "hint": "Relis la ligne « Le système solaire » du rappel.",
-      "explanation": "Le Soleil et ses huit planètes forment le système solaire. Il n’est qu’une toute petite partie de l’Univers.",
+      "explanation": "Le Soleil et tout ce qui tourne autour, dont huit planètes, forment le système solaire. Il n’est qu’une toute petite partie de l’Univers.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "De la Terre aux galaxies",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "Le système solaire : le Soleil et ses huit planètes.",
+            "Le système solaire : le Soleil et tout ce qui tourne autour, dont huit planètes.",
             "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
             "La lumière parcourt 300 000 kilomètres en une seconde.",
             "Une année-lumière : la distance que la lumière parcourt en un an.",
@@ -77,7 +77,7 @@
           "title": "De la Terre aux galaxies",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "Le système solaire : le Soleil et ses huit planètes.",
+            "Le système solaire : le Soleil et tout ce qui tourne autour, dont huit planètes.",
             "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
             "La lumière parcourt 300 000 kilomètres en une seconde.",
             "Une année-lumière : la distance que la lumière parcourt en un an.",
@@ -104,7 +104,7 @@
           "title": "De la Terre aux galaxies",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "Le système solaire : le Soleil et ses huit planètes.",
+            "Le système solaire : le Soleil et tout ce qui tourne autour, dont huit planètes.",
             "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
             "La lumière parcourt 300 000 kilomètres en une seconde.",
             "Une année-lumière : la distance que la lumière parcourt en un an.",
@@ -132,7 +132,7 @@
           "title": "De la Terre aux galaxies",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "Le système solaire : le Soleil et ses huit planètes.",
+            "Le système solaire : le Soleil et tout ce qui tourne autour, dont huit planètes.",
             "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
             "La lumière parcourt 300 000 kilomètres en une seconde.",
             "Une année-lumière : la distance que la lumière parcourt en un an.",
@@ -160,7 +160,7 @@
           "title": "De la Terre aux galaxies",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "Le système solaire : le Soleil et ses huit planètes.",
+            "Le système solaire : le Soleil et tout ce qui tourne autour, dont huit planètes.",
             "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
             "La lumière parcourt 300 000 kilomètres en une seconde.",
             "Une année-lumière : la distance que la lumière parcourt en un an.",
@@ -187,7 +187,7 @@
           "title": "De la Terre aux galaxies",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "Le système solaire : le Soleil et ses huit planètes.",
+            "Le système solaire : le Soleil et tout ce qui tourne autour, dont huit planètes.",
             "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
             "La lumière parcourt 300 000 kilomètres en une seconde.",
             "Une année-lumière : la distance que la lumière parcourt en un an.",
@@ -215,7 +215,7 @@
           "title": "De la Terre aux galaxies",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "Le système solaire : le Soleil et ses huit planètes.",
+            "Le système solaire : le Soleil et tout ce qui tourne autour, dont huit planètes.",
             "Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.",
             "La lumière parcourt 300 000 kilomètres en une seconde.",
             "Une année-lumière : la distance que la lumière parcourt en un an.",

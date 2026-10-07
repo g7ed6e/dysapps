@@ -126,7 +126,7 @@
       ],
       "answer": "dioxyde de carbone",
       "hint": "Relis la ligne « Brûler du pétrole » du rappel.",
-      "explanation": "Brûler de l’essence rejette du dioxyde de carbone, un gaz à effet de serre. Le moteur, lui, consomme de l’oxygène : il n’en rejette pas.",
+      "explanation": "Brûler de l’essence rejette du dioxyde de carbone, un gaz à effet de serre. Le moteur, lui, consomme de l’oxygène.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -144,9 +144,9 @@
     },
     {
       "key": "life-earth-sciences-5e-active-planet-weather-climate-2-5",
-      "prompt": "Une expérience en classe\nDeux bocaux fermés, au soleil, avec un thermomètre.\nBocal 1 : de l’air normal.\nBocal 2 : de l’air avec plus de dioxyde de carbone.\nUne heure plus tard, le bocal 2 est plus chaud.",
-      "question": "Que montre cette expérience ?",
-      "spoken": "Une expérience en classe. Deux bocaux fermés, au soleil, avec un thermomètre. Bocal 1, de l’air normal. Bocal 2, de l’air avec plus de dioxyde de carbone. Une heure plus tard, le bocal 2 est plus chaud.",
+      "prompt": "Un modèle en classe\nDeux bocaux fermés, au soleil, avec un thermomètre.\nBocal 1 : de l’air normal.\nBocal 2 : de l’air avec plus de dioxyde de carbone.\nUne heure plus tard, le bocal 2 est plus chaud.",
+      "question": "Que montre ce modèle ?",
+      "spoken": "Un modèle en classe. Deux bocaux fermés, au soleil, avec un thermomètre. Bocal 1, de l’air normal. Bocal 2, de l’air avec plus de dioxyde de carbone. Une heure plus tard, le bocal 2 est plus chaud.",
       "choices": [
         "le soleil chauffe moins le bocal 1",
         "le dioxyde de carbone garde la chaleur",
@@ -154,7 +154,7 @@
       ],
       "answer": "le dioxyde de carbone garde la chaleur",
       "hint": "Une seule chose change entre les deux bocaux. Laquelle ?",
-      "explanation": "Les deux bocaux sont au même soleil ; seul l’air change. Le bocal avec plus de dioxyde de carbone est plus chaud : ce gaz garde la chaleur, c’est l’effet de serre.",
+      "explanation": "Dans ce modèle, les deux bocaux sont au même soleil ; seul l’air change. Le bocal avec plus de dioxyde de carbone est plus chaud : ce gaz garde la chaleur. C’est l’effet de serre.",
       "aid": {
         "kind": "rule-card",
         "props": {

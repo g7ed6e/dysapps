@@ -7,8 +7,8 @@
   "items": [
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-0",
-      "prompt": "Le train roule sur une voie toute droite : sa trajectoire est …",
-      "spoken": "Le train roule sur une voie toute droite : sa trajectoire est  (mot manquant) ",
+      "prompt": "Vu du quai, le train roule sur une voie toute droite : sa trajectoire est …",
+      "spoken": "Vu du quai, le train roule sur une voie toute droite : sa trajectoire est  (mot manquant) ",
       "choices": [
         "circulaire",
         "rectiligne",
@@ -16,25 +16,26 @@
       ],
       "answer": "rectiligne",
       "hint": "Relis la ligne « Rectiligne » du rappel.",
-      "explanation": "Une trajectoire en ligne droite est rectiligne. Curviligne veut dire en forme de courbe.",
+      "explanation": "Vu du quai, le train va en ligne droite : sa trajectoire est rectiligne. Curviligne veut dire en forme de courbe.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Décrire un mouvement",
           "lines": [
+            "Un mouvement se décrit toujours par rapport à quelque chose, comme le sol.",
             "La trajectoire : le chemin suivi par l’objet.",
             "Rectiligne : une ligne droite. Curviligne : une courbe.",
             "Circulaire : un cercle.",
             "La vitesse peut rester la même, augmenter ou diminuer.",
-            "Une vitesse se dit en kilomètres par heure."
+            "Une vitesse se dit par exemple en kilomètres par heure."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-1",
-      "prompt": "Le ballon lancé vers le panier suit une courbe : sa trajectoire est …",
-      "spoken": "Le ballon lancé vers le panier suit une courbe : sa trajectoire est  (mot manquant) ",
+      "prompt": "Vu du sol, le ballon lancé vers le panier suit une courbe : sa trajectoire est …",
+      "spoken": "Vu du sol, le ballon lancé vers le panier suit une courbe : sa trajectoire est  (mot manquant) ",
       "choices": [
         "rectiligne",
         "circulaire",
@@ -48,20 +49,21 @@
         "props": {
           "title": "Décrire un mouvement",
           "lines": [
+            "Un mouvement se décrit toujours par rapport à quelque chose, comme le sol.",
             "La trajectoire : le chemin suivi par l’objet.",
             "Rectiligne : une ligne droite. Curviligne : une courbe.",
             "Circulaire : un cercle.",
             "La vitesse peut rester la même, augmenter ou diminuer.",
-            "Une vitesse se dit en kilomètres par heure."
+            "Une vitesse se dit par exemple en kilomètres par heure."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-2",
-      "prompt": "Photos de la bille, une par seconde\nLes positions de la bille sont de plus en plus écartées.",
+      "prompt": "Photos de la bille qui roule sur la table\nL’appareil photo est fixé à la table.\nIl prend une photo par seconde.\nLes positions de la bille sont de plus en plus écartées.",
       "question": "Que fait la vitesse de la bille ?",
-      "spoken": "Photos de la bille, une par seconde. Les positions de la bille sont de plus en plus écartées.",
+      "spoken": "Photos de la bille qui roule sur la table. L’appareil photo est fixé à la table. Il prend une photo par seconde. Les positions de la bille sont de plus en plus écartées.",
       "choices": [
         "elle reste la même",
         "elle augmente",
@@ -75,20 +77,21 @@
         "props": {
           "title": "Décrire un mouvement",
           "lines": [
+            "Un mouvement se décrit toujours par rapport à quelque chose, comme le sol.",
             "La trajectoire : le chemin suivi par l’objet.",
             "Rectiligne : une ligne droite. Curviligne : une courbe.",
             "Circulaire : un cercle.",
             "La vitesse peut rester la même, augmenter ou diminuer.",
-            "Une vitesse se dit en kilomètres par heure."
+            "Une vitesse se dit par exemple en kilomètres par heure."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-3",
-      "prompt": "Le trajet d’Inès à vélo\nPremière seconde : 5 m\nDeuxième seconde : 5 m\nTroisième seconde : 5 m",
+      "prompt": "Le trajet d’Inès à vélo, mesuré depuis le trottoir\nPremière seconde : 5 m\nDeuxième seconde : 5 m\nTroisième seconde : 5 m",
       "question": "Que fait la vitesse d’Inès ?",
-      "spoken": "Le trajet d’Inès à vélo. Première seconde, 5 mètres. Deuxième seconde, 5 mètres. Troisième seconde, 5 mètres.",
+      "spoken": "Le trajet d’Inès à vélo, mesuré depuis le trottoir. Première seconde, cinq mètres. Deuxième seconde, cinq mètres. Troisième seconde, cinq mètres.",
       "choices": [
         "elle augmente",
         "elle diminue",
@@ -102,19 +105,20 @@
         "props": {
           "title": "Décrire un mouvement",
           "lines": [
+            "Un mouvement se décrit toujours par rapport à quelque chose, comme le sol.",
             "La trajectoire : le chemin suivi par l’objet.",
             "Rectiligne : une ligne droite. Curviligne : une courbe.",
             "Circulaire : un cercle.",
             "La vitesse peut rester la même, augmenter ou diminuer.",
-            "Une vitesse se dit en kilomètres par heure."
+            "Une vitesse se dit par exemple en kilomètres par heure."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-4",
-      "prompt": "La voiture freine avant le feu rouge : sa vitesse …",
-      "spoken": "La voiture freine avant le feu rouge : sa vitesse  (mot manquant) ",
+      "prompt": "Vue du trottoir, la voiture freine avant le feu rouge : sa vitesse …",
+      "spoken": "Vue du trottoir, la voiture freine avant le feu rouge : sa vitesse  (mot manquant) ",
       "choices": [
         "diminue",
         "augmente",
@@ -128,20 +132,21 @@
         "props": {
           "title": "Décrire un mouvement",
           "lines": [
+            "Un mouvement se décrit toujours par rapport à quelque chose, comme le sol.",
             "La trajectoire : le chemin suivi par l’objet.",
             "Rectiligne : une ligne droite. Curviligne : une courbe.",
             "Circulaire : un cercle.",
             "La vitesse peut rester la même, augmenter ou diminuer.",
-            "Une vitesse se dit en kilomètres par heure."
+            "Une vitesse se dit par exemple en kilomètres par heure."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-5",
-      "prompt": "Le compteur du bus\nL’aiguille est sur le nombre 30.\nSous les nombres, il est écrit : km/h.",
+      "prompt": "Le compteur du bus\nIl donne la vitesse du bus par rapport à la route.\nL’aiguille est sur le nombre 30.\nSous les nombres, il est écrit : km/h.",
       "question": "À quelle vitesse roule le bus ?",
-      "spoken": "Le compteur du bus. L’aiguille est sur le nombre 30. Sous les nombres, il est écrit kilomètres par heure.",
+      "spoken": "Le compteur du bus. Il donne la vitesse du bus par rapport à la route. L’aiguille est sur le nombre trente. Sous les nombres, il est écrit kilomètres par heure.",
       "choices": [
         "30 kilomètres",
         "30 heures",
@@ -155,46 +160,48 @@
         "props": {
           "title": "Décrire un mouvement",
           "lines": [
+            "Un mouvement se décrit toujours par rapport à quelque chose, comme le sol.",
             "La trajectoire : le chemin suivi par l’objet.",
             "Rectiligne : une ligne droite. Curviligne : une courbe.",
             "Circulaire : un cercle.",
             "La vitesse peut rester la même, augmenter ou diminuer.",
-            "Une vitesse se dit en kilomètres par heure."
+            "Une vitesse se dit par exemple en kilomètres par heure."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-6",
-      "prompt": "Le chemin suivi par un objet qui bouge s’appelle sa …",
-      "spoken": "Le chemin suivi par un objet qui bouge s’appelle sa  (mot manquant) ",
+      "prompt": "Vu par un observateur, le chemin suivi par un objet qui bouge s’appelle sa …",
+      "spoken": "Vu par un observateur, le chemin suivi par un objet qui bouge s’appelle sa  (mot manquant) ",
       "choices": [
         "vitesse",
         "trajectoire",
         "distance"
       ],
       "answer": "trajectoire",
-      "hint": "Relis la première ligne du rappel.",
+      "hint": "Relis la ligne « La trajectoire » du rappel.",
       "explanation": "Le chemin suivi par l’objet est sa trajectoire. La vitesse dit s’il va vite ou lentement.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Décrire un mouvement",
           "lines": [
+            "Un mouvement se décrit toujours par rapport à quelque chose, comme le sol.",
             "La trajectoire : le chemin suivi par l’objet.",
             "Rectiligne : une ligne droite. Curviligne : une courbe.",
             "Circulaire : un cercle.",
             "La vitesse peut rester la même, augmenter ou diminuer.",
-            "Une vitesse se dit en kilomètres par heure."
+            "Une vitesse se dit par exemple en kilomètres par heure."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-7",
-      "prompt": "Photos du skieur en bas de la piste, une par seconde\nLes positions du skieur sont de plus en plus serrées.",
+      "prompt": "Photos du skieur en bas de la piste\nL’appareil photo est posé sur la neige.\nIl prend une photo par seconde.\nLes positions du skieur sont de plus en plus serrées.",
       "question": "Que fait la vitesse du skieur ?",
-      "spoken": "Photos du skieur en bas de la piste, une par seconde. Les positions du skieur sont de plus en plus serrées.",
+      "spoken": "Photos du skieur en bas de la piste. L’appareil photo est posé sur la neige. Il prend une photo par seconde. Les positions du skieur sont de plus en plus serrées.",
       "choices": [
         "elle augmente",
         "elle diminue",
@@ -208,11 +215,12 @@
         "props": {
           "title": "Décrire un mouvement",
           "lines": [
+            "Un mouvement se décrit toujours par rapport à quelque chose, comme le sol.",
             "La trajectoire : le chemin suivi par l’objet.",
             "Rectiligne : une ligne droite. Curviligne : une courbe.",
             "Circulaire : un cercle.",
             "La vitesse peut rester la même, augmenter ou diminuer.",
-            "Une vitesse se dit en kilomètres par heure."
+            "Une vitesse se dit par exemple en kilomètres par heure."
           ]
         }
       }

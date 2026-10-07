@@ -238,7 +238,7 @@ Pour tous les items :
    - réponse : peau
    - indice : Relis la ligne « La peau » du rappel.
    - explication : La peau empêche la plupart des microbes d’entrer. Une coupure ouvre cette barrière : c’est pour cela qu’on nettoie une plaie.
-2. énoncé : Pour nettoyer une petite plaie, on met un …
+2. énoncé : Pour désinfecter une petite plaie, après l’avoir lavée, on met un …
    - choix : vaccin · antibiotique · antiseptique
    - réponse : antiseptique
    - indice : Relis la ligne « Antiseptique » du rappel.
@@ -271,7 +271,7 @@ Pour tous les items :
    - choix : médicament · globule · microbe
    - réponse : microbe
    - indice : Relis la ligne « Le vaccin » du rappel.
-   - explication : Le vaccin présente au corps un microbe rendu inoffensif, ou un morceau de ce microbe. Le corps le mémorise : s’il rencontre le vrai microbe, il réagit vite.
+   - explication : Le vaccin présente au corps un microbe rendu inoffensif, ou un morceau de ce microbe, ou de quoi en fabriquer un morceau. Le corps le mémorise : s’il rencontre le vrai microbe, il réagit vite.
 8. énoncé : "Deux boîtes de culture, à la même température\nBoîte 1 : on pose un doigt pas lavé.\nBoîte 2 : on pose un doigt lavé au savon.\nTrois jours plus tard : boîte 1, beaucoup de taches de bactéries ; boîte 2, très peu."
    - question : Que montre cette expérience ?
    - lu : Deux boîtes de culture, à la même température. Boîte 1, on pose un doigt pas lavé. Boîte 2, on pose un doigt lavé au savon. Trois jours plus tard, boîte 1, beaucoup de taches de bactéries. Boîte 2, très peu.
@@ -301,7 +301,7 @@ Pour tous les items :
 Pour tous les items :
 - aide « La puberté » :
   - La puberté : le corps devient capable de se reproduire.
-  - Elle commence vers 9 à 14 ans, à un âge différent pour chacun.
+  - Elle commence vers 8 à 14 ans, à un âge différent pour chacun.
   - Des hormones la déclenchent ; le cerveau commande leur production.
   - Les testicules produisent des spermatozoïdes, les ovaires des ovules.
   - Ces cellules reproductrices sont les gamètes.
@@ -355,7 +355,7 @@ Pour tous les items :
 Pour tous les items :
 - aide « La reproduction humaine » :
   - Fécondation : un spermatozoïde et un ovule s’unissent, dans une trompe.
-  - La cellule-œuf se divise et s’installe dans l’utérus : c’est la nidation.
+  - La cellule-œuf se divise ; quelques jours plus tard, l’embryon s’installe dans l’utérus : la nidation.
   - L’embryon grandit dans l’utérus : la grossesse dure environ 9 mois.
   - Le placenta fait les échanges entre la mère et l’embryon.
   - La contraception permet de choisir le moment d’avoir un enfant.
@@ -366,11 +366,11 @@ Pour tous les items :
    - réponse : fécondation
    - indice : Relis la ligne « Fécondation » du rappel.
    - explication : L’union des deux gamètes est la fécondation. Elle donne une cellule-œuf, avec 46 chromosomes.
-2. énoncé : La cellule-œuf s’installe dans la paroi de l’utérus : c’est la …
+2. énoncé : L’embryon de quelques jours s’installe dans la paroi de l’utérus : c’est la …
    - choix : fécondation · digestion · nidation
    - réponse : nidation
    - indice : Relis la ligne « La cellule-œuf » du rappel. Le mot vient de « nid ».
-   - explication : La cellule-œuf, déjà divisée, s’installe dans l’utérus comme dans un nid : c’est la nidation. La grossesse commence.
+   - explication : La cellule-œuf s’est divisée : elle est devenue un embryon de quelques jours. Il s’installe dans la paroi de l’utérus comme dans un nid : c’est la nidation. La grossesse commence.
 3. énoncé : L’organe où grandit l’embryon pendant la grossesse est l’…
    - choix : utérus · ovaire · estomac
    - réponse : utérus

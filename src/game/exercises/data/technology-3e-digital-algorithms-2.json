@@ -42,7 +42,7 @@
       ],
       "answer": "condition",
       "hint": "Relis la ligne du rappel qui parle de « si » et de « sinon ».",
-      "explanation": "« Si », puis « alors » : le programme teste quelque chose avant d’agir : c’est une condition. Une boucle répète, sans tester.",
+      "explanation": "« Si », puis « alors » : le programme teste quelque chose avant d’agir : c’est une condition. Une boucle, elle, répète des instructions.",
       "aid": {
         "kind": "rule-card",
         "props": {

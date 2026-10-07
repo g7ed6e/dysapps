@@ -23,8 +23,8 @@
           "title": "La Terre",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
-            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Sur Terre, la vie est possible grâce à l’eau liquide.",
+            "L’atmosphère, la couche d’air autour de la Terre, garde une température douce.",
             "Météo : le temps qu’il fait un jour.",
             "Climat : le temps habituel d’une région, sur des années.",
             "Volcan : il rejette de la lave. Séisme : le sol tremble."
@@ -34,24 +34,24 @@
     },
     {
       "key": "life-earth-sciences-6e-living-world-planet-earth-1-1",
-      "prompt": "La Terre tourne sur elle-même : cela fait le jour et la …",
-      "spoken": "La Terre tourne sur elle-même : cela fait le jour et la  (mot manquant) ",
+      "prompt": "Les êtres vivants ont besoin d’eau à l’état …",
+      "spoken": "Les êtres vivants ont besoin d’eau à l’état  (mot manquant) ",
       "choices": [
-        "saison",
-        "nuit",
-        "pluie"
+        "solide",
+        "liquide",
+        "gazeux"
       ],
-      "answer": "nuit",
-      "hint": "Le côté tourné vers le Soleil est éclairé. Et l’autre côté ?",
-      "explanation": "En tournant sur elle-même, la Terre montre au Soleil un côté, puis l’autre : c’est le jour, puis la nuit.",
+      "answer": "liquide",
+      "hint": "Relis la ligne « Sur Terre » du rappel.",
+      "explanation": "La vie a besoin d’eau liquide. Sur Terre, il y en a dans les océans, les lacs et les rivières. Sur Mars, l’eau est surtout gelée.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "La Terre",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
-            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Sur Terre, la vie est possible grâce à l’eau liquide.",
+            "L’atmosphère, la couche d’air autour de la Terre, garde une température douce.",
             "Météo : le temps qu’il fait un jour.",
             "Climat : le temps habituel d’une région, sur des années.",
             "Volcan : il rejette de la lave. Séisme : le sol tremble."
@@ -61,25 +61,25 @@
     },
     {
       "key": "life-earth-sciences-6e-living-world-planet-earth-1-2",
-      "prompt": "Deux idées pour expliquer l’été\nLéo : en été, la Terre est plus près du Soleil.\nSami : en été, les rayons arrivent plus droit et les journées sont plus longues.",
-      "question": "Quelle idée est juste ?",
-      "spoken": "Deux idées pour expliquer l’été. Léo, en été, la Terre est plus près du Soleil. Sami, en été, les rayons arrivent plus droit et les journées sont plus longues.",
+      "prompt": "Trois planètes du système solaire\nVénus : plus près du Soleil, plus de 400 °C.\nLa Terre : en moyenne 15 °C, de l’eau liquide.\nMars : plus loin du Soleil, environ 60 °C sous zéro.",
+      "question": "Sur quelle planète la température permet-elle la vie ?",
+      "spoken": "Trois planètes du système solaire. Vénus, plus près du Soleil, plus de quatre cents degrés. La Terre, en moyenne quinze degrés, de l’eau liquide. Mars, plus loin du Soleil, environ soixante degrés sous zéro.",
       "choices": [
-        "celle de Léo",
-        "celle de Sami",
-        "aucune des deux"
+        "sur Vénus",
+        "sur la Terre",
+        "sur Mars"
       ],
-      "answer": "celle de Sami",
-      "hint": "Relis la ligne « Un tour » du rappel : qu’est-ce qui fait les saisons ?",
-      "explanation": "Les saisons viennent de l’axe penché de la Terre, pas de sa distance au Soleil. En été, les rayons arrivent plus droit et les jours sont plus longs.",
+      "answer": "sur la Terre",
+      "hint": "Compare les températures : laquelle est douce ?",
+      "explanation": "Sur Vénus, il fait bien trop chaud ; sur Mars, bien trop froid. Sur la Terre, la température est douce : l’eau reste liquide et la vie est possible.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "La Terre",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
-            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Sur Terre, la vie est possible grâce à l’eau liquide.",
+            "L’atmosphère, la couche d’air autour de la Terre, garde une température douce.",
             "Météo : le temps qu’il fait un jour.",
             "Climat : le temps habituel d’une région, sur des années.",
             "Volcan : il rejette de la lave. Séisme : le sol tremble."
@@ -89,24 +89,24 @@
     },
     {
       "key": "life-earth-sciences-6e-living-world-planet-earth-1-3",
-      "prompt": "La Terre fait le tour du Soleil en une …",
-      "spoken": "La Terre fait le tour du Soleil en une  (mot manquant) ",
+      "prompt": "La couche d’air qui entoure la Terre s’appelle l’…",
+      "spoken": "La couche d’air qui entoure la Terre s’appelle l’ (mot manquant) ",
       "choices": [
-        "journée",
-        "semaine",
-        "année"
+        "atmosphère",
+        "hémisphère",
+        "horizon"
       ],
-      "answer": "année",
-      "hint": "Relis la ligne « Un tour » du rappel.",
-      "explanation": "La Terre met un an à faire le tour du Soleil. En une journée, elle fait un tour sur elle-même.",
+      "answer": "atmosphère",
+      "hint": "Relis la ligne « L’atmosphère » du rappel.",
+      "explanation": "L’atmosphère est la couche d’air autour de la Terre. Elle contient l’air que nous respirons. Elle garde aussi une partie de la chaleur du Soleil.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "La Terre",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
-            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Sur Terre, la vie est possible grâce à l’eau liquide.",
+            "L’atmosphère, la couche d’air autour de la Terre, garde une température douce.",
             "Météo : le temps qu’il fait un jour.",
             "Climat : le temps habituel d’une région, sur des années.",
             "Volcan : il rejette de la lave. Séisme : le sol tremble."
@@ -133,8 +133,8 @@
           "title": "La Terre",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
-            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Sur Terre, la vie est possible grâce à l’eau liquide.",
+            "L’atmosphère, la couche d’air autour de la Terre, garde une température douce.",
             "Météo : le temps qu’il fait un jour.",
             "Climat : le temps habituel d’une région, sur des années.",
             "Volcan : il rejette de la lave. Séisme : le sol tremble."
@@ -161,8 +161,8 @@
           "title": "La Terre",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
-            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Sur Terre, la vie est possible grâce à l’eau liquide.",
+            "L’atmosphère, la couche d’air autour de la Terre, garde une température douce.",
             "Météo : le temps qu’il fait un jour.",
             "Climat : le temps habituel d’une région, sur des années.",
             "Volcan : il rejette de la lave. Séisme : le sol tremble."
@@ -189,8 +189,8 @@
           "title": "La Terre",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
-            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Sur Terre, la vie est possible grâce à l’eau liquide.",
+            "L’atmosphère, la couche d’air autour de la Terre, garde une température douce.",
             "Météo : le temps qu’il fait un jour.",
             "Climat : le temps habituel d’une région, sur des années.",
             "Volcan : il rejette de la lave. Séisme : le sol tremble."
@@ -216,8 +216,8 @@
           "title": "La Terre",
           "lines": [
             "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
-            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
-            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Sur Terre, la vie est possible grâce à l’eau liquide.",
+            "L’atmosphère, la couche d’air autour de la Terre, garde une température douce.",
             "Météo : le temps qu’il fait un jour.",
             "Climat : le temps habituel d’une région, sur des années.",
             "Volcan : il rejette de la lave. Séisme : le sol tremble."

@@ -16,13 +16,13 @@
       ],
       "answer": "corps pur",
       "hint": "Relis la ligne « Corps pur » du rappel.",
-      "explanation": "Une seule sorte de molécules, c’est un corps pur. L’eau du robinet, elle, contient aussi des sels : c’est un mélange.",
+      "explanation": "Une seule espèce chimique, l’eau : c’est un corps pur. L’eau du robinet, elle, contient aussi des sels : c’est un mélange.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Corps purs et mélanges",
           "lines": [
-            "Corps pur : une seule sorte de molécules. Mélange : plusieurs sortes.",
+            "Corps pur : une seule espèce chimique. Mélange : plusieurs constituants.",
             "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
             "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
             "Saturée : la solution ne peut plus rien dissoudre.",
@@ -41,14 +41,14 @@
         "mélange"
       ],
       "answer": "mélange",
-      "hint": "Combien de sortes de molécules ?",
-      "explanation": "L’eau minérale contient plusieurs sortes de molécules : c’est un mélange, même si on n’y voit qu’une seule chose.",
+      "hint": "Combien de constituants ?",
+      "explanation": "L’eau minérale contient plusieurs constituants, de l’eau et des sels : c’est un mélange, même si on n’y voit qu’une seule chose.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Corps purs et mélanges",
           "lines": [
-            "Corps pur : une seule sorte de molécules. Mélange : plusieurs sortes.",
+            "Corps pur : une seule espèce chimique. Mélange : plusieurs constituants.",
             "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
             "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
             "Saturée : la solution ne peut plus rien dissoudre.",
@@ -74,7 +74,7 @@
         "props": {
           "title": "Corps purs et mélanges",
           "lines": [
-            "Corps pur : une seule sorte de molécules. Mélange : plusieurs sortes.",
+            "Corps pur : une seule espèce chimique. Mélange : plusieurs constituants.",
             "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
             "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
             "Saturée : la solution ne peut plus rien dissoudre.",
@@ -100,7 +100,7 @@
         "props": {
           "title": "Corps purs et mélanges",
           "lines": [
-            "Corps pur : une seule sorte de molécules. Mélange : plusieurs sortes.",
+            "Corps pur : une seule espèce chimique. Mélange : plusieurs constituants.",
             "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
             "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
             "Saturée : la solution ne peut plus rien dissoudre.",
@@ -127,7 +127,7 @@
         "props": {
           "title": "Corps purs et mélanges",
           "lines": [
-            "Corps pur : une seule sorte de molécules. Mélange : plusieurs sortes.",
+            "Corps pur : une seule espèce chimique. Mélange : plusieurs constituants.",
             "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
             "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
             "Saturée : la solution ne peut plus rien dissoudre.",
@@ -153,7 +153,7 @@
         "props": {
           "title": "Corps purs et mélanges",
           "lines": [
-            "Corps pur : une seule sorte de molécules. Mélange : plusieurs sortes.",
+            "Corps pur : une seule espèce chimique. Mélange : plusieurs constituants.",
             "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
             "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
             "Saturée : la solution ne peut plus rien dissoudre.",
@@ -179,7 +179,7 @@
         "props": {
           "title": "Corps purs et mélanges",
           "lines": [
-            "Corps pur : une seule sorte de molécules. Mélange : plusieurs sortes.",
+            "Corps pur : une seule espèce chimique. Mélange : plusieurs constituants.",
             "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
             "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
             "Saturée : la solution ne peut plus rien dissoudre.",
@@ -206,7 +206,7 @@
         "props": {
           "title": "Corps purs et mélanges",
           "lines": [
-            "Corps pur : une seule sorte de molécules. Mélange : plusieurs sortes.",
+            "Corps pur : une seule espèce chimique. Mélange : plusieurs constituants.",
             "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
             "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
             "Saturée : la solution ne peut plus rien dissoudre.",

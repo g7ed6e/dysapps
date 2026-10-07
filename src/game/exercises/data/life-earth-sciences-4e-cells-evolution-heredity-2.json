@@ -25,7 +25,7 @@
             "Le noyau de la cellule contient les chromosomes.",
             "Chez l’humain : 46 chromosomes, rangés par paires, soit 23 paires.",
             "Un chromosome est fait d’ADN. Un gène est un morceau de cet ADN.",
-            "Un gène porte une information : la couleur des yeux, le groupe sanguin.",
+            "Un gène porte une information, comme la couleur des yeux. Il existe en plusieurs versions.",
             "Chaque parent donne un chromosome de chaque paire.",
             "Chaque être humain est unique, sauf les vrais jumeaux."
           ]
@@ -52,7 +52,7 @@
             "Le noyau de la cellule contient les chromosomes.",
             "Chez l’humain : 46 chromosomes, rangés par paires, soit 23 paires.",
             "Un chromosome est fait d’ADN. Un gène est un morceau de cet ADN.",
-            "Un gène porte une information : la couleur des yeux, le groupe sanguin.",
+            "Un gène porte une information, comme la couleur des yeux. Il existe en plusieurs versions.",
             "Chaque parent donne un chromosome de chaque paire.",
             "Chaque être humain est unique, sauf les vrais jumeaux."
           ]
@@ -79,7 +79,7 @@
             "Le noyau de la cellule contient les chromosomes.",
             "Chez l’humain : 46 chromosomes, rangés par paires, soit 23 paires.",
             "Un chromosome est fait d’ADN. Un gène est un morceau de cet ADN.",
-            "Un gène porte une information : la couleur des yeux, le groupe sanguin.",
+            "Un gène porte une information, comme la couleur des yeux. Il existe en plusieurs versions.",
             "Chaque parent donne un chromosome de chaque paire.",
             "Chaque être humain est unique, sauf les vrais jumeaux."
           ]
@@ -106,7 +106,7 @@
             "Le noyau de la cellule contient les chromosomes.",
             "Chez l’humain : 46 chromosomes, rangés par paires, soit 23 paires.",
             "Un chromosome est fait d’ADN. Un gène est un morceau de cet ADN.",
-            "Un gène porte une information : la couleur des yeux, le groupe sanguin.",
+            "Un gène porte une information, comme la couleur des yeux. Il existe en plusieurs versions.",
             "Chaque parent donne un chromosome de chaque paire.",
             "Chaque être humain est unique, sauf les vrais jumeaux."
           ]
@@ -134,7 +134,7 @@
             "Le noyau de la cellule contient les chromosomes.",
             "Chez l’humain : 46 chromosomes, rangés par paires, soit 23 paires.",
             "Un chromosome est fait d’ADN. Un gène est un morceau de cet ADN.",
-            "Un gène porte une information : la couleur des yeux, le groupe sanguin.",
+            "Un gène porte une information, comme la couleur des yeux. Il existe en plusieurs versions.",
             "Chaque parent donne un chromosome de chaque paire.",
             "Chaque être humain est unique, sauf les vrais jumeaux."
           ]
@@ -147,13 +147,13 @@
       "question": "Pourquoi sont-elles différentes ?",
       "spoken": "Deux sœurs, avec les mêmes parents. Léa, yeux bleus, groupe sanguin A. Inès, yeux marron, groupe sanguin O.",
       "choices": [
-        "elles n’ont pas reçu les mêmes gènes",
+        "elles n’ont pas reçu les mêmes versions des gènes",
         "elles ne mangent pas les mêmes aliments",
         "elles n’ont pas les mêmes parents"
       ],
-      "answer": "elles n’ont pas reçu les mêmes gènes",
+      "answer": "elles n’ont pas reçu les mêmes versions des gènes",
       "hint": "La couleur des yeux et le groupe sanguin dépendent de quoi ?",
-      "explanation": "Chaque parent donne au hasard un chromosome de chaque paire : les deux sœurs n’ont pas reçu les mêmes gènes. La nourriture ne change ni la couleur des yeux ni le groupe sanguin.",
+      "explanation": "Chaque parent donne au hasard un chromosome de chaque paire : les deux sœurs n’ont pas reçu les mêmes versions des gènes. La nourriture ne change ni la couleur des yeux ni le groupe sanguin.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -162,7 +162,7 @@
             "Le noyau de la cellule contient les chromosomes.",
             "Chez l’humain : 46 chromosomes, rangés par paires, soit 23 paires.",
             "Un chromosome est fait d’ADN. Un gène est un morceau de cet ADN.",
-            "Un gène porte une information : la couleur des yeux, le groupe sanguin.",
+            "Un gène porte une information, comme la couleur des yeux. Il existe en plusieurs versions.",
             "Chaque parent donne un chromosome de chaque paire.",
             "Chaque être humain est unique, sauf les vrais jumeaux."
           ]
@@ -174,13 +174,13 @@
       "prompt": "Les vrais jumeaux viennent de la même cellule-œuf : ils ont les mêmes …",
       "spoken": "Les vrais jumeaux viennent de la même cellule-œuf : ils ont les mêmes  (mot manquant) ",
       "choices": [
-        "gènes",
+        "versions des gènes",
         "prénoms",
         "empreintes digitales"
       ],
-      "answer": "gènes",
+      "answer": "versions des gènes",
       "hint": "Que contient la cellule-œuf, dans son noyau ?",
-      "explanation": "Nés de la même cellule-œuf, les vrais jumeaux ont les mêmes gènes. Leurs empreintes digitales sont pourtant différentes : elles se forment aussi selon la place de chacun dans le ventre de la mère.",
+      "explanation": "Nés de la même cellule-œuf, les vrais jumeaux ont les mêmes versions des gènes. Leurs empreintes digitales sont pourtant différentes : elles se forment aussi selon la place de chacun dans le ventre de la mère.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -189,7 +189,7 @@
             "Le noyau de la cellule contient les chromosomes.",
             "Chez l’humain : 46 chromosomes, rangés par paires, soit 23 paires.",
             "Un chromosome est fait d’ADN. Un gène est un morceau de cet ADN.",
-            "Un gène porte une information : la couleur des yeux, le groupe sanguin.",
+            "Un gène porte une information, comme la couleur des yeux. Il existe en plusieurs versions.",
             "Chaque parent donne un chromosome de chaque paire.",
             "Chaque être humain est unique, sauf les vrais jumeaux."
           ]
@@ -217,7 +217,7 @@
             "Le noyau de la cellule contient les chromosomes.",
             "Chez l’humain : 46 chromosomes, rangés par paires, soit 23 paires.",
             "Un chromosome est fait d’ADN. Un gène est un morceau de cet ADN.",
-            "Un gène porte une information : la couleur des yeux, le groupe sanguin.",
+            "Un gène porte une information, comme la couleur des yeux. Il existe en plusieurs versions.",
             "Chaque parent donne un chromosome de chaque paire.",
             "Chaque être humain est unique, sauf les vrais jumeaux."
           ]
