@@ -298,7 +298,7 @@ export function ArrangeJoinQuestion({ amenagement, nom, className }: { amenageme
  * La barre du mode, à place fixe, en bas. Sur la Carte, peu de boutons (mainteneur, 7 octobre 2026 : « il y a trop de
  * boutons », inspiré des jeux de base mobiles) : ✕ « Annuler » et ✓ « Valider », qui ferment le mode et gardent leur
  * mot partout (en grand texte, il passe sous l'icône) ; « Réunir » seulement quand le lieu choisi touche un voisin à
- * réunir ; « Poser » seulement pour un ouvrage à reposer. On déplace en glissant ou en touchant la place voulue, et
+ * réunir ; « Poser » seulement pour un ouvrage à reposer. On déplace en glissant (la mer touchée relâche le choix), et
  * « Tourner » est dessiné près du choix (ArrangeHandles.tsx). En vue simple (`croix`), sans scène, la croix des flèches,
  * « Tourner », ↶ « Défaire » et « Poser » restent dans la barre (décision du 6 octobre 2026).
  */
@@ -325,7 +325,7 @@ export function ArrangeBar({ amenagement, className, croix = false }: { amenagem
       <div className="arrange-bar-outils">
         {croix && <IconButton icone="tourner" nom="Tourner" disabled={!canTurn(choix) || occupe} onClick={amenagement.tourner} />}
         {croix && <IconButton icone="defaire" nom="Défaire la dernière pose" mot="Défaire" disabled={!amenagement.peutDefaire || occupe} onClick={amenagement.defaire} />}
-        {/* Sur la Carte, un choix se pose au lever du doigt ou en touchant sa place : « Poser » n'y sert qu'à un ouvrage
+        {/* Sur la Carte, un lieu ou un Gardien se pose au lever du doigt, une borne ou une arrivée en touchant sa place : « Poser » n'y sert qu'à un ouvrage
             à reposer, qui ne se glisse pas. Sur une place prise (choix 3 du mainteneur), il s'éteint. */}
         {(croix || choix?.genre === 'liaison') && (
           <button

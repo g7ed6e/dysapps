@@ -10,6 +10,7 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import { useState } from 'react';
 import { SettingsProvider } from '../core/SettingsContext';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { BiomeId } from './biomes';
 import type { World } from './engine/state';
 import { type Amenagement, QUESTION_D_ANNULATION, useAmenagement } from './Arranging';
 import { ArrangeBar, ArrangeButton, ArrangeSentence } from './ArrangeBar';
@@ -17,12 +18,11 @@ import { Icon } from '../components/Icon';
 import { ArrangeHandles } from './ArrangeHandles';
 import { HABILLAGES } from './world/skin';
 import { toutConstruit } from './world/budget';
-import { freeGuardianSpots, freeSpots, guardianOf, isletMiddle, joinedWith, linksToRelink, nearestFreeSpot, NO_MORE_ROOM, placeIn, spotOf } from './world/arrange';
+import { freeGuardianSpots, freeSpots, freeStationSpots, guardianOf, isletMiddle, joinedWith, linksToRelink, nearestFreeSpot, NO_MORE_ROOM, placeIn, spotOf, stationOf } from './world/arrange';
 import { frameOf } from './world/footprint';
 import { DESCENTE_MS, GESTE_DU_LIEU } from './world/arrangeGesture';
 import { stationInWorld } from './world/arrangeMode';
 import { startingStations } from './world/terrain/markers';
-import { freeStationSpots, stationOf } from './world/arrange';
 import { applyLayout } from './world/appliedLayout';
 import { thePlace } from './world/placeArticle';
 
@@ -96,14 +96,22 @@ const touche = (key: string) => fireEvent.keyDown(window, { key });
  * Le lieu choisi, glissé au doigt jusqu'à la place libre la plus proche de `point` (en cases du monde), puis lâché :
  * toucher la mer ne le déplace plus, elle le relâche (mainteneur, 7 octobre 2026).
  */
-const glisseVers = (id: string, point: { x: number; y: number }) => {
-  const libre = nearestFreeSpot(monde, id as never, point)!;
-  const ici = placeIn(monde, id as never).core;
+const glisseVers = (id: BiomeId, point: { x: number; y: number }) => {
+  const libre = nearestFreeSpot(monde, id, point)!;
+  const ici = placeIn(monde, id).core;
   const c = frameOf('6e');
-  act(() => void dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { lieu: id as never }));
+  act(() => void dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { lieu: id }));
   act(() => dernier.glisser.suivre({ x: c.x0 + libre.x * 4 + 8, y: c.y0 + libre.y * 4 + 8 }));
   act(() => dernier.glisser.lacher(true));
   return libre;
+};
+/** L'icône de « Réunir » la plus proche du lieu choisi : elle ne se montre que pendant le glissé. */
+const iconeDeReunion = (id: BiomeId) => {
+  const ici = placeIn(monde, id).core;
+  act(() => void dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { lieu: id }));
+  const icone = dernier.vue?.reunions?.[0];
+  act(() => dernier.glisser.lacher(false));
+  return icone;
 };
 const boutonsDeLaBarre = () => Array.from(document.querySelectorAll('.arrange-bar button')).map((b) => b.getAttribute('aria-label') ?? b.textContent?.trim());
 
@@ -455,7 +463,7 @@ describe('le mode « Aménager »', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     // La Tour, éloignée de la Ferme, puis rapprochée sur une place qui l'y colle.
     act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
-    const icone = dernier.vue!.reunions?.[0];
+    const icone = iconeDeReunion(TOUR);
     expect(icone).toBeDefined();
     const avant = spotOf(monde, TOUR);
     glisseVers(TOUR, { x: icone!.x, y: icone!.y });
@@ -491,7 +499,7 @@ describe('le mode « Aménager »', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
-    const icone = dernier.vue!.reunions![0];
+    const icone = iconeDeReunion(TOUR)!;
     glisseVers(TOUR, { x: icone.x, y: icone.y });
     const ici = spotOf(monde, TOUR);
     const pas = dernier.peutDefaire;

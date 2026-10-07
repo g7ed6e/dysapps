@@ -727,7 +727,8 @@ export function useAmenagement({
         return true;
       case 'ile': {
         const p = i.sol ? versMonde(i.sol) : null;
-        // Une borne ou une arrivée choisie : toucher son lieu la cale là ; la mer à côté d'un lieu, comme la mer.
+        // Une borne ou une arrivée choisie : toucher son lieu, ou la mer tout contre, la cale là ; avec un autre choix, la mer
+        // tout contre un lieu le relâche, comme la mer.
         if (p && choix && (choix.genre === 'borne' || choix.genre === 'arrivee')) {
           caleEtPose(choix, p);
           return true;
