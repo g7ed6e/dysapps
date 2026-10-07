@@ -1,0 +1,228 @@
+{
+  "id": "technology-5e-design-technical-solutions-2",
+  "biome": "technology-5e-design",
+  "type": "technical-solutions",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-5e-design-technical-solutions-2-0",
+      "prompt": "Le prix des trois solutions\nCahier des charges : moins de 10 euros.\nSolution A : 8 euros.\nSolution B : 12 euros.\nSolution C : 15 euros.",
+      "question": "Quelle solution respecte le prix ?",
+      "spoken": "Le prix des trois solutions. Cahier des charges, moins de 10 euros. Solution A, 8 euros. Solution B, 12 euros. Solution C, 15 euros.",
+      "choices": [
+        "la solution A",
+        "la solution B",
+        "la solution C"
+      ],
+      "answer": "la solution A",
+      "hint": "Cherche le prix plus petit que 10 euros.",
+      "explanation": "8 euros, c’est moins de 10 euros : la solution A respecte le prix. 12 et 15 euros dépassent la limite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir une solution",
+          "lines": [
+            "On compare les solutions avec le cahier des charges.",
+            "Un critère : ce qu’on vérifie (le prix, le poids, la durée).",
+            "On garde la solution qui respecte toutes les contraintes.",
+            "Si plusieurs les respectent, on prend la meilleure pour le besoin."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-2-1",
+      "prompt": "Trois façons d’accrocher le tableau d’affichage\nLe tableau est lourd.\nPâte adhésive : tient les objets légers.\nClous fins : tiennent les objets légers.\nVis et chevilles : tiennent les objets lourds.",
+      "question": "Quelle solution choisir ?",
+      "spoken": "Trois façons d’accrocher le tableau d’affichage. Le tableau est lourd. Pâte adhésive, tient les objets légers. Clous fins, tiennent les objets légers. Vis et chevilles, tiennent les objets lourds.",
+      "choices": [
+        "la pâte adhésive",
+        "les clous fins",
+        "les vis et chevilles"
+      ],
+      "answer": "les vis et chevilles",
+      "hint": "Relis la deuxième ligne : le tableau est-il léger ou lourd ?",
+      "explanation": "Le tableau est lourd : seules les vis et chevilles le tiennent. La pâte et les clous fins ne tiennent que les objets légers.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir une solution",
+          "lines": [
+            "On compare les solutions avec le cahier des charges.",
+            "Un critère : ce qu’on vérifie (le prix, le poids, la durée).",
+            "On garde la solution qui respecte toutes les contraintes.",
+            "Si plusieurs les respectent, on prend la meilleure pour le besoin."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-2-2",
+      "prompt": "On garde la solution qui respecte toutes les …",
+      "spoken": "On garde la solution qui respecte toutes les  (mot manquant) ",
+      "choices": [
+        "contraintes",
+        "couleurs",
+        "idées"
+      ],
+      "answer": "contraintes",
+      "hint": "Relis la ligne « On garde la solution » du rappel.",
+      "explanation": "Une solution est bonne si elle respecte toutes les contraintes du cahier des charges, pas seulement une.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir une solution",
+          "lines": [
+            "On compare les solutions avec le cahier des charges.",
+            "Un critère : ce qu’on vérifie (le prix, le poids, la durée).",
+            "On garde la solution qui respecte toutes les contraintes.",
+            "Si plusieurs les respectent, on prend la meilleure pour le besoin."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-2-3",
+      "prompt": "Le sac de sport\nCahier des charges : moins de 900 grammes, et lavable.\nSac A : 800 grammes, lavable.\nSac B : 600 grammes, pas lavable.\nSac C : 950 grammes, lavable.",
+      "question": "Quel sac choisir ?",
+      "spoken": "Le sac de sport. Cahier des charges, moins de 900 grammes, et lavable. Sac A, 800 grammes, lavable. Sac B, 600 grammes, pas lavable. Sac C, 950 grammes, lavable.",
+      "choices": [
+        "le sac A",
+        "le sac B",
+        "le sac C"
+      ],
+      "answer": "le sac A",
+      "hint": "Il faut les deux : assez léger, et lavable.",
+      "explanation": "Le sac A est léger et lavable : il respecte les deux contraintes. Le sac B est le plus léger, mais il ne se lave pas ; le sac C est trop lourd.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir une solution",
+          "lines": [
+            "On compare les solutions avec le cahier des charges.",
+            "Un critère : ce qu’on vérifie (le prix, le poids, la durée).",
+            "On garde la solution qui respecte toutes les contraintes.",
+            "Si plusieurs les respectent, on prend la meilleure pour le besoin."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-2-4",
+      "prompt": "Le prix, le poids ou la durée, ce que l’on vérifie pour comparer des solutions, s’appelle un …",
+      "spoken": "Le prix, le poids ou la durée, ce que l’on vérifie pour comparer des solutions, s’appelle un  (mot manquant) ",
+      "choices": [
+        "besoin",
+        "critère",
+        "croquis"
+      ],
+      "answer": "critère",
+      "hint": "Relis la ligne du rappel qui cite le prix, le poids et la durée.",
+      "explanation": "Ce que l’on vérifie pour comparer s’appelle un critère : le prix, le poids, la durée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir une solution",
+          "lines": [
+            "On compare les solutions avec le cahier des charges.",
+            "Un critère : ce qu’on vérifie (le prix, le poids, la durée).",
+            "On garde la solution qui respecte toutes les contraintes.",
+            "Si plusieurs les respectent, on prend la meilleure pour le besoin."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-2-5",
+      "prompt": "La boîte à bijoux\nCahier des charges : s’ouvrir d’une seule main.\nAimant : s’ouvre d’une main.\nCadenas : s’ouvre avec une clé, à deux mains.\nNœud de ruban : se défait à deux mains.",
+      "question": "Quelle solution choisir ?",
+      "spoken": "La boîte à bijoux. Cahier des charges, s’ouvrir d’une seule main. Aimant, s’ouvre d’une main. Cadenas, s’ouvre avec une clé, à deux mains. Nœud de ruban, se défait à deux mains.",
+      "choices": [
+        "le cadenas",
+        "l’aimant",
+        "le nœud de ruban"
+      ],
+      "answer": "l’aimant",
+      "hint": "Cherche la solution qui s’ouvre d’une seule main.",
+      "explanation": "Seul l’aimant s’ouvre d’une main : il respecte le cahier des charges. Le cadenas protège mieux, mais il demande les deux mains.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir une solution",
+          "lines": [
+            "On compare les solutions avec le cahier des charges.",
+            "Un critère : ce qu’on vérifie (le prix, le poids, la durée).",
+            "On garde la solution qui respecte toutes les contraintes.",
+            "Si plusieurs les respectent, on prend la meilleure pour le besoin."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-2-6",
+      "prompt": "La télécommande du projecteur\nDeux solutions respectent les contraintes.\nSolution A : des piles jetables.\nSolution B : une batterie rechargeable.\nLe besoin : servir tous les jours, longtemps.",
+      "question": "Quelle solution choisir ?",
+      "spoken": "La télécommande du projecteur. Deux solutions respectent les contraintes. Solution A, des piles jetables. Solution B, une batterie rechargeable. Le besoin, servir tous les jours, longtemps.",
+      "choices": [
+        "les piles jetables",
+        "la batterie rechargeable",
+        "aucune des deux"
+      ],
+      "answer": "la batterie rechargeable",
+      "hint": "Les deux conviennent : laquelle répond le mieux au besoin ?",
+      "explanation": "Les deux respectent les contraintes. Pour servir tous les jours, la batterie rechargeable est la meilleure : on ne jette pas de piles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir une solution",
+          "lines": [
+            "On compare les solutions avec le cahier des charges.",
+            "Un critère : ce qu’on vérifie (le prix, le poids, la durée).",
+            "On garde la solution qui respecte toutes les contraintes.",
+            "Si plusieurs les respectent, on prend la meilleure pour le besoin."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-2-7",
+      "prompt": "La lampe du jardin\nFonction : s’allumer toute seule quand la nuit tombe.",
+      "question": "Quelle solution technique répond à cette fonction ?",
+      "spoken": "La lampe du jardin. Fonction, s’allumer toute seule quand la nuit tombe.",
+      "choices": [
+        "un interrupteur",
+        "une ampoule plus forte",
+        "un capteur de lumière"
+      ],
+      "answer": "un capteur de lumière",
+      "hint": "« Toute seule » : sans que personne n’appuie.",
+      "explanation": "Le capteur de lumière repère la nuit et allume la lampe tout seul. Avec un interrupteur, il faut que quelqu’un appuie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir une solution",
+          "lines": [
+            "On compare les solutions avec le cahier des charges.",
+            "Un critère : ce qu’on vérifie (le prix, le poids, la durée).",
+            "On garde la solution qui respecte toutes les contraintes.",
+            "Si plusieurs les respectent, on prend la meilleure pour le besoin."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-5e-design",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

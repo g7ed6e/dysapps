@@ -52,7 +52,8 @@ describe.each(COMMANDES.map((c) => [c.fixture, c] as const))('%s', (_id, c) => {
       expect(k.y).toBeGreaterThanOrEqual(0);
       expect(k.z).toBeGreaterThanOrEqual(0);
       expect(k.y).toBeLessThanOrEqual(2);
-      expect(k.z).toBeLessThanOrEqual(2);
+      // Trois de haut au plus, sauf la salière de Rabot : trois sels en colonne et son toit (DA, relecture des captures SC-3).
+      expect(k.z).toBeLessThanOrEqual(c.fixture === 'technology-5e-design-fixture-1' ? 3 : 2);
     }
     // 3 × 3 au plus, sauf le bac à eau de Bloquette, une ligne de 4 cases (forme validée par le directeur artistique).
     expect(Math.max(...cases.map((k) => k.x))).toBeLessThanOrEqual(c.fixture === 'french-6e-grammar-spelling-fixture-1' ? 3 : 2);

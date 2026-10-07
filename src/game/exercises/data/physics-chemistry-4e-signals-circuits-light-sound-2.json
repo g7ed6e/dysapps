@@ -1,0 +1,242 @@
+{
+  "id": "physics-chemistry-4e-signals-circuits-light-sound-2",
+  "biome": "physics-chemistry-4e-signals-circuits",
+  "type": "light-sound",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-2-0",
+      "prompt": "Dans le vide de l’espace, le son ne passe pas : il a besoin de …",
+      "spoken": "Dans le vide de l’espace, le son ne passe pas : il a besoin de  (mot manquant) ",
+      "choices": [
+        "lumière",
+        "matière",
+        "chaleur"
+      ],
+      "answer": "matière",
+      "hint": "Relis la ligne « Le son » du rappel.",
+      "explanation": "Le son avance en faisant vibrer la matière : l’air, l’eau, un mur. Dans le vide, il n’y a rien à faire vibrer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le son",
+          "lines": [
+            "Le son a besoin de matière pour avancer : l’air, l’eau, un mur. Dans le vide, rien.",
+            "Dans l’air, le son parcourt environ 340 mètres en une seconde.",
+            "La fréquence, en hertz (Hz) : le nombre de vibrations en une seconde.",
+            "Grande fréquence : son aigu. Petite fréquence : son grave.",
+            "On entend de 20 à 20 000 hertz. En dessous, les infrasons ; au-dessus, les ultrasons.",
+            "Le niveau sonore se mesure en décibels (dB). Dès 85 décibels, l’oreille est en danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-2-1",
+      "prompt": "Le réveil sous la cloche\nUn réveil sonne sous une cloche de verre.\nAvec une pompe, on retire l’air de la cloche.\nOn n’entend presque plus le réveil.",
+      "question": "Que montre l’expérience ?",
+      "spoken": "Le réveil sous la cloche. Un réveil sonne sous une cloche de verre. Avec une pompe, on retire l’air de la cloche. On n’entend presque plus le réveil.",
+      "choices": [
+        "le verre arrête le son",
+        "le son ne passe pas dans le vide",
+        "le réveil s’est arrêté"
+      ],
+      "answer": "le son ne passe pas dans le vide",
+      "hint": "Avant de pomper, entendait-on le réveil à travers le verre ?",
+      "explanation": "Avec l’air, on entend le réveil à travers le verre. Sans air, presque plus rien : le son a besoin de matière pour avancer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le son",
+          "lines": [
+            "Le son a besoin de matière pour avancer : l’air, l’eau, un mur. Dans le vide, rien.",
+            "Dans l’air, le son parcourt environ 340 mètres en une seconde.",
+            "La fréquence, en hertz (Hz) : le nombre de vibrations en une seconde.",
+            "Grande fréquence : son aigu. Petite fréquence : son grave.",
+            "On entend de 20 à 20 000 hertz. En dessous, les infrasons ; au-dessus, les ultrasons.",
+            "Le niveau sonore se mesure en décibels (dB). Dès 85 décibels, l’oreille est en danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-2-2",
+      "prompt": "Un son très aigu a une fréquence …",
+      "spoken": "Un son très aigu a une fréquence  (mot manquant) ",
+      "choices": [
+        "petite",
+        "grande",
+        "nulle"
+      ],
+      "answer": "grande",
+      "hint": "Relis la ligne « Grande fréquence » du rappel.",
+      "explanation": "Plus la fréquence est grande, plus le son est aigu. Un son grave a une petite fréquence.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le son",
+          "lines": [
+            "Le son a besoin de matière pour avancer : l’air, l’eau, un mur. Dans le vide, rien.",
+            "Dans l’air, le son parcourt environ 340 mètres en une seconde.",
+            "La fréquence, en hertz (Hz) : le nombre de vibrations en une seconde.",
+            "Grande fréquence : son aigu. Petite fréquence : son grave.",
+            "On entend de 20 à 20 000 hertz. En dessous, les infrasons ; au-dessus, les ultrasons.",
+            "Le niveau sonore se mesure en décibels (dB). Dès 85 décibels, l’oreille est en danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-2-3",
+      "prompt": "Deux notes de flûte\nNote A : 260 Hz (hertz).\nNote B : 520 Hz (hertz).",
+      "question": "Quelle note est la plus aiguë ?",
+      "spoken": "Deux notes de flûte. Note A, 260 hertz. Note B, 520 hertz.",
+      "choices": [
+        "la note A",
+        "la note B",
+        "aucune, elles sont pareilles"
+      ],
+      "answer": "la note B",
+      "hint": "Laquelle a la plus grande fréquence ?",
+      "explanation": "La note B a une fréquence plus grande, 520 hertz contre 260 : elle est plus aiguë.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le son",
+          "lines": [
+            "Le son a besoin de matière pour avancer : l’air, l’eau, un mur. Dans le vide, rien.",
+            "Dans l’air, le son parcourt environ 340 mètres en une seconde.",
+            "La fréquence, en hertz (Hz) : le nombre de vibrations en une seconde.",
+            "Grande fréquence : son aigu. Petite fréquence : son grave.",
+            "On entend de 20 à 20 000 hertz. En dessous, les infrasons ; au-dessus, les ultrasons.",
+            "Le niveau sonore se mesure en décibels (dB). Dès 85 décibels, l’oreille est en danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-2-4",
+      "prompt": "Le sifflet pour chien a une fréquence trop grande pour nos oreilles : il émet des …",
+      "spoken": "Le sifflet pour chien a une fréquence trop grande pour nos oreilles : il émet des  (mot manquant) ",
+      "choices": [
+        "infrasons",
+        "ultrasons",
+        "décibels"
+      ],
+      "answer": "ultrasons",
+      "hint": "Au-dessus ou en dessous de ce qu’on entend ?",
+      "explanation": "Au-dessus de 20 000 hertz, ce sont des ultrasons : le chien les entend, pas nous. Les infrasons, en dessous de 20 hertz, sont trop graves.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le son",
+          "lines": [
+            "Le son a besoin de matière pour avancer : l’air, l’eau, un mur. Dans le vide, rien.",
+            "Dans l’air, le son parcourt environ 340 mètres en une seconde.",
+            "La fréquence, en hertz (Hz) : le nombre de vibrations en une seconde.",
+            "Grande fréquence : son aigu. Petite fréquence : son grave.",
+            "On entend de 20 à 20 000 hertz. En dessous, les infrasons ; au-dessus, les ultrasons.",
+            "Le niveau sonore se mesure en décibels (dB). Dès 85 décibels, l’oreille est en danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-2-5",
+      "prompt": "L’orage\nOn voit l’éclair.\nOn entend le tonnerre 6 secondes plus tard.\nLe son parcourt environ 1 kilomètre en 3 secondes.",
+      "question": "À quelle distance est l’orage ?",
+      "spoken": "L’orage. On voit l’éclair. On entend le tonnerre six secondes plus tard. Le son parcourt environ un kilomètre en trois secondes.",
+      "choices": [
+        "1 kilomètre",
+        "2 kilomètres",
+        "6 kilomètres"
+      ],
+      "answer": "2 kilomètres",
+      "hint": "Combien de fois 3 secondes dans 6 secondes ?",
+      "explanation": "En 6 secondes, il y a 2 fois 3 secondes : le son a parcouru 2 fois un kilomètre. L’orage est à environ 2 kilomètres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le son",
+          "lines": [
+            "Le son a besoin de matière pour avancer : l’air, l’eau, un mur. Dans le vide, rien.",
+            "Dans l’air, le son parcourt environ 340 mètres en une seconde.",
+            "La fréquence, en hertz (Hz) : le nombre de vibrations en une seconde.",
+            "Grande fréquence : son aigu. Petite fréquence : son grave.",
+            "On entend de 20 à 20 000 hertz. En dessous, les infrasons ; au-dessus, les ultrasons.",
+            "Le niveau sonore se mesure en décibels (dB). Dès 85 décibels, l’oreille est en danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-2-6",
+      "prompt": "Des niveaux sonores\nUne conversation : 60 dB (décibels).\nUn concert, près des enceintes : 105 dB.\nDanger pour l’oreille : à partir de 85 dB.",
+      "question": "Lequel est dangereux pour l’oreille ?",
+      "spoken": "Des niveaux sonores. Une conversation, 60 décibels. Un concert, près des enceintes, 105 décibels. Danger pour l’oreille, à partir de 85 décibels.",
+      "choices": [
+        "la conversation",
+        "le concert",
+        "aucun des deux"
+      ],
+      "answer": "le concert",
+      "hint": "Lequel dépasse 85 décibels ?",
+      "explanation": "Le concert près des enceintes dépasse 85 décibels : il peut abîmer l’oreille pour toujours. La conversation, à 60 décibels, est sans danger.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le son",
+          "lines": [
+            "Le son a besoin de matière pour avancer : l’air, l’eau, un mur. Dans le vide, rien.",
+            "Dans l’air, le son parcourt environ 340 mètres en une seconde.",
+            "La fréquence, en hertz (Hz) : le nombre de vibrations en une seconde.",
+            "Grande fréquence : son aigu. Petite fréquence : son grave.",
+            "On entend de 20 à 20 000 hertz. En dessous, les infrasons ; au-dessus, les ultrasons.",
+            "Le niveau sonore se mesure en décibels (dB). Dès 85 décibels, l’oreille est en danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-2-7",
+      "prompt": "Au concert, pour protéger ses oreilles, on s’éloigne des …",
+      "spoken": "Au concert, pour protéger ses oreilles, on s’éloigne des  (mot manquant) ",
+      "choices": [
+        "lumières",
+        "enceintes",
+        "portes"
+      ],
+      "answer": "enceintes",
+      "hint": "D’où sort le son ?",
+      "explanation": "Le son sort des enceintes : plus on s’en éloigne, plus le niveau sonore baisse. Les bouchons d’oreilles protègent aussi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le son",
+          "lines": [
+            "Le son a besoin de matière pour avancer : l’air, l’eau, un mur. Dans le vide, rien.",
+            "Dans l’air, le son parcourt environ 340 mètres en une seconde.",
+            "La fréquence, en hertz (Hz) : le nombre de vibrations en une seconde.",
+            "Grande fréquence : son aigu. Petite fréquence : son grave.",
+            "On entend de 20 à 20 000 hertz. En dessous, les infrasons ; au-dessus, les ultrasons.",
+            "Le niveau sonore se mesure en décibels (dB). Dès 85 décibels, l’oreille est en danger."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-4e-signals-circuits",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "id": "life-earth-sciences-5e-active-planet-weather-climate-2",
+  "biome": "life-earth-sciences-5e-active-planet",
+  "type": "weather-climate",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-2-0",
+      "prompt": "Un glacier des Alpes, mesuré par les scientifiques\nIl y a 50 ans : 10 kilomètres de long.\nAujourd’hui : 7 kilomètres de long.",
+      "question": "Que montre ce document ?",
+      "spoken": "Un glacier des Alpes, mesuré par les scientifiques. Il y a cinquante ans, 10 kilomètres de long. Aujourd’hui, 7 kilomètres de long.",
+      "choices": [
+        "le glacier grandit",
+        "le glacier recule",
+        "le glacier ne change pas"
+      ],
+      "answer": "le glacier recule",
+      "hint": "Compare les deux longueurs : laquelle est la plus petite ?",
+      "explanation": "Le glacier est passé de 10 à 7 kilomètres : il fond et recule. C’est un signe du réchauffement du climat.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat change",
+          "lines": [
+            "Le climat de la Terre a déjà changé : il y a eu des périodes glaciaires.",
+            "Aujourd’hui, la Terre se réchauffe vite.",
+            "La cause principale : les gaz à effet de serre rejetés par les humains.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Les glaciers fondent, la mer monte, les sécheresses sont plus fréquentes.",
+            "Sur un graphique, une courbe qui monte : la valeur grandit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-2-1",
+      "prompt": "Pendant une période glaciaire, le climat de la Terre est plus …",
+      "spoken": "Pendant une période glaciaire, le climat de la Terre est plus  (mot manquant) ",
+      "choices": [
+        "froid",
+        "chaud",
+        "pluvieux"
+      ],
+      "answer": "froid",
+      "hint": "« Glaciaire » vient de « glace ».",
+      "explanation": "Pendant une période glaciaire, la Terre est plus froide : de grands glaciers couvrent une partie des continents. Le climat a déjà changé bien avant les humains.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat change",
+          "lines": [
+            "Le climat de la Terre a déjà changé : il y a eu des périodes glaciaires.",
+            "Aujourd’hui, la Terre se réchauffe vite.",
+            "La cause principale : les gaz à effet de serre rejetés par les humains.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Les glaciers fondent, la mer monte, les sécheresses sont plus fréquentes.",
+            "Sur un graphique, une courbe qui monte : la valeur grandit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-2-2",
+      "prompt": "La cause principale du réchauffement actuel, ce sont les gaz à effet de serre rejetés par …",
+      "spoken": "La cause principale du réchauffement actuel, ce sont les gaz à effet de serre rejetés par  (mot manquant) ",
+      "choices": [
+        "les volcans",
+        "les océans",
+        "les humains"
+      ],
+      "answer": "les humains",
+      "hint": "Relis la ligne « La cause principale » du rappel.",
+      "explanation": "Le réchauffement actuel vient surtout des gaz rejetés par les activités humaines : transports, usines, chauffage, élevage. Les volcans en rejettent bien moins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat change",
+          "lines": [
+            "Le climat de la Terre a déjà changé : il y a eu des périodes glaciaires.",
+            "Aujourd’hui, la Terre se réchauffe vite.",
+            "La cause principale : les gaz à effet de serre rejetés par les humains.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Les glaciers fondent, la mer monte, les sécheresses sont plus fréquentes.",
+            "Sur un graphique, une courbe qui monte : la valeur grandit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-2-3",
+      "prompt": "Le graphique de la température moyenne de la Terre\nLa courbe reste plate pendant très longtemps.\nPuis elle monte de plus en plus vite, jusqu’à aujourd’hui.",
+      "question": "Que dit ce graphique ?",
+      "spoken": "Le graphique de la température moyenne de la Terre. La courbe reste plate pendant très longtemps. Puis elle monte de plus en plus vite, jusqu’à aujourd’hui.",
+      "choices": [
+        "la Terre se refroidit",
+        "la Terre se réchauffe",
+        "la température ne change pas"
+      ],
+      "answer": "la Terre se réchauffe",
+      "hint": "Relis la ligne « Sur un graphique » du rappel : que veut dire une courbe qui monte ?",
+      "explanation": "La courbe monte : la température grandit, la Terre se réchauffe. Elle monte de plus en plus vite : le réchauffement accélère.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat change",
+          "lines": [
+            "Le climat de la Terre a déjà changé : il y a eu des périodes glaciaires.",
+            "Aujourd’hui, la Terre se réchauffe vite.",
+            "La cause principale : les gaz à effet de serre rejetés par les humains.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Les glaciers fondent, la mer monte, les sécheresses sont plus fréquentes.",
+            "Sur un graphique, une courbe qui monte : la valeur grandit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-2-4",
+      "prompt": "L’essence d’une voiture vient du pétrole. En brûlant, elle rejette du …",
+      "spoken": "L’essence d’une voiture vient du pétrole. En brûlant, elle rejette du  (mot manquant) ",
+      "choices": [
+        "dioxyde de carbone",
+        "oxygène",
+        "sable"
+      ],
+      "answer": "dioxyde de carbone",
+      "hint": "Relis la ligne « Brûler du pétrole » du rappel.",
+      "explanation": "Brûler de l’essence rejette du dioxyde de carbone, un gaz à effet de serre. Le moteur, lui, consomme de l’oxygène : il n’en rejette pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat change",
+          "lines": [
+            "Le climat de la Terre a déjà changé : il y a eu des périodes glaciaires.",
+            "Aujourd’hui, la Terre se réchauffe vite.",
+            "La cause principale : les gaz à effet de serre rejetés par les humains.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Les glaciers fondent, la mer monte, les sécheresses sont plus fréquentes.",
+            "Sur un graphique, une courbe qui monte : la valeur grandit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-2-5",
+      "prompt": "Une expérience en classe\nDeux bocaux fermés, au soleil, avec un thermomètre.\nBocal 1 : de l’air normal.\nBocal 2 : de l’air avec plus de dioxyde de carbone.\nUne heure plus tard, le bocal 2 est plus chaud.",
+      "question": "Que montre cette expérience ?",
+      "spoken": "Une expérience en classe. Deux bocaux fermés, au soleil, avec un thermomètre. Bocal 1, de l’air normal. Bocal 2, de l’air avec plus de dioxyde de carbone. Une heure plus tard, le bocal 2 est plus chaud.",
+      "choices": [
+        "le soleil chauffe moins le bocal 1",
+        "le dioxyde de carbone garde la chaleur",
+        "les bocaux fermés refroidissent"
+      ],
+      "answer": "le dioxyde de carbone garde la chaleur",
+      "hint": "Une seule chose change entre les deux bocaux. Laquelle ?",
+      "explanation": "Les deux bocaux sont au même soleil ; seul l’air change. Le bocal avec plus de dioxyde de carbone est plus chaud : ce gaz garde la chaleur, c’est l’effet de serre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat change",
+          "lines": [
+            "Le climat de la Terre a déjà changé : il y a eu des périodes glaciaires.",
+            "Aujourd’hui, la Terre se réchauffe vite.",
+            "La cause principale : les gaz à effet de serre rejetés par les humains.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Les glaciers fondent, la mer monte, les sécheresses sont plus fréquentes.",
+            "Sur un graphique, une courbe qui monte : la valeur grandit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-2-6",
+      "prompt": "Quand les glaciers fondent, leur eau rejoint la mer : le niveau de la mer …",
+      "spoken": "Quand les glaciers fondent, leur eau rejoint la mer : le niveau de la mer  (mot manquant) ",
+      "choices": [
+        "baisse",
+        "ne bouge pas",
+        "monte"
+      ],
+      "answer": "monte",
+      "hint": "On ajoute de l’eau dans la mer.",
+      "explanation": "L’eau des glaciers qui fondent s’ajoute à la mer : son niveau monte. Les côtes basses risquent d’être inondées.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat change",
+          "lines": [
+            "Le climat de la Terre a déjà changé : il y a eu des périodes glaciaires.",
+            "Aujourd’hui, la Terre se réchauffe vite.",
+            "La cause principale : les gaz à effet de serre rejetés par les humains.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Les glaciers fondent, la mer monte, les sécheresses sont plus fréquentes.",
+            "Sur un graphique, une courbe qui monte : la valeur grandit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-2-7",
+      "prompt": "Pour aller au collège tout près, le trajet qui rejette le moins de dioxyde de carbone se fait …",
+      "spoken": "Pour aller au collège tout près, le trajet qui rejette le moins de dioxyde de carbone se fait  (mot manquant) ",
+      "choices": [
+        "en voiture",
+        "en scooter",
+        "à vélo"
+      ],
+      "answer": "à vélo",
+      "hint": "Quel moyen de transport n’a pas de moteur ?",
+      "explanation": "Le vélo n’a pas de moteur : il ne brûle pas d’essence et ne rejette pas de dioxyde de carbone. La voiture et le scooter en rejettent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat change",
+          "lines": [
+            "Le climat de la Terre a déjà changé : il y a eu des périodes glaciaires.",
+            "Aujourd’hui, la Terre se réchauffe vite.",
+            "La cause principale : les gaz à effet de serre rejetés par les humains.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Les glaciers fondent, la mer monte, les sécheresses sont plus fréquentes.",
+            "Sur un graphique, une courbe qui monte : la valeur grandit."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien observé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-5e-active-planet",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

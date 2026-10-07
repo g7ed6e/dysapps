@@ -176,7 +176,7 @@ function sensJuste(g: GroupeDeConstruction): boolean {
 }
 
 describe('La construction taillée (lot R5)', () => {
-  it('chaque archipel tout construit tient dans son enveloppe (7 750 triangles aux Premiers Rivages depuis SC-2, 7 500 ailleurs) et 3 appels de dessin, fantômes et fenêtres compris', () => {
+  it('chaque archipel tout construit tient dans son enveloppe (7 750 triangles aux Premiers Rivages depuis SC-2, 8 000 ailleurs depuis SC-3) et 3 appels de dessin, fantômes et fenêtres compris', () => {
     for (const a of ARCHIPELAGO_IDS) {
       for (const etat of ['tout', 'chantier', 'dernier'] as Etat[]) {
         const { cubes, sol } = monde(a, etat);
@@ -389,7 +389,7 @@ describe('La construction taillée (lot R5)', () => {
       expect(part, `${a} : ${iles.join(', ')}`).toBeGreaterThanOrEqual(a === '5e' || a === '4e' ? 1 / 6 : 0.2);
       expect(part, a).toBeLessThanOrEqual(a === '3e' ? 1 / 3 : 0.3);
     }
-    expect(TERRE_CUITE_SUR).toHaveLength(10);
+    expect(TERRE_CUITE_SUR).toHaveLength(13);
     // Aux Îles du Ciel, le dessus est enneigé et les rives restent d'ardoise ; délavé sur une île fermée.
     const ciel = couleursDuToit('3e', 'maths-3e-functions');
     expect(ciel.dessus).not.toBe(ciel.cote);

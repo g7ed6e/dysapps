@@ -195,6 +195,32 @@ const FORMES: Record<string, Cube[]> = {
   // Fret, le treuil (HG-3) : deux poteaux de deux fontes aux bouts, l'axe d'une barrière entre eux en haut (le bois du
   // contenu n'est ni de l'île ni de finition).
   'geography-4e-globalization-fixture-1': [...colonne(0, 0, 0, 1, BLOC.fonte), ...colonne(2, 0, 0, 1, BLOC.fonte), [1, 0, 1, 'fence']],
+  // Les îles de sciences de 5e à 3e (SC-3), d'après la forme décidée par le directeur artistique (docs/contenu, « > Forme »).
+  // Humus, le composteur : un U de trois bambous au sol (deux bras devant, le fond derrière), une barrière au fond.
+  'life-earth-sciences-5e-active-planet-fixture-1': [[0, 0, 0, BLOC.bambou], [2, 0, 0, BLOC.bambou], [1, 1, 0, BLOC.bambou], [1, 2, 0, 'fence']],
+  // Perle, le filtre : deux strates sur deux barrières, la troisième au milieu, tenue par les deux autres.
+  'physics-chemistry-5e-matter-universe-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 0, 1, BLOC.strate)],
+  // Rabot, la salière : trois sels en colonne, un toit dessus (DA, relecture des captures : deux sels et le troisième à
+  // leur pied ne faisaient pas une salière) ; quatre de haut, la seule à dépasser trois. Sa place est voulue
+  // (`WANTED_PLACES`).
+  'technology-5e-design-fixture-1': [...colonne(0, 0, 0, 2, BLOC.sel), [0, 0, 3, 'roof']],
+  // Nectar, la jardinière : trois lièges en rang (trois cases de large au plus : les barrières se posent sur les lièges
+  // des bouts, pas à côté).
+  'life-earth-sciences-4e-cells-evolution-fixture-1': [...rangee(0, 2, 0, 0, BLOC.liege), [0, 0, 1, 'fence'], [2, 0, 1, 'fence']],
+  // Radar, l'estrade : deux rangs de deux conteneurs, un escalier devant.
+  'physics-chemistry-4e-signals-circuits-fixture-1': [...rangee(0, 1, 1, 0, BLOC.conteneur), ...rangee(0, 1, 2, 0, BLOC.conteneur), [0, 0, 0, 'stairs']],
+  // Manivelle, le moteur : deux bobines au sol aux bouts, la troisième dessus, au milieu, sur une barrière (quatre
+  // cubes au moins).
+  'technology-4e-modeling-fixture-1': [[0, 0, 0, BLOC.bobine], [2, 0, 0, BLOC.bobine], [1, 0, 0, 'fence'], [1, 0, 1, BLOC.bobine]],
+  // Olive, la veilleuse : deux cires en colonne, une lanterne dessus (sans flamme), un savon à son pied (quatre cubes au
+  // moins).
+  'life-earth-sciences-3e-human-body-fixture-1': [...colonne(0, 0, 0, 1, BLOC.cire), [0, 0, 2, 'lantern'], [1, 0, 0, BLOC.savon]],
+  // Virage, le portique : deux poteaux de deux grès roses, une barrière en travers en haut.
+  'physics-chemistry-3e-motion-energy-fixture-1': [...colonne(0, 0, 0, 1, BLOC.gres), ...colonne(2, 0, 0, 1, BLOC.gres), [1, 0, 1, 'fence']],
+  // Navette, le carillon : deux ressorts en colonne, un toit de deux cubes dessus, qui déborde d'un côté (quatre cubes au
+  // moins).
+  'technology-3e-digital-fixture-1': [...colonne(0, 0, 0, 1, BLOC.ressort), [0, 0, 2, 'roof'], [1, 0, 2, 'roof']],
+
   // 3e : les Îles du Ciel.
   // Théo, l'équerre : une branche debout de trois prismes, une branche couchée de deux portes (le marbre se perdait sur
   // le sol de marbre du Belvédère, retouche du directeur artistique).
@@ -304,6 +330,15 @@ const PLACES: Record<string, readonly [number, number]> = {
   'english-4e-grammar-fixture-1': [8, 9],
   'english-3e-comprehension-fixture-1': [0, 12],
   'english-3e-grammar-fixture-1': [1, 10],
+  'life-earth-sciences-5e-active-planet-fixture-1': [1, 10],
+  'physics-chemistry-5e-matter-universe-fixture-1': [1, 11],
+  'technology-5e-design-fixture-1': [10, 3],
+  'life-earth-sciences-4e-cells-evolution-fixture-1': [11, 3],
+  'physics-chemistry-4e-signals-circuits-fixture-1': [8, 3],
+  'technology-4e-modeling-fixture-1': [2, 11],
+  'life-earth-sciences-3e-human-body-fixture-1': [6, 12],
+  'physics-chemistry-3e-motion-energy-fixture-1': [-1, 12],
+  'technology-3e-digital-fixture-1': [5, 3],
 };
 
 /**
@@ -316,6 +351,16 @@ const PLACES: Record<string, readonly [number, number]> = {
  */
 const WANTED_PLACES: Record<string, readonly [number, number]> = {
   'geography-3e-france-fixture-1': [14, 4],
+  // À la Menuiserie des objets (SC-3), la salière de Rabot se posait derrière la scierie, pour la même raison : elle
+  // avance sur l'herbe dégagée devant, entre les bornes et l'arbre, vue de la caméra de l'île (DA, relecture des captures).
+  'technology-5e-design-fixture-1': [10, 3],
+  // À la Ruche des réseaux (SC-3), Navette couchée de profil a changé de place, et le calcul posait le carillon derrière
+  // le poste : il se pose devant, sur l'herbe dégagée entre les bornes et la ruche, vu de la caméra de l'île.
+  'technology-3e-digital-fixture-1': [5, 3],
+  // À la Source du vivant (SC-3), Nectar de profil occupe la place d'avant, et le calcul posait la jardinière derrière
+  // lui, aux trois quarts cachée : elle se pose à l'est, sur l'herbe dégagée, entière à l'écran ; ses cases figées au sol
+  // y coûtent aussi moins que derrière Nectar (les commandes du 4e restent dans leur enveloppe, budget.ts).
+  'life-earth-sciences-4e-cells-evolution-fixture-1': [11, 3],
 };
 
 /** La place voulue d'une petite construction (voir `WANTED_PLACES`), ou `null`. */

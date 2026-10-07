@@ -22,8 +22,10 @@ const LV2_LANGAGES = A_COUVRIR(
 );
 
 // Sciences et technologie : les trois îles de 6e (la Vallée du vivant, le Laboratoire des éléments, le Hangar des
-// inventions, SC-2) couvrent le cycle 3, sauf fabriquer. Le cycle 4 viendra ensuite.
+// inventions, SC-2) couvrent le cycle 3, sauf fabriquer. Les neuf îles de 5e, 4e et 3e (SC-3) couvrent le cycle 4, sauf
+// manipuler, fabriquer un prototype et programmer un objet réel (docs/conception/cadrage-contenu.md, « Sciences »).
 const FABRIQUER = HORS('Fabriquer, mesurer pour de vrai, travailler en équipe : le travail de la classe, que l’application ne remplace pas.');
+const MANIPULER = HORS('Manipuler, mesurer, observer pour de vrai (montage, microscope, terrain) : le travail de la classe, que l’application ne remplace pas.');
 
 export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 3, français ----------
@@ -85,4 +87,11 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 3, sciences et technologie (SVT, physique-chimie, technologie) : fabriquer reste à la classe ----------
   'c3.te.demarches.concevoir': FABRIQUER,
   'c3.te.objets.realiser': FABRIQUER,
+  // ---------- Cycle 4, physique-chimie (SC-3) : manipuler reste à la classe ----------
+  'c4.pc.demarches.manipuler': MANIPULER,
+  // ---------- Cycle 4, SVT (SC-3) : manipuler reste à la classe ----------
+  'c4.sv.demarches.manipuler': MANIPULER,
+  // ---------- Cycle 4, technologie (SC-3) : fabriquer et programmer un objet réel restent à la classe ----------
+  'c4.te.design.prototype': FABRIQUER,
+  'c4.te.informatique.programmer': HORS('Programmer un objet réel : demande un éditeur de programme et un système à commander, hors du périmètre de l’application (comme c4.ma.e.programmation). Un programme court se lit à la Ruche des réseaux (« Lire un programme ») ; l’écrire et l’exécuter reste hors périmètre.'),
 };

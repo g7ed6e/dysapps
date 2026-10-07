@@ -345,9 +345,9 @@ it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phar
   // Au moins une île en altitude a une cascade : une colonne d'eau qui descend jusqu'au niveau de la mer.
   const falls = cubes.filter((c) => c.texture === 'eau' && c.z === 0 && BIOMES.some((b) => b.id === c.tag && islandCenter(b.id).z > 0));
   expect(falls.length).toBeGreaterThanOrEqual(1);
-  // La brume des sommets : sous les neuf Îles du Ciel (le Refuge des carnets, le Kiosque des témoins et le Plateau des
-  // territoires compris), nulle part ailleurs.
-  expect(mistPatches('3e').length).toBe(9);
+  // La brume des sommets : sous les douze Îles du Ciel (le Refuge des carnets, le Kiosque des témoins, le Plateau des
+  // territoires et les trois îles de sciences de SC-3 compris), nulle part ailleurs.
+  expect(mistPatches('3e').length).toBe(12);
   for (const m of mistPatches('3e')) expect(m.z).toBe(7.5);
   expect(mistPatches('6e')).toEqual([]);
   // Un repère par archipel du collège aussi : l'aiguille de glace du Glacier, le haut-fourneau de la Forge.

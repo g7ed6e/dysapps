@@ -48,6 +48,10 @@ export class Atelier {
   get rameau(): Peindre {
     return this.pot(SENTINELLE.rameau, 'dominante');
   }
+  /** Le rocher de la Tortue d'ocre : gris, éteint comme rallumé (`SENTINELLE.roche`). */
+  get roche(): Peindre {
+    return this.pot(SENTINELLE.roche, 'dominante');
+  }
   get orbite(): Peindre {
     return this.pot(SENTINELLE.orbite, 'yeux');
   }

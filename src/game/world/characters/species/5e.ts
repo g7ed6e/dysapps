@@ -285,4 +285,79 @@ export const ESPECES_5E = {
       },
     },
   },
+  // Les habitants de sciences (SC-3) : Archipéo est en pause (2 octobre 2026), ils n'ont que le strict nécessaire, une
+  // signature chacun (budget de l'archipel). Humus est un ver de terre météorologue, Perle un canard saunier, Rabot un
+  // pic-vert menuisier (DA, SC-3).
+  'life-earth-sciences-5e-active-planet': {
+    nom: 'Humus',
+    metier: 'météorologue',
+    dominante: 0xb07468,
+    marque: { couleur: 0xd0a096, ou: ['ventre'] },
+    tenue: { couleur: TENUE.cuir, vetements: ['ceinture'] },
+    // Un ver : le corps d'un seul tenant, sans épaules marquées, la tête ronde dans son prolongement.
+    silhouette: { largeur: 0.25, profondeur: 0.24, ventre: 0, jambes: 0.45, jambe: 0.12, tete: 0.25, teteProfondeur: 0.24, crane: 1 },
+    // Le bonnet de lin, en pointe.
+    coiffe: (T, k) => pointe(T, [0, 2.38, 0], 0.22, 0.32, k.lin, [0, 0, 0], 5),
+    corps: (T, k) => {
+      // La queue du ver, couchée derrière lui sur le sol, en anneaux.
+      fuseau(pose(T, repere([0, 0.13, 0.15], Math.PI / 2, 0, 0)), [[0, 0.12], [0.3, 0.11], [0.5, 0.07], [0.56, 0]], 5, k.dom);
+    },
+    outil: {
+      // Le pluviomètre : un piquet de bois, le tube de laiton gradué au bout.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.3, 0.2, 0.025, k.bois, 3);
+        manche(T, 0.2, 0.45, 0.06, k.laiton, 5);
+      },
+    },
+  },
+  'physics-chemistry-5e-matter-universe': {
+    nom: 'Perle',
+    metier: 'saunier',
+    dominante: 0xe8e4da,
+    marque: { couleur: 0xd8862a, ou: ['museau'] },
+    tenue: { couleur: TENUE.lin, vetements: ['tablier'] },
+    // Un canard : rond et bas sur pattes, le large bec plat orangé, la queue relevée.
+    silhouette: { largeur: 0.44, profondeur: 0.34, ventre: 0.1, jambes: 0.4, tete: 0.26 },
+    museau: { forme: 'museau', long: 0.22, r: 0.07, y: 2.12 },
+    // Les ailes un peu ouvertes : il ne se confond pas avec Vélin, rond lui aussi.
+    bras: { rz: 0.3 },
+    autreBras: { rz: 0.3 },
+    corps: (T, k) => pointe(T, [0, 1.25, 0.3], 0.16, 0.4, k.dom, [1.9, 0, 0], 4),
+    outil: {
+      // Le râteau à sel : un long manche de bois, sa traverse au sol.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.95, 0.35, 0.025, k.bois, 3);
+        pave(T, -0.22, -1.0, -0.03, 0.22, -0.92, 0.03, k.bois);
+      },
+    },
+  },
+  'technology-5e-design': {
+    nom: 'Rabot',
+    metier: 'menuisier',
+    dominante: 0x5e8a3a,
+    marque: { couleur: 0xb8402e, ou: [] },
+    tenue: { couleur: TENUE.cuir, vetements: ['tablier'] },
+    museau: { forme: 'bec', long: 0.3, r: 0.05, y: 2.2 },
+    // Trapu et court sur pattes : il ne se confond ni avec Moustache, mince, ni avec Lina.
+    silhouette: { largeur: 0.38, profondeur: 0.3, ventre: 0.08, jambes: 0.55, tete: 0.22, crane: 0.6 },
+    // Le rabot tenu loin du corps.
+    bras: { rz: 0.35 },
+    // La crête rouge, dressée et tirée vers l'arrière du crâne.
+    coiffe: (T, k) => pointe(T, [0, 2.36, 0.02], 0.1, 0.34, k.marque, [0.35, 0, 0], 4, 0.06),
+    corps: (T, k) => {
+      // La queue raide du pic, qui s'appuie au sol derrière lui.
+      pointe(T, [0, 1.0, 0.22], 0.14, 0.9, k.dom, [2.6, 0, 0], 4, 0.05);
+    },
+    outil: {
+      // Le rabot : un pavé de bois, sa lame de fer dessous, sa poignée.
+      pose: [0, 0, -Math.PI / 2],
+      dessiner: (T, k) => {
+        pave(T, -0.1, -0.02, -0.26, 0.1, 0.16, 0.26, k.bois);
+        pave(T, -0.05, -0.04, -0.02, 0.05, -0.02, 0.05, k.fer);
+        pave(T, -0.03, 0.16, -0.16, 0.03, 0.26, -0.06, k.bois);
+      },
+    },
+  },
 } satisfies Partial<Record<BiomeId, Espece>>;

@@ -25,17 +25,18 @@ export interface AppDef {
 
 /**
  * Chaque matière est une expédition : le français les archives, les maths les mécanismes, l’anglais les routes maritimes,
- * l’histoire-géographie les traces et les paysages, les sciences de la vie et de la Terre les graines et les milieux, la
- * physique-chimie l’eau et les circuits, la technologie les outils et les inventions, la LV2 les escales.
+ * l’histoire-géographie les traces et les paysages, les sciences de la vie et de la Terre le vivant et la planète, la
+ * physique-chimie la matière et l’énergie, la technologie les outils et les inventions, la LV2 les escales (de la 6e à la
+ * 3e pour les sciences : SC-3).
  */
 export const SUBJECTS: Record<Subject, { title: string; icon: AnyIconName; description: string; expedition: string }> = {
   french: { title: 'Français', icon: 'book', description: 'Homophones, lecture, compréhension', expedition: 'Archives et récits' },
   maths: { title: 'Maths', icon: 'calculator', description: 'Calcul mental, fractions, décimaux', expedition: 'Mécanismes et énigmes' },
   english: { title: 'Anglais', icon: 'globe', description: 'Vocabulaire, verbes irréguliers, grammaire', expedition: 'Cartes et messages' },
   'history-geography': { title: 'Histoire-géo', icon: 'landmark', description: 'Repères, frises, documents, paysages', expedition: 'Traces et paysages' },
-  'life-earth-sciences': { title: 'SVT', icon: 'leaf', description: 'Classer le vivant, se nourrir, la Terre', expedition: 'Graines et milieux' },
-  'physics-chemistry': { title: 'Physique-chimie', icon: 'flask-conical', description: 'États de l’eau, mouvements, circuits', expedition: 'Eau et circuits' },
-  technology: { title: 'Technologie', icon: 'wrench', description: 'Objets, matériaux, information', expedition: 'Outils et inventions' },
+  'life-earth-sciences': { title: 'SVT', icon: 'leaf', description: 'Le vivant, le corps, la Terre', expedition: 'Vivant et planète' },
+  'physics-chemistry': { title: 'Physique-chimie', icon: 'flask-conical', description: 'Matière, lumière, forces, énergie', expedition: 'Matière et énergie' },
+  technology: { title: 'Technologie', icon: 'wrench', description: 'Objets, réseaux, programmes', expedition: 'Outils et inventions' },
   lv2: { title: 'LV2', icon: 'languages', description: 'Se présenter, compter, parler de sa famille', expedition: 'Escales et rencontres' },
 };
 

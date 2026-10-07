@@ -160,7 +160,7 @@ export const DANS_LE_CIEL: Record<ArchipelagoId, boolean> = { '6e': false, '5e':
 const e = (left: number, right: number, front: number, back: number) => ({ left, right, front, back });
 
 /**
- * Les quarante-deux îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
+ * Les cinquante et une îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  *
@@ -250,9 +250,12 @@ const STARTING_MAP: MapPlace[] = [
   // Anglais 3e : de part et d'autre de l'arc, le Studio avant le Belvédère, le Château après l'Observatoire des données.
   { id: 'english-3e-comprehension', region: 'hauteurs', core: { x: -14, y: 912 }, altitude: 9, ext: e(3, 4, 2, 4), relief: 'collines', seed: 81 },
   { id: 'english-3e-grammar', region: 'hauteurs', core: { x: 130, y: 912 }, altitude: 9, ext: e(4, 3, 2, 4), relief: 'collines', seed: 82 },
-  // LV2 3e : à l'est du Château, un cran derrière, en bout de chemin : rien n'en dépend. Un refuge d'altitude, bas et
-  // arrondi (intention du 3e, §3), son lac d'altitude au fond, sur l'herbe (`LACS`).
-  { id: 'lv2-3e-travel', region: 'montagne', core: { x: 158, y: 928 }, repere: { x: 158, y: 926 }, altitude: 9, ext: e(2, 2, 2, 9), relief: 'plat', seed: 96 },
+  // LV2 3e : à l'est du Château, en bout de chemin : rien n'en dépend. Un refuge d'altitude, bas et arrondi (intention du
+  // 3e, §3), son lac d'altitude au fond, sur l'herbe (`LACS`). Avancé de 16 cases, à hauteur du Château (SC-3, consultant
+  // UX UI) : un cran derrière, au bord gauche de la Carte, son nom se taisait en OpenDyslexic quand le bonhomme y était
+  // et qu'il était la destination (la bulle et le médaillon prennent la place, la Géographie et le Château bordent
+  // dessus et dessous) ; son dessin reste celui de sa place d'avant (`repere`).
+  { id: 'lv2-3e-travel', region: 'montagne', core: { x: 158, y: 912 }, repere: { x: 158, y: 926 }, altitude: 9, ext: e(2, 2, 2, 9), relief: 'plat', seed: 96 },
   // Histoire-géographie de 5e à 3e (HG-3, DA, 6 octobre 2026) : deux îles par archipel, fermées au départ (on les
   // relie), sur le pas des places, à quatre cases d'eau au moins de leurs voisines ; leur terre est plate, sans relief
   // ni pic, comme au 6e. Aux Îles Brumeuses, le Bourg des chroniques et le Delta des ressources au second rang, au-delà
@@ -265,6 +268,27 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'geography-4e-globalization', region: 'basses-terres', core: { x: 58, y: 676 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 74 },
   { id: 'history-3e-twentieth-century', region: 'basses-terres', core: { x: -18, y: 964 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 83 },
   { id: 'geography-3e-france', region: 'basses-terres', core: { x: 130, y: 964 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 84 },
+  // Sciences de 5e à 3e (SC-3, DA, 6 octobre 2026) : trois îles par archipel, fermées au départ (on les relie), sur le
+  // pas des places, à quatre cases d'eau au moins de leurs voisines, l'îlot de leur Gardien devant elles ; terre plate,
+  // sans relief ni pic, comme l'histoire-géographie. Les cadres des régions n'avaient plus qu'une place libre chacun :
+  // ils s'approfondissent vers le fond (footprint.ts). Chaque place est celle, parmi les places libres, où les noms des
+  // îles se tiennent le mieux sur la Carte (three/mapLabels.test.ts : la tablette à l'ouverture et panneau ouvert, le
+  // portrait, OpenDyslexic, la flèche sur chaque ouvrage). Aux Îles Brumeuses, la Menuiserie des objets au coin de
+  // devant, à l'est, après le Relais (sa terre cuite loin du Comptoir et du Delta), la Prairie des climats derrière la
+  // Grammaire et la Saline des mélanges derrière le Bourg et le Delta, au rang du fond ; aux Anciens Ateliers, la Source
+  // des espèces au coin de devant, à l'ouest, avant la Forge (sa terre cuite loin du Théâtre et de l'Imprimerie), la
+  // Vigie des signaux derrière la Gare et le Bassin des maquettes derrière le Théâtre et le Cabinet, au rang du fond ;
+  // aux Îles du Ciel, le Verger de la santé à côté du Kiosque (sa terre cuite loin du Belvédère et du Plateau), le
+  // Tremplin des forces entre l'Observatoire des textes et le Plateau, la Ruche des réseaux derrière le Refuge.
+  { id: 'life-earth-sciences-5e-active-planet', region: 'basses-terres', core: { x: 101, y: 409 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 65 },
+  { id: 'physics-chemistry-5e-matter-universe', region: 'basses-terres', core: { x: 145, y: 409 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 66 },
+  { id: 'technology-5e-design', region: 'basses-terres', core: { x: 165, y: 309 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 67 },
+  { id: 'life-earth-sciences-4e-cells-evolution', region: 'basses-terres', core: { x: -2, y: 604 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 75 },
+  { id: 'physics-chemistry-4e-signals-circuits', region: 'basses-terres', core: { x: -2, y: 704 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 76 },
+  { id: 'technology-4e-modeling', region: 'basses-terres', core: { x: 110, y: 704 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 77 },
+  { id: 'life-earth-sciences-3e-human-body', region: 'basses-terres', core: { x: 10, y: 980 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 85 },
+  { id: 'physics-chemistry-3e-motion-energy', region: 'basses-terres', core: { x: 90, y: 972 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 86 },
+  { id: 'technology-3e-digital', region: 'basses-terres', core: { x: 158, y: 980 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 87 },
 ];
 
 /**

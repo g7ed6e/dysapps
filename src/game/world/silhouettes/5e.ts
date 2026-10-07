@@ -21,4 +21,8 @@ export const SILHOUETTES_5E = {
   // Histoire-géographie (HG-3) : des îles plates, sans pic.
   'history-5e-middle-ages': { pics: [] },
   'geography-5e-resources': { pics: [] },
+  // Sciences (SC-3) : des îles plates, sans pic.
+  'life-earth-sciences-5e-active-planet': { pics: [] },
+  'physics-chemistry-5e-matter-universe': { pics: [] },
+  'technology-5e-design': { pics: [] },
 } satisfies Partial<Record<BiomeId, Silhouette>>;

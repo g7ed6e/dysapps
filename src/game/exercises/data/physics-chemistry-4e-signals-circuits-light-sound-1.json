@@ -1,0 +1,241 @@
+{
+  "id": "physics-chemistry-4e-signals-circuits-light-sound-1",
+  "biome": "physics-chemistry-4e-signals-circuits",
+  "type": "light-sound",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-1-0",
+      "prompt": "Dans l’air, la lumière se propage en ligne …",
+      "spoken": "Dans l’air, la lumière se propage en ligne  (mot manquant) ",
+      "choices": [
+        "courbe",
+        "droite",
+        "brisée"
+      ],
+      "answer": "droite",
+      "hint": "Relis la ligne « Dans l’air » du rappel.",
+      "explanation": "Dans l’air, la lumière va en ligne droite : c’est pour cela qu’on la dessine par un trait droit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La lumière",
+          "lines": [
+            "Dans l’air, l’eau ou le verre, la lumière va en ligne droite.",
+            "On la dessine par un rayon : un trait droit avec une flèche.",
+            "Une source produit sa lumière : le Soleil, une lampe.",
+            "Les autres objets renvoient une partie de la lumière qu’ils reçoivent.",
+            "Pour voir un objet, sa lumière doit entrer dans l’œil.",
+            "La lumière va bien plus vite que le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-1-1",
+      "prompt": "Le Soleil produit sa propre lumière : c’est une …",
+      "spoken": "Le Soleil produit sa propre lumière : c’est une  (mot manquant) ",
+      "choices": [
+        "ombre",
+        "source",
+        "planète"
+      ],
+      "answer": "source",
+      "hint": "Relis la ligne « Une source » du rappel.",
+      "explanation": "Le Soleil produit sa lumière : c’est une source de lumière, comme une lampe allumée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La lumière",
+          "lines": [
+            "Dans l’air, l’eau ou le verre, la lumière va en ligne droite.",
+            "On la dessine par un rayon : un trait droit avec une flèche.",
+            "Une source produit sa lumière : le Soleil, une lampe.",
+            "Les autres objets renvoient une partie de la lumière qu’ils reçoivent.",
+            "Pour voir un objet, sa lumière doit entrer dans l’œil.",
+            "La lumière va bien plus vite que le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-1-2",
+      "prompt": "La Lune brille la nuit, mais elle ne produit pas de lumière : elle la …",
+      "spoken": "La Lune brille la nuit, mais elle ne produit pas de lumière : elle la  (mot manquant) ",
+      "choices": [
+        "renvoie",
+        "fabrique",
+        "garde"
+      ],
+      "answer": "renvoie",
+      "hint": "Relis la ligne « Les autres objets » du rappel.",
+      "explanation": "La Lune n’est pas une source : elle renvoie une partie de la lumière du Soleil, et c’est pour cela qu’on la voit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La lumière",
+          "lines": [
+            "Dans l’air, l’eau ou le verre, la lumière va en ligne droite.",
+            "On la dessine par un rayon : un trait droit avec une flèche.",
+            "Une source produit sa lumière : le Soleil, une lampe.",
+            "Les autres objets renvoient une partie de la lumière qu’ils reçoivent.",
+            "Pour voir un objet, sa lumière doit entrer dans l’œil.",
+            "La lumière va bien plus vite que le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-1-3",
+      "prompt": "Une lampe, trois cartes trouées, un écran\nOn aligne les trous avec la lampe : l’écran est éclairé.\nOn décale une seule carte : l’écran est noir.",
+      "question": "Que montre l’expérience ?",
+      "spoken": "Une lampe, trois cartes trouées, un écran. On aligne les trous avec la lampe, l’écran est éclairé. On décale une seule carte, l’écran est noir.",
+      "choices": [
+        "la lumière contourne les cartes",
+        "la lumière va en ligne droite",
+        "la lampe s’est éteinte"
+      ],
+      "answer": "la lumière va en ligne droite",
+      "hint": "Quand passe-t-elle, quand ne passe-t-elle plus ?",
+      "explanation": "La lumière ne passe que si les trous sont alignés : elle va en ligne droite, elle ne fait pas de détour.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La lumière",
+          "lines": [
+            "Dans l’air, l’eau ou le verre, la lumière va en ligne droite.",
+            "On la dessine par un rayon : un trait droit avec une flèche.",
+            "Une source produit sa lumière : le Soleil, une lampe.",
+            "Les autres objets renvoient une partie de la lumière qu’ils reçoivent.",
+            "Pour voir un objet, sa lumière doit entrer dans l’œil.",
+            "La lumière va bien plus vite que le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-1-4",
+      "prompt": "Pour voir un livre, la lumière du livre doit entrer dans …",
+      "spoken": "Pour voir un livre, la lumière du livre doit entrer dans  (mot manquant) ",
+      "choices": [
+        "la lampe",
+        "l’œil",
+        "le livre"
+      ],
+      "answer": "l’œil",
+      "hint": "Relis la ligne « Pour voir un objet » du rappel.",
+      "explanation": "On voit le livre quand la lumière qu’il renvoie entre dans l’œil. L’œil reçoit la lumière, il n’en envoie pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La lumière",
+          "lines": [
+            "Dans l’air, l’eau ou le verre, la lumière va en ligne droite.",
+            "On la dessine par un rayon : un trait droit avec une flèche.",
+            "Une source produit sa lumière : le Soleil, une lampe.",
+            "Les autres objets renvoient une partie de la lumière qu’ils reçoivent.",
+            "Pour voir un objet, sa lumière doit entrer dans l’œil.",
+            "La lumière va bien plus vite que le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-1-5",
+      "prompt": "Une lampe éclaire un ballon\nDerrière le ballon, sur le mur, il y a une zone sombre.",
+      "question": "Pourquoi le mur est-il sombre derrière le ballon ?",
+      "spoken": "Une lampe éclaire un ballon. Derrière le ballon, sur le mur, il y a une zone sombre.",
+      "choices": [
+        "le ballon fabrique de l’ombre",
+        "la lumière ne traverse pas le ballon",
+        "la lumière tourne autour du ballon"
+      ],
+      "answer": "la lumière ne traverse pas le ballon",
+      "hint": "La lumière va en ligne droite.",
+      "explanation": "Le ballon arrête la lumière, qui va en ligne droite : derrière lui, elle n’arrive pas. Cette zone sans lumière, c’est l’ombre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La lumière",
+          "lines": [
+            "Dans l’air, l’eau ou le verre, la lumière va en ligne droite.",
+            "On la dessine par un rayon : un trait droit avec une flèche.",
+            "Une source produit sa lumière : le Soleil, une lampe.",
+            "Les autres objets renvoient une partie de la lumière qu’ils reçoivent.",
+            "Pour voir un objet, sa lumière doit entrer dans l’œil.",
+            "La lumière va bien plus vite que le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-1-6",
+      "prompt": "Pendant l’orage, on voit l’éclair avant d’entendre le tonnerre : la lumière va plus vite que le …",
+      "spoken": "Pendant l’orage, on voit l’éclair avant d’entendre le tonnerre : la lumière va plus vite que le  (mot manquant) ",
+      "choices": [
+        "vent",
+        "son",
+        "nuage"
+      ],
+      "answer": "son",
+      "hint": "Relis la ligne « La lumière » du rappel.",
+      "explanation": "L’éclair et le tonnerre se produisent en même temps, mais la lumière arrive presque tout de suite ; le son, bien plus lent, arrive après.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La lumière",
+          "lines": [
+            "Dans l’air, l’eau ou le verre, la lumière va en ligne droite.",
+            "On la dessine par un rayon : un trait droit avec une flèche.",
+            "Une source produit sa lumière : le Soleil, une lampe.",
+            "Les autres objets renvoient une partie de la lumière qu’ils reçoivent.",
+            "Pour voir un objet, sa lumière doit entrer dans l’œil.",
+            "La lumière va bien plus vite que le son."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-light-sound-1-7",
+      "prompt": "Le schéma de la lumière\nUne lampe, à gauche.\nUn trait droit avec une flèche, vers la droite.\nUn œil, à droite.",
+      "question": "Comment s’appelle le trait avec la flèche ?",
+      "spoken": "Le schéma de la lumière. Une lampe, à gauche. Un trait droit avec une flèche, vers la droite. Un œil, à droite.",
+      "choices": [
+        "un rayon de lumière",
+        "une ombre",
+        "un fil électrique"
+      ],
+      "answer": "un rayon de lumière",
+      "hint": "Relis la ligne « On la dessine » du rappel.",
+      "explanation": "Le trait droit avec une flèche est un rayon de lumière : la flèche montre que la lumière va de la lampe vers l’œil.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La lumière",
+          "lines": [
+            "Dans l’air, l’eau ou le verre, la lumière va en ligne droite.",
+            "On la dessine par un rayon : un trait droit avec une flèche.",
+            "Une source produit sa lumière : le Soleil, une lampe.",
+            "Les autres objets renvoient une partie de la lumière qu’ils reçoivent.",
+            "Pour voir un objet, sa lumière doit entrer dans l’œil.",
+            "La lumière va bien plus vite que le son."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-4e-signals-circuits",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

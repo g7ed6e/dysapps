@@ -23,10 +23,13 @@ import { bossIsletOrigin, HORS_DE_LA_COLONNE, ISLET_H, ISLET_W, viewYaw, worldBo
 const ouvert = { parts: {}, log: [], links: grantAccess([], ['lv2-3e-travel']) };
 
 describe('la place du Refuge sur la carte du 3e', () => {
-  it('à l’est du Château, un cran derrière, sans toucher sa terre', () => {
+  it('à l’est du Château, à sa hauteur, sans toucher sa terre', () => {
+    // Un cran derrière jusqu'aux îles de sciences ; avancé à hauteur du Château depuis (SC-3, consultant UX UI) : au bord
+    // gauche de la Carte, entre la Géographie et le Château, son nom n'avait aucune place en OpenDyslexic quand le
+    // bonhomme y était (mapLabels.test.ts).
     const [r, c] = [landBox(islandDef('lv2-3e-travel')), landBox(islandDef('english-3e-grammar'))];
     expect(r.x0).toBeGreaterThan(c.x1);
-    expect(islandDef('lv2-3e-travel').core.y).toBeGreaterThan(islandDef('english-3e-grammar').core.y);
+    expect(islandDef('lv2-3e-travel').core.y).toBe(islandDef('english-3e-grammar').core.y);
     expect(islandDef('lv2-3e-travel').altitude).toBe(9);
   });
 });
@@ -431,10 +434,10 @@ describe('les caméras des îles', () => {
     for (const [ile, deg] of Object.entries(AVANT_LE_REFUGE))
       expect((viewYaw(ile as BiomeId) * 180) / Math.PI, ile).toBeCloseTo(deg, 3);
   });
-  it('seules des îles de LV2, les îles d’histoire-géographie et les îles de sciences de 6e sortent de la colonne centrale', () => {
+  it('seules des îles de LV2, les îles d’histoire-géographie et les îles de sciences sortent de la colonne centrale', () => {
     for (const id of HORS_DE_LA_COLONNE) {
       const b = BIOMES.find((x) => x.id === id);
-      expect(b && (estIleLv2(b) || b.subject === 'history-geography' || (b.classe === '6e' && b.subject !== 'french' && b.subject !== 'maths' && b.subject !== 'english')), id).toBe(true);
+      expect(b && (estIleLv2(b) || b.subject === 'history-geography' || (b.subject !== 'french' && b.subject !== 'maths' && b.subject !== 'english')), id).toBe(true);
     }
   });
 });

@@ -38,9 +38,10 @@ it('l’Observatoire des textes monte en trois gradins de 2 blocs, neige en haut
   const hauts = apres.colonnes.filter((c) => c.ile === 'french-3e-close-reading').map((c) => c.haut - o.z);
   expect(Math.max(...hauts)).toBe(GRADINS_3E.marche * GRADINS_3E.gradins);
   expect(min['french-3e-close-reading']).toBe(0);
-  // Le sommet des gradins est enneigé.
+  // Le sommet des gradins est enneigé (trois colonnes depuis SC-3 : la liaison vers le Tremplin des forces, voisin,
+  // garde ses abords bas, `amorcesVersLesIlesVenues`).
   const neige = modele.filter((c) => c.tag === 'french-3e-close-reading' && c.texture === 'neige');
-  expect(neige.length).toBeGreaterThan(3);
+  expect(neige.length).toBeGreaterThanOrEqual(3);
   // Le Belvédère : ses pics redescendent, rien ne dépasse le dôme.
   const b = origineDe('maths-3e-geometry');
   const belvedere = apres.colonnes.filter((c) => c.ile === 'maths-3e-geometry').map((c) => c.haut - b.z);

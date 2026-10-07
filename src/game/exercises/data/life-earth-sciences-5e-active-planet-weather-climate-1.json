@@ -1,0 +1,240 @@
+{
+  "id": "life-earth-sciences-5e-active-planet-weather-climate-1",
+  "biome": "life-earth-sciences-5e-active-planet",
+  "type": "weather-climate",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-1-0",
+      "prompt": "« Demain, il pleut à Lyon » : c’est une prévision de …",
+      "spoken": "« Demain, il pleut à Lyon » : c’est une prévision de  (mot manquant) ",
+      "choices": [
+        "climat",
+        "météo",
+        "saison"
+      ],
+      "answer": "météo",
+      "hint": "On parle d’un seul jour, ou de nombreuses années ?",
+      "explanation": "Le temps de demain, c’est la météo. Le climat décrit le temps habituel d’une région, sur au moins 30 ans.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Météo et climat",
+          "lines": [
+            "Météo : le temps qu’il fait, sur quelques jours.",
+            "Climat : le temps habituel d’une région, sur au moins 30 ans.",
+            "Le Soleil chauffe plus l’équateur que les pôles.",
+            "L’air et l’eau des océans bougent : ils transportent la chaleur.",
+            "L’air chaud est léger : il monte. L’air froid descend.",
+            "Un orage, une tempête, une forte pluie : des risques météo."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-1-1",
+      "prompt": "En Provence, les étés sont chauds et secs depuis très longtemps : c’est son …",
+      "spoken": "En Provence, les étés sont chauds et secs depuis très longtemps : c’est son  (mot manquant) ",
+      "choices": [
+        "climat",
+        "relief",
+        "météo"
+      ],
+      "answer": "climat",
+      "hint": "« Depuis très longtemps » : quelques jours, ou des années ?",
+      "explanation": "Le temps habituel d’une région, sur de nombreuses années, c’est son climat. La météo ne parle que de quelques jours.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Météo et climat",
+          "lines": [
+            "Météo : le temps qu’il fait, sur quelques jours.",
+            "Climat : le temps habituel d’une région, sur au moins 30 ans.",
+            "Le Soleil chauffe plus l’équateur que les pôles.",
+            "L’air et l’eau des océans bougent : ils transportent la chaleur.",
+            "L’air chaud est léger : il monte. L’air froid descend.",
+            "Un orage, une tempête, une forte pluie : des risques météo."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-1-2",
+      "prompt": "La région de la Terre la plus chauffée par le Soleil est …",
+      "spoken": "La région de la Terre la plus chauffée par le Soleil est  (mot manquant) ",
+      "choices": [
+        "le pôle Nord",
+        "le pôle Sud",
+        "l’équateur"
+      ],
+      "answer": "l’équateur",
+      "hint": "Relis la ligne « Le Soleil » du rappel.",
+      "explanation": "À l’équateur, les rayons du Soleil arrivent presque droit : ils chauffent beaucoup. Aux pôles, ils arrivent penchés : ils chauffent peu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Météo et climat",
+          "lines": [
+            "Météo : le temps qu’il fait, sur quelques jours.",
+            "Climat : le temps habituel d’une région, sur au moins 30 ans.",
+            "Le Soleil chauffe plus l’équateur que les pôles.",
+            "L’air et l’eau des océans bougent : ils transportent la chaleur.",
+            "L’air chaud est léger : il monte. L’air froid descend.",
+            "Un orage, une tempête, une forte pluie : des risques météo."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-1-3",
+      "prompt": "L’air chaud est plus léger que l’air froid : il …",
+      "spoken": "L’air chaud est plus léger que l’air froid : il  (mot manquant) ",
+      "choices": [
+        "descend",
+        "monte",
+        "reste au sol"
+      ],
+      "answer": "monte",
+      "hint": "Pense à une montgolfière : on chauffe l’air dedans.",
+      "explanation": "L’air chaud, plus léger, monte ; l’air froid descend. Ces mouvements de l’air font le vent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Météo et climat",
+          "lines": [
+            "Météo : le temps qu’il fait, sur quelques jours.",
+            "Climat : le temps habituel d’une région, sur au moins 30 ans.",
+            "Le Soleil chauffe plus l’équateur que les pôles.",
+            "L’air et l’eau des océans bougent : ils transportent la chaleur.",
+            "L’air chaud est léger : il monte. L’air froid descend.",
+            "Un orage, une tempête, une forte pluie : des risques météo."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-1-4",
+      "prompt": "Les vents et les courants des océans transportent la …",
+      "spoken": "Les vents et les courants des océans transportent la  (mot manquant) ",
+      "choices": [
+        "chaleur",
+        "lumière",
+        "nuit"
+      ],
+      "answer": "chaleur",
+      "hint": "Relis la ligne « L’air et l’eau » du rappel.",
+      "explanation": "L’air et l’eau qui bougent emportent la chaleur de l’équateur vers les pôles. Sans eux, l’équateur serait encore plus chaud et les pôles encore plus froids.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Météo et climat",
+          "lines": [
+            "Météo : le temps qu’il fait, sur quelques jours.",
+            "Climat : le temps habituel d’une région, sur au moins 30 ans.",
+            "Le Soleil chauffe plus l’équateur que les pôles.",
+            "L’air et l’eau des océans bougent : ils transportent la chaleur.",
+            "L’air chaud est léger : il monte. L’air froid descend.",
+            "Un orage, une tempête, une forte pluie : des risques météo."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-1-5",
+      "prompt": "Les températures moyennes d’une ville, sur 30 ans\nJanvier : 5 °C\nJuillet : 20 °C",
+      "question": "Ce tableau parle-t-il de la météo ou du climat ?",
+      "spoken": "Les températures moyennes d’une ville, sur trente ans. Janvier, 5 degrés. Juillet, 20 degrés.",
+      "choices": [
+        "de la météo",
+        "du climat",
+        "des deux"
+      ],
+      "answer": "du climat",
+      "hint": "Regarde le titre : sur combien de temps ?",
+      "explanation": "Des moyennes sur 30 ans décrivent le temps habituel de la ville : c’est son climat. La météo dirait le temps d’un jour précis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Météo et climat",
+          "lines": [
+            "Météo : le temps qu’il fait, sur quelques jours.",
+            "Climat : le temps habituel d’une région, sur au moins 30 ans.",
+            "Le Soleil chauffe plus l’équateur que les pôles.",
+            "L’air et l’eau des océans bougent : ils transportent la chaleur.",
+            "L’air chaud est léger : il monte. L’air froid descend.",
+            "Un orage, une tempête, une forte pluie : des risques météo."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-1-6",
+      "prompt": "Vigilance météo pour demain\nVert : pas de danger particulier.\nOrange : orages violents, être très prudent.\nRouge : danger très fort, rester à l’abri.\nTa région est en orange.",
+      "question": "Que fais-tu demain ?",
+      "spoken": "Vigilance météo pour demain. Vert, pas de danger particulier. Orange, orages violents, être très prudent. Rouge, danger très fort, rester à l’abri. Ta région est en orange.",
+      "choices": [
+        "je ne change rien",
+        "je pars me promener en forêt",
+        "je suis très prudent et je m’informe"
+      ],
+      "answer": "je suis très prudent et je m’informe",
+      "hint": "Relis la ligne de la couleur de ta région.",
+      "explanation": "En orange, des orages violents sont prévus : on est très prudent et on suit les informations. La forêt est dangereuse par grand vent : des branches peuvent tomber.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Météo et climat",
+          "lines": [
+            "Météo : le temps qu’il fait, sur quelques jours.",
+            "Climat : le temps habituel d’une région, sur au moins 30 ans.",
+            "Le Soleil chauffe plus l’équateur que les pôles.",
+            "L’air et l’eau des océans bougent : ils transportent la chaleur.",
+            "L’air chaud est léger : il monte. L’air froid descend.",
+            "Un orage, une tempête, une forte pluie : des risques météo."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-weather-climate-1-7",
+      "prompt": "Pendant un orage, dehors, le plus sûr est de s’abriter …",
+      "spoken": "Pendant un orage, dehors, le plus sûr est de s’abriter  (mot manquant) ",
+      "choices": [
+        "dans un bâtiment",
+        "sous un grand arbre",
+        "en haut d’une colline"
+      ],
+      "answer": "dans un bâtiment",
+      "hint": "La foudre tombe souvent sur ce qui est haut et seul.",
+      "explanation": "Un bâtiment protège de la foudre. Un grand arbre seul ou le haut d’une colline l’attirent : on s’en éloigne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Météo et climat",
+          "lines": [
+            "Météo : le temps qu’il fait, sur quelques jours.",
+            "Climat : le temps habituel d’une région, sur au moins 30 ans.",
+            "Le Soleil chauffe plus l’équateur que les pôles.",
+            "L’air et l’eau des océans bougent : ils transportent la chaleur.",
+            "L’air chaud est léger : il monte. L’air froid descend.",
+            "Un orage, une tempête, une forte pluie : des risques météo."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien observé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-5e-active-planet",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "id": "technology-4e-modeling-1",
+  "biome": "technology-4e-modeling",
+  "name": "L’usine de Manivelle",
+  "reward": {
+    "xp": 40
+  },
+  "done": "Mon usine ! Mes maquettes vont enfin tourner. Merci, bâtisseur."
+}

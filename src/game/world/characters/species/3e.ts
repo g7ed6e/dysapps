@@ -4,7 +4,7 @@
 import type { BiomeId } from '../../../biomes';
 import { TENUE, VERRE_DE_FI } from '../colors';
 import { COU, disque, jalon, manche, pointe, SOMMET_DE_TETE, type Espece } from '../template';
-import { devant, fuseau, pave, pose, repere } from '../painted';
+import { devant, fuseau, parFace, pave, pose, repere } from '../painted';
 import { tube } from '../sentinel';
 
 export const ESPECES_3E = {
@@ -340,5 +340,96 @@ export const ESPECES_3E = {
     },
     // Le jalon d'arpenteur, rayé de lin et de cuir.
     outil: { pose: [0, 0, -0.05], dessiner: (T, k) => jalon(T, -1.12, 1.35, 0.026, 6, k.lin, k.cuir) },
+  },
+  // Les habitants de sciences (SC-3) : Archipéo est en pause (2 octobre 2026), ils n'ont que le strict nécessaire, une
+  // signature chacun (budget de l'archipel). Olive est un koala soigneur, Virage un tatou rouleur, Navette une chenille
+  // tisseuse (DA, SC-3).
+  'life-earth-sciences-3e-human-body': {
+    nom: 'Olive',
+    metier: 'soigneur',
+    dominante: 0x8e8c88,
+    marque: { couleur: 0xc4c0b8, ou: ['ventre'] },
+    tenue: { couleur: TENUE.lin, vetements: ['tablier'] },
+    museau: { forme: 'museau', long: 0.1, r: 0.09 },
+    silhouette: { largeur: 0.36, ventre: 0.08, tete: 0.3, teteProfondeur: 0.26 },
+    coiffe: (T, k) => {
+      // Les grandes oreilles rondes du koala, de chaque côté de la tête.
+      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.32, 2.36, 0.02], 0, 0, Math.PI / 2)), 0, 0.17, 0.05, k.dom, 6);
+    },
+    outil: {
+      // La trousse de toile, sans croix : un sac de lin, sa poignée de cuir.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        pave(T, -0.14, -0.18, -0.07, 0.14, 0.02, 0.07, k.lin);
+        pave(T, -0.06, 0.02, -0.02, 0.06, 0.07, 0.02, k.cuir);
+      },
+    },
+  },
+  'physics-chemistry-3e-motion-energy': {
+    nom: 'Virage',
+    metier: 'rouleur',
+    dominante: 0xa8845e,
+    marque: { couleur: 0x6e5238, ou: ['dos'] },
+    tenue: { couleur: TENUE.cuir, vetements: ['ceinture'] },
+    museau: { forme: 'museau', long: 0.24, r: 0.06 },
+    silhouette: { largeur: 0.33, profondeur: 0.3, tete: 0.24 },
+    coiffe: (T, k) => {
+      for (const c of [-1, 1]) pointe(T, [c * 0.14, 2.42, 0.05], 0.05, 0.2, k.dom, [0, 0, -c * 0.3], 3);
+    },
+    corps: (T, k) => {
+      // La carapace en bandes, bombée sur le dos, du cou aux reins.
+      fuseau(pose(T, repere([0, 1.05, 0.2], 0, 0, 0)), [[0, 0.36, 0.22], [0.4, 0.42, 0.28], [0.8, 0.36, 0.24]], 6, parFace((s) => (s % 2 ? k.marque : k.dom)), { z: 0.08 });
+      pointe(T, [0, 0.8, 0.3], 0.07, 0.5, k.marque, [2.4, 0, 0], 3);
+    },
+    outil: {
+      // Une balle de cuir (consultant d'Archipéo, relecture des captures : un chronomètre disait la course contre la
+      // montre, DP-12) ; autant de facettes que lui.
+      pose: [0, 0, 0],
+      dessiner: (T, k) =>
+        fuseau(
+          T,
+          [
+            [-0.13, 0],
+            [-0.065, 0.113],
+            [0.065, 0.113],
+            [0.13, 0],
+          ],
+          5,
+          k.cuir,
+        ),
+    },
+  },
+  'technology-3e-digital': {
+    nom: 'Navette',
+    metier: 'tisseuse',
+    dominante: 0x8ab850,
+    marque: { couleur: 0xbcd888, ou: ['ventre'] },
+    tenue: { couleur: TENUE.lin, vetements: ['echarpe'] },
+    // La grosse tête ronde de la chenille sur un corps d'un seul tenant : elle ne se confond pas avec Jalon.
+    silhouette: { largeur: 0.33, profondeur: 0.28, ventre: 0.03, jambes: 0.4, jambe: 0.13, tete: 0.33, teteProfondeur: 0.28, crane: 1 },
+    coiffe: (T, k) => {
+      for (const c of [-1, 1]) pointe(T, [c * 0.12, 2.42, 0], 0.03, 0.26, k.dom, [0, 0, -c * 0.5], 3);
+    },
+    corps: (T, k) => {
+      // Les anneaux de la chenille, couchés derrière elle sur le sol.
+      for (const [z, r] of [
+        [0.32, 0.15],
+        [0.56, 0.12],
+      ] as const)
+        fuseau(T, [[0, r * 0.6], [r, r], [r * 2, r * 0.6]], 5, k.dom, { z, bas: false });
+    },
+    outil: {
+      // La navette de bois, en fuseau.
+      pose: [-Math.PI / 2, 0, 0],
+      dessiner: (T, k) => fuseau(T, [[-0.18, 0], [0, 0.04], [0.18, 0]], 4, k.bois),
+    },
+    autreMain: {
+      // La bobine de fil.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        disque(T, 0, 0.07, 0.12, k.lin, 5);
+        disque(T, 0.07, 0.09, 0.02, k.bois, 5);
+      },
+    },
   },
 } satisfies Partial<Record<BiomeId, Espece>>;
