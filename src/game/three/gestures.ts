@@ -17,7 +17,7 @@ import type { Signes } from './signs';
 import type { Cubes } from './cubes';
 import type { Amarre, Navire } from './ship';
 import type { Camera } from './camera';
-import { glisseCommence, pointDuPlan, quiGlisse, SEUIL_DU_GLISSE } from './drag';
+import { glisseCommence, pointDuPlan, quiGlisse, SEUIL_DU_CHOIX, SEUIL_DU_GLISSE } from './drag';
 
 /** Le doigt posé sur le monde : son pointeur, où, et le point du sol saisi une fois le seuil passé (sinon `null`). */
 interface Appui {
@@ -253,12 +253,12 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     return p ? { x: p.x, y: p.z } : null;
   };
   /**
-   * Le mode « Aménager », un choix en cours : le doigt parti en (x, y) est-il parti du choix (choix 3a du mainteneur) ?
+   * Le mode « Aménager » : le doigt parti en (x, y) est-il parti du choix, ou d'un lieu ou d'un Gardien à prendre ?
    * Ce qu'il touchait (le Gardien, la terre d'un lieu, ou la mer) est demandé à la page, sans rien prendre encore.
    */
   const cibleDuChoix = (x: number, y: number): CibleDuChoix | null => {
     const g = derniers.current.glisserLeChoix;
-    if (derniers.current.amenager !== 'choix' || !g) return null;
+    if (derniers.current.amenager === 'non' || !g) return null;
     const { creature, hit } = aim({ clientX: x, clientY: y });
     const found = creature ? creatureIdOf(creature.object) : null;
     let cible: CibleDuChoix | null = null;
@@ -277,9 +277,9 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
   const glisser = (e: PointerEvent, appui: Appui) => {
     appui.cx = e.clientX;
     appui.cy = e.clientY;
-    // Le mode « Aménager », un choix en cours (GD-9) : un glissé parti du choix le glisse au doigt (7 octobre 2026, choix
-    // 1b et 3a du mainteneur) ; tout autre glissé fait glisser la vue.
-    if (appui.tient === undefined && derniers.current.amenager === 'choix') {
+    // Le mode « Aménager » (GD-9) : un glissé parti du choix, ou d'un autre lieu ou Gardien qu'il choisit alors, le glisse
+    // au doigt (7 octobre 2026, choix 1b du mainteneur, puis « prendre directement ») ; parti de la mer, la vue glisse.
+    if (appui.tient === undefined && derniers.current.amenager !== 'non') {
       if (!glisseCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
       // Parti d'ailleurs que du choix : la Carte glisse dès `SEUIL_DU_GLISSE`. Parti du choix : il ne part qu'au-delà
       // d'un seuil plus grand (`SEUIL_DU_CHOIX`), et d'ici là la Carte non plus (`quiGlisse`).
@@ -405,11 +405,14 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (!down || e.pointerId !== down.id) return;
     const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
     const glisse = down.ancre !== null || Boolean(down.pince);
+    // Parti d'un lieu ou d'un Gardien du mode « Aménager », un doigt qui a un peu bougé sans le prendre (sous
+    // `SEUIL_DU_CHOIX`) : ni la Carte ni le choix n'ont bougé, c'est un toucher (un doigt peu précis le choisit quand même).
+    const toucherQuiTremble = !glisse && down.depuis !== undefined && moved < SEUIL_DU_CHOIX;
     // Le choix glissé, lâché : posé tout de suite sur une place libre (choix 2a du mainteneur).
     lacherLeChoix(down, true);
     lacher(e);
     // Après un glissé (ou un doigt qui a bougé pendant une marche ou un voyage), lever le doigt n'ouvre rien.
-    if (glisse || moved >= SEUIL_DU_GLISSE) return;
+    if (glisse || (moved >= SEUIL_DU_GLISSE && !toucherQuiTremble)) return;
     // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
     if (voyageRef.current) return rappels.current.onVoyageSkip?.();
     if (derniers.current.amenager !== 'non') return toucherEnAmenageant(e);
@@ -549,7 +552,13 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     cubesDuMonde.viser(hit && rappels.current.build ? cubesDuMonde.casesTouchees(hit).next : null);
   };
   const onLeave = () => cubesDuMonde.viser(null);
+  // Un appui long sur le monde, au doigt, est le début d'un glissé, jamais une sélection : iPadOS y montrerait sa loupe
+  // et ne laisserait pas partir le glissé. Les gestes passent par les événements de pointeur, qui restent.
+  const onTouchStart = (e: TouchEvent) => {
+    if (e.cancelable) e.preventDefault();
+  };
 
+  canvas.addEventListener('touchstart', onTouchStart, { passive: false });
   canvas.addEventListener('pointerdown', onDown);
   canvas.addEventListener('pointerup', onUp);
   canvas.addEventListener('pointermove', onHover);
@@ -557,6 +566,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
   canvas.addEventListener('pointercancel', onCancel);
   canvas.addEventListener('wheel', onWheel, { passive: false });
   return () => {
+    canvas.removeEventListener('touchstart', onTouchStart);
     canvas.removeEventListener('pointerdown', onDown);
     canvas.removeEventListener('pointerup', onUp);
     canvas.removeEventListener('pointermove', onHover);
