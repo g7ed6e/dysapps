@@ -159,7 +159,8 @@ it('les sources disent d’où vient le texte : jeu de données, PDF, licence, t
     if (s.pdfCopyBy) {
       // Un texte que le Bulletin officiel ne publie qu'en HTML : la page du BO, et une copie PDF dont l'auteur est nommé.
       expect(s.datasetUrl, s.id).toMatch(/^https:\/\/www\.education\.gouv\.fr\/bo\/.+\.htm$/);
-      expect(s.pdfUrl, s.id).toMatch(/^https:\/\/.+\.pdf$/);
+      // Les hôtes de copie sont épinglés : en ajouter un se décide dans la pull request.
+      expect(s.pdfUrl, s.id).toMatch(/^https:\/\/www\.arretetonchar\.fr\/.+\.pdf$/);
     } else {
       expect(s.pdfUrl).toMatch(/^https:\/\/(static\.data\.gouv\.fr|www\.education\.gouv\.fr|eduscol\.education\.gouv\.fr)\/.+\.pdf$/);
     }
