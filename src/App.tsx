@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { HashRouter, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { TitleScreen } from './components/TitleScreen';
@@ -31,6 +32,10 @@ import { MENU_PATH } from './core/paths';
 import { translatePath } from './core/legacyIds';
 import { movedPath } from './core/movedIds';
 import { useImmersive } from './game/useImmersive';
+import { mesuresAutomatiques } from './game/rendering';
+
+/** La mesure automatique (`?mesures=auto`), chargée à part : aucun élève ne la télécharge. */
+const AutoMeasure = lazy(() => import('./game/AutoMeasure'));
 
 // HashRouter : les URL en « #/… » fonctionnent sur GitHub Pages sans configuration serveur.
 export function App() {
@@ -42,6 +47,11 @@ export function App() {
             <AppRoutes />
             <TitleScreen />
             <AppBadge />
+            {mesuresAutomatiques() && (
+              <Suspense fallback={null}>
+                <AutoMeasure />
+              </Suspense>
+            )}
           </HashRouter>
         </BloclandProvider>
       </ProgressProvider>

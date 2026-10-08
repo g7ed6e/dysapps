@@ -42,3 +42,15 @@ it('« Passer » ferme et mémorise aussi ; « replay » le rouvre', async () =>
   );
   expect(screen.getByRole('dialog')).toHaveTextContent(/Première bulle/);
 });
+
+it('la mesure automatique (`?mesures=auto`) ne montre aucune bulle d’aide, sans rien écrire', () => {
+  localStorage.clear();
+  window.history.replaceState(null, '', '/?mesures=auto');
+  try {
+    expect(hasSeenTutorial('village-immersif')).toBe(true);
+    expect(localStorage.length).toBe(0);
+  } finally {
+    window.history.replaceState(null, '', '/');
+  }
+  expect(hasSeenTutorial('village-immersif')).toBe(false);
+});
