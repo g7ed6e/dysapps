@@ -110,6 +110,9 @@ describe('Le lissage : un volume par matière', () => {
     const muret = [0, 1].map((x) => ({ x, y: 0, z: 1, color: '#888888', texture: 'pierre', tag: 'port' }) as VoxelCube);
     const a = architectureDe('6e', muret, { kit: KITS['6e'], surLeVide: () => false });
     for (const p of a.peints.values()) expect(p.peinture.motifs[4] & MOTIF.pierreEntiere).toBeTruthy();
+    // Sur la carte des bâtiments, les cases ne sont jamais lissées : chacune garde sa teinte.
+    const batiments = new Map(muret.map((c) => [`${c.x},${c.y},${c.z}`, c.texture!]));
+    expect(architectureDe('6e', muret, { kit: KITS['6e'], batiments, surLeVide: () => false }).lisses.size).toBe(0);
   });
 
   it('le 5e, le 4e et le 3e n’ont pas de lissage', () => {
