@@ -212,8 +212,8 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
     autres: { triangles: 380, drawCalls: 0 },
   },
   // Le lot de contenu des programmes 2025-2026 (une mission de plus à la Forge et au Cabinet de 4e, et à l'Observatoire
-  // de 3e, une de moins au Glacier de 5e) : relevé aux mesures tout construit, comme pour SC-3, à confirmer par le
-  // mainteneur. Les bornes du 4e passent de 40 à 42 (1 176 triangles, 28 par borne, une par mission, aucune en double) :
+  // de 3e, une de moins au Glacier de 5e) : relevé aux mesures tout construit, comme pour SC-3, confirmé par le
+  // mainteneur (8 octobre 2026). Les bornes du 4e passent de 40 à 42 (1 176 triangles, 28 par borne, une par mission, aucune en double) :
   // 1 130 → 1 180 ; la petite construction de la Forge, replacée de (10, 3) à (9, 4) avec la mission ajoutée (`calculerLaPlaceDeLaPetiteConstruction`), fige au sol
   // d'autres cases (368 → 374 au 4e) : commandes 370 → 380. La somme des « autres » passe de 74 805 à 74 865, sous
   // `RENDER_BUDGET_AUTRES` (74 900), inchangé.
