@@ -27,13 +27,26 @@ Les deux Sphinx (des routes, de marbre) sortent toujours avec une barbe postiche
 
 46 personnages n’avaient pas de fiche R6 : le consultant Archipéo a déduit leur métier, leur outil, leur couleur ou la forme de leur Gardien de leur espèce, de la matière de l’île et du code (`src/game/world/characters/species/`). Ils sont marqués « déduit » dans `prompts.md`.
 
+## À reprendre au modèle 3D
+
+Relectures du consultant Archipéo et du référent dys (8 octobre 2026), à valider par le directeur artistique avant chaque modèle. Les images ne sont pas regénérées pour ces points.
+
+- **Socle** : le socle octogonal commun, dessiné par le code, remplace celui de l’image partout où il manque ou diffère (Lion, Taureau, Dune vivante, les deux Sphinx, Grand-bi, Diligence, Cheval à bascule, Locomotive, Cerf de lauze, Masque, Abeille de topaze).
+- **Rien à lire** : livres, feuilles, panneaux et cadrans restent vierges, sans lettre ni chiffre (Tick, Coucou de bronze, Grimoire, Mémo, Astra, Hibou, Grand Lecteur, Puck, Sema).
+- **Rien d’inquiétant** : le Masque garde des orbites peu profondes de la même pierre, sans trou noir, et reçoit la rampe de lumière au pied de sa stèle ; le Spectre et le Colporteur ont une surface pleine sous le voile et sous le chapeau ; la gueule des dragons ne montre pas de crocs.
+- **Yeux et visages** : petits yeux sombres sans blanc (Stat), pas de joues roses (Humus), tête ramenée vers un cinquième de la hauteur (Olive).
+- **Silhouettes proches** : le Titan d’acier prend des épaules plus larges que les hanches et des plaques régulières, le Golem de roche des blocs bruts et sa gemme en relief ; Jalon et Pince gardent des dominantes de clartés différentes ; le Spectre (voile en goutte) et le Colporteur (chapeau et hotte) se distinguent.
+- **Écho** : un casque de radio ancien en fer `#5C6470`, arceau fin et écouteurs ronds plats, et un micro court.
+- **Pièces fines** : pattes du Flamant de sel et de la Girafe d’ambre, rayons du Grand-bi et de la Diligence, fils de Bazar et du Golem des équations, ailes de la Libellule, treillis de l’Antenne, épaissis pour survivre au budget.
+- **Contrastes** : les Gardiens se détachent des quais et falaises grises par le socle ou l’éclairage ; l’état rallumé se lit par la flamme et les veines, pas par la seule teinte ; les créatures claires sur sable ou neige et les sombres la nuit (Plume, Stat, Fi, Écho) se vérifient sur capture.
+
 ## Refaire une image
 
 Avec mflux installé (`uv tool install --python 3.12 mflux`) :
 
 ```sh
 mflux-generate-z-image-turbo --base-model z-image-turbo --model deepsweet/Z-Image-Turbo-6B-MLX-Q4 \
-  --width 1024 --height 1024 --steps 9 --seed 1206 --output <nom>.png --prompt "<prompt>"
+  --width 1024 --height 1024 --steps 9 --seed <graine> --output <nom>.png --prompt "<prompt>"
 ```
 
 Environ 6 minutes par image et 11 Go de mémoire sur le Mac de référence.
