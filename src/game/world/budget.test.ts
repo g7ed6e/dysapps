@@ -115,12 +115,13 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // puis à 72 770 avec les trois îles de sciences (SC-2, même mot : « Budget on augmente pour l'instant »).
   // HG-3 (même mot) : les autres archipels passent de 55 790 à 62 875 avec leurs six îles d'histoire-géographie, puis à
   // 74 805 avec leurs neuf îles de sciences (SC-3), puis à 74 865 avec les programmes 2025-2026 (deux bornes de plus au
-  // 4e, la petite construction de la Forge déplacée).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3 et SC-3 : les îles d’histoire-géographie et de sciences) : 72 770 triangles et 25 appels aux Premiers Rivages, 74 865 et 24 ailleurs', () => {
+  // 4e, la petite construction de la Forge déplacée), puis à 74 877 avec les commandes relevées à 392 (mainteneur,
+  // 8 octobre 2026 : le pied de la machine d'Ixe et le perchoir de Cléa, au 4e).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3 et SC-3 : les îles d’histoire-géographie et de sciences) : 72 770 triangles et 25 appels aux Premiers Rivages, 74 877 et 24 ailleurs', () => {
     const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([72_770, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([74_865, 24]);
+    expect([total('5e'), appels('5e')]).toEqual([74_877, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la

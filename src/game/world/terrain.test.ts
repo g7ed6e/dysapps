@@ -24,6 +24,7 @@ import { AVATAR_HOME } from './terrain/base';
 import { SENTINELLE_DANS_LE_MONDE } from './terrain/creatures';
 import { DEMI_LARGEUR_DE_SENTINELLE, ECHELLE_DANS_LE_MONDE, HAUTEUR_DANS_LE_MONDE } from './characters/sentinel';
 import { portesDesLieux } from './terrain/village';
+import { QUEST_ROW } from './terrain/markers';
 import {
   avatarHome,
   BALEINES_REPLACEES,
@@ -47,6 +48,8 @@ import {
   guardianPlacements,
   guardianSpot,
   partDuGardienVue,
+  projectionDeLaVueDeLIle,
+  VUE_DE_L_ILE_PANNEAU_OUVERT,
   trophySpot,
   ISLAND,
   islandAt,
@@ -279,12 +282,50 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
   it('chaque île a sa place, sans repli : les îles ont grandi (« Agrandir les îles », 8 octobre 2026)', () => {
     // Mesuré le 8 octobre 2026, avant GD-11 point 3 : 23 îles sur 51 au repli. Depuis que le cœur a grandi, aucune.
     // Avant la règle « rien ne cache le Gardien » (relecture des planches, 8 octobre 2026) : 47 îles au palier 1, 3 au
-    // palier 2, 1 au palier 3 ; 33 Gardiens en partie cachés (la Forêt à moitié). Depuis : 23, 1 et 27.
+    // palier 2, 1 au palier 3 ; 33 Gardiens en partie cachés (la Forêt à moitié). Avec elle : 23, 1 et 27, 15 en partie
+    // cachés. Depuis les côtés de la bande de devant (DA, 8 octobre 2026) : 34, 0 et 17, dont 13 sur un côté de devant.
     expect(BIOMES.filter((b) => guardianSpot(b.id).repli).map((b) => b.id)).toEqual([]);
     const paliers = (n: number) => BIOMES.filter((b) => guardianSpot(b.id).palier === n).map((b) => b.id);
-    expect(paliers(1)).toHaveLength(23);
-    expect(paliers(2)).toEqual(['maths-5e-signed-numbers']);
-    expect(paliers(3)).toHaveLength(27);
+    expect(paliers(1)).toHaveLength(34);
+    expect(paliers(2)).toEqual([]);
+    expect(paliers(3)).toHaveLength(17);
+    expect(BIOMES.filter((b) => guardianSpot(b.id).y <= QUEST_ROW + 1).map((b) => b.id)).toEqual([
+      'french-6e-letter-confusion',
+      'french-6e-reading',
+      'maths-5e-signed-numbers',
+      'french-4e-agreement',
+      'english-5e-grammar',
+      'english-4e-comprehension',
+      'technology-6e-objects',
+      'history-4e-revolutions',
+      'geography-4e-globalization',
+      'life-earth-sciences-4e-cells-evolution',
+      'physics-chemistry-4e-signals-circuits',
+      'history-3e-twentieth-century',
+      'life-earth-sciences-3e-human-body',
+    ]);
+  });
+
+  it('sur un côté de la bande de devant : hors des colonnes des bornes, du chemin du bonhomme, et entier dans le cadre', () => {
+    for (const b of BIOMES) {
+      const s = guardianSpot(b.id);
+      if (s.y > QUEST_ROW + 1) continue;
+      const xs = questStations(b.id).map((st) => st.x);
+      // Aucune colonne de la première borne moins une à la dernière plus une.
+      expect(s.x + GUARDIAN_SQUARE - 1 < Math.min(...xs) - 1 || s.x > Math.max(...xs) + 1, b.id).toBe(true);
+      // Ni le départ du bonhomme, ni une case autour.
+      expect(Math.abs(s.x + 2 - AVATAR_HOME.x) > 3 || Math.abs(s.y + 2 - AVATAR_HOME.y) > 3, b.id).toBe(true);
+      // Entier dans la vue de l'île panneau ouvert, au-dessus des boutons du bas.
+      const V = VUE_DE_L_ILE_PANNEAU_OUVERT;
+      const { projeter } = projectionDeLaVueDeLIle(b.id);
+      const def = islandDef(b.id);
+      for (const [i, j] of [[0, 0], [GUARDIAN_SQUARE, 0], [0, GUARDIAN_SQUARE], [GUARDIAN_SQUARE, GUARDIAN_SQUARE]]) {
+        const [u, v] = projeter(def.core.x + s.x + i, def.core.y + s.y + j, def.altitude + 1);
+        expect(u, b.id).toBeGreaterThanOrEqual(0);
+        expect(u, b.id).toBeLessThanOrEqual(V.largeur);
+        expect(v, b.id).toBeLessThanOrEqual(V.hauteur - V.bas);
+      }
+    }
   });
 
   it('la sentinelle que la place du Gardien laisse voir est celle que dessine Archipéo', () => {
@@ -293,24 +334,17 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
   });
 
   it('rien ne le cache dans la vue de l’île : ni l’habitant, ni un lieu ou un bâtiment, ni l’étiquette du nom, dans les deux univers', () => {
-    // Faute de carré où il se voit entier, même le décor effacé (palier 3), ces îles gardent le carré où il se voit le
-    // plus : la part vue, au centième, dans la forme la plus cachée des deux univers. À trancher (directeur artistique) :
-    // laisser le Gardien aller sur les côtés, devant, ou déplacer ce qui le cache.
+    // Faute de carré où il se voit entier, même le décor effacé (palier 3), derrière la bande de devant ou sur un de ses
+    // côtés, ces îles gardent le carré où il se voit le plus : la part vue, au centième, dans la forme la plus cachée des
+    // deux univers. Sous 85 % : le Phare des fonctions, l'Horloge des verbes, la Prairie des climats et le Bassin des
+    // maquettes.
     const enPartie: Record<string, number> = {
       'maths-6e-calculation': 0.99,
-      'french-4e-agreement': 0.89,
       'maths-3e-functions': 0.74,
       'english-6e-grammar': 0.79,
-      'english-5e-grammar': 0.86,
-      'english-4e-comprehension': 0.92,
       'life-earth-sciences-6e-living-world': 0.89,
-      'technology-6e-objects': 0.86,
       'life-earth-sciences-5e-active-planet': 0.79,
-      'history-4e-revolutions': 0.73,
-      'geography-4e-globalization': 0.75,
       'technology-4e-modeling': 0.83,
-      'history-3e-twentieth-century': 0.96,
-      'life-earth-sciences-3e-human-body': 0.9,
       'physics-chemistry-3e-motion-energy': 0.86,
     };
     for (const b of BIOMES) {
