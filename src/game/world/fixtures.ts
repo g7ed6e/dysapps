@@ -322,7 +322,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'french-6e-reading-fixture-1': [7, 9],
   // Les objets des quêtes (GD-10), après la commande de l'île.
   'french-6e-phonology-fixture-2': [3, 19],
-  'french-6e-grammar-spelling-fixture-2': [8, 9],
+  'french-6e-grammar-spelling-fixture-2': [14, 5],
   'french-6e-reading-fixture-2': [10, 3],
   'maths-6e-calculation-fixture-1': [9, 3],
   'maths-6e-fractions-fixture-1': [-1, 11],
@@ -389,6 +389,11 @@ const WANTED_PLACES: Record<string, readonly [number, number]> = {
   // lui, aux trois quarts cachée : elle se pose à l'est, sur l'herbe dégagée, entière à l'écran ; ses cases figées au sol
   // y coûtent aussi moins que derrière Nectar (les commandes du 4e restent dans leur enveloppe, budget.ts).
   'life-earth-sciences-4e-cells-evolution-fixture-1': [11, 3],
+  // À la Ferme des accords (GD-10), le calcul posait le portillon de Bloquette contre la maison, derrière la commande et
+  // les bornes : ses galets disparaissaient derrière les blocs jaunes, la porte sur le mur brun. Il se pose à l'est, sur
+  // l'herbe nue près du bonhomme, entier à l'écran, à huit cases de Bloquette (DA et consultant Blocland, relecture des
+  // captures). Le calcul ne cherche pas si loin : seule la place voulue l'y met.
+  'french-6e-grammar-spelling-fixture-2': [14, 5],
 };
 
 /** La place voulue d'une petite construction (voir `WANTED_PLACES`), ou `null`. */
