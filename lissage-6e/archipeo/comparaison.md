@@ -1,20 +1,22 @@
 # Comparaison avec main
 
-Références : main au commit c90fa5437016df1f0716c3771d3bbb94a6405a9b (après : afe22933111696201db5ae9933b438d445844ecf). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : main au commit c90fa5437016df1f0716c3771d3bbb94a6405a9b (après : 0f4b1a974cef3a19237a8724ecf630cfe974f4de). Une vue est changée au-delà de 0,3 % de pixels différents.
 
-## Changées (5) : planches dans `planches/`
+## Changées (7) : planches dans `planches/`
 
 - 6e-entraide-french-6e-reading.jpg : 0,4 %
-- 6e-familles-6e-moulin-loin.jpg : 43,9 %
-- 6e-familles-6e-moulin.jpg : 3,3 %
-- 6e-familles-6e-observatoire.jpg : 8,3 %
+- 6e-familles-6e-cadran-archipel.jpg : 0,3 %
+- 6e-familles-6e-moulin-loin.jpg : 2,7 %
+- 6e-familles-6e-moulin.jpg : 3,5 %
+- 6e-familles-6e-observatoire.jpg : 8,5 %
 - 6e-familles-6e-pointe-paysages.jpg : 0,4 %
+- 6e-histoire-geo-geography-6e-living-apres-nuit.jpg : 42,5 %
 
-## Inchangées (57) : non publiées
+## Inchangées (55) : non publiées
 
 - 6e-archipel-nuit.jpg : 0,0 %
 - 6e-archipel-recul.jpg : 0,0 %
-- 6e-archipel.jpg : 0,0 %
+- 6e-archipel.jpg : 0,1 %
 - 6e-carte-nuit.jpg : 0,0 %
 - 6e-carte.jpg : 0,1 %
 - 6e-commandes-archipel.jpg : 0,0 %
@@ -32,20 +34,18 @@ Références : main au commit c90fa5437016df1f0716c3771d3bbb94a6405a9b (après :
 - 6e-entraide-french-6e-grammar-spelling-nuit.jpg : 0,2 %
 - 6e-entraide-french-6e-grammar-spelling.jpg : 0,3 %
 - 6e-entraide-french-6e-phonology-nuit.jpg : 0,1 %
-- 6e-entraide-french-6e-phonology.jpg : 0,1 %
+- 6e-entraide-french-6e-phonology.jpg : 0,2 %
 - 6e-entraide-french-6e-reading-nuit.jpg : 0,3 %
 - 6e-entraide-panneau-390x844-od32.jpg : 0,0 %
 - 6e-entraide-panneau.jpg : 0,0 %
 - 6e-familles-6e-cabane-foret.jpg : 0,3 %
 - 6e-familles-6e-cabine-baie.jpg : 0,0 %
-- 6e-familles-6e-cadran-archipel.jpg : 0,2 %
 - 6e-familles-6e-cadran-loin.jpg : 0,2 %
 - 6e-familles-6e-cadran-pres-nuit.jpg : 0,0 %
 - 6e-familles-6e-cadran-pres.jpg : 0,0 %
 - 6e-familles-6e-escalier-tour-fantome.jpg : 0,1 %
 - 6e-familles-6e-escalier-tour.jpg : 0,1 %
 - 6e-histoire-geo-defi-amphore-mi.jpg : 0,0 %
-- 6e-histoire-geo-geography-6e-living-apres-nuit.jpg : 0,0 %
 - 6e-histoire-geo-geography-6e-living-apres.jpg : 0,0 %
 - 6e-histoire-geo-geography-6e-living-avant-nuit.jpg : 0,0 %
 - 6e-histoire-geo-geography-6e-living-avant.jpg : 0,0 %
@@ -67,10 +67,11 @@ Références : main au commit c90fa5437016df1f0716c3771d3bbb94a6405a9b (après :
 - 6e-histoire-geo-mosaique-brique-chaume-nuit.jpg : 0,0 %
 - 6e-histoire-geo-mosaique-brique-chaume.jpg : 0,0 %
 - 6e-ile-nuit.jpg : 0,0 %
-- 6e-ile-recul.jpg : 0,1 %
+- 6e-ile-recul.jpg : 0,0 %
 - 6e-ile.jpg : 0,0 %
 
-## Sans référence (2) : dans `planches/` telles quelles
+## Sans référence (3) : dans `planches/` telles quelles
 
 - 6e-familles-6e-portillon.jpg
+- 6e-familles-6e-quai-galets.jpg
 - 6e-familles-6e-tour-lecteur.jpg
