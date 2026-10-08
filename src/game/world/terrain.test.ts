@@ -11,20 +11,22 @@ import { CREATURE_CUBES } from './characters/creatures';
 import { GUARDIAN_CUBES } from './characters/guardians';
 import { ARCHIPELAGOS, BRIDGES, VOYAGES, archipelagoOf, linkKind, linkWholeRegion } from './archipelago';
 import { walkGround, walkPath } from './paths';
+import { possibleLandings } from './routing';
 import { dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleRestZ, VEHICLE_DECK, VEHICLE_SIZE } from './harbor';
 import { VEHICLE_STAGES } from './vehicle';
 import { recetteDeLArchipel } from './assembly';
 import { toutConstruit } from './budget';
 import { decorPose } from './decor';
+import { isBiomeUnlocked } from './archipelago';
+import { zoneDesPlans } from './plans';
+import { AVATAR_HOME } from './terrain/base';
+import { portesDesLieux } from './terrain/village';
 import {
   avatarHome,
   BALEINES_REPLACEES,
   rangeeDevantLesBornes,
   avatarRoute,
   boardingRoute,
-  bossIsletCells,
-  bossIsletOrigin,
-  bossIsletSteps,
   bridgePath,
   cacheUneBorne,
   cacheUnLieu,
@@ -36,14 +38,15 @@ import {
   groundHeight,
   gardienDuMonde,
   gardienEnPartieRallume,
+  GUARDIAN_SQUARE,
+  guardianCells,
   guardianPlacements,
+  guardianSpot,
+  trophySpot,
   ISLAND,
   islandAt,
   islandCenter,
   islandOrigin,
-  ISLET_GAP,
-  ISLET_H,
-  ISLET_W,
   mistPatches,
   origineDe,
   PORTEE_DEVANT_LA_BORNE,
@@ -225,110 +228,119 @@ it("retrouve l'île sous un point, y compris depuis un pont", () => {
   expect(islandAt('6e', o.ox + ISLAND + 1, o.oy + ISLAND / 2)).toBe(BIOMES[1].id);
 });
 
-it('sans les Gardiens éteints, le Gardien apparaît sur un îlot devant son île quand il accepte le défi, en pierre, puis en couleurs une fois rallumé (GD-8)', async () => {
+it('sans les Gardiens éteints, le Gardien apparaît sur son île quand il accepte le défi, en pierre, puis en couleurs une fois rallumé, son bloc d’or devant lui (GD-8, GD-11)', async () => {
   const { typesWithContent } = await import('../boss');
   const { exercisesOf } = await import('../exercises');
   const { getBiome } = await import('../biomes');
+  const FORET = 'french-6e-phonology';
   const ready: Record<string, { stars: number }> = {};
-  for (const type of typesWithContent(getBiome('french-6e-phonology')!)) ready[exercisesOf('french-6e-phonology', type)[0].id] = { stars: 2 };
+  for (const type of typesWithContent(getBiome(FORET)!)) ready[exercisesOf(FORET, type)[0].id] = { stars: 2 };
   expect(guardianPlacements('6e', {}, [])).toEqual([]);
-  const front = bossIsletOrigin(0).y;
-  // Caché, l'îlot et ses pas japonais n'existent pas.
-  // (Devant la terre de la Forêt : l'îlot s'en est rapproché d'une case, `RETOUCHES_DE_L_ILOT`.)
-  expect(worldCubes('6e', {}).some((c) => c.tag === 'french-6e-phonology' && c.y < landBox(islandDef('french-6e-phonology')).y0)).toBe(false);
-  const [g] = guardianPlacements('6e', ready, []);
-  expect(g).toMatchObject({ id: 'french-6e-phonology', kind: 'guardian', still: true, beaten: false });
-  // Prêt, il est encore éteint : en pierre grise (GD-8).
+  // Plus d'îlot devant l'île : rien devant sa terre.
+  expect(worldCubes('6e', ready).some((c) => c.tag === FORET && c.y < landBox(islandDef(FORET)).y0)).toBe(false);
+  const [g] = guardianPlacements('6e', ready, [], false, [], 0.5);
+  expect(g).toMatchObject({ id: FORET, kind: 'guardian', still: true, beaten: false, echelle: 0.5 });
+  // Prêt, il est encore éteint : en pierre grise (GD-8), debout sur le sol de son île, sur son carré.
   expect(g.cubes.every((c) => estPierre(c.color))).toBe(true);
-  const islet = worldCubes('6e', ready).filter((c) => c.tag === 'french-6e-phonology' && c.y < front + ISLET_H);
-  const cells = bossIsletCells('french-6e-phonology');
-  const land = new Set(cells.map((c) => `${c.x},${c.y}`));
-  // Une petite île : pas un rectangle plein, mais plus large que le Gardien ; deux couches de terre sous le sol.
-  expect(cells.length).toBeLessThan(ISLET_W * ISLET_H);
-  expect(cells.length).toBeGreaterThan(9 * 8);
-  expect(islet.filter((c) => c.z === 0)).toHaveLength(cells.length);
-  expect(islet.filter((c) => c.z < 0).every((c) => c.texture === 'terre' || (c.texture === 'galet' && !land.has(`${c.x},${c.y}`)))).toBe(true);
-  // Au milieu, l'arène pavée (pierre bordée de galet) ; autour, l'herbe de la Forêt, du sable au bord de l'eau.
-  const top = (c: { x: number; y: number }) => islet.find((k) => k.x === c.x && k.y === c.y && k.z === 0)!.texture;
-  expect(cells.filter((c) => c.arena).every((c) => ['pierre', 'galet'].includes(top(c)!))).toBe(true);
-  expect(cells.some((c) => c.arena && top(c) === 'pierre')).toBe(true);
-  expect(cells.some((c) => !c.arena && !c.shore && top(c) === 'herbe')).toBe(true);
-  expect(cells.filter((c) => c.shore && !c.arena).every((c) => top(c) === 'sable')).toBe(true);
-  // Le Gardien, centré, a toute son emprise sur la terre de l'îlot.
-  for (const c of g.cubes) expect(land.has(`${g.origin.x + c.x},${g.origin.y + c.y}`)).toBe(true);
-  expect(g.origin.z).toBe(1);
-  expect(islet.some((c) => c.texture === 'or')).toBe(false);
-  // Les pas japonais : des galets dans l'eau, de l'îlot à la côte, chacun touchant le précédent.
-  const steps = bossIsletSteps('french-6e-phonology');
-  expect(steps.length).toBeGreaterThanOrEqual(ISLET_GAP);
-  const def = islandDef('french-6e-phonology');
-  expect(land.has(`${Math.round(steps[0].x)},${steps[0].y - 1}`) || land.has(`${steps[0].x - 1},${steps[0].y - 1}`)).toBe(true);
-  const last = steps[steps.length - 1];
-  expect(isLand(def, last.x, last.y + 1) || isLand(def, last.x - 1, last.y + 1)).toBe(true);
-  for (const s of steps) expect(isLand(def, s.x, s.y) || land.has(`${s.x},${s.y}`)).toBe(false);
-  const world = worldCubes('6e', ready);
-  for (const s of steps) expect(world.some((c) => c.x === s.x && c.y === s.y && c.z === s.z && c.texture === 'galet')).toBe(true);
-  // Rallumé : en couleurs (GD-8), et bloc d'or sur un socle de pierre, sur l'îlot, hors de l'emprise du Gardien.
-  const beaten = { ...ready, 'french-6e-phonology-challenge': { stars: 2 } };
+  const def = islandDef(FORET);
+  expect(g.origin.z).toBe(def.altitude + 1);
+  expect(g.cases).toEqual(guardianCells(FORET));
+  for (const c of g.cases) expect(isLand(def, c.x, c.y), `${c.x},${c.y}`).toBe(true);
+  const t = trophySpot(FORET);
+  const surLeSocle = (c: { x: number; y: number; z: number; texture?: string }) => c.x === def.core.x + t.x && c.y === def.core.y + t.y && c.z === def.altitude + 2 && c.texture === 'or';
+  expect(worldCubes('6e', ready).some(surLeSocle)).toBe(false);
+  // Rallumé : en couleurs (GD-8), et son bloc d'or sur un socle de pierre, sur la rangée de devant de son carré.
+  const beaten = { ...ready, [`${FORET}-challenge`]: { stars: 2 } };
   const [s] = guardianPlacements('6e', beaten, []);
   expect(s.beaten).toBe(true);
-  expect(s.cubes).toEqual(gardienDuMonde('french-6e-phonology').map((c) => expect.objectContaining({ color: c.color })));
-  const gold = worldCubes('6e', beaten).find((c) => c.tag === 'french-6e-phonology' && c.y < front + ISLET_H && c.texture === 'or')!;
-  expect(gold.z).toBe(2);
-  expect(land.has(`${gold.x},${gold.y}`)).toBe(true);
-  expect(cells.find((c) => c.x === gold.x && c.y === gold.y)!.guardian).toBe(false);
+  expect(s.cubes).toEqual(gardienDuMonde(FORET).map((c) => expect.objectContaining({ color: c.color })));
+  const monde = worldCubes('6e', beaten);
+  expect(monde.some(surLeSocle)).toBe(true);
+  expect(monde.some((c) => c.x === def.core.x + t.x && c.y === def.core.y + t.y && c.z === def.altitude + 1 && c.texture === 'pierre')).toBe(true);
+  expect(guardianSpot(FORET).y).toBe(t.y);
 });
 
-it('avec les sentinelles (Archipéo, lot 6), l’îlot et le Gardien sont là dès l’ouverture de l’île, sans pas japonais tant que le défi n’est pas prêt', async () => {
-  const { typesWithContent } = await import('../boss');
-  const { exercisesOf } = await import('../exercises');
-  const { getBiome } = await import('../biomes');
-  const ready: Record<string, { stars: number }> = {};
-  for (const type of typesWithContent(getBiome('french-6e-phonology')!)) ready[exercisesOf('french-6e-phonology', type)[0].id] = { stars: 2 };
-  const galets = (cubes: ReturnType<typeof worldCubes>) =>
-    bossIsletSteps('french-6e-phonology').filter((s) => cubes.some((c) => c.x === s.x && c.y === s.y && c.z === s.z && c.texture === 'galet')).length;
-  // La Forêt est ouverte dès le début : sa sentinelle attend, éteinte, sur son îlot, sans chemin.
+it('avec les sentinelles (Archipéo, lot 6), le Gardien est là dès l’ouverture de son île', () => {
+  // La Forêt est ouverte dès le début : sa sentinelle attend, éteinte, sur son île.
   const [g] = guardianPlacements('6e', {}, [], true);
   expect(g).toMatchObject({ id: 'french-6e-phonology', kind: 'guardian', beaten: false });
-  const attend = worldCubes('6e', {}, undefined, false, [], true);
-  const cells = bossIsletCells('french-6e-phonology');
-  expect(attend.filter((c) => c.tag === 'french-6e-phonology' && c.z === 0 && cells.some((k) => k.x === c.x && k.y === c.y))).toHaveLength(cells.length);
-  expect(galets(attend)).toBe(0);
   // Une île fermée n'a pas de sentinelle.
-  const { isBiomeUnlocked } = await import('./archipelago');
   const ouvertes = BIOMES.filter((b) => b.classe === '6e' && isBiomeUnlocked(b.id, [])).map((b) => b.id);
   expect(ouvertes.length).toBeLessThan(BIOMES.filter((b) => b.classe === '6e').length);
   expect(guardianPlacements('6e', {}, [], true).map((p) => p.id)).toEqual(ouvertes);
-  // Le défi prêt : le chemin s'ouvre, comme sans sentinelles.
-  expect(galets(worldCubes('6e', ready, undefined, false, [], true))).toBe(bossIsletSteps('french-6e-phonology').length);
-  // L'îlot de la Forêt est alors le même qu'avant le lot 6 (l'îlot de la Plaine, qui attend, peut couvrir un arbre voisin).
-  const front = bossIsletOrigin(0).y;
-  const foret = (cubes: ReturnType<typeof worldCubes>) => cubes.filter((c) => c.tag === 'french-6e-phonology' && c.y < front + ISLET_H + ISLET_GAP);
-  expect(foret(worldCubes('6e', ready, undefined, false, [], true))).toEqual(foret(worldCubes('6e', ready)));
 });
 
-it('chaque îlot porte tout son Gardien, a ses pas japonais, et flotte sur sa roche en altitude', async () => {
-  const { typesWithContent } = await import('../boss');
-  const { exercisesOf } = await import('../exercises');
-  const everyone: Record<string, { stars: number }> = {};
-  for (const b of BIOMES) {
-    for (const type of typesWithContent(b)) everyone[exercisesOf(b.id, type)[0].id] = { stars: 2 };
-    everyone[`${b.id}-challenge`] = { stars: 2 };
-  }
-  for (const a of ARCHIPELAGO_IDS) {
-    const world = worldCubes(a, everyone, village(everything));
-    const placements = guardianPlacements(a, everyone, everything);
-    for (const b of BIOMES.filter((x) => x.classe === a)) {
-      const land = new Set(bossIsletCells(b.id).map((c) => `${c.x},${c.y}`));
-      const g = placements.find((p) => p.id === b.id)!;
-      expect(g, b.id).toBeDefined();
-      for (const c of g.cubes) expect(land.has(`${g.origin.x + c.x},${g.origin.y + c.y}`), b.id).toBe(true);
-      expect(bossIsletSteps(b.id).length, b.id).toBeGreaterThanOrEqual(ISLET_GAP);
-      const z = islandDef(b.id).altitude;
-      // En altitude, de la roche sous la terre de l'îlot.
-      if (z > 0) expect(world.some((c) => c.tag === b.id && land.has(`${c.x},${c.y}`) && c.z < z - DEPTH && c.texture === 'pierre'), b.id).toBe(true);
+describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octobre 2026)', () => {
+  /**
+   * Les îles où aucun carré de 5 × 5 ne tient sans cacher à la vue de l'île un lieu, une borne ou le chantier, même
+   * l'habitant serré et le décor de la côte effacé : le Gardien y prend la place de repli (`repli`), qui gêne le moins.
+   * Mesuré le 8 octobre 2026 : 23 îles sur 51. Le mainteneur pense agrandir un peu les îles ; cette liste se videra alors.
+   */
+  const SANS_PLACE: readonly string[] = [
+    'french-6e-phonology',
+    'french-6e-letter-confusion',
+    'french-6e-word-spelling',
+    'maths-6e-decimals',
+    'maths-5e-proportionality',
+    'french-5e-homophones',
+    'french-5e-conjugation',
+    'maths-4e-algebra',
+    'french-4e-agreement',
+    'french-4e-vocabulary',
+    'maths-3e-statistics',
+    'french-3e-close-reading',
+    'english-6e-grammar',
+    'english-5e-vocabulary',
+    'english-5e-grammar',
+    'english-4e-grammar',
+    'english-3e-grammar',
+    'history-6e-antiquity',
+    'geography-6e-living',
+    'history-5e-middle-ages',
+    'geography-5e-resources',
+    'lv2-5e-introductions',
+    'lv2-4e-daily-life',
+  ];
+
+  it('chaque île a sa place, sauf la liste connue des îles trop petites', () => {
+    const sans = BIOMES.filter((b) => guardianSpot(b.id).repli).map((b) => b.id);
+    expect(sans).toEqual(SANS_PLACE);
+  });
+
+  it('son carré est sur la terre de son île, hors des bornes, de l’habitant, du départ du bonhomme, des portes, des arrivées des liaisons et du chantier', () => {
+    for (const b of BIOMES) {
+      const def = islandDef(b.id);
+      const s = guardianSpot(b.id);
+      const carre = new Set<string>();
+      for (let i = 0; i < GUARDIAN_SQUARE; i++) for (let j = 0; j < GUARDIAN_SQUARE; j++) carre.add(`${s.x + i},${s.y + j}`);
+      for (const k of carre) {
+        const [x, y] = k.split(',').map(Number);
+        expect(isLand(def, def.core.x + x, def.core.y + y), `${b.id} ${k}`).toBe(true);
+      }
+      for (const st of questStations(b.id)) expect(carre.has(`${st.x},${st.y}`), `${b.id} borne`).toBe(false);
+      const c = creatureSpot(b.id);
+      for (const k of creatureDuMonde(b.id)) expect(carre.has(`${c.x + k.x},${c.y + k.y}`), `${b.id} habitant`).toBe(false);
+      expect(carre.has(`${AVATAR_HOME.x},${AVATAR_HOME.y}`), `${b.id} bonhomme`).toBe(false);
+      for (const k of portesDesLieux(b.id)) expect(carre.has(k), `${b.id} porte ${k}`).toBe(false);
+      // Aucune liaison n'arrive sous lui.
+      for (const l of possibleLandings(def)) expect(carre.has(`${l.x},${l.y}`), `${b.id} arrivée ${l.cote} ${l.pas}`).toBe(false);
+      const zone = zoneDesPlans(b.id);
+      for (let x = zone.x; x < zone.x + zone.w; x++) for (let y = zone.y; y < zone.y + zone.h; y++) expect(carre.has(`${x},${y}`), `${b.id} chantier`).toBe(false);
+      // Les pas de l'habitant ne le traversent pas.
+      const cr = creaturePlacements(b.classe, everything).find((p) => p.id === b.id);
+      if (cr) expect(cr.steps.length, b.id).toBeGreaterThanOrEqual(1);
     }
-  }
+  });
+
+  it('dans Blocland, réduit de moitié, chaque Gardien tient sur son carré ; dans Archipéo, sa sentinelle aussi', () => {
+    for (const b of BIOMES) {
+      const e = gardienDuMonde(b.id);
+      const largeur = Math.max(...e.map((c) => c.x)) - Math.min(...e.map((c) => c.x)) + 1;
+      const profondeur = Math.max(...e.map((c) => c.y)) - Math.min(...e.map((c) => c.y)) + 1;
+      expect(largeur * 0.5, b.id).toBeLessThanOrEqual(GUARDIAN_SQUARE);
+      expect(profondeur * 0.5, b.id).toBeLessThanOrEqual(GUARDIAN_SQUARE + 0.5);
+    }
+  });
 });
 
 it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan, une cascade jusqu’à la mer', () => {
@@ -444,7 +456,7 @@ it('le bonhomme a toujours les pieds sur un bloc, jamais dedans, sur chaque île
   }
 });
 
-it('les baleines nagent dans les clairières d’eau de chaque archipel, jamais sur une terre, un îlot ni le port', () => {
+it('les baleines nagent dans les clairières d’eau de chaque archipel, jamais sur une terre ni le port', () => {
   // Pas de mer dans les Îles du Ciel : pas de baleines.
   expect(whaleSpots('3e', [])).toEqual([]);
   for (const a of ARCHIPELAGO_IDS) {
@@ -454,11 +466,7 @@ it('les baleines nagent dans les clairières d’eau de chaque archipel, jamais 
     expect(spots.length, a).toBeGreaterThanOrEqual(a === '6e' ? 4 : 2);
     expect(spots.length, a).toBeLessThanOrEqual(4);
     const land = new Set<string>();
-    for (const def of mapOf(a)) {
-      for (const c of landCells(def)) land.add(`${c.x},${c.y}`);
-      const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
-      for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) land.add(`${o.x + x},${o.y + y}`);
-    }
+    for (const def of mapOf(a)) for (const c of landCells(def)) land.add(`${c.x},${c.y}`);
     const dock = dockBox(ARCHIPELAGOS.find((x) => x.classe === a)!.port);
     for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) land.add(`${x},${y}`);
     const b = worldBounds(a);
@@ -474,18 +482,14 @@ it('les baleines nagent dans les clairières d’eau de chaque archipel, jamais 
   }
 });
 
-it('une baleine replacée à la main nage en eau libre, à trois cases au moins de toute terre, îlot, ponton, ouvrage ou monument', () => {
+it('une baleine replacée à la main nage en eau libre, à trois cases au moins de toute terre, ponton, ouvrage ou monument', () => {
   for (const a of ARCHIPELAGO_IDS)
     for (const { vers } of BALEINES_REPLACEES[a] ?? []) {
       const s = whaleSpots(a, []).find((w) => w.x === vers.x && w.y === vers.y);
       expect(s, `${a} : la baleine replacée en ${vers.x}, ${vers.y}`).toBeDefined();
       expect(s!.r).toBeGreaterThanOrEqual(4);
       const pres: { x: number; y: number }[] = [];
-      for (const def of mapOf(a)) {
-        pres.push(...landCells(def));
-        const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
-        for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) pres.push({ x: o.x + x, y: o.y + y });
-      }
+      for (const def of mapOf(a)) pres.push(...landCells(def));
       const dock = dockBox(ARCHIPELAGOS.find((x) => x.classe === a)!.port);
       for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) pres.push({ x, y });
       for (const m of monumentsOf(a)) for (let x = 0; x < MONUMENT_ISLET; x++) for (let y = 0; y < MONUMENT_ISLET; y++) pres.push({ x: m.islet.x + x, y: m.islet.y + y });
@@ -545,11 +549,9 @@ it('chaque mission a sa borne sur la rangée de devant, dans le cœur, hors de l
   expect(mine.every((c) => c.muted)).toBe(true);
 });
 
-it('chaque Gardien tient sur son îlot, et chaque créature reste petite devant lui', () => {
+it('chaque créature reste petite devant son Gardien, dans les modèles (le dessin de Blocland réduit le Gardien de moitié, GD-11)', () => {
   for (const b of BIOMES) {
     const g = GUARDIAN_CUBES[b.id];
-    expect(Math.max(...g.map((c) => c.x)), b.id).toBeLessThan(ISLET_W);
-    expect(Math.max(...g.map((c) => c.y)), b.id).toBeLessThan(ISLET_H);
     expect(Math.min(...g.map((c) => c.x)), b.id).toBeGreaterThanOrEqual(0);
     const gh = Math.max(...g.map((c) => c.z)) + 1;
     const ch = Math.max(...CREATURE_CUBES[b.id].map((c) => c.z)) + 1;
@@ -577,18 +579,14 @@ it('la caméra cadre l’île du bonhomme et ses voisines, et pivote vers le cen
   for (const b of BIOMES) expect(Math.abs(viewYaw(b.id))).toBeLessThanOrEqual(VIEW_YAW_MAX + 1e-9);
 });
 
-it('la mer est habillée de rochers et de bancs de sable, loin des terres, des îlots, des ouvrages, du port et des baleines', () => {
+it('la mer est habillée de rochers et de bancs de sable, loin des terres, des ouvrages, du port et des baleines', () => {
   const decor = seaDecor('6e');
   expect(decor.length).toBeGreaterThan(60);
   expect(decor.some((c) => c.texture === 'sable')).toBe(true);
   expect(decor.some((c) => c.texture === 'galet')).toBe(true);
   expect(decor.every((c) => c.tag === 'mer' && c.z >= -1 && c.z <= 1)).toBe(true);
   const solid = new Set<string>();
-  for (const def of mapOf('6e')) {
-    for (const c of landCells(def)) solid.add(`${c.x},${c.y}`);
-    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
-    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) solid.add(`${o.x + x},${o.y + y}`);
-  }
+  for (const def of mapOf('6e')) for (const c of landCells(def)) solid.add(`${c.x},${c.y}`);
   // Les tracés des liaisons : les écueils en gardent une case (le traceur les contourne), la terre en garde trois.
   const traces = new Set<string>();
   for (const def of BRIDGES.filter((b) => archipelagoOf(b.from).classe === '6e')) for (const c of bridgePath(def, [])) traces.add(`${c.x},${c.y}`);
@@ -621,14 +619,12 @@ it('le port : une jetée dans l’eau devant l’île-port, et le Bloc-Navire à
     const def = islandDef(a.port);
     const cells = dockCells(a.port);
     expect(cells.length, a.port).toBeGreaterThanOrEqual(8);
-    // Dans l'eau, devant l'île, hors de l'îlot du Gardien et de tout ouvrage ; descend d'une marche par case au plus.
-    const islet = bossIsletOrigin(BIOMES.findIndex((b) => b.id === a.port));
+    // Dans l'eau, devant l'île, hors de tout ouvrage ; descend d'une marche par case au plus.
     const paths = new Set(BRIDGES.filter((b) => archipelagoOf(b.from).classe === a.classe).flatMap((b) => bridgePath(b, []).map((c) => `${c.x},${c.y}`)));
     let prevZ = def.altitude;
     for (const c of cells) {
       expect(isLandAt(c.x, c.y), `${a.port} jetée sur la terre en ${c.x},${c.y}`).toBe(false);
       expect(c.y, a.port).toBeLessThan(def.core.y);
-      expect(c.x < islet.x || c.x >= islet.x + ISLET_W || c.y < islet.y || c.y >= islet.y + ISLET_H, `${a.port} jetée sur l'îlot`).toBe(true);
       expect(paths.has(`${c.x},${c.y}`), `${a.port} jetée sur un ouvrage`).toBe(false);
       expect(prevZ - c.z, a.port).toBeLessThanOrEqual(1);
       prevZ = c.z;

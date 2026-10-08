@@ -164,15 +164,6 @@ function Signes({ ligne }: { ligne: LigneDuMode }) {
           <SignePrise prise={ligne.prise} />
         </>
       );
-    case 'gardien':
-      return (
-        <>
-          <span className="signe">
-            <Icon name="shield" />
-          </span>{' '}
-          <PlaceSignsLine signes={ligne.signes} sansEcart={ligne.prise} /> <SignePrise prise={ligne.prise} />
-        </>
-      );
     case 'place':
       return (
         <>
@@ -325,7 +316,7 @@ export function ArrangeBar({ amenagement, className, croix = false }: { amenagem
       <div className="arrange-bar-outils">
         {croix && <IconButton icone="tourner" nom="Tourner" disabled={!canTurn(choix) || occupe} onClick={amenagement.tourner} />}
         {croix && <IconButton icone="defaire" nom="Défaire la dernière pose" mot="Défaire" disabled={!amenagement.peutDefaire || occupe} onClick={amenagement.defaire} />}
-        {/* Sur la Carte, un lieu ou un Gardien se pose au lever du doigt, une borne ou une arrivée en touchant sa place : « Poser » n'y sert qu'à un ouvrage
+        {/* Sur la Carte, un lieu se pose au lever du doigt, une borne ou une arrivée en touchant sa place : « Poser » n'y sert qu'à un ouvrage
             à reposer, qui ne se glisse pas. Sur une place prise (choix 3 du mainteneur), il s'éteint. */}
         {(croix || choix?.genre === 'liaison') && (
           <button

@@ -6,7 +6,7 @@ import { ARCHIPELAGOS, BRIDGES } from '../archipelago';
 import { planCells, plansFor } from '../plans';
 import { DOCK_DX, shoreY } from '../harbor';
 import { type ProjectionDeLaVue, projectionDeLaVueDeLIle, versLaCamera, VUE_DE_L_ILE_PANNEAU_OUVERT } from './view';
-import { creatureDuMonde, creatureSpot, solLibre } from './creatures';
+import { creatureDuMonde, creatureSpot, solLibre, surLeCarreDuGardien } from './creatures';
 import { cacheUneBorne, questStations, rangeeDevantLesBornes } from './markers';
 import { AVATAR_HOME, groundHeight, origineDe } from './base';
 import { cacheUnLieu, lieuxVus } from './village';
@@ -307,7 +307,8 @@ export function examenDeLaPetiteConstruction(
   const examiner = (ox: number, oy: number): ExamenDUnePlace | null => {
     const distance = Math.min(...pied.flatMap((p) => elle.map((e) => Math.abs(ox + p.x + 0.5 - e.x) + Math.abs(oy + p.y + 0.5 - e.y))));
     if (distance > R) return null;
-    if (!pied.every((p) => free(ox + p.x, oy + p.y) && !aCote.has(`${ox + p.x},${oy + p.y}`) && !interdites.has(`${ox + p.x},${oy + p.y}`))) return null;
+    // Ni sur le carré du Gardien (GD-11), qui évite, lui, la place écrite de la petite construction (`guardianSpot`).
+    if (!pied.every((p) => free(ox + p.x, oy + p.y) && !aCote.has(`${ox + p.x},${oy + p.y}`) && !interdites.has(`${ox + p.x},${oy + p.y}`) && !surLeCarreDuGardien(id, ox + p.x, oy + p.y))) return null;
     if (cases.some((c) => cacheUneBorne(bornes, vers, ox + c.x, oy + c.y, c.z + 1) || cacheUnLieu(lieux, vers, ox + c.x, oy + c.y, c.z + 1))) return null;
     const forme = new Set(cases.map((c) => `${ox + c.x},${oy + c.y},${c.z + 1}`));
     if (elle.some((e) => rayonArrete(forme, camera, e.x, e.y, e.z, 4))) return null;

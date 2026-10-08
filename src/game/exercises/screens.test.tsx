@@ -60,14 +60,16 @@ describe('déblocage des biomes', () => {
   it('verrouille la Mine tant que le pont n’est pas construit', async () => {
     const user = userEvent.setup();
     renderAt('/adventure');
-    // GD-9 : de la Plaine ou de la Forêt, une liaison vers chaque île qu'on peut relier, 4 blocs chacune.
-    expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(6);
+    // GD-9 : de la Plaine ou de la Forêt, une liaison vers chaque île qu'on peut relier, 4 blocs chacune. (Six ponts
+    // jusqu'à GD-11 : sans les îlots des Gardiens, une de ces liaisons, qu'ils empêchaient de tracer, se trace au large,
+    // en bac.)
+    expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(5);
     // Cinq îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9), dont la Pointe des paysages, derrière la
     // Fouille des siècles (HG-2), la Vallée du vivant et le Laboratoire des éléments, au rang du fond (SC-2) : elles
     // s'ouvriront de proche en proche.
     expect(screen.queryAllByText(/Île lointaine/).length).toBe(5);
-    // Deux bacs : vers la Fouille des siècles et vers le Hangar des inventions (SC-2).
-    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(2);
+    // Trois bacs : vers la Fouille des siècles et vers le Hangar des inventions (SC-2), et celui venu avec GD-11.
+    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(3);
     // Les îles des archipels de 5e, 4e et 3e, dont les six d'histoire-géographie (HG-3) et les neuf de sciences (SC-3).
     expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(36);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));

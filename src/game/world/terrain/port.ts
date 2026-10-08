@@ -19,7 +19,6 @@ import { casesDuVillage, PLACE_IDS, VILLAGE_PLACES } from './village';
 import { placeDeLaPetiteConstruction } from './fixture';
 import { creatureDuMonde, creatureSpot } from './creatures';
 import { boardingRoute, bridgePath } from './links';
-import { bossIsletCells, bossIsletSteps } from './guardians';
 
 /** Les cubes d'un objet haut du quai au-dessus de son sol (le mât et la toile d'un fanion, la fumée d'un foyer). */
 const HAUTEURS_D_UN_OBJET_HAUT = [0, 1, 2, 3] as const;
@@ -217,11 +216,10 @@ export function harbor(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>
   };
   // La barque de la grève : grise et retournée (1), redressée (2) ; elle part à l'eau (3) ; une seconde la remplace (4).
   if (spots.boat && rank !== 3) boatAt(spots.boat.x, spots.boat.y, spots.boat.z, 'x', prop('barque', spots.boat), rank === 1, rank === 1);
-  // Amarrée à l'ouest de la jetée, entre les poteaux et l'îlot du Gardien (une case d'eau autour), au plus près de la côte.
+  // Amarrée à l'ouest de la jetée, au plus près de la côte.
   if (a !== '3e' && rank >= 3) {
     const bx = X - 3;
-    const islet = new Set([...bossIsletCells(port), ...bossIsletSteps(port)].flatMap((c) => [-1, 0, 1].flatMap((ex) => [-1, 0, 1].map((ey) => `${c.x + ex},${c.y + ey}`))));
-    const clear = (by: number) => [0, 1].every((dx) => Array.from({ length: BOAT_LENGTH }, (_, dy) => [bx + dx, by + dy]).every(([x, y]) => !isLand(def, x, y) && !islet.has(`${x},${y}`)));
+    const clear = (by: number) => [0, 1].every((dx) => Array.from({ length: BOAT_LENGTH }, (_, dy) => [bx + dx, by + dy]).every(([x, y]) => !isLand(def, x, y)));
     for (let by = S - BOAT_LENGTH; by > cells[cells.length - 1].y; by--)
       if (clear(by)) {
         boatAt(bx, by, 0, 'y', `${port}/barque@${bx},${by}`);

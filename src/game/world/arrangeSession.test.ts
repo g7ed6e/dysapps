@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
-import { freeSpots, linksBrokenBy, moveIsland, relinkBetween, relinkChoices, startingSpot, turnGuardian } from './arrange';
+import { freeSpots, linksBrokenBy, moveIsland, relinkBetween, relinkChoices, startingSpot, turnIsland } from './arrange';
 import { canUndo, hasChanged, recordPose, resetToEntry, startArranging, undoLast } from './arrangeSession';
 import { toutConstruit } from './budget';
 
@@ -22,7 +22,7 @@ describe('Annuler, et ↶', () => {
     expect(undoLast(s, w0)).toBeNull();
     const place = freeSpots(w0, VOLCAN).find((p) => p.x !== startingSpot(VOLCAN).x)!;
     const a = poser(s, w0, moveIsland(w0, VOLCAN, place));
-    const b = poser(a.session, a.world, turnGuardian(a.world, VOLCAN));
+    const b = poser(a.session, a.world, turnIsland(a.world, VOLCAN));
     s = b.session;
     expect(hasChanged(s, b.world)).toBe(true);
     const u1 = undoLast(s, b.world)!;
@@ -36,7 +36,7 @@ describe('Annuler, et ↶', () => {
     const w0 = toutConstruit().world;
     const place = freeSpots(w0, VOLCAN).find((p) => p.x !== startingSpot(VOLCAN).x)!;
     const a = poser(startArranging(w0), w0, moveIsland(w0, VOLCAN, place));
-    const b = poser(a.session, a.world, turnGuardian(a.world, VOLCAN));
+    const b = poser(a.session, a.world, turnIsland(a.world, VOLCAN));
     const r = resetToEntry(b.session, b.world);
     expect(r.world).toEqual(w0);
     expect(hasChanged(r.session, r.world)).toBe(false);

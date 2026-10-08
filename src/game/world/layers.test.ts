@@ -72,7 +72,6 @@ const GRILLE = [
   'world/terrain/links',
   'world/terrain/village',
   'world/terrain/creatures',
-  'world/terrain/islets',
   'world/terrain/guardians',
   'world/terrain/fixture',
   'world/terrain/fixtureCheck',

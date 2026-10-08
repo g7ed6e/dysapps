@@ -6,9 +6,9 @@
 // Code pur, sans Three.js.
 import { getBridge } from './archipelago';
 import { ARCHIPELAGO_IDS } from './archipelagos';
-import { detachedIsletCorner, fittingPlaces, posesOfLayout } from './footprint';
+import { fittingPlaces, posesOfLayout } from './footprint';
 import { setLinkLayout } from './linkGeometry';
-import { type GuardianPose, layoutVersion, placeFixtures, placeIslands, placeJoins, type Side } from './placement';
+import { layoutVersion, placeIslands, placeJoins, placeStations, type Side } from './placement';
 import type { BiomeId } from '../biomes';
 import type { LinkLandings } from './routing';
 import type { Layout, LayoutSide } from './savedLayout';
@@ -33,25 +33,11 @@ function linkLayoutOf(layout: Layout | undefined): { relink: Set<string>; landin
   return { relink, landings };
 }
 
-/** Les Gardiens et les bornes déplacés d'une disposition, toutes régions confondues (leur dessin les lit, ./placement.ts). */
-function fixturesOf(layout: Layout | undefined): [Map<BiomeId, GuardianPose>, Map<string, { x: number; y: number }>] {
-  const gardiens = new Map<BiomeId, GuardianPose>();
+/** Les bornes déplacées d'une disposition, toutes régions confondues (leur dessin les lit, ./placement.ts). */
+function stationsOf(layout: Layout | undefined): Map<string, { x: number; y: number }> {
   const bornes = new Map<string, { x: number; y: number }>();
-  for (const a of ARCHIPELAGO_IDS) {
-    const r = layout?.[a];
-    if (!r) continue;
-    for (const [id, g] of Object.entries(r.guardians ?? {}))
-      if (g)
-        gardiens.set(id as BiomeId, {
-          side: g.side,
-          step: g.step,
-          turn: g.turn,
-          // Détaché (choix 4a) : le coin de son îlot dans le monde.
-          ...(g.spot ? { spot: g.spot, at: detachedIsletCorner(a, g.spot) } : {}),
-        });
-    for (const [k, p] of Object.entries(r.stations ?? {})) bornes.set(k, { x: p.x, y: p.y });
-  }
-  return [gardiens, bornes];
+  for (const a of ARCHIPELAGO_IDS) for (const [k, p] of Object.entries(layout?.[a]?.stations ?? {})) bornes.set(k, { x: p.x, y: p.y });
+  return bornes;
 }
 
 /** Les lieux réunis d'une disposition, dans les régions dont la disposition tient sur la grille (`fittingPlaces`). */
@@ -59,7 +45,7 @@ function joinsOf(layout: Layout | undefined): (readonly [BiomeId, BiomeId])[] {
   const out: (readonly [BiomeId, BiomeId])[] = [];
   for (const a of ARCHIPELAGO_IDS) {
     const r = layout?.[a];
-    if (r?.joined?.length && fittingPlaces(a, r.islands ?? {}, r.guardians ?? {})) out.push(...r.joined);
+    if (r?.joined?.length && fittingPlaces(a, r.islands ?? {})) out.push(...r.joined);
   }
   return out;
 }
@@ -75,7 +61,7 @@ let applied: { layout: Layout | undefined; version: number } | null = null;
 export function applyLayout(layout: Layout | undefined): number {
   if (applied && applied.layout === layout && applied.version === layoutVersion()) return applied.version;
   placeIslands(posesOfLayout(layout));
-  placeFixtures(...fixturesOf(layout));
+  placeStations(stationsOf(layout));
   placeJoins(joinsOf(layout));
   const { relink, landings } = linkLayoutOf(layout);
   setLinkLayout(relink, landings);

@@ -18,7 +18,7 @@ import { ANGLE_DU_PAPILLON, PAPILLON_DE_CUIVRE } from './characters/statues/3e';
 import { PAINTERS, SIZE } from './pixels';
 import { planCells, plansFor } from './plans';
 import { HAUT_DES_NUAGES, NUAGES, nuagesDe, placeDesNuages } from './fauna';
-import { bossIsletOrigin, HORS_DE_LA_COLONNE, ISLET_H, ISLET_W, viewYaw, worldBounds, worldCubes } from './terrain';
+import { HORS_DE_LA_COLONNE, viewYaw, worldBounds, worldCubes } from './terrain';
 
 const ouvert = { parts: {}, log: [], links: grantAccess([], ['lv2-3e-travel']) };
 
@@ -251,16 +251,6 @@ describe('les nuages des Îles du Ciel', () => {
     for (const n of hauts)
       for (const i of mapOf('3e').map((d) => landBox(d)))
         expect(n.x + n.len <= i.x0 - 3 || n.x >= i.x1 + 3 || n.z + 1.2 <= i.y0 - 3 || n.z >= i.y1 + 3, `${n.x},${n.z}`).toBe(true);
-  });
-
-  it('aucun nuage, haut ou bas, ne mord l’îlot d’un Gardien', () => {
-    const b = worldBounds('3e');
-    const nuages = placeDesNuages('3e', b, Math.max(b.maxX - b.minX, b.maxY - b.minY));
-    for (const d of mapOf('3e')) {
-      const o = bossIsletOrigin(BIOMES.findIndex((x) => x.id === d.id));
-      for (const n of nuages)
-        expect(n.x + n.len <= o.x - 3 || n.x >= o.x + ISLET_W - 1 + 3 || n.z + 1.2 <= o.y - 3 || n.z >= o.y + ISLET_H - 1 + 3, `${d.id} ${n.x},${n.z}`).toBe(true);
-    }
   });
 
   it('ailleurs, les nuages restent à leur place d’avant', () => {

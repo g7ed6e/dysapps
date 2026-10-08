@@ -4,7 +4,6 @@ import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type Islan
 import { dockBox } from '../harbor';
 import { type BridgeDef, getArchipelago, islandsOf } from '../archipelago';
 import { type BiomeId, BIOMES } from '../../biomes';
-import { ISLET_GAP, ISLET_H } from './islets';
 import { BAC_LONG, bridgePath } from './links';
 import { islandCenter } from './base';
 import { layoutCache } from '../placement';
@@ -26,14 +25,20 @@ export function worldBounds(a: ArchipelagoId): {
 }
 
 /**
- * L'étendue de la carte de départ d'une région, qui ne bouge jamais, terres, îlots et port compris : la mer y est
+ * La mer gardée devant chaque île (côté caméra), en cases : celle que prenait l'îlot de son Gardien et son eau jusqu'à
+ * GD-11 (8 octobre 2026). Le Gardien parti sur son île, le cadrage de la région, de sa Carte et de sa mer reste le même.
+ */
+const MER_DEVANT = 15;
+
+/**
+ * L'étendue de la carte de départ d'une région, qui ne bouge jamais, terres et port compris : la mer y est
  * semée une fois pour toutes (`seaDecor`), serrée autour des lieux plutôt qu'au bord du cadre.
  */
 export function bornesDeDepart(a: ArchipelagoId): { minX: number; maxX: number; minY: number; maxY: number } {
   return bornesDesIles(a, MAP.filter((d) => archipelagoOfIsland(d.id) === a).map((d) => startingIsland(d.id)));
 }
 
-/** L'étendue des lieux d'une région à leur place d'aujourd'hui (déplacés ou non, GD-9), îlots et port compris. */
+/** L'étendue des lieux d'une région à leur place d'aujourd'hui (déplacés ou non, GD-9), port compris. */
 export function bornesDesLieux(a: ArchipelagoId): { minX: number; maxX: number; minY: number; maxY: number } {
   return bornesDesIles(a, mapOf(a));
 }
@@ -49,7 +54,7 @@ function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[]): { minX: nu
     // Deux cases de marge : la couronne d'un grand arbre, l'écume d'une cascade débordent de la terre.
     minX = Math.min(minX, b.x0 - 2);
     maxX = Math.max(maxX, b.x1 + 2);
-    minY = Math.min(minY, b.y0 - ISLET_H - ISLET_GAP);
+    minY = Math.min(minY, b.y0 - MER_DEVANT);
     maxY = Math.max(maxY, b.y1 + 2);
   }
   const dock = dockBox(getArchipelago(a).port);

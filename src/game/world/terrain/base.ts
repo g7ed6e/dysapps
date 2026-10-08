@@ -222,7 +222,7 @@ const couchesCache = new WeakMap<readonly { x: number; y: number }[], readonly {
 
 /**
  * Sous une terre en altitude, la roche s'amincit : chaque couche garde les cases dont les quatre voisines étaient
- * au-dessus. Mémorisé par liste de cases (celles de `landCells` et de `bossIsletCells` le sont déjà).
+ * au-dessus. Mémorisé par liste de cases (celles de `landCells` le sont déjà).
  */
 export function taperLayers(cells: readonly { x: number; y: number }[]): readonly { x: number; y: number; d: number }[] {
   const known = couchesCache.get(cells);

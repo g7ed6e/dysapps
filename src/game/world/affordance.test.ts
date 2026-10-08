@@ -281,7 +281,7 @@ describe('les bulles (proposition P2, 4 octobre 2026)', () => {
 
 it('le Golem de roche (Gardien de l’île des lettres) : sa bulle au-dessus de son cube le plus haut, dans le monde', () => {
   const ile = 'french-6e-letter-confusion' as const;
-  // Son île ouverte (le pont depuis la Forêt) : il attend sur son îlot.
+  // Son île ouverte (le pont depuis la Forêt) : il attend sur son île.
   const golem = guardianPlacements('6e', {}, ['french-6e-phonology-french-6e-letter-confusion'], true).find((g) => g.id === ile)!;
   expect(golem.beaten).toBe(false);
   // Tous ses cubes, la tête et l'œil d'or compris : le plus haut est le dessus de sa tête.

@@ -313,7 +313,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'french-3e-close-reading-fixture-1': [5, 11],
   'english-6e-vocabulary-fixture-1': [8, 6],
   'english-6e-grammar-fixture-1': [10, 9],
-  'history-6e-antiquity-fixture-1': [0, 10],
+  'history-6e-antiquity-fixture-1': [1, 10],
   'geography-6e-living-fixture-1': [-1, 11],
   'history-5e-middle-ages-fixture-1': [1, 10],
   'geography-5e-resources-fixture-1': [2, 10],

@@ -215,7 +215,7 @@ export const BLOCLAND = {
       },
     },
     'history-6e-antiquity': {
-      challenge: 'L’Amphore peinte attend sur son îlot : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. »',
+      challenge: 'L’Amphore peinte attend sur son île : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. »',
       guardianSays: {
         hit: 'Juste. Une bande de ma frise reprend sa couleur.',
         miss: 'Mes couleurs restent. Regarde la frise, du plus ancien au plus récent, et reprends.',

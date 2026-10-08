@@ -18,7 +18,7 @@ import {
   placerALEchelle,
   sortDeLaPlace,
 } from './arrangeHandles';
-import { type ArrangeChoice, choiceFits, chooseGuardian, chooseIsland, chooseStation } from './arrangeMode';
+import { type ArrangeChoice, choiceFits, chooseIsland, chooseStation } from './arrangeMode';
 import { arrangeView } from './arrangeView';
 import { toutConstruit } from './budget';
 import { mapOf } from './map';
@@ -58,7 +58,7 @@ describe('les poignées autour du choix', () => {
     const [st] = questStations(id);
     const c = chooseStation(world, `${id}:${st.typeId}`)!;
     expect(c).not.toBeNull();
-    for (const choix of [c, unLieu, chooseGuardian(world, lieux[1])!]) {
+    for (const choix of [c, unLieu]) {
       const v = arrangeView(world, choix);
       const p = v.poignees!;
       if (choix === c) expect(p.liste.map((q) => q.cle)).not.toContain('tourner');
@@ -74,16 +74,10 @@ describe('les poignées autour du choix', () => {
     }
   });
 
-  it('un Gardien tourne : « Tourner » sert toujours', () => {
-    const c = chooseGuardian(world, lieux[1])!;
-    const p = arrangeView(world, c).poignees!;
-    expect(p.liste.find((q) => q.cle === 'tourner')?.dispo).toBe(true);
-  });
-
   it('à toute échelle, deux poignées ne se touchent jamais ni ne touchent le milieu du choix, même autour d’une borne', () => {
     const id = lieux[0];
     const [st] = questStations(id);
-    const choix = [chooseStation(world, `${id}:${st.typeId}`)!, unLieu, chooseGuardian(world, lieux[1])!];
+    const choix = [chooseStation(world, `${id}:${st.typeId}`)!, unLieu];
     for (const c of choix) {
       const v = arrangeView(world, c);
       const p = v.poignees!;

@@ -6,11 +6,13 @@
 // 1,5 case, neige sur celui du haut) ; le Belvédère perd ses deux pics, jumeaux de ceux du Glacier et de la Falaise, pour
 // un dôme bas en gradins de 6 blocs. L'île du Phare n'a pas de gradins (son anneau ne fait que 3 cases : ses gradins sont
 // le socle du phare) ; les autres îles restent basses et arrondies. Comme au 5e, ni le cœur, ni la première rangée de
-// l'anneau, ni les abords d'un ouvrage ne bougent : la marche, les bornes, les plans et le chemin restent où ils sont.
+// l'anneau, ni les abords d'un ouvrage, ni le carré du Gardien (GD-11) ne bougent : la marche, les bornes, les plans,
+// le chemin et le Gardien restent où ils sont.
 import type { BiomeId } from '../../biomes';
-import { bornesDuCoeur, islandDef, landCells } from '../map';
-import { origineDe } from '../terrain';
-import { amorcesDOrigine, amorcesVersLesIlesVenues } from '../terrain/links';
+import { bornesDuCoeur, islandDef, landCells, startingIsland } from '../map';
+import { bridgesOf } from '../archipelago';
+import { guardianCells, origineDe } from '../terrain';
+import { amorcesDOrigine, amorcesVersLesIlesVenues, casesDeLOuvrage } from '../terrain/links';
 import type { Modele } from './types';
 
 /** La hauteur d'un gradin (en blocs), son retrait sur le précédent (en cases), et la distance gardée aux ouvrages. */
@@ -28,7 +30,14 @@ function repere(id: BiomeId) {
   abords.push(...amorcesDOrigine(id));
   // Et celles des liaisons vers les îles d'histoire-géographie (HG-3), venues après la fiche.
   abords.push(...amorcesVersLesIlesVenues(id));
-  const pres = (x: number, y: number) => abords.some((c) => Math.abs(c.x - x) <= ABORDS && Math.abs(c.y - y) <= ABORDS);
+  // Et toutes ses liaisons tracées sur la carte de départ : depuis GD-11, sans les îlots des Gardiens, certaines s'y
+  // tracent autrement.
+  const coeur = startingIsland(id).core;
+  for (const b of bridgesOf(id)) for (const c of casesDeLOuvrage(b, [], startingIsland)) abords.push({ x: c.x - coeur.x, y: c.y - coeur.y });
+  // Le carré du Gardien (GD-11) et une case autour : il se tient sur un sol qui ne bouge pas.
+  const gardien = new Set<string>();
+  for (const c of guardianCells(id)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) gardien.add(`${c.x - o.x + dx},${c.y - o.y + dy}`);
+  const pres = (x: number, y: number) => gardien.has(`${x},${y}`) || abords.some((c) => Math.abs(c.x - x) <= ABORDS && Math.abs(c.y - y) <= ABORDS);
   // Le bord du fond du cœur (borne exclue), en repère d'île : la première rangée derrière le cœur.
   const fond = bornesDuCoeur(islandDef(id)).y1;
   return { cases, pres, fond };

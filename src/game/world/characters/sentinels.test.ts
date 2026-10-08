@@ -6,7 +6,7 @@ import type { FacettesDePersonnage, V3 } from './painted';
 import { toutConstruit } from '../budget';
 import { GRUE } from '../decor/4e';
 import { PHARES } from '../decor/lighthouse';
-import { bossIsletCenter, guardianPlacements, versLaCamera } from '../terrain';
+import { guardianCenter, guardianPlacements, versLaCamera } from '../terrain';
 import { fusionDesGardiens, pointDePose } from './merges';
 import {
   allumage,
@@ -345,12 +345,12 @@ describe('Les sentinelles dans le monde (revue d’ensemble du directeur artisti
     }
   });
 
-  it('la caméra du rallumage vise le milieu de la sentinelle, un bloc au-dessus du point de l’îlot', () => {
+  it('la caméra du rallumage vise le milieu de la sentinelle, un bloc au-dessus du milieu de son carré (GD-11)', () => {
     for (const b of BIOMES.filter((x) => x.classe === '6e')) {
       const g = guardianPlacements('6e', progress, village.links).find((p) => p.id === b.id);
       if (!g) continue;
       const pied = pointDePose(g)[1];
-      expect(bossIsletCenter(b.id).z + 1, b.id).toBeCloseTo(pied + HAUTEUR_DANS_LE_MONDE / 2, 1);
+      expect(guardianCenter(b.id).z + 1, b.id).toBeCloseTo(pied + HAUTEUR_DANS_LE_MONDE / 2, 1);
     }
   });
 });

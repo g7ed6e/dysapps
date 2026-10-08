@@ -6,7 +6,7 @@
 import type { BiomeId } from '../biomes';
 import { type BridgeDef, type BridgeKind, BRIDGES, bridgesOf, getBridge, otherEnd, provideLinkGeometry, SHORT_LINK } from './archipelago';
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, mapOf } from './map';
-import { chosenGuardian, layoutCache, layoutChanged } from './placement';
+import { layoutCache, layoutChanged } from './placement';
 import { linkBetweenJoined, type LinkLandings, LONG_LENGTH, type LinkRoute, RegionRouter } from './routing';
 import { visibleReefs } from './terrain/sea';
 import { appliedJoins, joinOf } from './join';
@@ -42,7 +42,7 @@ const soleRoutes = layoutCache<string, LinkRoute | null>();
 /** Le traceur d'une région, sans aucune liaison : la terre, les îlots, les quais, les écueils et les lieux réunis. */
 function emptyRouter(a: ArchipelagoId): RegionRouter {
   const reunions = appliedJoins(a).map((j) => ({ pair: j.pair, zone: j.shape.zone }));
-  return new RegionRouter(a, { lieux: mapOf(a), ecueils: visibleReefs(a), arriveesDeLaLiaison: chosenLandings, reunions, gardiens: chosenGuardian });
+  return new RegionRouter(a, { lieux: mapOf(a), ecueils: visibleReefs(a), arriveesDeLaLiaison: chosenLandings, reunions });
 }
 
 const emptyRouters = layoutCache<ArchipelagoId, RegionRouter>();
@@ -50,7 +50,7 @@ const emptyRouters = layoutCache<ArchipelagoId, RegionRouter>();
 /**
  * Le tracé d'une liaison seule dans la disposition (sans les autres liaisons). C'est aussi le tracé de repli d'une
  * liaison posée que le traceur ne refait pas (une sauvegarde d'avant GD-9, posée quand les lieux n'étaient pas à la
- * même place) : il évite la terre, les îlots des Gardiens et les écueils ; faute de quoi la liaison garde son tracé
+ * même place) : il évite la terre, les îlots des monuments et les écueils ; faute de quoi la liaison garde son tracé
  * d'origine (`traceDOrigine`, ./terrain/links.ts).
  */
 export function soleRoute(b: BridgeDef): LinkRoute | null {

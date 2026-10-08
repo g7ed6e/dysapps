@@ -18,7 +18,7 @@ import { Icon } from '../components/Icon';
 import { ArrangeHandles } from './ArrangeHandles';
 import { HABILLAGES } from './world/skin';
 import { toutConstruit } from './world/budget';
-import { freeGuardianSpots, freeSpots, freeStationSpots, guardianOf, isletMiddle, joinedWith, linksToRelink, nearestFreeSpot, NO_MORE_ROOM, placeIn, spotOf, stationOf } from './world/arrange';
+import { freeSpots, freeStationSpots, joinedWith, linksToRelink, nearestFreeSpot, NO_MORE_ROOM, placeIn, spotOf, stationOf } from './world/arrange';
 import { frameOf } from './world/footprint';
 import { mapOf } from './world/map';
 import { DESCENTE_MS, GESTE_DU_LIEU } from './world/arrangeGesture';
@@ -117,32 +117,12 @@ const iconeDeReunion = (id: BiomeId) => {
 const boutonsDeLaBarre = () => Array.from(document.querySelectorAll('.arrange-bar button')).map((b) => b.getAttribute('aria-label') ?? b.textContent?.trim());
 
 describe('le mode « Aménager »', () => {
-  it('« Tourner » un Gardien le pose tout de suite, et la phrase le dit', () => {
+  it('toucher un Gardien choisit son île : il la suit, sans ligne ni « Tourner » à lui (GD-11)', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     act(() => void dernier.intention({ genre: 'creature', id: VOLCAN, gardien: true }));
-    // La ligne de signes, comme un lieu : son île pour repère, la flèche, l'écart ; dite en mots.
-    expect(screen.getByRole('status').textContent).toMatch(/^Le Gardien : (au|à l’) [a-z-]+ du [^,]+, à \d+ cases?\.$/);
-    expect(dernier.ligne?.genre).toBe('gardien');
-    expect(document.querySelector('.arrange-signes')?.textContent).toContain(VOLCAN);
-    fireEvent.click(screen.getByRole('button', { name: /Tourner/ }));
-    // Plus de « C’est posé » : la ligne dit où il regarde, le son de la pose suffit.
-    expect(screen.getByRole('status').textContent).not.toMatch(/C’est posé/);
-    expect(screen.getByRole('status').textContent).not.toBe('');
-  });
-
-  it('« Tourner » un lieu qui, tourné, n’a aucune place libre : le fantôme ne tourne pas, la ligne le refuse (HG-3)', () => {
-    const GLACIER = 'maths-5e-signed-numbers' as const;
-    render(<SettingsProvider><Banc reduit depart={depart()} a="5e" /></SettingsProvider>);
-    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
-    act(() => void dernier.intention({ genre: 'ile', id: GLACIER }));
-    const avant = dernier.choix;
-    if (avant?.genre !== 'lieu') throw new Error('lieu');
-    fireEvent.click(within(screen.getByRole('group', { name: 'Déplacer' })).getByRole('button', { name: 'Tourner' }));
-    // Une croix et deux ou trois mots, comme les autres refus ; le fantôme garde son orientation.
-    expect(dernier.ligne).toEqual({ genre: 'refus', icone: 'close', texte: 'Pas de place' });
-    expect(screen.getByRole('status').textContent).toBe('Pas de place.');
-    expect(dernier.choix).toEqual(avant);
+    expect(dernier.choix).toMatchObject({ genre: 'lieu', id: VOLCAN });
+    expect(dernier.ligne?.genre).not.toBe('gardien');
   });
 
   it('choisir, décaler au clavier, poser à Entrée (moins d’animations), défaire, la mer touchée relâche, glisser pose, puis « Annuler » remet le plan comme à l’entrée', () => {
@@ -279,9 +259,9 @@ describe('le mode « Aménager »', () => {
     expect(dernier.glisse).toBe(true);
     act(() => dernier.glisser.lacher(true));
     expect(dernier.choix).toMatchObject({ genre: 'lieu', id: TOUR });
-    // Un Gardien ouvert se prend de même.
-    act(() => void dernier.glisser.prendre(isletMiddle(monde, VOLCAN, guardianOf(monde, VOLCAN)), { gardien: VOLCAN }));
-    expect(dernier.choix).toMatchObject({ genre: 'gardien', id: VOLCAN });
+    // Un glissé parti d'un Gardien prend son île (GD-11).
+    act(() => void dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { gardien: VOLCAN }));
+    expect(dernier.choix).toMatchObject({ genre: 'lieu', id: VOLCAN });
     act(() => dernier.glisser.lacher(false));
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
     const depart0 = spotOf(monde, VOLCAN);
@@ -350,22 +330,6 @@ describe('le mode « Aménager »', () => {
     act(() => dernier.glisser.lacher(false));
     expect(spotOf(monde, VOLCAN)).toEqual(depart0);
     expect(dernier.choix).toMatchObject({ genre: 'lieu', spot: libre });
-  });
-
-  it('un Gardien se glisse loin de son lieu (choix 4a) : posé au lever, son îlot détaché', () => {
-    render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
-    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
-    act(() => void dernier.intention({ genre: 'creature', id: VOLCAN, gardien: true }));
-    const ici = isletMiddle(monde, VOLCAN, guardianOf(monde, VOLCAN));
-    act(() => void dernier.glisser.prendre(ici, { gardien: VOLCAN }));
-    expect(dernier.glisse).toBe(true);
-    const loin = freeGuardianSpots(monde, VOLCAN).filter((g) => g.spot).map((g) => isletMiddle(monde, VOLCAN, g)).find((m) => Math.hypot(m.x - ici.x, m.y - ici.y) > 30)!;
-    act(() => dernier.glisser.suivre(loin));
-    expect(dernier.vue?.cases.some((k) => k.genre === 'lien')).toBe(true);
-    act(() => dernier.glisser.lacher(true));
-    expect(guardianOf(monde, VOLCAN).spot).toBeDefined();
-    // Avec moins d'animations : posé d'un coup, sans descente.
-    expect(dernier.geste).toBeNull();
   });
 
   it('« Valider » pose le choix en cours et garde le plan ; Échap n’annule jamais ; « Annuler » demande, sauf sans changement', () => {

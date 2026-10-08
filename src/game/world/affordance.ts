@@ -113,6 +113,21 @@ function boiteDe(cubes: readonly Cell[], o: Cell = { x: 0, y: 0, z: 0 }): Boite 
   return { min, max };
 }
 
+/**
+ * La boîte d'un personnage tel qu'il est dessiné : celle de ses cubes, ramenée à l'échelle de son dessin (`echelle`, un
+ * Gardien de Blocland : 0,5, GD-11) autour du milieu de son pied.
+ */
+function boiteDuPersonnage(p: Pick<CreaturePlacement, 'cubes' | 'origin' | 'echelle'>): Boite {
+  const b = boiteDe(p.cubes, p.origin);
+  const k = p.echelle ?? 1;
+  if (k === 1) return b;
+  const [cx, cy, z0] = [(b.min.x + b.max.x) / 2, (b.min.y + b.max.y) / 2, b.min.z];
+  return {
+    min: { x: cx + (b.min.x - cx) * k, y: cy + (b.min.y - cy) * k, z: z0 },
+    max: { x: cx + (b.max.x - cx) * k, y: cy + (b.max.y - cy) * k, z: z0 + (b.max.z - z0) * k },
+  };
+}
+
 /** Un objet et sa bulle, au-dessus du milieu de sa boîte. */
 function signeAuDessus(objet: ObjetTouche, etat: EtatDuSigne, iles: BiomeId[], boite: Boite): SigneDObjet {
   return { cle: cleDeLObjet(objet), objet, etat, x: (boite.min.x + boite.max.x) / 2, y: (boite.min.y + boite.max.y) / 2, z: boite.max.z + SIGNE.auDessus, iles, boite };
@@ -204,7 +219,7 @@ export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = 
   for (const g of creatures) {
     if (g.kind !== 'guardian' || g.beaten || !g.cubes.length) continue;
     const pret = etats ? etats.gardiensPrets.includes(g.id) : true;
-    out.push(signeAuDessus({ genre: 'gardien', id: g.id }, pret ? 'aFaire' : 'pasEncore', [g.id], boiteDe(g.cubes, g.origin)));
+    out.push(signeAuDessus({ genre: 'gardien', id: g.id }, pret ? 'aFaire' : 'pasEncore', [g.id], boiteDuPersonnage(g)));
   }
   // Le Bloc-Navire : à faire s'il a un bloc à poser ou s'il peut partir, sinon pas encore.
   if (vehicle?.cubes.length)
@@ -239,7 +254,7 @@ export function centreDeLObjet(
     case 'creature': {
       const gardien = objet.genre === 'gardien';
       const p = creatures.find((c) => c.id === objet.id && (c.kind === 'guardian') === gardien);
-      return p?.cubes.length ? centre(boiteDe(p.cubes, p.origin)) : null;
+      return p?.cubes.length ? centre(boiteDuPersonnage(p)) : null;
     }
     case 'ile':
       return ile ? ile(objet.id) : null;

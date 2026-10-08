@@ -235,8 +235,8 @@ type Fiche = Omit<MonumentDef, 'cells' | 'origin' | 'zone'> & { draw: () => Plan
 /**
  * Les places des îlots : trouvées une fois (la place libre la plus proche de l'île du monument, voir `monumentIsletFree`
  * dans terrain.ts), puis écrites ici, pour que le dessin du monde n'ait
- * rien à chercher. Un test vérifie qu'elles restent libres (loin des terres, des ouvrages, des îlots des Gardiens, du port
- * et des baleines).
+ * rien à chercher. Un test vérifie qu'elles restent libres (loin des terres, des ouvrages, du port et des
+ * baleines).
  */
 const FICHES: Fiche[] = [
   {

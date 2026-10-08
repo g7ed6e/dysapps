@@ -238,8 +238,8 @@ function FicheDeLaBorne({ id, onClose }: Props & { id: string }) {
 
 /**
  * Le Gardien : ce qu'il attend (une phrase), ou « Rallumer » quand il est prêt, déjà rallumé avec ses étoiles (GD-8).
- * Son îlot peut se tenir loin de son lieu (7 octobre 2026, choix 4a du mainteneur) : la fiche nomme son lieu (son icône et
- * son nom) ; « Rallumer » ouvre le défi d'ici, sans trajet du bonhomme ; pas encore prêt, « Y aller » mène à son lieu.
+ * Il se tient sur son île (GD-11) : la fiche nomme son lieu (son icône et son nom) ; « Rallumer » ouvre le défi d'ici,
+ * sans trajet du bonhomme ; pas encore prêt, « Y aller » mène à son lieu.
  */
 function FicheDuGardien({ ile, onClose, onAllerAuLieu }: Props & { ile: BiomeId }) {
   const { state } = useBlocland();
@@ -283,7 +283,7 @@ function FicheDuGardien({ ile, onClose, onAllerAuLieu }: Props & { ile: BiomeId 
         )
       }
     >
-      {/* Son lieu, en signes : son icône et son nom (son îlot peut se tenir loin de lui). */}
+      {/* Son lieu, en signes : son icône et son nom. */}
       <p className="world-fiche-lieu">
         <Icon name={biome.icon} /> {biome.name}
       </p>
