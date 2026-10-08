@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
@@ -116,6 +116,7 @@ it('le phare du large, un grand projet : cinq pièces, deux recettes, un seul bo
   expect(recettes).toHaveLength(2);
   // La recette que le stock paie est choisie d'avance, et le bouton mène à sa question.
   expect(recettes[1]).toBeChecked();
+  expect(screen.getAllByRole('radio', { name: /tu les as/ })).toEqual([recettes[1]]);
   expect(screen.getByRole('link', { name: /Construire le socle/ })).toHaveAttribute('href', '/adventure/project/landmark-5e-1/1');
   // L'autre recette manque de blocs : le bouton est gris et la liste dit où les gagner.
   await user.click(recettes[0]);
@@ -133,4 +134,5 @@ it('une pièce commencée bloc par bloc se finit sans rien payer', async () => {
   expect(screen.getByRole('button', { name: /Construire la tour/ })).toBeDisabled();
   // « Finir » a disparu : le focus va à la ligne qui dit la pièce posée.
   expect(screen.getByRole('status')).toHaveTextContent('Pièce posée : le socle.');
+  await waitFor(() => expect(screen.getByRole('status')).toHaveFocus());
 });

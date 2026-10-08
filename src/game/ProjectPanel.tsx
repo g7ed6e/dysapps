@@ -115,8 +115,8 @@ function RecipeCard({
   const ok = canPay(stock, recipe);
   const label = recipe.ingredients.map((i) => `${i.n} ${blockName(i.bloc, i.n)}`).join(' et ');
   return (
-    <label className="project-recipe" aria-label={`${label}${ok ? ', tu les as' : ''}`}>
-      <input type="radio" name={group} className="visually-hidden" checked={checked} onChange={onPick} />
+    <label className="project-recipe">
+      <input type="radio" name={group} className="visually-hidden" aria-label={`${label}${ok ? ', tu les as' : ''}`} checked={checked} onChange={onPick} />
       {recipe.ingredients.map((i) => (
         <span key={i.bloc} className="project-ingredient">
           <BlockIcon top={BLOCKS[i.bloc].top} side={BLOCKS[i.bloc].side} size={28} />
