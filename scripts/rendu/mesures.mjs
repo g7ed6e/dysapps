@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, gardiens ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -897,6 +897,29 @@ const CAPTURES = [
   { nom: 'sciences-college-carte-3e-od-ruche', vue: 'carte', famille: 'sciences-college', ile: 'technology-3e-digital', reglages: { font: 'opendyslexic' } },
   { nom: 'sciences-college-physics-chemistry-4e-signals-circuits-apres-nuit-recul', vue: 'île', famille: 'sciences-college', ile: 'physics-chemistry-4e-signals-circuits', nuit: true, zoomer: -2 },
   { nom: 'sciences-college-defi-grand-bi-od32', vue: 'défi', famille: 'sciences-college', ile: 'technology-4e-modeling', debout: 'technology-4e-modeling', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  // Les Gardiens sur leur île (GD-11, famille `gardiens`, à retirer une fois le lot fusionné) : la vue de l'île là où le
+  // Gardien ne se voit qu'en partie (l'Horloge des verbes, la Prairie des climats, le Bassin des maquettes ; le Phare des
+  // fonctions défi prêt, pour voir sa bulle entière) ; la machine d'Ixe à l'Atelier, posée ; panneau ouvert, le Marais
+  // des temps, l'Observatoire des textes et le Belvédère de Thalès (le Sphinx de marbre que Théo cachait) ; la Carte du
+  // 6e au téléphone, le bonhomme sur la Fouille des siècles.
+  ...[
+    ['horloge', 'english-6e-grammar'],
+    ['prairie', 'life-earth-sciences-5e-active-planet'],
+    ['bassin', 'technology-4e-modeling'],
+  ].map(([court, ile]) => ({ nom: `gd-11-${court}`, vue: 'île', famille: 'gardiens', ile })),
+  { nom: 'gd-11-phare-defi-pret', vue: 'île', famille: 'gardiens', ile: 'maths-3e-functions', debout: 'maths-3e-functions' },
+  // Depuis le seuil de 75 % (DA, 8 octobre 2026), le Hangar des inventions et le Verger de la santé ont leur Gardien
+  // sur un côté de devant : défi prêt, et le Hangar au téléphone.
+  { nom: 'gd-11-hangar-defi-pret', vue: 'île', famille: 'gardiens', ile: 'technology-6e-objects', debout: 'technology-6e-objects' },
+  { nom: 'gd-11-hangar-defi-pret-390x844', vue: 'île', famille: 'gardiens', ile: 'technology-6e-objects', debout: 'technology-6e-objects', taille: { width: 390, height: 844 } },
+  { nom: 'gd-11-verger-defi-pret', vue: 'île', famille: 'gardiens', ile: 'life-earth-sciences-3e-human-body', debout: 'life-earth-sciences-3e-human-body' },
+  { nom: 'gd-11-atelier-machine', vue: 'île', famille: 'gardiens', ile: 'maths-4e-algebra', posees: 'toutes' },
+  ...[
+    ['marais', 'french-5e-conjugation'],
+    ['observatoire-textes', 'french-3e-close-reading'],
+    ['belvedere', 'maths-3e-geometry'],
+  ].map(([court, ile]) => ({ nom: `gd-11-${court}-panneau`, vue: 'île', famille: 'gardiens', ile, voir: '.island-sheet' })),
+  { nom: 'gd-11-carte-6e-390x844', vue: 'carte', famille: 'gardiens', ile: 'history-6e-antiquity', taille: { width: 390, height: 844 } },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

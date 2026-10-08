@@ -4,7 +4,7 @@
 import type { BiomeId } from "../biomes";
 import { getArchipelago } from "./archipelago";
 import { placedLinksOf } from "./linkGeometry";
-import { isletInWorld, monumentIslet } from "./footprint";
+import { monumentIslet } from "./footprint";
 import { dockBox } from "./harbor";
 import {
   archipelagoOfIsland,
@@ -51,7 +51,7 @@ interface Grid {
 
 const gridCache = layoutCache<string, Grid>();
 
-/** Ce que la baleine évite, case par case : terres, îlots des Gardiens et des monuments, ouvrages, port, rochers. */
+/** Ce que la baleine évite, case par case : terres, îlots des monuments, ouvrages, port, rochers. */
 function obstacles(a: ArchipelagoId, links: readonly string[]): Grid {
   const cle = `${a}|${placedLinksOf(a, links).map((d) => d.id).join(',')}`;
   const known = gridCache.get(cle);
@@ -68,12 +68,7 @@ function obstacles(a: ArchipelagoId, links: readonly string[]): Grid {
     const j = y - y0;
     if (i >= 0 && j >= 0 && i < w && j < h) cells[j * w + i] = 1;
   };
-  for (const def of mapOf(a)) {
-    for (const c of landCells(def)) mark(c.x, c.y);
-    const r = isletInWorld(def);
-    for (let x = r.x0; x < r.x1; x++)
-      for (let y = r.y0; y < r.y1; y++) mark(x, y);
-  }
+  for (const def of mapOf(a)) for (const c of landCells(def)) mark(c.x, c.y);
   for (const def of placedLinksOf(a, links)) for (const c of bridgePath(def, links)) mark(c.x, c.y);
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++)

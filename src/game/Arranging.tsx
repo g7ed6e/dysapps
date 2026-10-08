@@ -15,11 +15,10 @@ import { sonDePose } from './sound';
 import { mesuresDemandees } from './rendering';
 import type { Habillage } from './skin';
 import { type ArchipelagoId, archipelagoOfIsland } from './world/archipelagos';
-import { type Direction, groupAt, guardianOf, type GuardianPlaceAt, guardianPlacesAt, isDetached, joinCandidates, joinedWith, joinIslands, joinsIn, linksToRelink, NO_MORE_ROOM, placeIn, sameGuardianPlace, spotOf, stationOf, currentLandings } from './world/arrange';
+import { type Direction, groupAt, joinCandidates, joinedWith, joinIslands, joinsIn, linksToRelink, NO_MORE_ROOM, placeIn, spotOf, stationOf, currentLandings } from './world/arrange';
 import {
   type ArrangeChoice,
   choiceFits,
-  chooseGuardian,
   chooseIsland,
   chooseLanding,
   chooseRelink,
@@ -32,19 +31,17 @@ import {
   snapChoice,
   stepChoice,
   turnChoice,
-  turnGuardianNow,
 } from './world/arrangeMode';
 import { type ArrangeSession, canUndo, hasChanged, recordPose, resetToEntry, startArranging, undoLast } from './world/arrangeSession';
 import { arrangeView } from './world/arrangeView';
 import { getBridge } from './world/archipelago';
 import { DESCENTE_MS, GESTE_DU_LIEU, GESTE_SOUS_LE_SOL, gestureZone } from './world/arrangeGesture';
 import type { ArrangeGesture, ArrangeView, CadreDuMode, GlisserLeChoix } from './world/view';
-import { footprintOf, guardianIsletRectangle, landRectangle } from './world/footprint';
+import { footprintOf, landRectangle } from './world/footprint';
 import { mapOf } from './world/map';
 import type { Intention, Point } from './world/layout';
 import type { Rectangle } from './world/placement';
-import { guardianSigns, type PlaceName, type PlaceSigns, placeSigns, placeSignsSentence } from './world/placeSentence';
-import type { GuardianPlace } from './world/savedLayout';
+import { type PlaceName, type PlaceSigns, placeSigns, placeSignsSentence } from './world/placeSentence';
 import { joinedSentence, ofPlace, thePlace } from './world/placeArticle';
 import { LIAISON, type LinkPhrases, type LinkWord, linkPhrases } from './world/linkWord';
 
@@ -80,7 +77,6 @@ function explicationDeLaReunion(reunion: TextesDeLaReunion): string {
  * `role="status"` disent `phrase`, la même chose en mots.
  * - `place` : le voisin repère, la flèche, le nombre et la case (« Mine des lettres ↖ 4 ⬚ »), et les ouvrages à reposer ;
  * - `refus` : une croix (ou un cadenas pour le lieu fixe) et deux ou trois mots, toujours écrits (référent dys) ;
- * - `gardien` : le bouclier, son île, la flèche, l'écart (comme `place`, son île pour repère) ;
  * - `reunis` : les deux lieux réunis, l'icône de « Réunir » entre eux ;
  * - `texte` : une phrase écrite telle quelle (une borne, une arrivée, « Touche un lieu… ») ; pour une arrivée, `vers` :
  *   le lieu d'en face, écrit après l'icône de l'ouvrage (consultant UX UI) ;
@@ -90,7 +86,6 @@ function explicationDeLaReunion(reunion: TextesDeLaReunion): string {
 export type LigneDuMode =
   | { genre: 'texte'; texte: string; vers?: string; prise?: boolean }
   | { genre: 'place'; signes: PlaceSigns; aReposer: number; prise?: boolean }
-  | { genre: 'gardien'; signes: PlaceSigns; prise?: boolean }
   | { genre: 'refus'; icone: 'close' | 'lock'; texte: string }
   | { genre: 'reunis'; a: string; b: string; aReposer: number };
 
@@ -258,16 +253,13 @@ export interface Amenagement {
 }
 
 /**
- * L'emprise d'un lieu (sa terre et l'îlot de son Gardien) dans un monde, en un rectangle ; avec le lieu auquel il est
+ * L'emprise d'un lieu (sa terre, où se tient son Gardien) dans un monde, en un rectangle ; avec le lieu auquel il est
  * réuni et leur réunion, qui bougent avec lui.
  */
 function emprise(world: World, id: BiomeId): Rectangle {
   const autre = joinedWith(world, id);
   const lieux = autre ? [id, autre] : [id];
-  // L'îlot d'un Gardien détaché (choix 4a du mainteneur) ne bouge pas avec son lieu : il n'est pas dans son emprise.
-  const parts: Rectangle[] = lieux.flatMap((l) =>
-    footprintOf(l, placeIn(world, l), guardianOf(world, l)).filter((p) => p.genre === 'terre' || (p.genre === 'ilot' && !isDetached(guardianOf(world, l)))),
-  );
+  const parts: Rectangle[] = lieux.flatMap((l) => footprintOf(l, placeIn(world, l)).filter((p) => p.genre === 'terre'));
   const zone = autre ? joinsIn(world, archipelagoOfIsland(id)).find((j) => j.pair.includes(id))?.shape.zone : undefined;
   if (zone) parts.push(zone);
   return {
@@ -305,8 +297,6 @@ export function useAmenagement({
   // Le doigt glisse le choix (choix 1b) : l'écart entre le doigt et le milieu du choix, pris au départ.
   const [glisse, setGlisse] = useState(false);
   const prise = useRef<{ dx: number; dy: number } | null>(null);
-  // Les places de l'îlot du Gardien glissé, calculées une fois au départ du glissé.
-  const placesDuGardien = useRef<GuardianPlaceAt[] | undefined>(undefined);
   const [phrase, setPhrase] = useState('');
   const [ligne, setLigne] = useState<LigneDuMode | null>(null);
   const [liste, setListe] = useState(false);
@@ -353,11 +343,6 @@ export function useAmenagement({
   };
   /** Le lieu avec lequel un lieu se réunirait, à sa place dans un monde (le premier voisin ouvert), ou rien. */
   const voisinAReunir = (w: World, id: BiomeId) => joinCandidates(w, id)[0] ?? null;
-  /** Où est le Gardien d'un lieu, en signes (son île, la flèche, l'écart) ; dit en mots. */
-  const ligneDuGardien = (w: World, id: BiomeId, g?: GuardianPlace): { ligne: LigneDuMode; lu: string } => {
-    const signes = guardianSigns(w, id, g, nom);
-    return { ligne: { genre: 'gardien', signes }, lu: `Le Gardien : ${placeSignsSentence(signes)}.` };
-  };
   const choisir = (c: ArrangeChoice | null, texte?: string, muet = false) => {
     setChoix(c);
     setQuestion(null);
@@ -374,9 +359,7 @@ export function useAmenagement({
     const l: { ligne: LigneDuMode; lu: string } =
       c.genre === 'lieu'
         ? ligneDuLieu(w, c.id, c.spot)
-        : c.genre === 'gardien'
-          ? ligneDuGardien(w, c.id, c.place)
-          : (() => {
+        : (() => {
             const t = choiceSentence(w, c, nom, mot);
             const vers = c.genre === 'arrivee' ? lieuDEnFace(c.link, c.end) : null;
             // Dit : « L’arrivée, sur la côte sud de la Forêt des sons, vers la Plaine des nombres. » (comme le nom du bouton).
@@ -385,7 +368,6 @@ export function useAmenagement({
           })();
     if (!prise) return montrer(l.ligne, l.lu);
     if (l.ligne.genre === 'place') return montrer({ ...l.ligne, prise: true }, `${enPhrase(ou(l.ligne.signes))} ${PLACE_PRISE}.`);
-    if (l.ligne.genre === 'gardien') return montrer({ ...l.ligne, prise: true }, `Le Gardien : ${ou(l.ligne.signes)}. ${PLACE_PRISE}.`);
     if (l.ligne.genre === 'texte') return montrer({ ...l.ligne, prise: true }, `${l.lu} ${PLACE_PRISE}.`);
     montrer(l.ligne, l.lu);
   };
@@ -426,9 +408,7 @@ export function useAmenagement({
     const apres: { ligne: LigneDuMode; lu: string } =
       choix.genre === 'lieu'
         ? ligneDuLieu(r.world, choix.id, spotOf(r.world, choix.id), n)
-        : choix.genre === 'gardien' && !n
-          ? ligneDuGardien(r.world, choix.id)
-          : (() => {
+        : (() => {
             const t = poseSentence(r.world, choix, nom, mot);
             const lu = t + (n ? ` ${mot.aReposer(n)}` : '');
             return { ligne: { genre: 'texte', texte: insecable(lu) } satisfies LigneDuMode, lu };
@@ -438,9 +418,9 @@ export function useAmenagement({
     const rechoisir = choix.genre === 'lieu' && joinCandidates(r.world, choix.id).length ? { ...choix, spot: spotOf(r.world, choix.id) } : null;
     // Lâché au doigt sur une place libre (choix 2a), dans Blocland : déjà à sa nouvelle place, il redescend d'un cube,
     // puis le « clac » ; d'un coup avec moins d'animations, et dans Archipéo (son voile reste pour « Poser »).
-    if (sansGeste && !reduceMotion && habillage.pose === 'geste' && (choix.genre === 'lieu' || choix.genre === 'gardien')) {
+    if (sansGeste && !reduceMotion && habillage.pose === 'geste' && choix.genre === 'lieu') {
       arrange(r.world);
-      const zone = choix.genre === 'lieu' ? emprise(r.world, choix.id) : guardianIsletRectangle(placeIn(r.world, choix.id), guardianOf(r.world, choix.id));
+      const zone = emprise(r.world, choix.id);
       const g: GesteEnCours = { apres: r.world, ligne: apres.ligne, phrase: apres.lu, timers: [], remonte: true, rechoisir };
       enCours.current = g;
       setGeste({ seq: ++seq.current, phase: 'descend', zone, debut: performance.now(), dureeMs: DESCENTE_MS, bas: 0, haut: 0 });
@@ -480,7 +460,7 @@ export function useAmenagement({
   const ouvrir = () => {
     if (ouvert) return;
     setSession(startArranging(worldRef.current));
-    choisir(null, `Touche un lieu, un Gardien, une borne ou ${mot.un} pour le déplacer.`);
+    choisir(null, `Touche un lieu, une borne ou ${mot.un} pour le déplacer.`);
   };
   /** Le mode se ferme : rien n'est en cours, plus rien ne s'affiche. */
   const fermer = () => {
@@ -548,16 +528,6 @@ export function useAmenagement({
   };
   const tourner = () => {
     if (!choix || enCours.current || !session) return;
-    if (choix.genre === 'gardien') {
-      const w = worldRef.current;
-      const { result, sentence } = turnGuardianNow(w, choix.id);
-      if (!result.ok) return direRefus(refus(result.reason));
-      setSession(recordPose(session, w, result.world));
-      arrange(result.world);
-      if (sons) sonDeLaPose();
-      // Tourner un Gardien le pose tout de suite : la ligne dit où il regarde, le son de la pose suffit.
-      return direTexte(sentence);
-    }
     if (choix.genre !== 'lieu') return;
     // Il tourne sur place, même si la place devient prise : la croix grise le montre (choix 3 du mainteneur). Un lieu qui,
     // tourné, n'a aucune place libre ne tourne pas : la croix et « Pas de place » (consultant UX UI, HG-3).
@@ -634,31 +604,27 @@ export function useAmenagement({
   };
 
   /**
-   * Le doigt part-il du choix (choix 3a du mainteneur) ? Du lieu choisi (sa terre, ou son fantôme), du Gardien choisi
-   * (lui, son îlot, ou son fantôme) ; jamais d'ailleurs : la vue glisse.
+   * Le doigt part-il du choix (choix 3a du mainteneur) ? Du lieu choisi (sa terre, son Gardien, ou son fantôme) ; jamais
+   * d'ailleurs : la vue glisse.
    */
   const partDuChoix = (c: ArrangeChoice, p: { x: number; y: number }, touche: { lieu?: BiomeId; gardien?: BiomeId }): boolean => {
     const w = worldRef.current;
     const dans = (r: Rectangle) => p.x >= r.x0 && p.x < r.x1 && p.y >= r.y0 && p.y < r.y1;
     if (c.genre === 'lieu') {
-      if (touche.lieu && groupAt(w, c.id, spotOf(w, c.id)).some((g) => g.id === touche.lieu)) return true;
+      const touchee = touche.lieu ?? touche.gardien;
+      if (touchee && groupAt(w, c.id, spotOf(w, c.id)).some((g) => g.id === touchee)) return true;
       return dans(emprise(w, c.id)) || groupAt(w, c.id, c.spot).some((g) => dans(landRectangle(g.def)));
-    }
-    if (c.genre === 'gardien') {
-      if (touche.gardien === c.id) return true;
-      const ici = placeIn(w, c.id);
-      return dans(guardianIsletRectangle(ici, guardianOf(w, c.id))) || dans(guardianIsletRectangle(ici, c.place));
     }
     return false;
   };
   /**
-   * Un glissé parti d'un autre lieu ou d'un autre Gardien que le choix (ou sans choix) : il le prend directement, comme
-   * dans les jeux de base mobiles (mainteneur, 7 octobre 2026) ; un lieu fixe ou un Gardien caché ne se prennent pas.
+   * Un glissé parti d'un autre lieu que le choix (ou sans choix), de sa terre ou de son Gardien, qui suit son île
+   * (GD-11) : il le prend directement, comme dans les jeux de base mobiles (mainteneur, 7 octobre 2026) ; un lieu fixe ne
+   * se prend pas.
    */
   const autreAPrendre = (touche: { lieu?: BiomeId; gardien?: BiomeId }): ArrangeChoice | null => {
-    const w = worldRef.current;
-    if (touche.gardien) return chooseGuardian(w, touche.gardien);
-    return touche.lieu ? chooseIsland(w, touche.lieu) : null;
+    const id = touche.lieu ?? touche.gardien;
+    return id ? chooseIsland(worldRef.current, id) : null;
   };
   const glisser: GlisserLeChoix = {
     partDuChoix(point, touche) {
@@ -670,15 +636,14 @@ export function useAmenagement({
       let c = choixRef.current;
       if (!c || !partDuChoix(c, point, touche)) {
         const autre = autreAPrendre(touche);
-        if (!autre || !choiceMiddle(worldRef.current, autre)) return false;
+        if (!autre || !choiceMiddle(autre)) return false;
         // Choisi sans rien dire : la voix parle au lever du doigt.
         choisir(autre, undefined, true);
         c = autre;
       }
-      const m = choiceMiddle(worldRef.current, c);
+      const m = choiceMiddle(c);
       if (!m) return false;
       prise.current = { dx: m.x - point.x, dy: m.y - point.y };
-      placesDuGardien.current = c.genre === 'gardien' ? guardianPlacesAt(worldRef.current, c.id) : undefined;
       setGlisse(true);
       return true;
     },
@@ -686,18 +651,17 @@ export function useAmenagement({
       const c = choixRef.current;
       const d = prise.current;
       if (!c || !d) return;
-      const s2 = dragChoice(worldRef.current, c, { x: point.x + d.dx, y: point.y + d.dy }, placesDuGardien.current);
+      const s2 = dragChoice(worldRef.current, c, { x: point.x + d.dx, y: point.y + d.dy });
       // Le fantôme ne change qu'à chaque place franchie : la ligne (sans la voix) et les liaisons se retracent alors.
       if (!sameChoicePlace(c, s2)) choisir(s2, undefined, true);
     },
     lacher(poser) {
       const c = choixRef.current;
       prise.current = null;
-      placesDuGardien.current = undefined;
       setGlisse(false);
       if (!c) return;
       const w = worldRef.current;
-      const bouge = c.genre === 'lieu' ? !sameSpot(c.spot, spotOf(w, c.id)) : c.genre === 'gardien' ? !sameGuardianPlace(c.place, guardianOf(w, c.id)) : false;
+      const bouge = c.genre === 'lieu' && !sameSpot(c.spot, spotOf(w, c.id));
       // Levé sur une place libre : posé tout de suite ; sur une place prise, il reste là, croix grise (choix 2a) ; la
       // voix dit où.
       if (poser && bouge && choiceFits(w, c)) return poserIci(true);
@@ -739,7 +703,7 @@ export function useAmenagement({
         // Toucher la mer relâche le choix, comme dans les jeux de base mobiles (mainteneur, 7 octobre 2026) : on
         // déplace en glissant ; la vue simple et le clavier restent pour qui ne glisse pas.
         if (choix) return relacher();
-        direTexte('Touche d’abord un lieu, un gardien, une borne ou une liaison.');
+        direTexte('Touche d’abord un lieu, une borne ou une liaison.');
         return true;
       case 'ile': {
         const p = i.sol ? versMonde(i.sol) : null;
@@ -757,18 +721,14 @@ export function useAmenagement({
         else choisir(c);
         return true;
       }
-      case 'creature':
-        if (((choix?.genre === 'gardien' && i.gardien) || (choix?.genre === 'lieu' && !i.gardien)) && choix.id === i.id) return relacher();
-        if (i.gardien) {
-          // Le Gardien d'un lieu encore fermé reste caché et ne se déplace pas (choix 6a du mainteneur).
-          const g = chooseGuardian(w, i.id);
-          if (g) choisir(g);
-        } else {
-          const c = chooseIsland(w, i.id);
-          if (c) choisir(c);
-          else direRefus(refus('fixe'));
-        }
+      case 'creature': {
+        // Une créature ou un Gardien, qui suit son île (GD-11) : toucher l'un d'eux choisit son île.
+        if (choix?.genre === 'lieu' && choix.id === i.id) return relacher();
+        const c = chooseIsland(w, i.id);
+        if (c) choisir(c);
+        else direRefus(refus('fixe'));
         return true;
+      }
       case 'borne': {
         if (choix?.genre === 'borne' && choix.key === `${i.ile}:${i.mission}`) return relacher();
         const c = chooseStation(w, `${i.ile}:${i.mission}`);
@@ -776,7 +736,7 @@ export function useAmenagement({
         return true;
       }
       case 'ouvrage': {
-        // L'ouvrage d'une arrivée choisie, retouché : elle est relâchée, comme le lieu, le Gardien ou la borne.
+        // L'ouvrage d'une arrivée choisie, retouché : elle est relâchée, comme le lieu ou la borne.
         if (choix?.genre === 'arrivee' && choix.link === i.id) return relacher();
         const c = i.point && w.links.includes(i.id) ? chooseLanding(w, i.id, i.point) : null;
         if (c) choisir(c);
@@ -865,10 +825,9 @@ export function useAmenagement({
   };
 }
 
-/** Deux choix du même objet sont-ils à la même place (un lieu, orientation comprise ; un Gardien, son îlot) ? */
+/** Deux choix du même objet sont-ils à la même place (un lieu, orientation comprise) ? */
 function sameChoicePlace(c: ArrangeChoice, d: ArrangeChoice): boolean {
   if (c.genre === 'lieu' && d.genre === 'lieu') return sameSpot(c.spot, d.spot);
-  if (c.genre === 'gardien' && d.genre === 'gardien') return sameGuardianPlace(c.place, d.place);
   return c === d;
 }
 

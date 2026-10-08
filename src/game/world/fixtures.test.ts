@@ -20,6 +20,8 @@ import {
   creatureDuMonde,
   creatureSpot,
   cubesDeLIle,
+  GUARDIAN_SQUARE,
+  guardianSpot,
   lieuxVus,
   origineDe,
   placeDeLaPetiteConstruction,
@@ -188,6 +190,22 @@ describe.each(PLACED_FIXTURES.map((c) => [c.fixture, c] as const))('%s, sa place
     const livre = commandeDe(c.fixture)?.block;
     const caches = examen!.cubes.filter((k) => k.block === livre && !k.vus).map((k) => `${k.x},${k.y},${k.z}`);
     expect(caches).toEqual([]);
+  });
+
+  // GD-11 : le Gardien se tient sur son île, sur un carré à lui seul ; la commande comme l'objet d'une quête (GD-10),
+  // son eau comprise, n'y entrent jamais, à aucune LV2.
+  it('jamais sur le carré du Gardien, ni elle ni son eau', () => {
+    for (const lv2 of ['es', 'de', 'none'] as const) {
+      try {
+        retenirReglages({ ...DEFAULT_SETTINGS, lv2 });
+        const g = guardianSpot(c.biome);
+        const dessus = (x: number, y: number) => x >= g.x && y >= g.y && x < g.x + GUARDIAN_SQUARE && y < g.y + GUARDIAN_SQUARE;
+        for (const k of cases) expect(dessus(place.x + k.x, place.y + k.y), `${lv2} ${k.x},${k.y}`).toBe(false);
+        for (const [x, y] of eauDeLaPetiteConstruction(c.fixture)) expect(dessus(place.x + x, place.y + y), `${lv2} eau`).toBe(false);
+      } finally {
+        retenirReglages(null);
+      }
+    }
   });
 
   it('jamais sur la rangée nue devant les bornes, ni sur le chemin du bonhomme vers le navire', () => {

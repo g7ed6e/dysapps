@@ -212,7 +212,7 @@ export function WorldPage() {
   const creatures = useMemo(
     () => [
       ...creaturePlacements(a, state.world.links),
-      ...guardianPlacements(a, state.progress, state.world.links, sentinelles, state.world.challengesKeptOpen).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false, cubes: statueDe(c.cubes) } : c)),
+      ...guardianPlacements(a, state.progress, state.world.links, sentinelles, state.world.challengesKeptOpen, habillage.echelleDesGardiens).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false, cubes: statueDe(c.cubes) } : c)),
     ],
     // La disposition (GD-9) : la place des créatures et des Gardiens suit leur lieu.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -226,7 +226,7 @@ export function WorldPage() {
   );
   // La disposition en grille (world/grid.ts) : où sont les îles, les bornes, les ouvrages, et les trajets du bonhomme,
   // qui suit le sol et contourne arbres, bornes, maisons et créatures.
-  const grille = useMemo(() => dispositionEnGrille(a, state.world.links, { cubes, creatures }), [a, state.world.links, cubes, creatures]);
+  const grille = useMemo(() => dispositionEnGrille(a, state.world.links, { cubes, creatures }, habillage.echelleDesGardiens), [a, state.world.links, cubes, creatures, habillage.echelleDesGardiens]);
   /** Où le bonhomme se tient sur une île (en cases du monde). */
   const seTenir = (id: BiomeId) => grille.versMonde(grille.seTenir(id));
   /**

@@ -154,8 +154,6 @@ const ALLURE: Readonly<Record<ArrangeCellKind, { l: number; couleur: number }>> 
   socle: { l: 1, couleur: 0x2f2b26 },
   conflit: { l: 1, couleur: 0xd2cfc6 },
   barre: { l: 1, couleur: 0x2f2b26 },
-  // La ligne en pointillés d'un Gardien détaché vers son lieu (choix 4a) : des points blancs sur leur socle sombre.
-  lien: { l: 1, couleur: 0xffffff },
 };
 
 /**
@@ -306,11 +304,7 @@ export function creerAmenagement(
   const forme = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
   const bordure = textureBordee();
   const matiere = new THREE.MeshBasicMaterial({ map: bordure, transparent: true, opacity: 0.92, depthWrite: false });
-  // Ce qui passe au-dessus des poignées (la ligne d'un Gardien détaché, choix 4a) : sans test de profondeur, après elles.
-  // Transparente (mais opaque) pour être dessinée avec la mer, après elle : sinon la mer, dessinée ensuite, la voile.
-  const matiereDessus = new THREE.MeshBasicMaterial({ map: bordure, transparent: true, depthTest: false, depthWrite: false });
   let cases: THREE.InstancedMesh | null = null;
-  let dessus: THREE.InstancedMesh | null = null;
   const m = new THREE.Matrix4();
   const tourne = new THREE.Quaternion();
   const ici3 = new THREE.Vector3();
@@ -474,13 +468,11 @@ export function creerAmenagement(
   };
 
   const vider = () => {
-    for (const d of [cases, dessus]) {
-      if (!d) continue;
-      monde.scene.remove(d);
-      d.dispose();
+    if (cases) {
+      monde.scene.remove(cases);
+      cases.dispose();
     }
     cases = null;
-    dessus = null;
   };
 
   const zone = (r: { x0: number; y0: number; x1: number; y1: number }) => zoneDuMode.uAmZone.value.set(r.x0, r.y0, r.x1, r.y1);
@@ -564,11 +556,7 @@ export function creerAmenagement(
       poignees.poser(vue?.poignees ?? null);
       tailleDuNom();
       if (!vue || !vue.cases.length) return;
-      const dessous = vue.cases.filter((c) => !c.dessus);
-      const audessus = vue.cases.filter((c) => c.dessus);
-      cases = dessous.length ? maillageDes(dessous, matiere, 2) : null;
-      // Après les poignées (9), avant les étiquettes (10, 11) : la ligne d'un Gardien détaché ne passe jamais dessous.
-      dessus = audessus.length ? maillageDes(audessus, matiereDessus, 9.5) : null;
+      cases = maillageDes(vue.cases, matiere, 2);
     },
     geste(g) {
       enCours = g;
@@ -620,7 +608,6 @@ export function creerAmenagement(
       forme.dispose();
       bordure.dispose();
       matiere.dispose();
-      matiereDessus.dispose();
       if (voile) {
         monde.scene.remove(voile);
         voile.geometry.dispose();

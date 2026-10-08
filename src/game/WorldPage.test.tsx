@@ -636,8 +636,8 @@ it('un monument : on le touche dans le monde, la caméra va sur son îlot, son p
   const sheet = await screen.findByRole('dialog', { name: /L’observatoire des baleines/ });
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/landmark-6e-1');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('french-6e-reading');
-  // L'îlot du monument, dans le repère de son île (la case 4, 82 du monde).
-  expect(screen.getByTestId('point')).toHaveTextContent('french-6e-reading 7,26');
+  // L'îlot du monument (en -5, 75 du monde), dans le repère de son île.
+  expect(screen.getByTestId('point')).toHaveTextContent('french-6e-reading 7,28');
   expect(within(sheet).getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
   await user.click(within(sheet).getByRole('link', { name: 'Tous les monuments' }));
   const list = await screen.findByRole('dialog', { name: /Monuments/ });
@@ -1140,18 +1140,19 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
   it('« Autre départ » (le chevron, « 1/2 ») : le même titre, le départ suivant, et la caméra cadre sa liaison', async () => {
     vuSansAide();
     localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'decouverte-ouvrages': true }));
-    // La Mine reliée : la Rivière a deux départs, la Plaine (un pont) et la Mine (un bac).
+    // La Mine reliée : la Rivière a trois départs, la Plaine (un pont), la Mine (un bac), et un troisième depuis que les
+    // îlots des Gardiens ont quitté la mer (GD-11).
     localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['french-6e-phonology-french-6e-letter-confusion'] } }));
     const user = userEvent.setup();
     renderAt('/adventure');
     await user.click(screen.getByRole('button', { name: 'Toucher la Rivière pâle' }));
     await user.click(within(screen.getByRole('dialog', { name: 'Rivière des fractions' })).getByRole('button', { name: 'Relier' }));
     // D'abord le départ le plus proche, le même que le fantôme du monde : la caméra ne bouge pas.
-    expect(screen.getByRole('dialog', { name: /^Rivière des fractions/ })).toHaveTextContent(/Le pont part de la Plaine des nombres\. Départ 1 sur 2\./);
+    expect(screen.getByRole('dialog', { name: /^Rivière des fractions/ })).toHaveTextContent(/Le pont part de la Plaine des nombres\. Départ 1 sur 3\./);
     expect(vu.liaisonCadree).toBeNull();
-    await user.click(within(screen.getByRole('dialog', { name: /^Rivière des fractions/ })).getByRole('button', { name: 'Autre départ, 1 sur 2' }));
+    await user.click(within(screen.getByRole('dialog', { name: /^Rivière des fractions/ })).getByRole('button', { name: 'Autre départ, 1 sur 3' }));
     const o = screen.getByRole('dialog', { name: /^Rivière des fractions/ });
-    expect(o).toHaveTextContent(/part de la Mine des lettres\. Départ 2 sur 2\./);
+    expect(o).toHaveTextContent(/part de la Mine des lettres\. Départ 2 sur 3\./);
     expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-letter-confusion-maths-6e-fractions' } });
     expect(vu.liaisonCadree).toBe('french-6e-letter-confusion-maths-6e-fractions');
     // Le monde dessine le fantôme du départ choisi, à la place de celui du plus proche.

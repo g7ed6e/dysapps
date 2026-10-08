@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
 import { BIOMES } from '../biomes';
-import { freeSpots, guardianOf, moveGuardian, startingSpot } from './arrange';
-import { casesWord, DIRECTIONS, distanceWords, directionWords, guardianSentence, guardianSigns, ofPlace, placeSentence, placeSigns, placeSignsSentence, thePlace, toPlace } from './placeSentence';
+import { freeSpots, startingSpot } from './arrange';
+import { casesWord, DIRECTIONS, distanceWords, directionWords, ofPlace, placeSentence, placeSigns, placeSignsSentence, thePlace, toPlace } from './placeSentence';
 import { lieuDAssemblage } from './assembly';
 import { agreeWithPlace, joinedSentence } from './placeArticle';
 
@@ -102,25 +102,5 @@ describe('où est une place, en mots', () => {
     expect(casesWord(1)).toBe('1 case');
     // Huit flèches, une par direction, toutes différentes.
     expect(new Set(DIRECTIONS.map((d) => d.icone)).size).toBe(8);
-  });
-
-  it('l’îlot d’un Gardien : « au sud de son île », puis le côté où il va', () => {
-    const id: BiomeId = 'maths-6e-decimals';
-    expect(guardianSentence(VIDE, id)).toBe('au sud de son île');
-    const r = moveGuardian(VIDE, id, { side: 'right', step: -1 });
-    expect(r.ok).toBe(true);
-    if (r.ok) {
-      expect(guardianOf(r.world, id).side).toBe('right');
-      expect(guardianSentence(r.world, id)).toMatch(/ouest de son île$/);
-    }
-  });
-
-  it('l’îlot d’un Gardien en signes, comme un lieu : son île pour repère, la flèche, l’écart', () => {
-    const id: BiomeId = 'maths-6e-decimals';
-    const s = guardianSigns(VIDE, id, undefined, () => 'Volcan');
-    expect(s.voisin).toBe('Volcan');
-    expect(s.direction.mot).toBe('sud');
-    expect(s.cases).toBeGreaterThanOrEqual(1);
-    expect(placeSignsSentence(s)).toMatch(/^au sud du Volcan, à \d+ cases?$/);
   });
 });

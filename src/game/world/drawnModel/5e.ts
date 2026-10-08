@@ -7,11 +7,12 @@
 // précédente. Ni le cœur, ni la première rangée de l'anneau, ni les abords d'un ouvrage ne bougent : la marche, les
 // bornes, les plans et le chemin restent où ils sont, et un gradin ne cache jamais une case où l'on marche.
 import type { BiomeId } from '../../biomes';
-import { bornesDuCoeur, islandDef, landCells } from '../map';
+import { archipelagoOfIsland, bornesDuCoeur, islandDef, landCells, startingIsland } from '../map';
+import { BRIDGES } from '../archipelago';
 import { smooth } from '../../../core/math';
 import { cellHash } from '../../../core/random';
 import { origineDe } from '../terrain';
-import { amorcesDOrigine, amorcesVersLesIlesVenues } from '../terrain/links';
+import { amorcesDOrigine, amorcesVersLesIlesVenues, casesDeLOuvrage } from '../terrain/links';
 import type { Modele } from './types';
 
 /**
@@ -73,6 +74,10 @@ function crete(id: BiomeId, sommets: Sommet[]): Modele {
   abords.push(...amorcesDOrigine(id, true));
   // Et celles des liaisons vers les îles d'histoire-géographie (HG-3), venues après la fiche.
   abords.push(...amorcesVersLesIlesVenues(id));
+  // Et toutes les liaisons de l'archipel tracées sur la carte de départ : depuis GD-11, les îles ont grandi, et une
+  // liaison entre deux autres lieux peut longer son fond.
+  const coeur = startingIsland(id).core;
+  for (const b of BRIDGES) if (archipelagoOfIsland(b.from) === archipelagoOfIsland(id)) for (const c of casesDeLOuvrage(b, [], startingIsland)) abords.push({ x: c.x - coeur.x, y: c.y - coeur.y });
   const pres = (x: number, y: number) => abords.some((c) => Math.abs(c.x - x) <= ABORDS && Math.abs(c.y - y) <= ABORDS);
   const casse = sommets.some((s) => s.pans);
   // Les paliers de chaque sommet, calculés une fois.

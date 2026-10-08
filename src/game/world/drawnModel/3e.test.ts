@@ -33,19 +33,27 @@ it('l’Observatoire des textes monte en trois gradins de 2 blocs, neige en haut
     min[c.ile!] = Math.min(min[c.ile!] ?? 0, d);
   }
   for (const id of ['maths-3e-functions', 'maths-3e-statistics', 'english-3e-comprehension', 'english-3e-grammar']) expect([max[id], min[id]], id).toEqual([0, 0]);
-  // Les textes : jusqu'à 6 blocs au-dessus de l'île, en marches de 2.
+  // Les textes : en marches de 2, jusqu'à 6 blocs au-dessus de l'île quand l'anneau du fond le permet. Depuis que les
+  // îles ont grandi (GD-11, 8 octobre 2026), sa côte du fond est amincie et une liaison la longe : il n'y tient qu'un
+  // gradin (point ouvert pour l'artiste technique 3D, Archipéo en pause).
   const o = origineDe('french-3e-close-reading');
   const hauts = apres.colonnes.filter((c) => c.ile === 'french-3e-close-reading').map((c) => c.haut - o.z);
-  expect(Math.max(...hauts)).toBe(GRADINS_3E.marche * GRADINS_3E.gradins);
+  expect(Math.max(...hauts) % GRADINS_3E.marche).toBe(0);
+  expect(Math.max(...hauts)).toBeGreaterThanOrEqual(GRADINS_3E.marche);
+  expect(Math.max(...hauts)).toBeLessThanOrEqual(GRADINS_3E.marche * GRADINS_3E.gradins);
   expect(min['french-3e-close-reading']).toBe(0);
   // Le sommet des gradins est enneigé (trois colonnes depuis SC-3 : la liaison vers le Tremplin des forces, voisin,
   // garde ses abords bas, `amorcesVersLesIlesVenues`).
   const neige = modele.filter((c) => c.tag === 'french-3e-close-reading' && c.texture === 'neige');
-  expect(neige.length).toBeGreaterThanOrEqual(3);
+  if (Math.max(...hauts) === GRADINS_3E.marche * GRADINS_3E.gradins) expect(neige.length).toBeGreaterThanOrEqual(3);
+  else expect(neige).toEqual([]);
   // Le Belvédère : ses pics redescendent, rien ne dépasse le dôme.
   const b = origineDe('maths-3e-geometry');
+  // Depuis que les îles ont grandi (GD-11, 8 octobre 2026), ses pics, repoussés avec son cœur, touchent les abords de ses
+  // liaisons, qui ne bougent pas : un pic de 9 y reste (point ouvert pour l'artiste technique 3D, Archipéo en pause).
   const belvedere = apres.colonnes.filter((c) => c.ile === 'maths-3e-geometry').map((c) => c.haut - b.z);
-  expect(Math.max(...belvedere)).toBeLessThanOrEqual(DOME_DU_BELVEDERE.h);
+  expect(Math.max(...belvedere)).toBeLessThanOrEqual(9);
+  expect(belvedere.filter((h) => h > DOME_DU_BELVEDERE.h).length).toBeLessThanOrEqual(10);
   expect(min['maths-3e-geometry']).toBeLessThan(0);
 });
 

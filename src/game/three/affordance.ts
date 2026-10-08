@@ -1,7 +1,7 @@
 // Les objets qu'on touche, dans la scène 3D (les règles : world/affordance.ts) : leurs zones de toucher.
-// Une borne ou un Gardien plus petits que 48 pixels à l'écran se touchent aussi tout autour, dans un carré de 48 pixels ;
-// les autres objets se touchent directement. Les bulles qui montrent ce qu'on peut faire sont dessinées avec les plaques
-// des créatures (./signs.ts). Rien sur la Carte ni pendant le voyage.
+// Une borne ou un Gardien plus petits que 48 pixels à l'écran se touchent aussi tout autour, dans un carré de 48 pixels
+// (là où les deux se chevauchent, la borne gagne) ; les autres objets se touchent directement. Les bulles qui montrent
+// ce qu'on peut faire sont dessinées avec les plaques des créatures (./signs.ts). Rien sur la Carte ni pendant le voyage.
 import * as THREE from 'three';
 import { zoneDeToucher, SIGNE, type ObjetTouche, type SigneDObjet, type ZoneDObjet } from '../world/affordance';
 import type { Derniers, Instant, PartieDeLaScene } from './scenePart';
@@ -48,8 +48,10 @@ export function creerAffordance(derniers: { current: Derniers }, instant: Instan
         boite.min.set(s.boite.min.x, s.boite.min.z, s.boite.min.y);
         boite.max.set(s.boite.max.x, s.boite.max.z, s.boite.max.y);
         const o = projeter(boite, cam, W, H);
-        // La distance de l'objet à la caméra : le sol touché devant lui le cache.
-        if (o && (o[2] - o[0] < SIGNE.zonePx || o[3] - o[1] < SIGNE.zonePx)) out.push({ objet: s.objet, zone: { ...zoneDeToucher(...o, boite.distanceToPoint(cam.position)), boite: s.boite } });
+        // La distance de l'objet à la caméra : le sol touché devant lui le cache. Une borne passe avant un Gardien là où
+        // leurs zones se chevauchent (`priorite`).
+        if (o && (o[2] - o[0] < SIGNE.zonePx || o[3] - o[1] < SIGNE.zonePx))
+          out.push({ objet: s.objet, zone: { ...zoneDeToucher(...o, boite.distanceToPoint(cam.position)), boite: s.boite, priorite: s.objet.genre === 'borne' ? 1 : 0 } });
       }
       return out;
     },
