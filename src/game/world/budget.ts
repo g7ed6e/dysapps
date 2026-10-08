@@ -60,7 +60,7 @@ export const RENDER_BUDGET_6E = { triangles: 72_800, drawCalls: RENDER_BUDGET.dr
  * du même mot, de 62 900 à 74 900, à la somme des enveloppes « autres » (74 805, 74 865 depuis les programmes
  * 2025-2026 : deux bornes de plus au 4e). Mesurés tout construit, « Dans la
  * scène » à part : 69 880 aux Îles Brumeuses, 67 080 aux Anciens Ateliers, 63 791 aux Îles du Ciel. La mesure sur
- * tablette reste à faire. Puis de 74 900 à 75 000 pour les quêtes de la 5e (GD-10, proposé au mainteneur le 8 octobre
+ * tablette reste à faire. Puis de 74 900 à 75 000 pour les quêtes de la 5e (GD-10, validé par le mainteneur le 8 octobre
  * 2026) : la somme des « autres » passe à 74 965 (commandes 380 → 480) ; 69 938 mesurés aux Îles Brumeuses.
  */
 export const RENDER_BUDGET_AUTRES = { triangles: 75_000, drawCalls: RENDER_BUDGET.drawCalls } as const;
@@ -224,10 +224,10 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // 1 130 → 1 180 ; la petite construction de la Forge, replacée de (10, 3) à (9, 4) avec la mission ajoutée (`calculerLaPlaceDeLaPetiteConstruction`), fige au sol
   // d'autres cases (368 → 374 au 4e) : commandes 370 → 380. La somme des « autres » passe de 74 805 à 74 865, sous
   // `RENDER_BUDGET_AUTRES` (74 900), inchangé.
-  // Les quêtes de la 5e (GD-10) : la tente, le four et la balise portent le poste des Îles Brumeuses de 374 à 466
+  // Les quêtes de la 5e (GD-10) : la tente, le four et la balise portent le poste des Îles Brumeuses de 374 à 476
   // triangles (`npm run rendu:budget`), aucun appel de plus ; aucun autre poste des « autres » n'a 90 de marge dans les
   // trois archipels. Commandes 380 → 480, la somme des « autres » de 74 865 à 74 965, sous `RENDER_BUDGET_AUTRES` relevé
-  // à 75 000 (proposé au mainteneur). Le monde en blocs de Blocland n'en change pas de plafond (30 896 au 5e, sur 100 000).
+  // à 75 000 (validé par le mainteneur le 8 octobre 2026). Le monde en blocs de Blocland n'en change pas de plafond (30 896 au 5e, sur 100 000).
   bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_450, drawCalls: 1 }, autres: { triangles: 1_180, drawCalls: 1 } },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
