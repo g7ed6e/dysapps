@@ -395,6 +395,7 @@ export class RegionRouter {
   /**
    * Une copie qu'on peut poser sans toucher l'original : la grille et les arrivées prises se copient, le reste (fixé à
    * la construction) se partage. Poser après une copie revient à refaire le traceur depuis le début, en moins cher.
+   * Le constructeur est sauté : un champ que `poser` change doit être copié ici (le test « une copie du traceur »).
    */
   copie(): RegionRouter {
     return Object.assign(Object.create(RegionRouter.prototype) as RegionRouter, {

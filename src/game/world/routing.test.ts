@@ -2,7 +2,7 @@
 // côte à une autre, au large des autres lieux, sans en croiser une autre, posées dans l'ordre où l'élève les a posées.
 // Sur des dispositions faites pour le test ; la carte de départ, calée sur le pas, a les siens (linkGeometry.test.ts).
 import { describe, expect, it } from 'vitest';
-import { isLand, isLandInWorld, startingIsland, type IslandDef } from './map';
+import { archipelagoOfIsland, isLand, isLandInWorld, mapOf, startingIsland, type IslandDef } from './map';
 import { footprintOf } from './footprint';
 import type { Rectangle } from './placement';
 
@@ -11,7 +11,7 @@ function distanceAuRectangle(x: number, y: number, r: Rectangle): number {
   return Math.max(r.x0 - x, x - (r.x1 - 1), r.y0 - y, y - (r.y1 - 1), 0);
 }
 import { type Anchor, anchorInWorld, possibleLandings, spotPossible, pathBetween, LONG_LENGTH, MAX_ISLANDS_PER_REGION, routeRegion, RegionRouter } from './routing';
-import { type BridgeDef, getBridge } from './archipelago';
+import { BRIDGES, type BridgeDef, getBridge } from './archipelago';
 import { CORE } from './map';
 import { stationBand } from './arrange';
 import { STEP, TOWARDS_SEA } from './placement';
@@ -187,6 +187,20 @@ describe('les liaisons posées l’une après l’autre', () => {
     expect(traces.get(VERS_LE_GALET)).not.toBeNull();
     expect(traces.get(VERS_LE_VOLCAN)).toBeNull();
   });
+});
+
+it('une copie du traceur pose comme lui, sans toucher l’original', () => {
+  const lieux = mapOf('6e');
+  const liaisons = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === '6e');
+  const neuf = new RegionRouter('6e', { lieux });
+  const attendus = liaisons.map((b) => neuf.poser(b, LONG_LENGTH));
+  expect(attendus.filter(Boolean).length).toBeGreaterThan(2);
+  const original = new RegionRouter('6e', { lieux });
+  const premier = original.poser(liaisons[0], LONG_LENGTH);
+  const essais = liaisons.slice(1).map((b) => original.essayer(b, LONG_LENGTH));
+  const copie = original.copie();
+  expect([premier, ...liaisons.slice(1).map((b) => copie.poser(b, LONG_LENGTH))]).toEqual(attendus);
+  expect(liaisons.slice(1).map((b) => original.essayer(b, LONG_LENGTH))).toEqual(essais);
 });
 
 it('le traceur refuse une région de plus de 31 lieux : un bit par lieu dans un entier de 32 bits', () => {
