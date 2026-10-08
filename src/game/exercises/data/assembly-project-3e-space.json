@@ -1,0 +1,311 @@
+{
+  "id": "assembly-project-3e-space",
+  "bloc": "project-3e-space",
+  "type": "assembly",
+  "level": 1,
+  "instruction": "Lis le document, puis choisis la phrase juste. Le rappel est affiché.",
+  "programme": [
+    "c4.hg.histoire.monde-depuis-1945",
+    "c4.hg.temps.reperes",
+    "c4.hg.temps.ordonner",
+    "c4.hg.demarches.document",
+    "c4.hg.demarches.lexique",
+    "c4.pc.mouvement.decrire",
+    "c4.pc.mouvement.forces",
+    "c4.pc.energie.formes"
+  ],
+  "items": [
+    {
+      "key": "project-3e-space-0",
+      "prompt": "4 octobre 1957 : l’Union soviétique lance Spoutnik, le premier satellite.\nIl tourne autour de la Terre.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "4 octobre 1957 : l’Union soviétique lance Spoutnik, le premier satellite. Il tourne autour de la Terre.",
+      "choices": [
+        "Spoutnik, lancé par l’Union soviétique, a un mouvement circulaire.",
+        "Spoutnik, lancé par les États-Unis, a un mouvement circulaire.",
+        "Spoutnik, lancé par l’Union soviétique, a un mouvement rectiligne."
+      ],
+      "answer": "Spoutnik, lancé par l’Union soviétique, a un mouvement circulaire.",
+      "hint": "D’abord : quel pays lance Spoutnik, dans le document ? Puis : tourner autour de la Terre, quelle trajectoire ?",
+      "explanation": "Le document dit que c’est l’Union soviétique, le camp de l’Est : les États-Unis, le camp de l’Ouest, lancent leur premier satellite après. Spoutnik tourne autour de la Terre : sa trajectoire est un cercle, son mouvement est circulaire ; rectiligne, ce serait une ligne droite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La guerre froide, et la trajectoire",
+          "lines": [
+            "Guerre froide : l’Union soviétique (camp de l’Est) et les États-Unis (camp de l’Ouest) s’affrontent, jusque dans l’espace.",
+            "Circulaire : un cercle ; rectiligne : une ligne droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-space-1",
+      "prompt": "12 avril 1961 : le Soviétique Youri Gagarine fait le tour de la Terre.\nIl est le premier humain dans l’espace.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "12 avril 1961 : le Soviétique Youri Gagarine fait le tour de la Terre. Il est le premier humain dans l’espace.",
+      "choices": [
+        "Gagarine, un Soviétique, garde la même masse dans l’espace.",
+        "Gagarine, un Américain, garde la même masse dans l’espace.",
+        "Gagarine, un Soviétique, perd toute sa masse dans l’espace."
+      ],
+      "answer": "Gagarine, un Soviétique, garde la même masse dans l’espace.",
+      "hint": "D’abord : de quel pays est Gagarine, dans le document ? Puis : la masse change-t-elle d’un endroit à l’autre ?",
+      "explanation": "Le document dit que Gagarine est soviétique, du camp de l’Est. Sa masse, en kilogrammes, est la même partout, dans l’espace aussi : c’est la même matière. C’est son poids qui change.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le camp de l’Est, et la masse",
+          "lines": [
+            "Soviétique : de l’Union soviétique, le camp de l’Est.",
+            "La masse est la même partout ; le poids change d’un astre à l’autre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-space-2",
+      "prompt": "21 juillet 1969 : l’Américain Neil Armstrong marche sur la Lune.\nIl y saute bien plus haut que sur la Terre.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "21 juillet 1969 : l’Américain Neil Armstrong marche sur la Lune. Il y saute bien plus haut que sur la Terre.",
+      "choices": [
+        "Sur la Lune, l’Américain garde sa masse, mais son poids est plus petit.",
+        "Sur la Lune, le Soviétique garde sa masse, mais son poids est plus petit.",
+        "Sur la Lune, l’Américain garde son poids, mais sa masse est plus petite."
+      ],
+      "answer": "Sur la Lune, l’Américain garde sa masse, mais son poids est plus petit.",
+      "hint": "D’abord : de quel pays est Armstrong, dans le document ? Puis : sur la Lune, qu’est-ce qui change, la masse ou le poids ?",
+      "explanation": "Le document dit qu’Armstrong est américain, du camp de l’Ouest. Sur la Lune, sa masse ne change pas ; son poids, l’attraction de la Lune, est environ 6 fois plus petit : il saute plus haut.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le camp de l’Ouest, et le poids",
+          "lines": [
+            "Les États-Unis et leurs alliés : le camp de l’Ouest.",
+            "La masse est la même partout ; sur la Lune, le poids est environ 6 fois plus petit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-space-3",
+      "prompt": "1957 : Spoutnik. 1961 : Gagarine. 1969 : des humains sur la Lune.\nPendant le décollage, la fusée va de plus en plus vite.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "1957 : Spoutnik. 1961 : Gagarine. 1969 : des humains sur la Lune. Pendant le décollage, la fusée va de plus en plus vite.",
+      "choices": [
+        "Au XXe siècle, la fusée a un mouvement accéléré.",
+        "Au XIXe siècle, la fusée a un mouvement accéléré.",
+        "Au XXe siècle, la fusée a un mouvement uniforme."
+      ],
+      "answer": "Au XXe siècle, la fusée a un mouvement accéléré.",
+      "hint": "D’abord : range les années avec le rappel. Puis : la vitesse augmente-t-elle ?",
+      "explanation": "1957, 1961 et 1969 sont entre 1901 et 2000 : c’est le XXe siècle, le vingtième. Le XIXe siècle, le dix-neuvième, va de 1801 à 1900 : le siècle ne se lit pas dans les deux premiers chiffres. De plus en plus vite : la vitesse augmente, le mouvement est accéléré.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le siècle, et le mouvement accéléré",
+          "lines": [
+            "XIXe siècle : de 1801 à 1900. XXe siècle : de 1901 à 2000.",
+            "Accéléré : la vitesse augmente ; uniforme : elle ne change pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-space-4",
+      "prompt": "1969 : des Américains marchent sur la Lune.\n1957 : les Soviétiques lancent le premier satellite.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "1969 : des Américains marchent sur la Lune. 1957 : les Soviétiques lancent le premier satellite.",
+      "choices": [
+        "Le satellite vient en premier ; la Lune aussi attire les astronautes.",
+        "Les pas sur la Lune viennent en premier ; la Lune aussi attire les astronautes.",
+        "Le satellite vient en premier ; sur la Lune, rien n’attire les astronautes."
+      ],
+      "answer": "Le satellite vient en premier ; la Lune aussi attire les astronautes.",
+      "hint": "D’abord : quelle année est la plus petite ? Puis : la Lune a-t-elle une masse ?",
+      "explanation": "1957 vient avant 1969 : le satellite vient en premier, même s’il est écrit en second. La Lune a une masse : elle attire les astronautes, moins fort que la Terre ; c’est pour cela qu’ils retombent après un saut.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ordonner, et la gravitation",
+          "lines": [
+            "Pour ordonner, compare les années : la plus petite vient d’abord.",
+            "Gravitation : deux objets qui ont une masse s’attirent, la Lune aussi."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-space-5",
+      "prompt": "26 novembre 1965 : la fusée française Diamant lance le satellite Astérix.\nLa France est le troisième pays à le faire, après l’Union soviétique et les États-Unis.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "26 novembre 1965 : la fusée française Diamant lance le satellite Astérix. La France est le troisième pays à le faire, après l’Union soviétique et les États-Unis.",
+      "choices": [
+        "La France est le troisième pays dans l’espace ; le poids de Diamant est vers le bas.",
+        "La France est le premier pays dans l’espace ; le poids de Diamant est vers le bas.",
+        "La France est le troisième pays dans l’espace ; le poids de Diamant est vers le haut."
+      ],
+      "answer": "La France est le troisième pays dans l’espace ; le poids de Diamant est vers le bas.",
+      "hint": "D’abord : combien de pays avant la France, dans le document ? Puis : vers où la Terre attire-t-elle la fusée ?",
+      "explanation": "Le document nomme deux pays avant la France : elle est la troisième. Le poids est l’attraction de la Terre, vers son centre : il tire la fusée vers le bas ; ce sont les moteurs qui la poussent vers le haut.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ordonner, et le poids",
+          "lines": [
+            "Après deux pays, on est le troisième.",
+            "Le poids : la force d’attraction de la planète, vers son centre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-space-6",
+      "prompt": "1962 : un vaisseau soviétique tourne autour de la Terre.\nEn 2 heures, il parcourt 56 000 km (kilomètres).",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "1962 : un vaisseau soviétique tourne autour de la Terre. En 2 heures, il parcourt 56 000 kilomètres.",
+      "choices": [
+        "Un vaisseau du camp de l’Est, à 28 000 kilomètres par heure.",
+        "Un vaisseau du camp de l’Ouest, à 28 000 kilomètres par heure.",
+        "Un vaisseau du camp de l’Est, à 112 000 kilomètres par heure."
+      ],
+      "answer": "Un vaisseau du camp de l’Est, à 28 000 kilomètres par heure.",
+      "hint": "D’abord : partage 56 000 kilomètres en 2 heures. Puis : soviétique, c’est quel camp ?",
+      "explanation": "La vitesse, c’est la distance divisée par la durée : 56 000 ÷ 2 = 28 000 kilomètres par heure. 112 000, c’est 56 000 × 2 : on a multiplié au lieu de diviser. Soviétique : de l’Union soviétique, le camp de l’Est.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vitesse, et les deux camps",
+          "lines": [
+            "Vitesse = distance ÷ durée.",
+            "Camp de l’Est : l’Union soviétique ; camp de l’Ouest : les États-Unis."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-space-7",
+      "prompt": "24 juillet 1969 : la capsule d’Apollo 11 ramène les Américains de la Lune.\nDes parachutes la ralentissent avant l’océan.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "24 juillet 1969 : la capsule d’Apollo 11 ramène les Américains de la Lune. Des parachutes la ralentissent avant l’océan.",
+      "choices": [
+        "Les Américains rentrent ; la capsule ralentit, son énergie cinétique diminue.",
+        "Les Soviétiques rentrent ; la capsule ralentit, son énergie cinétique diminue.",
+        "Les Américains rentrent ; la capsule ralentit, son énergie cinétique augmente."
+      ],
+      "answer": "Les Américains rentrent ; la capsule ralentit, son énergie cinétique diminue.",
+      "hint": "D’abord : qui revient de la Lune, dans le document ? Puis : moins vite, plus ou moins d’énergie cinétique ?",
+      "explanation": "Le document dit que la capsule ramène les Américains. L’énergie cinétique est celle du mouvement : plus on va vite, plus elle est grande ; la capsule ralentit, elle diminue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Apollo 11, et l’énergie cinétique",
+          "lines": [
+            "Apollo 11 : la mission des États-Unis qui pose des humains sur la Lune.",
+            "Cinétique : l’énergie d’un objet qui bouge. Plus il va vite, plus elle est grande."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-space-8",
+      "prompt": "3 novembre 1957 : un satellite soviétique emporte la chienne Laïka.\nElle est attachée dans sa capsule, qui tourne autour de la Terre.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "3 novembre 1957 : un satellite soviétique emporte la chienne Laïka. Elle est attachée dans sa capsule, qui tourne autour de la Terre.",
+      "choices": [
+        "Dans ce satellite soviétique, Laïka est immobile par rapport à sa capsule.",
+        "Dans ce satellite américain, Laïka est immobile par rapport à sa capsule.",
+        "Dans ce satellite soviétique, Laïka est immobile par rapport à la Terre."
+      ],
+      "answer": "Dans ce satellite soviétique, Laïka est immobile par rapport à sa capsule.",
+      "hint": "D’abord : de quel pays est le satellite, dans le document ? Puis : Laïka bouge-t-elle dans sa capsule ? et autour de la Terre ?",
+      "explanation": "Le document dit que le satellite est soviétique. Attachée, Laïka ne bouge pas par rapport à sa capsule ; mais la capsule tourne autour de la Terre : par rapport à la Terre, Laïka est en mouvement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le document, et le point de vue",
+          "lines": [
+            "La première ligne dit la date et le pays.",
+            "Un mouvement se décrit par rapport à un objet : la capsule, ou la Terre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-space-9",
+      "prompt": "16 juin 1963 : la Soviétique Valentina Terechkova part dans l’espace.\nC’est la première femme dans l’espace.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "16 juin 1963 : la Soviétique Valentina Terechkova part dans l’espace. C’est la première femme dans l’espace.",
+      "choices": [
+        "Terechkova est soviétique ; le carburant de sa fusée stocke de l’énergie chimique.",
+        "Terechkova est américaine ; le carburant de sa fusée stocke de l’énergie chimique.",
+        "Terechkova est soviétique ; le carburant de sa fusée stocke de l’énergie lumineuse."
+      ],
+      "answer": "Terechkova est soviétique ; le carburant de sa fusée stocke de l’énergie chimique.",
+      "hint": "D’abord : de quel pays est Terechkova, dans le document ? Puis : un carburant qui brûle, quelle énergie libère-t-il ?",
+      "explanation": "Le document dit que Terechkova est soviétique. Le carburant stocke de l’énergie chimique : en brûlant, il la convertit en énergie cinétique et thermique ; l’énergie lumineuse, c’est celle de la lumière.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le document, et les formes d’énergie",
+          "lines": [
+            "Soviétique : de l’Union soviétique ; américaine : des États-Unis.",
+            "Formes d’énergie : cinétique, de position, thermique, électrique, chimique, lumineuse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-space-10",
+      "prompt": "1986 : l’Union soviétique lance la station spatiale Mir.\nElle tourne autour de la Terre sans changer de vitesse.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "1986 : l’Union soviétique lance la station spatiale Mir. Elle tourne autour de la Terre sans changer de vitesse.",
+      "choices": [
+        "Mir est lancée pendant la guerre froide ; son mouvement est uniforme.",
+        "Mir est lancée après la guerre froide ; son mouvement est uniforme.",
+        "Mir est lancée pendant la guerre froide ; son mouvement est accéléré."
+      ],
+      "answer": "Mir est lancée pendant la guerre froide ; son mouvement est uniforme.",
+      "hint": "D’abord : 1986 est-il entre 1947 et 1991 ? Puis : la vitesse change-t-elle ?",
+      "explanation": "La guerre froide va de 1947 à 1991 : 1986 est pendant. Une vitesse qui ne change pas, c’est un mouvement uniforme ; accéléré, elle augmenterait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La guerre froide, et le mouvement uniforme",
+          "lines": [
+            "De 1947 à 1991 : la guerre froide.",
+            "Uniforme : la vitesse ne change pas ; accéléré : elle augmente."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-space-11",
+      "prompt": "1998 : la Russie et les États-Unis commencent ensemble la Station spatiale internationale.\nElle tourne autour de la Terre, à 400 km (kilomètres) d’altitude.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "1998 : la Russie et les États-Unis commencent ensemble la Station spatiale internationale. Elle tourne autour de la Terre, à 400 kilomètres d’altitude.",
+      "choices": [
+        "Après la guerre froide, on coopère ; la Terre attire toujours la station.",
+        "Pendant la guerre froide, on coopère ; la Terre attire toujours la station.",
+        "Après la guerre froide, on coopère ; là-haut, la Terre n’attire plus la station."
+      ],
+      "answer": "Après la guerre froide, on coopère ; la Terre attire toujours la station.",
+      "hint": "D’abord : 1998 est-il avant ou après 1991 ? Puis : la Terre attire-t-elle encore à 400 kilomètres ?",
+      "explanation": "La guerre froide finit en 1991 : en 1998, c’est après, et les deux anciens rivaux construisent ensemble. La Terre attire toujours la station : c’est cette attraction qui la fait tourner autour d’elle au lieu de partir en ligne droite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Après la guerre froide, et la gravitation",
+          "lines": [
+            "De 1947 à 1991 : la guerre froide. La Russie vient de l’ancienne Union soviétique.",
+            "Gravitation : la Terre attire la station, même là-haut."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien construit !",
+    "wrong": "{explanation}"
+  }
+}

@@ -1,4 +1,5 @@
-// Les monuments : de grands ouvrages classés, deux par archipel, chacun sur un îlot à lui au large (l'observatoire des
+// Les monuments : de grands ouvrages classés, deux par archipel (et les grands projets neufs : deux de plus en 4e, trois
+// en 3e), chacun sur un îlot à lui au large (l'observatoire des
 // baleines, le grand moulin…). Ils se construisent comme un plan, bloc par bloc, avec les blocs des îles de l'archipel :
 // de quoi employer ceux qui s'accumulent une fois les bâtiments finis. Ils ne ferment rien et n'ouvrent rien ; un
 // monument terminé rapporte de l'XP et un succès, et reste dans le monde.
@@ -234,6 +235,171 @@ function temple(): PlanCell[] {
   return cells;
 }
 
+/**
+ * Le portique des docks : un quai d'ardoise et ses rails, les chariots et les conteneurs ; quatre jambes d'acier ; une
+ * poutre en « Π » et sa flèche tendue vers la mer ; la cabine du grutier, aux vitres de calque, et son treuil. Dessiné
+ * en masses pleines, pour peu de faces (le pire cas du 4e, world/budget.ts).
+ */
+function portique(): PlanCell[] {
+  const { cells, put, box } = drawer();
+  // Le quai (z0 et z1) : la dalle et deux voies de rails ; dessus, les chariots des jambes (roues d'engrenage, GD-2),
+  // des rails entre eux et les conteneurs au milieu, en un seul bloc.
+  box(0, 0, 0, 7, 7, 1, BLOC.ardoise);
+  for (const x of [1, 5]) for (let y = 0; y < 7; y++) put(x, y, 0, BLOC.rail);
+  for (const x of [1, 5]) for (const y of [2, 3, 4]) put(x, y, 1, y === 3 ? BLOC.rail : BLOC.engrenage);
+  box(2, 2, 1, 3, 3, 1, BLOC.conteneur);
+  // Les quatre jambes (z2 et z3).
+  for (const x of [1, 5]) for (const y of [2, 4]) for (let z = 2; z <= 3; z++) put(x, y, z, BLOC.acier);
+  // La poutre (z4), d'un bord à l'autre, et la flèche qui dépasse vers la mer (devant). Rien ne pend dessous.
+  box(0, 2, 4, 7, 3, 1, BLOC.acier);
+  put(3, 1, 4, BLOC.acier);
+  put(3, 0, 4, BLOC.acier);
+  // La cabine (z5 et z6) : des vitres de calque devant et sur les côtés, le siège de velours, un toit d'acier ; le
+  // treuil derrière elle, un engrenage (GD-2).
+  for (const x of [2, 3, 4]) put(x, 2, 5, BLOC.calque);
+  put(2, 3, 5, BLOC.calque);
+  put(3, 3, 5, BLOC.velours);
+  put(4, 3, 5, BLOC.calque);
+  box(2, 2, 6, 3, 2, 1, BLOC.acier);
+  put(3, 4, 5, BLOC.engrenage);
+  return cells;
+}
+
+/**
+ * La tour des signaux : un pied d'ardoise de 7 × 7, un treillis de 5 × 5 en damier d'acier et de liège, un fût d'acier
+ * de 3 × 3 cerclé d'engrenages, une tête en croix et sa couronne de bobines. Dessinée en masses pleines, pour peu de
+ * faces (le pire cas du 4e, world/budget.ts).
+ */
+function tourSignaux(): PlanCell[] {
+  const { cells, put, box } = drawer();
+  // Le pied (z0) : une dalle d'ardoise (la fonte, autre gris sombre, ne la touche jamais : HG-3, DA).
+  box(0, 0, 0, 7, 7, 1, BLOC.ardoise);
+  // Le treillis (z1 et z2) : un damier d'acier et de liège.
+  for (let x = 1; x <= 5; x++) for (let y = 1; y <= 5; y++) for (let z = 1; z <= 2; z++) put(x, y, z, (x + y + z) % 2 === 0 ? BLOC.acier : BLOC.liege);
+  // Le fût (z3 à z5) : plein, cerclé d'engrenages à mi-hauteur (GD-2).
+  box(2, 2, 3, 3, 3, 3, BLOC.acier);
+  for (const [x, y] of [
+    [3, 2],
+    [2, 3],
+    [4, 3],
+    [3, 4],
+  ])
+    put(x, y, 4, BLOC.engrenage);
+  // La tête (z6 et z7) : deux bras en croix, puis une couronne de huit bobines serrée autour du mât (d'un bloc, pour que
+  // sa lueur l'enveloppe : ./lanternGlow.ts).
+  for (let i = 0; i < 7; i++) {
+    put(i, 3, 6, BLOC.acier);
+    put(3, i, 6, BLOC.acier);
+  }
+  for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, 7, BLOC.bobine);
+  put(3, 3, 7, BLOC.acier);
+  return cells;
+}
+
+/**
+ * La fusée, sur son pas de tir : un pas de grès et de pierre de taille, un premier étage de marbre à quatre ailerons de
+ * reliure, un second étage à hublots de lentille, une coiffe de grès et son antenne. Elle reste au sol.
+ */
+function fusee(): PlanCell[] {
+  const { cells, put, box } = drawer();
+  // Le pas de tir (z0).
+  box(0, 0, 0, 7, 7, 1, BLOC.taille);
+  for (const [x, y] of ringOf(0, 0, 7, 7)) put(x, y, 0, BLOC.gres);
+  // Le premier étage (z1 à z3) et ses ailerons ; des miroirs aux coins de la jonction (GD-2).
+  box(2, 2, 1, 3, 3, 3, BLOC.marbre);
+  for (const [x, y] of [
+    [2, 2],
+    [4, 2],
+    [2, 4],
+    [4, 4],
+  ])
+    put(x, y, 3, BLOC.miroir);
+  for (const [dx, dy] of [
+    [0, -1],
+    [0, 1],
+    [-1, 0],
+    [1, 0],
+  ]) {
+    put(3 + 2 * dx, 3 + 2 * dy, 1, BLOC.reliure);
+    put(3 + 3 * dx, 3 + 3 * dy, 1, BLOC.reliure);
+    put(3 + 2 * dx, 3 + 2 * dy, 2, BLOC.reliure);
+  }
+  // Le second étage (z4 à z6) : quatre hublots de lentille, une bague de reliure en haut.
+  box(2, 2, 4, 3, 3, 3, BLOC.marbre);
+  for (const [x, y] of [
+    [3, 2],
+    [2, 3],
+    [4, 3],
+    [3, 4],
+  ])
+    put(x, y, 5, BLOC.lentille);
+  for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, 6, BLOC.reliure);
+  // La coiffe (z7 à z9).
+  box(2, 2, 7, 3, 3, 1, BLOC.gres);
+  for (const [x, y] of disc(3, 3)) put(x, y, 8, BLOC.gres);
+  put(3, 3, 9, BLOC.antenne);
+  return cells;
+}
+
+/**
+ * Le château d'eau : un pied de pierre de taille et de grès, un fût de marbre, une large cuve de reliure en
+ * champignon, un toit de marbre couronné de lanternons de prisme.
+ */
+function chateauEau(): PlanCell[] {
+  const { cells, put, box } = drawer();
+  // Le pied (z0 et z1).
+  for (const [x, y] of disc(3, 5)) put(x, y, 0, BLOC.taille);
+  box(2, 2, 1, 3, 3, 1, BLOC.gres);
+  // Le fût (z2 à z4), creux, sa porte de reliure devant.
+  for (let z = 2; z <= 4; z++) for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, z, BLOC.marbre);
+  put(3, 2, 2, BLOC.reliure);
+  // La cuve (z5 et z6) : elle s'élargit, quatre jauges de miroir sur son bord (GD-2).
+  for (const [x, y] of disc(3, 5)) put(x, y, 5, BLOC.reliure);
+  for (const [x, y] of disc(3, 7)) put(x, y, 6, BLOC.reliure);
+  for (const [x, y] of [
+    [3, 0],
+    [0, 3],
+    [6, 3],
+    [3, 6],
+  ])
+    put(x, y, 6, BLOC.miroir);
+  // La couronne (z7 à z9) : le toit, puis une couronne de huit lanternons de prisme serrés autour de l'épi d'antenne
+  // (d'un bloc, pour que leur lueur les enveloppe : ./lanternGlow.ts).
+  for (const [x, y] of disc(3, 5)) put(x, y, 7, BLOC.marbre);
+  for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, 8, BLOC.prisme);
+  put(3, 3, 8, BLOC.antenne);
+  put(3, 3, 9, BLOC.antenne);
+  return cells;
+}
+
+/**
+ * La colonne des solides : un cube de marbre, un cylindre de quartz, un tronc de pyramide de pierre de taille aux coins
+ * de miroir, une sphère au sommet, dont la ceinture de lentille luit entre deux calottes de quartz. Pleins : un solide
+ * creux montre ses faces du dedans, et coûte plus.
+ */
+function colonneSolides(): PlanCell[] {
+  const { cells, put, box } = drawer();
+  // Le cube (z0 à z4), 5 × 5 × 5.
+  box(1, 1, 0, 5, 5, 5, BLOC.marbre);
+  // Le cylindre (z5 et z6).
+  for (let z = 5; z <= 6; z++) for (const [x, y] of disc(3, 5)) put(x, y, z, BLOC.quartz);
+  // Le tronc de pyramide (z7 et z8) : 5 × 5 puis 3 × 3, des miroirs à ses quatre coins du haut (GD-2).
+  box(1, 1, 7, 5, 5, 1, BLOC.taille);
+  box(2, 2, 8, 3, 3, 1, BLOC.taille);
+  for (const [x, y] of [
+    [2, 2],
+    [4, 2],
+    [2, 4],
+    [4, 4],
+  ])
+    put(x, y, 8, BLOC.miroir);
+  // La sphère (z9 à z11) : une calotte de quartz, la ceinture de lentille (ce qui luit), une calotte de quartz.
+  for (const [x, y] of disc(3, 3)) put(x, y, 9, BLOC.quartz);
+  box(2, 2, 10, 3, 3, 1, BLOC.lentille);
+  for (const [x, y] of disc(3, 3)) put(x, y, 11, BLOC.quartz);
+  return cells;
+}
+
 // ---------- Les monuments ----------
 
 type Fiche = Omit<MonumentDef, 'cells' | 'origin' | 'zone'> & { draw: () => PlanCell[] };
@@ -333,6 +499,68 @@ const FICHES: Fiche[] = [
     reward: { xp: 240, chest: {} },
     done: 'Le temple de marbre brille au-dessus des nuages. Les Îles du Ciel sont fières de toi.',
     draw: temple,
+  },
+  // Les grands projets de la 4e et de la 3e (décision du mainteneur, 8 octobre 2026) : cinq monuments neufs, qui se
+  // posent pièce par pièce (GD-10, ./projects.ts).
+  {
+    id: 'landmark-4e-3',
+    biome: 'geography-4e-globalization',
+    archipelago: '4e',
+    name: 'Le portique des docks',
+    description: 'Une grande grue de port sur ses rails, ses quatre jambes d’acier, sa poutre tendue vers la mer et la cabine du grutier, au-dessus d’une pile de conteneurs.',
+    islet: { x: 55, y: 711 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
+    reward: { xp: 210, chest: {} },
+    done: 'Le portique des docks est debout. La cabine s’allume : les conteneurs peuvent partir vers toutes les îles.',
+    draw: portique,
+    litWhenDone: BLOC.calque,
+  },
+  {
+    id: 'landmark-4e-4',
+    biome: 'physics-chemistry-4e-signals-circuits',
+    archipelago: '4e',
+    name: 'La tour des signaux',
+    description: 'Un pylône en treillis d’acier, large en bas et fin en haut, dont les bobines envoient des messages d’une île à l’autre.',
+    islet: { x: 21, y: 711 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
+    reward: { xp: 210, chest: {} },
+    done: 'La tour des signaux est finie. Ses bobines s’allument : les messages passent d’une île à l’autre.',
+    draw: tourSignaux,
+    litWhenDone: BLOC.bobine,
+  },
+  {
+    id: 'landmark-3e-3',
+    biome: 'physics-chemistry-3e-motion-energy',
+    archipelago: '3e',
+    name: 'La fusée',
+    description: 'Une fusée de marbre sur son pas de tir, avec ses ailerons, son second étage à hublots et sa coiffe pointée vers le ciel.',
+    islet: { x: 67, y: 991 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
+    reward: { xp: 240, chest: {} },
+    done: 'La fusée est prête sur son pas de tir. Ses hublots s’allument, tournés vers les étoiles.',
+    draw: fusee,
+    litWhenDone: BLOC.lentille,
+  },
+  {
+    id: 'landmark-3e-4',
+    biome: 'geography-3e-france',
+    archipelago: '3e',
+    name: 'Le château d’eau',
+    description: 'Un fût de marbre qui porte une large cuve, coiffée d’un toit et d’une couronne de lanternons.',
+    islet: { x: 157, y: 956 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
+    reward: { xp: 240, chest: {} },
+    done: 'Le château d’eau est plein. Sa couronne de lanternons s’allume au-dessus des nuages.',
+    draw: chateauEau,
+    litWhenDone: BLOC.prisme,
+  },
+  {
+    id: 'landmark-3e-5',
+    biome: 'maths-3e-geometry',
+    archipelago: '3e',
+    name: 'La colonne des solides',
+    description: 'Un cube, un cylindre et un tronc de pyramide posés l’un sur l’autre, et tout en haut une sphère à la ceinture de lumière.',
+    islet: { x: 11, y: 916 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
+    reward: { xp: 240, chest: {} },
+    done: 'La colonne des solides est montée. La ceinture de la sphère s’allume tout en haut.',
+    draw: colonneSolides,
+    litWhenDone: BLOC.lentille,
   },
 ];
 

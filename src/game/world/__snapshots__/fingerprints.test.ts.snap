@@ -13,11 +13,11 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie mi-parcours 1`] = `
 {
   "créatures et Gardiens": "ea5287cb",
-  "cubes": "21ae2e09",
-  "cubes avec créatures": "f772d915",
-  "décor posé sur la pente": "f5d096c5",
+  "cubes": "dd39be2b",
+  "cubes avec créatures": "784e8159",
+  "décor posé sur la pente": "a3fabf44",
   "navire": "4b6ff664",
-  "sol (facettes)": "088048e6",
+  "sol (facettes)": "7fce5526",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "8898f92d",
 }
@@ -26,11 +26,11 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie tout construit 1`] = `
 {
   "créatures et Gardiens": "c9cb4542",
-  "cubes": "2af9e43f",
-  "cubes avec créatures": "f232e427",
-  "décor posé sur la pente": "faa6b8ef",
+  "cubes": "12411bf4",
+  "cubes avec créatures": "302e1a54",
+  "décor posé sur la pente": "42c8caa9",
   "navire": "4b6ff664",
-  "sol (facettes)": "9a6e2a70",
+  "sol (facettes)": "281f9999",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "fab4337c",
 }
@@ -39,11 +39,11 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie vierge 1`] = `
 {
   "créatures et Gardiens": "741638a5",
-  "cubes": "997668d9",
-  "cubes avec créatures": "997668d9",
-  "décor posé sur la pente": "cc47b3ab",
+  "cubes": "0d5b927e",
+  "cubes avec créatures": "0d5b927e",
+  "décor posé sur la pente": "91576fc7",
   "navire": "4bb9b2d8",
-  "sol (facettes)": "4db411e0",
+  "sol (facettes)": "5c0a654f",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "8eed5829",
 }
@@ -62,11 +62,11 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, partie mi-parcours 1`] = `
 {
   "créatures et Gardiens": "c1f5e34f",
-  "cubes": "4e955e88",
-  "cubes avec créatures": "233d4254",
-  "décor posé sur la pente": "04eb12c8",
+  "cubes": "1c7119f7",
+  "cubes avec créatures": "4f76248b",
+  "décor posé sur la pente": "4d63872a",
   "navire": "3650107c",
-  "sol (facettes)": "bbfdf3c3",
+  "sol (facettes)": "383e1b32",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "d4f5b4ba",
 }
@@ -75,11 +75,11 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, partie tout construit 1`] = `
 {
   "créatures et Gardiens": "9031842b",
-  "cubes": "3159b49f",
-  "cubes avec créatures": "1572fa87",
-  "décor posé sur la pente": "a11d42b7",
+  "cubes": "dd752451",
+  "cubes avec créatures": "31842d41",
+  "décor posé sur la pente": "8239556e",
   "navire": "3650107c",
-  "sol (facettes)": "ba5020f4",
+  "sol (facettes)": "b496f95d",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "5fd5670a",
 }
@@ -88,11 +88,11 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, partie vierge 1`] = `
 {
   "créatures et Gardiens": "741638a5",
-  "cubes": "62cbc3aa",
-  "cubes avec créatures": "62cbc3aa",
-  "décor posé sur la pente": "f6b0a67d",
+  "cubes": "936aec4d",
+  "cubes avec créatures": "936aec4d",
+  "décor posé sur la pente": "8a58ac8f",
   "navire": "7b9a960a",
-  "sol (facettes)": "e1c38939",
+  "sol (facettes)": "ab794a18",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "e8bd99ca",
 }
@@ -278,8 +278,13 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
   "history-6e-antiquity-3": "45911060",
   "landmark-3e-1": "ef9e075d",
   "landmark-3e-2": "0e1f4797",
+  "landmark-3e-3": "67978d9e",
+  "landmark-3e-4": "d6fe8ec5",
+  "landmark-3e-5": "210f46a5",
   "landmark-4e-1": "e67f8392",
   "landmark-4e-2": "115c8833",
+  "landmark-4e-3": "9dbc5f3b",
+  "landmark-4e-4": "9622c387",
   "landmark-5e-1": "b3feb558",
   "landmark-5e-2": "2d6285b0",
   "landmark-6e-1": "cc9502f3",

@@ -1,0 +1,471 @@
+{
+  "id": "assembly-project-3e-solids",
+  "bloc": "project-3e-solids",
+  "type": "assembly",
+  "level": 1,
+  "instruction": "Lis le texte, calcule, puis choisis la phrase juste. Le rappel est affiché.",
+  "programme": [
+    "c4.ma.d.pythagore",
+    "c4.ma.d.thales",
+    "c4.fr.lecture.procedes",
+    "c4.fr.langue.enonciation",
+    "c4.fr.langue.discours-rapporte",
+    "c4.fr.langue.passif",
+    "c4.fr.langue.coherence-textuelle"
+  ],
+  "items": [
+    {
+      "key": "project-3e-solids-0",
+      "prompt": "Un pot en cylindre : 6 cm de large, 8 cm de haut.\nLéo dit : « Ma paille de 10 cm tient juste en biais. »",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Un pot en cylindre : 6 centimètres de large, 8 centimètres de haut. Léo dit : ma paille de 10 centimètres tient juste en biais.",
+      "choices": [
+        "Léo dit que sa paille tient juste : le biais mesure 10 centimètres.",
+        "Léo dit que ma paille tient juste : le biais mesure 10 centimètres.",
+        "Léo dit que sa paille tient juste : le biais mesure 14 centimètres."
+      ],
+      "answer": "Léo dit que sa paille tient juste : le biais mesure 10 centimètres.",
+      "hint": "D’abord : 6 et 8, c’est quel triangle connu ? Puis : dans « Léo dit que », qui est « ma » ?",
+      "explanation": "Le biais est l’hypoténuse d’un triangle rectangle de côtés 6 et 8 : c’est le triangle 6-8-10, il mesure 10 cm. 14, c’est 6 + 8 : on n’ajoute pas les côtés. Au discours indirect, Léo n’est plus celui qui parle : « ma paille » devient « sa paille ».",
+      "figure": {
+        "kind": "right-triangle",
+        "props": {
+          "a": 6,
+          "b": 8,
+          "c": "?",
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le triangle 6-8-10, et le discours indirect",
+          "lines": [
+            "6² + 8² = 36 + 64 = 100 = 10² : l’hypoténuse mesure 10.",
+            "Discours indirect : « ma paille » devient « sa paille »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-solids-1",
+      "prompt": "« La pyramide pointe vers le ciel comme une flèche. »\nHauteur : 4 m. Du centre de la base au milieu d’un bord : 3 m.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "La pyramide pointe vers le ciel comme une flèche. Hauteur : 4 mètres. Du centre de la base au milieu d’un bord : 3 mètres.",
+      "choices": [
+        "C’est une comparaison ; du milieu du bord au sommet, il y a 5 mètres.",
+        "C’est une métaphore ; du milieu du bord au sommet, il y a 5 mètres.",
+        "C’est une comparaison ; du milieu du bord au sommet, il y a 7 mètres."
+      ],
+      "answer": "C’est une comparaison ; du milieu du bord au sommet, il y a 5 mètres.",
+      "hint": "D’abord : 3 et 4, c’est quel triangle connu ? Puis : la phrase a-t-elle le mot « comme » ?",
+      "explanation": "La hauteur et le segment de la base font un angle droit : c’est le triangle 3-4-5, la pente mesure 5 m. 7, c’est 3 + 4 : on n’ajoute pas les côtés. La phrase rapproche la pyramide d’une flèche avec « comme » : c’est une comparaison ; sans « comme », ce serait une métaphore.",
+      "figure": {
+        "kind": "right-triangle",
+        "props": {
+          "a": 3,
+          "b": 4,
+          "c": "?",
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le triangle 3-4-5, et la comparaison",
+          "lines": [
+            "3² + 4² = 9 + 16 = 25 = 5² : l’hypoténuse mesure 5.",
+            "Comparaison : avec « comme ». Métaphore : une image sans « comme »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-solids-2",
+      "prompt": "Lou : « Cette colonne touche le ciel ! »\nUn bâton de 1 m a une ombre de 2 m ; l’ombre de la colonne mesure 8 m.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Lou dit : cette colonne touche le ciel ! Un bâton de 1 mètre a une ombre de 2 mètres ; l’ombre de la colonne mesure 8 mètres.",
+      "choices": [
+        "Lou exagère, c’est une hyperbole : la colonne mesure 4 mètres.",
+        "Lou exagère, c’est une comparaison : la colonne mesure 4 mètres.",
+        "Lou exagère, c’est une hyperbole : la colonne mesure 16 mètres."
+      ],
+      "answer": "Lou exagère, c’est une hyperbole : la colonne mesure 4 mètres.",
+      "hint": "D’abord : l’ombre du bâton est combien de fois sa hauteur ? Puis : Lou exagère-t-il, ou compare-t-il avec « comme » ?",
+      "explanation": "L’ombre du bâton est 2 fois sa hauteur ; au même moment, c’est pareil pour la colonne : 8 ÷ 2 = 4 m. 16, c’est 8 × 2 : on a multiplié au lieu de diviser. Lou exagère sans « comme » : c’est une hyperbole.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "ombre (m)",
+            "hauteur (m)"
+          ],
+          "rows": [
+            [
+              2,
+              1
+            ],
+            [
+              8,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’ombre, et l’hyperbole",
+          "lines": [
+            "Au même moment, hauteur et ombre sont proportionnelles (Thalès).",
+            "Hyperbole : une exagération ; comparaison : un rapprochement avec « comme »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-solids-3",
+      "prompt": "Le plan de la rampe a été dessiné par Inès, puis vérifié par Tom.\nLa rampe monte de 6 m pour 8 m au sol.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le plan de la rampe a été dessiné par Inès, puis vérifié par Tom. La rampe monte de 6 mètres pour 8 mètres au sol.",
+      "choices": [
+        "Inès a dessiné la rampe ; elle mesure 10 mètres.",
+        "Tom a dessiné la rampe ; elle mesure 10 mètres.",
+        "Inès a dessiné la rampe ; elle mesure 14 mètres."
+      ],
+      "answer": "Inès a dessiné la rampe ; elle mesure 10 mètres.",
+      "hint": "D’abord : 6 et 8, c’est quel triangle connu ? Puis : qui est après « dessiné par » ?",
+      "explanation": "La hauteur et le sol font un angle droit : c’est le triangle 6-8-10, la rampe mesure 10 m. 14, c’est 6 + 8 : on n’ajoute pas les côtés. À la voix passive, celui qui fait l’action est après « par » : Inès a dessiné, Tom a vérifié.",
+      "figure": {
+        "kind": "right-triangle",
+        "props": {
+          "a": 6,
+          "b": 8,
+          "c": "?",
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le triangle 6-8-10, et la voix passive",
+          "lines": [
+            "6² + 8² = 36 + 64 = 100 = 10² : l’hypoténuse mesure 10.",
+            "Voix passive : celui qui fait l’action est après « par »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-solids-4",
+      "prompt": "La porte de la colonne : 3 m de large et 4 m de haut.\nOn veut y faire passer une planche de 5 m, en biais.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "La porte de la colonne : 3 mètres de large et 4 mètres de haut. On veut y faire passer une planche de 5 mètres, en biais.",
+      "choices": [
+        "La diagonale mesure 5 mètres, donc la planche passe tout juste.",
+        "La diagonale mesure 5 mètres, pourtant la planche passe tout juste.",
+        "La diagonale mesure 7 mètres, donc la planche passe tout juste."
+      ],
+      "answer": "La diagonale mesure 5 mètres, donc la planche passe tout juste.",
+      "hint": "D’abord : 3 et 4, c’est quel triangle connu ? Puis : la planche passe-t-elle à cause de la diagonale, ou malgré elle ?",
+      "explanation": "La largeur et la hauteur font un angle droit : c’est le triangle 3-4-5, la diagonale mesure 5 m. 7, c’est 3 + 4 : on n’ajoute pas les côtés. La planche passe parce que la diagonale mesure 5 m : c’est une conséquence, donc ; pourtant dit une opposition.",
+      "figure": {
+        "kind": "right-triangle",
+        "props": {
+          "a": 3,
+          "b": 4,
+          "c": "?",
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le triangle 3-4-5, et donc",
+          "lines": [
+            "3² + 4² = 9 + 16 = 25 = 5² : l’hypoténuse mesure 5.",
+            "donc = une conséquence ; pourtant = une opposition."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-solids-5",
+      "prompt": "Le cylindre de la colonne : 3 m de diamètre, 4 m de haut.\nNour demande : « Une échelle de 5 m tient-elle en biais dedans ? »",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le cylindre de la colonne : 3 mètres de diamètre, 4 mètres de haut. Nour demande : une échelle de 5 mètres tient-elle en biais dedans ?",
+      "choices": [
+        "Nour demande si l’échelle tient : oui, tout juste.",
+        "Nour demande est-ce que l’échelle tient : oui, tout juste.",
+        "Nour demande si l’échelle tient : non, il faudrait 7 mètres."
+      ],
+      "answer": "Nour demande si l’échelle tient : oui, tout juste.",
+      "hint": "D’abord : 3 et 4, c’est quel triangle connu ? Puis : comment rapporter une question qui se répond par oui ou non ?",
+      "explanation": "Le diamètre et la hauteur font un angle droit : c’est le triangle 3-4-5, le biais mesure 5 m, juste la longueur de l’échelle. 7, c’est 3 + 4 : on n’ajoute pas les côtés. Une question par oui ou non se rapporte avec « si » : Nour demande si l’échelle tient.",
+      "figure": {
+        "kind": "right-triangle",
+        "props": {
+          "a": 3,
+          "b": 4,
+          "c": "?",
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le triangle 3-4-5, et la question rapportée",
+          "lines": [
+            "3² + 4² = 9 + 16 = 25 = 5² : l’hypoténuse mesure 5.",
+            "Question rapportée : « tient-elle ? » devient « si elle tient »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-solids-6",
+      "prompt": "Sur une face de la pyramide, Inès trace un triangle de 6, 8 et 10 cm.\nElle vérifie ensuite son angle avec une équerre.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Sur une face de la pyramide, Inès trace un triangle de 6, 8 et 10 centimètres. Elle vérifie ensuite son angle avec une équerre.",
+      "choices": [
+        "« Elle » désigne Inès ; le triangle est rectangle.",
+        "« Elle » désigne la face ; le triangle est rectangle.",
+        "« Elle » désigne Inès ; le triangle n’est pas rectangle."
+      ],
+      "answer": "« Elle » désigne Inès ; le triangle est rectangle.",
+      "hint": "D’abord : 6² + 8², est-ce égal à 10² ? Puis : qui peut tenir une équerre ?",
+      "explanation": "6² + 8² = 36 + 64 = 100, et 10² = 100 : l’égalité est vraie, le triangle est rectangle. « Elle » reprend Inès : c’est elle qui trace, puis qui vérifie ; une face ne tient pas d’équerre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La réciproque, et le pronom",
+          "lines": [
+            "Si le carré du plus grand côté est la somme des deux autres carrés, le triangle est rectangle.",
+            "Un pronom reprend un nom déjà écrit : cherche qui fait l’action."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-solids-7",
+      "prompt": "« La pyramide est une montagne de pierre. »\nSur une face, (MN) est parallèle à (AB) : SM = 2 m, SA = 6 m, AB = 9 m.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "La pyramide est une montagne de pierre. Sur une face, la droite M N est parallèle à la droite A B : S M égale 2 mètres, S A égale 6 mètres, A B égale 9 mètres.",
+      "choices": [
+        "C’est une métaphore ; MN mesure 3 mètres.",
+        "C’est une comparaison ; MN mesure 3 mètres.",
+        "C’est une métaphore ; MN mesure 5 mètres."
+      ],
+      "answer": "C’est une métaphore ; MN mesure 3 mètres.",
+      "hint": "D’abord : SM est quelle part de SA ? Puis : la phrase a-t-elle le mot « comme » ?",
+      "explanation": "SM = 2 et SA = 6 : SM est le tiers de SA, donc MN est le tiers de AB : 9 ÷ 3 = 3 m. 5, c’est 9 − 4 : on a enlevé l’écart entre 6 et 2 au lieu de prendre le même rapport. La pyramide est appelée montagne sans « comme » : c’est une métaphore.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "petit triangle",
+            "grand triangle"
+          ],
+          "rows": [
+            [
+              2,
+              6
+            ],
+            [
+              "?",
+              9
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Thalès, et la métaphore",
+          "lines": [
+            "Thalès : MN ÷ AB = SM ÷ SA (ici, 2 sur 6, le tiers).",
+            "Métaphore : une image sans « comme ». Comparaison : avec « comme »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-solids-8",
+      "prompt": "« La sphère veille sur la ville. »\nUn câble de 10 m va du haut de la colonne au sol, à 6 m de son pied.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "La sphère veille sur la ville. Un câble de 10 mètres va du haut de la colonne au sol, à 6 mètres de son pied.",
+      "choices": [
+        "C’est une personnification ; la colonne mesure 8 mètres.",
+        "C’est une comparaison ; la colonne mesure 8 mètres.",
+        "C’est une personnification ; la colonne mesure 4 mètres."
+      ],
+      "answer": "C’est une personnification ; la colonne mesure 8 mètres.",
+      "hint": "D’abord : 6 et 10, c’est quel triangle connu ? Puis : une sphère peut-elle veiller, comme une personne ?",
+      "explanation": "Le câble est l’hypoténuse du triangle 6-8-10 : la colonne mesure 8 m. 4, c’est 10 − 6 : on n’enlève pas les côtés. La sphère veille comme une personne : c’est une personnification ; il n’y a pas de « comme », ce n’est pas une comparaison.",
+      "figure": {
+        "kind": "right-triangle",
+        "props": {
+          "a": 6,
+          "b": "?",
+          "c": 10,
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le triangle 6-8-10, et la personnification",
+          "lines": [
+            "6-8-10 : si l’hypoténuse mesure 10 et un côté 6, l’autre mesure 8.",
+            "Personnification : une chose agit comme une personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-solids-9",
+      "prompt": "Message écrit par Sami hier : « Aujourd’hui, l’ombre du cube mesure 6 m. »\nAu même moment, un bâton de 1 m avait une ombre de 2 m.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Message écrit par Sami hier : aujourd’hui, l’ombre du cube mesure 6 mètres. Au même moment, un bâton de 1 mètre avait une ombre de 2 mètres.",
+      "choices": [
+        "Hier, l’ombre mesurait 6 mètres : le cube a 3 mètres de haut.",
+        "Aujourd’hui, l’ombre mesure 6 mètres : le cube a 3 mètres de haut.",
+        "Hier, l’ombre mesurait 6 mètres : le cube a 12 mètres de haut."
+      ],
+      "answer": "Hier, l’ombre mesurait 6 mètres : le cube a 3 mètres de haut.",
+      "hint": "D’abord : l’ombre du bâton est combien de fois sa hauteur ? Puis : le « aujourd’hui » de Sami, c’est quel jour pour nous ?",
+      "explanation": "L’ombre du bâton est 2 fois sa hauteur ; au même moment, c’est pareil pour le cube : 6 ÷ 2 = 3 m. 12, c’est 6 × 2 : on a multiplié au lieu de diviser. Sami a écrit hier : son « aujourd’hui », c’est hier pour nous.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "ombre (m)",
+            "hauteur (m)"
+          ],
+          "rows": [
+            [
+              2,
+              1
+            ],
+            [
+              6,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’ombre, et le jour du message",
+          "lines": [
+            "Au même moment, hauteur et ombre sont proportionnelles (Thalès).",
+            "« Aujourd’hui » veut dire le jour où le message a été écrit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-solids-10",
+      "prompt": "Lina a dit : « J’ai mesuré la pente de la pyramide. »\nHauteur : 8 m. Du centre de la base au milieu d’un bord : 6 m.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Lina a dit : j’ai mesuré la pente de la pyramide. Hauteur : 8 mètres. Du centre de la base au milieu d’un bord : 6 mètres.",
+      "choices": [
+        "Lina a dit qu’elle avait mesuré la pente : 10 mètres.",
+        "Lina a dit que j’avais mesuré la pente : 10 mètres.",
+        "Lina a dit qu’elle avait mesuré la pente : 14 mètres."
+      ],
+      "answer": "Lina a dit qu’elle avait mesuré la pente : 10 mètres.",
+      "hint": "D’abord : 6 et 8, c’est quel triangle connu ? Puis : au discours indirect, que devient « je » ?",
+      "explanation": "La hauteur et le segment de la base font un angle droit : c’est le triangle 6-8-10, la pente mesure 10 m. 14, c’est 6 + 8 : on n’ajoute pas les côtés. Au discours indirect, « je » devient « elle » : Lina a dit qu’elle avait mesuré.",
+      "figure": {
+        "kind": "right-triangle",
+        "props": {
+          "a": 6,
+          "b": 8,
+          "c": "?",
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le triangle 6-8-10, et le discours indirect",
+          "lines": [
+            "6² + 8² = 36 + 64 = 100 = 10² : l’hypoténuse mesure 10.",
+            "Discours indirect : « je » devient « il » ou « elle »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-solids-11",
+      "prompt": "Les ouvriers ont posé le cylindre. Ce lourd bloc mesure 4 m de haut.\nUne échelle de 5 m s’appuie en haut du bloc.",
+      "question": "À quelle distance du bloc est le pied de l’échelle ?",
+      "spoken": "Les ouvriers ont posé le cylindre. Ce lourd bloc mesure 4 mètres de haut. Une échelle de 5 mètres s’appuie en haut du bloc.",
+      "choices": [
+        "« Ce lourd bloc » reprend le cylindre : le pied est à 3 mètres.",
+        "« Ce lourd bloc » parle d’un autre bloc : le pied est à 3 mètres.",
+        "« Ce lourd bloc » reprend le cylindre : le pied est à 1 mètres."
+      ],
+      "answer": "« Ce lourd bloc » reprend le cylindre : le pied est à 3 mètres.",
+      "hint": "D’abord : 4 et 5, c’est quel triangle connu ? Puis : « ce lourd bloc », de quoi a-t-on déjà parlé ?",
+      "explanation": "L’échelle est l’hypoténuse du triangle 3-4-5 : le pied est à 3 m du bloc. 1, c’est 5 − 4 : on n’enlève pas les côtés. « Ce lourd bloc » reprend le cylindre, déjà nommé : le texte ne parle que d’un bloc.",
+      "figure": {
+        "kind": "right-triangle",
+        "props": {
+          "a": "?",
+          "b": 4,
+          "c": 5,
+          "labels": [
+            "A",
+            "B",
+            "C"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le triangle 3-4-5, et la reprise",
+          "lines": [
+            "3-4-5 : si l’hypoténuse mesure 5 et un côté 4, l’autre mesure 3.",
+            "Un groupe nominal avec « ce » reprend souvent un nom déjà écrit."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien construit !",
+    "wrong": "{explanation}"
+  }
+}

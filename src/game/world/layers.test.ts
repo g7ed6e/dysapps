@@ -48,6 +48,8 @@ const REGLES = [
   'world/recipes',
   // Les grands projets (GD-10) : leurs pièces et leurs recettes, produites depuis docs/contenu/projets.md.
   'world/projects',
+  // Le projet mis en avant parmi ceux d'un archipel (GD-10, 4e et 3e) : déduit de la sauvegarde.
+  'world/projectChoice',
   // Les commandes des habitants (GD-7), les quêtes (GD-10) et la forme de leurs petites constructions, en repère propre.
   'world/requests',
   'world/fixtures',
