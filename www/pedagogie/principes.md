@@ -73,6 +73,13 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 - **Pas de syllabes colorées sur la LV2**, texte marqué dans sa langue pour les lecteurs d’écran, et **entendre avant d’écrire**, comme en anglais : à la dictée à choix, la lecture automatique dit le mot dès l’ouverture de l’écran.
 - **Un signe qui change le sens** (schon/schön, tu/tú, si/sí) se travaille avec le son et dans une phrase, jamais sur la forme seule ; ¿ et ¡ s’affichent mais ne se lisent pas.
 
+## Le latin et le grec : une seule prononciation
+
+- **Une seule prononciation, celle de la classe** : la voix française lit les mots latins dans la prononciation dite restituée, la plus régulière (c et g toujours durs, u « ou », consonne finale dite) ; les mots passés en français (forum, villa) se lisent en français. L’écriture préparée pour la voix ne s’affiche jamais, ni à l’écran ni pour les lecteurs d’écran.
+- **Pas de syllabes colorées sur le latin et le grec** : le découpage du français tromperait l’élève, par exemple sur une terminaison. Les mots sont marqués dans leur langue pour les lecteurs d’écran ; une terminaison se montre à part par un trait (ros-am), jamais par la seule couleur.
+- **Une lettre grecque se nomme après la réponse** : la question ne lit jamais une lettre grecque, son nom donnerait la réponse ; l’explication la nomme ensuite.
+- **Un mot grec dans une seule police** : un mot en lettres grecques s’affiche toujours en entier dans une police qui a tout l’alphabet, la police choisie si elle l’a, sinon une seule police sans empattement, à la taille et aux espacements choisis. C’est la seule exception à « le texte se lit dans la police choisie ».
+
 ## Ce que travaille chaque île
 
 | Classe | Français | Maths | Anglais |
