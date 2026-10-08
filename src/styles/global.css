@@ -7029,6 +7029,16 @@ fieldset {
   :root[data-texte="grand"] .choices.short > :is(.choice, .choice-listen) {
     flex: 1 1 auto;
   }
+  /* Une réponse et son haut-parleur : la réponse garde toute la largeur pour qu'un mot ne s'y coupe pas, le haut-parleur
+     passe juste dessous, à droite, à la même place pour les trois réponses. */
+  :root[data-texte="grand"] .choice-listen {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+  }
+  :root[data-texte="grand"] .choice-listen > .speak-button {
+    align-self: flex-end;
+  }
   :root[data-texte="grand"] .enclos-pens {
     flex-wrap: wrap;
   }

@@ -617,18 +617,29 @@ const CAPTURES = [
     voir: '.assemblage-question button >> nth=-1',
   },
   // Les grands projets de la 4e et de la 3e (GD-10, famille `projets-college`), à retirer une fois le lot fusionné : les
-  // cinq monuments neufs finis, de jour et de nuit ; à mi-chantier (les deux premières pièces) et pas commencés ; la
-  // Carte de chaque archipel ; puis une question en anglais (le carnet de vol) et une des solides au téléphone en grand texte.
+  // archipels et leur Carte, de jour et de nuit ; puis une question en anglais (le carnet de vol) et une des solides au téléphone en grand texte.
   ...[
-    ['4e', 'maths-4e-algebra', { 'landmark-4e-3': 4, 'landmark-4e-4': 3 }],
-    ['3e', 'maths-3e-functions', { 'landmark-3e-3': 4, 'landmark-3e-4': 5, 'landmark-3e-5': 4 }],
-  ].flatMap(([a, ile, moitie]) => [
+    ['4e', 'maths-4e-algebra'],
+    ['3e', 'maths-3e-functions'],
+  ].flatMap(([a, ile]) => [
     { nom: `projets-${a}`, vue: 'archipel', famille: 'projets-college', ile, finesse: 2 },
     { nom: `projets-${a}-nuit`, vue: 'archipel', famille: 'projets-college', ile, nuit: true, finesse: 2 },
-    { nom: `projets-${a}-chantier`, vue: 'archipel', famille: 'projets-college', ile, etages: moitie, finesse: 2 },
-    { nom: `projets-${a}-fantome`, vue: 'archipel', famille: 'projets-college', ile, etages: Object.fromEntries(Object.keys(moitie).map((m) => [m, 0])), finesse: 2 },
     { nom: `projets-${a}-carte`, vue: 'carte', famille: 'projets-college', ile },
     { nom: `projets-${a}-carte-nuit`, vue: 'carte', famille: 'projets-college', ile, nuit: true },
+  ]),
+  // Chaque monument de près (sa fiche ouverte) : fini de jour et de nuit, à mi-chantier (les deux premières pièces),
+  // pas commencé (en fantôme).
+  ...[
+    ['portique', 'landmark-4e-3', 'maths-4e-algebra', 4],
+    ['tour', 'landmark-4e-4', 'maths-4e-algebra', 3],
+    ['fusee', 'landmark-3e-3', 'maths-3e-functions', 4],
+    ['chateau', 'landmark-3e-4', 'maths-3e-functions', 5],
+    ['colonne', 'landmark-3e-5', 'maths-3e-functions', 4],
+  ].flatMap(([nom, lieu, ile, moitie]) => [
+    { nom: `projets-${nom}`, vue: 'île', famille: 'projets-college', ile, lieu },
+    { nom: `projets-${nom}-nuit`, vue: 'île', famille: 'projets-college', ile, lieu, nuit: true },
+    { nom: `projets-${nom}-chantier`, vue: 'île', famille: 'projets-college', ile, lieu, etages: { [lieu]: moitie } },
+    { nom: `projets-${nom}-fantome`, vue: 'île', famille: 'projets-college', ile, lieu, etages: { [lieu]: 0 } },
   ]),
   ...[
     ['carnet', 'landmark-3e-3/1', { 'landmark-3e-3': 1 }, { 'english-3e-comprehension': 4, 'physics-chemistry-3e-motion-energy': 4, 'life-earth-sciences-3e-human-body': 2 }],
