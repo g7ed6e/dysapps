@@ -16,25 +16,25 @@ import type { VoxelCube } from './cube';
 /** La peau de la lanterne dépasse ses blocs de tant de case (au-dessus de leurs faces, sans s'y mêler). */
 export const PEAU = 0.03;
 /** L'opacité de la peau, la nuit : presque pleine, les plombs du vitrail se devinent encore. */
-export const OPACITE_DE_LA_PEAU = 0.9;
+const OPACITE_DE_LA_PEAU = 0.9;
 /** Le halo : son côté, en part de la plus grande dimension de la lanterne (le dégradé s'efface avant le bord). */
 export const HALO = 3;
 /** L'opacité du halo en son centre, la nuit. */
 export const OPACITE_DU_HALO = 0.6;
 /** La flaque de la corniche : son rayon dépasse le bord de la lanterne de tant de cases. */
-export const DEBORD_DE_LA_CORNICHE = 1.6;
+const DEBORD_DE_LA_CORNICHE = 1.6;
 /** L'opacité de la flaque de la corniche en son centre, la nuit. */
-export const OPACITE_DE_LA_CORNICHE = 0.7;
+const OPACITE_DE_LA_CORNICHE = 0.7;
 /** La flaque sur l'eau : son rayon, en part de la plus grande dimension de la lanterne (au moins `RAYON_DE_L_EAU_MIN`). */
-export const RAYON_DE_L_EAU = 2.6;
+const RAYON_DE_L_EAU = 2.6;
 export const RAYON_DE_L_EAU_MIN = 6;
 /** L'opacité de la flaque sur l'eau en son centre, la nuit (son centre est caché par l'îlot : on voit son bord). */
-export const OPACITE_DE_L_EAU = 0.55;
+const OPACITE_DE_L_EAU = 0.55;
 /** Les flaques flottent de tant au-dessus de ce qu'elles éclairent. */
 const AU_DESSUS = 0.02;
 
 /** Le halo d'une lanterne : son centre (repère de Three) et son côté. */
-export interface HaloDeLanterne {
+interface HaloDeLanterne {
   centre: [number, number, number];
   cote: number;
 }
