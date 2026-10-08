@@ -345,7 +345,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'maths-6e-fractions-fixture-1': [-1, 11],
   'maths-6e-decimals-fixture-1': [5, 12],
   'maths-5e-signed-numbers-fixture-1': [10, 3],
-  'maths-5e-signed-numbers-fixture-2': [6, 12],
+  'maths-5e-signed-numbers-fixture-2': [13, 3],
   'maths-5e-proportionality-fixture-1': [-1, 4],
   'french-5e-homophones-fixture-1': [10, 4],
   'french-5e-conjugation-fixture-1': [-3, 12],
@@ -362,7 +362,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'history-6e-antiquity-fixture-1': [0, 10],
   'geography-6e-living-fixture-1': [-1, 11],
   'history-5e-middle-ages-fixture-1': [1, 10],
-  'history-5e-middle-ages-fixture-2': [5, 10],
+  'history-5e-middle-ages-fixture-2': [8, 3],
   'geography-5e-resources-fixture-1': [2, 10],
   'history-4e-revolutions-fixture-1': [8, 6],
   'geography-4e-globalization-fixture-1': [10, 3],
@@ -414,6 +414,17 @@ const WANTED_PLACES: Record<string, readonly [number, number]> = {
   // nue, à gauche du bac de la commande à l'écran, entier, à huit cases de Bloquette (DA et consultant Blocland, relecture des
   // captures). Le calcul ne cherche pas si loin : seule la place voulue l'y met.
   'french-6e-grammar-spelling-fixture-2': [14, 5],
+  // Au Bourg des chroniques (GD-10), le calcul posait le four de Vélin derrière le logis, qu'il ne voit pas : un tiers du
+  // four se cachait derrière le mur et la lanterne de la porte. Il se pose sur l'herbe nue devant Vélin, une case nue
+  // entre eux, entre lui et la borne la plus proche de la caméra, entier vu de la caméra de l'île (DA, relecture des captures).
+  'history-5e-middle-ages-fixture-2': [8, 3],
+  // Au Glacier des relatifs (GD-10), la balise de Frimas se posait derrière lui, cachée par le grand manchot et le
+  // ponton : à côté de lui, la cabane de la commande et ses abords, la rangée des bornes, la butte de pierre et la
+  // terrasse prennent tout le sol. Elle se pose sur la glace nue à gauche de la cabane à l'écran, dans son rang, une case
+  // nue entre elles, entière et la lanterne jamais cachée (DA, relecture des captures) ; un rang plus loin, ses cases
+  // figées au sol passeraient l'enveloppe des commandes du 5e (484 triangles pour 480, budget.ts). Le calcul ne cherche
+  // pas si loin (sept cases de Frimas) : seule la place voulue l'y met.
+  'maths-5e-signed-numbers-fixture-2': [13, 3],
 };
 
 /** La place voulue d'une petite construction (voir `WANTED_PLACES`), ou `null`. */
