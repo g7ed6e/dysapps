@@ -627,19 +627,19 @@ const CAPTURES = [
     { nom: `projets-${a}-carte`, vue: 'carte', famille: 'projets-college', ile },
     { nom: `projets-${a}-carte-nuit`, vue: 'carte', famille: 'projets-college', ile, nuit: true },
   ]),
-  // Chaque monument de près (sa fiche ouverte) : fini de jour et de nuit, à mi-chantier (les deux premières pièces),
-  // pas commencé (en fantôme).
+  // Chaque monument vu depuis l'île à côté de laquelle il est posé : fini de jour et de nuit, à mi-chantier (les deux
+  // premières pièces), pas commencé (en fantôme).
   ...[
-    ['portique', 'landmark-4e-3', 'maths-4e-algebra', 4],
-    ['tour', 'landmark-4e-4', 'maths-4e-algebra', 3],
-    ['fusee', 'landmark-3e-3', 'maths-3e-functions', 4],
-    ['chateau', 'landmark-3e-4', 'maths-3e-functions', 5],
-    ['colonne', 'landmark-3e-5', 'maths-3e-functions', 4],
+    ['portique', 'landmark-4e-3', 'geography-4e-globalization', 4],
+    ['tour', 'landmark-4e-4', 'physics-chemistry-4e-signals-circuits', 3],
+    ['fusee', 'landmark-3e-3', 'physics-chemistry-3e-motion-energy', 4],
+    ['chateau', 'landmark-3e-4', 'geography-3e-france', 5],
+    ['colonne', 'landmark-3e-5', 'maths-3e-geometry', 4],
   ].flatMap(([nom, lieu, ile, moitie]) => [
-    { nom: `projets-${nom}`, vue: 'île', famille: 'projets-college', ile, lieu },
-    { nom: `projets-${nom}-nuit`, vue: 'île', famille: 'projets-college', ile, lieu, nuit: true },
-    { nom: `projets-${nom}-chantier`, vue: 'île', famille: 'projets-college', ile, lieu, etages: { [lieu]: moitie } },
-    { nom: `projets-${nom}-fantome`, vue: 'île', famille: 'projets-college', ile, lieu, etages: { [lieu]: 0 } },
+    { nom: `projets-${nom}`, vue: 'archipel', famille: 'projets-college', ile, finesse: 2 },
+    { nom: `projets-${nom}-nuit`, vue: 'archipel', famille: 'projets-college', ile, nuit: true, finesse: 2 },
+    { nom: `projets-${nom}-chantier`, vue: 'archipel', famille: 'projets-college', ile, etages: { [lieu]: moitie }, finesse: 2 },
+    { nom: `projets-${nom}-fantome`, vue: 'archipel', famille: 'projets-college', ile, etages: { [lieu]: 0 }, finesse: 2 },
   ]),
   ...[
     ['carnet', 'landmark-3e-3/1', { 'landmark-3e-3': 1 }, { 'english-3e-comprehension': 4, 'physics-chemistry-3e-motion-energy': 4, 'life-earth-sciences-3e-human-body': 2 }],
