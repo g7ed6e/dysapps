@@ -24,6 +24,7 @@ classDiagram
     links : string[]
     place? : BiomeId
     requests? : string[]
+    stories? : OpenStory[]
   }
   class ExerciseProgress {
     stars
@@ -37,7 +38,7 @@ classDiagram
 - `progress` : par mission, les meilleures étoiles, le nombre d’essais et le meilleur score.
 - `spaced` : les items à revoir (répétition espacée) ; `types` : l’adaptation du niveau par type d’exercice ; `streak` et `chests` : la série de jours et ses coffres ; `fluency` : les temps de lecture.
 - `stock` : les blocs gagnés, la ressource du jeu.
-- `world` : les cases posées de chaque plan, le journal des bâtiments finis, les liaisons construites, l’île du bonhomme et les commandes des habitants arrivées.
+- `world` : les cases posées de chaque plan, le journal des bâtiments finis, les liaisons construites, l’île du bonhomme, les commandes des habitants arrivées et les quêtes ouvertes avec leur étape (GD-10 ; une quête finie en sort, son objet posé dans `parts`).
 
 La progression commune (XP, rôles, succès), partagée avec le portail, est à part : `core/progress.ts`, tenue par `core/ProgressContext.tsx`.
 
@@ -45,11 +46,11 @@ La progression commune (XP, rôles, succès), partagée avec le portail, est à 
 
 ```mermaid
 flowchart LR
-  ecran[Écrans<br/>ExerciseRunner, WorldPage, BossPage…] -- actions --> ctx[BloclandContext<br/>complete, buildBridge, deliver, moveTo, launch…]
-  ctx -- état courant --> regles[Fonctions pures<br/>engine.ts, world/requests.ts, world/uses.ts…]
+  ecran[Écrans<br/>ExerciseRunner, WorldPage, BossPage…] -- actions --> ctx[BloclandContext<br/>complete, buildBridge, deliver, tapStory, moveTo, launch…]
+  ctx -- état courant --> regles[Fonctions pures<br/>engine.ts, world/requests.ts, world/stories.ts, world/uses.ts…]
   regles -- nouvel état --> ctx
   ctx -- setState --> ecran
-  ctx -- XP d’un plan fini --> prog[ProgressContext]
+  ctx -- XP d’un plan ou d’une quête finie --> prog[ProgressContext]
   ctx -- saveJSON à chaque changement --> stockage[(localStorage<br/>dysapps:game)]
 ```
 

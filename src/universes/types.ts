@@ -177,6 +177,11 @@ export interface TextesUnivers {
    */
   commandes?: TextesCommandes;
   /**
+   * Les quêtes des habitants (GD-10, mot neutre `story`) : leur nom et leurs gestes. Sans eux, l'univers ne montre pas
+   * les quêtes (ni arrivée, ni ligne, ni objet posé).
+   */
+  quetes?: TextesQuetes;
+  /**
    * La construction qui réunit deux lieux (GD-9, point 10 ; mot neutre `join`) : son nom, ce qu'elle est, ce que dit sa
    * fin. Sans elle, les mots communs (« La réunion »).
    */
@@ -217,6 +222,17 @@ interface TextesCommandes {
   tuEnAs: (have: number, count: number) => string;
   /** « Y aller » quand l'élève est déjà sur l'île qui donne le bloc. */
   tuYEs: string;
+}
+
+/** Les mots des quêtes des habitants dans un univers (GD-10). */
+interface TextesQuetes {
+  /** Le nom d'une quête, sur sa ligne et pour un lecteur d'écran. */
+  titre: string;
+  /** Le geste d'une étape faite d'un toucher, sur le bouton. */
+  donner: string;
+  apporter: string;
+  /** L'étape en cours, lue (« Étape 2 sur 3 ») ; à l'écran, « 2/3 ». */
+  etape: (n: number, total: number) => string;
 }
 
 /** Les noms qu'un univers donne à des blocs (GD-2 : les blocs assemblés). */

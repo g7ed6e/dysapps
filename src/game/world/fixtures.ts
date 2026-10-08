@@ -122,6 +122,22 @@ const FORMES: Record<string, Cube[]> = {
   // dessus. L'aimant remplace le bois, déjà demandé dans l'archipel (docs/contenu, à valider par le DA).
   'technology-6e-objects-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 0, 1, BLOC.carton), ...rangee(0, 2, 0, 2, BLOC.aimant)],
 
+  // Les objets posés à la fin des quêtes de 6e (GD-10, consultant Blocland ; docs/contenu/quetes.md).
+  // Mousso, la lanterne : un banc de trois bois, une barrière au milieu, la lanterne dessus.
+  'french-6e-phonology-fixture-2': [...rangee(0, 2, 0, 0, BLOC.bois), [1, 0, 1, 'fence'], [1, 0, 2, 'lantern']],
+  // Bloquette, le portillon : une porte de deux de haut entre deux poteaux de terre.
+  'french-6e-grammar-spelling-fixture-2': [...colonne(0, 0, 0, 1, BLOC.terre), ...colonne(1, 0, 0, 1, 'door'), ...colonne(2, 0, 0, 1, BLOC.terre)],
+  // Grimoire, l'escalier : trois marches de un à trois de haut, des portes dessous (le verre se perdait sur le sol de
+  // verre de la Tour, comme pour les commandes).
+  'french-6e-reading-fixture-2': [
+    [0, 0, 0, 'stairs'],
+    [1, 0, 0, 'door'],
+    [1, 0, 1, 'stairs'],
+    [2, 0, 0, 'door'],
+    [2, 0, 1, 'door'],
+    [2, 0, 2, 'stairs'],
+  ],
+
   // 5e : les Collines du Large.
   // Frimas, la cabane : des murs de portes sur deux rangs (la glace se perdait sur le sol de glace du Glacier,
   // retouche du directeur artistique), une porte vide devant à gauche, un toit de tuiles.
@@ -296,6 +312,10 @@ const PLACES: Record<string, readonly [number, number]> = {
   'french-6e-word-spelling-fixture-1': [1, 12],
   'french-6e-grammar-spelling-fixture-1': [9, 4],
   'french-6e-reading-fixture-1': [7, 9],
+  // Les objets des quêtes (GD-10), après la commande de l'île.
+  'french-6e-phonology-fixture-2': [3, 19],
+  'french-6e-grammar-spelling-fixture-2': [8, 9],
+  'french-6e-reading-fixture-2': [10, 3],
   'maths-6e-calculation-fixture-1': [9, 3],
   'maths-6e-fractions-fixture-1': [-1, 11],
   'maths-6e-decimals-fixture-1': [5, 12],

@@ -1,6 +1,7 @@
 // Le calcul de la place d'une petite construction (GD-7), que seul le test appelle pour vérifier la place écrite.
 import { type BiomeId, BIOMES, type BlockId, BLOCKS } from '../../biomes';
-import { casesDeLaPetiteConstruction, wantedPlace } from '../fixtures';
+import { casesDeLaPetiteConstruction, placeEcrite, wantedPlace } from '../fixtures';
+import { fixturesOfPlace } from '../placedFixtures';
 import { islandDef } from '../map';
 import { ARCHIPELAGOS, BRIDGES } from '../archipelago';
 import { planCells, plansFor } from '../plans';
@@ -214,6 +215,14 @@ export function examenDeLaPetiteConstruction(
               interdites.add(`${Math.round(p.x + ((q.x - p.x) * t) / n) - def.core.x + dx},${Math.round(p.y + ((q.y - p.y) * t) / n) - def.core.y + dy}`);
       }
     }
+  // Les petites constructions d'avant sur l'île (la commande, puis les quêtes dans leur ordre, GD-10), à leur place
+  // écrite : jamais dessus, ni sur la case qui les entoure ; celles d'après ne comptent pas (leur place se calcule
+  // après celle-ci, qui ne bouge donc jamais quand une quête s'ajoute).
+  const avant = fixturesOfPlace(id).map((f) => f.fixture);
+  for (const f of avant.slice(0, Math.max(0, avant.indexOf(fixture)))) {
+    const p = placeEcrite(f);
+    if (p) for (const c of casesDeLaPetiteConstruction(f) ?? []) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) interdites.add(`${p.x + c.x + dx},${p.y + c.y + dy}`);
+  }
   // Jamais devant la rangée des bornes : c'est par là que le bonhomme arrive et passe d'une borne à l'autre.
   const devant = Math.min(...questStations(id).map((st) => st.y), Infinity);
   const aCote = new Set<string>();

@@ -310,8 +310,8 @@ export function iconeDeLObjet(o: ObjetTouche): AnyIconName {
  * le bloc demandé ; un ouvrage : l'icône des ouvrages (GD-7 : celle du pli Ouvrages et de Mes blocs, celle de la
  * maquette choisie) ; le Bloc-Navire : le navire ; sinon (une mission, une île à reprendre) : l'étoile de « Jouer ».
  */
-export function imageDeLaDestination(d: { ouvrage?: string; commande?: string }, o: { navire: boolean; bloc?: BlockId }): ImageDeLaBulle {
-  if (d.commande && o.bloc) return { bloc: o.bloc };
+export function imageDeLaDestination(d: { ouvrage?: string; commande?: string; story?: string }, o: { navire: boolean; bloc?: BlockId }): ImageDeLaBulle {
+  if ((d.commande || d.story) && o.bloc) return { bloc: o.bloc };
   if (d.ouvrage) return { icone: 'ouvrage' };
   if (o.navire) return { icone: 'ship' };
   return { icone: 'star' };

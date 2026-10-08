@@ -45,7 +45,7 @@ function chantier(partiel: Partial<VehicleBuilder>): VehicleBuilder {
   };
 }
 
-function ouvrir(fiche: FicheOuverte, extra: { ship?: VehicleBuilder; commande?: Commande; onLivree?: (c: Commande) => boolean; onBoard?: () => void } = {}) {
+function ouvrir(fiche: FicheOuverte, extra: { ship?: VehicleBuilder; commande?: Commande; onLivree?: (c: { id: string }) => boolean; onBoard?: () => void } = {}) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
@@ -82,6 +82,21 @@ it('une créature qui a une commande prête : sa phrase et « Livrer », qui pos
   expect(f).toHaveTextContent('Potager posé chez Mousso !');
   expect(within(f).queryByRole('button', { name: /Livrer/ })).not.toBeInTheDocument();
   expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.requests ?? []).not.toContain(MOUSSO);
+});
+
+it('l’habitant de l’étape d’une quête (GD-10) : le signe de l’objet, « 2/3 », la phrase et « Apporter », qui pose l’objet', async () => {
+  sauver({ progress: joue(FORET, PLAINE), world: { parts: {}, log: [], links: [], place: FORET, stories: [{ id: 'story-6e-1', step: 2 }] } });
+  const onLivree = vi.fn(() => true);
+  ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' }, { onLivree });
+  const f = screen.getByRole('dialog', { name: 'Mousso' });
+  expect(within(f).getByRole('img', { name: 'Entraide. Étape 3 sur 3.' })).toHaveTextContent('3/3');
+  expect(f).toHaveTextContent('Apporte la lanterne à Mousso.');
+  expect(f).not.toHaveTextContent('Bonjour !');
+  await userEvent.click(within(f).getByRole('button', { name: /Apporter/ }));
+  expect(onLivree).toHaveBeenCalledWith(expect.objectContaining({ id: 'story-6e-1', biome: FORET }));
+  expect(f).toHaveTextContent('Lanterne posée chez Mousso !');
+  expect(within(f).queryByRole('button', { name: /Apporter/ })).not.toBeInTheDocument();
+  expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.stories).toBeUndefined();
 });
 
 it('une créature qui a des révisions dues : « Reprendre » et « Plus tard » ; après « Plus tard », sa phrase', async () => {

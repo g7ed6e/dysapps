@@ -11,7 +11,7 @@ import { BloclandProvider, useBlocland } from './BloclandContext';
 import { exercisesOf } from './exercises';
 import { IslandSheet } from './IslandSheet';
 import { MenuSheet } from './MenuSheet';
-import { getCommande, type Commande } from './world/requests';
+import { getCommande } from './world/requests';
 import { casesDeLaPetiteConstruction } from './world/fixtures';
 
 const FORET = 'french-6e-phonology';
@@ -79,7 +79,8 @@ it('dans le panneau de l’île de la créature : « Livrer » pose la petite co
   // La phrase prend la place de la ligne livrée, et le focus.
   const livree = document.querySelector(`[data-commande="${MOUSSO}"]`) as HTMLElement;
   expect(livree.textContent).toContain('Potager posé chez Mousso\u00a0!');
-  expect(within(liste).getAllByRole('listitem').map((l) => l.getAttribute('data-commande'))).toEqual([MOUSSO, COCO]);
+  // La livraison est un moment où la quête de la région peut arriver (GD-10) : sa ligne, en tête.
+  expect(within(liste).getAllByRole('listitem').map((l) => l.getAttribute('data-commande'))).toEqual(['story-6e-1', MOUSSO, COCO]);
   expect(livree.querySelector('.commande-posee')).toHaveFocus();
   expect(within(livree).queryByRole('button', { name: /Livrer/ })).toBeNull();
   const cases = casesDeLaPetiteConstruction(getCommande(MOUSSO)!.fixture)!.length;
@@ -146,7 +147,7 @@ it('en 3D, la phrase « posée » attend la fin de la vague de pose', async () =
           biome={getBiome(FORET)!}
           onClose={() => {}}
           in3d
-          onLivree={(c: Commande) => {
+          onLivree={(c: { id: string }) => {
             setEnCours(c.id);
             return true;
           }}

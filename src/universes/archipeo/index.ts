@@ -541,7 +541,13 @@ export const ARCHIPEO = {
     compte: (n, pretes) => (pretes ? `${pretes} prête${s(pretes)}` : `${n} en attente`),
     tuEnAs: (have, count) => `Tu en as ${have} sur ${count}.`,
     tuYEs: 'Tu y es : joue une mission ici.',
+  },  quetes: {
+    titre: 'Entraide',
+    donner: 'Donner',
+    apporter: 'Apporter',
+    etape: (n, total) => `Étape ${n} sur ${total}`,
   },
+
   // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
   blocs: nomsAssembles('archipeo'),
   // Une liaison s'appelle « ouvrage » à l'écran, partout (GD-9 : le mode « Aménager » et le menu aussi).

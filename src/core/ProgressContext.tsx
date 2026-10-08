@@ -36,7 +36,7 @@ interface ProgressContextValue {
   completePlan: (xp: number) => ProgressUpdate;
   /** Un monument terminé : XP et succès. */
   completeMonument: (xp: number) => ProgressUpdate;
-  /** Une construction qui réunit deux lieux terminée (GD-9) : XP, sans succès. */
+  /** Une construction qui réunit deux lieux terminée (GD-9), ou une quête finie (GD-10) : XP, sans succès. */
   completeJoin: (xp: number) => ProgressUpdate;
   /** Un Gardien de biome vaincu : succès. */
   beatBoss: () => ProgressUpdate;

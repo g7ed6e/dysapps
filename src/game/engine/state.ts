@@ -71,6 +71,12 @@ export interface World {
    */
   requests?: string[];
   /**
+   * Les quêtes ouvertes (GD-10 : world/stories.ts), une au plus par région, avec leur étape en cours. Absent tant
+   * qu'aucune n'est arrivée, et dans une sauvegarde d'avant les quêtes. Une quête finie en sort : son objet est alors
+   * dans `parts`.
+   */
+  stories?: { id: string; step: number }[];
+  /**
    * La disposition des régions aménagées (GD-9, world/savedLayout.ts) : la place et l'orientation des lieux, des
    * Gardiens, des bornes, les arrivées des liaisons, les lieux réunis, les raccourcis, les liaisons à reposer. Absent
    * dans une sauvegarde d'avant GD-9 et tant qu'aucune région n'est aménagée : la carte de départ.

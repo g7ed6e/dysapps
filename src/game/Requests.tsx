@@ -15,6 +15,7 @@
 // place de la ligne livrée, à la fin de la vague de pose (tout de suite sans vague), et reçoit le focus ; la ligne
 // disparaît à la prochaine ouverture.
 // Ignorer une commande, c'est ne pas la livrer : ni bouton, ni relance, ni perte, ni délai.
+import type { PetiteConstructionAPoser } from './world/placedFixtures';
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
@@ -34,6 +35,8 @@ import { ASSEMBLAGE_PATH, recetteDe } from './world/assembly';
 import { archipelagoOf, isBiomeUnlocked, type ArchipelagoId } from './world/archipelago';
 import { COMMANDES, commandeMiseEnAvant, commandesOuvertes, estLivree, estPrete, getCommande, ilesQuiDonnent, texteDeLaCommande, type Commande } from './world/requests';
 import { lienDeLaDestination } from './world/destination';
+import { getStory, openStoryOf } from './world/stories';
+import { StoryLine, tapTheStep } from './Stories';
 
 interface Props {
   /**
@@ -53,7 +56,7 @@ interface Props {
    * Une commande livrée (le panneau d'île en 3D) : la scène pose la petite construction, avec son geste et son son
    * (« clac » et carillon) ; rend `true` si elle prend le son. Sans elle (vue simple), le carillon tout de suite.
    */
-  onLivree?: (c: Commande) => boolean;
+  onLivree?: (c: PetiteConstructionAPoser) => boolean;
   /** La commande dont la petite construction est en train de se poser (la vague) : sa phrase attend la fin. */
   poseEnCours?: string | null;
   /**
@@ -92,7 +95,7 @@ export function YouAreHere({ dit }: { dit: boolean }) {
  */
 export function livrerLaCommande(
   c: Commande,
-  { deliver, onLivree, sons, lieu }: { deliver: (id: string) => { ok: boolean }; onLivree?: (c: Commande) => boolean; sons: boolean; lieu: string },
+  { deliver, onLivree, sons, lieu }: { deliver: (id: string) => { ok: boolean }; onLivree?: (c: PetiteConstructionAPoser) => boolean; sons: boolean; lieu: string },
 ): string | null {
   if (!deliver(c.id).ok) return null;
   const sonPris = onLivree?.(c) ?? false;
@@ -107,17 +110,20 @@ function ileDuBloc(c: Commande, links: string[]): BiomeId | null {
 }
 
 export function Requests({ island, fold, highlight = null, niveau = 'h3', className, onLivree, poseEnCours = null, onAller, onAuxMissions }: Props) {
-  const { state, deliver } = useBlocland();
+  const { state, deliver, tapStory } = useBlocland();
   const { settings, speak } = useSettings();
   const textes = useTextes();
   // La commande livrée ici : sa phrase, et sa place dans la liste (elle y prend la place de la ligne).
   const [said, setSaid] = useState<{ id: string; index: number; text: string } | null>(null);
   // « Y aller » touché sur l'île qui donne déjà le bloc : la ligne le dit.
   const [ici, setIci] = useState<string | null>(null);
+  // La quête (GD-10) finie ici : la phrase de la fin, à la fin de la pose de son objet.
+  const [queteDite, setQueteDite] = useState<{ id: string; text: string; finished: boolean } | null>(null);
   // La phrase d'une livraison ne suit pas sur une autre île.
   useEffect(() => {
     setSaid(null);
     setIci(null);
+    setQueteDite(null);
   }, [island]);
   const list = useRef<HTMLUListElement>(null);
   useEffect(() => {
@@ -143,7 +149,11 @@ export function Requests({ island, fold, highlight = null, niveau = 'h3', classN
   if (!mots) return null;
   const a: ArchipelagoId = archipelagoOf(island ?? state.world.place ?? 'french-6e-phonology').classe;
   const ouvertes = commandesOuvertes(state.world, a);
-  if (!ouvertes.length && !said) return null;
+  // La quête ouverte de la région, en tête de la liste (GD-10) ; finie ici, sa phrase reste à sa place.
+  const quete = textes.quetes ? openStoryOf(state.world, a) : null;
+  const queteFinie = queteDite?.finished ? getStory(queteDite.id) : undefined;
+  const queteVue = quete ?? (queteFinie ? { story: queteFinie, index: queteFinie.steps.length - 1 } : null);
+  if (!ouvertes.length && !said && !queteVue) return null;
 
   const lieu = textes.assemblage.a;
   const enAvant = commandeMiseEnAvant(state, a);
@@ -181,7 +191,10 @@ export function Requests({ island, fold, highlight = null, niveau = 'h3', classN
   // Ouvert de lui-même sur l'île de la commande prête, ou quand une ligne est mise en avant ; au menu, dès qu'une
   // commande est prête.
   const defaultOpen =
-    (island ? pretes.some((c) => c.biome === island) : pretes.length > 0) || ouvertes.some((c) => c.id === highlight) || said !== null;
+    (island ? pretes.some((c) => c.biome === island) : pretes.length > 0) ||
+    ouvertes.some((c) => c.id === highlight) ||
+    said !== null ||
+    (queteVue !== null && (highlight === queteVue.story.id || queteVue.story.steps[queteVue.index].place === island));
   return (
     <Foldable fold={fold} name="commandes" heading={heading} defaultOpen={defaultOpen}>
       <section className={`commandes${className ? ` ${className}` : ''}`} aria-labelledby={id}>
@@ -194,6 +207,21 @@ export function Requests({ island, fold, highlight = null, niveau = 'h3', classN
           </p>
         )}
         <ul ref={list} className="island-actions bridges-list commandes-list" aria-label={mots.liste}>
+          {queteVue && (
+            <StoryLine
+              story={queteVue.story}
+              index={queteVue.index}
+              state={state}
+              island={island}
+              highlight={highlight === queteVue.story.id}
+              said={queteDite?.finished && queteDite.id === queteVue.story.id ? (poseEnCours === queteDite.id ? '' : queteDite.text) : null}
+              onTap={() => {
+                const r = tapTheStep(queteVue.story, { tapStory, onLivree, sons: settings.sounds });
+                if (r) setQueteDite({ id: queteVue.story.id, ...r });
+              }}
+              onAller={onAller}
+            />
+          )}
           {lignes.map((c) => {
             const creature = getBiome(c.biome)!;
             const bloc = BLOCKS[c.block];

@@ -4716,6 +4716,19 @@ button.island-quest:active {
   font-size: 1rem;
   color: var(--text);
 }
+/* Le signe d'une quête (GD-10) : l'image de l'objet et « 2/3 », en chiffres gras, sur la ligne de la quête et dans la fiche
+   de l'habitant. La ligne de la quête : un bord en pointillés, une forme en plus de celle d'une commande. */
+.quete-signe {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  vertical-align: middle;
+}
+.commandes-list .quete-item {
+  border-style: dashed;
+}
 /* « Tu y es : joue une mission ici. », sous le titre « Missions » ; vide, la zone reste là pour le lecteur d'écran. */
 .commande-ici-missions {
   display: flex;

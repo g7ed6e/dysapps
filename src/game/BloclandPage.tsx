@@ -33,7 +33,7 @@ import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../universes';
 import { ArchipelagoMap } from './ArchipelagoMap';
 import { lienDeLaDestination, nextDestination } from './world/destination';
-import { sansCommandes } from './world/requests';
+import { gameAsShown } from './world/stories';
 import { islandState } from './world/islandState';
 import { SpeakButton } from '../components/SpeakButton';
 import { useUnivers } from '../core/SettingsContext';
@@ -62,7 +62,7 @@ export function BloclandPage() {
   const here = archipelagoOf(at).classe;
   const textes = useTextes();
   // Les commandes (GD-7) ne se suggèrent que dans un univers qui les montre (`commandes` dans ses textes).
-  const destination = nextDestination(textes.commandes ? state : sansCommandes(state), textes.archipels, textes.libelles);
+  const destination = nextDestination(gameAsShown(state, textes), textes.archipels, textes.libelles);
   // La vue simple n'a pas de monde : pas de moment du rallumage, mais son mot et sa cloche, une fois (lot 6).
   const { settings } = useSettings();
   const rallumage = useRekindling(state.progress, here, textes.sentinelles !== null);
@@ -79,14 +79,13 @@ export function BloclandPage() {
   const { remises } = usePlusTard();
   // Les révisions dues, calculées une fois pour toute la Carte (pas une fois par île).
   // Un seul signe par créature : sa commande prête et suggérée (GD-7, PR 3 : l'icône du bloc), sinon ses révisions.
-  const avecCommandes = Boolean(textes.commandes);
   const fontSigne = useMemo(() => {
     const dues = questsToReview(state.spaced, state.world.links);
-    const vu = avecCommandes ? state : sansCommandes(state);
+    const vu = gameAsShown(state, textes);
     return new Map(
-      ARCHIPELAGOS.flatMap((a) => signesDesCreatures(vu, a.classe, signesParmi(dues, a.classe, remises, settings.lv2), destination.commande)).map((x) => [x.id, x]),
+      ARCHIPELAGOS.flatMap((a) => signesDesCreatures(vu, a.classe, signesParmi(dues, a.classe, remises, settings.lv2), destination.commande, destination.story)).map((x) => [x.id, x]),
     );
-  }, [state, remises, settings.lv2, avecCommandes, destination.commande]);
+  }, [state, remises, settings.lv2, textes, destination.commande, destination.story]);
   return (
     <>
       <Link to={MENU_PATH} className="back-link">
