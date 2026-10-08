@@ -14,10 +14,13 @@ import { Icon } from './Icon';
 import { frenchTypography } from './math/RichText';
 import { SpeakButton } from './SpeakButton';
 import { Syllabified } from './Syllabified';
+import { mesuresAutomatiques } from '../game/rendering';
 
 const SESSION_KEY = 'dysapps:title-seen';
 
 function seenThisSession(): boolean {
+  // La mesure automatique (`?mesures=auto`) va droit au monde.
+  if (mesuresAutomatiques()) return true;
   try {
     return sessionStorage.getItem(SESSION_KEY) === '1';
   } catch {

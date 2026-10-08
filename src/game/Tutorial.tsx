@@ -5,6 +5,7 @@ import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { loadJSON, saveJSON } from '../core/storage';
+import { mesuresAutomatiques } from './rendering';
 
 const STORAGE_KEY = 'tutorials';
 
@@ -13,7 +14,8 @@ interface Seen {
 }
 
 export function hasSeenTutorial(id: string): boolean {
-  return Boolean(loadJSON<Seen>(STORAGE_KEY, {})[id]);
+  // La mesure automatique (`?mesures=auto`) mesure le monde, pas une bulle d'aide par-dessus : tout est déjà vu.
+  return mesuresAutomatiques() || Boolean(loadJSON<Seen>(STORAGE_KEY, {})[id]);
 }
 
 export function markTutorialSeen(id: string, seen = true): void {

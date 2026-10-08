@@ -6,7 +6,8 @@
 // cubes d'une des trois options de style du lot R1 (world/style.ts). L'application publiée les ignore : aucune adresse
 // ne fait passer un appareil d'élève à Archipéo (décisions 8 et 10 de docs/univers/univers.md).
 // `?mesures` affiche en plus, dans la vue 3D, les appels de dessin, les triangles et les images par seconde, pour mesurer
-// sur une tablette.
+// sur une tablette ; `?mesures=auto` fait seul le tour des vues sur une partie toute construite, en mémoire (la vraie
+// partie n'est pas touchée), et donne un tableau à copier (./AutoMeasure.tsx).
 import { DEFAULT_SETTINGS, reglagesCourants, sanitizeSettings, SETTINGS_KEY, type Settings } from '../core/settings';
 import { loadJSON, STORAGE_PREFIX } from '../core/storage';
 import { universAffiche } from '../core/universe';
@@ -44,6 +45,11 @@ export function mesuresDepuis(href: string): boolean {
   return p.has('mesures') && p.get('mesures') !== '0';
 }
 
+/** Vrai si l'adresse demande la mesure automatique (`?mesures=auto`). */
+export function mesuresAutoDepuis(href: string): boolean {
+  return params(href).get('mesures') === 'auto';
+}
+
 const here = () => (typeof window === 'undefined' ? '' : window.location.href);
 
 let lu: { brut: string | null; choix: ChoixUnivers } | null = null;
@@ -76,3 +82,6 @@ export const styleDuMonde = (): StyleSurface | null => styleDepuis(here(), regla
 
 /** Le compteur de mesures est-il demandé sur cette page ? */
 export const mesuresDemandees = (): boolean => mesuresDepuis(here());
+
+/** La mesure automatique est-elle demandée sur cette page ? */
+export const mesuresAutomatiques = (): boolean => mesuresAutoDepuis(here());
