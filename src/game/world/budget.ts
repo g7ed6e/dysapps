@@ -36,6 +36,7 @@ import { PLACED_FIXTURES } from './placedFixtures';
 import { casesDeLaPetiteConstruction } from './fixtures';
 import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './characters/merges';
 import { COUT_DES_BULLES } from './affordance';
+import { coutDesLueurs, lueursDesLanternes } from './lanternGlow';
 
 export const RENDER_BUDGET = {
   /** Triangles de la scène 3D d'un archipel, tout construit. */
@@ -333,6 +334,17 @@ export function sceneCost(
  */
 export function signesCost(): { triangles: number; drawCalls: number } {
   return { ...COUT_DES_BULLES };
+}
+
+/**
+ * La lueur des lanternes allumées de Blocland, la nuit (./lanternGlow.ts, GD-10 : le phare du large fini) : la peau et
+ * les flaques en un maillage, un halo par lanterne. De jour, rien. Hors de `sceneCost`, comme les bulles : à ajouter au
+ * monde en blocs sous son plafond.
+ */
+export function lueursCost(a: ArchipelagoId, partie = toutConstruit()): { triangles: number; drawCalls: number } {
+  const { progress, world: village } = partie;
+  // La hauteur de l'eau ne change pas le compte, seulement s'il y en a (sa flaque).
+  return coutDesLueurs(lueursDesLanternes(worldCubes(a, progress, village, false), DANS_LE_CIEL[a] ? null : 0));
 }
 
 /**

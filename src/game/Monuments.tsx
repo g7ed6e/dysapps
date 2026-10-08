@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
+import { frenchTypography } from '../core/typography';
 import { BLOCKS, blockCount, blockName, getBiome, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { planStatus } from './engine';
@@ -21,6 +22,8 @@ import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/universe';
 import { texteDuMonument, useTextes } from '../universes';
 import { Sheet } from './Sheet';
+import { ProjectPanel } from './ProjectPanel';
+import { piecesBuilt, projectOf } from './world/projects';
 
 export const MONUMENTS_TITLE = 'Monuments';
 /** L'adresse de la liste des monuments (un panneau dans le monde, une page en vue simple). */
@@ -52,6 +55,8 @@ function MonumentBody({ builder }: { builder: MonumentBuilder }) {
   const lieu = textes.assemblage;
   const texte = texteDuMonument(textes, monument);
   const said = firstSentences(texte.description);
+  // Un grand projet (GD-10) se construit pièce par pièce, pas case par case.
+  const project = projectOf(monument.id);
   return (
     <div className="monument">
       <p className="island-sheet-says">
@@ -76,70 +81,79 @@ function MonumentBody({ builder }: { builder: MonumentBuilder }) {
           <h3 id={`monument-avancement-${monument.id}`} className="island-sheet-heading">
             <Icon name="castle" /> Le chantier
           </h3>
-          <div
-            className="plan-track"
-            role="progressbar"
-            aria-label={`Avancement du monument ${monument.name}`}
-            aria-valuemin={0}
-            aria-valuemax={status.total}
-            aria-valuenow={status.done}
-            aria-valuetext={`${status.done} blocs posés sur ${status.total}`}
-          >
-            <div className="plan-fill" style={{ width: `${Math.round((status.done / status.total) * 100)}%` }} />
-          </div>
-          <p className="plan-count">
-            <strong>{status.done}</strong> / {status.total} blocs posés · +{monument.reward.xp} XP à la fin
-          </p>
-          {status.complete ? (
-            <p className="plan-done">
-              <Icon name="star" /> Terminé ! <Syllabified text={texte.done} />
-            </p>
+          {project ? (
+            <ProjectPanel project={project} monument={monument} done={texte.done} />
           ) : (
             <>
-              {aAssembler ? (
-                // Plus rien à poser mais des cases attendent un bloc assemblé : la ligne dit où aller (relecture UX UI).
-                <p className="monument-lacking plan-pourquoi">
-                  <Icon name="hammer" /> Il te reste {blockCount(aAssembler[0], aAssembler[1])} à poser : va{' '}
-                  <Link to={`${ASSEMBLAGE_PATH}?bloc=${aAssembler[0]}`}>{lieu.a}</Link> pour {aAssembler[1] > 1 ? 'les assembler' : 'l’assembler'}.
+              <div
+                className="plan-track"
+                role="progressbar"
+                aria-label={`Avancement du monument ${monument.name}`}
+                aria-valuemin={0}
+                aria-valuemax={status.total}
+                aria-valuenow={status.done}
+                aria-valuetext={`${status.done} blocs posés sur ${status.total}`}
+              >
+                <div className="plan-fill" style={{ width: `${Math.round((status.done / status.total) * 100)}%` }} />
+              </div>
+              <p className="plan-count">
+                <strong>{status.done}</strong> / {status.total} blocs posés · +{monument.reward.xp} XP à la fin
+              </p>
+              {status.complete ? (
+                <p className="plan-done">
+                  <Icon name="star" /> <span className="plan-done-word">Terminé !</span> <span className="plan-done-text"><Syllabified text={frenchTypography(texte.done)} /></span>
                 </p>
               ) : (
-                !builder.canFill && (
-                  // « Poser » ne peut rien : ce qui manque se lit tout de suite, sans ouvrir la liste.
-                  <p className="monument-lacking">
-                    <Icon name="blocks" /> <Syllabified text={lackingLine(missing, state.stock)} />
-                  </p>
-                )
+                <>
+                  {aAssembler ? (
+                    // Plus rien à poser mais des cases attendent un bloc assemblé : la ligne dit où aller (relecture UX UI).
+                    <p className="monument-lacking plan-pourquoi">
+                      <Icon name="hammer" /> Il te reste {blockCount(aAssembler[0], aAssembler[1])} à poser : va{' '}
+                      <Link to={`${ASSEMBLAGE_PATH}?bloc=${aAssembler[0]}`}>{lieu.a}</Link> pour {aAssembler[1] > 1 ? 'les assembler' : 'l’assembler'}.
+                    </p>
+                  ) : (
+                    !builder.canFill && (
+                      // « Poser » ne peut rien : ce qui manque se lit tout de suite, sans ouvrir la liste.
+                      <p className="monument-lacking">
+                        <Icon name="blocks" /> <Syllabified text={lackingLine(missing, state.stock)} />
+                      </p>
+                    )
+                  )}
+                  <details className="sheet-more monument-blocks">
+                    <summary>Les blocs qu’il faut</summary>
+                    <ul className="plan-missing" aria-label="Blocs qu’il manque">
+                      {missing.map(([block, n]) => {
+                        const have = state.stock[block] ?? 0;
+                        return (
+                          <li key={block}>
+                            <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
+                            <span>
+                              <strong>{n}</strong> {blockName(block, n)}
+                              {have >= n ? ' · tu les as' : <> · tu en as {have}, <EarnLink block={block} /></>}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </details>
+                  <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
+                    <Icon name="hammer" /> Poser le bloc suivant
+                  </button>
+                  <button type="button" className="button" disabled={!builder.canFill} onClick={builder.fillAll}>
+                    <Icon name="blocks" /> Poser tout ce que j’ai
+                  </button>
+                </>
               )}
-              <details className="sheet-more monument-blocks">
-                <summary>Les blocs qu’il faut</summary>
-                <ul className="plan-missing" aria-label="Blocs qu’il manque">
-                  {missing.map(([block, n]) => {
-                    const have = state.stock[block] ?? 0;
-                    return (
-                      <li key={block}>
-                        <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
-                        <span>
-                          <strong>{n}</strong> {blockName(block, n)}
-                          {have >= n ? ' · tu les as' : <> · tu en as {have}, <EarnLink block={block} /></>}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </details>
-              <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
-                <Icon name="hammer" /> Poser le bloc suivant
-              </button>
-              <button type="button" className="button" disabled={!builder.canFill} onClick={builder.fillAll}>
-                <Icon name="blocks" /> Poser tout ce que j’ai
-              </button>
             </>
           )}
         </section>
       )}
-      <p className="build-status" role="status" aria-live="polite">
-        {builder.notice ?? ''}
-      </p>
+      {!project && (
+        // Un grand projet a sa propre ligne, dans son panneau.
+        <p className="build-status" role="status" aria-live="polite">
+          {builder.notice ?? ''}
+        </p>
+      )}
       <p className="island-inventory-link">
         <InventoryLink /> · <Link to={MONUMENTS_PATH} className="island-inventory-more">Tous les monuments</Link>
       </p>
@@ -218,7 +232,9 @@ export function MonumentsList() {
             <ul className="island-quests">
               {monumentsOf(a.classe).map((m) => {
                 const s = planStatus(state, m);
-                const state_ = !reached ? 'Archipel fermé' : s.complete ? 'Terminé' : `${s.done} / ${s.total} blocs posés`;
+                const project = projectOf(m.id);
+                const avancement = project ? `${piecesBuilt(state, project)} / ${project.pieces.length} pièces posées` : `${s.done} / ${s.total} blocs posés`;
+                const state_ = !reached ? 'Archipel fermé' : s.complete ? 'Terminé' : avancement;
                 return (
                   <li key={m.id}>
                     <Link to={monumentPath(m)} className={`island-quest${reached ? '' : ' locked'}`}>

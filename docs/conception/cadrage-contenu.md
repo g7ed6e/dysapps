@@ -141,6 +141,15 @@ Décidé par le mainteneur le 1er octobre 2026, sur la proposition du directeur 
 - **Le tirage** : une permutation des questions par élève et par bloc, parcourue en boucle ; jamais une question parmi les 6 dernières posées pour ce bloc ; une question manquée revient après au moins 3 autres (en pratique après 6, à cause de la règle précédente).
 - **Rien ne se perd** : les blocs ne sont pris qu’à la bonne réponse ; une erreur laisse un second essai avec l’indice ; deux erreurs montrent l’explication, gardent les blocs et proposent une autre question. Ni XP, ni étoiles, ni adaptation du niveau : la question ne rapporte que le bloc. « Défaire » ne pose pas de question.
 
+### Les questions des grands projets (GD-10)
+
+Décidé le 8 octobre 2026 par le directeur du contenu pédagogique, avec la piste A choisie par le mainteneur (le phare du large en cinq pièces) : **une seule question qui mêle les deux matières de la recette**, sur un écran, dans la forme du vitrail, et non une suite de questions d’une seule matière.
+
+- **Le soulagement est la recette** : les deux recettes d’une pièce n’ont aucune matière en commun, si bien que l’élève qui bute en maths prend la recette sans maths ; jamais la LV2.
+- **Une banque par paire d’îles**, pas par pièce : en 5e, le vitrail (maths × français, 16 questions, le même tirage qu’à la Fabrique), « Au comptoir » (maths × anglais), « La chronique » (français × histoire), « Le récit des voyageurs » (anglais × géographie), 12 questions chacune, dans `docs/contenu/projets.md`.
+- **Garde-fous d’écriture**, en plus de ceux du vitrail : énoncé de deux lignes au plus ; côté maths, une seule opération de tête, petits nombres (jusqu’à 20, 10 %, 25 %, 50 %) ; côté langue, un seul point déjà travaillé sur l’île de la recette ; les deux notions indépendantes, chaque piège n’en rate qu’une ; aide de deux lignes, une par notion ; indice « D’abord … Puis … » ; aucune date à savoir par cœur : le fait d’histoire ou de géographie est dans le document.
+- **Les compétences** sont toutes déjà travaillées par une île : la couverture du programme et les exclusions ne bougent pas.
+
 ### Les commandes des habitants (GD-7)
 
 Cadrées le 3 octobre 2026 (format) ; liste du consultant de Blocland validée le même jour par le directeur artistique, avec ses quatre corrections (le lavoir de Nénu couvert de toits, le parasol de Lavi en cabines, la glacière de Pudding en coffre, Grimoire après « La lanterne du phare »).

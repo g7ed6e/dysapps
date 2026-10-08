@@ -14,8 +14,9 @@ import { bridgesFromLegacyProgress, getBridge, getVoyage, grantAccess, isBiomeUn
 import { lireTirage, recetteDe, type TirageAssemblage } from '../world/assembly';
 import { archipelDeLaCommande, getCommande, MAX_COMMANDES_OUVERTES } from '../world/requests';
 import { getStory, isStoryDone } from '../world/stories';
+import { PROJECT_BANKS } from '../world/projects';
 import { pairOfJoinId, sanitizeLayout } from '../world/savedLayout';
-import type { ExerciseProgress, GameState, LogEntry, SpacedItem, TypeStats } from './state';
+import type { DrawKey, ExerciseProgress, GameState, LogEntry, SpacedItem, TypeStats } from './state';
 import { INTERVALS } from './learning';
 
 function isRecord(v: unknown): v is Record<string, unknown> {
@@ -192,12 +193,14 @@ export function sanitizeState(input: unknown): GameState {
   }
   // Le bonhomme : sur une île ouverte, sinon on l'oublie (il repart de la Forêt).
   const place = typeof world.place === 'string' && getBiome(world.place) && isBiomeUnlocked(world.place as BiomeId, links) ? (world.place as BiomeId) : undefined;
-  // Le tirage des questions d'assemblage : seulement pour un bloc qui a sa recette, et seulement s'il y en a un.
-  const assemblyDraw: Partial<Record<BlockId, TirageAssemblage>> = {};
+  // Le tirage des questions d'assemblage : seulement pour un bloc qui a sa recette ou une banque de projets (GD-10), et
+  // seulement s'il y en a un.
+  const assemblyDraw: Partial<Record<DrawKey, TirageAssemblage>> = {};
   if (isRecord(raw.assemblyDraw)) {
     for (const [bloc, t] of Object.entries(raw.assemblyDraw)) {
-      const lu = Object.hasOwn(BLOCKS, bloc) && recetteDe(bloc as BlockId) ? lireTirage(t) : undefined;
-      if (lu) assemblyDraw[bloc as BlockId] = lu;
+      const connu = (Object.hasOwn(BLOCKS, bloc) && recetteDe(bloc as BlockId)) || PROJECT_BANKS.includes(bloc as DrawKey);
+      const lu = connu ? lireTirage(t) : undefined;
+      if (lu) assemblyDraw[bloc as DrawKey] = lu;
     }
   }
   // La disposition des régions (GD-9) : sa forme seulement ; invalide, la région revient à la carte de départ.

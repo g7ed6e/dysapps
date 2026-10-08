@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
@@ -52,7 +52,7 @@ it('« Poser tout ce que j’ai » emploie les blocs en poche ; fini, il rapport
   renderIn(<Page />);
   await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
   expect(screen.getAllByText(/L’observatoire des baleines : terminé !/).length).toBeGreaterThan(0);
-  expect(screen.getByText(/Terminé !/, { selector: '.plan-done' })).toBeInTheDocument();
+  expect(screen.getByText('Terminé !', { selector: '.plan-done-word' })).toBeInTheDocument();
   const progress = JSON.parse(localStorage.getItem('dysapps:progress')!);
   expect(progress.landmarksCompleted).toBe(1);
   expect(progress.badges.patrimoine).toBeTruthy();
@@ -98,4 +98,41 @@ it('la ligne de ce qui manque : les deux plus gros manques, puis « d’autres b
   expect(lackingLine([['french-6e-phonology', 5], ['maths-6e-calculation', 30]], { 'french-6e-phonology': 2 })).toBe('Il manque 30 briques et 3 blocs de bois.');
   expect(lackingLine([['french-6e-phonology', 5], ['maths-6e-calculation', 30], ['french-6e-letter-confusion', 1]], {})).toBe('Il manque 30 briques, 5 blocs de bois et d’autres blocs.');
   expect(lackingLine([['french-6e-phonology', 5]], { 'french-6e-phonology': 5 })).toBe('');
+});
+
+const PHARE = getMonument('landmark-5e-1')!;
+
+function PharePage() {
+  return <MonumentPage builder={useMonumentBuilder(PHARE)} />;
+}
+
+it('le phare du large, un grand projet : cinq pièces, deux recettes, un seul bouton pour la suivante', async () => {
+  const user = userEvent.setup();
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'english-5e-grammar': 6, 'geography-5e-resources': 4 }, world: { links: ['passage-5e'] } }));
+  renderIn(<PharePage />);
+  expect(screen.getByRole('img', { name: '0 pièce posée sur 5' })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /Poser tout/ })).toBeNull();
+  const recettes = screen.getAllByRole('radio');
+  expect(recettes).toHaveLength(2);
+  // La recette que le stock paie est choisie d'avance, et le bouton mène à sa question.
+  expect(recettes[1]).toBeChecked();
+  expect(screen.getAllByRole('radio', { name: /tu les as/ })).toEqual([recettes[1]]);
+  expect(screen.getByRole('link', { name: /Construire le socle/ })).toHaveAttribute('href', '/adventure/project/landmark-5e-1/1');
+  // L'autre recette manque de blocs : le bouton est gris et la liste dit où les gagner.
+  await user.click(recettes[0]);
+  expect(screen.getByRole('button', { name: /Construire le socle/ })).toBeDisabled();
+  expect(screen.getByRole('list', { name: 'Blocs qu’il manque' })).toBeInTheDocument();
+});
+
+it('une pièce commencée bloc par bloc se finit sans rien payer', async () => {
+  const user = userEvent.setup();
+  const une = planCells(PHARE).find((c) => c.z === 0)!.key;
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, world: { links: ['passage-5e'], parts: { [PHARE.id]: [une] } } }));
+  renderIn(<PharePage />);
+  await user.click(screen.getByRole('button', { name: /Finir le socle/ }));
+  expect(screen.getByRole('img', { name: '1 pièce posée sur 5' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /Construire la tour/ })).toBeDisabled();
+  // « Finir » a disparu : le focus va à la ligne qui dit la pièce posée.
+  expect(screen.getByRole('status')).toHaveTextContent('Pièce posée : le socle.');
+  await waitFor(() => expect(screen.getByRole('status')).toHaveFocus());
 });
