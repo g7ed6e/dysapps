@@ -2,18 +2,25 @@
 // l'archipel (décision du directeur artistique : la matière du bloc reste lisible par famille), les couleurs de
 // l'archipel par rôle, la manière de peindre les murs de chaque famille, et les pièces dessinées, par famille. Un bloc
 // que le kit ne peint ni ne dessine reste un bloc taillé tel quel : un kit vide ne change rien.
-import type { VillagePlaceId } from '../../cube';
+import type { VillagePlaceId, VoxelCube } from '../../cube';
 import type { Couleur } from '../../palette';
 import type { TextureKind } from '../../pixels';
 import type { IdDePiece } from '../choices';
 import type { ManiereDuMur } from '../paint';
 import type { DessinDePiece, Role } from '../rooms';
+import type { MaterialFamily } from '../families';
 
 /**
- * La famille d'une matière : le bois (colombages, bardages, pilotis), la pierre (soubassement, mur plein), le toit.
- * Le verre et les lanternes n'ont pas de famille : ils restent ce qu'ils sont (vitres, lanternes).
+ * La famille d'une matière : celle de la table commune (../families.ts). Le kit d'un archipel dit lesquelles il dessine
+ * (`matieres`) ; le verre et les lanternes restent ce qu'ils sont (vitres, lanternes) tant qu'aucun kit ne les dessine.
  */
-export type Famille = 'bois' | 'pierre' | 'toit';
+export type Famille = MaterialFamily;
+
+/**
+ * Le dessin d'une matière de la finition (la porte, la barrière, la marche), qui ne se lit pas sur sa seule famille : une
+ * manière de peindre son bloc, ou une pièce dessinée, d'après la pièce choisie par son voisinage et son bloc.
+ */
+type DessinDeFinition = (piece: IdDePiece, c: VoxelCube) => DessinDePiece | ManiereDuMur | undefined;
 
 /**
  * Une case du modèle d'un lieu du village (world/terrain.ts : `schoolModel`, `trophyModel`, et les trophées posés),
@@ -53,6 +60,8 @@ export interface Kit {
   bardes: readonly string[];
   /** Les pièces dessinées, par famille et par nom de pièce (./choices.ts). */
   pieces: Partial<Record<Famille, Partial<Record<IdDePiece, DessinDePiece>>>>;
+  /** La finition, matière par matière (la porte, la barrière, la marche) : elle passe avant `pieces` et `murs`. */
+  finitions?: Partial<Record<TextureKind, DessinDeFinition>>;
   /**
    * Les lieux du village qui prennent le kit (l'école, la salle des trophées, le lieu où l'on assemble) : la famille de chacun de leurs blocs, lue
    * sur sa place dans le modèle du lieu, pas sur la seule texture (la table « bloc vers matière » reste celle des plans).

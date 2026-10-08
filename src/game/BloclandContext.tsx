@@ -105,6 +105,8 @@ interface BloclandContextValue {
   batisseur: boolean;
   /** Ouvre le mode bâtisseur : la sauvegarde est gelée, la partie devient un bac à sable. */
   ouvrirBatisseur: () => void;
+  /** La mesure automatique (`?mesures=auto`) : la sauvegarde gelée, le jeu sur cette partie en mémoire. */
+  chargerPourLesMesures: (etat: GameState) => void;
 }
 
 const BloclandContext = createContext<BloclandContextValue | null>(null);
@@ -301,6 +303,13 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     setState(stateRef.current);
   }, []);
 
+  const chargerPourLesMesures = useCallback((etat: GameState) => {
+    // Gelée d'abord : rien de cette partie ne s'écrit sur l'appareil, la vraie revient au rechargement.
+    gelerSauvegarde();
+    stateRef.current = etat;
+    setState(etat);
+  }, []);
+
   const reset = useCallback(() => {
     removeKey(STORAGE_KEY);
     stateRef.current = EMPTY_STATE;
@@ -336,6 +345,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       reset,
       batisseur,
       ouvrirBatisseur,
+      chargerPourLesMesures,
     }),
     [
       state,
@@ -361,6 +371,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       reset,
       batisseur,
       ouvrirBatisseur,
+      chargerPourLesMesures,
     ],
   );
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;

@@ -27,7 +27,7 @@ import { visageDuJoueur } from './world/characters/face';
 import { MenuSheet } from './MenuSheet';
 import { ArchipelagoSwitcher } from './ArchipelagoSwitcher';
 import { useBackOpensMenu } from './useBackOpensMenu';
-import { mesuresDemandees } from './rendering';
+import { mesuresAutomatiques, mesuresDemandees } from './rendering';
 import { TrophySheet } from './TrophySheet';
 import { AssemblySheet } from './Assembly';
 import { ASSEMBLAGE_PATH } from './world/assembly';
@@ -383,7 +383,9 @@ export function WorldPage() {
   const ileDeLaBulle = useRef<BiomeId | null | undefined>(undefined);
   // Le mot de la baleine : aux grandes étapes de l'archipel, une fois le tutoriel fermé et hors voyage. Il attend un
   // instant (la fin d'une pose, d'une arrivée), puis la caméra cadre l'île concernée et la baleine passe au large.
-  const [tutoDone, setTutoDone] = useState(() => hasSeenTutorial('village-immersif'));
+  // La mesure automatique (`?mesures=auto`) garde ce verrou fermé, sans montrer le tutoriel (Tutorial.tsx) : ni rallumage
+  // qui déplace la caméra, ni mot, ni bandeau par-dessus le monde mesuré.
+  const [tutoDone, setTutoDone] = useState(() => hasSeenTutorial('village-immersif') && !mesuresAutomatiques());
   // Le mot de la baleine attend la fin des rallumages (« Tous les Gardiens… » vient après).
   // Les nouveaux noms des archipels (GD-1), une fois par appareil : avant le mot des grandes étapes, un panneau à la fois.
   const renommage = useRenaming(tutoDone && rallumage.enAttente.length === 0 && !vague && !vol, 1200);
