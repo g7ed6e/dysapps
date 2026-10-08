@@ -7,7 +7,10 @@ function ilesDuJeu() {
   return JSON.parse(texte.slice(texte.indexOf('= [') + 2, texte.lastIndexOf(' satisfies')));
 }
 const ILES = ilesDuJeu();
-const MONUMENTS = new Map([['landmark-5e-1', '5e']]);
+const MONUMENTS = new Map([
+  ['landmark-5e-1', '5e'],
+  ['landmark-3e-3', '3e'],
+]);
 const BANQUES = ['compound-5e', 'project-5e-counter'];
 
 const ENTETE = ['## Les pièces', '', '| projet | pièce | recette 1 | questions 1 | recette 2 | questions 2 | Blocland | Archipéo |', '| --- | --- | --- | --- | --- | --- | --- | --- |'];
@@ -46,6 +49,17 @@ describe('docs/contenu/projets.md', () => {
 
   it('refuse deux recettes qui partagent une matière', () => {
     expect(verifier(...trois(BONNE_1, 'maths-5e-proportionality × 6 · english-5e-grammar × 4'))).toThrow(/aucune matière en commun/);
+  });
+
+  it('en 3e, une recette prend trois îles de trois matières (décision du 8 octobre 2026), et seulement en 3e', () => {
+    const r1 = 'maths-3e-functions × 4 · physics-chemistry-3e-motion-energy × 3 · technology-3e-digital × 3';
+    const r2 = 'english-3e-comprehension × 4 · history-3e-twentieth-century × 3 · life-earth-sciences-3e-human-body × 3';
+    const ligne = (id, a = r1, b = r2) => `| \`landmark-3e-3\` | \`${id}\` | ${a} | \`compound-5e\` | ${b} | \`project-5e-counter\` | le ${id} | le ${id} |`;
+    const de3e = (...lignes) => () => verifierProjets(lireProjets([...ENTETE, ...lignes, ''].join('\n'), 'projets.md'), ILES, MONUMENTS, BANQUES, 'projets.md');
+    expect(de3e(ligne('a'), ligne('b'), ligne('c'))()[0].pieces[0].recipes[0].ingredients).toHaveLength(3);
+    expect(de3e(ligne('a', 'maths-3e-functions × 6 · physics-chemistry-3e-motion-energy × 4'), ligne('b'), ligne('c'))).toThrow(/trois îles en 3e/);
+    expect(de3e(ligne('a', 'maths-3e-functions × 4 · maths-3e-geometry × 3 · technology-3e-digital × 3'), ligne('b'), ligne('c'))).toThrow(/matières différentes/);
+    expect(verifier(...trois(`${BONNE_1} · english-5e-vocabulary × 2`))).toThrow(/deux îles en 5e/);
   });
 
   it('refuse une banque qui ne s’appelle pas « project-… »', () => {

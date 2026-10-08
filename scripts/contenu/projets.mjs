@@ -8,8 +8,9 @@
 //   | projet | pièce | recette 1 | questions 1 | recette 2 | questions 2 | Blocland | Archipéo |
 //   | `landmark-5e-1` | `base` | maths-5e-signed-numbers × 6 · french-5e-homophones × 4 | `compound-5e` | … | … | Le socle | Le socle |
 //
-// Une recette prend des blocs de deux îles de l'archipel du projet, de deux matières ; les deux recettes d'une pièce
-// n'ont aucune matière en commun, et jamais la LV2 (GD-10 : une matière difficile ne bloque jamais).
+// Une recette prend des blocs de deux îles de l'archipel du projet, de deux matières (de trois en 3e, dont la question
+// n'en mêle que deux : décision du mainteneur, 8 octobre 2026) ; les deux recettes d'une pièce n'ont aucune matière en
+// commun, et jamais la LV2 (GD-10 : une matière difficile ne bloque jamais).
 import { lireQuestions } from './assemblage.mjs';
 import { lireTexte } from './texte.mjs';
 
@@ -85,10 +86,15 @@ export function lireProjets(md, fichier) {
   return projets;
 }
 
+/** Combien d'îles (de matières) prend une recette : trois en 3e, deux avant. */
+export function ilesParRecette(classe) {
+  return classe === '3e' ? 3 : 2;
+}
+
 /**
  * Vérifie les projets contre les îles du jeu (src/game/islands.ts) et les banques connues (les blocs assemblés, dont
  * les questions sont dans assemblage.md, et celles de projets.md) : des blocs d'îles de l'archipel du projet, de deux
- * matières, sans LV2 ; deux recettes sans matière commune. Rend les projets au format de projects.json.
+ * matières (trois en 3e), sans LV2 ; deux recettes sans matière commune. Rend les projets au format de projects.json.
  */
 export function verifierProjets(projets, iles, monuments, banques, fichier) {
   const ile = new Map(iles.map((b) => [b.block, b]));
@@ -100,7 +106,8 @@ export function verifierProjets(projets, iles, monuments, banques, fichier) {
       const erreur = (m) => new Error(`${fichier}, ligne ${lignes[k] + 1} : ${m}`);
       const matieres = p.recipes.map((rec, j) => {
         if (!banques.includes(rec.bank)) throw erreur(`recette ${j + 1} : banque de questions « ${rec.bank} » inconnue (${banques.join(', ')})`);
-        if (rec.ingredients.length !== 2) throw erreur(`recette ${j + 1} : des blocs de deux îles`);
+        const n = ilesParRecette(classe);
+        if (rec.ingredients.length !== n) throw erreur(`recette ${j + 1} : des blocs de ${n === 3 ? 'trois' : 'deux'} îles en ${classe}`);
         const m = rec.ingredients.map(({ bloc }) => {
           const b = ile.get(bloc);
           if (!b) throw erreur(`recette ${j + 1} : « ${bloc} » n’est le bloc d’aucune île`);
@@ -108,7 +115,7 @@ export function verifierProjets(projets, iles, monuments, banques, fichier) {
           if (b.subject === 'lv2') throw erreur(`recette ${j + 1} : la LV2 n’est jamais une recette (GD-10)`);
           return b.subject;
         });
-        if (m[0] === m[1]) throw erreur(`recette ${j + 1} : deux îles de matières différentes`);
+        if (new Set(m).size !== m.length) throw erreur(`recette ${j + 1} : des îles de matières différentes`);
         return m;
       });
       if (matieres[0].some((m) => matieres[1].includes(m))) throw erreur('les deux recettes d’une pièce n’ont aucune matière en commun (GD-10)');

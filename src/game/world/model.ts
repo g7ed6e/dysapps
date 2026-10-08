@@ -2,6 +2,8 @@
 // en identifiants, sans une seule case. WorldPage le lit au lieu de décider lui-même ; une disposition (la grille
 // aujourd'hui, le réseau d'Archipéo demain) dit ensuite où dessiner chaque chose. Et les décisions que prend le jeu
 // quand l'élève touche le monde : jouer une borne, ouvrir l'île d'un ouvrage, aller vers une île, voyager.
+import { projectOf } from './projects';
+import { projectReady, suggestedProject } from './projectChoice';
 import { BIOMES, missionsJouables, type BiomeId } from '../biomes';
 import { guardianStatus } from '../boss';
 import type { GameState } from '../engine';
@@ -114,8 +116,14 @@ export function etatsDesObjets(state: GameState, a: ArchipelagoId): EtatsDesObje
     navirePret: Boolean(etape && (nextFillable(state, etape) || canLaunch(state, etape).ok)),
     chantiersPrets: [
       ...BRIDGES.filter((b) => ici.has(b.from) && buildBridge(b.id, links, state.stock, monde).ok).map((b) => b.id),
+      // Un monument posé case par case : un bloc à poser. Un grand projet (GD-10) : une pièce à poser, et un seul projet de
+      // l'archipel à la fois, celui que le jeu met en avant (le choix se fait dans le monde, en 4e et en 3e).
       ...monumentsOf(a)
-        .filter((m) => nextFillable(state, m))
+        .filter((m) => {
+          const project = projectOf(m.id);
+          if (!project) return nextFillable(state, m);
+          return projectReady(state, project) && suggestedProject(state, a) === project;
+        })
         .map((m) => m.id),
     ],
   };

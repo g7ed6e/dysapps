@@ -6,7 +6,9 @@ import { byId, citable } from '../../curriculum';
 import { BIOMES } from '../biomes';
 import { RECETTES } from '../world/assembly';
 import { getMonument } from '../world/monuments';
-import { PROJECTS } from '../world/projects';
+import { PROJECTS, type ProjectRecipe } from '../world/projects';
+import type { ArchipelagoId } from '../world/archipelagos';
+import type { DrawKey } from '../engine/state';
 import { ILES } from '../islands';
 import { BLOCS_A_QUESTIONS, CATALOG, UNORDERED, loadAllExercises, loadAssemblage } from './index';
 import { SCREEN_TYPES } from './registry';
@@ -14,13 +16,17 @@ import { piegesDe, placerChoixAssemblage, valeursDesNombres } from './shuffle';
 import type { AssemblageDef } from './types';
 
 // Les banques des grands projets (GD-10, docs/contenu/projets.md) se vérifient comme les blocs assemblés : chacune avec
-// une recette qui la pose, son archipel celui du projet.
+// les recettes qui la posent, son archipel celui du projet. En 3e, une recette prend trois îles, mais sa question n'en
+// mêle que deux (décision du 8 octobre 2026) : les deux matières de la banque sont dans chacune de ses recettes.
 const BANQUES_DE_PROJETS = [
-  ...new Map(
-    PROJECTS.flatMap((p) =>
-      p.pieces.flatMap((x) => x.recipes.map((r) => [r.bank, { bloc: r.bank, ingredients: r.ingredients, archipelago: getMonument(p.monument)!.archipelago }] as const)),
-    ).filter(([bank]) => bank.startsWith('project-')),
-  ).values(),
+  ...PROJECTS.flatMap((p) => p.pieces.flatMap((x) => x.recipes.map((r) => ({ ...r, archipelago: getMonument(p.monument)!.archipelago }))))
+    .filter((r) => r.bank.startsWith('project-'))
+    .reduce((banques, r) => {
+      const b = banques.get(r.bank) ?? { bloc: r.bank, ingredients: r.ingredients, archipelago: r.archipelago, recettes: [] as (typeof r.ingredients)[] };
+      b.recettes.push(r.ingredients);
+      return banques.set(r.bank, b);
+    }, new Map<DrawKey, { bloc: DrawKey; ingredients: ProjectRecipe['ingredients']; archipelago: ArchipelagoId; recettes: ProjectRecipe['ingredients'][] }>())
+    .values(),
 ];
 const BANQUES = [...RECETTES, ...BANQUES_DE_PROJETS];
 const QUESTIONS = new Map<string, AssemblageDef>();
@@ -89,8 +95,18 @@ describe.each(BANQUES.map((r) => [r.bloc, r] as const))('les questions du bloc %
       return e!;
     });
     expect(new Set(def().programme).size).toBe(def().programme.length);
-    const matieres = [...new Set(recette.ingredients.map((i) => matiereDuBloc(i.bloc)))];
-    expect(matieres.length, `${bloc} : la recette prend les blocs de deux matières`).toBe(2);
+    const recettes = 'recettes' in recette ? recette.recettes : [recette.ingredients];
+    const matieres =
+      'recettes' in recette
+        ? [...new Set(entries.map((e) => e.discipline))]
+        : [...new Set(recette.ingredients.map((i) => matiereDuBloc(i.bloc)))];
+    expect(matieres.length, `${bloc} : la question mêle deux matières`).toBe(2);
+    for (const r of recettes)
+      for (const m of matieres)
+        expect(
+          r.some((i) => matiereDuBloc(i.bloc) === m),
+          `${bloc} : une recette qui pose cette question ne prend pas de bloc de ${m}`,
+        ).toBe(true);
     for (const m of matieres)
       expect(
         entries.some((e) => e.discipline === m),
