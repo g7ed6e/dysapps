@@ -41,6 +41,7 @@ import {
   gardienEnPartieRallume,
   GUARDIAN_SQUARE,
   guardianCells,
+  guardianCenter,
   guardianPlacements,
   guardianSpot,
   trophySpot,
@@ -324,6 +325,18 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
       const cr = creaturePlacements(b.classe, everything).find((p) => p.id === b.id);
       if (cr) expect(cr.steps.length, b.id).toBeGreaterThanOrEqual(1);
     }
+  });
+
+  it('la grille et la caméra du rallumage visent le milieu du Gardien posé, pas celui de son carré', () => {
+    const tout = Object.fromEntries(BIOMES.map((b) => [b.id, { stars: 3 }]));
+    for (const a of ARCHIPELAGO_IDS)
+      for (const g of guardianPlacements(a, tout, BRIDGES.map((l) => l.id), true)) {
+        const xs = g.cubes.map((c) => g.origin.x + c.x);
+        const ys = g.cubes.map((c) => g.origin.y + c.y);
+        const c = guardianCenter(g.id);
+        expect(c.x, g.id).toBeCloseTo((Math.min(...xs) + Math.max(...xs)) / 2, 5);
+        expect(c.y, g.id).toBeCloseTo((Math.min(...ys) + Math.max(...ys)) / 2, 5);
+      }
   });
 
   it('dans Blocland, réduit de moitié, chaque Gardien tient sur son carré ; dans Archipéo, sa sentinelle aussi', () => {

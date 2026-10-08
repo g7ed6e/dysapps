@@ -8,6 +8,7 @@
 import { BIOMES, getBiome, type BiomeId } from '../biomes';
 import { getBridge } from './archipelago';
 import { type ArchipelagoId, ARCHIPELAGO_IDS, archipelagoOfIsland } from './archipelagos';
+import { CORE, COTE_DU_COEUR, DEFAULT_CORE_SIDE } from './map';
 
 /** Une orientation : de 0 à 3 quarts de tour (`Quarts`, ./placement.ts). */
 export type LayoutTurn = 0 | 1 | 2 | 3;
@@ -74,7 +75,11 @@ const isSide = (v: unknown): v is LayoutSide => typeof v === 'string' && (LAYOUT
 const IDS = new Set<string>(BIOMES.map((b) => b.id));
 const isIslandOf = (a: ArchipelagoId, v: string): v is BiomeId => IDS.has(v) && archipelagoOfIsland(v as BiomeId) === a;
 
-/** Une arrivée lue, ou `null`. Sa place le long du côté reste dans un lieu (au plus 8 pas de chaque côté du cœur). */
+/**
+ * Une arrivée lue, ou `null`. Sa place le long du côté reste dans la terre d'un lieu, côte comprise : au plus 8 pas de
+ * l'origine du lieu, quelle que soit la taille de son cœur (6 au plus depuis les îles agrandies de GD-11 ; vérifié par
+ * savedLayout.test.ts sur chaque arrivée possible de chaque lieu).
+ */
 function readLanding(v: unknown): LayoutLanding | null {
   if (!isRecord(v) || !isSide(v.side) || !isInt(v.step) || Math.abs(v.step) > 8) return null;
   return { side: v.side, step: v.step };
@@ -91,6 +96,17 @@ export const LAYOUT_LAST_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: numb
   '4e': { x: 42, y: 35 },
   '3e': { x: 52, y: 30 },
 };
+
+/**
+ * Les cases du cœur d'un lieu dans son repère, bornes comprises, sur chaque axe : le côté du cœur de l'île
+ * (`COTE_DU_COEUR`, `DEFAULT_CORE_SIDE`, ./map.ts) autour du cœur d'origine [0, `CORE`) ; de −3 à 18 à 22 de côté, de
+ * −5 à 20 à 26 (les îles-écoles). Les mêmes bornes que `bornesDuCoeur`, sans la carte.
+ */
+function coreCells(id: BiomeId): { min: number; max: number } {
+  const cote = COTE_DU_COEUR[id] ?? DEFAULT_CORE_SIDE;
+  const min = (CORE - cote) / 2;
+  return { min, max: min + cote - 1 };
+}
 
 /** Une mission du lieu : la clé d'une borne est « lieu:mission », la mission parmi celles du lieu (toutes LV2 comprises). */
 function isStationKey(a: ArchipelagoId, key: string): boolean {
@@ -136,9 +152,13 @@ function readRegion(a: ArchipelagoId, raw: unknown): RegionLayout | null {
   // Gardien se tient sur son île : une sauvegarde qui les garde se lit toujours, et ce champ est ignoré.
   if (isRecord(raw.stations)) {
     const stations: Record<string, { x: number; y: number }> = {};
-    // Une borne reste dans le cœur de son lieu (au plus 20 × 20, de −2 à 18).
-    for (const [key, p] of Object.entries(raw.stations))
-      if (isStationKey(a, key) && isRecord(p) && isInt(p.x) && isInt(p.y) && p.x >= -2 && p.x <= 17 && p.y >= -2 && p.y <= 17) stations[key] = { x: p.x, y: p.y };
+    // Une borne reste dans le cœur de son lieu, qui suit la taille du cœur de son île (GD-11 : 22 × 22 cases, 26 × 26
+    // pour les îles-écoles, dont la bande de devant commence à x = −3).
+    for (const [key, p] of Object.entries(raw.stations)) {
+      if (!isStationKey(a, key) || !isRecord(p) || !isInt(p.x) || !isInt(p.y)) continue;
+      const c = coreCells(key.split(':')[0] as BiomeId);
+      if (p.x >= c.min && p.x <= c.max && p.y >= c.min && p.y <= c.max) stations[key] = { x: p.x, y: p.y };
+    }
     if (Object.keys(stations).length) out.stations = stations;
   }
   const isLinkOf = (id: unknown): id is string => {

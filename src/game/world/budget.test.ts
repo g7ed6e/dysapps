@@ -212,11 +212,22 @@ it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangle
   expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 100_000, drawCalls: 120 });
 });
 
-it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus long, et toutes les réunions), chaque région tient sous le plafond', () => {
+/**
+ * Les appels qu'une liaison au plus long ajoute à une région, par sorte (« <région> <sorte> ») : au 3e, les galets d'un
+ * sentier venaient avec le gué de l'îlot des Gardiens ; l'îlot parti (GD-11, 8 octobre 2026), ils sont trois appels de
+ * plus (dessus, côté, dessous). Les autres régions ont des galets ailleurs (décor, petites constructions).
+ */
+const APPELS_EN_PLUS_D_UNE_LIAISON: Readonly<Record<string, number>> = { '3e sentier': 3 };
+
+it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus long, et toutes les réunions), chaque région tient sous le plafond, avec les appels qu’une liaison ajoute', () => {
   for (const a of ARCHIPELAGO_IDS) {
     const pire = worstCaseOfRegion(a);
     expect(pire.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
     expect(pire.drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
+    // Une liaison qui prend un matériau nouveau (le sentier au 3e) y tient aussi : vérifié ici, où le pire cas est déjà
+    // compté, plutôt que de le recompter (1,5 s au 3e) dans le test des liaisons.
+    for (const [cle, plus] of Object.entries(APPELS_EN_PLUS_D_UNE_LIAISON))
+      if (cle.startsWith(`${a} `)) expect(pire.drawCalls + plus, cle).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
     // Le pire cas compte plus que le monde d'aujourd'hui.
     expect(pire.triangles, a).toBeGreaterThan(sceneCost(a, true).triangles);
   }
@@ -293,18 +304,14 @@ it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tour
 }, 20_000);
 
 it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus), sauf le sentier au 3e, sous le plafond', () => {
-  // Au 3e, les galets d'un sentier venaient avec le gué de l'îlot des Gardiens ; l'îlot parti (GD-11, 8 octobre 2026),
-  // ils sont trois appels de plus (dessus, côté, dessous), que le pire cas du 3e (60 appels mesurés) tient sous le
-  // plafond de 120. Les autres régions ont des galets ailleurs (décor, petites constructions).
-  const EN_PLUS: Record<string, number> = { '3e sentier': 3 };
+  // Les appels de plus (le sentier au 3e) tiennent sous le plafond au pire de la région : vérifié dans le test du pire cas.
   const { progress, world } = toutConstruit();
   for (const a of ARCHIPELAGO_IDS) {
     const terrain = worldCubes(a, progress, world, false);
     const avant = buildMesh(terrain).length;
     for (const [kind, n] of [['bac', LONG_LENGTH], ['pont', LONG_LENGTH], ['pont', SHORT_LENGTH], ['sentier', SHORT_LENGTH]] as const) {
-      const plus = EN_PLUS[`${a} ${kind}`] ?? 0;
+      const plus = APPELS_EN_PLUS_D_UNE_LIAISON[`${a} ${kind}`] ?? 0;
       expect(buildMesh([...terrain, ...linkCubes(a, kind, n)]).length, `${a} ${kind}`).toBe(avant + plus);
-      if (plus) expect(worstCaseOfRegion(a).drawCalls + plus, `${a} ${kind}`).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
     }
   }
 });

@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { piedsSur, type ChampDuSol } from '../world/landMesh';
-import { gardienDuMonde, statueDe } from '../world/terrain';
+import { gardienTourne, statueDe } from '../world/terrain';
 import { avatarWalk, startStrolls, strollAt, walkPose, type Stroll, type Walk } from '../world/scene';
 import { hauteurDuSigne } from '../world/sign';
 import type { EnCasesDuMonde, WorldViewProps } from '../world/view';
@@ -113,11 +113,11 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
     // Rallumé : d'un seul maillage de nouveau, pour ne pas garder les appels des couches au-delà du moment.
     if (fondu.fini) habillerEnCouleurs(fondu.id);
   };
-  /** Le Gardien rebâti d'un seul maillage, dans ses couleurs (la fin du fondu). */
+  /** Le Gardien rebâti d'un seul maillage, dans ses couleurs (la fin du fondu), tourné avec son lieu comme le Gardien posé. */
   const habillerEnCouleurs = (id: BiomeId) => {
     couches = [];
     const group = viderLeGardien(id);
-    if (group) addMeshes(group, modelMeshes(gardienDuMonde(id), surface));
+    if (group) addMeshes(group, modelMeshes(gardienTourne(id), surface));
   };
   /** Les maillages du Gardien retirés et libérés ; son groupe, ou rien s'il n'est pas posé. */
   const viderLeGardien = (id: BiomeId) => {
@@ -139,10 +139,11 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
     const group = viderLeGardien(id);
     if (!group) return;
     if (fondu.fini) {
-      addMeshes(group, modelMeshes(gardienDuMonde(id), surface));
+      addMeshes(group, modelMeshes(gardienTourne(id), surface));
       return;
     }
-    const cubes = gardienDuMonde(id);
+    // Tourné avec son lieu, comme le Gardien posé (GD-9).
+    const cubes = gardienTourne(id);
     // Des pieds vers la tête, pour tous les Gardiens (GD-8).
     for (const z of [...new Set(cubes.map((c) => c.z))].sort((a, b) => a - b)) {
       const couche = cubes.filter((c) => c.z === z);

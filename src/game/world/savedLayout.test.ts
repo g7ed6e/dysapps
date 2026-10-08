@@ -1,12 +1,15 @@
 // La disposition de la sauvegarde (GD-9, L3) : lue et vérifiée, absente ou invalide, c'est la carte de départ, et une
 // sauvegarde d'avant se lit sans rien perdre.
 import { describe, expect, it } from 'vitest';
+import { getBiome } from '../biomes';
 import { EMPTY_STATE, sanitizeState } from '../engine';
+import { LAYOUT_SIDE_OF } from './appliedLayout';
 import { BRIDGES } from './archipelago';
 import { archipelagoOfIsland } from './archipelagos';
 import { frameOf, fittingPlaces, posesOfLayout } from './footprint';
-import { startingIsland } from './map';
+import { mapOf, startingIsland } from './map';
 import { STEP } from './placement';
+import { possibleLandings } from './routing';
 import { type Layout, LAYOUT_LAST_SPOT, sanitizeLayout } from './savedLayout';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 
@@ -104,6 +107,30 @@ describe('la disposition de la sauvegarde', () => {
     }
     // Rien de valide dans un champ : le champ part, la région reste.
     expect(sanitizeLayout({ '6e': { islands: valide['6e']!.islands, relink: 'tout', stations: { 'x:y': { x: 0, y: 0 } } } })).toEqual({ '6e': { islands: valide['6e']!.islands } });
+  });
+
+  it('une borne se garde dans le cœur de son lieu, qui suit la taille de son île (GD-11 : 22, et 26 pour les îles-écoles)', () => {
+    const borne = (id: string, mission: string, x: number, y: number) => sanitizeLayout({ '6e': { stations: { [`${id}:${mission}`]: { x, y } } } });
+    // Un cœur de 22 : de −3 à 18.
+    for (const [x, y] of [[-3, 1], [18, 1], [1, -3], [1, 18]]) expect(borne('maths-6e-decimals', 'ordering', x, y), `${x},${y}`).toBeDefined();
+    for (const [x, y] of [[-4, 1], [19, 1], [1, -4], [1, 19]]) expect(borne('maths-6e-decimals', 'ordering', x, y), `${x},${y}`).toBeUndefined();
+    // Un cœur de 26 (la Forêt) : de −5 à 20.
+    const mission = getBiome('french-6e-phonology')!.exercises[0].id;
+    for (const [x, y] of [[-5, 1], [20, 1], [-3, 1]]) expect(borne('french-6e-phonology', mission, x, y), `${x},${y}`).toBeDefined();
+    for (const [x, y] of [[-6, 1], [21, 1]]) expect(borne('french-6e-phonology', mission, x, y), `${x},${y}`).toBeUndefined();
+  });
+
+  it('chaque arrivée possible de chaque lieu, à chaque orientation, se relit telle quelle', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const lien = BRIDGES.find((b) => archipelagoOfIsland(b.from) === a)!.id;
+      for (const def of mapOf(a))
+        for (const quarts of [0, 1, 2, 3] as const)
+          for (const l of possibleLandings({ ...def, quarts })) {
+            const arrivee = { side: LAYOUT_SIDE_OF[l.cote], step: l.pas };
+            const layout = { [a]: { landings: { [lien]: { from: arrivee, to: arrivee } } } };
+            expect(sanitizeLayout(layout), `${def.id} ${quarts} ${l.cote} ${l.pas}`).toEqual(layout);
+          }
+    }
   });
 
   it('se pose seulement si elle tient sur la grille : dans le cadre, et ses lieux déplacés à quatre cases d’eau au moins', () => {

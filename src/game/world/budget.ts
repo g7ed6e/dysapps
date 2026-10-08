@@ -86,8 +86,9 @@ export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls
  * octobre 2026) : aux Premiers Rivages, 33 340 triangles et 100 appels tout construit, 102 au pire de la région
  * aménagée. Les triangles restent à 100 000 : pendant « Modifier le plan », le terrain se dessine face par face
  * (97 860 triangles au pire aux Premiers Rivages, 99 150 aux Anciens Ateliers). Les îles agrandies (GD-11, 8 octobre
- * 2026, « Côte amincie » : sans relever le plafond) : au pire de la région aménagée, 93 478 triangles et 109 appels aux
- * Premiers Rivages, 86 110 et 90 aux Îles Brumeuses, 98 582 et 84 aux Anciens Ateliers, 95 180 et 60 aux Îles du Ciel.
+ * 2026, « Côte amincie » : sans relever le plafond) : au pire de la région aménagée (`npm run rendu:budget`, avant → après),
+ * 97 928 → 93 570 triangles et 102 → 109 appels aux Premiers Rivages, 90 336 → 86 110 et 87 → 90 aux Îles Brumeuses,
+ * 99 174 → 98 582 et 85 → 84 aux Anciens Ateliers, 98 138 → 95 180 et 64 → 60 aux Îles du Ciel.
  * La mesure sur tablette reste à faire.
  */
 export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 100_000, drawCalls: 120 } as const;

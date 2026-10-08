@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
 import { reachableIslands } from './archipelago';
-import { ARCHIPELAGO_IDS } from './archipelagos';
+import { ARCHIPELAGO_IDS, archipelagoOfIsland } from './archipelagos';
 import {
   backToStartingMap,
   currentLandings,
@@ -17,6 +17,7 @@ import {
   freeStationSpots,
   isFixedPlace,
   isFreeSpot,
+  joinIslands,
   linksBrokenBy,
   linksToRelink,
   moveIsland,
@@ -262,6 +263,37 @@ describe('les bornes dans la bande de devant', () => {
   });
 });
 
+describe('les bornes déplacées dans la sauvegarde', () => {
+  // GD-11 : le cœur des îles-écoles passe à 26 (la bande de devant commence à x = −3), celui des autres à 22. Une borne
+  // posée sur n'importe quelle place de la bande se relit telle quelle depuis la sauvegarde.
+  const ECOLES: BiomeId[] = ['french-6e-phonology', 'maths-5e-proportionality', 'maths-4e-algebra', 'maths-3e-functions'];
+
+  it.each([...ECOLES, VOLCAN])('%s : chaque place de la bande de devant revient de la sauvegarde', (id) => {
+    const w = partie();
+    const cles = questStations(id).map((st) => `${id}:${st.typeId}`);
+    const bande = stationBand(id);
+    const essayees: { x: number; y: number }[] = [];
+    for (const p of bande) {
+      // Une borne pour qui la place est libre (une place près d'une autre borne ou d'un chantier ne l'est pour aucune).
+      const cle = cles.find((k) => freeStationSpots(w, k).some((q) => q.x === p.x && q.y === p.y));
+      if (!cle) continue;
+      essayees.push(p);
+      const w2 = apres(moveStation(w, cle, p));
+      expect(stationOf(w2, cle), `${cle} ${p.x},${p.y}`).toEqual(p);
+      const lu = sanitizeLayout(JSON.parse(JSON.stringify(w2.layout ?? null)));
+      expect(lu, `${cle} ${p.x},${p.y}`).toEqual(w2.layout);
+    }
+    // La première place de la bande (x = −3 sur une île-école) se prend par le geste.
+    expect(essayees).toContainEqual(bande[0]);
+    // La sauvegarde garde aussi une place de la bande prise aujourd'hui (une borne déplacée avant qu'une autre s'en
+    // approche), aux deux bouts de la bande.
+    for (const p of [bande[0], bande[bande.length - 1]]) {
+      const layout = { [archipelagoOfIsland(id)]: { stations: { [cles[0]]: p } } };
+      expect(sanitizeLayout(layout), `${cles[0]} ${p.x},${p.y}`).toEqual(layout);
+    }
+  });
+});
+
 describe('les arrivées des liaisons', () => {
   it('se déplacent sur une côte libre ; la liaison repart de là, ou devient « à reposer »', () => {
     const w = partie();
@@ -395,6 +427,52 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
     expect(w.links).toBe(avant.links);
     expect(w.layout?.['6e']?.joined).toEqual(avant.layout?.['6e']?.joined);
     expect(w.layout?.['6e']?.stations).toEqual(avant.layout?.['6e']?.stations);
+  });
+
+  /**
+   * Une sauvegarde d'avant GD-11 où deux lieux sont réunis : réunis avec des îles plus petites, ils étaient un pas plus
+   * près l'un de l'autre que ne le permettent les îles agrandies (deux cases de terre de plus par côté). On la refait
+   * en réunissant deux voisins, puis en rapprochant le premier d'un pas (`dx`, `dy`).
+   */
+  function reunisTropPres(id: BiomeId, autre: BiomeId, dx: number, dy: number): World {
+    const w = apres(joinIslands(partie(), id, autre));
+    const s = spotOf(w, id);
+    const r = w.layout!['6e']!;
+    return { ...w, layout: { ...w.layout, '6e': { ...r, islands: { ...r.islands, [id]: { ...s, x: s.x + dx, y: s.y + dy } } } } };
+  }
+
+  it('les îles ont grandi (GD-11) : une paire réunie trop rapprochée s’écarte d’un pas, et reste réunie ; rien ne se perd', () => {
+    const HANGAR: BiomeId = 'technology-6e-objects';
+    const avant = reunisTropPres(VOLCAN, HANGAR, -1, 0);
+    // Sans rien faire, la région ne tiendrait plus et reviendrait toute à la carte de départ, sans sa réunion.
+    expect(fittingPlaces('6e', avant.layout!['6e']!.islands!)).toBeNull();
+    expect(posesOfLayout(avant.layout).size).toBe(0);
+    const w = settleNewPlaces(avant);
+    const islands = w.layout?.['6e']?.islands ?? {};
+    expect(fittingPlaces('6e', islands)).not.toBeNull();
+    // Le Volcan reste où l'élève l'a mis ; le Hangar des inventions s'écarte d'un pas, et les deux restent réunis, leur construction
+    // posable entre eux.
+    expect(islands[VOLCAN]).toEqual(avant.layout!['6e']!.islands![VOLCAN]);
+    const [s, t] = [spotOf(avant, HANGAR), spotOf(w, HANGAR)];
+    expect(Math.abs(s.x - t.x) + Math.abs(s.y - t.y)).toBe(1);
+    expect(w.layout?.['6e']?.joined).toEqual(avant.layout?.['6e']?.joined);
+    expect(joinCandidates({ ...w, layout: { ...w.layout, '6e': { ...w.layout!['6e']!, joined: [] } } }, VOLCAN)).toContain(HANGAR);
+    expect(w.links).toBe(avant.links);
+    expect(w.parts).toBe(avant.parts);
+  });
+
+  it('les îles ont grandi (GD-11) : une paire réunie qui ne peut pas s’écarter laisse la région à la carte de départ, sans rien perdre', () => {
+    // La Mine des lettres et la Fouille des siècles, réunies en travers (le long des y), la Mine rapprochée d'un pas en
+    // x : aucun pas ne les écarte en gardant leur construction.
+    const MINE: BiomeId = 'french-6e-letter-confusion';
+    const avant = reunisTropPres(MINE, FOUILLE, 1, 0);
+    expect(fittingPlaces('6e', avant.layout!['6e']!.islands!)).toBeNull();
+    const w = settleNewPlaces(avant);
+    // Rien ne change dans la sauvegarde (ni les places, ni la réunion, ni les liaisons, ni les chantiers) : la région
+    // se montre à la carte de départ (`posesOfLayout`), sa réunion n'est pas posée (`joinsOf`, ./appliedLayout.ts).
+    expect(w).toBe(avant);
+    expect(posesOfLayout(w.layout).size).toBe(0);
+    expect(w.layout?.['6e']?.joined).toEqual([[MINE, FOUILLE]]);
   });
 
   it('une disposition qui tient, ou pas de disposition, reste la même', () => {

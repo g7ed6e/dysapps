@@ -3,7 +3,7 @@
 import { type BiomeDef, type BiomeId, BIOMES, BLOC, BLOCKS } from '../../biomes';
 import { type ArchipelagoId, islandDef } from '../map';
 import type { VoxelCube } from '../cube';
-import { turnCell, turnPlacedModel, turnPoint } from '../placement';
+import { turnCell, turnModel, turnPlacedModel, turnPoint } from '../placement';
 import { guardianStatus } from '../../boss';
 import { gardienDuMonde, GUARDIAN_SQUARE, guardianSpot } from './creatures';
 import { TEXTURES } from './base';
@@ -34,16 +34,25 @@ function milieuDuGardien(id: BiomeId): { x: number; y: number } {
 }
 
 /**
- * Le milieu du carré du Gardien, en cases du monde (une case : son coin bas), le lieu tourné, et la hauteur que vise la
- * caméra du rallumage (lot 6) : le pied du Gardien plus 1,6 bloc à son échelle (`echelle`, l'habillage) ; à l'échelle 1,
- * le milieu d'une sentinelle de 5,2 blocs (DA-5 : world/characters/sentinel.ts, `HAUTEUR_DANS_LE_MONDE` ; un test y tient
- * les deux ensemble). La grille y ancre le Gardien (world/grid.ts).
+ * Le milieu du Gardien sur son carré (`milieuDuGardien` : une demi-case vers le fond quand son bloc d'or est devant
+ * lui), en cases du monde (une case : son coin bas), le lieu tourné, et la hauteur que vise la caméra du rallumage
+ * (lot 6) : le pied du Gardien plus 1,6 bloc à son échelle (`echelle`, l'habillage) ; à l'échelle 1, le milieu d'une
+ * sentinelle de 5,2 blocs (DA-5 : world/characters/sentinel.ts, `HAUTEUR_DANS_LE_MONDE` ; un test y tient les deux
+ * ensemble). La grille y ancre le Gardien (world/grid.ts).
  */
 export function guardianCenter(id: BiomeId, echelle = 1): { x: number; y: number; z: number } {
   const def = islandDef(id);
-  const s = guardianSpot(id);
-  const m = turnPoint(s.x + GUARDIAN_SQUARE / 2, s.y + GUARDIAN_SQUARE / 2, def.quarts);
+  const milieu = milieuDuGardien(id);
+  const m = turnPoint(milieu.x, milieu.y, def.quarts);
   return { x: def.core.x + m.x - 0.5, y: def.core.y + m.y - 0.5, z: def.altitude + 1 + 1.6 * echelle };
+}
+
+/**
+ * Le Gardien en couleurs, tourné avec son lieu (GD-9) : les cubes du Gardien posé une fois rallumé (`guardianPlacements`),
+ * que le fondu du rallumage refait couche par couche (three/characters.ts).
+ */
+export function gardienTourne(id: BiomeId): ReturnType<typeof gardienDuMonde> {
+  return turnModel(gardienDuMonde(id), islandDef(id).quarts);
 }
 
 /** Les cases du carré du Gardien d'une île, en cases du monde, le lieu tourné : le bonhomme n'y marche pas. */

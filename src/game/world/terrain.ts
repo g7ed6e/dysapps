@@ -37,7 +37,7 @@ export { type BorneVue, cacheUneBorne, PLACES_DES_BORNES_DES_ECOLES, placesDesBo
 export { avatarRoute, BAC_LONG, boardingRoute, bridgePath, casesDeLOuvrage, placesDeLaFleche, portsDAttache, premierCoude, routeAt, routeLengths, tablier } from './terrain/links';
 export { ASSEMBLAGE_SIZE, type Atelier, atelierModel, cacheUnLieu, casesDesLieux, HALLE, lieuxVus, placeDoor, placeSpot, schoolModel, TROPHY_AT, TROPHY_SIZE, TROPHY_SLOTS, trophyModel, VILLAGE_PLACES } from './terrain/village';
 export { CREATURE_STEPS, creatureDuMonde, creaturePlacements, creatureSpot, gardienDuMonde, GUARDIAN_SQUARE, guardianSpot, QUARTS_DE_TOUR, QUARTS_DE_TOUR_DE_LA_CREATURE } from './terrain/creatures';
-export { gardienEnPartieRallume, guardianCells, guardianCenter, guardianPlacements, statueDe, trophySpot } from './terrain/guardians';
+export { gardienEnPartieRallume, gardienTourne, guardianCells, guardianCenter, guardianPlacements, statueDe, trophySpot } from './terrain/guardians';
 export { casesDeLaPetiteConstructionDansLeMonde, placeDeLaPetiteConstruction } from './terrain/fixture';
 export { BALEINES_REPLACEES, mistPatches, seaDecor, whaleSpots } from './terrain/sea';
 export { vehiclePlacement, type VehiclePlacement } from './terrain/port';

@@ -465,7 +465,8 @@ export function moveIsland(world: World, id: BiomeId, spot: LayoutSpot): Arrange
  * Une disposition sauvegardée qui ne tient plus sur la grille de sa région (`fittingPlaces`) : un lieu entré au jeu
  * après l'aménagement de la région (HG-2, HG-3, SC-3), à sa place de la carte de départ, chevauche un lieu que l'élève a
  * déplacé ; ou les îles ont grandi (GD-11, 8 octobre 2026) et deux lieux ne laissent plus assez d'eau entre eux, ou un
- * lieu déplacé sort du cadre. Plutôt que de ramener toute la région à la carte de départ, les lieux qui ne tiennent plus
+ * lieu déplacé sort du cadre. Plutôt que de ramener toute la région à la carte de départ, une paire réunie trop
+ * rapprochée s'écarte d'abord d'un pas, toujours réunie (`separateJoinedPairs`) ; puis les lieux qui ne tiennent plus
  * se décalent, un à un, chacun à la place libre la plus proche de la sienne, à son orientation (de face s'il n'y en a
  * pas) ; jamais le lieu de départ ni ce qui lui est réuni, et chacun une fois au plus. Des deux ordres essayés
  * (`shiftUntilFitting`), on garde celui qui respecte le mieux les choix de l'élève (`shiftCost`). Rien d'autre ne
@@ -479,12 +480,56 @@ export function settleNewPlaces(world: World): World {
   for (const a of ARCHIPELAGO_IDS) {
     const avant = regionOf(w, a).islands;
     if (!avant || fittingPlaces(a, avant)) continue;
+    // Une paire réunie que l'agrandissement a trop rapprochée s'écarte d'abord d'un pas, réunie ; puis, comme les
+    // autres lieux, elle se décale d'un bloc.
+    const ecarte = separateJoinedPairs(w, a);
     // Deux ordres possibles (`shiftUntilFitting`) : celui qui garde le mieux les choix de l'élève (`shiftCost`) ; le
     // premier à égalité.
-    const essais = [shiftUntilFitting(w, a, true), shiftUntilFitting(w, a, false)].filter((x): x is World => x !== null);
+    const essais = [shiftUntilFitting(ecarte, a, true), shiftUntilFitting(ecarte, a, false)].filter((x): x is World => x !== null);
     const cout = (x: World) => shiftCost(w, x, a);
     const mieux = essais.reduce<World | null>((m, x) => (m === null || cout(x) < cout(m) ? x : m), null);
     if (mieux) w = mieux;
+  }
+  return w;
+}
+
+/**
+ * Les paires réunies d'une région que les îles agrandies (GD-11) ont trop rapprochées l'une de l'autre (moins de
+ * `GAP_BETWEEN_PLACES` cases d'eau entre leurs terres : chacune a pris deux cases de terre par côté, un pas en tout) :
+ * l'un des deux lieux, jamais un lieu de départ, s'écarte d'un pas de l'autre, en x ou en y, là où leur construction
+ * se pose encore (`joinShape`). La paire reste réunie, et sa construction aussi. Une paire qui ne s'écarte pas reste
+ * telle quelle : la région ne tient pas et revient à la carte de départ, sans rien perdre (`settleNewPlaces`).
+ */
+function separateJoinedPairs(world: World, a: ArchipelagoId): World {
+  let w = world;
+  const tropPres = (d: IslandDef, e: IslandDef) => tooSmallGaps(a, [d, e]).some((g) => g.other !== null);
+  const max = LAYOUT_LAST_SPOT[a];
+  for (const [p, q] of regionOf(w, a).joined ?? []) {
+    if (!tropPres(placeIn(w, p), placeIn(w, q))) continue;
+    const ecart = [q, p]
+      .filter((id) => !isFixedPlace(id))
+      .flatMap((id) => {
+        const autre = id === p ? q : p;
+        const [s, t] = [spotOf(w, id), spotOf(w, autre)];
+        return [
+          { x: s.x + Math.sign(s.x - t.x), y: s.y },
+          { x: s.x, y: s.y + Math.sign(s.y - t.y) },
+        ]
+          .filter((c) => (c.x !== s.x || c.y !== s.y) && c.x >= 0 && c.y >= 0 && c.x <= max.x && c.y <= max.y)
+          .map((c) => ({ id, spot: { ...c, turn: s.turn } }));
+      })
+      .find(({ id, spot }) => {
+        const d = placedIsland(id, poseOfSpot(a, spot));
+        const [dp, dq] = id === p ? [d, placeIn(w, q)] : [placeIn(w, p), d];
+        return !tropPres(dp, dq) && joinShape(dp, dq) !== null;
+      });
+    if (!ecart) continue;
+    const r = regionOf(w, a);
+    const islands = { ...r.islands };
+    const depart = startingSpot(ecart.id);
+    if (ecart.spot.x === depart.x && ecart.spot.y === depart.y && ecart.spot.turn === 0) delete islands[ecart.id];
+    else islands[ecart.id] = ecart.spot;
+    w = withRegion(w, a, { ...r, islands });
   }
   return w;
 }
