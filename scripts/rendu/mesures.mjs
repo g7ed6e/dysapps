@@ -1107,6 +1107,7 @@ async function scenes() {
               liens: c.liens,
               xp: c.xp,
               commandes: c.commandes,
+              quetes: c.quetes,
               posees: c.posees,
               cliquer: c.cliquer,
               fiche: c.fiche,
