@@ -187,11 +187,11 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "Le canal de Panama relie l’océan Atlantique et l’océan Pacifique. Il évite aux navires un détour de plus de dix puissance quatre kilomètres.",
       "choices": [
-        "Entre l’Atlantique et le Pacifique, il évite plus de 10 000 kilomètres.",
-        "Entre l’Atlantique et le Pacifique, il évite plus de 100 000 kilomètres.",
-        "Entre la Méditerranée et la mer Rouge, il évite plus de 10 000 kilomètres."
+        "Atlantique et Pacifique : plus de 10 000 kilomètres évités.",
+        "Atlantique et Pacifique : plus de 100 000 kilomètres évités.",
+        "Méditerranée et mer Rouge : plus de 10 000 kilomètres évités."
       ],
-      "answer": "Entre l’Atlantique et le Pacifique, il évite plus de 10 000 kilomètres.",
+      "answer": "Atlantique et Pacifique : plus de 10 000 kilomètres évités.",
       "hint": "D’abord : combien de zéros après le 1 ? Puis : quels océans le document nomme-t-il ?",
       "explanation": "10⁴ = 10 000 : quatre zéros. 100 000 a un zéro de trop : c’est 10⁵. Le document dit que Panama relie l’Atlantique et le Pacifique ; la Méditerranée et la mer Rouge, c’est le canal de Suez.",
       "aid": {

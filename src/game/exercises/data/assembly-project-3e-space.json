@@ -69,11 +69,11 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "21 juillet 1969 : l’Américain Neil Armstrong marche sur la Lune. Il y saute bien plus haut que sur la Terre.",
       "choices": [
-        "Sur la Lune, l’Américain garde sa masse, mais son poids est plus petit.",
-        "Sur la Lune, le Soviétique garde sa masse, mais son poids est plus petit.",
-        "Sur la Lune, l’Américain garde son poids, mais sa masse est plus petite."
+        "L’Américain garde sa masse ; son poids est plus petit.",
+        "Le Soviétique garde sa masse ; son poids est plus petit.",
+        "L’Américain garde son poids ; sa masse est plus petite."
       ],
-      "answer": "Sur la Lune, l’Américain garde sa masse, mais son poids est plus petit.",
+      "answer": "L’Américain garde sa masse ; son poids est plus petit.",
       "hint": "D’abord : de quel pays est Armstrong, dans le document ? Puis : sur la Lune, qu’est-ce qui change, la masse ou le poids ?",
       "explanation": "Le document dit qu’Armstrong est américain, du camp de l’Ouest. Sur la Lune, sa masse ne change pas ; son poids, l’attraction de la Lune, est environ 6 fois plus petit : il saute plus haut.",
       "aid": {
@@ -93,11 +93,11 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "1957 : Spoutnik. 1961 : Gagarine. 1969 : des humains sur la Lune. Pendant le décollage, la fusée va de plus en plus vite.",
       "choices": [
-        "Au XXe siècle, la fusée a un mouvement accéléré.",
-        "Au XIXe siècle, la fusée a un mouvement accéléré.",
-        "Au XXe siècle, la fusée a un mouvement uniforme."
+        "Au XXe siècle (le vingtième), le mouvement est accéléré.",
+        "Au XIXe siècle (le dix-neuvième), le mouvement est accéléré.",
+        "Au XXe siècle (le vingtième), le mouvement est uniforme."
       ],
-      "answer": "Au XXe siècle, la fusée a un mouvement accéléré.",
+      "answer": "Au XXe siècle (le vingtième), le mouvement est accéléré.",
       "hint": "D’abord : range les années avec le rappel. Puis : la vitesse augmente-t-elle ?",
       "explanation": "1957, 1961 et 1969 sont entre 1901 et 2000 : c’est le XXe siècle, le vingtième. Le XIXe siècle, le dix-neuvième, va de 1801 à 1900 : le siècle ne se lit pas dans les deux premiers chiffres. De plus en plus vite : la vitesse augmente, le mouvement est accéléré.",
       "aid": {
@@ -117,11 +117,11 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "1969 : des Américains marchent sur la Lune. 1957 : les Soviétiques lancent le premier satellite.",
       "choices": [
-        "Le satellite vient en premier ; la Lune aussi attire les astronautes.",
-        "Les pas sur la Lune viennent en premier ; la Lune aussi attire les astronautes.",
-        "Le satellite vient en premier ; sur la Lune, rien n’attire les astronautes."
+        "Le satellite d’abord ; la Lune attire aussi les astronautes.",
+        "Les pas sur la Lune d’abord ; la Lune attire aussi les astronautes.",
+        "Le satellite d’abord ; sur la Lune, rien n’attire les astronautes."
       ],
-      "answer": "Le satellite vient en premier ; la Lune aussi attire les astronautes.",
+      "answer": "Le satellite d’abord ; la Lune attire aussi les astronautes.",
       "hint": "D’abord : quelle année est la plus petite ? Puis : la Lune a-t-elle une masse ?",
       "explanation": "1957 vient avant 1969 : le satellite vient en premier, même s’il est écrit en second. La Lune a une masse : elle attire les astronautes, moins fort que la Terre ; c’est pour cela qu’ils retombent après un saut.",
       "aid": {
@@ -137,15 +137,15 @@
     },
     {
       "key": "project-3e-space-5",
-      "prompt": "26 novembre 1965 : la fusée française Diamant lance le satellite Astérix.\nLa France est le troisième pays à le faire, après l’Union soviétique et les États-Unis.",
+      "prompt": "26 novembre 1965 : la fusée française Diamant lance le satellite Astérix.\nAvant la France, seuls l’Union soviétique et les États-Unis l’ont fait.",
       "question": "Quelle phrase est juste ?",
-      "spoken": "26 novembre 1965 : la fusée française Diamant lance le satellite Astérix. La France est le troisième pays à le faire, après l’Union soviétique et les États-Unis.",
+      "spoken": "26 novembre 1965 : la fusée française Diamant lance le satellite Astérix. Avant la France, seuls l’Union soviétique et les États-Unis l’ont fait.",
       "choices": [
-        "La France est le troisième pays dans l’espace ; le poids de Diamant est vers le bas.",
-        "La France est le premier pays dans l’espace ; le poids de Diamant est vers le bas.",
-        "La France est le troisième pays dans l’espace ; le poids de Diamant est vers le haut."
+        "La France est troisième ; le poids de Diamant est vers le bas.",
+        "La France est première ; le poids de Diamant est vers le bas.",
+        "La France est troisième ; le poids de Diamant est vers le haut."
       ],
-      "answer": "La France est le troisième pays dans l’espace ; le poids de Diamant est vers le bas.",
+      "answer": "La France est troisième ; le poids de Diamant est vers le bas.",
       "hint": "D’abord : combien de pays avant la France, dans le document ? Puis : vers où la Terre attire-t-elle la fusée ?",
       "explanation": "Le document nomme deux pays avant la France : elle est la troisième. Le poids est l’attraction de la Terre, vers son centre : il tire la fusée vers le bas ; ce sont les moteurs qui la poussent vers le haut.",
       "aid": {
@@ -189,11 +189,11 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "24 juillet 1969 : la capsule d’Apollo 11 ramène les Américains de la Lune. Des parachutes la ralentissent avant l’océan.",
       "choices": [
-        "Les Américains rentrent ; la capsule ralentit, son énergie cinétique diminue.",
-        "Les Soviétiques rentrent ; la capsule ralentit, son énergie cinétique diminue.",
-        "Les Américains rentrent ; la capsule ralentit, son énergie cinétique augmente."
+        "Les Américains rentrent ; l’énergie cinétique diminue.",
+        "Les Soviétiques rentrent ; l’énergie cinétique diminue.",
+        "Les Américains rentrent ; l’énergie cinétique augmente."
       ],
-      "answer": "Les Américains rentrent ; la capsule ralentit, son énergie cinétique diminue.",
+      "answer": "Les Américains rentrent ; l’énergie cinétique diminue.",
       "hint": "D’abord : qui revient de la Lune, dans le document ? Puis : moins vite, plus ou moins d’énergie cinétique ?",
       "explanation": "Le document dit que la capsule ramène les Américains. L’énergie cinétique est celle du mouvement : plus on va vite, plus elle est grande ; la capsule ralentit, elle diminue.",
       "aid": {
@@ -213,11 +213,11 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "3 novembre 1957 : un satellite soviétique emporte la chienne Laïka. Elle est attachée dans sa capsule, qui tourne autour de la Terre.",
       "choices": [
-        "Dans ce satellite soviétique, Laïka est immobile par rapport à sa capsule.",
-        "Dans ce satellite américain, Laïka est immobile par rapport à sa capsule.",
-        "Dans ce satellite soviétique, Laïka est immobile par rapport à la Terre."
+        "Satellite soviétique ; Laïka est immobile par rapport à sa capsule.",
+        "Satellite américain ; Laïka est immobile par rapport à sa capsule.",
+        "Satellite soviétique ; Laïka est immobile par rapport à la Terre."
       ],
-      "answer": "Dans ce satellite soviétique, Laïka est immobile par rapport à sa capsule.",
+      "answer": "Satellite soviétique ; Laïka est immobile par rapport à sa capsule.",
       "hint": "D’abord : de quel pays est le satellite, dans le document ? Puis : Laïka bouge-t-elle dans sa capsule ? et autour de la Terre ?",
       "explanation": "Le document dit que le satellite est soviétique. Attachée, Laïka ne bouge pas par rapport à sa capsule ; mais la capsule tourne autour de la Terre : par rapport à la Terre, Laïka est en mouvement.",
       "aid": {
@@ -237,11 +237,11 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "16 juin 1963 : la Soviétique Valentina Terechkova part dans l’espace. C’est la première femme dans l’espace.",
       "choices": [
-        "Terechkova est soviétique ; le carburant de sa fusée stocke de l’énergie chimique.",
-        "Terechkova est américaine ; le carburant de sa fusée stocke de l’énergie chimique.",
-        "Terechkova est soviétique ; le carburant de sa fusée stocke de l’énergie lumineuse."
+        "Elle est soviétique ; le carburant stocke de l’énergie chimique.",
+        "Elle est américaine ; le carburant stocke de l’énergie chimique.",
+        "Elle est soviétique ; le carburant stocke de l’énergie lumineuse."
       ],
-      "answer": "Terechkova est soviétique ; le carburant de sa fusée stocke de l’énergie chimique.",
+      "answer": "Elle est soviétique ; le carburant stocke de l’énergie chimique.",
       "hint": "D’abord : de quel pays est Terechkova, dans le document ? Puis : un carburant qui brûle, quelle énergie libère-t-il ?",
       "explanation": "Le document dit que Terechkova est soviétique. Le carburant stocke de l’énergie chimique : en brûlant, il la convertit en énergie cinétique et thermique ; l’énergie lumineuse, c’est celle de la lumière.",
       "aid": {
@@ -281,15 +281,15 @@
     },
     {
       "key": "project-3e-space-11",
-      "prompt": "1998 : la Russie et les États-Unis commencent ensemble la Station spatiale internationale.\nElle tourne autour de la Terre, à 400 km (kilomètres) d’altitude.",
+      "prompt": "1998 : la Russie et les États-Unis bâtissent ensemble une station.\nC’est la Station spatiale internationale, à 400 km (kilomètres) d’altitude.",
       "question": "Quelle phrase est juste ?",
-      "spoken": "1998 : la Russie et les États-Unis commencent ensemble la Station spatiale internationale. Elle tourne autour de la Terre, à 400 kilomètres d’altitude.",
+      "spoken": "1998 : la Russie et les États-Unis bâtissent ensemble une station. C’est la Station spatiale internationale, à 400 kilomètres d’altitude.",
       "choices": [
-        "Après la guerre froide, on coopère ; la Terre attire toujours la station.",
-        "Pendant la guerre froide, on coopère ; la Terre attire toujours la station.",
-        "Après la guerre froide, on coopère ; là-haut, la Terre n’attire plus la station."
+        "Après la guerre froide ; la Terre attire toujours la station.",
+        "Pendant la guerre froide ; la Terre attire toujours la station.",
+        "Après la guerre froide ; là-haut, la Terre n’attire plus la station."
       ],
-      "answer": "Après la guerre froide, on coopère ; la Terre attire toujours la station.",
+      "answer": "Après la guerre froide ; la Terre attire toujours la station.",
       "hint": "D’abord : 1998 est-il avant ou après 1991 ? Puis : la Terre attire-t-elle encore à 400 kilomètres ?",
       "explanation": "La guerre froide finit en 1991 : en 1998, c’est après, et les deux anciens rivaux construisent ensemble. La Terre attire toujours la station : c’est cette attraction qui la fait tourner autour d’elle au lieu de partir en ligne droite.",
       "aid": {

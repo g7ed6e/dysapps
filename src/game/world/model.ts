@@ -2,8 +2,6 @@
 // en identifiants, sans une seule case. WorldPage le lit au lieu de décider lui-même ; une disposition (la grille
 // aujourd'hui, le réseau d'Archipéo demain) dit ensuite où dessiner chaque chose. Et les décisions que prend le jeu
 // quand l'élève touche le monde : jouer une borne, ouvrir l'île d'un ouvrage, aller vers une île, voyager.
-import { projectOf } from './projects';
-import { projectReady, suggestedProject } from './projectChoice';
 import { BIOMES, missionsJouables, type BiomeId } from '../biomes';
 import { guardianStatus } from '../boss';
 import type { GameState } from '../engine';
@@ -25,6 +23,8 @@ import {
 import { nextDestination, type Destination } from './destination';
 import { islandState, type IslandStateDef } from './islandState';
 import { monumentsOf } from './monuments';
+import { projectReady, suggestedProject } from './projectChoice';
+import { projectOf } from './projects';
 import { stageBuildingAt, stageTo } from './vehicle';
 import type { VoyageLeg } from './voyage';
 

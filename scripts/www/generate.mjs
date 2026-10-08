@@ -1039,7 +1039,9 @@ function grandsProjets(d) {
     // Les îles de la question : celles de toutes les recettes qui la posent (en 3e, la troisième île d'une recette n'a pas
     // de question).
     const recettes = d.PROJECTS.flatMap((p) => p.pieces.flatMap((x) => x.recipes)).filter((x) => x.bank === q.bloc);
+    if (recettes.length === 0) throw new Error(`grands projets : la banque ${q.bloc} n'est posée par aucune recette`);
     const iles = recettes[0].ingredients.map((i) => i.bloc).filter((b) => recettes.every((r) => r.ingredients.some((i) => i.bloc === b)));
+    if (iles.length === 0) throw new Error(`grands projets : les recettes de la banque ${q.bloc} n'ont aucune île commune`);
     lines.push(`### Les questions : ${iles.map(name).join(' et ')}`, '');
     lines.push(programmeLine(q.programme, d, ''), '');
     lines.push(`Consigne : « ${q.instruction} »${q.lang === 'en' ? ' Le texte à lire est en anglais, lu en voix anglaise ; la question, l’indice et l’aide sont en français.' : ''}`, '');

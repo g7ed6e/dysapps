@@ -215,11 +215,11 @@
       "question": "Quelle phrase est juste pour 3 secondes ?",
       "spoken": "Une aire urbaine : une ville, ses banlieues et ses communes périurbaines. Son usine d’eau envoie f de t égale 7 fois t mètres cubes en t secondes.",
       "choices": [
-        "21 mètres cubes, pour la ville, ses banlieues et ses communes périurbaines.",
-        "10 mètres cubes, pour la ville, ses banlieues et ses communes périurbaines.",
+        "21 mètres cubes, pour toute l’aire urbaine.",
+        "10 mètres cubes, pour toute l’aire urbaine.",
         "21 mètres cubes, pour la ville centre seule."
       ],
-      "answer": "21 mètres cubes, pour la ville, ses banlieues et ses communes périurbaines.",
+      "answer": "21 mètres cubes, pour toute l’aire urbaine.",
       "hint": "D’abord : remplace t par 3. Puis : une aire urbaine, est-ce seulement la ville centre ?",
       "explanation": "f(3) = 7 × 3 = 21 mètres cubes. 10, c’est 7 + 3 : on multiplie par t, on ne l’ajoute pas. Le document le dit : l’aire urbaine, c’est la ville, ses banlieues et ses communes périurbaines, pas la ville centre seule.",
       "figure": {
@@ -322,14 +322,14 @@
     {
       "key": "project-3e-water-8",
       "prompt": "Toulouse, une métropole, attire chaque année de nouveaux habitants.\nUne de ses usines nettoie f(t) = 2 × t mètres cubes d’eau en t secondes.",
-      "question": "Quelle phrase est juste ?",
+      "question": "Quelle phrase est juste pour 16 mètres cubes ?",
       "spoken": "Toulouse, une métropole, attire chaque année de nouveaux habitants. Une de ses usines nettoie f de t égale 2 fois t mètres cubes d’eau en t secondes.",
       "choices": [
-        "Pour 16 mètres cubes, il faut 8 secondes ; Toulouse attire des habitants.",
-        "Pour 16 mètres cubes, il faut 32 secondes ; Toulouse attire des habitants.",
-        "Pour 16 mètres cubes, il faut 8 secondes ; Toulouse perd des habitants."
+        "8 secondes ; Toulouse attire des habitants.",
+        "32 secondes ; Toulouse attire des habitants.",
+        "8 secondes ; Toulouse perd des habitants."
       ],
-      "answer": "Pour 16 mètres cubes, il faut 8 secondes ; Toulouse attire des habitants.",
+      "answer": "8 secondes ; Toulouse attire des habitants.",
       "hint": "D’abord : quel nombre t donne 2 × t = 16 ? Puis : que dit le document des habitants ?",
       "explanation": "On cherche l’antécédent de 16 : 2 × 8 = 16, donc 8 secondes. 32, c’est 16 × 2 : on a multiplié au lieu de diviser. Le document dit que Toulouse attire de nouveaux habitants : une métropole attire.",
       "figure": {
@@ -411,13 +411,13 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "Une ville moyenne change ses tuyaux, avec l’aide de l’État. Eau qui arrive : 1 heure, 4 mètres cubes ; 2 heures, 8 ; 3 heures, 12.",
       "choices": [
-        "f est linéaire, car le volume est proportionnel au temps ; l’État aide.",
-        "f n’est pas linéaire, car le volume change chaque heure ; l’État aide.",
-        "f est linéaire, car le volume est proportionnel au temps ; la ville aménage seule."
+        "f est linéaire ; l’État aide la ville.",
+        "f n’est pas linéaire ; l’État aide la ville.",
+        "f est linéaire ; la ville aménage seule."
       ],
-      "answer": "f est linéaire, car le volume est proportionnel au temps ; l’État aide.",
+      "answer": "f est linéaire ; l’État aide la ville.",
       "hint": "D’abord : 4, 8, 12, c’est toujours combien de fois le nombre d’heures ? Puis : la ville est-elle seule, dans le document ?",
-      "explanation": "4, 8, 12 : toujours 4 fois le nombre d’heures. Le volume est proportionnel au temps : f(x) = 4x, une fonction linéaire. Qu’il change chaque heure ne l’empêche pas : il change toujours de la même façon. Le document dit que l’État aide la ville : elle n’aménage pas seule.",
+      "explanation": "4, 8, 12 : toujours 4 fois le nombre d’heures. Le volume est proportionnel au temps : f(x) = 4x, une fonction linéaire. Dire qu’elle n’est pas linéaire est faux : le volume est toujours 4 fois le nombre d’heures. Le document dit que l’État aide la ville : elle n’aménage pas seule.",
       "figure": {
         "kind": "ratio-table",
         "props": {

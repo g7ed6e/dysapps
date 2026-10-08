@@ -42,11 +42,11 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "Dans un téléphone, la voix fait vibrer une petite plaque. Cette vibration devient un signal électrique.",
       "choices": [
-        "Le téléphone fait entendre une voix de loin : le son est une vibration.",
-        "Le téléphone fait voir une image de loin : le son est une vibration.",
-        "Le téléphone fait entendre une voix de loin : le son est un rayon de lumière."
+        "Une voix entendue de loin : le son est une vibration.",
+        "Une image vue de loin : le son est une vibration.",
+        "Une voix entendue de loin : le son est un rayon de lumière."
       ],
-      "answer": "Le téléphone fait entendre une voix de loin : le son est une vibration.",
+      "answer": "Une voix entendue de loin : le son est une vibration.",
       "hint": "D’abord : que veut dire -phone ? Puis : que fait la voix dans le document ?",
       "explanation": "Télé- veut dire loin, -phone veut dire son, voix : le téléphone fait entendre une voix de loin. Le document le dit : la voix fait vibrer une plaque ; un son est une vibration de la matière, pas un rayon de lumière.",
       "aid": {
@@ -66,11 +66,11 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "La chorale chante en polyphonie. Les voix aiguës et les voix graves chantent en même temps.",
       "choices": [
-        "Plusieurs voix chantent ensemble ; les voix aiguës ont une grande fréquence.",
-        "Une seule voix chante ; les voix aiguës ont une grande fréquence.",
-        "Plusieurs voix chantent ensemble ; les voix aiguës ont une petite fréquence."
+        "Plusieurs voix ; les voix aiguës ont une grande fréquence.",
+        "Une seule voix ; les voix aiguës ont une grande fréquence.",
+        "Plusieurs voix ; les voix aiguës ont une petite fréquence."
       ],
-      "answer": "Plusieurs voix chantent ensemble ; les voix aiguës ont une grande fréquence.",
+      "answer": "Plusieurs voix ; les voix aiguës ont une grande fréquence.",
       "hint": "D’abord : que veut dire poly- ? Puis : un son aigu vibre-t-il vite ou lentement ?",
       "explanation": "Poly- veut dire plusieurs, -phonie vient de son, voix : la polyphonie, ce sont plusieurs voix ensemble. Un son aigu vibre vite : il a une grande fréquence ; un son grave, une petite.",
       "aid": {
@@ -90,11 +90,11 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "Un télescope montre des étoiles très lointaines. Leur lumière a traversé l’espace, où il n’y a pas d’air.",
       "choices": [
-        "Le télescope sert à regarder loin : la lumière traverse le vide.",
-        "Le télescope sert à écouter loin : la lumière traverse le vide.",
-        "Le télescope sert à regarder loin : la lumière ne traverse pas le vide."
+        "Il sert à regarder loin : la lumière traverse le vide.",
+        "Il sert à écouter loin : la lumière traverse le vide.",
+        "Il sert à regarder loin : la lumière ne traverse pas le vide."
       ],
-      "answer": "Le télescope sert à regarder loin : la lumière traverse le vide.",
+      "answer": "Il sert à regarder loin : la lumière traverse le vide.",
       "hint": "D’abord : que veut dire -scope ? Puis : la lumière des étoiles arrive-t-elle jusqu’à nous ?",
       "explanation": "Télé- veut dire loin, -scope veut dire regarder : le télescope sert à regarder loin. La lumière des étoiles arrive jusqu’à nous à travers l’espace vide ; c’est le son qui ne traverse pas le vide.",
       "aid": {
@@ -138,11 +138,11 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "Nino veut connaître la tension aux bornes de la lampe. Il prend un voltmètre.",
       "choices": [
-        "Le voltmètre mesure la tension : on le branche aux deux bornes de la lampe.",
-        "Le voltmètre produit la tension : on le branche aux deux bornes de la lampe.",
-        "Le voltmètre mesure la tension : on le branche en série avec la lampe."
+        "Il mesure la tension : on le branche aux deux bornes.",
+        "Il produit la tension : on le branche aux deux bornes.",
+        "Il mesure la tension : on le branche en série."
       ],
-      "answer": "Le voltmètre mesure la tension : on le branche aux deux bornes de la lampe.",
+      "answer": "Il mesure la tension : on le branche aux deux bornes.",
       "hint": "D’abord : que veut dire -mètre ? Puis : un voltmètre, où se branche-t-il ?",
       "explanation": "-mètre veut dire mesure : le voltmètre mesure une tension, en volts ; c’est la pile qui la produit. Il se branche aux deux bornes de la lampe ; c’est l’ampèremètre qui se branche en série.",
       "aid": {
@@ -207,14 +207,14 @@
     {
       "key": "project-4e-telegraph-8",
       "prompt": "Pendant l’orage, Léa voit un éclair au loin.\nLe soir, elle a « un éclair de génie » pour son exposé.",
-      "question": "Quelle phrase est juste ?",
+      "question": "« Un éclair de génie » : quelle phrase est juste ?",
       "spoken": "Pendant l’orage, Léa voit un éclair au loin. Le soir, elle a un éclair de génie pour son exposé.",
       "choices": [
-        "« Un éclair de génie » est au sens figuré ; le tonnerre arrive après l’éclair.",
-        "« Un éclair de génie » est au sens propre ; le tonnerre arrive après l’éclair.",
-        "« Un éclair de génie » est au sens figuré ; le tonnerre arrive avant l’éclair."
+        "Sens figuré ; le tonnerre arrive après l’éclair.",
+        "Sens propre ; le tonnerre arrive après l’éclair.",
+        "Sens figuré ; le tonnerre arrive avant l’éclair."
       ],
-      "answer": "« Un éclair de génie » est au sens figuré ; le tonnerre arrive après l’éclair.",
+      "answer": "Sens figuré ; le tonnerre arrive après l’éclair.",
       "hint": "D’abord : l’idée de Léa est-elle un vrai éclair ? Puis : qui va le plus vite, la lumière ou le son ?",
       "explanation": "Un éclair de génie n’est pas un vrai éclair : c’est une image pour une idée soudaine, le sens figuré. La lumière va bien plus vite que le son : on voit l’éclair, puis on entend le tonnerre.",
       "aid": {

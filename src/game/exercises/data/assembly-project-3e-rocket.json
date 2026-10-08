@@ -39,9 +39,9 @@
     },
     {
       "key": "project-3e-rocket-1",
-      "prompt": "On the Moon\nThe astronaut’s mass is 80 kg (kilograms). Her weight is 6 times smaller than on Earth.",
+      "prompt": "On the Moon, the astronaut’s mass is 80 kg (kilograms).\nHer weight is 6 times smaller than on Earth.",
       "question": "Quelle phrase est juste ?",
-      "spoken": "On the Moon. The astronaut’s mass is eighty kilograms. Her weight is six times smaller than on Earth.",
+      "spoken": "On the Moon, the astronaut’s mass is eighty kilograms. Her weight is six times smaller than on Earth.",
       "choices": [
         "Her weight is smaller, but her mass is still 80 kilograms.",
         "Her weight is smaller, because her mass is still 80 kilograms.",

@@ -31,7 +31,7 @@
 | `landmark-3e-4` | `crown` | maths-3e-functions × 4 · geography-3e-france × 4 · technology-3e-digital × 2 | `project-3e-water` | english-3e-comprehension × 4 · physics-chemistry-3e-motion-energy × 4 · life-earth-sciences-3e-human-body × 2 | `project-3e-rocket` | la couronne | la couronne |
 | `landmark-3e-5` | `cube` | maths-3e-geometry × 4 · french-3e-close-reading × 4 · technology-3e-digital × 2 | `project-3e-solids` | history-3e-twentieth-century × 4 · physics-chemistry-3e-motion-energy × 4 · life-earth-sciences-3e-human-body × 2 | `project-3e-space` | le cube | le cube |
 | `landmark-3e-5` | `cylinder` | maths-3e-geometry × 4 · french-3e-close-reading × 4 · life-earth-sciences-3e-human-body × 2 | `project-3e-solids` | english-3e-comprehension × 4 · physics-chemistry-3e-motion-energy × 4 · technology-3e-digital × 2 | `project-3e-rocket` | le cylindre | le cylindre |
-| `landmark-3e-5` | `pyramid` | maths-3e-geometry × 4 · french-3e-close-reading × 4 · technology-3e-digital × 2 | `project-3e-solids` | history-3e-twentieth-century × 4 · physics-chemistry-3e-motion-energy × 4 · life-earth-sciences-3e-human-body × 2 | `project-3e-space` | la pyramide | la pyramide |
+| `landmark-3e-5` | `pyramid` | maths-3e-geometry × 4 · french-3e-close-reading × 4 · technology-3e-digital × 2 | `project-3e-solids` | history-3e-twentieth-century × 4 · physics-chemistry-3e-motion-energy × 4 · life-earth-sciences-3e-human-body × 2 | `project-3e-space` | le tronc de pyramide | le tronc de pyramide |
 | `landmark-3e-5` | `sphere` | maths-3e-geometry × 4 · french-3e-close-reading × 4 · life-earth-sciences-3e-human-body × 2 | `project-3e-solids` | english-3e-comprehension × 4 · physics-chemistry-3e-motion-energy × 4 · technology-3e-digital × 2 | `project-3e-rocket` | la sphère | la sphère |
 
 ## Les questions
@@ -504,8 +504,8 @@
 8. énoncé : "Le canal de Panama relie l’océan Atlantique et l’océan Pacifique.\nIl évite aux navires un détour de plus de 10⁴ kilomètres."
    - question : Quelle phrase est juste ?
    - lu : Le canal de Panama relie l’océan Atlantique et l’océan Pacifique. Il évite aux navires un détour de plus de dix puissance quatre kilomètres.
-   - choix : Entre l’Atlantique et le Pacifique, il évite plus de 10 000 kilomètres. · Entre l’Atlantique et le Pacifique, il évite plus de 100 000 kilomètres. · Entre la Méditerranée et la mer Rouge, il évite plus de 10 000 kilomètres.
-   - réponse : Entre l’Atlantique et le Pacifique, il évite plus de 10 000 kilomètres.
+   - choix : Atlantique et Pacifique : plus de 10 000 kilomètres évités. · Atlantique et Pacifique : plus de 100 000 kilomètres évités. · Méditerranée et mer Rouge : plus de 10 000 kilomètres évités.
+   - réponse : Atlantique et Pacifique : plus de 10 000 kilomètres évités.
    - indice : D’abord : combien de zéros après le 1 ? Puis : quels océans le document nomme-t-il ?
    - explication : 10⁴ = 10 000 : quatre zéros. 100 000 a un zéro de trop : c’est 10⁵. Le document dit que Panama relie l’Atlantique et le Pacifique ; la Méditerranée et la mer Rouge, c’est le canal de Suez.
    - aide « 10 puissance 4, et le canal » :
@@ -572,8 +572,8 @@
 2. énoncé : "Dans un téléphone, la voix fait vibrer une petite plaque.\nCette vibration devient un signal électrique."
    - question : Quelle phrase est juste ?
    - lu : Dans un téléphone, la voix fait vibrer une petite plaque. Cette vibration devient un signal électrique.
-   - choix : Le téléphone fait entendre une voix de loin : le son est une vibration. · Le téléphone fait voir une image de loin : le son est une vibration. · Le téléphone fait entendre une voix de loin : le son est un rayon de lumière.
-   - réponse : Le téléphone fait entendre une voix de loin : le son est une vibration.
+   - choix : Une voix entendue de loin : le son est une vibration. · Une image vue de loin : le son est une vibration. · Une voix entendue de loin : le son est un rayon de lumière.
+   - réponse : Une voix entendue de loin : le son est une vibration.
    - indice : D’abord : que veut dire -phone ? Puis : que fait la voix dans le document ?
    - explication : Télé- veut dire loin, -phone veut dire son, voix : le téléphone fait entendre une voix de loin. Le document le dit : la voix fait vibrer une plaque ; un son est une vibration de la matière, pas un rayon de lumière.
    - aide « Télé-phone, et le son » :
@@ -582,8 +582,8 @@
 3. énoncé : "La chorale chante en polyphonie.\nLes voix aiguës et les voix graves chantent en même temps."
    - question : Quelle phrase est juste ?
    - lu : La chorale chante en polyphonie. Les voix aiguës et les voix graves chantent en même temps.
-   - choix : Plusieurs voix chantent ensemble ; les voix aiguës ont une grande fréquence. · Une seule voix chante ; les voix aiguës ont une grande fréquence. · Plusieurs voix chantent ensemble ; les voix aiguës ont une petite fréquence.
-   - réponse : Plusieurs voix chantent ensemble ; les voix aiguës ont une grande fréquence.
+   - choix : Plusieurs voix ; les voix aiguës ont une grande fréquence. · Une seule voix ; les voix aiguës ont une grande fréquence. · Plusieurs voix ; les voix aiguës ont une petite fréquence.
+   - réponse : Plusieurs voix ; les voix aiguës ont une grande fréquence.
    - indice : D’abord : que veut dire poly- ? Puis : un son aigu vibre-t-il vite ou lentement ?
    - explication : Poly- veut dire plusieurs, -phonie vient de son, voix : la polyphonie, ce sont plusieurs voix ensemble. Un son aigu vibre vite : il a une grande fréquence ; un son grave, une petite.
    - aide « Poly-phonie, et la fréquence » :
@@ -592,8 +592,8 @@
 4. énoncé : "Un télescope montre des étoiles très lointaines.\nLeur lumière a traversé l’espace, où il n’y a pas d’air."
    - question : Quelle phrase est juste ?
    - lu : Un télescope montre des étoiles très lointaines. Leur lumière a traversé l’espace, où il n’y a pas d’air.
-   - choix : Le télescope sert à regarder loin : la lumière traverse le vide. · Le télescope sert à écouter loin : la lumière traverse le vide. · Le télescope sert à regarder loin : la lumière ne traverse pas le vide.
-   - réponse : Le télescope sert à regarder loin : la lumière traverse le vide.
+   - choix : Il sert à regarder loin : la lumière traverse le vide. · Il sert à écouter loin : la lumière traverse le vide. · Il sert à regarder loin : la lumière ne traverse pas le vide.
+   - réponse : Il sert à regarder loin : la lumière traverse le vide.
    - indice : D’abord : que veut dire -scope ? Puis : la lumière des étoiles arrive-t-elle jusqu’à nous ?
    - explication : Télé- veut dire loin, -scope veut dire regarder : le télescope sert à regarder loin. La lumière des étoiles arrive jusqu’à nous à travers l’espace vide ; c’est le son qui ne traverse pas le vide.
    - aide « Télé-scope, et le vide » :
@@ -612,8 +612,8 @@
 6. énoncé : "Nino veut connaître la tension aux bornes de la lampe.\nIl prend un voltmètre."
    - question : Quelle phrase est juste ?
    - lu : Nino veut connaître la tension aux bornes de la lampe. Il prend un voltmètre.
-   - choix : Le voltmètre mesure la tension : on le branche aux deux bornes de la lampe. · Le voltmètre produit la tension : on le branche aux deux bornes de la lampe. · Le voltmètre mesure la tension : on le branche en série avec la lampe.
-   - réponse : Le voltmètre mesure la tension : on le branche aux deux bornes de la lampe.
+   - choix : Il mesure la tension : on le branche aux deux bornes. · Il produit la tension : on le branche aux deux bornes. · Il mesure la tension : on le branche en série.
+   - réponse : Il mesure la tension : on le branche aux deux bornes.
    - indice : D’abord : que veut dire -mètre ? Puis : un voltmètre, où se branche-t-il ?
    - explication : -mètre veut dire mesure : le voltmètre mesure une tension, en volts ; c’est la pile qui la produit. Il se branche aux deux bornes de la lampe ; c’est l’ampèremètre qui se branche en série.
    - aide « Volt-mètre, et ses bornes » :
@@ -640,10 +640,10 @@
      - Un mot peut avoir plusieurs sens : c’est la polysémie.
      - La lumière va en ligne droite ; on la dessine par un rayon.
 9. énoncé : "Pendant l’orage, Léa voit un éclair au loin.\nLe soir, elle a « un éclair de génie » pour son exposé."
-   - question : Quelle phrase est juste ?
+   - question : « Un éclair de génie » : quelle phrase est juste ?
    - lu : Pendant l’orage, Léa voit un éclair au loin. Le soir, elle a un éclair de génie pour son exposé.
-   - choix : « Un éclair de génie » est au sens figuré ; le tonnerre arrive après l’éclair. · « Un éclair de génie » est au sens propre ; le tonnerre arrive après l’éclair. · « Un éclair de génie » est au sens figuré ; le tonnerre arrive avant l’éclair.
-   - réponse : « Un éclair de génie » est au sens figuré ; le tonnerre arrive après l’éclair.
+   - choix : Sens figuré ; le tonnerre arrive après l’éclair. · Sens propre ; le tonnerre arrive après l’éclair. · Sens figuré ; le tonnerre arrive avant l’éclair.
+   - réponse : Sens figuré ; le tonnerre arrive après l’éclair.
    - indice : D’abord : l’idée de Léa est-elle un vrai éclair ? Puis : qui va le plus vite, la lumière ou le son ?
    - explication : Un éclair de génie n’est pas un vrai éclair : c’est une image pour une idée soudaine, le sens figuré. La lumière va bien plus vite que le son : on voit l’éclair, puis on entend le tonnerre.
    - aide « Sens figuré, et la vitesse » :
@@ -810,7 +810,7 @@
 12. énoncé : "Les ouvriers ont posé le cylindre. Ce lourd bloc mesure 4 m de haut.\nUne échelle de 5 m s’appuie en haut du bloc."
     - question : À quelle distance du bloc est le pied de l’échelle ?
     - lu : Les ouvriers ont posé le cylindre. Ce lourd bloc mesure 4 mètres de haut. Une échelle de 5 mètres s’appuie en haut du bloc.
-    - choix : « Ce lourd bloc » reprend le cylindre : le pied est à 3 mètres. · « Ce lourd bloc » parle d’un autre bloc : le pied est à 3 mètres. · « Ce lourd bloc » reprend le cylindre : le pied est à 1 mètres.
+    - choix : « Ce lourd bloc » reprend le cylindre : le pied est à 3 mètres. · « Ce lourd bloc » parle d’un autre bloc : le pied est à 3 mètres. · « Ce lourd bloc » reprend le cylindre : le pied est à 1 mètre.
     - réponse : « Ce lourd bloc » reprend le cylindre : le pied est à 3 mètres.
     - indice : D’abord : 4 et 5, c’est quel triangle connu ? Puis : « ce lourd bloc », de quoi a-t-on déjà parlé ?
     - explication : L’échelle est l’hypoténuse du triangle 3-4-5 : le pied est à 3 m du bloc. 1, c’est 5 − 4 : on n’enlève pas les côtés. « Ce lourd bloc » reprend le cylindre, déjà nommé : le texte ne parle que d’un bloc.
@@ -883,8 +883,8 @@
 6. énoncé : "Une aire urbaine : une ville, ses banlieues et ses communes périurbaines.\nSon usine d’eau envoie f(t) = 7 × t mètres cubes en t secondes."
    - question : Quelle phrase est juste pour 3 secondes ?
    - lu : Une aire urbaine : une ville, ses banlieues et ses communes périurbaines. Son usine d’eau envoie f de t égale 7 fois t mètres cubes en t secondes.
-   - choix : 21 mètres cubes, pour la ville, ses banlieues et ses communes périurbaines. · 10 mètres cubes, pour la ville, ses banlieues et ses communes périurbaines. · 21 mètres cubes, pour la ville centre seule.
-   - réponse : 21 mètres cubes, pour la ville, ses banlieues et ses communes périurbaines.
+   - choix : 21 mètres cubes, pour toute l’aire urbaine. · 10 mètres cubes, pour toute l’aire urbaine. · 21 mètres cubes, pour la ville centre seule.
+   - réponse : 21 mètres cubes, pour toute l’aire urbaine.
    - indice : D’abord : remplace t par 3. Puis : une aire urbaine, est-ce seulement la ville centre ?
    - explication : f(3) = 7 × 3 = 21 mètres cubes. 10, c’est 7 + 3 : on multiplie par t, on ne l’ajoute pas. Le document le dit : l’aire urbaine, c’est la ville, ses banlieues et ses communes périurbaines, pas la ville centre seule.
    - figure : tableau secondes · mètres cubes / 1 · 7 / 3 · ?
@@ -913,10 +913,10 @@
      - f(4), l’image de 4 : on remplace x par 4.
      - Inégalités : des écarts entre les territoires, de richesse ou de services.
 9. énoncé : "Toulouse, une métropole, attire chaque année de nouveaux habitants.\nUne de ses usines nettoie f(t) = 2 × t mètres cubes d’eau en t secondes."
-   - question : Quelle phrase est juste ?
+   - question : Quelle phrase est juste pour 16 mètres cubes ?
    - lu : Toulouse, une métropole, attire chaque année de nouveaux habitants. Une de ses usines nettoie f de t égale 2 fois t mètres cubes d’eau en t secondes.
-   - choix : Pour 16 mètres cubes, il faut 8 secondes ; Toulouse attire des habitants. · Pour 16 mètres cubes, il faut 32 secondes ; Toulouse attire des habitants. · Pour 16 mètres cubes, il faut 8 secondes ; Toulouse perd des habitants.
-   - réponse : Pour 16 mètres cubes, il faut 8 secondes ; Toulouse attire des habitants.
+   - choix : 8 secondes ; Toulouse attire des habitants. · 32 secondes ; Toulouse attire des habitants. · 8 secondes ; Toulouse perd des habitants.
+   - réponse : 8 secondes ; Toulouse attire des habitants.
    - indice : D’abord : quel nombre t donne 2 × t = 16 ? Puis : que dit le document des habitants ?
    - explication : On cherche l’antécédent de 16 : 2 × 8 = 16, donc 8 secondes. 32, c’est 16 × 2 : on a multiplié au lieu de diviser. Le document dit que Toulouse attire de nouveaux habitants : une métropole attire.
    - figure : tableau secondes · mètres cubes / 1 · 2 / ? · 16
@@ -937,10 +937,10 @@
 11. énoncé : "Une ville moyenne change ses tuyaux, avec l’aide de l’État.\nEau qui arrive : 1 heure, 4 mètres cubes ; 2 heures, 8 ; 3 heures, 12."
     - question : Quelle phrase est juste ?
     - lu : Une ville moyenne change ses tuyaux, avec l’aide de l’État. Eau qui arrive : 1 heure, 4 mètres cubes ; 2 heures, 8 ; 3 heures, 12.
-    - choix : f est linéaire, car le volume est proportionnel au temps ; l’État aide. · f n’est pas linéaire, car le volume change chaque heure ; l’État aide. · f est linéaire, car le volume est proportionnel au temps ; la ville aménage seule.
-    - réponse : f est linéaire, car le volume est proportionnel au temps ; l’État aide.
+    - choix : f est linéaire ; l’État aide la ville. · f n’est pas linéaire ; l’État aide la ville. · f est linéaire ; la ville aménage seule.
+    - réponse : f est linéaire ; l’État aide la ville.
     - indice : D’abord : 4, 8, 12, c’est toujours combien de fois le nombre d’heures ? Puis : la ville est-elle seule, dans le document ?
-    - explication : 4, 8, 12 : toujours 4 fois le nombre d’heures. Le volume est proportionnel au temps : f(x) = 4x, une fonction linéaire. Qu’il change chaque heure ne l’empêche pas : il change toujours de la même façon. Le document dit que l’État aide la ville : elle n’aménage pas seule.
+    - explication : 4, 8, 12 : toujours 4 fois le nombre d’heures. Le volume est proportionnel au temps : f(x) = 4x, une fonction linéaire. Dire qu’elle n’est pas linéaire est faux : le volume est toujours 4 fois le nombre d’heures. Le document dit que l’État aide la ville : elle n’aménage pas seule.
     - figure : tableau heures · mètres cubes / 1 · 4 / 2 · 8 / 3 · 12
     - aide « Le tableau, et les acteurs » :
       - Proportionnel : on multiplie toujours par le même nombre, f(x) = a × x.
@@ -975,9 +975,9 @@
    - aide « So, et le mouvement accéléré » :
      - so = donc (la conséquence) ; but = mais (l’opposition)
      - accelerated = accéléré, la vitesse augmente ; uniform = uniforme, elle ne change pas
-2. énoncé : "On the Moon\nThe astronaut’s mass is 80 kg (kilograms). Her weight is 6 times smaller than on Earth."
+2. énoncé : "On the Moon, the astronaut’s mass is 80 kg (kilograms).\nHer weight is 6 times smaller than on Earth."
    - question : Quelle phrase est juste ?
-   - lu : On the Moon. The astronaut’s mass is eighty kilograms. Her weight is six times smaller than on Earth.
+   - lu : On the Moon, the astronaut’s mass is eighty kilograms. Her weight is six times smaller than on Earth.
    - choix : Her weight is smaller, but her mass is still 80 kilograms. · Her weight is smaller, because her mass is still 80 kilograms. · Her weight is smaller, so her mass is smaller too.
    - réponse : Her weight is smaller, but her mass is still 80 kilograms.
    - indice : D’abord : sur la Lune, la masse change-t-elle ? Puis : le poids plus petit et la masse qui reste, est-ce une cause, ou une opposition ?
@@ -1116,8 +1116,8 @@
 3. énoncé : "21 juillet 1969 : l’Américain Neil Armstrong marche sur la Lune.\nIl y saute bien plus haut que sur la Terre."
    - question : Quelle phrase est juste ?
    - lu : 21 juillet 1969 : l’Américain Neil Armstrong marche sur la Lune. Il y saute bien plus haut que sur la Terre.
-   - choix : Sur la Lune, l’Américain garde sa masse, mais son poids est plus petit. · Sur la Lune, le Soviétique garde sa masse, mais son poids est plus petit. · Sur la Lune, l’Américain garde son poids, mais sa masse est plus petite.
-   - réponse : Sur la Lune, l’Américain garde sa masse, mais son poids est plus petit.
+   - choix : L’Américain garde sa masse ; son poids est plus petit. · Le Soviétique garde sa masse ; son poids est plus petit. · L’Américain garde son poids ; sa masse est plus petite.
+   - réponse : L’Américain garde sa masse ; son poids est plus petit.
    - indice : D’abord : de quel pays est Armstrong, dans le document ? Puis : sur la Lune, qu’est-ce qui change, la masse ou le poids ?
    - explication : Le document dit qu’Armstrong est américain, du camp de l’Ouest. Sur la Lune, sa masse ne change pas ; son poids, l’attraction de la Lune, est environ 6 fois plus petit : il saute plus haut.
    - aide « Le camp de l’Ouest, et le poids » :
@@ -1126,8 +1126,8 @@
 4. énoncé : "1957 : Spoutnik. 1961 : Gagarine. 1969 : des humains sur la Lune.\nPendant le décollage, la fusée va de plus en plus vite."
    - question : Quelle phrase est juste ?
    - lu : 1957 : Spoutnik. 1961 : Gagarine. 1969 : des humains sur la Lune. Pendant le décollage, la fusée va de plus en plus vite.
-   - choix : Au XXe siècle, la fusée a un mouvement accéléré. · Au XIXe siècle, la fusée a un mouvement accéléré. · Au XXe siècle, la fusée a un mouvement uniforme.
-   - réponse : Au XXe siècle, la fusée a un mouvement accéléré.
+   - choix : Au XXe siècle (le vingtième), le mouvement est accéléré. · Au XIXe siècle (le dix-neuvième), le mouvement est accéléré. · Au XXe siècle (le vingtième), le mouvement est uniforme.
+   - réponse : Au XXe siècle (le vingtième), le mouvement est accéléré.
    - indice : D’abord : range les années avec le rappel. Puis : la vitesse augmente-t-elle ?
    - explication : 1957, 1961 et 1969 sont entre 1901 et 2000 : c’est le XXe siècle, le vingtième. Le XIXe siècle, le dix-neuvième, va de 1801 à 1900 : le siècle ne se lit pas dans les deux premiers chiffres. De plus en plus vite : la vitesse augmente, le mouvement est accéléré.
    - aide « Le siècle, et le mouvement accéléré » :
@@ -1136,18 +1136,18 @@
 5. énoncé : "1969 : des Américains marchent sur la Lune.\n1957 : les Soviétiques lancent le premier satellite."
    - question : Quelle phrase est juste ?
    - lu : 1969 : des Américains marchent sur la Lune. 1957 : les Soviétiques lancent le premier satellite.
-   - choix : Le satellite vient en premier ; la Lune aussi attire les astronautes. · Les pas sur la Lune viennent en premier ; la Lune aussi attire les astronautes. · Le satellite vient en premier ; sur la Lune, rien n’attire les astronautes.
-   - réponse : Le satellite vient en premier ; la Lune aussi attire les astronautes.
+   - choix : Le satellite d’abord ; la Lune attire aussi les astronautes. · Les pas sur la Lune d’abord ; la Lune attire aussi les astronautes. · Le satellite d’abord ; sur la Lune, rien n’attire les astronautes.
+   - réponse : Le satellite d’abord ; la Lune attire aussi les astronautes.
    - indice : D’abord : quelle année est la plus petite ? Puis : la Lune a-t-elle une masse ?
    - explication : 1957 vient avant 1969 : le satellite vient en premier, même s’il est écrit en second. La Lune a une masse : elle attire les astronautes, moins fort que la Terre ; c’est pour cela qu’ils retombent après un saut.
    - aide « Ordonner, et la gravitation » :
      - Pour ordonner, compare les années : la plus petite vient d’abord.
      - Gravitation : deux objets qui ont une masse s’attirent, la Lune aussi.
-6. énoncé : "26 novembre 1965 : la fusée française Diamant lance le satellite Astérix.\nLa France est le troisième pays à le faire, après l’Union soviétique et les États-Unis."
+6. énoncé : "26 novembre 1965 : la fusée française Diamant lance le satellite Astérix.\nAvant la France, seuls l’Union soviétique et les États-Unis l’ont fait."
    - question : Quelle phrase est juste ?
-   - lu : 26 novembre 1965 : la fusée française Diamant lance le satellite Astérix. La France est le troisième pays à le faire, après l’Union soviétique et les États-Unis.
-   - choix : La France est le troisième pays dans l’espace ; le poids de Diamant est vers le bas. · La France est le premier pays dans l’espace ; le poids de Diamant est vers le bas. · La France est le troisième pays dans l’espace ; le poids de Diamant est vers le haut.
-   - réponse : La France est le troisième pays dans l’espace ; le poids de Diamant est vers le bas.
+   - lu : 26 novembre 1965 : la fusée française Diamant lance le satellite Astérix. Avant la France, seuls l’Union soviétique et les États-Unis l’ont fait.
+   - choix : La France est troisième ; le poids de Diamant est vers le bas. · La France est première ; le poids de Diamant est vers le bas. · La France est troisième ; le poids de Diamant est vers le haut.
+   - réponse : La France est troisième ; le poids de Diamant est vers le bas.
    - indice : D’abord : combien de pays avant la France, dans le document ? Puis : vers où la Terre attire-t-elle la fusée ?
    - explication : Le document nomme deux pays avant la France : elle est la troisième. Le poids est l’attraction de la Terre, vers son centre : il tire la fusée vers le bas ; ce sont les moteurs qui la poussent vers le haut.
    - aide « Ordonner, et le poids » :
@@ -1166,8 +1166,8 @@
 8. énoncé : "24 juillet 1969 : la capsule d’Apollo 11 ramène les Américains de la Lune.\nDes parachutes la ralentissent avant l’océan."
    - question : Quelle phrase est juste ?
    - lu : 24 juillet 1969 : la capsule d’Apollo 11 ramène les Américains de la Lune. Des parachutes la ralentissent avant l’océan.
-   - choix : Les Américains rentrent ; la capsule ralentit, son énergie cinétique diminue. · Les Soviétiques rentrent ; la capsule ralentit, son énergie cinétique diminue. · Les Américains rentrent ; la capsule ralentit, son énergie cinétique augmente.
-   - réponse : Les Américains rentrent ; la capsule ralentit, son énergie cinétique diminue.
+   - choix : Les Américains rentrent ; l’énergie cinétique diminue. · Les Soviétiques rentrent ; l’énergie cinétique diminue. · Les Américains rentrent ; l’énergie cinétique augmente.
+   - réponse : Les Américains rentrent ; l’énergie cinétique diminue.
    - indice : D’abord : qui revient de la Lune, dans le document ? Puis : moins vite, plus ou moins d’énergie cinétique ?
    - explication : Le document dit que la capsule ramène les Américains. L’énergie cinétique est celle du mouvement : plus on va vite, plus elle est grande ; la capsule ralentit, elle diminue.
    - aide « Apollo 11, et l’énergie cinétique » :
@@ -1176,8 +1176,8 @@
 9. énoncé : "3 novembre 1957 : un satellite soviétique emporte la chienne Laïka.\nElle est attachée dans sa capsule, qui tourne autour de la Terre."
    - question : Quelle phrase est juste ?
    - lu : 3 novembre 1957 : un satellite soviétique emporte la chienne Laïka. Elle est attachée dans sa capsule, qui tourne autour de la Terre.
-   - choix : Dans ce satellite soviétique, Laïka est immobile par rapport à sa capsule. · Dans ce satellite américain, Laïka est immobile par rapport à sa capsule. · Dans ce satellite soviétique, Laïka est immobile par rapport à la Terre.
-   - réponse : Dans ce satellite soviétique, Laïka est immobile par rapport à sa capsule.
+   - choix : Satellite soviétique ; Laïka est immobile par rapport à sa capsule. · Satellite américain ; Laïka est immobile par rapport à sa capsule. · Satellite soviétique ; Laïka est immobile par rapport à la Terre.
+   - réponse : Satellite soviétique ; Laïka est immobile par rapport à sa capsule.
    - indice : D’abord : de quel pays est le satellite, dans le document ? Puis : Laïka bouge-t-elle dans sa capsule ? et autour de la Terre ?
    - explication : Le document dit que le satellite est soviétique. Attachée, Laïka ne bouge pas par rapport à sa capsule ; mais la capsule tourne autour de la Terre : par rapport à la Terre, Laïka est en mouvement.
    - aide « Le document, et le point de vue » :
@@ -1186,8 +1186,8 @@
 10. énoncé : "16 juin 1963 : la Soviétique Valentina Terechkova part dans l’espace.\nC’est la première femme dans l’espace."
     - question : Quelle phrase est juste ?
     - lu : 16 juin 1963 : la Soviétique Valentina Terechkova part dans l’espace. C’est la première femme dans l’espace.
-    - choix : Terechkova est soviétique ; le carburant de sa fusée stocke de l’énergie chimique. · Terechkova est américaine ; le carburant de sa fusée stocke de l’énergie chimique. · Terechkova est soviétique ; le carburant de sa fusée stocke de l’énergie lumineuse.
-    - réponse : Terechkova est soviétique ; le carburant de sa fusée stocke de l’énergie chimique.
+    - choix : Elle est soviétique ; le carburant stocke de l’énergie chimique. · Elle est américaine ; le carburant stocke de l’énergie chimique. · Elle est soviétique ; le carburant stocke de l’énergie lumineuse.
+    - réponse : Elle est soviétique ; le carburant stocke de l’énergie chimique.
     - indice : D’abord : de quel pays est Terechkova, dans le document ? Puis : un carburant qui brûle, quelle énergie libère-t-il ?
     - explication : Le document dit que Terechkova est soviétique. Le carburant stocke de l’énergie chimique : en brûlant, il la convertit en énergie cinétique et thermique ; l’énergie lumineuse, c’est celle de la lumière.
     - aide « Le document, et les formes d’énergie » :
@@ -1203,11 +1203,11 @@
     - aide « La guerre froide, et le mouvement uniforme » :
       - De 1947 à 1991 : la guerre froide.
       - Uniforme : la vitesse ne change pas ; accéléré : elle augmente.
-12. énoncé : "1998 : la Russie et les États-Unis commencent ensemble la Station spatiale internationale.\nElle tourne autour de la Terre, à 400 km (kilomètres) d’altitude."
+12. énoncé : "1998 : la Russie et les États-Unis bâtissent ensemble une station.\nC’est la Station spatiale internationale, à 400 km (kilomètres) d’altitude."
     - question : Quelle phrase est juste ?
-    - lu : 1998 : la Russie et les États-Unis commencent ensemble la Station spatiale internationale. Elle tourne autour de la Terre, à 400 kilomètres d’altitude.
-    - choix : Après la guerre froide, on coopère ; la Terre attire toujours la station. · Pendant la guerre froide, on coopère ; la Terre attire toujours la station. · Après la guerre froide, on coopère ; là-haut, la Terre n’attire plus la station.
-    - réponse : Après la guerre froide, on coopère ; la Terre attire toujours la station.
+    - lu : 1998 : la Russie et les États-Unis bâtissent ensemble une station. C’est la Station spatiale internationale, à 400 kilomètres d’altitude.
+    - choix : Après la guerre froide ; la Terre attire toujours la station. · Pendant la guerre froide ; la Terre attire toujours la station. · Après la guerre froide ; là-haut, la Terre n’attire plus la station.
+    - réponse : Après la guerre froide ; la Terre attire toujours la station.
     - indice : D’abord : 1998 est-il avant ou après 1991 ? Puis : la Terre attire-t-elle encore à 400 kilomètres ?
     - explication : La guerre froide finit en 1991 : en 1998, c’est après, et les deux anciens rivaux construisent ensemble. La Terre attire toujours la station : c’est cette attraction qui la fait tourner autour d’elle au lieu de partir en ligne droite.
     - aide « Après la guerre froide, et la gravitation » :

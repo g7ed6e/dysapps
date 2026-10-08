@@ -242,40 +242,42 @@ function temple(): PlanCell[] {
  */
 function portique(): PlanCell[] {
   const { cells, put, box } = drawer();
-  // Le quai (z0 et z1) : la dalle et deux voies de rails ; dessus, les chariots des jambes (roues d'engrenage, GD-2),
-  // des rails entre eux et les conteneurs au milieu, en un seul bloc.
-  box(0, 0, 0, 7, 7, 1, BLOC.ardoise);
-  for (const x of [1, 5]) for (let y = 0; y < 7; y++) put(x, y, 0, BLOC.rail);
-  for (const x of [1, 5]) for (const y of [2, 3, 4]) put(x, y, 1, y === 3 ? BLOC.rail : BLOC.engrenage);
-  box(2, 2, 1, 3, 3, 1, BLOC.conteneur);
+  // Le quai (z0 et z1), en retrait d'une case sur l'avant : la dalle et deux voies de rails ; dessus, les chariots des
+  // jambes (roues d'engrenage, GD-2), des rails entre eux et les conteneurs au milieu, en un seul bloc.
+  box(0, 1, 0, 7, 6, 1, BLOC.ardoise);
+  for (const x of [1, 5]) for (let y = 1; y < 7; y++) put(x, y, 0, BLOC.rail);
+  for (const x of [1, 5]) for (const y of [3, 4, 5]) put(x, y, 1, y === 4 ? BLOC.rail : BLOC.engrenage);
+  box(2, 3, 1, 3, 3, 1, BLOC.conteneur);
   // Les quatre jambes (z2 et z3).
-  for (const x of [1, 5]) for (const y of [2, 4]) for (let z = 2; z <= 3; z++) put(x, y, z, BLOC.acier);
-  // La poutre (z4), d'un bord à l'autre, et la flèche qui dépasse vers la mer (devant). Rien ne pend dessous.
-  box(0, 2, 4, 7, 3, 1, BLOC.acier);
-  put(3, 1, 4, BLOC.acier);
-  put(3, 0, 4, BLOC.acier);
+  for (const x of [1, 5]) for (const y of [3, 5]) for (let z = 2; z <= 3; z++) put(x, y, z, BLOC.acier);
+  // La poutre (z4), d'un bord à l'autre, et la flèche qui dépasse du quai d'une case, vers la mer (devant). Rien ne
+  // pend dessous.
+  box(0, 3, 4, 7, 3, 1, BLOC.acier);
+  for (const y of [0, 1, 2]) put(3, y, 4, BLOC.acier);
   // La cabine (z5 et z6) : des vitres de calque devant et sur les côtés, le siège de velours, un toit d'acier ; le
   // treuil derrière elle, un engrenage (GD-2).
-  for (const x of [2, 3, 4]) put(x, 2, 5, BLOC.calque);
-  put(2, 3, 5, BLOC.calque);
-  put(3, 3, 5, BLOC.velours);
-  put(4, 3, 5, BLOC.calque);
-  box(2, 2, 6, 3, 2, 1, BLOC.acier);
-  put(3, 4, 5, BLOC.engrenage);
+  for (const x of [2, 3, 4]) put(x, 3, 5, BLOC.calque);
+  put(2, 4, 5, BLOC.calque);
+  put(3, 4, 5, BLOC.velours);
+  put(4, 4, 5, BLOC.calque);
+  box(2, 3, 6, 3, 2, 1, BLOC.acier);
+  put(3, 5, 5, BLOC.engrenage);
   return cells;
 }
 
 /**
- * La tour des signaux : un pied d'ardoise de 7 × 7, un treillis de 5 × 5 en damier d'acier et de liège, un fût d'acier
- * de 3 × 3 cerclé d'engrenages, une tête en croix et sa couronne de bobines. Dessinée en masses pleines, pour peu de
- * faces (le pire cas du 4e, world/budget.ts).
+ * La tour des signaux : un pied d'ardoise de 7 × 7, un treillis de 5 × 5 (du liège entre quatre montants d'acier), un
+ * fût d'acier de 3 × 3 cerclé d'engrenages, une tête en croix et sa couronne de bobines. Dessinée en masses pleines,
+ * pour peu de faces (le pire cas du 4e, world/budget.ts).
  */
 function tourSignaux(): PlanCell[] {
   const { cells, put, box } = drawer();
   // Le pied (z0) : une dalle d'ardoise (la fonte, autre gris sombre, ne la touche jamais : HG-3, DA).
   box(0, 0, 0, 7, 7, 1, BLOC.ardoise);
-  // Le treillis (z1 et z2) : un damier d'acier et de liège.
-  for (let x = 1; x <= 5; x++) for (let y = 1; y <= 5; y++) for (let z = 1; z <= 2; z++) put(x, y, z, (x + y + z) % 2 === 0 ? BLOC.acier : BLOC.liege);
+  // Le treillis (z1 et z2) : quatre montants d'acier aux coins, un remplissage de liège plein (pas de damier : un motif
+  // à fort contraste, DA).
+  box(1, 1, 1, 5, 5, 2, BLOC.liege);
+  for (const x of [1, 5]) for (const y of [1, 5]) for (let z = 1; z <= 2; z++) put(x, y, z, BLOC.acier);
   // Le fût (z3 à z5) : plein, cerclé d'engrenages à mi-hauteur (GD-2).
   box(2, 2, 3, 3, 3, 3, BLOC.acier);
   for (const [x, y] of [
@@ -519,7 +521,7 @@ const FICHES: Fiche[] = [
     biome: 'physics-chemistry-4e-signals-circuits',
     archipelago: '4e',
     name: 'La tour des signaux',
-    description: 'Un pylône en treillis d’acier, large en bas et fin en haut, dont les bobines envoient des messages d’une île à l’autre.',
+    description: 'Un pylône d’acier et de liège, large en bas et fin en haut, dont les bobines envoient des messages d’une île à l’autre.',
     islet: { x: 21, y: 711 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
     reward: { xp: 210, chest: {} },
     done: 'La tour des signaux est finie. Ses bobines s’allument : les messages passent d’une île à l’autre.',
@@ -556,7 +558,7 @@ const FICHES: Fiche[] = [
     archipelago: '3e',
     name: 'La colonne des solides',
     description: 'Un cube, un cylindre et un tronc de pyramide posés l’un sur l’autre, et tout en haut une sphère à la ceinture de lumière.',
-    islet: { x: 11, y: 916 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
+    islet: { x: 12, y: 916 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
     reward: { xp: 240, chest: {} },
     done: 'La colonne des solides est montée. La ceinture de la sphère s’allume tout en haut.',
     draw: colonneSolides,

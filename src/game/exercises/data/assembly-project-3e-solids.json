@@ -434,7 +434,7 @@
       "choices": [
         "« Ce lourd bloc » reprend le cylindre : le pied est à 3 mètres.",
         "« Ce lourd bloc » parle d’un autre bloc : le pied est à 3 mètres.",
-        "« Ce lourd bloc » reprend le cylindre : le pied est à 1 mètres."
+        "« Ce lourd bloc » reprend le cylindre : le pied est à 1 mètre."
       ],
       "answer": "« Ce lourd bloc » reprend le cylindre : le pied est à 3 mètres.",
       "hint": "D’abord : 4 et 5, c’est quel triangle connu ? Puis : « ce lourd bloc », de quoi a-t-on déjà parlé ?",

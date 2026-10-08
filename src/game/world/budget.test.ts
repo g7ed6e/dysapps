@@ -209,8 +209,8 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
     });
 });
 
-it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026), puis 120 avec une seule texture pour les blocs (piste 2, 7 octobre 2026)', () => {
-  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 100_000, drawCalls: 120 });
+it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026), puis 120 avec une seule texture pour les blocs (piste 2, 7 octobre 2026), puis 102 000 triangles pour les grands projets du 4e (GD-10, 8 octobre 2026)', () => {
+  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 102_000, drawCalls: 120 });
 });
 
 /**

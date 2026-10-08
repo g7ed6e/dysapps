@@ -465,7 +465,7 @@ export const ORIGINE_DES_MONUMENTS: Record<string, { x: number; y: number; z: nu
   'landmark-4e-4': { x: 24, y: 8, z: 0 },
   'landmark-3e-3': { x: -22, y: 20, z: 0 },
   'landmark-3e-4': { x: 28, y: -7, z: 0 },
-  'landmark-3e-5': { x: -6, y: -15, z: 0 },
+  'landmark-3e-5': { x: -5, y: -15, z: 0 },
 };
 
 /** Le coin d'un plan en coordonnées relatives à l'île (x, y, et z relatif au sol : 0 = premier bloc sur le sol). */

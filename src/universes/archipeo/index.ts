@@ -530,6 +530,16 @@ export const ARCHIPEO = {
       description: 'Une haute tour ronde de pierre grise, percée de hublots, dont le feu guide les navires dans la brume.',
       done: 'Le phare du large s’allume ! Plus aucun navire ne se perd dans la brume.',
     },
+    // Les grands projets de 4e et de 3e (GD-10, 8 octobre 2026) : textes proposés par le consultant d'Archipéo.
+    'landmark-4e-3': {
+      done: 'Le portique des docks est debout. La cabine s’allume : les navires chargent pour toutes les îles.',
+    },
+    'landmark-3e-3': {
+      description: 'Une fusée de marbre sur son pas de tir, avec ses ailerons, son second étage à hublots et sa coiffe pointée vers les étoiles que guettent les Îles du Ciel.',
+    },
+    'landmark-3e-4': {
+      done: 'Le château d’eau est plein. Sa couronne de lanternons s’allume au-dessus des nuages, et toute l’île a de l’eau.',
+    },
   },
   // Les commandes des habitants (GD-7), depuis la décision du 4 octobre 2026 (le gameplay de Blocland appliqué à
   // Archipéo) : l'habitant demande des blocs « pour bâtir chez lui ». Textes validés par le consultant d'Archipéo.
