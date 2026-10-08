@@ -26,7 +26,8 @@ export function worldBounds(a: ArchipelagoId): {
 
 /**
  * La mer gardée devant chaque île (côté caméra), en cases : celle que prenait l'îlot de son Gardien et son eau jusqu'à
- * GD-11 (8 octobre 2026). Le Gardien parti sur son île, le cadrage de la région, de sa Carte et de sa mer reste le même.
+ * GD-11 (8 octobre 2026). Le Gardien parti sur son île, la mer de la région reste semée de même (`bornesDeDepart`) ; la
+ * Carte, elle, ne la cadre plus (`bornesDesLieux`, `terresDe`).
  */
 const MER_DEVANT = 15;
 
@@ -38,13 +39,31 @@ export function bornesDeDepart(a: ArchipelagoId): { minX: number; maxX: number; 
   return bornesDesIles(a, MAP.filter((d) => archipelagoOfIsland(d.id) === a).map((d) => startingIsland(d.id)));
 }
 
-/** L'étendue des lieux d'une région à leur place d'aujourd'hui (déplacés ou non, GD-9), port compris. */
+/**
+ * L'étendue des lieux d'une région à leur place d'aujourd'hui (déplacés ou non, GD-9), port compris, sans la mer gardée
+ * devant eux : ce que la Carte cadre à l'ouverture (three/camera/framings.ts).
+ */
 export function bornesDesLieux(a: ArchipelagoId): { minX: number; maxX: number; minY: number; maxY: number } {
-  return bornesDesIles(a, mapOf(a));
+  return bornesDesIles(a, mapOf(a), 2);
 }
 
-/** Les bornes de quelques îles d'un archipel, et de son port (la colonne centrale, `colonneCentrale`). */
-function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[]): { minX: number; maxX: number; minY: number; maxY: number } {
+type Bornes = { minX: number; maxX: number; minY: number; maxY: number };
+
+/**
+ * Les terres des lieux d'une région à leur place d'aujourd'hui, une à une, et le quai de son port, chacune avec deux
+ * cases de marge (la couronne d'un grand arbre, l'écume d'une cascade débordent de la terre). La Carte les cadre à
+ * l'ouverture (three/camera/framings.ts) : vue de biais, une île au fond prend moins de place qu'un coin du rectangle
+ * qui les entoure toutes (GD-11, consultant UX UI).
+ */
+export function terresDe(a: ArchipelagoId): Bornes[] {
+  return [...mapOf(a).map((def) => landBox(def)), dockBox(getArchipelago(a).port)].map((b) => ({ minX: b.x0 - 2, maxX: b.x1 + 2, minY: b.y0 - 2, maxY: b.y1 + 2 }));
+}
+
+/**
+ * Les bornes de quelques îles d'un archipel, et de son port (la colonne centrale, `colonneCentrale`) ; `devant` : la mer
+ * gardée devant chaque île, côté caméra (`MER_DEVANT` par défaut).
+ */
+function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[], devant = MER_DEVANT): Bornes {
   let minX = Infinity;
   let maxX = -Infinity;
   let minY = Infinity;
@@ -54,7 +73,7 @@ function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[]): { minX: nu
     // Deux cases de marge : la couronne d'un grand arbre, l'écume d'une cascade débordent de la terre.
     minX = Math.min(minX, b.x0 - 2);
     maxX = Math.max(maxX, b.x1 + 2);
-    minY = Math.min(minY, b.y0 - MER_DEVANT);
+    minY = Math.min(minY, b.y0 - devant);
     maxY = Math.max(maxY, b.y1 + 2);
   }
   const dock = dockBox(getArchipelago(a).port);

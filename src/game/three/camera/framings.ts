@@ -1,7 +1,7 @@
 // Les cadrages de la caméra : les vues (île, suivi, Carte, voyage), le cadrage de la Carte selon la place libre et la
 // destination, celui de la traversée, et le décalage qui vise un point au-dessus du sol.
 import * as THREE from 'three';
-import { bornesDesLieux, type CadreDeCases, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, islandCenter, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
+import { bornesDesLieux, type CadreDeCases, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, islandCenter, terresDe, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
 import type { PlaceLue, Rect } from '../../freeSpace';
 import type { BiomeId } from '../../biomes';
 import type { ArchipelagoId } from '../../world/archipelago';
@@ -97,8 +97,14 @@ export const cleDeLaDestination = (d: DestinationDeLaCarte): string => (d === nu
 /**
  * Le cadrage de la Carte dans la place libre `libre` d'une vue `w` × `h` (pixels CSS) : la caméra recule assez pour que
  * l'archipel entier y tienne, avec la destination, sa flèche et son nom, jusqu'au plancher (`PLANCHER_DE_LA_CARTE`).
- * Au-delà, elle reste au plancher et la destination se pose au centre de la place libre : le bord de l'archipel sort.
- * `echelle` : les pixels par case au centre visé ; `auPlancher` : l'archipel ne tient pas entier.
+ * L'archipel entier, ce sont les terres des lieux d'aujourd'hui, une à une, et le quai du port (`terresDe`), sans la mer
+ * autour (GD-11, consultant UX UI : avec les îles agrandies, des noms se taisaient ; vue de biais, les terres tiennent un
+ * peu plus près que le rectangle du cadre, de 2 à 7 % sur la tablette) ; avec `region`, le mode « Modifier le plan », le
+ * cadre entier de la région, où se voient ses places libres. Au-delà, elle reste au plancher et la destination se pose au centre de la place
+ * libre : le bord de l'archipel sort. L'île du `bonhomme`, si elle sort alors de la place, y entre avec la destination,
+ * la Carte glissée juste ce qu'il faut, si les deux y tiennent (chacune avec `AUTOUR_DE_LA_DESTINATION`) ; sinon, son nom
+ * glisse au bord de l'écran, sous le médaillon (world/labelLayout.ts). `echelle` : les pixels par case au centre visé ;
+ * `auPlancher` : l'archipel ne tient pas entier.
  */
 export function cadrageDeLaCarte(
   archipel: ArchipelagoId,
@@ -106,18 +112,24 @@ export function cadrageDeLaCarte(
   w: number,
   h: number,
   libre: Rect,
+  { bonhomme = null, region = false }: { bonhomme?: BiomeId | null; region?: boolean } = {},
 ): { target: THREE.Vector3; pos: THREE.Vector3; echelle: number; auPlancher: boolean } {
   const u = new THREE.Vector3(MAP_VIEW.dx, MAP_VIEW.up, MAP_VIEW.dy).normalize();
   const tan = Math.tan((MAP_FOV / 2) * (Math.PI / 180));
   const cam = new THREE.PerspectiveCamera(MAP_FOV, w / h, 0.5, 1e5);
-  // L'étendue de l'archipel (terres, îlots et port, world/terrain.ts), à l'altitude de ses îles.
+  // L'étendue de l'archipel (les terres et le port, ou le cadre de la région ; world/terrain.ts), à l'altitude de ses îles.
   const altitude = mapOf(archipel)[0]?.altitude ?? 0;
-  const e = worldBounds(archipel);
-  const terres = [e.minX, e.maxX].flatMap((x) => [e.minY, e.maxY].map((y) => new THREE.Vector3(x, altitude, y)));
+  const e = region ? worldBounds(archipel) : bornesDesLieux(archipel);
+  const coins = (b: { minX: number; maxX: number; minY: number; maxY: number }) => [b.minX, b.maxX].flatMap((x) => [b.minY, b.maxY].map((y) => new THREE.Vector3(x, altitude, y)));
+  const terres = region ? coins(e) : terresDe(archipel).flatMap(coins);
   // La pointe de la flèche se pose au centre de l'île (three/labels.ts), ou sur le point donné (un ouvrage).
   const c = typeof destination === 'string' ? islandCenter(destination) : null;
   const point = typeof destination === 'string' ? null : destination;
   const dest = c ? new THREE.Vector3(c.x + 0.5, c.z, c.y + 0.5) : point ? new THREE.Vector3(point.x, point.z, point.y) : null;
+  // L'île du bonhomme, au plancher, se cadre avec la destination quand elle sort de la place (`avecLeBonhomme`).
+  const b = bonhomme && bonhomme !== destination ? islandCenter(bonhomme) : null;
+  const ileDuBonhomme = b ? new THREE.Vector3(b.x + 0.5, b.z, b.y + 0.5) : null;
+  let avecLeBonhomme = false;
   const sol = dest?.y ?? altitude;
   const v = new THREE.Vector3();
   const target = new THREE.Vector3();
@@ -145,8 +157,9 @@ export function cadrageDeLaCarte(
         const q = ecran(p);
         ajouter(q.x, q.y);
       }
-    if (dest) {
-      const q = ecran(dest);
+    for (const p of [dest, avecLeBonhomme ? ileDuBonhomme : null]) {
+      if (!p) continue;
+      const q = ecran(p);
       ajouter(q.x - A.cote, q.y - A.haut);
       ajouter(q.x + A.cote, q.y + A.bas);
     }
@@ -243,11 +256,32 @@ export function cadrageDeLaCarte(
     }
   };
   glisser();
+  if (!tout && ileDuBonhomme) {
+    // Au plancher, l'île du bonhomme hors de la place (avec ce qui l'entoure, comme la destination) y entre, la Carte
+    // glissée juste ce qu'il faut, si les deux tiennent ensemble : son nom ne sort plus de l'écran (référent dys,
+    // consultant UX UI, GD-11). Sinon, la destination reste seule au centre.
+    placer(d);
+    avecLeBonhomme = true;
+    const r = cadre(false);
+    const M = MARGE_DE_LA_CARTE;
+    const pousser = (a0: number, a1: number, b0: number, b1: number) => (a0 < b0 ? b0 - a0 : a1 > b1 ? b1 - a1 : 0);
+    const ex = pousser(r.x0, r.x1, libre.x0 + M, libre.x1 - M);
+    const ey = pousser(r.y0, r.y1, libre.y0 + M, libre.y1 - M);
+    v.copy(ileDuBonhomme).project(cam);
+    const q = { x: ((v.x + 1) / 2) * w, y: ((1 - v.y) / 2) * h };
+    const horsDeLaPlace = q.x < libre.x0 || q.x > libre.x1 || q.y < libre.y0 || q.y > libre.y1;
+    avecLeBonhomme = horsDeLaPlace && (ex !== 0 || ey !== 0) && r.x1 - r.x0 <= lw && r.y1 - r.y0 <= lh;
+    if (avecLeBonhomme) {
+      vise.x = (r.x0 + r.x1) / 2 + ex;
+      vise.y = (r.y0 + r.y1) / 2 + ey;
+      glisser();
+    }
+  }
   if (!auPlancher && r0.y1 - r0.y0 <= lh) {
     // Les lieux occupent rarement tout le cadre de leur région : au 5e et au 4e, ils sont au nord, et le sud du cadre
     // laissait 250 px de mer vide sous eux sur la tablette, leurs noms à 5 px du haut (UX UI, HG-3). Les lieux et leurs
-    // noms glissent au milieu de la place, haut et bas à égalité, tant que le cadre, la destination et ce qui l'entoure
-    // restent dedans (GD-9 : on aménage partout dans la région, la vue d'ensemble la montre toute).
+    // noms glissent au milieu de la place, haut et bas à égalité, tant que les terres (ou dans « Modifier le plan » le
+    // cadre entier, GD-9), la destination et ce qui l'entoure restent dedans.
     placer(d);
     const r = cadre(true);
     const l = lieux();

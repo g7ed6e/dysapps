@@ -146,7 +146,9 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
   // première pour le cadrage (`markers.ts`).
   const places = typeof destination === 'string' ? [] : dispositionEnGrille(a, POSEES).placesDeLaFleche(destination.ouvrage, destination.depuis).map((m) => ({ x: m.x + 0.5, y: m.y + 0.5, z: m.z + 2 }));
   const ici = places[0] ?? null;
-  const c = cadrageDeLaCarte(a, ici ?? (destination as BiomeId), W, H, placeLibre(W, H, bas, cote));
+  // Le cadrage de la Carte hors du mode « Aménager » : les lieux d'aujourd'hui, et au plancher l'île du bonhomme avec la
+  // destination quand elle sort de la place (`cadrageDeLaCarte`).
+  const c = cadrageDeLaCarte(a, ici ?? (destination as BiomeId), W, H, placeLibre(W, H, bas, cote), { bonhomme: bonhommeSur });
   const cam = new THREE.PerspectiveCamera(40, W / H, 0.5, 1e5);
   cam.position.copy(c.pos);
   cam.lookAt(c.target);
@@ -255,13 +257,12 @@ const ETATS = { blocland: 'Bâtie', archipeo: 'Restaurée' };
  * bonhomme ; aucun nom coupé par le bord (UX UI, SC-3). Limite connue (HG-3, SC-3), au pilotage.
  */
 const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
-  '5e:french-5e-conjugation': ['english-5e-grammar'],
-  '5e:technology-5e-design': ['geography-5e-resources'],
+  // Mesurés de nouveau depuis que la Carte cadre les lieux d'aujourd'hui et, au plancher, l'île du bonhomme hors de la
+  // place avec la destination (GD-11, consultant UX UI) : six Cartes avant, quatre depuis.
   '5e:lv2-5e-introductions': ['geography-5e-resources'],
-  // Depuis que les îles ont grandi et que l'archipel suit une grille régulière (GD-11), mesurés de nouveau.
-  '4e:maths-4e-powers': ['french-4e-vocabulary'],
+  '4e:maths-4e-powers': ['geography-4e-globalization'],
   '4e:english-4e-comprehension': ['french-4e-vocabulary'],
-  '3e:geography-3e-france': ['technology-3e-digital'],
+  '3e:english-3e-grammar': ['lv2-3e-travel'],
 };
 
 /**
@@ -273,8 +274,9 @@ const TUS_EN_PORTRAIT_AU_VERGER: string[] = [];
 
 /**
  * Au 3e, sur la tablette en OpenDyslexic 32 px, le bonhomme sur le Verger de la santé : les noms qui se taisent. Un seul
- * avant GD-11 ; trois depuis que les îles ont grandi (la Géométrie, l'Observatoire des textes, le Kiosque des témoins).
- * Régression connue de GD-11, au pilotage, à revoir par le référent dys et le consultant UX UI.
+ * avant GD-11 ; trois depuis que les îles ont grandi (la Géométrie, l'Observatoire des textes, le Kiosque des témoins),
+ * encore trois depuis que la Carte cadre les lieux d'aujourd'hui : le Verger et le Kiosque sont en haut à droite, sous la
+ * colonne des classes, qui prend la place de leurs noms. Régression connue de GD-11, au pilotage.
  */
 const TUS_EN_OD32_AU_VERGER = ['maths-3e-geometry', 'french-3e-close-reading', 'history-3e-twentieth-century'];
 
@@ -285,30 +287,20 @@ const TUS_EN_OD32_AU_VERGER = ['maths-3e-geometry', 'french-3e-close-reading', '
  * île, sous le médaillon.
  */
 const TUS_EN_OD32: Record<string, string[]> = {
-  // Quatre noms depuis GD-11 (les îles plus grandes serrent la Carte du 6e) : un de plus que la limite du référent dys
-  // (`TUS_EN_OD32_MAX`). Régression connue, au pilotage, à revoir par le référent dys et le consultant UX UI.
-  'history-6e-antiquity': ['french-6e-word-spelling', 'english-6e-grammar', 'geography-6e-living', 'life-earth-sciences-6e-living-world'],
-  'french-6e-phonology': ['geography-6e-living'],
+  // Quatre noms depuis GD-11 (les îles plus grandes serrent la Carte du 6e), trois depuis que la Carte cadre les lieux
+  // d'aujourd'hui (consultant UX UI) : trois sur main avant GD-11.
+  'history-6e-antiquity': ['french-6e-letter-confusion', 'english-6e-grammar', 'life-earth-sciences-6e-living-world'],
+  'french-6e-phonology': ['life-earth-sciences-6e-living-world'],
 };
-
-/** Trois noms tus au plus en OpenDyslexic 32 px (référent dys) ; quatre, le bonhomme sur la Fouille, depuis GD-11 (régression connue). */
-const TUS_EN_OD32_MAX: Record<string, number> = { 'history-6e-antiquity': 4, 'french-6e-phonology': 3 };
 
 /**
  * La tablette, panneau ouvert, selon la destination : les noms qui se taisent depuis les îles de sciences (SC-3, mesurés).
  * Trois îles de plus par classe, posées sur les seules places libres hors de la colonne de la caméra : la recherche des
- * places (cœurs de `map.ts`) laisse un nom tu par classe, une seule destination chacune, jamais celui de la destination.
- * Limite connue, à revoir par le référent dys et le consultant UX UI.
+ * places (cœurs de `map.ts`) laissait un nom tu par classe, une seule destination chacune, jamais celui de la destination.
  */
 const TUS_VERS_UNE_DESTINATION: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
-  // Mesurés de nouveau depuis la grille de GD-11 : trois destinations au 5e, une au 4e et au 3e.
-  '5e': {
-    'geography-5e-resources': ['history-5e-middle-ages'],
-    'technology-5e-design': ['french-5e-homophones'],
-    'lv2-5e-introductions': ['physics-chemistry-5e-matter-universe'],
-  },
-  '4e': { 'life-earth-sciences-4e-cells-evolution': ['history-4e-revolutions'] },
-  '3e': { 'life-earth-sciences-3e-human-body': ['maths-3e-functions'] },
+  // Depuis que la Carte cadre les lieux d'aujourd'hui et, au plancher, l'île du bonhomme avec la destination (GD-11,
+  // consultant UX UI) : aucun (cinq destinations en taisaient un depuis la grille de GD-11, trois sur main).
 };
 
 /**
@@ -316,37 +308,17 @@ const TUS_VERS_UNE_DESTINATION: Partial<Record<ArchipelagoId, Record<string, str
  * jamais celui de l'île de départ. Même limite que `TUS_VERS_UNE_DESTINATION`.
  */
 const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
-  // Mesurés de nouveau depuis la grille de GD-11 (les liaisons ont changé avec les places).
-  '5e': {
-    'english-5e-grammar-life-earth-sciences-5e-active-planet depuis life-earth-sciences-5e-active-planet': ['english-5e-vocabulary'],
-    'history-5e-middle-ages-physics-chemistry-5e-matter-universe depuis physics-chemistry-5e-matter-universe': ['maths-5e-proportionality', 'english-5e-vocabulary'],
-  },
-  '4e': {
-    'maths-4e-powers-life-earth-sciences-4e-cells-evolution depuis maths-4e-powers': ['maths-4e-algebra'],
-    'french-4e-vocabulary-english-4e-comprehension depuis french-4e-vocabulary': ['french-4e-agreement'],
-    'french-4e-vocabulary-technology-4e-modeling depuis technology-4e-modeling': ['french-4e-agreement'],
-    'history-4e-revolutions-geography-4e-globalization depuis geography-4e-globalization': ['life-earth-sciences-4e-cells-evolution'],
-    'history-4e-revolutions-physics-chemistry-4e-signals-circuits depuis history-4e-revolutions': ['maths-4e-powers'],
-  },
-  '3e': {
-    'maths-3e-statistics-english-3e-grammar depuis maths-3e-statistics': ['french-3e-close-reading'],
-    'maths-3e-statistics-english-3e-grammar depuis english-3e-grammar': ['french-3e-close-reading'],
-    'history-3e-twentieth-century-life-earth-sciences-3e-human-body depuis history-3e-twentieth-century': ['english-3e-grammar'],
-    'history-3e-twentieth-century-life-earth-sciences-3e-human-body depuis life-earth-sciences-3e-human-body': ['english-3e-grammar'],
-    'geography-3e-france-physics-chemistry-3e-motion-energy depuis physics-chemistry-3e-motion-energy': ['french-3e-close-reading', 'life-earth-sciences-3e-human-body'],
-  },
+  // Mesurés de nouveau depuis que la Carte cadre les lieux d'aujourd'hui (GD-11, consultant UX UI) : deux ouvrages taisent
+  // un nom (douze avant, cinq sur main).
+  '5e': { 'english-5e-grammar-life-earth-sciences-5e-active-planet depuis life-earth-sciences-5e-active-planet': ['technology-5e-design'] },
+  '3e': { 'geography-3e-france-technology-3e-digital depuis geography-3e-france': ['technology-3e-digital'] },
 };
 
 /**
- * Les mêmes, dans Archipéo, là où ils diffèrent (« Restaurée » est plus large que « Bâtie », UX UI, SC-3) :
- * depuis GD-11, deux ponts du 5e y taisent un nom de plus que dans Blocland.
+ * Les mêmes, dans Archipéo, là où ils diffèrent (« Restaurée » est plus large que « Bâtie », UX UI, SC-3) : aucun depuis
+ * que la Carte cadre les lieux d'aujourd'hui (deux ponts du 5e y taisaient un nom de plus depuis GD-11).
  */
-const TUS_SUR_UN_OUVRAGE_DANS_ARCHIPEO: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
-  '5e': {
-    'french-5e-homophones-french-5e-conjugation depuis french-5e-conjugation': ['english-5e-vocabulary'],
-    'french-5e-conjugation-english-5e-grammar depuis english-5e-grammar': ['maths-5e-proportionality'],
-  },
-};
+const TUS_SUR_UN_OUVRAGE_DANS_ARCHIPEO: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {};
 
 /**
  * La tablette à l'ouverture de la Carte, en OpenDyslexic, le bonhomme sur la destination (il y est arrivé) : les noms
@@ -358,29 +330,23 @@ const TUS_SUR_UN_OUVRAGE_DANS_ARCHIPEO: Partial<Record<ArchipelagoId, Record<str
  * Château (map.ts). Huit destinations sur douze y taisent un à trois autres noms.
  */
 const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
-  // Mesurés de nouveau depuis la grille de GD-11.
-  '5e': {
-    'french-5e-conjugation': ['life-earth-sciences-5e-active-planet'],
-    'blocland:english-5e-vocabulary': ['history-5e-middle-ages'],
-    'archipeo:english-5e-vocabulary': ['history-5e-middle-ages', 'geography-5e-resources'],
-    'blocland:english-5e-grammar': ['life-earth-sciences-5e-active-planet'],
-    'geography-5e-resources': ['history-5e-middle-ages'],
-  },
+  // Mesurés de nouveau depuis que la Carte cadre les lieux d'aujourd'hui (GD-11, consultant UX UI) : aucun au 5e, trois
+  // destinations au 4e, neuf au 3e (seize destinations avant dans Blocland, treize sur main).
   '4e': {
     'french-4e-agreement': ['lv2-4e-daily-life'],
-    'french-4e-vocabulary': ['technology-4e-modeling'],
     'english-4e-comprehension': ['french-4e-vocabulary'],
-    'history-4e-revolutions': ['physics-chemistry-4e-signals-circuits'],
     'geography-4e-globalization': ['history-4e-revolutions'],
   },
   '3e': {
-    'maths-3e-geometry': ['french-3e-close-reading', 'history-3e-twentieth-century'],
+    'maths-3e-geometry': ['history-3e-twentieth-century', 'physics-chemistry-3e-motion-energy'],
     'maths-3e-statistics': ['french-3e-close-reading', 'geography-3e-france', 'technology-3e-digital'],
-    'english-3e-grammar': ['maths-3e-statistics', 'technology-3e-digital'],
+    'english-3e-comprehension': ['maths-3e-statistics', 'history-3e-twentieth-century'],
+    'english-3e-grammar': ['maths-3e-statistics'],
     'geography-3e-france': ['physics-chemistry-3e-motion-energy'],
     'life-earth-sciences-3e-human-body': ['history-3e-twentieth-century'],
-    'technology-3e-digital': ['physics-chemistry-3e-motion-energy'],
-    'lv2-3e-travel': ['english-3e-grammar'],
+    'physics-chemistry-3e-motion-energy': ['french-3e-close-reading'],
+    'technology-3e-digital': ['french-3e-close-reading'],
+    'lv2-3e-travel': ['history-3e-twentieth-century'],
   },
 };
 
@@ -392,27 +358,26 @@ const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string,
  * `cadrageDeLaCarte`). Le même nombre avant la règle du médaillon (preview, 161ded36) et après.
  */
 const TUS_AU_TELEPHONE: Record<string, string[]> = {
-  // Depuis GD-11, les îles plus grandes serrent la Carte du 6e sur le téléphone : trois ou quatre noms se taisent, et,
-  // le bonhomme sur la Fouille des siècles, au bord gauche de l'écran, son propre nom n'a plus de place
-  // (`BONHOMME_TU_AU_TELEPHONE`). Régression connue, au pilotage, à revoir par le référent dys et le consultant UX UI.
-  'history-6e-antiquity': ['french-6e-grammar-spelling', 'maths-6e-decimals', 'history-6e-antiquity'],
+  // Depuis GD-11, les îles plus grandes serrent la Carte du 6e sur le téléphone : trois ou quatre noms se taisent (un
+  // avant). Le bonhomme sur la Fouille des siècles, au bord gauche de l'écran, la Fouille et la destination ne tiennent
+  // pas ensemble dans la place (`cadrageDeLaCarte`) : son nom glisse au bord de l'écran, sous le médaillon
+  // (`showAtAllCosts`), et l'Horloge des verbes se tait à sa place. Régression connue, au pilotage.
+  'history-6e-antiquity': ['french-6e-grammar-spelling', 'maths-6e-decimals', 'english-6e-grammar'],
   'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-grammar-spelling', 'maths-6e-decimals', 'history-6e-antiquity'],
 };
 
 /** Les noms montrés sur le téléphone, selon l'île du bonhomme (sept avant GD-11). */
 const NOMS_MONTRES_AU_TELEPHONE: Record<string, number> = { 'history-6e-antiquity': 6, 'french-6e-phonology': 5 };
 
-/** Les îles du bonhomme dont le nom se tait sur le téléphone (aucune avant GD-11) : régression connue, au pilotage. */
-const BONHOMME_TU_AU_TELEPHONE: readonly string[] = ['history-6e-antiquity'];
-
 /**
  * À l'ouverture de la Carte, sans panneau, en OpenDyslexic (taille normale, puis 10 % plus large), les noms qui se
- * taisent parmi ceux que le test exige (tous à ×1, ceux d'histoire-géographie à ×1,1) : aucun avant GD-11. Régression
- * connue, au pilotage, à revoir par le référent dys et le consultant UX UI.
+ * taisent parmi ceux que le test exige (tous à ×1, ceux d'histoire-géographie à ×1,1) : aucun avant GD-11. Depuis que la
+ * Carte cadre les lieux d'aujourd'hui, plus aucun au 4e ; au 3e, le Kiosque des témoins, en haut à droite sous la colonne
+ * des classes, n'a pas de place. Régression connue, au pilotage.
  */
 const TUS_EN_OD_A_L_OUVERTURE: Partial<Record<string, string[]>> = {
-  '4e:1.1': ['history-4e-revolutions'],
-  '3e:1': ['maths-3e-geometry'],
+  '3e:1': ['history-3e-twentieth-century'],
+  '3e:1.1': ['history-3e-twentieth-century'],
 };
 
 /** La destination que le jeu donne au village tout construit, le bonhomme sur l'île `ici` (`nextDestination`). */
@@ -469,7 +434,7 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
         expect(carte.tus, dit('la destination')).not.toContain(typeof destination === 'string' ? destination : destination.depuis);
         expect(carte.tus, dit('le bonhomme')).not.toContain(ici);
         expect(carte.tus, dit('les noms tus')).toEqual(TUS_EN_OD32[ici]);
-        expect(carte.tus.length, dit('les noms tus')).toBeLessThanOrEqual(TUS_EN_OD32_MAX[ici]);
+        expect(carte.tus.length, dit('les noms tus')).toBeLessThanOrEqual(3);
       }
     }
   }, 20_000);
@@ -483,7 +448,7 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
         expect(carte.tus, dit('les noms tus')).toEqual(TUS_AU_TELEPHONE[ici]);
         expect(carte.vues, dit('les noms montrés')).toHaveLength(NOMS_MONTRES_AU_TELEPHONE[ici]);
         expect(carte.tus, dit('la destination')).not.toContain(typeof destination === 'string' ? destination : destination.depuis);
-        if (!BONHOMME_TU_AU_TELEPHONE.includes(ici)) expect(carte.tus, dit('le bonhomme')).not.toContain(ici);
+        expect(carte.tus, dit('le bonhomme')).not.toContain(ici);
         for (const m of carte.montrees) for (const z of [...TELEPHONE.zones, carte.fanion]) expect(couvre(m, z), dit(m.id)).toBe(false);
       }
     }
@@ -560,11 +525,12 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       // la recherche complète se lance dès la police de lecture et les remet sur leur île (270 essais, 3 570 places
       // vérifiées). Le DA lève alors sa règle « au 6e, chaque nom garde la place d'avant HG-3 » (les îles ont bougé) : au
       // 6e, chaque nom sur son île et aucun tu, comme ailleurs. Le plafond de 300 essais (270 mesurés) sautera avec une île
-      // de plus au 6e : le relever alors à sa mesure.
+      // de plus au 6e : le relever alors à sa mesure. Depuis que la Carte cadre les lieux d'aujourd'hui (GD-11,
+      // consultant UX UI), 310 essais dans la police de lecture (270 à ×1,1) : son plafond passe à 320.
       const simple = laCarte('6e', mot, 'atkinson-hyperlegible', 1, destination, true);
       expect(simple.tus, univers).toEqual([]);
       expect(simple.ailleurs, univers).toEqual([]);
-      expect(simple.recherche?.essais ?? 0, univers).toBeLessThanOrEqual(300);
+      expect(simple.recherche?.essais ?? 0, univers).toBeLessThanOrEqual(320);
       expect(simple.recherche?.places ?? 0, univers).toBeLessThanOrEqual(4_000);
       const large = laCarte('6e', mot, 'atkinson-hyperlegible', 1.1, destination, true);
       expect(large.tus, `${univers}, ×1,1`).toEqual([]);
@@ -651,7 +617,7 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     30_000,
   );
 
-  it('3e, le bonhomme sur le Verger de la santé (les captures de SC-3), deux univers : en OpenDyslexic 32 px sur la tablette, un nom tu au plus ; en portrait 800 × 1280, chaque île dans le cadre, chaque nom entier, un nom tu (référent dys, UX UI, SC-3)', () => {
+  it('3e, le bonhomme sur le Verger de la santé (les captures de SC-3), deux univers : en OpenDyslexic 32 px sur la tablette, les noms tus mesurés ; en portrait 800 × 1280, chaque île dans le cadre, chaque nom entier, aucun nom tu (référent dys, UX UI, SC-3)', () => {
     const ici: BiomeId = 'life-earth-sciences-3e-human-body';
     const destination = destinationDuJeu(ici);
     for (const [univers, mot] of Object.entries(ETATS)) {
@@ -670,7 +636,7 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       }
       // En portrait, la Ruche des réseaux et le Refuge des carnets sortaient à gauche, 450 px vides en haut : les îles
       // glissent au milieu de la place (`cadrageDeLaCarte`). Toutes dans le cadre, chaque nom montré entier ; dans
-      // Luciole, la police par défaut, un nom se tait (`TUS_EN_PORTRAIT_AU_VERGER`), comme dans la page.
+      // Luciole, la police par défaut, les noms tus mesurés (`TUS_EN_PORTRAIT_AU_VERGER`).
       const debout = laCarte('3e', mot, 'luciole', 1, destination, true, PORTRAIT_800, ici);
       expect(debout.tus, `${univers}, 800 × 1280`).toEqual(TUS_EN_PORTRAIT_AU_VERGER);
       expect(debout.vues.length + debout.tus.length, `${univers}, 800 × 1280`).toBe(islandsOf('3e').length);
