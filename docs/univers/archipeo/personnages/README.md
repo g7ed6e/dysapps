@@ -21,7 +21,7 @@ Ces images sont des références de travail, pas le jeu : l’application ne les
 - **Les Gardiens** : des sentinelles de pierre éteinte (`#8E8C84`, une ou deux facettes de lichen `#7A8A6A`) sur un socle bas octogonal.
 - **Pour toutes** : low-poly à grandes facettes plates, vue de trois quarts avant gauche, un seul personnage entier sur un fond gris clair uni, sans décor ni texte.
 
-Le lichen des images ne passe pas dans les modèles 3D : au moment de peindre les facettes aux couleurs du jeu, toutes celles des Gardiens deviennent pierre `#8E8C84` (décision du mainteneur, 8 octobre 2026) ; les images ne sont pas regénérées.
+Le lichen des images ne passe pas dans les modèles 3D : au moment de peindre les facettes aux couleurs du jeu, toutes celles des Gardiens deviennent pierre `#8E8C84` (décision du mainteneur, 8 octobre 2026) ; les images ne sont pas regénérées. C’est le code qui pose le lichen sur le Gardien éteint et l’efface quand il se rallume, comme le veut le récit (décision du mainteneur, 8 octobre 2026).
 
 Les deux Sphinx (des routes, de marbre) sortent toujours avec une barbe postiche et un ornement au front, quel que soit le prompt : on les retire au moment du modèle 3D (décision du mainteneur, 8 octobre 2026). Bazar garde sa balance, avec le plateau pendu que le modèle d’image ajoute toujours (décision du mainteneur, 8 octobre 2026). Le Golem des équations garde lui aussi sa balance aux plateaux pendus : on épaissit ou on rattache les fils au moment du modèle 3D (décision du mainteneur, 8 octobre 2026).
 
