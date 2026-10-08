@@ -485,7 +485,7 @@ function archipelPage(d) {
           s.steps.map((e, k) => [`${k + 1}. ${ETAPE[e.kind]}`, `[${BIOMES.find((b) => b.id === e.place).creature.name}](iles/${e.place}.md)`, `« ${d.stepText(e)} »`]),
         ),
         '',
-        `À la fin : « ${s.done} »`,
+        `À la fin : « ${s.done} »${s.see ? ` ; puis « ${s.see} » mène au grand projet de l’archipel, tant qu’il n’est pas fini (il n’est jamais exigé).` : ''}`,
         '',
       );
     }

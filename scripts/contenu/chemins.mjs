@@ -99,7 +99,6 @@ export function produire() {
   // Les quêtes des habitants (GD-10) : docs/contenu/quetes.md → src/game/world/stories.json.
   const blocs = [...ordre.map((id) => biomes.get(id).block), ...assemblage.recettes.map((r) => r.bloc), 'roof', 'door', 'lantern', 'fence', 'stairs'];
   const quetes = lireQuetes(readFileSync(join(CONTENU, FICHIER_QUETES), 'utf8'), join('docs/contenu', FICHIER_QUETES));
-  sortie.set(QUETES, JSON.stringify(verifierQuetes(quetes, ordre.map((id) => biomes.get(id)), demandes, blocs), null, 2) + '\n');
   for (const q of lireQuestions(
     mdAssemblage,
     fichierAssemblage,
@@ -127,6 +126,10 @@ export function produire() {
     fichierProjets,
   );
   sortie.set(PROJETS, JSON.stringify(projets, null, 2) + '\n');
+  // Les quêtes après les projets : la dernière quête d'une région peut montrer son projet.
+  const classes = grandsOuvrages();
+  const projetsDesQuetes = projets.map((p) => ({ monument: p.monument, classe: classes.get(p.monument) }));
+  sortie.set(QUETES, JSON.stringify(verifierQuetes(quetes, ordre.map((id) => biomes.get(id)), demandes, blocs, projetsDesQuetes), null, 2) + '\n');
   // Les missions du portail : docs/contenu/portail/<mission>.md → src/apps/<mission>/….json.
   for (const m of MISSIONS_PORTAIL) {
     const fichier = join('docs/contenu/portail', `${m.id}.md`);

@@ -9,6 +9,7 @@ function ilesDuJeu() {
 const ILES = ilesDuJeu();
 const DEMANDES = JSON.parse(readFileSync('src/game/world/requests.json', 'utf8'));
 const BLOCS = [...ILES.map((b) => b.block), 'lantern', 'door', 'stairs'];
+const PROJETS = [{ monument: 'landmark-5e-1', classe: '5e' }];
 
 const quete = (...etapes) =>
   ['# Les quêtes', '', '## 6e', '', '### `story-6e-1`', '', '- objet : la lanterne', '- icône : `lantern`', '- fin : Lanterne posée chez Mousso !', '', ...etapes, ''].join('\n');
@@ -21,8 +22,17 @@ const verifier = (...etapes) => () => verifierQuetes(lireQuetes(quete(...etapes)
 
 describe('docs/contenu/quetes.md', () => {
   it('le fichier du dépôt se lit et se vérifie', () => {
-    const q = verifierQuetes(lireQuetes(readFileSync(`docs/contenu/${FICHIER_QUETES}`, 'utf8'), FICHIER_QUETES), ILES, DEMANDES, BLOCS);
+    const q = verifierQuetes(lireQuetes(readFileSync(`docs/contenu/${FICHIER_QUETES}`, 'utf8'), FICHIER_QUETES), ILES, DEMANDES, BLOCS, PROJETS);
     expect(q.length).toBeGreaterThanOrEqual(3);
+  });
+  it('la dernière quête d’une région peut montrer son projet, avec « projet » et « voir » ensemble', () => {
+    const avec = (...champs) => () => verifierQuetes(lireQuetes(quete(...champs, '', ...BONNES), 'quetes.md'), ILES, DEMANDES, BLOCS, PROJETS);
+    expect(avec('- projet : `landmark-5e-1`')).toThrow(/vont ensemble/);
+    expect(avec('- projet : `landmark-5e-1`', '- voir : Voir le phare')).toThrow(/en 5e, la quête en 6e/);
+    expect(avec('- projet : `landmark-6e-1`', '- voir : Voir le phare')).toThrow(/pas un grand projet/);
+    const phare = [{ monument: 'landmark-6e-1', classe: '6e' }];
+    const q = verifierQuetes(lireQuetes(quete('- projet : `landmark-6e-1`', '- voir : Voir le phare', '', ...BONNES), 'quetes.md'), ILES, DEMANDES, BLOCS, phare);
+    expect(q[0]).toMatchObject({ project: 'landmark-6e-1', see: 'Voir le phare' });
   });
   it('l’objet posé est la petite construction suivante de l’habitant, après celle de sa commande', () => {
     expect(verifier(...BONNES)()[0].fixture).toBe('french-6e-phonology-fixture-2');

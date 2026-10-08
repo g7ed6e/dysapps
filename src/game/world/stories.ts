@@ -41,6 +41,12 @@ export interface Story {
   steps: readonly StoryStep[];
   /** La phrase de la fin (« Lanterne posée chez Mousso ! »). */
   done: string;
+  /**
+   * Le grand projet que la quête montre une fois finie (la dernière de sa région, à partir de la 5e) : son grand ouvrage
+   * (`landmark-5e-1`), et le bouton qui y mène (« Voir le phare »). Le projet n'est jamais exigé.
+   */
+  project?: string;
+  see?: string;
 }
 
 /** Une quête ouverte : son identifiant et l'étape en cours (à partir de 0). */

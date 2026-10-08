@@ -186,6 +186,23 @@ const FORMES: Record<string, Cube[]> = {
   // Sillon, le coffre à graines (HG-3, retouche du consultant Blocland) : quatre enluminures au sol en carré de 2 × 2,
   // la lanterne sur une enluminure du fond ; sans eau.
   'geography-5e-resources-fixture-1': [...rangee(0, 1, 0, 0, BLOC.enluminure), ...rangee(0, 1, 1, 0, BLOC.enluminure), [1, 1, 1, 'lantern']],
+  // Les objets posés à la fin des quêtes de 5e (GD-10, directeur artistique et consultant de Blocland ; docs/contenu/quetes.md).
+  // Pudding, la tente : un triangle de toile devant, l'entrée au milieu, le faîte qui part vers le fond, tenu par un mât
+  // de barrière ; un cube par toile donnée à Bazar (consultant de Blocland), aucune tuile sur le sol de tuile du Comptoir.
+  'english-5e-vocabulary-fixture-2': [
+    [0, 0, 0, BLOC.toile],
+    [1, 0, 0, 'door'],
+    [2, 0, 0, BLOC.toile],
+    [1, 0, 1, BLOC.toile],
+    [1, 1, 0, 'fence'],
+    [1, 1, 1, BLOC.toile],
+  ],
+  // Vélin, le four à pain : deux sur deux, la bouche devant, le conduit au fond ; un cube par tuile donnée à Moustache.
+  'history-5e-middle-ages-fixture-2': [[0, 0, 0, 'door'], [1, 0, 0, BLOC.tuile], ...rangee(0, 1, 1, 0, BLOC.tuile), [1, 1, 1, BLOC.tuile]],
+  // Frimas, la balise, sœur du phare du large : un socle de deux sur deux, les quatre panneaux donnés à Sema, sur un coin
+  // la glace (jamais au sol, le sol du Glacier est de glace), la lanterne au sommet. Le socle en croix du consultant de
+  // Blocland, trois sur trois, ne trouve pas de place à côté de Frimas.
+  'maths-5e-signed-numbers-fixture-2': [...rangee(0, 1, 0, 0, BLOC.panneau), ...rangee(0, 1, 1, 0, BLOC.panneau), [1, 1, 1, BLOC.glace], [1, 1, 2, 'lantern']],
 
   // 4e : les Monts de Feu.
   // Braise, le wagonnet : une voie de trois rails, un wagonnet de deux aciers.
@@ -328,6 +345,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'maths-6e-fractions-fixture-1': [-1, 11],
   'maths-6e-decimals-fixture-1': [5, 12],
   'maths-5e-signed-numbers-fixture-1': [10, 3],
+  'maths-5e-signed-numbers-fixture-2': [6, 12],
   'maths-5e-proportionality-fixture-1': [-1, 4],
   'french-5e-homophones-fixture-1': [10, 4],
   'french-5e-conjugation-fixture-1': [-3, 12],
@@ -344,6 +362,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'history-6e-antiquity-fixture-1': [0, 10],
   'geography-6e-living-fixture-1': [-1, 11],
   'history-5e-middle-ages-fixture-1': [1, 10],
+  'history-5e-middle-ages-fixture-2': [5, 10],
   'geography-5e-resources-fixture-1': [2, 10],
   'history-4e-revolutions-fixture-1': [8, 6],
   'geography-4e-globalization-fixture-1': [10, 3],
@@ -353,6 +372,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'physics-chemistry-6e-matter-energy-fixture-1': [1, 11],
   'technology-6e-objects-fixture-1': [8, 6],
   'english-5e-vocabulary-fixture-1': [4, 11],
+  'english-5e-vocabulary-fixture-2': [8, 3],
   'english-5e-grammar-fixture-1': [10, 3],
   'english-4e-comprehension-fixture-1': [7, 9],
   'english-4e-grammar-fixture-1': [8, 9],
