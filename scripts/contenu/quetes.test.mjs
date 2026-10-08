@@ -30,6 +30,8 @@ describe('docs/contenu/quetes.md', () => {
     expect(avec('- projet : `landmark-5e-1`')).toThrow(/vont ensemble/);
     expect(avec('- projet : `landmark-5e-1`', '- voir : Voir le phare')).toThrow(/en 5e, la quête en 6e/);
     expect(avec('- projet : `landmark-6e-1`', '- voir : Voir le phare')).toThrow(/pas un grand projet/);
+    const deux = [quete('- projet : `landmark-6e-1`', '- voir : Voir le phare', '', ...BONNES), '### `story-6e-2`', '', '- objet : la lanterne', '- icône : `lantern`', '- fin : Lanterne posée chez Mousso !', '', ...BONNES, ''].join('\n');
+    expect(() => verifierQuetes(lireQuetes(deux, 'quetes.md'), ILES, DEMANDES, BLOCS, [{ monument: 'landmark-6e-1', classe: '6e' }])).toThrow(/seule la dernière quête/);
     const phare = [{ monument: 'landmark-6e-1', classe: '6e' }];
     const q = verifierQuetes(lireQuetes(quete('- projet : `landmark-6e-1`', '- voir : Voir le phare', '', ...BONNES), 'quetes.md'), ILES, DEMANDES, BLOCS, phare);
     expect(q[0]).toMatchObject({ project: 'landmark-6e-1', see: 'Voir le phare' });

@@ -80,4 +80,4 @@ Les quêtes des habitants ([GD-10](../gameplay/propositions/GD-10.md)) : une pet
 3. donner 4 `french-5e-homophones` chez `french-5e-homophones` : Donne {objet} à Sema.
 4. apporter chez `maths-5e-signed-numbers` : Apporte la balise à Frimas.
 
-> Forme : une petite balise, sœur du phare du large. Un socle de deux sur deux en panneaux jaunes (les quatre donnés), sur un coin un cube de glace, puis la lanterne au sommet : trois de haut, en bandes comme le phare. Aucune glace au sol (le sol du Glacier). Finie, la quête montre le phare du large (« Voir le phare »), tant qu’il n’est pas fini.
+> Forme : une petite balise, sœur du phare du large. Un socle de deux sur deux en panneaux jaunes (les quatre donnés), sur un coin un cube de glace, puis la lanterne au sommet : trois de haut, en bandes comme le phare de Blocland (dans Archipéo, une petite balise à feu, sans parenté de forme avec la tour de pierre). Aucune glace au sol (le sol du Glacier). À la fin de la pose, la ligne montre le phare du large (« Voir le phare »), s’il n’est pas fini.

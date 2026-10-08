@@ -127,8 +127,9 @@ export function StoryLine({ story, index, state, island, highlight = false, said
   const dest = stepDestination(state, step);
   const surPlace = !fini && !tap && island === dest;
   const lu = hereSaid && surPlace ? `${phrase} ${hereSaid}` : phrase;
-  // Finie, la dernière quête de la région montre son projet, tant qu'il reste une pièce à poser (GD-10).
-  const projet = fini && story.project ? projectOf(story.project) : undefined;
+  // Finie, la dernière quête de la région montre son projet, tant qu'il reste une pièce à poser (GD-10) ; pas pendant
+  // la pose de l'objet (la phrase de fin encore vide).
+  const projet = said && story.project ? projectOf(story.project) : undefined;
   const voir = projet && story.see && nextPiece(state, projet) !== null ? story.see : null;
   const desc = useRef<HTMLSpanElement>(null);
   useEffect(() => {

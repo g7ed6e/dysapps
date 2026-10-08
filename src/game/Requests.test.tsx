@@ -281,13 +281,13 @@ describe('l’entraide (GD-10) en tête de la liste', () => {
   });
   describe('la balise de Frimas (5e), finie, montre le phare du large tant qu’il n’est pas fini', () => {
     const balise = getStory('story-5e-3')!;
-    const ligne = (parts: Record<string, string[]>) => {
+    const ligne = (parts: Record<string, string[]>, said = 'Balise posée chez Frimas !') => {
       sauver({});
       render(
         <SettingsProvider>
           <MemoryRouter>
             <ul>
-              <StoryLine story={balise} index={3} state={{ stock: {}, world: { parts, log: [], links: [] } }} said="Balise posée chez Frimas !" onTap={() => {}} />
+              <StoryLine story={balise} index={3} state={{ stock: {}, world: { parts, log: [], links: [] } }} said={said} onTap={() => {}} />
             </ul>
           </MemoryRouter>
         </SettingsProvider>,
@@ -296,6 +296,10 @@ describe('l’entraide (GD-10) en tête de la liste', () => {
     it('« Voir le phare » mène au phare', () => {
       ligne({});
       expect(screen.getByRole('link', { name: /Voir le phare/ })).toHaveAttribute('href', '/adventure/landmark-5e-1');
+    });
+    it('pendant la pose de la balise (la phrase de fin encore vide) : rien encore', () => {
+      ligne({}, '');
+      expect(screen.queryByRole('link', { name: /Voir le phare/ })).toBeNull();
     });
     it('le phare fini : plus rien à montrer', () => {
       const phare = projectOf('landmark-5e-1')!;
