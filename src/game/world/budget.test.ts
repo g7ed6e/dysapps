@@ -304,15 +304,15 @@ it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tour
   expect(arrangeViewCost(null)).toEqual({ triangles: 0, drawCalls: 0 });
 }, 20_000);
 
-it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus), sauf le sentier au 3e, sous le plafond', () => {
+// Un archipel par test : chacun refait cinq fois le maillage de tout son terrain, plus grand depuis les îlots des grands
+// projets de la 4e et de la 3e (GD-10).
+it.each(ARCHIPELAGO_IDS)('GD-9, %s : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus), sauf le sentier au 3e, sous le plafond', (a) => {
   // Les appels de plus (le sentier au 3e) tiennent sous le plafond au pire de la région : vérifié dans le test du pire cas.
   const { progress, world } = toutConstruit();
-  for (const a of ARCHIPELAGO_IDS) {
-    const terrain = worldCubes(a, progress, world, false);
-    const avant = buildMesh(terrain).length;
-    for (const [kind, n] of [['bac', LONG_LENGTH], ['pont', LONG_LENGTH], ['pont', SHORT_LENGTH], ['sentier', SHORT_LENGTH]] as const) {
-      const plus = APPELS_EN_PLUS_D_UNE_LIAISON[`${a} ${kind}`] ?? 0;
-      expect(buildMesh([...terrain, ...linkCubes(a, kind, n)]).length, `${a} ${kind}`).toBe(avant + plus);
-    }
+  const terrain = worldCubes(a, progress, world, false);
+  const avant = buildMesh(terrain).length;
+  for (const [kind, n] of [['bac', LONG_LENGTH], ['pont', LONG_LENGTH], ['pont', SHORT_LENGTH], ['sentier', SHORT_LENGTH]] as const) {
+    const plus = APPELS_EN_PLUS_D_UNE_LIAISON[`${a} ${kind}`] ?? 0;
+    expect(buildMesh([...terrain, ...linkCubes(a, kind, n)]).length, `${a} ${kind}`).toBe(avant + plus);
   }
 });
