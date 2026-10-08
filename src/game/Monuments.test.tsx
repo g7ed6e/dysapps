@@ -52,7 +52,7 @@ it('« Poser tout ce que j’ai » emploie les blocs en poche ; fini, il rapport
   renderIn(<Page />);
   await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
   expect(screen.getAllByText(/L’observatoire des baleines : terminé !/).length).toBeGreaterThan(0);
-  expect(screen.getByText(/Terminé !/, { selector: '.plan-done' })).toBeInTheDocument();
+  expect(screen.getByText('Terminé !', { selector: '.plan-done-word' })).toBeInTheDocument();
   const progress = JSON.parse(localStorage.getItem('dysapps:progress')!);
   expect(progress.landmarksCompleted).toBe(1);
   expect(progress.badges.patrimoine).toBeTruthy();
