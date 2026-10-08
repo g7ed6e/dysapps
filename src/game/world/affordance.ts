@@ -21,6 +21,7 @@ import type { ObjetDeLaFiche } from './layout';
 export type { ObjetDeLaFiche };
 import type { Cell, CreaturePlacement } from './paths';
 import { islandCenter, type VehiclePlacement } from './terrain';
+import { SENTINELLE_DANS_LE_MONDE } from './terrain/creatures';
 
 /** L'état d'un objet touchable : à faire (il porte une bulle), pas encore, un lieu (ils n'en portent pas). */
 export type EtatDuSigne = 'aFaire' | 'pasEncore' | 'lieu';
@@ -128,6 +129,18 @@ function boiteDuPersonnage(p: Pick<CreaturePlacement, 'cubes' | 'origin' | 'eche
   };
 }
 
+/**
+ * La boîte d'un Gardien dessiné en sentinelle (Archipéo, `habillage.personnages` « modeles ») : la statue à l'échelle du
+ * monde, ses pieds au milieu de la place de ses cubes (`pointDePose` de world/characters/merges.ts), pas la boîte de ses
+ * cubes, qui sont ceux du Gardien de Blocland en grand : sa bulle et sa zone de toucher suivent la statue qu'on voit.
+ */
+function boiteDeLaSentinelle(p: Pick<CreaturePlacement, 'cubes' | 'origin'>): Boite {
+  const b = boiteDe(p.cubes, p.origin);
+  const [cx, cy, z0] = [(b.min.x + b.max.x) / 2, (b.min.y + b.max.y) / 2, p.origin.z];
+  const d = SENTINELLE_DANS_LE_MONDE.demiLargeur;
+  return { min: { x: cx - d, y: cy - d, z: z0 }, max: { x: cx + d, y: cy + d, z: z0 + SENTINELLE_DANS_LE_MONDE.hauteur } };
+}
+
 /** Un objet et sa bulle, au-dessus du milieu de sa boîte. */
 function signeAuDessus(objet: ObjetTouche, etat: EtatDuSigne, iles: BiomeId[], boite: Boite): SigneDObjet {
   return { cle: cleDeLObjet(objet), objet, etat, x: (boite.min.x + boite.max.x) / 2, y: (boite.min.y + boite.max.y) / 2, z: boite.max.z + SIGNE.auDessus, iles, boite };
@@ -152,13 +165,15 @@ export interface EntreeDesSignes {
   vehicle?: VehiclePlacement | null;
   /** Ce que les cubes ne disent pas (world/model.ts) ; sans lui, tout ce qui n'est pas une borne à faire est « pas encore ». */
   etats?: EtatsDesObjets;
+  /** Les Gardiens dessinés en cubes (Blocland, à leur échelle) ou en sentinelles (Archipéo) : leur bulle suit leur dessin. */
+  gardiens?: 'cubes' | 'sentinelles';
 }
 
 /**
  * Les signes des objets touchables d'un archipel, en cases du monde : un par objet, dans cet ordre (bornes, lieux et
  * monuments, ouvrages, Gardiens, navire). Une borne d'une île fermée n'en a pas (l'île entière se lit fermée).
  */
-export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = null, etats }: EntreeDesSignes): SigneDObjet[] {
+export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = null, etats, gardiens = 'cubes' }: EntreeDesSignes): SigneDObjet[] {
   const prets = new Set(etats?.chantiersPrets ?? []);
   // Les cubes des bornes, des lieux (sans leur îlot) et des ouvrages en fantôme, en un passage.
   const bornes = new Map<string, VoxelCube[]>();
@@ -219,7 +234,7 @@ export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = 
   for (const g of creatures) {
     if (g.kind !== 'guardian' || g.beaten || !g.cubes.length) continue;
     const pret = etats ? etats.gardiensPrets.includes(g.id) : true;
-    out.push(signeAuDessus({ genre: 'gardien', id: g.id }, pret ? 'aFaire' : 'pasEncore', [g.id], boiteDuPersonnage(g)));
+    out.push(signeAuDessus({ genre: 'gardien', id: g.id }, pret ? 'aFaire' : 'pasEncore', [g.id], gardiens === 'sentinelles' ? boiteDeLaSentinelle(g) : boiteDuPersonnage(g)));
   }
   // Le Bloc-Navire : à faire s'il a un bloc à poser ou s'il peut partir, sinon pas encore.
   if (vehicle?.cubes.length)

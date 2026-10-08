@@ -819,6 +819,11 @@ const CAPTURES = [
     ['bassin', 'technology-4e-modeling'],
   ].map(([court, ile]) => ({ nom: `gd-11-${court}`, vue: 'île', famille: 'gardiens', ile })),
   { nom: 'gd-11-phare-defi-pret', vue: 'île', famille: 'gardiens', ile: 'maths-3e-functions', debout: 'maths-3e-functions' },
+  // Depuis le seuil de 75 % (DA, 8 octobre 2026), le Hangar des inventions et le Verger de la santé ont leur Gardien
+  // sur un côté de devant : défi prêt, et le Hangar au téléphone.
+  { nom: 'gd-11-hangar-defi-pret', vue: 'île', famille: 'gardiens', ile: 'technology-6e-objects', debout: 'technology-6e-objects' },
+  { nom: 'gd-11-hangar-defi-pret-390x844', vue: 'île', famille: 'gardiens', ile: 'technology-6e-objects', debout: 'technology-6e-objects', taille: { width: 390, height: 844 } },
+  { nom: 'gd-11-verger-defi-pret', vue: 'île', famille: 'gardiens', ile: 'life-earth-sciences-3e-human-body', debout: 'life-earth-sciences-3e-human-body' },
   { nom: 'gd-11-atelier-machine', vue: 'île', famille: 'gardiens', ile: 'maths-4e-algebra', posees: 'toutes' },
   ...[
     ['marais', 'french-5e-conjugation'],

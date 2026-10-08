@@ -49,6 +49,7 @@ import {
   guardianPlacements,
   guardianSpot,
   partDuGardienVue,
+  SEUIL_DU_GARDIEN_VU,
   projectionDeLaVueDeLIle,
   VUE_DE_L_ILE_PANNEAU_OUVERT,
   trophySpot,
@@ -287,19 +288,24 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     // cachés. Depuis les côtés de la bande de devant (DA, 8 octobre 2026) : 34, 0 et 17, dont 13 sur un côté de devant.
     // Depuis que les rayons visent les yeux de la caméra en perspective (le Sphinx de marbre que Théo cachait) : 29, 0
     // et 22, dont 16 sur un côté. Depuis que le chemin du bonhomme depuis ses arrivées écarte les côtés (DA, 8 octobre
-    // 2026 ; appliqué derrière la bande aussi : 14 au palier 1) : 20, 0 et 31, dont 6 sur un côté.
+    // 2026 ; appliqué derrière la bande aussi : 14 au palier 1) : 20, 0 et 31, dont 6 sur un côté. Depuis le seuil de
+    // 75 % (DA, 8 octobre 2026 : sous lui, la bande du chemin des arrivées cède sur un côté de devant) : 23, 0 et 28,
+    // dont 9 sur un côté (le Hangar des inventions, l'Imprimerie des révolutions et le Verger de la santé y viennent).
     expect(BIOMES.filter((b) => guardianSpot(b.id).repli).map((b) => b.id)).toEqual([]);
     const paliers = (n: number) => BIOMES.filter((b) => guardianSpot(b.id).palier === n).map((b) => b.id);
-    expect(paliers(1)).toHaveLength(20);
+    expect(paliers(1)).toHaveLength(23);
     expect(paliers(2)).toEqual([]);
-    expect(paliers(3)).toHaveLength(31);
+    expect(paliers(3)).toHaveLength(28);
     expect(BIOMES.filter((b) => guardianSpot(b.id).y <= QUEST_ROW + 1).map((b) => b.id)).toEqual([
       'maths-3e-geometry',
       'english-5e-grammar',
       'english-4e-comprehension',
+      'technology-6e-objects',
+      'history-4e-revolutions',
       'geography-4e-globalization',
       'life-earth-sciences-4e-cells-evolution',
       'history-3e-twentieth-century',
+      'life-earth-sciences-3e-human-body',
     ]);
   });
 
@@ -344,10 +350,12 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
   it('rien ne le cache dans la vue de l’île : ni l’habitant, ni un lieu ou un bâtiment, ni l’étiquette du nom, dans les deux univers', () => {
     // Faute de carré où il se voit entier, même le décor effacé (palier 3), derrière la bande de devant ou sur un de ses
     // côtés, ces îles gardent le carré où il se voit le plus : la part vue, au centième, dans la forme la plus cachée des
-    // deux univers, les rayons visant les deux yeux de la caméra (en paysage et panneau ouvert). Sous 85 % : le Hangar
-    // des inventions et le Verger de la santé (54 %), l'Imprimerie des révolutions (66 %), le Phare des fonctions
-    // (68 %), la Prairie des climats (76 %), la Vigie des signaux (78 %), l'Horloge des verbes (79 %), la Falaise des
-    // accords, le Bassin des maquettes et le Tremplin des forces (83 %).
+    // deux univers, les rayons visant les deux yeux de la caméra (en paysage et panneau ouvert). Sous 85 % : le Phare
+    // des fonctions (68 %), la Prairie des climats (76 %), la Vigie des signaux (78 %), l'Horloge des verbes (79 %), la
+    // Falaise des accords, le Bassin des maquettes et le Tremplin des forces (83 %). Sous le seuil de 75 % (DA,
+    // 8 octobre 2026), seul le Phare des fonctions : aucun carré, même la bande du chemin des arrivées cédée, ne le
+    // montre plus. Le Hangar des inventions et le Verger de la santé (54 %), l'Imprimerie des révolutions (66 %) se
+    // voient entiers sur un côté de devant depuis ce seuil.
     const enPartie: Record<string, number> = {
       'maths-6e-calculation': 0.92,
       'maths-5e-signed-numbers': 0.88,
@@ -358,15 +366,12 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
       'history-6e-antiquity': 0.99,
       'geography-6e-living': 0.99,
       'life-earth-sciences-6e-living-world': 0.85,
-      'technology-6e-objects': 0.54,
       'history-5e-middle-ages': 0.93,
       'geography-5e-resources': 0.99,
       'life-earth-sciences-5e-active-planet': 0.76,
       'technology-5e-design': 0.89,
-      'history-4e-revolutions': 0.66,
       'physics-chemistry-4e-signals-circuits': 0.78,
       'technology-4e-modeling': 0.83,
-      'life-earth-sciences-3e-human-body': 0.54,
       'physics-chemistry-3e-motion-energy': 0.83,
     };
     for (const b of BIOMES) {
@@ -374,6 +379,7 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
       if (b.id in enPartie) expect(vue, b.id).toBeCloseTo(enPartie[b.id], 2);
       else expect(vue, b.id).toBe(1);
     }
+    expect(BIOMES.filter((b) => Math.min(...(['gardien', 'sentinelle'] as const).map((forme) => partDuGardienVue(b.id, forme))) < SEUIL_DU_GARDIEN_VU).map((b) => b.id)).toEqual(['maths-3e-functions']);
   });
 
   it('jamais sur une colline, ni sur la case d’entrée derrière une arrivée de liaison', () => {

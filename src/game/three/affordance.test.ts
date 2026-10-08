@@ -89,7 +89,8 @@ it('le Golem de roche : un Gardien à faire, sa bulle au-dessus de sa tête', ()
 it('au téléphone (390 × 844), toucher à côté de la borne la plus proche du Gardien ouvre la borne, pas le Gardien', () => {
   // Les îles où le Gardien se tient sur un côté de la bande de devant (GD-11), près des bornes : le Belvédère de Thalès
   // (le Sphinx de marbre), et les autres (world/terrain.test.ts les nomme ; ni la Mine des lettres ni la Tour du lecteur
-  // depuis que le chemin du bonhomme depuis ses arrivées écarte les côtés). Mesuré le 8 octobre 2026 : aucun de ces
+  // depuis que le chemin du bonhomme depuis ses arrivées écarte les côtés ; le Hangar des inventions, l'Imprimerie des
+  // révolutions et le Verger de la santé depuis le seuil de 75 %, neuf îles). Mesuré le 8 octobre 2026 : aucun de ces
   // Gardiens ne fait moins de 48 pixels au téléphone, il n'a pas de zone ; là où une zone de Gardien chevauche celle
   // d'une borne, la borne gagne (`zoneRetenue`, world/affordance.test.ts).
   const liens = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => linkWholeRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];

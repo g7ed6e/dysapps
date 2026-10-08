@@ -76,7 +76,8 @@ const routeursDeDepart = new Map<ArchipelagoId, RegionRouter>();
  * liaisons, et qui ne bouge pas avec lui (la place de son Gardien, GD-11 : le chemin du bonhomme depuis ses arrivées).
  */
 export function routeDeDepart(b: BridgeDef): LinkRoute | null {
-  if (routesDeDepart.has(b.id)) return routesDeDepart.get(b.id)!;
+  const connu = routesDeDepart.get(b.id);
+  if (connu !== undefined) return connu;
   const a = archipelagoOfIsland(b.from);
   // Sur la carte de départ (aucun lieu déplacé ni tourné, aucune arrivée choisie, aucune réunion), c'est le tracé seul de
   // la disposition, que le monde trace de toute façon : le traceur de départ ne se construit pas.

@@ -33,6 +33,7 @@ import { creaturePlacements, gardienDuMonde, guardianPlacements, islandCenter, v
 import { textesDe } from '../../universes';
 import { GESTE_DU_SIGNE, hauteurDuSigne } from './sign';
 import type { ArchipelagoId } from './map';
+import { SENTINELLE_DANS_LE_MONDE } from './terrain/creatures';
 
 const textes = textesDe('blocland');
 
@@ -414,4 +415,19 @@ it('sur la Carte, la bulle d\'or de la destination porte l\'image de ce qu\'on y
   expect(imageDeLaDestination({}, { navire: false })).toEqual({ icone: 'star' });
   // Une commande dont le bloc n'est pas connu : l'image de ce qu'on fait sinon.
   expect(imageDeLaDestination({ commande: 'c' }, { navire: false })).toEqual({ icone: 'star' });
+});
+
+it('un Gardien d’Archipéo : sa bulle au-dessus de la sentinelle qu’on voit, pas des cubes du Gardien de Blocland en grand', () => {
+  // Le Phare des fonctions, défi prêt (planche gd-11/archipeo/3e-gd-11-phare-defi-pret, 8 octobre 2026) : la bulle
+  // flottait à la hauteur de la boîte des cubes du Gardien, à l'échelle 1 dans Archipéo, bien au-dessus de la statue.
+  const [g] = guardianPlacements('3e', {}, fini().world.links, true, [], 1).filter((p) => p.id === 'maths-3e-functions');
+  const etats = { gardiensPrets: [g.id], navirePret: false, chantiersPrets: [] };
+  const [enCubes] = signesDesObjets({ cubes: [], creatures: [g], etats });
+  const [enSentinelle] = signesDesObjets({ cubes: [], creatures: [g], etats, gardiens: 'sentinelles' });
+  expect(enSentinelle.z).toBeCloseTo(g.origin.z + SENTINELLE_DANS_LE_MONDE.hauteur + SIGNE.auDessus, 9);
+  expect(enSentinelle.z).toBeLessThan(enCubes.z);
+  // Au-dessus du milieu de sa place, comme la statue (world/characters/merges.ts, `pointDePose`).
+  expect(enSentinelle.x).toBeCloseTo(enCubes.x, 9);
+  expect(enSentinelle.y).toBeCloseTo(enCubes.y, 9);
+  expect(enSentinelle.boite.max.x - enSentinelle.boite.min.x).toBeCloseTo(2 * SENTINELLE_DANS_LE_MONDE.demiLargeur, 9);
 });

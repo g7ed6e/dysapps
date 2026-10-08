@@ -127,9 +127,24 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   const vers = versLaCameraDuDessin(id);
   const coeur = bornesDuCoeur(islandDef(id));
   // La créature se tient sur le sol de l'île (z = 1 au-dessus, comme les lieux, sur un sol plat : voir `solLibre`).
-  const libre = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => free(x + sx + c.x, y + sy + c.y));
+  // Le sol libre et ce qui cache un lieu, par case, se gardent : chaque place candidate relit les cases de ses voisines.
+  const libres = new Map<number, boolean>();
+  const caches = new Map<number, boolean>();
+  const libreEn = (x: number, y: number) => {
+    const k = (x + 512) * 1024 + y + 512;
+    let l = libres.get(k);
+    if (l === undefined) libres.set(k, (l = free(x, y)));
+    return l;
+  };
+  const cacheEn = (x: number, y: number, z: number) => {
+    const k = ((x + 512) * 1024 + y + 512) * 256 + z;
+    let c = caches.get(k);
+    if (c === undefined) caches.set(k, (c = cacheUnLieu(lieux, vers, x, y, z)));
+    return c;
+  };
+  const libre = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => libreEn(x + sx + c.x, y + sy + c.y));
   /** Un cube de la créature (au pas `st`) se tient-il entre la caméra et un lieu du village ? */
-  const cache = (x: number, y: number, [sx, sy]: [number, number]) => cubes.some((c) => cacheUnLieu(lieux, vers, x + sx + c.x, y + sy + c.y, c.z + 1));
+  const cache = (x: number, y: number, [sx, sy]: [number, number]) => cubes.some((c) => cacheEn(x + sx + c.x, y + sy + c.y, c.z + 1));
   const fits = (x: number, y: number, st: [number, number]) => libre(x, y, st) && !cache(x, y, st);
   // Sur une île-école, derrière la salle des trophées : depuis que les îles ont grandi (GD-11), les marges du cœur
   // offrent des places sur le côté, devant elle.
@@ -194,15 +209,16 @@ const MARGE_DE_L_ETIQUETTE = 0.25;
  */
 export const SENTINELLE_DANS_LE_MONDE = { demiLargeur: 2.5 * 0.65, hauteur: 8 * 0.65 } as const;
 
+// Par île et par LV2, hors des caches de la disposition : ce qui peut cacher le Gardien se lit dans le repère de son
+// lieu (l'habitant, les lieux, les plans), pas dans la place de l'île ; une pose en mode aménagement ne le refait pas.
+const cubesQuiCachentConnus = new Map<string, Set<string>>();
+
 /**
  * Ce qui peut cacher le Gardien dans la vue de l'île (GD-11, relecture des planches du 8 octobre 2026) : l'habitant (ses
  * cubes, à chacun de ses pas), les lieux du village (l'école, la salle des trophées dans toute son emprise, le lieu où
  * l'on assemble, dans les deux univers) et les bâtiments des plans, tout construits ; en cubes du cœur (le lieu pas
  * tourné, z = 1 : le premier bloc au-dessus du sol).
  */
-// Par île et par LV2, hors des caches de la disposition : ce qui peut cacher le Gardien se lit dans le repère de son
-// lieu (l'habitant, les lieux, les plans), pas dans la place de l'île ; une pose en mode aménagement ne le refait pas.
-const cubesQuiCachentConnus = new Map<string, Set<string>>();
 
 function cubesQuiCachent(id: BiomeId): Set<string> {
   const cle = `${id}:${lv2Courante()}`;
@@ -248,7 +264,7 @@ function cubesQuiCachent(id: BiomeId): Set<string> {
  * laissait voir entier le Sphinx de marbre que Théo cache à moitié (Belvédère de Thalès, planches de GD-11). Rend, pour un carré (par son coin), la part de ces points que la caméra voit : de
  * l'une des deux formes, ou des deux ensemble (sans `forme`, ce que demande la place du Gardien).
  */
-type VueDuGardien = (x: number, y: number, forme?: FormeDuGardien) => number;
+type VueDuGardien = (x: number, y: number, forme?: FormeDuGardien, seuil?: number) => number;
 
 /**
  * Les deux Gardiens autour de leur milieu dans le carré (relatif à son coin, le lieu pas tourné) : demi-largeur,
@@ -362,46 +378,78 @@ function vueDuGardien(id: BiomeId): VueDuGardien {
   const lesDeux = [...parForme.values()].flat();
   // Pour chaque point : sous l'étiquette (`null`), ou les cases des cubes que coupent ses rayons. Un pas de l'habitant
   // sur le carré lui-même ne compte pas : il est retiré (`creaturePlacements`).
-  const rayons = new Map<string, [number, number][] | null>();
-  const coupes = (px: number, py: number, pz: number) => {
-    const k = `${px},${py},${pz}`;
-    let r = rayons.get(k);
-    if (r !== undefined) return r;
+  // Ce que coupent ses rayons, par point du monde (au deux-centième de case près), en un nombre : sous l'étiquette
+  // (`SOUS_L_ETIQUETTE`), aucun cube (`RIEN_NE_COUPE`), ou la boîte des cases des cubes coupés (x et y, du plus petit au
+  // plus grand, décalés de 512, dix bits chacun) : le carré ne compte que les cubes qui se tiennent sur lui, et ils s'y
+  // tiennent tous si leur boîte y tient. Aucune allocation par point : les rayons se lisent des milliers de fois.
+  const SOUS_L_ETIQUETTE = -2;
+  const RIEN_NE_COUPE = -1;
+  const rayons = new Map<number, number>();
+  const coupes = (px: number, py: number, pz: number): number => {
+    const k = ((Math.round(px * 200) + 65536) * 131072 + (Math.round(py * 200) + 65536)) * 8192 + Math.round(pz * 200);
+    const connu = rayons.get(k);
+    if (connu !== undefined) return connu;
+    let r = RIEN_NE_COUPE;
     const [u, w] = ecran(px, py, pz);
-    if (Math.abs(u - eu) <= demiLargeur && Math.abs(w - ev) <= demiHauteur) r = null;
+    if (Math.abs(u - eu) <= demiLargeur && Math.abs(w - ev) <= demiHauteur) r = SOUS_L_ETIQUETTE;
     else {
-      r = [];
+      let [x0, x1, y0, y1] = [Infinity, -Infinity, Infinity, -Infinity];
       for (const [ox, oy, oz] of yeux) {
         const l = Math.hypot(ox - px, oy - py, oz - pz) || 1;
         const [dx, dy, dz] = [(ox - px) / l, (oy - py) / l, (oz - pz) / l];
         // Le rayon, pas à pas (un quart de case), jusqu'au-dessus du plus haut cube qui pourrait le couper.
         for (let t = 0.25; pz + t * dz <= haut + 1; t += 0.25) {
-          const [cx, cy] = [Math.floor(px + t * dx), Math.floor(py + t * dy)];
-          if (cubes.has(numero(cx, cy, Math.floor(pz + t * dz)))) r.push([cx, cy]);
+          const cx = Math.floor(px + t * dx);
+          const cy = Math.floor(py + t * dy);
+          if (!cubes.has(numero(cx, cy, Math.floor(pz + t * dz)))) continue;
+          x0 = Math.min(x0, cx);
+          x1 = Math.max(x1, cx);
+          y0 = Math.min(y0, cy);
+          y1 = Math.max(y1, cy);
         }
       }
+      if (x0 <= x1) r = (((x0 + 512) * 1024 + (x1 + 512)) * 1024 + (y0 + 512)) * 1024 + (y1 + 512);
     }
     rayons.set(k, r);
     return r;
   };
+  /** Le point se voit-il du carré dont le coin est (x, y) ? */
+  const vuDuCarre = (r: number, x: number, y: number) => {
+    if (r === RIEN_NE_COUPE) return true;
+    if (r === SOUS_L_ETIQUETTE) return false;
+    const y1 = (r % 1024) - 512;
+    const y0 = (Math.floor(r / 1024) % 1024) - 512;
+    const x1 = (Math.floor(r / 1048576) % 1024) - 512;
+    const x0 = Math.floor(r / 1073741824) - 512;
+    return x0 >= x && y0 >= y && x1 < x + GUARDIAN_SQUARE && y1 < y + GUARDIAN_SQUARE;
+  };
   // La part vue, par carré et par forme, se garde : la place du Gardien la redemande à chaque palier et à chaque pose.
+  // Avec un seuil, le compte s'arrête dès que la part ne peut plus l'atteindre (-1, qui ne se garde pas).
   const parts = new Map<string, number>();
-  const vue: VueDuGardien = (x, y, forme) => {
+  const vue: VueDuGardien = (x, y, forme, seuil = -Infinity) => {
     const k = `${x},${y},${forme ?? ''}`;
     const connue = parts.get(k);
     if (connue !== undefined) return connue;
     const points = forme ? (parForme.get(forme) ?? lesDeux) : lesDeux;
-    let vus = 0;
+    const cachesPermis = points.length * (1 - seuil) + 1e-6;
+    let caches = 0;
     for (const [px, py, pz] of points) {
-      const r = coupes(x + px, y + py, pz);
-      if (r !== null && r.every(([cx, cy]) => cx >= x && cy >= y && cx < x + GUARDIAN_SQUARE && cy < y + GUARDIAN_SQUARE)) vus++;
+      if (vuDuCarre(coupes(x + px, y + py, pz), x, y)) continue;
+      if (++caches > cachesPermis) return -1;
     }
-    parts.set(k, vus / points.length);
-    return vus / points.length;
+    const part = (points.length - caches) / points.length;
+    parts.set(k, part);
+    return part;
   };
   vuesDuGardien.set(cle, vue);
   return vue;
 }
+
+/**
+ * La part du Gardien vue sous laquelle le chemin des arrivées cède sur un côté de devant (DA, 8 octobre 2026 ; voir
+ * `guardianSpot`).
+ */
+export const SEUIL_DU_GARDIEN_VU = 0.75;
 
 /** La place du Gardien sur son île : le coin de son carré (case relative au cœur, le lieu pas tourné). */
 export interface GuardianSpot {
@@ -447,8 +495,12 @@ const guardianSpots = layoutCache<string, GuardianSpot>();
  * cases où l'habitant se tient le sont (ses pas sur le carré sont retirés). Palier 3 : de plus, le décor de la côte et
  * des marges s'efface sous le carré (`decorSousLeGardien`) ; sans carré où il se voit entier, celui du palier 3 où il se
  * voit le plus (derrière, à part égale). Sans carré, même au palier 3, la place de repli (`repli`), qui oublie la vue de
- * l'île mais jamais une colline. Mesuré : 20 îles ont leur place au palier 1, aucune au palier 2, 31 au palier 3 (dont
- * 19 où il ne se voit pas entier : le test les nomme), aucune au repli ; 6 sont sur un côté de devant. Toute la
+ * l'île mais jamais une colline. Le seuil de 75 % (`SEUIL_DU_GARDIEN_VU`, DA, 8 octobre 2026) : quand la place trouvée
+ * laisse voir moins de 75 % du Gardien, la recherche se refait, la bande du chemin des arrivées cédée sur les côtés de
+ * devant (l'arrivée, une case autour et sa case d'entrée, comme la place du bonhomme, restent exclues), et la place
+ * qu'elle donne la remplace si elle en montre plus. Mesuré : 23 îles ont leur place au palier 1, aucune au palier 2, 28
+ * au palier 3 (dont 16 où il ne se voit pas entier : le test les nomme ; sous 75 %, le Phare des fonctions seul), aucune
+ * au repli ; 9 sont sur un côté de devant. Toute la
  * recherche tient dans cette fonction. Elle ne lit que le repère du lieu et la carte de départ (`routeDeDepart`) : un
  * lieu déplacé garde la place de son Gardien ; les rayons se gardent hors des caches de la disposition (`vueDuGardien`).
  */
@@ -527,25 +579,45 @@ export function guardianSpot(id: BiomeId): GuardianSpot {
   // place du Gardien est tirée dans le repère du lieu et ne bouge pas avec lui) jusqu'à sa place, avec une case autour de l'arrivée ; sur l'île-port, le chemin de la jetée (`boardingRoute` : la rangée de
   // devant, puis la colonne de la jetée jusqu'à la côte), une case autour de son pied. Seulement pour les côtés de
   // devant : appliqué derrière la bande aussi, 15 îles perdaient leur carré au palier 1 (14 au lieu de 29 ; 20 ainsi).
-  const arrivees = new Set<string>();
-  const depart = startingIsland(id).core;
-  for (const ouvrage of bridgesOf(id)) {
-    const trace = routeDeDepart(ouvrage);
-    for (const a of trace ? [trace.depuis, trace.vers] : []) {
-      if (a.lieu !== id) continue;
-      const [lx, ly] = [a.x - depart.x, a.y - depart.y];
-      autour(arrivees, lx, ly);
-      bande(arrivees, [lx - a.dx, ly - a.dy], home);
+  // `arrivees` : tout ce chemin ; `entrees` : ce qui n'en cède jamais (l'arrivée, sa case d'entrée et une case autour ; le
+  // pied de la jetée et une case autour), quand la bande entre l'entrée et la place du bonhomme cède (le seuil de 75 %,
+  // plus bas).
+  // Tracées à la première demande : seul un côté de devant les lit, et la plupart des îles ont leur carré derrière.
+  let chemins: { arrivees: Set<string>; entrees: Set<string> } | null = null;
+  const cheminsDesArrivees = () => {
+    if (chemins) return chemins;
+    const arrivees = new Set<string>();
+    const entrees = new Set<string>();
+    const depart = startingIsland(id).core;
+    for (const ouvrage of bridgesOf(id)) {
+      const trace = routeDeDepart(ouvrage);
+      for (const a of trace ? [trace.depuis, trace.vers] : []) {
+        if (a.lieu !== id) continue;
+        const [lx, ly] = [a.x - depart.x, a.y - depart.y];
+        autour(arrivees, lx, ly);
+        autour(entrees, lx, ly);
+        entrees.add(`${lx - a.dx},${ly - a.dy}`);
+        bande(arrivees, [lx - a.dx, ly - a.dy], home);
+      }
     }
-  }
-  if (ARCHIPELAGOS.some((a) => a.port === id)) {
-    const pied: [number, number] = [DOCK_DX, shoreY(id) - def.core.y];
-    bande(arrivees, home, [1, 0]);
-    bande(arrivees, [1, 0], [DOCK_DX, 0]);
-    bande(arrivees, [DOCK_DX, 0], pied);
-    autour(arrivees, ...pied);
-  }
-  const surLeCote = (x: number, y: number) => (x < premiere || x > derniere) && !chemin.has(`${x},${y}`) && !arrivees.has(`${x},${y}`) && !rangee.has(`${def.core.x + x},${def.core.y + y}`);
+    if (ARCHIPELAGOS.some((a) => a.port === id)) {
+      const pied: [number, number] = [DOCK_DX, shoreY(id) - def.core.y];
+      bande(arrivees, home, [1, 0]);
+      bande(arrivees, [1, 0], [DOCK_DX, 0]);
+      bande(arrivees, [DOCK_DX, 0], pied);
+      autour(arrivees, ...pied);
+      autour(entrees, ...pied);
+    }
+    chemins = { arrivees, entrees };
+    return chemins;
+  };
+  const surLeCote = (x: number, y: number, cede: boolean) => {
+    if (x >= premiere && x <= derniere) return false;
+    const k = `${x},${y}`;
+    if (chemin.has(k) || rangee.has(`${def.core.x + x},${def.core.y + y}`)) return false;
+    const { arrivees, entrees } = cheminsDesArrivees();
+    return !(cede ? entrees : arrivees).has(k);
+  };
   const tientDansLeCadre = gardienDansLeCadre(id);
   const cadresConnus = new Map<string, boolean>();
   const dansLeCadre = (x: number, y: number) => {
@@ -563,18 +635,19 @@ export function guardianSpot(id: BiomeId): GuardianSpot {
    * Le meilleur carré derrière la bande de devant (sa rangée et la rangée d'après), dans le cœur ou contre lui, ou
    * (`devant`) sur un de ses côtés, dans le cadre de la vue de l'île ; avec la part du Gardien qu'on y voit.
    */
-  const chercher = (libre: (x: number, y: number) => boolean, vue: (x: number, y: number) => number, entier: boolean, devant: boolean): { x: number; y: number; part: number } | null => {
+  const chercher = (libre: (x: number, y: number) => boolean, vue: VueDuGardien, entier: boolean, devant: boolean, cede: boolean): { x: number; y: number; part: number } | null => {
     let best: { x: number; y: number; part: number } | null = null;
     let score: number[] = [-Infinity, -Infinity, -Infinity, -Infinity, -Infinity];
     const [y0, y1] = devant ? [coeur.y0 - 3, QUEST_ROW + 1] : [Math.max(coeur.y0, QUEST_ROW + 2), coeur.y1 - n + 3];
-    const ouvert = devant ? (x: number, y: number) => libre(x, y) && surLeCote(x, y) : libre;
+    const ouvert = devant ? (x: number, y: number) => libre(x, y) && surLeCote(x, y, cede) : libre;
     for (let x = coeur.x0 - 3; x <= coeur.x1 - n + 3; x++)
       for (let y = y0; y <= y1; y++) {
         let ok = true;
         for (let i = 0; i < n && ok; i++) for (let j = 0; j < n && ok; j++) ok = ouvert(x + i, y + j);
         if (!ok || (devant && !dansLeCadre(x, y))) continue;
-        const part = vue(x, y);
-        if (entier && part < 1) continue;
+        // Vu entier, ou au moins autant que le meilleur jusqu'ici : sinon le compte des points s'arrête tôt.
+        const part = vue(x, y, undefined, entier ? 1 : best ? best.part : -Infinity);
+        if (part < 0 || (entier && part < 1)) continue;
         const cx = x + n / 2;
         const cy = y + n / 2;
         const loin = Math.min(...loinDe.map((p) => Math.hypot(cx - p.x - 0.5, cy - p.y - 0.5)));
@@ -605,17 +678,34 @@ export function guardianSpot(id: BiomeId): GuardianSpot {
     [3, sol.sansLeDecorDeLaCote, habitantSeul, true],
     [3, sol.sansLeDecorDeLaCote, habitantSeul, false],
   ];
-  let spot: GuardianSpot | null = null;
-  for (const [palier, ouvert, habite, entier] of paliers) {
-    const libre = (x: number, y: number) => ouvert(x, y) && !pris.has(`${x},${y}`) && !habite.has(`${x},${y}`) && !cache(x, y);
-    const derriere = chercher(libre, vu, entier, false);
-    const surUnCote = entier && derriere ? null : chercher(libre, vu, entier, true);
-    const trouve = derriere && (!surUnCote || derriere.part >= surUnCote.part - 1e-9) ? derriere : surUnCote;
-    if (trouve) {
-      spot = { x: trouve.x, y: trouve.y, palier };
-      break;
+  // Le sol libre de chaque palier, par case, se garde : chaque carré candidat relit les cases de ses voisins.
+  const libresConnus = paliers.map(() => new Map<number, boolean>());
+  const parPaliers = (cede: boolean): (GuardianSpot & { part: number }) | null => {
+    for (const [i, [palier, ouvert, habite, entier]] of paliers.entries()) {
+      const connus = libresConnus[i];
+      const libre = (x: number, y: number) => {
+        const k = (x + 512) * 1024 + y + 512;
+        let l = connus.get(k);
+        if (l === undefined) connus.set(k, (l = ouvert(x, y) && !pris.has(`${x},${y}`) && !habite.has(`${x},${y}`) && !cache(x, y)));
+        return l;
+      };
+      const derriere = chercher(libre, vu, entier, false, cede);
+      const surUnCote = entier && derriere ? null : chercher(libre, vu, entier, true, cede);
+      const trouve = derriere && (!surUnCote || derriere.part >= surUnCote.part - 1e-9) ? derriere : surUnCote;
+      if (trouve) return { x: trouve.x, y: trouve.y, palier, part: trouve.part };
     }
+    return null;
+  };
+  // Le seuil de 75 % (DA, 8 octobre 2026) : sur un côté de devant, le chemin des arrivées cède quand le meilleur carré
+  // qui le respecte laisse voir moins de 75 % du Gardien et qu'un carré qui ne le respecte pas en montre plus ; la case
+  // d'entrée de chaque arrivée (et l'arrivée, une case autour) et la place du bonhomme restent exclues : seule la bande
+  // entre les deux cède.
+  let trouve = parPaliers(false);
+  if (!trouve || trouve.part < SEUIL_DU_GARDIEN_VU - 1e-9) {
+    const cede = parPaliers(true);
+    if (cede && (!trouve || cede.part > trouve.part + 1e-9)) trouve = cede;
   }
+  let spot: GuardianSpot | null = trouve && { x: trouve.x, y: trouve.y, palier: trouve.palier };
   // La place de repli : sur la terre plate de l'île, sans rien d'immuable (`terre`, jamais une colline), ni la petite
   // construction, ni les portes, ni l'habitant, ni une arrivée ou l'entrée derrière elle ; le carré qui prend le moins
   // de cases qu'une règle refuse (le décor, les abords d'une borne, la vue de l'île) ; le premier de la grille à
