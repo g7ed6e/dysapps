@@ -35,6 +35,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 | La recherche « rien d’emprunté » sur « Jardin des heures » et ses replis | LV2-4 | — |
 | Le premier voyage : nombre de Gardiens exigés (3, 2, 2) et taille du premier chantier | Blocland | Selon les retours des élèves |
 | Relire les captures des Gardiens rallumés (le défi, le village reconstruit, le Bloc-Navire) et essayer sur tablette le moment du rallumage dans Blocland | GD-8 | En pull request |
+| Gardiens sur leur île : agrandir un peu les îles (ou déplacer des habitants) pour vider la liste des 23 îles au carré de repli ; dire quel signe, dans le monde, montre un défi prêt dans Archipéo, sans les pas japonais | GD-11 | En pull request |
 
 ### À vérifier sur tablette
 
@@ -151,6 +152,10 @@ Décidé par le mainteneur le 5 octobre 2026 ([GD-9](../gameplay/propositions/GD
 ### Quêtes et grands projets (GD-10)
 
 Décidé par le mainteneur le 5 octobre 2026 ([GD-10](../gameplay/propositions/GD-10.md)) : des quêtes de trois ou quatre étapes qui relient les habitants d’une région, et les grandes constructions qui deviennent des projets mêlant les matières dès la 5e. **Fiche décidée, rien de construit.** Suite, après les deux pull requests de GD-9 : le mot à l’écran (consultants d’univers), la question mêlée (directeur du contenu pédagogique), puis une pull request pour les quêtes (une région de 6e d’abord) et une pour les projets de 5e.
+
+### Gardiens sur leur île (GD-11)
+
+Décidé par le mainteneur le 8 octobre 2026 ([GD-11](../gameplay/propositions/GD-11.md)) : « réduire par 2 la taille des Gardiens en conservant leur forme actuelle » (Blocland) et « les positionner directement sur leur île » (les deux univers). **En pull request**, sur la branche `claude/project-thread-wu779k` : le Gardien sur un carré libre de 5 × 5 cases de son île, cherché par paliers dans `guardianSpot` (toutes les règles ; sans la marge ni les pas de l’habitant ; le décor bas de la côte effacé sous le carré ; à défaut, le carré le moins gênant de la terre), le bloc d’or devant lui ; à la moitié de sa taille dans Blocland ; plus d’îlot, de pas japonais ni de Gardien détaché (fin des choix 4a et 5a de GD-9), les places de Gardien des sauvegardes abandonnées ; toucher un Gardien dans « Modifier le plan » choisit son île. Quelques liaisons qu’on ne traçait pas se tracent maintenant et deviennent des bacs. **Restes** : 23 îles sur 51 au carré de repli (liste `SANS_PLACE` de `terrain.test.ts`, à vider), qui peut recouvrir un relief ou du décor ; les créatures de Blocland parfois plus grandes que leur Gardien réduit ; les relectures (directeur artistique, consultants, référent dys, UX UI, expert frontend).
 
 ### Le jeu themable
 

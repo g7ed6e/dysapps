@@ -4,7 +4,7 @@
 
 Cette page est produite à partir des données du jeu (`docs/contenu/` pour les noms, `src/universes/` pour les espèces et les répliques) par `npm run pilotage:personnages`. Elle se corrige dans le code, puis se régénère ; jamais à la main.
 
-Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans les deux univers, le Gardien attend éteint sur son îlot et son défi le **rallume** : une statue de pierre qui reprend ses couleurs dans Blocland, une sentinelle de pierre éteinte dans Archipéo. Les noms des archipels changent d’un univers à l’autre (GD-1), leurs identifiants jamais.
+Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans les deux univers, le Gardien attend éteint sur son île et son défi le **rallume** : une statue de pierre qui reprend ses couleurs dans Blocland, une sentinelle de pierre éteinte dans Archipéo. Les noms des archipels changent d’un univers à l’autre (GD-1), leurs identifiants jamais.
 
 ## Le mot des grandes étapes
 
@@ -124,7 +124,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | L’Amphore peinte attend sur son îlot : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. » | L’Amphore peinte dit doucement : « Mes bandes peintes sont éteintes. Tu as relevé toutes les trouvailles : remets chaque époque à sa place. » |
+| Au défi | L’Amphore peinte attend sur son île : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. » | L’Amphore peinte dit doucement : « Mes bandes peintes sont éteintes. Tu as relevé toutes les trouvailles : remets chaque époque à sa place. » |
 | À la fin | Je me rallume, du pied jusqu’au col. La Fouille est à toi, et à Silex. | Ma frise se rallume. La fouille est à toi, et à Silex. |
 | Silex à l’arrivée | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. |
 
