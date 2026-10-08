@@ -5,7 +5,7 @@ import type { VoxelCube } from '../cube';
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, inCore, isLand, islandDef, landscape, margesDuCoeur } from '../map';
 import { DOCK_DX, dockCells, dockOrigin, dockPosts, shoreY, vehicleAfloat, vehicleRestZ } from '../harbor';
 import { planCells, zoneDesPlans } from '../plans';
-import { commandeDeLIle } from '../requests';
+import { fixturesOfPlace } from '../placedFixtures';
 import { casesDeLaPetiteConstruction } from '../fixtures';
 import { getArchipelago } from '../archipelago';
 import { placedLinksOfPlace } from '../linkGeometry';
@@ -93,14 +93,13 @@ function quaySpots(port: BiomeId, links: readonly string[], cubes: VoxelCube[]):
       for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(at.x + door + dx, at.y - 1 + dy);
     }
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(AVATAR_HOME.x + dx, AVATAR_HOME.y + dy);
-  // La petite construction de la commande de l'île (GD-7, PR 3), à sa place écrite, qu'elle soit posée ou non : les
+  // Les petites constructions de l'île (la commande, GD-7, PR 3 ; les quêtes, GD-10), à leur place écrite, qu'elle soit posée ou non : les
   // objets du quai ne bougent jamais quand elle se pose. Sans case de marge : avec elle, la barque de la grève de la
   // Plaine, dont la boutique de Coco prend la place, n'en trouvait plus.
-  const commande = commandeDeLIle(port);
-  const place = commande ? placeDeLaPetiteConstruction(port, commande.fixture) : null;
-  if (commande && place)
-    for (const c of casesDeLaPetiteConstruction(commande.fixture) ?? [])
-      core(place.x + c.x, place.y + c.y);
+  for (const commande of fixturesOfPlace(port)) {
+    const place = placeDeLaPetiteConstruction(port, commande.fixture);
+    if (place) for (const c of casesDeLaPetiteConstruction(commande.fixture) ?? []) core(place.x + c.x, place.y + c.y);
+  }
   // Les marges d'un cœur agrandi (le Marché, 01/10/2026) : le passage devant les bornes, où l'on marche et construit ; les
   // objets du quai restent sur la grève, devant elles, comme avant.
   for (const m of margesDuCoeur(def)) ban(m.x, m.y);

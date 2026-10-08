@@ -15,7 +15,7 @@ import { ArchipelagosSheet } from './ArchipelagosSheet';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
 import { creaturesQuiFontSigne, signesDesCreatures, usePlusTard } from './reminders';
-import { sansCommandes } from './world/requests';
+import { gameAsShown, getStory } from './world/stories';
 import { SCHOOL_PATH, SchoolSheet } from './School';
 import { MonumentSheet, MonumentsSheet } from './Monuments';
 import { useJoinBuilder, useMonumentBuilder } from './useMonumentBuilder';
@@ -198,7 +198,7 @@ export function WorldPage() {
   const eteints = rallumage.enAttente.join();
   // Les commandes des habitants (GD-7, PR 3) : seulement dans un univers qui les montre (Blocland, Archipéo) ;
   // ailleurs, le monde se lit sans elles (ni petite construction, ni suggestion), la sauvegarde restant la même.
-  const vu = useMemo(() => (textes.commandes ? state : sansCommandes(state)), [state, textes.commandes]);
+  const vu = useMemo(() => gameAsShown(state, textes), [state, textes]);
   // Un autre départ choisi pour une liaison vers un lieu fermé (GD-9, « Relier ») : le monde montre son fantôme.
   const ouvrageVu = fiche?.objet.genre === 'ouvrage' ? fiche.objet.id : null;
   const liaisonChoisie = useMemo(() => chosenDeparture(ouvrageVu, vu.world.links), [ouvrageVu, vu.world.links]);
@@ -327,14 +327,14 @@ export function WorldPage() {
   // La prochaine destination (la même que « Reprendre l'aventure » au menu), dite et marquée sur la Carte.
   const destination = modele.destination;
   // Un seul signe par créature : sa commande prête et suggérée (GD-7, PR 3), sinon ses révisions (GD-4, étape 1).
-  const signes = useMemo(() => signesDesCreatures(vu, a, revisions, destination.commande), [vu, a, revisions, destination.commande]);
+  const signes = useMemo(() => signesDesCreatures(vu, a, revisions, destination.commande, destination.story), [vu, a, revisions, destination.commande, destination.story]);
   // La prochaine chose à faire, quand c'est un objet : sa bulle est mise en avant sur l'île où l'on est (proposition
   // P2, world/affordance.ts) ; sinon aucune (la bulle d'or ne dit jamais autre chose que la prochaine destination).
   const navirePret = useMemo(
     () => laDestinationEstLeNavire(destination, nextGoalInfo(state, archipelago.port, textes.archipels, textes.libelles)),
     [destination, state, archipelago.port, textes],
   );
-  const prochaine = destination.commande
+  const prochaine = destination.commande || destination.story
     ? cleDeLaCreature(destination.island)
     : destination.ouvrage
       ? cleDeLObjet({ genre: 'ouvrage', id: destination.ouvrage })
@@ -351,7 +351,7 @@ export function WorldPage() {
   );
   // Blocland, sur la Carte : la bulle d'or de la prochaine destination porte l'image de ce qu'on y fait (piste B,
   // choisie par le mainteneur le 4 octobre 2026) : le bloc d'une commande, l'icône des ouvrages, le navire ou l'étoile.
-  const blocDeLaCommande = destination.commande ? signes.find((s) => s.id === destination.island)?.bloc : undefined;
+  const blocDeLaCommande = destination.commande || destination.story ? signes.find((s) => s.id === destination.island)?.bloc : undefined;
   const imageDeLaCarte = useMemo(
     () => imageDeLaDestination(destination, { navire: navirePret, bloc: blocDeLaCommande }),
     [destination, navirePret, blocDeLaCommande],
@@ -603,7 +603,7 @@ export function WorldPage() {
 
   // Un lien vers un chantier (« Voir le chantier », une puce de Blocs, « Y aller ») : le panneau ne s'ouvre plus tout
   // seul, c'est la fiche de l'objet qui répond, par-dessus le monde (le Bloc-Navire, un ouvrage, la créature qui
-  // commande) ; le chantier reste mis en avant si l'élève ouvre le panneau. Une partie (`part`) : la vague, plus bas.
+  // commande, celle de l'étape d'une quête) ; le chantier reste mis en avant si l'élève ouvre le panneau. Une partie (`part`) : la vague, plus bas.
   useEffect(() => {
     if (!island || !chantier) return;
     setHighlight(chantier);
@@ -615,7 +615,9 @@ export function WorldPage() {
           ? { genre: 'ouvrage', id: chantier }
           : commande
             ? { genre: 'creature', id: commande.biome }
-            : null;
+            : getStory(chantier)
+              ? { genre: 'creature', id: island.id }
+              : null;
     if (objet) apresLeVolSIlYEnA(() => setFiche({ objet, seq: ++ficheSeq.current, saut: true }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, chantier]);

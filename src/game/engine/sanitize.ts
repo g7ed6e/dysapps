@@ -13,6 +13,7 @@ import { planV1 } from '../world/plansV1';
 import { bridgesFromLegacyProgress, getBridge, getVoyage, grantAccess, isBiomeUnlocked, legacyReachable } from '../world/archipelago';
 import { lireTirage, recetteDe, type TirageAssemblage } from '../world/assembly';
 import { archipelDeLaCommande, getCommande, MAX_COMMANDES_OUVERTES } from '../world/requests';
+import { getStory, isStoryDone } from '../world/stories';
 import { pairOfJoinId, sanitizeLayout } from '../world/savedLayout';
 import type { ExerciseProgress, GameState, LogEntry, SpacedItem, TypeStats } from './state';
 import { INTERVALS } from './learning';
@@ -211,6 +212,17 @@ export function sanitizeState(input: unknown): GameState {
       if (requests.filter((r) => archipelDeLaCommande(getCommande(r)!) === archipelDeLaCommande(c)).length >= MAX_COMMANDES_OUVERTES) continue;
       requests.push(c.id);
     }
+  // Les quêtes ouvertes (GD-10) : connues, pas finies, une par région, à une étape qui existe ; absentes d'une
+  // sauvegarde d'avant les quêtes, qui ne perd rien.
+  const stories: { id: string; step: number }[] = [];
+  if (Array.isArray(world.stories))
+    for (const o of world.stories) {
+      const story = isRecord(o) && typeof o.id === 'string' ? getStory(o.id) : undefined;
+      const step = story && typeof o.step === 'number' && Number.isInteger(o.step) ? o.step : -1;
+      if (!story || step < 0 || step >= story.steps.length || isStoryDone({ parts }, story)) continue;
+      if (stories.some((x) => getStory(x.id)!.region === story.region)) continue;
+      stories.push({ id: story.id, step });
+    }
   // Les défis restés ouverts après le déplacement (core/movedChallenges.ts) : des lieux touchés par le déplacement, sans
   // doublon, dont le défi n'est pas encore réussi ; une fois le Gardien rallumé, le lieu n'a plus rien à y faire.
   const challengesKeptOpen: BiomeId[] = [];
@@ -228,7 +240,7 @@ export function sanitizeState(input: unknown): GameState {
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluency,
-    world: { parts, log, links, ...(place ? { place } : {}), ...(requests.length ? { requests } : {}), ...(layout ? { layout } : {}), ...(challengesKeptOpen.length ? { challengesKeptOpen } : {}) },
+    world: { parts, log, links, ...(place ? { place } : {}), ...(requests.length ? { requests } : {}), ...(stories.length ? { stories } : {}), ...(layout ? { layout } : {}), ...(challengesKeptOpen.length ? { challengesKeptOpen } : {}) },
     ...(Object.keys(assemblyDraw).length ? { assemblyDraw } : {}),
   };
 }

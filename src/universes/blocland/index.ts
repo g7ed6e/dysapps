@@ -529,6 +529,13 @@ export const BLOCLAND = {
     tuEnAs: (have, count) => `Tu en as ${have} sur ${count}.`,
     tuYEs: 'Tu y es : joue une mission ici.',
   },
+  quetes: {
+    titre: 'Entraide',
+    donner: 'Donner',
+    apporter: 'Apporter',
+    etape: (n, total) => `Étape ${n} sur ${total}`,
+  },
+
   blocs: nomsAssembles('blocland'),
   // Une liaison s'appelle « ouvrage » à l'écran, partout (GD-9 : le mode « Aménager » et le menu aussi).
   liaisons: { nom: 'ouvrage', pluriel: 'ouvrages', feminin: false },

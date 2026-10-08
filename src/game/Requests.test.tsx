@@ -11,7 +11,7 @@ import { BloclandProvider, useBlocland } from './BloclandContext';
 import { exercisesOf } from './exercises';
 import { IslandSheet } from './IslandSheet';
 import { MenuSheet } from './MenuSheet';
-import { getCommande, type Commande } from './world/requests';
+import { getCommande } from './world/requests';
 import { casesDeLaPetiteConstruction } from './world/fixtures';
 
 const FORET = 'french-6e-phonology';
@@ -79,7 +79,8 @@ it('dans le panneau de l’île de la créature : « Livrer » pose la petite co
   // La phrase prend la place de la ligne livrée, et le focus.
   const livree = document.querySelector(`[data-commande="${MOUSSO}"]`) as HTMLElement;
   expect(livree.textContent).toContain('Potager posé chez Mousso\u00a0!');
-  expect(within(liste).getAllByRole('listitem').map((l) => l.getAttribute('data-commande'))).toEqual([MOUSSO, COCO]);
+  // La livraison est un moment où la quête de la région peut arriver (GD-10) : sa ligne, en tête.
+  expect(within(liste).getAllByRole('listitem').map((l) => l.getAttribute('data-commande'))).toEqual(['story-6e-1', MOUSSO, COCO]);
   expect(livree.querySelector('.commande-posee')).toHaveFocus();
   expect(within(livree).queryByRole('button', { name: /Livrer/ })).toBeNull();
   const cases = casesDeLaPetiteConstruction(getCommande(MOUSSO)!.fixture)!.length;
@@ -146,7 +147,7 @@ it('en 3D, la phrase « posée » attend la fin de la vague de pose', async () =
           biome={getBiome(FORET)!}
           onClose={() => {}}
           in3d
-          onLivree={(c: Commande) => {
+          onLivree={(c: { id: string }) => {
             setEnCours(c.id);
             return true;
           }}
@@ -254,4 +255,25 @@ it('Archipéo (décision du 4 octobre 2026) : les commandes arrivent et s’affi
   await userEvent.click(screen.getByRole('button', { name: 'Construire le pont' }));
   // Un ouvrage construit fait arriver la commande de Mousso, comme dans Blocland.
   expect(screen.getByTestId('etat').textContent).toContain(`commandes ${COCO},${MOUSSO} ·`);
+});
+
+describe('l’entraide (GD-10) en tête de la liste', () => {
+  const DUNES = 'maths-6e-calculation-french-6e-word-spelling';
+  it('la dernière étape faite ici : sa phrase de fin reste, au-dessus de la quête suivante arrivée avec elle', async () => {
+    sauver({ progress: joue(FORET, PLAINE), world: { parts: {}, log: [], links: [PONT_FERME, DUNES], place: FORET, stories: [{ id: 'story-6e-1', step: 2 }] } });
+    ouvrir(FORET);
+    const liste = screen.getByRole('list', { name: 'Les commandes des créatures' });
+    await userEvent.click(within(liste).getByRole('button', { name: /Apporter/ }));
+    expect(within(liste).getByRole('status')).toHaveTextContent(/Lanterne posée chez Mousso/);
+    expect(within(liste).getByRole('status')).toHaveFocus();
+    expect(within(liste).getAllByRole('listitem').map((l) => l.getAttribute('data-commande'))[0]).toBe('story-6e-1');
+    expect(within(liste).getAllByRole('listitem').some((l) => l.getAttribute('data-commande') === 'story-6e-2')).toBe(true);
+  });
+  it('une étape « mission » sur l’île même : « Y aller » mène aux missions de l’île et le dit', async () => {
+    sauver({ progress: joue(FORET, PLAINE), world: { parts: {}, log: [], links: [PONT_FERME], place: PLAINE, stories: [{ id: 'story-6e-1', step: 0 }] } });
+    ouvrir(PLAINE);
+    const ligne = document.querySelector('[data-commande="story-6e-1"]') as HTMLElement;
+    await userEvent.click(within(ligne).getByRole('button', { name: /Y aller/ }));
+    expect(ligne).toHaveTextContent('Tu y es');
+  });
 });

@@ -34,6 +34,7 @@ import { useTextes } from '../universes';
 import { dueCountOnOpenPlaces } from './review';
 import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
+import { STORY_XP, startStory, storyAfterMission, tapStoryStep, type StepResult } from './world/stories';
 import { applyLayout } from './world/appliedLayout';
 import { settleNewPlaces } from './world/arrange';
 import type { World } from './engine/state';
@@ -78,6 +79,11 @@ interface BloclandContextValue {
    * créature. Puis une autre commande peut arriver.
    */
   deliver: (id: string) => Livraison<GameState>;
+  /**
+   * Fait l'étape en cours d'une quête d'un toucher (GD-10) : « donner » (les blocs sortent du stock) ou « apporter ». À
+   * la dernière, l'objet se pose chez l'habitant, avec de l'XP ; puis la quête suivante peut arriver.
+   */
+  tapStory: (id: string) => StepResult<GameState>;
   /** Le bonhomme va sur une île ouverte. */
   moveTo: (id: BiomeId) => void;
   /**
@@ -98,7 +104,7 @@ const BloclandContext = createContext<BloclandContextValue | null>(null);
 const STORAGE_KEY = 'game';
 
 export function BloclandProvider({ children }: { children: ReactNode }) {
-  const { completePlan } = useProgress();
+  const { completePlan, completeJoin } = useProgress();
   // Une sauvegarde d'avant GD-6 reçoit tout de suite les parties de ses missions déjà terminées ; l'XP des plans qu'elles
   // finissent est donnée une fois, juste après (plus bas).
   // Un lieu entré au jeu après l'aménagement de sa région se pose à la place libre la plus proche (`settleNewPlaces`) :
@@ -130,8 +136,20 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     avecCommandes.current = avecLesTextes;
   }, [avecLesTextes]);
-  /** À la fin d'une mission, d'un ouvrage construit ou d'une livraison dans l'archipel `a` : une commande au plus arrive. */
-  const commandeQuiArrive = useCallback((s: GameState, a: ArchipelagoId): GameState => (avecCommandes.current ? faireArriverUneCommande(s, a).state : s), []);
+  // Les quêtes (GD-10), de même, dans un univers qui en a les textes (`quetes`).
+  const avecLesQuetes = Boolean(useTextes().quetes);
+  const avecQuetes = useRef(avecLesQuetes);
+  useEffect(() => {
+    avecQuetes.current = avecLesQuetes;
+  }, [avecLesQuetes]);
+  /**
+   * À la fin d'une mission, d'un ouvrage construit, d'une livraison ou d'une étape de quête dans l'archipel `a` : une
+   * commande au plus arrive, et une quête si la région n'en a pas d'ouverte.
+   */
+  const commandeQuiArrive = useCallback((s: GameState, a: ArchipelagoId): GameState => {
+    const avecUneCommande = avecCommandes.current ? faireArriverUneCommande(s, a).state : s;
+    return avecQuetes.current ? startStory(avecUneCommande, a).state : avecUneCommande;
+  }, []);
 
   useEffect(() => {
     saveJSON(STORAGE_KEY, state);
@@ -139,8 +157,10 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
 
   const complete = useCallback((def: ExerciseDef, results: ItemResult[]) => {
     const terminee = completeExercise(stateRef.current, def, results, todayISO());
-    // La mission finie, jamais pendant sa consigne : une commande peut arriver dans l'archipel de son île.
-    const completion = { ...terminee, state: commandeQuiArrive(terminee.state, archipelagoOf(def.biome).classe) };
+    // La mission finie : l'étape « mission » d'une quête chez son habitant est faite (GD-10) ; puis, jamais pendant sa
+    // consigne, une commande ou une quête peut arriver dans l'archipel de son île.
+    const etape = avecQuetes.current ? storyAfterMission(terminee.state, def.biome) : terminee.state;
+    const completion = { ...terminee, state: commandeQuiArrive(etape, archipelagoOf(def.biome).classe) };
     stateRef.current = completion.state;
     setState(completion.state);
     setSessionCount((n) => n + 1);
@@ -209,6 +229,17 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     },
     [pousser, commandeQuiArrive],
   );
+  const tapStory = useCallback(
+    (id: string): StepResult<GameState> => {
+      const r = tapStoryStep(stateRef.current, id);
+      if (!r.ok) return r;
+      // Une quête finie : son XP, sans succès (GD-10).
+      if (r.finished) completeJoin(STORY_XP);
+      const next = pousser(commandeQuiArrive(r.state, r.story.region));
+      return { ...r, state: next };
+    },
+    [pousser, commandeQuiArrive, completeJoin],
+  );
   const moveTo = useCallback((id: BiomeId) => {
     const next = moveAvatar(stateRef.current, id);
     if (next === stateRef.current) return;
@@ -270,6 +301,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       disassemble,
       buildBridge,
       deliver,
+      tapStory,
       moveTo,
       arrange,
       launch,
@@ -292,6 +324,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       disassemble,
       buildBridge,
       deliver,
+      tapStory,
       moveTo,
       arrange,
       launch,

@@ -32,7 +32,7 @@ import { JOIN_FILL, JOIN_MAX_STEPS } from './join';
 import { SHORT_LENGTH, LONG_LENGTH } from './routing';
 import type { BridgeKind } from './archipelago';
 import type { VoxelCube } from './cube';
-import { COMMANDES } from './requests';
+import { PLACED_FIXTURES } from './placedFixtures';
 import { casesDeLaPetiteConstruction } from './fixtures';
 import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './characters/merges';
 import { COUT_DES_BULLES } from './affordance';
@@ -205,10 +205,15 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
     premiersRivages: { triangles: 7_750, drawCalls: 3 },
     autres: { triangles: 8_000, drawCalls: 3 },
   },
+  // Les quêtes des habitants (GD-10, PR 1) : les trois objets posés à la fin des quêtes du 6e (la lanterne, le portillon,
+  // l'escalier) sont des petites constructions, comptées dans ce poste (`toutConstruitAvecLesCommandes`) : 758 triangles
+  // mesurés aux Premiers Rivages (`npm run rendu:budget`), toutes commandes livrées et toutes quêtes finies. Les commandes
+  // passent de 640 à 800, pris sur la marge du navire (650 → 490 ; 408 mesurés), la somme inchangée (72 770) ; aucun
+  // appel de plus.
   commandes: {
     lot: 'GD-7',
-    nom: 'Commandes (les petites constructions livrées, dans le sol et la construction, sans appel de plus)',
-    premiersRivages: { triangles: 640, drawCalls: 0 },
+    nom: 'Commandes et quêtes (les petites constructions posées, dans le sol et la construction, sans appel de plus)',
+    premiersRivages: { triangles: 800, drawCalls: 0 },
     autres: { triangles: 380, drawCalls: 0 },
   },
   // Le lot de contenu des programmes 2025-2026 (une mission de plus à la Forge et au Cabinet de 4e, et à l'Observatoire
@@ -218,7 +223,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // d'autres cases (368 → 374 au 4e) : commandes 370 → 380. La somme des « autres » passe de 74 805 à 74 865, sous
   // `RENDER_BUDGET_AUTRES` (74 900), inchangé.
   bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_450, drawCalls: 1 }, autres: { triangles: 1_180, drawCalls: 1 } },
-  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 650, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
+  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
   creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 3_650, drawCalls: 1 }, autres: { triangles: 3_200, drawCalls: 1 } },
   gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 2_780, drawCalls: 1 }, autres: { triangles: 2_780, drawCalls: 1 } },
@@ -254,13 +259,13 @@ export function toutConstruit() {
 }
 
 /**
- * La même partie, avec en plus toutes les commandes livrées (GD-7, PR 3) : la petite construction de chaque créature
- * posée chez elle, pour compter le monde au pire. Dans Archipéo, les postes se comptent sur `toutConstruit`, et les
+ * La même partie, avec en plus toutes les commandes livrées (GD-7, PR 3) et toutes les quêtes finies (GD-10) : les
+ * petites constructions de chaque créature posées chez elle, pour compter le monde au pire. Dans Archipéo, les postes se comptent sur `toutConstruit`, et les
  * petites constructions à part, dans le poste « commandes » (`commandesCost`).
  */
 export function toutConstruitAvecLesCommandes() {
   const partie = toutConstruit();
-  const fixtures = Object.fromEntries(COMMANDES.map((c) => [c.fixture, (casesDeLaPetiteConstruction(c.fixture) ?? []).map((k) => k.key)]));
+  const fixtures = Object.fromEntries(PLACED_FIXTURES.map((c) => [c.fixture, (casesDeLaPetiteConstruction(c.fixture) ?? []).map((k) => k.key)]));
   return { ...partie, world: { ...partie.world, parts: { ...partie.world.parts, ...fixtures } } };
 }
 

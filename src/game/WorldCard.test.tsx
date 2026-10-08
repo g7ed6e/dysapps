@@ -45,7 +45,7 @@ function chantier(partiel: Partial<VehicleBuilder>): VehicleBuilder {
   };
 }
 
-function ouvrir(fiche: FicheOuverte, extra: { ship?: VehicleBuilder; commande?: Commande; onLivree?: (c: Commande) => boolean; onBoard?: () => void } = {}) {
+function ouvrir(fiche: FicheOuverte, extra: { ship?: VehicleBuilder; commande?: Commande; onLivree?: (c: { id: string }) => boolean; onBoard?: () => void } = {}) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
@@ -82,6 +82,31 @@ it('une créature qui a une commande prête : sa phrase et « Livrer », qui pos
   expect(f).toHaveTextContent('Potager posé chez Mousso !');
   expect(within(f).queryByRole('button', { name: /Livrer/ })).not.toBeInTheDocument();
   expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.requests ?? []).not.toContain(MOUSSO);
+});
+
+it('l’habitant de l’étape d’une quête (GD-10) : le signe de l’objet, ses étapes, la phrase et « Apporter », qui pose l’objet', async () => {
+  sauver({ progress: joue(FORET, PLAINE), world: { parts: {}, log: [], links: [], place: FORET, stories: [{ id: 'story-6e-1', step: 2 }] } });
+  const onLivree = vi.fn(() => true);
+  ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' }, { onLivree });
+  const f = screen.getByRole('dialog', { name: 'Mousso' });
+  // Le signe : l'objet et une pastille par étape, jamais « 3/3 » (qui se lirait comme une fraction).
+  expect(within(f).getByRole('img', { name: 'Entraide : la lanterne. Étape 3 sur 3.' }).querySelectorAll('.quete-etape')).toHaveLength(3);
+  expect(f).toHaveTextContent('Apporte la lanterne à Mousso.');
+  expect(f).not.toHaveTextContent('Bonjour !');
+  await userEvent.click(within(f).getByRole('button', { name: /Apporter/ }));
+  expect(onLivree).toHaveBeenCalledWith(expect.objectContaining({ id: 'story-6e-1', biome: FORET }));
+  expect(f).toHaveTextContent('Lanterne posée chez Mousso !');
+  expect(within(f).queryByRole('button', { name: /Apporter/ })).not.toBeInTheDocument();
+  expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.stories).toBeUndefined();
+});
+
+it('une étape « donner » pas encore faisable : les révisions d’abord ; sans révisions, la phrase et ce que l’élève a déjà', () => {
+  sauver({ progress: joue(FORET, PLAINE), stock: { [BLOC.bois]: 1 }, world: { parts: {}, log: [], links: [], place: PLAINE, stories: [{ id: 'story-6e-1', step: 1 }] } });
+  ouvrir({ objet: { genre: 'creature', id: PLAINE }, seq: 1, saut: false, phrase: 'Bonjour !' });
+  const f = screen.getByRole('dialog', { name: 'Coco' });
+  expect(f).toHaveTextContent('Donne 2 blocs de bois à Coco.');
+  expect(f).toHaveTextContent('1 sur 2');
+  expect(within(f).queryByRole('button', { name: /Donner/ })).not.toBeInTheDocument();
 });
 
 it('une créature qui a des révisions dues : « Reprendre » et « Plus tard » ; après « Plus tard », sa phrase', async () => {

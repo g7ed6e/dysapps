@@ -145,6 +145,34 @@ Le nombre et le nom du bloc ne s’écrivent pas : le jeu met à la place de `{o
 
 Les phrases sont celles de Blocland (une « commande », une « petite construction ») ; Archipéo, en pause, n’affiche pas les commandes et n’a pas de phrases ici (dans le JSON, elles sont rangées sous `blocland`, pour qu’un autre univers ait les siennes à côté). La forme de chaque petite construction est dessinée par le code (`src/game/world/fixtures.ts`, testée) ; la note « > Forme » la décrit pour l’artiste technique 3D, et le jeu ne la lit pas. `scripts/contenu/demandes.mjs` lit la section et vérifie ces règles (avec les apostrophes typographiques, sans « … », deux phrases courtes au plus) ; `demandes.test.mjs` les teste. Changer un bloc, un nombre ou une petite construction passe par le directeur artistique ; une phrase, par le consultant de Blocland et le référent dys.
 
+## Les quêtes
+
+Les quêtes des habitants ([GD-10](../gameplay/propositions/GD-10.md)), l’« Entraide » à l’écran, s’écrivent dans `quetes.md`, un titre `## <classe>` par région, puis une quête par titre `### \`story-<classe>-<n>\``, dans l’ordre où elles arrivent. `npm run contenu` les écrit dans `src/game/world/stories.json` :
+
+```md
+## 6e
+
+### `story-6e-1`
+
+- objet : la lanterne
+- icône : `lantern`
+- fin : Lanterne posée chez Mousso !
+
+1. mission chez `maths-6e-calculation` : Joue une mission chez Coco.
+2. donner 2 `french-6e-phonology` chez `maths-6e-calculation` : Donne {objet} à Coco.
+3. apporter chez `french-6e-phonology` : Apporte la lanterne à Mousso.
+
+> Forme : un banc de trois bois, une barrière au milieu, la lanterne dessus.
+```
+
+- **identifiant** : `story-<classe>-<n>`, à partir de 1, qui ne change jamais ; l’objet posé à la fin est la petite construction suivante de la créature de la dernière étape (`<lieu>-fixture-<n>`, après celle de sa commande ; il ne s’écrit pas). Les deux numéros suivent l’ordre du fichier et sont enregistrés dans les sauvegardes : une quête nouvelle s’ajoute à la fin de sa région, jamais au milieu, et une commande ne s’ajoute pas à un lieu qui reçoit déjà l’objet d’une quête.
+- **objet** : son nom avec l’article ; **icône** : le bloc dont l’image le montre (un bloc d’île, assemblé ou de finition).
+- **étapes** : trois ou quatre, chacune chez une créature de la région, jamais sur l’île de la LV2 : `mission` (réussir une mission de son île, n’importe laquelle), `donner N \`<bloc>\`` (de 2 à 4 blocs d’une île de la région) ou `apporter`. La dernière se fait d’un toucher (`donner` ou `apporter`) : c’est elle qui pose l’objet.
+- **phrases** : une seule phrase de sept mots au plus, qui nomme la créature ; `{objet}`, seulement dans une étape `donner`, devient le nombre et le nom du bloc (« 2 blocs de bois »).
+- **fin** : cinq mots au plus, « <Objet> posé(e) chez <créature> ! ».
+
+La forme de l’objet et sa place restent dans le code (`src/game/world/fixtures.ts`, testées) ; la note « > Forme » la décrit, et le jeu ne la lit pas. `scripts/contenu/quetes.mjs` vérifie ces règles ; `quetes.test.mjs` les teste. Une étape, un bloc ou un objet passe par le directeur artistique ; une phrase, par les consultants d’univers et le référent dys.
+
 ## Les missions du portail
 
 `portail/` tient le contenu de quatre missions du portail, un fichier par mission ; `npm run contenu` en produit les JSON de `src/apps/` :

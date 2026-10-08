@@ -1,3 +1,4 @@
+import type { PetiteConstructionAPoser } from './world/placedFixtures';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
@@ -8,7 +9,6 @@ import { useSettings } from '../core/SettingsContext';
 import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { Requests, YouAreHere } from './Requests';
-import type { Commande } from './world/requests';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
 import { ShipSection } from './ShipSection';
@@ -63,7 +63,7 @@ interface Props {
   /** Les parties que la vague est en train de poser (GD-6) : le compte du bâtiment les attend. */
   enCoursDePose?: Partie[] | null;
   /** Une commande livrée dans ce panneau (GD-7, PR 3) : la scène pose sa petite construction ; `true` si elle en prend le son. */
-  onLivree?: (c: Commande) => boolean;
+  onLivree?: (c: PetiteConstructionAPoser) => boolean;
   /** La commande dont la petite construction se pose (la vague) : la phrase « posée » attend la fin (GD-7, PR 3). */
   commandeEnCoursDePose?: string | null;
 }
