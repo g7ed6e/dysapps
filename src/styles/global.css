@@ -2938,6 +2938,10 @@ figure.class-table {
   font-weight: 700;
   max-width: none;
 }
+/* « Terminé ! » d'un seul tenant : le point d'exclamation ne part pas seul à la ligne. */
+.plan-done-word {
+  white-space: nowrap;
+}
 .plan-done svg {
   flex-shrink: 0;
   margin-top: 0.3em;

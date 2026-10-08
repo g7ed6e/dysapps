@@ -569,8 +569,8 @@ const CAPTURES = [
   // Les grands projets (GD-10, famille `projets`), à retirer une fois le lot fusionné : le phare du large fini, sa
   // lanterne allumée, de jour et de nuit, et sur la Carte de nuit ; puis son panneau à deux pièces sur cinq (le socle et la
   // tour posés, `etages`), avec les blocs d'une recette en poche, sur tablette et au téléphone en grand texte.
-  { nom: 'projets-phare', vue: 'île', famille: 'projets', ile: 'maths-5e-signed-numbers', lieu: 'landmark-5e-1', finesse: 2 },
-  { nom: 'projets-phare-nuit', vue: 'île', famille: 'projets', ile: 'maths-5e-signed-numbers', lieu: 'landmark-5e-1', nuit: true, finesse: 2 },
+  { nom: 'projets-phare', vue: 'île', famille: 'projets', ile: 'maths-5e-signed-numbers', finesse: 2 },
+  { nom: 'projets-phare-nuit', vue: 'île', famille: 'projets', ile: 'maths-5e-signed-numbers', nuit: true, finesse: 2 },
   { nom: 'projets-carte-nuit', vue: 'carte', famille: 'projets', ile: 'maths-5e-signed-numbers', nuit: true },
   ...[
     { suffixe: '' },

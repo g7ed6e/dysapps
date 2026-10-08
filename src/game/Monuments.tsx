@@ -100,7 +100,7 @@ function MonumentBody({ builder }: { builder: MonumentBuilder }) {
               </p>
               {status.complete ? (
                 <p className="plan-done">
-                  <Icon name="star" /> Terminé ! <Syllabified text={texte.done} />
+                  <Icon name="star" /> <span className="plan-done-word">Terminé !</span> <Syllabified text={texte.done} />
                 </p>
               ) : (
                 <>
