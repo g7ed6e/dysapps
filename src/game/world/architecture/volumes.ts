@@ -14,7 +14,7 @@ export interface VolumeDeMatiere {
   ancre: VoxelCube;
   bas: number;
   haut: number;
-  /** Le nombre de cases du volume : une seule, c'est une case isolée (elle garde son dessus, world/construction.ts). */
+  /** Le nombre de cases du volume (une seule : une case isolée, qui peut devenir le bac « pièce seule »). */
   cases: number;
 }
 

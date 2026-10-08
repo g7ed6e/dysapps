@@ -92,7 +92,7 @@ describe('Le lissage : un volume par matière', () => {
     for (const c of socle) expect(peints.get(`${c.x},${c.y},${c.z}`)!.peinture.motifs[4]).toBe(0);
   });
 
-  it('le dessus d’un volume lissé prend le milieu entre le dessus et les côtés de sa matière ; une case isolée garde le sien', () => {
+  it('le dessus d’un volume lissé prend le milieu entre le dessus et les côtés de sa matière ; un bac « pièce seule » garde le sien', () => {
     // Décision du directeur artistique (8 octobre 2026) : les cases de sable des angles du moulin ne ressortent plus en carreaux.
     const enLineaire = (c: number) => [(c >> 16) & 255, (c >> 8) & 255, c & 255].map((k) => lineaire(k / 255));
     const sable = couleurDeMatiere('6e', 'sable');
@@ -124,6 +124,12 @@ describe('Le lissage : un volume par matière', () => {
     // Le bac « pièce seule » : son dessus dans la couleur de dessus du sable, jamais au milieu.
     const enSable = enLineaire(sable.dessus);
     expect(dessusDe(seule).some((c) => c.every((v, i) => Math.abs(v - enSable[i]) < 1e-4))).toBe(true);
+    // Une case de sable seule posée sur du bois (les angles du moulin) : un volume d'une case, peint, au milieu lui aussi.
+    const angle = [petite(0, 0, 1, 'bois'), petite(0, 0, 2, 'sable')];
+    const archi = architectureDe('6e', angle, { surLeVide: () => false });
+    expect(archi.lisses.get(`${LOIN},${LOIN},2`)?.cases).toBe(1);
+    expect(archi.remplacees.has(`${LOIN},${LOIN},2`)).toBe(false);
+    proche(dessusDe(angle), mixColor(sable.dessus, sable.cote, 0.5));
   });
 
   it('le soubassement se lit par colonne : une aile d’une rangée accolée à une tour de trois n’en a pas', () => {
