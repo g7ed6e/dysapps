@@ -1,38 +1,54 @@
 # Comparaison avec main
 
-Références : main au commit c90fa5437016df1f0716c3771d3bbb94a6405a9b (après : 21bc134b9bd9365556a6cd9a375fd9733499981a). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : main au commit c90fa5437016df1f0716c3771d3bbb94a6405a9b (après : 69e590567ab1920fc49ade2ffc6109ec45246a13). Une vue est changée au-delà de 0,3 % de pixels différents.
 
-## Changées (8) : planches dans `planches/`
+## Changées (7) : planches dans `planches/`
 
-- 3e-archipel-recul.jpg : 1,8 %
+- 3e-archipel-recul.jpg : 1,7 %
 - 3e-archipel.jpg : 6,6 %
 - 3e-carte.jpg : 0,3 %
 - 3e-ile-recul.jpg : 4,4 %
-- 3e-ile.jpg : 66,3 %
+- 3e-ile.jpg : 2,1 %
 - 4e-archipel-recul.jpg : 0,6 %
 - 4e-archipel.jpg : 0,9 %
+
+## Inchangées (3) : non publiées
+
 - 4e-carte.jpg : 0,3 %
-
-## Inchangées (2) : non publiées
-
 - 4e-ile-recul.jpg : 0,0 %
 - 4e-ile.jpg : 0,0 %
 
-## Sans référence (16) : dans `planches/` telles quelles
+## Sans référence (32) : dans `planches/` telles quelles
 
 - 3e-projets-3e-carte-nuit.jpg
 - 3e-projets-3e-carte.jpg
-- 3e-projets-3e-chantier.jpg
-- 3e-projets-3e-fantome.jpg
 - 3e-projets-3e-nuit.jpg
 - 3e-projets-3e.jpg
+- 3e-projets-chateau-chantier.jpg
+- 3e-projets-chateau-fantome.jpg
+- 3e-projets-chateau-nuit.jpg
+- 3e-projets-chateau.jpg
+- 3e-projets-colonne-chantier.jpg
+- 3e-projets-colonne-fantome.jpg
+- 3e-projets-colonne-nuit.jpg
+- 3e-projets-colonne.jpg
+- 3e-projets-fusee-chantier.jpg
+- 3e-projets-fusee-fantome.jpg
+- 3e-projets-fusee-nuit.jpg
+- 3e-projets-fusee.jpg
 - 3e-projets-question-carnet-390x844-od32.jpg
 - 3e-projets-question-carnet.jpg
 - 3e-projets-question-solides-390x844-od32.jpg
 - 3e-projets-question-solides.jpg
 - 4e-projets-4e-carte-nuit.jpg
 - 4e-projets-4e-carte.jpg
-- 4e-projets-4e-chantier.jpg
-- 4e-projets-4e-fantome.jpg
 - 4e-projets-4e-nuit.jpg
 - 4e-projets-4e.jpg
+- 4e-projets-portique-chantier.jpg
+- 4e-projets-portique-fantome.jpg
+- 4e-projets-portique-nuit.jpg
+- 4e-projets-portique.jpg
+- 4e-projets-tour-chantier.jpg
+- 4e-projets-tour-fantome.jpg
+- 4e-projets-tour-nuit.jpg
+- 4e-projets-tour.jpg
