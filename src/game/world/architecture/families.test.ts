@@ -42,6 +42,11 @@ describe('La table commune « matière → famille »', () => {
     expect(familyOf('#ff0000')).toBeNull();
   });
 
+  it('les matières rangées par analogie sont dans la table, une seule fois', () => {
+    for (const t of FAMILIES_TO_CONFIRM) expect(familyOf(t), t).not.toBeNull();
+    expect(new Set(FAMILIES_TO_CONFIRM).size).toBe(FAMILIES_TO_CONFIRM.length);
+  });
+
   it('elle ne s’active qu’au 6e : les kits du 5e, du 4e et du 3e restent vides', () => {
     expect(KITS['6e'].matieres).toEqual(materialsOf(['colombage', 'bardage', 'pierre', 'toit', 'finition']));
     for (const a of ['5e', '4e', '3e'] as const) expect(KITS[a].matieres, a).toEqual({});

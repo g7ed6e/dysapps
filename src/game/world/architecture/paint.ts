@@ -99,7 +99,8 @@ export function motifDeLaRangee(m: number, z: number): number {
  * aucune bande : le motif tel quel.
  */
 export function motifDesRangees(bas: number, haut: number, zBas: number, zHaut: number): number {
-  if (zHaut === zBas) return bas;
+  // Un bloc assemblé (au-delà de `MOTIF_FIN`) n'a pas de bandes : ses bits bas ne sont pas ceux d'un mur.
+  if (zHaut === zBas || bas >= MOTIF_FIN) return bas;
   const bandes = (bas & BITS_DU_PIED) | (haut & BITS_DE_LA_TETE);
   if (!bandes) return bas;
   const m = RANGEES.masque;

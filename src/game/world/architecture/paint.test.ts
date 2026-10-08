@@ -5,7 +5,7 @@ import { toutConstruit } from '../budget';
 import { batimentsDe } from '../construction';
 import { worldCubes } from '../terrain';
 import { architectureDe, CADRAN, COLOMBAGE, decharge, indexDuPlan, MOTIF, MOTIF_FIN, MOTIF_GLSL, motifDeLaRangee, motifDesRangees, peintureDuMur, pointsDuCadran, rangeesReunies, sensDeLaDecharge, voisinageDe, type Voisinage } from '.';
-import { maillageDeLaConstruction, MOTIF_ASSEMBLE_DEBUT } from '../construction';
+import { maillageDeLaConstruction, MOTIF_ASSEMBLE, MOTIF_ASSEMBLE_DEBUT } from '../construction';
 import { KIT_6E } from './kits/6e';
 
 const vois = (v: Partial<Voisinage>): Voisinage => ({
@@ -258,6 +258,8 @@ describe('Peindre ne coûte aucun triangle : la fusion réunit les rangées d’
     // Une rangée seule, ou sans bande : le motif tel quel.
     expect(motifDesRangees(rangees[0], rangees[0], 2, 2)).toBe(rangees[0]);
     expect(motifDesRangees(MOTIF.plein, MOTIF.plein, 2, 4)).toBe(MOTIF.plein);
+    // Deux blocs assemblés empilés (deux miroirs) : leur motif reste le leur, sans bandes ni hauteurs de rangées.
+    expect(motifDesRangees(MOTIF_ASSEMBLE.miroir, MOTIF_ASSEMBLE.miroir, 2, 3)).toBe(MOTIF_ASSEMBLE.miroir);
   });
 
   it('un mur de pierre de trois rangées sur quatre cases, soubassement et chaperon compris : un rectangle par face', () => {
