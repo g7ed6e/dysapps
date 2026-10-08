@@ -33,22 +33,30 @@ function ecartsPendant(ms: number): Promise<number[]> {
 }
 
 /**
- * Le monde dessine et ses chiffres ne bougent plus (le compteur de `?mesures` garde ceux de la vue d'avant tant que la
- * scène n'est pas refaite : une seconde de suite sans changement), au plus 30 s ; puis la caméra a le temps de se poser.
- * Faux s'il n'y a pas de monde en 3D (la vue simple, sans `.voxel-canvas`).
+ * Le monde dessine et ses chiffres ne bougent plus : le compteur de `?mesures` garde ceux de la vue d'avant
+ * (`ancienne`) tant que la scène n'est pas refaite, d'où l'attente qu'ils changent, puis une seconde de suite sans
+ * changement ; au plus 30 s. Puis la caméra a le temps de se poser. Faux s'il n'y a pas de monde en 3D (la vue simple,
+ * sans `.voxel-canvas`).
  */
-async function attendreLeMonde(): Promise<boolean> {
+async function attendreLeMonde(ancienne: string): Promise<boolean> {
   let avant = '';
   let stable = 0;
+  let change = false;
   for (let i = 0; i < 300 && stable < 10; i++) {
     await attendre(100);
-    const s = window.__dysappsRendu;
-    const cle = s?.calls ? `${s.calls}/${s.triangles}` : '';
-    stable = cle && cle === avant ? stable + 1 : 0;
+    const cle = chiffres();
+    change ||= cle !== ancienne;
+    stable = change && cle && cle === avant ? stable + 1 : 0;
     avant = cle;
   }
   await attendre(2000);
   return Boolean(document.querySelector('.voxel-canvas'));
+}
+
+/** Ce que dessine la dernière image (appels/triangles), vide sans compteur. */
+function chiffres(): string {
+  const s = window.__dysappsRendu;
+  return s?.calls ? `${s.calls}/${s.triangles}` : '';
 }
 
 /** La touche − sur le monde, `n` fois (three/gestures.ts : ×0,8 chaque fois, jusqu'à la borne du zoom). */
@@ -102,17 +110,19 @@ export default function AutoMeasure() {
       const { progress, world } = toutConstruitAvecLesCommandes();
       chargerPourLesMesures(partieDeMesure(progress, world, ile));
       navigate(`/adventure/${ile}`);
-      if (!(await attendreLeMonde())) return setEtape('Pas de monde en 3D (vue simple ?) : rien à mesurer.');
+      if (!(await attendreLeMonde(''))) return setEtape('Pas de monde en 3D (vue simple ?) : rien à mesurer.');
       await ligne('île');
       await reculer(10);
       await ligne('île, au plus reculé');
+      const ileReculee = chiffres();
       navigate('/adventure');
-      await attendreLeMonde();
+      await attendreLeMonde(ileReculee);
       await ligne('archipel');
       await reculer(10);
       await ligne('archipel, au plus reculé');
+      const archipelRecule = chiffres();
       navigate('/adventure/map');
-      await attendreLeMonde();
+      await attendreLeMonde(archipelRecule);
       await ligne('Carte');
       // « Modifier le plan » ouvert puis annulé : la plus longue image vient du terrain refait (sans faces fondues).
       if (!toucher(MODIFIER_LE_PLAN)) notes.push('« Modifier le plan » : bouton non trouvé.');

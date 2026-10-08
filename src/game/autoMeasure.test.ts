@@ -35,5 +35,6 @@ describe('la mesure automatique', () => {
     const t = tableauDesMesures([{ etape: 'île', appels: 39, triangles: 12880, ips: 58, pire: 33 }], 'iPad');
     expect(t).toContain('| île | 39 | 12');
     expect(t.split('\n')[0]).toBe('Mesure automatique · iPad');
+    expect(tableauDesMesures([], 'iPad', ['« Annuler » : bouton non trouvé.'])).toMatch(/\n\n« Annuler » : bouton non trouvé\.$/);
   });
 });
