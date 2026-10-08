@@ -157,9 +157,24 @@ function stateOf(a: ArchipelagoId, built: readonly string[]): LinksState {
   if (!e) {
     // Peu de listes différentes dans une partie ; on oublie les anciennes au-delà de quelques-unes.
     if (states.size > 32) states.clear();
-    const traceur = emptyRouter(a);
-    const traces = new Map<string, LinkRoute | null>();
-    for (const b of posees) if (!linkBetweenJoined(b)) traces.set(b.id, traceur.poser(b, LONG_LENGTH));
+    // Les liaisons se posent une à une (linkWholeRegion, une partie) : on repart d'une copie de l'état sans la
+    // dernière s'il est connu, sinon du traceur vide de la région ; le tracé est le même, sans tout refaire.
+    const avant = posees.length > 0 ? states.get(`${a}|${posees.slice(0, -1).map((b) => b.id).join(',')}`) : undefined;
+    let traceur: RegionRouter;
+    let traces: Map<string, LinkRoute | null>;
+    let reste: BridgeDef[];
+    if (avant) {
+      traceur = avant.traceur.copie();
+      traces = new Map(avant.traces);
+      reste = posees.slice(-1);
+    } else {
+      let vide = emptyRouters.get(a);
+      if (!vide) emptyRouters.set(a, (vide = emptyRouter(a)));
+      traceur = vide.copie();
+      traces = new Map();
+      reste = posees;
+    }
+    for (const b of reste) if (!linkBetweenJoined(b)) traces.set(b.id, traceur.poser(b, LONG_LENGTH));
     e = { traces, traceur, essais: new Map() };
     states.set(cle, e);
   }

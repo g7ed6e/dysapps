@@ -287,6 +287,10 @@ class Grid {
     const ly = y - this.y0;
     return lx < 0 || ly < 0 || lx >= this.w || ly >= this.h ? -1 : ly * this.w + lx;
   }
+  /** Une copie : ce qui est dur se copie, les lieux proches (fixés à la construction) se partagent. */
+  copie(): Grid {
+    return Object.assign(Object.create(Grid.prototype) as Grid, { ...this, dur: this.dur.slice() });
+  }
   /** Marque un rectangle élargi de `marge` cases. */
   rectangle(r: { x0: number; y0: number; x1: number; y1: number }, marge: number, f: (i: number) => void): void {
     for (let x = r.x0 - marge; x < r.x1 + marge; x++)
@@ -388,12 +392,35 @@ export class RegionRouter {
     }
   }
 
+  /**
+   * Une copie qu'on peut poser sans toucher l'original : la grille et les arrivées prises se copient, le reste (fixé à
+   * la construction) se partage. Poser après une copie revient à refaire le traceur depuis le début, en moins cher.
+   */
+  copie(): RegionRouter {
+    return Object.assign(Object.create(RegionRouter.prototype) as RegionRouter, {
+      ...this,
+      g: this.g.copie(),
+      prises: new Set(this.prises),
+      cotesPris: new Set(this.cotesPris),
+    });
+  }
+
+  // Les clés d'une arrivée, faites une fois : `libre` est appelé pour chaque paire d'arrivées de chaque essai.
+  private readonly cles = new Map<Anchor, { arrivee: string; cote: string }>();
+
+  private clesDe(c: Anchor): { arrivee: string; cote: string } {
+    let k = this.cles.get(c);
+    if (!k) this.cles.set(c, (k = { arrivee: `${c.lieu}|${c.cote}|${c.pas}`, cote: `${c.lieu}|${c.cote}` }));
+    return k;
+  }
+
   private cle(c: Anchor): string {
-    return `${c.lieu}|${c.cote}|${c.pas}`;
+    return this.clesDe(c).arrivee;
   }
 
   private libre(c: Anchor): boolean {
-    return !this.prises.has(this.cle(c)) && (this.depart.has(c.lieu) || !this.cotesPris.has(`${c.lieu}|${c.cote}`));
+    const k = this.clesDe(c);
+    return !this.prises.has(k.arrivee) && (this.depart.has(c.lieu) || !this.cotesPris.has(k.cote));
   }
 
   /** Le tracé que prendrait une liaison de `max` cases au plus, sans la poser ; `null` si elle ne tient pas. */
@@ -425,8 +452,8 @@ export class RegionRouter {
     if (!best) return null;
     this.prises.add(this.cle(best.depuis));
     this.prises.add(this.cle(best.vers));
-    this.cotesPris.add(`${best.depuis.lieu}|${best.depuis.cote}`);
-    this.cotesPris.add(`${best.vers.lieu}|${best.vers.cote}`);
+    this.cotesPris.add(this.clesDe(best.depuis).cote);
+    this.cotesPris.add(this.clesDe(best.vers).cote);
     for (const c of best.cases) this.g.rectangle({ x0: c.x, y0: c.y, x1: c.x + 1, y1: c.y + 1 }, LINK_GAP - 1, (i) => (this.g.dur[i] = 1));
     return best;
   }
