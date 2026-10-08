@@ -26,7 +26,7 @@ Les quêtes des habitants ([GD-10](../gameplay/propositions/GD-10.md)) : une pet
 2. donner 3 `maths-6e-fractions` chez `french-6e-word-spelling` : Donne {objet} à Rouxel.
 3. apporter chez `french-6e-grammar-spelling` : Apporte le portillon à Bloquette.
 
-> Forme : une porte de deux de haut entre deux poteaux de terre.
+> Forme : une porte sur un seuil de galet, entre deux poteaux de galets coiffés d’une barrière (les trois galets donnés).
 
 ### `story-6e-3`
 
@@ -39,4 +39,4 @@ Les quêtes des habitants ([GD-10](../gameplay/propositions/GD-10.md)) : une pet
 3. mission chez `french-6e-reading` : Joue une mission chez Grimoire.
 4. apporter chez `french-6e-reading` : Apporte l’escalier à Grimoire.
 
-> Forme : trois marches de un à trois de haut.
+> Forme : trois marches de un à trois de haut, tenues par les trois aimants donnés.

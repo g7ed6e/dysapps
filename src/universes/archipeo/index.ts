@@ -541,7 +541,8 @@ export const ARCHIPEO = {
     compte: (n, pretes) => (pretes ? `${pretes} prête${s(pretes)}` : `${n} en attente`),
     tuEnAs: (have, count) => `Tu en as ${have} sur ${count}.`,
     tuYEs: 'Tu y es : joue une mission ici.',
-  },  quetes: {
+  },
+  quetes: {
     titre: 'Entraide',
     donner: 'Donner',
     apporter: 'Apporter',

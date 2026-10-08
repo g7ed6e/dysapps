@@ -256,3 +256,24 @@ it('Archipéo (décision du 4 octobre 2026) : les commandes arrivent et s’affi
   // Un ouvrage construit fait arriver la commande de Mousso, comme dans Blocland.
   expect(screen.getByTestId('etat').textContent).toContain(`commandes ${COCO},${MOUSSO} ·`);
 });
+
+describe('l’entraide (GD-10) en tête de la liste', () => {
+  const DUNES = 'maths-6e-calculation-french-6e-word-spelling';
+  it('la dernière étape faite ici : sa phrase de fin reste, au-dessus de la quête suivante arrivée avec elle', async () => {
+    sauver({ progress: joue(FORET, PLAINE), world: { parts: {}, log: [], links: [PONT_FERME, DUNES], place: FORET, stories: [{ id: 'story-6e-1', step: 2 }] } });
+    ouvrir(FORET);
+    const liste = screen.getByRole('list', { name: 'Les commandes des créatures' });
+    await userEvent.click(within(liste).getByRole('button', { name: /Apporter/ }));
+    expect(within(liste).getByRole('status')).toHaveTextContent(/Lanterne posée chez Mousso/);
+    expect(within(liste).getByRole('status')).toHaveFocus();
+    expect(within(liste).getAllByRole('listitem').map((l) => l.getAttribute('data-commande'))[0]).toBe('story-6e-1');
+    expect(within(liste).getAllByRole('listitem').some((l) => l.getAttribute('data-commande') === 'story-6e-2')).toBe(true);
+  });
+  it('une étape « mission » sur l’île même : « Y aller » mène aux missions de l’île et le dit', async () => {
+    sauver({ progress: joue(FORET, PLAINE), world: { parts: {}, log: [], links: [PONT_FERME], place: PLAINE, stories: [{ id: 'story-6e-1', step: 0 }] } });
+    ouvrir(PLAINE);
+    const ligne = document.querySelector('[data-commande="story-6e-1"]') as HTMLElement;
+    await userEvent.click(within(ligne).getByRole('button', { name: /Y aller/ }));
+    expect(ligne).toHaveTextContent('Tu y es');
+  });
+});

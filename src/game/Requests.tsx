@@ -35,7 +35,7 @@ import { ASSEMBLAGE_PATH, recetteDe } from './world/assembly';
 import { archipelagoOf, isBiomeUnlocked, type ArchipelagoId } from './world/archipelago';
 import { COMMANDES, commandeMiseEnAvant, commandesOuvertes, estLivree, estPrete, getCommande, ilesQuiDonnent, texteDeLaCommande, type Commande } from './world/requests';
 import { lienDeLaDestination } from './world/destination';
-import { getStory, openStoryOf } from './world/stories';
+import { getStory, openStoryOf, type Story } from './world/stories';
 import { StoryLine, tapTheStep } from './Stories';
 
 interface Props {
@@ -145,14 +145,25 @@ export function Requests({ island, fold, highlight = null, niveau = 'h3', classN
     if (posee && said && settings.autoRead) speak(frenchTypography(said.text));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posee, said?.id]);
+  // La phrase de la fin d'une quête, de même, à la fin de la pose de son objet.
+  const queteFinieDite = queteDite?.finished === true && poseEnCours !== queteDite.id;
+  useEffect(() => {
+    if (queteFinieDite && queteDite && settings.autoRead) speak(queteDite.text);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queteFinieDite, queteDite?.id]);
   const mots = textes.commandes;
   if (!mots) return null;
   const a: ArchipelagoId = archipelagoOf(island ?? state.world.place ?? 'french-6e-phonology').classe;
   const ouvertes = commandesOuvertes(state.world, a);
-  // La quête ouverte de la région, en tête de la liste (GD-10) ; finie ici, sa phrase reste à sa place.
+  // La quête ouverte de la région (GD-10) ; finie ici, sa ligne reste, avec sa phrase, au-dessus de la suivante si une
+  // autre est arrivée avec la dernière étape.
   const quete = textes.quetes ? openStoryOf(state.world, a) : null;
   const queteFinie = queteDite?.finished ? getStory(queteDite.id) : undefined;
-  const queteVue = quete ?? (queteFinie ? { story: queteFinie, index: queteFinie.steps.length - 1 } : null);
+  const lignesDeQuete = [
+    ...(queteFinie ? [{ story: queteFinie, index: queteFinie.steps.length - 1 }] : []),
+    ...(quete && quete.story.id !== queteFinie?.id ? [quete] : []),
+  ];
+  const queteVue = lignesDeQuete[0] ?? null;
   if (!ouvertes.length && !said && !queteVue) return null;
 
   const lieu = textes.assemblage.a;
@@ -170,14 +181,44 @@ export function Requests({ island, fold, highlight = null, niveau = 'h3', classN
     const text = livrerLaCommande(c, { deliver, onLivree, sons: settings.sounds, lieu });
     if (text) setSaid({ id: c.id, index, text });
   };
-  // Déjà sur l'île qui donne le bloc : « Y aller » mène aux missions de l'île, et la ligne le dit.
-  const allerAuxMissions = (c: Commande) => {
+  // Déjà sur l'île qui donne le bloc (ou celle de l'étape d'une quête) : « Y aller » mène aux missions de l'île, et la
+  // ligne le dit.
+  const allerAuxMissions = (c: { id: string }) => {
     setIci(c.id);
     onAuxMissions?.();
     if (settings.autoRead) speak(frenchTypography(mots.tuYEs));
     const missions = island ? document.getElementById(`missions-${island}`) : null;
     missions?.scrollIntoView?.({ block: 'start', behavior: moinsDAnimations() ? 'auto' : 'smooth' });
     missions?.focus({ preventScroll: true });
+  };
+
+  // La quête en tête de la liste, sauf quand une commande se livre ici : un seul bouton principal en haut (consultant
+  // UX UI), la commande d'abord, comme dans la suggestion.
+  const livrerIci = island !== undefined && pretes.some((c) => c.biome === island);
+  const ligneDeQuete = (q: { story: Story; index: number }) => {
+    const finie = queteDite?.finished && queteDite.id === q.story.id;
+    return (
+      <StoryLine
+        key={q.story.id}
+        story={q.story}
+        index={q.index}
+        state={state}
+        island={island}
+        highlight={highlight === q.story.id}
+        said={finie ? (poseEnCours === q.story.id ? '' : queteDite.text) : null}
+        announced={queteDite !== null && !queteDite.finished && queteDite.id === q.story.id}
+        hereSaid={ici === q.story.id ? mots.tuYEs : null}
+        onTap={() => {
+          const r = tapTheStep(q.story, { tapStory, onLivree, sons: settings.sounds });
+          if (r) {
+            setQueteDite({ id: q.story.id, ...r });
+            if (settings.autoRead && !r.finished) speak(r.text);
+          }
+        }}
+        onAller={onAller}
+        onMissionsHere={() => allerAuxMissions(q.story)}
+      />
+    );
   };
 
   const Titre = niveau;
@@ -194,7 +235,7 @@ export function Requests({ island, fold, highlight = null, niveau = 'h3', classN
     (island ? pretes.some((c) => c.biome === island) : pretes.length > 0) ||
     ouvertes.some((c) => c.id === highlight) ||
     said !== null ||
-    (queteVue !== null && (highlight === queteVue.story.id || queteVue.story.steps[queteVue.index].place === island));
+    lignesDeQuete.some((q) => highlight === q.story.id || q.story.steps[q.index].place === island);
   return (
     <Foldable fold={fold} name="commandes" heading={heading} defaultOpen={defaultOpen}>
       <section className={`commandes${className ? ` ${className}` : ''}`} aria-labelledby={id}>
@@ -207,21 +248,7 @@ export function Requests({ island, fold, highlight = null, niveau = 'h3', classN
           </p>
         )}
         <ul ref={list} className="island-actions bridges-list commandes-list" aria-label={mots.liste}>
-          {queteVue && (
-            <StoryLine
-              story={queteVue.story}
-              index={queteVue.index}
-              state={state}
-              island={island}
-              highlight={highlight === queteVue.story.id}
-              said={queteDite?.finished && queteDite.id === queteVue.story.id ? (poseEnCours === queteDite.id ? '' : queteDite.text) : null}
-              onTap={() => {
-                const r = tapTheStep(queteVue.story, { tapStory, onLivree, sons: settings.sounds });
-                if (r) setQueteDite({ id: queteVue.story.id, ...r });
-              }}
-              onAller={onAller}
-            />
-          )}
+          {!livrerIci && lignesDeQuete.map(ligneDeQuete)}
           {lignes.map((c) => {
             const creature = getBiome(c.biome)!;
             const bloc = BLOCKS[c.block];
@@ -308,6 +335,7 @@ export function Requests({ island, fold, highlight = null, niveau = 'h3', classN
               </li>
             );
           })}
+          {livrerIci && lignesDeQuete.map(ligneDeQuete)}
         </ul>
       </section>
     </Foldable>

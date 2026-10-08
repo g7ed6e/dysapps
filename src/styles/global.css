@@ -4716,15 +4716,33 @@ button.island-quest:active {
   font-size: 1rem;
   color: var(--text);
 }
-/* Le signe d'une quête (GD-10) : l'image de l'objet et « 2/3 », en chiffres gras, sur la ligne de la quête et dans la fiche
-   de l'habitant. La ligne de la quête : un bord en pointillés, une forme en plus de celle d'une commande. */
+/* Le signe d'une quête (GD-10) : l'image de l'objet, puis une pastille par étape (jamais « 2/3 », qui se lirait comme
+   une fraction : référent dys) : pleine pour une étape faite, un anneau épais pour l'étape en cours, un anneau fin pour
+   la suite ; la forme dit l'état, pas seulement la couleur. La ligne de la quête : un bord en pointillés. */
 .quete-signe {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+  gap: 0.4rem;
   vertical-align: middle;
+}
+.quete-etapes {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+.quete-etape {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  border: 2px solid var(--text);
+  opacity: 0.55;
+}
+.quete-etape.faite {
+  background: var(--text);
+  opacity: 1;
+}
+.quete-etape.en-cours {
+  border-width: 4px;
+  opacity: 1;
 }
 .commandes-list .quete-item {
   border-style: dashed;

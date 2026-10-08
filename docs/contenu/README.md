@@ -165,7 +165,7 @@ Les quêtes des habitants ([GD-10](../gameplay/propositions/GD-10.md)), l’« E
 > Forme : un banc de trois bois, une barrière au milieu, la lanterne dessus.
 ```
 
-- **identifiant** : `story-<classe>-<n>`, à partir de 1, qui ne change jamais ; l’objet posé à la fin est la petite construction suivante de la créature de la dernière étape (`<lieu>-fixture-<n>`, après celle de sa commande ; il ne s’écrit pas).
+- **identifiant** : `story-<classe>-<n>`, à partir de 1, qui ne change jamais ; l’objet posé à la fin est la petite construction suivante de la créature de la dernière étape (`<lieu>-fixture-<n>`, après celle de sa commande ; il ne s’écrit pas). Les deux numéros suivent l’ordre du fichier et sont enregistrés dans les sauvegardes : une quête nouvelle s’ajoute à la fin de sa région, jamais au milieu, et une commande ne s’ajoute pas à un lieu qui reçoit déjà l’objet d’une quête.
 - **objet** : son nom avec l’article ; **icône** : le bloc dont l’image le montre (un bloc d’île, assemblé ou de finition).
 - **étapes** : trois ou quatre, chacune chez une créature de la région, jamais sur l’île de la LV2 : `mission` (réussir une mission de son île, n’importe laquelle), `donner N \`<bloc>\`` (de 2 à 4 blocs d’une île de la région) ou `apporter`. La dernière se fait d’un toucher (`donner` ou `apporter`) : c’est elle qui pose l’objet.
 - **phrases** : une seule phrase de sept mots au plus, qui nomme la créature ; `{objet}`, seulement dans une étape `donner`, devient le nombre et le nom du bloc (« 2 blocs de bois »).

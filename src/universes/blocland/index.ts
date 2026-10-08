@@ -528,7 +528,8 @@ export const BLOCLAND = {
     compte: (n, pretes) => (pretes ? `${pretes} prête${pretes > 1 ? 's' : ''}` : `${n} en attente`),
     tuEnAs: (have, count) => `Tu en as ${have} sur ${count}.`,
     tuYEs: 'Tu y es : joue une mission ici.',
-  },  quetes: {
+  },
+  quetes: {
     titre: 'Entraide',
     donner: 'Donner',
     apporter: 'Apporter',

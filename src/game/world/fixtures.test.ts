@@ -1,5 +1,6 @@
 // Les petites constructions des commandes (GD-7, PR 3) : chaque forme tient les limites du directeur artistique, et se
 // pose sur son île à côté de la créature sans rien chevaucher.
+import { STORIES } from './stories';
 import { DEFAULT_SETTINGS, retenirReglages, type Lv2Choice } from '../../core/settings';
 import { BIOMES, BLOC, BLOCKS, type BlockId } from '../biomes';
 import { BRIDGES, VOYAGES } from './archipelago';
@@ -65,9 +66,12 @@ describe.each(PLACED_FIXTURES.map((c) => [c.fixture, c] as const))('%s', (_id, c
 
   it('un cube du bloc livré par bloc demandé ; les autres de l’île de la créature ou de finition', () => {
     const commande = commandeDe(c.fixture);
-    if (commande) expect(cases.filter((k) => k.block === commande.block).length).toBeGreaterThanOrEqual(commande.count);
+    // L'objet d'une quête (GD-10) : un cube de chaque bloc donné en chemin, comme une commande (consultant de Blocland).
+    const donnes = STORIES.find((s) => s.fixture === c.fixture)?.steps.flatMap((e) => (e.kind === 'give' ? [e] : [])) ?? [];
+    const demandes = [...(commande ? [{ block: commande.block, count: commande.count }] : []), ...donnes];
+    for (const d of demandes) expect(cases.filter((k) => k.block === d.block).length).toBeGreaterThanOrEqual(d.count);
     const ile = BIOMES.find((b) => b.id === c.biome)!.block;
-    for (const k of cases) expect((commande && k.block === commande.block) || k.block === ile || FINITION.has(k.block)).toBe(true);
+    for (const k of cases) expect(demandes.some((d) => d.block === k.block) || k.block === ile || FINITION.has(k.block)).toBe(true);
     for (const k of cases) expect(BLOCKS[k.block]).toBeDefined();
   });
 

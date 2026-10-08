@@ -125,16 +125,24 @@ const FORMES: Record<string, Cube[]> = {
   // Les objets posés à la fin des quêtes de 6e (GD-10, consultant Blocland ; docs/contenu/quetes.md).
   // Mousso, la lanterne : un banc de trois bois, une barrière au milieu, la lanterne dessus.
   'french-6e-phonology-fixture-2': [...rangee(0, 2, 0, 0, BLOC.bois), [1, 0, 1, 'fence'], [1, 0, 2, 'lantern']],
-  // Bloquette, le portillon : une porte de deux de haut entre deux poteaux de terre.
-  'french-6e-grammar-spelling-fixture-2': [...colonne(0, 0, 0, 1, BLOC.terre), ...colonne(1, 0, 0, 1, 'door'), ...colonne(2, 0, 0, 1, BLOC.terre)],
-  // Grimoire, l'escalier : trois marches de un à trois de haut, des portes dessous (le verre se perdait sur le sol de
-  // verre de la Tour, comme pour les commandes).
+  // Bloquette, le portillon de son pré : une porte sur un seuil de galet, entre deux poteaux de galets coiffés d'une
+  // barrière (les trois galets donnés à Rouxel, consultant de Blocland).
+  'french-6e-grammar-spelling-fixture-2': [
+    [0, 0, 0, BLOC.galet],
+    [0, 0, 1, 'fence'],
+    [1, 0, 0, BLOC.galet],
+    [1, 0, 1, 'door'],
+    [2, 0, 0, BLOC.galet],
+    [2, 0, 1, 'fence'],
+  ],
+  // Grimoire, l'escalier : trois marches de un à trois de haut, tenues par les trois aimants donnés à Pince (le verre
+  // se perdait sur le sol de verre de la Tour ; consultant de Blocland).
   'french-6e-reading-fixture-2': [
     [0, 0, 0, 'stairs'],
-    [1, 0, 0, 'door'],
+    [1, 0, 0, BLOC.aimant],
     [1, 0, 1, 'stairs'],
-    [2, 0, 0, 'door'],
-    [2, 0, 1, 'door'],
+    [2, 0, 0, BLOC.aimant],
+    [2, 0, 1, BLOC.aimant],
     [2, 0, 2, 'stairs'],
   ],
 
