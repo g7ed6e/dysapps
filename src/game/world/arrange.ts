@@ -12,7 +12,7 @@ import type { World } from '../engine/state';
 import { BRIDGES, type BridgeDef, getBridge, isBiomeUnlocked, reachableIslands } from './archipelago';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, CORE, type IslandDef, startingIsland } from './map';
 import { SIDE_OF, LAYOUT_SIDE_OF } from './appliedLayout';
-import { fittingPlaces, type FootprintPart, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, placedIsland, poseOfSpot, spotInSteps, tooSmallGaps } from './footprint';
+import { boxOf, fittingPlaces, landRectangles, type FootprintPart, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, placedIsland, poseOfSpot, spotInSteps, tooSmallGaps } from './footprint';
 import { STEP, type Rectangle, wrapQuarts } from './placement';
 import { LONG_LENGTH, possibleLandings, RegionRouter, type LinkLandings, type LinkRoute, startingPlaces, placesOf } from './routing';
 import { LAYOUT_LAST_SPOT, type LayoutLanding, type LayoutSpot, type LayoutTurn, type RegionLayout } from './savedLayout';
@@ -22,6 +22,8 @@ import { AVATAR_HOME } from './terrain/base';
 import { portesDesLieux } from './terrain/village';
 import { creatureDuMonde, creatureSpot } from './terrain/creatures';
 import { joinShape, type JoinShape } from './join';
+import { gestureZone } from './arrangeGesture';
+import { silhouetteDe } from './silhouettes';
 import { QUEST_ROW, startingStations } from './terrain/markers';
 
 // ---------- Les mots communs ----------
@@ -125,6 +127,21 @@ export function joinsIn(world: World, a: ArchipelagoId): { pair: [BiomeId, Biome
   return out;
 }
 
+/**
+ * Ce que « Modifier le plan » soulève d'un lieu et de celui qui lui est réuni, une case de plus tout autour (GD-12) : les
+ * bandes de leur terre (`landRectangles`) et leur réunion, quand l'un d'eux a une forme ; `null` sinon (le rectangle de
+ * leur emprise suffit, comme avant). Deux lieux voisins s'emboîtent : le rectangle de l'un prendrait la côte de l'autre.
+ */
+export function liftPartsOf(world: World, id: BiomeId): Rectangle[] | null {
+  const autre = joinedWith(world, id);
+  const defs = (autre ? [id, autre] : [id]).map((l) => placeIn(world, l));
+  if (!defs.some((d) => silhouetteDe(d.id).forme)) return null;
+  const parts = defs.flatMap((d) => landRectangles(d));
+  const zone = autre ? joinsIn(world, archipelagoOfIsland(id)).find((j) => j.pair.includes(id))?.shape.zone : undefined;
+  if (zone) parts.push(zone);
+  return parts.map(gestureZone);
+}
+
 /** Les rectangles de l'emprise d'un lieu dans un monde. */
 function footprintIn(world: World, id: BiomeId, def: IslandDef = placeIn(world, id)): FootprintPart[] {
   return footprintOf(id, def);
@@ -171,7 +188,13 @@ function othersFootprintsByPlace(world: World, a: ArchipelagoId, sauf: BiomeId):
 
 /** Des rectangles laissent-ils au moins `GAP_BETWEEN_PLACES` cases d'eau à ceux des autres ? */
 function farEnough(rs: readonly Rectangle[], autres: readonly Rectangle[]): boolean {
-  return rs.every((r) => autres.every((o) => gapBetween(r, o) >= GAP_BETWEEN_PLACES));
+  // La boîte d'abord : les bandes de la terre d'une île qui a une forme (GD-12) ne se comparent qu'aux voisines.
+  const b = boxOf(rs);
+  for (const o of autres) {
+    if (gapBetween(b, o) >= GAP_BETWEEN_PLACES) continue;
+    for (const r of rs) if (gapBetween(r, o) < GAP_BETWEEN_PLACES) return false;
+  }
+  return true;
 }
 
 // ---------- Les liaisons ----------

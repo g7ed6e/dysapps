@@ -142,12 +142,20 @@ export function viewYaw(home: BiomeId): number {
  * qui pourrait cacher une borne est tiré pour cette vue.
  */
 function yawDuLieu(home: BiomeId): number {
-  const def = startingIsland(home);
+  const depart = startingIsland(home);
+  // Depuis sa place d'avant GD-12, si les formes l'ont fait bouger (`vueDepuis`) : la vue de l'île ne change pas.
+  const def = depart.vueDepuis ? { ...depart, core: depart.vueDepuis } : depart;
   const c = coeurDe(def);
   // Seul l'écart est-ouest compte : la caméra regarde toujours vers le nord, on la tourne vers la colonne centrale.
   const dx = colonneCentrale(archipelagoOfIsland(home)) - (c.x0 + c.x1) / 2;
   return VIEW_YAW_MAX * Math.max(-1, Math.min(1, dx / 50));
 }
+
+/**
+ * La colonne centrale d'un archipel dont les îles ont pris leur forme (GD-12), figée à sa valeur d'avant : les formes
+ * ont déplacé les îles et élargi leurs côtes, la colonne aurait bougé, et avec elle la vue de chaque île.
+ */
+const COLONNE_D_AVANT_LES_FORMES: Partial<Record<ArchipelagoId, number>> = { '6e': 72.5 };
 
 /**
  * Les îles qui ne comptent pas dans la colonne centrale : le Refuge des carnets (3e), posé au bord de l'archipel, ne fait
@@ -191,6 +199,8 @@ const colonnes = new Map<ArchipelagoId, number>();
  * `HORS_DE_LA_COLONNE`) et de son port, sur la carte de départ.
  */
 function colonneCentrale(a: ArchipelagoId): number {
+  const figee = COLONNE_D_AVANT_LES_FORMES[a];
+  if (figee !== undefined) return figee;
   const connue = colonnes.get(a);
   if (connue !== undefined) return connue;
   // La carte de départ : la colonne ne bouge pas quand l'élève déplace un lieu (GD-9).

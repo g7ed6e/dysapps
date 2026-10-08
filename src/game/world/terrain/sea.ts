@@ -36,10 +36,11 @@ import { layoutCache, type Rectangle } from '../placement';
  * changé (mesuré avec three/whales.test.ts) : au 6e, celle de -12, 100, que la côte de l'ouest cache en partie depuis le
  * port, nage en -8, 105, la clairière visible la plus proche ; au 5e, celle de 38, 414, cachée derrière les îles du sud,
  * nage en 79, 362, la seule clairière visible à moins de 80 cases (un rond de 4 cases, au nord du Marais) ;
- * au 4e, aucune baleine n'est plus dans le cadre de la vue du port.
+ * au 4e, aucune baleine n'est plus dans le cadre de la vue du port. Depuis GD-12 (une forme par île, 8 octobre 2026), les
+ * îles du 6e ont changé de place : aucune de ses clairières n'est plus cachée depuis le port, aucune baleine n'y est
+ * replacée.
  */
 export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
-  '6e': [{ de: { x: -12, y: 100 }, vers: { x: -8, y: 105 } }],
   '5e': [{ de: { x: 38, y: 414 }, vers: { x: 79, y: 362 } }],
 };
 

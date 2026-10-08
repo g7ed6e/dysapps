@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
-import { DIRECTION_STEP, DIRECTIONS, freeSpots, isFreeSpot, linksToRelink, placeIn, spotOf, stationOf } from './arrange';
+import { DIRECTION_STEP, DIRECTIONS, freeSpots, isFreeSpot, linksBrokenBy, linksToRelink, placeIn, spotOf, stationOf } from './arrange';
 import { isLandInWorld, mapOf } from './map';
 import {
   type ArrangeChoice,
@@ -30,6 +30,10 @@ import { startingPlaces } from './routing';
 
 const partie = (): World => toutConstruit().world;
 const VOLCAN: BiomeId = 'maths-6e-decimals';
+// Depuis les formes des îles (GD-12), le Volcan, au coin de devant, n'a que deux places : on glisse la Rivière, on défait
+// une liaison avec la Mine.
+const RIVIERE: BiomeId = 'maths-6e-fractions';
+const MINE: BiomeId = 'french-6e-letter-confusion';
 
 describe('choisir', () => {
   it('le lieu de départ ne se choisit pas ; un autre lieu part de sa place', () => {
@@ -172,7 +176,11 @@ describe('une borne, une arrivée, une liaison à reposer', () => {
 
   it('une liaison séparée se repose entre deux voisins, gratuitement', () => {
     const w = partie();
-    const c = snapChoice(w, chooseIsland(w, VOLCAN)!, { x: 200, y: 200 });
+    // Une place de la Mine qui défait une de ses liaisons.
+    const base = chooseIsland(w, MINE)!;
+    if (base.genre !== 'lieu') throw new Error('lieu');
+    const spot = ([1, 2, 3, 0] as const).flatMap((t) => freeSpots(w, MINE, t)).find((s) => linksBrokenBy(w, MINE, s).length)!;
+    const c = { ...base, spot };
     const r = poseChoice(w, c);
     if (!r.ok) throw new Error(r.reason);
     const relink = linksToRelink(r.world, '6e');
@@ -194,18 +202,18 @@ describe('glisser au doigt (7 octobre 2026, choix 1b, 2a, 3a, 6a du mainteneur)'
 
   it('un lieu suit le doigt place par place, libre ou prise ; la grille et l’empreinte se dessinent, les flèches se cachent', () => {
     const w = partie();
-    const c = chooseIsland(w, VOLCAN)!;
+    const c = chooseIsland(w, RIVIERE)!;
     if (c.genre !== 'lieu') throw new Error('lieu');
     const m = choiceMiddle(c)!;
     // Sur sa place : rien ne bouge.
     expect(dragChoice(w, c, { x: m.x + 1, y: m.y - 1 })).toEqual(c);
     // Une place libre plus loin (pas au bord du cadre, où la grille s'arrête), puis une place prise (sur un voisin) : le
     // fantôme y va quand même.
-    const libre = freeSpots(w, VOLCAN).find((s) => Math.abs(s.x - c.spot.x) + Math.abs(s.y - c.spot.y) > 3 && s.y > 1)!;
+    const libre = freeSpots(w, RIVIERE).find((s) => Math.abs(s.x - c.spot.x) + Math.abs(s.y - c.spot.y) > 3 && s.y > 1)!;
     const versLibre = dragChoice(w, c, choiceMiddle({ ...c, spot: libre })!);
     expect(versLibre).toEqual({ ...c, spot: libre });
     expect(choiceFits(w, versLibre)).toBe(true);
-    const voisin = mapOf('6e').find((d) => d.id !== VOLCAN)!.id;
+    const voisin = mapOf('6e').find((d) => d.id !== RIVIERE)!.id;
     const surVoisin = dragChoice(w, c, { x: placeIn(w, voisin).core.x + 8, y: placeIn(w, voisin).core.y + 8 });
     if (surVoisin.genre !== 'lieu') throw new Error('lieu');
     expect(choiceFits(w, surVoisin)).toBe(false);
@@ -214,7 +222,9 @@ describe('glisser au doigt (7 octobre 2026, choix 1b, 2a, 3a, 6a du mainteneur)'
     expect(v.poignees).toBeUndefined();
     expect(v.cases.some((k) => k.genre === 'place')).toBe(false);
     const grille = v.cases.filter((k) => k.genre === 'grille');
-    expect(grille.length).toBeGreaterThan(15);
+    // Depuis les formes des îles (GD-12), l'empreinte d'un lieu couvre huit places sur neuf : la grille n'en est plus que
+    // le tour, sur l'eau.
+    expect(grille.length).toBeGreaterThan(4);
     // La grille ne se pose que sur l'eau : jamais sur la terre d'un lieu, ni sur le lieu soulevé à sa place d'avant.
     for (const k of grille)
       for (const d of mapOf('6e')) {

@@ -23,7 +23,7 @@ const lien5e = BRIDGES.find((b) => archipelagoOfIsland(b.from) === '5e')!.id;
  */
 const valide: Layout = {
   '6e': {
-    islands: { 'maths-6e-decimals': { x: 2, y: 27, turn: 1 } },
+    islands: { 'maths-6e-decimals': { x: 12, y: 2, turn: 1 } },
     stations: { 'maths-6e-decimals:ordering': { x: 4, y: 14 } },
     landings: { [lien6e]: { from: { side: 'back', step: 2 }, to: { side: 'front', step: -1 } } },
     joined: [['french-6e-phonology', 'french-6e-letter-confusion']],
@@ -134,10 +134,11 @@ describe('la disposition de la sauvegarde', () => {
   });
 
   it('se pose seulement si elle tient sur la grille : dans le cadre, et ses lieux déplacés à quatre cases d’eau au moins', () => {
-    // La Ferme vers un coin du cadre : elle tient.
+    // Le Volcan, un pas plus à l'est au coin de devant, tourné d'un quart : il tient (depuis les formes des îles, GD-12,
+    // c'est l'une de ses deux places à ce quart).
     const poses = posesOfLayout(valide);
     const c = frameOf('6e');
-    expect(poses.get('maths-6e-decimals')).toEqual({ x: c.x0 + 2 * STEP, y: c.y0 + 27 * STEP, quarts: 1 });
+    expect(poses.get('maths-6e-decimals')).toEqual({ x: c.x0 + 12 * STEP, y: c.y0 + 2 * STEP, quarts: 1 });
     // Posée sur la Forêt, ou hors du cadre : la région reste à sa carte de départ.
     const foret = startingIsland('french-6e-phonology').core;
     const surLaForet = { x: (foret.x - c.x0) / STEP, y: Math.round((foret.y - c.y0) / STEP), turn: 0 as const };

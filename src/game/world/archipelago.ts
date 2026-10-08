@@ -150,9 +150,10 @@ const e = (from: BiomeId, to: BiomeId, kind: BridgeKind, via?: readonly Point[])
  * jetée, et reste dans `worldBounds` (starPort.test.ts). Sans points de passage, la ligne droite.
  */
 const VIA: Record<string, readonly Point[]> = {
-  'maths-6e-calculation-french-6e-reading': [{ x: 61, y: 14 }, { x: 13, y: 14 }, { x: 13, y: 52 }],
-  'maths-6e-calculation-french-6e-word-spelling': [{ x: 91, y: 21 }, { x: 91, y: 14 }, { x: 131, y: 14 }, { x: 131, y: 52 }],
-  'french-6e-phonology-english-6e-vocabulary': [{ x: 61, y: 67 }, { x: 61, y: 84 }, { x: 56, y: 84 }, { x: 56, y: 104 }],
+  // Les trois du 6e, retracés avec les formes des îles (GD-12, 8 octobre 2026) : par les bras de mer de la carte de départ.
+  'maths-6e-calculation-french-6e-reading': [{ x: 52, y: 27 }, { x: 52, y: 21 }, { x: 13, y: 21 }, { x: 13, y: 75 }],
+  'maths-6e-calculation-french-6e-word-spelling': [{ x: 95, y: 27 }, { x: 95, y: 46 }, { x: 152, y: 46 }],
+  'french-6e-phonology-english-6e-vocabulary': [{ x: 55, y: 71 }, { x: 55, y: 92 }, { x: -4, y: 92 }],
   'maths-5e-proportionality-french-5e-homophones': [{ x: 70, y: 336 }, { x: 70, y: 342 }, { x: 54, y: 342 }],
   'maths-3e-functions-english-3e-comprehension': [{ x: 50, y: 911 }, { x: 8, y: 911 }],
   'maths-3e-functions-english-3e-grammar': [{ x: 82, y: 915 }, { x: 87, y: 910 }, { x: 114, y: 910 }],

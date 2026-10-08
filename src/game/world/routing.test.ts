@@ -112,7 +112,8 @@ describe('le traceur d’une région', () => {
   it('ne coupe jamais un autre lieu : un lieu posé sur le chemin droit le fait passer au large, à deux cases au moins', () => {
     const g = pose(galet, 90 - (galet.core.x - plaine.core.x), 0);
     const obstacle = pose(startingIsland('english-6e-grammar'), 0, 0);
-    const milieu = { ...obstacle, core: { x: plaine.core.x + 45, y: plaine.core.y + 4 } };
+    // Sur la ligne de la liaison droite (GD-12 : les îles ont leur forme, la ligne a changé).
+    const milieu = { ...obstacle, core: { x: plaine.core.x + 45, y: plaine.core.y } };
     const t = tracer([plaine, g, milieu], VERS_LE_GALET).get(VERS_LE_GALET);
     expect(t).not.toBeUndefined();
     if (t) {
@@ -156,11 +157,13 @@ describe('une place possible (le geste « Aménager » le lira)', () => {
 
   it('impossible s’il coupe une liaison posée ; une liaison seulement proposée ne compte pas', () => {
     const volcan = startingIsland('maths-6e-decimals');
-    const v = { ...volcan, core: { x: plaine.core.x, y: plaine.core.y + 100 } };
-    const g = { ...galet, core: { x: plaine.core.x + 60, y: plaine.core.y + 50 } };
+    // Le Volcan à droite de la Plaine (GD-12 : leurs formes laissent passer une liaison en L autour d'un lieu posé
+    // derrière la Plaine ; à côté d'elle, non).
+    const v = { ...volcan, core: { x: plaine.core.x + 100, y: plaine.core.y - 8 } };
+    const g = { ...galet, core: { x: plaine.core.x + 50, y: plaine.core.y + 60 } };
     expect(tracer([plaine, g, v], VERS_LE_VOLCAN).get(VERS_LE_VOLCAN)).not.toBeNull();
     // Le Galet posé entre la Plaine et le Volcan : sa propre liaison se trace, mais plus celle du Volcan.
-    const entre = { ...galet, core: { x: plaine.core.x, y: plaine.core.y + 50 } };
+    const entre = { ...galet, core: { x: plaine.core.x + 48, y: plaine.core.y } };
     expect(tracer([plaine, entre, v], VERS_LE_GALET).get(VERS_LE_GALET)).not.toBeNull();
     expect(spotPossible('6e', [plaine, entre, v], galet.id, liaisons(VERS_LE_VOLCAN))).toBe(false);
     expect(spotPossible('6e', [plaine, entre, v], galet.id, [])).toBe(true);

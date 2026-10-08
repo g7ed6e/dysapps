@@ -251,7 +251,7 @@ const FICHES: Fiche[] = [
     archipelago: '6e',
     name: 'L’observatoire des baleines',
     description: 'Une tour de brique sur une plateforme de galets, et au sommet une longue-vue tournée vers le large, là où soufflent les baleines.',
-    islet: { x: -5, y: 75 }, // suit la Tour calée sur le pas (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026)
+    islet: { x: 22, y: 79 }, // suit la Tour calée sur le pas (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11), puis à droite de la Tour, sur une place libre du pas, avec les formes des îles (GD-12, 08/10/2026)
     reward: { xp: 150, chest: {} },
     done: 'L’observatoire est debout ! D’en haut, on voit les baleines souffler au large.',
     draw: observatoire,
@@ -262,7 +262,7 @@ const FICHES: Fiche[] = [
     archipelago: '6e',
     name: 'Le grand moulin',
     description: 'Un moulin de brique et de pierre, ses quatre ailes de bois et de toile tournées vers le vent du large.',
-    islet: { x: 24, y: 84 }, // suit la Ferme : la Forêt a grandi (01/10/2026), la carte s'est calée sur le pas (GD-9) ; recalé avec les îles agrandies (GD-11, 08/10/2026)
+    islet: { x: 0, y: 23 }, // suit la Ferme : la Forêt a grandi (01/10/2026), la carte s'est calée sur le pas (GD-9) ; recalé avec les îles agrandies (GD-11), puis au large du lobe gauche de la Ferme avec les formes des îles (GD-12, 08/10/2026)
     reward: { xp: 150, chest: {} },
     done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Premiers Rivages.',
     draw: moulin,

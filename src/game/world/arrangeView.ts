@@ -20,6 +20,7 @@ import {
   groupAt,
   joinsAround,
   joinsIn,
+  liftPartsOf,
   moveIsland,
   moveLanding,
   placeIn,
@@ -280,7 +281,8 @@ function dessinDuChoix(world: World, c: ArrangeChoice, glisse: boolean): Arrange
       // La vue garde entier le fantôme : les deux lieux réunis et leur réunion, pas seulement son milieu.
       const fantome = out.slice(0, debut);
       const cadre = fantome.length ? { rect: union(fantome.map((q) => ({ x0: q.x, y0: q.y, x1: q.x + 1, y1: q.y + 1 }))), z: eau, seq: 0 } : undefined;
-      return { cases: out, souleve: union(zone ? [...ici2, zone] : ici2), suivre: milieu(fantome, eau), barrees: relink, ...(cadre ? { cadre } : {}), ...(reunions.length ? { reunions } : {}), ...(zoneDuGlisse ? { zoneDuGlisse } : {}), ...(nomAuNord ? { nomAuNord } : {}) };
+      const parts = liftPartsOf(world, c.id);
+      return { cases: out, souleve: union(zone ? [...ici2, zone] : ici2), ...(parts ? { liftParts: parts } : {}), suivre: milieu(fantome, eau), barrees: relink, ...(cadre ? { cadre } : {}), ...(reunions.length ? { reunions } : {}), ...(zoneDuGlisse ? { zoneDuGlisse } : {}), ...(nomAuNord ? { nomAuNord } : {}) };
     }
     case 'borne': {
       const p = stationInWorld(world, c.key, c.place);

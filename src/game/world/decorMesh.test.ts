@@ -349,9 +349,11 @@ it('écueils et bancs : moins de 2 800 triangles aux Premiers Rivages ; les roch
   // avant les deux îles d'histoire-géographie, HG-2, qui élargissent la région ; 157 et 57 avant les trois îles de
   // sciences, SC-2, posées dans le même cadre, qui prennent leur place à la mer ; 153 et 68 avant que les îlots des Gardiens
   // quittent la mer, GD-11 : la rade devant chaque île reste sans écueil, mais les couloirs des liaisons de la carte de
-  // départ changent, et les écueils avec eux ; 147 et 64 avant que les îles grandissent, GD-11, 8 octobre 2026.)
-  expect(elements.filter((e) => e.genre === 'ecueil').length).toBe(148);
-  expect(elements.filter((e) => e.genre === 'banc').length).toBe(63);
+  // départ changent, et les écueils avec eux ; 147 et 64 avant que les îles grandissent, GD-11, 8 octobre 2026 ; 148
+  // et 63 avant que chaque île prenne sa forme, GD-12, que les colonnes de côté se rangent sur quatre rangs et le rang
+  // du fond en quinconce.)
+  expect(elements.filter((e) => e.genre === 'ecueil').length).toBe(145);
+  expect(elements.filter((e) => e.genre === 'banc').length).toBe(66);
   // La Forge : ses rochers sur la roche ont la valeur de la roche (0,9 à 1,1 fois), pas le beige de la pierre ; sur le
   // basalte, celle de la pierre chaude (R4b-4e), pas le basalte.
   const forge = monde('4e');

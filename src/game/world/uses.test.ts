@@ -93,16 +93,19 @@ it('l’inventaire commenté : les lignes rangées par utilité, les ouvrages un
   expect(inv.payable).toBe(5);
   expect(inv.ouvrages.map((o) => o.bridge.id).sort()).toEqual(
     [
-      'french-6e-phonology-french-6e-grammar-spelling',
       'french-6e-phonology-english-6e-grammar',
       'french-6e-phonology-english-6e-vocabulary',
       'french-6e-phonology-french-6e-letter-confusion',
       'french-6e-phonology-french-6e-word-spelling',
       'french-6e-phonology-history-6e-antiquity',
       'french-6e-phonology-life-earth-sciences-6e-living-world',
+      // Depuis les formes des îles (GD-12) : la Pointe et la Tour depuis la Forêt, la Ferme depuis la Plaine ; le
+      // Hangar, au coin du fond, ne se rejoint plus depuis la Plaine (par le Volcan ou la Ferme).
+      'french-6e-phonology-geography-6e-living',
+      'french-6e-phonology-french-6e-reading',
+      'french-6e-grammar-spelling-maths-6e-calculation',
       'maths-6e-calculation-maths-6e-fractions',
       'maths-6e-calculation-maths-6e-decimals',
-      'maths-6e-calculation-technology-6e-objects',
     ].sort(),
   );
   expect(inv.ouvrages.every((o) => o.enough)).toBe(true);

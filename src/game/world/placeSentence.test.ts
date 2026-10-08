@@ -84,8 +84,8 @@ describe('où est une place, en mots', () => {
 
   it('dit le voisin le plus proche, sa direction et l’écart, avec les noms de l’univers', () => {
     const id: BiomeId = 'english-6e-vocabulary';
-    // Derrière la Forêt des sons, à côté de l'Horloge des verbes, à sa droite sur la Carte.
-    expect(placeSentence(VIDE, id)).toMatch(/^à l’est de l’Horloge des verbes, à \d+ cases?$/);
+    // Au coin du fond, à l'ouest, derrière la Tour du lecteur (GD-12), au-dessus d'elle sur la Carte.
+    expect(placeSentence(VIDE, id)).toMatch(/^au nord de la Tour du lecteur, à \d+ cases?$/);
     expect(placeSentence(VIDE, id, startingSpot(id), (x) => `Lieu ${x}`)).toMatch(/du Lieu /);
     // Une autre place, une autre phrase (le fantôme la dit à chaque calage).
     const ailleurs = freeSpots(VIDE, id).find((s) => Math.abs(s.x - startingSpot(id).x) + Math.abs(s.y - startingSpot(id).y) > 2);
@@ -95,7 +95,7 @@ describe('où est une place, en mots', () => {
   it('la ligne de signes (piste A) : le voisin, la flèche, le nombre ; dite en mots, la même phrase', () => {
     const id: BiomeId = 'english-6e-vocabulary';
     const s = placeSigns(VIDE, id)!;
-    expect(s).toMatchObject({ voisin: 'Horloge des verbes', direction: { mot: 'est', icone: 'est' } });
+    expect(s).toMatchObject({ voisin: 'Tour du lecteur', direction: { mot: 'nord', icone: 'nord' } });
     expect(s.cases).toBeGreaterThan(0);
     expect(placeSignsSentence(s)).toBe(placeSentence(VIDE, id));
     expect(placeSignsSentence({ voisin: 'Mine des lettres', direction: DIRECTIONS[3], cases: 4 })).toBe('au nord-ouest de la Mine des lettres, à 4 cases');

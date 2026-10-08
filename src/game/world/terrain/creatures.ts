@@ -23,6 +23,8 @@ import { AVATAR_HOME, groundHeight, islandOrigin, isSchoolIsland, LAYOUT_PAD } f
 import { type BorneVue, cacheUneBorne, QUEST_ROW, questStations, rangeeDevantLesBornes } from './markers';
 import { amorcesDuDessin } from './links';
 import { layoutCache } from '../placement';
+import { GD11_GUARDIAN_SQUARES, GUARDIAN_SQUARE_SIDE } from '../guardianSquares';
+import { silhouetteDe } from '../silhouettes';
 
 /** Les pas d'une créature qui se promène : une case à gauche ou en arrière (jamais vers les plans). */
 export const CREATURE_STEPS: [number, number][] = [
@@ -188,7 +190,7 @@ export function gardienProfond(id: BiomeId): boolean {
  * de Blocland, réduit de moitié (`echelleDesGardiens` de l'habillage), et la sentinelle d'Archipéo y tiennent, avec le
  * bloc d'or du Gardien rallumé, sur la rangée de devant.
  */
-export const GUARDIAN_SQUARE = 5;
+export const GUARDIAN_SQUARE = GUARDIAN_SQUARE_SIDE;
 
 /** La hauteur, en blocs, que le Gardien occupe au-dessus de son carré pour ne cacher ni un lieu, ni une borne, ni un chantier. */
 const GUARDIAN_HEIGHT = 5;
@@ -508,6 +510,13 @@ export function guardianSpot(id: BiomeId): GuardianSpot {
   const cle = `${id}:${lv2Courante()}`;
   const known = guardianSpots.get(cle);
   if (known) return known;
+  // Une île qui a une forme (GD-12) garde le carré de GD-11 : sa forme le tient sur sa terre (./map.ts).
+  const fige = silhouetteDe(id).forme ? GD11_GUARDIAN_SQUARES[id] : undefined;
+  if (fige) {
+    const spot: GuardianSpot = { x: fige.x, y: fige.y, palier: fige.palier, ...(fige.repli ? { repli: true as const } : {}) };
+    guardianSpots.set(cle, spot);
+    return spot;
+  }
   const def = islandDef(id);
   const sol = solDeLIle(id);
   const coeur = bornesDuCoeur(def);

@@ -36,11 +36,12 @@ import { bridgePath, creatureSpot, placeSpot, questStations, VILLAGE_PLACES } fr
  * Les îles-écoles : le repère de leur dessin (leur place d'avant GD-9, qui ne bouge plus), leur côte amincie (GD-11) et
  * leur archipel. Les clés de sauvegarde restent relatives à ce repère.
  */
-const ECOLES: Partial<Record<BiomeId, { archipel: ArchipelagoId; core: { x: number; y: number }; ext: { left: number; right: number; front: number; back: number } }>> = {
+const ECOLES: Partial<Record<BiomeId, { archipel: ArchipelagoId; core: { x: number; y: number }; ext: { left: number; right: number; front: number; back: number } | null }>> = {
+  // La Forêt a pris sa forme (GD-12) : sa côte se lit sur elle (`ext : null`).
   'french-6e-phonology': {
     archipel: '6e',
     core: { x: 67, y: 59 },
-    ext: { left: 5, right: 4, front: 2, back: 5 },
+    ext: null,
   },
   'maths-5e-proportionality': {
     archipel: '5e',
@@ -70,9 +71,10 @@ it('les îles-écoles couvrent 26 × 26 cases, de −5 à 21 autour de leur orig
     expect(bornesDuCoeur(def), id).toEqual({ x0: -5, y0: -5, x1: 21, y1: 21 });
     // Le repère du dessin (celui des clés de sauvegarde) ne bouge pas ; la côte s'est amincie d'une case de chaque côté.
     expect(def.repere, id).toEqual(e.core);
-    expect(def.ext, id).toEqual(e.ext);
+    const ext = e.ext ?? def.ext;
+    expect(def.ext, id).toEqual(ext);
     const box = landBox(def);
-    expect([box.x0, box.y0, box.y1], id).toEqual([def.core.x - 5 - e.ext.left, def.core.y - 5 - e.ext.front, def.core.y + 21 + e.ext.back]);
+    expect([box.x0, box.y0, box.y1], id).toEqual([def.core.x - 5 - ext.left, def.core.y - 5 - ext.front, def.core.y + 21 + ext.back]);
     const c = coeurDe(def);
     for (let x = c.x0; x < c.x1; x++) for (let y = c.y0; y < c.y1; y++) expect(isLand(def, x, y), `${id} ${x},${y}`).toBe(true);
   }

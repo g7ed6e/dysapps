@@ -33,10 +33,16 @@ const TOUR: BiomeId = 'french-6e-reading';
 /** La partie toute construite, ses commandes livrées. */
 const partie = toutConstruitAvecLesCommandes();
 
-/** Une place libre de la Tour à l'orientation `q`, loin de sa place de départ. */
+/**
+ * Une place libre de la Tour à l'orientation `q`, hors de sa place de départ, la plus loin possible. Depuis les formes
+ * des îles (GD-12), la Tour et son observatoire ne tournent d'un quart qu'à un ou deux pas de leur place.
+ */
 function placeLoin(q: LayoutTurn) {
   const d = startingSpot(TOUR);
-  const libres = freeSpots(partie.world, TOUR, q).filter((s) => Math.abs(s.x - d.x) + Math.abs(s.y - d.y) >= 3);
+  const loin = (s: { x: number; y: number }) => Math.abs(s.x - d.x) + Math.abs(s.y - d.y);
+  const libres = freeSpots(partie.world, TOUR, q)
+    .filter((s) => loin(s) >= 1)
+    .sort((s, t) => loin(s) - loin(t));
   expect(libres.length, `orientation ${q}`).toBeGreaterThan(0);
   return libres[libres.length - 1];
 }

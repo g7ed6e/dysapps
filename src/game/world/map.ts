@@ -6,6 +6,8 @@
 import type { BiomeId } from '../biomes';
 import { archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
 import { silhouetteDe } from './silhouettes';
+import { BOITE_DE_LA_FORME, distanceALaForme, etendueDeLaForme, type FormeDeLIle } from './formes';
+import { GD11_GUARDIAN_SQUARES, GUARDIAN_SQUARE_SIDE } from './guardianSquares';
 import { layoutCache, unturnCell, chosenPose, type Quarts, turnCell, turnRectangle } from './placement';
 
 export { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
@@ -99,12 +101,21 @@ export interface IslandDef {
    * exactement son dessin.
    */
   repere: { x: number; y: number };
+  /**
+   * La place de son cœur d'où se tire le pivot de la vue de l'île (`viewYaw`, ./terrain/view.ts), quand elle n'est pas
+   * sa place de départ : celle d'avant GD-12, que les formes ont fait bouger. La vue de l'île, et tout ce qui se tire
+   * pour elle (la place du Gardien, des petites constructions, le décor qui cacherait une borne), reste celle d'avant.
+   */
+  vueDepuis?: { x: number; y: number };
   /** L'orientation du lieu posé (GD-9), en quarts de tour autour du milieu de son cœur (./placement.ts) ; 0 sur la carte de départ. */
   quarts: Quarts;
 }
 
-/** Un lieu tel que la carte de départ l'écrit : son repère est sa place, sauf s'il est donné. */
-type MapPlace = Omit<IslandDef, 'repere' | 'quarts'> & { repere?: { x: number; y: number } };
+/**
+ * Un lieu tel que la carte de départ l'écrit : son repère est sa place, sauf s'il est donné. Un lieu qui a une forme
+ * (GD-12, ./silhouettes/) n'écrit pas sa côte (`ext`) : elle se lit sur sa forme (`etendueDuLieu`).
+ */
+type MapPlace = Omit<IslandDef, 'repere' | 'quarts' | 'ext'> & { repere?: { x: number; y: number }; ext?: IslandDef['ext'] };
 
 // Le côté du cœur des îles : une règle du jeu (./coreSide.ts), que la sauvegarde lit aussi ; réexporté ici.
 export { CORE, COTE_DU_COEUR, DEFAULT_CORE_SIDE } from './coreSide';
@@ -144,6 +155,164 @@ export const DANS_LE_CIEL: Record<ArchipelagoId, boolean> = { '6e': false, '5e':
 
 const e = (left: number, right: number, front: number, back: number) => ({ left, right, front, back });
 
+// ---------- La forme de la terre (GD-12) ----------
+
+/**
+ * De combien, au plus, le bruit de la graine déplace le bord d'une forme (en cases) : un bruit lissé sur six cases, qui
+ * fait tourner la côte, et un grain à la case près (`dansLaFormeBrute`).
+ */
+const BRUIT_DE_LA_FORME = { lisse: 0.8, grain: 0 } as const;
+const MARGE_DU_BRUIT = BRUIT_DE_LA_FORME.lisse + BRUIT_DE_LA_FORME.grain;
+
+/**
+ * Autour du cœur, tant de cases sont toujours de la terre, quelle que soit la forme : la côte mince de GD-11, où passe
+ * le bonhomme ; aucun coin du cœur ne touche la mer.
+ */
+export const TERRE_AUTOUR_DU_COEUR = 2;
+
+/** La terre de la forme d'un lieu, dans son repère (relative à l'origine de son cœur), calculée une fois. */
+interface MasqueDeLaForme {
+  x0: number;
+  y0: number;
+  w: number;
+  h: number;
+  cases: Uint8Array;
+}
+const masques = new Map<BiomeId, MasqueDeLaForme>();
+
+/**
+ * La terre de la forme d'un lieu (GD-12), dans son repère : la forme du catalogue (./formes.ts), orientée, autour du
+ * cœur ; son bord cassé par le bruit de la graine, lu là où le dessin du lieu a été tiré (`tirage` : déplacé ou tourné,
+ * le lieu garde sa forme) ; toujours `TERRE_AUTOUR_DU_COEUR` cases de terre autour du cœur. Puis la terre d'un seul
+ * tenant : un morceau détaché par le bruit retourne à la mer, une mare fermée redevient de la terre.
+ */
+function masqueDeLaForme(def: IslandDef, f: FormeDeLIle): MasqueDeLaForme {
+  const connu = masques.get(def.id);
+  if (connu) return connu;
+  const b = bornesDuCoeur(def);
+  const s = (b.x1 - b.x0) / 2;
+  const e = etendueDeLaForme(f, s, MARGE_DU_BRUIT);
+  const x0 = b.x0 - e.left - 1;
+  const y0 = b.y0 - e.front - 1;
+  const w = b.x1 + e.right + 1 - x0;
+  const h = b.y1 + e.back + 1 - y0;
+  const cases = new Uint8Array(w * h);
+  for (let j = 0; j < h; j++)
+    for (let i = 0; i < w; i++) if (dansLaFormeBrute(def, f, b, s, x0 + i, y0 + j)) cases[j * w + i] = 1;
+  // D'un seul tenant : la terre que l'on gagne depuis le cœur, de proche en proche (sans diagonale).
+  const tenant = new Uint8Array(w * h);
+  const file: number[] = [(b.y0 - y0) * w + (b.x0 - x0)];
+  tenant[file[0]] = 1;
+  const voisins = (k: number, f2: (n: number) => void) => {
+    const i = k % w;
+    if (i > 0) f2(k - 1);
+    if (i < w - 1) f2(k + 1);
+    if (k >= w) f2(k - w);
+    if (k < w * (h - 1)) f2(k + w);
+  };
+  for (let n = 0; n < file.length; n++)
+    voisins(file[n], (k) => {
+      if (cases[k] && !tenant[k]) {
+        tenant[k] = 1;
+        file.push(k);
+      }
+    });
+  // La mer : ce qu'on gagne depuis le bord de la boîte sans passer sur la terre ; le reste (une mare fermée) est de la terre.
+  const mer = new Uint8Array(w * h);
+  const large: number[] = [];
+  for (let k = 0; k < w * h; k++) {
+    const i = k % w;
+    const j = Math.floor(k / w);
+    if ((i === 0 || j === 0 || i === w - 1 || j === h - 1) && !tenant[k]) {
+      mer[k] = 1;
+      large.push(k);
+    }
+  }
+  for (let n = 0; n < large.length; n++)
+    voisins(large[n], (k) => {
+      if (!tenant[k] && !mer[k]) {
+        mer[k] = 1;
+        large.push(k);
+      }
+    });
+  for (let k = 0; k < w * h; k++) cases[k] = mer[k] ? 0 : 1;
+  const m = { x0, y0, w, h, cases };
+  masques.set(def.id, m);
+  return m;
+}
+
+/** La case (x, y) du repère d'un lieu est-elle dans sa forme, son bord cassé par le bruit, avant d'être d'un seul tenant ? */
+function dansLaFormeBrute(def: IslandDef, f: FormeDeLIle, b: Readonly<Bornes>, s: number, x: number, y: number): boolean {
+  const autour = TERRE_AUTOUR_DU_COEUR;
+  // Jamais au-delà de la boîte de la forme (./formes.ts) : la terre d'un lieu tient dans le même carré, tourné ou non.
+  const boite = BOITE_DE_LA_FORME;
+  if (x < b.x0 - boite || x >= b.x1 + boite || y < b.y0 - boite || y >= b.y1 + boite) return false;
+  if (x >= b.x0 - autour && x < b.x1 + autour && y >= b.y0 - autour && y < b.y1 + autour) return true;
+  // Le carré du Gardien de GD-11, figé (./guardianSquares.ts), et une case autour : toujours de la terre.
+  const g = GD11_GUARDIAN_SQUARES[def.id];
+  if (g && x >= g.x - 1 && x < g.x + GUARDIAN_SQUARE_SIDE + 1 && y >= g.y - 1 && y < g.y + GUARDIAN_SQUARE_SIDE + 1) return true;
+  const u = x + 0.5 - (b.x0 + b.x1) / 2;
+  const v = y + 0.5 - (b.y0 + b.y1) / 2;
+  const d = distanceALaForme(f, u, v, s);
+  if (d > MARGE_DU_BRUIT) return false;
+  if (d < -MARGE_DU_BRUIT) return true;
+  // Au port, devant le cœur, la rive reste droite sur la largeur du quai et du Bloc-Navire (sans bruit) : la jetée en part.
+  if (f.quai && v < -s && u > 4 && u < 16) return d < 0;
+  const t = tirage(def, def.core.x + x, def.core.y + y);
+  const bruit = (smoothNoise(def.seed + 101, t.x, t.y, 6) - 0.5) * 2 * BRUIT_DE_LA_FORME.lisse + (noise(def.seed + 103, t.x, t.y) - 0.5) * 2 * BRUIT_DE_LA_FORME.grain;
+  return d + bruit < 0;
+}
+
+/** La case (x, y) du monde (le lieu posé, pas tourné) est-elle dans la forme du lieu ? */
+function dansLaForme(def: IslandDef, x: number, y: number): boolean {
+  const f = silhouetteDe(def.id).forme;
+  if (!f) return false;
+  const m = masqueDeLaForme(def, f);
+  const i = x - def.core.x - m.x0;
+  const j = y - def.core.y - m.y0;
+  return i >= 0 && j >= 0 && i < m.w && j < m.h && m.cases[j * m.w + i] === 1;
+}
+
+/**
+ * Au-delà de tant de cases du cœur, la terre d'une île qui a une forme est de la « terre nouvelle » (GD-12, piste 4 du
+ * budget) : à plat, de l'herbe, et de loin en loin un seul élément de décor (`computeLandscape`). La côte d'avant GD-12
+ * allait jusque-là ; ce qu'elle portait reste comme avant.
+ */
+export const COTE_D_AVANT = 4;
+
+/**
+ * La part du décor que garde une île qui a une forme (GD-12) : un élément tiré par le bruit n'est posé que si un second
+ * bruit passe sous cette part. Sur sa côte, en deçà de `COTE_D_AVANT` : la côte d'avant était surtout un bord, sans
+ * décor ; plus large, elle en garderait deux fois trop. Sur la terre nouvelle, au-delà : de loin en loin.
+ */
+const PART_DU_DECOR_D_UNE_FORME = { cote: 0.4, nouvelle: 0.1 } as const;
+
+/** La case (x, y) du monde (le lieu posé, pas tourné) est-elle de la terre nouvelle d'une île qui a une forme (`COTE_D_AVANT`) ? */
+function terreNouvelle(def: IslandDef, x: number, y: number): boolean {
+  if (!silhouetteDe(def.id).forme) return false;
+  const b = bornesDuCoeur(def);
+  const [lx, ly] = [x - def.core.x, y - def.core.y];
+  const d = Math.max(b.x0 - lx, lx - (b.x1 - 1), b.y0 - ly, ly - (b.y1 - 1));
+  return d > COTE_D_AVANT;
+}
+
+/** La côte d'un lieu qui a une forme : de combien sa terre déborde son cœur de chaque côté (`IslandDef.ext`). */
+function etendueDuLieu(def: IslandDef): IslandDef['ext'] {
+  const f = silhouetteDe(def.id).forme!;
+  const m = masqueDeLaForme(def, f);
+  const b = bornesDuCoeur(def);
+  let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
+  for (let j = 0; j < m.h; j++)
+    for (let i = 0; i < m.w; i++)
+      if (m.cases[j * m.w + i]) {
+        x0 = Math.min(x0, m.x0 + i);
+        x1 = Math.max(x1, m.x0 + i + 1);
+        y0 = Math.min(y0, m.y0 + j);
+        y1 = Math.max(y1, m.y0 + j + 1);
+      }
+  return { left: b.x0 - x0, right: x1 - b.x1, front: b.y0 - y0, back: y1 - b.y1 };
+}
+
 /**
  * Les cinquante et une îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
@@ -169,14 +338,20 @@ const STARTING_MAP: MapPlace[] = [
   // Tour, la Carrière, le Volcan, la Rivière) ne bougent pas : rien de la Forêt ne les approche, et l'archipel garde sa
   // colonne centrale (le cadrage des caméras) et sa largeur (la mer). L'isthme de la Ferme à la Tour, les ponts de la
   // Mine à la Carrière et à la Rivière, et le bac de la Ferme au Volcan y perdent deux cases.
-  { id: 'french-6e-phonology', region: 'basses-terres', core: { x: 68, y: 63 }, repere: { x: 67, y: 59 }, altitude: 0, ext: e(5, 4, 2, 5), relief: 'collines', seed: 11 },
-  { id: 'french-6e-grammar-spelling', region: 'basses-terres', core: { x: 24, y: 59 }, repere: { x: 25, y: 61 }, deplacee: { x: -2, y: 0 }, altitude: 0, ext: e(2, 3, 1, 3), relief: 'plat', seed: 12 },
-  { id: 'french-6e-letter-confusion', region: 'montagne', core: { x: 104, y: 67 }, repere: { x: 98, y: 61 }, deplacee: { x: 2, y: 0 }, altitude: 0, ext: e(2, 3, 1, 4), relief: 'montagne', seed: 13 },
-  { id: 'french-6e-reading', region: 'basses-terres', core: { x: -8, y: 51 }, repere: { x: -3, y: 56 }, altitude: 0, ext: e(1, 2, 1, 2), relief: 'plat', seed: 14 },
-  { id: 'french-6e-word-spelling', region: 'montagne', core: { x: 136, y: 55 }, repere: { x: 136, y: 56 }, altitude: 0, ext: e(2, 2, 1, 3), relief: 'collines', seed: 15 },
-  { id: 'maths-6e-calculation', region: 'basses-terres', core: { x: 64, y: 19 }, deplacee: { x: 0, y: -2 }, altitude: 0, ext: e(4, 4, 2, 1), relief: 'plat', seed: 16 },
-  { id: 'maths-6e-fractions', region: 'marais', core: { x: 108, y: 19 }, repere: { x: 109, y: 19 }, altitude: 0, ext: e(3, 3, 2, 2), relief: 'plat', seed: 17 },
-  { id: 'maths-6e-decimals', region: 'feu', core: { x: 20, y: 15 }, repere: { x: 21, y: 19 }, altitude: 0, ext: e(3, 3, 1, 5), relief: 'volcan', seed: 18 },
+  // GD-12 (08/10/2026, une forme par île) : chaque forme tient dans une boîte de cinq cases au plus autour du cœur
+  // (`BOITE_DE_LA_FORME`, formes.ts) et doit pouvoir tourner. Les colonnes de côté passent sur quatre rangs (y −5, 31,
+  // 67 et 103 ; x −12 et 24 à l'ouest, 108 et 144 à l'est), la Forêt et la Plaine restent ; les places laissées libres
+  // entre elles portent les îlots des monuments et les places où un lieu tourne. Au rang du fond, l'Horloge et la Vallée
+  // reculent d'un pas (y 107), en quinconce avec la Baie, la Fouille et la Pointe : sur la tablette, panneau ouvert,
+  // leurs noms ne se taisent plus sur la Carte. Chaque lieu garde la vue de sa place de GD-11 (`vueDepuis`).
+  { id: 'french-6e-phonology', region: 'basses-terres', core: { x: 68, y: 63 }, repere: { x: 67, y: 59 }, altitude: 0, relief: 'collines', seed: 11 },
+  { id: 'french-6e-grammar-spelling', region: 'basses-terres', core: { x: 24, y: 31 }, vueDepuis: { x: 24, y: 59 }, repere: { x: 25, y: 61 }, deplacee: { x: -2, y: 0 }, altitude: 0, relief: 'plat', seed: 12 },
+  { id: 'french-6e-letter-confusion', region: 'montagne', core: { x: 108, y: 59 }, vueDepuis: { x: 104, y: 67 }, repere: { x: 98, y: 61 }, deplacee: { x: 2, y: 0 }, altitude: 0, relief: 'montagne', seed: 13 },
+  { id: 'french-6e-reading', region: 'basses-terres', core: { x: -12, y: 67 }, vueDepuis: { x: -8, y: 51 }, repere: { x: -3, y: 56 }, altitude: 0, relief: 'plat', seed: 14 },
+  { id: 'french-6e-word-spelling', region: 'montagne', core: { x: 144, y: 59 }, vueDepuis: { x: 136, y: 55 }, repere: { x: 136, y: 56 }, altitude: 0, relief: 'collines', seed: 15 },
+  { id: 'maths-6e-calculation', region: 'basses-terres', core: { x: 64, y: 19 }, deplacee: { x: 0, y: -2 }, altitude: 0, relief: 'plat', seed: 16 },
+  { id: 'maths-6e-fractions', region: 'marais', core: { x: 108, y: 15 }, vueDepuis: { x: 108, y: 19 }, repere: { x: 109, y: 19 }, altitude: 0, relief: 'plat', seed: 17 },
+  { id: 'maths-6e-decimals', region: 'feu', core: { x: 24, y: -5 }, vueDepuis: { x: 20, y: 15 }, repere: { x: 21, y: 19 }, altitude: 0, relief: 'volcan', seed: 18 },
   // Îles Brumeuses (5e), sur les collines : deux paires d'isthmes l'une devant l'autre. Port : le Marché. Le Marché,
   // île-école, a un cœur de 20 et sa côte autour (01/10/2026) : le Glacier s'écarte de 2 vers l'ouest (l'isthme garde
   // sa largeur), le Comptoir et le Manoir de 2 vers l'est (le pont du Comptoir au Manoir reste droit), chacun avec son
@@ -208,24 +383,25 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'maths-3e-functions', region: 'hauteurs', core: { x: 58, y: 912 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'collines', seed: 42 },
   { id: 'maths-3e-statistics', region: 'hauteurs', core: { x: 94, y: 932 }, repere: { x: 98, y: 930 }, deplacee: { x: 2, y: 0 }, altitude: 9, ext: e(3, 2, 2, 2), relief: 'collines', seed: 43 },
   { id: 'french-3e-close-reading', region: 'hauteurs', core: { x: 58, y: 964 }, repere: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(2, 2, 1, 4), relief: 'collines', seed: 44 },
-  // Anglais 6e : derrière la Ferme et la Forêt, à dix cases d'eau l'une de l'autre (leur isthme est retiré, GD-9).
-  { id: 'english-6e-vocabulary', region: 'basses-terres', core: { x: 32, y: 107 }, repere: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, ext: e(3, 2, 1, 3), relief: 'plat', seed: 51 },
-  { id: 'english-6e-grammar', region: 'basses-terres', core: { x: 64, y: 107 }, repere: { x: 68, y: 102 }, deplacee: { x: 0, y: 1 }, altitude: 0, ext: e(2, 3, 1, 3), relief: 'collines', seed: 52 },
-  // Histoire-géographie 6e : derrière la Mine, au bout du second rang, la Fouille des siècles puis la Pointe des
+  // Anglais 6e : au rang du fond, à l'ouest (GD-12), la Baie au coin, l'Horloge à côté, un pas plus au fond (leur isthme
+  // est retiré, GD-9).
+  { id: 'english-6e-vocabulary', region: 'basses-terres', core: { x: -12, y: 103 }, vueDepuis: { x: 32, y: 107 }, repere: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, relief: 'plat', seed: 51 },
+  { id: 'english-6e-grammar', region: 'basses-terres', core: { x: 24, y: 107 }, vueDepuis: { x: 64, y: 107 }, repere: { x: 68, y: 102 }, deplacee: { x: 0, y: 1 }, altitude: 0, relief: 'collines', seed: 52 },
+  // Histoire-géographie 6e : au rang du fond, à l'est (GD-12), la Fouille des siècles puis la Pointe des
   // paysages, fermées au départ (on les relie). Sur le pas des places, à quatre cases d'eau au moins de leurs voisines.
   // Leur terre est plate, sans relief ni pic : l'archipel le plus chargé du monde, ses îles les plus sobres.
-  { id: 'history-6e-antiquity', region: 'basses-terres', core: { x: 124, y: 99 }, altitude: 0, ext: e(1, 1, 1, 1), relief: 'plat', seed: 53 },
-  { id: 'geography-6e-living', region: 'basses-terres', core: { x: 152, y: 99 }, altitude: 0, ext: e(1, 1, 1, 1), relief: 'plat', seed: 54 },
-  // Sciences 6e (SC-2) : dans le cadre de la région (192 × 144, pour que la Carte tienne sur la tablette), aux trois
-  // places qui restaient : la Vallée du vivant au second rang, entre l'Horloge et la Fouille ; le Laboratoire des
-  // éléments au coin de devant, à l'est, après la Rivière ; le Hangar des inventions au coin de devant, à l'ouest, avant
-  // le Volcan (sa terre cuite n'a ainsi que des voisines d'ardoise, la Tour et le Volcan). Le coin du fond, à l'ouest,
-  // reste libre pour aménager. Fermées au départ (on les relie). Sur le pas des places, à quatre cases d'eau au moins de
-  // leurs voisines (leur Gardien sur leur île depuis GD-11). Chacune garde le dessin de sa première place, au rang du fond
-  // (`repere`). Terre plate, sans relief ni pic, comme l'histoire-géographie.
-  { id: 'life-earth-sciences-6e-living-world', region: 'basses-terres', core: { x: 96, y: 111 }, repere: { x: 152, y: 139 }, altitude: 0, ext: e(1, 1, 1, 1), relief: 'plat', seed: 55 },
-  { id: 'physics-chemistry-6e-matter-energy', region: 'basses-terres', core: { x: 152, y: 15 }, repere: { x: 124, y: 139 }, altitude: 0, ext: e(1, 1, 1, 1), relief: 'plat', seed: 56 },
-  { id: 'technology-6e-objects', region: 'basses-terres', core: { x: -12, y: 11 }, repere: { x: 96, y: 139 }, altitude: 0, ext: e(1, 1, 1, 1), relief: 'plat', seed: 57 },
+  { id: 'history-6e-antiquity', region: 'basses-terres', core: { x: 108, y: 103 }, vueDepuis: { x: 124, y: 99 }, repere: { x: 124, y: 99 }, altitude: 0, relief: 'plat', seed: 53 },
+  { id: 'geography-6e-living', region: 'basses-terres', core: { x: 144, y: 103 }, vueDepuis: { x: 152, y: 99 }, repere: { x: 152, y: 99 }, altitude: 0, relief: 'plat', seed: 54 },
+  // Sciences 6e (SC-2) : dans le cadre de la région (192 × 144, pour que la Carte tienne sur la tablette). Depuis
+  // GD-12, la Vallée du vivant au rang du fond, entre l'Horloge et la Fouille, derrière la Forêt ; le Laboratoire des
+  // éléments au coin de devant, à l'est, après la Rivière ; le Hangar des inventions au coin de devant, à l'ouest, à côté
+  // du Volcan (voisin de la Ferme, il passe à l'ardoise, et la Vallée à la terre cuite, roofs.ts). Fermées au départ (on
+  // les relie). Sur le pas des places, à quatre cases d'eau au moins de leurs voisines (leur Gardien sur leur île depuis
+  // GD-11). Chacune garde le dessin de sa première place, au rang du fond (`repere`). Terre plate, sans relief ni pic,
+  // comme l'histoire-géographie.
+  { id: 'life-earth-sciences-6e-living-world', region: 'basses-terres', core: { x: 68, y: 107 }, vueDepuis: { x: 96, y: 111 }, repere: { x: 152, y: 139 }, altitude: 0, relief: 'plat', seed: 55 },
+  { id: 'physics-chemistry-6e-matter-energy', region: 'basses-terres', core: { x: 144, y: 15 }, vueDepuis: { x: 152, y: 15 }, repere: { x: 124, y: 139 }, altitude: 0, relief: 'plat', seed: 56 },
+  { id: 'technology-6e-objects', region: 'basses-terres', core: { x: -12, y: -5 }, vueDepuis: { x: -12, y: 11 }, repere: { x: 96, y: 139 }, altitude: 0, relief: 'plat', seed: 57 },
   // Anglais 5e : une colonne à droite du Marché et du Marais.
   { id: 'english-5e-vocabulary', region: 'basses-terres', core: { x: 105, y: 321 }, repere: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 1, 3), relief: 'plat', seed: 61 },
   { id: 'english-5e-grammar', region: 'hauteurs', core: { x: 101, y: 365 }, repere: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 1, 3), relief: 'collines', seed: 62 },
@@ -288,7 +464,11 @@ const STARTING_MAP: MapPlace[] = [
  * (`islandDef`) suit la disposition choisie (./placement.ts) ; sans elle, c'est celle-ci.
  */
 export const MAP: readonly IslandDef[] = Object.freeze(
-  STARTING_MAP.map((d): IslandDef => Object.freeze({ ...d, repere: d.repere ?? d.core, quarts: 0 as Quarts })),
+  STARTING_MAP.map((d): IslandDef => {
+    const def: IslandDef = { ...d, repere: d.repere ?? d.core, quarts: 0 as Quarts, ext: d.ext ?? { left: 0, right: 0, front: 0, back: 0 } };
+    if (!d.ext && !silhouetteDe(d.id).forme) throw new Error(`${d.id} n'a ni côte écrite ni forme.`);
+    return Object.freeze(silhouetteDe(d.id).forme ? { ...def, ext: etendueDuLieu(def) } : def);
+  }),
 );
 
 const STARTING_PLACES = new Map(MAP.map((d) => [d.id, d]));
@@ -729,6 +909,7 @@ export function isLandInWorld(def: IslandDef, x: number, y: number): boolean {
 /** La terre propre d'une île (sans l'isthme). */
 function isLandProper(def: IslandDef, x: number, y: number): boolean {
   if (inCore(def, x, y)) return true;
+  if (silhouetteDe(def.id).forme) return dansLaForme(def, x, y);
   const b = bornesDuCoeur(def);
   const x0 = def.core.x + b.x0 - def.ext.left;
   const y0 = def.core.y + b.y0 - def.ext.front;
@@ -811,6 +992,7 @@ export function landscape(def: IslandDef): LandCell[] {
 
 function computeLandscape(def: IslandDef): LandCell[] {
   const cells = landCells(def);
+  const forme = silhouetteDe(def.id).forme !== undefined;
   const isLandAt = (x: number, y: number) => isLand(def, x, y);
   const pk = peaks(def);
   const out: LandCell[] = [];
@@ -830,8 +1012,11 @@ function computeLandscape(def: IslandDef): LandCell[] {
       out.push({ x: c.x, y: c.y, h: 0, ground, decor: !edge && fine > 0.8 ? pickDecor(def, ground, 0, fine) : undefined });
       continue;
     }
-    // Hauteur : collines douces, puis les pics par-dessus.
-    let h = def.relief === 'plat' ? (n > 0.8 ? 1 : 0) : Math.min(2, Math.floor(n * 3));
+    // Hauteur : collines douces, puis les pics par-dessus. Une île qui a sa forme (GD-12) a une côte plate (« autour,
+    // plus de terre plate ») : ses pics dessinés seuls la soulèvent. (Garder le relief d'avant près du cœur coûte
+    // 3 000 triangles de plus au sol d'Archipéo, au-delà de son enveloppe, 8 octobre 2026.)
+    const nouvelle = terreNouvelle(def, c.x, c.y);
+    let h = forme ? 0 : def.relief === 'plat' ? (n > 0.8 ? 1 : 0) : Math.min(2, Math.floor(n * 3));
     let crater = false;
     for (const p of pk) {
       const d = Math.hypot(c.x - p.x, c.y - p.y) / p.r;
@@ -870,7 +1055,7 @@ function computeLandscape(def: IslandDef): LandCell[] {
     if (!LACS[def.id] && !edge && !nearCore && h === 0 && smoothNoise(def.seed + 11, t.x, t.y, 3) > 0.78 && def.relief !== 'volcan') {
       ground = 'eau';
       h = -1;
-    } else if (h <= 2 && !edge && fine > SEUIL_DU_DECOR) {
+    } else if (h <= 2 && !edge && fine > SEUIL_DU_DECOR && (!forme || noise(def.seed + 13, t.x, t.y) < PART_DU_DECOR_D_UNE_FORME[nouvelle ? 'nouvelle' : 'cote'])) {
       decor = pickDecor(def, ground, h, fine);
     }
     out.push({ x: c.x, y: c.y, h, ground, decor });
@@ -902,3 +1087,4 @@ export function reliefHeight(def: IslandDef, x: number, y: number): number {
   const cell = landscape(def).find((c) => c.x === x && c.y === y);
   return cell ? Math.max(0, cell.h) : 0;
 }
+

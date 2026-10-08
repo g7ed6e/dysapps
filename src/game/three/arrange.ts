@@ -28,19 +28,42 @@ const LOIN = 1e6;
  * Les valeurs que lisent les matériaux des blocs (partagées : une seule scène du monde à la fois) : la zone du monde
  * (x0, z0, x1, z1 dans le repère Three), le soulèvement (en cases) et la hauteur de coupe.
  */
+/**
+ * Au plus tant de rectangles dans la zone (GD-12) : les bandes de la terre de deux lieux réunis (seize au plus chacun,
+ * `landRectangles`) et leur réunion. Au-delà, la zone se réduit à son rectangle (ce qui n'arrive pas : `liftPartsOf`,
+ * arrange.test.ts).
+ */
+export const PARTS_DE_LA_ZONE = 40;
+
 const zoneDuMode = {
   uAmZone: { value: new THREE.Vector4(0, 0, -1, -1) },
+  /** Les rectangles de la zone (GD-12, `ArrangeView.liftParts`) : `uAmNParts` d'entre eux ; aucun, toute la zone. */
+  uAmParts: { value: Array.from({ length: PARTS_DE_LA_ZONE }, () => new THREE.Vector4()) },
+  uAmNParts: { value: 0 },
   uAmLift: { value: 0 },
   uAmCut: { value: LOIN },
 };
 
 const neutre = () => {
   zoneDuMode.uAmZone.value.set(0, 0, -1, -1);
+  zoneDuMode.uAmNParts.value = 0;
   zoneDuMode.uAmLift.value = 0;
   zoneDuMode.uAmCut.value = LOIN;
 };
 
-const DANS_LA_ZONE = 'p.x > uAmZone.x && p.x < uAmZone.z && p.z > uAmZone.y && p.z < uAmZone.w';
+/** Le test de la zone, dans les deux programmes : les rectangles s'il y en a, sinon le rectangle de la zone. */
+const DANS_LA_ZONE_GLSL = `uniform vec4 uAmZone;
+uniform vec4 uAmParts[${PARTS_DE_LA_ZONE}];
+uniform int uAmNParts;
+bool amDansLaZone(vec3 p) {
+  if (uAmNParts == 0) return p.x > uAmZone.x && p.x < uAmZone.z && p.z > uAmZone.y && p.z < uAmZone.w;
+  for (int i = 0; i < ${PARTS_DE_LA_ZONE}; i++) {
+    if (i >= uAmNParts) break;
+    vec4 r = uAmParts[i];
+    if (p.x > r.x && p.x < r.z && p.z > r.y && p.z < r.w) return true;
+  }
+  return false;
+}`;
 
 /** Les matériaux des blocs vus depuis l'ouverture de la scène : le mode « Aménager » les modifie le temps qu'il est ouvert. */
 const materiauxDesBlocs = new Set<THREE.Material>();
@@ -55,14 +78,14 @@ let modeOuvert = false;
 function injecter(shader: THREE.WebGLProgramParametersWithUniforms): void {
   Object.assign(shader.uniforms, zoneDuMode);
   shader.vertexShader = shader.vertexShader
-    .replace('#include <common>', '#include <common>\nuniform vec4 uAmZone;\nuniform float uAmLift;\nvarying vec3 vAmWp;')
+    .replace('#include <common>', `#include <common>\n${DANS_LA_ZONE_GLSL}\nuniform float uAmLift;\nvarying vec3 vAmWp;`)
     .replace(
       '#include <begin_vertex>',
-      `#include <begin_vertex>\n#ifdef USE_INSTANCING\nvec4 p = modelMatrix * instanceMatrix * vec4(transformed, 1.0);\n#else\nvec4 p = modelMatrix * vec4(transformed, 1.0);\n#endif\nif (${DANS_LA_ZONE}) { transformed.y += uAmLift; p.y += uAmLift; }\nvAmWp = p.xyz;`,
+      `#include <begin_vertex>\n#ifdef USE_INSTANCING\nvec4 p = modelMatrix * instanceMatrix * vec4(transformed, 1.0);\n#else\nvec4 p = modelMatrix * vec4(transformed, 1.0);\n#endif\nif (amDansLaZone(p.xyz)) { transformed.y += uAmLift; p.y += uAmLift; }\nvAmWp = p.xyz;`,
     );
   shader.fragmentShader = shader.fragmentShader
-    .replace('#include <common>', '#include <common>\nuniform vec4 uAmZone;\nuniform float uAmCut;\nvarying vec3 vAmWp;')
-    .replace('void main() {', `void main() {\n{ vec3 p = vAmWp; if (${DANS_LA_ZONE} && p.y > uAmCut) discard; }`);
+    .replace('#include <common>', `#include <common>\n${DANS_LA_ZONE_GLSL}\nuniform float uAmCut;\nvarying vec3 vAmWp;`)
+    .replace('void main() {', `void main() {\n{ if (vAmWp.y > uAmCut && amDansLaZone(vAmWp)) discard; }`);
 }
 
 /** Le programme d'un matériau avant l'ajout du mode (la texture des blocs, ./textures.ts), pour l'y remettre. */
@@ -129,8 +152,44 @@ export function ouvrirLeModeDansLesMateriaux(oui: boolean): void {
   if (change) for (const f of veilleurs) f(oui);
 }
 
+/** Un rectangle du monde, en cases (x, y). */
+interface ZoneDuMonde {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+
+/**
+ * Ce que le mode soulève en ce moment (piste 1 du budget de GD-12) : le lieu choisi et sa réunion. Le terrain des blocs
+ * ne s'y dessine pas fondu (./cubes.ts : les morceaux du monde qui touchent ces rectangles), puisqu'une face fondue à
+ * cheval sur leur bord s'étirerait ; ailleurs, il garde ses faces fondues, même dans le mode.
+ */
+let zonesSoulevees: readonly ZoneDuMonde[] = [];
+const veilleursDesZones = new Set<() => void>();
+
+/** Les rectangles que le mode soulève en ce moment (vide hors du mode, ou sans choix). */
+export function zonesSouleveesDuMode(): readonly ZoneDuMonde[] {
+  return zonesSoulevees;
+}
+
+/** Appelle `f` quand ce que le mode soulève change ; rend de quoi ne plus l'appeler. */
+export function suivreLesZonesSoulevees(f: () => void): () => void {
+  veilleursDesZones.add(f);
+  return () => veilleursDesZones.delete(f);
+}
+
+/** Fixe ce que le mode soulève (le mode, à chaque choix ; les tests). */
+export function fixerLesZonesSoulevees(rs: readonly ZoneDuMonde[]): void {
+  const meme = rs.length === zonesSoulevees.length && rs.every((r, i) => r.x0 === zonesSoulevees[i].x0 && r.y0 === zonesSoulevees[i].y0 && r.x1 === zonesSoulevees[i].x1 && r.y1 === zonesSoulevees[i].y1);
+  if (meme) return;
+  zonesSoulevees = rs.map((r) => ({ x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1 }));
+  for (const f of veilleursDesZones) f();
+}
+
 /** La scène se défait : le mode se ferme dans les matériaux, et la liste se vide (ils restent au cache de ./textures.ts). */
 function oublierLesMateriaux(): void {
+  fixerLesZonesSoulevees([]);
   ouvrirLeModeDansLesMateriaux(false);
   materiauxDesBlocs.clear();
 }
@@ -369,6 +428,7 @@ export function creerAmenagement(
   // La direction de la caméra, relue à chaque image du geste (sans allocation).
   const regard = new THREE.Vector3();
   let souleve: ArrangeView['souleve'] = null;
+  let liftParts: ArrangeView['liftParts'];
   let souleveDepuis = 0;
   let enCours: ArrangeGesture | null = null;
   // ---- Les poignées, dessinées dans le monde ; où elles se tiennent à l'écran, donné à la page (leurs boutons). Rien
@@ -475,7 +535,13 @@ export function creerAmenagement(
     cases = null;
   };
 
-  const zone = (r: { x0: number; y0: number; x1: number; y1: number }) => zoneDuMode.uAmZone.value.set(r.x0, r.y0, r.x1, r.y1);
+  const zone = (r: { x0: number; y0: number; x1: number; y1: number }, parts?: readonly { x0: number; y0: number; x1: number; y1: number }[]) => {
+    zoneDuMode.uAmZone.value.set(r.x0, r.y0, r.x1, r.y1);
+    // Trop de rectangles (ce qui n'arrive pas) : la zone entière, plutôt qu'une part de la terre oubliée.
+    const n = parts && parts.length <= PARTS_DE_LA_ZONE ? parts.length : 0;
+    for (let i = 0; i < n; i++) zoneDuMode.uAmParts.value[i].set(parts![i].x0, parts![i].y0, parts![i].x1, parts![i].y1);
+    zoneDuMode.uAmNParts.value = n;
+  };
 
   /** Les valeurs des matériaux à l'heure `now` : le geste d'abord, sinon le lieu soulevé, sinon rien. */
   const regler = (maintenant: number) => {
@@ -486,7 +552,7 @@ export function creerAmenagement(
       // Lâché au doigt (choix 2a) : déjà à sa nouvelle place, il redescend du soulèvement, sans coupe.
       if (voile) voile.visible = false;
       if (blocs) {
-        zone(enCours.zone);
+        zone(enCours.zone, enCours.zoneParts);
         zoneDuMode.uAmLift.value = SOULEVEMENT.hauteur * descentLift(enCours, now);
         zoneDuMode.uAmCut.value = LOIN;
       } else neutre();
@@ -494,7 +560,7 @@ export function creerAmenagement(
     }
     if (enCours) {
       if (blocs) {
-        zone(enCours.zone);
+        zone(enCours.zone, enCours.zoneParts);
         zoneDuMode.uAmLift.value = 0;
         zoneDuMode.uAmCut.value = gestureCut(enCours, now);
       } else if (voile && voileMat) {
@@ -512,11 +578,21 @@ export function creerAmenagement(
     }
     if (voile) voile.visible = false;
     if (blocs && souleve) {
-      zone(souleve);
+      zone(souleve, liftParts);
       const k = reduit ? 1 : Math.min(1, (now - souleveDepuis) / SOULEVEMENT.dureeMs);
       zoneDuMode.uAmLift.value = SOULEVEMENT.hauteur * k;
       zoneDuMode.uAmCut.value = LOIN;
     } else neutre();
+  };
+
+  /**
+   * Ce qui se soulève (Blocland) : le lieu choisi, ou le choix lâché qui redescend. Pendant le démontage et le remontage,
+   * rien ne se soulève (la coupe ne déplace aucun sommet) : les zones restent celles d'avant, sans refaire le terrain.
+   */
+  const suivreLesSoulevees = () => {
+    if (!blocs || (enCours && enCours.phase !== 'descend')) return;
+    if (enCours) fixerLesZonesSoulevees(enCours.zoneParts ?? [enCours.zone]);
+    else fixerLesZonesSoulevees(souleve ? (liftParts ?? [souleve]) : []);
   };
 
   /** Un maillage instancié de carrés plats (deux triangles chacun), ajouté à la scène. */
@@ -551,6 +627,8 @@ export function creerAmenagement(
       const meme = souleve && vue?.souleve && souleve.x0 === vue.souleve.x0 && souleve.y0 === vue.souleve.y0 && souleve.x1 === vue.souleve.x1;
       if (!meme) souleveDepuis = performance.now();
       souleve = vue?.souleve ?? null;
+      liftParts = vue?.liftParts;
+      suivreLesSoulevees();
       regler(performance.now());
       poserLeNom(vue);
       poignees.poser(vue?.poignees ?? null);
@@ -560,6 +638,7 @@ export function creerAmenagement(
     },
     geste(g) {
       enCours = g;
+      suivreLesSoulevees();
       regler(performance.now());
       // Pendant le geste, pas de poignées : le choix est posé.
       poignees.poser(g ? null : (vueCourante?.poignees ?? null));

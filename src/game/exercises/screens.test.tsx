@@ -61,14 +61,16 @@ describe('déblocage des biomes', () => {
     const user = userEvent.setup();
     renderAt('/adventure');
     // GD-9 : de la Plaine ou de la Forêt, une liaison vers chaque île qu'on peut relier, 4 blocs chacune. Depuis que
-    // les îles ont grandi (GD-11, 8 octobre 2026), leurs côtes sont plus proches : sept ponts.
+    // les îles ont grandi (GD-11, 8 octobre 2026), leurs côtes sont plus proches : sept ponts (vers la Mine, l'Horloge, la
+    // Fouille, la Vallée, la Ferme, la Rivière et le Volcan depuis GD-12).
     expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(7);
-    // Trois îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9) : la Tour du lecteur, la Pointe des
-    // paysages, derrière la Fouille des siècles (HG-2), et le Laboratoire des éléments, au rang du fond (SC-2) : elles
+    // Deux îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9) : depuis les formes des îles (GD-12), le
+    // Laboratoire des éléments et le Hangar des inventions, aux coins de devant, derrière la Rivière et le Volcan : elles
     // s'ouvriront de proche en proche.
-    expect(screen.queryAllByText(/Île lointaine/).length).toBe(3);
-    // Trois bacs : vers la Carrière des mots, la Fouille des siècles et le Hangar des inventions.
-    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(3);
+    expect(screen.queryAllByText(/Île lointaine/).length).toBe(2);
+    // Quatre bacs, depuis les formes des îles (GD-12) : vers la Carrière des mots, la Tour du lecteur, la Baie des mots
+    // et la Pointe des paysages.
+    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(4);
     // Les îles des archipels de 5e, 4e et 3e, dont les six d'histoire-géographie (HG-3) et les neuf de sciences (SC-3).
     expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(36);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));

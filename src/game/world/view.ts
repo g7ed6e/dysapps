@@ -40,6 +40,11 @@ export interface ArrangeView {
   cases: ArrangeCell[];
   /** L'emprise du choix à sa place d'avant (le lieu), soulevée tant qu'il est choisi ; ou rien. */
   souleve: Rectangle | null;
+  /**
+   * Ce qui se soulève vraiment, dans `souleve` : les bandes de la terre du lieu et de sa réunion, une case de plus tout
+   * autour (GD-12, `liftPartsOf`), quand un lieu a une forme ; sans elles, tout `souleve`.
+   */
+  liftParts?: readonly Rectangle[];
   /** Le milieu du fantôme : la vue le suit s'il sort de l'écran. */
   suivre: { x: number; y: number; z: number };
   /** Les liaisons qui ne tiendraient plus après la pose (leur nombre se dit dans la barre). */
@@ -124,6 +129,8 @@ export interface ArrangeGesture {
    */
   phase: 'demonte' | 'remonte' | 'descend';
   zone: Rectangle;
+  /** Ce qui se joue vraiment, dans `zone` (GD-12, `liftPartsOf`) : sans elles, toute la zone. */
+  zoneParts?: readonly Rectangle[];
   /**
    * L'autre place du geste (la nouvelle pendant le démontage, l'ancienne pendant le remontage) : le voile de brume
    * d'Archipéo glisse de l'une à l'autre.
