@@ -5,7 +5,7 @@
 // - Le volume porte une seule teinte, celle de sa case d'ancrage (`teinteDeCase`) : plus de joint de teinte d'une case à
 //   l'autre, si bien que la fusion de world/construction.ts en fait un rectangle par face, d'un seul tenant.
 // - Peint par le kit (./index.ts, `lisse`), il n'a ni chaperon ni dessus de pierre par case : un seul dessus, dans sa
-//   matière ; son soubassement se lit sur la hauteur du volume, pas sur la colonne du plan.
+//   matière ; son soubassement se lit par colonne, sur les cases du volume empilées à la colonne du bloc.
 // Code pur, sans Three.js ; le voisinage se lit fantômes compris (le volume ne change pas pendant le chantier).
 import type { VoxelCube } from '../cube';
 

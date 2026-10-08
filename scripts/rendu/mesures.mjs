@@ -704,6 +704,9 @@ const CAPTURES = [
   { nom: 'familles-6e-moulin', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', lieu: 'landmark-6e-2', sansPanneau: true, zoomer: 3, finesse: 2 },
   { nom: 'familles-6e-moulin-loin', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', lieu: 'landmark-6e-2', sansPanneau: true, finesse: 2 },
   { nom: 'familles-6e-observatoire', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-reading', lieu: 'landmark-6e-1', sansPanneau: true, zoomer: 3, finesse: 2 },
+  // Le quai de galets d'un seul tenant (la plateforme de l'observatoire, 7 × 7 cases, le seul du 6e) : un volume lissé,
+  // une seule teinte, de jour et de plus près, pour que le directeur artistique tranche s'il le garde ainsi.
+  { nom: 'familles-6e-quai-galets', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-reading', lieu: 'landmark-6e-1', sansPanneau: true, zoomer: 5, finesse: 2 },
   { nom: 'familles-6e-pointe-paysages', vue: 'île', famille: 'familles-sixieme', ile: 'geography-6e-living', posees: 'toutes', zoomer: 3, finesse: 2 },
   ...[
     { suffixe: '', autres: {} },
@@ -1339,14 +1342,17 @@ async function scenes() {
         // La Carte zoomée (`zoomer`) : la touche +, le monde ayant le focus, autour du centre de la place libre.
         if (zoomer) await zoomerLaVue(page, zoomer);
         // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.
-        for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer ? 16 : 0)); i++) {
+        // Le panneau masqué (`sansPanneau`) agrandit la place libre : la caméra repart vers un autre cadrage, qu'on laisse
+        // se poser comme après un zoom (sans ces pas, la vue de loin du grand moulin se prenait la caméra en route, à un
+        // point qui changeait d'une prise à l'autre).
+        for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer || sansPanneau ? 16 : 0)); i++) {
           await page.clock.runFor(125);
           await page.waitForTimeout(30);
         }
         // Après un trajet lancé (`allerA`) ou une fiche ouverte (`fiche`, la caméra recadrée hors d'elle) : la caméra posée
         // d'un coup à son cadrage, comme à la préparation (un pas de plus entre les deux, pour que les étiquettes suivent,
         // calculées pour ce cadrage : sans quoi une étiquette passe encore sous la fiche pendant le glissement).
-        if (allerA || fiche)
+        if (allerA || fiche || sansPanneau)
           for (let i = 0; i < 2; i++) {
             await page.evaluate(() => window.__dysappsCamera?.poser());
             await page.clock.runFor(125);

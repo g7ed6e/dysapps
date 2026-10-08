@@ -28,8 +28,8 @@
 //   directeur artistique, 8 octobre 2026) ;
 // - un mur plein ou bardé n'a de soubassement qu'à partir de trois rangées (`rangees`, lu sur la colonne du bloc) ;
 // - le lissage (./volumes.ts, mot du mainteneur du 8 octobre 2026), quand le kit le dit : dans un monument et dans les
-//   petites constructions, les cases voisines d'une même matière font un seul volume, sans chaperon par case, son
-//   soubassement lu sur la hauteur du volume.
+//   petites constructions, les cases voisines d'une même matière font un seul volume, sans chaperon par case ; son
+//   soubassement se lit par colonne (les cases du volume empilées à la colonne du bloc).
 import type { VoxelCube } from '../cube';
 import type { ArchipelagoId } from '../archipelagos';
 import type { TextureKind } from '../pixels';
@@ -97,6 +97,14 @@ function rangeesDeLaColonne(c: VoxelCube, index: IndexDuPlan): number {
   let n = 1;
   for (let z = c.z - 1; index.get(cle(c.x, c.y, z)) === 'mur'; z--) n++;
   for (let z = c.z + 1; index.get(cle(c.x, c.y, z)) === 'mur'; z++) n++;
+  return n;
+}
+
+/** Les rangées d'un volume lissé à la colonne d'un bloc : les cases de ce volume empilées d'un seul tenant, lui compris. */
+function rangeesDuVolume(c: VoxelCube, volume: VolumeDeMatiere, volumes: ReadonlyMap<string, VolumeDeMatiere>): number {
+  let n = 1;
+  for (let z = c.z - 1; volumes.get(cle(c.x, c.y, z)) === volume; z--) n++;
+  for (let z = c.z + 1; volumes.get(cle(c.x, c.y, z)) === volume; z++) n++;
   return n;
 }
 
@@ -267,7 +275,10 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     if (!v) continue;
     const { piece, rotation } = pieceDe(v);
     const volume = groupeDe(c) !== null ? volumes?.get(cle(c.x, c.y, c.z)) : undefined;
-    const rangees = volume ? volume.haut - volume.bas + 1 : rangeesDeLaColonne(c, plan.index);
+    // Le soubassement se lit par colonne (directeur artistique, 8 octobre 2026) : dans un volume lissé, sur les cases de
+    // ce volume empilées à la colonne du bloc, et non sur la hauteur du volume entier (une aile basse accolée à une tour
+    // n'en prend pas).
+    const rangees = volume ? rangeesDuVolume(c, volume, volumes!) : rangeesDeLaColonne(c, plan.index);
     choisis.push({ c, famille, v, piece, rotation, groupe: plan.groupe, rangees, lisse: volume !== undefined });
   }
   // Le dehors d'un bâtiment : du côté opposé au centre de ses murs (ceux de son île, ou de son lieu, ou de son plan), vu

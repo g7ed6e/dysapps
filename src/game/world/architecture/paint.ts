@@ -214,7 +214,7 @@ export interface ContexteDuMur {
   rangees?: number;
   /**
    * Le mur fait partie d'un volume lissé (./volumes.ts) : ni chaperon ni dessus de pierre, un seul dessus dans sa
-   * matière ; `rangees` est alors la hauteur du volume.
+   * matière ; `rangees` compte alors les cases du volume empilées à la colonne du bloc.
    */
   lisse?: boolean;
 }

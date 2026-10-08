@@ -88,6 +88,17 @@ describe('Le lissage : un volume par matière', () => {
     for (const c of socle) expect(peints.get(`${c.x},${c.y},${c.z}`)!.peinture.motifs[4]).toBe(0);
   });
 
+  it('le soubassement se lit par colonne : une aile d’une rangée accolée à une tour de trois n’en a pas', () => {
+    // Une tour de trois rangées et, contre elle, une aile d’une rangée, de même matière : un seul volume.
+    const tour = [petite(0, 0, 1), petite(0, 0, 2), petite(0, 0, 3)];
+    const aile = [petite(1, 0, 1), petite(2, 0, 1)];
+    const a = architectureDe('6e', [...tour, ...aile], { surLeVide: () => false });
+    expect(a.lisses.get(`${LOIN},${LOIN},1`)).toBe(a.lisses.get(`${LOIN + 2},${LOIN},1`));
+    const soubassement = (c: VoxelCube) => a.peints.get(`${c.x},${c.y},${c.z}`)!.peinture.motifs.slice(0, 4).some((m) => m & MOTIF.soubassement);
+    expect(soubassement(tour[0])).toBe(true);
+    for (const c of aile) expect(soubassement(c)).toBe(false);
+  });
+
   it('le bac « pièce seule » reste à la case isolée, jamais dans un volume réuni', () => {
     const seule = [petite(0, 0, 1)];
     const a = architectureDe('6e', seule, { surLeVide: () => false });
