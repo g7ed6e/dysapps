@@ -101,7 +101,7 @@ const NOIR: [number, number, number] = [0, 0, 0];
 const ALLURES = new Map<string, Allure>();
 
 function allureDe(c: VoxelCube, face: FaceSide): Allure {
-  const k = `${c.ghost ? 1 : 0}${c.muted ? 1 : 0}${face}|${c.texture ?? ''}|${c.texture ? '' : c.color}`;
+  const k = `${c.ghost ? 1 : 0}${c.muted ? 1 : 0}${c.lit ? 1 : 0}${face}|${c.texture ?? ''}|${c.texture ? '' : c.color}`;
   let a = ALLURES.get(k);
   if (!a) ALLURES.set(k, (a = { ...calculerLAllure(c, face), id: ALLURES.size }));
   return a;
@@ -111,7 +111,9 @@ function calculerLAllure(c: VoxelCube, face: FaceSide): Omit<Allure, 'id'> {
   // Un fantôme : la texture de côté de son bloc (ou le grain), bleutée par son matériau.
   if (c.ghost) return { pass: 'ghost', layer: c.texture ? layerOf(c.texture, 'side') : GRAIN_LAYER, color: BLANC, glow: NOIR };
   if (!c.texture) return { pass: 'opaque', layer: GRAIN_LAYER, color: linearRgb(c.color), glow: NOIR };
-  const lueur = c.muted ? undefined : GLOW[c.texture as TextureKind];
+  // Un bloc allumé (`lit`, la lanterne du phare du large fini) prend la lueur des lanternes, fixe : la même passe, aucun
+  // appel de dessin de plus.
+  const lueur = c.muted ? undefined : c.lit ? GLOW.lanterne : GLOW[c.texture as TextureKind];
   const glow: [number, number, number] = lueur ? (linearRgb(lueur[0]).map((v) => v * lueur[1]) as [number, number, number]) : NOIR;
   // Un bloc lumineux garde sa texture de côté sur toutes ses faces, comme son matériau d'avant.
   const layer = layerOf(c.texture, lueur ? 'side' : face, c.muted);

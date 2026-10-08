@@ -23,6 +23,7 @@ import { WorldPage } from './game/WorldPage';
 import { SchoolPage } from './game/School';
 import { AssemblyPage } from './game/Assembly';
 import { AssemblyQuestionPage } from './game/AssemblyQuestion';
+import { ProjectQuestionPage } from './game/ProjectQuestion';
 import { MonumentPage, MonumentsPage } from './game/Monuments';
 import { useJoinBuilder, useMonumentBuilder } from './game/useMonumentBuilder';
 import { JoinPage } from './game/Joins';
@@ -73,6 +74,7 @@ export function AppRoutes() {
         <Route path="adventure/passage/:vers" element={<VoyageEntry />} />
         {/* La question d'un bloc assemblé (GD-2), en plein écran comme une mission, en 3D comme en vue simple. */}
         <Route path="adventure/assembly/:bloc" element={<AssemblyQuestionPage />} />
+        <Route path="adventure/project/:monument/:recipe" element={<ProjectQuestionPage />} />
         <Route path="adventure/:biomeId/challenge" element={<BossPage />} />
         <Route path="adventure/:biomeId/:typeId" element={<MissionEntry />} />
         {/* Les anciennes adresses (/aventure/…, noms français) mènent à leur page sous les noms neutres. */}

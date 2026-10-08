@@ -284,6 +284,46 @@
     - aide « Un tiers, et s’en, sans » :
       - Un tiers de 9 : on partage 9 en 3 parts égales, 9 ÷ 3 = 3.
       - s’en = se + en (il s’en va). sans = le contraire de avec.
+13. énoncé : "Ton compte est à −3 €.\nTa tante te donne 8 €."
+    - question : Quelle phrase est juste ?
+    - lu : Ton compte est à moins 3 euros. Ta tante te donne 8 euros.
+    - choix : Ta tante t’a aidé : tu as 5 €. · Ta tante ta aidé : tu as 5 €. · Ta tante t’a aidé : tu as 11 €.
+    - réponse : Ta tante t’a aidé : tu as 5 €.
+    - indice : D’abord : de moins 3, avance de 8 bonds. Puis remplace par « t’avait ».
+    - explication : −3 + 8 = 5 : de −3, on avance de 8 bonds et on passe au-dessus de 0. On peut dire « ta tante t’avait aidé » : on écrit t’a. « ta » va devant un nom (ta tante). 11, c’est 3 + 8 : le signe moins a été oublié.
+    - aide « Le compte, et ta, t’a » :
+      - Ajouter un positif, c’est avancer vers la droite : −2 + 5 = 3.
+      - t’a = t’avait. ta = devant un nom (ta veste).
+14. énoncé : "Une pizza est coupée en 8 parts.\nMes amis en mangent 3."
+    - question : Quelle phrase est juste ?
+    - lu : Une pizza est coupée en 8 parts. Mes amis en mangent 3.
+    - choix : Mes amis m’ont laissé cinq huitièmes. · Mes amis mon laissé cinq huitièmes. · Mes amis m’ont laissé trois huitièmes.
+    - réponse : Mes amis m’ont laissé cinq huitièmes.
+    - indice : D’abord : sur 8 parts, combien en reste-t-il ? Puis remplace par « m’avaient ».
+    - explication : 8 parts − 3 parts = 5 parts : il reste cinq huitièmes de la pizza. On peut dire « mes amis m’avaient laissé » : on écrit m’ont. « mon » va devant un nom (mon cahier). Trois huitièmes, c’est la part mangée, pas celle qui reste.
+    - aide « Les huitièmes, et mon, m’ont » :
+      - Une part sur 8, c’est un huitième : 2 parts sur 8, deux huitièmes.
+      - m’ont = m’avaient. mon = devant un nom (mon cahier).
+15. énoncé : "Le sous-marin est à −20 m.\nIl remonte de 5 m."
+    - question : Quelle phrase est juste ?
+    - lu : Le sous-marin est à moins 20 mètres. Il remonte de 5 mètres.
+    - choix : Il est à −15 m, toujours dans l’eau. · Il est à −15 m, toujours d’en l’eau. · Il est à −25 m, toujours dans l’eau.
+    - réponse : Il est à −15 m, toujours dans l’eau.
+    - indice : D’abord : remonter, c’est aller vers 0. Puis : à l’intérieur, ou de + en ?
+    - explication : −20 + 5 = −15 : remonter, c’est avancer de 5 bonds vers 0. Le sous-marin est à l’intérieur de l’eau : on écrit dans. « d’en » veut dire de + en (d’en parler). −25, c’est descendre de 5 au lieu de remonter.
+    - aide « Remonter, et dans, d’en » :
+      - Remonter, c’est ajouter : on va vers 0. −10 + 3 = −7.
+      - dans = à l’intérieur. d’en = de + en (d’en parler).
+16. énoncé : "Le club a 12 gourdes.\nIl en donne un tiers aux nageurs."
+    - question : Quelle phrase est juste ?
+    - lu : Le club a 12 gourdes. Il en donne un tiers aux nageurs.
+    - choix : Le club leur donne 4 gourdes. · Le club leurs donne 4 gourdes. · Le club leur donne 3 gourdes.
+    - réponse : Le club leur donne 4 gourdes.
+    - indice : D’abord : partage 12 en 3 parts égales. Puis : leur est devant un verbe.
+    - explication : Un tiers de 12, c’est 12 ÷ 3 = 4 gourdes. « leur » est devant le verbe donne : il veut dire « à eux », et ne prend jamais de s. 3, c’est le nombre de parts, pas une part.
+    - aide « Un tiers, et leur » :
+      - Un tiers de 15 : on partage 15 en 3 parts égales, 15 ÷ 3 = 5.
+      - leur devant un verbe = à eux : jamais de s (je leur parle).
 
 ### L’engrenage · `compound-4e`
 

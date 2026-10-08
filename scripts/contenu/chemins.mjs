@@ -2,7 +2,8 @@
 // JSON qu'ils produisent (src/game/islands.ts, src/game/exercises/data/, src/game/world/plans/,
 // src/game/world/requests.json, src/apps/<mission>/), les quêtes (docs/contenu/quetes.md → src/game/world/stories.json),
 // et l'assemblage des blocs (docs/contenu/assemblage.md → src/game/world/recipes.ts, et ses questions →
-// src/game/exercises/data/assemblage-<bloc>.json).
+// src/game/exercises/data/assemblage-<bloc>.json), et les grands projets (docs/contenu/projets.md →
+// src/game/world/projects.json, et leurs banques de questions → src/game/exercises/data/assembly-<banque>.json).
 // Module sans effet : generer.mjs (npm run contenu) et importer.mjs s'en servent.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -11,6 +12,7 @@ import { MISSIONS_PORTAIL } from './portail.mjs';
 import { FICHIER_ASSEMBLAGE, ecrireRecettes, lireAssemblage, lireQuestions } from './assemblage.mjs';
 import { verifierDemandes } from './demandes.mjs';
 import { FICHIER_QUETES, lireQuetes, verifierQuetes } from './quetes.mjs';
+import { FICHIER_PROJETS, lireBanques, lireProjets, verifierProjets } from './projets.mjs';
 
 // Chemins depuis la racine du dépôt, d'où npm et vitest lancent les scripts.
 const racine = process.cwd();
@@ -21,6 +23,7 @@ export const PLANS = join(racine, 'src/game/world/plans');
 export const RECETTES = join(racine, 'src/game/world/recipes.ts');
 export const DEMANDES = join(racine, 'src/game/world/requests.json');
 export const QUETES = join(racine, 'src/game/world/stories.json');
+export const PROJETS = join(racine, 'src/game/world/projects.json');
 
 /** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
 const CHAMPS_ILE = ['name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'];
@@ -34,6 +37,12 @@ function ordreDesIles() {
   return [...texte.matchAll(/^\d+\. `([a-z0-9-]+)`$/gm)].map((m) => m[1]);
 }
 
+/** Les grands ouvrages (src/game/world/monuments.ts) et leur archipel : `id: 'landmark-5e-1'`, puis `archipelago: '5e'`. */
+function grandsOuvrages() {
+  const texte = readFileSync(join(racine, 'src/game/world/monuments.ts'), 'utf8');
+  return new Map([...texte.matchAll(/id: '(landmark-[a-z0-9-]+)',[^}]*?archipelago: '(6e|5e|4e|3e)'/gs)].map((m) => [m[1], m[2]]));
+}
+
 /**
  * Les îles (src/game/islands.ts, dans l'ordre de docs/contenu/archipel.md) et les exercices écrits en Markdown :
  * { sortie: Map<chemin JSON, texte>, iles: Set<île> }.
@@ -44,7 +53,7 @@ export function produire() {
   const biomes = new Map();
   const demandesParIle = new Map();
   const plansParIle = new Map();
-  for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md' && n !== 'archipel.md' && n !== FICHIER_ASSEMBLAGE && n !== FICHIER_QUETES).sort()) {
+  for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md' && n !== 'archipel.md' && n !== FICHIER_ASSEMBLAGE && n !== FICHIER_QUETES && n !== FICHIER_PROJETS).sort()) {
     const fichier = join('docs/contenu', f);
     const { ile, biome, exercices, plans, demandes } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
     if (f !== `${ile}.md`) throw new Error(`${fichier} : le fichier d'une île s'appelle <île>.md (${ile}.md)`);
@@ -100,6 +109,24 @@ export function produire() {
     if (sortie.has(chemin)) throw new Error(`${fichierAssemblage} : « ${q.id} » est déjà l’identifiant d’un exercice d’île`);
     sortie.set(chemin, JSON.stringify(q, null, 2) + '\n');
   }
+  // Les grands projets (GD-10) : docs/contenu/projets.md → src/game/world/projects.json, et ses banques de questions →
+  // src/game/exercises/data/assembly-<banque>.json. Les grands ouvrages et leur archipel sont lus dans monuments.ts.
+  const fichierProjets = join('docs/contenu', FICHIER_PROJETS);
+  const mdProjets = readFileSync(join(CONTENU, FICHIER_PROJETS), 'utf8');
+  const banques = lireBanques(mdProjets, fichierProjets);
+  for (const q of banques) {
+    const chemin = join(DATA, `${q.id}.json`);
+    if (sortie.has(chemin)) throw new Error(`${fichierProjets} : « ${q.id} » est déjà l’identifiant d’un autre exercice`);
+    sortie.set(chemin, JSON.stringify(q, null, 2) + '\n');
+  }
+  const projets = verifierProjets(
+    lireProjets(mdProjets, fichierProjets),
+    ordre.map((id) => biomes.get(id)),
+    grandsOuvrages(),
+    [...assemblage.recettes.map((r) => r.bloc), ...banques.map((q) => q.bloc)],
+    fichierProjets,
+  );
+  sortie.set(PROJETS, JSON.stringify(projets, null, 2) + '\n');
   // Les missions du portail : docs/contenu/portail/<mission>.md → src/apps/<mission>/….json.
   for (const m of MISSIONS_PORTAIL) {
     const fichier = join('docs/contenu/portail', `${m.id}.md`);

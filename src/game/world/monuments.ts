@@ -17,6 +17,12 @@ export interface MonumentDef extends PlanDef {
   description: string;
   /** Le coin de l'îlot dans le monde (x, y) : placé une fois pour toutes, loin des îles, des ouvrages et des baleines. */
   islet: { x: number; y: number };
+  /**
+   * Le bloc qui s'allume quand le monument est fini (toutes ses cases posées, et seulement alors) : ses cubes prennent la
+   * lueur des lanternes (`VoxelCube.lit`). Le phare du large : sa lanterne de vitraux (GD-10, « à la fin, le phare
+   * s'allume »).
+   */
+  litWhenDone?: BlockId;
 }
 
 // ---------- Outils de dessin ----------
@@ -271,6 +277,7 @@ const FICHES: Fiche[] = [
     reward: { xp: 180, chest: {} },
     done: 'Le phare du large s’allume ! Plus aucun navire ne se perd entre les Collines.',
     draw: phareLarge,
+    litWhenDone: BLOC.vitrail,
   },
   {
     id: 'landmark-5e-2',

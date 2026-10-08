@@ -5,14 +5,26 @@ import { APPS } from '../../apps/registry';
 import { byId, citable } from '../../curriculum';
 import { BIOMES } from '../biomes';
 import { RECETTES } from '../world/assembly';
+import { getMonument } from '../world/monuments';
+import { PROJECTS } from '../world/projects';
 import { ILES } from '../islands';
 import { BLOCS_A_QUESTIONS, CATALOG, UNORDERED, loadAllExercises, loadAssemblage } from './index';
 import { SCREEN_TYPES } from './registry';
 import { piegesDe, placerChoixAssemblage, valeursDesNombres } from './shuffle';
 import type { AssemblageDef } from './types';
 
+// Les banques des grands projets (GD-10, docs/contenu/projets.md) se vérifient comme les blocs assemblés : chacune avec
+// une recette qui la pose, son archipel celui du projet.
+const BANQUES_DE_PROJETS = [
+  ...new Map(
+    PROJECTS.flatMap((p) =>
+      p.pieces.flatMap((x) => x.recipes.map((r) => [r.bank, { bloc: r.bank, ingredients: r.ingredients, archipelago: getMonument(p.monument)!.archipelago }] as const)),
+    ).filter(([bank]) => bank.startsWith('project-')),
+  ).values(),
+];
+const BANQUES = [...RECETTES, ...BANQUES_DE_PROJETS];
 const QUESTIONS = new Map<string, AssemblageDef>();
-for (const r of RECETTES) {
+for (const r of BANQUES) {
   const def = await loadAssemblage(r.bloc);
   if (def) QUESTIONS.set(r.bloc, def);
 }
@@ -46,8 +58,8 @@ function textes(def: AssemblageDef): string[] {
   ].filter((t): t is string => typeof t === 'string');
 }
 
-it('chaque bloc assemblé a ses questions, au moins 8, et rien d’autre n’en a', () => {
-  for (const r of RECETTES) {
+it('chaque bloc assemblé et chaque banque de projet a ses questions, au moins 8, et rien d’autre n’en a', () => {
+  for (const r of BANQUES) {
     const def = QUESTIONS.get(r.bloc);
     expect(def, `${r.bloc} : aucune question dans docs/contenu/assemblage.md`).toBeDefined();
     expect(def!.bloc).toBe(r.bloc);
@@ -55,7 +67,7 @@ it('chaque bloc assemblé a ses questions, au moins 8, et rien d’autre n’en 
     expect(def!.items.length, r.bloc).toBeGreaterThanOrEqual(8);
     expect(new Set(def!.items.map((it) => it.key)).size, r.bloc).toBe(def!.items.length);
   }
-  expect([...BLOCS_A_QUESTIONS].sort()).toEqual(RECETTES.map((r) => r.bloc).sort());
+  expect([...BLOCS_A_QUESTIONS].sort()).toEqual(BANQUES.map((r) => r.bloc).sort());
 });
 
 it('les questions d’assemblage ne sont ni dans une île ni au catalogue des missions', () => {
@@ -67,7 +79,7 @@ it('les questions d’assemblage ne sont ni dans une île ni au catalogue des mi
   for (const def of QUESTIONS.values()) expect(piegesDe(def)).toBe('du-fichier');
 });
 
-describe.each(RECETTES.map((r) => [r.bloc, r] as const))('les questions du bloc %s', (bloc, recette) => {
+describe.each(BANQUES.map((r) => [r.bloc, r] as const))('les questions du bloc %s', (bloc, recette) => {
   const def = () => QUESTIONS.get(bloc)!;
 
   it('citent des compétences qui existent, des deux matières de la recette, du niveau de l’archipel', () => {
