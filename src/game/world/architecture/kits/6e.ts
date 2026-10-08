@@ -3,15 +3,17 @@
 // - Le bois : le colombage (poteaux #795643 sur un remplissage crème #D8D9C9, peint, 0 triangle) ; bardé (#B1815E) aux
 //   pignons (et, en attente, sur les bâtiments de bois du quai : `bardes`) ; des pilotis (#6E4C30) là où il touche
 //   l'eau et où le sol manque dessous.
-// - La pierre : un mur plein, de sa matière ; le soubassement et le chaperon en pierre #8A8F84.
+// - La pierre : un mur plein, de sa matière ; le soubassement en pierre #8A8F84, au pied d'un mur d'au moins trois
+//   rangées seulement ; le chaperon, mince, dans une teinte plus sombre de sa matière (retouches du 8 octobre 2026).
 // - Les toits : les pentes de ./roofs.ts, dans la couverture de leur île (world/roofs.ts : ardoise, ou terre cuite à la
 //   Ferme et à la Mine).
 // - L'école, la salle des trophées et la Halle aux matériaux (décision du directeur artistique, 30 septembre 2026 : des
 //   lieux du village, au milieu des maisons) : leurs murs en colombage, leurs toits en pentes (`LIEUX_6E`).
 // - La table commune « matière → famille » (../families.ts, décision du mainteneur du 8 octobre 2026) : le colombage
 //   (planches, terre, poutre, chaume), le bardage (cabine, carton : des clins dans la teinte de la matière, chaperon de
-//   pierre), la pierre (un mur plein dans sa teinte, soubassement et chaperon de pierre ; seule et basse, un bac de
-//   pierre), le toit (toit, tuile), la finition (la porte en vantail dans son encadrement, la marche de pierre basse :
+//   pierre ; le bois des monuments et des petites constructions aussi, dans le brun du kit), la pierre (un mur plein
+//   dans sa teinte ; seule et basse, un bac dans sa teinte, cerné d'un rebord gris), le toit (toit, tuile), la finition
+//   (la porte en vantail dans son encadrement, la marche basse dans la teinte de sa matière :
 //   ../lowPieces.ts ; la barrière en poteaux et lisses attend le budget). Les monuments, la cour des îles et les petites constructions des
 //   commandes et des quêtes la prennent aussi (../index.ts) ; le métal, la toile, le précieux, le végétal et l'eau
 //   attendent leur pull request.

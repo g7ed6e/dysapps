@@ -22,7 +22,11 @@
 //   entre les lieux (GD-9) attendent leur pull request ;
 // - les lieux du village (l'école, la salle des trophées, le lieu où l'on assemble : au milieu des maisons, décision du
 //   30 septembre 2026) prennent le kit quand il les nomme (`lieux`, au 6e) : leur plan se lit sur leurs blocs, la
-//   famille de chaque bloc sur sa place dans leur modèle (./places.ts) ; ailleurs, ils gardent leur dessin.
+//   famille de chaque bloc sur sa place dans leur modèle (./places.ts) ; ailleurs, ils gardent leur dessin ;
+// - le bois d'un monument ou d'une petite construction est bardé dans sa teinte de bois, jamais en colombage crème : ce
+//   ne sont pas des maisons, et le colombage y faisait un damier de crème, de matière et de pierre (retouches du
+//   directeur artistique, 8 octobre 2026) ;
+// - un mur plein ou bardé n'a de soubassement qu'à partir de trois rangées (`rangees`, lu sur la colonne du bloc).
 import type { VoxelCube } from '../cube';
 import type { ArchipelagoId } from '../archipelagos';
 import type { TextureKind } from '../pixels';
@@ -36,7 +40,7 @@ import { SIDES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Vois
 
 export { assemblerLesPieces } from './assembly';
 export { pieceDe, FORMES, type Forme, type IdDePiece } from './choices';
-export { CADRAN, COLOMBAGE, decharge, MOTIF, MOTIF_FIN, MOTIF_GLSL, motifDeLaRangee, motifDesRangees, peintureDuMur, pointsDuCadran, RANGEES, rangeesReunies, ROLES_PEINTS, sensDeLaDecharge } from './paint';
+export { CADRAN, CHAPERON_DE_LA_PIERRE, COLOMBAGE, decharge, MOTIF, MOTIF_FIN, MOTIF_GLSL, motifDeLaRangee, motifDesRangees, peintureDuMur, pointsDuCadran, RANGEES, rangeesReunies, RANGEES_DU_SOUBASSEMENT, ROLES_PEINTS, sensDeLaDecharge } from './paint';
 export { boiteDansLaCase, type DessinDePiece, type Role } from './rooms';
 export { indexDuPlan, voisinageDe, type Voisinage } from './neighborhood';
 export { KITS, kitVide, type CaseDuLieu, type Kit } from './kits';
@@ -81,6 +85,15 @@ export interface Architecture {
 }
 
 const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
+
+/** Les rangées du mur à la colonne d'un bloc : les murs empilés d'un seul tenant dans son plan, lui compris. */
+function rangeesDeLaColonne(c: VoxelCube, index: IndexDuPlan): number {
+  let n = 1;
+  for (let z = c.z - 1; index.get(cle(c.x, c.y, z)) === 'mur'; z--) n++;
+  for (let z = c.z + 1; index.get(cle(c.x, c.y, z)) === 'mur'; z++) n++;
+  return n;
+}
+
 /** Ce qui s'allume ou éclaire : jamais remplacé . */
 const LUMIERES = new Set(['lanterne', 'verre']);
 
@@ -212,14 +225,14 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     if (!plan) return null;
     return c.texture === 'barriere' ? { groupe: plan.groupe, index: barrieres(plan.groupe, plan.textures) } : plan;
   };
-  const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation; sansDecharge?: boolean; groupe: string }[] = [];
+  const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation; sansDecharge?: boolean; groupe: string; rangees: number }[] = [];
   for (const c of cubes) {
     if (c.place && !estUnMonument(c.place)) {
       const bloc = lieux && lieux.blocs.get(cle(c.x, c.y, c.z));
       if (!lieux || !bloc || options.exclure?.(c)) continue;
       const v = voisinageDe(c, bloc.classe === 'toit' ? lieux.indexDesToits : lieux.index, { surLeVide: options.surLeVide, classe: bloc.classe });
       if (!v) continue;
-      choisis.push({ c, famille: bloc.famille, v, ...pieceDe(v), sansDecharge: bloc.sansDecharge, groupe: 'lieu' });
+      choisis.push({ c, famille: bloc.famille, v, ...pieceDe(v), sansDecharge: bloc.sansDecharge, groupe: 'lieu', rangees: rangeesDeLaColonne(c, lieux.index) });
       continue;
     }
     if (c.ghost || !estDuPlan(c) || LUMIERES.has(c.texture ?? '') || options.exclure?.(c)) continue;
@@ -231,7 +244,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     const v = voisinageDe(c, plan.index, { surLeVide: options.surLeVide, toitures: plan.groupe === 'batiment' || plan.groupe === '' ? options.toitures : undefined });
     if (!v) continue;
     const { piece, rotation } = pieceDe(v);
-    choisis.push({ c, famille, v, piece, rotation, groupe: plan.groupe });
+    choisis.push({ c, famille, v, piece, rotation, groupe: plan.groupe, rangees: rangeesDeLaColonne(c, plan.index) });
   }
   // Le dehors d'un bâtiment : du côté opposé au centre de ses murs (ceux de son île, ou de son lieu, ou de son plan), vu
   // du dessus.
@@ -243,7 +256,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     const m = centres.get(k) ?? { x: 0, y: 0, n: 0 };
     centres.set(k, { x: m.x + c.x + 0.5, y: m.y + c.y + 0.5, n: m.n + 1 });
   }
-  for (const { c, famille, v, piece, rotation, sansDecharge, groupe } of choisis) {
+  for (const { c, famille, v, piece, rotation, sansDecharge, groupe, rangees } of choisis) {
     const k = cle(c.x, c.y, c.z);
     // La finition se dessine matière par matière (la porte, la barrière, la marche) : avant les pièces et les murs.
     const finition = famille === 'finition' ? kit.finitions?.[c.texture as TextureKind]?.(piece, c) : undefined;
@@ -265,7 +278,9 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
       const [dx, dy] = SIDES[cote];
       return dx * (c.x + 0.5 - m.x / m.n) + dy * (c.y + 0.5 - m.y / m.n) > 0;
     };
-    const peinture = peintureDuMur(v, maniere, { barde: kit.bardes.includes(c.tag ?? ''), exterieur, sansDecharge });
+    // Un monument, une petite construction : bardés (`groupeDe` : leur plan à part).
+    const barde = kit.bardes.includes(c.tag ?? '') || groupeDe(c) !== null;
+    const peinture = peintureDuMur(v, maniere, { barde, exterieur, sansDecharge, rangees });
     out.peints.set(k, { cube: c, famille, piece, rotation, peinture });
   }
   return out;

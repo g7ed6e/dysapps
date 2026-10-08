@@ -4,7 +4,7 @@ import type { VoxelCube } from '../cube';
 import { toutConstruit } from '../budget';
 import { batimentsDe } from '../construction';
 import { worldCubes } from '../terrain';
-import { architectureDe, CADRAN, COLOMBAGE, decharge, indexDuPlan, MOTIF, MOTIF_FIN, MOTIF_GLSL, motifDeLaRangee, motifDesRangees, peintureDuMur, pointsDuCadran, rangeesReunies, sensDeLaDecharge, voisinageDe, type Voisinage } from '.';
+import { architectureDe, CADRAN, CHAPERON_DE_LA_PIERRE, COLOMBAGE, decharge, indexDuPlan, MOTIF, MOTIF_FIN, MOTIF_GLSL, motifDeLaRangee, motifDesRangees, peintureDuMur, pointsDuCadran, RANGEES_DU_SOUBASSEMENT, rangeesReunies, sensDeLaDecharge, voisinageDe, type Voisinage } from '.';
 import { maillageDeLaConstruction, MOTIF_ASSEMBLE, MOTIF_ASSEMBLE_DEBUT } from '../construction';
 import { KIT_6E } from './kits/6e';
 
@@ -194,9 +194,41 @@ describe('La table commune : les manières de peindre (8 octobre 2026)', () => {
     const pied = peintureDuMur(vois({ texture: 'galet' }), 'plein');
     expect(pied.fond).toBe('matiere');
     for (const m of pied.motifs.slice(0, 4)) expect(m).toBe(MOTIF.plein | MOTIF.soubassement | MOTIF.chaperon);
-    expect(pied.motifs[4]).toBe(MOTIF.pierreEntiere);
+    // Le dessus du chaperon d'un mur plein : la teinte sombre de sa matière (le genre le dit au shader).
+    expect(pied.motifs[4]).toBe(MOTIF.plein | MOTIF.pierreEntiere);
     const etage = peintureDuMur(vois({ texture: 'galet', dessous: 'mur', dessus: 'toit' }), 'plein');
     for (const m of etage.motifs.slice(0, 4)) expect(m).toBe(MOTIF.plein);
+  });
+
+  it('la pierre garde la teinte de sa matière : soubassement seulement à partir de trois rangées, chaperon mince et sombre', () => {
+    // Un mur d'une ou deux rangées : pas de soubassement ; de trois, au pied seulement, une fois.
+    for (const rangees of [1, 2]) for (const m of peintureDuMur(vois({ texture: 'sable' }), 'plein', { rangees }).motifs.slice(0, 4)) expect(m & MOTIF.soubassement).toBe(0);
+    expect(RANGEES_DU_SOUBASSEMENT).toBe(3);
+    for (const m of peintureDuMur(vois({ texture: 'sable', dessus: 'mur' }), 'plein', { rangees: 3 }).motifs.slice(0, 4)) expect(m).toBe(MOTIF.plein | MOTIF.soubassement);
+    for (const m of peintureDuMur(vois({ texture: 'sable', dessous: 'mur', dessus: 'mur' }), 'plein', { rangees: 3 }).motifs.slice(0, 4)) expect(m).toBe(MOTIF.plein);
+    // Un mur bardé suit la même règle.
+    expect(peintureDuMur(vois({ texture: 'planches' }), 'colombage', { barde: true, rangees: 1 }).motifs[0]).toBe(MOTIF.bardage | MOTIF.chaperon);
+    // La teinte de la matière couvre au moins 60 % de la hauteur visible d'un mur d'une rangée, et d'un mur de trois.
+    expect(1 - COLOMBAGE.chaperonPlein).toBeGreaterThanOrEqual(0.6);
+    expect((3 - COLOMBAGE.soubassement - COLOMBAGE.chaperonPlein) / 3).toBeGreaterThanOrEqual(0.6);
+    expect(COLOMBAGE.chaperonPlein).toBeLessThan(COLOMBAGE.chaperon);
+    // Le chaperon et le dessus d'un mur plein : la teinte de sa matière, plus sombre, jamais la pierre du kit.
+    expect(CHAPERON_DE_LA_PIERRE).toBeGreaterThan(0.4);
+    expect(CHAPERON_DE_LA_PIERRE).toBeLessThan(0.8);
+    expect(MOTIF_GLSL).toContain(`c * ${CHAPERON_DE_LA_PIERRE.toFixed(4)}, smoothstep`);
+    expect(MOTIF_GLSL).toContain(`genre == ${MOTIF.plein} ? c * ${CHAPERON_DE_LA_PIERRE.toFixed(4)} : chap`);
+  });
+
+  it('le disque du cadran reste loin du crème Brume d’un fantôme, et s’efface de loin avec ses points', () => {
+    const lin = (v: number) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+    const srgb = (v: number) => (v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055);
+    const hex = (h: number) => [(h >> 16) & 255, (h >> 8) & 255, h & 255].map((v) => lin(v / 255));
+    // Le cadran des Premiers Rivages (#C8A454), éclairci comme dans le shader.
+    const disque = hex(0xc8a454).map((v) => srgb(v + (1 - v) * CADRAN.eclat) * 255);
+    const brume = [0xe5, 0xeb, 0xe3];
+    expect(Math.hypot(...disque.map((v, k) => v - brume[k]))).toBeGreaterThan(60);
+    expect(MOTIF_GLSL).toContain(`mix(c, vec3(1.0), ${CADRAN.eclat.toFixed(4)}), disque * loin)`);
+    expect(MOTIF_GLSL).toContain(`c * ${CADRAN.sombre.toFixed(4)}, point * loin)`);
   });
 
   it('le bardage : des clins dans la teinte de sa matière, un chaperon de pierre, sans soubassement', () => {

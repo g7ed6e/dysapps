@@ -18,23 +18,30 @@ const droite = (d: DessinDePiece) => d.facettes.every((f) => f.normale.filter((v
 const cube = (x: number, y: number): VoxelCube => ({ x, y, z: 1, color: '#888888', texture: 'barriere', tag: 't' });
 
 describe('Les pièces basses', () => {
-  it('le bac de pierre : seul et bas, en retrait dans sa case, son dessus en chaperon, ses côtés dans sa matière', () => {
+  it('le bac de pierre : seul et bas, en retrait dans sa case, dans sa matière, son dessus cerné d’un rebord gris', () => {
     const b = bacDePierre();
     expect(dansLaCase(b) && droite(b)).toBe(true);
     expect(KIT_6E.pieces.pierre?.[PIECE_SEULE_ET_BASSE]).toEqual(b);
+    // Le dessus : la matière au milieu, quatre bandes de rebord (le rôle `chaperon`) autour.
     const dessus = b.facettes.filter((f) => f.normale[2] > 0);
-    expect(dessus.map((f) => f.role)).toEqual(['chaperon']);
+    expect(dessus.map((f) => f.role)).toEqual([undefined, 'chaperon', 'chaperon', 'chaperon', 'chaperon']);
+    const aire = (pts: number[][]) => Math.abs(pts.reduce((n, p, k) => n + p[0] * pts[(k + 1) % pts.length][1] - pts[(k + 1) % pts.length][0] * p[1], 0)) / 2;
+    const total = (1 - 2 * PIECES_BASSES.bac.retrait) ** 2;
+    // La teinte de la matière garde plus de la moitié du dessus ; le rebord et le milieu le couvrent tout entier.
+    expect(aire(dessus[0].points)).toBeGreaterThan(total / 2);
+    expect(dessus.reduce((n, f) => n + aire(f.points), 0)).toBeCloseTo(total, 9);
     expect(Math.max(...b.facettes.flatMap((f) => f.points.map((p) => p[2])))).toBe(PIECES_BASSES.bac.haut);
     expect(b.facettes.filter((f) => f.normale[2] === 0).every((f) => f.role === undefined && f.face === 'cote')).toBe(true);
-    // Pas plus de triangles qu'un cube (son dessous, posé sur le sol, n'est pas émis).
-    expect(trianglesDe(b) - 2).toBeLessThanOrEqual(10);
+    // Un cube et son rebord, au plus (son dessous, posé sur le sol, n'est pas émis).
+    expect(trianglesDe(b) - 2).toBeLessThanOrEqual(18);
   });
 
-  it('la marche : de pierre (le soubassement du kit), basse, ou toute la case sous ce qui est posé dessus', () => {
+  it('la marche : dans la teinte de sa matière, basse, ou toute la case sous ce qui est posé dessus', () => {
     const basse = marche(false);
     expect(dansLaCase(basse) && droite(basse)).toBe(true);
     expect(Math.max(...basse.facettes.flatMap((f) => f.points.map((p) => p[2])))).toBe(PIECES_BASSES.marche);
-    expect(basse.facettes.every((f) => f.role === 'soubassement')).toBe(true);
+    // Aucun rôle du kit : ni le gris du soubassement, qui se confondait avec le fantôme et le dallage.
+    expect(basse.facettes.every((f) => f.role === undefined)).toBe(true);
     expect(basse.couvre).toBe(FACES.bas);
     expect(marche(true).couvre).toBe(0b111111);
     expect(marcheDe('mur.droit.pied.chaperon')).toBe(marcheDe('mur.seul.haut.chaperon'));

@@ -156,6 +156,34 @@ describe('Le kit des Premiers Rivages (lot 7b)', () => {
     for (const p of versants) expect(voisinageDe(p.cube, index)?.monte, cle(p.cube)).not.toBe(0);
   }, 30_000);
 
+  it('au 6e, la pierre garde sa teinte : soubassement à partir de trois rangées seulement ; le bois des monuments et des petites constructions est bardé', () => {
+    const { progress, world: village } = toutConstruitAvecLesCommandes();
+    const cubes = worldCubes('6e', progress, village, false);
+    const archi = architectureDe('6e', cubes, { batiments: batimentsDe('6e'), cours: coursDe('6e') });
+    // Les murs du monde, une fenêtre prise dans un mur comprise (tous les plans ensemble : au plus, la colonne s'allonge).
+    const plan = indexDuPlan(cubes.filter((c) => !c.ghost));
+    const colonne = (c: VoxelCube) => {
+      let n = 1;
+      for (let z = c.z - 1; plan.get(`${c.x},${c.y},${z}`) === 'mur'; z--) n++;
+      for (let z = c.z + 1; plan.get(`${c.x},${c.y},${z}`) === 'mur'; z++) n++;
+      return n;
+    };
+    let pleins = 0;
+    for (const p of archi.peints.values()) {
+      const genre = p.peinture.motifs[0] & 3;
+      if (p.peinture.fond !== 'matiere' && p.peinture.fond !== 'bardage') continue;
+      if (genre !== MOTIF.plein && genre !== MOTIF.bardage) continue;
+      pleins++;
+      // Un soubassement : au pied d'une colonne d'au moins trois rangées (les murs peints empilés, lus sur le monde).
+      if (p.peinture.motifs.slice(0, 4).some((m) => m & MOTIF.soubassement)) expect(colonne(p.cube), cle(p.cube)).toBeGreaterThanOrEqual(3);
+    }
+    expect(pleins).toBeGreaterThan(100);
+    // Le bois d'un monument ou d'une petite construction : bardé (le brun du kit), jamais le colombage crème.
+    const horsDesMaisons = [...archi.peints.values()].filter((p) => (p.cube.place?.startsWith('monument:') || p.cube.petiteConstruction) && p.famille === 'colombage');
+    expect(horsDesMaisons.length).toBeGreaterThan(10);
+    for (const p of horsDesMaisons) expect(p.peinture.fond, cle(p.cube)).not.toBe('remplissage');
+  }, 30_000);
+
   it('un mur ne change pas quand l’étape suivante de son bâtiment arrive dans le monde (la règle lit le bâtiment entier)', () => {
     const { progress, world: village } = toutConstruit();
     const tout = architectureDe('6e', worldCubes('6e', progress, village, false), { batiments: batimentsDe('6e') });
