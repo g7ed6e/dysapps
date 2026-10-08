@@ -98,10 +98,10 @@ export function blockUses(state: GameState, block: BlockId): Use[] {
   // employer les blocs qui s'accumulent).
   for (const m of monumentsOf(archipelagoOf(state.world.place ?? 'french-6e-phonology').classe)) {
     const need = monumentMissing(state, m, true)[block] ?? 0;
+    if (need === 0) continue;
     const project = projectOf(m.id);
     const piece = project ? nextPiece(state, project) : null;
-    if (need > 0)
-      uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/adventure/${m.id}`, ...(project && piece !== null && { piece: project.pieces[piece].names }) });
+    uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/adventure/${m.id}`, ...(project && piece !== null && { piece: project.pieces[piece].names }) });
   }
   return uses;
 }

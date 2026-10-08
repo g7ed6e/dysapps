@@ -157,7 +157,7 @@ function InventoryBody() {
                   ) : (
                     uses.map((use) => (
                       <Link key={cleDUsage(use)} to={use.to ?? `/adventure/${use.island}`} className={`tag${use.enough || use.kind === 'monument' ? ' tag-ok' : ''}`}>
-                        <Icon name={iconeDUsage(use)} /> {libelleDUsage(use, row.count, univers === 'archipeo' ? 'archipeo' : 'blocland')}
+                        <Icon name={iconeDUsage(use)} /> {libelleDUsage(use, row.count, univers)}
                       </Link>
                     ))
                   )}
