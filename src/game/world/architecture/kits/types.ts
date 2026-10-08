@@ -20,7 +20,7 @@ export type Famille = MaterialFamily;
  * Le dessin d'une matière de la finition (la porte, la barrière, la marche), qui ne se lit pas sur sa seule famille : une
  * manière de peindre son bloc, ou une pièce dessinée, d'après la pièce choisie par son voisinage et son bloc.
  */
-export type DessinDeFinition = (piece: IdDePiece, c: VoxelCube) => DessinDePiece | ManiereDuMur | undefined;
+type DessinDeFinition = (piece: IdDePiece, c: VoxelCube) => DessinDePiece | ManiereDuMur | undefined;
 
 /**
  * Une case du modèle d'un lieu du village (world/terrain.ts : `schoolModel`, `trophyModel`, et les trophées posés),

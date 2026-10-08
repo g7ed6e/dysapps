@@ -44,7 +44,7 @@ export { CADRAN, CHAPERON_DE_LA_PIERRE, COLOMBAGE, decharge, MOTIF, MOTIF_FIN, M
 export { boiteDansLaCase, type DessinDePiece, type Role } from './rooms';
 export { indexDuPlan, voisinageDe, type Voisinage } from './neighborhood';
 export { KITS, kitVide, type CaseDuLieu, type Kit } from './kits';
-export { CUBE_EXCEPTIONS, FAMILIES_TO_CONFIRM, familyOf, MATERIAL_FAMILIES, materialsOf, type MaterialFamily } from './families';
+export { CUBE_EXCEPTIONS, FAMILIES_TO_CONFIRM, familyOf, MATERIAL_FAMILIES, materialsOf } from './families';
 export { bacDePierre, barriere, marche, PIECES_BASSES } from './lowPieces';
 export { estUnLieuDuVillage } from './places';
 
