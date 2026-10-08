@@ -5,10 +5,11 @@
 // aux règles.
 import type { BiomeId } from '../biomes';
 import { type BridgeDef, type BridgeKind, BRIDGES, bridgesOf, getBridge, otherEnd, provideLinkGeometry, SHORT_LINK } from './archipelago';
-import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, mapOf } from './map';
+import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, MAP, mapOf, startingIsland } from './map';
 import { layoutCache, layoutChanged } from './placement';
 import { linkBetweenJoined, type LinkLandings, LONG_LENGTH, type LinkRoute, RegionRouter } from './routing';
-import { visibleReefs } from './terrain/sea';
+import { reefsOutside, visibleReefs } from './terrain/sea';
+import { footprintOf } from './footprint';
 import { appliedJoins, joinOf } from './join';
 
 // ---------- Ce que la disposition dit des liaisons ----------
@@ -62,6 +63,36 @@ export function soleRoute(b: BridgeDef): LinkRoute | null {
     t = vide.essayer(b, LONG_LENGTH);
     soleRoutes.set(b.id, t);
   }
+  return t;
+}
+
+// Les tracés des liaisons sur la carte de départ, hors des caches de la disposition : ils ne changent jamais.
+const routesDeDepart = new Map<string, LinkRoute | null>();
+const routeursDeDepart = new Map<ArchipelagoId, RegionRouter>();
+
+/**
+ * Le tracé d'une liaison seule sur la carte de départ (chaque lieu à sa place de départ, sans rotation, ses écueils à
+ * l'air, aucune arrivée choisie ni réunion), quelle que soit la disposition : ce que le dessin d'un lieu lit de ses
+ * liaisons, et qui ne bouge pas avec lui (la place de son Gardien, GD-11 : le chemin du bonhomme depuis ses arrivées).
+ */
+export function routeDeDepart(b: BridgeDef): LinkRoute | null {
+  if (routesDeDepart.has(b.id)) return routesDeDepart.get(b.id)!;
+  const a = archipelagoOfIsland(b.from);
+  // Sur la carte de départ (aucun lieu déplacé ni tourné, aucune arrivée choisie, aucune réunion), c'est le tracé seul de
+  // la disposition, que le monde trace de toute façon : le traceur de départ ne se construit pas.
+  if (mapOf(a).every((d) => d === startingIsland(d.id)) && !chosenLandings(b.id) && appliedJoins(a).length === 0) {
+    const t = soleRoute(b);
+    routesDeDepart.set(b.id, t);
+    return t;
+  }
+  let routeur = routeursDeDepart.get(a);
+  if (!routeur) {
+    const lieux = MAP.filter((d) => archipelagoOfIsland(d.id) === a);
+    const ecueils = reefsOutside(a, lieux.flatMap((d) => footprintOf(d.id, d)));
+    routeursDeDepart.set(a, (routeur = new RegionRouter(a, { lieux, ecueils })));
+  }
+  const t = routeur.essayer(b, LONG_LENGTH);
+  routesDeDepart.set(b.id, t);
   return t;
 }
 

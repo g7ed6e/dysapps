@@ -325,6 +325,18 @@ describe('zoneRetenue : la zone de toucher de 48 pixels', () => {
     expect(zoneRetenue([b, a], { x: 115, y: 105 }, null)).toBe(0);
   });
 
+  it('une borne et un Gardien dont les zones se chevauchent : la borne gagne, même plus loin du doigt (référent dys)', () => {
+    const borne = { ...zoneDeToucher(100, 100, 110, 110, 20), priorite: 1 };
+    const gardien = zoneDeToucher(120, 100, 130, 110, 10);
+    // Le doigt plus près du centre du Gardien, dans les deux zones : la borne.
+    expect(zoneRetenue([gardien, borne], { x: 122, y: 105 }, null)).toBe(1);
+    expect(zoneRetenue([borne, gardien], { x: 122, y: 105 }, null)).toBe(0);
+    // Hors de la zone de la borne : le Gardien.
+    expect(zoneRetenue([borne, gardien], { x: 140, y: 105 }, null)).toBe(1);
+    // Une borne que la garde écarte (cachée) laisse le Gardien.
+    expect(zoneRetenue([borne, gardien], { x: 122, y: 105 }, null, (i) => i !== 0)).toBe(1);
+  });
+
   it('un objet caché derrière le sol touché, nettement plus proche que lui : écarté', () => {
     const z = zoneDeToucher(100, 100, 110, 110, 30);
     expect(zoneRetenue([z], { x: 105, y: 105 }, 10)).toBe(-1);

@@ -68,6 +68,13 @@ const MARGE_DE_LA_CARTE = 12;
 /** La moitié de la hauteur de l'étiquette d'une île sur la Carte (le nom et l'état, 18 px, labelCanvas.ts), en pixels CSS. */
 const DEMI_HAUTEUR_D_UN_NOM = 31;
 
+/**
+ * De combien le placement des noms monte d'ordinaire le plus haut d'entre eux au-dessus de sa place (une demi-étiquette :
+ * son haut, une étiquette entière au-dessus de son point), en pixels CSS : le cadrage de la Carte le compte pour laisser
+ * au nom le plus haut la marge de la terre la plus basse.
+ */
+const MONTEE_D_UN_NOM = DEMI_HAUTEUR_D_UN_NOM;
+
 /** Sans page autour (un aperçu, un test) : une vue de tablette, moins la bande des boutons du bas. */
 export const HAUTEUR_DE_TABLETTE = 688;
 
@@ -285,6 +292,21 @@ export function cadrageDeLaCarte(
     placer(d);
     const r = cadre(true);
     const l = lieux();
+    // En paysage (la tablette), le haut : le placement des noms (world/labelLayout.ts) monte d'ordinaire le nom le plus
+    // haut d'une demi-étiquette ou d'une étiquette entière pour le dégager de ses voisins (mesuré sur la tablette,
+    // GD-11, consultant UX UI : de 34 à 67 px) ; le haut d'un nom se compte donc une étiquette entière au-dessus de son
+    // point (`MONTEE_D_UN_NOM`). Le bas : la terre la plus basse (`terres`), pas le coin du rectangle des lieux, qui
+    // tombe dans la mer. Le nom le plus haut a ainsi, à peu près, la marge de la terre la plus basse au-dessus des
+    // boutons (de 1 à 38 px d'écart sur la tablette, en taille normale et en OpenDyslexic 32 px, contre 29 à 80 avant).
+    // En portrait, l'estimation d'avant : la nouvelle y taisait des noms de plus au 5e et au 4e (three/mapLabels.test.ts).
+    if (w >= h) {
+      l.y0 -= MONTEE_D_UN_NOM;
+      l.y1 = -Infinity;
+      for (const p of terres) {
+        v.copy(p).project(cam);
+        l.y1 = Math.max(l.y1, ((1 - v.y) / 2) * h);
+      }
+    }
     const voulu = (libre.y0 + libre.y1) / 2 - (l.y0 + l.y1) / 2;
     const ecart = Math.min(libre.y1 - MARGE_DE_LA_CARTE - r.y1, Math.max(libre.y0 + MARGE_DE_LA_CARTE - r.y0, voulu));
     if (Math.abs(ecart) > 0.5) {

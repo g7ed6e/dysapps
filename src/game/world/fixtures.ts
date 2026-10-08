@@ -327,9 +327,10 @@ const PLACES: Record<string, readonly [number, number]> = {
   'french-6e-grammar-spelling-fixture-1': [9, 4],
   'french-6e-reading-fixture-1': [7, 9],
   // Les objets des quêtes (GD-10), après la commande de l'île. La lanterne de Mousso a quitté [3, 19] quand la Forêt a
-  // grandi (GD-11) : la commande s'y pose désormais à côté, en [4, 20] ; le calcul la pose de l'autre côté de Mousso,
+  // grandi (GD-11) et s'est posée de l'autre côté de Mousso, en [-4, 7] ; depuis que le Gardien de la Forêt se cherche
+  // en perspective et hors du chemin de ses arrivées (GD-11, planches), elle revient en [4, 20], près de la commande,
   // entière à l'écran.
-  'french-6e-phonology-fixture-2': [-4, 7],
+  'french-6e-phonology-fixture-2': [4, 20],
   'french-6e-grammar-spelling-fixture-2': [14, 5],
   'french-6e-reading-fixture-2': [10, 3],
   'maths-6e-calculation-fixture-1': [-5, 10],

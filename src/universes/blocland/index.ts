@@ -1,5 +1,5 @@
 // Les textes de Blocland. Depuis GD-8 (décision du mainteneur, 4 octobre 2026), les Gardiens ne sont plus vaincus :
-// chacun se tient sur son île dès l'ouverture de son île, statue de cubes grise et éteinte, et son défi réussi le
+// chacun se tient sur son île dès qu'elle s'ouvre, statue de cubes grise et éteinte, et son défi réussi le
 // rallume en couleurs (chaque épreuve réussie rend les siennes à une partie de lui, en partant du bas). « Rallumer »
 // remplace « vaincre » : chaque épreuve réussie nomme une partie du Gardien qui reprend sa couleur, chaque épreuve
 // ratée commence par « Mes couleurs restent. », la réplique finale dit « Je me rallume ». GD-1 (« le chantier du

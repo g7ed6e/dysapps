@@ -393,6 +393,11 @@ export interface ZoneDeToucher {
   h: number;
   /** La distance de la caméra au point le plus proche de l'objet. */
   distance: number;
+  /**
+   * Là où deux zones se chevauchent, celle de plus haute priorité gagne (0 par défaut) : une borne (1) passe avant un
+   * Gardien, que le Gardien se tienne près des bornes (GD-11, référent dys, téléphone).
+   */
+  priorite?: number;
 }
 
 /** La zone de toucher d'un objet, et sa boîte en cases du monde (le sol touché tout près d'elle garde la zone). */
@@ -406,8 +411,9 @@ export function zoneDeToucher(x0: number, y0: number, x1: number, y1: number, di
 }
 
 /**
- * La zone retenue sous le doigt levé, parmi les zones qui le contiennent : celle dont le centre est le plus proche du
- * doigt (en pixels), puis l'objet le plus proche de la caméra. Une zone est écartée quand le sol touché (`sol`, sa
+ * La zone retenue sous le doigt levé, parmi les zones qui le contiennent : la plus haute priorité (`priorite` : une
+ * borne avant un Gardien), puis celle dont le centre est le plus proche du doigt (en pixels), puis l'objet le plus
+ * proche de la caméra. Une zone est écartée quand le sol touché (`sol`, sa
  * distance le long du rayon, ou `null`) est plus proche que l'objet de `SIGNE.masque` blocs : l'objet est caché derrière
  * une colline, une maison ; et quand `garde` la refuse (appelée seulement pour une zone qui contient le doigt). L'indice
  * dans `zones`, ou −1.
@@ -415,14 +421,18 @@ export function zoneDeToucher(x0: number, y0: number, x1: number, y1: number, di
 export function zoneRetenue(zones: readonly ZoneDeToucher[], doigt: { x: number; y: number }, sol: number | null, garde?: (i: number) => boolean): number {
   let best = -1;
   let bestPx = Infinity;
+  let bestPriorite = -Infinity;
   zones.forEach((z, i) => {
     if (Math.abs(doigt.x - z.x) > z.w / 2 || Math.abs(doigt.y - z.y) > z.h / 2) return;
     if (sol !== null && sol < z.distance - SIGNE.masque) return;
+    const priorite = z.priorite ?? 0;
+    if (priorite < bestPriorite) return;
     const px = Math.hypot(doigt.x - z.x, doigt.y - z.y);
-    if (px > bestPx || (px === bestPx && z.distance >= zones[best].distance)) return;
+    if (priorite === bestPriorite && (px > bestPx || (px === bestPx && z.distance >= zones[best].distance))) return;
     if (garde && !garde(i)) return;
     best = i;
     bestPx = px;
+    bestPriorite = priorite;
   });
   return best;
 }

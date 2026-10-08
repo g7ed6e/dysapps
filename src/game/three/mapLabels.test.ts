@@ -276,9 +276,11 @@ const TUS_EN_PORTRAIT_AU_VERGER: string[] = [];
  * Au 3e, sur la tablette en OpenDyslexic 32 px, le bonhomme sur le Verger de la santé : les noms qui se taisent. Un seul
  * avant GD-11 ; trois depuis que les îles ont grandi (la Géométrie, l'Observatoire des textes, le Kiosque des témoins),
  * encore trois depuis que la Carte cadre les lieux d'aujourd'hui : le Verger et le Kiosque sont en haut à droite, sous la
- * colonne des classes, qui prend la place de leurs noms. Régression connue de GD-11, au pilotage.
+ * colonne des classes, qui prend la place de leurs noms. Quatre depuis que le cadrage compte le nom le plus haut monté
+ * d'une demi-étiquette (`cadrageDeLaCarte`, consultant UX UI) : le Belvédère de Thalès, le Château des hypothèses, le
+ * Kiosque et la Ruche des réseaux ; l'Observatoire des textes se montre. Régression connue de GD-11, au pilotage.
  */
-const TUS_EN_OD32_AU_VERGER = ['maths-3e-geometry', 'french-3e-close-reading', 'history-3e-twentieth-century'];
+const TUS_EN_OD32_AU_VERGER = ['maths-3e-geometry', 'english-3e-grammar', 'history-3e-twentieth-century', 'technology-3e-digital'];
 
 /**
  * La tablette en OpenDyslexic 32 px, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX
@@ -288,9 +290,10 @@ const TUS_EN_OD32_AU_VERGER = ['maths-3e-geometry', 'french-3e-close-reading', '
  */
 const TUS_EN_OD32: Record<string, string[]> = {
   // Quatre noms depuis GD-11 (les îles plus grandes serrent la Carte du 6e), trois depuis que la Carte cadre les lieux
-  // d'aujourd'hui (consultant UX UI) : trois sur main avant GD-11.
-  'history-6e-antiquity': ['french-6e-letter-confusion', 'english-6e-grammar', 'life-earth-sciences-6e-living-world'],
-  'french-6e-phonology': ['life-earth-sciences-6e-living-world'],
+  // d'aujourd'hui (consultant UX UI), deux depuis qu'elle compte le nom le plus haut monté d'une demi-étiquette : la
+  // Mine des lettres et l'Horloge des verbes se montrent, la Pointe des paysages se tait. Trois sur main avant GD-11.
+  'history-6e-antiquity': ['geography-6e-living', 'life-earth-sciences-6e-living-world'],
+  'french-6e-phonology': ['geography-6e-living'],
 };
 
 /**
@@ -331,7 +334,9 @@ const TUS_SUR_UN_OUVRAGE_DANS_ARCHIPEO: Partial<Record<ArchipelagoId, Record<str
  */
 const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
   // Mesurés de nouveau depuis que la Carte cadre les lieux d'aujourd'hui (GD-11, consultant UX UI) : aucun au 5e, trois
-  // destinations au 4e, neuf au 3e (seize destinations avant dans Blocland, treize sur main).
+  // destinations au 4e, neuf au 3e (seize destinations avant dans Blocland, treize sur main). Au 3e, quatre depuis que
+  // le cadrage compte le nom le plus haut monté d'une demi-étiquette (huit noms tus au lieu de treize) : le Kiosque des
+  // témoins ne se tait plus que vers le Belvédère de Thalès (quatre destinations avant).
   '4e': {
     'french-4e-agreement': ['lv2-4e-daily-life'],
     'english-4e-comprehension': ['french-4e-vocabulary'],
@@ -340,22 +345,17 @@ const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string,
   '3e': {
     'maths-3e-geometry': ['history-3e-twentieth-century', 'physics-chemistry-3e-motion-energy'],
     'maths-3e-statistics': ['french-3e-close-reading', 'geography-3e-france', 'technology-3e-digital'],
-    'english-3e-comprehension': ['maths-3e-statistics', 'history-3e-twentieth-century'],
-    'english-3e-grammar': ['maths-3e-statistics'],
-    'geography-3e-france': ['physics-chemistry-3e-motion-energy'],
-    'life-earth-sciences-3e-human-body': ['history-3e-twentieth-century'],
-    'physics-chemistry-3e-motion-energy': ['french-3e-close-reading'],
-    'technology-3e-digital': ['french-3e-close-reading'],
-    'lv2-3e-travel': ['history-3e-twentieth-century'],
+    'english-3e-grammar': ['lv2-3e-travel'],
+    'geography-3e-france': ['physics-chemistry-3e-motion-energy', 'technology-3e-digital'],
   },
 };
 
 /**
  * Le téléphone 390 × 844, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX UI). La
- * Carte y cadre la destination (la Forêt des sons) : sept îles se voient avec leur nom, sept autres sont hors du cadre,
- * la Fouille comprise. Un seul nom se tait, en bas à droite, au bord de l'écran : le Hangar des inventions (le Volcan des
- * décimaux jusqu'à SC-3 : les îles glissent depuis au milieu de la place, en hauteur, quand elles y tiennent,
- * `cadrageDeLaCarte`). Le même nombre avant la règle du médaillon (preview, 161ded36) et après.
+ * Carte y est au plancher et cadre la destination (la Forêt des sons) ; les îles glissent au milieu de la place, en
+ * hauteur, quand elles y tiennent (`cadrageDeLaCarte`). Un seul nom se taisait avant GD-11 (le Hangar des inventions, en
+ * bas à droite) ; depuis, trois ou quatre (ci-dessous), et cinq ou six noms se montrent. Le cadrage de la tablette qui
+ * compte le nom le plus haut monté d'une demi-étiquette ne vaut pas ici (portrait, au plancher).
  */
 const TUS_AU_TELEPHONE: Record<string, string[]> = {
   // Depuis GD-11, les îles plus grandes serrent la Carte du 6e sur le téléphone : trois ou quatre noms se taisent (un
@@ -373,10 +373,12 @@ const NOMS_MONTRES_AU_TELEPHONE: Record<string, number> = { 'history-6e-antiquit
  * À l'ouverture de la Carte, sans panneau, en OpenDyslexic (taille normale, puis 10 % plus large), les noms qui se
  * taisent parmi ceux que le test exige (tous à ×1, ceux d'histoire-géographie à ×1,1) : aucun avant GD-11. Depuis que la
  * Carte cadre les lieux d'aujourd'hui, plus aucun au 4e ; au 3e, le Kiosque des témoins, en haut à droite sous la colonne
- * des classes, n'a pas de place. Régression connue, au pilotage.
+ * des classes, n'avait pas de place. Depuis que le cadrage compte le nom le plus haut monté d'une demi-étiquette
+ * (consultant UX UI), le Kiosque se montre en taille normale, mais le Belvédère de Thalès et l'Observatoire des textes se
+ * taisent ; à ×1,1, le Kiosque se tait encore. Régression connue, au pilotage.
  */
 const TUS_EN_OD_A_L_OUVERTURE: Partial<Record<string, string[]>> = {
-  '3e:1': ['history-3e-twentieth-century'],
+  '3e:1': ['maths-3e-geometry', 'french-3e-close-reading'],
   '3e:1.1': ['history-3e-twentieth-century'],
 };
 
