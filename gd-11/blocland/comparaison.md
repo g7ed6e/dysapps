@@ -1,108 +1,41 @@
 # Comparaison avec main
 
-Références : main au commit 28d359337b52a8c95061426a8642f06f993d80f2 (après : 2f5b16349db503a3217d2d346fd56cb0c57dbe73). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : main au commit 28d359337b52a8c95061426a8642f06f993d80f2 (après : a6aab60fcc755f7f10fdf0ca7543bfabe0608de6). Une vue est changée au-delà de 0,3 % de pixels différents.
 
-## Changées (33) : planches dans `planches/`
+## Changées (20) : planches dans `planches/`
 
 - 3e-archipel-recul.jpg : 33,0 %
-- 3e-archipel.jpg : 46,4 %
-- 3e-carte.jpg : 24,7 %
-- 3e-grand-texte-archipel-800x1280.jpg : 47,4 %
-- 3e-grand-texte-archipel.jpg : 54,1 %
-- 3e-ile-recul.jpg : 48,2 %
-- 3e-ile.jpg : 58,3 %
+- 3e-archipel.jpg : 46,3 %
+- 3e-carte.jpg : 26,4 %
+- 3e-ile-recul.jpg : 48,1 %
+- 3e-ile.jpg : 58,6 %
 - 4e-archipel-recul.jpg : 38,8 %
-- 4e-archipel.jpg : 65,8 %
-- 4e-carte.jpg : 41,8 %
-- 4e-gris-muscade.jpg : 50,4 %
-- 4e-ile-recul.jpg : 49,6 %
+- 4e-archipel.jpg : 54,0 %
+- 4e-carte.jpg : 49,0 %
+- 4e-ile-recul.jpg : 49,7 %
 - 4e-ile.jpg : 51,2 %
 - 5e-archipel-recul.jpg : 29,4 %
-- 5e-archipel.jpg : 50,7 %
-- 5e-carte.jpg : 44,1 %
-- 5e-gris-moustache.jpg : 55,9 %
-- 5e-ile-recul.jpg : 42,9 %
-- 5e-ile.jpg : 50,9 %
+- 5e-archipel.jpg : 50,6 %
+- 5e-carte.jpg : 46,1 %
+- 5e-ile-recul.jpg : 42,6 %
+- 5e-ile.jpg : 49,7 %
 - 6e-archipel-recul.jpg : 50,6 %
-- 6e-archipel.jpg : 48,5 %
-- 6e-carte.jpg : 44,0 %
-- 6e-defi-french-6e-letter-confusion.jpg : 1,3 %
-- 6e-entraide-fiche-coco.jpg : 46,7 %
-- 6e-entraide-french-6e-grammar-spelling-nuit.jpg : 48,0 %
-- 6e-entraide-french-6e-grammar-spelling.jpg : 51,7 %
-- 6e-entraide-french-6e-phonology-nuit.jpg : 47,0 %
-- 6e-entraide-french-6e-phonology.jpg : 54,3 %
-- 6e-entraide-french-6e-reading-nuit.jpg : 41,5 %
-- 6e-entraide-french-6e-reading.jpg : 42,6 %
-- 6e-entraide-panneau-390x844-od32.jpg : 18,6 %
-- 6e-ile-recul.jpg : 55,6 %
-- 6e-ile.jpg : 54,9 %
+- 6e-archipel.jpg : 51,4 %
+- 6e-carte.jpg : 50,0 %
+- 6e-ile-recul.jpg : 55,5 %
+- 6e-ile.jpg : 55,1 %
 
-## Inchangées (66) : non publiées
+## Inchangées (0) : non publiées
 
-- 3e-bulle-svg.jpg : 0,0 %
-- 3e-bulle.jpg : 0,0 %
-- 3e-defi-english-3e-comprehension.jpg : 0,0 %
-- 3e-defi-english-3e-grammar.jpg : 0,0 %
-- 3e-defi-french-3e-close-reading.jpg : 0,0 %
-- 3e-defi-geography-3e-france.jpg : 0,0 %
-- 3e-defi-history-3e-twentieth-century.jpg : 0,0 %
-- 3e-defi-life-earth-sciences-3e-human-body.jpg : 0,0 %
-- 3e-defi-lv2-3e-travel.jpg : 0,0 %
-- 3e-defi-maths-3e-functions.jpg : 0,0 %
-- 3e-defi-maths-3e-geometry.jpg : 0,0 %
-- 3e-defi-maths-3e-statistics.jpg : 0,0 %
-- 3e-defi-physics-chemistry-3e-motion-energy.jpg : 0,0 %
-- 3e-defi-svg.jpg : 0,0 %
-- 3e-defi-technology-3e-digital.jpg : 0,0 %
-- 3e-gris-echo.jpg : 0,0 %
-- 4e-bulle-svg.jpg : 0,0 %
-- 4e-bulle.jpg : 0,0 %
-- 4e-defi-english-4e-comprehension.jpg : 0,0 %
-- 4e-defi-english-4e-grammar.jpg : 0,0 %
-- 4e-defi-french-4e-agreement.jpg : 0,0 %
-- 4e-defi-french-4e-vocabulary.jpg : 0,0 %
-- 4e-defi-geography-4e-globalization.jpg : 0,0 %
-- 4e-defi-history-4e-revolutions.jpg : 0,0 %
-- 4e-defi-life-earth-sciences-4e-cells-evolution.jpg : 0,0 %
-- 4e-defi-lv2-4e-daily-life.jpg : 0,0 %
-- 4e-defi-maths-4e-algebra.jpg : 0,0 %
-- 4e-defi-maths-4e-powers.jpg : 0,0 %
-- 4e-defi-physics-chemistry-4e-signals-circuits.jpg : 0,0 %
-- 4e-defi-svg.jpg : 0,0 %
-- 4e-defi-technology-4e-modeling.jpg : 0,0 %
-- 4e-gris-soleil.jpg : 0,0 %
-- 5e-bulle-svg.jpg : 0,0 %
-- 5e-bulle.jpg : 0,0 %
-- 5e-defi-english-5e-grammar.jpg : 0,0 %
-- 5e-defi-english-5e-vocabulary.jpg : 0,0 %
-- 5e-defi-french-5e-conjugation.jpg : 0,0 %
-- 5e-defi-french-5e-homophones.jpg : 0,0 %
-- 5e-defi-geography-5e-resources.jpg : 0,0 %
-- 5e-defi-history-5e-middle-ages.jpg : 0,0 %
-- 5e-defi-life-earth-sciences-5e-active-planet.jpg : 0,0 %
-- 5e-defi-lv2-5e-introductions.jpg : 0,0 %
-- 5e-defi-maths-5e-proportionality.jpg : 0,0 %
-- 5e-defi-maths-5e-signed-numbers.jpg : 0,0 %
-- 5e-defi-physics-chemistry-5e-matter-universe.jpg : 0,0 %
-- 5e-defi-svg.jpg : 0,0 %
-- 5e-defi-technology-5e-design.jpg : 0,0 %
-- 6e-bulle-svg.jpg : 0,0 %
-- 6e-bulle.jpg : 0,0 %
-- 6e-defi-english-6e-grammar.jpg : 0,0 %
-- 6e-defi-english-6e-vocabulary.jpg : 0,0 %
-- 6e-defi-french-6e-grammar-spelling.jpg : 0,0 %
-- 6e-defi-french-6e-phonology.jpg : 0,0 %
-- 6e-defi-french-6e-reading.jpg : 0,0 %
-- 6e-defi-french-6e-word-spelling.jpg : 0,0 %
-- 6e-defi-geography-6e-living.jpg : 0,0 %
-- 6e-defi-history-6e-antiquity.jpg : 0,0 %
-- 6e-defi-life-earth-sciences-6e-living-world.jpg : 0,0 %
-- 6e-defi-maths-6e-calculation.jpg : 0,0 %
-- 6e-defi-maths-6e-decimals.jpg : 0,0 %
-- 6e-defi-maths-6e-fractions.jpg : 0,0 %
-- 6e-defi-physics-chemistry-6e-matter-energy.jpg : 0,0 %
-- 6e-defi-svg.jpg : 0,0 %
-- 6e-defi-technology-6e-objects.jpg : 0,0 %
-- 6e-entraide-panneau.jpg : 0,2 %
-- 6e-gris-hanneton.jpg : 0,0 %
+
+## Sans référence (9) : dans `planches/` telles quelles
+
+- 3e-gd-11-belvedere-panneau.jpg
+- 3e-gd-11-observatoire-textes-panneau.jpg
+- 3e-gd-11-phare-defi-pret.jpg
+- 4e-gd-11-atelier-machine.jpg
+- 4e-gd-11-bassin.jpg
+- 5e-gd-11-marais-panneau.jpg
+- 5e-gd-11-prairie.jpg
+- 6e-gd-11-carte-6e-390x844.jpg
+- 6e-gd-11-horloge.jpg
