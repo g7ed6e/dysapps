@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -566,6 +566,25 @@ const CAPTURES = [
     'french-4e-agreement', 'french-4e-vocabulary', 'english-4e-comprehension', 'english-4e-grammar', 'maths-3e-geometry', 'maths-3e-statistics',
     'maths-3e-functions', 'french-3e-close-reading', 'english-3e-comprehension', 'english-3e-grammar',
   ].map((ile) => ({ nom: `commandes-ile-${ile}`, vue: 'île', famille: 'commandes-iles', ile, posees: 'toutes' })),
+  // Les grands projets (GD-10, famille `projets`), à retirer une fois le lot fusionné : le phare du large fini, sa
+  // lanterne allumée, de jour et de nuit, et sur la Carte de nuit ; puis son panneau à deux pièces sur cinq (le socle et la
+  // tour posés, `etages`), avec les blocs d'une recette en poche, sur tablette et au téléphone en grand texte.
+  { nom: 'projets-phare', vue: 'île', famille: 'projets', ile: 'maths-5e-signed-numbers', lieu: 'landmark-5e-1', finesse: 2 },
+  { nom: 'projets-phare-nuit', vue: 'île', famille: 'projets', ile: 'maths-5e-signed-numbers', lieu: 'landmark-5e-1', nuit: true, finesse: 2 },
+  { nom: 'projets-carte-nuit', vue: 'carte', famille: 'projets', ile: 'maths-5e-signed-numbers', nuit: true },
+  ...[
+    { suffixe: '' },
+    { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+  ].map(({ suffixe, ...autres }) => ({
+    nom: `projets-panneau${suffixe}`,
+    vue: 'île',
+    famille: 'projets',
+    ile: 'maths-5e-signed-numbers',
+    lieu: 'landmark-5e-1',
+    etages: { 'landmark-5e-1': 7 },
+    inventaire: { 'french-5e-conjugation': 6, 'history-5e-middle-ages': 4, 'maths-5e-proportionality': 2 },
+    ...autres,
+  })),
   // L'entraide (GD-10, famille `entraide`), à retirer une fois le lot fusionné : chez Mousso, Bloquette et Grimoire, l'objet
   // posé à côté de sa commande, de jour et de nuit (toutes les petites constructions posées) ; puis la ligne de l'entraide
   // dans le panneau de l'île, l'étape « Apporter » chez Mousso (tablette, téléphone au grand texte), et la fiche de Coco
@@ -863,6 +882,14 @@ async function weights() {
  * Une partie sans les îles `iles` : ni leurs étoiles, ni leurs plans (clés « <île>-… »). Sans elles, le jeu ne rouvre pas
  * l'île au chargement (`sansPonts` peut alors retirer le pont qui y mène : une île où l'on a joué reste ouverte).
  */
+/** Un grand ouvrage posé jusqu'à un étage (`etages` : `{ <monument>: z }`, les cases sous z seulement) : un projet en cours. */
+function jusquAuxEtages(parCle, etages) {
+  if (!etages) return parCle;
+  const out = { ...parCle };
+  for (const [m, z] of Object.entries(etages)) out[m] = (out[m] ?? []).filter((k) => Number(k.split(',')[2]) < z);
+  return out;
+}
+
 function sansLesIles(parCle, iles) {
   if (!iles?.length) return parCle;
   return Object.fromEntries(Object.entries(parCle).filter(([k]) => !iles.some((i) => k.startsWith(`${i}-`))));
@@ -1108,6 +1135,7 @@ async function scenes() {
               xp: c.xp,
               commandes: c.commandes,
               quetes: c.quetes,
+              etages: c.etages,
               posees: c.posees,
               cliquer: c.cliquer,
               fiche: c.fiche,
@@ -1118,7 +1146,7 @@ async function scenes() {
           )
         : []),
     ];
-    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, posees, cliquer, fiche, zoomer, reussir } of views) {
+    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, posees, cliquer, fiche, zoomer, reussir } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -1151,7 +1179,7 @@ async function scenes() {
             ? { parts: {}, log: [], links: liens ?? [], place: ile ?? at }
             : {
                 ...built,
-                parts: { ...sansLesIles(plans ?? built.parts, sansIles), ...petitesConstructions(posees) },
+                parts: { ...jusquAuxEtages(sansLesIles(plans ?? built.parts, sansIles), etages), ...petitesConstructions(posees) },
                 ...(bridges ? { links: bridges } : {}),
                 ...(commandes ? { requests: commandes } : {}),
                 ...(quetes ? { stories: quetes } : {}),
