@@ -32,8 +32,10 @@ vi.mock('./sound', async (original) => ({ ...(await original<typeof import('./so
 
 const VOLCAN = 'maths-6e-decimals' as const;
 /**
- * La Vallée du vivant (6e) : sur la carte de départ, sans voisin à réunir, avec de la place autour (depuis les formes
- * des îles, GD-12, le Volcan n'a plus que deux places libres, la Rivière se réunit au Laboratoire).
+ * La Vallée du vivant (6e) : sur la carte de départ, sans voisin à réunir (depuis les formes des îles, GD-12, le Volcan
+ * n'a plus que deux places libres, la Rivière se réunit au Laboratoire). Depuis le trait à sept cases, ses cinq autres
+ * places libres sont à un ou deux crans de la sienne, toutes près d'un voisin à réunir : entre la Forêt au fond, l'Horloge
+ * à l'ouest, la Fouille à l'est et le bord du cadre devant. Les glissés au loin prennent la Rivière.
  */
 const VALLEE = 'life-earth-sciences-6e-living-world' as const;
 const TOUR = 'french-6e-reading' as const;
@@ -42,8 +44,11 @@ const BAIE = 'english-6e-vocabulary' as const;
 const RIVIERE = 'maths-6e-fractions' as const;
 /** La Mine des lettres : une de ses places défait une liaison. */
 const MINE = 'french-6e-letter-confusion' as const;
-/** La Ferme des accords : sans voisin à réunir sur la carte de départ (GD-12). */
-const FERME = 'french-6e-grammar-spelling' as const;
+/**
+ * L'Horloge des verbes : sans voisin à réunir sur la carte de départ. Depuis le trait à sept cases (GD-12), la Ferme des
+ * accords se réunit au Volcan, et la Baie, avancée d'un pas vers la Tour, ne se réunit plus à l'Horloge.
+ */
+const HORLOGE = 'english-6e-grammar' as const;
 // Les noms du jeu pour la Tour et la Baie (deux noms féminins, pour l'accord de « réunie ») ; l'identifiant pour les autres.
 const NOMS: Record<string, string> = { [TOUR]: 'Tour du lecteur', [BAIE]: 'Baie des mots' };
 const nom = (id: string) => NOMS[id] ?? id;
@@ -153,9 +158,10 @@ describe('le mode « Aménager »', () => {
     expect(screen.getByRole('button', { name: 'Valider' }).className).toMatch(/primary/);
     expect(screen.getByRole('button', { name: 'Annuler' }).className).not.toMatch(/primary/);
     expect(screen.queryByRole('button', { name: 'Nord' })).toBeNull();
-    // Un lieu choisi, sans voisin à réunir (la Ferme) : toujours les deux mêmes boutons, « Valider » toujours mis en
-    // avant. (Le Volcan, depuis GD-11, est assez près du Hangar des inventions pour s'y réunir.)
-    act(() => void dernier.intention({ genre: 'ile', id: FERME }));
+    // Un lieu choisi, sans voisin à réunir (l'Horloge) : toujours les deux mêmes boutons, « Valider » toujours mis en
+    // avant. (Le Volcan, depuis GD-11, est assez près du Hangar des inventions pour s'y réunir ; la Ferme, depuis GD-12,
+    // du Volcan.)
+    act(() => void dernier.intention({ genre: 'ile', id: HORLOGE }));
     expect(dernier.choix?.genre).toBe('lieu');
     expect(boutonsDeLaBarre()).toEqual(['Annuler', 'Valider']);
     expect(screen.getByRole('button', { name: 'Valider' }).className).toMatch(/primary/);
@@ -215,10 +221,13 @@ describe('le mode « Aménager »', () => {
     expect(dernier.choix).toBeNull();
     expect(spotOf(monde, VALLEE)).toEqual(avant);
     expect(dernier.peutDefaire).toBe(false);
-    // Glissé jusqu'à une place libre (la plus proche du coin du fond, à l'ouest) : posé au lever du doigt.
-    act(() => void dernier.intention({ genre: 'ile', id: VALLEE }));
-    glisseVers(VALLEE, { x: 0, y: 120 });
-    expect(spotOf(monde, VALLEE)).not.toEqual(avant);
+    // Glissé jusqu'à une place libre (la plus proche du coin du fond, à l'ouest) : posé au lever du doigt. La Rivière,
+    // qui a de la place au loin (la Vallée n'a plus, depuis le trait à sept cases de GD-12, que des places près d'un
+    // voisin à réunir).
+    const riviere0 = spotOf(monde, RIVIERE);
+    act(() => void dernier.intention({ genre: 'ile', id: RIVIERE }));
+    glisseVers(RIVIERE, { x: 0, y: 120 });
+    expect(spotOf(monde, RIVIERE)).not.toEqual(riviere0);
     expect(dernier.choix).toBeNull();
     expect(dernier.ligne?.genre).toBe('place');
     // Quelque chose a bougé : « Annuler » demande d'abord. « Garder » prend sa place, l'« Annuler » qui confirme se pose
@@ -235,6 +244,7 @@ describe('le mode « Aménager »', () => {
     expect(garder).not.toBe(dessin('back'));
     fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
     expect(spotOf(monde, VALLEE)).toEqual(avant);
+    expect(spotOf(monde, RIVIERE)).toEqual(riviere0);
     expect(dernier.ouvert).toBe(false);
   });
 
@@ -272,7 +282,7 @@ describe('le mode « Aménager »', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     // Rien de choisi : un glissé parti d'un lieu fixe ne prend rien (la vue glisse) ; parti d'un autre lieu, il le choisit
     // et le prend directement (mainteneur, 7 octobre 2026), lâché sans bouger, il reste choisi.
-    const ici = placeIn(monde, VALLEE).core;
+    const ici = placeIn(monde, RIVIERE).core;
     const port = mapOf('6e').find((d) => !chooseIsland(monde, d.id))!.id;
     expect(dernier.glisser.prendre({ x: 0, y: 0 }, { lieu: port })).toBe(false);
     act(() => void dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { lieu: TOUR }));
@@ -281,24 +291,24 @@ describe('le mode « Aménager »', () => {
     act(() => dernier.glisser.lacher(true));
     expect(dernier.choix).toMatchObject({ genre: 'lieu', id: TOUR });
     // Un glissé parti d'un Gardien prend son île (GD-11).
-    act(() => void dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { gardien: VALLEE }));
-    expect(dernier.choix).toMatchObject({ genre: 'lieu', id: VALLEE });
+    act(() => void dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { gardien: RIVIERE }));
+    expect(dernier.choix).toMatchObject({ genre: 'lieu', id: RIVIERE });
     act(() => dernier.glisser.lacher(false));
-    act(() => void dernier.intention({ genre: 'ile', id: VALLEE }));
-    const depart0 = spotOf(monde, VALLEE);
+    act(() => void dernier.intention({ genre: 'ile', id: RIVIERE }));
+    const depart0 = spotOf(monde, RIVIERE);
     // Un glissé parti de la mer au loin : la vue glisse, le lieu reste.
     let pris = true;
     act(() => void (pris = dernier.glisser.prendre({ x: ici.x + 80, y: ici.y + 80 }, {})));
     expect(pris).toBe(false);
     expect(dernier.glisse).toBe(false);
     // Parti de sa terre : il suit le doigt ; la grille et l'empreinte se dessinent, les flèches se cachent.
-    act(() => void (pris = dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { lieu: VALLEE })));
+    act(() => void (pris = dernier.glisser.prendre({ x: ici.x + 8, y: ici.y + 8 }, { lieu: RIVIERE })));
     expect(pris).toBe(true);
     expect(dernier.glisse).toBe(true);
     expect(dernier.vue?.poignees).toBeUndefined();
     expect(dernier.vue?.cases.some((k) => k.genre === 'grille')).toBe(true);
     expect(screen.queryByRole('button', { name: 'Nord' })).toBeNull();
-    const libre = freeSpots(monde, VALLEE).find((q) => Math.abs(q.x - depart0.x) + Math.abs(q.y - depart0.y) > 3)!;
+    const libre = freeSpots(monde, RIVIERE).find((q) => Math.abs(q.x - depart0.x) + Math.abs(q.y - depart0.y) > 3)!;
     const c = frameOf('6e');
     const dits = dit.length;
     act(() => dernier.glisser.suivre({ x: c.x0 + libre.x * 4 + 8, y: c.y0 + libre.y * 4 + 8 }));
@@ -308,7 +318,7 @@ describe('le mode « Aménager »', () => {
     act(() => dernier.glisser.lacher(true));
     // Posé tout de suite, à sa nouvelle place, sans le démontage couche par couche : il redescend d'un cube, puis le
     // « clac » et la voix ; les flèches sont parties avec le choix.
-    expect(spotOf(monde, VALLEE)).toEqual(libre);
+    expect(spotOf(monde, RIVIERE)).toEqual(libre);
     expect(dernier.geste).toMatchObject({ phase: 'descend', dureeMs: DESCENTE_MS });
     expect(dit.length).toBe(dits);
     act(() => void vi.advanceTimersByTime(DESCENTE_MS));
@@ -319,37 +329,37 @@ describe('le mode « Aménager »', () => {
     // ↶ rattrape (la vue simple le montre ; sur la Carte, plus de bouton).
     expect(screen.queryByRole('button', { name: /Défaire/ })).toBeNull();
     act(() => dernier.defaire());
-    expect(spotOf(monde, VALLEE)).toEqual(depart0);
+    expect(spotOf(monde, RIVIERE)).toEqual(depart0);
   });
 
   it('levé sur une place prise, le lieu glissé reste là : croix grise, ni « Poser » ni Entrée ne le posent (choix 2a) ; interrompu, rien n’est posé', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
-    act(() => void dernier.intention({ genre: 'ile', id: VALLEE }));
-    const depart0 = spotOf(monde, VALLEE);
-    const ici = placeIn(monde, VALLEE).core;
+    act(() => void dernier.intention({ genre: 'ile', id: RIVIERE }));
+    const depart0 = spotOf(monde, RIVIERE);
+    const ici = placeIn(monde, RIVIERE).core;
     const voisin = placeIn(monde, TOUR).core;
-    act(() => void dernier.glisser.prendre({ x: ici.x + 4, y: ici.y + 4 }, { lieu: VALLEE }));
+    act(() => void dernier.glisser.prendre({ x: ici.x + 4, y: ici.y + 4 }, { lieu: RIVIERE }));
     act(() => dernier.glisser.suivre({ x: voisin.x + 4, y: voisin.y + 4 }));
     expect(dernier.vue?.cases.some((k) => k.genre === 'conflit')).toBe(true);
     expect(dernier.vue?.cases.some((k) => k.genre === 'barre')).toBe(true);
     act(() => dernier.glisser.lacher(true));
-    expect(spotOf(monde, VALLEE)).toEqual(depart0);
+    expect(spotOf(monde, RIVIERE)).toEqual(depart0);
     expect(dernier.placePrise).toBe(true);
     expect(dernier.vue?.poignees?.prise).toBeDefined();
     // Pas de « Poser » sur la Carte ; Entrée ne pose rien sur une place prise.
     expect(screen.queryByRole('button', { name: 'Poser' })).toBeNull();
     touche('Enter');
-    expect(spotOf(monde, VALLEE)).toEqual(depart0);
+    expect(spotOf(monde, RIVIERE)).toEqual(depart0);
     expect(dernier.placePrise).toBe(true);
     // Un glissé interrompu (un second doigt) : rien n'est posé, même sur une place libre.
-    const libre = freeSpots(monde, VALLEE).find((q) => Math.abs(q.x - depart0.x) + Math.abs(q.y - depart0.y) > 3)!;
+    const libre = freeSpots(monde, RIVIERE).find((q) => Math.abs(q.x - depart0.x) + Math.abs(q.y - depart0.y) > 3)!;
     const c = frameOf('6e');
     const fantome = dernier.choix?.genre === 'lieu' ? dernier.choix.spot : depart0;
     act(() => void dernier.glisser.prendre({ x: c.x0 + fantome.x * 4 + 8, y: c.y0 + fantome.y * 4 + 8 }, {}));
     act(() => dernier.glisser.suivre({ x: c.x0 + libre.x * 4 + 8, y: c.y0 + libre.y * 4 + 8 }));
     act(() => dernier.glisser.lacher(false));
-    expect(spotOf(monde, VALLEE)).toEqual(depart0);
+    expect(spotOf(monde, RIVIERE)).toEqual(depart0);
     expect(dernier.choix).toMatchObject({ genre: 'lieu', spot: libre });
   });
 
@@ -517,18 +527,18 @@ describe('le mode « Aménager »', () => {
   it('« Valider » sur une place prise : le choix reste à sa place d’avant, rien de posé ne se perd', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
-    act(() => void dernier.intention({ genre: 'ile', id: VALLEE }));
+    act(() => void dernier.intention({ genre: 'ile', id: RIVIERE }));
     // La place libre la plus proche du coin du fond, à l'ouest.
-    glisseVers(VALLEE, { x: 0, y: 120 });
-    const posee = spotOf(monde, VALLEE);
+    glisseVers(RIVIERE, { x: 0, y: 120 });
+    const posee = spotOf(monde, RIVIERE);
     // Un choix qui ne se pose pas (un lieu fixe se refuse ; on force ici un choix sur la place d'un autre lieu).
-    act(() => void dernier.intention({ genre: 'ile', id: VALLEE }));
+    act(() => void dernier.intention({ genre: 'ile', id: RIVIERE }));
     const c = dernier.choix;
     expect(c?.genre).toBe('lieu');
     if (c?.genre === 'lieu') act(() => dernier.choisirDirect({ ...c, spot: spotOf(monde, TOUR) }));
     fireEvent.click(screen.getByRole('button', { name: 'Valider' }));
     expect(dernier.ouvert).toBe(false);
-    expect(spotOf(monde, VALLEE)).toEqual(posee);
+    expect(spotOf(monde, RIVIERE)).toEqual(posee);
   });
 
   it('le geste de la pose dure 1,5 s au plus, et un toucher le termine ; le lever du doigt fait redescendre d’un cube', () => {

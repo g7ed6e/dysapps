@@ -578,7 +578,7 @@ export function nearestDeparture(island: BiomeId, bridges: string[], open = reac
  * toutes), GD-9 : vers un lieu fermé, celle qui part du lieu relié le plus proche (sur le lieu fermé lui-même, tous ses
  * départs possibles, `linksToIsland`) ; entre deux lieux ouverts, un raccourci entre voisins (`SHORT_LINK` cases au
  * plus). Avec « Pas de LV2 », aucune ne mène à l'île de la LV2 : l'élève n'y dépense pas de blocs. `open` : les îles
- * ouvertes (`reachableIslands(bridges)`), si l'appelant les a déjà.
+ * ouvertes (`reachableIslands(bridges)`), si l'appelant les a déjà. Sur un lieu fermé, la plus courte d'abord.
  */
 export function buildableBridges(bridges: string[], island?: BiomeId, world?: WorldProgress, lv2: Lv2Choice = lv2Courante(), open = reachableIslands(bridges)): BridgeDef[] {
   const proposees = new Set<string>();
@@ -596,7 +596,10 @@ export function buildableBridges(bridges: string[], island?: BiomeId, world?: Wo
       if (b) proposees.add(b.id);
     }
   }
-  return (island ? bridgesOf(island) : BRIDGES).filter((b) => {
+  // Sur un lieu fermé, ses départs dans l'ordre de `linksToIsland`, du plus court au plus long : le premier est celui de
+  // « Relier » (`nearestDeparture`), que la carte du lieu montre aussi.
+  const liste = !island ? BRIDGES : open.has(island) ? bridgesOf(island) : linksToIsland(island, bridges, open);
+  return liste.filter((b) => {
     if (!proposees.has(b.id)) return false;
     if (lv2 === 'none' && [b.from, b.to].some((id) => getBiome(id)?.subject === 'lv2')) return false;
     const state = bridgeState(b, bridges, world, open);

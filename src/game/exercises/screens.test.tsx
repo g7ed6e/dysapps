@@ -60,17 +60,18 @@ describe('déblocage des biomes', () => {
   it('verrouille la Mine tant que le pont n’est pas construit', async () => {
     const user = userEvent.setup();
     renderAt('/adventure');
-    // GD-9 : de la Plaine ou de la Forêt, une liaison vers chaque île qu'on peut relier, 4 blocs chacune. Depuis que
-    // les îles ont grandi (GD-11, 8 octobre 2026), leurs côtes sont plus proches : sept ponts (vers la Mine, l'Horloge, la
-    // Fouille, la Vallée, la Ferme, la Rivière et le Volcan depuis GD-12).
+    // GD-9 : de la Plaine ou de la Forêt, une liaison vers chaque île qu'on peut relier, 4 blocs chacune ; la carte d'une
+    // île fermée montre la plus courte (celle de « Relier »). Depuis que les îles ont grandi (GD-11, 8 octobre 2026), leurs
+    // côtes sont plus proches : sept ponts (vers la Mine, l'Horloge, la Fouille, la Vallée, la Ferme, la Rivière et le
+    // Volcan depuis GD-12). Depuis le trait à sept cases (GD-12), la Rivière est à 41 cases de la Forêt (un bac) mais à 18
+    // de la Plaine : sa carte montre ce pont.
     expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(7);
-    // Deux îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9) : depuis les formes des îles (GD-12), le
-    // Laboratoire des éléments et le Hangar des inventions, aux coins de devant, derrière la Rivière et le Volcan : elles
-    // s'ouvriront de proche en proche.
-    expect(screen.queryAllByText(/Île lointaine/).length).toBe(2);
-    // Quatre bacs, depuis les formes des îles (GD-12) : vers la Carrière des mots, la Tour du lecteur, la Baie des mots
-    // et la Pointe des paysages.
-    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(4);
+    // Une île qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9) : le Laboratoire des éléments, au coin de
+    // devant, derrière la Rivière ; il s'ouvrira de proche en proche.
+    expect(screen.queryAllByText(/Île lointaine/).length).toBe(1);
+    // Cinq bacs : vers la Carrière des mots, la Tour du lecteur, la Baie des mots, la Pointe des paysages et, depuis le
+    // trait à sept cases (GD-12), le Hangar des inventions, que la côte nouvelle laisse atteindre depuis la Forêt (95 cases).
+    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(5);
     // Les îles des archipels de 5e, 4e et 3e, dont les six d'histoire-géographie (HG-3) et les neuf de sciences (SC-3).
     expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(36);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
