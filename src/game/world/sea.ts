@@ -21,6 +21,14 @@ import { smoothstep } from '../../core/math';
 export const PAR_CASE = 2;
 /** Le plancher de nuages des Îles du Ciel : sa hauteur, sous la roche des îles (à 9), au-dessus de la mer qu'on ne voit plus. */
 export const PLANCHER_DE_NUAGES = 2.5;
+/**
+ * Blocland : la plus haute rangée de cubes dont le dessous est sous l'eau, ou sous le plancher de nuages opaque des Îles
+ * du Ciel. La caméra reste au-dessus : ces dessous ne se voient jamais, on ne les dessine pas.
+ */
+export function hiddenBottomLevel(a: ArchipelagoId): number {
+  return Math.floor(AMBIENCE[a].sky ? PLANCHER_DE_NUAGES : NIVEAU_EAU);
+}
+
 /** La marge de la carte autour de l'étendue de l'archipel, en cases : au-delà, le large. */
 const MARGE = 24;
 /** La distance à la terre gardée dans la carte (canal alpha), en cases. */

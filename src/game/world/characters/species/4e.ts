@@ -267,4 +267,136 @@ export const ESPECES_4E = {
       },
     },
   },
+  // Les habitants d'histoire-géographie (HG-3) : Archipéo est en pause (2 octobre 2026), ils n'ont que le strict
+  // nécessaire (budget de l'archipel). Typo est une souris imprimeuse, Fret un crabe grutier (DA, HG-3).
+  'history-4e-revolutions': {
+    nom: 'Typo',
+    metier: 'imprimeuse',
+    dominante: 0x8c8a86,
+    marque: { couleur: 0xe0a0a8, ou: ['museau'] },
+    tenue: { couleur: 0x2e2622, vetements: ['tablier'] },
+    museau: { forme: 'museau', long: 0.16, r: 0.06 },
+    // Mince, les deux grandes oreilles rondes de la souris, la longue queue fine levée derrière elle : elle ne se confond
+    // pas avec Muscade.
+    silhouette: { largeur: 0.27, ventre: 0.01 },
+    coiffe: (T, k) => {
+      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.27, 2.48, 0.03], Math.PI / 2, 0, 0)), 0, 0.21, 0.04, k.dom, 6);
+    },
+    corps: (T, k) =>
+      fuseau(
+        pose(T, repere([0.1, 0.75, 0.2], 0.7, 0, -0.5)),
+        [
+          [0, 0.04],
+          [0.25, 0.035],
+          [0.5, 0.03],
+          [0.7, 0],
+        ],
+        4,
+        k.marque,
+      ),
+    outil: {
+      // Le rouleau d'encre : un manche, le rouleau sombre.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.05, 0.25, 0.02, k.bois, 3);
+        pave(T, -0.12, 0.25, -0.04, 0.12, 0.33, 0.04, k.fer);
+      },
+    },
+  },
+  'geography-4e-globalization': {
+    nom: 'Fret',
+    metier: 'grutier',
+    dominante: 0xc8502e,
+    marque: { couleur: 0xe8a080, ou: ['ventre'] },
+    tenue: { couleur: TENUE.lin, vetements: ['gilet'] },
+    // Large et plat, le casque à large bord, une grosse pince à la main gauche : il ne se confond pas avec Braise.
+    silhouette: { largeur: 0.44, profondeur: 0.22, ventre: 0.02, tete: 0.33, crane: 1 },
+    coiffe: (T, k) => disque(T, 2.42, 0.38, 0.06, k.laiton, 8),
+    autreBras: { rz: 0.35 },
+    autreMain: { pose: [0, 0, 0], dessiner: (T, k) => pointe(T, [0, -0.05, 0], 0.14, 0.35, k.dom, [Math.PI, 0, 0], 4, 0.06) },
+    outil: {
+      // Le crochet de la grue : un câble, le crochet de fer.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.1, 0.25, 0.012, k.fer, 3);
+        pointe(T, [0, -0.1, 0], 0.05, 0.12, k.fer, [Math.PI, 0, 0], 3);
+      },
+    },
+  },
+  // Les habitants de sciences (SC-3) : Archipéo est en pause (2 octobre 2026), ils n'ont que le strict nécessaire, une
+  // signature chacun (budget de l'archipel). Nectar est un colibri butineur (carnet de naturaliste), Radar un suricate guetteur, Manivelle une
+  // otarie maquettiste (DA, SC-3).
+  'life-earth-sciences-4e-cells-evolution': {
+    nom: 'Nectar',
+    metier: 'naturaliste',
+    dominante: 0x3a8a62,
+    marque: { couleur: 0xc0708e, ou: ['poitrine'] },
+    tenue: { couleur: TENUE.cuir, vetements: ['ceinture'] },
+    // Le très long bec fin du colibri.
+    museau: { forme: 'bec', long: 0.5, r: 0.03, y: 2.2 },
+    silhouette: { largeur: 0.26, profondeur: 0.24, tete: 0.25 },
+    corps: (T, k) => {
+      // Les deux ailes levées en V dans le dos.
+      for (const c of [-1, 1]) pointe(T, [c * 0.18, 1.7, 0.2], 0.12, 0.75, k.dom, [0.3, 0, -c * 0.6], 3, 0.03);
+    },
+    outil: {
+      // Une fleur cueillie : une tige de bois, la corolle de lin.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.05, 0.3, 0.015, k.bois, 3);
+        disque(T, 0.33, 0.09, 0.04, k.lin, 5);
+      },
+    },
+    autreMain: {
+      // Le carnet de naturaliste.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => pave(T, -0.1, -0.12, -0.03, 0.1, 0.12, 0.03, k.cuir),
+    },
+  },
+  'physics-chemistry-4e-signals-circuits': {
+    nom: 'Radar',
+    metier: 'guetteur',
+    dominante: 0xc0a074,
+    marque: { couleur: 0x5a4030, ou: ['visage'] },
+    tenue: { couleur: TENUE.lin, vetements: ['echarpe'] },
+    museau: { forme: 'museau', long: 0.12, r: 0.06 },
+    // Le suricate debout : mince, haut sur pattes, les épaules étroites.
+    silhouette: { largeur: 0.24, profondeur: 0.22, ventre: 0.04, jambes: 0.85, jambe: 0.07, tete: 0.23 },
+    coiffe: (T, k) => {
+      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.22, 2.32, 0.04], 0, 0, Math.PI / 2)), 0, 0.07, 0.03, k.marque, 5);
+    },
+    corps: (T, k) => {
+      // La queue, tendue jusqu'au sol derrière lui : il s'y appuie pour guetter.
+      pointe(T, [0, 0.8, 0.2], 0.07, 0.84, k.dom, [2.75, 0, 0], 3);
+    },
+    outil: {
+      // La longue-vue de laiton, levée.
+      pose: [-1.1, 0, 0],
+      dessiner: (T, k) => manche(T, -0.1, 0.4, 0.045, k.laiton, 5),
+    },
+  },
+  'technology-4e-modeling': {
+    nom: 'Manivelle',
+    metier: 'maquettiste',
+    dominante: 0x5e4c42,
+    marque: { couleur: 0x8a786a, ou: ['museau'] },
+    tenue: { couleur: TENUE.lin, vetements: ['tablier'] },
+    museau: { forme: 'museau', long: 0.16, r: 0.08 },
+    // L'otarie : un long corps fuselé, la petite tête ronde, des nageoires au sol.
+    silhouette: { largeur: 0.38, profondeur: 0.3, ventre: 0.06, jambes: 0.35, jambe: 0.12, tete: 0.22, crane: 0.95 },
+    corps: (T, k) => {
+      // Les nageoires de derrière, à plat sur le sol, ouvertes.
+      for (const c of [-1, 1]) pave(pose(T, repere([c * 0.25, 0, 0.3], 0, c * 0.5, 0)), -0.08, 0, -0.05, 0.08, 0.04, 0.38, k.dom);
+    },
+    outil: {
+      // La coque de maquette, de bois, tenue par sa quille ; une petite manivelle de laiton sort de son flanc, l'axe puis
+      // le bras qui monte (consultant d'Archipéo, relecture des captures : sans elle, rien ne la nommait).
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        fuseau(pose(T, repere([0, 0.1, 0], Math.PI / 2, 0, 0)), [[-0.22, 0], [-0.1, 0.09, 0.06], [0.14, 0.1, 0.07], [0.22, 0]], 5, k.bois);
+        pave(T, 0.06, 0.085, -0.015, 0.16, 0.115, 0.015, k.laiton);
+        pave(T, 0.13, 0.115, -0.015, 0.16, 0.22, 0.015, k.laiton);
+      },
+    },
+  },
 } satisfies Partial<Record<BiomeId, Espece>>;

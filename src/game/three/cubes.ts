@@ -9,10 +9,12 @@ import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '.
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
 import { cacheDeLaConstruction, caseDeLaConstruction, caseDeLaPiece, construireParIle, couleursDesRoles, miseBoutABout, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
 import { modelerLeSol } from '../world/drawnModel';
-import { buildMesh } from '../world/mesher';
+import { buildMesh, type MeshOptions } from '../world/mesher';
+import { hiddenBottomLevel } from '../world/sea';
 import { gesteFini, hauteurDuGeste } from '../world/pose';
 import { avanceeDuFondu, couchesPosees, cubesPartis, hauteurDansLaVague, planDeLaVague, type PlanDeLaVague } from '../world/wave';
-import { maillageAvecLaVague, type QueueDeLaVague } from '../world/waveMesh';
+import { maillageAvecLaVague, vagueEnBlocs, type QueueDeLaVague } from '../world/waveMesh';
+import { blockRegions, buildBlockMesh, buildRegionMesh } from '../world/blockMesh';
 import { couleurDuFondu, maillageDuFondu, type FonduDeLaPose } from '../world/fadeMesh';
 import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendering';
@@ -21,7 +23,8 @@ import { creerConstruction, creerMateriaux, type MateriauxDeConstruction } from 
 import { creerDecor } from './decor';
 import type { Large } from './offshore';
 import type { Lumiere } from './light';
-import { meshOf } from './meshes';
+import { blockMeshOf, meshOf } from './meshes';
+import { modeOuvertDansLesMateriaux, suivreLeMode } from './arrange';
 import type { Instant, Monde, PartieDeLaScene } from './scenePart';
 import { creerSol } from './ground';
 
@@ -135,36 +138,105 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   let derniers: VoxelCube[] = [];
   let aRefaire = false;
 
-  const viderLeTerrain = () => {
-    for (const child of [...terrain.children]) {
+  /** Blocland : les dessous sous l'eau (ou sous le plancher de nuages) ne sont pas dessinés. */
+  const dessous: MeshOptions = { hiddenBottomsUpTo: hiddenBottomLevel(archipel) };
+  /**
+   * Blocland (sans option de style du lot R1) : le terrain en une seule texture, par morceaux du monde, ses faces voisines
+   * fondues (world/blockMesh.ts) ; sauf dans « Modifier le plan », qui soulève un lieu sommet par sommet : une face fondue
+   * à cheval sur son bord s'étirerait. Le terrain se refait à l'ouverture et à la fermeture du mode.
+   */
+  const enBlocs = !sol && !surface;
+  const neplusSuivreLeMode = enBlocs ? suivreLeMode(() => (aRefaire = true)) : () => {};
+  /**
+   * Blocland : les maillages de chaque région du monde, faces fondues ou non, avec la signature de ses cubes. Une pose ne
+   * refait que les régions qu'elle touche ; celles de l'autre état (fondu, ou non dans le mode) restent de côté, hors de
+   * la scène, et reviennent telles quelles si rien n'a changé entre-temps (le mode ouvert puis fermé sans rien bouger).
+   */
+  const regions = { fondues: new Map<string, { signature: string; meshes: THREE.Mesh[] }>(), unes: new Map<string, { signature: string; meshes: THREE.Mesh[] }>() };
+
+  const jeter = (meshes: readonly THREE.Object3D[]) => {
+    for (const child of meshes) {
       terrain.remove(child);
       (child as THREE.Mesh).geometry.dispose();
     }
   };
+  const viderLeTerrain = () => {
+    jeter([...terrain.children]);
+    for (const m of [regions.fondues, regions.unes]) {
+      for (const r of m.values()) jeter(r.meshes);
+      m.clear();
+    }
+  };
+  /** La vague à part (Blocland), refaite à chaque terrain. */
+  let maillagesDeLaVague: THREE.Mesh[] = [];
 
-  /** Le terrain : un maillage par matériau (Blocland), ou le sol à facettes, la construction et le décor (Archipéo). */
+  /** Le terrain de Blocland, région par région : seules les régions dont les cubes ont changé sont refaites. */
+  const poserLesRegions = (cubes: VoxelCube[]) => {
+    const fondre = !modeOuvertDansLesMateriaux();
+    const ici = fondre ? regions.fondues : regions.unes;
+    const ailleurs = fondre ? regions.unes : regions.fondues;
+    // Les régions de l'autre état quittent la scène (gardées de côté).
+    for (const r of ailleurs.values()) for (const m of r.meshes) terrain.remove(m);
+    const neuves = blockRegions(cubes);
+    for (const [k, r] of ici) {
+      if (neuves.get(k)?.signature === r.signature) continue;
+      jeter(r.meshes);
+      ici.delete(k);
+    }
+    for (const [k, region] of neuves) {
+      let r = ici.get(k);
+      if (!r) ici.set(k, (r = { signature: region.signature, meshes: buildRegionMesh(region, { ...dessous, fondre }).map(blockMeshOf) }));
+      for (const m of r.meshes) if (m.parent !== terrain) terrain.add(m);
+    }
+  };
+
+  /** Un maillage qui porte une part de la vague : ses sommets bougent, depuis leur hauteur de repos. */
+  const brancherLaQueue = (mesh: THREE.Mesh, queue: QueueDeLaVague) => {
+    if (!vague) return;
+    // Les cubes de la vague descendent de haut, hors de la sphère englobante : ces maillages-là se dessinent toujours.
+    mesh.frustumCulled = false;
+    const position = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+    position.setUsage(THREE.DynamicDrawUsage);
+    const repos = new Float32Array(queue.rangDuSommet.length);
+    for (let i = 0; i < repos.length; i++) repos[i] = position.getY(queue.premierSommet + i);
+    vague.queues.push({ mesh, queue, repos });
+  };
+
+  /** Le terrain : région par région, en une texture (Blocland), ou le sol à facettes, la construction et le décor (Archipéo). */
   const poserLeTerrain = (cubes: VoxelCube[]) => {
-    viderLeTerrain();
     derniers = cubes;
     aRefaire = false;
+    if (enBlocs) {
+      jeter(maillagesDeLaVague);
+      maillagesDeLaVague = [];
+      poserLesRegions(cubes);
+      if (!vague) return;
+      // La vague à part, un maillage par passe : ses sommets bougent, le terrain non.
+      vague.queues = [];
+      for (const { morceau, vague: queue } of vagueEnBlocs(vague.cubes, vague.plan)) {
+        const mesh = blockMeshOf(morceau);
+        terrain.add(mesh);
+        maillagesDeLaVague.push(mesh);
+        brancherLaQueue(mesh, queue);
+      }
+      placerLaVague(vague.ecoule ?? 0);
+      return;
+    }
+    viderLeTerrain();
     if (!sol && vague) {
       // La vague à la fin des maillages du terrain : ses sommets bougent, le terrain non.
       vague.queues = [];
-      for (const { groupe, vague: queue } of maillageAvecLaVague(cubes, vague.cubes, vague.plan)) {
+      for (const { groupe, vague: queue } of maillageAvecLaVague(cubes, vague.cubes, vague.plan, dessous)) {
         const mesh = meshOf(groupe, surface);
         terrain.add(mesh);
         if (!queue) continue;
-        const position = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
-        position.setUsage(THREE.DynamicDrawUsage);
-        const repos = new Float32Array(queue.rangDuSommet.length);
-        for (let i = 0; i < repos.length; i++) repos[i] = position.getY(queue.premierSommet + i);
-        vague.queues.push({ mesh, queue, repos });
+        brancherLaQueue(mesh, queue);
       }
       placerLaVague(vague.ecoule ?? 0);
       return;
     }
     if (!sol) {
-      for (const g of buildMesh(cubes)) terrain.add(meshOf(g, surface));
+      for (const g of buildMesh(cubes, [], dessous)) terrain.add(meshOf(g, surface));
       return;
     }
     // Archipéo : le sol et la roche en facettes, le reste en cubes. Le maillage du sol n'est refait que s'il change
@@ -338,7 +410,8 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     enclencher: (cube) => {
       finirLeGeste();
       const bloc = new THREE.Group();
-      for (const g of buildMesh([cube])) bloc.add(meshOf(g, surface));
+      if (enBlocs) for (const g of buildBlockMesh([cube], { morceau: Infinity })) bloc.add(blockMeshOf(g));
+      else for (const g of buildMesh([cube])) bloc.add(meshOf(g, surface));
       bloc.position.y = hauteurDuGeste(0);
       scene.add(bloc);
       geste = { bloc, ecoule: null, enAttente: null };
@@ -393,6 +466,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       }
     },
     dispose: () => {
+      neplusSuivreLeMode();
       vague = null;
       if (geste) geste.enAttente = null;
       finirLeGeste();

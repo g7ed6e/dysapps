@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { boitesDuTrace, ecarterDesObstacles, PLACES_DE_LA_FLECHE_MAX, placerAvecLaFlecheDOuvrage, entiere, layoutLabels, montrees, placerEtiquettes, replierLesSignes, separateMark, type LabelBox } from './labelLayout';
+import { boiteDesPoints, boitesDuTrace, recoupe, ecarterDesObstacles, PLACES_DE_LA_FLECHE_MAX, placerAvecLaFlecheDOuvrage, entiere, layoutLabels, montrees, placerEtiquettes, replierLesSignes, separateMark, type LabelBox } from './labelLayout';
 import { drawIslandLabel, measureIslandLabel } from './labelCanvas';
 
 const overlaps = (a: LabelBox, b: LabelBox) => Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
@@ -440,19 +440,15 @@ describe('la flèche d’un ouvrage sur la Carte (GD-7)', () => {
 
   it('aucune étiquette ne se pose sur elle, même faute de place : elle se déplace ou se tait', () => {
     // Un cadre bas (la bande libre d'un téléphone au grand texte) : une étiquette aussi large que lui, la flèche dessous.
-    // Simple obstacle, l'étiquette resterait dessus (sortir du cadre coûterait plus) ; obstacle dur, jamais.
+    // L'écart seul la laisserait dessus (sortir du cadre coûterait plus) ; sur la Carte, obstacle dur ou simple (la bulle,
+    // le médaillon : DA, HG-3), jamais.
     const etroit = { w: 390, h: 80 };
     const boxes: LabelBox[] = [{ x: 195, y: 40, w: 370, h: 60 }];
     const iles = boxes.map((b) => ({ x: b.x, y: b.y + 20 }));
     const dure: LabelBox = { x: 195, y: 40, w: 38, h: 48 };
-    const simple = placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [dure], bounds: etroit, gap: 6 }, { weights: [1] });
-    expect(simple.visibles[0] && overlaps({ ...boxes[0], x: boxes[0].x + simple.offsets[0].dx, y: boxes[0].y + simple.offsets[0].dy }, dure)).toBe(true);
-    const { offsets, visibles } = placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [], dures: [dure], bounds: etroit, gap: 6 }, { weights: [1] });
-    boxes.forEach((b, i) => {
-      if (!visibles[i]) return;
-      const at = { ...b, x: b.x + offsets[i].dx, y: b.y + offsets[i].dy };
-      expect(Math.abs(at.x - dure.x) < (at.w + dure.w) / 2 && Math.abs(at.y - dure.y) < (at.h + dure.h) / 2, `étiquette ${i}`).toBe(false);
-    });
+    const pose = (r: { offsets: { dx: number; dy: number }[]; visibles: boolean[] }) => r.visibles[0] && overlaps({ ...boxes[0], x: boxes[0].x + r.offsets[0].dx, y: boxes[0].y + r.offsets[0].dy }, dure);
+    expect(pose(placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [dure], bounds: etroit, gap: 6 }, { weights: [1] }))).toBe(false);
+    expect(pose(placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [], dures: [dure], bounds: etroit, gap: 6 }, { weights: [1] }))).toBe(false);
   });
 });
 
@@ -477,5 +473,32 @@ describe('replierLesSignes', () => {
     const r = replierLesSignes([box(150)], [130], placer);
     expect(r.visibles).toEqual([false]);
     expect(r.sansSigne).toEqual([false]);
+  });
+});
+
+describe('l’estompage pendant le glissé du choix (GD-9)', () => {
+  it('estompe toute étiquette dont le rectangle à l’écran recoupe celui de la zone, pas celle dont seul le lieu en est loin', () => {
+    // La zone de la grille, ses quatre coins projetés (un trapèze, vu en biais) : leur rectangle.
+    const zone = boiteDesPoints([
+      { x: 200, y: 300 },
+      { x: 400, y: 300 },
+      { x: 180, y: 450 },
+      { x: 420, y: 450 },
+    ]);
+    expect(zone).toEqual({ x: 300, y: 375, w: 240, h: 150 });
+    // Le centre du lieu est hors de la zone, mais l'étiquette déborde dessus : elle s'estompe.
+    expect(recoupe({ x: 130, y: 320, w: 160, h: 40 }, zone)).toBe(true);
+    // Juste à côté, sans la toucher : elle reste.
+    expect(recoupe({ x: 90, y: 320, w: 160, h: 40 }, zone)).toBe(false);
+    expect(recoupe({ x: 300, y: 270, w: 160, h: 40 }, zone)).toBe(false);
+  });
+});
+
+describe('le point d’une île, à l’arrondi près (HG-3)', () => {
+  it('une île dans le cadre n’en sort pas par une erreur d’arrondi : son nom se montre', () => {
+    // La Compréhension, au 3e : la boîte d'un pixel de son île « sortait » du cadre de 1e-13 pixel carré.
+    const ile = { x: 511.62184540480104, y: 687.3745046021975 };
+    const b = { x: ile.x, y: ile.y - 40, w: 176, h: 61 };
+    expect(montrees([b], [{ dx: 0, dy: 0 }], [], { w: 1024, h: 768 }, undefined, [ile])).toEqual([true]);
   });
 });

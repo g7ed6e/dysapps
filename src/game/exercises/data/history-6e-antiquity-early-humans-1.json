@@ -1,0 +1,238 @@
+{
+  "id": "history-6e-antiquity-early-humans-1",
+  "biome": "history-6e-antiquity",
+  "type": "early-humans",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "items": [
+    {
+      "key": "history-6e-antiquity-early-humans-1-0",
+      "prompt": "Les premiers humains sont apparus en … .",
+      "spoken": "Les premiers humains sont apparus en (mot manquant) .",
+      "choices": [
+        "Afrique",
+        "Europe",
+        "Asie"
+      ],
+      "answer": "Afrique",
+      "hint": "Cherche les premiers humains dans la frise.",
+      "explanation": "Les plus anciens fossiles humains viennent d’Afrique. Les humains ont ensuite peuplé les autres continents.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des débuts",
+          "lines": [
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Il y a des millions d’années : les premiers humains, en Afrique.",
+            "Il y a environ 12 000 ans : le Néolithique, les premiers villages.",
+            "Il y a environ 5 000 ans : l’écriture et les premiers États."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-1-1",
+      "prompt": "Les chasseurs-cueilleurs se déplacent pour trouver leur nourriture : ils sont … .",
+      "spoken": "Les chasseurs-cueilleurs se déplacent pour trouver leur nourriture : ils sont (mot manquant) .",
+      "choices": [
+        "nomades",
+        "sédentaires",
+        "agriculteurs"
+      ],
+      "answer": "nomades",
+      "hint": "Ils se déplacent sans cesse.",
+      "explanation": "Nomade : qui se déplace. Sédentaire : qui reste au même endroit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des débuts",
+          "lines": [
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Il y a des millions d’années : les premiers humains, en Afrique.",
+            "Il y a environ 12 000 ans : le Néolithique, les premiers villages.",
+            "Il y a environ 5 000 ans : l’écriture et les premiers États."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-1-2",
+      "prompt": "Au Néolithique, les humains vivent dans des villages : ils deviennent … .",
+      "spoken": "Au Néolithique, les humains vivent dans des villages : ils deviennent (mot manquant) .",
+      "choices": [
+        "nomades",
+        "cueilleurs",
+        "sédentaires"
+      ],
+      "answer": "sédentaires",
+      "hint": "Un village, on y reste.",
+      "explanation": "Sédentaire : qui reste au même endroit. Les agriculteurs restent près de leurs champs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des débuts",
+          "lines": [
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Il y a des millions d’années : les premiers humains, en Afrique.",
+            "Il y a environ 12 000 ans : le Néolithique, les premiers villages.",
+            "Il y a environ 5 000 ans : l’écriture et les premiers États."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-1-3",
+      "prompt": "Au Néolithique, les humains inventent l’agriculture et … .",
+      "spoken": "Au Néolithique, les humains inventent l’agriculture et (mot manquant) .",
+      "choices": [
+        "l’écriture",
+        "l’élevage",
+        "la chasse"
+      ],
+      "answer": "l’élevage",
+      "hint": "Les chèvres et les moutons vivent maintenant près des villages.",
+      "explanation": "Néolithique : l’agriculture et l’élevage. La chasse est bien plus ancienne. L’écriture vient plus tard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des débuts",
+          "lines": [
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Il y a des millions d’années : les premiers humains, en Afrique.",
+            "Il y a environ 12 000 ans : le Néolithique, les premiers villages.",
+            "Il y a environ 5 000 ans : l’écriture et les premiers États."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-1-4",
+      "prompt": "La Préhistoire se termine avec l’invention de … .",
+      "spoken": "La Préhistoire se termine avec l’invention de (mot manquant) .",
+      "choices": [
+        "l’agriculture",
+        "l’écriture",
+        "le feu"
+      ],
+      "answer": "l’écriture",
+      "hint": "Lis les deux premières lignes de la frise.",
+      "explanation": "Avec l’écriture, on passe de la Préhistoire à l’Antiquité. L’agriculture, c’est le Néolithique, encore dans la Préhistoire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des débuts",
+          "lines": [
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Il y a des millions d’années : les premiers humains, en Afrique.",
+            "Il y a environ 12 000 ans : le Néolithique, les premiers villages.",
+            "Il y a environ 5 000 ans : l’écriture et les premiers États."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-1-5",
+      "prompt": "Le Néolithique commence … l’invention de l’écriture.",
+      "spoken": "Le Néolithique commence (mot manquant) l’invention de l’écriture.",
+      "choices": [
+        "avant",
+        "après",
+        "en même temps que"
+      ],
+      "answer": "avant",
+      "hint": "Sur la frise, lequel est le plus haut ?",
+      "explanation": "Le Néolithique commence il y a environ 12 000 ans, l’écriture arrive il y a environ 5 000 ans : le Néolithique vient avant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des débuts",
+          "lines": [
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Il y a des millions d’années : les premiers humains, en Afrique.",
+            "Il y a environ 12 000 ans : le Néolithique, les premiers villages.",
+            "Il y a environ 5 000 ans : l’écriture et les premiers États."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-1-6",
+      "prompt": "Les premiers États naissent en Mésopotamie et en … .",
+      "spoken": "Les premiers États naissent en Mésopotamie et en (mot manquant) .",
+      "choices": [
+        "Grèce",
+        "Égypte",
+        "Gaule"
+      ],
+      "answer": "Égypte",
+      "hint": "Pense au grand fleuve et aux pyramides.",
+      "explanation": "Les premiers États naissent en Mésopotamie et en Égypte, près de grands fleuves. Les cités grecques viennent bien plus tard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des débuts",
+          "lines": [
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Il y a des millions d’années : les premiers humains, en Afrique.",
+            "Il y a environ 12 000 ans : le Néolithique, les premiers villages.",
+            "Il y a environ 5 000 ans : l’écriture et les premiers États."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-1-7",
+      "prompt": "Son métier : écrire pour le roi. C’est le … .",
+      "spoken": "Son métier : écrire pour le roi. C’est le (mot manquant) .",
+      "choices": [
+        "scribe",
+        "prêtre",
+        "soldat"
+      ],
+      "answer": "scribe",
+      "hint": "Ce mot vient d’un mot latin qui veut dire « écrire ».",
+      "explanation": "Le scribe écrit les lois, les impôts, les récoltes. Peu de gens savent écrire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des débuts",
+          "lines": [
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Il y a des millions d’années : les premiers humains, en Afrique.",
+            "Il y a environ 12 000 ans : le Néolithique, les premiers villages.",
+            "Il y a environ 5 000 ans : l’écriture et les premiers États."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-6e-antiquity",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

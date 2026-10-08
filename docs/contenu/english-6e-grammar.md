@@ -1,6 +1,6 @@
 ---
 lieu : english-6e-grammar
-module : Grammaire : to be, have got, présent simple
+module : Grammaire : to be, have, présent simple
 matière : english
 classe : 6e
 description : Am, is ou are ; have ou has ; le s de he, she, it : les verbes de base, la règle sous les yeux.
@@ -100,9 +100,9 @@ Pour tous les items :
    - indice : Il ne fait pas froid : négation, avec it.
    - explication : It isn’t cold : avec it, la négation est isn’t.
 
-## Have got · `have-got`
+## Have ou has · `have-got`
 
-- description : Have got ou has got, pour dire ce qu’on a.
+- description : Have ou has, pour dire ce qu’on a ; puis do et does pour la question et la négation.
 - compétences : c3.en.langue.groupe-verbal
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
@@ -122,70 +122,70 @@ Pour tous les items :
 Pour tous les items :
 - choix : have · has
 - indice : He, she, it (une seule personne ou chose) : has. Les autres : have.
-- aide « Have got (avoir) » :
-  - I / you / we / they have got (I’ve got)
-  - he / she / it has got (she’s got)
-  - have got = avoir, posséder : I have got a dog = j’ai un chien.
+- aide « Have (avoir) » :
+  - I / you / we / they have
+  - he / she / it has
+  - have = avoir, posséder : I have a dog = j’ai un chien.
 
 | énoncé | réponse | explication |
 | --- | --- | --- |
-| I … got a brother. | have | I have got : avec I, c’est have. |
-| She … got long hair. | has | She has got : avec she, c’est has. |
-| We … got a new teacher. | have | We have got : avec we, c’est have. |
-| My cat … got green eyes. | has | My cat = it : it has got. |
-| They … got a big garden. | have | They have got : avec they, c’est have. |
-| He … got a red bike. | has | He has got : avec he, c’est has. |
-| You … got a nice smile. | have | You have got : avec you, c’est have. |
-| Lina … got two sisters. | has | Lina = she : she has got. |
+| I … a brother. | have | I have : avec I, c’est have. |
+| She … long hair. | has | She has : avec she, c’est has. |
+| We … a new teacher. | have | We have : avec we, c’est have. |
+| My cat … green eyes. | has | My cat = it : it has. |
+| They … a big garden. | have | They have : avec they, c’est have. |
+| He … a red bike. | has | He has : avec he, c’est has. |
+| You … a nice smile. | have | You have : avec you, c’est have. |
+| Lina … two sisters. | has | Lina = she : she has. |
 
 ### Niveau 2 · `english-6e-grammar-have-got-2`
 
 Pour tous les items :
-- aide « Have got : négation et question » :
-  - Négation : I haven’t got, she hasn’t got.
-  - Question : on inverse ! Have you got…? Has he got…?
-  - Réponse courte : Yes, I have. No, he hasn’t.
+- aide « Have : négation et question » :
+  - Négation : I don’t have, she doesn’t have (have reste sans s).
+  - Question : Do you have…? Does he have…?
+  - Réponse courte : Yes, I do. No, he doesn’t.
 
-1. énoncé : … you got a pet?
-   - choix : Have · Has · Do
-   - réponse : Have
-   - indice : Question avec have got : have ou has devant le sujet.
-   - explication : Have you got a pet? : avec you, c’est have, placé devant.
-2. énoncé : … she got a phone?
-   - choix : Have · Has · Is
-   - réponse : Has
-   - indice : Question avec have got : have ou has devant le sujet.
-   - explication : Has she got a phone? : avec she, c’est has, placé devant.
-3. énoncé : I … got any brothers.
-   - choix : haven’t · hasn’t · don’t
-   - réponse : haven’t
+1. énoncé : … you have a pet?
+   - choix : Do · Does · Have
+   - réponse : Do
+   - indice : Question avec have : do ou does devant le sujet.
+   - explication : Do you have a pet? : avec you, c’est do, placé devant.
+2. énoncé : … she have a phone?
+   - choix : Do · Does · Is
+   - réponse : Does
+   - indice : Question avec have : do ou does devant le sujet.
+   - explication : Does she have a phone? : avec she, c’est does, placé devant. Have reste sans s.
+3. énoncé : I … have any brothers.
+   - choix : don’t · doesn’t · haven’t
+   - réponse : don’t
    - indice : Négation avec I.
-   - explication : I haven’t got : avec I, la négation est haven’t.
-4. énoncé : He … got a computer.
-   - choix : haven’t · hasn’t · isn’t
-   - réponse : hasn’t
+   - explication : I don’t have : avec I, la négation est don’t.
+4. énoncé : He … have a computer.
+   - choix : don’t · doesn’t · hasn’t
+   - réponse : doesn’t
    - indice : Négation avec he.
-   - explication : He hasn’t got : avec he, la négation est hasn’t.
-5. énoncé : … they got a car? — Yes, they have.
-   - choix : Have · Has · Are
-   - réponse : Have
-   - indice : Question avec have got : have ou has devant le sujet.
-   - explication : Have they got a car? : avec they, c’est have, placé devant.
-6. énoncé : My sister … got a bike.
-   - choix : haven’t · hasn’t · don’t
-   - réponse : hasn’t
+   - explication : He doesn’t have : avec he, la négation est doesn’t, et have reste sans s.
+5. énoncé : … they have a car? — Yes, they do.
+   - choix : Do · Does · Are
+   - réponse : Do
+   - indice : Question avec have : do ou does devant le sujet.
+   - explication : Do they have a car? : avec they, c’est do, placé devant.
+6. énoncé : My sister … have a bike.
+   - choix : don’t · doesn’t · hasn’t
+   - réponse : doesn’t
    - indice : My sister = she.
-   - explication : My sister = she : she hasn’t got.
-7. énoncé : Has he got a dog? — No, he … .
-   - choix : hasn’t · haven’t · isn’t
-   - réponse : hasn’t
-   - indice : La réponse courte reprend has.
-   - explication : No, he hasn’t : on reprend has, à la négation.
-8. énoncé : Have you got a pen? — Yes, I … .
-   - choix : have · has · am
-   - réponse : have
-   - indice : La réponse courte reprend have.
-   - explication : Yes, I have : on reprend have.
+   - explication : My sister = she : she doesn’t have.
+7. énoncé : Does he have a dog? — No, he … .
+   - choix : doesn’t · don’t · hasn’t
+   - réponse : doesn’t
+   - indice : La réponse courte reprend does.
+   - explication : No, he doesn’t : on reprend does, à la négation.
+8. énoncé : Do you have a pen? — Yes, I … .
+   - choix : do · does · have
+   - réponse : do
+   - indice : La réponse courte reprend do.
+   - explication : Yes, I do : on reprend do.
 
 ## Présent simple · `present-simple`
 
@@ -337,9 +337,9 @@ Pour tous les items :
    - réponse : 13 ans
    - indice : Écoute la fin du nombre : -teen ou -ty ?
    - explication : I’m thirteen = j’ai 13 ans. On entend -teen à la fin, et la voix appuie dessus : thir-TEEN. Thirty (30) finit par -ty ; three (3) est plus court.
-2. énoncé : "Lucy has got a dog.\nHis name is Max.\nEvery day, Lucy walks in the park with Max."
+2. énoncé : "Lucy has a dog.\nHis name is Max.\nEvery day, Lucy walks in the park with Max."
    - question : Que fait Lucy au parc tous les jours ?
-   - lu : Lucy has got a dog. His name is Max. Every day, Lucy walks in the park with Max.
+   - lu : Lucy has a dog. His name is Max. Every day, Lucy walks in the park with Max.
    - choix : Elle se promène avec Max · Elle travaille au parc · Elle joue au ballon avec Max
    - réponse : Elle se promène avec Max
    - indice : Écoute le verbe après Lucy, dans la 3e phrase : walks ou works ?
@@ -358,9 +358,9 @@ Pour tous les items :
    - réponse : Le jeudi
    - indice : Tuesday ou Thursday ? Écoute le début du mot : « tiou », ou th, la langue entre les dents ?
    - explication : Thursday = jeudi : il commence par th, la langue entre les dents. Tuesday (mardi) commence par « tiou ».
-5. énoncé : "This is my brother, Leo.\nHe has got a new bike.\nHe rides it every day."
+5. énoncé : "This is my brother, Leo.\nHe has a new bike.\nHe rides it every day."
    - question : Dans l’histoire, qui a un nouveau vélo ?
-   - lu : This is my brother, Leo. He has got a new bike. He rides it every day.
+   - lu : This is my brother, Leo. He has a new bike. He rides it every day.
    - choix : Ma sœur · Mon frère · Mon père
    - réponse : Mon frère
    - indice : Écoute la 1re phrase : my brother ou my sister ?
@@ -372,9 +372,9 @@ Pour tous les items :
    - réponse : Dans sa chambre
    - indice : Bedroom ou bathroom ? Écoute le début du mot.
    - explication : bedroom = la chambre (bed = le lit). La salle de bains se dit bathroom, la cuisine kitchen.
-7. énoncé : "My grandad lives on a farm.\nHe is sixty.\nHe has got fifteen cows."
+7. énoncé : "My grandad lives on a farm.\nHe is sixty.\nHe has fifteen cows."
    - question : Combien de vaches a le grand-père ?
-   - lu : My grandad lives on a farm. He is sixty. He has got fifteen cows.
+   - lu : My grandad lives on a farm. He is sixty. He has fifteen cows.
    - choix : 15 vaches · 50 vaches · 60 vaches
    - réponse : 15 vaches
    - indice : Écoute la dernière phrase : fifteen ou fifty ?
@@ -424,9 +424,9 @@ Pour tous les items :
    - réponse : Josh
    - indice : Écoute la phrase où l’on entend popcorn : quel prénom juste avant buys ?
    - explication : Then, Josh buys some popcorn = ensuite, Josh achète du pop-corn. Kate, sa sœur, achète les billets (the tickets) en premier.
-5. énoncé : "Lena has got a busy week.\nOn Monday, she goes to the library.\nOn Tuesday, she plays basketball.\nOn Thursday, she has a piano lesson."
+5. énoncé : "Lena has a busy week.\nOn Monday, she goes to the library.\nOn Tuesday, she plays basketball.\nOn Thursday, she has a piano lesson."
    - question : Quel jour Lena joue-t-elle au basket ?
-   - lu : Lena has got a busy week. On Monday, she goes to the library. On Tuesday, she plays basketball. On Thursday, she has a piano lesson.
+   - lu : Lena has a busy week. On Monday, she goes to the library. On Tuesday, she plays basketball. On Thursday, she has a piano lesson.
    - choix : Le jeudi · Le mardi · Le lundi
    - réponse : Le mardi
    - indice : Tuesday ou Thursday ? Écoute le début du mot.

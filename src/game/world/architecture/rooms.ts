@@ -8,7 +8,7 @@
 
 export type V3 = [number, number, number];
 
-/** Les faces d'une case, dans le masque `couvre` (les quatre côtés dans l'ordre de `COTES`, puis le haut et le bas). */
+/** Les faces d'une case, dans le masque `couvre` (les quatre côtés dans l'ordre de `SIDES`, puis le haut et le bas). */
 export const FACES = { est: 1, nord: 2, ouest: 4, sud: 8, haut: 16, bas: 32 } as const;
 export const TOUTES_LES_FACES = 0b111111;
 

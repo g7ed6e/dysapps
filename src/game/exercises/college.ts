@@ -126,11 +126,8 @@ export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'maths-5e-signed-numbers', type: 'thermometer', level: 2, instruction: THERMO_READ, generators: [readRelatif], block: 'maths-5e-signed-numbers' }),
   defineData({ biome: 'maths-5e-signed-numbers', type: 'adding', level: 1, instruction: BANQUISE, generators: [addRelatifs], block: 'maths-5e-signed-numbers' }),
   defineData({ biome: 'maths-5e-signed-numbers', type: 'adding', level: 2, instruction: BANQUISE_SUB, generators: [subRelatifs], block: 'maths-5e-signed-numbers' }),
-  defineData({ biome: 'maths-5e-signed-numbers', type: 'subtracting', level: 1, instruction: CREVASSES, generators: [mulRelatifs], block: 'maths-5e-signed-numbers' }),
-  defineData({ biome: 'maths-5e-signed-numbers', type: 'subtracting', level: 2, instruction: CREVASSES_DIV, generators: [divRelatifs], block: 'maths-5e-signed-numbers' }),
   defineData({ biome: 'maths-5e-signed-numbers', type: 'fractions', level: 1, instruction: ICEBERGS, generators: [compareFractionsC4], block: 'maths-5e-signed-numbers' }),
   defineData({ biome: 'maths-5e-signed-numbers', type: 'fractions', level: 2, instruction: ICEBERGS_SOMME, generators: [addSubFractions], block: 'maths-5e-signed-numbers' }),
-  defineData({ biome: 'maths-5e-signed-numbers', type: 'fractions', level: 3, instruction: ICEBERGS_PRODUIT, generators: [mulDivFractions], block: 'maths-5e-signed-numbers' }),
   defineData({ biome: 'maths-5e-proportionality', type: 'proportion-tables', level: 1, instruction: ETALS, generators: [fourthInt], block: 'maths-5e-proportionality' }),
   defineData({ biome: 'maths-5e-proportionality', type: 'proportion-tables', level: 2, instruction: ETALS_COEF, generators: [fourthCoef], block: 'maths-5e-proportionality' }),
   defineData({ biome: 'maths-5e-proportionality', type: 'percentages', level: 1, instruction: REMISES, generators: [percentOf], block: 'maths-5e-proportionality' }),
@@ -144,6 +141,11 @@ export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'maths-4e-powers', type: 'scientific-notation', level: 1, instruction: TREMPE, generators: [squareRoot], block: 'maths-4e-powers' }),
   defineData({ biome: 'maths-4e-powers', type: 'scientific-notation', level: 2, instruction: TREMPE_PRIME, generators: [primeOrDivisor], block: 'maths-4e-powers' }),
   defineData({ biome: 'maths-4e-powers', type: 'scientific-notation', level: 3, instruction: TREMPE_FACTEURS, generators: [primeDecomposition], block: 'maths-4e-powers' }),
+  // Le Fourneau : multiplier et diviser des relatifs, puis des fractions (venus du Glacier des relatifs, 5e, avec les
+  // programmes de 2026, qui placent ces calculs en 4e). Le type `subtracting` est gardé : le niveau adapté le suit.
+  defineData({ biome: 'maths-4e-powers', type: 'subtracting', level: 1, instruction: CREVASSES, generators: [mulRelatifs], block: 'maths-4e-powers' }),
+  defineData({ biome: 'maths-4e-powers', type: 'subtracting', level: 2, instruction: CREVASSES_DIV, generators: [divRelatifs], block: 'maths-4e-powers' }),
+  defineData({ biome: 'maths-4e-powers', type: 'subtracting', level: 3, instruction: ICEBERGS_PRODUIT, generators: [mulDivFractions], block: 'maths-4e-powers' }),
   defineData({ biome: 'maths-4e-algebra', type: 'simplifying', level: 1, instruction: REDUIRE, generators: [reduceSimple], block: 'maths-4e-algebra' }),
   defineData({ biome: 'maths-4e-algebra', type: 'simplifying', level: 2, instruction: REDUIRE_MIXTE, generators: [reduceMixed], block: 'maths-4e-algebra' }),
   defineData({ biome: 'maths-4e-algebra', type: 'expanding', level: 1, instruction: DEVELOPPER, generators: [developSimple], block: 'maths-4e-algebra' }),

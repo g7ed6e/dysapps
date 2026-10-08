@@ -17,11 +17,11 @@ const TOITS = new Set(['toit', 'tuile']);
 const HORS_MASSE = new Set(['lanterne']);
 
 /**
- * Les quatre côtés, dans le masque `cotes` : le bit `i` est la voisine dans la direction `COTES[i]`. L'ordre tourne dans
+ * Les quatre côtés, dans le masque `cotes` : le bit `i` est la voisine dans la direction `SIDES[i]`. L'ordre tourne dans
  * le sens direct vu du dessus (+x, puis +y, puis −x, puis −y) : tourner d'un quart de tour décale le masque d'un bit.
  * Les coins suivent le même ordre : le coin `i` est entre le côté `i` et le côté `i + 1` (le coin 0 : +x et +y).
  */
-export const COTES: readonly (readonly [number, number])[] = [
+export const SIDES: readonly (readonly [number, number])[] = [
   [1, 0],
   [0, 1],
   [-1, 0],
@@ -32,14 +32,14 @@ export const COTES: readonly (readonly [number, number])[] = [
 export interface Voisinage {
   texture: string;
   classe: Classe;
-  /** Les voisines de même classe, côte à côte (4 bits, voir `COTES`). */
+  /** Les voisines de même classe, côte à côte (4 bits, voir `SIDES`). */
   cotes: number;
   /** Ce qui est posé (ou à poser) juste au-dessus dans le plan. */
   dessus: Classe | 'rien';
   /** Ce qui est posé (ou à poser) juste en dessous dans le plan ; `rien` : le bloc est au pied (sur le sol). */
   dessous: Classe | 'rien';
   /**
-   * Le sens de la pente : les côtés où la même classe est posée (ou à poser) un cran plus haut (4 bits, voir `COTES`).
+   * Le sens de la pente : les côtés où la même classe est posée (ou à poser) un cran plus haut (4 bits, voir `SIDES`).
    * Un toit en gradins monte de ce côté.
    */
   monte: number;
@@ -98,26 +98,43 @@ export interface OptionsDuVoisinage {
   surLeVide?: (x: number, y: number, z: number) => boolean;
   /** La classe du bloc, quand elle ne se lit pas sur sa texture (un bloc d'un lieu du village : ./places.ts). */
   classe?: Classe;
+  /**
+   * La toiture des cases de toit qui n'appartiennent pas à la toiture commune (clé `x,y,z`, un nom par toiture) : deux
+   * toits de toitures différentes ne se prolongent pas, chacun lit ses pentes sur les siens (le toit de terre cuite de la
+   * maison basse du quartier, contre celui de la maison haute, world/construction/buildings.ts). Sans elle, une seule
+   * toiture.
+   */
+  toitures?: ReadonlyMap<string, string>;
 }
 
 /** Le voisinage d'un bloc du plan (`null` pour une lanterne, qui ne fait pas masse). */
 export function voisinageDe(c: VoxelCube, index: IndexDuPlan, options: OptionsDuVoisinage = {}): Voisinage | null {
   const classe = options.classe ?? classeDe(c.texture);
   if (!classe) return null;
-  const a = (dx: number, dy: number, dz: number) => index.get(cle(c.x + dx, c.y + dy, c.z + dz));
+  const toitures = options.toitures;
+  const sienne = toitures && classe === 'toit' ? toitures.get(cle(c.x, c.y, c.z)) : undefined;
+  const lue = (dx: number, dy: number, dz: number) => index.get(cle(c.x + dx, c.y + dy, c.z + dz));
+  // Pour un toit, un toit d'une autre toiture ne compte pas parmi ses voisines de même classe.
+  const a =
+    toitures && classe === 'toit'
+      ? (dx: number, dy: number, dz: number) => {
+          const k = lue(dx, dy, dz);
+          return k === 'toit' && toitures.get(cle(c.x + dx, c.y + dy, c.z + dz)) !== sienne ? undefined : k;
+        }
+      : lue;
   let cotes = 0;
   let monte = 0;
   let descend = 0;
   let coins = 0;
   let toits = 0;
-  COTES.forEach(([dx, dy], i) => {
+  SIDES.forEach(([dx, dy], i) => {
     const b = 1 << i;
     const cote = a(dx, dy, 0);
     if (cote === classe) cotes |= b;
     if (cote === 'toit') toits |= b;
     if (a(dx, dy, 1) === classe) monte |= b;
     if (a(dx, dy, -1) === classe) descend |= b;
-    const [ex, ey] = COTES[(i + 1) % 4];
+    const [ex, ey] = SIDES[(i + 1) % 4];
     if (a(dx + ex, dy + ey, 1) === classe) coins |= b;
   });
   const dessous = a(0, 0, -1) ?? 'rien';

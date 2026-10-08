@@ -1,0 +1,9 @@
+{
+  "id": "geography-3e-france-2",
+  "biome": "geography-3e-france",
+  "name": "Le toit de la mairie",
+  "reward": {
+    "xp": 50
+  },
+  "done": "Le toit est posé. Les cartes du plateau sont à l’abri."
+}

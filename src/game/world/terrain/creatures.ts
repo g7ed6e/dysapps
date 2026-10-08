@@ -8,13 +8,15 @@ import { lv2Courante } from '../../../core/settings';
 import { type ArchipelagoId, bornesDuCoeur, islandDef, landscape, margesDuCoeur, noise, tirage } from '../map';
 import { DECOR, decorate } from '../decor';
 import { zoneDesPlans } from '../plans';
-import { BRIDGES, isBiomeUnlocked, islandsOf } from '../archipelago';
+import { isBiomeUnlocked, islandsOf } from '../archipelago';
 import type { VoxelCube } from '../cube';
+import { turnDirection, turnPlacedModel } from '../placement';
 import { cacheUnLieu, lieuxVus, placeCells, portesDesLieux } from './village';
-import { versLaCamera } from './view';
+import { versLaCameraDuDessin } from './view';
 import { AVATAR_HOME, groundHeight, islandOrigin, LAYOUT_PAD } from './base';
 import { questStations } from './markers';
-import { bridgePath } from './links';
+import { amorcesDuDessin } from './links';
+import { layoutCache } from '../placement';
 
 /** Les pas d'une créature qui se promène : une case à gauche ou en arrière (jamais vers les plans). */
 export const CREATURE_STEPS: [number, number][] = [
@@ -37,9 +39,16 @@ export const QUARTS_DE_TOUR: Partial<Record<BiomeId, number>> = { 'lv2-3e-travel
  * Les créatures seules (pas leur Gardien) tournées d'un quart de tour de plus, même sens. Au Marché des proportions
  * (5e), Bazar est long (sept cases du museau à la queue) : de face, il n'a aucune place hors de la vue de la salle des
  * trophées (GD-3) ; tourné, il se tient derrière elle, le visage du côté des x croissants, celui de la caméra. Le quart
- * de tour dans l'autre sens lui ferait tourner le dos à la caméra (retouches de GD-3).
+ * de tour dans l'autre sens lui ferait tourner le dos à la caméra (retouches de GD-3). Jalon (le Plateau des territoires,
+ * 3e) n'est pas tournée : la caméra de son île pivote à fond vers l'est (`viewYaw`, −40°) et la regarde déjà de profil ;
+ * un quart de tour la lui montrerait de face (voir `JALON`, ../characters/creatures.ts).
  */
-export const QUARTS_DE_TOUR_DE_LA_CREATURE: Partial<Record<BiomeId, number>> = { 'maths-5e-proportionality': 1 };
+export const QUARTS_DE_TOUR_DE_LA_CREATURE: Partial<Record<BiomeId, number>> = {
+  'maths-5e-proportionality': 1,
+  // Navette, couchée de profil (SC-3) : la caméra de la Ruche regarde de l'est (`viewYaw`, −40°) ; tournée, elle lui
+  // montre son flanc et ses anneaux, pas sa tête de face.
+  'technology-3e-digital': 1,
+};
 
 function tourner(cubes: CubeDeModele[], quarts = 0): CubeDeModele[] {
   let out = cubes;
@@ -50,12 +59,29 @@ function tourner(cubes: CubeDeModele[], quarts = 0): CubeDeModele[] {
   return out;
 }
 
+/**
+ * Les Gardiens seuls (pas leur créature) tournés de quarts de tour de plus, même sens. Au Kiosque des témoins (3e), la
+ * caméra de l'île regarde du sud (`viewYaw`, +40°) : de face, la Colombe d'albâtre se lisait comme un bloc ; tournée de
+ * trois quarts de tour, elle montre son flanc, la tête vers l'ouest, l'œil, le bec et le rameau du côté de la caméra
+ * (DA, relecture des planches, HG-3).
+ */
+const QUARTS_DE_TOUR_DU_GARDIEN: Partial<Record<BiomeId, number>> = {
+  'history-3e-twentieth-century': 3,
+  // À la Menuiserie, au Bassin et à la Ruche (SC-3), la caméra de l'île regarde de l'est (`viewYaw`, −32 à −40°) : de
+  // face, le Cheval à bascule, le Grand-bi et l'Abeille se voyaient par la tranche ou de dos ; tournés d'un quart de
+  // tour, ils lui montrent leur flanc, l'œil de son côté (DA et consultant de Blocland, relecture des captures ; même
+  // règle que la Colombe d'albâtre).
+  'technology-5e-design': 1,
+  'technology-4e-modeling': 1,
+  'technology-3e-digital': 1,
+};
+
 const personnagesTournes = new Map<string, CubeDeModele[]>();
 
 const tourne = (genre: 'creature' | 'gardien', id: BiomeId, cubes: CubeDeModele[]) => {
   const cle = `${genre}:${id}`;
   let t = personnagesTournes.get(cle);
-  const quarts = (QUARTS_DE_TOUR[id] ?? 0) + (genre === 'creature' ? (QUARTS_DE_TOUR_DE_LA_CREATURE[id] ?? 0) : 0);
+  const quarts = (QUARTS_DE_TOUR[id] ?? 0) + (genre === 'creature' ? (QUARTS_DE_TOUR_DE_LA_CREATURE[id] ?? 0) : (QUARTS_DE_TOUR_DU_GARDIEN[id] ?? 0));
   if (!t) personnagesTournes.set(cle, (t = tourner(cubes, quarts)));
   return t;
 };
@@ -63,11 +89,11 @@ const tourne = (genre: 'creature' | 'gardien', id: BiomeId, cubes: CubeDeModele[
 /** La créature d'une île telle qu'elle se tient dans le monde (voir `QUARTS_DE_TOUR` et `QUARTS_DE_TOUR_DE_LA_CREATURE`). */
 export const creatureDuMonde = (id: BiomeId): CubeDeModele[] => tourne('creature', id, CREATURE_CUBES[id]);
 
-/** Le Gardien d'une île tel qu'il se tient sur son îlot (voir `QUARTS_DE_TOUR`). */
+/** Le Gardien d'une île tel qu'il se tient sur son îlot (voir `QUARTS_DE_TOUR` et `QUARTS_DE_TOUR_DU_GARDIEN`). */
 export const gardienDuMonde = (id: BiomeId): CubeDeModele[] => tourne('gardien', id, GUARDIAN_CUBES[id]);
 
 // Par île et par LV2 : la place de la créature évite les bornes, dont le nombre suit la LV2 sur l'île de la LV2.
-const creatureSpots = new Map<string, CreatureSpot>();
+const creatureSpots = layoutCache<string, CreatureSpot>();
 
 export interface CreatureSpot {
   x: number;
@@ -91,7 +117,7 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   const free = solLibre(id);
   const cubes = creatureDuMonde(id);
   const lieux = lieuxVus(id);
-  const vers = versLaCamera(id);
+  const vers = versLaCameraDuDessin(id);
   const coeur = bornesDuCoeur(islandDef(id));
   // La créature se tient sur le sol de l'île (z = 1 au-dessus, comme les lieux, sur un sol plat : voir `solLibre`).
   const libre = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => free(x + sx + c.x, y + sy + c.y));
@@ -117,7 +143,7 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
 }
 
 // Par île et par LV2 : le sol libre où la créature et la petite construction de sa commande peuvent se poser.
-const solsLibres = new Map<string, (x: number, y: number) => boolean>();
+const solsLibres = layoutCache<string, (x: number, y: number) => boolean>();
 
 /**
  * Les cases du sol d'une île (relatives au cœur) où rien n'est posé : ni le décor, ni les bornes et leur pourtour, ni la
@@ -143,8 +169,7 @@ export function solLibre(id: BiomeId): (x: number, y: number) => boolean {
   // … ni sur la case devant la porte d'un lieu, où le bonhomme s'arrête.
   for (const k of portesDesLieux(id)) blocked.add(k);
   // Ni sur un ouvrage qui part de l'île, ni à côté (sa rampe, son pied sur la côte).
-  for (const b of BRIDGES.filter((d) => d.from === id || d.to === id))
-    for (const c of bridgePath(b)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${c.x + dx - def.core.x},${c.y + dy - def.core.y}`);
+  for (const { cases } of amorcesDuDessin(id)) for (const c of cases) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${c.x + dx},${c.y + dy}`);
   // Le décor des marges du cœur (un cœur agrandi) : la créature ne s'y pose pas.
   for (const m of margesDuCoeur(def)) if (m.decor) blocked.add(`${m.x - def.core.x},${m.y - def.core.y}`);
   const coeur = bornesDuCoeur(def);
@@ -177,6 +202,13 @@ export function creaturePlacements(
     .map((b) => {
       const { ox, oy, oz } = islandOrigin(BIOMES.indexOf(b));
       const spot = creatureSpot(b.id);
-      return { id: b.id, cubes: creatureDuMonde(b.id), origin: { x: ox + spot.x, y: oy + spot.y, z: oz + 1 }, steps: spot.steps };
+      // Sur le lieu tourné (GD-9), la créature et ses pas tournent avec lui.
+      const def = islandDef(b.id);
+      const pose = turnPlacedModel(def.core, { x: ox + spot.x, y: oy + spot.y, z: oz + 1 }, creatureDuMonde(b.id), def.quarts);
+      const steps = spot.steps.map(([dx, dy]): [number, number] => {
+        const t = turnDirection(dx, dy, def.quarts);
+        return [t.dx, t.dy];
+      });
+      return { id: b.id, cubes: pose.cubes as VoxelCube[], origin: pose.origine, steps };
     });
 }

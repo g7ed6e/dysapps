@@ -1,0 +1,9 @@
+{
+  "id": "technology-3e-digital-1",
+  "biome": "technology-3e-digital",
+  "name": "Le poste de Navette",
+  "reward": {
+    "xp": 40
+  },
+  "done": "Mon poste ! D’ici, mes messages partent partout. Merci, bâtisseur."
+}

@@ -34,6 +34,12 @@ Les esquisses qui les illustrent sont **dessinées en code** (Three.js rendu dan
 - **À éviter** : herbe citron, mer bleu roi, cocotiers, pastel, volcan fumant.
 - **Composition** : horizon à 30 % du haut, deux rangs de montagnes bleues ; l'île-héros au centre-droit (x 35-95 %) ; le phare à x 70 %, de y 55 % à y 12 % ; le village étagé à gauche du phare ; au premier plan le lagon, la plage, le ponton et une barque ; un îlot boisé coupé par le bord gauche.
 
+- **La Fouille des siècles (HG)** : au bout du second rang ; le musée de Silex en mosaïque ocre et crème, toit d’ardoise ; un éclat de mosaïque et un tas de sable. Silex : ourson des fouilles brun, museau crème, pinceau de fouille. L’Amphore peinte : terre cuite à bandes sombres et ocre.
+- **La Pointe des paysages (HG)** : à côté de la Fouille ; le quartier de Boussole, murs de chaume, toits de terre cuite, ses champs et son quai. Boussole : pélican des ports, blanc, au bec à poche jaune pâle. Le Castor de glaise : assis, la queue en dalle plate.
+- **La Vallée du vivant (SC)** : au second rang, entre l’Horloge et la Fouille ; la serre de Fougère en fossile, toit d’ardoise ; deux touffes de mousse et une feuille. Fougère : escargot jardinier vert sauge, coquille brune à spirale claire. Le Cerf des sous-bois : debout, de profil, des bois à trois pointes.
+- **Le Laboratoire des éléments (SC)** : au coin de devant, à l’est, après la Rivière ; le laboratoire de Bulle en aimant, gris dominant, toit d’ardoise ; trois galets. Bulle : poulpe chimiste bleu ardoise, éprouvette. L’Alambic de verre : ballon sur trépied, bec courbe vers un flacon, sans flamme.
+- **Le Hangar des inventions (SC)** : au coin de devant, à l’ouest, à côté du Volcan ; l’atelier de Pince en carton, toit de terre cuite ; deux cartons empilés. Pince : fourmi bricoleuse brun-rouge, clé plate. L’Automate de laiton : trapu, tête-cube à deux hublots, trois boutons.
+
 ## 5e — Les Îles Brumeuses
 
 - **Intention** : l'exploration ; on devine plus qu'on ne voit.
@@ -46,6 +52,8 @@ Les esquisses qui les illustrent sont **dessinées en code** (Three.js rendu dan
 - **Composition** : la brume remplit le bas jusqu'à y 65 % ; une masse à gauche (x 0-40 %) monte à y 10 % ; une autre à droite (x 55-85 %) porte une tour à y 20 % ; le pont les relie à y 40 % ; une troisième, plus petite, émerge au centre-bas ; au fond des silhouettes décolorées.
 
 - **Le Relais des voyageurs (LV2)** : une escale au bout du chemin, par un pont depuis le Comptoir ; l’auberge de Lina, l’écurie et la fontaine sur des dalles chaudes `#B8A07A` (côté `#9A8462`) ; un ponton à l’est et une girouette derrière l’auberge. Lina : cigogne blanche, bec et pattes orange, pointes d’ailes fer. La Diligence de cuivre : caisse sur quatre roues, de profil, boussole de laiton sur un mât au-dessus du siège.
+- **Le Bourg des chroniques (HG)** : le logis de Vélin, à étage en avancée, ni église ni château, en enluminure violette à filets d’or `#6A4C9C`, toit d’ardoise. Vélin : lapin enlumineur. Le Griffon d’émail.
+- **Le Delta des ressources (HG)** : le moulin à eau de Sillon, roue fixe, au bord de rizières `#A2BF42` sur l’eau `#4F8C86`, toit de terre cuite. Sillon : ibis des rizières. La Libellule de jade, debout, quatre ailes presque à plat en X, un léger dièdre, jamais dressées (elles se liraient comme un poteau indicateur) ; ses nervures se rallument.
 
 ## 4e — Les Anciens Ateliers
 
@@ -58,6 +66,8 @@ Les esquisses qui les illustrent sont **dessinées en code** (Three.js rendu dan
 - **À éviter** : une ruine sinistre, un ciel rouge sang, l'orange comme seul code du 4e (c'est l'orange de l'anglais).
 - **Composition** : horizon à 60 % ; l'atelier sur x 15-75 %, jusqu'à y 8 % ; la grue à x 85 % ; au premier plan un feuillage à gauche et un quai de pierre en bas à droite ; le cône du volcan petit, à x 90 %, dans la brume chaude.
 - **Le Jardin des heures (LV2)** : un jardin au bout de la crête, par un pont depuis le Théâtre ; la cuisine de Muscade, la tonnelle et la serre, basses, sur un sol d’herbe, en pierre chaude, bois et ardoise `#3E3636` ; un ponton bas avec une barque ; aucune verticale. Muscade : écureuil châtain, tablier crème, louche de bois, queue en panache. Le Soleil de cuivre : disque patiné sur son socle, huit rayons droits et pointus, égaux, jamais un rouage ; au défi, leurs fils se rallument avec les réussites, et la pierre passe au Sable `#DAA66A` à la victoire. Barque sans mât ni voile.
+- **L’Imprimerie des révolutions (HG)** : la halle de Typo, en fonte vert-noir `#3E4A44` à rivets, toit de terre cuite, une verrière au faîte. Typo : souris imprimeuse. Le Paon de faïence, sans symbole national.
+- **L’Escale des échanges (HG)** : l’entrepôt de Fret et ses conteneurs empilés, tôle ondulée bleue `#3D7FB0`, toit d’ardoise. Fret : crabe grutier. Le Poulpe de corail.
 
 ## 3e — Les Îles du Ciel, puis L'Horizon (lot 8)
 
@@ -69,6 +79,8 @@ Les esquisses qui les illustrent sont **dessinées en code** (Three.js rendu dan
 - **Lumière** : midi, haute et claire, ciel bleu franc et non lavande.
 - **Composition** : le phare au centre (x 55 %), de y 45 % à y 6 % ; l'île-héros en gradins de x 10 à 90 % ; le massif à l'arrière entre y 20 % et y 50 % ; au premier plan des nuages et de la roche.
 - **Le Refuge des carnets (LV2)** : un refuge d'altitude à l'est du Château, par un pont ; la poste de Timbre, la salle commune et le pigeonnier sans pigeon, bas, en pierre claire, bois et bardeau brun sur les murs, toits d'ardoise enneigés ; un cœur d'herbe et un petit lac sombre, loin du bord ; aucune verticale, aucune fumée. Timbre : loutre factrice brun gris, gorge crème, sacoche fauve unie. Le Papillon de cuivre : quatre ailes en V franc face à la caméra, jamais de nervures en rayons ; au défi, les fils du bord des ailes se rallument avec les réussites, et la pierre passe au Sable `#DAA66A` à la victoire.
+- **Le Kiosque des témoins (HG)** : la bibliothèque de Mémo, sobre, en reliure bleu-vert `#2F6F74` (dos de livres sans lettres), toit d’ardoise enneigé ; rien de ludique sur la guerre. Mémo : marmotte bibliothécaire. La Colombe d’albâtre, tournée de trois quarts, un rameau vert d’un seul côté du bec, jamais en travers ; aucune arme.
+- **Le Plateau des territoires (HG)** : la mairie de Jalon, symétrique, sans drapeau ni horloge, en grès rose `#D49A94`, toit de terre cuite. Jalon : fourmi arpenteuse. Le Cerf de lauze.
 - **L'Horizon** : même île, calquée sur l'accueil : la mer `#187593` et `#208FAA` à la place des nuages, des quais et des bateaux, la baleine à droite, au loin les archipels précédents dans la brume, soleil de fin d'après-midi.
 
 ## Les écarts avec les décisions déjà prises (tranchés le 27 septembre 2026)

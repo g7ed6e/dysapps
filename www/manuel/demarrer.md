@@ -9,9 +9,9 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village**, sur
 - **Menu** (adresse `#/menu`) : dans le village, cette adresse ouvre le menu du village. Le menu en page n’existe plus qu’en vue simple (réglage « La liste des îles », ou appareil qui ne sait pas dessiner le monde), où il est l’accueil. De haut en bas :
   - **Blocland** et « Chaque bloc construit ton monde. » ;
   - **Ton village** : l’état du village de l’archipel où se tient le bonhomme, en cinq crans (voir [Le village en cinq états](blocland.md#le-village-en-cinq-etats)) ;
-  - **Reprendre l’aventure**, le gros bouton, qui mène à la **prochaine destination**, dite en une phrase et lue avec Écouter (« Prochaine destination : Plaine des nombres. Tu peux construire le bac vers Rivière des fractions. Il ouvre une île de maths. » ; l’ordre de la suggestion est dans [L’aventure](blocland.md)) ; en dessous, **Ma dernière mission** (la dernière mission ouverte) et **Mes révisions du jour** quand il y en a, les mêmes mots que dans le menu du village ;
+  - **Reprendre l’aventure**, le gros bouton, qui mène à la **prochaine destination**, dite en une phrase et lue avec Écouter (« Prochaine destination : Plaine des nombres. Tu peux poser le bac vers Rivière des fractions. Il ouvre une île de maths. » ; l’ordre de la suggestion est dans [L’aventure](blocland.md)) ; en dessous, **Ma dernière mission** (la dernière mission ouverte) et **Mes révisions du jour** quand il y en a, les mêmes mots que dans le menu du village ;
   - la **progression** : le rôle et le niveau, le nombre d’archipels atteints sur quatre, et le lien **Succès** ;
-  - les trois **Expéditions** : Maths, Français et Anglais, chacune avec le nom de son expédition, qui mènent aux missions de la matière ;
+  - les **Expéditions** : Maths, Français, Anglais, la deuxième langue (sauf avec « Pas de LV2 »), Histoire-géo, SVT, Physique-chimie et Technologie, chacune avec le nom de son expédition, qui mènent aux missions et aux îles de la matière. L’Histoire-géo (expédition Traces et paysages) n’a que ses îles, de la 6e à la 3e ; la SVT (Vivant et planète), la Physique-chimie (Matière et énergie) et la Technologie (Outils et inventions) aussi, de la 6e à la 3e ; leur page, comme celle de la deuxième langue, ramène au Menu ;
   - en bas, les liens **Toutes les missions**, **Réglages** et **Revoir le tutoriel**.
 
   La première fois, à la place de « Reprendre l’aventure », la carte **Commencer ici** lance le Tutoriel. Sur téléphone, le bouton « Reprendre l’aventure » se voit sans faire défiler ; sur tablette, tout le menu tient presque sur un écran.
@@ -21,7 +21,7 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village**, sur
 
 Il n’y a pas de barre du haut, dans Blocland comme dans Archipéo : sur chaque page hors du monde (Missions, une matière, une mission, Réglages, Succès), seul le bouton **Menu** (trois traits) reste en haut à droite, à la même place que dans le monde, et mène au menu. Le village en 3D non plus n’a pas de barre du haut : le monde prend tout l’écran, et le bouton Menu (ou le bouton retour) ouvre le menu du village, qui donne le rôle, la jauge d’XP, les Missions, les Succès, les Réglages et l’Accueil. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf quand l’appareil demande de réduire les animations. Pendant un chargement, le « D » de DysApps sautille au-dessus de « Chargement… ».
 
-![Le menu en page, en vue simple, sur tablette : Blocland, le village des Basses Terres en Réactivation, le bouton Reprendre l'aventure avec la prochaine destination, le rôle, puis les trois Expéditions.](/captures/menu.jpg)
+![Le menu en page, en vue simple, sur tablette : Blocland, le village des Basses Terres en Réactivation, le bouton Reprendre l'aventure avec la prochaine destination, le rôle, puis les Expéditions.](/captures/menu.jpg)
 
 ![Le menu en page, en vue simple, sur téléphone : le bouton Reprendre l'aventure se voit sans faire défiler.](/captures/telephone-menu.jpg)
 

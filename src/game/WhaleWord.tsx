@@ -10,7 +10,7 @@ import { loadJSON, saveJSON } from '../core/storage';
 import type { GameState } from './engine';
 import { hasSeenTutorial, markTutorialSeen } from './Tutorial';
 import type { ArchipelagoId } from './world/archipelago';
-import { reachedWhaleMoments, type WhaleMoment } from './world/whale';
+import { MAP_RESHAPED, mapReshapedMoment, playedBeforeReshape, reachedWhaleMoments, type WhaleMoment } from './world/whale';
 import { useHoldCelebrations } from '../components/Celebrations';
 import { Creature } from './Creatures';
 
@@ -19,6 +19,17 @@ import { Creature } from './Creatures';
 const STORAGE_KEY = 'guide-messages';
 
 type Said = Record<string, boolean>;
+
+/**
+ * L'annonce du changement de forme de la carte (GD-9) : à la première lecture de cette version, notée à dire pour une
+ * partie d'avant (`playedBeforeReshape`), déjà dite pour une partie neuve. Ensuite, la clé décide seule.
+ */
+function initMapReshaped(state: Pick<GameState, 'world'>): void {
+  const said = loadJSON<Said>(STORAGE_KEY, {});
+  if (MAP_RESHAPED in said) return;
+  said[MAP_RESHAPED] = !playedBeforeReshape(state);
+  saveJSON(STORAGE_KEY, said);
+}
 
 function isSaid(m: WhaleMoment, said: Said): boolean {
   return m.id.startsWith('archipel-') ? hasSeenTutorial(m.id) : Boolean(said[m.id]);
@@ -35,13 +46,14 @@ function markSaid(moments: WhaleMoment[]): void {
 
 /**
  * Une seule fois par appareil : ce qui était déjà atteint avant la baleine est noté dit sans parler (sauf sa
- * présentation en 6e à un élève qui n'a encore rien joué).
+ * présentation en 6e à un élève qui n'a encore rien joué). L'annonce du changement de forme de la carte aussi : un
+ * appareil où la baleine n'a jamais parlé n'a pas connu la carte d'avant.
  */
 function initWhaleMemory(state: Pick<GameState, 'progress' | 'world'>): void {
   if (loadJSON<Said | null>(STORAGE_KEY, null) !== null) return;
   const fresh = Object.keys(state.progress).length === 0;
   const all = (['6e', '5e', '4e', '3e'] as ArchipelagoId[]).flatMap((x) => reachedWhaleMoments(state, x));
-  saveJSON(STORAGE_KEY, {});
+  saveJSON(STORAGE_KEY, { [MAP_RESHAPED]: true });
   markSaid(all.filter((m) => !m.id.startsWith('archipel-') && !(fresh && m.id === 'baleine-6e-arrivee')));
 }
 
@@ -50,15 +62,19 @@ function initWhaleMemory(state: Pick<GameState, 'progress' | 'world'>): void {
  * Quand plusieurs tombent ensemble, une seule parle ; les autres sont notées dites à la fermeture, sans file d'attente.
  */
 export function useWhaleWord(state: Pick<GameState, 'progress' | 'world'>, a: ArchipelagoId, ready = true) {
-  const [tick, setTick] = useState(() => {
+  const [, setTick] = useState(() => {
     initWhaleMemory(state);
+    initMapReshaped(state);
     return 0;
   });
-  const moments = useMemo(() => reachedWhaleMoments(state, a), [state, a]);
-  const said = useMemo(() => loadJSON<Said>(STORAGE_KEY, {}), [tick, moments]);
+  // L'annonce du changement de forme de la carte passe d'abord, une fois, dans l'archipel où l'on revient.
+  const moments = useMemo(() => [mapReshapedMoment(a), ...reachedWhaleMoments(state, a)], [state, a]);
+  // Relu à chaque rendu (une petite clé du stockage local) : `close` en écrit une nouvelle, puis refait le rendu.
+  const said = loadJSON<Said>(STORAGE_KEY, {});
   const word = ready ? (moments.find((m) => !isSaid(m, said)) ?? null) : null;
   const close = () => {
-    markSaid(moments.filter((m) => !isSaid(m, said)));
+    // L'annonce ne se dit que pour elle : les étapes atteintes en même temps parlent ensuite.
+    markSaid(word?.kind === 'carte' ? [word] : moments.filter((m) => !isSaid(m, said)));
     setTick((t) => t + 1);
   };
   return { word, close };

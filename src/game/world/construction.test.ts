@@ -1,5 +1,6 @@
 import type { VoxelCube } from '../Voxel';
 import { BLOC, BIOMES, BLOCKS } from '../biomes';
+import { neighboursOf } from './linkGeometry';
 import { buildingStages } from './architect';
 import { enveloppeDe, toutConstruit } from './budget';
 import {
@@ -50,7 +51,7 @@ import { trophyBlock } from '../trophies';
 import { islandDef } from './map';
 import { ARDOISES, couleursDuToit, TERRE_CUITE_SUR, toitDe } from './roofs';
 import { sansToursDuCoeur } from './construction';
-import { ARCHIPELAGOS, BRIDGES } from './archipelago';
+import { ARCHIPELAGOS } from './archipelago';
 import { pontsDePierreEtDeBois } from './bridges';
 import { phareDuLarge } from './offshoreLighthouse';
 import { kitVide } from './architecture';
@@ -175,7 +176,7 @@ function sensJuste(g: GroupeDeConstruction): boolean {
 }
 
 describe('La construction taillée (lot R5)', () => {
-  it('chaque archipel tout construit tient dans son enveloppe (7 200 triangles aux Premiers Rivages, 7 500 ailleurs) et 3 appels de dessin, fantômes et fenêtres compris', () => {
+  it('chaque archipel tout construit tient dans son enveloppe (7 750 triangles aux Premiers Rivages depuis SC-2, 8 000 ailleurs depuis SC-3) et 3 appels de dessin, fantômes et fenêtres compris', () => {
     for (const a of ARCHIPELAGO_IDS) {
       for (const etat of ['tout', 'chantier', 'dernier'] as Etat[]) {
         const { cubes, sol } = monde(a, etat);
@@ -388,7 +389,7 @@ describe('La construction taillée (lot R5)', () => {
       expect(part, `${a} : ${iles.join(', ')}`).toBeGreaterThanOrEqual(a === '5e' || a === '4e' ? 1 / 6 : 0.2);
       expect(part, a).toBeLessThanOrEqual(a === '3e' ? 1 / 3 : 0.3);
     }
-    expect(TERRE_CUITE_SUR).toHaveLength(5);
+    expect(TERRE_CUITE_SUR).toHaveLength(13);
     // Aux Îles du Ciel, le dessus est enneigé et les rives restent d'ardoise ; délavé sur une île fermée.
     const ciel = couleursDuToit('3e', 'maths-3e-functions');
     expect(ciel.dessus).not.toBe(ciel.cote);
@@ -475,8 +476,10 @@ describe('La construction taillée (lot R5)', () => {
 
 describe('Les toits de terre cuite (lot R5)', () => {
   it('deux îles voisines ne sont jamais toutes deux en terre cuite', () => {
-    const voisines = BRIDGES.filter((b) => toitDe(b.from) === 'terre-cuite' && toitDe(b.to) === 'terre-cuite');
-    expect(voisines.map((b) => b.id)).toEqual([]);
+    // Voisines : celles qu'un pont relie dans la disposition (`neighboursOf`) ; depuis GD-9, toutes les paires d'une
+    // région ont leur liaison, mais seules les proches se voient ensemble.
+    const voisines = BIOMES.flatMap((b) => neighboursOf(b.id).filter((id) => toitDe(b.id) === 'terre-cuite' && toitDe(id) === 'terre-cuite').map((id) => `${b.id}-${id}`));
+    expect(voisines).toEqual([]);
   });
 
   it('les bornes : un pilier taillé à tête chanfreinée, dans ses deux cases, une borne par mission', () => {
@@ -700,7 +703,7 @@ describe('Le phare de Grimoire (lot R5, décision 16)', () => {
     expect(caseDeLaPiece(m, 'opaque', 0, { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 })).toBeNull();
   }, 30_000);
 
-  it('dans l’enveloppe de la construction du 6e, à chaque étape (7 200 triangles, 3 appels) : les cubes remplacés libèrent des triangles', () => {
+  it('dans l’enveloppe de la construction du 6e, à chaque étape (7 750 triangles, 3 appels) : les cubes remplacés libèrent des triangles', () => {
     const couts: number[] = [];
     for (const [nom, [murs, toit]] of Object.entries(etats)) {
       const { cubes, sol } = mondeDuPhare(murs, toit);

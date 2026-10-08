@@ -7,6 +7,9 @@ import { estUnOuvrage, type EnCasesDuMonde, type WorldViewProps } from './world/
 import { getBridge, otherEnd } from './world/archipelago';
 import { casesDesTirets } from './world/suggestedTrace';
 
+/** Sans liaison posée : une seule liste vide, pour que la mémoire des tracés ne change pas à chaque rendu. */
+const SANS_LIAISON: string[] = [];
+
 export function useEnCasesDuMonde({
   archipelago,
   focus,
@@ -15,8 +18,16 @@ export function useEnCasesDuMonde({
   trail,
   quests,
   burst,
-}: Pick<WorldViewProps, 'archipelago' | 'focus' | 'marker' | 'avatar' | 'trail' | 'quests' | 'burst'>): EnCasesDuMonde {
+  bridges = SANS_LIAISON,
+}: Pick<WorldViewProps, 'archipelago' | 'focus' | 'marker' | 'avatar' | 'trail' | 'quests' | 'burst' | 'bridges'>): EnCasesDuMonde {
   const disposition = useMemo(() => dispositionEnGrille(archipelago), [archipelago]);
+  // Le tracé d'un ouvrage suit les liaisons posées de la partie (GD-9) : la flèche se pose sur le même fantôme que le monde.
+  const cle = bridges.join(',');
+  const tracee = useMemo(
+    () => dispositionEnGrille(archipelago, bridges),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [archipelago, cle],
+  );
   const enMonde = disposition.versMonde;
   return {
     focus: useMemo(() => {
@@ -28,15 +39,15 @@ export function useEnCasesDuMonde({
     marker: useMemo(() => {
       if (marker === null || typeof marker === 'string') return marker;
       if (!estUnOuvrage(marker)) return enMonde(marker);
-      const places = disposition.placesDeLaFleche(marker.ouvrage, marker.depuis);
+      const places = tracee.placesDeLaFleche(marker.ouvrage, marker.depuis);
       if (!places.length) return null;
       const def = getBridge(marker.ouvrage);
       // De l'île de départ à la rive d'arrivée (la dernière case, toujours dessinée).
-      const liaison = disposition.liaison(marker.ouvrage);
+      const liaison = tracee.liaison(marker.ouvrage);
       const trace = def && marker.depuis === def.to ? [...liaison].reverse() : liaison;
       const arrivee = def ? otherEnd(def, marker.depuis ?? def.from) : undefined;
       return { ...marker, cell: places[0], places, trace, tirets: casesDesTirets(trace), ...(arrivee ? { arrivee } : {}) };
-    }, [marker, enMonde, disposition]),
+    }, [marker, enMonde, tracee]),
     avatar: useMemo(() => avatar && { ...avatar, route: avatar.route.map(enMonde) }, [avatar, enMonde]),
     trail: useMemo(() => trail?.map(enMonde), [trail, enMonde]),
     quests: useMemo(() => quests?.map(({ place, ...q }) => ({ ...q, cell: enMonde(place) })), [quests, enMonde]),

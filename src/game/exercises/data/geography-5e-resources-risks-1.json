@@ -1,0 +1,246 @@
+{
+  "id": "geography-5e-resources-risks-1",
+  "biome": "geography-5e-resources",
+  "type": "risks",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-5e-resources-risks-1-0",
+      "prompt": "Un incendie ou une explosion dans une usine est un risque … .",
+      "spoken": "Un incendie ou une explosion dans une usine est un risque (mot manquant) .",
+      "choices": [
+        "climatique",
+        "industriel",
+        "sanitaire"
+      ],
+      "answer": "industriel",
+      "hint": "Les usines, c’est l’industrie.",
+      "explanation": "Une usine qui brûle ou qui explose : c’est un risque industriel, comme à Rouen en 2019.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du risque",
+          "lines": [
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
+            "Prévention : se préparer avant la catastrophe.",
+            "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
+            "S’adapter : changer sa façon de vivre ou de construire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-1-1",
+      "prompt": "La sirène d’alerte sonne : il faut se mettre à l’abri … .",
+      "spoken": "La sirène d’alerte sonne : il faut se mettre à l’abri (mot manquant) .",
+      "choices": [
+        "dans un parc",
+        "dans un bâtiment",
+        "dans une voiture"
+      ],
+      "answer": "dans un bâtiment",
+      "hint": "Un lieu solide, dont on peut fermer portes et fenêtres.",
+      "explanation": "Quand la sirène d’alerte sonne, on entre dans un bâtiment et on ferme portes et fenêtres. Dehors ou dans une voiture, on est moins protégé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du risque",
+          "lines": [
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
+            "Prévention : se préparer avant la catastrophe.",
+            "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
+            "S’adapter : changer sa façon de vivre ou de construire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-1-2",
+      "prompt": "Quand un fleuve déborde, il provoque une … .",
+      "spoken": "Quand un fleuve déborde, il provoque une (mot manquant) .",
+      "choices": [
+        "sécheresse",
+        "éruption",
+        "inondation"
+      ],
+      "answer": "inondation",
+      "hint": "L’eau sort de son lit et couvre les rues.",
+      "explanation": "Une crue qui déborde provoque une inondation. La sécheresse, c’est le contraire : le manque d’eau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du risque",
+          "lines": [
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
+            "Prévention : se préparer avant la catastrophe.",
+            "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
+            "S’adapter : changer sa façon de vivre ou de construire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-1-3",
+      "prompt": "Une longue période sans pluie s’appelle une … .",
+      "spoken": "Une longue période sans pluie s’appelle une (mot manquant) .",
+      "choices": [
+        "canicule",
+        "sécheresse",
+        "inondation"
+      ],
+      "answer": "sécheresse",
+      "hint": "Le sol devient sec.",
+      "explanation": "La sécheresse, c’est le manque de pluie pendant longtemps. La canicule, c’est une très forte chaleur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du risque",
+          "lines": [
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
+            "Prévention : se préparer avant la catastrophe.",
+            "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
+            "S’adapter : changer sa façon de vivre ou de construire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-1-4",
+      "prompt": "Se préparer avant une catastrophe, c’est la … .",
+      "spoken": "Se préparer avant une catastrophe, c’est la (mot manquant) .",
+      "choices": [
+        "prévention",
+        "reconstruction",
+        "réparation"
+      ],
+      "answer": "prévention",
+      "hint": "Lis la ligne qui contient le mot « avant ».",
+      "explanation": "La prévention se fait avant : informer, s’entraîner, construire solide. Reconstruire et réparer se font après.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du risque",
+          "lines": [
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
+            "Prévention : se préparer avant la catastrophe.",
+            "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
+            "S’adapter : changer sa façon de vivre ou de construire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-1-5",
+      "prompt": "Les personnes et les maisons menacées par un aléa sont les … .",
+      "spoken": "Les personnes et les maisons menacées par un aléa sont les (mot manquant) .",
+      "choices": [
+        "aléas",
+        "enjeux",
+        "secours"
+      ],
+      "answer": "enjeux",
+      "hint": "Cherche « menacés » dans le rappel.",
+      "explanation": "Les enjeux sont ce qui est menacé : les personnes, les maisons, les routes. Sans enjeux, un aléa n’est pas un risque.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du risque",
+          "lines": [
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
+            "Prévention : se préparer avant la catastrophe.",
+            "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
+            "S’adapter : changer sa façon de vivre ou de construire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-1-6",
+      "prompt": "La mer monte : les îles très … sont menacées.",
+      "spoken": "La mer monte : les îles très (mot manquant) sont menacées.",
+      "choices": [
+        "hautes",
+        "froides",
+        "basses"
+      ],
+      "answer": "basses",
+      "hint": "Quelles îles l’eau recouvre-t-elle en premier ?",
+      "explanation": "Avec le réchauffement climatique, la mer monte : les îles basses, presque au niveau de la mer, risquent d’être recouvertes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du risque",
+          "lines": [
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
+            "Prévention : se préparer avant la catastrophe.",
+            "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
+            "S’adapter : changer sa façon de vivre ou de construire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-1-7",
+      "prompt": "Avec la chaleur et la sécheresse, en été, les forêts risquent de … .",
+      "spoken": "Avec la chaleur et la sécheresse, en été, les forêts risquent de (mot manquant) .",
+      "choices": [
+        "geler",
+        "brûler",
+        "être inondées"
+      ],
+      "answer": "brûler",
+      "hint": "Que devient une forêt très sèche, près d’une flamme ?",
+      "explanation": "Chaleur et sécheresse dessèchent les arbres : un feu de forêt part plus vite. Avec le réchauffement climatique, ce risque augmente.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du risque",
+          "lines": [
+            "Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Risque : un aléa là où il y a des enjeux.",
+            "Risque industriel : un accident dans une usine.",
+            "Prévention : se préparer avant la catastrophe.",
+            "Réchauffement climatique : la Terre se réchauffe, la mer monte.",
+            "S’adapter : changer sa façon de vivre ou de construire."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-5e-resources",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -14,7 +14,7 @@ créature : Rouxel
 ## Mot troué · `missing-letters`
 
 - description : Glisse le bloc de lettres qui manque.
-- compétences : c3.fr.langue.regularites-orthographiques
+- compétences : c3.fr.langue.mots-frequents
 - consigne : Écoute le mot, puis tape le bloc de lettres qui manque.
 - bravo : Le mot est complet !
 - erreur : {word} s’écrit avec « {answer} », pas « {chosen} ».
@@ -118,7 +118,7 @@ Pour tous les items :
 ## Coffre à mots · `sight-words`
 
 - description : Les mots-outils à réviser, en dictée.
-- compétences : c3.fr.langue.mots-invariables
+- compétences : c3.fr.langue.mots-frequents
 - par partie : 8
 - bravo : Bonne oreille !
 - erreur : Tu as choisi {chosen}. On écrit {word} : {hint}

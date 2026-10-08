@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { thePlace } from './world/placeArticle';
 import { Link, useNavigate } from 'react-router-dom';
 import { Feedback } from '../components/Feedback';
 import { Icon } from '../components/Icon';
@@ -341,7 +342,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
                 </Link>
               ) : revisionDeLIle || site.kind === 'aucun' ? (
                 <Link ref={suiteRef} to={`/adventure/${biome.id}`} className="button primary">
-                  <Icon name="map" /> Revenir sur {biome.name}
+                  <Icon name="map" /> Revenir sur {thePlace(biome.name)}
                 </Link>
               ) : (
                 <Link ref={suiteRef} to={site.to} className="button primary">

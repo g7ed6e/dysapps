@@ -4,57 +4,12 @@
   "type": "choices",
   "level": 1,
   "instruction": "Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.",
+  "programme": [
+    "c4.fr.5e.vocabulaire.orthographe",
+    "c4.fr.5e.grammaire.classes-de-mots",
+    "c3.fr.langue.orthographe-grammaticale"
+  ],
   "items": [
-    {
-      "key": "french-5e-homophones-choices-1-0",
-      "prompt": "… heure est-il ?",
-      "spoken": " (mot manquant)  heure est-il ?",
-      "choices": [
-        "Quel",
-        "Quelle",
-        "Qu’elle"
-      ],
-      "answer": "Quelle",
-      "hint": "« heure » est un nom féminin : on cherche le déterminant.",
-      "explanation": "« Quelle heure » : quelle accompagne le nom féminin « heure ».",
-      "aid": {
-        "kind": "rule-card",
-        "props": {
-          "title": "Homophones",
-          "lines": [
-            "quel / quelle : devant un nom (quel jour, quelle heure).",
-            "qu’elle = que + elle (on peut dire « qu’il »).",
-            "sans = pas de. s’en = se + en (il s’en va).",
-            "dans = à l’intérieur. d’en = de + en (d’en parler)."
-          ]
-        }
-      }
-    },
-    {
-      "key": "french-5e-homophones-choices-1-1",
-      "prompt": "Je crois … viendra demain.",
-      "spoken": "Je crois  (mot manquant)  viendra demain.",
-      "choices": [
-        "quelle",
-        "qu’elle",
-        "quel"
-      ],
-      "answer": "qu’elle",
-      "hint": "Remplace par « qu’il » : si ça marche, c’est « qu’elle ».",
-      "explanation": "« Je crois qu’il viendra » fonctionne : c’est « qu’elle », que + elle.",
-      "aid": {
-        "kind": "rule-card",
-        "props": {
-          "title": "Homophones",
-          "lines": [
-            "quel / quelle : devant un nom (quel jour, quelle heure).",
-            "qu’elle = que + elle (on peut dire « qu’il »).",
-            "sans = pas de. s’en = se + en (il s’en va).",
-            "dans = à l’intérieur. d’en = de + en (d’en parler)."
-          ]
-        }
-      }
-    },
     {
       "key": "french-5e-homophones-choices-1-2",
       "prompt": "Il est parti … dire au revoir.",
@@ -72,8 +27,8 @@
         "props": {
           "title": "Homophones",
           "lines": [
-            "quel / quelle : devant un nom (quel jour, quelle heure).",
-            "qu’elle = que + elle (on peut dire « qu’il »).",
+            "ma, ta : devant un nom (ma chambre, ta veste).",
+            "m’a, t’a = me + a, te + a : on peut dire « m’avait », « t’avait ».",
             "sans = pas de. s’en = se + en (il s’en va).",
             "dans = à l’intérieur. d’en = de + en (d’en parler)."
           ]
@@ -97,8 +52,8 @@
         "props": {
           "title": "Homophones",
           "lines": [
-            "quel / quelle : devant un nom (quel jour, quelle heure).",
-            "qu’elle = que + elle (on peut dire « qu’il »).",
+            "ma, ta : devant un nom (ma chambre, ta veste).",
+            "m’a, t’a = me + a, te + a : on peut dire « m’avait », « t’avait ».",
             "sans = pas de. s’en = se + en (il s’en va).",
             "dans = à l’intérieur. d’en = de + en (d’en parler)."
           ]
@@ -122,8 +77,8 @@
         "props": {
           "title": "Homophones",
           "lines": [
-            "quel / quelle : devant un nom (quel jour, quelle heure).",
-            "qu’elle = que + elle (on peut dire « qu’il »).",
+            "ma, ta : devant un nom (ma chambre, ta veste).",
+            "m’a, t’a = me + a, te + a : on peut dire « m’avait », « t’avait ».",
             "sans = pas de. s’en = se + en (il s’en va).",
             "dans = à l’intérieur. d’en = de + en (d’en parler)."
           ]
@@ -147,8 +102,8 @@
         "props": {
           "title": "Homophones",
           "lines": [
-            "quel / quelle : devant un nom (quel jour, quelle heure).",
-            "qu’elle = que + elle (on peut dire « qu’il »).",
+            "ma, ta : devant un nom (ma chambre, ta veste).",
+            "m’a, t’a = me + a, te + a : on peut dire « m’avait », « t’avait ».",
             "sans = pas de. s’en = se + en (il s’en va).",
             "dans = à l’intérieur. d’en = de + en (d’en parler)."
           ]
@@ -156,24 +111,24 @@
       }
     },
     {
-      "key": "french-5e-homophones-choices-1-6",
-      "prompt": "… beau match !",
-      "spoken": " (mot manquant)  beau match !",
+      "key": "ma-oncle",
+      "prompt": "Mon oncle … offert un ballon.",
+      "spoken": "Mon oncle  (mot manquant)  offert un ballon.",
       "choices": [
-        "Quel",
-        "Quelle",
-        "Qu’elle"
+        "ma",
+        "m’a",
+        "m’as"
       ],
-      "answer": "Quel",
-      "hint": "« match » est un nom masculin.",
-      "explanation": "« Quel beau match » : quel accompagne le nom masculin « match ».",
+      "answer": "m’a",
+      "hint": "Remplace par « m’avait » : si ça marche, c’est « m’a ».",
+      "explanation": "« Mon oncle m’avait offert un ballon » fonctionne : c’est « m’a », me + a, le verbe avoir. « M’as » va avec tu : tu m’as offert.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Homophones",
           "lines": [
-            "quel / quelle : devant un nom (quel jour, quelle heure).",
-            "qu’elle = que + elle (on peut dire « qu’il »).",
+            "ma, ta : devant un nom (ma chambre, ta veste).",
+            "m’a, t’a = me + a, te + a : on peut dire « m’avait », « t’avait ».",
             "sans = pas de. s’en = se + en (il s’en va).",
             "dans = à l’intérieur. d’en = de + en (d’en parler)."
           ]
@@ -181,24 +136,74 @@
       }
     },
     {
-      "key": "french-5e-homophones-choices-1-7",
-      "prompt": "Je pense … a raison.",
-      "spoken": "Je pense  (mot manquant)  a raison.",
+      "key": "ma-chambre",
+      "prompt": "J’ai rangé … chambre.",
+      "spoken": "J’ai rangé  (mot manquant)  chambre.",
       "choices": [
-        "quelle",
-        "qu’elle",
-        "quel"
+        "ma",
+        "m’a",
+        "m’as"
       ],
-      "answer": "qu’elle",
-      "hint": "Remplace par « qu’il ».",
-      "explanation": "« Je pense qu’il a raison » fonctionne : c’est « qu’elle ».",
+      "answer": "ma",
+      "hint": "Remplace par « m’avait » : si ça ne marche pas, c’est « ma ».",
+      "explanation": "« J’ai rangé m’avait chambre » ne veut rien dire : c’est « ma », devant le nom chambre, comme « ta chambre ».",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Homophones",
           "lines": [
-            "quel / quelle : devant un nom (quel jour, quelle heure).",
-            "qu’elle = que + elle (on peut dire « qu’il »).",
+            "ma, ta : devant un nom (ma chambre, ta veste).",
+            "m’a, t’a = me + a, te + a : on peut dire « m’avait », « t’avait ».",
+            "sans = pas de. s’en = se + en (il s’en va).",
+            "dans = à l’intérieur. d’en = de + en (d’en parler)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "ta-frere",
+      "prompt": "Ton frère … appelé hier soir.",
+      "spoken": "Ton frère  (mot manquant)  appelé hier soir.",
+      "choices": [
+        "ta",
+        "t’a",
+        "tas"
+      ],
+      "answer": "t’a",
+      "hint": "Remplace par « t’avait » : si ça marche, c’est « t’a ».",
+      "explanation": "« Ton frère t’avait appelé » fonctionne : c’est « t’a », te + a, le verbe avoir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Homophones",
+          "lines": [
+            "ma, ta : devant un nom (ma chambre, ta veste).",
+            "m’a, t’a = me + a, te + a : on peut dire « m’avait », « t’avait ».",
+            "sans = pas de. s’en = se + en (il s’en va).",
+            "dans = à l’intérieur. d’en = de + en (d’en parler)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "ta-veste",
+      "prompt": "Prends … veste, il pleut.",
+      "spoken": "Prends  (mot manquant)  veste, il pleut.",
+      "choices": [
+        "ta",
+        "t’a",
+        "tas"
+      ],
+      "answer": "ta",
+      "hint": "Remplace par « t’avait » : si ça ne marche pas, c’est « ta ».",
+      "explanation": "« Prends t’avait veste » ne veut rien dire : c’est « ta », devant le nom veste, comme « ma veste ». Un tas, c’est une pile.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Homophones",
+          "lines": [
+            "ma, ta : devant un nom (ma chambre, ta veste).",
+            "m’a, t’a = me + a, te + a : on peut dire « m’avait », « t’avait ».",
             "sans = pas de. s’en = se + en (il s’en va).",
             "dans = à l’intérieur. d’en = de + en (d’en parler)."
           ]

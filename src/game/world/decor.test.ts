@@ -78,7 +78,7 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
         "maths-6e-calculation/caisse@79,16",
         "maths-6e-calculation/fanion@73,16",
         "maths-6e-calculation/fanion@80,18",
-        "maths-6e-calculation/foyer@70,22",
+        "maths-6e-calculation/foyer@81,22",
       ],
       [
         "maths-5e-proportionality/barque@80,310",
@@ -92,8 +92,8 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
         "maths-4e-algebra/barque@70,635",
         "maths-4e-algebra/barque@73,624",
         "maths-4e-algebra/caisse@77,628",
-        "maths-4e-algebra/fanion@65,628",
-        "maths-4e-algebra/fanion@81,628",
+        "maths-4e-algebra/fanion@71,628",
+        "maths-4e-algebra/fanion@80,628",
         "maths-4e-algebra/foyer@80,630",
       ],
       [

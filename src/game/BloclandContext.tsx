@@ -8,7 +8,6 @@ import {
   buildBridge as buildBridgePure,
   completeExercise,
   completePortalQuest,
-  dueItems,
   fillPlanCell as fillPlanCellPure,
   launchVehicle as launchVehiclePure,
   moveAvatar,
@@ -32,8 +31,12 @@ import type { VehicleStage } from './world/vehicle';
 import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { useTextes } from '../universes';
+import { dueCountOnOpenPlaces } from './review';
 import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
+import { applyLayout } from './world/appliedLayout';
+import { settleNewPlaces } from './world/arrange';
+import type { World } from './engine/state';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
 const SESSION_MAX_EXERCISES = 3;
@@ -41,10 +44,15 @@ const SESSION_MAX_MINUTES = 10;
 
 interface BloclandContextValue {
   state: GameState;
+  /**
+   * Le numéro de la disposition du monde (GD-9, `layoutVersion`) : il change quand la place d'un lieu, une liaison à
+   * reposer ou une arrivée change. Les vues qui lisent la place des lieux s'en servent pour se refaire.
+   */
+  disposition: number;
   complete: (def: ExerciseDef, results: ItemResult[]) => Completion;
   /** Une mission du portail (l'école du village) terminée, score entre 0 et 1 : des blocs de l'île de l'école. */
   completePortal: (score: number, firstTime: boolean) => PortalCompletion;
-  /** Items à revoir aujourd'hui. */
+  /** Items à revoir aujourd'hui, sur les lieux ouverts. */
   dueCount: number;
   /** Exercices terminés dans cette session. */
   sessionCount: number;
@@ -72,6 +80,11 @@ interface BloclandContextValue {
   deliver: (id: string) => Livraison<GameState>;
   /** Le bonhomme va sur une île ouverte. */
   moveTo: (id: BiomeId) => void;
+  /**
+   * Le mode « Aménager » (GD-9) : la disposition et les liaisons d'un monde aménagé (world/arrange.ts) remplacent celles
+   * de la partie ; rien d'autre ne change (ni l'inventaire, ni la progression).
+   */
+  arrange: (next: Pick<World, 'links' | 'layout'>) => void;
   /** Largue les amarres du Bloc-Navire : le voyage est fait, le bonhomme arrive au port d'en face. */
   launch: (stage: VehicleStage) => LaunchResult;
   reset: () => void;
@@ -88,8 +101,17 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const { completePlan } = useProgress();
   // Une sauvegarde d'avant GD-6 reçoit tout de suite les parties de ses missions déjà terminées ; l'XP des plans qu'elles
   // finissent est donnée une fois, juste après (plus bas).
-  const [ouverture] = useState(() => rattraperLesParties(sanitizeState(loadJSON<unknown>(STORAGE_KEY, {}))));
+  // Un lieu entré au jeu après l'aménagement de sa région se pose à la place libre la plus proche (`settleNewPlaces`) :
+  // la disposition de l'élève tient, au lieu de revenir toute à la carte de départ.
+  const [ouverture] = useState(() => {
+    const lue = sanitizeState(loadJSON<unknown>(STORAGE_KEY, {}));
+    return rattraperLesParties({ ...lue, world: settleNewPlaces(lue.world) });
+  });
   const [state, setState] = useState<GameState>(ouverture.state);
+  // La disposition de la partie (GD-9) posée sur le monde avant que les vues ne le lisent, à la lecture de la partie et
+  // à chaque changement de `world.layout` : un calcul sans effet visible hors du monde, qui ne refait rien si la
+  // disposition est la même (`applyLayout`).
+  const disposition = useMemo(() => applyLayout(state.world.layout), [state.world.layout]);
   const stateRef = useRef(state);
   const rattrapes = useRef(ouverture.plansFinis);
   useEffect(() => {
@@ -193,6 +215,13 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     stateRef.current = next;
     setState(next);
   }, []);
+  const arrange = useCallback((next: Pick<World, 'links' | 'layout'>) => {
+    const { layout: _avant, ...reste } = stateRef.current.world;
+    const world: World = { ...reste, links: next.links, ...(next.layout ? { layout: next.layout } : {}) };
+    const etat = { ...stateRef.current, world };
+    stateRef.current = etat;
+    setState(etat);
+  }, []);
   const launch = useCallback((stage: VehicleStage) => {
     const r = launchVehiclePure(stateRef.current, stage);
     if (r.result.ok) {
@@ -222,11 +251,13 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const pauseAfterNext = sessionCount + 1 >= SESSION_MAX_EXERCISES || Date.now() - sessionStart.current > SESSION_MAX_MINUTES * 60_000;
-  const dueCount = useMemo(() => dueItems(state.spaced, todayISO()).length, [state.spaced]);
+  // Les items des lieux ouverts seulement, comme les révisions proposées (review.ts).
+  const dueCount = useMemo(() => dueCountOnOpenPlaces(state.spaced, state.world.links, todayISO()), [state.spaced, state.world.links]);
 
   const value = useMemo(
     () => ({
       state,
+      disposition,
       complete,
       completePortal,
       dueCount,
@@ -240,6 +271,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       buildBridge,
       deliver,
       moveTo,
+      arrange,
       launch,
       reset,
       batisseur,
@@ -247,6 +279,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     }),
     [
       state,
+      disposition,
       complete,
       completePortal,
       dueCount,
@@ -260,6 +293,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       buildBridge,
       deliver,
       moveTo,
+      arrange,
       launch,
       reset,
       batisseur,

@@ -2,9 +2,9 @@
 // triangle → case, les faces que ferme une pièce, et la mise bout à bout des îles.
 import type { VoxelCube } from '../cube';
 import { toutConstruit } from '../budget';
-import { caseDeLaPiece, maillageDeLaConstruction, miseBoutABout, MOTIF_ASSEMBLE, type GroupeDeConstruction, type MaillageDeLaConstruction } from '../construction';
+import { batimentsDe, blocsDArchipeoDe, caseDeLaPiece, enBlocsDArchipeo, maillageDeLaConstruction, miseBoutABout, MOTIF_ASSEMBLE, type GroupeDeConstruction, type MaillageDeLaConstruction } from '../construction';
 import { worldCubes } from '../terrain';
-import { boiteDansLaCase, FORMES, kitVide, type DessinDePiece, type IdDePiece, type Kit } from '.';
+import { architectureDe, boiteDansLaCase, FORMES, kitVide, type DessinDePiece, type IdDePiece, type Kit } from '.';
 
 const cle = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z}`;
 
@@ -128,4 +128,30 @@ describe('Les pièces d’architecture dans la construction', () => {
       debut += m.opaque.indices.length / 3;
     }
   }, 60_000);
+
+  it('la maison basse du quartier : de chaume dans Blocland, un toit de terre cuite en pente dans Archipéo (DA, retouches HG-2)', () => {
+    const autres = blocsDArchipeoDe('6e');
+    // Les deux pans et le faîte, sur les deux cases de la maison basse.
+    expect(autres.size).toBe(6);
+    expect([...autres.values()].every((t) => t === 'toit')).toBe(true);
+    const { progress, world: village } = toutConstruit();
+    const tous = worldCubes('6e', progress, village, false).filter((c) => !c.sol);
+    const toit = tous.filter((c) => autres.has(cle(c)));
+    // Blocland : les cubes du monde gardent leur chaume.
+    expect(toit).toHaveLength(6);
+    expect(toit.every((c) => c.texture === 'chaume' && c.tag === 'geography-6e-living')).toBe(true);
+    // Archipéo : des blocs de toit, que le kit dessine en pentes (jamais un bloc plat), aux mêmes cases.
+    const enArchipeo = enBlocsDArchipeo('6e', tous);
+    expect(enArchipeo.filter((c) => autres.has(cle(c))).every((c) => c.texture === 'toit')).toBe(true);
+    expect(enArchipeo.filter((c) => !autres.has(cle(c))).every((c, i, l) => l[i] === c)).toBe(true);
+    const quartier = enArchipeo.filter((c) => c.tag === 'geography-6e-living');
+    const archi = architectureDe('6e', quartier, { batiments: batimentsDe('6e'), toitures: autres });
+    const piece = (k: string) => archi.pieces.find((p) => cle(p.cube) === k)?.piece;
+    // Chaque maison son toit à deux pans : les versants devant et derrière, le faîte au bout de sa rangée.
+    for (const k of autres.keys()) expect(piece(k)).toMatch(/^toit\.(versant|faite)\.rive\.ciel$/);
+    // Le toit de la maison haute aussi : il ne descend pas sur celui de la maison basse (ni croupe, ni bloc plat).
+    const haute = archi.pieces.filter((p) => p.cube.texture === 'toit' && !autres.has(cle(p.cube)));
+    expect(haute).toHaveLength(6);
+    for (const p of haute) expect(p.piece).toMatch(/^toit\.(versant|faite)\.rive\.ciel$/);
+  }, 30_000);
 });

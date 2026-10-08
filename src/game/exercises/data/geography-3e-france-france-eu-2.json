@@ -1,0 +1,230 @@
+{
+  "id": "geography-3e-france-france-eu-2",
+  "biome": "geography-3e-france",
+  "type": "france-eu",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-3e-france-france-eu-2-0",
+      "prompt": "Les pays les plus peuplés de l’Union, en 2025\nL’Allemagne : plus de 80 millions d’habitants\nLa France : près de 69 millions\nL’Italie : environ 59 millions",
+      "question": "Quel pays est le plus peuplé de l’Union ?",
+      "spoken": "Les pays les plus peuplés de l’Union, en deux mille vingt-cinq. L’Allemagne : plus de quatre-vingts millions d’habitants. La France : près de soixante-neuf millions. L’Italie : environ cinquante-neuf millions.",
+      "choices": [
+        "la France",
+        "l’Allemagne",
+        "l’Italie"
+      ],
+      "answer": "l’Allemagne",
+      "hint": "Cherche le plus grand nombre.",
+      "explanation": "Plus de 80 millions, c’est le plus grand nombre : l’Allemagne est le pays le plus peuplé de l’Union. La France vient juste après.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "L’Union européenne : 27 pays.",
+            "Comparer : chercher le plus grand nombre.",
+            "Un flux : ce qui circule, des personnes ou des marchandises."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-2-1",
+      "prompt": "Un travailleur frontalier\nIl habite en Lorraine, en France.\nIl travaille chaque jour au Luxembourg.",
+      "question": "Que fait ce travailleur chaque jour ?",
+      "spoken": "Un travailleur frontalier. Il habite en Lorraine, en France. Il travaille chaque jour au Luxembourg.",
+      "choices": [
+        "il traverse une frontière",
+        "il déménage au Luxembourg",
+        "il reste en Lorraine"
+      ],
+      "answer": "il traverse une frontière",
+      "hint": "Il habite dans un pays, il travaille dans un autre.",
+      "explanation": "Il habite en France et travaille au Luxembourg : chaque jour, il traverse une frontière. C’est un flux de personnes dans l’Union.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "L’Union européenne : 27 pays.",
+            "Comparer : chercher le plus grand nombre.",
+            "Un flux : ce qui circule, des personnes ou des marchandises."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-2-2",
+      "prompt": "Les avions Airbus\nDes pièces viennent de France, d’Allemagne, d’Espagne et du Royaume-Uni.\nBeaucoup d’avions sont assemblés à Toulouse.",
+      "question": "Que montre ce document ?",
+      "spoken": "Les avions Airbus. Des pièces viennent de France, d’Allemagne, d’Espagne et du Royaume-Uni. Beaucoup d’avions sont assemblés à Toulouse.",
+      "choices": [
+        "une entreprise seulement française",
+        "une usine de voitures",
+        "des pays d’Europe qui travaillent ensemble"
+      ],
+      "answer": "des pays d’Europe qui travaillent ensemble",
+      "hint": "Combien de pays fabriquent les pièces ?",
+      "explanation": "Les pièces viennent de plusieurs pays d’Europe. Beaucoup d’avions sont assemblés à Toulouse : ces pays travaillent ensemble pour les fabriquer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "L’Union européenne : 27 pays.",
+            "Comparer : chercher le plus grand nombre.",
+            "Un flux : ce qui circule, des personnes ou des marchandises."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-2-3",
+      "prompt": "La France, en 2024\nLe pays le plus visité du monde\nEnviron 100 millions de touristes étrangers",
+      "question": "Que montre ce document ?",
+      "spoken": "La France, en deux mille vingt-quatre. Le pays le plus visité du monde. Environ cent millions de touristes étrangers.",
+      "choices": [
+        "la France attire le monde entier",
+        "peu de touristes viennent en France",
+        "la France est le pays le plus peuplé"
+      ],
+      "answer": "la France attire le monde entier",
+      "hint": "Relis la ligne qui commence par « Le pays ».",
+      "explanation": "Avec environ 100 millions de touristes étrangers, la France est le pays le plus visité du monde : elle attire le monde entier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "L’Union européenne : 27 pays.",
+            "Comparer : chercher le plus grand nombre.",
+            "Un flux : ce qui circule, des personnes ou des marchandises."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-2-4",
+      "prompt": "La langue française dans le monde\nEnviron 320 millions de personnes parlent français.\nOn le parle sur les cinq continents.",
+      "question": "Où parle-t-on français ?",
+      "spoken": "La langue française dans le monde. Environ trois cent vingt millions de personnes parlent français. On le parle sur les cinq continents.",
+      "choices": [
+        "seulement en France",
+        "seulement en Europe",
+        "sur les cinq continents"
+      ],
+      "answer": "sur les cinq continents",
+      "hint": "Relis la ligne qui commence par « On le parle ».",
+      "explanation": "Le français se parle sur les cinq continents, en Afrique surtout : c’est la francophonie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "L’Union européenne : 27 pays.",
+            "Comparer : chercher le plus grand nombre.",
+            "Un flux : ce qui circule, des personnes ou des marchandises."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-2-5",
+      "prompt": "Le Conseil de sécurité de l’ONU\n5 membres permanents\nLes États-Unis, la Chine, la Russie, le Royaume-Uni et la France",
+      "question": "Que montre ce document sur la France ?",
+      "spoken": "Le Conseil de sécurité de l’ONU. Cinq membres permanents. Les États-Unis, la Chine, la Russie, le Royaume-Uni et la France.",
+      "choices": [
+        "elle n’est pas à l’ONU",
+        "elle compte dans les décisions du monde",
+        "elle dirige seule l’ONU"
+      ],
+      "answer": "elle compte dans les décisions du monde",
+      "hint": "La France est-elle dans la liste ?",
+      "explanation": "La France est l’un des cinq membres permanents du Conseil de sécurité : elle compte dans les décisions du monde, mais ne décide pas seule.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "L’Union européenne : 27 pays.",
+            "Comparer : chercher le plus grand nombre.",
+            "Un flux : ce qui circule, des personnes ou des marchandises."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-2-6",
+      "prompt": "Le tunnel sous la Manche\nIl relie la France et le Royaume-Uni.\nDes trains de voyageurs et de camions le traversent.",
+      "question": "À quoi sert ce tunnel ?",
+      "spoken": "Le tunnel sous la Manche. Il relie la France et le Royaume-Uni. Des trains de voyageurs et de camions le traversent.",
+      "choices": [
+        "à séparer deux pays",
+        "à relier deux pays",
+        "à produire de l’électricité"
+      ],
+      "answer": "à relier deux pays",
+      "hint": "Relis la ligne qui contient « relie ».",
+      "explanation": "Le tunnel relie la France et le Royaume-Uni : voyageurs et marchandises le traversent. Le Royaume-Uni a quitté l’Union en 2020, mais les flux continuent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "L’Union européenne : 27 pays.",
+            "Comparer : chercher le plus grand nombre.",
+            "Un flux : ce qui circule, des personnes ou des marchandises."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-2-7",
+      "prompt": "L’euro\nLes billets sont les mêmes dans tous les pays de l’euro.\nUn Français paie en euros en Espagne ou en Italie.",
+      "question": "Qu’apporte l’euro aux voyageurs ?",
+      "spoken": "L’euro. Les billets sont les mêmes dans tous les pays de l’euro. Un Français paie en euros en Espagne ou en Italie.",
+      "choices": [
+        "pas besoin de changer de monnaie",
+        "des billets différents dans chaque pays",
+        "le droit de vote"
+      ],
+      "answer": "pas besoin de changer de monnaie",
+      "hint": "Relis la ligne qui commence par « Un Français ».",
+      "explanation": "Avec l’euro, un Français paie en Espagne ou en Italie avec la même monnaie : plus besoin de changer d’argent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "L’Union européenne : 27 pays.",
+            "Comparer : chercher le plus grand nombre.",
+            "Un flux : ce qui circule, des personnes ou des marchandises."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-3e-france",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

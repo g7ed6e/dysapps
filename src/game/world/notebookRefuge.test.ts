@@ -23,10 +23,13 @@ import { bossIsletOrigin, HORS_DE_LA_COLONNE, ISLET_H, ISLET_W, viewYaw, worldBo
 const ouvert = { parts: {}, log: [], links: grantAccess([], ['lv2-3e-travel']) };
 
 describe('la place du Refuge sur la carte du 3e', () => {
-  it('à l’est du Château, un cran derrière, sans toucher sa terre', () => {
+  it('à l’est du Château, à sa hauteur, sans toucher sa terre', () => {
+    // Un cran derrière jusqu'aux îles de sciences ; avancé à hauteur du Château depuis (SC-3, consultant UX UI) : au bord
+    // gauche de la Carte, entre la Géographie et le Château, son nom n'avait aucune place en OpenDyslexic quand le
+    // bonhomme y était (mapLabels.test.ts).
     const [r, c] = [landBox(islandDef('lv2-3e-travel')), landBox(islandDef('english-3e-grammar'))];
     expect(r.x0).toBeGreaterThan(c.x1);
-    expect(islandDef('lv2-3e-travel').core.y).toBeGreaterThan(islandDef('english-3e-grammar').core.y);
+    expect(islandDef('lv2-3e-travel').core.y).toBe(islandDef('english-3e-grammar').core.y);
     expect(islandDef('lv2-3e-travel').altitude).toBe(9);
   });
 });
@@ -425,15 +428,16 @@ describe('les caméras des îles', () => {
   // de 1,6° (−0,4 avant) ; la Forge, écartée vers l'ouest, reste au pivot maximal. Aux Îles du Ciel, le cœur du Phare
   // passé à 20 (01/10/2026) : le Belvédère et l'Observatoire des données, écartés de deux cases, pivotent de 1,6° de plus
   // (30,4 et −30,4 avant).
-  const AVANT_LE_REFUGE: Record<string, number> = { 'french-6e-phonology': 0, 'french-6e-grammar-spelling': 33.6, 'french-6e-letter-confusion': -24.8, 'french-6e-reading': 40, 'french-6e-word-spelling': -40, 'maths-6e-calculation': 2.4, 'maths-6e-fractions': -33.6, 'maths-6e-decimals': 36.8, 'english-6e-vocabulary': 24.8, 'english-6e-grammar': -0.8, 'maths-5e-signed-numbers': 37.6, 'maths-5e-proportionality': 12.8, 'french-5e-homophones': 36, 'french-5e-conjugation': 12.8, 'english-5e-vocabulary': -14.4, 'english-5e-grammar': -14.4, 'lv2-5e-introductions': -38.4, 'maths-4e-powers': 40, 'maths-4e-algebra': 25.2, 'french-4e-agreement': -2, 'french-4e-vocabulary': -26, 'english-4e-comprehension': -40, 'lv2-4e-daily-life': -40, 'english-4e-grammar': 40, 'maths-3e-geometry': 32, 'maths-3e-functions': 0, 'maths-3e-statistics': -32, 'french-3e-close-reading': 0, 'english-3e-comprehension': 40, 'english-3e-grammar': -40 };
+  // Calé sur la carte de départ posée sur la grille (GD-9, 05/10/2026) : les lieux ont bougé, les pivots avec eux.
+  const AVANT_LE_REFUGE: Record<string, number> = { 'french-6e-phonology': -1.2, 'french-6e-grammar-spelling': 34, 'french-6e-letter-confusion': -26.8, 'french-6e-reading': 40, 'french-6e-word-spelling': -40, 'maths-6e-calculation': 2, 'maths-6e-fractions': -33.2, 'maths-6e-decimals': 37.2, 'english-6e-vocabulary': 21.2, 'english-6e-grammar': -4.4, 'maths-5e-signed-numbers': 38, 'maths-5e-proportionality': 12.4, 'french-5e-homophones': 38, 'french-5e-conjugation': 15.6, 'english-5e-vocabulary': -16.4, 'english-5e-grammar': -13.2, 'lv2-5e-introductions': -38.8, 'maths-4e-powers': 34.8, 'maths-4e-algebra': 6, 'french-4e-agreement': -19.6, 'french-4e-vocabulary': -38.8, 'english-4e-comprehension': -16.4, 'lv2-4e-daily-life': -40, 'english-4e-grammar': 40, 'maths-3e-geometry': 32, 'maths-3e-functions': 0, 'maths-3e-statistics': -32, 'french-3e-close-reading': 0, 'english-3e-comprehension': 40, 'english-3e-grammar': -40 };
   it('gardent le cadrage d’avant le refuge, dans chaque archipel', () => {
     for (const [ile, deg] of Object.entries(AVANT_LE_REFUGE))
       expect((viewYaw(ile as BiomeId) * 180) / Math.PI, ile).toBeCloseTo(deg, 3);
   });
-  it('seules des îles de LV2 sortent de la colonne centrale', () => {
+  it('seules des îles de LV2, les îles d’histoire-géographie et les îles de sciences sortent de la colonne centrale', () => {
     for (const id of HORS_DE_LA_COLONNE) {
       const b = BIOMES.find((x) => x.id === id);
-      expect(b && estIleLv2(b), id).toBe(true);
+      expect(b && (estIleLv2(b) || b.subject === 'history-geography' || (b.subject !== 'french' && b.subject !== 'maths' && b.subject !== 'english')), id).toBe(true);
     }
   });
 });

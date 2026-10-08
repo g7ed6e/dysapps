@@ -2,6 +2,7 @@
 import { GAME_VERSION } from '../../core/migration';
 import type { BiomeId, BlockId } from '../biomes';
 import type { TirageAssemblage } from '../world/assembly';
+import type { Layout } from '../world/savedLayout';
 
 export interface ExerciseProgress {
   stars: 0 | 1 | 2 | 3;
@@ -69,6 +70,18 @@ export interface World {
    * commandes. Une commande livrée en sort : sa petite construction est alors dans `parts`.
    */
   requests?: string[];
+  /**
+   * La disposition des régions aménagées (GD-9, world/savedLayout.ts) : la place et l'orientation des lieux, des
+   * Gardiens, des bornes, les arrivées des liaisons, les lieux réunis, les raccourcis, les liaisons à reposer. Absent
+   * dans une sauvegarde d'avant GD-9 et tant qu'aucune région n'est aménagée : la carte de départ.
+   */
+  layout?: Layout;
+  /**
+   * Les lieux dont le défi était ouvert avant les programmes de 2025-2026 et l'est resté (core/movedChallenges.ts) :
+   * posé à la migration vers le format 4, seulement pour une sauvegarde plus ancienne. Un lieu en sort dès que son
+   * défi est réussi. Absent pour une partie neuve, où la règle est entière (boss.ts, `isBossUnlocked`).
+   */
+  challengesKeptOpen?: BiomeId[];
 }
 
 export interface LogEntry {

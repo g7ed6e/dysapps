@@ -44,7 +44,14 @@ it('le socle de 3 × 3 couvre les cases du phare de Blocland, jamais une case du
   // Règle 1 du directeur artistique : toutes les cases bloquées sont sous le socle.
   for (const k of bloquees) expect(socle, k).toContain(k);
   const def = islandDef('maths-3e-functions');
-  const chemins = new Set(BRIDGES.filter((b) => archipelagoOfIsland(b.from) === '3e').flatMap((b) => bridgePath(b).map((c) => `${c.x},${c.y}`)));
+  // Les liaisons qu'une partie peut poser (GD-9) : le socle du phare est un obstacle pour leurs arrivées et leurs
+  // couloirs (DA, 5 octobre 2026) ; aucune ne part de dessous ni n'y passe, pas même son pied contre la côte. Celles de
+  // la région toute reliée, et toutes celles qu'on pourrait poser au départ.
+  const traces = [
+    ...BRIDGES.filter((b) => archipelagoOfIsland(b.from) === '3e' && village.links.includes(b.id)).map((b) => bridgePath(b, village.links)),
+    ...BRIDGES.filter((b) => archipelagoOfIsland(b.from) === '3e').map((b) => bridgePath(b, [])),
+  ].map((t) => t.map((c) => `${c.x},${c.y}`));
+  const chemins = new Set(traces.flat());
   const posees = new Set(reste.filter((c) => !c.decor).map((c) => `${c.x},${c.y}`));
   for (const k of socle) {
     const [x, y] = k.split(',').map(Number);
@@ -164,9 +171,11 @@ it('le massif posé sur le plancher (DA-20) : ses bouts se perdent sous les nuag
   }
 });
 
-it('les nappes des sommets : une seule couche plate sous chaque île, sous son sol, environ 300 triangles, qui s’efface vers ses bords', () => {
-  const n = nappesDesSommets('3e')!;
-  expect(n.indices.length / 3).toBeLessThanOrEqual(320);
+// Environ 40 triangles par île : 320 au plus pour sept îles, 400 pour neuf depuis le Kiosque des témoins et le Plateau des
+// territoires (HG-3 : 378 mesurés), 520 pour douze depuis les îles de sciences (SC-3 : 504 mesurés).
+it('les nappes des sommets : une seule couche plate sous chaque île, sous son sol, environ 500 triangles, qui s’efface vers ses bords', () => {
+  const n = nappesDesSommets('3e', [])!;
+  expect(n.indices.length / 3).toBeLessThanOrEqual(520);
   const hauteurs = new Set<number>();
   for (let v = 0; v < n.positions.length / 3; v++) {
     hauteurs.add(n.positions[v * 3 + 1]);
@@ -178,7 +187,7 @@ it('les nappes des sommets : une seule couche plate sous chaque île, sous son s
   // Au plus 0,6 d'opacité, respiration comprise, et un bord qui s'efface tout à fait.
   expect(NAPPES_3E.opacite * (1 + MOUVEMENT_DE_LA_BRUME.opacite)).toBeLessThanOrEqual(0.6);
   expect(Math.min(...Array.from({ length: n.positions.length / 3 }, (_, v) => n.colors[v * 4 + 3]))).toBe(0);
-  expect(nappesDesSommets('5e')).toBeNull();
+  expect(nappesDesSommets('5e', [])).toBeNull();
 });
 
 it('l’oiseau planeur : un seul, au-dessus du massif, jamais au-dessus d’une île ni devant la lanterne, plus haut que les autres oiseaux ; figé si l’appareil le demande', () => {

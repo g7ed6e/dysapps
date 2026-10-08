@@ -93,16 +93,28 @@ function normalOf(a: [number, number, number], b: [number, number, number], c: [
 /** Le verre laisse voir les faces des blocs opaques derrière lui. */
 const seeThrough = (c: VoxelCube | undefined) => c?.texture === 'verre';
 
+export interface MeshOptions {
+  /**
+   * Blocland : le dessous des cubes posés à cette hauteur ou plus bas n'est pas dessiné (`hiddenBottomLevel`,
+   * world/sea.ts) ; sans elle, tous les dessous visibles le sont.
+   */
+  hiddenBottomsUpTo?: number;
+}
+
 /**
- * Construit les groupes de faces visibles d'un ensemble de cubes. `sol` (rendu Archipéo, lot R2) : les cubes du sol,
- * dessinés à part en facettes (./landMesh.ts) ; ils ne sont pas dessinés ici, mais le dessous d'un cube posé sur eux
- * reste caché (la case où quelque chose est posé reste plate, à la hauteur du dessus du cube de sol).
+ * Chaque face visible d'un ensemble de cubes : le cube, sa direction (en grille), et la face telle qu'elle se dessine
+ * (le dessus d'un cube `dessusCommeLesCotes` se dessine comme un côté). `sol` : voir `buildMesh`.
  */
-export function buildMesh(cubes: VoxelCube[], sol: VoxelCube[] = []): MeshGroup[] {
+export function eachVisibleFace(
+  cubes: readonly VoxelCube[],
+  sol: readonly VoxelCube[],
+  options: MeshOptions,
+  f: (c: VoxelCube, d: [number, number, number], dessinee: FaceSide) => void,
+): void {
+  const { hiddenBottomsUpTo = -Infinity } = options;
   const byPos = new Map<string, VoxelCube>();
   for (const c of cubes) byPos.set(key(c.x, c.y, c.z), c);
   const ground = new Set(sol.map((c) => key(c.x, c.y, c.z)));
-  const groups = new Map<string, MeshGroup>();
   for (const c of cubes) {
     for (const { d, face } of DIRS) {
       const neighbor = byPos.get(key(c.x + d[0], c.y + d[1], c.z + d[2]));
@@ -110,39 +122,67 @@ export function buildMesh(cubes: VoxelCube[], sol: VoxelCube[] = []): MeshGroup[
       if (neighbor && !neighbor.ghost && !c.ghost && !(seeThrough(neighbor) && !seeThrough(c))) continue;
       if (face === 'bottom' && !c.ghost && ground.has(key(c.x, c.y, c.z - 1))) continue;
       if (face === 'bottom' && c.sansDessous) continue;
+      // Sous l'eau (ou sous le plancher de nuages), un dessous n'est jamais vu : la caméra reste au-dessus.
+      if (face === 'bottom' && !c.ghost && c.z <= hiddenBottomsUpTo) continue;
       // Le dessus dessiné comme les côtés (`dessusCommeLesCotes`) : dans leur groupe, sans groupe de plus.
-      const dessinee = face === 'top' && c.dessusCommeLesCotes ? 'side' : face;
-      const gkey = (c.muted ? 'muted:' : '') + (c.ghost ? `ghost:${c.texture ?? c.color}` : c.texture ? `tex:${c.texture}:${dessinee}` : `tint:${c.color}`);
-      let g = groups.get(gkey);
-      if (!g) {
-        g = {
-          key: gkey,
-          texture: c.texture,
-          face: dessinee,
-          color: c.texture ? undefined : c.color,
-          ghost: c.ghost,
-          muted: c.muted,
-          positions: [],
-          normals: [],
-          uvs: [],
-          indices: [],
-        };
-        groups.set(gkey, g);
-      }
-      let quad = corners(c, d);
-      // Normale vers l'extérieur (X = dx, Y = dz, Z = dy), sinon on inverse l'ordre des sommets.
-      const n = normalOf(quad[0].p, quad[1].p, quad[2].p);
-      if (n[0] * d[0] + n[1] * d[2] + n[2] * d[1] < 0) quad = [quad[0], quad[3], quad[2], quad[1]];
-      const base = g.positions.length / 3;
-      for (const { p, uv } of quad) {
-        g.positions.push(p[0], p[1], p[2]);
-        g.normals.push(d[0], d[2], d[1]);
-        g.uvs.push(uv[0], uv[1]);
-      }
-      g.indices.push(base, base + 1, base + 2, base, base + 2, base + 3);
+      f(c, d, face === 'top' && c.dessusCommeLesCotes ? 'side' : face);
     }
   }
+}
+
+/** Les quatre coins d'une face, tournés vers l'extérieur (X = dx, Y = dz, Z = dy), avec leurs uv. */
+export function outwardCorners(c: VoxelCube, d: [number, number, number]): { p: [number, number, number]; uv: [number, number] }[] {
+  const quad = corners(c, d);
+  const n = normalOf(quad[0].p, quad[1].p, quad[2].p);
+  return n[0] * d[0] + n[1] * d[2] + n[2] * d[1] < 0 ? [quad[0], quad[3], quad[2], quad[1]] : quad;
+}
+
+/**
+ * Construit les groupes de faces visibles d'un ensemble de cubes. `sol` (rendu Archipéo, lot R2) : les cubes du sol,
+ * dessinés à part en facettes (./landMesh.ts) ; ils ne sont pas dessinés ici, mais le dessous d'un cube posé sur eux
+ * reste caché (la case où quelque chose est posé reste plate, à la hauteur du dessus du cube de sol).
+ */
+export function buildMesh(cubes: VoxelCube[], sol: VoxelCube[] = [], options: MeshOptions = {}): MeshGroup[] {
+  const groups = new Map<string, MeshGroup>();
+  eachVisibleFace(cubes, sol, options, (c, d, dessinee) => {
+    const gkey = (c.muted ? 'muted:' : '') + (c.ghost ? `ghost:${c.texture ?? c.color}` : c.texture ? `tex:${c.texture}:${dessinee}` : `tint:${c.color}`);
+    let g = groups.get(gkey);
+    if (!g) {
+      g = {
+        key: gkey,
+        texture: c.texture,
+        face: dessinee,
+        color: c.texture ? undefined : c.color,
+        ghost: c.ghost,
+        muted: c.muted,
+        positions: [],
+        normals: [],
+        uvs: [],
+        indices: [],
+      };
+      groups.set(gkey, g);
+    }
+    const base = g.positions.length / 3;
+    for (const { p, uv } of outwardCorners(c, d)) {
+      g.positions.push(p[0], p[1], p[2]);
+      g.normals.push(d[0], d[2], d[1]);
+      g.uvs.push(uv[0], uv[1]);
+    }
+    g.indices.push(base, base + 1, base + 2, base, base + 2, base + 3);
+  });
   return [...groups.values()];
+}
+
+/** Un groupe de couleur unie (ni texture, ni fantôme) : tous ceux d'un modèle se dessinent ensemble (three/meshes.ts). */
+export const isPlainTint = (g: MeshGroup): boolean => !g.texture && !g.ghost;
+
+/**
+ * Les appels de dessin d'un modèle dessiné par `meshesOf` (three/meshes.ts) : un par groupe texturé ou fantôme, un
+ * seul pour toutes ses couleurs unies.
+ */
+export function drawCallsOf(groups: MeshGroup[]): number {
+  const tints = groups.filter(isPlainTint).length;
+  return groups.length - tints + (tints > 0 ? 1 : 0);
 }
 
 /** Nombre total de faces d'un maillage (pour les tests et le budget de performance). */

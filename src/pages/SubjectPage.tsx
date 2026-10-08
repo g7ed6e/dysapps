@@ -1,6 +1,7 @@
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import { translatePath } from '../core/legacyIds';
-import { subjectInfo, visibleSubjects, type Subject } from '../apps/registry';
+import { MENU_PATH } from '../core/paths';
+import { appsBySubject, subjectInfo, visibleSubjects, type Subject } from '../apps/registry';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { Icon } from '../components/Icon';
 import { SubjectApps } from '../components/SubjectApps';
@@ -12,6 +13,18 @@ import { Creature } from '../game/Creatures';
 import { questProgress } from '../game/exercises';
 import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked } from '../game/world/archipelago';
 import { useTextes } from '../universes';
+
+/** « de français », « d’anglais », « d’histoire-géo », « de SVT » : la matière après « Les îles » (un sigle garde ses capitales). */
+function ofSubject(title: string): string {
+  const mot = title === title.toUpperCase() ? title : title.toLowerCase();
+  return /^[aeiouyéh]/.test(mot) ? `d’${mot}` : `de ${mot}`;
+}
+
+/** « archipel par archipel, de la 6e à la 3e », ou « en 6e » pour une matière d'une seule classe. */
+function classesOf(classes: Classe[]): string {
+  if (classes.length === 1) return `en ${classes[0]}`;
+  return `archipel par archipel, de la ${classes[0]} à la ${classes[classes.length - 1]}`;
+}
 
 export function SubjectPage() {
   const { subject } = useParams();
@@ -31,14 +44,22 @@ export function SubjectPage() {
 
   return (
     <>
-      <Link to="/quetes" className="back-link">
-        <Icon name="back" /> Missions
-      </Link>
+      {/* Une matière sans mission du portail (l'histoire-géographie, la LV2) n'est pas dans l'onglet Missions : on revient
+          au menu, d'où on est venu. */}
+      {appsBySubject(subject as Subject).length > 0 ? (
+        <Link to="/quetes" className="back-link">
+          <Icon name="back" /> Missions
+        </Link>
+      ) : (
+        <Link to={MENU_PATH} className="back-link">
+          <Icon name="back" /> Menu
+        </Link>
+      )}
       <h1 className={`page-title title-${subject}`}>
         <Icon name={info.icon} /> {info.title}
       </h1>
       <p className="intro">Expédition {info.expedition}.</p>
-      <SubjectApps subject={subject as Subject} />
+      {appsBySubject(subject as Subject).length > 0 && <SubjectApps subject={subject as Subject} />}
 
       {/* Une matière sans île dans Blocland (pas encore) : pas de section vide. */}
       {biomesOf(subject as Subject).length > 0 && (
@@ -47,7 +68,7 @@ export function SubjectPage() {
             <Icon name="map" /> Dans {UNIVERS[univers].nom}
           </h2>
           <p className="section-intro">
-            Les îles de {info.title.toLowerCase()} de l’aventure, archipel par archipel, de la 6e à la 3e. Chaque mission réussie donne des blocs pour le village.
+            Les îles {ofSubject(info.title)} de l’aventure, {classesOf(withIslands.map((a) => a.classe))}. Chaque mission réussie donne des blocs pour le village.
           </p>
         </>
       )}

@@ -1,4 +1,4 @@
-import { formatDuree, formatHeure, formatNombre, type Cote, type SceneProps } from './Scene';
+import { formatDuree, formatHeure, formatNombre, type Side, type SceneProps } from './Scene';
 import { PROBLEMES_COLLEGE_EXERCISES, PROBLEMES_EXERCISES } from './problems';
 import type { ExerciseDef, ExerciseItem } from './types';
 
@@ -11,7 +11,7 @@ const sceneOf = (it: ExerciseItem): SceneProps => {
 };
 
 const withUnit = (u: string) => (n: number) => `${formatNombre(n)} ${u}`;
-const num = (c: Cote | null | undefined) => (typeof c === 'number' ? c : 0);
+const num = (c: Side | null | undefined) => (typeof c === 'number' ? c : 0);
 
 /**
  * Ce que montre un schéma : les cotes affichées (texte), les autres données écrites dans l’énoncé (échelle, ratio),
@@ -21,7 +21,7 @@ function read(s: SceneProps): { shown: string[]; data: string[]; answer: string 
   const shown: string[] = [];
   const data: string[] = [];
   let answer = '';
-  const add = (c: Cote | null | undefined, format: (n: number) => string, value: () => number) => {
+  const add = (c: Side | null | undefined, format: (n: number) => string, value: () => number) => {
     if (c === undefined || c === null) return;
     if (c === '?') answer = format(Math.round(value() * 1000) / 1000);
     else shown.push(format(c));
@@ -91,7 +91,7 @@ const kindsOf = (defs: ExerciseDef[]) => defs.map((def) => [...new Set(def.items
 it('les missions de problèmes situés : des niveaux de huit items, un schéma et un rappel de méthode sur chacun', () => {
   expect(PROBLEMES_EXERCISES.map((e) => e.id)).toEqual(['maths-6e-calculation-word-problems-1', 'maths-6e-calculation-word-problems-2', 'maths-6e-calculation-word-problems-3']);
   expect(PROBLEMES_COLLEGE_EXERCISES.map((e) => e.id)).toEqual([
-    'maths-5e-proportionality-proportion-tables-3',
+    'maths-3e-statistics-ratio-sharing-1',
     'maths-5e-proportionality-ratios-3',
     'maths-5e-proportionality-ratios-4',
     'maths-3e-geometry-pythagoras-3',

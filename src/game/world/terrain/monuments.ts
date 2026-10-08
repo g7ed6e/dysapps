@@ -1,14 +1,15 @@
 // Les monuments, sur leur îlot au large.
-import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, landCells, mapOf } from '../map';
-import { BIOMES, BLOC, BLOCKS } from '../../biomes';
-import { BRIDGES, getArchipelago } from '../archipelago';
+import { type ArchipelagoId, DANS_LE_CIEL, landCells, mapOf } from '../map';
+import { BLOC, BLOCKS } from '../../biomes';
+import { getArchipelago } from '../archipelago';
+import { placedLinksOf } from '../linkGeometry';
 import { dockBox, dockOrigin } from '../harbor';
 import { MONUMENT_ISLET, type MonumentDef, monumentsOf } from '../monuments';
+import { isletInWorld, monumentIslet } from '../footprint';
 import { ORIGINE_DES_MONUMENTS, planCells, type PlanDef, planOrigin } from '../plans';
 import type { World } from '../../engine';
 import type { PlaceId, VoxelCube } from '../cube';
 import { SNOW } from '../decor';
-import { bossIsletOrigin, ISLET_H, ISLET_W } from './islets';
 import { bridgePath } from './links';
 import { whaleSpots } from './sea';
 import { DEPTH, origineDe, taperLayers, TEXTURES } from './base';
@@ -17,25 +18,25 @@ import { DEPTH, origineDe, taperLayers, TEXTURES } from './base';
  * Où un îlot de monument ne va pas : la terre des îles et leur abord (trois cases), les îlots des Gardiens, le port et sa
  * jetée, les ouvrages et leur abord, la place des baleines. Sert à placer les monuments (une fois) et à le vérifier.
  */
-export function monumentBlocked(a: ArchipelagoId): (x: number, y: number) => boolean {
+export function monumentBlocked(a: ArchipelagoId, links: readonly string[]): (x: number, y: number) => boolean {
   const solid = new Set<string>();
   const near = (x: number, y: number, r: number) => {
     for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) solid.add(`${x + dx},${y + dy}`);
   };
   for (const def of mapOf(a)) {
     for (const c of landCells(def)) near(c.x, c.y, 3);
-    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
-    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) near(o.x + x, o.y + y, 2);
+    const r = isletInWorld(def);
+    for (let x = r.x0; x < r.x1; x++) for (let y = r.y0; y < r.y1; y++) near(x, y, 2);
   }
-  for (const def of BRIDGES.filter((br) => archipelagoOfIsland(br.from) === a)) for (const c of bridgePath(def)) near(c.x, c.y, 3);
+  for (const def of placedLinksOf(a, links)) for (const c of bridgePath(def, links)) near(c.x, c.y, 3);
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) near(x, y, 3);
-  const whales = whaleSpots(a);
+  const whales = whaleSpots(a, links);
   return (x, y) => solid.has(`${x},${y}`) || whales.some((w) => Math.hypot(w.x - x, w.y - y) < w.r + 2);
 }
 
 /** L'îlot d'un monument est-il libre (toutes ses cases) ? */
-export function monumentIsletFree(a: ArchipelagoId, x0: number, y0: number, blocked = monumentBlocked(a)): boolean {
+export function monumentIsletFree(a: ArchipelagoId, links: readonly string[], x0: number, y0: number, blocked = monumentBlocked(a, links)): boolean {
   for (let x = x0; x < x0 + MONUMENT_ISLET; x++) for (let y = y0; y < y0 + MONUMENT_ISLET; y++) if (blocked(x, y)) return false;
   return true;
 }
@@ -43,13 +44,15 @@ export function monumentIsletFree(a: ArchipelagoId, x0: number, y0: number, bloc
 /**
  * Le point du monde où tombe la clé (0, 0, 0) d'un monument : une case de son plan (`planCells`, clé relative au cœur
  * de son île, figée par `ORIGINE_DES_MONUMENTS`) est dessinée en `monumentAnchor + case`. Le rendu suit l'îlot
- * (`m.islet`, la case (0, 0, 0) du plan au-dessus de son coin intérieur) ; les clés des sauvegardes, elles, ne bougent pas
+ * (`monumentIslet`, la case (0, 0, 0) du plan au-dessus de son coin intérieur ; il suit son lieu, GD-9) ; les clés des
+ * sauvegardes, elles, ne bougent pas
  * si l'îlot ou le cœur bougent.
  */
 export function monumentAnchor(m: MonumentDef): { x: number; y: number; z: number } {
   const fige = ORIGINE_DES_MONUMENTS[m.id];
   if (!fige) throw new Error(`Monument sans origine : ${m.id}`);
-  return { x: m.islet.x + 1 - fige.x, y: m.islet.y + 1 - fige.y, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 1 - fige.z };
+  const ilot = monumentIslet(m);
+  return { x: ilot.x + 1 - fige.x, y: ilot.y + 1 - fige.y, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 1 - fige.z };
 }
 
 /**
@@ -75,7 +78,8 @@ export function decalageDuQuai(plan: PlanDef): { x: number; y: number; z: number
 
 /** Le milieu de l'îlot d'un monument, à mi-hauteur du monument (pour y cadrer la caméra). */
 export function monumentCenter(m: MonumentDef): { x: number; y: number; z: number } {
-  return { x: m.islet.x + (MONUMENT_ISLET - 1) / 2, y: m.islet.y + (MONUMENT_ISLET - 1) / 2, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 3 };
+  const ilot = monumentIslet(m);
+  return { x: ilot.x + (MONUMENT_ISLET - 1) / 2, y: ilot.y + (MONUMENT_ISLET - 1) / 2, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 3 };
 }
 
 /**
@@ -91,13 +95,15 @@ export function monumentIslets(a: ArchipelagoId, village: World, cubes: VoxelCub
     const place: PlaceId = `monument:${m.id}`;
     const n = MONUMENT_ISLET;
     const land: { x: number; y: number }[] = [];
+    // L'îlot suit le lieu au large duquel il se tient (GD-9, `monumentIslet`) ; le monument garde son orientation.
+    const ilot = monumentIslet(m);
     for (let dx = 0; dx < n; dx++)
       for (let dy = 0; dy < n; dy++) {
         // Les coins arrondis.
         const cx = Math.abs(dx - (n - 1) / 2);
         const cy = Math.abs(dy - (n - 1) / 2);
         if (cx + cy > n - 3) continue;
-        land.push({ x: m.islet.x + dx, y: m.islet.y + dy });
+        land.push({ x: ilot.x + dx, y: ilot.y + dy });
       }
     for (const c of land) {
       cubes.push({ x: c.x, y: c.y, z: alt, color: top, texture: TEXTURES[top], tag: m.biome, place, sol: true });

@@ -36,9 +36,9 @@
     },
     {
       "key": "english-6e-grammar-story-1-1",
-      "prompt": "Lucy has got a dog.\nHis name is Max.\nEvery day, Lucy walks in the park with Max.",
+      "prompt": "Lucy has a dog.\nHis name is Max.\nEvery day, Lucy walks in the park with Max.",
       "question": "Que fait Lucy au parc tous les jours ?",
-      "spoken": "Lucy has got a dog. His name is Max. Every day, Lucy walks in the park with Max.",
+      "spoken": "Lucy has a dog. His name is Max. Every day, Lucy walks in the park with Max.",
       "choices": [
         "Elle se promène avec Max",
         "Elle travaille au parc",
@@ -120,9 +120,9 @@
     },
     {
       "key": "english-6e-grammar-story-1-4",
-      "prompt": "This is my brother, Leo.\nHe has got a new bike.\nHe rides it every day.",
+      "prompt": "This is my brother, Leo.\nHe has a new bike.\nHe rides it every day.",
       "question": "Dans l’histoire, qui a un nouveau vélo ?",
-      "spoken": "This is my brother, Leo. He has got a new bike. He rides it every day.",
+      "spoken": "This is my brother, Leo. He has a new bike. He rides it every day.",
       "choices": [
         "Ma sœur",
         "Mon frère",
@@ -176,9 +176,9 @@
     },
     {
       "key": "english-6e-grammar-story-1-6",
-      "prompt": "My grandad lives on a farm.\nHe is sixty.\nHe has got fifteen cows.",
+      "prompt": "My grandad lives on a farm.\nHe is sixty.\nHe has fifteen cows.",
       "question": "Combien de vaches a le grand-père ?",
-      "spoken": "My grandad lives on a farm. He is sixty. He has got fifteen cows.",
+      "spoken": "My grandad lives on a farm. He is sixty. He has fifteen cows.",
       "choices": [
         "15 vaches",
         "50 vaches",

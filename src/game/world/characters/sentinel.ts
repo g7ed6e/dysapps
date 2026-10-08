@@ -44,6 +44,14 @@ export class Atelier {
   get lichen(): Peindre {
     return this.pot(SENTINELLE.lichen, 'dominante');
   }
+  /** Le rameau de la Colombe : de pierre éteint, vert rallumé (`SENTINELLE.rameau`). */
+  get rameau(): Peindre {
+    return this.pot(SENTINELLE.rameau, 'dominante');
+  }
+  /** Le rocher de la Tortue d'ocre : gris, éteint comme rallumé (`SENTINELLE.roche`). */
+  get roche(): Peindre {
+    return this.pot(SENTINELLE.roche, 'dominante');
+  }
   get orbite(): Peindre {
     return this.pot(SENTINELLE.orbite, 'yeux');
   }
@@ -68,6 +76,8 @@ export interface Statue {
    * dans le monde et au défi, pour se montrer de profil à chaque caméra. Le socle et son foyer ne tournent pas.
    */
   tour?: Record<OuSeMontre, number>;
+  /** Sans flamme au foyer : sous un trépied, elle se lirait comme un bec Bunsen (l'Alambic de verre ; DA, SC-2). */
+  sansFlamme?: true;
 }
 
 /** Là où se montre une sentinelle : dans le monde, ou au défi (le portrait). */
@@ -278,12 +288,14 @@ export function orbites(T: Trace, a: Atelier, x: number, y: number, z: number, e
 const ALLUMAGE = new Map<Couleur, [Couleur, Couleur]>([
   [SENTINELLE.pierre, [SENTINELLE.pierre, SENTINELLE.rallumee]],
   [SENTINELLE.lichen, [SENTINELLE.lichen, SENTINELLE.rallumee]],
+  [SENTINELLE.rameau, [SENTINELLE.rameau, SENTINELLE.feuillage]],
   [LUEUR, [SENTINELLE.cendre, LUEUR]],
 ]);
 
 /**
  * La couleur d'une teinte de sentinelle au degré d'allumage `degre` (0 : éteinte, 1 : rallumée) : la pierre passe de
- * #8E8C84 (et son lichen) au Sable #DAA66A, la flamme et les veines de la cendre à la lueur ; les orbites ne changent pas.
+ * #8E8C84 (et son lichen) au Sable #DAA66A, le rameau de la Colombe au vert, la flamme et les veines de la cendre à la
+ * lueur ; les orbites ne changent pas.
  */
 export function allumage(c: Couleur, degre: number): Couleur {
   const de = ALLUMAGE.get(c);
@@ -340,7 +352,7 @@ function piecesDeSentinelle(s: Statue, { ou = 'monde', veines = 1 }: { ou?: OuSe
   return [
     { nom: 'socle', pivot: [0, 0, 0], dessiner: (T, pot) => socle(T, a(pot)) },
     { nom: 'sculpture', pivot: [0, HAUT_DU_SOCLE, 0], dessiner: (T, pot) => s.sculpture(R(T), a(pot)) },
-    { nom: 'flamme', pivot: [0, FOYER.haut, FOYER.z], lueur: 'allumage', dessiner: (T, pot) => flamme(T, a(pot)) },
+    ...(s.sansFlamme ? [] : [{ nom: 'flamme', pivot: [0, FOYER.haut, FOYER.z], lueur: 'allumage', dessiner: (T: Trace, pot: Pot) => flamme(T, a(pot)) } satisfies Piece]),
     { nom: 'veines', pivot: [0, HAUT_DU_SOCLE, 0], lueur: 'allumage', dessiner: (T, pot) => s.veines(R(T), a(pot)) },
   ];
 }

@@ -14,7 +14,7 @@ créature : Moustache
 ## -ing · `ing`
 
 - description : Be + -ing (maintenant) ou présent simple (d’habitude).
-- compétences : c4.en.langue.temps-verbaux
+- compétences : c4.en.5e.langue.verbe
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -129,7 +129,7 @@ Pour tous les items :
 ## Prétérit · `past-simple`
 
 - description : Was, were, les verbes en -ed ; did pour la question et la négation.
-- compétences : c4.en.langue.temps-verbaux
+- compétences : c4.en.5e.langue.verbe
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -239,7 +239,7 @@ Pour tous les items :
 ## Comparatifs · `comparatives`
 
 - description : Taller than, the tallest, more… than, better, the best.
-- compétences : c4.en.langue.groupe-nominal · c3.en.langue.groupe-nominal
+- compétences : c4.en.5e.langue.groupe-nominal
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !

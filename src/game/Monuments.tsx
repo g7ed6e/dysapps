@@ -1,6 +1,7 @@
 // Les monuments : de grands ouvrages classés, deux par archipel, chacun sur son îlot au large (l'observatoire des
 // baleines…). Ils emploient les blocs qui s'accumulent une fois les bâtiments finis. Dans le monde en 3D : un panneau
 // par monument et un panneau de la liste ; en vue simple : des pages. Le même contenu.
+import { ofPlace } from './world/placeArticle';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -163,7 +164,7 @@ export function lackingLine(missing: [BlockId, number][], inventory: Partial<Rec
 }
 
 function subtitle(m: MonumentDef, noms: NomsArchipels): string {
-  return `Monument des ${noms[m.archipelago]}, au large de ${getBiome(m.biome)?.name ?? m.biome}`;
+  return `Monument des ${noms[m.archipelago]}, au large ${ofPlace(getBiome(m.biome)?.name ?? m.biome)}`;
 }
 
 /** Le panneau d'un monument, qui glisse depuis le bas du monde (comme celui d'une île). */

@@ -39,6 +39,26 @@ export const BIOME_IDS = [
   'english-4e-grammar',
   'english-3e-comprehension',
   'english-3e-grammar',
+  'history-6e-antiquity',
+  'geography-6e-living',
+  'life-earth-sciences-6e-living-world',
+  'physics-chemistry-6e-matter-energy',
+  'technology-6e-objects',
+  'history-5e-middle-ages',
+  'geography-5e-resources',
+  'life-earth-sciences-5e-active-planet',
+  'physics-chemistry-5e-matter-universe',
+  'technology-5e-design',
+  'history-4e-revolutions',
+  'geography-4e-globalization',
+  'life-earth-sciences-4e-cells-evolution',
+  'physics-chemistry-4e-signals-circuits',
+  'technology-4e-modeling',
+  'history-3e-twentieth-century',
+  'geography-3e-france',
+  'life-earth-sciences-3e-human-body',
+  'physics-chemistry-3e-motion-energy',
+  'technology-3e-digital',
   'lv2-5e-introductions',
   'lv2-4e-daily-life',
   'lv2-3e-travel',
@@ -80,6 +100,26 @@ export type BlockId =
   | 'english-4e-grammar'
   | 'english-3e-comprehension'
   | 'english-3e-grammar'
+  | 'history-6e-antiquity'
+  | 'geography-6e-living'
+  | 'life-earth-sciences-6e-living-world'
+  | 'physics-chemistry-6e-matter-energy'
+  | 'technology-6e-objects'
+  | 'history-5e-middle-ages'
+  | 'geography-5e-resources'
+  | 'history-4e-revolutions'
+  | 'geography-4e-globalization'
+  | 'history-3e-twentieth-century'
+  | 'geography-3e-france'
+  | 'life-earth-sciences-5e-active-planet'
+  | 'physics-chemistry-5e-matter-universe'
+  | 'technology-5e-design'
+  | 'life-earth-sciences-4e-cells-evolution'
+  | 'physics-chemistry-4e-signals-circuits'
+  | 'technology-4e-modeling'
+  | 'life-earth-sciences-3e-human-body'
+  | 'physics-chemistry-3e-motion-energy'
+  | 'technology-3e-digital'
   | 'trophy-gold'
   | 'trophy-crystal'
   | 'lv2-5e-introductions'
@@ -130,6 +170,26 @@ export const BLOC = {
   rail: 'english-4e-grammar',
   antenne: 'english-3e-comprehension',
   taille: 'english-3e-grammar',
+  mosaique: 'history-6e-antiquity',
+  chaume: 'geography-6e-living',
+  fossile: 'life-earth-sciences-6e-living-world',
+  aimant: 'physics-chemistry-6e-matter-energy',
+  carton: 'technology-6e-objects',
+  enluminure: 'history-5e-middle-ages',
+  riziere: 'geography-5e-resources',
+  fonte: 'history-4e-revolutions',
+  conteneur: 'geography-4e-globalization',
+  reliure: 'history-3e-twentieth-century',
+  gres: 'geography-3e-france',
+  strate: 'life-earth-sciences-5e-active-planet',
+  sel: 'physics-chemistry-5e-matter-universe',
+  bambou: 'technology-5e-design',
+  petale: 'life-earth-sciences-4e-cells-evolution',
+  bobine: 'physics-chemistry-4e-signals-circuits',
+  liege: 'technology-4e-modeling',
+  savon: 'life-earth-sciences-3e-human-body',
+  ressort: 'physics-chemistry-3e-motion-energy',
+  cire: 'technology-3e-digital',
   dalle: 'lv2-5e-introductions',
   osier: 'lv2-4e-daily-life',
   bardeau: 'lv2-3e-travel',
@@ -189,6 +249,26 @@ export type BlockTexture =
   | 'rail'
   | 'antenne'
   | 'taille'
+  | 'mosaique'
+  | 'chaume'
+  | 'fossile'
+  | 'aimant'
+  | 'carton'
+  | 'enluminure'
+  | 'riziere'
+  | 'fonte'
+  | 'conteneur'
+  | 'reliure'
+  | 'gres'
+  | 'strate'
+  | 'sel'
+  | 'bambou'
+  | 'petale'
+  | 'bobine'
+  | 'liege'
+  | 'savon'
+  | 'ressort'
+  | 'cire'
   | 'or'
   | 'cristal'
   | 'dalle'
@@ -236,6 +316,60 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   'english-4e-grammar': { id: 'english-4e-grammar', name: 'Rail', top: '#85603a', side: '#4a4a50', texture: 'rail' },
   'english-3e-comprehension': { id: 'english-3e-comprehension', name: 'Antenne', top: '#b4bcc4', side: '#9aa4ae', texture: 'antenne' },
   'english-3e-grammar': { id: 'english-3e-grammar', name: 'Pierre de taille', top: '#e6dcc4', side: '#d8ccb0', texture: 'taille' },
+  // Le bloc de la Fouille des siècles (histoire, 6e) : des tesselles de 2 × 2 en tons ocre, terre cuite et crème, mats,
+  // l'ocre et le crème dominants (plus jaune que la brique, plus rouge que le chaume), distinctes du vitrail par
+  // l'absence de plomb et de couleurs vives.
+  'history-6e-antiquity': { id: 'history-6e-antiquity', name: 'Mosaïque', top: '#d6a258', side: '#b47c40', texture: 'mosaique' },
+  // Le bloc de la Pointe des paysages (géographie, 6e) : des bottes de paille en couches qui se chevauchent, distinctes
+  // du sable, de l'osier et du parchemin par le motif, pas par la teinte seule.
+  'geography-6e-living': { id: 'geography-6e-living', name: 'Chaume', top: '#d8b860', side: '#b0903e', texture: 'chaume' },
+  // Le bloc de la Vallée du vivant (SVT, 6e) : une pierre beige où dort une coquille en spirale, sombre ; distinct de la
+  // pierre de taille et du sable par la spirale, pas par la teinte seule (DA, SC-2).
+  'life-earth-sciences-6e-living-world': { id: 'life-earth-sciences-6e-living-world', name: 'Fossile', top: '#b3a68a', side: '#8f8370', texture: 'fossile' },
+  // Le bloc du Laboratoire des éléments (physique-chimie, 6e) : un aimant, le dessus en deux moitiés, rouge et bleue,
+  // les côtés gris métal marqués d'un U (DA, SC-2) ; jamais la couleur seule : les deux pôles se lisent à la forme.
+  'physics-chemistry-6e-matter-energy': { id: 'physics-chemistry-6e-matter-energy', name: 'Aimant', top: '#b84a40', side: '#8c9298', texture: 'aimant' },
+  // Le bloc du Hangar des inventions (technologie, 6e) : du carton ondulé brun clair, ses cannelures verticales,
+  // distinct des planches et de la terre par le motif (DA, SC-2).
+  'technology-6e-objects': { id: 'technology-6e-objects', name: 'Carton', top: '#b98d5a', side: '#9a7246', texture: 'carton' },
+  // Le bloc du Bourg des chroniques (histoire, 5e) : un violet profond parcouru de filets d'or, comme une page enluminée,
+  // distinct de l'obsidienne par les filets et par un violet plus clair.
+  'history-5e-middle-ages': { id: 'history-5e-middle-ages', name: 'Enluminure', top: '#6a4c9c', side: '#4e3878', texture: 'enluminure' },
+  // Le bloc du Delta des ressources (géographie, 5e) : des rangs de pousses vertes sur une eau bleu-vert, en terrasses,
+  // distincts de l'herbe et des feuilles par l'eau entre les rangs.
+  'geography-5e-resources': { id: 'geography-5e-resources', name: 'Rizière', top: '#a2bf42', side: '#4f8c86', texture: 'riziere' },
+  // Le bloc de l'Imprimerie des révolutions (histoire, 4e) : une fonte vert-noir à rivets, distincte de l'obsidienne, de
+  // l'acier et de l'ardoise par les rivets et par sa teinte verte.
+  'history-4e-revolutions': { id: 'history-4e-revolutions', name: 'Fonte', top: '#3e4a44', side: '#2c3631', texture: 'fonte' },
+  // Le bloc de l'Escale des échanges (géographie, 4e) : la tôle ondulée bleue d'un conteneur, distincte de l'eau par les
+  // ondes droites et serrées.
+  'geography-4e-globalization': { id: 'geography-4e-globalization', name: 'Conteneur', top: '#3d7fb0', side: '#2c6189', texture: 'conteneur' },
+  // Le bloc du Kiosque des témoins (histoire, 3e) : des dos de livres serrés, sans lettres, bleu-vert sombre, distincts
+  // du lambris et de la rizière par les dos verticaux.
+  'history-3e-twentieth-century': { id: 'history-3e-twentieth-century', name: 'Reliure', top: '#2f6f74', side: '#22545a', texture: 'reliure' },
+  // Le bloc du Plateau des territoires (géographie, 3e) : un grès rose à grain fin, en assises, distinct de la brique
+  // et de la tuile par sa teinte plus pâle et l'absence de joints marqués.
+  'geography-3e-france': { id: 'geography-3e-france', name: 'Grès rose', top: '#d49a94', side: '#b07872', texture: 'gres' },
+  // Les blocs des îles de sciences de 5e à 3e (décision du directeur artistique, SC-3) : le nom et les deux couleurs
+  // seulement ; la texture se peint dans world/pixels.ts.
+  // Le bloc de la Prairie des climats (SVT, 5e) : des couches de roche ; le dessus brun, les côtés en trois bandes, ocre #d4a656, brun-rouge #8a5a3a et gris #8e8a84.
+  'life-earth-sciences-5e-active-planet': { id: 'life-earth-sciences-5e-active-planet', name: 'Strate', top: '#9a6a44', side: '#8a5a3a', texture: 'strate' },
+  // Le bloc de la Saline des mélanges (physique-chimie, 5e) : du sel blanc, quatre petits cristaux carrés cernés de #8a98a6 sur chaque face (motif obligatoire).
+  'physics-chemistry-5e-matter-universe': { id: 'physics-chemistry-5e-matter-universe', name: 'Sel', top: '#ece8e2', side: '#c8ccd0', texture: 'sel' },
+  // Le bloc de la Menuiserie des objets (technologie, 5e) : des cannes de bambou, leurs bouts ronds dessus, verticales sur les côtés, nœuds #6f7a34.
+  'technology-5e-design': { id: 'technology-5e-design', name: 'Bambou', top: '#cdb46a', side: '#b49c4e', texture: 'bambou' },
+  // Le bloc de la Source des espèces (SVT, 4e) : des pétales roses en écailles, un cœur jaune.
+  'life-earth-sciences-4e-cells-evolution': { id: 'life-earth-sciences-4e-cells-evolution', name: 'Pétale', top: '#e88fb4', side: '#c8638e', texture: 'petale' },
+  // Le bloc de la Vigie des signaux (physique-chimie, 4e) : du fil de cuivre enroulé, l’axe gris dessus, les spires #8a4a22 sur les côtés.
+  'physics-chemistry-4e-signals-circuits': { id: 'physics-chemistry-4e-signals-circuits', name: 'Bobine', top: '#c47a3c', side: '#b5652e', texture: 'bobine' },
+  // Le bloc du Bassin des maquettes (technologie, 4e) : du liège cannelle moucheté de #4e3020 et de #d0a070.
+  'technology-4e-modeling': { id: 'technology-4e-modeling', name: 'Liège', top: '#b0785a', side: '#93603f', texture: 'liege' },
+  // Le bloc du Verger de la santé (SVT, 3e) : un savon vert menthe, une rainure et un ovale en relief #d8f0e4.
+  'life-earth-sciences-3e-human-body': { id: 'life-earth-sciences-3e-human-body', name: 'Savon', top: '#a6d8c0', side: '#86bfa4', texture: 'savon' },
+  // Le bloc du Tremplin des forces (physique-chimie, 3e) : un métal gris, un ressort en zigzag laiton #d6b04a.
+  'physics-chemistry-3e-motion-energy': { id: 'physics-chemistry-3e-motion-energy', name: 'Ressort', top: '#5a606a', side: '#4a4f58', texture: 'ressort' },
+  // Le bloc de la Ruche des réseaux (technologie, 3e) : de la cire couleur miel, des alvéoles en traits fins #8f5f1e.
+  'technology-3e-digital': { id: 'technology-3e-digital', name: 'Cire', top: '#d9a03c', side: '#b98030', texture: 'cire' },
   'trophy-gold': { id: 'trophy-gold', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   'trophy-crystal': { id: 'trophy-crystal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Le bloc du Relais des voyageurs (LV2, 5e) : des dalles de 8 × 8 décalées, distinctes de la pierre de taille par le motif.
@@ -281,7 +415,7 @@ export function ofBlock(id: BlockId): string {
  * dys). Les autres blocs sont des objets qu’on compte : « 5 toits », « 2 lanternes ».
  */
 const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
-  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'trophy-gold'],
+  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'physics-chemistry-5e-matter-universe', 'technology-5e-design', 'technology-4e-modeling', 'life-earth-sciences-3e-human-body', 'technology-3e-digital', 'trophy-gold'],
 );
 
 /** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */
@@ -346,6 +480,9 @@ export interface BiomeDef {
  * islands.ts, que le compilateur vérifie (`satisfies BiomeDef[]`), avec les tests (biomes.test.ts).
  */
 export const BIOMES: BiomeDef[] = ILES;
+
+/** Les matières des sciences (SVT, physique-chimie, technologie : SC-2 en 6e, SC-3 de la 5e à la 3e). */
+export const SCIENCE_SUBJECTS: readonly Subject[] = ['life-earth-sciences', 'physics-chemistry', 'technology'];
 
 /** Les îles d'une matière, dans l'ordre des classes. */
 export function biomesOf(subject: Subject): BiomeDef[] {

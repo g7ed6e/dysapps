@@ -3,7 +3,7 @@ lieu : french-5e-homophones
 module : Homophones grammaticaux
 matière : french
 classe : 5e
-description : Ses ou ces, quel ou qu’elle, sans ou s’en : choisir le bon mot, la règle sous les yeux.
+description : Des mots qui se disent pareil : choisis le bon, la règle sous les yeux.
 gardien : le Sphinx des routes
 icône : compass
 créature : Sema
@@ -15,14 +15,13 @@ créature : Sema
 
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
-- description : Ses / ces, ou / où, la / là / l’a, leur / leurs, quand, peu, c’est / s’est.
-- compétences : c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
+- description : Deux mots qui se disent pareil : choisis le bon.
+- compétences : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale
 
 ## Aiguillage · `choices`
 
-- description : Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt, mais / mes / met / m’est…
-- compétences : c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
-- consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
+- description : Le bon mot dans la phrase, la règle sous les yeux.
+- compétences : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c4.fr.5e.grammaire.accords · c3.fr.langue.orthographe-grammaticale
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : french-5e-homophones
@@ -36,159 +35,191 @@ Pour tous les items :
 
 ### Niveau 1 · `french-5e-homophones-choices-1`
 
+- consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
+- programme : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale
+
 Pour tous les items :
 - aide « Homophones » :
-  - quel / quelle : devant un nom (quel jour, quelle heure).
-  - qu’elle = que + elle (on peut dire « qu’il »).
+  - ma, ta : devant un nom (ma chambre, ta veste).
+  - m’a, t’a = me + a, te + a : on peut dire « m’avait », « t’avait ».
   - sans = pas de. s’en = se + en (il s’en va).
   - dans = à l’intérieur. d’en = de + en (d’en parler).
 
-1. énoncé : … heure est-il ?
-   - choix : Quel · Quelle · Qu’elle
-   - réponse : Quelle
-   - indice : « heure » est un nom féminin : on cherche le déterminant.
-   - explication : « Quelle heure » : quelle accompagne le nom féminin « heure ».
-2. énoncé : Je crois … viendra demain.
-   - choix : quelle · qu’elle · quel
-   - réponse : qu’elle
-   - indice : Remplace par « qu’il » : si ça marche, c’est « qu’elle ».
-   - explication : « Je crois qu’il viendra » fonctionne : c’est « qu’elle », que + elle.
-3. énoncé : Il est parti … dire au revoir.
+1. clé : french-5e-homophones-choices-1-2
+   - énoncé : Il est parti … dire au revoir.
    - choix : sans · s’en · sang
    - réponse : sans
    - indice : « sans » = pas de, l’absence.
    - explication : Il est parti sans dire au revoir : « sans » signifie l’absence.
-4. énoncé : Elle … va tout de suite.
+2. clé : french-5e-homophones-choices-1-3
+   - énoncé : Elle … va tout de suite.
    - choix : sans · s’en · sent
    - réponse : s’en
    - indice : « s’en aller » : on peut dire « je m’en vais ».
    - explication : « Elle s’en va » : verbe s’en aller, se + en.
-5. énoncé : Le chat dort … le panier.
+3. clé : french-5e-homophones-choices-1-4
+   - énoncé : Le chat dort … le panier.
    - choix : dans · d’en · dent
    - réponse : dans
    - indice : « dans » = à l’intérieur de.
    - explication : Le chat dort dans le panier : à l’intérieur.
-6. énoncé : Arrête … parler !
+4. clé : french-5e-homophones-choices-1-5
+   - énoncé : Arrête … parler !
    - choix : dans · d’en · dent
    - réponse : d’en
    - indice : « d’en » = de + en : arrête de parler de cela.
    - explication : Arrête d’en parler : de + en.
-7. énoncé : … beau match !
-   - choix : Quel · Quelle · Qu’elle
-   - réponse : Quel
-   - indice : « match » est un nom masculin.
-   - explication : « Quel beau match » : quel accompagne le nom masculin « match ».
-8. énoncé : Je pense … a raison.
-   - choix : quelle · qu’elle · quel
-   - réponse : qu’elle
-   - indice : Remplace par « qu’il ».
-   - explication : « Je pense qu’il a raison » fonctionne : c’est « qu’elle ».
+5. clé : ma-oncle
+   - énoncé : Mon oncle … offert un ballon.
+   - choix : ma · m’a · m’as
+   - réponse : m’a
+   - indice : Remplace par « m’avait » : si ça marche, c’est « m’a ».
+   - explication : « Mon oncle m’avait offert un ballon » fonctionne : c’est « m’a », me + a, le verbe avoir. « M’as » va avec tu : tu m’as offert.
+6. clé : ma-chambre
+   - énoncé : J’ai rangé … chambre.
+   - choix : ma · m’a · m’as
+   - réponse : ma
+   - indice : Remplace par « m’avait » : si ça ne marche pas, c’est « ma ».
+   - explication : « J’ai rangé m’avait chambre » ne veut rien dire : c’est « ma », devant le nom chambre, comme « ta chambre ».
+7. clé : ta-frere
+   - énoncé : Ton frère … appelé hier soir.
+   - choix : ta · t’a · tas
+   - réponse : t’a
+   - indice : Remplace par « t’avait » : si ça marche, c’est « t’a ».
+   - explication : « Ton frère t’avait appelé » fonctionne : c’est « t’a », te + a, le verbe avoir.
+8. clé : ta-veste
+   - énoncé : Prends … veste, il pleut.
+   - choix : ta · t’a · tas
+   - réponse : ta
+   - indice : Remplace par « t’avait » : si ça ne marche pas, c’est « ta ».
+   - explication : « Prends t’avait veste » ne veut rien dire : c’est « ta », devant le nom veste, comme « ma veste ». Un tas, c’est une pile.
 
 ### Niveau 2 · `french-5e-homophones-choices-2`
 
+- consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
+- programme : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale
+
 Pour tous les items :
 - aide « Homophones » :
-  - ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).
-  - si = condition ou oui. s’y = se + y (il s’y met).
-  - plus tôt = contraire de plus tard. plutôt = de préférence.
-  - près = pas loin. prêt = préparé.
+  - leur devant un verbe = à eux : jamais de s (je leur parle).
+  - leur devant un nom au singulier, leurs devant un nom au pluriel (leur chien, leurs chiens).
+  - mon, ton : devant un nom (mon cahier, ton bureau).
+  - m’ont, t’ont = me + ont, te + ont : on peut dire « m’avaient », « t’avaient ».
 
-1. énoncé : Il … a pas de pain.
-   - choix : ni · n’y · nid
-   - réponse : n’y
-   - indice : « n’y » = ne + y : il n’y a pas.
-   - explication : Il n’y a pas de pain : ne + y.
-2. énoncé : Je n’aime … le froid … la pluie.
-   - lu : Je n’aime  (mot manquant)  le froid  (mot manquant)  la pluie.
-   - choix : ni · n’y · nie
-   - réponse : ni
-   - indice : « ni » = et pas.
-   - explication : Ni le froid ni la pluie : et pas l’un, et pas l’autre.
-3. énoncé : Elle … met dès ce soir.
-   - choix : si · s’y · ci
-   - réponse : s’y
-   - indice : « s’y mettre » : on peut dire « je m’y mets ».
-   - explication : Elle s’y met : se + y.
-4. énoncé : Viens … tu veux.
-   - choix : si · s’y · ci
-   - réponse : si
-   - indice : « si » = à condition que.
-   - explication : Viens si tu veux : condition.
-5. énoncé : Il est arrivé … que prévu.
-   - choix : plus tôt · plutôt · plus tot
-   - réponse : plus tôt
-   - indice : Contraire de « plus tard » ? Alors c’est « plus tôt » en deux mots.
-   - explication : Plus tôt que prévu = avant l’heure prévue : contraire de plus tard.
-6. énoncé : Prends une pomme … qu’un gâteau.
-   - choix : plus tôt · plutôt · plus tot
-   - réponse : plutôt
-   - indice : « plutôt » = de préférence.
-   - explication : Prends une pomme plutôt qu’un gâteau : de préférence.
-7. énoncé : Le bus est … de l’école.
-   - choix : près · prêt · pré
-   - réponse : près
-   - indice : « près » = pas loin.
-   - explication : Le bus est près de l’école : pas loin.
-8. énoncé : Il est … à partir.
-   - choix : près · prêt · pré
-   - réponse : prêt
-   - indice : « prêt » = préparé (au féminin : prête).
-   - explication : Il est prêt à partir : préparé.
+1. clé : leur-pretes
+   - énoncé : Je … ai prêté mes feutres.
+   - choix : leur · leurs · l’heure
+   - réponse : leur
+   - indice : Devant un verbe, « leur » veut dire « à eux ».
+   - explication : « Je leur ai prêté » = j’ai prêté à eux : « leur » est devant le verbe, il ne prend jamais de s.
+2. clé : leurs-chiens
+   - énoncé : Les voisins promènent … chiens.
+   - choix : leur · leurs · l’heure
+   - réponse : leurs
+   - indice : Devant un nom : un chien, ou plusieurs ?
+   - explication : « chiens » est au pluriel : on écrit « leurs », avec un s.
+3. clé : leur-maison
+   - énoncé : Mes cousins ont vendu … maison.
+   - choix : leur · leurs · l’heure
+   - réponse : leur
+   - indice : Devant un nom : une maison, ou plusieurs ?
+   - explication : Ils ont une seule maison : « leur maison », au singulier, sans s. Les cousins sont plusieurs, mais c’est le nom qui commande.
+4. clé : leur-dis
+   - énoncé : Dis-… de venir.
+   - choix : leur · leurs · l’heure
+   - réponse : leur
+   - indice : Dis à qui ? « leur » veut dire « à eux ».
+   - explication : « Dis-leur » = dis à eux : « leur » va avec le verbe, il ne prend jamais de s.
+5. clé : mont-amis
+   - énoncé : Mes amis … aidé à porter le sac.
+   - choix : mon · m’ont · mont
+   - réponse : m’ont
+   - indice : Remplace par « m’avaient » : si ça marche, c’est « m’ont ».
+   - explication : « Mes amis m’avaient aidé » fonctionne : c’est « m’ont », me + ont, le verbe avoir.
+6. clé : mon-cahier
+   - énoncé : J’ai oublié … cahier.
+   - choix : mon · m’ont · mont
+   - réponse : mon
+   - indice : Remplace par « m’avaient » : si ça ne marche pas, c’est « mon ».
+   - explication : « J’ai oublié m’avaient cahier » ne veut rien dire : c’est « mon », devant le nom cahier. Un mont, c’est une montagne.
+7. clé : tont-parents
+   - énoncé : Tes parents … appelé ?
+   - choix : ton · t’ont · thon
+   - réponse : t’ont
+   - indice : Remplace par « t’avaient » : si ça marche, c’est « t’ont ».
+   - explication : « Tes parents t’avaient appelé » fonctionne : c’est « t’ont », te + ont, le verbe avoir.
+8. clé : ton-bureau
+   - énoncé : Range … bureau, s’il te plaît.
+   - choix : ton · t’ont · thon
+   - réponse : ton
+   - indice : Remplace par « t’avaient » : si ça ne marche pas, c’est « ton ».
+   - explication : « Range t’avaient bureau » ne veut rien dire : c’est « ton », devant le nom bureau. Le thon, c’est un poisson.
 
 ### Niveau 3 · `french-5e-homophones-choices-3`
 
-Pour tous les items :
-- aide « Mais, mes, met, m’est » :
-  - mais = pourtant (petit, mais courageux).
-  - mes = pluriel de « mon » (mon ami, mes amis) : on peut dire « tes ».
-  - met = verbe mettre (il met, il mettait).
-  - m’est = me + est (cela m’est égal, cela t’est égal).
+- consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
+- programme : c4.fr.5e.grammaire.classes-de-mots · c4.fr.5e.grammaire.accords · c4.fr.5e.vocabulaire.orthographe
 
-1. énoncé : J’ai cherché partout, … je n’ai rien trouvé.
-   - choix : mais · mes · met
-   - réponse : mais
-   - indice : Remplace par « pourtant ».
-   - explication : « J’ai cherché partout, pourtant je n’ai rien trouvé » fonctionne : c’est « mais ».
-2. énoncé : … parents arrivent ce soir.
-   - choix : Mais · Mes · Met
-   - réponse : Mes
-   - indice : Remplace par « tes » : tes parents.
-   - explication : On peut dire « tes parents » : c’est « mes », le pluriel de « mon ».
-3. énoncé : Il … la table avant le dîner.
-   - choix : mes · m’est · met
-   - réponse : met
-   - indice : Remplace par « mettait ».
-   - explication : « Il mettait la table » fonctionne : c’est le verbe mettre, « met ».
-4. énoncé : Tu peux prendre … crayons de couleur.
-   - choix : mes · met · mais
-   - réponse : mes
-   - indice : Remplace par « tes » : tes crayons.
-   - explication : On peut dire « tes crayons » : c’est « mes », le pluriel de « mon ».
-5. énoncé : Elle … toujours son casque à vélo.
-   - choix : mais · met · m’est
-   - réponse : met
-   - indice : Remplace par « mettait ».
-   - explication : « Elle mettait son casque » fonctionne : c’est le verbe mettre, « met ».
-6. énoncé : Le film était long, … il était très drôle.
-   - choix : met · mes · mais
-   - réponse : mais
-   - indice : Remplace par « pourtant ».
-   - explication : « Le film était long, pourtant il était très drôle » fonctionne : c’est « mais ».
-7. énoncé : Ce qu’il pense … égal.
-   - choix : m’est · mais · mes
-   - réponse : m’est
-   - indice : Remplace par « t’est » : cela t’est égal.
-   - explication : « Cela m’est égal » : me + est, comme « cela t’est égal ».
-8. énoncé : Cette histoire … arrivée l’an dernier.
-   - choix : mais · m’est · met
-   - réponse : m’est
-   - indice : Remplace par « t’est » : elle t’est arrivée.
-   - explication : « Cette histoire m’est arrivée » : me + est, comme « elle t’est arrivée ».
+Pour tous les items :
+- aide « La, l’a, là » :
+  - l’a = l’ + a : on peut dire « l’avait » (il l’a vue, il l’avait vue).
+  - Avec avoir, le participe s’accorde avec le COD placé avant : la tarte, il l’a mangée.
+  - la : devant un nom (la boîte), ou devant un verbe sans avoir (je la vois).
+  - là = à cet endroit : on peut dire « ici ».
+
+1. clé : la-lettre
+   - énoncé : Cette lettre, Paul … écrite hier.
+   - choix : la · l’a · là
+   - réponse : l’a
+   - indice : Remplace par « l’avait ».
+   - explication : « Paul l’avait écrite » fonctionne : c’est « l’a ». « l’ », c’est la lettre : elle est placée avant, donc on écrit écrite, avec un e.
+2. clé : la-boite
+   - énoncé : Pose … boîte sur la table.
+   - choix : la · l’a · là
+   - réponse : la
+   - indice : Le mot est devant un nom.
+   - explication : « la boîte » : « la » est devant le nom boîte. On ne peut pas dire « pose l’avait boîte ».
+3. clé : la-sac
+   - énoncé : Mon sac est …, sous la chaise.
+   - choix : la · l’a · là
+   - réponse : là
+   - indice : Remplace par « ici ».
+   - explication : « Mon sac est ici » fonctionne : c’est « là », l’endroit, avec un accent.
+4. clé : la-porte
+   - énoncé : La porte ? Le vent … ouverte.
+   - choix : la · l’a · là
+   - réponse : l’a
+   - indice : Remplace par « l’avait ».
+   - explication : « Le vent l’avait ouverte » fonctionne : c’est « l’a ». « l’ », c’est la porte : elle est placée avant, donc on écrit ouverte, avec un e.
+5. clé : la-chanson
+   - énoncé : Cette chanson, Léa … chante souvent.
+   - choix : la · l’a · là
+   - réponse : la
+   - indice : Remplace par « l’avait » : est-ce que ça marche ?
+   - explication : « Léa l’avait chante » ne veut rien dire : c’est « la », devant le verbe chante. « la » remplace la chanson.
+6. clé : la-veste
+   - énoncé : Ta veste ? Maman … lavée hier.
+   - choix : la · l’a · là
+   - réponse : l’a
+   - indice : Remplace par « l’avait ».
+   - explication : « Maman l’avait lavée » fonctionne : c’est « l’a ». « l’ », c’est ta veste : elle est placée avant, donc on écrit lavée, avec un e.
+7. clé : la-viens
+   - énoncé : Viens …, près de moi.
+   - choix : la · l’a · là
+   - réponse : là
+   - indice : Remplace par « ici ».
+   - explication : « Viens ici » fonctionne : c’est « là », l’endroit, avec un accent.
+8. clé : la-photo
+   - énoncé : Cette photo, Inès … prise à la mer.
+   - choix : la · l’a · là
+   - réponse : l’a
+   - indice : Remplace par « l’avait ».
+   - explication : « Inès l’avait prise » fonctionne : c’est « l’a ». « l’ », c’est la photo : elle est placée avant, donc on écrit prise.
 
 ## Bifurcation · `homophone-sentences`
 
 - description : Deux trous dans la phrase : choisis la bonne paire de mots.
-- compétences : c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
+- compétences : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale
 - consigne : Deux trous dans la phrase : choisis la paire de mots qui convient, dans l’ordre.
 - bravo : Bonne route !
 - erreur : {explanation}
@@ -260,62 +291,68 @@ Pour tous les items :
 
 Pour tous les items :
 - aide « Deux mots à choisir » :
-  - on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.
-  - ni = et pas · n’y = ne + y · ne = négation.
-  - si = condition ou question · s’y = se + y (il s’y met).
-  - c’est = cela est · s’est = se + est (elle s’est assise).
-  - sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.
-  - quand = lorsque · quant à = pour ce qui est de.
-  - ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être.
+  - ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est (elle s’est assise).
+  - a = avait · à = préposition. peu = pas beaucoup · peut = pouvait.
+  - sans = pas de · dans = à l’intérieur.
+  - leur devant un verbe (à eux) · leurs devant un nom pluriel · sont = verbe être.
+  - ma = devant un nom · m’a = m’avait. la = devant un nom · l’a = l’avait · là = ici.
 
-1. énoncé : … … va pas sans lui.
-   - lu : " (mot manquant)   (mot manquant)  va pas sans lui."
-   - choix : On / n’y · On / ni · Ont / n’y
-   - réponse : On / n’y
-   - indice : « quelqu’un » : on. « ne + y » : n’y.
-   - explication : On n’y va pas : quelqu’un (on), ne + y (n’y).
-2. énoncé : Elle … fait mal … la cour.
+1. clé : french-5e-homophones-homophone-sentences-2-1
+   - énoncé : Elle … fait mal … la cour.
    - lu : Elle  (mot manquant)  fait mal  (mot manquant)  la cour.
    - choix : s’est / dans · c’est / dans · s’est / d’en
    - réponse : s’est / dans
    - indice : « je me suis fait mal » : s’est. « à l’intérieur de » : dans.
    - explication : Elle s’est fait mal (verbe se faire mal) dans la cour (à l’intérieur).
-3. énoncé : … tu veux, on … met.
-   - lu : " (mot manquant)  tu veux, on  (mot manquant)  met."
-   - choix : Si / s’y · S’y / si · Si / si
-   - réponse : Si / s’y
-   - indice : Condition : si. « s’y mettre » : s’y.
-   - explication : Si tu veux (condition), on s’y met (se + y).
-4. énoncé : Il … levé … faire de bruit.
+2. clé : french-5e-homophones-homophone-sentences-2-3
+   - énoncé : Il … levé … faire de bruit.
    - lu : Il  (mot manquant)  levé  (mot manquant)  faire de bruit.
    - choix : s’est / sans · c’est / sans · s’est / s’en
    - réponse : s’est / sans
    - indice : « je me suis levé » : s’est. « pas de » : sans.
    - explication : Il s’est levé (verbe se lever) sans faire de bruit (pas de bruit).
-5. énoncé : … … fini, ils rentrent.
-   - lu : " (mot manquant)   (mot manquant)  fini, ils rentrent."
-   - choix : Quand / c’est · Quant / s’est · Qu’en / c’est
-   - réponse : Quand / c’est
-   - indice : « lorsque » : quand. « cela est » : c’est.
-   - explication : Quand c’est fini : lorsque cela est fini.
-6. énoncé : Elle … … chaussures neuves.
+3. clé : french-5e-homophones-homophone-sentences-2-5
+   - énoncé : Elle … … chaussures neuves.
    - lu : Elle  (mot manquant)   (mot manquant)  chaussures neuves.
    - choix : a / ses · à / ces · à / ses
    - réponse : a / ses
    - indice : « avait » : a. « les siennes » : ses.
    - explication : Elle a (avait) ses (les siennes) chaussures neuves.
-7. énoncé : … vélos … à eux.
+4. clé : french-5e-homophones-homophone-sentences-2-6
+   - énoncé : … vélos … à eux.
    - lu : " (mot manquant)  vélos  (mot manquant)  à eux."
    - choix : Leurs / sont · Leur / sont · Leurs / son
    - réponse : Leurs / sont
    - indice : devant un nom pluriel : leurs. « étaient » : sont.
    - explication : Leurs vélos (nom pluriel) sont (étaient) à eux.
-8. énoncé : Je … sais pas … tu viens.
-   - lu : Je  (mot manquant)  sais pas  (mot manquant)  tu viens.
-   - choix : ne / si · ni / si · ne / s’y
-   - réponse : ne / si
-   - indice : Négation : ne. Question « est-ce que tu viens ? » : si.
-   - explication : Je ne sais pas si tu viens : ne (négation), puis si (question indirecte).
+5. clé : hs-ma-crayons
+   - énoncé : Il … prêté … crayons.
+   - lu : Il  (mot manquant)  prêté  (mot manquant)  crayons.
+   - choix : m’a / ses · ma / ses · m’a / c’est
+   - réponse : m’a / ses
+   - indice : « m’avait » : m’a. « les siens » : ses.
+   - explication : Il m’a (m’avait) prêté ses (les siens) crayons.
+6. clé : hs-leur-verite
+   - énoncé : Je … ai dit … vérité.
+   - lu : Je  (mot manquant)  ai dit  (mot manquant)  vérité.
+   - choix : leur / la · leurs / la · leur / l’a
+   - réponse : leur / la
+   - indice : « à eux », devant le verbe : leur. Devant un nom : la.
+   - explication : Je leur (à eux) ai dit la vérité : « leur » devant le verbe ne prend pas de s, « la » est devant le nom vérité.
+7. clé : hs-a-peu
+   - énoncé : Il … mangé … de pain.
+   - lu : Il  (mot manquant)  mangé  (mot manquant)  de pain.
+   - choix : a / peu · à / peu · a / peut
+   - réponse : a / peu
+   - indice : « avait » : a. « pas beaucoup » : peu.
+   - explication : Il a (avait) mangé peu (pas beaucoup) de pain.
+8. clé : hs-la-cle
+   - énoncé : La clé ? Il … posée … .
+   - lu : La clé ? Il  (mot manquant)  posée  (mot manquant)  .
+   - choix : l’a / là · la / là · l’a / la
+   - réponse : l’a / là
+   - indice : « l’avait » : l’a. « ici » : là.
+   - explication : Il l’a (l’avait) posée là (ici). « l’ », c’est la clé : elle est placée avant, donc on écrit posée, avec un e.
 
 ## Les plans
 

@@ -25,13 +25,14 @@ it('deux monuments par archipel, chacun avec ses blocs gagnés dans les îles de
   }
 });
 
-it('chaque îlot de monument est libre (loin des îles, des ouvrages, du port, des baleines), dans l’archipel, sans chevaucher l’autre', () => {
+// Le relevé de ce qui bloque un îlot, pour chaque archipel (39 îles depuis HG-3) : près de 5 s, au-delà du délai par défaut.
+it('chaque îlot de monument est libre (loin des îles, des ouvrages, du port, des baleines), dans l’archipel, sans chevaucher l’autre', { timeout: 20_000 }, () => {
   for (const a of ARCHIPELAGOS) {
-    const blocked = monumentBlocked(a.classe);
+    const blocked = monumentBlocked(a.classe, []);
     const b = worldBounds(a.classe);
     const [m1, m2] = monumentsOf(a.classe);
     for (const m of [m1, m2]) {
-      expect(monumentIsletFree(a.classe, m.islet.x, m.islet.y, blocked), m.id).toBe(true);
+      expect(monumentIsletFree(a.classe, [], m.islet.x, m.islet.y, blocked), m.id).toBe(true);
       expect(m.islet.x >= b.minX && m.islet.x + MONUMENT_ISLET <= b.maxX && m.islet.y >= b.minY && m.islet.y + MONUMENT_ISLET <= b.maxY, m.id).toBe(true);
     }
     const apart = Math.abs(m1.islet.x - m2.islet.x) >= MONUMENT_ISLET + 2 || Math.abs(m1.islet.y - m2.islet.y) >= MONUMENT_ISLET + 2;

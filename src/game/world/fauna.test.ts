@@ -112,7 +112,7 @@ describe('les nuages d’Archipéo (DA-11)', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const b = worldBounds(a);
       // Le plus au nord de ce qu'on parcourt : les îles (leurs chemins), les ponts, la route du navire.
-      const ponts = BRIDGES.filter((d) => archipelagoOfIsland(d.from) === a).flatMap((d) => bridgePath(d));
+      const ponts = BRIDGES.filter((d) => archipelagoOfIsland(d.from) === a).flatMap((d) => bridgePath(d, []));
       const archipel = ARCHIPELAGOS.find((d) => d.classe === a);
       expect(archipel).toBeDefined();
       const port = archipel?.port ?? 'maths-6e-calculation';

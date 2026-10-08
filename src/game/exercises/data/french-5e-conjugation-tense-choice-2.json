@@ -36,12 +36,12 @@
       "spoken": "Au futur antérieur : demain à midi, je (mot manquant) mon exposé.",
       "choices": [
         "aurai terminé",
-        "aurais terminé",
+        "ai terminé",
         "avais terminé"
       ],
       "answer": "aurai terminé",
       "hint": "Quel est le futur du verbe avoir avec je ?",
-      "explanation": "Futur antérieur : avoir au futur, puis le participe : j’aurai terminé. « Aurais » finit par -ais : c’est le conditionnel.",
+      "explanation": "Futur antérieur : avoir au futur, puis le participe : j’aurai terminé. « Ai terminé » est le passé composé, « avais terminé » le plus-que-parfait.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -136,12 +136,12 @@
       "spoken": "Au futur antérieur : quand tu (mot manquant) ton goûter, tu pourras jouer.",
       "choices": [
         "auras mangé",
-        "aurais mangé",
+        "mangeras",
         "avais mangé"
       ],
       "answer": "auras mangé",
       "hint": "Quel est le futur du verbe avoir avec tu ?",
-      "explanation": "Futur antérieur : avoir au futur, puis le participe : tu auras mangé. « Aurais » finit par -ais : c’est le conditionnel.",
+      "explanation": "Futur antérieur : avoir au futur, puis le participe : tu auras mangé. « Mangeras » est le futur simple, sans auxiliaire ; « avais mangé », le plus-que-parfait.",
       "aid": {
         "kind": "rule-card",
         "props": {

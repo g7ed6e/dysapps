@@ -19,9 +19,10 @@ import { CreatureBubble } from './CreatureBubble';
 import { InventoryLink } from './Inventory';
 import { pickExercise, questProgress } from './exercises';
 import { Stars } from './Stars';
-import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss } from './boss';
+import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss, quoted } from './boss';
 import { BlockIcon } from './Voxel';
 import { PlanSection } from './PlanSection';
+import { JoinLine } from './Joins';
 import { ShipSection } from './ShipSection';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { stageAt } from './world/vehicle';
@@ -206,7 +207,7 @@ export function BiomePage() {
         </h2>
       )}
       {!sansLv2 && (() => {
-        const ready = unlocked && isBossOpen(biome, state.progress);
+        const ready = unlocked && isBossOpen(biome, state.progress, state.world.challengesKeptOpen);
         const beaten = isBossBeaten(biome.id, state.progress);
         const boss = state.progress[`${biome.id}-challenge`];
         const content = (
@@ -222,7 +223,7 @@ export function BiomePage() {
               <span className="tag tag-new">{textes.libelles.defiPretCourt}</span>
             ) : (
               <span className="tag">
-                <Icon name="lock" /> {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque mission'}
+                <Icon name="lock" /> {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).map(quoted).join(', ') || 'chaque mission'}
               </span>
             )}
           </>
@@ -248,6 +249,9 @@ export function BiomePage() {
           </div>
         </>
       )}
+
+      {/* Réuni à un autre lieu (GD-9) : la construction qui les réunit se pose depuis sa page. */}
+      {unlocked && <JoinLine island={biome.id} />}
 
       {unlocked && stageAt(biome.id) && (
         <>

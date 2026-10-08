@@ -21,7 +21,7 @@ import { useTextes } from '../universes';
 import { blockCount, estIleLv2, getBiome, guardianTitle, missionsJouables, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { isBossBeaten, isBossOpen } from './boss';
-import { useConstruireUnOuvrage } from './Bridges';
+import { useConstruireUnOuvrage, withArticle } from './Bridges';
 import { livrerLaCommande } from './Requests';
 import { accueilDeLIle } from './discoveries';
 import { currentStage, levelFor } from './engine';
@@ -39,9 +39,10 @@ import { statueDe } from './world/terrain';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import { borneDe } from './world/affordance';
 import type { ObjetDeLaFiche } from './world/layout';
-import { KIND_NAME, bridgeState, conditionText, getArchipelago, getBridge, isBiomeUnlocked, otherEnd, payableBlocks, remainingPath, type ArchipelagoId } from './world/archipelago';
+import { KIND_NAME, bridgeState, conditionText, getArchipelago, getBridge, isBiomeUnlocked, linkKind, linksToIsland, nearestDeparture, opensAnIsland, otherEnd, payableBlocks, reachableIslands, type ArchipelagoId } from './world/archipelago';
 import { estPrete, texteDeLaCommande, type Commande } from './world/requests';
 import { ileDeLOuvrage } from './world/model';
+import { ofPlace, thePlace, toPlace } from './world/placeArticle';
 import { earnIsland, whereToEarn } from './world/uses';
 import { VEHICLE_NAME, VEHICLE_STAGES } from './world/vehicle';
 
@@ -49,12 +50,14 @@ import { VEHICLE_NAME, VEHICLE_STAGES } from './world/vehicle';
 export interface FicheOuverte {
   objet: ObjetDeLaFiche;
   seq: number;
-  /** Ouverte autrement que d'un toucher sur l'objet (« Y aller », « Voir le premier ouvrage ») : son signe saute. */
+  /** Ouverte autrement que d'un toucher sur l'objet (« Y aller », « Relier ») : son signe saute. */
   saut: boolean;
   /** Ce que dit la créature touchée, quand elle n'a rien à proposer. */
   phrase?: string;
   /** Une île pâle touchée la première fois : la découverte des ouvrages, deuxième phrase de sa fiche. */
   decouverte?: string;
+  /** Ouverte par « Partir d'une autre île » (GD-9) : la caméra tient la liaison au-dessus de la fiche. */
+  cadrer?: boolean;
 }
 
 interface Props {
@@ -72,8 +75,10 @@ interface Props {
   onLivree?: (c: Commande) => boolean;
   /** La commande dont la petite construction se pose : la phrase « posée » attend la fin. */
   commandeEnCoursDePose?: string | null;
-  /** « Voir le premier ouvrage » d'une île pâle : la fiche de cet ouvrage. */
-  onVoirOuvrage: (id: string) => void;
+  /** « Relier » d'une île pâle : la fiche de cet ouvrage ; `autreDepart` : depuis « Partir d'une autre île » (la caméra cadre sa liaison). */
+  onVoirOuvrage: (id: string, autreDepart?: boolean) => void;
+  /** « Y aller » de la fiche d'un Gardien pas encore prêt : son lieu et ses missions, comme un toucher sur son lieu. */
+  onAllerAuLieu?: (id: BiomeId) => void;
 }
 
 /** La fiche de l'objet touché ; la page la remonte à chaque ouverture (`key`). */
@@ -231,14 +236,18 @@ function FicheDeLaBorne({ id, onClose }: Props & { id: string }) {
   );
 }
 
-/** Le Gardien : ce qu'il attend (une phrase), ou « Rallumer » quand il est prêt, déjà rallumé avec ses étoiles (GD-8). */
-function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
+/**
+ * Le Gardien : ce qu'il attend (une phrase), ou « Rallumer » quand il est prêt, déjà rallumé avec ses étoiles (GD-8).
+ * Son îlot peut se tenir loin de son lieu (7 octobre 2026, choix 4a du mainteneur) : la fiche nomme son lieu (son icône et
+ * son nom) ; « Rallumer » ouvre le défi d'ici, sans trajet du bonhomme ; pas encore prêt, « Y aller » mène à son lieu.
+ */
+function FicheDuGardien({ ile, onClose, onAllerAuLieu }: Props & { ile: BiomeId }) {
   const { state } = useBlocland();
   const textes = useTextes();
   const biome = getBiome(ile);
   if (!biome) return null;
   const unlocked = isBiomeUnlocked(ile, state.world.links);
-  const pret = unlocked && isBossOpen(biome, state.progress);
+  const pret = unlocked && isBossOpen(biome, state.progress, state.world.challengesKeptOpen);
   const vaincu = isBossBeaten(ile, state.progress);
   const phrase = pret ? (vaincu ? textes.libelles.dejaFait : textes.libelles.defiPret) : explicationDuGardien(biome, state.progress, unlocked);
   const stars = state.progress[`${ile}-challenge`]?.stars ?? 0;
@@ -249,10 +258,17 @@ function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
       icone={pret ? 'flame' : 'lock'}
       // Éteint (en pierre, ou la sentinelle éteinte d'Archipéo) tant qu'il n'est pas rallumé, en couleurs ensuite (GD-8).
       portrait={portraitEnMedaillon('guardian', ile, 'flame', () => <VoxelScene cubes={vaincu ? GUARDIAN_CUBES[ile] : statueDe(GUARDIAN_CUBES[ile])} s={12} pad={2} className="creature guardian-svg" />, vaincu ? 1 : 0)}
-      lecture={`${titre}. ${phrase}`}
+      lecture={`${titre}. ${biome.name}. ${phrase}`}
       onClose={onClose}
       actions={
-        pret && (
+        !pret ? (
+          unlocked &&
+          onAllerAuLieu && (
+            <button type="button" className="button" onClick={() => onAllerAuLieu(ile)}>
+              <Icon name="play" /> Y aller
+            </button>
+          )
+        ) : (
           <Link to={`/adventure/${ile}/challenge`} className="button primary">
             {vaincu ? (
               <>
@@ -267,6 +283,10 @@ function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
         )
       }
     >
+      {/* Son lieu, en signes : son icône et son nom (son îlot peut se tenir loin de lui). */}
+      <p className="world-fiche-lieu">
+        <Icon name={biome.icon} /> {biome.name}
+      </p>
       {pret && vaincu && <Stars count={stars} label={textes.libelles.etoiles} />}
       <Phrase text={phrase} />
     </Fiche>
@@ -364,57 +384,125 @@ function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId
   );
 }
 
-/** Un ouvrage en fantôme : « Pont entre X et Y », ses blocs, « Construire » ; sinon ce qui manque. */
-function FicheDeLOuvrage({ id, onBuilt, onClose }: Props & { id: string }) {
+/**
+ * Un ouvrage : « Pont entre X et Y », ses blocs, « Poser » ; sinon ce qui manque ; « Déjà posé. » une fois construit. Un
+ * ouvrage qui ouvre une île (GD-9, « Relier » ; piste A, des signes à la place des phrases) : le titre, fixe, est le nom
+ * de l'île à ouvrir ; dessous, en signes, l'île de départ (l'icône d'un ouvrage et son nom), le coût (un cube et le
+ * nombre) et, s'il manque des blocs, combien (jamais en rouge seul) ; quand l'île a plusieurs départs, « 2/3 » et le
+ * chevron du départ suivant (dont le monde montre le fantôme et que la caméra cadre). La voix dit tout en mots.
+ */
+function FicheDeLOuvrage({ id, onBuilt, onClose, onVoirOuvrage }: Props & { id: string }) {
   const { state } = useBlocland();
   const { settings } = useSettings();
   const def = getBridge(id);
-  const ile = ileDeLOuvrage(id, state.world.links) ?? def?.from ?? 'french-6e-phonology';
+  const links = state.world.links;
+  const ile = ileDeLOuvrage(id, links) ?? def?.from ?? 'french-6e-phonology';
   const { said, build } = useConstruireUnOuvrage(ile, onBuilt);
   if (!def) return null;
   const a = getBiome(def.from)?.name ?? def.from;
   const b = getBiome(def.to)?.name ?? def.to;
-  const titre = `${KIND_NAME[def.kind]} entre ${a} et ${b}`;
+  const kind = linkKind(def, links);
   const world = { progress: state.progress, plans: state.world.parts };
-  const etat = bridgeState(def, state.world.links, world);
+  const etat = bridgeState(def, links, world);
   const have = payableBlocks(state.stock);
   const sansLv2 = settings.lv2 === 'none' && [def.from, def.to].some((i) => getBiome(i)?.subject === 'lv2');
   const pret = etat === 'buildable' && have >= def.cost && !sansLv2;
+  // Un ouvrage qui ouvre une île : ses départs possibles, du plus proche au plus loin.
+  const open = reachableIslands(links);
+  const ferme = etat !== 'built' && opensAnIsland(def, open) ? (open.has(def.from) ? def.to : def.from) : null;
+  const departs = ferme ? linksToIsland(ferme, links, open) : [];
+  const rang = departs.findIndex((d) => d.id === def.id);
+  const suivant = departs.length > 1 ? departs[(rang + 1) % departs.length] : null;
+  const nomDeLIle = ferme ? (getBiome(ferme)?.name ?? ferme) : '';
+  const titre = ferme ? nomDeLIle : `${KIND_NAME[kind]} entre ${thePlace(a)} et ${thePlace(b)}`;
+  const depart = ferme ? (getBiome(otherEnd(def, ferme))?.name ?? otherEnd(def, ferme)) : '';
+  const quoi = withArticle(kind);
+  const depuis = ferme ? `${quoi.charAt(0).toUpperCase()}${quoi.slice(1)} part ${ofPlace(depart)}. ` : '';
+  const numero = ferme && departs.length > 1 && rang >= 0 ? `Départ ${rang + 1} sur ${departs.length}. ` : '';
   const phrase = sansLv2
     ? 'Choisis d’abord une LV2 dans les Réglages.'
     : etat === 'far'
-      ? `Il faut d’abord un chemin jusqu’à ${a} ou ${b}.`
+      ? `Il faut d’abord un chemin jusqu’${toPlace(a)} ou ${toPlace(b)}.`
       : etat === 'blocked'
-        ? `${def.cost} blocs. ${conditionText(def, state.world.links) ?? ''}`.trim()
+        ? `${def.cost} blocs. ${conditionText(def, links) ?? ''}`.trim()
         : etat === 'built'
-          ? 'Déjà construit.'
+          ? 'Déjà posé.'
           : have >= def.cost
-            ? `${def.cost} blocs. Tu en as ${have}.`
-            : `${def.cost} blocs. Il t’en manque ${def.cost - have}.`;
+            ? `${depuis}${numero}${def.cost} blocs. Tu en as ${have}.`
+            : `${depuis}${numero}${def.cost} blocs. Il t’en manque ${def.cost - have}.`;
   const texte = said ?? phrase;
+  // En signes : l'île à relier attend un départ, des blocs ; la phrase reste pour ce qui empêche (LV2, chemin, condition).
+  const enSignes = Boolean(ferme && !said && !sansLv2 && etat !== 'far' && etat !== 'blocked' && etat !== 'built');
   return (
     <Fiche
       titre={titre}
       icone="ouvrage"
-      lecture={`${titre}. ${texte}`}
+      lecture={`${ferme ? `Relier ${thePlace(nomDeLIle)}` : titre}. ${texte}`}
       onClose={onClose}
       actions={
-        pret &&
-        !said && (
-          <button type="button" className="button primary" onClick={() => build(def, getBiome(otherEnd(def, ile))?.name ?? '')}>
-            <Icon name="hammer" /> Construire
-          </button>
+        !said &&
+        (pret || (suivant && !sansLv2)) && (
+          <>
+            {pret && (
+              <button type="button" className="button primary" onClick={() => build(def)}>
+                <Icon name="hammer" /> Poser
+              </button>
+            )}
+            {suivant && !sansLv2 && (
+              <button
+                type="button"
+                className="button bouton-icone"
+                aria-label={`Autre départ, ${rang + 1} sur ${departs.length}`}
+                onClick={() => onVoirOuvrage(suivant.id, true)}
+              >
+                <span className="signe">
+                  {rang + 1}/{departs.length}
+                  <Icon name="chevronRight" />
+                </span>
+                <span className="mot-sous-icone" aria-hidden="true">
+                  Autre départ
+                </span>
+              </button>
+            )}
+          </>
         )
       }
     >
-      <Phrase text={texte} role="status" />
+      {enSignes ? (
+        <>
+          <p className="visually-hidden" role="status" aria-live="polite">
+            {frenchTypography(texte)}
+          </p>
+          <p className="world-fiche-phrase fiche-signes" aria-hidden="true">
+            <span className="signe">
+              <Icon name="ouvrage" /> {depart}
+            </span>{' '}
+            <span className="signe">
+              <Icon name="cube" /> {def.cost}
+            </span>{' '}
+            {have >= def.cost ? (
+              <span className="signe">
+                <Icon name="check" />
+              </span>
+            ) : (
+              <span className="signe">
+                <Icon name="blocks" /> −{def.cost - have}
+              </span>
+            )}
+          </p>
+        </>
+      ) : (
+        <Phrase text={texte} role="status" />
+      )}
     </Fiche>
   );
 }
 
 /**
- * Une île pâle : l'indice de sa créature, la première fois la découverte des ouvrages, et « Voir le premier ouvrage » (la
- * fiche de cet ouvrage).
+ * Une île pâle : l'indice de sa créature, la première fois la découverte des ouvrages, et « Relier » quand une liaison
+ * directe tient (GD-9 : la fiche de l'ouvrage depuis l'île reliée la plus proche, `nearestDeparture`, le même départ
+ * que la phrase et le fantôme du monde, d'où l'on peut choisir un autre départ). Sans liaison directe, pas de
+ * « Relier » : la phrase dit l'île à relier d'abord.
  */
 function FicheDeLIlePale({ ile, fiche, onVoirOuvrage, onClose }: Props & { ile: BiomeId }) {
   const { state } = useBlocland();
@@ -423,7 +511,7 @@ function FicheDeLIlePale({ ile, fiche, onVoirOuvrage, onClose }: Props & { ile: 
   const biome = getBiome(ile);
   if (!biome) return null;
   const indice = accueilDeLIle(state, ile, estIleLv2(biome) && settings.lv2 === 'none', textes);
-  const premier = remainingPath(ile, state.world.links)[0];
+  const premier = nearestDeparture(ile, state.world.links);
   return (
     <Fiche
       titre={biome.name}
@@ -433,7 +521,7 @@ function FicheDeLIlePale({ ile, fiche, onVoirOuvrage, onClose }: Props & { ile: 
       actions={
         premier && (
           <button type="button" className="button primary" onClick={() => onVoirOuvrage(premier.id)}>
-            <Icon name="hammer" /> Voir le premier ouvrage
+            <Icon name="ouvrage" /> Relier
           </button>
         )
       }

@@ -1,0 +1,240 @@
+{
+  "id": "physics-chemistry-5e-matter-universe-mixtures-density-1",
+  "biome": "physics-chemistry-5e-matter-universe",
+  "type": "mixtures-density",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-1-0",
+      "prompt": "L’eau distillée ne contient que des molécules d’eau : c’est un …",
+      "spoken": "L’eau distillée ne contient que des molécules d’eau : c’est un  (mot manquant) ",
+      "choices": [
+        "mélange",
+        "corps pur",
+        "soluté"
+      ],
+      "answer": "corps pur",
+      "hint": "Relis la ligne « Corps pur » du rappel.",
+      "explanation": "Une seule espèce chimique, l’eau : c’est un corps pur. L’eau du robinet, elle, contient aussi des sels : c’est un mélange.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Corps purs et mélanges",
+          "lines": [
+            "Corps pur : une seule espèce chimique, comme l’eau pure.",
+            "Mélange : plusieurs constituants.",
+            "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
+            "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
+            "Saturée : la solution ne peut plus rien dissoudre.",
+            "Miscibles : deux liquides qui se mélangent. Non miscibles : deux couches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-1-1",
+      "prompt": "L’eau minérale contient de l’eau et des sels dissous : c’est un …",
+      "spoken": "L’eau minérale contient de l’eau et des sels dissous : c’est un  (mot manquant) ",
+      "choices": [
+        "corps pur",
+        "solvant",
+        "mélange"
+      ],
+      "answer": "mélange",
+      "hint": "Combien de constituants ?",
+      "explanation": "L’eau minérale contient plusieurs constituants, de l’eau et des sels : c’est un mélange, même si on n’y voit qu’une seule chose.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Corps purs et mélanges",
+          "lines": [
+            "Corps pur : une seule espèce chimique, comme l’eau pure.",
+            "Mélange : plusieurs constituants.",
+            "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
+            "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
+            "Saturée : la solution ne peut plus rien dissoudre.",
+            "Miscibles : deux liquides qui se mélangent. Non miscibles : deux couches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-1-2",
+      "prompt": "Le sable reste visible au fond de l’eau : il est …",
+      "spoken": "Le sable reste visible au fond de l’eau : il est  (mot manquant) ",
+      "choices": [
+        "insoluble",
+        "soluble",
+        "miscible"
+      ],
+      "answer": "insoluble",
+      "hint": "Relis la ligne « Soluble » du rappel.",
+      "explanation": "Le sable ne se dissout pas dans l’eau, on le voit encore : il est insoluble. Le sel, lui, est soluble.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Corps purs et mélanges",
+          "lines": [
+            "Corps pur : une seule espèce chimique, comme l’eau pure.",
+            "Mélange : plusieurs constituants.",
+            "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
+            "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
+            "Saturée : la solution ne peut plus rien dissoudre.",
+            "Miscibles : deux liquides qui se mélangent. Non miscibles : deux couches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-1-3",
+      "prompt": "Dans l’eau sucrée, le sucre est le soluté, et l’eau est le …",
+      "spoken": "Dans l’eau sucrée, le sucre est le soluté, et l’eau est le  (mot manquant) ",
+      "choices": [
+        "soluté",
+        "solvant",
+        "mélange"
+      ],
+      "answer": "solvant",
+      "hint": "Qui dissout l’autre ?",
+      "explanation": "L’eau dissout le sucre : l’eau est le solvant, le sucre le soluté. Ensemble, ils forment une solution.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Corps purs et mélanges",
+          "lines": [
+            "Corps pur : une seule espèce chimique, comme l’eau pure.",
+            "Mélange : plusieurs constituants.",
+            "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
+            "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
+            "Saturée : la solution ne peut plus rien dissoudre.",
+            "Miscibles : deux liquides qui se mélangent. Non miscibles : deux couches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-1-4",
+      "prompt": "Du sel dans 100 mL d’eau\nOn ajoute du sel, une cuillère à la fois, et on remue.\nAprès neuf cuillères, du sel reste au fond, même en remuant.",
+      "question": "Comment appelle-t-on cette eau salée ?",
+      "spoken": "Du sel dans 100 millilitres d’eau. On ajoute du sel, une cuillère à la fois, et on remue. Après neuf cuillères, du sel reste au fond, même en remuant.",
+      "choices": [
+        "pure",
+        "miscible",
+        "saturée"
+      ],
+      "answer": "saturée",
+      "hint": "Relis la ligne « Saturée » du rappel.",
+      "explanation": "L’eau ne peut plus dissoudre de sel : la solution est saturée. Le sel en trop reste au fond.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Corps purs et mélanges",
+          "lines": [
+            "Corps pur : une seule espèce chimique, comme l’eau pure.",
+            "Mélange : plusieurs constituants.",
+            "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
+            "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
+            "Saturée : la solution ne peut plus rien dissoudre.",
+            "Miscibles : deux liquides qui se mélangent. Non miscibles : deux couches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-1-5",
+      "prompt": "L’huile et le vinaigre forment deux couches : ils sont …",
+      "spoken": "L’huile et le vinaigre forment deux couches : ils sont  (mot manquant) ",
+      "choices": [
+        "miscibles",
+        "non miscibles",
+        "solubles"
+      ],
+      "answer": "non miscibles",
+      "hint": "Relis la ligne « Miscibles » du rappel.",
+      "explanation": "Deux liquides qui restent en deux couches sont non miscibles. Même en secouant fort, les couches reviennent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Corps purs et mélanges",
+          "lines": [
+            "Corps pur : une seule espèce chimique, comme l’eau pure.",
+            "Mélange : plusieurs constituants.",
+            "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
+            "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
+            "Saturée : la solution ne peut plus rien dissoudre.",
+            "Miscibles : deux liquides qui se mélangent. Non miscibles : deux couches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-1-6",
+      "prompt": "L’eau et le sirop se mélangent sans faire de couches : ils sont …",
+      "spoken": "L’eau et le sirop se mélangent sans faire de couches : ils sont  (mot manquant) ",
+      "choices": [
+        "non miscibles",
+        "miscibles",
+        "saturés"
+      ],
+      "answer": "miscibles",
+      "hint": "Voit-on deux couches ?",
+      "explanation": "L’eau et le sirop forment un seul liquide : ils sont miscibles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Corps purs et mélanges",
+          "lines": [
+            "Corps pur : une seule espèce chimique, comme l’eau pure.",
+            "Mélange : plusieurs constituants.",
+            "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
+            "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
+            "Saturée : la solution ne peut plus rien dissoudre.",
+            "Miscibles : deux liquides qui se mélangent. Non miscibles : deux couches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-1-7",
+      "prompt": "La question de Noé : le sel se dissout-il mieux dans l’eau chaude ?\nVerre A : 100 mL d’eau froide.\nVerre B : 100 mL d’eau chaude.\nDans les deux, le même sel, la même cuillère.",
+      "question": "Qu’est-ce qui change d’un verre à l’autre ?",
+      "spoken": "La question de Noé, le sel se dissout-il mieux dans l’eau chaude ? Verre A, 100 millilitres d’eau froide. Verre B, 100 millilitres d’eau chaude. Dans les deux, le même sel, la même cuillère.",
+      "choices": [
+        "la quantité d’eau",
+        "la température de l’eau",
+        "la sorte de sel"
+      ],
+      "answer": "la température de l’eau",
+      "hint": "Compare le verre A et le verre B, mot à mot.",
+      "explanation": "Seule la température change : la quantité d’eau et le sel sont les mêmes. Une seule chose change : Noé saura ce qui compte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Corps purs et mélanges",
+          "lines": [
+            "Corps pur : une seule espèce chimique, comme l’eau pure.",
+            "Mélange : plusieurs constituants.",
+            "Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.",
+            "Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.",
+            "Saturée : la solution ne peut plus rien dissoudre.",
+            "Miscibles : deux liquides qui se mélangent. Non miscibles : deux couches."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-5e-matter-universe",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

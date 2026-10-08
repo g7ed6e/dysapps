@@ -79,3 +79,30 @@ it('est vaincu avec deux étoiles au défi', () => {
   expect(isBossBeaten('french-6e-phonology', { 'french-6e-phonology-challenge': { stars: 2 } })).toBe(true);
   expect(bossesBeaten({ 'french-6e-phonology-challenge': { stars: 3 }, 'french-6e-reading-challenge': { stars: 2 } })).toEqual(['french-6e-phonology', 'french-6e-reading']);
 });
+
+it('le défi tire son hasard d’un coup, avant le chargement : deux tirages lancés ensemble ne se partagent pas la suite (HG-2)', async () => {
+  const biome = getBiome('english-6e-vocabulary')!;
+  const state: GameState = { ...EMPTY_STATE, progress: starsEverywhere(biome.id) };
+  const suite = (graine: number) => {
+    let n = 0;
+    const tirer = () => {
+      n++;
+      graine = (graine * 16807) % 2147483647;
+      return graine / 2147483647;
+    };
+    return { tirer, tirages: () => n };
+  };
+  const ensemble = suite(7);
+  const [a, b] = [bossDef(biome, state, ensemble.tirer), bossDef(biome, state, ensemble.tirer)];
+  // Un seul tirage chacun, aussitôt lancé : rien ne se tire pendant le chargement.
+  expect(ensemble.tirages()).toBe(2);
+  const [da, db] = await Promise.all([a, b]);
+  expect(ensemble.tirages()).toBe(2);
+  // Les mêmes défis que lancés l'un après l'autre.
+  const apres = suite(7);
+  const ca = await bossDef(biome, state, apres.tirer);
+  const cb = await bossDef(biome, state, apres.tirer);
+  const cles = (d: { items: unknown[] }) => JSON.stringify(d.items);
+  expect(cles(da)).toBe(cles(ca));
+  expect(cles(db)).toBe(cles(cb));
+});

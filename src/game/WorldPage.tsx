@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -18,7 +18,9 @@ import { creaturesQuiFontSigne, signesDesCreatures, usePlusTard } from './remind
 import { sansCommandes } from './world/requests';
 import { SCHOOL_PATH, SchoolSheet } from './School';
 import { MonumentSheet, MonumentsSheet } from './Monuments';
-import { useMonumentBuilder } from './useMonumentBuilder';
+import { useJoinBuilder, useMonumentBuilder } from './useMonumentBuilder';
+import { JoinSheet } from './Joins';
+import { getJoin, SANS_REUNION } from './world/join';
 import { getMonument, monumentsOf } from './world/monuments';
 import { AvatarFace } from './AvatarFace';
 import { visageDuJoueur } from './world/characters/face';
@@ -33,6 +35,7 @@ import { laDestinationEstLeNavire, lienDeLaDestination } from './world/destinati
 import { nextGoalInfo } from './world/goals';
 import { borneDe, cleDeLaCreature, cleDeLObjet, imageDeLaDestination } from './world/affordance';
 import { getCommande } from './world/requests';
+import { thePlace, toPlace } from './world/placeArticle';
 import { WorldCard, type FicheOuverte } from './WorldCard';
 import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
@@ -63,7 +66,7 @@ import { villageStage } from './world/villageStage';
 import { dispositionEnGrille, type BoutsDuTrajet } from './world/grid';
 import type { Entite, Intention, ObjetDeLaFiche, Point } from './world/layout';
 import { resteDuTrajet } from './world/arrival';
-import type { Bonhomme } from './world/view';
+import type { Bonhomme, GlisserLeChoix } from './world/view';
 import { partiesDe, prochainePartie } from './world/parts';
 import { Loading } from '../components/Loading';
 import {
@@ -76,6 +79,9 @@ import {
 import {
   KIND_NAME,
   archipelagoOf,
+  chosenDeparture,
+  linkKind,
+  type BridgeDef,
   getArchipelago,
   getBridge,
   isBiomeUnlocked,
@@ -89,6 +95,12 @@ import { useHoldCelebrations } from '../components/Celebrations';
 import { useASuivre } from '../components/useNextUp';
 import { chiffreDeLaPastille, nomDuBoutonBlocs, prendreLesBlocs, volALieu, VOL, type GainRetenu } from './blockFlight';
 import { FlyingBlocks } from './FlyingBlocks';
+import { useAmenagement } from './Arranging';
+import { ArrangeBar, ArrangeButton, ArrangeListOffer, ArrangeSentence, PROPOSITION_DE_LA_LISTE, useTelephone } from './ArrangeBar';
+import { ArrangeList } from './ArrangeList';
+import { ArrangeHandles, creerSuiviALEcran } from './ArrangeHandles';
+import { Sheet } from './Sheet';
+import { texteGrand } from '../core/settings';
 
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
@@ -96,6 +108,10 @@ declare global {
   interface Window {
     /** Ouvrir la fiche d'un objet, pour les captures (en développement, ou avec `?mesures`). */
     __dysappsFiche?: (objet: ObjetDeLaFiche) => void;
+    /** Un toucher dans le mode « Aménager », pour les captures (en développement, ou avec `?mesures`). */
+    __dysappsAmenager?: (i: Intention) => void;
+    /** Un glissé du choix dans le mode « Aménager », tenu sans lever, pour les captures (même garde). */
+    __dysappsGlisser?: () => GlisserLeChoix;
   }
 }
 
@@ -115,7 +131,7 @@ export function WorldPage() {
   const { settings, speak, stop } = useSettings();
   const univers = useUnivers();
   const reduceMotion = useMoinsDAnimations();
-  const { state, moveTo, launch } = useBlocland();
+  const { state, disposition, moveTo, launch, arrange } = useBlocland();
   // La pose d'une partie en vague (GD-6, Blocland) : ses cases, absentes du monde jusqu'à ce que la vue les pose (useWavePose.ts).
   // La petite construction d'une commande livrée (GD-7, PR 3) se pose de la même vague : `commande`, sans partie.
   const [vague, setVague] = useState<Vague | null>(null);
@@ -163,7 +179,9 @@ export function WorldPage() {
   // Les monuments : leur liste, ou un monument (son îlot au large, où la caméra va).
   const monumentsOpen = biomeId === 'landmarks';
   const monument = biomeId ? getMonument(biomeId) : undefined;
-  const panelOpen = mapOpen || mondeOpen || blocsOpen || schoolOpen || menuOpen || trophiesOpen || assemblageOpen || monumentsOpen || Boolean(monument);
+  // La construction qui réunit deux lieux (GD-9) : son panneau, la caméra sur elle.
+  const reunion = biomeId ? getJoin(biomeId) : undefined;
+  const panelOpen = mapOpen || mondeOpen || blocsOpen || schoolOpen || menuOpen || trophiesOpen || assemblageOpen || monumentsOpen || Boolean(monument) || Boolean(reunion);
   const island = biomeId && !panelOpen ? getBiome(biomeId) : undefined;
   // Le bonhomme : où il se tient ; l'archipel affiché est le sien.
   const at = state.world.place ?? 'french-6e-phonology';
@@ -181,19 +199,24 @@ export function WorldPage() {
   // Les commandes des habitants (GD-7, PR 3) : seulement dans un univers qui les montre (Blocland, Archipéo) ;
   // ailleurs, le monde se lit sans elles (ni petite construction, ni suggestion), la sauvegarde restant la même.
   const vu = useMemo(() => (textes.commandes ? state : sansCommandes(state)), [state, textes.commandes]);
+  // Un autre départ choisi pour une liaison vers un lieu fermé (GD-9, « Relier ») : le monde montre son fantôme.
+  const ouvrageVu = fiche?.objet.genre === 'ouvrage' ? fiche.objet.id : null;
+  const liaisonChoisie = useMemo(() => chosenDeparture(ouvrageVu, vu.world.links), [ouvrageVu, vu.world.links]);
   const cubes = useMemo(
-    () => worldCubes(a, vu.progress, vu.world, false, trophyBlocks, sentinelles, habillage.atelier),
+    () => worldCubes(a, vu.progress, vu.world, false, trophyBlocks, sentinelles, habillage.atelier, liaisonChoisie),
     // La LV2 choisit les bornes de l'île de la LV2 (world/terrain.ts, `questStations`) ; l'habillage (le lieu
     // d'assemblage) ne change pas tant que la page est montée (useState).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, vu.progress, vu.world, trophyBlocks, sentinelles, settings.lv2, habillage.atelier],
+    [a, vu.progress, vu.world, trophyBlocks, sentinelles, settings.lv2, habillage.atelier, liaisonChoisie],
   );
   const creatures = useMemo(
     () => [
       ...creaturePlacements(a, state.world.links),
-      ...guardianPlacements(a, state.progress, state.world.links, sentinelles).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false, cubes: statueDe(c.cubes) } : c)),
+      ...guardianPlacements(a, state.progress, state.world.links, sentinelles, state.world.challengesKeptOpen).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false, cubes: statueDe(c.cubes) } : c)),
     ],
-    [a, state.progress, state.world.links, sentinelles, eteints],
+    // La disposition (GD-9) : la place des créatures et des Gardiens suit leur lieu.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [a, state.progress, state.world.links, sentinelles, eteints, disposition],
   );
   // La créature qui se souvient (GD-4, étape 1) : celles dont l'île a des révisions dues font signe, sauf après « Plus tard ».
   const { remises } = usePlusTard();
@@ -222,6 +245,52 @@ export function WorldPage() {
     const path = grille.raccord(here, route[0]);
     return path ? [...path, ...route.slice(1)] : [here, ...route];
   };
+  // Le mode « Aménager » (GD-9), sur la Carte seulement, hors mission : il se ferme quand on quitte la Carte.
+  const nomDuLieu = (id: BiomeId) => getBiome(id)?.name ?? id;
+  const amenagement = useAmenagement({
+    world: state.world,
+    a,
+    arrange,
+    nom: nomDuLieu,
+    reduceMotion,
+    habillage,
+    sons: settings.sounds,
+    dire: (texte) => {
+      if (settings.autoRead) speak(frenchTypography(texte));
+    },
+    versMonde: (p) => grille.versMonde(p),
+    reunion: textes.reunion,
+    liaisons: textes.liaisons,
+    hautDuLieu: (id) => {
+      let h = -Infinity;
+      for (const c of cubes) if (c.tag === id && c.z > h) h = c.z;
+      return Number.isFinite(h) ? h : undefined;
+    },
+  });
+  const enAmenageant = mapOpen && amenagement.ouvert;
+  // Où se tient le choix du mode à l'écran, donné par la 3D image après image : les flèches s'y posent autour de lui.
+  const [suiviDuChoix] = useState(creerSuiviALEcran);
+  // Au téléphone en grand texte, « Modifier le plan » propose d'abord la liste (`offreDeLaListe`), qui s'ouvre dans un panneau
+  // (`listeDAmenagement`) ; l'élève peut rester sur la Carte.
+  const telephone = useTelephone();
+  const [offreDeLaListe, setOffreDeLaListe] = useState(false);
+  const [listeDAmenagement, setListeDAmenagement] = useState(false);
+  const proposerLaListe =
+    telephone && texteGrand(settings)
+      ? () => {
+          setOffreDeLaListe(!offreDeLaListe);
+          if (!offreDeLaListe && settings.autoRead) speak(frenchTypography(PROPOSITION_DE_LA_LISTE));
+        }
+      : undefined;
+  useEffect(() => {
+    // Quitter la Carte en plein mode garde le plan tel qu'il est, comme « Valider ».
+    if (!mapOpen && amenagement.ouvert) amenagement.valider();
+    if (!mapOpen) {
+      setOffreDeLaListe(false);
+      setListeDAmenagement(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapOpen]);
   // Le Bloc-Navire amarré au port de l'archipel : un objet à part, qui tangue.
   const vehicle = useMemo(() => vehiclePlacement(a, state.progress, state.world), [a, state.progress, state.world]);
   // Le panneau de l'île ouverte, en plein écran par-dessus le monde : il ne s'ouvre que par son bouton dans la barre,
@@ -291,16 +360,19 @@ export function WorldPage() {
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
   // avec leur état en icône et en mot. Le bloc que l'île rapporte, avant son nom (ligne `blocDesIles` de l'habillage).
   const blocDesIles = habillage.blocDesIles === 'avant-le-nom';
+  // Dans « Modifier le plan » (GD-9), les étiquettes se réduisent au nom et au bloc, sans leur ligne d'état : elles
+  // prennent moins de place sous les flèches posées autour du choix, dont le nom est sur son fantôme (three/arrange.ts).
+  const etatsSurLaCarte = mapOpen && !enAmenageant;
   const islandLabels = useMemo(
     () =>
       ilesDuModele(state, a)
         .filter((i) => mapOpen || i.ouverte)
         .map((i) => {
           const bloc = blocDesIles ? getBiome(i.id)?.block : undefined;
-          return { id: i.id, text: i.nom, ...(bloc ? { bloc } : {}), ...(mapOpen ? { state: { id: i.etat.id, name: textes.etatsDIle[i.etat.id] } } : {}) };
+          return { id: i.id, text: i.nom, ...(bloc ? { bloc } : {}), ...(etatsSurLaCarte ? { state: { id: i.etat.id, name: textes.etatsDIle[i.etat.id] } } : {}) };
         }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, mapOpen, state.world.links, state.world.parts, state.progress, textes, blocDesIles],
+    [a, mapOpen, etatsSurLaCarte, state.world.links, state.world.parts, state.progress, textes, blocDesIles],
   );
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: island?.id ?? null, seq: 0 });
   // Tant que le tutoriel n'est pas vu, c'est le jour : une première minute lisible, même à 20 h. Ensuite, le réglage
@@ -355,14 +427,16 @@ export function WorldPage() {
   // La fiche du Bloc-Navire a le chantier du port, d'où qu'on la touche.
   const ship = useVehicleBuilder(fiche?.objet.genre === 'navire' ? archipelago.port : (island?.id ?? archipelago.port));
   const monumentBuilder = useMonumentBuilder(monument ?? monumentsOf(a)[0]);
-  // Les éclats : ceux du navire ou du monument, le dernier qui a bougé.
-  const seqs = useRef({ ship: ship.burst.seq, monument: monumentBuilder.burst.seq, last: ship.burst as Burst });
-  const now = { ship: ship.burst.seq, monument: monumentBuilder.burst.seq };
+  const reunionBuilder = useJoinBuilder(reunion?.plan ?? SANS_REUNION, reunion?.shape ?? null);
+  // Les éclats : ceux du navire, du monument ou de la réunion, le dernier qui a bougé.
+  const seqs = useRef({ ship: ship.burst.seq, monument: monumentBuilder.burst.seq, reunion: reunionBuilder.burst.seq, last: ship.burst as Burst });
+  const now = { ship: ship.burst.seq, monument: monumentBuilder.burst.seq, reunion: reunionBuilder.burst.seq };
   if (ship.burst.seq !== seqs.current.ship) seqs.current = { ...now, last: ship.burst };
   else if (monumentBuilder.burst.seq !== seqs.current.monument) seqs.current = { ...now, last: monumentBuilder.burst };
+  else if (reunionBuilder.burst.seq !== seqs.current.reunion) seqs.current = { ...now, last: reunionBuilder.burst };
   const burst = useMemo(
-    () => ({ ...seqs.current.last, seq: ship.burst.seq + monumentBuilder.burst.seq }),
-    [ship.burst, monumentBuilder.burst],
+    () => ({ ...seqs.current.last, seq: ship.burst.seq + monumentBuilder.burst.seq + reunionBuilder.burst.seq }),
+    [ship.burst, monumentBuilder.burst, reunionBuilder.burst],
   );
 
   // Le bonhomme : où il se tient, et son itinéraire quand on ouvre une autre île ouverte (il y marche).
@@ -374,8 +448,19 @@ export function WorldPage() {
   const arriveeDemandee = useRef<{ ile: BiomeId; sol: Point; enRoute?: Point } | null>(null);
   // Les vues reçoivent le trajet en ancrages : chaque point dans le repère de l'île la plus proche. Une disposition
   // à part, qui ne dépend que de l'archipel : `grille` change avec les cubes, et le bonhomme repartirait à chaque bloc posé.
-  const repere = useMemo(() => dispositionEnGrille(a), [a]);
+  // Elle suit la disposition (GD-9) : un lieu déplacé emporte ses repères.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const repere = useMemo(() => dispositionEnGrille(a), [a, disposition]);
   const avatar = useMemo(() => ({ ...walk, route: walk.route.map((p) => repere.versIle(p)) }), [walk, repere]);
+  // La disposition change (GD-9, un lieu déplacé ou tourné) : le bonhomme suit son lieu, à sa place, et reste à l'écran.
+  const dispositionVue = useRef(disposition);
+  useEffect(() => {
+    if (dispositionVue.current === disposition) return;
+    dispositionVue.current = disposition;
+    flanee.current = null;
+    setWalk((w) => ({ route: [seTenir(at)], seq: w.seq + 1 }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [disposition]);
   // L'élève a fait glisser la vue (la 3D le dit) : « Recentrer » la ramène à son cadrage, d'un appui (`recentrage`).
   const [vueDeplacee, setVueDeplacee] = useState(false);
   const [recentrage, setRecentrage] = useState(0);
@@ -435,6 +520,11 @@ export function WorldPage() {
       else setFocus((f) => ({ island: null, seq: f.seq + 1 }));
       return;
     }
+    // La construction qui réunit deux lieux : la caméra sur le premier des deux, qui la cadre avec l'autre.
+    if (reunion) {
+      setFocus((f) => ({ island: reunion.plan.archipelago === a ? reunion.pair[0] : null, seq: f.seq + 1 }));
+      return;
+    }
     // L'école ou la salle des trophées : le bonhomme marche jusqu'à sa porte, sur l'île de l'école de l'archipel.
     if (placeOpen) {
       const school = archipelago.school;
@@ -467,7 +557,7 @@ export function WorldPage() {
       moveTo(island.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [island?.id, mapOpen, placeOpen, monument?.id]);
+  }, [island?.id, mapOpen, placeOpen, monument?.id, reunion?.plan.id]);
 
   // Ce que le tutoriel ne dit plus, dit au moment où on le rencontre, une fois par appareil, par la créature de l'île :
   // les ouvrages au premier toucher d'une île pâle, le Bloc-Navire à la première arrivée au port (discoveries.ts).
@@ -722,11 +812,31 @@ export function WorldPage() {
       // Une île pâle : comme un toucher, avec la découverte la première fois.
       if (objet.genre === 'ile') return ouvrirLIlePaleRef.current(objet.id);
       setSheetOpen(false);
-      setFiche({ objet, seq: ++ficheSeq.current, saut: true });
+      // Une créature : sa phrase, comme d'un toucher (sans elle, la bulle de Jalon restait vide sur les captures, HG-3).
+      const phrase = objet.genre === 'creature' ? creatureLineRef.current(objet.id) : undefined;
+      setFiche({ objet, seq: ++ficheSeq.current, saut: true, ...(phrase ? { phrase } : {}) });
     };
     window.__dysappsFiche = ouvrir;
     return () => {
       if (window.__dysappsFiche === ouvrir) delete window.__dysappsFiche;
+    };
+  }, []);
+
+  // Pour les captures (en développement, ou avec `?mesures`) : un toucher dans le mode « Aménager », sans viser la scène.
+  const intentionRef = useRef<(i: Intention) => void>(() => {});
+  const glisserRef = useRef<GlisserLeChoix>(amenagement.glisser);
+  useLayoutEffect(() => {
+    glisserRef.current = amenagement.glisser;
+  });
+  useEffect(() => {
+    if (!(import.meta.env.DEV || mesuresDemandees())) return;
+    const toucher = (i: Intention) => intentionRef.current(i);
+    window.__dysappsAmenager = toucher;
+    const glisser = () => glisserRef.current;
+    window.__dysappsGlisser = glisser;
+    return () => {
+      if (window.__dysappsAmenager === toucher) delete window.__dysappsAmenager;
+      if (window.__dysappsGlisser === glisser) delete window.__dysappsGlisser;
     };
   }, []);
 
@@ -779,20 +889,23 @@ export function WorldPage() {
   const ouvrirFiche = (objet: ObjetDeLaFiche, options: Omit<FicheOuverte, 'objet' | 'seq' | 'saut'> & { saut?: boolean } = {}) => {
     if (voyage || mapOpen) return;
     if (island && sheetOpen) setSheetOpen(false);
-    setFiche({ objet, seq: ++ficheSeq.current, saut: options.saut ?? false, ...(options.phrase ? { phrase: options.phrase } : {}), ...(options.decouverte ? { decouverte: options.decouverte } : {}) });
+    setFiche({ objet, seq: ++ficheSeq.current, saut: options.saut ?? false, ...(options.phrase ? { phrase: options.phrase } : {}), ...(options.decouverte ? { decouverte: options.decouverte } : {}), ...(options.cadrer ? { cadrer: true } : {}) });
   };
-  /** Aller sur une île sans ouvrir son panneau, et y ouvrir la fiche d'un objet (« Y aller », « Voir le premier ouvrage »). */
+  /** Aller sur une île sans ouvrir son panneau, et y ouvrir la fiche d'un objet (« Y aller », « Relier »). */
   const allerALaFiche = (ile: BiomeId, objet: ObjetDeLaFiche) => {
     setSheetOpen(false);
     setFiche({ objet, seq: ++ficheSeq.current, saut: true });
     navigate(`/adventure/${ile}`);
   };
-  /** « Voir le premier ouvrage » (une île pâle, la Carte) : la fiche de cet ouvrage, depuis l'île ouverte qu'il touche. */
-  const voirOuvrage = (id: string) => {
+  /**
+   * « Relier » (une île pâle, la Carte) : la fiche de cet ouvrage, depuis l'île ouverte qu'il touche ; `autreDepart` :
+   * « Partir d'une autre île » (GD-9), la caméra tient la liaison au-dessus de la fiche.
+   */
+  const voirOuvrage = (id: string, autreDepart = false) => {
     const from = ileDeLOuvrage(id, state.world.links);
     if (!from) return;
     if (mapOpen) allerALaFiche(from, { genre: 'ouvrage', id });
-    else ouvrirFiche({ genre: 'ouvrage', id }, { saut: true });
+    else ouvrirFiche({ genre: 'ouvrage', id }, { saut: true, ...(autreDepart ? { cadrer: true } : {}) });
   };
   /** Une île pâle touchée : sa fiche, et une fois par appareil, la découverte des ouvrages dans la fiche, après l'indice. */
   const ouvrirLIlePale = (id: BiomeId) => {
@@ -808,11 +921,17 @@ export function WorldPage() {
   const onIsland = (id: BiomeId, sol?: Point, enRoute?: Point) => {
     const ouverte = isBiomeUnlocked(id, state.world.links);
     if (mapOpen && !ouverte) return setMapTarget(id);
+    // Sur la Carte, une île ouverte : on y va, à sa place d'arrivée (piste A du mainteneur, 7 octobre 2026 : la Carte
+    // sert à s'orienter, on ne fait rien d'autre que choisir une île).
+    if (mapOpen) {
+      setFiche(null);
+      return openIsland(id);
+    }
     if (sol && !voyage && island?.id === id && at === id) {
       setFiche(null);
       return flaner(id, sol, enRoute);
     }
-    if (!mapOpen && !voyage && !ouverte) return ouvrirLIlePale(id);
+    if (!voyage && !ouverte) return ouvrirLIlePale(id);
     if (island?.id === id && !sheetOpen) return onCreature(id, 'creature');
     setFiche(null);
     // Une autre île ouverte : l'effet du changement d'île l'y emmène, jusqu'à la case touchée.
@@ -822,6 +941,8 @@ export function WorldPage() {
   // Ce que l'élève fait dans le monde : la vue renvoie une intention, la page décide. Une borne, le Gardien, le navire,
   // un ouvrage en fantôme, une créature : leur fiche (lot 2 de « Toucher le monde ») ; un lieu : son panneau.
   const onIntent = (i: Intention) => {
+    // Le mode « Aménager » prend les touchers : choisir, caler le fantôme ; aucune fiche ne s'ouvre.
+    if (enAmenageant && amenagement.intention(i)) return;
     switch (i.genre) {
       case 'ile':
         return onIsland(i.id, i.sol && grille.versMonde(i.sol), i.enRoute && grille.versMonde(i.enRoute));
@@ -855,18 +976,26 @@ export function WorldPage() {
         return;
     }
   };
-  const ouvrageLabel = (b: { kind: keyof typeof KIND_NAME; from: BiomeId; to: BiomeId; cost: number }) =>
-    `${KIND_NAME[b.kind]} entre ${getBiome(b.from)?.name ?? b.from} et ${getBiome(b.to)?.name ?? b.to} (${b.cost} blocs)`;
+  intentionRef.current = onIntent;
+  const ouvrageLabel = (b: BridgeDef) =>
+    `${KIND_NAME[linkKind(b, state.world.links)]} entre ${thePlace(getBiome(b.from)?.name ?? b.from)} et ${thePlace(getBiome(b.to)?.name ?? b.to)} (${b.cost} blocs)`;
 
+  /** Ce que dit une créature touchée : une de ses phrases ; le bâtiment fini, la créature y habite : une fois sur deux, elle le dit. */
+  const creatureLine = (id: BiomeId): string => {
+    const t = textes.creatures[id];
+    if (!t) return '';
+    const home = partiesDe(id).length > 0 && prochainePartie(id, state.world.parts) === null;
+    const lines = home && Math.random() < 0.5 ? [t.home] : t.lines;
+    return lines[Math.floor(Math.random() * lines.length)];
+  };
+  const creatureLineRef = useRef(creatureLine);
+  creatureLineRef.current = creatureLine;
   /** Une créature ou un Gardien touchés : leur fiche ; la créature y dit une phrase (plus de bulle en haut). */
   const onCreature = (id: BiomeId, kind: 'creature' | 'guardian') => {
     const biome = getBiome(id);
     if (!biome) return;
     if (kind === 'guardian') return ouvrirFiche({ genre: 'gardien', id });
-    // Le bâtiment fini (toutes ses parties posées), la créature y habite : une fois sur deux, elle le dit.
-    const home = partiesDe(id).length > 0 && prochainePartie(id, state.world.parts) === null;
-    const lines = home && Math.random() < 0.5 ? [textes.creatures[id].home] : textes.creatures[id].lines;
-    ouvrirFiche({ genre: 'creature', id }, { phrase: lines[Math.floor(Math.random() * lines.length)] });
+    ouvrirFiche({ genre: 'creature', id }, { phrase: creatureLine(id) });
   };
   // Les bulles du haut (la Carte, les phrases du voyage, du village, d'une créature), une condition chacune.
   const ligneDuVoyage = voyage?.mode === 'cinema';
@@ -878,7 +1007,7 @@ export function WorldPage() {
   const phraseDeCreature = said && !ficheVue ? said : null;
   const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || phraseDeCreature);
   // Un panneau en plein écran par-dessus le monde (l'île, un lieu, Blocs, le menu, le voyage sans animation).
-  const pleinEcran = Boolean((island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel');
+  const pleinEcran = Boolean((island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' || (mapOpen && listeDAmenagement));
   // Le focus suit le plein écran : sur la croix du panneau qui s'ouvre (la barre du bas, dessous, devient inerte), puis
   // sur le premier bouton de la barre (le bouton de l'île) quand il se ferme, s'il n'est pas déjà ailleurs.
   const pleinEcranAvant = useRef(pleinEcran);
@@ -908,7 +1037,7 @@ export function WorldPage() {
   if (biomeId && !panelOpen && !island) return <NotFoundPage />;
   return (
     <div
-      className={`world-page${ficheVue ? ' fiche-ouverte' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}
+      className={`world-page${ficheVue ? ' fiche-ouverte' : ''}${enAmenageant ? ' en-amenagement' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}
     >
       <p className="visually-hidden" role="status" data-testid="arrivee-lue">
         {arriveeLue}
@@ -920,7 +1049,9 @@ export function WorldPage() {
         data-scene
         ref={stageRef}
         onPointerDownCapture={
-          moment
+          amenagement.geste
+            ? () => amenagement.finirLeGeste()
+            : moment
             ? toucherQuiSaute(sauterLeRallumage, finirLeRallumageEnSilence)
             : vague
               ? toucherQuiSaute(poserToutDUnCoup, poserEnSilence)
@@ -929,24 +1060,31 @@ export function WorldPage() {
       >
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <WorldCanvas
+            // La scène est refaite quand la disposition change (GD-9) : chaque partie relit la place des lieux, et
+            // l'ancienne libère tout ce qu'elle tenait.
+            key={disposition}
             archipelago={a}
             cubes={cubesVus}
             creatures={creatures}
-            signes={voyage ? undefined : signes}
+            signes={voyage || enAmenageant ? undefined : signes}
             prochaine={prochaine}
-            calme={Boolean(ficheVue) || panelOpen || panneauDeLIle || Boolean(whaleWord) || Boolean(motRallume)}
+            calme={Boolean(ficheVue) || panelOpen || panneauDeLIle || Boolean(whaleWord) || Boolean(motRallume) || enAmenageant}
             focus={focus}
             reduceMotion={reduceMotion}
             forceDay={forceDay}
             bridges={state.world.links}
-            marker={marker}
+            liaisonCadree={fiche?.cadrer && fiche.objet.genre === 'ouvrage' ? fiche.objet.id : null}
+            // Dans le mode « Aménager », « Poser » ou ✓ Valider est le seul élément mis en avant.
+            marker={enAmenageant ? null : marker}
+            amenager={enAmenageant ? { vue: amenagement.vue, cadre: amenagement.cadre, ecran: suiviDuChoix.suivre, touchers: suiviDuChoix.touchers, glisser: amenagement.glisser } : null}
+            geste={amenagement.geste}
             imageDeLaCarte={imageDeLaCarte}
             vehicle={vehicle}
             voyage={voyageAJouer(voyage)}
             avatar={avatar}
             map={mapOpen}
             home={at}
-            trail={trail}
+            trail={enAmenageant ? undefined : trail}
             quests={quests}
             etatsDesObjets={etats}
             islandLabels={voyage ? undefined : islandLabels}
@@ -967,7 +1105,7 @@ export function WorldPage() {
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
         {/* Sous le bouton Menu : une classe par archipel atteint, la sienne marquée ; un toucher change de classe. */}
-        {!voyage && <ArchipelagoSwitcher current={a} bridges={state.world.links} onGo={(to) => hop(getArchipelago(to).port)} />}
+        {!voyage && !enAmenageant && <ArchipelagoSwitcher current={a} bridges={state.world.links} onGo={(to) => hop(getArchipelago(to).port)} />}
         {/* Le menu du village, toujours en haut à droite, comme la pause d'un jeu. */}
         {!voyage && (
           <button
@@ -989,7 +1127,7 @@ export function WorldPage() {
         {vueDeplacee && !voyage && !bulleEnHaut && (
           // Un rond avec le visage du joueur, sans mot (mot du mainteneur, 4 octobre 2026, pour Blocland ; choix « 1a » du
           // même jour pour Archipéo) ; ses couleurs suivent l'univers (styles/global.css, `world-recentrer-tete`).
-          <button type="button" className="button world-recentrer world-recentrer-tete" onClick={recentrer} aria-label="Recentrer">
+          <button type="button" className="button world-recentrer world-recentrer-tete" data-couvre="etiquettes" onClick={recentrer} aria-label="Recentrer">
             <AvatarFace visage={visageDuJoueur(habillage)} />
           </button>
         )}
@@ -1003,10 +1141,24 @@ export function WorldPage() {
               </button>
             </div>
           )}
-          {panneauDeLaCarte && mapTarget && (
+          {enAmenageant && <ArrangeSentence amenagement={amenagement} nom={nomDuLieu} />}
+          {mapOpen && offreDeLaListe && !enAmenageant && !listeDAmenagement && (
+            <ArrangeListOffer
+              onListe={() => {
+                setOffreDeLaListe(false);
+                setListeDAmenagement(true);
+              }}
+              onCarte={() => {
+                setOffreDeLaListe(false);
+                if (amenagement.aReposer.length) amenagement.ouvrirLaListe();
+                else amenagement.ouvrir();
+              }}
+            />
+          )}
+          {panneauDeLaCarte && !enAmenageant && mapTarget && (
             <div className="creature-line world-line world-map-line" role="status" aria-live="polite">
               <p>
-                <strong>Pour aller à {getBiome(mapTarget)?.name} :</strong> encore {remaining.length} ouvrage{remaining.length > 1 ? 's' : ''} à construire.
+                <strong>Pour aller {toPlace(getBiome(mapTarget)?.name ?? mapTarget)} :</strong> encore {remaining.length} ouvrage{remaining.length > 1 ? 's' : ''}.
               </p>
               <ol className="world-map-path">
                 {remaining.map((b) => (
@@ -1014,7 +1166,7 @@ export function WorldPage() {
                 ))}
               </ol>
               <button type="button" className="button" onClick={() => voirOuvrage(remaining[0].id)}>
-                <Icon name="hammer" /> Voir le premier ouvrage
+                <Icon name="hammer" /> Relier
               </button>
             </div>
           )}
@@ -1076,9 +1228,18 @@ export function WorldPage() {
               onLivree={poserLaCommande}
               commandeEnCoursDePose={vague?.commande ?? null}
               onVoirOuvrage={voirOuvrage}
+              onAllerAuLieu={(id) => {
+                setFiche(null);
+                onIsland(id);
+              }}
             />
           </div>
         )}
+        {/* Les boutons transparents des flèches et de « Tourner », sur leurs poignées dessinées dans le monde. */}
+        {enAmenageant && <ArrangeHandles amenagement={amenagement} suivi={suiviDuChoix} />}
+        {enAmenageant ? (
+          <ArrangeBar amenagement={amenagement} />
+        ) : (
         <nav className="world-bar" data-couvre="scene" aria-label="Village">
           {island && !voyage && (
             <button
@@ -1101,6 +1262,8 @@ export function WorldPage() {
           >
             <Icon name="map" /> <span className="world-bar-text">Carte</span>
           </button>
+          {/* Sur la Carte, hors voyage : « Modifier le plan », à sa place fixe, après la Carte. */}
+          {mapOpen && !voyage && <ArrangeButton amenagement={amenagement} proposer={proposerLaListe} />}
           {!voyage && (
             <button
               type="button"
@@ -1119,6 +1282,7 @@ export function WorldPage() {
             </button>
           )}
         </nav>
+        )}
         {vol?.phase === 'vol' && vol.depart && vol.arrivee && (
           <FlyingBlocks key={vol.seq} bloc={vol.gain.bloc} nombre={vol.gain.nombre} depart={vol.depart} arrivee={vol.arrivee} onArrive={() => finirLeVol(true)} />
         )}
@@ -1127,7 +1291,11 @@ export function WorldPage() {
         <div className="island-sheet voyage-sheet">
           <VoyagePanel to={voyage.to} back={voyage.back} onArrive={arrive} />
         </div>
-      ) : voyage ? null : mondeOpen ? (
+      ) : voyage ? null : mapOpen && listeDAmenagement ? (
+        <Sheet id="panneau-amenager" className="arrange-sheet" titleId="amenager-titre" icon="amenager" title="Modifier le plan" onClose={() => setListeDAmenagement(false)}>
+          <ArrangeList a={a} enPanneau onFin={() => setListeDAmenagement(false)} />
+        </Sheet>
+      ) : mondeOpen ? (
         <ArchipelagosSheet onClose={() => navigate('/adventure')} onGo={openIsland} />
       ) : blocsOpen ? (
         <InventorySheet onClose={fermerLePanneau} />
@@ -1141,6 +1309,8 @@ export function WorldPage() {
         <MonumentsSheet onClose={fermerLePanneau} />
       ) : monument ? (
         <MonumentSheet builder={monumentBuilder} onClose={fermerLePanneau} />
+      ) : reunion ? (
+        <JoinSheet builder={reunionBuilder} onClose={fermerLePanneau} />
       ) : menuOpen ? (
         <MenuSheet
           onClose={() => navigate('/adventure')}

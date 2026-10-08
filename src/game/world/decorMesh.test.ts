@@ -124,8 +124,9 @@ it('l’habillage de la mer affleure, la cascade tombe du bord de sa case jusqu�
     expect(Math.max(...pts.map((p) => p[1])), e.id).toBeGreaterThan(-0.45);
   }
   const cascades = elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'cascade');
-  // Trois, et celle du Relais des voyageurs (LV2), qui a son lac.
-  expect(cascades.length).toBe(4);
+  // Trois, celle du Relais des voyageurs (LV2), qui a son lac, et celles du Bourg des chroniques et du Delta des
+  // ressources (HG-3) ; deux de plus depuis les îles de sciences (SC-3).
+  expect(cascades.length).toBe(8);
   for (const { e, i } of cascades) {
     const pts = sommets(maillage, i);
     const col = colonneEn(champ, e.x, e.y)!;
@@ -328,17 +329,23 @@ it('la fumée : chaque volute plus grosse, dérivée sous le vent comme le carr�
   for (let k = 1; k < 5; k++) expect(centres[k][1]).toBeGreaterThan(centres[k - 1][1]);
 });
 
-it('écueils et bancs : moins de 2 500 triangles aux Premiers Rivages ; les rochers de la Forge prennent sa roche, ou la pierre chaude sur le basalte', () => {
+it('écueils et bancs : moins de 2 800 triangles aux Premiers Rivages ; les rochers de la Forge prennent sa roche, ou la pierre chaude sur le basalte', () => {
   const { elements, maillage } = monde('6e');
   const mer = new Set(elements.map((e, i) => (e.genre === 'ecueil' || e.genre === 'banc' ? i : -1)));
   let n = 0;
   for (const i of maillage.decor.elements) if (mer.has(i)) n++;
-  expect(n).toBeLessThanOrEqual(2500);
+  // 2 645 depuis que la carte de départ est calée sur la grille (GD-9) : la mer, plus large, porte quelques écueils de plus.
+  // 2 762 avec les deux îles d'histoire-géographie (HG-2) ; plafond relevé de 2 700 à 2 800 (mainteneur, 6 octobre 2026).
+  // 2 781 avec les trois îles de sciences (SC-2), dans le même cadre.
+  expect(n).toBeLessThanOrEqual(2800);
   // Tous les écueils et les bancs sont là, un élément chacun.
   // (139 et 55 avant que le cœur de la Forêt passe à 20 et que ses voisines s'écartent, 01/10/2026 ; 54 bancs avant que
-  // l'îlot de son Gardien glisse sur le côté ; 140 avant les bacs du port, GD-7, qui en écartent un.)
-  expect(elements.filter((e) => e.genre === 'ecueil').length).toBe(139);
-  expect(elements.filter((e) => e.genre === 'banc').length).toBe(53);
+  // l'îlot de son Gardien glisse sur le côté ; 140 avant les bacs du port, GD-7, qui en écartent un ; 139 et 53 avant
+  // que la carte de départ soit calée sur la grille, GD-9 : la mer, plus large, en porte quelques-uns de plus ; 152 et 53
+  // avant les deux îles d'histoire-géographie, HG-2, qui élargissent la région ; 157 et 57 avant les trois îles de
+  // sciences, SC-2, posées dans le même cadre, qui prennent leur place à la mer.)
+  expect(elements.filter((e) => e.genre === 'ecueil').length).toBe(153);
+  expect(elements.filter((e) => e.genre === 'banc').length).toBe(68);
   // La Forge : ses rochers sur la roche ont la valeur de la roche (0,9 à 1,1 fois), pas le beige de la pierre ; sur le
   // basalte, celle de la pierre chaude (R4b-4e), pas le basalte.
   const forge = monde('4e');

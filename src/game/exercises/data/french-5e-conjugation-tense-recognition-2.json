@@ -1,0 +1,206 @@
+{
+  "id": "french-5e-conjugation-tense-recognition-2",
+  "biome": "french-5e-conjugation",
+  "type": "tense-recognition",
+  "level": 2,
+  "instruction": "Le verbe est-il à l’indicatif ou à l’impératif ? La règle est affichée.",
+  "items": [
+    {
+      "key": "french-5e-conjugation-tense-recognition-2-0",
+      "prompt": "« Tu ranges ta chambre. »",
+      "spoken": "« Tu ranges ta chambre. »",
+      "choices": [
+        "indicatif",
+        "impératif"
+      ],
+      "answer": "indicatif",
+      "hint": "Y a-t-il un sujet écrit devant le verbe ?",
+      "explanation": "Le sujet « tu » est écrit : on dit ce qui se passe, c’est l’indicatif présent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou impératif ?",
+          "lines": [
+            "Indicatif : on dit ce qui se passe, avec un sujet écrit (tu ranges, nous partons).",
+            "Impératif : on donne un ordre ou un conseil, sans sujet écrit (Range ! Partons !).",
+            "L’impératif n’a que trois personnes : tu, nous, vous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-tense-recognition-2-1",
+      "prompt": "« Range ta chambre ! »",
+      "spoken": "« Range ta chambre ! »",
+      "choices": [
+        "indicatif",
+        "impératif"
+      ],
+      "answer": "impératif",
+      "hint": "Y a-t-il un sujet écrit devant le verbe ?",
+      "explanation": "Pas de sujet écrit, et un ordre : c’est l’impératif présent, avec tu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou impératif ?",
+          "lines": [
+            "Indicatif : on dit ce qui se passe, avec un sujet écrit (tu ranges, nous partons).",
+            "Impératif : on donne un ordre ou un conseil, sans sujet écrit (Range ! Partons !).",
+            "L’impératif n’a que trois personnes : tu, nous, vous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-tense-recognition-2-2",
+      "prompt": "« Nous partons tôt. »",
+      "spoken": "« Nous partons tôt. »",
+      "choices": [
+        "indicatif",
+        "impératif"
+      ],
+      "answer": "indicatif",
+      "hint": "Y a-t-il un sujet écrit devant le verbe ?",
+      "explanation": "Le sujet « nous » est écrit : on dit ce qui se passe, c’est l’indicatif présent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou impératif ?",
+          "lines": [
+            "Indicatif : on dit ce qui se passe, avec un sujet écrit (tu ranges, nous partons).",
+            "Impératif : on donne un ordre ou un conseil, sans sujet écrit (Range ! Partons !).",
+            "L’impératif n’a que trois personnes : tu, nous, vous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-tense-recognition-2-3",
+      "prompt": "« Partons tôt ! »",
+      "spoken": "« Partons tôt ! »",
+      "choices": [
+        "indicatif",
+        "impératif"
+      ],
+      "answer": "impératif",
+      "hint": "Y a-t-il un sujet écrit devant le verbe ?",
+      "explanation": "Pas de sujet écrit : on se donne un ordre à nous-mêmes. C’est l’impératif présent, avec nous.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou impératif ?",
+          "lines": [
+            "Indicatif : on dit ce qui se passe, avec un sujet écrit (tu ranges, nous partons).",
+            "Impératif : on donne un ordre ou un conseil, sans sujet écrit (Range ! Partons !).",
+            "L’impératif n’a que trois personnes : tu, nous, vous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-tense-recognition-2-4",
+      "prompt": "« Écoutez bien la consigne. »",
+      "spoken": "« Écoutez bien la consigne. »",
+      "choices": [
+        "indicatif",
+        "impératif"
+      ],
+      "answer": "impératif",
+      "hint": "Qui écoute ? Le sujet est-il écrit ?",
+      "explanation": "Pas de sujet écrit : c’est un conseil donné à vous. C’est l’impératif présent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou impératif ?",
+          "lines": [
+            "Indicatif : on dit ce qui se passe, avec un sujet écrit (tu ranges, nous partons).",
+            "Impératif : on donne un ordre ou un conseil, sans sujet écrit (Range ! Partons !).",
+            "L’impératif n’a que trois personnes : tu, nous, vous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-tense-recognition-2-5",
+      "prompt": "« Vous écoutez la radio. »",
+      "spoken": "« Vous écoutez la radio. »",
+      "choices": [
+        "indicatif",
+        "impératif"
+      ],
+      "answer": "indicatif",
+      "hint": "Y a-t-il un sujet écrit devant le verbe ?",
+      "explanation": "Le sujet « vous » est écrit : on dit ce qui se passe, c’est l’indicatif présent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou impératif ?",
+          "lines": [
+            "Indicatif : on dit ce qui se passe, avec un sujet écrit (tu ranges, nous partons).",
+            "Impératif : on donne un ordre ou un conseil, sans sujet écrit (Range ! Partons !).",
+            "L’impératif n’a que trois personnes : tu, nous, vous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-tense-recognition-2-6",
+      "prompt": "« Va au tableau, Léo. »",
+      "spoken": "« Va au tableau, Léo. »",
+      "choices": [
+        "indicatif",
+        "impératif"
+      ],
+      "answer": "impératif",
+      "hint": "Léo est-il le sujet, ou celui à qui on parle ?",
+      "explanation": "On parle à Léo, sans sujet écrit : c’est un ordre, l’impératif présent. « Léo » n’est pas le sujet, c’est celui qu’on appelle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou impératif ?",
+          "lines": [
+            "Indicatif : on dit ce qui se passe, avec un sujet écrit (tu ranges, nous partons).",
+            "Impératif : on donne un ordre ou un conseil, sans sujet écrit (Range ! Partons !).",
+            "L’impératif n’a que trois personnes : tu, nous, vous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-tense-recognition-2-7",
+      "prompt": "« Léo va au tableau. »",
+      "spoken": "« Léo va au tableau. »",
+      "choices": [
+        "indicatif",
+        "impératif"
+      ],
+      "answer": "indicatif",
+      "hint": "Qui va au tableau ? Le sujet est-il écrit ?",
+      "explanation": "Le sujet « Léo » est écrit devant le verbe : on dit ce qui se passe, c’est l’indicatif présent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou impératif ?",
+          "lines": [
+            "Indicatif : on dit ce qui se passe, avec un sujet écrit (tu ranges, nous partons).",
+            "Impératif : on donne un ordre ou un conseil, sans sujet écrit (Range ! Partons !).",
+            "L’impératif n’a que trois personnes : tu, nous, vous."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne route !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-5e-conjugation",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

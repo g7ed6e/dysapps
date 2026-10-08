@@ -1,0 +1,234 @@
+{
+  "id": "technology-6e-objects-materials-2",
+  "biome": "technology-6e-objects",
+  "type": "materials",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-6e-objects-materials-2-0",
+      "prompt": "La plupart des plastiques sont fabriqués avec du …",
+      "spoken": "La plupart des plastiques sont fabriqués avec du  (mot manquant) ",
+      "choices": [
+        "bois",
+        "pétrole",
+        "sable"
+      ],
+      "answer": "pétrole",
+      "hint": "Relis la ligne « Le plastique » du rappel.",
+      "explanation": "Les plastiques sont surtout faits avec du pétrole, une ressource qui s’épuise. Le verre, lui, est fait avec du sable.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "D’où viennent les matériaux",
+          "lines": [
+            "Le bois vient des arbres : on peut en replanter.",
+            "Le plastique est fait surtout avec du pétrole, qui s’épuise.",
+            "Le verre est fait avec du sable ; le métal, avec des roches du sol.",
+            "Recycler : refaire de la matière avec un objet usé.",
+            "Avant de recycler : jeter moins, réutiliser, réparer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-2-1",
+      "prompt": "Le verre est fabriqué avec du …",
+      "spoken": "Le verre est fabriqué avec du  (mot manquant) ",
+      "choices": [
+        "sable",
+        "pétrole",
+        "bois"
+      ],
+      "answer": "sable",
+      "hint": "Relis la ligne « Le verre » du rappel.",
+      "explanation": "Le verre est fait avec du sable, chauffé très fort. Le verre usé se recycle en verre neuf.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "D’où viennent les matériaux",
+          "lines": [
+            "Le bois vient des arbres : on peut en replanter.",
+            "Le plastique est fait surtout avec du pétrole, qui s’épuise.",
+            "Le verre est fait avec du sable ; le métal, avec des roches du sol.",
+            "Recycler : refaire de la matière avec un objet usé.",
+            "Avant de recycler : jeter moins, réutiliser, réparer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-2-2",
+      "prompt": "Les consignes de tri de la ville\nBac jaune : bouteilles en plastique, canettes, cartons.\nConteneur à verre : bouteilles et pots en verre.\nComposteur : épluchures.",
+      "question": "Où vas-tu jeter le pot de confiture vide, en verre ?",
+      "spoken": "Les consignes de tri de la ville. Bac jaune, bouteilles en plastique, canettes, cartons. Conteneur à verre, bouteilles et pots en verre. Composteur, épluchures.",
+      "choices": [
+        "dans le bac jaune",
+        "dans le conteneur à verre",
+        "dans le composteur"
+      ],
+      "answer": "dans le conteneur à verre",
+      "hint": "Cherche la ligne où il est écrit « pots ».",
+      "explanation": "Les pots et les bouteilles en verre vont dans le conteneur à verre. Le verre se recycle en verre neuf.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "D’où viennent les matériaux",
+          "lines": [
+            "Le bois vient des arbres : on peut en replanter.",
+            "Le plastique est fait surtout avec du pétrole, qui s’épuise.",
+            "Le verre est fait avec du sable ; le métal, avec des roches du sol.",
+            "Recycler : refaire de la matière avec un objet usé.",
+            "Avant de recycler : jeter moins, réutiliser, réparer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-2-3",
+      "prompt": "Les consignes de tri de la ville\nBac jaune : emballages et papiers.\nConteneur à verre : bouteilles et pots.\nComposteur : épluchures de fruits et de légumes.",
+      "question": "Où vont les épluchures de pommes de terre ?",
+      "spoken": "Les consignes de tri de la ville. Bac jaune, emballages et papiers. Conteneur à verre, bouteilles et pots. Composteur, épluchures de fruits et de légumes.",
+      "choices": [
+        "dans le composteur",
+        "dans le bac jaune",
+        "dans le conteneur à verre"
+      ],
+      "answer": "dans le composteur",
+      "hint": "Cherche la ligne où il est écrit « épluchures ».",
+      "explanation": "Les épluchures vont au composteur : elles deviennent du compost, un engrais pour le jardin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "D’où viennent les matériaux",
+          "lines": [
+            "Le bois vient des arbres : on peut en replanter.",
+            "Le plastique est fait surtout avec du pétrole, qui s’épuise.",
+            "Le verre est fait avec du sable ; le métal, avec des roches du sol.",
+            "Recycler : refaire de la matière avec un objet usé.",
+            "Avant de recycler : jeter moins, réutiliser, réparer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-2-4",
+      "prompt": "Une canette en aluminium recyclée redevient de l’…",
+      "spoken": "Une canette en aluminium recyclée redevient de l’ (mot manquant) ",
+      "choices": [
+        "plastique",
+        "verre",
+        "aluminium"
+      ],
+      "answer": "aluminium",
+      "hint": "Recycler, c’est refaire la même matière.",
+      "explanation": "Recyclée, la canette redevient de l’aluminium, qui sert à fabriquer de nouveaux objets. On a besoin de moins de roche.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "D’où viennent les matériaux",
+          "lines": [
+            "Le bois vient des arbres : on peut en replanter.",
+            "Le plastique est fait surtout avec du pétrole, qui s’épuise.",
+            "Le verre est fait avec du sable ; le métal, avec des roches du sol.",
+            "Recycler : refaire de la matière avec un objet usé.",
+            "Avant de recycler : jeter moins, réutiliser, réparer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-2-5",
+      "prompt": "Recoller la semelle de sa chaussure au lieu de la jeter, c’est …",
+      "spoken": "Recoller la semelle de sa chaussure au lieu de la jeter, c’est  (mot manquant) ",
+      "choices": [
+        "recycler",
+        "réparer",
+        "trier"
+      ],
+      "answer": "réparer",
+      "hint": "La chaussure reste une chaussure.",
+      "explanation": "Recoller la semelle, c’est réparer : la chaussure sert encore. Recycler, c’est refaire de la matière avec un objet usé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "D’où viennent les matériaux",
+          "lines": [
+            "Le bois vient des arbres : on peut en replanter.",
+            "Le plastique est fait surtout avec du pétrole, qui s’épuise.",
+            "Le verre est fait avec du sable ; le métal, avec des roches du sol.",
+            "Recycler : refaire de la matière avec un objet usé.",
+            "Avant de recycler : jeter moins, réutiliser, réparer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-2-6",
+      "prompt": "Deux règles de la trousse\nRègle en bois : le bois vient d’une forêt replantée.\nRègle en plastique : le plastique vient du pétrole.",
+      "question": "Quelle règle vient d’une ressource renouvelable ?",
+      "spoken": "Deux règles de la trousse. Règle en bois, le bois vient d’une forêt replantée. Règle en plastique, le plastique vient du pétrole.",
+      "choices": [
+        "la règle en plastique",
+        "la règle en bois",
+        "les deux"
+      ],
+      "answer": "la règle en bois",
+      "hint": "Laquelle de ces ressources peut repousser ?",
+      "explanation": "Une forêt replantée repousse : le bois est renouvelable. Le pétrole s’épuise : il ne l’est pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "D’où viennent les matériaux",
+          "lines": [
+            "Le bois vient des arbres : on peut en replanter.",
+            "Le plastique est fait surtout avec du pétrole, qui s’épuise.",
+            "Le verre est fait avec du sable ; le métal, avec des roches du sol.",
+            "Recycler : refaire de la matière avec un objet usé.",
+            "Avant de recycler : jeter moins, réutiliser, réparer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-2-7",
+      "prompt": "Le journal du collège\nLa classe a remplacé les gobelets jetables par des gourdes.\nLa poubelle de la classe est moins pleine.",
+      "question": "Qu’a fait la classe ?",
+      "spoken": "Le journal du collège. La classe a remplacé les gobelets jetables par des gourdes. La poubelle de la classe est moins pleine.",
+      "choices": [
+        "elle a recyclé ses gobelets",
+        "elle a jeté moins de déchets",
+        "elle a trié ses gourdes"
+      ],
+      "answer": "elle a jeté moins de déchets",
+      "hint": "Relis la dernière ligne du document.",
+      "explanation": "Avec des gourdes, plus de gobelets à jeter : la classe a réduit ses déchets. Jeter moins vient avant recycler.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "D’où viennent les matériaux",
+          "lines": [
+            "Le bois vient des arbres : on peut en replanter.",
+            "Le plastique est fait surtout avec du pétrole, qui s’épuise.",
+            "Le verre est fait avec du sable ; le métal, avec des roches du sol.",
+            "Recycler : refaire de la matière avec un objet usé.",
+            "Avant de recycler : jeter moins, réutiliser, réparer."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-6e-objects",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

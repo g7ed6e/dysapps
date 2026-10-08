@@ -42,7 +42,7 @@ export type IdDePiece = IdDeMur | IdDeToit;
 export type Rotation = 0 | 1 | 2 | 3;
 
 /**
- * Les formes des murs, dans leur orientation de référence (le masque des côtés, bits de `COTES` : +x, +y, −x, −y). Une
+ * Les formes des murs, dans leur orientation de référence (le masque des côtés, bits de `SIDES` : +x, +y, −x, −y). Une
  * pièce est dessinée dans cette orientation ; `pieceDe` dit de combien la tourner.
  */
 export const FORMES: readonly { forme: Forme; cotes: number }[] = [

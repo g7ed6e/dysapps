@@ -3,7 +3,7 @@ lieu : french-5e-conjugation
 module : Conjugaison
 matière : french
 classe : 5e
-description : Présent, imparfait, passé composé, passé simple, futur, conditionnel, subjonctif : le bon temps, la règle affichée.
+description : Imparfait, passé composé, passé simple, futur, conditionnel : reconnaître et choisir le bon temps, la règle affichée.
 gardien : l’Hydre des marais
 icône : footprints
 créature : Kroa
@@ -14,7 +14,7 @@ créature : Kroa
 ## Rives du passé · `past-tenses`
 
 - description : Imparfait ou passé composé, puis le passé simple du récit.
-- compétences : c3.fr.langue.temps-a-memoriser · c4.fr.langue.valeurs-des-temps
+- compétences : c4.fr.5e.grammaire.temps-modes · c3.fr.langue.temps-a-memoriser
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : french-5e-conjugation
@@ -132,7 +132,7 @@ Pour tous les items :
 ## Brume du futur · `future-tense`
 
 - description : Futur ou conditionnel, puis les formes du futur.
-- compétences : c4.fr.langue.temps-a-memoriser · c3.fr.langue.temps-a-memoriser
+- compétences : c4.fr.5e.grammaire.formes-verbales · c3.fr.langue.temps-a-memoriser
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : french-5e-conjugation
@@ -216,10 +216,10 @@ Pour tous les items :
 | Nous … un gâteau. | ferons · fairons · ferions | ferons | Faire → fer-, nous : -ons. | Futur de faire avec nous : « ferons ». |
 | Ils … à huit heures. | viendront · venirons · viendrons | viendront | Venir → viendr-, ils : -ont. | Futur de venir avec ils : « viendront ». |
 
-## Roseaux du subjonctif · `subjunctive`
+## Reflets · `tense-recognition`
 
-- description : Le subjonctif présent, puis reconnaître le temps d’un verbe.
-- compétences : c4.fr.langue.temps-a-memoriser · c4.fr.langue.morphologie-verbale · c3.fr.langue.reconnaitre-verbe
+- description : Reconnais le temps d’un verbe, puis son mode : indicatif ou impératif. Le tableau des temps est sous les yeux.
+- compétences : c4.fr.5e.grammaire.temps-modes · c4.fr.5e.grammaire.formes-verbales · c3.fr.langue.reconnaitre-verbe
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : french-5e-conjugation
@@ -228,123 +228,140 @@ Pour tous les items :
 - monte à : 0.85
 - descend à : 0.5
 
-### Niveau 1 · `french-5e-conjugation-subjunctive-1`
-
-- consigne : Choisis le verbe au subjonctif présent après « il faut que », « bien que », « pour que ».
-
-Pour tous les items :
-- trou lu : " (mot manquant) "
-- aide « Le subjonctif présent » :
-  - Après il faut que, je veux que, bien que, pour que, avant que.
-  - Formé sur « ils » au présent : ils prennent → que je prenne.
-  - Terminaisons : -e, -es, -e, -ions, -iez, -ent.
-  - Irréguliers : être → que je sois, avoir → que j’aie, aller → que j’aille, faire → que je fasse.
-
-1. énoncé : Il faut que tu … tes devoirs.
-   - choix : fasses · fais · feras
-   - réponse : fasses
-   - indice : « Il faut que » appelle le subjonctif : que tu fasses.
-   - explication : Après « il faut que » : subjonctif, « fasses ».
-2. énoncé : Je veux que vous … à l’heure.
-   - choix : soyez · êtes · serez
-   - réponse : soyez
-   - indice : « Je veux que » + subjonctif d’être : que vous soyez.
-   - explication : Après « je veux que » : subjonctif, « soyez ».
-3. énoncé : Bien qu’il … froid, on sort.
-   - choix : fasse · fait · fera
-   - réponse : fasse
-   - indice : « Bien que » + subjonctif.
-   - explication : Après « bien que » : subjonctif, « fasse ».
-4. énoncé : Il est temps que nous … .
-   - choix : partions · partons · partirons
-   - réponse : partions
-   - indice : Subjonctif avec nous : -ions.
-   - explication : Après « il est temps que » : subjonctif, « partions ».
-5. énoncé : Je souhaite qu’elle … .
-   - choix : vienne · vient · viendra
-   - réponse : vienne
-   - indice : Formé sur « ils viennent » : qu’elle vienne.
-   - explication : Après « je souhaite que » : subjonctif, « vienne ».
-6. énoncé : Pour que tu …, il faut t’entraîner.
-   - choix : réussisses · réussis · réussiras
-   - réponse : réussisses
-   - indice : « Pour que » + subjonctif : que tu réussisses.
-   - explication : Après « pour que » : subjonctif, « réussisses ».
-7. énoncé : Il faut que j’… du courage.
-   - choix : aie · ai · aurai
-   - réponse : aie
-   - indice : Subjonctif d’avoir : que j’aie.
-   - explication : Après « il faut que » : subjonctif d’avoir, « aie ».
-8. énoncé : Avant que vous …, je vous donne mon adresse.
-   - choix : partiez · partez · partirez
-   - réponse : partiez
-   - indice : « Avant que » + subjonctif : que vous partiez.
-   - explication : Après « avant que » : subjonctif, « partiez ».
-
-### Niveau 2 · `french-5e-conjugation-subjunctive-2`
+### Niveau 1 · `french-5e-conjugation-tense-recognition-1`
 
 - consigne : Quel est le temps du verbe de la phrase ? Le tableau des temps est affiché.
 
 Pour tous les items :
 - aide « Reconnaître le temps » :
-  - Présent : maintenant (je mange). Imparfait : -ais, -ait, -aient.
-  - Passé composé : avoir ou être + participe (j’ai mangé).
-  - Passé simple : il mangea, ils prirent. Futur : -rai, -ras, -ra. Conditionnel : -rais, -rait.
-  - Subjonctif : après « que » (qu’il prenne, que nous soyons).
+  - Présent : -e, -es, -ons, -ez, -ent, ou -s, -s, -t.
+  - Imparfait : -ais, -ait, -ions, -iez, -aient.
+  - Passé simple : -a, -it, -ut, -èrent, -irent.
+  - Futur : -rai, -ras, -ra, -rons, -rez, -ront.
+  - Conditionnel : -rais, -rait, -rions, -riez, -raient.
+  - Passé composé : avoir ou être au présent + participe (j’ai mangé).
+  - Plus-que-parfait : avoir ou être à l’imparfait + participe (j’avais mangé).
 
-1. énoncé : « Nous chanterions volontiers. »
+1. clé : french-5e-conjugation-subjunctive-2-0
+   - énoncé : « Nous chanterions volontiers. »
    - lu : « Nous chanterions volontiers. »
    - choix : conditionnel · futur · imparfait
    - réponse : conditionnel
    - indice : -rions : conditionnel.
    - explication : « chanterions » : -rions, conditionnel présent.
-2. énoncé : « Ils ont couru jusqu’ici. »
+2. clé : french-5e-conjugation-subjunctive-2-1
+   - énoncé : « Ils ont couru jusqu’ici. »
    - lu : « Ils ont couru jusqu’ici. »
    - choix : passé composé · passé simple · présent
    - réponse : passé composé
    - indice : Avoir + participe passé.
-   - explication : « ont couru » : auxiliaire avoir + participe, passé composé.
-3. énoncé : « Qu’elle prenne son temps. »
-   - lu : « Qu’elle prenne son temps. »
-   - choix : subjonctif · présent · futur
-   - réponse : subjonctif
-   - indice : « prenne », et non « prend » : subjonctif.
-   - explication : « qu’elle prenne » : subjonctif présent.
-4. énoncé : « Vous finirez demain. »
+   - explication : « ont couru » : auxiliaire avoir au présent + participe, passé composé.
+3. clé : french-5e-conjugation-subjunctive-2-3
+   - énoncé : « Vous finirez demain. »
    - lu : « Vous finirez demain. »
    - choix : futur · conditionnel · présent
    - réponse : futur
    - indice : -rez : futur.
    - explication : « finirez » : futur simple.
-5. énoncé : « Le vent soufflait fort. »
+4. clé : french-5e-conjugation-subjunctive-2-4
+   - énoncé : « Le vent soufflait fort. »
    - lu : « Le vent soufflait fort. »
    - choix : imparfait · passé simple · présent
    - réponse : imparfait
    - indice : -ait : imparfait.
    - explication : « soufflait » : imparfait.
-6. énoncé : « Elle ouvrit les yeux. »
+5. clé : french-5e-conjugation-subjunctive-2-5
+   - énoncé : « Elle ouvrit les yeux. »
    - lu : « Elle ouvrit les yeux. »
    - choix : passé simple · présent · imparfait
    - réponse : passé simple
    - indice : -it au passé, dans un récit : passé simple.
    - explication : « ouvrit » : passé simple.
-7. énoncé : « Nous prenons le bus. »
+6. clé : french-5e-conjugation-subjunctive-2-6
+   - énoncé : « Nous prenons le bus. »
    - lu : « Nous prenons le bus. »
-   - choix : présent · futur · subjonctif
+   - choix : présent · futur · imparfait
    - réponse : présent
    - indice : Action maintenant : présent.
-   - explication : « prenons » : présent de l’indicatif.
-8. énoncé : « Il faudrait que tu viennes. » Temps de « viennes » ?
-   - lu : « Il faudrait que tu viennes. » Temps de « viennes » ?
-   - choix : subjonctif · conditionnel · futur
-   - réponse : subjonctif
-   - indice : Le verbe après « que tu » : « viennes », subjonctif.
-   - explication : « que tu viennes » : subjonctif présent (« faudrait » est au conditionnel).
+   - explication : « prenons » : présent de l’indicatif. À l’imparfait, on dirait « nous prenions ».
+7. clé : reflets-avions-fini
+   - énoncé : « Nous avions fini le repas. »
+   - lu : « Nous avions fini le repas. »
+   - choix : plus-que-parfait · passé composé · imparfait
+   - réponse : plus-que-parfait
+   - indice : Regarde l’auxiliaire : « avions », à quel temps est-il ?
+   - explication : « avions fini » : avoir à l’imparfait + participe, c’est le plus-que-parfait. Au passé composé, on dirait « nous avons fini ».
+8. clé : reflets-viendrais
+   - énoncé : « Tu viendrais avec nous ? »
+   - lu : « Tu viendrais avec nous ? »
+   - choix : conditionnel · futur · imparfait
+   - réponse : conditionnel
+   - indice : -rais : futur ou conditionnel ?
+   - explication : « viendrais » : -rais, conditionnel présent. Au futur, on dirait « tu viendras », sans i.
+
+### Niveau 2 · `french-5e-conjugation-tense-recognition-2`
+
+- consigne : Le verbe est-il à l’indicatif ou à l’impératif ? La règle est affichée.
+
+Pour tous les items :
+- aide « Indicatif ou impératif ? » :
+  - Indicatif : on dit ce qui se passe, avec un sujet écrit (tu ranges, nous partons).
+  - Impératif : on donne un ordre ou un conseil, sans sujet écrit (Range ! Partons !).
+  - L’impératif n’a que trois personnes : tu, nous, vous.
+
+1. énoncé : « Tu ranges ta chambre. »
+   - lu : « Tu ranges ta chambre. »
+   - choix : indicatif · impératif
+   - réponse : indicatif
+   - indice : Y a-t-il un sujet écrit devant le verbe ?
+   - explication : Le sujet « tu » est écrit : on dit ce qui se passe, c’est l’indicatif présent.
+2. énoncé : « Range ta chambre ! »
+   - lu : « Range ta chambre ! »
+   - choix : indicatif · impératif
+   - réponse : impératif
+   - indice : Y a-t-il un sujet écrit devant le verbe ?
+   - explication : Pas de sujet écrit, et un ordre : c’est l’impératif présent, avec tu.
+3. énoncé : « Nous partons tôt. »
+   - lu : « Nous partons tôt. »
+   - choix : indicatif · impératif
+   - réponse : indicatif
+   - indice : Y a-t-il un sujet écrit devant le verbe ?
+   - explication : Le sujet « nous » est écrit : on dit ce qui se passe, c’est l’indicatif présent.
+4. énoncé : « Partons tôt ! »
+   - lu : « Partons tôt ! »
+   - choix : indicatif · impératif
+   - réponse : impératif
+   - indice : Y a-t-il un sujet écrit devant le verbe ?
+   - explication : Pas de sujet écrit : on se donne un ordre à nous-mêmes. C’est l’impératif présent, avec nous.
+5. énoncé : « Écoutez bien la consigne. »
+   - lu : « Écoutez bien la consigne. »
+   - choix : indicatif · impératif
+   - réponse : impératif
+   - indice : Qui écoute ? Le sujet est-il écrit ?
+   - explication : Pas de sujet écrit : c’est un conseil donné à vous. C’est l’impératif présent.
+6. énoncé : « Vous écoutez la radio. »
+   - lu : « Vous écoutez la radio. »
+   - choix : indicatif · impératif
+   - réponse : indicatif
+   - indice : Y a-t-il un sujet écrit devant le verbe ?
+   - explication : Le sujet « vous » est écrit : on dit ce qui se passe, c’est l’indicatif présent.
+7. énoncé : « Va au tableau, Léo. »
+   - lu : « Va au tableau, Léo. »
+   - choix : indicatif · impératif
+   - réponse : impératif
+   - indice : Léo est-il le sujet, ou celui à qui on parle ?
+   - explication : On parle à Léo, sans sujet écrit : c’est un ordre, l’impératif présent. « Léo » n’est pas le sujet, c’est celui qu’on appelle.
+8. énoncé : « Léo va au tableau. »
+   - lu : « Léo va au tableau. »
+   - choix : indicatif · impératif
+   - réponse : indicatif
+   - indice : Qui va au tableau ? Le sujet est-il écrit ?
+   - explication : Le sujet « Léo » est écrit devant le verbe : on dit ce qui se passe, c’est l’indicatif présent.
 
 ## Gué des temps · `tense-choice`
 
 - description : Le présent et l’impératif, puis le plus-que-parfait et le futur antérieur, puis ce que dit chaque temps.
-- compétences : c4.fr.langue.valeurs-des-temps · c4.fr.langue.temps-a-memoriser · c4.fr.langue.morphologie-verbale · c3.fr.langue.temps-a-memoriser
+- compétences : c4.fr.5e.grammaire.temps-modes · c4.fr.5e.grammaire.formes-verbales · c3.fr.langue.temps-a-memoriser
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : french-5e-conjugation
@@ -425,10 +442,10 @@ Pour tous les items :
    - explication : Plus-que-parfait : avoir à l’imparfait, puis le participe : nous avions fini. « Avons fini » est le passé composé, « aurons fini » le futur antérieur.
 2. énoncé : Au futur antérieur : demain à midi, j’… mon exposé.
    - lu : Au futur antérieur : demain à midi, je (mot manquant) mon exposé.
-   - choix : aurai terminé · aurais terminé · avais terminé
+   - choix : aurai terminé · ai terminé · avais terminé
    - réponse : aurai terminé
    - indice : Quel est le futur du verbe avoir avec je ?
-   - explication : Futur antérieur : avoir au futur, puis le participe : j’aurai terminé. « Aurais » finit par -ais : c’est le conditionnel.
+   - explication : Futur antérieur : avoir au futur, puis le participe : j’aurai terminé. « Ai terminé » est le passé composé, « avais terminé » le plus-que-parfait.
 3. énoncé : Au plus-que-parfait : Léa … avant nous.
    - choix : était arrivée · avait arrivé · sera arrivée
    - réponse : était arrivée
@@ -445,10 +462,10 @@ Pour tous les items :
    - indice : Aller se conjugue avec être. Qui est le sujet, et combien sont-elles ?
    - explication : Aller se conjugue avec être : le participe s’accorde avec mes cousines, au féminin pluriel : elles étaient allées.
 6. énoncé : Au futur antérieur : quand tu … ton goûter, tu pourras jouer.
-   - choix : auras mangé · aurais mangé · avais mangé
+   - choix : auras mangé · mangeras · avais mangé
    - réponse : auras mangé
    - indice : Quel est le futur du verbe avoir avec tu ?
-   - explication : Futur antérieur : avoir au futur, puis le participe : tu auras mangé. « Aurais » finit par -ais : c’est le conditionnel.
+   - explication : Futur antérieur : avoir au futur, puis le participe : tu auras mangé. « Mangeras » est le futur simple, sans auxiliaire ; « avais mangé », le plus-que-parfait.
 7. énoncé : Au plus-que-parfait : il … son parapluie.
    - choix : avait pris · avait prit · aura pris
    - réponse : avait pris

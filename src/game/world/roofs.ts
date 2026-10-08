@@ -11,12 +11,41 @@ import { ambianceDe, type Couleur, type Faces } from './palette';
 export type Couverture = 'ardoise' | 'terre-cuite';
 
 /**
- * Les îles couvertes de terre cuite : 6e la Ferme et la Mine, 5e le Comptoir, 4e le Théâtre, 3e le Belvédère. Les îles
- * de la LV2 restent d'ardoise et sont hors de ce compte : le Relais des voyageurs (5e), voisin du Comptoir (jamais deux
- * voisins en terre cuite), le Jardin des heures (4e, DA LV2-4), voisin du Théâtre, d'ardoise #3E3636 (le 4e garde
- * une île de terre cuite sur six), et le Refuge des carnets (3e, DA LV2-5), d'ardoise enneigée.
+ * Les îles couvertes de terre cuite : 6e la Ferme, la Mine, la Pointe des paysages (HG-2 : ses toits de ville, jamais
+ * voisine de la Mine ; la Fouille des siècles, sa voisine, reste d'ardoise) et le Hangar des inventions (DA, SC-2 ; la
+ * Tour du lecteur et le Volcan des décimaux, ses voisins, sont d'ardoise, et il n'est pas voisin de la Pointe), 5e le
+ * Comptoir, 4e le Théâtre, 3e le Belvédère. Les îles de la LV2 restent d'ardoise et sont hors de ce compte : le Relais
+ * des voyageurs (5e), voisin du Comptoir (jamais deux voisins en terre cuite), le Jardin des heures (4e, DA LV2-4), voisin
+ * du Théâtre, d'ardoise #3E3636, et le Refuge des carnets (3e, DA LV2-5), d'ardoise enneigée. Les îles
+ * d'histoire-géographie de 5e à 3e (HG-3, DA) : en terre cuite le Delta des ressources (5e), l'Imprimerie des révolutions
+ * (4e) et le Plateau des territoires (3e) ; d'ardoise le Bourg des chroniques et l'Escale des échanges, d'ardoise
+ * enneigée le Kiosque des témoins. Chaque archipel des 5e à 3e garde ainsi deux îles de terre cuite, jamais voisines :
+ * au 5e, le Relais et le Bourg séparent le Comptoir du Delta ; au 4e, l'Escale sépare l'Imprimerie du Théâtre (deux sur
+ * dix) ; au 3e, le Belvédère et le Plateau sont aux deux bouts de l'archipel. Les îles de sciences de 5e à 3e (SC-3, DA) :
+ * une de plus en terre cuite par archipel, trois sur onze (la LV2 hors du compte), jamais voisine des deux autres : la
+ * Prairie des climats (5e) — la DA donnait la Menuiserie des objets, mais à sa place sur la Carte, au coin de devant à
+ * l'est, elle est voisine du Delta ; la DA prévoit alors l'échange avec une autre île de sciences de l'archipel, et la
+ * Prairie, entre le Marais et la Saline, n'est voisine ni du Comptoir ni du Delta ; la Source des espèces (4e), voisine
+ * de la Forge seulement ; le Verger de la santé (3e), voisin de l'Observatoire des textes et du Kiosque, loin du
+ * Belvédère et du Plateau. Les autres sont d'ardoise : #224C5F pour la Menuiserie des objets et la Saline des mélanges,
+ * #3E3636 pour la Vigie des signaux et le Bassin des maquettes, enneigée pour le Tremplin des forces et la Ruche des
+ * réseaux. Vérifié par construction.test.ts (« deux îles voisines »).
  */
-export const TERRE_CUITE_SUR: readonly string[] = ['french-6e-grammar-spelling', 'french-6e-letter-confusion', 'english-5e-vocabulary', 'english-4e-comprehension', 'maths-3e-geometry'];
+export const TERRE_CUITE_SUR: readonly string[] = [
+  'french-6e-grammar-spelling',
+  'french-6e-letter-confusion',
+  'geography-6e-living',
+  'technology-6e-objects',
+  'english-5e-vocabulary',
+  'geography-5e-resources',
+  'life-earth-sciences-5e-active-planet',
+  'english-4e-comprehension',
+  'history-4e-revolutions',
+  'life-earth-sciences-4e-cells-evolution',
+  'maths-3e-geometry',
+  'geography-3e-france',
+  'life-earth-sciences-3e-human-body',
+];
 
 /** La terre cuite, la même dans les quatre archipels. */
 const TERRE_CUITE: Couleur = 0xc0764a;

@@ -1,0 +1,239 @@
+{
+  "id": "life-earth-sciences-3e-human-body-puberty-reproduction-1",
+  "biome": "life-earth-sciences-3e-human-body",
+  "type": "puberty-reproduction",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-1-0",
+      "prompt": "La période où le corps devient capable de se reproduire s’appelle la …",
+      "spoken": "La période où le corps devient capable de se reproduire s’appelle la  (mot manquant) ",
+      "choices": [
+        "naissance",
+        "croissance",
+        "puberté"
+      ],
+      "answer": "puberté",
+      "hint": "Relis la ligne « La puberté » du rappel.",
+      "explanation": "La puberté est la période où le corps change et devient capable de se reproduire. On grandit aussi beaucoup pendant cette période.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La puberté",
+          "lines": [
+            "La puberté : le corps devient capable de se reproduire.",
+            "Elle commence vers 8 à 14 ans, à un âge différent pour chacun.",
+            "Des hormones la déclenchent ; le cerveau commande leur production.",
+            "Les testicules produisent des spermatozoïdes, les ovaires des ovules.",
+            "Ces cellules reproductrices sont les gamètes.",
+            "Chez la fille, les règles reviennent à peu près chaque mois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-1-1",
+      "prompt": "Les cellules reproductrices produites par les testicules sont les …",
+      "spoken": "Les cellules reproductrices produites par les testicules sont les  (mot manquant) ",
+      "choices": [
+        "ovules",
+        "spermatozoïdes",
+        "globules"
+      ],
+      "answer": "spermatozoïdes",
+      "hint": "Relis la ligne « Les testicules » du rappel.",
+      "explanation": "Les testicules produisent les spermatozoïdes. Les ovules, eux, sont produits par les ovaires.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La puberté",
+          "lines": [
+            "La puberté : le corps devient capable de se reproduire.",
+            "Elle commence vers 8 à 14 ans, à un âge différent pour chacun.",
+            "Des hormones la déclenchent ; le cerveau commande leur production.",
+            "Les testicules produisent des spermatozoïdes, les ovaires des ovules.",
+            "Ces cellules reproductrices sont les gamètes.",
+            "Chez la fille, les règles reviennent à peu près chaque mois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-1-2",
+      "prompt": "Les ovules sont produits par les …",
+      "spoken": "Les ovules sont produits par les  (mot manquant) ",
+      "choices": [
+        "ovaires",
+        "testicules",
+        "poumons"
+      ],
+      "answer": "ovaires",
+      "hint": "Le mot ressemble à « ovule ».",
+      "explanation": "Les ovaires produisent les ovules. Les testicules produisent les spermatozoïdes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La puberté",
+          "lines": [
+            "La puberté : le corps devient capable de se reproduire.",
+            "Elle commence vers 8 à 14 ans, à un âge différent pour chacun.",
+            "Des hormones la déclenchent ; le cerveau commande leur production.",
+            "Les testicules produisent des spermatozoïdes, les ovaires des ovules.",
+            "Ces cellules reproductrices sont les gamètes.",
+            "Chez la fille, les règles reviennent à peu près chaque mois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-1-3",
+      "prompt": "Les changements de la puberté sont déclenchés par des …",
+      "spoken": "Les changements de la puberté sont déclenchés par des  (mot manquant) ",
+      "choices": [
+        "vitamines",
+        "hormones",
+        "microbes"
+      ],
+      "answer": "hormones",
+      "hint": "Relis la ligne « Des hormones la déclenchent » du rappel.",
+      "explanation": "Des hormones, commandées par le cerveau, déclenchent les changements de la puberté. Elles circulent dans le sang jusqu’aux organes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La puberté",
+          "lines": [
+            "La puberté : le corps devient capable de se reproduire.",
+            "Elle commence vers 8 à 14 ans, à un âge différent pour chacun.",
+            "Des hormones la déclenchent ; le cerveau commande leur production.",
+            "Les testicules produisent des spermatozoïdes, les ovaires des ovules.",
+            "Ces cellules reproductrices sont les gamètes.",
+            "Chez la fille, les règles reviennent à peu près chaque mois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-1-4",
+      "prompt": "Ce que dit l’infirmière du collège\nLa puberté commence à des âges différents.\nCertains changent tôt, d’autres plus tard.\nLes deux sont normaux.",
+      "question": "Que faut-il retenir ?",
+      "spoken": "Ce que dit l’infirmière du collège. La puberté commence à des âges différents. Certains changent tôt, d’autres plus tard. Les deux sont normaux.",
+      "choices": [
+        "chacun a son rythme",
+        "tout le monde change au même âge",
+        "changer tard veut dire être malade"
+      ],
+      "answer": "chacun a son rythme",
+      "hint": "Relis la dernière ligne du document.",
+      "explanation": "La puberté arrive à des âges différents, et c’est normal : chacun a son rythme. On peut en parler à l’infirmière ou au médecin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La puberté",
+          "lines": [
+            "La puberté : le corps devient capable de se reproduire.",
+            "Elle commence vers 8 à 14 ans, à un âge différent pour chacun.",
+            "Des hormones la déclenchent ; le cerveau commande leur production.",
+            "Les testicules produisent des spermatozoïdes, les ovaires des ovules.",
+            "Ces cellules reproductrices sont les gamètes.",
+            "Chez la fille, les règles reviennent à peu près chaque mois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-1-5",
+      "prompt": "Chez la fille, les règles reviennent environ tous les …",
+      "spoken": "Chez la fille, les règles reviennent environ tous les  (mot manquant) ",
+      "choices": [
+        "14 jours",
+        "28 jours",
+        "60 jours"
+      ],
+      "answer": "28 jours",
+      "hint": "Relis la ligne « Chez la fille » du rappel : à peu près chaque mois.",
+      "explanation": "Les règles reviennent à peu près chaque mois, environ tous les 28 jours. Ce rythme varie d’une personne à l’autre, surtout au début.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La puberté",
+          "lines": [
+            "La puberté : le corps devient capable de se reproduire.",
+            "Elle commence vers 8 à 14 ans, à un âge différent pour chacun.",
+            "Des hormones la déclenchent ; le cerveau commande leur production.",
+            "Les testicules produisent des spermatozoïdes, les ovaires des ovules.",
+            "Ces cellules reproductrices sont les gamètes.",
+            "Chez la fille, les règles reviennent à peu près chaque mois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-1-6",
+      "prompt": "Le spermatozoïde et l’ovule sont des …",
+      "spoken": "Le spermatozoïde et l’ovule sont des  (mot manquant) ",
+      "choices": [
+        "hormones",
+        "organes",
+        "gamètes"
+      ],
+      "answer": "gamètes",
+      "hint": "Relis la ligne « Ces cellules reproductrices » du rappel.",
+      "explanation": "Le spermatozoïde et l’ovule sont les gamètes, les cellules reproductrices. Chacun porte 23 chromosomes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La puberté",
+          "lines": [
+            "La puberté : le corps devient capable de se reproduire.",
+            "Elle commence vers 8 à 14 ans, à un âge différent pour chacun.",
+            "Des hormones la déclenchent ; le cerveau commande leur production.",
+            "Les testicules produisent des spermatozoïdes, les ovaires des ovules.",
+            "Ces cellules reproductrices sont les gamètes.",
+            "Chez la fille, les règles reviennent à peu près chaque mois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-1-7",
+      "prompt": "Chez le garçon, à partir de la puberté, les spermatozoïdes sont produits …",
+      "spoken": "Chez le garçon, à partir de la puberté, les spermatozoïdes sont produits  (mot manquant) ",
+      "choices": [
+        "tout au long de la vie",
+        "une fois par mois",
+        "pendant un an seulement"
+      ],
+      "answer": "tout au long de la vie",
+      "hint": "Ce n’est pas une fois par mois, comme les règles.",
+      "explanation": "À partir de la puberté, les testicules produisent des spermatozoïdes sans arrêt, tout au long de la vie. Le rythme d’environ un mois concerne les ovaires.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La puberté",
+          "lines": [
+            "La puberté : le corps devient capable de se reproduire.",
+            "Elle commence vers 8 à 14 ans, à un âge différent pour chacun.",
+            "Des hormones la déclenchent ; le cerveau commande leur production.",
+            "Les testicules produisent des spermatozoïdes, les ovaires des ovules.",
+            "Ces cellules reproductrices sont les gamètes.",
+            "Chez la fille, les règles reviennent à peu près chaque mois."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-3e-human-body",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

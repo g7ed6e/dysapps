@@ -1,4 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { thePlace } from './world/placeArticle';
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -32,7 +33,7 @@ export function BossPage() {
   const textes = useTextes();
   const [run, setRun] = useState(0);
   const biome = getBiome(biomeId);
-  const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.world.links) && isBossOpen(biome, state.progress));
+  const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.world.links) && isBossOpen(biome, state.progress, state.world.challengesKeptOpen));
   const alreadyBeaten = biome ? isBossBeaten(biome.id, state.progress) : false;
   // Jamais affronté : aucune partie de son défi n'est encore enregistrée. Lu à l'arrivée, pas à la fin de la partie.
   const [regleOuverte, setRegleOuverte] = useState(() => (biome ? !state.progress[bossId(biome.id)] : false));
@@ -277,7 +278,7 @@ export function BossPage() {
           {shipHint && (
             <p className="panel ship-hint" role="status" aria-live="polite">
               <Icon name="ship" />{' '}
-              <Syllabified text={`Le Bloc-Navire a ses Gardiens : ${shipHint.short} est là ! Va au port, sur ${getBiome(shipHint.biome)?.name ?? shipHint.biome}, finir de le construire.`} />{' '}
+              <Syllabified text={`Le Bloc-Navire a ses Gardiens : ${shipHint.short} est là ! Va au port, sur ${thePlace(getBiome(shipHint.biome)?.name ?? shipHint.biome)}, finir de le construire.`} />{' '}
               <Link to={`/adventure/${getArchipelago(shipHint.from).port}`} className="button">
                 <Icon name="ship" /> Aller au port
               </Link>

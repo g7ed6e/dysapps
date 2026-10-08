@@ -6,34 +6,6 @@
   "instruction": "Deux trous dans la phrase : choisis la paire de mots qui convient, dans l’ordre.",
   "items": [
     {
-      "key": "french-5e-homophones-homophone-sentences-2-0",
-      "prompt": "… … va pas sans lui.",
-      "spoken": " (mot manquant)   (mot manquant)  va pas sans lui.",
-      "choices": [
-        "On / n’y",
-        "On / ni",
-        "Ont / n’y"
-      ],
-      "answer": "On / n’y",
-      "hint": "« quelqu’un » : on. « ne + y » : n’y.",
-      "explanation": "On n’y va pas : quelqu’un (on), ne + y (n’y).",
-      "aid": {
-        "kind": "rule-card",
-        "props": {
-          "title": "Deux mots à choisir",
-          "lines": [
-            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
-            "ni = et pas · n’y = ne + y · ne = négation.",
-            "si = condition ou question · s’y = se + y (il s’y met).",
-            "c’est = cela est · s’est = se + est (elle s’est assise).",
-            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
-            "quand = lorsque · quant à = pour ce qui est de.",
-            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
-          ]
-        }
-      }
-    },
-    {
       "key": "french-5e-homophones-homophone-sentences-2-1",
       "prompt": "Elle … fait mal … la cour.",
       "spoken": "Elle  (mot manquant)  fait mal  (mot manquant)  la cour.",
@@ -50,41 +22,11 @@
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
-            "ni = et pas · n’y = ne + y · ne = négation.",
-            "si = condition ou question · s’y = se + y (il s’y met).",
-            "c’est = cela est · s’est = se + est (elle s’est assise).",
-            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
-            "quand = lorsque · quant à = pour ce qui est de.",
-            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
-          ]
-        }
-      }
-    },
-    {
-      "key": "french-5e-homophones-homophone-sentences-2-2",
-      "prompt": "… tu veux, on … met.",
-      "spoken": " (mot manquant)  tu veux, on  (mot manquant)  met.",
-      "choices": [
-        "Si / s’y",
-        "S’y / si",
-        "Si / si"
-      ],
-      "answer": "Si / s’y",
-      "hint": "Condition : si. « s’y mettre » : s’y.",
-      "explanation": "Si tu veux (condition), on s’y met (se + y).",
-      "aid": {
-        "kind": "rule-card",
-        "props": {
-          "title": "Deux mots à choisir",
-          "lines": [
-            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
-            "ni = et pas · n’y = ne + y · ne = négation.",
-            "si = condition ou question · s’y = se + y (il s’y met).",
-            "c’est = cela est · s’est = se + est (elle s’est assise).",
-            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
-            "quand = lorsque · quant à = pour ce qui est de.",
-            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est (elle s’est assise).",
+            "a = avait · à = préposition. peu = pas beaucoup · peut = pouvait.",
+            "sans = pas de · dans = à l’intérieur.",
+            "leur devant un verbe (à eux) · leurs devant un nom pluriel · sont = verbe être.",
+            "ma = devant un nom · m’a = m’avait. la = devant un nom · l’a = l’avait · là = ici."
           ]
         }
       }
@@ -106,41 +48,11 @@
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
-            "ni = et pas · n’y = ne + y · ne = négation.",
-            "si = condition ou question · s’y = se + y (il s’y met).",
-            "c’est = cela est · s’est = se + est (elle s’est assise).",
-            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
-            "quand = lorsque · quant à = pour ce qui est de.",
-            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
-          ]
-        }
-      }
-    },
-    {
-      "key": "french-5e-homophones-homophone-sentences-2-4",
-      "prompt": "… … fini, ils rentrent.",
-      "spoken": " (mot manquant)   (mot manquant)  fini, ils rentrent.",
-      "choices": [
-        "Quand / c’est",
-        "Quant / s’est",
-        "Qu’en / c’est"
-      ],
-      "answer": "Quand / c’est",
-      "hint": "« lorsque » : quand. « cela est » : c’est.",
-      "explanation": "Quand c’est fini : lorsque cela est fini.",
-      "aid": {
-        "kind": "rule-card",
-        "props": {
-          "title": "Deux mots à choisir",
-          "lines": [
-            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
-            "ni = et pas · n’y = ne + y · ne = négation.",
-            "si = condition ou question · s’y = se + y (il s’y met).",
-            "c’est = cela est · s’est = se + est (elle s’est assise).",
-            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
-            "quand = lorsque · quant à = pour ce qui est de.",
-            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est (elle s’est assise).",
+            "a = avait · à = préposition. peu = pas beaucoup · peut = pouvait.",
+            "sans = pas de · dans = à l’intérieur.",
+            "leur devant un verbe (à eux) · leurs devant un nom pluriel · sont = verbe être.",
+            "ma = devant un nom · m’a = m’avait. la = devant un nom · l’a = l’avait · là = ici."
           ]
         }
       }
@@ -162,13 +74,11 @@
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
-            "ni = et pas · n’y = ne + y · ne = négation.",
-            "si = condition ou question · s’y = se + y (il s’y met).",
-            "c’est = cela est · s’est = se + est (elle s’est assise).",
-            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
-            "quand = lorsque · quant à = pour ce qui est de.",
-            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est (elle s’est assise).",
+            "a = avait · à = préposition. peu = pas beaucoup · peut = pouvait.",
+            "sans = pas de · dans = à l’intérieur.",
+            "leur devant un verbe (à eux) · leurs devant un nom pluriel · sont = verbe être.",
+            "ma = devant un nom · m’a = m’avait. la = devant un nom · l’a = l’avait · là = ici."
           ]
         }
       }
@@ -190,41 +100,115 @@
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
-            "ni = et pas · n’y = ne + y · ne = négation.",
-            "si = condition ou question · s’y = se + y (il s’y met).",
-            "c’est = cela est · s’est = se + est (elle s’est assise).",
-            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
-            "quand = lorsque · quant à = pour ce qui est de.",
-            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est (elle s’est assise).",
+            "a = avait · à = préposition. peu = pas beaucoup · peut = pouvait.",
+            "sans = pas de · dans = à l’intérieur.",
+            "leur devant un verbe (à eux) · leurs devant un nom pluriel · sont = verbe être.",
+            "ma = devant un nom · m’a = m’avait. la = devant un nom · l’a = l’avait · là = ici."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-homophone-sentences-2-7",
-      "prompt": "Je … sais pas … tu viens.",
-      "spoken": "Je  (mot manquant)  sais pas  (mot manquant)  tu viens.",
+      "key": "hs-ma-crayons",
+      "prompt": "Il … prêté … crayons.",
+      "spoken": "Il  (mot manquant)  prêté  (mot manquant)  crayons.",
       "choices": [
-        "ne / si",
-        "ni / si",
-        "ne / s’y"
+        "m’a / ses",
+        "ma / ses",
+        "m’a / c’est"
       ],
-      "answer": "ne / si",
-      "hint": "Négation : ne. Question « est-ce que tu viens ? » : si.",
-      "explanation": "Je ne sais pas si tu viens : ne (négation), puis si (question indirecte).",
+      "answer": "m’a / ses",
+      "hint": "« m’avait » : m’a. « les siens » : ses.",
+      "explanation": "Il m’a (m’avait) prêté ses (les siens) crayons.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Deux mots à choisir",
           "lines": [
-            "on = quelqu’un · ont = verbe avoir. a = avait · à = préposition.",
-            "ni = et pas · n’y = ne + y · ne = négation.",
-            "si = condition ou question · s’y = se + y (il s’y met).",
-            "c’est = cela est · s’est = se + est (elle s’est assise).",
-            "sans = pas de · s’en = se + en · dans = à l’intérieur · d’en = de + en.",
-            "quand = lorsque · quant à = pour ce qui est de.",
-            "ses = les siens · ces = ceux-là · leurs devant un nom pluriel · sont = verbe être."
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est (elle s’est assise).",
+            "a = avait · à = préposition. peu = pas beaucoup · peut = pouvait.",
+            "sans = pas de · dans = à l’intérieur.",
+            "leur devant un verbe (à eux) · leurs devant un nom pluriel · sont = verbe être.",
+            "ma = devant un nom · m’a = m’avait. la = devant un nom · l’a = l’avait · là = ici."
+          ]
+        }
+      }
+    },
+    {
+      "key": "hs-leur-verite",
+      "prompt": "Je … ai dit … vérité.",
+      "spoken": "Je  (mot manquant)  ai dit  (mot manquant)  vérité.",
+      "choices": [
+        "leur / la",
+        "leurs / la",
+        "leur / l’a"
+      ],
+      "answer": "leur / la",
+      "hint": "« à eux », devant le verbe : leur. Devant un nom : la.",
+      "explanation": "Je leur (à eux) ai dit la vérité : « leur » devant le verbe ne prend pas de s, « la » est devant le nom vérité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux mots à choisir",
+          "lines": [
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est (elle s’est assise).",
+            "a = avait · à = préposition. peu = pas beaucoup · peut = pouvait.",
+            "sans = pas de · dans = à l’intérieur.",
+            "leur devant un verbe (à eux) · leurs devant un nom pluriel · sont = verbe être.",
+            "ma = devant un nom · m’a = m’avait. la = devant un nom · l’a = l’avait · là = ici."
+          ]
+        }
+      }
+    },
+    {
+      "key": "hs-a-peu",
+      "prompt": "Il … mangé … de pain.",
+      "spoken": "Il  (mot manquant)  mangé  (mot manquant)  de pain.",
+      "choices": [
+        "a / peu",
+        "à / peu",
+        "a / peut"
+      ],
+      "answer": "a / peu",
+      "hint": "« avait » : a. « pas beaucoup » : peu.",
+      "explanation": "Il a (avait) mangé peu (pas beaucoup) de pain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux mots à choisir",
+          "lines": [
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est (elle s’est assise).",
+            "a = avait · à = préposition. peu = pas beaucoup · peut = pouvait.",
+            "sans = pas de · dans = à l’intérieur.",
+            "leur devant un verbe (à eux) · leurs devant un nom pluriel · sont = verbe être.",
+            "ma = devant un nom · m’a = m’avait. la = devant un nom · l’a = l’avait · là = ici."
+          ]
+        }
+      }
+    },
+    {
+      "key": "hs-la-cle",
+      "prompt": "La clé ? Il … posée … .",
+      "spoken": "La clé ? Il  (mot manquant)  posée  (mot manquant)  .",
+      "choices": [
+        "l’a / là",
+        "la / là",
+        "l’a / la"
+      ],
+      "answer": "l’a / là",
+      "hint": "« l’avait » : l’a. « ici » : là.",
+      "explanation": "Il l’a (l’avait) posée là (ici). « l’ », c’est la clé : elle est placée avant, donc on écrit posée, avec un e.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux mots à choisir",
+          "lines": [
+            "ses = les siens · ces = ceux-là · c’est = cela est · s’est = se + est (elle s’est assise).",
+            "a = avait · à = préposition. peu = pas beaucoup · peut = pouvait.",
+            "sans = pas de · dans = à l’intérieur.",
+            "leur devant un verbe (à eux) · leurs devant un nom pluriel · sont = verbe être.",
+            "ma = devant un nom · m’a = m’avait. la = devant un nom · l’a = l’avait · là = ici."
           ]
         }
       }

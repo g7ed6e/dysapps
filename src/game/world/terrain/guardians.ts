@@ -2,11 +2,13 @@
 import { type BiomeDef, type BiomeId, BIOMES, BLOC, BLOCKS } from '../../biomes';
 import { type ArchipelagoId, type Decor, type Ground, isLand, islandDef, type IslandDef, landscape, noise, smoothNoise, tirage } from '../map';
 import type { VoxelCube } from '../cube';
+import { chosenGuardian, turnModel, turnPlacedModel, wrapQuarts } from '../placement';
 import { decorate } from '../decor';
 import { guardianStatus } from '../../boss';
 import { gardienDuMonde } from './creatures';
-import { ARENA, bossIsletOrigin, glisseDeLIlot, ISLET_CENTER, ISLET_GAP, ISLET_H, ISLET_W, reculDeLIlot, RETOUCHES_DE_L_ILOT } from './islets';
+import { ARENA, bossIsletOrigin, caseDeLIlotDeplace, deplacementDeLIlot, glisseDeLIlot, ISLET_CENTER, ISLET_GAP, ISLET_H, ISLET_W, pointDeLIlotDeplace, reculDeLIlot, RETOUCHES_DE_L_ILOT } from './islets';
 import { DEPTH, GROUND_COLOR, taperLayers, TEXTURES } from './base';
+import { layoutCache } from '../placement';
 
 /** Coin local où poser un Gardien pour qu'il soit centré sur l'îlot. */
 function guardianOffset(id: BiomeId): { x: number; y: number } {
@@ -27,7 +29,7 @@ export interface IsletCell {
   shore: boolean;
 }
 
-const isletCache = new Map<BiomeId, IsletCell[]>();
+const isletCache = layoutCache<BiomeId, IsletCell[]>();
 
 /**
  * La terre de l'îlot : une ellipse à la côte irrégulière (bruit lissé, comme les îles), qui porte toujours
@@ -55,13 +57,16 @@ export function bossIsletCells(id: BiomeId): IsletCell[] {
       if (under.has(`${x},${y}`) || (y >= rogne && Math.hypot(dx, dy) + coast < 0.98)) land.add(`${x},${y}`);
     }
   const cells: IsletCell[] = [];
+  // Déplacé autour de son lieu (GD-9) : le même îlot, tourné d'un bloc et posé sur son côté.
+  const d = deplacementDeLIlot(def);
   for (const key of land) {
     const [x, y] = key.split(',').map(Number);
     const ax = (x - ISLET_CENTER.x) / ARENA.rx;
     const ay = (y - ISLET_CENTER.y) / ARENA.ry;
+    const p = d ? caseDeLIlotDeplace(d, o.x + x, o.y + y) : { x: o.x + x, y: o.y + y };
     cells.push({
-      x: o.x + x,
-      y: o.y + y,
+      x: p.x,
+      y: p.y,
       arena: ax ** 4 + ay ** 4 <= 1,
       guardian: under.has(key),
       shore: [`${x - 1},${y}`, `${x + 1},${y}`, `${x},${y - 1}`, `${x},${y + 1}`].some((k) => !land.has(k)),
@@ -78,6 +83,10 @@ export function bossIsletCells(id: BiomeId): IsletCell[] {
  */
 export function bossIsletSteps(id: BiomeId): { x: number; y: number; z: number }[] {
   const def = islandDef(id);
+  const d = deplacementDeLIlot(def);
+  // Détaché de son lieu (choix 4a du mainteneur) : pas de pas japonais, il ne touche pas sa côte.
+  if (d?.detache) return [];
+  if (d) return pasDeLIlotDeplace(id, d);
   const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
   const axe = o.x + Math.round(ISLET_CENTER.x);
   const ilot = bossIsletCells(id);
@@ -99,10 +108,43 @@ export function bossIsletSteps(id: BiomeId): { x: number; y: number; z: number }
   return steps;
 }
 
+/**
+ * Les pas japonais d'un îlot déplacé autour de son lieu (GD-9) : du bord de l'îlot tourné vers la terre jusqu'à la côte,
+ * dans l'axe du Gardien, en quinconce, au niveau du sol de l'île ; sans côte droit devant (à trois colonnes près), pas
+ * de gué.
+ */
+function pasDeLIlotDeplace(id: BiomeId, d: NonNullable<ReturnType<typeof deplacementDeLIlot>>): { x: number; y: number; z: number }[] {
+  const def = islandDef(id);
+  const cells = new Set(bossIsletCells(id).map((c) => `${c.x},${c.y}`));
+  const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
+  const axe = caseDeLIlotDeplace(d, o.x + Math.round(ISLET_CENTER.x), o.y + Math.round(ISLET_CENTER.y));
+  const { dx, dy } = d.versLaTerre;
+  // Le travers de l'axe : les colonnes voisines, de part et d'autre.
+  const tx = dy;
+  const ty = -dx;
+  let gue: { x: number; y: number; n: number } | null = null;
+  for (const k of [0, 1, -1, 2, -2, 3, -3]) {
+    let x = axe.x + tx * k;
+    let y = axe.y + ty * k;
+    if (!cells.has(`${x},${y}`)) continue;
+    // Jusqu'au bord de l'îlot, puis l'eau jusqu'à la côte.
+    while (cells.has(`${x + dx},${y + dy}`)) [x, y] = [x + dx, y + dy];
+    let n = 1;
+    while (n <= ISLET_H + ISLET_GAP && !isLand(def, x + dx * n, y + dy * n)) n++;
+    if (!isLand(def, x + dx * n, y + dy * n)) continue;
+    if (!gue || n < gue.n) gue = { x, y, n };
+  }
+  if (!gue) return [];
+  const steps: { x: number; y: number; z: number }[] = [];
+  for (let i = 1; i < gue.n; i++) steps.push({ x: gue.x + dx * i + (i % 2 === 0 ? tx : 0), y: gue.y + dy * i + (i % 2 === 0 ? ty : 0), z: def.altitude });
+  return steps;
+}
+
 /** Le socle du bloc d'or d'un Gardien vaincu : devant lui, à sa droite, sur la terre de l'îlot. */
 function trophySpot(id: BiomeId): { x: number; y: number } {
   const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
-  const target = { x: o.x + ISLET_CENTER.x + 3, y: o.y + 1 };
+  const d = deplacementDeLIlot(islandDef(id));
+  const target = d ? pointDeLIlotDeplace(d, o.x + ISLET_CENTER.x + 3, o.y + 1) : { x: o.x + ISLET_CENTER.x + 3, y: o.y + 1 };
   const free = bossIsletCells(id).filter((c) => !c.guardian && !c.shore);
   free.sort((p, q) => Math.abs(p.x - target.x) + Math.abs(p.y - target.y) - (Math.abs(q.x - target.x) + Math.abs(q.y - target.y)));
   return free[0];
@@ -227,17 +269,35 @@ export function guardianPlacements(
   progress: Record<string, { stars: number }>,
   bridges: string[],
   sentinelles = false,
+  keptOpen: readonly string[] = [],
 ): { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] {
   const out: { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] = [];
   BIOMES.forEach((b, index) => {
     if (b.classe !== a) return;
-    const status = guardianStatus(b, progress, bridges, sentinelles);
+    const status = guardianStatus(b, progress, bridges, sentinelles, keptOpen);
     if (status === 'hidden') return;
     const { x, y, z } = bossIsletOrigin(index);
     const off = guardianOffset(b.id);
     const beaten = status === 'beaten';
-    const cubes = beaten ? gardienDuMonde(b.id) : statueDe(gardienDuMonde(b.id));
-    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes, origin: { x: x + off.x, y: y + off.y, z: z + 1 } });
+    const modele = beaten ? gardienDuMonde(b.id) : statueDe(gardienDuMonde(b.id));
+    // Sur le lieu tourné (GD-9), le Gardien tourne avec son îlot.
+    const def = islandDef(b.id);
+    const choisi = chosenGuardian(b.id);
+    if (choisi) {
+      // Déplacé ou tourné (GD-9) : tourné de son orientation, au milieu de son îlot (là où il l'emporte). Détaché de son
+      // lieu (choix 4a), son orientation est celle du monde : le lieu tourné ne le tourne pas.
+      const tourne = turnModel(modele, choisi.at ? wrapQuarts(choisi.turn - def.quarts) : choisi.turn);
+      const w = Math.max(...tourne.map((c) => c.x)) + 1;
+      const h = Math.max(...tourne.map((c) => c.y)) + 1;
+      const centre = { x: x + off.x + (Math.max(...modele.map((c) => c.x)) + 1) / 2, y: y + off.y + (Math.max(...modele.map((c) => c.y)) + 1) / 2 };
+      const d = deplacementDeLIlot(def);
+      const m = d ? pointDeLIlotDeplace(d, centre.x, centre.y) : centre;
+      const pose = turnPlacedModel(def.core, { x: Math.round(m.x - w / 2), y: Math.round(m.y - h / 2), z: z + 1 }, tourne, def.quarts);
+      out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes: pose.cubes, origin: pose.origine });
+      return;
+    }
+    const pose = turnPlacedModel(def.core, { x: x + off.x, y: y + off.y, z: z + 1 }, modele, def.quarts);
+    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes: pose.cubes, origin: pose.origine });
   });
   return out;
 }

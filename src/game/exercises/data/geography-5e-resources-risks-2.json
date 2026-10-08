@@ -1,0 +1,230 @@
+{
+  "id": "geography-5e-resources-risks-2",
+  "biome": "geography-5e-resources",
+  "type": "risks",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-5e-resources-risks-2-0",
+      "prompt": "Le Japon, en mars 2011\nUne vague géante frappe la côte.\nElle inonde la centrale nucléaire de Fukushima.\nLa centrale a un grave accident.",
+      "question": "Quel accident a lieu à Fukushima ?",
+      "spoken": "Le Japon, en mars deux mille onze. Une vague géante frappe la côte. Elle inonde la centrale nucléaire de Fukushima. La centrale a un grave accident.",
+      "choices": [
+        "un feu de forêt",
+        "une épidémie",
+        "un accident nucléaire"
+      ],
+      "answer": "un accident nucléaire",
+      "hint": "Relis la ligne qui parle de la centrale.",
+      "explanation": "La vague a inondé la centrale nucléaire de Fukushima : un grave accident a suivi. Un accident dans une centrale, c’est un risque technologique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document sur un risque",
+          "lines": [
+            "La première ligne dit où et quand.",
+            "Aléa : ce qui peut arriver.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Avant : on se prépare. Après : on répare."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-2-1",
+      "prompt": "Description de la carte des risques d’une ville\nEn bleu : les zones qui peuvent être inondées\nDans ces zones, on ne construit plus de maisons.",
+      "question": "Pourquoi ne construit-on plus de maisons dans ces zones ?",
+      "spoken": "Description de la carte des risques d’une ville. En bleu : les zones qui peuvent être inondées. Dans ces zones, on ne construit plus de maisons.",
+      "choices": [
+        "à cause du risque d’inondation",
+        "à cause du bruit",
+        "par manque de place"
+      ],
+      "answer": "à cause du risque d’inondation",
+      "hint": "Lis la ligne qui commence par « En bleu ».",
+      "explanation": "Ne pas construire là où l’eau peut monter, c’est de la prévention : il y aura moins d’enjeux menacés.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document sur un risque",
+          "lines": [
+            "La première ligne dit où et quand.",
+            "Aléa : ce qui peut arriver.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Avant : on se prépare. Après : on répare."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-2-2",
+      "prompt": "Le Bangladesh\nUn pays bas, dans le delta de grands fleuves\nUn pays très peuplé\nLe niveau de la mer monte.",
+      "question": "Pourquoi le Bangladesh est-il menacé ?",
+      "spoken": "Le Bangladesh. Un pays bas, dans le delta de grands fleuves. Un pays très peuplé. Le niveau de la mer monte.",
+      "choices": [
+        "il est en haute montagne",
+        "il a peu d’habitants",
+        "il est bas et la mer monte"
+      ],
+      "answer": "il est bas et la mer monte",
+      "hint": "Relis la ligne « Un pays bas » et la ligne « Le niveau de la mer ».",
+      "explanation": "La mer qui monte et les inondations : c’est l’aléa. Les millions d’habitants de ces terres basses : ce sont les enjeux. Le risque est grand.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document sur un risque",
+          "lines": [
+            "La première ligne dit où et quand.",
+            "Aléa : ce qui peut arriver.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Avant : on se prépare. Après : on répare."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-2-3",
+      "prompt": "En France, en août 2003\nUne très forte canicule\nBeaucoup de personnes âgées meurent de la chaleur.",
+      "question": "Qui est le plus touché ?",
+      "spoken": "En France, en août deux mille trois. Une très forte canicule. Beaucoup de personnes âgées meurent de la chaleur.",
+      "choices": [
+        "les enfants",
+        "les personnes âgées",
+        "les touristes"
+      ],
+      "answer": "les personnes âgées",
+      "hint": "Relis la ligne qui commence par « Beaucoup ».",
+      "explanation": "Pendant la canicule de 2003, les personnes âgées sont les plus touchées. Depuis, on veille sur elles dès les premières chaleurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document sur un risque",
+          "lines": [
+            "La première ligne dit où et quand.",
+            "Aléa : ce qui peut arriver.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Avant : on se prépare. Après : on répare."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-2-4",
+      "prompt": "Rouen, en septembre 2019\nUn grand incendie dans l’usine Lubrizol\nUne fumée noire passe sur la ville.\nLes écoles ferment pour la journée.",
+      "question": "Pourquoi les écoles ferment-elles ?",
+      "spoken": "Rouen, en septembre deux mille dix-neuf. Un grand incendie dans l’usine Lubrizol. Une fumée noire passe sur la ville. Les écoles ferment pour la journée.",
+      "choices": [
+        "parce que la ville n’a plus d’électricité",
+        "pour protéger les élèves de la fumée",
+        "parce que les pompiers ont besoin des écoles"
+      ],
+      "answer": "pour protéger les élèves de la fumée",
+      "hint": "Relis la ligne qui parle de la fumée.",
+      "explanation": "L’incendie d’une usine est un risque industriel. On ferme les écoles pour protéger les élèves de la fumée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document sur un risque",
+          "lines": [
+            "La première ligne dit où et quand.",
+            "Aléa : ce qui peut arriver.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Avant : on se prépare. Après : on répare."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-2-5",
+      "prompt": "Les Pays-Bas\nUne partie du pays est plus basse que la mer.\nDes digues et des barrages le protègent.",
+      "question": "Comment les Pays-Bas se protègent-ils de la mer ?",
+      "spoken": "Les Pays-Bas. Une partie du pays est plus basse que la mer. Des digues et des barrages le protègent.",
+      "choices": [
+        "avec des digues et des barrages",
+        "en déplaçant les villes",
+        "en plantant des arbres"
+      ],
+      "answer": "avec des digues et des barrages",
+      "hint": "Relis la ligne qui contient « protègent ».",
+      "explanation": "Les digues et les barrages retiennent la mer : les Pays-Bas s’adaptent à une contrainte, et ils les renforcent car la mer monte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document sur un risque",
+          "lines": [
+            "La première ligne dit où et quand.",
+            "Aléa : ce qui peut arriver.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Avant : on se prépare. Après : on répare."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-2-6",
+      "prompt": "La mer de Glace, un glacier des Alpes\nIl perd plusieurs mètres d’épaisseur chaque année.\nLa cause : le réchauffement climatique.",
+      "question": "Pourquoi le glacier fond-il ?",
+      "spoken": "La mer de Glace, un glacier des Alpes. Il perd plusieurs mètres d’épaisseur chaque année. La cause : le réchauffement climatique.",
+      "choices": [
+        "les touristes trop nombreux",
+        "le réchauffement climatique",
+        "la pollution de l’eau"
+      ],
+      "answer": "le réchauffement climatique",
+      "hint": "Lis la ligne qui commence par « La cause ».",
+      "explanation": "Avec le réchauffement climatique, les glaciers des Alpes fondent. La mer de Glace devient plus mince chaque année.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document sur un risque",
+          "lines": [
+            "La première ligne dit où et quand.",
+            "Aléa : ce qui peut arriver.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Avant : on se prépare. Après : on répare."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-risks-2-7",
+      "prompt": "Toulouse, en septembre 2001\nUne usine chimique explose.\nElle était tout près des maisons.\nDepuis, on évite de construire près de ces usines.",
+      "question": "Que fait-on depuis pour réduire le risque ?",
+      "spoken": "Toulouse, en septembre deux mille un. Une usine chimique explose. Elle était tout près des maisons. Depuis, on évite de construire près de ces usines.",
+      "choices": [
+        "on construit de nouvelles maisons autour",
+        "on évite de construire près de ces usines",
+        "on ferme toutes les usines"
+      ],
+      "answer": "on évite de construire près de ces usines",
+      "hint": "Relis la ligne qui commence par « Depuis ».",
+      "explanation": "Moins de maisons près des usines dangereuses, c’est moins d’enjeux menacés. C’est de la prévention.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document sur un risque",
+          "lines": [
+            "La première ligne dit où et quand.",
+            "Aléa : ce qui peut arriver.",
+            "Enjeux : les personnes et les biens menacés.",
+            "Avant : on se prépare. Après : on répare."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-5e-resources",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,249 @@
+{
+  "id": "life-earth-sciences-3e-human-body-digestion-microbes-2",
+  "biome": "life-earth-sciences-3e-human-body",
+  "type": "digestion-microbes",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-2-0",
+      "prompt": "La première barrière du corps contre les microbes est la …",
+      "spoken": "La première barrière du corps contre les microbes est la  (mot manquant) ",
+      "choices": [
+        "peau",
+        "cellule",
+        "veine"
+      ],
+      "answer": "peau",
+      "hint": "Relis la ligne « La peau » du rappel.",
+      "explanation": "La peau empêche la plupart des microbes d’entrer. Une coupure ouvre cette barrière : c’est pour cela qu’on nettoie une plaie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Microbes et défenses",
+          "lines": [
+            "Bactéries, virus, champignons : des microbes, dont certains rendent malade.",
+            "La peau est la première barrière contre les microbes.",
+            "Les globules blancs détruisent les microbes ; certains fabriquent des anticorps.",
+            "Le corps garde la mémoire d’un microbe déjà rencontré.",
+            "Le vaccin apprend au corps à reconnaître un microbe, avant de le rencontrer.",
+            "Antiseptique : il tue les microbes sur la peau ou sur une plaie.",
+            "Antibiotique : un médicament contre les bactéries, pas contre les virus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-2-1",
+      "prompt": "Pour désinfecter une petite plaie, après l’avoir lavée, on met un …",
+      "spoken": "Pour désinfecter une petite plaie, après l’avoir lavée, on met un  (mot manquant) ",
+      "choices": [
+        "vaccin",
+        "antibiotique",
+        "antiseptique"
+      ],
+      "answer": "antiseptique",
+      "hint": "Relis la ligne « Antiseptique » du rappel.",
+      "explanation": "L’antiseptique tue les microbes sur la peau et sur une plaie. L’antibiotique est un médicament, que donne le médecin contre une infection par des bactéries.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Microbes et défenses",
+          "lines": [
+            "Bactéries, virus, champignons : des microbes, dont certains rendent malade.",
+            "La peau est la première barrière contre les microbes.",
+            "Les globules blancs détruisent les microbes ; certains fabriquent des anticorps.",
+            "Le corps garde la mémoire d’un microbe déjà rencontré.",
+            "Le vaccin apprend au corps à reconnaître un microbe, avant de le rencontrer.",
+            "Antiseptique : il tue les microbes sur la peau ou sur une plaie.",
+            "Antibiotique : un médicament contre les bactéries, pas contre les virus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-2-2",
+      "prompt": "La grippe est due à un virus : contre elle, un antibiotique est …",
+      "spoken": "La grippe est due à un virus : contre elle, un antibiotique est  (mot manquant) ",
+      "choices": [
+        "utile",
+        "inutile",
+        "obligatoire"
+      ],
+      "answer": "inutile",
+      "hint": "Relis la ligne « Antibiotique » du rappel : contre quels microbes agit l’antibiotique ?",
+      "explanation": "Un antibiotique agit contre les bactéries, pas contre les virus. Contre la grippe, il est inutile. Le prendre sans besoin aide les bactéries résistantes à se multiplier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Microbes et défenses",
+          "lines": [
+            "Bactéries, virus, champignons : des microbes, dont certains rendent malade.",
+            "La peau est la première barrière contre les microbes.",
+            "Les globules blancs détruisent les microbes ; certains fabriquent des anticorps.",
+            "Le corps garde la mémoire d’un microbe déjà rencontré.",
+            "Le vaccin apprend au corps à reconnaître un microbe, avant de le rencontrer.",
+            "Antiseptique : il tue les microbes sur la peau ou sur une plaie.",
+            "Antibiotique : un médicament contre les bactéries, pas contre les virus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-2-3",
+      "prompt": "Après une piqûre d’épine\nLe doigt devient rouge, chaud et gonflé.\nDes globules blancs arrivent autour de l’épine.",
+      "question": "Que font les globules blancs ?",
+      "spoken": "Après une piqûre d’épine. Le doigt devient rouge, chaud et gonflé. Des globules blancs arrivent autour de l’épine.",
+      "choices": [
+        "ils apportent l’oxygène",
+        "ils détruisent les microbes",
+        "ils fabriquent la peau"
+      ],
+      "answer": "ils détruisent les microbes",
+      "hint": "Relis la ligne « Les globules blancs » du rappel.",
+      "explanation": "Les globules blancs viennent détruire les microbes entrés avec l’épine. Ce sont les globules rouges qui transportent l’oxygène.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Microbes et défenses",
+          "lines": [
+            "Bactéries, virus, champignons : des microbes, dont certains rendent malade.",
+            "La peau est la première barrière contre les microbes.",
+            "Les globules blancs détruisent les microbes ; certains fabriquent des anticorps.",
+            "Le corps garde la mémoire d’un microbe déjà rencontré.",
+            "Le vaccin apprend au corps à reconnaître un microbe, avant de le rencontrer.",
+            "Antiseptique : il tue les microbes sur la peau ou sur une plaie.",
+            "Antibiotique : un médicament contre les bactéries, pas contre les virus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-2-4",
+      "prompt": "Certains globules blancs fabriquent des molécules qui reconnaissent un microbe précis : les …",
+      "spoken": "Certains globules blancs fabriquent des molécules qui reconnaissent un microbe précis : les  (mot manquant) ",
+      "choices": [
+        "anticorps",
+        "antiseptiques",
+        "antibiotiques"
+      ],
+      "answer": "anticorps",
+      "hint": "Relis la ligne « Les globules blancs » du rappel.",
+      "explanation": "Les anticorps sont fabriqués par le corps lui-même, par des globules blancs. Chaque anticorps reconnaît un seul microbe. Les antiseptiques et les antibiotiques viennent de l’extérieur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Microbes et défenses",
+          "lines": [
+            "Bactéries, virus, champignons : des microbes, dont certains rendent malade.",
+            "La peau est la première barrière contre les microbes.",
+            "Les globules blancs détruisent les microbes ; certains fabriquent des anticorps.",
+            "Le corps garde la mémoire d’un microbe déjà rencontré.",
+            "Le vaccin apprend au corps à reconnaître un microbe, avant de le rencontrer.",
+            "Antiseptique : il tue les microbes sur la peau ou sur une plaie.",
+            "Antibiotique : un médicament contre les bactéries, pas contre les virus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-2-5",
+      "prompt": "Les anticorps contre un même microbe\nPremière rencontre : les anticorps arrivent lentement, en petit nombre.\nDeuxième rencontre : ils arrivent vite, en grand nombre.",
+      "question": "Pourquoi le corps réagit-il plus vite la deuxième fois ?",
+      "spoken": "Les anticorps contre un même microbe. Première rencontre, les anticorps arrivent lentement, en petit nombre. Deuxième rencontre, ils arrivent vite, en grand nombre.",
+      "choices": [
+        "le microbe est devenu plus faible",
+        "le corps garde la mémoire du microbe",
+        "le corps a changé de sang"
+      ],
+      "answer": "le corps garde la mémoire du microbe",
+      "hint": "Relis la ligne « Le corps garde la mémoire » du rappel.",
+      "explanation": "Le corps garde la mémoire d’un microbe déjà rencontré : la deuxième fois, il fabrique vite beaucoup d’anticorps. Le vaccin utilise cette mémoire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Microbes et défenses",
+          "lines": [
+            "Bactéries, virus, champignons : des microbes, dont certains rendent malade.",
+            "La peau est la première barrière contre les microbes.",
+            "Les globules blancs détruisent les microbes ; certains fabriquent des anticorps.",
+            "Le corps garde la mémoire d’un microbe déjà rencontré.",
+            "Le vaccin apprend au corps à reconnaître un microbe, avant de le rencontrer.",
+            "Antiseptique : il tue les microbes sur la peau ou sur une plaie.",
+            "Antibiotique : un médicament contre les bactéries, pas contre les virus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-2-6",
+      "prompt": "Le vaccin protège parce qu’il apprend au corps à reconnaître le …",
+      "spoken": "Le vaccin protège parce qu’il apprend au corps à reconnaître le  (mot manquant) ",
+      "choices": [
+        "médicament",
+        "globule",
+        "microbe"
+      ],
+      "answer": "microbe",
+      "hint": "Relis la ligne « Le vaccin » du rappel.",
+      "explanation": "Le vaccin présente au corps un microbe rendu inoffensif, ou un morceau de ce microbe. Certains vaccins font fabriquer ce morceau par le corps. Le corps le mémorise : s’il rencontre le vrai microbe, il réagit vite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Microbes et défenses",
+          "lines": [
+            "Bactéries, virus, champignons : des microbes, dont certains rendent malade.",
+            "La peau est la première barrière contre les microbes.",
+            "Les globules blancs détruisent les microbes ; certains fabriquent des anticorps.",
+            "Le corps garde la mémoire d’un microbe déjà rencontré.",
+            "Le vaccin apprend au corps à reconnaître un microbe, avant de le rencontrer.",
+            "Antiseptique : il tue les microbes sur la peau ou sur une plaie.",
+            "Antibiotique : un médicament contre les bactéries, pas contre les virus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-digestion-microbes-2-7",
+      "prompt": "Deux boîtes de culture, à la même température\nBoîte 1 : on pose un doigt pas lavé.\nBoîte 2 : on pose un doigt lavé au savon.\nTrois jours plus tard : boîte 1, beaucoup de taches de bactéries ; boîte 2, très peu.",
+      "question": "Que montre cette expérience ?",
+      "spoken": "Deux boîtes de culture, à la même température. Boîte 1, on pose un doigt pas lavé. Boîte 2, on pose un doigt lavé au savon. Trois jours plus tard, boîte 1, beaucoup de taches de bactéries. Boîte 2, très peu.",
+      "choices": [
+        "le lavage des mains enlève des bactéries",
+        "le savon fait pousser les bactéries",
+        "les doigts n’ont pas de bactéries"
+      ],
+      "answer": "le lavage des mains enlève des bactéries",
+      "hint": "Une seule chose change entre les deux boîtes. Laquelle ?",
+      "explanation": "Seul le lavage change, et la boîte du doigt lavé a très peu de bactéries : se laver les mains au savon enlève des bactéries. C’est un geste simple contre les infections.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Microbes et défenses",
+          "lines": [
+            "Bactéries, virus, champignons : des microbes, dont certains rendent malade.",
+            "La peau est la première barrière contre les microbes.",
+            "Les globules blancs détruisent les microbes ; certains fabriquent des anticorps.",
+            "Le corps garde la mémoire d’un microbe déjà rencontré.",
+            "Le vaccin apprend au corps à reconnaître un microbe, avant de le rencontrer.",
+            "Antiseptique : il tue les microbes sur la peau ou sur une plaie.",
+            "Antibiotique : un médicament contre les bactéries, pas contre les virus."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien raisonné !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-3e-human-body",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

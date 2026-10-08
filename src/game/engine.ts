@@ -46,14 +46,17 @@ export type FillResult =
 
 /** Pose le bloc attendu à une cellule du plan (le type est imposé par le plan). Termine le plan si c'était la dernière. */
 export function fillPlanCell(state: GameState, plan: PlanDef, x: number, y: number, z: number, today = todayISO()): FillResult {
-  const cell = planCells(plan).find((c) => c.x === x && c.y === y && c.z === z);
+  const cells = planCells(plan);
+  const cell = cells.find((c) => c.x === x && c.y === y && c.z === z);
   if (!cell) return { state, ok: false, reason: 'pas-dans-le-plan' };
   const done = state.world.parts[plan.id] ?? [];
   if (done.includes(cell.key)) return { state, ok: false, reason: 'deja-pose', block: cell.block };
   if ((state.stock[cell.block] ?? 0) <= 0) return { state, ok: false, reason: 'plus-de-blocs', block: cell.block };
   const inventory = { ...state.stock, [cell.block]: (state.stock[cell.block] ?? 0) - 1 };
   const nextDone = [...done, cell.key];
-  const completed = nextDone.length === plan.cells.length;
+  // Terminé quand toutes les cases de CE plan sont posées (une réunion peut garder des clés d'une autre forme).
+  const posees = new Set(nextDone);
+  const completed = cells.every((c) => posees.has(c.key));
   if (completed) for (const [b, n] of Object.entries(plan.reward.chest)) inventory[b as BlockId] = (inventory[b as BlockId] ?? 0) + (n ?? 0);
   return {
     ok: true,
@@ -246,14 +249,20 @@ export function completeExercise(state: GameState, def: ExerciseDef, results: It
 
   // Une révision (des questions de la mission étaient à revoir aujourd'hui) rapporte toujours autant, quel que soit le
   // score (GD-6, point 4) ; sinon, des blocs même avec des erreurs, jamais zéro si au moins une bonne réponse.
-  const revision = estUneRevision(state.spaced, def.id, today);
+  // Un item de la file dont la clé n'est plus dans l'exercice (retiré par une mise à jour du contenu) n'a plus d'écran
+  // pour être revu : il quitte la file, sans compter comme une révision. Pas pour un exercice généré, dont les items
+  // tirés à chaque partie ne sont pas dans son échantillon fixe (`items`).
+  const known = def.generate ? null : new Set(def.items.map((it) => it.key));
+  const prefix = `${def.id}:`;
+  const queue = known ? state.spaced.filter((s) => !s.itemId.startsWith(prefix) || known.has(s.itemId.slice(prefix.length))) : state.spaced;
+  const revision = estUneRevision(queue, def.id, today);
   const anyCorrect = results.some((r) => r.correct);
   const bonus = revision ? { stars: 0, first: 0 } : blocksBonus(stars, prev.attempts === 0, anyCorrect);
   const blocks = revision ? blocsDUneRevision(def) : anyCorrect ? Math.max(1, Math.round(def.reward.amount * score)) + bonus.stars + bonus.first : 0;
   // XP à chaque exercice terminé ; bonus si terminé sans aide.
   const xp = Math.round(def.reward.xp * (perfect ? 1.5 : 1));
 
-  let spaced = state.spaced;
+  let spaced = queue;
   for (const r of results) spaced = recordSpaced(spaced, `${def.id}:${r.key}`, r.correct && r.attempts <= 1, today);
 
   const { streak, inventory, chests, chestBlock } = playedToday(state, def.reward.block, blocks, today, rng);

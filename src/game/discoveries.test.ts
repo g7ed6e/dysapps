@@ -26,9 +26,12 @@ it('les découvertes : les ouvrages sur une île pâle, le Bloc-Navire au port, 
     expect(decouverteDeLIle(fresh, 'maths-6e-calculation', ou)).toBe(textes.libelles.decouverteNavire);
     expect(decouverteDeLIle(fresh, 'maths-6e-calculation', ou)).toBeNull();
   }
-  // Aucun ouvrage ne demande un Gardien (GD-7) : seul l'escalier demande, en plus des blocs, une mission réussie.
-  for (const u of ['blocland', 'archipeo'] as const) {
-    expect(textesDe(u).libelles.decouverteOuvrages).toContain('Un escalier demande aussi une mission réussie.');
-    expect(textesDe(u).libelles.decouverteOuvrages).not.toContain('Gardien');
-  }
+  // Aucun ouvrage ne demande un Gardien (GD-7) ni une mission (GD-9) : des blocs, depuis l'île de son choix.
+  expect(textesDe('blocland').libelles.decouverteOuvrages).toBe(
+    'Les îles pâles sont fermées. Pour y venir, pose un ouvrage. Il part de l’île de ton choix. Chaque ouvrage coûte le même nombre de blocs.',
+  );
+  expect(textesDe('archipeo').libelles.decouverteOuvrages).toBe(
+    'Les îles pâles sont fermées. Pour y aller, pose un ouvrage. Il part de l’île de ton choix. Chaque ouvrage coûte le même nombre de blocs.',
+  );
+  for (const u of ['blocland', 'archipeo'] as const) expect(textesDe(u).libelles.decouverteOuvrages).not.toContain('Gardien');
 });

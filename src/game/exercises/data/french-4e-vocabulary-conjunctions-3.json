@@ -1,56 +1,60 @@
 {
-  "id": "french-5e-conjugation-subjunctive-1",
-  "biome": "french-5e-conjugation",
-  "type": "subjunctive",
-  "level": 1,
-  "instruction": "Choisis le verbe au subjonctif présent après « il faut que », « bien que », « pour que ».",
+  "id": "french-4e-vocabulary-conjunctions-3",
+  "biome": "french-4e-vocabulary",
+  "type": "conjunctions",
+  "level": 3,
+  "instruction": "Choisis le verbe au subjonctif présent après « bien que », « pour que », « avant que ».",
+  "programme": [
+    "c4.fr.langue.temps-a-memoriser",
+    "c4.fr.langue.morphologie-verbale"
+  ],
   "items": [
     {
       "key": "french-5e-conjugation-subjunctive-1-0",
-      "prompt": "Il faut que tu … tes devoirs.",
-      "spoken": "Il faut que tu  (mot manquant)  tes devoirs.",
+      "prompt": "Je t’explique pour que tu … tes devoirs seul.",
+      "spoken": "Je t’explique pour que tu  (mot manquant)  tes devoirs seul.",
       "choices": [
         "fasses",
         "fais",
         "feras"
       ],
       "answer": "fasses",
-      "hint": "« Il faut que » appelle le subjonctif : que tu fasses.",
-      "explanation": "Après « il faut que » : subjonctif, « fasses ».",
+      "hint": "« Pour que » appelle le subjonctif : que tu fasses.",
+      "explanation": "Après « pour que » : subjonctif de faire, « fasses ». « Fais » est le présent, « feras » le futur.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Le subjonctif présent",
+          "title": "Le subjonctif après les mots qui relient",
           "lines": [
-            "Après il faut que, je veux que, bien que, pour que, avant que.",
+            "Après bien que, pour que, avant que : le verbe est au subjonctif.",
             "Formé sur « ils » au présent : ils prennent → que je prenne.",
             "Terminaisons : -e, -es, -e, -ions, -iez, -ent.",
-            "Irréguliers : être → que je sois, avoir → que j’aie, aller → que j’aille, faire → que je fasse."
+            "Irréguliers : être → que je sois, avoir → que j’aie, faire → que je fasse."
           ]
         }
       }
     },
     {
       "key": "french-5e-conjugation-subjunctive-1-1",
-      "prompt": "Je veux que vous … à l’heure.",
-      "spoken": "Je veux que vous  (mot manquant)  à l’heure.",
+      "prompt": "Partez tôt pour que vous … à l’heure.",
+      "spoken": "Partez tôt pour que vous  (mot manquant)  à l’heure.",
       "choices": [
         "soyez",
         "êtes",
         "serez"
       ],
       "answer": "soyez",
-      "hint": "« Je veux que » + subjonctif d’être : que vous soyez.",
-      "explanation": "Après « je veux que » : subjonctif, « soyez ».",
+      "hint": "« Pour que » + subjonctif d’être : que vous soyez.",
+      "explanation": "Après « pour que » : subjonctif d’être, « soyez ». « Êtes » est le présent, « serez » le futur.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Le subjonctif présent",
+          "title": "Le subjonctif après les mots qui relient",
           "lines": [
-            "Après il faut que, je veux que, bien que, pour que, avant que.",
+            "Après bien que, pour que, avant que : le verbe est au subjonctif.",
             "Formé sur « ils » au présent : ils prennent → que je prenne.",
             "Terminaisons : -e, -es, -e, -ions, -iez, -ent.",
-            "Irréguliers : être → que je sois, avoir → que j’aie, aller → que j’aille, faire → que je fasse."
+            "Irréguliers : être → que je sois, avoir → que j’aie, faire → que je fasse."
           ]
         }
       }
@@ -70,20 +74,20 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Le subjonctif présent",
+          "title": "Le subjonctif après les mots qui relient",
           "lines": [
-            "Après il faut que, je veux que, bien que, pour que, avant que.",
+            "Après bien que, pour que, avant que : le verbe est au subjonctif.",
             "Formé sur « ils » au présent : ils prennent → que je prenne.",
             "Terminaisons : -e, -es, -e, -ions, -iez, -ent.",
-            "Irréguliers : être → que je sois, avoir → que j’aie, aller → que j’aille, faire → que je fasse."
+            "Irréguliers : être → que je sois, avoir → que j’aie, faire → que je fasse."
           ]
         }
       }
     },
     {
       "key": "french-5e-conjugation-subjunctive-1-3",
-      "prompt": "Il est temps que nous … .",
-      "spoken": "Il est temps que nous  (mot manquant)  .",
+      "prompt": "Finissons le jeu avant que nous … .",
+      "spoken": "Finissons le jeu avant que nous  (mot manquant)  .",
       "choices": [
         "partions",
         "partons",
@@ -91,24 +95,24 @@
       ],
       "answer": "partions",
       "hint": "Subjonctif avec nous : -ions.",
-      "explanation": "Après « il est temps que » : subjonctif, « partions ».",
+      "explanation": "Après « avant que » : subjonctif, « partions ». « Partons » est le présent, « partirons » le futur.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Le subjonctif présent",
+          "title": "Le subjonctif après les mots qui relient",
           "lines": [
-            "Après il faut que, je veux que, bien que, pour que, avant que.",
+            "Après bien que, pour que, avant que : le verbe est au subjonctif.",
             "Formé sur « ils » au présent : ils prennent → que je prenne.",
             "Terminaisons : -e, -es, -e, -ions, -iez, -ent.",
-            "Irréguliers : être → que je sois, avoir → que j’aie, aller → que j’aille, faire → que je fasse."
+            "Irréguliers : être → que je sois, avoir → que j’aie, faire → que je fasse."
           ]
         }
       }
     },
     {
       "key": "french-5e-conjugation-subjunctive-1-4",
-      "prompt": "Je souhaite qu’elle … .",
-      "spoken": "Je souhaite qu’elle  (mot manquant)  .",
+      "prompt": "Je l’appelle pour qu’elle … .",
+      "spoken": "Je l’appelle pour qu’elle  (mot manquant)  .",
       "choices": [
         "vienne",
         "vient",
@@ -116,16 +120,16 @@
       ],
       "answer": "vienne",
       "hint": "Formé sur « ils viennent » : qu’elle vienne.",
-      "explanation": "Après « je souhaite que » : subjonctif, « vienne ».",
+      "explanation": "Après « pour que » : subjonctif, « vienne ».",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Le subjonctif présent",
+          "title": "Le subjonctif après les mots qui relient",
           "lines": [
-            "Après il faut que, je veux que, bien que, pour que, avant que.",
+            "Après bien que, pour que, avant que : le verbe est au subjonctif.",
             "Formé sur « ils » au présent : ils prennent → que je prenne.",
             "Terminaisons : -e, -es, -e, -ions, -iez, -ent.",
-            "Irréguliers : être → que je sois, avoir → que j’aie, aller → que j’aille, faire → que je fasse."
+            "Irréguliers : être → que je sois, avoir → que j’aie, faire → que je fasse."
           ]
         }
       }
@@ -145,20 +149,20 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Le subjonctif présent",
+          "title": "Le subjonctif après les mots qui relient",
           "lines": [
-            "Après il faut que, je veux que, bien que, pour que, avant que.",
+            "Après bien que, pour que, avant que : le verbe est au subjonctif.",
             "Formé sur « ils » au présent : ils prennent → que je prenne.",
             "Terminaisons : -e, -es, -e, -ions, -iez, -ent.",
-            "Irréguliers : être → que je sois, avoir → que j’aie, aller → que j’aille, faire → que je fasse."
+            "Irréguliers : être → que je sois, avoir → que j’aie, faire → que je fasse."
           ]
         }
       }
     },
     {
       "key": "french-5e-conjugation-subjunctive-1-6",
-      "prompt": "Il faut que j’… du courage.",
-      "spoken": "Il faut que j’ (mot manquant)  du courage.",
+      "prompt": "Bien que j’… peur, je saute dans l’eau.",
+      "spoken": "Bien que je (mot manquant) peur, je saute dans l’eau.",
       "choices": [
         "aie",
         "ai",
@@ -166,16 +170,16 @@
       ],
       "answer": "aie",
       "hint": "Subjonctif d’avoir : que j’aie.",
-      "explanation": "Après « il faut que » : subjonctif d’avoir, « aie ».",
+      "explanation": "Après « bien que » : subjonctif d’avoir, « aie ». « Ai » est le présent : j’ai.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Le subjonctif présent",
+          "title": "Le subjonctif après les mots qui relient",
           "lines": [
-            "Après il faut que, je veux que, bien que, pour que, avant que.",
+            "Après bien que, pour que, avant que : le verbe est au subjonctif.",
             "Formé sur « ils » au présent : ils prennent → que je prenne.",
             "Terminaisons : -e, -es, -e, -ions, -iez, -ent.",
-            "Irréguliers : être → que je sois, avoir → que j’aie, aller → que j’aille, faire → que je fasse."
+            "Irréguliers : être → que je sois, avoir → que j’aie, faire → que je fasse."
           ]
         }
       }
@@ -195,23 +199,23 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Le subjonctif présent",
+          "title": "Le subjonctif après les mots qui relient",
           "lines": [
-            "Après il faut que, je veux que, bien que, pour que, avant que.",
+            "Après bien que, pour que, avant que : le verbe est au subjonctif.",
             "Formé sur « ils » au présent : ils prennent → que je prenne.",
             "Terminaisons : -e, -es, -e, -ions, -iez, -ent.",
-            "Irréguliers : être → que je sois, avoir → que j’aie, aller → que j’aille, faire → que je fasse."
+            "Irréguliers : être → que je sois, avoir → que j’aie, faire → que je fasse."
           ]
         }
       }
     }
   ],
   "feedback": {
-    "correct": "Bonne route !",
+    "correct": "Bien vu !",
     "wrong": "{explanation}"
   },
   "reward": {
-    "block": "french-5e-conjugation",
+    "block": "french-4e-vocabulary",
     "amount": 4,
     "xp": 14
   },

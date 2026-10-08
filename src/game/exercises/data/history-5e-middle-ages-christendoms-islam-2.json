@@ -1,0 +1,230 @@
+{
+  "id": "history-5e-middle-ages-christendoms-islam-2",
+  "biome": "history-5e-middle-ages",
+  "type": "christendoms-islam",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-5e-middle-ages-christendoms-islam-2-0",
+      "prompt": "Description d’une photo\nSainte-Sophie, à Constantinople\nUne immense église chrétienne\nConstruite au VIe siècle pour l’empereur Justinien",
+      "question": "Dans quelle ville est cette église ?",
+      "spoken": "Description d’une photo. Sainte-Sophie, à Constantinople. Une immense église chrétienne. Construite au sixième siècle pour l’empereur Justinien.",
+      "choices": [
+        "à Rome",
+        "à Constantinople",
+        "à Jérusalem"
+      ],
+      "answer": "à Constantinople",
+      "hint": "Lis la ligne qui commence par « Sainte-Sophie ».",
+      "explanation": "Sainte-Sophie est à Constantinople, la capitale de l’Empire byzantin. L’empereur Justinien l’a fait construire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le VIIe siècle : de l’an 601 à l’an 700.",
+            "Le XIe siècle : de l’an 1001 à l’an 1100."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-christendoms-islam-2-1",
+      "prompt": "Un événement\nAn 622\nMahomet quitte La Mecque pour Médine.\nC’est l’Hégire.",
+      "question": "En quel siècle a lieu l’Hégire ?",
+      "spoken": "Un événement. An six cent vingt-deux. Mahomet quitte La Mecque pour Médine. C’est l’Hégire.",
+      "choices": [
+        "au VIe siècle",
+        "au VIIe siècle",
+        "au VIIIe siècle"
+      ],
+      "answer": "au VIIe siècle",
+      "hint": "Dans le rappel, 622 est-il entre 601 et 700 ?",
+      "explanation": "L’an 622 est entre l’an 601 et l’an 700 : c’est le VIIe siècle. Le 6 du début ne donne pas le siècle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le VIIe siècle : de l’an 601 à l’an 700.",
+            "Le XIe siècle : de l’an 1001 à l’an 1100."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-christendoms-islam-2-2",
+      "prompt": "Des piliers de l’islam\nCroire en un Dieu unique\nPrier cinq fois par jour\nJeûner pendant le ramadan",
+      "question": "Combien de fois par jour un musulman doit-il prier ?",
+      "spoken": "Des piliers de l’islam. Croire en un Dieu unique. Prier cinq fois par jour. Jeûner pendant le ramadan.",
+      "choices": [
+        "une fois",
+        "quand il le veut",
+        "cinq fois"
+      ],
+      "answer": "cinq fois",
+      "hint": "Lis la ligne qui commence par « Prier ».",
+      "explanation": "Le document dit de prier cinq fois par jour. La prière est l’un des piliers de l’islam.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le VIIe siècle : de l’an 601 à l’an 700.",
+            "Le XIe siècle : de l’an 1001 à l’an 1100."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-christendoms-islam-2-3",
+      "prompt": "Description d’une carte\nL’expansion de l’islam\nEn 632 : l’Arabie\nVers 750 : de l’Espagne jusqu’au fleuve Indus",
+      "question": "Que montre cette carte ?",
+      "spoken": "Description d’une carte. L’expansion de l’islam. En six cent trente-deux : l’Arabie. Vers sept cent cinquante : de l’Espagne jusqu’au fleuve Indus.",
+      "choices": [
+        "un territoire qui grandit vite",
+        "un territoire qui rétrécit",
+        "un territoire qui ne change pas"
+      ],
+      "answer": "un territoire qui grandit vite",
+      "hint": "Compare la ligne « En 632 » et la ligne « Vers 750 ».",
+      "explanation": "D’abord l’Arabie, puis de l’Espagne jusqu’à l’Indus : les conquêtes agrandissent vite le territoire des musulmans.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le VIIe siècle : de l’an 601 à l’an 700.",
+            "Le XIe siècle : de l’an 1001 à l’an 1100."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-christendoms-islam-2-4",
+      "prompt": "Ce que fait Charlemagne\nIl fait ouvrir des écoles près des églises.\nIl fait venir des savants.\nIl fait recopier des livres anciens.",
+      "question": "À quoi Charlemagne s’intéresse-t-il ?",
+      "spoken": "Ce que fait Charlemagne. Il fait ouvrir des écoles près des églises. Il fait venir des savants. Il fait recopier des livres anciens.",
+      "choices": [
+        "à l’instruction",
+        "au commerce de la soie",
+        "à la navigation"
+      ],
+      "answer": "à l’instruction",
+      "hint": "Des écoles, des savants, des livres : à quoi servent-ils ?",
+      "explanation": "Écoles, savants, livres recopiés : Charlemagne veut développer l’instruction, surtout pour les hommes d’Église.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le VIIe siècle : de l’an 601 à l’an 700.",
+            "Le XIe siècle : de l’an 1001 à l’an 1100."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-christendoms-islam-2-5",
+      "prompt": "Charlemagne gouverne son empire\nDes comtes dirigent les régions en son nom.\nDes envoyés vont vérifier leur travail.",
+      "question": "Qui dirige les régions au nom de Charlemagne ?",
+      "spoken": "Charlemagne gouverne son empire. Des comtes dirigent les régions en son nom. Des envoyés vont vérifier leur travail.",
+      "choices": [
+        "les moines",
+        "les envoyés",
+        "les comtes"
+      ],
+      "answer": "les comtes",
+      "hint": "Lis la ligne qui contient « dirigent ».",
+      "explanation": "Les comtes dirigent les régions au nom de l’empereur. Les envoyés, eux, vérifient leur travail.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le VIIe siècle : de l’an 601 à l’an 700.",
+            "Le XIe siècle : de l’an 1001 à l’an 1100."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-christendoms-islam-2-6",
+      "prompt": "Le pape Urbain II, à Clermont\nAn 1095\nIl appelle les chrétiens à partir\npour prendre Jérusalem.",
+      "question": "En quel siècle le pape appelle-t-il à la croisade ?",
+      "spoken": "Le pape Urbain deux, à Clermont. An mille quatre-vingt-quinze. Il appelle les chrétiens à partir pour prendre Jérusalem.",
+      "choices": [
+        "au Xe siècle",
+        "au XIe siècle",
+        "au XIIe siècle"
+      ],
+      "answer": "au XIe siècle",
+      "hint": "Dans le rappel, 1095 est-il entre 1001 et 1100 ?",
+      "explanation": "L’an 1095 est entre l’an 1001 et l’an 1100 : c’est le XIe siècle. Le 10 du début ne donne pas le siècle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le VIIe siècle : de l’an 601 à l’an 700.",
+            "Le XIe siècle : de l’an 1001 à l’an 1100."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-christendoms-islam-2-7",
+      "prompt": "Jérusalem, une ville sainte\nPour les juifs : le Temple\nPour les chrétiens : le tombeau de Jésus\nPour les musulmans : une grande mosquée",
+      "question": "Pour combien de religions Jérusalem est-elle une ville sainte ?",
+      "spoken": "Jérusalem, une ville sainte. Pour les juifs : le Temple. Pour les chrétiens : le tombeau de Jésus. Pour les musulmans : une grande mosquée.",
+      "choices": [
+        "une",
+        "deux",
+        "trois"
+      ],
+      "answer": "trois",
+      "hint": "Compte les lignes qui commencent par « Pour ».",
+      "explanation": "Juifs, chrétiens et musulmans : Jérusalem est sainte pour trois religions. C’est pourquoi on se l’est tant disputée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le VIIe siècle : de l’an 601 à l’an 700.",
+            "Le XIe siècle : de l’an 1001 à l’an 1100."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-5e-middle-ages",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
