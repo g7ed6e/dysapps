@@ -1,8 +1,8 @@
 // Le chantier d'un grand projet (GD-10, piste A choisie par le mainteneur le 8 octobre 2026) : à la place du « bloc
 // suivant », cinq ronds (les pièces posées, la prochaine), deux recettes au choix et un seul bouton, « Construire la
-// lanterne », qui ouvre la question de la pièce. Une pièce commencée case par case (avant les projets) se finit d'un
+// lanterne » (Blocland), qui ouvre la question de la pièce. Une pièce commencée case par case (avant les projets) se finit d'un
 // geste, sans question ni blocs.
-import { useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useProgress } from '../core/ProgressContext';
 import { useUnivers } from '../core/SettingsContext';
@@ -26,6 +26,8 @@ export function ProjectPanel({ project, monument, done }: { project: Project; mo
   const { state, finishPiece } = useBlocland();
   const { completeMonument } = useProgress();
   const [notice, setNotice] = useState<string | null>(null);
+  // « Finir » disparaît une fois la pièce finie : le focus va à la ligne qui le dit, jamais perdu.
+  const noticeRef = useRef<HTMLParagraphElement>(null);
   const index = nextPiece(state, project);
   const built = piecesBuilt(state, project);
   const total = project.pieces.length;
@@ -36,22 +38,25 @@ export function ProjectPanel({ project, monument, done }: { project: Project; mo
   const payable = recipes.findIndex((r) => canPay(state.stock, r));
   const recipe = chosen && chosen.piece === index ? chosen.k : payable < 0 ? 0 : payable;
   const free = index !== null && pieceIsFree(state, project, index);
+  const group = useId();
   const finish = () => {
     const r = finishPiece(monument.id);
     if (!r?.ok) return;
+    // Le rond qui se remplit et le compteur disent l'avancement : la ligne ne dit que la pièce posée, ou l'XP à la fin.
     if (r.completed) {
       completeMonument(monument.reward.xp);
-      setNotice(`${done} +${monument.reward.xp} XP.`);
-    } else setNotice(`${built + 1} sur ${total}.`);
+      setNotice(`+${monument.reward.xp} XP`);
+    } else setNotice(`${capitalize(name)} : posée`.replace(/^(Le |L’)(.*) : posée$/, '$1$2 : posé'));
+    requestAnimationFrame(() => noticeRef.current?.focus());
   };
   return (
     <>
-      <ol className="project-pieces" aria-label={`${built} ${built > 1 ? 'pièces posées' : 'pièce posée'} sur ${total}`}>
+      <div className="project-pieces" role="img" aria-label={`${built} ${built > 1 ? 'pièces posées' : 'pièce posée'} sur ${total}`}>
         {project.pieces.map((p, k) => {
           const s = pieceState(state, project, k);
-          return <li key={p.id} className={`project-piece ${s === 'built' ? 'built' : k === index ? 'next' : 'todo'}`} aria-hidden="true" />;
+          return <span key={p.id} className={`project-piece ${s === 'built' ? 'built' : k === index ? 'next' : 'todo'}`} />;
         })}
-      </ol>
+      </div>
       <p className="plan-count">
         <strong>{built}</strong> sur {total} · +{monument.reward.xp} XP à la fin
       </p>
@@ -65,11 +70,12 @@ export function ProjectPanel({ project, monument, done }: { project: Project; mo
         </button>
       ) : (
         <>
-          <div className="project-recipes" role="radiogroup" aria-label="Avec quels blocs ?">
+          <fieldset className="project-recipes">
+            <legend className="visually-hidden">Avec quels blocs ?</legend>
             {recipes.map((r, k) => (
-              <RecipeCard key={k} recipe={r} stock={state.stock} checked={k === recipe} onPick={() => setChosen({ piece: index, k })} />
+              <RecipeCard key={k} group={group} recipe={r} stock={state.stock} checked={k === recipe} onPick={() => setChosen({ piece: index, k })} />
             ))}
-          </div>
+          </fieldset>
           {!canPay(state.stock, recipes[recipe]) && <Lacking recipe={recipes[recipe]} stock={state.stock} />}
           {canPay(state.stock, recipes[recipe]) ? (
             <Link to={projectQuestionPath(monument.id, recipe)} className="button primary">
@@ -82,22 +88,27 @@ export function ProjectPanel({ project, monument, done }: { project: Project; mo
           )}
         </>
       )}
-      {notice && (
-        <p className="build-status" role="status" aria-live="polite">
-          {notice}
-        </p>
-      )}
+      <p ref={noticeRef} tabIndex={-1} className="build-status" role="status" aria-live="polite">
+        {notice ?? ''}
+      </p>
     </>
   );
 }
 
-/** Une recette : ses deux blocs, en icônes avec leur nombre ; une coche quand le stock la paie. */
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/**
+ * Une recette : ses deux blocs, en icônes avec leur nombre ; une pastille cochée dans le coin quand le stock la paie.
+ * Un vrai bouton radio (les flèches passent d'une recette à l'autre) ; la carte choisie a son fond teinté.
+ */
 function RecipeCard({
+  group,
   recipe,
   stock,
   checked,
   onPick,
 }: {
+  group: string;
   recipe: ProjectRecipe;
   stock: Partial<Record<BlockId, number>>;
   checked: boolean;
@@ -106,22 +117,20 @@ function RecipeCard({
   const ok = canPay(stock, recipe);
   const label = recipe.ingredients.map((i) => `${i.n} ${blockName(i.bloc, i.n)}`).join(' et ');
   return (
-    <button
-      type="button"
-      role="radio"
-      aria-checked={checked}
-      className={`project-recipe${checked ? ' checked' : ''}`}
-      onClick={onPick}
-      aria-label={`${label}${ok ? ', tu les as' : ''}`}
-    >
+    <label className="project-recipe" aria-label={`${label}${ok ? ', tu les as' : ''}`}>
+      <input type="radio" name={group} className="visually-hidden" checked={checked} onChange={onPick} />
       {recipe.ingredients.map((i) => (
         <span key={i.bloc} className="project-ingredient">
           <BlockIcon top={BLOCKS[i.bloc].top} side={BLOCKS[i.bloc].side} size={28} />
           <strong>{i.n}</strong>
         </span>
       ))}
-      {ok && <Icon name="check" />}
-    </button>
+      {ok && (
+        <span className="project-recipe-ok">
+          <Icon name="check" />
+        </span>
+      )}
+    </label>
   );
 }
 

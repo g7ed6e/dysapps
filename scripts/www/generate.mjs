@@ -1016,7 +1016,6 @@ function ouvragesPage(d) {
   return { path: 'pedagogie/ouvrages.md', title: 'Ouvrages et plans', body: lines.join('\n') };
 }
 
-/** Les questions des blocs assemblés (GD-2) : ce qu'elles travaillent, leur consigne et leurs questions. */
 /** Les grands projets (GD-10) : leurs pièces, de bas en haut, et les deux recettes de chacune, puis leurs questions. */
 function grandsProjets(d) {
   if (d.PROJECTS.length === 0) return [];
@@ -1044,6 +1043,7 @@ function grandsProjets(d) {
   return lines;
 }
 
+/** Les questions des blocs assemblés (GD-2) : ce qu'elles travaillent, leur consigne et leurs questions. */
 function questionsAssemblage(d) {
   if (d.QUESTIONS_ASSEMBLAGE.length === 0) return [];
   const lines = [

@@ -2,6 +2,8 @@ import { EMPTY_STATE, repondreProjet, sanitizeState, type GameState } from '../e
 import { getMonument } from './monuments';
 import { planCells } from './plans';
 import { tirageNeuf } from './assembly';
+import { BLOCKS } from '../biomes';
+import { BLOCS_A_QUESTIONS } from '../exercises';
 import { PROJECTS, buildPiece, canPay, nextPiece, pieceCells, pieceState, piecesBuilt, projectNeeds, projectOf } from './projects';
 
 const phare = projectOf('landmark-5e-1')!;
@@ -97,4 +99,11 @@ it('la sauvegarde garde le tirage d’une banque de projet, et seulement des ban
   const t = tirageNeuf('g');
   const s = sanitizeState({ assemblyDraw: { 'project-5e-counter': t, 'project-inconnu': t } });
   expect(Object.keys(s.assemblyDraw ?? {})).toEqual(['project-5e-counter']);
+});
+
+it('chaque recette prend des blocs qui existent, et chaque banque a ses questions', () => {
+  for (const r of PROJECTS.flatMap((p) => p.pieces.flatMap((x) => x.recipes))) {
+    for (const i of r.ingredients) expect(BLOCKS[i.bloc], i.bloc).toBeDefined();
+    expect(BLOCS_A_QUESTIONS, r.bank).toContain(r.bank);
+  }
 });

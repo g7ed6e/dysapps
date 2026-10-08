@@ -46,19 +46,19 @@
       "spoken": "La corvée : des jours de travail gratuit pour le seigneur.",
       "choices": [
         "Les paysans travaillèrent gratuitement pour le seigneur.",
-        "Les paysans travaillérent gratuitement pour le seigneur.",
+        "Les paysans travaillirent gratuitement pour le seigneur.",
         "Les paysans travaillèrent pour le seigneur contre de l’argent."
       ],
       "answer": "Les paysans travaillèrent gratuitement pour le seigneur.",
-      "hint": "D’abord : la corvée est-elle payée, dans le document ? Puis : quel accent sur -èrent ?",
-      "explanation": "Le document dit « gratuit » : la corvée n’est pas payée. Contre de l’argent, c’est le contraire. Verbes en -er, avec ils : -èrent, avec un accent grave, comme dans mère.",
+      "hint": "D’abord : la corvée est-elle payée, dans le document ? Puis : travailler est un verbe en -er.",
+      "explanation": "Le document dit « gratuit » : la corvée n’est pas payée. Contre de l’argent, c’est le contraire. Travailler est un verbe en -er : ils travaillèrent. -irent va avec les autres verbes (ils finirent).",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Un mot du Moyen Âge, et -èrent",
           "lines": [
             "Un mot nouveau ? Le document l’explique juste en dessous, comme un dictionnaire.",
-            "Verbes en -er, avec ils : -èrent, accent grave (ils marchèrent)."
+            "Verbes en -er, avec ils : -èrent (ils marchèrent). Les autres : -irent (ils finirent)."
           ]
         }
       }
@@ -93,19 +93,19 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "En mille cent soixante-trois, on commence à bâtir Notre-Dame de Paris.",
       "choices": [
-        "Le chantier commença au XIIe siècle.",
-        "Le chantier commenca au XIIe siècle.",
-        "Le chantier commença au XIe siècle."
+        "Le chantier commença au douzième siècle.",
+        "Le chantier commenca au douzième siècle.",
+        "Le chantier commença au onzième siècle."
       ],
-      "answer": "Le chantier commença au XIIe siècle.",
+      "answer": "Le chantier commença au douzième siècle.",
       "hint": "D’abord : range l’année avec le rappel. Puis : devant a, le c garde-t-il le son « s » ?",
-      "explanation": "1163 est entre 1101 et 1200 : c’est le XIIe siècle. Le XIe siècle va de 1001 à 1100 : le siècle ne se lit pas dans les deux premiers chiffres. Devant a, le c prend une cédille pour garder le son « s » : il commença.",
+      "explanation": "1163 est entre 1101 et 1200 : c’est le XIIe siècle, le douzième. Le XIe siècle, le onzième, va de 1001 à 1100 : le siècle ne se lit pas dans les deux premiers chiffres. Devant a, le c prend une cédille pour garder le son « s » : il commença.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Le siècle, et la cédille",
           "lines": [
-            "XIe siècle : de l’an 1001 à l’an 1100. XIIe siècle : de l’an 1101 à l’an 1200.",
+            "XIe siècle (le onzième) : de l’an 1001 à l’an 1100. XIIe siècle (le douzième) : de l’an 1101 à l’an 1200.",
             "Devant a, o, u, le c prend une cédille pour faire « s » : il lança, nous plaçons."
           ]
         }
@@ -113,17 +113,17 @@
     },
     {
       "key": "project-5e-chronicle-4",
-      "prompt": "D’abord : le seigneur donne une charte à la ville.\nEnsuite : les bourgeois construisent un marché couvert.",
+      "prompt": "D’abord : les habitants bâtissent un grand mur autour de la ville.\nEnsuite : ils construisent un marché couvert.",
       "question": "Quelle phrase est juste ?",
-      "spoken": "D’abord, le seigneur donne une charte à la ville. Ensuite, les bourgeois construisent un marché couvert.",
+      "spoken": "D’abord, les habitants bâtissent un grand mur autour de la ville. Ensuite, ils construisent un marché couvert.",
       "choices": [
-        "Après la charte, les bourgeois construisirent un marché.",
-        "Après la charte, les bourgeois construisèrent un marché.",
-        "Avant la charte, les bourgeois construisirent un marché."
+        "Après le mur, les habitants construisirent un marché.",
+        "Après le mur, les habitants construisèrent un marché.",
+        "Avant le mur, les habitants construisirent un marché."
       ],
-      "answer": "Après la charte, les bourgeois construisirent un marché.",
+      "answer": "Après le mur, les habitants construisirent un marché.",
       "hint": "D’abord : quel fait vient en premier ? Puis : construire n’est pas un verbe en -er.",
-      "explanation": "Le document dit « d’abord » la charte, « ensuite » le marché : le marché vient après. Construire n’est pas un verbe en -er : ils construisirent, comme ils écrivirent. -èrent va avec les verbes en -er.",
+      "explanation": "Le document dit « d’abord » le mur, « ensuite » le marché : le marché vient après. Construire n’est pas un verbe en -er : ils construisirent, comme ils écrivirent. -èrent va avec les verbes en -er.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -185,24 +185,24 @@
     },
     {
       "key": "project-5e-chronicle-7",
-      "prompt": "Le vassal\nIl reçoit un fief de son seigneur et lui jure fidélité.",
+      "prompt": "Le vassal\nIl reçoit un fief, une terre, de son seigneur.",
       "question": "Quelle phrase est juste ?",
-      "spoken": "Le vassal : il reçoit un fief de son seigneur et lui jure fidélité.",
+      "spoken": "Le vassal : il reçoit un fief, une terre, de son seigneur.",
       "choices": [
         "Le vassal reçut un fief de son seigneur.",
-        "Le vassal reçu un fief de son seigneur.",
+        "Le vassal recevit un fief de son seigneur.",
         "Le seigneur reçut un fief de son vassal."
       ],
       "answer": "Le vassal reçut un fief de son seigneur.",
-      "hint": "D’abord : qui reçoit le fief, dans le document ? Puis : au passé simple, avec il, quelle lettre à la fin ?",
-      "explanation": "Le document dit que le vassal reçoit le fief, une terre, et que le seigneur le donne. Au passé simple, avec il : il reçut, avec un t. reçu, sans t, c’est le participe passé (il a reçu).",
+      "hint": "D’abord : qui reçoit le fief, dans le document ? Puis : recevoir fait son passé simple en -ut.",
+      "explanation": "Le document dit que le vassal reçoit le fief, une terre, et que le seigneur le donne. Recevoir fait son passé simple en -ut : il reçut, comme il voulut. recevit n’existe pas.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Qui reçoit ? et -ut",
           "lines": [
             "Qui donne, qui reçoit : cherche le sujet du verbe recevoir.",
-            "Passé simple en -ut, avec il : il courut, il voulut, toujours avec un t."
+            "Recevoir, vouloir, courir au passé simple, avec il : -ut (il voulut, il courut)."
           ]
         }
       }
@@ -213,19 +213,19 @@
       "question": "Quelle phrase est juste ?",
       "spoken": "En neuf cent quatre-vingt-sept, Hugues Capet devient roi des Francs.",
       "choices": [
-        "Hugues Capet devint roi au Xe siècle.",
-        "Hugues Capet devenit roi au Xe siècle.",
-        "Hugues Capet devint roi au IXe siècle."
+        "Hugues Capet devint roi au dixième siècle.",
+        "Hugues Capet devenit roi au dixième siècle.",
+        "Hugues Capet devint roi au neuvième siècle."
       ],
-      "answer": "Hugues Capet devint roi au Xe siècle.",
+      "answer": "Hugues Capet devint roi au dixième siècle.",
       "hint": "D’abord : range l’année avec le rappel. Puis : devenir se conjugue comme venir.",
-      "explanation": "987 est entre 901 et 1000 : c’est le Xe siècle. Le IXe siècle va de 801 à 900. Devenir se conjugue comme venir : il vint, il devint.",
+      "explanation": "987 est entre 901 et 1000 : c’est le Xe siècle, le dixième. Le IXe siècle, le neuvième, va de 801 à 900. Devenir se conjugue comme venir : il vint, il devint.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Le siècle, et venir",
           "lines": [
-            "IXe siècle : de l’an 801 à l’an 900. Xe siècle : de l’an 901 à l’an 1000.",
+            "IXe siècle (le neuvième) : de l’an 801 à l’an 900. Xe siècle (le dixième) : de l’an 901 à l’an 1000.",
             "Venir et ses frères au passé simple : il vint, il revint, il se souvint."
           ]
         }
@@ -305,7 +305,7 @@
     }
   ],
   "feedback": {
-    "correct": "Bien assemblé !",
+    "correct": "Bien construit !",
     "wrong": "{explanation}"
   }
 }

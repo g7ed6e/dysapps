@@ -147,9 +147,12 @@ function MonumentBody({ builder }: { builder: MonumentBuilder }) {
           )}
         </section>
       )}
-      <p className="build-status" role="status" aria-live="polite">
-        {builder.notice ?? ''}
-      </p>
+      {!project && (
+        // Un grand projet a sa propre ligne, dans son panneau.
+        <p className="build-status" role="status" aria-live="polite">
+          {builder.notice ?? ''}
+        </p>
+      )}
       <p className="island-inventory-link">
         <InventoryLink /> · <Link to={MONUMENTS_PATH} className="island-inventory-more">Tous les monuments</Link>
       </p>
@@ -229,7 +232,7 @@ export function MonumentsList() {
               {monumentsOf(a.classe).map((m) => {
                 const s = planStatus(state, m);
                 const project = projectOf(m.id);
-                const avancement = project ? `${piecesBuilt(state, project)} sur ${project.pieces.length}` : `${s.done} / ${s.total} blocs posés`;
+                const avancement = project ? `${piecesBuilt(state, project)} / ${project.pieces.length} pièces posées` : `${s.done} / ${s.total} blocs posés`;
                 const state_ = !reached ? 'Archipel fermé' : s.complete ? 'Terminé' : avancement;
                 return (
                   <li key={m.id}>

@@ -14,7 +14,7 @@ import { useUnivers } from '../core/SettingsContext';
 import { MixedQuestion } from './AssemblyQuestion';
 import { useBlocland } from './BloclandContext';
 import { loadAssemblage } from './exercises';
-import { getMonument } from './world/monuments';
+import { getMonument, type MonumentDef } from './world/monuments';
 import { canPay, nextPiece, piecesBuilt, projectOf, type Project } from './world/projects';
 
 /** L'adresse de la question de la pièce à construire d'un projet, avec la recette choisie (0 ou 1). */
@@ -47,7 +47,7 @@ export function ProjectQuestionPage() {
         <Icon name="hammer" /> Construire {name}
       </h1>
       {loaded ? (
-        <PieceQuestion key={autre} project={project} index={index} recipe={r} name={name} def={loaded} retour={retour} onAutre={() => setAutre((n) => n + 1)} />
+        <PieceQuestion key={autre} project={project} monument={monument} index={index} recipe={r} name={name} def={loaded} retour={retour} onAutre={() => setAutre((n) => n + 1)} />
       ) : (
         <Loading />
       )}
@@ -55,8 +55,17 @@ export function ProjectQuestionPage() {
   );
 }
 
+/** « au phare du large », « à la tour », « à l’observatoire », « aux arches » : où l'on revient, avec l'article du nom. */
+function toNamed(name: string): string {
+  const lower = name.charAt(0).toLowerCase() + name.slice(1);
+  if (lower.startsWith('le ')) return `au ${lower.slice(3)}`;
+  if (lower.startsWith('les ')) return `aux ${lower.slice(4)}`;
+  return `à ${lower}`;
+}
+
 function PieceQuestion({
   project,
+  monument,
   index,
   recipe,
   name,
@@ -65,6 +74,7 @@ function PieceQuestion({
   onAutre,
 }: {
   project: Project;
+  monument: MonumentDef;
   index: number;
   recipe: number;
   name: string;
@@ -74,7 +84,6 @@ function PieceQuestion({
 }) {
   const { repondreProjet } = useBlocland();
   const { completeMonument } = useProgress();
-  const monument = getMonument(project.monument)!;
   const { done } = texteDuMonument(useTextes(), monument);
   const r = project.pieces[index].recipes[recipe];
   return (
@@ -83,8 +92,11 @@ function PieceQuestion({
       drawKey={r.bank}
       canDo={(stock) => canPay(stock, r)}
       retour={retour}
-      retourText={`Revenir au ${monument.name.replace(/^Le /, '')}`}
-      aLieu={`au ${monument.name.replace(/^Le /, '')}`}
+      retourText={`Revenir ${toNamed(monument.name)}`}
+      aLieu={toNamed(monument.name)}
+      // Le même cri pour toutes les pièces, quelle que soit la banque (le vitrail dit « Bien assemblé ! » à la Fabrique).
+      bravo="Bien construit !"
+      // Sans `againText` : une seule pièce à la fois, `onAutre` ne sert qu'à « Une autre question » après une erreur.
       onAutre={onAutre}
       commit={(reponse) => {
         const res = repondreProjet(project.monument, index, recipe, reponse);
@@ -98,13 +110,11 @@ function PieceQuestion({
           return {
             done: true,
             text: `${done} +${monument.reward.xp} XP.`,
-            backState: { piece: index },
           };
         }
         return {
           done: true,
           text: `Pièce posée : ${piecesBuilt(res.state, project)} sur ${project.pieces.length}.`,
-          backState: { piece: index },
         };
       }}
     />

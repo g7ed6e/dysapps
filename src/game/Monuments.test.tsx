@@ -110,12 +110,12 @@ it('le phare du large, un grand projet : cinq pièces, deux recettes, un seul bo
   const user = userEvent.setup();
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'english-5e-grammar': 6, 'geography-5e-resources': 4 }, world: { links: ['passage-5e'] } }));
   renderIn(<PharePage />);
-  expect(screen.getByRole('list', { name: '0 pièce posée sur 5' })).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: '0 pièce posée sur 5' })).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: /Poser tout/ })).toBeNull();
   const recettes = screen.getAllByRole('radio');
   expect(recettes).toHaveLength(2);
   // La recette que le stock paie est choisie d'avance, et le bouton mène à sa question.
-  expect(recettes[1]).toHaveAttribute('aria-checked', 'true');
+  expect(recettes[1]).toBeChecked();
   expect(screen.getByRole('link', { name: /Construire le socle/ })).toHaveAttribute('href', '/adventure/project/landmark-5e-1/1');
   // L'autre recette manque de blocs : le bouton est gris et la liste dit où les gagner.
   await user.click(recettes[0]);
@@ -129,6 +129,8 @@ it('une pièce commencée bloc par bloc se finit sans rien payer', async () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, world: { links: ['passage-5e'], parts: { [PHARE.id]: [une] } } }));
   renderIn(<PharePage />);
   await user.click(screen.getByRole('button', { name: /Finir le socle/ }));
-  expect(screen.getByRole('list', { name: '1 pièce posée sur 5' })).toBeInTheDocument();
+  expect(screen.getByRole('img', { name: '1 pièce posée sur 5' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /Construire la tour/ })).toBeDisabled();
+  // « Finir » a disparu : le focus va à la ligne qui dit la pièce posée.
+  expect(screen.getByRole('status')).toHaveTextContent('Le socle : posé');
 });

@@ -137,24 +137,24 @@
     },
     {
       "key": "project-5e-travellers-5",
-      "prompt": "Electricity in France\nNuclear: 7 out of 10. Wind and sun: 3 out of 10.",
+      "prompt": "Greenhill, an invented village: its electricity\nSun: 7 out of 10. Wind: 3 out of 10.",
       "question": "Quelle phrase est juste ?",
-      "spoken": "Electricity in France. Nuclear, seven out of ten. Wind and sun, three out of ten.",
+      "spoken": "Greenhill, an invented village: its electricity. Sun, seven out of ten. Wind, three out of ten.",
       "choices": [
-        "Nuclear power is the biggest part.",
-        "Nuclear power is the bigest part.",
-        "Wind and sun are the biggest part."
+        "Solar power is the biggest part.",
+        "Solar power is the bigest part.",
+        "Wind power is the biggest part."
       ],
-      "answer": "Nuclear power is the biggest part.",
+      "answer": "Solar power is the biggest part.",
       "hint": "D’abord : quel nombre est le plus grand ? Puis : big, c’est consonne, voyelle, consonne.",
-      "explanation": "7 sur 10, c’est plus que 3 sur 10 : le nucléaire fait la plus grande part. big est court et finit par consonne, voyelle, consonne : on double le g, the biggest.",
+      "explanation": "Greenhill est un village inventé pour l’exercice. 7 sur 10, c’est plus que 3 sur 10 : le soleil fait la plus grande part de son électricité. big est court et finit par consonne, voyelle, consonne : on double le g, the biggest.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "The biggest, et le document",
           "lines": [
             "Mot court en consonne + voyelle + consonne : on double (hot → the hottest).",
-            "out of = sur ; nuclear power = le nucléaire ; wind and sun = le vent et le soleil"
+            "out of = sur ; solar power = l’énergie solaire ; wind power = l’énergie du vent"
           ]
         }
       }
@@ -305,7 +305,7 @@
     }
   ],
   "feedback": {
-    "correct": "Bien assemblé !",
+    "correct": "Bien construit !",
     "wrong": "{explanation}"
   }
 }

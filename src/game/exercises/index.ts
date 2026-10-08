@@ -4,6 +4,7 @@
 // Le service worker met ces fichiers en cache à l'installation : ils restent disponibles hors ligne.
 import { SETS } from '../../apps/homophones/data';
 import type { BiomeId } from '../biomes';
+import type { DrawKey } from '../engine/state';
 import type { AssemblageDef, ExerciseDef } from './types';
 import { MATHS_EXERCISES } from './maths';
 import { COLLEGE_EXERCISES } from './college';
@@ -174,7 +175,7 @@ export const CATALOG: ExerciseMeta[] = ORDER.flatMap((entry) =>
 export const UNORDERED = [...JSON_BY_ID.values()].filter((m) => m.type !== 'assembly' && !ORDER.includes(m.id)).map((m) => m.id);
 
 /** L'identifiant des questions d'un bloc assemblé (GD-2) ou d'une banque de projet (GD-10) : data/assembly-<bloc>.json. */
-export function assemblageId(bloc: string): string {
+export function assemblageId(bloc: DrawKey): string {
   return `assembly-${bloc}`;
 }
 
@@ -182,7 +183,7 @@ export function assemblageId(bloc: string): string {
 export const BLOCS_A_QUESTIONS: string[] = [...JSON_BY_ID.values()].filter((m) => m.type === 'assembly').map((m) => m.id.slice('assembly-'.length));
 
 /** Les questions d'un bloc assemblé ou d'une banque de projet, chargées à la demande comme un exercice JSON. */
-export async function loadAssemblage(bloc: string): Promise<AssemblageDef | undefined> {
+export async function loadAssemblage(bloc: DrawKey): Promise<AssemblageDef | undefined> {
   return (await LOADERS.get(assemblageId(bloc))?.()) as AssemblageDef | undefined;
 }
 

@@ -11,7 +11,7 @@
 //   partie commencée case par case, avant les projets) se finit sans rien demander ;
 // - la sauvegarde ne change pas : les cases posées restent dans `world.parts[<grand ouvrage>]`.
 import type { BlockId } from '../biomes';
-import type { GameState } from '../engine/state';
+import type { DrawKey, GameState } from '../engine/state';
 import type { UniversNomme } from './assembly';
 import { getMonument } from './monuments';
 import { planCells } from './plans';
@@ -21,7 +21,7 @@ export interface ProjectRecipe {
   /** Deux blocs d'îles de l'archipel, de deux matières. */
   ingredients: { bloc: BlockId; n: number }[];
   /** La banque de questions : celle d'un bloc assemblé (`compound-5e`) ou une banque de projets (`project-…`). */
-  bank: string;
+  bank: DrawKey;
 }
 
 interface ProjectPiece {
@@ -43,7 +43,9 @@ export const PROJECTS = PROJECTS_JSON as Project[];
 
 /**
  * La forme des pièces : les étages (z, dans le dessin du grand ouvrage) que chacune couvre, du plus bas au plus haut.
- * Le phare du large : le socle de glace, la tour rayée, la galerie de lambris, la lanterne de vitraux, le toit.
+ * Le phare du large, dans Blocland : le socle de glace, la tour rayée, la galerie de lambris, la lanterne de vitraux, le
+ * toit ; dans Archipéo, les mêmes étages du modèle taillé (offshoreLighthouse.ts) : le socle, la tour, le haut de la tour,
+ * la terrasse, le feu.
  */
 const LAYERS: Record<string, Record<string, readonly [number, number]>> = {
   'landmark-5e-1': {
@@ -61,7 +63,7 @@ export function projectOf(monument: string): Project | undefined {
 }
 
 /** Les banques de questions de projets (`project-…`), dont le tirage se garde comme celui d'un bloc assemblé. */
-export const PROJECT_BANKS: readonly string[] = [...new Set(PROJECTS.flatMap((p) => p.pieces.flatMap((x) => x.recipes.map((r) => r.bank))))];
+export const PROJECT_BANKS: readonly DrawKey[] = [...new Set(PROJECTS.flatMap((p) => p.pieces.flatMap((x) => x.recipes.map((r) => r.bank))))];
 
 /** Les cases d'une pièce (avec leur clé de sauvegarde), dans l'ordre du dessin. */
 export function pieceCells(project: Project, index: number): ReturnType<typeof planCells>[number][] {
@@ -99,7 +101,7 @@ export function canPay(stock: Partial<Record<BlockId, number>>, recipe: ProjectR
   return recipe.ingredients.every((i) => (stock[i.bloc] ?? 0) >= i.n);
 }
 
-/** Ce que la pièce à construire coûte encore : rien si elle est commencée, sinon les blocs de la recette. */
+/** La pièce est-elle commencée (des cases posées case par case), donc gratuite ? */
 export function pieceIsFree(state: Pick<GameState, 'world'>, project: Project, index: number): boolean {
   return pieceState(state, project, index) === 'started';
 }

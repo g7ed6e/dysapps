@@ -10,9 +10,9 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `landmark-5e-1` | `base` | maths-5e-signed-numbers × 6 · french-5e-homophones × 4 | `compound-5e` | english-5e-grammar × 6 · geography-5e-resources × 4 | `project-5e-travellers` | le socle | le socle |
 | `landmark-5e-1` | `tower` | maths-5e-proportionality × 6 · english-5e-vocabulary × 4 | `project-5e-counter` | french-5e-conjugation × 6 · history-5e-middle-ages × 4 | `project-5e-chronicle` | la tour | la tour |
-| `landmark-5e-1` | `gallery` | maths-5e-signed-numbers × 6 · french-5e-homophones × 4 | `compound-5e` | english-5e-grammar × 6 · geography-5e-resources × 4 | `project-5e-travellers` | la galerie | la galerie |
-| `landmark-5e-1` | `lantern` | maths-5e-proportionality × 6 · english-5e-vocabulary × 4 | `project-5e-counter` | french-5e-conjugation × 6 · history-5e-middle-ages × 4 | `project-5e-chronicle` | la lanterne | la lanterne |
-| `landmark-5e-1` | `roof` | maths-5e-signed-numbers × 6 · french-5e-homophones × 4 | `compound-5e` | english-5e-grammar × 6 · geography-5e-resources × 4 | `project-5e-travellers` | le toit | le toit |
+| `landmark-5e-1` | `gallery` | maths-5e-signed-numbers × 6 · french-5e-homophones × 4 | `compound-5e` | english-5e-grammar × 6 · geography-5e-resources × 4 | `project-5e-travellers` | la galerie | le haut de la tour |
+| `landmark-5e-1` | `lantern` | maths-5e-proportionality × 6 · english-5e-vocabulary × 4 | `project-5e-counter` | french-5e-conjugation × 6 · history-5e-middle-ages × 4 | `project-5e-chronicle` | la lanterne | la terrasse |
+| `landmark-5e-1` | `roof` | maths-5e-signed-numbers × 6 · french-5e-homophones × 4 | `compound-5e` | english-5e-grammar × 6 · geography-5e-resources × 4 | `project-5e-travellers` | le toit | le feu |
 
 ## Les questions
 
@@ -23,7 +23,7 @@
 - compétences : c4.ma.5e.proportionnalite.proportionnalite · c4.ma.5e.proportionnalite.pourcentages · c4.en.5e.interagir.echanges · c4.en.5e.langue.lexique · c4.en.5e.comprendre.informations-pratiques
 - langue : en
 - consigne : Lis l’énoncé en anglais, calcule, puis choisis la phrase juste et bien écrite. Le rappel est affiché.
-- bravo : Bien assemblé !
+- bravo : Bien construit !
 - erreur : {explanation}
 
 1. énoncé : "2 bottles of water: £2.\nAmy buys 6 bottles."
@@ -116,13 +116,13 @@
    - aide « Deux fois moins, et pound » :
      - 8 billes pour 4 € : 4 billes, deux fois moins, coûtent 2 €.
      - one pound = une livre ; two pounds = deux livres
-10. énoncé : "Bananas: 6 for £3.\nYou want 2 bananas."
+10. énoncé : "Bananas: 6 for £12.\nYou want 2 bananas."
     - question : Quelle phrase est juste ?
-    - lu : Bananas, six for three pounds. You want two bananas.
-    - choix : I’d like 2 bananas for £1, please. · I like 2 bananas for £1, please. · I’d like 2 bananas for £2, please.
-    - réponse : I’d like 2 bananas for £1, please.
+    - lu : Bananas, six for twelve pounds. You want two bananas.
+    - choix : I’d like 2 bananas for £4, please. · I like 2 bananas for £4, please. · I’d like 2 bananas for £10, please.
+    - réponse : I’d like 2 bananas for £4, please.
     - indice : D’abord : 2 bananes, c’est trois fois moins que 6. Puis : comment demander poliment ?
-    - explication : 2 bananes, c’est trois fois moins que 6 bananes : 3 livres partagées en 3, 1 livre. Pour demander poliment, on dit I’d like, je voudrais ; I like veut dire j’aime. 2, c’est 6 ÷ 3 : c’est le prix qu’on partage, pas le nombre de bananes.
+    - explication : 2 bananes, c’est trois fois moins que 6 bananes : 12 livres partagées en 3, 4 livres. Pour demander poliment, on dit I’d like, je voudrais ; I like veut dire j’aime. 10, c’est 12 − 2 : on a enlevé au lieu de partager.
     - aide « Trois fois moins, et I’d like » :
       - 9 œufs pour 6 € : 3 œufs, trois fois moins, coûtent 2 €.
       - I’d like = je voudrais ; I like = j’aime
@@ -151,7 +151,7 @@
 
 - compétences : c4.fr.5e.grammaire.temps-modes · c4.fr.5e.grammaire.formes-verbales · c3.fr.langue.temps-a-memoriser · c4.hg.histoire.occident-feodal · c4.hg.demarches.document · c4.hg.demarches.lexique · c4.hg.temps.ordonner · c4.hg.temps.reperes
 - consigne : Lis le document, puis choisis la phrase juste et bien écrite. Le rappel est affiché.
-- bravo : Bien assemblé !
+- bravo : Bien construit !
 - erreur : {explanation}
 
 1. énoncé : "Chronique de l’an 1100\nLe seigneur fait bâtir un château fort."
@@ -167,13 +167,13 @@
 2. énoncé : "La corvée\nDes jours de travail gratuit pour le seigneur."
    - question : Quelle phrase est juste ?
    - lu : La corvée : des jours de travail gratuit pour le seigneur.
-   - choix : Les paysans travaillèrent gratuitement pour le seigneur. · Les paysans travaillérent gratuitement pour le seigneur. · Les paysans travaillèrent pour le seigneur contre de l’argent.
+   - choix : Les paysans travaillèrent gratuitement pour le seigneur. · Les paysans travaillirent gratuitement pour le seigneur. · Les paysans travaillèrent pour le seigneur contre de l’argent.
    - réponse : Les paysans travaillèrent gratuitement pour le seigneur.
-   - indice : D’abord : la corvée est-elle payée, dans le document ? Puis : quel accent sur -èrent ?
-   - explication : Le document dit « gratuit » : la corvée n’est pas payée. Contre de l’argent, c’est le contraire. Verbes en -er, avec ils : -èrent, avec un accent grave, comme dans mère.
+   - indice : D’abord : la corvée est-elle payée, dans le document ? Puis : travailler est un verbe en -er.
+   - explication : Le document dit « gratuit » : la corvée n’est pas payée. Contre de l’argent, c’est le contraire. Travailler est un verbe en -er : ils travaillèrent. -irent va avec les autres verbes (ils finirent).
    - aide « Un mot du Moyen Âge, et -èrent » :
      - Un mot nouveau ? Le document l’explique juste en dessous, comme un dictionnaire.
-     - Verbes en -er, avec ils : -èrent, accent grave (ils marchèrent).
+     - Verbes en -er, avec ils : -èrent (ils marchèrent). Les autres : -irent (ils finirent).
 3. énoncé : "La dîme\nUne part des récoltes, donnée à l’Église."
    - question : Quelle phrase est juste ?
    - lu : La dîme : une part des récoltes, donnée à l’Église.
@@ -187,20 +187,20 @@
 4. énoncé : "1163\nOn commence à bâtir Notre-Dame de Paris."
    - question : Quelle phrase est juste ?
    - lu : En mille cent soixante-trois, on commence à bâtir Notre-Dame de Paris.
-   - choix : Le chantier commença au XIIe siècle. · Le chantier commenca au XIIe siècle. · Le chantier commença au XIe siècle.
-   - réponse : Le chantier commença au XIIe siècle.
+   - choix : Le chantier commença au douzième siècle. · Le chantier commenca au douzième siècle. · Le chantier commença au onzième siècle.
+   - réponse : Le chantier commença au douzième siècle.
    - indice : D’abord : range l’année avec le rappel. Puis : devant a, le c garde-t-il le son « s » ?
-   - explication : 1163 est entre 1101 et 1200 : c’est le XIIe siècle. Le XIe siècle va de 1001 à 1100 : le siècle ne se lit pas dans les deux premiers chiffres. Devant a, le c prend une cédille pour garder le son « s » : il commença.
+   - explication : 1163 est entre 1101 et 1200 : c’est le XIIe siècle, le douzième. Le XIe siècle, le onzième, va de 1001 à 1100 : le siècle ne se lit pas dans les deux premiers chiffres. Devant a, le c prend une cédille pour garder le son « s » : il commença.
    - aide « Le siècle, et la cédille » :
-     - XIe siècle : de l’an 1001 à l’an 1100. XIIe siècle : de l’an 1101 à l’an 1200.
+     - XIe siècle (le onzième) : de l’an 1001 à l’an 1100. XIIe siècle (le douzième) : de l’an 1101 à l’an 1200.
      - Devant a, o, u, le c prend une cédille pour faire « s » : il lança, nous plaçons.
-5. énoncé : "D’abord : le seigneur donne une charte à la ville.\nEnsuite : les bourgeois construisent un marché couvert."
+5. énoncé : "D’abord : les habitants bâtissent un grand mur autour de la ville.\nEnsuite : ils construisent un marché couvert."
    - question : Quelle phrase est juste ?
-   - lu : D’abord, le seigneur donne une charte à la ville. Ensuite, les bourgeois construisent un marché couvert.
-   - choix : Après la charte, les bourgeois construisirent un marché. · Après la charte, les bourgeois construisèrent un marché. · Avant la charte, les bourgeois construisirent un marché.
-   - réponse : Après la charte, les bourgeois construisirent un marché.
+   - lu : D’abord, les habitants bâtissent un grand mur autour de la ville. Ensuite, ils construisent un marché couvert.
+   - choix : Après le mur, les habitants construisirent un marché. · Après le mur, les habitants construisèrent un marché. · Avant le mur, les habitants construisirent un marché.
+   - réponse : Après le mur, les habitants construisirent un marché.
    - indice : D’abord : quel fait vient en premier ? Puis : construire n’est pas un verbe en -er.
-   - explication : Le document dit « d’abord » la charte, « ensuite » le marché : le marché vient après. Construire n’est pas un verbe en -er : ils construisirent, comme ils écrivirent. -èrent va avec les verbes en -er.
+   - explication : Le document dit « d’abord » le mur, « ensuite » le marché : le marché vient après. Construire n’est pas un verbe en -er : ils construisirent, comme ils écrivirent. -èrent va avec les verbes en -er.
    - aide « Avant, après, et -irent » :
      - D’abord, ensuite, enfin : ces mots donnent l’ordre des faits.
      - Construire, écrire, conduire, avec ils : -irent (ils écrivirent).
@@ -224,25 +224,25 @@
    - aide « Ne… pas, et -a » :
      - Une phrase avec « ne… pas » dit ce qu’on ne peut pas faire : lis-la jusqu’au bout.
      - Verbes en -er au passé simple : je chantai, il chanta.
-8. énoncé : "Le vassal\nIl reçoit un fief de son seigneur et lui jure fidélité."
+8. énoncé : "Le vassal\nIl reçoit un fief, une terre, de son seigneur."
    - question : Quelle phrase est juste ?
-   - lu : Le vassal : il reçoit un fief de son seigneur et lui jure fidélité.
-   - choix : Le vassal reçut un fief de son seigneur. · Le vassal reçu un fief de son seigneur. · Le seigneur reçut un fief de son vassal.
+   - lu : Le vassal : il reçoit un fief, une terre, de son seigneur.
+   - choix : Le vassal reçut un fief de son seigneur. · Le vassal recevit un fief de son seigneur. · Le seigneur reçut un fief de son vassal.
    - réponse : Le vassal reçut un fief de son seigneur.
-   - indice : D’abord : qui reçoit le fief, dans le document ? Puis : au passé simple, avec il, quelle lettre à la fin ?
-   - explication : Le document dit que le vassal reçoit le fief, une terre, et que le seigneur le donne. Au passé simple, avec il : il reçut, avec un t. reçu, sans t, c’est le participe passé (il a reçu).
+   - indice : D’abord : qui reçoit le fief, dans le document ? Puis : recevoir fait son passé simple en -ut.
+   - explication : Le document dit que le vassal reçoit le fief, une terre, et que le seigneur le donne. Recevoir fait son passé simple en -ut : il reçut, comme il voulut. recevit n’existe pas.
    - aide « Qui reçoit ? et -ut » :
      - Qui donne, qui reçoit : cherche le sujet du verbe recevoir.
-     - Passé simple en -ut, avec il : il courut, il voulut, toujours avec un t.
+     - Recevoir, vouloir, courir au passé simple, avec il : -ut (il voulut, il courut).
 9. énoncé : "987\nHugues Capet devient roi des Francs."
    - question : Quelle phrase est juste ?
    - lu : En neuf cent quatre-vingt-sept, Hugues Capet devient roi des Francs.
-   - choix : Hugues Capet devint roi au Xe siècle. · Hugues Capet devenit roi au Xe siècle. · Hugues Capet devint roi au IXe siècle.
-   - réponse : Hugues Capet devint roi au Xe siècle.
+   - choix : Hugues Capet devint roi au dixième siècle. · Hugues Capet devenit roi au dixième siècle. · Hugues Capet devint roi au neuvième siècle.
+   - réponse : Hugues Capet devint roi au dixième siècle.
    - indice : D’abord : range l’année avec le rappel. Puis : devenir se conjugue comme venir.
-   - explication : 987 est entre 901 et 1000 : c’est le Xe siècle. Le IXe siècle va de 801 à 900. Devenir se conjugue comme venir : il vint, il devint.
+   - explication : 987 est entre 901 et 1000 : c’est le Xe siècle, le dixième. Le IXe siècle, le neuvième, va de 801 à 900. Devenir se conjugue comme venir : il vint, il devint.
    - aide « Le siècle, et venir » :
-     - IXe siècle : de l’an 801 à l’an 900. Xe siècle : de l’an 901 à l’an 1000.
+     - IXe siècle (le neuvième) : de l’an 801 à l’an 900. Xe siècle (le dixième) : de l’an 901 à l’an 1000.
      - Venir et ses frères au passé simple : il vint, il revint, il se souvint.
 10. énoncé : "Église romane : murs épais, petites fenêtres.\nCathédrale gothique : grands vitraux."
     - question : Quelle phrase est juste ?
@@ -280,7 +280,7 @@
 - compétences : c4.en.5e.langue.verbe · c4.en.5e.langue.groupe-nominal · c4.en.5e.comprendre.oral-ecrit · c4.hg.geographie.ressources · c4.hg.geographie.demographie-developpement · c4.hg.demarches.document · c4.hg.demarches.lexique
 - langue : en
 - consigne : Lis l’énoncé en anglais, puis choisis la phrase juste et bien écrite. Le rappel est affiché.
-- bravo : Bien assemblé !
+- bravo : Bien construit !
 - erreur : {explanation}
 
 1. énoncé : "Day 1, in the North Sea\nWe visited a wind farm."
@@ -333,16 +333,16 @@
    - aide « More … than, et l’eau » :
      - Comparer : more + nom + than (more friends than me).
      - a lot = beaucoup ; a little = un peu ; wheat = le blé ; beef = le bœuf
-6. énoncé : "Electricity in France\nNuclear: 7 out of 10. Wind and sun: 3 out of 10."
+6. énoncé : "Greenhill, an invented village: its electricity\nSun: 7 out of 10. Wind: 3 out of 10."
    - question : Quelle phrase est juste ?
-   - lu : Electricity in France. Nuclear, seven out of ten. Wind and sun, three out of ten.
-   - choix : Nuclear power is the biggest part. · Nuclear power is the bigest part. · Wind and sun are the biggest part.
-   - réponse : Nuclear power is the biggest part.
+   - lu : Greenhill, an invented village: its electricity. Sun, seven out of ten. Wind, three out of ten.
+   - choix : Solar power is the biggest part. · Solar power is the bigest part. · Wind power is the biggest part.
+   - réponse : Solar power is the biggest part.
    - indice : D’abord : quel nombre est le plus grand ? Puis : big, c’est consonne, voyelle, consonne.
-   - explication : 7 sur 10, c’est plus que 3 sur 10 : le nucléaire fait la plus grande part. big est court et finit par consonne, voyelle, consonne : on double le g, the biggest.
+   - explication : Greenhill est un village inventé pour l’exercice. 7 sur 10, c’est plus que 3 sur 10 : le soleil fait la plus grande part de son électricité. big est court et finit par consonne, voyelle, consonne : on double le g, the biggest.
    - aide « The biggest, et le document » :
      - Mot court en consonne + voyelle + consonne : on double (hot → the hottest).
-     - out of = sur ; nuclear power = le nucléaire ; wind and sun = le vent et le soleil
+     - out of = sur ; solar power = l’énergie solaire ; wind power = l’énergie du vent
 7. énoncé : "Rice needs a lot of water.\nFarmers bring water from the river."
    - question : Quelle phrase est juste ?
    - lu : Rice needs a lot of water. Farmers bring water from the river.

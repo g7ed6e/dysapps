@@ -585,6 +585,22 @@ const CAPTURES = [
     inventaire: { 'french-5e-conjugation': 6, 'history-5e-middle-ages': 4, 'maths-5e-proportionality': 2 },
     ...autres,
   })),
+  // La question d'une pièce (le socle posé, la tour à construire), aux réglages les plus forts sur téléphone : celle du
+  // comptoir (maths et anglais) et celle de la chronique (français et histoire), pour le référent dys.
+  ...[
+    ['comptoir', 0, { 'maths-5e-proportionality': 6, 'english-5e-vocabulary': 4 }],
+    ['chronique', 1, { 'french-5e-conjugation': 6, 'history-5e-middle-ages': 4 }],
+  ].map(([banque, recette, inventaire]) => ({
+    nom: `projets-question-${banque}-390x844-od32`,
+    vue: 'île',
+    famille: 'projets',
+    ile: 'maths-5e-signed-numbers',
+    lieu: `project/landmark-5e-1/${recette}`,
+    etages: { 'landmark-5e-1': 1 },
+    inventaire,
+    taille: { width: 390, height: 844 },
+    reglages: { font: 'opendyslexic', fontSize: 32 },
+  })),
   // L'entraide (GD-10, famille `entraide`), à retirer une fois le lot fusionné : chez Mousso, Bloquette et Grimoire, l'objet
   // posé à côté de sa commande, de jour et de nuit (toutes les petites constructions posées) ; puis la ligne de l'entraide
   // dans le panneau de l'île, l'étape « Apporter » chez Mousso (tablette, téléphone au grand texte), et la fiche de Coco

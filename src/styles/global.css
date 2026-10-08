@@ -5852,13 +5852,12 @@ details.island-fold-objectif {
 }
 /* Un grand projet (GD-10) : un rond par pièce, plein quand elle est posée, cerclé pour la prochaine. */
 .project-pieces {
-  list-style: none;
   display: flex;
   gap: 0.5rem;
-  padding: 0;
   margin: 0.2rem 0 0;
 }
 .project-piece {
+  display: block;
   width: 1.4rem;
   height: 1.4rem;
   border: var(--border-width) solid var(--ink);
@@ -5872,30 +5871,46 @@ details.island-fold-objectif {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
-/* Les deux recettes d'une pièce, côte à côte : deux blocs et leur nombre, une coche quand le stock les a. */
+/* Les deux recettes d'une pièce, côte à côte (l'une sous l'autre quand la place manque) : deux blocs et leur nombre ;
+   la carte choisie a son fond teinté et son cadre, une pastille cochée dans le coin quand le stock les a. */
 .project-recipes {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
   gap: 0.5rem;
   margin: 0 0 0.6rem;
+  padding: 0;
+  border: 0;
+  min-width: 0;
 }
 .project-recipe {
+  position: relative;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
   min-height: 56px;
-  padding: 0.4rem;
+  padding: 0.4rem 1.6rem;
   border: var(--border-width) solid color-mix(in srgb, var(--ink) 35%, var(--surface));
   border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--ink);
-  font: inherit;
   cursor: pointer;
 }
-.project-recipe.checked {
+.project-recipe:has(:checked) {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px var(--accent);
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+}
+.project-recipe:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.project-recipe-ok {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  display: inline-flex;
 }
 .project-ingredient {
   display: inline-flex;

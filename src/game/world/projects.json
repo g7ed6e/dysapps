@@ -104,7 +104,7 @@
         ],
         "names": {
           "blocland": "la galerie",
-          "archipeo": "la galerie"
+          "archipeo": "le haut de la tour"
         }
       },
       {
@@ -139,7 +139,7 @@
         ],
         "names": {
           "blocland": "la lanterne",
-          "archipeo": "la lanterne"
+          "archipeo": "la terrasse"
         }
       },
       {
@@ -174,7 +174,7 @@
         ],
         "names": {
           "blocland": "le toit",
-          "archipeo": "le toit"
+          "archipeo": "le feu"
         }
       }
     ]

@@ -231,17 +231,17 @@
     },
     {
       "key": "project-5e-counter-9",
-      "prompt": "Bananas: 6 for £3.\nYou want 2 bananas.",
+      "prompt": "Bananas: 6 for £12.\nYou want 2 bananas.",
       "question": "Quelle phrase est juste ?",
-      "spoken": "Bananas, six for three pounds. You want two bananas.",
+      "spoken": "Bananas, six for twelve pounds. You want two bananas.",
       "choices": [
-        "I’d like 2 bananas for £1, please.",
-        "I like 2 bananas for £1, please.",
-        "I’d like 2 bananas for £2, please."
+        "I’d like 2 bananas for £4, please.",
+        "I like 2 bananas for £4, please.",
+        "I’d like 2 bananas for £10, please."
       ],
-      "answer": "I’d like 2 bananas for £1, please.",
+      "answer": "I’d like 2 bananas for £4, please.",
       "hint": "D’abord : 2 bananes, c’est trois fois moins que 6. Puis : comment demander poliment ?",
-      "explanation": "2 bananes, c’est trois fois moins que 6 bananes : 3 livres partagées en 3, 1 livre. Pour demander poliment, on dit I’d like, je voudrais ; I like veut dire j’aime. 2, c’est 6 ÷ 3 : c’est le prix qu’on partage, pas le nombre de bananes.",
+      "explanation": "2 bananes, c’est trois fois moins que 6 bananes : 12 livres partagées en 3, 4 livres. Pour demander poliment, on dit I’d like, je voudrais ; I like veut dire j’aime. 10, c’est 12 − 2 : on a enlevé au lieu de partager.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -303,7 +303,7 @@
     }
   ],
   "feedback": {
-    "correct": "Bien assemblé !",
+    "correct": "Bien construit !",
     "wrong": "{explanation}"
   }
 }

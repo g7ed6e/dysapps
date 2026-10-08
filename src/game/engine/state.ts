@@ -49,11 +49,16 @@ export interface GameState {
   /** Le monde : les parties posées, les liaisons construites, le lieu où se tient le personnage. */
   world: World;
   /**
-   * Le tirage des questions des blocs assemblés (GD-2), par bloc ou banque de projets (GD-10) : l'ordre propre à l'élève, les dernières posées, les
-   * manquées. Absent tant qu'aucune question n'a reçu de réponse.
+   * Le tirage des questions des blocs assemblés (GD-2), par bloc ou banque de projets (GD-10) : l'ordre propre à
+   * l'élève, les dernières posées, les manquées. Absent tant qu'aucune question n'a reçu de réponse.
    */
-  assemblyDraw?: Partial<Record<string, TirageAssemblage>>;
+  assemblyDraw?: Partial<Record<DrawKey, TirageAssemblage>>;
 }
+
+/** Une banque de questions propre aux grands projets (GD-10, docs/contenu/projets.md). */
+type ProjectBank = `project-${string}`;
+/** Ce qui a son tirage de questions : un bloc assemblé, ou une banque de projets. */
+export type DrawKey = BlockId | ProjectBank;
 
 export interface World {
   /** Cellules déjà posées de chaque plan (clés « x,y,z » relatives à l'île). */

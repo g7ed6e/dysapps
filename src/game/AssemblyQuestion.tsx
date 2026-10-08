@@ -22,7 +22,7 @@ import { useTextes } from '../universes';
 import { blockName, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { SessionPause } from './SessionPause';
-import { tirageDe, type GameState, type ReponseDonnee } from './engine';
+import { tirageDe, type DrawKey, type GameState, type ReponseDonnee } from './engine';
 import { loadAssemblage } from './exercises';
 import { autoReadText } from './exercises/reading';
 import { SCREEN_TYPES, retryAllowed, type ScreenAnswer } from './exercises/registry';
@@ -123,10 +123,11 @@ export function MixedQuestion({
   retourText,
   aLieu,
   againText,
+  bravo,
   onAutre,
 }: {
   def: AssemblageDef;
-  drawKey: string;
+  drawKey: DrawKey;
   /** Le stock permet-il de faire la chose ? Lu une fois, à l'ouverture. */
   canDo: (stock: GameState['stock']) => boolean;
   /** Note la réponse finale et, juste, fait la chose. */
@@ -138,6 +139,8 @@ export function MixedQuestion({
   aLieu: string;
   /** Le bouton pour en refaire une, quand c'est possible. */
   againText?: string;
+  /** Le cri d'une bonne réponse, s'il n'est pas celui des questions (`bravo` du fichier). */
+  bravo?: string;
   onAutre: () => void;
 }) {
   const { state, pauseAfterNext, continueSession } = useBlocland();
@@ -262,7 +265,7 @@ export function MixedQuestion({
         <div ref={resultatRef} className={`panel assemblage-resultat result-${fin.juste ? 'bien' : 'rate'}`} role="region" aria-label="Résultat">
           {/* Un seul bouton Écouter : il lit le cri, puis le bloc assemblé ou l'explication. */}
           <Feedback
-            shout={fin.juste ? def.feedback.correct : 'Pas tout à fait'}
+            shout={fin.juste ? (bravo ?? def.feedback.correct) : 'Pas tout à fait'}
             message={fin.texte}
             tone={fin.juste ? 'bien' : 'rate'}
             compact

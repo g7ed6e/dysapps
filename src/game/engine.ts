@@ -12,10 +12,10 @@ import type { ExerciseDef, ItemResult } from './exercises/types';
 import { starsFor } from '../core/stars';
 import { archipelagoOf, buildBridge as buildBridgePure, type BuildBridgeResult, getArchipelago, isBiomeUnlocked, reachableIslands, voyageId } from './world/archipelago';
 import { beatenGuardians, kitReady, VEHICLE_STAGES, type VehicleStage } from './world/vehicle';
-import type { GameState, SpacedItem } from './engine/state';
+import type { DrawKey, GameState, SpacedItem } from './engine/state';
 import { todayISO } from './engine/dates';
 import { adapt, CHEST_BLOCKS, dueItems, recordSpaced, scoreOf, type StreakUpdate, updateStreak } from './engine/learning';
-export { EMPTY_STATE, type ExerciseProgress, type GameState, type LogEntry, type SpacedItem, type Streak, type TypeStats, type World } from './engine/state';
+export { EMPTY_STATE, type DrawKey, type ExerciseProgress, type GameState, type LogEntry, type SpacedItem, type Streak, type TypeStats, type World } from './engine/state';
 export { addDays, daysBetween, todayISO } from './engine/dates';
 export { sanitizeState } from './engine/sanitize';
 export { adapt, CHEST_BLOCKS, CHEST_EVERY, dueItems, GRADUATE_AT, INTERVALS, levelFor, PROMOTE_AT_ONCE, recordSpaced, scoreOf, starsFor, type StreakUpdate, updateStreak } from './engine/learning';
@@ -92,7 +92,7 @@ export function assembleBlock(state: GameState, bloc: BlockId): AssembleResult {
 }
 
 /** Le tirage des questions d'un bloc assemblé (ou d'une banque de projets) pour cet élève, ou un tirage neuf avec `graine`. */
-export function tirageDe(state: GameState, bloc: string, graine: string): TirageAssemblage {
+export function tirageDe(state: GameState, bloc: DrawKey, graine: string): TirageAssemblage {
   return state.assemblyDraw?.[bloc] ?? tirageNeuf(graine);
 }
 
