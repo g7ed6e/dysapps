@@ -32,10 +32,10 @@ Low-poly game concept art of an adult anthropomorphic mole, a miner, standing up
 
 ### Le Golem de roche, Gardien (Mine des lettres)
 
-Image : `6e-mine-gardien-golem-de-roche.webp`
+Image : `6e-mine-gardien-golem-de-roche.webp` · graine 42 (seconde passe)
 
 ```text
-Low-poly game concept art of a rock golem guardian statue, standing upright, massive blocky body, short thick legs, both arms hanging straight down along the body, small head sunk between broad shoulders. Seen from its front-left three-quarter. A large faceted gem shape set in the middle of the chest, carved in the same stone, unlit. Calm, dignified expression, neutral closed mouth, shallow hollow eye sockets in soft shadow, no eyeballs, no glowing eyes. Carved entirely in stone, no metal, no glass. Few large flat facets, one flat matte color per facet, smooth untextured surfaces, no cracks. Uniform warm neutral grey stone #8E8C84. One or two flat dull sage-green lichen facets #7A8A6A on the shoulders. Low regular octagonal slab pedestal. One single object, whole statue in frame with margin, no scenery. Plain light neutral grey background, soft diffuse light from top left, no strong cast shadow. Mature, serious, not cute, no text.
+Low-poly game concept art of a rock golem guardian statue standing upright, arms along the body, a broad heavy body made of a few big stone blocks; its small head sits sunk deep between the massive shoulders, no neck. A large faceted gem carved in the middle of its chest, clearly visible, unlit. Shallow hollow eye sockets in soft shadow, calm closed mouth. Seen from its front-left three-quarter. Carved entirely in stone. Few large flat facets, one flat matte color per facet, smooth untextured surfaces. Uniform warm neutral grey stone #8E8C84. One or two flat dull sage-green lichen facets #7A8A6A. Low regular octagonal slab pedestal. One single solid object, whole statue in frame with margin. Plain light neutral grey background, soft diffuse light from top left. Mature, serious, calm, no text.
 ```
 
 ### Rouxel, créature (Carrière des mots)
@@ -80,10 +80,10 @@ Low-poly game concept art of an adult anthropomorphic tortoise, a bookbinder and
 
 ### La Chouette de verre, Gardien (Tour du lecteur)
 
-Image : `6e-tour-gardien-chouette-de-verre.webp`
+Image : `6e-tour-gardien-chouette-de-verre.webp` · graine 7 (seconde passe)
 
 ```text
-Low-poly game concept art of an owl guardian statue, standing upright and tall, wings folded close, two short ear tufts, compact round head. Seen from its front-left three-quarter. A stained-glass window pattern of a few large flat panes carved on the chest, in the same stone, unlit. Calm, dignified expression, neutral closed mouth, shallow hollow eye sockets in soft shadow, no eyeballs, no glowing eyes. Carved entirely in stone, no metal, no glass. Few large flat facets, one flat matte color per facet, smooth untextured surfaces, no cracks. Uniform warm neutral grey stone #8E8C84. One or two flat dull sage-green lichen facets #7A8A6A on the base of the wings. Low regular octagonal slab pedestal. One single object, whole statue in frame with margin, no scenery. Plain light neutral grey background, soft diffuse light from top left, no strong cast shadow. Mature, serious, not cute, no text.
+Low-poly game concept art of a barn owl guardian statue standing upright: a smooth round head with no ear tufts and a heart-shaped facial disc, a slender tall body, wings folded along the body. On its breast, a large stained-glass window pattern carved in the stone with a few clear lead lines, unlit. Shallow hollow eye sockets in soft shadow. Seen from its front-left three-quarter. Carved entirely in stone. Few large flat facets, one flat matte color per facet, smooth untextured surfaces. Uniform warm neutral grey stone #8E8C84. One or two flat dull sage-green lichen facets #7A8A6A. Low regular octagonal slab pedestal. One single solid object, whole statue in frame with margin. Plain light neutral grey background, soft diffuse light from top left. Mature, serious, calm, no text.
 ```
 
 ### Coco, créature (Plaine des nombres)
@@ -104,10 +104,10 @@ Low-poly game concept art of a cockchafer beetle guardian statue, standing on it
 
 ### Nénu, créature (Rivière des fractions)
 
-Image : `6e-riviere-creature-nenu.webp`
+Image : `6e-riviere-creature-nenu.webp` · graine 7 (seconde passe)
 
 ```text
-Low-poly game concept art of an adult anthropomorphic frog, a river ferrywoman, standing upright on its own feet, full body, seen from its front-left three-quarter. Skin water green #6F8F3E, wide flat head. Short open oilskin coat in sand color #DAA66A with short sleeves, green legs and chest visible. Holds a long wooden punting pole #8A6236 upright beside her. Head about one fifth of total height. Small dark eyes without whites, no smile, neutral closed mouth. Few large flat facets, one flat matte color per facet, smooth untextured surfaces. No pedestal, no ground, no scenery. One single character, whole body in frame with margin. Plain light neutral grey background, soft diffuse light from top left, no strong cast shadow. Adult, sober, mature, not cute, not chibi, no text.
+Low-poly game concept art of an anthropomorphic frog ferrywoman standing upright, full body, seen from the front-left three-quarter. Wide flat head, small dark deep-set eyes with no whites, calm closed mouth, water-green skin #6F8F3E. Wears a closed sand-colored oilskin coat #DAA66A buttoned up. Holds a long wooden punting pole #8A6236 upright beside her. Few large flat facets, one flat matte color per facet, smooth untextured surfaces. One single character, whole body in frame with margin, standing on nothing. Plain light neutral grey background, soft diffuse light from top left. Adult, sober, mature, no text.
 ```
 
 ### Le Brochet d'argent, Gardien (Rivière des fractions)
@@ -152,10 +152,10 @@ Low-poly game concept art of a stone lion guardian statue, lying down with its b
 
 ### Tick, créature (Horloge des verbes)
 
-Image : `6e-horloge-creature-tick.webp`
+Image : `6e-horloge-creature-tick.webp` · graine 42 (seconde passe)
 
 ```text
-Low-poly game concept art of an adult anthropomorphic hedgehog, a clockmaker, standing upright on its own feet, full body, seen from its front-left three-quarter. Grey-brown #6E5A48 spines fanned on the back and head in a few large flat plates, cream face and belly, short legs. Plain leather vest #6E4A2C. Holds a small brass clock #C9A24A dial forward, without numbers, and a brass magnifying loupe. Head about one fifth of total height. Small dark eyes without whites, no smile, neutral closed mouth. Few large flat facets, one flat matte color per facet, smooth untextured surfaces. No pedestal, no ground, no scenery. One single character, whole body in frame with margin. Plain light neutral grey background, soft diffuse light from top left, no strong cast shadow. Adult, sober, mature, not cute, not chibi, no text.
+Low-poly game concept art of an old hedgehog clockmaker character with adult proportions standing upright, full body, seen from the front-left three-quarter. A long narrow snout, small dark eyes, calm closed mouth, a serious craftsman face. Grey-brown #6E5A48 spines laid flat along the back and head as a few broad thick plates, no thin spikes. Cream face and belly. Plain leather vest #6E4A2C over a linen shirt. Holds a small brass clock #C9A24A against his chest with both hands, a brass loupe hanging on a short cord at his belt. Few large flat facets, one flat matte color per facet, smooth untextured surfaces. One single character, whole body in frame with margin, standing on nothing. Plain light neutral grey background, soft diffuse light from top left. Adult, sober, mature, no text.
 ```
 
 ### Le Coucou de bronze, Gardien (Horloge des verbes)
@@ -628,10 +628,10 @@ Low-poly game concept art of an adult anthropomorphic squirrel, a cook, standing
 
 ### Le Soleil de cuivre, Gardien (Jardin des heures)
 
-Image : `4e-jardin-gardien-soleil-de-cuivre.webp` · déduit
+Image : `4e-jardin-gardien-soleil-de-cuivre.webp` · déduit · graine 42 (seconde passe)
 
 ```text
-Low-poly game concept art of a sun disc guardian statue standing upright in a stone cradle: a flat round disc with exactly eight straight pointed rays, all equal. Seen from its front-left three-quarter. A thin carved line along each ray, from the center almost to the tip, unlit. No gear, no ring at the edge. No face, no eyes. Carved entirely in stone, no metal, no glass. Few large flat facets, one flat matte color per facet, smooth untextured surfaces, no cracks. Uniform warm neutral grey stone #8E8C84. One or two flat dull sage-green lichen facets #7A8A6A on the center of the disc. Low regular octagonal slab pedestal. One single object, whole statue in frame with margin, no scenery. Plain light neutral grey background, soft diffuse light from top left, no strong cast shadow. Mature, serious, not cute, no text.
+Low-poly game concept art of a sun guardian statue: a flat thin round stone disc standing upright on edge, with eight equal short broad flat rays in the same plane as the disc, like a sunburst medallion, held upright in a low stone cradle on the pedestal. A calm smooth face carved in low relief in the middle of the disc. Seen from its front-left three-quarter. Carved entirely in stone. Few large flat facets, one flat matte color per facet, smooth untextured surfaces. Uniform warm neutral grey stone #8E8C84. One or two flat dull sage-green lichen facets #7A8A6A. Low regular octagonal slab pedestal. One single solid object, whole statue in frame with margin. Plain light neutral grey background, soft diffuse light from top left. Mature, serious, calm, no text.
 ```
 
 ## Les Îles du Ciel (3e)
@@ -662,10 +662,10 @@ Low-poly game concept art of an anthropomorphic owl astronomer standing upright,
 
 ### Le Comptable des étoiles, Gardien (Observatoire des données)
 
-Image : `3e-donnees-gardien-comptable-des-etoiles.webp`
+Image : `3e-donnees-gardien-comptable-des-etoiles.webp` · graine 42 (seconde passe)
 
 ```text
-Low-poly game concept art of a star accountant guardian statue: a standing figure in a long robe and a tall pointed hat, holding a large open ledger in front, no writing. Seen from its front-left three-quarter. A few small stars engraved on the robe, unlit. Calm, dignified expression, neutral closed mouth, shallow hollow eye sockets in soft shadow, no eyeballs, no glowing eyes. Carved entirely in stone, no metal, no glass. Few large flat facets, one flat matte color per facet, smooth untextured surfaces, no cracks. Uniform warm neutral grey stone #8E8C84. One or two flat dull sage-green lichen facets #7A8A6A on the hem of the robe. Low regular octagonal slab pedestal. One single object, whole statue in frame with margin, no scenery. Plain light neutral grey background, soft diffuse light from top left, no strong cast shadow. Mature, serious, not cute, no text.
+Low-poly game concept art of a star-keeper guardian statue: a standing figure in a long plain robe and a tall pointed hat, both hands joined and empty in front of the chest, nothing held. Large five-pointed stars carved in relief all over the robe and the pointed hat. A calm smooth face, shallow hollow eye sockets in soft shadow. Seen from its front-left three-quarter. Carved entirely in stone. Few large flat facets, one flat matte color per facet, smooth untextured surfaces. Uniform warm neutral grey stone #8E8C84. One or two flat dull sage-green lichen facets #7A8A6A. Low regular octagonal slab pedestal. One single solid object, whole statue in frame with margin. Plain light neutral grey background, soft diffuse light from top left. Mature, serious, calm, no text.
 ```
 
 ### Fi, créature (Phare des fonctions)
@@ -806,10 +806,10 @@ Low-poly game concept art of an adult anthropomorphic caterpillar, a weaver, sta
 
 ### L'Abeille de topaze, Gardien (Ruche des réseaux)
 
-Image : `3e-ruche-gardien-abeille-de-topaze.webp` · déduit · graine 42 (seconde passe)
+Image : `3e-ruche-gardien-abeille-de-topaze.webp` · déduit · graine 2026 (seconde passe)
 
 ```text
-Low-poly game concept art of a bee guardian statue sitting heavily on a large flat stone flower, its round striped body resting directly on the flower heart, legs folded under the body, wings spread flat and thick, each with two carved hexagonal cells. Shallow hollow eye sockets in soft shadow, calm closed mouth. Seen from its front-left three-quarter. Carved entirely in stone. Few large flat facets, one flat matte color per facet, smooth untextured surfaces. Uniform warm neutral grey stone #8E8C84. One or two flat dull sage-green lichen facets #7A8A6A. Low regular octagonal slab pedestal. One single solid object, whole statue in frame with margin. Plain light neutral grey background, soft diffuse light from top left. Mature, serious, calm, no text.
+Low-poly game concept art of a solemn bee guardian statue standing upright on four sturdy legs on a low regular octagonal slab pedestal, long elongated body with a pointed striped abdomen, a narrow head with small shallow hollow eye sockets, calm and dignified like an old temple statue. Two thick flat wings folded along its back, each with two carved hexagonal cells. Seen from its front-left three-quarter. Carved entirely in stone. Few large flat facets, one flat matte color per facet, smooth untextured surfaces. Uniform warm neutral grey stone #8E8C84. One or two flat dull sage-green lichen facets #7A8A6A. Low regular octagonal slab pedestal. One single solid object, whole statue in frame with margin. Plain light neutral grey background, soft diffuse light from top left. Mature, serious, calm, no text.
 ```
 
 ### Timbre, créature (Refuge des carnets)
