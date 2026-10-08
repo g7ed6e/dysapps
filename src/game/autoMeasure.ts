@@ -4,9 +4,10 @@
 import { BIOMES, type BiomeId } from './biomes';
 import { EMPTY_STATE, type GameState, type World } from './engine/state';
 import { sanitizeState } from './engine/sanitize';
+import type { toutConstruitAvecLesCommandes } from './world/budget';
 
 /** La progression d'une partie de mesure, telle que world/budget.ts la prépare (les étoiles en nombre). */
-type Progression = Record<string, { stars: number; attempts: number; best: number }>;
+type Progression = ReturnType<typeof toutConstruitAvecLesCommandes>['progress'];
 
 /** Une ligne du tableau : une étape, ce que dessine sa dernière image, et ses images. */
 export interface LigneDeMesure {
@@ -41,8 +42,8 @@ export function partieDeLaPose(progress: Progression, world: World, ile: BiomeId
   return partieDeMesure(Object.fromEntries(Object.entries(progress).filter(([k]) => garde(k))), world, ile);
 }
 
-/** Le tableau à copier, en Markdown : l'appareil, puis une ligne par étape. */
-export function tableauDesMesures(lignes: readonly LigneDeMesure[], appareil: string): string {
+/** Le tableau à copier, en Markdown : l'appareil, une ligne par étape, puis ce qui n'a pas pu se mesurer (`notes`). */
+export function tableauDesMesures(lignes: readonly LigneDeMesure[], appareil: string, notes: readonly string[] = []): string {
   const nombre = (n: number) => n.toLocaleString('fr-FR');
   return [
     `Mesure automatique · ${appareil}`,
@@ -50,5 +51,6 @@ export function tableauDesMesures(lignes: readonly LigneDeMesure[], appareil: st
     '| Étape | Appels | Triangles | Images/s | Plus longue image (ms) |',
     '| --- | ---: | ---: | ---: | ---: |',
     ...lignes.map((l) => `| ${l.etape} | ${nombre(l.appels)} | ${nombre(l.triangles)} | ${l.ips} | ${l.pire} |`),
+    ...(notes.length ? ['', ...notes] : []),
   ].join('\n');
 }
