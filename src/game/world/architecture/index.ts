@@ -13,29 +13,39 @@
 // - un fantôme reste un cube Brume : seul un bloc posé devient pièce ;
 // - la matière reste lisible par famille : la table « bloc vers matière » du kit de l'archipel (./kits/) ;
 // - un bloc que le kit ne peint ni ne dessine reste un bloc taillé : un kit vide ne remplace rien ;
-// - le verre et les lanternes restent ce qu'ils sont (./construction.ts les allume) ; les monuments gardent leurs
-//   blocs taillés (des repères au large, seuls sur leur îlot) ; la cour d'une île (barrières, jardinières, quai) aussi :
-//   seuls les murs et le toit d'un bâtiment prennent le kit (world/construction.ts, `batimentsDe`) ; Blocland n'a pas
-//   de kit ;
+// - le verre et les lanternes restent ce qu'ils sont (./construction.ts les allume) ; Blocland n'a pas de kit ;
+// - la table commune « matière → famille » (./families.ts, 8 octobre 2026) : les murs et le toit d'un bâtiment
+//   (world/construction.ts, `batimentsDe`), sa cour (`cours`, la troisième étape de son plan), les monuments (le
+//   directeur artistique révise sa décision du 30 septembre) et les petites constructions des commandes et des quêtes
+//   prennent le kit ; chacun se lit sur son propre plan (la cour n'allonge pas un mur, un monument ne touche pas une
+//   maison), et une barrière ne se lit que sur les barrières (ses lisses vont d'un poteau à l'autre) ; les liaisons
+//   entre les lieux (GD-9) attendent leur pull request ;
 // - les lieux du village (l'école, la salle des trophées, le lieu où l'on assemble : au milieu des maisons, décision du
 //   30 septembre 2026) prennent le kit quand il les nomme (`lieux`, au 6e) : leur plan se lit sur leurs blocs, la
-//   famille de chaque bloc sur sa place dans leur modèle (./places.ts) ; ailleurs, ils gardent leur dessin.
+//   famille de chaque bloc sur sa place dans leur modèle (./places.ts) ; ailleurs, ils gardent leur dessin ;
+// - le bois d'un monument ou d'une petite construction est bardé dans sa teinte de bois, jamais en colombage crème : ce
+//   ne sont pas des maisons, et le colombage y faisait un damier de crème, de matière et de pierre (retouches du
+//   directeur artistique, 8 octobre 2026) ;
+// - un mur plein ou bardé n'a de soubassement qu'à partir de trois rangées (`rangees`, lu sur la colonne du bloc).
 import type { VoxelCube } from '../cube';
 import type { ArchipelagoId } from '../archipelagos';
 import type { TextureKind } from '../pixels';
 import { pieceDe, type IdDePiece, type Rotation } from './choices';
 import { KITS, kitRempli, type CaseDuLieu, type Famille, type Kit } from './kits';
 import { lieuxDuKit } from './places';
+import { getMonument } from '../monuments';
 import { peintureDuMur, type PeintureDuMur } from './paint';
 import { facettesPosees, tournerCouvre, type DessinDePiece, type Facette } from './rooms';
 import { SIDES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './neighborhood';
 
 export { assemblerLesPieces } from './assembly';
 export { pieceDe, FORMES, type Forme, type IdDePiece } from './choices';
-export { COLOMBAGE, decharge, MOTIF, MOTIF_GLSL, peintureDuMur, ROLES_PEINTS, sensDeLaDecharge } from './paint';
+export { CADRAN, CHAPERON_DE_LA_PIERRE, COLOMBAGE, decharge, MOTIF, MOTIF_FIN, MOTIF_GLSL, motifDeLaRangee, motifDesRangees, peintureDuMur, pointsDuCadran, RANGEES, rangeesReunies, RANGEES_DU_SOUBASSEMENT, ROLES_PEINTS, sensDeLaDecharge } from './paint';
 export { boiteDansLaCase, type DessinDePiece, type Role } from './rooms';
 export { indexDuPlan, voisinageDe, type Voisinage } from './neighborhood';
 export { KITS, kitVide, type CaseDuLieu, type Kit } from './kits';
+export { CUBE_EXCEPTIONS, FAMILIES_TO_CONFIRM, familyOf, MATERIAL_FAMILIES, materialsOf } from './families';
+export { bacDePierre, barriere, marche, PIECES_BASSES } from './lowPieces';
 export { estUnLieuDuVillage } from './places';
 
 /** Une pièce dessinée, posée : le bloc qu'elle remplace (sa couleur, son île, son lieu), sa pièce, et ses facettes dans le monde. */
@@ -75,6 +85,15 @@ export interface Architecture {
 }
 
 const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
+
+/** Les rangées du mur à la colonne d'un bloc : les murs empilés d'un seul tenant dans son plan, lui compris. */
+function rangeesDeLaColonne(c: VoxelCube, index: IndexDuPlan): number {
+  let n = 1;
+  for (let z = c.z - 1; index.get(cle(c.x, c.y, z)) === 'mur'; z--) n++;
+  for (let z = c.z + 1; index.get(cle(c.x, c.y, z)) === 'mur'; z++) n++;
+  return n;
+}
+
 /** Ce qui s'allume ou éclaire : jamais remplacé . */
 const LUMIERES = new Set(['lanterne', 'verre']);
 
@@ -89,6 +108,11 @@ export interface OptionsDeLArchitecture {
    * monde (le toit d'une maison dont on pose les murs). Sans eux, tout bloc du plan, lu sur les cubes du monde.
    */
   batiments?: ReadonlyMap<string, string>;
+  /**
+   * Les cours des îles (la troisième étape de leur plan, clé `x,y,z` → texture), posées ou non, lues sur leur propre plan
+   * (la cour n'allonge pas un mur). Sans elles, la cour garde ses blocs quand `batiments` est donné.
+   */
+  cours?: ReadonlyMap<string, string>;
   /** Un bloc au pied est-il sur le vide (l'eau, le large) ? Sans cette fonction, jamais (pas de pilotis). */
   surLeVide?: (x: number, y: number, z: number) => boolean;
   /**
@@ -98,6 +122,22 @@ export interface OptionsDeLArchitecture {
   caseDuLieu?: (c: VoxelCube) => CaseDuLieu | null;
   /** Les toitures à part (./neighborhood.ts, `OptionsDuVoisinage.toitures`). */
   toitures?: ReadonlyMap<string, string>;
+}
+
+/** Un monument (son plan sur son îlot), et non une liaison entre deux lieux (GD-9), qui a le même genre de lieu. */
+function estUnMonument(place: string): boolean {
+  return place.startsWith('monument:') && getMonument(place.slice('monument:'.length)) !== undefined;
+}
+
+/**
+ * Le plan à part d'un bloc, lu sur lui-même : un monument, ou les petites constructions d'une île (`null` : le plan des
+ * bâtiments, ou leur cour).
+ */
+function groupeDe(c: VoxelCube): string | null {
+  if (c.sol || c.decor) return null;
+  if (c.place && estUnMonument(c.place)) return c.place;
+  if (c.petiteConstruction) return `petite:${c.tag ?? ''}`;
+  return null;
 }
 
 /** L'index du plan de chaque carte des bâtiments (world/construction.ts, `batimentsDe`, la garde par archipel). */
@@ -129,7 +169,6 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
   // Le plan entier, fantômes compris ; les bâtiments entiers quand ils sont donnés (la cour n'allonge pas un mur, et un
   // mur ne change pas quand l'étape du toit arrive dans le monde).
   const batiments = options.batiments;
-  const dansLesCases = (c: VoxelCube) => !batiments || batiments.has(cle(c.x, c.y, c.z));
   const index = batiments ? indexDesBatiments(batiments) : indexDuPlan(cubes);
   // Les lieux du village que le kit reprend : leur plan à eux, lu sur leurs blocs (ils n'ont ni chantier ni fantôme).
   const lieux = kit.lieux && options.caseDuLieu ? lieuxDuKit(kit, cubes, options.caseDuLieu) : null;
@@ -137,38 +176,92 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     out.couverts = lieux.couverts;
     out.matieres = lieux.matieres;
   }
-  const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation; sansDecharge?: boolean }[] = [];
+  // Les autres plans, chacun lu sur lui-même : la cour de chaque île, chaque monument, les petites constructions de
+  // chaque île ; et, dans chacun, les barrières seules (une barrière ne se lit que sur les barrières).
+  const cours = batiments ? options.cours : undefined;
+  const indexDesCours = cours ? indexDesBatiments(cours) : null;
+  const autres = new Map<string, VoxelCube[]>();
   for (const c of cubes) {
-    if (c.place) {
+    const g = groupeDe(c);
+    if (!g) continue;
+    const l = autres.get(g);
+    if (l) l.push(c);
+    else autres.set(g, [c]);
+  }
+  const indexDesAutres = new Map<string, IndexDuPlan>();
+  const indexDe = (g: string): IndexDuPlan => {
+    let i = indexDesAutres.get(g);
+    if (!i) {
+      i = indexDuPlan(autres.get(g) ?? []);
+      indexDesAutres.set(g, i);
+    }
+    return i;
+  };
+  /** Les barrières d'un plan (une barrière ne se lit que sur les barrières : ses lisses vont d'un poteau à l'autre). */
+  const barrieresDe = new Map<string, IndexDuPlan>();
+  const barrieres = (groupe: string, textures: () => Iterable<readonly [string, string | undefined]>): IndexDuPlan => {
+    let i = barrieresDe.get(groupe);
+    if (!i) {
+      i = new Map();
+      for (const [k, t] of textures()) if (t === 'barriere') i.set(k, 'mur');
+      barrieresDe.set(groupe, i);
+    }
+    return i;
+  };
+  const texturesDe = (l: readonly VoxelCube[]) => l.filter(estDuPlan).map((c) => [cle(c.x, c.y, c.z), c.texture] as const);
+  /** Le plan où se lit un bloc (son groupe, et l'index de ce groupe), ou `null` s'il ne prend pas le kit. */
+  const planDe = (c: VoxelCube): { groupe: string; index: IndexDuPlan } | null => {
+    const k = cle(c.x, c.y, c.z);
+    const g = groupeDe(c);
+    const plan: { groupe: string; index: IndexDuPlan; textures: () => Iterable<readonly [string, string | undefined]> } | null = g
+      ? { groupe: g, index: indexDe(g), textures: () => texturesDe(autres.get(g) ?? []) }
+      : !batiments
+        ? { groupe: '', index, textures: () => texturesDe(cubes) }
+        : batiments.has(k)
+          ? { groupe: 'batiment', index, textures: () => batiments }
+          : cours?.has(k) && indexDesCours
+            ? { groupe: 'cour', index: indexDesCours, textures: () => cours }
+            : null;
+    if (!plan) return null;
+    return c.texture === 'barriere' ? { groupe: plan.groupe, index: barrieres(plan.groupe, plan.textures) } : plan;
+  };
+  const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation; sansDecharge?: boolean; groupe: string; rangees: number }[] = [];
+  for (const c of cubes) {
+    if (c.place && !estUnMonument(c.place)) {
       const bloc = lieux && lieux.blocs.get(cle(c.x, c.y, c.z));
       if (!lieux || !bloc || options.exclure?.(c)) continue;
       const v = voisinageDe(c, bloc.classe === 'toit' ? lieux.indexDesToits : lieux.index, { surLeVide: options.surLeVide, classe: bloc.classe });
       if (!v) continue;
-      choisis.push({ c, famille: bloc.famille, v, ...pieceDe(v), sansDecharge: bloc.sansDecharge });
+      choisis.push({ c, famille: bloc.famille, v, ...pieceDe(v), sansDecharge: bloc.sansDecharge, groupe: 'lieu', rangees: rangeesDeLaColonne(c, lieux.index) });
       continue;
     }
     if (c.ghost || !estDuPlan(c) || LUMIERES.has(c.texture ?? '') || options.exclure?.(c)) continue;
     if (!Number.isInteger(c.x) || !Number.isInteger(c.y) || !Number.isInteger(c.z)) continue;
-    if (!dansLesCases(c)) continue;
     const famille = kit.matieres[c.texture as TextureKind];
     if (!famille) continue;
-    const v = voisinageDe(c, index, { surLeVide: options.surLeVide, toitures: options.toitures });
+    const plan = planDe(c);
+    if (!plan) continue;
+    const v = voisinageDe(c, plan.index, { surLeVide: options.surLeVide, toitures: plan.groupe === 'batiment' || plan.groupe === '' ? options.toitures : undefined });
     if (!v) continue;
     const { piece, rotation } = pieceDe(v);
-    choisis.push({ c, famille, v, piece, rotation });
+    choisis.push({ c, famille, v, piece, rotation, groupe: plan.groupe, rangees: rangeesDeLaColonne(c, plan.index) });
   }
-  // Le dehors d'un bâtiment : du côté opposé au centre de ses murs (ceux de son île, ou de son lieu), vu du dessus.
-  const batimentDe = (c: VoxelCube) => `${c.tag ?? ''}|${c.place ?? ''}`;
+  // Le dehors d'un bâtiment : du côté opposé au centre de ses murs (ceux de son île, ou de son lieu, ou de son plan), vu
+  // du dessus.
+  const batimentDe = (c: VoxelCube, groupe: string) => `${c.tag ?? ''}|${c.place ?? ''}|${groupe}`;
   const centres = new Map<string, { x: number; y: number; n: number }>();
-  for (const { c, v } of choisis) {
+  for (const { c, v, groupe } of choisis) {
     if (v.classe !== 'mur') continue;
-    const k = batimentDe(c);
+    const k = batimentDe(c, groupe);
     const m = centres.get(k) ?? { x: 0, y: 0, n: 0 };
     centres.set(k, { x: m.x + c.x + 0.5, y: m.y + c.y + 0.5, n: m.n + 1 });
   }
-  for (const { c, famille, v, piece, rotation, sansDecharge } of choisis) {
+  for (const { c, famille, v, piece, rotation, sansDecharge, groupe, rangees } of choisis) {
     const k = cle(c.x, c.y, c.z);
-    const dessin = kit.pieces[famille]?.[piece];
+    // La finition se dessine matière par matière (la porte, la barrière, la marche) : avant les pièces et les murs.
+    const finition = famille === 'finition' ? kit.finitions?.[c.texture as TextureKind]?.(piece, c) : undefined;
+    if (famille === 'finition' && !finition) continue;
+    const dessin = typeof finition === 'object' ? finition : finition ? undefined : kit.pieces[famille]?.[piece];
     if (dessin) {
       const facettes = facettesPosees(dessin, rotation, c.x, c.y, c.z);
       out.remplacees.add(k);
@@ -177,15 +270,17 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
       out.triangles += facettes.reduce((n, f) => n + f.points.length - 2, 0);
       continue;
     }
-    const maniere = kit.murs[famille];
+    const maniere = typeof finition === 'string' ? finition : kit.murs[famille];
     if (v.classe !== 'mur' || !maniere) continue;
-    const m = centres.get(batimentDe(c));
+    const m = centres.get(batimentDe(c, groupe));
     const exterieur = (cote: number) => {
       if (!m) return true;
       const [dx, dy] = SIDES[cote];
       return dx * (c.x + 0.5 - m.x / m.n) + dy * (c.y + 0.5 - m.y / m.n) > 0;
     };
-    const peinture = peintureDuMur(v, maniere, { barde: kit.bardes.includes(c.tag ?? ''), exterieur, sansDecharge });
+    // Un monument, une petite construction : bardés (`groupeDe` : leur plan à part).
+    const barde = kit.bardes.includes(c.tag ?? '') || groupeDe(c) !== null;
+    const peinture = peintureDuMur(v, maniere, { barde, exterieur, sansDecharge, rangees });
     out.peints.set(k, { cube: c, famille, piece, rotation, peinture });
   }
   return out;

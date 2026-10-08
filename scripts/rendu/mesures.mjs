@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -627,6 +627,45 @@ const CAPTURES = [
     },
     { nom: `histoire-geo-mosaique-brique-chaume-archipel${suffixe}`, vue: 'archipel', famille: 'histoire-geo', ile: 'history-6e-antiquity', ...autres },
   ]),
+  // Les familles du 6e dans Archipéo (lot 7, la table « matière → famille », famille `familles-sixieme`), à retirer une fois
+  // le lot fusionné ; à prendre avec `--rendu archipeo`. De près (`zoomer`), toutes les petites constructions posées :
+  // le cadran de l'Horloge des verbes de près, de jour et de nuit, et de loin (l'île reculée, l'archipel) ; la cabine de
+  // la Baie des mots ; la cabane de bois de la Forêt (bardée) ; le grand moulin et l'observatoire (monuments du 6e) ; les
+  // bacs et les murets de mosaïque de la Pointe des paysages ; l'escalier de la Tour du lecteur, tout construit, puis
+  // avec deux cases de sa cour encore en fantôme à côté de lui (`partie` : « escalier-fantome »).
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `familles-6e-cadran-pres${suffixe}`,
+    vue: 'île',
+    famille: 'familles-sixieme',
+    ile: 'english-6e-grammar',
+    posees: 'toutes',
+    zoomer: 3,
+    finesse: 2,
+    ...autres,
+  })),
+  { nom: 'familles-6e-cadran-loin', vue: 'île', famille: 'familles-sixieme', ile: 'english-6e-grammar', posees: 'toutes', zoomer: -10, finesse: 2 },
+  { nom: 'familles-6e-cadran-archipel', vue: 'archipel', famille: 'familles-sixieme', ile: 'english-6e-grammar', posees: 'toutes', finesse: 2 },
+  { nom: 'familles-6e-cabine-baie', vue: 'île', famille: 'familles-sixieme', ile: 'english-6e-vocabulary', posees: 'toutes', zoomer: 3, finesse: 2 },
+  { nom: 'familles-6e-cabane-foret', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', posees: 'toutes', zoomer: 3, finesse: 2 },
+  // Les monuments eux-mêmes, sans leur fiche (`sansPanneau` : la caméra posée sur l'îlot du monument, le panneau masqué) :
+  // les ailes du moulin de près et de loin, l'observatoire des baleines de près.
+  { nom: 'familles-6e-moulin', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', lieu: 'landmark-6e-2', sansPanneau: true, zoomer: 3, finesse: 2 },
+  { nom: 'familles-6e-moulin-loin', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', lieu: 'landmark-6e-2', sansPanneau: true, finesse: 2 },
+  { nom: 'familles-6e-observatoire', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-reading', lieu: 'landmark-6e-1', sansPanneau: true, zoomer: 3, finesse: 2 },
+  { nom: 'familles-6e-pointe-paysages', vue: 'île', famille: 'familles-sixieme', ile: 'geography-6e-living', posees: 'toutes', zoomer: 3, finesse: 2 },
+  ...[
+    { suffixe: '', autres: {} },
+    { suffixe: '-fantome', autres: { partie: 'escalier-fantome' } },
+  ].map(({ suffixe, autres }) => ({
+    nom: `familles-6e-escalier-tour${suffixe}`,
+    vue: 'île',
+    famille: 'familles-sixieme',
+    ile: 'french-6e-reading',
+    posees: 'toutes',
+    zoomer: 3,
+    finesse: 2,
+    ...autres,
+  })),
   // Les six îles d'histoire-géographie des 5e, 4e et 3e (lot HG-3, famille `histoire-geo-college`), à retirer une fois le
   // lot fusionné : chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`)
   // et tout construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la
@@ -915,6 +954,15 @@ async function zoomerLaVue(page, zoomer) {
   for (let i = 0; i < Math.abs(zoomer); i++) await page.keyboard.press(zoomer > 0 ? '+' : '-');
 }
 
+/** Masque le panneau en plein écran (`sansPanneau`) : le monde dessous se voit, et reprend le focus (il n'est plus inerte). */
+async function masquerLePanneau(page) {
+  await page.addStyleTag({ content: '.world-page > .island-sheet { display: none !important }' });
+  await page.evaluate(() => {
+    const stage = document.querySelector('.world-stage');
+    if (stage) stage.inert = false;
+  });
+}
+
 async function ouvrirLePanneauPour(page, selecteur) {
   if (await page.locator(selecteur).count()) return;
   const bouton = page.getByRole('button', { name: /^Ouvrir le panneau de / });
@@ -1031,6 +1079,14 @@ async function scenes() {
         const cells = planCells(l[moitie]).map((c) => c.key);
         plans[l[moitie].id] = cells.filter((_, i) => i % 2 === 0);
       }
+    // La cour de la Tour du lecteur presque finie : l'escalier posé, deux cases encore en fantôme à côté de lui (la
+    // barrière devant, le bloc de la Tour à sa gauche ; famille `familles-6e`).
+    if (partie === 'escalier-fantome') {
+      const cour = plansFor('french-6e-reading')[2];
+      const cells = planCells(cour);
+      const restent = new Set(cells.filter((c) => (c.block === 'fence' && c.x === 10) || c.block === 'french-6e-reading').map((c) => c.key));
+      plans[cour.id] = cells.map((c) => c.key).filter((k) => !restent.has(k));
+    }
     if (partie === 'tour-avant' || partie === 'tour-debut' || partie === 'tour-mi') {
       const l = plansFor('french-6e-reading');
       // Avant : aucun plan posé ; au début : la moitié du premier (les murs) ; pendant : le premier posé, la moitié du
@@ -1112,13 +1168,14 @@ async function scenes() {
               cliquer: c.cliquer,
               fiche: c.fiche,
               zoomer: c.zoomer,
+              sansPanneau: c.sansPanneau,
               reussir: c.reussir,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, posees, cliquer, fiche, zoomer, reussir } of views) {
+    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, posees, cliquer, fiche, zoomer, reussir, sansPanneau } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -1190,6 +1247,9 @@ async function scenes() {
         // La fiche d'un objet ouverte une fois la scène prête (`fiche`, Toucher le monde, lot 2), comme d'un toucher :
         // le temps que la caméra glisse pour la laisser voir (16 pas, deux secondes de la scène).
         if (fiche) await page.evaluate((objet) => window.__dysappsFiche?.(objet), fiche);
+        // Le monde sans le panneau qui le couvre (`sansPanneau` : la fiche d'un monument, la caméra déjà posée sur lui) :
+        // le panneau masqué, le monde rendu au toucher et au clavier pour le zoom.
+        if (sansPanneau) await masquerLePanneau(page);
         // La Carte zoomée (`zoomer`) : la touche +, le monde ayant le focus, autour du centre de la place libre.
         if (zoomer) await zoomerLaVue(page, zoomer);
         // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.

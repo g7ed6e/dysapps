@@ -15,6 +15,11 @@
 //   restent ;
 // - soubassement de pierre sur 0,35 case, au pied seulement ; les blocs de pierre font un mur plein ; le chaperon d'un
 //   mur sans toit est en pierre ;
+// - la pierre garde la teinte de sa matière (retouches du directeur artistique, 8 octobre 2026, « familles du 6e ») :
+//   un mur plein n'a de soubassement qu'à partir de trois rangées (`RANGEES_DU_SOUBASSEMENT`), une seule fois, au pied,
+//   et son chaperon est une bande mince dans une teinte plus sombre de sa matière (`CHAPERON_DE_LA_PIERRE`), son dessus
+//   aussi : la teinte de la matière couvre au moins 85 % de la hauteur visible d'un mur, même d'une rangée ; un mur
+//   bardé suit la même règle du soubassement ;
 // - bardage aux pignons (sur les bâtiments de bois du quai, la règle attend qu'on en pose : option (c) du directeur
 //   artistique, 30/09, voir kits/6e.ts) ; la nuit, rien ne s'allume : la lumière de la scène assombrit tout.
 // Code pur, sans Three.js : le GLSL est une chaîne, que three/construction.ts insère dans le shader des blocs.
@@ -47,7 +52,65 @@ export const MOTIF = {
   descendante: 1 << 8,
   /** L'île est fermée : les couleurs des rôles délavées. */
   delave: 1 << 9,
+  /** Une porte : son vantail (la couleur de sa matière) dans un encadrement de pierre (la finition). */
+  vantail: 1 << 10,
+  /** Un cadran : un disque clair à douze points, sans aiguilles (décision du directeur artistique, 8 octobre 2026). */
+  cadran: 1 << 11,
+  /**
+   * Un rectangle de plusieurs rangées (la fusion de world/construction.ts réunit les rangées d'un mur) : les bandes du
+   * pied ne se peignent que sur sa rangée du pied, celles de la tête que sur sa rangée de la tête (`RANGEES`).
+   */
+  rangees: 1 << 12,
 } as const;
+
+/**
+ * Les rangées d'un rectangle de plusieurs rangées (`MOTIF.rangees`) : la hauteur (z de la grille, modulo 16) de sa
+ * rangée du pied, sur quatre bits à partir du bit `pied`, et celle de sa rangée de la tête, à partir du bit `tete`. Un
+ * rectangle a donc au plus 16 rangées.
+ */
+export const RANGEES = { pied: 13, tete: 17, masque: 15, max: 16 } as const;
+
+/** Le premier bit au-dessus de tous ceux d'un mur peint : les blocs assemblés commencent au-delà (construction/shader.ts). */
+export const MOTIF_FIN = 1 << (RANGEES.tete + 4);
+
+/** Les bandes qui ne se peignent qu'au pied d'un mur, et celles qui ne se peignent qu'à sa tête. */
+const BITS_DU_PIED = MOTIF.soubassement | MOTIF.sabliereBasse | MOTIF.montante | MOTIF.descendante;
+const BITS_DE_LA_TETE = MOTIF.chaperon | MOTIF.sabliereHaute;
+
+/**
+ * Deux rangées d'un mur peuvent-elles se réunir en un rectangle, la rangée `dessus` posée sur `dessous` ? Le même motif,
+ * aux bandes près : rien du pied sur celle du dessus, rien de la tête sur celle du dessous. Peindre ne coûte ainsi aucun
+ * triangle : un mur de trois rangées reste un rectangle par face, son soubassement et son chaperon compris.
+ */
+export function rangeesReunies(dessous: number, dessus: number): boolean {
+  if (dessous === dessus) return !(dessous & (BITS_DU_PIED | BITS_DE_LA_TETE));
+  const corps = ~(BITS_DU_PIED | BITS_DE_LA_TETE);
+  return (dessous & corps) === (dessus & corps) && !(dessus & BITS_DU_PIED) && !(dessous & BITS_DE_LA_TETE);
+}
+
+/** Le motif que le shader lit sur la rangée `z` d'un rectangle (`MOTIF_GLSL` : le même calcul, pour les tests). */
+export function motifDeLaRangee(m: number, z: number): number {
+  if (!(m & MOTIF.rangees)) return m;
+  const r = z & RANGEES.masque;
+  let out = m;
+  if (r !== ((m >> RANGEES.pied) & RANGEES.masque)) out &= ~BITS_DU_PIED;
+  if (r !== ((m >> RANGEES.tete) & RANGEES.masque)) out &= ~BITS_DE_LA_TETE;
+  return out;
+}
+
+/**
+ * Le motif d'un rectangle de rangées réunies, de la rangée `zBas` (motif `bas`) à la rangée `zHaut` (motif `haut`) : les
+ * bandes du pied de la première, celles de la tête de la dernière, et leurs hauteurs (`RANGEES`). Une seule rangée, ou
+ * aucune bande : le motif tel quel.
+ */
+export function motifDesRangees(bas: number, haut: number, zBas: number, zHaut: number): number {
+  // Un bloc assemblé (au-delà de `MOTIF_FIN`) n'a pas de bandes : ses bits bas ne sont pas ceux d'un mur.
+  if (zHaut === zBas || bas >= MOTIF_FIN) return bas;
+  const bandes = (bas & BITS_DU_PIED) | (haut & BITS_DE_LA_TETE);
+  if (!bandes) return bas;
+  const m = RANGEES.masque;
+  return (bas & ~(BITS_DU_PIED | BITS_DE_LA_TETE)) | bandes | MOTIF.rangees | ((zBas & m) << RANGEES.pied) | ((zHaut & m) << RANGEES.tete);
+}
 
 /** Les mesures du colombage, en part de case. */
 export const COLOMBAGE = {
@@ -55,6 +118,8 @@ export const COLOMBAGE = {
   poteau: 1 / 16,
   /** La hauteur du soubassement de pierre (0,3 à 0,4 case, décision du directeur artistique). */
   soubassement: 0.35,
+  /** La hauteur du chaperon d'un mur plein : une bande mince, dans une teinte plus sombre de la matière. */
+  chaperonPlein: 0.08,
   /** L'épaisseur d'une sablière. */
   sabliere: 0.07,
   /** La hauteur du chaperon. */
@@ -80,7 +145,42 @@ export const COLOMBAGE = {
   /** Le bardage : la hauteur d'une planche, et la demi-largeur d'un joint. */
   planche: 0.25,
   joint: 0.012,
+  /** La largeur de l'encadrement d'une porte, sur ses deux côtés et en haut. */
+  encadrement: 0.12,
 } as const;
+
+/**
+ * Un mur plein n'a de soubassement qu'à partir de tant de rangées (décision du directeur artistique, 8 octobre 2026) :
+ * plus bas, la bande de pierre prenait la moitié du mur, et la teinte de la matière se perdait.
+ */
+export const RANGEES_DU_SOUBASSEMENT = 3;
+
+/** Le chaperon d'un mur plein et son dessus : la teinte de sa matière, à cette part (en couleur linéaire). */
+export const CHAPERON_DE_LA_PIERRE = 0.62;
+
+/** Les mesures du cadran, en part de case, depuis le milieu de la face. */
+export const CADRAN = {
+  /** Le rayon du disque. */
+  disque: 0.36,
+  /**
+   * Le disque : la teinte du cadran, éclaircie de cette part vers le blanc (en couleur linéaire), loin du crème Brume
+   * d'un fantôme (`#E5EBE3`). De loin, le disque s'efface avec ses points.
+   */
+  eclat: 0.3,
+  /** Les points : la teinte du disque, à cette part. */
+  sombre: 0.45,
+  /** Le rayon du cercle des douze points, et celui d'un point. */
+  points: 0.27,
+  point: 0.035,
+} as const;
+
+/** Les douze points du cadran, sur la face (u, v de 0 à 1) : un toutes les heures, sans aiguilles. */
+export function pointsDuCadran(): [number, number][] {
+  return Array.from({ length: 12 }, (_, k) => {
+    const a = (k * Math.PI) / 6;
+    return [0.5 + CADRAN.points * Math.cos(a), 0.5 + CADRAN.points * Math.sin(a)];
+  });
+}
 
 /** Les rôles peints par le shader, dans l'ordre de l'uniforme `uRoles` (puis les mêmes, délavés). */
 export const ROLES_PEINTS = ['poteau', 'soubassement', 'chaperon'] as const;
@@ -94,8 +194,11 @@ export interface PeintureDuMur {
   motifs: readonly number[];
 }
 
-/** Comment peindre un mur d'une famille : un colombage (le bois) ou un mur plein (la pierre). */
-export type ManiereDuMur = 'colombage' | 'plein';
+/**
+ * Comment peindre un mur d'une famille : un colombage (le bois), un mur plein (la pierre), un bardage (des clins dans la
+ * teinte de sa matière), un vantail (la porte, dans son encadrement).
+ */
+export type ManiereDuMur = 'colombage' | 'plein' | 'bardage' | 'vantail';
 
 export interface ContexteDuMur {
   /** Le bâtiment est bardé (les bâtiments du quai), au lieu du colombage. */
@@ -104,6 +207,11 @@ export interface ContexteDuMur {
   sansDecharge?: boolean;
   /** La face du côté `cote` (0 à 3, ordre de `SIDES`) regarde-t-elle le dehors du bâtiment ? (Les décharges y vont seules.) */
   exterieur?: (cote: number) => boolean;
+  /**
+   * Le nombre de rangées du mur à la colonne du bloc (les murs empilés d'un seul tenant, du pied à la tête) : un mur
+   * plein ou bardé n'a de soubassement qu'à partir de `RANGEES_DU_SOUBASSEMENT`. Sans lui, le soubassement est posé.
+   */
+  rangees?: number;
 }
 
 /** Les quatre côtés : +x, +y, −x, −y (comme `SIDES`). */
@@ -140,29 +248,55 @@ export function decharge(motif: number): { pied: [number, number]; tete: [number
 }
 
 /**
+ * Le cadran se peint-il sur ce mur ? Un bloc de cadran en tête de son mur (rien de sa classe au-dessus), seul, au bout
+ * ou au milieu d'une rangée (pas dans un angle : le haut de la tour de l'Horloge ne montre qu'un cadran par face), sur
+ * ses faces sans voisine.
+ */
+function cadranSur(v: Voisinage): boolean {
+  const c = v.cotes & 0b1111;
+  const enLigne = c === 0 || c === 0b0001 || c === 0b0010 || c === 0b0100 || c === 0b1000 || c === 0b0101 || c === 0b1010;
+  return v.texture === 'cadran' && v.dessus !== 'mur' && enLigne;
+}
+
+/**
  * La peinture d'un mur, d'après son voisinage dans le plan (en orientation du monde) :
- * - un mur plein (la pierre) : sa matière, et un chaperon s'il n'a rien au-dessus ;
+ * - un vantail (la porte) : sa matière dans un encadrement de pierre, sur ses quatre côtés ;
+ * - un bardage : des clins dans la teinte de sa matière, un chaperon de pierre s'il n'a rien au-dessus ;
+ * - un mur plein (la pierre) : sa matière, un soubassement de pierre au pied, un chaperon s'il n'a rien au-dessus ; un
+ *   cadran en tête de son mur porte son disque à douze points (`cadranSur`) ;
  * - un mur de bois posé sur un toit (une cheminée) : de la pierre, maçonnée ;
  * - un pignon (un mur de bois sous un toit, entre deux toits) ou un bâtiment du quai : bardé ;
  * - sinon, le colombage : soubassement et sablière basse au pied, sablière haute sous un toit, chaperon sans rien
  *   au-dessus, décharge au rez, sur une face du dehors quand un seul de ses deux voisins le long de la face manque (le
- *   bout ou l'angle d'une façade : jamais sur un mur droit).
+ *   bout ou l'angle d'une façade : jamais sur un mur droit), et jamais sous un chaperon (le panneau y est trop court).
  * Un chaperon ne se pose que sur un mur qui ne monte plus (rien de sa classe un cran plus haut à côté : les gradins
  * d'un dôme n'en ont pas).
  */
 export function peintureDuMur(v: Voisinage, maniere: ManiereDuMur, contexte: ContexteDuMur = {}): PeintureDuMur {
   const pied = v.dessous === 'rien';
+  // Le soubassement d'un mur plein ou bardé : au pied d'un mur d'au moins trois rangées.
+  const socle = pied && (contexte.rangees ?? RANGEES_DU_SOUBASSEMENT) >= RANGEES_DU_SOUBASSEMENT ? MOTIF.soubassement : 0;
   const chaperon = v.dessus === 'rien' && v.monte === 0;
   const haut = chaperon ? MOTIF.pierreEntiere : 0;
   const bandes = chaperon ? MOTIF.chaperon : 0;
   const partout = (cotes: number, fond: Fond): PeintureDuMur => ({ fond, motifs: [cotes, cotes, cotes, cotes, haut, 0] });
-  if (maniere === 'plein') return partout(MOTIF.plein | bandes, 'matiere');
+  if (maniere === 'vantail') return { fond: 'matiere', motifs: [MOTIF.vantail, MOTIF.vantail, MOTIF.vantail, MOTIF.vantail, 0, 0] };
+  if (maniere === 'bardage') return partout(MOTIF.bardage | bandes, 'matiere');
+  if (maniere === 'plein') {
+    const base = MOTIF.plein | socle | bandes;
+    const disque = cadranSur(v);
+    const motifs = [0, 1, 2, 3].map((cote) => (disque && !(v.cotes & (1 << cote)) ? base | MOTIF.cadran : base));
+    // Le dessus du chaperon : la teinte sombre de la matière (le genre `plein` le dit au shader).
+    return { fond: 'matiere', motifs: [...motifs, haut ? MOTIF.plein | haut : 0, 0] };
+  }
   if (v.dessous === 'toit') return partout(MOTIF.plein | bandes, 'soubassement');
   if (v.dessus === 'toit' && v.toits !== 0) return partout(MOTIF.bardage, 'bardage');
-  if (contexte.barde) return partout(MOTIF.bardage | (pied ? MOTIF.soubassement : 0) | bandes, 'bardage');
+  if (contexte.barde) return partout(MOTIF.bardage | socle | bandes, 'bardage');
   const base = MOTIF.colombage | (pied ? MOTIF.soubassement | MOTIF.sabliereBasse : 0) | (v.dessus === 'toit' ? MOTIF.sabliereHaute : 0) | bandes;
   const motifs = [0, 1, 2, 3].map((cote) => {
-    if (!pied || contexte.sansDecharge || v.cotes & (1 << cote) || !contexte.exterieur?.(cote)) return base;
+    // Sous un chaperon (un mur sans toit : un muret, un monument), le panneau est trop court : la tête d'une décharge
+    // viendrait trop près du pied de sa voisine, autour d'un angle ou d'un mur de deux cases.
+    if (!pied || chaperon || contexte.sansDecharge || v.cotes & (1 << cote) || !contexte.exterieur?.(cote)) return base;
     // Les deux voisines le long de la face : exactement une qui manque, c'est un bout ou un angle de la façade.
     const manquent = [(cote + 1) % 4, (cote + 3) % 4].filter((c) => !(v.cotes & (1 << c))).length;
     return manquent === 1 ? base | sensDeLaDecharge(cote) : base;
@@ -193,11 +327,35 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
   vec3 bois = delave ? uRoles[3] : uRoles[0];
   vec3 socle = delave ? uRoles[4] : uRoles[1];
   vec3 chap = delave ? uRoles[5] : uRoles[2];
-  if (an.y > 0.5) return (m & ${MOTIF.pierreEntiere}) != 0 ? chap : c;
+  int genre = m & 3;
+  // Le dessus d'un chaperon : de pierre, ou, sur un mur plein, la teinte sombre de sa matière.
+  if (an.y > 0.5) return (m & ${MOTIF.pierreEntiere}) != 0 ? (genre == ${MOTIF.plein} ? c * ${CHAPERON_DE_LA_PIERRE.toFixed(4)} : chap) : c;
   float fu = fract(u);
   float fv = fract(pos.y);
+  // Un rectangle de plusieurs rangées : les bandes du pied sur sa rangée du pied, celles de la tête sur sa rangée de la tête.
+  if ((m & ${MOTIF.rangees}) != 0) {
+    int r = int(floor(pos.y)) & ${RANGEES.masque};
+    if (r != ((m >> ${RANGEES.pied}) & ${RANGEES.masque})) m &= ~${BITS_DU_PIED};
+    if (r != ((m >> ${RANGEES.tete}) & ${RANGEES.masque})) m &= ~${BITS_DE_LA_TETE};
+  }
   float loin = clamp((1.0 / max(du, dv) - 8.0) / 8.0, 0.0, 1.0);
-  int genre = m & 3;
+  if ((m & ${MOTIF.vantail}) != 0) {
+    // La porte : son vantail dans un encadrement de pierre (ses deux côtés et le haut), qui s'efface de loin.
+    const float E = ${COLOMBAGE.encadrement.toFixed(4)};
+    float cadre = max(bandeDuMotif(min(fu, 1.0 - fu), E, du), smoothstep(1.0 - E - 0.5 * dv, 1.0 - E + 0.5 * dv, fv));
+    return mix(c, chap, cadre * loin);
+  }
+  if ((m & ${MOTIF.cadran}) != 0) {
+    // Le cadran : un disque un peu plus clair que sa teinte, douze points sombres, sans aiguilles ; de loin, le disque
+    // s'efface avec ses points (jamais un disque clair sans ses points, qui se lirait comme un fantôme).
+    vec2 p = vec2(fu, fv) - 0.5;
+    float w = max(du, dv);
+    float disque = bandeDuMotif(length(p), ${CADRAN.disque.toFixed(4)}, w);
+    float k = floor(atan(p.y, p.x) / 0.5235988 + 0.5) * 0.5235988;
+    float point = bandeDuMotif(length(p - ${CADRAN.points.toFixed(4)} * vec2(cos(k), sin(k))), ${CADRAN.point.toFixed(4)}, w);
+    c = mix(c, mix(c, vec3(1.0), ${CADRAN.eclat.toFixed(4)}), disque * loin);
+    c = mix(c, c * ${CADRAN.sombre.toFixed(4)}, point * loin);
+  }
   const float S = ${COLOMBAGE.soubassement.toFixed(4)};
   const float B = ${COLOMBAGE.sabliere.toFixed(4)};
   const float C = ${COLOMBAGE.chaperon.toFixed(4)};
@@ -226,7 +384,11 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
     c *= 1.0 - 0.18 * joint * loin;
   }
   if ((m & ${MOTIF.soubassement}) != 0) c = mix(c, socle, 1.0 - smoothstep(S - 0.5 * dv, S + 0.5 * dv, fv));
-  if ((m & ${MOTIF.chaperon}) != 0) {
+  if ((m & ${MOTIF.chaperon}) != 0 && genre == ${MOTIF.plein}) {
+    // Le chaperon d'un mur plein : une bande mince, la teinte de sa matière plus sombre, sans trait d'ombre.
+    const float CP = ${COLOMBAGE.chaperonPlein.toFixed(4)};
+    c = mix(c, c * ${CHAPERON_DE_LA_PIERRE.toFixed(4)}, smoothstep(1.0 - CP - 0.5 * dv, 1.0 - CP + 0.5 * dv, fv));
+  } else if ((m & ${MOTIF.chaperon}) != 0) {
     c *= 1.0 - 0.25 * bandeDuMotif(abs(fv - (1.0 - C - 0.012)), 0.012, dv) * loin;
     c = mix(c, chap, smoothstep(1.0 - C - 0.5 * dv, 1.0 - C + 0.5 * dv, fv));
   }

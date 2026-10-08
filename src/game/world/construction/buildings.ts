@@ -62,6 +62,28 @@ export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
   return out;
 }
 
+const cours = layoutCache<ArchipelagoId, ReadonlyMap<string, string>>();
+
+/**
+ * Les cours des îles d'un archipel (la table commune, 8 octobre 2026) : les cases de la troisième étape du plan de chaque
+ * île (barrières, jardinières, marches, lanternes, ou le troisième morceau d'un lieu en trois plans), posées ou non, et
+ * la texture de leur bloc. Elles prennent le kit sur leur propre plan : la cour n'allonge pas un mur.
+ */
+export function coursDe(a: ArchipelagoId): ReadonlyMap<string, string> {
+  const deja = cours.get(a);
+  if (deja) return deja;
+  const out = new Map<string, string>();
+  for (const def of mapOf(a))
+    for (const plan of plansFor(def.id).slice(ETAPES_DU_BATIMENT, ETAPES_DU_BATIMENT + 1)) {
+      const d = decalageDesPlans(plan);
+      planCells(plan).forEach((c, i) => {
+        out.set(`${def.core.x + c.x + d.x},${def.core.y + c.y + d.y},${def.altitude + c.z + d.z + 1}`, BLOCKS[plan.cells[i].archipeo ?? c.block].texture);
+      });
+    }
+  cours.set(a, out);
+  return out;
+}
+
 const blocsDArchipeo = layoutCache<ArchipelagoId, ReadonlyMap<string, string>>();
 
 /**
