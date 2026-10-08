@@ -510,7 +510,7 @@ const FICHES: Fiche[] = [
     archipelago: '4e',
     name: 'Le portique des docks',
     description: 'Une grande grue de port sur ses rails, ses quatre jambes d’acier, sa poutre tendue vers la mer et la cabine du grutier, au-dessus d’une pile de conteneurs.',
-    islet: { x: 55, y: 711 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
+    islet: { x: 86, y: 711 }, // placé le 08/10/2026 avec les îles agrandies (#390), hors des tracés des liaisons ; décalé à l'est de l'Escale le même jour (relecture du directeur artistique) : vu depuis l'Escale, il n'est plus caché derrière son étiquette
     reward: { xp: 210, chest: {} },
     done: 'Le portique des docks est debout. La cabine s’allume : les conteneurs peuvent partir vers toutes les îles.',
     draw: portique,
@@ -558,7 +558,7 @@ const FICHES: Fiche[] = [
     archipelago: '3e',
     name: 'La colonne des solides',
     description: 'Un cube, un cylindre et un tronc de pyramide posés l’un sur l’autre, et tout en haut une sphère à la ceinture de lumière.',
-    islet: { x: 12, y: 916 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
+    islet: { x: 18, y: 912 }, // placé le 08/10/2026 avec les îles agrandies (#390), hors des tracés des liaisons ; décalé de six cases vers le Phare et de quatre vers le sud le même jour (relecture du directeur artistique) : sur la Carte, l'étiquette du Studio des ondes ne le couvre plus
     reward: { xp: 240, chest: {} },
     done: 'La colonne des solides est montée. La ceinture de la sphère s’allume tout en haut.',
     draw: colonneSolides,

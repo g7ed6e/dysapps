@@ -140,11 +140,11 @@ describe('les origines figées des chantiers (séparation du jeu et du rendu, J1
       'landmark-4e-2': { x: -2, y: 24, z: 0 },
       'landmark-3e-1': { x: -14, y: 4, z: 0 },
       'landmark-3e-2': { x: -14, y: 6, z: 0 },
-      'landmark-4e-3': { x: -6, y: 36, z: 0 },
+      'landmark-4e-3': { x: 25, y: 36, z: 0 },
       'landmark-4e-4': { x: 24, y: 8, z: 0 },
       'landmark-3e-3': { x: -22, y: 20, z: 0 },
       'landmark-3e-4': { x: 28, y: -7, z: 0 },
-      'landmark-3e-5': { x: -5, y: -15, z: 0 },
+      'landmark-3e-5': { x: 1, y: -19, z: 0 },
     });
     expect(Object.keys(ORIGINE_DU_QUAI).sort()).toEqual([...new Set(VEHICLE_STAGES.map((s) => s.biome))].sort());
     expect(Object.keys(ORIGINE_DES_MONUMENTS).sort()).toEqual(MONUMENTS.map((m) => m.id).sort());

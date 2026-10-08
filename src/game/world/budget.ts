@@ -92,7 +92,7 @@ export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls
  * 99 174 → 98 582 et 85 → 84 aux Anciens Ateliers, 98 138 → 95 180 et 64 → 60 aux Îles du Ciel.
  * Relevé à 102 000 triangles pour les deux grands projets neufs des Anciens Ateliers (GD-10, mainteneur, 8 octobre
  * 2026, « Plafond relevé ») : leurs îlots, des piliers de roche à l'altitude du 4e, et leurs dessins portent le pire de la
- * région aménagée à 100 400 triangles au pire, 460 de plus avec le glissé d'un choix ; les autres archipels restent sous 100 000.
+ * région aménagée à 100 448 triangles au pire, 460 de plus avec le glissé d'un choix ; les autres archipels restent sous 100 000.
  * La mesure sur tablette reste à faire.
  */
 export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 102_000, drawCalls: 120 } as const;
