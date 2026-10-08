@@ -14,6 +14,8 @@ export interface VolumeDeMatiere {
   ancre: VoxelCube;
   bas: number;
   haut: number;
+  /** Le nombre de cases du volume : une seule, c'est une case isolée (elle garde son dessus, world/construction.ts). */
+  cases: number;
 }
 
 const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
@@ -61,7 +63,7 @@ export function volumesDeMatiere(cubes: readonly VoxelCube[], groupe: (c: VoxelC
         cases.push(v);
       }
     }
-    const volume = { ancre, bas, haut };
+    const volume = { ancre, bas, haut, cases: cases.length };
     for (const x of cases) out.set(x, volume);
   }
   return out;

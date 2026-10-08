@@ -4,6 +4,9 @@
 // archipels n'ont pas de lissage.
 import type { VoxelCube } from '../cube';
 import { maillageDeLaConstruction, teinteDeCase } from '../construction';
+import { mixColor } from '../daylight';
+import { lineaire } from '../landMesh';
+import { couleurDeMatiere } from '../palette';
 import { architectureDe, KITS, MOTIF, PIECES_BASSES } from '.';
 import { volumesDeMatiere } from './volumes';
 
@@ -25,7 +28,7 @@ const solSous = (cubes: VoxelCube[]): VoxelCube[] => cubes.filter((c) => c.z ===
 /** Les triangles de l'opaque, par sommets (repère de grille : x, y, z, la hauteur en z). */
 function triangles(m: ReturnType<typeof maillageDeLaConstruction>) {
   const o = m.opaque;
-  const out: { p: [number, number, number][]; n: [number, number, number]; teintes: number[]; motifs: number[] }[] = [];
+  const out: { p: [number, number, number][]; n: [number, number, number]; teintes: number[]; motifs: number[]; couleurs: number[][] }[] = [];
   for (let t = 0; t < o.indices.length / 3; t++) {
     const s = [0, 1, 2].map((k) => o.indices[3 * t + k]);
     out.push({
@@ -33,6 +36,7 @@ function triangles(m: ReturnType<typeof maillageDeLaConstruction>) {
       n: [o.normals[3 * s[0]], o.normals[3 * s[0] + 2], o.normals[3 * s[0] + 1]],
       teintes: s.map((i) => o.teintes[i]),
       motifs: s.map((i) => o.motifs[i]),
+      couleurs: s.map((i) => [o.colors[3 * i], o.colors[3 * i + 1], o.colors[3 * i + 2]]),
     });
   }
   return out;
@@ -44,7 +48,7 @@ describe('Le lissage : un volume par matière', () => {
     const v = volumesDeMatiere(cubes, (c) => c.tag ?? null);
     const de = (c: VoxelCube) => v.get(`${c.x},${c.y},${c.z}`)!;
     expect(de(cubes[0])).toBe(de(cubes[2]));
-    expect(de(cubes[0])).toMatchObject({ bas: 1, haut: 3, ancre: cubes[0] });
+    expect(de(cubes[0])).toMatchObject({ bas: 1, haut: 3, ancre: cubes[0], cases: 3 });
     expect(de(cubes[3])).not.toBe(de(cubes[0]));
     expect(de(cubes[4])).not.toBe(de(cubes[0]));
   });
@@ -86,6 +90,40 @@ describe('Le lissage : un volume par matière', () => {
     expect(new Set(dessusDuSocle.flatMap((x) => x.teintes)).size).toBe(1);
     const peints = architectureDe('6e', [...socle, ...tour]).peints;
     for (const c of socle) expect(peints.get(`${c.x},${c.y},${c.z}`)!.peinture.motifs[4]).toBe(0);
+  });
+
+  it('le dessus d’un volume lissé prend le milieu entre le dessus et les côtés de sa matière ; une case isolée garde le sien', () => {
+    // Décision du directeur artistique (8 octobre 2026) : les cases de sable des angles du moulin ne ressortent plus en carreaux.
+    const enLineaire = (c: number) => [(c >> 16) & 255, (c >> 8) & 255, c & 255].map((k) => lineaire(k / 255));
+    const sable = couleurDeMatiere('6e', 'sable');
+    /** Les couleurs des faces tournées vers le haut, à la plus haute cote. */
+    const dessusDe = (cubes: VoxelCube[], a: '6e' | '5e' = '6e') => {
+      const haut = triangles(maillageDeLaConstruction(a, cubes, solSous(cubes))).filter((x) => x.n[2] > 0.5);
+      const cote = Math.max(...haut.flatMap((x) => x.p.map((p) => p[2])));
+      const dessus = haut.filter((x) => x.p.every((p) => Math.abs(p[2] - cote) < 1e-4));
+      expect(dessus.length).toBeGreaterThan(0);
+      return dessus.flatMap((x) => x.couleurs);
+    };
+    const proche = (couleurs: number[][], attendue: number) => {
+      const e = enLineaire(attendue);
+      for (const c of couleurs) c.forEach((v, i) => expect(v).toBeCloseTo(e[i], 4));
+    };
+    // Un volume lissé de sable (deux cases empilées) : le dessus au milieu, aucun triangle de plus.
+    const volume = [petite(0, 0, 1, 'sable'), petite(0, 0, 2, 'sable')];
+    expect(architectureDe('6e', volume, { surLeVide: () => false }).lisses.size).toBe(2);
+    proche(dessusDe(volume), mixColor(sable.dessus, sable.cote, 0.5));
+    expect(mixColor(sable.dessus, sable.cote, 0.5)).not.toBe(sable.dessus);
+    expect(triangles(maillageDeLaConstruction('6e', volume, solSous(volume)))).toHaveLength(2 + 4 * 2);
+    // La même colonne au 5e, sans lissage : la convention dessus clair, côtés plus sombres.
+    const sable5 = couleurDeMatiere('5e', 'sable');
+    expect(architectureDe('5e', volume).lisses.size).toBe(0);
+    proche(dessusDe(volume, '5e'), sable5.dessus);
+    // Une case isolée du 6e, hors de tout volume : son dessus garde la couleur de dessus de sa matière.
+    const seule = [petite(0, 0, 1, 'sable')];
+    expect(architectureDe('6e', seule, { surLeVide: () => false }).lisses.get(`${LOIN},${LOIN},1`)?.cases ?? 1).toBe(1);
+    // Le bac « pièce seule » : son dessus dans la couleur de dessus du sable, jamais au milieu.
+    const enSable = enLineaire(sable.dessus);
+    expect(dessusDe(seule).some((c) => c.every((v, i) => Math.abs(v - enSable[i]) < 1e-4))).toBe(true);
   });
 
   it('le soubassement se lit par colonne : une aile d’une rangée accolée à une tour de trois n’en a pas', () => {

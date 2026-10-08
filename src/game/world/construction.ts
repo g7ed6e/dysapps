@@ -370,7 +370,11 @@ export function maillageDeLaConstruction(
     const couvert = c.texture === 'toit' || Boolean(c.place && archi?.couverts.has(cle(c.x, c.y, c.z)));
     // Un bloc d'un lieu peut prendre la couleur d'une autre matière (la souche du clocheton, en pierre de taille).
     const repeint = c.place ? archi?.matieres.get(cle(c.x, c.y, c.z)) : undefined;
-    const k = `${repeint ?? ''}|${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${couvert ? `toit:${c.tag}` : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}`;
+    // Dans un volume lissé (et seulement là), le dessus prend le milieu entre le dessus et les côtés de sa matière
+    // (décision du directeur artistique, 8 octobre 2026) : les cases isolées (un volume d'une case) et les bâtiments des
+    // plans gardent la convention dessus clair, côtés plus sombres.
+    const lisse = (archi?.lisses.size ? archi.lisses.get(cle(c.x, c.y, c.z))?.cases ?? 0 : 0) > 1;
+    const k = `${repeint ?? ''}|${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${couvert ? `toit:${c.tag}` : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}|${lisse ? 1 : 0}`;
     let f = vues.get(k);
     if (f) return f;
     const delave = (x: Faces): Faces => (c.muted ? { dessus: mixColor(x.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(x.cote, DELAVE[0], DELAVE[1]) } : x);
@@ -404,6 +408,7 @@ export function maillageDeLaConstruction(
       const x = hex(c.color);
       f = { dessus: c.top ? hex(c.top) : mixColor(x, 0xffffff, 0.12), cote: x };
     }
+    if (lisse) f = { dessus: mixColor(f.dessus, f.cote, 0.5), cote: f.cote };
     vues.set(k, f);
     return f;
   };
