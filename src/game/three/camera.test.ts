@@ -137,6 +137,47 @@ describe('La Carte dans la place libre (DA-31)', () => {
     }
   });
 
+  it('à l’ouverture, la Carte cadre les lieux d’aujourd’hui, plus près que le cadre de la région ; « Modifier le plan » garde le cadre entier (GD-11, consultant UX UI)', () => {
+    const libre = { x0: 0, y0: 0, x1: T.w, y1: T.h - 64 };
+    for (const a of ARCHIPELAGO_IDS) {
+      const dest = mapOf(a)[1].id;
+      const lieux = cadrageDeLaCarte(a, dest, T.w, T.h, libre);
+      const region = cadrageDeLaCarte(a, dest, T.w, T.h, libre, { region: true });
+      expect(lieux.echelle, a).toBeGreaterThan(region.echelle);
+      // Le cadre de la région, ses quatre coins dans la place libre : les places libres s'y voient toutes.
+      const b = worldBounds(a);
+      const altitude = mapOf(a)[0].altitude;
+      for (const [x, y] of [[b.minX, b.minY], [b.maxX, b.minY], [b.minX, b.maxY], [b.maxX, b.maxY]]) {
+        const p = vu(region, T, x, altitude, y);
+        expect(p.x >= libre.x0 && p.x <= libre.x1 && p.y >= libre.y0 && p.y <= libre.y1, `${a} (${x}, ${y})`).toBe(true);
+      }
+    }
+  });
+
+  it('au plancher, l’île du bonhomme hors de la place y entre avec la destination quand les deux y tiennent ; sinon, la destination seule (GD-11, consultant UX UI)', () => {
+    // La tablette, panneau ouvert : au plancher dans chaque classe.
+    const libre = { x0: 0, y0: 250, x1: 1024, y1: 578 };
+    const A = AUTOUR_DE_LA_DESTINATION;
+    let cadrees = 0;
+    for (const a of ARCHIPELAGO_IDS)
+      for (const dest of mapOf(a).map((d) => d.id))
+        for (const bonhomme of mapOf(a).map((d) => d.id)) {
+          const seule = cadrageDeLaCarte(a, dest, T.w, T.h, libre);
+          expect(seule.auPlancher, a).toBe(true);
+          const avec = cadrageDeLaCarte(a, dest, T.w, T.h, libre, { bonhomme });
+          const ici = centre(bonhomme, seule, T);
+          const d = centre(dest, seule, T);
+          const horsDeLaPlace = ici.x < libre.x0 || ici.x > libre.x1 || ici.y < libre.y0 || ici.y > libre.y1;
+          const ensemble = Math.max(d.x, ici.x) - Math.min(d.x, ici.x) + 2 * A.cote <= libre.x1 - libre.x0 - 24 && Math.max(d.y, ici.y) - Math.min(d.y, ici.y) + A.haut + A.bas <= libre.y1 - libre.y0 - 24;
+          if (horsDeLaPlace && ensemble) {
+            cadrees++;
+            expect(dedans(centre(dest, avec, T), libre), `${dest}, bonhomme sur ${bonhomme}`).toBe(true);
+            expect(dedans(centre(bonhomme, avec, T), libre), `${bonhomme} avec ${dest}`).toBe(true);
+          } else if (!horsDeLaPlace) expect(avec.target.distanceTo(seule.target), `${dest}, bonhomme sur ${bonhomme}`).toBeLessThan(1e-6);
+        }
+    expect(cadrees).toBeGreaterThan(0);
+  });
+
   it('la flèche posée sur un ouvrage (GD-7) : sa pointe reste dans la place libre, au large comme serré', () => {
     // Les liaisons posées de la partie : depuis GD-9, une liaison qui ne tient pas n'a ni tracé ni flèche.
     const posees = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => linkWholeRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
@@ -471,9 +512,10 @@ describe('Une longue traversée (GD-7)', () => {
   });
 
   it('le cadre fixe se pose dans la place libre, hors du panneau d’île ouvert et des barres : paysage et portrait 800 × 1280', () => {
-    // De la Plaine à la Carrière par le long bac du port (109 cases), panneau de la Carrière ouvert.
-    const liens = ['maths-6e-calculation-french-6e-word-spelling'];
-    const route = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', liens)!;
+    // De la Plaine à la Fouille des siècles par le long bac du port (118 cases), panneau de la Fouille ouvert (la Carrière,
+    // à 67 cases depuis que les îles ont grandi, GD-11, était l'exemple jusque-là).
+    const liens = ['maths-6e-calculation-history-6e-antiquity'];
+    const route = avatarRoute('maths-6e-calculation', 'history-6e-antiquity', liens)!;
     const cadre = cadreDeTraversee('6e', liens, route)!;
     expect(cadre).not.toBeNull();
     const b = worldBounds('6e');

@@ -1,6 +1,6 @@
-// Le mode « Aménager » dans la vue simple (GD-9, point 4) : une ligne par lieu et par Gardien de la région du bonhomme,
-// sa place en signes, la même ligne que sur la Carte (piste A : le voisin, la flèche, le nombre, la case ; pour un
-// Gardien, son île pour repère ; dite en mots aux lecteurs d'écran), sans phrase ;
+// Le mode « Aménager » dans la vue simple (GD-9, point 4) : une ligne par lieu de la région du bonhomme (son Gardien,
+// sur son île, le suit : GD-11), sa place en signes, la même ligne que sur la Carte (piste A : le voisin, la flèche, le
+// nombre, la case ; dite en mots aux lecteurs d'écran), sans phrase ;
 // « Déplacer » (quatre flèches) le choisit, puis les flèches et « Poser » de la barre du mode le posent ; « Valider » ou
 // « Annuler » ferment le mode, comme sur la Carte (décision du mainteneur, 6 octobre 2026). Sous chaque
 // lieu, dans un pli, une ligne par borne et par arrivée de ses liaisons, qui se déplacent de même.
@@ -16,12 +16,12 @@ import { ArrangeBar, ArrangeButton, ArrangeJoinQuestion, ArrangeSentence, MODIFI
 import { getBiome, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { habillageDuMonde } from './skin';
-import { getBridge, isBiomeUnlocked, islandsOf } from './world/archipelago';
+import { getBridge, islandsOf } from './world/archipelago';
 import type { ArchipelagoId } from './world/archipelagos';
 import { currentLandings, isFixedPlace, joinedWith, routesIn } from './world/arrange';
 import { type ArrangeChoice, chooseStation, choiceSentence } from './world/arrangeMode';
 import { agreeWithPlace, thePlace, toPlace } from './world/placeArticle';
-import { guardianSigns, ofPlace, placeSigns, placeSignsSentence } from './world/placeSentence';
+import { placeSigns, placeSignsSentence } from './world/placeSentence';
 import type { LinkPhrases } from './world/linkWord';
 import { startingStations } from './world/terrain/markers';
 import type { World } from './engine/state';
@@ -105,12 +105,12 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
     else amenagement.ouvrir();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enPanneau, amenagement.ouvert]);
-  const choisi = (genre: 'lieu' | 'gardien', id: BiomeId) => choix?.genre === genre && choix.id === id;
+  const choisi = (id: BiomeId) => choix?.genre === 'lieu' && choix.id === id;
   // Dans le panneau, à chaque nouveau choix : il défile jusqu'au début de la ligne choisie, son nom juste sous le titre
   // (qui reste en haut) ; rien de choisi, il revient en haut. Les flèches, qui gardent le même choix, ne le font pas
   // bouger.
   const section = useRef<HTMLElement>(null);
-  const cleDuChoix = choix?.genre === 'lieu' || choix?.genre === 'gardien' ? `${choix.genre}:${choix.id}` : choix ? 'autre' : '';
+  const cleDuChoix = choix?.genre === 'lieu' ? `${choix.genre}:${choix.id}` : choix ? 'autre' : '';
   useEffect(() => {
     if (!enPanneau || cleDuChoix === 'autre') return;
     const panneau = section.current?.closest<HTMLElement>('.island-sheet');
@@ -135,25 +135,21 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
       {amenagement.ouvert && (
         <>
           <ul className="arrange-list-items">
-            {islandsOf(a).flatMap((b) => {
+            {islandsOf(a).map((b) => {
               const fixe = isFixedPlace(b.id);
               const reuni = joinedWith(state.world, b.id);
               const voisin = amenagement.voisinAReunir(b.id);
               const elements = sesElements(state.world, b.id, a, amenagement.mot);
               const signes = fixe ? null : placeSigns(state.world, b.id, undefined, nomDuLieu);
-              // Son Gardien, dans la même ligne de signes : son île pour repère, la flèche, l'écart.
-              const gardien = guardianSigns(state.world, b.id, undefined, nomDuLieu);
               // Ce que la ligne dit en mots (lecteurs d'écran) : sa place, ou qu'il est le point de départ ; réuni, à qui.
               const lu = `${b.name} : ${fixe ? 'le point de départ de la région, il ne bouge pas' : signes ? placeSignsSentence(signes) : ''}.${reuni ? ` ${agreeWithPlace(b.name, 'Réuni')} ${toPlaceName(reuni)}.` : ''}`;
-              // Le Gardien d'un lieu encore fermé reste caché, sans ligne (choix 6a du mainteneur, 7 octobre 2026).
-              const gardienVisible = isBiomeUnlocked(b.id, state.world.links);
-              return [
-                <li key={b.id} className={choisi('lieu', b.id) ? 'arrange-list-chosen' : undefined}>
+              return (
+                <li key={b.id} className={choisi(b.id) ? 'arrange-list-chosen' : undefined}>
                   <p>
                     <span className="visually-hidden">{lu}</span>
                     <span aria-hidden="true">
                       <strong>{b.name}</strong>
-                      {choisi('lieu', b.id) && (
+                      {choisi(b.id) && (
                         <>
                           {' '}
                           <Icon name="check" />
@@ -179,7 +175,7 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
                     </span>
                   </p>
                   {!fixe && (
-                    <IconButton icone="amenager" nom={`Déplacer ${b.name}`} mot="Déplacer" aria-pressed={choisi('lieu', b.id)} onClick={() => amenagement.intention({ genre: 'ile', id: b.id })} />
+                    <IconButton icone="amenager" nom={`Déplacer ${b.name}`} mot="Déplacer" aria-pressed={choisi(b.id)} onClick={() => amenagement.intention({ genre: 'ile', id: b.id })} />
                   )}
                   {voisin && (
                     <IconButton icone="reunir" nom={`Réunir ${b.name}…`} mot="Réunir" aria-pressed={amenagement.question?.id === b.id} onClick={() => amenagement.demanderReunion(b.id)} />
@@ -211,32 +207,8 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
                       </ul>
                     </details>
                   )}
-                </li>,
-                gardienVisible ? (
-                  <li key={`${b.id}-gardien`} className={choisi('gardien', b.id) ? 'arrange-list-chosen' : undefined}>
-                    <p>
-                      <span className="visually-hidden">{`Le Gardien ${ofPlace(b.name)} : ${placeSignsSentence(gardien)}.`}</span>
-                      <span aria-hidden="true">
-                        <Icon name="shield" />
-                        {choisi('gardien', b.id) && (
-                          <>
-                            {' '}
-                            <Icon name="check" />
-                          </>
-                        )}{' '}
-                        <PlaceSignsLine signes={gardien} />
-                      </span>
-                    </p>
-                    <IconButton
-                      icone="amenager"
-                      nom={`Déplacer le Gardien ${ofPlace(b.name)}`}
-                      mot="Déplacer"
-                      aria-pressed={choisi('gardien', b.id)}
-                      onClick={() => amenagement.intention({ genre: 'creature', id: b.id, gardien: true })}
-                    />
-                  </li>
-                ) : null,
-              ];
+                </li>
+              );
             })}
           </ul>
           <ArrangeBar amenagement={amenagement} className="arrange-bar-inline" croix />

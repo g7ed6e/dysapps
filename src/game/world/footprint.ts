@@ -1,5 +1,5 @@
 // L'emprise des lieux sur la grille d'une région (GD-9, L2) : le cadre fixe de chaque région, l'emprise de chaque lieu
-// (sa terre, l'îlot de son Gardien, les îlots des grandes constructions qui se tiennent à son large, le quai du port),
+// (sa terre, où se tient son Gardien depuis GD-11, les îlots des grandes constructions qui se tiennent à son large, le quai du port),
 // les lieux réunis, et l'écart d'eau qui sépare deux emprises. Code pur, sans Three.js.
 import { type BiomeId } from '../biomes';
 import { getArchipelago } from './archipelago';
@@ -8,9 +8,8 @@ import { BIOMES } from '../biomes';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, isthmusOf, startingIsland } from './map';
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
-import { chosenGuardian, STEP, type PlacePose, type Rectangle, turnRectangle } from './placement';
-import type { GuardianPlace, Layout, LayoutGuardian, LayoutSpot } from './savedLayout';
-import { ISLET_H, ISLET_W, rectangleDeLIlot, rectangleDeLIlotAutour } from './terrain/islets';
+import { STEP, type PlacePose, type Rectangle, turnRectangle } from './placement';
+import type { Layout, LayoutSpot } from './savedLayout';
 
 /**
  * Le cadre de chaque région, en cases du monde : la Carte le montre tout entier, la mer et ses écueils y sont semés une
@@ -29,7 +28,8 @@ import { ISLET_H, ISLET_W, rectangleDeLIlot, rectangleDeLIlotAutour } from './te
  * lieu de l'est ; les noms de la Carte sont mesurés avec ce cadre, mapLabels.test.ts), 168 × 140 aux Anciens Ateliers
  * (28 cases), 208 × 120 aux Îles du Ciel (8 cases), sous les 192 × 144 des Premiers Rivages, qui tiennent sur la Carte de
  * la tablette. Le Glacier et la Gare ne tournent toujours pas ; la Grammaire (5e) et le Refuge des carnets (3e), dans des
- * régions plus pleines, n'ont plus de place libre tournés non plus (`SANS_PLACE`, arrange.test.ts).
+ * régions plus pleines, n'avaient plus de place libre tournés non plus. Depuis GD-11 (les îlots des Gardiens retirés),
+ * chaque lieu mobile trouve une place tourné (arrange.test.ts) ; les îles agrandies tiennent dans les mêmes cadres.
  */
 const REGION_FRAMES: Readonly<Record<ArchipelagoId, Readonly<Rectangle>>> = Object.freeze({
   '6e': Object.freeze({ x0: -20, y0: -13, x1: 172, y1: 131 }),
@@ -43,7 +43,7 @@ export function frameOf(a: ArchipelagoId): Readonly<Rectangle> {
   return REGION_FRAMES[a];
 }
 
-/** Au moins tant de cases d'eau entre deux emprises de lieux qui ne sont pas réunis (îlot du Gardien compris). */
+/** Au moins tant de cases d'eau entre deux emprises de lieux qui ne sont pas réunis. */
 export const GAP_BETWEEN_PLACES = 4;
 
 /** Une liaison passe à tant de cases au moins de toute emprise (hors du départ de ses deux bouts) : sur l'eau, au large. */
@@ -82,54 +82,19 @@ function monumentRectangle(m: MonumentDef, def: IslandDef = islandDef(m.biome)):
   return { x0: o.x, y0: o.y, x1: o.x + MONUMENT_ISLET, y1: o.y + MONUMENT_ISLET };
 }
 
-/** Une part de l'emprise d'un lieu : sa terre, l'îlot de son Gardien, l'îlot d'une grande construction, le quai du port. */
+/** Une part de l'emprise d'un lieu : sa terre, l'îlot d'une grande construction, le quai du port. */
 export interface FootprintPart extends Rectangle {
   lieu: BiomeId;
-  genre: 'terre' | 'ilot' | 'monument' | 'quai';
-}
-
-/** Le coin, dans le monde, de l'îlot détaché d'un Gardien à une place de la grille de sa région (en pas). */
-export function detachedIsletCorner(a: ArchipelagoId, spot: { x: number; y: number }): { x: number; y: number } {
-  const c = REGION_FRAMES[a];
-  return { x: c.x0 + spot.x * STEP, y: c.y0 + spot.y * STEP };
+  genre: 'terre' | 'monument' | 'quai';
 }
 
 /**
- * Le rectangle de l'îlot du Gardien d'un lieu dans le monde, son îlot déplacé autour de lui (GD-9, `LayoutGuardian`) :
- * sur un des quatre côtés du lieu (dans son repère), à la même distance de sa terre qu'aujourd'hui (`ISLET_GAP`), et à
- * `step` pas le long de ce côté depuis sa place d'aujourd'hui (devant : au droit du bord gauche du cœur ; sur les
- * autres côtés, au droit du bord avant ou gauche du cœur). Devant, au pas 0, c'est sa place de la carte de départ
- * (`rectangleDeLIlot`). Le lieu tourné, l'îlot tourne avec lui.
+ * L'emprise d'un lieu dans le monde, à sa place (ou à celle de `def`) : les rectangles de sa terre (son Gardien s'y tient,
+ * GD-11), de ses grandes constructions, du quai (le port ne bouge pas : il est au point de départ).
  */
-export function guardianIsletRectangle(def: IslandDef, g: GuardianPlace & { at?: { x: number; y: number } }): Rectangle {
-  // Détaché de son lieu (choix 4a du mainteneur) : à sa place de la grille de la région, de face, quoi que fasse son lieu.
-  const coin = g.at ?? (g.spot ? detachedIsletCorner(archipelagoOfIsland(def.id), g.spot) : null);
-  if (coin) return { x0: coin.x, y0: coin.y, x1: coin.x + ISLET_W, y1: coin.y + ISLET_H };
-  const r = rectangleDeLIlotAutour(def, g);
-  const t = turnRectangle({ x0: r.x0 - def.core.x, y0: r.y0 - def.core.y, x1: r.x1 - def.core.x, y1: r.y1 - def.core.y }, def.quarts);
-  return { x0: def.core.x + t.x0, y0: def.core.y + t.y0, x1: def.core.x + t.x1, y1: def.core.y + t.y1 };
-}
-
-/**
- * L'îlot du Gardien d'un lieu à sa vraie place dans la disposition de la partie (`chosenGuardian`) : devant son lieu,
- * déplacé autour de lui, ou détaché (choix 4a du mainteneur). Le décor (baleines, brume, nuages, monuments) le lit.
- */
-export function isletInWorld(def: IslandDef): Rectangle {
-  const g = chosenGuardian(def.id);
-  return g ? guardianIsletRectangle(def, g) : rectangleDeLIlot(def);
-}
-
-/**
- * L'emprise d'un lieu dans le monde, à sa place (ou à celle de `def`) : les rectangles de sa terre, de son îlot (à sa
- * place, ou autour du lieu là où `gardien` le met), de ses grandes constructions, du quai (le port ne bouge pas : il est
- * au point de départ).
- */
-export function footprintOf(id: BiomeId, def: IslandDef = islandDef(id), gardien?: GuardianPlace): FootprintPart[] {
+export function footprintOf(id: BiomeId, def: IslandDef = islandDef(id)): FootprintPart[] {
   const a = getArchipelago(archipelagoOfIsland(id));
-  const out: FootprintPart[] = [
-    { lieu: id, genre: 'terre', ...landRectangle(def) },
-    { lieu: id, genre: 'ilot', ...(gardien ? guardianIsletRectangle(def, gardien) : rectangleDeLIlot(def)) },
-  ];
+  const out: FootprintPart[] = [{ lieu: id, genre: 'terre', ...landRectangle(def) }];
   for (const m of monumentsOf(a.classe)) if (m.biome === id) out.push({ lieu: id, genre: 'monument', ...monumentRectangle(m, def) });
   if (a.port === id) {
     // Le quai suit son lieu (il est dessiné depuis sa côte) ; le lieu du port, au point de départ, ne tourne pas.
@@ -168,20 +133,14 @@ export function placedIsland(id: BiomeId, pose: PlacePose): IslandDef {
  * leur place de départ gardent leur écart d'aujourd'hui (la carte de départ se cale sur le pas avec la PR suivante).
  * `null` si la disposition ne tient pas.
  */
-export function fittingPlaces(
-  a: ArchipelagoId,
-  islands: Partial<Record<BiomeId, LayoutSpot>>,
-  guardians: Partial<Record<BiomeId, LayoutGuardian>> = {},
-): Map<BiomeId, PlacePose> | null {
+export function fittingPlaces(a: ArchipelagoId, islands: Partial<Record<BiomeId, LayoutSpot>>): Map<BiomeId, PlacePose> | null {
   const poses = new Map<BiomeId, PlacePose>();
   for (const [id, spot] of Object.entries(islands) as [BiomeId, LayoutSpot][]) poses.set(id, poseOfSpot(a, spot));
   const lieux = BIOMES.filter((b) => b.classe === a).map((b) => {
     const p = poses.get(b.id);
-    // Un lieu dont le Gardien a quitté sa place compte comme déplacé : son îlot laisse l'écart de règle.
-    return { def: p ? placedIsland(b.id, p) : startingIsland(b.id), bouge: p !== undefined || guardians[b.id] !== undefined };
+    return p ? placedIsland(b.id, p) : startingIsland(b.id);
   });
-  const bougent = new Set(lieux.filter((l) => l.bouge).map((l) => l.def.id));
-  return tooSmallGaps(a, lieux.map((l) => l.def), (id) => bougent.has(id), (id) => guardians[id]).length ? null : poses;
+  return tooSmallGaps(a, lieux, (id) => poses.has(id)).length ? null : poses;
 }
 
 /**
@@ -200,18 +159,11 @@ export interface TooSmallGap {
  * dans le cadre et laisse au moins `GAP_BETWEEN_PLACES` cases d'eau à chacun, sauf à celui avec qui il est réuni ;
  * deux lieux restés à leur place de départ ne se touchent pas. Sans `bouge`, tous les lieux comptent comme déplacés.
  */
-export function tooSmallGaps(
-  a: ArchipelagoId,
-  lieux: readonly IslandDef[],
-  bouge: (id: BiomeId) => boolean = () => true,
-  gardien: (id: BiomeId) => GuardianPlace | undefined = () => undefined,
-): TooSmallGap[] {
+export function tooSmallGaps(a: ArchipelagoId, lieux: readonly IslandDef[], bouge: (id: BiomeId) => boolean = () => true): TooSmallGap[] {
   const out: TooSmallGap[] = [];
   const c = frameOf(a);
-  const parts = lieux.map((d) => footprintOf(d.id, d, gardien(d.id)));
+  const parts = lieux.map((d) => footprintOf(d.id, d));
   parts.forEach((ps, i) => {
-    // L'îlot détaché d'un Gardien (choix 4a) se tient loin de tout lieu, le sien compris.
-    if (gardien(lieux[i].id)?.spot) for (const e of detachedIsletTooClose(ps)) out.push(e);
     if (bouge(lieux[i].id))
       for (const p of ps) {
         const dehors = Math.min(p.x0 - c.x0, p.y0 - c.y0, c.x1 - p.x1, c.y1 - p.y1);
@@ -231,17 +183,6 @@ export function tooSmallGaps(
 }
 
 /**
- * L'îlot détaché d'un Gardien (choix 4a du mainteneur) trop près des autres parts de l'emprise de son propre lieu (sa
- * terre, ses grandes constructions, son quai) : moins de `GAP_BETWEEN_PLACES` cases d'eau. Contre son lieu (`side`,
- * `step`), l'îlot se tient à `ISLET_GAP` cases, et ceci ne le regarde pas.
- */
-export function detachedIsletTooClose(parts: readonly FootprintPart[]): TooSmallGap[] {
-  const ilot = parts.find((p) => p.genre === 'ilot');
-  if (!ilot) return [];
-  return parts.filter((p) => p !== ilot && gapBetween(ilot, p) < GAP_BETWEEN_PLACES).map((p) => ({ place: ilot.lieu, other: p.lieu, kind: 'ilot' as const, gap: gapBetween(ilot, p) }));
-}
-
-/**
  * Les poses des lieux d'une disposition (pour `placeIslands`, ./placement.ts) : les lieux déplacés seulement. Une
  * région dont la disposition ne tient pas sur sa grille (`fittingPlaces`) reste à sa carte de départ.
  */
@@ -249,7 +190,7 @@ export function posesOfLayout(layout: Layout | undefined): Map<BiomeId, PlacePos
   const out = new Map<BiomeId, PlacePose>();
   if (!layout) return out;
   for (const a of ARCHIPELAGO_IDS) {
-    const tenus = fittingPlaces(a, layout[a]?.islands ?? {}, layout[a]?.guardians ?? {});
+    const tenus = fittingPlaces(a, layout[a]?.islands ?? {});
     if (tenus) for (const [id, p] of tenus) out.set(id, p);
   }
   return out;

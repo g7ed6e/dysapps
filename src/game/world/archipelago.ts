@@ -519,12 +519,20 @@ export function conditionText(bridge: BridgeDef, bridges: string[]): string | nu
 }
 
 /**
+ * Un ouvrage est-il construit (le pont du départ, ou dans `bridges`) ? Le seul état de `bridgeState` qui se lit sans
+ * les îles ouvertes ni le tracé des liaisons : la marche, qui ne demande que celui-là, l'appelle à chaque ouvrage.
+ */
+export function bridgeBuilt(bridge: BridgeDef, bridges: readonly string[]): boolean {
+  return bridge.cost === 0 || bridges.includes(bridge.id);
+}
+
+/**
  * Construit ; constructible (une de ses deux îles est ouverte, la condition est remplie) ; bloqué (île ouverte mais
  * condition à remplir) ; ou trop loin pour l'instant. Sans `world`, les conditions ne sont pas regardées. `open` : les
  * îles ouvertes, si l'appelant les a déjà.
  */
 export function bridgeState(bridge: BridgeDef, bridges: string[], world?: WorldProgress, open?: Set<BiomeId>): BridgeState {
-  if (bridge.cost === 0 || bridges.includes(bridge.id)) return 'built';
+  if (bridgeBuilt(bridge, bridges)) return 'built';
   const ouvertes = open ?? reachableIslands(bridges);
   if (!ouvertes.has(bridge.from) && !ouvertes.has(bridge.to)) return 'far';
   // Une liaison qui ne tiendrait pas (elle couperait un lieu ou une liaison posée, ou serait trop longue) : pas proposée.

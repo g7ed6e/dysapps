@@ -1,14 +1,14 @@
 // La disposition de chaque région dans la sauvegarde (GD-9, L3, la donnée seulement) : le champ facultatif
-// `world.layout`. Il garde la place et l'orientation de chaque lieu, le côté, la place et l'orientation de chaque
-// Gardien, la place des bornes, les arrivées des liaisons, les lieux réunis, les raccourcis posés et les liaisons à
+// `world.layout`. Il garde la place et l'orientation de chaque lieu, la place des bornes, les arrivées des liaisons, les lieux réunis, les raccourcis posés et les liaisons à
 // reposer. Absent ou invalide, c'est la carte de départ ; une région dont les lieux sont invalides est oubliée seule,
 // les autres restent ; une borne, une arrivée, un raccourci ou une liaison à reposer invalide n'oublie qu'elle-même.
 // Ici, la forme de la donnée (des règles, sans le monde) ; qu'une disposition tienne sur la grille (dans son cadre, ses
-// lieux assez écartés, l'îlot détaché d'un Gardien loin de tout lieu) se vérifie quand on la pose (`posesOfLayout`, ./footprint.ts). Aucun écran ne l'écrit
+// lieux assez écartés) se vérifie quand on la pose (`posesOfLayout`, ./footprint.ts). Aucun écran ne l'écrit
 // encore (le geste « Aménager » vient avec la PR 2). Code pur, sans Three.js.
 import { BIOMES, getBiome, type BiomeId } from '../biomes';
 import { getBridge } from './archipelago';
 import { type ArchipelagoId, ARCHIPELAGO_IDS, archipelagoOfIsland } from './archipelagos';
+import { CORE, COTE_DU_COEUR, DEFAULT_CORE_SIDE } from './coreSide';
 
 /** Une orientation : de 0 à 3 quarts de tour (`Quarts`, ./placement.ts). */
 export type LayoutTurn = 0 | 1 | 2 | 3;
@@ -26,22 +26,6 @@ export interface LayoutSpot {
   turn: LayoutTurn;
 }
 
-/**
- * La place d'un Gardien : le côté de son lieu où se tient son îlot, sa place le long de ce côté (en pas), son orientation.
- * Détaché de son lieu (GD-9, 7 octobre 2026, choix 4a du mainteneur) : `spot`, la place du coin de son îlot sur la grille
- * de la région, en pas depuis le coin de son cadre ; `side` et `step` ne comptent plus (devant, au pas 0). Absente : il
- * se tient contre son lieu (`side`, `step`), comme avant.
- */
-export interface LayoutGuardian {
-  side: LayoutSide;
-  step: number;
-  turn: LayoutTurn;
-  spot?: { x: number; y: number };
-}
-
-/** Où se tient l'îlot d'un Gardien, sans son orientation : contre son lieu (`side`, `step`), ou détaché (`spot`). */
-export type GuardianPlace = Pick<LayoutGuardian, 'side' | 'step' | 'spot'>;
-
 /** L'arrivée d'une liaison sur un lieu : le côté du lieu (dans son repère) et la place le long de ce côté, en pas. */
 export interface LayoutLanding {
   side: LayoutSide;
@@ -52,8 +36,6 @@ export interface LayoutLanding {
 export interface RegionLayout {
   /** La place et l'orientation de chaque lieu déplacé. */
   islands?: Partial<Record<BiomeId, LayoutSpot>>;
-  /** Le côté, la place (ou la place détachée, `spot`) et l'orientation de chaque Gardien déplacé. */
-  guardians?: Partial<Record<BiomeId, LayoutGuardian>>;
   /** La place de chaque borne déplacée (clé « lieu:mission »), en cases du repère de son lieu. */
   stations?: Record<string, { x: number; y: number }>;
   /** Les arrivées choisies de chaque liaison (identifiant de liaison), à ses deux bouts. */
@@ -93,7 +75,11 @@ const isSide = (v: unknown): v is LayoutSide => typeof v === 'string' && (LAYOUT
 const IDS = new Set<string>(BIOMES.map((b) => b.id));
 const isIslandOf = (a: ArchipelagoId, v: string): v is BiomeId => IDS.has(v) && archipelagoOfIsland(v as BiomeId) === a;
 
-/** Une arrivée lue, ou `null`. Sa place le long du côté reste dans un lieu (au plus 8 pas de chaque côté du cœur). */
+/**
+ * Une arrivée lue, ou `null`. Sa place le long du côté reste dans la terre d'un lieu, côte comprise : au plus 8 pas de
+ * l'origine du lieu, quelle que soit la taille de son cœur (6 au plus depuis les îles agrandies de GD-11 ; vérifié par
+ * savedLayout.test.ts sur chaque arrivée possible de chaque lieu).
+ */
 function readLanding(v: unknown): LayoutLanding | null {
   if (!isRecord(v) || !isSide(v.side) || !isInt(v.step) || Math.abs(v.step) > 8) return null;
   return { side: v.side, step: v.step };
@@ -112,16 +98,15 @@ export const LAYOUT_LAST_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: numb
 };
 
 /**
- * La dernière place détachée de l'îlot d'un Gardien (choix 4a du mainteneur) dans chaque région, en pas depuis le coin de
- * son cadre : l'îlot (13 × 12 cases, ./terrain/islets.ts) y tient encore entier. Recopiée ici comme `LAYOUT_LAST_SPOT`
- * (savedLayout.test.ts vérifie qu'elles s'accordent).
+ * Les cases du cœur d'un lieu dans son repère, bornes comprises, sur chaque axe : le côté du cœur de l'île
+ * (`COTE_DU_COEUR`, `DEFAULT_CORE_SIDE`, ./coreSide.ts) autour du cœur d'origine [0, `CORE`) ; de −3 à 18 à 22 de côté, de
+ * −5 à 20 à 26 (les îles-écoles). Les mêmes bornes que `bornesDuCoeur`, sans la carte.
  */
-export const LAYOUT_LAST_ISLET_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: number; y: number }>>> = {
-  '6e': { x: 44, y: 33 },
-  '5e': { x: 38, y: 32 },
-  '4e': { x: 38, y: 32 },
-  '3e': { x: 48, y: 27 },
-};
+function coreCells(id: BiomeId): { min: number; max: number } {
+  const cote = COTE_DU_COEUR[id] ?? DEFAULT_CORE_SIDE;
+  const min = (CORE - cote) / 2;
+  return { min, max: min + cote - 1 };
+}
 
 /** Une mission du lieu : la clé d'une borne est « lieu:mission », la mission parmi celles du lieu (toutes LV2 comprises). */
 function isStationKey(a: ArchipelagoId, key: string): boolean {
@@ -132,18 +117,10 @@ function isStationKey(a: ArchipelagoId, key: string): boolean {
 
 /**
  * La disposition d'une région, lue et vérifiée, ou `null` si rien n'en reste (la carte de départ). Les lieux et les
- * lieux réunis vont ensemble : une entrée invalide de `islands`, `joined` ou `guardians` fait oublier toute la région. Une
- * entrée invalide de `stations`, `landings`, `shortcuts` ou `relink` n'oublie qu'elle-même ; la place détachée invalide
- * d'un Gardien (`spot`) le ramène seulement devant son lieu.
+ * lieux réunis vont ensemble : une entrée invalide de `islands` ou `joined` fait oublier toute la région. Une entrée
+ * invalide de `stations`, `landings`, `shortcuts` ou `relink` n'oublie qu'elle-même. Les places des Gardiens d'avant
+ * GD-11 (`guardians`) sont ignorées : chaque Gardien se tient sur son île.
  */
-/**
- * L'orientation d'un Gardien détaché (celle du monde) une fois revenu contre son lieu, où elle se compte depuis son lieu
- * tourné de `lieu` quarts : le Gardien reste tourné dans le monde comme il l'était.
- */
-export function turnAgainstPlace(turn: LayoutTurn, lieu: LayoutTurn): LayoutTurn {
-  return (((turn - lieu) % 4) + 4) % 4 as LayoutTurn;
-}
-
 function readRegion(a: ArchipelagoId, raw: unknown): RegionLayout | null {
   if (!isRecord(raw)) return null;
   const out: RegionLayout = {};
@@ -171,32 +148,17 @@ function readRegion(a: ArchipelagoId, raw: unknown): RegionLayout | null {
     }
     if (joined.length) out.joined = joined;
   }
-  if (raw.guardians !== undefined) {
-    if (!isRecord(raw.guardians)) return null;
-    const guardians: Partial<Record<BiomeId, LayoutGuardian>> = {};
-    const max = LAYOUT_LAST_ISLET_SPOT[a];
-    for (const [id, g] of Object.entries(raw.guardians)) {
-      if (!isIslandOf(a, id) || !isRecord(g) || !isSide(g.side) || !isInt(g.step) || Math.abs(g.step) > 8 || !isTurn(g.turn)) return null;
-      if (g.spot === undefined) {
-        guardians[id] = { side: g.side, step: g.step, turn: g.turn };
-        continue;
-      }
-      // Détaché (choix 4a) : une place hors de la grille de la région n'en est pas une ; l'îlot revient devant son lieu,
-      // et rien d'autre ne s'oublie.
-      const s = g.spot;
-      const x = isRecord(s) && isInt(s.x) && s.x >= 0 && s.x <= max.x ? s.x : null;
-      const y = isRecord(s) && isInt(s.y) && s.y >= 0 && s.y <= max.y ? s.y : null;
-      // Revenu devant son lieu, il reste tourné dans le monde comme il l'était (`turnAgainstPlace`, comme quand
-      // `settleNewPlaces` ramène un îlot qui ne tient plus) : les deux chemins donnent la même orientation.
-      guardians[id] = x !== null && y !== null ? { side: 'front', step: 0, turn: g.turn, spot: { x, y } } : { side: 'front', step: 0, turn: turnAgainstPlace(g.turn, out.islands?.[id]?.turn ?? 0) };
-    }
-    if (Object.keys(guardians).length) out.guardians = guardians;
-  }
+  // `guardians` : la place des Gardiens autour de leur lieu (GD-9, jusqu'au 8 octobre 2026). Depuis GD-11, chaque
+  // Gardien se tient sur son île : une sauvegarde qui les garde se lit toujours, et ce champ est ignoré.
   if (isRecord(raw.stations)) {
     const stations: Record<string, { x: number; y: number }> = {};
-    // Une borne reste dans le cœur de son lieu (au plus 20 × 20, de −2 à 18).
-    for (const [key, p] of Object.entries(raw.stations))
-      if (isStationKey(a, key) && isRecord(p) && isInt(p.x) && isInt(p.y) && p.x >= -2 && p.x <= 17 && p.y >= -2 && p.y <= 17) stations[key] = { x: p.x, y: p.y };
+    // Une borne reste dans le cœur de son lieu, qui suit la taille du cœur de son île (GD-11 : 22 × 22 cases, 26 × 26
+    // pour les îles-écoles, dont la bande de devant commence à x = −3).
+    for (const [key, p] of Object.entries(raw.stations)) {
+      if (!isStationKey(a, key) || !isRecord(p) || !isInt(p.x) || !isInt(p.y)) continue;
+      const c = coreCells(key.split(':')[0] as BiomeId);
+      if (p.x >= c.min && p.x <= c.max && p.y >= c.min && p.y <= c.max) stations[key] = { x: p.x, y: p.y };
+    }
     if (Object.keys(stations).length) out.stations = stations;
   }
   const isLinkOf = (id: unknown): id is string => {

@@ -8,7 +8,6 @@
 // le long de X ; le nuage s'allonge le long de X, le dessous plat à Y = 0.
 import { AMBIENCE, mixColor } from './daylight';
 import { ALTITUDE, landBox, mapOf, type ArchipelagoId } from './map';
-import { isletInWorld } from './footprint';
 import { passPhase, type WhaleRoute } from './whalePass';
 import { BRUME, type Couleur } from './palette';
 import { cellHash } from '../../core/random';
@@ -55,20 +54,13 @@ export const HAUT_DES_NUAGES = { ciel: 16, ailleurs: 12 } as const;
 export function placeDesNuages(a: ArchipelagoId, bounds: { minX: number; minY: number; maxY: number }, largeur: number): NuagePose[] {
   const spots = nuagesDe(a);
   const ciel = Boolean(AMBIENCE[a].sky);
-  // Les îlots des Gardiens (devant leur île, voir `bossIsletOrigin`) : aucun nuage, haut ou bas, n'y mord.
-  const ilots = ciel
-    ? mapOf(a).map((d) => {
-        const r = isletInWorld(d);
-        return { x0: r.x0, x1: r.x1 - 1, y0: r.y0, y1: r.y1 - 1 };
-      })
-    : [];
   const iles = ciel ? mapOf(a).map((d) => landBox(d)) : [];
   const MARGE = 3;
   return spots.map(([fx, fy, len], i) => {
     const bas = ciel && i >= NUAGES.length;
     const n: NuagePose = { x: bounds.minX + fx * largeur, y: bas ? 4 + (i % 3) : ciel ? HAUT_DES_NUAGES.ciel : HAUT_DES_NUAGES.ailleurs, z: bounds.minY + fy * (bounds.maxY - bounds.minY), len };
-    // Un nuage haut évite les îles et les îlots ; un nuage bas, la mer de nuages sous les îles, seulement les îlots.
-    const aEviter = bas ? ilots : [...iles, ...ilots];
+    // Un nuage haut évite les îles ; un nuage bas passe sous elles, dans la mer de nuages.
+    const aEviter = bas ? [] : iles;
     const dessus = (b: (typeof iles)[number]) => n.x + n.len > b.x0 - MARGE && n.x < b.x1 + MARGE && n.z + 1.2 > b.y0 - MARGE && n.z < b.y1 + MARGE;
     for (let essai = 0; essai < aEviter.length; essai++) {
       const b = aEviter.find(dessus);

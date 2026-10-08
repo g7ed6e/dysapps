@@ -527,13 +527,14 @@ describe('le budget du terrain', () => {
 it('le rebord plat de la dalle : la Forge reste plate jusqu’à son bord, la roche descend jusqu’à elle, on y marche à plat', async () => {
   // Lot R4 (décision du directeur artistique au lot R3). Comme la vue 3D : le décor en primitives ne fige pas sa case.
   const { rangerLeDecor } = await import('./decorMesh');
-  const { islandDef, CORE } = await import('./map');
+  const { islandDef, coeurDe } = await import('./map');
   const { progress, world: village } = toutConstruit();
   const cubes = worldCubes('4e', progress, village, false);
   const sol = cubes.filter((c) => c.sol);
   const champ = champDuSol('4e', sol, rangerLeDecor(cubes.filter((c) => !c.sol)).reste);
-  const { core } = islandDef('maths-4e-powers');
-  const dalle = champ.colonnes.filter((c) => c.x >= core.x && c.x < core.x + CORE && c.y >= core.y && c.y < core.y + CORE);
+  // La dalle : le cœur agrandi et ses marges (GD-11), jusqu'à son bord.
+  const coeur = coeurDe(islandDef('maths-4e-powers'));
+  const dalle = champ.colonnes.filter((c) => c.x >= coeur.x0 && c.x < coeur.x1 && c.y >= coeur.y0 && c.y < coeur.y1);
   const matiere = (c: { matieres: string[] }) => c.matieres[c.matieres.length - 1];
   const laDalle = matiere(dalle[0]);
   const dessus = (c: { matieres: string[] }) => couleurDeMatiere('4e', matiere(c) as never).dessus;

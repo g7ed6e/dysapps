@@ -1,39 +1,31 @@
-// Aménager sa région (GD-9, L5, les actions pures) : déplacer et tourner un lieu, un Gardien autour de son lieu, une
+// Aménager sa région (GD-9, L5, les actions pures) : déplacer et tourner un lieu (son Gardien le suit, GD-11), une
 // borne dans la bande de devant, une arrivée ; les liaisons qui ne tiennent plus deviennent « à reposer », se reposent
 // gratuitement, et rien ne se perd ; la carte de départ rend tout.
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
 import { reachableIslands } from './archipelago';
-import { ARCHIPELAGO_IDS } from './archipelagos';
+import { ARCHIPELAGO_IDS, archipelagoOfIsland } from './archipelagos';
 import {
   backToStartingMap,
   currentLandings,
   DIRECTION_STEP,
   DIRECTIONS,
-  freeGuardianSpots,
-  guardianPlaces,
-  placeIn,
   spotNear,
   freeLandings,
   freeSpots,
   freeStationSpots,
-  guardianFacing,
-  guardianOf,
   isFixedPlace,
   isFreeSpot,
+  joinIslands,
   linksBrokenBy,
   linksToRelink,
-  moveGuardian,
   moveIsland,
   moveLanding,
   moveStation,
   nearestFreeSpot,
-  nearestGuardianSpot,
   stepSpot,
-  stepGuardianSpot,
   stationSpots,
-  isFreeGuardianSpot,
   joinCandidates,
   joinCandidatesAt,
   landingSpots,
@@ -45,15 +37,12 @@ import {
   startingSpot,
   stationBand,
   stationOf,
-  turnGuardian,
   turnIsland,
 } from './arrange';
 import { toutConstruit } from './budget';
-import { detachedIsletCorner, fittingPlaces, footprintOf, frameOf, gapBetween, guardianIsletRectangle, placedIsland, posesOfLayout, poseOfSpot } from './footprint';
-import { startingIsland } from './map';
+import { fittingPlaces, frameOf, posesOfLayout } from './footprint';
 import { placesOf, startingPlaces } from './routing';
 import { LAYOUT_LAST_SPOT, sanitizeLayout } from './savedLayout';
-import { rectangleDeLIlot } from './terrain/islets';
 import { questStations } from './terrain/markers';
 
 /** Une partie toute reliée : chaque région ouverte, ses liaisons posées. */
@@ -154,17 +143,13 @@ describe('les places des lieux', () => {
     expect(loin).toBeDefined();
   });
 
-  it('aux 5e, 4e et 3e, chaque lieu mobile de la carte de départ peut tourner (à sa place ou ailleurs), sauf quatre (HG-3, SC-3)', () => {
-    // Tournés, le Glacier des relatifs (52 × 34 cases avec son monument) et la Gare du futur (4e, 37 × 28) ne trouvaient
-    // aucune place libre (HG-3). Depuis les îles de sciences (SC-3), trois îles de plus par classe sur les places libres :
-    // la Grammaire (5e) et le Refuge des carnets (3e) n'en trouvent plus non plus (mesuré). Limite connue d'Aménager : le
-    // fantôme ne pivote pas, la ligne dit le refus (arrangeMode.test.ts).
-    const SANS_PLACE: readonly BiomeId[] = ['maths-5e-signed-numbers', 'english-5e-grammar', 'english-4e-grammar', 'lv2-3e-travel'];
+  it('dans chaque région, chaque lieu mobile de la carte de départ peut tourner (à sa place ou ailleurs) (GD-11)', () => {
+    // Jusqu'à GD-11, l'îlot du Gardien prenait la place qui manquait à quatre lieux (HG-3, SC-3) ; le Gardien se tient
+    // désormais sur son île, et chaque lieu trouve une place, tourné.
     const w = partie();
     const sans: string[] = [];
-    for (const a of ['5e', '4e', '3e'] as const)
-      for (const id of placesOf(a).filter((p) => !isFixedPlace(p))) if (!turnIsland(w, id).ok) sans.push(id);
-    expect(sans).toEqual(SANS_PLACE);
+    for (const a of ARCHIPELAGO_IDS) for (const id of placesOf(a).filter((p) => !isFixedPlace(p))) if (!turnIsland(w, id).ok) sans.push(id);
+    expect(sans).toEqual([]);
   });
 
   it('tourner un lieu d’un quart de tour, quatre fois, le ramène à son orientation', () => {
@@ -237,140 +222,6 @@ describe('les liaisons à reposer', () => {
   });
 });
 
-describe('les Gardiens autour de leur lieu', () => {
-  it('à sa place de départ, devant, au pas 0 : le même îlot qu’aujourd’hui', () => {
-    for (const a of ARCHIPELAGO_IDS)
-      for (const id of placesOf(a)) expect(guardianIsletRectangle(startingIsland(id), { side: 'front', step: 0 }), id).toEqual(rectangleDeLIlot(startingIsland(id)));
-  });
-
-  it('se déplace sur un des quatre côtés, à une place libre, et garde ce qu’il regarde', () => {
-    const w = partie();
-    const places = freeGuardianSpots(w, VOLCAN);
-    expect(places).toContainEqual({ side: 'front', step: 0 });
-    const ailleurs = places.find((g) => g.side !== 'front' && !g.spot)!;
-    expect(ailleurs).toBeDefined();
-    const w2 = apres(moveGuardian(w, VOLCAN, ailleurs));
-    const g = guardianOf(w2, VOLCAN);
-    expect({ side: g.side, step: g.step }).toEqual(ailleurs);
-    expect(guardianFacing(guardianOf(w, VOLCAN))).toBe('mer');
-    expect(guardianFacing(g)).toBe('mer');
-    expect(posesOfLayout(w2.layout).size).toBe(0);
-    expect(sanitizeLayout(JSON.parse(JSON.stringify(w2.layout)))).toEqual(w2.layout);
-    // Le calage et les flèches restent sur les places libres.
-    const proche = nearestGuardianSpot(w, VOLCAN, { x: 0, y: 0 })!;
-    expect(places).toContainEqual(proche);
-    // Les flèches avancent d'un cran, libre ou pris (choix 3) : contre sa terre, ou détaché (choix 4a), jamais sur place.
-    for (const dir of DIRECTIONS) {
-      const n = stepGuardianSpot(w, VOLCAN, { side: 'front', step: 0 }, dir);
-      if (n) expect(Boolean(n.spot) || (Math.abs(n.step) <= 8 && (n.side !== 'front' || n.step !== 0))).toBe(true);
-    }
-    expect(isFreeGuardianSpot(w, VOLCAN, { side: 'front', step: 0 })).toBe(true);
-    // Une place qui n'est pas contre son lieu : refusée.
-    expect(moveGuardian(w, VOLCAN, { side: 'front', step: 8 })).toEqual({ ok: false, reason: 'occupee' });
-  });
-
-  it('tourne d’un quart de tour à chaque toucher : la mer, la côte, son île, la côte', () => {
-    let w = partie();
-    const vus: string[] = [];
-    for (let i = 0; i < 4; i++) {
-      w = apres(turnGuardian(w, VOLCAN));
-      vus.push(guardianFacing(guardianOf(w, VOLCAN)));
-    }
-    expect(vus).toEqual(['cote', 'ile', 'cote', 'mer']);
-    expect(w.layout).toBeUndefined();
-  });
-});
-
-describe('les Gardiens détachés de leur lieu (7 octobre 2026, choix 4a, 5a du mainteneur)', () => {
-  /** Une place détachée libre loin de la terre du Volcan (plus de 12 cases d'eau). */
-  const auLoin = (w: World) => {
-    const terre = footprintOf(VOLCAN, placeIn(w, VOLCAN)).find((p) => p.genre === 'terre')!;
-    return freeGuardianSpots(w, VOLCAN).find((g) => g.spot && gapBetween(guardianIsletRectangle(placeIn(w, VOLCAN), g), terre) > 12)!;
-  };
-
-  it('son îlot se pose n’importe où dans la région, sur l’eau, à 4 cases au moins de tout lieu', () => {
-    const w = partie();
-    const loin = auLoin(w);
-    expect(loin).toBeDefined();
-    const w2 = apres(moveGuardian(w, VOLCAN, loin));
-    const g = guardianOf(w2, VOLCAN);
-    expect(g.spot).toEqual(loin.spot);
-    const ilot = guardianIsletRectangle(placeIn(w2, VOLCAN), g);
-    const k = detachedIsletCorner('6e', loin.spot!);
-    expect(ilot).toEqual({ x0: k.x, y0: k.y, x1: k.x + 13, y1: k.y + 12 });
-    // Loin de tout lieu, le sien compris ; dans le cadre de sa région.
-    for (const id of placesOf('6e')) for (const p of footprintOf(id, placeIn(w2, id), guardianOf(w2, id))) if (p.genre !== 'ilot' || id !== VOLCAN) expect(gapBetween(ilot, p), id).toBeGreaterThanOrEqual(4);
-    // La disposition tient : la région ne revient pas à la carte de départ, et se relit telle quelle.
-    expect(fittingPlaces('6e', w2.layout?.['6e']?.islands ?? {}, w2.layout?.['6e']?.guardians ?? {})).not.toBeNull();
-    expect(sanitizeLayout(JSON.parse(JSON.stringify(w2.layout)))).toEqual(w2.layout);
-    // Trop près d'un lieu : refusé.
-    const pres = guardianPlaces(w, VOLCAN).find((x) => x.spot && !isFreeGuardianSpot(w, VOLCAN, x));
-    expect(pres && moveGuardian(w, VOLCAN, pres)).toEqual({ ok: false, reason: 'occupee' });
-    // Il revient contre son lieu, devant, au pas 0 : la disposition est vide.
-    expect(apres(moveGuardian(w2, VOLCAN, { side: 'front', step: 0 })).layout).toBeUndefined();
-  });
-
-  it('quand son lieu bouge ou tourne, il reste où il est (choix 5a) ; contre son lieu, il le suit', () => {
-    const w = partie();
-    const w2 = apres(moveGuardian(w, VOLCAN, auLoin(w)));
-    const avant = guardianIsletRectangle(placeIn(w2, VOLCAN), guardianOf(w2, VOLCAN));
-    const ou = freeSpots(w2, VOLCAN).find((x) => x.x !== spotOf(w2, VOLCAN).x)!;
-    const w3 = apres(moveIsland(w2, VOLCAN, ou));
-    expect(guardianIsletRectangle(placeIn(w3, VOLCAN), guardianOf(w3, VOLCAN))).toEqual(avant);
-    const w4 = apres(turnIsland(w3, VOLCAN));
-    expect(guardianIsletRectangle(placeIn(w4, VOLCAN), guardianOf(w4, VOLCAN))).toEqual(avant);
-    // Son lieu ne se pose jamais à moins de 4 cases de son îlot.
-    for (const s2 of freeSpots(w2, VOLCAN)) {
-      const terre = footprintOf(VOLCAN, placedIsland(VOLCAN, poseOfSpot('6e', s2))).find((p) => p.genre === 'terre')!;
-      expect(gapBetween(terre, avant)).toBeGreaterThanOrEqual(4);
-    }
-    // Contre son lieu (côté, pas) : son îlot suit (le comportement d'avant).
-    const ilotDeDepart = guardianIsletRectangle(placeIn(w, VOLCAN), guardianOf(w, VOLCAN));
-    const w5 = apres(moveIsland(w, VOLCAN, freeSpots(w, VOLCAN).find((x) => x.x !== spotOf(w, VOLCAN).x)!));
-    expect(guardianIsletRectangle(placeIn(w5, VOLCAN), guardianOf(w5, VOLCAN))).not.toEqual(ilotDeDepart);
-  });
-
-  it('garde son orientation dans le monde, et dit ce qu’il regarde depuis son îlot', () => {
-    const w = partie();
-    const w2 = apres(moveGuardian(w, VOLCAN, auLoin(w)));
-    expect(guardianOf(w2, VOLCAN).turn).toBe(0);
-    const g = guardianOf(apres(turnGuardian(w2, VOLCAN)), VOLCAN);
-    expect(g.turn).toBe(1);
-    expect(['mer', 'ile', 'cote']).toContain(guardianFacing(g, { dx: 0, dy: 1 }));
-    // De face (orientation 0, il regarde vers le bas de la grille) : son lieu au-dessous, il le regarde.
-    expect(guardianFacing({ ...g, turn: 0 }, { dx: 0, dy: -10 })).toBe('ile');
-    expect(guardianFacing({ ...g, turn: 0 }, { dx: 0, dy: 10 })).toBe('mer');
-  });
-
-  it('une place détachée qui ne tient plus le ramène devant son lieu, sans rien perdre d’autre', () => {
-    const w = partie();
-    const loin = auLoin(w);
-    const w2 = apres(moveGuardian(w, VOLCAN, loin));
-    // Une sauvegarde abîmée : l'îlot posé sur la terre de son lieu.
-    const s0 = startingSpot(VOLCAN);
-    const abimee: World = { ...w2, layout: { ...w2.layout, '6e': { ...w2.layout!['6e'], guardians: { [VOLCAN]: { side: 'front', step: 0, turn: 2, spot: { x: s0.x, y: s0.y } } } } } };
-    const lue = settleNewPlaces(abimee);
-    expect(guardianOf(lue, VOLCAN)).toEqual({ side: 'front', step: 0, turn: 2 });
-    // Son lieu tourné d'un quart : il regardait le monde vers 2, il regarde encore par là, compté depuis son lieu.
-    const tourne = apres(turnIsland(w2, VOLCAN));
-    const abimeeTournee: World = { ...tourne, layout: { ...tourne.layout, '6e': { ...tourne.layout!['6e'], guardians: { [VOLCAN]: { side: 'front', step: 0, turn: 2, spot: { x: s0.x, y: s0.y } } } } } };
-    expect(placeIn(abimeeTournee, VOLCAN).quarts).toBe(1);
-    expect(guardianOf(settleNewPlaces(abimeeTournee), VOLCAN)).toEqual({ side: 'front', step: 0, turn: 1 });
-    // Hors de la grille, à la lecture : de même, et la région reste.
-    const hors = sanitizeLayout({ '6e': { islands: { [VOLCAN]: { x: 2, y: 3, turn: 0 } }, guardians: { [VOLCAN]: { side: 'left', step: 2, turn: 1, spot: { x: -1, y: 4 } } } } });
-    expect(hors?.['6e']?.guardians?.[VOLCAN]).toEqual({ side: 'front', step: 0, turn: 1 });
-    expect(hors?.['6e']?.islands?.[VOLCAN]).toEqual({ x: 2, y: 3, turn: 0 });
-    // Son lieu tourné, hors de la grille à la lecture : la même orientation que par `settleNewPlaces` (2 − 1 = 1).
-    const horsTourne = sanitizeLayout({ '6e': { islands: { [VOLCAN]: { ...spotOf(tourne, VOLCAN) } }, guardians: { [VOLCAN]: { side: 'front', step: 0, turn: 2, spot: { x: -1, y: 4 } } } } });
-    expect(horsTourne?.['6e']?.guardians?.[VOLCAN]).toEqual(guardianOf(settleNewPlaces(abimeeTournee), VOLCAN));
-    // Une sauvegarde d'avant (sans `spot`) se lit sans rien perdre.
-    const avant = { '6e': { guardians: { [VOLCAN]: { side: 'left', step: 2, turn: 1 } } } };
-    expect(sanitizeLayout(avant)).toEqual(avant);
-    // « Carte de départ » le ramène devant son lieu.
-    expect(backToStartingMap(w2, '6e')?.layout).toBeUndefined();
-  });
-});
-
 describe('le glissé d’un lieu (7 octobre 2026, choix 1b du mainteneur)', () => {
   it('se cale sur la place de la grille la plus proche du point, libre ou prise, jamais hors de la grille', () => {
     const w = partie();
@@ -412,6 +263,37 @@ describe('les bornes dans la bande de devant', () => {
   });
 });
 
+describe('les bornes déplacées dans la sauvegarde', () => {
+  // GD-11 : le cœur des îles-écoles passe à 26 (la bande de devant commence à x = −3), celui des autres à 22. Une borne
+  // posée sur n'importe quelle place de la bande se relit telle quelle depuis la sauvegarde.
+  const ECOLES: BiomeId[] = ['french-6e-phonology', 'maths-5e-proportionality', 'maths-4e-algebra', 'maths-3e-functions'];
+
+  it.each([...ECOLES, VOLCAN])('%s : chaque place de la bande de devant revient de la sauvegarde', (id) => {
+    const w = partie();
+    const cles = questStations(id).map((st) => `${id}:${st.typeId}`);
+    const bande = stationBand(id);
+    const essayees: { x: number; y: number }[] = [];
+    for (const p of bande) {
+      // Une borne pour qui la place est libre (une place près d'une autre borne ou d'un chantier ne l'est pour aucune).
+      const cle = cles.find((k) => freeStationSpots(w, k).some((q) => q.x === p.x && q.y === p.y));
+      if (!cle) continue;
+      essayees.push(p);
+      const w2 = apres(moveStation(w, cle, p));
+      expect(stationOf(w2, cle), `${cle} ${p.x},${p.y}`).toEqual(p);
+      const lu = sanitizeLayout(JSON.parse(JSON.stringify(w2.layout ?? null)));
+      expect(lu, `${cle} ${p.x},${p.y}`).toEqual(w2.layout);
+    }
+    // La première place de la bande (x = −3 sur une île-école) se prend par le geste.
+    expect(essayees).toContainEqual(bande[0]);
+    // La sauvegarde garde aussi une place de la bande prise aujourd'hui (une borne déplacée avant qu'une autre s'en
+    // approche), aux deux bouts de la bande.
+    for (const p of [bande[0], bande[bande.length - 1]]) {
+      const layout = { [archipelagoOfIsland(id)]: { stations: { [cles[0]]: p } } };
+      expect(sanitizeLayout(layout), `${cles[0]} ${p.x},${p.y}`).toEqual(layout);
+    }
+  });
+});
+
 describe('les arrivées des liaisons', () => {
   it('se déplacent sur une côte libre ; la liaison repart de là, ou devient « à reposer »', () => {
     const w = partie();
@@ -447,23 +329,19 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
     expect(posesOfLayout(ancienne().layout).size).toBe(0);
   });
 
-  it('le lieu nouveau se pose à la place libre la plus proche de sa place de départ ; l’Horloge reste où l’élève l’a mise, rien d’autre ne bouge', () => {
-    const w = settleNewPlaces(ancienne());
+  it('l’Horloge, plus large depuis que les îles ont grandi (GD-11), touche aussi la Pointe et la Vallée : la Fouille trouverait sa place, pas la Vallée ; c’est l’Horloge qui se décale, à la place libre la plus proche, et rien d’autre ne bouge', () => {
+    const avant = ancienne();
+    const w = settleNewPlaces(avant);
     const islands = w.layout?.['6e']?.islands ?? {};
-    expect(islands[HORLOGE]).toEqual(startingSpot(FOUILLE));
-    expect(islands[FOUILLE]).toBeDefined();
-    expect(islands[FOUILLE]).not.toEqual(startingSpot(FOUILLE));
-    expect(islands[FOUILLE]?.turn).toBe(0);
-    // La Pointe ne touchait rien : elle reste à sa place de départ, hors de la disposition, comme les autres lieux. La
-    // Vallée du vivant (SC-2), entre l'Horloge et la Fouille, touche l'Horloge plus large que la Fouille : nouvelle elle
-    // aussi, elle se pose à la place libre la plus proche.
-    expect(Object.keys(islands).sort()).toEqual([HORLOGE, FOUILLE, VALLEE].sort());
-    expect(islands[VALLEE]?.turn).toBe(0);
-    expect(isFreeSpot({ ...w, layout: { '6e': { islands: { [HORLOGE]: islands[HORLOGE]! } } } }, FOUILLE, islands[FOUILLE]!)).toBe(true);
+    expect(Object.keys(islands)).toEqual([HORLOGE]);
+    expect(islands[HORLOGE]).not.toEqual(startingSpot(FOUILLE));
+    expect(islands[HORLOGE]?.turn).toBe(0);
+    expect(fittingPlaces('6e', islands)).not.toBeNull();
     const poses = posesOfLayout(w.layout);
     expect(poses.get(HORLOGE)).toBeDefined();
-    expect(poses.get(FOUILLE)).toBeDefined();
-    expect(poses.has(POINTE)).toBe(false);
+    for (const id of [FOUILLE, POINTE, VALLEE]) expect(poses.has(id), id).toBe(false);
+    // Aucune progression ne se perd : liaisons, réunions et chantiers ne sont pas dans la disposition des places.
+    expect(w.links).toBe(avant.links);
   });
 
   it('au 5e (HG-3) : une île déplacée vers l’est, là où entrent le Bourg et le Delta, reste où l’élève l’a mise ; les deux lieux nouveaux se posent à côté', () => {
@@ -492,7 +370,6 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
   // le cadre d'alors (le Château des hypothèses, 4e, sur la Source des espèces ; le Kiosque des témoins, 3e, sur le
   // Tremplin des forces).
   it.each([
-    { a: '4e', lieu: 'english-4e-grammar', sur: 'life-earth-sciences-4e-cells-evolution' },
     { a: '3e', lieu: 'history-3e-twentieth-century', sur: 'physics-chemistry-3e-motion-energy' },
     // Le Refuge des carnets avance de (158, 928) à (158, 912) pour tous (map.ts, SC-3) : un lieu que l'élève a posé sur sa
     // nouvelle place y reste, et le Refuge se pose ailleurs.
@@ -510,6 +387,92 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
     expect(Object.keys(islands).sort()).toEqual([lieu, sur].sort());
     expect(fittingPlaces(a, islands)).not.toBeNull();
     expect(Object.keys(w.layout ?? {})).toEqual([a]);
+  });
+
+  it('au 4e (SC-3, puis GD-11) : le Château des hypothèses, posé sur la place de départ de la Source des espèces, sort désormais du cadre ; il se décale, seul, à la place libre la plus proche : la sienne, sur la carte de départ', () => {
+    const lieu: BiomeId = 'english-4e-grammar';
+    const ici = startingSpot('life-earth-sciences-4e-cells-evolution');
+    expect(fittingPlaces('4e', { [lieu]: ici })).toBeNull();
+    const avant: World = { ...partie(), layout: { '4e': { islands: { [lieu]: ici } } } };
+    const w = settleNewPlaces(avant);
+    expect(Object.keys(w.layout?.['4e']?.islands ?? {})).toEqual([]);
+    expect(spotOf(w, lieu)).toEqual(startingSpot(lieu));
+    expect(w.links).toBe(avant.links);
+  });
+
+  it('les îles ont grandi (GD-11) : un lieu déplacé qui ne laisse plus assez d’eau à un voisin se décale, seul, à la place libre la plus proche ; ses liaisons, ses réunions, ses bornes et ses chantiers restent', () => {
+    // Une place du Volcan, déplacé par l'élève avant GD-11, qui tenait avec des îles plus petites : sa terre n'est plus
+    // qu'à une, deux ou trois cases d'eau d'un lieu resté à sa place de départ, dans le cadre.
+    const w0 = partie();
+    const max = LAYOUT_LAST_SPOT['6e'];
+    let ici: { x: number; y: number; turn: 0 } | null = null;
+    for (let x = 0; x <= max.x && !ici; x++)
+      for (let y = 0; y <= max.y && !ici; y++) {
+        const s = { x, y, turn: 0 as const };
+        if (fittingPlaces('6e', { [VOLCAN]: s })) continue;
+        // Trop près d'un voisin, mais sans le toucher : une case de plus de chaque côté, et il tiendrait.
+        const plusPetit = [-1, 0, 1].every((dx) => [-1, 0, 1].every((dy) => !fittingPlaces('6e', { [VOLCAN]: { x: x + dx, y: y + dy, turn: 0 } })));
+        if (!plusPetit && isFreeSpot({ ...w0, layout: {} }, VOLCAN, { x: x - 1, y, turn: 0 })) ici = s;
+      }
+    expect(ici).not.toBeNull();
+    const avant: World = { ...w0, layout: { '6e': { islands: { [VOLCAN]: ici! } } } };
+    // Sans rien faire, la région reviendrait toute à la carte de départ.
+    expect(posesOfLayout(avant.layout).size).toBe(0);
+    const w = settleNewPlaces(avant);
+    const islands = w.layout?.['6e']?.islands ?? {};
+    expect(Object.keys(islands).filter((id) => id !== VOLCAN)).toEqual([]);
+    expect(fittingPlaces('6e', islands)).not.toBeNull();
+    const la = spotOf(w, VOLCAN);
+    expect(Math.abs(la.x - ici!.x) + Math.abs(la.y - ici!.y)).toBeLessThanOrEqual(2);
+    expect(w.links).toBe(avant.links);
+    expect(w.layout?.['6e']?.joined).toEqual(avant.layout?.['6e']?.joined);
+    expect(w.layout?.['6e']?.stations).toEqual(avant.layout?.['6e']?.stations);
+  });
+
+  /**
+   * Une sauvegarde d'avant GD-11 où deux lieux sont réunis : réunis avec des îles plus petites, ils étaient un pas plus
+   * près l'un de l'autre que ne le permettent les îles agrandies (deux cases de terre de plus par côté). On la refait
+   * en réunissant deux voisins, puis en rapprochant le premier d'un pas (`dx`, `dy`).
+   */
+  function reunisTropPres(id: BiomeId, autre: BiomeId, dx: number, dy: number): World {
+    const w = apres(joinIslands(partie(), id, autre));
+    const s = spotOf(w, id);
+    const r = w.layout!['6e']!;
+    return { ...w, layout: { ...w.layout, '6e': { ...r, islands: { ...r.islands, [id]: { ...s, x: s.x + dx, y: s.y + dy } } } } };
+  }
+
+  it('les îles ont grandi (GD-11) : une paire réunie trop rapprochée s’écarte d’un pas, et reste réunie ; rien ne se perd', () => {
+    const HANGAR: BiomeId = 'technology-6e-objects';
+    const avant = reunisTropPres(VOLCAN, HANGAR, -1, 0);
+    // Sans rien faire, la région ne tiendrait plus et reviendrait toute à la carte de départ, sans sa réunion.
+    expect(fittingPlaces('6e', avant.layout!['6e']!.islands!)).toBeNull();
+    expect(posesOfLayout(avant.layout).size).toBe(0);
+    const w = settleNewPlaces(avant);
+    const islands = w.layout?.['6e']?.islands ?? {};
+    expect(fittingPlaces('6e', islands)).not.toBeNull();
+    // Le Volcan reste où l'élève l'a mis ; le Hangar des inventions s'écarte d'un pas, et les deux restent réunis, leur construction
+    // posable entre eux.
+    expect(islands[VOLCAN]).toEqual(avant.layout!['6e']!.islands![VOLCAN]);
+    const [s, t] = [spotOf(avant, HANGAR), spotOf(w, HANGAR)];
+    expect(Math.abs(s.x - t.x) + Math.abs(s.y - t.y)).toBe(1);
+    expect(w.layout?.['6e']?.joined).toEqual(avant.layout?.['6e']?.joined);
+    expect(joinCandidates({ ...w, layout: { ...w.layout, '6e': { ...w.layout!['6e']!, joined: [] } } }, VOLCAN)).toContain(HANGAR);
+    expect(w.links).toBe(avant.links);
+    expect(w.parts).toBe(avant.parts);
+  });
+
+  it('les îles ont grandi (GD-11) : une paire réunie qui ne peut pas s’écarter laisse la région à la carte de départ, sans rien perdre', () => {
+    // La Mine des lettres et la Fouille des siècles, réunies en travers (le long des y), la Mine rapprochée d'un pas en
+    // x : aucun pas ne les écarte en gardant leur construction.
+    const MINE: BiomeId = 'french-6e-letter-confusion';
+    const avant = reunisTropPres(MINE, FOUILLE, 1, 0);
+    expect(fittingPlaces('6e', avant.layout!['6e']!.islands!)).toBeNull();
+    const w = settleNewPlaces(avant);
+    // Rien ne change dans la sauvegarde (ni les places, ni la réunion, ni les liaisons, ni les chantiers) : la région
+    // se montre à la carte de départ (`posesOfLayout`), sa réunion n'est pas posée (`joinsOf`, ./appliedLayout.ts).
+    expect(w).toBe(avant);
+    expect(posesOfLayout(w.layout).size).toBe(0);
+    expect(w.layout?.['6e']?.joined).toEqual([[MINE, FOUILLE]]);
   });
 
   it('une disposition qui tient, ou pas de disposition, reste la même', () => {

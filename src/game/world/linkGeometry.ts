@@ -5,10 +5,11 @@
 // aux règles.
 import type { BiomeId } from '../biomes';
 import { type BridgeDef, type BridgeKind, BRIDGES, bridgesOf, getBridge, otherEnd, provideLinkGeometry, SHORT_LINK } from './archipelago';
-import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, mapOf } from './map';
-import { chosenGuardian, layoutCache, layoutChanged } from './placement';
+import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, MAP, mapOf, startingIsland } from './map';
+import { layoutCache, layoutChanged } from './placement';
 import { linkBetweenJoined, type LinkLandings, LONG_LENGTH, type LinkRoute, RegionRouter } from './routing';
-import { visibleReefs } from './terrain/sea';
+import { reefsOutside, visibleReefs } from './terrain/sea';
+import { footprintOf } from './footprint';
 import { appliedJoins, joinOf } from './join';
 
 // ---------- Ce que la disposition dit des liaisons ----------
@@ -42,7 +43,7 @@ const soleRoutes = layoutCache<string, LinkRoute | null>();
 /** Le traceur d'une région, sans aucune liaison : la terre, les îlots, les quais, les écueils et les lieux réunis. */
 function emptyRouter(a: ArchipelagoId): RegionRouter {
   const reunions = appliedJoins(a).map((j) => ({ pair: j.pair, zone: j.shape.zone }));
-  return new RegionRouter(a, { lieux: mapOf(a), ecueils: visibleReefs(a), arriveesDeLaLiaison: chosenLandings, reunions, gardiens: chosenGuardian });
+  return new RegionRouter(a, { lieux: mapOf(a), ecueils: visibleReefs(a), arriveesDeLaLiaison: chosenLandings, reunions });
 }
 
 const emptyRouters = layoutCache<ArchipelagoId, RegionRouter>();
@@ -50,7 +51,7 @@ const emptyRouters = layoutCache<ArchipelagoId, RegionRouter>();
 /**
  * Le tracé d'une liaison seule dans la disposition (sans les autres liaisons). C'est aussi le tracé de repli d'une
  * liaison posée que le traceur ne refait pas (une sauvegarde d'avant GD-9, posée quand les lieux n'étaient pas à la
- * même place) : il évite la terre, les îlots des Gardiens et les écueils ; faute de quoi la liaison garde son tracé
+ * même place) : il évite la terre, les îlots des monuments et les écueils ; faute de quoi la liaison garde son tracé
  * d'origine (`traceDOrigine`, ./terrain/links.ts).
  */
 export function soleRoute(b: BridgeDef): LinkRoute | null {
@@ -62,6 +63,37 @@ export function soleRoute(b: BridgeDef): LinkRoute | null {
     t = vide.essayer(b, LONG_LENGTH);
     soleRoutes.set(b.id, t);
   }
+  return t;
+}
+
+// Les tracés des liaisons sur la carte de départ, hors des caches de la disposition : ils ne changent jamais.
+const routesDeDepart = new Map<string, LinkRoute | null>();
+const routeursDeDepart = new Map<ArchipelagoId, RegionRouter>();
+
+/**
+ * Le tracé d'une liaison seule sur la carte de départ (chaque lieu à sa place de départ, sans rotation, ses écueils à
+ * l'air, aucune arrivée choisie ni réunion), quelle que soit la disposition : ce que le dessin d'un lieu lit de ses
+ * liaisons, et qui ne bouge pas avec lui (la place de son Gardien, GD-11 : le chemin du bonhomme depuis ses arrivées).
+ */
+export function routeDeDepart(b: BridgeDef): LinkRoute | null {
+  const connu = routesDeDepart.get(b.id);
+  if (connu !== undefined) return connu;
+  const a = archipelagoOfIsland(b.from);
+  // Sur la carte de départ (aucun lieu déplacé ni tourné, aucune arrivée choisie, aucune réunion), c'est le tracé seul de
+  // la disposition, que le monde trace de toute façon : le traceur de départ ne se construit pas.
+  if (mapOf(a).every((d) => d === startingIsland(d.id)) && !chosenLandings(b.id) && appliedJoins(a).length === 0) {
+    const t = soleRoute(b);
+    routesDeDepart.set(b.id, t);
+    return t;
+  }
+  let routeur = routeursDeDepart.get(a);
+  if (!routeur) {
+    const lieux = MAP.filter((d) => archipelagoOfIsland(d.id) === a);
+    const ecueils = reefsOutside(a, lieux.flatMap((d) => footprintOf(d.id, d)));
+    routeursDeDepart.set(a, (routeur = new RegionRouter(a, { lieux, ecueils })));
+  }
+  const t = routeur.essayer(b, LONG_LENGTH);
+  routesDeDepart.set(b.id, t);
   return t;
 }
 
@@ -125,9 +157,24 @@ function stateOf(a: ArchipelagoId, built: readonly string[]): LinksState {
   if (!e) {
     // Peu de listes différentes dans une partie ; on oublie les anciennes au-delà de quelques-unes.
     if (states.size > 32) states.clear();
-    const traceur = emptyRouter(a);
-    const traces = new Map<string, LinkRoute | null>();
-    for (const b of posees) if (!linkBetweenJoined(b)) traces.set(b.id, traceur.poser(b, LONG_LENGTH));
+    // Les liaisons se posent une à une (linkWholeRegion, une partie) : on repart d'une copie de l'état sans la
+    // dernière s'il est connu, sinon du traceur vide de la région ; le tracé est le même, sans tout refaire.
+    const avant = posees.length > 0 ? states.get(`${a}|${posees.slice(0, -1).map((b) => b.id).join(',')}`) : undefined;
+    let traceur: RegionRouter;
+    let traces: Map<string, LinkRoute | null>;
+    let reste: BridgeDef[];
+    if (avant) {
+      traceur = avant.traceur.copie();
+      traces = new Map(avant.traces);
+      reste = posees.slice(-1);
+    } else {
+      let vide = emptyRouters.get(a);
+      if (!vide) emptyRouters.set(a, (vide = emptyRouter(a)));
+      traceur = vide.copie();
+      traces = new Map();
+      reste = posees;
+    }
+    for (const b of reste) if (!linkBetweenJoined(b)) traces.set(b.id, traceur.poser(b, LONG_LENGTH));
     e = { traces, traceur, essais: new Map() };
     states.set(cle, e);
   }

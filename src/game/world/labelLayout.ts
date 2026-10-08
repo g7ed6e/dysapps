@@ -482,7 +482,7 @@ const KEPT_NAME_PLACES = 8;
  * UX UI), puis celles de la dernière chance (`TRIES_FINS`), puis dessus et dessous glissés de côté pour tenir dans le
  * cadre (la distance à l'île comptée sans le repère passé) : entière, hors de l'interface et des repères (la bulle, le
  * médaillon, la flèche d'un ouvrage), pas plus loin de son île que d'`ECART_MAX` hauteurs de plus, pas plus près d'une
- * autre île que de la sienne (vu de son milieu), hors de la garde de la destination (`isFree`), sans couvrir l'autre nom
+ * autre île que de la sienne (vu de son milieu ; glissé de côté, vu de l'aplomb de son île), hors de la garde de la destination (`isFree`), sans couvrir l'autre nom
  * gardé. Les noms montrés qu'elle couvre se taisent, puis cherchent une autre place (`repair`) ; parmi les
  * `KEPT_NAME_PLACES` places qui en font taire le moins, celle qui montre le plus de noms à la fin l'emporte. Sans aucune
  * place qui tienne, il se tait. Modifie `state`.
@@ -519,13 +519,16 @@ function showAtAllCosts(
     // la Ruche des réseaux, au bord gauche de la Carte du 3e en OpenDyslexic, le bonhomme dessus : consultant UX UI, SC-3).
     const slid = simple
       .slice(0, 2)
-      .map((s, k) => ({ at: { ...s, x: clamp(s.x, b.w / 2 + gap, bounds.w - b.w / 2 - gap) }, passed: Math.abs(s.y - natural[k]) }))
+      .map((s, k) => ({ at: { ...s, x: clamp(s.x, b.w / 2 + gap, bounds.w - b.w / 2 - gap) }, passed: Math.abs(s.y - natural[k]), glisse: true }))
       .filter((s) => s.at.x !== ile.x);
     const candidates: { at: LabelBox; covered: number[] }[] = [];
-    for (const { at, passed } of [...[...simple, ...placesAutour(b, bounds, gap)].map((at) => ({ at, passed: 0 })), ...slid]) {
+    for (const { at, passed, glisse } of [...[...simple, ...placesAutour(b, bounds, gap)].map((at) => ({ at, passed: 0, glisse: false })), ...slid]) {
       if (!entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds) || obstacles.some((v) => overlap(at, v, gap) > 0) || !isFree(i, at)) continue;
       if (distanceA(at, ile) - passed > distanceA(b, ile) + ECART_MAX * b.h) continue;
-      const half = milieu(at);
+      // Glissé au bord de l'écran, le nom se lit juste au-dessus ou au-dessous de son île (sous le médaillon) : il désigne
+      // l'île sous lui à l'aplomb de la sienne, pas celle sous son milieu, qu'une île au bord n'atteint plus (au
+      // téléphone, au 6e, la Fouille des siècles et la Vallée du vivant ; référent dys, consultant UX UI, GD-11).
+      const half = glisse ? { ...at, x: ile.x, w: 0 } : milieu(at);
       const d = distanceA(half, ile);
       if (iles.some((q, j) => j !== i && distanceA(half, q) < d)) continue;
       const covered = [...state.vues].filter(([, v]) => overlap(at, v, gap) > 0).map(([j]) => j);

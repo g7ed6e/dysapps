@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { piedsSur, type ChampDuSol } from '../world/landMesh';
-import { gardienDuMonde, statueDe } from '../world/terrain';
+import { gardienTourne, statueDe } from '../world/terrain';
 import { avatarWalk, startStrolls, strollAt, walkPose, type Stroll, type Walk } from '../world/scene';
 import { hauteurDuSigne } from '../world/sign';
 import type { EnCasesDuMonde, WorldViewProps } from '../world/view';
@@ -63,6 +63,8 @@ interface Walker {
   stroll: Stroll;
   /** Le milieu de son emprise, par rapport à sa place (pour la poser sur le sol en pente). */
   centre: { x: number; y: number };
+  /** Le décalage de son groupe réduit (un Gardien de Blocland, GD-11) : réduit autour de son pied, il reste au milieu de sa place. */
+  decalage: { x: number; y: number };
 }
 
 /** Les personnages en cubes (le monde en blocs). */
@@ -111,11 +113,11 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
     // Rallumé : d'un seul maillage de nouveau, pour ne pas garder les appels des couches au-delà du moment.
     if (fondu.fini) habillerEnCouleurs(fondu.id);
   };
-  /** Le Gardien rebâti d'un seul maillage, dans ses couleurs (la fin du fondu). */
+  /** Le Gardien rebâti d'un seul maillage, dans ses couleurs (la fin du fondu), tourné avec son lieu comme le Gardien posé. */
   const habillerEnCouleurs = (id: BiomeId) => {
     couches = [];
     const group = viderLeGardien(id);
-    if (group) addMeshes(group, modelMeshes(gardienDuMonde(id), surface));
+    if (group) addMeshes(group, modelMeshes(gardienTourne(id), surface));
   };
   /** Les maillages du Gardien retirés et libérés ; son groupe, ou rien s'il n'est pas posé. */
   const viderLeGardien = (id: BiomeId) => {
@@ -137,10 +139,11 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
     const group = viderLeGardien(id);
     if (!group) return;
     if (fondu.fini) {
-      addMeshes(group, modelMeshes(gardienDuMonde(id), surface));
+      addMeshes(group, modelMeshes(gardienTourne(id), surface));
       return;
     }
-    const cubes = gardienDuMonde(id);
+    // Tourné avec son lieu, comme le Gardien posé (GD-9).
+    const cubes = gardienTourne(id);
     // Des pieds vers la tête, pour tous les Gardiens (GD-8).
     for (const z of [...new Set(cubes.map((c) => c.z))].sort((a, b) => a - b)) {
       const couche = cubes.filter((c) => c.z === z);
@@ -173,14 +176,23 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
         const group = new THREE.Group();
         group.userData = { creature: c.id, kind: c.kind ?? 'creature' };
         addMeshes(group, modelMeshes(c.cubes, surface));
+        // Réduit (un Gardien de Blocland, GD-11) : même forme, mêmes cubes, à l'échelle de son dessin, autour du milieu
+        // de ses cubes au sol ; le groupe se décale d'autant, pour que ce milieu reste au milieu de sa place.
+        const k = c.echelle ?? 1;
+        group.scale.setScalar(k);
+        const milieu = c.cubes.length
+          ? { x: (Math.min(...c.cubes.map((q) => q.x)) + Math.max(...c.cubes.map((q) => q.x)) + 1) / 2, y: (Math.min(...c.cubes.map((q) => q.y)) + Math.max(...c.cubes.map((q) => q.y)) + 1) / 2 }
+          : { x: 0.5, y: 0.5 };
+        const decalage = { x: (1 - k) * milieu.x, y: (1 - k) * milieu.y };
         // Le milieu de son emprise au sol : c'est là qu'on lit la hauteur du sol à facettes.
-        const pieds = c.cubes.filter((q) => q.z === Math.min(...c.cubes.map((k) => k.z)));
-        const centre = pieds.length
+        const pieds = c.cubes.filter((q) => q.z === Math.min(...c.cubes.map((m) => m.z)));
+        const auSol = pieds.length
           ? { x: (Math.min(...pieds.map((q) => q.x)) + Math.max(...pieds.map((q) => q.x)) + 1) / 2, y: (Math.min(...pieds.map((q) => q.y)) + Math.max(...pieds.map((q) => q.y)) + 1) / 2 }
           : { x: 0.5, y: 0.5 };
-        group.position.set(c.origin.x, piedsSur(champ(), c.origin.x + centre.x, c.origin.y + centre.y, c.origin.z), c.origin.y);
+        const centre = { x: decalage.x + k * auSol.x, y: decalage.y + k * auSol.y };
+        group.position.set(c.origin.x + decalage.x, piedsSur(champ(), c.origin.x + centre.x, c.origin.y + centre.y, c.origin.z), c.origin.y + decalage.y);
         creaturesGroup.add(group);
-        return { group, stroll: strolls[i], centre };
+        return { group, stroll: strolls[i], centre, decalage };
       });
       // Reposés pendant un rallumage : le Gardien qui se rallume reprend son fondu là où il en est.
       if (fondu) habillerLeFondu();
@@ -190,14 +202,14 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
       if (fondu && !fondu.fini) teindre();
       if (reduit) return;
       // Créatures : petit balancement, et un pas de temps en temps.
-      for (const { group, stroll, centre } of walkers) {
+      for (const { group, stroll, centre, decalage } of walkers) {
         const { dx, dy, bob } = strollAt(stroll, instant.now, t);
         const x = stroll.origin.x + dx;
         const y = stroll.origin.y + dy;
         // Le signe : un saut lent, une fois, par-dessus le balancement.
         const debut = signes.get(group.userData.creature as BiomeId);
         const saut = debut === undefined || group.userData.kind !== 'creature' ? 0 : hauteurDuSigne(instant.now - debut);
-        group.position.set(x, piedsSur(champ(), x + centre.x, y + centre.y, stroll.origin.z) + bob + saut, y);
+        group.position.set(x + decalage.x, piedsSur(champ(), x + centre.x, y + centre.y, stroll.origin.z) + bob + saut, y + decalage.y);
       }
     },
     faireSigne: (id, debut) => {

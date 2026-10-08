@@ -18,13 +18,17 @@ export interface CreaturePlacement {
   id: BiomeId;
   cubes: VoxelCube[];
   origin: Cell;
-  /** Une créature se promène ; un Gardien reste sur son îlot. */
+  /** Une créature se promène ; un Gardien reste à sa place, sur son île. */
   kind?: 'creature' | 'guardian';
   still?: boolean;
   /** Les pas possibles depuis sa place (sinon ceux par défaut). */
   steps?: [number, number][];
   /** Un Gardien vaincu (en statue de pierre, ou sa sentinelle rallumée) : il ne porte plus de signe (world/affordance.ts). */
   beaten?: boolean;
+  /** L'échelle de son dessin autour de son pied (un Gardien de Blocland : 0,5, GD-11) ; 1 sans elle. */
+  echelle?: number;
+  /** Les cases qu'il occupe au sol, à la place de celles de ses cubes (le carré d'un Gardien, GD-11). */
+  cases?: { x: number; y: number }[];
 }
 
 /** Le décor qu'on enjambe (bas, au ras du sol) ; le reste barre le passage. */
@@ -76,6 +80,10 @@ export function walkGround(cubes: VoxelCube[], creatures: CreaturePlacement[] = 
   }
   for (const r of reservees) blocked.add(key(r.x, r.y));
   for (const cr of creatures) {
+    if (cr.cases) {
+      for (const c of cr.cases) blocked.add(key(c.x, c.y));
+      continue;
+    }
     const steps: [number, number][] = [[0, 0], ...(cr.steps ?? [])];
     for (const [sx, sy] of steps)
       for (const c of cr.cubes) blocked.add(key(Math.floor(cr.origin.x + sx + c.x), Math.floor(cr.origin.y + sy + c.y)));

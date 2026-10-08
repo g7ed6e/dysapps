@@ -57,7 +57,7 @@ it('les cases du navire sont sur le quai, devant l’île-port, sous le niveau d
     const o = dockOrigin(s.biome);
     const def = islandDef(s.biome);
     for (const c of cells) {
-      // Devant l'île (y négatif relatif au cœur), à droite de l'îlot du Gardien.
+      // Devant l'île (y négatif relatif au cœur), à droite de la colonne 12.
       expect(c.y, s.id).toBeLessThan(0);
       expect(c.x, s.id).toBeGreaterThanOrEqual(12);
     }

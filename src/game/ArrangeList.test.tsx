@@ -1,6 +1,5 @@
-// Le mode « Aménager » en vue simple (GD-9, point 4) : une ligne par lieu et par Gardien, sa place en signes (dite en
-// mots aux lecteurs d'écran) ; « Déplacer », les flèches et « Poser » ; l'ordre des lignes ne dépend pas de la disposition.
-import { ofPlace } from './world/placeSentence';
+// Le mode « Aménager » en vue simple (GD-9, point 4) : une ligne par lieu (son Gardien le suit, GD-11), sa place en
+// signes (dite en mots aux lecteurs d'écran) ; « Déplacer », les flèches et « Poser » ; l'ordre des lignes ne dépend pas de la disposition.
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -9,7 +8,7 @@ import { SettingsProvider } from '../core/SettingsContext';
 import { ArrangeList } from './ArrangeList';
 import { BloclandProvider } from './BloclandContext';
 import { applyLayout } from './world/appliedLayout';
-import { isBiomeUnlocked, islandsOf } from './world/archipelago';
+import { islandsOf } from './world/archipelago';
 import { freeSpots, isFixedPlace, spotOf } from './world/arrange';
 import type { BiomeId } from './biomes';
 import { EMPTY_STATE } from './engine/state';
@@ -29,7 +28,7 @@ function monter() {
   );
 }
 
-/** Les lignes de premier niveau (un lieu, un Gardien), sans celles des plis. */
+/** Les lignes de premier niveau (un lieu), sans celles des plis. */
 const lignes = () =>
   Array.from(screen.getAllByRole('list')[0].children)
     .filter((li) => li.tagName === 'LI')
@@ -73,23 +72,20 @@ function jusquALaPlaceLibreDuLieu(id: BiomeId): void {
 }
 
 describe('Aménager en vue simple', () => {
-  it('une ligne par lieu et par Gardien, sa place en signes ; « Déplacer », une flèche, « Poser » ; l’ordre ne bouge pas', () => {
+  it('une ligne par lieu, aucune pour son Gardien (GD-11), sa place en signes ; « Déplacer », une flèche, « Poser » ; l’ordre ne bouge pas', () => {
     monter();
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     const lieux = islandsOf('6e');
     const avant = lignes();
-    // Le Gardien d'un lieu encore fermé n'a pas de ligne (choix 6a du mainteneur) : au départ, ceux des lieux ouverts.
-    expect(avant).toHaveLength(lieux.length + lieux.filter((b) => isBiomeUnlocked(b.id, EMPTY_STATE.world.links)).length);
-    expect(avant[0]).toBe(lieux[0].name);
-    // Le Gardien : le bouclier et la même ligne de signes, son île pour repère.
-    expect(avant[1]).toBe(lieux[0].name);
+    // Le Gardien suit son île (GD-11) : pas de ligne à lui.
+    expect(avant).toEqual(lieux.map((b) => b.name));
+    expect(screen.queryByRole('button', { name: /Déplacer le Gardien/ })).toBeNull();
     // Pas de phrase d'introduction : les lignes suffisent.
     expect(document.querySelector('.section-intro')).toBeNull();
     // La place en signes (le voisin, la flèche, le nombre, la case), dite en mots ; le point de départ : un drapeau et un
     // cadenas.
     for (const b of lieux) {
-      // La première ligne à son nom est celle du lieu (celle de son Gardien suit).
-      const p = screen.getAllByText(b.name, { selector: 'strong' })[0].closest('p')!;
+      const p = screen.getByText(b.name, { selector: 'strong' }).closest('p')!;
       expect(p.querySelector('.visually-hidden')!.textContent).toMatch(isFixedPlace(b.id) ? /ne bouge pas/ : / à \d+ cases?\.$/);
       if (!isFixedPlace(b.id)) expect(p.querySelector('.signes-de-place')).not.toBeNull();
     }
@@ -110,32 +106,6 @@ describe('Aménager en vue simple', () => {
     expect(lignes()).toEqual(avant);
   });
 
-  it('le Gardien se déplace autour de son île', () => {
-    monter();
-    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
-    const b = islandsOf('6e')[0];
-    const li = screen.getByRole('button', { name: `Déplacer le Gardien ${ofPlace(b.name)}` }).closest('li')!;
-    const avant = li.querySelector('p .visually-hidden')!.textContent;
-    expect(avant).toMatch(/, à \d+ cases?\.$/);
-    expect(avant).not.toMatch(/son île/);
-    expect(li.querySelector('.signes-de-place')).not.toBeNull();
-    fireEvent.click(within(li).getByRole('button', { name: `Déplacer le Gardien ${ofPlace(b.name)}` }));
-    // Les flèches le mènent jusqu'à un autre côté de son île (quelques pas le long du même côté d'abord) ; vers l'est,
-    // ses places détachées sont prises (choix 4a : trop près des lieux voisins), on part vers l'ouest.
-    const cote = (t: string | null | undefined) => /: (?:au|à l’) ([a-z-]+) /.exec(t ?? '')?.[1];
-    const depart = cote(avant);
-    tour: for (const nom of ['Ouest', 'Est', 'Nord']) {
-      for (let i = 0; i < 8; i++) {
-        fireEvent.click(screen.getByRole('button', { name: new RegExp(nom) }));
-        const t = screen.getByRole('status').textContent;
-        if (t?.includes('Plus de place')) break;
-        // Un autre côté, sur une place libre (une place prise se montre, « Poser » éteint).
-        if (cote(t) && cote(t) !== depart && screen.getByRole('button', { name: 'Poser' }).matches(':enabled')) break tour;
-      }
-    }
-    fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
-    expect(cote(li.querySelector('p .visually-hidden')!.textContent)).not.toBe(depart);
-  });
   it('les bornes et les arrivées d’un lieu, dans son pli, se déplacent de même', () => {
     monter();
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
