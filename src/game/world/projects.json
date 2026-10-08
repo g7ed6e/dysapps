@@ -1,0 +1,182 @@
+[
+  {
+    "monument": "landmark-5e-1",
+    "pieces": [
+      {
+        "id": "base",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-5e-signed-numbers",
+                "n": 6
+              },
+              {
+                "bloc": "french-5e-homophones",
+                "n": 4
+              }
+            ],
+            "bank": "compound-5e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-5e-grammar",
+                "n": 6
+              },
+              {
+                "bloc": "geography-5e-resources",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-travellers"
+          }
+        ],
+        "names": {
+          "blocland": "le socle",
+          "archipeo": "le socle"
+        }
+      },
+      {
+        "id": "tower",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-5e-proportionality",
+                "n": 6
+              },
+              {
+                "bloc": "english-5e-vocabulary",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-counter"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "french-5e-conjugation",
+                "n": 6
+              },
+              {
+                "bloc": "history-5e-middle-ages",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-chronicle"
+          }
+        ],
+        "names": {
+          "blocland": "la tour",
+          "archipeo": "la tour"
+        }
+      },
+      {
+        "id": "gallery",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-5e-signed-numbers",
+                "n": 6
+              },
+              {
+                "bloc": "french-5e-homophones",
+                "n": 4
+              }
+            ],
+            "bank": "compound-5e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-5e-grammar",
+                "n": 6
+              },
+              {
+                "bloc": "geography-5e-resources",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-travellers"
+          }
+        ],
+        "names": {
+          "blocland": "la galerie",
+          "archipeo": "la galerie"
+        }
+      },
+      {
+        "id": "lantern",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-5e-proportionality",
+                "n": 6
+              },
+              {
+                "bloc": "english-5e-vocabulary",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-counter"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "french-5e-conjugation",
+                "n": 6
+              },
+              {
+                "bloc": "history-5e-middle-ages",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-chronicle"
+          }
+        ],
+        "names": {
+          "blocland": "la lanterne",
+          "archipeo": "la lanterne"
+        }
+      },
+      {
+        "id": "roof",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-5e-signed-numbers",
+                "n": 6
+              },
+              {
+                "bloc": "french-5e-homophones",
+                "n": 4
+              }
+            ],
+            "bank": "compound-5e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-5e-grammar",
+                "n": 6
+              },
+              {
+                "bloc": "geography-5e-resources",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-travellers"
+          }
+        ],
+        "names": {
+          "blocland": "le toit",
+          "archipeo": "le toit"
+        }
+      }
+    ]
+  }
+]

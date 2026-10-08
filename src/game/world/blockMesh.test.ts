@@ -175,3 +175,24 @@ describe('le maillage des blocs en une seule texture', () => {
     expect(changees.sort()).toEqual([r.key, `${r.rx + 1},${r.ry}`].sort());
   });
 });
+
+describe('Un bloc allumé (GD-10, la lanterne du phare du large)', () => {
+  it('prend la lueur des lanternes dans la même passe, sans morceau de plus ; éteint, le même bloc ne brille pas', () => {
+    const vitraux = (lit: boolean): VoxelCube[] => [0, 1, 2].map((x) => ({ x, y: 0, z: 0, color: '#d0594f', texture: 'vitrail', ...(lit ? { lit: true as const } : {}) }));
+    const eteint = buildBlockMesh(vitraux(false), { fondre: true });
+    const allume = buildBlockMesh(vitraux(true), { fondre: true });
+    const lanterne = buildBlockMesh([{ x: 0, y: 0, z: 0, color: '#fff', texture: 'lanterne' }], { fondre: true });
+    expect(allume.map((g) => g.pass)).toEqual(eteint.map((g) => g.pass));
+    expect(chunkFaceCount(allume)).toBe(chunkFaceCount(eteint));
+    expect(eteint[0].glows.every((v) => v === 0)).toBe(true);
+    // La lueur de la lanterne, exacte, sur chaque sommet ; fixe (une couleur de sommet, rien d'animé).
+    const lueur = lanterne[0].glows.slice(0, 3);
+    expect(lueur.some((v) => v > 0)).toBe(true);
+    for (let i = 0; i < allume[0].glows.length; i += 3) expect(allume[0].glows.slice(i, i + 3)).toEqual(lueur);
+    // Délavé, ou en fantôme, il ne brille pas.
+    const [delave] = buildBlockMesh([{ ...vitraux(true)[0], muted: true }]);
+    expect(delave.glows.every((v) => v === 0)).toBe(true);
+    const [fantome] = buildBlockMesh([{ ...vitraux(true)[0], ghost: true }]);
+    expect(fantome.glows.every((v) => v === 0)).toBe(true);
+  });
+});

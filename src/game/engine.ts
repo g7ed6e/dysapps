@@ -7,6 +7,7 @@ import { type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome } from './biomes';
 import { cellKey, planCells, type PlanDef } from './world/plans';
 import { assemblables, noterQuestion, recetteDe, type TirageAssemblage, tirageNeuf } from './world/assembly';
 import { missionsTerminees, type Partie, poserLesParties } from './world/parts';
+import { buildPiece, projectOf } from './world/projects';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { starsFor } from '../core/stars';
 import { archipelagoOf, buildBridge as buildBridgePure, type BuildBridgeResult, getArchipelago, isBiomeUnlocked, reachableIslands, voyageId } from './world/archipelago';
@@ -90,8 +91,8 @@ export function assembleBlock(state: GameState, bloc: BlockId): AssembleResult {
   return { state: { ...state, stock: inventory }, ok: true };
 }
 
-/** Le tirage des questions d'un bloc assemblé pour cet élève, ou un tirage neuf avec `graine`. */
-export function tirageDe(state: GameState, bloc: BlockId, graine: string): TirageAssemblage {
+/** Le tirage des questions d'un bloc assemblé (ou d'une banque de projets) pour cet élève, ou un tirage neuf avec `graine`. */
+export function tirageDe(state: GameState, bloc: string, graine: string): TirageAssemblage {
   return state.assemblyDraw?.[bloc] ?? tirageNeuf(graine);
 }
 
@@ -120,6 +121,26 @@ export function repondreAssemblage(state: GameState, bloc: BlockId, reponse: Rep
   if (!reponse.juste) return { state: note, assemble: false, reason: 'manquee' };
   const r = assembleBlock(note, bloc);
   return r.ok ? { state: r.state, assemble: true } : { state: note, assemble: false, reason: r.reason };
+}
+
+export type ReponseProjet =
+  | { state: GameState; built: true; completed: boolean }
+  | { state: GameState; built: false; reason: 'manquee' | 'pas-de-projet' | 'pas-la-suivante' | 'plus-de-blocs' };
+
+/**
+ * La réponse finale à la question d'une pièce de projet (GD-10) : juste (du premier coup ou au second essai), la pièce se
+ * pose en entier avec la recette choisie (`buildPiece`) ; manquée, rien n'est pris. La question est notée dans le tirage
+ * de sa banque, le même que celui du bloc assemblé dont elle reprend les questions (`compound-5e`).
+ */
+export function repondreProjet(state: GameState, monument: string, piece: number, recipe: number, reponse: ReponseDonnee): ReponseProjet {
+  const project = projectOf(monument);
+  const bank = project?.pieces[piece]?.recipes[recipe]?.bank;
+  if (!project || !bank) return { state, built: false, reason: 'pas-de-projet' };
+  const tirage = noterQuestion(reponse.cles, state.assemblyDraw?.[bank] ?? reponse.tirage, reponse.cle, reponse.juste);
+  const note: GameState = { ...state, assemblyDraw: { ...state.assemblyDraw, [bank]: tirage } };
+  if (!reponse.juste) return { state: note, built: false, reason: 'manquee' };
+  const r = buildPiece(note, project, piece, recipe);
+  return r.ok ? { state: r.state, built: true, completed: r.completed } : { state: note, built: false, reason: r.reason };
 }
 
 /**

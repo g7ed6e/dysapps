@@ -22,7 +22,7 @@ import { useTextes } from '../universes';
 import { blockName, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { SessionPause } from './SessionPause';
-import { tirageDe, type ReponseDonnee } from './engine';
+import { tirageDe, type GameState, type ReponseDonnee } from './engine';
 import { loadAssemblage } from './exercises';
 import { autoReadText } from './exercises/reading';
 import { SCREEN_TYPES, retryAllowed, type ScreenAnswer } from './exercises/registry';
@@ -73,39 +73,83 @@ export function AssemblyQuestionPage() {
   );
 }
 
+/** La question d'un bloc assemblé : la question mêlée, qui assemble le bloc à la bonne réponse. */
+function QuestionDAssemblage({ def, recette, retour, lieu, onAutre }: { def: AssemblageDef; recette: Recette; retour: string; lieu: LieuDAssemblage; onAutre: () => void }) {
+  const { repondreAssemblage } = useBlocland();
+  const un = blockName(recette.bloc, 1);
+  return (
+    <MixedQuestion
+      def={def}
+      drawKey={recette.bloc}
+      canDo={(stock) => assemblables(stock, recette) > 0}
+      retour={retour}
+      retourText={`Revenir ${lieu.a}`}
+      aLieu={lieu.a}
+      againText={`Assembler 1 autre ${un}`}
+      onAutre={onAutre}
+      commit={(reponse) => {
+        const r = repondreAssemblage(recette.bloc, reponse);
+        if (r.assemble)
+          return { done: true, text: messageAssemble(recette.bloc, r.state.stock[recette.bloc] ?? 0), again: assemblables(r.state.stock, recette) > 0, backState: { assemble: recette.bloc } };
+        return { done: false, lacking: reponse.juste ? `C’est juste, mais il te manque des blocs pour 1 ${un} : rien n’est pris.` : undefined };
+      }}
+    />
+  );
+}
+
+/** Ce que fait la bonne réponse : la chose est faite (son message, et si l'on peut en refaire une), ou il manquait des blocs. */
+export type MixedQuestionCommit = { done: true; text: string; again?: boolean; backState?: unknown } | { done: false; lacking?: string };
+
 interface Fin {
   juste: boolean;
-  /** Le bloc est assemblé : la carte du lieu le redira au retour. */
+  /** La chose est faite (le bloc assemblé, la pièce posée) : le lieu le redira au retour. */
   assemble: boolean;
+  /** Ce que le retour passe au lieu (le bloc assemblé, pour sa carte). */
+  backState?: unknown;
   /** Ce qui s'affiche sous le cri : le bloc assemblé, ou l'explication. */
   texte: string;
 }
 
-function QuestionDAssemblage({
+/**
+ * Une question qui mêle deux matières (GD-2, GD-10) : celle d'un bloc assemblé, ou d'une pièce de projet. Le tirage de
+ * l'élève (`drawKey` : le bloc ou la banque), deux essais, rien de perdu ; à la bonne réponse, `commit` fait la chose.
+ */
+export function MixedQuestion({
   def,
-  recette,
+  drawKey,
+  canDo,
+  commit,
   retour,
-  lieu,
+  retourText,
+  aLieu,
+  againText,
   onAutre,
 }: {
   def: AssemblageDef;
-  recette: Recette;
+  drawKey: string;
+  /** Le stock permet-il de faire la chose ? Lu une fois, à l'ouverture. */
+  canDo: (stock: GameState['stock']) => boolean;
+  /** Note la réponse finale et, juste, fait la chose. */
+  commit: (reponse: ReponseDonnee) => MixedQuestionCommit;
   retour: string;
-  /** Le lieu dans l'univers choisi : « La Fabrique », « à la Fabrique ». */
-  lieu: LieuDAssemblage;
+  /** Le bouton de retour : « Revenir à la Fabrique ». */
+  retourText: string;
+  /** Où l'on revient, après « Tu reviens » : « à la Fabrique ». */
+  aLieu: string;
+  /** Le bouton pour en refaire une, quand c'est possible. */
+  againText?: string;
   onAutre: () => void;
 }) {
-  const { state, repondreAssemblage, pauseAfterNext, continueSession } = useBlocland();
+  const { state, pauseAfterNext, continueSession } = useBlocland();
   const { settings, speak } = useSettings();
   const haptics = useHaptics();
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
-  const un = blockName(recette.bloc, 1);
   const cles = useMemo(() => def.items.map((it) => it.key), [def]);
   // Fixés à l'ouverture : le tirage de l'élève (un neuf la première fois), la question tirée, ses choix placés (la même
   // place pour une question tout au long d'un tour), et ce qu'il peut assembler.
-  const [tirage] = useState(() => tirageDe(state, recette.bloc, graineAuHasard()));
-  const [possible] = useState(() => assemblables(state.stock, recette) > 0);
+  const [tirage] = useState(() => tirageDe(state, drawKey, graineAuHasard()));
+  const [possible] = useState(() => canDo(state.stock));
   const [item] = useState(() => {
     const cle = prochaineQuestion(cles, tirage);
     return placerChoixAssemblage(def, `${tirage.graine}:${tirage.tour}`).find((it) => it.key === cle);
@@ -126,7 +170,7 @@ function QuestionDAssemblage({
   // Le mode concentration reste jusqu'à ce que l'élève quitte l'écran, résultat compris : la barre du haut ne revient
   // pas sous ses yeux. Quitter ne prend rien ; une fois le bloc assemblé, il est dans la poche. Retour au lieu sans
   // garder la question dans l'historique : le geste retour du téléphone ne la rouvre pas.
-  const notePause = `${fin?.assemble ? fin.texte : 'Tes blocs restent dans ta poche : rien n’est pris.'} Tu reviens ${lieu.a}.`;
+  const notePause = `${fin?.assemble ? fin.texte : 'Tes blocs restent dans ta poche : rien n’est pris.'} Tu reviens ${aLieu}.`;
   useFocusMode(possible, () => navigate(retour, { replace: true }), notePause);
   useAnswerKeys(sectionRef);
   // Le résultat s'affiche sous les réponses, en entier, avec ses boutons : la page y défile, le focus va au bouton
@@ -166,17 +210,17 @@ function QuestionDAssemblage({
     essais.current = 'fini';
     setAnswered(a);
     const reponse: ReponseDonnee = { cles, cle: item.key, juste, tirage };
-    const r = repondreAssemblage(recette.bloc, reponse);
+    const r = commit(reponse);
     setPause(pauseAfterNext);
-    if (r.assemble) {
+    if (r.done) {
       haptics.success();
-      setFin({ juste: true, assemble: true, texte: messageAssemble(recette.bloc, r.state.stock[recette.bloc] ?? 0) });
-      setEncore(assemblables(r.state.stock, recette) > 0);
+      setFin({ juste: true, assemble: true, texte: r.text, backState: r.backState });
+      setEncore(Boolean(r.again));
       return;
     }
-    // Juste, mais les blocs ont été pris ailleurs entre-temps : rien n'est assemblé ni perdu.
+    // Juste, mais les blocs ont été pris ailleurs entre-temps : rien n'est fait ni perdu.
     if (juste) {
-      setFin({ juste: true, assemble: false, texte: `C’est juste, mais il te manque des blocs pour 1 ${un} : rien n’est pris.` });
+      setFin({ juste: true, assemble: false, texte: r.lacking ?? 'C’est juste, mais il te manque des blocs : rien n’est pris.' });
       return;
     }
     const explication = fillTemplate(def.feedback.wrong, { ...item, ...a.detail });
@@ -227,7 +271,7 @@ function QuestionDAssemblage({
           />
           {pause ? (
             <SessionPause
-              suite={`Tu pourras revenir ${lieu.a} plus tard.`}
+              suite={`Tu pourras revenir ${aLieu} plus tard.`}
               onContinuer={() => {
                 continueSession();
                 setPause(false);
@@ -237,18 +281,12 @@ function QuestionDAssemblage({
             <div className="assemblage-question-actions">
               {fin.juste ? (
                 <>
-                  <Link
-                    ref={principalRef}
-                    to={retour}
-                    replace
-                    state={fin.assemble ? { assemble: recette.bloc } : undefined}
-                    className="button primary next-button"
-                  >
-                    <Icon name="back" /> Revenir {lieu.a}
+                  <Link ref={principalRef} to={retour} replace state={fin.assemble ? fin.backState : undefined} className="button primary next-button">
+                    <Icon name="back" /> {retourText}
                   </Link>
-                  {encore && (
+                  {encore && againText && (
                     <button type="button" className="button" onClick={onAutre}>
-                      <Icon name="hammer" /> Assembler 1 autre {un}
+                      <Icon name="hammer" /> {againText}
                     </button>
                   )}
                 </>
@@ -258,7 +296,7 @@ function QuestionDAssemblage({
                     <Icon name="replay" /> Une autre question
                   </button>
                   <Link to={retour} replace className="button">
-                    <Icon name="back" /> Revenir {lieu.a}
+                    <Icon name="back" /> {retourText}
                   </Link>
                 </>
               )}

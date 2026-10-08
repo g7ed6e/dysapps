@@ -231,6 +231,13 @@ Les cases des monuments qui demandent ces blocs restent dans le code (`src/game/
 - **Les choix** : des nombres (même unité, milliers avec une espace insécable, ou « 8 × 10⁹ ») sont toujours affichés du plus petit au plus grand ; des phrases sont mélangées avec la graine de l’élève, la bonne réponse autant de fois à chaque place sur les questions du bloc. Un piège de chaque matière, écrit dans le fichier : aucun n’est calculé.
 - **Vérifié par `src/game/exercises/assembly.test.ts`** : chaque bloc a au moins 8 questions ; ses compétences existent dans `src/curriculum/`, couvrent les deux matières des îles de sa recette, sont déjà travaillées par une île ou le portail, et sont du cycle 3 seul en 6e, avec au moins une du cycle 4 de la 5e à la 3e ; trois choix différents dont la réponse ; une aide sur chaque question ; ni « … » ni la question dans `lu` ; des apostrophes typographiques.
 
+## Les grands projets
+
+`projets.md` n’est pas une île : il tient les grands projets ([GD-10](../gameplay/propositions/GD-10.md)), dès la 5e. `npm run contenu` en produit `src/game/world/projects.json`, et les questions de chaque banque dans `src/game/exercises/data/assembly-<banque>.json`. Un tableau, puis les questions :
+
+- **« ## Les pièces »** : une rangée par pièce, de bas en haut (l’ordre où elles se posent) : le grand ouvrage (`landmark-5e-1`, déclaré dans `src/game/world/monuments.ts`), l’identifiant de la pièce, puis deux recettes, chacune avec ses blocs (`maths-5e-signed-numbers × 6 · french-5e-homophones × 4`) et sa banque de questions, puis le nom de la pièce, avec son article, dans chaque univers. Les blocs d’une recette viennent de deux îles de la classe du projet, de deux matières ; les deux recettes d’une pièce n’ont aucune matière en commun ; jamais la LV2 (vérifié par `npm run contenu`). Les étages que couvre chaque pièce restent dans le code (`src/game/world/projects.ts`).
+- **« ## Les questions »** : un **« ### Nom · `project-…` »** par banque, écrit exactement comme les questions d’un bloc assemblé (ci-dessus). Une recette peut aussi poser les questions d’un bloc assemblé (`compound-5e`) : l’élève garde alors le même tirage qu’à la Fabrique. `src/game/exercises/assembly.test.ts` vérifie les banques comme les blocs.
+
 ## Ajouter une île
 
 Écrire `<lieu>.md` (en-tête, nom, missions), ajouter l’île à sa place dans `archipel.md` et son identifiant dans `BIOME_IDS` (`src/game/biomes.ts`), puis lancer `npm run contenu`. Le monde (terrain, constructions, textes d’univers) se prépare à part : voir [Le format des exercices](../conception/exercices.md).

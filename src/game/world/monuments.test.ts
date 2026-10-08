@@ -65,3 +65,19 @@ it('les cases posées d’un monument sont gardées par la sauvegarde', () => {
     .map((c) => c.key);
   expect(sanitizeState({ world: { parts: { [m.id]: [...keys, '99,99,99'] } } }).world.parts[m.id]).toEqual(keys);
 });
+
+it('le phare du large fini s’allume : sa lanterne de vitraux, et seulement quand toutes ses cases sont posées (GD-10)', () => {
+  const m = getMonument('landmark-5e-1')!;
+  const o = monumentAnchor(m);
+  const keys = planCells(m).map((c) => c.key);
+  const allumes = (parts: string[]) =>
+    worldCubes('5e', {}, { parts: { [m.id]: parts }, log: [], links: [] }).filter((c) => c.place === `monument:${m.id}` && c.lit);
+  // Une case manque (la dernière, le toit) : rien ne s'allume.
+  expect(allumes(keys.slice(0, -1))).toHaveLength(0);
+  const lanterne = allumes(keys);
+  // Fini : les huit vitraux de l'étage de la lanterne (z8 du dessin), aucun autre bloc.
+  expect(lanterne).toHaveLength(8);
+  expect(lanterne.every((c) => c.texture === 'vitrail' && !c.ghost && c.z - o.z === Math.min(...planCells(m).filter((k) => k.block === m.litWhenDone).map((k) => k.z)))).toBe(true);
+  // Les autres monuments ne s'allument pas.
+  expect(MONUMENTS.filter((k) => k.litWhenDone).map((k) => k.id)).toEqual([m.id]);
+});

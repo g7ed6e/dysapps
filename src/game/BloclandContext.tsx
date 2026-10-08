@@ -14,6 +14,7 @@ import {
   rattraperLesParties,
   recordFluence as recordFluencePure,
   repondreAssemblage as repondreAssemblagePure,
+  repondreProjet as repondreProjetPure,
   sanitizeState,
   todayISO,
   type AssembleResult,
@@ -24,9 +25,11 @@ import {
   type PortalCompletion,
   type ReponseAssemblage,
   type ReponseDonnee,
+  type ReponseProjet,
 } from './engine';
 import type { BiomeId, BlockId } from './biomes';
 import type { PlanDef } from './world/plans';
+import { buildPiece, nextPiece, pieceIsFree, projectOf, type BuildPieceResult } from './world/projects';
 import type { VehicleStage } from './world/vehicle';
 import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
@@ -70,6 +73,10 @@ interface BloclandContextValue {
    * l'inventaire ; manquée, rien n'est pris. La question est notée dans le tirage de l'élève.
    */
   repondreAssemblage: (bloc: BlockId, reponse: ReponseDonnee) => ReponseAssemblage;
+  /** La réponse finale à la question d'une pièce de projet (GD-10) : juste, la pièce se pose en entier. */
+  repondreProjet: (monument: string, piece: number, recipe: number, reponse: ReponseDonnee) => ReponseProjet;
+  /** Finit, sans question ni blocs, la pièce de projet commencée case par case avant les projets (GD-10). */
+  finishPiece: (monument: string) => BuildPieceResult | null;
   /** Défait un bloc assemblé en poche : ses blocs reviennent (GD-2). */
   disassemble: (bloc: BlockId) => AssembleResult;
   /** Construit un pont vers une île voisine, payé avec les blocs de l'inventaire. */
@@ -210,6 +217,25 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     },
     [pousser],
   );
+  const repondreProjet = useCallback(
+    (monument: string, piece: number, recipe: number, reponse: ReponseDonnee): ReponseProjet => {
+      const r = repondreProjetPure(stateRef.current, monument, piece, recipe, reponse);
+      // Comme une question d'assemblage, elle compte dans l'horloge de séance.
+      setSessionCount((n) => n + 1);
+      return r.state === stateRef.current ? r : { ...r, state: pousser(r.state) };
+    },
+    [pousser],
+  );
+  const finishPiece = useCallback(
+    (monument: string): BuildPieceResult | null => {
+      const project = projectOf(monument);
+      const index = project ? nextPiece(stateRef.current, project) : null;
+      if (!project || index === null || !pieceIsFree(stateRef.current, project, index)) return null;
+      const r = buildPiece(stateRef.current, project, index, 0);
+      return r.ok ? { ...r, state: pousser(r.state) } : r;
+    },
+    [pousser],
+  );
   const disassemble = useCallback((bloc: BlockId) => appliquer(disassembleBlock(stateRef.current, bloc)), [appliquer]);
   const buildBridge = useCallback((id: string) => {
     const r = buildBridgePure(stateRef.current, id);
@@ -298,6 +324,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       recordFluence,
       fillPlan,
       repondreAssemblage,
+      repondreProjet,
+      finishPiece,
       disassemble,
       buildBridge,
       deliver,
@@ -321,6 +349,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       recordFluence,
       fillPlan,
       repondreAssemblage,
+      repondreProjet,
+      finishPiece,
       disassemble,
       buildBridge,
       deliver,

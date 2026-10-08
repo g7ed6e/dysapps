@@ -56,6 +56,8 @@ export async function generatePages() {
     const commandesMod = await load('/src/game/world/requests.ts');
     // Les quêtes des habitants (GD-10) : l'entraide, d'habitant en habitant.
     const queteMod = await load('/src/game/world/stories.ts');
+    // Les grands projets (GD-10) : un monument posé pièce par pièce, deux recettes par pièce.
+    const projetsMod = await load('/src/game/world/projects.ts');
     // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
     const universMod = await load('/src/universes/index.ts');
     const universCore = await load('/src/core/universe.ts');
@@ -91,6 +93,9 @@ export async function generatePages() {
       ASSEMBLAGE: recettesMod.ASSEMBLAGE,
       // Les questions des blocs assemblés (GD-2), une par bloc : hors du catalogue des îles.
       QUESTIONS_ASSEMBLAGE: (await Promise.all(recettesMod.ASSEMBLAGE.recettes.map((r) => exercisesMod.loadAssemblage(r.bloc)))).filter(Boolean),
+      PROJECTS: projetsMod.PROJECTS,
+      // Les banques de questions propres aux projets (`project-…`) ; les autres sont celles des blocs assemblés.
+      QUESTIONS_PROJETS: (await Promise.all(projetsMod.PROJECT_BANKS.filter((b) => b.startsWith('project-')).map((b) => exercisesMod.loadAssemblage(b)))).filter(Boolean),
       engine: engineMod,
       progress: progressMod,
       settings: settingsMod,
@@ -999,16 +1004,46 @@ function ouvragesPage(d) {
           .sort((x, y) => y[1] - x[1])
           .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
           .join(', ');
-        return [`Les ${d.ARCHIPELAGOS.find((a) => a.classe === m.archipelago).name}`, `${m.name} — ${m.description}`, `[${name(m.biome)}](iles/${m.biome}.md)`, `${m.cells.length} : ${need}`, String(m.reward.xp)];
+        const projet = d.PROJECTS.find((p) => p.monument === m.id);
+        const blocs = projet ? `${projet.pieces.length} pièces, voir [Les grands projets](#les-grands-projets)` : `${m.cells.length} : ${need}`;
+        return [`Les ${d.ARCHIPELAGOS.find((a) => a.classe === m.archipelago).name}`, `${m.name} — ${m.description}`, `[${name(m.biome)}](iles/${m.biome}.md)`, blocs, String(m.reward.xp)];
       }),
     ),
     '',
+    ...grandsProjets(d),
     ...questionsAssemblage(d),
   ];
   return { path: 'pedagogie/ouvrages.md', title: 'Ouvrages et plans', body: lines.join('\n') };
 }
 
 /** Les questions des blocs assemblés (GD-2) : ce qu'elles travaillent, leur consigne et leurs questions. */
+/** Les grands projets (GD-10) : leurs pièces, de bas en haut, et les deux recettes de chacune, puis leurs questions. */
+function grandsProjets(d) {
+  if (d.PROJECTS.length === 0) return [];
+  const recette = (r) => r.ingredients.map((i) => d.blockCount(i.bloc, i.n)).join(' et ');
+  const lines = [
+    '## Les grands projets',
+    '',
+    'Dès la 5e, une grande construction devient un **projet** : elle se pose pièce par pièce, de bas en haut. Chaque pièce a deux recettes au choix, des blocs de deux îles de deux matières ; les deux recettes n’ont aucune matière en commun et ne demandent jamais la LV2, si bien qu’une matière difficile ne bloque jamais. La recette choisie pose une question qui mêle ses deux matières, comme celle d’un bloc assemblé : juste, la pièce entière se pose et ses blocs sont pris ; manquée, rien n’est pris. Une pièce commencée bloc par bloc se finit sans rien payer. Voir [Les monuments](../manuel/blocland.md#les-monuments) dans le manuel.',
+    '',
+  ];
+  for (const p of d.PROJECTS) {
+    const m = d.MONUMENTS.find((x) => x.id === p.monument);
+    lines.push(`### ${m.name}`, '');
+    lines.push(table(['Pièce', 'Recette 1', 'Recette 2'], p.pieces.map((x) => [x.names.blocland, recette(x.recipes[0]), recette(x.recipes[1])])), '');
+  }
+  const name = (id) => d.BIOMES.find((x) => x.id === id)?.name ?? id;
+  for (const q of d.QUESTIONS_PROJETS) {
+    const r = d.PROJECTS.flatMap((p) => p.pieces.flatMap((x) => x.recipes)).find((x) => x.bank === q.bloc);
+    lines.push(`### Les questions : ${r.ingredients.map((i) => name(i.bloc)).join(' et ')}`, '');
+    lines.push(programmeLine(q.programme, d, ''), '');
+    lines.push(`Consigne : « ${q.instruction} »${q.lang === 'en' ? ' Le texte à lire est en anglais, lu en voix anglaise ; la question, l’indice et l’aide sont en français.' : ''}`, '');
+    lines.push('<details>', `<summary>Questions : ${q.items.length}</summary>`, '');
+    lines.push(...q.items.map((it) => `- ${describeItem(it)}`), '', '</details>', '');
+  }
+  return lines;
+}
+
 function questionsAssemblage(d) {
   if (d.QUESTIONS_ASSEMBLAGE.length === 0) return [];
   const lines = [

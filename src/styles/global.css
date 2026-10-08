@@ -5850,6 +5850,58 @@ details.island-fold-objectif {
 .monument-blocks {
   margin: 0 0 0.6rem;
 }
+/* Un grand projet (GD-10) : un rond par pièce, plein quand elle est posée, cerclé pour la prochaine. */
+.project-pieces {
+  list-style: none;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0.2rem 0 0;
+}
+.project-piece {
+  width: 1.4rem;
+  height: 1.4rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ink) 15%, var(--surface));
+}
+.project-piece.built {
+  background: var(--accent);
+}
+.project-piece.next {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+/* Les deux recettes d'une pièce, côte à côte : deux blocs et leur nombre, une coche quand le stock les a. */
+.project-recipes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+}
+.project-recipe {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 56px;
+  padding: 0.4rem;
+  border: var(--border-width) solid color-mix(in srgb, var(--ink) 35%, var(--surface));
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.project-recipe.checked {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.project-ingredient {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
 .inventory-missing li {
   display: flex;
   align-items: center;

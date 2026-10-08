@@ -6,7 +6,7 @@ import { placedLinksOf } from '../linkGeometry';
 import { dockBox, dockOrigin } from '../harbor';
 import { MONUMENT_ISLET, type MonumentDef, monumentsOf } from '../monuments';
 import { isletInWorld, monumentIslet } from '../footprint';
-import { ORIGINE_DES_MONUMENTS, planCells, type PlanDef, planOrigin } from '../plans';
+import { isPlanDone, ORIGINE_DES_MONUMENTS, planCells, type PlanDef, planOrigin } from '../plans';
 import type { World } from '../../engine';
 import type { PlaceId, VoxelCube } from '../cube';
 import { SNOW } from '../decor';
@@ -114,9 +114,13 @@ export function monumentIslets(a: ArchipelagoId, village: World, cubes: VoxelCub
       for (const t of taperLayers(land)) cubes.push({ x: t.x, y: t.y, z: alt - DEPTH - t.d, color: BLOCKS[BLOC.pierre].side, texture: 'pierre', tag: m.biome, place, sol: true });
     const done = new Set(village.parts[m.id] ?? []);
     const o = monumentAnchor(m);
+    // Fini (toutes ses cases posées) : ses blocs `litWhenDone` s'allument (GD-10, la lanterne du phare du large).
+    const fini = m.litWhenDone !== undefined && isPlanDone(m, village.parts);
     for (const c of planCells(m)) {
       const bd = BLOCKS[c.block];
-      cubes.push({ x: o.x + c.x, y: o.y + c.y, z: o.z + c.z, color: bd.side, top: bd.top, texture: bd.texture, tag: m.biome, ghost: !done.has(c.key), place });
+      const cube: VoxelCube = { x: o.x + c.x, y: o.y + c.y, z: o.z + c.z, color: bd.side, top: bd.top, texture: bd.texture, tag: m.biome, ghost: !done.has(c.key), place };
+      if (fini && c.block === m.litWhenDone) cube.lit = true;
+      cubes.push(cube);
     }
   }
 }

@@ -32,6 +32,8 @@ function readyRank(kind: Use['kind'] | 'ouvrage', here: boolean): number {
 
 /** « Bloc-Navire : encore 6 à gagner », « Bloc-Navire : tu as tout, pose-les », « La tour : tu peux en poser 4 ». */
 function libelleDUsage(use: Use, count: number): string {
+  // Un grand projet pose une pièce entière : il faut tous ses blocs, comme le navire.
+  if (use.project) return `${use.name} : ${use.enough ? 'tu as tout, construis la pièce' : `encore ${use.need - count} à gagner`}`;
   // Un monument prend ce qu'on a : on peut en poser dès le premier bloc.
   if (use.kind === 'monument') return `${use.name} : ${use.enough ? 'tu as tout, pose-les' : `tu peux en poser ${Math.min(count, use.need)}`}`;
   return `${cap(VEHICLE_NAME)} : ${use.enough ? 'tu as tout, pose-les' : `encore ${use.need - count} à gagner`}`;

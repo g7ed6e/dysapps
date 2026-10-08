@@ -8,7 +8,7 @@ import { planStatus, type GameState } from '../engine';
 import type { PlanDef } from './plans';
 import { BRIDGE_BLOCKS, KIND_NAME, archipelagoOf, linkKind, buildableBridges, conditionMet, otherEnd, payableBlocks } from './archipelago';
 import { monumentsOf } from './monuments';
-import { blockUses, type Use } from './uses';
+import { blockUses, monumentMissing, type Use } from './uses';
 import { VEHICLE_NAME, stageAt } from './vehicle';
 
 export interface Worksite {
@@ -27,8 +27,8 @@ export interface Worksite {
 }
 
 /** Ce qu'il manque d'un plan posé case par case (navire, monument), en blocs, et combien l'élève en a déjà en poche. */
-function gauge(state: GameState, plan: PlanDef) {
-  const missing = Object.entries(planStatus(state, plan).missing).filter(([, n]) => (n ?? 0) > 0) as [BlockId, number][];
+function gauge(state: GameState, plan: PlanDef, needs = planStatus(state, plan).missing) {
+  const missing = Object.entries(needs).filter(([, n]) => (n ?? 0) > 0) as [BlockId, number][];
   const need = missing.reduce((sum, [, n]) => sum + n, 0);
   const have = missing.reduce((sum, [b, n]) => sum + Math.min(n, state.stock[b] ?? 0), 0);
   return { have, need, ready: need > 0 && have >= need };
@@ -55,8 +55,8 @@ function fromUse(state: GameState, use: Use): Worksite | null {
   if (use.kind === 'monument') {
     const monument = monumentsOf(archipelagoOf(use.island).classe).find((m) => m.name === use.name);
     if (!monument) return null;
-    const g = gauge(state, monument);
-    const text = g.ready ? `${monument.name} : tu as tous tes blocs. Va les poser !` : `${monument.name} : ${count(g.have, g.need)}.`;
+    const g = gauge(state, monument, monumentMissing(state, monument));
+    const text = g.ready ? `${monument.name} : tu as tous tes blocs. ${use.project ? 'Va construire !' : 'Va les poser !'}` : `${monument.name} : ${count(g.have, g.need)}.`;
     return { kind: 'monument', text, ...g, island: use.island, to: `/adventure/${monument.id}` };
   }
   return null;

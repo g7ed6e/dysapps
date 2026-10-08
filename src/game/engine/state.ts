@@ -49,10 +49,10 @@ export interface GameState {
   /** Le monde : les parties posées, les liaisons construites, le lieu où se tient le personnage. */
   world: World;
   /**
-   * Le tirage des questions des blocs assemblés (GD-2), par bloc : l'ordre propre à l'élève, les dernières posées, les
+   * Le tirage des questions des blocs assemblés (GD-2), par bloc ou banque de projets (GD-10) : l'ordre propre à l'élève, les dernières posées, les
    * manquées. Absent tant qu'aucune question n'a reçu de réponse.
    */
-  assemblyDraw?: Partial<Record<BlockId, TirageAssemblage>>;
+  assemblyDraw?: Partial<Record<string, TirageAssemblage>>;
 }
 
 export interface World {

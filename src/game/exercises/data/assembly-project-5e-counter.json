@@ -1,0 +1,309 @@
+{
+  "id": "assembly-project-5e-counter",
+  "bloc": "project-5e-counter",
+  "type": "assembly",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Lis l’énoncé en anglais, calcule, puis choisis la phrase juste et bien écrite. Le rappel est affiché.",
+  "programme": [
+    "c4.ma.5e.proportionnalite.proportionnalite",
+    "c4.ma.5e.proportionnalite.pourcentages",
+    "c4.en.5e.interagir.echanges",
+    "c4.en.5e.langue.lexique",
+    "c4.en.5e.comprendre.informations-pratiques"
+  ],
+  "items": [
+    {
+      "key": "project-5e-counter-0",
+      "prompt": "2 bottles of water: £2.\nAmy buys 6 bottles.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Two bottles of water, two pounds. Amy buys six bottles.",
+      "choices": [
+        "Amy pays 6 pounds.",
+        "Amy pays 6 pound.",
+        "Amy pays 12 pounds."
+      ],
+      "answer": "Amy pays 6 pounds.",
+      "hint": "D’abord : combien coûte une bouteille ? Puis : une livre, ou plusieurs ?",
+      "explanation": "2 bouteilles pour 2 livres : 1 bouteille coûte 1 livre, et 6 bouteilles coûtent 6 livres. Plus d’une livre : pounds, avec un s. 12, c’est 6 × 2 : 2 livres, c’est le prix de deux bouteilles, pas d’une.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le prix d’un, et pounds",
+          "lines": [
+            "3 stylos pour 3 € : 1 stylo coûte 1 €, et 5 stylos coûtent 5 €.",
+            "one pound = une livre ; two pounds = deux livres"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-counter-1",
+      "prompt": "Sandwiches: 3 for £6.\nLéo wants one sandwich.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Sandwiches, three for six pounds. Léo wants one sandwich.",
+      "choices": [
+        "How much is one? It’s £2.",
+        "How many is one? It’s £2.",
+        "How much is one? It’s £3."
+      ],
+      "answer": "How much is one? It’s £2.",
+      "hint": "D’abord : partage 6 livres en 3. Puis : on demande un prix, ou on compte des choses ?",
+      "explanation": "3 sandwichs pour 6 livres : 6 ÷ 3 = 2 livres pour un. Pour un prix, on demande how much ; how many sert à compter des choses. 3, c’est 6 − 3 : on partage le prix, on n’enlève pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Partager, et how much",
+          "lines": [
+            "4 gâteaux pour 8 € : on partage, 8 ÷ 4, donc 2 € pour un gâteau.",
+            "how much = combien (un prix) ; how many = combien de (on compte)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-counter-2",
+      "prompt": "Milk: 2 cartons for £3.\nDad buys 4 cartons.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Milk, two cartons for three pounds. Dad buys four cartons.",
+      "choices": [
+        "Dad gets 4 cartons of milk for £6.",
+        "Dad gets 4 pieces of milk for £6.",
+        "Dad gets 4 cartons of milk for £5."
+      ],
+      "answer": "Dad gets 4 cartons of milk for £6.",
+      "hint": "D’abord : 4 briques, c’est combien de fois 2 briques ? Puis : le lait se vend dans quoi ?",
+      "explanation": "4 briques, c’est 2 fois 2 briques : 2 fois 3 livres, 6 livres. Le lait se vend en brique : a carton of milk. a piece of, c’est un morceau (a piece of cake). 5, c’est 3 + 2 : on a ajouté au lieu de multiplier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux fois plus, et a carton of",
+          "lines": [
+            "2 pains pour 1 € : 4 pains, deux fois plus, coûtent 2 €.",
+            "a carton of = une brique de ; a piece of = un morceau de"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-counter-3",
+      "prompt": "Apples: 3 for £1.\nYou want 9 apples.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Apples, three for one pound. You want nine apples.",
+      "choices": [
+        "I’d like 9 apples for £3, please.",
+        "I like 9 apples for £3, please.",
+        "I’d like 9 apples for £7, please."
+      ],
+      "answer": "I’d like 9 apples for £3, please.",
+      "hint": "D’abord : 9 pommes, c’est combien de fois 3 pommes ? Puis : comment demander poliment ?",
+      "explanation": "9 pommes, c’est 3 fois 3 pommes : 3 fois 1 livre, 3 livres. Pour demander poliment, on dit I’d like, je voudrais ; I like veut dire j’aime. 7, c’est 1 + 6 : on a ajouté au lieu de multiplier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trois fois plus, et I’d like",
+          "lines": [
+            "2 crayons pour 1 € : 6 crayons, trois fois plus, coûtent 3 €.",
+            "I’d like = je voudrais ; I like = j’aime"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-counter-4",
+      "prompt": "The bill: £20.\nThe tip: 10% of the bill.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "The bill, twenty pounds. The tip, ten per cent of the bill.",
+      "choices": [
+        "The bill is £20, so the tip is £2.",
+        "The menu is £20, so the tip is £2.",
+        "The bill is £20, so the tip is £10."
+      ],
+      "answer": "The bill is £20, so the tip is £2.",
+      "hint": "D’abord : 10 %, c’est partager en 10. Puis : la carte, ou l’addition ?",
+      "explanation": "10 % de 20, c’est 20 ÷ 10 = 2 livres. Ce qu’on paie, c’est the bill, l’addition ; the menu, c’est la carte des plats. 10, c’est prendre le pourcentage pour le prix : 10 %, ce n’est pas 10 livres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "10 %, et the bill",
+          "lines": [
+            "10 %, c’est un dixième : 10 % de 50, c’est 50 ÷ 10, donc 5.",
+            "the bill = l’addition ; the menu = la carte ; the tip = le pourboire"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-counter-5",
+      "prompt": "A bag of 8 sweets.\n25% are red.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "A bag of eight sweets. Twenty-five per cent are red.",
+      "choices": [
+        "Not many: only 2 are red.",
+        "Not much: only 2 are red.",
+        "Not many: only 4 are red."
+      ],
+      "answer": "Not many: only 2 are red.",
+      "hint": "D’abord : 25 %, c’est un quart. Puis : des bonbons, ça se compte ?",
+      "explanation": "25 %, c’est un quart : 8 ÷ 4 = 2 bonbons rouges. Les bonbons se comptent : not many, pas beaucoup ; much va avec ce qui ne se compte pas (much water). 4, c’est la moitié : 25 %, c’est un quart, pas la moitié.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "25 %, et many",
+          "lines": [
+            "25 %, c’est un quart : 25 % de 12, c’est 12 ÷ 4, donc 3.",
+            "many = beaucoup de (on compte : many apples) ; much = beaucoup de (on ne compte pas : much water)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-counter-6",
+      "prompt": "1 glass of orange juice: £2.\nYou buy juice for 4 friends.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "One glass of orange juice, two pounds. You buy juice for four friends.",
+      "choices": [
+        "Four glasses of orange juice: £8.",
+        "Four glass of orange juice: £8.",
+        "Four glasses of orange juice: £6."
+      ],
+      "answer": "Four glasses of orange juice: £8.",
+      "hint": "D’abord : 4 verres à 2 livres. Puis : un verre, ou plusieurs ?",
+      "explanation": "4 verres à 2 livres : 4 × 2 = 8 livres. Plusieurs verres : glasses, avec -es. 6, c’est 4 + 2 : on a ajouté au lieu de multiplier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le prix de plusieurs, et glasses",
+          "lines": [
+            "1 crêpe coûte 3 € : 5 crêpes coûtent 5 fois 3 €, 15 €.",
+            "one glass = un verre ; two glasses = deux verres"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-counter-7",
+      "prompt": "Pens: 5 for £2.\nNina needs 10 pens.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Pens, five for two pounds. Nina needs ten pens.",
+      "choices": [
+        "How much is it? It’s £4.",
+        "How many is it? It’s £4.",
+        "How much is it? It’s £7."
+      ],
+      "answer": "How much is it? It’s £4.",
+      "hint": "D’abord : 10 stylos, c’est combien de fois 5 stylos ? Puis : on demande un prix, ou on compte des choses ?",
+      "explanation": "10 stylos, c’est 2 fois 5 stylos : 2 fois 2 livres, 4 livres. Pour un prix, on demande how much. 7, c’est 2 + 5 : on a ajouté au lieu de multiplier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux fois plus, et how much",
+          "lines": [
+            "3 cahiers pour 4 € : 6 cahiers, deux fois plus, coûtent 8 €.",
+            "how much = combien (un prix) ; how many = combien de (on compte)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-counter-8",
+      "prompt": "10 stickers: £2.\nTom buys 5 stickers.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Ten stickers, two pounds. Tom buys five stickers.",
+      "choices": [
+        "Tom pays 1 pound.",
+        "Tom pays 1 pounds.",
+        "Tom pays 4 pounds."
+      ],
+      "answer": "Tom pays 1 pound.",
+      "hint": "D’abord : 5 autocollants, c’est la moitié de 10. Puis : une livre, ou plusieurs ?",
+      "explanation": "5, c’est la moitié de 10 : on paie la moitié de 2 livres, 1 livre. Une seule livre : pound, sans s. 4, c’est 2 × 2 : on a doublé au lieu de prendre la moitié.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux fois moins, et pound",
+          "lines": [
+            "8 billes pour 4 € : 4 billes, deux fois moins, coûtent 2 €.",
+            "one pound = une livre ; two pounds = deux livres"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-counter-9",
+      "prompt": "Bananas: 6 for £3.\nYou want 2 bananas.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Bananas, six for three pounds. You want two bananas.",
+      "choices": [
+        "I’d like 2 bananas for £1, please.",
+        "I like 2 bananas for £1, please.",
+        "I’d like 2 bananas for £2, please."
+      ],
+      "answer": "I’d like 2 bananas for £1, please.",
+      "hint": "D’abord : 2 bananes, c’est trois fois moins que 6. Puis : comment demander poliment ?",
+      "explanation": "2 bananes, c’est trois fois moins que 6 bananes : 3 livres partagées en 3, 1 livre. Pour demander poliment, on dit I’d like, je voudrais ; I like veut dire j’aime. 2, c’est 6 ÷ 3 : c’est le prix qu’on partage, pas le nombre de bananes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Trois fois moins, et I’d like",
+          "lines": [
+            "9 œufs pour 6 € : 3 œufs, trois fois moins, coûtent 2 €.",
+            "I’d like = je voudrais ; I like = j’aime"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-counter-10",
+      "prompt": "2 child tickets: £6.\nWe are 4 children.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Two child tickets, six pounds. We are four children.",
+      "choices": [
+        "Here you are: 4 tickets for £12.",
+        "Here are you: 4 tickets for £12.",
+        "Here you are: 4 tickets for £8."
+      ],
+      "answer": "Here you are: 4 tickets for £12.",
+      "hint": "D’abord : 4 enfants, c’est combien de fois 2 enfants ? Puis : que dit-on en tendant quelque chose ?",
+      "explanation": "4 billets, c’est 2 fois 2 billets : 2 fois 6 livres, 12 livres. En tendant quelque chose, on dit Here you are, voilà, dans cet ordre. 8, c’est 6 + 2 : on a ajouté au lieu de multiplier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux fois plus, et here you are",
+          "lines": [
+            "2 places pour 5 € : 4 places, deux fois plus, coûtent 10 €.",
+            "here you are = voilà (en tendant quelque chose)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-counter-11",
+      "prompt": "The shop has 16 cartons of juice.\n50% are apple juice.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "The shop has sixteen cartons of juice. Fifty per cent are apple juice.",
+      "choices": [
+        "There are 8 cartons of apple juice.",
+        "There are 8 pieces of apple juice.",
+        "There are 4 cartons of apple juice."
+      ],
+      "answer": "There are 8 cartons of apple juice.",
+      "hint": "D’abord : 50 %, c’est la moitié. Puis : le jus se vend dans quoi ?",
+      "explanation": "50 %, c’est la moitié : 16 ÷ 2 = 8 briques. Le jus se vend en brique : a carton of juice ; a piece of, c’est un morceau. 4, c’est un quart : 50 %, c’est la moitié, pas le quart.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "50 %, et a carton of",
+          "lines": [
+            "50 %, c’est la moitié : 50 % de 10, c’est 10 ÷ 2, donc 5.",
+            "a carton of = une brique de ; a piece of = un morceau de"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien assemblé !",
+    "wrong": "{explanation}"
+  }
+}
