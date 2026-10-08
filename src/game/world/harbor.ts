@@ -3,8 +3,12 @@
 import type { BiomeId } from '../biomes';
 import { ALTITUDE, archipelagoOfIsland, coeurDe, isLand, islandDef, type ArchipelagoId, type IslandDef } from './map';
 
-/** Colonne de la jetée, à droite du cœur (jusqu'à GD-11, l'îlot du Gardien tenait les colonnes 0 à 12 devant l'île). */
-export const DOCK_DX = 14;
+/**
+ * Colonne de la jetée, à droite du cœur (jusqu'à GD-11, l'îlot du Gardien tenait les colonnes 0 à 12 devant l'île). La
+ * 16 depuis que le cœur a grandi et que la côte s'est amincie (GD-11, 8 octobre 2026) : en 14, sur la côte mince du
+ * Marché, la jetée partait du bord du cœur, sur la rangée de côte devant les bornes, qui reste nue.
+ */
+export const DOCK_DX = 16;
 /** Cases de jetée à plat au moins, une fois au niveau de repos du navire. */
 const DOCK_FLAT = 3;
 
@@ -28,10 +32,12 @@ export function vehicleRestZ(a: ArchipelagoId): number {
 /** Le navire flotte sur l'eau (il tangue) ; sinon il plane, au-dessus de l'eau ou des nuages. */
 export const vehicleAfloat = (a: ArchipelagoId): boolean => vehicleRestZ(a) === 0;
 
-/** La dernière case de terre d'une colonne, côté mer (devant l'île) : la côte. Le cœur s'il n'y a pas de terre. */
+/** La dernière case de terre d'une colonne, côté mer (devant l'île) : la côte. Le bord du cœur s'il n'y a pas de terre. */
 function shoreYAt(def: IslandDef, x: number): number {
-  let shore = def.core.y;
-  for (let y = def.core.y; y >= def.core.y - def.ext.front - 3; y--) if (isLand(def, x, y)) shore = y;
+  // Depuis le bord de devant du cœur (agrandi, `coeurDe`), à travers la côte.
+  const y0 = coeurDe(def).y0;
+  let shore = y0;
+  for (let y = y0; y >= y0 - def.ext.front - 3; y--) if (isLand(def, x, y)) shore = y;
   return shore;
 }
 

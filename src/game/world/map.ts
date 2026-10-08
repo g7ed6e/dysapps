@@ -113,16 +113,22 @@ type MapPlace = Omit<IslandDef, 'repere' | 'quarts'> & { repere?: { x: number; y
 export const CORE = 16;
 
 /**
- * Côté du cœur des îles qui en ont un plus grand que `CORE` : les îles-écoles, qui portent les lieux du village (l'école,
- * la salle des trophées), passent de 16 × 16 à 20 × 20 (décision du mainteneur, 01/10/2026), une à la fois. Il grandit
- * également des deux côtés autour du cœur d'origine : à 20, le cœur couvre [−2, 18) en coordonnées relatives à
- * `IslandDef.core`, qui reste l'origine du repère de l'île (et des clés de sauvegarde) ; son milieu ne bouge pas.
- * C'est de la vraie terre en plus : la côte (`ext`) garde sa largeur autour du cœur agrandi, la terre de l'île gagne
- * deux cases de chaque côté, et ses voisines s'écartent d'autant dans `MAP` (choix du mainteneur, 01/10/2026). Les
- * marges du cœur (l'anneau de deux cases autour du cœur d'origine) sont plates, avec le décor de la côte
- * (`margesDuCoeur`, allégé île par île : `DECOR_DES_MARGES`). La Forêt d'abord, puis le Marché, l'Atelier et le Phare.
+ * Côté du cœur de chaque île (GD-11, décision du mainteneur du 8 octobre 2026, « Agrandir les îles », « Tout autour »,
+ * « Côte amincie ») : le cœur grandit de trois cases de chaque côté autour du cœur d'origine (`CORE`), de 16 à 22, pour
+ * que le Gardien ait sa place sur son île ; la côte (`ext`) s'amincit d'une case de chaque côté (une case au moins) :
+ * deux cases de terre nettes en plus par côté, sous le plafond de Blocland (100 000 triangles au pire). `IslandDef.core`
+ * reste l'origine du repère de l'île (et des clés de sauvegarde) : à 22, le cœur couvre [−3, 19) ; son milieu ne bouge
+ * pas. Les marges du cœur (l'anneau autour du cœur d'origine) sont plates et ne portent que leurs jalons
+ * (`margesDuCoeur`).
  */
-export const COTE_DU_COEUR: Readonly<Partial<Record<BiomeId, number>>> = Object.freeze({ 'french-6e-phonology': 20, 'maths-5e-proportionality': 20, 'maths-4e-algebra': 20, 'maths-3e-functions': 20 });
+export const DEFAULT_CORE_SIDE = 22;
+
+/**
+ * Côté du cœur des îles-écoles, qui portent les lieux du village (l'école, la salle des trophées) : 20 depuis le
+ * 1er octobre 2026 (décision du mainteneur), 26 depuis GD-11 (trois cases de plus de chaque côté, comme les autres
+ * îles). La Forêt, le Marché, l'Atelier et le Phare.
+ */
+export const COTE_DU_COEUR: Readonly<Partial<Record<BiomeId, number>>> = Object.freeze({ 'french-6e-phonology': 26, 'maths-5e-proportionality': 26, 'maths-4e-algebra': 26, 'maths-3e-functions': 26 });
 
 /** Des bornes de cases : [x0, x1) × [y0, y1), bornes hautes exclues. */
 export interface Bornes {
@@ -134,12 +140,11 @@ export interface Bornes {
 
 const bornesLocales = new Map<BiomeId, Readonly<Bornes>>();
 
-/** Les bornes du cœur d'une île relatives à son origine `def.core` (0..16 aujourd'hui, −2..18 à 20 de côté). */
+/** Les bornes du cœur d'une île relatives à son origine `def.core` (−3..19 à 22 de côté, −5..21 à 26). */
 export function bornesDuCoeur(def: IslandDef): Readonly<Bornes> {
   let b = bornesLocales.get(def.id);
   if (!b) {
-    const cote = COTE_DU_COEUR[def.id] ?? CORE;
-    // (CORE − cote) / 2 plutôt que −marge : 0 et non −0 pour un cœur de 16.
+    const cote = COTE_DU_COEUR[def.id] ?? DEFAULT_CORE_SIDE;
     const debut = (CORE - cote) / 2;
     b = Object.freeze({ x0: debut, y0: debut, x1: cote + debut, y1: cote + debut });
     bornesLocales.set(def.id, b);
@@ -168,6 +173,11 @@ const e = (left: number, right: number, front: number, back: number) => ({ left,
  * footprint.ts) ; chaque lieu y bouge de quelques cases et garde son dessin (`repere` : sa place d'avant). Le second
  * lieu d'une paire réunie par un isthme garde son écart à l'autre, hors du pas. Entre deux emprises, au moins
  * `GAP_BETWEEN_PLACES` cases d'eau, et chaque lieu peut être relié par une liaison droite ou en L (routing.ts).
+ *
+ * GD-11 (08/10/2026) : les cœurs grandissent (`DEFAULT_CORE_SIDE`, `COTE_DU_COEUR`) et chaque côte s'amincit d'une
+ * case ; les lieux que leur terre agrandie approchait à moins de `GAP_BETWEEN_PLACES` cases d'une voisine glissent sur
+ * le pas (de 4 cases, rarement 8 ou 12), avec les îlots des monuments (monuments.ts). Les cadres des régions ne bougent
+ * pas. Les notes île par île ci-dessous racontent les places d'avant ; les nombres sont ceux d'aujourd'hui.
  */
 const STARTING_MAP: MapPlace[] = [
   // Premiers Rivages (6e), au niveau de la mer. Port : la Plaine. La Forêt, île-école, a un cœur de 20 (`COTE_DU_COEUR`)
@@ -175,18 +185,18 @@ const STARTING_MAP: MapPlace[] = [
   // pour garder les bras de mer et la longueur des ouvrages (à deux cases près), chacune avec son dessin (`deplacee`) :
   // la Ferme de 2 vers l'ouest, la Mine de 2 vers l'est, la Plaine de 2 devant ; derrière, la Baie (2 vers l'ouest) et
   // l'Horloge d'une case seulement, pour que la mer semée au large ne s'étende pas d'un rang (l'îlot du Gardien de
-  // l'Horloge est à deux cases d'eau de la Forêt, comme celui de la Forêt l'est de la Plaine). Les îles du bord (la
+  // l'Horloge, retiré depuis GD-11, était à deux cases d'eau de la Forêt). Les îles du bord (la
   // Tour, la Carrière, le Volcan, la Rivière) ne bougent pas : rien de la Forêt ne les approche, et l'archipel garde sa
   // colonne centrale (le cadrage des caméras) et sa largeur (la mer). L'isthme de la Ferme à la Tour, les ponts de la
   // Mine à la Carrière et à la Rivière, et le bac de la Ferme au Volcan y perdent deux cases.
-  { id: 'french-6e-phonology', region: 'basses-terres', core: { x: 68, y: 63 }, repere: { x: 67, y: 59 }, altitude: 0, ext: e(6, 5, 3, 6), relief: 'collines', seed: 11 },
-  { id: 'french-6e-grammar-spelling', region: 'basses-terres', core: { x: 24, y: 59 }, repere: { x: 25, y: 61 }, deplacee: { x: -2, y: 0 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'plat', seed: 12 },
-  { id: 'french-6e-letter-confusion', region: 'montagne', core: { x: 100, y: 67 }, repere: { x: 98, y: 61 }, deplacee: { x: 2, y: 0 }, altitude: 0, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 13 },
-  { id: 'french-6e-reading', region: 'basses-terres', core: { x: -4, y: 51 }, repere: { x: -3, y: 56 }, altitude: 0, ext: e(2, 3, 2, 3), relief: 'plat', seed: 14 },
-  { id: 'french-6e-word-spelling', region: 'montagne', core: { x: 136, y: 55 }, repere: { x: 136, y: 56 }, altitude: 0, ext: e(3, 3, 2, 4), relief: 'collines', seed: 15 },
-  { id: 'maths-6e-calculation', region: 'basses-terres', core: { x: 64, y: 19 }, deplacee: { x: 0, y: -2 }, altitude: 0, ext: e(5, 5, 3, 2), relief: 'plat', seed: 16 },
-  { id: 'maths-6e-fractions', region: 'marais', core: { x: 108, y: 19 }, repere: { x: 109, y: 19 }, altitude: 0, ext: e(4, 4, 3, 3), relief: 'plat', seed: 17 },
-  { id: 'maths-6e-decimals', region: 'feu', core: { x: 20, y: 15 }, repere: { x: 21, y: 19 }, altitude: 0, ext: e(4, 4, 2, 6), relief: 'volcan', seed: 18 },
+  { id: 'french-6e-phonology', region: 'basses-terres', core: { x: 68, y: 63 }, repere: { x: 67, y: 59 }, altitude: 0, ext: e(5, 4, 2, 5), relief: 'collines', seed: 11 },
+  { id: 'french-6e-grammar-spelling', region: 'basses-terres', core: { x: 24, y: 59 }, repere: { x: 25, y: 61 }, deplacee: { x: -2, y: 0 }, altitude: 0, ext: e(2, 3, 1, 3), relief: 'plat', seed: 12 },
+  { id: 'french-6e-letter-confusion', region: 'montagne', core: { x: 104, y: 67 }, repere: { x: 98, y: 61 }, deplacee: { x: 2, y: 0 }, altitude: 0, ext: e(2, 3, 1, 4), relief: 'montagne', seed: 13 },
+  { id: 'french-6e-reading', region: 'basses-terres', core: { x: -8, y: 51 }, repere: { x: -3, y: 56 }, altitude: 0, ext: e(1, 2, 1, 2), relief: 'plat', seed: 14 },
+  { id: 'french-6e-word-spelling', region: 'montagne', core: { x: 136, y: 55 }, repere: { x: 136, y: 56 }, altitude: 0, ext: e(2, 2, 1, 3), relief: 'collines', seed: 15 },
+  { id: 'maths-6e-calculation', region: 'basses-terres', core: { x: 64, y: 19 }, deplacee: { x: 0, y: -2 }, altitude: 0, ext: e(4, 4, 2, 1), relief: 'plat', seed: 16 },
+  { id: 'maths-6e-fractions', region: 'marais', core: { x: 108, y: 19 }, repere: { x: 109, y: 19 }, altitude: 0, ext: e(3, 3, 2, 2), relief: 'plat', seed: 17 },
+  { id: 'maths-6e-decimals', region: 'feu', core: { x: 20, y: 15 }, repere: { x: 21, y: 19 }, altitude: 0, ext: e(3, 3, 1, 5), relief: 'volcan', seed: 18 },
   // Îles Brumeuses (5e), sur les collines : deux paires d'isthmes l'une devant l'autre. Port : le Marché. Le Marché,
   // île-école, a un cœur de 20 et sa côte autour (01/10/2026) : le Glacier s'écarte de 2 vers l'ouest (l'isthme garde
   // sa largeur), le Comptoir et le Manoir de 2 vers l'est (le pont du Comptoir au Manoir reste droit), chacun avec son
@@ -194,17 +204,19 @@ const STARTING_MAP: MapPlace[] = [
   // pas : le pont du Marché au Marais était long (30 cases), celui du Comptoir au Relais y perd deux cases ; écarter
   // aussi le Relais, pour garder la colonne centrale, élargissait la mer semée de 157 triangles de décor, au-delà de son
   // enveloppe : la colonne recule d'une case, et les caméras du 5e tournent de 0,8°.
-  { id: 'maths-5e-signed-numbers', region: 'montagne', core: { x: 37, y: 321 }, repere: { x: 38, y: 320 }, deplacee: { x: -2, y: 0 }, altitude: 3, ext: e(4, 4, 3, 6), relief: 'montagne', seed: 21 },
-  { id: 'maths-5e-proportionality', region: 'marais', core: { x: 69, y: 317 }, altitude: 3, ext: e(3, 4, 2, 3), relief: 'plat', seed: 22 },
-  { id: 'french-5e-homophones', region: 'basses-terres', core: { x: 37, y: 373 }, repere: { x: 40, y: 362 }, altitude: 3, ext: e(4, 4, 3, 4), relief: 'collines', seed: 23 },
-  { id: 'french-5e-conjugation', region: 'marais', core: { x: 65, y: 377 }, repere: { x: 69, y: 367 }, altitude: 3, ext: e(4, 4, 2, 4), relief: 'plat', seed: 24 },
+  { id: 'maths-5e-signed-numbers', region: 'montagne', core: { x: 33, y: 321 }, repere: { x: 38, y: 320 }, deplacee: { x: -2, y: 0 }, altitude: 3, ext: e(3, 3, 2, 5), relief: 'montagne', seed: 21 },
+  // Le Marché garde deux rangées de côte devant (GD-11 amincit les autres côtes d'une case) : sinon l'escalier de sa jetée
+  // monterait sur la rangée nue devant ses bornes.
+  { id: 'maths-5e-proportionality', region: 'marais', core: { x: 69, y: 317 }, altitude: 3, ext: e(2, 3, 2, 2), relief: 'plat', seed: 22 },
+  { id: 'french-5e-homophones', region: 'basses-terres', core: { x: 33, y: 373 }, repere: { x: 40, y: 362 }, altitude: 3, ext: e(3, 3, 2, 3), relief: 'collines', seed: 23 },
+  { id: 'french-5e-conjugation', region: 'marais', core: { x: 65, y: 373 }, repere: { x: 69, y: 367 }, altitude: 3, ext: e(3, 3, 1, 3), relief: 'plat', seed: 24 },
   // Anciens Ateliers (4e), sur les monts : redessinés en deux rangs dans leur cadre de 160 × 112 (GD-9, 05/10/2026 ;
   // ils étaient en ligne). Port : l'Atelier, au point de départ. Devant, la Forge, l'Atelier, la Falaise et, au bout,
   // l'île de la LV2 ; derrière, la Gare, le Théâtre et le Cabinet. Chacun garde son dessin (`repere`).
-  { id: 'maths-4e-powers', region: 'feu', core: { x: 26, y: 620 }, repere: { x: 28, y: 618 }, deplacee: { x: -2, y: 0 }, altitude: 6, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 31 },
-  { id: 'maths-4e-algebra', region: 'hauteurs', core: { x: 62, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 32 },
-  { id: 'french-4e-agreement', region: 'montagne', core: { x: 94, y: 616 }, repere: { x: 96, y: 618 }, deplacee: { x: 2, y: 0 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },
-  { id: 'french-4e-vocabulary', region: 'hauteurs', core: { x: 118, y: 660 }, repere: { x: 126, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 34 },
+  { id: 'maths-4e-powers', region: 'feu', core: { x: 26, y: 620 }, repere: { x: 28, y: 618 }, deplacee: { x: -2, y: 0 }, altitude: 6, ext: e(2, 3, 1, 4), relief: 'montagne', seed: 31 },
+  { id: 'maths-4e-algebra', region: 'hauteurs', core: { x: 62, y: 632 }, altitude: 6, ext: e(2, 2, 1, 3), relief: 'collines', seed: 32 },
+  { id: 'french-4e-agreement', region: 'montagne', core: { x: 94, y: 616 }, repere: { x: 96, y: 618 }, deplacee: { x: 2, y: 0 }, altitude: 6, ext: e(2, 3, 1, 6), relief: 'montagne', seed: 33 },
+  { id: 'french-4e-vocabulary', region: 'hauteurs', core: { x: 126, y: 664 }, repere: { x: 126, y: 632 }, altitude: 6, ext: e(2, 2, 1, 3), relief: 'collines', seed: 34 },
   // Îles du Ciel (3e), sur les sommets : un arc, le Phare devant au centre. Port : le Phare. Le Phare, île-école, a un
   // cœur de 20 et sa côte autour (01/10/2026) : le Belvédère s'écarte de 2 vers l'ouest, l'Observatoire des données de
   // 2 vers l'est (leurs ponts vers le Phare gardent leur longueur, ceux du Studio et du Château y perdent deux cases),
@@ -212,64 +224,64 @@ const STARTING_MAP: MapPlace[] = [
   // n'avait plus de marge, garde ses rangs (le devant du Phare l'a agrandie de deux cases, le fond la reprend), et le
   // col n'y perd que deux cases. Les îles du bord (le Studio, le Château, le Refuge) ne bougent pas : la colonne
   // centrale et la largeur restent. Le temple de marbre suit le Belvédère, le grand phare la côte repoussée (decor/3e.ts).
-  { id: 'maths-3e-geometry', region: 'montagne', core: { x: 18, y: 932 }, repere: { x: 18, y: 930 }, deplacee: { x: -2, y: 0 }, altitude: 9, ext: e(3, 3, 2, 6), relief: 'montagne', seed: 41 },
-  { id: 'maths-3e-functions', region: 'hauteurs', core: { x: 58, y: 912 }, altitude: 9, ext: e(3, 3, 3, 3), relief: 'collines', seed: 42 },
-  { id: 'maths-3e-statistics', region: 'hauteurs', core: { x: 98, y: 932 }, repere: { x: 98, y: 930 }, deplacee: { x: 2, y: 0 }, altitude: 9, ext: e(4, 3, 3, 3), relief: 'collines', seed: 43 },
-  { id: 'french-3e-close-reading', region: 'hauteurs', core: { x: 58, y: 960 }, repere: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
+  { id: 'maths-3e-geometry', region: 'montagne', core: { x: 18, y: 932 }, repere: { x: 18, y: 930 }, deplacee: { x: -2, y: 0 }, altitude: 9, ext: e(2, 2, 1, 5), relief: 'montagne', seed: 41 },
+  { id: 'maths-3e-functions', region: 'hauteurs', core: { x: 58, y: 912 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'collines', seed: 42 },
+  { id: 'maths-3e-statistics', region: 'hauteurs', core: { x: 94, y: 932 }, repere: { x: 98, y: 930 }, deplacee: { x: 2, y: 0 }, altitude: 9, ext: e(3, 2, 2, 2), relief: 'collines', seed: 43 },
+  { id: 'french-3e-close-reading', region: 'hauteurs', core: { x: 58, y: 964 }, repere: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(2, 2, 1, 4), relief: 'collines', seed: 44 },
   // Anglais 6e : derrière la Ferme et la Forêt, à dix cases d'eau l'une de l'autre (leur isthme est retiré, GD-9).
-  { id: 'english-6e-vocabulary', region: 'basses-terres', core: { x: 40, y: 111 }, repere: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, ext: e(4, 3, 2, 4), relief: 'plat', seed: 51 },
-  { id: 'english-6e-grammar', region: 'basses-terres', core: { x: 72, y: 111 }, repere: { x: 68, y: 102 }, deplacee: { x: 0, y: 1 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'collines', seed: 52 },
+  { id: 'english-6e-vocabulary', region: 'basses-terres', core: { x: 32, y: 107 }, repere: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, ext: e(3, 2, 1, 3), relief: 'plat', seed: 51 },
+  { id: 'english-6e-grammar', region: 'basses-terres', core: { x: 64, y: 107 }, repere: { x: 68, y: 102 }, deplacee: { x: 0, y: 1 }, altitude: 0, ext: e(2, 3, 1, 3), relief: 'collines', seed: 52 },
   // Histoire-géographie 6e : derrière la Mine, au bout du second rang, la Fouille des siècles puis la Pointe des
   // paysages, fermées au départ (on les relie). Sur le pas des places, à quatre cases d'eau au moins de leurs voisines.
   // Leur terre est plate, sans relief ni pic : l'archipel le plus chargé du monde, ses îles les plus sobres.
-  { id: 'history-6e-antiquity', region: 'basses-terres', core: { x: 124, y: 99 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'plat', seed: 53 },
-  { id: 'geography-6e-living', region: 'basses-terres', core: { x: 152, y: 99 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'plat', seed: 54 },
+  { id: 'history-6e-antiquity', region: 'basses-terres', core: { x: 124, y: 99 }, altitude: 0, ext: e(1, 1, 1, 1), relief: 'plat', seed: 53 },
+  { id: 'geography-6e-living', region: 'basses-terres', core: { x: 152, y: 99 }, altitude: 0, ext: e(1, 1, 1, 1), relief: 'plat', seed: 54 },
   // Sciences 6e (SC-2) : dans le cadre de la région (192 × 144, pour que la Carte tienne sur la tablette), aux trois
   // places qui restaient : la Vallée du vivant au second rang, entre l'Horloge et la Fouille ; le Laboratoire des
   // éléments au coin de devant, à l'est, après la Rivière ; le Hangar des inventions au coin de devant, à l'ouest, avant
   // le Volcan (sa terre cuite n'a ainsi que des voisines d'ardoise, la Tour et le Volcan). Le coin du fond, à l'ouest,
   // reste libre pour aménager. Fermées au départ (on les relie). Sur le pas des places, à quatre cases d'eau au moins de
-  // leurs voisines, l'îlot de leur Gardien devant elles. Chacune garde le dessin de sa première place, au rang du fond
+  // leurs voisines (leur Gardien sur leur île depuis GD-11). Chacune garde le dessin de sa première place, au rang du fond
   // (`repere`). Terre plate, sans relief ni pic, comme l'histoire-géographie.
-  { id: 'life-earth-sciences-6e-living-world', region: 'basses-terres', core: { x: 100, y: 111 }, repere: { x: 152, y: 139 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'plat', seed: 55 },
-  { id: 'physics-chemistry-6e-matter-energy', region: 'basses-terres', core: { x: 152, y: 15 }, repere: { x: 124, y: 139 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'plat', seed: 56 },
-  { id: 'technology-6e-objects', region: 'basses-terres', core: { x: -12, y: 11 }, repere: { x: 96, y: 139 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'plat', seed: 57 },
+  { id: 'life-earth-sciences-6e-living-world', region: 'basses-terres', core: { x: 96, y: 111 }, repere: { x: 152, y: 139 }, altitude: 0, ext: e(1, 1, 1, 1), relief: 'plat', seed: 55 },
+  { id: 'physics-chemistry-6e-matter-energy', region: 'basses-terres', core: { x: 152, y: 15 }, repere: { x: 124, y: 139 }, altitude: 0, ext: e(1, 1, 1, 1), relief: 'plat', seed: 56 },
+  { id: 'technology-6e-objects', region: 'basses-terres', core: { x: -12, y: 11 }, repere: { x: 96, y: 139 }, altitude: 0, ext: e(1, 1, 1, 1), relief: 'plat', seed: 57 },
   // Anglais 5e : une colonne à droite du Marché et du Marais.
-  { id: 'english-5e-vocabulary', region: 'basses-terres', core: { x: 105, y: 321 }, repere: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'plat', seed: 61 },
-  { id: 'english-5e-grammar', region: 'hauteurs', core: { x: 101, y: 365 }, repere: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'collines', seed: 62 },
+  { id: 'english-5e-vocabulary', region: 'basses-terres', core: { x: 105, y: 321 }, repere: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 1, 3), relief: 'plat', seed: 61 },
+  { id: 'english-5e-grammar', region: 'hauteurs', core: { x: 101, y: 365 }, repere: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 1, 3), relief: 'collines', seed: 62 },
   // LV2 5e : à l'est du Comptoir, dans son alignement (le pont reste droit), en bout de chemin : rien n'en dépend.
-  { id: 'lv2-5e-introductions', region: 'basses-terres', core: { x: 133, y: 321 }, repere: { x: 133, y: 320 }, altitude: 3, ext: e(2, 3, 2, 4), relief: 'plat', seed: 94 },
+  { id: 'lv2-5e-introductions', region: 'basses-terres', core: { x: 137, y: 321 }, repere: { x: 133, y: 320 }, altitude: 3, ext: e(1, 2, 1, 3), relief: 'plat', seed: 94 },
   // Anglais 4e : au second rang, la Gare derrière la Forge, le Théâtre à côté du Cabinet.
-  { id: 'english-4e-comprehension', region: 'hauteurs', core: { x: 90, y: 660 }, repere: { x: 158, y: 618 }, altitude: 6, ext: e(3, 4, 2, 4), relief: 'collines', seed: 71 },
+  { id: 'english-4e-comprehension', region: 'hauteurs', core: { x: 94, y: 660 }, repere: { x: 158, y: 618 }, altitude: 6, ext: e(2, 3, 1, 3), relief: 'collines', seed: 71 },
   // LV2 4e : au bout du premier rang, après la Falaise, en bout de chemin : rien n'en dépend. Sur la Carte au grand
   // texte, quand la flèche désigne l'ouvrage qui l'ouvre, le Jardin sort du bas de la place libre d'une trentaine de
   // pixels (la flèche et son tracé y restent) : un pas vers le fond le ramènerait à vingt, mais le mettrait à deux
   // cases du Cabinet des mots (GD-9, 5 octobre 2026 : question laissée au directeur artistique).
-  { id: 'lv2-4e-daily-life', region: 'basses-terres', core: { x: 138, y: 632 }, repere: { x: 190, y: 632 }, altitude: 6, ext: e(2, 3, 2, 4), relief: 'plat', seed: 95 },
-  { id: 'english-4e-grammar', region: 'feu', core: { x: 2, y: 660 }, repere: { x: -2, y: 632 }, altitude: 6, ext: e(4, 3, 2, 4), relief: 'collines', seed: 72 },
+  { id: 'lv2-4e-daily-life', region: 'basses-terres', core: { x: 138, y: 632 }, repere: { x: 190, y: 632 }, altitude: 6, ext: e(1, 2, 1, 3), relief: 'plat', seed: 95 },
+  { id: 'english-4e-grammar', region: 'feu', core: { x: 2, y: 664 }, repere: { x: -2, y: 632 }, altitude: 6, ext: e(3, 2, 1, 3), relief: 'collines', seed: 72 },
   // Anglais 3e : de part et d'autre de l'arc, le Studio avant le Belvédère, le Château après l'Observatoire des données.
-  { id: 'english-3e-comprehension', region: 'hauteurs', core: { x: -14, y: 912 }, altitude: 9, ext: e(3, 4, 2, 4), relief: 'collines', seed: 81 },
-  { id: 'english-3e-grammar', region: 'hauteurs', core: { x: 130, y: 912 }, altitude: 9, ext: e(4, 3, 2, 4), relief: 'collines', seed: 82 },
+  { id: 'english-3e-comprehension', region: 'hauteurs', core: { x: -14, y: 912 }, altitude: 9, ext: e(2, 3, 1, 3), relief: 'collines', seed: 81 },
+  { id: 'english-3e-grammar', region: 'hauteurs', core: { x: 126, y: 912 }, repere: { x: 130, y: 912 }, altitude: 9, ext: e(3, 2, 1, 3), relief: 'collines', seed: 82 },
   // LV2 3e : à l'est du Château, en bout de chemin : rien n'en dépend. Un refuge d'altitude, bas et arrondi (intention du
   // 3e, §3), son lac d'altitude au fond, sur l'herbe (`LACS`). Avancé de 16 cases, à hauteur du Château (SC-3, consultant
   // UX UI) : un cran derrière, au bord gauche de la Carte, son nom se taisait en OpenDyslexic quand le bonhomme y était
   // et qu'il était la destination (la bulle et le médaillon prennent la place, la Géographie et le Château bordent
   // dessus et dessous) ; son dessin reste celui de sa place d'avant (`repere`).
-  { id: 'lv2-3e-travel', region: 'montagne', core: { x: 158, y: 912 }, repere: { x: 158, y: 926 }, altitude: 9, ext: e(2, 2, 2, 9), relief: 'plat', seed: 96 },
+  { id: 'lv2-3e-travel', region: 'montagne', core: { x: 158, y: 912 }, repere: { x: 158, y: 926 }, altitude: 9, ext: e(1, 1, 1, 8), relief: 'plat', seed: 96 },
   // Histoire-géographie de 5e à 3e (HG-3, DA, 6 octobre 2026) : deux îles par archipel, fermées au départ (on les
   // relie), sur le pas des places, à quatre cases d'eau au moins de leurs voisines ; leur terre est plate, sans relief
   // ni pic, comme au 6e. Aux Îles Brumeuses, le Bourg des chroniques et le Delta des ressources au second rang, au-delà
   // du Manoir (le cadre du 5e s'élargit de 24 cases vers l'est) ; aux Anciens Ateliers, l'Imprimerie des révolutions et
   // l'Escale des échanges derrière la Gare ; aux Îles du Ciel, le Kiosque des témoins derrière le Studio et le Plateau
   // des territoires derrière le Château.
-  { id: 'history-5e-middle-ages', region: 'basses-terres', core: { x: 129, y: 365 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 63 },
-  { id: 'geography-5e-resources', region: 'basses-terres', core: { x: 157, y: 365 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 64 },
-  { id: 'history-4e-revolutions', region: 'basses-terres', core: { x: 30, y: 676 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 73 },
-  { id: 'geography-4e-globalization', region: 'basses-terres', core: { x: 58, y: 676 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 74 },
-  { id: 'history-3e-twentieth-century', region: 'basses-terres', core: { x: -18, y: 964 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 83 },
-  { id: 'geography-3e-france', region: 'basses-terres', core: { x: 130, y: 964 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 84 },
+  { id: 'history-5e-middle-ages', region: 'basses-terres', core: { x: 133, y: 365 }, repere: { x: 129, y: 365 }, altitude: 3, ext: e(1, 1, 1, 1), relief: 'plat', seed: 63 },
+  { id: 'geography-5e-resources', region: 'basses-terres', core: { x: 161, y: 365 }, repere: { x: 157, y: 365 }, altitude: 3, ext: e(1, 1, 1, 1), relief: 'plat', seed: 64 },
+  { id: 'history-4e-revolutions', region: 'basses-terres', core: { x: 34, y: 676 }, repere: { x: 30, y: 676 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 73 },
+  { id: 'geography-4e-globalization', region: 'basses-terres', core: { x: 62, y: 676 }, repere: { x: 58, y: 676 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 74 },
+  { id: 'history-3e-twentieth-century', region: 'basses-terres', core: { x: -18, y: 964 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 83 },
+  { id: 'geography-3e-france', region: 'basses-terres', core: { x: 130, y: 964 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 84 },
   // Sciences de 5e à 3e (SC-3, DA, 6 octobre 2026) : trois îles par archipel, fermées au départ (on les relie), sur le
-  // pas des places, à quatre cases d'eau au moins de leurs voisines, l'îlot de leur Gardien devant elles ; terre plate,
+  // pas des places, à quatre cases d'eau au moins de leurs voisines (leur Gardien sur leur île depuis GD-11) ; terre plate,
   // sans relief ni pic, comme l'histoire-géographie. Les cadres des régions n'avaient plus qu'une place libre chacun :
   // ils s'approfondissent vers le fond (footprint.ts). Chaque place est celle, parmi les places libres, où les noms des
   // îles se tiennent le mieux sur la Carte (three/mapLabels.test.ts : la tablette à l'ouverture et panneau ouvert, le
@@ -280,15 +292,15 @@ const STARTING_MAP: MapPlace[] = [
   // Vigie des signaux derrière la Gare et le Bassin des maquettes derrière le Théâtre et le Cabinet, au rang du fond ;
   // aux Îles du Ciel, le Verger de la santé à côté du Kiosque (sa terre cuite loin du Belvédère et du Plateau), le
   // Tremplin des forces entre l'Observatoire des textes et le Plateau, la Ruche des réseaux derrière le Refuge.
-  { id: 'life-earth-sciences-5e-active-planet', region: 'basses-terres', core: { x: 101, y: 409 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 65 },
-  { id: 'physics-chemistry-5e-matter-universe', region: 'basses-terres', core: { x: 145, y: 409 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 66 },
-  { id: 'technology-5e-design', region: 'basses-terres', core: { x: 165, y: 309 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 67 },
-  { id: 'life-earth-sciences-4e-cells-evolution', region: 'basses-terres', core: { x: -2, y: 604 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 75 },
-  { id: 'physics-chemistry-4e-signals-circuits', region: 'basses-terres', core: { x: -2, y: 704 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 76 },
-  { id: 'technology-4e-modeling', region: 'basses-terres', core: { x: 110, y: 704 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 77 },
-  { id: 'life-earth-sciences-3e-human-body', region: 'basses-terres', core: { x: 10, y: 980 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 85 },
-  { id: 'physics-chemistry-3e-motion-energy', region: 'basses-terres', core: { x: 90, y: 972 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 86 },
-  { id: 'technology-3e-digital', region: 'basses-terres', core: { x: 158, y: 980 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 87 },
+  { id: 'life-earth-sciences-5e-active-planet', region: 'basses-terres', core: { x: 101, y: 409 }, altitude: 3, ext: e(1, 1, 1, 1), relief: 'plat', seed: 65 },
+  { id: 'physics-chemistry-5e-matter-universe', region: 'basses-terres', core: { x: 145, y: 409 }, altitude: 3, ext: e(1, 1, 1, 1), relief: 'plat', seed: 66 },
+  { id: 'technology-5e-design', region: 'basses-terres', core: { x: 169, y: 309 }, repere: { x: 165, y: 309 }, altitude: 3, ext: e(1, 1, 1, 1), relief: 'plat', seed: 67 },
+  { id: 'life-earth-sciences-4e-cells-evolution', region: 'basses-terres', core: { x: -2, y: 592 }, repere: { x: -2, y: 604 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 75 },
+  { id: 'physics-chemistry-4e-signals-circuits', region: 'basses-terres', core: { x: -2, y: 704 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 76 },
+  { id: 'technology-4e-modeling', region: 'basses-terres', core: { x: 110, y: 704 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 77 },
+  { id: 'life-earth-sciences-3e-human-body', region: 'basses-terres', core: { x: 10, y: 980 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 85 },
+  { id: 'physics-chemistry-3e-motion-energy', region: 'basses-terres', core: { x: 90, y: 972 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 86 },
+  { id: 'technology-3e-digital', region: 'basses-terres', core: { x: 158, y: 980 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 87 },
 ];
 
 /**
@@ -526,18 +538,9 @@ class PlaceCells<T extends { x: number; y: number }> {
 const marginsCache = new PlaceCells<LandCell>((def) => computeMargins(def));
 
 /**
- * Le décor des marges allégé, île par île, quand celui de la côte n'y tient pas dans l'enveloppe du décor de son
- * archipel (world/budget.ts) : `genre`, un seul genre, le plus bas de la côte de l'île ; `unSurDeux`, une case sur deux
- * de son rythme ; `derriere`, rien devant le cœur d'origine (la rangée des bornes reste dégagée, côté caméra). Le Marché
- * (5e, 01/10/2026) : le port reste bas (intention du 5e, §3), des roseaux sur les côtés et derrière.
- */
-export const DECOR_DES_MARGES: Readonly<Partial<Record<BiomeId, Readonly<{ genre?: Decor; unSurDeux?: true; derriere?: true }>>>> = Object.freeze({
-  'maths-5e-proportionality': Object.freeze({ genre: 'roseau', unSurDeux: true, derriere: true } as const),
-});
-
-/**
  * Le seuil du décor : une case de côte porte un élément de décor quand son bruit fin (`noise(seed + 3)`) le passe
- * (`computeLandscape`, `margesDuCoeur`, `jalonsDesMarges`) ; `pickDecor` choisit l'élément entre ce seuil et 1.
+ * (`computeLandscape`), et là où il le passe les marges ne reçoivent pas de jalon (`jalonsDesMarges`) ; `pickDecor`
+ * choisit l'élément entre ce seuil et 1.
  */
 const SEUIL_DU_DECOR = 0.62;
 
@@ -550,11 +553,11 @@ function solAPlat(def: IslandDef): Ground {
 }
 
 /**
- * Les marges du cœur d'une île dont le cœur est plus grand que `CORE` : l'anneau entre le cœur d'origine et le cœur
- * agrandi (`coeurDe`), vide pour les autres îles. Une terre plate (h = 0) et constructible, au sol du cœur. Sa rangée
- * extérieure porte le décor de la côte à son rythme (le même bruit que `landscape`) pour ne pas laisser un terrain vide ;
- * sa rangée intérieure, qui borde le cœur d'origine, reste nue : un passage tout autour, et le décor tient dans son
- * enveloppe. Le rendu y pose ce décor sans jamais cacher une borne (terrain.ts, `cacheUneBorne`). Mémorisé.
+ * Les marges du cœur d'une île : l'anneau entre le cœur d'origine et le cœur agrandi (`coeurDe`). Une terre plate
+ * (h = 0) et constructible, au sol du cœur. Elle ne porte que ses jalons, sur sa rangée extérieure (GD-11, « Côte
+ * amincie » : « jalons gardés dans les marges », sans autre décor, `jalonsDesMarges`) ; le reste est nu : un passage
+ * tout autour, où le Gardien trouve sa place, et le décor tient dans son enveloppe. Le rendu y pose les jalons sans
+ * jamais cacher une borne (terrain.ts, `cacheUneBorne`). Mémorisé.
  */
 export function margesDuCoeur(def: IslandDef): LandCell[] {
   return marginsCache.de(def);
@@ -562,27 +565,13 @@ export function margesDuCoeur(def: IslandDef): LandCell[] {
 
 function computeMargins(def: IslandDef): LandCell[] {
   const c = coeurDe(def);
-  // Le sol à plat de la côte de l'île (comme dans `computeLandscape`), qui choisit son décor.
   const sol = solAPlat(def);
   const out: LandCell[] = [];
   const jalons = jalonsDesMarges(def, c, sol);
   for (let x = c.x0; x < c.x1; x++)
     for (let y = c.y0; y < c.y1; y++) {
       if (inCoeurDOrigine(def, x, y)) continue;
-      const t = tirage(def, x, y);
-      const fine = noise(def.seed + 3, t.x, t.y);
-      // La rangée qui borde le cœur d'origine reste nue : un passage tout autour, où l'on marche et construit.
-      const bord = inCoeurDOrigine(def, x - 1, y) || inCoeurDOrigine(def, x + 1, y) || inCoeurDOrigine(def, x, y - 1) || inCoeurDOrigine(def, x, y + 1);
-      const coin = inCoeurDOrigine(def, x - 1, y - 1) || inCoeurDOrigine(def, x + 1, y - 1) || inCoeurDOrigine(def, x - 1, y + 1) || inCoeurDOrigine(def, x + 1, y + 1);
-      const allege = DECOR_DES_MARGES[def.id];
-      let decor = !bord && !coin && fine > SEUIL_DU_DECOR ? pickDecor(def, sol, 0, fine) : undefined;
-      if (!decor) decor = jalons.get(`${x},${y}`);
-      if (decor && allege) {
-        if (allege.genre) decor = allege.genre;
-        if (allege.unSurDeux && (t.x + t.y) % 2) decor = undefined;
-        if (allege.derriere && y < def.core.y) decor = undefined;
-      }
-      out.push({ x, y, h: 0, ground: sol, decor });
+      out.push({ x, y, h: 0, ground: sol, decor: jalons.get(`${x},${y}`) });
     }
   return out;
 }
@@ -594,7 +583,7 @@ function computeMargins(def: IslandDef): LandCell[] {
 export const PAS_DES_JALONS = 5;
 
 /** Les jalons des marges par région : une pierre, une touffe, un rondin ; rien que de bas. */
-const JALONS: Readonly<Record<RegionId, readonly Decor[]>> = Object.freeze({
+export const JALONS: Readonly<Record<RegionId, readonly Decor[]>> = Object.freeze({
   'basses-terres': ['rocher', 'buisson', 'souche'],
   marais: ['souche', 'rocher'],
   hauteurs: ['rocher', 'souche'],
@@ -605,9 +594,11 @@ const JALONS: Readonly<Record<RegionId, readonly Decor[]>> = Object.freeze({
 /**
  * Les jalons de la rangée extérieure des marges d'un cœur agrandi (`c`) : vue de l'archipel, la bande d'herbe nue le
  * long du cœur faisait une longue ligne droite (relecture du consultant Blocland, 01/10/2026). Chaque côté de la rangée
- * est parcouru ; une suite de cases sans décor du bruit (le même que dans `margesDuCoeur`) est cassée de loin en loin
- * (`PAS_DES_JALONS`) par une pierre, une touffe ou un rondin (`JALONS`, selon la région), jamais contre un décor ni
- * contre un autre jalon. La rangée où l'on marche (contre le cœur d'origine) reste nue. Rend les jalons par case.
+ * est parcouru ; une suite de cases que le bruit du décor laisse nues (`SEUIL_DU_DECOR`, le même bruit que la côte) est
+ * cassée de loin en loin (`PAS_DES_JALONS`) par une pierre, une touffe ou un rondin (`JALONS`, selon la région), jamais
+ * contre un autre jalon. Depuis GD-11 (« Côte amincie », 8 octobre 2026), les marges ne portent plus que ces jalons :
+ * le décor que le bruit y posait est retiré, ses cases restent nues, et les jalons gardent leurs places. Rend les jalons
+ * par case.
  */
 function jalonsDesMarges(def: IslandDef, c: Bornes, sol: Ground): Map<string, Decor> {
   const out = new Map<string, Decor>();
@@ -632,8 +623,8 @@ function jalonsDesMarges(def: IslandDef, c: Bornes, sol: Ground): Map<string, De
       }
       let fin = k;
       while (fin < rangee.length && !plein[fin]) fin++;
-      // La suite nue [k, fin) : ses jalons à intervalles à peu près égaux, ni à ses bouts (contre un décor) ni l'un contre
-      // l'autre. Chacun glisse d'une case au hasard (bruit fixe) et change de genre d'un jalon au suivant : pas de rangée
+      // La suite nue [k, fin) : ses jalons à intervalles à peu près égaux, ni à ses bouts ni l'un contre l'autre.
+      // Chacun glisse d'une case au hasard (bruit fixe) et change de genre d'un jalon au suivant : pas de rangée
       // régulière de rondins identiques (DA, 01/10/2026, sur la rangée de devant des Anciens Ateliers). Les glissements
       // gardent moins de `PAS_DES_JALONS` cases nues à la suite ; sinon, les places égales.
       const long = fin - k;
@@ -646,8 +637,7 @@ function jalonsDesMarges(def: IslandDef, c: Bornes, sol: Ground): Map<string, De
           return p > avant + 1 && p < fin - 1 && p - avant - 1 < PAS_DES_JALONS;
         }) && fin - ps[ps.length - 1] - 1 < PAS_DES_JALONS;
       let finales = egales;
-      // (Pas sur une île allégée, `DECOR_DES_MARGES` : le Marché garde ses roseaux, une case sur deux, à leur place.)
-      for (let essai = 0; essai < 4 && n > 0 && !DECOR_DES_MARGES[def.id]; essai++) {
+      for (let essai = 0; essai < 4 && n > 0; essai++) {
         const ps = egales.map((p) => p + Math.floor(noise(def.seed + 31 + essai, ...toLocalCell(def, rangee[p][0], rangee[p][1])) * 3) - 1);
         if (ps.some((p, j) => p !== egales[j]) && tient(ps)) {
           finales = ps;
@@ -791,18 +781,30 @@ export interface LandCell {
   decor?: Decor;
 }
 
-/** Les pics d'une île, à sa place dans le monde : son relief, écrit en repère d'île (./silhouettes/). */
+/**
+ * Les pics d'une île, à sa place dans le monde : son relief, écrit en repère d'île autour du cœur d'origine
+ * (./silhouettes/), repoussé avec la côte autour du cœur agrandi (comme `tirage`, dans l'autre sens).
+ */
 function peaks(def: IslandDef): { x: number; y: number; h: number; r: number }[] {
-  return silhouetteDe(def.id).pics.map((p) => ({ x: def.core.x + p.x, y: def.core.y + p.y, h: p.h, r: p.r }));
+  const b = bornesDuCoeur(def);
+  return silhouetteDe(def.id).pics.map((p) => ({ x: def.core.x + autourDuCoeur(p.x, b.x0, b.x1), y: def.core.y + autourDuCoeur(p.y, b.y0, b.y1), h: p.h, r: p.r }));
+}
+
+/** Une coordonnée autour du cœur d'origine [0, `CORE`) portée autour du cœur agrandi [`debut`, `fin`) : l'inverse de `aLaPlaceDOrigine`. */
+function autourDuCoeur(rel: number, debut: number, fin: number): number {
+  if (rel < 0) return rel + debut;
+  if (rel >= CORE) return rel - CORE + fin;
+  return debut + (rel * (fin - debut)) / CORE;
 }
 
 /**
  * Les lacs dessinés à la main (en cases relatives au coin du cœur ; `x`, `y` le coin, `w` × `d`) : le lac d'altitude du
  * Refuge des carnets (DA, LV2-5), sur l'herbe, loin du bord, derrière le cœur, à gauche de la poste dans la vue de
  * l'île, bordé d'une rangée de pierre plate (la roche, au ras du sol : pas de ponton), puis d'une rive d'herbe nue. Sur une île qui a son lac, le hasard n'en creuse pas d'autre.
+ * Trois rangées plus au fond depuis que le cœur a grandi de trois cases (GD-11) : il reste derrière le cœur.
  */
 export const LACS: Partial<Record<BiomeId, { x: number; y: number; w: number; d: number }>> = {
-  'lv2-3e-travel': { x: 6, y: 17, w: 4, d: 2 },
+  'lv2-3e-travel': { x: 6, y: 20, w: 4, d: 2 },
 };
 
 /**
@@ -838,7 +840,9 @@ function computeLandscape(def: IslandDef): LandCell[] {
     const n = smoothNoise(def.seed + 7, t.x, t.y, 4);
     const fine = noise(def.seed + 3, t.x, t.y);
     const edge = !isLandAt(c.x - 1, c.y) || !isLandAt(c.x + 1, c.y) || !isLandAt(c.x, c.y - 1) || !isLandAt(c.x, c.y + 1);
-    const nearCore = coreDistance(def, c.x, c.y) < 0.35;
+    // Près du cœur : la première rangée de côte autour de lui, quelle que soit la largeur de la côte (amincie par GD-11),
+    // et plus loin sur une côte large ; on y monte d'une marche au plus depuis le cœur.
+    const nearCore = coreDistance(def, c.x, c.y) < 0.35 || [-1, 0, 1].some((dx) => [-1, 0, 1].some((dy) => inCore(def, c.x + dx, c.y + dy)));
     if (inIsthmus(def, c.x, c.y)) {
       // L'isthme : une bande plate qui relie deux îles, herbe et sable au bord, quelques buissons.
       const sandy = edge && def.altitude === 0 && def.region !== 'feu';

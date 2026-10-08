@@ -471,9 +471,10 @@ describe('Une longue traversée (GD-7)', () => {
   });
 
   it('le cadre fixe se pose dans la place libre, hors du panneau d’île ouvert et des barres : paysage et portrait 800 × 1280', () => {
-    // De la Plaine à la Carrière par le long bac du port (109 cases), panneau de la Carrière ouvert.
-    const liens = ['maths-6e-calculation-french-6e-word-spelling'];
-    const route = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', liens)!;
+    // De la Plaine à la Fouille des siècles par le long bac du port (118 cases), panneau de la Fouille ouvert (la Carrière,
+    // à 67 cases depuis que les îles ont grandi, GD-11, était l'exemple jusque-là).
+    const liens = ['maths-6e-calculation-history-6e-antiquity'];
+    const route = avatarRoute('maths-6e-calculation', 'history-6e-antiquity', liens)!;
     const cadre = cadreDeTraversee('6e', liens, route)!;
     expect(cadre).not.toBeNull();
     const b = worldBounds('6e');

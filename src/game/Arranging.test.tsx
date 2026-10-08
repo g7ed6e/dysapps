@@ -18,7 +18,7 @@ import { Icon } from '../components/Icon';
 import { ArrangeHandles } from './ArrangeHandles';
 import { HABILLAGES } from './world/skin';
 import { toutConstruit } from './world/budget';
-import { freeSpots, freeStationSpots, joinedWith, linksToRelink, nearestFreeSpot, NO_MORE_ROOM, placeIn, spotOf, stationOf } from './world/arrange';
+import { freeSpots, freeStationSpots, joinCandidatesAt, joinedWith, linksToRelink, nearestFreeSpot, NO_MORE_ROOM, placeIn, spotOf, stationOf } from './world/arrange';
 import { frameOf } from './world/footprint';
 import { mapOf } from './world/map';
 import { DESCENTE_MS, GESTE_DU_LIEU } from './world/arrangeGesture';
@@ -30,6 +30,8 @@ import { thePlace } from './world/placeArticle';
 vi.mock('./sound', async (original) => ({ ...(await original<typeof import('./sound')>()), playClac: vi.fn(), playPlace: vi.fn() }));
 
 const VOLCAN = 'maths-6e-decimals' as const;
+/** La Rivière des fractions (6e) : sur la carte de départ, sans voisin à réunir. */
+const RIVIERE = 'maths-6e-fractions' as const;
 const TOUR = 'french-6e-reading' as const;
 const FERME = 'french-6e-grammar-spelling' as const;
 // Les noms du jeu pour la Tour et la Ferme (deux noms féminins, pour l'accord de « réunie ») ; l'identifiant pour les autres.
@@ -135,11 +137,14 @@ describe('le mode « Aménager »', () => {
     expect(screen.getByRole('button', { name: 'Valider' }).className).toMatch(/primary/);
     expect(screen.getByRole('button', { name: 'Annuler' }).className).not.toMatch(/primary/);
     expect(screen.queryByRole('button', { name: 'Nord' })).toBeNull();
-    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    // Un lieu choisi, sans voisin à réunir (la Rivière) : toujours les deux mêmes boutons, « Valider » toujours mis en
+    // avant. (Le Volcan, depuis GD-11, est assez près du Hangar des inventions pour s'y réunir.)
+    act(() => void dernier.intention({ genre: 'ile', id: RIVIERE }));
     expect(dernier.choix?.genre).toBe('lieu');
-    // Un lieu choisi, sans voisin à réunir : toujours les deux mêmes boutons, « Valider » toujours mis en avant.
     expect(boutonsDeLaBarre()).toEqual(['Annuler', 'Valider']);
     expect(screen.getByRole('button', { name: 'Valider' }).className).toMatch(/primary/);
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    expect(dernier.choix).toMatchObject({ genre: 'lieu', id: VOLCAN });
     // Autour du choix, hors de la barre : « Tourner » seul (on déplace en glissant ou en touchant la place voulue).
     const autour = screen.getByRole('group', { name: 'Déplacer' });
     expect(autour.closest('.arrange-bar')).toBeNull();
@@ -512,7 +517,7 @@ describe('le mode « Aménager »', () => {
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
     const avant = spotOf(monde, VOLCAN);
     // Une place libre au loin, prise au clavier (sans la poser), puis Entrée : le geste du lieu.
-    const loin = (de: { x: number; y: number }) => freeSpots(monde, VOLCAN).find((q) => Math.abs(q.x - de.x) + Math.abs(q.y - de.y) > 3)!;
+    const loin = (de: { x: number; y: number }) => freeSpots(monde, VOLCAN).find((q) => Math.abs(q.x - de.x) + Math.abs(q.y - de.y) > 3 && !joinCandidatesAt(monde, VOLCAN, q).length)!;
     const c = dernier.choix;
     if (c?.genre !== 'lieu') throw new Error('lieu');
     act(() => dernier.choisirDirect({ ...c, spot: loin(avant) }));
@@ -608,8 +613,8 @@ describe('le mode « Aménager »', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     const reunir = () => screen.getByRole('button', { name: 'Réunir' });
     expect(screen.queryByRole('button', { name: 'Réunir' })).toBeNull();
-    // Le Volcan, sans voisin à réunir : pas de « Réunir », pas de place éteinte pour lui.
-    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    // La Rivière, sans voisin à réunir : pas de « Réunir », pas de place éteinte pour elle.
+    act(() => void dernier.intention({ genre: 'ile', id: RIVIERE }));
     expect(screen.queryByRole('button', { name: 'Réunir' })).toBeNull();
     expect(boutonsDeLaBarre()).toEqual(['Annuler', 'Valider']);
     act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
@@ -669,8 +674,8 @@ describe('le mode « Aménager »', () => {
       expect(barre.querySelector('.arrange-bar-outils .arrange-pose')).toBeNull();
       expect(screen.queryByRole('button', { name: 'Tout remettre comme avant' })).toBeNull();
       expect(screen.queryByRole('button', { name: /Terminé/ })).toBeNull();
-      // La ligne : la même qu'à la tablette, des signes, dits en entier.
-      act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+      // La ligne : la même qu'à la tablette, des signes, dits en entier (la Rivière, sans voisin à réunir).
+      act(() => void dernier.intention({ genre: 'ile', id: RIVIERE }));
       // « Tourner » est dessiné dans le monde : son bouton, transparent, n'a rien à lire, seulement son nom ; pas de flèche.
       const tourner = within(screen.getByRole('group', { name: 'Déplacer' })).getByRole('button', { name: 'Tourner' });
       expect(tourner.textContent).toBe('');

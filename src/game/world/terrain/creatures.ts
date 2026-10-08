@@ -14,9 +14,9 @@ import { isBiomeUnlocked, islandsOf } from '../archipelago';
 import type { VoxelCube } from '../cube';
 import { TOWARDS_SEA, turnDirection, turnPlacedModel } from '../placement';
 import { possibleLandings } from '../routing';
-import { cacheUnLieu, lieuxVus, placeCells, portesDesLieux } from './village';
+import { cacheUnLieu, lieuxVus, placeCells, portesDesLieux, TROPHY_AT, TROPHY_SIZE } from './village';
 import { versLaCameraDuDessin } from './view';
-import { AVATAR_HOME, groundHeight, islandOrigin, LAYOUT_PAD } from './base';
+import { AVATAR_HOME, groundHeight, islandOrigin, isSchoolIsland, LAYOUT_PAD } from './base';
 import { type BorneVue, cacheUneBorne, QUEST_ROW, questStations } from './markers';
 import { amorcesDuDessin } from './links';
 import { layoutCache } from '../placement';
@@ -111,7 +111,8 @@ export interface CreatureSpot {
  * d'où elle peut se promener ; sinon elle reste immobile. Sur une île-école, ni elle ni ses pas ne se tiennent entre la
  * caméra de l'île et un lieu du village, l'emprise réservée de la salle des trophées comprise (`cacheUnLieu`) : devant
  * le cœur, aucune place ne la tient hors de leur vue, elle va derrière la salle, sur les quatre îles-écoles (à la Forêt
- * des sons, un arbre du décor lui a laissé la place : `DECOR.foret`) (GD-3, retouches du directeur artistique).
+ * des sons, un arbre du décor lui a laissé la place : `DECOR.foret`) (GD-3, retouches du directeur artistique) ; depuis
+ * que les îles ont grandi (GD-11), la règle l'y tient.
  */
 export function creatureSpot(id: BiomeId): CreatureSpot {
   const cle = `${id}:${lv2Courante()}`;
@@ -127,10 +128,13 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   /** Un cube de la créature (au pas `st`) se tient-il entre la caméra et un lieu du village ? */
   const cache = (x: number, y: number, [sx, sy]: [number, number]) => cubes.some((c) => cacheUnLieu(lieux, vers, x + sx + c.x, y + sy + c.y, c.z + 1));
   const fits = (x: number, y: number, st: [number, number]) => libre(x, y, st) && !cache(x, y, st);
+  // Sur une île-école, derrière la salle des trophées : depuis que les îles ont grandi (GD-11), les marges du cœur
+  // offrent des places sur le côté, devant elle.
+  const derriere = isSchoolIsland(id) ? TROPHY_AT.y + TROPHY_SIZE.d : -Infinity;
   let best: CreatureSpot | null = null;
   let bestScore = Infinity;
   for (let x = coeur.x0 - 2; x < coeur.x1; x++) {
-    for (let y = coeur.y0; y < coeur.y1; y++) {
+    for (let y = Math.max(coeur.y0, derriere); y < coeur.y1; y++) {
       if (!fits(x, y, [0, 0])) continue;
       const steps = CREATURE_STEPS.filter((st) => fits(x, y, st));
       const score = Math.abs(x - 2) + Math.abs(y - 4) - 2 * (steps.length - 1);
@@ -166,7 +170,7 @@ export interface GuardianSpot {
   palier: 1 | 2 | 3;
   /**
    * Aucun carré libre, même au palier 3 : la place de repli, où le Gardien peut cacher à la vue de l'île un lieu, une
-   * borne ou le chantier (le test tient la liste de ces îles, à vider quand les îles seront agrandies).
+   * borne ou le chantier. Depuis que les îles ont grandi (GD-11), aucune île n'y vient : le test l'exige.
    */
   repli?: true;
 }
@@ -176,17 +180,19 @@ const guardianSpots = layoutCache<string, GuardianSpot>();
 
 /**
  * Où le Gardien d'une île se tient (GD-11) : un carré de `GUARDIAN_SQUARE` cases de côté sur le sol libre de son île
- * (`solLibre`), sans la petite construction de sa commande, hors de la bande de devant des bornes, sans case devant une
- * porte (ni autour), ni sur une arrivée possible d'une liaison ; aucune de ses cases ne se tient entre la caméra de l'île et un lieu, une borne ou le chantier
- * (`cacheUneBorne`). Parmi ces carrés, le plus loin du départ du bonhomme et des portes, puis le plus au large (loin du
- * milieu du cœur), puis le premier de la grille : un choix fixe, calculé dans le repère du lieu pas tourné ; il tourne
- * avec son lieu (DA, 8 octobre 2026).
+ * (`solLibre`), réservé à lui seul : sans la petite construction de sa commande, hors de la bande de devant des bornes,
+ * sans case devant une porte (ni autour), ni sur une arrivée possible d'une liaison ou la case d'entrée derrière elle ;
+ * aucune de ses cases ne se tient entre la caméra de l'île et un lieu, une borne ou le chantier (`cacheUneBorne`), et
+ * les pas de l'habitant n'y entrent pas (`creaturePlacements`). Parmi ces carrés, le plus loin du départ du bonhomme et
+ * des portes, puis le plus au large (loin du milieu du cœur), puis le premier de la grille : un choix fixe, calculé
+ * dans le repère du lieu pas tourné ; il tourne avec son lieu (DA, 8 octobre 2026).
  *
- * Les îles sont petites : la recherche se fait par paliers, du plus strict au plus large (défaut validé en attendant
- * des îles agrandies, 8 octobre 2026). Palier 1 : l'habitant, ses pas et une case autour sont exclus. Palier 2 : seules
- * les cases où l'habitant se tient le sont (ses pas sur le carré sont retirés, voir `creaturePlacements`). Palier 3 :
- * de plus, le décor de la côte et des marges s'efface sous le carré (`decorSousLeGardien`). Sans carré, même au
- * palier 3, la place de repli (`repli`), qui oublie la vue de l'île. Toute la recherche tient dans cette fonction.
+ * La recherche se fait par paliers, du plus strict au plus large. Palier 1 : l'habitant, ses pas et une case autour
+ * sont exclus. Palier 2 : seules les cases où l'habitant se tient le sont (ses pas sur le carré sont retirés). Palier
+ * 3 : de plus, le décor de la côte et des marges s'efface sous le carré (`decorSousLeGardien`). Sans carré, même au
+ * palier 3, la place de repli (`repli`), qui oublie la vue de l'île mais jamais une colline. Depuis que les îles ont
+ * grandi (GD-11, « Agrandir les îles », 8 octobre 2026), 47 îles ont leur place au palier 1, la Forêt, le Marché et
+ * l'Atelier au palier 2, la Fouille des siècles au palier 3, aucune au repli. Toute la recherche tient dans cette fonction.
  */
 export function guardianSpot(id: BiomeId): GuardianSpot {
   const cle = `${id}:${lv2Courante()}`;
@@ -210,14 +216,12 @@ export function guardianSpot(id: BiomeId): GuardianSpot {
   }
   const portes = portesDesLieux(id).map((k) => k.split(',').map(Number) as [number, number]);
   for (const [x, y] of portes) autour(pris, x, y);
-  // Chaque arrivée possible d'une liaison (GD-9), le lieu pas tourné (la place du Gardien tourne avec lui) : jamais
-  // sous le Gardien. L'entrée de l'île derrière elle : la place
-  // de repli l'évite tant qu'elle peut (le bonhomme en descend).
-  const entrees = new Set<string>();
+  // Chaque arrivée possible d'une liaison (GD-9), le lieu pas tourné (la place du Gardien tourne avec lui), et la case
+  // d'entrée de l'île derrière elle, où le bonhomme descend : jamais sous le Gardien, à aucun palier ni au repli.
   for (const l of possibleLandings(startingIsland(id))) {
     const v = TOWARDS_SEA[l.cote];
     pris.add(`${l.x},${l.y}`);
-    entrees.add(`${l.x - v.dx},${l.y - v.dy}`);
+    pris.add(`${l.x - v.dx},${l.y - v.dy}`);
   }
   // L'habitant : au palier 1, ses pas et une case autour ; ensuite, les cases où il se tient seulement.
   const habitant = creatureSpot(id);
@@ -279,12 +283,13 @@ export function guardianSpot(id: BiomeId): GuardianSpot {
       break;
     }
   }
-  // La place de repli : sur la terre de l'île, sans rien d'immuable (`terre`), ni la petite construction, ni les
-  // portes, ni l'habitant ; le carré qui prend le moins de cases qu'une règle refuse (une colline, le décor, les abords
-  // d'une borne, la vue de l'île), et surtout aucune entrée derrière une arrivée ; le premier de la grille à égalité. Sans terre assez grande, le fond du cœur.
+  // La place de repli : sur la terre plate de l'île, sans rien d'immuable (`terre`, jamais une colline), ni la petite
+  // construction, ni les portes, ni l'habitant, ni une arrivée ou l'entrée derrière elle ; le carré qui prend le moins
+  // de cases qu'une règle refuse (le décor, les abords d'une borne, la vue de l'île) ; le premier de la grille à
+  // égalité. Sans terre assez grande, le fond du cœur. Depuis que les îles ont grandi (GD-11), aucune île n'y vient.
   if (!spot) {
     const dur = (x: number, y: number) => sol.terre(x, y) && !pris.has(`${x},${y}`) && !habitantSeul.has(`${x},${y}`);
-    const genant = (x: number, y: number) => (sol.sansLeDecorDeLaCote(x, y) ? 0 : 1) + (cache(x, y) ? 1 : 0) + (entrees.has(`${x},${y}`) ? 25 : 0);
+    const genant = (x: number, y: number) => (sol.sansLeDecorDeLaCote(x, y) ? 0 : 1) + (cache(x, y) ? 1 : 0);
     let moins = Infinity;
     let repli: { x: number; y: number } | null = null;
     for (let x = coeur.x0 - 3; x <= coeur.x1 - n + 3; x++)
@@ -326,9 +331,9 @@ interface SolDeLIle {
   libre: (x: number, y: number) => boolean;
   sansLeDecorDeLaCote: (x: number, y: number) => boolean;
   /**
-   * La terre de l'île (le cœur, ou la côte plate hors de l'eau) où rien d'immuable n'est posé : ni une borne, ni la zone
-   * des plans, ni la place du bonhomme, ni un lieu ou la case devant sa porte, ni un ouvrage et ses abords. Le décor, les collines et
-   * les abords y restent : la place de repli du Gardien (`guardianSpot`) en prend le moins possible.
+   * La terre plate de l'île (le cœur ou la côte, hors de l'eau et des collines) où rien d'immuable n'est posé : ni une
+   * borne, ni la zone des plans, ni la place du bonhomme, ni un lieu ou la case devant sa porte, ni un ouvrage et ses
+   * abords. Le décor et les abords y restent : la place de repli du Gardien (`guardianSpot`) en prend le moins possible.
    */
   terre: (x: number, y: number) => boolean;
 }
@@ -395,9 +400,9 @@ function solDeLIle(id: BiomeId): SolDeLIle {
   const terre = (x: number, y: number) => {
     const k = `${x},${y}`;
     if (dur.has(k)) return false;
-    if (x >= coeur.x0 && y >= coeur.y0 && x < coeur.x1 && y < coeur.y1) return true;
+    if (x >= coeur.x0 && y >= coeur.y0 && x < coeur.x1 && y < coeur.y1) return groundHeight(index, x, y) <= 0;
     const c = scenery.get(k);
-    return Boolean(c) && c!.ground !== 'eau' && c!.ground !== 'lave';
+    return Boolean(c) && c!.h === 0 && c!.ground !== 'eau' && c!.ground !== 'lave';
   };
   const out: SolDeLIle = { libre: (x, y) => sol(x, y, true), sansLeDecorDeLaCote: (x, y) => sol(x, y, false), terre };
   solsLibres.set(cle, out);

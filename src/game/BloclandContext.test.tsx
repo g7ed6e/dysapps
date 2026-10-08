@@ -45,7 +45,7 @@ it('une sauvegarde d’avant GD-6 reçoit à l’ouverture ses parties et l’XP
 
 it('la disposition sauvegardée (GD-9) est posée sur le monde dès l’ouverture, et retirée avec la partie', () => {
   localStorage.clear();
-  const spot = { x: 13, y: 7, turn: 1 as const };
+  const spot = { x: 12, y: 7, turn: 1 as const };
   localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, progress: {}, world: { parts: {}, log: [], links: [], layout: { '6e': { islands: { 'maths-6e-decimals': spot } } } } }));
   let reset: () => void = () => {};
   function Lieu() {

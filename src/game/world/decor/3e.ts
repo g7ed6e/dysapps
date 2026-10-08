@@ -33,9 +33,10 @@ const RETRAIT_3E = { bandeau: 0.16, joint: 0.12, ombre: 0.75, decolle: 0.03 } as
  * le massif, et non plus sur l'île de l'Observatoire des textes, juste derrière elle ; depuis cette île des textes,
  * dont le phare est au premier plan, le même pivot l'écarte du cœur de l'île, sa lanterne sur le ciel (radians,
  * ajoutés au pivot de la vue ; depuis ces îles, la vue ne glisse pas vers le phare). Depuis que le cœur du Phare a 20
- * cases (01/10/2026), le phare suit la côte repoussée, deux cases plus loin en x et en y (75,5 et 929,5 avant).
+ * cases (01/10/2026), le phare suit la côte repoussée, deux cases plus loin en x et en y (75,5 et 929,5 avant) ; depuis
+ * que les îles ont grandi (GD-11, 8 octobre 2026), encore deux cases plus loin en x et trois en y, son toit à 25.
  */
-export const GRAND_PHARE_3E = { ile: 'maths-3e-functions', x: 77.5, y: 931.5, pied: 9.7, haut: 26, rayon: 1.2, pivot: { 'maths-3e-functions': -0.3, 'french-3e-close-reading': -0.3 } } as const;
+export const GRAND_PHARE_3E = { ile: 'maths-3e-functions', x: 79.5, y: 934.5, pied: 9.7, haut: 25, rayon: 1.2, pivot: { 'maths-3e-functions': -0.3, 'french-3e-close-reading': -0.3 } } as const;
 
 const delave = (f: Faces, muted: boolean): Faces => (muted ? { dessus: mixColor(f.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(f.cote, DELAVE[0], DELAVE[1]) } : f);
 const uni = (c: Couleur, muted: boolean): Faces => delave({ dessus: c, cote: c }, muted);

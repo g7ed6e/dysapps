@@ -6,7 +6,7 @@ import { grantAccess } from './archipelago';
 import { buildingStages } from './architect';
 import { fenetresDe } from './construction';
 import { GRASS } from './decor';
-import { CORE, inCore, isLand, islandDef, landBox, landscape, mapOf } from './map';
+import { DEFAULT_CORE_SIDE, inCore, isLand, islandDef, landBox, landscape, mapOf } from './map';
 import { couleurDeMatiere, luminance, MATIERES } from './palette';
 import { couleursDuToit } from './roofs';
 import { CREATURE_CUBES } from './characters/creatures';
@@ -45,7 +45,7 @@ describe('le cœur d’herbe et le lac d’altitude', () => {
       const avant = dessus.get(k);
       if (!avant || avant.z < q.z) dessus.set(k, q);
     }
-    expect(dessus.size).toBe(CORE * CORE);
+    expect(dessus.size).toBe(DEFAULT_CORE_SIDE * DEFAULT_CORE_SIDE);
     for (const q of dessus.values()) expect(q.color).toBe(GRASS);
     expect(cubes.some((q) => q.tag === 'lv2-3e-travel' && q.sol && q.texture === 'bardeau')).toBe(false);
   });
@@ -419,7 +419,9 @@ describe('les caméras des îles', () => {
   // passé à 20 (01/10/2026) : le Belvédère et l'Observatoire des données, écartés de deux cases, pivotent de 1,6° de plus
   // (30,4 et −30,4 avant).
   // Calé sur la carte de départ posée sur la grille (GD-9, 05/10/2026) : les lieux ont bougé, les pivots avec eux.
-  const AVANT_LE_REFUGE: Record<string, number> = { 'french-6e-phonology': -1.2, 'french-6e-grammar-spelling': 34, 'french-6e-letter-confusion': -26.8, 'french-6e-reading': 40, 'french-6e-word-spelling': -40, 'maths-6e-calculation': 2, 'maths-6e-fractions': -33.2, 'maths-6e-decimals': 37.2, 'english-6e-vocabulary': 21.2, 'english-6e-grammar': -4.4, 'maths-5e-signed-numbers': 38, 'maths-5e-proportionality': 12.4, 'french-5e-homophones': 38, 'french-5e-conjugation': 15.6, 'english-5e-vocabulary': -16.4, 'english-5e-grammar': -13.2, 'lv2-5e-introductions': -38.8, 'maths-4e-powers': 34.8, 'maths-4e-algebra': 6, 'french-4e-agreement': -19.6, 'french-4e-vocabulary': -38.8, 'english-4e-comprehension': -16.4, 'lv2-4e-daily-life': -40, 'english-4e-grammar': 40, 'maths-3e-geometry': 32, 'maths-3e-functions': 0, 'maths-3e-statistics': -32, 'french-3e-close-reading': 0, 'english-3e-comprehension': 40, 'english-3e-grammar': -40 };
+  // Depuis que les îles ont grandi (GD-11, 8 octobre 2026), les cœurs sont plus larges et quelques lieux ont glissé d'un
+  // pas sur la grille : les pivots suivent (mesurés).
+  const AVANT_LE_REFUGE: Record<string, number> = { 'french-6e-phonology': -2.8, 'french-6e-grammar-spelling': 32.4, 'french-6e-letter-confusion': -31.6, 'french-6e-reading': 40, 'french-6e-word-spelling': -40, 'maths-6e-calculation': 0.4, 'maths-6e-fractions': -34.8, 'maths-6e-decimals': 35.6, 'english-6e-vocabulary': 26, 'english-6e-grammar': 0.4, 'maths-5e-signed-numbers': 40, 'maths-5e-proportionality': 12.4, 'french-5e-homophones': 40, 'french-5e-conjugation': 15.6, 'english-5e-vocabulary': -16.4, 'english-5e-grammar': -13.2, 'lv2-5e-introductions': -40, 'maths-4e-powers': 34.8, 'maths-4e-algebra': 6, 'french-4e-agreement': -19.6, 'french-4e-vocabulary': -40, 'english-4e-comprehension': -19.6, 'lv2-4e-daily-life': -40, 'english-4e-grammar': 40, 'maths-3e-geometry': 30.4, 'maths-3e-functions': -1.6, 'maths-3e-statistics': -30.4, 'french-3e-close-reading': -1.6, 'english-3e-comprehension': 40, 'english-3e-grammar': -40 };
   it('gardent le cadrage d’avant le refuge, dans chaque archipel', () => {
     for (const [ile, deg] of Object.entries(AVANT_LE_REFUGE))
       expect((viewYaw(ile as BiomeId) * 180) / Math.PI, ile).toBeCloseTo(deg, 3);

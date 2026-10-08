@@ -636,8 +636,8 @@ it('un monument : on le touche dans le monde, la caméra va sur son îlot, son p
   const sheet = await screen.findByRole('dialog', { name: /L’observatoire des baleines/ });
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/landmark-6e-1');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('french-6e-reading');
-  // L'îlot du monument, dans le repère de son île (la case 4, 82 du monde).
-  expect(screen.getByTestId('point')).toHaveTextContent('french-6e-reading 7,26');
+  // L'îlot du monument (en -5, 75 du monde), dans le repère de son île.
+  expect(screen.getByTestId('point')).toHaveTextContent('french-6e-reading 7,28');
   expect(within(sheet).getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
   await user.click(within(sheet).getByRole('link', { name: 'Tous les monuments' }));
   const list = await screen.findByRole('dialog', { name: /Monuments/ });

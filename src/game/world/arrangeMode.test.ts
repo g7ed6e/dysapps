@@ -199,8 +199,9 @@ describe('glisser au doigt (7 octobre 2026, choix 1b, 2a, 3a, 6a du mainteneur)'
     const m = choiceMiddle(c)!;
     // Sur sa place : rien ne bouge.
     expect(dragChoice(w, c, { x: m.x + 1, y: m.y - 1 })).toEqual(c);
-    // Une place libre plus loin, puis une place prise (sur un voisin) : le fantôme y va quand même.
-    const libre = freeSpots(w, VOLCAN).find((s) => Math.abs(s.x - c.spot.x) + Math.abs(s.y - c.spot.y) > 3)!;
+    // Une place libre plus loin (pas au bord du cadre, où la grille s'arrête), puis une place prise (sur un voisin) : le
+    // fantôme y va quand même.
+    const libre = freeSpots(w, VOLCAN).find((s) => Math.abs(s.x - c.spot.x) + Math.abs(s.y - c.spot.y) > 3 && s.y > 1)!;
     const versLibre = dragChoice(w, c, choiceMiddle({ ...c, spot: libre })!);
     expect(versLibre).toEqual({ ...c, spot: libre });
     expect(choiceFits(w, versLibre)).toBe(true);

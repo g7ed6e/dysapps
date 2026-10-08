@@ -140,10 +140,13 @@ const FORMES: Record<string, Cube[]> = {
   'maths-5e-proportionality-fixture-1': [...rangee(0, 2, 0, 0, BLOC.panneau), ...rangee(0, 2, 1, 0, BLOC.toile), ...rangee(0, 2, 1, 1, BLOC.toile)],
   // Sema, le poteau indicateur : un poteau de lambris, deux panneaux de part et d'autre de son sommet.
   'french-5e-homophones-fixture-1': [...colonne(1, 0, 0, 2, BLOC.lambris), [0, 0, 2, BLOC.panneau], [2, 0, 2, BLOC.panneau]],
-  // Kroa, l'abri : deux poteaux de tourbe au fond, un auvent de 3 × 2 (toile, tourbe, toile) qui déborde devant.
+  // Kroa, l'abri : deux poteaux de tourbe au pied de barrière au fond (la tourbe se perdait sur le sol de tourbe des
+  // marges du Marais depuis que les îles ont grandi, GD-11), un auvent de 3 × 2 (toile, tourbe, toile) qui déborde devant.
   'french-5e-conjugation-fixture-1': [
-    ...colonne(0, 1, 0, 1, BLOC.tourbe),
-    ...colonne(2, 1, 0, 1, BLOC.tourbe),
+    [0, 1, 0, 'fence'],
+    [0, 1, 1, BLOC.tourbe],
+    [2, 1, 0, 'fence'],
+    [2, 1, 1, BLOC.tourbe],
     [0, 0, 2, BLOC.toile],
     [0, 1, 2, BLOC.toile],
     [2, 0, 2, BLOC.toile],
@@ -166,8 +169,10 @@ const FORMES: Record<string, Cube[]> = {
   // 4e : les Monts de Feu.
   // Braise, le wagonnet : une voie de trois rails, un wagonnet de deux aciers.
   'maths-4e-powers-fixture-1': [...rangee(0, 2, 0, 0, BLOC.rail), [0, 0, 1, BLOC.acier], [1, 0, 1, BLOC.acier]],
-  // Ixe, la machine : deux poteaux de calque, deux engrenages empilés entre eux.
-  'maths-4e-algebra-fixture-1': [...colonne(0, 0, 0, 1, BLOC.calque), ...colonne(2, 0, 0, 1, BLOC.calque), ...colonne(1, 0, 0, 1, BLOC.engrenage)],
+  // Ixe, la machine : deux poteaux de calque sur un socle de trois engrenages, un engrenage de plus au milieu (le calque
+  // se perdait sur le sol de calque des marges de l'Atelier depuis que les îles ont grandi, GD-11 ; un pied de barrière
+  // ou d'acier dépassait de 4 triangles le poste des commandes d'Archipéo, 380 : le socle d'engrenages y tient juste).
+  'maths-4e-algebra-fixture-1': [[0, 0, 0, BLOC.engrenage], [0, 0, 1, BLOC.calque], [2, 0, 0, BLOC.engrenage], [2, 0, 1, BLOC.calque], ...colonne(1, 0, 0, 1, BLOC.engrenage)],
   // Cléa, le perchoir : trois marches de 1, 2 et 3 cubes, l'escalier dessous (l'ardoise se perdait sur le sol d'ardoise
   // de la Falaise, retouche du directeur artistique), un acier sur chaque marche.
   'french-4e-agreement-fixture-1': [
@@ -291,52 +296,52 @@ export function estPosee(parts: Record<string, string[]>, id: string): boolean {
  * (world/terrain/fixtureCheck.ts) les refait et le test les compare, pour chaque LV2 (fixtures.test.ts) ; une île ou une forme qui change les fait changer.
  */
 const PLACES: Record<string, readonly [number, number]> = {
-  'french-6e-phonology-fixture-1': [-1, 5],
-  'french-6e-letter-confusion-fixture-1': [10, 1],
+  'french-6e-phonology-fixture-1': [4, 20],
+  'french-6e-letter-confusion-fixture-1': [-2, 12],
   'french-6e-word-spelling-fixture-1': [1, 12],
   'french-6e-grammar-spelling-fixture-1': [9, 4],
   'french-6e-reading-fixture-1': [7, 9],
-  'maths-6e-calculation-fixture-1': [9, 3],
+  'maths-6e-calculation-fixture-1': [-3, 4],
   'maths-6e-fractions-fixture-1': [-1, 11],
-  'maths-6e-decimals-fixture-1': [5, 12],
-  'maths-5e-signed-numbers-fixture-1': [10, 3],
-  'maths-5e-proportionality-fixture-1': [-1, 4],
+  'maths-6e-decimals-fixture-1': [-2, 9],
+  'maths-5e-signed-numbers-fixture-1': [-2, 8],
+  'maths-5e-proportionality-fixture-1': [9, 17],
   'french-5e-homophones-fixture-1': [10, 4],
-  'french-5e-conjugation-fixture-1': [-3, 12],
+  'french-5e-conjugation-fixture-1': [-1, 11],
   'maths-4e-powers-fixture-1': [9, 4],
-  'maths-4e-algebra-fixture-1': [5, 19],
-  'french-4e-agreement-fixture-1': [4, 11],
-  'french-4e-vocabulary-fixture-1': [6, 10],
+  'maths-4e-algebra-fixture-1': [6, 20],
+  'french-4e-agreement-fixture-1': [-1, 12],
+  'french-4e-vocabulary-fixture-1': [-2, 11],
   'maths-3e-geometry-fixture-1': [10, 3],
   'maths-3e-statistics-fixture-1': [2, 10],
-  'maths-3e-functions-fixture-1': [6, 19],
+  'maths-3e-functions-fixture-1': [5, 22],
   'french-3e-close-reading-fixture-1': [5, 11],
-  'english-6e-vocabulary-fixture-1': [8, 6],
-  'english-6e-grammar-fixture-1': [10, 9],
-  'history-6e-antiquity-fixture-1': [1, 10],
-  'geography-6e-living-fixture-1': [-1, 11],
+  'english-6e-vocabulary-fixture-1': [-2, 6],
+  'english-6e-grammar-fixture-1': [-3, 5],
+  'history-6e-antiquity-fixture-1': [0, 10],
+  'geography-6e-living-fixture-1': [-2, 10],
   'history-5e-middle-ages-fixture-1': [1, 10],
   'geography-5e-resources-fixture-1': [2, 10],
   'history-4e-revolutions-fixture-1': [8, 6],
   'geography-4e-globalization-fixture-1': [10, 3],
-  'history-3e-twentieth-century-fixture-1': [10, 3],
+  'history-3e-twentieth-century-fixture-1': [-2, 7],
   'geography-3e-france-fixture-1': [14, 4],
   'life-earth-sciences-6e-living-world-fixture-1': [3, 9],
   'physics-chemistry-6e-matter-energy-fixture-1': [1, 11],
   'technology-6e-objects-fixture-1': [8, 6],
-  'english-5e-vocabulary-fixture-1': [4, 11],
+  'english-5e-vocabulary-fixture-1': [-1, 12],
   'english-5e-grammar-fixture-1': [10, 3],
   'english-4e-comprehension-fixture-1': [7, 9],
   'english-4e-grammar-fixture-1': [8, 9],
-  'english-3e-comprehension-fixture-1': [0, 12],
+  'english-3e-comprehension-fixture-1': [-2, 7],
   'english-3e-grammar-fixture-1': [1, 10],
   'life-earth-sciences-5e-active-planet-fixture-1': [1, 10],
   'physics-chemistry-5e-matter-universe-fixture-1': [1, 11],
   'technology-5e-design-fixture-1': [10, 3],
   'life-earth-sciences-4e-cells-evolution-fixture-1': [11, 3],
-  'physics-chemistry-4e-signals-circuits-fixture-1': [8, 3],
+  'physics-chemistry-4e-signals-circuits-fixture-1': [-2, 10],
   'technology-4e-modeling-fixture-1': [2, 11],
-  'life-earth-sciences-3e-human-body-fixture-1': [6, 12],
+  'life-earth-sciences-3e-human-body-fixture-1': [6, 11],
   'physics-chemistry-3e-motion-energy-fixture-1': [-1, 12],
   'technology-3e-digital-fixture-1': [5, 3],
 };

@@ -297,23 +297,19 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
     expect(posesOfLayout(ancienne().layout).size).toBe(0);
   });
 
-  it('le lieu nouveau se pose à la place libre la plus proche de sa place de départ ; l’Horloge reste où l’élève l’a mise, rien d’autre ne bouge', () => {
-    const w = settleNewPlaces(ancienne());
+  it('l’Horloge, plus large depuis que les îles ont grandi (GD-11), touche aussi la Pointe et la Vallée : la Fouille trouverait sa place, pas la Vallée ; c’est l’Horloge qui se décale, à la place libre la plus proche, et rien d’autre ne bouge', () => {
+    const avant = ancienne();
+    const w = settleNewPlaces(avant);
     const islands = w.layout?.['6e']?.islands ?? {};
-    expect(islands[HORLOGE]).toEqual(startingSpot(FOUILLE));
-    expect(islands[FOUILLE]).toBeDefined();
-    expect(islands[FOUILLE]).not.toEqual(startingSpot(FOUILLE));
-    expect(islands[FOUILLE]?.turn).toBe(0);
-    // La Pointe ne touchait rien : elle reste à sa place de départ, hors de la disposition, comme les autres lieux. La
-    // Vallée du vivant (SC-2), entre l'Horloge et la Fouille, touche l'Horloge plus large que la Fouille : nouvelle elle
-    // aussi, elle se pose à la place libre la plus proche.
-    expect(Object.keys(islands).sort()).toEqual([HORLOGE, FOUILLE, VALLEE].sort());
-    expect(islands[VALLEE]?.turn).toBe(0);
-    expect(isFreeSpot({ ...w, layout: { '6e': { islands: { [HORLOGE]: islands[HORLOGE]! } } } }, FOUILLE, islands[FOUILLE]!)).toBe(true);
+    expect(Object.keys(islands)).toEqual([HORLOGE]);
+    expect(islands[HORLOGE]).not.toEqual(startingSpot(FOUILLE));
+    expect(islands[HORLOGE]?.turn).toBe(0);
+    expect(fittingPlaces('6e', islands)).not.toBeNull();
     const poses = posesOfLayout(w.layout);
     expect(poses.get(HORLOGE)).toBeDefined();
-    expect(poses.get(FOUILLE)).toBeDefined();
-    expect(poses.has(POINTE)).toBe(false);
+    for (const id of [FOUILLE, POINTE, VALLEE]) expect(poses.has(id), id).toBe(false);
+    // Aucune progression ne se perd : liaisons, réunions et chantiers ne sont pas dans la disposition des places.
+    expect(w.links).toBe(avant.links);
   });
 
   it('au 5e (HG-3) : une île déplacée vers l’est, là où entrent le Bourg et le Delta, reste où l’élève l’a mise ; les deux lieux nouveaux se posent à côté', () => {
@@ -342,7 +338,6 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
   // le cadre d'alors (le Château des hypothèses, 4e, sur la Source des espèces ; le Kiosque des témoins, 3e, sur le
   // Tremplin des forces).
   it.each([
-    { a: '4e', lieu: 'english-4e-grammar', sur: 'life-earth-sciences-4e-cells-evolution' },
     { a: '3e', lieu: 'history-3e-twentieth-century', sur: 'physics-chemistry-3e-motion-energy' },
     // Le Refuge des carnets avance de (158, 928) à (158, 912) pour tous (map.ts, SC-3) : un lieu que l'élève a posé sur sa
     // nouvelle place y reste, et le Refuge se pose ailleurs.
@@ -360,6 +355,46 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
     expect(Object.keys(islands).sort()).toEqual([lieu, sur].sort());
     expect(fittingPlaces(a, islands)).not.toBeNull();
     expect(Object.keys(w.layout ?? {})).toEqual([a]);
+  });
+
+  it('au 4e (SC-3, puis GD-11) : le Château des hypothèses, posé sur la place de départ de la Source des espèces, sort désormais du cadre ; il se décale, seul, à la place libre la plus proche : la sienne, sur la carte de départ', () => {
+    const lieu: BiomeId = 'english-4e-grammar';
+    const ici = startingSpot('life-earth-sciences-4e-cells-evolution');
+    expect(fittingPlaces('4e', { [lieu]: ici })).toBeNull();
+    const avant: World = { ...partie(), layout: { '4e': { islands: { [lieu]: ici } } } };
+    const w = settleNewPlaces(avant);
+    expect(Object.keys(w.layout?.['4e']?.islands ?? {})).toEqual([]);
+    expect(spotOf(w, lieu)).toEqual(startingSpot(lieu));
+    expect(w.links).toBe(avant.links);
+  });
+
+  it('les îles ont grandi (GD-11) : un lieu déplacé qui ne laisse plus assez d’eau à un voisin se décale, seul, à la place libre la plus proche ; ses liaisons, ses réunions, ses bornes et ses chantiers restent', () => {
+    // Une place du Volcan, déplacé par l'élève avant GD-11, qui tenait avec des îles plus petites : sa terre n'est plus
+    // qu'à une, deux ou trois cases d'eau d'un lieu resté à sa place de départ, dans le cadre.
+    const w0 = partie();
+    const max = LAYOUT_LAST_SPOT['6e'];
+    let ici: { x: number; y: number; turn: 0 } | null = null;
+    for (let x = 0; x <= max.x && !ici; x++)
+      for (let y = 0; y <= max.y && !ici; y++) {
+        const s = { x, y, turn: 0 as const };
+        if (fittingPlaces('6e', { [VOLCAN]: s })) continue;
+        // Trop près d'un voisin, mais sans le toucher : une case de plus de chaque côté, et il tiendrait.
+        const plusPetit = [-1, 0, 1].every((dx) => [-1, 0, 1].every((dy) => !fittingPlaces('6e', { [VOLCAN]: { x: x + dx, y: y + dy, turn: 0 } })));
+        if (!plusPetit && isFreeSpot({ ...w0, layout: {} }, VOLCAN, { x: x - 1, y, turn: 0 })) ici = s;
+      }
+    expect(ici).not.toBeNull();
+    const avant: World = { ...w0, layout: { '6e': { islands: { [VOLCAN]: ici! } } } };
+    // Sans rien faire, la région reviendrait toute à la carte de départ.
+    expect(posesOfLayout(avant.layout).size).toBe(0);
+    const w = settleNewPlaces(avant);
+    const islands = w.layout?.['6e']?.islands ?? {};
+    expect(Object.keys(islands).filter((id) => id !== VOLCAN)).toEqual([]);
+    expect(fittingPlaces('6e', islands)).not.toBeNull();
+    const la = spotOf(w, VOLCAN);
+    expect(Math.abs(la.x - ici!.x) + Math.abs(la.y - ici!.y)).toBeLessThanOrEqual(2);
+    expect(w.links).toBe(avant.links);
+    expect(w.layout?.['6e']?.joined).toEqual(avant.layout?.['6e']?.joined);
+    expect(w.layout?.['6e']?.stations).toEqual(avant.layout?.['6e']?.stations);
   });
 
   it('une disposition qui tient, ou pas de disposition, reste la même', () => {

@@ -462,45 +462,95 @@ export function moveIsland(world: World, id: BiomeId, spot: LayoutSpot): Arrange
 }
 
 /**
- * Les lieux entrés au jeu après qu'une région a été aménagée (les deux îles d'histoire-géographie de 6e, HG-2) : absents
- * de la disposition sauvegardée, ils sont à leur place de la carte de départ. Si elle touche un lieu que l'élève a
- * déplacé, la disposition ne tiendrait plus (`fittingPlaces`) et toute la région reviendrait à la carte de départ : le
- * lieu nouveau se pose plutôt à la place libre la plus proche de sa place de départ, de face, et rien d'autre ne bouge.
- * Rend le même monde quand chaque région tient déjà, ou quand aucune place libre ne la ferait tenir (la région revient
- * alors à la carte de départ, comme avant).
+ * Une disposition sauvegardée qui ne tient plus sur la grille de sa région (`fittingPlaces`) : un lieu entré au jeu
+ * après l'aménagement de la région (HG-2, HG-3, SC-3), à sa place de la carte de départ, chevauche un lieu que l'élève a
+ * déplacé ; ou les îles ont grandi (GD-11, 8 octobre 2026) et deux lieux ne laissent plus assez d'eau entre eux, ou un
+ * lieu déplacé sort du cadre. Plutôt que de ramener toute la région à la carte de départ, les lieux qui ne tiennent plus
+ * se décalent, un à un, chacun à la place libre la plus proche de la sienne, à son orientation (de face s'il n'y en a
+ * pas) ; jamais le lieu de départ ni ce qui lui est réuni, et chacun une fois au plus. Des deux ordres essayés
+ * (`shiftUntilFitting`), on garde celui qui respecte le mieux les choix de l'élève (`shiftCost`). Rien d'autre ne
+ * bouge, et aucune progression ne se perd : les liaisons, les réunions, les bornes et les chantiers ne sont pas dans
+ * les places. Rend le même monde quand chaque région tient déjà, ou quand aucun décalage ne la fait tenir (la région
+ * revient alors à la carte de départ, comme avant). Appelée à la lecture de la partie (`BloclandContext`), elle ne
+ * change aucun format (pas de migration) : la disposition décalée s'enregistre avec la partie suivante.
  */
 export function settleNewPlaces(world: World): World {
   let w = world;
   for (const a of ARCHIPELAGO_IDS) {
-    const r = regionOf(w, a);
-    if (!r.islands || fittingPlaces(a, r.islands)) continue;
-    const poses = r.islands;
-    const bouge = (id: BiomeId) => poses[id] !== undefined;
-    const ecarts = tooSmallGaps(
-      a,
-      placesOf(a).map((id) => placeIn(w, id)),
-      bouge,
-    );
-    // Un lieu resté à sa place de départ ne touche jamais un lieu déplacé (`moveIsland` le refuse) : s'il le touche, il
-    // est nouveau.
-    const nouveaux = placesOf(a).filter((id) => !bouge(id) && ecarts.some((e) => e.place === id || e.other === id));
-    if (!nouveaux.length) continue;
-    let essai: World | null = w;
-    for (const id of nouveaux) {
-      const depart = startingIsland(id).core;
-      // On cherche autour du milieu du cœur de départ, pas de son coin.
-      const libre = nearestFreeSpot(essai, id, { x: depart.x + CORE / 2, y: depart.y + CORE / 2 }, 0);
-      if (!libre) {
-        essai = null;
-        break;
-      }
-      const ici = regionOf(essai, a);
-      essai = withRegion(essai, a, { ...ici, islands: { ...ici.islands, [id]: libre } });
-    }
-    const apres = essai && regionOf(essai, a);
-    if (essai && apres && fittingPlaces(a, apres.islands ?? {})) w = essai;
+    const avant = regionOf(w, a).islands;
+    if (!avant || fittingPlaces(a, avant)) continue;
+    // Deux ordres possibles (`shiftUntilFitting`) : celui qui garde le mieux les choix de l'élève (`shiftCost`) ; le
+    // premier à égalité.
+    const essais = [shiftUntilFitting(w, a, true), shiftUntilFitting(w, a, false)].filter((x): x is World => x !== null);
+    const cout = (x: World) => shiftCost(w, x, a);
+    const mieux = essais.reduce<World | null>((m, x) => (m === null || cout(x) < cout(m) ? x : m), null);
+    if (mieux) w = mieux;
   }
   return w;
+}
+
+/**
+ * Ce que coûte un décalage : d'abord les pas des lieux que l'élève avait déplacés (on garde ses choix autant que
+ * possible), puis le nombre de lieux décalés, puis la somme de leurs pas.
+ */
+function shiftCost(avant: World, apres: World, a: ArchipelagoId): number {
+  const choisis = regionOf(avant, a).islands ?? {};
+  let cout = 0;
+  for (const id of placesOf(a)) {
+    const s = spotOf(avant, id);
+    const t = spotOf(apres, id);
+    if (s.x === t.x && s.y === t.y && s.turn === t.turn) continue;
+    const pas = Math.abs(s.x - t.x) + Math.abs(s.y - t.y) + (s.turn === t.turn ? 0 : 1);
+    cout += (choisis[id] ? pas * 1_000_000 : 0) + 1000 + pas;
+  }
+  return cout;
+}
+
+/**
+ * Décale un à un les lieux d'une région qui ne tiennent plus (`settleNewPlaces`) jusqu'à ce qu'elle tienne ; `null` si
+ * l'un d'eux ne trouve aucune place libre. Un lieu qui sort du cadre se décale le premier (lui seul le peut) ; puis,
+ * selon `unmovedFirst`, un lieu resté à sa place de départ avant un lieu déplacé, ou l'inverse.
+ */
+function shiftUntilFitting(world: World, a: ArchipelagoId, unmovedFirst: boolean): World | null {
+  let monde = world;
+  const decales = new Set<BiomeId>();
+  for (;;) {
+    const ici = regionOf(monde, a);
+    const poses = ici.islands ?? {};
+    if (fittingPlaces(a, poses)) return monde;
+    const bouge = (id: BiomeId) => poses[id] !== undefined;
+    const courant = monde;
+    const ecarts = tooSmallGaps(
+      a,
+      placesOf(a).map((id) => placeIn(courant, id)),
+      bouge,
+    );
+    const horsCadre = placesOf(a).filter((id) => ecarts.some((e) => e.place === id && e.other === null));
+    const enCause = placesOf(a).filter((id) => ecarts.some((e) => e.place === id || e.other === id));
+    // Un lieu resté à sa place de départ qui chevauche un lieu déplacé y est entré après lui (HG-2, SC-3).
+    const nouveaux = enCause.filter((id) => !bouge(id) && ecarts.some((e) => e.gap <= 0 && e.other !== null && ((e.place === id && bouge(e.other)) || (e.other === id && bouge(e.place)))));
+    const restes = enCause.filter((id) => !bouge(id) && !nouveaux.includes(id));
+    const ordre = unmovedFirst ? [...nouveaux, ...enCause.filter(bouge), ...restes] : [...enCause.filter(bouge), ...nouveaux, ...restes];
+    const peutBouger = (id: BiomeId) => !groupOf(courant, id).some((g) => isFixedPlace(g) || decales.has(g));
+    const id = [...horsCadre, ...ordre].find(peutBouger);
+    if (!id) return null;
+    for (const g of groupOf(courant, id)) decales.add(g);
+    const depuis = poses[id];
+    const depart = startingIsland(id).core;
+    // On cherche autour du milieu de son cœur (d'origine), pas de son coin.
+    const point = depuis ? middleOf(a, depuis) : { x: depart.x + CORE / 2, y: depart.y + CORE / 2 };
+    const turn = depuis?.turn ?? 0;
+    const libre = nearestFreeSpot(courant, id, point, turn) ?? (turn ? nearestFreeSpot(courant, id, point, 0) : null);
+    if (!libre) return null;
+    const islands = { ...poses };
+    for (const g of companions(courant, id, libre)) {
+      const s0 = startingSpot(g.id);
+      // À sa place de départ, sans rotation : le lieu n'est plus dans la disposition.
+      if (g.spot.x === s0.x && g.spot.y === s0.y && g.spot.turn === 0) delete islands[g.id];
+      else islands[g.id] = { x: g.spot.x, y: g.spot.y, turn: g.spot.turn };
+    }
+    monde = withRegion(courant, a, { ...ici, islands });
+  }
 }
 
 /** Les lieux d'une région où le lieu `id` est (avec celui avec lequel il est réuni) quand il est posé à `spot`. */

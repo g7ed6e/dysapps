@@ -12,7 +12,8 @@ function distanceAuRectangle(x: number, y: number, r: Rectangle): number {
 }
 import { type Anchor, anchorInWorld, possibleLandings, spotPossible, pathBetween, LONG_LENGTH, MAX_ISLANDS_PER_REGION, routeRegion, RegionRouter } from './routing';
 import { type BridgeDef, getBridge } from './archipelago';
-import { bornesDuCoeur } from './map';
+import { CORE } from './map';
+import { stationBand } from './arrange';
 import { STEP, TOWARDS_SEA } from './placement';
 
 /** Les liaisons posées, dans l'ordre, toutes jusqu'à 96 cases. */
@@ -54,7 +55,9 @@ describe('les arrivées d’un lieu', () => {
   for (const id of ['maths-6e-calculation', 'french-6e-phonology', 'french-4e-agreement'] as const)
     it(`${id} : sur sa côte, au pas, jamais devant les bornes`, () => {
       const def = startingIsland(id);
-      const coeur = bornesDuCoeur(def);
+      // Les places des bornes (la bande de devant) : aucune arrivée devant elles, ni devant le cœur d'origine. Devant
+      // les marges d'un cœur agrandi (GD-11), une arrivée reste possible.
+      const bornes = new Set(stationBand(id).map((b) => b.x));
       const arrivees = possibleLandings(def);
       expect(arrivees.length).toBeGreaterThan(4);
       for (const a of arrivees) {
@@ -62,7 +65,10 @@ describe('les arrivées d’un lieu', () => {
         expect(isLand(def, def.core.x + a.x, def.core.y + a.y), `${a.cote}${a.pas}`).toBe(true);
         expect(isLand(def, def.core.x + a.x + dx, def.core.y + a.y + dy), `${a.cote}${a.pas}`).toBe(false);
         expect(Math.abs((dy !== 0 ? a.x : a.y) % STEP)).toBe(0);
-        if (a.cote === 'devant') expect(a.x < coeur.x0 || a.x >= coeur.x1).toBe(true);
+        if (a.cote === 'devant') {
+          expect(a.x < 0 || a.x >= CORE).toBe(true);
+          expect(bornes.has(a.x)).toBe(false);
+        }
       }
     });
 });

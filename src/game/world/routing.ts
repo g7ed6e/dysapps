@@ -9,7 +9,7 @@ import { BIOMES, type BiomeId } from '../biomes';
 import { ARCHIPELAGOS, type BridgeDef } from './archipelago';
 import { decorate, LANDMARK_OF, landmark } from './decor';
 import { frameOf, LINK_GAP, tooSmallGaps, footprintOf } from './footprint';
-import { type ArchipelagoId, bornesDuCoeur, CORE, isLand, isLandInWorld, isthmusOf, type IslandDef, landCells, landscape, margesDuCoeur, noise, reliefHeight, tirage, toWorld } from './map';
+import { type ArchipelagoId, CORE, isLand, isLandInWorld, isthmusOf, type IslandDef, landCells, landscape, margesDuCoeur, noise, reliefHeight, tirage, toWorld } from './map';
 import { LOW } from './paths';
 import { type Rectangle, type Side, SIDES, STEP, type Quarts, turnDirection, TOWARDS_SEA } from './placement';
 
@@ -160,8 +160,8 @@ function lineOffset(q: Quarts): { colonnes: number; rangees: number } {
  * Les arrivées possibles d'un lieu, dans son repère (le lieu pas tourné), calculées une fois par orientation : elles ne
  * dépendent que de son dessin. Sur chaque côté, à chaque pas de la grille du monde (`lineOffset`) : la case de
  * côte la plus au large de la colonne (ou de la rangée), si elle a de la terre ; jamais sous un décor haut (elle et la
- * suivante vers l'intérieur), ni devant les bornes (la bande de devant, sur toute la largeur du cœur). `pas` : le rang
- * de sa ligne, en pas.
+ * suivante vers l'intérieur), ni devant les bornes (la bande de devant, sur la largeur du cœur d'origine). `pas` : le
+ * rang de sa ligne, en pas.
  */
 export function possibleLandings(def: IslandDef): readonly LocalLanding[] {
   const cleDuLieu = `${def.id}:${def.quarts}`;
@@ -170,7 +170,6 @@ export function possibleLandings(def: IslandDef): readonly LocalLanding[] {
   const decalage = lineOffset(def.quarts);
   const terre = new Set(landCells(def).filter((c) => isLand(def, c.x, c.y)).map((c) => `${c.x - def.core.x},${c.y - def.core.y}`));
   const haut = tallDecor(def);
-  const coeur = bornesDuCoeur(def);
   const out: LocalLanding[] = [];
   let x0 = Infinity;
   let y0 = Infinity;
@@ -199,8 +198,10 @@ export function possibleLandings(def: IslandDef): readonly LocalLanding[] {
     const [debut, fin] = vertical ? [x0, x1] : [y0, y1];
     const d = vertical ? decalage.colonnes : decalage.rangees;
     for (let p = Math.ceil((debut - d) / STEP) * STEP + d; p <= fin; p += STEP) {
-      // Devant le cœur, la bande des bornes : aucune arrivée.
-      if (cote === 'devant' && p >= coeur.x0 && p < coeur.x1) continue;
+      // Devant les bornes, la bande du cœur d'origine (où elles se tiennent) : aucune arrivée. Devant les marges d'un cœur
+      // agrandi (GD-11), une arrivée reste possible : sans elle, deux lieux l'un devant l'autre ne se reliaient plus
+      // par un pont droit.
+      if (cote === 'devant' && p >= 0 && p < CORE) continue;
       // La case de côte la plus au large sur cette ligne.
       let best: { x: number; y: number } | null = null;
       for (const k of terre) {

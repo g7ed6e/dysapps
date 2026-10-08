@@ -1,5 +1,5 @@
 import { BIOMES } from '../biomes';
-import { ALTITUDE, ARCHIPELAGO_IDS, CORE, LACS, isLand, islandDef, landBox, landCells, landscape, MAP, reliefHeight } from './map';
+import { ALTITUDE, ARCHIPELAGO_IDS, CORE, LACS, isLand, islandDef, landBox, landCells, landscape, margesDuCoeur, MAP, reliefHeight } from './map';
 import { BRIDGES, LINKS_BEFORE_GD9, linkWholeRegion, VOYAGES } from './archipelago';
 import { worldCubes } from './terrain';
 
@@ -69,8 +69,10 @@ it('le paysage : du décor sur chaque île, jamais sur l’eau ni la lave, des l
   let lakes = 0;
   for (const def of MAP) {
     const cells = landscape(def);
+    // Sur sa côte, ou ses jalons dans les marges du cœur : une côte d'une case (amincie par GD-11) est tout entière au
+    // bord, sans décor.
     expect(
-      cells.some((c) => c.decor),
+      cells.some((c) => c.decor) || margesDuCoeur(def).some((c) => c.decor),
       def.id,
     ).toBe(true);
     for (const c of cells) {

@@ -32,18 +32,15 @@ import { layoutCache, type Rectangle } from '../placement';
  * deux baleines nageaient l'une contre l'autre, en 97, 304 et 98, 314) : ronde de 5 cases, à plus de cent cases de la
  * première, entière dans la vue du port. Au 4e, celle de 41, 715 (29, 706 sans liaison) passait en 82, 705.
  *
- * Depuis GD-11 (8 octobre 2026), les îlots des Gardiens ont quitté la mer et les clairières ont changé (mesuré avec
- * three/whales.test.ts) : au 6e, plus aucune ne se cache, celles de -9, 76 et -12, 73 ne sont plus choisies ; au 5e,
- * celle de 29, 357, cachée derrière les îles de l'ouest, nage en 49, 363, la clairière visible la plus proche ; celle de
- * 29, 420 nage toujours en 93, 429 ; au 4e, celle de 2, 691, cachée par la côte de l'ouest, passe en 35, 667.
+ * Depuis GD-11 (8 octobre 2026), les îlots des Gardiens ont quitté la mer et les îles ont grandi ; les clairières ont
+ * changé (mesuré avec three/whales.test.ts) : au 6e, celle de -12, 100, que la côte de l'ouest cache en partie depuis le
+ * port, nage en -8, 105, la clairière visible la plus proche ; au 5e, celle de 38, 414, cachée derrière les îles du sud,
+ * nage en 79, 362, la seule clairière visible à moins de 80 cases (un rond de 4 cases, au nord du Marais) ;
+ * au 4e, aucune baleine n'est plus dans le cadre de la vue du port.
  */
 export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
-  '6e': [{ de: { x: 3, y: 109 }, vers: { x: -1, y: 109 } }],
-  '5e': [
-    { de: { x: 29, y: 357 }, vers: { x: 49, y: 363 } },
-    { de: { x: 29, y: 420 }, vers: { x: 93, y: 429 } },
-  ],
-  '4e': [{ de: { x: 2, y: 691 }, vers: { x: 35, y: 667 } }],
+  '6e': [{ de: { x: -12, y: 100 }, vers: { x: -8, y: 105 } }],
+  '5e': [{ de: { x: 38, y: 414 }, vers: { x: 79, y: 362 } }],
 };
 
 /**

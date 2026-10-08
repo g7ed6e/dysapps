@@ -28,7 +28,8 @@ import type { Layout, LayoutSpot } from './savedLayout';
  * lieu de l'est ; les noms de la Carte sont mesurés avec ce cadre, mapLabels.test.ts), 168 × 140 aux Anciens Ateliers
  * (28 cases), 208 × 120 aux Îles du Ciel (8 cases), sous les 192 × 144 des Premiers Rivages, qui tiennent sur la Carte de
  * la tablette. Le Glacier et la Gare ne tournent toujours pas ; la Grammaire (5e) et le Refuge des carnets (3e), dans des
- * régions plus pleines, n'ont plus de place libre tournés non plus (`SANS_PLACE`, arrange.test.ts).
+ * régions plus pleines, n'avaient plus de place libre tournés non plus. Depuis GD-11 (les îlots des Gardiens retirés),
+ * chaque lieu mobile trouve une place tourné (arrange.test.ts) ; les îles agrandies tiennent dans les mêmes cadres.
  */
 const REGION_FRAMES: Readonly<Record<ArchipelagoId, Readonly<Rectangle>>> = Object.freeze({
   '6e': Object.freeze({ x0: -20, y0: -13, x1: 172, y1: 131 }),

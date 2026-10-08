@@ -1,7 +1,7 @@
 import { islandsOf } from './archipelago';
 import { placedLinksOf } from './linkGeometry';
 import { BLOC, BIOMES, missionsJouables } from '../biomes';
-import { ARCHIPELAGO_IDS, CORE, MAP, bornesDuCoeur, isLand, islandDef, landBox, landCells, mapOf } from './map';
+import { ARCHIPELAGO_IDS, CORE, MAP, bornesDuCoeur, coeurDe, isLand, islandDef, landBox, landCells, mapOf, startingIsland } from './map';
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
 import { PLAN_ZONE, planCells, plansFor } from './plans';
@@ -12,6 +12,7 @@ import { GUARDIAN_CUBES } from './characters/guardians';
 import { ARCHIPELAGOS, BRIDGES, VOYAGES, archipelagoOf, linkKind, linkWholeRegion } from './archipelago';
 import { walkGround, walkPath } from './paths';
 import { possibleLandings } from './routing';
+import { TOWARDS_SEA } from './placement';
 import { dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleRestZ, VEHICLE_DECK, VEHICLE_SIZE } from './harbor';
 import { VEHICLE_STAGES } from './vehicle';
 import { recetteDeLArchipel } from './assembly';
@@ -271,40 +272,33 @@ it('avec les sentinelles (Archipéo, lot 6), le Gardien est là dès l’ouvertu
 });
 
 describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octobre 2026)', () => {
-  /**
-   * Les îles où aucun carré de 5 × 5 ne tient sans cacher à la vue de l'île un lieu, une borne ou le chantier, même
-   * l'habitant serré et le décor de la côte effacé : le Gardien y prend la place de repli (`repli`), qui gêne le moins.
-   * Mesuré le 8 octobre 2026 : 23 îles sur 51. Le mainteneur pense agrandir un peu les îles ; cette liste se videra alors.
-   */
-  const SANS_PLACE: readonly string[] = [
-    'french-6e-phonology',
-    'french-6e-letter-confusion',
-    'french-6e-word-spelling',
-    'maths-6e-decimals',
-    'maths-5e-proportionality',
-    'french-5e-homophones',
-    'french-5e-conjugation',
-    'maths-4e-algebra',
-    'french-4e-agreement',
-    'french-4e-vocabulary',
-    'maths-3e-statistics',
-    'french-3e-close-reading',
-    'english-6e-grammar',
-    'english-5e-vocabulary',
-    'english-5e-grammar',
-    'english-4e-grammar',
-    'english-3e-grammar',
-    'history-6e-antiquity',
-    'geography-6e-living',
-    'history-5e-middle-ages',
-    'geography-5e-resources',
-    'lv2-5e-introductions',
-    'lv2-4e-daily-life',
-  ];
+  it('chaque île a sa place, sans repli : les îles ont grandi (« Agrandir les îles », 8 octobre 2026)', () => {
+    // Mesuré le 8 octobre 2026, avant GD-11 point 3 : 23 îles sur 51 au repli. Depuis que le cœur a grandi de trois
+    // cases par côté et que la côte s'est amincie, aucune : 47 îles au palier 1, la Forêt, le Marché et l'Atelier au
+    // palier 2 (leur habitant se promène derrière la salle des trophées), la Fouille des siècles au palier 3 (le décor
+    // de la côte s'efface sous son carré).
+    expect(BIOMES.filter((b) => guardianSpot(b.id).repli).map((b) => b.id)).toEqual([]);
+    const paliers = (n: number) => BIOMES.filter((b) => guardianSpot(b.id).palier === n).map((b) => b.id);
+    expect(paliers(1)).toHaveLength(47);
+    expect(paliers(2)).toEqual(['french-6e-phonology', 'maths-5e-proportionality', 'maths-4e-algebra']);
+    expect(paliers(3)).toEqual(['history-6e-antiquity']);
+  });
 
-  it('chaque île a sa place, sauf la liste connue des îles trop petites', () => {
-    const sans = BIOMES.filter((b) => guardianSpot(b.id).repli).map((b) => b.id);
-    expect(sans).toEqual(SANS_PLACE);
+  it('jamais sur une colline, ni sur la case d’entrée derrière une arrivée de liaison', () => {
+    for (const b of BIOMES) {
+      const s = guardianSpot(b.id);
+      const index = BIOMES.indexOf(b);
+      const carre = new Set<string>();
+      for (let i = 0; i < GUARDIAN_SQUARE; i++) for (let j = 0; j < GUARDIAN_SQUARE; j++) carre.add(`${s.x + i},${s.y + j}`);
+      for (const k of carre) {
+        const [x, y] = k.split(',').map(Number);
+        expect(groundHeight(index, x, y), `${b.id} ${k}`).toBeLessThanOrEqual(0);
+      }
+      for (const l of possibleLandings(startingIsland(b.id))) {
+        const v = TOWARDS_SEA[l.cote];
+        expect(carre.has(`${l.x - v.dx},${l.y - v.dy}`), `${b.id} entrée ${l.cote} ${l.pas}`).toBe(false);
+      }
+    }
   });
 
   it('son carré est sur la terre de son île, hors des bornes, de l’habitant, du départ du bonhomme, des portes, des arrivées des liaisons et du chantier', () => {
@@ -746,7 +740,9 @@ it('le bonhomme embarque : de son île à la jetée, planche par planche, jusqu�
 it('le Bloc-Navire : le chantier du port montre ses cases en fantôme, les étapes parties sont dessinées entières', () => {
   const [coque, ballon] = VEHICLE_STAGES;
   // Le navire n'est pas dans le terrain (il tangue, c'est un objet à part) : le terrain ne garde que la jetée.
-  const terrain = worldCubes('6e', {}, village([]), false).filter((c) => c.tag === 'maths-6e-calculation' && c.y < islandDef('maths-6e-calculation').core.y - 4);
+  // Au large de sa côte de devant (le cœur agrandi et sa côte, GD-11).
+  const plaine = islandDef('maths-6e-calculation');
+  const terrain = worldCubes('6e', {}, village([]), false).filter((c) => c.tag === 'maths-6e-calculation' && c.y < coeurDe(plaine).y0 - plaine.ext.front);
   expect(terrain.some((c) => c.ghost)).toBe(false);
   expect(terrain.every((c) => c.texture === 'planches' || c.texture === 'escalier' || c.texture === 'tronc' || c.texture === 'lanterne')).toBe(true);
   // Au début, sur la Plaine : la coque en fantôme (la voile aussi, tant que les Gardiens ne sont pas vaincus), amarrée au quai.
