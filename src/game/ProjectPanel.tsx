@@ -8,6 +8,7 @@ import { useProgress } from '../core/ProgressContext';
 import { useUnivers } from '../core/SettingsContext';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
+import { frenchTypography } from '../core/typography';
 import { BLOCKS, blockName, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { EarnLink } from './PlanSection';
@@ -62,7 +63,7 @@ export function ProjectPanel({ project, monument, done }: { project: Project; mo
       </p>
       {index === null ? (
         <p className="plan-done">
-          <Icon name="star" /> <span className="plan-done-word">Terminé !</span> <span className="plan-done-text"><Syllabified text={done} /></span>
+          <Icon name="star" /> <span className="plan-done-word">Terminé !</span> <span className="plan-done-text"><Syllabified text={frenchTypography(done)} /></span>
         </p>
       ) : free ? (
         <button type="button" className="button primary" onClick={finish}>

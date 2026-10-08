@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
+import { frenchTypography } from '../core/typography';
 import { BLOCKS, blockCount, blockName, getBiome, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { planStatus } from './engine';
@@ -100,7 +101,7 @@ function MonumentBody({ builder }: { builder: MonumentBuilder }) {
               </p>
               {status.complete ? (
                 <p className="plan-done">
-                  <Icon name="star" /> <span className="plan-done-word">Terminé !</span> <span className="plan-done-text"><Syllabified text={texte.done} /></span>
+                  <Icon name="star" /> <span className="plan-done-word">Terminé !</span> <span className="plan-done-text"><Syllabified text={frenchTypography(texte.done)} /></span>
                 </p>
               ) : (
                 <>
