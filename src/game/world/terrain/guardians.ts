@@ -5,24 +5,8 @@ import { type ArchipelagoId, islandDef } from '../map';
 import type { VoxelCube } from '../cube';
 import { turnCell, turnModel, turnPlacedModel, turnPoint } from '../placement';
 import { guardianStatus } from '../../boss';
-import { gardienDuMonde, GUARDIAN_SQUARE, guardianSpot } from './creatures';
+import { etendue, gardienDuMonde, gardienProfond, GUARDIAN_SQUARE, guardianSpot } from './creatures';
 import { TEXTURES } from './base';
-
-/** Un Gardien plus profond que tant de cases (vu de face) prend tout son carré : son bloc d'or va à côté de lui. */
-const PROFONDEUR_DU_GARDIEN_DEVANT_SON_OR = 8;
-
-/** L'étendue d'un modèle en cubes : son coin bas et son coin haut (exclu), en x et en y. */
-function etendue(cubes: readonly { x: number; y: number }[]): { x0: number; y0: number; x1: number; y1: number } {
-  const xs = cubes.map((c) => c.x);
-  const ys = cubes.map((c) => c.y);
-  return { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs) + 1, y1: Math.max(...ys) + 1 };
-}
-
-/** Le Gardien prend-il tout son carré, de l'avant au fond (un Gardien vu de profil, long) ? */
-function gardienProfond(id: BiomeId): boolean {
-  const e = etendue(gardienDuMonde(id));
-  return e.y1 - e.y0 > PROFONDEUR_DU_GARDIEN_DEVANT_SON_OR;
-}
 
 /**
  * Le milieu du Gardien dans son carré (repère du cœur, le lieu pas tourné) : au milieu de ses quatre rangées du fond, la

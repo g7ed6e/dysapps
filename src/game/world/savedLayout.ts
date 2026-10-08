@@ -8,7 +8,7 @@
 import { BIOMES, getBiome, type BiomeId } from '../biomes';
 import { getBridge } from './archipelago';
 import { type ArchipelagoId, ARCHIPELAGO_IDS, archipelagoOfIsland } from './archipelagos';
-import { CORE, COTE_DU_COEUR, DEFAULT_CORE_SIDE } from './map';
+import { CORE, COTE_DU_COEUR, DEFAULT_CORE_SIDE } from './coreSide';
 
 /** Une orientation : de 0 à 3 quarts de tour (`Quarts`, ./placement.ts). */
 export type LayoutTurn = 0 | 1 | 2 | 3;
@@ -99,7 +99,7 @@ export const LAYOUT_LAST_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: numb
 
 /**
  * Les cases du cœur d'un lieu dans son repère, bornes comprises, sur chaque axe : le côté du cœur de l'île
- * (`COTE_DU_COEUR`, `DEFAULT_CORE_SIDE`, ./map.ts) autour du cœur d'origine [0, `CORE`) ; de −3 à 18 à 22 de côté, de
+ * (`COTE_DU_COEUR`, `DEFAULT_CORE_SIDE`, ./coreSide.ts) autour du cœur d'origine [0, `CORE`) ; de −3 à 18 à 22 de côté, de
  * −5 à 20 à 26 (les îles-écoles). Les mêmes bornes que `bornesDuCoeur`, sans la carte.
  */
 function coreCells(id: BiomeId): { min: number; max: number } {

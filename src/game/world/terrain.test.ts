@@ -21,6 +21,8 @@ import { decorPose } from './decor';
 import { isBiomeUnlocked } from './archipelago';
 import { zoneDesPlans } from './plans';
 import { AVATAR_HOME } from './terrain/base';
+import { SENTINELLE_DANS_LE_MONDE } from './terrain/creatures';
+import { DEMI_LARGEUR_DE_SENTINELLE, ECHELLE_DANS_LE_MONDE, HAUTEUR_DANS_LE_MONDE } from './characters/sentinel';
 import { portesDesLieux } from './terrain/village';
 import {
   avatarHome,
@@ -44,6 +46,7 @@ import {
   guardianCenter,
   guardianPlacements,
   guardianSpot,
+  partDuGardienVue,
   trophySpot,
   ISLAND,
   islandAt,
@@ -274,15 +277,47 @@ it('avec les sentinelles (Archipéo, lot 6), le Gardien est là dès l’ouvertu
 
 describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octobre 2026)', () => {
   it('chaque île a sa place, sans repli : les îles ont grandi (« Agrandir les îles », 8 octobre 2026)', () => {
-    // Mesuré le 8 octobre 2026, avant GD-11 point 3 : 23 îles sur 51 au repli. Depuis que le cœur a grandi de trois
-    // cases par côté et que la côte s'est amincie, aucune : 47 îles au palier 1, la Forêt, le Marché et l'Atelier au
-    // palier 2 (leur habitant se promène derrière la salle des trophées), la Fouille des siècles au palier 3 (le décor
-    // de la côte s'efface sous son carré).
+    // Mesuré le 8 octobre 2026, avant GD-11 point 3 : 23 îles sur 51 au repli. Depuis que le cœur a grandi, aucune.
+    // Avant la règle « rien ne cache le Gardien » (relecture des planches, 8 octobre 2026) : 47 îles au palier 1, 3 au
+    // palier 2, 1 au palier 3 ; 33 Gardiens en partie cachés (la Forêt à moitié). Depuis : 23, 1 et 27.
     expect(BIOMES.filter((b) => guardianSpot(b.id).repli).map((b) => b.id)).toEqual([]);
     const paliers = (n: number) => BIOMES.filter((b) => guardianSpot(b.id).palier === n).map((b) => b.id);
-    expect(paliers(1)).toHaveLength(47);
-    expect(paliers(2)).toEqual(['french-6e-phonology', 'maths-5e-proportionality', 'maths-4e-algebra']);
-    expect(paliers(3)).toEqual(['history-6e-antiquity']);
+    expect(paliers(1)).toHaveLength(23);
+    expect(paliers(2)).toEqual(['maths-5e-signed-numbers']);
+    expect(paliers(3)).toHaveLength(27);
+  });
+
+  it('la sentinelle que la place du Gardien laisse voir est celle que dessine Archipéo', () => {
+    expect(SENTINELLE_DANS_LE_MONDE.demiLargeur).toBeCloseTo(DEMI_LARGEUR_DE_SENTINELLE * ECHELLE_DANS_LE_MONDE, 9);
+    expect(SENTINELLE_DANS_LE_MONDE.hauteur).toBeCloseTo(HAUTEUR_DANS_LE_MONDE, 9);
+  });
+
+  it('rien ne le cache dans la vue de l’île : ni l’habitant, ni un lieu ou un bâtiment, ni l’étiquette du nom, dans les deux univers', () => {
+    // Faute de carré où il se voit entier, même le décor effacé (palier 3), ces îles gardent le carré où il se voit le
+    // plus : la part vue, au centième, dans la forme la plus cachée des deux univers. À trancher (directeur artistique) :
+    // laisser le Gardien aller sur les côtés, devant, ou déplacer ce qui le cache.
+    const enPartie: Record<string, number> = {
+      'maths-6e-calculation': 0.99,
+      'french-4e-agreement': 0.89,
+      'maths-3e-functions': 0.74,
+      'english-6e-grammar': 0.79,
+      'english-5e-grammar': 0.86,
+      'english-4e-comprehension': 0.92,
+      'life-earth-sciences-6e-living-world': 0.89,
+      'technology-6e-objects': 0.86,
+      'life-earth-sciences-5e-active-planet': 0.79,
+      'history-4e-revolutions': 0.73,
+      'geography-4e-globalization': 0.75,
+      'technology-4e-modeling': 0.83,
+      'history-3e-twentieth-century': 0.96,
+      'life-earth-sciences-3e-human-body': 0.9,
+      'physics-chemistry-3e-motion-energy': 0.86,
+    };
+    for (const b of BIOMES) {
+      const vue = Math.min(...(['gardien', 'sentinelle'] as const).map((forme) => partDuGardienVue(b.id, forme)));
+      if (b.id in enPartie) expect(vue, b.id).toBeCloseTo(enPartie[b.id], 2);
+      else expect(vue, b.id).toBe(1);
+    }
   });
 
   it('jamais sur une colline, ni sur la case d’entrée derrière une arrivée de liaison', () => {

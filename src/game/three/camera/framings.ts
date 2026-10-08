@@ -1,7 +1,7 @@
 // Les cadrages de la caméra : les vues (île, suivi, Carte, voyage), le cadrage de la Carte selon la place libre et la
 // destination, celui de la traversée, et le décalage qui vise un point au-dessus du sol.
 import * as THREE from 'three';
-import { bornesDesLieux, type CadreDeCases, DISTANCE_DE_LA_VUE_DE_L_ILE, islandCenter, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
+import { bornesDesLieux, type CadreDeCases, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, islandCenter, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
 import type { PlaceLue, Rect } from '../../freeSpace';
 import type { BiomeId } from '../../biomes';
 import type { ArchipelagoId } from '../../world/archipelago';
@@ -64,8 +64,6 @@ export const LARGEUR_D_UNE_ILE = 22;
 /** Entre l'archipel entier et le bord de la place libre. */
 const MARGE_DE_LA_CARTE = 12;
 
-/** À combien de cases au-dessus du sol de son île flotte le nom d'une île (three/labels.ts). */
-export const HAUTEUR_DES_NOMS = 12;
 
 /** La moitié de la hauteur de l'étiquette d'une île sur la Carte (le nom et l'état, 18 px, labelCanvas.ts), en pixels CSS. */
 const DEMI_HAUTEUR_D_UN_NOM = 31;

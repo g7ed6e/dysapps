@@ -215,6 +215,12 @@ export const VUE_DE_L_ILE = { dx: 0.7, dy: -0.7, up: 0.9 };
 /** La distance de la caméra de la vue d'une île au point visé (en paysage ; la vue en portrait recule, three/camera.ts). */
 export const DISTANCE_DE_LA_VUE_DE_L_ILE = 30;
 
+/**
+ * À combien de cases au-dessus du sol de son île flotte le nom d'une île (three/labels.ts) : la place du Gardien évite
+ * l'étiquette dans la vue de l'île (./creatures.ts, `guardianSpot`).
+ */
+export const HAUTEUR_DES_NOMS = 12;
+
 /** La caméra vise un bloc au-dessus du point qu'elle regarde (le centre d'une île à son altitude, le bonhomme). */
 export const VISEE_AU_DESSUS_DU_SOL = 1;
 

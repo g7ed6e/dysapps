@@ -193,10 +193,11 @@ const FORMES: Record<string, Cube[]> = {
   // 4e : les Monts de Feu.
   // Braise, le wagonnet : une voie de trois rails, un wagonnet de deux aciers.
   'maths-4e-powers-fixture-1': [...rangee(0, 2, 0, 0, BLOC.rail), [0, 0, 1, BLOC.acier], [1, 0, 1, BLOC.acier]],
-  // Ixe, la machine : deux poteaux de calque sur un socle de trois engrenages, un engrenage de plus au milieu (le calque
-  // se perdait sur le sol de calque des marges de l'Atelier depuis que les îles ont grandi, GD-11 ; un pied de barrière
-  // ou d'acier dépassait de 4 triangles le poste des commandes d'Archipéo, 380 : le socle d'engrenages y tient juste).
-  'maths-4e-algebra-fixture-1': [[0, 0, 0, BLOC.engrenage], [0, 0, 1, BLOC.calque], [2, 0, 0, BLOC.engrenage], [2, 0, 1, BLOC.calque], ...colonne(1, 0, 0, 1, BLOC.engrenage)],
+  // Ixe, la machine : deux poteaux de calque sur un pied de barrière (des planches), une colonne de deux engrenages au
+  // milieu, un par bloc demandé (le calque se perdait sur le sol de calque des marges de l'Atelier depuis que les îles
+  // ont grandi, GD-11 ; le socle de quatre engrenages contredisait « un cube par bloc demandé », relecture des planches,
+  // 8 octobre 2026 ; la pierre n'est ni de l'Atelier ni de finition).
+  'maths-4e-algebra-fixture-1': [[0, 0, 0, 'fence'], [0, 0, 1, BLOC.calque], [2, 0, 0, 'fence'], [2, 0, 1, BLOC.calque], ...colonne(1, 0, 0, 1, BLOC.engrenage)],
   // Cléa, le perchoir : trois marches de 1, 2 et 3 cubes, l'escalier dessous (l'ardoise se perdait sur le sol d'ardoise
   // de la Falaise, retouche du directeur artistique), un acier sur chaque marche.
   'french-4e-agreement-fixture-1': [
@@ -320,7 +321,7 @@ export function estPosee(parts: Record<string, string[]>, id: string): boolean {
  * (world/terrain/fixtureCheck.ts) les refait et le test les compare, pour chaque LV2 (fixtures.test.ts) ; une île ou une forme qui change les fait changer.
  */
 const PLACES: Record<string, readonly [number, number]> = {
-  'french-6e-phonology-fixture-1': [4, 20],
+  'french-6e-phonology-fixture-1': [0, 20],
   'french-6e-letter-confusion-fixture-1': [-2, 12],
   'french-6e-word-spelling-fixture-1': [1, 12],
   'french-6e-grammar-spelling-fixture-1': [9, 4],
@@ -331,7 +332,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'french-6e-phonology-fixture-2': [-4, 7],
   'french-6e-grammar-spelling-fixture-2': [14, 5],
   'french-6e-reading-fixture-2': [10, 3],
-  'maths-6e-calculation-fixture-1': [-3, 4],
+  'maths-6e-calculation-fixture-1': [-5, 10],
   'maths-6e-fractions-fixture-1': [-1, 11],
   'maths-6e-decimals-fixture-1': [-2, 9],
   'maths-5e-signed-numbers-fixture-1': [-2, 8],

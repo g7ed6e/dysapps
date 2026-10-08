@@ -56,6 +56,8 @@ const REGLES = [
   'world/layout',
   // La disposition des régions dans la sauvegarde (GD-9) : sa forme seulement ; qu'elle tienne se vérifie dans la grille.
   'world/savedLayout',
+  // Le côté du cœur des îles, en cases : la sauvegarde le lit pour borner une borne déplacée ; la grille le réexporte.
+  'world/coreSide',
   // L'article devant le nom d'un lieu (« la Forêt des sons », « du Volcan ») : des mots seulement, partagés par les phrases.
   'world/placeArticle',
 ];
