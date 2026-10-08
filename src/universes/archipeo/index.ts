@@ -535,7 +535,7 @@ export const ARCHIPEO = {
       done: 'Le portique des docks est debout. La cabine s’allume : les navires chargent pour toutes les îles.',
     },
     'landmark-3e-3': {
-      description: 'Une fusée de marbre sur son pas de tir, avec ses ailerons, son second étage à hublots et sa coiffe pointée vers les étoiles que guettent les Îles du Ciel.',
+      description: 'Une fusée de marbre sur son pas de tir, avec ses ailerons, son second étage à hublots et sa coiffe pointée vers les étoiles, au-dessus des Îles du Ciel.',
     },
     'landmark-3e-4': {
       done: 'Le château d’eau est plein. Sa couronne de lanternons s’allume au-dessus des nuages, et toute l’île a de l’eau.',

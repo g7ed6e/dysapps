@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, gardiens ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, projets-college, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, gardiens ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -616,6 +616,39 @@ const CAPTURES = [
     reglages: { font: 'opendyslexic', fontSize: 32 },
     voir: '.assemblage-question button >> nth=-1',
   },
+  // Les grands projets de la 4e et de la 3e (GD-10, famille `projets-college`), à retirer une fois le lot fusionné : les
+  // cinq monuments neufs finis, de jour et de nuit ; à mi-chantier (les deux premières pièces) et pas commencés ; la
+  // Carte de chaque archipel ; puis une question en anglais (le carnet de vol) et une des solides au téléphone en grand texte.
+  ...[
+    ['4e', 'maths-4e-algebra', { 'landmark-4e-3': 4, 'landmark-4e-4': 3 }],
+    ['3e', 'maths-3e-functions', { 'landmark-3e-3': 4, 'landmark-3e-4': 5, 'landmark-3e-5': 4 }],
+  ].flatMap(([a, ile, moitie]) => [
+    { nom: `projets-${a}`, vue: 'archipel', famille: 'projets-college', ile, finesse: 2 },
+    { nom: `projets-${a}-nuit`, vue: 'archipel', famille: 'projets-college', ile, nuit: true, finesse: 2 },
+    { nom: `projets-${a}-chantier`, vue: 'archipel', famille: 'projets-college', ile, etages: moitie, finesse: 2 },
+    { nom: `projets-${a}-fantome`, vue: 'archipel', famille: 'projets-college', ile, etages: Object.fromEntries(Object.keys(moitie).map((m) => [m, 0])), finesse: 2 },
+    { nom: `projets-${a}-carte`, vue: 'carte', famille: 'projets-college', ile },
+    { nom: `projets-${a}-carte-nuit`, vue: 'carte', famille: 'projets-college', ile, nuit: true },
+  ]),
+  ...[
+    ['carnet', 'landmark-3e-3/1', { 'landmark-3e-3': 1 }, { 'english-3e-comprehension': 4, 'physics-chemistry-3e-motion-energy': 4, 'life-earth-sciences-3e-human-body': 2 }],
+    ['solides', 'landmark-3e-5/0', {}, { 'maths-3e-geometry': 4, 'french-3e-close-reading': 4, 'technology-3e-digital': 2 }],
+  ].flatMap(([banque, lieu, etages, inventaire]) =>
+    [
+      { suffixe: '' },
+      { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+    ].map(({ suffixe, ...autres }) => ({
+      nom: `projets-question-${banque}${suffixe}`,
+      vue: 'île',
+      famille: 'projets-college',
+      ile: 'maths-3e-functions',
+      lieu: `project/${lieu}`,
+      etages: { 'landmark-3e-5': 0, ...etages },
+      inventaire,
+      voir: '.assemblage-question button >> nth=-1',
+      ...autres,
+    })),
+  ),
   // L'entraide (GD-10, famille `entraide`), à retirer une fois le lot fusionné : chez Mousso, Bloquette et Grimoire, l'objet
   // posé à côté de sa commande, de jour et de nuit (toutes les petites constructions posées) ; puis la ligne de l'entraide
   // dans le panneau de l'île, l'étape « Apporter » chez Mousso (tablette, téléphone au grand texte), et la fiche de Coco
