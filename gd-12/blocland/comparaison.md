@@ -1,14 +1,14 @@
 # Comparaison avec main
 
-Références : main au commit c90fa5437016df1f0716c3771d3bbb94a6405a9b (après : d2d928b6753a2a66ca0e09e7a35a728cef044a41). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : main au commit c90fa5437016df1f0716c3771d3bbb94a6405a9b (après : 687d7c588ace60c16912d5f81e9268c6c08bc5e9). Une vue est changée au-delà de 0,3 % de pixels différents.
 
 ## Changées (5) : planches dans `planches/`
 
-- 6e-archipel-recul.jpg : 48,5 %
-- 6e-archipel.jpg : 44,1 %
-- 6e-carte.jpg : 50,0 %
-- 6e-ile-recul.jpg : 41,6 %
-- 6e-ile.jpg : 30,6 %
+- 6e-archipel-recul.jpg : 49,8 %
+- 6e-archipel.jpg : 44,3 %
+- 6e-carte.jpg : 58,8 %
+- 6e-ile-recul.jpg : 43,3 %
+- 6e-ile.jpg : 31,0 %
 
 ## Inchangées (0) : non publiées
 
