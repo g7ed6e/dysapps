@@ -21,7 +21,9 @@ import { styleDuMonde } from '../rendering';
 import { creerPiliers } from './markers';
 import { creerConstruction, creerMateriaux, type MateriauxDeConstruction } from './construction';
 import { creerDecor } from './decor';
-import type { Large } from './offshore';
+import { WATER_LEVEL, type Large } from './offshore';
+import { creerLueurs } from './lanternGlow';
+import { AMBIENCE } from '../world/daylight';
 import type { Lumiere } from './light';
 import { blockMeshOf, meshOf } from './meshes';
 import { modeOuvertDansLesMateriaux, suivreLeMode } from './arrange';
@@ -146,6 +148,8 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
    * à cheval sur son bord s'étirerait. Le terrain se refait à l'ouverture et à la fermeture du mode.
    */
   const enBlocs = !sol && !surface;
+  // Blocland : la lueur des lanternes allumées la nuit (GD-10, le phare du large fini), sur l'eau ou sans mer (Îles du Ciel).
+  const lueurs = sol ? null : creerLueurs(scene, lumiere, AMBIENCE[archipel].sky ? null : WATER_LEVEL);
   const neplusSuivreLeMode = enBlocs ? suivreLeMode(() => (aRefaire = true)) : () => {};
   /**
    * Blocland : les maillages de chaque région du monde, faces fondues ou non, avec la signature de ses cubes. Une pose ne
@@ -206,6 +210,8 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   const poserLeTerrain = (cubes: VoxelCube[]) => {
     derniers = cubes;
     aRefaire = false;
+    // Dans « Modifier le plan », un lieu se soulève dans le shader : la lueur, posée à sa place, s'éteint le temps du mode.
+    lueurs?.poser(modeOuvertDansLesMateriaux() ? [] : cubes);
     if (enBlocs) {
       jeter(maillagesDeLaVague);
       maillagesDeLaVague = [];
@@ -475,6 +481,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       viderLeTerrain();
       sol?.en3D.dispose();
       sol?.decor.dispose();
+      lueurs?.dispose();
       taille?.construction.dispose();
       taille?.piliers.dispose();
       materiaux?.dispose();
