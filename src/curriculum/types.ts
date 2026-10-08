@@ -11,11 +11,15 @@ export type Cycle = 3 | 4;
  * cycle 4 seulement). Les LV2 deviennent des matières de l'application avec leur première île (LV2-2 du cadrage du contenu).
  * La SVT, la physique-chimie et la technologie (cycles 3 et 4) le deviennent de même, avec leurs îles. L'enseignement
  * moral et civique (`civics`, de la 6e à la 3e) attend que sa forme dans le jeu soit choisie (cadrage du contenu, « EMC »).
+ * Le latin et le grec ancien (`latin`, `greek`, option langues et cultures de l'Antiquité, de la 5e à la 3e, cycle 4
+ * seulement) attendent leurs îles, ouvertes comme la LV2 par un réglage (cadrage du contenu, « LCA »).
  */
 export type Discipline =
   | Exclude<Subject, 'lv2'>
   | 'german'
   | 'spanish'
+  | 'latin'
+  | 'greek'
   | 'life-earth-sciences'
   | 'physics-chemistry'
   | 'technology'
@@ -26,7 +30,7 @@ export type Discipline =
  * en vigueur pour une discipline et cité par ses domaines (champ `source`) : les sciences de 6e (2023), la technologie du
  * cycle 4 (2024), le français et les maths de 6e (2025) et de 5e (2026), les langues vivantes du collège (2025, un texte
  * par langue et par classe, de la 6e à la 3e), l'enseignement moral et civique (2024, un texte du CP à la terminale,
- * rangé par classe).
+ * rangé par classe), les langues et cultures de l'Antiquité (2016, latin et grec, de la 5e à la 3e).
  */
 export type SourceId =
   | 'c3'
@@ -40,7 +44,8 @@ export type SourceId =
   | 'lv-en-2025'
   | 'lv-de-2025'
   | 'lv-es-2025'
-  | 'emc-2024';
+  | 'emc-2024'
+  | 'lca-2016';
 
 /** D'où vient le texte : le jeu de données data.gouv.fr, son PDF, sa licence. */
 export interface ProgrammeSource {
@@ -51,6 +56,12 @@ export interface ProgrammeSource {
   /** Le PDF de l'annexe (une par cycle). */
   title: string;
   pdfUrl: string;
+  /**
+   * Qui a fait la copie PDF citée par `pdfUrl`, quand le texte officiel n'est publié qu'en HTML : `datasetUrl` est
+   * alors la page du Bulletin officiel, et les pages (`pages`, `page` des domaines et des compétences) sont celles de
+   * la copie.
+   */
+  pdfCopyBy?: string;
   pages: number;
   licence: { name: string; url: string };
   /** Le texte réglementaire qui fixe le programme, tel qu'il est connu : jamais un numéro ou une date non lus. */

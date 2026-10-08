@@ -39,6 +39,13 @@ const AXES_LV2 = (axe6: string) =>
 // Enseignement moral et civique (docs/conception/cadrage-contenu.md, « EMC ») : le référentiel est écrit (EMC-1) ; la
 // forme dans le jeu : une île par classe (EMC-2).
 const EMC = A_COUVRIR('Enseignement moral et civique : une île par classe (choix du mainteneur, 8 octobre 2026), à construire.');
+// Latin et grec ancien, option LCA (docs/conception/cadrage-contenu.md, « LCA ») : le référentiel est écrit (LCA-1) ; la
+// forme dans le jeu : une île par classe de la 5e à la 3e, ouverte selon le réglage de l'option, comme la LV2.
+const LCA = A_COUVRIR('Latin et grec (option LCA) : une île par classe de la 5e à la 3e, ouverte selon le réglage Latin, Grec ou Pas d’option, comme la LV2 (choix du mainteneur, 8 octobre 2026), à construire.');
+const LCA_PRONONCER = A_COUVRIR('Prononciation et alphabet : à travailler sur l’écrit (lettres, règles de lecture, syllabes), dans une île LCA à construire ; une voix sûre pour le latin et le grec sur la tablette reste à vérifier.');
+const LCA_LIRE_ORAL = HORS('Lire à voix haute un texte latin ou grec : il faudrait un micro et une écoute de l’élève ; la prononciation se travaille à part, sur l’écrit.');
+const LCA_TRADUIRE = HORS('Traduire soi-même et justifier ses choix : de la rédaction, hors de ce que fait un écran à choix ; l’application fait reconnaître le sens d’un mot, d’une forme ou d’une phrase (indices, langue).');
+const LCA_COMMENTER = HORS('Interpréter, commenter, comparer des traductions : un travail d’écriture et de débat en classe, hors d’une application d’entraînement.');
 const MANIPULER = HORS('Manipuler, mesurer, observer pour de vrai (montage, microscope, terrain) : le travail de la classe, que l’application ne remplace pas.');
 
 export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
@@ -214,4 +221,60 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.emc.3e.regles.constitution': EMC,
   'c4.emc.3e.opinion.information': EMC,
   'c4.emc.3e.engagement.collectif': EMC,
+  // ---------- Latin et grec ancien, option LCA (cycle 4, programme de 2016), LCA-1 ----------
+  'c4.la.reperes.chronologie': LCA,
+  'c4.la.reperes.heritage': LCA,
+  'c4.la.culture.origines-rome': LCA,
+  'c4.la.culture.republique': LCA,
+  'c4.la.culture.vie-privee': LCA,
+  'c4.la.culture.vie-publique': LCA,
+  'c4.la.culture.mediterranee': LCA,
+  'c4.la.3e.culture.republique-principat': LCA,
+  'c4.la.3e.culture.empire': LCA,
+  'c4.la.3e.culture.vie-sociale': LCA,
+  'c4.la.3e.culture.mediterranee': LCA,
+  'c4.la.lecture.indices': LCA,
+  'c4.la.lecture.situer': LCA,
+  'c4.la.lecture.dictionnaire': LCA,
+  'c4.la.lecture.lire-oralement': LCA_LIRE_ORAL,
+  'c4.la.lecture.traduire': LCA_TRADUIRE,
+  'c4.la.lecture.interpreter': LCA_COMMENTER,
+  'c4.la.langue.prononciation': LCA_PRONONCER,
+  'c4.la.langue.cas-fonctions': LCA,
+  'c4.la.langue.declinaisons': LCA,
+  'c4.la.langue.pronoms': LCA,
+  'c4.la.langue.verbe': LCA,
+  'c4.la.langue.syntaxe': LCA,
+  'c4.la.langue.lexique': LCA,
+  'c4.la.langue.intercomprehension': LCA,
+  'c4.la.3e.langue.nominale': LCA,
+  'c4.la.3e.langue.verbe': LCA,
+  'c4.la.3e.langue.syntaxe': LCA,
+  'c4.la.3e.langue.lexique': LCA,
+  'c4.gr.reperes.chronologie': LCA,
+  'c4.gr.reperes.heritage': LCA,
+  'c4.gr.culture.origines-rome': LCA,
+  'c4.gr.culture.republique': LCA,
+  'c4.gr.culture.vie-privee': LCA,
+  'c4.gr.culture.vie-publique': LCA,
+  'c4.gr.culture.mediterranee': LCA,
+  'c4.gr.3e.culture.mythe-histoire': LCA,
+  'c4.gr.3e.culture.unite-diversite': LCA,
+  'c4.gr.3e.culture.vie-sociale': LCA,
+  'c4.gr.3e.culture.mediterranee': LCA,
+  'c4.gr.lecture.indices': LCA,
+  'c4.gr.lecture.situer': LCA,
+  'c4.gr.lecture.dictionnaire': LCA,
+  'c4.gr.lecture.lire-oralement': LCA_LIRE_ORAL,
+  'c4.gr.lecture.traduire': LCA_TRADUIRE,
+  'c4.gr.lecture.interpreter': LCA_COMMENTER,
+  'c4.gr.langue.alphabet': LCA_PRONONCER,
+  'c4.gr.langue.cas-fonctions': LCA,
+  'c4.gr.langue.lexique': LCA,
+  'c4.gr.langue.intercomprehension': LCA,
+  'c4.gr.3e.langue.alphabet': LCA_PRONONCER,
+  'c4.gr.3e.langue.nominale': LCA,
+  'c4.gr.3e.langue.verbe': LCA,
+  'c4.gr.3e.langue.syntaxe': LCA,
+  'c4.gr.3e.langue.lexique': LCA,
 };

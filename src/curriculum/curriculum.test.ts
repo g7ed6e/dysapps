@@ -10,6 +10,10 @@ const straightApostrophe = (t: string) => t.includes("'");
 /** Les LV2 commencent en 5e : elles n'ont que le cycle 4. */
 const LV2 = ['german', 'spanish'] as const;
 
+/** L'option langues et cultures de l'Antiquité (latin, grec) commence en 5e : elle n'a que le cycle 4. */
+const LCA = ['latin', 'greek'] as const;
+const CYCLE4_SEUL: readonly string[] = [...LV2, ...LCA];
+
 /**
  * L'enseignement moral et civique : un texte rangé par classe, une compétence par thème, au grain d'une mission (3 thèmes
  * en 6e, 2 en 5e, 2 en 4e, 3 en 3e). Il a donc moins de compétences que le plancher des autres disciplines.
@@ -27,13 +31,13 @@ it('le référentiel a une taille raisonnable et chaque discipline est présente
   // suivent les textes en vigueur (7 octobre 2026) : le français, les maths et l'anglais de 6e réécrits sur les textes
   // de 2025 (87 compétences au lieu de 73), et 82 compétences de 5e (français et maths de 2026, anglais, allemand et
   // espagnol de 2025) à côté de celles de 2020, réservées à la 4e et à la 3e : 427 en tout. L'enseignement moral et
-  // civique (8 octobre 2026) y ajoute 10 compétences, une par thème : 437 en tout, sous le même plafond.
+  // civique (8 octobre 2026) y ajoute 10 compétences, une par thème : 437 en tout, sous le même plafond. Le plafond passe
+  // à 500 pour le latin et le grec ancien (option LCA, 8 octobre 2026) : 29 et 26 compétences, 492 en tout.
   expect(PROGRAMME.length).toBeGreaterThanOrEqual(100);
-  expect(PROGRAMME.length).toBeLessThanOrEqual(450);
+  expect(PROGRAMME.length).toBeLessThanOrEqual(500);
   for (const discipline of Object.keys(DISCIPLINES) as (keyof typeof DISCIPLINES)[]) {
     if (discipline === 'civics') continue;
-    const lv2 = (LV2 as readonly string[]).includes(discipline);
-    if (lv2) expect(entriesOf(3, discipline), `${discipline} : pas de LV2 au cycle 3`).toHaveLength(0);
+    if (CYCLE4_SEUL.includes(discipline)) expect(entriesOf(3, discipline), `${discipline} : rien au cycle 3`).toHaveLength(0);
     else expect(entriesOf(3, discipline).length, `${discipline}, cycle 3`).toBeGreaterThanOrEqual(10);
     expect(entriesOf(4, discipline).length, `${discipline}, cycle 4`).toBeGreaterThanOrEqual(10);
   }
@@ -50,6 +54,30 @@ it('l’enseignement moral et civique a une compétence par thème, dans chaque 
   for (const e of emc) {
     expect(e.source, e.id).toBe('emc-2024');
     expect(e.classes, e.id).toHaveLength(1);
+  }
+});
+
+it('le latin et le grec suivent le programme de LCA de 2016 : la culture de 5e et 4e et l’ensemble commun de 3e sont les mêmes', () => {
+  const la = entriesOf(4, 'latin');
+  const gr = entriesOf(4, 'greek');
+  for (const e of [...la, ...gr]) expect(e.source, e.id).toBe('lca-2016');
+  // Chaque classe a sa culture et sa langue, dans chaque langue.
+  for (const list of [la, gr]) {
+    for (const classe of ['5e', '4e', '3e'] as const) {
+      const domaines = new Set(list.filter((e) => e.classes.includes(classe)).map((e) => e.domaine.replace(/^c4-(la|gr)-(3e-)?/, '')));
+      expect([...domaines].sort(), `${list[0].discipline}, ${classe}`).toEqual(['culture', 'langue', 'lecture', 'reperes']);
+    }
+  }
+  // Le texte ne donne qu'une liste de thèmes pour la 5e et la 4e, et un ensemble commun en 3e : mêmes libellés et pages.
+  const communs = (e: { id: string }) => /^c4\.(la|gr)\.(culture\.|3e\.culture\.mediterranee|reperes\.|langue\.cas-fonctions|langue\.lexique)/.test(e.id);
+  const laCommuns = la.filter(communs);
+  expect(gr.filter(communs).map((e) => [e.id.replace('c4.gr.', 'c4.la.'), e.classes, e.competence, e.page])).toEqual(
+    laCommuns.map((e) => [e.id, e.classes, e.competence, e.page]),
+  );
+  // Ce que l'écran ne fait pas (lire à voix haute, traduire soi-même, commenter) est hors périmètre ; le reste, à couvrir.
+  for (const e of [...la, ...gr]) {
+    const hors = /\.lecture\.(lire-oralement|traduire|interpreter)$/.test(e.id);
+    expect(EXCLUSIONS[e.id as keyof typeof EXCLUSIONS]?.kind, e.id).toBe(hors ? 'hors-perimetre' : 'a-couvrir');
   }
 });
 
@@ -128,7 +156,13 @@ it('les sources disent d’où vient le texte : jeu de données, PDF, licence, t
   for (const s of Object.values(SOURCES)) {
     // Le ministère : data.gouv.fr, le Bulletin officiel ou éduscol.
     expect(s.datasetUrl).toMatch(/^https:\/\/(www\.data\.gouv\.fr|www\.education\.gouv\.fr|eduscol\.education\.gouv\.fr)\//);
-    expect(s.pdfUrl).toMatch(/^https:\/\/(static\.data\.gouv\.fr|www\.education\.gouv\.fr|eduscol\.education\.gouv\.fr)\/.+\.pdf$/);
+    if (s.pdfCopyBy) {
+      // Un texte que le Bulletin officiel ne publie qu'en HTML : la page du BO, et une copie PDF dont l'auteur est nommé.
+      expect(s.datasetUrl, s.id).toMatch(/^https:\/\/www\.education\.gouv\.fr\/bo\/.+\.htm$/);
+      expect(s.pdfUrl, s.id).toMatch(/^https:\/\/.+\.pdf$/);
+    } else {
+      expect(s.pdfUrl).toMatch(/^https:\/\/(static\.data\.gouv\.fr|www\.education\.gouv\.fr|eduscol\.education\.gouv\.fr)\/.+\.pdf$/);
+    }
     expect(s.licence.name).toMatch(/Licence Ouverte|réutilisation libre/);
     expect(s.licence.url).toMatch(/^https:\/\//);
     // Le texte réglementaire tel qu'il est lu : numéro et date du Bulletin officiel, numéro et année quand la date n'a

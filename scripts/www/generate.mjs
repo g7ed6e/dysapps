@@ -295,6 +295,8 @@ function programmesPage(d) {
     '',
     'L’enseignement moral et civique suit, de la 6e à la 3e, le programme du CP à la terminale, rangé par classe : chaque thème d’une classe est une compétence.',
     '',
+    'Le latin et le grec ancien, enseignements de complément (option langues et cultures de l’Antiquité, LCA), suivent de la 5e à la 3e le programme de 2016 : des thèmes de culture et un tableau de langue communs à la 5e et à la 4e, puis une 3e de latin et une 3e de grec ; la lecture et la traduction valent pour tout le cycle. Le Bulletin officiel ne publie ce texte qu’en HTML : les pages indiquées sont celles de la copie PDF citée dans les sources.',
+    '',
     table(
       ['Cycle', 'Discipline', 'Compétences', 'Travaillées', 'À couvrir', 'Hors périmètre'],
       // Une discipline absente d'un cycle (les LV2 n'ont que le cycle 4) n'a pas de ligne.
@@ -359,7 +361,8 @@ function programmesPage(d) {
     '',
     `Les programmes viennent du jeu de données [${SOURCES.c3.dataset}](${SOURCES.c3.datasetUrl}) publié sur data.gouv.fr par le ministère de l’Éducation nationale, sous ${SOURCES.c3.licence.name} ([texte de la licence](${SOURCES.c3.licence.url})) : réutilisation libre, avec mention de la source et de la date. Quand une discipline suit un programme plus récent, publié au Bulletin officiel ou sur éduscol, ses domaines citent ce texte ; ce sont des informations publiques, réutilisables librement avec la même mention ([code des relations entre le public et l’administration](${INFORMATIONS_PUBLIQUES.url})).`,
     '',
-    ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl}) : ${s.pages} pages, ${s.legal}, pour ${s.classes.join(', ')}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
+    // Un texte publié en HTML seulement (pdfCopyBy) : la copie PDF citée, son auteur, et le lien vers la page officielle.
+    ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl})${s.pdfCopyBy ? ` (copie PDF faite par ${s.pdfCopyBy} ; [texte officiel au Bulletin officiel](${s.datasetUrl}), en HTML)` : ''} : ${s.pages} pages, ${s.legal}, pour ${s.classes.join(', ')}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
     '',
     'Les libellés de cette page sont des résumés fidèles du texte officiel, écrits pour tenir sur une ligne ; le texte officiel fait foi.',
     '',

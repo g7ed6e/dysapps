@@ -205,4 +205,26 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     targets: 'per-class',
     consulted: '2026-10-08',
   },
+  // Les langues et cultures de l'Antiquité (latin, grec) : le programme de l'enseignement de complément du cycle 4,
+  // arrêté du 8 février 2016, BO n° 11 du 17 mars 2016, NOR MENE1603855A, en vigueur dans les trois classes du cycle 4
+  // depuis la rentrée 2016 (article 3). Le Bulletin officiel ne le publie qu'en HTML (datasetUrl), page non lue le
+  // 8 octobre 2026 (403) ; le texte lu est la copie PDF du numéro 11 faite par l'association Arrête ton char, dont le
+  // fichier téléchargé à son adresse ce jour-là est identique, octet par octet, à celui qui a été lu. La copie a
+  // 14 pages : les deux du sommaire du numéro (pages 1 et 2 du BO), puis les pages 70 à 81 du BO (page de la copie =
+  // page du BO - 67). Les pages citées sont celles de la copie, avec celles du BO en commentaire (cycle4.ts). Un projet
+  // de nouveau programme (mai 2025) n'est pas en vigueur : il n'est pas cité.
+  'lca-2016': {
+    id: 'lca-2016',
+    dataset: 'Bulletin officiel n° 11 du 17 mars 2016 (MENE1603855A), page en HTML ; copie PDF de l’association Arrête ton char',
+    datasetUrl: 'https://www.education.gouv.fr/bo/16/Hebdo11/MENE1603855A.htm',
+    title: 'Programme d’enseignement de complément de langues et cultures de l’Antiquité au cycle 4 (annexe), en vigueur depuis la rentrée 2016',
+    pdfUrl: 'https://www.arretetonchar.fr/wp-content/uploads/2019/01/MENE1603855A.pdf',
+    pdfCopyBy: 'l’association Arrête ton char',
+    pages: 14,
+    licence: INFORMATIONS_PUBLIQUES,
+    legal: 'Arrêté du 8 février 2016, Bulletin officiel n° 11 du 17 mars 2016 (NOR MENE1603855A)',
+    classes: ['5e', '4e', '3e'],
+    targets: 'end-of-cycle',
+    consulted: '2026-10-08',
+  },
 };

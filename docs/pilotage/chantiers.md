@@ -21,6 +21,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 | **HG-1** à **HG-3** | L’histoire et la géographie | [Cadrage du contenu](../conception/cadrage-contenu.md), l’histoire et la géographie |
 | **SC-1** à **SC-4** | Les sciences et la technologie | [Cadrage du contenu](../conception/cadrage-contenu.md), les sciences et la technologie |
 | **EMC-1** et suivantes | L’enseignement moral et civique | [Cadrage du contenu](../conception/cadrage-contenu.md), l’enseignement moral et civique |
+| **LCA-1** et suivantes | Le latin et le grec, option langues et cultures de l’Antiquité | [Cadrage du contenu](../conception/cadrage-contenu.md), le latin et le grec |
 | **C-1** à **C-15** | Le contenu pédagogique à couvrir | [Cadrage du contenu](../conception/cadrage-contenu.md), le plan |
 | **M1** à **M5** | Le contenu écrit en Markdown, source du jeu et du site | [Contenu en Markdown](../contenu/README.md) et ci-dessous |
 | **GD-n** | Les propositions de game design | [Game design](../gameplay/propositions/modele.md) |
@@ -35,7 +36,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 | Entendre sur iPad et Android un nombre de dix chiffres lu en milliards (Nombres géants) | C-2 | — |
 | La recherche « rien d’emprunté » sur « Jardin des heures » et ses replis | LV2-4 | — |
 | Le premier voyage : nombre de Gardiens exigés (3, 2, 2) et taille du premier chantier | Blocland | Selon les retours des élèves |
-| Les noms, les Gardiens et les places des quatre îles d’enseignement moral et civique | EMC-2 | Propositions du directeur artistique à valider ; pose après GD-12 |
+| La pose des îles d’enseignement moral et civique (4) et de latin-grec (3) : formes, places, plafonds relevés (Blocland 115 000 triangles, Archipéo 76 500 et 83 000, choix du mainteneur du 8 octobre 2026) | EMC-2, LCA-2 | Après GD-12 ; noms validés par le mainteneur le 8 octobre 2026 ; réglage « Pas d’option » par défaut |
 | Relire les captures des Gardiens rallumés (le défi, le village reconstruit, le Bloc-Navire) et essayer sur tablette le moment du rallumage dans Blocland | GD-8 | En pull request |
 | Gardiens sur leur île : relire les îles agrandies (directeur artistique, consultants, référent dys, UX UI, expert frontend) ; des noms de la Carte se taisent encore plus que sur main, premier chantier après la fusion (au 3e, à l’ouverture en OpenDyslexic, le Belvédère et l’Observatoire, le Kiosque à ×1,1 ; quatre au Verger en OpenDyslexic 32 px ; trois ou quatre au téléphone au 6e), celui de l’île du bonhomme ne se tait plus ; le contraste de la statue éteinte, avec le lot 11 (Contraste élevé) ; dire quel signe, dans le monde, montre un défi prêt dans Archipéo, sans les pas japonais | GD-11 | En pull request |
 | Une forme par île, au 6e : relire les captures de la famille `formes` (Carte, Forêt, Plaine, Rivière, Pointe, « Modifier le plan »), puis donner l’accord avant les trois autres archipels ; des noms de la Carte se taisent encore en OpenDyslexic 32 px (au téléphone, deux noms seulement s’affichent, « En liste » reste ; en portrait 800 × 1280, quatre, trois dans le navigateur) | GD-12 | En pull request (#394) |
@@ -114,6 +115,10 @@ SC-4 fait (7 octobre 2026) : les sciences relues dans les textes en vigueur, le 
 ### L’enseignement moral et civique (EMC)
 
 EMC-1, le référentiel : l’enseignement moral et civique de la 6e à la 3e entre dans `src/curriculum/` (discipline `civics`, `c3.emc.6e.*` et `c4.emc.5e.*` à `c4.emc.3e.*`), sur le programme du CP à la terminale que lie le calendrier d’éduscol (en vigueur en 5e depuis 2024, en 4e depuis 2025, en 6e et en 3e depuis 2026 ; source `emc-2024`, pages lues le 8 octobre 2026). Dix compétences, une par thème (trois en 6e, deux en 5e, deux en 4e, trois en 3e), toutes « à couvrir ». Aucune île, aucune mission, aucune matière de l’application : la forme dans le jeu attend le choix du mainteneur (plus haut). EMC-2 (choix du mainteneur, 8 octobre 2026 : une île par classe) : noms, Gardiens et places proposés par le directeur artistique ; les îles se posent après GD-12.
+
+### Le latin et le grec (LCA)
+
+LCA-1, le référentiel : le latin et le grec ancien, option langues et cultures de l’Antiquité, entrent dans `src/curriculum/` (disciplines `latin` et `greek`, `c4.la.*` et `c4.gr.*`, cycle 4 seulement), sur le programme de l’enseignement de complément du cycle 4 (arrêté du 8 février 2016, BO n° 11 du 17 mars 2016 ; source `lca-2016`, lu le 8 octobre 2026 dans la copie PDF de l’association Arrête ton char, le BO ne le publiant qu’en HTML). 55 compétences (29 en latin, 26 en grec), à couvrir sauf lire à voix haute, traduire soi-même et commenter, hors périmètre. Le projet de programme de mai 2025 n’est pas en vigueur. Aucune île, aucun réglage, aucune matière de l’application : la forme choisie par le mainteneur (8 octobre 2026, « comme la LV2 » : une île par classe, ouverte par un réglage Latin, Grec ou Pas d’option) vient aux étapes suivantes.
 
 ### Le contenu en Markdown (M)
 

@@ -2,8 +2,9 @@
 // la rentrée 2026, les langues vivantes sur les programmes des classes de collège (2025). En 4e et en 3e, jusqu'à
 // l'entrée en vigueur des nouveaux textes dans ces classes : l'annexe 3 de 2020. L'histoire et la géographie, la
 // physique-chimie et la SVT suivent l'annexe de 2020 dans les trois classes, la technologie le programme du BO n° 9 du
-// 29 février 2024, l'enseignement moral et civique le programme du CP à la terminale (2024), rangé par classe (champ
-// `source` des domaines et des compétences, sources.ts).
+// 29 février 2024, l'enseignement moral et civique le programme du CP à la terminale (2024), rangé par classe, le latin
+// et le grec ancien (option LCA) le programme de l'enseignement de complément de 2016 (champ `source` des domaines et des
+// compétences, sources.ts).
 // Le texte de 2020 ne répartit rien par année (sauf l'histoire et la géographie, thème par thème), celui de technologie
 // donne des repères de progressivité par classe ; les textes de 2025 et 2026 sont rangés par classe.
 // Les libellés sont des résumés fidèles du texte officiel ; le texte fait foi (page du PDF indiquée).
@@ -93,7 +94,8 @@ export const DOMAINES_C4: readonly ProgrammeDomaine[] = [
   { id: 'c4-sv-corps', cycle: 4, discipline: 'life-earth-sciences', title: 'Le corps humain et la santé', page: 112 },
   { id: 'c4-te-usages', cycle: 4, discipline: 'technology', title: 'Les objets et les systèmes techniques : leurs usages et leurs interactions à découvrir et à analyser', page: 3, source: 'c4-te-2024' },
   { id: 'c4-te-fonctionnement', cycle: 4, discipline: 'technology', title: 'Structure, fonctionnement, comportement : des objets et des systèmes techniques à comprendre', page: 7, source: 'c4-te-2024' },
-  { id: 'c4-te-conception', cycle: 4, discipline: 'technology', title: 'Création, conception, réalisation, innovations : des objets à concevoir et à réaliser', page: 11, source: 'c4-te-2024' },  // Enseignement moral et civique : le programme du CP à la terminale (source emc-2024), en vigueur en 5e depuis 2024, en
+  { id: 'c4-te-conception', cycle: 4, discipline: 'technology', title: 'Création, conception, réalisation, innovations : des objets à concevoir et à réaliser', page: 11, source: 'c4-te-2024' },
+  // Enseignement moral et civique : le programme du CP à la terminale (source emc-2024), en vigueur en 5e depuis 2024, en
   // 4e depuis 2025, en 3e depuis 2026, rangé par classe ; lu le 8 octobre 2026 (et non la partie EMC du PDF de 2020).
   // Un domaine et une compétence par thème : deux en 5e, deux en 4e, trois en 3e.
   { id: 'c4-emc-5e-egalite', cycle: 4, discipline: 'civics', title: 'Agir pour l’égalité femmes-hommes et lutter contre les discriminations (5e)', page: 16, source: 'emc-2024' },
@@ -103,6 +105,22 @@ export const DOMAINES_C4: readonly ProgrammeDomaine[] = [
   { id: 'c4-emc-3e-regles', cycle: 4, discipline: 'civics', title: 'Les règles du jeu démocratique (3e)', page: 20, source: 'emc-2024' },
   { id: 'c4-emc-3e-opinion', cycle: 4, discipline: 'civics', title: 'Les acteurs du jeu démocratique et leur engagement (1) : l’opinion (3e)', page: 21, source: 'emc-2024' },
   { id: 'c4-emc-3e-engagement', cycle: 4, discipline: 'civics', title: 'Les acteurs du jeu démocratique et leur engagement (2) : l’engagement collectif (3e)', page: 21, source: 'emc-2024' },
+  // Latin et grec ancien, option langues et cultures de l'Antiquité (LCA) : le programme de l'enseignement de complément
+  // du cycle 4 (source lca-2016, arrêté du 8 février 2016, BO n° 11 du 17 mars 2016), lu le 8 octobre 2026 dans la copie
+  // PDF du numéro (sources.ts). Les pages sont celles de la copie ; celles du BO en commentaire (page de la copie + 67).
+  // Le texte donne la culture et la langue en commun pour la 5e et la 4e, puis la 3e de latin et la 3e de grec à part.
+  { id: 'c4-la-reperes', cycle: 4, discipline: 'latin', title: 'Compétences travaillées : acquérir des éléments de culture littéraire, historique et artistique', page: 5, source: 'lca-2016' }, // BO p. 72
+  { id: 'c4-la-culture', cycle: 4, discipline: 'latin', title: 'Culture littéraire, historique et artistique : thèmes de 5e et de 4e', page: 5, source: 'lca-2016' }, // BO p. 72-73
+  { id: 'c4-la-3e-culture', cycle: 4, discipline: 'latin', title: 'Culture littéraire, historique et artistique : thèmes de 3e en latin', page: 6, source: 'lca-2016' }, // BO p. 73-74
+  { id: 'c4-la-lecture', cycle: 4, discipline: 'latin', title: 'Lecture, compréhension, traduction', page: 7, source: 'lca-2016' }, // BO p. 74-76
+  { id: 'c4-la-langue', cycle: 4, discipline: 'latin', title: 'Étude de la langue : attendus de fin de cycle, 5e et 4e', page: 9, source: 'lca-2016' }, // BO p. 76-78
+  { id: 'c4-la-3e-langue', cycle: 4, discipline: 'latin', title: 'Étude de la langue : 3e en latin', page: 11, source: 'lca-2016' }, // BO p. 78-79
+  { id: 'c4-gr-reperes', cycle: 4, discipline: 'greek', title: 'Compétences travaillées : acquérir des éléments de culture littéraire, historique et artistique', page: 5, source: 'lca-2016' }, // BO p. 72
+  { id: 'c4-gr-culture', cycle: 4, discipline: 'greek', title: 'Culture littéraire, historique et artistique : thèmes de 5e et de 4e', page: 5, source: 'lca-2016' }, // BO p. 72-73
+  { id: 'c4-gr-3e-culture', cycle: 4, discipline: 'greek', title: 'Culture littéraire, historique et artistique : thèmes de 3e en grec', page: 6, source: 'lca-2016' }, // BO p. 73-74
+  { id: 'c4-gr-lecture', cycle: 4, discipline: 'greek', title: 'Lecture, compréhension, traduction', page: 7, source: 'lca-2016' }, // BO p. 74-76
+  { id: 'c4-gr-langue', cycle: 4, discipline: 'greek', title: 'Étude de la langue : attendus de fin de cycle, 5e et 4e', page: 9, source: 'lca-2016' }, // BO p. 76-78
+  { id: 'c4-gr-3e-langue', cycle: 4, discipline: 'greek', title: 'Étude de la langue : 3e en grec', page: 12, source: 'lca-2016' }, // BO p. 79-80
 ];
 
 const FR_L1 = 'Lire et comprendre en autonomie des textes variés, des images et des documents composites, sur différents supports';
@@ -189,6 +207,42 @@ const EMC3 = { source: 'emc-2024', classes: ['3e'] } as const;
 const EMC5_ATTENDU = 'Égalité, fraternité et solidarité';
 const EMC4_ATTENDU = 'Défendre les droits et les libertés';
 const EMC3_ATTENDU = 'Faire vivre la démocratie';
+// Latin et grec (option LCA, programme de 2016) : la culture et la langue de 5e et de 4e sont communes aux deux classes ;
+// la lecture, les repères et l'intercompréhension valent pour tout le cycle ; la 3e a ses tableaux.
+const LCA_54 = { source: 'lca-2016', classes: ['5e', '4e'] } as const;
+const LCA_CYCLE = { source: 'lca-2016', classes: ['5e', '4e', '3e'] } as const;
+const LCA_3 = { source: 'lca-2016', classes: ['3e'] } as const;
+// Les attendus. Le texte suit l'orthographe rectifiée de 1990 (« connaitre », « maitriser ») : les attendus la gardent.
+// La culture n'a pas d'attendus de fin de cycle : la compétence travaillée qui la porte en tient lieu (BO p. 72), comme
+// pour les repères, le dictionnaire de latin et l'interprétation en grec, que les attendus ne nomment pas.
+const LCA_REPERES = 'Acquérir des éléments de culture littéraire, historique et artistique';
+const LCA_CULTURE = 'Disposer de connaissances sur des œuvres, des faits, des croyances et des institutions caractéristiques des civilisations antiques';
+const LCA_OUTILS = 'Utiliser les ressources et outils qui permettent de vérifier ou compléter ses connaissances linguistiques';
+const LCA_INTERPRETER = 'Mobiliser ses connaissances linguistiques et culturelles pour interpréter un texte';
+const LA_LIRE = 'Lire oralement un texte latin';
+const LA_INDICES = 'Repérer des indices signifiants pour émettre des hypothèses de lecture et interpréter un texte';
+const LA_TRADUIRE = 'Traduire individuellement et de façon aboutie un texte authentique court et accessible';
+const LA_SITUER = 'Situer les textes littéraires dans leur contexte historique et culturel';
+const LA_ANALYSER = 'Interpréter des textes littéraires en fondant son interprétation sur quelques outils d’analyse simples';
+const GR_LIRE = 'Lire oralement un texte écrit en grec';
+const GR_DICTIONNAIRE = 'Savoir rechercher un mot dans un dictionnaire de grec';
+const GR_INDICES = 'Repérer des indices signifiants pour émettre des hypothèses de lecture portant sur un énoncé court et accessible';
+const GR_TRADUIRE = 'Traduire des phrases simples';
+const LCA_DECLINAISON = 'Comprendre et maitriser les principes d’une langue à déclinaison';
+const LCA_LEXIQUE = 'Savoir repérer et analyser en contexte l’emploi d’unités lexicales';
+const LCA_VERBE = 'Connaitre les éléments fondamentaux du système verbal';
+const LCA_PHRASE = 'Repérer les éléments constitutifs d’une phrase complexe';
+const LCA_INTERCOMPREHENSION = 'Savoir mobiliser des compétences d’intercompréhension des langues';
+// Les libellés communs aux deux langues : le texte donne la culture de 5e et de 4e, l'ensemble « Le monde méditerranéen »
+// de 3e et le fonctionnement d'une langue à déclinaison une seule fois, pour le latin et pour le grec.
+const LCA_ORIGINES = 'Les origines de Rome et ses figures héroïques : les légendes de fondation (Carthage, Marseille, Athènes, Mycènes, Rome), de Troie au Latium, le site de Rome et les influences étrusques, les premiers rois, les épisodes célèbres de la Rome royale';
+const LCA_REPUBLIQUE = 'La république, histoire et institutions : sa naissance et les épisodes célèbres de ses premiers siècles, patriciens et plébéiens, le clientélisme, assemblées, délibérations et votes dans le monde antique, les grandes figures politiques';
+const LCA_VIE_PRIVEE = 'Vie privée et vie publique (1) : famille, filiation, place des femmes, âges de la vie ; l’habitat ; la vie quotidienne ; les sentiments et leur expression';
+const LCA_VIE_PUBLIQUE = 'Vie privée et vie publique (2), thèmes latins et grecs : maîtres et esclaves ; éducation et formation (magisters, rhéteurs) ; la religion romaine, ses divinités, rites et fêtes, figures grecques et romaines des dieux ; théâtre, jeux et loisirs publics';
+const LCA_MEDITERRANEE_54 = 'Le monde méditerranéen antique : Carthage et les guerres puniques ; alliances et conflits entre cités ; puissances terrestres et puissances maritimes';
+const LCA_MEDITERRANEE_3 = 'Le monde méditerranéen, ensemble commun au latin et au grec : Rome et la Grèce, échanges et influences ; les pratiques de l’argumentation ; la transmission culturelle, de la Grèce à Rome, de l’Antiquité au Moyen Âge et à la Renaissance';
+const LCA_CAS = 'Le fonctionnement d’une langue à déclinaison : les cas et les fonctions ; s’appuyer sur la morphologie nominale pour accéder au sens des textes';
+const LCA_RESEAUX = 'Mettre en réseau les mots par champ sémantique, par famille lexicale et par famille morphologique ; le sens des préverbes, les verbes formés avec les mêmes préverbes ou les mêmes radicaux';
 const EN5 = { source: 'lv-en-2025', classes: ['5e'] } as const;
 const DE5 = { source: 'lv-de-2025', classes: ['5e'] } as const;
 const ES5 = { source: 'lv-es-2025', classes: ['5e'] } as const;
@@ -503,4 +557,74 @@ export const ENTRIES_C4 = [
   { id: 'c4.emc.3e.regles.constitution', ...EMC3, cycle: 4, discipline: 'civics', domaine: 'c4-emc-3e-regles', attendu: EMC3_ATTENDU, competence: 'La Constitution de la Ve République : droits et libertés, séparation des pouvoirs, contrôle du gouvernement par le Parlement ; une République laïque ; ses révisions depuis 1958 ; les institutions européennes et la citoyenneté européenne', page: 20 },
   { id: 'c4.emc.3e.opinion.information', ...EMC3, cycle: 4, discipline: 'civics', domaine: 'c4-emc-3e-opinion', attendu: EMC3_ATTENDU, competence: 'L’opinion publique, les médias et les sondages ; l’information et la désinformation à l’ère du numérique et des intelligences artificielles, le complotisme ; distinguer croyance, opinion et savoir ; les lanceurs d’alerte', page: 21 },
   { id: 'c4.emc.3e.engagement.collectif', ...EMC3, cycle: 4, discipline: 'civics', domaine: 'c4-emc-3e-engagement', attendu: EMC3_ATTENDU, competence: 'Les élections et le référendum, moments de débat ; le vote, non obligatoire, marque un engagement ; l’engagement politique, syndical, associatif ou humanitaire, la démocratie scolaire, l’engagement dans les institutions ; la liberté de manifester', page: 21 },
+  // ---------- Latin, option LCA (programme de l'enseignement de complément de 2016 ; pages de la copie, BO = + 67) ----------
+  // Repères (BO p. 72) : tout le cycle.
+  { id: 'c4.la.reperes.chronologie', ...LCA_CYCLE, cycle: 4, discipline: 'latin', domaine: 'c4-la-reperes', attendu: LCA_REPERES, competence: 'Disposer des repères nécessaires pour se représenter l’étendue historique et l’ampleur culturelle des civilisations antiques', page: 5 },
+  { id: 'c4.la.reperes.heritage', ...LCA_CYCLE, cycle: 4, discipline: 'latin', domaine: 'c4-la-reperes', attendu: LCA_REPERES, competence: 'Repérer l’influence des œuvres antiques ou de l’histoire ancienne dans des productions culturelles de différentes époques, pour mieux les comprendre', page: 5 },
+  // Culture de 5e et de 4e (BO p. 73) : « De la légende à l’histoire » en deux thèmes, « Vie privée et vie publique » en
+  // deux (ses quatre thèmes sans astérisque, puis ses quatre thèmes latins et grecs), « Le monde méditerranéen antique ».
+  { id: 'c4.la.culture.origines-rome', ...LCA_54, cycle: 4, discipline: 'latin', domaine: 'c4-la-culture', attendu: LCA_CULTURE, competence: LCA_ORIGINES, page: 6 },
+  { id: 'c4.la.culture.republique', ...LCA_54, cycle: 4, discipline: 'latin', domaine: 'c4-la-culture', attendu: LCA_CULTURE, competence: LCA_REPUBLIQUE, page: 6 },
+  { id: 'c4.la.culture.vie-privee', ...LCA_54, cycle: 4, discipline: 'latin', domaine: 'c4-la-culture', attendu: LCA_CULTURE, competence: LCA_VIE_PRIVEE, page: 6 },
+  { id: 'c4.la.culture.vie-publique', ...LCA_54, cycle: 4, discipline: 'latin', domaine: 'c4-la-culture', attendu: LCA_CULTURE, competence: LCA_VIE_PUBLIQUE, page: 6 },
+  { id: 'c4.la.culture.mediterranee', ...LCA_54, cycle: 4, discipline: 'latin', domaine: 'c4-la-culture', attendu: LCA_CULTURE, competence: LCA_MEDITERRANEE_54, page: 6 },
+  // Culture de 3e en latin (BO p. 73-74) : trois ensembles latins et l'ensemble commun.
+  { id: 'c4.la.3e.culture.republique-principat', ...LCA_3, cycle: 4, discipline: 'latin', domaine: 'c4-la-3e-culture', attendu: LCA_CULTURE, competence: 'De la république au principat : les crises et la fin de la République, la naissance du principat, Auguste', page: 6 },
+  { id: 'c4.la.3e.culture.empire', ...LCA_3, cycle: 4, discipline: 'latin', domaine: 'c4-la-3e-culture', attendu: LCA_CULTURE, competence: 'L’empire romain : l’impérialisme romain, l’armée romaine et les guerres de conquête, la Paix romaine et la romanisation de l’empire, des figures d’empereurs', page: 6 },
+  { id: 'c4.la.3e.culture.vie-sociale', ...LCA_3, cycle: 4, discipline: 'latin', domaine: 'c4-la-3e-culture', attendu: LCA_CULTURE, competence: 'Vie familiale, sociale et intellectuelle : la vie à la ville et la vie à la campagne, citoyens et non-citoyens, polythéisme et monothéismes, Rome et les provinces (la Sicile, la Gaule)', page: 7 },
+  { id: 'c4.la.3e.culture.mediterranee', ...LCA_3, cycle: 4, discipline: 'latin', domaine: 'c4-la-3e-culture', attendu: LCA_CULTURE, competence: LCA_MEDITERRANEE_3, page: 7 },
+  // Lecture, compréhension, traduction (BO p. 74-76) : tout le cycle ; les attendus de fin de cycle du latin (BO p. 75).
+  { id: 'c4.la.lecture.indices', ...LCA_CYCLE, cycle: 4, discipline: 'latin', domaine: 'c4-la-lecture', attendu: LA_INDICES, competence: 'Repérer des indices signifiants et un réseau lexical, mobiliser ses connaissances de la langue, utiliser une traduction pour repérer et comprendre des éléments d’un texte latin', page: 9 },
+  { id: 'c4.la.lecture.situer', ...LCA_CYCLE, cycle: 4, discipline: 'latin', domaine: 'c4-la-lecture', attendu: LA_SITUER, competence: 'Rattacher le contenu d’un texte à ses connaissances historiques ou culturelles ; extraire des informations de supports variés (textes latins, textes traduits, textes en français, images)', page: 9 },
+  { id: 'c4.la.lecture.dictionnaire', ...LCA_CYCLE, cycle: 4, discipline: 'latin', domaine: 'c4-la-lecture', attendu: LCA_OUTILS, competence: 'Se repérer dans le dictionnaire latin-français, papier ou numérique, pour retrouver un verbe, un nom, un adjectif', page: 9 },
+  { id: 'c4.la.lecture.lire-oralement', ...LCA_CYCLE, cycle: 4, discipline: 'latin', domaine: 'c4-la-lecture', attendu: LA_LIRE, competence: 'Lire à haute voix un texte latin, la mise en voix étant un des indices de sa compréhension', page: 8 },
+  { id: 'c4.la.lecture.traduire', ...LCA_CYCLE, cycle: 4, discipline: 'latin', domaine: 'c4-la-lecture', attendu: LA_TRADUIRE, competence: 'Traduire soi-même un texte authentique court et accessible ; proposer une traduction aboutie et justifier ses choix', page: 8 },
+  { id: 'c4.la.lecture.interpreter', ...LCA_CYCLE, cycle: 4, discipline: 'latin', domaine: 'c4-la-lecture', attendu: LA_ANALYSER, competence: 'Interpréter et commenter un texte littéraire avec quelques outils d’analyse simples ; comparer des traductions', page: 8 },
+  // Étude de la langue (BO p. 77-78) : les attendus de fin de cycle, puis le tableau de 5e et de 4e.
+  { id: 'c4.la.langue.prononciation', ...LCA_54, cycle: 4, discipline: 'latin', domaine: 'c4-la-langue', attendu: LA_LIRE, competence: 'La prononciation du latin', page: 10 },
+  { id: 'c4.la.langue.cas-fonctions', ...LCA_54, cycle: 4, discipline: 'latin', domaine: 'c4-la-langue', attendu: LCA_DECLINAISON, competence: LCA_CAS, page: 10 },
+  { id: 'c4.la.langue.declinaisons', ...LCA_54, cycle: 4, discipline: 'latin', domaine: 'c4-la-langue', attendu: LCA_DECLINAISON, competence: 'À mémoriser, les noms des trois premières déclinaisons et les adjectifs de la première et de la seconde classe ; à observer, les degrés de l’adjectif', page: 10 },
+  { id: 'c4.la.langue.pronoms', ...LCA_54, cycle: 4, discipline: 'latin', domaine: 'c4-la-langue', attendu: LCA_DECLINAISON, competence: 'À mémoriser, les pronoms personnels (sauf réfléchis) ; à observer, les pronoms et adjectifs pronominaux is, ea, id, hic, ille, iste, idem, ipse et les adjectifs possessifs', page: 10 },
+  { id: 'c4.la.langue.verbe', ...LCA_54, cycle: 4, discipline: 'latin', domaine: 'c4-la-langue', attendu: LCA_VERBE, competence: 'Le verbe : radical, marques de mode-temps et de personne, infectum et perfectum ; à mémoriser, les temps primitifs des verbes fréquents, sum et ses composés à l’indicatif, l’indicatif actif des conjugaisons régulières ; à observer, l’impératif présent actif, eo, fio, fero', page: 11 },
+  { id: 'c4.la.langue.syntaxe', ...LCA_54, cycle: 4, discipline: 'latin', domaine: 'c4-la-langue', attendu: LCA_PHRASE, competence: 'Les groupes syntaxiques et leur fonction, phrase simple et phrase complexe ; les compléments de lieu, de temps, de moyen, de manière, de cause, d’accompagnement ; à observer, l’ablatif absolu, la subordonnée infinitive, les subordonnées causales et temporelles à l’indicatif', page: 11 },
+  { id: 'c4.la.langue.lexique', ...LCA_54, cycle: 4, discipline: 'latin', domaine: 'c4-la-langue', attendu: LCA_LEXIQUE, competence: `${LCA_RESEAUX} ; synonymie et polysémie ; le sens d’un verbe selon sa construction`, page: 11 },
+  { id: 'c4.la.langue.intercomprehension', ...LCA_CYCLE, cycle: 4, discipline: 'latin', domaine: 'c4-la-langue', attendu: LCA_INTERCOMPREHENSION, competence: 'Passer d’un texte latin à sa traduction et inversement ; établir des correspondances entre le latin et le français, puis avec les autres langues étudiées', page: 10 },
+  // Étude de la langue, 3e en latin (BO p. 78-79).
+  { id: 'c4.la.3e.langue.nominale', ...LCA_3, cycle: 4, discipline: 'latin', domaine: 'c4-la-3e-langue', attendu: LCA_DECLINAISON, competence: 'À observer, les quatrième et cinquième déclinaisons et la déclinaison des noms de nombre ; à mémoriser, le pronom relatif, le pronom personnel réfléchi de troisième personne, les pronoms-adjectifs indéfinis, les degrés de l’adverbe', page: 12 },
+  { id: 'c4.la.3e.langue.verbe', ...LCA_3, cycle: 4, discipline: 'latin', domaine: 'c4-la-3e-langue', attendu: LCA_VERBE, competence: 'À observer, le gérondif, l’adjectif verbal, le passif et le déponent ; à mémoriser, le subjonctif présent, imparfait et plus-que-parfait actif, eo, fio, fero, volo, nolo, malo, l’indicatif passif et déponent à la troisième personne', page: 12 },
+  { id: 'c4.la.3e.langue.syntaxe', ...LCA_3, cycle: 4, discipline: 'latin', domaine: 'c4-la-3e-langue', attendu: LCA_PHRASE, competence: 'La proposition relative ; les propositions au subjonctif (défense, condition, souhait ; temps, cause, but, conséquence) ; l’ablatif absolu ; les principales particules de liaison', page: 12 },
+  { id: 'c4.la.3e.langue.lexique', ...LCA_3, cycle: 4, discipline: 'latin', domaine: 'c4-la-3e-langue', attendu: LCA_LEXIQUE, competence: 'Lexique et sémantique : la poursuite du travail de 5e et de 4e (réseaux de mots, préverbes, synonymie et polysémie)', page: 12 },
+  // ---------- Grec ancien, option LCA (même texte) ----------
+  { id: 'c4.gr.reperes.chronologie', ...LCA_CYCLE, cycle: 4, discipline: 'greek', domaine: 'c4-gr-reperes', attendu: LCA_REPERES, competence: 'Disposer des repères nécessaires pour se représenter l’étendue historique et l’ampleur culturelle des civilisations antiques', page: 5 },
+  { id: 'c4.gr.reperes.heritage', ...LCA_CYCLE, cycle: 4, discipline: 'greek', domaine: 'c4-gr-reperes', attendu: LCA_REPERES, competence: 'Repérer l’influence des œuvres antiques ou de l’histoire ancienne dans des productions culturelles de différentes époques, pour mieux les comprendre', page: 5 },
+  // Culture de 5e et de 4e : la même liste qu'en latin, le texte n'en donne qu'une (BO p. 73).
+  { id: 'c4.gr.culture.origines-rome', ...LCA_54, cycle: 4, discipline: 'greek', domaine: 'c4-gr-culture', attendu: LCA_CULTURE, competence: LCA_ORIGINES, page: 6 },
+  { id: 'c4.gr.culture.republique', ...LCA_54, cycle: 4, discipline: 'greek', domaine: 'c4-gr-culture', attendu: LCA_CULTURE, competence: LCA_REPUBLIQUE, page: 6 },
+  { id: 'c4.gr.culture.vie-privee', ...LCA_54, cycle: 4, discipline: 'greek', domaine: 'c4-gr-culture', attendu: LCA_CULTURE, competence: LCA_VIE_PRIVEE, page: 6 },
+  { id: 'c4.gr.culture.vie-publique', ...LCA_54, cycle: 4, discipline: 'greek', domaine: 'c4-gr-culture', attendu: LCA_CULTURE, competence: LCA_VIE_PUBLIQUE, page: 6 },
+  { id: 'c4.gr.culture.mediterranee', ...LCA_54, cycle: 4, discipline: 'greek', domaine: 'c4-gr-culture', attendu: LCA_CULTURE, competence: LCA_MEDITERRANEE_54, page: 6 },
+  // Culture de 3e en grec (BO p. 73-74) : trois ensembles grecs et l'ensemble commun.
+  { id: 'c4.gr.3e.culture.mythe-histoire', ...LCA_3, cycle: 4, discipline: 'greek', domaine: 'c4-gr-3e-culture', attendu: LCA_CULTURE, competence: 'Du mythe à l’histoire : l’époque minoenne, l’époque mycénienne ; Athènes, ses mythes fondateurs, de la tyrannie à la démocratie', page: 6 },
+  { id: 'c4.gr.3e.culture.unite-diversite', ...LCA_3, cycle: 4, discipline: 'greek', domaine: 'c4-gr-3e-culture', attendu: LCA_CULTURE, competence: 'La Grèce dans son unité et sa diversité : jeux, théâtre et fêtes, espaces de partage culturel ; Athènes et Sparte, deux modèles de cité ; des guerres médiques à la guerre du Péloponnèse ; d’Alexandre à l’époque hellénistique', page: 6 },
+  { id: 'c4.gr.3e.culture.vie-sociale', ...LCA_3, cycle: 4, discipline: 'greek', domaine: 'c4-gr-3e-culture', attendu: LCA_CULTURE, competence: 'Vie familiale, sociale et intellectuelle : l’architecture palatiale et domestique, les classes sociales, la vie quotidienne, cultes, pratiques religieuses et sanctuaires ; Socrate, Périclès, Démosthène et leur influence', page: 7 },
+  { id: 'c4.gr.3e.culture.mediterranee', ...LCA_3, cycle: 4, discipline: 'greek', domaine: 'c4-gr-3e-culture', attendu: LCA_CULTURE, competence: LCA_MEDITERRANEE_3, page: 7 },
+  // Lecture, compréhension, traduction : les attendus de fin de cycle du grec (BO p. 75).
+  { id: 'c4.gr.lecture.indices', ...LCA_CYCLE, cycle: 4, discipline: 'greek', domaine: 'c4-gr-lecture', attendu: GR_INDICES, competence: 'Repérer des indices signifiants et un réseau lexical, mobiliser ses connaissances de la langue, utiliser une traduction pour repérer et comprendre des éléments d’un énoncé grec court', page: 9 },
+  { id: 'c4.gr.lecture.situer', ...LCA_CYCLE, cycle: 4, discipline: 'greek', domaine: 'c4-gr-lecture', attendu: LCA_INTERPRETER, competence: 'Rattacher le contenu d’un texte à ses connaissances historiques ou culturelles ; extraire des informations de supports variés (textes grecs, textes traduits, textes en français, images)', page: 9 },
+  { id: 'c4.gr.lecture.dictionnaire', ...LCA_CYCLE, cycle: 4, discipline: 'greek', domaine: 'c4-gr-lecture', attendu: GR_DICTIONNAIRE, competence: 'Se repérer dans le dictionnaire grec-français, papier ou numérique, pour retrouver un verbe, un nom, un adjectif', page: 9 },
+  { id: 'c4.gr.lecture.lire-oralement', ...LCA_CYCLE, cycle: 4, discipline: 'greek', domaine: 'c4-gr-lecture', attendu: GR_LIRE, competence: 'Lire à haute voix un texte écrit en grec, la mise en voix étant un des indices de sa compréhension', page: 8 },
+  { id: 'c4.gr.lecture.traduire', ...LCA_CYCLE, cycle: 4, discipline: 'greek', domaine: 'c4-gr-lecture', attendu: GR_TRADUIRE, competence: 'Traduire soi-même des phrases simples, puis un texte authentique court et accessible ; proposer une traduction aboutie et justifier ses choix', page: 8 },
+  { id: 'c4.gr.lecture.interpreter', ...LCA_CYCLE, cycle: 4, discipline: 'greek', domaine: 'c4-gr-lecture', attendu: LCA_INTERPRETER, competence: 'Interpréter et commenter un texte en langue ancienne ; comparer des traductions', page: 9 },
+  // Étude de la langue, 5e et 4e : la phonétique et la morphosyntaxe « latin et grec », le lexique sans langue nommée ; les
+  // tableaux de morphologie et de syntaxe de 5e et de 4e sont ceux du latin (BO p. 77-78).
+  { id: 'c4.gr.langue.alphabet', ...LCA_54, cycle: 4, discipline: 'greek', domaine: 'c4-gr-langue', attendu: GR_LIRE, competence: 'L’alphabet grec et sa prononciation', page: 10 },
+  { id: 'c4.gr.langue.cas-fonctions', ...LCA_54, cycle: 4, discipline: 'greek', domaine: 'c4-gr-langue', attendu: LCA_DECLINAISON, competence: LCA_CAS, page: 10 },
+  { id: 'c4.gr.langue.lexique', ...LCA_54, cycle: 4, discipline: 'greek', domaine: 'c4-gr-langue', attendu: LCA_LEXIQUE, competence: `${LCA_RESEAUX} ; synonymie et polysémie ; le sens d’un verbe selon sa construction`, page: 11 },
+  { id: 'c4.gr.langue.intercomprehension', ...LCA_CYCLE, cycle: 4, discipline: 'greek', domaine: 'c4-gr-langue', attendu: LCA_INTERCOMPREHENSION, competence: 'Passer d’un texte grec à sa traduction et inversement ; établir des correspondances entre le grec et le français, puis avec les autres langues étudiées', page: 10 },
+  // Étude de la langue, 3e en grec (BO p. 79-80).
+  { id: 'c4.gr.3e.langue.alphabet', ...LCA_3, cycle: 4, discipline: 'greek', domaine: 'c4-gr-3e-langue', attendu: GR_LIRE, competence: 'L’alphabet grec : l’écriture, la valeur phonétique des lettres, les esprits, les accents', page: 12 },
+  { id: 'c4.gr.3e.langue.nominale', ...LCA_3, cycle: 4, discipline: 'greek', domaine: 'c4-gr-3e-langue', attendu: LCA_DECLINAISON, competence: 'Le système des cas ; à mémoriser, la déclinaison de l’article, les première et deuxième déclinaisons des noms, les adjectifs de la première classe, les démonstratifs οὗτος, ὅδε, ἐκεῖνος', page: 12 },
+  { id: 'c4.gr.3e.langue.verbe', ...LCA_3, cycle: 4, discipline: 'greek', domaine: 'c4-gr-3e-langue', attendu: LCA_VERBE, competence: 'À observer, le présent, l’imparfait, le futur sigmatique et l’aoriste sigmatique des verbes en -ω à l’actif, les participes présent et aoriste ; à mémoriser, l’indicatif présent et imparfait actif des verbes en -ω non contractes, εἰμί à l’indicatif et à l’infinitif présent, les infinitifs présent, futur et aoriste', page: 12 },
+  { id: 'c4.gr.3e.langue.syntaxe', ...LCA_3, cycle: 4, discipline: 'greek', domaine: 'c4-gr-3e-langue', attendu: LCA_PHRASE, competence: 'Les compléments circonstanciels de lieu, de temps, de moyen, de cause, de manière, d’accompagnement ; le génitif absolu ; la valeur des temps (temporelle, aspectuelle) ; les subordonnées introduites par ὅτι et ὡς ; les principales particules', page: 13 },
+  { id: 'c4.gr.3e.langue.lexique', ...LCA_3, cycle: 4, discipline: 'greek', domaine: 'c4-gr-3e-langue', attendu: LCA_LEXIQUE, competence: LCA_RESEAUX, page: 13 },
 ] as const satisfies readonly ProgrammeEntry[];

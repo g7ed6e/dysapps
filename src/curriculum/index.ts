@@ -1,7 +1,7 @@
 // Le référentiel des programmes officiels : les compétences des cycles 3 et 4 (français, maths, anglais, histoire et
-// géographie ; SVT, physique-chimie et technologie ; enseignement moral et civique ; allemand et espagnol en LV2, cycle 4
-// seulement) que les missions citent (champ `programme` de biomes.ts et de apps/registry.ts), chacune avec son texte et
-// ses classes.
+// géographie ; SVT, physique-chimie et technologie ; enseignement moral et civique ; allemand et espagnol en LV2, latin
+// et grec ancien en option LCA, cycle 4 seulement) que les missions citent (champ `programme` de biomes.ts et de
+// apps/registry.ts), chacune avec son texte et ses classes.
 // Provenance : data.gouv.fr, Licence Ouverte ; les programmes plus récents, du Bulletin officiel et d'éduscol (sources.ts).
 // Ce module n'entre pas dans le bundle de l'application : les missions n'en importent que des types.
 import type { Classe } from '../game/biomes';
@@ -20,6 +20,9 @@ export const DISCIPLINES: Record<Discipline, { label: string; short: string }> =
   english: { label: 'Anglais (langues vivantes)', short: 'en' },
   german: { label: 'Allemand (LV2)', short: 'de' },
   spanish: { label: 'Espagnol (LV2)', short: 'es' },
+  // L'option langues et cultures de l'Antiquité (LCA), de la 5e à la 3e, sur le programme de 2016 ; pas encore d'île.
+  latin: { label: 'Latin (option LCA)', short: 'la' },
+  greek: { label: 'Grec ancien (option LCA)', short: 'gr' },
   'history-geography': { label: 'Histoire et géographie', short: 'hg' },
   // Au cycle 3, les trois forment un seul enseignement, sciences et technologie, que le référentiel découpe comme au
   // collège ; au cycle 4, ce sont trois enseignements. Les libellés valent pour les deux cycles.
