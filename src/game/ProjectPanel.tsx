@@ -46,7 +46,7 @@ export function ProjectPanel({ project, monument, done }: { project: Project; mo
     if (r.completed) {
       completeMonument(monument.reward.xp);
       setNotice(`+${monument.reward.xp} XP`);
-    } else setNotice(`${capitalize(name)} : posée`.replace(/^(Le |L’)(.*) : posée$/, '$1$2 : posé'));
+    } else setNotice(`Pièce posée : ${name}.`);
     requestAnimationFrame(() => noticeRef.current?.focus());
   };
   return (
@@ -58,7 +58,7 @@ export function ProjectPanel({ project, monument, done }: { project: Project; mo
         })}
       </div>
       <p className="plan-count">
-        <strong>{built}</strong> sur {total} · +{monument.reward.xp} XP à la fin
+        <strong>{built}</strong> / {total} pièces posées · +{monument.reward.xp} XP à la fin
       </p>
       {index === null ? (
         <p className="plan-done">
@@ -94,8 +94,6 @@ export function ProjectPanel({ project, monument, done }: { project: Project; mo
     </>
   );
 }
-
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /**
  * Une recette : ses deux blocs, en icônes avec leur nombre ; une pastille cochée dans le coin quand le stock la paie.

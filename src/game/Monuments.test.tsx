@@ -132,5 +132,5 @@ it('une pièce commencée bloc par bloc se finit sans rien payer', async () => {
   expect(screen.getByRole('img', { name: '1 pièce posée sur 5' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /Construire la tour/ })).toBeDisabled();
   // « Finir » a disparu : le focus va à la ligne qui dit la pièce posée.
-  expect(screen.getByRole('status')).toHaveTextContent('Le socle : posé');
+  expect(screen.getByRole('status')).toHaveTextContent('Pièce posée : le socle.');
 });

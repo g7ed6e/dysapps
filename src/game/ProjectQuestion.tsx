@@ -15,7 +15,7 @@ import { MixedQuestion } from './AssemblyQuestion';
 import { useBlocland } from './BloclandContext';
 import { loadAssemblage } from './exercises';
 import { getMonument, type MonumentDef } from './world/monuments';
-import { canPay, nextPiece, piecesBuilt, projectOf, type Project } from './world/projects';
+import { canPay, nextPiece, projectOf, type Project } from './world/projects';
 
 /** L'adresse de la question de la pièce à construire d'un projet, avec la recette choisie (0 ou 1). */
 export function projectQuestionPath(monument: string, recipe: number): string {
@@ -114,7 +114,7 @@ function PieceQuestion({
         }
         return {
           done: true,
-          text: `Pièce posée : ${piecesBuilt(res.state, project)} sur ${project.pieces.length}.`,
+          text: `Pièce posée : ${name}.`,
         };
       }}
     />
