@@ -29,6 +29,8 @@ Le jeu en une phrase : l’élève avance de région en région, une par classe.
 | `landmark` | grande construction | Une construction de la région, hors des lieux, posée élément par élément |
 | `fixture` | aménagement | Ce qu’une commande livrée pose chez un habitant |
 | `request` | commande | Ce qu’un habitant demande d’apporter ; le mot « demande » de GD-7 est déjà celui de la mission (GD-5) |
+| `story` | quête | Une petite histoire de trois ou quatre étapes qui passe d’un habitant à l’autre ; le mot à l’écran revient à chaque univers ([GD-10](propositions/GD-10.md)) |
+| `project` | grand projet | Une grande construction dont chaque élément mêle deux matières ou plus, dès la 5e ([GD-10](propositions/GD-10.md)) |
 | `resident` | habitant | L’être du lieu, qui propose les missions et se souvient |
 | `guardian` | gardien | L’être qui propose le défi du lieu |
 | `challenge` | défi | La grande épreuve du lieu |
@@ -85,7 +87,7 @@ La boucle ([GD-5](propositions/GD-5.md), modèle A ; [GD-6](propositions/GD-6.md
 5. **L’élève dépense son stock** pour les liaisons, les grandes constructions, le passage et les commandes. Seule la construction du lieu se pose seule : le reste est un geste de l’élève, qui choisit où dépenser.
 6. **Le défi du gardien** achève l’épreuve du lieu et compte pour le passage.
 
-Trois échelles : une mission (5 à 10 minutes, une partie posée) ; un lieu (quelques séances, le lieu achevé qui fournit sa ressource) ; une région (une année, la région transformée et le passage). Le savoir devient un outil petit à petit (modèle B : une notion maîtrisée ouvre un raccourci ou un embellissement, jamais un passage obligatoire), et les grands projets mêlent les matières en 4e et en 3e (modèle C), chacun par sa fiche.
+Trois échelles : une mission (5 à 10 minutes, une partie posée) ; un lieu (quelques séances, le lieu achevé qui fournit sa ressource) ; une région (une année, la région transformée et le passage). Le savoir devient un outil petit à petit (modèle B : une notion maîtrisée ouvre un raccourci ou un embellissement, jamais un passage obligatoire), et les grands projets mêlent les matières de la 5e à la 3e ([GD-10](propositions/GD-10.md) : les grandes constructions deviennent des projets). Des quêtes relient les habitants d’une région ([GD-10](propositions/GD-10.md)).
 
 ## Les missions, les révisions et les étoiles
 
