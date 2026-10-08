@@ -1,17 +1,17 @@
 # Comparaison avec main
 
-Références : main au commit 28d359337b52a8c95061426a8642f06f993d80f2 (après : 3eb32d3b962cee4f8e7375966cf274827a5f353b). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : main au commit 28d359337b52a8c95061426a8642f06f993d80f2 (après : b8881a7bc78c80bf027dc753176c53968f0193c7). Une vue est changée au-delà de 0,3 % de pixels différents.
 
-## Changées (1) : planches dans `planches/`
+## Changées (0) : planches dans `planches/`
 
-- 5e-ile.jpg : 0,4 %
 
-## Inchangées (4) : non publiées
+## Inchangées (5) : non publiées
 
 - 5e-archipel-recul.jpg : 0,0 %
-- 5e-archipel.jpg : 0,2 %
+- 5e-archipel.jpg : 0,1 %
 - 5e-carte.jpg : 0,0 %
-- 5e-ile-recul.jpg : 0,2 %
+- 5e-ile-recul.jpg : 0,1 %
+- 5e-ile.jpg : 0,0 %
 
 ## Sans référence (10) : dans `planches/` telles quelles
 
