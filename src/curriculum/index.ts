@@ -1,6 +1,7 @@
 // Le référentiel des programmes officiels : les compétences des cycles 3 et 4 (français, maths, anglais, histoire et
-// géographie ; SVT, physique-chimie et technologie ; allemand et espagnol en LV2, cycle 4 seulement) que les missions
-// citent (champ `programme` de biomes.ts et de apps/registry.ts), chacune avec son texte et ses classes.
+// géographie ; SVT, physique-chimie et technologie ; enseignement moral et civique ; allemand et espagnol en LV2, cycle 4
+// seulement) que les missions citent (champ `programme` de biomes.ts et de apps/registry.ts), chacune avec son texte et
+// ses classes.
 // Provenance : data.gouv.fr, Licence Ouverte ; les programmes plus récents, du Bulletin officiel et d'éduscol (sources.ts).
 // Ce module n'entre pas dans le bundle de l'application : les missions n'en importent que des types.
 import type { Classe } from '../game/biomes';
@@ -25,6 +26,8 @@ export const DISCIPLINES: Record<Discipline, { label: string; short: string }> =
   'life-earth-sciences': { label: 'Sciences de la vie et de la Terre (SVT)', short: 'sv' },
   'physics-chemistry': { label: 'Physique-chimie', short: 'pc' },
   technology: { label: 'Technologie', short: 'te' },
+  // De la 6e à la 3e, sur le programme du CP à la terminale (2024), rangé par classe ; pas encore de forme dans le jeu.
+  civics: { label: 'Enseignement moral et civique (EMC)', short: 'emc' },
 };
 
 export const DOMAINES: readonly ProgrammeDomaine[] = [...DOMAINES_C3, ...DOMAINES_C4];

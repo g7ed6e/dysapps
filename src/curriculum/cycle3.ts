@@ -1,6 +1,7 @@
 // Cycle 3 (CM1, CM2, 6e), résumé au grain d'une mission, pour la seule classe de 6e : le français et les maths sur les
 // programmes en vigueur à la rentrée 2025, l'anglais sur le programme des langues vivantes du collège (2025), l'histoire
-// et la géographie sur l'annexe de 2020, les sciences et la technologie sur le programme de 2023 (sources.ts).
+// et la géographie sur l'annexe de 2020, les sciences et la technologie sur le programme de 2023, l'enseignement moral
+// et civique sur le programme du CP à la terminale (2024) (sources.ts).
 // Les libellés sont des résumés fidèles du texte officiel ; le texte fait foi (page du PDF indiquée).
 import type { ProgrammeDomaine, ProgrammeEntry } from './types';
 
@@ -49,12 +50,21 @@ export const DOMAINES_C3: readonly ProgrammeDomaine[] = [
   { id: 'c3-pc-matiere', cycle: 3, discipline: 'physics-chemistry', title: 'Matière, mouvement, énergie, information', page: 81, source: 'c3-2023' },
   { id: 'c3-te-demarches', cycle: 3, discipline: 'technology', title: 'Sciences et technologie : compétences travaillées (technologie)', page: 80, source: 'c3-2023' },
   { id: 'c3-te-objets', cycle: 3, discipline: 'technology', title: 'Les objets techniques au cœur de la société', page: 91, source: 'c3-2023' },
+  // Enseignement moral et civique : le programme du CP à la terminale (source emc-2024), en vigueur en 6e depuis 2026,
+  // rangé par classe ; lu le 8 octobre 2026. La 6e (« Apprendre à vivre dans une société démocratique », page 14) a trois
+  // thèmes : un domaine et une compétence par thème, au grain d'une mission.
+  { id: 'c3-emc-6e-representer', cycle: 3, discipline: 'civics', title: 'Représenter les autres et servir l’intérêt général (6e)', page: 15, source: 'emc-2024' },
+  { id: 'c3-emc-6e-laicite', cycle: 3, discipline: 'civics', title: 'Respecter des règles et en comprendre la finalité : l’exemple de la laïcité à l’École (6e)', page: 15, source: 'emc-2024' },
+  { id: 'c3-emc-6e-vie-privee', cycle: 3, discipline: 'civics', title: 'Avoir des droits en tant que personne et respecter ceux des autres : l’exemple du droit à la vie privée (6e)', page: 16, source: 'emc-2024' },
 ];
 
 // La source et les classes de chaque compétence (types.ts) : en 6e, chaque texte ne vaut que pour la 6e.
 const FR = { source: 'c3-fr-2025', classes: ['6e'] } as const;
 const MA = { source: 'c3-ma-2025', classes: ['6e'] } as const;
 const EN = { source: 'lv-en-2025', classes: ['6e'] } as const;
+const EMC6 = { source: 'emc-2024', classes: ['6e'] } as const;
+/** L'enseignement moral et civique de 6e : le titre de la classe tient lieu d'attendu (texte rangé par classe). */
+const EMC6_ATTENDU = 'Apprendre à vivre dans une société démocratique';
 const HG = { source: 'c3', classes: ['6e'] } as const;
 const ST = { source: 'c3-2023', classes: ['6e'] } as const;
 
@@ -299,4 +309,8 @@ export const ENTRIES_C3 = [
   { id: 'c3.te.objets.realiser', ...ST, cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_CONCEPTION, competence: 'Organiser et planifier en équipe la réalisation d’une maquette ; réaliser des maquettes simples pour matérialiser une solution ; vérifier qu’elle répond au problème posé', page: 94 },
   { id: 'c3.te.objets.information', ...ST, cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_PROGRAMMATION, competence: 'Les objets reliés entre eux par des réseaux (objets communicants, transmission et traitement de données) ; la chaîne d’information et d’action d’un objet programmable, ses capteurs et ses actionneurs', page: 94 },
   { id: 'c3.te.objets.programmer', ...ST, cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_PROGRAMMATION, competence: 'Coder un algorithme simple qui agit sur un objet technique (programmation par blocs) ; comprendre un programme simple et le traduire en langage naturel ; critiquer un programme', page: 95 },
+  // ---------- Enseignement moral et civique, 6e (programme du CP à la terminale, en vigueur en 6e depuis 2026) ----------
+  { id: 'c3.emc.6e.representer.interet-general', ...EMC6, cycle: 3, discipline: 'civics', domaine: 'c3-emc-6e-representer', attendu: EMC6_ATTENDU, competence: 'Les représentants, choisis par un vote, portent la parole des autres et décident ensemble, de la classe à l’Union européenne ; l’intérêt général, intérêt commun de tous, qui prend en compte les générations futures ; la responsabilité des élus', page: 15 },
+  { id: 'c3.emc.6e.laicite.ecole', ...EMC6, cycle: 3, discipline: 'civics', domaine: 'c3-emc-6e-laicite', attendu: EMC6_ATTENDU, competence: 'La laïcité garantit la liberté de conscience (croire, ne pas croire, changer de croyance) et l’égalité de tous ; la neutralité de l’État et le libre exercice des cultes (loi de 1905) ; un principe juridique, non une opinion ; à l’école, un espace neutre à l’abri des prosélytismes (loi du 15 mars 2004, Charte de la laïcité)', page: 15 },
+  { id: 'c3.emc.6e.vie-privee.droit', ...EMC6, cycle: 3, discipline: 'civics', domaine: 'c3-emc-6e-vie-privee', attendu: EMC6_ATTENDU, competence: 'Le droit au respect de la vie privée, pour l’enfant comme pour l’adulte : le droit à l’intimité et la protection du droit à l’image ; le respecter aussi en ligne (majorité numérique, données personnelles, traces et réputation numériques)', page: 16 },
 ] as const satisfies readonly ProgrammeEntry[];

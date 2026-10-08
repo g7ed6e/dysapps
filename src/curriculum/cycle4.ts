@@ -2,7 +2,8 @@
 // la rentrée 2026, les langues vivantes sur les programmes des classes de collège (2025). En 4e et en 3e, jusqu'à
 // l'entrée en vigueur des nouveaux textes dans ces classes : l'annexe 3 de 2020. L'histoire et la géographie, la
 // physique-chimie et la SVT suivent l'annexe de 2020 dans les trois classes, la technologie le programme du BO n° 9 du
-// 29 février 2024 (champ `source` des domaines et des compétences, sources.ts).
+// 29 février 2024, l'enseignement moral et civique le programme du CP à la terminale (2024), rangé par classe (champ
+// `source` des domaines et des compétences, sources.ts).
 // Le texte de 2020 ne répartit rien par année (sauf l'histoire et la géographie, thème par thème), celui de technologie
 // donne des repères de progressivité par classe ; les textes de 2025 et 2026 sont rangés par classe.
 // Les libellés sont des résumés fidèles du texte officiel ; le texte fait foi (page du PDF indiquée).
@@ -71,7 +72,6 @@ export const DOMAINES_C4: readonly ProgrammeDomaine[] = [
   { id: 'c4-es-5e-interagir', cycle: 4, discipline: 'spanish', title: 'Langues vivantes : interaction orale et écrite, médiation (5e)', page: 16, source: 'lv-es-2025' },
   { id: 'c4-es-5e-langue', cycle: 4, discipline: 'spanish', title: 'Langues vivantes : outils linguistiques (5e)', page: 17, source: 'lv-es-2025' },
   // Histoire et géographie : pages et libellés vérifiés dans le PDF cité par sources.ts (7 octobre 2026). Le texte répartit les thèmes par classe : chaque thème est une compétence, donc une mission.
-  // L'enseignement moral et civique, qui suit dans le PDF, n'est pas dans l'application (hors périmètre).
   { id: 'c4-hg-temps', cycle: 4, discipline: 'history-geography', title: 'Histoire et géographie : se repérer dans le temps', page: 78 },
   { id: 'c4-hg-espace', cycle: 4, discipline: 'history-geography', title: 'Histoire et géographie : se repérer dans l’espace', page: 79 },
   { id: 'c4-hg-demarches', cycle: 4, discipline: 'history-geography', title: 'Histoire et géographie : raisonner, analyser et comprendre un document, pratiquer différents langages', page: 79 },
@@ -93,7 +93,16 @@ export const DOMAINES_C4: readonly ProgrammeDomaine[] = [
   { id: 'c4-sv-corps', cycle: 4, discipline: 'life-earth-sciences', title: 'Le corps humain et la santé', page: 112 },
   { id: 'c4-te-usages', cycle: 4, discipline: 'technology', title: 'Les objets et les systèmes techniques : leurs usages et leurs interactions à découvrir et à analyser', page: 3, source: 'c4-te-2024' },
   { id: 'c4-te-fonctionnement', cycle: 4, discipline: 'technology', title: 'Structure, fonctionnement, comportement : des objets et des systèmes techniques à comprendre', page: 7, source: 'c4-te-2024' },
-  { id: 'c4-te-conception', cycle: 4, discipline: 'technology', title: 'Création, conception, réalisation, innovations : des objets à concevoir et à réaliser', page: 11, source: 'c4-te-2024' },
+  { id: 'c4-te-conception', cycle: 4, discipline: 'technology', title: 'Création, conception, réalisation, innovations : des objets à concevoir et à réaliser', page: 11, source: 'c4-te-2024' },  // Enseignement moral et civique : le programme du CP à la terminale (source emc-2024), en vigueur en 5e depuis 2024, en
+  // 4e depuis 2025, en 3e depuis 2026, rangé par classe ; lu le 8 octobre 2026 (et non la partie EMC du PDF de 2020).
+  // Un domaine et une compétence par thème : deux en 5e, deux en 4e, trois en 3e.
+  { id: 'c4-emc-5e-egalite', cycle: 4, discipline: 'civics', title: 'Agir pour l’égalité femmes-hommes et lutter contre les discriminations (5e)', page: 16, source: 'emc-2024' },
+  { id: 'c4-emc-5e-solidarite', cycle: 4, discipline: 'civics', title: 'La solidarité et ses échelles (5e)', page: 17, source: 'emc-2024' },
+  { id: 'c4-emc-4e-etat-de-droit', cycle: 4, discipline: 'civics', title: 'L’État de droit et les libertés (4e)', page: 18, source: 'emc-2024' },
+  { id: 'c4-emc-4e-defense', cycle: 4, discipline: 'civics', title: 'Défendre le cadre démocratique : sécurité et défense nationale (4e)', page: 19, source: 'emc-2024' },
+  { id: 'c4-emc-3e-regles', cycle: 4, discipline: 'civics', title: 'Les règles du jeu démocratique (3e)', page: 20, source: 'emc-2024' },
+  { id: 'c4-emc-3e-opinion', cycle: 4, discipline: 'civics', title: 'Les acteurs du jeu démocratique et leur engagement (1) : l’opinion (3e)', page: 21, source: 'emc-2024' },
+  { id: 'c4-emc-3e-engagement', cycle: 4, discipline: 'civics', title: 'Les acteurs du jeu démocratique et leur engagement (2) : l’engagement collectif (3e)', page: 21, source: 'emc-2024' },
 ];
 
 const FR_L1 = 'Lire et comprendre en autonomie des textes variés, des images et des documents composites, sur différents supports';
@@ -173,6 +182,13 @@ const HG_4E = { source: 'c4', classes: ['4e'] } as const;
 const HG_3E = { source: 'c4', classes: ['3e'] } as const;
 const FR5 = { source: 'c4-fr-2026', classes: ['5e'] } as const;
 const MA5 = { source: 'c4-ma-2026', classes: ['5e'] } as const;
+const EMC5 = { source: 'emc-2024', classes: ['5e'] } as const;
+const EMC4 = { source: 'emc-2024', classes: ['4e'] } as const;
+const EMC3 = { source: 'emc-2024', classes: ['3e'] } as const;
+/** L'enseignement moral et civique : le titre de chaque classe tient lieu d'attendu (texte rangé par classe). */
+const EMC5_ATTENDU = 'Égalité, fraternité et solidarité';
+const EMC4_ATTENDU = 'Défendre les droits et les libertés';
+const EMC3_ATTENDU = 'Faire vivre la démocratie';
 const EN5 = { source: 'lv-en-2025', classes: ['5e'] } as const;
 const DE5 = { source: 'lv-de-2025', classes: ['5e'] } as const;
 const ES5 = { source: 'lv-es-2025', classes: ['5e'] } as const;
@@ -479,4 +495,12 @@ export const ENTRIES_C4 = [
   { id: 'c4.te.conception.prototype', ...TE, cycle: 4, discipline: 'technology', domaine: 'c4-te-conception', attendu: TE_IMAGINER, competence: 'Prototyper une solution : fabriquer, assembler des constituants, modéliser et produire une forme, interfacer des objets communicants', page: 13 },
   { id: 'c4.te.conception.valider', ...TE, cycle: 4, discipline: 'technology', domaine: 'c4-te-conception', attendu: TE_VALIDER, competence: 'Valider la tenue mécanique d’un matériau et les performances d’un objet par une simulation ou un protocole de test ; comparer les résultats aux exigences d’un cahier des charges', page: 15 },
   { id: 'c4.te.conception.programmer', ...TE, cycle: 4, discipline: 'technology', domaine: 'c4-te-conception', attendu: TE_PROGRAMMER, competence: 'Analyser, modifier, puis concevoir un algorithme et le traduire en programme structuré (sous-programmes, fonctions) ; réaliser et mettre au point un programme qui commande un système réel', page: 16 },
+  // ---------- Enseignement moral et civique (programme du CP à la terminale : 5e depuis 2024, 4e 2025, 3e 2026) ----------
+  { id: 'c4.emc.5e.egalite.discriminations', ...EMC5, cycle: 4, discipline: 'civics', domaine: 'c4-emc-5e-egalite', attendu: EMC5_ATTENDU, competence: 'L’égalité entre les femmes et les hommes, principe garanti par la Constitution, et les inégalités et violences sexistes qui persistent ; la discrimination, un délit puni par la loi ; l’inclusion ; les stéréotypes et les préjugés, à la racine du racisme, de l’antisémitisme, de la xénophobie et du harcèlement, y compris en ligne', page: 16 },
+  { id: 'c4.emc.5e.solidarite.echelles', ...EMC5, cycle: 4, discipline: 'civics', domaine: 'c4-emc-5e-solidarite', attendu: EMC5_ATTENDU, competence: 'La solidarité, liée à l’idéal de fraternité : l’État, les collectivités territoriales et les associations réduisent les inégalités et protègent contre les risques sociaux (Sécurité sociale) et environnementaux ; l’impôt ; la solidarité européenne et mondiale', page: 17 },
+  { id: 'c4.emc.4e.etat-de-droit.libertes', ...EMC4, cycle: 4, discipline: 'civics', domaine: 'c4-emc-4e-etat-de-droit', attendu: EMC4_ATTENDU, competence: 'Les libertés individuelles et collectives (opinion, conscience, expression, y compris en ligne, réunion, association, presse), encadrées par la loi et limitées par les libertés des autres et l’ordre public ; l’État de droit ; l’indépendance et l’organisation de la justice', page: 18 },
+  { id: 'c4.emc.4e.defense.securite', ...EMC4, cycle: 4, discipline: 'civics', domaine: 'c4-emc-4e-defense', attendu: EMC4_ATTENDU, competence: 'La sûreté, droit de la Déclaration des droits de l’homme et du citoyen : les forces de sécurité intérieure (police, gendarmerie, pompiers, douanes) ; les forces armées défendent la souveraineté nationale ; de nouveaux enjeux, la guerre informationnelle et la cyberdéfense ; la police de l’environnement', page: 19 },
+  { id: 'c4.emc.3e.regles.constitution', ...EMC3, cycle: 4, discipline: 'civics', domaine: 'c4-emc-3e-regles', attendu: EMC3_ATTENDU, competence: 'La Constitution de la Ve République : droits et libertés, séparation des pouvoirs, contrôle du gouvernement par le Parlement ; une République laïque ; ses révisions depuis 1958 ; les institutions européennes et la citoyenneté européenne', page: 20 },
+  { id: 'c4.emc.3e.opinion.information', ...EMC3, cycle: 4, discipline: 'civics', domaine: 'c4-emc-3e-opinion', attendu: EMC3_ATTENDU, competence: 'L’opinion publique, les médias et les sondages ; l’information et la désinformation à l’ère du numérique et des intelligences artificielles, le complotisme ; distinguer croyance, opinion et savoir ; les lanceurs d’alerte', page: 21 },
+  { id: 'c4.emc.3e.engagement.collectif', ...EMC3, cycle: 4, discipline: 'civics', domaine: 'c4-emc-3e-engagement', attendu: EMC3_ATTENDU, competence: 'Les élections et le référendum, moments de débat ; le vote, non obligatoire, marque un engagement ; l’engagement politique, syndical, associatif ou humanitaire, la démocratie scolaire, l’engagement dans les institutions ; la liberté de manifester', page: 21 },
 ] as const satisfies readonly ProgrammeEntry[];

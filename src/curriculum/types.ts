@@ -9,7 +9,8 @@ export type Cycle = 3 | 4;
 /**
  * Les disciplines du référentiel : les matières de l'application, et les deux LV2 (allemand, espagnol, de la 5e à la 3e,
  * cycle 4 seulement). Les LV2 deviennent des matières de l'application avec leur première île (LV2-2 du cadrage du contenu).
- * La SVT, la physique-chimie et la technologie (cycles 3 et 4) le deviennent de même, avec leurs îles.
+ * La SVT, la physique-chimie et la technologie (cycles 3 et 4) le deviennent de même, avec leurs îles. L'enseignement
+ * moral et civique (`civics`, de la 6e à la 3e) attend que sa forme dans le jeu soit choisie (cadrage du contenu, « EMC »).
  */
 export type Discipline =
   | Exclude<Subject, 'lv2'>
@@ -17,13 +18,15 @@ export type Discipline =
   | 'spanish'
   | 'life-earth-sciences'
   | 'physics-chemistry'
-  | 'technology';
+  | 'technology'
+  | 'civics';
 
 /**
  * c3, c4 : les annexes de 2020 (data.gouv.fr), source par défaut de chaque cycle. Les autres : un programme plus récent,
  * en vigueur pour une discipline et cité par ses domaines (champ `source`) : les sciences de 6e (2023), la technologie du
  * cycle 4 (2024), le français et les maths de 6e (2025) et de 5e (2026), les langues vivantes du collège (2025, un texte
- * par langue et par classe, de la 6e à la 3e).
+ * par langue et par classe, de la 6e à la 3e), l'enseignement moral et civique (2024, un texte du CP à la terminale,
+ * rangé par classe).
  */
 export type SourceId =
   | 'c3'
@@ -36,7 +39,8 @@ export type SourceId =
   | 'c4-ma-2026'
   | 'lv-en-2025'
   | 'lv-de-2025'
-  | 'lv-es-2025';
+  | 'lv-es-2025'
+  | 'emc-2024';
 
 /** D'où vient le texte : le jeu de données data.gouv.fr, son PDF, sa licence. */
 export interface ProgrammeSource {

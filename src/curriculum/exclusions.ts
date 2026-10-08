@@ -36,6 +36,9 @@ const FIGURE = A_COUVRIR('Géométrie de 5e : il faut des figures dessinées (an
 const ORAL_ECRIT_LIBRE = HORS('Production orale et écrite libre : hors de ce que peut faire une application sans micro ni rédaction.');
 const AXES_LV2 = (axe6: string) =>
   A_COUVRIR(`Repères culturels de 5e (cinq axes, dont l’axe 6 : ${axe6}) : le Relais des voyageurs travaille la langue, pas encore ces repères ; il faudrait des documents inventés, rien ne s’emprunte.`);
+// Enseignement moral et civique (docs/conception/cadrage-contenu.md, « EMC ») : le référentiel est écrit (EMC-1) ; la
+// forme dans le jeu : une île par classe (EMC-2).
+const EMC = A_COUVRIR('Enseignement moral et civique : une île par classe (choix du mainteneur, 8 octobre 2026), à construire.');
 const MANIPULER = HORS('Manipuler, mesurer, observer pour de vrai (montage, microscope, terrain) : le travail de la classe, que l’application ne remplace pas.');
 
 export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
@@ -200,4 +203,15 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.te.fonctionnement.donnees': A_COUVRIR('Décrire un objet par des données (descripteurs, types), le bit, trier et filtrer un tableau : prévu sur la question sur un document, à la Ruche des réseaux ou au Bassin des maquettes.'),
   'c4.te.fonctionnement.depanner': A_COUVRIR('Repérer une panne et formuler une hypothèse sur un objet décrit en mots (ses symptômes, ses pièces) ; réparer reste au travail de l’atelier.'),
   'c4.te.conception.projet': A_COUVRIR('Lire un diagramme de planification des tâches, les étapes d’un projet, l’écoconception : prévu à la Menuiserie des objets, sur la question sur un document.'),
+  // ---------- Enseignement moral et civique, 6e (cycle 3) et 5e à 3e (cycle 4), EMC-1 ----------
+  'c3.emc.6e.representer.interet-general': EMC,
+  'c3.emc.6e.laicite.ecole': EMC,
+  'c3.emc.6e.vie-privee.droit': EMC,
+  'c4.emc.5e.egalite.discriminations': EMC,
+  'c4.emc.5e.solidarite.echelles': EMC,
+  'c4.emc.4e.etat-de-droit.libertes': EMC,
+  'c4.emc.4e.defense.securite': EMC,
+  'c4.emc.3e.regles.constitution': EMC,
+  'c4.emc.3e.opinion.information': EMC,
+  'c4.emc.3e.engagement.collectif': EMC,
 };

@@ -293,6 +293,8 @@ function programmesPage(d) {
     '',
     'Les langues vivantes suivent, en 6e et en 5e, les programmes des classes de collège publiés en 2025, un par langue : l’anglais dès la 6e, la deuxième langue vivante (LV2), l’allemand ou l’espagnol, à partir de la 5e. En 4e et en 3e, elles suivent le programme de 2020, commun à toutes les langues, avec les mêmes compétences et les mêmes pages.',
     '',
+    'L’enseignement moral et civique suit, de la 6e à la 3e, le programme du CP à la terminale, rangé par classe : chaque thème d’une classe est une compétence.',
+    '',
     table(
       ['Cycle', 'Discipline', 'Compétences', 'Travaillées', 'À couvrir', 'Hors périmètre'],
       // Une discipline absente d'un cycle (les LV2 n'ont que le cycle 4) n'a pas de ligne.
