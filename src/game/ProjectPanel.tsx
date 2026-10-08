@@ -62,7 +62,7 @@ export function ProjectPanel({ project, monument, done }: { project: Project; mo
       </p>
       {index === null ? (
         <p className="plan-done">
-          <Icon name="star" /> <span className="plan-done-word">Terminé !</span> <Syllabified text={done} />
+          <Icon name="star" /> <span className="plan-done-word">Terminé !</span> <span className="plan-done-text"><Syllabified text={done} /></span>
         </p>
       ) : free ? (
         <button type="button" className="button primary" onClick={finish}>

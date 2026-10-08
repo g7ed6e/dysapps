@@ -10,7 +10,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `landmark-5e-1` | `base` | maths-5e-signed-numbers × 6 · french-5e-homophones × 4 | `compound-5e` | english-5e-grammar × 6 · geography-5e-resources × 4 | `project-5e-travellers` | le socle | le socle |
 | `landmark-5e-1` | `tower` | maths-5e-proportionality × 6 · english-5e-vocabulary × 4 | `project-5e-counter` | french-5e-conjugation × 6 · history-5e-middle-ages × 4 | `project-5e-chronicle` | la tour | la tour |
-| `landmark-5e-1` | `gallery` | maths-5e-signed-numbers × 6 · french-5e-homophones × 4 | `compound-5e` | english-5e-grammar × 6 · geography-5e-resources × 4 | `project-5e-travellers` | la galerie | le haut de la tour |
+| `landmark-5e-1` | `gallery` | maths-5e-signed-numbers × 6 · french-5e-homophones × 4 | `compound-5e` | english-5e-grammar × 6 · geography-5e-resources × 4 | `project-5e-travellers` | la galerie | la corniche |
 | `landmark-5e-1` | `lantern` | maths-5e-proportionality × 6 · english-5e-vocabulary × 4 | `project-5e-counter` | french-5e-conjugation × 6 · history-5e-middle-ages × 4 | `project-5e-chronicle` | la lanterne | la terrasse |
 | `landmark-5e-1` | `roof` | maths-5e-signed-numbers × 6 · french-5e-homophones × 4 | `compound-5e` | english-5e-grammar × 6 · geography-5e-resources × 4 | `project-5e-travellers` | le toit | le feu |
 

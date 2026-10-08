@@ -67,6 +67,7 @@
   --radius: 12px; /* panneaux et cartes */
   --radius-control: 8px; /* boutons, champs, réponses */
   --radius-pill: 999px; /* étiquettes courtes */
+  --radius-piece: 50%; /* l'avancement d'un grand projet (GD-10) : des ronds dans Archipéo ; Blocland en fait des carrés plats */
   --radius-signe: 0; /* le signe de la créature qui se souvient (GD-4) : un hexagone dans Archipéo (masque, plus bas) ; Blocland en fait une plaque */
   /* Une seule ombre, douce, pour un panneau posé sur le monde. */
   --shadow-float: 0 2px 8px rgba(19, 40, 61, 0.18);
@@ -2938,9 +2939,17 @@ figure.class-table {
   font-weight: 700;
   max-width: none;
 }
-/* « Terminé ! » d'un seul tenant : le point d'exclamation ne part pas seul à la ligne. */
+/* « Terminé ! » d'un seul tenant avec l'étoile, la phrase dessous sur toute la largeur (en grand texte au téléphone,
+   elle ne se serre pas dans une colonne). */
+.plan-done {
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
+}
 .plan-done-word {
   white-space: nowrap;
+}
+.plan-done-text {
+  flex-basis: 100%;
 }
 .plan-done svg {
   flex-shrink: 0;
@@ -5865,7 +5874,7 @@ details.island-fold-objectif {
   width: 1.4rem;
   height: 1.4rem;
   border: var(--border-width) solid var(--ink);
-  border-radius: 50%;
+  border-radius: var(--radius-piece);
   background: color-mix(in srgb, var(--ink) 15%, var(--surface));
 }
 .project-piece.built {

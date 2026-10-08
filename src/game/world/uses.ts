@@ -6,8 +6,8 @@ import { BIOMES, BLOCKS, type BiomeDef, type BiomeId, type BlockId } from '../bi
 import { canLaunch, currentStage, planStatus, type GameState } from '../engine';
 import { archipelagoOf, buildableBridges, conditionMet, islandsOf, otherEnd, payableBlocks, reachableIslands, type BridgeDef } from './archipelago';
 import { monumentsOf, type MonumentDef } from './monuments';
-import { projectNeeds, projectOf } from './projects';
-import { lieuDAssemblage } from './assembly';
+import { nextPiece, projectNeeds, projectOf } from './projects';
+import { lieuDAssemblage, type UniversNomme } from './assembly';
 import { universCourant } from '../../core/settings';
 import type { VehicleStage } from './vehicle';
 
@@ -46,8 +46,8 @@ export interface Use {
   enough: boolean;
   /** Où aller (un monument a sa propre adresse) ; sinon l'île. */
   to?: string;
-  /** Un grand projet (GD-10) : sa pièce se pose en entier, il faut tous ses blocs. */
-  project?: boolean;
+  /** Un grand projet (GD-10) : le nom, dans chaque univers, de la pièce à construire ; elle se pose en entier, il faut tous ses blocs. */
+  piece?: Record<UniversNomme, string>;
 }
 
 /** Les îles ouvertes de l'archipel où se tient le bonhomme, la sienne en premier. */
@@ -98,7 +98,10 @@ export function blockUses(state: GameState, block: BlockId): Use[] {
   // employer les blocs qui s'accumulent).
   for (const m of monumentsOf(archipelagoOf(state.world.place ?? 'french-6e-phonology').classe)) {
     const need = monumentMissing(state, m, true)[block] ?? 0;
-    if (need > 0) uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/adventure/${m.id}`, ...(projectOf(m.id) && { project: true }) });
+    const project = projectOf(m.id);
+    const piece = project ? nextPiece(state, project) : null;
+    if (need > 0)
+      uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/adventure/${m.id}`, ...(project && piece !== null && { piece: project.pieces[piece].names }) });
   }
   return uses;
 }

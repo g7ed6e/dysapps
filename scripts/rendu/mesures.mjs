@@ -571,6 +571,7 @@ const CAPTURES = [
   // tour posés, `etages`), avec les blocs d'une recette en poche, sur tablette et au téléphone en grand texte.
   { nom: 'projets-phare', vue: 'île', famille: 'projets', ile: 'maths-5e-signed-numbers', finesse: 2 },
   { nom: 'projets-phare-nuit', vue: 'île', famille: 'projets', ile: 'maths-5e-signed-numbers', nuit: true, finesse: 2 },
+  { nom: 'projets-fini-390x844-od32', vue: 'île', famille: 'projets', ile: 'maths-5e-signed-numbers', lieu: 'landmark-5e-1', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 }, voir: '.plan-done' },
   { nom: 'projets-carte-nuit', vue: 'carte', famille: 'projets', ile: 'maths-5e-signed-numbers', nuit: true },
   ...[
     { suffixe: '' },
@@ -601,6 +602,19 @@ const CAPTURES = [
     taille: { width: 390, height: 844 },
     reglages: { font: 'opendyslexic', fontSize: 32 },
   })),
+  // La même question du comptoir, défilée jusqu'aux réponses (l'énoncé anglais, le rappel, les choix).
+  {
+    nom: 'projets-question-comptoir-bas-390x844-od32',
+    vue: 'île',
+    famille: 'projets',
+    ile: 'maths-5e-signed-numbers',
+    lieu: 'project/landmark-5e-1/0',
+    etages: { 'landmark-5e-1': 1 },
+    inventaire: { 'maths-5e-proportionality': 6, 'english-5e-vocabulary': 4 },
+    taille: { width: 390, height: 844 },
+    reglages: { font: 'opendyslexic', fontSize: 32 },
+    voir: '.assemblage-question button >> nth=-1',
+  },
   // L'entraide (GD-10, famille `entraide`), à retirer une fois le lot fusionné : chez Mousso, Bloquette et Grimoire, l'objet
   // posé à côté de sa commande, de jour et de nuit (toutes les petites constructions posées) ; puis la ligne de l'entraide
   // dans le panneau de l'île, l'étape « Apporter » chez Mousso (tablette, téléphone au grand texte), et la fiche de Coco

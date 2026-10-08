@@ -44,7 +44,7 @@ export const PROJECTS = PROJECTS_JSON as Project[];
 /**
  * La forme des pièces : les étages (z, dans le dessin du grand ouvrage) que chacune couvre, du plus bas au plus haut.
  * Le phare du large, dans Blocland : le socle de glace, la tour rayée, la galerie de lambris, la lanterne de vitraux, le
- * toit ; dans Archipéo, les mêmes étages du modèle taillé (offshoreLighthouse.ts) : le socle, la tour, le haut de la tour,
+ * toit ; dans Archipéo, les mêmes étages du modèle taillé (offshoreLighthouse.ts) : le socle, la tour, la corniche,
  * la terrasse, le feu.
  */
 const LAYERS: Record<string, Record<string, readonly [number, number]>> = {

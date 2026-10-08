@@ -56,7 +56,7 @@ function fromUse(state: GameState, use: Use): Worksite | null {
     const monument = monumentsOf(archipelagoOf(use.island).classe).find((m) => m.name === use.name);
     if (!monument) return null;
     const g = gauge(state, monument, monumentMissing(state, monument));
-    const text = g.ready ? `${monument.name} : tu as tous tes blocs. ${use.project ? 'Va construire !' : 'Va les poser !'}` : `${monument.name} : ${count(g.have, g.need)}.`;
+    const text = g.ready ? `${monument.name} : tu as tous tes blocs. ${use.piece ? 'Va construire !' : 'Va les poser !'}` : `${monument.name} : ${count(g.have, g.need)}.`;
     return { kind: 'monument', text, ...g, island: use.island, to: `/adventure/${monument.id}` };
   }
   return null;
