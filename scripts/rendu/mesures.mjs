@@ -618,7 +618,8 @@ const CAPTURES = [
   },
   // L'entraide de la 5e (GD-10, famille `entraide`), à retirer une fois le lot fusionné : chez Pudding, Vélin et Frimas,
   // l'objet posé à côté de sa commande, de jour et de nuit (toutes les petites constructions posées) ; puis la balise
-  // apportée à Frimas (`cliquer`), la pose finie : la ligne finie et « Voir le phare » (tablette, téléphone au grand texte).
+  // apportée à Frimas (`cliquer`), la pose finie : la ligne finie et « Voir le phare » (tablette, téléphone au grand texte),
+  // les deux premières quêtes déjà finies.
   ...['english-5e-vocabulary', 'history-5e-middle-ages', 'maths-5e-signed-numbers'].flatMap((ile) => [
     { nom: `entraide-${ile}`, vue: 'île', famille: 'entraide', ile, posees: 'toutes', finesse: 2 },
     { nom: `entraide-${ile}-nuit`, vue: 'île', famille: 'entraide', ile, posees: 'toutes', nuit: true, finesse: 2 },
@@ -632,6 +633,9 @@ const CAPTURES = [
     famille: 'entraide',
     ile: 'maths-5e-signed-numbers',
     quetes: [{ id: 'story-5e-3', step: 3 }],
+    // Les deux premières quêtes finies (sinon la tente arrive juste après), les succès déjà gagnés (sans leur annonce).
+    posees: ['english-5e-vocabulary-fixture-2', 'history-5e-middle-ages-fixture-2'],
+    succes: 'tous',
     cliquer: '.quete-item .button.primary',
     pasEnPlus: 64,
     ...autres,
