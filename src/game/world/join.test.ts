@@ -53,12 +53,12 @@ afterEach(() => {
 });
 
 describe('Réunir deux lieux', () => {
-  it('sur la carte de départ, les voisines au plus près peuvent déjà se réunir (GD-12) : la Tour et la Baie, la Rivière et le Laboratoire, le Volcan et le Hangar ; la Ferme, non', () => {
+  it('sur la carte de départ, les voisines au plus près peuvent déjà se réunir (GD-12) : la Tour et la Baie, la Rivière et le Laboratoire, le Volcan et le Hangar ; la Ferme et le Volcan (depuis que la Ferme tourne son trèfle vers le fond, quatre cases d’eau devant elle)', () => {
     const w = toutConstruit().world;
     expect(joinCandidates(w, 'french-6e-reading')).toEqual(['english-6e-vocabulary']);
     expect(joinCandidates(w, 'maths-6e-fractions')).toEqual(['physics-chemistry-6e-matter-energy']);
-    expect(joinCandidates(w, 'french-6e-grammar-spelling')).toEqual([]);
-    expect(joinCandidates(w, VOLCAN)).toEqual(['technology-6e-objects']);
+    expect(joinCandidates(w, 'french-6e-grammar-spelling')).toEqual([VOLCAN]);
+    expect(joinCandidates(w, VOLCAN)).toEqual(['french-6e-grammar-spelling', 'technology-6e-objects']);
   });
 
   it('deux voisins au plus près : 4 cases de long au moins, sur l’eau, des deux côtes à l’autre', () => {

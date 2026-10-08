@@ -22,4 +22,12 @@ interface Pic {
 export interface Silhouette {
   pics: Pic[];
   forme?: FormeDeLIle;
+  /**
+   * Les coins du cœur qui restent carrés (GD-12, point 4), dans le repère de l'île, quand une petite construction ou un
+   * objet de quête se tient contre eux (../formes.test.ts le vérifie) ; le carré du Gardien, lui, se voit dans ../map.ts.
+   */
+  squareCorners?: readonly CoreCorner[];
 }
+
+/** Un coin du cœur d'une île, dans son repère : devant (y plus petit) ou au fond, à gauche (x plus petit) ou à droite. */
+type CoreCorner = 'devant-gauche' | 'devant-droite' | 'fond-gauche' | 'fond-droite';

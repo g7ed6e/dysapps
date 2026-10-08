@@ -53,7 +53,7 @@ const VOLCAN: BiomeId = 'maths-6e-decimals';
 
 /**
  * La Rivière des fractions (6e), reliée à la Plaine et au Laboratoire : depuis les formes des îles (GD-12), le Volcan,
- * au coin de devant, n'a plus que deux places ; on déplace la Rivière quand il en faut beaucoup.
+ * au coin de devant, n'a que cinq à sept places par quart de tour ; on déplace la Rivière quand il en faut beaucoup.
  */
 const RIVIERE: BiomeId = 'maths-6e-fractions';
 
@@ -477,17 +477,17 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
   });
 
   it('les îles ont grandi (GD-11) : une paire réunie qui ne peut pas s’écarter laisse la région à la carte de départ, sans rien perdre', () => {
-    // Le Volcan et le Hangar des inventions, réunis au coin de devant (GD-12), le Volcan un pas plus au fond, trop près
-    // de la Ferme : au bord du cadre, la paire ne trouve aucun pas qui la sépare de la Ferme en gardant sa construction.
-    const HANGAR: BiomeId = 'technology-6e-objects';
-    const avant = reunisTropPres(VOLCAN, HANGAR, 0, 1);
+    // La Ferme et le Volcan, réunis (GD-12), la Ferme un pas plus à l'est, trop près de la Forêt : la paire ne trouve
+    // aucun pas qui la sépare de la Forêt, lieu de départ qui ne bouge pas, en gardant sa construction.
+    const FERME: BiomeId = 'french-6e-grammar-spelling';
+    const avant = reunisTropPres(FERME, VOLCAN, 1, 0);
     expect(fittingPlaces('6e', avant.layout!['6e']!.islands!)).toBeNull();
     const w = settleNewPlaces(avant);
     // Rien ne change dans la sauvegarde (ni les places, ni la réunion, ni les liaisons, ni les chantiers) : la région
     // se montre à la carte de départ (`posesOfLayout`), sa réunion n'est pas posée (`joinsOf`, ./appliedLayout.ts).
     expect(w).toBe(avant);
     expect(posesOfLayout(w.layout).size).toBe(0);
-    expect(w.layout?.['6e']?.joined).toEqual([[VOLCAN, HANGAR]]);
+    expect(w.layout?.['6e']?.joined).toEqual([[FERME, VOLCAN]]);
   });
 
   it('une disposition qui tient, ou pas de disposition, reste la même', () => {

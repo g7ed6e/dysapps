@@ -228,17 +228,17 @@ it('l’ouvrage qu’on peut payer passe devant, et l’île de LV2 reste en bou
 it('sans assez de blocs, la suggestion dit ce qu’il manque ; le panneau de l’île de départ met le même ouvrage en avant', () => {
   const state = sanitizeState({ progress: joue('french-6e-phonology', 3), stock: { [BLOC.bois]: 1 }, world: { place: 'french-6e-phonology', links: [] } });
   const s = ouvrageSuggere(state, '6e')!;
-  expect(s).toMatchObject({ ile: 'maths-6e-calculation', goal: { text: 'Encore 3 blocs pour le pont vers la Rivière des fractions. Il ouvre une île de maths.', have: 1, need: 4 } });
+  expect(s).toMatchObject({ ile: 'maths-6e-calculation', goal: { text: 'Encore 3 blocs pour le pont vers le Volcan des décimaux. Il ouvre une île de maths.', have: 1, need: 4 } });
   // Le seul « Construire » principal du pli Ouvrages de la Plaine : le même ouvrage.
   expect(nextGoalInfo(state, 'maths-6e-calculation')?.ouvrage).toBe(s.goal.ouvrage);
 });
 
 it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrage, même si le Bloc-Navire est plus proche (une seule source)', () => {
-  // La Forêt jouée en entier, la Plaine (le port) une fois, l'anglais beaucoup : les maths sont les moins jouées. Les
-  // îles jouées sont reliées à la lecture de la sauvegarde ; depuis que les îles ont grandi (GD-11), la Plaine est la
-  // plus près du Volcan (depuis les formes des îles, GD-12, le Laboratoire et le Hangar, voisins de la Rivière et du
-  // Volcan, ne sont pas joués ici) : la liaison suggérée part d'elle, 4 blocs (1 en stock). Le Bloc-Navire, à son port, n'attend
-  // plus qu'une case : 1 bloc, plus proche que les 3 de la liaison.
+  // La Forêt jouée en entier, la Plaine (le port) une fois, l'anglais beaucoup. Les
+  // îles jouées sont reliées à la lecture de la sauvegarde. Depuis la boîte du trait (GD-12, 8 octobre 2026), le Hangar
+  // des inventions, jamais joué, s'atteint par un bac depuis la Forêt : la technologie est la moins jouée, la liaison
+  // suggérée part de la Forêt, 4 blocs (1 en stock). Le Bloc-Navire, à son port, n'attend plus qu'une case : 1 bloc,
+  // plus proche que les 3 de la liaison.
   const progress = {
     ...joue('french-6e-phonology', 99),
     ...joue('maths-6e-calculation', 1),
@@ -251,10 +251,10 @@ it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrag
   const presque = planCells(coque).map((c) => c.key).slice(1);
   const state = sanitizeState({ progress, stock: { [BLOC.bois]: 1 }, world: { place: 'french-6e-phonology', links: [], parts: { [coque.id]: presque } } });
   const s = ouvrageSuggere(state, '6e')!;
-  expect(s.ile).toBe('maths-6e-calculation');
+  expect(s.ile).toBe('french-6e-phonology');
   const goal = nextGoalInfo(state, s.ile);
   expect(goal).toMatchObject({ have: 1, need: 4, ouvrage: s.goal.ouvrage });
-  expect(goal?.text).toMatch(/^Encore 3 blocs pour le pont vers .+\. Il ouvre une île de maths\.$/);
+  expect(goal?.text).toMatch(/^Encore 3 blocs pour le bac vers .+\. Il ouvre une île de technologie\.$/);
   // La prochaine destination dit la même phrase, mot pour mot, avec la même jauge.
   const d = nextDestinationDe(state, NOMS_ARCHIPELS, textesDe('blocland').libelles);
   expect(d).toMatchObject({ island: s.ile, text: goal!.text, have: goal!.have, need: goal!.need, ouvrage: goal!.ouvrage });
@@ -282,7 +282,7 @@ it('la suggestion ne dépend que de la sauvegarde, et deux élèves de la même 
   };
   const lea = seances('french-6e-phonology');
   const sami = seances('maths-6e-calculation');
-  expect(lea).toEqual(['maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals', 'french-6e-phonology-english-6e-grammar']);
+  expect(lea).toEqual(['maths-6e-calculation-maths-6e-decimals', 'maths-6e-calculation-maths-6e-fractions', 'french-6e-phonology-english-6e-grammar']);
   expect(sami).toEqual(['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-grammar-spelling-maths-6e-calculation']);
   expect(lea.filter((id) => sami.includes(id))).toEqual([]);
 });

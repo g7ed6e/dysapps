@@ -262,7 +262,7 @@ const FICHES: Fiche[] = [
     archipelago: '6e',
     name: 'Le grand moulin',
     description: 'Un moulin de brique et de pierre, ses quatre ailes de bois et de toile tournées vers le vent du large.',
-    islet: { x: 0, y: 23 }, // suit la Ferme : la Forêt a grandi (01/10/2026), la carte s'est calée sur le pas (GD-9) ; recalé avec les îles agrandies (GD-11), puis au large du lobe gauche de la Ferme avec les formes des îles (GD-12, 08/10/2026)
+    islet: { x: 50, y: 45 }, // suit la Ferme : la Forêt a grandi (01/10/2026), la carte s'est calée sur le pas (GD-9) ; recalé avec les îles agrandies (GD-11), puis avec les formes des îles (GD-12, 08/10/2026) à droite de la Ferme, entre elle et la Forêt : au large de son lobe gauche, il prenait au Hangar et au Volcan presque toutes leurs places où glisser (une ou deux par quart de tour ; onze et cinq au moins depuis, trois cases plus bas que d'abord, pour garder quatre cases d'eau devant la Plaine)
     reward: { xp: 150, chest: {} },
     done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Premiers Rivages.',
     draw: moulin,

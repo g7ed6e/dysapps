@@ -25,6 +25,11 @@ export interface FormeDeLIle {
   vers: Vers;
   miroir?: boolean;
   quai?: boolean;
+  /**
+   * Le trait s'arrête à la boîte de la forme (`BOITE_DE_LA_FORME`), et non à celle du trait : au bord du cadre de sa
+   * région, il en sortirait.
+   */
+  short?: boolean;
 }
 
 // ---------- Les volumes simples, en distance signée (négative dedans) ----------
@@ -70,150 +75,230 @@ function unionDouce(a: number, b: number, k: number): number {
   return b + (a - b) * h - k * h * (1 - h);
 }
 
-/** `a` creusé de `b` (une baie, une crique), adouci de k. */
-function creuse(a: number, b: number, k: number): number {
-  return -unionDouce(-a, b, k);
-}
-
 // ---------- Le catalogue, chaque forme tournée vers le devant (−v) ----------
 
 /**
  * La boîte de chaque forme (piste 1 du directeur artistique, « formes contenues », 8 octobre 2026) : sa terre ne dépasse
- * jamais le cœur de plus de `BOITE_DE_LA_FORME` cases, sur aucun de ses quatre côtés. La boîte est carrée et centrée
- * sur le cœur : elle tourne avec le lieu sans changer de place, si bien qu'un lieu qui tient à sa place y tient tourné
- * (GD-9, GD-11 : chaque lieu mobile peut tourner). Une forme se lit donc par des volumes larges plutôt que longs : un
- * bras plus large que long, une baie qui mord la terre autour du cœur (jamais le cœur) ; on n'agrandit pas la boîte.
+ * jamais le cœur de plus de `BOITE_DE_LA_FORME` cases, sauf du côté de son trait (`FEATURE_BOX`). Une forme se lit
+ * par des volumes larges plutôt que longs : un bras plus large que long, une baie qui mord la terre autour du cœur
+ * (jamais le cœur).
  */
 export const BOITE_DE_LA_FORME = 5;
 
-/** Sur chaque côté, la terre dépasse le cœur d'au moins tant de cases, là où la forme est la plus large. */
-export const COTE_MINIMALE_DE_LA_FORME = 3;
-
-/** Le bord le plus lointain que dessine une forme, depuis le bord du cœur, avant le bruit (qui l'écarte de moins d'une case). */
-const LOIN = BOITE_DE_LA_FORME - 0.5;
+/**
+ * Du côté de son trait, et là seulement, la terre d'une forme va jusqu'à tant de cases du cœur (mainteneur, 8 octobre
+ * 2026 : « On peut faire sauter le point dogmatique du DA si c'est trop moche » ; dans la boîte de cinq, les îles se
+ * lisaient encore comme des carrés aux coins arrondis sur la Carte). La boîte d'une forme n'est donc plus carrée : un
+ * lieu tourné ne tient plus forcément à sa place, et le glissé ne propose que les places où il tient (./arrange.ts).
+ */
+export const FEATURE_BOX = 7;
 
 /**
- * Une baie creusée dans le bord de devant (−v) : un disque qui mord la terre jusqu'à `fond` cases du cœur, sur `demi`
- * cases de part et d'autre de `cu`, depuis un bord placé à `bord` cases du cœur.
+ * Le bord le plus lointain que dessine une forme, depuis le bord du cœur : un peu au-delà de sa boîte (`FAR_REACH`), ou de
+ * celle de son trait (`FEATURE_REACH`), de ce que le bruit de la côte peut le ramener (./map.ts) ; la boîte coupe la terre, et
+ * le trait d'une forme va toujours jusqu'à son bord (directeur artistique, 8 octobre 2026).
  */
-function baie(u: number, v: number, s: number, cu: number, demi: number, bord: number, fond: number): number {
-  const d = bord - fond;
-  const r = (demi * demi + d * d) / (2 * d);
-  return disque(u, v, cu, -(s + bord) - r + d, r);
+const FAR_REACH = BOITE_DE_LA_FORME + 0.8;
+const FEATURE_REACH = FEATURE_BOX + 0.8;
+
+/**
+ * Le bord d'une forme là où elle ne s'avance pas (son côté opposé, les creux de ses flancs, le fond de ses baies), depuis
+ * le bord du cœur : une case et demie, si bien que la terre s'y tient aux deux cases qui entourent toujours le cœur
+ * (`TERRE_AUTOUR_DU_COEUR`, ./map.ts), une troisième de loin en loin, quand le bruit de la côte la pousse.
+ */
+const BODY_MARGIN = 1.5;
+
+/**
+ * Le rayon des coins du corps de chaque forme : celui des coins de plage du cœur (`BEACH_RADIUS`, ./map.ts) et de
+ * ses deux cases de terre. Là où la mer entre, la côte tourne autour du coin du cœur sans le montrer.
+ */
+const BODY_RADIUS = 6 + BODY_MARGIN;
+
+/**
+ * Ce que devient chaque coin du cœur d'une forme (GD-12, point 4, construit le 8 octobre 2026) : `plage`, la mer entre
+ * et le coin s'abaisse en plage (du sable, au niveau de la côte), le sol du lieu s'arrête avec lui, arrondi ; `terre`,
+ * un lobe ou une corne de la forme le couvre, le sol du lieu s'arrête aussi, arrondi, sur la terre de la côte ; `trait`,
+ * le trait de la forme (un bras) part de lui, le sol du lieu le suit. Un coin où quelque chose est posé (le carré du
+ * Gardien, ./map.ts) reste carré.
+ */
+export type ShapeCorner = 'plage' | 'terre' | 'trait';
+
+/** Les coins d'une forme dans son repère propre, dans l'ordre : devant à gauche, devant à droite, fond à gauche, fond à droite. */
+type ShapeCorners = readonly [ShapeCorner, ShapeCorner, ShapeCorner, ShapeCorner];
+
+/** Le corps (`body`) de chaque forme : le cœur et ses deux cases de terre, aux coins arrondis (`BODY_RADIUS`). */
+function body(u: number, v: number, s: number): number {
+  return rectangleArrondi(u, v, 0, 0, s + BODY_MARGIN, s + BODY_MARGIN, BODY_RADIUS);
 }
+
+/**
+ * Chaque forme est le corps (le cœur et ses deux cases de terre) et ce qui la distingue : son trait, d'un seul côté
+ * (`side` : devant, −1, ou au fond, 1, dans son repère propre), jusqu'au bord de la boîte du trait (`FEATURE_REACH`) ; le reste
+ * jusqu'à la boîte (`FAR_REACH`) au plus ; le côté opposé et les flancs restent aux deux cases du corps (`BODY_MARGIN`), si bien
+ * qu'elle se lit franchement asymétrique (directeur artistique, 8 octobre 2026, relecture des planches). `feature` : où le
+ * sol du lieu suit la forme (dans son repère propre) ; `corners` : ce que devient chaque coin du cœur.
+ */
+interface ShapeDrawing {
+  side: -1 | 1;
+  distance: (u: number, v: number, s: number, quai: boolean) => number;
+  feature: (u: number, v: number, s: number, quai: boolean) => boolean;
+  corners: (quai: boolean) => ShapeCorners;
+}
+
+const ALL_BEACH: ShapeCorners = ['plage', 'plage', 'plage', 'plage'];
+
+const SHAPE_CATALOGUE: Readonly<Record<FormeId, ShapeDrawing>> = {
+  // Un ovale doux, sans bras ni creux, plus long vers le fond : le galet s'y avance jusqu'au bord de la boîte du trait,
+  // ses flancs à trois cases, son devant aux deux cases du corps ; ses quatre coins en plage.
+  galet: {
+    side: 1,
+    distance: (u, v, s) => unionDouce(body(u, v, s), rectangleArrondi(u, v, 0, (FEATURE_REACH - BODY_MARGIN) / 2, s + 3, s + (FEATURE_REACH + BODY_MARGIN) / 2, 10), 2),
+    feature: () => false,
+    corners: () => ALL_BEACH,
+  },
+  // Deux cornes qui embrassent une baie : elles s'avancent devant jusqu'au bord de la boîte du trait, tournées l'une vers
+  // l'autre ; entre elles, la baie descend jusqu'aux deux cases du corps. Le fond et les flancs restent au corps.
+  // L'île-port n'a qu'une corne, à gauche, accrochée à son flanc : la seconde serait sous le Bloc-Navire. Entre elle et
+  // la jetée (colonne 16 du cœur, u = 8,5), la rade ; le coin de devant à gauche en plage la prolonge (relecture du
+  // directeur artistique, 8 octobre 2026), celui de devant à droite reste carré, la rive droite du quai.
+  croissant: {
+    side: -1,
+    distance: (u, v, s, quai) => {
+      if (quai) return unionDouce(body(u, v, s), gelule(u, v, -(s + FAR_REACH - 2.5), -(s - 3), -(s + 1), -(s + FEATURE_REACH - 2.5), 2.5), 1.5);
+      const gauche = gelule(u, v, -(s - 1), -(s - 2), -(s - 4), -(s + FEATURE_REACH - 2.5), 2.5);
+      const droite = gelule(u, v, s - 1, -(s - 2), s - 4, -(s + FEATURE_REACH - 2.5), 2.5);
+      return unionDouce(unionDouce(body(u, v, s), gauche, 2), droite, 2);
+    },
+    feature: (u, v, s, quai) => !quai && v < -s && Math.abs(u) > s - 7,
+    corners: (quai) => (quai ? ['plage', 'trait', 'plage', 'plage'] : ['trait', 'trait', 'plage', 'plage']),
+  },
+  // Un ventre rond d'un côté, un creux de l'autre : le ventre s'avance au fond jusqu'au bord de la boîte du trait ;
+  // devant, deux pointes courtes encadrent le creux, qui descend jusqu'aux deux cases du corps. Le sol du lieu va
+  // jusqu'au bord du creux (le sable du front de taille de la Carrière).
+  haricot: {
+    side: 1,
+    distance: (u, v, s) => {
+      const ventre = rectangleArrondi(u, v, 0, s + FEATURE_REACH - 8.5, s + 1, 8.5, 8.5);
+      const pointes = Math.min(disque(u, v, -(s - 1.5), -(s - 1), 4.5), disque(u, v, s - 1.5, -(s - 1), 4.5));
+      return unionDouce(unionDouce(body(u, v, s), ventre, 2), pointes, 1.5);
+    },
+    feature: (u, v, s) => v < -s && Math.abs(u) < s - 4,
+    corners: () => ['terre', 'terre', 'plage', 'plage'],
+  },
+  // Un corps et un bras large qui s'avance devant, du côté droit, jusqu'au bord de la boîte du trait, plus large que
+  // long ; il se lit par les plages de part et d'autre. Le sol du lieu le suit.
+  presquile: {
+    side: -1,
+    distance: (u, v, s) => unionDouce(body(u, v, s), gelule(u, v, s - 5, -(s - 1), s - 3, -(s + FEATURE_REACH - 3), 3), 2),
+    feature: (u, v, s) => v < -s + 2 && u > s - 9,
+    corners: () => ['plage', 'trait', 'plage', 'plage'],
+  },
+  // Un rond qui s'effile : la pointe, au milieu du devant, jusqu'au bord de la boîte du trait, entre deux coins en plage.
+  // Le sol du lieu va jusqu'à la pointe (la pierre de la Mine, la roche sombre du Volcan).
+  goutte: {
+    side: -1,
+    distance: (u, v, s) => unionDouce(body(u, v, s), goutteDe(u, v, 0, -(s - 3), 9, 0, -(s + FEATURE_REACH - 2), 2), 2),
+    feature: (u, v, s) => v < -s && Math.abs(u) < 6,
+    corners: () => ALL_BEACH,
+  },
+  // Trois lobes, deux aux coins de devant, jusqu'au bord de la boîte du trait, l'un au fond, jusqu'à la boîte ; entre
+  // eux, les criques descendent jusqu'aux deux cases du corps, et les coins du fond, en plage, les prolongent.
+  trefle: {
+    side: -1,
+    distance: (u, v, s) => {
+      const devant = (x: number) => gelule(u, v, x, -(s - 2), x, -(s + FEATURE_REACH - 3.5), 3.5);
+      const lobes = Math.min(disque(u, v, 0, s + FAR_REACH - 5, 5), devant(-(s - 0.5)), devant(s - 0.5));
+      return unionDouce(body(u, v, s), lobes, 1.5);
+    },
+    feature: () => false,
+    corners: () => ['terre', 'terre', 'plage', 'plage'],
+  },
+  // Deux lobes, devant jusqu'au bord de la boîte du trait, au fond jusqu'à la boîte, réunis par une taille : les flancs
+  // restent aux deux cases du corps, ses quatre coins en plage.
+  cacahuete: {
+    side: -1,
+    distance: (u, v, s) => {
+      const lobes = Math.min(rectangleArrondi(u, v, 0, -(s + FEATURE_REACH - 7.5), s - 3, 7.5, 7.5), rectangleArrondi(u, v, 0, s + FAR_REACH - 6, s - 4, 6, 6));
+      return unionDouce(body(u, v, s), lobes, 2);
+    },
+    feature: () => false,
+    corners: () => ALL_BEACH,
+  },
+};
 
 /**
  * La distance signée au bord d'une forme du catalogue, dans son repère propre : ce qui la distingue tourné vers le
- * devant (−v), `s` le demi-côté du cœur. Chaque forme tient dans sa boîte (`BOITE_DE_LA_FORME`), laisse au moins deux
- * cases de terre autour du cœur (./map.ts le tient), et ses bras, ses lobes et ses baies ont trois cases de large au
- * moins (formes.test.ts).
+ * devant (−v), `s` le demi-côté du cœur. Chaque forme tient dans sa boîte (`BOITE_DE_LA_FORME`) ; ./map.ts lui ajoute
+ * les deux cases de terre autour du cœur et le bruit de la côte, et formes.test.ts vérifie sur la terre finale que ses
+ * bras, ses lobes et ses baies ont trois cases de large au moins.
  */
 function distanceCanonique(f: FormeDeLIle, u: number, v: number, s: number): number {
-  const L = s + LOIN;
-  switch (f.forme) {
-    case 'galet':
-      // Un ovale doux, un peu plus long vers le fond : les coins de devant très arrondis, ceux du fond un peu moins, où
-      // se tiennent les repères (le chêne de la Forêt, juste derrière le cœur).
-      return v > 0.5 ? rectangleArrondi(u, v, 0, 0.5, s + 3, s + 3.5, 7) : rectangleArrondi(u, v, 0, 0.5, s + 3, s + 3.5, s * 0.9);
-    case 'croissant': {
-      if (f.quai) {
-        // L'île-port : la baie s'ouvre devant, à droite, où se tiennent la jetée (colonne 16 du cœur, u = 8,5) et le
-        // Bloc-Navire (u de 9 à 15). Devant elles, la rive reste droite à deux cases du cœur ; une seule corne, à gauche,
-        // embrasse la rade : la seconde serait sous le navire, et la boîte ne la tient pas au-delà.
-        const corps = rectangleArrondi(u, v, 0, 0.5, s + 3, s + 2.5, 7);
-        const corne = rectangleArrondi(u, v, -(s - 1), -(s + 1), 5.5, 3.5, 2.5);
-        return unionDouce(corps, corne, 2.5);
-      }
-      // Un corps rond derrière, deux cornes larges et courtes devant, et entre elles la baie, qui mord la terre jusqu'à
-      // une case et demie du cœur.
-      const corps = v > 0 ? rectangleArrondi(u, v, 0, -0.5, L, s + 4, 9) : rectangleArrondi(u, v, 0, -0.5, L, s + 4, 3);
-      return creuse(corps, baie(u, v, s, 0, 8, LOIN, 1.5), 1.5);
-    }
-    case 'haricot': {
-      // Un ventre rond, entamé devant d'un creux large et peu profond : le bord rentre jusqu'à une case et demie du cœur.
-      const ventre = rectangleArrondi(u, v, 0, 0.25, s + 3.5, s + 3.75, 10);
-      return creuse(ventre, baie(u, v, s, 0, 10, 4, 1.5), 2);
-    }
-    case 'presquile': {
-      // Un corps rond, mince devant (deux cases), et un bras large qui s'avance devant, du côté droit, jusqu'au bord
-      // de la boîte : plus large que long, il se lit par la côte mince qui le borde.
-      const corps = rectangleArrondi(u, v, 0, 0.5, s + 3, s + 2.5, 8);
-      const bras = gelule(u, v, s - 4, -(s - 1), s - 1, -(s + 1.5), 3);
-      return unionDouce(corps, bras, 2);
-    }
-    case 'goutte': {
-      // Un rond dont le devant s'effile : les coins de devant très arrondis, une pointe au milieu jusqu'au bord de la boîte.
-      const rond = v > 0 ? rectangleArrondi(u, v, 0, 0, s + 3, s + 3, 6) : rectangleArrondi(u, v, 0, 0, s + 3, s + 3, s - 2);
-      const pointe = goutteDe(u, v, 0, -(s - 4), 8, 0, -(s + 3), 2);
-      return unionDouce(rond, pointe, 3);
-    }
-    case 'trefle': {
-      // Trois lobes, deux aux coins de devant, l'un au fond ; entre eux, la côte rentre jusqu'à deux cases du cœur.
-      const base = rectangleArrondi(u, v, 0, 0, s + 2, s + 2, 8);
-      const fond = disque(u, v, 0, s - 0.5, 5);
-      const gauche = disque(u, v, -(s - 1.5), -(s - 1.5), 6);
-      const droite = disque(u, v, s - 1.5, -(s - 1.5), 6);
-      return unionDouce(unionDouce(unionDouce(base, fond, 2), gauche, 2), droite, 2);
-    }
-    case 'cacahuete': {
-      // Deux lobes, devant et au fond, réunis par une taille : de part et d'autre du milieu du cœur, la côte rentre
-      // jusqu'à une case et demie de lui.
-      const corps = rectangleArrondi(u, v, 0, 0, s + 3.5, L, 9);
-      const taille = Math.min(disque(u, v, -(s + 1.5 + 7), 0, 7), disque(u, v, s + 1.5 + 7, 0, 7));
-      return creuse(corps, taille, 2);
-    }
-  }
+  return SHAPE_CATALOGUE[f.forme].distance(u, v, s, f.quai === true);
 }
 
-/**
- * Un point du repère du cœur (`u` à droite, `v` vers le fond) dans le repère propre d'une forme tournée vers `vers` :
- * son devant y tombe devant (−v). Le miroir échange la gauche et la droite de la forme.
- */
-function versLeRepereDeLaForme(f: FormeDeLIle, u: number, v: number): [number, number] {
-  let a: number;
-  let b: number;
-  switch (f.vers) {
-    case 'devant':
-      [a, b] = [u, v];
-      break;
-    case 'fond':
-      [a, b] = [-u, -v];
-      break;
-    case 'gauche':
-      // Le devant de la forme regarde vers la gauche (−u) : sa droite est devant l'île (−v).
-      [a, b] = [-v, u];
-      break;
-    case 'droite':
-      [a, b] = [v, -u];
-      break;
+/** Un point du repère du cœur dans le repère propre d'une forme tournée vers `vers` (voir `distanceALaForme`). */
+function toShapeFrame(f: FormeDeLIle, u: number, v: number, sortie: [number, number]): [number, number] {
+  let a = u;
+  let b = v;
+  if (f.vers === 'fond') {
+    a = -u;
+    b = -v;
+  } else if (f.vers === 'gauche') {
+    // Le devant de la forme regarde vers la gauche (−u) : sa droite est devant l'île (−v).
+    a = -v;
+    b = u;
+  } else if (f.vers === 'droite') {
+    a = v;
+    b = -u;
   }
-  return [f.miroir ? -a : a, b];
+  sortie[0] = f.miroir ? -a : a;
+  sortie[1] = b;
+  return sortie;
 }
+
+/** Un point de travail pour `toShapeFrame` : la terre de chaque lieu la lit des milliers de fois, sans rien allouer. */
+const SCRATCH_POINT: [number, number] = [0, 0];
 
 /**
  * La distance signée (en cases, négative dedans) d'un point au bord de la forme d'une île, dans le repère du cœur : `u`
  * vers la droite et `v` vers le fond depuis le milieu du cœur, `s` son demi-côté.
  */
 export function distanceALaForme(f: FormeDeLIle, u: number, v: number, s: number): number {
-  const [a, b] = versLeRepereDeLaForme(f, u, v);
+  const [a, b] = toShapeFrame(f, u, v, SCRATCH_POINT);
   return distanceCanonique(f, a, b, s);
 }
 
 /**
- * L'étendue de la forme autour du cœur, en cases (de son bord au bout de la terre, de chaque côté), avant le bruit :
- * ce que la boîte de la terre de l'île (`ext`, ./map.ts) doit tenir, le bruit compris (`marge`).
+ * Le point (`u`, `v`, repère du cœur) est-il là où le sol du lieu suit la forme vers son trait (GD-12, précision du
+ * directeur artistique du 8 octobre 2026 : la pierre de la Mine dans sa pointe, le sable de la Carrière au bord de
+ * son creux) ? Hors du cœur seulement ; mêmes matières, rien de neuf.
  */
-export function etendueDeLaForme(f: FormeDeLIle, s: number, marge: number): { left: number; right: number; front: number; back: number } {
-  let [x0, x1, y0, y1] = [0, 0, 0, 0];
-  const R = s + 30;
-  for (let i = -R; i < R; i++)
-    for (let j = -R; j < R; j++) {
-      // Le milieu de la case (i, j) depuis le milieu du cœur.
-      if (distanceALaForme(f, i + 0.5, j + 0.5, s) >= marge) continue;
-      x0 = Math.min(x0, i);
-      x1 = Math.max(x1, i + 1);
-      y0 = Math.min(y0, j);
-      y1 = Math.max(y1, j + 1);
-    }
-  return { left: Math.max(0, -s - x0), right: Math.max(0, x1 - s), front: Math.max(0, -s - y0), back: Math.max(0, y1 - s) };
+export function inShapeFeature(f: FormeDeLIle, u: number, v: number, s: number): boolean {
+  const [a, b] = toShapeFrame(f, u, v, SCRATCH_POINT);
+  return SHAPE_CATALOGUE[f.forme].feature(a, b, s, f.quai === true);
+}
+
+/**
+ * Ce que devient le coin du cœur du côté (`su`, `sv`) (−1 ou 1 : à gauche ou à droite, devant ou au fond, dans le
+ * repère du cœur), selon sa forme tournée (`ShapeCorner`).
+ */
+export function shapeCorner(f: FormeDeLIle, su: -1 | 1, sv: -1 | 1): ShapeCorner {
+  const [a, b] = toShapeFrame(f, su, sv, SCRATCH_POINT);
+  return SHAPE_CATALOGUE[f.forme].corners(f.quai === true)[(b < 0 ? 0 : 2) + (a < 0 ? 0 : 1)];
+}
+
+/** Le côté du cœur vers lequel s'avance le trait d'une forme tournée, dans le repère du cœur (−1 ou 1 sur `u` ou `v`). */
+export function featureSide(f: FormeDeLIle): { u: number; v: number } {
+  const c = SHAPE_CATALOGUE[f.forme].side;
+  // Le point (0, c) du repère propre, ramené dans le repère du cœur : l'inverse de `toShapeFrame`.
+  switch (f.vers) {
+    case 'devant':
+      return { u: 0, v: c };
+    case 'fond':
+      return { u: 0, v: -c };
+    case 'gauche':
+      return { u: c, v: 0 };
+    case 'droite':
+      return { u: -c, v: 0 };
+  }
 }

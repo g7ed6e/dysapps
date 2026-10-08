@@ -6,7 +6,7 @@
 import type { BiomeId } from '../biomes';
 import { archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
 import { silhouetteDe } from './silhouettes';
-import { BOITE_DE_LA_FORME, distanceALaForme, etendueDeLaForme, type FormeDeLIle } from './formes';
+import { BOITE_DE_LA_FORME, FEATURE_BOX, type ShapeCorner, featureSide, shapeCorner, inShapeFeature, distanceALaForme, type FormeDeLIle } from './formes';
 import { GD11_GUARDIAN_SQUARES, GUARDIAN_SQUARE_SIDE } from './guardianSquares';
 import { layoutCache, unturnCell, chosenPose, type Quarts, turnCell, turnRectangle } from './placement';
 
@@ -158,51 +158,183 @@ const e = (left: number, right: number, front: number, back: number) => ({ left,
 // ---------- La forme de la terre (GD-12) ----------
 
 /**
- * De combien, au plus, le bruit de la graine déplace le bord d'une forme (en cases) : un bruit lissé sur six cases, qui
- * fait tourner la côte, et un grain à la case près (`dansLaFormeBrute`).
+ * Le bruit de la côte d'une forme : un bruit lissé sur une grande longueur d'onde (`onde` cases), qui fait tourner la
+ * côte d'au plus `amplitude` cases, sans grain à la case près (relecture du directeur artistique, 8 octobre 2026 : « une
+ * côte un peu plus vivante »). La boîte de la forme tient : au bord, la terre est coupée (`rawShapeCell`).
  */
-const BRUIT_DE_LA_FORME = { lisse: 0.8, grain: 0 } as const;
-const MARGE_DU_BRUIT = BRUIT_DE_LA_FORME.lisse + BRUIT_DE_LA_FORME.grain;
+const BRUIT_DE_LA_FORME = { amplitude: 1.3, onde: 9 } as const;
 
 /**
  * Autour du cœur, tant de cases sont toujours de la terre, quelle que soit la forme : la côte mince de GD-11, où passe
- * le bonhomme ; aucun coin du cœur ne touche la mer.
+ * le bonhomme ; aucun coin du cœur ne touche la mer. Autour d'un coin de plage (`BEACH_RADIUS`), elles tournent
+ * avec lui.
  */
 export const TERRE_AUTOUR_DU_COEUR = 2;
 
-/** La terre de la forme d'un lieu, dans son repère (relative à l'origine de son cœur), calculée une fois. */
+/**
+ * Le rayon des coins du cœur d'une île qui a une forme (GD-12, point 4, construit le 8 octobre 2026) : là où rien n'est
+ * posé, le coin des marges s'abaisse en plage, et le sol du lieu s'arrête avec lui, arrondi (`coreCornerGround`). Six cases :
+ * huit cases du cœur par coin, toutes dans ses marges (trois cases de large, cinq à la Forêt), aucune dans son cœur
+ * d'origine ; à cinq, le coin se lisait encore carré sur la Carte.
+ */
+export const BEACH_RADIUS = 6;
+
+/** Un coin du cœur : ce que sa forme en fait (`ShapeCorner`), ou `carre`, quand quelque chose y est posé. */
+type CornerState = ShapeCorner | 'carre';
+
+/** Les noms des coins du cœur, dans l'ordre de `MasqueDeLaForme.corners`. */
+const CORE_CORNERS = ['devant-gauche', 'devant-droite', 'fond-gauche', 'fond-droite'] as const;
+
+/** La terre de la forme d'un lieu, dans son repère (relative à l'origine de son cœur), et ses coins, calculés une fois. */
 interface MasqueDeLaForme {
   x0: number;
   y0: number;
   w: number;
   h: number;
   cases: Uint8Array;
+  /** Les coins du cœur, dans l'ordre de `CORE_CORNERS`. */
+  corners: readonly CornerState[];
 }
 const masques = new Map<BiomeId, MasqueDeLaForme>();
 
+/** L'indice d'un coin du cœur (`MasqueDeLaForme.corners`) pour une case relative à son origine (au plus près du coin). */
+function cornerAt(b: Readonly<Bornes>, x: number, y: number): number {
+  return (2 * y + 1 < b.y0 + b.y1 ? 0 : 2) + (2 * x + 1 < b.x0 + b.x1 ? 0 : 1);
+}
+
+/**
+ * La distance (en cases, négative dans le cœur) du milieu de la case (x, y), relative à l'origine du cœur, au cœur dont
+ * les coins `arrondis` tournent sur `BEACH_RADIUS` cases : comme une distance de damier ailleurs (les deux cases de
+ * terre font un anneau carré autour d'un coin resté carré).
+ */
+function distanceToCore(b: Readonly<Bornes>, arrondi: (k: number) => boolean, x: number, y: number): number {
+  const cx = x + 0.5;
+  const cy = y + 0.5;
+  const k = cornerAt(b, x, y);
+  const dx = k % 2 === 0 ? b.x0 - cx : cx - b.x1;
+  const dy = k < 2 ? b.y0 - cy : cy - b.y1;
+  if (!arrondi(k)) return Math.max(dx, dy);
+  const r = BEACH_RADIUS;
+  return dx + r > 0 && dy + r > 0 ? Math.hypot(dx + r, dy + r) - r : Math.max(dx, dy);
+}
+
+/**
+ * Les coins du cœur d'un lieu qui a une forme : ce que sa forme en fait (`shapeCorner`), sauf là où le carré du
+ * Gardien (figé, ./guardianSquares.ts) ou la case autour toucherait le coin arrondi : il y reste carré. Les bornes, la
+ * zone des plans, les lieux, les petites constructions et les objets de quête ne sont jamais dans un coin
+ * (formes.test.ts le vérifie, lieu par lieu).
+ */
+function coreCorners(def: IslandDef, f: FormeDeLIle, b: Readonly<Bornes>): CornerState[] {
+  const g = GD11_GUARDIAN_SQUARES[def.id];
+  const carres = silhouetteDe(def.id).squareCorners ?? [];
+  const coins: CornerState[] = [];
+  for (let k = 0; k < 4; k++) {
+    const c = shapeCorner(f, k % 2 === 0 ? -1 : 1, k < 2 ? -1 : 1);
+    let pris = carres.includes(CORE_CORNERS[k]);
+    if (g && c !== 'trait')
+      for (let y = g.y - 1; y < g.y + GUARDIAN_SQUARE_SIDE + 1 && !pris; y++)
+        for (let x = g.x - 1; x < g.x + GUARDIAN_SQUARE_SIDE + 1 && !pris; x++)
+          pris = x >= b.x0 && x < b.x1 && y >= b.y0 && y < b.y1 && cornerAt(b, x, y) === k && distanceToCore(b, (q) => q === k, x, y) > 0;
+    coins.push(pris ? 'carre' : c);
+  }
+  return coins;
+}
+
 /**
  * La terre de la forme d'un lieu (GD-12), dans son repère : la forme du catalogue (./formes.ts), orientée, autour du
- * cœur ; son bord cassé par le bruit de la graine, lu là où le dessin du lieu a été tiré (`tirage` : déplacé ou tourné,
- * le lieu garde sa forme) ; toujours `TERRE_AUTOUR_DU_COEUR` cases de terre autour du cœur. Puis la terre d'un seul
- * tenant : un morceau détaché par le bruit retourne à la mer, une mare fermée redevient de la terre.
+ * cœur ; son bord tourné par le bruit de la graine, lu là où le dessin du lieu a été tiré (`tirage` : déplacé ou
+ * tourné, le lieu garde sa forme) ; toujours `TERRE_AUTOUR_DU_COEUR` cases de terre autour du cœur. Puis la terre d'un
+ * seul tenant (un morceau détaché par le bruit retourne à la mer, une mare fermée redevient de la terre), sans pointe ni
+ * entaille de moins de trois cases (`smoothCoastline`).
  */
 function masqueDeLaForme(def: IslandDef, f: FormeDeLIle): MasqueDeLaForme {
   const connu = masques.get(def.id);
   if (connu) return connu;
   const b = bornesDuCoeur(def);
   const s = (b.x1 - b.x0) / 2;
-  const e = etendueDeLaForme(f, s, MARGE_DU_BRUIT);
-  const x0 = b.x0 - e.left - 1;
-  const y0 = b.y0 - e.front - 1;
-  const w = b.x1 + e.right + 1 - x0;
-  const h = b.y1 + e.back + 1 - y0;
+  const coins = coreCorners(def, f, b);
+  // La boîte de la forme et une case de mer autour.
+  const boite = shapeBox(f);
+  const x0 = b.x0 - boite.gauche - 1;
+  const y0 = b.y0 - boite.devant - 1;
+  const w = b.x1 - b.x0 + boite.gauche + boite.droite + 2;
+  const h = b.y1 - b.y0 + boite.devant + boite.fond + 2;
   const cases = new Uint8Array(w * h);
+  const sures = new Uint8Array(w * h);
+  const enPlage = (k: number) => coins[k] === 'plage';
   for (let j = 0; j < h; j++)
-    for (let i = 0; i < w; i++) if (dansLaFormeBrute(def, f, b, s, x0 + i, y0 + j)) cases[j * w + i] = 1;
-  // D'un seul tenant : la terre que l'on gagne depuis le cœur, de proche en proche (sans diagonale).
-  const tenant = new Uint8Array(w * h);
-  const file: number[] = [(b.y0 - y0) * w + (b.x0 - x0)];
-  tenant[file[0]] = 1;
+    for (let i = 0; i < w; i++) {
+      const t = rawShapeCell(def, f, b, s, boite, enPlage, x0 + i, y0 + j);
+      if (t) cases[j * w + i] = 1;
+      if (t === 2) sures[j * w + i] = 1;
+    }
+  smoothCoastline(cases, sures, w, h, (b.y0 - y0) * w + (b.x0 - x0));
+  const m = { x0, y0, w, h, cases, corners: coins };
+  masques.set(def.id, m);
+  return m;
+}
+
+/**
+ * Le masque de la terre d'une forme, retouché : d'un seul tenant depuis le cœur (la case `depart`), sans mare fermée,
+ * et sans dentelle : une case de terre qui ne tient dans aucun carré de 3 × 3 tout en terre retourne à la mer (une
+ * pointe d'une ou deux cases), une case de mer qui ne tient dans aucun carré de 3 × 3 tout en mer devient de la terre
+ * (une entaille, un puits), jusqu'à ce que rien ne change. Les cases `sures` (le cœur, ses deux cases de terre, le
+ * carré du Gardien) restent de la terre. Hors du masque, la mer.
+ */
+function smoothCoastline(cases: Uint8Array, sures: Uint8Array, w: number, h: number, depart: number): void {
+  // La terre de chaque carré de 3 × 3, par son coin (i, j) de −2 à w − 1 : hors du masque, la mer. Un tableau par
+  // passe, plutôt que neuf carrés de neuf cases relus pour chaque case (expert frontend, import de la carte).
+  const W = w + 2;
+  const somme = new Uint8Array(W * (h + 2));
+  const sommer = () => {
+    for (let j = -2; j < h; j++)
+      for (let i = -2; i < w; i++) {
+        let n = 0;
+        for (let dy = 0; dy < 3; dy++)
+          for (let dx = 0; dx < 3; dx++) {
+            const x = i + dx;
+            const y = j + dy;
+            if (x >= 0 && y >= 0 && x < w && y < h) n += cases[y * w + x];
+          }
+        somme[(j + 2) * W + i + 2] = n;
+      }
+  };
+  // La case (i, j) tient-elle dans un carré de 3 × 3 tout entier de terre (9) ou de mer (0) ?
+  const dansUnCarre = (i: number, j: number, plein: number) => {
+    for (let oy = -2; oy <= 0; oy++) for (let ox = -2; ox <= 0; ox++) if (somme[(j + oy + 2) * W + i + ox + 2] === plein) return true;
+    return false;
+  };
+  for (let passe = 0; passe < 8; passe++) {
+    let change = false;
+    sommer();
+    for (let j = 0; j < h; j++)
+      for (let i = 0; i < w; i++) {
+        const k = j * w + i;
+        if (cases[k] && !sures[k] && !dansUnCarre(i, j, 9)) {
+          cases[k] = 0;
+          change = true;
+        }
+      }
+    sommer();
+    for (let j = 1; j < h - 1; j++)
+      for (let i = 1; i < w - 1; i++) {
+        const k = j * w + i;
+        if (!cases[k] && !dansUnCarre(i, j, 0)) {
+          cases[k] = 1;
+          change = true;
+        }
+      }
+    change = inOnePiece(cases, w, h, depart) || change;
+    if (!change) return;
+  }
+}
+
+/**
+ * La terre d'un seul tenant : celle que l'on gagne depuis la case `depart`, de proche en proche (sans diagonale) ; puis
+ * la mer, ce qu'on gagne depuis le bord du masque sans passer sur la terre : le reste (une mare fermée) est de la
+ * terre. Dit si quelque chose a changé.
+ */
+function inOnePiece(cases: Uint8Array, w: number, h: number, depart: number): boolean {
   const voisins = (k: number, f2: (n: number) => void) => {
     const i = k % w;
     if (i > 0) f2(k - 1);
@@ -210,6 +342,9 @@ function masqueDeLaForme(def: IslandDef, f: FormeDeLIle): MasqueDeLaForme {
     if (k >= w) f2(k - w);
     if (k < w * (h - 1)) f2(k + w);
   };
+  const tenant = new Uint8Array(w * h);
+  const file: number[] = [depart];
+  tenant[depart] = 1;
   for (let n = 0; n < file.length; n++)
     voisins(file[n], (k) => {
       if (cases[k] && !tenant[k]) {
@@ -217,7 +352,6 @@ function masqueDeLaForme(def: IslandDef, f: FormeDeLIle): MasqueDeLaForme {
         file.push(k);
       }
     });
-  // La mer : ce qu'on gagne depuis le bord de la boîte sans passer sur la terre ; le reste (une mare fermée) est de la terre.
   const mer = new Uint8Array(w * h);
   const large: number[] = [];
   for (let k = 0; k < w * h; k++) {
@@ -235,32 +369,56 @@ function masqueDeLaForme(def: IslandDef, f: FormeDeLIle): MasqueDeLaForme {
         large.push(k);
       }
     });
-  for (let k = 0; k < w * h; k++) cases[k] = mer[k] ? 0 : 1;
-  const m = { x0, y0, w, h, cases };
-  masques.set(def.id, m);
-  return m;
+  let change = false;
+  for (let k = 0; k < w * h; k++) {
+    const t = mer[k] ? 0 : 1;
+    if (cases[k] !== t) {
+      cases[k] = t;
+      change = true;
+    }
+  }
+  return change;
 }
 
-/** La case (x, y) du repère d'un lieu est-elle dans sa forme, son bord cassé par le bruit, avant d'être d'un seul tenant ? */
-function dansLaFormeBrute(def: IslandDef, f: FormeDeLIle, b: Readonly<Bornes>, s: number, x: number, y: number): boolean {
-  const autour = TERRE_AUTOUR_DU_COEUR;
-  // Jamais au-delà de la boîte de la forme (./formes.ts) : la terre d'un lieu tient dans le même carré, tourné ou non.
-  const boite = BOITE_DE_LA_FORME;
-  if (x < b.x0 - boite || x >= b.x1 + boite || y < b.y0 - boite || y >= b.y1 + boite) return false;
-  if (x >= b.x0 - autour && x < b.x1 + autour && y >= b.y0 - autour && y < b.y1 + autour) return true;
+/**
+ * La case (x, y) du repère d'un lieu est-elle dans sa forme, son bord tourné par le bruit, avant les retouches ? 0 :
+ * non ; 1 : oui ; 2 : oui, toujours (le cœur, ses deux cases de terre, le carré du Gardien et la case autour).
+ */
+function rawShapeCell(def: IslandDef, f: FormeDeLIle, b: Readonly<Bornes>, s: number, boite: ShapeBox, enPlage: (k: number) => boolean, x: number, y: number): 0 | 1 | 2 {
+  // Jamais au-delà de la boîte de la forme (./formes.ts), plus profonde du côté de son trait.
+  if (x < b.x0 - boite.gauche || x >= b.x1 + boite.droite || y < b.y0 - boite.devant || y >= b.y1 + boite.fond) return 0;
+  if (distanceToCore(b, enPlage, x, y) < TERRE_AUTOUR_DU_COEUR) return 2;
   // Le carré du Gardien de GD-11, figé (./guardianSquares.ts), et une case autour : toujours de la terre.
   const g = GD11_GUARDIAN_SQUARES[def.id];
-  if (g && x >= g.x - 1 && x < g.x + GUARDIAN_SQUARE_SIDE + 1 && y >= g.y - 1 && y < g.y + GUARDIAN_SQUARE_SIDE + 1) return true;
+  if (g && x >= g.x - 1 && x < g.x + GUARDIAN_SQUARE_SIDE + 1 && y >= g.y - 1 && y < g.y + GUARDIAN_SQUARE_SIDE + 1) return 2;
   const u = x + 0.5 - (b.x0 + b.x1) / 2;
   const v = y + 0.5 - (b.y0 + b.y1) / 2;
   const d = distanceALaForme(f, u, v, s);
-  if (d > MARGE_DU_BRUIT) return false;
-  if (d < -MARGE_DU_BRUIT) return true;
+  const a = BRUIT_DE_LA_FORME.amplitude;
+  if (d > a) return 0;
   // Au port, devant le cœur, la rive reste droite sur la largeur du quai et du Bloc-Navire (sans bruit) : la jetée en part.
-  if (f.quai && v < -s && u > 4 && u < 16) return d < 0;
+  if (f.quai && v < -s && u > 4 && u < 16) return d < 0 ? 1 : 0;
+  if (d < -a) return 1;
   const t = tirage(def, def.core.x + x, def.core.y + y);
-  const bruit = (smoothNoise(def.seed + 101, t.x, t.y, 6) - 0.5) * 2 * BRUIT_DE_LA_FORME.lisse + (noise(def.seed + 103, t.x, t.y) - 0.5) * 2 * BRUIT_DE_LA_FORME.grain;
-  return d + bruit < 0;
+  return d + (smoothNoise(def.seed + 101, t.x, t.y, BRUIT_DE_LA_FORME.onde) - 0.5) * 2 * a < 0 ? 1 : 0;
+}
+
+/** De combien la terre d'une forme peut dépasser le cœur de chaque côté, dans le repère du lieu. */
+export interface ShapeBox {
+  gauche: number;
+  droite: number;
+  devant: number;
+  fond: number;
+}
+
+/**
+ * La boîte d'une forme (GD-12) : `BOITE_DE_LA_FORME` cases au-delà du cœur, `FEATURE_BOX` du côté de son trait
+ * (./formes.ts, décision du mainteneur du 8 octobre 2026).
+ */
+export function shapeBox(f: FormeDeLIle): ShapeBox {
+  const t = featureSide(f);
+  const [B, T] = [BOITE_DE_LA_FORME, f.short ? BOITE_DE_LA_FORME : FEATURE_BOX];
+  return { gauche: t.u < 0 ? T : B, droite: t.u > 0 ? T : B, devant: t.v < 0 ? T : B, fond: t.v > 0 ? T : B };
 }
 
 /** La case (x, y) du monde (le lieu posé, pas tourné) est-elle dans la forme du lieu ? */
@@ -271,6 +429,33 @@ function dansLaForme(def: IslandDef, x: number, y: number): boolean {
   const i = x - def.core.x - m.x0;
   const j = y - def.core.y - m.y0;
   return i >= 0 && j >= 0 && i < m.w && j < m.h && m.cases[j * m.w + i] === 1;
+}
+
+/**
+ * Le sol d'une case du cœur d'un lieu (x, y du monde, le lieu posé, pas tourné) : `null`, le sol du lieu (son bloc, ou
+ * l'herbe) ; ailleurs, dans un coin arrondi du cœur d'une île qui a une forme (`BEACH_RADIUS`), le sable d'un coin
+ * de plage, ou le sol de la côte sous un lobe (`solAPlat`). Hors du cœur, `null`.
+ */
+export function coreCornerGround(def: IslandDef, x: number, y: number): Ground | null {
+  const f = silhouetteDe(def.id).forme;
+  if (!f || !inCore(def, x, y)) return null;
+  const b = bornesDuCoeur(def);
+  const m = masqueDeLaForme(def, f);
+  const [lx, ly] = [x - def.core.x, y - def.core.y];
+  const c = m.corners[cornerAt(b, lx, ly)];
+  if ((c !== 'plage' && c !== 'terre') || distanceToCore(b, () => true, lx, ly) <= 0) return null;
+  // (Au Volcan, la plage est du basalte, comme sa côte.)
+  return c === 'plage' && def.altitude === 0 && def.region !== 'feu' ? 'sable' : solAPlat(def);
+}
+
+/**
+ * La case (x, y) du monde (le lieu posé, pas tourné) est-elle à deux cases au plus d'un coin de plage du cœur (en
+ * damier) ? Sa côte y est du sable : la plage du coin va jusqu'à la mer.
+ */
+function nearBeach(def: IslandDef, x: number, y: number): boolean {
+  for (let dy = -TERRE_AUTOUR_DU_COEUR; dy <= TERRE_AUTOUR_DU_COEUR; dy++)
+    for (let dx = -TERRE_AUTOUR_DU_COEUR; dx <= TERRE_AUTOUR_DU_COEUR; dx++) if (coreCornerGround(def, x + dx, y + dy) === 'sable') return true;
+  return false;
 }
 
 /**
@@ -297,8 +482,7 @@ function terreNouvelle(def: IslandDef, x: number, y: number): boolean {
 }
 
 /** La côte d'un lieu qui a une forme : de combien sa terre déborde son cœur de chaque côté (`IslandDef.ext`). */
-function etendueDuLieu(def: IslandDef): IslandDef['ext'] {
-  const f = silhouetteDe(def.id).forme!;
+function etendueDuLieu(def: IslandDef, f: FormeDeLIle): IslandDef['ext'] {
   const m = masqueDeLaForme(def, f);
   const b = bornesDuCoeur(def);
   let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
@@ -343,7 +527,10 @@ const STARTING_MAP: MapPlace[] = [
   // 67 et 103 ; x −12 et 24 à l'ouest, 108 et 144 à l'est), la Forêt et la Plaine restent ; les places laissées libres
   // entre elles portent les îlots des monuments et les places où un lieu tourne. Au rang du fond, l'Horloge et la Vallée
   // reculent d'un pas (y 107), en quinconce avec la Baie, la Fouille et la Pointe : sur la tablette, panneau ouvert,
-  // leurs noms ne se taisent plus sur la Carte. Chaque lieu garde la vue de sa place de GD-11 (`vueDepuis`).
+  // leurs noms ne se taisent plus sur la Carte. Chaque lieu garde la vue de sa place de GD-11 (`vueDepuis`). Depuis que
+  // le trait de chaque forme va jusqu'à sept cases (`FEATURE_BOX`, mainteneur, 8 octobre 2026), la Baie avance d'un
+  // pas vers la Tour (y 99) et le Laboratoire d'un pas vers la Rivière (x 140) : leurs côtes en face, à deux cases du
+  // cœur, s'étaient écartées à neuf cases d'eau, trop loin pour se réunir.
   { id: 'french-6e-phonology', region: 'basses-terres', core: { x: 68, y: 63 }, repere: { x: 67, y: 59 }, altitude: 0, relief: 'collines', seed: 11 },
   { id: 'french-6e-grammar-spelling', region: 'basses-terres', core: { x: 24, y: 31 }, vueDepuis: { x: 24, y: 59 }, repere: { x: 25, y: 61 }, deplacee: { x: -2, y: 0 }, altitude: 0, relief: 'plat', seed: 12 },
   { id: 'french-6e-letter-confusion', region: 'montagne', core: { x: 108, y: 59 }, vueDepuis: { x: 104, y: 67 }, repere: { x: 98, y: 61 }, deplacee: { x: 2, y: 0 }, altitude: 0, relief: 'montagne', seed: 13 },
@@ -385,7 +572,7 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'french-3e-close-reading', region: 'hauteurs', core: { x: 58, y: 964 }, repere: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(2, 2, 1, 4), relief: 'collines', seed: 44 },
   // Anglais 6e : au rang du fond, à l'ouest (GD-12), la Baie au coin, l'Horloge à côté, un pas plus au fond (leur isthme
   // est retiré, GD-9).
-  { id: 'english-6e-vocabulary', region: 'basses-terres', core: { x: -12, y: 103 }, vueDepuis: { x: 32, y: 107 }, repere: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, relief: 'plat', seed: 51 },
+  { id: 'english-6e-vocabulary', region: 'basses-terres', core: { x: -12, y: 99 }, vueDepuis: { x: 32, y: 107 }, repere: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, relief: 'plat', seed: 51 },
   { id: 'english-6e-grammar', region: 'basses-terres', core: { x: 24, y: 107 }, vueDepuis: { x: 64, y: 107 }, repere: { x: 68, y: 102 }, deplacee: { x: 0, y: 1 }, altitude: 0, relief: 'collines', seed: 52 },
   // Histoire-géographie 6e : au rang du fond, à l'est (GD-12), la Fouille des siècles puis la Pointe des
   // paysages, fermées au départ (on les relie). Sur le pas des places, à quatre cases d'eau au moins de leurs voisines.
@@ -400,7 +587,7 @@ const STARTING_MAP: MapPlace[] = [
   // GD-11). Chacune garde le dessin de sa première place, au rang du fond (`repere`). Terre plate, sans relief ni pic,
   // comme l'histoire-géographie.
   { id: 'life-earth-sciences-6e-living-world', region: 'basses-terres', core: { x: 68, y: 107 }, vueDepuis: { x: 96, y: 111 }, repere: { x: 152, y: 139 }, altitude: 0, relief: 'plat', seed: 55 },
-  { id: 'physics-chemistry-6e-matter-energy', region: 'basses-terres', core: { x: 144, y: 15 }, vueDepuis: { x: 152, y: 15 }, repere: { x: 124, y: 139 }, altitude: 0, relief: 'plat', seed: 56 },
+  { id: 'physics-chemistry-6e-matter-energy', region: 'basses-terres', core: { x: 140, y: 15 }, vueDepuis: { x: 152, y: 15 }, repere: { x: 124, y: 139 }, altitude: 0, relief: 'plat', seed: 56 },
   { id: 'technology-6e-objects', region: 'basses-terres', core: { x: -12, y: -5 }, vueDepuis: { x: -12, y: 11 }, repere: { x: 96, y: 139 }, altitude: 0, relief: 'plat', seed: 57 },
   // Anglais 5e : une colonne à droite du Marché et du Marais.
   { id: 'english-5e-vocabulary', region: 'basses-terres', core: { x: 105, y: 321 }, repere: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 1, 3), relief: 'plat', seed: 61 },
@@ -466,8 +653,9 @@ const STARTING_MAP: MapPlace[] = [
 export const MAP: readonly IslandDef[] = Object.freeze(
   STARTING_MAP.map((d): IslandDef => {
     const def: IslandDef = { ...d, repere: d.repere ?? d.core, quarts: 0 as Quarts, ext: d.ext ?? { left: 0, right: 0, front: 0, back: 0 } };
-    if (!d.ext && !silhouetteDe(d.id).forme) throw new Error(`${d.id} n'a ni côte écrite ni forme.`);
-    return Object.freeze(silhouetteDe(d.id).forme ? { ...def, ext: etendueDuLieu(def) } : def);
+    const f = silhouetteDe(d.id).forme;
+    if (!d.ext && !f) throw new Error(`${d.id} n'a ni côte écrite ni forme.`);
+    return Object.freeze(f ? { ...def, ext: etendueDuLieu(def, f) } : def);
   }),
 );
 
@@ -731,7 +919,9 @@ function computeMargins(def: IslandDef): LandCell[] {
   for (let x = c.x0; x < c.x1; x++)
     for (let y = c.y0; y < c.y1; y++) {
       if (inCoeurDOrigine(def, x, y)) continue;
-      out.push({ x, y, h: 0, ground: sol, decor: jalons.get(`${x},${y}`) });
+      // Un coin de plage (GD-12) : du sable, sans jalon.
+      const coin = coreCornerGround(def, x, y);
+      out.push(coin === 'sable' ? { x, y, h: 0, ground: coin } : { x, y, h: 0, ground: coin ?? sol, decor: jalons.get(`${x},${y}`) });
     }
   return out;
 }
@@ -940,6 +1130,11 @@ export interface LandCell {
   h: number;
   ground: Ground;
   decor?: Decor;
+  /**
+   * Le sol du lieu (le bloc de son cœur) recouvre la case : là où il suit la forme de l'île vers son trait (GD-12, la
+   * pierre de la Mine dans sa pointe, `inShapeFeature`). `ground` reste le sol de la côte, pour le reste du jeu.
+   */
+  placeGround?: true;
 }
 
 /**
@@ -992,7 +1187,11 @@ export function landscape(def: IslandDef): LandCell[] {
 
 function computeLandscape(def: IslandDef): LandCell[] {
   const cells = landCells(def);
-  const forme = silhouetteDe(def.id).forme !== undefined;
+  const f = silhouetteDe(def.id).forme;
+  const forme = f !== undefined;
+  // Le milieu du cœur et son demi-côté, pour lire la forme (`inShapeFeature`).
+  const b = bornesDuCoeur(def);
+  const [mx, my, demi] = [def.core.x + (b.x0 + b.x1) / 2, def.core.y + (b.y0 + b.y1) / 2, (b.x1 - b.x0) / 2];
   const isLandAt = (x: number, y: number) => isLand(def, x, y);
   const pk = peaks(def);
   const out: LandCell[] = [];
@@ -1041,6 +1240,8 @@ function computeLandscape(def: IslandDef): LandCell[] {
     if (def.id === 'maths-5e-signed-numbers' && h >= 2) ground = 'neige';
     if (crater) ground = 'lave';
     if (edge && def.altitude === 0 && h === 0 && def.region !== 'feu') ground = 'sable';
+    // Près d'un coin de plage du cœur (GD-12, point 4), la côte est du sable jusqu'à la mer.
+    if (forme && def.altitude === 0 && h === 0 && def.region !== 'feu' && nearBeach(def, c.x, c.y)) ground = 'sable';
     // Lacs et mares : dans un creux, loin du bord et du cœur ; le lac dessiné d'une île, et sa bordure de pierre.
     let decor: Decor | undefined;
     const lac = auLac(def, c.x, c.y);
@@ -1052,15 +1253,86 @@ function computeLandscape(def: IslandDef): LandCell[] {
       out.push({ x: c.x, y: c.y, h: 0, ground: lac === 'bord' ? 'roche' : 'herbe' });
       continue;
     }
-    if (!LACS[def.id] && !edge && !nearCore && h === 0 && smoothNoise(def.seed + 11, t.x, t.y, 3) > 0.78 && def.relief !== 'volcan') {
+    // (Pas de mare sur la côte d'une île qui a une forme : un puits d'une ou deux cases dans sa terre, GD-12.)
+    if (!forme && !LACS[def.id] && !edge && !nearCore && h === 0 && smoothNoise(def.seed + 11, t.x, t.y, 3) > 0.78 && def.relief !== 'volcan') {
       ground = 'eau';
       h = -1;
     } else if (h <= 2 && !edge && fine > SEUIL_DU_DECOR && (!forme || noise(def.seed + 13, t.x, t.y) < PART_DU_DECOR_D_UNE_FORME[nouvelle ? 'nouvelle' : 'cote'])) {
       decor = pickDecor(def, ground, h, fine);
     }
-    out.push({ x: c.x, y: c.y, h, ground, decor });
+    // Le sol du lieu suit la forme vers son trait (GD-12), hors du bord, du sable et des sommets.
+    const placeGround = f !== undefined && !edge && h < 3 && ground !== 'sable' && ground !== 'lave' && inShapeFeature(f, c.x + 0.5 - mx, c.y + 0.5 - my, demi);
+    out.push(placeGround ? { x: c.x, y: c.y, h, ground, decor, placeGround } : { x: c.x, y: c.y, h, ground, decor });
   }
+  if (forme) dressShape(def, out);
   return out;
+}
+
+/** Au bout d'un bras ou d'un lobe, l'élément de décor déjà là qu'on y pose, selon la région : un arbre, ou un rocher. */
+const LOBE_TIP_DECOR: Readonly<Record<RegionId, Decor>> = Object.freeze({
+  'basses-terres': 'arbre',
+  marais: 'arbre',
+  hauteurs: 'rocher',
+  montagne: 'sapin',
+  feu: 'rocher',
+});
+
+/**
+ * Sur la côte d'une île qui a une forme, de loin en loin un jalon (`JALONS`), une case en retrait du bord : jamais à
+ * moins de tant de cases (en damier) d'un autre élément de décor.
+ */
+const COAST_MARKER_SPACING = 4;
+
+/**
+ * La terre nouvelle d'une forme habillée (GD-12, proposition du consultant Blocland, 8 octobre 2026) : sans quoi elle
+ * était une pelouse nue. Au bout de chaque bras ou lobe (la terre à trois cases ou plus du cœur, d'un seul tenant, six
+ * cases au moins), l'élément de la région (`LOBE_TIP_DECOR`) sur sa case la plus au large qui n'est pas au bord ; le
+ * long de la côte, une case en retrait du bord, de loin en loin, un jalon (une pierre, une touffe, un rondin). Rien que
+ * le décor déjà là, sur l'herbe ou le sol de la côte, jamais sur le sable ni sur un pic. Modifie `cases`.
+ */
+function dressShape(def: IslandDef, cases: LandCell[]): void {
+  const b = bornesDuCoeur(def);
+  const loin = (c: LandCell) => {
+    const [lx, ly] = [c.x - def.core.x, c.y - def.core.y];
+    return Math.max(b.x0 - lx, lx - (b.x1 - 1), b.y0 - ly, ly - (b.y1 - 1));
+  };
+  const bord = (c: LandCell) => !isLand(def, c.x - 1, c.y) || !isLand(def, c.x + 1, c.y) || !isLand(def, c.x, c.y - 1) || !isLand(def, c.x, c.y + 1);
+  const libre = (c: LandCell) => !c.decor && c.h === 0 && c.ground !== 'sable' && c.ground !== 'eau' && c.ground !== 'lave';
+  const parCase = new Map(cases.map((c) => [`${c.x},${c.y}`, c]));
+  // Les bras et les lobes : la terre à trois cases ou plus du cœur, morceau par morceau (sans diagonale).
+  const vus = new Set<LandCell>();
+  for (const depart of cases) {
+    if (vus.has(depart) || loin(depart) < 3) continue;
+    const lobe: LandCell[] = [depart];
+    vus.add(depart);
+    for (let n = 0; n < lobe.length; n++)
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const v = parCase.get(`${lobe[n].x + dx},${lobe[n].y + dy}`);
+        if (v && !vus.has(v) && loin(v) >= 3) {
+          vus.add(v);
+          lobe.push(v);
+        }
+      }
+    if (lobe.length < 6) continue;
+    const bout = lobe.filter((c) => libre(c) && !bord(c)).sort((p, q) => loin(q) - loin(p) || p.y - q.y || p.x - q.x)[0];
+    if (bout) bout.decor = LOBE_TIP_DECOR[def.region];
+  }
+  // Les jalons de la côte, une case en retrait du bord, dans l'ordre des cases (colonne par colonne).
+  const genres = JALONS[def.region];
+  const decores = cases.filter((c) => c.decor);
+  for (const c of cases) {
+    if (!libre(c) || bord(c) || c.placeGround) continue;
+    const auBord = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => {
+      const v = parCase.get(`${c.x + dx},${c.y + dy}`);
+      return v !== undefined && bord(v);
+    });
+    if (!auBord) continue;
+    const t = tirage(def, c.x, c.y);
+    if (noise(def.seed + 43, t.x, t.y) > 0.3) continue;
+    if (decores.some((d) => Math.max(Math.abs(d.x - c.x), Math.abs(d.y - c.y)) < COAST_MARKER_SPACING)) continue;
+    c.decor = genres[Math.floor(noise(def.seed + 47, t.x, t.y) * genres.length) % genres.length];
+    decores.push(c);
+  }
 }
 
 function pickDecor(def: IslandDef, ground: Ground, h: number, r: number): Decor | undefined {

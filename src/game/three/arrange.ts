@@ -124,6 +124,9 @@ function reglerLeMateriau(m: THREE.Material, oui: boolean): void {
  * du mode « Aménager ». Hors du mode, le matériau reste tel quel (son programme est celui d'avant, sans `discard`) ;
  * l'ajout n'est posé que le temps que le mode est ouvert (`ouvrirLeModeDansLesMateriaux`).
  */
+/** Aucune part de la zone : la zone entière (`zone`). */
+const NO_PARTS: readonly { x0: number; y0: number; x1: number; y1: number }[] = [];
+
 export function avecLAmenagement<M extends THREE.Material>(m: M): M {
   materiauxDesBlocs.add(m);
   reglerLeMateriau(m, modeOuvert);
@@ -413,10 +416,17 @@ export function creerAmenagement(
     // Avec des poignées, le nom se pose au-dessus d'elles (le bas du nom sur le bord nord du plus haut radeau) : jamais
     // sur une poignée. Sans elles, au-dessus du fantôme.
     // Pendant le glissé (les poignées cachées), au-dessus du bord nord de l'empreinte : jamais sur elle.
+    // Un lieu choisi, au repos : son nom sur son fantôme, sous son milieu (le haut du nom au milieu : le centre de la
+    // croix d'une place prise reste visible). « Tourner », sa seule poignée, se tient hors du fantôme, à son coin ;
+    // au-dessus d'elle, le nom se posait sur l'île voisine (la Tour du lecteur sur la Baie des mots, GD-12, directeur
+    // artistique).
     const nord = vueCourante?.nomAuNord;
     if (nord) {
       nomSprite.center.set(0.5, -0.15);
       nomSprite.position.set(nord.x, nord.z, nord.y);
+    } else if (vueCourante?.souleve) {
+      nomSprite.center.set(0.5, 1.15);
+      nomSprite.position.set(vueCourante.suivre.x, vueCourante.suivre.z + 1, vueCourante.suivre.y);
     } else if (poignees.auDessus(nomSprite.position)) nomSprite.center.set(0.5, -0.15);
     else if (vueCourante) {
       nomSprite.center.set(0.5, 0.5);
@@ -538,9 +548,12 @@ export function creerAmenagement(
   const zone = (r: { x0: number; y0: number; x1: number; y1: number }, parts?: readonly { x0: number; y0: number; x1: number; y1: number }[]) => {
     zoneDuMode.uAmZone.value.set(r.x0, r.y0, r.x1, r.y1);
     // Trop de rectangles (ce qui n'arrive pas) : la zone entière, plutôt qu'une part de la terre oubliée.
-    const n = parts && parts.length <= PARTS_DE_LA_ZONE ? parts.length : 0;
-    for (let i = 0; i < n; i++) zoneDuMode.uAmParts.value[i].set(parts![i].x0, parts![i].y0, parts![i].x1, parts![i].y1);
-    zoneDuMode.uAmNParts.value = n;
+    const liste = parts && parts.length <= PARTS_DE_LA_ZONE ? parts : NO_PARTS;
+    for (let i = 0; i < liste.length; i++) {
+      const p = liste[i];
+      zoneDuMode.uAmParts.value[i].set(p.x0, p.y0, p.x1, p.y1);
+    }
+    zoneDuMode.uAmNParts.value = liste.length;
   };
 
   /** Les valeurs des matériaux à l'heure `now` : le geste d'abord, sinon le lieu soulevé, sinon rien. */

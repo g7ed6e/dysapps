@@ -94,7 +94,8 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
       .sort(),
   ).toEqual([
     // Depuis les formes des îles (GD-12, 8 octobre 2026) : la Ferme s'atteint depuis la Plaine, la Tour depuis la Forêt ;
-    // le Hangar, au coin de devant derrière le Volcan, par le Volcan (comme le Laboratoire, par la Rivière, depuis SC-2).
+    // le Hangar, au coin de devant derrière le Volcan, par le Volcan (comme le Laboratoire, par la Rivière, depuis SC-2),
+    // et, depuis la boîte du trait (8 octobre 2026), aussi depuis la Forêt : sa liaison (95 cases) tient désormais.
     'french-6e-grammar-spelling-maths-6e-calculation',
     'french-6e-phonology-english-6e-grammar',
     'french-6e-phonology-english-6e-vocabulary',
@@ -104,6 +105,7 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
     'french-6e-phonology-geography-6e-living',
     'french-6e-phonology-history-6e-antiquity',
     'french-6e-phonology-life-earth-sciences-6e-living-world',
+    'french-6e-phonology-technology-6e-objects',
     'maths-6e-calculation-maths-6e-decimals',
     'maths-6e-calculation-maths-6e-fractions',
   ]);
@@ -163,6 +165,7 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
     'french-6e-phonology-geography-6e-living',
     'french-6e-phonology-history-6e-antiquity',
     'french-6e-phonology-life-earth-sciences-6e-living-world',
+    'french-6e-phonology-technology-6e-objects',
     'maths-5e-proportionality-english-5e-grammar',
     'maths-5e-proportionality-english-5e-vocabulary',
     'maths-5e-proportionality-french-5e-conjugation',

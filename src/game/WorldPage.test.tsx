@@ -1141,25 +1141,25 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     vuSansAide();
     localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'decouverte-ouvrages': true }));
     // La Mine reliée : la Rivière a trois départs, la Plaine et la Mine (deux ponts), et un troisième depuis que les
-    // îlots des Gardiens ont quitté la mer (GD-11). Depuis les formes des îles (GD-12), la Mine, rangée sous la Rivière,
-    // est le départ le plus proche, la Plaine vient ensuite.
+    // îlots des Gardiens ont quitté la mer (GD-11). Depuis que les traits des formes vont jusqu'à sept cases (GD-12,
+    // 8 octobre 2026), la Plaine est de nouveau le départ le plus proche, la Mine vient ensuite.
     localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['french-6e-phonology-french-6e-letter-confusion'] } }));
     const user = userEvent.setup();
     renderAt('/adventure');
     await user.click(screen.getByRole('button', { name: 'Toucher la Rivière pâle' }));
     await user.click(within(screen.getByRole('dialog', { name: 'Rivière des fractions' })).getByRole('button', { name: 'Relier' }));
     // D'abord le départ le plus proche, le même que le fantôme du monde : la caméra ne bouge pas.
-    expect(screen.getByRole('dialog', { name: /^Rivière des fractions/ })).toHaveTextContent(/part de la Mine des lettres\. Départ 1 sur 3\./);
+    expect(screen.getByRole('dialog', { name: /^Rivière des fractions/ })).toHaveTextContent(/part de la Plaine des nombres\. Départ 1 sur 3\./);
     expect(vu.liaisonCadree).toBeNull();
     await user.click(within(screen.getByRole('dialog', { name: /^Rivière des fractions/ })).getByRole('button', { name: 'Autre départ, 1 sur 3' }));
     const o = screen.getByRole('dialog', { name: /^Rivière des fractions/ });
-    expect(o).toHaveTextContent(/Le pont part de la Plaine des nombres\. Départ 2 sur 3\./);
-    expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'maths-6e-calculation-maths-6e-fractions' } });
-    expect(vu.liaisonCadree).toBe('maths-6e-calculation-maths-6e-fractions');
+    expect(o).toHaveTextContent(/Le pont part de la Mine des lettres\. Départ 2 sur 3\./);
+    expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-letter-confusion-maths-6e-fractions' } });
+    expect(vu.liaisonCadree).toBe('french-6e-letter-confusion-maths-6e-fractions');
     // Le monde dessine le fantôme du départ choisi, à la place de celui du plus proche.
     const fantomes = new Set(vu.cubes.filter((c) => c.ghost).map((c) => (c as { bridge?: string }).bridge));
-    expect(fantomes.has('maths-6e-calculation-maths-6e-fractions')).toBe(true);
-    expect(fantomes.has('french-6e-letter-confusion-maths-6e-fractions')).toBe(false);
+    expect(fantomes.has('french-6e-letter-confusion-maths-6e-fractions')).toBe(true);
+    expect(fantomes.has('maths-6e-calculation-maths-6e-fractions')).toBe(false);
   });
 
   it('un ouvrage en fantôme : « Poser » quand on a les blocs ; construit, il ne s’ouvre plus (il se touche comme le sol)', async () => {
