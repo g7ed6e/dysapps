@@ -122,7 +122,7 @@
       ],
       "answer": "aluminium",
       "hint": "Recycler, c’est refaire la même matière.",
-      "explanation": "Recyclée, la canette redevient de l’aluminium, qui sert à fabriquer de nouveaux objets. On n’a pas besoin de nouvelles roches.",
+      "explanation": "Recyclée, la canette redevient de l’aluminium, qui sert à fabriquer de nouveaux objets. On a besoin de moins de roche.",
       "aid": {
         "kind": "rule-card",
         "props": {

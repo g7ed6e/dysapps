@@ -86,17 +86,17 @@
     },
     {
       "key": "life-earth-sciences-6e-living-world-living-groups-2-3",
-      "prompt": "Les attributs de trois animaux\nRequin : squelette interne, nageoires\nDauphin : squelette interne, nageoires, poils, mamelles\nVache : squelette interne, poils, mamelles",
+      "prompt": "Les attributs de trois animaux\nRequin : squelette interne, nageoires\nDauphin : squelette interne, nageoires, mamelles\nVache : squelette interne, poils, mamelles",
       "question": "Qui est le plus proche parent du dauphin ?",
-      "spoken": "Les attributs de trois animaux. Requin, squelette interne, nageoires. Dauphin, squelette interne, nageoires, poils, mamelles. Vache, squelette interne, poils, mamelles.",
+      "spoken": "Les attributs de trois animaux. Requin, squelette interne, nageoires. Dauphin, squelette interne, nageoires, mamelles. Vache, squelette interne, poils, mamelles.",
       "choices": [
         "le requin",
         "la vache",
         "aucun des deux"
       ],
       "answer": "la vache",
-      "hint": "Qui a, comme le dauphin, des poils et des mamelles ?",
-      "explanation": "Le dauphin a des poils et des mamelles, comme la vache : ce sont deux mammifères. Le requin lui ressemble et vit dans la mer, mais ce n’est pas un mammifère.",
+      "hint": "Qui a, comme le dauphin, des mamelles ?",
+      "explanation": "Le dauphin a des mamelles, comme la vache : ce sont deux mammifères. Le requin lui ressemble et vit dans la mer, mais ce n’est pas un mammifère.",
       "aid": {
         "kind": "rule-card",
         "props": {

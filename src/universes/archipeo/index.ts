@@ -104,7 +104,7 @@ export const ARCHIPEO = {
       },
     },
     'french-5e-conjugation': {
-      challenge: 'L’Hydre des marais murmure de ses trois voix : « Mes trois cous sont éteints. Parle-moi du présent, du passé, du futur et du doute. »',
+      challenge: 'L’Hydre des marais murmure de ses trois voix : « Mes trois cous sont éteints. Parle-moi du présent, du passé et du futur. »',
       guardianSays: {
         hit: 'Une écaille de mes cous s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Cherche l’indice de temps dans la phrase, et reprends.',
@@ -115,7 +115,7 @@ export const ARCHIPEO = {
       challenge: 'Le Titan d’acier parle d’une voix lente : « Mon cœur de forge est éteint. Tu as chauffé toute ma forge, prends le temps de tes calculs. »',
       guardianSays: {
         hit: 'Une veine d’or s’allume vers mon cœur. C’est juste.',
-        miss: 'Rien ne s’éteint. Relis la règle, compte les zéros, et reprends.',
+        miss: 'Rien ne s’éteint. Relis la règle affichée, et reprends.',
         beaten: 'Mon cœur de forge se rallume. La forge est à toi, et à Braise.',
       },
     },
@@ -139,7 +139,7 @@ export const ARCHIPEO = {
       challenge: 'Le Hibou lexicographe chuchote entre ses tiroirs : « Mon livre est éteint. Tu as ouvert tous mes tiroirs, démontons les mots ensemble. »',
       guardianSays: {
         hit: 'Une veine d’or s’allume sur mon livre. Tu as trouvé la racine.',
-        miss: 'Rien ne s’éteint. Découpe le mot, cherche le petit morceau connu, et reprends.',
+        miss: 'Rien ne s’éteint. Relis l’aide sous la question, et reprends.',
         beaten: 'Mon livre se rallume. Le cabinet est à toi, et à Plume.',
       },
     },

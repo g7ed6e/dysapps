@@ -202,7 +202,7 @@
       ],
       "answer": "le télécharger une fois",
       "hint": "Combien de fois le film passe-t-il par internet ?",
-      "explanation": "Téléchargé une fois, le film ne passe qu’une fois par internet. En ligne, il passe dix fois : dix fois plus de données, et d’électricité.",
+      "explanation": "Téléchargé une fois, le film ne passe qu’une fois par internet. En ligne, il passe dix fois : dix fois plus de données, et plus d’électricité.",
       "aid": {
         "kind": "rule-card",
         "props": {

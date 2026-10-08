@@ -76,6 +76,12 @@ export interface World {
    * dans une sauvegarde d'avant GD-9 et tant qu'aucune région n'est aménagée : la carte de départ.
    */
   layout?: Layout;
+  /**
+   * Les lieux dont le défi était ouvert avant les programmes de 2025-2026 et l'est resté (core/movedChallenges.ts) :
+   * posé à la migration vers le format 4, seulement pour une sauvegarde plus ancienne. Un lieu en sort dès que son
+   * défi est réussi. Absent pour une partie neuve, où la règle est entière (boss.ts, `isBossUnlocked`).
+   */
+  challengesKeptOpen?: BiomeId[];
 }
 
 export interface LogEntry {

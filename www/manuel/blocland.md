@@ -294,6 +294,8 @@ Les parties se posent toujours dans le même ordre, celui du dessin, quelle que 
 - une île à **trois missions** : une partie par plan (les murs, le toit, la cour) ;
 - une île à **deux missions** (la Mine des lettres) : les murs, puis le toit et la cour ensemble (« Le toit et la cour de la forge »).
 
+Quand une île gagne ou perd une mission (avec les programmes de 2025-2026, la Forge, le Cabinet et l’Observatoire des données en ont quatre, le Glacier trois), rien de ce qui est posé ne se défait : un bâtiment fini reste fini. Une mission qui change d’île garde ses étoiles et ses questions à revoir. Crevasses devient Fourneau, à la Forge (4e). Le subjonctif part aux Liens, au Cabinet (4e). Le partage selon un ratio part aux Cargaisons, à l’Observatoire des données (3e). Leurs étoiles les suivent ; elles n’ouvrent pas l’île, qui s’ouvre par les ponts et le passage. Un défi déjà ouvert le reste.
+
 Ce qui reste à poser est dessiné en **fantômes bleutés** dans le monde. Rien ne se pose à la main : toucher un fantôme du bâtiment y fait marcher le bonhomme, comme sur le sol.
 
 ![La cabane de Mousso en cours : les murs posés en bois, le reste en fantômes bleutés.](/captures/plan-en-cours.jpg)

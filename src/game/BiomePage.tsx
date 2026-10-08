@@ -207,7 +207,7 @@ export function BiomePage() {
         </h2>
       )}
       {!sansLv2 && (() => {
-        const ready = unlocked && isBossOpen(biome, state.progress);
+        const ready = unlocked && isBossOpen(biome, state.progress, state.world.challengesKeptOpen);
         const beaten = isBossBeaten(biome.id, state.progress);
         const boss = state.progress[`${biome.id}-challenge`];
         const content = (

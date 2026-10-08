@@ -21,6 +21,19 @@ export function reviewKeys(spaced: SpacedItem[], exerciseId: string, today = tod
     .map((s) => keyOf(s.itemId));
 }
 
+/**
+ * Le nombre d'items à revoir aujourd'hui sur les lieux ouverts, comme `questsToReview` : un item arrivé avec sa mission
+ * dans un lieu encore fermé (programmes de 2025-2026, core/movedIds.ts) attend l'ouverture du lieu. Seul le nombre
+ * compte : aucune date ni aucun retard ne s'affiche.
+ */
+export function dueCountOnOpenPlaces(spaced: SpacedItem[], bridges: string[], today = todayISO()): number {
+  const places = new Map(CATALOG.map((meta) => [meta.id, meta.biome]));
+  return dueItems(spaced, today).filter((s) => {
+    const place = places.get(exerciseOf(s.itemId));
+    return place !== undefined && isBiomeUnlocked(place, bridges);
+  }).length;
+}
+
 export interface ReviewQuest {
   biome: BiomeId;
   type: string;

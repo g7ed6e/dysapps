@@ -12,7 +12,7 @@ import { ApplicationSection } from './settings/ApplicationSection';
 import { EraseSection } from './settings/EraseSection';
 
 const SAMPLE = 'Le bâtisseur range ses blocs de bois dans la cabane. Il en a 3, il en pose 2 : il en reste 1.';
-const SAMPLE_EN = 'Hello! My name is Robin. I have got three blue blocks.';
+const SAMPLE_EN = 'Hello! My name is Robin. I have three blue blocks.';
 
 /** Le nom de chaque police, dans sa case. */
 const FONT_NAMES = Object.fromEntries((Object.keys(FONT_LABELS) as FontChoice[]).map((font) => [font, <span>{nomCoupable(FONT_LABELS[font])}</span>])) as Record<FontChoice, ReactNode>;

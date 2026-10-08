@@ -269,11 +269,12 @@ export function guardianPlacements(
   progress: Record<string, { stars: number }>,
   bridges: string[],
   sentinelles = false,
+  keptOpen: readonly string[] = [],
 ): { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] {
   const out: { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] = [];
   BIOMES.forEach((b, index) => {
     if (b.classe !== a) return;
-    const status = guardianStatus(b, progress, bridges, sentinelles);
+    const status = guardianStatus(b, progress, bridges, sentinelles, keptOpen);
     if (status === 'hidden') return;
     const { x, y, z } = bossIsletOrigin(index);
     const off = guardianOffset(b.id);

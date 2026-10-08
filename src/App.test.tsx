@@ -1,14 +1,20 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { AppRoutes } from './App';
 import { SettingsProvider } from './core/SettingsContext';
 import { ProgressProvider, useProgress } from './core/ProgressContext';
 import { BloclandProvider } from './game/BloclandContext';
+import { MOVED_PATHS } from './core/movedIds';
 
 /** Dit si les bandeaux de récompense sont retenus (DA-9). */
 function Retenus() {
   return <p data-testid="retenus">{useProgress().celebrationsHeld ? 'oui' : 'non'}</p>;
+}
+
+/** L'adresse affichée, après les redirections. */
+function Adresse() {
+  return <p data-testid="adresse">{useLocation().pathname}</p>;
 }
 
 function renderAt(path: string) {
@@ -19,6 +25,7 @@ function renderAt(path: string) {
           <MemoryRouter initialEntries={[path]}>
             <AppRoutes />
             <Retenus />
+            <Adresse />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -352,4 +359,13 @@ it('une ancienne adresse (favori, lien d’enseignant) ouvre la même page sous 
   renderAt('/matiere/francais');
   expect(screen.queryByText(/Zone introuvable/)).not.toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Forêt des sons/ })).toHaveAttribute('href', '/adventure/french-6e-phonology');
+});
+
+it('l’ancienne adresse d’une mission déplacée (programmes de 2025-2026) ouvre la mission à sa nouvelle place', () => {
+  for (const [from, to] of Object.entries(MOVED_PATHS)) {
+    renderAt(from);
+    expect(screen.getByTestId('adresse'), from).toHaveTextContent(to);
+    expect(screen.queryByText(/Zone introuvable/), from).not.toBeInTheDocument();
+    document.body.innerHTML = '';
+  }
 });

@@ -27,7 +27,8 @@
             "pH égal à 7 : la solution est neutre.",
             "pH plus grand que 7 : la solution est basique.",
             "Plus le pH est petit, plus la solution est acide.",
-            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+            "Acide : plus d’ions hydrogène que d’ions hydroxyde.",
+            "Basique : plus d’ions hydroxyde que d’ions hydrogène."
           ]
         }
       }
@@ -54,7 +55,8 @@
             "pH égal à 7 : la solution est neutre.",
             "pH plus grand que 7 : la solution est basique.",
             "Plus le pH est petit, plus la solution est acide.",
-            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+            "Acide : plus d’ions hydrogène que d’ions hydroxyde.",
+            "Basique : plus d’ions hydroxyde que d’ions hydrogène."
           ]
         }
       }
@@ -81,7 +83,8 @@
             "pH égal à 7 : la solution est neutre.",
             "pH plus grand que 7 : la solution est basique.",
             "Plus le pH est petit, plus la solution est acide.",
-            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+            "Acide : plus d’ions hydrogène que d’ions hydroxyde.",
+            "Basique : plus d’ions hydroxyde que d’ions hydrogène."
           ]
         }
       }
@@ -109,7 +112,8 @@
             "pH égal à 7 : la solution est neutre.",
             "pH plus grand que 7 : la solution est basique.",
             "Plus le pH est petit, plus la solution est acide.",
-            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+            "Acide : plus d’ions hydrogène que d’ions hydroxyde.",
+            "Basique : plus d’ions hydroxyde que d’ions hydrogène."
           ]
         }
       }
@@ -136,23 +140,24 @@
             "pH égal à 7 : la solution est neutre.",
             "pH plus grand que 7 : la solution est basique.",
             "Plus le pH est petit, plus la solution est acide.",
-            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+            "Acide : plus d’ions hydrogène que d’ions hydroxyde.",
+            "Basique : plus d’ions hydroxyde que d’ions hydrogène."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-3e-motion-energy-acids-bases-1-5",
-      "prompt": "Une solution basique contient beaucoup d’ions …",
-      "spoken": "Une solution basique contient beaucoup d’ions  (mot manquant) ",
+      "prompt": "Dans une solution basique, les ions hydroxyde sont … nombreux que les ions hydrogène.",
+      "spoken": "Dans une solution basique, les ions hydroxyde sont  (mot manquant)  nombreux que les ions hydrogène.",
       "choices": [
-        "hydrogène",
-        "hydroxyde",
-        "oxygène"
+        "plus",
+        "moins",
+        "aussi"
       ],
-      "answer": "hydroxyde",
-      "hint": "Relis la ligne « Acide » du rappel.",
-      "explanation": "Une solution basique contient beaucoup d’ions hydroxyde. Une solution acide, beaucoup d’ions hydrogène.",
+      "answer": "plus",
+      "hint": "Relis la ligne « Basique » du rappel.",
+      "explanation": "Dans une solution basique, les ions hydroxyde sont plus nombreux que les ions hydrogène. Dans une solution acide, c’est l’inverse. Dans une solution neutre, il y en a autant.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -163,7 +168,8 @@
             "pH égal à 7 : la solution est neutre.",
             "pH plus grand que 7 : la solution est basique.",
             "Plus le pH est petit, plus la solution est acide.",
-            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+            "Acide : plus d’ions hydrogène que d’ions hydroxyde.",
+            "Basique : plus d’ions hydroxyde que d’ions hydrogène."
           ]
         }
       }
@@ -191,7 +197,8 @@
             "pH égal à 7 : la solution est neutre.",
             "pH plus grand que 7 : la solution est basique.",
             "Plus le pH est petit, plus la solution est acide.",
-            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+            "Acide : plus d’ions hydrogène que d’ions hydroxyde.",
+            "Basique : plus d’ions hydroxyde que d’ions hydrogène."
           ]
         }
       }
@@ -219,7 +226,8 @@
             "pH égal à 7 : la solution est neutre.",
             "pH plus grand que 7 : la solution est basique.",
             "Plus le pH est petit, plus la solution est acide.",
-            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+            "Acide : plus d’ions hydrogène que d’ions hydroxyde.",
+            "Basique : plus d’ions hydroxyde que d’ions hydrogène."
           ]
         }
       }

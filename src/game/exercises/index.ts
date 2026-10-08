@@ -43,7 +43,8 @@ const graines: ExerciseDef[] = SETS.filter((s) => GRAINES_SETS.includes(s.id)).m
 }));
 
 /** Panneaux (Carrefour des homophones) : les autres jeux de la mission Homophones, avec la règle affichée. */
-const PANNEAUX_SETS: Record<string, number> = { ces: 1, ou: 1, la: 1, leur: 1, quand: 2, peu: 2, cest: 2 };
+// ou / où et quand / quant / qu’en (des conjonctions, en 4e avec les programmes de 2026) restent au portail seulement.
+const PANNEAUX_SETS: Record<string, number> = { ces: 1, la: 1, leur: 1, peu: 2, cest: 2 };
 const panneaux: ExerciseDef[] = SETS.filter((s) => s.id in PANNEAUX_SETS).map((set) => ({
   id: `french-5e-homophones-pairs-${set.id}`,
   biome: 'french-5e-homophones',
@@ -83,9 +84,10 @@ const ORDER: (string | ExerciseDef[])[] = [
   'french-6e-word-spelling-sight-words-2', 'french-6e-word-spelling-sight-words-3', 'french-6e-word-spelling-sight-words-4', 'french-6e-word-spelling-word-families-1', 'french-6e-word-spelling-word-families-2', 'french-6e-word-spelling-word-forms-1', 'french-6e-word-spelling-word-forms-2', 'french-6e-grammar-spelling-word-classes-1', 'french-6e-grammar-spelling-word-classes-2',
   'french-6e-grammar-spelling-e-er-ez-1', 'french-6e-grammar-spelling-e-er-ez-2', 'french-6e-grammar-spelling-plurals-1', 'french-6e-grammar-spelling-plurals-2', MATHS_EXERCISES, POSEES_EXERCISES, VOLCAN_EXERCISES, PROBLEMES_EXERCISES, COLLEGE_EXERCISES, PROBLEMES_COLLEGE_EXERCISES, panneaux, 'french-5e-homophones-choices-1',
   'french-5e-homophones-choices-2', 'french-5e-homophones-choices-3', 'french-5e-homophones-homophone-sentences-1', 'french-5e-homophones-homophone-sentences-2', 'french-5e-conjugation-past-tenses-1', 'french-5e-conjugation-past-tenses-2',
-  'french-5e-conjugation-future-tense-1', 'french-5e-conjugation-future-tense-2', 'french-5e-conjugation-subjunctive-1', 'french-5e-conjugation-subjunctive-2', 'french-5e-conjugation-tense-choice-1', 'french-5e-conjugation-tense-choice-2', 'french-5e-conjugation-tense-choice-3', 'french-4e-agreement-past-participle-1', 'french-4e-agreement-past-participle-2',
+  'french-5e-conjugation-future-tense-1', 'french-5e-conjugation-future-tense-2', 'french-5e-conjugation-tense-recognition-1', 'french-5e-conjugation-tense-recognition-2', 'french-5e-conjugation-tense-choice-1', 'french-5e-conjugation-tense-choice-2', 'french-5e-conjugation-tense-choice-3', 'french-4e-agreement-past-participle-1', 'french-4e-agreement-past-participle-2',
   'french-4e-agreement-adjectives-1', 'french-4e-agreement-adjectives-2', 'french-4e-agreement-subject-verb-1', 'french-4e-agreement-subject-verb-2', 'french-4e-agreement-reflexive-verbs-1', 'french-4e-agreement-reflexive-verbs-2', 'french-4e-agreement-reflexive-verbs-3', 'french-4e-vocabulary-word-roots-1',
   'french-4e-vocabulary-word-roots-2', 'french-4e-vocabulary-meaning-1', 'french-4e-vocabulary-meaning-2', 'french-4e-vocabulary-meaning-3', 'french-4e-vocabulary-nuances-1', 'french-4e-vocabulary-nuances-2', 'french-4e-vocabulary-nuances-3',
+  'french-4e-vocabulary-conjunctions-1', 'french-4e-vocabulary-conjunctions-2', 'french-4e-vocabulary-conjunctions-3',
   'french-3e-close-reading-inference-1', 'french-3e-close-reading-inference-2', 'french-3e-close-reading-inference-3',
   'french-3e-close-reading-figures-of-speech-1', 'french-3e-close-reading-figures-of-speech-2', 'french-3e-close-reading-figures-of-speech-3', 'french-3e-close-reading-text-connectives-1', 'french-3e-close-reading-text-connectives-2', 'french-3e-close-reading-text-connectives-3', 'french-3e-close-reading-voices-1', 'french-3e-close-reading-voices-2', 'french-3e-close-reading-voices-3', 'english-6e-vocabulary-hello-1', 'english-6e-vocabulary-hello-2',
   'english-6e-vocabulary-numbers-1', 'english-6e-vocabulary-numbers-2', 'english-6e-vocabulary-first-listening-1', 'english-6e-vocabulary-first-listening-2', 'english-6e-vocabulary-signs-1', 'english-6e-vocabulary-signs-2', 'english-6e-grammar-to-be-1', 'english-6e-grammar-to-be-2',

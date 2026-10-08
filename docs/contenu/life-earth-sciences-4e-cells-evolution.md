@@ -35,7 +35,7 @@ Pour tous les items :
 - aide « La cellule » :
   - Tout être vivant est fait d’une ou de plusieurs cellules.
   - Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.
-  - La cellule de plante a en plus une paroi et des chloroplastes verts.
+  - La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.
   - Les cellules forment des tissus, les tissus des organes.
   - Une cellule est trop petite pour l’œil : on l’observe au microscope.
 
@@ -57,7 +57,7 @@ Pour tous les items :
 4. énoncé : Seules les cellules des parties vertes des plantes ont des …
    - choix : noyaux · chloroplastes · membranes
    - réponse : chloroplastes
-   - indice : Relis la ligne « La cellule de plante » du rappel : qu’ont-elles de vert ?
+   - indice : Relis la ligne « La cellule de plante » du rappel.
    - explication : Les chloroplastes, verts, sont dans les cellules des parties vertes des plantes. Le noyau et la membrane sont dans les cellules animales aussi.
 5. énoncé : "Deux cellules vues au microscope\nCellule A : une membrane, un noyau.\nCellule B : une paroi, une membrane, un noyau, des chloroplastes verts."
    - question : Quelle cellule vient d’une feuille ?
@@ -89,7 +89,7 @@ Pour tous les items :
 Pour tous les items :
 - aide « Se nourrir et respirer » :
   - La plante verte fabrique sa matière avec la lumière : c’est la photosynthèse.
-  - Il lui faut de l’eau, du dioxyde de carbone et de la lumière.
+  - Il lui faut de l’eau et des sels minéraux, du dioxyde de carbone et de la lumière.
   - Elle fabrique des sucres, comme l’amidon, et rejette de l’oxygène.
   - Un animal mange de la matière faite par d’autres êtres vivants.
   - Pour respirer, les cellules prennent de l’oxygène et rejettent du dioxyde de carbone.
@@ -220,7 +220,7 @@ Pour tous les items :
   - Le noyau de la cellule contient les chromosomes.
   - Chez l’humain : 46 chromosomes, rangés par paires, soit 23 paires.
   - Un chromosome est fait d’ADN. Un gène est un morceau de cet ADN.
-  - Un gène porte une information : la couleur des yeux, le groupe sanguin.
+  - Un gène porte une information, comme la couleur des yeux. Il existe en plusieurs versions.
   - Chaque parent donne un chromosome de chaque paire.
   - Chaque être humain est unique, sauf les vrais jumeaux.
 
@@ -254,15 +254,15 @@ Pour tous les items :
 6. énoncé : "Deux sœurs, avec les mêmes parents\nLéa : yeux bleus, groupe sanguin A.\nInès : yeux marron, groupe sanguin O."
    - question : Pourquoi sont-elles différentes ?
    - lu : Deux sœurs, avec les mêmes parents. Léa, yeux bleus, groupe sanguin A. Inès, yeux marron, groupe sanguin O.
-   - choix : elles n’ont pas reçu les mêmes gènes · elles ne mangent pas les mêmes aliments · elles n’ont pas les mêmes parents
-   - réponse : elles n’ont pas reçu les mêmes gènes
+   - choix : elles n’ont pas reçu les mêmes versions des gènes · elles ne mangent pas les mêmes aliments · elles n’ont pas les mêmes parents
+   - réponse : elles n’ont pas reçu les mêmes versions des gènes
    - indice : La couleur des yeux et le groupe sanguin dépendent de quoi ?
-   - explication : Chaque parent donne au hasard un chromosome de chaque paire : les deux sœurs n’ont pas reçu les mêmes gènes. La nourriture ne change ni la couleur des yeux ni le groupe sanguin.
+   - explication : Chaque parent donne au hasard un chromosome de chaque paire : les deux sœurs n’ont pas reçu les mêmes versions des gènes. La nourriture ne change ni la couleur des yeux ni le groupe sanguin.
 7. énoncé : Les vrais jumeaux viennent de la même cellule-œuf : ils ont les mêmes …
-   - choix : gènes · prénoms · empreintes digitales
-   - réponse : gènes
+   - choix : versions des gènes · prénoms · empreintes digitales
+   - réponse : versions des gènes
    - indice : Que contient la cellule-œuf, dans son noyau ?
-   - explication : Nés de la même cellule-œuf, les vrais jumeaux ont les mêmes gènes. Leurs empreintes digitales sont pourtant différentes : elles se forment aussi selon la place de chacun dans le ventre de la mère.
+   - explication : Nés de la même cellule-œuf, les vrais jumeaux ont les mêmes versions des gènes. Leurs empreintes digitales sont pourtant différentes : elles se forment aussi selon la place de chacun dans le ventre de la mère.
 8. énoncé : "La question de Tom : la couleur des yeux dépend-elle des gènes ?\nIl observe trois familles.\nDans chacune, les enfants ont souvent la couleur des yeux d’un parent."
    - question : Que montre l’observation de Tom ?
    - lu : La question de Tom, la couleur des yeux dépend-elle des gènes ? Il observe trois familles. Dans chacune, les enfants ont souvent la couleur des yeux d’un parent.
@@ -364,11 +364,11 @@ Pour tous les items :
    - réponse : naturelle
    - indice : Relis la ligne « C’est la sélection naturelle » du rappel.
    - explication : Quand c’est le milieu qui trie les individus, c’est la sélection naturelle. La sélection artificielle, c’est l’éleveur qui choisit les animaux à faire reproduire.
-3. énoncé : Un lièvre au pelage blanc vit dans la neige : il se cache mieux des renards. Il a donc plus de chances de …
+3. énoncé : Une souris au pelage clair vit sur un sable clair : elle se cache mieux des rapaces. Elle a donc plus de chances de …
    - choix : changer de couleur · grandir plus vite · survivre
    - réponse : survivre
    - indice : Relis la ligne « Certains sont mieux adaptés » du rappel.
-   - explication : Bien caché, le lièvre blanc est moins souvent mangé : il survit mieux et a plus de petits. Il ne change pas de couleur pour s’adapter : il est né avec ce pelage.
+   - explication : Bien cachée, la souris claire est moins souvent mangée : elle survit mieux et a plus de petits. Elle ne change pas de couleur pour s’adapter : elle est née avec ce pelage.
 4. énoncé : "Deux idées pour expliquer le long cou des girafes\nIdée 1 : chaque girafe a étiré son cou, et ses petits en ont hérité.\nIdée 2 : les girafes au cou plus long mangeaient mieux, et avaient plus de petits."
    - question : Quelle idée correspond à la sélection naturelle ?
    - lu : Deux idées pour expliquer le long cou des girafes. Idée 1, chaque girafe a étiré son cou, et ses petits en ont hérité. Idée 2, les girafes au cou plus long mangeaient mieux, et avaient plus de petits.

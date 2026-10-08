@@ -38,7 +38,7 @@ Pour tous les items :
   - Séisme : des roches cassent et glissent le long d’une faille.
   - Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.
   - Volcan : du magma monte et sort en lave, en cendres et en gaz.
-  - Le vent, la pluie et les rivières usent les roches : c’est l’érosion.
+  - L’histoire de la Terre se découpe en ères géologiques, longues de millions d’années.
 
 1. énoncé : La couche au centre de la Terre s’appelle le …
    - choix : manteau · noyau · croûte
@@ -78,12 +78,12 @@ Pour tous les items :
    - choix : celle du volcan B · celle du volcan A · elles sont pareilles
    - réponse : celle du volcan B
    - indice : Contre quoi est-il le plus difficile de se protéger : une coulée ou une explosion ?
-   - explication : L’éruption du volcan B est explosive : les cendres et les blocs partent loin et vite. La lave liquide du volcan A coule plus lentement : on a le temps de s’éloigner.
-8. énoncé : Le vent et la pluie usent lentement les roches : c’est l’…
-   - choix : érosion · éruption · évaporation
-   - réponse : érosion
-   - indice : Relis la ligne « Le vent » du rappel.
-   - explication : L’usure des roches par le vent, la pluie et les rivières s’appelle l’érosion. L’éruption, c’est le volcan qui rejette de la lave : les deux mots se ressemblent.
+   - explication : L’éruption du volcan B est explosive : les cendres et les blocs partent loin et vite. Une coulée de lave avance sur le sol : on a le temps de s’éloigner.
+8. énoncé : L’histoire de la Terre se découpe en très longues périodes : les ères …
+   - choix : géologiques · glaciaires · volcaniques
+   - réponse : géologiques
+   - indice : Relis la ligne « L’histoire de la Terre » du rappel.
+   - explication : L’histoire de la Terre se découpe en ères géologiques. Chacune dure des dizaines de millions d’années, ou plus. Les glaciations, elles, sont des moments froids, bien plus courts.
 
 ### Niveau 2 · `life-earth-sciences-5e-active-planet-active-earth-2`
 
@@ -94,7 +94,7 @@ Pour tous les items :
   - Il y a un risque quand un aléa menace des enjeux.
   - On ne sait pas empêcher un séisme, ni prévoir son jour.
   - Prévenir : construire solide, surveiller, informer, s’entraîner.
-  - Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches.
+  - Le sable et la boue se déposent en couches : ils forment de nouvelles roches.
 
 1. énoncé : "Deux îles avec le même volcan actif\nÎle A : personne n’y habite.\nÎle B : une ville est au pied du volcan."
    - question : Sur quelle île le risque est-il le plus grand ?
@@ -130,8 +130,8 @@ Pour tous les items :
 6. énoncé : Le sable et la boue se déposent au fond de la mer, couche après couche : ils forment des roches …
    - choix : volcaniques · sédimentaires · précieuses
    - réponse : sédimentaires
-   - indice : Relis la ligne « Les débris » du rappel.
-   - explication : Les débris déposés en couches forment des roches sédimentaires, comme le calcaire ou le grès. Les roches volcaniques, elles, viennent de la lave refroidie.
+   - indice : Relis la ligne « Le sable et la boue » du rappel.
+   - explication : Le sable et la boue déposés en couches forment des roches sédimentaires, comme le grès, fait de grains de sable. Les roches volcaniques, elles, viennent de la lave refroidie.
 7. énoncé : "Consignes en cas de séisme\nÀ l’intérieur : s’abriter sous une table solide.\nÀ l’extérieur : s’éloigner des bâtiments et des fils électriques.\nAprès : sortir à pied, par l’escalier."
    - question : Tu es dans la rue quand le sol tremble. Que fais-tu ?
    - lu : Consignes en cas de séisme. À l’intérieur, s’abriter sous une table solide. À l’extérieur, s’éloigner des bâtiments et des fils électriques. Après, sortir à pied, par l’escalier.
@@ -258,14 +258,14 @@ Pour tous les items :
    - choix : dioxyde de carbone · oxygène · sable
    - réponse : dioxyde de carbone
    - indice : Relis la ligne « Brûler du pétrole » du rappel.
-   - explication : Brûler de l’essence rejette du dioxyde de carbone, un gaz à effet de serre. Le moteur, lui, consomme de l’oxygène : il n’en rejette pas.
-6. énoncé : "Une expérience en classe\nDeux bocaux fermés, au soleil, avec un thermomètre.\nBocal 1 : de l’air normal.\nBocal 2 : de l’air avec plus de dioxyde de carbone.\nUne heure plus tard, le bocal 2 est plus chaud."
-   - question : Que montre cette expérience ?
-   - lu : Une expérience en classe. Deux bocaux fermés, au soleil, avec un thermomètre. Bocal 1, de l’air normal. Bocal 2, de l’air avec plus de dioxyde de carbone. Une heure plus tard, le bocal 2 est plus chaud.
+   - explication : Brûler de l’essence rejette du dioxyde de carbone, un gaz à effet de serre. Le moteur, lui, consomme de l’oxygène.
+6. énoncé : "Un modèle en classe\nDeux bocaux fermés, au soleil, avec un thermomètre.\nBocal 1 : de l’air normal.\nBocal 2 : de l’air avec plus de dioxyde de carbone.\nUne heure plus tard, le bocal 2 est plus chaud."
+   - question : Que montre ce modèle ?
+   - lu : Un modèle en classe. Deux bocaux fermés, au soleil, avec un thermomètre. Bocal 1, de l’air normal. Bocal 2, de l’air avec plus de dioxyde de carbone. Une heure plus tard, le bocal 2 est plus chaud.
    - choix : le soleil chauffe moins le bocal 1 · le dioxyde de carbone garde la chaleur · les bocaux fermés refroidissent
    - réponse : le dioxyde de carbone garde la chaleur
    - indice : Une seule chose change entre les deux bocaux. Laquelle ?
-   - explication : Les deux bocaux sont au même soleil ; seul l’air change. Le bocal avec plus de dioxyde de carbone est plus chaud : ce gaz garde la chaleur, c’est l’effet de serre.
+   - explication : Dans ce modèle, les deux bocaux sont au même soleil ; seul l’air change. Le bocal avec plus de dioxyde de carbone est plus chaud : ce gaz garde la chaleur. C’est l’effet de serre.
 7. énoncé : Quand les glaciers fondent, leur eau rejoint la mer : le niveau de la mer …
    - choix : baisse · ne bouge pas · monte
    - réponse : monte
@@ -347,7 +347,7 @@ Pour tous les items :
    - choix : érosion · arrosage · engrais
    - réponse : érosion
    - indice : Le vent et la pluie emportent la terre. Comment s’appelle cette usure ?
-   - explication : Les racines des haies retiennent la terre que le vent et la pluie emporteraient : elles protègent le sol de l’érosion. Le sol met très longtemps à se former.
+   - explication : L’érosion, c’est l’usure du sol par le vent et la pluie, qui emportent la terre. Les racines des haies retiennent cette terre : elles protègent le sol. Le sol met très longtemps à se former.
 
 ### Niveau 2 · `life-earth-sciences-5e-active-planet-human-impact-2`
 

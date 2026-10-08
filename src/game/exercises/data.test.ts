@@ -273,8 +273,8 @@ it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle a
       .filter((e) => e.type === 'pairs')
       .map((e) => e.id)
       .sort(),
-  ).toEqual(['ces', 'cest', 'la', 'leur', 'ou', 'peu', 'quand'].map((s) => `french-5e-homophones-pairs-${s}`).sort());
-  expect(defs.length).toBe(50);
+  ).toEqual(['ces', 'cest', 'la', 'leur', 'peu'].map((s) => `french-5e-homophones-pairs-${s}`).sort());
+  expect(defs.length).toBe(51);
   for (const def of defs)
     for (const it of def.items) {
       expect(it.choices).toContain(it.answer);
@@ -351,7 +351,7 @@ it('LV2 (allemand, espagnol) : la langue de la mission, la règle affichée, ¿ 
       expect(String(it.spoken), it.key).not.toMatch(/[…¿¡]/);
       const prompt = String(it.prompt);
       if (prompt.includes('…')) {
-        expect(def.programme?.some((id) => id.endsWith('.ecrire.dictee-fiche')), `${def.id} : un trou, seulement en dictée`).toBe(true);
+        expect(def.programme?.some((id) => /\.(ecrire\.dictee-fiche|exprimer\.dictee)$/.test(id)), `${def.id} : un trou, seulement en dictée`).toBe(true);
         expect(prompt.split('…').length, it.key).toBe(2);
         expect(it.question, it.key).toBeUndefined();
         expect(String(it.spoken), it.key).toBe(prompt.replace('…', String(it.answer)).replace(/[¿¡]/g, ''));

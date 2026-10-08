@@ -108,6 +108,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'subtracting': { component: CalculationScreen, batch: 1 },
   'fractions': { component: CalculationScreen, batch: 1 },
   'proportion-tables': { component: CalculationScreen, batch: 1 },
+  'ratio-sharing': { component: CalculationScreen, batch: 1 },
   'percentages': { component: CalculationScreen, batch: 1 },
   'ratios': { component: CalculationScreen, batch: 1 },
   // Français du collège : phrase à trou et règle affichée, même écran.
@@ -116,7 +117,8 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'homophone-sentences': { component: CalculationScreen, batch: 1 },
   'past-tenses': { component: CalculationScreen, batch: 1 },
   'future-tense': { component: CalculationScreen, batch: 1 },
-  'subjunctive': { component: CalculationScreen, batch: 1 },
+  'tense-recognition': { component: CalculationScreen, batch: 1 },
+  'conjunctions': { component: CalculationScreen, batch: 1 },
   'tense-choice': { component: CalculationScreen, batch: 1 },
   'powers': { component: CalculationScreen, batch: 1 },
   'square-roots': { component: CalculationScreen, batch: 1 },

@@ -27,7 +27,7 @@
             "Séisme : des roches cassent et glissent le long d’une faille.",
             "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
             "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
-            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+            "L’histoire de la Terre se découpe en ères géologiques, longues de millions d’années."
           ]
         }
       }
@@ -54,7 +54,7 @@
             "Séisme : des roches cassent et glissent le long d’une faille.",
             "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
             "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
-            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+            "L’histoire de la Terre se découpe en ères géologiques, longues de millions d’années."
           ]
         }
       }
@@ -81,7 +81,7 @@
             "Séisme : des roches cassent et glissent le long d’une faille.",
             "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
             "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
-            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+            "L’histoire de la Terre se découpe en ères géologiques, longues de millions d’années."
           ]
         }
       }
@@ -108,7 +108,7 @@
             "Séisme : des roches cassent et glissent le long d’une faille.",
             "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
             "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
-            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+            "L’histoire de la Terre se découpe en ères géologiques, longues de millions d’années."
           ]
         }
       }
@@ -135,7 +135,7 @@
             "Séisme : des roches cassent et glissent le long d’une faille.",
             "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
             "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
-            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+            "L’histoire de la Terre se découpe en ères géologiques, longues de millions d’années."
           ]
         }
       }
@@ -163,7 +163,7 @@
             "Séisme : des roches cassent et glissent le long d’une faille.",
             "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
             "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
-            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+            "L’histoire de la Terre se découpe en ères géologiques, longues de millions d’années."
           ]
         }
       }
@@ -180,7 +180,7 @@
       ],
       "answer": "celle du volcan B",
       "hint": "Contre quoi est-il le plus difficile de se protéger : une coulée ou une explosion ?",
-      "explanation": "L’éruption du volcan B est explosive : les cendres et les blocs partent loin et vite. La lave liquide du volcan A coule plus lentement : on a le temps de s’éloigner.",
+      "explanation": "L’éruption du volcan B est explosive : les cendres et les blocs partent loin et vite. Une coulée de lave avance sur le sol : on a le temps de s’éloigner.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -191,23 +191,23 @@
             "Séisme : des roches cassent et glissent le long d’une faille.",
             "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
             "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
-            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+            "L’histoire de la Terre se découpe en ères géologiques, longues de millions d’années."
           ]
         }
       }
     },
     {
       "key": "life-earth-sciences-5e-active-planet-active-earth-1-7",
-      "prompt": "Le vent et la pluie usent lentement les roches : c’est l’…",
-      "spoken": "Le vent et la pluie usent lentement les roches : c’est l’ (mot manquant) ",
+      "prompt": "L’histoire de la Terre se découpe en très longues périodes : les ères …",
+      "spoken": "L’histoire de la Terre se découpe en très longues périodes : les ères  (mot manquant) ",
       "choices": [
-        "érosion",
-        "éruption",
-        "évaporation"
+        "géologiques",
+        "glaciaires",
+        "volcaniques"
       ],
-      "answer": "érosion",
-      "hint": "Relis la ligne « Le vent » du rappel.",
-      "explanation": "L’usure des roches par le vent, la pluie et les rivières s’appelle l’érosion. L’éruption, c’est le volcan qui rejette de la lave : les deux mots se ressemblent.",
+      "answer": "géologiques",
+      "hint": "Relis la ligne « L’histoire de la Terre » du rappel.",
+      "explanation": "L’histoire de la Terre se découpe en ères géologiques. Chacune dure des dizaines de millions d’années, ou plus. Les glaciations, elles, sont des moments froids, bien plus courts.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -218,7 +218,7 @@
             "Séisme : des roches cassent et glissent le long d’une faille.",
             "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
             "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
-            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+            "L’histoire de la Terre se découpe en ères géologiques, longues de millions d’années."
           ]
         }
       }

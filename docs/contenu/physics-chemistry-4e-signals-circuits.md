@@ -226,17 +226,17 @@ Pour tous les items :
 Pour tous les items :
 - aide « Tension et loi d’Ohm » :
   - En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.
-  - En dérivation, chaque branche a la même tension que la pile.
+  - En dérivation, chaque branche reliée directement aux bornes de la pile a la même tension qu’elle.
   - La résistance, en ohms : elle freine le courant.
   - La loi d’Ohm : la tension est égale à la résistance fois l’intensité.
   - On l’écrit U = R × I : U en volts, R en ohms, I en ampères.
   - Pour trouver la résistance : on divise la tension par l’intensité.
 
-1. énoncé : En dérivation, chaque branche a la même tension que la …
+1. énoncé : En dérivation, chaque branche reliée directement aux deux bornes a la même tension que la …
    - choix : lampe · résistance · pile
    - réponse : pile
    - indice : Relis la ligne « En dérivation » du rappel.
-   - explication : En dérivation, chaque branche est reliée aux deux bornes de la pile : elle a la même tension qu’elle.
+   - explication : En dérivation, chaque branche est reliée aux deux bornes de la pile par des fils seuls : elle a la même tension qu’elle.
 2. énoncé : "Le circuit en série\nTension de la pile : 9 V (volts).\nTension de la lampe : 5 V.\nTension du moteur : on la cherche."
    - question : Quelle est la tension du moteur ?
    - lu : Le circuit en série. Tension de la pile, 9 volts. Tension de la lampe, 5 volts. Tension du moteur, on la cherche.
@@ -368,16 +368,16 @@ Pour tous les items :
    - réponse : regroupent autrement
    - indice : Relis la ligne « Pendant la réaction » du rappel.
    - explication : Les atomes des réactifs se séparent, puis se regroupent autrement pour former les produits. Aucun n’est détruit.
-2. énoncé : "Le flacon fermé par un ballon\nDans le flacon : du vinaigre et un sachet de bicarbonate.\nLa balance affiche 200 g.\nOn renverse le sachet : ça mousse, le ballon gonfle."
+2. énoncé : "La bouteille fermée par son bouchon\nDans une bouteille en plastique souple : du vinaigre et un sachet de bicarbonate.\nLa balance affiche 200 g.\nOn renverse le sachet : ça mousse, la bouteille devient dure."
    - question : Que va afficher la balance ?
-   - lu : Le flacon fermé par un ballon. Dans le flacon, du vinaigre et un sachet de bicarbonate. La balance affiche 200 grammes. On renverse le sachet, ça mousse, le ballon gonfle.
+   - lu : La bouteille fermée par son bouchon. Dans une bouteille en plastique souple, du vinaigre et un sachet de bicarbonate. La balance affiche deux cents grammes. On renverse le sachet, ça mousse, la bouteille devient dure.
    - choix : 180 grammes · 200 grammes · 220 grammes
    - réponse : 200 grammes
    - indice : Le gaz qui se forme peut-il sortir ?
-   - explication : Le gaz reste dans le ballon : aucun atome ne sort. La masse se conserve, la balance affiche encore 200 grammes.
-3. énoncé : "Le même essai, sans ballon\nAvant : 200 g.\nÇa mousse, le gaz part dans l’air.\nAprès : 195 g."
+   - explication : Le bouchon garde le gaz dans la bouteille : aucun atome ne sort. La masse se conserve, la balance affiche encore 200 grammes.
+3. énoncé : "Le même essai, sans bouchon\nAvant : 200 g.\nÇa mousse, le gaz part dans l’air.\nAprès : 195 g."
    - question : Pourquoi la masse a-t-elle baissé ?
-   - lu : Le même essai, sans ballon. Avant, 200 grammes. Ça mousse, le gaz part dans l’air. Après, 195 grammes.
+   - lu : Le même essai, sans bouchon. Avant, deux cents grammes. Ça mousse, le gaz part dans l’air. Après, cent quatre-vingt-quinze grammes.
    - choix : des atomes ont disparu · le gaz est parti dans l’air · la balance s’est trompée
    - réponse : le gaz est parti dans l’air
    - indice : Relis la troisième ligne du document.

@@ -8,184 +8,184 @@
   "items": [
     {
       "key": "english-6e-grammar-have-got-1-0",
-      "prompt": "I … got a brother.",
-      "spoken": "I blank got a brother.",
+      "prompt": "I … a brother.",
+      "spoken": "I blank a brother.",
       "choices": [
         "have",
         "has"
       ],
       "answer": "have",
       "hint": "He, she, it (une seule personne ou chose) : has. Les autres : have.",
-      "explanation": "I have got : avec I, c’est have.",
+      "explanation": "I have : avec I, c’est have.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got (avoir)",
+          "title": "Have (avoir)",
           "lines": [
-            "I / you / we / they have got (I’ve got)",
-            "he / she / it has got (she’s got)",
-            "have got = avoir, posséder : I have got a dog = j’ai un chien."
+            "I / you / we / they have",
+            "he / she / it has",
+            "have = avoir, posséder : I have a dog = j’ai un chien."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-1-1",
-      "prompt": "She … got long hair.",
-      "spoken": "She blank got long hair.",
+      "prompt": "She … long hair.",
+      "spoken": "She blank long hair.",
       "choices": [
         "have",
         "has"
       ],
       "answer": "has",
       "hint": "He, she, it (une seule personne ou chose) : has. Les autres : have.",
-      "explanation": "She has got : avec she, c’est has.",
+      "explanation": "She has : avec she, c’est has.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got (avoir)",
+          "title": "Have (avoir)",
           "lines": [
-            "I / you / we / they have got (I’ve got)",
-            "he / she / it has got (she’s got)",
-            "have got = avoir, posséder : I have got a dog = j’ai un chien."
+            "I / you / we / they have",
+            "he / she / it has",
+            "have = avoir, posséder : I have a dog = j’ai un chien."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-1-2",
-      "prompt": "We … got a new teacher.",
-      "spoken": "We blank got a new teacher.",
+      "prompt": "We … a new teacher.",
+      "spoken": "We blank a new teacher.",
       "choices": [
         "have",
         "has"
       ],
       "answer": "have",
       "hint": "He, she, it (une seule personne ou chose) : has. Les autres : have.",
-      "explanation": "We have got : avec we, c’est have.",
+      "explanation": "We have : avec we, c’est have.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got (avoir)",
+          "title": "Have (avoir)",
           "lines": [
-            "I / you / we / they have got (I’ve got)",
-            "he / she / it has got (she’s got)",
-            "have got = avoir, posséder : I have got a dog = j’ai un chien."
+            "I / you / we / they have",
+            "he / she / it has",
+            "have = avoir, posséder : I have a dog = j’ai un chien."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-1-3",
-      "prompt": "My cat … got green eyes.",
-      "spoken": "My cat blank got green eyes.",
+      "prompt": "My cat … green eyes.",
+      "spoken": "My cat blank green eyes.",
       "choices": [
         "have",
         "has"
       ],
       "answer": "has",
       "hint": "He, she, it (une seule personne ou chose) : has. Les autres : have.",
-      "explanation": "My cat = it : it has got.",
+      "explanation": "My cat = it : it has.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got (avoir)",
+          "title": "Have (avoir)",
           "lines": [
-            "I / you / we / they have got (I’ve got)",
-            "he / she / it has got (she’s got)",
-            "have got = avoir, posséder : I have got a dog = j’ai un chien."
+            "I / you / we / they have",
+            "he / she / it has",
+            "have = avoir, posséder : I have a dog = j’ai un chien."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-1-4",
-      "prompt": "They … got a big garden.",
-      "spoken": "They blank got a big garden.",
+      "prompt": "They … a big garden.",
+      "spoken": "They blank a big garden.",
       "choices": [
         "have",
         "has"
       ],
       "answer": "have",
       "hint": "He, she, it (une seule personne ou chose) : has. Les autres : have.",
-      "explanation": "They have got : avec they, c’est have.",
+      "explanation": "They have : avec they, c’est have.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got (avoir)",
+          "title": "Have (avoir)",
           "lines": [
-            "I / you / we / they have got (I’ve got)",
-            "he / she / it has got (she’s got)",
-            "have got = avoir, posséder : I have got a dog = j’ai un chien."
+            "I / you / we / they have",
+            "he / she / it has",
+            "have = avoir, posséder : I have a dog = j’ai un chien."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-1-5",
-      "prompt": "He … got a red bike.",
-      "spoken": "He blank got a red bike.",
+      "prompt": "He … a red bike.",
+      "spoken": "He blank a red bike.",
       "choices": [
         "have",
         "has"
       ],
       "answer": "has",
       "hint": "He, she, it (une seule personne ou chose) : has. Les autres : have.",
-      "explanation": "He has got : avec he, c’est has.",
+      "explanation": "He has : avec he, c’est has.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got (avoir)",
+          "title": "Have (avoir)",
           "lines": [
-            "I / you / we / they have got (I’ve got)",
-            "he / she / it has got (she’s got)",
-            "have got = avoir, posséder : I have got a dog = j’ai un chien."
+            "I / you / we / they have",
+            "he / she / it has",
+            "have = avoir, posséder : I have a dog = j’ai un chien."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-1-6",
-      "prompt": "You … got a nice smile.",
-      "spoken": "You blank got a nice smile.",
+      "prompt": "You … a nice smile.",
+      "spoken": "You blank a nice smile.",
       "choices": [
         "have",
         "has"
       ],
       "answer": "have",
       "hint": "He, she, it (une seule personne ou chose) : has. Les autres : have.",
-      "explanation": "You have got : avec you, c’est have.",
+      "explanation": "You have : avec you, c’est have.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got (avoir)",
+          "title": "Have (avoir)",
           "lines": [
-            "I / you / we / they have got (I’ve got)",
-            "he / she / it has got (she’s got)",
-            "have got = avoir, posséder : I have got a dog = j’ai un chien."
+            "I / you / we / they have",
+            "he / she / it has",
+            "have = avoir, posséder : I have a dog = j’ai un chien."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-1-7",
-      "prompt": "Lina … got two sisters.",
-      "spoken": "Lina blank got two sisters.",
+      "prompt": "Lina … two sisters.",
+      "spoken": "Lina blank two sisters.",
       "choices": [
         "have",
         "has"
       ],
       "answer": "has",
       "hint": "He, she, it (une seule personne ou chose) : has. Les autres : have.",
-      "explanation": "Lina = she : she has got.",
+      "explanation": "Lina = she : she has.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got (avoir)",
+          "title": "Have (avoir)",
           "lines": [
-            "I / you / we / they have got (I’ve got)",
-            "he / she / it has got (she’s got)",
-            "have got = avoir, posséder : I have got a dog = j’ai un chien."
+            "I / you / we / they have",
+            "he / she / it has",
+            "have = avoir, posséder : I have a dog = j’ai un chien."
           ]
         }
       }

@@ -24,7 +24,7 @@
           "lines": [
             "Tout être vivant est fait d’une ou de plusieurs cellules.",
             "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
-            "La cellule de plante a en plus une paroi et des chloroplastes verts.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
             "Les cellules forment des tissus, les tissus des organes.",
             "Une cellule est trop petite pour l’œil : on l’observe au microscope."
           ]
@@ -50,7 +50,7 @@
           "lines": [
             "Tout être vivant est fait d’une ou de plusieurs cellules.",
             "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
-            "La cellule de plante a en plus une paroi et des chloroplastes verts.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
             "Les cellules forment des tissus, les tissus des organes.",
             "Une cellule est trop petite pour l’œil : on l’observe au microscope."
           ]
@@ -76,7 +76,7 @@
           "lines": [
             "Tout être vivant est fait d’une ou de plusieurs cellules.",
             "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
-            "La cellule de plante a en plus une paroi et des chloroplastes verts.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
             "Les cellules forment des tissus, les tissus des organes.",
             "Une cellule est trop petite pour l’œil : on l’observe au microscope."
           ]
@@ -93,7 +93,7 @@
         "membranes"
       ],
       "answer": "chloroplastes",
-      "hint": "Relis la ligne « La cellule de plante » du rappel : qu’ont-elles de vert ?",
+      "hint": "Relis la ligne « La cellule de plante » du rappel.",
       "explanation": "Les chloroplastes, verts, sont dans les cellules des parties vertes des plantes. Le noyau et la membrane sont dans les cellules animales aussi.",
       "aid": {
         "kind": "rule-card",
@@ -102,7 +102,7 @@
           "lines": [
             "Tout être vivant est fait d’une ou de plusieurs cellules.",
             "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
-            "La cellule de plante a en plus une paroi et des chloroplastes verts.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
             "Les cellules forment des tissus, les tissus des organes.",
             "Une cellule est trop petite pour l’œil : on l’observe au microscope."
           ]
@@ -129,7 +129,7 @@
           "lines": [
             "Tout être vivant est fait d’une ou de plusieurs cellules.",
             "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
-            "La cellule de plante a en plus une paroi et des chloroplastes verts.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
             "Les cellules forment des tissus, les tissus des organes.",
             "Une cellule est trop petite pour l’œil : on l’observe au microscope."
           ]
@@ -155,7 +155,7 @@
           "lines": [
             "Tout être vivant est fait d’une ou de plusieurs cellules.",
             "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
-            "La cellule de plante a en plus une paroi et des chloroplastes verts.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
             "Les cellules forment des tissus, les tissus des organes.",
             "Une cellule est trop petite pour l’œil : on l’observe au microscope."
           ]
@@ -182,7 +182,7 @@
           "lines": [
             "Tout être vivant est fait d’une ou de plusieurs cellules.",
             "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
-            "La cellule de plante a en plus une paroi et des chloroplastes verts.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
             "Les cellules forment des tissus, les tissus des organes.",
             "Une cellule est trop petite pour l’œil : on l’observe au microscope."
           ]
@@ -208,7 +208,7 @@
           "lines": [
             "Tout être vivant est fait d’une ou de plusieurs cellules.",
             "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
-            "La cellule de plante a en plus une paroi et des chloroplastes verts.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
             "Les cellules forment des tissus, les tissus des organes.",
             "Une cellule est trop petite pour l’œil : on l’observe au microscope."
           ]

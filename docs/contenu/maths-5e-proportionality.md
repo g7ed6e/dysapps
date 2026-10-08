@@ -3,7 +3,7 @@ lieu : maths-5e-proportionality
 module : Proportionnalité
 matière : maths
 classe : 5e
-description : Tableaux de proportionnalité, pourcentages, vitesses, échelles et partages, avec le tableau ou le schéma toujours affiché.
+description : Tableaux de proportionnalité, pourcentages, vitesses et échelles, avec le tableau ou le schéma toujours affiché.
 gardien : le Colporteur
 icône : ruler
 créature : Bazar
@@ -15,22 +15,22 @@ créature : Bazar
 
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
-- description : Complète un tableau de proportionnalité, puis partage une cargaison entre les navires selon un ratio.
-- compétences : c4.ma.b.proportionnalite · c4.ma.b.ratio · c3.ma.nombres.proportionnalite
+- description : Complète un tableau de proportionnalité, en passant par l’unité, puis par le coefficient.
+- compétences : c4.ma.5e.proportionnalite.proportionnalite · c3.ma.proportionnalite.proportionnalite
 
 ## Remises · `percentages`
 
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Prends un pourcentage, puis applique une hausse ou une baisse.
-- compétences : c4.ma.b.pourcentages-echelles · c3.ma.nombres.proportionnalite
+- compétences : c4.ma.5e.proportionnalite.pourcentages · c3.ma.nombres.pourcentages
 
 ## Balances · `ratios`
 
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Vitesses constantes et échelles de carte, puis la carte de l’archipel, en mots ou en fraction, puis une traversée : la distance, la vitesse ou la durée, les minutes changées en heures.
-- compétences : c4.ma.c.grandeurs-composees · c4.ma.b.pourcentages-echelles · c3.ma.espace.echelle · c4.ma.c.conversions
+- compétences : c4.ma.5e.proportionnalite.proportionnalite · c3.ma.proportionnalite.echelle
 
 ## Les plans
 

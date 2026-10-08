@@ -247,7 +247,7 @@ function FicheDuGardien({ ile, onClose, onAllerAuLieu }: Props & { ile: BiomeId 
   const biome = getBiome(ile);
   if (!biome) return null;
   const unlocked = isBiomeUnlocked(ile, state.world.links);
-  const pret = unlocked && isBossOpen(biome, state.progress);
+  const pret = unlocked && isBossOpen(biome, state.progress, state.world.challengesKeptOpen);
   const vaincu = isBossBeaten(ile, state.progress);
   const phrase = pret ? (vaincu ? textes.libelles.dejaFait : textes.libelles.defiPret) : explicationDuGardien(biome, state.progress, unlocked);
   const stars = state.progress[`${ile}-challenge`]?.stars ?? 0;

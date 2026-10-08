@@ -3,7 +3,7 @@ lieu : technology-6e-objects
 module : Les objets techniques
 matière : technology
 classe : 6e
-description : À quoi sert un objet et comment il marche, de quoi il est fait et ce qu’il devient, comment il stocke et transmet l’information, et comment il a changé.
+description : À quoi sert un objet et comment il marche, de quoi il est fait et ce qu’il devient, comment il prend une information et agit, et comment il a changé.
 gardien : l’Automate de laiton
 icône : ruler
 créature : Pince
@@ -258,7 +258,7 @@ Pour tous les items :
    - choix : plastique · verre · aluminium
    - réponse : aluminium
    - indice : Recycler, c’est refaire la même matière.
-   - explication : Recyclée, la canette redevient de l’aluminium, qui sert à fabriquer de nouveaux objets. On n’a pas besoin de nouvelles roches.
+   - explication : Recyclée, la canette redevient de l’aluminium, qui sert à fabriquer de nouveaux objets. On a besoin de moins de roche.
 6. énoncé : Recoller la semelle de sa chaussure au lieu de la jeter, c’est …
    - choix : recycler · réparer · trier
    - réponse : réparer
@@ -281,7 +281,7 @@ Pour tous les items :
 
 ## L’information et les objets · `information-networks`
 
-- description : Stocker et transmettre l’information, les réseaux, chercher et ranger avec le numérique, puis comment les objets ont changé.
+- description : Les capteurs et les actionneurs d’un objet programmable, chercher et ranger avec le numérique, puis comment les objets ont changé.
 - compétences : c3.te.objets.information · c3.te.demarches.numerique · c3.te.objets.evolution
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
@@ -298,31 +298,31 @@ Pour tous les items :
 ### Niveau 1 · `technology-6e-objects-information-networks-1`
 
 Pour tous les items :
-- aide « L’information et les réseaux » :
-  - Stocker : garder l’information. Transmettre : l’envoyer.
-  - Un réseau : des objets reliés qui échangent des informations.
+- aide « L’information et les objets » :
+  - Un capteur prend une information : une présence, la lumière, un obstacle.
+  - Le programme de l’objet décide quoi faire avec cette information.
+  - Un actionneur agit : un moteur, par exemple, fait bouger l’objet.
   - Le navigateur : le logiciel qui ouvre les sites.
-  - Le moteur de recherche : il trouve les pages qui parlent de tes mots.
-  - Pour chercher, on tape quelques mots-clés.
+  - Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.
   - Range tes fichiers dans des dossiers, avec un nom clair.
 
-1. énoncé : La clé USB sert à … des fichiers.
-   - choix : imprimer · stocker · dessiner
-   - réponse : stocker
-   - indice : Relis la première ligne du rappel.
-   - explication : La clé USB garde les fichiers : elle sert à les stocker. On peut l’emporter et la brancher sur un autre ordinateur.
-2. énoncé : La montre connectée envoie les pas comptés au téléphone, sans fil : elle … l’information.
-   - choix : transmet · stocke · efface
-   - réponse : transmet
-   - indice : La montre envoie l’information à un autre objet.
-   - explication : Envoyer l’information à un autre objet, c’est la transmettre. Ici, sans fil.
-3. énoncé : "La salle informatique du collège\nLes ordinateurs sont reliés à une même imprimante.\nIls partagent aussi un dossier d’exposés."
-   - question : Pourquoi dit-on que c’est un réseau ?
-   - lu : La salle informatique du collège. Les ordinateurs sont reliés à une même imprimante. Ils partagent aussi un dossier d’exposés.
-   - choix : les ordinateurs sont neufs · les ordinateurs sont reliés et échangent · les ordinateurs sont dans la même salle
-   - réponse : les ordinateurs sont reliés et échangent
-   - indice : Relis la ligne « Un réseau » du rappel.
-   - explication : Un réseau, ce sont des objets reliés qui échangent des informations. Être dans la même salle ne suffit pas.
+1. énoncé : Le détecteur de présence repère qu’une personne arrive : c’est un …
+   - choix : capteur · actionneur · générateur
+   - réponse : capteur
+   - indice : Relis la ligne « Un capteur » du rappel.
+   - explication : Le détecteur prend une information : quelqu’un arrive. C’est un capteur. Un actionneur, lui, agit, comme un moteur.
+2. énoncé : Le robot avance grâce à son moteur : le moteur est un …
+   - choix : capteur · actionneur · programme
+   - réponse : actionneur
+   - indice : Le moteur prend-il une information, ou fait-il bouger le robot ?
+   - explication : Le moteur fait bouger le robot : il agit, c’est un actionneur. Le capteur, lui, prend une information.
+3. énoncé : "Le lampadaire de la rue\nLe détecteur repère qu’un passant arrive.\nLe programme du lampadaire décide d’allumer.\nLa lampe s’allume."
+   - question : Quel élément prend l’information ?
+   - lu : Le lampadaire de la rue. Le détecteur repère qu’un passant arrive. Le programme du lampadaire décide d’allumer. La lampe s’allume.
+   - choix : le détecteur · le programme · la lampe
+   - réponse : le détecteur
+   - indice : Relis la ligne « Un capteur » du rappel.
+   - explication : Le détecteur prend l’information : c’est le capteur. Le programme décide, puis la lampe s’allume. On part de l’information pour arriver à l’action.
 4. énoncé : Pour trouver des pages sur les volcans, on tape des mots-clés dans un …
    - choix : tableur · traitement de texte · moteur de recherche
    - réponse : moteur de recherche
@@ -347,11 +347,13 @@ Pour tous les items :
    - réponse : volcans
    - indice : Relis la dernière ligne du rappel.
    - explication : « Volcans » dit ce que contient le fichier : on le retrouve vite. « Sans titre » et « document 1 » ne disent rien.
-8. énoncé : Internet relie des ordinateurs du monde entier : c’est un immense …
-   - choix : logiciel · réseau · fichier
-   - réponse : réseau
-   - indice : Relis la ligne « Un réseau » du rappel.
-   - explication : Internet est un réseau : des millions d’ordinateurs reliés, qui échangent des informations.
+8. énoncé : "Le robot de la classe\nSon capteur repère un mur devant lui.\nSon programme dit : « si un mur est devant, alors tourner ».\nSes moteurs font tourner le robot."
+   - question : Quel élément décide de tourner ?
+   - lu : Le robot de la classe. Son capteur repère un mur devant lui. Son programme dit, si un mur est devant, alors tourner. Ses moteurs font tourner le robot.
+   - choix : le capteur · le programme · les moteurs
+   - réponse : le programme
+   - indice : Relis la ligne « Le programme » du rappel.
+   - explication : Le capteur repère le mur, puis le programme décide de tourner. Enfin, les moteurs font tourner le robot.
 
 ### Niveau 2 · `technology-6e-objects-information-networks-2`
 

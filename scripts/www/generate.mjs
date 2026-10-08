@@ -263,13 +263,13 @@ function programmeLine(ids, d, from) {
     const p = d.programme.byId(id);
     if (!p) return id;
     const dom = d.programme.domaineOf(p);
-    return `${p.competence} ([cycle ${p.cycle}, ${dom.title.replace(/^Langues vivantes : /, '')}, p. ${p.page}](${from}programmes.md#${p.domaine}))`;
+    return `${p.competence} ([${p.classes.join(', ')}, ${dom.title.replace(/^Langues vivantes : /, '').replace(/ \([3-6]e\)$/, '')}, p. ${p.page}](${from}programmes.md#${p.domaine}))`;
   });
   return `Programme officiel : ${parts.join(' ; ')}.`;
 }
 
 function programmesPage(d) {
-  const { PROGRAMME, DOMAINES, DISCIPLINES, SOURCES } = d.programme;
+  const { PROGRAMME, DOMAINES, DISCIPLINES, SOURCES, INFORMATIONS_PUBLIQUES } = d.programme;
   const { EXCLUSIONS, coverage } = d;
   const disciplines = Object.keys(DISCIPLINES);
   const status = (e) => (coverage.has(e.id) ? 'travaillee' : EXCLUSIONS[e.id]?.kind ?? 'sans');
@@ -279,9 +279,9 @@ function programmesPage(d) {
     '',
     'Chaque mission d’Archipéo et du portail cite les compétences du programme officiel qu’elle travaille. Cette page les met en face du programme, domaine par domaine : ce qui est travaillé (et par quelle mission), ce qui reste **à couvrir** (la feuille de route du contenu) et ce qui est **hors périmètre** d’une application d’entraînement (l’oral, l’écriture libre, la lecture d’œuvres complètes, la géométrie de construction). Le référentiel est dans `src/curriculum/` ; les libellés sont des résumés fidèles du texte officiel, dont la page est indiquée (« à vérifier » quand elle n’a pas encore été relue dans le texte en vigueur) ; le texte fait foi.',
     '',
-    'Le cycle 3 se termine en 6e ; le cycle 4 couvre la 5e, la 4e et la 3e, sans répartition par année dans le texte officiel. Une île de 5e, 4e ou 3e peut consolider une compétence du cycle 3 ; une île de 6e ne travaille jamais le cycle 4.',
+    'Le cycle 3 se termine en 6e ; le cycle 4 couvre la 5e, la 4e et la 3e. Chaque compétence dit le texte qui la fixe et les classes où elle est au programme : en 6e, le français et les mathématiques suivent les programmes en vigueur depuis la rentrée 2025 ; en 5e, ceux en vigueur à la rentrée 2026, rangés par classe ; en 4e et en 3e, le programme du cycle 4 de 2020, qui ne répartit rien par année. Une île travaille les compétences de sa classe et peut consolider celles d’une classe d’avant, jamais celles d’une classe d’après.',
     '',
-    'Le programme de langues vivantes est commun à toutes les langues : l’anglais le suit du cycle 3 au cycle 4, et la deuxième langue vivante (LV2), l’allemand ou l’espagnol, commencée en 5e, le suit au cycle 4 seulement, avec les mêmes compétences et les mêmes pages.',
+    'Les langues vivantes suivent, en 6e et en 5e, les programmes des classes de collège publiés en 2025, un par langue : l’anglais dès la 6e, la deuxième langue vivante (LV2), l’allemand ou l’espagnol, à partir de la 5e. En 4e et en 3e, elles suivent le programme de 2020, commun à toutes les langues, avec les mêmes compétences et les mêmes pages.',
     '',
     table(
       ['Cycle', 'Discipline', 'Compétences', 'Travaillées', 'À couvrir', 'Hors périmètre'],
@@ -305,10 +305,13 @@ function programmesPage(d) {
         const entries = PROGRAMME.filter((e) => e.domaine === dom.id);
         lines.push(`### ${dom.title} {#${dom.id}}`, '');
         const attendus = [...new Set(entries.map((e) => e.attendu))];
-        lines.push(`*Attendus de fin de cycle (p. ${dom.page}${dom.unverified ? ', à vérifier' : ''}) : ${attendus.map((a) => `${a.replace(/\.$/, '')}`).join(' ; ')}.*`, '');
+        const texte = dom.source ? ` de [${SOURCES[dom.source].title}](${SOURCES[dom.source].pdfUrl})` : '';
+        // Les textes rangés par classe (2025, 2026, `targets` de la source) n'ont pas d'attendus de fin de cycle : leurs titres en tiennent lieu.
+        const parClasse = dom.source && SOURCES[dom.source].targets === 'per-class';
+        lines.push(`*${parClasse ? 'Ce que le texte attend' : 'Attendus de fin de cycle'} (p. ${dom.page}${texte}${dom.unverified ? ', à vérifier' : ''}) : ${attendus.map((a) => `${a.replace(/\.$/, '')}`).join(' ; ')}.*`, '');
         lines.push(
           table(
-            ['Compétence', 'Page', 'Missions'],
+            ['Compétence', 'Classes', 'Page', 'Missions'],
             entries.map((e) => {
               const who = coverage.get(e.id);
               const x = EXCLUSIONS[e.id];
@@ -317,7 +320,7 @@ function programmesPage(d) {
                 : x
                   ? `*${x.kind === 'a-couvrir' ? 'À couvrir' : 'Hors périmètre'} — ${x.motif}*`
                   : '*aucune*';
-              return [e.competence, e.unverified ? `${e.page} (à vérifier)` : String(e.page), quests];
+              return [e.competence, e.classes.join(', '), e.unverified ? `${e.page} (à vérifier)` : String(e.page), quests];
             }),
           ),
           '',
@@ -342,9 +345,9 @@ function programmesPage(d) {
     '',
     '## Sources et licence {#sources}',
     '',
-    `Les programmes viennent du jeu de données [${SOURCES.c3.dataset}](${SOURCES.c3.datasetUrl}) publié sur data.gouv.fr par le ministère de l’Éducation nationale, sous ${SOURCES.c3.licence.name} ([texte de la licence](${SOURCES.c3.licence.url})) : réutilisation libre, avec mention de la source et de la date.`,
+    `Les programmes viennent du jeu de données [${SOURCES.c3.dataset}](${SOURCES.c3.datasetUrl}) publié sur data.gouv.fr par le ministère de l’Éducation nationale, sous ${SOURCES.c3.licence.name} ([texte de la licence](${SOURCES.c3.licence.url})) : réutilisation libre, avec mention de la source et de la date. Quand une discipline suit un programme plus récent, publié au Bulletin officiel ou sur éduscol, ses domaines citent ce texte ; ce sont des informations publiques, réutilisables librement avec la même mention ([code des relations entre le public et l’administration](${INFORMATIONS_PUBLIQUES.url})).`,
     '',
-    ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl}) : ${s.pages} pages, ${s.legal}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
+    ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl}) : ${s.pages} pages, ${s.legal}, pour ${s.classes.join(', ')}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
     '',
     'Les libellés de cette page sont des résumés fidèles du texte officiel, écrits pour tenir sur une ligne ; le texte officiel fait foi.',
     '',

@@ -11,12 +11,12 @@ créature : Manivelle
 
 # Bassin des maquettes
 
-> Île de 4e en technologie, programme du cycle 4 en vigueur (annexe 3 du BO n° 31 du 30 juillet 2020). Écrans existants seulement : la question à trou et la question sur un document (quatre lignes au plus sous le titre, une information par ligne). Un schéma se décrit case par case, une courbe par ce qu’elle fait (« elle monte », « elle reste plate ») : pas de schéma ni de courbe à voir tant qu’il n’y a pas d’écran pour eux. Les fonctions des deux chaînes gardent toujours les mêmes mots : alimenter, distribuer, convertir, transmettre ; acquérir, traiter, communiquer. Une simulation se lit et se compare au cahier des charges, jamais ne se calcule ; les unités s’écrivent en toutes lettres.
+> Île de 4e en technologie, programme du cycle 4 en vigueur (BO n° 9 du 29 février 2024). Écrans existants seulement : la question à trou et la question sur un document (quatre lignes au plus sous le titre, une information par ligne). Un schéma se décrit case par case, une courbe par ce qu’elle fait (« elle monte », « elle reste plate ») : pas de schéma ni de courbe à voir tant qu’il n’y a pas d’écran pour eux. Les fonctions des deux chaînes gardent toujours les mêmes mots : alimenter, distribuer, convertir, transmettre ; acquérir, traiter, communiquer. Une simulation se lit et se compare au cahier des charges, jamais ne se calcule ; les unités s’écrivent en toutes lettres.
 
 ## La chaîne d’énergie · `energy-chain`
 
 - description : Alimenter, distribuer, convertir et transmettre : le chemin de l’énergie dans un objet, puis son schéma.
-- compétences : c4.te.modelisation.fonctionnement · c4.te.demarches.langages
+- compétences : c4.te.fonctionnement.energie
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -150,7 +150,7 @@ Pour tous les items :
 ## La chaîne d’information · `information-chain`
 
 - description : Acquérir, traiter et communiquer : capteurs, carte programmable et actionneurs, puis les deux chaînes ensemble.
-- compétences : c4.te.modelisation.fonctionnement · c4.te.demarches.langages
+- compétences : c4.te.fonctionnement.information · c4.te.fonctionnement.energie
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -177,11 +177,11 @@ Pour tous les items :
    - réponse : capteur
    - indice : Il repère quelqu’un qui passe.
    - explication : Le détecteur repère un mouvement : c’est un capteur. La lampe qui s’allume ensuite est l’actionneur.
-2. énoncé : Le thermostat mesure la température de la pièce : il … l’information.
+2. énoncé : Le capteur du thermostat mesure la température de la pièce : il … l’information.
    - choix : traite · acquiert · communique
    - réponse : acquiert
    - indice : Relis la ligne « Acquérir » du rappel.
-   - explication : Mesurer la température, c’est prendre l’information : le thermostat l’acquiert, grâce à son capteur.
+   - explication : Mesurer la température, c’est prendre l’information : le capteur l’acquiert.
 3. énoncé : "La porte automatique du magasin\nUn capteur voit le client arriver.\nLa carte programmable reçoit le signal.\nElle donne l’ordre d’ouvrir."
    - question : Quel élément traite l’information ?
    - lu : La porte automatique du magasin. Un capteur voit le client arriver. La carte programmable reçoit le signal. Elle donne l’ordre d’ouvrir.
@@ -282,7 +282,7 @@ Pour tous les items :
 ## Lire une simulation · `simulation`
 
 - description : Ce qu’est un modèle et une simulation, puis lire un résultat (tableau, courbe) et le comparer au cahier des charges.
-- compétences : c4.te.modelisation.simuler · c4.te.design.besoin · c4.te.demarches.langages
+- compétences : c4.te.conception.valider · c4.te.usages.interactions
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}

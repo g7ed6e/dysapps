@@ -68,7 +68,7 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
   const { assemblage, liaisons } = useTextes();
   const mot = linkPhrases(liaisons);
   const { progress } = useProgress();
-  const resume = lastPlace();
+  const resume = lastPlace(state.world.links);
   const reviews = questsToReview(state.spaced, state.world.links);
   // Échap referme le menu, comme la croix ; la touche est prise à la capture, avant les écouteurs des mots ouverts
   // dessous (baleine, rallumage), qui ne se ferment pas avec lui.

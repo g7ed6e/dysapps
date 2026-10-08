@@ -28,7 +28,7 @@
             "Il y a un risque quand un aléa menace des enjeux.",
             "On ne sait pas empêcher un séisme, ni prévoir son jour.",
             "Prévenir : construire solide, surveiller, informer, s’entraîner.",
-            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+            "Le sable et la boue se déposent en couches : ils forment de nouvelles roches."
           ]
         }
       }
@@ -55,7 +55,7 @@
             "Il y a un risque quand un aléa menace des enjeux.",
             "On ne sait pas empêcher un séisme, ni prévoir son jour.",
             "Prévenir : construire solide, surveiller, informer, s’entraîner.",
-            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+            "Le sable et la boue se déposent en couches : ils forment de nouvelles roches."
           ]
         }
       }
@@ -82,7 +82,7 @@
             "Il y a un risque quand un aléa menace des enjeux.",
             "On ne sait pas empêcher un séisme, ni prévoir son jour.",
             "Prévenir : construire solide, surveiller, informer, s’entraîner.",
-            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+            "Le sable et la boue se déposent en couches : ils forment de nouvelles roches."
           ]
         }
       }
@@ -110,7 +110,7 @@
             "Il y a un risque quand un aléa menace des enjeux.",
             "On ne sait pas empêcher un séisme, ni prévoir son jour.",
             "Prévenir : construire solide, surveiller, informer, s’entraîner.",
-            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+            "Le sable et la boue se déposent en couches : ils forment de nouvelles roches."
           ]
         }
       }
@@ -138,7 +138,7 @@
             "Il y a un risque quand un aléa menace des enjeux.",
             "On ne sait pas empêcher un séisme, ni prévoir son jour.",
             "Prévenir : construire solide, surveiller, informer, s’entraîner.",
-            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+            "Le sable et la boue se déposent en couches : ils forment de nouvelles roches."
           ]
         }
       }
@@ -153,8 +153,8 @@
         "précieuses"
       ],
       "answer": "sédimentaires",
-      "hint": "Relis la ligne « Les débris » du rappel.",
-      "explanation": "Les débris déposés en couches forment des roches sédimentaires, comme le calcaire ou le grès. Les roches volcaniques, elles, viennent de la lave refroidie.",
+      "hint": "Relis la ligne « Le sable et la boue » du rappel.",
+      "explanation": "Le sable et la boue déposés en couches forment des roches sédimentaires, comme le grès, fait de grains de sable. Les roches volcaniques, elles, viennent de la lave refroidie.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -165,7 +165,7 @@
             "Il y a un risque quand un aléa menace des enjeux.",
             "On ne sait pas empêcher un séisme, ni prévoir son jour.",
             "Prévenir : construire solide, surveiller, informer, s’entraîner.",
-            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+            "Le sable et la boue se déposent en couches : ils forment de nouvelles roches."
           ]
         }
       }
@@ -193,7 +193,7 @@
             "Il y a un risque quand un aléa menace des enjeux.",
             "On ne sait pas empêcher un séisme, ni prévoir son jour.",
             "Prévenir : construire solide, surveiller, informer, s’entraîner.",
-            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+            "Le sable et la boue se déposent en couches : ils forment de nouvelles roches."
           ]
         }
       }
@@ -221,7 +221,7 @@
             "Il y a un risque quand un aléa menace des enjeux.",
             "On ne sait pas empêcher un séisme, ni prévoir son jour.",
             "Prévenir : construire solide, surveiller, informer, s’entraîner.",
-            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+            "Le sable et la boue se déposent en couches : ils forment de nouvelles roches."
           ]
         }
       }

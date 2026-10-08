@@ -33,9 +33,9 @@
     },
     {
       "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-2-1",
-      "prompt": "Le flacon fermé par un ballon\nDans le flacon : du vinaigre et un sachet de bicarbonate.\nLa balance affiche 200 g.\nOn renverse le sachet : ça mousse, le ballon gonfle.",
+      "prompt": "La bouteille fermée par son bouchon\nDans une bouteille en plastique souple : du vinaigre et un sachet de bicarbonate.\nLa balance affiche 200 g.\nOn renverse le sachet : ça mousse, la bouteille devient dure.",
       "question": "Que va afficher la balance ?",
-      "spoken": "Le flacon fermé par un ballon. Dans le flacon, du vinaigre et un sachet de bicarbonate. La balance affiche 200 grammes. On renverse le sachet, ça mousse, le ballon gonfle.",
+      "spoken": "La bouteille fermée par son bouchon. Dans une bouteille en plastique souple, du vinaigre et un sachet de bicarbonate. La balance affiche deux cents grammes. On renverse le sachet, ça mousse, la bouteille devient dure.",
       "choices": [
         "180 grammes",
         "200 grammes",
@@ -43,7 +43,7 @@
       ],
       "answer": "200 grammes",
       "hint": "Le gaz qui se forme peut-il sortir ?",
-      "explanation": "Le gaz reste dans le ballon : aucun atome ne sort. La masse se conserve, la balance affiche encore 200 grammes.",
+      "explanation": "Le bouchon garde le gaz dans la bouteille : aucun atome ne sort. La masse se conserve, la balance affiche encore 200 grammes.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -60,9 +60,9 @@
     },
     {
       "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-2-2",
-      "prompt": "Le même essai, sans ballon\nAvant : 200 g.\nÇa mousse, le gaz part dans l’air.\nAprès : 195 g.",
+      "prompt": "Le même essai, sans bouchon\nAvant : 200 g.\nÇa mousse, le gaz part dans l’air.\nAprès : 195 g.",
       "question": "Pourquoi la masse a-t-elle baissé ?",
-      "spoken": "Le même essai, sans ballon. Avant, 200 grammes. Ça mousse, le gaz part dans l’air. Après, 195 grammes.",
+      "spoken": "Le même essai, sans bouchon. Avant, deux cents grammes. Ça mousse, le gaz part dans l’air. Après, cent quatre-vingt-quinze grammes.",
       "choices": [
         "des atomes ont disparu",
         "le gaz est parti dans l’air",

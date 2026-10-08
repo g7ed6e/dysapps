@@ -31,7 +31,7 @@
 
 ### La poutre · `compound-6e`
 
-- compétences : c3.fr.langue.genre-nombre · c3.fr.langue.accord-sujet-verbe · c3.fr.langue.homophonie · c3.fr.langue.phonemes-graphemes · c3.fr.langue.mots-invariables · c3.fr.lecture.reprises · c3.fr.lecture.explicite · c3.fr.lecture.lexique-contexte · c3.ma.nombres.problemes · c3.ma.nombres.calcul-mental · c3.ma.grandeurs.perimetre · c3.ma.grandeurs.durees
+- compétences : c3.fr.langue.genre-nombre · c3.fr.langue.accord-sujet-verbe · c3.fr.langue.orthographe-grammaticale · c3.fr.langue.phonemes-graphemes · c3.fr.langue.mots-frequents · c3.fr.lecture.reprises · c3.fr.lecture.explicite · c3.fr.lecture.lexique-contexte · c3.ma.nombres.problemes · c3.ma.nombres.calcul-mental · c3.ma.grandeurs.perimetre · c3.ma.grandeurs.durees
 - consigne : Lis, calcule, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien assemblé !
 - erreur : {explanation}
@@ -159,7 +159,7 @@
 
 ### Le vitrail · `compound-5e`
 
-- compétences : c4.ma.a.relatifs · c4.ma.a.calcul-relatifs · c4.ma.a.fractions · c4.ma.a.calcul-fractions · c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
+- compétences : c4.ma.5e.nombres.relatifs · c4.ma.5e.nombres.calcul-relatifs · c4.ma.5e.nombres.fractions · c4.ma.5e.nombres.calcul-fractions · c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale
 - consigne : Lis, calcule, puis choisis la phrase juste et bien écrite. Le rappel est affiché.
 - bravo : Bien assemblé !
 - erreur : {explanation}
@@ -172,7 +172,7 @@
    - indice : De moins 3 à 0, puis de 0 à 4 : compte les bonds. Puis : ces ou ses ?
    - explication : 4 − (−3) = 4 + 3 = 7 degrés. « ces » montre (ces moments-là) ; « ses » veut dire les siens. 1, c’est 4 − 3 : le signe moins a été oublié.
    - aide « Écart, et ces, ses » :
-     - Soustraire un négatif, c’est ajouter : 4 − (−3) = 4 + 3.
+     - Soustraire un négatif, c’est ajouter : 5 − (−1) = 5 + 1.
      - ces = on montre (ces livres-là). ses = les siens, les siennes.
 2. énoncé : "Lina place le nombre −2\nsur la droite graduée."
    - question : Quelle phrase est juste ?
@@ -197,13 +197,13 @@
 4. énoncé : "Oslo : −8 °C.\nParis : −2 °C."
    - question : Quelle phrase est juste ?
    - lu : Oslo, moins 8 degrés. Paris, moins 2 degrés.
-   - choix : Oslo, c’est là où il fait plus froid. · Oslo, c’est là ou il fait plus froid. · Paris, c’est là où il fait plus froid.
-   - réponse : Oslo, c’est là où il fait plus froid.
-   - indice : Lequel est le plus loin de 0, du côté des négatifs ? Puis : un lieu, ou « ou bien » ?
-   - explication : −8 est plus petit que −2 : il fait plus froid à Oslo. « où » dit le lieu ; « ou » veut dire « ou bien ». Paris, c’est croire que −2 est plus petit parce que 2 est plus petit que 8.
-   - aide « Le plus froid, et ou, où » :
+   - choix : Il fait plus froid à Oslo. · Il fait plus froid a Oslo. · Il fait plus froid à Paris.
+   - réponse : Il fait plus froid à Oslo.
+   - indice : Lequel est le plus loin de 0, du côté des négatifs ? Puis remplace par « avait ».
+   - explication : −8 est plus petit que −2 : il fait plus froid à Oslo. On ne peut pas dire « plus froid avait Oslo » : on écrit à, avec un accent. Paris, c’est croire que −2 est plus petit parce que 2 est plus petit que 8.
+   - aide « Le plus froid, et a, à » :
      - Entre deux négatifs, le plus petit est le plus loin de 0 : −5 est plus petit que −1.
-     - où = le lieu ou le moment. ou = ou bien.
+     - a = avait. à = petit mot devant un lieu (à Lyon).
 5. énoncé : "Le thermomètre indique −5 °C.\nLa température monte de 3 degrés."
    - question : Quelle phrase est juste ?
    - lu : Le thermomètre indique moins 5 degrés. La température monte de 3 degrés.
@@ -234,16 +234,16 @@
    - aide « La baisse, et c’est, s’est » :
      - Pour un écart, passe par 0 et compte les bonds.
      - s’est = se + est (elle s’est levée). c’est = cela est.
-8. énoncé : "Ana calcule (−3) × (−4).\nElle explique son résultat."
-   - question : Quelle phrase est juste ?
-   - lu : Ana calcule moins 3 fois moins 4. Elle explique son résultat.
-   - choix : Quand on multiplie deux négatifs, on trouve 12. · Quant on multiplie deux négatifs, on trouve 12. · Quand on multiplie deux négatifs, on trouve −12.
-   - réponse : Quand on multiplie deux négatifs, on trouve 12.
-   - indice : Moins par moins : quel signe ? Puis remplace par « lorsque ».
-   - explication : (−3) × (−4) = 12 : moins par moins donne plus. « Quand » veut dire « lorsque ». « Quant » s’emploie dans « quant à » (quant à moi). −12, c’est garder le signe moins : la règle des signes a été oubliée.
-   - aide « Les signes, et quand, quant » :
-     - Moins par moins donne plus. Plus par moins donne moins.
-     - quand = lorsque. quant à = pour ce qui est de.
+8. énoncé : "Ana calcule 2 − 5.\nElle raconte comment elle a trouvé."
+   - question : Quelle phrase d’Ana est juste ?
+   - lu : Ana calcule 2 moins 5. Elle raconte comment elle a trouvé.
+   - choix : Ma sœur m’a montré qu’on trouve −3. · Ma sœur ma montré qu’on trouve −3. · Ma sœur m’a montré qu’on trouve 3.
+   - réponse : Ma sœur m’a montré qu’on trouve −3.
+   - indice : De 2, recule de 5 bonds. Puis remplace par « m’avait ».
+   - explication : 2 − 5 = −3 : de 2, on recule de 5 bonds, et on passe sous 0. On peut dire « ma sœur m’avait montré » : on écrit m’a. « ma » va devant un nom (ma sœur). 3, c’est 5 − 2 : le signe moins a été oublié.
+   - aide « Reculer, et ma, m’a » :
+     - Soustraire, c’est reculer sur la droite graduée : 1 − 3 = −2.
+     - m’a = m’avait. ma = devant un nom (ma sœur).
 9. énoncé : "Deux amis partagent une tarte.\nChacun en prend un quart."
    - question : Quelle phrase est juste ?
    - lu : Deux amis partagent une tarte. Chacun en prend un quart.
@@ -257,23 +257,23 @@
 10. énoncé : "À Paris, il est 10 h.\nDécalage de Londres : −1 h."
     - question : Quelle heure est-il à Londres ?
     - lu : À Paris, il est 10 heures. Décalage de Londres, moins 1 heure.
-    - choix : 9 h : une heure plus tôt. · 9 h : une heure plutôt. · 11 h : une heure plus tôt.
-    - réponse : 9 h : une heure plus tôt.
-    - indice : Ajouter moins 1, c’est reculer ou avancer ? Puis : le contraire de « plus tard » ?
-    - explication : 10 + (−1) = 9 : à Londres, il est 9 h. « plus tôt » est le contraire de « plus tard » ; « plutôt » veut dire « de préférence ». 11 h, c’est 10 + 1 : le signe moins a été oublié.
-    - aide « Le décalage, et plus tôt, plutôt » :
+    - choix : À Londres, c’est 9 h. · À Londres, s’est 9 h. · À Londres, c’est 11 h.
+    - réponse : À Londres, c’est 9 h.
+    - indice : Ajouter moins 1, c’est reculer ou avancer ? Puis : peux-tu dire « cela est » ?
+    - explication : 10 + (−1) = 9 : à Londres, il est 9 h. On peut dire « cela est 9 h » : on écrit c’est. « s’est » va avec un verbe comme se lever (il s’est levé). 11 h, c’est 10 + 1 : le signe moins a été oublié.
+    - aide « Le décalage, et c’est, s’est » :
       - Ajouter un négatif, c’est reculer : 8 + (−2) = 6.
-      - plus tôt = avant, le contraire de plus tard. plutôt = de préférence.
+      - c’est = cela est. s’est = se + est (il s’est levé).
 11. énoncé : "Jade et Emma lisent le même livre.\nJade en a lu un tiers.\nEmma en a lu un quart."
     - question : Quelle phrase est juste ?
     - lu : Jade et Emma lisent le même livre. Jade en a lu un tiers. Emma en a lu un quart.
-    - choix : Emma voit que Jade a lu plus qu’elle. · Emma voit que Jade a lu plus quelle. · Jade voit qu’Emma a lu plus qu’elle.
-    - réponse : Emma voit que Jade a lu plus qu’elle.
-    - indice : En 3 parts ou en 4 parts : quelle part est la plus grande ? Puis remplace par « qu’il ».
-    - explication : Un tiers est plus grand qu’un quart : partagé en 3, chaque part est plus grande qu’en 4. Jade a lu plus qu’Emma : elle, c’est Emma. On peut dire « plus qu’il » : on écrit qu’elle. « Jade voit qu’Emma a lu plus », c’est croire qu’un quart est plus grand parce que 4 est plus grand que 3.
-    - aide « Comparer, et qu’elle, quel » :
+    - choix : Jade a lu plus que son amie. · Jade a lu plus que sont amie. · Emma a lu plus que son amie.
+    - réponse : Jade a lu plus que son amie.
+    - indice : En 3 parts ou en 4 parts : quelle part est la plus grande ? Puis remplace par « étaient ».
+    - explication : Un tiers est plus grand qu’un quart : partagé en 3, chaque part est plus grande qu’en 4. Jade a lu plus qu’Emma. On ne peut pas dire « plus que étaient amie » : on écrit son, comme « sa copine ». « Emma a lu plus », c’est croire qu’un quart est plus grand parce que 4 est plus grand que 3.
+    - aide « Comparer, et son, sont » :
       - Même numérateur : plus le dénominateur est grand, plus la part est petite.
-      - qu’elle = qu’il au féminin. quel = devant un nom (quel livre ?).
+      - son = le sien, la sienne (son livre). sont = étaient.
 12. énoncé : "Léo a 12 billes.\nIl perd un tiers de ses billes."
     - question : Quelle phrase est juste ?
     - lu : Léo a 12 billes. Il perd un tiers de ses billes.
@@ -419,7 +419,7 @@ Pour tous les items :
 
 ### Le miroir · `compound-3e`
 
-- compétences : c4.fr.langue.sens-des-mots · c4.fr.langue.enonciation · c4.fr.langue.discours-rapporte · c4.fr.langue.passif · c4.fr.langue.coherence-textuelle · c4.fr.lecture.procedes · c4.fr.lecture.controle · c3.fr.lecture.implicite · c4.ma.b.probabilites · c4.ma.b.indicateurs · c4.ma.b.effectifs-frequences · c4.ma.b.lire-donnees · c4.ma.b.pourcentages-echelles
+- compétences : c4.fr.langue.sens-des-mots · c4.fr.langue.enonciation · c4.fr.langue.discours-rapporte · c4.fr.langue.passif · c4.fr.langue.coherence-textuelle · c4.fr.lecture.procedes · c4.fr.lecture.controle · c3.fr.lecture.implicite · c4.ma.b.probabilites · c4.ma.b.indicateurs · c4.ma.b.effectifs-frequences · c4.ma.b.lire-donnees · c4.ma.5e.proportionnalite.pourcentages
 - consigne : Lis le texte, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien assemblé !
 - erreur : {explanation}

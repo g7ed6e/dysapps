@@ -20,14 +20,14 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Masse, volume, masse volumique",
+          "title": "Masse et volume",
           "lines": [
             "La masse se mesure en grammes (g), le volume en millilitres (mL).",
             "Un litre, c’est mille millilitres.",
-            "La masse volumique : la masse d’un millilitre de la matière.",
-            "On la trouve en divisant la masse par le volume.",
-            "L’eau : 1 gramme par millilitre.",
-            "Masse volumique plus petite que l’eau : ça flotte. Plus grande : ça coule."
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
           ]
         }
       }
@@ -48,14 +48,14 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Masse, volume, masse volumique",
+          "title": "Masse et volume",
           "lines": [
             "La masse se mesure en grammes (g), le volume en millilitres (mL).",
             "Un litre, c’est mille millilitres.",
-            "La masse volumique : la masse d’un millilitre de la matière.",
-            "On la trouve en divisant la masse par le volume.",
-            "L’eau : 1 gramme par millilitre.",
-            "Masse volumique plus petite que l’eau : ça flotte. Plus grande : ça coule."
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
           ]
         }
       }
@@ -76,69 +76,69 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Masse, volume, masse volumique",
+          "title": "Masse et volume",
           "lines": [
             "La masse se mesure en grammes (g), le volume en millilitres (mL).",
             "Un litre, c’est mille millilitres.",
-            "La masse volumique : la masse d’un millilitre de la matière.",
-            "On la trouve en divisant la masse par le volume.",
-            "L’eau : 1 gramme par millilitre.",
-            "Masse volumique plus petite que l’eau : ça flotte. Plus grande : ça coule."
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-5e-matter-universe-mixtures-density-2-3",
-      "prompt": "Un caillou\nMasse : 30 g (grammes).\nVolume : 10 mL (millilitres).",
-      "question": "Quelle est sa masse volumique ?",
-      "spoken": "Un caillou. Masse, 30 grammes. Volume, 10 millilitres.",
+      "prompt": "Deux cailloux de la même roche\nVolume du caillou A : 10 mL (millilitres).\nMasse du caillou A : 30 g (grammes).\nVolume du caillou B : 20 mL, deux fois plus.",
+      "question": "Quelle est la masse du caillou B ?",
+      "spoken": "Deux cailloux de la même roche. Volume du caillou A, dix millilitres. Masse du caillou A, trente grammes. Volume du caillou B, vingt millilitres, deux fois plus.",
       "choices": [
-        "3 grammes par millilitre",
-        "20 grammes par millilitre",
-        "40 grammes par millilitre"
+        "40 grammes",
+        "50 grammes",
+        "60 grammes"
       ],
-      "answer": "3 grammes par millilitre",
-      "hint": "Relis la ligne « On la trouve » du rappel.",
-      "explanation": "On divise la masse par le volume : 30 divisé par 10, 3 grammes par millilitre. Chaque millilitre de caillou a une masse de 3 grammes.",
+      "answer": "60 grammes",
+      "hint": "Relis la ligne « Une même matière » du rappel.",
+      "explanation": "Même roche, deux fois plus de volume : deux fois plus de masse. 30 fois 2, 60 grammes.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Masse, volume, masse volumique",
+          "title": "Masse et volume",
           "lines": [
             "La masse se mesure en grammes (g), le volume en millilitres (mL).",
             "Un litre, c’est mille millilitres.",
-            "La masse volumique : la masse d’un millilitre de la matière.",
-            "On la trouve en divisant la masse par le volume.",
-            "L’eau : 1 gramme par millilitre.",
-            "Masse volumique plus petite que l’eau : ça flotte. Plus grande : ça coule."
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-5e-matter-universe-mixtures-density-2-4",
-      "prompt": "Le glaçon flotte sur l’eau : sa masse volumique est plus … que celle de l’eau liquide.",
-      "spoken": "Le glaçon flotte sur l’eau : sa masse volumique est plus  (mot manquant)  que celle de l’eau liquide.",
+      "prompt": "Le glaçon flotte sur l’eau : à volume égal, la glace a … de masse que l’eau liquide.",
+      "spoken": "Le glaçon flotte sur l’eau : à volume égal, la glace a  (mot manquant)  de masse que l’eau liquide.",
       "choices": [
-        "grande",
-        "lourde",
-        "petite"
+        "plus",
+        "autant",
+        "moins"
       ],
-      "answer": "petite",
-      "hint": "Relis la ligne « Masse volumique » du rappel.",
-      "explanation": "Ce qui flotte sur l’eau a une masse volumique plus petite que celle de l’eau : c’est le cas de la glace. Un millilitre de glace a une masse un peu plus petite qu’un millilitre d’eau.",
+      "answer": "moins",
+      "hint": "Relis la ligne « À volume égal » du rappel.",
+      "explanation": "À volume égal, ce qui flotte sur l’eau a moins de masse que l’eau : c’est le cas de la glace. Un millilitre de glace a une masse un peu plus petite qu’un millilitre d’eau.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Masse, volume, masse volumique",
+          "title": "Masse et volume",
           "lines": [
             "La masse se mesure en grammes (g), le volume en millilitres (mL).",
             "Un litre, c’est mille millilitres.",
-            "La masse volumique : la masse d’un millilitre de la matière.",
-            "On la trouve en divisant la masse par le volume.",
-            "L’eau : 1 gramme par millilitre.",
-            "Masse volumique plus petite que l’eau : ça flotte. Plus grande : ça coule."
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
           ]
         }
       }
@@ -159,14 +159,14 @@
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Masse, volume, masse volumique",
+          "title": "Masse et volume",
           "lines": [
             "La masse se mesure en grammes (g), le volume en millilitres (mL).",
             "Un litre, c’est mille millilitres.",
-            "La masse volumique : la masse d’un millilitre de la matière.",
-            "On la trouve en divisant la masse par le volume.",
-            "L’eau : 1 gramme par millilitre.",
-            "Masse volumique plus petite que l’eau : ça flotte. Plus grande : ça coule."
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
           ]
         }
       }
@@ -183,45 +183,45 @@
       ],
       "answer": "elle flotte",
       "hint": "À volume égal, qui a la plus petite masse ?",
-      "explanation": "100 millilitres d’huile ont une masse de 90 grammes, moins que l’eau : la masse volumique de l’huile est plus petite, elle flotte. Elle ne se dissout pas : huile et eau ne sont pas miscibles.",
+      "explanation": "100 millilitres d’huile ont une masse de 90 grammes, moins que 100 millilitres d’eau : à volume égal, l’huile a moins de masse, elle flotte. Elle ne se dissout pas : huile et eau ne sont pas miscibles.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Masse, volume, masse volumique",
+          "title": "Masse et volume",
           "lines": [
             "La masse se mesure en grammes (g), le volume en millilitres (mL).",
             "Un litre, c’est mille millilitres.",
-            "La masse volumique : la masse d’un millilitre de la matière.",
-            "On la trouve en divisant la masse par le volume.",
-            "L’eau : 1 gramme par millilitre.",
-            "Masse volumique plus petite que l’eau : ça flotte. Plus grande : ça coule."
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
           ]
         }
       }
     },
     {
       "key": "physics-chemistry-5e-matter-universe-mixtures-density-2-7",
-      "prompt": "La masse volumique de l’eau est de 1 gramme par …",
-      "spoken": "La masse volumique de l’eau est de 1 gramme par  (mot manquant) ",
+      "prompt": "Un millilitre d’eau a une masse d’un …",
+      "spoken": "Un millilitre d’eau a une masse d’un  (mot manquant) ",
       "choices": [
-        "millilitre",
-        "litre",
-        "kilogramme"
+        "gramme",
+        "kilogramme",
+        "milligramme"
       ],
-      "answer": "millilitre",
+      "answer": "gramme",
       "hint": "Relis la ligne « L’eau » du rappel.",
-      "explanation": "Un millilitre d’eau a une masse de 1 gramme : 1 gramme par millilitre. Un litre d’eau a une masse de mille grammes, un kilogramme.",
+      "explanation": "Un millilitre d’eau a une masse d’un gramme. Un litre, c’est mille millilitres : un litre d’eau a donc une masse de mille grammes, un kilogramme.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Masse, volume, masse volumique",
+          "title": "Masse et volume",
           "lines": [
             "La masse se mesure en grammes (g), le volume en millilitres (mL).",
             "Un litre, c’est mille millilitres.",
-            "La masse volumique : la masse d’un millilitre de la matière.",
-            "On la trouve en divisant la masse par le volume.",
-            "L’eau : 1 gramme par millilitre.",
-            "Masse volumique plus petite que l’eau : ça flotte. Plus grande : ça coule."
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
           ]
         }
       }

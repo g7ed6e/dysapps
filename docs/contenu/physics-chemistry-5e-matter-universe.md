@@ -3,7 +3,7 @@ lieu : physics-chemistry-5e-matter-universe
 module : La matière, de la goutte aux étoiles
 matière : physics-chemistry
 classe : 5e
-description : Les molécules et les changements d’état, les corps purs, les mélanges et la masse volumique, puis l’Univers, le système solaire et l’atome.
+description : Les molécules et les changements d’état, les corps purs et les mélanges, la masse et le volume, puis l’Univers, le système solaire et ses éléments.
 gardien : le Flamant de sel
 icône : scale
 créature : Perle
@@ -11,7 +11,7 @@ créature : Perle
 
 # Saline des mélanges
 
-> Île de 5e en physique-chimie, programme du cycle 4 en vigueur (annexe 3 du BO n° 31 du 30 juillet 2020). Écrans existants seulement, comme en 6e : la question à trou et la question sur un document (une information par ligne, quatre lignes au plus sous le titre). Les unités s’écrivent en toutes lettres dans les choix et dans ce que lit la voix ; le symbole, quand il sert, reste dans le document avec le mot à côté. Un seul calcul par item, à une opération, sur des nombres entiers : la masse volumique se trouve en divisant la masse par le volume.
+> Île de 5e en physique-chimie, programme du cycle 4 en vigueur (annexe 3 du BO n° 31 du 30 juillet 2020). Écrans existants seulement, comme en 6e : la question à trou et la question sur un document (une information par ligne, quatre lignes au plus sous le titre). Les unités s’écrivent en toutes lettres dans les choix et dans ce que lit la voix ; le symbole, quand il sert, reste dans le document avec le mot à côté. Un seul calcul par item, à une opération, sur des nombres entiers. La masse volumique n’arrive qu’en 4e : en 5e, on compare des masses à volume égal, et deux fois plus de volume d’une même matière donne deux fois plus de masse. La constitution de l’atome attend la 3e, les symboles et les formules la 4e.
 
 ## États et molécules · `changes-of-state`
 
@@ -33,7 +33,7 @@ Pour tous les items :
 
 Pour tous les items :
 - aide « Les états et les molécules » :
-  - Toute matière est faite de molécules, bien trop petites pour être vues.
+  - L’eau, comme beaucoup de corps, est faite de molécules, bien trop petites pour être vues.
   - Solide : molécules serrées et rangées. Il garde sa forme.
   - Liquide : molécules serrées, en désordre. Elles glissent les unes sur les autres.
   - Gaz : molécules éloignées, en désordre. On peut le comprimer.
@@ -144,9 +144,9 @@ Pour tous les items :
    - indice : Relis la troisième ligne du document.
    - explication : L’axe de gauche donne la température, en degrés Celsius ; l’axe du bas, le temps. La partie plate à 100 degrés, c’est le palier de l’ébullition.
 
-## Mélanges et masse volumique · `mixtures-density`
+## Mélanges, masse et volume · `mixtures-density`
 
-- description : Corps purs et mélanges, dissoudre et mélanger deux liquides, puis la masse, le volume et la masse volumique : ce qui flotte et ce qui coule.
+- description : Corps purs et mélanges, dissoudre et mélanger deux liquides, puis la masse et le volume : ce qui flotte et ce qui coule.
 - compétences : c4.pc.matiere.etats · c4.pc.demarches.experimenter · c4.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
@@ -164,7 +164,8 @@ Pour tous les items :
 
 Pour tous les items :
 - aide « Corps purs et mélanges » :
-  - Corps pur : une seule sorte de molécules. Mélange : plusieurs sortes.
+  - Corps pur : une seule espèce chimique, comme l’eau pure.
+  - Mélange : plusieurs constituants.
   - Soluble : il se dissout dans le liquide. Insoluble : on le voit encore.
   - Ce qui se dissout : le soluté. Le liquide qui le dissout : le solvant.
   - Saturée : la solution ne peut plus rien dissoudre.
@@ -174,12 +175,12 @@ Pour tous les items :
    - choix : mélange · corps pur · soluté
    - réponse : corps pur
    - indice : Relis la ligne « Corps pur » du rappel.
-   - explication : Une seule sorte de molécules, c’est un corps pur. L’eau du robinet, elle, contient aussi des sels : c’est un mélange.
+   - explication : Une seule espèce chimique, l’eau : c’est un corps pur. L’eau du robinet, elle, contient aussi des sels : c’est un mélange.
 2. énoncé : L’eau minérale contient de l’eau et des sels dissous : c’est un …
    - choix : corps pur · solvant · mélange
    - réponse : mélange
-   - indice : Combien de sortes de molécules ?
-   - explication : L’eau minérale contient plusieurs sortes de molécules : c’est un mélange, même si on n’y voit qu’une seule chose.
+   - indice : Combien de constituants ?
+   - explication : L’eau minérale contient plusieurs constituants, de l’eau et des sels : c’est un mélange, même si on n’y voit qu’une seule chose.
 3. énoncé : Le sable reste visible au fond de l’eau : il est …
    - choix : insoluble · soluble · miscible
    - réponse : insoluble
@@ -218,13 +219,13 @@ Pour tous les items :
 ### Niveau 2 · `physics-chemistry-5e-matter-universe-mixtures-density-2`
 
 Pour tous les items :
-- aide « Masse, volume, masse volumique » :
+- aide « Masse et volume » :
   - La masse se mesure en grammes (g), le volume en millilitres (mL).
   - Un litre, c’est mille millilitres.
-  - La masse volumique : la masse d’un millilitre de la matière.
-  - On la trouve en divisant la masse par le volume.
-  - L’eau : 1 gramme par millilitre.
-  - Masse volumique plus petite que l’eau : ça flotte. Plus grande : ça coule.
+  - Une même matière : deux fois plus de volume, deux fois plus de masse.
+  - Pour comparer deux matières, on prend le même volume de chacune.
+  - L’eau : un millilitre a une masse d’un gramme.
+  - À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule.
 
 1. énoncé : Une bouteille d’un litre contient …
    - choix : 10 millilitres · 100 millilitres · 1 000 millilitres
@@ -245,18 +246,18 @@ Pour tous les items :
    - réponse : 10 millilitres
    - indice : De combien l’eau est-elle montée ?
    - explication : Le caillou pousse l’eau, qui monte de 50 à 60 millilitres : 60 moins 50, le caillou a un volume de 10 millilitres.
-4. énoncé : "Un caillou\nMasse : 30 g (grammes).\nVolume : 10 mL (millilitres)."
-   - question : Quelle est sa masse volumique ?
-   - lu : Un caillou. Masse, 30 grammes. Volume, 10 millilitres.
-   - choix : 3 grammes par millilitre · 20 grammes par millilitre · 40 grammes par millilitre
-   - réponse : 3 grammes par millilitre
-   - indice : Relis la ligne « On la trouve » du rappel.
-   - explication : On divise la masse par le volume : 30 divisé par 10, 3 grammes par millilitre. Chaque millilitre de caillou a une masse de 3 grammes.
-5. énoncé : Le glaçon flotte sur l’eau : sa masse volumique est plus … que celle de l’eau liquide.
-   - choix : grande · lourde · petite
-   - réponse : petite
-   - indice : Relis la ligne « Masse volumique » du rappel.
-   - explication : Ce qui flotte sur l’eau a une masse volumique plus petite que celle de l’eau : c’est le cas de la glace. Un millilitre de glace a une masse un peu plus petite qu’un millilitre d’eau.
+4. énoncé : "Deux cailloux de la même roche\nVolume du caillou A : 10 mL (millilitres).\nMasse du caillou A : 30 g (grammes).\nVolume du caillou B : 20 mL, deux fois plus."
+   - question : Quelle est la masse du caillou B ?
+   - lu : Deux cailloux de la même roche. Volume du caillou A, dix millilitres. Masse du caillou A, trente grammes. Volume du caillou B, vingt millilitres, deux fois plus.
+   - choix : 40 grammes · 50 grammes · 60 grammes
+   - réponse : 60 grammes
+   - indice : Relis la ligne « Une même matière » du rappel.
+   - explication : Même roche, deux fois plus de volume : deux fois plus de masse. 30 fois 2, 60 grammes.
+5. énoncé : Le glaçon flotte sur l’eau : à volume égal, la glace a … de masse que l’eau liquide.
+   - choix : plus · autant · moins
+   - réponse : moins
+   - indice : Relis la ligne « À volume égal » du rappel.
+   - explication : À volume égal, ce qui flotte sur l’eau a moins de masse que l’eau : c’est le cas de la glace. Un millilitre de glace a une masse un peu plus petite qu’un millilitre d’eau.
 6. énoncé : "Deux cubes, chacun de 10 mL\nCube en bois : 6 g.\nCube en fer : 79 g.\n10 mL d’eau : 10 g."
    - question : Lequel coule dans l’eau ?
    - lu : Deux cubes, chacun de 10 millilitres. Cube en bois, 6 grammes. Cube en fer, 79 grammes. 10 millilitres d’eau, 10 grammes.
@@ -270,16 +271,16 @@ Pour tous les items :
    - choix : elle coule au fond · elle se dissout · elle flotte
    - réponse : elle flotte
    - indice : À volume égal, qui a la plus petite masse ?
-   - explication : 100 millilitres d’huile ont une masse de 90 grammes, moins que l’eau : la masse volumique de l’huile est plus petite, elle flotte. Elle ne se dissout pas : huile et eau ne sont pas miscibles.
-8. énoncé : La masse volumique de l’eau est de 1 gramme par …
-   - choix : millilitre · litre · kilogramme
-   - réponse : millilitre
+   - explication : 100 millilitres d’huile ont une masse de 90 grammes, moins que 100 millilitres d’eau : à volume égal, l’huile a moins de masse, elle flotte. Elle ne se dissout pas : huile et eau ne sont pas miscibles.
+8. énoncé : Un millilitre d’eau a une masse d’un …
+   - choix : gramme · kilogramme · milligramme
+   - réponse : gramme
    - indice : Relis la ligne « L’eau » du rappel.
-   - explication : Un millilitre d’eau a une masse de 1 gramme : 1 gramme par millilitre. Un litre d’eau a une masse de mille grammes, un kilogramme.
+   - explication : Un millilitre d’eau a une masse d’un gramme. Un litre, c’est mille millilitres : un litre d’eau a donc une masse de mille grammes, un kilogramme.
 
-## L’Univers et l’atome · `universe-atoms`
+## L’Univers et ses éléments · `universe-atoms`
 
-- description : Du système solaire aux galaxies, l’année-lumière, puis l’atome, son noyau et ses électrons, et les atomes nés dans les étoiles.
+- description : Du système solaire aux galaxies, l’année-lumière, puis l’âge de l’Univers, ses éléments et les atomes nés dans les étoiles.
 - compétences : c4.pc.matiere.univers · c4.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
@@ -298,7 +299,7 @@ Pour tous les items :
 Pour tous les items :
 - aide « De la Terre aux galaxies » :
   - Le Soleil est une étoile. La Terre est une planète qui tourne autour.
-  - Le système solaire : le Soleil et ses huit planètes.
+  - Le système solaire : le Soleil et tout ce qui tourne autour, dont huit planètes.
   - Une galaxie : des milliards d’étoiles. La nôtre s’appelle la Voie lactée.
   - La lumière parcourt 300 000 kilomètres en une seconde.
   - Une année-lumière : la distance que la lumière parcourt en un an.
@@ -309,11 +310,11 @@ Pour tous les items :
    - réponse : étoile
    - indice : Relis la ligne « Le Soleil » du rappel.
    - explication : Le Soleil est une étoile : il produit sa propre lumière. La Terre est une planète qui tourne autour de lui.
-2. énoncé : Le Soleil et les huit planètes qui tournent autour forment le …
+2. énoncé : Le Soleil et tout ce qui tourne autour, dont huit planètes, forment le …
    - choix : système solaire · ciel étoilé · cosmos
    - réponse : système solaire
    - indice : Relis la ligne « Le système solaire » du rappel.
-   - explication : Le Soleil et ses huit planètes forment le système solaire. Il n’est qu’une toute petite partie de l’Univers.
+   - explication : Le Soleil et tout ce qui tourne autour, dont huit planètes, forment le système solaire. Il n’est qu’une toute petite partie de l’Univers.
 3. énoncé : Notre galaxie, qui contient le système solaire, s’appelle la …
    - choix : Grande Ourse · Lune · Voie lactée
    - réponse : Voie lactée
@@ -354,60 +355,62 @@ Pour tous les items :
 ### Niveau 2 · `physics-chemistry-5e-matter-universe-universe-atoms-2`
 
 Pour tous les items :
-- aide « L’atome et les éléments » :
-  - Toute la matière est faite d’atomes, bien trop petits pour être vus.
-  - Un atome : un noyau au centre, des électrons qui se déplacent autour.
-  - Le noyau porte presque toute la masse. Autour, c’est surtout du vide.
+- aide « L’Univers et ses éléments » :
+  - L’Univers est né il y a près de 14 milliards d’années.
+  - Le Soleil et ses planètes sont nés il y a environ 4 milliards et demi d’années.
+  - Dans l’Univers, il y a surtout de l’hydrogène et de l’hélium.
+  - La Terre est faite surtout de fer et d’oxygène.
+  - Le carbone, l’oxygène et le fer sont nés dans des étoiles.
   - Une molécule : des atomes liés ensemble.
-  - Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.
-  - Des atomes comme le carbone et l’oxygène sont nés dans des étoiles.
 
-1. énoncé : Au centre de l’atome, il y a le …
-   - choix : noyau · électron · vide
-   - réponse : noyau
-   - indice : Relis la ligne « Un atome » du rappel.
-   - explication : Le noyau est au centre de l’atome ; les électrons se déplacent autour.
-2. énoncé : Autour du noyau se déplacent les …
-   - choix : molécules · électrons · étoiles
-   - réponse : électrons
-   - indice : Relis la ligne « Un atome » du rappel.
-   - explication : Les électrons se déplacent autour du noyau. Les molécules, elles, sont faites de plusieurs atomes.
-3. énoncé : Presque toute la masse de l’atome est dans son …
-   - choix : électron · vide · noyau
-   - réponse : noyau
-   - indice : Relis la ligne « Le noyau » du rappel.
-   - explication : Le noyau est tout petit, mais il porte presque toute la masse de l’atome. Les électrons sont très légers.
+1. énoncé : Dans l’Univers, l’élément qu’on trouve le plus est un gaz très léger : l’…
+   - choix : hydrogène · oxygène · azote
+   - réponse : hydrogène
+   - indice : Relis la ligne « Dans l’Univers » du rappel.
+   - explication : L’Univers contient surtout de l’hydrogène, puis de l’hélium. L’oxygène et l’azote y sont bien plus rares.
+2. énoncé : "Ce qu’on trouve le plus\nDans l’Univers : l’hydrogène et l’hélium.\nDans la Terre : le fer et l’oxygène."
+   - question : De quoi la Terre est-elle faite surtout ?
+   - lu : Ce qu’on trouve le plus. Dans l’Univers, l’hydrogène et l’hélium. Dans la Terre, le fer et l’oxygène.
+   - choix : d’hydrogène et d’hélium · de fer et d’oxygène · de carbone et d’azote
+   - réponse : de fer et d’oxygène
+   - indice : Relis la ligne « Dans la Terre » du document.
+   - explication : La Terre est faite surtout de fer et d’oxygène. L’Univers, lui, contient surtout de l’hydrogène et de l’hélium, comme le Soleil.
+3. énoncé : "Trois dates\nL’Univers naît : il y a près de 14 milliards d’années.\nLe Soleil naît : il y a environ 4 milliards et demi d’années.\nLes derniers dinosaures disparaissent : il y a 66 millions d’années."
+   - question : Qu’est-ce qui est arrivé en premier ?
+   - lu : Trois dates. L’Univers naît, il y a près de quatorze milliards d’années. Le Soleil naît, il y a environ quatre milliards et demi d’années. Les derniers dinosaures disparaissent, il y a soixante-six millions d’années.
+   - choix : la naissance de l’Univers · la naissance du Soleil · la fin des dinosaures
+   - réponse : la naissance de l’Univers
+   - indice : Compare les nombres : des milliards, ou des millions ?
+   - explication : Près de 14 milliards d’années, c’est la date la plus ancienne : l’Univers est né bien avant le Soleil. Un million est mille fois plus petit qu’un milliard : les dinosaures sont bien plus récents.
 4. énoncé : Des atomes liés ensemble forment une …
    - choix : cellule · molécule · galaxie
    - réponse : molécule
    - indice : Relis la ligne « Une molécule » du rappel.
    - explication : Des atomes liés ensemble forment une molécule, comme la molécule d’eau. La cellule, c’est en sciences de la vie : elle contient des milliards de molécules.
-5. énoncé : "La molécule d’eau\nSa formule : H₂O.\nH, c’est l’hydrogène. O, c’est l’oxygène.\nLe petit 2 compte les atomes d’hydrogène."
-   - question : Combien d’atomes d’hydrogène dans une molécule d’eau ?
-   - lu : La molécule d’eau. Sa formule, H deux O. H, c’est l’hydrogène. O, c’est l’oxygène. Le petit deux compte les atomes d’hydrogène.
-   - choix : 1 · 2 · 3
-   - réponse : 2
-   - indice : Relis la dernière ligne du document.
-   - explication : Le petit 2 après le H dit qu’il y a 2 atomes d’hydrogène. Le O, sans petit chiffre, compte pour un seul atome d’oxygène.
-6. énoncé : "La molécule de dioxyde de carbone\nSa formule : CO₂.\nC, c’est le carbone. O, c’est l’oxygène.\nLe petit 2 compte les atomes d’oxygène."
-   - question : Combien d’atomes en tout dans cette molécule ?
-   - lu : La molécule de dioxyde de carbone. Sa formule, C O deux. C, c’est le carbone. O, c’est l’oxygène. Le petit deux compte les atomes d’oxygène.
-   - choix : 2 · 3 · 4
-   - réponse : 3
-   - indice : Compte le carbone, puis les oxygènes.
-   - explication : Un atome de carbone et 2 atomes d’oxygène : 1 plus 2, 3 atomes en tout.
+5. énoncé : "Deux étoiles vues de la Terre\nÉtoile A : à 10 années-lumière.\nÉtoile B : à 100 années-lumière."
+   - question : La lumière de quelle étoile a voyagé le plus longtemps, ou est-ce pareil ?
+   - lu : Deux étoiles vues de la Terre. Étoile A, à dix années-lumière. Étoile B, à cent années-lumière.
+   - choix : l’étoile A · l’étoile B · pareil pour les deux
+   - réponse : l’étoile B
+   - indice : Une année-lumière, c’est le chemin que fait la lumière en un an.
+   - explication : La lumière de l’étoile B a voyagé 100 ans, celle de l’étoile A 10 ans. On voit l’étoile B comme elle était il y a 100 ans.
+6. énoncé : La Terre et les autres planètes sont nées presque en même temps que …
+   - choix : le Soleil · l’Univers · la Voie lactée
+   - réponse : le Soleil
+   - indice : Relis la ligne « Le Soleil et ses planètes » du rappel.
+   - explication : Le Soleil et ses planètes sont nés d’un même nuage de gaz et de poussières, il y a environ 4 milliards et demi d’années. La Voie lactée et l’Univers sont bien plus vieux.
 7. énoncé : Le carbone de notre corps est né il y a très longtemps, dans une …
    - choix : planète · étoile · comète
    - réponse : étoile
-   - indice : Relis la ligne « Des atomes » du rappel.
+   - indice : Relis la ligne « Le carbone » du rappel.
    - explication : Les atomes de carbone se sont formés au cœur d’étoiles, il y a des milliards d’années. Ils sont passés ensuite par la Terre, les plantes, puis notre corps.
-8. énoncé : "Si l’atome était grand comme un stade\nLe noyau serait une bille, au centre du terrain.\nLes électrons seraient autour des tribunes."
-   - question : Qu’y a-t-il surtout dans un atome ?
-   - lu : Si l’atome était grand comme un stade. Le noyau serait une bille, au centre du terrain. Les électrons seraient autour des tribunes.
-   - choix : des noyaux · du vide · de l’eau
-   - réponse : du vide
-   - indice : Entre la bille et les tribunes, qu’y a-t-il ?
-   - explication : Entre le noyau et les électrons, il n’y a rien : l’atome est surtout fait de vide.
+8. énoncé : "Distances depuis la Terre\nLa Lune : environ 380 000 kilomètres.\nLe Soleil : environ 150 millions de kilomètres.\nL’étoile la plus proche après le Soleil : environ 4 années-lumière."
+   - question : Pourquoi donne-t-on la distance de l’étoile en années-lumière ?
+   - lu : Distances depuis la Terre. La Lune, environ trois cent quatre-vingt mille kilomètres. Le Soleil, environ cent cinquante millions de kilomètres. L’étoile la plus proche après le Soleil, environ quatre années-lumière.
+   - choix : elle est très loin · elle est très chaude · elle est très grosse
+   - réponse : elle est très loin
+   - indice : L’année-lumière est une unité de distance.
+   - explication : En kilomètres, la distance de cette étoile serait un nombre immense : environ 40 000 milliards. L’année-lumière sert à dire de très grandes distances avec un petit nombre.
 
 ## Les plans
 

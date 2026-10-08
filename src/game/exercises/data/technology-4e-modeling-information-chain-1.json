@@ -32,8 +32,8 @@
     },
     {
       "key": "technology-4e-modeling-information-chain-1-1",
-      "prompt": "Le thermostat mesure la température de la pièce : il … l’information.",
-      "spoken": "Le thermostat mesure la température de la pièce : il  (mot manquant)  l’information.",
+      "prompt": "Le capteur du thermostat mesure la température de la pièce : il … l’information.",
+      "spoken": "Le capteur du thermostat mesure la température de la pièce : il  (mot manquant)  l’information.",
       "choices": [
         "traite",
         "acquiert",
@@ -41,7 +41,7 @@
       ],
       "answer": "acquiert",
       "hint": "Relis la ligne « Acquérir » du rappel.",
-      "explanation": "Mesurer la température, c’est prendre l’information : le thermostat l’acquiert, grâce à son capteur.",
+      "explanation": "Mesurer la température, c’est prendre l’information : le capteur l’acquiert.",
       "aid": {
         "kind": "rule-card",
         "props": {

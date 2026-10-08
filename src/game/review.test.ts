@@ -1,7 +1,8 @@
 import { EMPTY_STATE, type SpacedItem } from './engine';
 import { exercisesOf, loadAllExercises, pickExercise } from './exercises';
 import { runItems } from './exercises/run';
-import { exercisesToReview, questsToReview, reviewKeys } from './review';
+import { dueCountOnOpenPlaces, exercisesToReview, questsToReview, reviewKeys } from './review';
+import { grantAccess } from './world/archipelago';
 
 const ALL = await loadAllExercises();
 const TODAY = '2026-09-27';
@@ -32,4 +33,11 @@ it('les items à revoir passent en tête de la partie (écrans d’un item) ; un
   const chasse = ALL.find((e) => e.id === 'french-6e-phonology-sound-hunt-an')!;
   const k = chasse.items[5].key;
   expect(runItems(chasse, 'a', [k]).map((i) => i.key)).toEqual(runItems(chasse, 'a').map((i) => i.key));
+});
+
+it('le compteur des révisions ne compte que les items des lieux ouverts, comme les missions proposées', () => {
+  // Un item de 5e arrivé avec sa mission à la Forge (programmes de 2025-2026) attend l'ouverture de la Forge.
+  const spaced = [due('french-6e-phonology-syllables-warmup-002:parapluie'), due('maths-4e-powers-subtracting-1:mul-3-4'), due('french-6e-phonology-rhymes-eau:bateau', '2026-10-01')];
+  expect(dueCountOnOpenPlaces(spaced, EMPTY_STATE.world.links, TODAY)).toBe(1);
+  expect(dueCountOnOpenPlaces(spaced, grantAccess([], ['maths-4e-powers']), TODAY)).toBe(2);
 });

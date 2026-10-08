@@ -11,12 +11,12 @@ créature : Navette
 
 # Ruche des réseaux
 
-> Île de 3e en technologie, programme du cycle 4 en vigueur (annexe 3 du BO n° 31 du 30 juillet 2020). Écrans existants seulement : la question à trou et la question sur un document (quatre lignes au plus sous le titre, une information par ligne). Écrire, mettre au point et exécuter un programme qui commande un objet réel (`c4.te.informatique.programmer`) reste au travail de la classe : ici, un programme court se lit, écrit en français, une instruction par ligne, et l’élève dit ce qu’il fait. Les sigles sont évités ; « adresse IP » est expliquée une fois dans le rappel. L’évolution des objets se dit sans date, par « d’abord », « ensuite », « aujourd’hui ».
+> Île de 3e en technologie, programme du cycle 4 en vigueur (BO n° 9 du 29 février 2024). Écrans existants seulement : la question à trou et la question sur un document (quatre lignes au plus sous le titre, une information par ligne). Écrire, mettre au point et exécuter un programme qui commande un objet réel (`c4.te.conception.programmer`) reste au travail de la classe : ici, un programme court se lit, écrit en français, une instruction par ligne, et l’élève dit ce qu’il fait. Les sigles sont évités ; « adresse IP » est expliquée une fois dans le rappel. L’évolution des objets se dit sans date, par « d’abord », « ensuite », « aujourd’hui ».
 
 ## Le réseau informatique · `computer-networks`
 
 - description : Les éléments d’un réseau et l’adresse de chaque appareil, puis internet, les protocoles et le stockage des données.
-- compétences : c4.te.informatique.reseaux · c4.te.demarches.responsable
+- compétences : c4.te.fonctionnement.reseaux · c4.te.usages.numerique
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -35,7 +35,8 @@ Pour tous les items :
 - aide « Les éléments d’un réseau » :
   - Un réseau : des appareils reliés qui échangent des données.
   - Ils sont reliés par un câble, ou sans fil, par le wifi.
-  - La box relie le réseau de la maison à internet.
+  - Le commutateur relie les appareils d’un même réseau.
+  - La box relie le réseau de la maison à internet : c’est un routeur.
   - Le serveur : un ordinateur qui garde des données et répond aux demandes.
   - Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP.
 
@@ -66,13 +67,13 @@ Pour tous les items :
    - réponse : adresse
    - indice : Relis la ligne « Chaque appareil » du rappel.
    - explication : Chaque appareil a son adresse sur le réseau : les données savent ainsi où aller, comme une lettre avec l’adresse de la maison.
-6. énoncé : "Le réseau du collège\nLes ordinateurs de la salle sont reliés à un même boîtier.\nCe boîtier est relié à la box du collège.\nUn serveur garde les dossiers des élèves."
+6. énoncé : "Le réseau du collège\nLes ordinateurs de la salle sont reliés à un même commutateur.\nCe commutateur est relié au routeur du collège.\nUn serveur garde les dossiers des élèves."
    - question : Où sont gardés les dossiers des élèves ?
-   - lu : Le réseau du collège. Les ordinateurs de la salle sont reliés à un même boîtier. Ce boîtier est relié à la box du collège. Un serveur garde les dossiers des élèves.
-   - choix : dans la box · sur le serveur · dans le boîtier
+   - lu : Le réseau du collège. Les ordinateurs de la salle sont reliés à un même commutateur. Ce commutateur est relié au routeur du collège. Un serveur garde les dossiers des élèves.
+   - choix : dans le routeur · sur le serveur · dans le commutateur
    - réponse : sur le serveur
    - indice : Cherche la ligne où il est écrit « dossiers ».
-   - explication : Le serveur garde les dossiers : un élève les retrouve depuis n’importe quel ordinateur de la salle. Le boîtier et la box relient les appareils.
+   - explication : Le serveur garde les dossiers : un élève les retrouve depuis n’importe quel ordinateur de la salle. Le commutateur et le routeur relient les appareils : ils ne gardent pas les dossiers.
 7. énoncé : Le numéro qui donne l’adresse d’un appareil sur le réseau s’appelle l’adresse …
    - choix : mail · postale · IP
    - réponse : IP
@@ -84,7 +85,7 @@ Pour tous les items :
    - choix : directement d’un téléphone à l’autre · par des serveurs d’internet · par le chargeur
    - réponse : par des serveurs d’internet
    - indice : Cherche la ligne où il est écrit « serveurs ».
-   - explication : La photo ne va pas directement d’un téléphone à l’autre : elle passe par des serveurs d’internet, puis arrive chez Lou.
+   - explication : Ici, la photo ne va pas directement d’un téléphone à l’autre : elle passe par des serveurs d’internet, puis arrive chez Lou.
 
 ### Niveau 2 · `technology-3e-digital-computer-networks-2`
 
@@ -143,12 +144,12 @@ Pour tous les items :
    - choix : le regarder en ligne à chaque fois · le télécharger une fois · c’est pareil
    - réponse : le télécharger une fois
    - indice : Combien de fois le film passe-t-il par internet ?
-   - explication : Téléchargé une fois, le film ne passe qu’une fois par internet. En ligne, il passe dix fois : dix fois plus de données, et d’électricité.
+   - explication : Téléchargé une fois, le film ne passe qu’une fois par internet. En ligne, il passe dix fois : dix fois plus de données, et plus d’électricité.
 
 ## Objets connectés et données personnelles · `connected-objects`
 
 - description : Comment les objets évoluent et changent la société, les objets connectés, puis protéger ses données personnelles.
-- compétences : c4.te.objets.evolution · c4.te.informatique.reseaux
+- compétences : c4.te.usages.evolution · c4.te.usages.numerique
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -282,7 +283,7 @@ Pour tous les items :
 ## Lire un programme · `algorithms`
 
 - description : Un algorithme et un programme : séquence, boucle et événement, puis condition et variable, dans un programme court à lire.
-- compétences : c4.te.modelisation.fonctionnement · c4.te.demarches.langages
+- compétences : c4.te.fonctionnement.programme
 - consigne : Lis la phrase ou le programme, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -374,7 +375,7 @@ Pour tous les items :
    - choix : boucle · variable · condition
    - réponse : condition
    - indice : Relis la ligne du rappel qui parle de « si » et de « sinon ».
-   - explication : « Si », puis « alors » : le programme teste quelque chose avant d’agir : c’est une condition. Une boucle répète, sans tester.
+   - explication : « Si », puis « alors » : le programme teste quelque chose avant d’agir : c’est une condition. Une boucle, elle, répète des instructions.
 3. énoncé : "Le jeu de Nina\nAu début, le score vaut 0.\nÀ chaque pièce attrapée, ajouter 1 au score.\nNina attrape 3 pièces."
    - question : Combien vaut le score ?
    - lu : Le jeu de Nina. Au début, le score vaut 0. À chaque pièce attrapée, ajouter 1 au score. Nina attrape 3 pièces.

@@ -103,7 +103,7 @@ export const BLOCLAND = {
       },
     },
     'french-5e-conjugation': {
-      challenge: 'L’Hydre des marais sort de la vase : « Mes trois cous sont tout gris. Parle-moi du passé, du futur et du doute. »',
+      challenge: 'L’Hydre des marais sort de la vase : « Mes trois cous sont tout gris. Parle-moi du passé, du présent et du futur. »',
       guardianSays: {
         hit: 'Sss… Juste. Un bloc de mes cous redevient vert.',
         miss: 'Mes couleurs restent. Cherche l’indice de temps dans la phrase, et reprends.',
@@ -114,7 +114,7 @@ export const BLOCLAND = {
       challenge: 'Le Titan d’acier pose son marteau : « Mon cœur de forge est gris. Tu as chauffé toute ma forge : prends le temps de tes calculs. »',
       guardianSays: {
         hit: 'Clang ! Juste. Une plaque de mon armure reprend sa couleur.',
-        miss: 'Mes couleurs restent. Relis la règle, compte les zéros, et reprends.',
+        miss: 'Mes couleurs restent. Relis la règle affichée, et reprends.',
         beaten: 'Clang ! Je me rallume, jusqu’à mon cœur de forge. La forge est à toi, et à Braise.',
       },
     },
@@ -138,7 +138,7 @@ export const BLOCLAND = {
       challenge: 'Le Hibou lexicographe ferme son dictionnaire : « Mes plumes sont toutes grises. Tu as ouvert tous mes tiroirs : démontons les mots. »',
       guardianSays: {
         hit: 'Hou… Juste. Un bloc de mes plumes redevient brun.',
-        miss: 'Mes couleurs restent. Découpe le mot, cherche le petit morceau connu, et reprends.',
+        miss: 'Mes couleurs restent. Relis l’aide sous la question, et reprends.',
         beaten: 'Hou ! Je me rallume, des lunettes au livre rouge. Le cabinet est à toi, et à Plume.',
       },
     },

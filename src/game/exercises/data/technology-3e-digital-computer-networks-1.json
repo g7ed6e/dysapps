@@ -24,7 +24,8 @@
           "lines": [
             "Un réseau : des appareils reliés qui échangent des données.",
             "Ils sont reliés par un câble, ou sans fil, par le wifi.",
-            "La box relie le réseau de la maison à internet.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
             "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
             "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
           ]
@@ -50,7 +51,8 @@
           "lines": [
             "Un réseau : des appareils reliés qui échangent des données.",
             "Ils sont reliés par un câble, ou sans fil, par le wifi.",
-            "La box relie le réseau de la maison à internet.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
             "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
             "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
           ]
@@ -77,7 +79,8 @@
           "lines": [
             "Un réseau : des appareils reliés qui échangent des données.",
             "Ils sont reliés par un câble, ou sans fil, par le wifi.",
-            "La box relie le réseau de la maison à internet.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
             "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
             "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
           ]
@@ -103,7 +106,8 @@
           "lines": [
             "Un réseau : des appareils reliés qui échangent des données.",
             "Ils sont reliés par un câble, ou sans fil, par le wifi.",
-            "La box relie le réseau de la maison à internet.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
             "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
             "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
           ]
@@ -129,7 +133,8 @@
           "lines": [
             "Un réseau : des appareils reliés qui échangent des données.",
             "Ils sont reliés par un câble, ou sans fil, par le wifi.",
-            "La box relie le réseau de la maison à internet.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
             "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
             "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
           ]
@@ -138,17 +143,17 @@
     },
     {
       "key": "technology-3e-digital-computer-networks-1-5",
-      "prompt": "Le réseau du collège\nLes ordinateurs de la salle sont reliés à un même boîtier.\nCe boîtier est relié à la box du collège.\nUn serveur garde les dossiers des élèves.",
+      "prompt": "Le réseau du collège\nLes ordinateurs de la salle sont reliés à un même commutateur.\nCe commutateur est relié au routeur du collège.\nUn serveur garde les dossiers des élèves.",
       "question": "Où sont gardés les dossiers des élèves ?",
-      "spoken": "Le réseau du collège. Les ordinateurs de la salle sont reliés à un même boîtier. Ce boîtier est relié à la box du collège. Un serveur garde les dossiers des élèves.",
+      "spoken": "Le réseau du collège. Les ordinateurs de la salle sont reliés à un même commutateur. Ce commutateur est relié au routeur du collège. Un serveur garde les dossiers des élèves.",
       "choices": [
-        "dans la box",
+        "dans le routeur",
         "sur le serveur",
-        "dans le boîtier"
+        "dans le commutateur"
       ],
       "answer": "sur le serveur",
       "hint": "Cherche la ligne où il est écrit « dossiers ».",
-      "explanation": "Le serveur garde les dossiers : un élève les retrouve depuis n’importe quel ordinateur de la salle. Le boîtier et la box relient les appareils.",
+      "explanation": "Le serveur garde les dossiers : un élève les retrouve depuis n’importe quel ordinateur de la salle. Le commutateur et le routeur relient les appareils : ils ne gardent pas les dossiers.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -156,7 +161,8 @@
           "lines": [
             "Un réseau : des appareils reliés qui échangent des données.",
             "Ils sont reliés par un câble, ou sans fil, par le wifi.",
-            "La box relie le réseau de la maison à internet.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
             "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
             "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
           ]
@@ -182,7 +188,8 @@
           "lines": [
             "Un réseau : des appareils reliés qui échangent des données.",
             "Ils sont reliés par un câble, ou sans fil, par le wifi.",
-            "La box relie le réseau de la maison à internet.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
             "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
             "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
           ]
@@ -201,7 +208,7 @@
       ],
       "answer": "par des serveurs d’internet",
       "hint": "Cherche la ligne où il est écrit « serveurs ».",
-      "explanation": "La photo ne va pas directement d’un téléphone à l’autre : elle passe par des serveurs d’internet, puis arrive chez Lou.",
+      "explanation": "Ici, la photo ne va pas directement d’un téléphone à l’autre : elle passe par des serveurs d’internet, puis arrive chez Lou.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -209,7 +216,8 @@
           "lines": [
             "Un réseau : des appareils reliés qui échangent des données.",
             "Ils sont reliés par un câble, ou sans fil, par le wifi.",
-            "La box relie le réseau de la maison à internet.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
             "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
             "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
           ]

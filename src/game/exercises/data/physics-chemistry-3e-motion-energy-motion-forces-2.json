@@ -199,8 +199,8 @@
     },
     {
       "key": "physics-chemistry-3e-motion-energy-motion-forces-2-7",
-      "prompt": "Le poids d’un objet est toujours dirigé vers le …",
-      "spoken": "Le poids d’un objet est toujours dirigé vers le  (mot manquant) ",
+      "prompt": "Sur la Terre, le poids d’un objet est dirigé vers le …",
+      "spoken": "Sur la Terre, le poids d’un objet est dirigé vers le  (mot manquant) ",
       "choices": [
         "haut",
         "nord",

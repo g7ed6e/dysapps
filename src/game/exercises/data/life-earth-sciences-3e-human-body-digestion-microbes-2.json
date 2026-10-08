@@ -35,8 +35,8 @@
     },
     {
       "key": "life-earth-sciences-3e-human-body-digestion-microbes-2-1",
-      "prompt": "Pour nettoyer une petite plaie, on met un …",
-      "spoken": "Pour nettoyer une petite plaie, on met un  (mot manquant) ",
+      "prompt": "Pour désinfecter une petite plaie, après l’avoir lavée, on met un …",
+      "spoken": "Pour désinfecter une petite plaie, après l’avoir lavée, on met un  (mot manquant) ",
       "choices": [
         "vaccin",
         "antibiotique",
@@ -186,7 +186,7 @@
       ],
       "answer": "microbe",
       "hint": "Relis la ligne « Le vaccin » du rappel.",
-      "explanation": "Le vaccin présente au corps un microbe rendu inoffensif, ou un morceau de ce microbe. Le corps le mémorise : s’il rencontre le vrai microbe, il réagit vite.",
+      "explanation": "Le vaccin présente au corps un microbe rendu inoffensif, ou un morceau de ce microbe. Certains vaccins font fabriquer ce morceau par le corps. Le corps le mémorise : s’il rencontre le vrai microbe, il réagit vite.",
       "aid": {
         "kind": "rule-card",
         "props": {

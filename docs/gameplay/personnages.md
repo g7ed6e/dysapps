@@ -205,9 +205,9 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | L’Hydre des marais sort de la vase : « Mes trois cous sont tout gris. Parle-moi du passé, du futur et du doute. » | L’Hydre des marais murmure de ses trois voix : « Mes trois cous sont éteints. Parle-moi du présent, du passé, du futur et du doute. » |
+| Au défi | L’Hydre des marais sort de la vase : « Mes trois cous sont tout gris. Parle-moi du passé, du présent et du futur. » | L’Hydre des marais murmure de ses trois voix : « Mes trois cous sont éteints. Parle-moi du présent, du passé et du futur. » |
 | À la fin | Sss ! Je me rallume, mes trois têtes aussi. Le marais est à toi, et à Kroa. | Mes trois cous se rallument. Le marais est à toi, et à Kroa. |
-| Kroa à l’arrivée | Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le futur, et le subjonctif dans les roseaux. Chaque verbe juste, c’est de la tourbe pour le village. | Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le futur, et le subjonctif dans les roseaux. Chaque verbe juste, c’est de la tourbe pour le village. |
+| Kroa à l’arrivée | Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le présent, le futur. Chaque verbe juste, c’est de la tourbe pour le village. | Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le présent, le futur. Chaque verbe juste, c’est de la tourbe pour le village. |
 
 ### La Reine du marché, Comptoir
 

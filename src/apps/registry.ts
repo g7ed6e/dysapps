@@ -67,7 +67,7 @@ export const APPS: AppDef[] = [
   {
     id: 'homophones',
     subject: 'french',
-    programme: ['c3.fr.langue.homophonie'],
+    programme: ['c3.fr.langue.orthographe-grammaticale'],
     title: 'Homophones',
     description: 'a / à, et / est, son / sont, ces / ses… 3 niveaux et 13 paires à maîtriser.',
     icon: 'shuffle',
@@ -127,7 +127,7 @@ export const APPS: AppDef[] = [
   {
     id: 'irreguliers',
     subject: 'english',
-    programme: ['c4.en.langue.temps-verbaux'],
+    programme: ['c4.en.5e.langue.verbe', 'c4.en.langue.temps-verbaux'],
     title: 'Verbes irréguliers',
     description: 'go – went – gone : 60 verbes du collège en 3 niveaux, au prétérit et au participe passé.',
     icon: 'history',

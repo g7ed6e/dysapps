@@ -3,7 +3,7 @@ lieu : maths-4e-powers
 module : Puissances et racines
 matière : maths
 classe : 4e
-description : Puissances de 10, notation scientifique, puissances, racines carrées, nombres premiers.
+description : Puissances, notation scientifique, racines carrées, nombres premiers, puis multiplier et diviser des relatifs et des fractions.
 gardien : le Titan d’acier
 icône : zap
 créature : Braise
@@ -30,7 +30,14 @@ créature : Braise
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Racines carrées, puis diviseurs et nombres premiers, puis décomposition en facteurs premiers.
-- compétences : c4.ma.a.carres-racine · c4.ma.a.divisibilite-premiers · c3.ma.nombres.divisibilite
+- compétences : c4.ma.a.carres-racine · c4.ma.a.divisibilite-premiers · c4.ma.5e.nombres.divisibilite
+
+## Fourneau · `subtracting`
+
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
+
+- description : Multiplie et divise des relatifs avec la règle des signes affichée, puis des fractions.
+- compétences : c4.ma.a.calcul-relatifs · c4.ma.a.calcul-fractions
 
 ## Les plans
 

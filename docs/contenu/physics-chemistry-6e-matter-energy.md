@@ -164,44 +164,45 @@ Pour tous les items :
 
 Pour tous les items :
 - aide « Décrire un mouvement » :
+  - Un mouvement se décrit toujours par rapport à quelque chose, comme le sol.
   - La trajectoire : le chemin suivi par l’objet.
   - Rectiligne : une ligne droite. Curviligne : une courbe.
   - Circulaire : un cercle.
   - La vitesse peut rester la même, augmenter ou diminuer.
-  - Une vitesse se dit en kilomètres par heure.
+  - Une vitesse se dit par exemple en kilomètres par heure.
 
-1. énoncé : Le train roule sur une voie toute droite : sa trajectoire est …
+1. énoncé : Vu du quai, le train roule sur une voie toute droite : sa trajectoire est …
    - choix : circulaire · rectiligne · curviligne
    - réponse : rectiligne
    - indice : Relis la ligne « Rectiligne » du rappel.
-   - explication : Une trajectoire en ligne droite est rectiligne. Curviligne veut dire en forme de courbe.
-2. énoncé : Le ballon lancé vers le panier suit une courbe : sa trajectoire est …
+   - explication : Vu du quai, le train va en ligne droite : sa trajectoire est rectiligne. Curviligne veut dire en forme de courbe.
+2. énoncé : Vu du sol, le ballon lancé vers le panier suit une courbe : sa trajectoire est …
    - choix : rectiligne · circulaire · curviligne
    - réponse : curviligne
    - indice : Le ballon monte, puis redescend en arrondi.
    - explication : Le ballon suit une courbe : sa trajectoire est curviligne. Elle n’est pas circulaire : le ballon ne fait pas un cercle.
-3. énoncé : "Photos de la bille, une par seconde\nLes positions de la bille sont de plus en plus écartées."
+3. énoncé : "Photos de la bille qui roule sur la table\nL’appareil photo est fixé à la table.\nIl prend une photo par seconde.\nLes positions de la bille sont de plus en plus écartées."
    - question : Que fait la vitesse de la bille ?
-   - lu : Photos de la bille, une par seconde. Les positions de la bille sont de plus en plus écartées.
+   - lu : Photos de la bille qui roule sur la table. L’appareil photo est fixé à la table. Il prend une photo par seconde. Les positions de la bille sont de plus en plus écartées.
    - choix : elle reste la même · elle augmente · elle diminue
    - réponse : elle augmente
    - indice : Chaque seconde, la bille va-t-elle plus loin ou moins loin ?
    - explication : En un même temps, la bille parcourt une distance de plus en plus grande : sa vitesse augmente.
-4. énoncé : "Le trajet d’Inès à vélo\nPremière seconde : 5 m\nDeuxième seconde : 5 m\nTroisième seconde : 5 m"
+4. énoncé : "Le trajet d’Inès à vélo, vu du trottoir\nPremière seconde : 5 m\nDeuxième seconde : 5 m\nTroisième seconde : 5 m"
    - question : Que fait la vitesse d’Inès ?
-   - lu : Le trajet d’Inès à vélo. Première seconde, 5 mètres. Deuxième seconde, 5 mètres. Troisième seconde, 5 mètres.
+   - lu : Le trajet d’Inès à vélo, vu du trottoir. Première seconde, cinq mètres. Deuxième seconde, cinq mètres. Troisième seconde, cinq mètres.
    - choix : elle augmente · elle diminue · elle reste la même
    - réponse : elle reste la même
    - indice : Les distances changent-elles d’une ligne à l’autre ?
    - explication : Chaque seconde, Inès parcourt la même distance : sa vitesse reste la même.
-5. énoncé : La voiture freine avant le feu rouge : sa vitesse …
+5. énoncé : Vu du trottoir, le camion freine avant le feu rouge : sa vitesse …
    - choix : diminue · augmente · reste la même
    - réponse : diminue
    - indice : Freiner, c’est aller moins vite.
-   - explication : En freinant, la voiture va de moins en moins vite : sa vitesse diminue.
-6. énoncé : "Le compteur du bus\nL’aiguille est sur le nombre 30.\nSous les nombres, il est écrit : km/h."
+   - explication : En freinant, le camion va de moins en moins vite : sa vitesse diminue.
+6. énoncé : "Le compteur du bus\nIl donne la vitesse du bus par rapport à la route.\nL’aiguille est sur le nombre 30.\nSous les nombres, il est écrit : km/h."
    - question : À quelle vitesse roule le bus ?
-   - lu : Le compteur du bus. L’aiguille est sur le nombre 30. Sous les nombres, il est écrit kilomètres par heure.
+   - lu : Le compteur du bus. Il donne la vitesse du bus par rapport à la route. L’aiguille est sur le nombre trente. Sous les nombres, il est écrit kilomètres par heure.
    - choix : 30 kilomètres · 30 heures · 30 kilomètres par heure
    - réponse : 30 kilomètres par heure
    - indice : Relis la dernière ligne du rappel.
@@ -209,11 +210,11 @@ Pour tous les items :
 7. énoncé : Le chemin suivi par un objet qui bouge s’appelle sa …
    - choix : vitesse · trajectoire · distance
    - réponse : trajectoire
-   - indice : Relis la première ligne du rappel.
+   - indice : Relis la ligne « La trajectoire » du rappel.
    - explication : Le chemin suivi par l’objet est sa trajectoire. La vitesse dit s’il va vite ou lentement.
-8. énoncé : "Photos du skieur en bas de la piste, une par seconde\nLes positions du skieur sont de plus en plus serrées."
+8. énoncé : "Photos du skieur en bas de la piste\nL’appareil photo est posé sur la neige.\nIl prend une photo par seconde.\nLes positions du skieur sont de plus en plus serrées."
    - question : Que fait la vitesse du skieur ?
-   - lu : Photos du skieur en bas de la piste, une par seconde. Les positions du skieur sont de plus en plus serrées.
+   - lu : Photos du skieur en bas de la piste. L’appareil photo est posé sur la neige. Il prend une photo par seconde. Les positions du skieur sont de plus en plus serrées.
    - choix : elle augmente · elle diminue · elle reste la même
    - réponse : elle diminue
    - indice : Chaque seconde, le skieur va-t-il plus loin ou moins loin ?
@@ -299,7 +300,7 @@ Pour tous les items :
   - Renouvelables : le Soleil, le vent, l’eau qui coule.
   - Non renouvelables : le pétrole, le charbon, le gaz. Ils s’épuisent.
   - Un objet convertit l’énergie : il la change de forme.
-  - Formes : électrique, lumineuse, thermique (la chaleur), de mouvement.
+  - Formes : électrique, lumineuse, thermique (la chaleur), de mouvement (cinétique).
   - Énergie chimique : dans une pile, dans les aliments.
 
 1. énoncé : L’éolienne change l’énergie du vent en énergie …
