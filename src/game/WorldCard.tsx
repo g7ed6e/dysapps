@@ -8,6 +8,7 @@
 // Dans les deux univers (proposition P2, PR 2, pour Blocland ; « 4a », 4 octobre 2026, pour Archipéo), la fiche de la
 // créature et celle du Gardien portent leur portrait en médaillon, qui déborde au-dessus de la fiche ; les autres gardent
 // l'icône du titre. Blocland le dessine en cubes, Archipéo avec son modèle en SVG (l'icône en attendant, ou en repli).
+import type { PetiteConstructionAPoser } from './world/placedFixtures';
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { Link } from 'react-router-dom';
@@ -39,8 +40,10 @@ import { statueDe } from './world/terrain';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import { borneDe } from './world/affordance';
 import type { ObjetDeLaFiche } from './world/layout';
-import { KIND_NAME, bridgeState, conditionText, getArchipelago, getBridge, isBiomeUnlocked, linkKind, linksToIsland, nearestDeparture, opensAnIsland, otherEnd, payableBlocks, reachableIslands, type ArchipelagoId } from './world/archipelago';
+import { KIND_NAME, archipelagoOf, bridgeState, conditionText, getArchipelago, getBridge, isBiomeUnlocked, linkKind, linksToIsland, nearestDeparture, opensAnIsland, otherEnd, payableBlocks, reachableIslands, type ArchipelagoId } from './world/archipelago';
 import { estPrete, texteDeLaCommande, type Commande } from './world/requests';
+import { canTapStep, openStoryOf, type Story } from './world/stories';
+import { StepButton, StoryBadge, stepSentence, storyBadgeReading, tapTheStep } from './Stories';
 import { ileDeLOuvrage } from './world/model';
 import { ofPlace, thePlace, toPlace } from './world/placeArticle';
 import { earnIsland, whereToEarn } from './world/uses';
@@ -72,7 +75,7 @@ interface Props {
   /** La commande prête et suggérée de la créature (sa plaque), s'il y en a une. */
   commande?: Commande;
   /** Une commande livrée : la scène pose sa petite construction ; `true` si elle en prend le son. */
-  onLivree?: (c: Commande) => boolean;
+  onLivree?: (c: PetiteConstructionAPoser) => boolean;
   /** La commande dont la petite construction se pose : la phrase « posée » attend la fin. */
   commandeEnCoursDePose?: string | null;
   /** « Relier » d'une île pâle : la fiche de cet ouvrage ; `autreDepart` : depuis « Partir d'une autre île » (la caméra cadre sa liaison). */
@@ -535,25 +538,43 @@ function FicheDeLIlePale({ ile, fiche, onVoirOuvrage, onClose }: Props & { ile: 
 }
 
 /**
- * Une créature : son nom, sa phrase ; sa plaque, avec la même priorité : une commande prête, « Livrer » ; des révisions,
- * « Reprendre » (le bouton principal) et « Plus tard », avec les boutons de la fiche.
+ * Une créature : son nom, sa phrase ; sa plaque, avec la même priorité : une commande prête, « Livrer » ; l'étape de la
+ * quête de sa région qui se fait chez elle (GD-10), son signe (l'objet, « 2/3 ») et « Donner » ou « Apporter » ; des
+ * révisions, « Reprendre » (le bouton principal) et « Plus tard », avec les boutons de la fiche.
  */
 function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePose = null, onClose }: Props & { ile: BiomeId }) {
-  const { state, deliver } = useBlocland();
+  const { state, deliver, tapStory } = useBlocland();
   const { settings } = useSettings();
   const textes = useTextes();
   const biome = getBiome(ile);
   const rappel = useResidentReminder(biome && isBiomeUnlocked(ile, state.world.links) ? biome : undefined);
-  const [livree, setLivree] = useState<{ id: string; text: string } | null>(null);
+  const [livree, setLivree] = useState<{ id: string; text: string; quete?: { story: Story; index: number } } | null>(null);
   const [remis, setRemis] = useState(false);
   if (!biome) return null;
   const lieu = textes.assemblage.a;
   const nom = biome.creature.name;
   const prete = commande && commande.biome === ile && estPrete(state, commande) ? commande : null;
+  const ouverte = textes.quetes && !prete ? openStoryOf(state.world, archipelagoOf(ile).classe) : null;
+  const quete = ouverte && ouverte.step.place === ile ? ouverte : null;
+  // L'étape se fait ici d'un toucher : elle passe avant les révisions ; sinon, les révisions d'abord (consultant UX UI).
+  const queteFaisable = quete && canTapStep(state, quete.step) ? quete : null;
+  const avecRappel = Boolean(rappel && !remis);
+  const queteMontree = queteFaisable ?? (quete && !avecRappel ? quete : null);
   const posee = livree && commandeEnCoursDePose !== livree.id ? livree.text : null;
-  const phrase = livree ? (posee ?? '') : prete ? texteDeLaCommande(prete, 'ready', lieu) : rappel && !remis ? rappel.texte : (fiche.phrase ?? '');
-  const enRappel = !prete && !livree && rappel && !remis ? rappel : null;
-  const lecture = `${nom}. ${livree ? (posee ?? '') : enRappel ? enRappel.lu : phrase}`.trim();
+  const phrase = livree
+    ? (posee ?? '')
+    : prete
+      ? texteDeLaCommande(prete, 'ready', lieu)
+      : queteMontree
+        ? stepSentence(state, queteMontree.step, textes.commandes?.tuEnAs)
+        : rappel && !remis
+          ? rappel.texte
+          : (fiche.phrase ?? '');
+  const enRappel = !prete && !queteMontree && !livree && rappel && !remis ? rappel : null;
+  // Le signe de la quête, gardé après une étape faite ici (celui de l'étape suivante, ou toutes faites à la fin).
+  const signe = livree?.quete ?? (queteMontree && !livree ? { story: queteMontree.story, index: queteMontree.index } : null);
+  const luDuSigne = signe && textes.quetes ? `${storyBadgeReading(textes.quetes, signe.story, signe.index)} ` : '';
+  const lecture = `${nom}. ${luDuSigne}${livree ? (posee ?? '') : enRappel ? enRappel.lu : phrase}`.trim();
   return (
     <Fiche
       titre={nom}
@@ -573,6 +594,15 @@ function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePo
           >
             <Icon name="hammer" /> {textes.commandes?.livrer ?? 'Livrer'}
           </button>
+        ) : queteFaisable && !livree ? (
+          <StepButton
+            step={queteFaisable.step}
+            onClick={() => {
+              const { story, index } = queteFaisable;
+              const r = tapTheStep(story, { tapStory, onLivree, sons: settings.sounds });
+              if (r) setLivree({ id: story.id, text: r.text, quete: { story, index: r.finished ? story.steps.length : index + 1 } });
+            }}
+          />
         ) : (
           enRappel && <ReminderButtons biome={biome} rappel={enRappel} onRemis={() => setRemis(true)} />
         )
@@ -584,7 +614,11 @@ function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePo
         </p>
       ) : livree ? (
         <p className="world-fiche-phrase commande-posee" role="status" aria-live="polite">
-          {posee ? <Syllabified text={frenchTypography(posee)} /> : null}
+          {signe && <StoryBadge story={signe.story} index={signe.index} />} {posee ? <Syllabified text={frenchTypography(posee)} /> : null}
+        </p>
+      ) : signe ? (
+        <p className="world-fiche-phrase">
+          <StoryBadge story={signe.story} index={signe.index} /> <Syllabified text={phrase} />
         </p>
       ) : (
         <Phrase text={phrase} />

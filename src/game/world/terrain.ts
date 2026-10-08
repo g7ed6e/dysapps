@@ -14,7 +14,7 @@ import { placedLinksOf } from './linkGeometry';
 import { cascades, DECOR, decorate, GRASS, landmark, pontonEtBarque, type Put, WATER } from './decor';
 import { LOW } from './paths';
 import { guardianStatus } from '../boss';
-import { commandeDeLIle } from './requests';
+import { fixturesOfPlace } from './placedFixtures';
 import { casesDeLaPetiteConstruction, eauDeLaPetiteConstruction, estPosee } from './fixtures';
 import { decalageDesPlans, isPlanDone, planCells, type PlanDef, plansFor } from './plans';
 import { lv2Courante } from '../../core/settings';
@@ -343,9 +343,10 @@ function poserLIle(
         tag: biome.id,
       });
   }
-  // La petite construction d'une commande livrée (GD-7, PR 3), à côté de la créature, en cubes posés.
-  const commande = unlocked ? commandeDeLIle(biome.id) : undefined;
-  if (commande && estPosee(village.parts, commande.fixture)) {
+  // Les petites constructions posées chez la créature, en cubes posés : celle de sa commande livrée (GD-7, PR 3) et les
+  // objets des quêtes finies chez elle (GD-10).
+  for (const commande of unlocked ? fixturesOfPlace(biome.id) : []) {
+    if (!estPosee(village.parts, commande.fixture)) continue;
     const place = placeDeLaPetiteConstruction(biome.id, commande.fixture);
     if (place)
       for (const c of casesDeLaPetiteConstruction(commande.fixture) ?? []) {

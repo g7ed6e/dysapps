@@ -11,6 +11,7 @@ import { islandsOf, type ArchipelagoId } from './world/archipelago';
 import type { SigneDeCreature } from './world/view';
 import type { Lv2Choice } from '../core/settings';
 import { signeDeLaCreature } from './world/requests';
+import { openStoryOf } from './world/stories';
 import type { GameState } from './engine';
 
 /** Le paramètre d'adresse d'une révision lancée par la créature : à la fin, on revient sur son île. */
@@ -57,7 +58,7 @@ export function signesParmi(dues: readonly ReviewQuest[], archipel: ArchipelagoI
 }
 
 /**
- * Un seul signe par créature (affordance-blocland.md §8 ; GD-7, PR 3) : parmi les créatures d'un archipel, celle dont la
+ * Un seul signe par créature (affordance-blocland.md §8 ; GD-7, PR 3 ; GD-10) : parmi les créatures d'un archipel, celle dont la
  * commande est prête et suggérée (`suggeree` : la commande de la prochaine destination) montre le bloc demandé ; les
  * autres gardent leur signe des révisions (`revisions`, déjà calculé), ou rien.
  */
@@ -66,12 +67,18 @@ export function signesDesCreatures(
   archipel: ArchipelagoId,
   revisions: readonly SigneDeCreature[],
   suggeree: string | undefined,
+  quete?: string,
 ): SigneDeCreature[] {
+  // La quête suggérée (GD-10, `quete` : celle de la prochaine destination) : l'habitant de son étape en cours montre
+  // l'objet, après une commande et avant les révisions.
+  const ouverte = quete ? openStoryOf(state.world, archipel) : null;
+  const chezQui = ouverte && ouverte.story.id === quete ? ouverte.step.place : null;
   return islandsOf(archipel).flatMap((b): SigneDeCreature[] => {
     const revision = revisions.find((r) => r.id === b.id);
     const signe = signeDeLaCreature(state, b.id, { revisions: Boolean(revision), suggeree });
-    if (!signe) return [];
-    return [signe.genre === 'commande' ? { id: b.id, icone: 'blocks', bloc: signe.bloc } : revision!];
+    if (signe?.genre === 'commande') return [{ id: b.id, icone: 'blocks', bloc: signe.bloc }];
+    if (chezQui === b.id) return [{ id: b.id, icone: 'blocks', bloc: ouverte!.story.item }];
+    return signe ? [revision!] : [];
   });
 }
 

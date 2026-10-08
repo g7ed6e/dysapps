@@ -151,7 +151,7 @@ Décidé par le mainteneur le 5 octobre 2026 ([GD-9](../gameplay/propositions/GD
 
 ### Quêtes et grands projets (GD-10)
 
-Décidé par le mainteneur le 5 octobre 2026 ([GD-10](../gameplay/propositions/GD-10.md)) : des quêtes de trois ou quatre étapes qui relient les habitants d’une région, et les grandes constructions qui deviennent des projets mêlant les matières dès la 5e. **Fiche décidée, rien de construit.** Suite, après les deux pull requests de GD-9 : le mot à l’écran (consultants d’univers), la question mêlée (directeur du contenu pédagogique), puis une pull request pour les quêtes (une région de 6e d’abord) et une pour les projets de 5e.
+Décidé par le mainteneur le 5 octobre 2026 ([GD-10](../gameplay/propositions/GD-10.md)) : des quêtes de trois ou quatre étapes qui relient les habitants d’une région, et les grandes constructions qui deviennent des projets mêlant les matières dès la 5e. **Quêtes de la 6e construites** (8 octobre 2026) : trois quêtes (la lanterne, le portillon, l’escalier), « Entraide » à l’écran dans les deux univers, en tête de la liste des commandes et dans la fiche de l’habitant, peu de texte (l’objet, « 2/3 », une phrase, une action). Reste : les essayer sur tablette, le mot d’Archipéo à confirmer par son consultant, les quêtes des autres régions, puis la pull request des grands projets de 5e (avec la question mêlée du directeur du contenu pédagogique).
 
 ### Gardiens sur leur île (GD-11)
 

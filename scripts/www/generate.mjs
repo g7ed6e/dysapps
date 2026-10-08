@@ -54,6 +54,8 @@ export async function generatePages() {
     const partiesMod = await load('/src/game/world/parts.ts');
     // Les commandes des créatures (GD-7) : qui demande quoi, contre quoi.
     const commandesMod = await load('/src/game/world/requests.ts');
+    // Les quêtes des habitants (GD-10) : l'entraide, d'habitant en habitant.
+    const queteMod = await load('/src/game/world/stories.ts');
     // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
     const universMod = await load('/src/universes/index.ts');
     const universCore = await load('/src/core/universe.ts');
@@ -73,6 +75,9 @@ export async function generatePages() {
       commandeDeLIle: commandesMod.commandeDeLIle,
       texteDeLaCommande: commandesMod.texteDeLaCommande,
       SEUIL_DE_LA_PREMIERE_COMMANDE: commandesMod.SEUIL_DE_LA_PREMIERE_COMMANDE,
+      STORIES: queteMod.STORIES,
+      STORY_XP: queteMod.STORY_XP,
+      stepText: queteMod.stepText,
       BRIDGES: archMod.BRIDGES,
       KIND_NAME: archMod.KIND_NAME,
       // La nature d'un ouvrage suit son tracé sur la carte de départ, sans liaison posée (GD-9, `linkKind`).
@@ -454,6 +459,28 @@ function archipelPage(d) {
             b.exercises.map((e) => e.title).join(', '),
           ]),
         ),
+        '',
+      );
+    }
+  }
+  if (d.STORIES.length) {
+    const ETAPE = { mission: 'Réussir une mission', give: 'Donner', bring: 'Apporter' };
+    lines.push(
+      '## L’entraide',
+      '',
+      `Dans chaque archipel, des petites histoires de trois ou quatre étapes passent d’une créature à l’autre, une à la fois, après le premier ouvrage construit. La dernière étape pose l’objet chez la créature qui le reçoit, avec ${d.STORY_XP} XP : ni délai, ni échec.`,
+      '',
+    );
+    for (const s of d.STORIES) {
+      lines.push(
+        `### ${capFirst(s.name)} (${s.region})`,
+        '',
+        table(
+          ['Étape', 'Chez', 'Ce que dit la ligne'],
+          s.steps.map((e, k) => [`${k + 1}. ${ETAPE[e.kind]}`, `[${BIOMES.find((b) => b.id === e.place).creature.name}](iles/${e.place}.md)`, `« ${d.stepText(e)} »`]),
+        ),
+        '',
+        `À la fin : « ${s.done} »`,
         '',
       );
     }

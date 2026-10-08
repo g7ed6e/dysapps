@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -566,6 +566,36 @@ const CAPTURES = [
     'french-4e-agreement', 'french-4e-vocabulary', 'english-4e-comprehension', 'english-4e-grammar', 'maths-3e-geometry', 'maths-3e-statistics',
     'maths-3e-functions', 'french-3e-close-reading', 'english-3e-comprehension', 'english-3e-grammar',
   ].map((ile) => ({ nom: `commandes-ile-${ile}`, vue: 'île', famille: 'commandes-iles', ile, posees: 'toutes' })),
+  // L'entraide (GD-10, famille `entraide`), à retirer une fois le lot fusionné : chez Mousso, Bloquette et Grimoire, l'objet
+  // posé à côté de sa commande, de jour et de nuit (toutes les petites constructions posées) ; puis la ligne de l'entraide
+  // dans le panneau de l'île, l'étape « Apporter » chez Mousso (tablette, téléphone au grand texte), et la fiche de Coco
+  // à l'étape « Donner ».
+  ...['french-6e-phonology', 'french-6e-grammar-spelling', 'french-6e-reading'].flatMap((ile) => [
+    { nom: `entraide-${ile}`, vue: 'île', famille: 'entraide', ile, posees: 'toutes', finesse: 2 },
+    { nom: `entraide-${ile}-nuit`, vue: 'île', famille: 'entraide', ile, posees: 'toutes', nuit: true, finesse: 2 },
+  ]),
+  ...[
+    { suffixe: '' },
+    { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+  ].map(({ suffixe, ...autres }) => ({
+    nom: `entraide-panneau${suffixe}`,
+    vue: 'île',
+    famille: 'entraide',
+    ile: 'french-6e-phonology',
+    quetes: [{ id: 'story-6e-1', step: 2 }],
+    commandes: ['maths-6e-calculation-request-1'],
+    voir: '.commandes-list',
+    ...autres,
+  })),
+  {
+    nom: 'entraide-fiche-coco',
+    vue: 'île',
+    famille: 'entraide',
+    ile: 'maths-6e-calculation',
+    quetes: [{ id: 'story-6e-1', step: 1 }],
+    inventaire: { 'french-6e-phonology': 3 },
+    fiche: { genre: 'creature', id: 'maths-6e-calculation' },
+  },
   // Les îles d'histoire-géographie de 6e (lot HG-2, famille `histoire-geo`), à retirer une fois le lot fusionné : la Fouille des
   // siècles et la Pointe des paysages de près, de jour et de nuit, avant leur restauration (l'île ouverte, rien d'y joué
   // ni posé, le Gardien en statue grise : `sansIles`) et tout construit (le Gardien rallumé) ; le défi de l'Amphore peinte
@@ -1077,6 +1107,7 @@ async function scenes() {
               liens: c.liens,
               xp: c.xp,
               commandes: c.commandes,
+              quetes: c.quetes,
               posees: c.posees,
               cliquer: c.cliquer,
               fiche: c.fiche,
@@ -1087,7 +1118,7 @@ async function scenes() {
           )
         : []),
     ];
-    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, posees, cliquer, fiche, zoomer, reussir } of views) {
+    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, posees, cliquer, fiche, zoomer, reussir } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -1123,6 +1154,7 @@ async function scenes() {
                 parts: { ...sansLesIles(plans ?? built.parts, sansIles), ...petitesConstructions(posees) },
                 ...(bridges ? { links: bridges } : {}),
                 ...(commandes ? { requests: commandes } : {}),
+                ...(quetes ? { stories: quetes } : {}),
                 place: depuis ?? ile ?? at,
               },
           progress: jouees ? missionsJouees(jouees) : sansEtoiles || depart ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose || missions !== undefined ? ile : null, pose ?? missions),
