@@ -26,7 +26,10 @@
 // - le bois d'un monument ou d'une petite construction est bardé dans sa teinte de bois, jamais en colombage crème : ce
 //   ne sont pas des maisons, et le colombage y faisait un damier de crème, de matière et de pierre (retouches du
 //   directeur artistique, 8 octobre 2026) ;
-// - un mur plein ou bardé n'a de soubassement qu'à partir de trois rangées (`rangees`, lu sur la colonne du bloc).
+// - un mur plein ou bardé n'a de soubassement qu'à partir de trois rangées (`rangees`, lu sur la colonne du bloc) ;
+// - le lissage (./volumes.ts, mot du mainteneur du 8 octobre 2026), quand le kit le dit : dans un monument et dans les
+//   petites constructions, les cases voisines d'une même matière font un seul volume, sans chaperon par case, son
+//   soubassement lu sur la hauteur du volume.
 import type { VoxelCube } from '../cube';
 import type { ArchipelagoId } from '../archipelagos';
 import type { TextureKind } from '../pixels';
@@ -37,6 +40,7 @@ import { getMonument } from '../monuments';
 import { peintureDuMur, type PeintureDuMur } from './paint';
 import { facettesPosees, tournerCouvre, type DessinDePiece, type Facette } from './rooms';
 import { SIDES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './neighborhood';
+import { volumesDeMatiere, type VolumeDeMatiere } from './volumes';
 
 export { assemblerLesPieces } from './assembly';
 export { pieceDe, FORMES, type Forme, type IdDePiece } from './choices';
@@ -82,6 +86,8 @@ export interface Architecture {
   couverts: Set<string>;
   /** Les blocs des lieux du village qui prennent la couleur d'une autre matière (clé `x,y,z`, ./places.ts). */
   matieres: Map<string, TextureKind>;
+  /** Les volumes lissés (clé `x,y,z` → son volume, ./volumes.ts), quand le kit le dit : une teinte par volume. */
+  lisses: Map<string, VolumeDeMatiere>;
 }
 
 const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
@@ -140,6 +146,18 @@ function groupeDe(c: VoxelCube): string | null {
   return null;
 }
 
+/**
+ * Le plan à part où se lisse un bloc (./volumes.ts) : un monument, les petites constructions d'une île, ou le reste de
+ * l'île hors de ses bâtiments (sa cour, les piliers et le quai de son cœur) ; `null` pour un bâtiment des plans (ses murs
+ * sont déjà réunis), un lieu du village, une liaison entre deux lieux, une borne, un pont, le sol et le décor.
+ */
+function groupeDuLissage(c: VoxelCube, batiments?: ReadonlyMap<string, string>): string | null {
+  if (c.sol || c.decor || c.quest || c.bridge) return null;
+  if (c.place) return estUnMonument(c.place) ? c.place : null;
+  if (batiments?.has(cle(c.x, c.y, c.z))) return null;
+  return c.petiteConstruction ? `petite:${c.tag ?? ''}` : `ile:${c.tag ?? ''}`;
+}
+
 /** L'index du plan de chaque carte des bâtiments (world/construction.ts, `batimentsDe`, la garde par archipel). */
 const indexParBatiments = new WeakMap<ReadonlyMap<string, string>, IndexDuPlan>();
 
@@ -163,7 +181,7 @@ function indexDesBatiments(batiments: ReadonlyMap<string, string>): IndexDuPlan 
  */
 export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], options: OptionsDeLArchitecture = {}): Architecture {
   const kit = options.kit ?? KITS[a];
-  const out: Architecture = { remplacees: new Set(), pieces: [], couvre: new Map(), peints: new Map(), triangles: 0, couverts: new Set(), matieres: new Map() };
+  const out: Architecture = { remplacees: new Set(), pieces: [], couvre: new Map(), peints: new Map(), triangles: 0, couverts: new Set(), matieres: new Map(), lisses: new Map() };
   // Un kit sans pièce ni mur peint ne remplace rien : pas même l'index du plan à faire.
   if (!kitRempli(kit)) return out;
   // Le plan entier, fantômes compris ; les bâtiments entiers quand ils sont donnés (la cour n'allonge pas un mur, et un
@@ -225,7 +243,11 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     if (!plan) return null;
     return c.texture === 'barriere' ? { groupe: plan.groupe, index: barrieres(plan.groupe, plan.textures) } : plan;
   };
-  const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation; sansDecharge?: boolean; groupe: string; rangees: number }[] = [];
+  // Les volumes lissés (./volumes.ts), fantômes compris : tous, pour la teinte (world/construction.ts) ; la peinture ne
+  // lisse que les monuments et les petites constructions (`groupeDe`), les cours gardant la leur.
+  const volumes = kit.lissage ? volumesDeMatiere(cubes, (c) => (LUMIERES.has(c.texture ?? '') ? null : groupeDuLissage(c, batiments))) : null;
+  if (volumes) out.lisses = volumes;
+  const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation; sansDecharge?: boolean; groupe: string; rangees: number; lisse?: boolean }[] = [];
   for (const c of cubes) {
     if (c.place && !estUnMonument(c.place)) {
       const bloc = lieux && lieux.blocs.get(cle(c.x, c.y, c.z));
@@ -244,7 +266,9 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     const v = voisinageDe(c, plan.index, { surLeVide: options.surLeVide, toitures: plan.groupe === 'batiment' || plan.groupe === '' ? options.toitures : undefined });
     if (!v) continue;
     const { piece, rotation } = pieceDe(v);
-    choisis.push({ c, famille, v, piece, rotation, groupe: plan.groupe, rangees: rangeesDeLaColonne(c, plan.index) });
+    const volume = groupeDe(c) !== null ? volumes?.get(cle(c.x, c.y, c.z)) : undefined;
+    const rangees = volume ? volume.haut - volume.bas + 1 : rangeesDeLaColonne(c, plan.index);
+    choisis.push({ c, famille, v, piece, rotation, groupe: plan.groupe, rangees, lisse: volume !== undefined });
   }
   // Le dehors d'un bâtiment : du côté opposé au centre de ses murs (ceux de son île, ou de son lieu, ou de son plan), vu
   // du dessus.
@@ -256,7 +280,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     const m = centres.get(k) ?? { x: 0, y: 0, n: 0 };
     centres.set(k, { x: m.x + c.x + 0.5, y: m.y + c.y + 0.5, n: m.n + 1 });
   }
-  for (const { c, famille, v, piece, rotation, sansDecharge, groupe, rangees } of choisis) {
+  for (const { c, famille, v, piece, rotation, sansDecharge, groupe, rangees, lisse } of choisis) {
     const k = cle(c.x, c.y, c.z);
     // La finition se dessine matière par matière (la porte, la barrière, la marche) : avant les pièces et les murs.
     const finition = famille === 'finition' ? kit.finitions?.[c.texture as TextureKind]?.(piece, c) : undefined;
@@ -280,7 +304,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     };
     // Un monument, une petite construction : bardés (`groupeDe` : leur plan à part).
     const barde = kit.bardes.includes(c.tag ?? '') || groupeDe(c) !== null;
-    const peinture = peintureDuMur(v, maniere, { barde, exterieur, sansDecharge, rangees });
+    const peinture = peintureDuMur(v, maniere, { barde, exterieur, sansDecharge, rangees, lisse });
     out.peints.set(k, { cube: c, famille, piece, rotation, peinture });
   }
   return out;

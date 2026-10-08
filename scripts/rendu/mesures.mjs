@@ -682,7 +682,9 @@ const CAPTURES = [
   // le cadran de l'Horloge des verbes de près, de jour et de nuit, et de loin (l'île reculée, l'archipel) ; la cabine de
   // la Baie des mots ; la cabane de bois de la Forêt (bardée) ; le grand moulin et l'observatoire (monuments du 6e) ; les
   // bacs et les murets de mosaïque de la Pointe des paysages ; l'escalier de la Tour du lecteur, tout construit, puis
-  // avec deux cases de sa cour encore en fantôme à côté de lui (`partie` : « escalier-fantome »).
+  // avec deux cases de sa cour encore en fantôme à côté de lui (`partie` : « escalier-fantome »). Le lissage (un volume par
+  // matière, 8 octobre 2026) se juge sur les mêmes vues, et sur la Tour du lecteur entière avec son escalier et sur le
+  // portillon de Bloquette (une petite construction de quête).
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
     nom: `familles-6e-cadran-pres${suffixe}`,
     vue: 'île',
@@ -716,6 +718,8 @@ const CAPTURES = [
     finesse: 2,
     ...autres,
   })),
+  { nom: 'familles-6e-tour-lecteur', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-reading', posees: 'toutes', zoomer: 1, finesse: 2 },
+  { nom: 'familles-6e-portillon', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', posees: 'toutes', zoomer: 3, finesse: 2 },
   // Les six îles d'histoire-géographie des 5e, 4e et 3e (lot HG-3, famille `histoire-geo-college`), à retirer une fois le
   // lot fusionné : chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`)
   // et tout construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la

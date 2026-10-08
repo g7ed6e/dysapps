@@ -134,4 +134,7 @@ export const KIT_6E: Kit = {
   // La barrière attend le budget (une exception nommée, ../families.ts) : son dessin est prêt (`barriereDe`).
   finitions: { porte: () => 'vantail', escalier: marcheDe, marche: marcheDe },
   lieux: LIEUX_6E,
+  // Le lissage (mot du mainteneur, 8 octobre 2026) : un volume par matière dans les monuments, les petites
+  // constructions, les cours et les piliers du cœur.
+  lissage: true,
 };
