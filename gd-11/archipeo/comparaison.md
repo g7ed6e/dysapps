@@ -1,42 +1,43 @@
 # Comparaison avec main
 
-Références : main au commit 28d359337b52a8c95061426a8642f06f993d80f2 (après : d1a4930d907fa0c9681c60bb8720d821c5cc438f). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : main au commit 28d359337b52a8c95061426a8642f06f993d80f2 (après : 2f5b16349db503a3217d2d346fd56cb0c57dbe73). Une vue est changée au-delà de 0,3 % de pixels différents.
 
-## Changées (31) : planches dans `planches/`
+## Changées (32) : planches dans `planches/`
 
 - 3e-archipel-recul.jpg : 32,0 %
-- 3e-archipel.jpg : 50,1 %
-- 3e-carte.jpg : 33,8 %
-- 3e-grand-texte-archipel-800x1280.jpg : 41,5 %
-- 3e-grand-texte-archipel.jpg : 56,4 %
-- 3e-ile-recul.jpg : 44,2 %
-- 3e-ile.jpg : 52,5 %
-- 4e-archipel-recul.jpg : 33,9 %
-- 4e-archipel.jpg : 62,2 %
-- 4e-carte.jpg : 42,7 %
+- 3e-archipel.jpg : 50,0 %
+- 3e-carte.jpg : 33,1 %
+- 3e-grand-texte-archipel-800x1280.jpg : 41,7 %
+- 3e-grand-texte-archipel.jpg : 56,5 %
+- 3e-ile-recul.jpg : 44,4 %
+- 3e-ile.jpg : 52,7 %
+- 4e-archipel-recul.jpg : 33,7 %
+- 4e-archipel.jpg : 48,7 %
+- 4e-carte.jpg : 38,9 %
 - 4e-gris-muscade.jpg : 39,4 %
-- 4e-ile-recul.jpg : 42,6 %
+- 4e-ile-recul.jpg : 42,5 %
 - 4e-ile.jpg : 44,2 %
 - 5e-archipel-recul.jpg : 39,4 %
-- 5e-archipel.jpg : 44,6 %
-- 5e-carte.jpg : 47,1 %
-- 5e-gris-moustache.jpg : 56,8 %
+- 5e-archipel.jpg : 44,7 %
+- 5e-carte.jpg : 56,4 %
+- 5e-gris-moustache.jpg : 57,2 %
 - 5e-ile-recul.jpg : 46,2 %
-- 5e-ile.jpg : 39,1 %
-- 6e-archipel-recul.jpg : 42,3 %
+- 5e-ile.jpg : 39,7 %
+- 6e-archipel-recul.jpg : 42,0 %
 - 6e-archipel.jpg : 40,9 %
-- 6e-carte.jpg : 45,7 %
-- 6e-entraide-fiche-coco.jpg : 37,8 %
+- 6e-carte.jpg : 45,8 %
+- 6e-defi-french-6e-letter-confusion.jpg : 0,5 %
+- 6e-entraide-fiche-coco.jpg : 37,2 %
 - 6e-entraide-french-6e-grammar-spelling-nuit.jpg : 39,8 %
 - 6e-entraide-french-6e-grammar-spelling.jpg : 42,2 %
 - 6e-entraide-french-6e-phonology-nuit.jpg : 39,6 %
-- 6e-entraide-french-6e-phonology.jpg : 44,1 %
-- 6e-entraide-french-6e-reading-nuit.jpg : 37,7 %
-- 6e-entraide-french-6e-reading.jpg : 38,8 %
-- 6e-ile-recul.jpg : 44,6 %
-- 6e-ile.jpg : 43,2 %
+- 6e-entraide-french-6e-phonology.jpg : 44,0 %
+- 6e-entraide-french-6e-reading-nuit.jpg : 38,0 %
+- 6e-entraide-french-6e-reading.jpg : 39,2 %
+- 6e-ile-recul.jpg : 44,7 %
+- 6e-ile.jpg : 43,3 %
 
-## Inchangées (68) : non publiées
+## Inchangées (67) : non publiées
 
 - 3e-bulle-svg.jpg : 0,0 %
 - 3e-bulle.jpg : 0,0 %
@@ -90,7 +91,6 @@ Références : main au commit 28d359337b52a8c95061426a8642f06f993d80f2 (après :
 - 6e-defi-english-6e-grammar.jpg : 0,0 %
 - 6e-defi-english-6e-vocabulary.jpg : 0,0 %
 - 6e-defi-french-6e-grammar-spelling.jpg : 0,0 %
-- 6e-defi-french-6e-letter-confusion.jpg : 0,1 %
 - 6e-defi-french-6e-phonology.jpg : 0,0 %
 - 6e-defi-french-6e-reading.jpg : 0,0 %
 - 6e-defi-french-6e-word-spelling.jpg : 0,0 %
