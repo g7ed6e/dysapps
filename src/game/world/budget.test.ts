@@ -2,10 +2,8 @@ import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
 import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
-import { chooseGuardian, chooseIsland, choiceMiddle, dragChoice } from './arrangeMode';
+import { chooseIsland, choiceMiddle, dragChoice } from './arrangeMode';
 import { arrangeView, arrangeViewCost } from './arrangeView';
-import { freeGuardianSpots, moveGuardian, placeIn } from './arrange';
-import { gapBetween, guardianIsletRectangle, landRectangle } from './footprint';
 import { BUDGET_DES_POIGNEES, coutDesPoignees } from './arrangeHandles';
 import { buildMesh } from './mesher';
 import { worldCubes } from './terrain';
@@ -117,12 +115,13 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // puis à 72 770 avec les trois îles de sciences (SC-2, même mot : « Budget on augmente pour l'instant »).
   // HG-3 (même mot) : les autres archipels passent de 55 790 à 62 875 avec leurs six îles d'histoire-géographie, puis à
   // 74 805 avec leurs neuf îles de sciences (SC-3), puis à 74 865 avec les programmes 2025-2026 (deux bornes de plus au
-  // 4e, la petite construction de la Forge déplacée).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3 et SC-3 : les îles d’histoire-géographie et de sciences) : 72 770 triangles et 25 appels aux Premiers Rivages, 74 865 et 24 ailleurs', () => {
+  // 4e, la petite construction de la Forge déplacée), puis à 74 877 avec les commandes relevées à 392 (mainteneur,
+  // 8 octobre 2026 : le pied de la machine d'Ixe et le perchoir de Cléa, au 4e).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3 et SC-3 : les îles d’histoire-géographie et de sciences) : 72 770 triangles et 25 appels aux Premiers Rivages, 74 877 et 24 ailleurs', () => {
     const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([72_770, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([74_865, 24]);
+    expect([total('5e'), appels('5e')]).toEqual([74_877, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la
@@ -214,11 +213,22 @@ it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangle
   expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 100_000, drawCalls: 120 });
 });
 
-it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus long, et toutes les réunions), chaque région tient sous le plafond', () => {
+/**
+ * Les appels qu'une liaison au plus long ajoute à une région, par sorte (« <région> <sorte> ») : au 3e, les galets d'un
+ * sentier venaient avec le gué de l'îlot des Gardiens ; l'îlot parti (GD-11, 8 octobre 2026), ils sont trois appels de
+ * plus (dessus, côté, dessous). Les autres régions ont des galets ailleurs (décor, petites constructions).
+ */
+const APPELS_EN_PLUS_D_UNE_LIAISON: Readonly<Record<string, number>> = { '3e sentier': 3 };
+
+it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus long, et toutes les réunions), chaque région tient sous le plafond, avec les appels qu’une liaison ajoute', () => {
   for (const a of ARCHIPELAGO_IDS) {
     const pire = worstCaseOfRegion(a);
     expect(pire.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
     expect(pire.drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
+    // Une liaison qui prend un matériau nouveau (le sentier au 3e) y tient aussi : vérifié ici, où le pire cas est déjà
+    // compté, plutôt que de le recompter (1,5 s au 3e) dans le test des liaisons.
+    for (const [cle, plus] of Object.entries(APPELS_EN_PLUS_D_UNE_LIAISON))
+      if (cle.startsWith(`${a} `)) expect(pire.drawCalls + plus, cle).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
     // Le pire cas compte plus que le monde d'aujourd'hui.
     expect(pire.triangles, a).toBeGreaterThan(sceneCost(a, true).triangles);
   }
@@ -233,7 +243,7 @@ it('GD-9 : au pire de chaque région, le dessin d’un choix du mode « Aménage
     const pire = worstCaseOfRegion(a);
     let plus = { triangles: 0, drawCalls: 0, places: 0 };
     for (const id of mapOf(a).map((d) => d.id)) {
-      const choix = [chooseIsland(world, id), chooseGuardian(world, id)].filter((c) => c !== null);
+      const choix = [chooseIsland(world, id)].filter((c) => c !== null);
       for (const c of choix) {
         const v = arrangeView(world, c);
         const cout = arrangeViewCost(v);
@@ -256,8 +266,8 @@ it('GD-9, choix 1b : pendant le glissé, la grille et l’empreinte (un seul app
     let sol = 0;
     let plus = { triangles: 0, drawCalls: 0 };
     for (const id of mapOf(a).map((d) => d.id))
-      for (const c of [chooseIsland(world, id), chooseGuardian(world, id)].filter((c) => c !== null)) {
-        const m = choiceMiddle(world, c)!;
+      for (const c of [chooseIsland(world, id)].filter((c) => c !== null)) {
+        const m = choiceMiddle(c)!;
         // Sur sa place, sur une place voisine, et vers un voisin (une place prise, ses cases barrées).
         for (const [dx, dy] of [[0, 0], [12, 0], [0, -12], [-20, 8], [30, 0]]) {
           const v = arrangeView(world, dragChoice(world, c, { x: m.x + dx, y: m.y + dy }), true);
@@ -275,37 +285,12 @@ it('GD-9, choix 1b : pendant le glissé, la grille et l’empreinte (un seul app
   }
 }, 30_000);
 
-it('GD-9, choix 4a : la ligne d’un Gardien détaché vers son lieu, au-dessus des poignées, un appel de plus, sous le plafond', () => {
-  const { world } = toutConstruit();
-  for (const a of ARCHIPELAGO_IDS) {
-    const pire = worstCaseOfRegion(a);
-    let plus = { triangles: 0, drawCalls: 0 };
-    for (const id of mapOf(a).map((d) => d.id)) {
-      // Son Gardien posé le plus loin possible de lui, dans sa région.
-      const terre = landRectangle(placeIn(world, id));
-      const loin = freeGuardianSpots(world, id)
-        .filter((g) => g.spot)
-        .sort((g, h) => gapBetween(guardianIsletRectangle(placeIn(world, id), h), terre) - gapBetween(guardianIsletRectangle(placeIn(world, id), g), terre))[0];
-      if (!loin) continue;
-      const r = moveGuardian(world, id, loin);
-      if (!r.ok) continue;
-      for (const c of [chooseIsland(r.world, id), chooseGuardian(r.world, id)].filter((c) => c !== null)) {
-        const cout = arrangeViewCost(arrangeView(r.world, c));
-        if (cout.triangles > plus.triangles) plus = cout;
-      }
-    }
-    // Les cases, la ligne au-dessus des poignées, les poignées : trois appels, pendant un choix seulement.
-    expect(plus.drawCalls, a).toBe(3);
-    expect(pire.triangles + plus.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
-  }
-}, 60_000);
-
 it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tourner ») : un appel, 400 triangles au plus, seulement pendant un choix', () => {
   const { world } = toutConstruit();
   expect(BUDGET_DES_POIGNEES).toEqual({ triangles: 400, drawCalls: 1 });
   for (const a of ARCHIPELAGO_IDS)
     for (const id of mapOf(a).map((d) => d.id))
-      for (const c of [chooseIsland(world, id), chooseGuardian(world, id)].filter((c) => c !== null)) {
+      for (const c of [chooseIsland(world, id)].filter((c) => c !== null)) {
         const v = arrangeView(world, c);
         for (const style of ['blocs', 'peint'] as const) {
           const p = coutDesPoignees(v.poignees, style);
@@ -319,12 +304,15 @@ it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tour
   expect(arrangeViewCost(null)).toEqual({ triangles: 0, drawCalls: 0 });
 }, 20_000);
 
-it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus)', () => {
+it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus), sauf le sentier au 3e, sous le plafond', () => {
+  // Les appels de plus (le sentier au 3e) tiennent sous le plafond au pire de la région : vérifié dans le test du pire cas.
   const { progress, world } = toutConstruit();
   for (const a of ARCHIPELAGO_IDS) {
     const terrain = worldCubes(a, progress, world, false);
     const avant = buildMesh(terrain).length;
-    for (const [kind, n] of [['bac', LONG_LENGTH], ['pont', LONG_LENGTH], ['pont', SHORT_LENGTH], ['sentier', SHORT_LENGTH]] as const)
-      expect(buildMesh([...terrain, ...linkCubes(a, kind, n)]).length, `${a} ${kind}`).toBe(avant);
+    for (const [kind, n] of [['bac', LONG_LENGTH], ['pont', LONG_LENGTH], ['pont', SHORT_LENGTH], ['sentier', SHORT_LENGTH]] as const) {
+      const plus = APPELS_EN_PLUS_D_UNE_LIAISON[`${a} ${kind}`] ?? 0;
+      expect(buildMesh([...terrain, ...linkCubes(a, kind, n)]).length, `${a} ${kind}`).toBe(avant + plus);
+    }
   }
 });

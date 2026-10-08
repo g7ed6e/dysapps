@@ -66,41 +66,42 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
   }
   // Et les objets du quai, tout construit, sont là où ils étaient avant les noms (barque, caisses, fanions, foyer) ; à la
   // Plaine, la barque de la grève et le foyer laissent sa place à la boutique de Coco (GD-7, PR 3, retouche du directeur
-  // artistique : les objets du quai réservent celle de la petite construction de l'île-port).
+  // artistique : les objets du quai réservent celle de la petite construction de l'île-port). Depuis GD-11, les îles-ports
+  // ont grandi et changé de place : les mêmes objets, à de nouvelles cases.
   const quai = ARCHIPELAGO_IDS.map((a) =>
     [...new Set(parties(a)[1].filter((c) => c.decor && c.tag === getArchipelago(a).port && !bati(c) && !/arbre|sapin|buisson|fleur|rocher|roseau|souche|champignon|cristal/.test(kindOf(c.decor))).map((c) => c.decor))].sort(),
   );
   expect(quai).toMatchInlineSnapshot(`
     [
       [
-        "maths-6e-calculation/barque@75,12",
-        "maths-6e-calculation/barque@76,22",
-        "maths-6e-calculation/caisse@79,16",
-        "maths-6e-calculation/fanion@73,16",
-        "maths-6e-calculation/fanion@80,18",
-        "maths-6e-calculation/foyer@81,22",
+        "maths-6e-calculation/barque@70,14",
+        "maths-6e-calculation/barque@77,10",
+        "maths-6e-calculation/caisse@81,14",
+        "maths-6e-calculation/fanion@83,17",
+        "maths-6e-calculation/fanion@85,15",
+        "maths-6e-calculation/foyer@83,20",
       ],
       [
-        "maths-5e-proportionality/barque@80,310",
-        "maths-5e-proportionality/barque@87,314",
-        "maths-5e-proportionality/caisse@87,317",
-        "maths-5e-proportionality/fanion@71,314",
-        "maths-5e-proportionality/fanion@87,319",
-        "maths-5e-proportionality/foyer@90,317",
+        "maths-5e-proportionality/barque@77,320",
+        "maths-5e-proportionality/barque@82,307",
+        "maths-5e-proportionality/caisse@87,311",
+        "maths-5e-proportionality/fanion@90,313",
+        "maths-5e-proportionality/fanion@91,311",
+        "maths-5e-proportionality/foyer@92,323",
       ],
       [
         "maths-4e-algebra/barque@70,635",
-        "maths-4e-algebra/barque@73,624",
-        "maths-4e-algebra/caisse@77,628",
-        "maths-4e-algebra/fanion@71,628",
-        "maths-4e-algebra/fanion@80,628",
-        "maths-4e-algebra/foyer@80,630",
+        "maths-4e-algebra/barque@75,622",
+        "maths-4e-algebra/caisse@82,626",
+        "maths-4e-algebra/fanion@83,630",
+        "maths-4e-algebra/fanion@84,628",
+        "maths-4e-algebra/foyer@84,634",
       ],
       [
-        "maths-3e-functions/caisse@66,908",
-        "maths-3e-functions/fanion@64,908",
-        "maths-3e-functions/fanion@77,908",
-        "maths-3e-functions/foyer@76,910",
+        "maths-3e-functions/caisse@68,915",
+        "maths-3e-functions/fanion@62,915",
+        "maths-3e-functions/fanion@66,915",
+        "maths-3e-functions/foyer@79,907",
       ],
     ]
   `);

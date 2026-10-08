@@ -50,10 +50,11 @@ afterEach(() => {
 });
 
 describe('Réunir deux lieux', () => {
-  it('sur la carte de départ, la Tour et la Ferme (leur isthme d’avant) peuvent déjà se réunir ; le Volcan, loin de tous, non', () => {
+  it('sur la carte de départ, la Tour et la Ferme (leur isthme d’avant) peuvent déjà se réunir ; la Rivière, loin de tous, non ; le Volcan, depuis que les îles ont grandi (GD-11), avec le Hangar', () => {
     const w = toutConstruit().world;
     expect(joinCandidates(w, 'french-6e-reading')).toEqual(['french-6e-grammar-spelling']);
-    expect(joinCandidates(w, VOLCAN)).toEqual([]);
+    expect(joinCandidates(w, 'maths-6e-fractions')).toEqual([]);
+    expect(joinCandidates(w, VOLCAN)).toEqual(['technology-6e-objects']);
   });
 
   it('deux voisins au plus près : 4 cases de long au moins, sur l’eau, des deux côtes à l’autre', () => {

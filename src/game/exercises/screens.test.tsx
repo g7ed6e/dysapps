@@ -60,14 +60,15 @@ describe('déblocage des biomes', () => {
   it('verrouille la Mine tant que le pont n’est pas construit', async () => {
     const user = userEvent.setup();
     renderAt('/adventure');
-    // GD-9 : de la Plaine ou de la Forêt, une liaison vers chaque île qu'on peut relier, 4 blocs chacune.
-    expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(6);
-    // Cinq îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9), dont la Pointe des paysages, derrière la
-    // Fouille des siècles (HG-2), la Vallée du vivant et le Laboratoire des éléments, au rang du fond (SC-2) : elles
+    // GD-9 : de la Plaine ou de la Forêt, une liaison vers chaque île qu'on peut relier, 4 blocs chacune. Depuis que
+    // les îles ont grandi (GD-11, 8 octobre 2026), leurs côtes sont plus proches : sept ponts.
+    expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(7);
+    // Trois îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9) : la Tour du lecteur, la Pointe des
+    // paysages, derrière la Fouille des siècles (HG-2), et le Laboratoire des éléments, au rang du fond (SC-2) : elles
     // s'ouvriront de proche en proche.
-    expect(screen.queryAllByText(/Île lointaine/).length).toBe(5);
-    // Deux bacs : vers la Fouille des siècles et vers le Hangar des inventions (SC-2).
-    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(2);
+    expect(screen.queryAllByText(/Île lointaine/).length).toBe(3);
+    // Trois bacs : vers la Carrière des mots, la Fouille des siècles et le Hangar des inventions.
+    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(3);
     // Les îles des archipels de 5e, 4e et 3e, dont les six d'histoire-géographie (HG-3) et les neuf de sciences (SC-3).
     expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(36);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
@@ -83,7 +84,9 @@ describe('déblocage des biomes', () => {
     const user = userEvent.setup();
     renderAt('/adventure/french-6e-letter-confusion');
     expect(screen.queryByRole('link', { name: /Filon/ })).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: /Poser/ }));
+    // Depuis GD-11, un bac depuis la Plaine s'offre aussi : on pose le pont depuis la Forêt.
+    const poser = screen.getAllByRole('button', { name: /Poser/ }).find((b) => b.closest('section,li,div')?.textContent?.startsWith('Pont depuis la Forêt des sons'));
+    await user.click(poser!);
     expect(document.body.textContent).toMatch(/Le pont vers la Mine des lettres est posé/);
     expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion']);

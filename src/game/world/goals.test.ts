@@ -107,8 +107,10 @@ it('la vue d’ensemble cadre les îles ouvertes et leurs voisines, puis s’él
 it('une île fermée dit l’ouvrage précis qui y mène, ou l’île à ouvrir d’abord', () => {
   const fresh = sanitizeState({});
   expect(lockedHint(fresh, 'french-6e-letter-confusion')).toBe('Pas si vite ! Pour venir ici, pose le pont depuis la Forêt des sons : 4 blocs.');
-  // La Carrière : aucune liaison directe ne tient encore jusqu'à elle (GD-9) ; on y vient en reliant d'abord la Mine.
-  expect(lockedHint(fresh, 'french-6e-word-spelling')).toBe('Relie d’abord la Mine des lettres. De là, un ouvrage mène ici.');
+  // La Carrière : depuis que les îles ont grandi (GD-11), un bac y mène depuis la Forêt.
+  expect(lockedHint(fresh, 'french-6e-word-spelling')).toBe('Pas si vite ! Pour venir ici, pose le bac depuis la Forêt des sons : 4 blocs.');
+  // La Tour : aucune liaison directe ne tient encore jusqu'à elle (GD-9) ; on y vient en reliant d'abord la Ferme.
+  expect(lockedHint(fresh, 'french-6e-reading')).toBe('Relie d’abord la Ferme des accords. De là, un ouvrage mène ici.');
   // Sans aucun chemin, la phrase le dit simplement.
   expect(AUCUNE_LIAISON).toBe('Pas de passage jusqu’ici pour l’instant.');
   // Dans les Anciens Ateliers, depuis l'Atelier : la liaison part du lieu relié le plus proche.
@@ -218,9 +220,9 @@ it('sans assez de blocs, la suggestion dit ce qu’il manque ; le panneau de l�
 
 it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrage, même si le Bloc-Navire est plus proche (une seule source)', () => {
   // La Forêt jouée en entier, la Plaine (le port) une fois, l'anglais beaucoup : les maths sont les moins jouées. Les
-  // îles jouées sont reliées à la lecture de la sauvegarde ; le Hangar des inventions (SC-2), relié à la Plaine, est le
-  // plus près du Volcan : la liaison suggérée part de lui, 4 blocs (1 en stock). Le Bloc-Navire n'attend plus qu'une
-  // case : 1 bloc, plus proche que les 3 de la liaison.
+  // îles jouées sont reliées à la lecture de la sauvegarde ; depuis que les îles ont grandi (GD-11), la Plaine est la
+  // plus près du Volcan : la liaison suggérée part d'elle, 4 blocs (1 en stock). Le Bloc-Navire, à son port, n'attend
+  // plus qu'une case : 1 bloc, plus proche que les 3 de la liaison.
   const progress = {
     ...joue('french-6e-phonology', 99),
     ...joue('maths-6e-calculation', 1),
@@ -235,7 +237,7 @@ it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrag
   const presque = planCells(coque).map((c) => c.key).slice(1);
   const state = sanitizeState({ progress, stock: { [BLOC.bois]: 1 }, world: { place: 'french-6e-phonology', links: [], parts: { [coque.id]: presque } } });
   const s = ouvrageSuggere(state, '6e')!;
-  expect(s.ile).toBe('technology-6e-objects');
+  expect(s.ile).toBe('maths-6e-calculation');
   const goal = nextGoalInfo(state, s.ile);
   expect(goal).toMatchObject({ have: 1, need: 4, ouvrage: s.goal.ouvrage });
   expect(goal?.text).toMatch(/^Encore 3 blocs pour le pont vers .+\. Il ouvre une île de maths\.$/);
@@ -266,7 +268,7 @@ it('la suggestion ne dépend que de la sauvegarde, et deux élèves de la même 
   };
   const lea = seances('french-6e-phonology');
   const sami = seances('maths-6e-calculation');
-  expect(lea).toEqual(['maths-6e-calculation-maths-6e-decimals', 'maths-6e-calculation-maths-6e-fractions', 'french-6e-phonology-english-6e-vocabulary']);
+  expect(lea).toEqual(['maths-6e-calculation-maths-6e-decimals', 'maths-6e-calculation-maths-6e-fractions', 'french-6e-phonology-english-6e-grammar']);
   expect(sami).toEqual(['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-grammar-spelling']);
   expect(lea.filter((id) => sami.includes(id))).toEqual([]);
 });

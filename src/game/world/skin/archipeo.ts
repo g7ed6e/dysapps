@@ -16,4 +16,5 @@ export const HABILLAGE_ARCHIPEO = {
   pose: 'fondu',
   formeDesSignes: 'hexagone',
   blocDesIles: 'avant-le-nom',
+  echelleDesGardiens: 1,
 } as const satisfies Readonly<Habillage> & { univers: 'archipeo' };

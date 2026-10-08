@@ -1,6 +1,6 @@
 // Les ouvrages entre les îles (ponts, rampes, bacs), leurs abords, et les chemins du bonhomme qui les empruntent.
 import { type BiomeDef, type BiomeId, BLOC, BLOCKS, getBiome, SCIENCE_SUBJECTS } from '../../biomes';
-import { type BridgeDef, type BridgeKind, bridgesOf, LINKS_BEFORE_GD9, bridgeState, otherEnd } from '../archipelago';
+import { type BridgeDef, type BridgeKind, bridgeBuilt, bridgesOf, LINKS_BEFORE_GD9, otherEnd } from '../archipelago';
 import { coeurDe, CORE, inCoeurDOrigine, inCore, isLand, islandDef, type IslandDef, startingIsland, margesDuCoeur } from '../map';
 import { groundLevelAt } from '../ground';
 import { type Cell, type WalkGround, walkPath } from '../paths';
@@ -454,7 +454,7 @@ export function avatarRoute(
     if (here === null || e === null || here === to) break;
     done.add(here);
     for (const b of bridgesOf(here)) {
-      if (bridgeState(b, bridges) !== 'built') continue;
+      if (!bridgeBuilt(b, bridges)) continue;
       const there = otherEnd(b, here);
       if (done.has(there)) continue;
       const deck = tablier(b, here, bridges);

@@ -33,6 +33,7 @@ import { creaturePlacements, gardienDuMonde, guardianPlacements, islandCenter, v
 import { textesDe } from '../../universes';
 import { GESTE_DU_SIGNE, hauteurDuSigne } from './sign';
 import type { ArchipelagoId } from './map';
+import { SENTINELLE_DANS_LE_MONDE } from './terrain/creatures';
 
 const textes = textesDe('blocland');
 
@@ -281,7 +282,7 @@ describe('les bulles (proposition P2, 4 octobre 2026)', () => {
 
 it('le Golem de roche (Gardien de l’île des lettres) : sa bulle au-dessus de son cube le plus haut, dans le monde', () => {
   const ile = 'french-6e-letter-confusion' as const;
-  // Son île ouverte (le pont depuis la Forêt) : il attend sur son îlot.
+  // Son île ouverte (le pont depuis la Forêt) : il attend sur son île.
   const golem = guardianPlacements('6e', {}, ['french-6e-phonology-french-6e-letter-confusion'], true).find((g) => g.id === ile)!;
   expect(golem.beaten).toBe(false);
   // Tous ses cubes, la tête et l'œil d'or compris : le plus haut est le dessus de sa tête.
@@ -323,6 +324,18 @@ describe('zoneRetenue : la zone de toucher de 48 pixels', () => {
     // À égale distance des deux centres : le plus proche de la caméra.
     expect(zoneRetenue([a, b], { x: 115, y: 105 }, null)).toBe(1);
     expect(zoneRetenue([b, a], { x: 115, y: 105 }, null)).toBe(0);
+  });
+
+  it('une borne et un Gardien dont les zones se chevauchent : la borne gagne, même plus loin du doigt (référent dys)', () => {
+    const borne = { ...zoneDeToucher(100, 100, 110, 110, 20), priorite: 1 };
+    const gardien = zoneDeToucher(120, 100, 130, 110, 10);
+    // Le doigt plus près du centre du Gardien, dans les deux zones : la borne.
+    expect(zoneRetenue([gardien, borne], { x: 122, y: 105 }, null)).toBe(1);
+    expect(zoneRetenue([borne, gardien], { x: 122, y: 105 }, null)).toBe(0);
+    // Hors de la zone de la borne : le Gardien.
+    expect(zoneRetenue([borne, gardien], { x: 140, y: 105 }, null)).toBe(1);
+    // Une borne que la garde écarte (cachée) laisse le Gardien.
+    expect(zoneRetenue([borne, gardien], { x: 122, y: 105 }, null, (i) => i !== 0)).toBe(1);
   });
 
   it('un objet caché derrière le sol touché, nettement plus proche que lui : écarté', () => {
@@ -402,4 +415,19 @@ it('sur la Carte, la bulle d\'or de la destination porte l\'image de ce qu\'on y
   expect(imageDeLaDestination({}, { navire: false })).toEqual({ icone: 'star' });
   // Une commande dont le bloc n'est pas connu : l'image de ce qu'on fait sinon.
   expect(imageDeLaDestination({ commande: 'c' }, { navire: false })).toEqual({ icone: 'star' });
+});
+
+it('un Gardien d’Archipéo : sa bulle au-dessus de la sentinelle qu’on voit, pas des cubes du Gardien de Blocland en grand', () => {
+  // Le Phare des fonctions, défi prêt (planche gd-11/archipeo/3e-gd-11-phare-defi-pret, 8 octobre 2026) : la bulle
+  // flottait à la hauteur de la boîte des cubes du Gardien, à l'échelle 1 dans Archipéo, bien au-dessus de la statue.
+  const [g] = guardianPlacements('3e', {}, fini().world.links, true, [], 1).filter((p) => p.id === 'maths-3e-functions');
+  const etats = { gardiensPrets: [g.id], navirePret: false, chantiersPrets: [] };
+  const [enCubes] = signesDesObjets({ cubes: [], creatures: [g], etats });
+  const [enSentinelle] = signesDesObjets({ cubes: [], creatures: [g], etats, gardiens: 'sentinelles' });
+  expect(enSentinelle.z).toBeCloseTo(g.origin.z + SENTINELLE_DANS_LE_MONDE.hauteur + SIGNE.auDessus, 9);
+  expect(enSentinelle.z).toBeLessThan(enCubes.z);
+  // Au-dessus du milieu de sa place, comme la statue (world/characters/merges.ts, `pointDePose`).
+  expect(enSentinelle.x).toBeCloseTo(enCubes.x, 9);
+  expect(enSentinelle.y).toBeCloseTo(enCubes.y, 9);
+  expect(enSentinelle.boite.max.x - enSentinelle.boite.min.x).toBeCloseTo(2 * SENTINELLE_DANS_LE_MONDE.demiLargeur, 9);
 });

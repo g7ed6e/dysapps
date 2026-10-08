@@ -170,14 +170,15 @@ describe('La salle des trophées (GD-3)', () => {
   });
 
   it('la créature de chaque île-école se tient hors de la vue de la salle, derrière elle (GD-3, retouches)', () => {
-    // Le Marché : immobile (derrière la salle, Bazar n'a pas la place de ses pas). La Forêt : l'arbre de (1, 10) du décor
+    // Le Marché : immobile jusqu'à GD-11 (derrière la salle, Bazar n'avait pas la place de ses pas). La Forêt : l'arbre de (1, 10) du décor
     // a laissé la place à Mousso et à ses pas (`DECOR.foret`).
     // Les places mesurées (coordonnées du cœur) : la règle est dans `creatureSpot` (cacheUnLieu), ce test garde la trace.
     expect(Object.fromEntries(ARCHIPELAGOS.map((a) => [a.school, (({ x, y, steps }) => ({ x, y, pas: steps.length }))(creatureSpot(a.school))]))).toEqual({
-      'french-6e-phonology': { x: 0, y: 13, pas: 3 },
-      'maths-5e-proportionality': { x: -4, y: 12, pas: 1 },
-      'maths-4e-algebra': { x: 1, y: 14, pas: 2 },
-      'maths-3e-functions': { x: 3, y: 13, pas: 3 },
+      // Depuis que les îles ont grandi (GD-11), chacune a la place de ses quatre pas.
+      'french-6e-phonology': { x: -1, y: 12, pas: 4 },
+      'maths-5e-proportionality': { x: 1, y: 14, pas: 4 },
+      'maths-4e-algebra': { x: 2, y: 14, pas: 4 },
+      'maths-3e-functions': { x: 2, y: 14, pas: 4 },
     });
   });
 
