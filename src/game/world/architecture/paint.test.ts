@@ -208,9 +208,9 @@ describe('La table commune : les manières de peindre (8 octobre 2026)', () => {
     for (const m of peintureDuMur(vois({ texture: 'sable', dessous: 'mur', dessus: 'mur' }), 'plein', { rangees: 3 }).motifs.slice(0, 4)) expect(m).toBe(MOTIF.plein);
     // Un mur bardé suit la même règle.
     expect(peintureDuMur(vois({ texture: 'planches' }), 'colombage', { barde: true, rangees: 1 }).motifs[0]).toBe(MOTIF.bardage | MOTIF.chaperon);
-    // La teinte de la matière couvre au moins 60 % de la hauteur visible d'un mur d'une rangée, et d'un mur de trois.
-    expect(1 - COLOMBAGE.chaperonPlein).toBeGreaterThanOrEqual(0.6);
-    expect((3 - COLOMBAGE.soubassement - COLOMBAGE.chaperonPlein) / 3).toBeGreaterThanOrEqual(0.6);
+    // La teinte de la matière couvre au moins 85 % de la hauteur visible d'un mur d'une rangée, et d'un mur de trois.
+    expect(1 - COLOMBAGE.chaperonPlein).toBeGreaterThanOrEqual(0.85);
+    expect((3 - COLOMBAGE.soubassement - COLOMBAGE.chaperonPlein) / 3).toBeGreaterThanOrEqual(0.85);
     expect(COLOMBAGE.chaperonPlein).toBeLessThan(COLOMBAGE.chaperon);
     // Le chaperon et le dessus d'un mur plein : la teinte de sa matière, plus sombre, jamais la pierre du kit.
     expect(CHAPERON_DE_LA_PIERRE).toBeGreaterThan(0.4);

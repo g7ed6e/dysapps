@@ -18,7 +18,7 @@
 // - la pierre garde la teinte de sa matière (retouches du directeur artistique, 8 octobre 2026, « familles du 6e ») :
 //   un mur plein n'a de soubassement qu'à partir de trois rangées (`RANGEES_DU_SOUBASSEMENT`), une seule fois, au pied,
 //   et son chaperon est une bande mince dans une teinte plus sombre de sa matière (`CHAPERON_DE_LA_PIERRE`), son dessus
-//   aussi : la teinte de la matière couvre au moins 60 % de la hauteur visible d'un mur, même d'une rangée ; un mur
+//   aussi : la teinte de la matière couvre au moins 85 % de la hauteur visible d'un mur, même d'une rangée ; un mur
 //   bardé suit la même règle du soubassement ;
 // - bardage aux pignons (sur les bâtiments de bois du quai, la règle attend qu'on en pose : option (c) du directeur
 //   artistique, 30/09, voir kits/6e.ts) ; la nuit, rien ne s'allume : la lumière de la scène assombrit tout.

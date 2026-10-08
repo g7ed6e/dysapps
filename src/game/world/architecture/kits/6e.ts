@@ -1,6 +1,8 @@
 // Le kit des Premiers Rivages (6e, lot 7b d'Archipéo), la référence des autres archipels : l'intention du directeur
 // artistique du 30 septembre 2026 (avis « Aligné », docs/univers/archipeo/cadrage.md, « L'intention du 6e »).
-// - Le bois : le colombage (poteaux #795643 sur un remplissage crème #D8D9C9, peint, 0 triangle) ; bardé (#B1815E) aux
+// - Le bois : le colombage (poteaux #795643 sur un torchis crème chaud #D9C7A8, peint, 0 triangle : le crème froid
+//   #D8D9C9, tiré de 35 % vers le Sable #DAA66A, pour qu'il se lise chaud à l'ombre et non gris-bleu, loin du fantôme
+//   Brume #E5EBE3 ; retouches du directeur artistique, 8 octobre 2026) ; bardé (#B1815E) aux
 //   pignons (et, en attente, sur les bâtiments de bois du quai : `bardes`) ; des pilotis (#6E4C30) là où il touche
 //   l'eau et où le sol manque dessous.
 // - La pierre : un mur plein, de sa matière ; le soubassement en pierre #8A8F84, au pied d'un mur d'au moins trois
@@ -122,7 +124,7 @@ export const KIT_6E: Kit = {
   // La table commune, pour les familles que le kit dessine (la Ferme, en terre : le torchis d'un colombage, décision du
   // directeur artistique du 30/09).
   matieres: materialsOf(['colombage', 'bardage', 'pierre', 'toit', 'finition']),
-  couleurs: { poteau: 0x795643, remplissage: 0xd8d9c9, soubassement: 0x8a8f84, chaperon: 0x8a8f84, bardage: 0xb1815e, pilotis: 0x6e4c30 },
+  couleurs: { poteau: 0x795643, remplissage: 0xd9c7a8, soubassement: 0x8a8f84, chaperon: 0x8a8f84, bardage: 0xb1815e, pilotis: 0x6e4c30 },
   murs: { colombage: 'colombage', bardage: 'bardage', pierre: 'plein' },
   // En attente (décision du directeur artistique, 30/09) : au 6e, le bardage reste aux pignons. Les îles au quai ou au
   // ponton (la Baie, la Rivière, la Tour) n'ont aucun mur de bois (la cabine de la Baie reste en blocs) : la règle attend
