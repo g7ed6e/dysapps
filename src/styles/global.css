@@ -4718,7 +4718,7 @@ button.island-quest:active {
 }
 /* Le signe d'une quête (GD-10) : l'image de l'objet, puis une pastille par étape (jamais « 2/3 », qui se lirait comme
    une fraction : référent dys) : pleine pour une étape faite, un anneau épais pour l'étape en cours, un anneau fin pour
-   la suite ; la forme dit l'état, pas seulement la couleur. La ligne de la quête : un bord en pointillés. */
+   la suite, tous à pleine opacité (contraste de 3:1 au moins, référent dys) ; la forme dit l'état, pas la couleur. La ligne de la quête : un bord en pointillés. */
 .quete-signe {
   display: inline-flex;
   align-items: center;
@@ -4734,15 +4734,12 @@ button.island-quest:active {
   height: 0.7rem;
   border-radius: 50%;
   border: 2px solid var(--text);
-  opacity: 0.55;
 }
 .quete-etape.faite {
   background: var(--text);
-  opacity: 1;
 }
 .quete-etape.en-cours {
   border-width: 4px;
-  opacity: 1;
 }
 .commandes-list .quete-item {
   border-style: dashed;
