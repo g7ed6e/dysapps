@@ -13,7 +13,7 @@ export type FormeId = 'galet' | 'croissant' | 'haricot' | 'presquile' | 'goutte'
 export const FORMES: readonly FormeId[] = ['galet', 'croissant', 'haricot', 'presquile', 'goutte', 'trefle', 'cacahuete'];
 
 /** Le côté vers lequel une forme tourne ce qui la distingue (l'ouverture du croissant, la pointe de la goutte, le bras…). */
-export type Vers = 'devant' | 'fond' | 'gauche' | 'droite';
+type Vers = 'devant' | 'fond' | 'gauche' | 'droite';
 
 /**
  * La forme d'une île : la forme du catalogue, le côté vers lequel elle se tourne (dans le repère de l'île, avant qu'on la

@@ -33,7 +33,7 @@ const LOIN = 1e6;
  * `landRectangles`) et leur réunion. Au-delà, la zone se réduit à son rectangle (ce qui n'arrive pas : `liftPartsOf`,
  * arrange.test.ts).
  */
-export const PARTS_DE_LA_ZONE = 40;
+const PARTS_DE_LA_ZONE = 40;
 
 const zoneDuMode = {
   uAmZone: { value: new THREE.Vector4(0, 0, -1, -1) },
