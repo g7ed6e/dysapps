@@ -113,9 +113,10 @@ export interface IslandDef {
 
 /**
  * Un lieu tel que la carte de départ l'écrit : son repère est sa place, sauf s'il est donné. Un lieu qui a une forme
- * (GD-12, ./silhouettes/) n'écrit pas sa côte (`ext`) : elle se lit sur sa forme (`etendueDuLieu`).
+ * (GD-12, ./silhouettes/) écrit aussi sa côte (`ext`), celle que donne sa forme (`etendueDuLieu`, vérifiée par
+ * map.test.ts) : la calculer à l'import du module coûtait une trentaine de millisecondes (le masque de quinze formes).
  */
-type MapPlace = Omit<IslandDef, 'repere' | 'quarts' | 'ext'> & { repere?: { x: number; y: number }; ext?: IslandDef['ext'] };
+type MapPlace = Omit<IslandDef, 'repere' | 'quarts'> & { repere?: { x: number; y: number } };
 
 // Le côté du cœur des îles : une règle du jeu (./coreSide.ts), que la sauvegarde lit aussi ; réexporté ici.
 export { CORE, COTE_DU_COEUR, DEFAULT_CORE_SIDE } from './coreSide';
@@ -438,10 +439,13 @@ function dansLaForme(def: IslandDef, x: number, y: number): boolean {
  */
 export function coreCornerGround(def: IslandDef, x: number, y: number): Ground | null {
   const f = silhouetteDe(def.id).forme;
-  if (!f || !inCore(def, x, y)) return null;
-  const b = bornesDuCoeur(def);
-  const m = masqueDeLaForme(def, f);
-  const [lx, ly] = [x - def.core.x, y - def.core.y];
+  if (!f) return null;
+  return cornerGroundIn(def, bornesDuCoeur(def), masqueDeLaForme(def, f), x - def.core.x, y - def.core.y);
+}
+
+/** `coreCornerGround`, la case (lx, ly) dans le repère du lieu, ses bornes et son masque déjà lus. */
+function cornerGroundIn(def: IslandDef, b: Readonly<Bornes>, m: MasqueDeLaForme, lx: number, ly: number): Ground | null {
+  if (lx < b.x0 || lx >= b.x1 || ly < b.y0 || ly >= b.y1) return null;
   const c = m.corners[cornerAt(b, lx, ly)];
   if ((c !== 'plage' && c !== 'terre') || distanceToCore(b, () => true, lx, ly) <= 0) return null;
   // (Au Volcan, la plage est du basalte, comme sa côte.)
@@ -450,11 +454,17 @@ export function coreCornerGround(def: IslandDef, x: number, y: number): Ground |
 
 /**
  * La case (x, y) du monde (le lieu posé, pas tourné) est-elle à deux cases au plus d'un coin de plage du cœur (en
- * damier) ? Sa côte y est du sable : la plage du coin va jusqu'à la mer.
+ * damier) ? Sa côte y est du sable : la plage du coin va jusqu'à la mer. (La forme, les bornes et le masque lus une
+ * fois, pas une fois par case voisine.)
  */
 function nearBeach(def: IslandDef, x: number, y: number): boolean {
+  const f = silhouetteDe(def.id).forme;
+  if (!f) return false;
+  const b = bornesDuCoeur(def);
+  const m = masqueDeLaForme(def, f);
+  const [lx, ly] = [x - def.core.x, y - def.core.y];
   for (let dy = -TERRE_AUTOUR_DU_COEUR; dy <= TERRE_AUTOUR_DU_COEUR; dy++)
-    for (let dx = -TERRE_AUTOUR_DU_COEUR; dx <= TERRE_AUTOUR_DU_COEUR; dx++) if (coreCornerGround(def, x + dx, y + dy) === 'sable') return true;
+    for (let dx = -TERRE_AUTOUR_DU_COEUR; dx <= TERRE_AUTOUR_DU_COEUR; dx++) if (cornerGroundIn(def, b, m, lx + dx, ly + dy) === 'sable') return true;
   return false;
 }
 
@@ -481,8 +491,11 @@ function terreNouvelle(def: IslandDef, x: number, y: number): boolean {
   return d > COTE_D_AVANT;
 }
 
-/** La côte d'un lieu qui a une forme : de combien sa terre déborde son cœur de chaque côté (`IslandDef.ext`). */
-function etendueDuLieu(def: IslandDef, f: FormeDeLIle): IslandDef['ext'] {
+/**
+ * La côte d'un lieu qui a une forme : de combien sa terre déborde son cœur de chaque côté (`IslandDef.ext`). La carte
+ * de départ l'écrit en dur ; map.test.ts vérifie qu'elle suit la forme.
+ */
+export function etendueDuLieu(def: IslandDef, f: FormeDeLIle): IslandDef['ext'] {
   const m = masqueDeLaForme(def, f);
   const b = bornesDuCoeur(def);
   let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
@@ -531,14 +544,14 @@ const STARTING_MAP: MapPlace[] = [
   // le trait de chaque forme va jusqu'à sept cases (`FEATURE_BOX`, mainteneur, 8 octobre 2026), la Baie avance d'un
   // pas vers la Tour (y 99) et le Laboratoire d'un pas vers la Rivière (x 140) : leurs côtes en face, à deux cases du
   // cœur, s'étaient écartées à neuf cases d'eau, trop loin pour se réunir.
-  { id: 'french-6e-phonology', region: 'basses-terres', core: { x: 68, y: 63 }, repere: { x: 67, y: 59 }, altitude: 0, relief: 'collines', seed: 11 },
-  { id: 'french-6e-grammar-spelling', region: 'basses-terres', core: { x: 24, y: 31 }, vueDepuis: { x: 24, y: 59 }, repere: { x: 25, y: 61 }, deplacee: { x: -2, y: 0 }, altitude: 0, relief: 'plat', seed: 12 },
-  { id: 'french-6e-letter-confusion', region: 'montagne', core: { x: 108, y: 59 }, vueDepuis: { x: 104, y: 67 }, repere: { x: 98, y: 61 }, deplacee: { x: 2, y: 0 }, altitude: 0, relief: 'montagne', seed: 13 },
-  { id: 'french-6e-reading', region: 'basses-terres', core: { x: -12, y: 67 }, vueDepuis: { x: -8, y: 51 }, repere: { x: -3, y: 56 }, altitude: 0, relief: 'plat', seed: 14 },
-  { id: 'french-6e-word-spelling', region: 'montagne', core: { x: 144, y: 59 }, vueDepuis: { x: 136, y: 55 }, repere: { x: 136, y: 56 }, altitude: 0, relief: 'collines', seed: 15 },
-  { id: 'maths-6e-calculation', region: 'basses-terres', core: { x: 64, y: 19 }, deplacee: { x: 0, y: -2 }, altitude: 0, relief: 'plat', seed: 16 },
-  { id: 'maths-6e-fractions', region: 'marais', core: { x: 108, y: 15 }, vueDepuis: { x: 108, y: 19 }, repere: { x: 109, y: 19 }, altitude: 0, relief: 'plat', seed: 17 },
-  { id: 'maths-6e-decimals', region: 'feu', core: { x: 24, y: -5 }, vueDepuis: { x: 20, y: 15 }, repere: { x: 21, y: 19 }, altitude: 0, relief: 'volcan', seed: 18 },
+  { id: 'french-6e-phonology', region: 'basses-terres', core: { x: 68, y: 63 }, repere: { x: 67, y: 59 }, altitude: 0, ext: e(3, 3, 3, 7), relief: 'collines', seed: 11 },
+  { id: 'french-6e-grammar-spelling', region: 'basses-terres', core: { x: 24, y: 31 }, vueDepuis: { x: 24, y: 59 }, repere: { x: 25, y: 61 }, deplacee: { x: -2, y: 0 }, altitude: 0, ext: e(3, 4, 5, 7), relief: 'plat', seed: 12 },
+  { id: 'french-6e-letter-confusion', region: 'montagne', core: { x: 108, y: 59 }, vueDepuis: { x: 104, y: 67 }, repere: { x: 98, y: 61 }, deplacee: { x: 2, y: 0 }, altitude: 0, ext: e(2, 2, 2, 7), relief: 'montagne', seed: 13 },
+  { id: 'french-6e-reading', region: 'basses-terres', core: { x: -12, y: 67 }, vueDepuis: { x: -8, y: 51 }, repere: { x: -3, y: 56 }, altitude: 0, ext: e(5, 3, 2, 2), relief: 'plat', seed: 14 },
+  { id: 'french-6e-word-spelling', region: 'montagne', core: { x: 144, y: 59 }, vueDepuis: { x: 136, y: 55 }, repere: { x: 136, y: 56 }, altitude: 0, ext: e(7, 4, 3, 3), relief: 'collines', seed: 15 },
+  { id: 'maths-6e-calculation', region: 'basses-terres', core: { x: 64, y: 19 }, deplacee: { x: 0, y: -2 }, altitude: 0, ext: e(5, 2, 7, 2), relief: 'plat', seed: 16 },
+  { id: 'maths-6e-fractions', region: 'marais', core: { x: 108, y: 15 }, vueDepuis: { x: 108, y: 19 }, repere: { x: 109, y: 19 }, altitude: 0, ext: e(2, 2, 7, 5), relief: 'plat', seed: 17 },
+  { id: 'maths-6e-decimals', region: 'feu', core: { x: 24, y: -5 }, vueDepuis: { x: 20, y: 15 }, repere: { x: 21, y: 19 }, altitude: 0, ext: e(2, 2, 2, 5), relief: 'volcan', seed: 18 },
   // Îles Brumeuses (5e), sur les collines : deux paires d'isthmes l'une devant l'autre. Port : le Marché. Le Marché,
   // île-école, a un cœur de 20 et sa côte autour (01/10/2026) : le Glacier s'écarte de 2 vers l'ouest (l'isthme garde
   // sa largeur), le Comptoir et le Manoir de 2 vers l'est (le pont du Comptoir au Manoir reste droit), chacun avec son
@@ -572,13 +585,13 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'french-3e-close-reading', region: 'hauteurs', core: { x: 58, y: 964 }, repere: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(2, 2, 1, 4), relief: 'collines', seed: 44 },
   // Anglais 6e : au rang du fond, à l'ouest (GD-12), la Baie au coin, l'Horloge à côté, un pas plus au fond (leur isthme
   // est retiré, GD-9).
-  { id: 'english-6e-vocabulary', region: 'basses-terres', core: { x: -12, y: 99 }, vueDepuis: { x: 32, y: 107 }, repere: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, relief: 'plat', seed: 51 },
-  { id: 'english-6e-grammar', region: 'basses-terres', core: { x: 24, y: 107 }, vueDepuis: { x: 64, y: 107 }, repere: { x: 68, y: 102 }, deplacee: { x: 0, y: 1 }, altitude: 0, relief: 'collines', seed: 52 },
+  { id: 'english-6e-vocabulary', region: 'basses-terres', core: { x: -12, y: 99 }, vueDepuis: { x: 32, y: 107 }, repere: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, ext: e(5, 2, 3, 2), relief: 'plat', seed: 51 },
+  { id: 'english-6e-grammar', region: 'basses-terres', core: { x: 24, y: 107 }, vueDepuis: { x: 64, y: 107 }, repere: { x: 68, y: 102 }, deplacee: { x: 0, y: 1 }, altitude: 0, ext: e(4, 4, 7, 3), relief: 'collines', seed: 52 },
   // Histoire-géographie 6e : au rang du fond, à l'est (GD-12), la Fouille des siècles puis la Pointe des
   // paysages, fermées au départ (on les relie). Sur le pas des places, à quatre cases d'eau au moins de leurs voisines.
   // Leur terre est plate, sans relief ni pic : l'archipel le plus chargé du monde, ses îles les plus sobres.
-  { id: 'history-6e-antiquity', region: 'basses-terres', core: { x: 108, y: 103 }, vueDepuis: { x: 124, y: 99 }, repere: { x: 124, y: 99 }, altitude: 0, relief: 'plat', seed: 53 },
-  { id: 'geography-6e-living', region: 'basses-terres', core: { x: 144, y: 103 }, vueDepuis: { x: 152, y: 99 }, repere: { x: 152, y: 99 }, altitude: 0, relief: 'plat', seed: 54 },
+  { id: 'history-6e-antiquity', region: 'basses-terres', core: { x: 108, y: 103 }, vueDepuis: { x: 124, y: 99 }, repere: { x: 124, y: 99 }, altitude: 0, ext: e(3, 3, 7, 4), relief: 'plat', seed: 53 },
+  { id: 'geography-6e-living', region: 'basses-terres', core: { x: 144, y: 103 }, vueDepuis: { x: 152, y: 99 }, repere: { x: 152, y: 99 }, altitude: 0, ext: e(2, 2, 7, 3), relief: 'plat', seed: 54 },
   // Sciences 6e (SC-2) : dans le cadre de la région (192 × 144, pour que la Carte tienne sur la tablette). Depuis
   // GD-12, la Vallée du vivant au rang du fond, entre l'Horloge et la Fouille, derrière la Forêt ; le Laboratoire des
   // éléments au coin de devant, à l'est, après la Rivière ; le Hangar des inventions au coin de devant, à l'ouest, à côté
@@ -586,9 +599,9 @@ const STARTING_MAP: MapPlace[] = [
   // les relie). Sur le pas des places, à quatre cases d'eau au moins de leurs voisines (leur Gardien sur leur île depuis
   // GD-11). Chacune garde le dessin de sa première place, au rang du fond (`repere`). Terre plate, sans relief ni pic,
   // comme l'histoire-géographie.
-  { id: 'life-earth-sciences-6e-living-world', region: 'basses-terres', core: { x: 68, y: 107 }, vueDepuis: { x: 96, y: 111 }, repere: { x: 152, y: 139 }, altitude: 0, relief: 'plat', seed: 55 },
-  { id: 'physics-chemistry-6e-matter-energy', region: 'basses-terres', core: { x: 140, y: 15 }, vueDepuis: { x: 152, y: 15 }, repere: { x: 124, y: 139 }, altitude: 0, relief: 'plat', seed: 56 },
-  { id: 'technology-6e-objects', region: 'basses-terres', core: { x: -12, y: -5 }, vueDepuis: { x: -12, y: 11 }, repere: { x: 96, y: 139 }, altitude: 0, relief: 'plat', seed: 57 },
+  { id: 'life-earth-sciences-6e-living-world', region: 'basses-terres', core: { x: 68, y: 107 }, vueDepuis: { x: 96, y: 111 }, repere: { x: 152, y: 139 }, altitude: 0, ext: e(7, 5, 2, 2), relief: 'plat', seed: 55 },
+  { id: 'physics-chemistry-6e-matter-energy', region: 'basses-terres', core: { x: 140, y: 15 }, vueDepuis: { x: 152, y: 15 }, repere: { x: 124, y: 139 }, altitude: 0, ext: e(3, 4, 5, 7), relief: 'plat', seed: 56 },
+  { id: 'technology-6e-objects', region: 'basses-terres', core: { x: -12, y: -5 }, vueDepuis: { x: -12, y: 11 }, repere: { x: 96, y: 139 }, altitude: 0, ext: e(3, 7, 2, 2), relief: 'plat', seed: 57 },
   // Anglais 5e : une colonne à droite du Marché et du Marais.
   { id: 'english-5e-vocabulary', region: 'basses-terres', core: { x: 105, y: 321 }, repere: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 1, 3), relief: 'plat', seed: 61 },
   { id: 'english-5e-grammar', region: 'hauteurs', core: { x: 101, y: 365 }, repere: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 1, 3), relief: 'collines', seed: 62 },
@@ -651,12 +664,7 @@ const STARTING_MAP: MapPlace[] = [
  * (`islandDef`) suit la disposition choisie (./placement.ts) ; sans elle, c'est celle-ci.
  */
 export const MAP: readonly IslandDef[] = Object.freeze(
-  STARTING_MAP.map((d): IslandDef => {
-    const def: IslandDef = { ...d, repere: d.repere ?? d.core, quarts: 0 as Quarts, ext: d.ext ?? { left: 0, right: 0, front: 0, back: 0 } };
-    const f = silhouetteDe(d.id).forme;
-    if (!d.ext && !f) throw new Error(`${d.id} n'a ni côte écrite ni forme.`);
-    return Object.freeze(f ? { ...def, ext: etendueDuLieu(def, f) } : def);
-  }),
+  STARTING_MAP.map((d): IslandDef => Object.freeze({ ...d, repere: d.repere ?? d.core, quarts: 0 as Quarts })),
 );
 
 const STARTING_PLACES = new Map(MAP.map((d) => [d.id, d]));
@@ -896,7 +904,8 @@ const SEUIL_DU_DECOR = 0.62;
 function solAPlat(def: IslandDef): Ground {
   if (def.id === 'maths-5e-signed-numbers') return 'glace';
   if (def.region === 'feu') return 'basalte';
-  if (def.region === 'marais') return 'mousse';
+  // (Une île des marais qui a une forme, GD-12 : sa terre en herbe, comme son cœur ; voir `computeLandscape`.)
+  if (def.region === 'marais') return silhouetteDe(def.id).forme ? 'herbe' : 'mousse';
   return 'herbe';
 }
 
@@ -1233,7 +1242,9 @@ function computeLandscape(def: IslandDef): LandCell[] {
     let ground: Ground = 'herbe';
     if (def.region === 'feu') ground = 'basalte';
     else if (def.region === 'hauteurs') ground = h > 0 ? 'roche' : 'herbe';
-    else if (def.region === 'marais') ground = 'mousse';
+    // Aux marais, la mousse ; sur une île qui a une forme (GD-12, la Rivière des fractions), l'herbe de son cœur : sa
+    // terre agrandie en mousse, plus sombre, se lisait en bandes de chaque côté du sol du lieu.
+    else if (def.region === 'marais') ground = forme ? 'herbe' : 'mousse';
     if (def.id === 'maths-5e-signed-numbers') ground = 'glace';
     if (h >= 3) ground = def.region === 'feu' ? 'basalte' : 'roche';
     if (h >= 5 && def.region !== 'feu') ground = 'neige';

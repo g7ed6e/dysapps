@@ -681,7 +681,9 @@ function reparerLaCarte(
   /**
    * Les places autour du nom `j` qui tiennent (`tient`), vérifiées une fois par réparation : elles ne dépendent ni des
    * autres noms ni des places promises. Au 6e, en OpenDyslexic 32 px, un nom sans place relançait `deplacer` 25 000 fois
-   * par ouverture de la Carte, chaque fois avec toutes ses places à vérifier (GD-12, 8 octobre 2026).
+   * par ouverture de la Carte, chaque fois avec toutes ses places à vérifier (GD-12, 8 octobre 2026). Le cache suppose
+   * que `libre` (la garde de la destination, lue par `tient`) ne lit aucun état qui change pendant la réparation : s'il
+   * venait à lire les noms déjà posés ou les places promises, ce cache rendrait des places qui ne tiennent plus.
    */
   const fitCache = new Map<number, LabelBox[]>();
   const placesThatFit = (j: number) => {

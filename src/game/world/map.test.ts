@@ -1,5 +1,6 @@
 import { BIOMES } from '../biomes';
-import { ALTITUDE, ARCHIPELAGO_IDS, CORE, LACS, isLand, islandDef, landBox, landCells, landscape, margesDuCoeur, MAP, reliefHeight } from './map';
+import { ALTITUDE, ARCHIPELAGO_IDS, CORE, etendueDuLieu, LACS, isLand, islandDef, landBox, landCells, landscape, margesDuCoeur, MAP, reliefHeight } from './map';
+import { silhouetteDe } from './silhouettes';
 import { BRIDGES, LINKS_BEFORE_GD9, linkWholeRegion, VOYAGES } from './archipelago';
 import { worldCubes } from './terrain';
 
@@ -15,6 +16,13 @@ it('chaque île a une place, une altitude selon sa classe, et son cœur fait par
     const lb = landBox(def);
     expect(land.length).toBeLessThan((lb.x1 - lb.x0) * (lb.y1 - lb.y0));
   }
+});
+
+it('la côte écrite d’un lieu qui a une forme (GD-12) est celle de sa forme', () => {
+  // La carte de départ l'écrit en dur, pour ne pas calculer quinze masques à l'import de map.ts.
+  const formes = MAP.filter((d) => silhouetteDe(d.id).forme);
+  expect(formes.length).toBe(15);
+  for (const d of formes) expect(d.ext, d.id).toEqual(etendueDuLieu(d, silhouetteDe(d.id).forme!));
 });
 
 it('aucune terre ne chevauche une autre', () => {

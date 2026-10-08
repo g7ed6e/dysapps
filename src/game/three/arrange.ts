@@ -119,14 +119,14 @@ function reglerLeMateriau(m: THREE.Material, oui: boolean): void {
   m.needsUpdate = true;
 }
 
+/** Aucune part de la zone : la zone entière (`zone`). */
+const NO_PARTS: readonly { x0: number; y0: number; x1: number; y1: number }[] = [];
+
 /**
  * Un matériau des blocs (Blocland) qui saura soulever le lieu choisi et le couper au-dessus d'une hauteur, dans la zone
  * du mode « Aménager ». Hors du mode, le matériau reste tel quel (son programme est celui d'avant, sans `discard`) ;
  * l'ajout n'est posé que le temps que le mode est ouvert (`ouvrirLeModeDansLesMateriaux`).
  */
-/** Aucune part de la zone : la zone entière (`zone`). */
-const NO_PARTS: readonly { x0: number; y0: number; x1: number; y1: number }[] = [];
-
 export function avecLAmenagement<M extends THREE.Material>(m: M): M {
   materiauxDesBlocs.add(m);
   reglerLeMateriau(m, modeOuvert);
