@@ -1,8 +1,8 @@
 import type { VoxelCube } from '../cube';
-import { toutConstruit } from '../budget';
+import { toutConstruit, toutConstruitAvecLesCommandes } from '../budget';
 import { ARCHIPELAGO_IDS } from '../map';
 import { worldCubes } from '../terrain';
-import { batimentsDe } from '../construction';
+import { batimentsDe, coursDe } from '../construction';
 import { architectureDe, FORMES, KITS, kitVide, MOTIF, pieceDe, voisinageDe, indexDuPlan, type IdDePiece, type Kit } from '.';
 import { boiteDansLaCase, FACES, facettesPosees, tournerCouvre, trianglesDe, TOUTES_LES_FACES, type DessinDePiece } from './rooms';
 import { KIT_6E } from './kits/6e';
@@ -20,21 +20,27 @@ function toutesLesPieces(): IdDePiece[] {
 /** Un kit d'essai : la pierre et les planches dessinées partout par `dessin`. */
 function kitDEssai(dessin: DessinDePiece): Kit {
   const pieces = Object.fromEntries(toutesLesPieces().map((p) => [p, dessin]));
-  return { ...kitVide(), matieres: { pierre: 'pierre', planches: 'bois' }, pieces: { pierre: pieces, bois: pieces } };
+  return { ...kitVide(), matieres: { pierre: 'pierre', planches: 'colombage' }, pieces: { pierre: pieces, colombage: pieces } };
 }
 
 const cube = (x: number, y: number, z: number, texture = 'pierre', autre: Partial<VoxelCube> = {}): VoxelCube => ({ x, y, z, color: '#888888', texture, tag: 'port', ...autre });
 
 describe('L’architecture modulaire', () => {
-  it('seul le kit des Premiers Rivages est rempli (lot 7b) : ailleurs, aucun bloc remplacé ni peint, sur tout un archipel construit', () => {
-    const { progress, world: village } = toutConstruit();
+  it('la table commune ne s’active qu’au 6e : ailleurs, aucun bloc remplacé ni peint, sur tout un archipel construit, cours, monuments et petites constructions comprises', () => {
+    const { progress, world: village } = toutConstruitAvecLesCommandes();
     for (const a of ARCHIPELAGO_IDS) {
-      const archi = architectureDe(a, worldCubes(a, progress, village, false), { batiments: batimentsDe(a) });
+      const archi = architectureDe(a, worldCubes(a, progress, village, false), { batiments: batimentsDe(a), cours: coursDe(a) });
       if (a === '6e') {
         expect(archi.pieces.length, a).toBeGreaterThan(0);
         expect(archi.peints.size, a).toBeGreaterThan(0);
+        // Les monuments, la cour (la troisième étape) et les petites constructions des commandes et des quêtes aussi.
+        const pris = [...archi.pieces.map((p) => p.cube), ...[...archi.peints.values()].map((p) => p.cube)];
+        expect(pris.some((c) => c.place?.startsWith('monument:'))).toBe(true);
+        expect(pris.some((c) => c.petiteConstruction)).toBe(true);
+        expect(pris.some((c) => coursDe(a).has(cle(c)))).toBe(true);
         continue;
       }
+      expect(KITS[a].finitions ?? {}, a).toEqual({});
       expect(Object.keys(KITS[a].matieres), a).toEqual([]);
       expect(Object.keys(KITS[a].pieces), a).toEqual([]);
       expect(Object.keys(KITS[a].murs), a).toEqual([]);
@@ -60,7 +66,7 @@ describe('L’architecture modulaire', () => {
     ];
     const archi = architectureDe('6e', cubes, { kit, exclure: (c) => c.x === 7 });
     expect([...archi.remplacees].sort()).toEqual(['0,0,1', '1,0,1']);
-    expect(archi.pieces.map((p) => p.famille)).toEqual(['pierre', 'bois']);
+    expect(archi.pieces.map((p) => p.famille)).toEqual(['pierre', 'colombage']);
     // La planche voit la pierre à sa gauche et le fantôme à sa droite (le plan entier) : un mur droit.
     expect(archi.pieces[1].piece).toBe('mur.droit.pied.chaperon');
     expect(archi.triangles).toBe(2 * 12);
@@ -103,29 +109,36 @@ describe('L’architecture modulaire', () => {
 describe('Le kit des Premiers Rivages (lot 7b)', () => {
   it('porte les couleurs de l’archipel par rôle (intention du directeur artistique)', () => {
     expect(KIT_6E.couleurs).toEqual({ poteau: 0x795643, remplissage: 0xd8d9c9, soubassement: 0x8a8f84, chaperon: 0x8a8f84, bardage: 0xb1815e, pilotis: 0x6e4c30 });
-    expect(KIT_6E.murs).toEqual({ bois: 'colombage', pierre: 'plein' });
+    expect(KIT_6E.murs).toEqual({ colombage: 'colombage', bardage: 'bardage', pierre: 'plein' });
+    // La finition, matière par matière : la porte peinte, la marche dessinée ; la barrière attend le budget.
+    expect(Object.keys(KIT_6E.finitions ?? {}).sort()).toEqual(['escalier', 'marche', 'porte']);
     // Le verre et les lanternes n'ont pas de famille : ils ne deviennent jamais des pièces.
     expect(KIT_6E.matieres.verre).toBeUndefined();
     expect(KIT_6E.matieres.lanterne).toBeUndefined();
   });
 
-  it('les maisons de bois en colombage, celles de pierre en mur plein, les toits en pente ; ni la cour, ni l’école, ni les monuments', () => {
+  it('les maisons de bois en colombage, celles de pierre en mur plein, les toits en pente ; les monuments aussi ; ni la cour sans elle, ni l’école sans son modèle', () => {
     const { progress, world: village } = toutConstruit();
     const cubes = worldCubes('6e', progress, village, false);
     const archi = architectureDe('6e', cubes, { batiments: batimentsDe('6e') });
-    const parIle = (ile: string) => [...archi.peints.values()].filter((p) => p.cube.tag === ile);
-    // La cabane de la Forêt (planches) : du colombage, des pignons bardés, une cheminée maçonnée.
+    const parIle = (ile: string) => [...archi.peints.values()].filter((p) => p.cube.tag === ile && !p.cube.place);
+    // La cabane de la Forêt (planches) : du colombage, des pignons bardés, une cheminée maçonnée, une porte en vantail.
     const foret = parIle('french-6e-phonology');
-    expect(new Set(foret.map((p) => p.peinture.fond))).toEqual(new Set(['remplissage', 'bardage', 'soubassement']));
+    expect(new Set(foret.map((p) => p.peinture.fond))).toEqual(new Set(['remplissage', 'bardage', 'soubassement', 'matiere']));
     expect(foret.filter((p) => p.peinture.fond === 'remplissage').every((p) => (p.peinture.motifs[0] & 3) === MOTIF.colombage)).toBe(true);
-    // La forge de la Mine (pierre) : un mur plein.
-    expect(parIle('french-6e-letter-confusion').every((p) => p.peinture.fond === 'matiere' && (p.peinture.motifs[0] & 3) === MOTIF.plein)).toBe(true);
-    // Les toits : des pentes (versants, faîtes, arêtiers, croupes), aucune pièce hors d'un toit ni de pilotis.
-    const pentes = new Set(archi.pieces.map((p) => p.piece.split('.').slice(0, 2).join('.')));
-    expect([...pentes].sort()).toEqual(['toit.aretier', 'toit.croupe', 'toit.faite', 'toit.versant']);
-    // Rien d'un lieu (école, trophées, monuments), rien de la cour, rien hors des bâtiments.
+    expect(foret.filter((p) => p.peinture.fond === 'matiere').every((p) => p.cube.texture === 'porte' && p.peinture.motifs[0] === MOTIF.vantail)).toBe(true);
+    // La forge de la Mine (pierre) : un mur plein, sa porte en vantail.
+    expect(parIle('french-6e-letter-confusion').every((p) => p.peinture.fond === 'matiere' && ((p.peinture.motifs[0] & 3) === MOTIF.plein || p.cube.texture === 'porte'))).toBe(true);
+    // Les toits des bâtiments : des pentes (versants, faîtes, arêtiers, croupes), aucune pièce hors d'un toit ni de pilotis.
     const batiments = batimentsDe('6e');
+    const pentes = new Set(archi.pieces.filter((p) => batiments.has(cle(p.cube))).map((p) => p.piece.split('.').slice(0, 2).join('.')));
+    expect([...pentes].sort()).toEqual(['toit.aretier', 'toit.croupe', 'toit.faite', 'toit.versant']);
+    // Les monuments prennent la table (décision du directeur artistique, 8 octobre 2026) ; rien d'un lieu du village sans
+    // son modèle (`caseDuLieu`), rien de la cour sans elle (`cours`), rien hors des bâtiments et des monuments.
+    const monuments = [...archi.peints.values()].filter((p) => p.cube.place?.startsWith('monument:'));
+    expect(monuments.length).toBeGreaterThan(20);
     for (const p of [...archi.pieces, ...archi.peints.values()]) {
+      if (p.cube.place?.startsWith('monument:')) continue;
       expect(p.cube.place).toBeUndefined();
       expect(batiments.has(cle(p.cube))).toBe(true);
     }

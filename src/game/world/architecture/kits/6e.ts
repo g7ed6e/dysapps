@@ -8,8 +8,17 @@
 //   Ferme et à la Mine).
 // - L'école, la salle des trophées et la Halle aux matériaux (décision du directeur artistique, 30 septembre 2026 : des
 //   lieux du village, au milieu des maisons) : leurs murs en colombage, leurs toits en pentes (`LIEUX_6E`).
-// Le verre et les lanternes ne deviennent jamais des pièces ; les monuments gardent leurs blocs taillés.
+// - La table commune « matière → famille » (../families.ts, décision du mainteneur du 8 octobre 2026) : le colombage
+//   (planches, terre, poutre, chaume), le bardage (cabine, carton : des clins dans la teinte de la matière, chaperon de
+//   pierre), la pierre (un mur plein dans sa teinte, soubassement et chaperon de pierre ; seule et basse, un bac de
+//   pierre), le toit (toit, tuile), la finition (la porte en vantail dans son encadrement, la marche de pierre basse :
+//   ../lowPieces.ts ; la barrière en poteaux et lisses attend le budget). Les monuments, la cour des îles et les petites constructions des
+//   commandes et des quêtes la prennent aussi (../index.ts) ; le métal, la toile, le précieux, le végétal et l'eau
+//   attendent leur pull request.
+// Le verre et les lanternes ne deviennent jamais des pièces.
 import { boiteDansLaCase, type DessinDePiece, type Facette } from '../rooms';
+import { materialsOf } from '../families';
+import { bacDePierre, marcheDe, PIECE_SEULE_ET_BASSE } from '../lowPieces';
 import { MOTIF } from '../paint';
 import { piecesDeToit } from '../roofs';
 import type { IdDeMur, Forme, Tete } from '../choices';
@@ -82,7 +91,7 @@ const souche = ({ x, y, z, w }: CaseDuLieu) => x === (w - 1) / 2 && y === 1 && z
 const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
   school: (m) =>
     m.z <= 3 && (m.texture === 'brique' || m.texture === 'taille')
-      ? { famille: 'bois' }
+      ? { famille: 'colombage' }
       : m.texture === 'toit' && souche(m)
         ? { matiere: 'taille' }
         : m.texture === 'toit'
@@ -90,7 +99,7 @@ const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
           : undefined,
   trophies: (m) =>
     m.texture === 'marbre' && m.z <= 3 && pilier(m)
-      ? { famille: 'bois', sansDecharge: true }
+      ? { famille: 'colombage', sansDecharge: true }
       : m.z === 4 && m.texture === 'taille'
         ? { famille: 'toit', couverture: true }
         : // Le faîte d'or, au rang du milieu : la salle a une profondeur impaire (TROPHY_SIZE, 3 cases), sinon il n'y en a pas.
@@ -101,21 +110,24 @@ const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
     !dansLaHalle(m)
       ? undefined
       : m.z <= HALLE.haut && (m.texture === 'planches' || m.texture === 'pierre')
-        ? { famille: 'bois' }
+        ? { famille: 'colombage' }
         : m.texture === 'toit'
           ? { famille: 'toit' }
           : undefined,
 };
 
 export const KIT_6E: Kit = {
-  // La Ferme (terre) : le torchis d'un colombage, dans la famille du bois (décision du directeur artistique, 30/09).
-  matieres: { planches: 'bois', terre: 'bois', pierre: 'pierre', galet: 'pierre', brique: 'pierre', obsidienne: 'pierre', toit: 'toit' },
+  // La table commune, pour les familles que le kit dessine (la Ferme, en terre : le torchis d'un colombage, décision du
+  // directeur artistique du 30/09).
+  matieres: materialsOf(['colombage', 'bardage', 'pierre', 'toit', 'finition']),
   couleurs: { poteau: 0x795643, remplissage: 0xd8d9c9, soubassement: 0x8a8f84, chaperon: 0x8a8f84, bardage: 0xb1815e, pilotis: 0x6e4c30 },
-  murs: { bois: 'colombage', pierre: 'plein' },
+  murs: { colombage: 'colombage', bardage: 'bardage', pierre: 'plein' },
   // En attente (décision du directeur artistique, 30/09) : au 6e, le bardage reste aux pignons. Les îles au quai ou au
   // ponton (la Baie, la Rivière, la Tour) n'ont aucun mur de bois (la cabine de la Baie reste en blocs) : la règle attend
   // les bâtiments de bois qu'on y posera.
   bardes: ['english-6e-vocabulary', 'maths-6e-fractions', 'french-6e-reading'],
-  pieces: { toit: piecesDeToit(), bois: piecesSurPilotis() },
+  pieces: { toit: piecesDeToit(), colombage: piecesSurPilotis(), pierre: { [PIECE_SEULE_ET_BASSE]: bacDePierre() } },
+  // La barrière attend le budget (une exception nommée, ../families.ts) : son dessin est prêt (`barriereDe`).
+  finitions: { porte: () => 'vantail', escalier: marcheDe, marche: marcheDe },
   lieux: LIEUX_6E,
 };

@@ -43,7 +43,7 @@
 // des rôles (`settings.ts`), ce que le shader reprend (`shader.ts`), le genre des blocs (`kinds.ts`), le phare de
 // Grimoire (`lighthouse.ts`), les bâtiments et les lieux que le kit reprend (`buildings.ts`). Il en réexporte les noms publics.
 import type { Cell } from './view';
-import { architectureDe, assemblerLesPieces, type Kit, KITS, MOTIF } from './architecture';
+import { architectureDe, assemblerLesPieces, type Kit, KITS, MOTIF, motifDesRangees, RANGEES, rangeesReunies } from './architecture';
 import type { VoxelCube } from '../Voxel';
 import { ambianceDe, type Couleur, couleurDeMatiere, type Faces, MATIERES } from './palette';
 import { DELAVE, eclaircir, type FacettesDuDecor, hex, Pinceau, rgb } from './decor/brush';
@@ -60,12 +60,12 @@ import { CREME_DU_PHARE, phareDeGrimoire } from './construction/lighthouse';
 import { cle, decalagesDe, genresDesBlocs } from './construction/kinds';
 import { type BlocAssemble, MOTIF_ASSEMBLE, SANS_BISEAU, teinteDeCase } from './construction/shader';
 import { BISEAU, couleurDuRole, FANTOME, LANTERNE, PROFONDEUR, RANG_DES_SOCLES, TOILE_DU_NAVIRE, TROPHEE, VERRE_HORS_MUR, VITRE_DE_JOUR } from './construction/settings';
-import { batimentsDe, blocsDArchipeoDe, caseDuLieu, enBlocsDArchipeo } from './construction/buildings';
+import { batimentsDe, blocsDArchipeoDe, caseDuLieu, coursDe, enBlocsDArchipeo } from './construction/buildings';
 export { ALLUMAGE, ARETE, ARETE_DU_VERRE, ARETE_FANTOME, BISEAU, couleursDesRoles, DECALAGE_MAX, ECART_SOMBRE, ECLAT_DU_BISEAU, FANTOME, FENETRES_ALLUMEES, LANTERNES_ALLUMEES, LUEUR, PLEINE_NUIT, TEINTE, TROPHEE, VITRE_DE_JOUR } from './construction/settings';
 export { BISEAU_GLSL, type BlocAssemble, detailDuMotif, ECLAT_GLSL, eclatDeFenetre, eclatDuBiseau, MOTIF_ASSEMBLE, MOTIF_ASSEMBLE_DEBUT, MOTIF_ASSEMBLE_GLSL, opaciteDesFantomes, SANS_BISEAU, TEINTE_GLSL, teinteDeCase } from './construction/shader';
 export { genresDesBlocs } from './construction/kinds';
 export { CREME_DU_PHARE, phareDeGrimoire } from './construction/lighthouse';
-export { batimentsDe, blocsDArchipeoDe, caseDuLieu, enBlocsDArchipeo, ETAPES_DU_BATIMENT, sansToursDuCoeur } from './construction/buildings';
+export { batimentsDe, blocsDArchipeoDe, caseDuLieu, coursDe, enBlocsDArchipeo, ETAPES_DU_BATIMENT, sansToursDuCoeur } from './construction/buildings';
 
 // ---------- Le maillage ----------
 
@@ -332,6 +332,7 @@ export function maillageDeLaConstruction(
         exclure: (c) => parUnModele(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
         kit,
         batiments: options.kit ? undefined : batimentsDe(a),
+        cours: options.kit ? undefined : coursDe(a),
         toitures: options.kit ? undefined : blocsDArchipeoDe(a),
         surLeVide,
         caseDuLieu,
@@ -416,8 +417,11 @@ export function maillageDeLaConstruction(
    * celui de son mur peint, délavé sur une île fermée ; 0 hors d'un mur peint.
    */
   const motifDe = (c: VoxelCube, d: number) => {
-    if (c.texture && c.texture in MOTIF_ASSEMBLE && genres.get(c) === 'bloc') return c.muted ? 0 : MOTIF_ASSEMBLE[c.texture as BlocAssemble];
-    const m = peintDe(c)?.peinture.motifs[FACE_PEINTE[d]] ?? 0;
+    // Un mur peint d'abord : une poutre posée dans un monument est du colombage (la table commune) ; un bloc assemblé
+    // seul (le bloc suspendu de la Halle) garde son motif.
+    const peint = peintDe(c);
+    if (!peint && c.texture && c.texture in MOTIF_ASSEMBLE && genres.get(c) === 'bloc') return c.muted ? 0 : MOTIF_ASSEMBLE[c.texture as BlocAssemble];
+    const m = peint?.peinture.motifs[FACE_PEINTE[d]] ?? 0;
     return m && c.muted ? m | MOTIF.delave : m;
   };
   /**
@@ -663,12 +667,21 @@ export function maillageDeLaConstruction(
     const [groupe, ds, ps] = pk.split('|');
     const d = Number(ds);
     const plan = Number(ps);
+    // Un mur (une face verticale du groupe opaque) réunit ses rangées malgré les bandes de son pied et de sa tête : le
+    // shader les peint par rangée (`motifDesRangees`).
+    const parRangees = groupe === 'o' && axeDe(d) < 2;
     const ordre = [...cases.values()].sort((p, q) => p.v - q.v || p.u - q.u);
     for (const s of ordre) {
       if (s.fait) continue;
+      const meme = (x: Case | undefined) => (x && !x.fait && x.couleur === s.couleur && x.teinte === s.teinte && x.arete === s.arete ? x : undefined);
       const at = (u: number, v: number) => {
-        const x = cases.get(`${u},${v}`);
-        return x && !x.fait && x.couleur === s.couleur && x.teinte === s.teinte && x.arete === s.arete && x.motif === s.motif ? x : undefined;
+        const x = meme(cases.get(`${u},${v}`));
+        return x && x.motif === s.motif ? x : undefined;
+      };
+      /** La case (u, v) d'une rangée au-dessus, dont le motif est `motif` (celui de toute la rangée). */
+      const auDessus = (u: number, v: number, motif: number) => {
+        const x = meme(cases.get(`${u},${v}`));
+        return x && x.motif === motif ? x : undefined;
       };
       // Le long de u : même couleur, mêmes retraits en v.
       let u1 = s.u;
@@ -680,12 +693,15 @@ export function maillageDeLaConstruction(
         u1++;
       }
       const bords = { gauche: s.r[0], droite: droite.r[1], bas: s.r[2], haut: s.r[3] };
-      // Puis le long de v, rangée par rangée.
+      // Puis le long de v, rangée par rangée (un mur : une rangée d'un même motif, qui se réunit à la précédente).
       let v1 = s.v;
+      let motifDuHaut = s.motif;
       for (;;) {
+        const premiere = meme(cases.get(`${s.u},${v1 + 1}`));
+        const motif = parRangees && premiere && v1 - s.v + 2 <= RANGEES.max && rangeesReunies(motifDuHaut, premiere.motif) ? premiere.motif : s.motif;
         const rangee: Case[] = [];
         for (let u = s.u; u <= u1; u++) {
-          const n = at(u, v1 + 1);
+          const n = parRangees ? auDessus(u, v1 + 1, motif) : at(u, v1 + 1);
           if (!n) break;
           rangee.push(n);
         }
@@ -698,6 +714,7 @@ export function maillageDeLaConstruction(
         if (bords.haut) break;
         v1++;
         bords.haut = haut;
+        motifDuHaut = motif;
       }
       for (let v = s.v; v <= v1; v++)
         for (let u = s.u; u <= u1; u++) {
@@ -705,7 +722,7 @@ export function maillageDeLaConstruction(
           if (c) c.fait = true;
         }
       if (groupe === 'g') fantome(d, plan, s.u, u1 + 1, s.v, v1 + 1);
-      else rectangle(O, d, plan, s.u, u1 + 1, s.v, v1 + 1, [bords.gauche, bords.droite, bords.bas, bords.haut], s.couleur, undefined, s.teinte, s.arete, s.motif);
+      else rectangle(O, d, plan, s.u, u1 + 1, s.v, v1 + 1, [bords.gauche, bords.droite, bords.bas, bords.haut], s.couleur, undefined, s.teinte, s.arete, parRangees ? motifDesRangees(s.motif, motifDuHaut, s.v, v1) : s.motif);
     }
   }
 
