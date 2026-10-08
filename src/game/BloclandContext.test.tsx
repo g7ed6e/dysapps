@@ -8,6 +8,8 @@ import { getPlan } from './world/plans';
 import { poseOfSpot } from './world/footprint';
 import { islandDef, startingIsland } from './world/map';
 import { layoutVersion } from './world/placement';
+import { degelerSauvegarde } from '../core/storage';
+import { EMPTY_STATE } from './engine/state';
 
 function Etat() {
   const { progress } = useProgress();
@@ -69,5 +71,33 @@ it('la disposition sauvegardée (GD-9) est posée sur le monde dès l’ouvertur
   const depart = startingIsland('maths-6e-decimals').core;
   expect(screen.getByText(`${depart.x},${depart.y},0,true`)).toBeInTheDocument();
   unmount();
+  localStorage.clear();
+});
+
+it('la partie des mesures (`?mesures=auto`) se joue en mémoire : la sauvegarde de l’élève n’est pas touchée', () => {
+  localStorage.clear();
+  const sauvegarde = JSON.stringify({ version: 3, progress: {}, world: { parts: {}, log: [], links: [] } });
+  localStorage.setItem('dysapps:game', sauvegarde);
+  let charger: (etat: typeof EMPTY_STATE) => void = () => {};
+  function Mesures() {
+    const ctx = useBlocland();
+    charger = ctx.chargerPourLesMesures;
+    return <p>{`lieu ${ctx.state.world.place ?? 'aucun'}`}</p>;
+  }
+  const { unmount } = render(
+    <SettingsProvider>
+      <ProgressProvider>
+        <BloclandProvider>
+          <Mesures />
+        </BloclandProvider>
+      </ProgressProvider>
+    </SettingsProvider>,
+  );
+  const avant = localStorage.getItem('dysapps:game');
+  act(() => charger({ ...EMPTY_STATE, world: { ...EMPTY_STATE.world, place: 'maths-6e-decimals' } }));
+  expect(screen.getByText('lieu maths-6e-decimals')).toBeInTheDocument();
+  expect(localStorage.getItem('dysapps:game')).toBe(avant);
+  unmount();
+  degelerSauvegarde();
   localStorage.clear();
 });

@@ -9,7 +9,7 @@ import { trophyBlock } from '../../trophies';
 import { toutConstruit } from '../budget';
 import { batimentsDe, caseDeLaConstruction, caseDeLaPiece, caseDuLieu, maillageDeLaConstruction, type GroupeDeConstruction } from '../construction';
 import { atelierModel, HALLE, schoolModel, trophyModel, worldCubes } from '../terrain';
-import { architectureDe, estUnLieuDuVillage, MOTIF, pieceDe, type Voisinage } from '.';
+import { architectureDe, familyOf, estUnLieuDuVillage, MOTIF, pieceDe, type Voisinage } from '.';
 import { KIT_6E } from './kits/6e';
 
 const TOUS: BlockId[] = BADGES.map((b) => trophyBlock(b.id));
@@ -215,12 +215,14 @@ describe('Les lieux du village au kit du 6e', () => {
     expect([...lieuxTouches].sort()).toEqual(['assembly', 'school', 'trophies']);
   });
 
-  it('les monuments gardent leurs blocs taillés ; au 5e, au 4e et au 3e, l’école, la salle et la Halle gardent leur dessin', () => {
+  it('au 6e, les monuments prennent la table commune (8 octobre 2026) ; au 5e, au 4e et au 3e, l’école, la salle et la Halle gardent leur dessin', () => {
     const { progress, world: village } = toutConstruit();
     const tous = worldCubes('6e', progress, village, false).filter((c) => !c.sol);
     const archi = archiDe('6e', tous);
-    for (const [k, p] of archi.peints) expect(p.cube.place?.startsWith('monument:') ?? false, k).toBe(false);
-    for (const p of archi.pieces) expect(p.cube.place?.startsWith('monument:') ?? false).toBe(false);
+    const monuments = [...archi.peints.values()].filter((p) => p.cube.place?.startsWith('monument:'));
+    expect(monuments.length).toBeGreaterThan(0);
+    // Chaque bloc peint d'un monument, dans la famille de sa matière (la table commune).
+    for (const p of monuments) expect(p.famille).toBe(familyOf(p.cube.texture));
     for (const a of ['5e', '4e', '3e'] as const) {
       const { cubes } = lieux(a, TOUS.slice(0, 6));
       const autre = archiDe(a, cubes);
