@@ -660,10 +660,10 @@ const CAPTURES = [
     ]),
   ),
   // Les personnages importés du 6e dans Archipéo (famille `personnages-importes`), à retirer une fois le lot fusionné ; à
-  // prendre avec `--rendu archipeo`. Le front de rallumage au défi du Golem de roche, à une, deux et trois épreuves
+  // prendre avec `--rendu archipeo`. Le front de rallumage au défi de l'Amphore peinte (des questions à choix), à une, deux et trois épreuves
   // réussies (`reussir`) ; le Grand Chêne, sa fiche ouverte, éteint (`sansIles`) et rallumé, de jour et de nuit ; la vue
   // de l'archipel en recul, de jour et de nuit (les créatures de loin, les Gardiens rallumés).
-  ...[1, 2, 3].map((reussir) => ({ nom: `personnages-importes-defi-golem-${reussir}`, vue: 'défi', famille: 'personnages-importes', ile: 'french-6e-letter-confusion', debout: 'french-6e-letter-confusion', reussir })),
+  ...[1, 2, 3].map((reussir) => ({ nom: `personnages-importes-defi-amphore-${reussir}`, vue: 'défi', famille: 'personnages-importes', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir })),
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
     { nom: `personnages-importes-chene-eteint${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', sansIles: ['french-6e-phonology'], fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
     { nom: `personnages-importes-chene-rallume${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
