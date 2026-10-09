@@ -1,7 +1,7 @@
 // Le relief de marche des Premiers Rivages (6e), île par île, en repère d'île (./types.ts). Il est commun à Blocland : le
 // changer change ses îles et ses empreintes. Un gradin propre à Archipéo s'écrit dans ../drawnModel/6e.ts (U2).
 // La forme de chaque île (GD-12, « Une forme par île », décision du mainteneur du 8 octobre 2026) : choisie à la main,
-// d'après son sujet ou son nom (docs/gameplay/propositions/GD-12.md, §2), tournée pour garder la mer entre voisines.
+// d'après son sujet ou son nom (docs/gameplay/propositions/archives/GD-12.md, §2), tournée pour garder la mer entre voisines.
 // Son trait va jusqu'à sept cases du cœur (`FEATURE_BOX`, mainteneur, 8 octobre 2026) ; `short` le garde à cinq, pour
 // un lieu au bord du cadre ou trop près d'une voisine de ce côté.
 import type { BiomeId } from '../../biomes';

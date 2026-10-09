@@ -1,7 +1,7 @@
 // Le relief de marche des Îles du Ciel (3e), île par île, en repère d'île (./types.ts). Il est commun à Blocland : le
 // changer change ses îles et ses empreintes. Un gradin propre à Archipéo s'écrit dans ../drawnModel/3e.ts (U2).
 // La forme de chaque île (GD-12, « Une forme par île », décision du mainteneur du 8 octobre 2026), un seul champ,
-// `forme` : choisie à la main d'après son sujet ou son nom (docs/gameplay/propositions/GD-12.md), tournée pour garder la
+// `forme` : choisie à la main d'après son sujet ou son nom (docs/gameplay/propositions/archives/GD-12.md), tournée pour garder la
 // mer entre voisines. Changer la forme d'une île, c'est changer ce champ, puis récrire sa côte dans la carte de départ
 // (`ext`, ../map.ts : map.test.ts dit laquelle). Deux formes plus marquées (directeur artistique, 9 octobre 2026) : le
 // crochet du Tremplin et le moulinet de la Ruche. Dans le ciel, chaque case de terre coûte ses dessous et ses parois au

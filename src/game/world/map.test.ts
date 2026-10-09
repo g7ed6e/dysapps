@@ -33,7 +33,7 @@ it('la côte écrite d’un lieu qui a une forme (GD-12) est celle de sa forme',
 /**
  * Les places gardées pour des îles futures (GD-12, coordination du 9 octobre 2026) : deux par archipel, l'éducation
  * morale et civique et le latin ou le grec, chacune avec un premier dessin de forme du catalogue, sans créer le lieu
- * (docs/gameplay/propositions/GD-12.md). Une île de la carte de départ ne s'y pose pas.
+ * (docs/gameplay/propositions/archives/GD-12.md). Une île de la carte de départ ne s'y pose pas.
  */
 const PLACES_FUTURES: Partial<Record<ArchipelagoId, readonly { nom: string; core: { x: number; y: number }; forme: FormeDeLIle }[]>> = {
   '5e': [

@@ -192,12 +192,15 @@ export const ENVELOPPES: Record<
   // aux Îles du Ciel). Les bornes passent de 1 450 à 1 700 et de 1 180 à 1 450, pris sur le sol, qui garde de la marge
   // dans les quatre archipels (2 810 aux Premiers Rivages, 2 926 aux Anciens Ateliers avant le prélèvement) ; la somme
   // ne change pas. Aux Îles Brumeuses, l'enveloppe propre du sol (GD-12) cède de même 270 : 36 230.
+  // GD-12, une forme par île, aux Îles du Ciel : le sol mesure 38 994 triangles (36 930 avant). Il prend 2 070 au décor
+  // du même archipel (8 910 mesurés pour 13 600) : sol 39 000, décor 11 530, la somme ne change pas (mainteneur,
+  // 9 octobre 2026, carte « Échanger »).
   sol: {
     lot: 'R4b',
     nom: 'Sol',
     premiersRivages: { triangles: 32_550, drawCalls: 2 },
     autres: { triangles: 36_930, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 36_230, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 36_230, drawCalls: 1 }, '3e': { triangles: 39_000, drawCalls: 1 } },
   },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
@@ -246,7 +249,7 @@ export const ENVELOPPES: Record<
     nom: 'Décor et repères signatures',
     premiersRivages: { triangles: 13_700, drawCalls: 3 },
     autres: { triangles: 13_600, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 17_400, drawCalls: 3 } },
+    parArchipel: { '5e': { triangles: 17_400, drawCalls: 3 }, '3e': { triangles: 11_530, drawCalls: 3 } },
   },
   construction: {
     lot: 'R5',
