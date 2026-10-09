@@ -82,7 +82,7 @@ export interface Kit {
    */
   lissage?: boolean;
   /**
-   * Les poteaux de bois (le végétal, `tronc`) que le kit dessine en poteaux carrés (../lowPieces.ts, `poteauDeBois`) :
+   * Les poteaux de bois (le végétal, `tronc`) que le kit dessine en poteaux carrés (../lowPieces.ts, `woodenPost`) :
    * au 6e, ceux des liaisons (les bacs, les lanternes à leurs bouts) et de la jetée. Ils ne sont d'aucun plan.
    */
   poteaux?: (c: VoxelCube) => boolean;

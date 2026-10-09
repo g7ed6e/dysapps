@@ -23,8 +23,8 @@
 // - bardage aux pignons (sur les bâtiments de bois du quai, la règle attend qu'on en pose : option (c) du directeur
 //   artistique, 30/09, voir kits/6e.ts) ; la nuit, rien ne s'allume : la lumière de la scène assombrit tout.
 // Le métal et le velours (intention du directeur artistique, 9 octobre 2026) : la tôle, des joints verticaux mats tous
-// les quarts de case (`TOLE`, le rôle `joint`), le soubassement à partir de trois rangées et un chaperon mince ; la
-// tenture, des plis d'un quart de case dans la teinte du velours et un galon d'or en haut (`TENTURE`, le rôle `galon`).
+// les quarts de case (`SHEET_METAL`, le rôle `joint`), le soubassement à partir de trois rangées et un chaperon mince ; la
+// tenture, des plis d'un quart de case dans la teinte du velours et un galon d'or en haut (`DRAPE`, le rôle `galon`).
 // De loin, les joints et les plis s'effacent : le mur est uni.
 // Code pur, sans Three.js : le GLSL est une chaîne, que three/construction.ts insère dans le shader des blocs.
 import type { Voisinage } from './neighborhood';
@@ -164,14 +164,14 @@ export const COLOMBAGE = {
  * reflet (intention du directeur artistique, 9 octobre 2026) ; de loin, le mur devient uni. `joint` : la demi-largeur
  * d'un joint, en part de case ; `pas` : l'écart entre deux joints.
  */
-export const TOLE = { pas: 0.25, joint: 0.02 } as const;
+export const SHEET_METAL = { pas: 0.25, joint: 0.02 } as const;
 
 /**
  * La tenture (le velours du fond de la salle des trophées) : des plis verticaux, une bande claire puis une sombre d'un
  * quart de case chacune, dans la teinte de la matière (`clair`, `sombre` : ses parts, en couleur linéaire), et un galon
  * d'or peint en haut (`galon`, en part de case ; le rôle `galon` du kit).
  */
-export const TENTURE = { pli: 0.25, clair: 1.14, sombre: 0.8, galon: 0.08 } as const;
+export const DRAPE = { pli: 0.25, clair: 1.14, sombre: 0.8, galon: 0.08 } as const;
 
 /**
  * Un mur plein n'a de soubassement qu'à partir de tant de rangées (décision du directeur artistique, 8 octobre 2026) :
@@ -210,7 +210,7 @@ export function pointsDuCadran(): [number, number][] {
 export const ROLES_PEINTS = ['poteau', 'soubassement', 'chaperon', 'joint', 'galon'] as const;
 
 /** L'indice d'un rôle peint dans `uRoles`, délavé ou non. */
-const indiceDuRole = (r: (typeof ROLES_PEINTS)[number], delave: boolean) => ROLES_PEINTS.indexOf(r) + (delave ? ROLES_PEINTS.length : 0);
+const roleIndex = (r: (typeof ROLES_PEINTS)[number], delave: boolean) => ROLES_PEINTS.indexOf(r) + (delave ? ROLES_PEINTS.length : 0);
 
 /** La couleur de fond d'un mur peint : la couleur de ses faces, avant le motif. */
 type Fond = 'remplissage' | 'bardage' | 'matiere' | 'soubassement' | 'tole';
@@ -352,7 +352,8 @@ export function peintureDuMur(v: Voisinage, maniere: ManiereDuMur, contexte: Con
  * Le motif en GLSL : `peindreLeMotif(c, motif, pos, n)` rend la couleur linéaire `c` (le fond de la face) peinte du
  * motif, au point `pos` (repère Three, la case entière aux coordonnées entières) de normale `n`. `uRoles` : les
  * couleurs linéaires des rôles (`ROLES_PEINTS`), puis les mêmes, délavées. De loin, quand une case tient en moins de
- * 16 pixels, les traits fins (poteaux, sablières, décharges, joints) s'effacent ; sous 8 pixels, le mur est uni.
+ * 16 pixels, les traits fins (poteaux, sablières, décharges, clins) s'effacent ; sous 8 pixels, le mur est uni. Les
+ * motifs au quart de case (joints de la tôle, plis de la tenture) s'effacent dès 32 pixels par case, et ont disparu à 16.
  */
 export const MOTIF_GLSL = `
 uniform vec3 uRoles[${ROLES_PEINTS.length * 2}];
@@ -368,11 +369,11 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
   int m = int(motif + 0.5);
   if (m <= 0) return c;
   bool delave = (m & ${MOTIF.delave}) != 0;
-  vec3 bois = delave ? uRoles[${indiceDuRole('poteau', true)}] : uRoles[${indiceDuRole('poteau', false)}];
-  vec3 socle = delave ? uRoles[${indiceDuRole('soubassement', true)}] : uRoles[${indiceDuRole('soubassement', false)}];
-  vec3 chap = delave ? uRoles[${indiceDuRole('chaperon', true)}] : uRoles[${indiceDuRole('chaperon', false)}];
-  vec3 joint = delave ? uRoles[${indiceDuRole('joint', true)}] : uRoles[${indiceDuRole('joint', false)}];
-  vec3 galon = delave ? uRoles[${indiceDuRole('galon', true)}] : uRoles[${indiceDuRole('galon', false)}];
+  vec3 bois = delave ? uRoles[${roleIndex('poteau', true)}] : uRoles[${roleIndex('poteau', false)}];
+  vec3 socle = delave ? uRoles[${roleIndex('soubassement', true)}] : uRoles[${roleIndex('soubassement', false)}];
+  vec3 chap = delave ? uRoles[${roleIndex('chaperon', true)}] : uRoles[${roleIndex('chaperon', false)}];
+  vec3 joint = delave ? uRoles[${roleIndex('joint', true)}] : uRoles[${roleIndex('joint', false)}];
+  vec3 galon = delave ? uRoles[${roleIndex('galon', true)}] : uRoles[${roleIndex('galon', false)}];
   int genre = m & 3;
   bool vertical = (m & ${MOTIF.vertical}) != 0;
   // Le dessus d'un chaperon : de pierre, ou, sur un mur plein, la teinte sombre de sa matière.
@@ -386,6 +387,9 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
     if (r != ((m >> ${RANGEES.tete}) & ${RANGEES.masque})) m &= ~${BITS_DE_LA_TETE};
   }
   float loin = clamp((1.0 / max(du, dv) - 8.0) / 8.0, 0.0, 1.0);
+  // Les motifs au quart de case (les joints de la tôle, les plis de la tenture) s'effacent deux fois plus tôt : rien sous
+  // 4 pixels par motif (16 par case), entiers dès 8 (32 par case), pour ne jamais moirer en recul ni en mouvement.
+  float loinFin = clamp((${SHEET_METAL.pas.toFixed(4)} / max(du, dv) - 4.0) / 4.0, 0.0, 1.0);
   if ((m & ${MOTIF.vantail}) != 0) {
     // La porte : son vantail dans un encadrement de pierre (ses deux côtés et le haut), qui s'efface de loin.
     const float E = ${COLOMBAGE.encadrement.toFixed(4)};
@@ -427,13 +431,13 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
     c = mix(c, bois, bois_ * loin);
   } else if (genre == ${MOTIF.bardage} && vertical) {
     // La tôle : un joint mat tous les quarts de case, le long de la face ; de loin, le mur uni.
-    float q = fract(u / ${TOLE.pas.toFixed(4)});
-    float j = bandeDuMotif(min(q, 1.0 - q) * ${TOLE.pas.toFixed(4)}, ${TOLE.joint.toFixed(4)}, du);
-    c = mix(c, joint, j * loin);
+    float q = fract(u / ${SHEET_METAL.pas.toFixed(4)});
+    float j = bandeDuMotif(min(q, 1.0 - q) * ${SHEET_METAL.pas.toFixed(4)}, ${SHEET_METAL.joint.toFixed(4)}, du);
+    c = mix(c, joint, j * loinFin);
   } else if (genre == ${MOTIF.plein} && vertical) {
     // La tenture : des plis, une bande claire puis une sombre d'un quart de case, en douceur (un cosinus, sans arête).
-    float pli = 0.5 + 0.5 * cos(3.14159265 * u / ${TENTURE.pli.toFixed(4)});
-    c *= mix(1.0, mix(${TENTURE.sombre.toFixed(4)}, ${TENTURE.clair.toFixed(4)}, pli), loin);
+    float pli = 0.5 + 0.5 * cos(3.14159265 * u / ${DRAPE.pli.toFixed(4)});
+    c *= mix(1.0, mix(${DRAPE.sombre.toFixed(4)}, ${DRAPE.clair.toFixed(4)}, pli), loinFin);
   } else if (genre == ${MOTIF.bardage}) {
     float q = fract(pos.y / ${COLOMBAGE.planche.toFixed(4)});
     float joint = bandeDuMotif(min(q, 1.0 - q) * ${COLOMBAGE.planche.toFixed(4)}, ${COLOMBAGE.joint.toFixed(4)}, dv);
@@ -442,7 +446,7 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
   if ((m & ${MOTIF.soubassement}) != 0) c = mix(c, socle, 1.0 - smoothstep(S - 0.5 * dv, S + 0.5 * dv, fv));
   if ((m & ${MOTIF.chaperon}) != 0 && genre == ${MOTIF.plein} && vertical) {
     // Le galon d'or de la tenture, en haut du mur.
-    const float G = ${TENTURE.galon.toFixed(4)};
+    const float G = ${DRAPE.galon.toFixed(4)};
     c = mix(c, galon, smoothstep(1.0 - G - 0.5 * dv, 1.0 - G + 0.5 * dv, fv));
   } else if ((m & ${MOTIF.chaperon}) != 0 && (genre == ${MOTIF.plein} || vertical)) {
     // Le chaperon d'un mur plein ou de tôle : une bande mince, la teinte de sa matière plus sombre, sans trait d'ombre.

@@ -38,20 +38,20 @@ import { KITS, kitRempli, type CaseDuLieu, type Famille, type Kit } from './kits
 import { lieuxDuKit } from './places';
 import { getMonument } from '../monuments';
 import { peintureDuMur, type ManiereDuMur, type PeintureDuMur } from './paint';
-import { poteauDeBois } from './lowPieces';
+import { woodenPost } from './lowPieces';
 import { facettesPosees, tournerCouvre, type DessinDePiece, type Facette } from './rooms';
 import { SIDES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './neighborhood';
 import { volumesDeMatiere, type VolumeDeMatiere } from './volumes';
 
 export { assemblerLesPieces } from './assembly';
 export { pieceDe, FORMES, type Forme, type IdDePiece } from './choices';
-export { CADRAN, CHAPERON_DE_LA_PIERRE, COLOMBAGE, decharge, MOTIF, MOTIF_FIN, MOTIF_GLSL, motifDeLaRangee, motifDesRangees, peintureDuMur, pointsDuCadran, RANGEES, rangeesReunies, RANGEES_DU_SOUBASSEMENT, ROLES_PEINTS, sensDeLaDecharge, TENTURE, TOLE } from './paint';
+export { CADRAN, CHAPERON_DE_LA_PIERRE, COLOMBAGE, decharge, MOTIF, MOTIF_FIN, MOTIF_GLSL, motifDeLaRangee, motifDesRangees, peintureDuMur, pointsDuCadran, RANGEES, rangeesReunies, RANGEES_DU_SOUBASSEMENT, ROLES_PEINTS, sensDeLaDecharge, DRAPE, SHEET_METAL } from './paint';
 export { boiteDansLaCase, type DessinDePiece, type Role } from './rooms';
 export { indexDuPlan, voisinageDe, type Voisinage } from './neighborhood';
 export { KITS, kitVide, type CaseDuLieu, type Kit } from './kits';
 export { CUBE_EXCEPTIONS, FAMILIES_TO_CONFIRM, familyOf, MATERIAL_FAMILIES, materialsOf } from './families';
-export { bacDePierre, barriere, marche, PIECES_BASSES, poteauDeBois } from './lowPieces';
-export { APPUI, cloche, cristal, lingot, PRECIEUX } from './precious';
+export { bacDePierre, barriere, marche, PIECES_BASSES, woodenPost } from './lowPieces';
+export { bell, crystal, ingot, PRECIOUS, RESTING_HEIGHT } from './precious';
 export { estUnLieuDuVillage } from './places';
 
 /** Une pièce dessinée, posée : le bloc qu'elle remplace (sa couleur, son île, son lieu), sa pièce, et ses facettes dans le monde. */
@@ -338,7 +338,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     for (const c of poteaux) {
       const au = cle(c.x, c.y, c.z + 1);
       const dessus = !des.has(au) && !lanternes.has(au);
-      poser(c, 'vegetal', dessus ? 'mur.seul.pied.chaperon' : 'mur.seul.pied.mur', 0, poteauDeBois(dessus));
+      poser(c, 'vegetal', dessus ? 'mur.seul.pied.chaperon' : 'mur.seul.pied.mur', 0, woodenPost(dessus));
     }
   }
   return out;

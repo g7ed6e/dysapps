@@ -30,7 +30,7 @@
 import { boiteDansLaCase, type DessinDePiece, type Facette } from '../rooms';
 import { materialsOf } from '../families';
 import { bacDePierre, marcheDe, PIECE_SEULE_ET_BASSE } from '../lowPieces';
-import { cloche } from '../precious';
+import { bell } from '../precious';
 import { dockPosts } from '../../harbor';
 import { getArchipelago } from '../../archipelago';
 import type { VoxelCube } from '../../cube';
@@ -87,22 +87,31 @@ const dansLaHalle = ({ y }: CaseDuLieu) => y >= HALLE.rang;
 /** La souche du clocheton de l'école : la case du toit sous lui, au milieu de la façade, au deuxième rang (schoolModel). */
 const souche = ({ x, y, z, w }: CaseDuLieu) => x === (w - 1) / 2 && y === 1 && z === 5;
 /** La cloche, sur le fût du clocheton (la souche et la case au-dessus d'elle). */
-const laCloche = ({ x, y, z, w, texture }: CaseDuLieu) => x === (w - 1) / 2 && y === 1 && z === 7 && texture === 'or';
-const CLOCHE = cloche();
+const isBell = ({ x, y, z, w, texture }: CaseDuLieu) => x === (w - 1) / 2 && y === 1 && z === 7 && texture === 'or';
+const BELL = bell();
 
-/** Les colonnes des poteaux de la jetée du port des Premiers Rivages (world/harbor.ts), faites une fois. */
-let colonnesDeLaJetee: { port: string; cases: Set<string> } | null = null;
+/**
+ * Les colonnes des poteaux de la jetée du port des Premiers Rivages (world/harbor.ts) : calculées au premier appel (la
+ * carte des îles n'est lue qu'une fois le monde demandé), puis gardées.
+ */
+const jettyPosts = (() => {
+  let memo: { port: string; cells: Set<string> } | undefined;
+  return () => {
+    if (!memo) {
+      const port = getArchipelago('6e').port;
+      memo = { port, cells: new Set(dockPosts(port).map((p) => `${p.x},${p.y}`)) };
+    }
+    return memo;
+  };
+})();
 /**
  * Un poteau de bois que le kit dessine : celui d'une liaison (un bac, une lanterne à son bout) ou de la jetée du port.
  * Le décor du cœur des îles garde ses troncs (une autre pull request).
  */
-function estUnPoteau(c: VoxelCube): boolean {
+function isPost(c: VoxelCube): boolean {
   if (c.bridge) return true;
-  if (!colonnesDeLaJetee) {
-    const port = getArchipelago('6e').port;
-    colonnesDeLaJetee = { port, cases: new Set(dockPosts(port).map((p) => `${p.x},${p.y}`)) };
-  }
-  return c.tag === colonnesDeLaJetee.port && !c.decor && colonnesDeLaJetee.cases.has(`${c.x},${c.y}`);
+  const jetty = jettyPosts();
+  return c.tag === jetty.port && !c.decor && jetty.cells.has(`${c.x},${c.y}`);
 }
 
 /**
@@ -127,8 +136,8 @@ const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
   school: (m) =>
     m.z <= 3 && (m.texture === 'brique' || m.texture === 'taille')
       ? { famille: 'colombage' }
-      : laCloche(m)
-        ? { famille: 'precieux', dessin: CLOCHE }
+      : isBell(m)
+        ? { famille: 'precieux', dessin: BELL }
         : m.texture === 'toit' && souche(m)
         ? { matiere: 'taille' }
         : m.texture === 'toit'
@@ -173,5 +182,5 @@ export const KIT_6E: Kit = {
   // Le lissage (mot du mainteneur, 8 octobre 2026) : un volume par matière dans les monuments, les petites
   // constructions, les cours et les piliers du cœur.
   lissage: true,
-  poteaux: estUnPoteau,
+  poteaux: isPost,
 };

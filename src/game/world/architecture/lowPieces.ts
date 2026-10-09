@@ -23,7 +23,7 @@ export const PIECES_BASSES = {
    * Le poteau de bois (le végétal, `tronc` : les bacs, les lanternes au bout des liaisons, la jetée) : sa section, celle
    * du corps d'une lanterne (world/construction/settings.ts, `LANTERNE.corps`), qui s'y pose juste.
    */
-  poteauDeBois: 0.3,
+  woodenPost: 0.3,
 } as const;
 
 /** Les facettes d'une boîte, sauf celles dont la normale est donnée (le dessous, un bout caché dans le poteau). */
@@ -146,8 +146,8 @@ export function marcheDe(piece: IdDePiece): DessinDePiece | undefined {
  * autre poteau, ou dans l'eau), ni dessus quand un poteau ou une lanterne le couvre (`dessus`). Au plus 10 triangles,
  * ceux d'un cube.
  */
-export function poteauDeBois(dessus: boolean): DessinDePiece {
-  const p = PIECES_BASSES.poteauDeBois;
+export function woodenPost(dessus: boolean): DessinDePiece {
+  const p = PIECES_BASSES.woodenPost;
   const b = boiteDansLaCase(0.5 - p / 2, 0.5 + p / 2, 0.5 - p / 2, 0.5 + p / 2, 0, 1, 0, 'pilotis');
   return { facettes: dessus ? sans(b, [0, 0, -1]) : sans(b, [0, 0, -1], [0, 0, 1]), couvre: 0 };
 }

@@ -769,8 +769,8 @@ const CAPTURES = [
   { nom: 'familles-6e-portillon', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', posees: 'toutes', zoomer: 3, finesse: 2 },
   // Le métal, le précieux et le végétal (9 octobre 2026) : le laboratoire de Bulle de près, de jour, de nuit, et pendant
   // le fondu de sa pose (la ruine à mi-chemin : `partie` « un-plan », `poseA` 0,5) ; l'établi de Pince ; l'escalier de
-  // Grimoire est `familles-6e-escalier-tour` ; la salle des trophées pleine (tous les succès) de près, cadrée comme
-  // `lieux-trophees-tous`, puis sans cadre ; le clocheton de l'école ; le port, sa jetée et le long bac (ses poteaux),
+  // Grimoire est `familles-6e-escalier-tour` ; la salle des trophées pleine (tous les succès) de face, puis l'île
+  // entière ; le clocheton de l'école ; le port, sa jetée et le long bac (ses poteaux),
   // de jour et de nuit (les lanternes) ; le bout d'une liaison (le poteau et sa lanterne) à la Mine des lettres.
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
     { nom: `familles-6e-labo${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'physics-chemistry-6e-matter-energy', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
@@ -778,8 +778,21 @@ const CAPTURES = [
   ]),
   { nom: 'familles-6e-labo-fondu', vue: 'île', famille: 'familles-sixieme', ile: 'physics-chemistry-6e-matter-energy', partie: 'un-plan', pose: 1, poseA: 0.5, finesse: 2 },
   { nom: 'familles-6e-etabli', vue: 'île', famille: 'familles-sixieme', ile: 'technology-6e-objects', posees: 'toutes', zoomer: 3, finesse: 2 },
-  { nom: 'familles-6e-salle-pleine', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', succes: 'tous', recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
-  { nom: 'familles-6e-salle-pleine-nuit', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', succes: 'tous', nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  // La salle pleine de face, cadrée sur le mur du fond (la tenture et ses plis #782640, le galon d'or, les lingots et
+  // les cristaux) : la caméra posée sur la salle (`lieu` « trophies », sa fiche masquée), de jour puis de nuit. Le
+  // recadrage fixe d'avant GD-12 (`familles-6e-salle-pleine`) ne tombait plus sur la salle agrandie : retiré.
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `familles-6e-salle-fond${suffixe}`,
+    vue: 'île',
+    famille: 'familles-sixieme',
+    ile: 'french-6e-phonology',
+    lieu: 'trophies',
+    sansPanneau: true,
+    succes: 'tous',
+    zoomer: 4,
+    finesse: 2,
+    ...autres,
+  })),
   { nom: 'familles-6e-salle-pleine-ile', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', succes: 'tous', zoomer: 2, finesse: 2 },
   { nom: 'familles-6e-clocheton', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', zoomer: 4, finesse: 2 },
   { nom: 'familles-6e-liaison-bout', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', zoomer: 3, finesse: 2 },

@@ -11,7 +11,7 @@ import { worldCubes } from '../terrain';
 import { dockPosts } from '../harbor';
 import { getArchipelago } from '../archipelago';
 import { estUnePlaceDeTrophee } from '../trophyHall';
-import { APPUI, architectureDe, PRECIEUX, cloche, cristal, lingot, MOTIF, MOTIF_FIN, MOTIF_GLSL, peintureDuMur, PIECES_BASSES, poteauDeBois, RANGEES, ROLES_PEINTS, TENTURE, TOLE, type Voisinage } from '.';
+import { architectureDe, bell, crystal, DRAPE, ingot, MOTIF, MOTIF_FIN, MOTIF_GLSL, peintureDuMur, PIECES_BASSES, PRECIOUS, RANGEES, RESTING_HEIGHT, ROLES_PEINTS, SHEET_METAL, type Voisinage, woodenPost } from '.';
 import { trianglesDe, type DessinDePiece } from './rooms';
 import { KIT_6E } from './kits/6e';
 
@@ -75,9 +75,13 @@ describe('La tôle et la tenture, peintes', () => {
     expect(ROLES_PEINTS).toEqual(['poteau', 'soubassement', 'chaperon', 'joint', 'galon']);
     expect(MOTIF_GLSL).toContain(`uniform vec3 uRoles[${ROLES_PEINTS.length * 2}]`);
     expect(MOTIF_GLSL).toContain('vec3 galon = delave ? uRoles[9] : uRoles[4];');
-    expect(MOTIF_GLSL).toContain(`fract(u / ${TOLE.pas.toFixed(4)})`);
-    expect(MOTIF_GLSL).toContain('c = mix(c, joint, j * loin);');
-    expect(MOTIF_GLSL).toContain(`${TENTURE.pli.toFixed(4)}`);
+    expect(MOTIF_GLSL).toContain(`fract(u / ${SHEET_METAL.pas.toFixed(4)})`);
+    // Les joints et les plis, au quart de case, s'effacent deux fois plus tôt que le colombage (référent dys) : à 4 pixels
+    // par motif, plus rien ; entiers à 8.
+    expect(MOTIF_GLSL).toContain(`float loinFin = clamp((${SHEET_METAL.pas.toFixed(4)} / max(du, dv) - 4.0) / 4.0, 0.0, 1.0);`);
+    expect(MOTIF_GLSL).toContain('c = mix(c, joint, j * loinFin);');
+    expect(MOTIF_GLSL).toContain(`pli), loinFin);`);
+    expect(MOTIF_GLSL).toContain(`${DRAPE.pli.toFixed(4)}`);
     expect(MOTIF_GLSL).toContain('c = mix(c, galon,');
     // Zinc clair, joints plus sombres, galon d'or (directeur artistique) ; la tôle n'est plus le gris de la pierre.
     expect([KIT_6E.couleurs.tole, KIT_6E.couleurs.joint, KIT_6E.couleurs.galon]).toEqual([0xa4aab0, 0x7e848a, 0xcca22e]);
@@ -86,26 +90,26 @@ describe('La tôle et la tenture, peintes', () => {
 
 describe('Le précieux et le poteau de bois : au plus les triangles d’un cube', () => {
   it('le lingot, la cloche : des troncs de pyramide (10 triangles) ; le cristal : un prisme et sa pointe (12)', () => {
-    expect(trianglesDe(lingot())).toBe(10);
-    expect(trianglesDe(cloche())).toBe(10);
-    expect(trianglesDe(cristal())).toBe(12);
+    expect(trianglesDe(ingot())).toBe(10);
+    expect(trianglesDe(bell())).toBe(10);
+    expect(trianglesDe(crystal())).toBe(12);
     // Les proportions du directeur artistique : le lingot bas, ~0,8 × 0,5 à la base ; la cloche ~0,45 de haut, ~0,8 en bas.
-    expect(PRECIEUX.lingot.base).toEqual([0.8, 0.5]);
-    expect(PRECIEUX.lingot.haut).toBeLessThan(PRECIEUX.lingot.base[1]);
-    expect([PRECIEUX.cloche.hauteur, PRECIEUX.cloche.bas]).toEqual([0.45, 0.8]);
-    expect(PRECIEUX.cloche.dessus).toBeLessThan(PRECIEUX.cloche.bas);
-    for (const d of [lingot(), cloche(), cristal()]) dansSaCaseEtTourneeAuDehors(d);
+    expect(PRECIOUS.ingot.base).toEqual([0.8, 0.5]);
+    expect(PRECIOUS.ingot.haut).toBeLessThan(PRECIOUS.ingot.base[1]);
+    expect([PRECIOUS.bell.hauteur, PRECIOUS.bell.bas]).toEqual([0.45, 0.8]);
+    expect(PRECIOUS.bell.dessus).toBeLessThan(PRECIOUS.bell.bas);
+    for (const d of [ingot(), bell(), crystal()]) dansSaCaseEtTourneeAuDehors(d);
     // Les appuis du trophée du dessus : le haut du lingot, celui du prisme du cristal.
-    expect(APPUI.lingot).toBeLessThan(TROPHEE.hauteur);
-    expect(APPUI.cristal).toBeLessThan(TROPHEE.hauteur);
+    expect(RESTING_HEIGHT.ingot).toBeLessThan(TROPHEE.hauteur);
+    expect(RESTING_HEIGHT.crystal).toBeLessThan(TROPHEE.hauteur);
   });
 
   it('le poteau de bois : 0,3 case de section, le brun des pilotis, sans dessous ; sans dessus sous un poteau ou une lanterne', () => {
-    expect(PIECES_BASSES.poteauDeBois).toBe(0.3);
-    expect(trianglesDe(poteauDeBois(true))).toBe(10);
-    expect(trianglesDe(poteauDeBois(false))).toBe(8);
-    expect(poteauDeBois(true).facettes.every((f) => f.role === 'pilotis')).toBe(true);
-    dansSaCaseEtTourneeAuDehors(poteauDeBois(true));
+    expect(PIECES_BASSES.woodenPost).toBe(0.3);
+    expect(trianglesDe(woodenPost(true))).toBe(10);
+    expect(trianglesDe(woodenPost(false))).toBe(8);
+    expect(woodenPost(true).facettes.every((f) => f.role === 'pilotis')).toBe(true);
+    dansSaCaseEtTourneeAuDehors(woodenPost(true));
   });
 });
 

@@ -32,7 +32,7 @@ export type MaterialFamily =
   | 'finition'
   /**
    * Les formes communes du décor (world/decor/common.ts) ; au 6e, les poteaux de bois des liaisons et de la jetée en
-   * poteaux carrés (./lowPieces.ts, `poteauDeBois`).
+   * poteaux carrés (./lowPieces.ts, `woodenPost`).
    */
   | 'vegetal'
   | 'toile'

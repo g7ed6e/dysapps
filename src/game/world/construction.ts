@@ -44,7 +44,7 @@
 // des rôles (`settings.ts`), ce que le shader reprend (`shader.ts`), le genre des blocs (`kinds.ts`), le phare de
 // Grimoire (`lighthouse.ts`), les bâtiments et les lieux que le kit reprend (`buildings.ts`). Il en réexporte les noms publics.
 import type { Cell } from './view';
-import { APPUI, architectureDe, assemblerLesPieces, cristal, type Kit, KITS, lingot, MOTIF, motifDesRangees, RANGEES, rangeesReunies } from './architecture';
+import { architectureDe, assemblerLesPieces, crystal, ingot, type Kit, KITS, MOTIF, motifDesRangees, RANGEES, rangeesReunies, RESTING_HEIGHT } from './architecture';
 import type { VoxelCube } from '../Voxel';
 import { ambianceDe, type Couleur, couleurDeMatiere, type Faces, MATIERES } from './palette';
 import { DELAVE, eclaircir, type FacettesDuDecor, hex, Pinceau, rgb } from './decor/brush';
@@ -71,8 +71,8 @@ export { batimentsDe, blocsDArchipeoDe, caseDuLieu, coursDe, enBlocsDArchipeo, E
 // ---------- Le maillage ----------
 
 /** Les trophées précieux (./architecture/precious.ts), faits une fois. */
-const LINGOT = lingot();
-const CRISTAL = cristal();
+const INGOT = ingot();
+const CRYSTAL = crystal();
 
 /** Un groupe de la construction : un appel de dessin. Repère Three (X = x, Y = hauteur, Z = y). */
 export interface GroupeDeConstruction {
@@ -590,13 +590,13 @@ export function maillageDeLaConstruction(
   };
 
   /** Le dessin précieux d'un trophée (../architecture/precious.ts : le lingot d'or, le cristal), ou `null` : une boîte. */
-  const precieuxDe = (c: VoxelCube): 'lingot' | 'cristal' | null => (c.texture === 'or' ? 'lingot' : c.texture === 'cristal' ? 'cristal' : null);
+  const preciousOf = (c: VoxelCube): 'ingot' | 'crystal' | null => (c.texture === 'or' ? 'ingot' : c.texture === 'cristal' ? 'crystal' : null);
   /** Là où se pose le trophée du dessus : le haut d'une boîte, d'un lingot, ou du prisme d'un cristal. */
-  const appuiDe = (c: VoxelCube | undefined) => {
-    const p = c ? precieuxDe(c) : null;
-    return p ? APPUI[p] : TROPHEE.hauteur;
+  const restingHeightOf = (c: VoxelCube | undefined) => {
+    const p = c ? preciousOf(c) : null;
+    return p ? RESTING_HEIGHT[p] : TROPHEE.hauteur;
   };
-  const tropheesParCase = new Map<string, VoxelCube>();
+  const trophiesByCell = new Map<string, VoxelCube>();
   /**
    * Un trophée (`TROPHEE`) : une boîte au milieu de sa case, sans son dessous (il est posé) ni sa face du fond (contre le
    * velours ou le trophée de derrière : la caméra regarde toujours vers le nord), aux couleurs de son bloc. Le trophée
@@ -607,13 +607,13 @@ export function maillageDeLaConstruction(
     const premier = rang === RANG_DES_SOCLES;
     const w = premier ? TROPHEE.bas : TROPHEE.haut;
     const [x0, x1, y0, y1] = [c.x + 0.5 - w / 2, c.x + 0.5 + w / 2, c.y + 0.5 - w / 2, c.y + 0.5 + w / 2];
-    const z0 = premier ? c.z : c.z - 1 + appuiDe(tropheesParCase.get(cle(c.x, c.y, c.z - 1)));
+    const z0 = premier ? c.z : c.z - 1 + restingHeightOf(trophiesByCell.get(cle(c.x, c.y, c.z - 1)));
     const z1 = z0 + TROPHEE.hauteur;
     const f = couleursDe(c);
     const sansBiseau = mode === 'peint' ? [0, 1, 2, 3].map(() => [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU]) : undefined;
-    const precieux = precieuxDe(c);
+    const precieux = preciousOf(c);
     if (precieux) {
-      const dessin = precieux === 'lingot' ? LINGOT : CRISTAL;
+      const dessin = precieux === 'ingot' ? INGOT : CRYSTAL;
       for (const fa of dessin.facettes) {
         // La face du fond : jamais vue.
         if (fa.normale[1] > 0.5) continue;
@@ -630,7 +630,7 @@ export function maillageDeLaConstruction(
     q([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0], f.cote);
   };
 
-  for (const c of trophees.keys()) tropheesParCase.set(cle(c.x, c.y, c.z), c);
+  for (const c of trophees.keys()) trophiesByCell.set(cle(c.x, c.y, c.z), c);
 
   // ---- Les faces des blocs, des vitres, des lanternes et des trophées.
   interface Case {
