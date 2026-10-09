@@ -111,10 +111,27 @@ describe('L’architecture modulaire', () => {
 
 describe('Le kit des Premiers Rivages (lot 7b)', () => {
   it('porte les couleurs de l’archipel par rôle (intention du directeur artistique)', () => {
-    expect(KIT_6E.couleurs).toEqual({ poteau: 0x795643, remplissage: 0xd9c7a8, soubassement: 0x8a8f84, chaperon: 0x8a8f84, bardage: 0xb1815e, pilotis: 0x6e4c30, tole: 0xa4aab0, joint: 0x7e848a, galon: 0xcca22e });
+    expect(KIT_6E.couleurs).toEqual({
+      poteau: 0x795643,
+      remplissage: 0xd9c7a8,
+      soubassement: 0x8a8f84,
+      chaperon: 0x8a8f84,
+      bardage: 0xb1815e,
+      pilotis: 0x6e4c30,
+      tole: 0xa4aab0,
+      joint: 0x7e848a,
+      galon: 0xcca22e,
+      // Le reste (9 octobre 2026) : la braise mate, l'eau en nappe, le nénuphar, la paille.
+      braise: 0xc0764a,
+      nappe: 0x178078,
+      lisere: 0xe5ebe3,
+      flanc: 0x142b38,
+      feuille: 0x4e8f36,
+      paille: 0xe8c66f,
+    });
     expect(KIT_6E.murs).toEqual({ colombage: 'colombage', bardage: 'bardage', pierre: 'plein', metal: 'tole' });
-    // La finition, matière par matière : la porte peinte, la marche dessinée ; la barrière attend le budget.
-    expect(Object.keys(KIT_6E.finitions ?? {}).sort()).toEqual(['escalier', 'marche', 'porte']);
+    // La finition, matière par matière : la porte peinte, la marche et la barrière dessinées (la barrière depuis le 9 octobre 2026).
+    expect(Object.keys(KIT_6E.finitions ?? {}).sort()).toEqual(['barriere', 'escalier', 'marche', 'porte']);
     // Le verre et les lanternes n'ont pas de famille : ils ne deviennent jamais des pièces.
     expect(KIT_6E.matieres.verre).toBeUndefined();
     expect(KIT_6E.matieres.lanterne).toBeUndefined();
@@ -141,7 +158,8 @@ describe('Le kit des Premiers Rivages (lot 7b)', () => {
   it('les maisons de bois en colombage, celles de pierre en mur plein, les toits en pente ; les monuments aussi ; ni la cour sans elle, ni l’école sans son modèle', () => {
     const { progress, world: village } = toutConstruit();
     const cubes = worldCubes('6e', progress, village, false);
-    const archi = architectureDe('6e', cubes, { batiments: batimentsDe('6e') });
+    // Les plans seuls : le reste (le cœur, les liaisons, les lieux) a son test (./heart.test.ts).
+    const archi = architectureDe('6e', cubes, { batiments: batimentsDe('6e'), kit: { ...KIT_6E, reste: undefined } });
     const parIle = (ile: string) => [...archi.peints.values()].filter((p) => p.cube.tag === ile && !p.cube.place);
     // La cabane de la Forêt (planches) : du colombage, des pignons bardés, une cheminée maçonnée, une porte en vantail.
     const foret = parIle('french-6e-phonology');

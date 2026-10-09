@@ -792,6 +792,24 @@ const CAPTURES = [
   { nom: 'familles-6e-salle-pleine-ile', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', succes: 'tous', zoomer: 2, finesse: 2 },
   { nom: 'familles-6e-clocheton', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', zoomer: 4, finesse: 2 },
   { nom: 'familles-6e-liaison-bout', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', zoomer: 3, finesse: 2 },
+  // L'eau, le quai, les liaisons, le cœur et la barrière (9 octobre 2026) : la Mine des lettres (la galerie, le puits, son
+  // eau et ses pavillons), la mare des Fractions (son nénuphar, le petit arbre), le cône des Décimaux, le boulier du
+  // Calcul, le Gardien et son socle (aux Antiquités : la mosaïque et le tas de fouille à côté), de jour et de nuit ; la
+  // cabine et le réverbère de la Baie de nuit ; le bout d'une liaison de nuit et de loin (tablier, barrière, escalier,
+  // lanterne) ; la cour de la Halle et l'école de près, leurs panneaux masqués. La tour de l'Horloge et son rouage sont
+  // `familles-6e-cadran-*`, la jetée et le feu de port `familles-6e-port-bac*`, la salle pleine `familles-6e-salle-fond*`.
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    { nom: `familles-6e-mine${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
+    { nom: `familles-6e-mare${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-fractions', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
+    { nom: `familles-6e-gardien${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'history-6e-antiquity', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
+  ]),
+  { nom: 'familles-6e-liaison-bout-nuit', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', zoomer: 3, finesse: 2, nuit: true },
+  { nom: 'familles-6e-cone', vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-decimals', posees: 'toutes', zoomer: 3, finesse: 2 },
+  { nom: 'familles-6e-boulier', vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-calculation', posees: 'toutes', zoomer: 3, finesse: 2 },
+  { nom: 'familles-6e-cabine-baie-nuit', vue: 'île', famille: 'familles-sixieme', ile: 'english-6e-vocabulary', posees: 'toutes', zoomer: 3, finesse: 2, nuit: true },
+  { nom: 'familles-6e-liaison-loin', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', zoomer: -6, finesse: 2 },
+  { nom: 'familles-6e-halle-cour', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', lieu: 'assembly', sansPanneau: true, zoomer: 4, finesse: 2 },
+  { nom: 'familles-6e-ecole', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', lieu: 'school', sansPanneau: true, zoomer: 4, finesse: 2 },
   // Les six îles d'histoire-géographie des 5e, 4e et 3e (lot HG-3, famille `histoire-geo-college`), à retirer une fois le
   // lot fusionné : chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`)
   // et tout construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la

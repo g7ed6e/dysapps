@@ -70,7 +70,7 @@ describe('Les pièces basses', () => {
     expect(barriereDe('mur.droit.pied.chaperon', cube(1, 0))!.facettes.length).toBeLessThan(barriereDe('mur.droit.pied.chaperon', cube(0, 0))!.facettes.length);
   });
 
-  it('la barrière attend le budget : elle n’est pas dans le kit des Premiers Rivages', () => {
-    expect(KIT_6E.finitions?.barriere).toBeUndefined();
+  it('la barrière est dans le kit des Premiers Rivages (9 octobre 2026) : elle tient dans l’enveloppe de la construction', () => {
+    expect(KIT_6E.finitions?.barriere).toBe(barriereDe);
   });
 });

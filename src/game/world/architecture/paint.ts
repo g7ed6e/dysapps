@@ -174,6 +174,30 @@ export const SHEET_METAL = { pas: 0.25, joint: 0.02 } as const;
 export const DRAPE = { pli: 0.25, clair: 1.14, sombre: 0.8, galon: 0.08 } as const;
 
 /**
+ * Les dessins peints du cœur, des liaisons et des lieux (intention du directeur artistique, 9 octobre 2026), faits des
+ * bits de `MOTIF` (aucun bit de plus : les combinaisons ne servaient pas) :
+ * - `planksAlongX`, `planksAlongY` : sur le dessus d'un tablier, des joints dans le brun des poteaux, tous les quarts de
+ *   case, en travers de la marche (le long de x : des lignes à x constant) ; de loin, effacés (`loinFin`) ;
+ * - `straw` : sur les flancs du champ de blé, les stries de la tôle, dans un ton plus sombre de la matière (la paille) ;
+ * - `glazing` : la verrière, des petits bois dans le brun des poteaux au bord et au milieu de chaque case ;
+ * - `gallery` : l'entrée d'une galerie, un encadrement de bois (le brun des pilotis) au bord du volume seulement, côté u
+ *   bas (`MOTIF.montante`), côté u haut (`MOTIF.descendante`) et en haut (`MOTIF.chaperon`) ;
+ * - `waterRim` : sur le dessus d'une nappe d'eau, le liseré clair au bord de la nappe seulement, côté −x
+ *   (`MOTIF.montante`), +x (`MOTIF.descendante`), −y de la grille (`MOTIF.chaperon`), +y (`MOTIF.sabliereHaute`).
+ */
+export const HEART_MOTIFS = {
+  planksAlongX: MOTIF.bardage | MOTIF.vertical | MOTIF.montante,
+  planksAlongY: MOTIF.bardage | MOTIF.vertical | MOTIF.descendante,
+  straw: MOTIF.bardage | MOTIF.vertical | MOTIF.descendante,
+  glazing: MOTIF.colombage | MOTIF.vertical,
+  gallery: MOTIF.vantail | MOTIF.vertical,
+  waterRim: MOTIF.plein | MOTIF.vertical,
+} as const;
+
+/** Les mesures des dessins peints du cœur : le pas et le joint du plancher, les petits bois, le ton des stries, le liseré de l'eau. */
+export const HEART_PAINT = { pas: 0.25, joint: 0.02, petitBois: 0.035, paille: 0.72, lisere: 0.06 } as const;
+
+/**
  * Un mur plein n'a de soubassement qu'à partir de tant de rangées (décision du directeur artistique, 8 octobre 2026) :
  * plus bas, la bande de pierre prenait la moitié du mur, et la teinte de la matière se perdait.
  */
@@ -207,13 +231,16 @@ export function pointsDuCadran(): [number, number][] {
 }
 
 /** Les rôles peints par le shader, dans l'ordre de l'uniforme `uRoles` (puis les mêmes, délavés). */
-export const ROLES_PEINTS = ['poteau', 'soubassement', 'chaperon', 'joint', 'galon'] as const;
+export const ROLES_PEINTS = ['poteau', 'soubassement', 'chaperon', 'joint', 'galon', 'pilotis', 'lisere'] as const;
 
 /** L'indice d'un rôle peint dans `uRoles`, délavé ou non. */
 const roleIndex = (r: (typeof ROLES_PEINTS)[number], delave: boolean) => ROLES_PEINTS.indexOf(r) + (delave ? ROLES_PEINTS.length : 0);
 
-/** La couleur de fond d'un mur peint : la couleur de ses faces, avant le motif. */
-type Fond = 'remplissage' | 'bardage' | 'matiere' | 'soubassement' | 'tole';
+/**
+ * La couleur de fond d'un mur peint : la couleur de ses faces, avant le motif ; un rôle du kit, ou sa matière. L'or mat
+ * (`galon`) et la braise (`braise`) : le bloc d'or d'un Gardien, le sommet du cône des Décimaux.
+ */
+export type Fond = 'remplissage' | 'bardage' | 'matiere' | 'soubassement' | 'tole' | 'galon' | 'braise';
 
 /** Un mur peint : son fond et le motif de chacune de ses faces (ordre des bits de `FACES` : +x, +y, −x, −y, haut, bas). */
 export interface PeintureDuMur {
@@ -366,6 +393,7 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
   float u = an.x > 0.5 ? pos.z : pos.x;
   float du = max(fwidth(u), 1e-5);
   float dv = max(fwidth(pos.y), 1e-5);
+  float dz = max(fwidth(pos.z), 1e-5);
   int m = int(motif + 0.5);
   if (m <= 0) return c;
   bool delave = (m & ${MOTIF.delave}) != 0;
@@ -374,10 +402,46 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
   vec3 chap = delave ? uRoles[${roleIndex('chaperon', true)}] : uRoles[${roleIndex('chaperon', false)}];
   vec3 joint = delave ? uRoles[${roleIndex('joint', true)}] : uRoles[${roleIndex('joint', false)}];
   vec3 galon = delave ? uRoles[${roleIndex('galon', true)}] : uRoles[${roleIndex('galon', false)}];
+  vec3 cadreDeBois = delave ? uRoles[${roleIndex('pilotis', true)}] : uRoles[${roleIndex('pilotis', false)}];
+  vec3 lisere = delave ? uRoles[${roleIndex('lisere', true)}] : uRoles[${roleIndex('lisere', false)}];
   int genre = m & 3;
   bool vertical = (m & ${MOTIF.vertical}) != 0;
-  // Le dessus d'un chaperon : de pierre, ou, sur un mur plein, la teinte sombre de sa matière.
-  if (an.y > 0.5) return (m & ${MOTIF.pierreEntiere}) != 0 ? (genre == ${MOTIF.plein} ? c * ${CHAPERON_DE_LA_PIERRE.toFixed(4)} : chap) : c;
+  if (an.y > 0.5) {
+    if (genre == ${MOTIF.bardage} && vertical) {
+      // Le plancher d'un tablier : un joint brun tous les quarts de case, en travers de la marche ; de loin, uni.
+      bool leLongDeX = (m & ${MOTIF.montante}) != 0;
+      float w = leLongDeX ? pos.x : pos.z;
+      float dw = leLongDeX ? du : dz;
+      float loinDuPlancher = clamp((${HEART_PAINT.pas.toFixed(4)} / dw - 4.0) / 4.0, 0.0, 1.0);
+      float q = fract(w / ${HEART_PAINT.pas.toFixed(4)});
+      float j = bandeDuMotif(min(q, 1.0 - q) * ${HEART_PAINT.pas.toFixed(4)}, ${HEART_PAINT.joint.toFixed(4)}, dw);
+      return mix(c, bois, j * loinDuPlancher);
+    }
+    if (genre == ${MOTIF.plein} && vertical) {
+      // Le liseré d'une nappe d'eau, au bord de la nappe seulement (une bande nette, sans fondu de loin).
+      const float L = ${HEART_PAINT.lisere.toFixed(4)};
+      vec2 f = fract(pos.xz);
+      float bord = 0.0;
+      if ((m & ${MOTIF.montante}) != 0) bord = max(bord, 1.0 - smoothstep(L - 0.5 * du, L + 0.5 * du, f.x));
+      if ((m & ${MOTIF.descendante}) != 0) bord = max(bord, smoothstep(1.0 - L - 0.5 * du, 1.0 - L + 0.5 * du, f.x));
+      if ((m & ${MOTIF.chaperon}) != 0) bord = max(bord, 1.0 - smoothstep(L - 0.5 * dz, L + 0.5 * dz, f.y));
+      if ((m & ${MOTIF.sabliereHaute}) != 0) bord = max(bord, smoothstep(1.0 - L - 0.5 * dz, 1.0 - L + 0.5 * dz, f.y));
+      return mix(c, lisere, bord);
+    }
+    if ((m & ${MOTIF.cadran}) != 0) {
+      // Le cadran sur le dessus d'une dalle (le rouage) : le même disque à douze points, sans aiguilles.
+      vec2 p = fract(pos.xz) - 0.5;
+      float w = max(du, dz);
+      float loinDuDisque = clamp((1.0 / w - 8.0) / 8.0, 0.0, 1.0);
+      float disque = bandeDuMotif(length(p), ${CADRAN.disque.toFixed(4)}, w);
+      float k = floor(atan(p.y, p.x) / 0.5235988 + 0.5) * 0.5235988;
+      float point = bandeDuMotif(length(p - ${CADRAN.points.toFixed(4)} * vec2(cos(k), sin(k))), ${CADRAN.point.toFixed(4)}, w);
+      c = mix(c, mix(c, vec3(1.0), ${CADRAN.eclat.toFixed(4)}), disque * loinDuDisque);
+      return mix(c, c * ${CADRAN.sombre.toFixed(4)}, point * loinDuDisque);
+    }
+    // Le dessus d'un chaperon : de pierre, ou, sur un mur plein, la teinte sombre de sa matière.
+    return (m & ${MOTIF.pierreEntiere}) != 0 ? (genre == ${MOTIF.plein} ? c * ${CHAPERON_DE_LA_PIERRE.toFixed(4)} : chap) : c;
+  }
   float fu = fract(u);
   float fv = fract(pos.y);
   // Un rectangle de plusieurs rangées : les bandes du pied sur sa rangée du pied, celles de la tête sur sa rangée de la tête.
@@ -391,8 +455,16 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
   // 4 pixels par motif (16 par case), entiers dès 8 (32 par case), pour ne jamais moirer en recul ni en mouvement.
   float loinFin = clamp((${SHEET_METAL.pas.toFixed(4)} / max(du, dv) - 4.0) / 4.0, 0.0, 1.0);
   if ((m & ${MOTIF.vantail}) != 0) {
-    // La porte : son vantail dans un encadrement de pierre (ses deux côtés et le haut), qui s'efface de loin.
     const float E = ${COLOMBAGE.encadrement.toFixed(4)};
+    if (vertical) {
+      // L'entrée d'une galerie : un encadrement de bois au bord du volume seulement (ses côtés et son haut), de loin effacé.
+      float bord = 0.0;
+      if ((m & ${MOTIF.montante}) != 0) bord = max(bord, 1.0 - smoothstep(E - 0.5 * du, E + 0.5 * du, fu));
+      if ((m & ${MOTIF.descendante}) != 0) bord = max(bord, smoothstep(1.0 - E - 0.5 * du, 1.0 - E + 0.5 * du, fu));
+      if ((m & ${MOTIF.chaperon}) != 0) bord = max(bord, smoothstep(1.0 - E - 0.5 * dv, 1.0 - E + 0.5 * dv, fv));
+      return mix(c, cadreDeBois, bord * loin);
+    }
+    // La porte : son vantail dans un encadrement de pierre (ses deux côtés et le haut), qui s'efface de loin.
     float cadre = max(bandeDuMotif(min(fu, 1.0 - fu), E, du), smoothstep(1.0 - E - 0.5 * dv, 1.0 - E + 0.5 * dv, fv));
     return mix(c, chap, cadre * loin);
   }
@@ -411,7 +483,13 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
   const float B = ${COLOMBAGE.sabliere.toFixed(4)};
   const float C = ${COLOMBAGE.chaperon.toFixed(4)};
   const float P = ${COLOMBAGE.poteau.toFixed(4)};
-  if (genre == ${MOTIF.colombage}) {
+  if (genre == ${MOTIF.colombage} && vertical) {
+    // La verrière : des petits bois au bord et au milieu de chaque case, dans les deux sens ; de loin, la vitre unie.
+    const float PB = ${HEART_PAINT.petitBois.toFixed(4)};
+    float e = min(min(fu, 1.0 - fu), abs(fu - 0.5));
+    float f = min(min(fv, 1.0 - fv), abs(fv - 0.5));
+    c = mix(c, bois, max(bandeDuMotif(e, PB, du), bandeDuMotif(f, PB, dv)) * loin);
+  } else if (genre == ${MOTIF.colombage}) {
     float bois_ = bandeDuMotif(min(fu, 1.0 - fu), P, du);
     if ((m & ${MOTIF.sabliereBasse}) != 0) bois_ = max(bois_, bandeDuMotif(abs(fv - (S + 0.5 * B)), 0.5 * B, dv));
     if ((m & ${MOTIF.sabliereHaute}) != 0) bois_ = max(bois_, bandeDuMotif(abs(fv - (1.0 - 0.5 * B)), 0.5 * B, dv));
@@ -433,7 +511,8 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
     // La tôle : un joint mat tous les quarts de case, le long de la face ; de loin, le mur uni.
     float q = fract(u / ${SHEET_METAL.pas.toFixed(4)});
     float j = bandeDuMotif(min(q, 1.0 - q) * ${SHEET_METAL.pas.toFixed(4)}, ${SHEET_METAL.joint.toFixed(4)}, du);
-    c = mix(c, joint, j * loinFin);
+    // Les stries du blé (le bit de la décharge descendante) : le même joint, dans un ton plus sombre de la paille.
+    c = mix(c, (m & ${MOTIF.descendante}) != 0 ? c * ${HEART_PAINT.paille.toFixed(4)} : joint, j * loinFin);
   } else if (genre == ${MOTIF.plein} && vertical) {
     // La tenture : des plis, une bande claire puis une sombre d'un quart de case, en douceur (un cosinus, sans arête).
     float pli = 0.5 + 0.5 * cos(3.14159265 * u / ${DRAPE.pli.toFixed(4)});

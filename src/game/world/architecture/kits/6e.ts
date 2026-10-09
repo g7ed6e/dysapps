@@ -16,7 +16,7 @@
 //   pierre ; le bois des monuments et des petites constructions aussi, dans le brun du kit), la pierre (un mur plein
 //   dans sa teinte ; seule et basse, un bac dans sa teinte, cerné d'un rebord gris), le toit (toit, tuile), la finition
 //   (la porte en vantail dans son encadrement, la marche basse dans la teinte de sa matière :
-//   ../lowPieces.ts ; la barrière en poteaux et lisses attend le budget). Les monuments, la cour des îles et les petites constructions des
+//   ../lowPieces.ts ; la barrière en poteaux et lisses, depuis le 9 octobre 2026). Les monuments, la cour des îles et les petites constructions des
 //   commandes et des quêtes la prennent aussi (../index.ts).
 // - Le métal, le précieux et le végétal (intention du directeur artistique, 9 octobre 2026 ; mot du mainteneur,
 //   « on continue ») : l'aimant en tôle peinte (plaques zinc clair #A4AAB0, joints verticaux #7E848A tous les quarts de
@@ -26,10 +26,16 @@
 //   les trophées d'or et de cristal en lingot et en cristal (world/construction.ts) ; les poteaux de bois des liaisons
 //   et de la jetée en poteaux carrés (`poteaux`). Toile, feuilles, herbe, mousse, sapin et eau : aucun n'est posé par
 //   un plan au 6e.
+// - Le reste (intention du directeur artistique, 9 octobre 2026, `reste` : ../heart.ts) : le décor du cœur des îles (un
+//   volume par matière, peint ; les rochers, petits arbres et buissons des formes communes), le quai et les tabliers
+//   des liaisons, l'eau en nappe, les pavillons des petites constructions, les toits cachés et plats peints dans la
+//   couverture, le verre hors d'un mur en verrière, la cour de la Halle, la porte et le fût de l'école, les socles de
+//   la salle des trophées.
 // Le verre et les lanternes ne deviennent jamais des pièces.
 import { boiteDansLaCase, type DessinDePiece, type Facette } from '../rooms';
 import { materialsOf } from '../families';
-import { bacDePierre, marcheDe, PIECE_SEULE_ET_BASSE } from '../lowPieces';
+import { bacDePierre, barriereDe, marcheDe, PIECE_SEULE_ET_BASSE } from '../lowPieces';
+import { restOf6e } from '../heart';
 import { bell } from '../precious';
 import { dockPosts } from '../../harbor';
 import { getArchipelago } from '../../archipelago';
@@ -106,7 +112,7 @@ const jettyPosts = (() => {
 })();
 /**
  * Un poteau de bois que le kit dessine : celui d'une liaison (un bac, une lanterne à son bout) ou de la jetée du port.
- * Le décor du cœur des îles garde ses troncs (une autre pull request).
+ * Ceux du décor du cœur des îles passent par le reste (../heart.ts).
  */
 function isPost(c: VoxelCube): boolean {
   if (c.bridge) return true;
@@ -169,18 +175,39 @@ export const KIT_6E: Kit = {
   // La table commune, pour les familles que le kit dessine (la Ferme, en terre : le torchis d'un colombage, décision du
   // directeur artistique du 30/09).
   matieres: materialsOf(['colombage', 'bardage', 'pierre', 'toit', 'finition', 'metal']),
-  couleurs: { poteau: 0x795643, remplissage: 0xd9c7a8, soubassement: 0x8a8f84, chaperon: 0x8a8f84, bardage: 0xb1815e, pilotis: 0x6e4c30, tole: 0xa4aab0, joint: 0x7e848a, galon: 0xcca22e },
+  couleurs: {
+    poteau: 0x795643,
+    remplissage: 0xd9c7a8,
+    soubassement: 0x8a8f84,
+    chaperon: 0x8a8f84,
+    bardage: 0xb1815e,
+    pilotis: 0x6e4c30,
+    tole: 0xa4aab0,
+    joint: 0x7e848a,
+    galon: 0xcca22e,
+    // Le reste (../heart.ts, 9 octobre 2026) : la braise mate, l'eau en nappe (dessus, liseré Brume, flancs), le
+    // nénuphar, la paille du blé.
+    braise: 0xc0764a,
+    nappe: 0x178078,
+    lisere: 0xe5ebe3,
+    flanc: 0x142b38,
+    feuille: 0x4e8f36,
+    paille: 0xe8c66f,
+  },
   murs: { colombage: 'colombage', bardage: 'bardage', pierre: 'plein', metal: 'tole' },
   // En attente (décision du directeur artistique, 30/09) : au 6e, le bardage reste aux pignons. Les îles au quai ou au
   // ponton (la Baie, la Rivière, la Tour) n'ont aucun mur de bois (la cabine de la Baie reste en blocs) : la règle attend
   // les bâtiments de bois qu'on y posera.
   bardes: ['english-6e-vocabulary', 'maths-6e-fractions', 'french-6e-reading'],
   pieces: { toit: piecesDeToit(), colombage: piecesSurPilotis(), pierre: { [PIECE_SEULE_ET_BASSE]: bacDePierre() } },
-  // La barrière attend le budget (une exception nommée, ../families.ts) : son dessin est prêt (`barriereDe`).
-  finitions: { porte: () => 'vantail', escalier: marcheDe, marche: marcheDe },
+  // La barrière en poteaux et lisses (`barriereDe`), branchée le 9 octobre 2026 : elle tient dans l'enveloppe.
+  finitions: { porte: () => 'vantail', escalier: marcheDe, marche: marcheDe, barriere: barriereDe },
   lieux: LIEUX_6E,
   // Le lissage (mot du mainteneur, 8 octobre 2026) : un volume par matière dans les monuments, les petites
   // constructions, les cours et les piliers du cœur.
   lissage: true,
   poteaux: isPost,
+  // Le reste (intention du directeur artistique, 9 octobre 2026) : le décor du cœur, le quai, les tabliers, l'eau, les
+  // toits cachés, le verre hors d'un mur, la cour de la Halle, la porte et le fût de l'école, les socles de la salle.
+  reste: restOf6e,
 };

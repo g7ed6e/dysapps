@@ -556,11 +556,14 @@ describe('Les toits de terre cuite (lot R5)', () => {
       expect(allumes3D, a).toEqual(allumesOracle);
       expect(m.opaque.aretes.length, a).toBe(m.opaque.positions.length / 3);
     }
-    // Le verre hors d'un mur (au 6e : les jardinières de la Tour, les monuments) porte l'arête ; les autres blocs non.
-    const m = maillageDeLaConstruction('6e', monde('6e').cubes, monde('6e').sol);
+    // Le verre hors d'un mur (au 5e) porte l'arête ; les autres blocs non. Au 6e, le reste (9 octobre 2026) le peint en
+    // verrière ou en eau : plus aucune arête.
+    const m = maillageDeLaConstruction('5e', monde('5e').cubes, monde('5e').sol);
     const avec = [...m.opaque.aretes].filter((v) => v === 1).length;
     expect(avec).toBeGreaterThan(0);
     expect(avec).toBeLessThan(m.opaque.aretes.length / 4);
+    const m6 = maillageDeLaConstruction('6e', monde('6e').cubes, monde('6e').sol);
+    expect([...m6.opaque.aretes].filter((v) => v === 1).length).toBe(0);
   });
 });
 

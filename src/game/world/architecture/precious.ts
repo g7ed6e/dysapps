@@ -18,7 +18,7 @@ export const PRECIOUS = {
 } as const;
 
 /** La normale d'un polygone plan (ses trois premiers points, dans le sens direct vu du dehors). */
-function normalOf(p: V3[]): V3 {
+export function normalOf(p: V3[]): V3 {
   const [a, b, c] = p;
   const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
   const v = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
@@ -33,7 +33,7 @@ const facet = (points: V3[], face: 'dessus' | 'cote'): Facette => ({ points, nor
  * Un tronc de pyramide centré dans la case, de la base (`bx` × `by`, à `z0`) au dessus (`hx` × `hy`, à `z1`) : son dessus
  * et ses quatre flancs (le dessous, posé, n'est pas dessiné ; l'assemblage cache ce qui touche un bloc plein).
  */
-function frustum(bx: number, by: number, hx: number, hy: number, z0: number, z1: number): Facette[] {
+export function frustum(bx: number, by: number, hx: number, hy: number, z0: number, z1: number): Facette[] {
   const b = (sx: number, sy: number): V3 => [0.5 + (sx * bx) / 2, 0.5 + (sy * by) / 2, z0];
   const h = (sx: number, sy: number): V3 => [0.5 + (sx * hx) / 2, 0.5 + (sy * hy) / 2, z1];
   return [
