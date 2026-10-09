@@ -57,5 +57,5 @@ it('« Application » : le bouton qui lance la mesure automatique', () => {
       </ProgressProvider>
     </SettingsProvider>,
   );
-  expect(within(screen.getByRole('group', { name: 'Application' })).getByRole('button', { name: 'Mesurer la tablette' })).toBeInTheDocument();
+  expect(within(screen.getByRole('group', { name: 'Application' })).getByRole('button', { name: 'Mesurer l’appareil' })).toBeInTheDocument();
 });

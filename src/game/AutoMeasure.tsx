@@ -2,8 +2,8 @@
 // partie toute construite des mesures (world/budget.ts) jouée en mémoire, puis le tour des vues du 6e (l'île, reculée,
 // l'archipel, reculé, la Carte, l'ouverture et la fermeture de « Modifier le plan », la pose d'une partie en vague) ;
 // à la fin, un tableau à copier. Chargé à part (React.lazy), seulement avec cette adresse : aucun élève ne le voit.
-// Elle se lance aussi depuis les Réglages (« Mesurer la tablette », pages/settings/ApplicationSection.tsx). La vraie partie
-// revient par « Revenir au jeu » (la page rechargée sans `?mesures`, sur les Réglages), à tout moment.
+// Elle se lance aussi depuis les Réglages (« Mesurer l’appareil », pages/settings/ApplicationSection.tsx). La vraie partie
+// revient par « Réglages » (la page rechargée sans `?mesures`, sur les Réglages), à tout moment.
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBlocland } from './BloclandContext';
@@ -12,6 +12,7 @@ import { toutConstruitAvecLesCommandes } from './world/budget';
 import { adresseSansMesure } from './rendering';
 import { type LigneDeMesure, partieDeLaPose, partieDeMesure, resumerLesImages, tableauDesMesures } from './autoMeasure';
 import { MODIFIER_LE_PLAN } from './ArrangeBar';
+import { Icon } from '../components/Icon';
 
 /** L'île de la pose : la Forêt des sons, comme les captures de la famille `pose`. */
 const ILE_DE_LA_POSE: BiomeId = 'french-6e-phonology';
@@ -165,23 +166,32 @@ export default function AutoMeasure() {
     }
   };
 
-  // La page rechargée sans `?mesures` : la sauvegarde, gelée pendant la mesure, revient telle quelle.
-  const revenir = () => window.location.assign(adresseSansMesure(window.location.href));
+  // La page rechargée sans `?mesures` : la sauvegarde, gelée pendant la mesure, revient telle quelle ; la pose de la
+  // tournée, si on part pendant elle, est oubliée (la vraie partie ne la rejouera pas).
+  const revenir = () => {
+    try {
+      sessionStorage.removeItem('dysapps:pose');
+    } catch {
+      // Stockage indisponible : rien n'a été écrit.
+    }
+    window.location.assign(adresseSansMesure(window.location.href));
+  };
 
   return (
     <div
       style={{
         position: 'fixed',
-        top: 8,
-        left: 8,
-        right: 8,
+        // Hors de l'encoche, comme le reste de l'appli (global.css).
+        top: 'max(8px, env(safe-area-inset-top))',
+        left: 'max(8px, env(safe-area-inset-left))',
+        right: 'max(8px, env(safe-area-inset-right))',
         zIndex: 1000,
         maxHeight: '60vh',
         overflow: 'auto',
         padding: '8px 12px',
-        background: '#000d',
+        // Opaque : derrière, le monde bouge tout seul.
+        background: '#000',
         color: '#fff',
-        font: '14px/1.4 ui-monospace, monospace',
         borderRadius: 8,
       }}
     >
@@ -193,10 +203,10 @@ export default function AutoMeasure() {
           </button>
         )}
         <button type="button" className="button" onClick={revenir}>
-          Revenir au jeu
+          <Icon name="back" /> Réglages
         </button>
       </div>
-      {resultat && <pre style={{ whiteSpace: 'pre-wrap', userSelect: 'text', margin: 0 }}>{resultat}</pre>}
+      {resultat && <pre style={{ whiteSpace: 'pre-wrap', userSelect: 'text', margin: 0, font: '14px/1.4 ui-monospace, monospace' }}>{resultat}</pre>}
     </div>
   );
 }
