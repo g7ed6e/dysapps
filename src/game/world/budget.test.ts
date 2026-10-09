@@ -122,11 +122,12 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // 8 octobre 2026 : le pied de la machine d'Ixe et le perchoir de Cléa, au 4e), puis à 74 985 avec les quêtes de la 5e
   // (GD-10). GD-12, une forme par île (mainteneur, 9 octobre 2026, carte « Relever ») : aux Îles Brumeuses, le décor à
   // 17 400 et la mer à 6 400, le sol ramené à 36 500 (78 635) ; la mer à 6 400 aux Anciens Ateliers (75 535), à 6 900
-  // aux Îles du Ciel (76 035).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10 et GD-12) : 72 770 triangles et 25 appels aux Premiers Rivages, 78 635, 75 535 et 76 035 et 24 appels ailleurs', () => {
+  // aux Îles du Ciel (76 035). EMC-2 (mainteneur, 9 octobre 2026) : les Premiers Rivages à 73 390 avec le Préau des
+  // délégués, sous `RENDER_BUDGET_6E` relevé à 76 500.
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12 et EMC-2) : 73 390 triangles et 25 appels aux Premiers Rivages, 78 635, 75 535 et 76 035 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([72_770, 25]);
+    expect([total('6e'), appels('6e')]).toEqual([73_390, 25]);
     expect([total('5e'), appels('5e')]).toEqual([78_635, 24]);
     expect([total('4e'), appels('4e')]).toEqual([75_535, 24]);
     expect([total('3e'), appels('3e')]).toEqual([76_035, 24]);

@@ -169,7 +169,7 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
     'french-6e-phonology-geography-6e-living',
     'french-6e-phonology-history-6e-antiquity',
     'french-6e-phonology-life-earth-sciences-6e-living-world',
-    'french-6e-phonology-technology-6e-objects',
+    // Le Hangar ne s'atteint plus depuis la Forêt : le Préau des délégués (EMC-2) coupe sa liaison.
     // Depuis les formes des îles (GD-12, 9 octobre 2026), quatre depuis le Marché : le Comptoir, le Marais et le Glacier
     // par un pont, le Carrefour par un bac de 46 cases. Le Manoir, monté au second rang derrière le fer du Comptoir, ne
     // s'y trace plus, ni le Bourg, le Relais et la Menuiserie (des bacs de 86, 45 et 73 cases depuis GD-11).

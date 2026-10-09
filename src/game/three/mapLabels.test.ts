@@ -293,8 +293,9 @@ const ETATS = { blocland: 'Bâtie', archipeo: 'Restaurée' };
 const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
   // Mesurés de nouveau depuis que la Carte cadre les lieux d'aujourd'hui et, au plancher, l'île du bonhomme hors de la
   // place avec la destination (GD-11, consultant UX UI) : six Cartes avant, quatre depuis, trois depuis une forme par
-  // île aux Îles Brumeuses (GD-12, 9 octobre 2026 : le Delta n'y est plus sous le nom du Relais).
-  '4e:maths-4e-powers': ['geography-4e-globalization'],
+  // île aux Îles Brumeuses (GD-12, 9 octobre 2026 : le Delta n'y est plus sous le nom du Relais), deux depuis le dernier
+  // recours de la Carte (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026) : au 4e, vers les Puissances, la
+  // Mondialisation se montre.
   '4e:english-4e-comprehension': ['french-4e-vocabulary'],
   '3e:english-3e-grammar': ['lv2-3e-travel'],
 };

@@ -49,7 +49,8 @@ describe('les poignées autour du choix', () => {
       const t = c && arrangeView(world, c).poignees!.liste[0];
       return t && !(Math.sign(t.ox) === NORD_EST.dx && Math.sign(t.oy) === NORD_EST.dy);
     });
-    expect(ailleurs).toEqual(['french-6e-grammar-spelling', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'physics-chemistry-6e-matter-energy']);
+    // Le Volcan et le Préau des délégués (EMC-2) s'y ajoutent : le Préau est leur voisin au nord-est.
+    expect(ailleurs).toEqual(['french-6e-grammar-spelling', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'maths-6e-decimals', 'physics-chemistry-6e-matter-energy', 'civics-6e-democratic-society']);
   });
 
   it('« Tourner » : un voisin au coin nord-est, il passe au coin libre le plus proche du lieu choisi ; puis il garde son coin tant qu’il n’y gêne pas', () => {
