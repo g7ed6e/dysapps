@@ -17,6 +17,7 @@ import {
   COULEURS_DES_POIGNEES,
   coutDesPoignees,
   formeDesPoignees,
+  ecartVersLaPlace,
   placerALEchelle,
   sortDeLaPlace,
 } from './arrangeHandles';
@@ -269,5 +270,17 @@ describe('une poignée hors de la place libre', () => {
     expect(sortDeLaPlace(une(400, 490), 1, libre)).toBe(true);
     expect(sortDeLaPlace(une(-30, 300), 1, libre)).toBe(true);
     expect(sortDeLaPlace(Float32Array.from([0, 400, 300, 48, 48, 1, 790, 300, 48, 48]), 2, libre)).toBe(true);
+  });
+
+  it('ramenée dans la place, du moins possible (GD-12, relecture UX UI) : zéro dedans, l’écart du bord sinon', () => {
+    const une = (x: number, y: number) => Float32Array.from([0, x, y, 48, 48]);
+    const e = { x: 0, y: 0 };
+    expect(ecartVersLaPlace(une(400, 300), 1, libre, 4, e)).toEqual({ x: 0, y: 0 });
+    // Sous la ligne du haut : son haut à 66, ramené à 84 (le haut de la place, et la marge).
+    expect(ecartVersLaPlace(une(400, 90), 1, libre, 4, e)).toEqual({ x: 0, y: 18 });
+    expect(ecartVersLaPlace(une(790, 490), 1, libre, 4, e)).toEqual({ x: -18, y: -18 });
+    // Trop grandes pour la place : alignées sur son haut.
+    expect(ecartVersLaPlace(Float32Array.from([0, 400, 60, 48, 48, 1, 400, 520, 48, 48]), 2, libre, 4, e).y).toBe(48);
+    expect(ecartVersLaPlace(une(400, 300), 0, libre, 4, e)).toEqual({ x: 0, y: 0 });
   });
 });

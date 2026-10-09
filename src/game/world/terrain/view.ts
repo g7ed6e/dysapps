@@ -1,12 +1,14 @@
 // Le cadrage de la vue : l'étendue de l'archipel, la zone et l'angle de la vue d'une île, l'île sous la vue, la caméra
 // d'une île et sa projection, le cadre d'une traversée.
-import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, mapOf, startingIsland, MAP } from '../map';
+import { type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, coeurDe, islandDef, type IslandDef, landBox, mapOf, startingIsland, MAP } from '../map';
 import { dockBox } from '../harbor';
 import { type BridgeDef, getArchipelago, islandsOf } from '../archipelago';
 import { type BiomeId, BIOMES, estLieuDOption } from '../../biomes';
 import { BAC_LONG, bridgePath } from './links';
 import { islandCenter } from './base';
-import { layoutCache } from '../placement';
+import { layoutCache, turnDirection } from '../placement';
+import { featureSide, hasLagoon, LAGOON_MIDDLE } from '../formes';
+import { silhouetteDe } from '../silhouettes';
 import { frameOf } from '../footprint';
 import { placedLinksOf, neighboursOf } from '../linkGeometry';
 
@@ -156,7 +158,7 @@ function yawDuLieu(home: BiomeId): number {
  * La colonne centrale d'un archipel dont les îles ont pris leur forme (GD-12), figée à sa valeur d'avant : les formes
  * ont déplacé les îles et élargi leurs côtes, la colonne aurait bougé, et avec elle la vue de chaque île.
  */
-const COLONNE_D_AVANT_LES_FORMES: Partial<Record<ArchipelagoId, number>> = { '6e': 72.5, '5e': 92.5 };
+const COLONNE_D_AVANT_LES_FORMES: Partial<Record<ArchipelagoId, number>> = { '6e': 72.5, '5e': 92.5, '4e': 77.5 };
 
 /**
  * Les îles qui ne comptent pas dans la colonne centrale : le Refuge des carnets (3e), posé au bord de l'archipel, ne fait
@@ -283,13 +285,43 @@ export function versLaCameraDuDessin(id: BiomeId): [number, number, number] {
 }
 
 /**
+ * La vue d'une île qui a un lagon (GD-12, le Bassin des maquettes, relecture du 9 octobre 2026) : visé au milieu de son
+ * cœur, le lagon, devant lui, tombait sous le panneau de l'île, presque absent de sa propre vue. La visée glisse de
+ * `towards` (en part du chemin du milieu du cœur au milieu du lagon), et la caméra recule de `pullBack` fois, pour que le
+ * lagon et sa passe tiennent à côté du cœur.
+ */
+const LAGOON_FRAMING = { towards: 0.55, pullBack: 1.3 } as const;
+
+
+/**
+ * Le point que vise la vue d'une île (x, y de la grille, z en hauteur) : le milieu de son cœur (`islandCenter`) ; pour
+ * une île qui a un lagon, glissé vers lui (`LAGOON_FRAMING`), son quart de tour compris.
+ */
+export function islandViewTarget(id: BiomeId): { x: number; y: number; z: number } {
+  const c = islandCenter(id);
+  const f = silhouetteDe(id).forme;
+  if (!hasLagoon(f)) return c;
+  const def = islandDef(id);
+  const b = bornesDuCoeur(def);
+  const side = featureSide(f);
+  const t = turnDirection(side.u, side.v, def.quarts);
+  const k = LAGOON_FRAMING.towards * ((b.x1 - b.x0) / 2 + LAGOON_MIDDLE);
+  return { x: c.x + t.dx * k, y: c.y + t.dy * k, z: c.z };
+}
+
+/** De combien la caméra de la vue d'une île recule (`LAGOON_FRAMING`) : 1, sauf pour une île qui a un lagon. */
+export function islandViewPullBack(id: BiomeId): number {
+  return hasLagoon(silhouetteDe(id).forme) ? LAGOON_FRAMING.pullBack : 1;
+}
+
+/**
  * La place de la caméra de la vue d'une île (x, y de la grille, z en hauteur), en paysage et sans le glissement vers un
  * grand repère d'Archipéo (world/framing.ts) : ce que calcule three/camera.ts dans le cas simple.
  */
 export function cameraDeLIle(id: BiomeId): { x: number; y: number; z: number } {
-  const c = islandCenter(id);
+  const c = islandViewTarget(id);
   const [dx, dy, up] = directionDeLaVue(id);
-  const d = DISTANCE_DE_LA_VUE_DE_L_ILE;
+  const d = DISTANCE_DE_LA_VUE_DE_L_ILE * islandViewPullBack(id);
   return { x: c.x + d * dx, y: c.y + d * dy, z: c.z + VISEE_AU_DESSUS_DU_SOL + d * up };
 }
 
@@ -314,9 +346,9 @@ export type ProjectionDeLaVue = (x: number, y: number, z: number) => [number, nu
 export function projectionDeLaVueDeLIle(id: BiomeId): { projeter: ProjectionDeLaVue; cube: number; oeil: { x: number; y: number; z: number } } {
   const V = VUE_DE_L_ILE_PANNEAU_OUVERT;
   const aspect = V.largeur / V.hauteur;
-  const c = islandCenter(id);
+  const c = islandViewTarget(id);
   const [dx, dy, up] = directionDeLaVue(id);
-  const d = DISTANCE_DE_LA_VUE_DE_L_ILE * (aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1);
+  const d = DISTANCE_DE_LA_VUE_DE_L_ILE * islandViewPullBack(id) * (aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1);
   const cible = [c.x, c.z + VISEE_AU_DESSUS_DU_SOL, c.y];
   const oeil = [c.x + d * dx, c.z + VISEE_AU_DESSUS_DU_SOL + d * up, c.y + d * dy];
   const norme = (v: number[]) => {

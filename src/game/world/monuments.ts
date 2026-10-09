@@ -471,7 +471,7 @@ const FICHES: Fiche[] = [
     archipelago: '4e',
     name: 'Le viaduc',
     description: 'Des piles et des arches d’ardoise, un tablier de rails, et une locomotive d’acier qui attend le départ.',
-    islet: { x: 17, y: 648 }, // suit la Gare, au second rang des Anciens Ateliers redessinés (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026)
+    islet: { x: 8, y: 654 }, // suit la Gare, au second rang des Anciens Ateliers redessinés (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026) ; plus à l'ouest depuis une forme par île (GD-12, 09/10/2026 : sa place d'avant n'avait plus quatre cases d'eau autour d'elle) ; puis rapproché de la Gare, quatre cases d'eau devant elle (relecture du 9 octobre 2026 : loin devant, tourné d'un demi-tour, il ne laissait à la Gare qu'une place libre)
     reward: { xp: 210, chest: {} },
     done: 'Le viaduc tient bon ! La locomotive siffle au-dessus de la mer.',
     draw: viaduc,
@@ -482,7 +482,7 @@ const FICHES: Fiche[] = [
     archipelago: '4e',
     name: 'L’amphithéâtre',
     description: 'Trois gradins de velours, une scène de parchemin entre deux colonnes, et des projecteurs pour les grands soirs.',
-    islet: { x: 91, y: 685 }, // suit le Théâtre, au second rang des Anciens Ateliers redessinés (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026)
+    islet: { x: 110, y: 650 }, // suit le Théâtre, au second rang des Anciens Ateliers redessinés (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026) ; devant le Théâtre, derrière la Falaise, depuis une forme par île (GD-12, 09/10/2026 : sa place d'avant est dans la terre du Théâtre)
     reward: { xp: 210, chest: {} },
     done: 'L’amphithéâtre est prêt ! Tout le monde des Anciens Ateliers viendra au spectacle.',
     draw: amphitheatre,
@@ -517,7 +517,7 @@ const FICHES: Fiche[] = [
     archipelago: '4e',
     name: 'Le portique des docks',
     description: 'Une grande grue de port sur ses rails, ses quatre jambes d’acier, sa poutre tendue vers la mer et la cabine du grutier, au-dessus d’une pile de conteneurs.',
-    islet: { x: 86, y: 711 }, // placé le 08/10/2026 avec les îles agrandies (#390), hors des tracés des liaisons ; décalé à l'est de l'Escale le même jour (relecture du directeur artistique) : vu depuis l'Escale, il n'est plus caché derrière son étiquette
+    islet: { x: 94, y: 650 }, // placé le 08/10/2026 avec les îles agrandies (#390), hors des tracés des liaisons ; décalé à l'est de l'Escale le même jour (relecture du directeur artistique) : vu depuis l'Escale, il n'est plus caché derrière son étiquette ; devant l'Escale, à l'est, depuis une forme par île (GD-12, 09/10/2026 : sa place d'avant est au rang du fond, sur une place future)
     reward: { xp: 210, chest: {} },
     done: 'Le portique des docks est debout. La cabine s’allume : les conteneurs peuvent partir vers toutes les îles.',
     draw: portique,
@@ -529,7 +529,7 @@ const FICHES: Fiche[] = [
     archipelago: '4e',
     name: 'La tour des signaux',
     description: 'Un pylône d’acier et de liège, large en bas et fin en haut, dont les bobines envoient des messages d’une île à l’autre.',
-    islet: { x: 21, y: 711 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
+    islet: { x: 30, y: 711 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons ; neuf cases plus à l'est depuis une forme par île (GD-12, 09/10/2026), à côté de la Vigie au coin du fond
     reward: { xp: 210, chest: {} },
     done: 'La tour des signaux est finie. Ses bobines s’allument : les messages passent d’une île à l’autre.',
     draw: tourSignaux,

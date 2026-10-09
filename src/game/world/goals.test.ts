@@ -129,9 +129,10 @@ it('une île fermée dit l’ouvrage précis qui y mène, ou l’île à ouvrir 
   expect(lockedHint(fresh, 'french-6e-reading')).toBe('Pas si vite ! Pour venir ici, pose le bac depuis la Forêt des sons : 4 blocs.');
   // Sans aucun chemin, la phrase le dit simplement.
   expect(AUCUNE_LIAISON).toBe('Pas de passage jusqu’ici pour l’instant.');
-  // Dans les Anciens Ateliers, depuis l'Atelier : la liaison part du lieu relié le plus proche.
+  // Dans les Anciens Ateliers, depuis l'Atelier : la liaison part du lieu relié le plus proche (un bac depuis que le
+  // Théâtre est au second rang, GD-12).
   const ateliers = sanitizeState({ world: { links: ['passage-5e', 'passage-4e'] } });
-  expect(lockedHint(ateliers, 'english-4e-comprehension')).toBe('Pas si vite ! Pour venir ici, pose le pont depuis l’Atelier du calcul littéral : 5 blocs.');
+  expect(lockedHint(ateliers, 'english-4e-comprehension')).toBe('Pas si vite ! Pour venir ici, pose le bac depuis l’Atelier du calcul littéral : 5 blocs.');
 });
 
 it('une île d’un autre archipel parle du Bloc-Navire : ses blocs, ses Gardiens, l’embarquement, ou l’archipel d’avant', () => {

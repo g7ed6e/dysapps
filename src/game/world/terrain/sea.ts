@@ -40,9 +40,17 @@ import { layoutCache, type Rectangle } from '../placement';
  * îles du 6e ont changé de place : aucune de ses clairières n'est plus cachée depuis le port, aucune baleine n'y est
  * replacée. Au 5e, depuis ses formes (9 octobre 2026), le cadre élargi et approfondi : la clairière de 35, 438, au coin
  * du fond à l'ouest, a un point de son rond caché par le Carrefour ; la baleine nage deux cases plus loin, en 37, 439.
+ * Au 4e, depuis ses formes (9 octobre 2026), le cadre approfondi ramène deux clairières du fond dans la vue du port,
+ * en partie cachées par des îles : la baleine de 32, 739 nage en 37, 740, celle de 119, 736 en 110, 740 ; la première
+ * six cases plus à l'est, en 43, 738, depuis que l'Imprimerie recule d'un pas et le Théâtre avance d'un pas
+ * (relecture du 9 octobre 2026 : en 37, 740, cinq points de son rond passaient derrière une île).
  */
 export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
   '5e': [{ de: { x: 35, y: 438 }, vers: { x: 37, y: 439 } }],
+  '4e': [
+    { de: { x: 32, y: 739 }, vers: { x: 43, y: 738 } },
+    { de: { x: 119, y: 736 }, vers: { x: 110, y: 740 } },
+  ],
 };
 
 /**
