@@ -237,11 +237,10 @@ describe('étiquettes entières ou absentes (DA-10)', () => {
     const sousLePanneau: LabelBox = { x: 380, y: 560, w: 8, h: 8 };
     const r = placerEtiquettes([kiosque, verger], iles, { zones: [sousLePanneau], bulles: [], obstacles: [], bounds: cadre, gap: 6 }, { weights: [1, 1] });
     expect(r.visibles[1]).toBe(false);
-    // Montré, il désigne son île : son centre est plus près du Kiosque que du Verger, de côté.
-    if (r.visibles[0]) {
-      const x = kiosque.x + r.offsets[0].dx;
-      expect(Math.abs(x - 300)).toBeLessThanOrEqual(Math.abs(x - 380));
-    }
+    // Le nom du Kiosque est montré, et il désigne son île : son centre est plus près du Kiosque que du Verger, de côté.
+    expect(r.visibles[0]).toBe(true);
+    const x = kiosque.x + r.offsets[0].dx;
+    expect(Math.abs(x - 300)).toBeLessThanOrEqual(Math.abs(x - 380));
   });
 
   it('retire avant l’écart l’étiquette dont l’île est sous le panneau : elle ne pousse pas les autres', () => {

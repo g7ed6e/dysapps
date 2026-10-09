@@ -207,7 +207,8 @@ export const ENVELOPPES: Record<
   // profonde de deux rangs, pour un lac loin du bord), porte le sol du 3e à 22 505.
   // GD-12, une forme par île : la mer couvre le cadre approfondi de chaque région (6 264 aux Îles Brumeuses). Relevée
   // à 6 400 aux Îles Brumeuses et aux Anciens Ateliers, à 6 900 aux Îles du Ciel (mainteneur, 9 octobre 2026, carte
-  // « Relever »).
+  // « Relever »). Celles des Anciens Ateliers (6 400) et des Îles du Ciel (6 900) sont relevées d'avance, pour les
+  // pull requests de leurs formes, qui approfondiront leurs cadres : sur main, leur mer tient encore sous 5 850.
   mer: {
     lot: 'R4b',
     nom: 'Mer',

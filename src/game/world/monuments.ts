@@ -441,7 +441,7 @@ const FICHES: Fiche[] = [
     archipelago: '5e',
     name: 'Le phare du large',
     description: 'Une haute tour rayée de tuiles et de glace, une galerie de lambris et une lanterne de vitraux, pour les navires qui passent.',
-    islet: { x: 46, y: 304 }, // au large, à l'ouest du Marché, entre lui et le Glacier (GD-12, relecture du 9 octobre 2026) : devant le Glacier (38, 298), il coupait le bas de la vue de l'archipel, sous le bouton de la Carte ; vu du Glacier, il se tient entier sur le côté (le seul îlot libre près du Glacier qui s'y voit en entier, hors de son axe) ; avant, derrière le Glacier, le moulinet du Carrefour a pris sa place ; recalé avec les îles agrandies (GD-11)
+    islet: { x: 38, y: 304 }, // au large, devant le Glacier, à l'ouest du Marché (GD-12, seconde relecture du 9 octobre 2026) : deux pas plus à l'ouest qu'en 46, 304, où sa lanterne portait le nom du Marché dans la vue de l'archipel et cachait le devant du Marché, et où, vu du Glacier, elle était coupée au coin ; plus au fond, le Glacier ; au rang du Marché ou derrière, aucun îlot libre de ce côté (le Glacier, le Marché, le Carrefour) ; plus devant (38, 298), il coupait le bas de la vue de l'archipel, sous le bouton de la Carte ; avant, derrière le Glacier, le moulinet du Carrefour a pris sa place ; recalé avec les îles agrandies (GD-11)
     reward: { xp: 180, chest: {} },
     done: 'Le phare du large s’allume ! Plus aucun navire ne se perd entre les Collines.',
     draw: phareLarge,

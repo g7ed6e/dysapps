@@ -7,6 +7,8 @@ import { currentLandings, DIRECTION_STEP, othersFootprintsOf, routesIn, spotOf }
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import {
   bordDeLaCroix,
+  type CoinDuChoix,
+  coinDeTournerDe,
   BUDGET_DES_POIGNEES,
   POIGNEE_MIN_PX,
   ECHELLES,
@@ -27,6 +29,7 @@ import { questStations } from './terrain/markers';
 const { world } = toutConstruit();
 const lieux = mapOf('6e').map((d) => d.id);
 const unLieu = lieux.map((id) => chooseIsland(world, id)).find((c) => c !== null)!;
+const NORD_EST: CoinDuChoix = { dx: DIRECTION_STEP.est.dx, dy: DIRECTION_STEP.nord.dy };
 
 describe('les poignées autour du choix', () => {
   it('un lieu : seul « Tourner », au coin nord-est d’ordinaire, hors de l’emprise du fantôme ; aucune flèche (« trop de boutons », 7 octobre 2026)', () => {
@@ -40,19 +43,35 @@ describe('les poignées autour du choix', () => {
     const demi = COTE_DU_RADEAU / 2;
     // Hors de l'emprise, d'au moins une place.
     expect(x + demi <= r.x0 - 1 + 1e-9 || x - demi >= r.x1 + 1 - 1e-9 || y + demi <= r.y0 - 1 + 1e-9 || y - demi >= r.y1 + 1 - 1e-9).toBe(true);
-    // Au coin nord-est d'ordinaire (ailleurs quand il y tomberait sur un autre lieu : le test suivant).
-    const auNordEst = lieux.filter((id) => {
+    // Au coin nord-est d'ordinaire : ailleurs seulement quand son radeau y tomberait sur un autre lieu (les tests suivants).
+    const ailleurs = lieux.filter((id) => {
       const c = chooseIsland(world, id);
       const t = c && arrangeView(world, c).poignees!.liste[0];
-      return t && Math.sign(t.ox) === DIRECTION_STEP.est.dx && Math.sign(t.oy) === DIRECTION_STEP.nord.dy;
+      return t && !(Math.sign(t.ox) === NORD_EST.dx && Math.sign(t.oy) === NORD_EST.dy);
     });
-    expect(auNordEst.length).toBeGreaterThan(lieux.length / 2);
+    expect(ailleurs).toEqual(['french-6e-grammar-spelling', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'physics-chemistry-6e-matter-energy']);
+  });
+
+  it('« Tourner » : un voisin au coin nord-est, il passe au coin libre le plus proche du lieu choisi ; puis il garde son coin tant qu’il n’y gêne pas', () => {
+    // Le Comptoir (5e) : à son coin nord-est, à l'échelle de la Carte, son radeau se poserait sur un voisin.
+    const comptoir = chooseIsland(world, 'english-5e-vocabulary')!;
+    const ici = (c: ArrangeChoice, garde: CoinDuChoix | null) => coinDeTournerDe(arrangeView(world, c, false, garde).poignees);
+    expect(ici(comptoir, null)).not.toEqual(NORD_EST);
+    // Il le reste même si le nord-est était son coin : il y gênerait.
+    expect(ici(comptoir, NORD_EST)).toEqual(ici(comptoir, null));
+    // Le Carrefour (5e) : le nord-est est libre, et trois autres coins aussi.
+    const carrefour = chooseIsland(world, 'french-5e-homophones')!;
+    expect(ici(carrefour, null)).toEqual(NORD_EST);
+    // « Toujours au même endroit » : un coin libre qu'il occupait déjà, il le garde, même si le nord-est l'est aussi.
+    const sudEst = { dx: NORD_EST.dx, dy: -NORD_EST.dy };
+    expect(ici(carrefour, sudEst)).toEqual(sudEst);
+    // Un coin qui gêne, il le quitte : le coin sud-ouest du Carrefour tombe sur un voisin.
+    expect(ici(carrefour, { dx: -NORD_EST.dx, dy: -NORD_EST.dy })).toEqual(NORD_EST);
   });
 
   it('« Tourner » ne se pose jamais sur la terre d’un autre lieu : il passe à un autre coin (GD-12, relecture du 9 octobre 2026)', () => {
     // Vu au 3e, sur la première construction de ses formes (le Tremplin des forces choisi, son radeau se posait sur la
-    // Ruche des réseaux) : sur les cartes de départ d'aujourd'hui, aucun lieu n'a besoin d'un autre coin ; le cas
-    // reviendra avec les formes des Îles du Ciel, dans leur pull request.
+    // Ruche des réseaux) ; au 5e, le Comptoir (le test précédent).
     for (const a of ARCHIPELAGO_IDS)
       for (const d of mapOf(a)) {
         const c = chooseIsland(world, d.id);

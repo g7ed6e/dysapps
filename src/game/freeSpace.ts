@@ -1,6 +1,6 @@
-// La place libre de la Carte (DA-31) : la part de la vue que l'interface ne couvre pas, sous le panneau « Prochaine
-// destination » (son pli « Les îles et leur état » compté fermé), au-dessus de la barre du bas, sans la colonne (ou la
-// rangée) Menu et archipel. La caméra de la Carte y cadre l'archipel et la destination (three/camera.ts).
+// La place libre de la Carte (DA-31) : la part de la vue que l'interface ne couvre pas, sous le panneau de la Carte (le
+// chemin d'ouvrages d'une île pâle touchée ; un pli ouvert y compte fermé), au-dessus de la barre du bas, sans la colonne
+// (ou la rangée) Menu et archipel. La caméra de la Carte y cadre l'archipel et la destination (three/camera.ts).
 // Lue dans la page par les zones que marque `data-couvre` (./coveredZones.ts), pas image par image.
 import type { LabelBox } from './world/labelLayout';
 import { zonesCouvertes } from './coveredZones';
@@ -84,7 +84,7 @@ export function sousLaFiche(ecran: { x: number; y: number }, fiche: Rect, marge 
 }
 
 /**
- * Ce qui s'ouvre dans l'interface compte fermé : le pli « Les îles et leur état » (un `details` ouvert) et ce qu'ouvre
+ * Ce qui s'ouvre dans l'interface compte fermé : un pli (un `details` ouvert) et ce qu'ouvre
  * un bouton `aria-expanded`, s'il y en a un. La zone qui les porte s'arrête où elle s'arrêterait fermée, défilement
  * du haut remis à zéro (fermé, le panneau tient sans défiler) : la caméra ne bouge pas quand l'élève ouvre ou referme un pli.
  */
