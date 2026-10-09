@@ -459,7 +459,7 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
   });
 });
 
-it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan, une cascade jusqu’à la mer', () => {
+it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan, les cascades des Îles du Ciel', () => {
   const cubes = allCubes({}, village(everything), false);
   const of = (id: string) => cubes.filter((c) => c.tag === id && !c.bridge);
   const foret = of('french-6e-phonology');
@@ -470,9 +470,11 @@ it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phar
   expect(of('maths-6e-decimals').some((c) => c.color === '#a9a4a0')).toBe(true);
   expect(of('french-6e-letter-confusion').some((c) => c.texture === 'toile')).toBe(true);
   expect(of('french-5e-conjugation').filter((c) => c.color === '#d9453f').length).toBeGreaterThanOrEqual(20);
-  // Au moins une île en altitude a une cascade : une colonne d'eau qui descend jusqu'au niveau de la mer.
+  // Une cascade, une colonne d'eau d'une île en altitude jusqu'au niveau de la mer : il n'en reste qu'aux Îles du Ciel, qui
+  // n'ont pas encore leurs formes (GD-12, 9 octobre 2026 ; une île qui a sa forme n'a plus de mare d'où l'eau déborde).
   const falls = cubes.filter((c) => c.texture === 'eau' && c.z === 0 && BIOMES.some((b) => b.id === c.tag && islandCenter(b.id).z > 0));
   expect(falls.length).toBeGreaterThanOrEqual(1);
+  for (const c of falls) expect(c.tag).toMatch(/-3e-/);
   // La brume des sommets : sous les douze Îles du Ciel (le Refuge des carnets, le Kiosque des témoins, le Plateau des
   // territoires et les trois îles de sciences de SC-3 compris), nulle part ailleurs.
   expect(mistPatches('3e').length).toBe(12);
