@@ -362,7 +362,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'maths-4e-algebra-fixture-1': [6, 20],
   'french-4e-agreement-fixture-1': [-1, 12],
   'french-4e-vocabulary-fixture-1': [-2, 11],
-  'maths-3e-geometry-fixture-1': [8, 4],
+  'maths-3e-geometry-fixture-1': [7, 9],
   'maths-3e-statistics-fixture-1': [2, 10],
   'maths-3e-functions-fixture-1': [5, 22],
   'french-3e-close-reading-fixture-1': [5, 11],
