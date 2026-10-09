@@ -5190,9 +5190,10 @@ button.island-quest:active {
 .geometry svg {
   width: 100%;
   /* Bornée par la hauteur de l'écran, comme le graphique : sur une tablette à l'horizontale, aucune figure ne prend plus
-     de 45 % de la hauteur, et laisse place à la règle et aux réponses. */
-  max-width: min(24rem, 45vh);
-  max-height: 45vh;
+     de 45 % de la hauteur, et laisse place à la règle et aux réponses. Jamais sous 15rem pourtant : sur un téléphone à
+     l'horizontale, 45 % ferait tomber les lettres des figures hautes vers 10 px ; mieux vaut faire défiler. */
+  max-width: min(24rem, max(45vh, 15rem));
+  max-height: max(45vh, 15rem);
   display: block;
   margin: 0 auto;
   color: var(--text);
