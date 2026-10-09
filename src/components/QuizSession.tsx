@@ -292,7 +292,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
           <p className="question-count">
             Question {index + 1} / {questions.length}
           </p>
-          <SpeakButton text={question.spokenPrompt ?? question.prompt} label="Écouter" lang={question.spokenLang ?? question.promptLang} />
+          <SpeakButton text={question.spokenPrompt ?? question.prompt} label="Écouter" lang={question.spokenLang ?? question.promptLang} shown={question.prompt} />
         </div>
         <h2 id="question-titre" className="question-prompt" lang={langAttr(question.promptLang)}>
           <RichText text={question.prompt} lang={question.promptLang} />

@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ForeignWordsProvider, Marked } from './ForeignWords';
+import { SpeakButton } from './SpeakButton';
 import { Syllabified } from './Syllabified';
 import { RichText } from './math/RichText';
 import type { ForeignWord } from '../core/foreignWords';
@@ -51,5 +52,20 @@ describe('les mots marqués à l’écran (principes dys, « Le latin et le grec
       </SettingsProvider>,
     );
     expect(container.querySelector('[lang]')).toBeNull();
+  });
+});
+
+describe('le bouton Écouter d’un texte écrit pour la voix', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.stubGlobal('speechSynthesis', { speak: vi.fn(), cancel: vi.fn(), getVoices: () => [] });
+    vi.stubGlobal('SpeechSynthesisUtterance', class { constructor(public text: string) {} });
+  });
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('son nom accessible reprend le texte affiché, jamais le « lu »', () => {
+    avec(<SpeakButton text="Pouélla rossamm amatt" shown="Puella rosam amat" />);
+    expect(screen.getByRole('button', { name: 'Écouter : Puella rosam amat' })).toBeInTheDocument();
+    expect(document.body.innerHTML).not.toContain('rossamm');
   });
 });

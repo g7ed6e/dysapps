@@ -60,7 +60,7 @@ export function CalculationScreen({ items, answered, onAnswer, ruledOut, onHelp,
                 </li>
               ))}
             </ul>
-            <SpeakButton text={spoken} label="Écouter" lang={lang} />
+            <SpeakButton text={spoken} label="Écouter" lang={lang} shown={String(prompt)} />
           </div>
         </>
       ) : (
@@ -68,7 +68,7 @@ export function CalculationScreen({ items, answered, onAnswer, ruledOut, onHelp,
           <p className="question-prompt calcul-prompt" lang={langAttr(lang)}>
             <RichText text={prompt} lang={lang} />
           </p>
-          <SpeakButton text={spoken} label="Écouter" lang={lang} />
+          <SpeakButton text={spoken} label="Écouter" lang={lang} shown={String(prompt)} />
         </div>
       )}
       {figure && <div className="calcul-figure">{<Aid aid={figure} />}</div>}
