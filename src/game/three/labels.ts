@@ -14,7 +14,7 @@ import { reperesDe } from '../world/framing';
 import { boiteDesPoints, boitesDuTrace, placerAvecLaFlecheDOuvrage, placerDAbordSimplement, recoupe, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { HAUTEUR_DES_NOMS, islandCenter } from '../world/terrain';
 import { bridgesOf, otherEnd } from '../world/archipelago';
-import type { BiomeId } from '../biomes';
+import { estUnBiome } from '../biomes';
 import { lecteurDeZones } from '../coveredZones';
 import type { IslandLabel, WorldViewProps } from '../world/view';
 import type { Instant, Monde, PartieDeLaScene } from './scenePart';
@@ -43,7 +43,7 @@ const ETIQUETTE_AU_DESSUS = HAUTEUR_DES_NOMS;
  */
 export function mapLabelWeights(labels: readonly { id: string; closed: boolean }[], destination: string | null | undefined, selected: string | null = null): number[] {
   const open = new Set(labels.filter((l) => !l.closed).map((l) => l.id));
-  const nextToOpen = (id: string) => bridgesOf(id as BiomeId).some((b) => open.has(otherEnd(b, id as BiomeId)));
+  const nextToOpen = (id: string) => estUnBiome(id) && bridgesOf(id).some((b) => open.has(otherEnd(b, id)));
   return labels.map((l) => (l.id === destination ? 2 : !l.closed || l.id === selected || nextToOpen(l.id) ? 1 : 0.5));
 }
 
