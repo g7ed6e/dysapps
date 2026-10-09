@@ -1,7 +1,7 @@
 import { enveloppeDe, toutConstruit } from './budget';
 import { mixColor } from './daylight';
 import { champDuSol, colonneEn, NIVEAU_EAU, RIVAGE } from './landMesh';
-import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
+import { ARCHIPELAGO_IDS, type ArchipelagoId, islandDef, lagoonWater } from './map';
 import {
   BORD,
   cadreDeLaMer,
@@ -164,6 +164,27 @@ describe('la carte de la mer', () => {
     expect(luminance(c)).toBeLessThan(luminance(mer));
     expect(luminance(c)).toBeLessThan(luminance(lagon));
     expect(PORTEE).toBe(8);
+  });
+
+  it('l’eau du lagon d’une île est un haut-fond : le Bleu lagon jusqu’à sa passe, sans écume (GD-12, le Bassin des maquettes)', () => {
+    const a = '4e';
+    const { terres } = reel(a);
+    const lagon = lagoonWater(islandDef('technology-4e-modeling'));
+    expect(lagon.length).toBeGreaterThanOrEqual(60);
+    const fonds = new Set(terres.filter((t) => t.shallow).map((t) => `${t.x},${t.y}`));
+    expect(fonds).toEqual(new Set(lagon.map((c) => `${c.x},${c.y}`)));
+    const carte = carteDeLaMer(a, terres, worldBounds(a));
+    const bleu = compense(eauxDe(a).lagon, exposition(a));
+    for (const c of lagon) {
+      const i = Math.floor((c.x + 0.5 - carte.x0) * PAR_CASE);
+      const j = Math.floor((c.y + 0.5 - carte.y0) * PAR_CASE);
+      const o = (j * carte.l + i) * 4;
+      expect((carte.data[o] << 16) | (carte.data[o + 1] << 8) | carte.data[o + 2], `${c.x},${c.y}`).toBe(bleu);
+      // De l'eau : la distance à la terre n'y est pas nulle (pas de liseré d'écume au milieu du lagon).
+      expect(carte.data[o + 3], `${c.x},${c.y}`).toBeGreaterThan(0);
+    }
+    // La signature distingue un haut-fond d'une terre.
+    expect(signatureDesTerres(terres)).not.toBe(signatureDesTerres(terres.map(({ x, y, ecueil }) => (ecueil ? { x, y, ecueil } : { x, y }))));
   });
 });
 

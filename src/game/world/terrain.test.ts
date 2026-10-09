@@ -2,7 +2,7 @@ import { islandsOf } from './archipelago';
 import { GD11_GUARDIAN_SQUARES } from './guardianSquares';
 import { placedLinksOf } from './linkGeometry';
 import { BLOC, BIOMES, missionsJouables } from '../biomes';
-import { ARCHIPELAGO_IDS, CORE, MAP, bornesDuCoeur, coeurDe, isLand, islandDef, landBox, landCells, mapOf, startingIsland } from './map';
+import { ARCHIPELAGO_IDS, CORE, MAP, bornesDuCoeur, coeurDe, isLand, islandDef, lagoonWater, landBox, landCells, mapOf, startingIsland } from './map';
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
 import { PLAN_ZONE, planCells, plansFor } from './plans';
@@ -351,6 +351,21 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
         expect(u, b.id).toBeLessThanOrEqual(V.largeur);
         expect(v, b.id).toBeLessThanOrEqual(V.hauteur - V.bas);
       }
+    }
+  });
+
+  it('la vue d’une île qui a un lagon cadre son lagon et sa passe, panneau ouvert, au-dessus des boutons (GD-12, le Bassin des maquettes)', () => {
+    // Visée au milieu de son cœur, le lagon tombait sous le panneau de l'île (relecture du 9 octobre 2026).
+    const V = VUE_DE_L_ILE_PANNEAU_OUVERT;
+    const avecLagon = MAP.filter((d) => lagoonWater(d).length > 0);
+    expect(avecLagon.map((d) => d.id)).toEqual(['technology-4e-modeling']);
+    for (const def of avecLagon) {
+      const { projeter } = projectionDeLaVueDeLIle(def.id);
+      for (const c of lagoonWater(def))
+        for (const [i, j] of [[0, 0], [1, 0], [0, 1], [1, 1]]) {
+          const [u, v] = projeter(c.x + i, c.y + j, 0);
+          expect(u >= 0 && u <= V.largeur && v >= 0 && v <= V.hauteur - V.bas, `${def.id} (${c.x}, ${c.y})`).toBe(true);
+        }
     }
   });
 

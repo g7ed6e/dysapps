@@ -12,7 +12,7 @@
 //   lente et plus ample, pas d'écume.
 import { AMBIENCE, mixColor } from './daylight';
 import { eclairement, NIVEAU_EAU, type ChampDuSol } from './landMesh';
-import type { ArchipelagoId } from './map';
+import { type ArchipelagoId, lagoonWater, mapOf } from './map';
 import { eauxDe, type Couleur } from './palette';
 import { cellHash } from '../../core/random';
 import { smoothstep } from '../../core/math';
@@ -35,6 +35,8 @@ const MARGE = 24;
 export const PORTEE = 8;
 /** Les distances (en cases) où la mer passe du lagon à la mer de l'archipel, puis de la mer au large. */
 export const PALIERS = { lagon: 1.5, mer: 8, large: 22 } as const;
+/** Au-delà d'un haut-fond (l'eau du lagon d'une île), la mer rejoint sa couleur en tant de cases. */
+const SHALLOWS_SLOPE = 2;
 /** Le lissage de la profondeur (rayon en cases) : pas de pli sombre à mi-chemin entre deux îles. */
 const LISSAGE = 3;
 /** Sur ce bord du cadre (en cases), la mer rejoint le large : rien ne s'étire au-delà de la carte. */
@@ -101,11 +103,15 @@ export function vueDeJour(c: Couleur, e: number): Couleur {
 
 // ---------- La terre, vue de la mer ----------
 
-/** Une case de terre, vue de la mer ; un écueil (rocher, banc, pilotis) fait de l'écume, pas de lagon. */
+/**
+ * Une case de terre, vue de la mer ; un écueil (rocher, banc, pilotis) fait de l'écume, pas de lagon. Un haut-fond
+ * (`shallow`) n'est pas de la terre : une case d'eau peinte en Bleu lagon (l'eau du lagon d'une île, GD-12), sans écume.
+ */
 export interface Terre {
   x: number;
   y: number;
   ecueil?: boolean;
+  shallow?: boolean;
 }
 
 /**
@@ -127,13 +133,22 @@ export function terresDeLaMer(champ: ChampDuSol, autres: { x: number; y: number;
   if (ciel) return out;
   for (const p of champ.pieds) ajoute(p.x, p.y);
   for (const c of autres) if (c.z < 0) ajoute(c.x, c.y, true);
+  // L'eau du lagon d'une île (GD-12, le Bassin des maquettes) : des hauts-fonds, en Bleu lagon jusqu'à la passe
+  // (consultant Archipéo, 9 octobre 2026 ; docs/univers/archipeo/game-design.md).
+  for (const def of mapOf(champ.archipel))
+    for (const c of lagoonWater(def)) {
+      const k = `${c.x},${c.y}`;
+      if (vues.has(k)) continue;
+      vues.add(k);
+      out.push({ x: c.x, y: c.y, shallow: true });
+    }
   return out;
 }
 
 /** La signature d'une liste de terres : la même tant que la côte ne change pas. */
 export function signatureDesTerres(terres: Terre[]): string {
   return terres
-    .map((t) => `${t.x},${t.y}${t.ecueil ? 'e' : ''}`)
+    .map((t) => `${t.x},${t.y}${t.ecueil ? 'e' : ''}${t.shallow ? 'h' : ''}`)
     .sort()
     .join('|');
 }
@@ -189,12 +204,12 @@ export function carteDeLaMer(a: ArchipelagoId, terres: Terre[], etendue: Etendue
   const { x0, y0, largeur, hauteur } = cadreDeLaMer(etendue);
   const l = largeur * PAR_CASE;
   const h = hauteur * PAR_CASE;
-  // La terre, case par case, sur le cadre.
+  // La terre, case par case, sur le cadre : 1 une île, 2 un écueil, 3 un haut-fond (de l'eau, sans écume).
   const terre = new Uint8Array(largeur * hauteur);
   for (const t of terres) {
     const i = t.x - x0;
     const j = t.y - y0;
-    if (i >= 0 && j >= 0 && i < largeur && j < hauteur) terre[j * largeur + i] = t.ecueil ? 2 : 1;
+    if (i >= 0 && j >= 0 && i < largeur && j < hauteur) terre[j * largeur + i] = t.shallow ? 3 : t.ecueil ? 2 : 1;
   }
   // Une distance approchée, point par point (chanfrein en deux passes), depuis les points dont le centre est sur terre :
   // à toute terre (l'écume), et aux îles seulement (la profondeur, sans les écueils).
@@ -230,8 +245,11 @@ export function carteDeLaMer(a: ArchipelagoId, terres: Terre[], etendue: Etendue
       }
     return d;
   };
-  const d = chanfrein((v) => v > 0);
+  const d = chanfrein((v) => v === 1 || v === 2);
   const dIles = chanfrein((v) => v === 1);
+  // Aux hauts-fonds, la distance (le lagon d'une île), s'il y en a : la couleur y est celle du lagon, et rejoint la mer
+  // en `SHALLOWS_SLOPE` cases au-delà (à la passe), sans déborder sous l'anneau de terre.
+  const dShallows = terres.some((t) => t.shallow) ? chanfrein((v) => v === 3) : null;
   // La profondeur, pour la couleur : la distance ramenée à la case, lissée (deux passes d'une moyenne glissante), pour
   // que la mer ne marque pas de pli à mi-chemin entre deux îles.
   const MAX = PALIERS.large + 2;
@@ -303,7 +321,7 @@ export function carteDeLaMer(a: ArchipelagoId, terres: Terre[], etendue: Etendue
         const cy = Math.floor(py) - y0;
         for (let v = cy - 4; v <= cy + 4; v++)
           for (let u = cx - 4; u <= cx + 4; u++) {
-            if (u < 0 || v < 0 || u >= largeur || v >= hauteur || !terre[v * largeur + u]) continue;
+            if (u < 0 || v < 0 || u >= largeur || v >= hauteur || terre[v * largeur + u] === 0 || terre[v * largeur + u] === 3) continue;
             const qx = x0 + u;
             const qy = y0 + v;
             const dx = Math.max(qx - px, 0, px - qx - 1);
@@ -317,7 +335,8 @@ export function carteDeLaMer(a: ArchipelagoId, terres: Terre[], etendue: Etendue
       // La couleur suit la profondeur lissée (loin des îles, pas des écueils), sans jamais être plus profonde que la
       // distance exacte près des côtes.
       const pres = dIles[k] === 0 ? 0 : dIles[k] === d[k] ? dist : Math.max(0, (dIles[k] - 0.5) / PAR_CASE);
-      const p = Math.min(profEn(px, py), pres);
+      let p = Math.min(profEn(px, py), pres);
+      if (dShallows) p = Math.min(p, (Math.max(0, (dShallows[k] - 0.5) / PAR_CASE) * PALIERS.mer) / SHALLOWS_SLOPE);
       const profondeur = p + (MAX - p) * (1 - bord);
       const c = couleur(profondeur);
       const o = k * 4;

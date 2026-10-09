@@ -471,7 +471,7 @@ const FICHES: Fiche[] = [
     archipelago: '4e',
     name: 'Le viaduc',
     description: 'Des piles et des arches d’ardoise, un tablier de rails, et une locomotive d’acier qui attend le départ.',
-    islet: { x: 8, y: 640 }, // suit la Gare, au second rang des Anciens Ateliers redessinés (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026) ; plus à l'ouest depuis une forme par île (GD-12, 09/10/2026 : sa place d'avant n'avait plus quatre cases d'eau autour d'elle)
+    islet: { x: 8, y: 654 }, // suit la Gare, au second rang des Anciens Ateliers redessinés (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026) ; plus à l'ouest depuis une forme par île (GD-12, 09/10/2026 : sa place d'avant n'avait plus quatre cases d'eau autour d'elle) ; puis rapproché de la Gare, quatre cases d'eau devant elle (relecture du 9 octobre 2026 : loin devant, tourné d'un demi-tour, il ne laissait à la Gare qu'une place libre)
     reward: { xp: 210, chest: {} },
     done: 'Le viaduc tient bon ! La locomotive siffle au-dessus de la mer.',
     draw: viaduc,

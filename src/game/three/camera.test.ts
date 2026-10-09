@@ -154,6 +154,22 @@ describe('La Carte dans la place libre (DA-31)', () => {
     }
   });
 
+  it('« Modifier le plan » garde le cadre entier, quelle que soit la destination, sous la phrase de la place (GD-12, relecture UX UI)', () => {
+    // La tablette, la phrase de la place en haut, Menu et bonhomme contournés à droite, Annuler et Valider en bas.
+    const V = { w: 1024, h: 768 };
+    const libre = { x0: 0, y0: 88, x1: 960, y1: 698 };
+    for (const a of ARCHIPELAGO_IDS)
+      for (const def of mapOf(a)) {
+        const c = cadrageDeLaCarte(a, def.id, V.w, V.h, libre, { region: true });
+        expect(c.auPlancher, `${a} ${def.id}`).toBe(false);
+        const b = worldBounds(a);
+        for (const [x, y] of [[b.minX, b.minY], [b.maxX, b.minY], [b.minX, b.maxY], [b.maxX, b.maxY]]) {
+          const p = vu(c, V, x, def.altitude, y);
+          expect(p.x >= libre.x0 && p.x <= libre.x1 && p.y >= libre.y0 && p.y <= libre.y1, `${a} ${def.id} (${x}, ${y})`).toBe(true);
+        }
+      }
+  });
+
   it('au plancher, l’île du bonhomme hors de la place y entre avec la destination quand les deux y tiennent ; sinon, la destination seule (GD-11, consultant UX UI)', () => {
     // La tablette, panneau ouvert : au plancher dans chaque classe.
     const libre = { x0: 0, y0: 250, x1: 1024, y1: 578 };

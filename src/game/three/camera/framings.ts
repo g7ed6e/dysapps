@@ -137,6 +137,8 @@ export function cadrageDeLaCarte(
   const b = bonhomme && bonhomme !== destination ? islandCenter(bonhomme) : null;
   const ileDuBonhomme = b ? new THREE.Vector3(b.x + 0.5, b.z, b.y + 0.5) : null;
   let avecLeBonhomme = false;
+  /** La destination et ce qui l'entoure comptent dans ce qui doit tenir (voir « Modifier le plan », plus bas). */
+  let withDestination = true;
   const sol = dest?.y ?? altitude;
   const v = new THREE.Vector3();
   const target = new THREE.Vector3();
@@ -164,7 +166,7 @@ export function cadrageDeLaCarte(
         const q = ecran(p);
         ajouter(q.x, q.y);
       }
-    for (const p of [dest, avecLeBonhomme ? ileDuBonhomme : null]) {
+    for (const p of [withDestination ? dest : null, avecLeBonhomme ? ileDuBonhomme : null]) {
       if (!p) continue;
       const q = ecran(p);
       ajouter(q.x - A.cote, q.y - A.haut);
@@ -215,7 +217,16 @@ export function cadrageDeLaCarte(
     return r.x1 - r.x0 <= lw && r.y1 - r.y0 <= lh;
   };
   const plancher = h / (2 * tan * PLANCHER_DE_LA_CARTE);
-  const auPlancher = !tient(plancher);
+  let auPlancher = !tient(plancher);
+  if (auPlancher && region) {
+    // « Modifier le plan » garde le cadre entier de la région (GD-9) : une destination au fond du cadre (au 4e, la Vigie
+    // des signaux ou le Bassin des maquettes, au rang du fond) y ajoutait sa flèche et son nom au-dessus d'elle, et la
+    // Carte passait au plancher, centrée sur elle : la Source des espèces sortait au coin bas droit (GD-12, relecture
+    // UX UI, 9 octobre 2026). Le cadre seul, s'il tient ; la bulle de la flèche se tient dans la place (`tenirLaBulle`, three/labels.ts).
+    withDestination = false;
+    auPlancher = !tient(plancher);
+    if (auPlancher) withDestination = true;
+  }
   let d = plancher;
   if (!auPlancher) {
     // Le plus près où tout tient : la taille à l'écran décroît avec la distance, une dichotomie suffit.

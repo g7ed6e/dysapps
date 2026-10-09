@@ -67,6 +67,13 @@ it('les places des îles futures (GD-12) : dans le cadre, à quatre cases d’ea
   }
 });
 
+it('la terre de chaque lieu, forme comprise, tient dans le cadre de sa région (GD-12)', () => {
+  for (const a of ARCHIPELAGO_IDS) {
+    const c = frameOf(a);
+    for (const d of mapOf(a)) for (const k of landCells(d)) expect(k.x >= c.x0 && k.x < c.x1 && k.y >= c.y0 && k.y < c.y1, `${a} ${d.id} (${k.x}, ${k.y})`).toBe(true);
+  }
+});
+
 it('aucune terre ne chevauche une autre', () => {
   const owner = new Map<string, string>();
   BIOMES.forEach((b) => {

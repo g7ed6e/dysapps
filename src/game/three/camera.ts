@@ -11,7 +11,7 @@ import * as THREE from 'three';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './scenePart';
 import type { BiomeId } from '../biomes';
 import { type PlaceLue, RESERVE_DU_BAS } from '../freeSpace';
-import { type CadreDeCases, islandCenter, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, worldBounds } from '../world/terrain';
+import { type CadreDeCases, islandCenter, viewYaw, viewZone, islandViewPullBack, VISEE_AU_DESSUS_DU_SOL, islandViewTarget, worldBounds } from '../world/terrain';
 import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/framing';
 import { mapOf } from '../world/map';
 import { bornerLeDecalage, type Decalage, estDecale } from './drag';
@@ -151,8 +151,8 @@ export function creerCamera(
     surLaCarte = false;
     const portrait = aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1;
     const avatar = { x: avatarAt.x, y: avatarAt.z, z: avatarAt.y };
-    let c = spot ?? (island ? islandCenter(island) : avatar);
-    let d = (island ? ISLAND_DISTANCE : FOLLOW_DISTANCE) * portrait;
+    let c = spot ?? (island ? islandViewTarget(island) : avatar);
+    let d = (island ? ISLAND_DISTANCE * (spot ? 1 : islandViewPullBack(island)) : FOLLOW_DISTANCE) * portrait;
     const v = island ? ISLAND_VIEW : VIEW;
     // Bonhomme posé sur son île : on cadre la zone (son île et ses voisines), le bonhomme restant au premier tiers.
     if (!island && zone) {

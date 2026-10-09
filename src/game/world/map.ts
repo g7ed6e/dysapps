@@ -6,7 +6,7 @@
 import type { BiomeId } from '../biomes';
 import { archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
 import { silhouetteDe } from './silhouettes';
-import { BOITE_DE_LA_FORME, type ShapeCorner, calmeDeLaForme, featureSide, shapeCorner, inShapeFeature, distanceALaForme, traitDeLaForme, type FormeDeLIle } from './formes';
+import { BOITE_DE_LA_FORME, type ShapeCorner, calmeDeLaForme, inLagoon, featureSide, shapeCorner, inShapeFeature, distanceALaForme, traitDeLaForme, type FormeDeLIle } from './formes';
 import { GD11_GUARDIAN_SQUARES, GUARDIAN_SQUARE_SIDE } from './guardianSquares';
 import { layoutCache, unturnCell, chosenPose, type Quarts, turnCell, turnRectangle } from './placement';
 
@@ -578,7 +578,7 @@ const STARTING_MAP: MapPlace[] = [
   // Anciens Ateliers (4e), sur les monts : redessinés en deux rangs dans leur cadre de 160 × 112 (GD-9, 05/10/2026 ;
   // ils étaient en ligne). Port : l'Atelier, au point de départ. Devant, la Forge, l'Atelier, la Falaise et, au bout,
   // l'île de la LV2 ; derrière, la Gare, le Théâtre et le Cabinet. Chacun garde son dessin (`repere`).
-  // GD-12 (09/10/2026, une forme par île) : trois rangs sur le pas (devant, de y 592 à 632 ; y 672 ; y 716), chaque lieu
+  // GD-12 (09/10/2026, une forme par île) : trois rangs sur le pas (devant, de y 592 à 632 ; de y 668 à 676 ; y 716), chaque lieu
   // à quatre à huit cases d'eau de ses voisines (sept paires à réunir au départ). Devant, la Source, la Forge, l'Atelier
   // (qui ne bouge pas), la Falaise et le Jardin ; au second rang, la Gare, l'Imprimerie, l'Escale, le Théâtre et le
   // Cabinet ; au rang du fond, la Vigie au coin de l'ouest, derrière la Gare, le Bassin au coin de l'est, et entre eux
@@ -587,6 +587,10 @@ const STARTING_MAP: MapPlace[] = [
   // l'Escale, panneau ouvert ; la Falaise un pas plus en avant ne pose plus le nom du Jardin, en portrait, près d'une
   // autre île. Le cadre gagne 24 cases vers le fond (footprint.ts). Chaque lieu garde la vue de sa place de GD-11
   // (`vueDepuis`) et son dessin (`repere`) ; la colonne d'avant les formes reste celle des caméras (terrain/view.ts).
+  // Relecture du 9 octobre 2026 : le Théâtre un pas plus en avant (y 668), l'Imprimerie un pas plus au fond (y 676) ;
+  // panneau ouvert, les noms tus passent de cinq noms vers trois destinations et cinq flèches à trois noms vers deux
+  // destinations et trois flèches (three/mapLabels.test.ts). Le Bassin deux pas plus au fond en taisait moins encore,
+  // mais sa terre passait dans un morceau de plus du monde en blocs (six appels de dessin de plus).
   { id: 'maths-4e-powers', region: 'feu', core: { x: 26, y: 624 }, vueDepuis: { x: 26, y: 620 }, repere: { x: 28, y: 618 }, deplacee: { x: -2, y: 0 }, altitude: 6, ext: e(2, 2, 3, 7), relief: 'montagne', seed: 31 },
   { id: 'maths-4e-algebra', region: 'hauteurs', core: { x: 62, y: 632 }, altitude: 6, ext: e(5, 2, 7, 2), relief: 'collines', seed: 32 },
   { id: 'french-4e-agreement', region: 'montagne', core: { x: 98, y: 612 }, vueDepuis: { x: 94, y: 616 }, repere: { x: 96, y: 618 }, deplacee: { x: 2, y: 0 }, altitude: 6, ext: e(4, 3, 4, 7), relief: 'montagne', seed: 33 },
@@ -626,8 +630,9 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'english-5e-grammar', region: 'hauteurs', core: { x: 101, y: 357 }, vueDepuis: { x: 101, y: 365 }, repere: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 7, 3), relief: 'collines', seed: 62 },
   // LV2 5e : à l'est du Comptoir, dans son alignement (le pont reste droit), en bout de chemin : rien n'en dépend.
   { id: 'lv2-5e-introductions', region: 'basses-terres', core: { x: 133, y: 321 }, vueDepuis: { x: 137, y: 321 }, repere: { x: 133, y: 320 }, altitude: 3, ext: e(2, 2, 7, 5), relief: 'plat', seed: 94 },
-  // Anglais 4e : au second rang, la Gare au coin de l'ouest, derrière la Source, le Théâtre à côté du Cabinet (GD-12).
-  { id: 'english-4e-comprehension', region: 'hauteurs', core: { x: 102, y: 672 }, vueDepuis: { x: 94, y: 660 }, repere: { x: 158, y: 618 }, altitude: 6, ext: e(2, 2, 2, 5), relief: 'collines', seed: 71 },
+  // Anglais 4e : au second rang, la Gare au coin de l'ouest, derrière la Source, le Théâtre à côté du Cabinet, un pas
+  // plus en avant (GD-12).
+  { id: 'english-4e-comprehension', region: 'hauteurs', core: { x: 102, y: 668 }, vueDepuis: { x: 94, y: 660 }, repere: { x: 158, y: 618 }, altitude: 6, ext: e(2, 2, 2, 5), relief: 'collines', seed: 71 },
   // LV2 4e : au bout du premier rang, après la Falaise, en bout de chemin : rien n'en dépend. Sur la Carte au grand
   // texte, quand la flèche désigne l'ouvrage qui l'ouvre, le Jardin sort du bas de la place libre d'une trentaine de
   // pixels (la flèche et son tracé y restent) : un pas vers le fond le ramènerait à vingt, mais le mettrait à deux
@@ -654,7 +659,7 @@ const STARTING_MAP: MapPlace[] = [
   // la Gare et le Théâtre.
   { id: 'history-5e-middle-ages', region: 'basses-terres', core: { x: 137, y: 357 }, vueDepuis: { x: 133, y: 365 }, repere: { x: 129, y: 365 }, altitude: 3, ext: e(4, 3, 2, 7), relief: 'plat', seed: 63 },
   { id: 'geography-5e-resources', region: 'basses-terres', core: { x: 173, y: 405 }, vueDepuis: { x: 161, y: 365 }, repere: { x: 157, y: 365 }, altitude: 3, ext: e(3, 3, 7, 5), relief: 'plat', seed: 64 },
-  { id: 'history-4e-revolutions', region: 'basses-terres', core: { x: 38, y: 672 }, vueDepuis: { x: 34, y: 676 }, repere: { x: 30, y: 676 }, altitude: 6, ext: e(2, 3, 5, 3), relief: 'plat', seed: 73 },
+  { id: 'history-4e-revolutions', region: 'basses-terres', core: { x: 38, y: 676 }, vueDepuis: { x: 34, y: 676 }, repere: { x: 30, y: 676 }, altitude: 6, ext: e(2, 3, 5, 3), relief: 'plat', seed: 73 },
   { id: 'geography-4e-globalization', region: 'basses-terres', core: { x: 70, y: 672 }, vueDepuis: { x: 62, y: 676 }, repere: { x: 58, y: 676 }, altitude: 6, ext: e(2, 2, 5, 5), relief: 'plat', seed: 74 },
   { id: 'history-3e-twentieth-century', region: 'basses-terres', core: { x: -18, y: 964 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 83 },
   { id: 'geography-3e-france', region: 'basses-terres', core: { x: 130, y: 964 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 84 },
@@ -1148,6 +1153,32 @@ function isLandProper(def: IslandDef, x: number, y: number): boolean {
 /** Toutes les cases de terre d'une île, colonne par colonne (calculées une fois, à ne pas modifier). */
 export function landCells(def: IslandDef): readonly Readonly<{ x: number; y: number }>[] {
   return terreDe(def).liste;
+}
+
+const lagoonCache = new Map<BiomeId, { x: number; y: number; quarts: Quarts; cells: readonly Readonly<{ x: number; y: number }>[] }>();
+
+/**
+ * L'eau du lagon d'un lieu et de sa passe (la forme `lagon`, GD-12), case par case, dans le monde, le lieu posé et
+ * tourné : la mer elle-même, dans l'anneau de terre. Vide pour un lieu sans lagon. La mer d'Archipéo y peint ses
+ * hauts-fonds (./sea.ts) ; la vue de l'île la cadre (./terrain/view.ts).
+ */
+export function lagoonWater(def: IslandDef): readonly Readonly<{ x: number; y: number }>[] {
+  const f = silhouetteDe(def.id).forme;
+  if (f?.forme !== 'lagon') return [];
+  const known = lagoonCache.get(def.id);
+  if (known && known.x === def.core.x && known.y === def.core.y && known.quarts === def.quarts) return known.cells;
+  const b = bornesDuCoeur(def);
+  const half = (b.x1 - b.x0) / 2;
+  const box = shapeBox(f);
+  const cells: Readonly<{ x: number; y: number }>[] = [];
+  for (let y = b.y0 - box.devant; y < b.y1 + box.fond; y++)
+    for (let x = b.x0 - box.gauche; x < b.x1 + box.droite; x++) {
+      if (isLand(def, def.core.x + x, def.core.y + y)) continue;
+      if (inLagoon(f, x + 0.5 - (b.x0 + b.x1) / 2, y + 0.5 - (b.y0 + b.y1) / 2, half)) cells.push(Object.freeze(toWorld(def, x, y)));
+    }
+  const frozen = Object.freeze(cells);
+  lagoonCache.set(def.id, { x: def.core.x, y: def.core.y, quarts: def.quarts, cells: frozen });
+  return frozen;
 }
 
 /** Nature du sol d'une case hors du cœur. */
