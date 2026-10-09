@@ -6,12 +6,12 @@ import { HABILLAGES, type Habillage } from '../skin';
 import { toutConstruit } from '../world/budget';
 import { maillageDeLaConstruction } from '../world/construction';
 import { buildMesh } from '../world/mesher';
-import { buildBlockMesh, chunkFaceCount } from '../world/blockMesh';
+import { blockRegions, buildBlockMesh, buildRegionMesh, chunkFaceCount, chunkTouches } from '../world/blockMesh';
 import { hiddenBottomLevel } from '../world/sea';
 import { worldCubes } from '../world/terrain';
 import { KITS } from '../world/architecture';
 import { creerCubes } from './cubes';
-import { ouvrirLeModeDansLesMateriaux } from './arrange';
+import { fixerLesZonesSoulevees, ouvrirLeModeDansLesMateriaux } from './arrange';
 import type { Large } from './offshore';
 import type { Lumiere } from './light';
 import type { Instant, Monde } from './scenePart';
@@ -86,10 +86,22 @@ describe('Le rendu de Blocland ne montre aucune pièce d’architecture', () => 
     expect(tri(terrain)).toBe(chunkFaceCount(buildBlockMesh(cubes, { ...dessous, fondre: true })) * 2);
     ouvrirLeModeDansLesMateriaux(true);
     for (const x of mats) expect(x.customProgramCacheKey()).toBe('blocsamenager');
-    // Dans le mode, le terrain se refait sans fondre ses faces (le lieu choisi se soulève sommet par sommet) : cube pour
-    // cube, les triangles du mailleur (world/mesher.ts).
+    // Dans le mode, sans choix, le terrain garde ses faces fondues (piste 1 du budget de GD-12).
+    c.animer!(0, 0.016, false);
+    expect(tri(terrain)).toBe(chunkFaceCount(buildBlockMesh(cubes, { ...dessous, fondre: true })) * 2);
+    // Un lieu soulevé : les régions qu'il touche se refont sans fondre leurs faces (il se soulève sommet par sommet), les
+    // autres restent fondues.
+    const zone = { x0: 60, y0: 60, x1: 100, y1: 100 };
+    fixerLesZonesSoulevees([zone]);
+    c.animer!(0, 0.016, false);
+    const attendu = [...blockRegions(cubes).values()].reduce((n, r) => n + chunkFaceCount(buildRegionMesh(r, { ...dessous, fondre: !chunkTouches(r, [zone]) })) * 2, 0);
+    expect(tri(terrain)).toBe(attendu);
+    expect(attendu).toBeGreaterThan(chunkFaceCount(buildBlockMesh(cubes, { ...dessous, fondre: true })) * 2);
+    // Tout le monde soulevé : cube pour cube, les triangles du mailleur (world/mesher.ts).
+    fixerLesZonesSoulevees([{ x0: -1000, y0: -1000, x1: 1000, y1: 1000 }]);
     c.animer!(0, 0.016, false);
     expect(tri(terrain)).toBe(buildMesh(cubes, [], dessous).reduce((n, g) => n + g.indices.length / 3, 0));
+    fixerLesZonesSoulevees([]);
     ouvrirLeModeDansLesMateriaux(false);
     for (const x of mats) expect(x.customProgramCacheKey()).toBe('blocs');
     c.animer!(0, 0.016, false);

@@ -147,6 +147,11 @@ describe('relier un lieu fermé', () => {
     // Sur le lieu fermé, tous ses départs possibles.
     const mine = 'french-6e-word-spelling';
     expect(buildableBridges([], mine).map((b) => b.id)).toEqual(linksToIsland(mine, []).map((b) => b.id));
+    // Le plus court d'abord, même quand l'ordre des liaisons du lieu dit autre chose : depuis le trait à sept cases
+    // (GD-12), la Rivière est à 41 cases de la Forêt (un bac), à 18 de la Plaine (un pont) ; sa carte montre le pont.
+    const riviere = 'maths-6e-fractions';
+    expect(buildableBridges([], riviere).map((b) => b.id)).toEqual(linksToIsland(riviere, []).map((b) => b.id));
+    expect(buildableBridges([], riviere)[0]?.id).toBe('maths-6e-calculation-maths-6e-fractions');
   });
 
   it('une liaison qui ne tiendrait pas n’est pas proposée, et ne se pose pas', () => {

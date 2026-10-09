@@ -279,7 +279,8 @@ it('GD-9, choix 1b : pendant le glissé, la grille et l’empreinte (un seul app
     // Mesuré le 7 octobre 2026, après les relectures : 370 à 382 triangles au pire selon la région (la grille sur l'eau
     // seulement, l'empreinte sur son socle, ses croix) ; 406 au 3e une fois ses îles de sciences et d'histoire-géographie
     // arrivées (#371, #378), d'où 420 : le directeur artistique visait « 300 à 400 », sous la marge d'environ 1 000.
-    expect(sol, a).toBeLessThanOrEqual(420);
+    // 422 au 6e avec les formes des îles (GD-12, trait à sept cases) : plafond relevé à 430 (mainteneur, 9 octobre 2026).
+    expect(sol, a).toBeLessThanOrEqual(430);
     expect(plus.drawCalls, a).toBe(1);
     expect(pire.triangles + plus.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
   }

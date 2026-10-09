@@ -13,7 +13,7 @@ import { ALTITUDE, type ArchipelagoId, DANS_LE_CIEL, mapOf } from './map';
 import { appelsDuSol, champDuSol, landMesh, poseDuDecor, trianglesDuSol } from './landMesh';
 import { modelerLeSol } from './drawnModel';
 import { buildMesh, drawCallsOf, faceCount } from './mesher';
-import { buildBlockMesh, chunkFaceCount, type BlockChunk } from './blockMesh';
+import { blockRegions, buildBlockMesh, buildRegionMesh, chunkFaceCount, type BlockChunk } from './blockMesh';
 import { hiddenBottomLevel } from './sea';
 import { MONUMENTS } from './monuments';
 import { PLANS, planCells } from './plans';
@@ -458,32 +458,64 @@ export function linkTriangles(a: ArchipelagoId, kind: BridgeKind, longueur: numb
 }
 
 /**
+ * Dans « Modifier le plan », le lieu choisi et sa réunion se soulèvent sommet par sommet : les morceaux du monde qu'ils
+ * touchent se dessinent face par face, les autres gardent leurs faces fondues (three/cubes.ts, piste 1 du budget de
+ * GD-12). Ils tiennent dans tant de morceaux de côté, où qu'ils soient posés : deux lieux réunis, une case de plus tout
+ * autour, ne dépassent pas `(MORCEAUX_DU_CHOIX − 1) × 32 + 1` cases de côté (budget.test.ts).
+ */
+export const MORCEAUX_DU_CHOIX = 4;
+
+/**
+ * Ce que coûtent de plus, au pire, les morceaux du lieu soulevé dessinés face par face : sur le monde d'aujourd'hui, la
+ * fenêtre de `MORCEAUX_DU_CHOIX` × `MORCEAUX_DU_CHOIX` morceaux où les faces non fondues pèsent le plus.
+ */
+export function choiceUnfusedCost(cubes: readonly VoxelCube[], options: { hiddenBottomsUpTo?: number }): number {
+  const plus = new Map<string, number>();
+  for (const r of blockRegions(cubes).values()) {
+    const unes = chunkFaceCount(buildRegionMesh(r, { ...options, fondre: false }));
+    const fondues = chunkFaceCount(buildRegionMesh(r, { ...options, fondre: true }));
+    plus.set(`${r.rx},${r.ry}`, (unes - fondues) * 2);
+  }
+  const cles = [...plus.keys()].map((k) => k.split(',').map(Number));
+  let pire = 0;
+  for (const [rx0] of cles)
+    for (const [, ry0] of cles) {
+      let n = 0;
+      for (let i = 0; i < MORCEAUX_DU_CHOIX; i++) for (let j = 0; j < MORCEAUX_DU_CHOIX; j++) n += plus.get(`${rx0 + i},${ry0 + j}`) ?? 0;
+      pire = Math.max(pire, n);
+    }
+  return pire;
+}
+
+/**
  * Le pire cas d'une région aménagée (GD-9), tout construit, commandes posées et bulles comprises : le monde d'aujourd'hui
  * sans ses liaisons (`base`), puis autant de liaisons que l'élève peut en poser (`maxLinks`), toutes au plus long —
  * celles qui ouvrent un lieu (lieux − 1, longues : des bacs de 96 cases sur la mer, des ponts dans le ciel), les autres
  * des raccourcis entre lieux ouverts (36 cases au plus, `SHORT_LINK`) — et les réunions : un lieu ne se réunit qu'à un
  * seul autre (lieux ÷ 2 au plus), chacune au plus large (`joinTriangles`). Une réunion est un côté du même graphe
  * planaire que les liaisons (elle ne croise aucune liaison, et aucune liaison ne relie deux lieux réunis) : chacune
- * prend la place d'un raccourci. Les triangles comptés face par face, comme le terrain se dessine pendant « Modifier le
- * plan » (three/cubes.ts : il n'y fond pas ses faces), le pire moment ; les appels, les mêmes dans le mode et hors de lui
- * (un par morceau du monde et par passe).
+ * prend la place d'un raccourci. Le pire moment est « Modifier le plan », un lieu choisi : le terrain fondu, comme hors
+ * du mode, et les morceaux du lieu soulevé face par face (`choix`, `choiceUnfusedCost`) ; les liaisons et les réunions
+ * comptées face par face. Les appels, les mêmes dans le mode et hors de lui (un par morceau du monde et par passe).
  */
-export function worstCaseOfRegion(a: ArchipelagoId): { base: number; liaisons: number; reunions: number; triangles: number; drawCalls: number } {
+export function worstCaseOfRegion(a: ArchipelagoId): { base: number; choix: number; liaisons: number; reunions: number; triangles: number; drawCalls: number } {
   const partie = toutConstruitAvecLesCommandes();
   const terrain = worldCubes(a, partie.progress, partie.world, false);
-  const scene = sceneCost(a, true, false, partie);
-  const appels = sceneCost(a, true, true, partie).drawCalls;
+  const scene = sceneCost(a, true, true, partie);
   const signes = signesCost();
   const dessous = { hiddenBottomsUpTo: hiddenBottomLevel(a) };
-  const liaisonsDAujourdhui = (faceCount(buildMesh(terrain, [], dessous)) - faceCount(buildMesh(terrain.filter((c) => !c.bridge), [], dessous))) * 2;
-  const base = scene.triangles + signes.triangles - liaisonsDAujourdhui;
+  const sansLiaisons = terrain.filter((c) => !c.bridge);
+  const fondu = (cubes: readonly VoxelCube[]) => chunkFaceCount(buildBlockMesh([...cubes], { ...dessous, fondre: true })) * 2;
+  const liaisonsDAujourdhui = fondu(terrain) - fondu(sansLiaisons);
+  const choix = choiceUnfusedCost(sansLiaisons, dessous);
+  const base = scene.triangles + signes.triangles - liaisonsDAujourdhui + choix;
   const lieux = mapOf(a).length;
   const longue = linkTriangles(a, DANS_LE_CIEL[a] ? 'pont' : 'bac', LONG_LENGTH);
   const raccourci = linkTriangles(a, 'pont', SHORT_LENGTH);
   const nReunions = Math.floor(lieux / 2);
   const liaisons = (lieux - 1) * longue + (maxLinks(lieux) - (lieux - 1) - nReunions) * raccourci;
   const reunions = nReunions * joinTriangles(a);
-  return { base, liaisons, reunions, triangles: base + liaisons + reunions, drawCalls: appels + signes.drawCalls };
+  return { base, choix, liaisons, reunions, triangles: base + liaisons + reunions, drawCalls: scene.drawCalls + signes.drawCalls };
 }
 
 /**

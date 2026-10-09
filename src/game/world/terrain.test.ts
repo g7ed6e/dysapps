@@ -1,4 +1,5 @@
 import { islandsOf } from './archipelago';
+import { GD11_GUARDIAN_SQUARES } from './guardianSquares';
 import { placedLinksOf } from './linkGeometry';
 import { BLOC, BIOMES, missionsJouables } from '../biomes';
 import { ARCHIPELAGO_IDS, CORE, MAP, bornesDuCoeur, coeurDe, isLand, islandDef, landBox, landCells, mapOf, startingIsland } from './map';
@@ -180,8 +181,8 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   expect(trail.length).toBeGreaterThanOrEqual(4);
   expect(trail.every((c) => c.ghost)).toBe(true);
   expect(trail.filter((c) => c.texture === 'galet').every((c) => c.z >= 1 && c.z <= 4)).toBe(true);
-  // Forêt–Ferme : un pont, en planches, à plat (même altitude).
-  const ghost = bridgeCubes([], 'french-6e-phonology-french-6e-grammar-spelling').filter((c) => c.ghost);
+  // Plaine–Ferme : un pont, en planches, à plat (même altitude).
+  const ghost = bridgeCubes([], 'french-6e-grammar-spelling-maths-6e-calculation').filter((c) => c.ghost);
   expect(ghost.length).toBeGreaterThanOrEqual(4);
   expect(ghost.filter((c) => c.texture !== 'lanterne' && c.texture !== 'tronc').every((c) => c.texture === 'planches' && c.z === 0)).toBe(true);
   // Une lanterne sur un poteau à chaque bout, à côté du tablier (jamais sur le passage).
@@ -189,7 +190,7 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   expect(lanterns).toHaveLength(2);
   const deck = new Set(ghost.filter((c) => c.texture === 'planches').map((c) => `${c.x},${c.y}`));
   for (const l of lanterns) expect(deck.has(`${l.x},${l.y}`)).toBe(false);
-  const built = bridgeCubes(['french-6e-phonology-french-6e-grammar-spelling'], 'french-6e-phonology-french-6e-grammar-spelling').filter((c) => !c.ghost);
+  const built = bridgeCubes(['french-6e-grammar-spelling-maths-6e-calculation'], 'french-6e-grammar-spelling-maths-6e-calculation').filter((c) => !c.ghost);
   expect(built.length).toBe(ghost.length);
   // Mine–Carrière : trop loin tant que la Mine est fermée, aucun cube de pont côté Carrière.
   expect(bridgeCubes([], 'french-6e-letter-confusion-french-6e-word-spelling')).toHaveLength(0);
@@ -281,6 +282,17 @@ it('avec les sentinelles (Archipéo, lot 6), le Gardien est là dès l’ouvertu
 });
 
 describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octobre 2026)', () => {
+  it('GD-12 : les 51 carrés des Gardiens ne bougent pas, qu’une île ait pris sa forme ou non', () => {
+    // Une île qui a sa forme garde le carré de GD-11 (figé) ; les autres le retrouvent par la recherche. Le seuil de 75 %
+    // et la part vue de chaque Gardien se vérifient plus bas, sur les mêmes carrés.
+    expect(Object.keys(GD11_GUARDIAN_SQUARES)).toHaveLength(51);
+    expect(Object.keys(GD11_GUARDIAN_SQUARES).sort()).toEqual(BIOMES.map((b) => b.id).sort());
+    for (const b of BIOMES) {
+      const s = guardianSpot(b.id);
+      expect({ x: s.x, y: s.y, palier: s.palier }, b.id).toEqual(GD11_GUARDIAN_SQUARES[b.id]);
+    }
+  });
+
   it('chaque île a sa place, sans repli : les îles ont grandi (« Agrandir les îles », 8 octobre 2026)', () => {
     // Mesuré le 8 octobre 2026, avant GD-11 point 3 : 23 îles sur 51 au repli. Depuis que le cœur a grandi, aucune.
     // Avant la règle « rien ne cache le Gardien » (relecture des planches, 8 octobre 2026) : 47 îles au palier 1, 3 au

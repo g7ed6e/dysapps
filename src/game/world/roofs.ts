@@ -31,14 +31,16 @@ export type Couverture = 'ardoise' | 'terre-cuite';
  * #3E3636 pour la Vigie des signaux et le Bassin des maquettes, enneigée pour le Tremplin des forces et la Ruche des
  * réseaux. Depuis que les îles ont grandi (GD-11, 8 octobre 2026), la Mine est voisine de la Pointe, et le Belvédère
  * du Verger : leur terre cuite passe à la Rivière des fractions et au Studio des ondes, les seules places qui ne
- * touchent aucune autre terre cuite (à confirmer par le directeur artistique). Vérifié par construction.test.ts
- * (« deux îles voisines »).
+ * touchent aucune autre terre cuite (à confirmer par le directeur artistique). Depuis les formes des îles (GD-12,
+ * 8 octobre 2026), le Hangar des inventions est voisin de la Ferme : sa terre cuite passe à la Vallée du vivant, une
+ * autre île de sciences, qui ne touche aucune autre terre cuite (l'échange que la DA prévoit à SC-3, confirmé par le
+ * directeur artistique le 8 octobre 2026). Vérifié par construction.test.ts (« deux îles voisines »).
  */
 export const TERRE_CUITE_SUR: readonly string[] = [
   'french-6e-grammar-spelling',
   'maths-6e-fractions',
   'geography-6e-living',
-  'technology-6e-objects',
+  'life-earth-sciences-6e-living-world',
   'english-5e-vocabulary',
   'geography-5e-resources',
   'life-earth-sciences-5e-active-planet',

@@ -7,7 +7,7 @@
 import { type BiomeId, BIOMES, BLOC, BLOCKS, SCIENCE_SUBJECTS } from '../biomes';
 import type { World } from '../engine';
 import type { VoxelCube } from './cube';
-import { type ArchipelagoId, archipelagoOfIsland, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, tirage, turnInWorld } from './map';
+import { type ArchipelagoId, archipelagoOfIsland, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, coreCornerGround, tirage, turnInWorld } from './map';
 import { turnCell } from './placement';
 import { type BridgeDef, buildableBridges, bridgeState, getBridge, isBiomeUnlocked, linkKind, opensAnIsland, reachableIslands } from './archipelago';
 import { placedLinksOf } from './linkGeometry';
@@ -169,6 +169,8 @@ function poserLIle(
     biome.subject === 'history-geography' ||
     SCIENCE_SUBJECTS.includes(biome.subject);
   const h = (x: number, y: number) => groundHeight(index, x, y);
+  // Le sol du lieu : celui de son cœur, et de sa côte là où il suit la forme de l'île vers son trait (GD-12).
+  const sol = grassy ? GRASS : block.side;
   // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
   // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
   const taken = new Set<number>();
@@ -208,14 +210,16 @@ function poserLIle(
     for (let d = 1; d <= DEPTH; d++) putSol(c.x, c.y, -d, BLOCKS[BLOC.terre].side);
     const top = h(x, y);
     if (top > 0) putSol(c.x, c.y, 0, BLOCKS[BLOC.terre].side);
-    putSol(c.x, c.y, top, grassy ? GRASS : block.side);
+    // Dans un coin arrondi du cœur d'une île qui a une forme (GD-12), le sable de la plage ou le sol de la côte.
+    const coin = coreCornerGround(def, c.x, c.y);
+    putSol(c.x, c.y, top, coin ? GROUND_COLOR[coin] : sol);
   }
   // Le paysage autour du cœur : collines, pics, lacs, cratère, sable des plages, neige des sommets, puis le décor.
   const scenery = landscape(def);
   for (const c of scenery) {
     for (let d = 1; d <= DEPTH; d++) putSol(c.x, c.y, Math.min(0, c.h) - d, underground(def, c, c.h + d));
     for (let z = 0; z < c.h; z++) putSol(c.x, c.y, z, underground(def, c, c.h - z));
-    putSol(c.x, c.y, c.h, GROUND_COLOR[c.ground]);
+    putSol(c.x, c.y, c.h, c.placeGround ? sol : GROUND_COLOR[c.ground]);
   }
   DECOR[biome.id](putDecor, (x, y) => h(x + LAYOUT_PAD.x, y + LAYOUT_PAD.y));
   // Les bornes de mission : un socle du bloc de l'île, une ardoise étoilée dessus. Délavées avec l'île quand elle est fermée.

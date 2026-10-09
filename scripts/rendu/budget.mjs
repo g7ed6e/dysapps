@@ -70,7 +70,8 @@ try {
         // La lueur des lanternes allumées, la nuit (GD-10).
         lueurs: budget.lueursCost(a),
         plafond: budget.PLAFOND_DU_MONDE_EN_BLOCS,
-        // Le pire cas d'une région aménagée (GD-9) : toutes les liaisons au plus long, les raccourcis, les réunions.
+        // Le pire cas d'une région aménagée (GD-9) : le lieu soulevé face par face, toutes les liaisons au plus long, les
+        // raccourcis, les réunions.
         pire: budget.worstCaseOfRegion(a),
       },
     };
@@ -105,7 +106,7 @@ try {
       console.log(`La lueur des lanternes allumées, la nuit (\`lueursCost\`) : ${n(b.lueurs.triangles)} triangles, ${b.lueurs.drawCalls} appels ; avec tout ce qui précède : ${n(nuit.triangles)} triangles, ${nuit.drawCalls} appels${nuitDepasse}.`);
       const p = b.pire;
       const pireDepasse = p.triangles > b.plafond.triangles || p.drawCalls > b.plafond.drawCalls ? ' ⚠' : '';
-      console.log(`Au pire, la région aménagée (GD-9, \`worstCaseOfRegion\`) : ${n(p.triangles)} triangles (${n(p.base)} sans liaisons, ${n(p.liaisons)} de liaisons au plus long, ${n(p.reunions)} de réunions), ${p.drawCalls} appels${pireDepasse}.`);
+      console.log(`Au pire, la région aménagée (GD-9, \`worstCaseOfRegion\`) : ${n(p.triangles)} triangles (${n(p.base)} sans liaisons, dont ${n(p.choix)} pour le lieu soulevé face par face, ${n(p.liaisons)} de liaisons au plus long, ${n(p.reunions)} de réunions), ${p.drawCalls} appels${pireDepasse}.`);
     }
   }
 } finally {

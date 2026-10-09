@@ -102,6 +102,9 @@ const GRILLE = [
   'world/silhouettes/5e',
   'world/silhouettes/4e',
   'world/silhouettes/3e',
+  // La forme de chaque île (GD-12), en repère d'île : le catalogue des formes, et les carrés des Gardiens qu'elles gardent.
+  'world/formes',
+  'world/guardianSquares',
   // Les modèles des personnages en cubes, en repère propre : la grille les pose, les vues les dessinent (R6).
   'world/characters/ascii',
   'world/characters/creatures',

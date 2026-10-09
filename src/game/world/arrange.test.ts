@@ -51,6 +51,12 @@ const partie = (): World => toutConstruit().world;
 /** Le lieu qu'on déplace dans ces tests : le Volcan des décimaux (6e), relié à la Plaine et à la Tour. */
 const VOLCAN: BiomeId = 'maths-6e-decimals';
 
+/**
+ * La Rivière des fractions (6e), reliée à la Plaine et au Laboratoire : depuis les formes des îles (GD-12), le Volcan,
+ * au coin de devant, n'a que cinq à sept places par quart de tour ; on déplace la Rivière quand il en faut beaucoup.
+ */
+const RIVIERE: BiomeId = 'maths-6e-fractions';
+
 /** Le monde, une fois l'action faite (l'action doit réussir). */
 function apres(r: ReturnType<typeof moveIsland>): World {
   if (!r.ok) throw new Error(`refusée : ${r.reason}`);
@@ -133,13 +139,13 @@ describe('les places des lieux', () => {
     expect(prises).toBeGreaterThan(0);
   });
 
-  it('une place qui colle le lieu à un voisin le dit (« Réunir », choix 2a) ; sa place de départ, voisine de la Ferme, aussi', () => {
+  it('une place qui colle le lieu à un voisin le dit (« Réunir », choix 2a) ; sa place de départ, voisine de la Baie, aussi', () => {
     const w = partie();
     const TOUR = 'french-6e-reading' as BiomeId;
     expect(joinCandidatesAt(w, TOUR, spotOf(w, TOUR))).toEqual(joinCandidates(w, TOUR));
     expect(joinCandidates(w, TOUR).length).toBeGreaterThan(0);
     // Loin de tous : aucune réunion.
-    const loin = freeSpots(w, VOLCAN).find((s) => !joinCandidatesAt(w, VOLCAN, s).length);
+    const loin = freeSpots(w, RIVIERE).find((s) => !joinCandidatesAt(w, RIVIERE, s).length);
     expect(loin).toBeDefined();
   });
 
@@ -165,11 +171,18 @@ describe('les places des lieux', () => {
 });
 
 describe('les liaisons à reposer', () => {
-  /** Une place du Volcan (tourné) qui défait au moins une de ses liaisons. */
+  /**
+   * Le lieu qu'on déplace ici : la Mine des lettres, entre la Forêt et la Carrière. Depuis les formes des îles (GD-12),
+   * la mer est plus large entre les lieux et les liaisons se retracent presque partout ; la Mine a encore des places
+   * qui en défont.
+   */
+  const MINE: BiomeId = 'french-6e-letter-confusion';
+
+  /** Une place de la Mine (tournée ou non) qui défait au moins une de ses liaisons. */
   function placeQuiDefait(w: World) {
-    for (const turn of [1, 2, 3] as const)
-      for (const s of freeSpots(w, VOLCAN, turn)) {
-        const cassees = linksBrokenBy(w, VOLCAN, s);
+    for (const turn of [1, 2, 3, 0] as const)
+      for (const s of freeSpots(w, MINE, turn)) {
+        const cassees = linksBrokenBy(w, MINE, s);
         if (cassees.length) return { s, cassees };
       }
     throw new Error('aucune place ne défait de liaison');
@@ -178,7 +191,7 @@ describe('les liaisons à reposer', () => {
   it('une liaison qui ne tient plus devient « à reposer » : construite, gardée, ses lieux restent ouverts', () => {
     const w = partie();
     const { s, cassees } = placeQuiDefait(w);
-    const w2 = apres(moveIsland(w, VOLCAN, s));
+    const w2 = apres(moveIsland(w, MINE, s));
     expect(linksToRelink(w2, '6e')).toEqual(cassees);
     expect(w2.links).toEqual(w.links);
     expect(reachableIslands(w2.links)).toEqual(reachableIslands(w.links));
@@ -192,7 +205,7 @@ describe('les liaisons à reposer', () => {
   it('elle se repose gratuitement entre deux voisins au choix, sans fermer un lieu ni en défaire une autre', () => {
     const w = partie();
     const { s, cassees } = placeQuiDefait(w);
-    const w2 = apres(moveIsland(w, VOLCAN, s));
+    const w2 = apres(moveIsland(w, MINE, s));
     const id = cassees[0];
     const choix = relinkChoices(w2, id);
     expect(choix.length).toBeGreaterThan(0);
@@ -210,7 +223,7 @@ describe('les liaisons à reposer', () => {
   it('revenir à la carte de départ vide la disposition et rend les liaisons posées, aucune perdue', () => {
     const w = partie();
     const { s } = placeQuiDefait(w);
-    const w2 = apres(moveIsland(w, VOLCAN, s));
+    const w2 = apres(moveIsland(w, MINE, s));
     const w3 = backToStartingMap(w2, '6e')!;
     expect(w3.layout).toBeUndefined();
     expect(w3.links).toEqual(w.links);
@@ -329,17 +342,19 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
     expect(posesOfLayout(ancienne().layout).size).toBe(0);
   });
 
-  it('l’Horloge, plus large depuis que les îles ont grandi (GD-11), touche aussi la Pointe et la Vallée : la Fouille trouverait sa place, pas la Vallée ; c’est l’Horloge qui se décale, à la place libre la plus proche, et rien d’autre ne bouge', () => {
+  it('depuis les formes des îles (GD-12), la Fouille, que l’élève n’a pas déplacée, trouve une place libre : elle s’y décale, l’Horloge reste où l’élève l’a mise, et rien d’autre ne bouge', () => {
     const avant = ancienne();
     const w = settleNewPlaces(avant);
     const islands = w.layout?.['6e']?.islands ?? {};
-    expect(Object.keys(islands)).toEqual([HORLOGE]);
-    expect(islands[HORLOGE]).not.toEqual(startingSpot(FOUILLE));
-    expect(islands[HORLOGE]?.turn).toBe(0);
+    expect(Object.keys(islands).sort()).toEqual([HORLOGE, FOUILLE].sort());
+    expect(islands[HORLOGE]).toEqual(startingSpot(FOUILLE));
+    expect(islands[FOUILLE]).not.toEqual(startingSpot(FOUILLE));
+    expect(islands[FOUILLE]?.turn).toBe(0);
     expect(fittingPlaces('6e', islands)).not.toBeNull();
     const poses = posesOfLayout(w.layout);
     expect(poses.get(HORLOGE)).toBeDefined();
-    for (const id of [FOUILLE, POINTE, VALLEE]) expect(poses.has(id), id).toBe(false);
+    expect(poses.get(FOUILLE)).toBeDefined();
+    for (const id of [POINTE, VALLEE]) expect(poses.has(id), id).toBe(false);
     // Aucune progression ne se perd : liaisons, réunions et chantiers ne sont pas dans la disposition des places.
     expect(w.links).toBe(avant.links);
   });
@@ -442,37 +457,37 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
   }
 
   it('les îles ont grandi (GD-11) : une paire réunie trop rapprochée s’écarte d’un pas, et reste réunie ; rien ne se perd', () => {
-    const HANGAR: BiomeId = 'technology-6e-objects';
-    const avant = reunisTropPres(VOLCAN, HANGAR, -1, 0);
+    const LABO: BiomeId = 'physics-chemistry-6e-matter-energy';
+    const avant = reunisTropPres(RIVIERE, LABO, 1, 0);
     // Sans rien faire, la région ne tiendrait plus et reviendrait toute à la carte de départ, sans sa réunion.
     expect(fittingPlaces('6e', avant.layout!['6e']!.islands!)).toBeNull();
     expect(posesOfLayout(avant.layout).size).toBe(0);
     const w = settleNewPlaces(avant);
     const islands = w.layout?.['6e']?.islands ?? {};
     expect(fittingPlaces('6e', islands)).not.toBeNull();
-    // Le Volcan reste où l'élève l'a mis ; le Hangar des inventions s'écarte d'un pas, et les deux restent réunis, leur construction
-    // posable entre eux.
-    expect(islands[VOLCAN]).toEqual(avant.layout!['6e']!.islands![VOLCAN]);
-    const [s, t] = [spotOf(avant, HANGAR), spotOf(w, HANGAR)];
+    // La Rivière reste où l'élève l'a mise ; le Laboratoire des éléments s'écarte d'un pas, et les deux restent réunis,
+    // leur construction posable entre eux.
+    expect(islands[RIVIERE]).toEqual(avant.layout!['6e']!.islands![RIVIERE]);
+    const [s, t] = [spotOf(avant, LABO), spotOf(w, LABO)];
     expect(Math.abs(s.x - t.x) + Math.abs(s.y - t.y)).toBe(1);
     expect(w.layout?.['6e']?.joined).toEqual(avant.layout?.['6e']?.joined);
-    expect(joinCandidates({ ...w, layout: { ...w.layout, '6e': { ...w.layout!['6e']!, joined: [] } } }, VOLCAN)).toContain(HANGAR);
+    expect(joinCandidates({ ...w, layout: { ...w.layout, '6e': { ...w.layout!['6e']!, joined: [] } } }, RIVIERE)).toContain(LABO);
     expect(w.links).toBe(avant.links);
     expect(w.parts).toBe(avant.parts);
   });
 
   it('les îles ont grandi (GD-11) : une paire réunie qui ne peut pas s’écarter laisse la région à la carte de départ, sans rien perdre', () => {
-    // La Mine des lettres et la Fouille des siècles, réunies en travers (le long des y), la Mine rapprochée d'un pas en
-    // x : aucun pas ne les écarte en gardant leur construction.
-    const MINE: BiomeId = 'french-6e-letter-confusion';
-    const avant = reunisTropPres(MINE, FOUILLE, 1, 0);
+    // La Ferme et le Volcan, réunis (GD-12), la Ferme un pas plus à l'est, trop près de la Forêt : la paire ne trouve
+    // aucun pas qui la sépare de la Forêt, lieu de départ qui ne bouge pas, en gardant sa construction.
+    const FERME: BiomeId = 'french-6e-grammar-spelling';
+    const avant = reunisTropPres(FERME, VOLCAN, 1, 0);
     expect(fittingPlaces('6e', avant.layout!['6e']!.islands!)).toBeNull();
     const w = settleNewPlaces(avant);
     // Rien ne change dans la sauvegarde (ni les places, ni la réunion, ni les liaisons, ni les chantiers) : la région
     // se montre à la carte de départ (`posesOfLayout`), sa réunion n'est pas posée (`joinsOf`, ./appliedLayout.ts).
     expect(w).toBe(avant);
     expect(posesOfLayout(w.layout).size).toBe(0);
-    expect(w.layout?.['6e']?.joined).toEqual([[MINE, FOUILLE]]);
+    expect(w.layout?.['6e']?.joined).toEqual([[FERME, VOLCAN]]);
   });
 
   it('une disposition qui tient, ou pas de disposition, reste la même', () => {

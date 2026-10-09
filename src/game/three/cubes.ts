@@ -14,7 +14,7 @@ import { hiddenBottomLevel } from '../world/sea';
 import { gesteFini, hauteurDuGeste } from '../world/pose';
 import { avanceeDuFondu, couchesPosees, cubesPartis, hauteurDansLaVague, planDeLaVague, type PlanDeLaVague } from '../world/wave';
 import { maillageAvecLaVague, vagueEnBlocs, type QueueDeLaVague } from '../world/waveMesh';
-import { blockRegions, buildBlockMesh, buildRegionMesh } from '../world/blockMesh';
+import { blockRegions, buildBlockMesh, buildRegionMesh, chunkTouches } from '../world/blockMesh';
 import { couleurDuFondu, maillageDuFondu, type FonduDeLaPose } from '../world/fadeMesh';
 import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendering';
@@ -26,7 +26,7 @@ import { creerLueurs } from './lanternGlow';
 import { AMBIENCE } from '../world/daylight';
 import type { Lumiere } from './light';
 import { blockMeshOf, meshOf } from './meshes';
-import { modeOuvertDansLesMateriaux, suivreLeMode } from './arrange';
+import { modeOuvertDansLesMateriaux, suivreLeMode, suivreLesZonesSoulevees, zonesSouleveesDuMode } from './arrange';
 import type { Instant, Monde, PartieDeLaScene } from './scenePart';
 import { creerSol } from './ground';
 
@@ -151,6 +151,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   // Blocland : la lueur des lanternes allumées la nuit (GD-10, le phare du large fini), sur l'eau ou sans mer (Îles du Ciel).
   const lueurs = sol ? null : creerLueurs(scene, lumiere, AMBIENCE[archipel].sky ? null : WATER_LEVEL);
   const neplusSuivreLeMode = enBlocs ? suivreLeMode(() => (aRefaire = true)) : () => {};
+  const neplusSuivreLesZones = enBlocs ? suivreLesZonesSoulevees(() => (aRefaire = true)) : () => {};
   /**
    * Blocland : les maillages de chaque région du monde, faces fondues ou non, avec la signature de ses cubes. Une pose ne
    * refait que les régions qu'elle touche ; celles de l'autre état (fondu, ou non dans le mode) restent de côté, hors de
@@ -174,20 +175,26 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   /** La vague à part (Blocland), refaite à chaque terrain. */
   let maillagesDeLaVague: THREE.Mesh[] = [];
 
-  /** Le terrain de Blocland, région par région : seules les régions dont les cubes ont changé sont refaites. */
+  /**
+   * Le terrain de Blocland, région par région : seules les régions dont les cubes ont changé sont refaites. Dans le mode,
+   * seules les régions que touche ce qu'il soulève (le lieu choisi, `zonesSouleveesDuMode`) se dessinent face par face ;
+   * les autres gardent leurs faces fondues (piste 1 du budget de GD-12).
+   */
   const poserLesRegions = (cubes: VoxelCube[]) => {
-    const fondre = !modeOuvertDansLesMateriaux();
-    const ici = fondre ? regions.fondues : regions.unes;
-    const ailleurs = fondre ? regions.unes : regions.fondues;
-    // Les régions de l'autre état quittent la scène (gardées de côté).
-    for (const r of ailleurs.values()) for (const m of r.meshes) terrain.remove(m);
+    const mode = modeOuvertDansLesMateriaux();
+    const zones = mode ? zonesSouleveesDuMode() : [];
     const neuves = blockRegions(cubes);
-    for (const [k, r] of ici) {
-      if (neuves.get(k)?.signature === r.signature) continue;
-      jeter(r.meshes);
-      ici.delete(k);
-    }
+    for (const m of [regions.fondues, regions.unes])
+      for (const [k, r] of m) {
+        if (neuves.get(k)?.signature === r.signature) continue;
+        jeter(r.meshes);
+        m.delete(k);
+      }
     for (const [k, region] of neuves) {
+      const fondre = !chunkTouches(region, zones);
+      const ici = fondre ? regions.fondues : regions.unes;
+      // La même région dans l'autre état quitte la scène (gardée de côté).
+      for (const m of (fondre ? regions.unes : regions.fondues).get(k)?.meshes ?? []) terrain.remove(m);
       let r = ici.get(k);
       if (!r) ici.set(k, (r = { signature: region.signature, meshes: buildRegionMesh(region, { ...dessous, fondre }).map(blockMeshOf) }));
       for (const m of r.meshes) if (m.parent !== terrain) terrain.add(m);
@@ -473,6 +480,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     },
     dispose: () => {
       neplusSuivreLeMode();
+      neplusSuivreLesZones();
       vague = null;
       if (geste) geste.enAttente = null;
       finirLeGeste();

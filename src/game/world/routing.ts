@@ -5,6 +5,8 @@
 // aucun lieu, aucun écueil, aucune autre liaison. Courte (un pont), elle fait 36 cases au plus ; longue (un bac), 96.
 // Code pur, sans Three.js : il trace les liaisons posées, dans l'ordre où elles l'ont été, puis dit si une liaison de
 // plus tiendrait, et le geste « Aménager » s'en servira (`spotPossible`).
+import { onFixedGuardianSquare } from './guardianSquares';
+import { silhouetteDe } from './silhouettes';
 import { BIOMES, type BiomeId } from '../biomes';
 import { ARCHIPELAGOS, type BridgeDef } from './archipelago';
 import { decorate, LANDMARK_OF, landmark } from './decor';
@@ -187,8 +189,11 @@ export function possibleLandings(def: IslandDef): readonly LocalLanding[] {
   let marche = walkableCache.get(def.id);
   if (!marche) walkableCache.set(def.id, (marche = walkableCells(def, haut)));
   const ouLonMarche = marche;
+  const forme = silhouetteDe(def.id).forme !== undefined;
   const libre = (x: number, y: number, dx: number, dy: number) => {
     for (let k = 0; k <= 1; k++) if (haut.has(`${x - k * dx},${y - k * dy}`)) return false;
+    // Ni l'arrivée ni sa case d'entrée sur le carré figé du Gardien d'une île qui a sa forme (GD-12).
+    for (let k = 0; k <= 1; k++) if (onFixedGuardianSquare(def.id, forme, x - k * dx, y - k * dy)) return false;
     // Le bonhomme doit pouvoir gagner le cœur du lieu à pied depuis son arrivée.
     return ouLonMarche.has(`${x},${y}`);
   };

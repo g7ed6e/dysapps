@@ -15,7 +15,7 @@ import { sonDePose } from './sound';
 import { mesuresDemandees } from './rendering';
 import type { Habillage } from './skin';
 import { type ArchipelagoId, archipelagoOfIsland } from './world/archipelagos';
-import { type Direction, groupAt, joinCandidates, joinedWith, joinIslands, joinsIn, linksToRelink, NO_MORE_ROOM, placeIn, spotOf, stationOf, currentLandings } from './world/arrange';
+import { type Direction, groupAt, joinCandidates, joinedWith, joinIslands, joinsIn, liftPartsOf, linksToRelink, NO_MORE_ROOM, placeIn, spotOf, stationOf, currentLandings } from './world/arrange';
 import {
   type ArrangeChoice,
   choiceFits,
@@ -423,7 +423,8 @@ export function useAmenagement({
       const zone = emprise(r.world, choix.id);
       const g: GesteEnCours = { apres: r.world, ligne: apres.ligne, phrase: apres.lu, timers: [], remonte: true, rechoisir };
       enCours.current = g;
-      setGeste({ seq: ++seq.current, phase: 'descend', zone, debut: performance.now(), dureeMs: DESCENTE_MS, bas: 0, haut: 0 });
+      const zoneParts = liftPartsOf(r.world, choix.id);
+      setGeste({ seq: ++seq.current, phase: 'descend', zone, ...(zoneParts ? { zoneParts } : {}), debut: performance.now(), dureeMs: DESCENTE_MS, bas: 0, haut: 0 });
       g.timers.push(window.setTimeout(finirLeGeste, DESCENTE_MS));
       return;
     }
@@ -444,14 +445,17 @@ export function useAmenagement({
     enCours.current = g;
     const ancienne = gestureZone(emprise(w, id));
     const nouvelle = gestureZone(emprise(r.world, id));
-    setGeste({ ...base, seq: ++seq.current, phase: 'demonte', zone: ancienne, autre: nouvelle, debut: performance.now() });
+    // Les bandes de la terre (GD-12) : un lieu qui a une forme se démonte sans prendre la côte d'un voisin emboîté.
+    const partsAvant = liftPartsOf(w, id);
+    const partsApres = liftPartsOf(r.world, id);
+    setGeste({ ...base, seq: ++seq.current, phase: 'demonte', zone: ancienne, ...(partsAvant ? { zoneParts: partsAvant } : {}), autre: nouvelle, debut: performance.now() });
     // Les captures tiennent le geste dans son démontage (`__dysappsGesteA`) : il ne passe pas au remontage.
     if (typeof window.__dysappsGesteA === 'number' && (import.meta.env.DEV || mesuresDemandees())) return;
     g.timers.push(
       window.setTimeout(() => {
         g.remonte = true;
         arrange(r.world);
-        setGeste({ ...base, dureeMs: GESTE_DU_LIEU.remonteMs, seq: ++seq.current, phase: 'remonte', zone: nouvelle, autre: ancienne, debut: performance.now() });
+        setGeste({ ...base, dureeMs: GESTE_DU_LIEU.remonteMs, seq: ++seq.current, phase: 'remonte', zone: nouvelle, ...(partsApres ? { zoneParts: partsApres } : {}), autre: ancienne, debut: performance.now() });
         g.timers.push(window.setTimeout(finirLeGeste, GESTE_DU_LIEU.remonteMs));
       }, GESTE_DU_LIEU.demonteMs),
     );
