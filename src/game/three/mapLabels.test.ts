@@ -222,10 +222,12 @@ function laCarte(
   // Les poids de la scène (`mapLabelWeights`) : la destination 2, une île fermée qu'aucun ouvrage ne relie à une île
   // ouverte 0,5, les autres 1 ; l'île touchée ne se tait jamais.
   const touchee = selected ? iles.findIndex((b) => b.id === selected) : -1;
-  const weights = mapLabelWeights(iles.map((b) => ({ id: b.id, closed: fermees.includes(b.id) })), dest, selected);
-  const poids = { weights, ...(parDefaut && indice >= 0 ? { destination: indice } : {}), ...(arrivee >= 0 ? { arrivee } : {}), avatarIsland, ...(touchee >= 0 ? { selected: touchee } : {}) };
-  // La Carte où rien n'est touché (`avecLIleTouchee`, comme `labels.ts`).
-  const poidsSansLui: CarteDesEtiquettes = { weights: mapLabelWeights(iles.map((b) => ({ id: b.id, closed: fermees.includes(b.id) })), dest, null), ...(parDefaut && indice >= 0 ? { destination: indice } : {}), ...(arrivee >= 0 ? { arrivee } : {}), avatarIsland };
+  const lesPoids = (touchee: string | null) => mapLabelWeights(iles.map((b) => ({ id: b.id, closed: fermees.includes(b.id) })), dest, touchee);
+  const poids: CarteDesEtiquettes = { weights: lesPoids(selected ?? null), ...(parDefaut && indice >= 0 ? { destination: indice } : {}), ...(arrivee >= 0 ? { arrivee } : {}), avatarIsland, ...(touchee >= 0 ? { selected: touchee } : {}) };
+  // La Carte où rien n'est touché (`avecLIleTouchee`, comme `labels.ts`) : celle-ci sans la clé `selected`, ses poids
+  // calculés sans l'île touchée (une île fermée touchée y pèse 1 au lieu de 0,5, `mapLabelWeights`).
+  const { selected: _touchee, ...sansLaTouchee } = poids;
+  const poidsSansLui: CarteDesEtiquettes = { ...sansLaTouchee, weights: lesPoids(null) };
   // Le tracé de l'ouvrage, que les étiquettes évitent si elles peuvent (`souplesDuTrace`).
   const souples = parDefaut && def ? boitesDuTrace(casesDeLOuvrage(def, POSEES).map((p) => ecran(p.x + 0.5, p.z + 1, p.y + 0.5))) : [];
   // Le placement simple d'abord, puis une recherche complète pour tout le placement du cadrage s'il tait un nom ou en

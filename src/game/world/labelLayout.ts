@@ -69,6 +69,17 @@ function horsDuCadre(p: LabelBox, bounds: { w: number; h: number }): boolean {
 }
 
 /**
+ * L'île `i` se voit-elle sur la Carte : son centre dans le cadre et sous aucune zone de l'interface ni bulle (`couvert`) ?
+ * Le seul filtre des noms qu'on compte, pour le placement, la recherche et l'île touchée.
+ */
+function ileVue(iles: readonly { x: number; y: number }[], vue: { couvert: readonly LabelBox[]; bounds: { w: number; h: number } }): (i: number) => boolean {
+  return (i) => {
+    const p = { ...iles[i], w: 1, h: 1 };
+    return !horsDuCadre(p, vue.bounds) && !vue.couvert.some((z) => overlap(p, z, 0) > 0);
+  };
+}
+
+/**
  * Ce que coûte de couvrir un obstacle souple (le tracé de l'ouvrage suggéré, GD-7), par pixel couvert, quand une
  * étiquette ou un obstacle dur coûte 1 : une étiquette s'en écarte si une place proche est libre, mais le couvre plutôt
  * que d'en couvrir une autre.
@@ -712,10 +723,7 @@ function reparerLaCarte(
   const { couvert, obstacles, bounds, gap, recherche } = vue;
   // L'écart permis, en hauteurs d'étiquette : `ECART_MAX`, sauf au dernier recours (`ECART_DU_DERNIER_RECOURS`).
   const ecart = vue.ecart ?? ECART_MAX;
-  const ileVue = (i: number) => {
-    const p = { ...iles[i], w: 1, h: 1 };
-    return !horsDuCadre(p, bounds) && !couvert.some((z) => overlap(p, z, 0) > 0);
-  };
+  const seVoit = ileVue(iles, { couvert, bounds });
   /**
    * La place `at` tient-elle pour le nom `i`, sans compter les autres noms ni les repères : entière, hors de
    * l'interface, près de son île, pas plus près d'une autre ?
@@ -783,10 +791,10 @@ function reparerLaCarte(
     return null;
   };
   if (voulue) for (const [j, at] of deplacer(voulue.i, [], [], POUSSEES_MAX, [voulue.at]) ?? []) poser(j, at);
-  const tus = (only ?? boxes.map((_, i) => i)).filter((i) => !visibles[i] && ileVue(i)).sort((a, b) => poids(b) - poids(a) || a - b);
+  const tus = (only ?? boxes.map((_, i) => i)).filter((i) => !visibles[i] && seVoit(i)).sort((a, b) => poids(b) - poids(a) || a - b);
   for (const i of tus) for (const [j, at] of deplacer(i, [], [], POUSSEES_MAX) ?? []) poser(j, at);
   // Le placement simple seul (`placerDAbordSimplement`) : pas de recherche complète.
-  if (recherche) chercherToutesLesPlaces({ boxes, iles, vues, ileVue, tientSeule, horsDesReperes, bounds, gap, poussable, voulue, poser, recherche, autour: { couvert, obstacles }, ecart });
+  if (recherche) chercherToutesLesPlaces({ boxes, iles, vues, ileVue: seVoit, tientSeule, horsDesReperes, bounds, gap, poussable, voulue, poser, recherche, autour: { couvert, obstacles }, ecart });
 }
 
 /**
@@ -863,13 +871,9 @@ export function placerDAbordSimplement<R extends { offsets: LabelOffset[]; visib
   etroites: readonly (number | undefined)[] = [],
 ): R {
   const simple = placer(null);
-  const couvert = [...vue.zones, ...vue.bulles];
-  const ileVue = (i: number) => {
-    const p = { ...iles[i], w: 1, h: 1 };
-    return !horsDuCadre(p, vue.bounds) && !couvert.some((z) => overlap(p, z, 0) > 0);
-  };
+  const seVoit = ileVue(iles, { couvert: [...vue.zones, ...vue.bulles], bounds: vue.bounds });
   const aReprendre = boxes.some((b, i) => {
-    if (!ileVue(i)) return false;
+    if (!seVoit(i)) return false;
     if (!simple.visibles[i]) return true;
     const w = simple.sansSigne?.[i] && etroites[i] !== undefined ? etroites[i]! : b.w;
     return onAnotherIsland({ ...b, w, x: b.x + simple.offsets[i].dx, y: b.y + simple.offsets[i].dy }, i, iles);
@@ -896,13 +900,8 @@ export function avecLIleTouchee<R extends { visibles: boolean[] }>(
 ): R {
   const avec = placer(false);
   if (touchee === undefined || touchee < 0) return avec;
-  const couvert = [...vue.zones, ...vue.bulles];
-  const seVoient = iles
-    .map((_, i) => i)
-    .filter((i) => {
-      const p = { ...iles[i], w: 1, h: 1 };
-      return i !== touchee && !horsDuCadre(p, vue.bounds) && !couvert.some((z) => overlap(p, z, 0) > 0);
-    });
+  const seVoit = ileVue(iles, { couvert: [...vue.zones, ...vue.bulles], bounds: vue.bounds });
+  const seVoient = iles.map((_, i) => i).filter((i) => i !== touchee && seVoit(i));
   const tus = (v: boolean[]) => seVoient.filter((i) => !v[i]).length;
   const nAvec = tus(avec.visibles);
   const montre = avec.visibles[touchee];
