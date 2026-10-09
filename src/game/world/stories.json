@@ -84,5 +84,93 @@
       }
     ],
     "done": "Escalier posé chez Grimoire !"
+  },
+  {
+    "id": "story-5e-1",
+    "region": "5e",
+    "name": "la tente",
+    "item": "maths-5e-proportionality",
+    "fixture": "english-5e-vocabulary-fixture-2",
+    "steps": [
+      {
+        "kind": "mission",
+        "place": "maths-5e-proportionality",
+        "text": "Joue une mission chez Bazar."
+      },
+      {
+        "kind": "give",
+        "place": "maths-5e-proportionality",
+        "text": "Donne {objet} à Bazar.",
+        "block": "maths-5e-proportionality",
+        "count": 4
+      },
+      {
+        "kind": "bring",
+        "place": "english-5e-vocabulary",
+        "text": "Apporte la tente à Pudding."
+      }
+    ],
+    "done": "Tente posée chez Pudding !"
+  },
+  {
+    "id": "story-5e-2",
+    "region": "5e",
+    "name": "le four",
+    "item": "english-5e-vocabulary",
+    "fixture": "history-5e-middle-ages-fixture-2",
+    "steps": [
+      {
+        "kind": "mission",
+        "place": "english-5e-vocabulary",
+        "text": "Joue une mission chez Pudding."
+      },
+      {
+        "kind": "give",
+        "place": "english-5e-grammar",
+        "text": "Donne {objet} à Moustache.",
+        "block": "english-5e-vocabulary",
+        "count": 4
+      },
+      {
+        "kind": "bring",
+        "place": "history-5e-middle-ages",
+        "text": "Apporte le four à Vélin."
+      }
+    ],
+    "done": "Four posé chez Vélin !"
+  },
+  {
+    "id": "story-5e-3",
+    "region": "5e",
+    "name": "la balise",
+    "item": "french-5e-homophones",
+    "fixture": "maths-5e-signed-numbers-fixture-2",
+    "steps": [
+      {
+        "kind": "mission",
+        "place": "maths-5e-signed-numbers",
+        "text": "Joue une mission chez Frimas."
+      },
+      {
+        "kind": "mission",
+        "place": "french-5e-homophones",
+        "text": "Joue une mission chez Sema."
+      },
+      {
+        "kind": "give",
+        "place": "french-5e-homophones",
+        "text": "Donne {objet} à Sema.",
+        "block": "french-5e-homophones",
+        "count": 4
+      },
+      {
+        "kind": "bring",
+        "place": "maths-5e-signed-numbers",
+        "text": "Apporte la balise à Frimas."
+      }
+    ],
+    "done": "Balise posée chez Frimas !",
+    "project": "landmark-5e-1",
+    "see": "Voir le phare"
   }
 ]

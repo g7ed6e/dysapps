@@ -170,6 +170,7 @@ Les quêtes des habitants ([GD-10](../gameplay/propositions/GD-10.md)), l’« E
 - **étapes** : trois ou quatre, chacune chez une créature de la région, jamais sur l’île de la LV2 : `mission` (réussir une mission de son île, n’importe laquelle), `donner N \`<bloc>\`` (de 2 à 4 blocs d’une île de la région) ou `apporter`. La dernière se fait d’un toucher (`donner` ou `apporter`) : c’est elle qui pose l’objet.
 - **phrases** : une seule phrase de sept mots au plus, qui nomme la créature ; `{objet}`, seulement dans une étape `donner`, devient le nombre et le nom du bloc (« 2 blocs de bois »).
 - **fin** : cinq mots au plus, « <Objet> posé(e) chez <créature> ! ».
+- **projet** et **voir** (facultatifs, ensemble, à partir de la 5e) : la dernière quête de la région montre son grand projet, sans jamais l’exiger. `- projet : \`landmark-5e-1\`` nomme le grand ouvrage (un projet de `projets.md`, de la même classe) ; `- voir : Voir le phare`, trois mots au plus, est le bouton qui y mène à la fin de la pose de l’objet, sous la phrase de fin, si le projet n’est pas fini.
 
 La forme de l’objet et sa place restent dans le code (`src/game/world/fixtures.ts`, testées) ; la note « > Forme » la décrit, et le jeu ne la lit pas. `scripts/contenu/quetes.mjs` vérifie ces règles ; `quetes.test.mjs` les teste. Une étape, un bloc ou un objet passe par le directeur artistique ; une phrase, par les consultants d’univers et le référent dys.
 

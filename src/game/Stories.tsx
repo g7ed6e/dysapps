@@ -16,6 +16,7 @@ import type { PetiteConstructionAPoser } from './world/placedFixtures';
 import { canTapStep, stepText, storyPlace, type StepResult, type Story, type StoryStep } from './world/stories';
 import { lienDeLaDestination } from './world/destination';
 import { isBiomeUnlocked } from './world/archipelago';
+import { nextPiece, projectOf } from './world/projects';
 import { frenchTypography } from '../core/typography';
 import type { GameState } from './engine';
 
@@ -126,6 +127,10 @@ export function StoryLine({ story, index, state, island, highlight = false, said
   const dest = stepDestination(state, step);
   const surPlace = !fini && !tap && island === dest;
   const lu = hereSaid && surPlace ? `${phrase} ${hereSaid}` : phrase;
+  // Finie, la dernière quête de la région montre son projet, tant qu'il reste une pièce à poser (GD-10) ; pas pendant
+  // la pose de l'objet (la phrase de fin encore vide).
+  const projet = said && story.project ? projectOf(story.project) : undefined;
+  const voir = projet && story.see && nextPiece(state, projet) !== null ? story.see : null;
   const desc = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     if (announced || fini) desc.current?.focus();
@@ -164,7 +169,13 @@ export function StoryLine({ story, index, state, island, highlight = false, said
       {lu && <SpeakButton text={lu} compact />}
       {tap ? (
         <StepButton step={step} onClick={onTap} />
-      ) : fini ? null : surPlace ? (
+      ) : fini ? (
+        voir && (
+          <Link to={`/adventure/${story.project}`} className="button">
+            <Icon name="castle" /> {voir}
+          </Link>
+        )
+      ) : surPlace ? (
         onMissionsHere && (
           <button type="button" className="button" onClick={onMissionsHere}>
             <Icon name="play" /> Y aller

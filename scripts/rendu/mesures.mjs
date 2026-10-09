@@ -660,11 +660,11 @@ const CAPTURES = [
       ...autres,
     })),
   ),
-  // L'entraide (GD-10, famille `entraide`), à retirer une fois le lot fusionné : chez Mousso, Bloquette et Grimoire, l'objet
-  // posé à côté de sa commande, de jour et de nuit (toutes les petites constructions posées) ; puis la ligne de l'entraide
-  // dans le panneau de l'île, l'étape « Apporter » chez Mousso (tablette, téléphone au grand texte), et la fiche de Coco
-  // à l'étape « Donner ».
-  ...['french-6e-phonology', 'french-6e-grammar-spelling', 'french-6e-reading'].flatMap((ile) => [
+  // L'entraide de la 5e (GD-10, famille `entraide`), à retirer une fois le lot fusionné : chez Pudding, Vélin et Frimas,
+  // l'objet posé à côté de sa commande, de jour et de nuit (toutes les petites constructions posées) ; puis la balise
+  // apportée à Frimas (`cliquer`), la pose finie : la ligne finie et « Voir le phare » (tablette, téléphone au grand texte),
+  // les deux premières quêtes déjà finies.
+  ...['english-5e-vocabulary', 'history-5e-middle-ages', 'maths-5e-signed-numbers'].flatMap((ile) => [
     { nom: `entraide-${ile}`, vue: 'île', famille: 'entraide', ile, posees: 'toutes', finesse: 2 },
     { nom: `entraide-${ile}-nuit`, vue: 'île', famille: 'entraide', ile, posees: 'toutes', nuit: true, finesse: 2 },
   ]),
@@ -672,24 +672,20 @@ const CAPTURES = [
     { suffixe: '' },
     { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
   ].map(({ suffixe, ...autres }) => ({
-    nom: `entraide-panneau${suffixe}`,
+    nom: `entraide-voir-le-phare${suffixe}`,
     vue: 'île',
     famille: 'entraide',
-    ile: 'french-6e-phonology',
-    quetes: [{ id: 'story-6e-1', step: 2 }],
-    commandes: ['maths-6e-calculation-request-1'],
-    voir: '.commandes-list',
+    ile: 'maths-5e-signed-numbers',
+    quetes: [{ id: 'story-5e-3', step: 3 }],
+    // Les deux premières quêtes finies (sinon la tente arrive juste après), les succès déjà gagnés (sans leur annonce).
+    posees: ['english-5e-vocabulary-fixture-2', 'history-5e-middle-ages-fixture-2'],
+    succes: 'tous',
+    // Le phare à deux pièces sur cinq : fini, il n'y aurait plus rien à montrer.
+    etages: { 'landmark-5e-1': 7 },
+    cliquer: '.quete-item .button.primary',
+    pasEnPlus: 64,
     ...autres,
   })),
-  {
-    nom: 'entraide-fiche-coco',
-    vue: 'île',
-    famille: 'entraide',
-    ile: 'maths-6e-calculation',
-    quetes: [{ id: 'story-6e-1', step: 1 }],
-    inventaire: { 'french-6e-phonology': 3 },
-    fiche: { genre: 'creature', id: 'maths-6e-calculation' },
-  },
   // Les îles d'histoire-géographie de 6e (lot HG-2, famille `histoire-geo`), à retirer une fois le lot fusionné : la Fouille des
   // siècles et la Pointe des paysages de près, de jour et de nuit, avant leur restauration (l'île ouverte, rien d'y joué
   // ni posé, le Gardien en statue grise : `sansIles`) et tout construit (le Gardien rallumé) ; le défi de l'Amphore peinte
