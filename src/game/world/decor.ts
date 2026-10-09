@@ -386,6 +386,11 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.carton].side);
     put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.carton].side);
   },
+  'civics-6e-democratic-society': (put, h) => {
+    // Sobre, sans drapeau ni symbole : un tableau sur son pied, la craie sur un pied de planches.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.craie].side);
+  },
   // Les îles de sciences de 5e à 3e (SC-3) : un décor par île (DA), sobre, quelques blocs au sol, aucune lanterne.
   'life-earth-sciences-5e-active-planet': (put, h) => {
     // Un rocher à strates : trois cubes de strate en marche.

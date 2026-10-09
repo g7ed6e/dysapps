@@ -986,6 +986,18 @@ const CAPTURES = [
     ile: 'life-earth-sciences-6e-living-world',
     ...autres,
   })),
+  // L'île d'EMC de 6e (lot EMC-2, famille `emc`), à retirer une fois le lot fusionné : le Préau des délégués de près, de
+  // jour et de nuit, avant sa restauration (l'Hirondelle de nacre en statue grise, `sansIles`) et tout construit, avec la
+  // fiche de son Gardien ; « Mes blocs » avec de la craie en poche (le dessus du bloc) ; la vue de l'archipel depuis le
+  // Préau, de jour.
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    { nom: `emc-preau-avant${suffixe}`, vue: 'île', famille: 'emc', ile: 'civics-6e-democratic-society', sansIles: ['civics-6e-democratic-society'], ...autres },
+    { nom: `emc-preau-apres${suffixe}`, vue: 'île', famille: 'emc', ile: 'civics-6e-democratic-society', ...autres },
+    { nom: `emc-preau-gardien-avant${suffixe}`, vue: 'île', famille: 'emc', ile: 'civics-6e-democratic-society', sansIles: ['civics-6e-democratic-society'], fiche: { genre: 'gardien', id: 'civics-6e-democratic-society' }, ...autres },
+    { nom: `emc-preau-gardien-apres${suffixe}`, vue: 'île', famille: 'emc', ile: 'civics-6e-democratic-society', fiche: { genre: 'gardien', id: 'civics-6e-democratic-society' }, ...autres },
+  ]),
+  { nom: 'emc-mes-blocs', vue: 'île', famille: 'emc', ile: 'civics-6e-democratic-society', lieu: 'stock', inventaire: { 'civics-6e-democratic-society': 6 } },
+  { nom: 'emc-archipel', vue: 'archipel', famille: 'emc', ile: 'civics-6e-democratic-society' },
   // Les neuf îles de sciences des 5e, 4e et 3e (lot SC-3, famille `sciences-college`), à retirer une fois le lot fusionné :
   // chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`) et tout
   // construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la petite

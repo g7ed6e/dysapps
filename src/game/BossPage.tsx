@@ -18,6 +18,7 @@ import { STARS_TO_BEAT, bossDef, bossId, isBossBeaten, isBossOpen } from './boss
 import { explicationDuGardien } from './IslandSheet';
 import { firstSentences } from './firstSentences';
 import { ExerciseRunner } from './ExerciseRunner';
+import { ForeignWordsProvider } from '../components/ForeignWords';
 import { Guardian3D, type GuardianMood } from './Guardians';
 import { FONDU, lueursDuDefi } from './world/characters/glow';
 import { playDrum, playGrowl, playVictory } from './sound';
@@ -284,24 +285,26 @@ export function BossPage() {
               </Link>
             </p>
           )}
-          <ExerciseRunner
-            key={`${def.id}-${run}`}
-            biome={biome}
-            def={def}
-            onReplay={() => setRun((r) => r + 1)}
-            onRound={onRound}
-            etapesNeutres={Boolean(sent)}
-            onComplete={(c) => {
-              if (c.stars >= STARS_TO_BEAT && !alreadyBeaten) {
-                beatBoss();
-                const here = archipelagoOf(biome.id).classe;
-                const next = nextArchipelago(here);
-                const stage = next ? stageTo(next.classe) : undefined;
-                // Le compte d'avant ce Gardien : s'il manquait juste lui, le kit arrive.
-                if (stage && beatenGuardians(here, state.progress) + 1 === stage.guardians) setShipHint(stage);
-              }
-            }}
-          />
+          <ForeignWordsProvider words={biome.foreignWords}>
+            <ExerciseRunner
+              key={`${def.id}-${run}`}
+              biome={biome}
+              def={def}
+              onReplay={() => setRun((r) => r + 1)}
+              onRound={onRound}
+              etapesNeutres={Boolean(sent)}
+              onComplete={(c) => {
+                if (c.stars >= STARS_TO_BEAT && !alreadyBeaten) {
+                  beatBoss();
+                  const here = archipelagoOf(biome.id).classe;
+                  const next = nextArchipelago(here);
+                  const stage = next ? stageTo(next.classe) : undefined;
+                  // Le compte d'avant ce Gardien : s'il manquait juste lui, le kit arrive.
+                  if (stage && beatenGuardians(here, state.progress) + 1 === stage.guardians) setShipHint(stage);
+                }
+              }}
+            />
+          </ForeignWordsProvider>
         </>
       )}
     </>

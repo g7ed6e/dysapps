@@ -100,11 +100,12 @@ it('l’inventaire commenté : les lignes rangées par utilité, les ouvrages un
       'french-6e-phonology-history-6e-antiquity',
       'french-6e-phonology-life-earth-sciences-6e-living-world',
       // Depuis les formes des îles (GD-12) : la Pointe et la Tour depuis la Forêt, la Ferme depuis la Plaine ; le
-      // Hangar, au coin de devant, ne se rejoint pas depuis la Plaine, mais par un bac depuis la Forêt depuis la boîte
-      // du trait (8 octobre 2026).
+      // Hangar, au coin de devant, ne se rejoint ni depuis la Plaine, ni depuis la Forêt depuis le Préau (EMC-2), qui
+      // coupe son bac.
       'french-6e-phonology-geography-6e-living',
-      'french-6e-phonology-technology-6e-objects',
       'french-6e-phonology-french-6e-reading',
+      // Le Préau (EMC-2), à l'ouest au rang du milieu, depuis la Forêt.
+      'french-6e-phonology-civics-6e-democratic-society',
       'french-6e-grammar-spelling-maths-6e-calculation',
       'maths-6e-calculation-maths-6e-fractions',
       'maths-6e-calculation-maths-6e-decimals',

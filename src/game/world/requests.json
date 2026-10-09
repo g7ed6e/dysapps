@@ -430,6 +430,19 @@
     }
   },
   {
+    "id": "civics-6e-democratic-society-request-1",
+    "biome": "civics-6e-democratic-society",
+    "block": "life-earth-sciences-6e-living-world",
+    "count": 3,
+    "fixture": "civics-6e-democratic-society-fixture-1",
+    "blocland": {
+      "name": "l’urne",
+      "ask": "Il me faut {objet} pour mon urne. Joue une mission de la Vallée du vivant.",
+      "ready": "Tu as les {blocs} ! Livre-les à Voix.",
+      "done": "Urne posée chez Voix !"
+    }
+  },
+  {
     "id": "history-5e-middle-ages-request-1",
     "biome": "history-5e-middle-ages",
     "block": "french-5e-conjugation",

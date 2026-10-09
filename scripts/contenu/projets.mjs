@@ -12,6 +12,7 @@
 // n'en mêle que deux : décision du mainteneur, 8 octobre 2026) ; les deux recettes d'une pièce n'ont aucune matière en
 // commun, et jamais la LV2 (GD-10 : une matière difficile ne bloque jamais).
 import { lireQuestions } from './assemblage.mjs';
+import { estLieuDOption } from './demandes.mjs';
 import { lireTexte } from './texte.mjs';
 
 export const FICHIER_PROJETS = 'projets.md';
@@ -112,7 +113,7 @@ export function verifierProjets(projets, iles, monuments, banques, fichier) {
           const b = ile.get(bloc);
           if (!b) throw erreur(`recette ${j + 1} : « ${bloc} » n’est le bloc d’aucune île`);
           if (b.classe !== classe) throw erreur(`recette ${j + 1} : « ${bloc} » vient d’une île de ${b.classe}, pas de ${classe}`);
-          if (b.subject === 'lv2') throw erreur(`recette ${j + 1} : la LV2 n’est jamais une recette (GD-10)`);
+          if (estLieuDOption(b)) throw erreur(`recette ${j + 1} : un lieu d’option (LV2, latin ou grec) n’est jamais une recette (GD-10, GD-13)`);
           return b.subject;
         });
         if (new Set(m).size !== m.length) throw erreur(`recette ${j + 1} : des îles de matières différentes`);

@@ -307,6 +307,26 @@ describe('étiquettes entières ou absentes (DA-10)', () => {
   });
 });
 
+describe('sur la Carte, l’île touchée garde son nom (référent dys, 9 octobre 2026)', () => {
+  // Deux îles voisines dans un cadre bas : une seule place pour leurs deux noms, au-dessus d'elles.
+  const cadre = { w: 400, h: 70 };
+  const vue = { zones: [], bulles: [], obstacles: [], bounds: cadre, gap: 6 };
+  const boxes: LabelBox[] = [
+    { x: 150, y: 34, w: 200, h: 40 },
+    { x: 250, y: 34, w: 200, h: 40 },
+  ];
+  const iles = [{ x: 150, y: 60 }, { x: 250, y: 60 }];
+
+  it('sans île touchée, un des deux noms se tait', () => {
+    expect(placerEtiquettes(boxes, iles, vue, { weights: [1, 1] }).visibles).toEqual([true, false]);
+  });
+
+  it('l’île touchée montre son nom, même plus légère (une île fermée), et c’est l’autre qui se tait', () => {
+    expect(placerEtiquettes(boxes, iles, vue, { weights: [1, 1], selected: 1 }).visibles).toEqual([false, true]);
+    expect(placerEtiquettes(boxes, iles, vue, { weights: [1, 0.5], selected: 1 }).visibles).toEqual([false, true]);
+  });
+});
+
 describe('hors de la Carte, les étiquettes tenues (« Commence ici », le bonhomme ; référent dys, LV2-5)', () => {
   const cadre = { w: 1000, h: 600 };
   const zones = [{ x: 500, y: 570, w: 1000, h: 60 }];

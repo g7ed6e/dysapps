@@ -2,18 +2,19 @@
 // et, une fois par appareil, une découverte que le tutoriel ne dit plus (les ouvrages, le Bloc-Navire). Code pur, sauf
 // la mémoire des découvertes déjà dites (celle des tutoriels).
 import type { TextesUnivers } from '../universes';
-import { SANS_LV2, type BiomeId } from './biomes';
+import type { BiomeId, SansOption } from './biomes';
 import type { GameState } from './engine';
 import { hasSeenTutorial, markTutorialSeen } from './Tutorial';
 import { isBiomeUnlocked } from './world/archipelago';
 import { lockedHint } from './world/goals';
 
 /**
- * Ce que dit la créature à l'ouverture du panneau de son île : « pas de LV2 » sur l'île de la LV2 sans LV2, son accueil
- * sur une île ouverte, sinon ce qu'il faut construire pour y venir.
+ * Ce que dit la créature à l'ouverture du panneau de son île : « pas de LV2 » sur l'île de la LV2 sans LV2 (« pas
+ * d'option » sur celle du latin et du grec sans option, `sansSonOption`), son accueil sur une île ouverte, sinon ce
+ * qu'il faut construire pour y venir.
  */
-export function accueilDeLIle(state: GameState, id: BiomeId, sansLv2: boolean, textes: TextesUnivers): string {
-  if (sansLv2) return SANS_LV2;
+export function accueilDeLIle(state: GameState, id: BiomeId, sansOption: SansOption | null, textes: TextesUnivers): string {
+  if (sansOption) return sansOption.lu;
   return isBiomeUnlocked(id, state.world.links) ? textes.creatures[id].greeting : lockedHint(state, id, textes.archipels, textes.libelles);
 }
 

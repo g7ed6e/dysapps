@@ -125,6 +125,9 @@ const ORDER: (string | ExerciseDef[])[] = [
   'physics-chemistry-6e-matter-energy-energy-circuits-1', 'physics-chemistry-6e-matter-energy-energy-circuits-2', 'physics-chemistry-6e-matter-energy-materials-light-1', 'physics-chemistry-6e-matter-energy-materials-light-2',
   'technology-6e-objects-object-function-1', 'technology-6e-objects-object-function-2', 'technology-6e-objects-materials-1', 'technology-6e-objects-materials-2',
   'technology-6e-objects-information-networks-1', 'technology-6e-objects-information-networks-2', 'technology-6e-objects-solve-program-1', 'technology-6e-objects-solve-program-2',
+  // Enseignement moral et civique (Préau des délégués, 6e).
+  'civics-6e-democratic-society-representatives-1', 'civics-6e-democratic-society-representatives-2', 'civics-6e-democratic-society-school-secularism-1',
+  'civics-6e-democratic-society-school-secularism-2', 'civics-6e-democratic-society-private-life-1', 'civics-6e-democratic-society-private-life-2',
   // Sciences et technologie de la 5e à la 3e (SC-3).
   // Prairie des climats, Saline des mélanges, Menuiserie des objets, 5e.
   'life-earth-sciences-5e-active-planet-active-earth-1', 'life-earth-sciences-5e-active-planet-active-earth-2', 'life-earth-sciences-5e-active-planet-weather-climate-1',

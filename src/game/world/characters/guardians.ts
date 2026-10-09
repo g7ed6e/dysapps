@@ -952,6 +952,39 @@ const ABEILLE = fromLayers(
   { T: '#e0a83a', B: '#5a3c1e', A: '#eef4f2', G: '#8e989c', K: '#1f1a16' },
 );
 
+// L'Hirondelle de nacre (EMC, 6e ; sans flamme, aucun symbole) : posée de profil sur une petite poutre, le long des x,
+// la tête vers les x croissants (à gauche de l'écran, loin du nom de l'île, fiche du Gardien ouverte) ; le corps penché,
+// la tête petite et ronde, sans rien sur ses côtés, l'œil sur le flanc de la tête, un bec d'un bloc qui dépasse devant ;
+// les ailes repliées le long du dos, leur bord d'attaque plus clair, jusqu'au-dessus de la queue ; derrière, la queue
+// en V, longue, ses deux brins qui s'écartent à plat : la caméra de l'île, haute, la voit de trois quarts. La nacre
+// pâle du dos et des ailes, le ventre blanc, la gorge rose pâle, la pointe des ailes et des brins d'une nacre plus
+// soutenue (DA, relecture des captures emc-2, passe 2 : de face, tête large et ailes ouvertes, elle se lisait comme un
+// koala). Dix de long, cinq de large, huit de haut. Neuf couleurs, la poutre, les yeux et le bec compris.
+const HIRONDELLE = fromLayers(
+  [
+    ['..........', '..........', '....SS....', '..........', '..........'],
+    ['....SS....', '....SS....', '....SS....', '....SS....', '....SS....'],
+    ['..........', '.....G....', '..........', '.....G....', '..........'],
+    ['D.........', 'DNNNWWW...', '..NNWWW...', 'DNNNWWW...', 'D.........'],
+    ['..DNN.....', '...NNWWW..', '...NNWWW..', '...NNWWW..', '..DNN.....'],
+    ['....NNL...', '....NNWP..', '....NNWP..', '....NNWP..', '....NNL...'],
+    ['.....LL...', '.....NNNP.', '.....NNNPB', '.....NNNP.', '.....LL...'],
+    ['..........', '.......NE.', '.......NN.', '.......NE.', '..........'],
+  ],
+  {
+    N: '#c8d3ee',
+    L: '#eef2fb',
+    W: '#fdfbf6',
+    P: '#f2c2c8',
+    D: '#8ea4d8',
+    // L'œil, sur le flanc de la tête : sombre de côté, le dessus de nacre (vu d'en haut, la tête reste claire).
+    E: { color: '#1f1a16', top: '#c8d3ee' },
+    B: '#3a3a42',
+    G: '#4a4a52',
+    S: '#8a6236',
+  },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': GRAND_CHENE,
   'french-6e-letter-confusion': GOLEM,
@@ -986,6 +1019,7 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'life-earth-sciences-6e-living-world': CERF,
   'physics-chemistry-6e-matter-energy': ALAMBIC,
   'technology-6e-objects': AUTOMATE,
+  'civics-6e-democratic-society': HIRONDELLE,
   'life-earth-sciences-5e-active-planet': TORTUE,
   'physics-chemistry-5e-matter-universe': FLAMANT,
   'technology-5e-design': CHEVAL_A_BASCULE,

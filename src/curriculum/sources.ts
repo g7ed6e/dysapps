@@ -25,6 +25,7 @@ const PDF_FR_2026 = `${EDUCATION}document/Annexe%201%20%E2%80%93%20Programme%20d
 const PDF_MA_2026 = `${EDUCATION}document/Annexe%202%20%E2%80%93%20Programme%20de%20math%C3%A9matiques%20pour%20le%20cycle%204-480716.pdf`;
 const LEGAL_2026 = 'Arrêté du 18 février 2026, Bulletin officiel n° 10 du 5 mars 2026';
 const BO_NON_LU = 'Bulletin officiel : référence non lue (le PDF ne l’écrit pas)';
+const PDF_EMC_2024 = `${EDUCATION}document/Annexe%20%E2%80%94%20Programme%20d%E2%80%99enseignement%20moral%20et%20civique%20du%20cours%20pr%C3%A9paratoire%20%C3%A0%20la%20classe%20terminale%20des%20voies%20g%C3%A9n%C3%A9rale%2C%20technologique%20et%20professionnelle%20et%20des%20classes%20pr%C3%A9parant%20au%20CAP-402159.pdf`;
 
 /** Les textes publiés par le ministère hors de data.gouv.fr. */
 export const INFORMATIONS_PUBLIQUES = {
@@ -186,5 +187,44 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     classes: ['5e'],
     targets: 'per-class',
     consulted: '2026-10-07',
+  },
+  // L'enseignement moral et civique : le PDF que lie le calendrier de mise en œuvre des nouveaux programmes d'éduscol
+  // (juillet 2026), qui le donne en vigueur en 5e depuis 2024, en 4e depuis 2025, en 6e et en 3e depuis 2026. Le fichier
+  // téléchargé à cette adresse le 8 octobre 2026 est identique, octet par octet, à celui qui a été lu. Le PDF n'écrit pas
+  // sa référence au Bulletin officiel (ses métadonnées le datent de juin 2024) : elle n'est pas écrite.
+  'emc-2024': {
+    id: 'emc-2024',
+    dataset: 'Programme d’enseignement moral et civique du CP à la terminale (education.gouv.fr), lié par le calendrier des nouveaux programmes d’éduscol',
+    datasetUrl: PDF_EMC_2024,
+    title: 'Programme d’enseignement moral et civique du cours préparatoire à la classe terminale (annexe), en vigueur en 5e depuis 2024, en 4e depuis 2025, en 6e et en 3e depuis 2026',
+    pdfUrl: PDF_EMC_2024,
+    pages: 31,
+    licence: INFORMATIONS_PUBLIQUES,
+    legal: BO_NON_LU,
+    classes: ['6e', '5e', '4e', '3e'],
+    targets: 'per-class',
+    consulted: '2026-10-08',
+  },
+  // Les langues et cultures de l'Antiquité (latin, grec) : le programme de l'enseignement de complément du cycle 4,
+  // arrêté du 8 février 2016, BO n° 11 du 17 mars 2016, NOR MENE1603855A, en vigueur dans les trois classes du cycle 4
+  // depuis la rentrée 2016 (article 3). Le Bulletin officiel ne le publie qu'en HTML (datasetUrl), page non lue le
+  // 8 octobre 2026 (403) ; le texte lu est la copie PDF du numéro 11 faite par l'association Arrête ton char, dont le
+  // fichier téléchargé à son adresse ce jour-là est identique, octet par octet, à celui qui a été lu. La copie a
+  // 14 pages : les deux du sommaire du numéro (pages 1 et 2 du BO), puis les pages 70 à 81 du BO (page de la copie =
+  // page du BO - 67). Les pages citées sont celles de la copie, avec celles du BO en commentaire (cycle4.ts). Un projet
+  // de nouveau programme (mai 2025) n'est pas en vigueur : il n'est pas cité.
+  'lca-2016': {
+    id: 'lca-2016',
+    dataset: 'Bulletin officiel n° 11 du 17 mars 2016 (MENE1603855A), page en HTML ; copie PDF de l’association Arrête ton char',
+    datasetUrl: 'https://www.education.gouv.fr/bo/16/Hebdo11/MENE1603855A.htm',
+    title: 'Programme d’enseignement de complément de langues et cultures de l’Antiquité au cycle 4 (annexe), en vigueur depuis la rentrée 2016',
+    pdfUrl: 'https://www.arretetonchar.fr/wp-content/uploads/2019/01/MENE1603855A.pdf',
+    pdfCopyBy: 'l’association Arrête ton char',
+    pages: 14,
+    licence: INFORMATIONS_PUBLIQUES,
+    legal: 'Arrêté du 8 février 2016, Bulletin officiel n° 11 du 17 mars 2016 (NOR MENE1603855A)',
+    classes: ['5e', '4e', '3e'],
+    targets: 'end-of-cycle',
+    consulted: '2026-10-08',
   },
 };

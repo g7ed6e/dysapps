@@ -129,6 +129,9 @@ import laboratoireCour from './plans/physics-chemistry-6e-matter-energy-3.json';
 import hangarAtelier from './plans/technology-6e-objects-1.json';
 import hangarToit from './plans/technology-6e-objects-2.json';
 import hangarCour from './plans/technology-6e-objects-3.json';
+import preauPreau from './plans/civics-6e-democratic-society-1.json';
+import preauToit from './plans/civics-6e-democratic-society-2.json';
+import preauCour from './plans/civics-6e-democratic-society-3.json';
 import prairiePlan1 from './plans/life-earth-sciences-5e-active-planet-1.json';
 import prairiePlan2 from './plans/life-earth-sciences-5e-active-planet-2.json';
 import prairiePlan3 from './plans/life-earth-sciences-5e-active-planet-3.json';
@@ -366,6 +369,9 @@ const PLAN_FILES = [
   hangarAtelier,
   hangarToit,
   hangarCour,
+  preauPreau,
+  preauToit,
+  preauCour,
   prairiePlan1,
   prairiePlan2,
   prairiePlan3,

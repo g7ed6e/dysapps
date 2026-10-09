@@ -69,6 +69,7 @@ export const TEXTURES: Record<string, string> = {
   [BLOCKS[BLOC.fossile].side]: 'fossile',
   [BLOCKS[BLOC.aimant].side]: 'aimant',
   [BLOCKS[BLOC.carton].side]: 'carton',
+  [BLOCKS[BLOC.craie].side]: 'craie',
   [BLOCKS[BLOC.strate].side]: 'strate',
   [BLOCKS[BLOC.sel].side]: 'sel',
   [BLOCKS[BLOC.bambou].side]: 'bambou',
@@ -176,11 +177,25 @@ const VENUES_AU_MILIEU: readonly string[] = [
   'technology-3e-digital',
 ];
 
+/**
+ * Les îles entrées au milieu de la liste après les précédentes (l'EMC, EMC-2) : elles ne comptent dans le rang d'aucune
+ * île, pas même des îles venues au milieu (`VENUES_AU_MILIEU`), dont le relief ne bouge pas non plus.
+ */
+const ENTREES_ENSUITE: readonly string[] = ['civics-6e-democratic-society'];
+
 let rangsDuDessin: readonly number[] | undefined;
 
-/** Le rang qui tire la forme du plateau d'une île : son rang dans `BIOMES`, sans les îles venues au milieu avant elle. */
+/**
+ * Le rang qui tire la forme du plateau d'une île : son rang dans `BIOMES`, sans les îles entrées ensuite avant elle
+ * (`ENTREES_ENSUITE`), ni, pour les îles d'avant, sans les îles venues au milieu avant elle.
+ */
 const rangDuDessin = (index: number): number =>
-  (rangsDuDessin ??= BIOMES.map((b, i) => (VENUES_AU_MILIEU.includes(b.id) ? i : i - BIOMES.slice(0, i).filter((x) => VENUES_AU_MILIEU.includes(x.id)).length)))[index] ?? index;
+  (rangsDuDessin ??= BIOMES.map((b, i) => {
+    const avant = BIOMES.slice(0, i);
+    const rang = i - avant.filter((x) => ENTREES_ENSUITE.includes(x.id)).length;
+    if (VENUES_AU_MILIEU.includes(b.id) || ENTREES_ENSUITE.includes(b.id)) return rang;
+    return rang - avant.filter((x) => VENUES_AU_MILIEU.includes(x.id)).length;
+  }))[index] ?? index;
 
 export function groundHeight(index: number, x: number, y: number): number {
   const lx = x - LAYOUT_PAD.x;

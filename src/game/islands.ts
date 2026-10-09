@@ -1876,6 +1876,46 @@ export const ILES = [
     ]
   },
   {
+    "id": "civics-6e-democratic-society",
+    "name": "Préau des délégués",
+    "module": "Vivre dans une société démocratique",
+    "subject": "civics",
+    "classe": "6e",
+    "description": "Élire des représentants et servir l’intérêt général, la laïcité à l’école, puis le droit au respect de la vie privée, aussi en ligne.",
+    "block": "civics-6e-democratic-society",
+    "guardian": "l’Hirondelle de nacre",
+    "icon": "vote",
+    "creature": {
+      "name": "Voix"
+    },
+    "exercises": [
+      {
+        "id": "representatives",
+        "title": "Représenter les autres",
+        "description": "Élire des représentants, de la classe à l’Union européenne, et servir l’intérêt général, celui de tous, aujourd’hui et demain.",
+        "programme": [
+          "c3.emc.6e.representer.interet-general"
+        ]
+      },
+      {
+        "id": "school-secularism",
+        "title": "L’école laïque",
+        "description": "La liberté de croire ou de ne pas croire, la neutralité de l’État et la loi de 1905, puis l’école laïque, qui protège chaque élève de toute pression.",
+        "programme": [
+          "c3.emc.6e.laicite.ecole"
+        ]
+      },
+      {
+        "id": "private-life",
+        "title": "Ma vie privée",
+        "description": "Le droit au respect de la vie privée, pour l’enfant comme pour l’adulte : l’intimité, le droit à l’image, puis les données et les traces que l’on laisse en ligne.",
+        "programme": [
+          "c3.emc.6e.vie-privee.droit"
+        ]
+      }
+    ]
+  },
+  {
     "id": "history-5e-middle-ages",
     "name": "Bourg des chroniques",
     "module": "Histoire, du Moyen Âge aux Temps modernes",

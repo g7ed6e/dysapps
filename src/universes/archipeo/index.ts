@@ -307,6 +307,14 @@ export const ARCHIPEO = {
         beaten: 'Mes boutons se rallument. Le hangar est à toi, et à Pince.',
       },
     },
+    'civics-6e-democratic-society': {
+      challenge: 'L’Hirondelle de nacre dit doucement : « Les plumes de mes ailes sont éteintes. Tu as fait le tour du préau : dis-moi comment on vit ensemble. »',
+      guardianSays: {
+        hit: 'Une plume de mon aile s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le rappel, cherche le mot de la règle, et reprends.',
+        beaten: 'Mes ailes se rallument. Le préau est à toi, et à Voix.',
+      },
+    },
     'life-earth-sciences-5e-active-planet': {
       challenge: 'La Tortue d’ocre dit doucement : « Les écailles de ma carapace sont éteintes. Tu as relevé le temps de toute la prairie : dis-moi comment change la Terre. »',
       guardianSays: {
@@ -473,6 +481,7 @@ export const ARCHIPEO = {
     'life-earth-sciences-6e-living-world': 'escargot jardinier',
     'physics-chemistry-6e-matter-energy': 'poulpe chimiste',
     'technology-6e-objects': 'fourmi bricoleuse',
+    'civics-6e-democratic-society': 'panda roux délégué',
     'life-earth-sciences-5e-active-planet': 'ver de terre météorologue',
     'physics-chemistry-5e-matter-universe': 'canard saunier',
     'technology-5e-design': 'pic-vert menuisier',

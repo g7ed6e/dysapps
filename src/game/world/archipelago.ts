@@ -6,8 +6,8 @@
 // de départ. Un voyage fait reste fait : on revient toujours en arrière.
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
 import { ofPlace } from './placeArticle';
-import { BLOC, BIOMES, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
-import { lv2Courante, type Lv2Choice } from '../../core/settings';
+import { BLOC, BIOMES, getBiome, sansSonOption, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
+import { lcaCourante, lv2Courante, type Lv2Choice } from '../../core/settings';
 import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
 import { premierePartiePosee } from './parts';
 
@@ -427,6 +427,7 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   BLOC.fossile,
   BLOC.aimant,
   BLOC.carton,
+  BLOC.craie,
   BLOC.strate,
   BLOC.sel,
   BLOC.bambou,
@@ -577,7 +578,8 @@ export function nearestDeparture(island: BiomeId, bridges: string[], open = reac
  * Les liaisons proposées maintenant (constructibles ou bloquées par une condition), qui touchent une île donnée (ou
  * toutes), GD-9 : vers un lieu fermé, celle qui part du lieu relié le plus proche (sur le lieu fermé lui-même, tous ses
  * départs possibles, `linksToIsland`) ; entre deux lieux ouverts, un raccourci entre voisins (`SHORT_LINK` cases au
- * plus). Avec « Pas de LV2 », aucune ne mène à l'île de la LV2 : l'élève n'y dépense pas de blocs. `open` : les îles
+ * plus). Avec « Pas de LV2 », aucune ne mène à l'île de la LV2, ni avec « Pas d'option » à celle du latin et du grec
+ * (GD-13) : l'élève n'y dépense pas de blocs. `open` : les îles
  * ouvertes (`reachableIslands(bridges)`), si l'appelant les a déjà. Sur un lieu fermé, la plus courte d'abord.
  */
 export function buildableBridges(bridges: string[], island?: BiomeId, world?: WorldProgress, lv2: Lv2Choice = lv2Courante(), open = reachableIslands(bridges)): BridgeDef[] {
@@ -601,7 +603,7 @@ export function buildableBridges(bridges: string[], island?: BiomeId, world?: Wo
   const liste = !island ? BRIDGES : open.has(island) ? bridgesOf(island) : linksToIsland(island, bridges, open);
   return liste.filter((b) => {
     if (!proposees.has(b.id)) return false;
-    if (lv2 === 'none' && [b.from, b.to].some((id) => getBiome(id)?.subject === 'lv2')) return false;
+    if ([b.from, b.to].some((id) => sansSonOption(getBiome(id), { lv2, lca: lcaCourante() }))) return false;
     const state = bridgeState(b, bridges, world, open);
     return state === 'buildable' || state === 'blocked';
   });

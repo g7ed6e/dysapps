@@ -6,7 +6,7 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
+import { guardianTitle, missionsJouables, sansSonOption, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { Requests, YouAreHere } from './Requests';
 import { isBiomeUnlocked } from './world/archipelago';
@@ -78,11 +78,13 @@ interface Props {
 export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard, posees = null, enCoursDePose = null, onLivree, commandeEnCoursDePose = null }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
-  const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
+  // « Pas de LV2 » sur l'île de la LV2, « Pas d'option » sur celle du latin et du grec (GD-13).
+  const sansOption = sansSonOption(biome, settings);
+  const sansLv2 = sansOption !== null;
   const textes = useTextes();
   const unlocked = isBiomeUnlocked(biome.id, state.world.links);
   // « Pas de LV2 » : un seul message, lu à l'ouverture, à la place de l'accueil et du prochain objectif.
-  const greeting = accueilDeLIle(state, biome.id, sansLv2, textes);
+  const greeting = accueilDeLIle(state, biome.id, sansOption, textes);
   const bossReady = unlocked && isBossOpen(biome, state.progress, state.world.challengesKeptOpen);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
   const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.archipels, textes.libelles) : null;
@@ -146,11 +148,11 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       {rappel && <ResidentReminder biome={biome} rappel={rappel} onRemis={remettre} />}
       <LaterSaid dit={remis} />
 
-      {sansLv2 ? (
-        // « Pas de LV2 » : rien à construire, rien à jouer ; le chemin vers le réglage (décision du directeur artistique).
+      {sansOption ? (
+        // « Pas de LV2 », « Pas d'option » : rien à construire, rien à jouer ; le chemin vers le réglage (décision du directeur artistique).
         <p>
           <Link to="/reglages" className="button">
-            <Icon name="settings" /> Choisir une LV2
+            <Icon name="settings" /> {sansOption.bouton}
           </Link>
         </p>
       ) : (
@@ -164,7 +166,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       )}
       {!sansLv2 && <YouAreHere dit={ici} />}
       <ul className="island-quests" aria-label="Missions de l’île">
-        {missionsJouables(biome, settings.lv2).map((exercise) => {
+        {missionsJouables(biome, settings.lv2, settings.lca).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
           const progress = def ? questProgress(biome.id, exercise.id, state.progress) : undefined;
           const playable = Boolean(def && unlocked);
