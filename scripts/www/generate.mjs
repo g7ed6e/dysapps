@@ -197,6 +197,12 @@ const AID_NAME = {
   'long-division': 'division posée en potence',
   'class-table': 'tableau de numération par classes (unités, mille, millions, milliards)',
   'value-table': 'tableau de valeurs',
+  'triangle-angles': 'triangle tracé avec ses vrais angles (angle droit en petit carré, côtés égaux marqués)',
+  angle: 'angle tracé (seul à côté d’un angle droit, côte à côte sur une droite, ou opposé par le sommet)',
+  'plane-figure': 'figure plane cotée (rectangle, carré, parallélogramme, triangle, disque, cercle, médiatrice, rectangle partagé)',
+  solid: 'solide en perspective (petits cubes, cube, cylindre, cône, prisme et pyramide)',
+  transformation: 'figure et son image sur un quadrillage',
+  'coordinate-plane': 'repère gradué de −6 à 6',
   scene: 'schéma de la situation',
 };
 /** Les schémas de problèmes situés (`scene`), par sorte, avec la grandeur que l'élève cherche. */

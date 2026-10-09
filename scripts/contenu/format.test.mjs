@@ -83,6 +83,90 @@ describe('le format Markdown du contenu', () => {
     expect(() => lireFigure('droite 5 · 2')).toThrow(/plus grand/);
   });
 
+  it('lit les figures de géométrie sur une ligne', () => {
+    expect(lireFigure('angles 40 · 60 · ?')).toEqual({ kind: 'triangle-angles', props: { angles: [40, 60, '?'] } });
+    expect(lireFigure('angles 80 · ? · ? / isocèle')).toEqual({ kind: 'triangle-angles', props: { angles: [80, '?', '?'], marks: 'isosceles' } });
+    expect(lireFigure('angles ? · ? · ? / équilatéral')).toEqual({ kind: 'triangle-angles', props: { angles: ['?', '?', '?'], marks: 'equilateral' } });
+    expect(lireFigure('angle 120')).toEqual({ kind: 'angle', props: { layout: 'single', values: [120] } });
+    expect(lireFigure('angle plat 130 · ?')).toEqual({ kind: 'angle', props: { layout: 'straight', values: [130, '?'] } });
+    expect(lireFigure('angle croisé 70 · ?')).toEqual({ kind: 'angle', props: { layout: 'crossed', values: [70, '?'] } });
+    expect(lireFigure('plane rectangle 5 · 3 / aire ?')).toEqual({ kind: 'plane-figure', props: { shape: 'rectangle', values: [5, 3], area: '?' } });
+    expect(lireFigure('plane parallélogramme 5 · 3 · 4 / aire ?')).toEqual({ kind: 'plane-figure', props: { shape: 'parallelogram', values: [5, 3, 4], area: '?' } });
+    expect(lireFigure('plane cercle 4 / diamètre ?')).toEqual({ kind: 'plane-figure', props: { shape: 'circle', values: [4], diameter: '?' } });
+    expect(lireFigure('plane médiatrice 7 · ?')).toEqual({ kind: 'plane-figure', props: { shape: 'bisector', values: [7, '?'] } });
+    expect(lireFigure('plane partagé ? / a · b / 7a · 7b')).toEqual({ kind: 'plane-figure', props: { shape: 'split', values: ['?'], widths: ['a', 'b'], areas: ['7a', '7b'] } });
+    expect(lireFigure('solide cubes 3 · 2 · 2 / 2 · 2 · 3')).toEqual({ kind: 'solid', props: { solid: 'cubes', boxes: [[3, 2, 2], [2, 2, 3]] } });
+    expect(lireFigure('solide cylindre')).toEqual({ kind: 'solid', props: { solid: 'cylinder' } });
+    expect(lireFigure('solide cylindre 3 · 2 / volume ?')).toEqual({ kind: 'solid', props: { solid: 'cylinder', values: [3, 2], volume: '?' } });
+    expect(lireFigure('solide cône r · h')).toEqual({ kind: 'solid', props: { solid: 'cone', values: ['r', 'h'] } });
+    expect(lireFigure('image translation')).toEqual({ kind: 'transformation', props: { transform: 'translation' } });
+    expect(lireFigure('image centrale / arc ?')).toEqual({ kind: 'transformation', props: { transform: 'point-reflection', arc: '?' } });
+    expect(lireFigure('image rotation 90 / angle 50 · ?')).toEqual({ kind: 'transformation', props: { transform: 'rotation', amount: 90, angles: [50, '?'] } });
+    expect(lireFigure('image axiale / aire 12 · ?')).toEqual({ kind: 'transformation', props: { transform: 'reflection', areas: [12, '?'] } });
+    expect(lireFigure('repère')).toEqual({ kind: 'coordinate-plane', props: { points: [] } });
+    expect(lireFigure('repère A 4 · −2 / B 0 · 5')).toEqual({ kind: 'coordinate-plane', props: { points: [{ name: 'A', x: 4, y: -2 }, { name: 'B', x: 0, y: 5 }] } });
+  });
+
+  it('réécrit chaque figure de géométrie telle qu’elle a été lue', () => {
+    const lignes = [
+      'angles 40 · 60 · ?', 'angles 80 · ? · ? / isocèle', 'angles 90 · 35 · ?', 'angles ? · ? · ? / équilatéral', 'angles 45 · 75 · ?',
+      'angle 120', 'angle 45', 'angle plat 130 · ?', 'angle croisé 70 · ?',
+      'plane rectangle 5 · 3 / aire ?', 'plane carré 6 / aire ?', 'plane parallélogramme 6 · 4 / aire ?', 'plane parallélogramme 5 · 3 · 4 / aire ?',
+      'plane triangle 8 · 5 / aire ?', 'plane disque 5 / aire ?', 'plane cercle 4 / diamètre ?', 'plane cercle 2,5', 'plane médiatrice 7 · ?',
+      'plane partagé 3 / x · 4 / ? · ?', 'plane partagé ? / a · b / 7a · 7b',
+      'solide cubes 4 · 2 · 3', 'solide cubes 3 · 2 · 2 / 2 · 2 · 3', 'solide cube 1', 'solide cylindre 3 · 2 / volume ?', 'solide cylindre',
+      'solide cône r · h', 'solide cône 3 · 4 / volume ?', 'solide prisme-pyramide h',
+      'image translation', 'image axiale', 'image centrale / arc ?', 'image rotation 90 / angle 50 · ?', 'image rotation −90', 'image axiale / aire 12 · ?',
+      'image homothétie 2 / angle 40 · ?', 'image centrale / aire 12 cm² · ? / arc ?',
+      'repère', 'repère A 4 · −2', 'repère C 2 · 3 / D −6 · 6',
+    ];
+    for (const l of lignes) expect(ecrireFigure(lireFigure(l))).toBe(l);
+    // Dans une île : la figure passe par le Markdown et revient identique.
+    const items = lignes.map((l, n) => ({ key: `maths-6e-calculation-x-1-${n}`, prompt: `Question ${n}`, choices: ['a', 'b'], answer: 'a', figure: lireFigure(l) }));
+    const ex = { id: 'maths-6e-calculation-x-1', biome: 'maths-6e-calculation', type: 'x', level: 1, items };
+    expect(lireIle(ecrireIle({ id: 'maths-6e-calculation' }, [ex])).exercices).toEqual([ex]);
+  });
+
+  it('refuse une figure de géométrie mal écrite, en disant comment l’écrire', () => {
+    const refus = {
+      'angles 40 · 60': /angles 40 · 60 · \?/,
+      'angles 100 · 90 · ?': /somme 180°/,
+      'angles 80 · ? · ?': /isocèle/,
+      'angles 80 · 60 · ? / rectangle': /équilatéral/,
+      'angles 50 · ? · ? / équilatéral': /équilatéral/,
+      'angle 200': /angle 120/,
+      'angle ?': /angle 120/,
+      'angle plat 130 · 60': /somme 180°/,
+      'angle croisé 70 · 80': /opposé par le sommet/,
+      'angle croisé ? · ?': /opposé par le sommet/,
+      'plane rectangle 5': /plane rectangle 5 · 3/,
+      'plane losange 5 · 3': /plane rectangle/,
+      'plane carré 6 / périmètre ?': /plane carré 6/,
+      'plane cercle 4 / aire ?': /diamètre/,
+      'plane médiatrice 7 · ? / aire ?': /médiatrice/,
+      'plane partagé 3 / x · 4': /partagé/,
+      'plane rectangle −5 · 3': /plane rectangle/,
+      'solide cubes 4 · 2': /solide cubes 4 · 2 · 3/,
+      'solide cubes 4 · 2 · 1,5': /entiers/,
+      'solide cylindre 3': /solide cylindre 3 · 2/,
+      'solide cube 1 / volume ?': /solide cube 1/,
+      'solide sphère 3': /solide cône/,
+      'image rotation': /multiple de 90/,
+      'image rotation 45': /multiple de 90/,
+      'image homothétie 0,5': /rapport 2 ou 3/,
+      'image translation 3': /image translation/,
+      'image axiale / arc ?': /arc \?/,
+      'image rotation 90 / angle 50': /angle 50 · \?/,
+      'image axiale / angle 50 · ? / aire 12 · ?': /angle 50 · \?/,
+      'image centrale / arc ? / aire 12 · ?': /arc \?/,
+      'repère A 7 · 0': /de −6 à 6/,
+      'repère A 1 · 2 / A 3 · 4': /repère A 4 · −2/,
+      'repère a 1 · 2': /majuscule/,
+    };
+    for (const [ligne, message] of Object.entries(refus)) expect(() => lireFigure(ligne), ligne).toThrow(message);
+    expect(() => lireFigure('cercle 3')).toThrow(/« repère »/);
+  });
+
   it('refuse une valeur vide ou avec des espaces au bord écrite sans guillemets', () => {
     const md = ['---', 'lieu : english-6e-vocabulary', '---', '## X · `x`', '- consigne : texte  ', ''].join('\n');
     expect(() => lireIle(md, 'english-6e-vocabulary.md')).toThrow('écrire entre guillemets');
