@@ -228,9 +228,15 @@ export function lueursDesGardiens(
     if (!d) return;
     const m = f.modeles[i];
     for (let t = 0; t < m.pieces.length; t++) {
-      const a = lueurDuTriangle(m, t, d);
+      const a = lueurDuTriangle(m, t, d, d);
       if (!a) continue;
-      for (let v = (p.debut + t) * 3; v < (p.debut + t + 1) * 3; v++) dans.set([r, g, b, a], v * 4);
+      // Sans tableau intermédiaire : la fonction tourne à chaque image d'un fondu.
+      for (let o = (p.debut + t) * 12; o < (p.debut + t + 1) * 12; o += 4) {
+        dans[o] = r;
+        dans[o + 1] = g;
+        dans[o + 2] = b;
+        dans[o + 3] = a;
+      }
     }
   });
   return dans;

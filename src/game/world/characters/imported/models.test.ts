@@ -59,6 +59,16 @@ it('une créature importée a la taille de son gabarit, les pieds au sol', () =>
   }
 });
 
+it('de loin, une créature n’a aucune couleur plus sombre que la clarté 0,42 ; de près, elle garde les siennes', () => {
+  const clarte = (c: number) => (Math.max(c >> 16, (c >> 8) & 255, c & 255) + Math.min(c >> 16, (c >> 8) & 255, c & 255)) / 2 / 255;
+  let sombresDePres = 0;
+  for (const id of ILES_IMPORTEES) {
+    for (const c of modeleImporte('creature', id, 'loin')!.teintes) expect(clarte(c), id).toBeGreaterThanOrEqual(0.415);
+    sombresDePres += [...modeleImporte('creature', id, 'pres')!.teintes].filter((c) => clarte(c) < 0.4).length;
+  }
+  expect(sombresDePres).toBeGreaterThan(0);
+});
+
 it('éteint, un Gardien porte du lichen ; rallumé, toute sa pierre est au Sable', () => {
   const f = modeleImporte('gardien', 'french-6e-letter-confusion' as BiomeId, 'pres')!;
   expect([...f.teintes].filter((t) => t === SENTINELLE.lichen).length).toBeGreaterThan(10);

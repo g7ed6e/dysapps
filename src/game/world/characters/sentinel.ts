@@ -342,10 +342,10 @@ const EMISSION_DE_PIERRE = 0.35;
 /**
  * Le poids de la lueur du triangle `t` d'une sentinelle (0 : il suit la lumière de la scène ; 1 : il brille de la
  * couleur `LUEUR`) : une flamme, des veines ou l'anneau du socle, au degré des lueurs ; la pierre d'une sentinelle
- * importée, un peu, à mesure qu'elle se réchauffe (le socle non : son anneau suffit).
+ * importée, un peu, à mesure qu'elle se réchauffe (le socle non : son anneau suffit). `pierre` et `lueurs` : ses degrés
+ * (`degresDAllumage`), lus une fois par sentinelle, la fonction tournant à chaque image d'un fondu.
  */
-export function lueurDuTriangle(f: FacettesDePersonnage, t: number, degre: Allumage): number {
-  const { pierre, lueurs } = degresDAllumage(degre);
+export function lueurDuTriangle(f: FacettesDePersonnage, t: number, pierre: number, lueurs: number): number {
   const piece = f.table[f.pieces[t]];
   if (piece.lueur === 'allumage') return lueurs;
   const h = f.hauteurs?.[t];

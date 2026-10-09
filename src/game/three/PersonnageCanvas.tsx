@@ -98,7 +98,7 @@ export default function PersonnageCanvas({
       const l = lueur.array as Float32Array;
       l.fill(0);
       for (let t = 0; t < f.pieces.length; t++) {
-        const a = lueurDuTriangle(f, t, d);
+        const a = lueurDuTriangle(f, t, d.pierre, d.lueurs);
         if (a) for (let v = t * 3; v < t * 3 + 3; v++) l.set([k[0], k[1], k[2], a], v * 4);
       }
       couleurs.needsUpdate = true;

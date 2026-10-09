@@ -35,7 +35,7 @@ const SIXIEME: Partial<Record<BiomeId, [lieu: string, gardien: string, creature:
   'french-6e-word-spelling': ['carriere', 'dune-vivante', 'rouxel', 1, 1],
   'french-6e-grammar-spelling': ['ferme', 'taureau-de-terre', 'bloquette', 0, 3],
   'french-6e-reading': ['tour', 'chouette-de-verre', 'grimoire', 0, 0],
-  'maths-6e-calculation': ['plaine', 'hanneton-de-bronze', 'coco', 0, 0],
+  'maths-6e-calculation': ['plaine', 'hanneton-de-bronze', 'coco', 0, 3],
   'maths-6e-fractions': ['riviere', 'brochet-d-argent', 'nenu', 0, 3],
   'maths-6e-decimals': ['volcan', 'dragon-de-cendre', 'lavi', 0, 0],
   'english-6e-vocabulary': ['baie', 'lion-de-pierre', 'robin', 0, 0],
@@ -43,7 +43,7 @@ const SIXIEME: Partial<Record<BiomeId, [lieu: string, gardien: string, creature:
   'history-6e-antiquity': ['fouille', 'amphore-peinte', 'silex', 0, 3],
   'geography-6e-living': ['pointe', 'castor-de-glaise', 'boussole', 0, 1],
   'life-earth-sciences-6e-living-world': ['vallee', 'cerf-des-sous-bois', 'fougere', 0, 0],
-  'physics-chemistry-6e-matter-energy': ['laboratoire', 'alambic-de-verre', 'bulle', 0, 0],
+  'physics-chemistry-6e-matter-energy': ['laboratoire', 'alambic-de-verre', 'bulle', 0, 1],
   'technology-6e-objects': ['hangar', 'automate-de-laiton', 'pince', 1, 1],
 };
 

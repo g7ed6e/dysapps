@@ -4,8 +4,9 @@
 // à nouveau » est gardé pour le village et la baleine). Proposés par le consultant d'Archipéo, validés par le directeur
 // artistique le 28 septembre 2026 ; lus seulement une fois l'univers ouvert (voir src/universes/index.ts). Au 6e, les
 // Gardiens sont des modèles importés, sans flamme ni veines, dont la pierre se réchauffe des pieds vers la tête : leurs
-// répliques disent « se réchauffe » et ne nomment que ce qui se voit (consultant d'Archipéo, 9 octobre 2026). De la 5e
-// à la 3e, les veines d'or restent celles des sentinelles dessinées en code.
+// répliques ne nomment que ce qui se voit ; celles qui nommaient des veines, une gemme ou une braise disent « se
+// réchauffe », les autres gardent « s'allume » (consultant d'Archipéo, 9 octobre 2026). De la 5e à la 3e, les veines
+// d'or restent celles des sentinelles dessinées en code.
 import { agreeWithPlace, thePlace } from '../../game/world/placeArticle';
 import { BLOCLAND } from '../blocland';
 import { ETATS_D_ILE, REPLIQUES } from '../common';
@@ -61,7 +62,7 @@ export const ARCHIPEO = {
     'maths-6e-calculation': {
       challenge: 'Le Hanneton de bronze bourdonne doucement : « Ma carapace de bronze est éteinte. Tu as compté toute ma plaine, calcule avec moi. »',
       guardianSays: {
-        hit: 'Ma carapace se réchauffe, du dos à la tête. C’est juste.',
+        hit: 'Ma carapace se réchauffe. C’est juste.',
         miss: 'Rien ne s’éteint. Regarde les points, compte par cinq, et recommence.',
         beaten: 'Ma carapace se rallume. La plaine est à toi, et à Coco.',
       },
