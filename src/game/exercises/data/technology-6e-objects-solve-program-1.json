@@ -1,0 +1,242 @@
+{
+  "id": "technology-6e-objects-solve-program-1",
+  "biome": "technology-6e-objects",
+  "type": "solve-program",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-6e-objects-solve-program-1-0",
+      "prompt": "Une condition que la solution doit respecter s’appelle une …",
+      "spoken": "Une condition que la solution doit respecter s’appelle une  (mot manquant) ",
+      "choices": [
+        "fonction",
+        "contrainte",
+        "matière"
+      ],
+      "answer": "contrainte",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Une condition à respecter, comme être léger ou imperméable, est une contrainte. La fonction dit à quoi sert l’objet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre un problème technique",
+          "lines": [
+            "Un même problème peut avoir plusieurs solutions.",
+            "Une contrainte : une condition que la solution doit respecter.",
+            "Imperméable : qui ne laisse pas passer l’eau.",
+            "Le poids : un objet à porter doit être léger.",
+            "L’autonomie : le temps qu’un objet marche sans être rechargé.",
+            "On compare les solutions, et on garde celle qui respecte les contraintes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-1-1",
+      "prompt": "Le problème : protéger le téléphone de la pluie, en randonnée\nSolution A : une pochette en plastique, bien fermée.\nSolution B : une pochette en tissu.\nSolution C : une boîte en carton.",
+      "question": "Quelle solution est imperméable ?",
+      "spoken": "Le problème, protéger le téléphone de la pluie, en randonnée. Solution A, une pochette en plastique, bien fermée. Solution B, une pochette en tissu. Solution C, une boîte en carton.",
+      "choices": [
+        "la solution A",
+        "la solution B",
+        "la solution C"
+      ],
+      "answer": "la solution A",
+      "hint": "Relis la ligne « Imperméable » du rappel.",
+      "explanation": "Le plastique, bien fermé, ne laisse pas passer l’eau : la pochette A est imperméable. Le tissu laisse passer la pluie, et le carton se mouille et se déchire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre un problème technique",
+          "lines": [
+            "Un même problème peut avoir plusieurs solutions.",
+            "Une contrainte : une condition que la solution doit respecter.",
+            "Imperméable : qui ne laisse pas passer l’eau.",
+            "Le poids : un objet à porter doit être léger.",
+            "L’autonomie : le temps qu’un objet marche sans être rechargé.",
+            "On compare les solutions, et on garde celle qui respecte les contraintes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-1-2",
+      "prompt": "Le sac de randonnée doit être facile à porter toute la journée : la contrainte est son …",
+      "spoken": "Le sac de randonnée doit être facile à porter toute la journée : la contrainte est son  (mot manquant) ",
+      "choices": [
+        "prix",
+        "poids",
+        "couleur"
+      ],
+      "answer": "poids",
+      "hint": "Qu’est-ce qui fatigue le dos quand on porte un sac ?",
+      "explanation": "Un sac facile à porter doit être léger : la contrainte est son poids. Le prix et la couleur ne changent rien à la fatigue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre un problème technique",
+          "lines": [
+            "Un même problème peut avoir plusieurs solutions.",
+            "Une contrainte : une condition que la solution doit respecter.",
+            "Imperméable : qui ne laisse pas passer l’eau.",
+            "Le poids : un objet à porter doit être léger.",
+            "L’autonomie : le temps qu’un objet marche sans être rechargé.",
+            "On compare les solutions, et on garde celle qui respecte les contraintes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-1-3",
+      "prompt": "La lampe de vélo marche 10 heures sans être rechargée : elle a une bonne …",
+      "spoken": "La lampe de vélo marche 10 heures sans être rechargée : elle a une bonne  (mot manquant) ",
+      "choices": [
+        "solidité",
+        "imperméabilité",
+        "autonomie"
+      ],
+      "answer": "autonomie",
+      "hint": "Relis la ligne « L’autonomie » du rappel.",
+      "explanation": "Le temps qu’un objet marche sans recharge, c’est son autonomie. L’imperméabilité, c’est ne pas laisser passer l’eau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre un problème technique",
+          "lines": [
+            "Un même problème peut avoir plusieurs solutions.",
+            "Une contrainte : une condition que la solution doit respecter.",
+            "Imperméable : qui ne laisse pas passer l’eau.",
+            "Le poids : un objet à porter doit être léger.",
+            "L’autonomie : le temps qu’un objet marche sans être rechargé.",
+            "On compare les solutions, et on garde celle qui respecte les contraintes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-1-4",
+      "prompt": "Le problème : un abri pour les vélos de la cour\nContraintes : protéger de la pluie, laisser passer la lumière.\nSolution A : un toit en tuiles.\nSolution B : une toile percée de petits trous.\nSolution C : un toit en plastique transparent.",
+      "question": "Quelle solution respecte les deux contraintes ?",
+      "spoken": "Le problème, un abri pour les vélos de la cour. Contraintes, protéger de la pluie, laisser passer la lumière. Solution A, un toit en tuiles. Solution B, une toile percée de petits trous. Solution C, un toit en plastique transparent.",
+      "choices": [
+        "la solution A",
+        "la solution B",
+        "la solution C"
+      ],
+      "answer": "la solution C",
+      "hint": "Vérifie chaque solution : arrête-t-elle la pluie ? Laisse-t-elle passer la lumière ?",
+      "explanation": "Le plastique transparent arrête la pluie et laisse passer la lumière : C respecte les deux contraintes. Les tuiles arrêtent la pluie mais font de l’ombre ; la toile percée laisse passer la lumière, mais aussi la pluie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre un problème technique",
+          "lines": [
+            "Un même problème peut avoir plusieurs solutions.",
+            "Une contrainte : une condition que la solution doit respecter.",
+            "Imperméable : qui ne laisse pas passer l’eau.",
+            "Le poids : un objet à porter doit être léger.",
+            "L’autonomie : le temps qu’un objet marche sans être rechargé.",
+            "On compare les solutions, et on garde celle qui respecte les contraintes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-1-5",
+      "prompt": "Trois lampes pour le camping\nLampe A : 3 heures sans recharge, 100 grammes.\nLampe B : 12 heures sans recharge, 150 grammes.\nLampe C : 12 heures sans recharge, 900 grammes.\nContraintes : éclairer toute la nuit, environ 10 heures, et être légère.",
+      "question": "Quelle lampe choisir ?",
+      "spoken": "Trois lampes pour le camping. Lampe A, 3 heures sans recharge, 100 grammes. Lampe B, 12 heures sans recharge, 150 grammes. Lampe C, 12 heures sans recharge, 900 grammes. Contraintes, éclairer toute la nuit, environ 10 heures, et être légère.",
+      "choices": [
+        "la lampe A",
+        "la lampe B",
+        "la lampe C"
+      ],
+      "answer": "la lampe B",
+      "hint": "Écarte d’abord la lampe qui s’éteint trop tôt, puis la plus lourde.",
+      "explanation": "La lampe A s’éteint après 3 heures, bien avant la fin de la nuit. B et C tiennent 12 heures, mais C est lourde : B respecte les deux contraintes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre un problème technique",
+          "lines": [
+            "Un même problème peut avoir plusieurs solutions.",
+            "Une contrainte : une condition que la solution doit respecter.",
+            "Imperméable : qui ne laisse pas passer l’eau.",
+            "Le poids : un objet à porter doit être léger.",
+            "L’autonomie : le temps qu’un objet marche sans être rechargé.",
+            "On compare les solutions, et on garde celle qui respecte les contraintes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-1-6",
+      "prompt": "Pour un même problème technique, on trouve souvent …",
+      "spoken": "Pour un même problème technique, on trouve souvent  (mot manquant) ",
+      "choices": [
+        "une seule solution",
+        "plusieurs solutions",
+        "aucune solution"
+      ],
+      "answer": "plusieurs solutions",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Un même problème a souvent plusieurs solutions : on les compare pour garder la meilleure. C’est pour cela qu’on cherche plusieurs idées avant de choisir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre un problème technique",
+          "lines": [
+            "Un même problème peut avoir plusieurs solutions.",
+            "Une contrainte : une condition que la solution doit respecter.",
+            "Imperméable : qui ne laisse pas passer l’eau.",
+            "Le poids : un objet à porter doit être léger.",
+            "L’autonomie : le temps qu’un objet marche sans être rechargé.",
+            "On compare les solutions, et on garde celle qui respecte les contraintes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-1-7",
+      "prompt": "Deux gourdes pour la classe\nGourde A : en plastique fin, jetée après une semaine.\nGourde B : en métal, utilisée pendant des années.",
+      "question": "Laquelle est le meilleur choix pour l’environnement ?",
+      "spoken": "Deux gourdes pour la classe. Gourde A, en plastique fin, jetée après une semaine. Gourde B, en métal, utilisée pendant des années.",
+      "choices": [
+        "la gourde A",
+        "la gourde B",
+        "les deux autant"
+      ],
+      "answer": "la gourde B",
+      "hint": "Laquelle fait le moins de déchets ?",
+      "explanation": "La gourde B sert des années : elle fait bien moins de déchets que des gourdes jetées chaque semaine. Comparer des solutions, c’est aussi penser à l’environnement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre un problème technique",
+          "lines": [
+            "Un même problème peut avoir plusieurs solutions.",
+            "Une contrainte : une condition que la solution doit respecter.",
+            "Imperméable : qui ne laisse pas passer l’eau.",
+            "Le poids : un objet à porter doit être léger.",
+            "L’autonomie : le temps qu’un objet marche sans être rechargé.",
+            "On compare les solutions, et on garde celle qui respecte les contraintes."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-6e-objects",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

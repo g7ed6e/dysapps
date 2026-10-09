@@ -1,0 +1,242 @@
+{
+  "id": "lv2-3e-travel-de-media-2",
+  "biome": "lv2-3e-travel",
+  "type": "de-media",
+  "level": 2,
+  "lang": "de",
+  "instruction": "Tu remplis une fiche d’inscription sous la dictée. Écoute la ligne, puis choisis le mot bien écrit. La règle est affichée.",
+  "programme": [
+    "c4.de.ecrire.dictee-fiche"
+  ],
+  "items": [
+    {
+      "key": "lv2-3e-travel-de-media-2-0",
+      "prompt": "Wohnort: …",
+      "spoken": "Wohnort: München",
+      "choices": [
+        "Munchen",
+        "München",
+        "Münschen"
+      ],
+      "answer": "München",
+      "hint": "Écoute : entends-tu « ou » ou « u » ? Puis la fin : ch, ou sch ?",
+      "explanation": "München : le son « u » s’écrit ü, et la fin s’écrit ch, pas sch. Sans les deux points, Munchen se dirait « Mounchen ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Eine Anmeldung ausfüllen",
+          "lines": [
+            "die Anmeldung = l’inscription ; die Sprache = la langue",
+            "der Wohnort = où l’on habite ; der Geburtsort = où l’on est né",
+            "das Lieblingsfach = la matière préférée ; das Haustier = l’animal",
+            "ei se dit « aï » ; ie se dit « i » ; z se dit « ts »",
+            "ü se dit « u » ; ö se dit « eu » ; u se dit « ou »",
+            "v se dit souvent « f » : der Vater."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-media-2-1",
+      "prompt": "Sprachen: Deutsch und …",
+      "spoken": "Sprachen: Deutsch und Französisch",
+      "choices": [
+        "Französisch",
+        "Franzözisch",
+        "Franzosisch"
+      ],
+      "answer": "Französisch",
+      "hint": "Écoute : « o » ou « eu » ? Et le son « z » : s ou z ?",
+      "explanation": "Französisch : le son « eu » s’écrit ö. Entre deux voyelles, le son « z » s’écrit s ; la lettre z se dirait « ts ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Eine Anmeldung ausfüllen",
+          "lines": [
+            "die Anmeldung = l’inscription ; die Sprache = la langue",
+            "der Wohnort = où l’on habite ; der Geburtsort = où l’on est né",
+            "das Lieblingsfach = la matière préférée ; das Haustier = l’animal",
+            "ei se dit « aï » ; ie se dit « i » ; z se dit « ts »",
+            "ü se dit « u » ; ö se dit « eu » ; u se dit « ou »",
+            "v se dit souvent « f » : der Vater."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-media-2-2",
+      "prompt": "Lieblingsfach: …",
+      "spoken": "Lieblingsfach: Erdkunde",
+      "choices": [
+        "Erdkounde",
+        "Ertkunde",
+        "Erdkunde"
+      ],
+      "answer": "Erdkunde",
+      "hint": "Écoute le son « ou ». Et Erd vient de die Erde, la Terre.",
+      "explanation": "die Erdkunde (la géographie) : le son « ou » s’écrit u, une seule lettre. Erd vient de die Erde, la Terre : il garde son d.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Eine Anmeldung ausfüllen",
+          "lines": [
+            "die Anmeldung = l’inscription ; die Sprache = la langue",
+            "der Wohnort = où l’on habite ; der Geburtsort = où l’on est né",
+            "das Lieblingsfach = la matière préférée ; das Haustier = l’animal",
+            "ei se dit « aï » ; ie se dit « i » ; z se dit « ts »",
+            "ü se dit « u » ; ö se dit « eu » ; u se dit « ou »",
+            "v se dit souvent « f » : der Vater."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-media-2-3",
+      "prompt": "Hobbys: …",
+      "spoken": "Hobbys: Zeichnen",
+      "choices": [
+        "Zeichnen",
+        "Zaichnen",
+        "Tseichnen"
+      ],
+      "answer": "Zeichnen",
+      "hint": "Écoute le début : « ts », puis « aï ».",
+      "explanation": "das Zeichnen (le dessin) : le son « ts » s’écrit z, et le son « aï » s’écrit ei. ai est rare en allemand (der Mai) ; ts est une graphie du français.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Eine Anmeldung ausfüllen",
+          "lines": [
+            "die Anmeldung = l’inscription ; die Sprache = la langue",
+            "der Wohnort = où l’on habite ; der Geburtsort = où l’on est né",
+            "das Lieblingsfach = la matière préférée ; das Haustier = l’animal",
+            "ei se dit « aï » ; ie se dit « i » ; z se dit « ts »",
+            "ü se dit « u » ; ö se dit « eu » ; u se dit « ou »",
+            "v se dit souvent « f » : der Vater."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-media-2-4",
+      "prompt": "Haustier: ein …",
+      "spoken": "Haustier: ein Vogel",
+      "choices": [
+        "Fogel",
+        "Vogel",
+        "Vogell"
+      ],
+      "answer": "Vogel",
+      "hint": "Le son « f » de ce mot s’écrit comme dans der Vater.",
+      "explanation": "der Vogel (l’oiseau) : le son « f » s’écrit v, comme dans der Vater. La fin -el ne prend qu’un l.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Eine Anmeldung ausfüllen",
+          "lines": [
+            "die Anmeldung = l’inscription ; die Sprache = la langue",
+            "der Wohnort = où l’on habite ; der Geburtsort = où l’on est né",
+            "das Lieblingsfach = la matière préférée ; das Haustier = l’animal",
+            "ei se dit « aï » ; ie se dit « i » ; z se dit « ts »",
+            "ü se dit « u » ; ö se dit « eu » ; u se dit « ou »",
+            "v se dit souvent « f » : der Vater."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-media-2-5",
+      "prompt": "Land: die …",
+      "spoken": "Land: die Schweiz",
+      "choices": [
+        "Schwaiz",
+        "Schweiz",
+        "Schwiez"
+      ],
+      "answer": "Schweiz",
+      "hint": "Écoute : « aï » ou « i » ?",
+      "explanation": "die Schweiz (la Suisse) : le son « aï » s’écrit ei. ie se dirait « i » ; ai est rare en allemand (der Mai).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Eine Anmeldung ausfüllen",
+          "lines": [
+            "die Anmeldung = l’inscription ; die Sprache = la langue",
+            "der Wohnort = où l’on habite ; der Geburtsort = où l’on est né",
+            "das Lieblingsfach = la matière préférée ; das Haustier = l’animal",
+            "ei se dit « aï » ; ie se dit « i » ; z se dit « ts »",
+            "ü se dit « u » ; ö se dit « eu » ; u se dit « ou »",
+            "v se dit souvent « f » : der Vater."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-media-2-6",
+      "prompt": "Lieblingsfarbe: …",
+      "spoken": "Lieblingsfarbe: Grün",
+      "choices": [
+        "Grun",
+        "Grühn",
+        "Grün"
+      ],
+      "answer": "Grün",
+      "hint": "Écoute : « ou » ou « u » ?",
+      "explanation": "das Grün (le vert) : le son « u » s’écrit ü, sans h après. Sans les deux points, Grun se dirait « Groun ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Eine Anmeldung ausfüllen",
+          "lines": [
+            "die Anmeldung = l’inscription ; die Sprache = la langue",
+            "der Wohnort = où l’on habite ; der Geburtsort = où l’on est né",
+            "das Lieblingsfach = la matière préférée ; das Haustier = l’animal",
+            "ei se dit « aï » ; ie se dit « i » ; z se dit « ts »",
+            "ü se dit « u » ; ö se dit « eu » ; u se dit « ou »",
+            "v se dit souvent « f » : der Vater."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-media-2-7",
+      "prompt": "Geburtsort: …",
+      "spoken": "Geburtsort: Leipzig",
+      "choices": [
+        "Laipzig",
+        "Leibzig",
+        "Leipzig"
+      ],
+      "answer": "Leipzig",
+      "hint": "Écoute : « aï », puis p ou b ?",
+      "explanation": "Leipzig : le son « aï » s’écrit ei, et on entend un p, pas un b. ai est rare en allemand (der Mai).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Eine Anmeldung ausfüllen",
+          "lines": [
+            "die Anmeldung = l’inscription ; die Sprache = la langue",
+            "der Wohnort = où l’on habite ; der Geburtsort = où l’on est né",
+            "das Lieblingsfach = la matière préférée ; das Haustier = l’animal",
+            "ei se dit « aï » ; ie se dit « i » ; z se dit « ts »",
+            "ü se dit « u » ; ö se dit « eu » ; u se dit « ou »",
+            "v se dit souvent « f » : der Vater."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien écrit !"
+  },
+  "reward": {
+    "block": "lv2-3e-travel",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

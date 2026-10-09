@@ -23,7 +23,7 @@ export const PLACES_DES_BORNES_DES_ECOLES = [0, 4, 8, 12, 16] as const;
  * Les colonnes des bornes d'une île-école à `n` missions, prises dans `PLACES_DES_BORNES_DES_ECOLES` à partir du milieu :
  * 1 → 8 ; 3 → 4, 8, 12 ; 5 → toutes. Un nombre pair ne se centre pas au pas de 4 : il penche d'une place vers la gauche
  * (x bas), 2 → 4, 8 et 4 → 0, 4, 8, 12, plutôt que de quitter la grille des places. Au-delà de 5, `null` : l'île reprend
- * le pas de 3 des autres îles. Aujourd'hui, les quatre îles-écoles ont 3 missions (threeBands.test.ts).
+ * le pas de 3 des autres îles. Une île-école porte jusqu'à cinq missions (GD-14).
  */
 export function placesDesBornes(n: number): readonly number[] | null {
   const places = PLACES_DES_BORNES_DES_ECOLES;

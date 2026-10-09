@@ -1,0 +1,238 @@
+{
+  "id": "maths-3e-geometry-transformations-1",
+  "biome": "maths-3e-geometry",
+  "type": "transformations",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-3e-geometry-transformations-1-0",
+      "prompt": "Une figure glisse, sans tourner et sans se retourner. C’est une …",
+      "spoken": "Une figure glisse, sans tourner et sans se retourner. C’est une (mot manquant)",
+      "choices": [
+        "translation",
+        "rotation",
+        "symétrie axiale"
+      ],
+      "answer": "translation",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Glisser sans tourner, c’est une translation : chaque point bouge de la même façon, dans la même direction. Une rotation fait tourner la figure ; une symétrie axiale la retourne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effet d’une transformation",
+          "lines": [
+            "Translation : la figure glisse, sans tourner.",
+            "Symétrie axiale : la figure se retourne, comme dans un miroir.",
+            "Symétrie centrale : la figure fait un demi-tour autour d’un point.",
+            "Rotation : la figure tourne autour d’un point, d’un angle donné.",
+            "Ces quatre transformations gardent les longueurs, les angles et les aires.",
+            "Homothétie de rapport k positif : les longueurs sont multipliées par k, les angles ne changent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-1-1",
+      "prompt": "Une figure se retourne, comme dans un miroir. C’est une …",
+      "spoken": "Une figure se retourne, comme dans un miroir. C’est une (mot manquant)",
+      "choices": [
+        "symétrie axiale",
+        "symétrie centrale",
+        "translation"
+      ],
+      "answer": "symétrie axiale",
+      "hint": "Un miroir est une ligne droite, pas un point.",
+      "explanation": "Le miroir est une droite, l’axe : c’est une symétrie axiale. La symétrie centrale se fait autour d’un point : la figure fait un demi-tour, sans se retourner. La translation la fait glisser.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effet d’une transformation",
+          "lines": [
+            "Translation : la figure glisse, sans tourner.",
+            "Symétrie axiale : la figure se retourne, comme dans un miroir.",
+            "Symétrie centrale : la figure fait un demi-tour autour d’un point.",
+            "Rotation : la figure tourne autour d’un point, d’un angle donné.",
+            "Ces quatre transformations gardent les longueurs, les angles et les aires.",
+            "Homothétie de rapport k positif : les longueurs sont multipliées par k, les angles ne changent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-1-2",
+      "prompt": "Une symétrie centrale, c’est une rotation de …",
+      "spoken": "Une symétrie centrale, c’est une rotation de (mot manquant)",
+      "choices": [
+        "90°",
+        "180°",
+        "360°"
+      ],
+      "answer": "180°",
+      "hint": "La symétrie centrale fait un demi-tour. Un tour complet mesure 360 degrés.",
+      "explanation": "La symétrie centrale fait un demi-tour autour du centre : 360 ÷ 2 = 180°. 90°, c’est un quart de tour. 360°, c’est un tour complet : la figure reviendrait à sa place.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effet d’une transformation",
+          "lines": [
+            "Translation : la figure glisse, sans tourner.",
+            "Symétrie axiale : la figure se retourne, comme dans un miroir.",
+            "Symétrie centrale : la figure fait un demi-tour autour d’un point.",
+            "Rotation : la figure tourne autour d’un point, d’un angle donné.",
+            "Ces quatre transformations gardent les longueurs, les angles et les aires.",
+            "Homothétie de rapport k positif : les longueurs sont multipliées par k, les angles ne changent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-1-3",
+      "prompt": "On fait tourner un triangle de 90° autour d’un point. Un angle de 50° du triangle devient un angle de …",
+      "spoken": "On fait tourner un triangle de 90 degrés autour d’un point. Un angle de 50 degrés du triangle devient un angle de (mot manquant)",
+      "choices": [
+        "50°",
+        "90°",
+        "140°"
+      ],
+      "answer": "50°",
+      "hint": "Le triangle tourne. Est-ce que sa forme change ?",
+      "explanation": "Une rotation déplace la figure sans la déformer : l’angle mesure toujours 50°. 140°, c’est 50 + 90 : on a ajouté l’angle de la rotation, qui dit seulement de combien la figure tourne. 90° est l’angle de la rotation, pas celui du triangle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effet d’une transformation",
+          "lines": [
+            "Translation : la figure glisse, sans tourner.",
+            "Symétrie axiale : la figure se retourne, comme dans un miroir.",
+            "Symétrie centrale : la figure fait un demi-tour autour d’un point.",
+            "Rotation : la figure tourne autour d’un point, d’un angle donné.",
+            "Ces quatre transformations gardent les longueurs, les angles et les aires.",
+            "Homothétie de rapport k positif : les longueurs sont multipliées par k, les angles ne changent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-1-4",
+      "prompt": "Un rectangle de 12 cm² a pour image, par une symétrie axiale, un rectangle de …",
+      "spoken": "Un rectangle de 12 centimètres carrés a pour image, par une symétrie axiale, un rectangle de (mot manquant)",
+      "choices": [
+        "6 cm²",
+        "12 cm²",
+        "24 cm²"
+      ],
+      "answer": "12 cm²",
+      "hint": "Dans un miroir, une figure change-t-elle de taille ?",
+      "explanation": "Une symétrie axiale garde les longueurs : l’image a les mêmes côtés, donc la même aire, 12 cm². 24 cm², c’est la figure et son image ensemble. 6 cm², c’est la moitié : la symétrie ne coupe pas la figure, elle la retourne tout entière.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effet d’une transformation",
+          "lines": [
+            "Translation : la figure glisse, sans tourner.",
+            "Symétrie axiale : la figure se retourne, comme dans un miroir.",
+            "Symétrie centrale : la figure fait un demi-tour autour d’un point.",
+            "Rotation : la figure tourne autour d’un point, d’un angle donné.",
+            "Ces quatre transformations gardent les longueurs, les angles et les aires.",
+            "Homothétie de rapport k positif : les longueurs sont multipliées par k, les angles ne changent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-1-5",
+      "prompt": "Une homothétie de rapport 2 transforme un segment de 7 cm en un segment de …",
+      "spoken": "Une homothétie de rapport 2 transforme un segment de 7 centimètres en un segment de (mot manquant)",
+      "choices": [
+        "9 cm",
+        "14 cm",
+        "28 cm"
+      ],
+      "answer": "14 cm",
+      "hint": "Une longueur est multipliée par le rapport.",
+      "explanation": "Les longueurs sont multipliées par 2 : 7 × 2 = 14 cm. 9 cm, c’est 7 + 2 : on multiplie, on n’ajoute pas. 28 cm, c’est multiplier par 2 × 2, ce qui vaut pour les aires.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effet d’une transformation",
+          "lines": [
+            "Translation : la figure glisse, sans tourner.",
+            "Symétrie axiale : la figure se retourne, comme dans un miroir.",
+            "Symétrie centrale : la figure fait un demi-tour autour d’un point.",
+            "Rotation : la figure tourne autour d’un point, d’un angle donné.",
+            "Ces quatre transformations gardent les longueurs, les angles et les aires.",
+            "Homothétie de rapport k positif : les longueurs sont multipliées par k, les angles ne changent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-1-6",
+      "prompt": "Une homothétie de rapport 0,5 transforme une figure en …",
+      "spoken": "Une homothétie de rapport 0,5 transforme une figure en (mot manquant)",
+      "choices": [
+        "un agrandissement",
+        "une réduction",
+        "une figure de même taille"
+      ],
+      "answer": "une réduction",
+      "hint": "Que devient une longueur multipliée par 0,5 ?",
+      "explanation": "Multiplier par 0,5, c’est prendre la moitié : les longueurs diminuent, l’image est une réduction. Un rapport plus grand que 1 donnerait un agrandissement. La même taille, c’est un rapport de 1.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effet d’une transformation",
+          "lines": [
+            "Translation : la figure glisse, sans tourner.",
+            "Symétrie axiale : la figure se retourne, comme dans un miroir.",
+            "Symétrie centrale : la figure fait un demi-tour autour d’un point.",
+            "Rotation : la figure tourne autour d’un point, d’un angle donné.",
+            "Ces quatre transformations gardent les longueurs, les angles et les aires.",
+            "Homothétie de rapport k positif : les longueurs sont multipliées par k, les angles ne changent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-1-7",
+      "prompt": "Parmi ces transformations, celle qui peut changer les longueurs, c’est …",
+      "spoken": "Parmi ces transformations, celle qui peut changer les longueurs, c’est (mot manquant)",
+      "choices": [
+        "l’homothétie",
+        "la rotation",
+        "la symétrie centrale"
+      ],
+      "answer": "l’homothétie",
+      "hint": "Relis la cinquième ligne du rappel : quelles transformations gardent les longueurs ?",
+      "explanation": "L’homothétie multiplie les longueurs par son rapport : elle agrandit ou réduit. La rotation et la symétrie centrale déplacent la figure sans changer ses longueurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effet d’une transformation",
+          "lines": [
+            "Translation : la figure glisse, sans tourner.",
+            "Symétrie axiale : la figure se retourne, comme dans un miroir.",
+            "Symétrie centrale : la figure fait un demi-tour autour d’un point.",
+            "Rotation : la figure tourne autour d’un point, d’un angle donné.",
+            "Ces quatre transformations gardent les longueurs, les angles et les aires.",
+            "Homothétie de rapport k positif : les longueurs sont multipliées par k, les angles ne changent pas."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

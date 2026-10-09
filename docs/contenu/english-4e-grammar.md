@@ -510,6 +510,127 @@ Pour tous les items :
    - indice : immigrants ressemble au mot français. Et by ship ?
    - explication : Des millions d’immigrants sont arrivés en bateau (by ship) sur cette île, près de New York. Ils venaient commencer une nouvelle vie.
 
+## Forms · `forms`
+
+- description : Remplir une fiche de renseignements et écrire un message simple en anglais, en choisissant le bon mot.
+- compétences : c4.en.ecrire.dictee-fiche
+- langue : en
+- consigne : Choisis ce qui complète la fiche ou le message en anglais. La règle est affichée : lis-la avant de répondre.
+- bravo : Bien écrit !
+- erreur : {explanation}
+- bloc gagné : english-4e-grammar
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- trou lu : blank
+
+### Niveau 1 · `english-4e-grammar-forms-1`
+
+Pour tous les items :
+- aide « Remplir une fiche » :
+  - first name = le prénom ; surname = le nom de famille
+  - date of birth = la date de naissance ; age = l’âge
+  - address = l’adresse ; town = la ville ; country = le pays
+  - nationality = la nationalité (un adjectif : Italian, Irish)
+  - languages = les langues ; hobbies = les loisirs ; pets = les animaux
+
+1. énoncé : My name is Lucas Martin. First name: …
+   - choix : Lucas · Martin · Lucas Martin
+   - réponse : Lucas
+   - indice : Le prénom ou le nom de famille ? Relis la règle.
+   - explication : first name = le prénom : Lucas. Martin est le nom de famille, surname ; la case ne demande que le prénom.
+2. énoncé : My name is Emma Brown. Surname: …
+   - choix : Brown · Emma · Emma Brown
+   - réponse : Brown
+   - indice : Le prénom ou le nom de famille ? Relis la règle.
+   - explication : surname = le nom de famille : Brown. Emma est le prénom, first name ; la case ne demande que le nom de famille.
+3. énoncé : I’m from Spain. Nationality: …
+   - choix : Spanish · Spain · Madrid
+   - réponse : Spanish
+   - indice : La nationalité est un adjectif : relis la règle.
+   - explication : La nationalité est un adjectif : Spanish, espagnol. Spain, c’est le pays ; Madrid, la capitale.
+4. énoncé : …: 14 Church Street, Bristol
+   - lu : blank: fourteen Church Street, Bristol.
+   - choix : Address · Date of birth · Phone number
+   - réponse : Address
+   - indice : Un numéro, une rue, une ville : où habite-t-on ?
+   - explication : 14 Church Street, Bristol : un numéro, une rue et une ville. C’est l’adresse, address, avec deux d et deux s en anglais. Phone number = le numéro de téléphone.
+5. énoncé : …: 3 May 2012
+   - lu : blank: the third of May, twenty twelve.
+   - choix : Date of birth · Age · Address
+   - réponse : Date of birth
+   - indice : C’est une date, avec un jour, un mois et une année.
+   - explication : 3 May 2012 est une date : le jour où l’on est né, date of birth. Age demande un nombre d’années, pas une date.
+6. énoncé : …: football, drawing
+   - choix : Hobbies · Languages · Pets
+   - réponse : Hobbies
+   - indice : Le football et le dessin : qu’est-ce qu’on en fait, après l’école ?
+   - explication : Le football et le dessin sont des loisirs : hobbies. Languages = les langues ; pets = les animaux de compagnie.
+7. énoncé : I speak French and English. …: French, English
+   - choix : Languages · Nationality · Hobbies
+   - réponse : Languages
+   - indice : I speak = je parle. Que parle-t-on ?
+   - explication : On parle le français et l’anglais : ce sont des langues, languages. Nationality demande d’où l’on est, pas les langues qu’on parle.
+8. énoncé : I live in Leeds, in England. Country: …
+   - choix : England · Leeds · English
+   - réponse : England
+   - indice : Le pays, la ville ou la langue ? Relis la règle.
+   - explication : country = le pays : England, l’Angleterre. Leeds est la ville, town ; English est la langue ou la nationalité.
+
+### Niveau 2 · `english-4e-grammar-forms-2`
+
+Pour tous les items :
+- aide « Écrire un message » :
+  - Pour commencer : dear = cher, chère ; hi = salut
+  - Pour finir : love = je t’embrasse ; best wishes = amitiés
+  - thank you for = merci pour ; I’m writing to = je t’écris pour
+  - on Monday = lundi ; at six = à six heures ; in May = en mai
+  - will = le futur (I will call) ; yesterday = hier (it was fun)
+
+1. énoncé : … Sam, thank you for your letter!
+   - choix : Dear · Love · Best wishes
+   - réponse : Dear
+   - indice : Le début ou la fin du message ? Relis la règle.
+   - explication : Dear Sam = cher Sam : on commence une lettre par Dear. Love et Best wishes servent à finir, juste avant son prénom.
+2. énoncé : See you soon! …, Lina
+   - choix : Love · Dear · Hi
+   - réponse : Love
+   - indice : Le début ou la fin du message ? Relis la règle.
+   - explication : Love, Lina : on finit un message à un ami par Love, juste avant son prénom. Dear et Hi servent à commencer.
+3. énoncé : Dear Mrs Green, I’m writing … ask about the summer camp.
+   - choix : to · for · at
+   - réponse : to
+   - indice : Après le trou vient un verbe, ask. Relis la règle.
+   - explication : I’m writing to ask = je vous écris pour demander : to + verbe dit pourquoi on écrit. for se met devant un nom (for the camp), pas devant un verbe.
+4. énoncé : Thank you … your email, Tom!
+   - choix : for · to · of
+   - réponse : for
+   - indice : Merci pour : relis la règle.
+   - explication : thank you for = merci pour : on dit thank you for, jamais thank you to ni thank you of.
+5. énoncé : I’m sorry, I … come to your party on Saturday.
+   - choix : can’t · am not · doesn’t
+   - réponse : can’t
+   - indice : Je ne peux pas venir : après le trou, le verbe come est à la base.
+   - explication : I can’t come = je ne peux pas venir : après can’t, le verbe reste à la base. I am not come ne se dit pas, et doesn’t va avec he ou she.
+6. énoncé : Would you like to come to my party … Saturday?
+   - choix : on · in · at
+   - réponse : on
+   - indice : Saturday est un jour : relis la règle.
+   - explication : on + un jour : on Saturday, samedi. in va avec un mois (in May), at avec une heure (at six).
+7. énoncé : Hi Mum, I’m at the library. I … be home at six.
+   - choix : will · am · was
+   - réponse : will
+   - indice : À six heures, c’est plus tard : passé, présent ou futur ?
+   - explication : I will be home = je serai à la maison : will + base pour ce qui va arriver. I am be et I was be ne se disent pas.
+8. énoncé : Thanks for the party! It … great to see you yesterday.
+   - choix : was · is · will
+   - réponse : was
+   - indice : yesterday = hier : passé, présent ou futur ?
+   - explication : yesterday = hier : c’est passé, donc it was great. It is parle de maintenant ; après will, il faudrait be (it will be).
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

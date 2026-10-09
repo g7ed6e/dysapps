@@ -608,6 +608,177 @@ Pour tous les items :
    - indice : en la camiseta = sur le tee-shirt.
    - explication : la mancha = la tache : j’ai une tache sur mon tee-shirt. La manche d’un vêtement se dit la manga.
 
+## Medios y fichas · `es-media`
+
+- description : Un programme de télévision, une affiche de concert, un message sur un réseau ; puis remplir une fiche.
+- compétences : c4.es.culture.langages · c4.es.ecrire.dictee-fiche
+- lv2 : es
+- langue : es
+- erreur : {explanation}
+- bloc gagné : lv2-3e-travel
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `lv2-3e-travel-es-media-1`
+
+- consigne : Lis la question, puis le document en espagnol, et choisis la bonne réponse. Le lexique est affiché.
+- bravo : Bien lu !
+
+Pour tous les items :
+- aide « Leer los medios » :
+  - el programa = l’émission ; la película = le film ; la serie = la série
+  - las noticias = les informations ; el concurso = le jeu
+  - el concierto = le concert ; la entrada = le billet ; gratis = gratuit
+  - antes de = avant ; después de = après
+  - publicar = publier ; me encanta = j’adore
+  - 21:30 = 21 h 30
+
+1. énoncé : "Canal 5, sábado\n20:00 Noticias\n20:30 Fútbol: Unión Norte - Atlético Sur\n22:30 Serie: La casa del faro"
+   - question : À quelle heure commence le match de football ?
+   - lu : Canal cinco, sábado. A las veinte, noticias. A las veinte y treinta, fútbol: Unión Norte contra Atlético Sur. A las veintidós y treinta, serie: La casa del faro.
+   - langue des choix : fr
+   - choix : 20 h 00 · 20 h 30 · 22 h 30
+   - réponse : 20 h 30
+   - indice : Trouve la ligne Fútbol, puis lis son heure.
+   - explication : 20:30 Fútbol = le match commence à 20 h 30. À 20 h, ce sont las noticias, les informations ; à 22 h 30, la série.
+2. énoncé : "Canal 2, domingo\n15:00 Película: El perro astronauta\n17:00 Dibujos animados\n19:00 Concurso: ¿Quién sabe más?"
+   - question : Quelle sorte d’émission passe à 17 h ?
+   - lu : Canal dos, domingo. A las quince, película: El perro astronauta. A las diecisiete, dibujos animados. A las diecinueve, concurso: Quién sabe más?
+   - langue des choix : fr
+   - choix : Un dessin animé · Un film · Un jeu télévisé
+   - réponse : Un dessin animé
+   - indice : Trouve la ligne de 17:00. el dibujo = le dessin.
+   - explication : 17:00 Dibujos animados = des dessins animés. La película (le film) passe à 15 h ; el concurso (le jeu), à 19 h.
+3. énoncé : "Concierto: Los Girasoles\nSábado 14 de junio, 21:00\nPlaza Mayor\nEntrada gratis"
+   - question : Où a lieu le concert ?
+   - lu : Concierto: Los Girasoles. Sábado catorce de junio, a las veintiuna. Plaza Mayor. Entrada gratis.
+   - langue des choix : fr
+   - choix : Sur une place · Dans un stade · Dans une salle de sport
+   - réponse : Sur une place
+   - indice : Lis la 3e ligne : la plaza ressemble à un mot français.
+   - explication : Plaza Mayor = la grand-place : le concert a lieu dehors, sur une place. En Espagne, l’été, il y a souvent des concerts gratuits sur la place de la ville.
+4. énoncé : "Gran concierto de verano\nGrupo: Luna Roja\nViernes 4 de julio, 22:00\nEntradas: 12 euros"
+   - question : Quel jour de la semaine a lieu le concert ?
+   - lu : Gran concierto de verano. Grupo: Luna Roja. Viernes cuatro de julio, a las veintidós. Entradas: doce euros.
+   - langue des choix : fr
+   - choix : Le mercredi · Le jeudi · Le vendredi
+   - réponse : Le vendredi
+   - indice : Lis la 3e ligne. jueves ou viernes ?
+   - explication : Viernes = vendredi : le concert a lieu le vendredi 4 juillet. Le jeudi se dit jueves ; le mercredi, miércoles.
+5. énoncé : "Marta @marta_viaja\nHoy, excursión al museo con mi clase.\n¡Me encanta el arte!\n45 me gusta · 3 comentarios"
+   - question : Où est Marta aujourd’hui ?
+   - lu : Marta publica: Hoy, excursión al museo con mi clase. Me encanta el arte! Cuarenta y cinco me gusta, tres comentarios.
+   - langue des choix : fr
+   - choix : Au musée · À la plage · Au collège
+   - réponse : Au musée
+   - indice : Lis la 2e ligne : hoy = aujourd’hui.
+   - explication : Hoy, excursión al museo = aujourd’hui, sortie au musée avec sa classe. Me encanta el arte = j’adore l’art.
+6. énoncé : "Pablo @pablo_cocina\n¡Mañana salgo en la tele!\nCanal 4, programa Jóvenes cocineros, 18:00"
+   - question : Que fait Pablo demain ?
+   - lu : Pablo publica: Mañana salgo en la tele! Canal cuatro, programa Jóvenes cocineros, a las dieciocho.
+   - langue des choix : fr
+   - choix : Il passe à la télé · Il regarde la télé · Il achète une télé
+   - réponse : Il passe à la télé
+   - indice : Regarder se dit ver. Est-ce le verbe de la 2e ligne ?
+   - explication : salir en la tele = passer à la télé : ¡Mañana salgo en la tele! = demain, je passe à la télé. Pablo est dans l’émission Jóvenes cocineros (jeunes cuisiniers). Regarder la télé se dirait ver la tele.
+7. énoncé : "Canal 3\n18:00 Dibujos animados\n19:00 Noticias\n20:00 Documental: Los Andes"
+   - question : Regarde le programme. Quelle phrase est vraie ?
+   - lu : Canal tres. A las dieciocho, dibujos animados. A las diecinueve, noticias. A las veinte, documental: Los Andes.
+   - langue des choix : es
+   - choix : Las noticias son antes del documental. · Las noticias son después del documental. · Los dibujos son después de las noticias.
+   - réponse : Las noticias son antes del documental.
+   - indice : Compare les heures : 19:00 ou 20:00, qui vient en premier ?
+   - explication : Las noticias (19 h) son antes del documental (20 h) : les informations passent avant le documentaire. Los dibujos (18 h) passent avant, pas después.
+8. énoncé : "Comentarios\nAna: ¡Me encanta esta canción!\nLeo: A mí no me gusta mucho."
+   - question : Qui n’aime pas beaucoup la chanson ?
+   - lu : Comentarios. Ana: Me encanta esta canción! Leo: A mí no me gusta mucho.
+   - langue des choix : fr
+   - choix : Leo · Ana · Ana et Leo
+   - réponse : Leo
+   - indice : Cherche la phrase avec no.
+   - explication : Leo écrit : A mí no me gusta mucho = moi, je n’aime pas beaucoup. Ana écrit : me encanta, j’adore.
+
+### Niveau 2 · `lv2-3e-travel-es-media-2`
+
+- consigne : Lis la question, puis le document en espagnol : tu remplis une fiche. Le lexique est affiché.
+- bravo : Bien rempli !
+
+Pour tous les items :
+- aide « Rellenar una ficha » :
+  - el nombre = le prénom ; los apellidos = les noms de famille
+  - En Espagne, on a deux apellidos.
+  - la fecha de nacimiento = la date de naissance ; nací = je suis né
+  - la edad = l’âge ; la nacionalidad = la nationalité
+  - la dirección = l’adresse ; la calle = la rue
+  - las lenguas = les langues ; hablo = je parle
+
+1. énoncé : "Me llamo Lucía Martín Gil.\nTengo quince años.\nVivo en Bilbao."
+   - question : Que mets-tu à la ligne Nombre ?
+   - lu : Me llamo Lucía Martín Gil. Tengo quince años. Vivo en Bilbao.
+   - langue des choix : fr
+   - choix : Lucía · Martín Gil · Lucía Martín
+   - réponse : Lucía
+   - indice : Attention : el nombre ne veut pas dire le nom. Relis la règle.
+   - explication : el nombre = le prénom : Lucía. Martín Gil, ce sont ses apellidos, ses noms de famille.
+2. énoncé : "Soy Diego Ruiz Torres.\nNací en Lima.\nVivo en Madrid con mi familia."
+   - question : Que mets-tu à la ligne Apellidos ?
+   - lu : Soy Diego Ruiz Torres. Nací en Lima. Vivo en Madrid con mi familia.
+   - langue des choix : fr
+   - choix : Ruiz Torres · Ruiz · Diego Ruiz Torres
+   - réponse : Ruiz Torres
+   - indice : apellidos est au pluriel. Et Diego, qu’est-ce que c’est ?
+   - explication : los apellidos = les noms de famille : Ruiz Torres, les deux. Diego est son nombre, son prénom.
+3. énoncé : "Me llamo Inés.\nNací el 5 de junio de 2011."
+   - question : Que mets-tu à la ligne Fecha de nacimiento ?
+   - lu : Me llamo Inés. Nací el cinco de junio de dos mil once.
+   - langue des choix : fr
+   - choix : 5 juin 2011 · 5 juillet 2011 · 15 juin 2011
+   - réponse : 5 juin 2011
+   - indice : junio ou julio ? Et cinco, c’est combien ?
+   - explication : el 5 de junio de 2011 = le 5 juin 2011. junio = juin, julio = juillet. cinco = 5 ; 15 se dirait quince.
+4. énoncé : "Me llamo Mateo.\nVivo en Madrid, pero soy mexicano.\nMi madre es española."
+   - question : Que mets-tu à la ligne Nacionalidad ?
+   - lu : Me llamo Mateo. Vivo en Madrid, pero soy mexicano. Mi madre es española.
+   - langue des choix : fr
+   - choix : Mexicain · Espagnol · Français
+   - réponse : Mexicain
+   - indice : Cherche soy (je suis), pas vivo (j’habite).
+   - explication : Soy mexicano = je suis mexicain. Mateo vit à Madrid, mais il est mexicain ; c’est sa mère qui est espagnole.
+5. énoncé : "Soy Carmen.\nVivo en la calle Mayor, número 8.\nMi ciudad es Bilbao."
+   - question : Que mets-tu à la ligne Dirección ?
+   - lu : Soy Carmen. Vivo en la calle Mayor, número ocho. Mi ciudad es Bilbao.
+   - langue des choix : fr
+   - choix : Calle Mayor, 8 · Bilbao · Calle Bilbao, 8
+   - réponse : Calle Mayor, 8
+   - indice : Attention : la dirección ne veut pas dire la direction. Relis la règle.
+   - explication : la dirección = l’adresse : la rue et le numéro, calle Mayor, 8. Bilbao est sa ciudad, sa ville.
+6. énoncé : "Me llamo Álex.\nTengo catorce años.\nMi hermano tiene doce."
+   - question : Que mets-tu à la ligne Edad ?
+   - lu : Me llamo Álex. Tengo catorce años. Mi hermano tiene doce.
+   - langue des choix : fr
+   - choix : 12 · 14 · 40
+   - réponse : 14
+   - indice : la edad = l’âge. C’est l’âge d’Álex, pas celui de son frère.
+   - explication : Tengo catorce años = j’ai 14 ans. catorce = 14 ; 40 se dirait cuarenta. doce (12), c’est l’âge de son frère.
+7. énoncé : "Soy Jordi y vivo en Girona.\nHablo español y catalán.\nNo hablo inglés."
+   - question : Que mets-tu à la ligne Lenguas ?
+   - lu : Soy Jordi y vivo en Girona. Hablo español y catalán. No hablo inglés.
+   - langue des choix : fr
+   - choix : Espagnol et catalan · Espagnol et anglais · Catalan seulement
+   - réponse : Espagnol et catalan
+   - indice : Cherche hablo (je parle). Et la ligne avec no ?
+   - explication : Hablo español y catalán = je parle espagnol et catalan. No hablo inglés : il ne parle pas anglais. En Catalogne, on parle souvent les deux langues.
+8. énoncé : "Ficha de inscripción\nNombre: Pablo\nApellidos: Sanz Ortega\nEdad: 15 años\nCiudad: Lima"
+   - question : Lis la fiche. Quelle phrase est vraie ?
+   - lu : Ficha de inscripción. Nombre: Pablo. Apellidos: Sanz Ortega. Edad: quince años. Ciudad: Lima.
+   - langue des choix : es
+   - choix : Pablo vive en Lima. · Pablo tiene cinco años. · Su nombre es Sanz.
+   - réponse : Pablo vive en Lima.
+   - indice : Vérifie chaque phrase avec une ligne de la fiche.
+   - explication : Ciudad: Lima, donc Pablo vive en Lima, il habite à Lima. Il a quince años, 15 ans, pas cinco. Sanz est un apellido, pas son nombre.
+
 ## Wohin bist du gefahren? · `de-past`
 
 - description : Le Perfekt avec haben, puis haben ou sein.
@@ -1186,6 +1357,157 @@ Pour tous les items :
    - réponse : du poison
    - indice : Schokolade = le chocolat ; Hunde = les chiens. Ce mot ressemble à un mot anglais.
    - explication : das Gift = le poison : le chocolat est un poison pour les chiens. Un cadeau se dit ein Geschenk ; en anglais, a gift.
+
+## Medien · `de-media`
+
+- description : Des médias inventés à lire : programme de télé, affiche, message ; puis une fiche remplie sous la dictée.
+- compétences : c4.de.culture.langages · c4.de.ecrire.dictee-fiche
+- lv2 : de
+- langue : de
+- erreur : {explanation}
+- bloc gagné : lv2-3e-travel
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `lv2-3e-travel-de-media-1`
+
+- consigne : Lis la question, puis le document en allemand. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.
+- programme : c4.de.culture.langages
+- bravo : Bien lu !
+
+Pour tous les items :
+- langue des choix : fr
+- aide « Die Medien » :
+  - das Fernsehprogramm = le programme de télévision
+  - die Nachrichten = les informations ; die Sendung = l’émission
+  - die Karte = le billet ; die Stadthalle = la salle des fêtes
+  - der Beitrag = le message publié ; der Kommentar = le commentaire
+  - der Comic = la bande dessinée ; Band 3 = tome 3
+  - heute Abend = ce soir ; neu = nouveau
+  - 20:15 = 20 h 15
+
+1. énoncé : "Fernsehprogramm – Freitag\n18:30 Tiere der Welt\n19:00 Nachrichten\n20:15 Krimi: Der rote Koffer"
+   - question : À quelle heure commence le film policier ?
+   - lu : Fernsehprogramm, Freitag. Achtzehn Uhr dreißig, Tiere der Welt. Neunzehn Uhr, Nachrichten. Zwanzig Uhr fünfzehn, Krimi, Der rote Koffer.
+   - choix : 18 h 30 · 19 h 00 · 20 h 15
+   - réponse : 20 h 15
+   - indice : Le film policier se dit der Krimi : trouve sa ligne.
+   - explication : der Krimi = le film policier : sa ligne dit 20:15, donc 20 h 15. À 19 h, ce sont les Nachrichten, les informations. En Allemagne, le film du soir commence souvent à 20 h 15.
+2. énoncé : "Konzert: Die Wolken\nSamstag, 14. Juni, 20 Uhr\nStadthalle Bremen\nKarten: 15 Euro"
+   - question : Quel jour a lieu le concert ?
+   - lu : Konzert, Die Wolken. Samstag, vierzehnter Juni, zwanzig Uhr. Stadthalle Bremen. Karten, fünfzehn Euro.
+   - choix : Le dimanche · Le samedi · Le jeudi
+   - réponse : Le samedi
+   - indice : Lis la 2e ligne : Samstag ou Sonntag ?
+   - explication : Samstag = samedi : le concert a lieu le samedi 14 juin, à 20 h. Sonntag, c’est dimanche ; Donnerstag, jeudi.
+3. énoncé : "Konzert: Die Wolken\nSamstag, 14. Juni\nAusverkauft!"
+   - question : Peut-on encore acheter un billet ?
+   - lu : Konzert, Die Wolken. Samstag, vierzehnter Juni. Ausverkauft!
+   - choix : Non, c’est complet · Oui, à l’entrée du concert · Oui, il en reste quelques-uns
+   - réponse : Non, c’est complet
+   - indice : ausverkauft : verkaufen = vendre, et aus = fini.
+   - explication : ausverkauft = tout est vendu : c’est complet, il n’y a plus de billets (Karten).
+4. énoncé : "Beitrag von Lena\nHeute Abend Kino mit Mia!\nWer kommt mit?"
+   - question : Que propose Lena ?
+   - lu : Beitrag von Lena. Heute Abend Kino mit Mia! Wer kommt mit?
+   - choix : De regarder un film demain · D’aller au concert ce soir · D’aller au cinéma ce soir
+   - réponse : D’aller au cinéma ce soir
+   - indice : Lis la 2e ligne : das Kino, ou das Konzert ?
+   - explication : Heute Abend Kino = ce soir, cinéma : Lena propose d’y aller avec Mia. Wer kommt mit? = Qui vient avec nous ?
+5. énoncé : "Danke für die Hilfe bei Mathe!\nBis morgen!\nLG Jonas"
+   - question : Que veut dire LG à la fin du message ?
+   - lu : Danke für die Hilfe bei Mathe! Bis morgen! Liebe Grüße, Jonas.
+   - choix : Merci beaucoup · Amitiés · À demain
+   - réponse : Amitiés
+   - indice : LG, ce sont deux mots : Liebe Grüße. Danke et bis morgen sont déjà dans le message.
+   - explication : LG = Liebe Grüße, une formule pour finir un message, comme « amitiés ». Danke = merci ; bis morgen = à demain.
+6. énoncé : "Kino Astoria\nDer Wolf im Schnee\nab 12 Jahren\nHeute: 16:00 und 19:30"
+   - question : Qui peut voir ce film ?
+   - lu : Kino Astoria. Der Wolf im Schnee. Ab zwölf Jahren. Heute, sechzehn Uhr und neunzehn Uhr dreißig.
+   - choix : Les enfants de 12 ans et plus · Les enfants de moins de 12 ans · Les adultes seulement
+   - réponse : Les enfants de 12 ans et plus
+   - indice : ab, c’est le point de départ : à partir de quel âge ?
+   - explication : ab 12 Jahren = à partir de 12 ans : il faut avoir 12 ans ou plus. En Allemagne, l’affiche d’un film indique souvent l’âge minimum.
+7. énoncé : "Radio Hallo – Montag\n7:00 Musik am Morgen\n16:00 Podcast: Schule und mehr\n18:00 Sport am Abend"
+   - question : De quoi parle le podcast de 16 h ?
+   - lu : Radio Hallo, Montag. Sieben Uhr, Musik am Morgen. Sechzehn Uhr, Podcast, Schule und mehr. Achtzehn Uhr, Sport am Abend.
+   - choix : De sport · De l’école · De musique
+   - réponse : De l’école
+   - indice : Trouve la ligne 16:00, puis lis le titre du podcast.
+   - explication : Schule und mehr = l’école et plus encore : le podcast parle de l’école. La musique, c’est à 7 h ; le sport, à 18 h.
+8. énoncé : "Neu: Max und der Roboter, Band 3\nDer Comic ist ab Mittwoch im Buchladen."
+   - question : Où peut-on acheter la bande dessinée ?
+   - lu : Neu: Max und der Roboter, Band drei. Der Comic ist ab Mittwoch im Buchladen.
+   - choix : À la bibliothèque · Dans un kiosque à journaux · Dans une librairie
+   - réponse : Dans une librairie
+   - indice : der Buchladen : das Buch = le livre ; der Laden = le magasin.
+   - explication : der Buchladen = le magasin de livres, la librairie. La bibliothèque se dit die Bibliothek : on y emprunte des livres, on ne les achète pas.
+
+### Niveau 2 · `lv2-3e-travel-de-media-2`
+
+- consigne : Tu remplis une fiche d’inscription sous la dictée. Écoute la ligne, puis choisis le mot bien écrit. La règle est affichée.
+- programme : c4.de.ecrire.dictee-fiche
+- bravo : Bien écrit !
+
+Pour tous les items :
+- aide « Eine Anmeldung ausfüllen » :
+  - die Anmeldung = l’inscription ; die Sprache = la langue
+  - der Wohnort = où l’on habite ; der Geburtsort = où l’on est né
+  - das Lieblingsfach = la matière préférée ; das Haustier = l’animal
+  - ei se dit « aï » ; ie se dit « i » ; z se dit « ts »
+  - ü se dit « u » ; ö se dit « eu » ; u se dit « ou »
+  - v se dit souvent « f » : der Vater.
+
+1. énoncé : "Wohnort: …"
+   - lu : "Wohnort: München"
+   - choix : Munchen · München · Münschen
+   - réponse : München
+   - indice : Écoute : entends-tu « ou » ou « u » ? Puis la fin : ch, ou sch ?
+   - explication : München : le son « u » s’écrit ü, et la fin s’écrit ch, pas sch. Sans les deux points, Munchen se dirait « Mounchen ».
+2. énoncé : "Sprachen: Deutsch und …"
+   - lu : "Sprachen: Deutsch und Französisch"
+   - choix : Französisch · Franzözisch · Franzosisch
+   - réponse : Französisch
+   - indice : Écoute : « o » ou « eu » ? Et le son « z » : s ou z ?
+   - explication : Französisch : le son « eu » s’écrit ö. Entre deux voyelles, le son « z » s’écrit s ; la lettre z se dirait « ts ».
+3. énoncé : "Lieblingsfach: …"
+   - lu : "Lieblingsfach: Erdkunde"
+   - choix : Erdkounde · Ertkunde · Erdkunde
+   - réponse : Erdkunde
+   - indice : Écoute le son « ou ». Et Erd vient de die Erde, la Terre.
+   - explication : die Erdkunde (la géographie) : le son « ou » s’écrit u, une seule lettre. Erd vient de die Erde, la Terre : il garde son d.
+4. énoncé : "Hobbys: …"
+   - lu : "Hobbys: Zeichnen"
+   - choix : Zeichnen · Zaichnen · Tseichnen
+   - réponse : Zeichnen
+   - indice : Écoute le début : « ts », puis « aï ».
+   - explication : das Zeichnen (le dessin) : le son « ts » s’écrit z, et le son « aï » s’écrit ei. ai est rare en allemand (der Mai) ; ts est une graphie du français.
+5. énoncé : "Haustier: ein …"
+   - lu : "Haustier: ein Vogel"
+   - choix : Fogel · Vogel · Vogell
+   - réponse : Vogel
+   - indice : Le son « f » de ce mot s’écrit comme dans der Vater.
+   - explication : der Vogel (l’oiseau) : le son « f » s’écrit v, comme dans der Vater. La fin -el ne prend qu’un l.
+6. énoncé : "Land: die …"
+   - lu : "Land: die Schweiz"
+   - choix : Schwaiz · Schweiz · Schwiez
+   - réponse : Schweiz
+   - indice : Écoute : « aï » ou « i » ?
+   - explication : die Schweiz (la Suisse) : le son « aï » s’écrit ei. ie se dirait « i » ; ai est rare en allemand (der Mai).
+7. énoncé : "Lieblingsfarbe: …"
+   - lu : "Lieblingsfarbe: Grün"
+   - choix : Grun · Grühn · Grün
+   - réponse : Grün
+   - indice : Écoute : « ou » ou « u » ?
+   - explication : das Grün (le vert) : le son « u » s’écrit ü, sans h après. Sans les deux points, Grun se dirait « Groun ».
+8. énoncé : "Geburtsort: …"
+   - lu : "Geburtsort: Leipzig"
+   - choix : Laipzig · Leibzig · Leipzig
+   - réponse : Leipzig
+   - indice : Écoute : « aï », puis p ou b ?
+   - explication : Leipzig : le son « aï » s’écrit ei, et on entend un p, pas un b. ai est rare en allemand (der Mai).
 
 ## Les plans
 

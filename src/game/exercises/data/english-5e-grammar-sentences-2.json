@@ -1,0 +1,231 @@
+{
+  "id": "english-5e-grammar-sentences-2",
+  "biome": "english-5e-grammar",
+  "type": "sentences",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "english-5e-grammar-sentences-2-0",
+      "prompt": "It’s … cold to swim today.",
+      "spoken": "It’s blank cold to swim today.",
+      "choices": [
+        "too",
+        "very",
+        "much"
+      ],
+      "answer": "too",
+      "hint": "Il fait si froid qu’on ne peut pas nager : relis la ligne de very et too.",
+      "explanation": "too cold to swim = trop froid pour nager : avec to + verbe derrière, on dit too. Very cold veut dire très froid, sans « pour » derrière ; much ne se met pas seul devant un adjectif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nuancer et enchaîner",
+          "lines": [
+            "very = très ; too = trop (too hot to drink)",
+            "much older = beaucoup plus vieux (much + comparatif, jamais very)",
+            "first = d’abord, then = ensuite ; so = donc ; like = comme, par exemple",
+            "Pluriels sans s : man → men, foot → feet, mouse → mice.",
+            "Le génitif : Sam’s bag = le sac de Sam"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-2-1",
+      "prompt": "This song is … good! I listen to it every day.",
+      "spoken": "This song is blank good! I listen to it every day.",
+      "choices": [
+        "very",
+        "much",
+        "many"
+      ],
+      "answer": "very",
+      "hint": "Good est un adjectif : relis la première ligne de la règle.",
+      "explanation": "very good = très bien. Much et many veulent dire beaucoup : ils ne se mettent pas seuls devant un adjectif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nuancer et enchaîner",
+          "lines": [
+            "very = très ; too = trop (too hot to drink)",
+            "much older = beaucoup plus vieux (much + comparatif, jamais very)",
+            "first = d’abord, then = ensuite ; so = donc ; like = comme, par exemple",
+            "Pluriels sans s : man → men, foot → feet, mouse → mice.",
+            "Le génitif : Sam’s bag = le sac de Sam"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-2-2",
+      "prompt": "My brother is … taller than me.",
+      "spoken": "My brother is blank taller than me.",
+      "choices": [
+        "much",
+        "very",
+        "many"
+      ],
+      "answer": "much",
+      "hint": "Taller est un comparatif : plus grand.",
+      "explanation": "much + comparatif = beaucoup plus : much taller. On ne dit pas very taller ; many va devant un nom au pluriel (many friends).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nuancer et enchaîner",
+          "lines": [
+            "very = très ; too = trop (too hot to drink)",
+            "much older = beaucoup plus vieux (much + comparatif, jamais very)",
+            "first = d’abord, then = ensuite ; so = donc ; like = comme, par exemple",
+            "Pluriels sans s : man → men, foot → feet, mouse → mice.",
+            "Le génitif : Sam’s bag = le sac de Sam"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-2-3",
+      "prompt": "First, I brush my teeth. … , I get dressed.",
+      "spoken": "First, I brush my teeth. blank , I get dressed.",
+      "choices": [
+        "Then",
+        "First",
+        "But"
+      ],
+      "answer": "Then",
+      "hint": "Qu’est-ce qui vient après, dans l’ordre ?",
+      "explanation": "then = ensuite : c’est la deuxième étape. First (d’abord) est déjà pris ; but marque une opposition, et il n’y en a pas ici.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nuancer et enchaîner",
+          "lines": [
+            "very = très ; too = trop (too hot to drink)",
+            "much older = beaucoup plus vieux (much + comparatif, jamais very)",
+            "first = d’abord, then = ensuite ; so = donc ; like = comme, par exemple",
+            "Pluriels sans s : man → men, foot → feet, mouse → mice.",
+            "Le génitif : Sam’s bag = le sac de Sam"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-2-4",
+      "prompt": "It’s raining, … I’m taking my umbrella.",
+      "spoken": "It’s raining, blank I’m taking my umbrella.",
+      "choices": [
+        "so",
+        "but",
+        "or"
+      ],
+      "answer": "so",
+      "hint": "La pluie est la cause. Le parapluie, c’est la conséquence.",
+      "explanation": "so = donc : il pleut, donc je prends mon parapluie. But dirait le contraire ; or propose un choix.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nuancer et enchaîner",
+          "lines": [
+            "very = très ; too = trop (too hot to drink)",
+            "much older = beaucoup plus vieux (much + comparatif, jamais very)",
+            "first = d’abord, then = ensuite ; so = donc ; like = comme, par exemple",
+            "Pluriels sans s : man → men, foot → feet, mouse → mice.",
+            "Le génitif : Sam’s bag = le sac de Sam"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-2-5",
+      "prompt": "I love fruit, … apples and bananas.",
+      "spoken": "I love fruit, blank apples and bananas.",
+      "choices": [
+        "like",
+        "as",
+        "but"
+      ],
+      "answer": "like",
+      "hint": "Les pommes et les bananes sont des exemples de fruits.",
+      "explanation": "like = comme, par exemple : like apples and bananas. As ne donne pas un exemple tout seul ; but marque une opposition.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nuancer et enchaîner",
+          "lines": [
+            "very = très ; too = trop (too hot to drink)",
+            "much older = beaucoup plus vieux (much + comparatif, jamais very)",
+            "first = d’abord, then = ensuite ; so = donc ; like = comme, par exemple",
+            "Pluriels sans s : man → men, foot → feet, mouse → mice.",
+            "Le génitif : Sam’s bag = le sac de Sam"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-2-6",
+      "prompt": "Two … are talking to my mum.",
+      "spoken": "Two blank are talking to my mum.",
+      "choices": [
+        "women",
+        "womans",
+        "womens"
+      ],
+      "answer": "women",
+      "hint": "Woman finit comme man : regarde le pluriel de man dans la règle.",
+      "explanation": "man → men, donc woman → women : le pluriel change de voyelle, sans s. Womans et womens n’existent pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nuancer et enchaîner",
+          "lines": [
+            "very = très ; too = trop (too hot to drink)",
+            "much older = beaucoup plus vieux (much + comparatif, jamais very)",
+            "first = d’abord, then = ensuite ; so = donc ; like = comme, par exemple",
+            "Pluriels sans s : man → men, foot → feet, mouse → mice.",
+            "Le génitif : Sam’s bag = le sac de Sam"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-2-7",
+      "prompt": "… room is very small.",
+      "spoken": "blank room is very small.",
+      "choices": [
+        "My sister’s",
+        "My sister",
+        "My sisters"
+      ],
+      "answer": "My sister’s",
+      "hint": "La chambre est à qui ? Relis la ligne du génitif.",
+      "explanation": "my sister’s room = la chambre de ma sœur : le ’s dit à qui elle est. My sister seul ne le dit pas ; my sisters, sans apostrophe, c’est plusieurs sœurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nuancer et enchaîner",
+          "lines": [
+            "very = très ; too = trop (too hot to drink)",
+            "much older = beaucoup plus vieux (much + comparatif, jamais very)",
+            "first = d’abord, then = ensuite ; so = donc ; like = comme, par exemple",
+            "Pluriels sans s : man → men, foot → feet, mouse → mice.",
+            "Le génitif : Sam’s bag = le sac de Sam"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-5e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

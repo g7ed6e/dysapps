@@ -1,0 +1,239 @@
+{
+  "id": "english-3e-grammar-messages-1",
+  "biome": "english-3e-grammar",
+  "type": "messages",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Lis la question, puis le panneau ou la consigne en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "english-3e-grammar-messages-1-0",
+      "prompt": "Staff only",
+      "question": "Qui a le droit de passer cette porte ?",
+      "spoken": "Staff only.",
+      "choices": [
+        "Seulement les employés",
+        "Tout le monde",
+        "Seulement les clients"
+      ],
+      "choicesLang": "fr",
+      "answer": "Seulement les employés",
+      "hint": "Only veut dire « seulement ». Qui passe derrière le comptoir d’un magasin ?",
+      "explanation": "staff = le personnel, les gens qui travaillent ici ; only = seulement. Les clients (customers) n’ont pas le droit d’entrer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Panneaux et consignes",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "do not = ne pas ; no entry = entrée interdite ; please = s’il te plaît ; only = seulement",
+            "mind = attention à ; use = utiliser ; keep = garder",
+            "first floor = premier étage ; second floor = deuxième étage"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-1-1",
+      "prompt": "In case of fire\nDo not use the lift.\nUse the stairs.",
+      "question": "En cas d’incendie, que ne dois-tu pas prendre ?",
+      "spoken": "In case of fire. Do not use the lift. Use the stairs.",
+      "choices": [
+        "L’ascenseur",
+        "L’escalier",
+        "La sortie de secours"
+      ],
+      "choicesLang": "fr",
+      "answer": "L’ascenseur",
+      "hint": "Cherche la phrase qui commence par Do not : elle dit ce qu’il ne faut pas faire.",
+      "explanation": "do not use the lift = ne prends pas l’ascenseur (lift = ascenseur, en anglais britannique). Use the stairs dit le contraire : prends l’escalier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Panneaux et consignes",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "do not = ne pas ; no entry = entrée interdite ; please = s’il te plaît ; only = seulement",
+            "mind = attention à ; use = utiliser ; keep = garder",
+            "first floor = premier étage ; second floor = deuxième étage"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-1-2",
+      "prompt": "No entry\nPlease use the side door.",
+      "question": "Par où entres-tu dans le bâtiment ?",
+      "spoken": "No entry. Please use the side door.",
+      "choices": [
+        "Par la porte de côté",
+        "Par cette porte",
+        "Par la porte de derrière"
+      ],
+      "choicesLang": "fr",
+      "answer": "Par la porte de côté",
+      "hint": "No entry : peut-on entrer ici ? La deuxième ligne dit par où passer.",
+      "explanation": "no entry = entrée interdite : on n’entre pas par cette porte. Use the side door = passe par la porte de côté (side = le côté ; derrière se dit back).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Panneaux et consignes",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "do not = ne pas ; no entry = entrée interdite ; please = s’il te plaît ; only = seulement",
+            "mind = attention à ; use = utiliser ; keep = garder",
+            "first floor = premier étage ; second floor = deuxième étage"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-1-3",
+      "prompt": "Work in pairs.\nAsk your partner three questions.",
+      "question": "Avec qui travailles-tu ?",
+      "spoken": "Work in pairs. Ask your partner three questions.",
+      "choices": [
+        "Avec un camarade",
+        "Tout seul",
+        "Avec trois camarades"
+      ],
+      "choicesLang": "fr",
+      "answer": "Avec un camarade",
+      "hint": "Pair, c’est une paire : combien de chaussures dans une paire ?",
+      "explanation": "in pairs = par deux : tu travailles avec un camarade, your partner. Three, c’est le nombre de questions à lui poser, pas de camarades.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Panneaux et consignes",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "do not = ne pas ; no entry = entrée interdite ; please = s’il te plaît ; only = seulement",
+            "mind = attention à ; use = utiliser ; keep = garder",
+            "first floor = premier étage ; second floor = deuxième étage"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-1-4",
+      "prompt": "Match each word with the right picture.",
+      "question": "Que dois-tu faire ?",
+      "spoken": "Match each word with the right picture.",
+      "choices": [
+        "Relier chaque mot à la bonne image",
+        "Dessiner chaque mot",
+        "Écrire un mot sous chaque image"
+      ],
+      "choicesLang": "fr",
+      "answer": "Relier chaque mot à la bonne image",
+      "hint": "Match, ici, ce n’est pas un match de foot : on met ensemble deux choses qui vont ensemble.",
+      "explanation": "match = associer, relier : chaque mot va avec la bonne image (the right picture). Dessiner se dit draw, écrire se dit write.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Panneaux et consignes",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "do not = ne pas ; no entry = entrée interdite ; please = s’il te plaît ; only = seulement",
+            "mind = attention à ; use = utiliser ; keep = garder",
+            "first floor = premier étage ; second floor = deuxième étage"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-1-5",
+      "prompt": "Toilets: first floor\nCafé: ground floor\nLibrary: second floor",
+      "question": "À quel étage est le café ?",
+      "spoken": "Toilets, first floor. Café, ground floor. Library, second floor.",
+      "choices": [
+        "Au rez-de-chaussée",
+        "Au premier étage",
+        "Au deuxième étage"
+      ],
+      "choicesLang": "fr",
+      "answer": "Au rez-de-chaussée",
+      "hint": "Trouve la ligne du café. Ground veut dire « le sol ».",
+      "explanation": "ground floor = le rez-de-chaussée, l’étage au niveau du sol (ground). Au Royaume-Uni, first floor est le premier étage, au-dessus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Panneaux et consignes",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "do not = ne pas ; no entry = entrée interdite ; please = s’il te plaît ; only = seulement",
+            "mind = attention à ; use = utiliser ; keep = garder",
+            "first floor = premier étage ; second floor = deuxième étage"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-1-6",
+      "prompt": "Dogs welcome\nPlease keep your dog on a lead.",
+      "question": "Que demande ce panneau, à l’entrée du parc ?",
+      "spoken": "Dogs welcome. Please keep your dog on a lead.",
+      "choices": [
+        "Tenir son chien en laisse",
+        "Laisser son chien courir librement",
+        "Laisser son chien à l’entrée"
+      ],
+      "choicesLang": "fr",
+      "answer": "Tenir son chien en laisse",
+      "hint": "Dogs welcome : les chiens sont-ils interdits ? Puis lis la phrase avec keep.",
+      "explanation": "dogs welcome = les chiens sont les bienvenus ; keep your dog on a lead = garde ton chien en laisse (a lead = une laisse). Il entre, mais attaché.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Panneaux et consignes",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "do not = ne pas ; no entry = entrée interdite ; please = s’il te plaît ; only = seulement",
+            "mind = attention à ; use = utiliser ; keep = garder",
+            "first floor = premier étage ; second floor = deuxième étage"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-1-7",
+      "prompt": "Mind the step",
+      "question": "À quoi dois-tu faire attention en entrant ?",
+      "spoken": "Mind the step.",
+      "choices": [
+        "À la marche",
+        "À la porte",
+        "À ta tête"
+      ],
+      "choicesLang": "fr",
+      "answer": "À la marche",
+      "hint": "Mind veut dire « attention à » : regarde le mot qui suit.",
+      "explanation": "mind the step = attention à la marche (a step = une marche, un pas). Attention à ta tête se dirait mind your head.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Panneaux et consignes",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le document le mot qui répond.",
+            "do not = ne pas ; no entry = entrée interdite ; please = s’il te plaît ; only = seulement",
+            "mind = attention à ; use = utiliser ; keep = garder",
+            "first floor = premier étage ; second floor = deuxième étage"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-3e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

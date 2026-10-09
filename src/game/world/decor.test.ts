@@ -85,9 +85,9 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
       [
         "maths-5e-proportionality/barque@77,320",
         "maths-5e-proportionality/barque@82,307",
-        "maths-5e-proportionality/caisse@87,311",
-        "maths-5e-proportionality/fanion@90,313",
-        "maths-5e-proportionality/fanion@91,311",
+        "maths-5e-proportionality/caisse@90,312",
+        "maths-5e-proportionality/fanion@90,317",
+        "maths-5e-proportionality/fanion@91,314",
         "maths-5e-proportionality/foyer@92,323",
       ],
       [

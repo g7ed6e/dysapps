@@ -13,13 +13,15 @@ import {
   translatePlaceId,
   translateResourceId,
 } from './legacyIds';
-import { challengesOpenBeforeMove } from './movedChallenges';
+import { challengesOpenBeforeAdditions, challengesOpenBeforeMove } from './movedChallenges';
 import { RETIRED_ITEMS, STARS_KEPT_IN_MISSION, movedExerciseId, movedItemId } from './movedIds';
 
 /**
  * Le format de la partie (`dysapps:game`) : 2 depuis les champs neutres, 3 depuis les identifiants neutres (lieux,
  * ressources, parties, missions, exercices), 4 depuis les exercices déplacés par les programmes de 2025-2026
  * (movedIds.ts). Une partie sans numéro est d'avant.
+ *
+ * 5 depuis les missions ajoutées pour couvrir le programme (GD-14) : les défis ouverts avant l'ajout le restent.
  *
  * Limite connue du format 4 : un onglet resté ouvert sur le code d'avant relit une partie au format 4 sans la
  * comprendre. Sa propre lecture (sanitize d'avant) ouvre les lieux où sont arrivés des exercices déplacés (ses étoiles
@@ -28,7 +30,9 @@ import { RETIRED_ITEMS, STARS_KEPT_IN_MISSION, movedExerciseId, movedItemId } fr
  * ouverts sur une progression déjà déplacée. Les étoiles et la file de révision ne se perdent pas : `moveExercises`
  * réunit les deux identifiants. La mise à jour est proposée, jamais imposée (docs/conception/deploiement.md).
  */
-export const GAME_VERSION = 4;
+export const GAME_VERSION = 5;
+/** Le format des exercices déplacés par les programmes de 2025-2026. */
+const MOVED_EXERCISES_VERSION = 4;
 /** Le format des identifiants neutres : une partie à ce format, ou à un format plus récent, ne repasse pas par legacyIds. */
 const NEUTRAL_IDS_VERSION = 3;
 
@@ -192,9 +196,9 @@ function moveExercises(game: Record<string, unknown>): void {
  * ouverts jusqu'à ce qu'ils soient réussis. La liste des lieux va dans le monde (`challengesKeptOpen`), seulement s'il
  * y en a ; une partie neuve n'en a jamais.
  */
-function keepChallengesOpen(game: Record<string, unknown>): void {
+function keepChallengesOpen(game: Record<string, unknown>, openBefore: (progress: Record<string, unknown>) => string[] = challengesOpenBeforeMove): void {
   if (!isRecord(game.progress)) return;
-  const open = challengesOpenBeforeMove(game.progress);
+  const open = openBefore(game.progress);
   if (!open.length) return;
   const world = isRecord(game.world) ? game.world : {};
   const before = Array.isArray(world.challengesKeptOpen) ? world.challengesKeptOpen.filter((id): id is string => typeof id === 'string') : [];
@@ -227,10 +231,12 @@ export function translateGame(input: unknown): unknown {
   }
   const version = versionOf(out);
   if (version < NEUTRAL_IDS_VERSION) translateIds(out);
-  if (version < GAME_VERSION) {
+  if (version < MOVED_EXERCISES_VERSION) {
     keepChallengesOpen(out);
     moveExercises(out);
   }
+  // Format 5 (GD-14) : sur la progression aux identifiants du format 4, les défis ouverts avant l'ajout des missions.
+  if (version < GAME_VERSION) keepChallengesOpen(out, challengesOpenBeforeAdditions);
   return out;
 }
 

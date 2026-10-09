@@ -409,6 +409,150 @@ Pour tous les items :
    - indice : Y a-t-il un mot entre les deux propositions, ou seulement un signe ?
    - explication : Un point-virgule sépare « Le réveil sonne » et « je saute du lit », sans mot pour les relier : les propositions sont juxtaposées.
 
+## Les temps du récit · `tense-values`
+
+- description : Lis une phrase ou un petit récit : trouve quand se passe l’action, et ce que dit le temps du verbe.
+- compétences : c3.fr.langue.valeurs-des-temps
+- bravo : Bien vu !
+- erreur : {explanation}
+- bloc gagné : french-6e-reading
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `french-6e-reading-tense-values-1`
+
+- blocs : 4
+- XP : 12
+- consigne : Lis la question, puis la phrase. Trouve quand se passe l’action, ou le temps du verbe. Le rappel est affiché.
+
+Pour tous les items :
+- aide « Le moment de l’action, le temps du verbe » :
+  - Le moment de l’action : dans le passé, le présent ou le futur. Cherche les mots qui disent quand : hier, demain, en ce moment.
+  - Le temps du verbe : sa forme. Présent, passé composé, futur, imparfait.
+  - Les deux ne vont pas toujours ensemble. Lundi, je pars en classe verte : verbe au présent, action à venir.
+  - Quand on parle : le présent dit maintenant, le passé composé dit avant, le futur dit après.
+  - Le présent peut aussi dire une habitude. Le dimanche, je dors tard.
+
+1. énoncé : Samedi prochain, je joue un match de hand.
+   - question : À quel temps est le verbe « joue » ?
+   - choix : présent · futur · imparfait
+   - réponse : présent
+   - indice : Regarde la forme du verbe, pas le mot « prochain ».
+   - explication : « je joue » est la forme du présent. Le match aura lieu samedi prochain, dans le futur : le temps du verbe n’est pas toujours le moment de l’action. Au futur, on écrirait « je jouerai ».
+2. énoncé : Demain, Léo dort chez son cousin.
+   - question : Quand se passe l’action ?
+   - choix : dans le futur · dans le présent · dans le passé
+   - réponse : dans le futur
+   - indice : Cherche le mot qui dit quand.
+   - explication : Le mot « Demain » place l’action dans le futur. Le verbe « dort » est au présent, mais l’action n’a pas encore eu lieu.
+3. énoncé : Hier, j’ai oublié mon cahier de maths.
+   - question : À quel temps est le verbe « ai oublié » ?
+   - choix : passé composé · présent · imparfait
+   - réponse : passé composé
+   - indice : Le verbe est fait de deux mots. Lesquels ?
+   - explication : « ai oublié » a deux mots : l’auxiliaire avoir au présent, puis le participe passé « oublié ». C’est le passé composé : l’action est passée et finie. Le mot « ai », seul, serait au présent.
+4. énoncé : Le car part dans dix minutes.
+   - question : Quand le car part-il ?
+   - choix : dans le futur · dans le présent · dans le passé
+   - réponse : dans le futur
+   - indice : Le car est-il déjà parti ? Lis la fin de la phrase.
+   - explication : « dans dix minutes » : le car n’est pas encore parti, l’action est dans le futur. Le verbe « part » est pourtant au présent.
+5. énoncé : En ce moment, ma sœur révise son contrôle.
+   - question : Quand se passe l’action ?
+   - choix : dans le présent · dans le passé · dans le futur
+   - réponse : dans le présent
+   - indice : Cherche les mots qui disent quand.
+   - explication : « En ce moment » : l’action se passe au moment où l’on parle. Ici, le verbe au présent et le moment de l’action vont ensemble.
+6. énoncé : Chaque mercredi, je vais au judo.
+   - question : Que dit le présent dans cette phrase ?
+   - choix : une action qui se répète · une action finie · une action qui n’a lieu qu’une fois
+   - réponse : une action qui se répète
+   - indice : Lis les deux premiers mots.
+   - explication : « Chaque mercredi » : l’action revient toutes les semaines. Le présent dit ici une habitude. Une action finie se dirait au passé composé : « j’ai fait du judo ».
+7. énoncé : Je finirai mon exposé dimanche.
+   - question : À quel temps est le verbe « finirai » ?
+   - choix : futur · présent · passé composé
+   - réponse : futur
+   - indice : Regarde la fin du verbe.
+   - explication : « finirai » finit par « -rai », la marque du futur avec « je ». Ici, le temps du verbe et le moment de l’action vont ensemble : dimanche, c’est plus tard.
+8. énoncé : Tom dit à Inès : « J’ai gagné ! »
+   - question : Quand Tom a-t-il gagné ?
+   - choix : avant de parler · pendant qu’il parle · après avoir parlé
+   - réponse : avant de parler
+   - indice : À quel temps est le verbe « ai gagné » ?
+   - explication : « ai gagné » est au passé composé : dans les paroles de quelqu’un, ce temps dit une action déjà faite. Tom a gagné, puis il le dit à Inès.
+
+### Niveau 2 · `french-6e-reading-tense-values-2`
+
+- blocs : 5
+- XP : 14
+- consigne : Lis la question, puis le petit récit. Trouve ce que dit le temps du verbe. Le rappel est affiché.
+
+Pour tous les items :
+- aide « Les temps du récit » :
+  - Un récit au passé utilise surtout le passé simple et l’imparfait.
+  - Passé simple : les actions qui font avancer l’histoire, une à une. Elle sauta du mur.
+  - Imparfait : le décor, ce qui dure, les habitudes. La mer était calme.
+  - Dans les paroles des personnages : présent, passé composé, futur.
+  - Le temps du verbe n’est pas toujours le moment de l’action : regarde la date ou les mots qui disent quand.
+
+1. énoncé : "Il faisait froid.\nLe vent soufflait.\nSoudain, la porte claqua."
+   - question : Quel verbe dit l’action qui fait avancer l’histoire ?
+   - lu : Il faisait froid. Le vent soufflait. Soudain, la porte claqua.
+   - choix : claqua · faisait · soufflait
+   - réponse : claqua
+   - indice : Quelle action arrive d’un coup, après « Soudain » ?
+   - explication : « claqua », au passé simple, dit une action soudaine : l’histoire avance. « faisait » et « soufflait », à l’imparfait, décrivent le décor.
+2. énoncé : "Chaque soir, la famille se réunissait autour du feu.\nLe grand-père racontait des histoires."
+   - question : Que dit l’imparfait dans ce texte ?
+   - lu : Chaque soir, la famille se réunissait autour du feu. Le grand-père racontait des histoires.
+   - choix : une habitude · une action soudaine · une action à venir
+   - réponse : une habitude
+   - indice : Lis les deux premiers mots du texte.
+   - explication : « se réunissait » et « racontait » sont à l’imparfait, et « Chaque soir » dit que ces actions se répétaient : c’est une habitude dans le passé. Une action soudaine serait au passé simple.
+3. énoncé : "La forêt était sombre.\nDes chouettes hululaient.\nLina s’arrêta net."
+   - question : À quel temps est le verbe « s’arrêta » ?
+   - lu : La forêt était sombre. Des chouettes hululaient. Lina s’arrêta net.
+   - choix : passé simple · imparfait · présent
+   - réponse : passé simple
+   - indice : Compare sa fin avec celle de « était » et « hululaient ».
+   - explication : « s’arrêta » est au passé simple : avec « elle », la fin « -a » est la marque du passé simple des verbes en -er. À l’imparfait, on écrirait « s’arrêtait », comme « était ».
+4. énoncé : "Max entra dans la cuisine.\nIl ouvrit le frigo.\nIl prit une pomme."
+   - question : Que montrent ces verbes au passé simple ?
+   - lu : Max entra dans la cuisine. Il ouvrit le frigo. Il prit une pomme.
+   - choix : des actions qui se suivent · une description · une habitude
+   - réponse : des actions qui se suivent
+   - indice : Les trois actions arrivent-elles en même temps, ou l’une après l’autre ?
+   - explication : Max entre, puis ouvre le frigo, puis prend une pomme : le passé simple raconte des actions l’une après l’autre. Une description ou une habitude seraient à l’imparfait.
+5. énoncé : "Le château se dressait sur une colline.\nSes murs étaient gris et couverts de lierre."
+   - question : À quoi sert l’imparfait dans ce texte ?
+   - lu : Le château se dressait sur une colline. Ses murs étaient gris et couverts de lierre.
+   - choix : à décrire le lieu · à raconter des actions qui se suivent · à dire ce qui arrivera
+   - réponse : à décrire le lieu
+   - indice : Est-ce qu’il se passe quelque chose, ou est-ce qu’on regarde le lieu ?
+   - explication : « se dressait » et « étaient » sont à l’imparfait : ils décrivent le château, le décor de l’histoire. Aucune action ne se passe encore.
+6. énoncé : "Nous lisions tranquillement.\nTout à coup, le téléphone sonna."
+   - question : Quelle action vient couper l’autre ?
+   - lu : Nous lisions tranquillement. Tout à coup, le téléphone sonna.
+   - choix : le téléphone sonna · nous lisions · aucune des deux
+   - réponse : le téléphone sonna
+   - indice : Quelle action dure ? Laquelle arrive « tout à coup » ?
+   - explication : « lisions », à l’imparfait, dit une action qui dure. « sonna », au passé simple, arrive d’un coup et coupe la lecture.
+7. énoncé : "Zoé regarda son frère et dit :\n« Je pars demain. »"
+   - question : Quand Zoé part-elle ?
+   - lu : Zoé regarda son frère et dit : Je pars demain.
+   - choix : après avoir parlé · pendant qu’elle parle · avant de parler
+   - réponse : après avoir parlé
+   - indice : Dans les paroles de Zoé, cherche le mot qui dit quand.
+   - explication : Le récit est au passé simple : « regarda », « dit ». Dans les paroles de Zoé, le temps change : « pars », au présent, avec « demain », dit une action à venir. Zoé partira le lendemain du jour où elle parle.
+8. énoncé : En 1969, un homme marche pour la première fois sur la Lune.
+   - question : Quand se passe cette action ?
+   - lu : En mille neuf cent soixante-neuf, un homme marche pour la première fois sur la Lune.
+   - choix : dans le passé · dans le présent · dans le futur
+   - réponse : dans le passé
+   - indice : Regarde la date, pas seulement le verbe.
+   - explication : L’année 1969 est passée. Le verbe « marche » est au présent, mais l’action est passée : ce présent rend le récit plus vivant. Le temps du verbe n’est pas le moment de l’action.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

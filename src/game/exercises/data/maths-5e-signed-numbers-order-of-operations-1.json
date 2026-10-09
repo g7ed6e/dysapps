@@ -1,0 +1,230 @@
+{
+  "id": "maths-5e-signed-numbers-order-of-operations-1",
+  "biome": "maths-5e-signed-numbers",
+  "type": "order-of-operations",
+  "level": 1,
+  "instruction": "Calcule, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-1-0",
+      "prompt": "2 + 3 × 4 = …",
+      "spoken": "2 plus 3 fois 4, combien ?",
+      "choices": [
+        "9",
+        "14",
+        "20"
+      ],
+      "answer": "14",
+      "hint": "Quelle opération passe en premier : + ou × ?",
+      "explanation": "La multiplication passe avant l’addition : 3 × 4 = 12, puis 2 + 12 = 14. 20, c’est calculer de gauche à droite : 2 + 3 = 5, puis 5 × 4.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les priorités",
+          "lines": [
+            "D’abord : les parenthèses.",
+            "Puis : les carrés et les cubes.",
+            "Puis : × et ÷.",
+            "Enfin : + et −, de gauche à droite.",
+            "Au carré : 3² = 3 × 3. Au cube : 2³ = 2 × 2 × 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-1-1",
+      "prompt": "(5 + 2) × 3 = …",
+      "spoken": "La parenthèse 5 plus 2, fois 3, combien ?",
+      "choices": [
+        "10",
+        "11",
+        "21"
+      ],
+      "answer": "21",
+      "hint": "Que calcules-tu d’abord, quand il y a des parenthèses ?",
+      "explanation": "Les parenthèses d’abord : 5 + 2 = 7, puis 7 × 3 = 21. 11, c’est oublier les parenthèses : 5 + 2 × 3.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les priorités",
+          "lines": [
+            "D’abord : les parenthèses.",
+            "Puis : les carrés et les cubes.",
+            "Puis : × et ÷.",
+            "Enfin : + et −, de gauche à droite.",
+            "Au carré : 3² = 3 × 3. Au cube : 2³ = 2 × 2 × 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-1-2",
+      "prompt": "20 − 8 ÷ 2 = …",
+      "spoken": "20 moins 8 divisé par 2, combien ?",
+      "choices": [
+        "6",
+        "16",
+        "24"
+      ],
+      "answer": "16",
+      "hint": "Relis l’ordre du rappel : − ou ÷, lequel vient d’abord ?",
+      "explanation": "La division d’abord : 8 ÷ 2 = 4, puis 20 − 4 = 16. 6, c’est calculer de gauche à droite : 20 − 8 = 12, puis 12 ÷ 2.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les priorités",
+          "lines": [
+            "D’abord : les parenthèses.",
+            "Puis : les carrés et les cubes.",
+            "Puis : × et ÷.",
+            "Enfin : + et −, de gauche à droite.",
+            "Au carré : 3² = 3 × 3. Au cube : 2³ = 2 × 2 × 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-1-3",
+      "prompt": "18 − (4 + 6) = …",
+      "spoken": "18 moins la parenthèse 4 plus 6, combien ?",
+      "choices": [
+        "8",
+        "20",
+        "28"
+      ],
+      "answer": "8",
+      "hint": "Calcule d’abord ce qui est entre parenthèses.",
+      "explanation": "Les parenthèses d’abord : 4 + 6 = 10, puis 18 − 10 = 8. 20, c’est oublier les parenthèses : 18 − 4 = 14, puis 14 + 6.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les priorités",
+          "lines": [
+            "D’abord : les parenthèses.",
+            "Puis : les carrés et les cubes.",
+            "Puis : × et ÷.",
+            "Enfin : + et −, de gauche à droite.",
+            "Au carré : 3² = 3 × 3. Au cube : 2³ = 2 × 2 × 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-1-4",
+      "prompt": "7² = …",
+      "spoken": "7 au carré, combien ?",
+      "choices": [
+        "9",
+        "14",
+        "49"
+      ],
+      "answer": "49",
+      "hint": "Au carré : le nombre multiplié par lui-même.",
+      "explanation": "7², c’est 7 × 7 = 49. 14, c’est 7 × 2 : le carré n’est pas le double. 9, c’est 7 + 2.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les priorités",
+          "lines": [
+            "D’abord : les parenthèses.",
+            "Puis : les carrés et les cubes.",
+            "Puis : × et ÷.",
+            "Enfin : + et −, de gauche à droite.",
+            "Au carré : 3² = 3 × 3. Au cube : 2³ = 2 × 2 × 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-1-5",
+      "prompt": "64 est le carré de …",
+      "spoken": "64 est le carré de quel nombre ?",
+      "choices": [
+        "8",
+        "32",
+        "62"
+      ],
+      "answer": "8",
+      "hint": "Quel nombre, multiplié par lui-même, donne 64 ?",
+      "explanation": "8 × 8 = 64 : 64 est le carré de 8. 32, c’est la moitié de 64 : 32 × 2 = 64, mais le carré n’est pas le double.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les priorités",
+          "lines": [
+            "D’abord : les parenthèses.",
+            "Puis : les carrés et les cubes.",
+            "Puis : × et ÷.",
+            "Enfin : + et −, de gauche à droite.",
+            "Au carré : 3² = 3 × 3. Au cube : 2³ = 2 × 2 × 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-1-6",
+      "prompt": "10³ = …",
+      "spoken": "10 au cube, combien ?",
+      "choices": [
+        "30",
+        "100",
+        "1 000"
+      ],
+      "answer": "1 000",
+      "hint": "Au cube : 10 × 10 × 10.",
+      "explanation": "10³, c’est 10 × 10 × 10 = 1 000. 30, c’est 10 × 3 ; 100, c’est 10², le carré.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les priorités",
+          "lines": [
+            "D’abord : les parenthèses.",
+            "Puis : les carrés et les cubes.",
+            "Puis : × et ÷.",
+            "Enfin : + et −, de gauche à droite.",
+            "Au carré : 3² = 3 × 3. Au cube : 2³ = 2 × 2 × 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-1-7",
+      "prompt": "3 + 4² = …",
+      "spoken": "3 plus 4 au carré, combien ?",
+      "choices": [
+        "11",
+        "19",
+        "49"
+      ],
+      "answer": "19",
+      "hint": "Le carré se calcule avant l’addition.",
+      "explanation": "Le carré d’abord : 4² = 16, puis 3 + 16 = 19. 49, c’est (3 + 4)² : le carré ne porte que sur le 4. 11, c’est 3 + 4 × 2.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les priorités",
+          "lines": [
+            "D’abord : les parenthèses.",
+            "Puis : les carrés et les cubes.",
+            "Puis : × et ÷.",
+            "Enfin : + et −, de gauche à droite.",
+            "Au carré : 3² = 3 × 3. Au cube : 2³ = 2 × 2 × 2."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-5e-signed-numbers",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

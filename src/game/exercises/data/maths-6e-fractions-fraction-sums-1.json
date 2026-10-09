@@ -1,0 +1,230 @@
+{
+  "id": "maths-6e-fractions-fraction-sums-1",
+  "biome": "maths-6e-fractions",
+  "type": "fraction-sums",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-6e-fractions-fraction-sums-1-0",
+      "prompt": "2/5 + 1/5 = …",
+      "spoken": "2 cinquièmes plus un cinquième, c’est combien ?",
+      "choices": [
+        "3/5",
+        "3/10",
+        "3"
+      ],
+      "answer": "3/5",
+      "hint": "Ce sont des cinquièmes : combien de cinquièmes en tout ?",
+      "explanation": "2 cinquièmes plus 1 cinquième font 3 cinquièmes : 3/5. On n’ajoute pas les dénominateurs : 3/10 est faux. Et 3 seul oublie que ce sont des cinquièmes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Calculer avec des fractions",
+          "lines": [
+            "Même dénominateur : on ajoute ou on enlève les numérateurs.",
+            "Le dénominateur ne change pas : des cinquièmes plus des cinquièmes font des cinquièmes.",
+            "1 = 2/2 = 4/4 = 10/10, et 1/2 = 2/4.",
+            "Un entier fois une fraction : on multiplie seulement le numérateur.",
+            "Dans une égalité, les deux côtés du signe = valent le même nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-1-1",
+      "prompt": "7/8 − 3/8 = …",
+      "spoken": "7 huitièmes moins 3 huitièmes, c’est combien ?",
+      "choices": [
+        "4/8",
+        "4",
+        "10/8"
+      ],
+      "answer": "4/8",
+      "hint": "Ce sont des huitièmes : on enlève 3 huitièmes à 7 huitièmes.",
+      "explanation": "7 − 3 = 4, et le dénominateur reste 8 : 4/8. 10/8, c’est ajouter au lieu d’enlever ; 4 seul oublie les huitièmes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Calculer avec des fractions",
+          "lines": [
+            "Même dénominateur : on ajoute ou on enlève les numérateurs.",
+            "Le dénominateur ne change pas : des cinquièmes plus des cinquièmes font des cinquièmes.",
+            "1 = 2/2 = 4/4 = 10/10, et 1/2 = 2/4.",
+            "Un entier fois une fraction : on multiplie seulement le numérateur.",
+            "Dans une égalité, les deux côtés du signe = valent le même nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-1-2",
+      "prompt": "1 − 1/4 = …",
+      "spoken": "1 moins un quart, c’est combien ?",
+      "choices": [
+        "3/4",
+        "0",
+        "5/4"
+      ],
+      "answer": "3/4",
+      "hint": "1, c’est combien de quarts ?",
+      "explanation": "1 = 4/4. 4 quarts moins 1 quart, il reste 3 quarts : 3/4. 0, c’est faire 1 − 1 en oubliant les quarts ; 5/4, c’est ajouter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Calculer avec des fractions",
+          "lines": [
+            "Même dénominateur : on ajoute ou on enlève les numérateurs.",
+            "Le dénominateur ne change pas : des cinquièmes plus des cinquièmes font des cinquièmes.",
+            "1 = 2/2 = 4/4 = 10/10, et 1/2 = 2/4.",
+            "Un entier fois une fraction : on multiplie seulement le numérateur.",
+            "Dans une égalité, les deux côtés du signe = valent le même nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-1-3",
+      "prompt": "1/2 + 1/4 = …",
+      "spoken": "un demi plus un quart, c’est combien ?",
+      "choices": [
+        "3/4",
+        "2/6",
+        "2/4"
+      ],
+      "answer": "3/4",
+      "hint": "Écris d’abord 1/2 en quarts.",
+      "explanation": "1/2 = 2/4, donc 2/4 + 1/4 = 3/4. 2/6, c’est ajouter les numérateurs et les dénominateurs ; 2/4, c’est ajouter les numérateurs sans changer 1/2 en quarts.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Calculer avec des fractions",
+          "lines": [
+            "Même dénominateur : on ajoute ou on enlève les numérateurs.",
+            "Le dénominateur ne change pas : des cinquièmes plus des cinquièmes font des cinquièmes.",
+            "1 = 2/2 = 4/4 = 10/10, et 1/2 = 2/4.",
+            "Un entier fois une fraction : on multiplie seulement le numérateur.",
+            "Dans une égalité, les deux côtés du signe = valent le même nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-1-4",
+      "prompt": "3 × 2/7 = …",
+      "spoken": "3 fois 2 septièmes, c’est combien ?",
+      "choices": [
+        "6/7",
+        "6/21",
+        "5/7"
+      ],
+      "answer": "6/7",
+      "hint": "3 fois 2 septièmes, c’est 2/7 + 2/7 + 2/7.",
+      "explanation": "3 × 2 = 6 septièmes : 6/7. On ne multiplie pas le dénominateur : 6/21 est faux. 5/7, c’est 3 + 2 : on a ajouté.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Calculer avec des fractions",
+          "lines": [
+            "Même dénominateur : on ajoute ou on enlève les numérateurs.",
+            "Le dénominateur ne change pas : des cinquièmes plus des cinquièmes font des cinquièmes.",
+            "1 = 2/2 = 4/4 = 10/10, et 1/2 = 2/4.",
+            "Un entier fois une fraction : on multiplie seulement le numérateur.",
+            "Dans une égalité, les deux côtés du signe = valent le même nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-1-5",
+      "prompt": "4 × 1/4 = …",
+      "spoken": "4 fois un quart, c’est combien ?",
+      "choices": [
+        "1",
+        "4/16",
+        "5/4"
+      ],
+      "answer": "1",
+      "hint": "4 quarts, c’est combien d’unités ?",
+      "explanation": "4 fois 1 quart font 4 quarts, et 4/4 = 1. 4/16, c’est multiplier aussi le dénominateur ; 5/4, c’est ajouter 4 et 1.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Calculer avec des fractions",
+          "lines": [
+            "Même dénominateur : on ajoute ou on enlève les numérateurs.",
+            "Le dénominateur ne change pas : des cinquièmes plus des cinquièmes font des cinquièmes.",
+            "1 = 2/2 = 4/4 = 10/10, et 1/2 = 2/4.",
+            "Un entier fois une fraction : on multiplie seulement le numérateur.",
+            "Dans une égalité, les deux côtés du signe = valent le même nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-1-6",
+      "prompt": "… − 5 = 2 × 6",
+      "spoken": "Combien moins 5 égale 2 fois 6 ?",
+      "choices": [
+        "7",
+        "12",
+        "17"
+      ],
+      "answer": "17",
+      "hint": "Calcule d’abord 2 × 6. Puis : quel nombre, moins 5, donne ce résultat ?",
+      "explanation": "2 × 6 = 12, et 17 − 5 = 12 : les deux côtés valent 12. 12 est le résultat de droite, pas le nombre qui manque ; 7, c’est 12 − 5 : on a enlevé au lieu d’ajouter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Calculer avec des fractions",
+          "lines": [
+            "Même dénominateur : on ajoute ou on enlève les numérateurs.",
+            "Le dénominateur ne change pas : des cinquièmes plus des cinquièmes font des cinquièmes.",
+            "1 = 2/2 = 4/4 = 10/10, et 1/2 = 2/4.",
+            "Un entier fois une fraction : on multiplie seulement le numérateur.",
+            "Dans une égalité, les deux côtés du signe = valent le même nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-1-7",
+      "prompt": "3 × … = 12",
+      "spoken": "3 fois combien égale 12 ?",
+      "choices": [
+        "4",
+        "9",
+        "36"
+      ],
+      "answer": "4",
+      "hint": "Dans la table de 3, quel nombre donne 12 ?",
+      "explanation": "3 × 4 = 12. 9, c’est 12 − 3 : on a enlevé au lieu de chercher dans la table. 36, c’est 3 × 12.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Calculer avec des fractions",
+          "lines": [
+            "Même dénominateur : on ajoute ou on enlève les numérateurs.",
+            "Le dénominateur ne change pas : des cinquièmes plus des cinquièmes font des cinquièmes.",
+            "1 = 2/2 = 4/4 = 10/10, et 1/2 = 2/4.",
+            "Un entier fois une fraction : on multiplie seulement le numérateur.",
+            "Dans une égalité, les deux côtés du signe = valent le même nombre."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-6e-fractions",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

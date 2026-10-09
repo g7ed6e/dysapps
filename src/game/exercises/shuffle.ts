@@ -19,11 +19,12 @@ export function shuffleRunChoices(def: ExerciseDef, items: ExerciseItem[], seed:
 }
 
 /**
- * Les maths calculent leurs pièges voisins ; ailleurs, les pièges écrits dans le fichier restent. Une question
+ * Les maths produites par le code calculent leurs pièges voisins ; ailleurs, et dans une mission de maths écrite en
+ * Markdown (sans `generate`), dont les explications nomment les pièges, ceux du fichier restent. Une question
  * d'assemblage (GD-2) n'a pas d'île : ses pièges sont écrits exprès, un de chaque matière.
  */
-export function piegesDe(def: Pick<ExerciseDef, 'type'> & { biome?: string }): 'calcules' | 'du-fichier' {
-  if (def.type === 'assembly') return 'du-fichier';
+export function piegesDe(def: Pick<ExerciseDef, 'type' | 'generate'> & { biome?: string }): 'calcules' | 'du-fichier' {
+  if (def.type === 'assembly' || !def.generate) return 'du-fichier';
   return BIOMES.find((b) => b.id === def.biome)?.subject === 'maths' ? 'calcules' : 'du-fichier';
 }
 

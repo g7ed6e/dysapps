@@ -1,0 +1,243 @@
+{
+  "id": "english-3e-grammar-messages-2",
+  "biome": "english-3e-grammar",
+  "type": "messages",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Lis la question, puis le message en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "english-3e-grammar-messages-2-0",
+      "prompt": "Hi Sam!\nThe film starts at 7:30 pm.\nLet’s meet at 7:15 pm in front of the cinema.\nTom",
+      "question": "À quelle heure Tom veut-il retrouver Sam ?",
+      "spoken": "Hi Sam! The film starts at seven thirty p.m. Let’s meet at seven fifteen p.m. in front of the cinema. Tom.",
+      "choices": [
+        "7 h 15",
+        "19 h 15",
+        "19 h 30"
+      ],
+      "choicesLang": "fr",
+      "answer": "19 h 15",
+      "hint": "Let’s meet veut dire « retrouvons-nous ». Trouve sa ligne, puis pense à pm.",
+      "explanation": "let’s meet at 7:15 pm = retrouvons-nous à 7 h 15 du soir, soit 19 h 15 (pm : on ajoute 12). 19 h 30, c’est l’heure où le film commence (starts).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un message",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le message la phrase qui répond.",
+            "Dear = cher, chère (au début) ; see you = à bientôt ; love = je t’embrasse (à la fin)",
+            "pm = après midi : on ajoute 12 (6 pm = 18 h)",
+            "past = après, to = avant : ten to six = 5 h 50",
+            "each = chacun ; bring = apporter"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-2-1",
+      "prompt": "Dear Grandma,\nI’m in Scotland with my class.\nIt’s cold and rainy, but the castles are amazing!\nLove,\nLina",
+      "question": "Quel temps fait-il en Écosse ?",
+      "spoken": "Dear Grandma, I’m in Scotland with my class. It’s cold and rainy, but the castles are amazing! Love, Lina.",
+      "choices": [
+        "Il fait froid et il pleut",
+        "Il fait chaud et il pleut",
+        "Il fait froid et beau"
+      ],
+      "choicesLang": "fr",
+      "answer": "Il fait froid et il pleut",
+      "hint": "Cherche la phrase qui commence par It’s : c’est elle qui dit le temps.",
+      "explanation": "cold = froid, rainy = pluvieux : il fait froid et il pleut. Amazing parle des châteaux (castles), pas du temps.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un message",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le message la phrase qui répond.",
+            "Dear = cher, chère (au début) ; see you = à bientôt ; love = je t’embrasse (à la fin)",
+            "pm = après midi : on ajoute 12 (6 pm = 18 h)",
+            "past = après, to = avant : ten to six = 5 h 50",
+            "each = chacun ; bring = apporter"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-2-2",
+      "prompt": "Hi Emma,\nI can buy the concert tickets for us.\nThey are £12 each.\nJack",
+      "question": "Combien coûte un billet ?",
+      "spoken": "Hi Emma, I can buy the concert tickets for us. They are twelve pounds each. Jack.",
+      "choices": [
+        "2 livres",
+        "12 livres",
+        "24 livres"
+      ],
+      "choicesLang": "fr",
+      "answer": "12 livres",
+      "hint": "Trouve le prix, puis regarde le mot qui le suit : each.",
+      "explanation": "£12 each = 12 livres chacun : un billet coûte 12 livres. 24 livres, ce serait le prix des deux billets.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un message",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le message la phrase qui répond.",
+            "Dear = cher, chère (au début) ; see you = à bientôt ; love = je t’embrasse (à la fin)",
+            "pm = après midi : on ajoute 12 (6 pm = 18 h)",
+            "past = après, to = avant : ten to six = 5 h 50",
+            "each = chacun ; bring = apporter"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-2-3",
+      "prompt": "Hello Hugo,\nWelcome to Bristol!\nPlease bring a towel and warm clothes.\nWe have sheets for your bed.\nSee you on Saturday,\nThe Smith family",
+      "question": "Qu’est-ce que Hugo doit apporter ?",
+      "spoken": "Hello Hugo, welcome to Bristol! Please bring a towel and warm clothes. We have sheets for your bed. See you on Saturday, the Smith family.",
+      "choices": [
+        "Une serviette et des vêtements chauds",
+        "Des draps pour son lit",
+        "Une serviette et des vêtements légers"
+      ],
+      "choicesLang": "fr",
+      "answer": "Une serviette et des vêtements chauds",
+      "hint": "Cherche la phrase avec bring, puis lis-la jusqu’au bout.",
+      "explanation": "bring a towel and warm clothes = apporte une serviette et des vêtements chauds (warm = chaud). Les draps (sheets), la famille les a déjà : we have.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un message",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le message la phrase qui répond.",
+            "Dear = cher, chère (au début) ; see you = à bientôt ; love = je t’embrasse (à la fin)",
+            "pm = après midi : on ajoute 12 (6 pm = 18 h)",
+            "past = après, to = avant : ten to six = 5 h 50",
+            "each = chacun ; bring = apporter"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-2-4",
+      "prompt": "Hi! I’m Mia, I live in Leeds.\nI’m your new pen pal.\nHow are you?",
+      "question": "Que réponds-tu à la question de Mia ?",
+      "spoken": "Hi! I’m Mia, I live in Leeds. I’m your new pen pal. How are you?",
+      "choices": [
+        "I’m fine, thanks. And you?",
+        "I’m fifteen. And you?",
+        "I’m from France. And you?"
+      ],
+      "answer": "I’m fine, thanks. And you?",
+      "hint": "How are you? : Mia demande ton âge, d’où tu viens, ou comment tu vas ?",
+      "explanation": "How are you? = comment vas-tu ? On répond I’m fine (je vais bien). I’m fifteen répond à How old are you? ; I’m from France répond à Where are you from?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un message",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le message la phrase qui répond.",
+            "Dear = cher, chère (au début) ; see you = à bientôt ; love = je t’embrasse (à la fin)",
+            "pm = après midi : on ajoute 12 (6 pm = 18 h)",
+            "past = après, to = avant : ten to six = 5 h 50",
+            "each = chacun ; bring = apporter"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-2-5",
+      "prompt": "Hi! I’m at the bus stop.\nWhat time is it?\nMy phone is dead!\nAva",
+      "question": "Il est 16 h 20. Que réponds-tu à Ava ?",
+      "spoken": "Hi! I’m at the bus stop. What time is it? My phone is dead! Ava.",
+      "choices": [
+        "It’s twenty past four.",
+        "It’s twenty to four.",
+        "It’s twenty to five."
+      ],
+      "answer": "It’s twenty past four.",
+      "hint": "16 h 20, c’est 4 h 20 de l’après-midi. Relis la ligne de past et to.",
+      "explanation": "16 h 20 = 4 h 20 : twenty past four (past = après). Twenty to four, c’est 3 h 40, et twenty to five, 4 h 40 (to = avant).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un message",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le message la phrase qui répond.",
+            "Dear = cher, chère (au début) ; see you = à bientôt ; love = je t’embrasse (à la fin)",
+            "pm = après midi : on ajoute 12 (6 pm = 18 h)",
+            "past = après, to = avant : ten to six = 5 h 50",
+            "each = chacun ; bring = apporter"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-2-6",
+      "prompt": "Hi! I’m selling my old bike.\nIt’s blue and in very good condition.\nKim",
+      "question": "Tu veux connaître le prix du vélo. Que demandes-tu ?",
+      "spoken": "Hi! I’m selling my old bike. It’s blue and in very good condition. Kim.",
+      "choices": [
+        "How much is it?",
+        "How many is it?",
+        "How old is it?"
+      ],
+      "answer": "How much is it?",
+      "hint": "Un prix ne se compte pas en objets : much ou many ?",
+      "explanation": "How much is it? = combien ça coûte ? How many se dit devant des choses qu’on compte (How many bikes?) ; How old is it? demande son âge.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un message",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le message la phrase qui répond.",
+            "Dear = cher, chère (au début) ; see you = à bientôt ; love = je t’embrasse (à la fin)",
+            "pm = après midi : on ajoute 12 (6 pm = 18 h)",
+            "past = après, to = avant : ten to six = 5 h 50",
+            "each = chacun ; bring = apporter"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-messages-2-7",
+      "prompt": "Hi! Let’s have a picnic in the park on Sunday.\nMeet me at 12:30 at the gate.\nPaul",
+      "question": "Tu veux savoir s’il fera beau dimanche. Que demandes-tu ?",
+      "spoken": "Hi! Let’s have a picnic in the park on Sunday. Meet me at twelve thirty at the gate. Paul.",
+      "choices": [
+        "Will it be sunny on Sunday?",
+        "Is it sunny today?",
+        "What time is the picnic?"
+      ],
+      "answer": "Will it be sunny on Sunday?",
+      "hint": "Tu demandes le temps qu’il fera, et pour quel jour ?",
+      "explanation": "Will it be sunny on Sunday? = fera-t-il beau dimanche ? (will : le futur). Is it sunny today? parle d’aujourd’hui ; l’heure du pique-nique (12:30), Paul l’a déjà donnée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un message",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le message la phrase qui répond.",
+            "Dear = cher, chère (au début) ; see you = à bientôt ; love = je t’embrasse (à la fin)",
+            "pm = après midi : on ajoute 12 (6 pm = 18 h)",
+            "past = après, to = avant : ten to six = 5 h 50",
+            "each = chacun ; bring = apporter"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-3e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

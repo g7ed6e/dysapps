@@ -6,8 +6,11 @@
  *
  * - 3 missions : une partie par plan.
  * - 2 missions : le premier plan, puis les deux autres ensemble.
- * - 4 missions (et le lieu de la LV2, qui en a quatre par langue) : le premier plan en deux, par la hauteur (« Le bas
- *   du four de Rouxel », puis « Le haut… »), puis les deux autres.
+ * - 4 missions : le premier plan en deux, par la hauteur (« Le bas du four de Rouxel », puis « Le haut… »), puis les
+ *   deux autres.
+ * - 5 missions (GD-14) : le premier plan en trois, par la hauteur (« Le bas… », « Le milieu… », « Le haut… »), puis les
+ *   deux autres.
+ * Le lieu de la LV2 compte les missions d'une seule langue (les deux langues en ont autant).
  */
 import { BIOMES, type BiomeDef, type BiomeId } from '../biomes';
 import { isPlanDone, planCells, plansFor, type PlanDef } from './plans';
@@ -23,13 +26,19 @@ export interface Partie {
   cases: { plan: PlanDef; keys: string[] }[];
 }
 
-/** Un lieu a au plus quatre parties : le lieu de la LV2 compte les quatre missions d'une langue. */
-const PARTIES_MAX = 4;
+/** Un lieu a au plus cinq parties, comme il a au plus cinq missions (GD-14). */
+const PARTIES_MAX = 5;
 
-/** Le nombre de parties du bâtiment d'un lieu : autant que de missions, de 2 à 4 (0 sans bâtiment). */
+/** Les missions d'un lieu qui comptent pour son bâtiment : sur le lieu de la LV2, celles d'une seule langue. */
+function missionsDuBatiment(biome: Pick<BiomeDef, 'exercises'>): number {
+  const langue = biome.exercises.find((x) => x.lv2 !== undefined)?.lv2;
+  return langue === undefined ? biome.exercises.length : biome.exercises.filter((x) => x.lv2 === langue).length;
+}
+
+/** Le nombre de parties du bâtiment d'un lieu : autant que de missions, de 2 à 5 (0 sans bâtiment). */
 export function nombreDeParties(biome: Pick<BiomeDef, 'id' | 'exercises'>): number {
   if (plansFor(biome.id).length < 3) return 0;
-  return Math.max(2, Math.min(PARTIES_MAX, biome.exercises.length));
+  return Math.max(2, Math.min(PARTIES_MAX, missionsDuBatiment(biome)));
 }
 
 /** Un nom en milieu de phrase, après deux-points : sa minuscule (« Partie posée : le toit de la cabane »). */
@@ -82,6 +91,25 @@ function enDeux(plan: PlanDef): [string[], string[]] {
   return [bas, haut];
 }
 
+/** Le premier plan coupé en trois par la hauteur : chaque morceau prend les rangées jusqu'au tiers, puis aux deux tiers des cases au moins. */
+function enTrois(plan: PlanDef): [string[], string[], string[]] {
+  const cells = planCells(plan);
+  const hauteurs = [...new Set(cells.map((c) => c.z))].sort((a, b) => a - b);
+  const seuil = (part: number) => hauteurs.find((z) => cells.filter((c) => c.z <= z).length * 3 >= cells.length * part) ?? hauteurs[hauteurs.length - 1];
+  const [s1, s2] = [seuil(1), seuil(2)];
+  const bas = cells.filter((c) => c.z <= s1).map((c) => c.key);
+  const milieu = cells.filter((c) => c.z > s1 && c.z <= s2).map((c) => c.key);
+  const haut = cells.filter((c) => c.z > s2).map((c) => c.key);
+  // Trop peu de rangées pour trois morceaux : les cases se coupent en trois, dans l'ordre du dessin.
+  if (!milieu.length || !haut.length) {
+    const tout = cells.map((c) => c.key);
+    const a = Math.ceil(tout.length / 3);
+    const b = Math.ceil((tout.length * 2) / 3);
+    return [tout.slice(0, a), tout.slice(a, b), tout.slice(b)];
+  }
+  return [bas, milieu, haut];
+}
+
 const CACHE = new Map<BiomeId, Partie[]>();
 
 /** Les parties du bâtiment d'un lieu, dans l'ordre où elles se posent. */
@@ -104,6 +132,15 @@ export function partiesDe(id: BiomeId): Partie[] {
     const [bas, haut] = enDeux(plans[0]);
     parties = [
       { nom: `Le bas ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: bas }] },
+      { nom: `Le haut ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: haut }] },
+      { nom: plans[1].name, cases: [tout(plans[1])] },
+      { nom: plans[2].name, cases: [tout(plans[2])] },
+    ];
+  } else if (n === 5) {
+    const [bas, milieu, haut] = enTrois(plans[0]);
+    parties = [
+      { nom: `Le bas ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: bas }] },
+      { nom: `Le milieu ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: milieu }] },
       { nom: `Le haut ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: haut }] },
       { nom: plans[1].name, cases: [tout(plans[1])] },
       { nom: plans[2].name, cases: [tout(plans[2])] },

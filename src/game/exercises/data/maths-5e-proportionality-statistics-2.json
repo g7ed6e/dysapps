@@ -1,0 +1,230 @@
+{
+  "id": "maths-5e-proportionality-statistics-2",
+  "biome": "maths-5e-proportionality",
+  "type": "statistics",
+  "level": 2,
+  "instruction": "Lis la phrase, le tableau ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-5e-proportionality-statistics-2-0",
+      "prompt": "Tirer une carte au hasard, sans pouvoir prévoir laquelle : c’est une expérience …",
+      "spoken": "Tirer une carte au hasard, sans pouvoir prévoir laquelle. Quel mot dit cette expérience ?",
+      "choices": [
+        "aléatoire",
+        "certaine",
+        "impossible"
+      ],
+      "answer": "aléatoire",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "On ne peut pas prévoir la carte : l’expérience est aléatoire, elle dépend du hasard. « Certain » et « impossible » disent les chances d’un évènement, pas une expérience.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les chances",
+          "lines": [
+            "Expérience aléatoire : on ne peut pas prévoir le résultat.",
+            "Une issue : un résultat possible. Un évènement : une ou plusieurs issues.",
+            "Impossible : probabilité 0. Certain : probabilité 1.",
+            "Issues qui ont la même chance : issues qui conviennent ÷ toutes les issues.",
+            "Une chance sur 5 : 1/5 = 0,2 = 20 %."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-2-1",
+      "prompt": "On lance un dé à six faces. « Obtenir 7 » est un évènement …",
+      "spoken": "On lance un dé à six faces. Obtenir 7, c’est quel évènement ?",
+      "choices": [
+        "impossible",
+        "peu probable",
+        "certain"
+      ],
+      "answer": "impossible",
+      "hint": "Quels nombres sont écrits sur un dé à six faces ?",
+      "explanation": "Les faces vont de 1 à 6 : aucune face ne porte 7. L’évènement est impossible, sa probabilité est 0. « Peu probable » voudrait dire qu’il arrive quelquefois : ici, jamais.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les chances",
+          "lines": [
+            "Expérience aléatoire : on ne peut pas prévoir le résultat.",
+            "Une issue : un résultat possible. Un évènement : une ou plusieurs issues.",
+            "Impossible : probabilité 0. Certain : probabilité 1.",
+            "Issues qui ont la même chance : issues qui conviennent ÷ toutes les issues.",
+            "Une chance sur 5 : 1/5 = 0,2 = 20 %."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-2-2",
+      "prompt": "On lance un dé à six faces. « Obtenir un nombre pair » compte … issues.",
+      "spoken": "On lance un dé à six faces. Obtenir un nombre pair, combien d’issues ?",
+      "choices": [
+        "2",
+        "3",
+        "6"
+      ],
+      "answer": "3",
+      "hint": "Écris les nombres pairs de 1 à 6.",
+      "explanation": "Les nombres pairs du dé sont 2, 4 et 6 : 3 issues. 2, c’est oublier le 6. 6, c’est toutes les issues du dé, pairs et impairs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les chances",
+          "lines": [
+            "Expérience aléatoire : on ne peut pas prévoir le résultat.",
+            "Une issue : un résultat possible. Un évènement : une ou plusieurs issues.",
+            "Impossible : probabilité 0. Certain : probabilité 1.",
+            "Issues qui ont la même chance : issues qui conviennent ÷ toutes les issues.",
+            "Une chance sur 5 : 1/5 = 0,2 = 20 %."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-2-3",
+      "prompt": "On lance une pièce équilibrée. La probabilité d’obtenir pile est …",
+      "spoken": "On lance une pièce équilibrée. Quelle est la probabilité d’obtenir pile ?",
+      "choices": [
+        "1/2",
+        "1",
+        "2"
+      ],
+      "answer": "1/2",
+      "hint": "Une pièce a deux faces. Combien donnent pile ?",
+      "explanation": "2 issues, pile ou face, avec la même chance ; 1 seule donne pile : 1 sur 2, 1/2. 2, c’est le nombre d’issues : une probabilité n’est jamais plus grande que 1. 1 voudrait dire que pile est certain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les chances",
+          "lines": [
+            "Expérience aléatoire : on ne peut pas prévoir le résultat.",
+            "Une issue : un résultat possible. Un évènement : une ou plusieurs issues.",
+            "Impossible : probabilité 0. Certain : probabilité 1.",
+            "Issues qui ont la même chance : issues qui conviennent ÷ toutes les issues.",
+            "Une chance sur 5 : 1/5 = 0,2 = 20 %."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-2-4",
+      "prompt": "On lance un dé équilibré à six faces. La probabilité d’obtenir 3 est …",
+      "spoken": "On lance un dé équilibré à six faces. Quelle est la probabilité d’obtenir 3 ?",
+      "choices": [
+        "1/6",
+        "1/3",
+        "3/6"
+      ],
+      "answer": "1/6",
+      "hint": "Combien de faces portent le 3 ? Combien de faces en tout ?",
+      "explanation": "Une seule face porte le 3, sur 6 faces : 1/6. 3/6, c’est prendre la valeur 3 pour un nombre d’issues. 1/3 met le 3 en bas, à la place des 6 faces.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les chances",
+          "lines": [
+            "Expérience aléatoire : on ne peut pas prévoir le résultat.",
+            "Une issue : un résultat possible. Un évènement : une ou plusieurs issues.",
+            "Impossible : probabilité 0. Certain : probabilité 1.",
+            "Issues qui ont la même chance : issues qui conviennent ÷ toutes les issues.",
+            "Une chance sur 5 : 1/5 = 0,2 = 20 %."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-2-5",
+      "prompt": "Un sac : 3 boules rouges et 7 bleues. On tire une boule au hasard. La probabilité de tirer une rouge est …",
+      "spoken": "Un sac contient 3 boules rouges et 7 boules bleues. On tire une boule au hasard. Quelle est la probabilité de tirer une rouge ?",
+      "choices": [
+        "3/10",
+        "3/7",
+        "7/10"
+      ],
+      "answer": "3/10",
+      "hint": "Combien de boules en tout dans le sac ?",
+      "explanation": "3 + 7 = 10 boules en tout, dont 3 rouges : 3/10. 3/7 compare aux bleues, pas à toutes les boules. 7/10, c’est la probabilité de tirer une bleue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les chances",
+          "lines": [
+            "Expérience aléatoire : on ne peut pas prévoir le résultat.",
+            "Une issue : un résultat possible. Un évènement : une ou plusieurs issues.",
+            "Impossible : probabilité 0. Certain : probabilité 1.",
+            "Issues qui ont la même chance : issues qui conviennent ÷ toutes les issues.",
+            "Une chance sur 5 : 1/5 = 0,2 = 20 %."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-2-6",
+      "prompt": "« Une chance sur 4 », en nombre décimal, c’est …",
+      "spoken": "Une chance sur 4, en nombre décimal, c’est combien ?",
+      "choices": [
+        "0,25",
+        "0,4",
+        "4"
+      ],
+      "answer": "0,25",
+      "hint": "Une chance sur 4, c’est 1 divisé par 4.",
+      "explanation": "Une chance sur 4, c’est 1/4, et 1 ÷ 4 = 0,25, soit 25 %. 0,4, c’est écrire le 4 après la virgule : 0,4, c’est 4 sur 10. 4 est plus grand que 1 : ce n’est pas une probabilité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les chances",
+          "lines": [
+            "Expérience aléatoire : on ne peut pas prévoir le résultat.",
+            "Une issue : un résultat possible. Un évènement : une ou plusieurs issues.",
+            "Impossible : probabilité 0. Certain : probabilité 1.",
+            "Issues qui ont la même chance : issues qui conviennent ÷ toutes les issues.",
+            "Une chance sur 5 : 1/5 = 0,2 = 20 %."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-2-7",
+      "prompt": "Sur l’échelle de probabilité, de 0 à 1, « ne pas gagner au loto » se place …",
+      "spoken": "Sur l’échelle de probabilité, de 0 à 1, où se place l’évènement : ne pas gagner au loto ?",
+      "choices": [
+        "près de 0",
+        "au milieu",
+        "près de 1"
+      ],
+      "answer": "près de 1",
+      "hint": "Lis bien : « ne pas gagner ». Est-ce rare, ou presque sûr ?",
+      "explanation": "Gagner au loto est très rare, donc ne pas gagner est presque certain : près de 1. Près de 0, c’est la place de « gagner au loto ». Au milieu, c’est une chance sur deux, comme pile ou face.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les chances",
+          "lines": [
+            "Expérience aléatoire : on ne peut pas prévoir le résultat.",
+            "Une issue : un résultat possible. Un évènement : une ou plusieurs issues.",
+            "Impossible : probabilité 0. Certain : probabilité 1.",
+            "Issues qui ont la même chance : issues qui conviennent ÷ toutes les issues.",
+            "Une chance sur 5 : 1/5 = 0,2 = 20 %."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-5e-proportionality",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

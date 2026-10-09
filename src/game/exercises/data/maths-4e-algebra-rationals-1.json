@@ -1,0 +1,243 @@
+{
+  "id": "maths-4e-algebra-rationals-1",
+  "biome": "maths-4e-algebra",
+  "type": "rationals",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-4e-algebra-rationals-1-0",
+      "prompt": "L’opposé de 6,5 est …",
+      "spoken": "L’opposé de 6,5 est  (mot manquant) ",
+      "choices": [
+        "−6,5",
+        "−5,6",
+        "6,5"
+      ],
+      "answer": "−6,5",
+      "hint": "Même distance à zéro, mais de l’autre côté.",
+      "explanation": "6,5 et −6,5 sont à la même distance de zéro, de part et d’autre : ils sont opposés. −5,6 inverse les chiffres ; 6,5 garde le même signe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres relatifs",
+          "lines": [
+            "L’opposé de 3 est −3 : même distance à zéro, de l’autre côté.",
+            "Sur la droite graduée, le plus grand est le plus à droite.",
+            "Deux négatifs : le plus grand est le plus près de zéro. −1 est plus grand que −4.",
+            "Un positif est toujours plus grand qu’un négatif.",
+            "Encadrer : un nombre plus petit à gauche, un plus grand à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-1-1",
+      "prompt": "Altitude de trois plongeurs\nAli : −4,2 m\nBen : −3,9 m\nCléa : −3,8 m",
+      "question": "Qui est le plus près de la surface ?",
+      "spoken": "Altitude de trois plongeurs. Ali, moins 4,2 mètres. Ben, moins 3,9 mètres. Cléa, moins 3,8 mètres.",
+      "choices": [
+        "Ali",
+        "Ben",
+        "Cléa"
+      ],
+      "answer": "Cléa",
+      "hint": "Le plus près de la surface a l’altitude la plus grande : le nombre le plus près de zéro.",
+      "explanation": "−3,8 est le plus près de zéro : c’est le plus grand des trois, Cléa est la plus haute. Ali est le plus profond : 4,2 est plus grand que 3,8, mais −4,2 est plus petit que −3,8.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres relatifs",
+          "lines": [
+            "L’opposé de 3 est −3 : même distance à zéro, de l’autre côté.",
+            "Sur la droite graduée, le plus grand est le plus à droite.",
+            "Deux négatifs : le plus grand est le plus près de zéro. −1 est plus grand que −4.",
+            "Un positif est toujours plus grand qu’un négatif.",
+            "Encadrer : un nombre plus petit à gauche, un plus grand à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-1-2",
+      "prompt": "Sur la droite graduée, le point marqué a pour abscisse …",
+      "spoken": "Sur la droite graduée, le point marqué a pour abscisse  (mot manquant) ",
+      "choices": [
+        "−2,5",
+        "−1,5",
+        "1,5"
+      ],
+      "answer": "−1,5",
+      "hint": "Le point est-il à gauche ou à droite de zéro ? Puis compte les unités depuis zéro.",
+      "explanation": "Le point est à gauche de zéro, au milieu entre −2 et −1 : son abscisse est −1,5. 1,5 est son opposé, à droite de zéro ; −2,5 est entre −3 et −2.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": -3,
+          "max": 3,
+          "points": [
+            -1.5
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres relatifs",
+          "lines": [
+            "L’opposé de 3 est −3 : même distance à zéro, de l’autre côté.",
+            "Sur la droite graduée, le plus grand est le plus à droite.",
+            "Deux négatifs : le plus grand est le plus près de zéro. −1 est plus grand que −4.",
+            "Un positif est toujours plus grand qu’un négatif.",
+            "Encadrer : un nombre plus petit à gauche, un plus grand à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-1-3",
+      "prompt": "Températures relevées à midi\nLundi : −2,5 °C\nMardi : 1,5 °C\nMercredi : −3 °C",
+      "question": "Quel jour a-t-il fait le plus froid ?",
+      "spoken": "Températures relevées à midi. Lundi, moins 2,5 degrés. Mardi, 1,5 degré. Mercredi, moins 3 degrés.",
+      "choices": [
+        "lundi",
+        "mardi",
+        "mercredi"
+      ],
+      "answer": "mercredi",
+      "hint": "Le plus froid, c’est le plus petit nombre : le plus loin à gauche sur la droite graduée.",
+      "explanation": "−3 est plus petit que −2,5 : il est plus loin de zéro, à gauche. Mercredi est le jour le plus froid. Lundi, à −2,5 °C, fait un peu moins froid ; mardi, à 1,5 °C, est le seul jour au-dessus de zéro.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres relatifs",
+          "lines": [
+            "L’opposé de 3 est −3 : même distance à zéro, de l’autre côté.",
+            "Sur la droite graduée, le plus grand est le plus à droite.",
+            "Deux négatifs : le plus grand est le plus près de zéro. −1 est plus grand que −4.",
+            "Un positif est toujours plus grand qu’un négatif.",
+            "Encadrer : un nombre plus petit à gauche, un plus grand à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-1-4",
+      "prompt": "Le nombre −4,6 est compris entre deux entiers qui se suivent : …",
+      "spoken": "Le nombre moins 4,6 est compris entre deux entiers qui se suivent : (mot manquant)",
+      "choices": [
+        "−5 et −4",
+        "−4 et −3",
+        "4 et 5"
+      ],
+      "answer": "−5 et −4",
+      "hint": "Sur la droite graduée, moins 4,6 est-il à gauche ou à droite de moins 4 ?",
+      "explanation": "−4,6 est plus loin de zéro que −4 : il est à sa gauche, entre −5 et −4. Il n’est pas entre −4 et −3, qui sont plus près de zéro. 4 et 5 encadrent son opposé, 4,6.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres relatifs",
+          "lines": [
+            "L’opposé de 3 est −3 : même distance à zéro, de l’autre côté.",
+            "Sur la droite graduée, le plus grand est le plus à droite.",
+            "Deux négatifs : le plus grand est le plus près de zéro. −1 est plus grand que −4.",
+            "Un positif est toujours plus grand qu’un négatif.",
+            "Encadrer : un nombre plus petit à gauche, un plus grand à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-1-5",
+      "prompt": "Niveau d’un lac, comparé à l’été, en mètres\nMars : −0,75\nAvril : −0,8\nMai : 0,1",
+      "question": "En quel mois le niveau est-il le plus bas ?",
+      "spoken": "Niveau d’un lac, comparé à l’été, en mètres. Mars, moins 0,75. Avril, moins 0,8. Mai, 0,1.",
+      "choices": [
+        "mars",
+        "avril",
+        "mai"
+      ],
+      "answer": "avril",
+      "hint": "Écris 0,8 avec deux chiffres après la virgule, puis compare avec 0,75.",
+      "explanation": "0,8 = 0,80, plus grand que 0,75 : −0,8 est plus loin de zéro que −0,75, donc plus bas. Le niveau le plus bas est en avril. En mars, 75 centièmes, c’est moins que 80 centièmes. En mai, le niveau est au-dessus de zéro.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres relatifs",
+          "lines": [
+            "L’opposé de 3 est −3 : même distance à zéro, de l’autre côté.",
+            "Sur la droite graduée, le plus grand est le plus à droite.",
+            "Deux négatifs : le plus grand est le plus près de zéro. −1 est plus grand que −4.",
+            "Un positif est toujours plus grand qu’un négatif.",
+            "Encadrer : un nombre plus petit à gauche, un plus grand à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-1-6",
+      "prompt": "La somme d’un nombre et de son opposé vaut toujours …",
+      "spoken": "La somme d’un nombre et de son opposé vaut toujours  (mot manquant) ",
+      "choices": [
+        "−1",
+        "0",
+        "1"
+      ],
+      "answer": "0",
+      "hint": "Pense à un pas en avant, puis un pas en arrière.",
+      "explanation": "2,5 + (−2,5) = 0 : un nombre et son opposé s’annulent. 1, c’est le produit d’un nombre et de son inverse, pas la somme avec son opposé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres relatifs",
+          "lines": [
+            "L’opposé de 3 est −3 : même distance à zéro, de l’autre côté.",
+            "Sur la droite graduée, le plus grand est le plus à droite.",
+            "Deux négatifs : le plus grand est le plus près de zéro. −1 est plus grand que −4.",
+            "Un positif est toujours plus grand qu’un négatif.",
+            "Encadrer : un nombre plus petit à gauche, un plus grand à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-1-7",
+      "prompt": "Ranger −1,2 ; 0,4 et −1,5 dans l’ordre croissant donne …",
+      "spoken": "Ranger moins 1,2 ; 0,4 et moins 1,5 dans l’ordre croissant donne (mot manquant)",
+      "choices": [
+        "−1,5 ; −1,2 ; 0,4",
+        "−1,2 ; −1,5 ; 0,4",
+        "0,4 ; −1,2 ; −1,5"
+      ],
+      "answer": "−1,5 ; −1,2 ; 0,4",
+      "hint": "Croissant : du plus petit au plus grand. Le plus petit est le plus loin à gauche de zéro.",
+      "explanation": "−1,5 est plus loin de zéro que −1,2 : il est plus petit, il vient en premier. 0,4, le seul positif, vient en dernier. Mettre −1,2 avant −1,5, c’est oublier le signe moins ; 0,4 en premier, c’est l’ordre décroissant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les nombres relatifs",
+          "lines": [
+            "L’opposé de 3 est −3 : même distance à zéro, de l’autre côté.",
+            "Sur la droite graduée, le plus grand est le plus à droite.",
+            "Deux négatifs : le plus grand est le plus près de zéro. −1 est plus grand que −4.",
+            "Un positif est toujours plus grand qu’un négatif.",
+            "Encadrer : un nombre plus petit à gauche, un plus grand à droite."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-4e-algebra",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

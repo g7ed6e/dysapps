@@ -26,7 +26,7 @@ import { AVATAR_HOME } from './terrain/base';
 import { SENTINELLE_DANS_LE_MONDE } from './terrain/creatures';
 import { DEMI_LARGEUR_DE_SENTINELLE, ECHELLE_DANS_LE_MONDE, HAUTEUR_DANS_LE_MONDE } from './characters/sentinel';
 import { portesDesLieux } from './terrain/village';
-import { QUEST_ROW } from './terrain/markers';
+import { PLACES_DES_BORNES_DES_ECOLES, QUEST_ROW } from './terrain/markers';
 import {
   avatarHome,
   BALEINES_REPLACEES,
@@ -303,16 +303,16 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     // 2026 ; appliqué derrière la bande aussi : 14 au palier 1) : 20, 0 et 31, dont 6 sur un côté. Depuis le seuil de
     // 75 % (DA, 8 octobre 2026 : sous lui, la bande du chemin des arrivées cède sur un côté de devant) : 23, 0 et 28,
     // dont 9 sur un côté (le Hangar des inventions, l'Imprimerie des révolutions et le Verger de la santé y viennent).
+    // Depuis la cinquième mission (GD-14, 9 octobre 2026), une borne de plus touche trois carrés de devant : 21, 0 et 30,
+    // dont 6 sur un côté (le Hangar des inventions passe derrière la bande, au palier 1 ; le Manoir du passé et le
+    // Belvédère de Thalès au palier 3).
     expect(BIOMES.filter((b) => guardianSpot(b.id).repli).map((b) => b.id)).toEqual([]);
     const paliers = (n: number) => BIOMES.filter((b) => guardianSpot(b.id).palier === n).map((b) => b.id);
-    expect(paliers(1)).toHaveLength(23);
+    expect(paliers(1)).toHaveLength(21);
     expect(paliers(2)).toEqual([]);
-    expect(paliers(3)).toHaveLength(28);
+    expect(paliers(3)).toHaveLength(30);
     expect(BIOMES.filter((b) => guardianSpot(b.id).y <= QUEST_ROW + 1).map((b) => b.id)).toEqual([
-      'maths-3e-geometry',
-      'english-5e-grammar',
       'english-4e-comprehension',
-      'technology-6e-objects',
       'history-4e-revolutions',
       'geography-4e-globalization',
       'life-earth-sciences-4e-cells-evolution',
@@ -367,7 +367,8 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     // Falaise des accords, le Bassin des maquettes et le Tremplin des forces (83 %). Sous le seuil de 75 % (DA,
     // 8 octobre 2026), seul le Phare des fonctions : aucun carré, même la bande du chemin des arrivées cédée, ne le
     // montre plus. Le Hangar des inventions et le Verger de la santé (54 %), l'Imprimerie des révolutions (66 %) se
-    // voient entiers sur un côté de devant depuis ce seuil.
+    // voient entiers sur un côté de devant depuis ce seuil. Depuis la cinquième mission (GD-14), le Belvédère de Thalès
+    // (82 %) et le Manoir du passé (81 %) ont quitté le leur, qu'une borne de plus touchait.
     const enPartie: Record<string, number> = {
       'maths-6e-calculation': 0.92,
       'maths-5e-signed-numbers': 0.88,
@@ -385,6 +386,8 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
       'physics-chemistry-4e-signals-circuits': 0.78,
       'technology-4e-modeling': 0.83,
       'physics-chemistry-3e-motion-energy': 0.83,
+      'maths-3e-geometry': 0.82,
+      'english-5e-grammar': 0.81,
     };
     for (const b of BIOMES) {
       const vue = Math.min(...(['gardien', 'sentinelle'] as const).map((forme) => partDuGardienVue(b.id, forme)));
@@ -649,7 +652,9 @@ it('chaque mission a sa borne sur la rangée de devant, dans le cœur, hors de l
     for (const [sx, sy] of spot.steps) for (const c of CREATURE_CUBES[b.id]) creature.add(`${spot.x + sx + c.x},${spot.y + sy + c.y}`);
     for (const st of stations) {
       expect(st.x).toBeGreaterThanOrEqual(0);
-      expect(st.x).toBeLessThan(CORE);
+      // Une île-école à cinq missions pose sa dernière borne en (16, 1), dans son cœur agrandi (GD-14).
+    expect(st.x).toBeLessThanOrEqual(PLACES_DES_BORNES_DES_ECOLES.at(-1)!);
+    if (st.x >= CORE) expect(bornesDuCoeur(islandDef(b.id)).x1, b.id).toBeGreaterThan(st.x);
       expect(st.y).toBeLessThan(PLAN_ZONE.y);
       expect(creature.has(`${st.x},${st.y}`), `${b.id} ${st.typeId}`).toBe(false);
     }

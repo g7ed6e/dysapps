@@ -1,0 +1,242 @@
+{
+  "id": "life-earth-sciences-6e-living-world-life-enquiry-1",
+  "biome": "life-earth-sciences-6e-living-world",
+  "type": "life-enquiry",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-1-0",
+      "prompt": "Tous les êtres vivants, la plante comme l’animal, sont faits de …",
+      "spoken": "Tous les êtres vivants, la plante comme l’animal, sont faits de  (mot manquant) ",
+      "choices": [
+        "organes",
+        "cellules",
+        "muscles"
+      ],
+      "answer": "cellules",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Tous les êtres vivants sont faits de cellules : c’est ce qu’ils ont en commun. Une plante n’a pas de muscles, et certains êtres vivants n’ont aucun organe, mais tous ont des cellules.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du plus petit au plus grand",
+          "lines": [
+            "Tous les êtres vivants sont faits de cellules.",
+            "La plupart des cellules ne se voient qu’au microscope.",
+            "Unicellulaire : fait d’une seule cellule.",
+            "Organe : le cœur, l’estomac, une feuille. Plusieurs organes forment un appareil.",
+            "L’organisme : l’être vivant entier.",
+            "L’histoire de la Terre se compte en millions et en milliards d’années."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-1-1",
+      "prompt": "Trois observations au microscope\nPeau d’oignon : des cellules collées les unes aux autres.\nIntérieur de la joue : des cellules collées les unes aux autres.\nGoutte d’eau de mare : de tout petits êtres vivants, chacun fait d’une seule cellule.",
+      "question": "Que montrent ces observations ?",
+      "spoken": "Trois observations au microscope. Peau d’oignon, des cellules collées les unes aux autres. Intérieur de la joue, des cellules collées les unes aux autres. Goutte d’eau de mare, de tout petits êtres vivants, chacun fait d’une seule cellule.",
+      "choices": [
+        "seules les plantes ont des cellules",
+        "seuls les animaux ont des cellules",
+        "tous ces êtres vivants ont des cellules"
+      ],
+      "answer": "tous ces êtres vivants ont des cellules",
+      "hint": "Sur quelles lignes trouve-t-on le mot « cellule » ?",
+      "explanation": "L’oignon est une plante, la joue est celle d’un humain, un animal, et les êtres de la mare sont faits d’une cellule : tous ont des cellules. La cellule est commune à tous les êtres vivants, pas seulement aux plantes ou aux animaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du plus petit au plus grand",
+          "lines": [
+            "Tous les êtres vivants sont faits de cellules.",
+            "La plupart des cellules ne se voient qu’au microscope.",
+            "Unicellulaire : fait d’une seule cellule.",
+            "Organe : le cœur, l’estomac, une feuille. Plusieurs organes forment un appareil.",
+            "L’organisme : l’être vivant entier.",
+            "L’histoire de la Terre se compte en millions et en milliards d’années."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-1-2",
+      "prompt": "L’estomac et l’intestin travaillent ensemble pour digérer : ils forment un …",
+      "spoken": "L’estomac et l’intestin travaillent ensemble pour digérer : ils forment un  (mot manquant) ",
+      "choices": [
+        "organe",
+        "appareil",
+        "organisme"
+      ],
+      "answer": "appareil",
+      "hint": "Relis la ligne « Organe » du rappel.",
+      "explanation": "L’estomac et l’intestin sont deux organes. Ensemble, ils forment un appareil : l’appareil digestif. L’organisme, c’est l’être vivant entier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du plus petit au plus grand",
+          "lines": [
+            "Tous les êtres vivants sont faits de cellules.",
+            "La plupart des cellules ne se voient qu’au microscope.",
+            "Unicellulaire : fait d’une seule cellule.",
+            "Organe : le cœur, l’estomac, une feuille. Plusieurs organes forment un appareil.",
+            "L’organisme : l’être vivant entier.",
+            "L’histoire de la Terre se compte en millions et en milliards d’années."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-1-3",
+      "prompt": "Une découverte, en 1665\nLe savant Robert Hooke observe une fine tranche de liège.\nIl utilise un des premiers microscopes.\nIl voit de petites cases, qu’il appelle des « cellules ».",
+      "question": "Qu’est-ce qui lui a permis de voir des cellules ?",
+      "spoken": "Une découverte, en 1665. Le savant Robert Hooke observe une fine tranche de liège. Il utilise un des premiers microscopes. Il voit de petites cases, qu’il appelle des cellules.",
+      "choices": [
+        "ses yeux seuls",
+        "un nouvel instrument",
+        "une idée, sans rien observer"
+      ],
+      "answer": "un nouvel instrument",
+      "hint": "Relis la troisième ligne du document.",
+      "explanation": "Le microscope était alors un instrument nouveau : grâce à lui, Hooke a vu des cellules. À l’œil nu, c’était impossible. Un savoir scientifique avance avec les instruments de son époque.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du plus petit au plus grand",
+          "lines": [
+            "Tous les êtres vivants sont faits de cellules.",
+            "La plupart des cellules ne se voient qu’au microscope.",
+            "Unicellulaire : fait d’une seule cellule.",
+            "Organe : le cœur, l’estomac, une feuille. Plusieurs organes forment un appareil.",
+            "L’organisme : l’être vivant entier.",
+            "L’histoire de la Terre se compte en millions et en milliards d’années."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-1-4",
+      "prompt": "La paramécie, qui nage dans l’eau des mares, est faite d’une seule cellule : elle est …",
+      "spoken": "La paramécie, qui nage dans l’eau des mares, est faite d’une seule cellule : elle est  (mot manquant) ",
+      "choices": [
+        "pluricellulaire",
+        "unicellulaire",
+        "végétale"
+      ],
+      "answer": "unicellulaire",
+      "hint": "« Uni » veut dire un seul.",
+      "explanation": "Faite d’une seule cellule, la paramécie est unicellulaire. Pluricellulaire veut dire fait de nombreuses cellules, comme un chat ou un chêne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du plus petit au plus grand",
+          "lines": [
+            "Tous les êtres vivants sont faits de cellules.",
+            "La plupart des cellules ne se voient qu’au microscope.",
+            "Unicellulaire : fait d’une seule cellule.",
+            "Organe : le cœur, l’estomac, une feuille. Plusieurs organes forment un appareil.",
+            "L’organisme : l’être vivant entier.",
+            "L’histoire de la Terre se compte en millions et en milliards d’années."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-1-5",
+      "prompt": "Trois moments de l’histoire de la vie, dans le désordre\nIl y a 66 millions d’années : les grands dinosaures disparaissent.\nIl y a environ 300 000 ans : les premiers humains de notre espèce.\nIl y a plus de 3 milliards d’années : les premiers êtres vivants, faits d’une seule cellule.",
+      "question": "Quel moment est le plus ancien ?",
+      "spoken": "Trois moments de l’histoire de la vie, dans le désordre. Il y a soixante-six millions d’années, les grands dinosaures disparaissent. Il y a environ trois cent mille ans, les premiers humains de notre espèce. Il y a plus de trois milliards d’années, les premiers êtres vivants, faits d’une seule cellule.",
+      "choices": [
+        "la fin des grands dinosaures",
+        "les premiers humains",
+        "les premiers êtres vivants"
+      ],
+      "answer": "les premiers êtres vivants",
+      "hint": "Cherche le mot « milliards » : c’est le plus grand.",
+      "explanation": "Un milliard, c’est mille millions : plus de 3 milliards d’années, c’est bien plus ancien que 66 millions d’années. Les premiers êtres vivants viennent donc bien avant les dinosaures, et les humains sont les plus récents.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du plus petit au plus grand",
+          "lines": [
+            "Tous les êtres vivants sont faits de cellules.",
+            "La plupart des cellules ne se voient qu’au microscope.",
+            "Unicellulaire : fait d’une seule cellule.",
+            "Organe : le cœur, l’estomac, une feuille. Plusieurs organes forment un appareil.",
+            "L’organisme : l’être vivant entier.",
+            "L’histoire de la Terre se compte en millions et en milliards d’années."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-1-6",
+      "prompt": "Une vie humaine dure environ 80 ans. La Terre, elle, a environ 4,5 …",
+      "spoken": "Une vie humaine dure environ 80 ans. La Terre, elle, a environ quatre virgule cinq (mot manquant).",
+      "choices": [
+        "siècles",
+        "millions d’années",
+        "milliards d’années"
+      ],
+      "answer": "milliards d’années",
+      "hint": "C’est un temps immense : le plus grand des trois.",
+      "explanation": "La Terre a environ 4,5 milliards d’années : c’est l’échelle des temps géologiques, le temps long. 4,5 millions d’années, ce serait mille fois moins ; 4,5 siècles, à peine cinq vies humaines.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du plus petit au plus grand",
+          "lines": [
+            "Tous les êtres vivants sont faits de cellules.",
+            "La plupart des cellules ne se voient qu’au microscope.",
+            "Unicellulaire : fait d’une seule cellule.",
+            "Organe : le cœur, l’estomac, une feuille. Plusieurs organes forment un appareil.",
+            "L’organisme : l’être vivant entier.",
+            "L’histoire de la Terre se compte en millions et en milliards d’années."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-1-7",
+      "prompt": "Trois choses à observer dans le jardin\nUne fourmi.\nUn grain de sable.\nUne cellule de feuille.",
+      "question": "Laquelle ne peut se voir qu’au microscope ?",
+      "spoken": "Trois choses à observer dans le jardin. Une fourmi. Un grain de sable. Une cellule de feuille.",
+      "choices": [
+        "la fourmi",
+        "le grain de sable",
+        "la cellule de feuille"
+      ],
+      "answer": "la cellule de feuille",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "La fourmi et le grain de sable se voient à l’œil nu, ou à la loupe. Une cellule de feuille est bien plus petite : il faut un microscope.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du plus petit au plus grand",
+          "lines": [
+            "Tous les êtres vivants sont faits de cellules.",
+            "La plupart des cellules ne se voient qu’au microscope.",
+            "Unicellulaire : fait d’une seule cellule.",
+            "Organe : le cœur, l’estomac, une feuille. Plusieurs organes forment un appareil.",
+            "L’organisme : l’être vivant entier.",
+            "L’histoire de la Terre se compte en millions et en milliards d’années."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien enquêté !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-6e-living-world",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

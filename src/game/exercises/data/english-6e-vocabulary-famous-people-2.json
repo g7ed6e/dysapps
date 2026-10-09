@@ -1,0 +1,239 @@
+{
+  "id": "english-6e-vocabulary-famous-people-2",
+  "biome": "english-6e-vocabulary",
+  "type": "famous-people",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Lis la question, puis la description de l’image en anglais, et choisis le mot qui dit ce qu’on ressent. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "english-6e-vocabulary-famous-people-2-0",
+      "prompt": "A painting\nIt’s Ben’s birthday.\nHe has a big cake and a lot of presents.\nHe is smiling.",
+      "question": "Comment se sent Ben ?",
+      "spoken": "A painting. It’s Ben’s birthday. He has a big cake and a lot of presents. He is smiling.",
+      "choices": [
+        "happy",
+        "sad",
+        "tired"
+      ],
+      "answer": "happy",
+      "hint": "Lis la dernière ligne : que fait Ben ?",
+      "explanation": "He is smiling = il sourit : c’est son anniversaire, il est content, happy. sad = triste, tired = fatigué.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dire ce qu’on ressent",
+          "lines": [
+            "Lis ce que fait la personne, puis choisis le mot qui va avec.",
+            "happy = content ; sad = triste ; tired = fatigué",
+            "angry = en colère ; scared = qui a peur ; surprised = surpris",
+            "smile = sourire ; cry = pleurer ; shout = crier",
+            "funny = drôle ; scary = qui fait peur ; beautiful = beau"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-2-1",
+      "prompt": "A drawing\nA girl is in her bedroom.\nHer cat is lost.\nShe is crying.",
+      "question": "Comment se sent la fille ?",
+      "spoken": "A drawing. A girl is in her bedroom. Her cat is lost. She is crying.",
+      "choices": [
+        "sad",
+        "happy",
+        "angry"
+      ],
+      "answer": "sad",
+      "hint": "Son chat est perdu, lost. Et que fait-elle sur la dernière ligne ?",
+      "explanation": "She is crying = elle pleure : son chat est perdu, elle est triste, sad. happy = content, angry = en colère.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dire ce qu’on ressent",
+          "lines": [
+            "Lis ce que fait la personne, puis choisis le mot qui va avec.",
+            "happy = content ; sad = triste ; tired = fatigué",
+            "angry = en colère ; scared = qui a peur ; surprised = surpris",
+            "smile = sourire ; cry = pleurer ; shout = crier",
+            "funny = drôle ; scary = qui fait peur ; beautiful = beau"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-2-2",
+      "prompt": "A photo\nA dark forest at night.\nA big wolf is behind a tree.\nA little rabbit sees the wolf.",
+      "question": "Comment se sent le petit lapin ?",
+      "spoken": "A photo. A dark forest at night. A big wolf is behind a tree. A little rabbit sees the wolf.",
+      "choices": [
+        "scared",
+        "happy",
+        "tired"
+      ],
+      "answer": "scared",
+      "hint": "La nuit, dans la forêt, le lapin voit un grand loup. Que ressent-il ?",
+      "explanation": "Le petit lapin voit un grand loup, la nuit : il a peur, scared. happy = content, tired = fatigué.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dire ce qu’on ressent",
+          "lines": [
+            "Lis ce que fait la personne, puis choisis le mot qui va avec.",
+            "happy = content ; sad = triste ; tired = fatigué",
+            "angry = en colère ; scared = qui a peur ; surprised = surpris",
+            "smile = sourire ; cry = pleurer ; shout = crier",
+            "funny = drôle ; scary = qui fait peur ; beautiful = beau"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-2-3",
+      "prompt": "A painting\nA man is in his garden.\nA dog is eating his flowers!\nHe shouts: Stop it, bad dog!",
+      "question": "Comment se sent l’homme ?",
+      "spoken": "A painting. A man is in his garden. A dog is eating his flowers! He shouts: Stop it, bad dog!",
+      "choices": [
+        "angry",
+        "happy",
+        "scared"
+      ],
+      "answer": "angry",
+      "hint": "Le chien mange ses fleurs. Et que fait l’homme sur la dernière ligne ?",
+      "explanation": "He shouts = il crie : le chien mange ses fleurs, l’homme est en colère, angry. happy = content, scared = qui a peur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dire ce qu’on ressent",
+          "lines": [
+            "Lis ce que fait la personne, puis choisis le mot qui va avec.",
+            "happy = content ; sad = triste ; tired = fatigué",
+            "angry = en colère ; scared = qui a peur ; surprised = surpris",
+            "smile = sourire ; cry = pleurer ; shout = crier",
+            "funny = drôle ; scary = qui fait peur ; beautiful = beau"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-2-4",
+      "prompt": "A drawing\nIt’s eleven o’clock at night.\nA boy is on the sofa.\nHe wants to go to bed.",
+      "question": "Comment se sent le garçon ?",
+      "spoken": "A drawing. It’s eleven o’clock at night. A boy is on the sofa. He wants to go to bed.",
+      "choices": [
+        "tired",
+        "angry",
+        "surprised"
+      ],
+      "answer": "tired",
+      "hint": "Il est tard, et le garçon veut aller au lit, go to bed. Pourquoi ?",
+      "explanation": "Il est 11 h du soir et il veut aller se coucher : il est fatigué, tired. angry = en colère, surprised = surpris.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dire ce qu’on ressent",
+          "lines": [
+            "Lis ce que fait la personne, puis choisis le mot qui va avec.",
+            "happy = content ; sad = triste ; tired = fatigué",
+            "angry = en colère ; scared = qui a peur ; surprised = surpris",
+            "smile = sourire ; cry = pleurer ; shout = crier",
+            "funny = drôle ; scary = qui fait peur ; beautiful = beau"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-2-5",
+      "prompt": "A drawing\nA cat in a big hat\nis dancing on the table.",
+      "question": "Que peux-tu dire devant ce dessin ?",
+      "spoken": "A drawing. A cat in a big hat is dancing on the table.",
+      "choices": [
+        "It’s funny!",
+        "It’s sad.",
+        "It’s scary!"
+      ],
+      "answer": "It’s funny!",
+      "hint": "Un chat avec un grand chapeau qui danse sur la table : ça fait rire, pleurer ou peur ?",
+      "explanation": "It’s funny! = c’est drôle ! Un chat qui danse avec un chapeau fait rire. sad = triste, scary = qui fait peur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dire ce qu’on ressent",
+          "lines": [
+            "Lis ce que fait la personne, puis choisis le mot qui va avec.",
+            "happy = content ; sad = triste ; tired = fatigué",
+            "angry = en colère ; scared = qui a peur ; surprised = surpris",
+            "smile = sourire ; cry = pleurer ; shout = crier",
+            "funny = drôle ; scary = qui fait peur ; beautiful = beau"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-2-6",
+      "prompt": "A painting\nAn old castle at night.\nA ghost with red eyes is at the window.",
+      "question": "Que peux-tu dire devant ce tableau ?",
+      "spoken": "A painting. An old castle at night. A ghost with red eyes is at the window.",
+      "choices": [
+        "It’s scary!",
+        "It’s funny!",
+        "It’s sad."
+      ],
+      "answer": "It’s scary!",
+      "hint": "La nuit, un fantôme aux yeux rouges à la fenêtre : ça fait rire, pleurer ou peur ?",
+      "explanation": "It’s scary! = ça fait peur ! Un fantôme, a ghost, aux yeux rouges, la nuit. funny = drôle, sad = triste.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dire ce qu’on ressent",
+          "lines": [
+            "Lis ce que fait la personne, puis choisis le mot qui va avec.",
+            "happy = content ; sad = triste ; tired = fatigué",
+            "angry = en colère ; scared = qui a peur ; surprised = surpris",
+            "smile = sourire ; cry = pleurer ; shout = crier",
+            "funny = drôle ; scary = qui fait peur ; beautiful = beau"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-2-7",
+      "prompt": "A photo\nA beach in the evening.\nThe sky is pink, orange and gold.",
+      "question": "Que peux-tu dire devant cette photo ?",
+      "spoken": "A photo. A beach in the evening. The sky is pink, orange and gold.",
+      "choices": [
+        "It’s beautiful!",
+        "It’s scary!",
+        "It’s sad."
+      ],
+      "answer": "It’s beautiful!",
+      "hint": "Une plage le soir, un ciel rose, orange et doré : c’est beau, triste ou effrayant ?",
+      "explanation": "It’s beautiful! = c’est beau ! Le ciel du soir a de belles couleurs. scary = qui fait peur, sad = triste.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dire ce qu’on ressent",
+          "lines": [
+            "Lis ce que fait la personne, puis choisis le mot qui va avec.",
+            "happy = content ; sad = triste ; tired = fatigué",
+            "angry = en colère ; scared = qui a peur ; surprised = surpris",
+            "smile = sourire ; cry = pleurer ; shout = crier",
+            "funny = drôle ; scary = qui fait peur ; beautiful = beau"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-6e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,238 @@
+{
+  "id": "maths-6e-fractions-fraction-sums-2",
+  "biome": "maths-6e-fractions",
+  "type": "fraction-sums",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-6e-fractions-fraction-sums-2-0",
+      "prompt": "Le schéma en barre\nLa barre entière vaut 30 €. Elle a 3 parts égales.\nTom a 2 de ces parts.",
+      "question": "Combien Tom a-t-il ?",
+      "spoken": "Le schéma en barre. La barre entière vaut 30 euros. Elle a 3 parts égales. Tom a 2 de ces parts.",
+      "choices": [
+        "10 €",
+        "15 €",
+        "20 €"
+      ],
+      "answer": "20 €",
+      "hint": "Combien vaut une part ? Puis : Tom en a deux.",
+      "explanation": "Une part vaut 30 ÷ 3 = 10 €. Tom a 2 parts : 2 × 10 = 20 €, les 2/3 de 30 €. 10 €, c’est une seule part ; 15 €, c’est couper la barre en 2.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Problèmes, suites et hasard",
+          "lines": [
+            "Schéma en barre : une barre coupée en parts égales. Une part vaut le total divisé par le nombre de parts.",
+            "Suite : cherche ce qu’on ajoute, ou par quoi on multiplie, d’une étape à la suivante.",
+            "Probabilité = nombre de cas qui conviennent / nombre de cas possibles (s’ils ont tous la même chance).",
+            "Une probabilité est entre 0 (impossible) et 1 (certain).",
+            "Le hasard ne se souvient pas des tirages d’avant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-2-1",
+      "prompt": "Léa et Sam ont 24 billes en tout.\nSam a 2 fois plus de billes que Léa.\nLe schéma : Léa, 1 part ; Sam, 2 parts. Les 3 parts font 24.",
+      "question": "Combien Léa a-t-elle de billes ?",
+      "spoken": "Léa et Sam ont 24 billes en tout. Sam a 2 fois plus de billes que Léa. Le schéma : Léa, 1 part ; Sam, 2 parts. Les 3 parts font 24.",
+      "choices": [
+        "8 billes",
+        "12 billes",
+        "16 billes"
+      ],
+      "answer": "8 billes",
+      "hint": "Les 24 billes sont partagées en 3 parts égales.",
+      "explanation": "24 ÷ 3 = 8 : une part, celle de Léa, vaut 8 billes. Sam a 16 billes, et 8 + 16 = 24. 12, c’est couper en 2 parts au lieu de 3.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Problèmes, suites et hasard",
+          "lines": [
+            "Schéma en barre : une barre coupée en parts égales. Une part vaut le total divisé par le nombre de parts.",
+            "Suite : cherche ce qu’on ajoute, ou par quoi on multiplie, d’une étape à la suivante.",
+            "Probabilité = nombre de cas qui conviennent / nombre de cas possibles (s’ils ont tous la même chance).",
+            "Une probabilité est entre 0 (impossible) et 1 (certain).",
+            "Le hasard ne se souvient pas des tirages d’avant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-2-2",
+      "prompt": "Le gâteau\nInès mange 1/4 du gâteau.\nNoé en mange 2/4.",
+      "question": "Quelle part du gâteau reste-t-il ?",
+      "spoken": "Le gâteau. Inès mange un quart du gâteau. Noé en mange 2 quarts.",
+      "choices": [
+        "1/4",
+        "3/4",
+        "3/8"
+      ],
+      "answer": "1/4",
+      "hint": "Combien de quarts sont mangés ? Le gâteau entier, c’est 4/4.",
+      "explanation": "Ils mangent 1/4 + 2/4 = 3/4. Il reste 4/4 − 3/4 = 1/4. 3/4, c’est la part mangée, pas ce qui reste ; 3/8, c’est ajouter les dénominateurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Problèmes, suites et hasard",
+          "lines": [
+            "Schéma en barre : une barre coupée en parts égales. Une part vaut le total divisé par le nombre de parts.",
+            "Suite : cherche ce qu’on ajoute, ou par quoi on multiplie, d’une étape à la suivante.",
+            "Probabilité = nombre de cas qui conviennent / nombre de cas possibles (s’ils ont tous la même chance).",
+            "Une probabilité est entre 0 (impossible) et 1 (certain).",
+            "Le hasard ne se souvient pas des tirages d’avant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-2-3",
+      "prompt": "Un motif de bâtonnets\nÉtape 1 : 4 bâtonnets.\nÉtape 2 : 7 bâtonnets.\nÉtape 3 : 10 bâtonnets.",
+      "question": "Combien de bâtonnets à l’étape 5 ?",
+      "spoken": "Un motif de bâtonnets. Étape 1, 4 bâtonnets. Étape 2, 7 bâtonnets. Étape 3, 10 bâtonnets.",
+      "choices": [
+        "13",
+        "16",
+        "20"
+      ],
+      "answer": "16",
+      "hint": "Combien de bâtonnets ajoute-t-on à chaque étape ?",
+      "explanation": "On ajoute 3 bâtonnets à chaque étape : 10, puis 13 à l’étape 4, puis 16 à l’étape 5. 13, c’est l’étape 4 ; 20, c’est 5 fois 4, comme si chaque étape ajoutait 4.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Problèmes, suites et hasard",
+          "lines": [
+            "Schéma en barre : une barre coupée en parts égales. Une part vaut le total divisé par le nombre de parts.",
+            "Suite : cherche ce qu’on ajoute, ou par quoi on multiplie, d’une étape à la suivante.",
+            "Probabilité = nombre de cas qui conviennent / nombre de cas possibles (s’ils ont tous la même chance).",
+            "Une probabilité est entre 0 (impossible) et 1 (certain).",
+            "Le hasard ne se souvient pas des tirages d’avant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-2-4",
+      "prompt": "Une suite de nombres\n3 ; 6 ; 12 ; 24",
+      "question": "Quelle règle donne le nombre suivant ?",
+      "spoken": "Une suite de nombres. 3, 6, 12, 24.",
+      "choices": [
+        "On multiplie par 2.",
+        "On ajoute 3.",
+        "On ajoute 6."
+      ],
+      "answer": "On multiplie par 2.",
+      "hint": "Vérifie ta règle sur chaque étape, pas seulement sur la première.",
+      "explanation": "3 × 2 = 6, 6 × 2 = 12, 12 × 2 = 24 : on multiplie par 2 à chaque étape. « On ajoute 3 » ne marche que pour la première : 6 + 3 ne donne pas 12.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Problèmes, suites et hasard",
+          "lines": [
+            "Schéma en barre : une barre coupée en parts égales. Une part vaut le total divisé par le nombre de parts.",
+            "Suite : cherche ce qu’on ajoute, ou par quoi on multiplie, d’une étape à la suivante.",
+            "Probabilité = nombre de cas qui conviennent / nombre de cas possibles (s’ils ont tous la même chance).",
+            "Une probabilité est entre 0 (impossible) et 1 (certain).",
+            "Le hasard ne se souvient pas des tirages d’avant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-2-5",
+      "prompt": "Le sac de billes\nIl y a 3 billes rouges et 1 bille bleue.\nOn tire une bille au hasard, sans regarder.",
+      "question": "Quelle est la probabilité de tirer une bille rouge ?",
+      "spoken": "Le sac de billes. Il y a 3 billes rouges et 1 bille bleue. On tire une bille au hasard, sans regarder.",
+      "choices": [
+        "3/4",
+        "1/2",
+        "1/4"
+      ],
+      "answer": "3/4",
+      "hint": "Combien de billes en tout ? Combien de rouges ?",
+      "explanation": "4 billes en tout, dont 3 rouges : la probabilité est 3/4. Deux couleurs ne font pas une chance sur deux : il y a plus de rouges. 1/4, c’est la bille bleue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Problèmes, suites et hasard",
+          "lines": [
+            "Schéma en barre : une barre coupée en parts égales. Une part vaut le total divisé par le nombre de parts.",
+            "Suite : cherche ce qu’on ajoute, ou par quoi on multiplie, d’une étape à la suivante.",
+            "Probabilité = nombre de cas qui conviennent / nombre de cas possibles (s’ils ont tous la même chance).",
+            "Une probabilité est entre 0 (impossible) et 1 (certain).",
+            "Le hasard ne se souvient pas des tirages d’avant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-2-6",
+      "prompt": "Le dé\nUn dé a 6 faces, numérotées de 1 à 6.\nOn le lance une fois.",
+      "question": "Quelle est la probabilité d’obtenir un nombre plus grand que 4 ?",
+      "spoken": "Le dé. Un dé a 6 faces, numérotées de 1 à 6. On le lance une fois.",
+      "choices": [
+        "2/6",
+        "3/6",
+        "4/6"
+      ],
+      "answer": "2/6",
+      "hint": "Écris les nombres plus grands que 4 : 4 en fait-il partie ?",
+      "explanation": "Plus grand que 4 : seulement 5 et 6, soit 2 faces sur 6 : 2/6. 3/6 compte aussi le 4, qui n’est pas plus grand que 4 ; 4/6, ce sont les faces de 1 à 4.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Problèmes, suites et hasard",
+          "lines": [
+            "Schéma en barre : une barre coupée en parts égales. Une part vaut le total divisé par le nombre de parts.",
+            "Suite : cherche ce qu’on ajoute, ou par quoi on multiplie, d’une étape à la suivante.",
+            "Probabilité = nombre de cas qui conviennent / nombre de cas possibles (s’ils ont tous la même chance).",
+            "Une probabilité est entre 0 (impossible) et 1 (certain).",
+            "Le hasard ne se souvient pas des tirages d’avant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-fractions-fraction-sums-2-7",
+      "prompt": "Les lancers de Hugo\nSa pièce est bien équilibrée.\nIl la lance 10 fois.\nIl obtient 7 fois pile.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Les lancers de Hugo. Sa pièce est bien équilibrée. Il la lance 10 fois. Il obtient 7 fois pile.",
+      "choices": [
+        "Sur 10 lancers, c’est possible : la probabilité de pile reste 1/2.",
+        "La probabilité de pile est devenue 7/10.",
+        "Au prochain lancer, face a plus de chances de sortir."
+      ],
+      "answer": "Sur 10 lancers, c’est possible : la probabilité de pile reste 1/2.",
+      "hint": "La pièce change-t-elle après des lancers ?",
+      "explanation": "La pièce est équilibrée : pile a toujours une chance sur deux, 1/2. Sur peu de lancers, on peut obtenir 7 piles. 7/10 est ce qu’Hugo a observé, pas la probabilité. Et la pièce ne se souvient pas des lancers d’avant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Problèmes, suites et hasard",
+          "lines": [
+            "Schéma en barre : une barre coupée en parts égales. Une part vaut le total divisé par le nombre de parts.",
+            "Suite : cherche ce qu’on ajoute, ou par quoi on multiplie, d’une étape à la suivante.",
+            "Probabilité = nombre de cas qui conviennent / nombre de cas possibles (s’ils ont tous la même chance).",
+            "Une probabilité est entre 0 (impossible) et 1 (certain).",
+            "Le hasard ne se souvient pas des tirages d’avant."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-6e-fractions",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

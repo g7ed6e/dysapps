@@ -1,0 +1,238 @@
+{
+  "id": "history-6e-antiquity-viewpoints-2",
+  "biome": "history-6e-antiquity",
+  "type": "viewpoints",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-6e-antiquity-viewpoints-2-0",
+      "prompt": "D’après Suétone, un historien romain\nL’empereur Auguste se vantait souvent :\n« J’ai trouvé Rome en briques,\nje la laisse en marbre. »",
+      "question": "Qui se vante dans ce document ?",
+      "spoken": "D’après Suétone, un historien romain. L’empereur Auguste se vantait souvent : J’ai trouvé Rome en briques, je la laisse en marbre.",
+      "choices": [
+        "l’historien Suétone",
+        "l’empereur Auguste",
+        "les habitants de Rome"
+      ],
+      "answer": "l’empereur Auguste",
+      "hint": "Lis la deuxième ligne : qui se vantait ?",
+      "explanation": "Suétone écrit le texte, mais c’est Auguste qui se vante : Suétone rapporte ses paroles. Auguste veut qu’on retienne les beaux monuments de son règne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Questionner un document",
+          "lines": [
+            "Qui l’a écrit ? Un Romain, un ennemi de Rome, l’empereur lui-même ?",
+            "Pour qui ? Les Romains, l’empereur, les peuples vaincus ?",
+            "Dans quel but ? Se vanter, convaincre, faire un éloge, critiquer.",
+            "Un auteur qui parle de lui-même se montre sous son meilleur jour.",
+            "Le sens implicite : ce que le document veut dire sans l’écrire en toutes lettres."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-2-1",
+      "prompt": "D’après un texte d’Auguste, gravé devant son tombeau\n« J’ai agrandi les frontières de toutes les provinces.\nSur terre et sur mer, j’ai ramené la paix. »",
+      "question": "Dans quel but Auguste a-t-il fait graver ce texte ?",
+      "spoken": "D’après un texte d’Auguste, gravé devant son tombeau. J’ai agrandi les frontières de toutes les provinces. Sur terre et sur mer, j’ai ramené la paix.",
+      "choices": [
+        "pour raconter ses défaites",
+        "pour donner des ordres à l’armée",
+        "pour qu’on se souvienne de ses réussites"
+      ],
+      "answer": "pour qu’on se souvienne de ses réussites",
+      "hint": "De quoi Auguste parle-t-il : de ses succès ou de ses échecs ?",
+      "explanation": "Auguste parle de lui-même et ne cite que ses réussites. Gravé devant son tombeau, le texte est fait pour que tous s’en souviennent. Ses défaites n’y sont pas : c’est son point de vue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Questionner un document",
+          "lines": [
+            "Qui l’a écrit ? Un Romain, un ennemi de Rome, l’empereur lui-même ?",
+            "Pour qui ? Les Romains, l’empereur, les peuples vaincus ?",
+            "Dans quel but ? Se vanter, convaincre, faire un éloge, critiquer.",
+            "Un auteur qui parle de lui-même se montre sous son meilleur jour.",
+            "Le sens implicite : ce que le document veut dire sans l’écrire en toutes lettres."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-2-2",
+      "prompt": "D’après Tite-Live, historien romain, sous l’empereur Auguste\n« Le dieu Mars est le père de Romulus.\nLes peuples doivent l’accepter,\ncomme ils acceptent notre domination. »",
+      "question": "Dans quel but Tite-Live raconte-t-il cette origine ?",
+      "spoken": "D’après Tite-Live, historien romain, sous l’empereur Auguste. Le dieu Mars est le père de Romulus. Les peuples doivent l’accepter, comme ils acceptent notre domination.",
+      "choices": [
+        "pour montrer que Rome mérite de dominer",
+        "pour prouver que Mars a existé",
+        "pour se moquer des Romains"
+      ],
+      "answer": "pour montrer que Rome mérite de dominer",
+      "hint": "Relis les deux dernières lignes.",
+      "explanation": "Pour Tite-Live, un fondateur fils de Mars montre que Rome est faite pour dominer les autres peuples. C’est le point de vue d’un Romain : la légende ne prouve rien sur Mars.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Questionner un document",
+          "lines": [
+            "Qui l’a écrit ? Un Romain, un ennemi de Rome, l’empereur lui-même ?",
+            "Pour qui ? Les Romains, l’empereur, les peuples vaincus ?",
+            "Dans quel but ? Se vanter, convaincre, faire un éloge, critiquer.",
+            "Un auteur qui parle de lui-même se montre sous son meilleur jour.",
+            "Le sens implicite : ce que le document veut dire sans l’écrire en toutes lettres."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-2-3",
+      "prompt": "Virgile, poète romain, sous l’empereur Auguste\nDans son poème, le dieu Jupiter parle des Romains :\n« Je leur ai donné un empire sans fin. »",
+      "question": "Quelle idée ce poème veut-il faire passer ?",
+      "spoken": "Virgile, poète romain, sous l’empereur Auguste. Dans son poème, le dieu Jupiter parle des Romains : Je leur ai donné un empire sans fin.",
+      "choices": [
+        "Rome doit arrêter ses conquêtes",
+        "les dieux veulent que Rome domine",
+        "Jupiter protège les ennemis de Rome"
+      ],
+      "answer": "les dieux veulent que Rome domine",
+      "hint": "Selon le poème, qui a donné l’empire aux Romains ?",
+      "explanation": "Dans le poème, c’est Jupiter, le roi des dieux, qui donne l’empire aux Romains : leur domination serait voulue par les dieux. Virgile écrit sous Auguste, pour la gloire de Rome.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Questionner un document",
+          "lines": [
+            "Qui l’a écrit ? Un Romain, un ennemi de Rome, l’empereur lui-même ?",
+            "Pour qui ? Les Romains, l’empereur, les peuples vaincus ?",
+            "Dans quel but ? Se vanter, convaincre, faire un éloge, critiquer.",
+            "Un auteur qui parle de lui-même se montre sous son meilleur jour.",
+            "Le sens implicite : ce que le document veut dire sans l’écrire en toutes lettres."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-2-4",
+      "prompt": "D’après La Guerre des Gaules, de Jules César\nCésar raconte lui-même sa conquête de la Gaule.\nIl écrit pour les Romains.\nLes Gaulois n’ont pas laissé de récit de cette guerre.",
+      "question": "Pourquoi faut-il lire ce récit avec prudence ?",
+      "spoken": "D’après La Guerre des Gaules, de Jules César. César raconte lui-même sa conquête de la Gaule. Il écrit pour les Romains. Les Gaulois n’ont pas laissé de récit de cette guerre.",
+      "choices": [
+        "César écrit des siècles après la guerre",
+        "César raconte sa propre guerre",
+        "César ne parle pas de ses soldats"
+      ],
+      "answer": "César raconte sa propre guerre",
+      "hint": "Qui raconte, et de quelle guerre parle-t-il ?",
+      "explanation": "César raconte sa propre guerre, pour les Romains : il se montre sous son meilleur jour. Et les Gaulois n’ont pas laissé leur version : on n’entend qu’un seul point de vue. César écrit pendant la guerre ou juste après, pas des siècles plus tard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Questionner un document",
+          "lines": [
+            "Qui l’a écrit ? Un Romain, un ennemi de Rome, l’empereur lui-même ?",
+            "Pour qui ? Les Romains, l’empereur, les peuples vaincus ?",
+            "Dans quel but ? Se vanter, convaincre, faire un éloge, critiquer.",
+            "Un auteur qui parle de lui-même se montre sous son meilleur jour.",
+            "Le sens implicite : ce que le document veut dire sans l’écrire en toutes lettres."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-2-5",
+      "prompt": "D’après Tacite, historien romain\nIl rapporte le discours d’un chef ennemi de Rome,\nau nord de l’actuelle Grande-Bretagne :\n« Là où ils font un désert, ils disent qu’ils ont donné la paix. »",
+      "question": "Que pense ce chef de la paix romaine ?",
+      "spoken": "D’après Tacite, historien romain. Il rapporte le discours d’un chef ennemi de Rome, au nord de l’actuelle Grande-Bretagne : Là où ils font un désert, ils disent qu’ils ont donné la paix.",
+      "choices": [
+        "elle protège les peuples",
+        "elle cache des destructions",
+        "elle enrichit les vaincus"
+      ],
+      "answer": "elle cache des destructions",
+      "hint": "Relis la dernière ligne : un désert, c’est un lieu plein ou vide ?",
+      "explanation": "Pour ce chef, les Romains détruisent tout, puis appellent cela la paix. C’est une critique, le point de vue d’un ennemi de Rome. Auguste, lui, parle de la paix comme d’une réussite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Questionner un document",
+          "lines": [
+            "Qui l’a écrit ? Un Romain, un ennemi de Rome, l’empereur lui-même ?",
+            "Pour qui ? Les Romains, l’empereur, les peuples vaincus ?",
+            "Dans quel but ? Se vanter, convaincre, faire un éloge, critiquer.",
+            "Un auteur qui parle de lui-même se montre sous son meilleur jour.",
+            "Le sens implicite : ce que le document veut dire sans l’écrire en toutes lettres."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-2-6",
+      "prompt": "D’après Aelius Aristide, un Grec, dans un discours à Rome\n« Aujourd’hui, Grecs et étrangers vont où ils veulent,\nsans crainte, d’un bout à l’autre de l’empire. »",
+      "question": "Comment l’auteur voit-il l’Empire romain ?",
+      "spoken": "D’après Aelius Aristide, un Grec, dans un discours à Rome. Aujourd’hui, Grecs et étrangers vont où ils veulent, sans crainte, d’un bout à l’autre de l’empire.",
+      "choices": [
+        "il en fait l’éloge",
+        "il le critique",
+        "il n’en donne pas d’avis"
+      ],
+      "answer": "il en fait l’éloge",
+      "hint": "Voyager partout sans crainte : est-ce une bonne ou une mauvaise chose ?",
+      "explanation": "Voyager partout sans crainte : l’auteur dit du bien de l’empire, c’est un éloge. Il parle à Rome, devant des Romains, pour honorer Rome. Le chef ennemi de Rome, chez Tacite, voit la paix romaine autrement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Questionner un document",
+          "lines": [
+            "Qui l’a écrit ? Un Romain, un ennemi de Rome, l’empereur lui-même ?",
+            "Pour qui ? Les Romains, l’empereur, les peuples vaincus ?",
+            "Dans quel but ? Se vanter, convaincre, faire un éloge, critiquer.",
+            "Un auteur qui parle de lui-même se montre sous son meilleur jour.",
+            "Le sens implicite : ce que le document veut dire sans l’écrire en toutes lettres."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-2-7",
+      "prompt": "L’autel de Rome et d’Auguste, à Lyon\nChaque année, les représentants de soixante peuples gaulois s’y réunissent.\nIls y honorent Rome et l’empereur.",
+      "question": "Que montrent les Gaulois en honorant Rome ?",
+      "spoken": "L’autel de Rome et d’Auguste, à Lyon. Chaque année, les représentants de soixante peuples gaulois s’y réunissent. Ils y honorent Rome et l’empereur.",
+      "choices": [
+        "leur révolte contre Rome",
+        "leur fidélité à Rome",
+        "leur victoire sur Rome"
+      ],
+      "answer": "leur fidélité à Rome",
+      "hint": "Honorer quelqu’un, est-ce être pour lui ou contre lui ?",
+      "explanation": "En honorant Rome et l’empereur, les Gaulois montrent qu’ils lui sont fidèles. Le document ne l’écrit pas en toutes lettres : c’est son sens implicite. Les Gaulois vivent désormais à la romaine : c’est la romanisation.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Questionner un document",
+          "lines": [
+            "Qui l’a écrit ? Un Romain, un ennemi de Rome, l’empereur lui-même ?",
+            "Pour qui ? Les Romains, l’empereur, les peuples vaincus ?",
+            "Dans quel but ? Se vanter, convaincre, faire un éloge, critiquer.",
+            "Un auteur qui parle de lui-même se montre sous son meilleur jour.",
+            "Le sens implicite : ce que le document veut dire sans l’écrire en toutes lettres."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-6e-antiquity",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

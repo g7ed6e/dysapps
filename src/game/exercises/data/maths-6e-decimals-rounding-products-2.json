@@ -1,0 +1,240 @@
+{
+  "id": "maths-6e-decimals-rounding-products-2",
+  "biome": "maths-6e-decimals",
+  "type": "rounding-products",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-6e-decimals-rounding-products-2-0",
+      "prompt": "0,4 × 0,2 = …",
+      "spoken": "0 virgule 4 fois 0 virgule 2, c’est combien ?",
+      "choices": [
+        "0,08",
+        "0,8",
+        "8"
+      ],
+      "answer": "0,08",
+      "hint": "4 × 2 = 8. Combien de chiffres après la virgule en tout ?",
+      "explanation": "4 × 2 = 8. Il y a un chiffre après la virgule dans 0,4 et un dans 0,2 : deux en tout, donc 0,08. 0,8 n’en a qu’un. Multiplier par un nombre plus petit que 1 donne un résultat plus petit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Multiplier des décimaux",
+          "lines": [
+            "Multiplie d’abord sans les virgules, comme des entiers.",
+            "Compte les chiffres après la virgule dans les deux nombres.",
+            "Le résultat en a autant en tout.",
+            "Ordre de grandeur : arrondis chaque nombre à l’unité, puis calcule.",
+            "Arrondir : de 0 à 4, on garde ; de 5 à 9, on augmente de 1.",
+            "1 km = 1 000 m. 1 m = 1 000 mm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-2-1",
+      "prompt": "1,5 × 3 = …",
+      "spoken": "1 virgule 5 fois 3, c’est combien ?",
+      "choices": [
+        "0,45",
+        "4,5",
+        "45"
+      ],
+      "answer": "4,5",
+      "hint": "15 × 3 = 45. Combien de chiffres après la virgule en tout ?",
+      "explanation": "15 × 3 = 45, et un seul chiffre après la virgule, celui de 1,5 : 4,5. Contrôle : 3 fois un peu plus de 1, c’est un peu plus de 3. 45 a perdu sa virgule.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Multiplier des décimaux",
+          "lines": [
+            "Multiplie d’abord sans les virgules, comme des entiers.",
+            "Compte les chiffres après la virgule dans les deux nombres.",
+            "Le résultat en a autant en tout.",
+            "Ordre de grandeur : arrondis chaque nombre à l’unité, puis calcule.",
+            "Arrondir : de 0 à 4, on garde ; de 5 à 9, on augmente de 1.",
+            "1 km = 1 000 m. 1 m = 1 000 mm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-2-2",
+      "prompt": "1,2 × 0,3 = …",
+      "spoken": "1 virgule 2 fois 0 virgule 3, c’est combien ?",
+      "choices": [
+        "0,036",
+        "0,36",
+        "3,6"
+      ],
+      "answer": "0,36",
+      "hint": "12 × 3 = 36. Compte les chiffres après la virgule dans 1,2 et dans 0,3.",
+      "explanation": "12 × 3 = 36, et deux chiffres après la virgule en tout (un dans 1,2, un dans 0,3) : 0,36. 3,6 n’en a qu’un ; 0,036 en a trois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Multiplier des décimaux",
+          "lines": [
+            "Multiplie d’abord sans les virgules, comme des entiers.",
+            "Compte les chiffres après la virgule dans les deux nombres.",
+            "Le résultat en a autant en tout.",
+            "Ordre de grandeur : arrondis chaque nombre à l’unité, puis calcule.",
+            "Arrondir : de 0 à 4, on garde ; de 5 à 9, on augmente de 1.",
+            "1 km = 1 000 m. 1 m = 1 000 mm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-2-3",
+      "prompt": "Le calcul de Léo\nLéo pose 4,9 × 6,1.\nIl trouve 298,9.",
+      "question": "Que dit l’ordre de grandeur ?",
+      "spoken": "Le calcul de Léo. Léo pose 4 virgule 9 fois 6 virgule 1. Il trouve 298 virgule 9.",
+      "choices": [
+        "Environ 30 : la virgule est mal placée.",
+        "Environ 300 : le résultat est juste.",
+        "Environ 30 : le résultat est juste."
+      ],
+      "answer": "Environ 30 : la virgule est mal placée.",
+      "hint": "Arrondis 4,9 et 6,1 à l’unité, puis multiplie.",
+      "explanation": "4,9 est proche de 5, 6,1 proche de 6 : 5 × 6 = 30. Le résultat doit être proche de 30, pas de 300 : la virgule est mal placée. Le bon résultat est 29,89.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Multiplier des décimaux",
+          "lines": [
+            "Multiplie d’abord sans les virgules, comme des entiers.",
+            "Compte les chiffres après la virgule dans les deux nombres.",
+            "Le résultat en a autant en tout.",
+            "Ordre de grandeur : arrondis chaque nombre à l’unité, puis calcule.",
+            "Arrondir : de 0 à 4, on garde ; de 5 à 9, on augmente de 1.",
+            "1 km = 1 000 m. 1 m = 1 000 mm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-2-4",
+      "prompt": "Au marché\nLe tissu coûte 3 € le mètre.\nNina en achète 2,5 m.",
+      "question": "Combien paie-t-elle ?",
+      "spoken": "Au marché. Le tissu coûte 3 euros le mètre. Nina en achète 2 virgule 5 mètres.",
+      "choices": [
+        "5,5 €",
+        "7,5 €",
+        "75 €"
+      ],
+      "answer": "7,5 €",
+      "hint": "2,5 mètres à 3 € chacun : on ajoute, ou on multiplie ?",
+      "explanation": "2,5 fois 3 € : 25 × 3 = 75, et un chiffre après la virgule, donc 7,5 €. 5,5 €, c’est 3 + 2,5 : on a ajouté au lieu de multiplier. 75 € a perdu sa virgule.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Multiplier des décimaux",
+          "lines": [
+            "Multiplie d’abord sans les virgules, comme des entiers.",
+            "Compte les chiffres après la virgule dans les deux nombres.",
+            "Le résultat en a autant en tout.",
+            "Ordre de grandeur : arrondis chaque nombre à l’unité, puis calcule.",
+            "Arrondir : de 0 à 4, on garde ; de 5 à 9, on augmente de 1.",
+            "1 km = 1 000 m. 1 m = 1 000 mm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-2-5",
+      "prompt": "2,384 arrondi au centième, c’est …",
+      "spoken": "2 virgule 384, arrondi au centième, c’est combien ?",
+      "choices": [
+        "2,38",
+        "2,39",
+        "2,4"
+      ],
+      "answer": "2,38",
+      "hint": "Regarde le chiffre des millièmes : 4.",
+      "explanation": "Le chiffre des millièmes est 4, entre 0 et 4 : le chiffre des centièmes ne change pas, donc 2,38. 2,39, c’est augmenter alors que le chiffre est 4 ; 2,4, c’est l’arrondi au dixième.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Multiplier des décimaux",
+          "lines": [
+            "Multiplie d’abord sans les virgules, comme des entiers.",
+            "Compte les chiffres après la virgule dans les deux nombres.",
+            "Le résultat en a autant en tout.",
+            "Ordre de grandeur : arrondis chaque nombre à l’unité, puis calcule.",
+            "Arrondir : de 0 à 4, on garde ; de 5 à 9, on augmente de 1.",
+            "1 km = 1 000 m. 1 m = 1 000 mm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-2-6",
+      "prompt": "7,48 arrondi à l’unité, c’est …",
+      "spoken": "7 virgule 48, arrondi à l’unité, c’est combien ?",
+      "choices": [
+        "7",
+        "7,5",
+        "8"
+      ],
+      "answer": "7",
+      "hint": "Pour l’unité, seul le chiffre des dixièmes compte.",
+      "explanation": "Le chiffre des dixièmes est 4 : on garde 7. Arrondir d’abord à 7,5, puis à 8, c’est arrondir deux fois : 7,48 est plus près de 7 que de 8.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Multiplier des décimaux",
+          "lines": [
+            "Multiplie d’abord sans les virgules, comme des entiers.",
+            "Compte les chiffres après la virgule dans les deux nombres.",
+            "Le résultat en a autant en tout.",
+            "Ordre de grandeur : arrondis chaque nombre à l’unité, puis calcule.",
+            "Arrondir : de 0 à 4, on garde ; de 5 à 9, on augmente de 1.",
+            "1 km = 1 000 m. 1 m = 1 000 mm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-2-7",
+      "prompt": "2,4 km = … m",
+      "spoken": "2 virgule 4 kilomètres, c’est combien de mètres ?",
+      "choices": [
+        "24 m",
+        "240 m",
+        "2 400 m"
+      ],
+      "answer": "2 400 m",
+      "hint": "1 kilomètre, c’est combien de mètres ?",
+      "explanation": "1 km = 1 000 m, donc 2,4 km = 2,4 × 1 000 = 2 400 m. 240 m, c’est multiplier par 100 ; 24 m, par 10.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Multiplier des décimaux",
+          "lines": [
+            "Multiplie d’abord sans les virgules, comme des entiers.",
+            "Compte les chiffres après la virgule dans les deux nombres.",
+            "Le résultat en a autant en tout.",
+            "Ordre de grandeur : arrondis chaque nombre à l’unité, puis calcule.",
+            "Arrondir : de 0 à 4, on garde ; de 5 à 9, on augmente de 1.",
+            "1 km = 1 000 m. 1 m = 1 000 mm."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-6e-decimals",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

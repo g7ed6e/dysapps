@@ -1,0 +1,239 @@
+{
+  "id": "lv2-5e-introductions-es-sentences-1",
+  "biome": "lv2-5e-introductions",
+  "type": "es-sentences",
+  "level": 1,
+  "lang": "es",
+  "instruction": "Lis et écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "lv2-5e-introductions-es-sentences-1-0",
+      "prompt": "¿Quién es tu profesora de inglés?",
+      "spoken": "Quién es tu profesora de inglés?",
+      "choices": [
+        "Es la señora Gil.",
+        "Está en el colegio.",
+        "Es el lunes."
+      ],
+      "answer": "Es la señora Gil.",
+      "hint": "Regarde le premier mot de la question, puis la règle.",
+      "explanation": "¿Quién? = qui : on répond par une personne, la señora Gil. Está en el colegio dit où elle est ; es el lunes dit quand.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Preguntar y decir no",
+          "lines": [
+            "¿Quién? = qui ; ¿Dónde? = où ; ¿Cuándo? = quand",
+            "¿Qué? = que, quoi ; ¿Cuántos? = combien ; ¿Por qué? = pourquoi",
+            "porque = parce que : il répond à ¿Por qué?",
+            "o = ou : on choisit l’un des deux. y = et ; pero = mais.",
+            "no se met juste avant le verbe : no hablo alemán.",
+            "Avec me ou te, no vient avant : no te escucho."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-1-1",
+      "prompt": "¿Dónde está la biblioteca?",
+      "spoken": "Dónde está la biblioteca?",
+      "choices": [
+        "Está aquí.",
+        "Abre a las nueve.",
+        "Hay muchos libros."
+      ],
+      "answer": "Está aquí.",
+      "hint": "Regarde le premier mot de la question, puis la règle.",
+      "explanation": "¿Dónde? = où : on répond par un lieu, está aquí (elle est ici). Abre a las nueve dit quand elle ouvre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Preguntar y decir no",
+          "lines": [
+            "¿Quién? = qui ; ¿Dónde? = où ; ¿Cuándo? = quand",
+            "¿Qué? = que, quoi ; ¿Cuántos? = combien ; ¿Por qué? = pourquoi",
+            "porque = parce que : il répond à ¿Por qué?",
+            "o = ou : on choisit l’un des deux. y = et ; pero = mais.",
+            "no se met juste avant le verbe : no hablo alemán.",
+            "Avec me ou te, no vient avant : no te escucho."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-1-2",
+      "prompt": "¿Cuándo tienes inglés?",
+      "spoken": "Cuándo tienes inglés?",
+      "choices": [
+        "El martes.",
+        "En el aula 4.",
+        "Con la señora Gil."
+      ],
+      "answer": "El martes.",
+      "hint": "Regarde le premier mot de la question, puis la règle.",
+      "explanation": "¿Cuándo? = quand : on répond par un moment, el martes (le mardi). En el aula 4 dit où ; con la señora Gil dit avec qui.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Preguntar y decir no",
+          "lines": [
+            "¿Quién? = qui ; ¿Dónde? = où ; ¿Cuándo? = quand",
+            "¿Qué? = que, quoi ; ¿Cuántos? = combien ; ¿Por qué? = pourquoi",
+            "porque = parce que : il répond à ¿Por qué?",
+            "o = ou : on choisit l’un des deux. y = et ; pero = mais.",
+            "no se met juste avant le verbe : no hablo alemán.",
+            "Avec me ou te, no vient avant : no te escucho."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-1-3",
+      "prompt": "¿Por qué estudias español?",
+      "spoken": "Por qué estudias español?",
+      "choices": [
+        "Porque me gusta.",
+        "Los lunes y los jueves.",
+        "En el colegio."
+      ],
+      "answer": "Porque me gusta.",
+      "hint": "¿Por qué? demande une raison. Quel mot répond à pourquoi ?",
+      "explanation": "¿Por qué? = pourquoi : on répond avec porque (parce que), en un seul mot et sans accent. Porque me gusta = parce que j’aime ça.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Preguntar y decir no",
+          "lines": [
+            "¿Quién? = qui ; ¿Dónde? = où ; ¿Cuándo? = quand",
+            "¿Qué? = que, quoi ; ¿Cuántos? = combien ; ¿Por qué? = pourquoi",
+            "porque = parce que : il répond à ¿Por qué?",
+            "o = ou : on choisit l’un des deux. y = et ; pero = mais.",
+            "no se met juste avant le verbe : no hablo alemán.",
+            "Avec me ou te, no vient avant : no te escucho."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-1-4",
+      "prompt": "¿Qué comes en el recreo?",
+      "spoken": "Qué comes en el recreo?",
+      "choices": [
+        "Una manzana.",
+        "En el patio.",
+        "A las once."
+      ],
+      "answer": "Una manzana.",
+      "hint": "¿Qué? = que, quoi. Que manges-tu ?",
+      "explanation": "¿Qué comes? = Que manges-tu ? On répond par une chose : una manzana (une pomme). En el patio dit où ; a las once dit quand.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Preguntar y decir no",
+          "lines": [
+            "¿Quién? = qui ; ¿Dónde? = où ; ¿Cuándo? = quand",
+            "¿Qué? = que, quoi ; ¿Cuántos? = combien ; ¿Por qué? = pourquoi",
+            "porque = parce que : il répond à ¿Por qué?",
+            "o = ou : on choisit l’un des deux. y = et ; pero = mais.",
+            "no se met juste avant le verbe : no hablo alemán.",
+            "Avec me ou te, no vient avant : no te escucho."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-1-5",
+      "prompt": "¿Tienes un perro?",
+      "spoken": "Tienes un perro?",
+      "choices": [
+        "No, no tengo perro.",
+        "No, tengo no perro.",
+        "No, tengo perro."
+      ],
+      "answer": "No, no tengo perro.",
+      "hint": "Le premier no répond non. Où se place le no qui nie le verbe ?",
+      "explanation": "Le premier no veut dire non ; le second se met juste avant le verbe : no tengo perro (je n’ai pas de chien). Sans lui, tengo perro voudrait dire « j’ai un chien ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Preguntar y decir no",
+          "lines": [
+            "¿Quién? = qui ; ¿Dónde? = où ; ¿Cuándo? = quand",
+            "¿Qué? = que, quoi ; ¿Cuántos? = combien ; ¿Por qué? = pourquoi",
+            "porque = parce que : il répond à ¿Por qué?",
+            "o = ou : on choisit l’un des deux. y = et ; pero = mais.",
+            "no se met juste avant le verbe : no hablo alemán.",
+            "Avec me ou te, no vient avant : no te escucho."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-1-6",
+      "prompt": "¿Te gusta el pescado?",
+      "spoken": "Te gusta el pescado?",
+      "choices": [
+        "No, no me gusta.",
+        "No, me no gusta.",
+        "No, me gusta no."
+      ],
+      "answer": "No, no me gusta.",
+      "hint": "Relis la dernière ligne de la règle : où va no avec me ?",
+      "explanation": "no se place avant me : no me gusta (je n’aime pas). En espagnol, pas de mot comme « pas » après le verbe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Preguntar y decir no",
+          "lines": [
+            "¿Quién? = qui ; ¿Dónde? = où ; ¿Cuándo? = quand",
+            "¿Qué? = que, quoi ; ¿Cuántos? = combien ; ¿Por qué? = pourquoi",
+            "porque = parce que : il répond à ¿Por qué?",
+            "o = ou : on choisit l’un des deux. y = et ; pero = mais.",
+            "no se met juste avant le verbe : no hablo alemán.",
+            "Avec me ou te, no vient avant : no te escucho."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-1-7",
+      "prompt": "¿Quieres agua o zumo?",
+      "spoken": "Quieres agua o zumo?",
+      "choices": [
+        "Agua, gracias.",
+        "Sí, gracias.",
+        "Bien, gracias."
+      ],
+      "answer": "Agua, gracias.",
+      "hint": "o = ou : on te demande de choisir.",
+      "explanation": "o = ou : on choisit l’un des deux, agua (de l’eau). Sí ne répond pas à une question avec o ; bien, gracias répond à ¿Qué tal?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Preguntar y decir no",
+          "lines": [
+            "¿Quién? = qui ; ¿Dónde? = où ; ¿Cuándo? = quand",
+            "¿Qué? = que, quoi ; ¿Cuántos? = combien ; ¿Por qué? = pourquoi",
+            "porque = parce que : il répond à ¿Por qué?",
+            "o = ou : on choisit l’un des deux. y = et ; pero = mais.",
+            "no se met juste avant le verbe : no hablo alemán.",
+            "Avec me ou te, no vient avant : no te escucho."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien répondu !"
+  },
+  "reward": {
+    "block": "lv2-5e-introductions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

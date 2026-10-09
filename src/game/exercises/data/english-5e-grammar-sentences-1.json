@@ -1,0 +1,223 @@
+{
+  "id": "english-5e-grammar-sentences-1",
+  "biome": "english-5e-grammar",
+  "type": "sentences",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "english-5e-grammar-sentences-1-0",
+      "prompt": "There … two cats in the garden.",
+      "spoken": "There blank two cats in the garden.",
+      "choices": [
+        "are",
+        "is",
+        "have"
+      ],
+      "answer": "are",
+      "hint": "Un chat ou plusieurs ? Relis la ligne « Un seul, plusieurs ».",
+      "explanation": "two cats, c’est plusieurs → there are. There is, c’est pour un seul ; « il y a » ne se dit pas avec have.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nier, demander, relier",
+          "lines": [
+            "Négation : I, you, we, they → don’t ; he, she, it → doesn’t, puis le verbe sans s.",
+            "Question : Do ou Does + sujet + verbe ? Avec be : Is ou Are + sujet ?",
+            "Un seul : this, that, there is. Plusieurs : these, those, there are.",
+            "and = et, but = mais, or = ou"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-1-1",
+      "prompt": "… shoes are new.",
+      "spoken": "blank shoes are new.",
+      "choices": [
+        "These",
+        "This",
+        "That"
+      ],
+      "answer": "These",
+      "hint": "Shoes : une chaussure ou plusieurs ?",
+      "explanation": "shoes are, c’est plusieurs → these. This et that, c’est pour un seul.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nier, demander, relier",
+          "lines": [
+            "Négation : I, you, we, they → don’t ; he, she, it → doesn’t, puis le verbe sans s.",
+            "Question : Do ou Does + sujet + verbe ? Avec be : Is ou Are + sujet ?",
+            "Un seul : this, that, there is. Plusieurs : these, those, there are.",
+            "and = et, but = mais, or = ou"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-1-2",
+      "prompt": "I … like fish.",
+      "spoken": "I blank like fish.",
+      "choices": [
+        "don’t",
+        "doesn’t",
+        "not"
+      ],
+      "answer": "don’t",
+      "hint": "Le sujet est I : relis la ligne de la négation.",
+      "explanation": "I + négation → I don’t like. Doesn’t va avec he, she, it ; not seul ne suffit pas devant un verbe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nier, demander, relier",
+          "lines": [
+            "Négation : I, you, we, they → don’t ; he, she, it → doesn’t, puis le verbe sans s.",
+            "Question : Do ou Does + sujet + verbe ? Avec be : Is ou Are + sujet ?",
+            "Un seul : this, that, there is. Plusieurs : these, those, there are.",
+            "and = et, but = mais, or = ou"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-1-3",
+      "prompt": "My dad … play tennis.",
+      "spoken": "My dad blank play tennis.",
+      "choices": [
+        "doesn’t",
+        "don’t",
+        "isn’t"
+      ],
+      "answer": "doesn’t",
+      "hint": "My dad, c’est he. Et play est un verbe, pas be.",
+      "explanation": "my dad = he → he doesn’t play. Don’t va avec I, you, we, they ; isn’t va avec be, pas avec play.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nier, demander, relier",
+          "lines": [
+            "Négation : I, you, we, they → don’t ; he, she, it → doesn’t, puis le verbe sans s.",
+            "Question : Do ou Does + sujet + verbe ? Avec be : Is ou Are + sujet ?",
+            "Un seul : this, that, there is. Plusieurs : these, those, there are.",
+            "and = et, but = mais, or = ou"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-1-4",
+      "prompt": "… your sister play the piano?",
+      "spoken": "blank your sister play the piano?",
+      "choices": [
+        "Does",
+        "Do",
+        "Is"
+      ],
+      "answer": "Does",
+      "hint": "Your sister, c’est she. Et play est un verbe.",
+      "explanation": "your sister = she → Does she play…? Do va avec I, you, we, they ; Is ne va pas avec un verbe comme play.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nier, demander, relier",
+          "lines": [
+            "Négation : I, you, we, they → don’t ; he, she, it → doesn’t, puis le verbe sans s.",
+            "Question : Do ou Does + sujet + verbe ? Avec be : Is ou Are + sujet ?",
+            "Un seul : this, that, there is. Plusieurs : these, those, there are.",
+            "and = et, but = mais, or = ou"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-1-5",
+      "prompt": "… you hungry?",
+      "spoken": "blank you hungry?",
+      "choices": [
+        "Are",
+        "Do",
+        "Does"
+      ],
+      "answer": "Are",
+      "hint": "Hungry n’est pas un verbe : il faut be.",
+      "explanation": "avoir faim se dit be hungry : la question se pose avec be → Are you hungry? Do et Does vont avec un verbe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nier, demander, relier",
+          "lines": [
+            "Négation : I, you, we, they → don’t ; he, she, it → doesn’t, puis le verbe sans s.",
+            "Question : Do ou Does + sujet + verbe ? Avec be : Is ou Are + sujet ?",
+            "Un seul : this, that, there is. Plusieurs : these, those, there are.",
+            "and = et, but = mais, or = ou"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-1-6",
+      "prompt": "I like tea, … I don’t like coffee.",
+      "spoken": "I like tea, blank I don’t like coffee.",
+      "choices": [
+        "but",
+        "and",
+        "or"
+      ],
+      "answer": "but",
+      "hint": "Les deux parties disent-elles la même chose, ou le contraire ?",
+      "explanation": "j’aime, je n’aime pas : c’est le contraire → but (mais). And ajoute une idée ; or propose un choix.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nier, demander, relier",
+          "lines": [
+            "Négation : I, you, we, they → don’t ; he, she, it → doesn’t, puis le verbe sans s.",
+            "Question : Do ou Does + sujet + verbe ? Avec be : Is ou Are + sujet ?",
+            "Un seul : this, that, there is. Plusieurs : these, those, there are.",
+            "and = et, but = mais, or = ou"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-sentences-1-7",
+      "prompt": "Is it Monday … Tuesday today?",
+      "spoken": "Is it Monday blank Tuesday today?",
+      "choices": [
+        "or",
+        "and",
+        "but"
+      ],
+      "answer": "or",
+      "hint": "On demande de choisir entre deux jours.",
+      "explanation": "un choix entre deux → or (ou). Aujourd’hui ne peut pas être lundi et mardi (and) ; but dirait le contraire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nier, demander, relier",
+          "lines": [
+            "Négation : I, you, we, they → don’t ; he, she, it → doesn’t, puis le verbe sans s.",
+            "Question : Do ou Does + sujet + verbe ? Avec be : Is ou Are + sujet ?",
+            "Un seul : this, that, there is. Plusieurs : these, those, there are.",
+            "and = et, but = mais, or = ou"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-5e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

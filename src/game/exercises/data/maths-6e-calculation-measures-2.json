@@ -1,0 +1,239 @@
+{
+  "id": "maths-6e-calculation-measures-2",
+  "biome": "maths-6e-calculation",
+  "type": "measures",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-6e-calculation-measures-2-0",
+      "prompt": "Un triangle a un angle de 40° et un angle de 60°. Son troisième angle mesure …",
+      "spoken": "Un triangle a un angle de 40 degrés et un angle de 60 degrés. Son troisième angle mesure combien de degrés ?",
+      "choices": [
+        "80°",
+        "100°",
+        "140°"
+      ],
+      "answer": "80°",
+      "hint": "Les trois angles font 180°. Combien font déjà les deux premiers ?",
+      "explanation": "40 + 60 = 100, et 180 − 100 = 80 : le troisième angle mesure 80°. 100°, c’est la somme des deux premiers ; 140°, c’est 180 − 40, en oubliant l’angle de 60°.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles, cercles, aires",
+          "lines": [
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Isocèle : deux angles égaux. Équilatéral : trois angles égaux. Rectangle : un angle droit, de 90°.",
+            "Le diamètre d’un cercle vaut deux rayons.",
+            "Un point de la médiatrice d’un segment est à la même distance de ses deux bouts.",
+            "1 m² = 100 dm². 1 dm² = 100 cm².",
+            "Un tableau : lis chaque ligne, et garde celles qui vont."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-2-1",
+      "prompt": "Un triangle isocèle a un angle de 80°. Ses deux autres angles sont égaux. Chacun mesure …",
+      "spoken": "Un triangle isocèle a un angle de 80 degrés. Ses deux autres angles sont égaux. Chacun mesure combien de degrés ?",
+      "choices": [
+        "50°",
+        "80°",
+        "100°"
+      ],
+      "answer": "50°",
+      "hint": "180 − 80 donne les deux angles égaux ensemble. Puis partage en deux.",
+      "explanation": "180 − 80 = 100 pour les deux angles égaux ensemble, donc 100 ÷ 2 = 50° chacun. 100°, c’est oublier de partager en deux ; 80°, c’est croire que les trois angles sont égaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles, cercles, aires",
+          "lines": [
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Isocèle : deux angles égaux. Équilatéral : trois angles égaux. Rectangle : un angle droit, de 90°.",
+            "Le diamètre d’un cercle vaut deux rayons.",
+            "Un point de la médiatrice d’un segment est à la même distance de ses deux bouts.",
+            "1 m² = 100 dm². 1 dm² = 100 cm².",
+            "Un tableau : lis chaque ligne, et garde celles qui vont."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-2-2",
+      "prompt": "Un triangle rectangle a un angle de 30°. Son troisième angle mesure …",
+      "spoken": "Un triangle rectangle a un angle de 30 degrés. Son troisième angle mesure combien de degrés ?",
+      "choices": [
+        "30°",
+        "60°",
+        "150°"
+      ],
+      "answer": "60°",
+      "hint": "Un triangle rectangle a aussi un angle droit, de 90°.",
+      "explanation": "Les angles font 180° : 90 + 30 = 120, et 180 − 120 = 60°. 150°, c’est oublier l’angle droit ; 30°, c’est recopier l’angle donné : rien ne dit que les deux autres angles sont égaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles, cercles, aires",
+          "lines": [
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Isocèle : deux angles égaux. Équilatéral : trois angles égaux. Rectangle : un angle droit, de 90°.",
+            "Le diamètre d’un cercle vaut deux rayons.",
+            "Un point de la médiatrice d’un segment est à la même distance de ses deux bouts.",
+            "1 m² = 100 dm². 1 dm² = 100 cm².",
+            "Un tableau : lis chaque ligne, et garde celles qui vont."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-2-3",
+      "prompt": "Dans un triangle équilatéral, chaque angle mesure …",
+      "spoken": "Dans un triangle équilatéral, chaque angle mesure combien de degrés ?",
+      "choices": [
+        "60°",
+        "90°",
+        "180°"
+      ],
+      "answer": "60°",
+      "hint": "Les trois angles sont égaux et font 180° en tout.",
+      "explanation": "180 ÷ 3 = 60 : chaque angle mesure 60°. 180°, c’est la somme des trois ; 90°, c’est l’angle droit, qu’un triangle équilatéral n’a pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles, cercles, aires",
+          "lines": [
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Isocèle : deux angles égaux. Équilatéral : trois angles égaux. Rectangle : un angle droit, de 90°.",
+            "Le diamètre d’un cercle vaut deux rayons.",
+            "Un point de la médiatrice d’un segment est à la même distance de ses deux bouts.",
+            "1 m² = 100 dm². 1 dm² = 100 cm².",
+            "Un tableau : lis chaque ligne, et garde celles qui vont."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-2-4",
+      "prompt": "Un cercle a un rayon de 4 cm. Son diamètre mesure …",
+      "spoken": "Un cercle a un rayon de 4 centimètres. Son diamètre mesure combien de centimètres ?",
+      "choices": [
+        "2 cm",
+        "4 cm",
+        "8 cm"
+      ],
+      "answer": "8 cm",
+      "hint": "Le diamètre traverse le cercle en passant par le centre.",
+      "explanation": "Le diamètre vaut deux rayons : 2 × 4 = 8 cm. 2 cm, c’est prendre la moitié : on a confondu rayon et diamètre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles, cercles, aires",
+          "lines": [
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Isocèle : deux angles égaux. Équilatéral : trois angles égaux. Rectangle : un angle droit, de 90°.",
+            "Le diamètre d’un cercle vaut deux rayons.",
+            "Un point de la médiatrice d’un segment est à la même distance de ses deux bouts.",
+            "1 m² = 100 dm². 1 dm² = 100 cm².",
+            "Un tableau : lis chaque ligne, et garde celles qui vont."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-2-5",
+      "prompt": "Le point M est sur la médiatrice du segment [AB]. MA mesure 7 cm. MB mesure …",
+      "spoken": "Le point M est sur la médiatrice du segment A B. M A mesure 7 centimètres. M B mesure combien de centimètres ?",
+      "choices": [
+        "3,5 cm",
+        "7 cm",
+        "14 cm"
+      ],
+      "answer": "7 cm",
+      "hint": "Relis la ligne « médiatrice » du rappel.",
+      "explanation": "Un point de la médiatrice est à la même distance de A et de B : MB = MA = 7 cm. 3,5 cm, c’est confondre avec le milieu ; 14 cm, c’est doubler.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles, cercles, aires",
+          "lines": [
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Isocèle : deux angles égaux. Équilatéral : trois angles égaux. Rectangle : un angle droit, de 90°.",
+            "Le diamètre d’un cercle vaut deux rayons.",
+            "Un point de la médiatrice d’un segment est à la même distance de ses deux bouts.",
+            "1 m² = 100 dm². 1 dm² = 100 cm².",
+            "Un tableau : lis chaque ligne, et garde celles qui vont."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-2-6",
+      "prompt": "3 m² = … dm²",
+      "spoken": "3 mètres carrés, c’est combien de décimètres carrés ?",
+      "choices": [
+        "30 dm²",
+        "300 dm²",
+        "3 000 dm²"
+      ],
+      "answer": "300 dm²",
+      "hint": "1 m², c’est combien de dm² ?",
+      "explanation": "1 m² = 100 dm², donc 3 m² = 300 dm². 30 dm², c’est multiplier par 10 comme pour une longueur ; pour une aire, c’est 10 × 10 = 100.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles, cercles, aires",
+          "lines": [
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Isocèle : deux angles égaux. Équilatéral : trois angles égaux. Rectangle : un angle droit, de 90°.",
+            "Le diamètre d’un cercle vaut deux rayons.",
+            "Un point de la médiatrice d’un segment est à la même distance de ses deux bouts.",
+            "1 m² = 100 dm². 1 dm² = 100 cm².",
+            "Un tableau : lis chaque ligne, et garde celles qui vont."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-2-7",
+      "prompt": "Les sorties possibles\nMusée : 8 €, 2 h\nCinéma : 6 €, 2 h\nZoo : 12 €, 4 h\nPiscine : 4 €, 1 h\nLa classe veut : moins de 7 €, et au moins 2 h.",
+      "question": "Quelle sortie choisir ?",
+      "spoken": "Les sorties possibles. Musée, 8 euros, 2 heures. Cinéma, 6 euros, 2 heures. Zoo, 12 euros, 4 heures. Piscine, 4 euros, 1 heure. La classe veut moins de 7 euros, et au moins 2 heures.",
+      "choices": [
+        "le cinéma",
+        "la piscine",
+        "le musée"
+      ],
+      "answer": "le cinéma",
+      "hint": "Écarte d’abord les sorties à 7 € ou plus. Puis regarde la durée.",
+      "explanation": "Moins de 7 € : le cinéma et la piscine. Au moins 2 h : seul le cinéma, 2 h ; la piscine ne dure qu’1 h. Le musée dure 2 h, mais coûte 8 €.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles, cercles, aires",
+          "lines": [
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Isocèle : deux angles égaux. Équilatéral : trois angles égaux. Rectangle : un angle droit, de 90°.",
+            "Le diamètre d’un cercle vaut deux rayons.",
+            "Un point de la médiatrice d’un segment est à la même distance de ses deux bouts.",
+            "1 m² = 100 dm². 1 dm² = 100 cm².",
+            "Un tableau : lis chaque ligne, et garde celles qui vont."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-6e-calculation",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "id": "maths-6e-decimals-rounding-products-1",
+  "biome": "maths-6e-decimals",
+  "type": "rounding-products",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-6e-decimals-rounding-products-1-0",
+      "prompt": "12,7 arrondi à l’unité, c’est …",
+      "spoken": "12 virgule 7, arrondi à l’unité, c’est combien ?",
+      "choices": [
+        "10",
+        "12",
+        "13"
+      ],
+      "answer": "13",
+      "hint": "Regarde le chiffre des dixièmes, juste après la virgule.",
+      "explanation": "Le chiffre des dixièmes est 7, entre 5 et 9 : l’unité augmente de 1, 12,7 donne 13. 12, c’est couper après la virgule ; 10, c’est arrondir à la dizaine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Arrondir et convertir",
+          "lines": [
+            "Arrondir à l’unité : regarde le chiffre des dixièmes.",
+            "Arrondir au dixième : regarde le chiffre des centièmes.",
+            "De 0 à 4, le chiffre gardé ne change pas. De 5 à 9, il augmente de 1.",
+            "1 km = 1 000 m. 1 m = 100 cm. 1 m = 1 000 mm.",
+            "Vers une unité plus petite, le nombre devient plus grand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-1-1",
+      "prompt": "8,42 arrondi à l’unité, c’est …",
+      "spoken": "8 virgule 42, arrondi à l’unité, c’est combien ?",
+      "choices": [
+        "8",
+        "8,4",
+        "9"
+      ],
+      "answer": "8",
+      "hint": "À l’unité, il ne reste aucun chiffre après la virgule.",
+      "explanation": "Le chiffre des dixièmes est 4, entre 0 et 4 : on garde 8. 8,4, c’est l’arrondi au dixième, pas à l’unité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Arrondir et convertir",
+          "lines": [
+            "Arrondir à l’unité : regarde le chiffre des dixièmes.",
+            "Arrondir au dixième : regarde le chiffre des centièmes.",
+            "De 0 à 4, le chiffre gardé ne change pas. De 5 à 9, il augmente de 1.",
+            "1 km = 1 000 m. 1 m = 100 cm. 1 m = 1 000 mm.",
+            "Vers une unité plus petite, le nombre devient plus grand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-1-2",
+      "prompt": "5,38 arrondi au dixième, c’est …",
+      "spoken": "5 virgule 38, arrondi au dixième, c’est combien ?",
+      "choices": [
+        "5",
+        "5,3",
+        "5,4"
+      ],
+      "answer": "5,4",
+      "hint": "Regarde le chiffre des centièmes : 8.",
+      "explanation": "Le chiffre des centièmes est 8, entre 5 et 9 : le chiffre des dixièmes passe de 3 à 4, donc 5,4. 5,3, c’est couper sans arrondir ; 5, c’est l’arrondi à l’unité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Arrondir et convertir",
+          "lines": [
+            "Arrondir à l’unité : regarde le chiffre des dixièmes.",
+            "Arrondir au dixième : regarde le chiffre des centièmes.",
+            "De 0 à 4, le chiffre gardé ne change pas. De 5 à 9, il augmente de 1.",
+            "1 km = 1 000 m. 1 m = 100 cm. 1 m = 1 000 mm.",
+            "Vers une unité plus petite, le nombre devient plus grand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-1-3",
+      "prompt": "3,5 m = … cm",
+      "spoken": "3 virgule 5 mètres, c’est combien de centimètres ?",
+      "choices": [
+        "35 cm",
+        "350 cm",
+        "3 500 cm"
+      ],
+      "answer": "350 cm",
+      "hint": "1 mètre, c’est combien de centimètres ?",
+      "explanation": "1 m = 100 cm, donc 3,5 m = 3,5 × 100 = 350 cm. 35 cm, c’est multiplier par 10 ; 3 500 cm, par 1 000.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Arrondir et convertir",
+          "lines": [
+            "Arrondir à l’unité : regarde le chiffre des dixièmes.",
+            "Arrondir au dixième : regarde le chiffre des centièmes.",
+            "De 0 à 4, le chiffre gardé ne change pas. De 5 à 9, il augmente de 1.",
+            "1 km = 1 000 m. 1 m = 100 cm. 1 m = 1 000 mm.",
+            "Vers une unité plus petite, le nombre devient plus grand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-1-4",
+      "prompt": "4 km = … m",
+      "spoken": "4 kilomètres, c’est combien de mètres ?",
+      "choices": [
+        "40 m",
+        "400 m",
+        "4 000 m"
+      ],
+      "answer": "4 000 m",
+      "hint": "Kilo veut dire mille.",
+      "explanation": "1 km = 1 000 m, donc 4 km = 4 000 m. 400 m, c’est multiplier par 100, comme pour les centimètres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Arrondir et convertir",
+          "lines": [
+            "Arrondir à l’unité : regarde le chiffre des dixièmes.",
+            "Arrondir au dixième : regarde le chiffre des centièmes.",
+            "De 0 à 4, le chiffre gardé ne change pas. De 5 à 9, il augmente de 1.",
+            "1 km = 1 000 m. 1 m = 100 cm. 1 m = 1 000 mm.",
+            "Vers une unité plus petite, le nombre devient plus grand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-1-5",
+      "prompt": "250 cm = … m",
+      "spoken": "250 centimètres, c’est combien de mètres ?",
+      "choices": [
+        "0,25 m",
+        "2,5 m",
+        "25 m"
+      ],
+      "answer": "2,5 m",
+      "hint": "Le mètre est plus grand que le centimètre : le nombre devient plus petit.",
+      "explanation": "100 cm = 1 m, donc 250 cm = 250 ÷ 100 = 2,5 m. 25 m, c’est diviser par 10 ; 0,25 m, par 1 000.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Arrondir et convertir",
+          "lines": [
+            "Arrondir à l’unité : regarde le chiffre des dixièmes.",
+            "Arrondir au dixième : regarde le chiffre des centièmes.",
+            "De 0 à 4, le chiffre gardé ne change pas. De 5 à 9, il augmente de 1.",
+            "1 km = 1 000 m. 1 m = 100 cm. 1 m = 1 000 mm.",
+            "Vers une unité plus petite, le nombre devient plus grand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-1-6",
+      "prompt": "8 cm = … m",
+      "spoken": "8 centimètres, c’est combien de mètres ?",
+      "choices": [
+        "0,08 m",
+        "0,8 m",
+        "800 m"
+      ],
+      "answer": "0,08 m",
+      "hint": "8 cm, c’est moins qu’un mètre.",
+      "explanation": "8 cm = 8 ÷ 100 = 0,08 m : 8 centièmes de mètre. 800 m, c’est multiplier au lieu de diviser ; 0,8 m, c’est diviser par 10.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Arrondir et convertir",
+          "lines": [
+            "Arrondir à l’unité : regarde le chiffre des dixièmes.",
+            "Arrondir au dixième : regarde le chiffre des centièmes.",
+            "De 0 à 4, le chiffre gardé ne change pas. De 5 à 9, il augmente de 1.",
+            "1 km = 1 000 m. 1 m = 100 cm. 1 m = 1 000 mm.",
+            "Vers une unité plus petite, le nombre devient plus grand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-decimals-rounding-products-1-7",
+      "prompt": "0,74 arrondi au dixième, c’est …",
+      "spoken": "0 virgule 74, arrondi au dixième, c’est combien ?",
+      "choices": [
+        "0,7",
+        "0,8",
+        "1"
+      ],
+      "answer": "0,7",
+      "hint": "Regarde le chiffre des centièmes : 4.",
+      "explanation": "Le chiffre des centièmes est 4, entre 0 et 4 : le chiffre des dixièmes ne change pas, donc 0,7. 1, c’est l’arrondi à l’unité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Arrondir et convertir",
+          "lines": [
+            "Arrondir à l’unité : regarde le chiffre des dixièmes.",
+            "Arrondir au dixième : regarde le chiffre des centièmes.",
+            "De 0 à 4, le chiffre gardé ne change pas. De 5 à 9, il augmente de 1.",
+            "1 km = 1 000 m. 1 m = 100 cm. 1 m = 1 000 mm.",
+            "Vers une unité plus petite, le nombre devient plus grand."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-6e-decimals",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

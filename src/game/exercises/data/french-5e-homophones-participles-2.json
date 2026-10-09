@@ -1,0 +1,230 @@
+{
+  "id": "french-5e-homophones-participles-2",
+  "biome": "french-5e-homophones",
+  "type": "participles",
+  "level": 2,
+  "instruction": "Choisis la forme qui complète la phrase. Avec avoir, cherche le COD et sa place. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "french-5e-homophones-participles-2-0",
+      "prompt": "Ta trousse ? Je l’ai … sous ton bureau.",
+      "spoken": "Ta trousse ? Je l’ai  (mot manquant)  sous ton bureau.",
+      "choices": [
+        "trouvée",
+        "trouvé",
+        "trouver"
+      ],
+      "answer": "trouvée",
+      "hint": "J’ai trouvé quoi ? Que remplace « l’ » ?",
+      "explanation": "« l’ » remplace « ta trousse » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin singulier : « trouvée ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec avoir",
+          "lines": [
+            "Avec avoir, jamais d’accord avec le sujet. Elles ont chanté.",
+            "Trouve le COD : pose la question « qui ? » ou « quoi ? » après le verbe. Puis regarde sa place.",
+            "COD placé avant (l’, la, les) : le participe s’accorde avec lui. Ma casquette ? Je l’ai lavée.",
+            "COD placé après : pas d’accord. J’ai lavé ma casquette.",
+            "lui, leur répondent à « à qui ? » : ce ne sont pas des COD, pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-2-1",
+      "prompt": "J’ai … tes baskets dans l’entrée.",
+      "spoken": "J’ai  (mot manquant)  tes baskets dans l’entrée.",
+      "choices": [
+        "rangé",
+        "rangées",
+        "ranger"
+      ],
+      "answer": "rangé",
+      "hint": "J’ai rangé quoi ? Le COD est-il avant ou après le verbe ?",
+      "explanation": "Le COD, « tes baskets », est placé après le verbe : pas d’accord, « rangé ». On ne dit pas « j’ai vendre » : l’infinitif ne va pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec avoir",
+          "lines": [
+            "Avec avoir, jamais d’accord avec le sujet. Elles ont chanté.",
+            "Trouve le COD : pose la question « qui ? » ou « quoi ? » après le verbe. Puis regarde sa place.",
+            "COD placé avant (l’, la, les) : le participe s’accorde avec lui. Ma casquette ? Je l’ai lavée.",
+            "COD placé après : pas d’accord. J’ai lavé ma casquette.",
+            "lui, leur répondent à « à qui ? » : ce ne sont pas des COD, pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-2-2",
+      "prompt": "Mes lunettes ? Je les ai … partout.",
+      "spoken": "Mes lunettes ? Je les ai  (mot manquant)  partout.",
+      "choices": [
+        "cherchées",
+        "cherché",
+        "chercher"
+      ],
+      "answer": "cherchées",
+      "hint": "J’ai cherché quoi ? Que remplace « les » ?",
+      "explanation": "« les » remplace « mes lunettes » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin pluriel : « cherchées ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec avoir",
+          "lines": [
+            "Avec avoir, jamais d’accord avec le sujet. Elles ont chanté.",
+            "Trouve le COD : pose la question « qui ? » ou « quoi ? » après le verbe. Puis regarde sa place.",
+            "COD placé avant (l’, la, les) : le participe s’accorde avec lui. Ma casquette ? Je l’ai lavée.",
+            "COD placé après : pas d’accord. J’ai lavé ma casquette.",
+            "lui, leur répondent à « à qui ? » : ce ne sont pas des COD, pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-2-3",
+      "prompt": "Mes grands-parents ? Je leur ai … une carte.",
+      "spoken": "Mes grands-parents ? Je leur ai  (mot manquant)  une carte.",
+      "choices": [
+        "envoyé",
+        "envoyés",
+        "envoyer"
+      ],
+      "answer": "envoyé",
+      "hint": "J’ai envoyé quoi ? Et à qui ?",
+      "explanation": "« leur » veut dire « à eux » : ce n’est pas un COD. Le COD, « une carte », est placé après le verbe : pas d’accord, « envoyé ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec avoir",
+          "lines": [
+            "Avec avoir, jamais d’accord avec le sujet. Elles ont chanté.",
+            "Trouve le COD : pose la question « qui ? » ou « quoi ? » après le verbe. Puis regarde sa place.",
+            "COD placé avant (l’, la, les) : le participe s’accorde avec lui. Ma casquette ? Je l’ai lavée.",
+            "COD placé après : pas d’accord. J’ai lavé ma casquette.",
+            "lui, leur répondent à « à qui ? » : ce ne sont pas des COD, pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-2-4",
+      "prompt": "Ces photos, je vais les … demain.",
+      "spoken": "Ces photos, je vais les  (mot manquant)  demain.",
+      "choices": [
+        "imprimer",
+        "imprimées",
+        "imprimé"
+      ],
+      "answer": "imprimer",
+      "hint": "Le verbe avoir est-il dans la phrase ? Remplace par « vendre » ou « vendu ».",
+      "explanation": "On dit « je vais les vendre » : après « vais », c’est l’infinitif, « imprimer », en -er. Il n’y a pas d’avoir : « les » placé avant ne change rien ici.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec avoir",
+          "lines": [
+            "Avec avoir, jamais d’accord avec le sujet. Elles ont chanté.",
+            "Trouve le COD : pose la question « qui ? » ou « quoi ? » après le verbe. Puis regarde sa place.",
+            "COD placé avant (l’, la, les) : le participe s’accorde avec lui. Ma casquette ? Je l’ai lavée.",
+            "COD placé après : pas d’accord. J’ai lavé ma casquette.",
+            "lui, leur répondent à « à qui ? » : ce ne sont pas des COD, pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-2-5",
+      "prompt": "Ma voisine ? Je lui ai … son livre.",
+      "spoken": "Ma voisine ? Je lui ai  (mot manquant)  son livre.",
+      "choices": [
+        "rendu",
+        "rendue",
+        "rendre"
+      ],
+      "answer": "rendu",
+      "hint": "J’ai rendu quoi ? Et à qui ?",
+      "explanation": "« lui » veut dire « à elle » : ce n’est pas un COD. Le COD, « son livre », est placé après le verbe : pas d’accord, « rendu ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec avoir",
+          "lines": [
+            "Avec avoir, jamais d’accord avec le sujet. Elles ont chanté.",
+            "Trouve le COD : pose la question « qui ? » ou « quoi ? » après le verbe. Puis regarde sa place.",
+            "COD placé avant (l’, la, les) : le participe s’accorde avec lui. Ma casquette ? Je l’ai lavée.",
+            "COD placé après : pas d’accord. J’ai lavé ma casquette.",
+            "lui, leur répondent à « à qui ? » : ce ne sont pas des COD, pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-2-6",
+      "prompt": "Léa a … ses copines au cinéma.",
+      "spoken": "Léa a  (mot manquant)  ses copines au cinéma.",
+      "choices": [
+        "emmené",
+        "emmenée",
+        "emmenées"
+      ],
+      "answer": "emmené",
+      "hint": "Léa a emmené qui ? Le COD est-il avant ou après le verbe ?",
+      "explanation": "Avec avoir, pas d’accord avec le sujet « Léa ». Le COD, « ses copines », est placé après le verbe : pas d’accord non plus, « emmené ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec avoir",
+          "lines": [
+            "Avec avoir, jamais d’accord avec le sujet. Elles ont chanté.",
+            "Trouve le COD : pose la question « qui ? » ou « quoi ? » après le verbe. Puis regarde sa place.",
+            "COD placé avant (l’, la, les) : le participe s’accorde avec lui. Ma casquette ? Je l’ai lavée.",
+            "COD placé après : pas d’accord. J’ai lavé ma casquette.",
+            "lui, leur répondent à « à qui ? » : ce ne sont pas des COD, pas d’accord."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-2-7",
+      "prompt": "Les clés ? Tu les as … dans ta poche ?",
+      "spoken": "Les clés ? Tu les as  (mot manquant)  dans ta poche ?",
+      "choices": [
+        "mises",
+        "mis",
+        "mettre"
+      ],
+      "answer": "mises",
+      "hint": "Tu as mis quoi ? Que remplace « les » ?",
+      "explanation": "« les » remplace « les clés » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin pluriel : « mises ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé avec avoir",
+          "lines": [
+            "Avec avoir, jamais d’accord avec le sujet. Elles ont chanté.",
+            "Trouve le COD : pose la question « qui ? » ou « quoi ? » après le verbe. Puis regarde sa place.",
+            "COD placé avant (l’, la, les) : le participe s’accorde avec lui. Ma casquette ? Je l’ai lavée.",
+            "COD placé après : pas d’accord. J’ai lavé ma casquette.",
+            "lui, leur répondent à « à qui ? » : ce ne sont pas des COD, pas d’accord."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne route !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-5e-homophones",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

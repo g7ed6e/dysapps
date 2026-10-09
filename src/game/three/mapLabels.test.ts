@@ -315,8 +315,10 @@ const TUS_EN_OD32: Record<string, string[]> = {
   // 8 octobre 2026) : l'Horloge des verbes et le Volcan des décimaux, que l'écart posait sur une voisine, reprennent une
   // place sur leur île ; la Vallée du vivant (le bonhomme sur la Fouille) et la Mine des lettres (sur la Forêt, comme la
   // capture `formes-carte-6e-od32`) n'en trouvent plus.
-  'history-6e-antiquity': ['geography-6e-living', 'life-earth-sciences-6e-living-world'],
-  'french-6e-phonology': ['french-6e-letter-confusion', 'geography-6e-living'],
+  // Depuis les missions du programme (GD-14, 9 octobre 2026 : une borne de plus, le Gardien du Hangar des inventions
+  // derrière la bande de devant), mesurés : la Carrière des mots seule, le bonhomme sur la Fouille ; aucun sur la Forêt.
+  'history-6e-antiquity': ['french-6e-word-spelling'],
+  'french-6e-phonology': [],
 };
 
 /**
@@ -392,8 +394,10 @@ const TUS_AU_TELEPHONE: Record<string, string[]> = {
   // (`showAtAllCosts`), et l'Horloge des verbes se tait à sa place. Régression connue, au pilotage. Depuis les formes
   // des îles (GD-12), les colonnes de côté sur quatre rangs et le rang du fond en quinconce : un nom tu le bonhomme sur
   // la Fouille (la Mine des lettres), trois sur la Forêt (le Volcan se montre).
-  'history-6e-antiquity': ['french-6e-letter-confusion'],
-  'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-grammar-spelling', 'history-6e-antiquity'],
+  // Depuis les missions du programme (GD-14, 9 octobre 2026), mesurés : un seul nom tu dans les deux cas, le Hangar des
+  // inventions.
+  'history-6e-antiquity': ['technology-6e-objects'],
+  'french-6e-phonology': ['technology-6e-objects'],
 };
 
 /**
@@ -401,8 +405,9 @@ const TUS_AU_TELEPHONE: Record<string, string[]> = {
  * 2026 ; trois au plus, référent dys) : la Pointe des paysages, dans les deux cas.
  */
 const SILENCED_IN_PORTRAIT_6E: Record<string, string[]> = {
-  'history-6e-antiquity': ['geography-6e-living'],
-  'french-6e-phonology': ['geography-6e-living'],
+  // Depuis les missions du programme (GD-14, 9 octobre 2026), mesurés : aucun.
+  'history-6e-antiquity': [],
+  'french-6e-phonology': [],
 };
 
 /**
@@ -411,15 +416,17 @@ const SILENCED_IN_PORTRAIT_6E: Record<string, string[]> = {
  * mesure de jsdom en tait un de plus. Régression connue, au pilotage.
  */
 const SILENCED_IN_PORTRAIT_6E_OD32: Record<string, string[]> = {
-  'history-6e-antiquity': ['french-6e-word-spelling', 'geography-6e-living', 'life-earth-sciences-6e-living-world', 'physics-chemistry-6e-matter-energy'],
-  'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-word-spelling', 'geography-6e-living', 'physics-chemistry-6e-matter-energy'],
+  // Depuis les missions du programme (GD-14, 9 octobre 2026), mesurés : la Mine des lettres à la place de la Vallée du
+  // vivant sur la Fouille ; trois sur la Forêt.
+  'history-6e-antiquity': ['french-6e-letter-confusion', 'french-6e-word-spelling', 'geography-6e-living', 'physics-chemistry-6e-matter-energy'],
+  'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-word-spelling', 'geography-6e-living'],
 };
 
 /** Trois noms tus au plus sur une Carte (référent dys). */
 const SILENCED_NAMES_CAP = 3;
 
 /** Les noms montrés sur le téléphone, selon l'île du bonhomme (sept avant GD-11, six puis sept depuis GD-12 sur la Fouille). */
-const NOMS_MONTRES_AU_TELEPHONE: Record<string, number> = { 'history-6e-antiquity': 7, 'french-6e-phonology': 5 };
+const NOMS_MONTRES_AU_TELEPHONE: Record<string, number> = { 'history-6e-antiquity': 7, 'french-6e-phonology': 7 };
 
 /**
  * À l'ouverture de la Carte, sans panneau, en OpenDyslexic (taille normale, puis 10 % plus large), les noms qui se

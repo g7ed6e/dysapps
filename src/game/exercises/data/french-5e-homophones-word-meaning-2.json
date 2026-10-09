@@ -1,0 +1,227 @@
+{
+  "id": "french-5e-homophones-word-meaning-2",
+  "biome": "french-5e-homophones",
+  "type": "word-meaning",
+  "level": 2,
+  "instruction": "Choisis le mot qui complète la phrase. La règle est affichée : lis-la avant de répondre.",
+  "programme": [
+    "c4.fr.5e.vocabulaire.formation",
+    "c4.fr.5e.vocabulaire.relations",
+    "c4.fr.5e.vocabulaire.reemploi"
+  ],
+  "items": [
+    {
+      "key": "french-5e-homophones-word-meaning-2-0",
+      "prompt": "Le puzzle est fini : Léo le … pour le ranger dans sa boîte.",
+      "spoken": "Le puzzle est fini : Léo le  (mot manquant)  pour le ranger dans sa boîte.",
+      "choices": [
+        "défait",
+        "refait",
+        "fait"
+      ],
+      "answer": "défait",
+      "hint": "Regarde le début des mots : quel préfixe dit le contraire ?",
+      "explanation": "Dé- dit le contraire : défaire, c’est le contraire de faire. Pour ranger le puzzle fini, Léo le défait. Re- veut dire « de nouveau » : le refaire, ce serait le recommencer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Former les mots",
+          "lines": [
+            "dé- = le contraire (coller, décoller). -ette = petit (fillette). -eur = qui fait (chanteur).",
+            "Du latin : aqua = eau, -vore = qui mange. Du grec : chrono = temps.",
+            "Une lettre muette ? Cherche un mot de la même famille : un bord, border.",
+            "Registres : familier entre amis, courant avec tout le monde, soutenu pour un écrit soigné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-2-1",
+      "prompt": "Un petit camion s’appelle … .",
+      "spoken": "Un petit camion s’appelle  (mot manquant)  .",
+      "choices": [
+        "une camionnette",
+        "un camionneur",
+        "un camionnage"
+      ],
+      "answer": "une camionnette",
+      "hint": "Quel suffixe veut dire « petit » ?",
+      "explanation": "Le suffixe -ette veut dire petit : une camionnette est un petit camion. Avec -eur, le camionneur est celui qui conduit le camion. Le camionnage, c’est le transport en camion.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Former les mots",
+          "lines": [
+            "dé- = le contraire (coller, décoller). -ette = petit (fillette). -eur = qui fait (chanteur).",
+            "Du latin : aqua = eau, -vore = qui mange. Du grec : chrono = temps.",
+            "Une lettre muette ? Cherche un mot de la même famille : un bord, border.",
+            "Registres : familier entre amis, courant avec tout le monde, soutenu pour un écrit soigné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-2-2",
+      "prompt": "Le nénuphar est une plante aquatique : il pousse dans l’… .",
+      "spoken": "Le nénuphar est une plante aquatique : il pousse dans l’ (mot manquant)  .",
+      "choices": [
+        "eau",
+        "ombre",
+        "herbe"
+      ],
+      "answer": "eau",
+      "hint": "Regarde le début d’« aquatique » : que veut dire aqua en latin ?",
+      "explanation": "Aqua veut dire eau en latin : une plante aquatique pousse dans l’eau, comme le nénuphar.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Former les mots",
+          "lines": [
+            "dé- = le contraire (coller, décoller). -ette = petit (fillette). -eur = qui fait (chanteur).",
+            "Du latin : aqua = eau, -vore = qui mange. Du grec : chrono = temps.",
+            "Une lettre muette ? Cherche un mot de la même famille : un bord, border.",
+            "Registres : familier entre amis, courant avec tout le monde, soutenu pour un écrit soigné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-2-3",
+      "prompt": "Un animal carnivore mange … .",
+      "spoken": "Un animal carnivore mange  (mot manquant)  .",
+      "choices": [
+        "de la viande",
+        "des plantes",
+        "de tout"
+      ],
+      "answer": "de la viande",
+      "hint": "-vore veut dire « qui mange ». Que mange le lion ?",
+      "explanation": "-vore veut dire « qui mange », et carni- vient d’un mot latin qui veut dire la chair, la viande. Celui qui mange des plantes est herbivore, celui qui mange de tout est omnivore.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Former les mots",
+          "lines": [
+            "dé- = le contraire (coller, décoller). -ette = petit (fillette). -eur = qui fait (chanteur).",
+            "Du latin : aqua = eau, -vore = qui mange. Du grec : chrono = temps.",
+            "Une lettre muette ? Cherche un mot de la même famille : un bord, border.",
+            "Registres : familier entre amis, courant avec tout le monde, soutenu pour un écrit soigné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-2-4",
+      "prompt": "Avec un chronomètre, on mesure le … .",
+      "spoken": "Avec un chronomètre, on mesure le  (mot manquant)  .",
+      "choices": [
+        "temps",
+        "poids",
+        "bruit"
+      ],
+      "answer": "temps",
+      "hint": "Regarde le début du mot : que veut dire chrono en grec ?",
+      "explanation": "Chrono veut dire temps en grec : le chronomètre mesure le temps. Le poids se mesure avec une balance.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Former les mots",
+          "lines": [
+            "dé- = le contraire (coller, décoller). -ette = petit (fillette). -eur = qui fait (chanteur).",
+            "Du latin : aqua = eau, -vore = qui mange. Du grec : chrono = temps.",
+            "Une lettre muette ? Cherche un mot de la même famille : un bord, border.",
+            "Registres : familier entre amis, courant avec tout le monde, soutenu pour un écrit soigné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-2-5",
+      "prompt": "Le cheval part au … dans le pré.",
+      "spoken": "Le cheval part au  (mot manquant)  dans le pré.",
+      "choices": [
+        "galop",
+        "galot",
+        "galo"
+      ],
+      "answer": "galop",
+      "hint": "Cherche le verbe de la même famille : on y entend la dernière lettre.",
+      "explanation": "Le verbe de la même famille, c’est « galoper » : on y entend le p. On écrit donc « galop », avec un p muet à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Former les mots",
+          "lines": [
+            "dé- = le contraire (coller, décoller). -ette = petit (fillette). -eur = qui fait (chanteur).",
+            "Du latin : aqua = eau, -vore = qui mange. Du grec : chrono = temps.",
+            "Une lettre muette ? Cherche un mot de la même famille : un bord, border.",
+            "Registres : familier entre amis, courant avec tout le monde, soutenu pour un écrit soigné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-2-6",
+      "prompt": "« Un toubib » est un mot familier. Le mot courant, c’est … .",
+      "spoken": "« Un toubib » est un mot familier. Le mot courant, c’est  (mot manquant)  .",
+      "choices": [
+        "un médecin",
+        "un praticien",
+        "un infirmier"
+      ],
+      "answer": "un médecin",
+      "hint": "Le mot courant, c’est celui qu’on dit à tout le monde.",
+      "explanation": "« Un toubib » est familier ; le mot courant, c’est « un médecin ». « Un praticien » est un mot soutenu, et un infirmier fait un autre métier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Former les mots",
+          "lines": [
+            "dé- = le contraire (coller, décoller). -ette = petit (fillette). -eur = qui fait (chanteur).",
+            "Du latin : aqua = eau, -vore = qui mange. Du grec : chrono = temps.",
+            "Une lettre muette ? Cherche un mot de la même famille : un bord, border.",
+            "Registres : familier entre amis, courant avec tout le monde, soutenu pour un écrit soigné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-2-7",
+      "prompt": "Au lieu de « j’ai la flemme », on dit à un professeur : « Je n’ai pas … . »",
+      "spoken": "Au lieu de « j’ai la flemme », on dit à un professeur : « Je n’ai pas  (mot manquant)  . »",
+      "choices": [
+        "envie",
+        "la flemme",
+        "la pêche"
+      ],
+      "answer": "envie",
+      "hint": "Avec un professeur, on choisit le registre courant : pas de mot familier.",
+      "explanation": "« J’ai la flemme » est familier. Avec un professeur, on dit en registre courant : « Je n’ai pas envie. » « La flemme » et « la pêche » restent des mots familiers.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Former les mots",
+          "lines": [
+            "dé- = le contraire (coller, décoller). -ette = petit (fillette). -eur = qui fait (chanteur).",
+            "Du latin : aqua = eau, -vore = qui mange. Du grec : chrono = temps.",
+            "Une lettre muette ? Cherche un mot de la même famille : un bord, border.",
+            "Registres : familier entre amis, courant avec tout le monde, soutenu pour un écrit soigné."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne route !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-5e-homophones",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "id": "french-5e-homophones-word-meaning-1",
+  "biome": "french-5e-homophones",
+  "type": "word-meaning",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. La règle est affichée : lis-la avant de répondre.",
+  "programme": [
+    "c4.fr.5e.vocabulaire.sens",
+    "c4.fr.5e.vocabulaire.relations",
+    "c4.fr.5e.vocabulaire.reemploi"
+  ],
+  "items": [
+    {
+      "key": "french-5e-homophones-word-meaning-1-0",
+      "prompt": "« Débuter » et « … » sont synonymes.",
+      "spoken": "« Débuter » et «  (mot manquant)  » sont synonymes.",
+      "choices": [
+        "commencer",
+        "terminer",
+        "continuer"
+      ],
+      "answer": "commencer",
+      "hint": "Des synonymes ont un sens proche. Quand un film débute, que fait-il ?",
+      "explanation": "« Débuter » et « commencer » ont un sens proche : ce sont des synonymes. « Terminer » dit le contraire : c’est un antonyme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sens des mots",
+          "lines": [
+            "Synonymes : un sens proche (un bateau, un navire).",
+            "Antonymes : un sens contraire (ouvrir, fermer).",
+            "Homonymes : le même son, un autre sens (le pain, il peint).",
+            "Sens propre : le sens concret. Sens figuré : une image (une tempête d’applaudissements).",
+            "Un mot inconnu ? Relis la phrase : ce qui l’entoure aide à trouver son sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-1-1",
+      "prompt": "« Ajouter » et « … » sont des antonymes.",
+      "spoken": "« Ajouter » et «  (mot manquant)  » sont des antonymes.",
+      "choices": [
+        "enlever",
+        "rajouter",
+        "mettre"
+      ],
+      "answer": "enlever",
+      "hint": "Des antonymes ont un sens contraire.",
+      "explanation": "« Enlever » dit le contraire d’« ajouter » : ce sont des antonymes. « Rajouter » et « mettre » ont un sens proche d’« ajouter ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sens des mots",
+          "lines": [
+            "Synonymes : un sens proche (un bateau, un navire).",
+            "Antonymes : un sens contraire (ouvrir, fermer).",
+            "Homonymes : le même son, un autre sens (le pain, il peint).",
+            "Sens propre : le sens concret. Sens figuré : une image (une tempête d’applaudissements).",
+            "Un mot inconnu ? Relis la phrase : ce qui l’entoure aide à trouver son sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-1-2",
+      "prompt": "La rue est étroite, mais l’avenue est … .",
+      "spoken": "La rue est étroite, mais l’avenue est  (mot manquant)  .",
+      "choices": [
+        "large",
+        "longue",
+        "fine"
+      ],
+      "answer": "large",
+      "hint": "« mais » annonce le contraire d’« étroite ».",
+      "explanation": "Le contraire d’« étroite », c’est « large » : « mais » oppose les deux. « Longue » est le contraire de « courte », et « fine » a un sens proche d’« étroite ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sens des mots",
+          "lines": [
+            "Synonymes : un sens proche (un bateau, un navire).",
+            "Antonymes : un sens contraire (ouvrir, fermer).",
+            "Homonymes : le même son, un autre sens (le pain, il peint).",
+            "Sens propre : le sens concret. Sens figuré : une image (une tempête d’applaudissements).",
+            "Un mot inconnu ? Relis la phrase : ce qui l’entoure aide à trouver son sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-1-3",
+      "prompt": "« Le sel » et « la selle » se disent pareil. Ce sont des … .",
+      "spoken": "« Le sel » et « la selle » se disent pareil. Ce sont des  (mot manquant)  .",
+      "choices": [
+        "homonymes",
+        "synonymes",
+        "antonymes"
+      ],
+      "answer": "homonymes",
+      "hint": "Les deux mots ont le même son. Ont-ils le même sens ?",
+      "explanation": "Le sel se met dans la soupe, la selle se pose sur un cheval : même son, sens différent, ce sont des homonymes. Des synonymes auraient un sens proche.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sens des mots",
+          "lines": [
+            "Synonymes : un sens proche (un bateau, un navire).",
+            "Antonymes : un sens contraire (ouvrir, fermer).",
+            "Homonymes : le même son, un autre sens (le pain, il peint).",
+            "Sens propre : le sens concret. Sens figuré : une image (une tempête d’applaudissements).",
+            "Un mot inconnu ? Relis la phrase : ce qui l’entoure aide à trouver son sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-1-4",
+      "prompt": "Elle a la tête dans les nuages : elle est … .",
+      "spoken": "Elle a la tête dans les nuages : elle est  (mot manquant)  .",
+      "choices": [
+        "distraite",
+        "très grande",
+        "dans un avion"
+      ],
+      "answer": "distraite",
+      "hint": "Sa tête n’est pas vraiment dans le ciel : c’est une image.",
+      "explanation": "C’est le sens figuré : elle rêve, elle n’écoute pas, elle est distraite. « Très grande » et « dans un avion » prennent la phrase au sens propre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sens des mots",
+          "lines": [
+            "Synonymes : un sens proche (un bateau, un navire).",
+            "Antonymes : un sens contraire (ouvrir, fermer).",
+            "Homonymes : le même son, un autre sens (le pain, il peint).",
+            "Sens propre : le sens concret. Sens figuré : une image (une tempête d’applaudissements).",
+            "Un mot inconnu ? Relis la phrase : ce qui l’entoure aide à trouver son sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-1-5",
+      "prompt": "Frigorifié, Tom tremble et souffle sur ses doigts : il a très … .",
+      "spoken": "Frigorifié, Tom tremble et souffle sur ses doigts : il a très  (mot manquant)  .",
+      "choices": [
+        "froid",
+        "peur",
+        "faim"
+      ],
+      "answer": "froid",
+      "hint": "Pourquoi souffle-t-on sur ses doigts ? Regarde aussi le début de « frigorifié ».",
+      "explanation": "Tom souffle sur ses doigts pour les réchauffer, et « frigorifié » commence comme « frigo » : il a très froid. On peut trembler de peur, mais on ne souffle pas sur ses doigts.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sens des mots",
+          "lines": [
+            "Synonymes : un sens proche (un bateau, un navire).",
+            "Antonymes : un sens contraire (ouvrir, fermer).",
+            "Homonymes : le même son, un autre sens (le pain, il peint).",
+            "Sens propre : le sens concret. Sens figuré : une image (une tempête d’applaudissements).",
+            "Un mot inconnu ? Relis la phrase : ce qui l’entoure aide à trouver son sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-1-6",
+      "prompt": "Exténuée par la randonnée, Inès se couche tout de suite : elle est très … .",
+      "spoken": "Exténuée par la randonnée, Inès se couche tout de suite : elle est très  (mot manquant)  .",
+      "choices": [
+        "fatiguée",
+        "contente",
+        "en retard"
+      ],
+      "answer": "fatiguée",
+      "hint": "Relis la phrase : que fait Inès juste après la randonnée ?",
+      "explanation": "Après une longue marche, Inès se couche tout de suite : « exténuée » veut dire très fatiguée. La phrase ne parle ni de joie ni de retard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sens des mots",
+          "lines": [
+            "Synonymes : un sens proche (un bateau, un navire).",
+            "Antonymes : un sens contraire (ouvrir, fermer).",
+            "Homonymes : le même son, un autre sens (le pain, il peint).",
+            "Sens propre : le sens concret. Sens figuré : une image (une tempête d’applaudissements).",
+            "Un mot inconnu ? Relis la phrase : ce qui l’entoure aide à trouver son sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-word-meaning-1-7",
+      "prompt": "Ce cri dans la nuit m’a glacé le sang : il m’a fait très … .",
+      "spoken": "Ce cri dans la nuit m’a glacé le sang : il m’a fait très  (mot manquant)  .",
+      "choices": [
+        "peur",
+        "froid",
+        "mal"
+      ],
+      "answer": "peur",
+      "hint": "Le sang n’a pas vraiment gelé : c’est une image.",
+      "explanation": "« Glacer le sang » est au sens figuré : c’est faire très peur. « Froid » prend l’expression au sens propre, et un cri ne fait pas mal.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sens des mots",
+          "lines": [
+            "Synonymes : un sens proche (un bateau, un navire).",
+            "Antonymes : un sens contraire (ouvrir, fermer).",
+            "Homonymes : le même son, un autre sens (le pain, il peint).",
+            "Sens propre : le sens concret. Sens figuré : une image (une tempête d’applaudissements).",
+            "Un mot inconnu ? Relis la phrase : ce qui l’entoure aide à trouver son sens."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne route !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-5e-homophones",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

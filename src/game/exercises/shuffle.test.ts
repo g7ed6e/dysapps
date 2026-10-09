@@ -4,7 +4,9 @@ import foret from './data/french-6e-phonology-syllables-warmup-002.json';
 import { loadAllExercises } from './index';
 import { runItems } from './run';
 import type { ExerciseDef, ExerciseItem } from './types';
-import { shuffleRunChoices } from './shuffle';
+import { piegesDe, shuffleRunChoices } from './shuffle';
+import { placeChoices } from '../../core/choices';
+import { seeded } from '../../core/random';
 
 const EXERCISES = await loadAllExercises();
 
@@ -57,9 +59,9 @@ it('garde les nombres dans l’ordre croissant, mais décale la fenêtre pour qu
   expect(run.filter((i) => at(i) === 1).length).toBeLessThanOrEqual(Math.ceil(run.length / 3) + 1);
 });
 
-it('déplace la réponse d’une liste de nombres en retournant un piège, et l’écrit comme ses voisins', () => {
-  const def = { id: 'test', biome: 'maths-6e-calculation', items: [{ key: 'k', choices: ['−3', '1 200', '2 000,5'], answer: '1 200' }] } as unknown as ExerciseDef;
-  const lists = ['a', 'b', 'c', 'd', 'e', 'f'].map((seed) => shuffleRunChoices(def, def.items, seed)[0].choices as string[]);
+it('pièges calculés : déplace la réponse d’une liste de nombres en retournant un piège, et l’écrit comme ses voisins', () => {
+  const items = [{ key: 'k', choices: ['−3', '1 200', '2 000,5'], answer: '1 200' }];
+  const lists = ['a', 'b', 'c', 'd', 'e', 'f'].map((seed) => placeChoices(items, seeded(seed), 'calcules')[0].choices);
   const value = (c: string) => Number(c.replace('−', '-').replace(/\s/g, '').replace(',', '.'));
   for (const list of lists) {
     expect(list).toContain('1 200');
@@ -70,6 +72,12 @@ it('déplace la réponse d’une liste de nombres en retournant un piège, et l�
   // Une liste de nombres que l'auteur n'a pas rangée reste telle quelle.
   const loose = { id: 'l', items: [{ key: 'k', choices: ['5', '2', '9'], answer: '2' }] } as unknown as ExerciseDef;
   expect(shuffleRunChoices(loose, loose.items, 'a')[0].choices).toEqual(['5', '2', '9']);
+});
+
+it('maths écrites en Markdown (sans générateur) : les pièges du fichier restent ceux de l’auteur', () => {
+  const def = { id: 'm', biome: 'maths-6e-calculation', items: [{ key: 'k', choices: ['300', '3 000', '30 000'], answer: '3 000' }] } as unknown as ExerciseDef;
+  expect(piegesDe(def)).toBe('du-fichier');
+  for (const seed of ['a', 'b', 'c', 'd']) expect(shuffleRunChoices(def, def.items, seed)[0].choices).toEqual(['300', '3 000', '30 000']);
 });
 
 it('hors maths, des nombres entendus gardent leurs pièges : 3, 13, 30 restent 3, 13, 30', () => {

@@ -352,6 +352,310 @@ Pour tous les items :
    - indice : Plus… que, avec un adjectif long.
    - explication : more interesting than = plus intéressant que.
 
+## Phrases · `sentences`
+
+- description : Nier, demander, relier, nuancer : don’t, does, but, so, very, too.
+- compétences : c4.en.5e.langue.phrase · c3.en.langue.groupe-nominal
+- langue : en
+- consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- bravo : Bien dit !
+- erreur : {explanation}
+- bloc gagné : english-5e-grammar
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- trou lu : blank
+
+### Niveau 1 · `english-5e-grammar-sentences-1`
+
+Pour tous les items :
+- aide « Nier, demander, relier » :
+  - Négation : I, you, we, they → don’t ; he, she, it → doesn’t, puis le verbe sans s.
+  - Question : Do ou Does + sujet + verbe ? Avec be : Is ou Are + sujet ?
+  - Un seul : this, that, there is. Plusieurs : these, those, there are.
+  - and = et, but = mais, or = ou
+
+1. énoncé : There … two cats in the garden.
+   - choix : are · is · have
+   - réponse : are
+   - indice : Un chat ou plusieurs ? Relis la ligne « Un seul, plusieurs ».
+   - explication : two cats, c’est plusieurs → there are. There is, c’est pour un seul ; « il y a » ne se dit pas avec have.
+2. énoncé : … shoes are new.
+   - choix : These · This · That
+   - réponse : These
+   - indice : Shoes : une chaussure ou plusieurs ?
+   - explication : shoes are, c’est plusieurs → these. This et that, c’est pour un seul.
+3. énoncé : I … like fish.
+   - choix : don’t · doesn’t · not
+   - réponse : don’t
+   - indice : Le sujet est I : relis la ligne de la négation.
+   - explication : I + négation → I don’t like. Doesn’t va avec he, she, it ; not seul ne suffit pas devant un verbe.
+4. énoncé : My dad … play tennis.
+   - choix : doesn’t · don’t · isn’t
+   - réponse : doesn’t
+   - indice : My dad, c’est he. Et play est un verbe, pas be.
+   - explication : my dad = he → he doesn’t play. Don’t va avec I, you, we, they ; isn’t va avec be, pas avec play.
+5. énoncé : … your sister play the piano?
+   - choix : Does · Do · Is
+   - réponse : Does
+   - indice : Your sister, c’est she. Et play est un verbe.
+   - explication : your sister = she → Does she play…? Do va avec I, you, we, they ; Is ne va pas avec un verbe comme play.
+6. énoncé : … you hungry?
+   - choix : Are · Do · Does
+   - réponse : Are
+   - indice : Hungry n’est pas un verbe : il faut be.
+   - explication : avoir faim se dit be hungry : la question se pose avec be → Are you hungry? Do et Does vont avec un verbe.
+7. énoncé : I like tea, … I don’t like coffee.
+   - choix : but · and · or
+   - réponse : but
+   - indice : Les deux parties disent-elles la même chose, ou le contraire ?
+   - explication : j’aime, je n’aime pas : c’est le contraire → but (mais). And ajoute une idée ; or propose un choix.
+8. énoncé : Is it Monday … Tuesday today?
+   - choix : or · and · but
+   - réponse : or
+   - indice : On demande de choisir entre deux jours.
+   - explication : un choix entre deux → or (ou). Aujourd’hui ne peut pas être lundi et mardi (and) ; but dirait le contraire.
+
+### Niveau 2 · `english-5e-grammar-sentences-2`
+
+Pour tous les items :
+- aide « Nuancer et enchaîner » :
+  - very = très ; too = trop (too hot to drink)
+  - much older = beaucoup plus vieux (much + comparatif, jamais very)
+  - first = d’abord, then = ensuite ; so = donc ; like = comme, par exemple
+  - Pluriels sans s : man → men, foot → feet, mouse → mice.
+  - Le génitif : Sam’s bag = le sac de Sam
+
+1. énoncé : It’s … cold to swim today.
+   - choix : too · very · much
+   - réponse : too
+   - indice : Il fait si froid qu’on ne peut pas nager : relis la ligne de very et too.
+   - explication : too cold to swim = trop froid pour nager : avec to + verbe derrière, on dit too. Very cold veut dire très froid, sans « pour » derrière ; much ne se met pas seul devant un adjectif.
+2. énoncé : This song is … good! I listen to it every day.
+   - choix : very · much · many
+   - réponse : very
+   - indice : Good est un adjectif : relis la première ligne de la règle.
+   - explication : very good = très bien. Much et many veulent dire beaucoup : ils ne se mettent pas seuls devant un adjectif.
+3. énoncé : My brother is … taller than me.
+   - choix : much · very · many
+   - réponse : much
+   - indice : Taller est un comparatif : plus grand.
+   - explication : much + comparatif = beaucoup plus : much taller. On ne dit pas very taller ; many va devant un nom au pluriel (many friends).
+4. énoncé : First, I brush my teeth. … , I get dressed.
+   - choix : Then · First · But
+   - réponse : Then
+   - indice : Qu’est-ce qui vient après, dans l’ordre ?
+   - explication : then = ensuite : c’est la deuxième étape. First (d’abord) est déjà pris ; but marque une opposition, et il n’y en a pas ici.
+5. énoncé : It’s raining, … I’m taking my umbrella.
+   - choix : so · but · or
+   - réponse : so
+   - indice : La pluie est la cause. Le parapluie, c’est la conséquence.
+   - explication : so = donc : il pleut, donc je prends mon parapluie. But dirait le contraire ; or propose un choix.
+6. énoncé : I love fruit, … apples and bananas.
+   - choix : like · as · but
+   - réponse : like
+   - indice : Les pommes et les bananes sont des exemples de fruits.
+   - explication : like = comme, par exemple : like apples and bananas. As ne donne pas un exemple tout seul ; but marque une opposition.
+7. énoncé : Two … are talking to my mum.
+   - choix : women · womans · womens
+   - réponse : women
+   - indice : Woman finit comme man : regarde le pluriel de man dans la règle.
+   - explication : man → men, donc woman → women : le pluriel change de voyelle, sans s. Womans et womens n’existent pas.
+8. énoncé : … room is very small.
+   - choix : My sister’s · My sister · My sisters
+   - réponse : My sister’s
+   - indice : La chambre est à qui ? Relis la ligne du génitif.
+   - explication : my sister’s room = la chambre de ma sœur : le ’s dit à qui elle est. My sister seul ne le dit pas ; my sisters, sans apostrophe, c’est plusieurs sœurs.
+
+## Portraits · `portraits`
+
+- description : Lire un portrait, un personnage de livre ou un message, et demander de l’aide en anglais.
+- compétences : c4.en.5e.culture.portrait · c4.en.5e.culture.reel-imaginaire · c4.en.5e.interagir.mediation
+- langue : en
+- bravo : Bien lu !
+- erreur : {explanation}
+- bloc gagné : english-5e-grammar
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `english-5e-grammar-portraits-1`
+
+- consigne : Lis la question, puis le portrait ou la scène en anglais, et choisis la bonne réponse. Le lexique est affiché.
+
+Pour tous les items :
+- aide « Décrire quelqu’un » :
+  - Lis d’abord la question, puis cherche dans le texte la phrase qui répond.
+  - hair = les cheveux ; eyes = les yeux ; tall = grand
+  - kind = gentil ; funny = drôle ; good at = fort en
+  - yearbook = l’album de fin d’année ; dream = le rêve ; job = le métier
+  - Ce que fait la personne sur l’image : is reading = lit, is running = court
+
+1. énoncé : "Hi! My name is Maya and I’m twelve.\nI have long black hair and brown eyes.\nI love music. I play the guitar."
+   - question : De quelle couleur sont les cheveux de Maya ?
+   - lu : Hi! My name is Maya and I’m twelve. I have long black hair and brown eyes. I love music. I play the guitar.
+   - choix : Noirs · Bruns · Blonds
+   - langue des choix : fr
+   - réponse : Noirs
+   - indice : Cherche le mot hair, puis le mot de couleur juste avant.
+   - explication : long black hair = de longs cheveux noirs : en anglais, la couleur se place avant hair. Brown va avec eyes : ce sont ses yeux qui sont bruns.
+2. énoncé : "This is my best friend, Leo.\nHe is kind and very generous.\nHe always shares his snacks with me."
+   - question : Que fait Leo avec ses goûters ?
+   - lu : This is my best friend, Leo. He is kind and very generous. He always shares his snacks with me.
+   - choix : Il les partage · Il les mange seul · Il les oublie
+   - langue des choix : fr
+   - réponse : Il les partage
+   - indice : Lis la dernière ligne : cherche le verbe juste avant his snacks.
+   - explication : He shares his snacks with me = il partage ses goûters avec moi : c’est pour cela qu’il est generous, généreux. S’il les mangeait seul, il ne serait pas généreux.
+3. énoncé : "My grandad is seventy-two.\nHe is short and a bit shy.\nHe wears glasses and a big red hat."
+   - question : Comment est le grand-père ?
+   - lu : My grandad is seventy-two. He is short and a bit shy. He wears glasses and a big red hat.
+   - choix : Petit et un peu timide · En short et un peu timide · Grand et un peu timide
+   - langue des choix : fr
+   - réponse : Petit et un peu timide
+   - indice : Lis la deuxième ligne : He is dit comment il est, pas ce qu’il porte.
+   - explication : He is short = il est petit, de taille ; a bit shy = un peu timide. Ici, short décrit la personne, pas un vêtement (un short se dit shorts). Grand se dit tall.
+4. énoncé : "Middle School Yearbook\nAmir Khan, Grade 7\nHe is good at science.\nHis dream job: vet"
+   - question : Quel métier Amir veut-il faire plus tard ?
+   - lu : Middle School Yearbook. Amir Khan, Grade seven. He is good at science. His dream job, vet.
+   - choix : Vétérinaire · Professeur de sciences · Médecin
+   - langue des choix : fr
+   - réponse : Vétérinaire
+   - indice : Cherche la ligne qui parle de son rêve : le métier est son dernier mot.
+   - explication : His dream job: vet = le métier dont il rêve : vétérinaire, celui qui soigne les animaux. He is good at science dit qu’il est fort en sciences, pas qu’il veut les enseigner.
+5. énoncé : "Portrait of a girl with a cat\nPainted in 1890\nThe girl is smiling.\nShe is wearing a blue dress."
+   - question : Que fait la fille sur le tableau ?
+   - lu : Portrait of a girl with a cat. Painted in eighteen ninety. The girl is smiling. She is wearing a blue dress.
+   - choix : Elle sourit · Elle pleure · Elle chante
+   - langue des choix : fr
+   - réponse : Elle sourit
+   - indice : Cherche le verbe en -ing qui va avec the girl : il dit ce qu’elle fait.
+   - explication : The girl is smiling = la fille sourit (smile = sourire). Pleurer se dit cry, chanter se dit sing.
+6. énoncé : "At the end of the lesson, the bell rings.\nYour teacher gives the homework.\nYou don’t hear it."
+   - question : Que dis-tu au professeur ?
+   - lu : At the end of the lesson, the bell rings. Your teacher gives the homework. You don’t hear it.
+   - choix : Can you repeat, please? · Can you spell it, please? · Can you translate, please?
+   - réponse : Can you repeat, please?
+   - indice : Tu n’as rien entendu : que doit faire le professeur ?
+   - explication : Can you repeat, please? = Pouvez-vous répéter, s’il vous plaît ? Tu entendras les devoirs une deuxième fois. Spell sert à épeler un mot, translate à le traduire : cela n’aide pas si tu n’as rien entendu.
+   - aide « Demander de l’aide » :
+     - Pour demander : can you = peux-tu, pouvez-vous ; please = s’il te plaît
+     - repeat = répéter ; spell = épeler ; translate = traduire
+     - slowly = lentement ; louder = plus fort ; mean = vouloir dire
+7. énoncé : "In class, Mrs Green speaks very fast.\nYou don’t understand."
+   - question : Que demandes-tu à Mrs Green ?
+   - lu : In class, Mrs Green speaks very fast. You don’t understand.
+   - choix : Can you speak slowly, please? · Can you speak louder, please? · Can you spell it, please?
+   - réponse : Can you speak slowly, please?
+   - indice : Le problème, c’est la vitesse : que doit-elle changer ?
+   - explication : Can you speak slowly, please? = Pouvez-vous parler lentement ? Elle parle trop vite. Louder veut dire plus fort : cela aide quand on n’entend pas. Spell sert à épeler un mot.
+   - aide « Demander de l’aide » :
+     - Pour demander : can you = peux-tu, pouvez-vous ; please = s’il te plaît
+     - repeat = répéter ; spell = épeler ; translate = traduire
+     - slowly = lentement ; louder = plus fort ; mean = vouloir dire
+8. énoncé : "Your friend Jack says: “Look, a wizard!”\nYou don’t know the word wizard."
+   - question : Que demandes-tu à Jack ?
+   - lu : Your friend Jack says: Look, a wizard! You don’t know the word wizard.
+   - choix : What does wizard mean? · How do you spell wizard? · Can you repeat, please?
+   - réponse : What does wizard mean?
+   - indice : Tu connais le mot, mais pas son sens : quelle question parle du sens ?
+   - explication : What does wizard mean? = Que veut dire wizard ? Jack t’expliquera : un sorcier. How do you spell demande comment le mot s’écrit ; Can you repeat fait seulement redire le mot.
+   - aide « Demander de l’aide » :
+     - Pour demander : can you = peux-tu, pouvez-vous ; please = s’il te plaît
+     - repeat = répéter ; spell = épeler ; translate = traduire
+     - slowly = lentement ; louder = plus fort ; mean = vouloir dire
+
+### Niveau 2 · `english-5e-grammar-portraits-2`
+
+- consigne : Lis la question, puis le texte en anglais, et choisis la bonne réponse. Le lexique est affiché.
+
+Pour tous les items :
+- aide « Des personnages de livres » :
+  - Lis d’abord la question, puis cherche la phrase qui répond.
+  - author = l’auteur ; character = le personnage ; story = l’histoire
+  - real = vrai, qui existe ; invented = inventé ; famous = célèbre
+  - follow = suivre ; grow up = grandir ; want = vouloir
+
+1. énoncé : "Alice is a girl in a story by Lewis Carroll.\nOne day, she follows a white rabbit.\nShe falls down a hole into Wonderland."
+   - question : Qu’est-ce qu’Alice suit ?
+   - lu : Alice is a girl in a story by Lewis Carroll. One day, she follows a white rabbit. She falls down a hole into Wonderland.
+   - choix : Un lapin blanc · Un chat blanc · Une souris blanche
+   - langue des choix : fr
+   - réponse : Un lapin blanc
+   - indice : Lis la deuxième ligne : ce qu’elle suit vient juste après le verbe.
+   - explication : she follows a white rabbit = elle suit un lapin blanc. Un chat se dit a cat, une souris a mouse.
+2. énoncé : "Sherlock Holmes is a famous detective.\nArthur Conan Doyle invented him in 1887.\nIn the stories, Holmes lives in Baker Street, a real street in London."
+   - question : Qu’est-ce qui est réel dans ce texte ?
+   - lu : Sherlock Holmes is a famous detective. Arthur Conan Doyle invented him in eighteen eighty-seven. In the stories, Holmes lives in Baker Street, a real street in London.
+   - choix : La rue Baker Street · Le détective Holmes · Les enquêtes de Holmes
+   - langue des choix : fr
+   - réponse : La rue Baker Street
+   - indice : Cherche le mot real : de quoi parle la fin de sa phrase ?
+   - explication : a real street in London = une vraie rue de Londres : Baker Street existe. Holmes et ses enquêtes, Conan Doyle les a inventés (invented) : ils sont imaginaires.
+3. énoncé : "Dorothy lives on a farm in Kansas with her little dog, Toto.\nA big storm takes her to the Land of Oz.\nThere, she meets a Scarecrow. He wants a brain."
+   - question : Que veut l’épouvantail ?
+   - lu : Dorothy lives on a farm in Kansas with her little dog, Toto. A big storm takes her to the Land of Oz. There, she meets a Scarecrow. He wants a brain.
+   - choix : Un cerveau · Un cœur · Du courage
+   - langue des choix : fr
+   - réponse : Un cerveau
+   - indice : Lis la dernière phrase. Un épouvantail a la tête remplie de paille : que lui manque-t-il ?
+   - explication : He wants a brain = il veut un cerveau, pour réfléchir. Dans l’histoire, le cœur (a heart), c’est ce que veut l’homme en fer-blanc, et le courage, ce que veut le lion.
+4. énoncé : "Mowgli is a boy in The Jungle Book, by Rudyard Kipling.\nHe grows up with a family of wolves.\nBaloo, a wise old bear, teaches him the Law of the Jungle."
+   - question : Avec qui Mowgli grandit-il ?
+   - lu : Mowgli is a boy in The Jungle Book, by Rudyard Kipling. He grows up with a family of wolves. Baloo, a wise old bear, teaches him the Law of the Jungle.
+   - choix : Avec des loups · Avec des ours · Avec des singes
+   - langue des choix : fr
+   - réponse : Avec des loups
+   - indice : Lis la deuxième ligne jusqu’au bout : sa famille, ce sont quels animaux ?
+   - explication : He grows up with a family of wolves = il grandit dans une famille de loups. Baloo est un ours (a bear), mais c’est son professeur, pas sa famille. Un singe se dit a monkey.
+5. énoncé : "Ebenezer Scrooge is an old man in a story by Charles Dickens.\nHe is very rich, but he never gives money to anyone.\nHe hates Christmas."
+   - question : Que pense Scrooge de Noël ?
+   - lu : Ebenezer Scrooge is an old man in a story by Charles Dickens. He is very rich, but he never gives money to anyone. He hates Christmas.
+   - choix : Il déteste Noël · Il adore Noël · Il fête Noël en famille
+   - langue des choix : fr
+   - réponse : Il déteste Noël
+   - indice : Lis la dernière ligne, puis la deuxième : un homme qui ne donne jamais rien aime-t-il les fêtes ?
+   - explication : He hates Christmas = il déteste Noël. Adorer se dit love : c’est le contraire. Rien dans le texte ne dit qu’il fête Noël.
+6. énoncé : "Hi Tom! It’s Amy.\nMy party is on Saturday at 3 pm.\nBring your swimsuit: we have a pool!"
+   - question : Ce message est pour ton frère Tom, qui ne lit pas l’anglais. Que lui dis-tu ?
+   - lu : Hi Tom! It’s Amy. My party is on Saturday at three p.m. Bring your swimsuit, we have a pool!
+   - choix : Samedi à 15 h, prends ton maillot. · Samedi à 3 h, prends ton maillot. · Dimanche à 15 h, prends ton maillot.
+   - langue des choix : fr
+   - réponse : Samedi à 15 h, prends ton maillot.
+   - indice : Cherche le jour, puis l’heure : que veut dire pm ?
+   - explication : Saturday = samedi, et 3 pm = 15 h (pm : on ajoute 12). Bring your swimsuit = prends ton maillot de bain. 3 h, ce serait la nuit ; dimanche se dit Sunday.
+   - aide « Transmettre, demander » :
+     - Pour transmettre un message, garde l’essentiel : le jour, l’heure, ce qu’il faut faire.
+     - pm = après midi : on ajoute 12 ; because of = à cause de ; next = prochain
+     - speak up = parler plus fort ; slow down = ralentir
+7. énoncé : "Hello, it’s Mr Brown, the football coach.\nThere is no training today because of the rain.\nSee you next Wednesday!"
+   - question : Ton ami ne comprend pas ce message. Que lui dis-tu en français ?
+   - lu : Hello, it’s Mr Brown, the football coach. There is no training today because of the rain. See you next Wednesday!
+   - choix : Pas d’entraînement aujourd’hui. · Entraînement sous la pluie aujourd’hui. · Entraînement aujourd’hui et mercredi.
+   - langue des choix : fr
+   - réponse : Pas d’entraînement aujourd’hui.
+   - indice : Cherche le petit mot no : il dit qu’une chose n’a pas lieu.
+   - explication : There is no training today = il n’y a pas d’entraînement aujourd’hui, à cause de la pluie (because of the rain). Le prochain, c’est mercredi prochain (next Wednesday), pas aujourd’hui.
+   - aide « Transmettre, demander » :
+     - Pour transmettre un message, garde l’essentiel : le jour, l’heure, ce qu’il faut faire.
+     - pm = après midi : on ajoute 12 ; because of = à cause de ; next = prochain
+     - speak up = parler plus fort ; slow down = ralentir
+8. énoncé : "Ben is presenting his project to the class.\nHe speaks very quietly.\nAt the back of the class, nobody can hear him."
+   - question : Que peux-tu dire à Ben ?
+   - lu : Ben is presenting his project to the class. He speaks very quietly. At the back of the class, nobody can hear him.
+   - choix : Could you speak up, please? · Could you slow down, please? · Could you sit down, please?
+   - réponse : Could you speak up, please?
+   - indice : Quel est le problème : la vitesse de sa voix, ou sa force ?
+   - explication : Could you speak up, please? = Peux-tu parler plus fort, s’il te plaît ? Au fond, on ne l’entend pas. Slow down veut dire ralentir : Ben ne parle pas trop vite, il parle trop bas.
+   - aide « Transmettre, demander » :
+     - Pour transmettre un message, garde l’essentiel : le jour, l’heure, ce qu’il faut faire.
+     - pm = après midi : on ajoute 12 ; because of = à cause de ; next = prochain
+     - speak up = parler plus fort ; slow down = ralentir
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

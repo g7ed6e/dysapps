@@ -1,0 +1,234 @@
+{
+  "id": "maths-5e-signed-numbers-order-of-operations-2",
+  "biome": "maths-5e-signed-numbers",
+  "type": "order-of-operations",
+  "level": 2,
+  "instruction": "Calcule, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-2-0",
+      "prompt": "Programme de calcul\nChoisis 5.\nAjoute 3.\nMultiplie le résultat par 2.",
+      "question": "Quelle expression traduit ce programme ?",
+      "spoken": "Programme de calcul. Choisis 5. Ajoute 3. Multiplie le résultat par 2.",
+      "choices": [
+        "(5 + 3) × 2",
+        "5 + 3 × 2",
+        "5 × 2 + 3"
+      ],
+      "answer": "(5 + 3) × 2",
+      "hint": "Le programme ajoute d’abord. Comment garder cet ordre ?",
+      "explanation": "On ajoute d’abord, puis on multiplie le résultat : il faut des parenthèses, (5 + 3) × 2. Sans elles, 5 + 3 × 2 ferait la multiplication en premier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programmes et équations",
+          "lines": [
+            "Un programme se fait dans l’ordre. Les parenthèses gardent cet ordre.",
+            "Le carré passe avant × et +.",
+            "3x veut dire 3 × x.",
+            "Pour trouver x, on fait l’opération inverse.",
+            "x + 5 = 9, donc x = 9 − 5. 2x = 10, donc x = 10 ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-2-1",
+      "prompt": "Programme de calcul\nChoisis 4.\nMultiplie par 3.\nEnlève 2.",
+      "question": "Quel nombre obtiens-tu ?",
+      "spoken": "Programme de calcul. Choisis 4. Multiplie par 3. Enlève 2.",
+      "choices": [
+        "4",
+        "6",
+        "10"
+      ],
+      "answer": "10",
+      "hint": "Suis les lignes dans l’ordre, une à une.",
+      "explanation": "4 × 3 = 12, puis 12 − 2 = 10 : c’est 4 × 3 − 2. 4, c’est 4 × (3 − 2) : on a enlevé avant de multiplier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programmes et équations",
+          "lines": [
+            "Un programme se fait dans l’ordre. Les parenthèses gardent cet ordre.",
+            "Le carré passe avant × et +.",
+            "3x veut dire 3 × x.",
+            "Pour trouver x, on fait l’opération inverse.",
+            "x + 5 = 9, donc x = 9 − 5. 2x = 10, donc x = 10 ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-2-2",
+      "prompt": "Programme de calcul\nChoisis 6.\nAjoute 4.\nCalcule le carré du résultat.",
+      "question": "Quel nombre obtiens-tu ?",
+      "spoken": "Programme de calcul. Choisis 6. Ajoute 4. Calcule le carré du résultat.",
+      "choices": [
+        "20",
+        "22",
+        "100"
+      ],
+      "answer": "100",
+      "hint": "Le carré porte sur le résultat de l’addition.",
+      "explanation": "6 + 4 = 10, puis 10² = 10 × 10 = 100 : c’est (6 + 4)². 22, c’est 6 + 4², le carré du 4 seul. 20, c’est 10 × 2 : le double, pas le carré.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programmes et équations",
+          "lines": [
+            "Un programme se fait dans l’ordre. Les parenthèses gardent cet ordre.",
+            "Le carré passe avant × et +.",
+            "3x veut dire 3 × x.",
+            "Pour trouver x, on fait l’opération inverse.",
+            "x + 5 = 9, donc x = 9 − 5. 2x = 10, donc x = 10 ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-2-3",
+      "prompt": "2 × 5² = …",
+      "spoken": "2 fois 5 au carré, combien ?",
+      "choices": [
+        "20",
+        "50",
+        "100"
+      ],
+      "answer": "50",
+      "hint": "Que calcules-tu d’abord : le carré ou la multiplication ?",
+      "explanation": "Le carré d’abord : 5² = 25, puis 2 × 25 = 50. 100, c’est (2 × 5)² : le carré ne porte que sur le 5. 20, c’est 2 × 5 × 2.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programmes et équations",
+          "lines": [
+            "Un programme se fait dans l’ordre. Les parenthèses gardent cet ordre.",
+            "Le carré passe avant × et +.",
+            "3x veut dire 3 × x.",
+            "Pour trouver x, on fait l’opération inverse.",
+            "x + 5 = 9, donc x = 9 − 5. 2x = 10, donc x = 10 ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-2-4",
+      "prompt": "5 × x = 35. Alors x = …",
+      "spoken": "5 fois x égale 35. Combien vaut x ?",
+      "choices": [
+        "7",
+        "30",
+        "175"
+      ],
+      "answer": "7",
+      "hint": "Quel nombre, multiplié par 5, donne 35 ?",
+      "explanation": "L’inverse de × 5, c’est ÷ 5 : x = 35 ÷ 5 = 7. On vérifie : 5 × 7 = 35. 30, c’est 35 − 5 : on a enlevé au lieu de diviser.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programmes et équations",
+          "lines": [
+            "Un programme se fait dans l’ordre. Les parenthèses gardent cet ordre.",
+            "Le carré passe avant × et +.",
+            "3x veut dire 3 × x.",
+            "Pour trouver x, on fait l’opération inverse.",
+            "x + 5 = 9, donc x = 9 − 5. 2x = 10, donc x = 10 ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-2-5",
+      "prompt": "3x = 24. Alors x = …",
+      "spoken": "3 x égale 24. Combien vaut x ?",
+      "choices": [
+        "8",
+        "21",
+        "72"
+      ],
+      "answer": "8",
+      "hint": "3x veut dire 3 × x.",
+      "explanation": "3x, c’est 3 × x. L’inverse de × 3, c’est ÷ 3 : x = 24 ÷ 3 = 8. On vérifie : 3 × 8 = 24. 72, c’est 24 × 3 : on a refait la même opération au lieu de l’inverse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programmes et équations",
+          "lines": [
+            "Un programme se fait dans l’ordre. Les parenthèses gardent cet ordre.",
+            "Le carré passe avant × et +.",
+            "3x veut dire 3 × x.",
+            "Pour trouver x, on fait l’opération inverse.",
+            "x + 5 = 9, donc x = 9 − 5. 2x = 10, donc x = 10 ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-2-6",
+      "prompt": "Léa a des billes.\nOn lui en donne 12.\nElle en a maintenant 30.\nx est le nombre de billes du début.",
+      "question": "Quelle équation traduit ce problème ?",
+      "spoken": "Léa a des billes. On lui en donne 12. Elle en a maintenant 30. x est le nombre de billes du début.",
+      "choices": [
+        "x + 12 = 30",
+        "x − 12 = 30",
+        "12 × x = 30"
+      ],
+      "answer": "x + 12 = 30",
+      "hint": "On lui donne des billes : en a-t-elle plus, ou moins ?",
+      "explanation": "Au début, x billes ; on en ajoute 12 ; on obtient 30 : x + 12 = 30. On lui en donne : c’est une addition, pas une soustraction.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programmes et équations",
+          "lines": [
+            "Un programme se fait dans l’ordre. Les parenthèses gardent cet ordre.",
+            "Le carré passe avant × et +.",
+            "3x veut dire 3 × x.",
+            "Pour trouver x, on fait l’opération inverse.",
+            "x + 5 = 9, donc x = 9 − 5. 2x = 10, donc x = 10 ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-order-of-operations-2-7",
+      "prompt": "x + 2 = 20. Alors x = …",
+      "spoken": "x plus 2 égale 20. Combien vaut x ?",
+      "choices": [
+        "10",
+        "18",
+        "22"
+      ],
+      "answer": "18",
+      "hint": "Quel nombre, plus 2, donne 20 ?",
+      "explanation": "L’inverse de + 2, c’est − 2 : x = 20 − 2 = 18. On vérifie : 18 + 2 = 20. 10, c’est 20 ÷ 2 : x + 2, ce n’est pas 2x.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programmes et équations",
+          "lines": [
+            "Un programme se fait dans l’ordre. Les parenthèses gardent cet ordre.",
+            "Le carré passe avant × et +.",
+            "3x veut dire 3 × x.",
+            "Pour trouver x, on fait l’opération inverse.",
+            "x + 5 = 9, donc x = 9 − 5. 2x = 10, donc x = 10 ÷ 2."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-5e-signed-numbers",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

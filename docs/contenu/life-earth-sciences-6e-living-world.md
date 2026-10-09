@@ -411,6 +411,143 @@ Pour tous les items :
    - indice : Où vont les fumées quand elles sortent du pot d’échappement ?
    - explication : Les fumées des voitures partent dans l’air et le polluent. Marcher, faire du vélo ou prendre le bus pollue moins.
 
+## Enquêter sur le vivant · `life-enquiry`
+
+- description : La cellule, les tailles et les temps du vivant, puis le réchauffement climatique lu dans des données, et la différence entre une preuve et une croyance.
+- compétences : c3.sv.vivant.cellule · c3.sv.terre.climat · c3.sv.demarches.esprit-critique · c3.sv.demarches.situer
+- consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- bravo : Bien enquêté !
+- erreur : {explanation}
+- bloc gagné : life-earth-sciences-6e-living-world
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- trou lu : " (mot manquant) "
+
+### Niveau 1 · `life-earth-sciences-6e-living-world-life-enquiry-1`
+
+Pour tous les items :
+- aide « Du plus petit au plus grand » :
+  - Tous les êtres vivants sont faits de cellules.
+  - La plupart des cellules ne se voient qu’au microscope.
+  - Unicellulaire : fait d’une seule cellule.
+  - Organe : le cœur, l’estomac, une feuille. Plusieurs organes forment un appareil.
+  - L’organisme : l’être vivant entier.
+  - L’histoire de la Terre se compte en millions et en milliards d’années.
+
+1. énoncé : Tous les êtres vivants, la plante comme l’animal, sont faits de …
+   - choix : organes · cellules · muscles
+   - réponse : cellules
+   - indice : Relis la première ligne du rappel.
+   - explication : Tous les êtres vivants sont faits de cellules : c’est ce qu’ils ont en commun. Une plante n’a pas de muscles, et certains êtres vivants n’ont aucun organe, mais tous ont des cellules.
+2. énoncé : "Trois observations au microscope\nPeau d’oignon : des cellules collées les unes aux autres.\nIntérieur de la joue : des cellules collées les unes aux autres.\nGoutte d’eau de mare : de tout petits êtres vivants, chacun fait d’une seule cellule."
+   - question : Que montrent ces observations ?
+   - lu : Trois observations au microscope. Peau d’oignon, des cellules collées les unes aux autres. Intérieur de la joue, des cellules collées les unes aux autres. Goutte d’eau de mare, de tout petits êtres vivants, chacun fait d’une seule cellule.
+   - choix : seules les plantes ont des cellules · seuls les animaux ont des cellules · tous ces êtres vivants ont des cellules
+   - réponse : tous ces êtres vivants ont des cellules
+   - indice : Sur quelles lignes trouve-t-on le mot « cellule » ?
+   - explication : L’oignon est une plante, la joue est celle d’un humain, un animal, et les êtres de la mare sont faits d’une cellule : tous ont des cellules. La cellule est commune à tous les êtres vivants, pas seulement aux plantes ou aux animaux.
+3. énoncé : L’estomac et l’intestin travaillent ensemble pour digérer : ils forment un …
+   - choix : organe · appareil · organisme
+   - réponse : appareil
+   - indice : Relis la ligne « Organe » du rappel.
+   - explication : L’estomac et l’intestin sont deux organes. Ensemble, ils forment un appareil : l’appareil digestif. L’organisme, c’est l’être vivant entier.
+4. énoncé : "Une découverte, en 1665\nLe savant Robert Hooke observe une fine tranche de liège.\nIl utilise un des premiers microscopes.\nIl voit de petites cases, qu’il appelle des « cellules »."
+   - question : Qu’est-ce qui lui a permis de voir des cellules ?
+   - lu : Une découverte, en 1665. Le savant Robert Hooke observe une fine tranche de liège. Il utilise un des premiers microscopes. Il voit de petites cases, qu’il appelle des cellules.
+   - choix : ses yeux seuls · un nouvel instrument · une idée, sans rien observer
+   - réponse : un nouvel instrument
+   - indice : Relis la troisième ligne du document.
+   - explication : Le microscope était alors un instrument nouveau : grâce à lui, Hooke a vu des cellules. À l’œil nu, c’était impossible. Un savoir scientifique avance avec les instruments de son époque.
+5. énoncé : La paramécie, qui nage dans l’eau des mares, est faite d’une seule cellule : elle est …
+   - choix : pluricellulaire · unicellulaire · végétale
+   - réponse : unicellulaire
+   - indice : « Uni » veut dire un seul.
+   - explication : Faite d’une seule cellule, la paramécie est unicellulaire. Pluricellulaire veut dire fait de nombreuses cellules, comme un chat ou un chêne.
+6. énoncé : "Trois moments de l’histoire de la vie, dans le désordre\nIl y a 66 millions d’années : les grands dinosaures disparaissent.\nIl y a environ 300 000 ans : les premiers humains de notre espèce.\nIl y a plus de 3 milliards d’années : les premiers êtres vivants, faits d’une seule cellule."
+   - question : Quel moment est le plus ancien ?
+   - lu : Trois moments de l’histoire de la vie, dans le désordre. Il y a soixante-six millions d’années, les grands dinosaures disparaissent. Il y a environ trois cent mille ans, les premiers humains de notre espèce. Il y a plus de trois milliards d’années, les premiers êtres vivants, faits d’une seule cellule.
+   - choix : la fin des grands dinosaures · les premiers humains · les premiers êtres vivants
+   - réponse : les premiers êtres vivants
+   - indice : Cherche le mot « milliards » : c’est le plus grand.
+   - explication : Un milliard, c’est mille millions : plus de 3 milliards d’années, c’est bien plus ancien que 66 millions d’années. Les premiers êtres vivants viennent donc bien avant les dinosaures, et les humains sont les plus récents.
+7. énoncé : Une vie humaine dure environ 80 ans. La Terre, elle, a environ 4,5 …
+   - lu : Une vie humaine dure environ 80 ans. La Terre, elle, a environ quatre virgule cinq (mot manquant).
+   - choix : siècles · millions d’années · milliards d’années
+   - réponse : milliards d’années
+   - indice : C’est un temps immense : le plus grand des trois.
+   - explication : La Terre a environ 4,5 milliards d’années : c’est l’échelle des temps géologiques, le temps long. 4,5 millions d’années, ce serait mille fois moins ; 4,5 siècles, à peine cinq vies humaines.
+8. énoncé : "Trois choses à observer dans le jardin\nUne fourmi.\nUn grain de sable.\nUne cellule de feuille."
+   - question : Laquelle ne peut se voir qu’au microscope ?
+   - lu : Trois choses à observer dans le jardin. Une fourmi. Un grain de sable. Une cellule de feuille.
+   - choix : la fourmi · le grain de sable · la cellule de feuille
+   - réponse : la cellule de feuille
+   - indice : Relis la deuxième ligne du rappel.
+   - explication : La fourmi et le grain de sable se voient à l’œil nu, ou à la loupe. Une cellule de feuille est bien plus petite : il faut un microscope.
+
+### Niveau 2 · `life-earth-sciences-6e-living-world-life-enquiry-2`
+
+Pour tous les items :
+- aide « Le climat et les preuves » :
+  - Depuis plus de 100 ans, la température moyenne de la Terre monte.
+  - Les gaz à effet de serre retiennent la chaleur autour de la Terre.
+  - Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.
+  - Atténuer : rejeter moins de ces gaz. S’adapter : vivre avec le climat qui change.
+  - Un savoir scientifique repose sur des preuves : des mesures, des expériences.
+  - Une croyance ou une opinion ne repose pas sur des preuves.
+
+1. énoncé : "Température moyenne de la Terre\nVers 1900 : la température de départ.\nVers 1960 : un peu plus chaud.\nVers 2020 : environ 1 degré de plus qu’en 1900."
+   - question : Que montrent ces relevés ?
+   - lu : Température moyenne de la Terre. Vers 1900, la température de départ. Vers 1960, un peu plus chaud. Vers 2020, environ un degré de plus qu’en 1900.
+   - choix : la Terre se refroidit · la Terre se réchauffe · la température ne change pas
+   - réponse : la Terre se réchauffe
+   - indice : Compare la première et la dernière ligne.
+   - explication : En 2020, la température moyenne est plus haute qu’en 1900 : la Terre se réchauffe. Un degré de plus en moyenne, sur toute la Terre, c’est beaucoup.
+2. énoncé : "Un glacier des Alpes\nPhoto de 1920 : la glace descend jusqu’au fond de la vallée.\nPhoto de 2020 : la glace s’arrête bien plus haut. On voit des rochers nus."
+   - question : Que montrent ces deux photos ?
+   - lu : Un glacier des Alpes. Photo de 1920, la glace descend jusqu’au fond de la vallée. Photo de 2020, la glace s’arrête bien plus haut. On voit des rochers nus.
+   - choix : le glacier grandit · le glacier fond et recule · le glacier ne change pas
+   - réponse : le glacier fond et recule
+   - indice : Où s’arrête la glace sur la photo la plus récente ?
+   - explication : En 2020, la glace s’arrête plus haut : le glacier a fondu et reculé. La fonte des glaciers est une des données qui montrent le réchauffement climatique.
+3. énoncé : Brûler du pétrole, du charbon ou du gaz rejette un gaz à effet de serre : …
+   - choix : l’oxygène · l’hydrogène · le dioxyde de carbone
+   - réponse : le dioxyde de carbone
+   - indice : Relis la ligne « Brûler » du rappel.
+   - explication : En brûlant, le pétrole, le charbon et le gaz rejettent du dioxyde de carbone, qui retient la chaleur. L’oxygène, lui, n’est pas rejeté : il est utilisé pour brûler.
+4. énoncé : Venir au collège à vélo plutôt qu’en voiture, pour rejeter moins de gaz : c’est une action d’…
+   - choix : adaptation · atténuation · observation
+   - réponse : atténuation
+   - indice : Relis la ligne « Atténuer » du rappel.
+   - explication : Rejeter moins de gaz à effet de serre, c’est atténuer le réchauffement. S’adapter, c’est changer sa façon de vivre parce que le climat a déjà changé.
+5. énoncé : Les étés sont plus secs : des agriculteurs cultivent des plantes qui ont besoin de moins d’eau. C’est une action d’…
+   - choix : atténuation · observation · adaptation
+   - réponse : adaptation
+   - indice : Le climat a déjà changé : que font les agriculteurs ?
+   - explication : Les agriculteurs changent leurs cultures pour vivre avec un climat plus sec : ils s’adaptent. Cela ne fait pas baisser les gaz à effet de serre : ce n’est pas une atténuation.
+6. énoncé : "Relevés dans une mer d’Europe\nL’eau se réchauffe depuis des années.\nDes poissons des eaux chaudes y arrivent.\nDes poissons des eaux froides partent vers le nord."
+   - question : Que change le réchauffement dans cette mer ?
+   - lu : Relevés dans une mer d’Europe. L’eau se réchauffe depuis des années. Des poissons des eaux chaudes y arrivent. Des poissons des eaux froides partent vers le nord.
+   - choix : les espèces qui y vivent · la couleur de l’eau · rien, les poissons restent
+   - réponse : les espèces qui y vivent
+   - indice : Relis les deux dernières lignes du document.
+   - explication : Des espèces arrivent, d’autres partent : le réchauffement change le peuplement de la mer. Chaque espèce vit là où la température lui convient.
+7. énoncé : "Deux affirmations\nA : « Ce matin, j’avais froid. Donc la Terre ne se réchauffe pas. »\nB : « Les mesures de milliers de stations, sur plus de 100 ans, montrent que la température moyenne monte. »"
+   - question : Laquelle repose sur une preuve ?
+   - lu : Deux affirmations. A, ce matin, j’avais froid, donc la Terre ne se réchauffe pas. B, les mesures de milliers de stations, sur plus de cent ans, montrent que la température moyenne monte.
+   - choix : l’affirmation A · l’affirmation B · aucune des deux
+   - réponse : l’affirmation B
+   - indice : Laquelle s’appuie sur des mesures ?
+   - explication : B s’appuie sur des mesures nombreuses, faites pendant longtemps : c’est une preuve. A parle du temps d’un seul matin, en un seul lieu : c’est la météo, pas le climat.
+8. énoncé : « Le fer à cheval porte bonheur. » Aucune mesure, aucune expérience ne le montre : c’est …
+   - choix : une croyance · un savoir scientifique · une mesure
+   - réponse : une croyance
+   - indice : Relis les deux dernières lignes du rappel.
+   - explication : Rien ne le prouve : c’est une croyance. Un savoir scientifique repose sur des preuves, comme des mesures ou des expériences.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

@@ -1,0 +1,233 @@
+{
+  "id": "maths-6e-calculation-measures-1",
+  "biome": "maths-6e-calculation",
+  "type": "measures",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-6e-calculation-measures-1-0",
+      "prompt": "Un rectangle mesure 5 cm sur 3 cm. Son aire est …",
+      "spoken": "Un rectangle mesure 5 centimètres sur 3 centimètres. Son aire est de combien de centimètres carrés ?",
+      "choices": [
+        "8 cm²",
+        "15 cm²",
+        "16 cm²"
+      ],
+      "answer": "15 cm²",
+      "hint": "L’aire d’un rectangle : longueur × largeur.",
+      "explanation": "5 × 3 = 15 : l’aire est 15 cm². 16 cm², c’est le tour, le périmètre : 5 + 3 + 5 + 3. 8 cm², c’est 5 + 3.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires, volumes, angles",
+          "lines": [
+            "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
+            "L’aire, c’est la surface ; le périmètre, c’est le tour.",
+            "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-1-1",
+      "prompt": "Un carré a des côtés de 6 cm. Son aire est …",
+      "spoken": "Un carré a des côtés de 6 centimètres. Son aire est de combien de centimètres carrés ?",
+      "choices": [
+        "12 cm²",
+        "24 cm²",
+        "36 cm²"
+      ],
+      "answer": "36 cm²",
+      "hint": "L’aire d’un carré : côté × côté.",
+      "explanation": "6 × 6 = 36 : l’aire est 36 cm². 24 cm², c’est le périmètre, 4 × 6 ; 12 cm², c’est 6 × 2.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires, volumes, angles",
+          "lines": [
+            "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
+            "L’aire, c’est la surface ; le périmètre, c’est le tour.",
+            "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-1-2",
+      "prompt": "Un pavé fait de petits cubes de 1 cm³\nUne couche : 4 cubes sur 2 cubes.\nIl y a 3 couches.",
+      "question": "Quel est le volume du pavé ?",
+      "spoken": "Un pavé fait de petits cubes de 1 centimètre cube. Une couche, 4 cubes sur 2 cubes. Il y a 3 couches.",
+      "choices": [
+        "8 cm³",
+        "9 cm³",
+        "24 cm³"
+      ],
+      "answer": "24 cm³",
+      "hint": "Combien de cubes dans une couche ? Puis : combien de couches ?",
+      "explanation": "Une couche a 4 × 2 = 8 cubes. 3 couches : 3 × 8 = 24 cubes, donc 24 cm³. 8 cm³, c’est une seule couche ; 9 cm³, c’est 4 + 2 + 3.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires, volumes, angles",
+          "lines": [
+            "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
+            "L’aire, c’est la surface ; le périmètre, c’est le tour.",
+            "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-1-3",
+      "prompt": "Deux boîtes remplies de petits cubes de 1 cm³\nBoîte A : 2 couches de 6 cubes.\nBoîte B : 3 couches de 4 cubes.",
+      "question": "Quelle boîte a le plus grand volume ?",
+      "spoken": "Deux boîtes remplies de petits cubes de 1 centimètre cube. Boîte A, 2 couches de 6 cubes. Boîte B, 3 couches de 4 cubes.",
+      "choices": [
+        "la boîte A",
+        "la boîte B",
+        "elles ont le même volume"
+      ],
+      "answer": "elles ont le même volume",
+      "hint": "Compte les cubes de chaque boîte.",
+      "explanation": "Boîte A : 2 × 6 = 12 cubes. Boîte B : 3 × 4 = 12 cubes. 12 cm³ chacune : elles ont le même volume, même si B a plus de couches.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires, volumes, angles",
+          "lines": [
+            "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
+            "L’aire, c’est la surface ; le périmètre, c’est le tour.",
+            "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-1-4",
+      "prompt": "Un angle de 120° est un angle …",
+      "spoken": "Un angle de 120 degrés est un angle (mot manquant).",
+      "choices": [
+        "aigu",
+        "droit",
+        "obtus"
+      ],
+      "answer": "obtus",
+      "hint": "120°, c’est plus ou moins que 90° ?",
+      "explanation": "120° est plus grand que 90° et plus petit que 180° : l’angle est obtus. Un angle aigu mesure moins de 90°.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires, volumes, angles",
+          "lines": [
+            "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
+            "L’aire, c’est la surface ; le périmètre, c’est le tour.",
+            "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-1-5",
+      "prompt": "Un angle de 45° est un angle …",
+      "spoken": "Un angle de 45 degrés est un angle (mot manquant).",
+      "choices": [
+        "aigu",
+        "droit",
+        "obtus"
+      ],
+      "answer": "aigu",
+      "hint": "45°, c’est plus ou moins que 90° ?",
+      "explanation": "45° est plus petit que 90° : l’angle est aigu. C’est la moitié d’un angle droit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires, volumes, angles",
+          "lines": [
+            "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
+            "L’aire, c’est la surface ; le périmètre, c’est le tour.",
+            "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-1-6",
+      "prompt": "Un tube de colle a deux bases en disque et une face courbe : c’est un …",
+      "spoken": "Un tube de colle a deux bases en disque et une face courbe : c’est un  (mot manquant) ",
+      "choices": [
+        "cône",
+        "cylindre",
+        "pyramide"
+      ],
+      "answer": "cylindre",
+      "hint": "Combien de disques ? Relis la dernière ligne du rappel.",
+      "explanation": "Deux disques et une face courbe : c’est un cylindre. Le cône n’a qu’un disque et une pointe ; la pyramide n’a que des faces plates.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires, volumes, angles",
+          "lines": [
+            "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
+            "L’aire, c’est la surface ; le périmètre, c’est le tour.",
+            "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-6e-calculation-measures-1-7",
+      "prompt": "Le sport préféré des élèves de 6e B\nFoot : 9 élèves\nDanse : 6 élèves\nNatation : 4 élèves\nHand : 6 élèves",
+      "question": "Combien d’élèves de plus ont choisi le foot que la natation ?",
+      "spoken": "Le sport préféré des élèves de sixième B. Foot, 9 élèves. Danse, 6 élèves. Natation, 4 élèves. Hand, 6 élèves.",
+      "choices": [
+        "4",
+        "5",
+        "13"
+      ],
+      "answer": "5",
+      "hint": "Trouve la ligne du foot et celle de la natation. Combien de plus ?",
+      "explanation": "Foot : 9, natation : 4. 9 − 4 = 5 élèves de plus. 13, c’est 9 + 4 : on a ajouté au lieu de chercher l’écart ; 4, c’est la natation seule.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires, volumes, angles",
+          "lines": [
+            "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
+            "L’aire, c’est la surface ; le périmètre, c’est le tour.",
+            "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-6e-calculation",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

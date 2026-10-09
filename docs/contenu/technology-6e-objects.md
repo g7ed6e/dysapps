@@ -413,6 +413,148 @@ Pour tous les items :
    - indice : Compare les deux lignes : la matière, puis comment on le porte.
    - explication : Le cuir a laissé la place à un tissu léger, et l’on porte le cartable sur le dos ou à roulettes : le matériau et l’usage ont changé avec les besoins.
 
+## Résoudre et programmer · `solve-program`
+
+- description : Comparer des solutions à un problème technique en tenant compte d’une contrainte, puis lire un programme simple, dire ce qu’il fait et le critiquer.
+- compétences : c3.te.objets.probleme · c3.te.objets.programmer
+- consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- bravo : Bien vu !
+- erreur : {explanation}
+- bloc gagné : technology-6e-objects
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- trou lu : " (mot manquant) "
+
+### Niveau 1 · `technology-6e-objects-solve-program-1`
+
+Pour tous les items :
+- aide « Résoudre un problème technique » :
+  - Un même problème peut avoir plusieurs solutions.
+  - Une contrainte : une condition que la solution doit respecter.
+  - Imperméable : qui ne laisse pas passer l’eau.
+  - Le poids : un objet à porter doit être léger.
+  - L’autonomie : le temps qu’un objet marche sans être rechargé.
+  - On compare les solutions, et on garde celle qui respecte les contraintes.
+
+1. énoncé : Une condition que la solution doit respecter s’appelle une …
+   - choix : fonction · contrainte · matière
+   - réponse : contrainte
+   - indice : Relis la deuxième ligne du rappel.
+   - explication : Une condition à respecter, comme être léger ou imperméable, est une contrainte. La fonction dit à quoi sert l’objet.
+2. énoncé : "Le problème : protéger le téléphone de la pluie, en randonnée\nSolution A : une pochette en plastique, bien fermée.\nSolution B : une pochette en tissu.\nSolution C : une boîte en carton."
+   - question : Quelle solution est imperméable ?
+   - lu : Le problème, protéger le téléphone de la pluie, en randonnée. Solution A, une pochette en plastique, bien fermée. Solution B, une pochette en tissu. Solution C, une boîte en carton.
+   - choix : la solution A · la solution B · la solution C
+   - réponse : la solution A
+   - indice : Relis la ligne « Imperméable » du rappel.
+   - explication : Le plastique, bien fermé, ne laisse pas passer l’eau : la pochette A est imperméable. Le tissu laisse passer la pluie, et le carton se mouille et se déchire.
+3. énoncé : Le sac de randonnée doit être facile à porter toute la journée : la contrainte est son …
+   - choix : prix · poids · couleur
+   - réponse : poids
+   - indice : Qu’est-ce qui fatigue le dos quand on porte un sac ?
+   - explication : Un sac facile à porter doit être léger : la contrainte est son poids. Le prix et la couleur ne changent rien à la fatigue.
+4. énoncé : La lampe de vélo marche 10 heures sans être rechargée : elle a une bonne …
+   - choix : solidité · imperméabilité · autonomie
+   - réponse : autonomie
+   - indice : Relis la ligne « L’autonomie » du rappel.
+   - explication : Le temps qu’un objet marche sans recharge, c’est son autonomie. L’imperméabilité, c’est ne pas laisser passer l’eau.
+5. énoncé : "Le problème : un abri pour les vélos de la cour\nContraintes : protéger de la pluie, laisser passer la lumière.\nSolution A : un toit en tuiles.\nSolution B : une toile percée de petits trous.\nSolution C : un toit en plastique transparent."
+   - question : Quelle solution respecte les deux contraintes ?
+   - lu : Le problème, un abri pour les vélos de la cour. Contraintes, protéger de la pluie, laisser passer la lumière. Solution A, un toit en tuiles. Solution B, une toile percée de petits trous. Solution C, un toit en plastique transparent.
+   - choix : la solution A · la solution B · la solution C
+   - réponse : la solution C
+   - indice : Vérifie chaque solution : arrête-t-elle la pluie ? Laisse-t-elle passer la lumière ?
+   - explication : Le plastique transparent arrête la pluie et laisse passer la lumière : C respecte les deux contraintes. Les tuiles arrêtent la pluie mais font de l’ombre ; la toile percée laisse passer la lumière, mais aussi la pluie.
+6. énoncé : "Trois lampes pour le camping\nLampe A : 3 heures sans recharge, 100 grammes.\nLampe B : 12 heures sans recharge, 150 grammes.\nLampe C : 12 heures sans recharge, 900 grammes.\nContraintes : éclairer toute la nuit, environ 10 heures, et être légère."
+   - question : Quelle lampe choisir ?
+   - lu : Trois lampes pour le camping. Lampe A, 3 heures sans recharge, 100 grammes. Lampe B, 12 heures sans recharge, 150 grammes. Lampe C, 12 heures sans recharge, 900 grammes. Contraintes, éclairer toute la nuit, environ 10 heures, et être légère.
+   - choix : la lampe A · la lampe B · la lampe C
+   - réponse : la lampe B
+   - indice : Écarte d’abord la lampe qui s’éteint trop tôt, puis la plus lourde.
+   - explication : La lampe A s’éteint après 3 heures, bien avant la fin de la nuit. B et C tiennent 12 heures, mais C est lourde : B respecte les deux contraintes.
+7. énoncé : Pour un même problème technique, on trouve souvent …
+   - choix : une seule solution · plusieurs solutions · aucune solution
+   - réponse : plusieurs solutions
+   - indice : Relis la première ligne du rappel.
+   - explication : Un même problème a souvent plusieurs solutions : on les compare pour garder la meilleure. C’est pour cela qu’on cherche plusieurs idées avant de choisir.
+8. énoncé : "Deux gourdes pour la classe\nGourde A : en plastique fin, jetée après une semaine.\nGourde B : en métal, utilisée pendant des années."
+   - question : Laquelle est le meilleur choix pour l’environnement ?
+   - lu : Deux gourdes pour la classe. Gourde A, en plastique fin, jetée après une semaine. Gourde B, en métal, utilisée pendant des années.
+   - choix : la gourde A · la gourde B · les deux autant
+   - réponse : la gourde B
+   - indice : Laquelle fait le moins de déchets ?
+   - explication : La gourde B sert des années : elle fait bien moins de déchets que des gourdes jetées chaque semaine. Comparer des solutions, c’est aussi penser à l’environnement.
+
+### Niveau 2 · `technology-6e-objects-solve-program-2`
+
+Pour tous les items :
+- aide « Lire un programme » :
+  - Un programme : des instructions, lues dans l’ordre, de haut en bas.
+  - « Répéter 3 fois » : refaire 3 fois les instructions qui suivent.
+  - « Si un obstacle est devant, alors tourner » : le robot tourne seulement s’il y a un obstacle.
+  - « Sinon » : ce que fait le robot quand ce n’est pas vrai.
+  - Le capteur donne l’information ; le programme décide.
+  - Un bon programme fait ce qu’on attend, sans instruction inutile.
+
+1. énoncé : "Le programme du robot\nAvancer de 2 cases.\nTourner à gauche.\nAvancer de 1 case.\nS’arrêter."
+   - question : Que fait le robot juste avant de s’arrêter ?
+   - lu : Le programme du robot. Avancer de 2 cases. Tourner à gauche. Avancer de 1 case. S’arrêter.
+   - choix : il avance de 2 cases · il tourne à gauche · il avance de 1 case
+   - réponse : il avance de 1 case
+   - indice : Cherche la ligne juste au-dessus de « S’arrêter ».
+   - explication : Les instructions se font dans l’ordre, de haut en bas : juste avant de s’arrêter, le robot avance de 1 case. Il a tourné à gauche juste avant.
+2. énoncé : "Le programme de la lumière de l’escalier\nQuand on appuie sur le bouton :\nallumer la lumière,\nattendre 2 minutes,\néteindre la lumière."
+   - question : Que fait ce programme, dit en mots ?
+   - lu : Le programme de la lumière de l’escalier. Quand on appuie sur le bouton, allumer la lumière, attendre 2 minutes, éteindre la lumière.
+   - choix : la lumière s’allume 2 minutes après l’appui · la lumière reste allumée 2 minutes, puis s’éteint · la lumière clignote 2 fois
+   - réponse : la lumière reste allumée 2 minutes, puis s’éteint
+   - indice : Lis les trois instructions dans l’ordre.
+   - explication : D’abord la lumière s’allume, puis le programme attend 2 minutes, puis il l’éteint. Elle s’allume tout de suite, sans attendre : l’attente vient après.
+3. énoncé : "Le programme du robot\nRépéter 3 fois :\navancer de 1 case."
+   - question : De combien de cases le robot avance-t-il en tout ?
+   - lu : Le programme du robot. Répéter 3 fois, avancer de 1 case.
+   - choix : 1 case · 3 cases · 4 cases
+   - réponse : 3 cases
+   - indice : Relis la ligne « Répéter » du rappel.
+   - explication : L’instruction « avancer de 1 case » est faite 3 fois : le robot avance de 3 cases en tout. 1 case, ce serait sans la boucle.
+4. énoncé : "Le programme du robot aspirateur\nRépéter sans fin :\navancer ;\nsi un obstacle est devant, alors tourner."
+   - question : Le robot arrive contre un mur. Que fait-il ?
+   - lu : Le programme du robot aspirateur. Répéter sans fin, avancer. Si un obstacle est devant, alors tourner.
+   - choix : il continue tout droit · il s’arrête pour toujours · il tourne
+   - réponse : il tourne
+   - indice : Le mur est un obstacle : lis la ligne qui commence par « si ».
+   - explication : Le mur est un obstacle devant le robot : la condition est vraie, il tourne. Puis il repart, car la boucle recommence sans fin.
+5. énoncé : "Le programme du robot aspirateur\nSi la batterie est faible, alors retourner à la base.\nSinon, continuer à aspirer.\nLa batterie est pleine."
+   - question : Que fait le robot ?
+   - lu : Le programme du robot aspirateur. Si la batterie est faible, alors retourner à la base. Sinon, continuer à aspirer. La batterie est pleine.
+   - choix : il retourne à la base · il continue à aspirer · il s’arrête
+   - réponse : il continue à aspirer
+   - indice : La batterie est-elle faible ? Si non, lis la ligne « Sinon ».
+   - explication : La batterie est pleine : elle n’est pas faible, la condition est fausse. Le robot fait la partie « Sinon » : il continue à aspirer.
+6. énoncé : Dans le robot, l’information « un obstacle est devant » vient d’un …
+   - choix : moteur · écran · capteur
+   - réponse : capteur
+   - indice : Relis l’avant-dernière ligne du rappel.
+   - explication : Le capteur repère l’obstacle et donne l’information au programme. Le moteur, lui, fait bouger le robot.
+7. énoncé : "Deux programmes pour aller tout droit de A à B, 4 cases plus loin\nProgramme 1 : avancer de 4 cases.\nProgramme 2 : avancer de 2 cases, tourner à droite, tourner à gauche, avancer de 2 cases."
+   - question : Les deux arrivent en B. Lequel est le meilleur ?
+   - lu : Deux programmes pour aller tout droit de A à B, 4 cases plus loin. Programme 1, avancer de 4 cases. Programme 2, avancer de 2 cases, tourner à droite, tourner à gauche, avancer de 2 cases.
+   - choix : le programme 1 · le programme 2 · ils se valent
+   - réponse : le programme 1
+   - indice : Relis la dernière ligne du rappel.
+   - explication : Dans le programme 2, tourner à droite puis à gauche ne sert à rien : le robot perd du temps. Le programme 1 arrive au même endroit, plus vite, sans instruction inutile.
+8. énoncé : "Le but : le robot fait le tour d’un carré.\nLe programme de Sami :\nRépéter 3 fois :\navancer de 2 cases,\ntourner à droite."
+   - question : Que faut-il changer pour finir le carré ?
+   - lu : Le but, le robot fait le tour d’un carré. Le programme de Sami. Répéter 3 fois, avancer de 2 cases, tourner à droite.
+   - choix : tourner à gauche au lieu de droite · répéter 4 fois au lieu de 3 · avancer de 3 cases au lieu de 2
+   - réponse : répéter 4 fois au lieu de 3
+   - indice : Combien de côtés a un carré ?
+   - explication : Un carré a 4 côtés : avec 3 répétitions, le robot n’en fait que 3. Il faut répéter 4 fois. Tourner à gauche ferait aussi un carré, mais de l’autre côté, toujours avec un côté de moins.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

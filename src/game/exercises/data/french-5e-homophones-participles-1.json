@@ -1,0 +1,230 @@
+{
+  "id": "french-5e-homophones-participles-1",
+  "biome": "french-5e-homophones",
+  "type": "participles",
+  "level": 1,
+  "instruction": "Choisis la forme qui complète la phrase : participe passé ou infinitif. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "french-5e-homophones-participles-1-0",
+      "prompt": "Mes cousines sont … hier soir.",
+      "spoken": "Mes cousines sont  (mot manquant)  hier soir.",
+      "choices": [
+        "arrivées",
+        "arrivé",
+        "arriver"
+      ],
+      "answer": "arrivées",
+      "hint": "Qui est-ce qui est arrivé ? Une fille ou un garçon, un ou plusieurs ?",
+      "explanation": "On peut dire « sont vendues » : c’est le participe passé. Avec être, il s’accorde avec le sujet « mes cousines », féminin pluriel : « arrivées ». On ne dit pas « sont vendre » : « arriver » ne va pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé ou infinitif ?",
+          "lines": [
+            "-é ou -er ? Remplace le verbe par « vendu » ou par « vendre ».",
+            "Tu peux dire « vendre » : c’est l’infinitif, en -er.",
+            "Tu peux dire « vendu » : c’est le participe passé, en -é.",
+            "Avec être, le participe s’accorde avec le sujet. Elles sont venues.",
+            "Trouve le sujet : qui est-ce qui ? Puis son genre et son nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-1-1",
+      "prompt": "Il va … ses devoirs avant le dîner.",
+      "spoken": "Il va  (mot manquant)  ses devoirs avant le dîner.",
+      "choices": [
+        "terminer",
+        "terminé",
+        "terminés"
+      ],
+      "answer": "terminer",
+      "hint": "Remplace par « vendre » ou « vendu ».",
+      "explanation": "On dit « il va vendre », pas « il va vendu » : après « va », c’est l’infinitif, « terminer », en -er.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé ou infinitif ?",
+          "lines": [
+            "-é ou -er ? Remplace le verbe par « vendu » ou par « vendre ».",
+            "Tu peux dire « vendre » : c’est l’infinitif, en -er.",
+            "Tu peux dire « vendu » : c’est le participe passé, en -é.",
+            "Avec être, le participe s’accorde avec le sujet. Elles sont venues.",
+            "Trouve le sujet : qui est-ce qui ? Puis son genre et son nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-1-2",
+      "prompt": "Ma grand-mère est … en Bretagne.",
+      "spoken": "Ma grand-mère est  (mot manquant)  en Bretagne.",
+      "choices": [
+        "née",
+        "né",
+        "nés"
+      ],
+      "answer": "née",
+      "hint": "Qui est née ? Une femme ou un homme ?",
+      "explanation": "Avec être, le participe s’accorde avec le sujet « ma grand-mère », féminin singulier : « née », avec un e. « né » irait avec « mon grand-père ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé ou infinitif ?",
+          "lines": [
+            "-é ou -er ? Remplace le verbe par « vendu » ou par « vendre ».",
+            "Tu peux dire « vendre » : c’est l’infinitif, en -er.",
+            "Tu peux dire « vendu » : c’est le participe passé, en -é.",
+            "Avec être, le participe s’accorde avec le sujet. Elles sont venues.",
+            "Trouve le sujet : qui est-ce qui ? Puis son genre et son nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-1-3",
+      "prompt": "Ma mère veut … le salon.",
+      "spoken": "Ma mère veut  (mot manquant)  le salon.",
+      "choices": [
+        "ranger",
+        "rangé",
+        "rangée"
+      ],
+      "answer": "ranger",
+      "hint": "Remplace par « vendre » ou « vendu ».",
+      "explanation": "On dit « elle veut vendre », pas « elle veut vendu » : après « veut », c’est l’infinitif, « ranger », en -er. Le verbe « veut » n’est pas l’auxiliaire être.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé ou infinitif ?",
+          "lines": [
+            "-é ou -er ? Remplace le verbe par « vendu » ou par « vendre ».",
+            "Tu peux dire « vendre » : c’est l’infinitif, en -er.",
+            "Tu peux dire « vendu » : c’est le participe passé, en -é.",
+            "Avec être, le participe s’accorde avec le sujet. Elles sont venues.",
+            "Trouve le sujet : qui est-ce qui ? Puis son genre et son nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-1-4",
+      "prompt": "Les garçons sont … de la cantine.",
+      "spoken": "Les garçons sont  (mot manquant)  de la cantine.",
+      "choices": [
+        "sortis",
+        "sorti",
+        "sortir"
+      ],
+      "answer": "sortis",
+      "hint": "Qui est-ce qui est sorti ? Un ou plusieurs ?",
+      "explanation": "Avec être, le participe s’accorde avec le sujet « les garçons », masculin pluriel : « sortis », avec un s. On ne dit pas « sont vendre » : « sortir » ne va pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé ou infinitif ?",
+          "lines": [
+            "-é ou -er ? Remplace le verbe par « vendu » ou par « vendre ».",
+            "Tu peux dire « vendre » : c’est l’infinitif, en -er.",
+            "Tu peux dire « vendu » : c’est le participe passé, en -é.",
+            "Avec être, le participe s’accorde avec le sujet. Elles sont venues.",
+            "Trouve le sujet : qui est-ce qui ? Puis son genre et son nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-1-5",
+      "prompt": "Papa doit … la voiture devant la maison.",
+      "spoken": "Papa doit  (mot manquant)  la voiture devant la maison.",
+      "choices": [
+        "garer",
+        "garé",
+        "garée"
+      ],
+      "answer": "garer",
+      "hint": "Remplace par « vendre » ou « vendu ».",
+      "explanation": "On dit « il doit vendre », pas « il doit vendu » : après « doit », c’est l’infinitif, « garer », en -er. « La voiture » vient après : elle ne change rien.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé ou infinitif ?",
+          "lines": [
+            "-é ou -er ? Remplace le verbe par « vendu » ou par « vendre ».",
+            "Tu peux dire « vendre » : c’est l’infinitif, en -er.",
+            "Tu peux dire « vendu » : c’est le participe passé, en -é.",
+            "Avec être, le participe s’accorde avec le sujet. Elles sont venues.",
+            "Trouve le sujet : qui est-ce qui ? Puis son genre et son nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-1-6",
+      "prompt": "Elles sont … danser au gymnase.",
+      "spoken": "Elles sont  (mot manquant)  danser au gymnase.",
+      "choices": [
+        "allées",
+        "allé",
+        "aller"
+      ],
+      "answer": "allées",
+      "hint": "Le verbe être est juste avant le trou. Qui est-ce qui est allé ?",
+      "explanation": "« sont » est l’auxiliaire être : on peut dire « elles sont venues », c’est le participe passé. Il s’accorde avec « elles », féminin pluriel : « allées ». Le verbe qui suit, « danser », est à l’infinitif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé ou infinitif ?",
+          "lines": [
+            "-é ou -er ? Remplace le verbe par « vendu » ou par « vendre ».",
+            "Tu peux dire « vendre » : c’est l’infinitif, en -er.",
+            "Tu peux dire « vendu » : c’est le participe passé, en -é.",
+            "Avec être, le participe s’accorde avec le sujet. Elles sont venues.",
+            "Trouve le sujet : qui est-ce qui ? Puis son genre et son nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-participles-1-7",
+      "prompt": "Après le match, les joueuses sont … dans les vestiaires.",
+      "spoken": "Après le match, les joueuses sont  (mot manquant)  dans les vestiaires.",
+      "choices": [
+        "rentrées",
+        "rentré",
+        "rentrer"
+      ],
+      "answer": "rentrées",
+      "hint": "Qui est-ce qui est rentré ? Une ou plusieurs, filles ou garçons ?",
+      "explanation": "On peut dire « sont vendues » : c’est le participe passé. Avec être, il s’accorde avec le sujet « les joueuses », féminin pluriel : « rentrées ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Participe passé ou infinitif ?",
+          "lines": [
+            "-é ou -er ? Remplace le verbe par « vendu » ou par « vendre ».",
+            "Tu peux dire « vendre » : c’est l’infinitif, en -er.",
+            "Tu peux dire « vendu » : c’est le participe passé, en -é.",
+            "Avec être, le participe s’accorde avec le sujet. Elles sont venues.",
+            "Trouve le sujet : qui est-ce qui ? Puis son genre et son nombre."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne route !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-5e-homophones",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

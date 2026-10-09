@@ -1,0 +1,244 @@
+{
+  "id": "technology-3e-digital-data-tables-2",
+  "biome": "technology-3e-digital",
+  "type": "data-tables",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-3e-digital-data-tables-2-0",
+      "prompt": "Le tableau des vélos\nVélo A : 12 kilogrammes.\nVélo B : 9 kilogrammes.\nVélo C : 15 kilogrammes.",
+      "question": "Trié du plus léger au plus lourd, quel vélo vient en premier ?",
+      "spoken": "Le tableau des vélos. Vélo A, 12 kilogrammes. Vélo B, 9 kilogrammes. Vélo C, 15 kilogrammes.",
+      "choices": [
+        "le vélo A",
+        "le vélo B",
+        "le vélo C"
+      ],
+      "answer": "le vélo B",
+      "hint": "Cherche le plus petit poids.",
+      "explanation": "9 kilogrammes est le plus petit poids : le vélo B vient en premier. Le vélo A est le premier écrit, mais pas le plus léger.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Traiter un tableau",
+          "lines": [
+            "Un tableau : une ligne par objet, une colonne par descripteur.",
+            "Trier : ranger les lignes dans un ordre (du plus petit au plus grand, de A à Z).",
+            "Filtrer : garder seulement les lignes qui respectent une condition.",
+            "Calculer : le tableur fait par exemple la somme d’une colonne.",
+            "Un fichier garde des données : du texte, des nombres ou une image.",
+            "Vrai ou faux tient dans un seul bit : 1 ou 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-2-1",
+      "prompt": "Le tableau des sorties\nCinéma : 8 euros.\nPiscine : 4 euros.\nBowling : 12 euros.",
+      "question": "On filtre « moins de 10 euros ». Quelles lignes restent ?",
+      "spoken": "Le tableau des sorties. Cinéma, 8 euros. Piscine, 4 euros. Bowling, 12 euros.",
+      "choices": [
+        "la piscine seulement",
+        "le cinéma et la piscine",
+        "le bowling seulement"
+      ],
+      "answer": "le cinéma et la piscine",
+      "hint": "Compare chaque prix à 10 euros.",
+      "explanation": "8 euros et 4 euros, c’est moins de 10 euros : le cinéma et la piscine restent. Le bowling, à 12 euros, est caché par le filtre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Traiter un tableau",
+          "lines": [
+            "Un tableau : une ligne par objet, une colonne par descripteur.",
+            "Trier : ranger les lignes dans un ordre (du plus petit au plus grand, de A à Z).",
+            "Filtrer : garder seulement les lignes qui respectent une condition.",
+            "Calculer : le tableur fait par exemple la somme d’une colonne.",
+            "Un fichier garde des données : du texte, des nombres ou une image.",
+            "Vrai ou faux tient dans un seul bit : 1 ou 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-2-2",
+      "prompt": "Garder seulement les lignes qui respectent une condition, c’est …",
+      "spoken": "Garder seulement les lignes qui respectent une condition, c’est  (mot manquant) ",
+      "choices": [
+        "trier",
+        "filtrer",
+        "calculer"
+      ],
+      "answer": "filtrer",
+      "hint": "Relis la ligne « Filtrer » du rappel.",
+      "explanation": "Filtrer garde les lignes qui respectent une condition et cache les autres. Trier les garde toutes, mais change leur ordre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Traiter un tableau",
+          "lines": [
+            "Un tableau : une ligne par objet, une colonne par descripteur.",
+            "Trier : ranger les lignes dans un ordre (du plus petit au plus grand, de A à Z).",
+            "Filtrer : garder seulement les lignes qui respectent une condition.",
+            "Calculer : le tableur fait par exemple la somme d’une colonne.",
+            "Un fichier garde des données : du texte, des nombres ou une image.",
+            "Vrai ou faux tient dans un seul bit : 1 ou 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-2-3",
+      "prompt": "Pour écrire vrai ou faux, un seul … suffit.",
+      "spoken": "Pour écrire vrai ou faux, un seul  (mot manquant)  suffit.",
+      "choices": [
+        "bit",
+        "fichier",
+        "tableau"
+      ],
+      "answer": "bit",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Un booléen n’a que deux valeurs : un bit, qui vaut 1 ou 0, suffit pour l’écrire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Traiter un tableau",
+          "lines": [
+            "Un tableau : une ligne par objet, une colonne par descripteur.",
+            "Trier : ranger les lignes dans un ordre (du plus petit au plus grand, de A à Z).",
+            "Filtrer : garder seulement les lignes qui respectent une condition.",
+            "Calculer : le tableur fait par exemple la somme d’une colonne.",
+            "Un fichier garde des données : du texte, des nombres ou une image.",
+            "Vrai ou faux tient dans un seul bit : 1 ou 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-2-4",
+      "prompt": "Les dépenses de la sortie\nBus : 30 euros.\nMusée : 50 euros.\nGoûter : 20 euros.",
+      "question": "Le tableur fait la somme. Quel résultat affiche-t-il ?",
+      "spoken": "Les dépenses de la sortie. Bus, 30 euros. Musée, 50 euros. Goûter, 20 euros.",
+      "choices": [
+        "50 euros",
+        "80 euros",
+        "100 euros"
+      ],
+      "answer": "100 euros",
+      "hint": "Ajoute les trois dépenses.",
+      "explanation": "30 + 50 + 20 = 100 : le tableur affiche 100 euros. 80 euros, c’est oublier le goûter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Traiter un tableau",
+          "lines": [
+            "Un tableau : une ligne par objet, une colonne par descripteur.",
+            "Trier : ranger les lignes dans un ordre (du plus petit au plus grand, de A à Z).",
+            "Filtrer : garder seulement les lignes qui respectent une condition.",
+            "Calculer : le tableur fait par exemple la somme d’une colonne.",
+            "Un fichier garde des données : du texte, des nombres ou une image.",
+            "Vrai ou faux tient dans un seul bit : 1 ou 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-2-5",
+      "prompt": "Le thermomètre connecté\nIl mesure la température toutes les heures.\nIl garde ses mesures dans un fichier.",
+      "question": "Quel type de données ce fichier garde-t-il ?",
+      "spoken": "Le thermomètre connecté. Il mesure la température toutes les heures. Il garde ses mesures dans un fichier.",
+      "choices": [
+        "des nombres",
+        "des images",
+        "des sons"
+      ],
+      "answer": "des nombres",
+      "hint": "Une température, comme 19 degrés, c’est quoi ?",
+      "explanation": "Chaque mesure de température est un nombre : le fichier garde des nombres. Le thermomètre ne prend ni photo ni son.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Traiter un tableau",
+          "lines": [
+            "Un tableau : une ligne par objet, une colonne par descripteur.",
+            "Trier : ranger les lignes dans un ordre (du plus petit au plus grand, de A à Z).",
+            "Filtrer : garder seulement les lignes qui respectent une condition.",
+            "Calculer : le tableur fait par exemple la somme d’une colonne.",
+            "Un fichier garde des données : du texte, des nombres ou une image.",
+            "Vrai ou faux tient dans un seul bit : 1 ou 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-2-6",
+      "prompt": "La porte du garage connectée\nElle dit à l’application si elle est ouverte ou fermée.",
+      "question": "Quel type de donnée suffit ?",
+      "spoken": "La porte du garage connectée. Elle dit à l’application si elle est ouverte ou fermée.",
+      "choices": [
+        "un nombre",
+        "un booléen",
+        "une image"
+      ],
+      "answer": "un booléen",
+      "hint": "Combien d’états la porte peut-elle avoir ici ?",
+      "explanation": "Ouverte ou fermée : deux états seulement, donc un booléen, vrai ou faux. Une image de la porte serait bien plus lourde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Traiter un tableau",
+          "lines": [
+            "Un tableau : une ligne par objet, une colonne par descripteur.",
+            "Trier : ranger les lignes dans un ordre (du plus petit au plus grand, de A à Z).",
+            "Filtrer : garder seulement les lignes qui respectent une condition.",
+            "Calculer : le tableur fait par exemple la somme d’une colonne.",
+            "Un fichier garde des données : du texte, des nombres ou une image.",
+            "Vrai ou faux tient dans un seul bit : 1 ou 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-2-7",
+      "prompt": "Le tableau du club\nLina : licence payée, vrai.\nTom : licence payée, faux.\nSam : licence payée, vrai.",
+      "question": "On filtre « licence payée : faux ». Qui reste ?",
+      "spoken": "Le tableau du club. Lina, licence payée, vrai. Tom, licence payée, faux. Sam, licence payée, vrai.",
+      "choices": [
+        "Lina",
+        "Tom",
+        "Sam"
+      ],
+      "answer": "Tom",
+      "hint": "Cherche la ligne où il est écrit « faux ».",
+      "explanation": "Seul Tom a « faux » : le filtre ne garde que sa ligne. Lina et Sam ont « vrai », ils sont cachés.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Traiter un tableau",
+          "lines": [
+            "Un tableau : une ligne par objet, une colonne par descripteur.",
+            "Trier : ranger les lignes dans un ordre (du plus petit au plus grand, de A à Z).",
+            "Filtrer : garder seulement les lignes qui respectent une condition.",
+            "Calculer : le tableur fait par exemple la somme d’une colonne.",
+            "Un fichier garde des données : du texte, des nombres ou une image.",
+            "Vrai ou faux tient dans un seul bit : 1 ou 0."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-3e-digital",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

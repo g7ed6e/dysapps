@@ -417,6 +417,143 @@ Pour tous les items :
    - indice : Le ticket n’est pas bon : lis la partie « sinon ».
    - explication : La condition « le ticket est bon » est fausse : le programme fait la partie « sinon » et affiche « Ticket refusé ». La barrière reste baissée.
 
+## Données et tableaux · `data-tables`
+
+- description : Décrire un objet par des données (descripteur, type, bit), puis trier, filtrer et calculer dans un petit tableau.
+- compétences : c4.te.fonctionnement.donnees
+- consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- bravo : Bien vu !
+- erreur : {explanation}
+- bloc gagné : technology-3e-digital
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- trou lu : " (mot manquant) "
+
+### Niveau 1 · `technology-3e-digital-data-tables-1`
+
+Pour tous les items :
+- aide « Décrire avec des données » :
+  - Un objet : ce que l’on décrit (un élève, un livre, un vélo).
+  - Un descripteur : une caractéristique de l’objet (nom, prix, couleur).
+  - Le type d’une donnée : un mot, un nombre ou un booléen.
+  - Un booléen : seulement vrai ou faux.
+  - Le bit : la plus petite donnée, qui vaut 0 ou 1.
+
+1. énoncé : Dans la fiche d’un livre, « nombre de pages » est un …
+   - choix : objet · descripteur · type
+   - réponse : descripteur
+   - indice : Relis la ligne « Un descripteur » du rappel.
+   - explication : Le nombre de pages est une caractéristique du livre : c’est un descripteur. L’objet, c’est le livre lui-même.
+2. énoncé : Dans la colonne « Âge », la donnée 12 est de type …
+   - choix : mot · nombre · booléen
+   - réponse : nombre
+   - indice : Relis la ligne « Le type d’une donnée » du rappel.
+   - explication : 12 est un nombre : on peut le comparer ou faire un calcul avec. Un booléen ne vaut que vrai ou faux.
+3. énoncé : "La fiche du vélo\nMarque : Rando.\nPrix : 250 euros.\nÉlectrique : faux."
+   - question : Quel descripteur est un booléen ?
+   - lu : La fiche du vélo. Marque, Rando. Prix, 250 euros. Électrique, faux.
+   - choix : Marque · Prix · Électrique
+   - réponse : Électrique
+   - indice : Relis la ligne « Un booléen » du rappel.
+   - explication : « Électrique » vaut vrai ou faux : c’est un booléen. La marque est un mot, le prix un nombre.
+4. énoncé : « Le casier est fermé : vrai » est une donnée de type …
+   - choix : mot · nombre · booléen
+   - réponse : booléen
+   - indice : Combien de valeurs peut prendre cette donnée ?
+   - explication : Le casier est fermé ou ne l’est pas : la donnée vaut vrai ou faux, c’est un booléen. Même écrit en lettres, « vrai » est ici une des deux valeurs d’un booléen.
+5. énoncé : La plus petite donnée, qui vaut 0 ou 1, est le …
+   - choix : bit · octet · pixel
+   - réponse : bit
+   - indice : Relis la dernière ligne du rappel.
+   - explication : Le bit est la plus petite donnée : 0 ou 1. Un octet en réunit huit ; un pixel est un point d’une image.
+6. énoncé : "La fiche de Lina au club\nPrénom : Lina.\nÂge : 13.\nLicence payée : vrai."
+   - question : Quel est le type de la donnée « Lina » ?
+   - lu : La fiche de Lina au club. Prénom, Lina. Âge, 13. Licence payée, vrai.
+   - choix : un mot · un nombre · un booléen
+   - réponse : un mot
+   - indice : « Lina » s’écrit-il avec des lettres ou avec des chiffres ?
+   - explication : « Lina » est fait de lettres : c’est un mot. L’âge, 13, est un nombre ; « Licence payée » est un booléen.
+7. énoncé : "Les fiches de la bibliothèque\nChaque fiche décrit un livre.\nSur chaque fiche : le titre, l’auteur, l’année."
+   - question : Quel est l’objet décrit ?
+   - lu : Les fiches de la bibliothèque. Chaque fiche décrit un livre. Sur chaque fiche, le titre, l’auteur, l’année.
+   - choix : le titre · le livre · l’année
+   - réponse : le livre
+   - indice : Relis la deuxième ligne du document.
+   - explication : Chaque fiche décrit un livre : le livre est l’objet. Le titre et l’année sont ses descripteurs.
+8. énoncé : Un bit ne peut valoir que 0 ou …
+   - choix : 1 · 2 · 10
+   - réponse : 1
+   - indice : Relis la ligne « Le bit » du rappel.
+   - explication : Un bit vaut 0 ou 1, rien d’autre. Dans l’ordinateur, toutes les données s’écrivent avec ces deux chiffres.
+
+### Niveau 2 · `technology-3e-digital-data-tables-2`
+
+Pour tous les items :
+- aide « Traiter un tableau » :
+  - Un tableau : une ligne par objet, une colonne par descripteur.
+  - Trier : ranger les lignes dans un ordre (du plus petit au plus grand, de A à Z).
+  - Filtrer : garder seulement les lignes qui respectent une condition.
+  - Calculer : le tableur fait par exemple la somme d’une colonne.
+  - Un fichier garde des données : du texte, des nombres ou une image.
+  - Vrai ou faux tient dans un seul bit : 1 ou 0.
+
+1. énoncé : "Le tableau des vélos\nVélo A : 12 kilogrammes.\nVélo B : 9 kilogrammes.\nVélo C : 15 kilogrammes."
+   - question : Trié du plus léger au plus lourd, quel vélo vient en premier ?
+   - lu : Le tableau des vélos. Vélo A, 12 kilogrammes. Vélo B, 9 kilogrammes. Vélo C, 15 kilogrammes.
+   - choix : le vélo A · le vélo B · le vélo C
+   - réponse : le vélo B
+   - indice : Cherche le plus petit poids.
+   - explication : 9 kilogrammes est le plus petit poids : le vélo B vient en premier. Le vélo A est le premier écrit, mais pas le plus léger.
+2. énoncé : "Le tableau des sorties\nCinéma : 8 euros.\nPiscine : 4 euros.\nBowling : 12 euros."
+   - question : On filtre « moins de 10 euros ». Quelles lignes restent ?
+   - lu : Le tableau des sorties. Cinéma, 8 euros. Piscine, 4 euros. Bowling, 12 euros.
+   - choix : la piscine seulement · le cinéma et la piscine · le bowling seulement
+   - réponse : le cinéma et la piscine
+   - indice : Compare chaque prix à 10 euros.
+   - explication : 8 euros et 4 euros, c’est moins de 10 euros : le cinéma et la piscine restent. Le bowling, à 12 euros, est caché par le filtre.
+3. énoncé : Garder seulement les lignes qui respectent une condition, c’est …
+   - choix : trier · filtrer · calculer
+   - réponse : filtrer
+   - indice : Relis la ligne « Filtrer » du rappel.
+   - explication : Filtrer garde les lignes qui respectent une condition et cache les autres. Trier les garde toutes, mais change leur ordre.
+4. énoncé : Pour écrire vrai ou faux, un seul … suffit.
+   - choix : bit · fichier · tableau
+   - réponse : bit
+   - indice : Relis la dernière ligne du rappel.
+   - explication : Un booléen n’a que deux valeurs : un bit, qui vaut 1 ou 0, suffit pour l’écrire.
+5. énoncé : "Les dépenses de la sortie\nBus : 30 euros.\nMusée : 50 euros.\nGoûter : 20 euros."
+   - question : Le tableur fait la somme. Quel résultat affiche-t-il ?
+   - lu : Les dépenses de la sortie. Bus, 30 euros. Musée, 50 euros. Goûter, 20 euros.
+   - choix : 50 euros · 80 euros · 100 euros
+   - réponse : 100 euros
+   - indice : Ajoute les trois dépenses.
+   - explication : 30 + 50 + 20 = 100 : le tableur affiche 100 euros. 80 euros, c’est oublier le goûter.
+6. énoncé : "Le thermomètre connecté\nIl mesure la température toutes les heures.\nIl garde ses mesures dans un fichier."
+   - question : Quel type de données ce fichier garde-t-il ?
+   - lu : Le thermomètre connecté. Il mesure la température toutes les heures. Il garde ses mesures dans un fichier.
+   - choix : des nombres · des images · des sons
+   - réponse : des nombres
+   - indice : Une température, comme 19 degrés, c’est quoi ?
+   - explication : Chaque mesure de température est un nombre : le fichier garde des nombres. Le thermomètre ne prend ni photo ni son.
+7. énoncé : "La porte du garage connectée\nElle dit à l’application si elle est ouverte ou fermée."
+   - question : Quel type de donnée suffit ?
+   - lu : La porte du garage connectée. Elle dit à l’application si elle est ouverte ou fermée.
+   - choix : un nombre · un booléen · une image
+   - réponse : un booléen
+   - indice : Combien d’états la porte peut-elle avoir ici ?
+   - explication : Ouverte ou fermée : deux états seulement, donc un booléen, vrai ou faux. Une image de la porte serait bien plus lourde.
+8. énoncé : "Le tableau du club\nLina : licence payée, vrai.\nTom : licence payée, faux.\nSam : licence payée, vrai."
+   - question : On filtre « licence payée : faux ». Qui reste ?
+   - lu : Le tableau du club. Lina, licence payée, vrai. Tom, licence payée, faux. Sam, licence payée, vrai.
+   - choix : Lina · Tom · Sam
+   - réponse : Tom
+   - indice : Cherche la ligne où il est écrit « faux ».
+   - explication : Seul Tom a « faux » : le filtre ne garde que sa ligne. Lina et Sam ont « vrai », ils sont cachés.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

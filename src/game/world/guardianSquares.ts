@@ -3,7 +3,8 @@
 // donné, en cases depuis l'origine de son cœur, le lieu pas tourné, avec le palier qui l'a donné. Une île qui prend une
 // forme garde ce carré (la recherche, sur sa nouvelle côte, en trouverait un autre) ; sa forme le tient toujours sur sa
 // terre (./map.ts). Pour les îles sans forme, la recherche le retrouve : terrain.test.ts compare les 51 carrés à cette
-// table. Données pures, sans import.
+// table. Trois carrés ont bougé avec la cinquième mission (GD-14, 9 octobre 2026) : le Hangar des inventions, le Manoir
+// du passé et le Belvédère de Thalès, dont une borne de plus touchait le carré. Données pures, sans import.
 import type { BiomeId } from '../biomes';
 
 /** Le côté du carré d'un Gardien, en cases (`GUARDIAN_SQUARE`, ./terrain/creatures.ts). */
@@ -33,13 +34,13 @@ export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<Gu
   'geography-6e-living': { x: -2, y: 13, palier: 3 },
   'life-earth-sciences-6e-living-world': { x: -1, y: 13, palier: 3 },
   'physics-chemistry-6e-matter-energy': { x: -2, y: 13, palier: 1 },
-  'technology-6e-objects': { x: 13, y: -2, palier: 1 },
+  'technology-6e-objects': { x: 15, y: 13, palier: 1 },
   'maths-5e-signed-numbers': { x: -3, y: 14, palier: 3 },
   'maths-5e-proportionality': { x: 17, y: 18, palier: 3 },
   'french-5e-homophones': { x: -2, y: 14, palier: 1 },
   'french-5e-conjugation': { x: 15, y: 15, palier: 3 },
   'english-5e-vocabulary': { x: 16, y: 15, palier: 3 },
-  'english-5e-grammar': { x: 14, y: 2, palier: 1 },
+  'english-5e-grammar': { x: 0, y: 14, palier: 3 },
   'lv2-5e-introductions': { x: 14, y: 3, palier: 1 },
   'history-5e-middle-ages': { x: -2, y: 13, palier: 3 },
   'geography-5e-resources': { x: -2, y: 14, palier: 3 },
@@ -58,7 +59,7 @@ export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<Gu
   'life-earth-sciences-4e-cells-evolution': { x: 13, y: -2, palier: 1 },
   'physics-chemistry-4e-signals-circuits': { x: -4, y: 5, palier: 3 },
   'technology-4e-modeling': { x: -2, y: 13, palier: 3 },
-  'maths-3e-geometry': { x: 13, y: -1, palier: 1 },
+  'maths-3e-geometry': { x: -3, y: 3, palier: 3 },
   'maths-3e-functions': { x: -5, y: 14, palier: 3 },
   'maths-3e-statistics': { x: 14, y: 3, palier: 1 },
   'french-3e-close-reading': { x: 13, y: 16, palier: 1 },
