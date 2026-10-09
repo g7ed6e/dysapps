@@ -38,7 +38,6 @@ function tree(put: Put, x: number, y: number, base: number, tall = 2): void {
   put(x, y, base + tall + 2, LEAF, id);
 }
 
-/** Décor propre à chaque biome, en coordonnées relatives à l'île. `h` donne la hauteur du sol d'une case. */
 /**
  * Le triangle 3-4-5 du Belvédère de Thalès, dans la grille du décor : le côté de 3 cases (7 à 9, y = 0), celui de 4 cases
  * (x = 7, y 0 à 3), et le grand côté en marches (9, 1) et (8, 2), sans diagonale. Deux rangées plus près des bornes que
@@ -55,6 +54,7 @@ export const TRIANGLE_DU_BELVEDERE: readonly (readonly [number, number])[] = [
   [8, 2],
 ];
 
+/** Décor propre à chaque biome, en coordonnées relatives à l'île. `h` donne la hauteur du sol d'une case. */
 export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => void> = {
   'french-6e-phonology': (put, h) => {
     // Derrière la salle des trophées, l'arbre de (1, 10) a laissé la place à Mousso, qui s'y tient hors de la vue des
