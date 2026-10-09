@@ -91,12 +91,15 @@ const SOCLE: Anneau[] = [
   [0.85, 1.78],
   [HAUT_DU_SOCLE, 1.88],
 ];
+/** L'anneau du socle d'une sentinelle importée (`socleSeul`) : sa hauteur, du bas et du haut. */
+const ANNEAU = [0.5, 0.66] as const;
 /** Le foyer, sur le devant du socle : son centre en Z et le haut de sa coupe. */
 export const FOYER = { z: -1.3, haut: 1.12 } as const;
 
 /** Le socle octogonal, le même pour toutes les sentinelles, et la coupe du foyer. */
-function socle(T: Trace, a: Atelier): void {
+function socle(T: Trace, a: Atelier, foyer = true): void {
   fuseau(T, SOCLE, 8, a.moussue((k, j) => k === 0 && (j === 0 || j === 3 || j === 5)), { bas: false });
+  if (!foyer) return;
   fuseau(
     T,
     [
@@ -318,6 +321,38 @@ export function degresDAllumage(a: Allumage): { pierre: number; lueurs: number }
   return typeof a === 'number' ? { pierre: clamp(a, 0, 1), lueurs: clamp(a, 0, 1) } : { pierre: clamp(a.pierre, 0, 1), lueurs: clamp(a.lueurs, 0, 1) };
 }
 
+/** La largeur du front qui monte dans une sentinelle importée, en part de sa hauteur. */
+const FRONT = 0.12;
+
+/**
+ * Le degré de la pierre d'une sentinelle importée à la hauteur `h` (0 : le bas de la statue, 1 : le haut) quand ses
+ * lueurs sont à `lueurs` : la pierre se réchauffe des pieds vers la tête, d'un front doux ; entière à 1.
+ */
+export function frontDeLueur(lueurs: number, h: number): number {
+  if (lueurs <= 0) return 0;
+  return clamp(((1 + FRONT) * lueurs - h) / FRONT, 0, 1);
+}
+
+/**
+ * La part de lumière propre de la pierre d'une sentinelle importée rallumée : assez pour se voir la nuit, assez peu
+ * pour garder le modelé de la statue (DA, relecture des modèles importés : « une émission chaude Sable »).
+ */
+const EMISSION_DE_PIERRE = 0.35;
+
+/**
+ * Le poids de la lueur du triangle `t` d'une sentinelle (0 : il suit la lumière de la scène ; 1 : il brille de la
+ * couleur `LUEUR`) : une flamme, des veines ou l'anneau du socle, au degré des lueurs ; la pierre d'une sentinelle
+ * importée, un peu, à mesure qu'elle se réchauffe (le socle non : son anneau suffit). `pierre` et `lueurs` : ses degrés
+ * (`degresDAllumage`), lus une fois par sentinelle, la fonction tournant à chaque image d'un fondu.
+ */
+export function lueurDuTriangle(f: FacettesDePersonnage, t: number, pierre: number, lueurs: number): number {
+  const piece = f.table[f.pieces[t]];
+  if (piece.lueur === 'allumage') return lueurs;
+  const h = f.hauteurs?.[t];
+  if (h === undefined || piece.nom === 'socle') return 0;
+  return EMISSION_DE_PIERRE * Math.max(pierre, frontDeLueur(lueurs, h));
+}
+
 /**
  * Les couleurs d'une sentinelle au degré `degre`, sommet par sommet, dans l'espace linéaire (écrites dans `dans` s'il
  * est donné) : la teinte de `allumage`, nuancée selon la facette comme tout personnage ; une lueur perd sa nuance à
@@ -327,7 +362,9 @@ export function couleursAllumees(f: FacettesDePersonnage, degre: Allumage, dans 
   const { pierre, lueurs: dl } = degresDAllumage(degre);
   const lueurs = new Set(f.palette.filter((p) => p.role === 'lueur').map((p) => p.couleur));
   for (let t = 0; t < f.teintes.length; t++) {
-    const d = lueurs.has(f.teintes[t]) ? dl : pierre;
+    // Une sentinelle importée n'a ni flamme ni veines : ses lueurs montent dans la pierre, des pieds vers la tête.
+    const h = f.hauteurs?.[t];
+    const d = lueurs.has(f.teintes[t]) ? dl : h === undefined ? pierre : Math.max(pierre, frontDeLueur(dl, h));
     const k = rgb(allumage(f.teintes[t], d));
     const ny = f.normals[t * 9 + 1];
     let w = NUANCE[0] + (NUANCE[1] - NUANCE[0]) * clamp(0.5 + 0.5 * ny, 0, 1);
@@ -339,6 +376,20 @@ export function couleursAllumees(f: FacettesDePersonnage, degre: Allumage, dans 
 }
 
 // ---------- La sentinelle entière ----------
+
+/**
+ * Le socle commun seul, sans foyer, éteint : celui d'une sentinelle importée (./imported/models.ts), dont le modèle a
+ * perdu son propre socle à la coupe (scripts/rendu/modeles/couper.py).
+ */
+export function socleSeul(): FacettesDePersonnage {
+  const f = peindrePersonnage([
+    { nom: 'socle', pivot: [0, 0, 0], dessiner: (T, pot) => socle(T, new Atelier(pot), false) },
+    // Un anneau de cendre tout autour du socle, qui s'allume avec la statue : rallumée, elle se distingue d'un arbre
+    // ou d'une pierre au soleil par autre chose que sa couleur (DA, relecture des modèles importés).
+    { nom: 'anneau', pivot: [0, 0, 0], lueur: 'allumage', dessiner: (T, pot) => bandeauDuSocle(T, [0, 1, 2, 3, 4, 5, 6, 7], ANNEAU[0], ANNEAU[1], new Atelier(pot).lueur) },
+  ]);
+  return { ...f, colors: couleursAllumees(f, 0) };
+}
 
 /**
  * Les quatre pièces d'une sentinelle ; `ou` : où elle se montre (une statue longue, `tour`, s'y tourne) ; `veines` : la

@@ -56,6 +56,11 @@ export interface FacettesDePersonnage {
   table: PieceDuModele[];
   /** Les couleurs de base du personnage, dans l'ordre où elles sont peintes, avec leur rôle. */
   palette: { couleur: Couleur; role: Role }[];
+  /**
+   * Pour chaque triangle d'une sentinelle importée (./imported/models.ts), sa hauteur dans la statue, de 0 (le bas) à
+   * 1 (le haut) : ses lueurs y montent des pieds vers la tête (`couleursAllumees`). Absent d'un modèle dessiné en code.
+   */
+  hauteurs?: Float32Array;
 }
 
 /** La nuance d'une facette selon qu'elle regarde le ciel ou le sol : de `NUANCE[0]` (dessous) à `NUANCE[1]` (dessus). */

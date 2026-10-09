@@ -6,6 +6,7 @@ import { appVersion } from './scripts/version.mjs';
 import { exerciseMeta } from './scripts/exerciseMeta.mjs';
 import { splashLinks } from './scripts/splash-devices.mjs';
 import { iconeUrl } from './scripts/icones.mjs';
+import { compacterGlb } from './scripts/rendu/compacterGlb.mjs';
 
 // Deux cibles de déploiement :
 // - GitHub Pages sert le site dans un sous-dossier (https://<utilisateur>.github.io/dysapps/) : DEPLOY_TARGET=github ;
@@ -63,6 +64,21 @@ function appleSplash(): Plugin {
   };
 }
 
+// Les personnages importés d'Archipéo (src/game/importedCharacters.ts) : publiés compactés, sans normales, positions et
+// couleurs en entiers (environ trois fois plus légers) ; le serveur de dev sert les fichiers tels quels.
+function compactGlb(): Plugin {
+  return {
+    name: 'dysapps-compact-glb',
+    apply: 'build',
+    generateBundle(_options, bundle) {
+      for (const file of Object.values(bundle)) {
+        if (file.type !== 'asset' || !file.fileName.endsWith('.glb') || typeof file.source === 'string') continue;
+        file.source = compacterGlb(file.source);
+      }
+    },
+  };
+}
+
 export default defineConfig({
   base,
   // La version se déduit de l'historique git (scripts/version.mjs) : aucune pull request ne l'écrit.
@@ -77,6 +93,7 @@ export default defineConfig({
     securityHeaders(),
     iconLinks(),
     appleSplash(),
+    compactGlb(),
     VitePWA({
       // La mise à jour est proposée (bande + bouton), jamais imposée en pleine partie.
       registerType: 'prompt',
@@ -103,9 +120,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Tout ce qui sert hors ligne, y compris les fichiers chargés à la demande (3D, quêtes, exercices)
-        // et les textures PNG de l'interface.
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // Tout ce qui sert hors ligne, y compris les fichiers chargés à la demande (3D, quêtes, exercices), les textures
+        // PNG de l'interface et les personnages importés d'Archipéo (.glb, compactés).
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,glb}'],
         // Les écrans de lancement (un par appareil) ne servent qu'au démarrage de l'appli installée sur iPhone et iPad :
         // les précharger ferait télécharger 1 Mo d'images à tous les élèves.
         globIgnores: ['splash/**'],
