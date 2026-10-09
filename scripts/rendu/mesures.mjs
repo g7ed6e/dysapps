@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, gardiens ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, gardiens, emc5 ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -917,6 +917,34 @@ const CAPTURES = [
   ]),
   { nom: 'emc-mes-blocs', vue: 'île', famille: 'emc', ile: 'civics-6e-democratic-society', lieu: 'stock', inventaire: { 'civics-6e-democratic-society': 6 } },
   { nom: 'emc-archipel', vue: 'archipel', famille: 'emc', ile: 'civics-6e-democratic-society' },
+  // Le Fournil des partages et la Grotte des légendes du 5e (lot EMC-5e-2, famille `emc5`), à retirer une fois le lot
+  // fusionné : chacun en plan rapproché (`zoomer`), de jour et de nuit, avant sa restauration (le Gardien en statue
+  // grise, `sansIles`) et tout construit ; la fiche de son Gardien ouverte (l'Oie d'opale près de Mie sur le sol de
+  // farine ; le Phénix dans son nid), éteint puis rallumé ; sa créature, sa fiche ouverte (Mie ; Lyre, sa lyre et ses
+  // pieds). La Grotte avec l'option latin (`lca: 'la'`) : sans option, l'île n'a pas de mission. Puis les deux défis
+  // neufs, le Gardien éteint, sur la tablette et au téléphone en portrait ; et « Mes blocs » avec le sel, le bambou, la
+  // farine et le tuf en poche, puis la farine avec le sel seul et le tuf avec le bambou seul.
+  ...[
+    ['fournil', 'civics-5e-equality-solidarity', {}],
+    ['grotte', 'lca-5e-legends', { reglages: { lca: 'la' } }],
+  ].flatMap(([lieu, ile, option]) => [
+    ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+      { nom: `emc5-${lieu}-avant${suffixe}`, vue: 'île', famille: 'emc5', ile, sansIles: [ile], zoomer: 2, ...option, ...autres },
+      { nom: `emc5-${lieu}-apres${suffixe}`, vue: 'île', famille: 'emc5', ile, zoomer: 2, ...option, ...autres },
+      { nom: `emc5-${lieu}-gardien-avant${suffixe}`, vue: 'île', famille: 'emc5', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile }, zoomer: 2, ...option, ...autres },
+      { nom: `emc5-${lieu}-gardien-apres${suffixe}`, vue: 'île', famille: 'emc5', ile, fiche: { genre: 'gardien', id: ile }, zoomer: 2, ...option, ...autres },
+      { nom: `emc5-${lieu}-creature${suffixe}`, vue: 'île', famille: 'emc5', ile, fiche: { genre: 'creature', id: ile }, zoomer: 2, ...option, ...autres },
+    ]),
+    { nom: `emc5-${lieu}-defi`, vue: 'défi', famille: 'emc5', ile, debout: ile, ...option },
+    { nom: `emc5-${lieu}-defi-390x844`, vue: 'défi', famille: 'emc5', ile, debout: ile, taille: { width: 390, height: 844 }, ...option },
+  ]),
+  // « Mes blocs » suit l'ordre des blocs (sel, bambou, farine, tuf) : les quatre ensemble, puis chaque paire seule, pour que
+  // la farine soit juste à côté du sel et le tuf juste à côté du bambou.
+  ...[
+    ['', { 'physics-chemistry-5e-matter-universe': 5, 'technology-5e-design': 4, 'civics-5e-equality-solidarity': 6, 'lca-5e-legends': 3 }],
+    ['-farine-sel', { 'physics-chemistry-5e-matter-universe': 5, 'civics-5e-equality-solidarity': 6 }],
+    ['-tuf-bambou', { 'technology-5e-design': 4, 'lca-5e-legends': 3 }],
+  ].map(([suffixe, inventaire]) => ({ nom: `emc5-mes-blocs${suffixe}`, vue: 'île', famille: 'emc5', ile: 'civics-5e-equality-solidarity', lieu: 'stock', inventaire })),
   // Les neuf îles de sciences des 5e, 4e et 3e (lot SC-3, famille `sciences-college`), à retirer une fois le lot fusionné :
   // chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`) et tout
   // construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la petite
