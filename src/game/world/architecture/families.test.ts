@@ -20,8 +20,8 @@ describe('La table commune « matière → famille »', () => {
     expect(Object.keys(MATERIAL_FAMILIES).filter((t) => !(TEXTURE_KINDS as string[]).includes(t))).toEqual([]);
   });
 
-  it('les exceptions sont nommées : le fantôme (A) et la pierre du fondu (B), proposés au mainteneur, puis ce qui a son modèle', () => {
-    expect(CUBE_EXCEPTIONS.map((e) => e.id)).toEqual(['fantome', 'pierre-du-fondu', 'borne', 'barriere']);
+  it('les exceptions sont nommées : le fantôme (A) et la pierre du fondu (B), proposés au mainteneur, puis ce qui a son modèle ; la barrière n’en est plus une', () => {
+    expect(CUBE_EXCEPTIONS.map((e) => e.id)).toEqual(['fantome', 'pierre-du-fondu', 'borne']);
     for (const e of CUBE_EXCEPTIONS) {
       expect(e.what.length, e.id).toBeGreaterThan(0);
       expect(e.where.length, e.id).toBeGreaterThan(0);
@@ -67,7 +67,7 @@ describe('La table commune « matière → famille »', () => {
     const batiments = batimentsDe('6e');
     const cours = coursDe('6e');
     // Dans les bâtiments, leurs cours, les monuments et les petites constructions, un bloc posé d'une famille que le kit
-    // dessine (colombage, bardage, pierre, finition, métal) est pris, sauf une exception nommée (la barrière, en attente).
+    // dessine (colombage, bardage, pierre, finition, métal) est pris (la barrière aussi, depuis le 9 octobre 2026).
     const exceptions = new Set<string>(CUBE_EXCEPTIONS.flatMap((e) => (e.texture ? [e.texture] : [])));
     const restent = new Map<string, number>();
     for (const c of restes) {
@@ -82,32 +82,30 @@ describe('La table commune « matière → famille »', () => {
   }, 60_000);
 
   /**
-   * Ce qui reste en blocs taillés au 6e, hors exceptions nommées, matière par origine : la PR suivante du chantier (les
-   * ponts et les liaisons, le quai et le décor du cœur, le verre, les toits cachés). Rien du métal, du précieux posé par
-   * un lieu ni des poteaux de bois des liaisons et de la jetée n'y est (lot du 9 octobre 2026). Une paire qui apparaît
-   * fait échouer le test : elle se range ici, avec sa raison, ou se dessine.
+   * Ce qui reste en blocs taillés au 6e, hors exceptions nommées, matière par origine. Le lot du 9 octobre 2026 (« eau,
+   * quai, liaisons, cœur, barrière ») l'a vidé : le décor du cœur, les tabliers des liaisons et de la jetée, l'eau de la
+   * Mine, les toits cachés et plats, le verre hors d'un mur, les lieux du village et la barrière ont leur dessin
+   * (./heart.ts, ./heartPieces.ts, `barriereDe`). Une paire qui apparaît fait échouer le test : elle se dessine, ou se
+   * range ici avec sa raison.
    */
-  const EN_ATTENTE = [
-    // Le cœur des îles (le quai, le Gardien et son socle, les objets posés par world/decor.ts) : le décor du cœur.
+  const EN_ATTENTE: string[] = [];
+
+  /** Ce que les lots du 9 octobre 2026 ont dessiné : rien de tout cela ne redevient un bloc taillé. */
+  const TRAITEES = [
+    // Le métal, le précieux posé par un lieu, les poteaux de bois des liaisons et de la jetée (#399).
+    'aimant', 'velours', 'tronc@liaison', 'or@lieu:school', 'tronc@lieu',
+    // Le décor du cœur, le quai et le Gardien.
     'brique@coeur', 'cabine@coeur', 'cadran@coeur', 'carton@coeur', 'chaume@coeur', 'feuilles@coeur', 'galet@coeur',
     'mosaique@coeur', 'mousse@coeur', 'obsidienne@coeur', 'or@coeur', 'pierre@coeur', 'planches@coeur', 'sable@coeur',
-    'tronc@coeur', 'verre@coeur',
-    // Une couleur seule, sans matière (le brun sombre de world/decor.ts, posé dans le cœur de la Baie et de la Mine).
-    'couleur@coeur',
-    // Les liaisons entre les lieux (GD-9) : leurs tabliers.
-    'planches@liaison',
-    // L'eau d'une petite construction (la Mine) : la famille de l'eau, une nappe, à dessiner.
-    'eau@petite',
-    // Les toits cachés sous un autre toit, et ceux des petites constructions qui ne font pas de pente.
-    'toit@batiment', 'toit@petite',
-    // Le verre hors d'un mur (la tour du 6e, provisoire) : il ne devient jamais une pièce.
-    'verre@batiment', 'verre@cour', 'verre@petite',
-    // Les lieux du village : la cour de la Halle, la porte et le fût du clocheton de l'école, les toits cachés, les
-    // socles de marbre de la salle (hors lot).
-    'brique@lieu:assembly', 'planches@lieu:assembly', 'poutre@lieu:assembly', 'toit@lieu:assembly',
-    'porte@lieu:school', 'taille@lieu:school', 'toit@lieu:school',
-    'marbre@lieu:trophies', 'taille@lieu:trophies',
-  ].sort();
+    'tronc@coeur', 'verre@coeur', 'couleur@coeur',
+    // Les tabliers des liaisons, l'eau de la Mine, les toits cachés et plats, le verre hors d'un mur.
+    'planches@liaison', 'eau@petite', 'toit@batiment', 'toit@petite', 'verre@batiment', 'verre@cour', 'verre@petite',
+    // Les lieux du village.
+    'brique@lieu:assembly', 'planches@lieu:assembly', 'poutre@lieu:assembly', 'toit@lieu:assembly', 'porte@lieu:school',
+    'taille@lieu:school', 'toit@lieu:school', 'marbre@lieu:trophies', 'taille@lieu:trophies',
+    // La barrière, d'où qu'elle vienne.
+    'barriere',
+  ];
 
   it('au 6e, tout construit, salle des trophées pleine : aucun cube de la construction hors sol, décor et exception nommée ne reste un bloc taillé, sauf ce qui attend sa pull request (nommé)', () => {
     const { progress, world: village } = toutConstruitAvecLesCommandes();
@@ -133,7 +131,6 @@ describe('La table commune « matière → famille »', () => {
       tailles.add(`${c.texture ?? 'couleur'}@${origine}`);
     }
     expect([...tailles].sort()).toEqual(EN_ATTENTE);
-    // Ce lot : plus un bloc d'aimant, de velours, de cloche ni de poteau de liaison ou de jetée.
-    for (const t of tailles) expect(['aimant', 'velours', 'tronc@liaison', 'or@lieu:school', 'tronc@lieu'].some((x) => t.startsWith(x)), t).toBe(false);
+    for (const t of tailles) expect(TRAITEES.some((x) => t.startsWith(x)), t).toBe(false);
   }, 60_000);
 });

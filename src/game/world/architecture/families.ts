@@ -81,18 +81,10 @@ export const CUBE_EXCEPTIONS: readonly CubeException[] = [
     where: 'world/construction.ts, `piliersDe` : son pilier taillé, instancié',
     status: 'son modèle à elle (lot R5) : ce n’est pas un bloc posé',
   },
-  {
-    id: 'barriere',
-    texture: 'barriere',
-    what: 'la barrière (de la finition), tant que ses poteaux et ses lisses ne tiennent pas dans le budget',
-    where: 'world/construction.ts, en bloc taillé ; son dessin est prêt (./lowPieces.ts, `barriereDe`), pas branché',
-    status: 'en attente du mainteneur : +678 triangles au 6e, au-delà de l’enveloppe de la construction (8 octobre 2026)',
-  },
 ];
 
-/** Les textures couvertes par une exception. */
+/** Les textures couvertes par une exception. La barrière n'en est plus une (9 octobre 2026) : poteaux et lisses. */
 type ExceptionTexture = 'borne';
-// La barrière garde sa famille (la finition) : son exception n'est qu'une attente.
 
 /**
  * La famille de chaque matière. Les matières relevées par le directeur artistique (biomes.ts, architect.ts,

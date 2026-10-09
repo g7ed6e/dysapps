@@ -28,7 +28,7 @@ import {
   routesIn,
 } from './arrange';
 import { type ArrangeChoice, landingInWorld, placeOfChoice, stationInWorld } from './arrangeMode';
-import { coutDesPoignees, poigneesDuChoix, type StyleDesPoignees } from './arrangeHandles';
+import { type CoinDuChoix, coutDesPoignees, poigneesDuChoix, type StyleDesPoignees } from './arrangeHandles';
 import { footprintOf, frameOf, gapBetween, GAP_BETWEEN_PLACES, landRectangle } from './footprint';
 import { joinShape } from './join';
 import { type ArchipelagoId, archipelagoOfIsland, type IslandDef, isLandInWorld } from './map';
@@ -217,15 +217,16 @@ const DEMI_CHOIX = 1.5;
 
 /**
  * Le dessin du mode pour un choix, dans un monde, avec ses poignées (./arrangeHandles.ts) posées sur l'eau autour de
- * l'emprise du fantôme (ou, sans fantôme, du point suivi).
+ * l'emprise du fantôme (ou, sans fantôme, du point suivi). `coin` : le coin où « Tourner » se tenait pour ce choix,
+ * qu'il garde tant qu'il n'y gêne pas (./arrangeHandles.ts).
  */
-export function arrangeView(world: World, c: ArrangeChoice, glisse = false): ArrangeView {
+export function arrangeView(world: World, c: ArrangeChoice, glisse = false, coin: CoinDuChoix | null = null): ArrangeView {
   const v = dessinDuChoix(world, c, glisse);
   // Pendant le glissé, les flèches se cachent (choix 1b du mainteneur) : elles reviennent au lever du doigt.
   if (glisse) return v;
   const fantome = v.cases.filter((k) => k.genre === 'fantome');
   const r = v.cadre?.rect ?? (fantome.length ? union(fantome.map((q) => ({ x0: q.x, y0: q.y, x1: q.x + 1, y1: q.y + 1 }))) : { x0: v.suivre.x - DEMI_CHOIX, y0: v.suivre.y - DEMI_CHOIX, x1: v.suivre.x + DEMI_CHOIX, y1: v.suivre.y + DEMI_CHOIX });
-  return { ...v, poignees: poigneesDuChoix(world, c, r, placeIn(world, placeOfChoice(c)).altitude) };
+  return { ...v, poignees: poigneesDuChoix(world, c, r, placeIn(world, placeOfChoice(c)).altitude, coin) };
 }
 
 function dessinDuChoix(world: World, c: ArrangeChoice, glisse: boolean): ArrangeView {

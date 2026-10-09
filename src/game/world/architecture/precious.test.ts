@@ -14,6 +14,7 @@ import { estUnePlaceDeTrophee } from '../trophyHall';
 import { architectureDe, bell, crystal, DRAPE, ingot, MOTIF, MOTIF_FIN, MOTIF_GLSL, peintureDuMur, PIECES_BASSES, PRECIOUS, RANGEES, RESTING_HEIGHT, ROLES_PEINTS, SHEET_METAL, type Voisinage, woodenPost } from '.';
 import { trianglesDe, type DessinDePiece } from './rooms';
 import { KIT_6E } from './kits/6e';
+import { HEART_PAINT } from './paint';
 
 const vois = (v: Partial<Voisinage>): Voisinage => ({
   texture: 'aimant',
@@ -72,14 +73,15 @@ describe('La tôle et la tenture, peintes', () => {
   });
 
   it('le shader peint les joints, les plis et le galon, avec les rôles joint et galon du kit ; de loin, ils s’effacent', () => {
-    expect(ROLES_PEINTS).toEqual(['poteau', 'soubassement', 'chaperon', 'joint', 'galon']);
+    // Puis le brun des pilotis (l'encadrement d'une galerie, le reste, 9 octobre 2026) ; le liseré de l'eau est dessiné, pas peint.
+    expect(ROLES_PEINTS).toEqual(['poteau', 'soubassement', 'chaperon', 'joint', 'galon', 'pilotis']);
     expect(MOTIF_GLSL).toContain(`uniform vec3 uRoles[${ROLES_PEINTS.length * 2}]`);
-    expect(MOTIF_GLSL).toContain('vec3 galon = delave ? uRoles[9] : uRoles[4];');
+    expect(MOTIF_GLSL).toContain('vec3 galon = delave ? uRoles[10] : uRoles[4];');
     expect(MOTIF_GLSL).toContain(`fract(u / ${SHEET_METAL.pas.toFixed(4)})`);
     // Les joints et les plis, au quart de case, s'effacent deux fois plus tôt que le colombage (référent dys) : à 4 pixels
     // par motif, plus rien ; entiers à 8.
     expect(MOTIF_GLSL).toContain(`float loinFin = clamp((${SHEET_METAL.pas.toFixed(4)} / max(du, dv) - 4.0) / 4.0, 0.0, 1.0);`);
-    expect(MOTIF_GLSL).toContain('c = mix(c, joint, j * loinFin);');
+    expect(MOTIF_GLSL).toContain(`c = mix(c, (m & ${MOTIF.descendante}) != 0 ? c * ${HEART_PAINT.paille.toFixed(4)} : joint, j * loinFin);`);
     expect(MOTIF_GLSL).toContain(`pli), loinFin);`);
     expect(MOTIF_GLSL).toContain(`${DRAPE.pli.toFixed(4)}`);
     expect(MOTIF_GLSL).toContain('c = mix(c, galon,');
@@ -130,13 +132,19 @@ describe('Au 6e, dans le monde', () => {
     for (const c of marches) expect(archi.remplacees.has(cle(c))).toBe(true);
   });
 
-  it('les poteaux des liaisons et de la jetée deviennent des poteaux de bois, pas le tronc du décor du cœur', () => {
+  it('les poteaux des liaisons et de la jetée deviennent des poteaux de bois, comme le végétal du cœur et le mât de la Halle', () => {
     const port = getArchipelago('6e').port;
     const jetee = new Set(dockPosts(port).map((p) => `${p.x},${p.y}`));
     const poteaux = archi.pieces.filter((p) => p.famille === 'vegetal');
     expect(poteaux.length).toBeGreaterThan(10);
-    for (const p of poteaux) expect(p.cube.texture === 'tronc' && (Boolean(p.cube.bridge) || (p.cube.tag === port && jetee.has(`${p.cube.x},${p.cube.y}`))), cle(p.cube)).toBe(true);
-    expect(poteaux.some((p) => !p.cube.bridge)).toBe(true);
+    // Le reste (9 octobre 2026) y ajoute le végétal du cœur (troncs nus, bouchons, blé…) et le mât de la Halle.
+    expect(poteaux.some((p) => p.cube.bridge)).toBe(true);
+    expect(poteaux.some((p) => p.cube.tag === port && jetee.has(`${p.cube.x},${p.cube.y}`))).toBe(true);
+    // Chaque poteau de bois vient d'une liaison, de la jetée, du cœur d'une île (aucun lieu) ou du mât de la Halle.
+    const formes = [woodenPost(true), woodenPost(false)].map((d) => JSON.stringify(d));
+    const debout = poteaux.filter((p) => formes.includes(JSON.stringify(p.dessin)));
+    expect(debout.length).toBeGreaterThan(10);
+    for (const { cube: c } of debout) expect(Boolean(c.bridge) || (c.tag === port && jetee.has(`${c.x},${c.y}`)) || !c.place || c.place === 'assembly', cle(c)).toBe(true);
     for (const c of cubes.filter((c) => c.texture === 'tronc' && !c.ghost && !c.decor && (c.bridge || (c.tag === port && jetee.has(`${c.x},${c.y}`))))) expect(archi.remplacees.has(cle(c)), cle(c)).toBe(true);
   });
 

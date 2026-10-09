@@ -228,6 +228,21 @@ describe('étiquettes entières ou absentes (DA-10)', () => {
     expect(montrees([b], [{ dx: 0, dy: 30 }], [], cadre, undefined, iles)).toEqual([true]);
   });
 
+  it('sur la Carte, un nom large ne se centre pas au-dessus de la voisine dont le nom s’est tu, même quand les deux îles sont sous son milieu (GD-12)', () => {
+    // Le Kiosque des témoins (300) et le Verger de la santé (380), voisins ; le Verger sous un bouton, son nom tu. Le
+    // nom du Kiosque, 400 px de large en OpenDyslexic 32, posé au-dessus du Verger : les deux îles sont sous son milieu.
+    const kiosque: LabelBox = { x: 375, y: 520, w: 400, h: 60 };
+    const verger: LabelBox = { x: 380, y: 200, w: 200, h: 60 };
+    const iles = [{ x: 300, y: 560 }, { x: 380, y: 560 }];
+    const sousLePanneau: LabelBox = { x: 380, y: 560, w: 8, h: 8 };
+    const r = placerEtiquettes([kiosque, verger], iles, { zones: [sousLePanneau], bulles: [], obstacles: [], bounds: cadre, gap: 6 }, { weights: [1, 1] });
+    expect(r.visibles[1]).toBe(false);
+    // Le nom du Kiosque est montré, et il désigne son île : son centre est plus près du Kiosque que du Verger, de côté.
+    expect(r.visibles[0]).toBe(true);
+    const x = kiosque.x + r.offsets[0].dx;
+    expect(Math.abs(x - 300)).toBeLessThanOrEqual(Math.abs(x - 380));
+  });
+
   it('retire avant l’écart l’étiquette dont l’île est sous le panneau : elle ne pousse pas les autres', () => {
     const sous: LabelBox = { x: 480, y: 250, w: 254, h: 50 };
     const libre: LabelBox = { x: 480, y: 360, w: 254, h: 50 };

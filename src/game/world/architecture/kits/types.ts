@@ -5,8 +5,8 @@
 import type { VillagePlaceId, VoxelCube } from '../../cube';
 import type { Couleur } from '../../palette';
 import type { TextureKind } from '../../pixels';
-import type { IdDePiece } from '../choices';
-import type { ManiereDuMur } from '../paint';
+import type { IdDePiece, Rotation } from '../choices';
+import type { ManiereDuMur, PeintureDuMur } from '../paint';
 import type { DessinDePiece, Role } from '../rooms';
 import type { MaterialFamily } from '../families';
 
@@ -55,6 +55,26 @@ interface BlocDuKit {
 }
 export type LieuDuKit = (m: CaseDuLieu) => BlocDuKit | undefined;
 
+/** D'où vient un bloc que le plan ne prend pas : le cœur d'une île, une liaison, une petite construction, un bâtiment, une cour, un lieu du village. */
+export type RestOrigin = 'coeur' | 'liaison' | 'petite' | 'batiment' | 'cour' | 'lieu';
+
+/** Ce que le dessin du reste lit autour d'un bloc. */
+export interface RestContext {
+  origin: RestOrigin;
+  /** Le bloc posé d'une case (ni fantôme, ni décor, ni borne), s'il y en a un. */
+  at: (x: number, y: number, z: number) => VoxelCube | undefined;
+  /** La case du bloc dans le modèle de son lieu du village, ou `null`. */
+  place: CaseDuLieu | null;
+}
+
+/**
+ * Le dessin d'un bloc que le plan ne prend pas (le reste) : une pièce dessinée, ou un mur peint (sa peinture), dont le
+ * dessus peut ne jamais être vu (`hiddenTop` : un toit caché sous un autre, qui n'émet pas son dessus).
+ */
+export type RestDrawing =
+  | { family: Famille; piece: DessinDePiece; rotation?: Rotation }
+  | { family: Famille; paint: PeintureDuMur; hiddenTop?: boolean };
+
 export interface Kit {
   /** La table « bloc vers matière » : la famille de chaque texture de bloc (une texture absente n'est pas remplacée). */
   matieres: Partial<Record<TextureKind, Famille>>;
@@ -86,6 +106,12 @@ export interface Kit {
    * au 6e, ceux des liaisons (les bacs, les lanternes à leurs bouts) et de la jetée. Ils ne sont d'aucun plan.
    */
   poteaux?: (c: VoxelCube) => boolean;
+  /**
+   * Le reste (au 6e, ../heart.ts) : le dessin des blocs posés que ni le plan, ni les lieux, ni les poteaux ne prennent
+   * (le décor du cœur, le quai, les tabliers des liaisons, l'eau, les toits cachés, le verre hors d'un mur, la cour de la
+   * Halle) ; `undefined` : il reste un bloc taillé.
+   */
+  reste?: (c: VoxelCube, ctx: RestContext) => RestDrawing | undefined;
 }
 
 /** Un kit vide : aucun bloc remplacé. */
