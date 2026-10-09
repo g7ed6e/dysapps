@@ -44,6 +44,12 @@ export function questStations(id: BiomeId): { typeId: string; x: number; y: numb
   });
 }
 
+/**
+ * L'empilement d'une borne de mission au-dessus du sol de sa case, en blocs : le socle (du bloc de l'île) sur le sol,
+ * l'ardoise étoilée dessus (world/terrain.ts les pose ; le dessus de l'ardoise est un bloc plus haut).
+ */
+export const ETAGES_DE_LA_BORNE = { socle: 1, ardoise: 2 } as const;
+
 /** Une borne de mission dans le monde : le milieu de sa case (x, y de la grille) et le dessus de son ardoise (z). */
 export interface BorneDuMonde {
   x: number;
@@ -63,12 +69,16 @@ const bornesDuMonde = layoutCache<BiomeId, readonly BorneDuMonde[]>();
 export function bornesDansLeMonde(id: BiomeId): readonly BorneDuMonde[] {
   const connues = bornesDuMonde.get(id);
   if (connues) return connues;
-  const def = islandDef(id);
+  // Un lieu sans bornes (le port, un lieu qui n'est pas une île de mission) : aucune, sans lire sa place.
+  const stations = questStations(id);
+  const def = stations.length ? islandDef(id) : null;
   const index = BIOMES.findIndex((b) => b.id === id);
-  const out = questStations(id).map((st): BorneDuMonde => {
-    const w = toWorld(def, st.x, st.y);
-    return { x: w.x + 0.5, y: w.y + 0.5, sommet: def.altitude + groundHeight(index, st.x, st.y) + 3 };
-  });
+  const out = def
+    ? stations.map((st): BorneDuMonde => {
+        const w = toWorld(def, st.x, st.y);
+        return { x: w.x + 0.5, y: w.y + 0.5, sommet: def.altitude + groundHeight(index, st.x, st.y) + ETAGES_DE_LA_BORNE.ardoise + 1 };
+      })
+    : [];
   bornesDuMonde.set(id, out);
   return out;
 }

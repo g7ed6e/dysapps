@@ -30,6 +30,8 @@ import { creerSignes, type Signes } from './signs';
 import { creerCubes, type Cubes } from './cubes';
 import { creerNavire, type Amarre, type Navire } from './ship';
 import { creerCamera, type Camera } from './camera';
+import type { InterfaceDeLaVue } from './camera/framings';
+import { cleDesZones, zonesCouvertes } from '../coveredZones';
 import { creerRond } from './groundRing';
 import { ecouterLeClavier, ecouterLesGestes } from './gestures';
 import { lancerLaBoucle } from './loop';
@@ -256,8 +258,23 @@ export default function WorldCanvas({
     const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant, lecteurDePlaceLibre(el), ileVisee);
     const affordance = creerAffordance(derniers, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
-    // La taille de la vue, tenue à jour par `resize` : la caméra y cadre les bornes au téléphone.
-    const vue = { w: el.clientWidth, h: el.clientHeight };
+    // La taille de la vue, tenue à jour par `resize`, et ce que l'interface y pose (les boutons du haut, la barre du bas),
+    // relu quand la vue change de taille ou quand la page remesure sa colonne et sa barre (`--colonne-bas`, `--barre-h`,
+    // ../useBubblePlacement.ts, écrits sur la scène) : la caméra y cadre les bornes au téléphone.
+    const vue: { w: number; h: number; ui: InterfaceDeLaVue | null } = { w: el.clientWidth, h: el.clientHeight, ui: null };
+    const scenePosee = el.closest<HTMLElement>('[data-scene]');
+    let cleDeLInterface = '';
+    const lireLInterface = () => {
+      const boutons = zonesCouvertes(el, 1, '[data-couvre="bouton"]');
+      const barre = Number.parseFloat(scenePosee?.style.getPropertyValue('--barre-h') ?? '') || 0;
+      const cle = `${cleDesZones(boutons)}|${barre}`;
+      if (cle === cleDeLInterface) return;
+      cleDeLInterface = cle;
+      vue.ui = { boutons, barre };
+    };
+    lireLInterface();
+    const remesure = typeof MutationObserver === 'undefined' ? null : new MutationObserver(lireLInterface);
+    if (scenePosee) remesure?.observe(scenePosee, { attributes: true, attributeFilter: ['style'] });
     const lecture = {
       place: lecteurDePlaceLibre(el),
       vue,
@@ -435,6 +452,7 @@ export default function WorldCanvas({
       if (!w || !h) return;
       vue.w = w;
       vue.h = h;
+      lireLInterface();
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
@@ -475,6 +493,7 @@ export default function WorldCanvas({
       arreterLaBoucle();
       arreterLeClavier();
       observer.disconnect();
+      remesure?.disconnect();
       arreterLesGestes();
       for (const p of parties) p.dispose();
       meter?.dispose();

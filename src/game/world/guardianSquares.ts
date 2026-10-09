@@ -4,7 +4,10 @@
 // forme garde ce carré (la recherche, sur sa nouvelle côte, en trouverait un autre) ; sa forme le tient toujours sur sa
 // terre (./map.ts). Pour les îles sans forme, la recherche le retrouve : terrain.test.ts compare les 51 carrés à cette
 // table. Trois carrés ont bougé avec la cinquième mission (GD-14, 9 octobre 2026) : le Hangar des inventions, le Manoir
-// du passé et le Belvédère de Thalès, dont une borne de plus touchait le carré. Données pures, sans import.
+// du passé et le Belvédère de Thalès, dont une borne de plus touchait le carré. Le Manoir du passé a ensuite pris sa forme
+// (GD-12, 5e) : en (0, 14), l'étiquette de l'île se posait sur la tête du Gardien et le toit du manoir bâti lui couvrait le
+// pied (81 % vu, DA, 9 octobre 2026) ; la recherche refaite sur sa terre nouvelle lui donne (15, 15), où il se voit entier
+// dans les deux univers. Données pures, sans import.
 import type { BiomeId } from '../biomes';
 
 /** Le côté du carré d'un Gardien, en cases (`GUARDIAN_SQUARE`, ./terrain/creatures.ts). */
@@ -40,7 +43,7 @@ export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<Gu
   'french-5e-homophones': { x: -2, y: 14, palier: 1 },
   'french-5e-conjugation': { x: 15, y: 15, palier: 3 },
   'english-5e-vocabulary': { x: 16, y: 15, palier: 3 },
-  'english-5e-grammar': { x: 0, y: 14, palier: 3 },
+  'english-5e-grammar': { x: 15, y: 15, palier: 3 },
   'lv2-5e-introductions': { x: 14, y: 3, palier: 1 },
   'history-5e-middle-ages': { x: -2, y: 13, palier: 3 },
   'geography-5e-resources': { x: -2, y: 14, palier: 3 },

@@ -368,7 +368,7 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     // 8 octobre 2026), seul le Phare des fonctions : aucun carré, même la bande du chemin des arrivées cédée, ne le
     // montre plus. Le Hangar des inventions et le Verger de la santé (54 %), l'Imprimerie des révolutions (66 %) se
     // voient entiers sur un côté de devant depuis ce seuil. Depuis la cinquième mission (GD-14), le Belvédère de Thalès
-    // (82 %) et le Manoir du passé (81 %) ont quitté le leur, qu'une borne de plus touchait.
+    // (82 %) a quitté le sien, qu'une borne de plus touchait ; le Manoir du passé aussi (81 % en (0, 14)), puis, sa forme prise, la recherche refaite sur sa terre l'a posé en (15, 15), où il se voit entier.
     const enPartie: Record<string, number> = {
       'maths-6e-calculation': 0.92,
       'maths-5e-signed-numbers': 0.88,
@@ -387,7 +387,6 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
       'technology-4e-modeling': 0.83,
       'physics-chemistry-3e-motion-energy': 0.83,
       'maths-3e-geometry': 0.82,
-      'english-5e-grammar': 0.81,
     };
     for (const b of BIOMES) {
       const vue = Math.min(...(['gardien', 'sentinelle'] as const).map((forme) => partDuGardienVue(b.id, forme)));

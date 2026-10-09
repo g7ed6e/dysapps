@@ -1014,6 +1014,12 @@ const CAPTURES = [
     ['relais', 'lv2-5e-introductions'],
   ].map(([court, ile]) => ({ nom: `cinq-missions-${court}-390x844`, vue: 'île', famille: 'cinq-missions', ile, taille: { width: 390, height: 844 } })),
   { nom: 'cinq-missions-relais-844x390', vue: 'île', famille: 'cinq-missions', ile: 'lv2-5e-introductions', taille: { width: 844, height: 390 } },
+  // Au téléphone en grand texte (référent dys, consultant UX UI) : les classes passent en rangée en haut, la barre du bas
+  // sur deux lignes ; les bornes se cadrent sous elles, le nom de l'île hors des bornes.
+  ...[
+    ['marche', 'maths-5e-proportionality'],
+    ['fonctions', 'maths-3e-functions'],
+  ].map(([court, ile]) => ({ nom: `cinq-missions-${court}-390x844-grand-texte`, vue: 'île', famille: 'cinq-missions', ile, taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } })),
   // L'autre île-école à cinq missions (la borne près de la porte de l'école), et les étapes du Belvédère.
   { nom: 'cinq-missions-fonctions', vue: 'île', famille: 'cinq-missions', ile: 'maths-3e-functions' },
   ...[1, 2, 3].map((n) => ({ nom: `cinq-missions-belvedere-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-3e-geometry', partie: 'avant', missions: n })),

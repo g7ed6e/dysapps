@@ -16,7 +16,7 @@ import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/framing';
 import { mapOf } from '../world/map';
 import { layoutVersion } from '../world/placement';
 import { bornerLeDecalage, type Decalage, estDecale } from './drag';
-import { cadrageDeLaCarte, cadrageDeLaTraversee, type CadrageDesBornes, cadrerLesBornes, cleDeLaDestination, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, FOLLOW_DISTANCE, FOLLOW_MAX, HAUTEUR_DE_TABLETTE, ISLAND_DISTANCE, ISLAND_VIEW, LARGEUR_D_UNE_ILE, type LectureDeLaCarte, PAS, VIEW, VISEE, VOYAGE_VIEW, ZOOM_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera/framings';
+import { cadrageDeLaCarte, cadrageDeLaTraversee, type CadrageDesBornes, cadrerLesBornes, type InterfaceDeLaVue, cleDeLaDestination, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, FOLLOW_DISTANCE, FOLLOW_MAX, HAUTEUR_DE_TABLETTE, ISLAND_DISTANCE, ISLAND_VIEW, LARGEUR_D_UNE_ILE, type LectureDeLaCarte, PAS, VIEW, VISEE, VOYAGE_VIEW, ZOOM_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera/framings';
 export { AUTOUR_DE_LA_DESTINATION, BORNES_AU_TELEPHONE, cadrageDeLaCarte, cadrageDeLaTraversee, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, ISLAND_VIEW, type LectureDeLaCarte, PLANCHER_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera/framings';
 
 declare global {
@@ -202,18 +202,19 @@ export function creerCamera(
 
   /**
    * Le cadrage des bornes au téléphone (`cadrerLesBornes`), gardé tant que ni l'île, ni la vue (île ou bonhomme), ni la
-   * taille de la vue, ni la disposition ne changent : pas recalculé image par image.
+   * taille de la vue, ni l'interface lue, ni la disposition ne changent : pas recalculé image par image.
    */
-  let cadrageDesBornes: { id: BiomeId; ile: boolean; version: number; w: number; h: number; fov: number; r: CadrageDesBornes } | null = null;
+  let cadrageDesBornes: { id: BiomeId; ile: boolean; version: number; w: number; h: number; fov: number; ui: InterfaceDeLaVue | null; r: CadrageDesBornes } | null = null;
   const bornesCadrees = (id: BiomeId, ile: boolean, target: THREE.Vector3, pos: THREE.Vector3, aspect: number): CadrageDesBornes => {
     // Sans taille de la vue (un test), une vue de tablette de cet aspect.
     const h = carte?.vue?.h || HAUTEUR_DE_TABLETTE;
     const w = carte?.vue?.w || h * aspect;
+    const ui = carte?.vue?.ui ?? null;
     const version = layoutVersion();
     const c = cadrageDesBornes;
-    if (c && c.id === id && c.ile === ile && c.version === version && c.w === w && c.h === h && c.fov === camera.fov) return c.r;
-    const r = cadrerLesBornes(target, pos, bornesDansLeMonde(id), w, h, camera.fov);
-    cadrageDesBornes = { id, ile, version, w, h, fov: camera.fov, r };
+    if (c && c.id === id && c.ile === ile && c.version === version && c.w === w && c.h === h && c.fov === camera.fov && c.ui === ui) return c.r;
+    const r = cadrerLesBornes(target, pos, bornesDansLeMonde(id), w, h, camera.fov, ui);
+    cadrageDesBornes = { id, ile, version, w, h, fov: camera.fov, ui, r };
     return r;
   };
 

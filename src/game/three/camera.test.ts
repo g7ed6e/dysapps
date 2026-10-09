@@ -14,11 +14,13 @@ import { neighboursOf } from '../world/linkGeometry';
 import { archipelagoOfIsland } from '../world/archipelagos';
 import { dispositionEnGrille } from '../world/grid';
 import { placeLibre, type Rect } from '../freeSpace';
-import { avatarRoute, bornesDansLeMonde, bridgePath, cadreDeLaLiaison, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
+import { avatarRoute, bornesDansLeMonde, bridgePath, ETAGES_DE_LA_BORNE, cadreDeLaLiaison, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
 import { getBridge } from '../world/archipelago';
 import { AUTOUR_DE_LA_DESTINATION, BORNES_AU_TELEPHONE, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera';
-import { cadrerLesBornes, ZOOM_DE_LA_CARTE } from './camera/framings';
+import { boitesDesBornes, cadrerLesBornes, type InterfaceDeLaVue, ZOOM_DE_LA_CARTE } from './camera/framings';
 import { RESERVE_DU_BAS } from '../freeSpace';
+import { placerEtiquettes, replierLesSignes } from '../world/labelLayout';
+import { HAUTEUR_DES_NOMS } from '../world/terrain';
 import { SIGNE } from '../world/affordance';
 import type { Derniers, Instant, Monde } from './scenePart';
 
@@ -635,8 +637,13 @@ it('le recadrage d’une fiche (lot 2 de « Toucher le monde ») : un glissement
 // mission 1 sortait par le bord droit de l'écran en portrait. La caméra glisse de côté, ou recule, juste ce qu'il faut ;
 // la tablette garde son cadrage. Sans WebGL : on projette les bornes avec la caméra calculée.
 describe('Les bornes au téléphone en portrait (GD-14)', () => {
-  /** La caméra de la vue de l'île (`island`) ou du bonhomme posé sur `home`, dans une vue `t` dont la caméra connaît la taille. */
-  function cadrer(habillage: Habillage, t: { w: number; h: number }, island: BiomeId | null, home: BiomeId): THREE.PerspectiveCamera {
+  /** Une vue de téléphone en portrait : sa taille, et ce que l'interface y pose (lu dans la page, WorldCanvas.tsx). */
+  type Telephone = { w: number; h: number; ui: InterfaceDeLaVue; nom: string };
+  /**
+   * La caméra de la vue de l'île (`island`) ou du bonhomme posé sur `home`, dans une vue `t` dont la caméra connaît la
+   * taille et l'interface.
+   */
+  function cadrer(habillage: Habillage, t: { w: number; h: number; ui?: InterfaceDeLaVue }, island: BiomeId | null, home: BiomeId): THREE.PerspectiveCamera {
     const a = archipelagoOfIsland(home);
     const b = worldBounds(a);
     const monde: Monde = { scene: new THREE.Scene(), archipel: a, habillage, surface: null, etendue: b, centre: { x: (b.minX + b.maxX) / 2, y: (b.minY + b.maxY) / 2 }, largeur: Math.max(b.maxX - b.minX, b.maxY - b.minY), liaisons: () => [] };
@@ -651,25 +658,83 @@ describe('Les bornes au téléphone en portrait (GD-14)', () => {
   }
   /**
    * Le plus petit écart, en pixels CSS, entre une borne de `id` (sa bulle la plus grande, son pied) et ce qu'elle ne doit
-   * pas passer : la marge des bords, la barre du bas, la colonne de droite (Menu et classes). Négatif : elle déborde.
+   * pas passer : la marge des bords, la barre du bas, les boutons du haut qu'elle croise. Négatif : elle déborde.
    */
-  function jeu(cam: THREE.Camera, t: { w: number; h: number }, id: BiomeId): number {
+  function jeu(cam: THREE.Camera, t: Telephone, id: BiomeId): number {
     const B = BORNES_AU_TELEPHONE;
     let min = Infinity;
     for (const b of bornesDansLeMonde(id)) {
       const pointe = ecran(cam, t, b.x, b.sommet + SIGNE.auDessus, b.y);
-      const pied = ecran(cam, t, b.x, b.sommet - 2, b.y);
+      const pied = ecran(cam, t, b.x, b.sommet - ETAGES_DE_LA_BORNE.ardoise, b.y);
       const haut = pointe.y - B.hautBulle;
-      const plafond = pointe.x + B.demiBulle > t.w - B.colonne.largeur - B.marge ? B.colonne.bas + B.marge : B.marge;
-      min = Math.min(min, pointe.x - B.demiBulle - B.marge, t.w - B.marge - (pointe.x + B.demiBulle), haut - plafond, t.h - RESERVE_DU_BAS - B.marge - pied.y);
+      // La bulle ne touche aucun bouton, à la marge près.
+      for (const o of t.ui.boutons) {
+        const cote = Math.max(o.x - o.w / 2 - (pointe.x + B.demiBulle), pointe.x - B.demiBulle - (o.x + o.w / 2));
+        const dessous = haut - (o.y + o.h / 2);
+        min = Math.min(min, Math.max(cote, dessous) - B.marge);
+      }
+      min = Math.min(min, pointe.x - B.demiBulle - B.marge, t.w - B.marge - (pointe.x + B.demiBulle), haut - B.marge, t.h - Math.max(RESERVE_DU_BAS, t.ui.barre) - B.marge - pied.y);
     }
     return min;
   }
+  /**
+   * Les boutons du haut, relevés dans la page (global.css, `.world-menu-button`, `.world-archipel`) : en texte normal, Menu
+   * (52 px) dans le coin et la colonne des quatre classes dessous (jusqu'à 290 px, 82 px pour « ✓ 3e ») ; en grand texte au
+   * téléphone, la rangée des classes en haut, sur deux lignes (OpenDyslexic, plus large), à gauche de Menu, et la barre
+   * du bas sur deux lignes.
+   */
+  const colonne = (w: number): InterfaceDeLaVue => ({
+    boutons: [
+      { x: w - 12 - 26, y: 12 + 26, w: 52, h: 52 },
+      { x: w - 12 - 41, y: 74 + 108, w: 82, h: 216 },
+    ],
+    barre: 72,
+  });
+  const rangee = (w: number): InterfaceDeLaVue => ({
+    boutons: [
+      { x: w - 12 - 26, y: 12 + 26, w: 52, h: 52 },
+      { x: (12 + (w - 74)) / 2, y: 12 + 62, w: w - 86, h: 124 },
+    ],
+    barre: 140,
+  });
   const ECOLES = ['maths-5e-proportionality', 'maths-4e-algebra', 'maths-3e-functions'] as BiomeId[];
-  const TELEPHONES = [
-    { w: 390, h: 844 },
-    { w: 360, h: 740 },
+  const TELEPHONES: Telephone[] = [
+    { w: 390, h: 844, ui: colonne(390), nom: '390 × 844' },
+    { w: 360, h: 740, ui: colonne(360), nom: '360 × 740' },
+    { w: 390, h: 844, ui: rangee(390), nom: '390 × 844, grand texte' },
   ];
+
+  it('le nom de l’île ne se pose sur aucune borne ni sur sa bulle : au Phare des fonctions, au téléphone, il en couvrait une (référent dys, consultant UX UI)', () => {
+    // L'étiquette telle que la pose three/labels.ts : au-dessus du milieu du cœur, à `HAUTEUR_DES_NOMS` ; sa taille, celle
+    // que mesure la recherche des Gardiens (18 px, 0,65 em par lettre, le bloc et le bord).
+    const id: BiomeId = 'maths-3e-functions';
+    const nom = 'Phare des fonctions';
+    let montres = 0;
+    for (const t of TELEPHONES)
+      for (const u of ['blocland', 'archipeo'] as const) {
+        const cam = cadrer(HABILLAGES[u], t, id, id);
+        const c = islandCenter(id);
+        const p = ecran(cam, t, c.x + 0.5, c.z + HAUTEUR_DES_NOMS, c.y + 0.5);
+        const ile = ecran(cam, t, c.x + 0.5, c.z, c.y + 0.5);
+        const box = { x: p.x, y: p.y, w: 18 * (nom.length * 0.65 + 2.4) + 4, h: 18 * 1.7 + 4 };
+        const zones = [...t.ui.boutons, { x: t.w / 2, y: t.h - t.ui.barre / 2, w: t.w, h: t.ui.barre }];
+        const bornes = boitesDesBornes(cam, t.w, t.h, [id]);
+        expect(bornes.length, `${u}, ${t.nom}`).toBe(5);
+        const vue = { zones, bulles: [], obstacles: bornes, bounds: { w: t.w, h: t.h }, gap: 6 };
+        // Comme three/labels.ts : sans place, le nom essaie sans son bloc, plus étroit.
+        const etroite = [box.w - 18 * 1.2];
+        const r = replierLesSignes([box], etroite, (b) => placerEtiquettes(b, [ile], vue, null, [0]));
+        // Le nom ne se tait pas pour les bornes : visible sans elles, il l'est avec.
+        const sans = replierLesSignes([box], etroite, (b) => placerEtiquettes(b, [ile], { ...vue, obstacles: [] }, null, [0]));
+        expect(r.visibles[0], `${u}, ${t.nom}, visible`).toBe(sans.visibles[0]);
+        if (!r.visibles[0]) continue;
+        montres++;
+        const pose = { ...box, w: r.sansSigne[0] ? etroite[0] : box.w, x: box.x + r.offsets[0].dx, y: box.y + r.offsets[0].dy };
+        const recouvre = bornes.filter((b) => Math.abs(b.x - pose.x) < (b.w + pose.w) / 2 && Math.abs(b.y - pose.y) < (b.h + pose.h) / 2);
+        expect(recouvre, `${u}, ${t.nom}`).toEqual([]);
+      }
+    expect(montres).toBeGreaterThan(0);
+  });
 
   it('les îles-écoles du 5e au 3e : leurs bornes à 0, 4, 8, 12 et 16 (quatre au 4e), comme sur les captures', () => {
     for (const id of ECOLES) {
@@ -678,13 +743,13 @@ describe('Les bornes au téléphone en portrait (GD-14)', () => {
     }
   });
 
-  it.each(Object.keys(HABILLAGES) as (keyof typeof HABILLAGES)[])('%s : chaque borne et sa bulle tiennent dans la vue, à 24 px des bords, hors de la colonne et de la barre du bas', (u) => {
+  it.each(Object.keys(HABILLAGES) as (keyof typeof HABILLAGES)[])('%s : chaque borne et sa bulle tiennent dans la vue, à 24 px des bords, sous les boutons du haut lus dans la page et au-dessus de la barre du bas', (u) => {
     for (const id of ECOLES)
       for (const t of TELEPHONES)
         for (const island of [id, null]) {
           const vue = island ? 'vue de l’île' : 'bonhomme posé';
           const marge = jeu(cadrer(HABILLAGES[u], t, island, id), t, id);
-          expect(marge, `${id}, ${vue}, ${t.w} × ${t.h}`).toBeGreaterThanOrEqual(-0.5);
+          expect(marge, `${id}, ${vue}, ${t.nom}`).toBeGreaterThanOrEqual(-0.5);
         }
   });
 
