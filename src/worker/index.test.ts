@@ -30,6 +30,8 @@ describe('le Worker', () => {
     expect(points.map((p) => p.blobs[4])).toEqual(['production']);
     await worker.fetch(post('https://ma-branche-dysapps.exemple.workers.dev/api/usage'), e);
     expect(points.map((p) => p.blobs[4])).toEqual(['production', 'preview']);
+    // Sans taille déclarée, l'envoi est lu quand même.
+    expect((await worker.fetch(new Request('https://dysapps.x.dev/api/usage', { method: 'POST', body }), e)).status).toBe(204);
   });
   it('refuse ce qui ne vient pas de l’application ou n’a pas la forme attendue', async () => {
     const { e, points } = env();
@@ -37,6 +39,8 @@ describe('le Worker', () => {
     expect((await worker.fetch(new Request('https://dysapps.x.dev/api/usage'), e)).status).toBe(405);
     expect((await worker.fetch(post('https://dysapps.x.dev/api/usage', { body: '{' }), e)).status).toBe(400);
     expect((await worker.fetch(post('https://dysapps.x.dev/api/usage', { body: 'x'.repeat(20_000) }), e)).status).toBe(413);
+    // Une taille déclarée fausse ne trompe pas la lecture.
+    expect((await worker.fetch(post('https://dysapps.x.dev/api/usage', { body: 'x'.repeat(20_000), headers: { 'Content-Length': '10' } }), e)).status).toBe(413);
     expect(points).toEqual([]);
   });
   it('laisse les fichiers à Cloudflare, une autre adresse /api/ n’existe pas', async () => {

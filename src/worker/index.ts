@@ -14,17 +14,39 @@ export interface Env {
 
 const empty = (status: number) => new Response(null, { status, headers: { 'Cache-Control': 'no-store' } });
 
+/** Le corps de la requête, lu sans jamais dépasser `max` octets (la taille déclarée n'est pas toujours là) ; `null` au-delà. */
+async function readAtMost(request: Request, max: number): Promise<string | null> {
+  if (!request.body) return '';
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > max) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  const all = new Uint8Array(size);
+  let at = 0;
+  for (const c of chunks) {
+    all.set(c, at);
+    at += c.byteLength;
+  }
+  return new TextDecoder().decode(all);
+}
+
 export async function handleUsage(request: Request, env: Env): Promise<Response> {
   if (request.method !== 'POST') return empty(405);
   // Seulement depuis l'application elle-même (le navigateur pose cet en-tête, un autre site ne peut pas le changer).
   const site = request.headers.get('Sec-Fetch-Site');
   if (site !== null && site !== 'same-origin') return empty(403);
-  // `sendBeacon` donne toujours la taille : sans elle, rien n'est lu.
-  const declared = request.headers.get('Content-Length');
-  if (declared === null) return empty(411);
-  if (Number(declared) > MAX_BYTES) return empty(413);
-  const text = await request.text();
-  if (text.length > MAX_BYTES) return empty(413);
+  if (Number(request.headers.get('Content-Length') ?? 0) > MAX_BYTES) return empty(413);
+  const text = await readAtMost(request, MAX_BYTES);
+  if (text === null) return empty(413);
   let raw: unknown;
   try {
     raw = JSON.parse(text);

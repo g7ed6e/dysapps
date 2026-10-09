@@ -69,7 +69,7 @@ public/          icônes, police Luciole
 
 ## Le Worker (`src/worker/`)
 
-- `index.ts` : le Worker de Cloudflare (`main` de `wrangler.jsonc`). Les fichiers de `dist/` sont servis sans passer par lui ; il ne reçoit que `/api/…` (`run_worker_first`). `POST /api/usage` : seulement depuis l’application elle-même (`Sec-Fetch-Site`), avec sa taille (`Content-Length`), 16 Kio au plus, vérifié par `parseUsageBatch`, puis chaque évènement est écrit dans le jeu de données `dysapps_usage` de Workers Analytics Engine, avec le canal déduit de l’adresse (`production` sous `dysapps.…`, sinon `preview`) ; jamais l’adresse IP ni un en-tête ; les journaux d’invocation du Worker sont coupés (`observability.logs.invocation_logs` de `wrangler.jsonc`). Analytics Engine garde les données trois mois. Toute autre adresse `/api/…` répond 404.
+- `index.ts` : le Worker de Cloudflare (`main` de `wrangler.jsonc`). Les fichiers de `dist/` sont servis sans passer par lui ; il ne reçoit que `/api/…` (`run_worker_first`). `POST /api/usage` : seulement depuis l’application elle-même (`Sec-Fetch-Site`), sa taille (`Content-Length` quand il est là, et le corps lu sans jamais dépasser 16 Kio), vérifié par `parseUsageBatch`, puis chaque évènement est écrit dans le jeu de données `dysapps_usage` de Workers Analytics Engine, avec le canal déduit de l’adresse (`production` sous `dysapps.…`, sinon `preview`) ; jamais l’adresse IP ni un en-tête ; les journaux d’invocation du Worker sont coupés (`observability.logs.invocation_logs` de `wrangler.jsonc`). Analytics Engine garde les données trois mois. Toute autre adresse `/api/…` répond 404.
 
 ## Le jeu (`src/game/`)
 

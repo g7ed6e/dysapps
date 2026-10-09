@@ -20,6 +20,7 @@ describe('la mesure d’usage', () => {
   afterEach(() => {
     vi.unstubAllEnvs();
     vi.useRealTimers();
+    vi.restoreAllMocks();
     settings?.retenirReglages(null);
   });
 
@@ -74,6 +75,17 @@ describe('la mesure d’usage', () => {
     const again = ((await sent()) as { events: { screen?: string; seconds?: number }[] }[]).flatMap((b) => b.events);
     expect(again.at(-1)).toEqual(expect.objectContaining({ screen: '/reglages', seconds: 4 }));
     hidden.mockRestore();
+  });
+
+  it('ne compte la première image que si le monde est le premier écran', async () => {
+    const usage = await load();
+    usage.startUsage();
+    usage.usageScreen('/');
+    usage.usageScreen('/adventure');
+    usage.usageFrame(16);
+    usage.flushUsage();
+    const [batch] = (await sent()) as { events: { kind: string; firstFrameMs?: number }[] }[];
+    expect(batch.events[0]).toEqual(expect.objectContaining({ kind: 'launch', firstFrameMs: 0 }));
   });
 
   it('oublie ce qui attendait quand le réglage est coupé', async () => {
