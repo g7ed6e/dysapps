@@ -37,19 +37,21 @@ import { pieceDe, type IdDePiece, type Rotation } from './choices';
 import { KITS, kitRempli, type CaseDuLieu, type Famille, type Kit } from './kits';
 import { lieuxDuKit } from './places';
 import { getMonument } from '../monuments';
-import { peintureDuMur, type PeintureDuMur } from './paint';
+import { peintureDuMur, type ManiereDuMur, type PeintureDuMur } from './paint';
+import { woodenPost } from './lowPieces';
 import { facettesPosees, tournerCouvre, type DessinDePiece, type Facette } from './rooms';
 import { SIDES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './neighborhood';
 import { volumesDeMatiere, type VolumeDeMatiere } from './volumes';
 
 export { assemblerLesPieces } from './assembly';
 export { pieceDe, FORMES, type Forme, type IdDePiece } from './choices';
-export { CADRAN, CHAPERON_DE_LA_PIERRE, COLOMBAGE, decharge, MOTIF, MOTIF_FIN, MOTIF_GLSL, motifDeLaRangee, motifDesRangees, peintureDuMur, pointsDuCadran, RANGEES, rangeesReunies, RANGEES_DU_SOUBASSEMENT, ROLES_PEINTS, sensDeLaDecharge } from './paint';
+export { CADRAN, CHAPERON_DE_LA_PIERRE, COLOMBAGE, decharge, MOTIF, MOTIF_FIN, MOTIF_GLSL, motifDeLaRangee, motifDesRangees, peintureDuMur, pointsDuCadran, RANGEES, rangeesReunies, RANGEES_DU_SOUBASSEMENT, ROLES_PEINTS, sensDeLaDecharge, DRAPE, SHEET_METAL } from './paint';
 export { boiteDansLaCase, type DessinDePiece, type Role } from './rooms';
 export { indexDuPlan, voisinageDe, type Voisinage } from './neighborhood';
 export { KITS, kitVide, type CaseDuLieu, type Kit } from './kits';
 export { CUBE_EXCEPTIONS, FAMILIES_TO_CONFIRM, familyOf, MATERIAL_FAMILIES, materialsOf } from './families';
-export { bacDePierre, barriere, marche, PIECES_BASSES } from './lowPieces';
+export { bacDePierre, barriere, marche, PIECES_BASSES, woodenPost } from './lowPieces';
+export { bell, crystal, ingot, PRECIOUS, RESTING_HEIGHT } from './precious';
 export { estUnLieuDuVillage } from './places';
 
 /** Une pièce dessinée, posée : le bloc qu'elle remplace (sa couleur, son île, son lieu), sa pièce, et ses facettes dans le monde. */
@@ -255,18 +257,24 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
   // lisse que les monuments et les petites constructions (`groupeDe`), les cours gardant la leur.
   const volumes = kit.lissage ? volumesDeMatiere(cubes, (c) => (LUMIERES.has(c.texture ?? '') ? null : groupeDuLissage(c, batiments))) : null;
   if (volumes) out.lisses = volumes;
-  const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation; sansDecharge?: boolean; groupe: string; rangees: number; lisse?: boolean }[] = [];
+  const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation; sansDecharge?: boolean; groupe: string; rangees: number; lisse?: boolean; dessin?: DessinDePiece | ManiereDuMur }[] = [];
+  const poteaux: VoxelCube[] = [];
   for (const c of cubes) {
     if (c.place && !estUnMonument(c.place)) {
       const bloc = lieux && lieux.blocs.get(cle(c.x, c.y, c.z));
       if (!lieux || !bloc || options.exclure?.(c)) continue;
       const v = voisinageDe(c, bloc.classe === 'toit' ? lieux.indexDesToits : lieux.index, { surLeVide: options.surLeVide, classe: bloc.classe });
       if (!v) continue;
-      choisis.push({ c, famille: bloc.famille, v, ...pieceDe(v), sansDecharge: bloc.sansDecharge, groupe: 'lieu', rangees: rangeesDeLaColonne(c, lieux.index) });
+      choisis.push({ c, famille: bloc.famille, v, ...pieceDe(v), sansDecharge: bloc.sansDecharge, groupe: 'lieu', rangees: rangeesDeLaColonne(c, lieux.index), dessin: bloc.dessin });
       continue;
     }
-    if (c.ghost || !estDuPlan(c) || LUMIERES.has(c.texture ?? '') || options.exclure?.(c)) continue;
-    if (!Number.isInteger(c.x) || !Number.isInteger(c.y) || !Number.isInteger(c.z)) continue;
+    if (c.ghost || options.exclure?.(c) || !Number.isInteger(c.x) || !Number.isInteger(c.y) || !Number.isInteger(c.z)) continue;
+    // Un poteau de bois (le végétal, une liaison ou la jetée) : d'aucun plan, il se dessine seul, après (`poteaux`).
+    if (c.texture === 'tronc' && !c.sol && !c.decor && kit.poteaux?.(c)) {
+      poteaux.push(c);
+      continue;
+    }
+    if (!estDuPlan(c) || LUMIERES.has(c.texture ?? '')) continue;
     const famille = kit.matieres[c.texture as TextureKind];
     if (!famille) continue;
     const plan = planDe(c);
@@ -291,18 +299,23 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     const m = centres.get(k) ?? { x: 0, y: 0, n: 0 };
     centres.set(k, { x: m.x + c.x + 0.5, y: m.y + c.y + 0.5, n: m.n + 1 });
   }
-  for (const { c, famille, v, piece, rotation, sansDecharge, groupe, rangees, lisse } of choisis) {
+  /** Pose une pièce dessinée à la place de son bloc. */
+  const poser = (c: VoxelCube, famille: Famille, piece: IdDePiece, rotation: Rotation, dessin: DessinDePiece) => {
     const k = cle(c.x, c.y, c.z);
-    // La finition se dessine matière par matière (la porte, la barrière, la marche) : avant les pièces et les murs.
-    const finition = famille === 'finition' ? kit.finitions?.[c.texture as TextureKind]?.(piece, c) : undefined;
+    const facettes = facettesPosees(dessin, rotation, c.x, c.y, c.z);
+    out.remplacees.add(k);
+    out.couvre.set(k, tournerCouvre(dessin.couvre, rotation));
+    out.pieces.push({ cube: c, famille, piece, rotation, dessin, facettes });
+    out.triangles += facettes.reduce((n, f) => n + f.points.length - 2, 0);
+  };
+  for (const { c, famille, v, piece, rotation, sansDecharge, groupe, rangees, lisse, dessin: dessinDuLieu } of choisis) {
+    // Le dessin que le lieu donne (la cloche, la tenture), puis la finition, matière par matière (la porte, la barrière,
+    // la marche) : avant les pièces et les murs.
+    const finition = dessinDuLieu ?? (famille === 'finition' ? kit.finitions?.[c.texture as TextureKind]?.(piece, c) : undefined);
     if (famille === 'finition' && !finition) continue;
     const dessin = typeof finition === 'object' ? finition : finition ? undefined : kit.pieces[famille]?.[piece];
     if (dessin) {
-      const facettes = facettesPosees(dessin, rotation, c.x, c.y, c.z);
-      out.remplacees.add(k);
-      out.couvre.set(k, tournerCouvre(dessin.couvre, rotation));
-      out.pieces.push({ cube: c, famille, piece, rotation, dessin, facettes });
-      out.triangles += facettes.reduce((n, f) => n + f.points.length - 2, 0);
+      poser(c, famille, piece, rotation, dessin);
       continue;
     }
     const maniere = typeof finition === 'string' ? finition : kit.murs[famille];
@@ -316,7 +329,17 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     // Un monument, une petite construction : bardés (`groupeDe` : leur plan à part).
     const barde = kit.bardes.includes(c.tag ?? '') || groupeDe(c) !== null;
     const peinture = peintureDuMur(v, maniere, { barde, exterieur, sansDecharge, rangees, lisse });
-    out.peints.set(k, { cube: c, famille, piece, rotation, peinture });
+    out.peints.set(cle(c.x, c.y, c.z), { cube: c, famille, piece, rotation, peinture });
+  }
+  // Les poteaux de bois : sans dessus sous un autre poteau ou sous une lanterne (son corps s'y pose juste).
+  if (poteaux.length) {
+    const des = new Set(poteaux.map((c) => cle(c.x, c.y, c.z)));
+    const lanternes = new Set(cubes.filter((c) => c.texture === 'lanterne' && !c.ghost).map((c) => cle(c.x, c.y, c.z)));
+    for (const c of poteaux) {
+      const au = cle(c.x, c.y, c.z + 1);
+      const dessus = !des.has(au) && !lanternes.has(au);
+      poser(c, 'vegetal', dessus ? 'mur.seul.pied.chaperon' : 'mur.seul.pied.mur', 0, woodenPost(dessus));
+    }
   }
   return out;
 }

@@ -88,7 +88,7 @@ describe('Le toucher des pièces du lot 7b : toute la case, pour chaque forme', 
       const cubes = tous.filter((c) => c.tag === ile);
       const m = maillageDeLaConstruction('6e', cubes);
       const archi = architectureDe('6e', cubes, { batiments });
-      for (const p of archi.pieces) vues.add(p.piece.split('.')[1]);
+      for (const p of archi.pieces) if (p.famille === 'toit') vues.add(p.piece.split('.')[1]);
       const { pieces } = toucherPartout(m, new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`)));
       expect(pieces, ile).toBeGreaterThan(0);
     }

@@ -1,6 +1,7 @@
 // L'école, la salle des trophées et la Halle aux matériaux des Premiers Rivages au kit du 6e (lot 7b, décision du
-// directeur artistique du 30 septembre 2026) : leurs murs en colombage, leurs toits en pentes ; la porte, les fenêtres,
-// le clocheton, le fond de velours, les socles, les trophées et la cour de la Halle restent des blocs ; le toucher prend
+// directeur artistique du 30 septembre 2026) : leurs murs en colombage, leurs toits en pentes ; la cloche en tronc de
+// pyramide d'or et le fond de velours en tenture peinte (9 octobre 2026) ; la porte, les fenêtres, le fût du clocheton,
+// les socles, les trophées et la cour de la Halle restent des blocs ; le toucher prend
 // toute la case ; les monuments et les autres archipels ne changent pas.
 import type { BlockId } from '../../biomes';
 import type { VoxelCube } from '../cube';
@@ -39,7 +40,7 @@ describe('Les lieux du village au kit du 6e', () => {
     }
   });
 
-  it('l’école : ses murs en colombage sur soubassement, un toit à deux pans de versants ; la porte, les fenêtres et le clocheton restent des blocs', () => {
+  it('l’école : ses murs en colombage sur soubassement, un toit à deux pans de versants, la cloche d’or en tronc de pyramide ; la porte, les fenêtres et le fût du clocheton restent des blocs', () => {
     const { cubes } = lieux('6e');
     const archi = archiDe('6e', cubes);
     const ecole = cubes.filter((c) => c.place === 'school');
@@ -64,10 +65,15 @@ describe('Les lieux du village au kit du 6e', () => {
     }
     // Le toit : des versants seulement (deux pans), jamais une pointe ; le rang caché sous le haut du toit et la souche du
     // clocheton restent des blocs.
-    const toits = archi.pieces.filter((p) => p.cube.place === 'school');
+    const toits = archi.pieces.filter((p) => p.cube.place === 'school' && p.famille === 'toit');
     expect(toits.length).toBe(19);
     expect(new Set(toits.map((p) => p.piece.split('.')[1]))).toEqual(new Set(['versant']));
-    for (const c of ecole.filter((c) => ['porte', 'verre', 'or'].includes(c.texture ?? '') || rel(c)?.z === 6)) {
+    // La cloche : le tronc de pyramide d'or, sur le fût, au plus les 10 triangles d'un cube (DA, 9 octobre 2026).
+    const cloches = archi.pieces.filter((p) => p.cube.place === 'school' && p.famille === 'precieux');
+    expect(cloches.map((p) => `${p.cube.texture}:${rel(p.cube).z}`)).toEqual(['or:7']);
+    expect(cloches[0].dessin).toBe(KIT_6E.lieux?.school?.({ ...rel(cloches[0].cube), texture: 'or' })?.dessin);
+    expect(cloches[0].facettes.reduce((n, f) => n + f.points.length - 2, 0)).toBeLessThanOrEqual(10);
+    for (const c of ecole.filter((c) => ['porte', 'verre'].includes(c.texture ?? '') || rel(c)?.z === 6)) {
       expect(archi.peints.has(cle(c)) || archi.remplacees.has(cle(c)), cle(c)).toBe(false);
     }
     // La souche du clocheton (le toit sous lui) : un bloc, de la pierre de taille du clocheton (un seul fût de deux cases).
@@ -78,13 +84,21 @@ describe('Les lieux du village au kit du 6e', () => {
     expect([...archi.matieres.keys()]).toEqual([cle(souches[0])]);
   });
 
-  it('la salle des trophées : ses quatre piliers en colombage, son toit en pentes dans la couverture de l’île, son faîte d’or ; velours, socles et trophées restent des blocs', () => {
+  it('la salle des trophées : ses quatre piliers en colombage, son toit en pentes dans la couverture de l’île, son faîte d’or, le fond de velours en tenture ; socles et trophées restent des blocs', () => {
     const { cubes } = lieux('6e', TOUS.slice(0, 6));
     const archi = archiDe('6e', cubes);
     const salle = cubes.filter((c) => c.place === 'trophies');
     const rel = (c: VoxelCube) => caseDuLieu(c)!;
-    const piliers = [...archi.peints.values()].filter((p) => p.cube.place === 'trophies');
+    const piliers = [...archi.peints.values()].filter((p) => p.cube.place === 'trophies' && p.famille === 'colombage');
     expect(piliers.length).toBe(12);
+    // Le fond de velours : une tenture peinte (ses plis, le galon d'or au rang du haut), 0 triangle.
+    const tentures = [...archi.peints.values()].filter((p) => p.cube.place === 'trophies' && p.famille === 'precieux');
+    expect(tentures.length).toBe(2 * 3);
+    for (const p of tentures) {
+      expect(p.cube.texture).toBe('velours');
+      const galon = rel(p.cube).z === 3 ? MOTIF.chaperon : 0;
+      expect(p.peinture.motifs.slice(0, 4)).toEqual(Array(4).fill(MOTIF.plein | MOTIF.vertical | galon));
+    }
     expect(piliers.every((p) => p.cube.texture === 'marbre' && p.peinture.fond === 'remplissage')).toBe(true);
     // Des piliers isolés : poteaux et sablières, aucune décharge (décision du directeur artistique, 1er octobre 2026).
     for (const p of piliers) expect(p.peinture.motifs.every((f) => !(f & (MOTIF.montante | MOTIF.descendante))), cle(p.cube)).toBe(true);
@@ -95,12 +109,12 @@ describe('Les lieux du village au kit du 6e', () => {
     // La couverture de l'île : le toit de pierre de taille, pièces et rang caché ; jamais l'or.
     for (const c of salle.filter((c) => rel(c)?.z === 4)) expect(archi.couverts.has(cle(c))).toBe(true);
     for (const c of salle.filter((c) => c.texture === 'or')) expect(archi.couverts.has(cle(c))).toBe(false);
-    // Le reste (le fond de velours, les socles, les trophées) : des blocs.
+    // Le reste (les socles, les trophées) : des blocs (les trophées dessinés par world/construction.ts).
     // Les quatre coins de la salle de départ, à droite de son emprise (x = 4 à 7, GD-3).
     const pilier = (m: { x: number; y: number }) => (m.x === 4 || m.x === 7) && (m.y === 0 || m.y === 2);
     for (const c of salle) {
       const m = rel(c);
-      if (!m || m.z >= 4 || pilier(m)) continue;
+      if (!m || m.z >= 4 || pilier(m) || c.texture === 'velours') continue;
       expect(archi.peints.has(cle(c)) || archi.remplacees.has(cle(c)), cle(c)).toBe(false);
     }
   });
@@ -168,8 +182,10 @@ describe('Les lieux du village au kit du 6e', () => {
       ).toEqual(Array.from({ length: largeur }, (_, i) => `${debut + i}:toit.versant.${i === 0 || i === largeur - 1 ? 'rive' : 'courant'}.ciel@${rotation}`));
     }
     // Les piliers de la salle et de ses travées : en colombage, sans décharge.
-    const piliers = [...archi.peints.values()].filter((p) => p.cube.place === 'trophies');
+    const piliers = [...archi.peints.values()].filter((p) => p.cube.place === 'trophies' && p.famille === 'colombage');
     expect(piliers.length).toBe((largeur === 6 ? 6 : 8) * 3);
+    // Le velours de chaque travée aussi, en tenture.
+    expect([...archi.peints.values()].filter((p) => p.cube.texture === 'velours').length).toBe((largeur - (largeur === 6 ? 3 : 4)) * 3);
     for (const p of piliers) {
       expect(p.cube.texture).toBe('marbre');
       expect(p.peinture.motifs.every((f) => !(f & (MOTIF.montante | MOTIF.descendante))), cle(p.cube)).toBe(true);

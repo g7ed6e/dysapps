@@ -92,8 +92,9 @@ export function couleurDuRole(a: ArchipelagoId, kit: Kit, role: Role, muted = fa
 }
 
 /**
- * Les couleurs des rôles que le shader peint sur les murs (`ROLES_PEINTS` : poteau, soubassement, chaperon), puis les
- * mêmes délavées, dans l'espace linéaire de Three.js : l'uniforme `uRoles` des blocs (three/construction.ts).
+ * Les couleurs des rôles que le shader peint sur les murs (`ROLES_PEINTS` : poteau, soubassement, chaperon, joint de la
+ * tôle, galon de la tenture), puis les mêmes délavées, dans l'espace linéaire de Three.js : l'uniforme `uRoles` des
+ * blocs (three/construction.ts).
  */
 export function couleursDesRoles(a: ArchipelagoId, kit: Kit = KITS[a]): Float32Array {
   const out: number[] = [];

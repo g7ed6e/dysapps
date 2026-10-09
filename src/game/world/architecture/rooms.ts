@@ -14,9 +14,9 @@ export const TOUTES_LES_FACES = 0b111111;
 
 /**
  * Les rôles des couleurs d'un kit (./kits/types.ts) : une pièce peut en montrer plusieurs dans sa case (le colombage sur
- * son remplissage, les pilotis sous le plancher).
+ * son remplissage, les pilotis sous le plancher) ; la tôle et ses joints (le métal), le galon d'or (la tenture).
  */
-export type Role = 'poteau' | 'remplissage' | 'soubassement' | 'bardage' | 'pilotis' | 'chaperon';
+export type Role = 'poteau' | 'remplissage' | 'soubassement' | 'bardage' | 'pilotis' | 'chaperon' | 'tole' | 'joint' | 'galon';
 
 /** Une facette d'une pièce : un polygone convexe (3 ou 4 sommets) et sa normale. */
 export interface Facette {
