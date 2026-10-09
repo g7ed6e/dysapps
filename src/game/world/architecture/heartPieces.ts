@@ -26,8 +26,13 @@ export const HEART = {
   awning: 0.25,
   /** La planche du panneau indicateur (au 5e) : son épaisseur, son bas et son haut dans la case. */
   signBoard: { thick: 0.15, bottom: 0.3, top: 0.8 },
-  /** L'épi d'un roseau du Marais (au 5e, l'or posé sur un poteau de bois) : son côté et sa hauteur, plus petits que sa case. */
+  /**
+   * L'épi d'un roseau du Marais (au 5e, l'or posé sur un poteau de bois ; aussi le haut du thermomètre du Glacier) : son
+   * côté et sa hauteur, plus petits que sa case.
+   */
   reedHead: { side: 0.45, height: 0.7 },
+  /** Le tube de verre du thermomètre du Glacier (au 5e) : son côté. */
+  thermometerTube: 0.5,
   /** La plate-bande de rizière (au 5e) : sa hauteur. */
   paddy: 0.3,
   /** La flèche d'or : sa base et sa hauteur. */
@@ -465,6 +470,18 @@ export function reedHead(): DessinDePiece {
     const { side, height } = HEART.reedHead;
     const [a, b] = [0.5 - side / 2, 0.5 + side / 2];
     return { facettes: without(boiteDansLaCase(a, b, a, b, 0, height).facettes, DOWN), couvre: 0 };
+  });
+}
+
+/**
+ * Le tube du thermomètre (au 5e, le verre posé sur la glace au Glacier ; retouches du 9 octobre 2026, troisième tour : il
+ * se lisait comme une caisse à croisillons sous un cube d'or) : un tube de verre uni, plus étroit que sa case, de toute
+ * sa hauteur, sans croisillons ni dessous, sa teinte tenue loin du fantôme Brume (`ghostApart`). 10 triangles.
+ */
+export function thermometerTube(): DessinDePiece {
+  return once('thermometre', () => {
+    const [a, b] = [0.5 - HEART.thermometerTube / 2, 0.5 + HEART.thermometerTube / 2];
+    return { facettes: without(boiteDansLaCase(a, b, a, b, 0, 1).facettes, DOWN).map((f) => ({ ...f, ghostApart: true })), couvre: 0 };
   });
 }
 

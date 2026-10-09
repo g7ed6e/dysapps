@@ -789,8 +789,10 @@ const CAPTURES = [
   // (`sansEtiquettes`), les panneaux des lieux et des monuments masqués (`sansPanneau`). Le Glacier (le dôme, la balise,
   // les congères) et la Saline (le sel), de près, les murs de leur premier plan à moitié posés (`partie` « murs-mi » : une
   // case sur deux de glace ou de sel bâtie, l'autre en fantôme Brume, côte à côte), pour juger leur écart à Brume, tous
-  // les succès déjà gagnés (`succes`) pour que le bandeau « Succès débloqué » ne couvre pas la scène ; le Glacier aussi de
-  // nuit. Le Marché (l'échoppe
+  // les succès déjà gagnés (`succes`) pour que le bandeau « Succès débloqué » ne couvre pas la scène, aucune mission de
+  // l'île jouée (`missions` 0, le défi gagné gardé : `defiGagne`) pour que le jeu ne repose pas au chargement les parties
+  // dues, qui fermaient les fantômes et annonçaient « Niveau supérieur ! » ; le Glacier aussi de nuit, et une paire de
+  // près (`glace-fantome`). Le Marché (l'échoppe
   // de toile et son auvent), le Comptoir (l'échoppe de tuile, la tente, la glacière), le Bourg (le logis d'enluminure,
   // le four, l'écritoire), le Delta (le moulin, la rizière), le Marais (la hutte de tourbe, les mares, de jour et de
   // nuit), le Manoir (la tour de lambris, la serre) ; le phare du large pièce par pièce (`etages` : le socle, la tour, la
@@ -802,6 +804,8 @@ const CAPTURES = [
     famille: 'familles-cinquieme',
     ile: 'maths-5e-signed-numbers',
     partie: 'murs-mi',
+    missions: 0,
+    defiGagne: true,
     succes: 'tous',
     posees: 'toutes',
     zoomer: 3,
@@ -809,8 +813,28 @@ const CAPTURES = [
     finesse: 2,
     ...autres,
   })),
+  // Une paire « glace bâtie / fantôme » du Glacier en gros plan, de jour et de nuit (le référent dys, troisième tour du
+  // 9 octobre 2026), recadrée sur les murs de l'igloo (`recadre`, relevé sur la capture locale du glacier).
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `familles-5e-glace-fantome${suffixe}`,
+    vue: 'île',
+    famille: 'familles-cinquieme',
+    ile: 'maths-5e-signed-numbers',
+    partie: 'murs-mi',
+    missions: 0,
+    defiGagne: true,
+    succes: 'tous',
+    posees: 'toutes',
+    zoomer: 3,
+    sansEtiquettes: true,
+    recadre: { x: 320, y: 180, width: 220, height: 160 },
+    finesse: 3,
+    ...autres,
+  })),
   { nom: 'familles-5e-marche', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
   { nom: 'familles-5e-comptoir', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-vocabulary', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  // La glacière de Pudding en gros plan (son couvercle de tuile en nappe, posé au bas de sa case sur la glace).
+  { nom: 'familles-5e-glaciere', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-vocabulary', posees: 'toutes', zoomer: 3, sansEtiquettes: true, recadre: { x: 440, y: 60, width: 190, height: 160 }, finesse: 3 },
   { nom: 'familles-5e-logis', vue: 'île', famille: 'familles-cinquieme', ile: 'history-5e-middle-ages', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
   { nom: 'familles-5e-delta', vue: 'île', famille: 'familles-cinquieme', ile: 'geography-5e-resources', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
@@ -825,7 +849,7 @@ const CAPTURES = [
     ...autres,
   })),
   { nom: 'familles-5e-manoir', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-grammar', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
-  { nom: 'familles-5e-saline', vue: 'île', famille: 'familles-cinquieme', ile: 'physics-chemistry-5e-matter-universe', partie: 'murs-mi', succes: 'tous', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-5e-saline', vue: 'île', famille: 'familles-cinquieme', ile: 'physics-chemistry-5e-matter-universe', partie: 'murs-mi', missions: 0, defiGagne: true, succes: 'tous', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
   // Le phare du large (world/offshoreLighthouse.ts, LAYERS) posé jusqu'à un étage : le socle (1), la tour (7), la
   // galerie (8), la lanterne (9) ; puis fini, de nuit (son feu).
   ...[
@@ -1368,9 +1392,11 @@ async function scenes() {
    * encore à faire, `missions`) : ses autres exercices et son défi sont retirés, sans quoi l'ouverture poserait aussitôt
    * les parties suivantes.
    */
-  const premieresMissions = (parCle, ile, n) => {
+  const premieresMissions = (parCle, ile, n, defiGagne) => {
     if (!ile) return parCle;
     const types = BIOMES.find((b) => b.id === ile).exercises.slice(0, n).map((x) => `${ile}-${x.id}-`);
+    // Le défi gagné gardé (`defiGagne`) : le Gardien reste vaincu, l'île restaurée, même sans mission jouée.
+    if (defiGagne) types.push(`${ile}-challenge`);
     return Object.fromEntries(Object.entries(parCle).filter(([k]) => !k.startsWith(`${ile}-`) || types.some((t) => k.startsWith(t))));
   };
   /**
@@ -1408,9 +1434,12 @@ async function scenes() {
     if (partie === 'un-plan')
       for (const b of BIOMES) plansFor(b.id).forEach((p, i) => i > 0 && delete plans[p.id]);
     // Sur chaque île : les plans d'avant posés, la moitié de celui-ci (0 : les murs, 1 : le toit, 2 : la cour), rien après.
+    // Les murs à moitié (`murs-mi`) : sur l'île de la vue seulement ; ailleurs, le jeu reposerait au chargement les parties
+    // dues aux missions jouées, et ses plans finis annonceraient un niveau par-dessus la vue.
     const moitie = { 'murs-mi': 0, 'toit-mi': 1, 'cour-mi': 2 }[partie];
     if (moitie !== undefined)
       for (const b of BIOMES) {
+        if (partie === 'murs-mi' && b.id !== ile) continue;
         const l = plansFor(b.id);
         if (l.length <= moitie) continue;
         l.forEach((p, i) => {
@@ -1493,6 +1522,7 @@ async function scenes() {
               finesse: c.finesse,
               pose: c.pose,
               missions: c.missions,
+              defiGagne: c.defiGagne,
               pasEnPlus: c.pasEnPlus,
               poseA: c.poseA,
               revisions: c.revisions,
@@ -1518,7 +1548,7 @@ async function scenes() {
           )
         : []),
     ];
-    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, posees, cliquer, amenager, fiche, zoomer, reussir, sansPanneau, sansEtiquettes } of views) {
+    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, posees, cliquer, amenager, fiche, zoomer, reussir, sansPanneau, sansEtiquettes, defiGagne } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -1557,7 +1587,7 @@ async function scenes() {
                 ...(quetes ? { stories: quetes } : {}),
                 place: depuis ?? ile ?? at,
               },
-          progress: jouees ? missionsJouees(jouees) : sansEtoiles || depart ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose || missions !== undefined ? ile : null, pose ?? missions),
+          progress: jouees ? missionsJouees(jouees) : sansEtoiles || depart ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose || missions !== undefined ? ile : null, pose ?? missions, defiGagne),
           pose: pose ? { biome: ile, rangs: Array.from({ length: pose }, (_, i) => i + 1) } : null,
           view,
           univers: UNIVERS_DES_TEXTES,

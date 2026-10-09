@@ -102,20 +102,15 @@ export interface Kit {
   tilesInWalls?: (c: VoxelCube, plan: (x: number, y: number, z: number) => string | undefined) => boolean;
   /**
    * Un bloc que le kit peint à plat, sans pièce ni mur, d'après sa place (au 5e : l'auvent rayé de l'échoppe du Marché,
-   * le toit en damier du kiosque) : sa matière unie, sans dessus sous un autre bloc posé.
+   * le toit en damier du kiosque tant qu'il n'est pas fini) : sa matière unie, sans dessus sous un autre bloc posé.
    */
   flat?: (c: VoxelCube) => boolean;
   /**
-   * Le lissage d'un bloc avec d'autres matières (au 5e : chaque rang du toit en damier du kiosque, un seul volume, toile
-   * et tuile confondues, le damier peint dessus par leurs couleurs) : le nom de son volume ; `undefined` : le volume de
-   * sa seule matière.
+   * Les blocs d'un monument que le kit dessine d'un seul tenant (au 5e : le toit en pavillon du kiosque et sa verrière),
+   * lus sur tout le plan du monument (`plan` : ses blocs, fantômes compris) : la pièce de la case, `null` (rien : une case
+   * que le dessin d'une autre traverse), ou `undefined` (le dessin ordinaire).
    */
-  oneVolume?: (c: VoxelCube) => string | undefined;
-  /**
-   * Un bloc de verre peint comme une vitre, plus sombre que sa matière (au 5e : le lanterneau de vitrail du kiosque, une
-   * verrière ambrée, et non un bloc d'or) : ses couleurs assombries comme celles des fenêtres (`VITRE_DE_JOUR`).
-   */
-  panes?: (c: VoxelCube) => boolean;
+  monumentPieces?: (c: VoxelCube, plan: readonly VoxelCube[]) => DessinDePiece | null | undefined;
   /** Les matières tenues loin du fantôme Brume (../heartPieces.ts, `apartFromGhost` ; au 5e : la glace, le sel, la toile). */
   ghostApart?: readonly TextureKind[];
   /**

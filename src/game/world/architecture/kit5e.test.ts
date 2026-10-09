@@ -9,7 +9,7 @@ import { couleurDuRole } from '../construction/settings';
 import { BRUME, couleurDeMatiere } from '../palette';
 import { worldCubes } from '../terrain';
 import { restOf } from './heart';
-import { apartFromGhost, awning, crate, darkPost, HEART, lid, mound, paddyBed, reedHead, rgbGap, signBoard, slab, snowDrift } from './heartPieces';
+import { apartFromGhost, awning, crate, darkPost, HEART, lid, mound, paddyBed, reedHead, rgbGap, signBoard, slab, snowDrift, thermometerTube } from './heartPieces';
 import { PIECES_BASSES, stepOf } from './lowPieces';
 import { HEART_MOTIFS, MOTIF } from './paint';
 import { trianglesDe, type DessinDePiece } from './rooms';
@@ -91,11 +91,17 @@ describe('Le kit du 5e : les pièces du reste', () => {
     const t = monde(tour);
     expect(t(tour[0])).toMatchObject({ family: 'bardage', paint: { motifs: [MOTIF.bardage, MOTIF.bardage, MOTIF.bardage, MOTIF.bardage, 0, 0] } });
     expect(t(tour[2])).toMatchObject({ family: 'bardage', paint: { fond: 'matiere' } });
-    // Le thermomètre : la glace en pilier lissé, le verre posé sur elle en verrière (pas une mare).
-    const thermometre = [cube(0, 0, 1, 'glace'), cube(0, 0, 2, 'glace'), cube(0, 0, 3, 'verre'), cube(0, 0, 4, 'chaume')];
+    // Le thermomètre : la glace en pilier lissé, le verre posé sur elle en tube uni (ni mare, ni croisillons), l'or en
+    // haut en épi plus petit que sa case (plus une caisse d'or) ; le verre posé sur un autre bloc reste une verrière.
+    const thermometre = [cube(0, 0, 1, 'glace'), cube(0, 0, 2, 'glace'), cube(0, 0, 3, 'verre'), cube(0, 0, 4, 'or')];
     const th = monde(thermometre);
     expect(th(thermometre[0])).toMatchObject({ family: 'pierre', paint: { fond: 'matiere' } });
-    expect(th(thermometre[2])).toMatchObject({ family: 'verre', paint: { motifs: [HEART_MOTIFS.glazing, HEART_MOTIFS.glazing, HEART_MOTIFS.glazing, HEART_MOTIFS.glazing, 0, 0] } });
+    expect(th(thermometre[2])).toEqual({ family: 'verre', piece: thermometerTube() });
+    expect(thermometerTube().facettes.every((f) => f.ghostApart && !f.motif)).toBe(true);
+    expect(trianglesDe(thermometerTube())).toBe(10);
+    expect(th(thermometre[3])).toEqual({ family: 'precieux', piece: reedHead() });
+    const verriere = [cube(0, 0, 1, 'dalle'), cube(0, 0, 2, 'verre')];
+    expect(monde(verriere)(verriere[1])).toMatchObject({ family: 'verre', paint: { motifs: [HEART_MOTIFS.glazing, HEART_MOTIFS.glazing, HEART_MOTIFS.glazing, HEART_MOTIFS.glazing, 0, 0] } });
     // Une flaque au sol reste une mare.
     expect(monde([cube(0, 0, 1, 'verre')])(cube(0, 0, 1, 'verre'))).toMatchObject({ family: 'eau' });
     // La congère, le tas de sel (ce qui porte un sel en pilier, le sommet en tas bas), le rocher à strates.
@@ -224,26 +230,41 @@ describe('Le kit du 5e : les murs, les lieux, le kiosque', () => {
     expect(halle.length).toBeGreaterThan(0);
   });
 
-  it('le kiosque : ses poteaux de tourbe en poteaux carrés, son toit en damier peint à plat, un seul volume par rang, son lanterneau en verrière', () => {
+  it('le kiosque : ses poteaux de tourbe en poteaux carrés, son toit en pavillon au damier peint, sa verrière au faîte, plus claire que le toit', () => {
     const kiosque = tous.filter((c) => c.place === 'monument:landmark-5e-2' && !c.ghost);
     const poteaux = kiosque.filter((c) => c.texture === 'tourbe');
     expect(poteaux.length).toBe(24);
-    for (const c of poteaux) expect(archi.pieces.some((p) => p.cube === c && p.facettes.length > 0), cle(c)).toBe(true);
-    for (const c of kiosque.filter((x) => x.texture === 'toile' || x.texture === 'tuile')) expect(archi.peints.get(cle(c))?.peinture.motifs).toEqual([0, 0, 0, 0, 0, 0]);
-    for (const c of kiosque.filter((x) => x.texture === 'vitrail')) expect(archi.peints.get(cle(c))?.peinture.motifs[0]).toBe(HEART_MOTIFS.glazing);
-    // Chaque rang du toit : un seul volume lissé, toile et tuile confondues (une seule teinte, plus d'arête par case).
+    const pieceDe = (c: VoxelCube) => archi.pieces.find((p) => p.cube === c);
+    for (const c of poteaux) expect(pieceDe(c)?.facettes.length, cle(c)).toBeGreaterThan(0);
+    // Le toit : le rang bas porte le pavillon (chaque case, sa colonne, dans sa matière : le damier) ; le rang du dessus
+    // ne dessine rien, le pavillon passe à travers : plus de redan entre les rangs.
     const toit = kiosque.filter((c) => c.texture === 'toile' || c.texture === 'tuile');
-    const rangs = new Set(toit.map((c) => c.z));
-    expect(rangs.size).toBe(2);
-    for (const z of rangs) {
-      const volumes = new Set(toit.filter((c) => c.z === z).map((c) => archi.lisses.get(cle(c))));
-      expect(volumes.size, `rang ${z}`).toBe(1);
-      expect([...volumes][0], `rang ${z}`).toBeDefined();
+    const base = Math.min(...toit.map((c) => c.z));
+    expect(new Set(toit.map((c) => c.z)).size).toBe(2);
+    for (const c of toit) {
+      const p = pieceDe(c);
+      expect(p, cle(c)).toBeDefined();
+      expect(archi.peints.has(cle(c)), cle(c)).toBe(false);
+      if (c.z !== base) expect(p!.facettes, cle(c)).toEqual([]);
     }
-    // Le lanterneau : une verrière ambrée, peinte comme une vitre, plus sombre que le vitrail (et que l'or).
+    const enPente = toit.filter((c) => c.z === base && pieceDe(c)!.facettes.some((f) => f.face === 'dessus' && f.normale[2] > 0 && f.normale[2] < 1));
+    // Toutes ses colonnes, sauf celle du milieu, sous la verrière.
+    expect(enPente.length).toBe(toit.filter((c) => c.z === base).length - 1);
+    // Le damier : une colonne de toile, une de tuile, sur la pente.
+    expect(new Set(toit.filter((c) => c.z === base).map((c) => `${c.texture}|${(c.x + c.y) % 2}`)).size).toBe(2);
+    // Le lanterneau : une seule verrière basse au faîte (la case du milieu), les autres vitraux ne dessinent rien.
     const lanterneau = kiosque.filter((c) => c.texture === 'vitrail');
-    expect(lanterneau.length).toBeGreaterThan(0);
-    for (const c of lanterneau) expect(KIT.panes?.(c), cle(c)).toBe(true);
-    expect(kiosque.filter((c) => c.texture !== 'vitrail').some((c) => KIT.panes?.(c))).toBe(false);
+    expect(lanterneau.length).toBe(6);
+    const pleins = lanterneau.filter((c) => (pieceDe(c)?.facettes.length ?? 0) > 0);
+    expect(pleins.length).toBe(1);
+    for (const c of lanterneau) expect(archi.remplacees.has(cle(c)), cle(c)).toBe(true);
+    // Plus claire que le toit : le vitrail, plus lumineux que la tuile et que la toile tenue loin du fantôme.
+    const clarte = (c: number) => 0.2126 * ((c >> 16) & 255) + 0.7152 * ((c >> 8) & 255) + 0.0722 * (c & 255);
+    const verre = couleurDeMatiere('5e', 'vitrail').dessus;
+    expect(clarte(verre)).toBeGreaterThan(clarte(couleurDeMatiere('5e', 'tuile').dessus));
+    expect(clarte(verre)).toBeGreaterThan(clarte(apartFromGhost(couleurDeMatiere('5e', 'toile').dessus)));
+    // Le coût : le toit et sa verrière tiennent sous les deux rangs de cubes qu'ils remplacent, peints à plat.
+    const triangles = [...toit, ...lanterneau].reduce((n, c) => n + trianglesDe(pieceDe(c)!.dessin), 0);
+    expect(triangles).toBeLessThanOrEqual(300);
   });
 });

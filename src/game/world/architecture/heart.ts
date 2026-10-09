@@ -24,7 +24,7 @@
 import type { VoxelCube } from '../cube';
 import type { Rotation } from './choices';
 import { familyOf } from './families';
-import { awning, beam, bead, cap, chalkLoaf, coneCorner, coneSide, coneStep, crate, darkPost, deck, dialSlab, EMPTY, foliage, hangingCrate, HEART, lid, mound, paddyBed, pavilion, reedHead, rock, signBoard, slab, snowDrift, spire, trunk, waterNeighbours, waterSheet, wheat } from './heartPieces';
+import { awning, beam, bead, cap, chalkLoaf, coneCorner, coneSide, coneStep, crate, darkPost, deck, dialSlab, EMPTY, foliage, hangingCrate, HEART, lid, mound, paddyBed, pavilion, reedHead, rock, signBoard, slab, snowDrift, spire, thermometerTube, trunk, waterNeighbours, waterSheet, wheat } from './heartPieces';
 import type { RestContext, RestDrawing } from './kits/types';
 import { stepOf, woodenPost } from './lowPieces';
 import { SIDES } from './neighborhood';
@@ -288,6 +288,8 @@ function heartOf(c: VoxelCube, at: RestContext['at']): RestDrawing | undefined {
       if (!below) return { family: 'vegetal', piece: wheat() };
       // En haut d'un poteau de bois (les roseaux du Marais, 5e) : un épi plus petit que sa case.
       if (t === 'tronc') return { family: 'vegetal', piece: reedHead() };
+      // En haut du tube du thermomètre (le Glacier, 5e) : le même épi, plus petit que sa case, et non un cube d'or.
+      if (t === 'verre' && tex(at(c.x, c.y, c.z - 2)) === 'glace') return { family: 'precieux', piece: reedHead() };
       return { family: 'precieux', paint: GOLD };
     }
     case 'cabine':
@@ -317,8 +319,10 @@ function heartOf(c: VoxelCube, at: RestContext['at']): RestDrawing | undefined {
     case 'mousse':
       return { family: 'vegetal', piece: foliage(seedOf(c), true) };
     case 'verre':
-      // Posé sur un autre bloc (le thermomètre du Glacier, 5e) : une verrière ; au sol, une mare.
+      // Posé sur un autre bloc : une verrière ; sur la glace (le thermomètre du Glacier, 5e), son tube de verre uni ; au
+      // sol, une mare.
       if (isWindow(c, at)) return undefined;
+      if (tex(below) === 'glace') return { family: 'verre', piece: thermometerTube() };
       return below && tex(below) !== 'verre' ? { family: 'verre', paint: GLAZED } : waterOf(c, at, HEART.water.pond);
     // Le 5e.
     case 'glace':

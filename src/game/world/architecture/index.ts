@@ -43,6 +43,7 @@ import { facettesPosees, tournerCouvre, type DessinDePiece, type Facette } from 
 import { SIDES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './neighborhood';
 import { volumesDeMatiere, type VolumeDeMatiere } from './volumes';
 import { familyOf } from './families';
+import { EMPTY } from './heartPieces';
 
 export { assemblerLesPieces } from './assembly';
 export { pieceDe, FORMES, type Forme, type IdDePiece } from './choices';
@@ -309,11 +310,13 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
   };
   // Les volumes lissés (./volumes.ts), fantômes compris : tous, pour la teinte (world/construction.ts) ; la peinture ne
   // lisse que les monuments et les petites constructions (`groupeDe`), les cours gardant la leur.
-  const volumes = kit.lissage ? volumesDeMatiere(cubes, (c) => (LUMIERES.has(c.texture ?? '') ? null : groupeDuLissage(c, batiments)), kit.oneVolume) : null;
+  const volumes = kit.lissage ? volumesDeMatiere(cubes, (c) => (LUMIERES.has(c.texture ?? '') ? null : groupeDuLissage(c, batiments))) : null;
   if (volumes) out.lisses = volumes;
   const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation; sansDecharge?: boolean; groupe: string; rangees: number; lisse?: boolean; dessin?: DessinDePiece | ManiereDuMur }[] = [];
   const poteaux: VoxelCube[] = [];
   const aPlat: VoxelCube[] = [];
+  /** Ce que le kit dessine d'un monument d'un seul tenant (`Kit.monumentPieces`) : posé après les autres pièces. */
+  const dUnTenant: { c: VoxelCube; dessin: DessinDePiece }[] = [];
   for (const c of cubes) {
     if (c.place && !estUnMonument(c.place)) {
       const bloc = lieux && lieux.blocs.get(cle(c.x, c.y, c.z));
@@ -330,6 +333,13 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
       continue;
     }
     if (!estDuPlan(c) || LUMIERES.has(c.texture ?? '')) continue;
+    // Dessiné d'un seul tenant sur tout le monument (le toit en pavillon du kiosque) : `null`, la case ne dessine rien.
+    const g = kit.monumentPieces && c.place && estUnMonument(c.place) ? c.place : null;
+    const tenant = g ? kit.monumentPieces!(c, autres.get(g) ?? []) : undefined;
+    if (tenant !== undefined) {
+      dUnTenant.push({ c, dessin: tenant ?? EMPTY });
+      continue;
+    }
     // Peint à plat par le kit (l'auvent rayé, le toit en damier) : d'aucune pièce ni d'aucun mur, il se peint après.
     if (kit.flat?.(c)) {
       aPlat.push(c);
@@ -402,6 +412,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
       poser(c, 'vegetal', dessus ? 'mur.seul.pied.chaperon' : 'mur.seul.pied.mur', 0, woodenPost(dessus));
     }
   }
+  for (const { c, dessin } of dUnTenant) poser(c, familyOf(c.texture) ?? 'toit', 'mur.seul.pied.chaperon', 0, dessin);
   // Ce que le kit peint à plat : sa matière unie, sans dessus sous un bloc posé.
   if (aPlat.length) {
     const poses = new Set<string>();
