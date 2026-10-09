@@ -1,5 +1,6 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
+import { chargerLesModelesDuDisque } from './characters/imported/fromDisk.testing';
 import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseIsland, choiceMiddle, dragChoice } from './arrangeMode';
@@ -122,12 +123,12 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // 8 octobre 2026 : le pied de la machine d'Ixe et le perchoir de Cléa, au 4e), puis à 74 985 avec les quêtes de la 5e
   // (GD-10). GD-12, une forme par île (mainteneur, 9 octobre 2026, carte « Relever ») : aux Îles Brumeuses, le décor à
   // 17 400 et la mer à 6 400, le sol ramené à 36 500 (78 635) ; la mer à 6 400 aux Anciens Ateliers (75 535), à 6 900
-  // aux Îles du Ciel (76 035). EMC-2 (mainteneur, 9 octobre 2026) : les Premiers Rivages à 73 390 avec le Préau des
-  // délégués, sous `RENDER_BUDGET_6E` relevé à 76 500.
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12 et EMC-2) : 73 390 triangles et 25 appels aux Premiers Rivages, 78 635, 75 535 et 76 035 et 24 appels ailleurs', () => {
+  // aux Îles du Ciel (76 035). EMC-2 (mainteneur, 9 octobre 2026) : le Préau des délégués, avec les personnages
+  // importés, porte les Premiers Rivages à 76 290, sous `RENDER_BUDGET_6E` relevé à 76 500.
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e et EMC-2) : 76 290 triangles et 25 appels aux Premiers Rivages, 78 635, 75 535 et 76 035 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([73_390, 25]);
+    expect([total('6e'), appels('6e')]).toEqual([76_290, 25]);
     expect([total('5e'), appels('5e')]).toEqual([78_635, 24]);
     expect([total('4e'), appels('4e')]).toEqual([75_535, 24]);
     expect([total('3e'), appels('3e')]).toEqual([76_035, 24]);
@@ -216,6 +217,17 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
         expect(cout.drawCalls, a).toBeLessThanOrEqual(enveloppeDe(p, a).drawCalls);
       }
     });
+
+  // Les personnages importés du 6e, lus sur le disque comme la vue les charge : au pire, de près sur l'île qui coûte le
+  // plus, de loin ailleurs. (En dernier : une fois chargés, ils remplacent les dessinés en code dans ce fichier.)
+  it('R6 : avec les personnages importés du 6e, créatures et Gardiens tiennent leur enveloppe aux Premiers Rivages', () => {
+    chargerLesModelesDuDisque();
+    for (const p of ['creatures', 'gardiens'] as const) {
+      const cout = personnagesCost('6e')[p];
+      expect(cout.triangles, p).toBeLessThanOrEqual(enveloppeDe(p, '6e').triangles);
+      expect(cout.drawCalls, p).toBe(1);
+    }
+  }, 60_000);
 });
 
 it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026), puis 120 avec une seule texture pour les blocs (piste 2, 7 octobre 2026), puis 102 000 triangles pour les grands projets du 4e (GD-10, 8 octobre 2026)', () => {

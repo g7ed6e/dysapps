@@ -87,6 +87,10 @@ Dans Archipéo, depuis le lot R6, **les personnages** sont peints (`src/game/wor
 - une créature a une ombre de contact, sombre et nette, sous ses pieds, plus marquée la nuit ;
 - ce qui brille la nuit fait au moins 3 × 3 pixels, avec un halo chaud d’un pixel sur ce qui l’entoure, fixe (il ne clignote jamais).
 
+### Les personnages importés du 6e (9 octobre 2026)
+
+Au 6e, les Gardiens et les créatures ne sont plus dessinés en code : ce sont les modèles faits à partir des concepts, un de près et un de loin (décision du mainteneur, « Monde et fiches »). Le Gardien est une statue de pierre et de lichen sur le socle commun, sans flamme ni veines ; il se réchauffe des pieds vers la tête à chaque épreuve réussie, et rallumé, sa pierre luit un peu au Sable et un anneau brille autour du socle. Les valeurs sont dans [Le style](../../rendu/style.md#créatures-et-gardiens). Un modèle qui ne se charge pas laisse la place au dessin en code.
+
 ### Les bulles et la Carte (4 octobre 2026)
 
 Le mainteneur a choisi (« 1a ») d’appliquer à Archipéo les signes de Blocland, dessinés en hexagone (spécification du consultant Archipéo) : les bulles de ce qu’on peut faire (une à trois, sur l’île où l’on est, seulement ce qu’on peut faire maintenant, mêmes images, seule la prochaine bouge, de 4 px au plus), la plaque d’une commande et le signe de la créature qui se souvient deviennent un **hexagone à coins adoucis, pointe vers la chose**, fond Brume `#E5EBE3`, bord et ombre nette Nuit océan `#142B38`, la prochaine plus grande (64 px contre 56) et bordée de lumière `#FFD866`. Sur la Carte, la bulle de la prochaine étape prend cet hexagone, et le **médaillon « toi »**, rond Brume au bord Nuit océan, porte le visage du bonhomme peint, à la place de la flèche jaune et du fanion ; **Recentrer** devient ce même rond, sans mot. Le losange et le disque d’avant ne sont plus dessinés. Coût inchangé : un appel de dessin, la texture de 16 cases ([Le style](../../rendu/style.md), habillage : `formeDesSignes: 'hexagone'`, `signesDesObjets: 'bulles'`).

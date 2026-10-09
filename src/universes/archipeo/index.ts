@@ -2,7 +2,11 @@
 // savoir. « Rallumer » remplace « vaincre » ; chaque épreuve réussie nomme ce qui s'allume sur la sentinelle, chaque
 // épreuve ratée commence par « Rien ne s'éteint. », et la réplique finale dit que la sentinelle « se rallume » (« brille
 // à nouveau » est gardé pour le village et la baleine). Proposés par le consultant d'Archipéo, validés par le directeur
-// artistique le 28 septembre 2026 ; lus seulement une fois l'univers ouvert (voir src/universes/index.ts).
+// artistique le 28 septembre 2026 ; lus seulement une fois l'univers ouvert (voir src/universes/index.ts). Au 6e, les
+// Gardiens sont des modèles importés, sans flamme ni veines, dont la pierre se réchauffe des pieds vers la tête : leurs
+// répliques ne nomment que ce qui se voit ; celles qui nommaient des veines, une gemme ou une braise disent « se
+// réchauffe », les autres gardent « s'allume » (consultant d'Archipéo, 9 octobre 2026). De la 5e à la 3e, les veines
+// d'or restent celles des sentinelles dessinées en code.
 import { agreeWithPlace, thePlace } from '../../game/world/placeArticle';
 import { BLOCLAND } from '../blocland';
 import { ETATS_D_ILE, REPLIQUES } from '../common';
@@ -24,11 +28,11 @@ export const ARCHIPEO = {
       },
     },
     'french-6e-letter-confusion': {
-      challenge: 'Le Golem de roche dit doucement : « Ma gemme est éteinte, et mes lettres se ressemblent. Regarde-les bien, prends ton temps. »',
+      challenge: 'Le Golem de roche dit doucement : « Ma poitrine est froide, et mes lettres se ressemblent. Regarde-les bien, prends ton temps. »',
       guardianSays: {
-        hit: 'Une veine d’or s’allume jusqu’à ma gemme. Tu regardes bien.',
+        hit: 'Ma pierre se réchauffe jusqu’à ma poitrine. Tu regardes bien.',
         miss: 'Rien ne s’éteint. Regarde bien la lettre, et reprends.',
-        beaten: 'Ma gemme se rallume. La mine est à toi, et à Tunel.',
+        beaten: 'Ma pierre se rallume. La mine est à toi, et à Tunel.',
       },
     },
     'french-6e-word-spelling': {
@@ -42,7 +46,7 @@ export const ARCHIPEO = {
     'french-6e-grammar-spelling': {
       challenge: 'Le Taureau de terre parle doucement : « Mon collier est éteint. Ici, tout doit s’accorder, cherche à ton rythme. »',
       guardianSays: {
-        hit: 'Une veine d’or s’allume sur mon collier. C’était bien accordé.',
+        hit: 'Mon collier se réchauffe, maille après maille. C’était bien accordé.',
         miss: 'Rien ne s’éteint. Le prochain enclos t’attend.',
         beaten: 'Mon collier se rallume. Tout s’accorde. La ferme est à toi, et à Bloquette.',
       },
@@ -56,11 +60,11 @@ export const ARCHIPEO = {
       },
     },
     'maths-6e-calculation': {
-      challenge: 'Le Hanneton de bronze bourdonne doucement : « Mes ailes de bronze sont éteintes. Tu as compté toute ma plaine, calcule avec moi. »',
+      challenge: 'Le Hanneton de bronze bourdonne doucement : « Ma carapace de bronze est éteinte. Tu as compté toute ma plaine, calcule avec moi. »',
       guardianSays: {
-        hit: 'Une veine d’or s’allume entre mes ailes. C’est juste.',
+        hit: 'Ma carapace se réchauffe. C’est juste.',
         miss: 'Rien ne s’éteint. Regarde les points, compte par cinq, et recommence.',
-        beaten: 'Mes ailes se rallument. La plaine est à toi, et à Coco.',
+        beaten: 'Ma carapace se rallume. La plaine est à toi, et à Coco.',
       },
     },
     'maths-6e-fractions': {
@@ -72,11 +76,11 @@ export const ARCHIPEO = {
       },
     },
     'maths-6e-decimals': {
-      challenge: 'Le Dragon de cendre souffle une fumée tiède : « Ma braise est éteinte. Tu as gravi tout mon volcan, lis chaque nombre rang par rang. »',
+      challenge: 'Le Dragon de cendre souffle une fumée tiède : « Mes écailles sont éteintes. Tu as gravi tout mon volcan, lis chaque nombre rang par rang. »',
       guardianSays: {
-        hit: 'Une braise s’allume sur mon ventre. C’est exact.',
+        hit: 'Une écaille se réchauffe sur mon ventre. C’est exact.',
         miss: 'Rien ne s’éteint. Regarde le tableau ou la droite, rang par rang, et reprends.',
-        beaten: 'Mon ventre de braise se rallume. Le volcan est à toi, et à Lavi.',
+        beaten: 'Mes écailles se rallument. Le volcan est à toi, et à Lavi.',
       },
     },
     'maths-5e-signed-numbers': {
@@ -178,7 +182,7 @@ export const ARCHIPEO = {
     'english-6e-vocabulary': {
       challenge: 'Le Lion de pierre parle doucement depuis son quai : « Ma crinière est éteinte. Tu as écouté tous les mots de la baie, écoute-les encore. »',
       guardianSays: {
-        hit: 'Une veine d’or s’allume dans ma crinière. Tu as l’oreille anglaise.',
+        hit: 'Ma crinière se réchauffe, mèche après mèche. Tu as l’oreille anglaise.',
         miss: 'Rien ne s’éteint. Réécoute le mot, relis la règle, et reprends.',
         beaten: 'Ma crinière se rallume. La baie est à toi, et à Robin.',
       },
