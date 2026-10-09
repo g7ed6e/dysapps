@@ -29,20 +29,34 @@ it('donne une partie par mission, de 2 à 5, faite des cases des trois plans, sa
   }
 });
 
-it('coupe les murs en deux par la hauteur pour quatre missions, en trois pour cinq, réunit le toit et la cour pour deux', () => {
+it('coupe les murs en deux par la hauteur pour quatre missions, en trois rangées pour cinq (ou le mur et le toit en deux), réunit le toit et la cour pour deux', () => {
   expect(partiesDe('french-6e-word-spelling').map((p) => p.nom)).toEqual(['Le bas du four de Rouxel', 'Le haut du four de Rouxel', 'L’abri du four', 'La cour du four']);
   expect(partiesDe('french-6e-grammar-spelling')[0].nom).toBe('Le bas de l’étable de Bloquette');
   expect(partiesDe('lv2-5e-introductions')[2].nom).toBe('Le haut de l’auberge de Lina');
   // Cinq missions (GD-14) : le premier plan en trois, sans case partagée, du bas vers le haut.
   const cinq = partiesDe('maths-6e-calculation');
   expect(cinq.map((p) => p.nom)).toEqual(['Le bas du nid de Coco', 'Le milieu du nid de Coco', 'Le haut du nid de Coco', 'Le toit du nid', 'La cour du nid']);
-  const hauteurs = cinq.slice(0, 3).map((p) => p.cases[0].keys.map((k) => Number(k.split(',')[2])));
-  expect(Math.max(...hauteurs[0])).toBeLessThanOrEqual(Math.min(...hauteurs[1]));
-  expect(Math.max(...hauteurs[1])).toBeLessThanOrEqual(Math.min(...hauteurs[2]));
-  expect(cinq.slice(0, 3).every((p) => p.cases[0].keys.length > 0)).toBe(true);
   const z = (keys: string[]) => keys.map((k) => Number(k.split(',')[2]));
   const [basEtable, hautEtable] = partiesDe('french-6e-grammar-spelling');
   expect(Math.max(...z(basEtable.cases[0].keys))).toBeLessThan(Math.min(...z(hautEtable.cases[0].keys)));
+  // Un mur de deux rangées seulement : son bas et son haut, puis le bas et le haut du deuxième plan.
+  expect(partiesDe('maths-5e-signed-numbers').map((p) => p.nom)).toEqual([
+    'Le bas de l’igloo de Frimas',
+    'Le haut de l’igloo de Frimas',
+    'Le bas du dôme de l’igloo',
+    'Le haut du dôme de l’igloo',
+    'La patinoire de l’igloo',
+  ]);
+  // Partout où un plan se coupe pour cinq missions, il se coupe en rangées entières : chaque partie est toute en
+  // dessous de la suivante, sans case vide, et « Le milieu » ou « Le haut » dit vrai.
+  for (const biome of BIOMES.filter((b) => partiesDe(b.id).length === 5)) {
+    const parties = partiesDe(biome.id);
+    for (const [a, b] of parties.slice(0, -1).map((p, i) => [p, parties[i + 1]] as const)) {
+      expect(a.cases[0].keys.length, a.nom).toBeGreaterThan(0);
+      if (a.cases.length !== 1 || b.cases.length !== 1 || a.cases[0].plan.id !== b.cases[0].plan.id) continue;
+      expect(Math.max(...z(a.cases[0].keys)), `${a.nom} sous ${b.nom}`).toBeLessThan(Math.min(...z(b.cases[0].keys)));
+    }
+  }
   const mine = partiesDe('french-6e-letter-confusion');
   expect(mine).toHaveLength(2);
   expect(mine[1].cases.map((c) => c.plan.id)).toEqual(['french-6e-letter-confusion-2', 'french-6e-letter-confusion-3']);

@@ -970,6 +970,20 @@ const CAPTURES = [
     ['pointe', 'geography-6e-living'],
   ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
   { nom: 'formes-modifier-le-plan', vue: 'carte', famille: 'formes', ile: 'french-6e-phonology', amenager: 'french-6e-reading' },
+  // Cinq missions par île (GD-14, famille `cinq-missions`, à retirer une fois le lot fusionné) : la Plaine des nombres
+  // (cinq bornes au pas de 3), son bâtiment à une, deux et trois parties (le bas, le milieu, le haut du premier plan) ;
+  // le Volcan des décimaux, dont le premier plan n'a que deux rangées, à deux et trois parties ; le Marché des
+  // proportions, île-école à cinq bornes, son quai décalé ; les trois Gardiens replacés ; la Carte du 6e au téléphone.
+  ...[1, 2, 3].map((n) => ({ nom: `cinq-missions-plaine-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-calculation', partie: 'avant', missions: n })),
+  { nom: 'cinq-missions-plaine', vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-calculation' },
+  ...[2, 3].map((n) => ({ nom: `cinq-missions-volcan-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-decimals', partie: 'avant', missions: n })),
+  { nom: 'cinq-missions-marche', vue: 'île', famille: 'cinq-missions', ile: 'maths-5e-proportionality' },
+  ...[
+    ['hangar', 'technology-6e-objects'],
+    ['manoir', 'english-5e-grammar'],
+    ['belvedere', 'maths-3e-geometry'],
+  ].map(([court, ile]) => ({ nom: `cinq-missions-${court}`, vue: 'île', famille: 'cinq-missions', ile })),
+  { nom: 'cinq-missions-carte-6e-390x844', vue: 'carte', famille: 'cinq-missions', ile: 'history-6e-antiquity', taille: { width: 390, height: 844 } },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

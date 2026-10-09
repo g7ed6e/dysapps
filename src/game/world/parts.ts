@@ -8,8 +8,9 @@
  * - 2 missions : le premier plan, puis les deux autres ensemble.
  * - 4 missions : le premier plan en deux, par la hauteur (« Le bas du four de Rouxel », puis « Le haut… »), puis les
  *   deux autres.
- * - 5 missions (GD-14) : le premier plan en trois, par la hauteur (« Le bas… », « Le milieu… », « Le haut… »), puis les
- *   deux autres.
+ * - 5 missions (GD-14) : le premier plan en trois rangées entières (« Le bas du nid de Coco », « Le milieu… »,
+ *   « Le haut… »), puis les deux autres ; un premier plan de deux rangées se coupe en deux, puis le deuxième plan aussi
+ *   (« Le bas du toit de la hutte », « Le haut… »), puis le troisième.
  * Le lieu de la LV2 compte les missions d'une seule langue (les deux langues en ont autant).
  */
 import { BIOMES, type BiomeDef, type BiomeId } from '../biomes';
@@ -69,7 +70,7 @@ function ensemble(a: string, b: string): string {
   return `${a} et ${minuscule(b)}`;
 }
 
-/** Le premier plan coupé en deux par la hauteur : les rangées du bas jusqu'à la moitié des cases au moins, puis le reste. */
+/** Un plan coupé en deux par la hauteur : les rangées du bas jusqu'à la moitié des cases au moins, puis le reste. */
 function enDeux(plan: PlanDef): [string[], string[]] {
   const cells = planCells(plan);
   const hauteurs = [...new Set(cells.map((c) => c.z))].sort((a, b) => a - b);
@@ -91,23 +92,30 @@ function enDeux(plan: PlanDef): [string[], string[]] {
   return [bas, haut];
 }
 
-/** Le premier plan coupé en trois par la hauteur : chaque morceau prend les rangées jusqu'au tiers, puis aux deux tiers des cases au moins. */
-function enTrois(plan: PlanDef): [string[], string[], string[]] {
+/**
+ * Un plan coupé en `k` parts par la hauteur, en rangées entières (GD-14) : chaque part prend des rangées qui se suivent,
+ * au plus près d'un `k`-ième des cases. `null` si le plan a moins de `k` rangées : une part serait une demi-rangée, et
+ * son nom (« le milieu ») mentirait.
+ */
+function enRangees(plan: PlanDef, k: 2 | 3): string[][] | null {
   const cells = planCells(plan);
   const hauteurs = [...new Set(cells.map((c) => c.z))].sort((a, b) => a - b);
-  const seuil = (part: number) => hauteurs.find((z) => cells.filter((c) => c.z <= z).length * 3 >= cells.length * part) ?? hauteurs[hauteurs.length - 1];
-  const [s1, s2] = [seuil(1), seuil(2)];
-  const bas = cells.filter((c) => c.z <= s1).map((c) => c.key);
-  const milieu = cells.filter((c) => c.z > s1 && c.z <= s2).map((c) => c.key);
-  const haut = cells.filter((c) => c.z > s2).map((c) => c.key);
-  // Trop peu de rangées pour trois morceaux : les cases se coupent en trois, dans l'ordre du dessin.
-  if (!milieu.length || !haut.length) {
-    const tout = cells.map((c) => c.key);
-    const a = Math.ceil(tout.length / 3);
-    const b = Math.ceil((tout.length * 2) / 3);
-    return [tout.slice(0, a), tout.slice(a, b), tout.slice(b)];
+  if (hauteurs.length < k) return null;
+  const parRangee = hauteurs.map((z) => cells.filter((c) => c.z === z).length);
+  const somme = (de: number, a: number) => parRangee.slice(de, a).reduce((t, n) => t + n, 0);
+  // Les coupes (une liste croissante de rangs de rangées) qui donnent les parts les plus égales.
+  const coupes = (debut: number, reste: number): number[][] =>
+    reste === 0 ? [[]] : Array.from({ length: hauteurs.length - reste - debut + 1 }, (_, d) => debut + d).flatMap((i) => coupes(i + 1, reste - 1).map((c) => [i, ...c]));
+  let meilleure: number[] = [];
+  let ecart = Infinity;
+  for (const c of coupes(1, k - 1)) {
+    const bornes = [0, ...c, hauteurs.length];
+    const parts = bornes.slice(1).map((b, i) => somme(bornes[i], b));
+    const e = Math.max(...parts) * 1000 + parts.reduce((t, n) => t + n * n, 0);
+    if (e < ecart) [ecart, meilleure] = [e, c];
   }
-  return [bas, milieu, haut];
+  const limites = [-Infinity, ...meilleure.map((i) => hauteurs[i]), Infinity];
+  return limites.slice(1).map((haut, i) => cells.filter((c) => c.z >= limites[i] && c.z < haut).map((c) => c.key));
 }
 
 const CACHE = new Map<BiomeId, Partie[]>();
@@ -137,14 +145,28 @@ export function partiesDe(id: BiomeId): Partie[] {
       { nom: plans[2].name, cases: [tout(plans[2])] },
     ];
   } else if (n === 5) {
-    const [bas, milieu, haut] = enTrois(plans[0]);
-    parties = [
-      { nom: `Le bas ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: bas }] },
-      { nom: `Le milieu ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: milieu }] },
-      { nom: `Le haut ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: haut }] },
-      { nom: plans[1].name, cases: [tout(plans[1])] },
-      { nom: plans[2].name, cases: [tout(plans[2])] },
-    ];
+    // Le premier plan en trois rangées entières ; s'il n'en a que deux, ses deux rangées, puis le deuxième plan en deux.
+    const trois = enRangees(plans[0], 3);
+    if (trois) {
+      const [bas, milieu, haut] = trois;
+      parties = [
+        { nom: `Le bas ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: bas }] },
+        { nom: `Le milieu ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: milieu }] },
+        { nom: `Le haut ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: haut }] },
+        { nom: plans[1].name, cases: [tout(plans[1])] },
+        { nom: plans[2].name, cases: [tout(plans[2])] },
+      ];
+    } else {
+      const [bas, haut] = enRangees(plans[0], 2) ?? enDeux(plans[0]);
+      const [basDuDeuxieme, hautDuDeuxieme] = enRangees(plans[1], 2) ?? enDeux(plans[1]);
+      parties = [
+        { nom: `Le bas ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: bas }] },
+        { nom: `Le haut ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: haut }] },
+        { nom: `Le bas ${complement(plans[1].name)}`, cases: [{ plan: plans[1], keys: basDuDeuxieme }] },
+        { nom: `Le haut ${complement(plans[1].name)}`, cases: [{ plan: plans[1], keys: hautDuDeuxieme }] },
+        { nom: plans[2].name, cases: [tout(plans[2])] },
+      ];
+    }
   }
   const out = parties.map((p, i) => ({ ...p, biome: id, rang: i + 1, total: parties.length }));
   CACHE.set(id, out);

@@ -248,19 +248,20 @@ it('le bâtiment d’un lieu qui perd ou reçoit une mission : rien de posé ne 
   const garde = (s: { world: { parts: Record<string, string[]> } }, parts: Record<string, string[]>) => {
     for (const [plan, keys] of Object.entries(parts)) expect(s.world.parts[plan], plan).toEqual(expect.arrayContaining(keys));
   };
-  // Le Glacier a reçu deux missions au 9 octobre 2026 (GD-14) : cinq parties, le premier plan en trois.
-  expect(partiesDe('maths-5e-signed-numbers').map((p) => p.nom).slice(3)).toEqual([p1.name, p2.name]);
+  // Le Glacier a reçu deux missions au 9 octobre 2026 (GD-14) : cinq parties ; l'igloo n'a que deux rangées, il se
+  // coupe en deux, et le dôme aussi.
+  expect(partiesDe('maths-5e-signed-numbers').map((p) => p.nom).at(-1)).toBe(p2.name);
 
   // 1 partie sur 4, posée par le Thermomètre (qui reste) : le premier plan s'achève à l'ouverture, rien ne s'enlève.
   const un = ouvrir({ 'maths-5e-signed-numbers-thermometer-1': P(2, 1, 0.8) }, { [p0.id]: bas });
   garde(un, { [p0.id]: bas });
   expect(partiesPosees('maths-5e-signed-numbers', un.world.parts)).toBe(1);
-  // 1 partie sur 4, posée par les Crevasses (parties à la Forge) : le bas reste posé ; il couvre le premier tiers du
-  // premier plan (GD-14), la partie suivante est le milieu.
+  // 1 partie sur 4, posée par les Crevasses (parties à la Forge) : le bas reste posé ; la partie suivante est le haut
+  // de l'igloo (GD-14).
   const crevasses = ouvrir({ 'maths-5e-signed-numbers-subtracting-1': P(2, 1, 0.8) }, { [p0.id]: bas });
   garde(crevasses, { [p0.id]: bas });
   expect(partiesPosees('maths-5e-signed-numbers', crevasses.world.parts)).toBe(1);
-  expect(prochainePartie('maths-5e-signed-numbers', crevasses.world.parts)?.nom).toBe('Le milieu de l’igloo de Frimas');
+  expect(prochainePartie('maths-5e-signed-numbers', crevasses.world.parts)?.nom).toBe('Le haut de l’igloo de Frimas');
   // 3 parties sur 4 (le premier plan entier, le deuxième) : 4 sur 5, la suivante est le troisième plan.
   const trois = ouvrir(
     { 'maths-5e-signed-numbers-thermometer-1': P(2, 1, 0.8), 'maths-5e-signed-numbers-adding-1': P(2, 1, 0.8), 'maths-5e-signed-numbers-subtracting-1': P(2, 1, 0.8) },

@@ -28,7 +28,9 @@
 // composant de l'aide visuelle des missions : « figure : tableau x · f(x) / 2 · 6 / 4 · ? » (tableau de proportionnalité :
 // l'en-tête, puis une ligne par « / »), « figure : triangle 3 · 4 · ? » (triangle rectangle : les deux côtés de l'angle
 // droit, puis l'hypoténuse), « figure : droite 0 · 20 / 5 · 10 » (droite graduée : du premier au dernier nombre, puis les
-// points marqués).
+// points marqués), « figure : fraction 3/5 » (barre de fraction), « figure : fractions 3/5 · 3/10 » (deux barres à
+// comparer), « figure : diagramme lundi · mardi / 10 · 20 » (diagramme en barres : les noms, puis les nombres ; les
+// nombres seuls sans noms) et « figure : graphique 2 · 1 » (la droite y = 2 × x + 1 dans un repère).
 //
 // Ce qui se déduit ne s'écrit pas : « trou lu : blank » (pour tous les items) donne « lu » = l'énoncé dont le « … »
 // est remplacé ; « clé des items : mot » (ou lettre, ou paragraphe) donne la clé ; « mot troué : en[f]ant » donne
@@ -173,10 +175,17 @@ function ecrireAide(aide, entete, retrait) {
 const nombreOuTexte = (v) => (/^−?\d+(,\d+)?$/.test(v) ? Number(v.replace('−', '-').replace(',', '.')) : v);
 const ecrireNombre = (v) => (typeof v === 'number' ? String(v).replace('-', '−').replace('.', ',') : v);
 
-/** Une figure écrite « tableau … », « triangle … » ou « droite … » → sa description en données (`{ kind, props }`). */
+/** Une fraction écrite « 3/5 » → [3, 5], ou null. */
+const fractionLue = (v) => {
+  const m = /^(\d+)\/(\d+)$/.exec(v);
+  return m && Number(m[2]) > 0 ? [Number(m[1]), Number(m[2])] : null;
+};
+const SORTES_DE_FIGURE = 'tableau|triangle|droite|fraction|fractions|diagramme|graphique';
+
+/** Une figure écrite « tableau … », « triangle … », « droite … », « fraction … », « fractions … », « diagramme … » ou « graphique … » → sa description en données (`{ kind, props }`). */
 export function lireFigure(brut) {
-  const m = /^(tableau|triangle|droite) (.+)$/.exec(brut);
-  if (!m) throw new Error(`figure : « tableau … », « triangle … » ou « droite … » attendu, lu « ${brut} »`);
+  const m = new RegExp(`^(${SORTES_DE_FIGURE}) (.+)$`).exec(brut);
+  if (!m) throw new Error(`figure : « tableau … », « triangle … », « droite … », « fraction … », « fractions … », « diagramme … » ou « graphique … » attendu, lu « ${brut} »`);
   const lignes = m[2].split(' / ').map((l) => l.split(' · '));
   if (m[1] === 'tableau') {
     if (lignes.length < 2 || lignes.some((l) => l.length !== lignes[0].length)) throw new Error(`figure : un tableau a un en-tête et des lignes de même longueur, lu « ${brut} »`);
@@ -186,6 +195,28 @@ export function lireFigure(brut) {
     if (lignes.length !== 1 || lignes[0].length !== 3) throw new Error(`figure : un triangle a trois côtés, lu « ${brut} »`);
     const [a, b, c] = lignes[0].map(nombreOuTexte);
     return { kind: 'right-triangle', props: { a, b, c, labels: ['A', 'B', 'C'] } };
+  }
+  if (m[1] === 'fraction') {
+    const f = fractionLue(m[2]);
+    if (!f || f[0] > f[1]) throw new Error(`figure : une fraction s'écrit « 3/5 », au plus une unité, lu « ${brut} »`);
+    return { kind: 'fraction-bar', props: { n: f[0], d: f[1] } };
+  }
+  if (m[1] === 'fractions') {
+    const fs = lignes.length === 1 ? lignes[0].map(fractionLue) : [];
+    if (fs.length !== 2 || fs.some((f) => !f || f[0] > f[1])) throw new Error(`figure : deux fractions à comparer s'écrivent « 3/5 · 3/10 », au plus une unité chacune, lu « ${brut} »`);
+    return { kind: 'compare-bars', props: { a: fs[0], b: fs[1] } };
+  }
+  if (m[1] === 'diagramme') {
+    const valeurs = lignes.at(-1).map(nombreOuTexte);
+    if (lignes.length > 2 || valeurs.some((v) => typeof v !== 'number' || v < 0) || (lignes.length === 2 && lignes[0].length !== valeurs.length))
+      throw new Error(`figure : un diagramme donne ses noms puis, après « / », autant de nombres positifs, lu « ${brut} »`);
+    return { kind: 'bar-list', props: { values: valeurs, ...(lignes.length === 2 && { labels: lignes[0] }) } };
+  }
+  if (m[1] === 'graphique') {
+    const [a, b] = lignes[0].map(nombreOuTexte);
+    if (lignes.length !== 1 || lignes[0].length !== 2 || typeof a !== 'number' || typeof b !== 'number')
+      throw new Error(`figure : un graphique donne a puis b de la droite y = a × x + b, lu « ${brut} »`);
+    return { kind: 'graph', props: { a, b } };
   }
   const [bornes, points] = lignes;
   if (lignes.length > 2 || bornes.length !== 2) throw new Error(`figure : une droite va d'un nombre à un autre, lu « ${brut} »`);
@@ -199,10 +230,15 @@ export function lireFigure(brut) {
 export function ecrireFigure(figure) {
   const { kind, props } = figure;
   const ligne = (l) => l.map(ecrireNombre).join(' · ');
-  if (kind === 'ratio-table' && Object.keys(props).join() === 'cols,rows') return `tableau ${[props.cols, ...props.rows].map(ligne).join(' / ')}`;
-  if (kind === 'right-triangle' && Object.keys(props).join() === 'a,b,c,labels' && props.labels.join() === 'A,B,C') return `triangle ${ligne([props.a, props.b, props.c])}`;
-  if (kind === 'number-line' && ['min,max', 'min,max,points'].includes(Object.keys(props).join()))
+  const cles = Object.keys(props).join();
+  if (kind === 'ratio-table' && cles === 'cols,rows') return `tableau ${[props.cols, ...props.rows].map(ligne).join(' / ')}`;
+  if (kind === 'right-triangle' && cles === 'a,b,c,labels' && props.labels.join() === 'A,B,C') return `triangle ${ligne([props.a, props.b, props.c])}`;
+  if (kind === 'number-line' && ['min,max', 'min,max,points'].includes(cles))
     return `droite ${ligne([props.min, props.max])}${props.points ? ` / ${ligne(props.points)}` : ''}`;
+  if (kind === 'fraction-bar' && cles === 'n,d') return `fraction ${props.n}/${props.d}`;
+  if (kind === 'compare-bars' && cles === 'a,b') return `fractions ${props.a.join('/')} · ${props.b.join('/')}`;
+  if (kind === 'bar-list' && ['values', 'values,labels'].includes(cles)) return `diagramme ${props.labels ? `${props.labels.join(' · ')} / ` : ''}${ligne(props.values)}`;
+  if (kind === 'graph' && cles === 'a,b') return `graphique ${ligne([props.a, props.b])}`;
   throw new Error(`figure non prise en charge : ${JSON.stringify(figure)}`);
 }
 

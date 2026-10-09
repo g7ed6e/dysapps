@@ -156,7 +156,7 @@ La **croix** du panneau le ferme et rend le monde, sans quitter l’île : la ca
 
 ## Les missions et les étoiles
 
-Chaque île propose deux à quatre **missions**. Une mission enchaîne les items d’un exercice (souvent huit, ou quatre écrans de quatre mots), un item à la fois :
+Chaque île propose deux à cinq **missions**. Une mission enchaîne les items d’un exercice (souvent huit, ou quatre écrans de quatre mots), un item à la fois :
 
 - la **consigne** est écrite au-dessus de l’item, en syllabes colorées si le réglage est activé, et lue à voix haute au début de la mission ; le bouton 🔊 « Consigne » la relit. Une mission qui lit elle-même son mot en s’ouvrant (dictée, écoute en anglais) ne lit pas la consigne par-dessus ;
 - l’élève répond en un geste : toucher un mot, un bloc, une réponse, valider un écran ; dans le Filon, un repère court, « Lettre à piocher : d », garde la lettre cible sous les yeux, juste au-dessus du bloc qui passe ;
@@ -302,12 +302,12 @@ Chaque île a **un bâtiment**, la maison de la créature (la cabane de Mousso, 
 
 Les parties se posent toujours dans le même ordre, celui du dessin, quelle que soit la mission jouée. Le dessin suit trois plans : d’abord **les murs** (le bloc de l’île, avec l’emplacement de la porte et des fenêtres), puis **le toit** (les tuiles, la porte, des fenêtres éclairées par des lanternes, une cheminée ou un sommet), puis **la cour** (une barrière avec son portillon, une lanterne sur chaque poteau du bout, une marche devant la porte, une jardinière). Les parties en viennent :
 
-- une île à **cinq missions** : le bas des murs, le milieu des murs, le haut des murs, puis le toit, puis la cour (« Le bas du four de Rouxel », « Le milieu du four de Rouxel », « Le haut du four de Rouxel »…) ;
+- une île à **cinq missions** : le bas des murs, le milieu des murs, le haut des murs, puis le toit, puis la cour (« Le bas du nid de Coco », « Le milieu du nid de Coco », « Le haut du nid de Coco »…) ; quand les murs n’ont que deux rangées de blocs, le bas des murs, le haut des murs, puis le bas du toit, le haut du toit, puis la cour (« Le bas du toit de la hutte ») ;
 - une île à **quatre missions** : le bas des murs, le haut des murs, puis le toit, puis la cour ;
 - une île à **trois missions** : une partie par plan (les murs, le toit, la cour) ;
 - une île à **deux missions** (la Mine des lettres) : les murs, puis le toit et la cour ensemble (« Le toit et la cour de la forge »).
 
-Quand une île gagne ou perd une mission (avec les programmes de 2025-2026, la Forge, le Cabinet et l’Observatoire des données en ont quatre, le Glacier trois ; en octobre 2026, de nombreuses îles reçoivent une mission de plus, pour travailler tout le programme), rien de ce qui est posé ne se défait : un bâtiment fini reste fini, et la mission arrivée ne pose rien de plus. Une mission qui change d’île garde ses étoiles et ses questions à revoir. Crevasses devient Fourneau, à la Forge (4e). Le subjonctif part aux Liens, au Cabinet (4e). Le partage selon un ratio part aux Cargaisons, à l’Observatoire des données (3e). Leurs étoiles les suivent ; elles n’ouvrent pas l’île, qui s’ouvre par les ponts et le passage. Un défi déjà ouvert le reste.
+Quand une île gagne ou perd une mission (avec les programmes de 2025-2026, la Forge, le Cabinet et l’Observatoire des données en ont quatre, le Glacier trois ; quand une île reçoit une mission de plus, pour travailler tout le programme), rien de ce qui est posé ne se défait : un bâtiment fini reste fini, et la mission arrivée ne pose rien de plus. Une mission qui change d’île garde ses étoiles et ses questions à revoir. Crevasses devient Fourneau, à la Forge (4e). Le subjonctif part aux Liens, au Cabinet (4e). Le partage selon un ratio part aux Cargaisons, à l’Observatoire des données (3e). Leurs étoiles les suivent ; elles n’ouvrent pas l’île, qui s’ouvre par les ponts et le passage. Un défi déjà ouvert le reste.
 
 Ce qui reste à poser est dessiné en **fantômes bleutés** dans le monde. Rien ne se pose à la main : toucher un fantôme du bâtiment y fait marcher le bonhomme, comme sur le sol.
 

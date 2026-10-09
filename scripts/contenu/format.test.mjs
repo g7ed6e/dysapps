@@ -65,6 +65,16 @@ describe('le format Markdown du contenu', () => {
     expect(lireFigure('tableau x · f(x) / 2 · 6 / 4 · ?')).toEqual({ kind: 'ratio-table', props: { cols: ['x', 'f(x)'], rows: [[2, 6], [4, '?']] } });
     expect(lireFigure('droite 0 · 20 / 5 · 10')).toEqual({ kind: 'number-line', props: { min: 0, max: 20, points: [5, 10] } });
     expect(ecrireFigure(lireFigure('triangle 6 · 8 · ?'))).toBe('triangle 6 · 8 · ?');
+    expect(lireFigure('fraction 3/5')).toEqual({ kind: 'fraction-bar', props: { n: 3, d: 5 } });
+    expect(lireFigure('fractions 3/5 · 3/10')).toEqual({ kind: 'compare-bars', props: { a: [3, 5], b: [3, 10] } });
+    expect(lireFigure('diagramme lundi · mardi / 10 · 20')).toEqual({ kind: 'bar-list', props: { values: [10, 20], labels: ['lundi', 'mardi'] } });
+    expect(lireFigure('graphique 2 · −1')).toEqual({ kind: 'graph', props: { a: 2, b: -1 } });
+    for (const f of ['fraction 3/5', 'fractions 3/5 · 3/10', 'diagramme lundi · mardi / 10 · 20', 'diagramme 4 · 0,5', 'graphique 2 · −1'])
+      expect(ecrireFigure(lireFigure(f))).toBe(f);
+    expect(() => lireFigure('fraction 7/5')).toThrow(/une unité/);
+    expect(() => lireFigure('fractions 3/5')).toThrow(/deux fractions/);
+    expect(() => lireFigure('diagramme a · b / 10')).toThrow(/autant de nombres/);
+    expect(() => lireFigure('graphique 2')).toThrow(/a puis b/);
     expect(() => lireFigure('cercle 3')).toThrow(/tableau/);
     expect(() => lireFigure('tableau x · y / 1')).toThrow(/même longueur/);
     expect(() => lireFigure('triangle 3 · 4')).toThrow(/trois côtés/);
