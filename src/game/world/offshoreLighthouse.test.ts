@@ -32,7 +32,7 @@ describe('Le phare du large du 5e (revue d’ensemble, DA-4 : Archipéo seulemen
     expect(MONUMENTS.filter((x) => x.id === PHARE_DU_LARGE)).toHaveLength(1);
   });
 
-  it('fini, remplace tous ses cubes par le modèle ; pas fini, les cubes et les fantômes restent', () => {
+  it('fini, remplace tous ses cubes par le modèle ; son socle pas fini, les cubes et les fantômes restent', () => {
     const cubes = worldCubes('5e', progress, village, false);
     const siens = cubes.filter((c) => c.place === `monument:${PHARE_DU_LARGE}` && !c.sol);
     expect(siens.length).toBe(m.cells.length);
@@ -41,7 +41,8 @@ describe('Le phare du large du 5e (revue d’ensemble, DA-4 : Archipéo seulemen
     expect(remplacees.size).toBe(siens.length);
     expect(pose!.cellules).toHaveLength(siens.length);
 
-    const moitie = { ...village, parts: { ...village.parts, [PHARE_DU_LARGE]: (village.parts[PHARE_DU_LARGE] ?? []).slice(1) } };
+    const socle = new Set(planCells(m).filter((c) => c.z === 0).map((c) => c.key));
+    const moitie = { ...village, parts: { ...village.parts, [PHARE_DU_LARGE]: (village.parts[PHARE_DU_LARGE] ?? []).filter((k, _, l) => !socle.has(k) || k !== l.find((x) => socle.has(x))) } };
     const enCours = phareDuLarge(worldCubes('5e', progress, moitie, false));
     expect(enCours.pose).toBeNull();
     expect(enCours.remplacees.size).toBe(0);
@@ -110,6 +111,44 @@ describe('Le phare du large du 5e (revue d’ensemble, DA-4 : Archipéo seulemen
     dessinerPhareDuLarge(Pm, Lm, { ...pose!, muted: true });
     expect(Lm.triangles).toBe(0);
   });
+
+  it('se construit pièce par pièce (intention du directeur artistique, 9 octobre 2026) : chaque pièce finie du grand projet, et celles d’en dessous, laisse la place à sa pièce du modèle ; le feu ne s’allume que le phare fini', () => {
+    const cellules = planCells(m);
+    const o = monumentAnchor(m);
+    const avec = (garder: (z: number) => boolean) => ({ ...village, parts: { ...village.parts, [PHARE_DU_LARGE]: cellules.filter((c) => garder(c.z)).map((c) => c.key) } });
+    const hauteur = (P: Pinceau) => {
+      const f = P.fin();
+      let h = -Infinity;
+      for (let i = 1; i < f.positions.length; i += 3) h = Math.max(h, f.positions[i]);
+      return h;
+    };
+    // Le socle et la tour (les étages 0 à 6) : le soubassement et le fût, jusqu'au haut de la tour du plan ; ni corniche,
+    // ni hublot, ni feu ; les cases de la galerie, de la lanterne et du toit restent des fantômes.
+    const tour = worldCubes('5e', progress, avec((z) => z <= 6), false).filter((c) => c.tag === m.biome && !c.sol);
+    const { pose, remplacees } = phareDuLarge(tour);
+    expect([...pose!.pieces!]).toEqual(['base', 'tower']);
+    expect(remplacees.size).toBe(cellules.filter((c) => c.z <= 6).length);
+    expect(pose!.cellules).toHaveLength(remplacees.size);
+    const P = new Pinceau();
+    const L = new Pinceau();
+    dessinerPhareDuLarge(P, L, pose!);
+    expect(L.triangles).toBe(0);
+    expect(hauteur(P)).toBeCloseTo(o.z + 7);
+    const g = maillageDeLaConstruction('5e', tour);
+    const [t0, t1] = g.phareDuLarge!.opaque;
+    for (let t = t0; t < t1; t++) expect(g.opaque.motifs[g.opaque.indices[3 * t]]).not.toBe(MOTIF_ASSEMBLE.vitrail);
+    expect(g.fantomes.indices.length).toBeGreaterThan(0);
+    // Tout sauf le toit : la corniche et la terrasse, sans corbeille ni feu.
+    const sansToit = phareDuLarge(worldCubes('5e', progress, avec((z) => z <= 8), false)).pose!;
+    expect(sansToit.pieces!.size).toBe(4);
+    const P2 = new Pinceau();
+    const L2 = new Pinceau();
+    dessinerPhareDuLarge(P2, L2, sansToit);
+    expect(L2.triangles).toBe(0);
+    expect(hauteur(P2)).toBeCloseTo(o.z + MESURES_DU_PHARE_DU_LARGE.parapet.haut);
+    // Une pièce finie au-dessus d'une qui ne l'est pas attend : la tour sans le socle, rien du modèle.
+    expect(phareDuLarge(worldCubes('5e', progress, avec((z) => z >= 1 && z <= 6), false)).pose).toBeNull();
+  }, 30_000);
 
   it('dans la construction taillée : un dessin en facettes, touchable par ses cases, sans cube du monument', () => {
     const cubes = worldCubes('5e', progress, village, false).filter((c) => c.tag === m.biome && !c.sol);

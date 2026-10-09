@@ -130,12 +130,15 @@ export function barriereDe(piece: IdDePiece, c: VoxelCube): DessinDePiece | unde
 
 /** La marche d'un bloc (un escalier), d'après sa pièce. */
 export function marcheDe(piece: IdDePiece): DessinDePiece | undefined {
-  if (!formeDe(piece)) return undefined;
-  const dessus = sousQuelqueChose(piece);
-  let d = MARCHES.get(dessus);
+  return formeDe(piece) ? stepOf(sousQuelqueChose(piece)) : undefined;
+}
+
+/** La marche, faite une fois : basse, ou de toute la case sous ce qui est posé dessus (`covered`). */
+export function stepOf(covered: boolean): DessinDePiece {
+  let d = MARCHES.get(covered);
   if (!d) {
-    d = marche(dessus);
-    MARCHES.set(dessus, d);
+    d = marche(covered);
+    MARCHES.set(covered, d);
   }
   return d;
 }

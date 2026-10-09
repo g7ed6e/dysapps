@@ -154,6 +154,8 @@ const auPhare = (m: MaillageDeLaConstruction, groupe: 'opaque' | 'fenetres', i: 
   );
 /** Les triangles des ponts de pierre et de bois du 5e (des modèles, comptés à part). */
 const auxPonts = (m: MaillageDeLaConstruction) => (m.ponts ?? []).reduce((n, p) => n + p.opaque[1] - p.opaque[0], 0);
+/** Les triangles des pièces d'architecture dessinées (lot 7) : comptées à part, au plus un cube pour ce qui est fait de main d'homme. */
+const auxPieces = (m: MaillageDeLaConstruction) => (m.pieces ?? []).reduce((n, p) => n + p.opaque[1] - p.opaque[0], 0);
 
 /** Un triangle d'une lanterne : le toucher retrouve la case de la lanterne. */
 function dansUneLanterne(lanternes: Map<string, VoxelCube>, t: { centre: { x: number; y: number; z: number }; n: { x: number; y: number; z: number } }) {
@@ -185,10 +187,11 @@ describe('La construction taillée (lot R5)', () => {
         expect(cout.drawCalls, `${a} ${etat}`).toBeLessThanOrEqual(enveloppeDe('construction', a).drawCalls);
       }
       // Et bien moins que les cubes d'avant (bornes comprises, qui sortent vers leur poste), sans compter les ponts de
-      // pierre et de bois du 5e : un modèle qui remplace ses cubes de planches, dans l'enveloppe ci-dessus.
+      // pierre et de bois du 5e (un modèle qui remplace ses cubes de planches) ni les pièces d'architecture dessinées
+      // (lot 7 : les rochers, arbres, congères et poteaux du reste, comptés à part), dans l'enveloppe ci-dessus.
       const { cubes, sol } = monde(a);
       const m = maillageDeLaConstruction(a, cubes, sol);
-      expect(coutDeLaConstruction(m).triangles - auxPonts(m), a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.7);
+      expect(coutDeLaConstruction(m).triangles - auxPonts(m) - auxPieces(m), a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.7);
     }
   }, 60_000);
 
@@ -357,8 +360,9 @@ describe('La construction taillée (lot R5)', () => {
   });
 
   it('la fusion ne mêle pas deux matières : une face fusionnée n’a qu’une couleur, et les blocs gardent la leur', () => {
-    const { cubes, sol } = monde('5e');
-    const m = maillageDeLaConstruction('5e', cubes, sol);
+    // Au 4e, sans kit (au 6e et au 5e, les volumes lissés portent la teinte de leur ancre).
+    const { cubes, sol } = monde('4e');
+    const m = maillageDeLaConstruction('4e', cubes, sol);
     const c = m.opaque.colors;
     // Les blocs seulement (quatre sommets et deux triangles par face) : les ponts de pierre et de bois, dessinés à la
     // fin, sont des facettes peintes.
@@ -556,14 +560,16 @@ describe('Les toits de terre cuite (lot R5)', () => {
       expect(allumes3D, a).toEqual(allumesOracle);
       expect(m.opaque.aretes.length, a).toBe(m.opaque.positions.length / 3);
     }
-    // Le verre hors d'un mur (au 5e) porte l'arête ; les autres blocs non. Au 6e, le reste (9 octobre 2026) le peint en
-    // verrière ou en eau : plus aucune arête.
-    const m = maillageDeLaConstruction('5e', monde('5e').cubes, monde('5e').sol);
+    // Le verre hors d'un mur (au 4e, sans kit) porte l'arête ; les autres blocs non. Au 6e et au 5e, le reste (9 octobre
+    // 2026) le peint en verrière ou en eau : plus aucune arête.
+    const m = maillageDeLaConstruction('4e', monde('4e').cubes, monde('4e').sol);
     const avec = [...m.opaque.aretes].filter((v) => v === 1).length;
     expect(avec).toBeGreaterThan(0);
     expect(avec).toBeLessThan(m.opaque.aretes.length / 4);
-    const m6 = maillageDeLaConstruction('6e', monde('6e').cubes, monde('6e').sol);
-    expect([...m6.opaque.aretes].filter((v) => v === 1).length).toBe(0);
+    for (const a of ['6e', '5e'] as const) {
+      const mk = maillageDeLaConstruction(a, monde(a).cubes, monde(a).sol);
+      expect([...mk.opaque.aretes].filter((v) => v === 1).length, a).toBe(0);
+    }
   });
 });
 
@@ -585,8 +591,9 @@ describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur a
   const dansLaCase = (m: MaillageDeLaConstruction, x: number, y: number) =>
     triangles(m.opaque).filter((t) => t.p.every(([px, , pz]) => px > x + 0.05 && px < x + 0.95 && pz > y + 0.05 && pz < y + 0.95));
 
-  it('au 6e, chaque trophée est plus petit que sa case : il ne touche ni le pilier voisin ni la sablière, le fond se voit au-dessus', () => {
-    const { m, cubes, coin, places } = avecLesTrophees('6e');
+  for (const a of ['6e', '5e'] as const)
+  it(`au ${a}, chaque trophée est plus petit que sa case : il ne touche ni le pilier voisin ni la sablière, le fond se voit au-dessus`, () => {
+    const { m, cubes, coin, places } = avecLesTrophees(a);
     // Les 24 trophées sont dans le monde, à leur place.
     const poses = new Set(cubes.filter((c) => c.place === 'trophies').map((c) => cle(c.x, c.y, c.z)));
     for (const p of places) expect(poses.has(cle(p.x, p.y, p.z))).toBe(true);
@@ -605,7 +612,7 @@ describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur a
   });
 
   it('ailleurs, tant que le kit de l’archipel ne reprend pas la salle, les trophées restent des blocs entiers (et Blocland les garde)', () => {
-    for (const a of ['5e', '4e', '3e'] as const) {
+    for (const a of ['4e', '3e'] as const) {
       const { m, places } = avecLesTrophees(a);
       for (const p of places) expect(dansLaCase(m, p.x, p.y).length, `${a} ${cle(p.x, p.y, p.z)}`).toBe(0);
     }

@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, gardiens ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, gardiens ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -774,6 +774,82 @@ const CAPTURES = [
   { nom: 'familles-6e-liaison-loin', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', zoomer: -6, finesse: 2 },
   { nom: 'familles-6e-halle-cour', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', lieu: 'assembly', sansPanneau: true, zoomer: 4, finesse: 2 },
   { nom: 'familles-6e-ecole', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', lieu: 'school', sansPanneau: true, zoomer: 4, finesse: 2 },
+  // Les familles du 5e dans Archipéo (le 5e au niveau du 6e, 9 octobre 2026, famille `familles-cinquieme`), à retirer une
+  // fois le lot fusionné ; à prendre avec `--rendu archipeo`. Les étiquettes des îles cachées sur le cœur
+  // (`sansEtiquettes`), les panneaux des lieux et des monuments masqués (`sansPanneau`). Le Glacier (le dôme, la balise,
+  // les congères) et la Saline (le sel), de près, la cour de leur île à moitié posée (`partie` « cour-mi ») : la glace
+  // et le sel bâtis à côté d'un fantôme, pour juger leur écart à Brume ; le Glacier aussi de nuit. Le Marché (l'échoppe
+  // de toile et son auvent), le Comptoir (l'échoppe de tuile, la tente, la glacière), le Bourg (le logis d'enluminure,
+  // le four, l'écritoire), le Delta (le moulin, la rizière), le Marais (la hutte de tourbe, les mares, de jour et de
+  // nuit), le Manoir (la tour de lambris, la serre) ; le phare du large pièce par pièce (`etages` : le socle, la tour, la
+  // galerie, la lanterne), puis fini de nuit ; le kiosque de près et de loin ; l'école, la salle pleine de face (de jour
+  // et de nuit) et la cour de la Halle ; une liaison de loin ; l'archipel au plus reculé (le moiré des plis et des clins).
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `familles-5e-glacier${suffixe}`,
+    vue: 'île',
+    famille: 'familles-cinquieme',
+    ile: 'maths-5e-signed-numbers',
+    partie: 'cour-mi',
+    posees: 'toutes',
+    zoomer: 3,
+    sansEtiquettes: true,
+    finesse: 2,
+    ...autres,
+  })),
+  { nom: 'familles-5e-marche', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-5e-comptoir', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-vocabulary', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-5e-logis', vue: 'île', famille: 'familles-cinquieme', ile: 'history-5e-middle-ages', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-5e-delta', vue: 'île', famille: 'familles-cinquieme', ile: 'geography-5e-resources', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `familles-5e-marais${suffixe}`,
+    vue: 'île',
+    famille: 'familles-cinquieme',
+    ile: 'french-5e-conjugation',
+    posees: 'toutes',
+    zoomer: 3,
+    sansEtiquettes: true,
+    finesse: 2,
+    ...autres,
+  })),
+  { nom: 'familles-5e-manoir', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-grammar', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-5e-saline', vue: 'île', famille: 'familles-cinquieme', ile: 'physics-chemistry-5e-matter-universe', partie: 'cour-mi', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  // Le phare du large (world/offshoreLighthouse.ts, LAYERS) posé jusqu'à un étage : le socle (1), la tour (7), la
+  // galerie (8), la lanterne (9) ; puis fini, de nuit (son feu).
+  ...[
+    ['socle', 1],
+    ['tour', 7],
+    ['galerie', 8],
+    ['lanterne', 9],
+  ].map(([piece, z]) => ({
+    nom: `familles-5e-phare-etapes-${piece}`,
+    vue: 'île',
+    famille: 'familles-cinquieme',
+    ile: 'maths-5e-signed-numbers',
+    lieu: 'landmark-5e-1',
+    sansPanneau: true,
+    etages: { 'landmark-5e-1': z },
+    zoomer: 3,
+    finesse: 2,
+  })),
+  { nom: 'familles-5e-phare-etapes-fini-nuit', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-signed-numbers', lieu: 'landmark-5e-1', sansPanneau: true, nuit: true, zoomer: 3, finesse: 2 },
+  { nom: 'familles-5e-kiosque', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-grammar', lieu: 'landmark-5e-2', sansPanneau: true, zoomer: 3, finesse: 2 },
+  { nom: 'familles-5e-kiosque-loin', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-grammar', lieu: 'landmark-5e-2', sansPanneau: true, finesse: 2 },
+  { nom: 'familles-5e-ecole', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', lieu: 'school', sansPanneau: true, zoomer: 4, finesse: 2 },
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `familles-5e-salle-fond${suffixe}`,
+    vue: 'île',
+    famille: 'familles-cinquieme',
+    ile: 'maths-5e-proportionality',
+    lieu: 'trophies',
+    sansPanneau: true,
+    succes: 'tous',
+    zoomer: 4,
+    finesse: 2,
+    ...autres,
+  })),
+  { nom: 'familles-5e-halle-cour', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', lieu: 'assembly', sansPanneau: true, zoomer: 4, finesse: 2 },
+  { nom: 'familles-5e-liaison-loin', vue: 'île', famille: 'familles-cinquieme', ile: 'french-5e-homophones', zoomer: -6, finesse: 2 },
+  { nom: 'familles-5e-archipel-recul', vue: 'archipel', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', posees: 'toutes', zoomer: -10, finesse: 2 },
   // Les six îles d'histoire-géographie des 5e, 4e et 3e (lot HG-3, famille `histoire-geo-college`), à retirer une fois le
   // lot fusionné : chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`)
   // et tout construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la
