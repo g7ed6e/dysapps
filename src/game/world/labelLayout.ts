@@ -203,6 +203,18 @@ export function entiere(box: LabelBox, o: LabelOffset, zones: LabelBox[], bounds
 const ECART_MAX = 1.5;
 
 /**
+ * Sur la Carte, l'écart du dernier recours (`placerSansSouples`) : quand des noms se taisent encore après la recherche
+ * complète, les noms peuvent s'éloigner de leur île d'autant de hauteurs d'étiquette (au lieu d'`ECART_MAX`), jamais plus
+ * près d'une autre île que de la sienne. Au 6e, en portrait 800 × 1280 en OpenDyslexic 32 px, seize îles dans une bande
+ * de 550 px de large pour des noms de 250 à 400 px : cinq et six noms se taisaient depuis le Préau des délégués (EMC-2) ;
+ * deux et trois avec ce recours (référent dys, 9 octobre 2026). À 2 hauteurs, aucun de moins (mesuré).
+ */
+const ECART_DU_DERNIER_RECOURS = 2.25;
+
+/** Au dernier recours, combien de crans d'une demi-étiquette un nom qui ne se tait jamais essaie au-dessus et au-dessous de son île. */
+const LEVELS_OF_THE_LAST_RESORT = 4;
+
+/**
  * Les étiquettes à montrer : entières (voir `entiere`), près de leur île, sans se couvrir l'une l'autre. Une étiquette
  * dont l'île (`iles`, à l'écran ; sinon sa place voulue) est sous l'interface ou hors du cadre, ou que l'écart éloigne
  * de son île de plus d'`ECART_MAX` hauteurs, ne se montre pas : un nom loin de son île ne désigne rien. Quand deux se
@@ -319,6 +331,11 @@ export interface CarteDesEtiquettes {
   arrivee?: number;
   /** L'indice de l'île où se tient le bonhomme : comme celui de la destination, son nom ne se tait jamais (DA, HG-3). */
   avatarIsland?: number;
+  /**
+   * L'indice de l'île touchée (sur la Carte, l'île fermée choisie ; ailleurs, celle dont la fiche est ouverte) : son nom
+   * ne se tait jamais non plus (référent dys, 9 octobre 2026).
+   */
+  selected?: number;
 }
 
 function placerSansSouples(
@@ -444,11 +461,12 @@ function placerSansSouples(
       if (entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds) && !obstacles.some((v) => overlap(at, v, gap) > 0)) dessus = { i: destination, at };
     }
     reparerLaCarte(boxes, iles, offsets, visibles, vues, { couvert, obstacles, bounds, gap, recherche: vue.recherche === undefined ? rechercheDuCadrage() : vue.recherche }, poids, horsDeLaGarde, autreQueLaDestination, dessus);
-    // Deux noms ne se taisent jamais sur la Carte (DA, HG-3) : celui de la prochaine destination et celui de l'île où se
-    // tient le bonhomme (`carte.avatarIsland`).
-    const neverHidden = [destination, carte.avatarIsland].filter((i): i is number => i !== undefined && gardees.includes(i));
+    // Trois noms ne se taisent jamais sur la Carte : celui de la prochaine destination, celui de l'île touchée
+    // (`carte.selected`, référent dys, 9 octobre 2026) et celui de l'île où se tient le bonhomme (`carte.avatarIsland`,
+    // DA, HG-3).
+    const neverHidden = [...new Set([destination, carte.selected, carte.avatarIsland])].filter((i): i is number => i !== undefined && gardees.includes(i));
     if (neverHidden.some((i) => !visibles[i])) {
-      // Les noms qu'ils font taire cherchent encore une place près de leur île, sans pousser ces deux-là.
+      // Les noms qu'ils font taire cherchent encore une place près de leur île, sans pousser ceux-là.
       const repair = (o: LabelOffset[], v: boolean[], m: Map<number, LabelBox>, covered: number[]) => reparerLaCarte(boxes, iles, o, v, m, { couvert, obstacles, bounds, gap, recherche: null }, poids, horsDeLaGarde, (j) => !neverHidden.includes(j), null, covered);
       showAtAllCosts(neverHidden, boxes, iles, { offsets, visibles, vues }, { couvert, obstacles, bounds, gap }, horsDeLaGarde, repair);
     }
@@ -462,6 +480,23 @@ function placerSansSouples(
         visibles[i] = false;
         offsets[i] = { dx: 0, dy: 0 };
       }
+    // Le dernier recours (référent dys, 9 octobre 2026) : après la recherche complète (jamais au placement simple, qui
+    // ne la lancerait plus, et laisserait loin de leur île des noms qu'elle aurait posés près d'elle), si des noms se
+    // taisent encore, la même réparation se refait avec un écart plus large (`ECART_DU_DERNIER_RECOURS`), toujours chaque
+    // nom plus près de son île que d'une autre, sous ses propres plafonds d'essais (`dernierRecours`). Un nom montré ne
+    // quitte sa place que pour en faire à un nom tu, s'il en trouve une autre (la recherche essaie d'abord la place de
+    // chacun) ; celui de la destination garde la sienne.
+    const encoreTus = gardees.filter((i) => !visibles[i]);
+    if (vue.recherche && encoreTus.length) {
+      const recherche = (vue.recherche.dernierRecours ??= rechercheDuCadrage());
+      reparerLaCarte(boxes, iles, offsets, visibles, vues, { couvert, obstacles, bounds, gap, recherche, ecart: ECART_DU_DERNIER_RECOURS }, poids, horsDeLaGarde, autreQueLaDestination, null, encoreTus);
+    }
+    // Un nom qui ne se tait jamais et se tait encore (l'île touchée au bord de la Carte, sa place sous le nom du
+    // bonhomme) : ses places au dernier recours, plus loin et à plusieurs crans au-dessus et au-dessous de son île.
+    if (neverHidden.some((i) => !visibles[i])) {
+      const repair = (o: LabelOffset[], v: boolean[], m: Map<number, LabelBox>, covered: number[]) => reparerLaCarte(boxes, iles, o, v, m, { couvert, obstacles, bounds, gap, recherche: null, ecart: ECART_DU_DERNIER_RECOURS }, poids, horsDeLaGarde, (j) => !neverHidden.includes(j), null, covered);
+      showAtAllCosts(neverHidden, boxes, iles, { offsets, visibles, vues }, { couvert, obstacles, bounds, gap }, horsDeLaGarde, repair, { ecart: ECART_DU_DERNIER_RECOURS, levels: LEVELS_OF_THE_LAST_RESORT, yieldLater: true });
+    }
     return { offsets, visibles };
   }
   // Une étiquette tenue dont l'île se voit ne se tait jamais : sans place simple libre, elle garde la place que lui donne
@@ -488,16 +523,18 @@ function placerSansSouples(
 const KEPT_NAME_PLACES = 8;
 
 /**
- * Sur la Carte, les noms qui ne se taisent jamais tant que leur île se voit (`kept` : la prochaine destination, puis
- * l'île du bonhomme ; DA, HG-3). Un tel nom encore tu essaie les places simples autour de son île (dessus, dessous, de
+ * Sur la Carte, les noms qui ne se taisent jamais tant que leur île se voit (`kept` : la prochaine destination, l'île
+ * touchée, puis l'île du bonhomme ; DA, HG-3 ; référent dys, 9 octobre 2026). Un tel nom encore tu essaie les places simples autour de son île (dessus, dessous, de
  * côté ; dessus et dessous passent le médaillon ou la bulle posés sur l'île : sa place de plus, sous son île, consultant
  * UX UI), puis celles de la dernière chance (`TRIES_FINS`), puis dessus et dessous glissés de côté pour tenir dans le
  * cadre (la distance à l'île comptée sans le repère passé) : entière, hors de l'interface et des repères (la bulle, le
  * médaillon, la flèche d'un ouvrage), pas plus loin de son île que d'`ECART_MAX` hauteurs de plus, pas plus près d'une
- * autre île que de la sienne (vu de son milieu ; glissé de côté, vu de l'aplomb de son île), hors de la garde de la destination (`isFree`), sans couvrir l'autre nom
- * gardé. Les noms montrés qu'elle couvre se taisent, puis cherchent une autre place (`repair`) ; parmi les
+ * autre île que de la sienne (vu de son milieu ; glissé de côté, vu de l'aplomb de son île), hors de la garde de la destination (`isFree`), sans couvrir un
+ * autre nom gardé (sauf `yieldLater`, voir plus bas). Les noms montrés qu'elle couvre se taisent, puis cherchent une autre place (`repair`) ; parmi les
  * `KEPT_NAME_PLACES` places qui en font taire le moins, celle qui montre le plus de noms à la fin l'emporte. Sans aucune
- * place qui tienne, il se tait. Modifie `state`.
+ * place qui tienne, il se tait. Au dernier recours (`ecart`, `levels`), l'écart permis s'élargit, et dessus et dessous
+ * s'essaient aussi plus haut et plus bas, par demi-étiquettes (`levels` crans), glissés de côté s'il le faut : un nom au
+ * bord de la Carte peut alors passer au-dessus du nom voisin qui couvre sa place. Modifie `state`.
  */
 function showAtAllCosts(
   kept: number[],
@@ -507,6 +544,7 @@ function showAtAllCosts(
   vue: { couvert: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number },
   isFree: (i: number, at: LabelBox) => boolean,
   repair: (offsets: LabelOffset[], visibles: boolean[], vues: Map<number, LabelBox>, covered: number[]) => void,
+  { ecart = ECART_MAX, levels = 0, yieldLater = false }: { ecart?: number; levels?: number; yieldLater?: boolean } = {},
 ): void {
   const { couvert, obstacles, bounds, gap } = vue;
   for (const i of kept) {
@@ -519,24 +557,23 @@ function showAtAllCosts(
       if (!inTheWay.length) return y;
       return side < 0 ? Math.min(...inTheWay.map((v) => v.y - v.h / 2)) - b.h / 2 - gap : Math.max(...inTheWay.map((v) => v.y + v.h / 2)) + b.h / 2 + gap;
     };
-    const natural = [ile.y - b.h / 2 - gap, ile.y + b.h / 2 + gap];
-    const simple = [
-      { ...b, x: ile.x, y: pass(natural[0], -1) },
-      { ...b, x: ile.x, y: pass(natural[1], 1) },
-      { ...b, x: ile.x - b.w / 2 - gap, y: ile.y },
-      { ...b, x: ile.x + b.w / 2 + gap, y: ile.y },
-    ];
+    // Dessus, puis dessous ; au dernier recours, aussi plus haut et plus bas, par demi-étiquettes.
+    const step = b.h / 2 + gap;
+    const natural: { y: number; side: 1 | -1 }[] = [];
+    for (let k = 0; k <= levels; k++) natural.push({ y: ile.y - b.h / 2 - gap - k * step, side: -1 }, { y: ile.y + b.h / 2 + gap + k * step, side: 1 });
+    const vertical = natural.map((n) => ({ ...b, x: ile.x, y: pass(n.y, n.side) }));
+    const simple = [...vertical.slice(0, 2), { ...b, x: ile.x - b.w / 2 - gap, y: ile.y }, { ...b, x: ile.x + b.w / 2 + gap, y: ile.y }, ...vertical.slice(2)];
     // Une île au bord de l'écran : dessus et dessous, le nom glissé de côté pour y tenir entier, en dernier ; sa distance
     // à l'île se compte sans la hauteur du repère qu'il passe (la bulle de la destination est plus haute qu'`ECART_MAX` ;
     // la Ruche des réseaux, au bord gauche de la Carte du 3e en OpenDyslexic, le bonhomme dessus : consultant UX UI, SC-3).
-    const slid = simple
-      .slice(0, 2)
-      .map((s, k) => ({ at: { ...s, x: clamp(s.x, b.w / 2 + gap, bounds.w - b.w / 2 - gap) }, passed: Math.abs(s.y - natural[k]), glisse: true }))
+    // (La distance au-delà du cran voulu n'est pas « passée » : seul le repère passé l'est.)
+    const slid = vertical
+      .map((s, k) => ({ at: { ...s, x: clamp(s.x, b.w / 2 + gap, bounds.w - b.w / 2 - gap) }, passed: Math.abs(s.y - natural[k].y), glisse: true }))
       .filter((s) => s.at.x !== ile.x);
-    const candidates: { at: LabelBox; covered: number[] }[] = [];
+    const candidates: { at: LabelBox; covered: number[]; keptCovered: boolean }[] = [];
     for (const { at, passed, glisse } of [...[...simple, ...placesAutour(b, bounds, gap)].map((at) => ({ at, passed: 0, glisse: false })), ...slid]) {
       if (!entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds) || obstacles.some((v) => overlap(at, v, gap) > 0) || !isFree(i, at)) continue;
-      if (distanceA(at, ile) - passed > distanceA(b, ile) + ECART_MAX * b.h) continue;
+      if (distanceA(at, ile) - passed > distanceA(b, ile) + ecart * b.h) continue;
       // Glissé au bord de l'écran, le nom se lit juste au-dessus ou au-dessous de son île (sous le médaillon) : il désigne
       // l'île sous lui à l'aplomb de la sienne, pas celle sous son milieu, qu'une île au bord n'atteint plus (au
       // téléphone, au 6e, la Fouille des siècles et la Vallée du vivant ; référent dys, consultant UX UI, GD-11).
@@ -544,12 +581,17 @@ function showAtAllCosts(
       const d = distanceA(half, ile);
       if (iles.some((q, j) => j !== i && distanceA(half, q) < d)) continue;
       const covered = [...state.vues].filter(([, v]) => overlap(at, v, gap) > 0).map(([j]) => j);
-      if (!covered.some((j) => kept.includes(j))) candidates.push({ at, covered });
+      const keptCovered = covered.some((j) => kept.includes(j));
+      // Avec `yieldLater`, une place sur un nom gardé après lui (`kept` va du plus prioritaire au moins) se prend aussi,
+      // en dernier, si ce nom trouve ensuite une autre place ; jamais sur un nom gardé avant lui.
+      if (!keptCovered || (yieldLater && !covered.some((j) => kept.indexOf(j) !== -1 && kept.indexOf(j) < kept.indexOf(i)))) candidates.push({ at, covered, keptCovered });
     }
-    // Le tri est stable : à autant de noms couverts, la place la plus proche (les places simples d'abord).
+    // Le tri est stable : à autant de noms couverts, la place la plus proche (les places simples d'abord). Une place sur
+    // un nom gardé ne s'essaie que s'il n'y en a aucune autre.
     candidates.sort((p, q) => p.covered.length - q.covered.length);
+    const pool = candidates.some((c) => !c.keptCovered) ? candidates.filter((c) => !c.keptCovered) : candidates;
     let best: { offsets: LabelOffset[]; visibles: boolean[]; vues: Map<number, LabelBox>; n: number } | null = null;
-    for (const { at, covered } of candidates.slice(0, KEPT_NAME_PLACES)) {
+    for (const { at, covered, keptCovered } of pool.slice(0, KEPT_NAME_PLACES)) {
       const offsets = state.offsets.map((o) => ({ ...o }));
       const visibles = [...state.visibles];
       const vues = new Map(state.vues);
@@ -562,6 +604,11 @@ function showAtAllCosts(
       visibles[i] = true;
       vues.set(i, at);
       if (covered.length) repair(offsets, visibles, vues, covered);
+      if (keptCovered) {
+        // Le nom gardé qu'elle couvre cherche sa place à son tour ; sans place, celle-ci ne se prend pas.
+        showAtAllCosts(kept, boxes, iles, { offsets, visibles, vues }, vue, isFree, repair, { ecart, levels });
+        if (kept.some((j) => (state.visibles[j] || j === i) && !visibles[j])) continue;
+      }
       const n = visibles.filter(Boolean).length;
       if (!best || n > best.n) best = { offsets, visibles, vues, n };
       // Rien ne s'est tu : aucune place ne fera mieux.
@@ -653,7 +700,7 @@ function reparerLaCarte(
   offsets: LabelOffset[],
   visibles: boolean[],
   vues: Map<number, LabelBox>,
-  vue: { couvert: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number; recherche: RechercheDuCadrage | null },
+  vue: { couvert: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number; recherche: RechercheDuCadrage | null; ecart?: number },
   poids: (i: number) => number,
   libre: (i: number, at: LabelBox) => boolean,
   poussable: (j: number) => boolean,
@@ -661,6 +708,8 @@ function reparerLaCarte(
   only?: readonly number[],
 ): void {
   const { couvert, obstacles, bounds, gap, recherche } = vue;
+  // L'écart permis, en hauteurs d'étiquette : `ECART_MAX`, sauf au dernier recours (`ECART_DU_DERNIER_RECOURS`).
+  const ecart = vue.ecart ?? ECART_MAX;
   const ileVue = (i: number) => {
     const p = { ...iles[i], w: 1, h: 1 };
     return !horsDuCadre(p, bounds) && !couvert.some((z) => overlap(p, z, 0) > 0);
@@ -673,7 +722,7 @@ function reparerLaCarte(
     const b = boxes[i];
     const ile = iles[i];
     if (!entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds)) return false;
-    if (distanceA(at, ile) > distanceA(b, ile) + ECART_MAX * b.h) return false;
+    if (distanceA(at, ile) > distanceA(b, ile) + ecart * b.h) return false;
     // Pas plus près d'une autre île que de la sienne, vu du milieu du nom (voir `milieu`, `onAnotherIsland`).
     return !onAnotherIsland(at, i, iles);
   };
@@ -735,7 +784,7 @@ function reparerLaCarte(
   const tus = (only ?? boxes.map((_, i) => i)).filter((i) => !visibles[i] && ileVue(i)).sort((a, b) => poids(b) - poids(a) || a - b);
   for (const i of tus) for (const [j, at] of deplacer(i, [], [], POUSSEES_MAX) ?? []) poser(j, at);
   // Le placement simple seul (`placerDAbordSimplement`) : pas de recherche complète.
-  if (recherche) chercherToutesLesPlaces({ boxes, iles, vues, ileVue, tientSeule, horsDesReperes, bounds, gap, poussable, voulue, poser, recherche, autour: { couvert, obstacles } });
+  if (recherche) chercherToutesLesPlaces({ boxes, iles, vues, ileVue, tientSeule, horsDesReperes, bounds, gap, poussable, voulue, poser, recherche, autour: { couvert, obstacles }, ecart });
 }
 
 /**
@@ -785,6 +834,8 @@ export interface RechercheDuCadrage {
   readonly unNomDeMoins: Map<string, readonly (readonly [number, LabelBox])[] | null>;
   /** Les places autour de chaque nom qui tiennent (sans les repères), déjà vérifiées dans ce cadrage. */
   readonly autour: Map<string, LabelBox[]>;
+  /** La recherche du dernier recours (`ECART_DU_DERNIER_RECOURS`), sous ses propres plafonds, ouverte au premier besoin. */
+  dernierRecours?: RechercheDuCadrage;
 }
 
 /** Une recherche neuve, pour le placement d'un cadrage (voir `RechercheDuCadrage`). */
@@ -843,6 +894,8 @@ interface DemandeDeRecherche {
   recherche: RechercheDuCadrage;
   /** Ce qui, hors des boîtes, change ce qui tient : l'interface, les repères (dont la flèche de la destination). */
   autour: { couvert: LabelBox[]; obstacles: LabelBox[] };
+  /** L'écart permis aux noms, en hauteurs d'étiquette (voir `reparerLaCarte`) : il change ce qui tient, et les clés des caches. */
+  ecart: number;
 }
 
 /**
@@ -869,7 +922,7 @@ function chercherToutesLesPlaces(d: DemandeDeRecherche): void {
   const enBas = voulue !== null && (!montree || montree.x !== voulue.at.x || montree.y !== voulue.at.y);
   if (!tus.length && !ailleurs && !enBas) return;
   // La même recherche, déjà faite dans ce cadrage : son résultat (les places, ou rien).
-  const cle = JSON.stringify([boxes, iles, [...vues], voulue, d.autour, noms.filter((i) => !poussable(i)), bounds, gap]);
+  const cle = JSON.stringify([boxes, iles, [...vues], voulue, d.autour, noms.filter((i) => !poussable(i)), bounds, gap, d.ecart]);
   // (Une clé de quelques kilo-octets : bien moins cher que les milliers de places qu'elle évite de vérifier.)
   const deja = recherche.deja.get(cle);
   const appliquer = (r: readonly (readonly [number, LabelBox])[] | null) => {
@@ -887,7 +940,7 @@ function chercherToutesLesPlaces(d: DemandeDeRecherche): void {
   const placesAutourDe = (i: number) => {
     let l = autourDe.get(i);
     if (l) return l;
-    const k = `${i} ${JSON.stringify(boxes[i])} ${commun}`;
+    const k = `${i} ${d.ecart} ${JSON.stringify(boxes[i])} ${commun}`;
     let seules = recherche.autour.get(k);
     if (!seules) {
       seules = placesAutour(boxes[i], bounds, gap, TRIES_DE_LA_RECHERCHE).filter((at) => (recherche.places++, tientSeule(i, at)));
@@ -1001,7 +1054,7 @@ function chercherToutesLesPlaces(d: DemandeDeRecherche): void {
     // placements d'un cadrage la relançaient sur les mêmes boîtes, une quinzaine de fois au 3e en OpenDyslexic 32 px.
     // Un échec gardé ne regarde pas la place actuelle des autres noms : il peut cacher une solution, et taire au pire
     // un nom de plus.
-    const commeAvant = JSON.stringify([tous, tous.filter((i) => !poussable(i)), boxes, iles, voulue, ici, d.autour, bounds, gap]);
+    const commeAvant = JSON.stringify([tous, tous.filter((i) => !poussable(i)), boxes, iles, voulue, ici, d.autour, bounds, gap, d.ecart]);
     for (const k of aLaisser) {
       const cleSansLui = `${k} ${commeAvant}`;
       const dejaSansLui = recherche.unNomDeMoins.get(cleSansLui);

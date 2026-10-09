@@ -32,7 +32,7 @@ import { placeLibre } from '../freeSpace';
 import { cadrageDeLaCarte } from './camera';
 import { largeurEnGras, type PoliceDeTest } from './testFonts';
 import { caseALEcran } from './signs';
-import { MEDAILLON_CSS } from './labels';
+import { MEDAILLON_CSS, mapLabelWeights } from './labels';
 import { sanitizeState } from '../engine';
 import { textesDe } from '../../universes';
 import { nextDestination } from '../world/destination';
@@ -155,9 +155,20 @@ const POSEES = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => linkWholeRegion(a,
  * `parDefaut` : la Carte à l'ouverture, au plus près de la scène (`labels.ts`) : sans panneau (`ZONES_PAR_DEFAUT`), la
  * bulle de la destination à sa taille (`caseALEcran`), le médaillon « toi », les étiquettes avec le bloc de leur île
  * (repliées sans lui si un nom se tait, `replierLesSignes`), et sur un ouvrage le tracé suggéré et le poids de l'île
- * d'arrivée.
+ * d'arrivée. `fermees` : les îles fermées (leur état écrit « Fermée », leur poids celui de la scène, `mapLabelWeights`) ;
+ * `selected` : l'île touchée, dont le nom ne se tait jamais.
  */
-function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: number, destination: BiomeId | { ouvrage: string; depuis?: BiomeId } = getArchipelago(a).port, parDefaut = false, ecranDeLaCarte: EcranDeLaCarte = parDefaut ? TABLETTE_A_L_OUVERTURE : TABLETTE_PANNEAU_OUVERT, bonhommeSur: BiomeId = islandsOf(a)[0].id) {
+function laCarte(
+  a: ArchipelagoId,
+  etat: string,
+  police: PoliceDeTest,
+  elargir: number,
+  destination: BiomeId | { ouvrage: string; depuis?: BiomeId } = getArchipelago(a).port,
+  parDefaut = false,
+  ecranDeLaCarte: EcranDeLaCarte = parDefaut ? TABLETTE_A_L_OUVERTURE : TABLETTE_PANNEAU_OUVERT,
+  bonhommeSur: BiomeId = islandsOf(a)[0].id,
+  { fermees = [], selected = null }: { fermees?: readonly BiomeId[]; selected?: BiomeId | null } = {},
+) {
   const { zones, bas, cote } = ecranDeLaCarte;
   const { w: W, h: H } = ecranDeLaCarte.taille;
   // Une île : la pointe au-dessus de son cœur ; un ouvrage (GD-7) : juste au-dessus de ses places sur la liaison, la
@@ -180,7 +191,7 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
   const largeur = largeurEnGras(police);
   const centres = iles.map((b) => islandCenter(b.id));
   // L'étiquette flotte à 12 cases au-dessus du sol de son île (`labels.ts`).
-  const sansBloc = iles.map((b, i) => ({ ...ecran(centres[i].x + 0.5, centres[i].z + 12, centres[i].y + 0.5), ...etiquette(b.name, etat, largeur, elargir) }));
+  const sansBloc = iles.map((b, i) => ({ ...ecran(centres[i].x + 0.5, centres[i].z + 12, centres[i].y + 0.5), ...etiquette(b.name, fermees.includes(b.id) ? 'Fermée' : etat, largeur, elargir) }));
   const boxes = parDefaut ? sansBloc.map((b) => ({ ...b, w: b.w + BLOC_W * elargir })) : sansBloc;
   const points = centres.map((p) => ecran(p.x + 0.5, p.z, p.y + 0.5));
   // Le fanion du bonhomme et la flèche de la destination (`marksOnScreen`).
@@ -208,7 +219,11 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
   const indice = iles.findIndex((b) => b.id === dest);
   // Le nom de l'île du bonhomme ne se tait jamais, comme celui de la destination (`labels.ts`, DA, HG-3).
   const avatarIsland = iles.findIndex((b) => b.id === bonhommeSur);
-  const poids = { weights: iles.map((b) => (b.id === dest ? 2 : 1)), ...(parDefaut && indice >= 0 ? { destination: indice } : {}), ...(arrivee >= 0 ? { arrivee } : {}), avatarIsland };
+  // Les poids de la scène (`mapLabelWeights`) : la destination 2, une île fermée qu'aucun ouvrage ne relie à une île
+  // ouverte 0,5, les autres 1 ; l'île touchée ne se tait jamais.
+  const touchee = selected ? iles.findIndex((b) => b.id === selected) : -1;
+  const weights = mapLabelWeights(iles.map((b) => ({ id: b.id, closed: fermees.includes(b.id) })), dest, selected);
+  const poids = { weights, ...(parDefaut && indice >= 0 ? { destination: indice } : {}), ...(arrivee >= 0 ? { arrivee } : {}), avatarIsland, ...(touchee >= 0 ? { selected: touchee } : {}) };
   // Le tracé de l'ouvrage, que les étiquettes évitent si elles peuvent (`souplesDuTrace`).
   const souples = parDefaut && def ? boitesDuTrace(casesDeLOuvrage(def, POSEES).map((p) => ecran(p.x + 0.5, p.z + 1, p.y + 0.5))) : [];
   // Le placement simple d'abord, puis une recherche complète pour tout le placement du cadrage s'il tait un nom ou en
@@ -297,9 +312,10 @@ const TUS_EN_PORTRAIT_AU_VERGER: string[] = [];
  * encore trois depuis que la Carte cadre les lieux d'aujourd'hui : le Verger et le Kiosque sont en haut à droite, sous la
  * colonne des classes, qui prend la place de leurs noms. Quatre depuis que le cadrage compte le nom le plus haut monté
  * d'une demi-étiquette (`cadrageDeLaCarte`, consultant UX UI) : le Belvédère de Thalès, le Château des hypothèses, le
- * Kiosque et la Ruche des réseaux ; l'Observatoire des textes se montre. Régression connue de GD-11, au pilotage.
+ * Kiosque et la Ruche des réseaux ; l'Observatoire des textes se montre. Deux depuis le dernier recours de la Carte
+ * (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026) : le Château des hypothèses et la Ruche se montrent.
  */
-const TUS_EN_OD32_AU_VERGER = ['maths-3e-geometry', 'english-3e-grammar', 'history-3e-twentieth-century', 'technology-3e-digital'];
+const TUS_EN_OD32_AU_VERGER = ['maths-3e-geometry', 'history-3e-twentieth-century'];
 
 /**
  * La tablette en OpenDyslexic 32 px, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX
@@ -374,10 +390,8 @@ const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string,
     'geography-4e-globalization': ['history-4e-revolutions'],
   },
   '3e': {
-    'maths-3e-geometry': ['history-3e-twentieth-century', 'physics-chemistry-3e-motion-energy'],
-    'maths-3e-statistics': ['french-3e-close-reading', 'geography-3e-france', 'technology-3e-digital'],
-    'english-3e-grammar': ['lv2-3e-travel'],
-    'geography-3e-france': ['physics-chemistry-3e-motion-energy', 'technology-3e-digital'],
+    'maths-3e-statistics': ['french-3e-close-reading', 'geography-3e-france'],
+    'english-3e-grammar': ['technology-3e-digital'],
   },
 };
 
@@ -394,9 +408,10 @@ const TUS_AU_TELEPHONE: Record<string, string[]> = {
   // pas ensemble dans la place (`cadrageDeLaCarte`) : son nom glisse au bord de l'écran, sous le médaillon
   // (`showAtAllCosts`), et l'Horloge des verbes se tait à sa place. Régression connue, au pilotage. Depuis les formes
   // des îles (GD-12), les colonnes de côté sur quatre rangs et le rang du fond en quinconce : un nom tu le bonhomme sur
-  // la Fouille (la Mine des lettres), trois sur la Forêt (le Volcan se montre).
+  // la Fouille (la Mine des lettres), trois sur la Forêt (le Volcan se montre). Deux sur la Forêt depuis le dernier
+  // recours de la Carte (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026) : la Fouille se montre.
   'history-6e-antiquity': ['french-6e-letter-confusion'],
-  'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-grammar-spelling', 'history-6e-antiquity'],
+  'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-grammar-spelling'],
 };
 
 /**
@@ -410,22 +425,31 @@ const SILENCED_IN_PORTRAIT_6E: Record<string, string[]> = {
 
 /**
  * Les mêmes en OpenDyslexic 32 px (GD-12, 8 octobre 2026, mesurés) : quatre, un de plus que le plafond du référent dys
- * (`SILENCED_NAMES_CAP`) ; cinq et six depuis le Préau des délégués (EMC-2). Dans la page, le bonhomme sur la Forêt, trois (capture `formes-carte-6e-800x1280-od32`) : la
- * mesure de jsdom en tait un de plus. Régression connue, au pilotage.
+ * (`SILENCED_NAMES_CAP`) ; cinq et six depuis le Préau des délégués (EMC-2) ; deux et trois depuis le dernier recours de
+ * la Carte (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026), au plafond.
  */
 const SILENCED_IN_PORTRAIT_6E_OD32: Record<string, string[]> = {
-  // Depuis le Préau des délégués (EMC-2, mesurés) : cinq, le bonhomme sur la Fouille (le nom du Préau se tait aussi) ;
-  // six, le bonhomme sur la Forêt (la Plaine des nombres et la Vallée du vivant se taisent aussi). Jusqu'à trois de plus
-  // que le plafond du référent dys : régression à trancher (référent dys, UX UI), au pilotage.
-  'history-6e-antiquity': ['french-6e-word-spelling', 'geography-6e-living', 'life-earth-sciences-6e-living-world', 'physics-chemistry-6e-matter-energy', 'civics-6e-democratic-society'],
-  'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-word-spelling', 'maths-6e-calculation', 'geography-6e-living', 'life-earth-sciences-6e-living-world', 'physics-chemistry-6e-matter-energy'],
+  // Le bonhomme sur la Fouille : la Carrière des mots et la Pointe des paysages (le Préau, le Laboratoire et la Vallée
+  // du vivant se montrent). Sur la Forêt : la Mine des lettres, la Carrière et la Pointe (la Plaine, le Laboratoire et la
+  // Vallée se montrent).
+  'history-6e-antiquity': ['french-6e-word-spelling', 'geography-6e-living'],
+  'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-word-spelling', 'geography-6e-living'],
 };
 
 /** Trois noms tus au plus sur une Carte (référent dys). */
 const SILENCED_NAMES_CAP = 3;
 
-/** Les noms montrés sur le téléphone, selon l'île du bonhomme (sept avant GD-11, six puis sept depuis GD-12 sur la Fouille). */
-const NOMS_MONTRES_AU_TELEPHONE: Record<string, number> = { 'history-6e-antiquity': 7, 'french-6e-phonology': 5 };
+/**
+ * L'île touchée qui se montre peut en taire un autre : quatre noms tus au plus, un de plus que le plafond (mesuré au 6e,
+ * en portrait en OpenDyslexic 32 px, la Pointe des paysages touchée, le bonhomme sur la Forêt).
+ */
+const TUS_L_ILE_TOUCHEE = SILENCED_NAMES_CAP + 1;
+
+/**
+ * Les noms montrés sur le téléphone, selon l'île du bonhomme (sept avant GD-11, six puis sept depuis GD-12 sur la Fouille ;
+ * six sur la Forêt depuis le dernier recours de la Carte).
+ */
+const NOMS_MONTRES_AU_TELEPHONE: Record<string, number> = { 'history-6e-antiquity': 7, 'french-6e-phonology': 6 };
 
 /**
  * À l'ouverture de la Carte, sans panneau, en OpenDyslexic (taille normale, puis 10 % plus large), les noms qui se
@@ -433,10 +457,11 @@ const NOMS_MONTRES_AU_TELEPHONE: Record<string, number> = { 'history-6e-antiquit
  * Carte cadre les lieux d'aujourd'hui, plus aucun au 4e ; au 3e, le Kiosque des témoins, en haut à droite sous la colonne
  * des classes, n'avait pas de place. Depuis que le cadrage compte le nom le plus haut monté d'une demi-étiquette
  * (consultant UX UI), le Kiosque se montre en taille normale, mais le Belvédère de Thalès et l'Observatoire des textes se
- * taisent ; à ×1,1, le Kiosque se tait encore. Régression connue, au pilotage.
+ * taisent ; à ×1,1, le Kiosque se tait encore. Régression connue, au pilotage. Depuis le dernier recours de la Carte
+ * (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026), le Belvédère se montre en taille normale.
  */
 const TUS_EN_OD_A_L_OUVERTURE: Partial<Record<string, string[]>> = {
-  '3e:1': ['maths-3e-geometry', 'french-3e-close-reading'],
+  '3e:1': ['french-3e-close-reading'],
   '3e:1.1': ['history-3e-twentieth-century'],
 };
 
@@ -523,15 +548,15 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     }
   }, 20_000);
 
-  it('6e, portrait 800 × 1280, deux univers, dans Luciole et en OpenDyslexic 32 px : trois noms tus au plus dans Luciole (six en OpenDyslexic depuis le Préau, régression connue), jamais ceux de la destination ni de l’île du bonhomme, chacun sur son île (GD-12, UX UI)', () => {
+  it('6e, portrait 800 × 1280, deux univers, dans Luciole et en OpenDyslexic 32 px : trois noms tus au plus, jamais ceux de la destination ni de l’île du bonhomme, chacun sur son île (GD-12, UX UI ; référent dys)', () => {
     for (const ici of ['history-6e-antiquity', islandsOf('6e')[0].id] as BiomeId[]) {
       const destination = destinationDuJeu(ici);
       for (const [univers, mot] of Object.entries(ETATS)) {
         // Dans Luciole, puis en OpenDyslexic 32 px.
         for (const [police, chasse, ecran, attendus, plafond] of [
           ['luciole', 1, PORTRAIT_800, SILENCED_IN_PORTRAIT_6E, SILENCED_NAMES_CAP],
-          // Trois de plus que le plafond depuis le Préau des délégués (EMC-2), régression à trancher.
-          ['opendyslexic', CHASSE_OD32, PORTRAIT_800_OD32, SILENCED_IN_PORTRAIT_6E_OD32, SILENCED_NAMES_CAP + 3],
+          // Au plafond depuis le dernier recours de la Carte (trois de plus depuis le Préau des délégués, EMC-2).
+          ['opendyslexic', CHASSE_OD32, PORTRAIT_800_OD32, SILENCED_IN_PORTRAIT_6E_OD32, SILENCED_NAMES_CAP],
         ] as const) {
           const carte = laCarte('6e', mot, police, chasse, destination, true, ecran, ici);
           const dit = (quoi: string) => `${univers}, ${police}, bonhomme sur ${ici}, ${quoi}`;
@@ -545,6 +570,75 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       }
     }
   }, 20_000);
+
+  it('le poids d’un nom sur la Carte : la destination 2, une île fermée qu’un ouvrage relie à une île ouverte 1, sinon 0,5 ; l’île touchée au moins 1 (référent dys)', () => {
+    const labels = [
+      { id: 'french-6e-phonology', closed: false },
+      { id: 'civics-6e-democratic-society', closed: true },
+      { id: 'geography-5e-resources', closed: true },
+      { id: 'maths-6e-calculation', closed: false },
+    ];
+    // Le Préau se relie à la Forêt, ouverte ; aucune île des Îles Brumeuses n'est ouverte.
+    expect(mapLabelWeights(labels, 'maths-6e-calculation')).toEqual([1, 1, 0.5, 2]);
+    expect(mapLabelWeights(labels, 'maths-6e-calculation', 'geography-5e-resources')).toEqual([1, 1, 1, 2]);
+  });
+
+  // Le jeu tout construit sauf le Préau des délégués, la dernière île du 6e (EMC-2) : fermé, il pesait 0,5 et son nom
+  // se taisait le premier (sur la tablette en OpenDyslexic 32 px, à la place de la Fouille des siècles, le bonhomme sur
+  // la Forêt). Relié à une île ouverte, il pèse 1 : les mêmes noms se taisent que s'il était ouvert (mesuré).
+  it('6e, le Préau des délégués fermé, en OpenDyslexic 32 px sur la tablette et en portrait : son nom ne se tait pas plus tôt, et pas un nom de plus (référent dys)', () => {
+    const preau: BiomeId = 'civics-6e-democratic-society';
+    for (const ici of ['history-6e-antiquity', islandsOf('6e')[0].id] as BiomeId[]) {
+      const destination = destinationDuJeu(ici);
+      for (const [ecran, attendus] of [
+        [TABLETTE_OD32, TUS_EN_OD32],
+        [PORTRAIT_800_OD32, SILENCED_IN_PORTRAIT_6E_OD32],
+      ] as const) {
+        const carte = laCarte('6e', ETATS.blocland, 'opendyslexic', CHASSE_OD32, destination, true, ecran, ici, { fermees: [preau] });
+        expect(carte.tus, `bonhomme sur ${ici}, ${ecran.taille.w} × ${ecran.taille.h}`).toEqual(attendus[ici]);
+      }
+    }
+  }, 20_000);
+
+  // L'île touchée (sur la Carte, l'île fermée choisie ; ailleurs, celle dont la fiche est ouverte) : son nom ne se tait
+  // jamais, comme celui de la destination, tant qu'une place le permet : entière, à 2,25 hauteurs d'étiquette au plus de
+  // son île, pas plus près d'une autre île, ni sur le nom de la destination, ni sur celui du bonhomme s'il n'en trouve pas
+  // d'autre (référent dys, 9 octobre 2026). Chaque nom tu, touché à son tour : ceux qui n'ont aucune place qui tienne se
+  // taisent encore (`TOUCHEE_SANS_PLACE`, mesurés), les autres se montrent, au prix d'autres noms (`TUS_L_ILE_TOUCHEE`).
+  const TOUCHEE_SANS_PLACE: Record<string, string[]> = {
+    // La Carrière des mots, au bord gauche, entre la Pointe des paysages (dessus) et le Laboratoire (dessous), la Mine à
+    // côté ; la Mine, entre la Carrière, la Forêt et la Rivière : toute place de leur nom est plus près d'une voisine.
+    'portrait-od32:history-6e-antiquity': ['french-6e-word-spelling'],
+    'portrait-od32:french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-word-spelling'],
+    // La Pointe, au bord du rang du fond, sous le nom de la Fouille ; la Mine, le bonhomme sur la Forêt.
+    'tablette-od32:history-6e-antiquity': ['geography-6e-living'],
+    'tablette-od32:french-6e-phonology': ['french-6e-letter-confusion'],
+    'telephone:french-6e-phonology': ['french-6e-letter-confusion'],
+  };
+  it('6e, l’île touchée garde son nom, sauf sans aucune place qui tienne (mesuré) ; jamais aux dépens de la destination ni du bonhomme (référent dys)', () => {
+    for (const ici of ['history-6e-antiquity', islandsOf('6e')[0].id] as BiomeId[]) {
+      const destination = destinationDuJeu(ici);
+      const dest = typeof destination === 'string' ? destination : destination.depuis;
+      for (const [nom, ecran, police, chasse] of [
+        ['portrait-od32', PORTRAIT_800_OD32, 'opendyslexic', CHASSE_OD32],
+        ['tablette-od32', TABLETTE_OD32, 'opendyslexic', CHASSE_OD32],
+        ['telephone', TELEPHONE, 'atkinson-hyperlegible', 1],
+        ['portrait-luciole', PORTRAIT_800, 'luciole', 1],
+      ] as const) {
+        const sansPlace = TOUCHEE_SANS_PLACE[`${nom}:${ici}`] ?? [];
+        for (const touchee of laCarte('6e', ETATS.blocland, police, chasse, destination, true, ecran, ici).tus) {
+          const carte = laCarte('6e', ETATS.blocland, police, chasse, destination, true, ecran, ici, { selected: touchee, fermees: [touchee] });
+          const dit = (quoi: string) => `${nom}, bonhomme sur ${ici}, ${touchee} touchée, ${quoi}`;
+          expect(carte.tus.includes(touchee), dit('son nom')).toBe(sansPlace.includes(touchee));
+          expect(carte.tus, dit('la destination')).not.toContain(dest);
+          expect(carte.tus, dit('le bonhomme')).not.toContain(ici);
+          // Chaque nom montré sur son île, sauf ceux qui ne se taisent jamais, glissés à l'aplomb de la leur.
+          expect(carte.ailleurs.filter((id) => id !== ici && id !== touchee), dit('les noms sur une autre île')).toEqual([]);
+          expect(carte.tus.length, dit('les noms tus')).toBeLessThanOrEqual(TUS_L_ILE_TOUCHEE);
+        }
+      }
+    }
+  }, 60_000);
 
   // Les six îles d'histoire-géographie des 5e, 4e et 3e (HG-3), deux par archipel, voisines dans les deux premiers.
   const VOISINES_HG3 = {

@@ -102,6 +102,7 @@ export default function WorldCanvas({
   onVueDeplacee,
   recentrage = 0,
   fiche = null,
+  selectedIsland = null,
   situer,
   className,
   label,
@@ -703,6 +704,14 @@ export default function WorldCanvas({
     // Une fois par fiche ouverte.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fiche?.seq]);
+
+  // ---- L'île touchée garde son nom (référent dys, 9 octobre 2026) : sur la Carte, l'île fermée choisie ; ailleurs, celle
+  // dont la fiche est ouverte.
+  const ileTouchee = map ? selectedIsland : fiche?.objet.genre === 'ile' ? fiche.objet.id : null;
+  useEffect(() => {
+    world.current?.etiquettes.keepShown(ileTouchee);
+    // Reposée aussi quand la scène est refaite (un autre archipel, la préférence de mouvement).
+  }, [ileTouchee, reduceMotion, archipelago]);
 
   // ---- Caméra : l'île demandée (ou le bonhomme) est rejointe en douceur par la boucle ; au premier cadrage, d'un coup.
   useEffect(() => {
