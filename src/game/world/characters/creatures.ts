@@ -810,18 +810,23 @@ const MIE = fromLayers(
 // Lyre : un gecko conteur, debout sur ses pattes de derrière, de face : jaune d'ocre semé de taches brunes, le ventre
 // clair, la grosse tête ronde aux yeux sur les côtés ; sa queue épaisse posée au sol derrière lui, en crosse ; les pieds
 // sous le corps, les doigts en avant (le corps les touche par une face). Il tient de la main droite sa petite lyre de
-// bois, tournée vers l'élève : deux montants, la caisse en bas, la traverse en haut, le milieu vide, trois sur trois
-// (consultant Blocland, 9 octobre 2026). Ni casque ni couronne. Huit de large, cinq de profond, sept de haut. Cinq
-// couleurs, les yeux compris (proposition de l'artiste technique 3D).
+// bois, tournée vers l'élève. Carrée, trois sur trois, elle se lisait de face comme un cadre, une porte ou un tableau
+// (DA, relecture des captures emc-5e-3) : la caisse étroite en bas, posée dans la main, deux bras plus écartés qui
+// montent, la traverse, dont les bouts des bras dépassent comme deux cornes, et entre eux trois cordes de laiton plus
+// claires, d'un clair et d'un mi-clair en alternance pour qu'elles se distinguent sans vide entre elles. Ni casque ni
+// couronne. Neuf de large, cinq de profond, neuf de haut. Sept couleurs, les yeux compris (proposition de l'artiste
+// technique 3D).
 const LYRE = fromLayers(
   [
-    ['.Y..Y...', '.Y..Y...', '........', '..YY....', '...Y....'],
-    ['........', '.YWWY...', '.YYYY...', '..Y.....', '........'],
-    ['.....LLL', '.YWWY...', '.SYYS...', '........', '........'],
-    ['....YL.L', '.YWWY...', '.YYYY...', '........', '........'],
-    ['.....LLL', '..YY....', '..SS....', '........', '........'],
-    ['..YY....', '.EYYE...', '.YSYY...', '........', '........'],
-    ['........', '.YYYY...', '..YY....', '........', '........'],
+    ['Y..Y.....', 'Y..Y.....', '.........', '.YY......', '..Y......'],
+    ['.........', 'YWWY.....', 'YYYY.....', '.Y.......', '.........'],
+    ['.........', 'YWWY.....', 'SYYS.....', '.........', '.........'],
+    ['...YYLLL.', 'YWWY.....', 'YYYY.....', '.........', '.........'],
+    ['....LCKCL', '.YY......', '.SS......', '.........', '.........'],
+    ['.YY.LCKCL', 'EYYE.....', 'YSYY.....', '.........', '.........'],
+    ['....LCKCL', 'YYYY.....', '.YY......', '.........', '.........'],
+    ['....LLLLL', '.........', '.........', '.........', '.........'],
+    ['....L...L', '.........', '.........', '.........', '.........'],
   ],
   {
     Y: '#d8aa4a',
@@ -829,6 +834,9 @@ const LYRE = fromLayers(
     W: '#f0e2b8',
     E: { color: '#1f1a16', top: '#d8aa4a' },
     L: '#8a5a2e',
+    // Les cordes : un laiton clair, et la corde du milieu un ton plus soutenu.
+    C: '#f6e8b4',
+    K: '#e2c27a',
   },
 );
 

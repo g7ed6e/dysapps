@@ -3,7 +3,7 @@
 // socles compris.
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../template';
-import { devant, fuseau, pave, pose, repere, type Anneau, type V3 } from '../painted';
+import { devant, fuseau, pave, pose, repere, type Anneau, type Trace, type V3 } from '../painted';
 import { dalle, orbites, plaque, tube, veine, veineSur, type Statue } from '../sentinel';
 
 /** L'Oie d'opale : le corps ovale, de la queue aux épaules ; la tête, petite, au bout du long cou (jusqu'à huit blocs). */
@@ -28,6 +28,15 @@ const AILE_DE_L_OIE: [number, number][] = [
   [0.8, 2.2],
 ];
 
+/**
+ * Le fil de lueur d'une aile repliée de l'Oie, sur son flanc (z, y) : de l'épaule, devant et en haut, à la pointe,
+ * derrière et en bas. Il suit le flanc extérieur de l'aile (`AILE_DE_L_OIE`, de x = 1,05 en y = 3,4 à x = 1,0 en y = 1,9).
+ */
+const FIL_DE_L_AILE_DE_L_OIE: [number, number][] = [
+  [-0.45, 3.25],
+  [0.45, 2.05],
+];
+
 /** Le Phénix d'argile : le corps, de la queue aux épaules ; la tête au bout du cou court (jusqu'à huit blocs). */
 const CORPS_DU_PHENIX: Anneau[] = [
   [1, 0.55, 0.75],
@@ -49,6 +58,18 @@ const AILE_DU_PHENIX: [number, number][] = [
   [0.95, 2.1],
   [0.75, 2.4],
 ];
+
+/** Le fil de lueur d'une aile du Phénix, sur son flanc (z, y), le long de `AILE_DU_PHENIX` (x = 1,0 en y = 4 à 0,95 en y = 2,1). */
+const FIL_DE_L_AILE_DU_PHENIX: [number, number][] = [
+  [-0.4, 3.85],
+  [0.4, 2.3],
+];
+
+/**
+ * Le flanc extérieur d'une aile repliée, posée en dalle le long de Z (`s` : −1 à gauche, 1 à droite ; `x`, son écart au
+ * pied du flanc) : le −Z d'une veine y regarde vers l'extérieur, et son x court le long de Z (vers l'arrière à droite).
+ */
+const surLeFlanc = (T: Trace, s: -1 | 1, x: number) => pose(T, repere([s * x, 0, 0], 0, -s * (Math.PI / 2), 0));
 
 const TETE_DU_MAMMOUTH: Anneau[] = [
   [5.0, 0.8, 0.75, -1.2],
@@ -962,18 +983,17 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       for (const c of [-1, 1]) dalle(T, AILE_DE_L_OIE.map(([x, y]): [number, number] => [c * x, y]), -0.6, 0.6, a.pierre);
       orbites(T, a, 0, 7.45, devant(TETE_DE_L_OIE, 5, 7.45, Z_DE_LA_TETE_DE_L_OIE).z, 0.2, 0.11);
     },
+    // Un fil de lueur sur le flanc de chaque aile repliée, de l'épaule (devant, en haut) à la pointe (derrière, en bas).
+    // Posé sur la tranche de l'aile, de face, il se lisait comme une flamme dorée de part et d'autre de l'oiseau (DA,
+    // relecture des captures emc-5e-3) : sur le flanc, il ne se dresse plus.
     veines: (T, a) => {
-      // Un fil de lueur le long de chaque aile repliée, de l'épaule à la pointe.
-      for (const c of [-1, 1])
+      for (const s of [-1, 1] as const)
         veine(
-          T,
-          [
-            [c * 1.0, 3.5],
-            [c * 0.95, 2.2],
-          ],
+          surLeFlanc(T, s, 1.0),
+          FIL_DE_L_AILE_DE_L_OIE.map(([z, y]): [number, number] => [s * z, y]),
           0.09 * a.veines,
           a.lueur,
-          () => -0.62,
+          (y) => -0.05 * ((y - 1.9) / 1.5),
         );
     },
   },
@@ -1016,17 +1036,15 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       for (const c of [-1, 1]) dalle(T, AILE_DU_PHENIX.map(([x, y]): [number, number] => [c * x, y]), -0.55, 0.55, a.pierre);
       orbites(T, a, 0, 7.25, devant(TETE_DU_PHENIX, 5, 7.25, Z_DE_LA_TETE_DU_PHENIX).z, 0.22, 0.12);
     },
+    // Le même fil que l'Oie, sur le flanc de chaque aile (pas sur sa tranche, où il se lisait comme une flamme).
     veines: (T, a) => {
-      for (const c of [-1, 1])
+      for (const s of [-1, 1] as const)
         veine(
-          T,
-          [
-            [c * 0.95, 4.1],
-            [c * 0.9, 2.4],
-          ],
+          surLeFlanc(T, s, 0.95),
+          FIL_DE_L_AILE_DU_PHENIX.map(([z, y]): [number, number] => [s * z, y]),
           0.09 * a.veines,
           a.lueur,
-          () => -0.57,
+          (y) => -0.05 * ((y - 2.1) / 1.9),
         );
     },
   },
