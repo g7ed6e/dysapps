@@ -31,7 +31,7 @@ Chaque fichier a une place ; `scripts/structure.test.mjs` vérifie en CI la raci
 | Le rendu (le style) | `docs/rendu/` ; le budget reste dans le code |
 | Le pilotage (où en est chaque chantier) | `docs/pilotage/chantiers.md`, seule page du dossier |
 | Les fichiers servis tels quels (icônes, polices, écrans de lancement) | `public/` |
-| Les scripts (build, contenu, site, rendu, version) | `scripts/`, ou son sous-dossier `contenu/`, `pilotage/`, `programme/`, `rendu/`, `www/` |
+| Les scripts (build, contenu, site, rendu, modèles 3D, version) | `scripts/`, ou son sous-dossier `contenu/`, `pilotage/`, `programme/`, `rendu/`, `www/` |
 | Les agents et les skills | `.claude/agents/<agent>.md`, `.claude/skills/<skill>/` (`SKILL.md` et ses ressources) |
 | Les livrables de travail (captures, maquettes, notes de fil) | hors du dépôt : la Bibliothèque du projet, ou la branche `captures` |
 
