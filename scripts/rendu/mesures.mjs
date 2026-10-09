@@ -680,6 +680,8 @@ const CAPTURES = [
     // Les deux premières quêtes finies (sinon la tente arrive juste après), les succès déjà gagnés (sans leur annonce).
     posees: ['english-5e-vocabulary-fixture-2', 'history-5e-middle-ages-fixture-2'],
     succes: 'tous',
+    // Le phare à deux pièces sur cinq : fini, il n'y aurait plus rien à montrer.
+    etages: { 'landmark-5e-1': 7 },
     cliquer: '.quete-item .button.primary',
     pasEnPlus: 64,
     ...autres,
