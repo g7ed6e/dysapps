@@ -5569,6 +5569,10 @@ details.island-fold-objectif {
 .settings-adresse {
   overflow-wrap: anywhere;
 }
+.settings-measure {
+  margin-top: 1rem;
+}
+
 .settings-links {
   display: flex;
   flex-wrap: wrap;
