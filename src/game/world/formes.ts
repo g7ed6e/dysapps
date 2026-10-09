@@ -408,12 +408,17 @@ export function calmeDeLaForme(f: FormeDeLIle, u: number, v: number, s: number):
   return c(a, b, s);
 }
 
+/** La forme a-t-elle un lagon (la forme `lagon`, GD-12) ? Sans forme, non. */
+export function hasLagoon(f: FormeDeLIle | null | undefined): f is FormeDeLIle {
+  return f?.forme === 'lagon';
+}
+
 /**
  * Le point (`u`, `v`, repère du cœur) est-il dans l'eau du lagon ou de sa passe (la forme `lagon`) ? Hors du lagon,
  * toujours non. La mer d'Archipéo y peint ses hauts-fonds (./sea.ts).
  */
 export function inLagoon(f: FormeDeLIle, u: number, v: number, s: number): boolean {
-  if (f.forme !== 'lagon') return false;
+  if (!hasLagoon(f)) return false;
   const [a, b] = toShapeFrame(f, u, v, SCRATCH_POINT);
   return eauDuLagon(a, b, s) < 0;
 }

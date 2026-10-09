@@ -80,6 +80,11 @@ export interface Camera extends PartieDeLaScene {
    */
   auBut(point: THREE.Vector3, W: number, H: number): { x: number; y: number } | null;
   /**
+   * Une caméra de travail posée à la place visée (comme `auBut`), à lire tout de suite (le prochain appel la déplace) ;
+   * `null` avant la première image.
+   */
+  cameraAuBut(): THREE.PerspectiveCamera | null;
+  /**
    * La fiche d'un objet le cache (lot 2 de « Toucher le monde ») : le cadrage glisse à plat pour que ce point du monde se
    * pose en `vers` (coordonnées normalisées de l'écran, −1 à 1), sans changer de distance ni de direction. Effacé quand
    * l'application reprend la main (une île, la Carte, une marche, un voyage). Sur la Carte (le mode « Aménager »), la
@@ -369,6 +374,11 @@ export function creerCamera(
       projete.copy(point).project(essai);
       if (projete.z > 1) return null;
       return { x: ((projete.x + 1) / 2) * W, y: ((1 - projete.y) / 2) * H };
+    },
+    cameraAuBut: () => {
+      if (!vu) return null;
+      placerLEssai(but.target, but.pos);
+      return essai;
     },
     recadrer: (point, vers) => {
       recadre = { point: point.clone(), vers: { ...vers } };

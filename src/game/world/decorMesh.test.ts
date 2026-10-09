@@ -131,6 +131,7 @@ it('l’habillage de la mer affleure, la cascade tombe du bord de sa case jusqu�
   // tombe du bord de sa case jusqu'à la mer.
   for (const a of ARCHIPELAGO_IDS.filter((a) => a !== '3e')) expect(monde(a).elements.filter((e) => e.genre === 'cascade'), a).toEqual([]);
   const ateliers = monde('3e');
+  const CASCADES_SUR_LA_GREVE = ['english-3e-comprehension/cascade@5,932', 'english-3e-grammar/cascade@138,932'];
   const cascades = ateliers.elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'cascade');
   expect(cascades.length).toBe(2);
   for (const { e, i } of cascades) {
@@ -140,8 +141,9 @@ it('l’habillage de la mer affleure, la cascade tombe du bord de sa case jusqu�
     // Du haut de la case du bord (sur la pente) jusqu'à la mer.
     expect(Math.max(...pts.map((p) => p[1])), e.id).toBeLessThanOrEqual(col.haut + 1 + 0.1);
     expect(Math.max(...pts.map((p) => p[1])), e.id).toBeGreaterThan(col.haut);
-    // Jusqu'au niveau de la mer : aux Îles du Ciel, elles s'arrêtent sur la grève, au ras de l'eau.
-    expect(Math.min(...pts.map((p) => p[1])), e.id).toBeLessThanOrEqual(0.1);
+    // Jusque sous le niveau de la mer ; seules les deux connues des Îles du Ciel s'arrêtent sur la grève, au ras de l'eau
+    // (relecture du code, GD-12) : une autre cascade qui s'arrêterait au-dessus de la mer se verrait.
+    expect(Math.min(...pts.map((p) => p[1])), e.id).toBeLessThanOrEqual(CASCADES_SUR_LA_GREVE.includes(e.id) ? 0.1 : -0.3);
     // Collée à la falaise : jamais plus d'une case et demie de son bord.
     for (const p of pts) expect(Math.hypot(p[0] - (e.x + 0.5), p[2] - (e.y + 0.5)), e.id).toBeLessThan(1.75);
   }

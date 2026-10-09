@@ -215,31 +215,37 @@ export function carteDeLaMer(a: ArchipelagoId, terres: Terre[], etendue: Etendue
   // à toute terre (l'écume), et aux îles seulement (la profondeur, sans les écueils).
   const INF = 1e9;
   const D = Math.SQRT2;
-  const chanfrein = (source: (v: number) => boolean) => {
-    const d = new Float32Array(l * h).fill(INF);
-    for (let j = 0; j < h; j++)
-      for (let i = 0; i < l; i++) if (source(terre[Math.floor(j / PAR_CASE) * largeur + Math.floor(i / PAR_CASE)])) d[j * l + i] = 0;
-    for (let j = 0; j < h; j++)
-      for (let i = 0; i < l; i++) {
-        const k = j * l + i;
+  /**
+   * La distance en points depuis les sources, sur le rectangle de points [i0, i1[ × [j0, j1[ (toute la carte par
+   * défaut), rangée ligne par ligne sur ce rectangle.
+   */
+  const chanfrein = (source: (v: number) => boolean, i0 = 0, j0 = 0, i1 = l, j1 = h) => {
+    const rl = i1 - i0;
+    const rh = j1 - j0;
+    const d = new Float32Array(rl * rh).fill(INF);
+    for (let j = 0; j < rh; j++)
+      for (let i = 0; i < rl; i++) if (source(terre[Math.floor((j + j0) / PAR_CASE) * largeur + Math.floor((i + i0) / PAR_CASE)])) d[j * rl + i] = 0;
+    for (let j = 0; j < rh; j++)
+      for (let i = 0; i < rl; i++) {
+        const k = j * rl + i;
         let v = d[k];
         if (i > 0) v = Math.min(v, d[k - 1] + 1);
         if (j > 0) {
-          v = Math.min(v, d[k - l] + 1);
-          if (i > 0) v = Math.min(v, d[k - l - 1] + D);
-          if (i < l - 1) v = Math.min(v, d[k - l + 1] + D);
+          v = Math.min(v, d[k - rl] + 1);
+          if (i > 0) v = Math.min(v, d[k - rl - 1] + D);
+          if (i < rl - 1) v = Math.min(v, d[k - rl + 1] + D);
         }
         d[k] = v;
       }
-    for (let j = h - 1; j >= 0; j--)
-      for (let i = l - 1; i >= 0; i--) {
-        const k = j * l + i;
+    for (let j = rh - 1; j >= 0; j--)
+      for (let i = rl - 1; i >= 0; i--) {
+        const k = j * rl + i;
         let v = d[k];
-        if (i < l - 1) v = Math.min(v, d[k + 1] + 1);
-        if (j < h - 1) {
-          v = Math.min(v, d[k + l] + 1);
-          if (i < l - 1) v = Math.min(v, d[k + l + 1] + D);
-          if (i > 0) v = Math.min(v, d[k + l - 1] + D);
+        if (i < rl - 1) v = Math.min(v, d[k + 1] + 1);
+        if (j < rh - 1) {
+          v = Math.min(v, d[k + rl] + 1);
+          if (i < rl - 1) v = Math.min(v, d[k + rl + 1] + D);
+          if (i > 0) v = Math.min(v, d[k + rl - 1] + D);
         }
         d[k] = v;
       }
@@ -247,12 +253,30 @@ export function carteDeLaMer(a: ArchipelagoId, terres: Terre[], etendue: Etendue
   };
   const d = chanfrein((v) => v === 1 || v === 2);
   const dIles = chanfrein((v) => v === 1);
+  const MAX = PALIERS.large + 2;
   // Aux hauts-fonds, la distance (le lagon d'une île), s'il y en a : la couleur y est celle du lagon, et rejoint la mer
-  // en `SHALLOWS_SLOPE` cases au-delà (à la passe), sans déborder sous l'anneau de terre.
-  const dShallows = terres.some((t) => t.shallow) ? chanfrein((v) => v === 3) : null;
+  // en `SHALLOWS_SLOPE` cases au-delà (à la passe), sans déborder sous l'anneau de terre. Calculée seulement sur le
+  // rectangle des hauts-fonds élargi de `RAYON` cases : au-delà, elle ne change plus la profondeur (plafonnée à `MAX`),
+  // et la carte reste la même au point près (relecture du code, GD-12 : sur toute la grille, ce calcul coûtait cher).
+  const RAYON = Math.ceil((MAX * SHALLOWS_SLOPE) / PALIERS.mer) + 1;
+  const fonds = { i0: Infinity, j0: Infinity, i1: -Infinity, j1: -Infinity };
+  for (const t of terres) {
+    if (!t.shallow) continue;
+    fonds.i0 = Math.min(fonds.i0, (t.x - x0 - RAYON) * PAR_CASE);
+    fonds.j0 = Math.min(fonds.j0, (t.y - y0 - RAYON) * PAR_CASE);
+    fonds.i1 = Math.max(fonds.i1, (t.x - x0 + 1 + RAYON) * PAR_CASE);
+    fonds.j1 = Math.max(fonds.j1, (t.y - y0 + 1 + RAYON) * PAR_CASE);
+  }
+  const si0 = Math.max(0, fonds.i0);
+  const sj0 = Math.max(0, fonds.j0);
+  const si1 = Math.min(l, fonds.i1);
+  const sj1 = Math.min(h, fonds.j1);
+  const dShallows = si1 > si0 && sj1 > sj0 ? chanfrein((v) => v === 3, si0, sj0, si1, sj1) : null;
+  const sl = si1 - si0;
+  /** La distance (en points) au haut-fond le plus proche, hors du rectangle : assez loin pour ne rien changer. */
+  const versLesFonds = (i: number, j: number) => (i >= si0 && i < si1 && j >= sj0 && j < sj1 ? dShallows![(j - sj0) * sl + i - si0] : INF);
   // La profondeur, pour la couleur : la distance ramenée à la case, lissée (deux passes d'une moyenne glissante), pour
   // que la mer ne marque pas de pli à mi-chemin entre deux îles.
-  const MAX = PALIERS.large + 2;
   let prof = new Float32Array(largeur * hauteur);
   for (let v = 0; v < hauteur; v++)
     for (let u = 0; u < largeur; u++) {
@@ -336,7 +360,7 @@ export function carteDeLaMer(a: ArchipelagoId, terres: Terre[], etendue: Etendue
       // distance exacte près des côtes.
       const pres = dIles[k] === 0 ? 0 : dIles[k] === d[k] ? dist : Math.max(0, (dIles[k] - 0.5) / PAR_CASE);
       let p = Math.min(profEn(px, py), pres);
-      if (dShallows) p = Math.min(p, (Math.max(0, (dShallows[k] - 0.5) / PAR_CASE) * PALIERS.mer) / SHALLOWS_SLOPE);
+      if (dShallows) p = Math.min(p, (Math.max(0, (versLesFonds(i, j) - 0.5) / PAR_CASE) * PALIERS.mer) / SHALLOWS_SLOPE);
       const profondeur = p + (MAX - p) * (1 - bord);
       const c = couleur(profondeur);
       const o = k * 4;

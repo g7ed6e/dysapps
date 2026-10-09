@@ -6,7 +6,7 @@
 import type { BiomeId } from '../biomes';
 import { archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
 import { silhouetteDe } from './silhouettes';
-import { BOITE_DE_LA_FORME, type ShapeCorner, calmeDeLaForme, inLagoon, featureSide, shapeCorner, inShapeFeature, distanceALaForme, traitDeLaForme, type FormeDeLIle } from './formes';
+import { BOITE_DE_LA_FORME, type ShapeCorner, calmeDeLaForme, hasLagoon, inLagoon, featureSide, shapeCorner, inShapeFeature, distanceALaForme, traitDeLaForme, type FormeDeLIle } from './formes';
 import { GD11_GUARDIAN_SQUARES, GUARDIAN_SQUARE_SIDE } from './guardianSquares';
 import { layoutCache, unturnCell, chosenPose, type Quarts, turnCell, turnRectangle } from './placement';
 
@@ -1155,6 +1155,10 @@ export function landCells(def: IslandDef): readonly Readonly<{ x: number; y: num
   return terreDe(def).liste;
 }
 
+/**
+ * L'eau du lagon de chaque lieu, gardée pour sa place (son cœur et son quart de tour). La clé ignore la côte (`ext`) :
+ * juste tant qu'elle est fixée par la carte de départ (`etendueDuLieu`) et ne change pas avec la place.
+ */
 const lagoonCache = new Map<BiomeId, { x: number; y: number; quarts: Quarts; cells: readonly Readonly<{ x: number; y: number }>[] }>();
 
 /**
@@ -1164,7 +1168,7 @@ const lagoonCache = new Map<BiomeId, { x: number; y: number; quarts: Quarts; cel
  */
 export function lagoonWater(def: IslandDef): readonly Readonly<{ x: number; y: number }>[] {
   const f = silhouetteDe(def.id).forme;
-  if (f?.forme !== 'lagon') return [];
+  if (!hasLagoon(f)) return [];
   const known = lagoonCache.get(def.id);
   if (known && known.x === def.core.x && known.y === def.core.y && known.quarts === def.quarts) return known.cells;
   const b = bornesDuCoeur(def);

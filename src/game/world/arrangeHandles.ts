@@ -225,6 +225,32 @@ export function sortDeLaPlace(ici: ArrayLike<number>, n: number, libre: Rectangl
   return false;
 }
 
+/**
+ * De combien glisser l'écran (pixels de la vue, `out.x` et `out.y`) pour que les poignées (`ici`, `n` boîtes, comme
+ * `sortDeLaPlace`) tiennent dans la place libre `libre`, à `marge` pixels de ses bords : le moins possible, zéro si elles
+ * y tiennent (GD-12, relecture UX UI du 9 octobre 2026 : poser le choix au milieu de la place faisait sortir le coin
+ * opposé de la région). Trop grandes pour la place, elles s'alignent sur son haut et sur son bord gauche. Pur, sans
+ * allocation.
+ */
+export function ecartVersLaPlace(ici: ArrayLike<number>, n: number, libre: Rectangle, marge: number, out: { x: number; y: number }): { x: number; y: number } {
+  let x0 = Infinity;
+  let y0 = Infinity;
+  let x1 = -Infinity;
+  let y1 = -Infinity;
+  for (let k = 0; k < n; k++) {
+    const w = ici[5 * k + 3] / 2;
+    const h = ici[5 * k + 4] / 2;
+    x0 = Math.min(x0, ici[5 * k + 1] - w);
+    x1 = Math.max(x1, ici[5 * k + 1] + w);
+    y0 = Math.min(y0, ici[5 * k + 2] - h);
+    y1 = Math.max(y1, ici[5 * k + 2] + h);
+  }
+  const pousser = (a0: number, a1: number, b0: number, b1: number) => (a0 < b0 ? b0 - a0 : a1 > b1 ? Math.max(b1 - a1, b0 - a0) : 0);
+  out.x = n ? pousser(x0, x1, libre.x0 + marge, libre.x1 - marge) : 0;
+  out.y = n ? pousser(y0, y1, libre.y0 + marge, libre.y1 - marge) : 0;
+  return out;
+}
+
 // ---------- La forme ----------
 
 /** Le style des poignées : en cubes (Blocland), ou peint à plat (Archipéo). */

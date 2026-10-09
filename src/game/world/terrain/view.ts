@@ -7,7 +7,7 @@ import { type BiomeId, BIOMES } from '../../biomes';
 import { BAC_LONG, bridgePath } from './links';
 import { islandCenter } from './base';
 import { layoutCache, turnDirection } from '../placement';
-import { featureSide, LAGOON_MIDDLE } from '../formes';
+import { featureSide, hasLagoon, LAGOON_MIDDLE } from '../formes';
 import { silhouetteDe } from '../silhouettes';
 import { frameOf } from '../footprint';
 import { placedLinksOf, neighboursOf } from '../linkGeometry';
@@ -290,10 +290,6 @@ export function versLaCameraDuDessin(id: BiomeId): [number, number, number] {
  */
 export const LAGOON_FRAMING = { towards: 0.55, pullBack: 1.3 } as const;
 
-/** L'île a-t-elle un lagon (la forme `lagon`) ? */
-function hasLagoon(id: BiomeId): boolean {
-  return silhouetteDe(id).forme?.forme === 'lagon';
-}
 
 /**
  * Le point que vise la vue d'une île (x, y de la grille, z en hauteur) : le milieu de son cœur (`islandCenter`) ; pour
@@ -302,7 +298,7 @@ function hasLagoon(id: BiomeId): boolean {
 export function islandViewTarget(id: BiomeId): { x: number; y: number; z: number } {
   const c = islandCenter(id);
   const f = silhouetteDe(id).forme;
-  if (f?.forme !== 'lagon') return c;
+  if (!hasLagoon(f)) return c;
   const def = islandDef(id);
   const b = bornesDuCoeur(def);
   const side = featureSide(f);
@@ -313,7 +309,7 @@ export function islandViewTarget(id: BiomeId): { x: number; y: number; z: number
 
 /** De combien la caméra de la vue d'une île recule (`LAGOON_FRAMING`) : 1, sauf pour une île qui a un lagon. */
 export function islandViewPullBack(id: BiomeId): number {
-  return hasLagoon(id) ? LAGOON_FRAMING.pullBack : 1;
+  return hasLagoon(silhouetteDe(id).forme) ? LAGOON_FRAMING.pullBack : 1;
 }
 
 /**
