@@ -1101,6 +1101,7 @@ export function WorldPage() {
             onVueDeplacee={setVueDeplacee}
             recentrage={recentrage}
             fiche={vueDeLaFiche}
+            selectedIsland={mapOpen ? mapTarget : null}
             situer={situer}
             chantier={Boolean(island)}
             className="voxel-canvas-stage"

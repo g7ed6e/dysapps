@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { DEMANDES, produire } from './chemins.mjs';
 import { ecrireIle, lireIle } from './format.mjs';
-import { verifierDemandes } from './demandes.mjs';
+import { estLieuDOption, verifierDemandes } from './demandes.mjs';
 
 const debut = ['---', 'lieu : french-6e-letter-confusion', '---', '', '# Mine', '', '## Les plans', '', '| plan | nom | XP | quand c’est bâti |', '| --- | --- | --- | --- |', '| `french-6e-letter-confusion-1` | La forge | 50 | Fini. |', '', '## Les demandes', ''];
 const tunel = [
@@ -100,12 +100,12 @@ describe('les commandes des habitants en Markdown', () => {
     expect(verifier([...tunel, '- après le plan : `french-6e-reading-2`'])).toThrow('n’est pas un plan de l’île');
   });
 
-  it('suit docs/contenu/ : une commande par île de français, de maths, d’anglais, d’histoire-géographie et de sciences, aucune en LV2', () => {
+  it('suit docs/contenu/ : une commande par île de français, de maths, d’anglais, d’histoire-géographie, de sciences et d’EMC, aucune dans un lieu d’option (LV2, latin-grec)', () => {
     const { sortie } = produire();
     const demandes = JSON.parse(sortie.get(DEMANDES));
     expect(readFileSync(DEMANDES, 'utf8')).toBe(sortie.get(DEMANDES));
-    const scolaires = ilesDuJeu().filter((b) => b.subject !== 'lv2');
-    expect(scolaires).toHaveLength(48);
+    const scolaires = ilesDuJeu().filter((b) => !estLieuDOption(b));
+    expect(scolaires).toHaveLength(49);
     expect(demandes.map((d) => d.biome)).toEqual(scolaires.map((b) => b.id));
     expect(new Set(demandes.map((d) => d.id)).size).toBe(demandes.length);
     expect(new Set(demandes.map((d) => d.fixture)).size).toBe(demandes.length);

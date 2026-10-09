@@ -2,6 +2,7 @@
 
 import { frenchTypography } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
+import { Marked } from '../../components/ForeignWords';
 import type { Lang } from '../../core/speech';
 import { GRAPH_FRAME, type GraphFrame } from './graph';
 import { motsAEcouter } from './lexicon';
@@ -106,7 +107,7 @@ export function RuleCard({ title, lines, lang = 'fr' }: { title?: string; lines:
                   <SpeakButton text={mots} lang={lang} compact />
                 </span>
               ) : (
-                frenchTypography(l)
+                <Marked text={frenchTypography(l)} />
               )}
             </li>
           );

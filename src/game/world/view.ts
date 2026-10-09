@@ -400,6 +400,11 @@ export interface WorldViewProps {
    */
   fiche?: { objet: ObjetDeLaFiche; seq: number; saut: boolean } | null;
   /**
+   * Sur la Carte, l'île fermée touchée, dont le chemin d'ouvrages est montré : comme celui de l'île dont la fiche est
+   * ouverte, son nom ne se tait jamais (référent dys, 9 octobre 2026). La vue simple l'ignore.
+   */
+  selectedIsland?: BiomeId | null;
+  /**
    * Où se tient un objet à l'écran, la caméra posée à son cadrage (en pixels de la fenêtre), ou `null` s'il est derrière
    * elle : la vue y range sa fonction tant que la scène existe (le vol des blocs part de la borne de la mission).
    */

@@ -6,7 +6,7 @@
 // pour le rendu Archipéo, le sol (R2), la mer et la faune (R3), le décor (R4), la construction taillée, les bornes et
 // le navire (R5), et les personnages fusionnés (R6). Vérifié par world/budget.test.ts.
 import { AVATAR_PARTS } from '../Avatar';
-import { BIOMES, type BlockId } from '../biomes';
+import { BIOMES, type BiomeId, type BlockId } from '../biomes';
 import { CATALOG } from '../exercises';
 import { ARCHIPELAGOS, grantAccess, linkWholeRegion, VOYAGES } from './archipelago';
 import { ALTITUDE, type ArchipelagoId, DANS_LE_CIEL, mapOf } from './map';
@@ -48,9 +48,12 @@ export const RENDER_BUDGET = {
 /**
  * Les Premiers Rivages (6e) dépassent les 60 000 des tablettes depuis les deux îles d'histoire-géographie (HG-2) : relevé
  * par le mainteneur le 6 octobre 2026 (« Budget on augmente pour l'instant »), à la somme de leurs enveloppes, puis du
- * même mot pour les trois îles de sciences (SC-2) : de 63 400 à 72 800. La mesure sur tablette reste à faire.
+ * même mot pour les trois îles de sciences (SC-2) : de 63 400 à 72 800. La mesure sur tablette reste à faire. Puis à
+ * 75 750 pour les personnages importés du 6e (modèles TRELLIS, de près sur une île à la fois ; à valider par le
+ * mainteneur), à la somme des enveloppes (75 740). Puis à 76 500 pour l'île d'EMC du 6e, le Préau des délégués
+ * (EMC-2, décision du mainteneur, 9 octobre 2026).
  */
-export const RENDER_BUDGET_6E = { triangles: 72_800, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_6E = { triangles: 76_500, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
  * Les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
@@ -169,6 +172,17 @@ export const ENVELOPPES: Record<
   // 72 800 (71 368 triangles comptés, « Dans la scène » à part). La mesure sur tablette reste à faire.
   // Les trois îles replacées dans le cadre de 192 × 144 (SC-2, retouche de la Carte) : la mer revient à 6 200 (900 de
   // marge), le sol à 32 728, le décor à 13 227 ; les enveloppes restent celles du mot du mainteneur.
+  // L'île d'EMC du 6e, le Préau des délégués (EMC-2) : `RENDER_BUDGET_6E` relevé à 76 500 par le mainteneur (9 octobre
+  // 2026). Mesuré tout construit (`npm run rendu:budget`), avant → après : le sol 30 014 → 32 174, le décor 11 846 →
+  // 12 396, la construction 5 978 → 6 274, les commandes 748 → 806, les bornes 1 428 → 1 512 (trois bornes de plus), les
+  // créatures 3 635 → 3 912 (Voix), les Gardiens 2 744 → 2 931 (l'Hirondelle de nacre) ; le total compté 64 605 → 68 217.
+  // Le monde en blocs au pire de la région aménagée : 71 196 → 75 572 triangles, 113 → 115 appels, sous son plafond.
+  // Les enveloppes qui n'avaient plus de marge passent, avec une petite marge, sans lot d'optimisation (Archipéo en
+  // pause) : les commandes de 800 à 850, les bornes de 1 450 à 1 550, les créatures de 3 650 à 3 950, les Gardiens de
+  // 2 780 à 2 950. La somme des Premiers Rivages passe de 72 770 à 73 390, sous les 76 500.
+  // Retouches de la relecture des captures emc-2 (DA), dans ces enveloppes : l'Hirondelle de nacre redessinée en oiseau
+  // (187 → 199 triangles ; les Gardiens 2 931 → 2 943), Voix la patte levée, paume ouverte (277 → 301 ; les créatures
+  // 3 912 → 3 936), sans appel de plus.
   // Les six îles d'histoire-géographie des 5e, 4e et 3e (HG-3) : enveloppes « autres » relevées du même mot, aux valeurs
   // mesurées tout construit (le plus gourmand des trois archipels) avec une petite marge : le sol de 24 850 à 29 850
   // (29 800 aux Anciens Ateliers), le décor de 10 500 à 11 500 (11 466 aux Îles Brumeuses), les commandes de 200 à 280
@@ -192,6 +206,10 @@ export const ENVELOPPES: Record<
   // aux Îles du Ciel). Les bornes passent de 1 450 à 1 700 et de 1 180 à 1 450, pris sur le sol, qui garde de la marge
   // dans les quatre archipels (2 810 aux Premiers Rivages, 2 926 aux Anciens Ateliers avant le prélèvement) ; la somme
   // ne change pas. Aux Îles Brumeuses, l'enveloppe propre du sol (GD-12) cède de même 270 : 36 230.
+  // La 6e avec le Préau des délégués (EMC-2) et la cinquième mission (GD-14) ensemble : 63 bornes de 28 triangles,
+  // 1 764 mesurés aux Premiers Rivages (`npm run rendu:budget`, 9 octobre 2026). L'enveloppe passe de 1 700 à 1 800, les
+  // 100 que l'EMC y avait ajoutés (1 450 → 1 550) ; la somme des Premiers Rivages reste celle de l'EMC, 73 390, sous les
+  // 76 500 de `RENDER_BUDGET_6E`. Le sol y mesure 32 150, sous ses 32 550.
   // GD-12, une forme par île, aux Îles du Ciel : le sol mesure 38 994 triangles (36 930 avant). Il prend 2 070 au décor
   // du même archipel (8 910 mesurés pour 13 600) : sol 39 000, décor 11 530, la somme ne change pas (mainteneur,
   // 9 octobre 2026, carte « Échanger »).
@@ -267,7 +285,7 @@ export const ENVELOPPES: Record<
   commandes: {
     lot: 'GD-7',
     nom: 'Commandes et quêtes (les petites constructions posées, dans le sol et la construction, sans appel de plus)',
-    premiersRivages: { triangles: 800, drawCalls: 0 },
+    premiersRivages: { triangles: 850, drawCalls: 0 },
     autres: { triangles: 500, drawCalls: 0 },
   },
   // Le lot de contenu des programmes 2025-2026 (une mission de plus à la Forge et au Cabinet de 4e, et à l'Observatoire
@@ -280,11 +298,17 @@ export const ENVELOPPES: Record<
   // sur les îles agrandies de GD-11 (`commandesCost`), aucun appel de plus ; aucun autre poste des « autres » n'a cette
   // marge dans les trois archipels. Commandes 392 → 500, la somme des « autres » de 74 877 à 74 985, sous
   // `RENDER_BUDGET_AUTRES` relevé à 75 000 (validé par le mainteneur le 8 octobre 2026). Le monde en blocs de Blocland n'en change pas de plafond (30 896 au 5e, sur 100 000).
-  bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_700, drawCalls: 1 }, autres: { triangles: 1_450, drawCalls: 1 } },
+  bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_800, drawCalls: 1 }, autres: { triangles: 1_450, drawCalls: 1 } },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
-  creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 3_650, drawCalls: 1 }, autres: { triangles: 3_200, drawCalls: 1 } },
-  gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 2_780, drawCalls: 1 }, autres: { triangles: 2_780, drawCalls: 1 } },
+  // Les personnages importés du 6e (modèles TRELLIS retravaillés, choix « Monde et fiches » du mainteneur, 9 octobre
+  // 2026) : de loin partout (environ 200 triangles), de près sur l'île regardée (environ 1 500), au pire de l'île qui
+  // coûte le plus. Mesurés : créatures 4 254 (Bulle de près), Gardiens 5 054, socle commun et son anneau compris. Créatures
+  // 3 650 → 4 300, Gardiens 2 780 → 5 100 aux Premiers Rivages ; la somme passe de 72 770 à 75 740 (`RENDER_BUDGET_6E`).
+  // Avec le Préau des délégués (EMC-2), dessiné en code : créatures 4 560 → 4 600, Gardiens 5 152 → 5 200 ; avec les
+  // bornes à 1 800, la somme des Premiers Rivages fait 76 290, sous les 76 500 de `RENDER_BUDGET_6E`.
+  creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 4_600, drawCalls: 1 }, autres: { triangles: 3_200, drawCalls: 1 } },
+  gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 5_200, drawCalls: 1 }, autres: { triangles: 2_780, drawCalls: 1 } },
   scene: {
     lot: 'socle',
     nom: 'Dans la scène : étiquettes, flèche, fanion, balises',
@@ -613,17 +637,23 @@ export function fauneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
 
 /**
  * Les personnages d'Archipéo (lot R6) dans un archipel tout construit : le bonhomme, les créatures fusionnées et les
- * Gardiens en sentinelles fusionnés (./characters/merges.ts), un appel de dessin chacun.
+ * Gardiens en sentinelles fusionnés (./characters/merges.ts), un appel de dessin chacun ; les personnages importés
+ * (./characters/imported/models.ts), s'ils sont chargés, au pire cas : de près sur l'île qui coûte le plus.
  */
 export function personnagesCost(a: ArchipelagoId): Record<'bonhomme' | 'creatures' | 'gardiens', { triangles: number; drawCalls: number }> {
   const { progress, world: village } = toutConstruit();
-  const creatures = fusionDesCreatures(creaturePlacements(a, village.links));
-  const gardiens = fusionDesGardiens(guardianPlacements(a, progress, village.links));
+  const lesCreatures = creaturePlacements(a, village.links);
+  const lesGardiens = guardianPlacements(a, progress, village.links);
+  // Au pire, on est sur l'île dont les personnages importés de près coûtent le plus (de loin partout ailleurs).
+  const iles: (BiomeId | null)[] = [null, ...new Set([...lesCreatures, ...lesGardiens].map((c) => c.id))];
+  const pire = (cout: (pres: BiomeId | null) => number) => Math.max(...iles.map(cout));
+  const creatures = pire((pres) => trianglesDeLaFusion(fusionDesCreatures(lesCreatures, pres)));
+  const gardiens = pire((pres) => trianglesDeLaFusion(fusionDesGardiens(lesGardiens, pres)));
   const appel = (n: number) => (n > 0 ? 1 : 0);
   return {
     bonhomme: { triangles: trianglesDeLaFusion(fusionDuBonhomme()), drawCalls: 1 },
-    creatures: { triangles: trianglesDeLaFusion(creatures), drawCalls: appel(trianglesDeLaFusion(creatures)) },
-    gardiens: { triangles: trianglesDeLaFusion(gardiens), drawCalls: appel(trianglesDeLaFusion(gardiens)) },
+    creatures: { triangles: creatures, drawCalls: appel(creatures) },
+    gardiens: { triangles: gardiens, drawCalls: appel(gardiens) },
   };
 }
 

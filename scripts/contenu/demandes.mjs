@@ -23,6 +23,15 @@
 // d'assemblage de l'univers, docs/contenu/assemblage.md).
 import { lireTexte } from './texte.mjs';
 
+/**
+ * Les matières des lieux d'option (GD-13) : la LV2 et le latin ou grec. Un tel lieu reste en bout de chemin, n'a pas de
+ * commande, n'entre dans aucune quête ni aucune recette, et son bloc n'est jamais demandé.
+ */
+export const MATIERES_D_OPTION = ['lv2', 'lca'];
+
+/** Un lieu d'option (GD-13) : l'île de la LV2, l'île du latin et du grec. */
+export const estLieuDOption = (ile) => MATIERES_D_OPTION.includes(ile.subject);
+
 export const TITRE_DEMANDES = '## Les demandes';
 
 /** Les champs d'une commande, dans l'ordre d'écriture : [étiquette, clé, obligatoire]. */
@@ -145,8 +154,8 @@ export function verifierDemandes(iles, demandesParIle, recettes, plans) {
   for (const ile of iles) {
     const demandes = demandesParIle.get(ile.id) ?? [];
     const ou = `docs/contenu/${ile.id}.md`;
-    if (ile.subject === 'lv2') {
-      if (demandes.length) throw new Error(`${ou} : une île de LV2 n’a pas de commande (GD-7)`);
+    if (estLieuDOption(ile)) {
+      if (demandes.length) throw new Error(`${ou} : un lieu d’option (LV2, latin ou grec) n’a pas de commande (GD-7, GD-13)`);
       continue;
     }
     if (demandes.length === 0) throw new Error(`${ou} : l’île n’a pas de commande (« ${TITRE_DEMANDES} », une au moins)`);
@@ -158,7 +167,7 @@ export function verifierDemandes(iles, demandesParIle, recettes, plans) {
       if (autre) {
         if (autre.id === ile.id) throw err('une créature ne demande pas le bloc de sa propre île');
         if (autre.classe !== ile.classe) throw err(`le bloc « ${d.block} » vient d’un autre archipel (${autre.classe}, l’île est en ${ile.classe})`);
-        if (autre.subject === 'lv2') throw err('jamais le bloc d’une île de LV2');
+        if (estLieuDOption(autre)) throw err('jamais le bloc d’un lieu d’option (LV2, latin ou grec)');
       } else if (recette) {
         if (recette.archipelago !== ile.classe) throw err(`le bloc assemblé « ${d.block} » est celui de l’archipel ${recette.archipelago}, l’île est en ${ile.classe}`);
         if (recette.ingredients.some((x) => x.bloc === ile.id)) throw err(`la recette de « ${d.block} » prend le bloc de l’île : la créature demanderait son propre bloc`);

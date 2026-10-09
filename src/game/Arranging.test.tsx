@@ -40,10 +40,11 @@ const VOLCAN = 'maths-6e-decimals' as const;
 const VALLEE = 'life-earth-sciences-6e-living-world' as const;
 const TOUR = 'french-6e-reading' as const;
 const BAIE = 'english-6e-vocabulary' as const;
+const PREAU = 'civics-6e-democratic-society' as const;
 /** La Rivière des fractions : de la place au loin, sans voisin à réunir (GD-12). */
 const RIVIERE = 'maths-6e-fractions' as const;
-/** La Mine des lettres : une de ses places défait une liaison. */
-const MINE = 'french-6e-letter-confusion' as const;
+/** La Carrière des mots : une de ses places défait une liaison (la Mine n'en a plus depuis le Préau, EMC-2). */
+const CARRIERE = 'french-6e-word-spelling' as const;
 /**
  * L'Horloge des verbes : sans voisin à réunir sur la carte de départ. Depuis le trait à sept cases (GD-12), la Ferme des
  * accords se réunit au Volcan, et la Baie, avancée d'un pas vers la Tour, ne se réunit plus à l'Horloge.
@@ -468,18 +469,18 @@ describe('le mode « Aménager »', () => {
   it('posé au doigt sur une place à l’icône de « Réunir », le lieu reste choisi et « Réunir » apparaît (choix 2a)', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
-    // La Tour, éloignée de la Baie (sur la carte de départ, elle s'y réunit déjà, GD-12), puis rapprochée sur une place
-    // qui l'y colle.
-    act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
-    const depart0 = spotOf(monde, TOUR);
-    const loin = freeSpots(monde, TOUR).find((q) => Math.abs(q.x - depart0.x) + Math.abs(q.y - depart0.y) > 3 && !joinCandidatesAt(monde, TOUR, q).length)!;
-    glisseVers(TOUR, { x: frameOf('6e').x0 + loin.x * 4 + 8, y: frameOf('6e').y0 + loin.y * 4 + 8 });
-    act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
-    const icone = iconeDeReunion(TOUR);
+    // La Rivière, éloignée du Laboratoire (sur la carte de départ, elle s'y réunit déjà, GD-12), puis rapprochée sur une
+    // place qui l'y colle. (La Tour et la Baie n'ont plus de place loin de tout voisin depuis le Préau, EMC-2.)
+    act(() => void dernier.intention({ genre: 'ile', id: RIVIERE }));
+    const depart0 = spotOf(monde, RIVIERE);
+    const loin = freeSpots(monde, RIVIERE).find((q) => Math.abs(q.x - depart0.x) + Math.abs(q.y - depart0.y) > 3 && !joinCandidatesAt(monde, RIVIERE, q).length)!;
+    glisseVers(RIVIERE, { x: frameOf('6e').x0 + loin.x * 4 + 8, y: frameOf('6e').y0 + loin.y * 4 + 8 });
+    act(() => void dernier.intention({ genre: 'ile', id: RIVIERE }));
+    const icone = iconeDeReunion(RIVIERE);
     expect(icone).toBeDefined();
-    const avant = spotOf(monde, TOUR);
-    glisseVers(TOUR, { x: icone!.x, y: icone!.y }, true);
-    expect(spotOf(monde, TOUR)).not.toEqual(avant);
+    const avant = spotOf(monde, RIVIERE);
+    glisseVers(RIVIERE, { x: icone!.x, y: icone!.y }, true);
+    expect(spotOf(monde, RIVIERE)).not.toEqual(avant);
     expect(dernier.choix?.genre).toBe('lieu');
     expect(screen.getByRole('button', { name: 'Réunir' })).toBeEnabled();
   });
@@ -588,10 +589,10 @@ describe('le mode « Aménager »', () => {
   it('la pastille montre les liaisons à reposer ; le mot est expliqué la première fois ; on la repose', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
-    // Une place de la Mine qui défait une de ses liaisons (depuis les formes des îles, GD-12, un lieu n'a de places
+    // Une place de la Carrière qui défait une de ses liaisons (depuis les formes des îles, GD-12, un lieu n'a de places
     // qu'autour de la sienne : peu en défont une).
-    act(() => void dernier.intention({ genre: 'ile', id: MINE }));
-    const spot = ([1, 2, 3, 0] as const).flatMap((t) => freeSpots(monde, MINE, t)).find((q) => linksBrokenBy(monde, MINE, q).length)!;
+    act(() => void dernier.intention({ genre: 'ile', id: CARRIERE }));
+    const spot = ([1, 2, 3, 0] as const).flatMap((t) => freeSpots(monde, CARRIERE, t)).find((q) => linksBrokenBy(monde, CARRIERE, q).length)!;
     const choix = dernier.choix;
     if (choix?.genre !== 'lieu') throw new Error('lieu');
     act(() => dernier.choisirDirect({ ...choix, spot }));
@@ -666,10 +667,11 @@ describe('le mode « Aménager »', () => {
     fireEvent.click(reunir());
     expect(joinedWith(monde, TOUR)).toBeNull();
     const question = screen.getByRole('group', { name: `Réunir ${thePlace(nom(TOUR))} ?` });
-    // Dite en mots (le haut-parleur, les lecteurs d'écran) ; écrite en signes.
-    expect(dernier.phrase).toBe(`Réunir ${thePlace(nom(TOUR))} et ${thePlace(nom(BAIE))}\u00a0? Les deux lieux ne se sépareront plus.`);
-    expect(question.querySelector('.arrange-signes')!.textContent).toMatch(new RegExp(`^${nom(TOUR)} +${nom(BAIE)}`));
-    expect(question.querySelector('.arrange-question-buttons')!.textContent).toBe(' Réunir');
+    // Dite en mots (le haut-parleur, les lecteurs d'écran) ; écrite en signes. Depuis le Préau des délégués (EMC-2), la
+    // Tour a deux voisins à réunir : la Baie et le Préau ; la question demande lequel, un bouton par lieu.
+    expect(dernier.phrase).toBe(`Réunir ${thePlace(nom(TOUR))} et quel lieu\u00a0? Les deux lieux ne se sépareront plus.`);
+    expect(question.querySelector('.arrange-signes')!.textContent).toMatch(new RegExp(`^${nom(TOUR)} +\\?`));
+    expect(question.querySelector('.arrange-question-buttons')!.textContent).toBe(` ${nom(BAIE)} ${nom(PREAU)}`);
     // Pendant la question, rien n'est mis en avant dans la barre ; « Réunir » reste enfoncé.
     expect(document.querySelectorAll('.arrange-bar .primary')).toHaveLength(0);
     expect(reunir()).toHaveAttribute('aria-pressed', 'true');

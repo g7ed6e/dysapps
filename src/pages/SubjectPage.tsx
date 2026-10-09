@@ -35,8 +35,8 @@ export function SubjectPage() {
   // Une ancienne adresse (`/matiere/francais`) : la même page sous son adresse neutre.
   const neuve = translatePath(pathname + search);
   if (neuve !== pathname + search) return <Navigate to={neuve} replace />;
-  if (!subject || !visibleSubjects(settings.lv2).includes(subject as Subject)) return <NotFoundPage />;
-  const info = subjectInfo(subject as Subject, settings.lv2);
+  if (!subject || !visibleSubjects(settings).includes(subject as Subject)) return <NotFoundPage />;
+  const info = subjectInfo(subject as Subject, settings);
   const withIslands = ARCHIPELAGOS.filter((a) => biomesOf(subject as Subject).some((b) => b.classe === a.classe));
   const reachedArchipelagos = withIslands.filter((a) => isArchipelagoReached(a.classe, state.world.links));
   const laterArchipelagos = withIslands.filter((a) => !isArchipelagoReached(a.classe, state.world.links));
@@ -94,7 +94,7 @@ export function SubjectPage() {
 
 /** Les îles d'une matière dans un archipel : leur créature, leurs étoiles, ou ce qu'il faut pour y aller. */
 function ArchipelagoIslands({ classe, subject }: { classe: Classe; subject: Subject }) {
-  const lv2 = useSettings().settings.lv2;
+  const { lv2, lca } = useSettings().settings;
   const { state } = useBlocland();
   const islands = biomesOf(subject).filter((b) => b.classe === classe);
   const reached = isArchipelagoReached(classe, state.world.links);
@@ -107,7 +107,7 @@ function ArchipelagoIslands({ classe, subject }: { classe: Classe; subject: Subj
       <ul className="grid apps blocland-islands">
         {islands.map((biome) => {
           const unlocked = isBiomeUnlocked(biome.id, state.world.links);
-          const stars = missionsJouables(biome, lv2).reduce((n, x) => n + (questProgress(biome.id, x.id, state.progress)?.stars ?? 0), 0);
+          const stars = missionsJouables(biome, lv2, lca).reduce((n, x) => n + (questProgress(biome.id, x.id, state.progress)?.stars ?? 0), 0);
           return (
             <li key={biome.id}>
               <Link to={`/adventure/${biome.id}`} className={`panel app-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>

@@ -23,6 +23,7 @@
 // « donner N `<bloc>` » (des blocs du stock, de 2 à 4), « apporter » (l'objet, d'un toucher). La dernière étape se fait
 // d'un toucher (« donner » ou « apporter ») : c'est elle qui pose l'objet. Jeton : {objet}, remplacé par le nombre et le
 // nom du bloc de Mes blocs (« 2 blocs de bois »).
+import { estLieuDOption } from './demandes.mjs';
 import { lireTexte } from './texte.mjs';
 
 export const FICHIER_QUETES = 'quetes.md';
@@ -152,12 +153,12 @@ export function verifierQuetes(quetes, iles, demandes, blocs, projets = []) {
       const ou = `étape ${k + 1}`;
       if (!ile) throw err(`${ou} : « ${e.place} » n’est pas un lieu`);
       if (ile.classe !== q.region) throw err(`${ou} : « ${e.place} » est en ${ile.classe}, la quête en ${q.region}`);
-      if (ile.subject === 'lv2') throw err(`${ou} : jamais un lieu de LV2`);
+      if (estLieuDOption(ile)) throw err(`${ou} : jamais un lieu d’option (LV2, latin ou grec)`);
       if (!e.text.includes(ile.creature.name)) throw err(`${ou} : la phrase nomme l’habitant, ${ile.creature.name}`);
       if (motsDe(e.text) > 7) throw err(`${ou} : sept mots au plus, une seule phrase`);
       if (e.kind === 'give') {
         const donne = parId.get(e.block);
-        if (!donne || donne.classe !== q.region || donne.subject === 'lv2') throw err(`${ou} : « ${e.block} » est le bloc d’un lieu de la région, jamais de la LV2`);
+        if (!donne || donne.classe !== q.region || estLieuDOption(donne)) throw err(`${ou} : « ${e.block} » est le bloc d’un lieu de la région, jamais d’un lieu d’option (LV2, latin ou grec)`);
         if (!e.text.includes('{objet}')) throw err(`${ou} : « {objet} » dit les blocs donnés (« Donne {objet} à ${ile.creature.name}. »)`);
       } else if (e.text.includes('{')) throw err(`${ou} : pas de jeton`);
     });

@@ -104,6 +104,7 @@ export default function WorldCanvas({
   onVueDeplacee,
   recentrage = 0,
   fiche = null,
+  selectedIsland = null,
   situer,
   className,
   label,
@@ -370,10 +371,26 @@ export default function WorldCanvas({
       cadrage.recentrer(aussiLeZoom);
       signaler();
     };
+    // Les personnages d'Archipéo importés de près sur l'île que la caméra regarde (le centre de la vue, au niveau de la
+    // mer), relu quatre fois par seconde : une île changée refait la fusion des personnages. Rien sur la Carte.
+    const auNiveauDeLaMer = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    const regard = new THREE.Raycaster();
+    const centreDeLaVue = new THREE.Vector2(0, 0);
+    const pointRegarde = new THREE.Vector3();
+    let prochainRegard = 0;
+    const viseur: PartieDeLaScene = {
+      animer: (t) => {
+        if (t < prochainRegard || instant.carte || derniers.current.carte) return;
+        prochainRegard = t + 0.25;
+        regard.setFromCamera(centreDeLaVue, camera);
+        if (regard.ray.intersectPlane(auNiveauDeLaMer, pointRegarde)) personnages.viser(pointRegarde.x, pointRegarde.z);
+      },
+      dispose: () => {},
+    };
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
     const deplacements: PartieDeLaScene[] = [personnages, navire];
     /** Le reste de l'image, dans cet ordre : la caméra suit ce qui a bougé ; les étiquettes se placent pour elle, en dernier. */
-    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, affordance, brume, lumiere, large, navire, cubesDuMonde, rond, amenagement, signesDesCreatures, etiquettes];
+    const parties: PartieDeLaScene[] = [personnages, cadrage, viseur, bornes, affordance, brume, lumiere, large, navire, cubesDuMonde, rond, amenagement, signesDesCreatures, etiquettes];
 
     /** Un objet touché répond : la pile d'étoiles d'une borne réussie saute, sinon sa bulle rebondit, s'il en a une. */
     const sauterLeSigne = (objet: ObjetTouche) => {
@@ -615,6 +632,14 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [creatures, reduceMotion, archipelago]);
 
+  // ---- L'île où l'on arrive : ses personnages d'Archipéo importés de près, ceux des autres îles de loin (aucune sur la
+  // Carte) ; ensuite, l'île que la caméra regarde (`viseur`).
+  const pres = map ? null : (home ?? null);
+  useEffect(() => {
+    world.current?.personnages.approcher(pres);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pres, reduceMotion, archipelago]);
+
   // ---- Les créatures qui font signe (GD-4, étape 1) : un geste à l'arrivée sur leur île, puis l'icône de la notion
   const signesKey = signes.map((x) => `${x.id}:${x.icone}:${x.bloc ?? ''}`).join('|');
   useEffect(() => {
@@ -732,6 +757,14 @@ export default function WorldCanvas({
     // Une fois par fiche ouverte.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fiche?.seq]);
+
+  // ---- L'île touchée garde son nom (référent dys, 9 octobre 2026) : sur la Carte, l'île fermée choisie ; ailleurs, celle
+  // dont la fiche est ouverte.
+  const ileTouchee = map ? selectedIsland : fiche?.objet.genre === 'ile' ? fiche.objet.id : null;
+  useEffect(() => {
+    world.current?.etiquettes.keepShown(ileTouchee);
+    // Reposée aussi quand la scène est refaite (un autre archipel, la préférence de mouvement).
+  }, [ileTouchee, reduceMotion, archipelago]);
 
   // ---- Caméra : l'île demandée (ou le bonhomme) est rejointe en douceur par la boucle ; au premier cadrage, d'un coup.
   useEffect(() => {

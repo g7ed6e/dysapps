@@ -54,6 +54,8 @@
   --life-earth-sciences: #5fb8a0; /* vert d'eau : les sciences de la vie et de la Terre */
   --physics-chemistry: #8a9be8; /* lavande : la physique-chimie */
   --technology: #c98ad0; /* mauve : la technologie */
+  --civics: #e3b65a; /* blé doré : l'EMC (à valider par le directeur artistique) */
+  --lca: #b98a66; /* argile : le latin ou grec, la terre cuite de ses Gardiens (à valider par le directeur artistique) */
   --green: #6cb33f; /* herbe */
   /* Texte posé sur une couleur de remplissage (sable, matière). */
   --on-accent: #13283d;
@@ -317,6 +319,12 @@ svg {
 .title-technology svg {
   color: var(--technology);
 }
+.title-civics svg {
+  color: var(--civics);
+}
+.title-lca svg {
+  color: var(--lca);
+}
 .back-link {
   /* Le bouton retour : toujours en haut à gauche, même forme partout (comme dans un jeu). */
   display: inline-flex;
@@ -422,6 +430,12 @@ button.app-card:active {
 .subject-technology {
   border-top-color: var(--technology);
 }
+.subject-civics {
+  border-top-color: var(--civics);
+}
+.subject-lca {
+  border-top-color: var(--lca);
+}
 .app-card.locked {
   border-top-width: var(--border-width);
   border-top-color: var(--ink);
@@ -454,6 +468,10 @@ button.app-card:active {
 .subject-physics-chemistry .app-icon,
 .subject-technology .subject-icon,
 .subject-technology .app-icon,
+.subject-civics .subject-icon,
+.subject-civics .app-icon,
+.subject-lca .subject-icon,
+.subject-lca .app-icon,
 .app-card[class*="biome-"] .app-icon {
   color: var(--on-accent);
 }
@@ -488,6 +506,14 @@ button.app-card:active {
 .subject-technology .subject-icon,
 .subject-technology .app-icon {
   background: var(--technology);
+}
+.subject-civics .subject-icon,
+.subject-civics .app-icon {
+  background: var(--civics);
+}
+.subject-lca .subject-icon,
+.subject-lca .app-icon {
+  background: var(--lca);
 }
 /* Cartes de mission d'une île : l'icône sur un aplat de sable, bleu nuit dessus. */
 .app-card[class*="biome-"] .app-icon {

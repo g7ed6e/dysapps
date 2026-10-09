@@ -282,10 +282,10 @@ it('avec les sentinelles (Archipéo, lot 6), le Gardien est là dès l’ouvertu
 });
 
 describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octobre 2026)', () => {
-  it('GD-12 : les 51 carrés des Gardiens ne bougent pas, qu’une île ait pris sa forme ou non', () => {
+  it('GD-12 : les 52 carrés des Gardiens ne bougent pas, qu’une île ait pris sa forme ou non', () => {
     // Une île qui a sa forme garde le carré de GD-11 (figé) ; les autres le retrouvent par la recherche. Le seuil de 75 %
     // et la part vue de chaque Gardien se vérifient plus bas, sur les mêmes carrés.
-    expect(Object.keys(GD11_GUARDIAN_SQUARES)).toHaveLength(51);
+    expect(Object.keys(GD11_GUARDIAN_SQUARES)).toHaveLength(52);
     expect(Object.keys(GD11_GUARDIAN_SQUARES).sort()).toEqual(BIOMES.map((b) => b.id).sort());
     for (const b of BIOMES) {
       const s = guardianSpot(b.id);
@@ -306,13 +306,16 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     // Depuis la cinquième mission (GD-14, 9 octobre 2026), une borne de plus touche trois carrés de devant : 21, 0 et 30,
     // dont 6 sur un côté (le Hangar des inventions passe derrière la bande, au palier 1 ; le Manoir du passé et le
     // Belvédère de Thalès au palier 3).
+    // Avec le Préau des délégués (EMC-2), au palier 1 sur un côté de devant, mesurés après GD-14 : 22, 0 et 30, dont 7
+    // sur un côté.
     expect(BIOMES.filter((b) => guardianSpot(b.id).repli).map((b) => b.id)).toEqual([]);
     const paliers = (n: number) => BIOMES.filter((b) => guardianSpot(b.id).palier === n).map((b) => b.id);
-    expect(paliers(1)).toHaveLength(21);
+    expect(paliers(1)).toHaveLength(22);
     expect(paliers(2)).toEqual([]);
     expect(paliers(3)).toHaveLength(30);
     expect(BIOMES.filter((b) => guardianSpot(b.id).y <= QUEST_ROW + 1).map((b) => b.id)).toEqual([
       'english-4e-comprehension',
+      'civics-6e-democratic-society',
       'history-4e-revolutions',
       'geography-4e-globalization',
       'life-earth-sciences-4e-cells-evolution',

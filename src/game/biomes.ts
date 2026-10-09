@@ -2,12 +2,16 @@
 import type { Subject } from '../apps/registry';
 import type { ProgrammeId } from '../curriculum';
 import type { AnyIconName } from '../components/Icon';
-import { lv2Courante, universCourant, type Lv2Choice } from '../core/settings';
+import { lcaCourante, lv2Courante, universCourant, type LcaChoice, type Lv2Choice } from '../core/settings';
+import type { ForeignWord } from '../core/foreignWords';
 import { nomAssemble } from './world/assembly';
 import { ILES } from './islands';
 
 /** Une deuxième langue vivante (pas « Pas de LV2 »). */
 export type Lv2 = Exclude<Lv2Choice, 'none'>;
+
+/** Une option de l'île du latin et du grec (pas « Pas d'option »). */
+export type Lca = Exclude<LcaChoice, 'none'>;
 
 /** Les identifiants des îles (ceux de docs/contenu/archipel.md, dans le même ordre ; vérifié par biomes.test.ts). */
 export const BIOME_IDS = [
@@ -44,6 +48,7 @@ export const BIOME_IDS = [
   'life-earth-sciences-6e-living-world',
   'physics-chemistry-6e-matter-energy',
   'technology-6e-objects',
+  'civics-6e-democratic-society',
   'history-5e-middle-ages',
   'geography-5e-resources',
   'life-earth-sciences-5e-active-planet',
@@ -105,6 +110,7 @@ export type BlockId =
   | 'life-earth-sciences-6e-living-world'
   | 'physics-chemistry-6e-matter-energy'
   | 'technology-6e-objects'
+  | 'civics-6e-democratic-society'
   | 'history-5e-middle-ages'
   | 'geography-5e-resources'
   | 'history-4e-revolutions'
@@ -175,6 +181,7 @@ export const BLOC = {
   fossile: 'life-earth-sciences-6e-living-world',
   aimant: 'physics-chemistry-6e-matter-energy',
   carton: 'technology-6e-objects',
+  craie: 'civics-6e-democratic-society',
   enluminure: 'history-5e-middle-ages',
   riziere: 'geography-5e-resources',
   fonte: 'history-4e-revolutions',
@@ -217,6 +224,11 @@ export interface BlockDef {
   rare?: boolean;
   /** Un bloc assemblé (GD-2) : il ne se gagne nulle part, il s'assemble dans le lieu du village prévu pour ça. */
   assemble?: boolean;
+  /**
+   * Un ou deux bâtons pâles, de ces couleurs, couchés sur le dessus de son icône (`BlockIcon`, Voxel.tsx, et le bloc des
+   * étiquettes, world/labelCanvas.ts) : un aplat sombre seul ne dit pas ce qu'est le bloc (la craie se lisait charbon).
+   */
+  batons?: readonly [string] | readonly [string, string];
 }
 
 export type BlockTexture =
@@ -254,6 +266,7 @@ export type BlockTexture =
   | 'fossile'
   | 'aimant'
   | 'carton'
+  | 'craie'
   | 'enluminure'
   | 'riziere'
   | 'fonte'
@@ -332,6 +345,14 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // Le bloc du Hangar des inventions (technologie, 6e) : du carton ondulé brun clair, ses cannelures verticales,
   // distinct des planches et de la terre par le motif (DA, SC-2).
   'technology-6e-objects': { id: 'technology-6e-objects', name: 'Carton', top: '#b98d5a', side: '#9a7246', texture: 'carton' },
+  // Le bloc du Préau des délégués (EMC, 6e) : des bâtons de craie couchés, côte à côte, sur l'ardoise vert sombre d'un
+  // tableau ; blanc, jaune pâle, rose pâle et bleu pâle. Distinct du sel (blanc, quatre cristaux cernés) et du fossile
+  // (beige, une spirale) par les bâtons et le fond sombre, pas par la teinte seule (proposition de l'artiste technique 3D,
+  // à valider par le directeur artistique). Le dessus de l'icône, l'ardoise du tableau un ton plus clair : en blanc, elle se
+  // lisait comme du sel ou de la neige (DA, relecture des captures emc-2) ; deux bâtons de craie couchés dessus, blanc et
+  // rose pâle, pas tout à fait parallèles (ni un signe égal, ni la fente d'une urne) : unie, l'ardoise se lisait comme du
+  // charbon (passe 2).
+  'civics-6e-democratic-society': { id: 'civics-6e-democratic-society', name: 'Craie', top: '#4c6458', side: '#3e5248', texture: 'craie', batons: ['#f2efe6', '#eec4c4'] },
   // Le bloc du Bourg des chroniques (histoire, 5e) : un violet profond parcouru de filets d'or, comme une page enluminée,
   // distinct de l'obsidienne par les filets et par un violet plus clair.
   'history-5e-middle-ages': { id: 'history-5e-middle-ages', name: 'Enluminure', top: '#6a4c9c', side: '#4e3878', texture: 'enluminure' },
@@ -415,7 +436,7 @@ export function ofBlock(id: BlockId): string {
  * dys). Les autres blocs sont des objets qu’on compte : « 5 toits », « 2 lanternes ».
  */
 const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
-  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'physics-chemistry-5e-matter-universe', 'technology-5e-design', 'technology-4e-modeling', 'life-earth-sciences-3e-human-body', 'technology-3e-digital', 'trophy-gold'],
+  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'civics-6e-democratic-society', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'physics-chemistry-5e-matter-universe', 'technology-5e-design', 'technology-4e-modeling', 'life-earth-sciences-3e-human-body', 'technology-3e-digital', 'trophy-gold'],
 );
 
 /** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */
@@ -446,6 +467,16 @@ export interface ExerciseTypeDef {
    * Réglages se jouent ; voir `missionsDe`.
    */
   lv2?: Lv2;
+  /**
+   * Une mission de l'île du latin et du grec (matière `lca`) : l'option qu'elle travaille, `la` ou `gr`. Seules les
+   * missions de l'option choisie dans les Réglages se jouent (GD-13) ; voir `missionsJouables`.
+   */
+  option?: Lca;
+  /**
+   * Une mission écrite et relue, gardée hors du jeu tant que ce qu'il lui faut manque (« L'alphabet grec » attend sa
+   * police) : la raison. Elle ne se joue pas (`missionsJouables`) ; le site la signale.
+   */
+  waiting?: string;
 }
 
 export interface CreatureDef {
@@ -472,6 +503,11 @@ export interface BiomeDef {
   guardian: string;
   creature: CreatureDef;
   exercises: ExerciseTypeDef[];
+  /**
+   * Les mots de l'île qui ne sont pas du français (« ## La voix » de son Markdown) : marqués dans leur langue, sans
+   * syllabes colorées, et lus comme le dit cette liste (src/core/foreignWords.ts). L'île du latin et du grec seulement.
+   */
+  foreignWords?: readonly ForeignWord[];
 }
 
 /**
@@ -499,19 +535,55 @@ export function guardianTitle(biome: Pick<BiomeDef, 'guardian'>): string {
 }
 
 /**
- * Les missions qui se jouent sur une île : toutes, sauf celles d'une autre LV2 que celle des Réglages. Avec « Pas de
- * LV2 », l'île de la LV2 n'en a aucune. Les bornes, le Gardien et la progression passent par ici.
+ * Les missions qui se jouent sur une île : toutes, sauf celles d'une autre LV2 que celle des Réglages, celles d'une autre
+ * option que le latin ou le grec choisi, et celles qui attendent ce qu'il leur faut (`waiting`). Avec « Pas de LV2 »,
+ * l'île de la LV2 n'en a aucune ; avec « Pas d'option », l'île du latin et du grec non plus. Les bornes, le Gardien et
+ * la progression passent par ici.
  */
-export function missionsJouables(biome: Pick<BiomeDef, 'exercises'>, lv2: Lv2Choice = lv2Courante()): ExerciseTypeDef[] {
-  return biome.exercises.filter((x) => x.lv2 === undefined || x.lv2 === lv2);
+export function missionsJouables(biome: Pick<BiomeDef, 'exercises'>, lv2: Lv2Choice = lv2Courante(), lca: LcaChoice = lcaCourante()): ExerciseTypeDef[] {
+  return biome.exercises.filter((x) => x.waiting === undefined && (x.lv2 === undefined || x.lv2 === lv2) && (x.option === undefined || x.option === lca));
 }
 
 /** Ce que dit l'île de la LV2 avec « Pas de LV2 » (lu à l'ouverture de son panneau), qu'elle soit ouverte ou non. */
 export const SANS_LV2 = 'Tu n’as pas choisi de LV2 : les missions de ta deuxième langue ne sont pas proposées ici. Tu peux en choisir une dans les Réglages.';
 
+/** Ce que dit l'île du latin et du grec avec « Pas d'option » (lu à l'ouverture de son panneau). */
+export const SANS_LCA = 'Tu n’as pas choisi l’option latin ou grec : ses missions ne sont pas proposées ici. Si tu la suis au collège, choisis-la dans les Réglages.';
+
 /** Une île de LV2 : ses missions dépendent de la langue choisie. */
 export function estIleLv2(biome: Pick<BiomeDef, 'subject'>): boolean {
   return biome.subject === 'lv2';
+}
+
+/**
+ * Un lieu d'option (GD-13) : l'île de la LV2 ou celle du latin et du grec. Ses missions dépendent d'un réglage ; il reste
+ * en bout de chemin, n'a pas de commande, n'entre dans aucune quête ni aucun projet, et ne compte pas dans la matière la
+ * moins jouée.
+ */
+export function estLieuDOption(biome: Pick<BiomeDef, 'subject'>): boolean {
+  return biome.subject === 'lv2' || biome.subject === 'lca';
+}
+
+/** Un lieu d'option dont l'élève n'a pas choisi l'option : ce que lit son panneau, son bouton vers les Réglages, la phrase de ses liaisons. */
+export interface SansOption {
+  lu: string;
+  bouton: string;
+  liaison: string;
+}
+
+const SANS_OPTION: Record<'lv2' | 'lca', SansOption> = {
+  lv2: { lu: SANS_LV2, bouton: 'Choisir une LV2', liaison: 'Choisis d’abord une LV2 dans les Réglages.' },
+  lca: { lu: SANS_LCA, bouton: 'Choisir l’option', liaison: 'Choisis d’abord l’option latin ou grec dans les Réglages.' },
+};
+
+/**
+ * Un lieu d'option dont l'élève n'a pas choisi l'option (« Pas de LV2 », « Pas d'option »), ou `null` : son panneau le
+ * dit, sans cadenas, avec un bouton vers les Réglages ; il reste fermé, et aucune liaison n'y mène (GD-13).
+ */
+export function sansSonOption(biome: Pick<BiomeDef, 'subject'> | undefined, choix: { lv2: Lv2Choice; lca: LcaChoice }): SansOption | null {
+  if (biome?.subject === 'lv2' && choix.lv2 === 'none') return SANS_OPTION.lv2;
+  if (biome?.subject === 'lca' && choix.lca === 'none') return SANS_OPTION.lca;
+  return null;
 }
 
 export function getBiome(id: string | undefined): BiomeDef | undefined {

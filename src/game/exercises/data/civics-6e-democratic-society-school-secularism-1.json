@@ -1,0 +1,240 @@
+{
+  "id": "civics-6e-democratic-society-school-secularism-1",
+  "biome": "civics-6e-democratic-society",
+  "type": "school-secularism",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-6e-democratic-society-school-secularism-1-0",
+      "prompt": "Croire en une religion, ne pas croire, ou changer de croyance : c’est la liberté de …",
+      "spoken": "Croire en une religion, ne pas croire, ou changer de croyance : c’est la liberté de  (mot manquant) ",
+      "choices": [
+        "circulation",
+        "conscience",
+        "réunion"
+      ],
+      "answer": "conscience",
+      "hint": "Relis la première ligne du rappel : de quelle liberté parle-t-elle ?",
+      "explanation": "Croire, ne pas croire, changer de croyance : c’est la liberté de conscience. La laïcité la garantit à chacun.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La laïcité",
+          "lines": [
+            "Chacun est libre de croire, de ne pas croire, de changer de croyance.",
+            "L’État ne favorise aucune religion, et n’en défavorise aucune.",
+            "Chacun peut pratiquer son culte, dans le respect de la loi.",
+            "La loi du 9 décembre 1905 sépare les Églises et l’État.",
+            "La laïcité est une règle de droit, la même pour tous.",
+            "À l’école publique, personne ne peut imposer une croyance à un élève."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-1-1",
+      "prompt": "L’État ne favorise aucune religion : il est …",
+      "spoken": "L’État ne favorise aucune religion : il est  (mot manquant) ",
+      "choices": [
+        "croyant",
+        "contre les religions",
+        "neutre"
+      ],
+      "answer": "neutre",
+      "hint": "L’État traite-t-il une religion mieux qu’une autre ?",
+      "explanation": "L’État est neutre : il ne favorise ni ne défavorise aucune religion. Il n’est pas contre les religions.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La laïcité",
+          "lines": [
+            "Chacun est libre de croire, de ne pas croire, de changer de croyance.",
+            "L’État ne favorise aucune religion, et n’en défavorise aucune.",
+            "Chacun peut pratiquer son culte, dans le respect de la loi.",
+            "La loi du 9 décembre 1905 sépare les Églises et l’État.",
+            "La laïcité est une règle de droit, la même pour tous.",
+            "À l’école publique, personne ne peut imposer une croyance à un élève."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-1-2",
+      "prompt": "D’après la loi du 9 décembre 1905\nLa République assure la liberté de conscience.\nElle garantit le libre exercice des cultes.\nElle ne paie aucun culte.",
+      "question": "Que garantit la République ?",
+      "spoken": "D’après la loi du neuf décembre mille neuf cent cinq. La République assure la liberté de conscience. Elle garantit le libre exercice des cultes. Elle ne paie aucun culte.",
+      "choices": [
+        "le libre exercice des cultes",
+        "une seule religion pour tous",
+        "l’interdiction des cultes"
+      ],
+      "answer": "le libre exercice des cultes",
+      "hint": "Lis la ligne qui contient le mot « garantit ».",
+      "explanation": "La loi de 1905 garantit le libre exercice des cultes : chacun peut pratiquer sa religion. L’État, lui, n’en paie aucune.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La laïcité",
+          "lines": [
+            "Chacun est libre de croire, de ne pas croire, de changer de croyance.",
+            "L’État ne favorise aucune religion, et n’en défavorise aucune.",
+            "Chacun peut pratiquer son culte, dans le respect de la loi.",
+            "La loi du 9 décembre 1905 sépare les Églises et l’État.",
+            "La laïcité est une règle de droit, la même pour tous.",
+            "À l’école publique, personne ne peut imposer une croyance à un élève."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-1-3",
+      "prompt": "La laïcité n’est pas une opinion : c’est un principe …",
+      "spoken": "La laïcité n’est pas une opinion : c’est un principe  (mot manquant) ",
+      "choices": [
+        "religieux",
+        "juridique",
+        "personnel"
+      ],
+      "answer": "juridique",
+      "hint": "Relis l’avant-dernière ligne du rappel : une règle de quoi ?",
+      "explanation": "La laïcité est un principe juridique : une règle de droit, écrite dans la loi. Ce n’est ni une religion, ni une opinion personnelle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La laïcité",
+          "lines": [
+            "Chacun est libre de croire, de ne pas croire, de changer de croyance.",
+            "L’État ne favorise aucune religion, et n’en défavorise aucune.",
+            "Chacun peut pratiquer son culte, dans le respect de la loi.",
+            "La loi du 9 décembre 1905 sépare les Églises et l’État.",
+            "La laïcité est une règle de droit, la même pour tous.",
+            "À l’école publique, personne ne peut imposer une croyance à un élève."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-1-4",
+      "prompt": "Croire ou ne pas croire est un choix personnel. La laïcité, elle, est une règle qui protège …",
+      "spoken": "Croire ou ne pas croire est un choix personnel. La laïcité, elle, est une règle qui protège  (mot manquant) ",
+      "choices": [
+        "les croyants seulement",
+        "les non-croyants seulement",
+        "tout le monde"
+      ],
+      "answer": "tout le monde",
+      "hint": "La liberté de conscience est la liberté de qui ?",
+      "explanation": "Croire ou ne pas croire est un choix personnel. La laïcité est une règle commune : elle protège la liberté de conscience de tous, croyants ou non.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La laïcité",
+          "lines": [
+            "Chacun est libre de croire, de ne pas croire, de changer de croyance.",
+            "L’État ne favorise aucune religion, et n’en défavorise aucune.",
+            "Chacun peut pratiquer son culte, dans le respect de la loi.",
+            "La loi du 9 décembre 1905 sépare les Églises et l’État.",
+            "La laïcité est une règle de droit, la même pour tous.",
+            "À l’école publique, personne ne peut imposer une croyance à un élève."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-1-5",
+      "prompt": "Le 9 décembre, jour de la loi de 1905, c’est la Journée de la …",
+      "spoken": "Le neuf décembre, jour de la loi de mille neuf cent cinq, c’est la Journée de la (mot manquant)",
+      "choices": [
+        "laïcité",
+        "République",
+        "citoyenneté"
+      ],
+      "answer": "laïcité",
+      "hint": "La loi de 1905 sépare les Églises et l’État : quel principe fonde-t-elle ?",
+      "explanation": "Le 9 décembre, jour de la loi de 1905, l’école fête la Journée de la laïcité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La laïcité",
+          "lines": [
+            "Chacun est libre de croire, de ne pas croire, de changer de croyance.",
+            "L’État ne favorise aucune religion, et n’en défavorise aucune.",
+            "Chacun peut pratiquer son culte, dans le respect de la loi.",
+            "La loi du 9 décembre 1905 sépare les Églises et l’État.",
+            "La laïcité est une règle de droit, la même pour tous.",
+            "À l’école publique, personne ne peut imposer une croyance à un élève."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-1-6",
+      "prompt": "L’école de Jules Ferry\n1881 : l’école primaire publique devient gratuite.\n1882 : l’instruction devient obligatoire.\n1882 : l’école primaire publique devient laïque.",
+      "question": "En quelle année l’école primaire publique devient-elle laïque ?",
+      "spoken": "L’école de Jules Ferry. Mille huit cent quatre-vingt-un : l’école primaire publique devient gratuite. Mille huit cent quatre-vingt-deux : l’instruction devient obligatoire. Mille huit cent quatre-vingt-deux : l’école primaire publique devient laïque.",
+      "choices": [
+        "1881",
+        "1882",
+        "1905"
+      ],
+      "answer": "1882",
+      "hint": "Cherche le mot « laïque » dans le document.",
+      "explanation": "En 1882, l’école primaire publique devient laïque, avant même la loi de 1905. En 1881, elle était devenue gratuite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La laïcité",
+          "lines": [
+            "Chacun est libre de croire, de ne pas croire, de changer de croyance.",
+            "L’État ne favorise aucune religion, et n’en défavorise aucune.",
+            "Chacun peut pratiquer son culte, dans le respect de la loi.",
+            "La loi du 9 décembre 1905 sépare les Églises et l’État.",
+            "La laïcité est une règle de droit, la même pour tous.",
+            "À l’école publique, personne ne peut imposer une croyance à un élève."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-1-7",
+      "prompt": "À l’école publique, la laïcité protège chaque élève de toute … religieuse.",
+      "spoken": "À l’école publique, la laïcité protège chaque élève de toute  (mot manquant)  religieuse.",
+      "choices": [
+        "liberté",
+        "pression",
+        "croyance"
+      ],
+      "answer": "pression",
+      "hint": "Relis la dernière ligne du rappel : que fait celui qui veut imposer sa croyance ?",
+      "explanation": "L’école laïque protège chaque élève des pressions religieuses : personne ne peut lui imposer une croyance, et il reste libre de la sienne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La laïcité",
+          "lines": [
+            "Chacun est libre de croire, de ne pas croire, de changer de croyance.",
+            "L’État ne favorise aucune religion, et n’en défavorise aucune.",
+            "Chacun peut pratiquer son culte, dans le respect de la loi.",
+            "La loi du 9 décembre 1905 sépare les Églises et l’État.",
+            "La laïcité est une règle de droit, la même pour tous.",
+            "À l’école publique, personne ne peut imposer une croyance à un élève."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-6e-democratic-society",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

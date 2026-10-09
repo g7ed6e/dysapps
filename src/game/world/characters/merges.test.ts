@@ -3,7 +3,7 @@ import { ARCHIPELAGO_IDS } from '../map';
 import { creaturePlacements, guardianPlacements } from '../terrain';
 import { bonhommePeint } from './avatar';
 import { creaturePeinte } from './paintedCreatures';
-import { allumageDuGardien, couleursDesGardiens, fusionDesCreatures, lueursDesGardiens, fusionDesGardiens, fusionDuBonhomme, pointDePose, trianglesDeLaFusion } from './merges';
+import { allumageDuGardien, couleursDesGardiens, fusionDesCreatures, ileRegardee, lueursDesGardiens, fusionDesGardiens, fusionDuBonhomme, pointDePose, trianglesDeLaFusion } from './merges';
 import { couleursAllumees } from './sentinel';
 import { sentinellePeinte } from './paintedSentinels';
 
@@ -58,6 +58,18 @@ describe('Les personnages fusionnés, archipel par archipel', () => {
       });
     });
   }
+
+  it('les personnages de près sont ceux de l’île que la caméra regarde, sans va-et-vient entre deux îles proches', () => {
+    const place = (id: string, x: number, y: number) => ({ id: id as never, origin: { x, y, z: 2 }, cubes: [{ x: 0, y: 0, z: 0 }] });
+    const places = [place('french-6e-phonology', 0, 0), place('french-6e-phonology', 4, 0), place('maths-6e-calculation', 40, 0)];
+    // Le bonhomme sur la Forêt, la vue glissée sur la Plaine voisine : la Plaine passe de près.
+    expect(ileRegardee(places, 39, 1, 'french-6e-phonology')).toBe('maths-6e-calculation');
+    // À mi-chemin, un peu plus près de la Plaine : la Forêt reste de près.
+    expect(ileRegardee(places, 23, 0, 'french-6e-phonology')).toBe('french-6e-phonology');
+    // En pleine mer, loin de tout : rien ne change ; sans île de près, la plus proche le devient.
+    expect(ileRegardee(places, 22, 60, 'maths-6e-calculation')).toBe('maths-6e-calculation');
+    expect(ileRegardee(places, 1, 1, null)).toBe('french-6e-phonology');
+  });
 
   it('ce qui brille la nuit : la lanterne de Fi (verre ambre le jour, lueur la nuit), l’abdomen d’Astra, la braise de Braise', () => {
     const brillent = (a: '3e' | '4e') => {

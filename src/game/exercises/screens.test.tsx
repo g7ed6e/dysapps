@@ -66,11 +66,12 @@ describe('déblocage des biomes', () => {
     // Volcan depuis GD-12). Depuis le trait à sept cases (GD-12), la Rivière est à 41 cases de la Forêt (un bac) mais à 18
     // de la Plaine : sa carte montre ce pont.
     expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(7);
-    // Une île qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9) : le Laboratoire des éléments, au coin de
-    // devant, derrière la Rivière ; il s'ouvrira de proche en proche.
-    expect(screen.queryAllByText(/Île lointaine/).length).toBe(1);
-    // Cinq bacs : vers la Carrière des mots, la Tour du lecteur, la Baie des mots, la Pointe des paysages et, depuis le
-    // trait à sept cases (GD-12), le Hangar des inventions, que la côte nouvelle laisse atteindre depuis la Forêt (95 cases).
+    // Les îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9) : le Laboratoire des éléments, au coin de
+    // devant, derrière la Rivière, et, depuis le Préau des délégués (EMC-2), qui coupe son bac depuis la Forêt, le Hangar
+    // des inventions, derrière le Volcan ; elles s'ouvriront de proche en proche.
+    expect(screen.queryAllByText(/Île lointaine/).length).toBe(2);
+    // Cinq bacs : vers la Carrière des mots, la Tour du lecteur, la Baie des mots, la Pointe des paysages et le Préau des
+    // délégués (EMC-2).
     expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(5);
     // Les îles des archipels de 5e, 4e et 3e, dont les six d'histoire-géographie (HG-3) et les neuf de sciences (SC-3).
     expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(36);

@@ -7,11 +7,17 @@ import { EXCLUSIONS } from '../curriculum/exclusions';
 import { BIOMES } from './biomes';
 import { loadAllExercises } from './exercises';
 
-/** La discipline attendue d'une mission : celle de son île, ou pour l'île de la LV2 la langue de la mission. */
+/**
+ * La discipline attendue d'une mission : celle de son île, ou pour un lieu d'option (GD-13) celle de la mission : la
+ * langue de la LV2, le latin ou le grec.
+ */
 const LV2_DISCIPLINE = { de: 'german', es: 'spanish' } as const;
+const OPTION_DISCIPLINE = { la: 'latin', gr: 'greek' } as const;
 function disciplineDe(b: (typeof BIOMES)[number], mission: string): string {
-  const lv2 = b.exercises.find((x) => x.id === mission)?.lv2;
-  return lv2 ? LV2_DISCIPLINE[lv2] : b.subject;
+  const x = b.exercises.find((m) => m.id === mission);
+  if (x?.lv2) return LV2_DISCIPLINE[x.lv2];
+  if (x?.option) return OPTION_DISCIPLINE[x.option];
+  return b.subject;
 }
 
 const EXERCISES = await loadAllExercises();

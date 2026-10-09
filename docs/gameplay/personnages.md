@@ -39,6 +39,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Vallée du vivant](https://g7ed6e.github.io/dysapps/pedagogie/iles/life-earth-sciences-6e-living-world.html) (SVT) | Fougère | escargot jardinier | escargot jardinier | Le Cerf des sous-bois |
 | [Laboratoire des éléments](https://g7ed6e.github.io/dysapps/pedagogie/iles/physics-chemistry-6e-matter-energy.html) (Physique-chimie) | Bulle | goutte chimiste | poulpe chimiste | L’Alambic de verre |
 | [Hangar des inventions](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-6e-objects.html) (Technologie) | Pince | fourmi bricoleuse | fourmi bricoleuse | L’Automate de laiton |
+| [Préau des délégués](https://g7ed6e.github.io/dysapps/pedagogie/iles/civics-6e-democratic-society.html) (EMC) | Voix | panda roux délégué | panda roux délégué | L’Hirondelle de nacre |
 
 ### Le Grand Chêne, Forêt des sons
 
@@ -52,8 +53,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Golem de roche gronde doucement : « Ma gemme est grise, et mes lettres se ressemblent toutes. Toi, tu les reconnais ? » | Le Golem de roche dit doucement : « Ma gemme est éteinte, et mes lettres se ressemblent. Regarde-les bien, prends ton temps. » |
-| À la fin | Je me rallume, de mes pieds jusqu’à ma gemme. Bien joué, bâtisseur. | Ma gemme se rallume. La mine est à toi, et à Tunel. |
+| Au défi | Le Golem de roche gronde doucement : « Ma gemme est grise, et mes lettres se ressemblent toutes. Toi, tu les reconnais ? » | Le Golem de roche dit doucement : « Ma poitrine est froide, et mes lettres se ressemblent. Regarde-les bien, prends ton temps. » |
+| À la fin | Je me rallume, de mes pieds jusqu’à ma gemme. Bien joué, bâtisseur. | Ma pierre se rallume. La mine est à toi, et à Tunel. |
 | Tunel à l’arrivée | Bienvenue dans ma mine ! Ici, les lettres se ressemblent, mais mon œil ne se trompe jamais. Pioche les bonnes, je te donne de la pierre. | Bienvenue dans ma mine ! Ici, les lettres se ressemblent, mais mon œil ne se trompe jamais. Pioche les bonnes, je te donne de la pierre. |
 
 ### La Dune vivante, Carrière des mots
@@ -84,8 +85,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Hanneton de bronze bourdonne : « Me voilà tout gris. Tu as compté toute ma plaine : calcule avec moi. » | Le Hanneton de bronze bourdonne doucement : « Mes ailes de bronze sont éteintes. Tu as compté toute ma plaine, calcule avec moi. » |
-| À la fin | Bzzz ! Je me rallume, des pattes aux antennes. La plaine est à toi, et à Coco. | Mes ailes se rallument. La plaine est à toi, et à Coco. |
+| Au défi | Le Hanneton de bronze bourdonne : « Me voilà tout gris. Tu as compté toute ma plaine : calcule avec moi. » | Le Hanneton de bronze bourdonne doucement : « Ma carapace de bronze est éteinte. Tu as compté toute ma plaine, calcule avec moi. » |
+| À la fin | Bzzz ! Je me rallume, des pattes aux antennes. La plaine est à toi, et à Coco. | Ma carapace se rallume. La plaine est à toi, et à Coco. |
 | Coco à l’arrivée | Bonjour, bâtisseur ! Dans ma plaine, on calcule avec les yeux : les points, la boîte de dix, la droite. Chaque calcul réussi, c’est de la brique pour le village. | Bonjour, bâtisseur ! Dans ma plaine, on calcule avec les yeux : les points, la boîte de dix, la droite. Chaque calcul réussi, c’est de la brique pour le village. |
 
 ### Le Brochet d’argent, Rivière des fractions
@@ -100,8 +101,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Dragon de cendre souffle une fumée tiède : « Même ma braise est grise. Tu as gravi tout mon volcan : lis chaque nombre rang par rang. » | Le Dragon de cendre souffle une fumée tiède : « Ma braise est éteinte. Tu as gravi tout mon volcan, lis chaque nombre rang par rang. » |
-| À la fin | Grrr ! Je me rallume, braise au ventre et yeux rouges. Le volcan est à toi, et à Lavi. | Mon ventre de braise se rallume. Le volcan est à toi, et à Lavi. |
+| Au défi | Le Dragon de cendre souffle une fumée tiède : « Même ma braise est grise. Tu as gravi tout mon volcan : lis chaque nombre rang par rang. » | Le Dragon de cendre souffle une fumée tiède : « Mes écailles sont éteintes. Tu as gravi tout mon volcan, lis chaque nombre rang par rang. » |
+| À la fin | Grrr ! Je me rallume, braise au ventre et yeux rouges. Le volcan est à toi, et à Lavi. | Mes écailles se rallument. Le volcan est à toi, et à Lavi. |
 | Lavi à l’arrivée | Salut, bâtisseur ! Sur mon volcan, la virgule sépare les unités des dixièmes. Regarde le tableau avant de répondre. Chaque nombre lu, c’est de l’obsidienne pour le village. | Salut, bâtisseur ! Sur mon volcan, la virgule sépare les unités des dixièmes. Regarde le tableau avant de répondre. Chaque nombre lu, c’est de l’obsidienne pour le village. |
 
 ### Le Lion de pierre, Baie des mots
@@ -159,6 +160,14 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Au défi | L’Automate de laiton fait tourner sa clé : « Me voilà tout gris. Tu as ouvert tous mes objets : dis-moi à quoi ils servent. » | L’Automate de laiton dit doucement : « Les boutons de ma poitrine sont éteints. Tu as essayé tous les objets du hangar : dis-moi à quoi ils servent. » |
 | À la fin | Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Pince. | Mes boutons se rallument. Le hangar est à toi, et à Pince. |
 | Pince à l’arrivée | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. |
+
+### L’Hirondelle de nacre, Préau des délégués
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Hirondelle de nacre ouvre une aile : « Me voilà toute grise. Tu as fait le tour de mon préau : dis-moi comment on vit ensemble. » | L’Hirondelle de nacre dit doucement : « Les plumes de mes ailes sont éteintes. Tu as fait le tour du préau : dis-moi comment on vit ensemble. » |
+| À la fin | Je me rallume, de la queue jusqu’au bec. Le préau est à toi, et à Voix. | Mes ailes se rallument. Le préau est à toi, et à Voix. |
+| Voix à l’arrivée | Bonjour, bâtisseur ! Au préau, on apprend à vivre ensemble. Chaque bonne réponse te donne de la craie. La craie, c’est pour écrire au tableau. | Bonjour, bâtisseur ! Au préau, on apprend à vivre ensemble. Chaque bonne réponse te donne de la craie. La craie, c’est pour écrire au tableau. |
 
 ## Les Collines du Large (Blocland), les Îles Brumeuses (Archipéo), 5e
 
