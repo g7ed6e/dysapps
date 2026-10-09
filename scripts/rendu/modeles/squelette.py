@@ -8,7 +8,7 @@
 #
 # <quarts de tour> : ceux de src/game/world/characters/imported/models.ts (le modèle tourné vers l'élève). Réglages,
 # facultatifs : cou=0.6 (le haut du dos, en fraction de la hauteur), queue=non (pas de queue), jambes=non (pas de
-# jambes : ni marche ni os de jambe), bras=non (pas de bras qui balancent). Quarts et réglages de chaque créature : la colonne « squelette » de
+# jambes : ni marche ni os de jambe), bras=non (pas de bras qui balancent), bras=L ou bras=R (un seul bras). Quarts et réglages de chaque créature : la colonne « squelette » de
 # docs/univers/archipeo/personnages/modeles/reglages.csv. Relire ensuite la planche d'apercu_squelette.py.
 #
 # Écrit final-1500.glb sans normales ni indices (le jeu calcule les siennes), avec JOINTS_0 et WEIGHTS_0 (quatre os par
@@ -151,7 +151,8 @@ def find_legs(q, h):
             continue
         k = np.flatnonzero(inner)[np.argmax(gaps[inner])]
         split.append((y0, mid[k]))
-    if len(split) < 3:
+    # Deux tranches suffisent : des pattes courtes (une taupe en manteau) n'en ont pas plus.
+    if len(split) < 2:
         return None
     crotch = split[-1][0] + 0.02 * h
     cut = np.median([m for _, m in split])
@@ -162,6 +163,7 @@ def find_legs(q, h):
         centre = np.array([np.median(s[:, 0]), np.median(s[:, 2])])
         # Son épaisseur : mesurée au bas de la jambe, où ne descend ni bras ni outil.
         foot = s[s[:, 1] < 0.4 * crotch]
+        foot = foot if len(foot) >= 20 else s  # des pattes courtes : toute la patte
         radius = np.percentile(np.hypot(foot[:, 0] - centre[0], foot[:, 2] - centre[1]), 90)
         legs.append((centre, radius))
     return crotch, legs
@@ -198,7 +200,7 @@ def find_arms(q, h, crotch, neck, centre):
 def find_tail(q, h, crotch, neck):
     """La queue : ce qui dépasse franchement derrière le tronc (vers +Z), entre les jambes et le cou."""
     band = q[(q[:, 1] > crotch) & (q[:, 1] < neck)]
-    back = np.percentile(band[:, 2], 75)
+    back = np.percentile(band[:, 2], 95)
     cand = q[(q[:, 2] > back + 0.1 * h) & (q[:, 1] > 0.05 * h) & (q[:, 1] < neck)]
     if len(cand) < 0.02 * len(q):
         return None
@@ -215,6 +217,27 @@ def seg_dist(p, a, b):
     ab = b - a
     t = np.clip(((p - a) @ ab) / max(ab @ ab, 1e-12), 0, 1)
     return np.linalg.norm(p - (a + t[:, None] * ab), axis=1), t
+
+
+def touching(q, mask, seeds):
+    """Les sommets de `mask` reliés à un sommet de `seeds` par des arêtes de triangles dont les deux bouts sont dans
+    `mask` (les sommets de même position soudés)."""
+    _, ids = np.unique(np.round(q, 5), axis=0, return_inverse=True)
+    ids = ids.ravel()
+    parent = np.arange(ids.max() + 1)
+
+    def find(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    for t in range(0, len(q), 3):
+        for i, j in ((t, t + 1), (t + 1, t + 2), (t + 2, t)):
+            if mask[i] and mask[j]:
+                parent[find(ids[i])] = find(ids[j])
+    roots = np.array([find(i) for i in ids])
+    return mask & np.isin(roots, roots[seeds & mask])
 
 
 def smooth(x):
@@ -256,6 +279,8 @@ def rig(q, h, settings):
             for n in ("hips", "spine", "head"):
                 w[n] = w[n] * (1 - k)
     arms = {} if settings.get("bras") == "non" else find_arms(dense, h, crotch, neck, cx)
+    # bras=L ou bras=R : un seul bras se détache du corps (l'autre est pris dans le manteau, ou tient le ventre).
+    arms = {k: v for k, v in arms.items() if settings.get("bras") not in ("L", "R") or (k < 0) == (settings["bras"] == "L")}
     if arms:
         # Ce qui dépasse devant ou derrière le corps, tranche par tranche : le corps est la bande du milieu, en x.
         outside = np.zeros(len(q))
@@ -272,6 +297,8 @@ def rig(q, h, settings):
         # ce qui dépasse devant ou derrière le corps (l'outil tenu) ; à l'épaule, il se fond au dos.
         beside = smooth(((q[:, 0] - limit) * side) / (0.02 * h)) * smooth((y - crotch) / (0.03 * h))
         held = smooth(((q[:, 0] - cx) * side - 0.12 * h) / (0.02 * h)) * smooth(outside / (0.02 * h))
+        # L'outil tenu touche la main : ce qui dépasse sans toucher le bras (une queue, un pied) reste au corps.
+        held = held * touching(q, (held > 0.05) | (beside > 0.5), beside > 0.5)
         k = np.maximum(beside, held) * smooth((shoulder + 0.02 * h - y) / (0.08 * h))
         w[name] = k
         for n in [b[0] for b in bones if b[0] != name]:

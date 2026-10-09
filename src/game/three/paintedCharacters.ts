@@ -118,7 +118,8 @@ export const GESTES = {
   regard: [0.2, 7],
   queue: [0.3, 4],
   // La marche : les jambes, les bras à l'inverse des jambes, le buste penché en avant et qui tourne un peu avec le pas.
-  pas: { angle: 0.45, cadence: 8, bras: 0.5, buste: 0.08, penche: 0.06 },
+  // `dandine` : le roulis des hanches des créatures à pattes courtes (une taupe en manteau), qui se dandinent.
+  pas: { angle: 0.45, cadence: 8, bras: 0.5, buste: 0.08, penche: 0.06, dandine: 0.1 },
 } as const;
 
 /**
@@ -173,7 +174,7 @@ interface Promeneur {
 }
 
 /** Tourne un os de squelette par son nom, s'il existe. */
-function tourner(membres: Map<string, THREE.Bone>, nom: string, axe: 'x' | 'y', angle: number): void {
+function tourner(membres: Map<string, THREE.Bone>, nom: string, axe: 'x' | 'y' | 'z', angle: number): void {
   const b = membres.get(nom);
   if (b) b.rotation[axe] = angle;
 }
@@ -200,6 +201,18 @@ function bouger(membres: Map<string, THREE.Bone>, t: number, phase: number, pas:
   tourner(membres, 'shin.R', 'x', -0.8 * GESTES.pas.angle * Math.max(0, k));
   tourner(membres, 'arm.L', 'x', -GESTES.pas.bras * k);
   tourner(membres, 'arm.R', 'x', GESTES.pas.bras * k);
+  // Le poids passe sur la patte posée : le corps penche de son côté.
+  tourner(membres, 'hips', 'z', -GESTES.pas.dandine * pattesCourtes(membres) * k);
+}
+
+/**
+ * De 0 (des jambes au quart de la hauteur du cou, ou plus : Mousso) à 1 (des pattes au dixième, ou moins : Tunel).
+ * Les têtes des os sont rangées par rapport à leur parent : hanches, dos puis tête s'empilent jusqu'au cou.
+ */
+function pattesCourtes(membres: Map<string, THREE.Bone>): number {
+  const hanches = membres.get('hips')?.position.y ?? 0;
+  const cou = hanches + (membres.get('spine')?.position.y ?? 0) + (membres.get('head')?.position.y ?? 0);
+  return membres.has('thigh.L') && cou > 0 ? Math.min(1, Math.max(0, (0.25 - hanches / cou) / 0.15)) : 0;
 }
 
 /** De 0 à 1 sans à-coup (sa pente est nulle aux deux bouts). */
