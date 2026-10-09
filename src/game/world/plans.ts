@@ -132,6 +132,12 @@ import hangarCour from './plans/technology-6e-objects-3.json';
 import preauPreau from './plans/civics-6e-democratic-society-1.json';
 import preauToit from './plans/civics-6e-democratic-society-2.json';
 import preauCour from './plans/civics-6e-democratic-society-3.json';
+import fournilFournil from './plans/civics-5e-equality-solidarity-1.json';
+import fournilToit from './plans/civics-5e-equality-solidarity-2.json';
+import fournilCour from './plans/civics-5e-equality-solidarity-3.json';
+import grotteAbri from './plans/lca-5e-legends-1.json';
+import grottePorche from './plans/lca-5e-legends-2.json';
+import grotteCercle from './plans/lca-5e-legends-3.json';
 import prairiePlan1 from './plans/life-earth-sciences-5e-active-planet-1.json';
 import prairiePlan2 from './plans/life-earth-sciences-5e-active-planet-2.json';
 import prairiePlan3 from './plans/life-earth-sciences-5e-active-planet-3.json';
@@ -372,6 +378,12 @@ const PLAN_FILES = [
   preauPreau,
   preauToit,
   preauCour,
+  fournilFournil,
+  fournilToit,
+  fournilCour,
+  grotteAbri,
+  grottePorche,
+  grotteCercle,
   prairiePlan1,
   prairiePlan2,
   prairiePlan3,

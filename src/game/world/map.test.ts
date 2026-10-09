@@ -23,23 +23,21 @@ it('chaque île a une place, une altitude selon sa classe, et son cœur fait par
 
 it('la côte écrite d’un lieu qui a une forme (GD-12) est celle de sa forme', () => {
   // La carte de départ l'écrit en dur, pour ne pas calculer un masque par lieu à l'import de map.ts. Les lieux des
-  // Basses Terres (16, avec le Préau des délégués d'EMC-2), des Collines du Large (12), des Monts de Feu (12) et des Îles
-  // du Ciel (12) ont leur forme (GD-12 ; formes.test.ts compte les lieux de chaque archipel).
+  // Basses Terres (16, avec le Préau des délégués d'EMC-2), des Collines du Large (14, avec le Fournil des partages et la
+  // Grotte des légendes d'EMC-2 et LCA-2), des Monts de Feu (12) et des Îles du Ciel (12) ont leur forme (GD-12 ;
+  // formes.test.ts compte les lieux de chaque archipel).
   const formes = MAP.filter((d) => silhouetteDe(d.id).forme);
-  expect(formes.length).toBe(52);
+  expect(formes.length).toBe(54);
   for (const d of formes) expect(d.ext, d.id).toEqual(etendueDuLieu(d, silhouetteDe(d.id).forme!));
 });
 
 /**
  * Les places gardées pour des îles futures (GD-12, coordination du 9 octobre 2026) : deux par archipel, l'éducation
  * morale et civique et le latin ou le grec, chacune avec un premier dessin de forme du catalogue, sans créer le lieu
- * (docs/gameplay/propositions/archives/GD-12.md). Une île de la carte de départ ne s'y pose pas.
+ * (docs/gameplay/propositions/archives/GD-12.md). Une île de la carte de départ ne s'y pose pas. Celles du 5e sont
+ * occupées depuis EMC-2 et LCA-2 : le Fournil des partages en (29, 405), la Grotte des légendes en (65, 405), à leurs formes.
  */
 const PLACES_FUTURES: Partial<Record<ArchipelagoId, readonly { nom: string; core: { x: number; y: number }; forme: FormeDeLIle }[]>> = {
-  '5e': [
-    { nom: 'EMC', core: { x: 29, y: 405 }, forme: { forme: 'trefle', vers: 'devant' } },
-    { nom: 'latin ou grec', core: { x: 65, y: 405 }, forme: { forme: 'galet', vers: 'devant', short: true } },
-  ],
   // Aux Monts de Feu, au rang du fond, entre la Vigie et le Bassin : l'EMC en trèfle derrière l'Escale, le latin ou le
   // grec en galet derrière le Théâtre (9 octobre 2026).
   '4e': [

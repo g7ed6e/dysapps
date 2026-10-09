@@ -15,7 +15,8 @@
 // - Au 5e (les Collines du Large, le même reste : ce qui suit n'est posé ni au 6e ni ailleurs) : les auvents (la toile du
 //   Marché, la tuile du Comptoir) en nappes minces, la toile ou la tuile seule au sol en ballot ; la tour de lambris du
 //   Manoir comme la cabine (bardée, son chapeau) ; le thermomètre et la stalagmite de glace, le rocher à strates en
-//   piliers lissés ; les congères (le nuage) et le tas de sel en tas bas ; le montoir de dalles et le plateau
+//   piliers lissés ; les congères (le nuage), le tas de sel et les sacs de farine du Fournil en tas bas ; le rocher de
+//   tuf de la Grotte en rocher ; le montoir de dalles et le plateau
 //   d'enluminure en dalles ; la rizière en plate-bande ; les planches des panneaux indicateurs jusqu'à leur poteau ;
 //   l'or en haut d'un poteau (les roseaux du Marais) en épi plus petit que sa case ; le pied de planches d'un pupitre en
 //   caisse ; le verre posé sur un bloc (le thermomètre) en verrière ; l'escalier en marches ; dans une petite
@@ -335,6 +336,11 @@ function heartOf(c: VoxelCube, at: RestContext['at']): RestDrawing | undefined {
       return tex(above) === 'sel' ? { family: 'pierre', paint: PILLAR } : { family: 'pierre', piece: mound() };
     case 'dalle':
       return { family: 'pierre', piece: slab(HEART.slab.mounting) };
+    // Les sacs de farine du Fournil (EMC 5e) : des tas bas ; le rocher de tuf de la Grotte (latin-grec 5e) : un rocher.
+    case 'farine':
+      return { family: 'pierre', piece: mound() };
+    case 'tuf':
+      return { family: 'pierre', piece: rock(seedOf(c), false) };
     case 'enluminure':
       return { family: 'colombage', piece: slab(HEART.slab.desk) };
     case 'riziere':

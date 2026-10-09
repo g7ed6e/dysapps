@@ -43,11 +43,11 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
   expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(16);
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
   // GD-9 : une liaison possible entre chaque paire de lieux d'une même région (120 en 6e depuis l'île d'EMC d'EMC-2, 105
-  // depuis les îles de sciences de SC-2 ; 66 dans les trois autres depuis celles de SC-3, 36 depuis les îles
-  // d'histoire-géographie de HG-3, 21 avant).
-  expect(BRIDGES).toHaveLength(120 + 3 * 66);
+  // depuis les îles de sciences de SC-2 ; 91 en 5e depuis le Fournil des partages et la Grotte des légendes, EMC-2 et
+  // LCA-2 ; 66 dans les deux autres depuis celles de SC-3, 36 depuis les îles d'histoire-géographie de HG-3, 21 avant).
+  expect(BRIDGES).toHaveLength(120 + 91 + 2 * 66);
   expect(VOYAGES.map((v) => v.id)).toEqual(['passage-5e', 'passage-4e', 'passage-3e']);
-  expect(BIOMES.length).toBe(52);
+  expect(BIOMES.length).toBe(54);
   // Le Relais des voyageurs (LV2) reste en bout de chemin : la liaison la plus proche vient du Comptoir.
   expect(remainingPath('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary']).map((b) => b.id)).toEqual(['english-5e-vocabulary-lv2-5e-introductions']);
   expect(isBiomeUnlocked('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary', 'english-5e-vocabulary-lv2-5e-introductions'])).toBe(true);
@@ -172,7 +172,10 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
     // Le Hangar ne s'atteint plus depuis la Forêt : le Préau des délégués (EMC-2) coupe sa liaison.
     // Depuis les formes des îles (GD-12, 9 octobre 2026), quatre depuis le Marché : le Comptoir, le Marais et le Glacier
     // par un pont, le Carrefour par un bac de 46 cases. Le Manoir, monté au second rang derrière le fer du Comptoir, ne
-    // s'y trace plus, ni le Bourg, le Relais et la Menuiserie (des bacs de 86, 45 et 73 cases depuis GD-11).
+    // s'y trace plus, ni le Bourg, le Relais et la Menuiserie (des bacs de 86, 45 et 73 cases depuis GD-11). Le Fournil des
+    // partages (EMC-2), au rang du fond, s'atteint depuis le Marché ; la Grotte des légendes (LCA-2), lieu d'option, n'est
+    // proposée qu'avec l'option latin ou grec (« Pas d'option » par défaut).
+    'maths-5e-proportionality-civics-5e-equality-solidarity',
     'maths-5e-proportionality-english-5e-vocabulary',
     'maths-5e-proportionality-french-5e-conjugation',
     'maths-5e-proportionality-french-5e-homophones',

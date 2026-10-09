@@ -16,8 +16,11 @@ import { AVATAR_HOME } from './terrain/base';
 const LIEUX = ARCHIPELAGO_IDS.flatMap((a) => mapOf(a)).filter((d) => silhouetteDe(d.id).forme);
 /** Jusqu'où regarder autour du cœur : le plus long trait du catalogue (le crochet et le lagon, 9 octobre 2026). */
 const T = TRAIT_MAX;
-/** Les archipels qui ont pris leurs formes, et combien de lieux chacun. */
-const ARCHIPELS_AUX_FORMES: Partial<Record<(typeof ARCHIPELAGO_IDS)[number], number>> = { '6e': 16, '5e': 12, '4e': 12, '3e': 12 };
+/**
+ * Les archipels qui ont pris leurs formes, et combien de lieux chacun. Au 5e, 14 depuis le Fournil des partages et la
+ * Grotte des légendes (EMC-2, LCA-2), posés aux deux places que GD-12 avait gardées.
+ */
+const ARCHIPELS_AUX_FORMES: Partial<Record<(typeof ARCHIPELAGO_IDS)[number], number>> = { '6e': 16, '5e': 14, '4e': 12, '3e': 12 };
 
 /** La case (x, y), au repère du monde, est-elle de la terre de l'île ? */
 const terre = (id: string) => {

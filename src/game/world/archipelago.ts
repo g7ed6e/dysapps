@@ -431,6 +431,8 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   BLOC.strate,
   BLOC.sel,
   BLOC.bambou,
+  BLOC.farine,
+  BLOC.tuf,
   BLOC.petale,
   BLOC.bobine,
   BLOC.liege,

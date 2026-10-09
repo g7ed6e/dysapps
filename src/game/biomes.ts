@@ -54,6 +54,7 @@ export const BIOME_IDS = [
   'life-earth-sciences-5e-active-planet',
   'physics-chemistry-5e-matter-universe',
   'technology-5e-design',
+  'civics-5e-equality-solidarity',
   'history-4e-revolutions',
   'geography-4e-globalization',
   'life-earth-sciences-4e-cells-evolution',
@@ -67,6 +68,7 @@ export const BIOME_IDS = [
   'lv2-5e-introductions',
   'lv2-4e-daily-life',
   'lv2-3e-travel',
+  'lca-5e-legends',
 ] as const;
 export type BiomeId = (typeof BIOME_IDS)[number];
 
@@ -120,6 +122,7 @@ export type BlockId =
   | 'life-earth-sciences-5e-active-planet'
   | 'physics-chemistry-5e-matter-universe'
   | 'technology-5e-design'
+  | 'civics-5e-equality-solidarity'
   | 'life-earth-sciences-4e-cells-evolution'
   | 'physics-chemistry-4e-signals-circuits'
   | 'technology-4e-modeling'
@@ -131,6 +134,7 @@ export type BlockId =
   | 'lv2-5e-introductions'
   | 'lv2-4e-daily-life'
   | 'lv2-3e-travel'
+  | 'lca-5e-legends'
   | 'compound-6e'
   | 'compound-5e'
   | 'compound-4e'
@@ -191,6 +195,7 @@ export const BLOC = {
   strate: 'life-earth-sciences-5e-active-planet',
   sel: 'physics-chemistry-5e-matter-universe',
   bambou: 'technology-5e-design',
+  farine: 'civics-5e-equality-solidarity',
   petale: 'life-earth-sciences-4e-cells-evolution',
   bobine: 'physics-chemistry-4e-signals-circuits',
   liege: 'technology-4e-modeling',
@@ -200,6 +205,7 @@ export const BLOC = {
   dalle: 'lv2-5e-introductions',
   osier: 'lv2-4e-daily-life',
   bardeau: 'lv2-3e-travel',
+  tuf: 'lca-5e-legends',
   poutre: 'compound-6e',
   vitrail: 'compound-5e',
   engrenage: 'compound-4e',
@@ -276,6 +282,7 @@ export type BlockTexture =
   | 'strate'
   | 'sel'
   | 'bambou'
+  | 'farine'
   | 'petale'
   | 'bobine'
   | 'liege'
@@ -287,6 +294,7 @@ export type BlockTexture =
   | 'dalle'
   | 'osier'
   | 'bardeau'
+  | 'tuf'
   | 'poutre'
   | 'vitrail'
   | 'engrenage'
@@ -379,6 +387,11 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   'physics-chemistry-5e-matter-universe': { id: 'physics-chemistry-5e-matter-universe', name: 'Sel', top: '#ece8e2', side: '#c8ccd0', texture: 'sel' },
   // Le bloc de la Menuiserie des objets (technologie, 5e) : des cannes de bambou, leurs bouts ronds dessus, verticales sur les côtés, nœuds #6f7a34.
   'technology-5e-design': { id: 'technology-5e-design', name: 'Bambou', top: '#cdb46a', side: '#b49c4e', texture: 'bambou' },
+  // Le bloc du Fournil des partages (EMC, 5e) : un sac de farine, la toile de jute brun clair tissée en croix sur les
+  // côtés, la farine blanc chaud qui déborde en haut, le dessus de farine poudrée de son (couleurs du directeur
+  // artistique, 9 octobre 2026). Distinct du sel (des cristaux cernés), de la craie (des bâtons sur
+  // l'ardoise) et du sable (un grain seul) par la trame de la toile et la bande de farine.
+  'civics-5e-equality-solidarity': { id: 'civics-5e-equality-solidarity', name: 'Farine', top: '#f4e9cf', side: '#bfa274', texture: 'farine' },
   // Le bloc de la Source des espèces (SVT, 4e) : des pétales roses en écailles, un cœur jaune.
   'life-earth-sciences-4e-cells-evolution': { id: 'life-earth-sciences-4e-cells-evolution', name: 'Pétale', top: '#e88fb4', side: '#c8638e', texture: 'petale' },
   // Le bloc de la Vigie des signaux (physique-chimie, 4e) : du fil de cuivre enroulé, l’axe gris dessus, les spires #8a4a22 sur les côtés.
@@ -401,6 +414,10 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // Le bloc du Refuge des carnets (LV2, 3e) : des bardeaux de bois en écailles décalées, au bas arrondi, distincts de la
   // tuile, de la brique et de la dalle par le motif ; un bois brun chaud, jamais gris comme la pierre.
   'lv2-3e-travel': { id: 'lv2-3e-travel', name: 'Bardeau', top: '#96724e', side: '#7c5c3e', texture: 'bardeau' },
+  // Le bloc de la Grotte des légendes (latin-grec, 5e) : du tuf, la pierre tendre des grottes, rosé, semé de pores
+  // sombres bordés d'un pixel clair (couleurs du directeur artistique, 9 octobre 2026). Distinct du fossile (une
+  // spirale), du grès rose (des assises roses), du bambou et de la pierre (mouchetée de gris) par les pores et sa teinte.
+  'lca-5e-legends': { id: 'lca-5e-legends', name: 'Tuf', top: '#d6b4a0', side: '#b08e7c', texture: 'tuf' },
   // Blocs assemblés (GD-2) : aucune île ne les donne, on les assemble sur l'île de l'école (world/assembly.ts). Leur nom
   // ici est celui de Blocland ; chaque univers donne le sien, écrit dans docs/contenu/assemblage.md.
   'compound-6e': { id: 'compound-6e', name: 'Poutre', top: '#dcba86', side: '#c49a64', texture: 'poutre', assemble: true },
@@ -436,7 +453,7 @@ export function ofBlock(id: BlockId): string {
  * dys). Les autres blocs sont des objets qu’on compte : « 5 toits », « 2 lanternes ».
  */
 const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
-  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'civics-6e-democratic-society', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'physics-chemistry-5e-matter-universe', 'technology-5e-design', 'technology-4e-modeling', 'life-earth-sciences-3e-human-body', 'technology-3e-digital', 'trophy-gold'],
+  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'civics-6e-democratic-society', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'physics-chemistry-5e-matter-universe', 'technology-5e-design', 'civics-5e-equality-solidarity', 'lca-5e-legends', 'technology-4e-modeling', 'life-earth-sciences-3e-human-body', 'technology-3e-digital', 'trophy-gold'],
 );
 
 /** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */

@@ -339,6 +339,14 @@ export const ARCHIPEO = {
         beaten: 'Ma robe se rallume. La menuiserie est à toi, et à Rabot.',
       },
     },
+    'civics-5e-equality-solidarity': {
+      challenge: 'L’Oie d’opale dit doucement : « Les plumes de mes ailes sont éteintes. Tu as fait le tour du fournil : dis-moi ce qu’est l’égalité. »',
+      guardianSays: {
+        hit: 'Une plume de mon aile s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Mes ailes se rallument. Le fournil est à toi, et à Mie.',
+      },
+    },
     'life-earth-sciences-4e-cells-evolution': {
       challenge: 'La Girafe d’ambre dit doucement : « Les taches de mon cou sont éteintes. Tu as vu grandir tout ce qui vit à la source : dis-moi comment le vivant se transmet. »',
       guardianSays: {
@@ -393,6 +401,14 @@ export const ARCHIPEO = {
         hit: 'Le bord de mes ailes brille un peu plus. C’est juste.',
         miss: 'Rien ne s’éteint. Lis bien la question, relis la règle, et reprends.',
         beaten: 'Le bord de mes ailes se rallume. Le refuge est à toi, et à Timbre.',
+      },
+    },
+    'lca-5e-legends': {
+      challenge: 'Le Phénix d’argile dit doucement : « Les plumes de mes ailes sont éteintes. Tu as écouté les légendes de la grotte : raconte-les-moi. »',
+      guardianSays: {
+        hit: 'Une plume de mon aile s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis la traduction, cherche le mot du rappel, et reprends.',
+        beaten: 'Je renais, mes ailes se rallument. La grotte est à toi, et à Lyre.',
       },
     },
     'english-5e-grammar': {
@@ -465,6 +481,7 @@ export const ARCHIPEO = {
     'lv2-5e-introductions': 'cigogne voyageuse',
     'lv2-4e-daily-life': 'écureuil cuisinier',
     'lv2-3e-travel': 'loutre factrice',
+    'lca-5e-legends': 'gecko conteur',
     'english-5e-grammar': 'chat du manoir',
     'english-4e-comprehension': 'lutin souffleur',
     'english-4e-grammar': 'blaireau chef de gare',
@@ -485,6 +502,7 @@ export const ARCHIPEO = {
     'life-earth-sciences-5e-active-planet': 'ver de terre météorologue',
     'physics-chemistry-5e-matter-universe': 'canard saunier',
     'technology-5e-design': 'pic-vert menuisier',
+    'civics-5e-equality-solidarity': 'capybara boulanger',
     'life-earth-sciences-4e-cells-evolution': 'colibri butineur',
     'physics-chemistry-4e-signals-circuits': 'suricate guetteur',
     'technology-4e-modeling': 'otarie maquettiste',

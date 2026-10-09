@@ -43,4 +43,10 @@ export const SILHOUETTES_5E = {
   'life-earth-sciences-5e-active-planet': { pics: [], forme: { forme: 'galet', vers: 'devant' } },
   'physics-chemistry-5e-matter-universe': { pics: [], forme: { forme: 'croissant', vers: 'gauche' } },
   'technology-5e-design': { pics: [], forme: { forme: 'presquile', vers: 'devant' } },
+  // L'EMC (EMC-2) et le latin-grec (LCA-2), des îles plates, sans pic, aux formes que GD-12 a gardées pour leurs places
+  // (map.test.ts) : le Fournil des partages, un trèfle ouvert devant, trois lobes autour du fournil, comme un pain qu'on
+  // partage ; la Grotte des légendes, un galet court ouvert devant, le rocher rond de la grotte (propositions de
+  // l'artiste technique 3D, à trancher par le directeur artistique).
+  'civics-5e-equality-solidarity': { pics: [], forme: { forme: 'trefle', vers: 'devant' } },
+  'lca-5e-legends': { pics: [], forme: { forme: 'galet', vers: 'devant', short: true } },
 } satisfies Partial<Record<BiomeId, Silhouette>>;

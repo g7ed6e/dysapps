@@ -73,6 +73,8 @@ export const TEXTURES: Record<string, string> = {
   [BLOCKS[BLOC.strate].side]: 'strate',
   [BLOCKS[BLOC.sel].side]: 'sel',
   [BLOCKS[BLOC.bambou].side]: 'bambou',
+  [BLOCKS[BLOC.farine].side]: 'farine',
+  [BLOCKS[BLOC.tuf].side]: 'tuf',
   [BLOCKS[BLOC.petale].side]: 'petale',
   [BLOCKS[BLOC.bobine].side]: 'bobine',
   [BLOCKS[BLOC.liege].side]: 'liege',
@@ -178,10 +180,15 @@ const VENUES_AU_MILIEU: readonly string[] = [
 ];
 
 /**
- * Les îles entrées au milieu de la liste après les précédentes (l'EMC, EMC-2) : elles ne comptent dans le rang d'aucune
- * île, pas même des îles venues au milieu (`VENUES_AU_MILIEU`), dont le relief ne bouge pas non plus.
+ * Les îles entrées au milieu de la liste après les précédentes (l'EMC, EMC-2 ; le latin-grec, LCA-2) : elles ne
+ * comptent dans le rang d'aucune île, pas même des îles venues au milieu (`VENUES_AU_MILIEU`), dont le relief ne bouge
+ * pas non plus.
  */
-const ENTREES_ENSUITE: readonly string[] = ['civics-6e-democratic-society'];
+const ENTREES_ENSUITE: readonly string[] = [
+  'civics-6e-democratic-society',
+  'civics-5e-equality-solidarity',
+  'lca-5e-legends',
+];
 
 let rangsDuDessin: readonly number[] | undefined;
 

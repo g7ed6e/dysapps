@@ -73,8 +73,9 @@ describe('déblocage des biomes', () => {
     // Cinq bacs : vers la Carrière des mots, la Tour du lecteur, la Baie des mots, la Pointe des paysages et le Préau des
     // délégués (EMC-2).
     expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(5);
-    // Les îles des archipels de 5e, 4e et 3e, dont les six d'histoire-géographie (HG-3) et les neuf de sciences (SC-3).
-    expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(36);
+    // Les îles des archipels de 5e, 4e et 3e, dont les six d'histoire-géographie (HG-3), les neuf de sciences (SC-3), le
+    // Fournil des partages (EMC-2) et la Grotte des légendes (LCA-2).
+    expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(38);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
     // Le message est découpé en syllabes (plusieurs éléments) : on lit le texte complet.
     expect(document.body.textContent).toMatch(/Pas si vite/);

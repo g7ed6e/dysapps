@@ -27,6 +27,7 @@ import {
   nearestFreeSpot,
   nextIn,
   placeIn,
+  placeTurns,
   relinkBetween,
   relinkChoices,
   spotOf,
@@ -211,8 +212,11 @@ export function choiceFits(world: World, c: ArrangeChoice): boolean {
   }
 }
 
-/** Le choix a-t-il « Tourner » (un lieu ; le Gardien tourne avec son île, GD-11) ? */
-export const canTurn = (c: ArrangeChoice | null): boolean => c?.genre === 'lieu';
+/**
+ * Le choix a-t-il « Tourner » (un lieu ; le Gardien tourne avec son île, GD-11) ? Pas un lieu qui ne tourne pas
+ * (`placeTurns` : le Marais des temps, le Comptoir et le Manoir du passé, directeur artistique, 9 octobre 2026).
+ */
+export const canTurn = (c: ArrangeChoice | null): boolean => c?.genre === 'lieu' && placeTurns(c.id);
 
 /**
  * « Tourner » un lieu choisi : son fantôme pivote d'un quart de tour, à sa place, même si elle est prise (choix 3 du
@@ -222,7 +226,7 @@ export const canTurn = (c: ArrangeChoice | null): boolean => c?.genre === 'lieu'
  */
 export function turnChoice(world: World, c: Extract<ArrangeChoice, { genre: 'lieu' }>): ArrangeChoice | null {
   const turn = ((c.spot.turn + 1) % 4) as LayoutTurn;
-  if (!hasFreeSpot(world, c.id, turn)) return null;
+  if (!placeTurns(c.id) || !hasFreeSpot(world, c.id, turn)) return null;
   return { ...c, spot: { ...c.spot, turn } };
 }
 

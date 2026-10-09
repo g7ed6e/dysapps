@@ -312,6 +312,9 @@ const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
   '3e:english-3e-comprehension': ['geography-3e-france', 'physics-chemistry-3e-motion-energy'],
   '3e:life-earth-sciences-3e-human-body': ['french-3e-close-reading'],
   '3e:technology-3e-digital': ['physics-chemistry-3e-motion-energy'],
+  // Au 5e, depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec, 9 octobre 2026, mesuré) : vers le
+  // Marais des temps, le nom du Carrefour des homophones, son voisin, se tait.
+  '5e:french-5e-conjugation': ['french-5e-homophones'],
 };
 
 /**
@@ -376,6 +379,26 @@ const TUS_VERS_UNE_DESTINATION: Partial<Record<ArchipelagoId, Record<string, str
     'life-earth-sciences-4e-cells-evolution': ['geography-4e-globalization', 'technology-4e-modeling'],
     'physics-chemistry-4e-signals-circuits': ['french-4e-vocabulary'],
   },
+  // Au 5e, depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec, 9 octobre 2026, mesurés) : trois
+  // destinations taisent un ou deux noms. Vers le Glacier des relatifs, cinq se taisaient, au-delà du plafond de trois du
+  // référent dys (Bloquant du consultant UX UI) ; aucun depuis que la recherche d'un nom tu de moins laisse aussi de côté,
+  // à son tour, un nom montré (`chercherToutesLesPlaces`) : tous se posent, la Prairie des climats au dernier recours.
+  '5e': {
+    'english-5e-vocabulary': ['physics-chemistry-5e-matter-universe'],
+    'french-5e-homophones': ['geography-5e-resources', 'technology-5e-design'],
+    'geography-5e-resources': ['civics-5e-equality-solidarity'],
+  },
+};
+
+/**
+ * Les mêmes, dans Archipéo, là où ils diffèrent (« Restaurée » est plus large que « Bâtie », UX UI, SC-3) : au 5e,
+ * depuis le Fournil des partages et la Grotte des légendes (mesurés), vers le Glacier des relatifs, un seul nom se tait.
+ */
+const TUS_VERS_UNE_DESTINATION_DANS_ARCHIPEO: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
+  '5e': {
+    'english-5e-vocabulary': ['lca-5e-legends'],
+    'maths-5e-signed-numbers': ['life-earth-sciences-5e-active-planet'],
+  },
 };
 
 /**
@@ -391,6 +414,15 @@ const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>
   // coin du fond, sous le panneau, depuis les deux bouts de l'ouvrage de l'Atelier à la Forge et depuis la Source vers la
   // Forge (régression, au pilotage). Les deux îles d'histoire-géographie ne se taisent plus l'une vers l'autre. Aux Îles du
   // Ciel, aucun depuis une forme par île (l'ouvrage entre le Plateau et la Ruche taisait la Ruche).
+  // Au 5e, depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec, 9 octobre 2026, mesurés) : cinq
+  // flèches taisent un ou deux noms.
+  '5e': {
+    'maths-5e-proportionality-french-5e-conjugation depuis french-5e-conjugation': ['lca-5e-legends'],
+    'maths-5e-signed-numbers-maths-5e-proportionality depuis maths-5e-proportionality': ['physics-chemistry-5e-matter-universe', 'lca-5e-legends'],
+    'maths-5e-signed-numbers-maths-5e-proportionality depuis maths-5e-signed-numbers': ['physics-chemistry-5e-matter-universe', 'lca-5e-legends'],
+    'technology-5e-design-lv2-5e-introductions depuis lv2-5e-introductions': ['civics-5e-equality-solidarity'],
+    'technology-5e-design-lv2-5e-introductions depuis technology-5e-design': ['physics-chemistry-5e-matter-universe'],
+  },
   '4e': {
     'maths-4e-algebra-maths-4e-powers depuis maths-4e-algebra': ['technology-4e-modeling'],
     'maths-4e-algebra-maths-4e-powers depuis maths-4e-powers': ['technology-4e-modeling'],
@@ -402,7 +434,10 @@ const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>
  * Les mêmes, dans Archipéo, là où ils diffèrent (« Restaurée » est plus large que « Bâtie », UX UI, SC-3) : aucun depuis
  * que la Carte cadre les lieux d'aujourd'hui (deux ponts du 5e y taisaient un nom de plus depuis GD-11).
  */
-const TUS_SUR_UN_OUVRAGE_DANS_ARCHIPEO: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {};
+const TUS_SUR_UN_OUVRAGE_DANS_ARCHIPEO: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
+  // Depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec de 5e, mesuré).
+  '5e': { 'maths-5e-signed-numbers-maths-5e-proportionality depuis maths-5e-proportionality': ['life-earth-sciences-5e-active-planet', 'lca-5e-legends'] },
+};
 
 /**
  * La tablette à l'ouverture de la Carte, en OpenDyslexic, le bonhomme sur la destination (il y est arrivé) : les noms
@@ -423,7 +458,15 @@ const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string,
   // de Feu, depuis une forme par île, aucune (trois destinations avant). Au 3e, depuis une forme
   // par île, cinq destinations taisaient chacune un nom (quatre destinations, huit noms avant) ; depuis la relecture du
   // 9 octobre 2026, deux destinations, trois noms (vers l'Observatoire des données et vers la Ruche des réseaux).
+  // Au 5e, depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec, 9 octobre 2026, mesurés) : sept
+  // destinations, un nom chacune ; la Grotte et le Fournil, voisins au rang du fond, se taisent l'un vers l'autre.
   '5e': {
+    'civics-5e-equality-solidarity': ['lca-5e-legends'],
+    'french-5e-conjugation': ['french-5e-homophones'],
+    'lca-5e-legends': ['civics-5e-equality-solidarity'],
+    'life-earth-sciences-5e-active-planet': ['lca-5e-legends'],
+    'lv2-5e-introductions': ['physics-chemistry-5e-matter-universe'],
+    'maths-5e-proportionality': ['french-5e-conjugation'],
     'physics-chemistry-5e-matter-universe': ['geography-5e-resources'],
   },
   '3e': {
@@ -794,7 +837,7 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
         const t = nomsTus(a, mot, 'atkinson-hyperlegible', 1, dest);
         if (t.length) tus[dest] = t;
       }
-      expect(tus, univers).toEqual(TUS_VERS_UNE_DESTINATION[a] ?? {});
+      expect(tus, univers).toEqual({ ...TUS_VERS_UNE_DESTINATION[a], ...(univers === 'archipeo' ? TUS_VERS_UNE_DESTINATION_DANS_ARCHIPEO[a] : {}) });
     }
   });
 

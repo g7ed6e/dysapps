@@ -2165,6 +2165,46 @@ export const ILES = [
     ]
   },
   {
+    "id": "civics-5e-equality-solidarity",
+    "name": "Fournil des partages",
+    "module": "Égalité, fraternité et solidarité",
+    "subject": "civics",
+    "classe": "5e",
+    "description": "L’égalité entre les femmes et les hommes, la lutte contre les discriminations et le harcèlement, puis la solidarité, de la commune au monde.",
+    "block": "civics-5e-equality-solidarity",
+    "guardian": "l’Oie d’opale",
+    "icon": "heart-handshake",
+    "creature": {
+      "name": "Mie"
+    },
+    "exercises": [
+      {
+        "id": "gender-equality",
+        "title": "Égalité femmes-hommes",
+        "description": "L’égalité entre les femmes et les hommes, garantie par la Constitution et conquise par des lois, les stéréotypes, puis les inégalités qui restent.",
+        "programme": [
+          "c4.emc.5e.egalite.discriminations"
+        ]
+      },
+      {
+        "id": "discrimination",
+        "title": "Contre les discriminations",
+        "description": "La discrimination, un délit puni par la loi ; les stéréotypes et les préjugés à la racine du racisme, de l’antisémitisme, de la xénophobie et du harcèlement ; l’inclusion.",
+        "programme": [
+          "c4.emc.5e.egalite.discriminations"
+        ]
+      },
+      {
+        "id": "solidarity",
+        "title": "La solidarité",
+        "description": "La solidarité, liée à la fraternité : la Sécurité sociale, l’impôt, les collectivités et les associations, puis l’aide européenne et mondiale face aux risques.",
+        "programme": [
+          "c4.emc.5e.solidarite.echelles"
+        ]
+      }
+    ]
+  },
+  {
     "id": "history-4e-revolutions",
     "name": "Imprimerie des révolutions",
     "module": "Histoire, du XVIIIe siècle à la France du XIXe siècle",
@@ -3024,6 +3064,361 @@ export const ILES = [
           "c4.de.ecrire.dictee-fiche"
         ],
         "lv2": "de"
+      }
+    ]
+  },
+  {
+    "id": "lca-5e-legends",
+    "name": "Grotte des légendes",
+    "module": "Légendes, dieux et héros",
+    "subject": "lca",
+    "classe": "5e",
+    "description": "Les légendes de fondation, les dieux et les héros de l’Antiquité, et les premiers pas dans la langue : les cas en latin, l’alphabet en grec.",
+    "block": "lca-5e-legends",
+    "guardian": "le Phénix d’argile",
+    "icon": "scroll-text",
+    "creature": {
+      "name": "Lyre"
+    },
+    "exercises": [
+      {
+        "id": "la-founding",
+        "title": "Rome, de la légende à l’histoire",
+        "description": "Les légendes de la fondation de Rome, d’Énée à Romulus, puis les rois de Rome et la naissance de la République.",
+        "programme": [
+          "c4.la.culture.origines-rome",
+          "c4.la.reperes.chronologie",
+          "c4.la.lecture.situer"
+        ],
+        "option": "la"
+      },
+      {
+        "id": "la-gods",
+        "title": "Dieux et héros de Rome",
+        "description": "Les dieux romains et leurs noms grecs, les héros de Rome, et les mots français qui en viennent.",
+        "programme": [
+          "c4.la.culture.vie-publique",
+          "c4.la.reperes.heritage",
+          "c4.la.langue.lexique"
+        ],
+        "option": "la"
+      },
+      {
+        "id": "la-cases",
+        "title": "Les cas latins",
+        "description": "En latin, la fin du mot dit sa fonction : le nominatif, l’accusatif, le génitif, puis les autres cas, avec rosa et dominus.",
+        "programme": [
+          "c4.la.langue.cas-fonctions",
+          "c4.la.langue.declinaisons",
+          "c4.la.langue.intercomprehension"
+        ],
+        "option": "la"
+      },
+      {
+        "id": "gr-founding",
+        "title": "Cités de légende",
+        "description": "Les légendes de fondation des cités grecques et de leurs voisines : Athènes, Mycènes, Troie, Marseille, Carthage ; puis ce que l’archéologie en montre.",
+        "programme": [
+          "c4.gr.culture.origines-rome",
+          "c4.gr.reperes.chronologie",
+          "c4.gr.lecture.situer"
+        ],
+        "option": "gr"
+      },
+      {
+        "id": "gr-gods",
+        "title": "Dieux et héros grecs",
+        "description": "Les dieux de l’Olympe, les héros des mythes grecs, et les mots et expressions français qui en viennent.",
+        "programme": [
+          "c4.gr.culture.vie-publique",
+          "c4.gr.reperes.heritage",
+          "c4.gr.langue.lexique"
+        ],
+        "option": "gr"
+      },
+      {
+        "id": "gr-alphabet",
+        "title": "L’alphabet grec",
+        "description": "Les 24 lettres de l’alphabet grec, écrites et transcrites avec nos lettres, les lettres qui trompent, puis des mots grecs et les mots français qui en viennent.",
+        "programme": [
+          "c4.gr.langue.alphabet",
+          "c4.gr.langue.intercomprehension",
+          "c4.gr.langue.lexique"
+        ],
+        "option": "gr",
+        "waiting": "la police grecque"
+      }
+    ],
+    "foreignWords": [
+      {
+        "word": "rosa",
+        "lang": "la",
+        "spoken": "rossa"
+      },
+      {
+        "word": "rosam",
+        "lang": "la",
+        "spoken": "rossamm"
+      },
+      {
+        "word": "rosae",
+        "lang": "la",
+        "spoken": "rossaï"
+      },
+      {
+        "word": "dominus",
+        "lang": "la",
+        "spoken": "dominouss"
+      },
+      {
+        "word": "dominum",
+        "lang": "la",
+        "spoken": "dominoumm"
+      },
+      {
+        "word": "domini",
+        "lang": "la",
+        "spoken": "domini"
+      },
+      {
+        "word": "domino",
+        "lang": "la",
+        "spoken": "domino"
+      },
+      {
+        "word": "domine",
+        "lang": "la",
+        "spoken": "dominé"
+      },
+      {
+        "word": "puella",
+        "lang": "la",
+        "spoken": "pouélla"
+      },
+      {
+        "word": "amat",
+        "lang": "la",
+        "spoken": "amatt"
+      },
+      {
+        "word": "servum",
+        "lang": "la",
+        "spoken": "sérwoumm"
+      },
+      {
+        "word": "vocat",
+        "lang": "la",
+        "spoken": "wokatt"
+      },
+      {
+        "word": "lupa",
+        "lang": "la",
+        "spoken": "loupa"
+      },
+      {
+        "word": "geminos",
+        "lang": "la",
+        "spoken": "guéminoss"
+      },
+      {
+        "word": "nutrit",
+        "lang": "la",
+        "spoken": "noutritt"
+      },
+      {
+        "word": "agricola",
+        "lang": "la",
+        "spoken": "agrikola"
+      },
+      {
+        "word": "filiae",
+        "lang": "la",
+        "spoken": "filiaï"
+      },
+      {
+        "word": "dat",
+        "lang": "la",
+        "spoken": "datt"
+      },
+      {
+        "word": "stilo",
+        "lang": "la",
+        "spoken": "stilo"
+      },
+      {
+        "word": "stilus",
+        "lang": "la",
+        "spoken": "stilouss"
+      },
+      {
+        "word": "scribit",
+        "lang": "la",
+        "spoken": "skribitt"
+      },
+      {
+        "word": "Romam",
+        "lang": "la",
+        "spoken": "Romamm"
+      },
+      {
+        "word": "condit",
+        "lang": "la",
+        "spoken": "konnditt"
+      },
+      {
+        "word": "in villa",
+        "lang": "la",
+        "spoken": "inn willa"
+      },
+      {
+        "word": "villa",
+        "lang": "la",
+        "spoken": "willa"
+      },
+      {
+        "word": "habitat",
+        "lang": "la",
+        "spoken": "habitatt"
+      },
+      {
+        "word": "Senatus Populusque Romanus",
+        "lang": "la",
+        "spoken": "Sénatouss Popoulouskwé Romanouss"
+      },
+      {
+        "word": "populus",
+        "lang": "la",
+        "spoken": "popoulouss"
+      },
+      {
+        "word": "-am",
+        "lang": "la",
+        "spoken": "amm"
+      },
+      {
+        "word": "-um",
+        "lang": "la",
+        "spoken": "oumm"
+      },
+      {
+        "word": "-e",
+        "lang": "la",
+        "spoken": "é"
+      },
+      {
+        "word": "-que",
+        "lang": "la",
+        "spoken": "kwé"
+      },
+      {
+        "word": "senex",
+        "lang": "la",
+        "spoken": "sénèks"
+      },
+      {
+        "word": "res publica",
+        "lang": "la",
+        "spoken": "réss poublika"
+      },
+      {
+        "word": "Mercurii dies",
+        "lang": "la",
+        "spoken": "Merkourii diéss"
+      },
+      {
+        "word": "odor",
+        "lang": "la",
+        "spoken": "odorr"
+      },
+      {
+        "word": "servus",
+        "lang": "la",
+        "spoken": "sérwouss"
+      },
+      {
+        "word": "nauta",
+        "lang": "la",
+        "spoken": "naouta"
+      },
+      {
+        "word": "muthos",
+        "lang": "grc-Latn",
+        "spoken": "mutoss"
+      },
+      {
+        "word": "tauros",
+        "lang": "grc-Latn",
+        "spoken": "taouross"
+      },
+      {
+        "word": "Nikaia",
+        "lang": "grc-Latn",
+        "spoken": "Nikaïa"
+      },
+      {
+        "word": "arkhaios",
+        "lang": "grc-Latn",
+        "spoken": "arkaïoss"
+      },
+      {
+        "word": "psukhê",
+        "lang": "grc-Latn",
+        "spoken": "psukê"
+      },
+      {
+        "word": "gê",
+        "lang": "grc-Latn",
+        "spoken": "guê"
+      },
+      {
+        "word": "graphô",
+        "lang": "grc-Latn",
+        "spoken": "grafô"
+      },
+      {
+        "word": "graphein",
+        "lang": "grc-Latn",
+        "spoken": "grafeïnn"
+      },
+      {
+        "word": "orthos",
+        "lang": "grc-Latn",
+        "spoken": "ortoss"
+      },
+      {
+        "word": "khronos",
+        "lang": "grc-Latn",
+        "spoken": "kronoss"
+      },
+      {
+        "word": "metron",
+        "lang": "grc-Latn",
+        "spoken": "métronn"
+      },
+      {
+        "word": "philos",
+        "lang": "grc-Latn",
+        "spoken": "filoss"
+      },
+      {
+        "word": "theatron",
+        "lang": "grc-Latn",
+        "spoken": "téatronn"
+      },
+      {
+        "word": "phônê",
+        "lang": "grc-Latn",
+        "spoken": "fônê"
+      },
+      {
+        "word": "dêmos",
+        "lang": "grc-Latn",
+        "spoken": "dêmoss"
+      },
+      {
+        "word": "kosmos",
+        "lang": "grc-Latn",
+        "spoken": "kosmoss"
       }
     ]
   }

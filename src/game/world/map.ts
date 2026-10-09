@@ -516,7 +516,7 @@ export function etendueDuLieu(def: IslandDef, f: FormeDeLIle): IslandDef['ext'] 
 }
 
 /**
- * Les cinquante-deux îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
+ * Les cinquante-quatre îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  *
@@ -703,6 +703,12 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'life-earth-sciences-5e-active-planet', region: 'basses-terres', core: { x: 101, y: 405 }, vueDepuis: { x: 101, y: 409 }, repere: { x: 101, y: 409 }, altitude: 3, ext: e(4, 4, 3, 7), relief: 'plat', seed: 65 },
   { id: 'physics-chemistry-5e-matter-universe', region: 'basses-terres', core: { x: 141, y: 405 }, vueDepuis: { x: 145, y: 409 }, repere: { x: 145, y: 409 }, altitude: 3, ext: e(7, 2, 2, 2), relief: 'plat', seed: 66 },
   { id: 'technology-5e-design', region: 'basses-terres', core: { x: 165, y: 309 }, vueDepuis: { x: 169, y: 309 }, repere: { x: 165, y: 309 }, altitude: 3, ext: e(2, 2, 7, 2), relief: 'plat', seed: 67 },
+  // EMC 5e (EMC-2) et latin-grec 5e (LCA-2) : le Fournil des partages et la Grotte des légendes, aux deux places que GD-12
+  // a gardées au rang du fond des Îles Brumeuses, du côté des x bas (à droite sur la Carte, « à l'est » pour la phrase
+  // d'une place ; map.test.ts), derrière le Carrefour et la Prairie ; fermés au départ (on les relie). La Grotte est un lieu d'option (GD-13) : fermée sans l'option latin ou grec, aucune liaison
+  // ne la propose alors, rien n'en dépend. Terre plate, comme les autres îles des matières entrées après les premières.
+  { id: 'civics-5e-equality-solidarity', region: 'basses-terres', core: { x: 29, y: 405 }, altitude: 3, ext: e(4, 4, 7, 5), relief: 'plat', seed: 68 },
+  { id: 'lca-5e-legends', region: 'basses-terres', core: { x: 65, y: 405 }, altitude: 3, ext: e(3, 4, 2, 5), relief: 'plat', seed: 97 },
   { id: 'life-earth-sciences-4e-cells-evolution', region: 'basses-terres', core: { x: 2, y: 592 }, vueDepuis: { x: -2, y: 592 }, repere: { x: -2, y: 604 }, altitude: 6, ext: e(2, 2, 5, 2), relief: 'plat', seed: 75 },
   { id: 'physics-chemistry-4e-signals-circuits', region: 'basses-terres', core: { x: 2, y: 716 }, vueDepuis: { x: -2, y: 704 }, repere: { x: -2, y: 704 }, altitude: 6, ext: e(2, 2, 5, 2), relief: 'plat', seed: 76 },
   { id: 'technology-4e-modeling', region: 'basses-terres', core: { x: 138, y: 716 }, vueDepuis: { x: 110, y: 704 }, repere: { x: 110, y: 704 }, altitude: 6, ext: e(3, 4, 12, 2), relief: 'plat', seed: 77 },

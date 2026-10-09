@@ -334,6 +334,14 @@ export const BLOCLAND = {
         beaten: 'Je me rallume, des patins jusqu’à la crinière. La Menuiserie est à toi, et à Rabot.',
       },
     },
+    'civics-5e-equality-solidarity': {
+      challenge: 'L’Oie d’opale lève le cou : « Me voilà toute grise. Tu as fait le tour du fournil : dis-moi ce qu’est l’égalité. »',
+      guardianSays: {
+        hit: 'Juste. Une plume de mon aile reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, des pattes jusqu’au bec. Le fournil est à toi, et à Mie.',
+      },
+    },
     'life-earth-sciences-4e-cells-evolution': {
       challenge: 'La Girafe d’ambre baisse son long cou : « Mes taches sont toutes grises. Tu as fait le tour de ma source : dis-moi comment le vivant se transmet et change. »',
       guardianSays: {
@@ -388,6 +396,14 @@ export const BLOCLAND = {
         hit: 'Juste. Un bloc de mes ailes redevient cuivre.',
         miss: 'Mes couleurs restent. Lis bien la question, relis la règle, et reprends.',
         beaten: 'Je me rallume, jusqu’au bout des antennes. Le refuge est à toi, et à Timbre.',
+      },
+    },
+    'lca-5e-legends': {
+      challenge: 'Le Phénix d’argile se dresse dans son nid : « Me voilà tout gris. Tu as écouté les légendes de la grotte : raconte-les-moi. »',
+      guardianSays: {
+        hit: 'Juste. Une plume de mon aile reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis la traduction, cherche le mot du rappel, et reprends.',
+        beaten: 'Je renais, et je me rallume, de la queue jusqu’à la huppe. La grotte est à toi, et à Lyre.',
       },
     },
     'english-5e-grammar': {
@@ -462,6 +478,7 @@ export const BLOCLAND = {
     'lv2-5e-introductions': 'cigogne voyageuse',
     'lv2-4e-daily-life': 'écureuil cuisinier',
     'lv2-3e-travel': 'loutre factrice',
+    'lca-5e-legends': 'gecko conteur',
     'history-6e-antiquity': 'ourson fouilleur',
     'geography-6e-living': 'tortue géographe',
     'history-5e-middle-ages': 'lapin enlumineur',
@@ -477,6 +494,7 @@ export const BLOCLAND = {
     'life-earth-sciences-5e-active-planet': 'ver de terre laboureur',
     'physics-chemistry-5e-matter-universe': 'canard saunier',
     'technology-5e-design': 'pic-vert menuisier',
+    'civics-5e-equality-solidarity': 'capybara boulanger',
     'life-earth-sciences-4e-cells-evolution': 'colibri butineur',
     'physics-chemistry-4e-signals-circuits': 'suricate guetteur',
     'technology-4e-modeling': 'lémurien maquettiste',
