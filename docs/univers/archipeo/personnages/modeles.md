@@ -25,7 +25,7 @@ Les Gardiens (coupe du socle en part de la hauteur, triangles des deux versions)
 | Hanneton de bronze (Plaine, 6e) | 0,12 | 1 304 | 267 |
 | Dune vivante (Carrière, 6e) | 0,12 | 1 229 | 159 |
 | Grand chêne (Forêt, 6e) | 0,12 | 1 334 | 197 |
-| Amphore peinte (Fouille, 6e) | 0,07 | 1 355 | 288 |
+| Amphore peinte (Fouille, 6e) | 0,07 | 1 349 | 195 |
 | Automate de laiton (Hangar, 6e) | 0,12 | 1 325 | 173 |
 | Coucou de bronze (Horloge, 6e) | 0,12 | 1 365 | 164 |
 | Alambic de verre (Laboratoire, 6e) | 0,12 | 1 278 | 160 |
@@ -35,6 +35,18 @@ Les Gardiens (coupe du socle en part de la hauteur, triangles des deux versions)
 | Chouette de verre (Tour, 6e) | 0,12 | 1 316 | 168 |
 | Cerf des sous-bois (Vallée, 6e) | 0,12 | 1 305 | 164 |
 | Dragon de cendre (Volcan, 6e) | 0,12 | 1 226 | 144 |
+| Griffon d'émail (Bourg, 5e) | 0,12 | 1 415 | 206 |
+| Sphinx des routes (Carrefour, 5e) | 0,12 | 1 465 | 212 |
+| Reine du marché (Comptoir, 5e) | 0,12 | 1 284 | 174 |
+| Libellule de jade (Delta, 5e) | 0,12 | 1 426 | 200 |
+| Mammouth de givre (Glacier, 5e) | 0,12 | 1 340 | 189 |
+| Spectre du manoir (Manoir, 5e) | 0,12 | 1 271 | 185 |
+| Hydre des marais (Marais, 5e) | 0,12 | 1 347 | 194 |
+| Colporteur (Marché, 5e) | 0,12 | 1 419 | 191 |
+| Cheval à bascule (Menuiserie, 5e) | 0 (garde ses patins) | 1 512 | 214 |
+| Tortue d'ocre (Prairie, 5e) | 0,12 | 1 401 | 187 |
+| Diligence de cuivre (Relais, 5e) | 0,12 | 1 475 | 216 |
+| Flamant de sel (Saline, 5e) | 0,12 | 1 307 | 172 |
 
 Les créatures (sans socle, rien à couper) :
 
@@ -47,16 +59,28 @@ Les créatures (sans socle, rien à couper) :
 | Silex (Fouille, 6e) | 1 500 | 200 |
 | Pince (Hangar, 6e) | 1 500 | 230 |
 | Tick (Horloge, 6e) | 1 500 | 200 |
-| Bulle (Laboratoire, 6e) | 1 666 | 400 |
+| Bulle (Laboratoire, 6e) | 1 498 | 200 |
 | Tunel (Mine, 6e) | 1 500 | 200 |
 | Coco (Plaine, 6e) | 1 500 | 200 |
 | Boussole (Pointe, 6e) | 1 500 | 200 |
 | Nénu (Rivière, 6e) | 1 500 | 200 |
-| Grimoire (Tour, 6e) | 1 500 | 208 |
+| Grimoire (Tour, 6e) | 1 500 | 200 |
 | Fougère (Vallée, 6e) | 1 500 | 200 |
 | Lavi (Volcan, 6e) | 1 500 | 200 |
+| Vélin (Bourg, 5e) | 1 500 | 200 |
+| Sema (Carrefour, 5e) | 1 500 | 200 |
+| Pudding (Comptoir, 5e) | 1 500 | 200 |
+| Sillon (Delta, 5e) | 1 500 | 200 |
+| Frimas (Glacier, 5e) | 1 500 | 200 |
+| Moustache (Manoir, 5e) | 1 500 | 200 |
+| Kroa (Marais, 5e) | 1 500 | 200 |
+| Bazar (Marché, 5e) | 1 500 | 198 |
+| Rabot (Menuiserie, 5e) | 1 500 | 200 |
+| Humus (Prairie, 5e) | 1 500 | 200 |
+| Lina (Relais, 5e) | 1 500 | 200 |
+| Perle (Saline, 5e) | 1 500 | 200 |
 
-À reprendre : la version 200 de l’Amphore peinte est trouée ; Bulle (des débris flottent au-dessus de la tête) et Grimoire (débris sous la carapace) ; Coco est tournée de côté, l’alignement sur le socle ne sert pas aux créatures.
+À reprendre : de loin (200 triangles), l’Hydre des marais, le Colporteur et la Diligence de cuivre ne sont plus que des blocs, et des éclats restent sous la Tortue d’ocre ; de près, tout tient. Le Cheval à bascule garde ses patins : ils font partie du personnage, on ne coupe rien.
 
 ## Passer du concept au modèle brut
 
@@ -67,11 +91,13 @@ Le Space [microsoft/TRELLIS.2](https://huggingface.co/spaces/microsoft/TRELLIS.2
 Les scripts sont dans [`scripts/rendu/modeles/`](../../../../scripts/rendu/modeles/). `lot.py` enchaîne les quatre autres sur tout un dossier :
 
 1. `aligner.py` pose le socle à plat, le centre et met son grand côté sur l’axe nord-sud (plus un quart de tour si le réglage le demande) ;
-2. `lion_lowpoly.py` referme le maillage, le réduit à 1 500 puis à 200 triangles (s’il cale loin de la cible, sur un feuillage ou des pièces fines, il remaille plus gros et recommence) et peint chaque facette : en pierre `#8E8C84` pour un Gardien (le lichen de l’image ne passe pas : c’est le code qui le pose sur le Gardien éteint, décision du mainteneur du 8 octobre 2026), de la plus proche des quatre couleurs principales de sa texture pour une créature (nom en `-creature-`) ;
+2. `lion_lowpoly.py` referme le maillage, retire les débris détachés, le réduit à 1 500 puis à 200 triangles et peint chaque facette : en pierre `#8E8C84` pour un Gardien (le lichen de l’image ne passe pas : c’est le code qui le pose sur le Gardien éteint, décision du mainteneur du 8 octobre 2026), de la plus proche des quatre couleurs principales de sa texture pour une créature (nom en `-creature-`) ;
 3. `couper.py` coupe le socle d’un Gardien à la hauteur réglée, puisque le socle octogonal commun vient du code (une créature n’a pas de socle) ;
 4. `rendre_controle.py` fait le rendu de contrôle.
 
 On réduit avant de couper : la réduction cale sur un modèle déjà coupé.
+
+La réduction se joue en plusieurs essais. Le premier remaille finement puis réduit ; s’il s’écarte trop du brut, les suivants épaississent d’abord les parois fines (sans quoi la réduction cale ou les troue : Bulle, Grimoire, l’Amphore de loin) et remaillent plus gros. Le script garde l’essai dont la surface reste la plus proche de celle du brut ; c’est ce qui a sauvé le corps du Cheval à bascule, replié en tente au premier essai.
 
 Pour refaire un personnage, copier son brut de la Bibliothèque (`<nom>.glb`) dans un dossier de travail, avec `reglages.csv`, puis :
 

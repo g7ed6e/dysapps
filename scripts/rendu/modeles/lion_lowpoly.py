@@ -24,6 +24,7 @@ LICHEN = (0x7A, 0x8A, 0x6A)
 SEUIL_VERT = 999        # ecart de vert (sur 255) a partir duquel une facette devient du lichen ; 999 = pas de lichen (choix du 8 octobre 2026), 6 pour le garder
 VOXEL = 0.006           # taille du remaillage qui referme le maillage avant la reduction (modele de 1 unite)
 
+ECART_BON = 0.008       # ecart moyen a l'original (modele de 1 unite) en dessous duquel on ne tente pas les essais suivants
 COULEURS = 0           # 0 = tout en pierre (les Gardiens) ; n > 0 = les n couleurs principales de la texture (les creatures)
 
 if "--" in sys.argv:
@@ -54,13 +55,48 @@ uvs = orig.data.uv_layers.active.data
 # copie de travail, refermee puis reduite
 for o in bpy.context.selected_objects:
     o.select_set(False)
-def reduire(voxel):
+def nettoyer(red):
+    """Retire les debris (morceaux detaches de moins de 3 % des facettes, vus sur Bulle et Grimoire) et remet les
+    normales vers l'exterieur (des facettes retournees trouaient l'Amphore a 200 triangles)."""
+    bm = bmesh.new(); bm.from_mesh(red.data)
+    bm.faces.ensure_lookup_table()
+    vus, morceaux = set(), []
+    for f in bm.faces:
+        if f.index in vus:
+            continue
+        pile, morceau = [f], []
+        vus.add(f.index)
+        while pile:
+            g = pile.pop(); morceau.append(g)
+            for e in g.edges:
+                for h in e.link_faces:
+                    if h.index not in vus:
+                        vus.add(h.index); pile.append(h)
+        morceaux.append(morceau)
+    total = len(bm.faces)
+    debris = [g for m in morceaux if len(m) < total * 0.03 for g in m]
+    if debris and len(debris) < total:
+        bmesh.ops.delete(bm, geom=debris, context="FACES")
+        print(f"{len(debris)} facettes de debris retirees")
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(red.data); bm.free()
+
+
+def reduire(voxel, epaisseur=0.0):
     red = orig.copy(); red.data = orig.data.copy(); red.name = f"lion-{TRIANGLES}"
     bpy.context.collection.objects.link(red)
     bpy.context.view_layer.objects.active = red; red.select_set(True)
-    rm = red.modifiers.new("remaillage", "REMESH"); rm.mode = "VOXEL"; rm.voxel_size = voxel
-    bpy.ops.object.modifier_apply(modifier=rm.name)
+    bm = bmesh.new(); bm.from_mesh(red.data)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)  # recoud les coutures de la texture
+    bm.to_mesh(red.data); bm.free()
+    if epaisseur:  # epaissit les parois fines : le remaillage les remplit au lieu d'en faire deux feuilles collees
+        so = red.modifiers.new("epaisseur", "SOLIDIFY"); so.thickness = epaisseur; so.offset = 0
+        bpy.ops.object.modifier_apply(modifier=so.name)
+    if voxel:
+        rm = red.modifiers.new("remaillage", "REMESH"); rm.mode = "VOXEL"; rm.voxel_size = voxel
+        bpy.ops.object.modifier_apply(modifier=rm.name)
     bm = bmesh.new(); bm.from_mesh(red.data); bmesh.ops.triangulate(bm, faces=bm.faces); bm.to_mesh(red.data); bm.free()
+    nettoyer(red)  # avant la reduction : les debris du remaillage la font caler
     for _ in range(8):  # le collapse cale parfois avant la cible : on repasse
         if len(red.data.polygons) <= TRIANGLES * 1.05:
             break
@@ -70,15 +106,35 @@ def reduire(voxel):
     return red
 
 
-# si la reduction cale loin de la cible (feuillage, pieces fines : vu sur le Grand Chene et le Castor),
-# on remaille plus gros, deux fois au plus
-voxel = VOXEL
-red = reduire(voxel)
-while len(red.data.polygons) > TRIANGLES * 1.3 and voxel < VOXEL * 4:
-    print(f"reduction calee a {len(red.data.polygons)} triangles avec un voxel de {voxel} : on remaille plus gros")
-    bpy.data.objects.remove(red)
-    voxel *= 2
-    red = reduire(voxel)
+# chaque essai remaille puis reduit ; on garde celui qui s'ecarte le moins de l'original (distance moyenne de
+# 2 000 points de l'original a la surface reduite). Le premier suffit le plus souvent ; les suivants epaississent
+# les parois fines (Bulle, Grimoire) ou remaillent plus gros si la reduction cale (Grand Chene, Castor), et
+# rattrapent une reduction qui s'effondre (le corps du Cheval a bascule replie en tente).
+def ecart(red):
+    arbre_red = BVHTree.FromObject(red, bpy.context.evaluated_depsgraph_get())
+    sommets = orig.data.vertices
+    pas = max(1, len(sommets) // 2000)
+    d = [(arbre_red.find_nearest(sommets[i].co)[3] or 0) for i in range(0, len(sommets), pas)]
+    return sum(d) / len(d)
+
+
+essais = [(VOXEL, 0.0), (VOXEL, VOXEL * 4), (VOXEL * 2, VOXEL * 6), (VOXEL * 4, VOXEL * 8)]
+meilleur = None
+for voxel, epaisseur in essais:
+    red = reduire(voxel, epaisseur)
+    n = len(red.data.polygons)
+    e = ecart(red) if n <= TRIANGLES * 1.3 else float("inf")
+    print(f"essai voxel {voxel}, epaisseur {epaisseur} : {n} triangles, ecart moyen {e:.4f}")
+    if meilleur is None or e < meilleur[0]:
+        if meilleur:
+            bpy.data.objects.remove(meilleur[1])
+        meilleur = (e, red)
+    else:
+        bpy.data.objects.remove(red)
+    if meilleur[0] < ECART_BON:
+        break
+red = meilleur[1]
+nettoyer(red)  # la reduction peut detacher a son tour de petits morceaux
 red.data.materials.clear()
 
 # couleur de chaque facette : 7 points, ramenes au point le plus proche de l'original, lus dans la texture
