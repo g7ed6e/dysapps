@@ -73,7 +73,7 @@ describe('La tôle et la tenture, peintes', () => {
   });
 
   it('le shader peint les joints, les plis et le galon, avec les rôles joint et galon du kit ; de loin, ils s’effacent', () => {
-    // Puis le brun des pilotis (l'encadrement d'une galerie) et le liseré de l'eau (le reste, 9 octobre 2026).
+    // Puis le brun des pilotis (l'encadrement d'une galerie, le reste, 9 octobre 2026) ; le liseré de l'eau est dessiné, pas peint.
     expect(ROLES_PEINTS).toEqual(['poteau', 'soubassement', 'chaperon', 'joint', 'galon', 'pilotis']);
     expect(MOTIF_GLSL).toContain(`uniform vec3 uRoles[${ROLES_PEINTS.length * 2}]`);
     expect(MOTIF_GLSL).toContain('vec3 galon = delave ? uRoles[10] : uRoles[4];');

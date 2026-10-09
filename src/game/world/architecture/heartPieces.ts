@@ -259,7 +259,7 @@ const NEUTRAL_GREY = 0x8a8f84;
  */
 export function apartFromGhost(c: Couleur): Couleur {
   let out = c;
-  for (let t = 0.05; rgbGap(out, BRUME) < HEART.chalk.ghostGap && t <= 1; t += 0.05) out = mixColor(c, NEUTRAL_GREY, t);
+  for (let i = 1; rgbGap(out, BRUME) < HEART.chalk.ghostGap && i <= 20; i++) out = mixColor(c, NEUTRAL_GREY, i / 20);
   return out;
 }
 
