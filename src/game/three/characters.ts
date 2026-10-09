@@ -9,6 +9,7 @@ import { piedsSur, type ChampDuSol } from '../world/landMesh';
 import { gardienTourne, statueDe } from '../world/terrain';
 import { avatarWalk, startStrolls, strollAt, walkPose, type Stroll, type Walk } from '../world/scene';
 import { hauteurDuSigne } from '../world/sign';
+import { ileRegardee } from '../world/characters/merges';
 import type { EnCasesDuMonde, WorldViewProps } from '../world/view';
 import type { Lumiere } from './light';
 import { addMeshes, modelMeshes } from './meshes';
@@ -30,10 +31,16 @@ export interface Personnages extends PartieDeLaScene {
   marcher(avatar: NonNullable<EnCasesDuMonde['avatar']>): void;
   poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>): void;
   /**
-   * L'île où l'on est (`null` : aucune, la Carte) : ses personnages d'Archipéo importés sont de près, ceux des autres
-   * îles de loin (./paintedCharacters.ts) ; les personnages en cubes n'en font rien.
+   * L'île de près, celle où l'on arrive (`null` : aucune, la Carte), puis celle que la caméra regarde (`viser`) : ses
+   * personnages d'Archipéo importés sont de près, ceux des autres îles de loin (./paintedCharacters.ts) ; les
+   * personnages en cubes n'en font rien.
    */
   approcher(id: BiomeId | null): void;
+  /**
+   * Le point que la caméra regarde (`x`, `z`, dans la scène) : l'île dont un personnage en est le plus près passe de près
+   * (`ileRegardee`), même si le bonhomme est ailleurs.
+   */
+  viser(x: number, z: number): void;
   /** Le moment du rallumage (lot 6) : la sentinelle de ce Gardien se rallume en fondu ; `null` : plus de moment. */
   rallumer(id: BiomeId | null, dureeMs: number): void;
   /** Le geste de la créature qui se souvient (GD-4, étape 1) : un saut lent, qui commence à `debut` (`performance.now`). */
@@ -49,7 +56,7 @@ export interface Personnages extends PartieDeLaScene {
 export interface Habits {
   /** Les bras et les jambes du bonhomme, et le sens de leur balancement quand il marche. */
   membres: { os: THREE.Object3D; sens: number }[];
-  /** Pose les créatures et les Gardiens ; `pres` : l'île où l'on est (ses personnages importés de près). */
+  /** Pose les créatures et les Gardiens ; `pres` : l'île de près (ses personnages importés de près). */
   poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>, pres?: BiomeId | null): void;
   /** Les créatures bougent (rien avec « Réduire les animations »). */
   animer(t: number, reduit: boolean): void;
@@ -302,6 +309,9 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
       if (id === pres) return;
       pres = id;
       if (places) habits?.poserLesCreatures(places, pres);
+    },
+    viser: (x, z) => {
+      if (places) p.approcher(ileRegardee(places, x, z, pres));
     },
     rallumer: (id, dureeMs) => {
       rallumage = { id, dureeMs };

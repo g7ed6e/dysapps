@@ -49,7 +49,7 @@ export const RENDER_BUDGET = {
  * Les Premiers Rivages (6e) dépassent les 60 000 des tablettes depuis les deux îles d'histoire-géographie (HG-2) : relevé
  * par le mainteneur le 6 octobre 2026 (« Budget on augmente pour l'instant »), à la somme de leurs enveloppes, puis du
  * même mot pour les trois îles de sciences (SC-2) : de 63 400 à 72 800. La mesure sur tablette reste à faire. Puis à
- * 75 750 pour les personnages importés du 6e (modèles TRELLIS, de près sur l'île où l'on est ; à valider par le
+ * 75 750 pour les personnages importés du 6e (modèles TRELLIS, de près sur une île à la fois ; à valider par le
  * mainteneur), à la somme des enveloppes (75 740). Puis à 76 500 pour l'île d'EMC du 6e, le Préau des délégués
  * (EMC-2, décision du mainteneur, 9 octobre 2026).
  */
@@ -299,7 +299,7 @@ export const ENVELOPPES: Record<
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
   // Les personnages importés du 6e (modèles TRELLIS retravaillés, choix « Monde et fiches » du mainteneur, 9 octobre
-  // 2026) : de loin partout (environ 200 triangles), de près sur l'île où l'on est (environ 1 500), au pire de l'île qui
+  // 2026) : de loin partout (environ 200 triangles), de près sur l'île regardée (environ 1 500), au pire de l'île qui
   // coûte le plus. Mesurés : créatures 4 254 (Bulle de près), Gardiens 5 054, socle commun et son anneau compris. Créatures
   // 3 650 → 4 300, Gardiens 2 780 → 5 100 aux Premiers Rivages ; la somme passe de 72 770 à 75 740 (`RENDER_BUDGET_6E`).
   // Avec le Préau des délégués (EMC-2), dessiné en code : créatures 4 560 → 4 600, Gardiens 5 152 → 5 200 ; avec les
