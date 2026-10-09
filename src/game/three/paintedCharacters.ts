@@ -122,6 +122,22 @@ export const GESTES = {
   pas: { angle: 0.45, cadence: 8, bras: 0.5, buste: 0.08, penche: 0.06, dandine: 0.1 },
 } as const;
 
+/** Une allure : les amplitudes de la marche (`GESTES.pas`). */
+export type Allure = { readonly [K in keyof typeof GESTES.pas]: number };
+
+/**
+ * Les créatures qui ne marchent pas comme les autres (choix du mainteneur, qualifiées une à une sur leur vidéo).
+ */
+export const ALLURES: Partial<Record<BiomeId, Partial<Allure>>> = {
+  // Rouxel, le renard : une marche fine et distinguée, à petits pas, les bras à peine balancés, le buste droit.
+  'french-6e-word-spelling': { angle: 0.28, bras: 0.18, buste: 0, penche: -0.03 },
+  // Bloquette, la brebis : son râteau, tenu comme un bâton de marche, balance peu.
+  'french-6e-grammar-spelling': { bras: 0.2 },
+};
+
+/** L'allure d'une créature : la marche commune, et ce que la sienne change. */
+export const allureDe = (id: BiomeId): Allure => ({ ...GESTES.pas, ...ALLURES[id] });
+
 /**
  * Les os d'un squelette, chacun à sa place de repos (relative à son parent), et le maillage qui les porte. Sans
  * `poids`, chaque sommet suit son os seul.
@@ -171,6 +187,7 @@ interface Promeneur {
   phase: number;
   /** Les os de son squelette, par nom (hanches, dos, tête, jambes, bras, queue), s'il en a un. */
   membres: Map<string, THREE.Bone>;
+  allure: Allure;
 }
 
 /** Tourne un os de squelette par son nom, s'il existe. */
@@ -183,26 +200,26 @@ function tourner(membres: Map<string, THREE.Bone>, nom: string, axe: 'x' | 'y' |
 const cycle = ([angle, periode]: readonly [number, number], t: number, decalage = 0) => angle * Math.sin((2 * Math.PI * t) / periode - decalage);
 
 /**
- * Joue les gestes d'une créature qui a un squelette (`GESTES`). `pas` : où elle en est de son pas, de 0 à 1 (0 au
- * repos) ; ses membres partent et reviennent en douceur sur le premier et le dernier cinquième du pas, sans à-coup
- * (référent dys), et balancent en plein entre les deux.
+ * Joue les gestes d'une créature qui a un squelette (`GESTES`, et son `allure` pour la marche). `pas` : où elle en
+ * est de son pas, de 0 à 1 (0 au repos) ; ses membres partent et reviennent en douceur sur le premier et le dernier
+ * cinquième du pas, sans à-coup (référent dys), et balancent en plein entre les deux.
  */
-function bouger(membres: Map<string, THREE.Bone>, t: number, phase: number, pas: number, dureeDuPas: number): void {
+function bouger(membres: Map<string, THREE.Bone>, allure: Allure, t: number, phase: number, pas: number, dureeDuPas: number): void {
   const elan = adoucir(Math.min(pas, 1 - pas) / 0.2);
-  const k = elan * Math.sin(pas * dureeDuPas * GESTES.pas.cadence);
-  tourner(membres, 'spine', 'x', cycle(GESTES.souffle, t + phase) - GESTES.pas.penche * elan);
-  tourner(membres, 'spine', 'y', GESTES.pas.buste * k);
+  const k = elan * Math.sin(pas * dureeDuPas * allure.cadence);
+  tourner(membres, 'spine', 'x', cycle(GESTES.souffle, t + phase) - allure.penche * elan);
+  tourner(membres, 'spine', 'y', allure.buste * k);
   tourner(membres, 'head', 'y', cycle(GESTES.regard, t + phase));
   tourner(membres, 'tail.1', 'y', cycle(GESTES.queue, t + phase));
   tourner(membres, 'tail.2', 'y', 1.2 * cycle(GESTES.queue, t + phase, 0.9));
-  tourner(membres, 'thigh.L', 'x', GESTES.pas.angle * k);
-  tourner(membres, 'thigh.R', 'x', -GESTES.pas.angle * k);
-  tourner(membres, 'shin.L', 'x', -0.8 * GESTES.pas.angle * Math.max(0, -k));
-  tourner(membres, 'shin.R', 'x', -0.8 * GESTES.pas.angle * Math.max(0, k));
-  tourner(membres, 'arm.L', 'x', -GESTES.pas.bras * k);
-  tourner(membres, 'arm.R', 'x', GESTES.pas.bras * k);
+  tourner(membres, 'thigh.L', 'x', allure.angle * k);
+  tourner(membres, 'thigh.R', 'x', -allure.angle * k);
+  tourner(membres, 'shin.L', 'x', -0.8 * allure.angle * Math.max(0, -k));
+  tourner(membres, 'shin.R', 'x', -0.8 * allure.angle * Math.max(0, k));
+  tourner(membres, 'arm.L', 'x', -allure.bras * k);
+  tourner(membres, 'arm.R', 'x', allure.bras * k);
   // Le poids passe sur la patte posée : le corps penche de son côté.
-  tourner(membres, 'hips', 'z', -GESTES.pas.dandine * pattesCourtes(membres) * k);
+  tourner(membres, 'hips', 'z', -allure.dandine * pattesCourtes(membres) * k);
 }
 
 /**
@@ -338,6 +355,7 @@ export function habiller(
             milieu: { x: pivot[0] - c.origin.x, y: pivot[2] - c.origin.y },
             phase: (i * 1.7) % GESTE.periode,
             membres: new Map(f.squelette.flatMap((o, k) => (k >= 2 * lesCreatures.length && o.id === c.id ? [[o.nom, bones[k]] as const] : []))),
+            allure: allureDe(c.id),
           };
           poser(promeneur, 0, 0, 0);
           return promeneur;
@@ -397,7 +415,7 @@ export function habiller(
         q.bras.rotation.x = -GESTE.angle * Math.max(0, Math.sin(((t + q.phase) / GESTE.periode) * Math.PI * 2));
         if (q.membres.size) {
           const pas = q.stroll.start ? Math.min(1, (instant.now - q.stroll.start) / q.stroll.duration) : 0;
-          bouger(q.membres, t, q.phase, pas, q.stroll.duration / 1000);
+          bouger(q.membres, q.allure, t, q.phase, pas, q.stroll.duration / 1000);
         }
       }
     },

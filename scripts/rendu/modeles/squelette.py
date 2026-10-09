@@ -8,7 +8,8 @@
 #
 # <quarts de tour> : ceux de src/game/world/characters/imported/models.ts (le modèle tourné vers l'élève). Réglages,
 # facultatifs : cou=0.6 (le haut du dos, en fraction de la hauteur), queue=non (pas de queue), jambes=non (pas de
-# jambes : ni marche ni os de jambe), bras=non (pas de bras qui balancent), bras=L ou bras=R (un seul bras), leve=L ou leve=R (la main levée au-dessus de l'épaule). Quarts et réglages de chaque créature : la colonne « squelette » de
+# jambes : ni marche ni os de jambe), bras=non (pas de bras qui balancent), bras=L ou bras=R (un seul bras), leve=L ou leve=R (la main levée au-dessus de l'épaule),
+# teinte=L ou teinte=R (un bras collé au corps, pris à sa couleur, la plus sombre du modèle). Quarts et réglages de chaque créature : la colonne « squelette » de
 # docs/univers/archipeo/personnages/modeles/reglages.csv. Relire ensuite la planche d'apercu_squelette.py.
 #
 # Écrit final-1500.glb sans normales ni indices (le jeu calcule les siennes), avec JOINTS_0 et WEIGHTS_0 (quatre os par
@@ -247,7 +248,7 @@ def smooth(x):
     return x * x * (3 - 2 * x)
 
 
-def rig(q, h, settings):
+def rig(q, h, settings, col=None):
     """Les os (nom, parent, tête dans le repère du jeu) et quatre os et poids par sommet."""
     dense = surface(q)
     legs = None if settings.get("jambes") == "non" else find_legs(dense, h)
@@ -285,6 +286,20 @@ def rig(q, h, settings):
     arms = {} if settings.get("bras") == "non" else find_arms(dense[dense[:, 2] < back + 0.05 * h], h, crotch, neck, cx)
     # bras=L ou bras=R : un seul bras se détache du corps (l'autre est pris dans le manteau, ou tient le ventre).
     arms = {k: v for k, v in arms.items() if settings.get("bras") not in ("L", "R") or (k < 0) == (settings["bras"] == "L")}
+    painted = {}
+    if settings.get("teinte") in ("L", "R") and col is not None:
+        # Un bras collé au manteau, qu'aucun creux ne sépare : on le prend à sa couleur, la plus sombre du modèle (le
+        # pelage noir des pattes d'un renard), de son côté, entre l'entrejambe et le cou, d'un seul tenant.
+        side = -1 if settings["teinte"] == "L" else 1
+        tone = np.round(col[:, :3], 2).sum(1)
+        mask = (tone <= tone.min() + 0.01) & ((q[:, 0] - cx) * side > 0.06 * h) & (y > crotch) & (y < neck)
+        if mask.sum() >= 20:
+            top = q[mask][q[mask][:, 1] >= np.percentile(q[mask][:, 1], 90)]
+            # Le plus grand morceau, pour ne pas prendre une tache du manteau.
+            ids = touching(q, mask, mask & (y >= top[:, 1].min()))
+            shoulder = float(q[ids][:, 1].max())
+            arms[side] = (None, shoulder, float(q[ids][:, 1].min()), float(np.median(top[:, 0])), float(np.median(top[:, 2])))
+            painted[side] = ids
     if arms:
         # Ce qui dépasse devant ou derrière le corps, tranche par tranche : le corps est la bande du milieu, en x.
         outside = np.zeros(len(q))
@@ -299,14 +314,24 @@ def rig(q, h, settings):
         bones.append((name, 1, [ax, shoulder, az]))
         # Le bras prend ce qui dépasse du tronc sur le côté, au-dessus de l'entrejambe (pas les pieds), et, de son côté,
         # ce qui dépasse devant ou derrière le corps (l'outil tenu) ; à l'épaule, il se fond au dos.
+        if side in painted:
+            # Le bras pris à sa couleur : lui seul, fondu au dos sur le haut.
+            k = painted[side] * smooth((shoulder - y) / (0.06 * h))
+            w[name] = k
+            for n in [b[0] for b in bones if b[0] != name]:
+                if n in w:
+                    w[n] = w[n] * (1 - k)
+            continue
         beside = smooth(((q[:, 0] - limit) * side) / (0.02 * h)) * smooth((y - crotch) / (0.03 * h))
         held = smooth(((q[:, 0] - cx) * side - 0.12 * h) / (0.02 * h)) * smooth(outside / (0.02 * h))
         # L'outil tenu touche la main : ce qui dépasse sans toucher le bras (une queue, un pied) reste au corps.
         held = held * touching(q, (held > 0.05) | (beside > 0.5), beside > 0.5)
         k = np.maximum(beside, held) * smooth((shoulder + 0.02 * h - y) / (0.08 * h))
         if settings.get("leve") == name[-1]:
-            # La main levée (un marteau brandi au-dessus de l'épaule) : ce qui dépasse sur le côté, à toute hauteur.
-            k = np.maximum(k, beside * touching(q, beside > 0.5, k > 0.5))
+            # La main levée (un marteau brandi, un râteau tenu debout) : ce qui dépasse sur le côté et touche la main,
+            # à toute hauteur, jusqu'au sol.
+            side_only = smooth(((q[:, 0] - limit) * side) / (0.02 * h))
+            k = np.maximum(k, side_only * touching(q, side_only > 0.5, k > 0.5))
         w[name] = k
         for n in [b[0] for b in bones if b[0] != name]:
             if n in w:
@@ -348,7 +373,7 @@ def main():
     frame = Frame(pos, quarts)
     q = frame.to_game(pos)
     h = q[:, 1].max()
-    bones, joints, weights = rig(q, h, settings)
+    bones, joints, weights = rig(q, h, settings, col)
     print(f"hauteur {h:.3f}", " ".join(f"{n}={np.round(np.array(p) / h, 2).tolist()}" for n, _, p in bones))
     heads = frame.to_file(np.array([b[2] for b in bones]))
     out = [{"name": n, "parent": p, "head": [round(float(v), 5) for v in heads[i]]} for i, (n, p, _) in enumerate(bones)]
