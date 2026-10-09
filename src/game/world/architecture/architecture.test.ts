@@ -29,11 +29,11 @@ function kitDEssai(dessin: DessinDePiece): Kit {
 const cube = (x: number, y: number, z: number, texture = 'pierre', autre: Partial<VoxelCube> = {}): VoxelCube => ({ x, y, z, color: '#888888', texture, tag: 'port', ...autre });
 
 describe('L’architecture modulaire', () => {
-  it('la table commune ne s’active qu’au 6e : ailleurs, aucun bloc remplacé ni peint, sur tout un archipel construit, cours, monuments et petites constructions comprises', () => {
+  it('la table commune s’active au 6e et au 5e : au 4e et au 3e, aucun bloc remplacé ni peint, sur tout un archipel construit, cours, monuments et petites constructions comprises', () => {
     const { progress, world: village } = toutConstruitAvecLesCommandes();
     for (const a of ARCHIPELAGO_IDS) {
       const archi = architectureDe(a, worldCubes(a, progress, village, false), { batiments: batimentsDe(a), cours: coursDe(a) });
-      if (a === '6e') {
+      if (a === '6e' || a === '5e') {
         expect(archi.pieces.length, a).toBeGreaterThan(0);
         expect(archi.peints.size, a).toBeGreaterThan(0);
         // Les monuments, la cour (la troisième étape) et les petites constructions des commandes et des quêtes aussi.

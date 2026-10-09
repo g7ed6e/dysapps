@@ -54,11 +54,11 @@ const batiment = (dx = 0, tag = 'port'): VoxelCube[] => [
 ];
 
 describe('Les pièces d’architecture dans la construction', () => {
-  it('hors des Premiers Rivages (kits vides), rien ne change : ni pièce, ni motif, sur une île construite', () => {
+  it('hors des Premiers Rivages et des Collines du Large (kits vides), rien ne change : ni pièce, ni motif, sur une île construite', () => {
     const { progress, world: village } = toutConstruit();
-    const tous = worldCubes('5e', progress, village, false).filter((c) => !c.sol);
+    const tous = worldCubes('4e', progress, village, false).filter((c) => !c.sol);
     const ile = tous.find((c) => c.tag)!.tag;
-    const m = maillageDeLaConstruction('5e', tous.filter((c) => c.tag === ile));
+    const m = maillageDeLaConstruction('4e', tous.filter((c) => c.tag === ile));
     expect(m.pieces).toBeUndefined();
     expect(m.opaque.motifs.length).toBe(m.opaque.positions.length / 3);
     // Aucun motif de pièce ; seuls les blocs assemblés (GD-2) portent le leur (MOTIF_ASSEMBLE).
