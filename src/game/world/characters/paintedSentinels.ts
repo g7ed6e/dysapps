@@ -52,7 +52,7 @@ const cacheDuMonde = new Map<BiomeId, FacettesDePersonnage>();
 /**
  * La sentinelle d'une île telle que le monde la pose (DA-5) : le même modèle, ses veines élargies pour qu'elles restent
  * aussi épaisses une fois la statue ramenée à `ECHELLE_DANS_LE_MONDE` (../merges.ts). Calculée une fois. Son modèle
- * importé à ce niveau s'il est chargé (./imported/models.ts) : de loin, sauf sur l'île où l'on est.
+ * importé à ce niveau s'il est chargé (./imported/models.ts) : de loin, sauf sur l'île que la caméra regarde.
  */
 export function sentinelleDuMonde(id: BiomeId, niveau: Niveau = 'loin'): FacettesDePersonnage {
   const importe = modeleImporte('gardien', id, niveau);

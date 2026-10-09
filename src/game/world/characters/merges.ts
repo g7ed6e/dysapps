@@ -121,14 +121,37 @@ const ajoute = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 const PIECES_DU_BRAS: ReadonlySet<string> = new Set(['bras', 'outil']);
 
 /**
- * Le niveau d'un personnage dans le monde : de près sur l'île où l'on est (`pres`), de loin ailleurs. Seul un modèle
+ * Le niveau d'un personnage dans le monde : de près sur l'île regardée (`pres`, `ileRegardee`), de loin ailleurs. Seul un modèle
  * importé a deux niveaux (./imported/models.ts) ; un modèle dessiné en code est le même aux deux.
  */
 const niveauDans = (id: BiomeId, pres: BiomeId | null): Niveau => (id === pres ? 'pres' : 'loin');
 
+/** Au-delà, en cases, le point regardé est en pleine mer : l'île de près ne change pas. */
+const PORTEE_DU_REGARD = 24;
+/** De combien de cases une autre île doit être plus près du point regardé pour prendre la place (pas de va-et-vient). */
+const ECART_POUR_CHANGER = 3;
+
+/**
+ * L'île dont les personnages sont de près : celle dont un personnage est le plus près du point que la caméra regarde
+ * (`x`, `z`, dans la scène), même si le bonhomme est ailleurs (mainteneur, 9 octobre 2026 : le glissé vers l'île
+ * voisine montre ses modèles riches). `actuelle` la garde tant qu'aucune autre n'est nettement plus près, ou que le
+ * regard est en pleine mer. Une seule île à la fois : le budget compte le pire cas d'une île de près.
+ */
+export function ileRegardee(places: PersonnagePlace[], x: number, z: number, actuelle: BiomeId | null): BiomeId | null {
+  let [meilleure, dMin, dActuelle] = [actuelle, Infinity, Infinity];
+  for (const p of places) {
+    const [px, , pz] = pointDePose(p);
+    const d = Math.hypot(px - x, pz - z);
+    if (d < dMin) [meilleure, dMin] = [p.id, d];
+    if (p.id === actuelle) dActuelle = Math.min(dActuelle, d);
+  }
+  if (dMin > PORTEE_DU_REGARD) return actuelle;
+  return dMin < dActuelle - ECART_POUR_CHANGER ? meilleure : actuelle;
+}
+
 /**
  * Les créatures placées, en un maillage : l'os `2i` porte le corps de la i-ième, l'os `2i + 1` son bras et son outil.
- * `pres` : l'île où l'on est, dont la créature est de près.
+ * `pres` : l'île regardée, dont la créature est de près.
  */
 export function fusionDesCreatures(places: PersonnagePlace[], pres: BiomeId | null = null): FusionDesCreatures {
   const modeles = places.map((p) => creaturePeinte(p.id, niveauDans(p.id, pres)));
@@ -170,7 +193,7 @@ export function fusionDesCreatures(places: PersonnagePlace[], pres: BiomeId | nu
 
 /**
  * Les Gardiens placés, en sentinelles, en un maillage fixe, éteints (`couleursDesGardiens` donne les autres degrés), à
- * l'échelle du monde (`ECHELLE_DANS_LE_MONDE`, DA-5), les pieds sur leur case. `pres` : l'île où l'on est, dont le
+ * l'échelle du monde (`ECHELLE_DANS_LE_MONDE`, DA-5), les pieds sur leur case. `pres` : l'île regardée, dont le
  * Gardien est de près.
  */
 export function fusionDesGardiens(places: PersonnagePlace[], pres: BiomeId | null = null): FusionDesGardiens {

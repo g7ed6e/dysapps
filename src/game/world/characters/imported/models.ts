@@ -19,7 +19,7 @@ import { tailleDe, type Espece } from '../template';
 import type { ModeleLu } from './glb';
 
 export type Genre = 'gardien' | 'creature';
-/** De près (le défi, les fiches, l'île où l'on est) ou de loin (le reste de l'archipel). */
+/** De près (le défi, les fiches, l'île que la caméra regarde) ou de loin (le reste de l'archipel). */
 export type Niveau = 'pres' | 'loin';
 
 /** Le fichier de chaque version, dans le dossier d'un modèle (docs/univers/archipeo/personnages/modeles/<nom>/). */
