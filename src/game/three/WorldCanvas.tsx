@@ -371,10 +371,26 @@ export default function WorldCanvas({
       cadrage.recentrer(aussiLeZoom);
       signaler();
     };
+    // Les personnages d'Archipéo importés de près sur l'île que la caméra regarde (le centre de la vue, au niveau de la
+    // mer), relu quatre fois par seconde : une île changée refait la fusion des personnages. Rien sur la Carte.
+    const auNiveauDeLaMer = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    const regard = new THREE.Raycaster();
+    const centreDeLaVue = new THREE.Vector2(0, 0);
+    const pointRegarde = new THREE.Vector3();
+    let prochainRegard = 0;
+    const viseur: PartieDeLaScene = {
+      animer: (t) => {
+        if (t < prochainRegard || instant.carte || derniers.current.carte) return;
+        prochainRegard = t + 0.25;
+        regard.setFromCamera(centreDeLaVue, camera);
+        if (regard.ray.intersectPlane(auNiveauDeLaMer, pointRegarde)) personnages.viser(pointRegarde.x, pointRegarde.z);
+      },
+      dispose: () => {},
+    };
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
     const deplacements: PartieDeLaScene[] = [personnages, navire];
     /** Le reste de l'image, dans cet ordre : la caméra suit ce qui a bougé ; les étiquettes se placent pour elle, en dernier. */
-    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, affordance, brume, lumiere, large, navire, cubesDuMonde, rond, amenagement, signesDesCreatures, etiquettes];
+    const parties: PartieDeLaScene[] = [personnages, cadrage, viseur, bornes, affordance, brume, lumiere, large, navire, cubesDuMonde, rond, amenagement, signesDesCreatures, etiquettes];
 
     /** Un objet touché répond : la pile d'étoiles d'une borne réussie saute, sinon sa bulle rebondit, s'il en a une. */
     const sauterLeSigne = (objet: ObjetTouche) => {
@@ -616,7 +632,8 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [creatures, reduceMotion, archipelago]);
 
-  // ---- L'île où l'on est : ses personnages d'Archipéo importés de près, ceux des autres îles de loin (aucune sur la Carte)
+  // ---- L'île où l'on arrive : ses personnages d'Archipéo importés de près, ceux des autres îles de loin (aucune sur la
+  // Carte) ; ensuite, l'île que la caméra regarde (`viseur`).
   const pres = map ? null : (home ?? null);
   useEffect(() => {
     world.current?.personnages.approcher(pres);

@@ -241,7 +241,7 @@ const roleIndex = (r: (typeof ROLES_PEINTS)[number], delave: boolean) => ROLES_P
  * La couleur de fond d'un mur peint : la couleur de ses faces, avant le motif ; un rôle du kit, ou sa matière. L'or mat
  * (`galon`) et la braise (`braise`) : le bloc d'or d'un Gardien, le sommet du cône des Décimaux.
  */
-export type Fond = 'remplissage' | 'bardage' | 'matiere' | 'soubassement' | 'tole' | 'galon' | 'braise';
+export type Fond = 'remplissage' | 'bardage' | 'matiere' | 'soubassement' | 'tole' | 'galon' | 'braise' | 'masonry';
 
 /** Un mur peint : son fond et le motif de chacune de ses faces (ordre des bits de `FACES` : +x, +y, −x, −y, haut, bas). */
 export interface PeintureDuMur {
@@ -251,9 +251,12 @@ export interface PeintureDuMur {
 
 /**
  * Comment peindre un mur d'une famille : un colombage (le bois), un mur plein (la pierre), un bardage (des clins dans la
- * teinte de sa matière), un vantail (la porte, dans son encadrement), la tôle (le métal), la tenture (le velours).
+ * teinte de sa matière), un vantail (la porte, dans son encadrement), la tôle (le métal), la tenture (le velours). Au 5e
+ * (intention du directeur artistique, 9 octobre 2026) : la toile tendue (`cloth`, les plis de la tenture sans galon), les
+ * clins verticaux (`verticalBoards`, le bambou), la verrière (`glazing`, le vitrail) et la maçonnerie des lieux du
+ * village (`masonry`, un mur plein dans la pierre du kit, le rôle `masonry`).
  */
-export type ManiereDuMur = 'colombage' | 'plein' | 'bardage' | 'vantail' | 'tole' | 'tenture';
+export type ManiereDuMur = 'colombage' | 'plein' | 'bardage' | 'vantail' | 'tole' | 'tenture' | 'cloth' | 'verticalBoards' | 'glazing' | 'masonry';
 
 export interface ContexteDuMur {
   /** Le bâtiment est bardé (les bâtiments du quai), au lieu du colombage. */
@@ -343,6 +346,11 @@ export function peintureDuMur(v: Voisinage, maniere: ManiereDuMur, contexte: Con
   const partout = (cotes: number, fond: Fond): PeintureDuMur => ({ fond, motifs: [cotes, cotes, cotes, cotes, haut, 0] });
   if (maniere === 'vantail') return { fond: 'matiere', motifs: [MOTIF.vantail, MOTIF.vantail, MOTIF.vantail, MOTIF.vantail, 0, 0] };
   if (maniere === 'bardage') return partout(MOTIF.bardage | bandes, 'matiere');
+  // Les clins verticaux : les stries du blé (un joint tous les quarts de case, dans un ton plus sombre de la matière),
+  // le chaperon mince du bardage.
+  if (maniere === 'verticalBoards') return partout(MOTIF.bardage | MOTIF.vertical | MOTIF.descendante | bandes, 'matiere');
+  // La verrière : les petits bois peints sur la vitre de sa teinte, un dessus uni.
+  if (maniere === 'glazing') return { fond: 'matiere', motifs: [HEART_MOTIFS.glazing, HEART_MOTIFS.glazing, HEART_MOTIFS.glazing, HEART_MOTIFS.glazing, 0, 0] };
   // La tôle : ses joints, le soubassement à partir de trois rangées, un chaperon mince sans toit (comme un mur plein), et
   // un dessus dans sa teinte (le kit : `tole`), sans dessus gris ; aux pignons aussi.
   if (maniere === 'tole') {
@@ -350,16 +358,17 @@ export function peintureDuMur(v: Voisinage, maniere: ManiereDuMur, contexte: Con
     return { fond: 'tole', motifs: [b, b, b, b, 0, 0] };
   }
   // La tenture : ses plis, et le galon en haut du mur (sous le toit, ou sans rien dessus) ; ni soubassement ni chaperon.
-  if (maniere === 'tenture') {
-    const b = MOTIF.plein | MOTIF.vertical | (v.dessus !== 'mur' ? MOTIF.chaperon : 0);
+  // La toile tendue : les mêmes plis, sans galon.
+  if (maniere === 'tenture' || maniere === 'cloth') {
+    const b = MOTIF.plein | MOTIF.vertical | (maniere === 'tenture' && v.dessus !== 'mur' ? MOTIF.chaperon : 0);
     return { fond: 'matiere', motifs: [b, b, b, b, 0, 0] };
   }
-  if (maniere === 'plein') {
+  if (maniere === 'plein' || maniere === 'masonry') {
     const base = MOTIF.plein | socle | bandes;
     const disque = cadranSur(v);
     const motifs = [0, 1, 2, 3].map((cote) => (disque && !(v.cotes & (1 << cote)) ? base | MOTIF.cadran : base));
     // Le dessus du chaperon : la teinte sombre de la matière (le genre `plein` le dit au shader).
-    return { fond: 'matiere', motifs: [...motifs, haut ? MOTIF.plein | haut : 0, 0] };
+    return { fond: maniere === 'masonry' ? 'masonry' : 'matiere', motifs: [...motifs, haut ? MOTIF.plein | haut : 0, 0] };
   }
   if (v.dessous === 'toit') return partout(MOTIF.plein | bandes, 'soubassement');
   if (v.dessus === 'toit' && v.toits !== 0) return partout(MOTIF.bardage, 'bardage');
