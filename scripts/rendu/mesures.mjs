@@ -976,8 +976,20 @@ const CAPTURES = [
   // proportions, île-école à cinq bornes, son quai décalé ; les trois Gardiens replacés ; la Carte du 6e au téléphone.
   ...[1, 2, 3].map((n) => ({ nom: `cinq-missions-plaine-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-calculation', partie: 'avant', missions: n })),
   { nom: 'cinq-missions-plaine', vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-calculation' },
-  ...[2, 3].map((n) => ({ nom: `cinq-missions-volcan-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-decimals', partie: 'avant', missions: n })),
+  ...[2, 3, 4].map((n) => ({ nom: `cinq-missions-volcan-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-decimals', partie: 'avant', missions: n })),
   { nom: 'cinq-missions-marche', vue: 'île', famille: 'cinq-missions', ile: 'maths-5e-proportionality' },
+  // Au téléphone (consultant UX UI) : les îles-écoles du 5e au 3e, dont la borne de la mission 1 frôle le bord droit, et
+  // les cinq bornes empilées du Relais des voyageurs, en portrait et en paysage.
+  ...[
+    ['marche', 'maths-5e-proportionality'],
+    ['atelier', 'maths-4e-algebra'],
+    ['fonctions', 'maths-3e-functions'],
+    ['relais', 'lv2-5e-introductions'],
+  ].map(([court, ile]) => ({ nom: `cinq-missions-${court}-390x844`, vue: 'île', famille: 'cinq-missions', ile, taille: { width: 390, height: 844 } })),
+  { nom: 'cinq-missions-relais-844x390', vue: 'île', famille: 'cinq-missions', ile: 'lv2-5e-introductions', taille: { width: 844, height: 390 } },
+  // L'autre île-école à cinq missions (la borne près de la porte de l'école), et les étapes du Belvédère.
+  { nom: 'cinq-missions-fonctions', vue: 'île', famille: 'cinq-missions', ile: 'maths-3e-functions' },
+  ...[1, 2, 3].map((n) => ({ nom: `cinq-missions-belvedere-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-3e-geometry', partie: 'avant', missions: n })),
   ...[
     ['hangar', 'technology-6e-objects'],
     ['manoir', 'english-5e-grammar'],

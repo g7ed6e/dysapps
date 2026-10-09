@@ -37,6 +37,8 @@ it('lit une fraction, et une unité qui porte « / » sans la prendre pour une f
   expect(parseFraction('3/5')).toBe(0.6);
   expect(parseFraction('3')).toBe(3);
   expect(parseFraction('3/0')).toBeUndefined();
+  expect(parseFraction('3/00')).toBeUndefined();
+  expect(parseFraction('−7/2')).toBe(-3.5);
   expect(parseNumber('3/5')).toBeUndefined();
   expect(parseNumber('15 km/h')).toEqual({ value: 15, decimals: 0, unit: ' km/h' });
 });

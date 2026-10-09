@@ -28,7 +28,8 @@
 // composant de l'aide visuelle des missions : « figure : tableau x · f(x) / 2 · 6 / 4 · ? » (tableau de proportionnalité :
 // l'en-tête, puis une ligne par « / »), « figure : triangle 3 · 4 · ? » (triangle rectangle : les deux côtés de l'angle
 // droit, puis l'hypoténuse), « figure : droite 0 · 20 / 5 · 10 » (droite graduée : du premier au dernier nombre, puis les
-// points marqués), « figure : fraction 3/5 » (barre de fraction), « figure : fractions 3/5 · 3/10 » (deux barres à
+// points marqués), « figure : graduée 5 · 6 / 10 / 5,38 » (droite d'un entier à un autre, chaque unité en 10 parts, un
+// « ? » sur 5,38, sans le nombre), « figure : fraction 3/5 » (barre de fraction), « figure : fractions 3/5 · 3/10 » (deux barres à
 // comparer), « figure : diagramme lundi · mardi / 10 · 20 » (diagramme en barres : les noms, puis les nombres ; les
 // nombres seuls sans noms) et « figure : graphique 2 · 1 » (la droite y = 2 × x + 1 dans un repère).
 //
@@ -180,12 +181,12 @@ const fractionLue = (v) => {
   const m = /^(\d+)\/(\d+)$/.exec(v);
   return m && Number(m[2]) > 0 ? [Number(m[1]), Number(m[2])] : null;
 };
-const SORTES_DE_FIGURE = 'tableau|triangle|droite|fraction|fractions|diagramme|graphique';
+const SORTES_DE_FIGURE = 'tableau|triangle|droite|graduée|fraction|fractions|diagramme|graphique';
 
 /** Une figure écrite « tableau … », « triangle … », « droite … », « fraction … », « fractions … », « diagramme … » ou « graphique … » → sa description en données (`{ kind, props }`). */
 export function lireFigure(brut) {
   const m = new RegExp(`^(${SORTES_DE_FIGURE}) (.+)$`).exec(brut);
-  if (!m) throw new Error(`figure : « tableau … », « triangle … », « droite … », « fraction … », « fractions … », « diagramme … » ou « graphique … » attendu, lu « ${brut} »`);
+  if (!m) throw new Error(`figure : « tableau … », « triangle … », « droite … », « graduée … », « fraction … », « fractions … », « diagramme … » ou « graphique … » attendu, lu « ${brut} »`);
   const lignes = m[2].split(' / ').map((l) => l.split(' · '));
   if (m[1] === 'tableau') {
     if (lignes.length < 2 || lignes.some((l) => l.length !== lignes[0].length)) throw new Error(`figure : un tableau a un en-tête et des lignes de même longueur, lu « ${brut} »`);
@@ -195,6 +196,17 @@ export function lireFigure(brut) {
     if (lignes.length !== 1 || lignes[0].length !== 3) throw new Error(`figure : un triangle a trois côtés, lu « ${brut} »`);
     const [a, b, c] = lignes[0].map(nombreOuTexte);
     return { kind: 'right-triangle', props: { a, b, c, labels: ['A', 'B', 'C'] } };
+  }
+  if (m[1] === 'graduée') {
+    const [bornes, parts, point] = lignes;
+    const [debut, fin] = (bornes ?? []).map(nombreOuTexte);
+    const parUnite = parts?.length === 1 ? nombreOuTexte(parts[0]) : undefined;
+    const marque = point?.length === 1 ? nombreOuTexte(point[0]) : undefined;
+    const entiers = [debut, fin, parUnite].every(Number.isInteger) && bornes.length === 2 && debut < fin && parUnite >= 2;
+    const cran = entiers && marque !== undefined ? (marque - debut) * parUnite : 0;
+    if (!entiers || lignes.length > 3 || (point && (typeof marque !== 'number' || Math.abs(cran - Math.round(cran)) > 1e-9 || cran < 0 || cran > (fin - debut) * parUnite)))
+      throw new Error(`figure : une droite graduée en parts va d'un entier à un plus grand, puis « / » le nombre de parts par unité, et au besoin « / » le point marqué d'un « ? », sur une graduation, lu « ${brut} »`);
+    return { kind: 'graduated-line', props: { start: debut, units: fin - debut, perUnit: parUnite, ...(point && { point: Math.round(cran) }) } };
   }
   if (m[1] === 'fraction') {
     const f = fractionLue(m[2]);
@@ -235,6 +247,8 @@ export function ecrireFigure(figure) {
   if (kind === 'right-triangle' && cles === 'a,b,c,labels' && props.labels.join() === 'A,B,C') return `triangle ${ligne([props.a, props.b, props.c])}`;
   if (kind === 'number-line' && ['min,max', 'min,max,points'].includes(cles))
     return `droite ${ligne([props.min, props.max])}${props.points ? ` / ${ligne(props.points)}` : ''}`;
+  if (kind === 'graduated-line' && ['start,units,perUnit', 'start,units,perUnit,point'].includes(cles))
+    return `graduée ${ligne([props.start, props.start + props.units])} / ${props.perUnit}${props.point === undefined ? '' : ` / ${ecrireNombre(Number((props.start + props.point / props.perUnit).toFixed(6)))}`}`;
   if (kind === 'fraction-bar' && cles === 'n,d') return `fraction ${props.n}/${props.d}`;
   if (kind === 'compare-bars' && cles === 'a,b') return `fractions ${props.a.join('/')} · ${props.b.join('/')}`;
   if (kind === 'bar-list' && ['values', 'values,labels'].includes(cles)) return `diagramme ${props.labels ? `${props.labels.join(' · ')} / ` : ''}${ligne(props.values)}`;

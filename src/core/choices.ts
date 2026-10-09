@@ -92,10 +92,11 @@ export function parseNumber(c: Choice): Parsed | undefined {
   return { value, decimals: (m[3] ?? '').length, unit: m[4] };
 }
 
-/** « 3/5 » → 0,6, « 2 » → 2 ; undefined si ce n'est ni une fraction ni un entier. */
+/** « 3/5 » → 0,6, « −7/2 » → −3,5, « 2 » → 2 ; undefined si ce n'est ni une fraction ni un entier. */
 export function parseFraction(c: Choice): number | undefined {
-  const m = /^\s*(\d+)(?:\/(\d+))?\s*$/.exec(String(c));
-  return m && m[2] !== '0' ? Number(m[1]) / Number(m[2] ?? 1) : undefined;
+  const m = /^\s*([-−]?)(\d+)(?:\/(\d+))?\s*$/.exec(String(c));
+  if (!m || (m[3] !== undefined && !(Number(m[3]) > 0))) return undefined;
+  return (m[1] ? -1 : 1) * (Number(m[2]) / Number(m[3] ?? 1));
 }
 
 /** Écrit un nombre comme ses voisins : même signe moins, même séparateur de milliers, même virgule, même unité. */

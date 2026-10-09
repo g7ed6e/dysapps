@@ -69,7 +69,9 @@ describe('le format Markdown du contenu', () => {
     expect(lireFigure('fractions 3/5 · 3/10')).toEqual({ kind: 'compare-bars', props: { a: [3, 5], b: [3, 10] } });
     expect(lireFigure('diagramme lundi · mardi / 10 · 20')).toEqual({ kind: 'bar-list', props: { values: [10, 20], labels: ['lundi', 'mardi'] } });
     expect(lireFigure('graphique 2 · −1')).toEqual({ kind: 'graph', props: { a: 2, b: -1 } });
-    for (const f of ['fraction 3/5', 'fractions 3/5 · 3/10', 'diagramme lundi · mardi / 10 · 20', 'diagramme 4 · 0,5', 'graphique 2 · −1'])
+    expect(lireFigure('graduée 5 · 6 / 10 / 5,3')).toEqual({ kind: 'graduated-line', props: { start: 5, units: 1, perUnit: 10, point: 3 } });
+    expect(() => lireFigure('graduée 5 · 6 / 10 / 5,38')).toThrow(/sur une graduation/);
+    for (const f of ['graduée −1 · 0 / 5 / −0,4', 'graduée 0 · 1 / 10', 'fraction 3/5', 'fractions 3/5 · 3/10', 'diagramme lundi · mardi / 10 · 20', 'diagramme 4 · 0,5', 'graphique 2 · −1'])
       expect(ecrireFigure(lireFigure(f))).toBe(f);
     expect(() => lireFigure('fraction 7/5')).toThrow(/une unité/);
     expect(() => lireFigure('fractions 3/5')).toThrow(/deux fractions/);

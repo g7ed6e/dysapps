@@ -384,7 +384,8 @@ const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string,
  * Le téléphone 390 × 844, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX UI). La
  * Carte y est au plancher et cadre la destination (la Forêt des sons) ; les îles glissent au milieu de la place, en
  * hauteur, quand elles y tiennent (`cadrageDeLaCarte`). Un seul nom se taisait avant GD-11 (le Hangar des inventions, en
- * bas à droite) ; depuis, trois ou quatre (ci-dessous), et cinq ou six noms se montrent. Le cadrage de la tablette qui
+ * bas à droite) ; GD-11 en a tu trois ou quatre ; depuis GD-14, de nouveau un seul (ci-dessous), et sept noms se montrent.
+ * Le cadrage de la tablette qui
  * compte le nom le plus haut monté d'une demi-étiquette ne vaut pas ici (portrait, au plancher).
  */
 const TUS_AU_TELEPHONE: Record<string, string[]> = {
@@ -402,7 +403,7 @@ const TUS_AU_TELEPHONE: Record<string, string[]> = {
 
 /**
  * Le portrait 800 × 1280 au 6e, dans Luciole, selon l'île du bonhomme : les noms qui se taisent (mesurés, GD-12, 8 octobre
- * 2026 ; trois au plus, référent dys) : la Pointe des paysages, dans les deux cas.
+ * 2026 ; trois au plus, référent dys) : aucun depuis GD-14.
  */
 const SILENCED_IN_PORTRAIT_6E: Record<string, string[]> = {
   // Depuis les missions du programme (GD-14, 9 octobre 2026), mesurés : aucun.
@@ -412,8 +413,8 @@ const SILENCED_IN_PORTRAIT_6E: Record<string, string[]> = {
 
 /**
  * Les mêmes en OpenDyslexic 32 px (GD-12, 8 octobre 2026, mesurés) : quatre, un de plus que le plafond du référent dys
- * (`SILENCED_NAMES_CAP`). Dans la page, le bonhomme sur la Forêt, trois (capture `formes-carte-6e-800x1280-od32`) : la
- * mesure de jsdom en tait un de plus. Régression connue, au pilotage.
+ * (`SILENCED_NAMES_CAP`) sur la Fouille ; trois sur la Forêt depuis GD-14. La page est à revoir sur la capture
+ * `formes-carte-6e-800x1280-od32`. Régression connue, au pilotage.
  */
 const SILENCED_IN_PORTRAIT_6E_OD32: Record<string, string[]> = {
   // Depuis les missions du programme (GD-14, 9 octobre 2026), mesurés : la Mine des lettres à la place de la Vallée du

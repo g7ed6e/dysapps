@@ -157,6 +157,8 @@ export function partiesDe(id: BiomeId): Partie[] {
         { nom: plans[2].name, cases: [tout(plans[2])] },
       ];
     } else {
+      // Un plan d'une seule rangée retomberait sur enDeux, qui coupe la rangée : aucun lieu n'en a (parts.test.ts le
+      // vérifie sur tout lieu à cinq parties).
       const [bas, haut] = enRangees(plans[0], 2) ?? enDeux(plans[0]);
       const [basDuDeuxieme, hautDuDeuxieme] = enRangees(plans[1], 2) ?? enDeux(plans[1]);
       parties = [
