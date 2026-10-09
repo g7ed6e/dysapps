@@ -270,12 +270,16 @@ export const ENVELOPPES: Record<
   // à 6 400 aux Îles Brumeuses et aux Anciens Ateliers, à 6 900 aux Îles du Ciel (mainteneur, 9 octobre 2026, carte
   // « Relever »). Celles des Anciens Ateliers (6 400) et des Îles du Ciel (6 900) sont relevées d'avance, pour les
   // pull requests de leurs formes, qui approfondiront leurs cadres : sur main, leur mer tient encore sous 5 850.
+  // Révision de GD-12 (les îles EMC et d'option du 4e et du 3e au flanc est, en attente du mot du mainteneur) : le cadre
+  // des Anciens Ateliers s'élargit de 36 cases vers l'est, celui des Îles du Ciel de 28 ; leur mer mesure 7 150 et
+  // 7 592 triangles (6 160 et 6 864 avant). Proposition de l'artiste technique 3D, à valider par le mainteneur : 7 150
+  // et 7 600.
   mer: {
     lot: 'R4b',
     nom: 'Mer',
     premiersRivages: { triangles: 7_100, drawCalls: 1 },
     autres: { triangles: 5_850, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 6_270, drawCalls: 1 }, '4e': { triangles: 6_400, drawCalls: 1 }, '3e': { triangles: 6_900, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 6_270, drawCalls: 1 }, '4e': { triangles: 7_150, drawCalls: 1 }, '3e': { triangles: 7_600, drawCalls: 1 } },
   },
   // Un appel de plus pendant le passage de la baleine (son écume) : voir `APPEL_DU_PASSAGE`.
   // Proposition de l'artiste technique 3D pour les missions ajoutées en 6e (étapes de contenu C-1 à C-5), à valider par

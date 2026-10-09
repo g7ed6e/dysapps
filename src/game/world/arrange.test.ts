@@ -163,9 +163,10 @@ describe('les places des lieux', () => {
     // montré pour eux (directeur artistique, 9 octobre 2026).
     const w = partie();
     const sans: string[] = [];
-    // Aux Anciens Ateliers, l'Escale des échanges de même, depuis la Porte des libertés et la Colonnade des cités ; aux
-    // Îles du Ciel, l'Observatoire des textes, depuis le Forum des débats et le Bosquet des sages.
-    const sansTourner = ['french-5e-conjugation', 'english-5e-vocabulary', 'english-5e-grammar', 'geography-4e-globalization', 'french-3e-close-reading'] as BiomeId[];
+    // Aux Anciens Ateliers et aux Îles du Ciel, la Porte des libertés, la Colonnade des cités, le Forum des débats et le
+    // Bosquet des sages au flanc est (révision de GD-12, en attente du mot du mainteneur) : l'Escale des échanges et
+    // l'Observatoire des textes y retrouvent une place tournée, ils tournent de nouveau.
+    const sansTourner = ['french-5e-conjugation', 'english-5e-vocabulary', 'english-5e-grammar'] as BiomeId[];
     for (const a of ARCHIPELAGO_IDS)
       for (const id of placesOf(a).filter((p) => !isFixedPlace(p) && placeTurns(p))) if (!turnIsland(w, id).ok) sans.push(id);
     expect(sans).toEqual(['french-6e-reading']);
