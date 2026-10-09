@@ -1051,6 +1051,25 @@ const CAPTURES = [
     ['glacier', 'maths-5e-signed-numbers'],
   ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
   { nom: 'formes-modifier-le-plan-5e', vue: 'carte', famille: 'formes', ile: 'maths-5e-proportionality', amenager: 'english-5e-vocabulary' },
+  // Aux Monts de Feu (4e, 9 octobre 2026) : la Carte sur la tablette, en OpenDyslexic 32 px et debout, le bonhomme sur
+  // l'Imprimerie des révolutions (les noms tus du portrait) ; le Bassin (le lagon), l'Atelier (son quai), la Forge et la
+  // Falaise (leurs pics), la Gare (son quai qui file) de près ; « Modifier le plan », le Bassin choisi, puis la Vigie et
+  // la Source, aux deux autres coins de la région, le bonhomme sur elles.
+  { nom: 'formes-carte-4e', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions' },
+  { nom: 'formes-carte-4e-od32', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  { nom: 'formes-carte-4e-800x1280', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions', taille: { width: 800, height: 1280 } },
+  ...[
+    ['bassin', 'technology-4e-modeling'],
+    ['atelier', 'maths-4e-algebra'],
+    ['forge', 'maths-4e-powers'],
+    ['falaise', 'french-4e-agreement'],
+    ['gare', 'english-4e-grammar'],
+  ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
+  { nom: 'formes-modifier-le-plan-4e', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions', amenager: 'technology-4e-modeling' },
+  ...[
+    ['vigie', 'physics-chemistry-4e-signals-circuits'],
+    ['source', 'life-earth-sciences-4e-cells-evolution'],
+  ].map(([court, ile]) => ({ nom: `formes-modifier-le-plan-4e-${court}`, vue: 'carte', famille: 'formes', ile, amenager: ile })),
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

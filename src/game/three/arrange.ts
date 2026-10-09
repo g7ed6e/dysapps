@@ -18,7 +18,7 @@ import { drawIslandLabel, measureIslandLabel } from '../world/labelCanvas';
 import type { Monde, PartieDeLaScene } from './scenePart';
 import { mesuresDemandees } from '../rendering';
 import { creerPoignees } from './arrangeHandles';
-import { type CleDePoignee, type PoigneesDuChoix, sortDeLaPlace } from '../world/arrangeHandles';
+import { type CleDePoignee, ecartVersLaPlace, type PoigneesDuChoix, sortDeLaPlace } from '../world/arrangeHandles';
 import type { LabelBox } from '../world/labelLayout';
 
 /** Ce qui ne coupe ni ne soulève rien. */
@@ -347,10 +347,14 @@ const RAMENER_MS = 1000;
 type EcouteDuChoixALEcran = () => ((b: ChoixALEcran | null) => void) | null | undefined;
 
 /**
- * Une poignée sort de la place libre : la vue se recadre pour ramener les poignées du choix `p` au milieu de la place
- * libre ; rend `false` si elle ne le peut pas maintenant (un glissé en cours).
+ * Une poignée sort de la place libre : la vue se recadre pour ramener les poignées du choix `p` dans la place libre,
+ * l'écran glissé de `ecart` (pixels de la vue, le moins possible), ou, sans `ecart` (une poignée hors de la vue même
+ * au but), le choix au milieu de la place ; rend `false` si elle ne le peut pas maintenant (un glissé en cours).
  */
-type RamenerLesPoignees = (p: PoigneesDuChoix) => boolean;
+type RamenerLesPoignees = (p: PoigneesDuChoix, ecart: { x: number; y: number } | null) => boolean;
+
+/** Les poignées ramenées dans la place libre s'y tiennent à tant de pixels de ses bords. */
+const MARGE_DES_POIGNEES = 4;
 
 export function creerAmenagement(
   monde: Monde,
@@ -360,6 +364,7 @@ export function creerAmenagement(
   lumiere?: Lumiere,
   aLEcran?: EcouteDuChoixALEcran,
   ramener?: RamenerLesPoignees,
+  auBut?: () => THREE.Camera | null,
 ): Amenagement {
   const blocs = monde.habillage.pose === 'geste';
   // Un carré plat, couché : deux triangles par case.
@@ -454,6 +459,9 @@ export function creerAmenagement(
   let place: { libre: Rect; dx: number; dy: number; w: number; h: number } | null = null;
   let placeLue = -Infinity;
   const ici = new Float32Array(5 * POIGNEES_MAX);
+  /** Les mêmes boîtes, la caméra à sa place visée (`auBut`), et l'écart qui les ramène dans la place libre. */
+  const iciAuBut = new Float32Array(5 * POIGNEES_MAX);
+  const ecart = { x: 0, y: 0 };
   const point = new THREE.Vector3();
   /** Le dernier recadrage demandé parce qu'une poignée sortait de la place libre (horloge de la page). */
   let rameneeA = -Infinity;
@@ -484,7 +492,16 @@ export function creerAmenagement(
       camera.updateMatrixWorld();
       n = poignees.aLEcran(camera, p.w, p.h, ici);
       const toutes = n === (vue.poignees?.liste.length ?? 0);
-      if (vue.poignees && (!toutes || sortDeLaPlace(ici, n, p.libre)) && maintenant - rameneeA > RAMENER_MS && ramener?.(vue.poignees)) rameneeA = maintenant;
+      if (vue.poignees && ramener && (!toutes || sortDeLaPlace(ici, n, p.libre)) && maintenant - rameneeA > RAMENER_MS) {
+        // Jugé la caméra à sa place visée, pas en chemin : pendant que la Carte glisse vers le cadre de la région, une
+        // poignée encore hors de la place y entrera d'elle-même (GD-12, relecture UX UI du 9 octobre 2026 : le Bassin des
+        // maquettes, choisi pendant ce glissé, était posé au milieu de la place et la Source des espèces sortait au coin).
+        const cam = auBut?.() ?? camera;
+        const m = poignees.aLEcran(cam, p.w, p.h, iciAuBut);
+        const loin = m !== vue.poignees.liste.length;
+        if (!loin) ecartVersLaPlace(iciAuBut, m, p.libre, MARGE_DES_POIGNEES, ecart);
+        if ((loin || ecart.x !== 0 || ecart.y !== 0) && ramener(vue.poignees, loin ? null : ecart)) rameneeA = maintenant;
+      }
       for (const r of vue.reunions ?? []) {
         if (2 * nr >= iciDesReunions.length) break;
         point.set(r.x, r.z, r.y).project(camera);

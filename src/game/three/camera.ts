@@ -11,7 +11,7 @@ import * as THREE from 'three';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './scenePart';
 import type { BiomeId } from '../biomes';
 import { type PlaceLue, RESERVE_DU_BAS } from '../freeSpace';
-import { bornesDansLeMonde, type CadreDeCases, islandCenter, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, worldBounds } from '../world/terrain';
+import { bornesDansLeMonde, type CadreDeCases, islandCenter, viewYaw, viewZone, islandViewPullBack, VISEE_AU_DESSUS_DU_SOL, islandViewTarget, worldBounds } from '../world/terrain';
 import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/framing';
 import { mapOf } from '../world/map';
 import { layoutVersion } from '../world/placement';
@@ -79,6 +79,11 @@ export interface Camera extends PartieDeLaScene {
    * elle est en chemin) ; `null` avant la première image ou derrière la caméra.
    */
   auBut(point: THREE.Vector3, W: number, H: number): { x: number; y: number } | null;
+  /**
+   * Une caméra de travail posée à la place visée (comme `auBut`), à lire tout de suite (le prochain appel la déplace) ;
+   * `null` avant la première image.
+   */
+  cameraAuBut(): THREE.PerspectiveCamera | null;
   /**
    * La fiche d'un objet le cache (lot 2 de « Toucher le monde ») : le cadrage glisse à plat pour que ce point du monde se
    * pose en `vers` (coordonnées normalisées de l'écran, −1 à 1), sans changer de distance ni de direction. Effacé quand
@@ -152,8 +157,8 @@ export function creerCamera(
     surLaCarte = false;
     const portrait = aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1;
     const avatar = { x: avatarAt.x, y: avatarAt.z, z: avatarAt.y };
-    let c = spot ?? (island ? islandCenter(island) : avatar);
-    let d = (island ? ISLAND_DISTANCE : FOLLOW_DISTANCE) * portrait;
+    let c = spot ?? (island ? islandViewTarget(island) : avatar);
+    let d = (island ? ISLAND_DISTANCE * (spot ? 1 : islandViewPullBack(island)) : FOLLOW_DISTANCE) * portrait;
     const v = island ? ISLAND_VIEW : VIEW;
     // Bonhomme posé sur son île : on cadre la zone (son île et ses voisines), le bonhomme restant au premier tiers.
     if (!island && zone) {
@@ -369,6 +374,11 @@ export function creerCamera(
       projete.copy(point).project(essai);
       if (projete.z > 1) return null;
       return { x: ((projete.x + 1) / 2) * W, y: ((1 - projete.y) / 2) * H };
+    },
+    cameraAuBut: () => {
+      if (!vu) return null;
+      placerLEssai(but.target, but.pos);
+      return essai;
     },
     recadrer: (point, vers) => {
       recadre = { point: point.clone(), vers: { ...vers } };
