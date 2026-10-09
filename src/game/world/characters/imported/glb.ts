@@ -129,5 +129,9 @@ export function lireGlb(buffer: ArrayBuffer): ModeleLu {
   }
   if (!bones || !jts) return { positions, colors };
   for (let i = 0; i < joints.length; i++) if (joints[i] >= bones.length) throw new Error(`Os inconnu : ${joints[i]}`);
+  // Chaque os après son parent : la fusion les range dans cet ordre (../merges.ts).
+  bones.forEach((b, i) => {
+    if (!Number.isInteger(b.parent) || b.parent < -1 || b.parent >= i) throw new Error(`Parent d’os invalide : ${b.name}`);
+  });
   return { positions, colors, skin: { bones, joints, weights } };
 }

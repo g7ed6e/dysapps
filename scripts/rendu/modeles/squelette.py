@@ -167,12 +167,12 @@ def find_legs(q, h):
     return crotch, legs
 
 
-def find_tail(dense, h, crotch, neck):
+def find_tail(q, h, crotch, neck):
     """La queue : ce qui dépasse franchement derrière le tronc (vers +Z), entre les jambes et le cou."""
     band = q[(q[:, 1] > crotch) & (q[:, 1] < neck)]
     back = np.percentile(band[:, 2], 75)
     cand = q[(q[:, 2] > back + 0.1 * h) & (q[:, 1] > 0.05 * h) & (q[:, 1] < neck)]
-    if len(cand) < 0.02 * len(q):  # q : les points de surface
+    if len(cand) < 0.02 * len(q):
         return None
     base = cand[cand[:, 2] <= np.percentile(cand[:, 2], 12)].mean(0)
     base[2] = back  # la queue part du dos

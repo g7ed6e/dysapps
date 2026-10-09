@@ -166,22 +166,29 @@ interface Promeneur {
   membres: Map<string, THREE.Bone>;
 }
 
-/** Joue les gestes d'une créature qui a un squelette (`GESTES`) : `marche` quand elle fait un pas. */
-function bouger(membres: Map<string, THREE.Bone>, t: number, phase: number, marche: boolean): void {
-  const cycle = ([angle, periode]: readonly [number, number], decalage = 0) => angle * Math.sin((2 * Math.PI * (t + phase)) / periode - decalage);
-  const tourner = (nom: string, axe: 'x' | 'y', angle: number) => {
-    const b = membres.get(nom);
-    if (b) b.rotation[axe] = angle;
-  };
-  tourner('spine', 'x', cycle(GESTES.souffle));
-  tourner('head', 'y', cycle(GESTES.regard));
-  tourner('tail.1', 'y', cycle(GESTES.queue));
-  tourner('tail.2', 'y', 1.2 * cycle(GESTES.queue, 0.9));
-  const k = marche ? Math.sin(t * GESTES.pas.cadence) : 0;
-  tourner('thigh.L', 'x', GESTES.pas.angle * k);
-  tourner('thigh.R', 'x', -GESTES.pas.angle * k);
-  tourner('shin.L', 'x', -0.8 * GESTES.pas.angle * Math.max(0, -k));
-  tourner('shin.R', 'x', -0.8 * GESTES.pas.angle * Math.max(0, k));
+/** Tourne un os de squelette par son nom, s'il existe. */
+function tourner(membres: Map<string, THREE.Bone>, nom: string, axe: 'x' | 'y', angle: number): void {
+  const b = membres.get(nom);
+  if (b) b.rotation[axe] = angle;
+}
+
+/** Un cycle de geste (`GESTES`) au temps `t`, décalé de la phase de la créature et de `decalage` (en radians). */
+const cycle = ([angle, periode]: readonly [number, number], t: number, decalage = 0) => angle * Math.sin((2 * Math.PI * t) / periode - decalage);
+
+/**
+ * Joue les gestes d'une créature qui a un squelette (`GESTES`). `pas` : où elle en est de son pas, de 0 à 1 (0 au
+ * repos) ; ses jambes partent et reviennent en douceur, sans à-coup au début ni à la fin du pas (référent dys).
+ */
+function bouger(membres: Map<string, THREE.Bone>, t: number, phase: number, pas: number, dureeDuPas: number): void {
+  tourner(membres, 'spine', 'x', cycle(GESTES.souffle, t + phase));
+  tourner(membres, 'head', 'y', cycle(GESTES.regard, t + phase));
+  tourner(membres, 'tail.1', 'y', cycle(GESTES.queue, t + phase));
+  tourner(membres, 'tail.2', 'y', 1.2 * cycle(GESTES.queue, t + phase, 0.9));
+  const k = Math.sin(Math.PI * pas) * Math.sin(pas * dureeDuPas * GESTES.pas.cadence);
+  tourner(membres, 'thigh.L', 'x', GESTES.pas.angle * k);
+  tourner(membres, 'thigh.R', 'x', -GESTES.pas.angle * k);
+  tourner(membres, 'shin.L', 'x', -0.8 * GESTES.pas.angle * Math.max(0, -k));
+  tourner(membres, 'shin.R', 'x', -0.8 * GESTES.pas.angle * Math.max(0, k));
 }
 
 /**
@@ -348,13 +355,20 @@ export function habiller(
         repeindre(fondu.id);
         fondu.fini = performance.now() - fondu.t0 >= fondu.dureeMs;
       }
-      if (reduit) return;
+      if (reduit) {
+        // Les squelettes à leur pose de repos (l'appareil a pu demander moins d'animations en cours de partie).
+        for (const q of promeneurs) for (const b of q.membres.values()) b.rotation.set(0, 0, 0);
+        return;
+      }
       for (const q of promeneurs) {
         const { dx, dy, bob } = strollAt(q.stroll, instant.now, t);
         poser(q, dx, dy, bob);
         // Le geste lent : le bras se lève et redescend, en cinq secondes (coupé avec « Réduire les animations »).
         q.bras.rotation.x = -GESTE.angle * Math.max(0, Math.sin(((t + q.phase) / GESTE.periode) * Math.PI * 2));
-        if (q.membres.size) bouger(q.membres, t, q.phase, q.stroll.start !== 0);
+        if (q.membres.size) {
+          const pas = q.stroll.start ? Math.min(1, (instant.now - q.stroll.start) / q.stroll.duration) : 0;
+          bouger(q.membres, t, q.phase, pas, q.stroll.duration / 1000);
+        }
       }
     },
     rallumer: (id, dureeMs) => {
