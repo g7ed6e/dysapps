@@ -4,6 +4,8 @@ Une image par créature et par Gardien des 51 îles, soit 102 images. Elles serv
 
 Ces images sont des références de travail, pas le jeu : l’application ne les importe ni ne les charge.
 
+Les modèles 3D tirés de ces images, bruts et retravaillés, et les scripts qui passent de l’un à l’autre : [les modèles 3D des personnages](modeles.md).
+
 ## La fiche
 
 | | |
