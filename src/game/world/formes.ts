@@ -8,7 +8,7 @@
 // 22, 13 pour un cœur de 26). Le bruit de la graine de l'île casse ensuite le contour à la case près (./map.ts).
 // Code pur, sans Three.js.
 
-/** Les onze formes du catalogue (docs/gameplay/propositions/GD-12.md, §1 et « Les quatre »). */
+/** Les onze formes du catalogue (docs/gameplay/propositions/archives/GD-12.md, §1 et « Les quatre »). */
 export type FormeId = 'galet' | 'croissant' | 'haricot' | 'presquile' | 'goutte' | 'trefle' | 'cacahuete' | 'fer' | 'crochet' | 'lagon' | 'moulinet';
 
 /**

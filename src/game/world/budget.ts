@@ -231,12 +231,15 @@ export const ENVELOPPES: Record<
   // sol 41 250 → 41 210 (41 203), la faune 1 180 → 1 140 (1 132), la mer 6 300 → 6 270 (6 264), les créatures
   // 3 500 → 3 485 (3 480), les commandes 550 → 545 (540). La somme des Îles Brumeuses reste 85 945, sous
   // `RENDER_BUDGET_AUTRES` (86 000), inchangé ; aucun appel de plus.
+  // GD-12, une forme par île, aux Îles du Ciel : le sol mesure 38 994 triangles (36 930 avant). Il prend 2 070 au décor
+  // du même archipel (8 910 mesurés pour 13 600) : sol 39 000, décor 11 530, la somme ne change pas (mainteneur,
+  // 9 octobre 2026, carte « Échanger »).
   sol: {
     lot: 'R4b',
     nom: 'Sol',
     premiersRivages: { triangles: 32_550, drawCalls: 2 },
     autres: { triangles: 36_930, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 41_210, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 41_210, drawCalls: 1 }, '3e': { triangles: 39_000, drawCalls: 1 } },
   },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
@@ -291,7 +294,7 @@ export const ENVELOPPES: Record<
     nom: 'Décor et repères signatures',
     premiersRivages: { triangles: 13_700, drawCalls: 3 },
     autres: { triangles: 13_600, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 19_000, drawCalls: 3 } },
+    parArchipel: { '5e': { triangles: 19_000, drawCalls: 3 }, '3e': { triangles: 11_530, drawCalls: 3 } },
   },
   construction: {
     lot: 'R5',
