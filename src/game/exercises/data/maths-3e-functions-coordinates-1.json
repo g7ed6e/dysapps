@@ -91,6 +91,18 @@
       "answer": "−2",
       "hint": "On écrit d’abord l’abscisse, puis l’ordonnée.",
       "explanation": "Dans (4 ; −2), l’abscisse vient d’abord : 4. L’ordonnée vient ensuite : −2. 4 est l’abscisse. 2 oublie le signe moins : le point est en dessous de l’axe des abscisses.",
+      "figure": {
+        "kind": "coordinate-plane",
+        "props": {
+          "points": [
+            {
+              "name": "A",
+              "x": 4,
+              "y": -2
+            }
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -119,6 +131,12 @@
       "answer": "en haut à gauche",
       "hint": "L’abscisse dit gauche ou droite. L’ordonnée dit haut ou bas.",
       "explanation": "Abscisse négative : le point est à gauche de l’origine. Ordonnée positive : il est en haut. M est donc en haut à gauche. En haut à droite, l’abscisse serait positive ; en bas à gauche, l’ordonnée serait négative.",
+      "figure": {
+        "kind": "coordinate-plane",
+        "props": {
+          "points": []
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -146,6 +164,12 @@
       "answer": "l’axe des ordonnées",
       "hint": "Son abscisse vaut 0. Il n’est ni à gauche ni à droite de l’origine : où est-il ?",
       "explanation": "L’abscisse de B vaut 0 : il n’est ni à gauche ni à droite de l’origine. Il est donc sur l’axe vertical, l’axe des ordonnées, 5 unités au-dessus de l’origine. Sur l’axe des abscisses, c’est l’ordonnée qui vaudrait 0.",
+      "figure": {
+        "kind": "coordinate-plane",
+        "props": {
+          "points": []
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -173,6 +197,18 @@
       "answer": "(6 ; 3)",
       "hint": "Aller vers la droite change l’abscisse. Est-ce que la hauteur change ?",
       "explanation": "Vers la droite, l’abscisse augmente : 2 + 4 = 6. Le point ne monte pas et ne descend pas : l’ordonnée reste 3. (2 ; 7), c’est monter de 4 au lieu d’aller à droite. (6 ; 7), c’est ajouter 4 aux deux coordonnées.",
+      "figure": {
+        "kind": "coordinate-plane",
+        "props": {
+          "points": [
+            {
+              "name": "C",
+              "x": 2,
+              "y": 3
+            }
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -238,6 +274,12 @@
       "answer": "(−3 ; 0)",
       "hint": "À gauche de l’origine, l’abscisse est négative. Sur l’axe des abscisses, que vaut l’ordonnée ?",
       "explanation": "À gauche de l’origine, l’abscisse est négative : −3. Sur l’axe des abscisses, le point n’est ni en haut ni en bas : l’ordonnée vaut 0. On écrit (−3 ; 0). (0 ; −3) inverse l’ordre : ce point serait sur l’axe des ordonnées. (3 ; 0) est à droite de l’origine.",
+      "figure": {
+        "kind": "coordinate-plane",
+        "props": {
+          "points": []
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

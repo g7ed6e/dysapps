@@ -72,6 +72,7 @@ Pour tous les items :
    - réponse : 40°
    - indice : La figure grandit, mais garde-t-elle la même forme ?
    - explication : Un agrandissement garde la forme : les angles ne changent pas, l’angle mesure toujours 40°. 80°, c’est multiplier par 2, ce qui vaut pour une longueur. 20°, c’est diviser par 2 : les angles ne changent ni dans un agrandissement, ni dans une réduction.
+   - figure : image homothétie 2 / angle 40 · ?
 3. énoncé : Une figure de 5 cm² est agrandie de rapport 2. Son aire devient …
    - lu : Une figure de 5 centimètres carrés est agrandie de rapport 2. Son aire devient (mot manquant)
    - choix : 7 cm² · 10 cm² · 20 cm²
@@ -211,30 +212,35 @@ Pour tous les items :
    - réponse : translation
    - indice : Relis la première ligne du rappel.
    - explication : Glisser sans tourner, c’est une translation : chaque point bouge de la même façon, dans la même direction. Une rotation fait tourner la figure ; une symétrie axiale la retourne.
+   - figure : image translation
 2. énoncé : Une figure se retourne, comme dans un miroir. C’est une …
    - lu : Une figure se retourne, comme dans un miroir. C’est une (mot manquant)
    - choix : symétrie axiale · symétrie centrale · translation
    - réponse : symétrie axiale
    - indice : Un miroir est une ligne droite, pas un point.
    - explication : Le miroir est une droite, l’axe : c’est une symétrie axiale. La symétrie centrale se fait autour d’un point : la figure fait un demi-tour, sans se retourner. La translation la fait glisser.
+   - figure : image axiale
 3. énoncé : Une symétrie centrale, c’est une rotation de …
    - lu : Une symétrie centrale, c’est une rotation de (mot manquant)
    - choix : 90° · 180° · 360°
    - réponse : 180°
    - indice : La symétrie centrale fait un demi-tour. Un tour complet mesure 360 degrés.
    - explication : La symétrie centrale fait un demi-tour autour du centre : 360 ÷ 2 = 180°. 90°, c’est un quart de tour. 360°, c’est un tour complet : la figure reviendrait à sa place.
+   - figure : image centrale / arc ?
 4. énoncé : On fait tourner un triangle de 90° autour d’un point. Un angle de 50° du triangle devient un angle de …
    - lu : On fait tourner un triangle de 90 degrés autour d’un point. Un angle de 50 degrés du triangle devient un angle de (mot manquant)
    - choix : 50° · 90° · 140°
    - réponse : 50°
    - indice : Le triangle tourne. Est-ce que sa forme change ?
    - explication : Une rotation déplace la figure sans la déformer : l’angle mesure toujours 50°. 140°, c’est 50 + 90 : on a ajouté l’angle de la rotation, qui dit seulement de combien la figure tourne. 90° est l’angle de la rotation, pas celui du triangle.
+   - figure : image rotation 90 / angle 50 · ?
 5. énoncé : Un rectangle de 12 cm² a pour image, par une symétrie axiale, un rectangle de …
    - lu : Un rectangle de 12 centimètres carrés a pour image, par une symétrie axiale, un rectangle de (mot manquant)
    - choix : 6 cm² · 12 cm² · 24 cm²
    - réponse : 12 cm²
    - indice : Dans un miroir, une figure change-t-elle de taille ?
    - explication : Une symétrie axiale garde les longueurs : l’image a les mêmes côtés, donc la même aire, 12 cm². 24 cm², c’est la figure et son image ensemble. 6 cm², c’est la moitié : la symétrie ne coupe pas la figure, elle la retourne tout entière.
+   - figure : image axiale / aire 12 · ?
 6. énoncé : Une homothétie de rapport 2 transforme un segment de 7 cm en un segment de …
    - lu : Une homothétie de rapport 2 transforme un segment de 7 centimètres en un segment de (mot manquant)
    - choix : 9 cm · 14 cm · 28 cm

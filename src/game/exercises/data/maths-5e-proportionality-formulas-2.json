@@ -254,6 +254,23 @@
       "answer": "3x + 12",
       "hint": "Le 3 multiplie x, et il multiplie aussi 4.",
       "explanation": "On multiplie chaque terme par 3 : 3 × x + 3 × 4 = 3x + 12. 3x + 4, c’est oublier de multiplier le 4 ; x + 12, c’est oublier de multiplier x.",
+      "figure": {
+        "kind": "plane-figure",
+        "props": {
+          "shape": "split",
+          "values": [
+            3
+          ],
+          "widths": [
+            "x",
+            4
+          ],
+          "areas": [
+            "?",
+            "?"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -280,6 +297,23 @@
       "answer": "7(a + b)",
       "hint": "Quel nombre multiplie a, et multiplie aussi b ?",
       "explanation": "7 multiplie a et b : 7a + 7b = 7(a + b). On vérifie en développant : 7 × a + 7 × b. 14(a + b), c’est compter le 7 deux fois. 7a + b oublie que le 7 multiplie aussi b.",
+      "figure": {
+        "kind": "plane-figure",
+        "props": {
+          "shape": "split",
+          "values": [
+            "?"
+          ],
+          "widths": [
+            "a",
+            "b"
+          ],
+          "areas": [
+            "7a",
+            "7b"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

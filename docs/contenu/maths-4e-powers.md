@@ -71,17 +71,20 @@ Pour tous les items :
    - réponse : 24 cm²
    - indice : Relis la première ligne du rappel.
    - explication : Aire = base × hauteur = 6 × 4 = 24 cm². 12 divise par 2 : c’est la formule du triangle. 20, c’est 2 × (6 + 4) : on a pris la hauteur pour un côté et calculé le tour.
+   - figure : plane parallélogramme 6 · 4 / aire ?
 2. énoncé : Un parallélogramme a une base de 5 cm, un côté penché de 4 cm et une hauteur de 3 cm. Son aire est …
    - lu : Un parallélogramme a une base de 5 centimètres, un côté penché de 4 centimètres et une hauteur de 3 centimètres. Son aire est (mot manquant).
    - choix : 15 cm² · 18 cm² · 20 cm²
    - réponse : 15 cm²
    - indice : Le côté penché n’est pas la hauteur.
    - explication : Aire = base × hauteur = 5 × 3 = 15 cm². 5 × 4 = 20 prend le côté penché, et 18 est le périmètre, le tour de la figure.
+   - figure : plane parallélogramme 5 · 3 · 4 / aire ?
 3. énoncé : Le volume d’une boîte se mesure en …
    - choix : cm · cm² · cm³
    - réponse : cm³
    - indice : Un volume a trois dimensions : longueur, largeur et hauteur.
    - explication : Un volume se mesure en centimètres cubes, cm³, car on multiplie trois longueurs. Le cm² sert pour une aire, le cm pour une longueur.
+   - figure : solide cube 1
 4. énoncé : Un prisme droit a une base d’aire 12 cm² et une hauteur de 5 cm. Son volume est …
    - lu : Un prisme droit a une base d’aire 12 centimètres carrés et une hauteur de 5 centimètres. Son volume est (mot manquant).
    - choix : 17 cm³ · 30 cm³ · 60 cm³
@@ -139,11 +142,13 @@ Pour tous les items :
    - réponse : π × r² × h ÷ 3
    - indice : Un cône se calcule comme une pyramide, avec un disque pour base.
    - explication : L’aire du disque de base est π × r² ; on la multiplie par la hauteur, puis on divise par 3. Sans « divisé par 3 », c’est le cylindre ; avec r au lieu de r², ce n’est pas l’aire du disque.
+   - figure : solide cône r · h
 3. énoncé : Une pyramide et un prisme droit ont la même base et la même hauteur. La pyramide a pour volume … celui du prisme.
    - choix : la moitié de · le tiers de · le double de
    - réponse : le tiers de
    - indice : Compare les deux lignes du rappel.
    - explication : Les deux formules ne diffèrent que par « divisé par 3 » : la pyramide a le tiers du volume du prisme. Il faut trois pyramides pour remplir le prisme. La moitié, c’est diviser par 2 comme pour un triangle ; le double, c’est retourner la comparaison.
+   - figure : solide prisme-pyramide h
 4. énoncé : Une pyramide a une base carrée de 3 cm de côté et une hauteur de 5 cm. Son volume est …
    - lu : Une pyramide a une base carrée de 3 centimètres de côté et une hauteur de 5 centimètres. Son volume est (mot manquant).
    - choix : 5 cm³ · 15 cm³ · 45 cm³

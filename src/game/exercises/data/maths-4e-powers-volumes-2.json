@@ -59,6 +59,16 @@
       "answer": "π × r² × h ÷ 3",
       "hint": "Un cône se calcule comme une pyramide, avec un disque pour base.",
       "explanation": "L’aire du disque de base est π × r² ; on la multiplie par la hauteur, puis on divise par 3. Sans « divisé par 3 », c’est le cylindre ; avec r au lieu de r², ce n’est pas l’aire du disque.",
+      "figure": {
+        "kind": "solid",
+        "props": {
+          "solid": "cone",
+          "values": [
+            "r",
+            "h"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -84,6 +94,15 @@
       "answer": "le tiers de",
       "hint": "Compare les deux lignes du rappel.",
       "explanation": "Les deux formules ne diffèrent que par « divisé par 3 » : la pyramide a le tiers du volume du prisme. Il faut trois pyramides pour remplir le prisme. La moitié, c’est diviser par 2 comme pour un triangle ; le double, c’est retourner la comparaison.",
+      "figure": {
+        "kind": "solid",
+        "props": {
+          "solid": "prism-pyramid",
+          "values": [
+            "h"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

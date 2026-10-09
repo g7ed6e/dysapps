@@ -17,6 +17,12 @@
       "answer": "translation",
       "hint": "Relis la première ligne du rappel.",
       "explanation": "Glisser sans tourner, c’est une translation : chaque point bouge de la même façon, dans la même direction. Une rotation fait tourner la figure ; une symétrie axiale la retourne.",
+      "figure": {
+        "kind": "transformation",
+        "props": {
+          "transform": "translation"
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -44,6 +50,12 @@
       "answer": "symétrie axiale",
       "hint": "Un miroir est une ligne droite, pas un point.",
       "explanation": "Le miroir est une droite, l’axe : c’est une symétrie axiale. La symétrie centrale se fait autour d’un point : la figure fait un demi-tour, sans se retourner. La translation la fait glisser.",
+      "figure": {
+        "kind": "transformation",
+        "props": {
+          "transform": "reflection"
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -71,6 +83,13 @@
       "answer": "180°",
       "hint": "La symétrie centrale fait un demi-tour. Un tour complet mesure 360 degrés.",
       "explanation": "La symétrie centrale fait un demi-tour autour du centre : 360 ÷ 2 = 180°. 90°, c’est un quart de tour. 360°, c’est un tour complet : la figure reviendrait à sa place.",
+      "figure": {
+        "kind": "transformation",
+        "props": {
+          "transform": "point-reflection",
+          "arc": "?"
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -98,6 +117,17 @@
       "answer": "50°",
       "hint": "Le triangle tourne. Est-ce que sa forme change ?",
       "explanation": "Une rotation déplace la figure sans la déformer : l’angle mesure toujours 50°. 140°, c’est 50 + 90 : on a ajouté l’angle de la rotation, qui dit seulement de combien la figure tourne. 90° est l’angle de la rotation, pas celui du triangle.",
+      "figure": {
+        "kind": "transformation",
+        "props": {
+          "transform": "rotation",
+          "amount": 90,
+          "angles": [
+            50,
+            "?"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -125,6 +155,16 @@
       "answer": "12 cm²",
       "hint": "Dans un miroir, une figure change-t-elle de taille ?",
       "explanation": "Une symétrie axiale garde les longueurs : l’image a les mêmes côtés, donc la même aire, 12 cm². 24 cm², c’est la figure et son image ensemble. 6 cm², c’est la moitié : la symétrie ne coupe pas la figure, elle la retourne tout entière.",
+      "figure": {
+        "kind": "transformation",
+        "props": {
+          "transform": "reflection",
+          "areas": [
+            12,
+            "?"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

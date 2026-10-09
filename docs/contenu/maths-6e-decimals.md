@@ -139,18 +139,21 @@ Pour tous les items :
    - réponse : 0,08
    - indice : 4 × 2 = 8. Combien de chiffres après la virgule en tout ?
    - explication : 4 × 2 = 8. Il y a un chiffre après la virgule dans 0,4 et un dans 0,2 : deux en tout, donc 0,08. 0,8 n’en a qu’un ; 8 n’en a plus aucun. Multiplier par un nombre plus petit que 1 donne un résultat plus petit.
+   - figure : tableau nombre · chiffres après la virgule / 0,4 · 1 / 0,2 · 1 / 0,4 × 0,2 · ?
 2. énoncé : 1,5 × 3 = …
    - lu : 1 virgule 5 fois 3, c’est combien ?
    - choix : 0,45 · 4,5 · 45
    - réponse : 4,5
    - indice : 15 × 3 = 45. Combien de chiffres après la virgule en tout ?
    - explication : 15 × 3 = 45, et un seul chiffre après la virgule, celui de 1,5 : 4,5. Contrôle : 3 fois un peu plus de 1, c’est un peu plus de 3. 45 a perdu sa virgule ; 0,45 a deux chiffres après la virgule au lieu d’un.
+   - figure : tableau nombre · chiffres après la virgule / 1,5 · 1 / 3 · 0 / 1,5 × 3 · ?
 3. énoncé : 1,2 × 0,3 = …
    - lu : 1 virgule 2 fois 0 virgule 3, c’est combien ?
    - choix : 0,036 · 0,36 · 3,6
    - réponse : 0,36
    - indice : 12 × 3 = 36. Compte les chiffres après la virgule dans 1,2 et dans 0,3.
    - explication : 12 × 3 = 36, et deux chiffres après la virgule en tout (un dans 1,2, un dans 0,3) : 0,36. 3,6 n’en a qu’un ; 0,036 en a trois.
+   - figure : tableau nombre · chiffres après la virgule / 1,2 · 1 / 0,3 · 1 / 1,2 × 0,3 · ?
 4. énoncé : "Le calcul de Léo\nLéo pose 4,9 × 6,1.\nIl trouve 298,9."
    - question : Que dit l’ordre de grandeur ?
    - lu : Le calcul de Léo. Léo pose 4 virgule 9 fois 6 virgule 1. Il trouve 298 virgule 9.
@@ -158,6 +161,7 @@ Pour tous les items :
    - réponse : Environ 30 : la virgule est mal placée.
    - indice : Arrondis 4,9 et 6,1 à l’unité, puis multiplie.
    - explication : 4,9 est proche de 5, 6,1 proche de 6 : 5 × 6 = 30. Le résultat doit être proche de 30, pas de 300 : la virgule est mal placée. Le bon résultat est 29,89. « Environ 300 » reprend le résultat de Léo au lieu de le contrôler ; et 298,9, loin de 30, ne peut pas être juste.
+   - figure : tableau nombre · arrondi / 4,9 · 5 / 6,1 · 6 / produit · ?
 5. énoncé : "Au marché\nLe tissu coûte 3 € le mètre.\nNina en achète 2,5 m."
    - question : Combien paie-t-elle ?
    - lu : Au marché. Le tissu coûte 3 euros le mètre. Nina en achète 2 virgule 5 mètres.
@@ -172,6 +176,7 @@ Pour tous les items :
    - réponse : 2,38
    - indice : Regarde le chiffre des millièmes : 4.
    - explication : Le chiffre des millièmes est 4, entre 0 et 4 : le chiffre des centièmes ne change pas, donc 2,38. 2,39, c’est augmenter alors que le chiffre est 4 ; 2,4, c’est l’arrondi au dixième.
+   - figure : tableau unités · dixièmes · centièmes · millièmes / 2 · 3 · 8 · 4
 7. énoncé : 7,48 arrondi à l’unité, c’est …
    - lu : 7 virgule 48, arrondi à l’unité, c’est combien ?
    - choix : 7 · 7,5 · 8

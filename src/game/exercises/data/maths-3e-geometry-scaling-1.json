@@ -63,6 +63,17 @@
       "answer": "40°",
       "hint": "La figure grandit, mais garde-t-elle la même forme ?",
       "explanation": "Un agrandissement garde la forme : les angles ne changent pas, l’angle mesure toujours 40°. 80°, c’est multiplier par 2, ce qui vaut pour une longueur. 20°, c’est diviser par 2 : les angles ne changent ni dans un agrandissement, ni dans une réduction.",
+      "figure": {
+        "kind": "transformation",
+        "props": {
+          "transform": "dilation",
+          "amount": 2,
+          "angles": [
+            40,
+            "?"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

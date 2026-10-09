@@ -283,42 +283,49 @@ Pour tous les items :
    - réponse : 25π
    - indice : π × r × r : le rayon est multiplié deux fois.
    - explication : π × 5 × 5 = 25π cm², environ 78 cm². 10π, c’est π × 2 × 5, le périmètre du cercle, pas l’aire. 5π, c’est oublier de multiplier une deuxième fois par le rayon.
+   - figure : plane disque 5 / aire ?
 3. énoncé : Un cylindre a un rayon de 3 cm et une hauteur de 2 cm. Son volume est … cm³.
    - lu : Un cylindre a un rayon de 3 centimètres et une hauteur de 2 centimètres. Quel est son volume, en centimètres cubes ?
    - choix : 6π · 9π · 18π
    - réponse : 18π
    - indice : D’abord l’aire du disque de base, puis × la hauteur.
    - explication : La base est un disque : π × 3 × 3 = 9π cm². Puis 9π × 2 = 18π cm³. 9π, c’est l’aire de la base seule, sans la hauteur. 6π, c’est π × 3 × 2 : le rayon n’est pris qu’une fois.
+   - figure : solide cylindre 3 · 2 / volume ?
 4. énoncé : Deux angles adjacents forment un angle plat. L’un mesure 130°, l’autre mesure …
    - lu : Deux angles adjacents forment un angle plat. L’un mesure 130 degrés. Combien mesure l’autre ?
    - choix : 50° · 130° · 230°
    - réponse : 50°
    - indice : Un angle plat mesure 180°. Enlève l’angle connu.
    - explication : Ensemble, ils font un angle plat, 180° : 180 − 130 = 50°. 130°, c’est croire les deux angles égaux, comme des angles opposés par le sommet. 230°, c’est 360 − 130 : un angle plat ne fait pas 360°.
+   - figure : angle plat 130 · ?
 5. énoncé : Deux droites se coupent. Deux angles opposés par le sommet : l’un mesure 70°, l’autre mesure …
    - lu : Deux droites se coupent. Deux angles opposés par le sommet : l’un mesure 70 degrés. Combien mesure l’autre ?
    - choix : 20° · 70° · 110°
    - réponse : 70°
    - indice : Relis la ligne du rappel sur les angles opposés par le sommet.
    - explication : Deux angles opposés par le sommet ont la même mesure : 70°. 110°, c’est l’angle d’à côté, qui forme un angle plat avec lui : 70 + 110 = 180. 20°, c’est 90 − 70 : il n’y a pas d’angle droit ici.
+   - figure : angle croisé 70 · ?
 6. énoncé : Un triangle a un angle de 45° et un angle de 75°. Le troisième mesure …
    - lu : Un triangle a un angle de 45 degrés et un angle de 75 degrés. Combien mesure le troisième ?
    - choix : 60° · 120° · 240°
    - réponse : 60°
    - indice : Les trois angles font 180°. Enlève les deux angles connus.
    - explication : 45 + 75 = 120, puis 180 − 120 = 60 : le troisième angle mesure 60°. 120°, c’est la somme des deux angles connus. 240°, c’est 360 − 120 : 360°, ce n’est pas la somme des angles d’un triangle.
+   - figure : angles 45 · 75 · ?
 7. énoncé : Un triangle a un angle droit et un angle de 35°. Le troisième mesure …
    - lu : Un triangle a un angle droit et un angle de 35 degrés. Combien mesure le troisième ?
    - choix : 55° · 125° · 145°
    - réponse : 55°
    - indice : Un angle droit mesure 90°. Les trois angles font 180°.
    - explication : 90 + 35 = 125, puis 180 − 125 = 55 : le troisième angle mesure 55°. 145°, c’est 180 − 35 : l’angle droit est oublié. 125°, c’est la somme des deux angles connus.
+   - figure : angles 90 · 35 · ?
 8. énoncé : Un triangle a une base de 8 cm et une hauteur de 5 cm. Son aire est … cm².
    - lu : Un triangle a une base de 8 centimètres et une hauteur de 5 centimètres. Quelle est son aire, en centimètres carrés ?
    - choix : 13 · 20 · 40
    - réponse : 20
    - indice : Base × hauteur, puis divise par 2.
    - explication : 8 × 5 = 40, puis 40 ÷ 2 = 20 cm². 40, c’est oublier de diviser par 2 : c’est l’aire du rectangle. 13, c’est 8 + 5.
+   - figure : plane triangle 8 · 5 / aire ?
 
 ## Les plans
 

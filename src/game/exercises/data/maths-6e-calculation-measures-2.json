@@ -17,6 +17,16 @@
       "answer": "80°",
       "hint": "Les trois angles font 180°. Combien font déjà les deux premiers ?",
       "explanation": "40 + 60 = 100, et 180 − 100 = 80 : le troisième angle mesure 80°. 100°, c’est la somme des deux premiers ; 140°, c’est 180 − 40, en oubliant l’angle de 60°.",
+      "figure": {
+        "kind": "triangle-angles",
+        "props": {
+          "angles": [
+            40,
+            60,
+            "?"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -44,6 +54,17 @@
       "answer": "50°",
       "hint": "180 − 80 donne les deux angles égaux ensemble. Puis partage en deux.",
       "explanation": "180 − 80 = 100 pour les deux angles égaux ensemble, donc 100 ÷ 2 = 50° chacun. 100°, c’est oublier de partager en deux ; 80°, c’est croire que les trois angles sont égaux.",
+      "figure": {
+        "kind": "triangle-angles",
+        "props": {
+          "angles": [
+            80,
+            "?",
+            "?"
+          ],
+          "marks": "isosceles"
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -71,6 +92,16 @@
       "answer": "60°",
       "hint": "Un triangle rectangle a aussi un angle droit, de 90°.",
       "explanation": "Les angles font 180° : 90 + 30 = 120, et 180 − 120 = 60°. 150°, c’est oublier l’angle droit ; 30°, c’est recopier l’angle donné : rien ne dit que les deux autres angles sont égaux.",
+      "figure": {
+        "kind": "triangle-angles",
+        "props": {
+          "angles": [
+            90,
+            30,
+            "?"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -98,6 +129,17 @@
       "answer": "60°",
       "hint": "Les trois angles sont égaux et font 180° en tout.",
       "explanation": "180 ÷ 3 = 60 : chaque angle mesure 60°. 180°, c’est la somme des trois ; 90°, c’est l’angle droit, qu’un triangle équilatéral n’a pas.",
+      "figure": {
+        "kind": "triangle-angles",
+        "props": {
+          "angles": [
+            "?",
+            "?",
+            "?"
+          ],
+          "marks": "equilateral"
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -125,6 +167,16 @@
       "answer": "8 cm",
       "hint": "Le diamètre traverse le cercle en passant par le centre.",
       "explanation": "Le diamètre vaut deux rayons : 2 × 4 = 8 cm. 2 cm, c’est prendre la moitié : on a confondu rayon et diamètre.",
+      "figure": {
+        "kind": "plane-figure",
+        "props": {
+          "shape": "circle",
+          "values": [
+            4
+          ],
+          "diameter": "?"
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -152,6 +204,16 @@
       "answer": "7 cm",
       "hint": "Relis la ligne « médiatrice » du rappel.",
       "explanation": "Un point de la médiatrice est à la même distance de A et de B : MB = MA = 7 cm. 3,5 cm, c’est confondre avec le milieu ; 14 cm, c’est doubler.",
+      "figure": {
+        "kind": "plane-figure",
+        "props": {
+          "shape": "bisector",
+          "values": [
+            7,
+            "?"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

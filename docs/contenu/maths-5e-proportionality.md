@@ -164,12 +164,14 @@ Pour tous les items :
    - réponse : 3x + 12
    - indice : Le 3 multiplie x, et il multiplie aussi 4.
    - explication : On multiplie chaque terme par 3 : 3 × x + 3 × 4 = 3x + 12. 3x + 4, c’est oublier de multiplier le 4 ; x + 12, c’est oublier de multiplier x.
+   - figure : plane partagé 3 / x · 4 / ? · ?
 7. énoncé : 7a + 7b = …
    - lu : 7 a plus 7 b. Factorise.
    - choix : 7(a + b) · 7a + b · 14(a + b)
    - réponse : 7(a + b)
    - indice : Quel nombre multiplie a, et multiplie aussi b ?
    - explication : 7 multiplie a et b : 7a + 7b = 7(a + b). On vérifie en développant : 7 × a + 7 × b. 14(a + b), c’est compter le 7 deux fois. 7a + b oublie que le 7 multiplie aussi b.
+   - figure : plane partagé ? / a · b / 7a · 7b
 8. énoncé : 6 × (100 + 2) = …
    - lu : 6 fois la parenthèse 100 plus 2, combien ?
    - choix : 602 · 608 · 612

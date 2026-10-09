@@ -230,6 +230,7 @@ Pour tous les items :
    - réponse : −2
    - indice : On écrit d’abord l’abscisse, puis l’ordonnée.
    - explication : Dans (4 ; −2), l’abscisse vient d’abord : 4. L’ordonnée vient ensuite : −2. 4 est l’abscisse. 2 oublie le signe moins : le point est en dessous de l’axe des abscisses.
+   - figure : repère A 4 · −2
 4. énoncé : "Dans un repère du plan,\nle point M a une abscisse négative\net une ordonnée positive."
    - question : Où est le point M par rapport à l’origine ?
    - lu : Dans un repère du plan, le point M a une abscisse négative et une ordonnée positive.
@@ -237,18 +238,21 @@ Pour tous les items :
    - réponse : en haut à gauche
    - indice : L’abscisse dit gauche ou droite. L’ordonnée dit haut ou bas.
    - explication : Abscisse négative : le point est à gauche de l’origine. Ordonnée positive : il est en haut. M est donc en haut à gauche. En haut à droite, l’abscisse serait positive ; en bas à gauche, l’ordonnée serait négative.
+   - figure : repère
 5. énoncé : Le point B a pour coordonnées (0 ; 5). Il est sur …
    - lu : Le point B a pour coordonnées 0 point-virgule 5. Il est sur (mot manquant)
    - choix : l’axe des abscisses · l’axe des ordonnées · aucun des deux axes
    - réponse : l’axe des ordonnées
    - indice : Son abscisse vaut 0. Il n’est ni à gauche ni à droite de l’origine : où est-il ?
    - explication : L’abscisse de B vaut 0 : il n’est ni à gauche ni à droite de l’origine. Il est donc sur l’axe vertical, l’axe des ordonnées, 5 unités au-dessus de l’origine. Sur l’axe des abscisses, c’est l’ordonnée qui vaudrait 0.
+   - figure : repère
 6. énoncé : Le point C a pour coordonnées (2 ; 3). On le déplace de 4 unités vers la droite. Le nouveau point a pour coordonnées …
    - lu : Le point C a pour coordonnées 2 point-virgule 3. On le déplace de 4 unités vers la droite. Le nouveau point a pour coordonnées (mot manquant)
    - choix : (6 ; 3) · (2 ; 7) · (6 ; 7)
    - réponse : (6 ; 3)
    - indice : Aller vers la droite change l’abscisse. Est-ce que la hauteur change ?
    - explication : Vers la droite, l’abscisse augmente : 2 + 4 = 6. Le point ne monte pas et ne descend pas : l’ordonnée reste 3. (2 ; 7), c’est monter de 4 au lieu d’aller à droite. (6 ; 7), c’est ajouter 4 aux deux coordonnées.
+   - figure : repère C 2 · 3
 7. énoncé : Sur une droite graduée, A a pour abscisse −3 et B a pour abscisse 5. La distance AB est …
    - lu : Sur une droite graduée, A a pour abscisse moins 3 et B a pour abscisse 5. La distance A B est (mot manquant)
    - choix : −8 · 2 · 8
@@ -262,6 +266,7 @@ Pour tous les items :
    - réponse : (−3 ; 0)
    - indice : À gauche de l’origine, l’abscisse est négative. Sur l’axe des abscisses, que vaut l’ordonnée ?
    - explication : À gauche de l’origine, l’abscisse est négative : −3. Sur l’axe des abscisses, le point n’est ni en haut ni en bas : l’ordonnée vaut 0. On écrit (−3 ; 0). (0 ; −3) inverse l’ordre : ce point serait sur l’axe des ordonnées. (3 ; 0) est à droite de l’origine.
+   - figure : repère
 
 ### Niveau 2 · `maths-3e-functions-coordinates-2`
 

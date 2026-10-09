@@ -17,6 +17,17 @@
       "answer": "15 cm²",
       "hint": "L’aire d’un rectangle : longueur × largeur.",
       "explanation": "5 × 3 = 15 : l’aire est 15 cm². 16 cm², c’est le tour, le périmètre : 5 + 3 + 5 + 3. 8 cm², c’est 5 + 3.",
+      "figure": {
+        "kind": "plane-figure",
+        "props": {
+          "shape": "rectangle",
+          "values": [
+            5,
+            3
+          ],
+          "area": "?"
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -43,6 +54,16 @@
       "answer": "36 cm²",
       "hint": "L’aire d’un carré : côté × côté.",
       "explanation": "6 × 6 = 36 : l’aire est 36 cm². 24 cm², c’est le périmètre, 4 × 6 ; 12 cm², c’est 6 × 2.",
+      "figure": {
+        "kind": "plane-figure",
+        "props": {
+          "shape": "square",
+          "values": [
+            6
+          ],
+          "area": "?"
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -70,6 +91,19 @@
       "answer": "24 cm³",
       "hint": "Combien de cubes dans une couche ? Puis : combien de couches ?",
       "explanation": "Une couche a 4 × 2 = 8 cubes. 3 couches : 3 × 8 = 24 cubes, donc 24 cm³. 8 cm³, c’est une seule couche ; 9 cm³, c’est 4 + 2 + 3.",
+      "figure": {
+        "kind": "solid",
+        "props": {
+          "solid": "cubes",
+          "boxes": [
+            [
+              4,
+              2,
+              3
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -97,6 +131,24 @@
       "answer": "elles ont le même volume",
       "hint": "Compte les cubes de chaque boîte.",
       "explanation": "Boîte A : 2 × 6 = 12 cubes. Boîte B : 3 × 4 = 12 cubes. 12 cm³ chacune : elles ont le même volume, même si B a plus de couches.",
+      "figure": {
+        "kind": "solid",
+        "props": {
+          "solid": "cubes",
+          "boxes": [
+            [
+              3,
+              2,
+              2
+            ],
+            [
+              2,
+              2,
+              3
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -123,6 +175,15 @@
       "answer": "obtus",
       "hint": "120°, c’est plus ou moins que 90° ?",
       "explanation": "120° est plus grand que 90° et plus petit que 180° : l’angle est obtus. Un angle aigu mesure moins de 90°.",
+      "figure": {
+        "kind": "angle",
+        "props": {
+          "layout": "single",
+          "values": [
+            120
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -149,6 +210,15 @@
       "answer": "aigu",
       "hint": "45°, c’est plus ou moins que 90° ?",
       "explanation": "45° est plus petit que 90° : l’angle est aigu. C’est la moitié d’un angle droit.",
+      "figure": {
+        "kind": "angle",
+        "props": {
+          "layout": "single",
+          "values": [
+            45
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -175,6 +245,12 @@
       "answer": "cylindre",
       "hint": "Combien de disques ? Relis la dernière ligne du rappel.",
       "explanation": "Deux disques et une face courbe : c’est un cylindre. Le cône n’a qu’un disque et une pointe ; la pyramide n’a que des faces plates.",
+      "figure": {
+        "kind": "solid",
+        "props": {
+          "solid": "cylinder"
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

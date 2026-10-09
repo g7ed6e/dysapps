@@ -17,6 +17,17 @@
       "answer": "24 cm²",
       "hint": "Relis la première ligne du rappel.",
       "explanation": "Aire = base × hauteur = 6 × 4 = 24 cm². 12 divise par 2 : c’est la formule du triangle. 20, c’est 2 × (6 + 4) : on a pris la hauteur pour un côté et calculé le tour.",
+      "figure": {
+        "kind": "plane-figure",
+        "props": {
+          "shape": "parallelogram",
+          "values": [
+            6,
+            4
+          ],
+          "area": "?"
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -43,6 +54,18 @@
       "answer": "15 cm²",
       "hint": "Le côté penché n’est pas la hauteur.",
       "explanation": "Aire = base × hauteur = 5 × 3 = 15 cm². 5 × 4 = 20 prend le côté penché, et 18 est le périmètre, le tour de la figure.",
+      "figure": {
+        "kind": "plane-figure",
+        "props": {
+          "shape": "parallelogram",
+          "values": [
+            5,
+            3,
+            4
+          ],
+          "area": "?"
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -69,6 +92,15 @@
       "answer": "cm³",
       "hint": "Un volume a trois dimensions : longueur, largeur et hauteur.",
       "explanation": "Un volume se mesure en centimètres cubes, cm³, car on multiplie trois longueurs. Le cm² sert pour une aire, le cm pour une longueur.",
+      "figure": {
+        "kind": "solid",
+        "props": {
+          "solid": "cube",
+          "values": [
+            1
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
