@@ -1,6 +1,6 @@
 # Architecture
 
-DysApps est une application web statique : React 19, TypeScript, Vite, Three.js pour la 3D, Vitest pour les tests. Aucun serveur, aucune API : tout tourne dans le navigateur et tout est enregistré dans le stockage local de l’appareil.
+DysApps est une application web statique : React 19, TypeScript, Vite, Three.js pour la 3D, Vitest pour les tests. Tout tourne dans le navigateur et tout est enregistré dans le stockage local de l’appareil. Le seul serveur est le Worker de Cloudflare (`src/worker/`), qui reçoit la mesure d’usage anonyme et ne sert rien d’autre.
 
 Ce dossier décrit le code tel qu’il est, avec des schémas :
 

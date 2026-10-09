@@ -46,6 +46,8 @@ export interface Settings {
   appBadge: boolean;
   /** La LV2 de l'élève : ses missions, sa voix. La langue non choisie n'apparaît nulle part. */
   lv2: Lv2Choice;
+  /** La mesure d'usage anonyme (src/core/usage.ts), qui aide à améliorer l'application ; on peut la couper. */
+  usageStats: boolean;
   /**
    * L'univers de l'appareil (lot 6, src/core/universe.ts). Absent sur un appareil qui ne l'a jamais ouvert depuis la
    * bascule : le premier choix se calcule alors au premier lancement, puis reste. Jamais dans les réglages par défaut.
@@ -74,6 +76,7 @@ export const DEFAULT_SETTINGS: Settings = {
   haptics: true,
   appBadge: true,
   lv2: 'es',
+  usageStats: true,
 };
 
 export const FONT_LABELS: Record<FontChoice, string> = {
@@ -147,6 +150,7 @@ export function sanitizeSettings(raw: Partial<Settings> & { view3d?: unknown }):
     haptics: s.haptics === undefined ? DEFAULT_SETTINGS.haptics : Boolean(s.haptics),
     appBadge: s.appBadge === undefined ? DEFAULT_SETTINGS.appBadge : Boolean(s.appBadge),
     lv2: Object.hasOwn(LV2_LABELS, s.lv2) ? s.lv2 : DEFAULT_SETTINGS.lv2,
+    usageStats: s.usageStats === undefined ? DEFAULT_SETTINGS.usageStats : Boolean(s.usageStats),
     // Absent reste absent (le premier choix dépend de la progression) ; un univers inconnu vaut l'univers par défaut.
     ...(s.univers === undefined ? {} : { univers: Object.hasOwn(UNIVERS, s.univers) ? s.univers : UNIVERS_PAR_DEFAUT }),
   };

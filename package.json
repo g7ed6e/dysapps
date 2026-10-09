@@ -89,7 +89,8 @@
       "src/curriculum/index.ts",
       "src/curriculum/functionWords.ts",
       "src/curriculum/sources.ts",
-      "src/universes/index.ts"
+      "src/universes/index.ts",
+      "src/worker/index.ts"
     ],
     "project": [
       "src/**/*.{ts,tsx}",

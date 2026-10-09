@@ -1,6 +1,7 @@
-// La section Application des réglages : la version, la mise à jour, les liens (sortie de SettingsPage.tsx, qualité du
-// code, lot 8).
+// La section Application des réglages : la version, la mise à jour, la mesure d'usage, les liens (sortie de
+// SettingsPage.tsx, qualité du code, lot 8).
 import { Icon } from '../../components/Icon';
+import { useSettings } from '../../core/SettingsContext';
 import { APP_VERSION, applyUpdate, checkForUpdate, useAppUpdate } from '../../core/appUpdate';
 
 const DOCS_URL = 'https://g7ed6e.github.io/dysapps/';
@@ -8,6 +9,7 @@ const REPO_URL = 'https://github.com/g7ed6e/dysapps';
 
 export function ApplicationSection() {
   const appUpdate = useAppUpdate();
+  const { settings, update } = useSettings();
   return (
     <fieldset className="panel">
       <legend>Application</legend>
@@ -29,6 +31,15 @@ export function ApplicationSection() {
             : appUpdate.checked === 'hors-ligne'
               ? 'Pas de connexion : réessaie plus tard.'
               : 'L’application se met à jour toute seule ; ce bouton sert à ne pas attendre.'}
+      </p>
+      {/* La mesure d'usage anonyme (core/usage.ts) : ce qu'elle compte, en une phrase. */}
+      <label className="toggle">
+        <input type="checkbox" checked={settings.usageStats} onChange={(e) => update({ usageStats: e.target.checked })} />
+        Aider à améliorer l’appli
+      </label>
+      <p className="settings-note">
+        L’appli compte ses lancements, le temps passé sur chaque écran et sa fluidité, sans savoir qui tu es. Rien n’est écrit
+        sur ton appareil.
       </p>
       {/* Ouverts dans un nouvel onglet : l'appli reste où elle était. */}
       <div className="settings-links">

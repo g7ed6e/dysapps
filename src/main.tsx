@@ -12,11 +12,14 @@ import './styles/roles.css';
 import './styles/blocland.css';
 import { App } from './App';
 import { migrateStorage } from './core/migration';
+import { startUsage } from './core/usage';
 // La géométrie des liaisons (GD-9), que les règles du monde demandent à la grille.
 import './game/world/linkGeometry';
 
 // Une sauvegarde d'avant les mots neutres est traduite avant que l'appli ne la lise.
 migrateStorage();
+// La mesure d'usage anonyme, dans l'application publiée seulement (src/core/usage.ts).
+startUsage();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

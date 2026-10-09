@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { HashRouter, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { TitleScreen } from './components/TitleScreen';
@@ -34,6 +34,7 @@ import { translatePath } from './core/legacyIds';
 import { movedPath } from './core/movedIds';
 import { useImmersive } from './game/useImmersive';
 import { mesuresAutomatiques } from './game/rendering';
+import { usageScreen } from './core/usage';
 
 /** La mesure automatique (`?mesures=auto`), chargée à part : aucun élève ne la télécharge. */
 const AutoMeasure = lazy(() => import('./game/AutoMeasure'));
@@ -46,6 +47,7 @@ export function App() {
         <BloclandProvider>
           <HashRouter>
             <AppRoutes />
+            <UsageScreen />
             <TitleScreen />
             <AppBadge />
             {mesuresAutomatiques() && (
@@ -58,6 +60,13 @@ export function App() {
       </ProgressProvider>
     </SettingsProvider>
   );
+}
+
+// L'écran affiché, pour la mesure d'usage anonyme (core/usage.ts).
+function UsageScreen() {
+  const { pathname } = useLocation();
+  useEffect(() => usageScreen(pathname), [pathname]);
+  return null;
 }
 
 export function AppRoutes() {
