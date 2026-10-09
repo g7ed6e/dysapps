@@ -2,7 +2,7 @@
 // personnages, docs/univers/archipeo/personnages/modeles.md), en deux versions : de près (environ 1 500 triangles) et de
 // loin (environ 200). Code pur, sans DOM : le registre des noms, et la mise au format des personnages dessinés en code
 // (`FacettesDePersonnage`), pour que le monde, le défi, les fiches et le budget les lisent comme les autres. Ce qui
-// charge les fichiers est à part (../../../three/importedModels.ts, et le disque pour les tests).
+// charge les fichiers est à part (../../../importedCharacters.ts, et le disque pour les tests : ./fromDisk.testing.ts).
 //
 // Un modèle importé remplace celui dessiné en code tant qu'il est chargé ; sinon (pas encore chargé, réseau coupé,
 // archipel sans modèle), le dessiné en code reste.

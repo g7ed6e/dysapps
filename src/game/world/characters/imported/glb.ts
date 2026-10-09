@@ -1,12 +1,12 @@
-// Read a binary glTF (.glb) made by the model pipeline (scripts/rendu/modeles/): one mesh, triangles, vertex colours,
-// no texture. Pure code, no DOM and no Three.js, so the budget and the tests can read the same files from disk.
-// Only what that pipeline writes is supported: float, normalized short or byte attributes, optional indices, and a
-// node translation and scale (enough for quantized positions).
+// Lit un glTF binaire (.glb) fait par la chaîne des modèles (scripts/rendu/modeles/) : un maillage, des triangles, des
+// couleurs de sommets, sans texture. Code pur, sans DOM ni Three.js : le budget et les tests lisent les mêmes fichiers
+// sur le disque. Seul ce qu'écrivent cette chaîne et le compactage du build (scripts/rendu/compacterGlb.mjs) est lu :
+// des flottants ou des entiers « normalized », des indices ou non, la translation et l'échelle du nœud.
 
-/** A model read from a .glb: three vertices per triangle (no index), and their colours in linear space. */
+/** Un modèle lu : trois sommets par triangle (sans indices), et leurs couleurs dans l'espace linéaire. */
 export interface ModeleLu {
   positions: Float32Array;
-  /** Linear RGB per vertex (glTF COLOR_0 is linear). */
+  /** Une couleur RVB linéaire par sommet (COLOR_0 de glTF est linéaire). */
   colors: Float32Array;
 }
 
@@ -31,7 +31,7 @@ const JSON_CHUNK = 0x4e4f534a;
 const BIN_CHUNK = 0x004e4942;
 const COMPONENTS = { SCALAR: 1, VEC3: 3, VEC4: 4 } as const;
 
-/** Reads one component as a number: normalized integers are brought back to [0, 1] or [−1, 1]. */
+/** Lit une composante : un entier « normalized » est ramené dans [0, 1] ou [−1, 1]. */
 function lecteur(view: DataView, type: number, normalized: boolean): { size: number; read: (o: number) => number } {
   switch (type) {
     case 5126:
@@ -51,7 +51,7 @@ function lecteur(view: DataView, type: number, normalized: boolean): { size: num
   }
 }
 
-/** The values of an accessor, `n` components per element (the first `n` if it has more, e.g. RGBA read as RGB). */
+/** Les valeurs d'un accesseur, `n` composantes par élément (les `n` premières s'il en a plus : RGBA lu en RVB). */
 function valeurs(gltf: Gltf, bin: DataView, index: number, n: number): Float32Array {
   const a = gltf.accessors[index];
   const v = gltf.bufferViews[a.bufferView];
@@ -64,7 +64,7 @@ function valeurs(gltf: Gltf, bin: DataView, index: number, n: number): Float32Ar
   return out;
 }
 
-/** Reads a .glb: its first mesh, as non-indexed triangles, with the node's translation and scale applied. */
+/** Lit un .glb : son maillage, en triangles sans indices, avec la translation et l'échelle de son nœud. */
 export function lireGlb(buffer: ArrayBuffer): ModeleLu {
   const view = new DataView(buffer);
   if (view.getUint32(0, true) !== MAGIC) throw new Error('Pas un fichier .glb');
@@ -78,8 +78,7 @@ export function lireGlb(buffer: ArrayBuffer): ModeleLu {
     o += 8 + length;
   }
   if (!gltf || !bin) throw new Error('Fichier .glb incomplet');
-  const meshIndex = gltf.nodes?.findIndex((n) => n.mesh !== undefined) ?? -1;
-  const node = meshIndex >= 0 ? gltf.nodes![meshIndex] : {};
+  const node = gltf.nodes?.find((n) => n.mesh !== undefined) ?? {};
   const prim = gltf.meshes[node.mesh ?? 0].primitives[0];
   if ((prim.mode ?? 4) !== 4) throw new Error('Seuls les triangles sont lus');
   if (prim.attributes.COLOR_0 === undefined) throw new Error('Modèle sans couleurs de sommets');
