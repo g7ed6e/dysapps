@@ -17,7 +17,10 @@ export type MaterialFamily =
   | 'bardage'
   /** Le mur plein dans la teinte de la matière, soubassement et chaperon de pierre ; seule et basse, un bac. */
   | 'pierre'
-  /** La tôle à joints verticaux peints, chaperon de pierre, aucun rivet. */
+  /**
+   * La tôle à joints verticaux peints tous les quarts de case, soubassement de pierre à partir de trois rangées, chaperon
+   * mince sans toit, aucun rivet (au 6e, le 9 octobre 2026).
+   */
   | 'metal'
   /** Les pentes, la rive, le versant et le faîte, dans la couverture de l'île (world/roofs.ts). */
   | 'toit'
@@ -27,9 +30,16 @@ export type MaterialFamily =
   | 'lanterne'
   /** La porte (un vantail dans son encadrement), la barrière (poteaux et lisses), la marche (de pierre, basse). */
   | 'finition'
-  /** Les formes communes du décor (world/decor/common.ts). */
+  /**
+   * Les formes communes du décor (world/decor/common.ts) ; au 6e, les poteaux de bois des liaisons et de la jetée en
+   * poteaux carrés (./lowPieces.ts, `woodenPost`).
+   */
   | 'vegetal'
   | 'toile'
+  /**
+   * L'or, le cristal, le velours : au 6e, la cloche, le lingot et le cristal des trophées (./precious.ts), la tenture du
+   * fond de la salle des trophées (./paint.ts) ; jamais une lueur ni une transparence.
+   */
   | 'precieux'
   /** Une nappe plate. */
   | 'eau';

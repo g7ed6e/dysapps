@@ -38,11 +38,17 @@ export interface CaseDuLieu {
 /**
  * Ce que le kit fait d'un bloc d'un lieu du village : sa famille (un mur de bois ou de pierre, un toit ; sans famille, il
  * reste un bloc taillé), s'il prend la couverture de son île (world/roofs.ts) ou la couleur d'une autre matière
- * (`matiere`) au lieu de la sienne, et si son colombage se passe de décharge (`sansDecharge`, un pilier isolé) ;
+ * (`matiere`) au lieu de la sienne, son dessin quand il ne se lit pas sur sa famille (`dessin`), et si son colombage se
+ * passe de décharge (`sansDecharge`, un pilier isolé) ;
  * `undefined` : il reste le bloc qu'il est.
  */
 interface BlocDuKit {
   famille?: Famille;
+  /**
+   * Son dessin, quand sa famille ne le dit pas seule (le précieux : la cloche de l'école, une pièce ; le velours de la
+   * salle des trophées, une tenture peinte).
+   */
+  dessin?: DessinDePiece | ManiereDuMur;
   couverture?: boolean;
   matiere?: TextureKind;
   sansDecharge?: boolean;
@@ -75,6 +81,11 @@ export interface Kit {
    * déjà réunis, leurs toits en pente.
    */
   lissage?: boolean;
+  /**
+   * Les poteaux de bois (le végétal, `tronc`) que le kit dessine en poteaux carrés (../lowPieces.ts, `woodenPost`) :
+   * au 6e, ceux des liaisons (les bacs, les lanternes à leurs bouts) et de la jetée. Ils ne sont d'aucun plan.
+   */
+  poteaux?: (c: VoxelCube) => boolean;
 }
 
 /** Un kit vide : aucun bloc remplacé. */

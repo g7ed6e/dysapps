@@ -19,6 +19,11 @@ export const PIECES_BASSES = {
   lisse: { largeur: 0.08, hauteur: 0.08, haut: 0.55 },
   /** La marche : sa hauteur. */
   marche: 0.3,
+  /**
+   * Le poteau de bois (le végétal, `tronc` : les bacs, les lanternes au bout des liaisons, la jetée) : sa section, celle
+   * du corps d'une lanterne (world/construction/settings.ts, `LANTERNE.corps`), qui s'y pose juste.
+   */
+  woodenPost: 0.3,
 } as const;
 
 /** Les facettes d'une boîte, sauf celles dont la normale est donnée (le dessous, un bout caché dans le poteau). */
@@ -133,6 +138,18 @@ export function marcheDe(piece: IdDePiece): DessinDePiece | undefined {
     MARCHES.set(dessus, d);
   }
   return d;
+}
+
+/**
+ * Le poteau de bois (intention du directeur artistique, 9 octobre 2026) : un poteau carré au milieu de sa case, de toute
+ * sa hauteur, dans le brun des pilotis du kit (le rôle `pilotis`), le dessus net. Ni dessous (posé sur le sol, sur un
+ * autre poteau, ou dans l'eau), ni dessus quand un poteau ou une lanterne le couvre (`dessus`). Au plus 10 triangles,
+ * ceux d'un cube.
+ */
+export function woodenPost(dessus: boolean): DessinDePiece {
+  const p = PIECES_BASSES.woodenPost;
+  const b = boiteDansLaCase(0.5 - p / 2, 0.5 + p / 2, 0.5 - p / 2, 0.5 + p / 2, 0, 1, 0, 'pilotis');
+  return { facettes: dessus ? sans(b, [0, 0, -1]) : sans(b, [0, 0, -1], [0, 0, 1]), couvre: 0 };
 }
 
 /** L'identifiant de la pièce seule et basse : un bloc sans voisine, au pied, sans rien au-dessus. */

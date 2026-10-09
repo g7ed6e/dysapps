@@ -44,7 +44,7 @@
 // des rôles (`settings.ts`), ce que le shader reprend (`shader.ts`), le genre des blocs (`kinds.ts`), le phare de
 // Grimoire (`lighthouse.ts`), les bâtiments et les lieux que le kit reprend (`buildings.ts`). Il en réexporte les noms publics.
 import type { Cell } from './view';
-import { architectureDe, assemblerLesPieces, type Kit, KITS, MOTIF, motifDesRangees, RANGEES, rangeesReunies } from './architecture';
+import { architectureDe, assemblerLesPieces, crystal, ingot, type Kit, KITS, MOTIF, motifDesRangees, RANGEES, rangeesReunies, RESTING_HEIGHT } from './architecture';
 import type { VoxelCube } from '../Voxel';
 import { ambianceDe, type Couleur, couleurDeMatiere, type Faces, MATIERES } from './palette';
 import { DELAVE, eclaircir, type FacettesDuDecor, hex, Pinceau, rgb } from './decor/brush';
@@ -69,6 +69,10 @@ export { CREME_DU_PHARE, phareDeGrimoire } from './construction/lighthouse';
 export { batimentsDe, blocsDArchipeoDe, caseDuLieu, coursDe, enBlocsDArchipeo, ETAPES_DU_BATIMENT, sansToursDuCoeur } from './construction/buildings';
 
 // ---------- Le maillage ----------
+
+/** Les trophées précieux (./architecture/precious.ts), faits une fois. */
+const INGOT = ingot();
+const CRYSTAL = crystal();
 
 /** Un groupe de la construction : un appel de dessin. Repère Three (X = x, Y = hauteur, Z = y). */
 export interface GroupeDeConstruction {
@@ -380,7 +384,7 @@ export function maillageDeLaConstruction(
     let f = vues.get(k);
     if (f) return f;
     const delave = (x: Faces): Faces => (c.muted ? { dessus: mixColor(x.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(x.cote, DELAVE[0], DELAVE[1]) } : x);
-    const role = fond === 'remplissage' || fond === 'bardage' || fond === 'soubassement' ? couleurDuRole(a, kit, fond, c.muted) : null;
+    const role = fond === 'remplissage' || fond === 'bardage' || fond === 'soubassement' || fond === 'tole' ? couleurDuRole(a, kit, fond, c.muted) : null;
     if (role !== null) f = { dessus: role, cote: role };
     else if (repeint) f = delave(couleurDeMatiere(a, repeint));
     else if (couvert) f = couleursDuToit(a, c.tag, c.muted);
@@ -585,24 +589,48 @@ export function maillageDeLaConstruction(
     boite(F, c.x + b0, c.x + b1, c.y + b0, c.y + b1, z0, z0 + LANTERNE.coeur, eteint, { extra: decalages.get(c) ?? -1 });
   };
 
+  /** Le dessin précieux d'un trophée (../architecture/precious.ts : le lingot d'or, le cristal), ou `null` : une boîte. */
+  const preciousOf = (c: VoxelCube): 'ingot' | 'crystal' | null => (c.texture === 'or' ? 'ingot' : c.texture === 'cristal' ? 'crystal' : null);
+  /** Là où se pose le trophée du dessus : le haut d'une boîte, d'un lingot, ou du prisme d'un cristal. */
+  const restingHeightOf = (c: VoxelCube | undefined) => {
+    const p = c ? preciousOf(c) : null;
+    return p ? RESTING_HEIGHT[p] : TROPHEE.hauteur;
+  };
+  const trophiesByCell = new Map<string, VoxelCube>();
   /**
    * Un trophée (`TROPHEE`) : une boîte au milieu de sa case, sans son dessous (il est posé) ni sa face du fond (contre le
-   * velours ou le trophée de derrière : la caméra regarde toujours vers le nord), aux couleurs de son bloc.
+   * velours ou le trophée de derrière : la caméra regarde toujours vers le nord), aux couleurs de son bloc. Le trophée
+   * d'or est un lingot, celui de cristal un cristal (intention du directeur artistique, 9 octobre 2026), sans leurs
+   * faces tournées vers le fond ; celui du second rang se pose sur le haut de celui du premier.
    */
   const trophee = (c: VoxelCube, rang: number) => {
     const premier = rang === RANG_DES_SOCLES;
     const w = premier ? TROPHEE.bas : TROPHEE.haut;
     const [x0, x1, y0, y1] = [c.x + 0.5 - w / 2, c.x + 0.5 + w / 2, c.y + 0.5 - w / 2, c.y + 0.5 + w / 2];
-    const z0 = premier ? c.z : c.z - 1 + TROPHEE.hauteur;
+    const z0 = premier ? c.z : c.z - 1 + restingHeightOf(trophiesByCell.get(cle(c.x, c.y, c.z - 1)));
     const z1 = z0 + TROPHEE.hauteur;
     const f = couleursDe(c);
     const sansBiseau = mode === 'peint' ? [0, 1, 2, 3].map(() => [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU]) : undefined;
+    const precieux = preciousOf(c);
+    if (precieux) {
+      const dessin = precieux === 'ingot' ? INGOT : CRYSTAL;
+      for (const fa of dessin.facettes) {
+        // La face du fond : jamais vue.
+        if (fa.normale[1] > 0.5) continue;
+        const pts = fa.points.map(([x, y, z]) => [c.x + x, c.y + y, z0 + z] as V3);
+        const col = fa.face === 'dessus' ? f.dessus : f.cote;
+        O.poly(pts, fa.normale, pts.map(() => col), { teinte: teinteDe(c), biseaux: sansBiseau ? pts.map(() => sansBiseau[0]) : undefined });
+      }
+      return;
+    }
     const q = (pts: V3[], n: V3, col: Couleur) => O.poly(pts, n, [col, col, col, col], { teinte: teinteDe(c), biseaux: sansBiseau });
     q([[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], [0, 0, 1], f.dessus);
     q([[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]], [0, -1, 0], f.cote);
     q([[x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1]], [-1, 0, 0], f.cote);
     q([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0], f.cote);
   };
+
+  for (const c of trophees.keys()) trophiesByCell.set(cle(c.x, c.y, c.z), c);
 
   // ---- Les faces des blocs, des vitres, des lanternes et des trophées.
   interface Case {
