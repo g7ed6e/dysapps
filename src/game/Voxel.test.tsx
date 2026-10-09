@@ -30,4 +30,9 @@ describe('l’icône de la craie (DA, relecture des captures emc-2, passe 2)', (
     const angle = ({ baton: [a, b] }: (typeof BATONS_DU_DESSUS)[number]) => Math.atan2(b[1] - a[1], b[0] - a[0]);
     expect(Math.abs(angle(BATONS_DU_DESSUS[0]) - angle(BATONS_DU_DESSUS[1]))).toBeGreaterThan(0.3);
   });
+
+  it('chaque bloc a sa paire de couleurs : l’icône retrouve les bâtons par elle, aucun autre bloc n’en hérite (expert frontend)', () => {
+    const paires = Object.values(BLOCKS).map((b) => `${b.top}|${b.side}`);
+    expect(new Set(paires).size).toBe(paires.length);
+  });
 });
