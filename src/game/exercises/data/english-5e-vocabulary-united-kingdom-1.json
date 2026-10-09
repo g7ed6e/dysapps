@@ -1,0 +1,247 @@
+{
+  "id": "english-5e-vocabulary-united-kingdom-1",
+  "biome": "english-5e-vocabulary",
+  "type": "united-kingdom",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Lis la question, puis le document en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "english-5e-vocabulary-united-kingdom-1-0",
+      "prompt": "Map of the UK\nEngland: London\nScotland: Edinburgh\nWales: Cardiff\nNorthern Ireland: Belfast",
+      "question": "Quelle est la capitale du pays de Galles ?",
+      "spoken": "Map of the UK. England, London. Scotland, Edinburgh. Wales, Cardiff. Northern Ireland, Belfast.",
+      "choices": [
+        "Cardiff",
+        "Édimbourg",
+        "Belfast"
+      ],
+      "choicesLang": "fr",
+      "answer": "Cardiff",
+      "hint": "Cherche dans le lexique comment on dit pays de Galles, puis trouve sa ligne.",
+      "explanation": "Wales = le pays de Galles : sa capitale est Cardiff. Édimbourg (Edinburgh) est la capitale de l’Écosse, Belfast celle de l’Irlande du Nord. Avec l’Angleterre, ces quatre nations forment le Royaume-Uni.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le Royaume-Uni",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "England = l’Angleterre ; Wales = le pays de Galles",
+            "Scotland = l’Écosse ; Northern Ireland = l’Irlande du Nord",
+            "the UK = le Royaume-Uni ; money = la monnaie ; king = le roi",
+            "built = a construit (passé de build) ; the north = le nord"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-1-1",
+      "prompt": "Stonehenge\nA circle of big stones in the south of England\nMore than 4,000 years old",
+      "question": "Qu’est-ce que Stonehenge ?",
+      "spoken": "Stonehenge. A circle of big stones in the south of England. More than four thousand years old.",
+      "choices": [
+        "Un cercle de grandes pierres",
+        "Un vieux château",
+        "Une tour en pierre"
+      ],
+      "choicesLang": "fr",
+      "answer": "Un cercle de grandes pierres",
+      "hint": "Lis la deuxième ligne : circle ressemble à un mot français.",
+      "explanation": "a circle of big stones = un cercle de grandes pierres, dressé il y a plus de 4 000 ans dans le sud de l’Angleterre. Un château se dit castle, une tour tower.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le Royaume-Uni",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "England = l’Angleterre ; Wales = le pays de Galles",
+            "Scotland = l’Écosse ; Northern Ireland = l’Irlande du Nord",
+            "the UK = le Royaume-Uni ; money = la monnaie ; king = le roi",
+            "built = a construit (passé de build) ; the north = le nord"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-1-2",
+      "prompt": "Shopping in the UK\nMoney: the pound\nOne pound = 100 pence",
+      "question": "Quelle monnaie utilise-t-on au Royaume-Uni ?",
+      "spoken": "Shopping in the UK. Money, the pound. One pound is one hundred pence.",
+      "choices": [
+        "La livre sterling",
+        "L’euro",
+        "Le dollar"
+      ],
+      "choicesLang": "fr",
+      "answer": "La livre sterling",
+      "hint": "Trouve la ligne qui commence par Money.",
+      "explanation": "the pound = la livre sterling, la monnaie du Royaume-Uni : une livre vaut 100 pence. L’euro est la monnaie de la France, le dollar celle des États-Unis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le Royaume-Uni",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "England = l’Angleterre ; Wales = le pays de Galles",
+            "Scotland = l’Écosse ; Northern Ireland = l’Irlande du Nord",
+            "the UK = le Royaume-Uni ; money = la monnaie ; king = le roi",
+            "built = a construit (passé de build) ; the north = le nord"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-1-3",
+      "prompt": "Big Ben\nBig Ben is not the tower.\nIt is the big bell inside the tower.",
+      "question": "D’après ce document, qu’est-ce que Big Ben ?",
+      "spoken": "Big Ben. Big Ben is not the tower. It is the big bell inside the tower.",
+      "choices": [
+        "Une grosse cloche",
+        "Une grande tour",
+        "Une grande horloge"
+      ],
+      "choicesLang": "fr",
+      "answer": "Une grosse cloche",
+      "hint": "La deuxième ligne dit ce que Big Ben n’est pas. Lis la dernière ligne jusqu’au bout.",
+      "explanation": "the big bell = la grosse cloche : Big Ben est la cloche qui sonne les heures, dans la tour de l’horloge, à Londres. Cette tour s’appelle Elizabeth Tower.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le Royaume-Uni",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "England = l’Angleterre ; Wales = le pays de Galles",
+            "Scotland = l’Écosse ; Northern Ireland = l’Irlande du Nord",
+            "the UK = le Royaume-Uni ; money = la monnaie ; king = le roi",
+            "built = a construit (passé de build) ; the north = le nord"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-1-4",
+      "prompt": "1066: the Battle of Hastings\nWilliam, Duke of Normandy, wins the battle.\nHe becomes King of England.",
+      "question": "D’où vient Guillaume, le nouveau roi d’Angleterre ?",
+      "spoken": "Ten sixty-six, the Battle of Hastings. William, Duke of Normandy, wins the battle. He becomes King of England.",
+      "choices": [
+        "De Normandie",
+        "D’Écosse",
+        "De Londres"
+      ],
+      "choicesLang": "fr",
+      "answer": "De Normandie",
+      "hint": "Lis la deuxième ligne : Duke of veut dire duc de.",
+      "explanation": "Duke of Normandy = duc de Normandie : Guillaume le Conquérant vient de Normandie, une région de la France d’aujourd’hui. En 1066, il gagne la bataille d’Hastings et devient roi d’Angleterre : une histoire commune aux deux pays.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le Royaume-Uni",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "England = l’Angleterre ; Wales = le pays de Galles",
+            "Scotland = l’Écosse ; Northern Ireland = l’Irlande du Nord",
+            "the UK = le Royaume-Uni ; money = la monnaie ; king = le roi",
+            "built = a construit (passé de build) ; the north = le nord"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-1-5",
+      "prompt": "Hadrian’s Wall\nThe Romans built this wall\nin the north of England.",
+      "question": "Qui a construit ce mur ?",
+      "spoken": "Hadrian’s Wall. The Romans built this wall in the north of England.",
+      "choices": [
+        "Les Romains",
+        "Les Vikings",
+        "Les Normands"
+      ],
+      "choicesLang": "fr",
+      "answer": "Les Romains",
+      "hint": "Trouve le mot built dans le lexique, puis lis qui est juste avant.",
+      "explanation": "The Romans built = les Romains ont construit. Le mur d’Hadrien, dans le nord de l’Angleterre, a près de 1 900 ans. Les Vikings et les Normands sont arrivés bien plus tard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le Royaume-Uni",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "England = l’Angleterre ; Wales = le pays de Galles",
+            "Scotland = l’Écosse ; Northern Ireland = l’Irlande du Nord",
+            "the UK = le Royaume-Uni ; money = la monnaie ; king = le roi",
+            "built = a construit (passé de build) ; the north = le nord"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-1-6",
+      "prompt": "The Channel Tunnel\nUnder the sea, between England and France\nTrains since 1994",
+      "question": "Où passe ce tunnel ?",
+      "spoken": "The Channel Tunnel. Under the sea, between England and France. Trains since nineteen ninety-four.",
+      "choices": [
+        "Sous la mer",
+        "Sous une montagne",
+        "Sous Londres"
+      ],
+      "choicesLang": "fr",
+      "answer": "Sous la mer",
+      "hint": "under veut dire sous. Lis la deuxième ligne jusqu’au bout.",
+      "explanation": "under the sea = sous la mer : le tunnel sous la Manche relie l’Angleterre et la France. Des trains y passent depuis 1994.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le Royaume-Uni",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "England = l’Angleterre ; Wales = le pays de Galles",
+            "Scotland = l’Écosse ; Northern Ireland = l’Irlande du Nord",
+            "the UK = le Royaume-Uni ; money = la monnaie ; king = le roi",
+            "built = a construit (passé de build) ; the north = le nord"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-1-7",
+      "prompt": "National Trust\nWe look after old houses, gardens and beaches.\nOver 500 places to visit",
+      "question": "Que fait le National Trust ?",
+      "spoken": "National Trust. We look after old houses, gardens and beaches. Over five hundred places to visit.",
+      "choices": [
+        "Il prend soin de lieux à visiter",
+        "Il construit des maisons neuves",
+        "Il vend de vieilles maisons"
+      ],
+      "choicesLang": "fr",
+      "answer": "Il prend soin de lieux à visiter",
+      "hint": "look after veut dire s’occuper de. Lis la deuxième ligne jusqu’au bout.",
+      "explanation": "look after = prendre soin de : le National Trust protège de vieilles maisons, des jardins et des plages, ouverts à la visite. Construire se dit build, vendre sell.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le Royaume-Uni",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "England = l’Angleterre ; Wales = le pays de Galles",
+            "Scotland = l’Écosse ; Northern Ireland = l’Irlande du Nord",
+            "the UK = le Royaume-Uni ; money = la monnaie ; king = le roi",
+            "built = a construit (passé de build) ; the north = le nord"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-5e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

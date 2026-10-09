@@ -36,11 +36,8 @@ it('devant : les bornes seules, au pas de 4, centrées sur la visée ; au milieu
   expect(PLACES_DES_BORNES_DES_ECOLES).toEqual([0, 4, 8, 12, 16]);
   for (const id of ECOLES) {
     const bornes = questStations(id);
-    expect(bornes.map((b) => [b.x, b.y]), id).toEqual([
-      [4, 1],
-      [8, 1],
-      [12, 1],
-    ]);
+    // Trois missions aux places du milieu ; quatre penchent d'une place à gauche ; cinq les prennent toutes (GD-14).
+    expect(bornes.map((b) => [b.x, b.y]), id).toEqual(placesDesBornes(bornes.length)?.map((x) => [x, 1]));
     // L'école quitte le devant : sa porte en (14, 2), une case libre entre elle et le bord droit du cœur (x = 17).
     const def = islandDef(id);
     const porte = (lieu: 'school' | 'assembly') => {
