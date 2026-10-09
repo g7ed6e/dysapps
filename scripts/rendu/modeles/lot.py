@@ -57,7 +57,7 @@ for nom_fichier in sorted(os.listdir(dossier)):
                           4 if creature else 0)
             if creature:
                 shutil.copy(os.path.join(d, f"2-reduit-{n}.glb"), os.path.join(d, f"final-{n}.glb"))
-                t.append(next((l.split(" : ")[1].split()[0] for l in out.splitlines() if "triangles," in l), "?"))
+                t.append(next((l.split(" : ")[1].split()[0] for l in out.splitlines() if "facettes de lichen" in l), "?"))
                 continue
             out = blender("couper.py", os.path.join(d, f"2-reduit-{n}.glb"), os.path.join(d, f"final-{n}.glb"), hauteur)
             t.append(next((l.split()[1] for l in out.splitlines() if "faces apres coupe" in l), "?"))
