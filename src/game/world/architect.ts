@@ -1,7 +1,7 @@
 // L'architecte du village : le dessin des bâtiments des îles, en trois étapes (les murs, le toit, la cour), calculé à partir
 // d'une forme (maison, tour, dôme, échoppe, hutte, kiosque, relais, jardin, refuge,
 // musée, quartier, logis, moulin, halle, entrepôt, bibliothèque, mairie, serre, laboratoire, atelier, station, chalet, scierie,
-// pépinière, pavillon, usine, infirmerie, gymnase, poste, préau) et du bloc de l'île. Les cases sont relatives à la zone des
+// pépinière, pavillon, usine, infirmerie, gymnase, poste, préau, fournil, grotte) et du bloc de l'île. Les cases sont relatives à la zone des
 // plans de l'île (6 × 5 cases, z = 0 : premier bloc sur le sol) ; la façade et la porte sont devant (y bas), la cour aussi.
 // Les blocs de finition (toit, porte, lanterne, barrière, escalier) viennent des coffres des étapes précédentes : un coffre
 // donne exactement ceux de l'étape suivante (voir plans.ts).
@@ -46,6 +46,8 @@ type BuildingStyle =
   | { kind: 'laboratoire' }
   | { kind: 'atelier' }
   | { kind: 'preau' }
+  | { kind: 'fournil' }
+  | { kind: 'grotte' }
   | { kind: 'station' }
   | { kind: 'chalet' }
   | { kind: 'scierie' }
@@ -89,6 +91,9 @@ const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   'life-earth-sciences-5e-active-planet': { kind: 'station' },
   'physics-chemistry-5e-matter-universe': { kind: 'chalet' },
   'technology-5e-design': { kind: 'scierie' },
+  // EMC 5e (EMC-2) et latin-grec 5e (LCA-2)
+  'civics-5e-equality-solidarity': { kind: 'fournil' },
+  'lca-5e-legends': { kind: 'grotte' },
   // Anciens Ateliers (4e)
   'maths-4e-algebra': { kind: 'maison' },
   'maths-4e-powers': { kind: 'maison', chimney: 2 },
@@ -808,6 +813,59 @@ function preau(b: BlockId): Stages {
   return [without(walls, [lanterne]), roof, cour];
 }
 
+/**
+ * Le fournil (le fournil de Mie, EMC 5e ; proposition de l'artiste technique 3D, à valider par le directeur artistique) :
+ * un fournil de village, aucun drapeau ni symbole, ni cheminée ni fumée. Le fournil : une salle de farine, quatre sur
+ * trois, trois blocs de haut, à gauche. Le toit du fournil : la porte, une fenêtre éclairée, le toit à deux pans, et à
+ * droite le four à pain, bas, deux blocs sur deux de profond, sa gueule éclairée devant (une lanterne au ras du sol :
+ * « la pâte lève au chaud »). La cour du fournil : la table longue où l'on partage le pain (deux planches), la barrière,
+ * son portillon, deux lanternes et la marche.
+ */
+function fournil(b: BlockId): Stages {
+  const doorX = 1;
+  const windows: [number, number, number][] = [[2, 2, 1]];
+  const four: ArchCell[] = [];
+  for (const y of [3, 4]) for (let z = 0; z < 2; z++) four.push({ x: 5, y, z, block: b });
+  four.push({ x: 5, y: 2, z: 0, block: BLOC.lanterne }, { x: 5, y: 2, z: 1, block: b });
+  const roof = [...ouvertures([doorX, 2, 0], windows), ...deuxPans(0, 3, 2, 3, b, 0, 3), ...four];
+  const cour: ArchCell[] = [{ x: 3, y: 1, z: 0, block: BLOC.bois }, { x: 4, y: 1, z: 0, block: BLOC.bois }, { x: doorX, y: 1, z: 0, block: BLOC.escalier }, ...frontFence([doorX], [0, ZW - 1])];
+  return [without(room(b, 0, 4, 3), [[doorX, 2, 0], ...windows]), roof, cour];
+}
+
+/**
+ * La grotte (l'abri de Lyre, latin-grec 5e ; proposition de l'artiste technique 3D, à valider par le directeur
+ * artistique) : un abri sous roche, ouvert devant, ni temple ni colonne, aucun dieu ni symbole. L'abri : le rocher du
+ * fond en tuf, six de large, deux blocs de haut, ses deux retours sur les côtés, une lanterne au fond (où l'on garde les
+ * légendes). Le porche de la grotte : la voûte de tuf au-dessus, en deux gradins, posée sur deux piliers de tuf devant.
+ * Le cercle des conteurs : six sièges de tuf en rond devant le porche, au ras du sol, une lanterne sur les deux sièges
+ * du bout ; ni barrière ni portillon (une grotte ne se ferme pas).
+ */
+function grotte(b: BlockId): Stages {
+  const y0 = 3;
+  const lanterne: [number, number, number] = [3, y0 + 1, 1];
+  const abri: ArchCell[] = [];
+  for (let z = 0; z < 2; z++) {
+    for (let x = 0; x < ZW; x++) abri.push({ x, y: y0 + 1, z, block: b });
+    for (const x of [0, ZW - 1]) abri.push({ x, y: y0, z, block: b });
+  }
+  const porche: ArchCell[] = [{ x: lanterne[0], y: lanterne[1], z: lanterne[2], block: BLOC.lanterne }];
+  for (const x of [1, ZW - 2]) for (let z = 0; z < 2; z++) porche.push({ x, y: y0, z, block: b });
+  for (let x = 0; x < ZW; x++) for (const y of [y0, y0 + 1]) porche.push({ x, y, z: 2, block: b });
+  for (let x = 1; x < ZW - 1; x++) porche.push({ x, y: y0 + 1, z: 3, block: b });
+  const cercle: ArchCell[] = [];
+  for (const [x, y] of [
+    [2, 2],
+    [3, 2],
+    [1, 1],
+    [4, 1],
+    [2, 0],
+    [3, 0],
+  ])
+    cercle.push({ x, y, z: 0, block: b });
+  cercle.push({ x: 1, y: 1, z: 1, block: BLOC.lanterne }, { x: 4, y: 1, z: 1, block: BLOC.lanterne });
+  return [without(abri, [lanterne]), porche, cercle];
+}
+
 // ---------- Les bâtiments des îles de sciences de 5e à 3e (SC-3) ----------
 // Décision du directeur artistique (6 octobre 2026) : les murs du bloc de l'île, le toit de l'univers (rouge dans Blocland,
 // sa couverture dans Archipéo, `roofs.ts`), aucun fronton, aucune pièce nouvelle : les blocs de finition de toujours
@@ -1030,6 +1088,10 @@ export function buildingStages(biome: BiomeId, block: BlockId): Stages {
       return atelier(block);
     case 'preau':
       return preau(block);
+    case 'fournil':
+      return fournil(block);
+    case 'grotte':
+      return grotte(block);
     case 'station':
       return weatherStation(block);
     case 'chalet':

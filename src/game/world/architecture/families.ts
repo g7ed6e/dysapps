@@ -114,6 +114,9 @@ export const MATERIAL_FAMILIES: Record<Exclude<TextureKind, ExceptionTexture>, M
   marbre: 'pierre',
   cadran: 'pierre',
   lentille: 'pierre',
+  // La farine (l'enduit blanc cassé du Fournil) et le tuf de la Grotte (directeur artistique, 9 octobre 2026).
+  farine: 'pierre',
+  tuf: 'pierre',
   // Le métal.
   aimant: 'metal',
   // Le toit.

@@ -21,7 +21,7 @@ export interface GuardianSquare {
   repli?: true;
 }
 
-/** Les 52 carrés des Gardiens de GD-11, la LV2 par défaut. */
+/** Les 54 carrés des Gardiens de GD-11, la LV2 par défaut. */
 export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<GuardianSquare>>>> = {
   'french-6e-phonology': { x: 16, y: 19, palier: 3 },
   'french-6e-grammar-spelling': { x: 17, y: 11, palier: 3 },
@@ -51,6 +51,8 @@ export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<Gu
   'life-earth-sciences-5e-active-planet': { x: 1, y: 13, palier: 3 },
   'physics-chemistry-5e-matter-universe': { x: -2, y: 13, palier: 1 },
   'technology-5e-design': { x: -2, y: 13, palier: 3 },
+  'civics-5e-equality-solidarity': { x: 13, y: -2, palier: 1 },
+  'lca-5e-legends': { x: 14, y: -2, palier: 1 },
   'maths-4e-powers': { x: 15, y: 10, palier: 1 },
   'maths-4e-algebra': { x: 16, y: 17, palier: 3 },
   'french-4e-agreement': { x: 0, y: 14, palier: 3 },

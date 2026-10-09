@@ -254,6 +254,9 @@ const FORMES: Record<string, Cube[]> = {
   // leur pied ne faisaient pas une salière) ; quatre de haut, la seule à dépasser trois. Sa place est voulue
   // (`WANTED_PLACES`).
   'technology-5e-design-fixture-1': [...colonne(0, 0, 0, 2, BLOC.sel), [0, 0, 3, 'roof']],
+  // Mie, la table ronde (EMC-2 ; proposition de l'artiste technique 3D, sobre, aucun symbole) : un plateau en croix,
+  // les trois rizières en travers et deux farines aux bouts, vu d'en haut presque rond, sur un pied de barrière au milieu.
+  'civics-5e-equality-solidarity-fixture-1': [[1, 1, 0, 'fence'], ...rangee(0, 2, 1, 1, BLOC.riziere), [1, 0, 1, BLOC.farine], [1, 2, 1, BLOC.farine]],
   // Nectar, la jardinière : trois lièges en rang (trois cases de large au plus : les barrières se posent sur les lièges
   // des bouts, pas à côté).
   'life-earth-sciences-4e-cells-evolution-fixture-1': [...rangee(0, 2, 0, 0, BLOC.liege), [0, 0, 1, 'fence'], [2, 0, 1, 'fence']],
@@ -394,6 +397,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'life-earth-sciences-5e-active-planet-fixture-1': [1, 10],
   'physics-chemistry-5e-matter-universe-fixture-1': [1, 11],
   'technology-5e-design-fixture-1': [10, 3],
+  'civics-5e-equality-solidarity-fixture-1': [-2, 12],
   'life-earth-sciences-4e-cells-evolution-fixture-1': [11, 3],
   'physics-chemistry-4e-signals-circuits-fixture-1': [-2, 10],
   'technology-4e-modeling-fixture-1': [2, 11],

@@ -508,6 +508,19 @@
     }
   },
   {
+    "id": "civics-5e-equality-solidarity-request-1",
+    "biome": "civics-5e-equality-solidarity",
+    "block": "geography-5e-resources",
+    "count": 3,
+    "fixture": "civics-5e-equality-solidarity-fixture-1",
+    "blocland": {
+      "name": "la table ronde",
+      "ask": "Il me faut {objet} pour ma table ronde. Joue une mission du Delta des ressources.",
+      "ready": "Tu as les {blocs} ! Livre-les à Mie.",
+      "done": "Table ronde posée chez Mie !"
+    }
+  },
+  {
     "id": "history-4e-revolutions-request-1",
     "biome": "history-4e-revolutions",
     "block": "french-4e-agreement",

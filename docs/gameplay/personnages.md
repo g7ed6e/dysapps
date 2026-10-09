@@ -184,7 +184,9 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Prairie des climats](https://g7ed6e.github.io/dysapps/pedagogie/iles/life-earth-sciences-5e-active-planet.html) (SVT) | Humus | ver de terre laboureur | ver de terre météorologue | La Tortue d’ocre |
 | [Saline des mélanges](https://g7ed6e.github.io/dysapps/pedagogie/iles/physics-chemistry-5e-matter-universe.html) (Physique-chimie) | Perle | canard saunier | canard saunier | Le Flamant de sel |
 | [Menuiserie des objets](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-5e-design.html) (Technologie) | Rabot | pic-vert menuisier | pic-vert menuisier | Le Cheval à bascule |
+| [Fournil des partages](https://g7ed6e.github.io/dysapps/pedagogie/iles/civics-5e-equality-solidarity.html) (EMC) | Mie | capybara boulanger | capybara boulanger | L’Oie d’opale |
 | [Relais des voyageurs](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-5e-introductions.html) (LV2 (espagnol ou allemand)) | Lina | cigogne voyageuse | cigogne voyageuse | La Diligence de cuivre |
+| [Grotte des légendes](https://g7ed6e.github.io/dysapps/pedagogie/iles/lca-5e-legends.html) (Latin ou grec (option)) | Lyre | gecko conteur | gecko conteur | Le Phénix d’argile |
 
 ### Le Mammouth de givre, Glacier des relatifs
 
@@ -274,6 +276,14 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | À la fin | Je me rallume, des patins jusqu’à la crinière. La Menuiserie est à toi, et à Rabot. | Ma robe se rallume. La menuiserie est à toi, et à Rabot. |
 | Rabot à l’arrivée | Bonjour, bâtisseur ! À la menuiserie, on dessine un objet avant de le fabriquer. Chaque bonne réponse te donne du bambou. Le bambou, c’est une grande herbe très solide. | Bonjour, bâtisseur ! À la menuiserie, on dessine un objet avant de le fabriquer. Chaque bonne réponse te donne du bambou. Le bambou, c’est une grande herbe très solide. |
 
+### L’Oie d’opale, Fournil des partages
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Oie d’opale lève le cou : « Me voilà toute grise. Tu as fait le tour du fournil : dis-moi ce qu’est l’égalité. » | L’Oie d’opale dit doucement : « Les plumes de mes ailes sont éteintes. Tu as fait le tour du fournil : dis-moi ce qu’est l’égalité. » |
+| À la fin | Je me rallume, des pattes jusqu’au bec. Le fournil est à toi, et à Mie. | Mes ailes se rallument. Le fournil est à toi, et à Mie. |
+| Mie à l’arrivée | Bonjour, bâtisseur ! Au fournil, on partage le pain avec tout le monde. Chaque bonne réponse te donne de la farine. La farine, c’est le blé moulu. | Bonjour, bâtisseur ! Au fournil, on partage le pain avec tout le monde. Chaque bonne réponse te donne de la farine. La farine, c’est le blé moulu. |
+
 ### La Diligence de cuivre, Relais des voyageurs
 
 |  | Blocland | Archipéo |
@@ -281,6 +291,14 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Au défi | La Diligence de cuivre s’arrête devant l’auberge : « Mon cuivre est tout gris. Tu as accueilli tous mes voyageurs : écoute bien ce qu’ils te disent. » | La Diligence de cuivre dit doucement depuis le ponton : « La boussole de mon siège est éteinte. Tu as fait escale chez mes voyageurs : écoute bien ce qu’ils te disent. » |
 | À la fin | Hue ! Je me rallume, des roues aux lanternes. Le Relais est à toi, et à Lina. | Ma boussole se rallume. Le Relais est à toi, et à Lina. |
 | Lina à l’arrivée | Bonjour, bâtisseur ! Au Relais, les voyageurs se présentent, comptent et parlent de leur famille, dans ta deuxième langue. Écoute bien : la voix lit chaque mot pour toi. Chaque bonne réponse, c’est une dalle pour le village. | Bonjour, bâtisseur ! Au Relais, les voyageurs se présentent, comptent et parlent de leur famille, dans ta deuxième langue. Écoute bien : la voix lit chaque mot pour toi. Chaque bonne réponse, c’est une dalle pour le village. |
+
+### Le Phénix d’argile, Grotte des légendes
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Phénix d’argile se dresse dans son nid : « Me voilà tout gris. Tu as écouté les légendes de la grotte : raconte-les-moi. » | Le Phénix d’argile dit doucement : « Les plumes de mes ailes sont éteintes. Tu as écouté les légendes de la grotte : raconte-les-moi. » |
+| À la fin | Je renais, et je me rallume, de la queue jusqu’à la huppe. La grotte est à toi, et à Lyre. | Je renais, mes ailes se rallument. La grotte est à toi, et à Lyre. |
+| Lyre à l’arrivée | Bonjour, bâtisseur ! Dans ma grotte, je garde les vieilles légendes. Chaque bonne réponse te donne du tuf. Le tuf, c’est une pierre tendre. | Bonjour, bâtisseur ! Dans ma grotte, je garde les vieilles légendes. Chaque bonne réponse te donne du tuf. Le tuf, c’est une pierre tendre. |
 
 ## Les Monts de Feu (Blocland), les Anciens Ateliers (Archipéo), 4e
 

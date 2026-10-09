@@ -985,6 +985,60 @@ const HIRONDELLE = fromLayers(
   },
 );
 
+// L'Oie d'opale (EMC, 5e ; sans flamme, aucun symbole) : de profil, le long des x, la tête vers les x croissants ;
+// debout sur ses deux pattes, le corps ovale, la queue relevée derrière, le long cou dressé, la tête petite, le bec d'un
+// bloc qui dépasse devant. L'opale : un blanc laiteux, et sur les ailes, le long des flancs, des plumes aux reflets rose
+// et vert pâles, en alternance (ce sont elles qui se rallument). Neuf de long, cinq de large, neuf de haut. Six couleurs,
+// les yeux compris (proposition de l'artiste technique 3D).
+const OIE = fromLayers(
+  [
+    ['.........', '...FF....', '.........', '...FF....', '.........'],
+    ['.........', '....F....', '.........', '....F....', '.........'],
+    ['.........', '.OOOOOO..', '.OOOOOO..', '.OOOOOO..', '.........'],
+    ['..OOOO...', 'OOOOOOO..', 'OOOOOOO..', 'OOOOOOO..', '..OOOO...'],
+    ['.VPVPV...', '.OOOOOO..', 'OOOOOOO..', '.OOOOOO..', '.VPVPV...'],
+    ['.........', '.........', '......O..', '.........', '.........'],
+    ['.........', '.........', '......O..', '.........', '.........'],
+    ['.........', '......E..', '......OOB', '......E..', '.........'],
+    ['.........', '.........', '......OO.', '.........', '.........'],
+  ],
+  {
+    O: '#eef2f4',
+    V: '#cfe8da',
+    P: '#f0d2de',
+    B: '#e2b464',
+    F: '#c88a4a',
+    E: { color: '#1f1a16', top: '#eef2f4' },
+  },
+);
+
+// Le Phénix d'argile (latin-grec, 5e ; sans flamme : il « renaît » en se rallumant, sans feu) : de profil, le long des
+// x, la tête vers les x croissants ; un oiseau de terre cuite, comme sur un vase, posé dans son nid d'argile sombre ; les
+// ailes repliées le long du corps, peintes de plumes noires et ocre en alternance (ce sont elles qui se rallument), la
+// longue queue qui descend jusqu'au nid derrière, le cou court, la tête, son bec ocre et une petite huppe sombre couchée
+// vers l'arrière. Aucune flamme, aucune pointe dressée. Dix de long, cinq de large, neuf de haut. Six couleurs, les yeux
+// compris (proposition de l'artiste technique 3D).
+const PHENIX = fromLayers(
+  [
+    ['..DDDD....', 'ODDDDDD...', '.DDDDDD...', 'ODDDDDD...', '..DDDD....'],
+    ['..........', '.OAAAA....', '..AAAA....', '.OAAAA....', '..........'],
+    ['..ONONO...', '..AAAAAA..', '..AAAAAA..', '..AAAAAA..', '..ONONO...'],
+    ['...ONON...', '..AAAAAA..', '..AAAAAA..', '..AAAAAA..', '...ONON...'],
+    ['..........', '......A...', '.....AAA..', '......A...', '..........'],
+    ['..........', '..........', '......AA..', '..........', '..........'],
+    ['..........', '.......E..', '......AAAO', '.......E..', '..........'],
+    ['..........', '..........', '......AAA.', '..........', '..........'],
+    ['..........', '..........', '.....DD...', '..........', '..........'],
+  ],
+  {
+    A: '#c4703e',
+    D: '#7e3e22',
+    O: '#e2a466',
+    N: '#2a1c16',
+    E: { color: '#1f1a16', top: '#c4703e' },
+  },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': GRAND_CHENE,
   'french-6e-letter-confusion': GOLEM,
@@ -1023,6 +1077,7 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'life-earth-sciences-5e-active-planet': TORTUE,
   'physics-chemistry-5e-matter-universe': FLAMANT,
   'technology-5e-design': CHEVAL_A_BASCULE,
+  'civics-5e-equality-solidarity': OIE,
   'life-earth-sciences-4e-cells-evolution': GIRAFE,
   'physics-chemistry-4e-signals-circuits': CLOCHE,
   'technology-4e-modeling': GRAND_BI,
@@ -1038,4 +1093,5 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'english-3e-comprehension': ANTENNE,
   'english-3e-grammar': DRAGON_G,
   'lv2-3e-travel': PAPILLON,
+  'lca-5e-legends': PHENIX,
 };

@@ -1080,8 +1080,15 @@ function chercherToutesLesPlaces(d: DemandeDeRecherche): void {
     // plus), et quand la recherche large a fini sans trouver : arrêtée par son plafond, elle n'a pas montré qu'aucune
     // solution n'existe (expert frontend, SC-3). Sinon, rien ne change, et l'échec est retenu.
     if (recherche.essais >= ESSAIS_DE_LA_RECHERCHE) return appliquer(null);
-    const aLaisser = tus.filter((i) => !fixables.has(i)).sort((i, j) => placesDe(i).length - placesDe(j).length || i - j);
-    if (aLaisser.length < 2) return appliquer(null);
+    const parSesPlaces = (i: number, j: number) => placesDe(i).length - placesDe(j).length || i - j;
+    const tusALaisser = tus.filter((i) => !fixables.has(i)).sort(parSesPlaces);
+    if (tusALaisser.length < 2) return appliquer(null);
+    // Puis, si aucun nom tu laissé de côté ne laisse poser les autres, chaque nom montré à son tour (le nom de la
+    // destination jamais) : au 5e, vers le Glacier des relatifs, cinq noms se taisaient faute d'une place pour le Delta
+    // des ressources (une seule) ; laisser de côté la Prairie des climats, montrée, les pose tous, et le dernier recours
+    // la remet (consultant UX UI et référent dys, 9 octobre 2026). Sous le même plafond (`ESSAIS_D_UN_NOM_DE_MOINS`).
+    const montresALaisser = noms.filter((i) => vues.has(i) && !fixables.has(i) && poussable(i)).sort(parSesPlaces);
+    const aLaisser = [...tusALaisser, ...montresALaisser];
     const tous = noms;
     let trouvees: Map<number, LabelBox> | null = null;
     // Ce que la recherche sans ce nom a déjà donné dans ce cadrage, quelle que soit la place actuelle des autres noms :

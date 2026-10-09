@@ -411,6 +411,19 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.bois].side);
     put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.bois].side);
   },
+  // L'EMC et le latin-grec de 5e (EMC-2, LCA-2) : sobres, quelques blocs au sol, aucune lanterne ni symbole.
+  'civics-5e-equality-solidarity': (put, h) => {
+    // Des sacs de farine contre une caisse de planches : deux sacs au sol, la caisse à côté.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.farine].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.farine].side);
+    put(9, 4, h(9, 4) + 1, BLOCKS[BLOC.bois].side);
+  },
+  'lca-5e-legends': (put, h) => {
+    // Un rocher de tuf, deux blocs en marche, comme l'entrée d'une petite grotte.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.tuf].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.tuf].side);
+    put(10, 3, h(10, 3) + 2, BLOCKS[BLOC.tuf].side);
+  },
   'life-earth-sciences-4e-cells-evolution': (put, h) => {
     // Une vasque d'eau d'une case, cerclée de galets.
     for (let x = 8; x <= 10; x++)

@@ -67,9 +67,13 @@ export const RENDER_BUDGET_6E = { triangles: 76_500, drawCalls: RENDER_BUDGET.dr
  * 2026) : la somme des « autres » passe à 74 985 (commandes 392 → 500). Puis, avec une forme par île (GD-12) : relevé à
  * 78 700 (mainteneur, 9 octobre 2026, carte « Relever »), pour le décor et la mer des Îles Brumeuses, plus grandes
  * (78 635 aux Îles Brumeuses, la somme de leurs enveloppes). Mesuré tout construit, « Dans la scène » à part : 74 391
- * aux Îles Brumeuses.
+ * aux Îles Brumeuses. Puis à 83 000, le plafond autorisé par le mainteneur (9 octobre 2026, « Archipéo hors 6e jusqu'à
+ * 83 000 si nécessaire »), pour le Fournil des partages et la Grotte des légendes (EMC et latin-grec de 5e), que la
+ * somme de leurs enveloppes dépassait encore. Puis relevé à 86 000 par le mainteneur le 9 octobre 2026 pour le Fournil
+ * des partages et la Grotte des légendes (5e) : mesuré tout construit, avec la cinquième mission (GD-14), « Dans la
+ * scène » à part, 84 576 aux Îles Brumeuses (74 664 avant) ; la somme de leurs enveloppes (85 945) y tient.
  */
-export const RENDER_BUDGET_AUTRES = { triangles: 78_700, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_AUTRES = { triangles: 86_000, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
@@ -210,12 +214,21 @@ export const ENVELOPPES: Record<
   // 1 764 mesurés aux Premiers Rivages (`npm run rendu:budget`, 9 octobre 2026). L'enveloppe passe de 1 700 à 1 800, les
   // 100 que l'EMC y avait ajoutés (1 450 → 1 550) ; la somme des Premiers Rivages reste celle de l'EMC, 73 390, sous les
   // 76 500 de `RENDER_BUDGET_6E`. Le sol y mesure 32 150, sous ses 32 550.
+  // Le Fournil des partages et la Grotte des légendes (EMC et latin-grec de 5e), avec la cinquième mission (GD-14) :
+  // enveloppes des Îles Brumeuses posées aux valeurs mesurées tout construit (`npm run rendu:budget`, 9 octobre 2026),
+  // avant → après, avec une petite marge : le sol 34 682 → 41 203 (enveloppe 41 250), le décor 17 215 → 18 993 (19 100),
+  // les commandes 492 → 542 (550 : la table ronde), les bornes 1 428 → 1 512 (1 520 : trois bornes de plus), les
+  // créatures 2 963 → 3 480 (3 500 : Mie et Lyre), les Gardiens 2 761 → 3 147 (3 150 : l'Oie d'opale et le Phénix
+  // d'argile) ; aucun appel de plus. Pour tenir, la mer (6 264 mesurés) et la faune (1 132) des Îles Brumeuses cèdent
+  // chacune 100 de leur marge : 6 300 et 1 180. La somme des Îles Brumeuses passe de 78 635 à 85 945, sous
+  // `RENDER_BUDGET_AUTRES`, relevé à 86 000 par le mainteneur le 9 octobre 2026 pour le Fournil des partages et la Grotte
+  // des légendes (5e).
   sol: {
     lot: 'R4b',
     nom: 'Sol',
     premiersRivages: { triangles: 32_550, drawCalls: 2 },
     autres: { triangles: 36_930, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 36_230, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 41_250, drawCalls: 1 } },
   },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
@@ -237,7 +250,7 @@ export const ENVELOPPES: Record<
     nom: 'Mer',
     premiersRivages: { triangles: 7_100, drawCalls: 1 },
     autres: { triangles: 5_850, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 6_400, drawCalls: 1 }, '4e': { triangles: 6_400, drawCalls: 1 }, '3e': { triangles: 6_900, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 6_300, drawCalls: 1 }, '4e': { triangles: 6_400, drawCalls: 1 }, '3e': { triangles: 6_900, drawCalls: 1 } },
   },
   // Un appel de plus pendant le passage de la baleine (son écume) : voir `APPEL_DU_PASSAGE`.
   // Proposition de l'artiste technique 3D pour les missions ajoutées en 6e (étapes de contenu C-1 à C-5), à valider par
@@ -245,7 +258,13 @@ export const ENVELOPPES: Record<
   // Leur enveloppe en prend 250 à la faune, dont les baleines, les oiseaux et les nuages ne dépendent pas des îles
   // (1 132 mesurés, comme au 5e) : 1 250 pour les bornes (44 bornes, huit de plus pour l'île des Grandeurs), 1 250 pour
   // la faune ; la somme ne change pas (57 800). Le navire garde ses 1 000, promis en partie à la construction (cadrage Archipéo, lot 7b).
-  faune: { lot: 'R4b', nom: 'Faune', premiersRivages: { triangles: 1_250, drawCalls: 3 }, autres: { triangles: 1_280, drawCalls: 3 } },
+  faune: {
+    lot: 'R4b',
+    nom: 'Faune',
+    premiersRivages: { triangles: 1_250, drawCalls: 3 },
+    autres: { triangles: 1_280, drawCalls: 3 },
+    parArchipel: { '5e': { triangles: 1_180, drawCalls: 3 } },
+  },
   // Les commandes des habitants dans Archipéo (GD-7, décision du mainteneur du 4 octobre 2026 : le gameplay de Blocland
   // appliqué à Archipéo) : le directeur artistique propose un poste de 450 triangles par archipel, pris sur la marge du
   // décor, la somme inchangée. Mesuré toutes commandes livrées (`commandesCost`) : 430 aux Premiers Rivages, 178 aux
@@ -264,7 +283,7 @@ export const ENVELOPPES: Record<
     nom: 'Décor et repères signatures',
     premiersRivages: { triangles: 13_700, drawCalls: 3 },
     autres: { triangles: 13_600, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 17_400, drawCalls: 3 } },
+    parArchipel: { '5e': { triangles: 19_100, drawCalls: 3 } },
   },
   construction: {
     lot: 'R5',
@@ -284,6 +303,7 @@ export const ENVELOPPES: Record<
     nom: 'Commandes et quêtes (les petites constructions posées, dans le sol et la construction, sans appel de plus)',
     premiersRivages: { triangles: 850, drawCalls: 0 },
     autres: { triangles: 500, drawCalls: 0 },
+    parArchipel: { '5e': { triangles: 550, drawCalls: 0 } },
   },
   // Le lot de contenu des programmes 2025-2026 (une mission de plus à la Forge et au Cabinet de 4e, et à l'Observatoire
   // de 3e, une de moins au Glacier de 5e) : relevé aux mesures tout construit, comme pour SC-3, confirmé par le
@@ -295,7 +315,13 @@ export const ENVELOPPES: Record<
   // sur les îles agrandies de GD-11 (`commandesCost`), aucun appel de plus ; aucun autre poste des « autres » n'a cette
   // marge dans les trois archipels. Commandes 392 → 500, la somme des « autres » de 74 877 à 74 985, sous
   // `RENDER_BUDGET_AUTRES` relevé à 75 000 (validé par le mainteneur le 8 octobre 2026). Le monde en blocs de Blocland n'en change pas de plafond (30 896 au 5e, sur 100 000).
-  bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_800, drawCalls: 1 }, autres: { triangles: 1_450, drawCalls: 1 } },
+  bornes: {
+    lot: 'R5',
+    nom: 'Bornes (instanciées)',
+    premiersRivages: { triangles: 1_800, drawCalls: 1 },
+    autres: { triangles: 1_450, drawCalls: 1 },
+    parArchipel: { '5e': { triangles: 1_520, drawCalls: 1 } },
+  },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
   // Les personnages importés du 6e (modèles TRELLIS retravaillés, choix « Monde et fiches » du mainteneur, 9 octobre
@@ -304,8 +330,20 @@ export const ENVELOPPES: Record<
   // 3 650 → 4 300, Gardiens 2 780 → 5 100 aux Premiers Rivages ; la somme passe de 72 770 à 75 740 (`RENDER_BUDGET_6E`).
   // Avec le Préau des délégués (EMC-2), dessiné en code : créatures 4 560 → 4 600, Gardiens 5 152 → 5 200 ; avec les
   // bornes à 1 800, la somme des Premiers Rivages fait 76 290, sous les 76 500 de `RENDER_BUDGET_6E`.
-  creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 4_600, drawCalls: 1 }, autres: { triangles: 3_200, drawCalls: 1 } },
-  gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 5_200, drawCalls: 1 }, autres: { triangles: 2_780, drawCalls: 1 } },
+  creatures: {
+    lot: 'R6',
+    nom: 'Créatures',
+    premiersRivages: { triangles: 4_600, drawCalls: 1 },
+    autres: { triangles: 3_200, drawCalls: 1 },
+    parArchipel: { '5e': { triangles: 3_500, drawCalls: 1 } },
+  },
+  gardiens: {
+    lot: 'R6',
+    nom: 'Gardiens en sentinelles',
+    premiersRivages: { triangles: 5_200, drawCalls: 1 },
+    autres: { triangles: 2_780, drawCalls: 1 },
+    parArchipel: { '5e': { triangles: 3_150, drawCalls: 1 } },
+  },
   scene: {
     lot: 'socle',
     nom: 'Dans la scène : étiquettes, flèche, fanion, balises',

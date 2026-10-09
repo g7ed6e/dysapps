@@ -4,6 +4,7 @@ import { chargerLesModelesDuDisque } from './characters/imported/fromDisk.testin
 import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseIsland, choiceMiddle, dragChoice } from './arrangeMode';
+import { placeTurns } from './arrange';
 import { arrangeView, arrangeViewCost } from './arrangeView';
 import { BUDGET_DES_POIGNEES, coutDesPoignees } from './arrangeHandles';
 import { buildMesh } from './mesher';
@@ -28,8 +29,9 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
   }
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
   expect(RENDER_BUDGET_6E).toEqual({ triangles: 76_500, drawCalls: 40 });
-  // GD-12 : 78 700 ailleurs (mainteneur, 9 octobre 2026, carte « Relever »).
-  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 78_700, drawCalls: 40 });
+  // GD-12 : 78 700 ailleurs (mainteneur, 9 octobre 2026, carte « Relever ») ; relevé à 86 000 par le mainteneur le
+  // 9 octobre 2026 pour le Fournil des partages et la Grotte des légendes (5e).
+  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 86_000, drawCalls: 40 });
 });
 
 it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : un appel de plus au plus, sous le plafond', () => {
@@ -124,12 +126,14 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // (GD-10). GD-12, une forme par île (mainteneur, 9 octobre 2026, carte « Relever ») : aux Îles Brumeuses, le décor à
   // 17 400 et la mer à 6 400, le sol ramené à 36 500 (78 635) ; la mer à 6 400 aux Anciens Ateliers (75 535), à 6 900
   // aux Îles du Ciel (76 035). EMC-2 (mainteneur, 9 octobre 2026) : le Préau des délégués, avec les personnages
-  // importés, porte les Premiers Rivages à 76 290, sous `RENDER_BUDGET_6E` relevé à 76 500.
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e et EMC-2) : 76 290 triangles et 25 appels aux Premiers Rivages, 78 635, 75 535 et 76 035 et 24 appels ailleurs', () => {
+  // importés, porte les Premiers Rivages à 76 290, sous `RENDER_BUDGET_6E` relevé à 76 500. Le Fournil des partages et
+  // la Grotte des légendes (5e), avec la cinquième mission (GD-14) : les Îles Brumeuses à 85 945, aux mesures
+  // (world/budget.ts), sous `RENDER_BUDGET_AUTRES` relevé à 86 000 (mainteneur, 9 octobre 2026).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e) : 76 290 triangles et 25 appels aux Premiers Rivages, 85 945, 75 535 et 76 035 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([76_290, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([78_635, 24]);
+    expect([total('5e'), appels('5e')]).toEqual([85_945, 24]);
     expect([total('4e'), appels('4e')]).toEqual([75_535, 24]);
     expect([total('3e'), appels('3e')]).toEqual([76_035, 24]);
   });
@@ -319,7 +323,8 @@ it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tour
         for (const style of ['blocs', 'peint'] as const) {
           const p = coutDesPoignees(v.poignees, style);
           expect(p.triangles, `${id} ${style}`).toBeLessThanOrEqual(BUDGET_DES_POIGNEES.triangles);
-          expect(p.drawCalls, `${id} ${style}`).toBe(1);
+          // Un lieu qui ne tourne pas n'a pas de « Tourner » : aucune poignée, aucun appel (directeur artistique).
+          expect(p.drawCalls, `${id} ${style}`).toBe(placeTurns(id) ? 1 : 0);
         }
         // Dans le coût du dessin du choix : un appel pour les cases, un pour les poignées.
         expect(arrangeViewCost(v).triangles).toBe(2 * v.cases.length + coutDesPoignees(v.poignees, 'blocs').triangles);

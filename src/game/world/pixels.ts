@@ -51,6 +51,8 @@ export type TextureKind =
   | 'strate'
   | 'sel'
   | 'bambou'
+  | 'farine'
+  | 'tuf'
   | 'petale'
   | 'bobine'
   | 'liege'
@@ -336,6 +338,65 @@ function craie(t: TonsDeLaCraie, face: 'top' | 'side'): Painter {
     // Un bâton de onze pixels, puis l'ardoise, décalé de cinq pixels à chaque rang.
     if ((x + rang * 5) % 16 >= 11) return fond(x, y);
     return v === 2 ? ombres[rang] : batons[rang];
+  };
+}
+
+// ---------- Les blocs des îles d'EMC et de latin-grec de 5e (EMC-2, LCA-2) ----------
+
+/** Les tons de la farine : la toile du sac, son fil plus sombre, la couture, la farine et son grain de son. */
+type TonsDeLaFarine = { toile: string; fil: string; couture: string; farine: string; son: string };
+
+/**
+ * De la farine (le Fournil des partages, EMC 5e ; proposition de l'artiste technique 3D, à valider par le directeur
+ * artistique) : sur le côté, un sac de toile de jute, sa trame en natte (un fil plus sombre en carrés de 2 × 2 pixels,
+ * en damier), une couture d'un pixel au milieu de la hauteur, et en haut quatre pixels de farine blanche qui débordent,
+ * leur bord irrégulier tiré d'un hachage ; sur le dessus, la farine, un grain de son clairsemé. Sans hasard : la trame et
+ * la bande blanche la séparent du sel (des cristaux cernés), de la craie (des bâtons sur l'ardoise), du sable (un grain
+ * seul) et de la toile (unie).
+ */
+function farine(t: TonsDeLaFarine, face: 'top' | 'side'): Painter {
+  const [toile, fil, couture, blanc, son] = [t.toile, t.fil, t.couture, t.farine, t.son].map(hexToRgb);
+  if (face === 'top') return (x, y) => (hacher(x, y) < 70 ? son : blanc);
+  return (x, y) => {
+    // La farine qui déborde du sac : trois pixels, parfois quatre.
+    if (y < 3 || (y === 3 && hacher(x, 7) < 500)) return blanc;
+    if (y === 10) return x % 2 === 0 ? couture : fil;
+    // La natte de la toile : des carrés de 2 × 2 pixels en damier (un damier d'un pixel moirait en NearestFilter,
+    // consultant Blocland, 9 octobre 2026).
+    return ((x >> 1) + (y >> 1)) % 2 === 0 ? fil : toile;
+  };
+}
+
+/** Les tons du tuf : la pierre, son grain clair, le pore et son bord éclairé. */
+type TonsDuTuf = { pierre: string; clair: string; pore: string; bord: string };
+
+/** Les pores du tuf (2 × 1 pixels ou 1 × 1), à leur place fixe sur la face : ni damier, ni rangée. */
+const PORES_DU_TUF: readonly (readonly [number, number, number])[] = [
+  [2, 2, 2],
+  [9, 1, 1],
+  [12, 5, 2],
+  [5, 6, 1],
+  [1, 10, 2],
+  [8, 9, 2],
+  [13, 12, 1],
+  [4, 13, 2],
+];
+
+/**
+ * Du tuf (la Grotte des légendes, latin-grec 5e ; proposition de l'artiste technique 3D, à valider par le directeur
+ * artistique) : la pierre tendre des grottes, d'un rosé (directeur artistique, 9 octobre 2026), un grain clair d'un pixel sur dix tiré d'un
+ * hachage, et huit pores sombres à places fixes, d'un ou deux pixels, leur bord du dessous éclairé d'un pixel clair.
+ * Les pores la séparent du fossile (une spirale), de la pierre (mouchetée de gris), du sable (un grain seul) et du grès
+ * rose (des assises).
+ */
+function tuf(t: TonsDuTuf): Painter {
+  const [pierre, clair, pore, bord] = [t.pierre, t.clair, t.pore, t.bord].map(hexToRgb);
+  return (x, y) => {
+    for (const [px, py, w] of PORES_DU_TUF) {
+      if (x >= px && x < px + w && y === py) return pore;
+      if (x >= px && x < px + w && y === py + 1) return bord;
+    }
+    return hacher(x, y) < 100 ? clair : pierre;
   };
 }
 
@@ -1034,6 +1095,16 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
   bambou: {
     top: paintBamboo({ canne: '#cdb46a', reflet: '#e0ca86', creux: '#8a7638', noeud: '#9c8440' }, 'top'),
     side: paintBamboo({ canne: '#b49c4e', reflet: '#cab466', creux: '#7e6c30', noeud: '#6f7a34' }, 'side'),
+  },
+  // Farine (le Fournil des partages, EMC 5e) : un sac de jute tissé, la farine blanche qui déborde en haut.
+  farine: {
+    top: farine({ toile: '#bfa274', fil: '#a58a5e', couture: '#7c6644', farine: '#f4e9cf', son: '#d8c8a4' }, 'top'),
+    side: farine({ toile: '#bfa274', fil: '#a58a5e', couture: '#7c6644', farine: '#f4e9cf', son: '#d8c8a4' }, 'side'),
+  },
+  // Tuf (la Grotte des légendes, latin-grec 5e) : une pierre tendre rosée, semée de pores.
+  tuf: {
+    top: tuf({ pierre: '#d6b4a0', clair: '#e2c4b2', pore: '#6e5048', bord: '#e8d2c4' }),
+    side: tuf({ pierre: '#b08e7c', clair: '#bf9e8c', pore: '#5a423a', bord: '#c8a898' }),
   },
   // Pétale (la Source des espèces, SVT 4e) : des pétales en écailles, un cœur jaune.
   petale: {

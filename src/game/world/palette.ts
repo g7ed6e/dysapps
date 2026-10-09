@@ -361,6 +361,10 @@ export const MATIERES: Record<TextureKind, Faces> = {
   strate: { dessus: 0x9a6a44, cote: 0x8a5a3a },
   sel: { dessus: 0xece8e2, cote: 0xc8ccd0 },
   bambou: { dessus: 0xcdb46a, cote: 0xb49c4e },
+  // La farine du Fournil : le blanc de la farine dessus, la toile de jute du sac sur les côtés (le motif reste à Blocland).
+  farine: { dessus: 0xf4e9cf, cote: 0xbfa274 },
+  // Le tuf de la Grotte : une pierre tendre rosée, plus rose que le fossile, loin du bambou (directeur artistique).
+  tuf: { dessus: 0xd6b4a0, cote: 0xb08e7c },
   petale: { dessus: 0xe88fb4, cote: 0xc8638e },
   bobine: { dessus: 0xc47a3c, cote: 0xb5652e },
   liege: { dessus: 0xb0785a, cote: 0x93603f },

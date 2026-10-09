@@ -1,0 +1,243 @@
+{
+  "id": "civics-5e-equality-solidarity-discrimination-2",
+  "biome": "civics-5e-equality-solidarity",
+  "type": "discrimination",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-2-0",
+      "prompt": "Le Défenseur des droits\nIl aide les victimes de discrimination.\nToute personne peut le saisir : lui demander d’agir.\nC’est gratuit.",
+      "question": "Que peut faire une personne victime de discrimination ?",
+      "spoken": "Le Défenseur des droits. Il aide les victimes de discrimination. Toute personne peut le saisir : lui demander d’agir. C’est gratuit.",
+      "choices": [
+        "attendre que cela passe",
+        "saisir le Défenseur des droits",
+        "payer pour être aidée"
+      ],
+      "answer": "saisir le Défenseur des droits",
+      "hint": "Lis la ligne qui dit ce que toute personne peut faire.",
+      "explanation": "Une victime de discrimination peut saisir le Défenseur des droits, c’est-à-dire lui demander d’agir, gratuitement. Il est indépendant : il ne reçoit d’ordre de personne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir contre les discriminations",
+          "lines": [
+            "Le Défenseur des droits aide gratuitement les victimes de discrimination.",
+            "Depuis 2022, le harcèlement scolaire est un délit.",
+            "Témoin : ne pas participer, ne pas partager, en parler à un adulte.",
+            "En ligne aussi, les insultes et les messages de haine sont punis.",
+            "Du préjugé à la discrimination : un jugement, puis un acte.",
+            "Loi de 2005 : l’égalité des droits et des chances des personnes handicapées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-2-1",
+      "prompt": "La loi du 11 février 2005\nL’égalité des droits et des chances des personnes handicapées.\nÀ l’école : chaque enfant handicapé peut être inscrit dans l’école la plus proche de chez lui.",
+      "question": "Que garantit cette loi à l’école ?",
+      "spoken": "La loi du onze février deux mille cinq. L’égalité des droits et des chances des personnes handicapées. À l’école : chaque enfant handicapé peut être inscrit dans l’école la plus proche de chez lui.",
+      "choices": [
+        "les enfants handicapés vont dans une école à part",
+        "rien ne change",
+        "chaque enfant handicapé peut être inscrit près de chez lui"
+      ],
+      "answer": "chaque enfant handicapé peut être inscrit près de chez lui",
+      "hint": "Lis la ligne qui commence par « À l’école ».",
+      "explanation": "La loi de 2005 permet à chaque enfant handicapé d’être inscrit dans l’école la plus proche de chez lui : c’est l’inclusion scolaire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir contre les discriminations",
+          "lines": [
+            "Le Défenseur des droits aide gratuitement les victimes de discrimination.",
+            "Depuis 2022, le harcèlement scolaire est un délit.",
+            "Témoin : ne pas participer, ne pas partager, en parler à un adulte.",
+            "En ligne aussi, les insultes et les messages de haine sont punis.",
+            "Du préjugé à la discrimination : un jugement, puis un acte.",
+            "Loi de 2005 : l’égalité des droits et des chances des personnes handicapées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-2-2",
+      "prompt": "Sur Internet, même sous un pseudo, un message raciste est … par la loi.",
+      "spoken": "Sur Internet, même sous un pseudo, un message raciste est  (mot manquant)  par la loi.",
+      "choices": [
+        "puni",
+        "permis",
+        "ignoré"
+      ],
+      "answer": "puni",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Un message raciste est puni par la loi, en ligne comme ailleurs. Un pseudo ne protège pas : Internet n’est pas un espace sans droit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir contre les discriminations",
+          "lines": [
+            "Le Défenseur des droits aide gratuitement les victimes de discrimination.",
+            "Depuis 2022, le harcèlement scolaire est un délit.",
+            "Témoin : ne pas participer, ne pas partager, en parler à un adulte.",
+            "En ligne aussi, les insultes et les messages de haine sont punis.",
+            "Du préjugé à la discrimination : un jugement, puis un acte.",
+            "Loi de 2005 : l’égalité des droits et des chances des personnes handicapées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-2-3",
+      "prompt": "La loi du 2 mars 2022\nLe harcèlement scolaire devient un délit.\nLes messages en ligne comptent aussi.",
+      "question": "Que change cette loi ?",
+      "spoken": "La loi du deux mars deux mille vingt-deux. Le harcèlement scolaire devient un délit. Les messages en ligne comptent aussi.",
+      "choices": [
+        "les moqueries sont permises en ligne",
+        "le harcèlement scolaire est puni comme un délit",
+        "seuls les adultes peuvent être harcelés"
+      ],
+      "answer": "le harcèlement scolaire est puni comme un délit",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "Depuis 2022, le harcèlement scolaire est un délit, puni par la loi, y compris quand il passe par des messages en ligne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir contre les discriminations",
+          "lines": [
+            "Le Défenseur des droits aide gratuitement les victimes de discrimination.",
+            "Depuis 2022, le harcèlement scolaire est un délit.",
+            "Témoin : ne pas participer, ne pas partager, en parler à un adulte.",
+            "En ligne aussi, les insultes et les messages de haine sont punis.",
+            "Du préjugé à la discrimination : un jugement, puis un acte.",
+            "Loi de 2005 : l’égalité des droits et des chances des personnes handicapées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-2-4",
+      "prompt": "Dans un groupe de discussion\nDes messages se moquent d’un élève, chaque jour.\nCertains élèves les partagent.\nD’autres les voient et se taisent.",
+      "question": "Que peut faire un témoin ?",
+      "spoken": "Dans un groupe de discussion. Des messages se moquent d’un élève, chaque jour. Certains élèves les partagent. D’autres les voient et se taisent.",
+      "choices": [
+        "ne pas partager, et en parler à un adulte",
+        "partager pour montrer aux autres",
+        "répondre par une moquerie"
+      ],
+      "answer": "ne pas partager, et en parler à un adulte",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Le témoin ne partage pas, et il en parle à un adulte du collège : il aide à protéger l’élève visé. Partager, c’est déjà participer. Le 3018, gratuit et anonyme, aide aussi les victimes et les témoins de harcèlement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir contre les discriminations",
+          "lines": [
+            "Le Défenseur des droits aide gratuitement les victimes de discrimination.",
+            "Depuis 2022, le harcèlement scolaire est un délit.",
+            "Témoin : ne pas participer, ne pas partager, en parler à un adulte.",
+            "En ligne aussi, les insultes et les messages de haine sont punis.",
+            "Du préjugé à la discrimination : un jugement, puis un acte.",
+            "Loi de 2005 : l’égalité des droits et des chances des personnes handicapées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-2-5",
+      "prompt": "Du préjugé à la discrimination\nUn préjugé : penser que tout un groupe travaille mal.\nUn acte : refuser d’embaucher les personnes de ce groupe.",
+      "question": "Quand le préjugé devient-il une discrimination ?",
+      "spoken": "Du préjugé à la discrimination. Un préjugé : penser que tout un groupe travaille mal. Un acte : refuser d’embaucher les personnes de ce groupe.",
+      "choices": [
+        "dès qu’on y pense",
+        "quand il conduit à un acte, comme refuser un emploi",
+        "jamais"
+      ],
+      "answer": "quand il conduit à un acte, comme refuser un emploi",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Le préjugé est un jugement ; la discrimination est un acte, comme refuser un emploi. C’est cet acte que la loi punit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir contre les discriminations",
+          "lines": [
+            "Le Défenseur des droits aide gratuitement les victimes de discrimination.",
+            "Depuis 2022, le harcèlement scolaire est un délit.",
+            "Témoin : ne pas participer, ne pas partager, en parler à un adulte.",
+            "En ligne aussi, les insultes et les messages de haine sont punis.",
+            "Du préjugé à la discrimination : un jugement, puis un acte.",
+            "Loi de 2005 : l’égalité des droits et des chances des personnes handicapées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-2-6",
+      "prompt": "Refuser un enfant dans un club de sport à cause de sa religion est puni par la …",
+      "spoken": "Refuser un enfant dans un club de sport à cause de sa religion est puni par la  (mot manquant) ",
+      "choices": [
+        "loi",
+        "politesse",
+        "tradition"
+      ],
+      "answer": "loi",
+      "hint": "Une discrimination est un délit : qui punit un délit ?",
+      "explanation": "Refuser un enfant à cause de sa religion est une discrimination : la loi la punit. Un club ne choisit pas ses membres selon leur religion.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir contre les discriminations",
+          "lines": [
+            "Le Défenseur des droits aide gratuitement les victimes de discrimination.",
+            "Depuis 2022, le harcèlement scolaire est un délit.",
+            "Témoin : ne pas participer, ne pas partager, en parler à un adulte.",
+            "En ligne aussi, les insultes et les messages de haine sont punis.",
+            "Du préjugé à la discrimination : un jugement, puis un acte.",
+            "Loi de 2005 : l’égalité des droits et des chances des personnes handicapées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-2-7",
+      "prompt": "Le racisme, l’antisémitisme et la xénophobie reposent souvent sur des …",
+      "spoken": "Le racisme, l’antisémitisme et la xénophobie reposent souvent sur des  (mot manquant) ",
+      "choices": [
+        "savoirs",
+        "lois",
+        "stéréotypes"
+      ],
+      "answer": "stéréotypes",
+      "hint": "Des idées toutes faites sur tout un groupe : comment les appelle-t-on ?",
+      "explanation": "Ces haines reposent sur des stéréotypes et des préjugés : des idées toutes faites, collées à tout un groupe. Les connaître aide à les combattre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir contre les discriminations",
+          "lines": [
+            "Le Défenseur des droits aide gratuitement les victimes de discrimination.",
+            "Depuis 2022, le harcèlement scolaire est un délit.",
+            "Témoin : ne pas participer, ne pas partager, en parler à un adulte.",
+            "En ligne aussi, les insultes et les messages de haine sont punis.",
+            "Du préjugé à la discrimination : un jugement, puis un acte.",
+            "Loi de 2005 : l’égalité des droits et des chances des personnes handicapées."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-5e-equality-solidarity",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

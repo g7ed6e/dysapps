@@ -4,7 +4,51 @@
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../template';
 import { devant, fuseau, pave, pose, repere, type Anneau, type V3 } from '../painted';
-import { dalle, orbites, plaque, tube, veineSur, type Statue } from '../sentinel';
+import { dalle, orbites, plaque, tube, veine, veineSur, type Statue } from '../sentinel';
+
+/** L'Oie d'opale : le corps ovale, de la queue aux épaules ; la tête, petite, au bout du long cou (jusqu'à huit blocs). */
+const CORPS_DE_L_OIE: Anneau[] = [
+  [1, 0.6, 0.8],
+  [2.2, 0.95, 1.05],
+  [3.4, 0.85, 0.95],
+  [4.2, 0.4, 0.45],
+];
+const Z_DE_LA_TETE_DE_L_OIE = -0.55;
+const TETE_DE_L_OIE: Anneau[] = [
+  [6.3, 0.25, 0.25],
+  [6.8, 0.4, 0.45],
+  [7.6, 0.38, 0.42],
+  [8, 0.2, 0.2],
+];
+/** L'aile droite de l'Oie, repliée sur le flanc (x, y) ; la gauche en miroir. */
+const AILE_DE_L_OIE: [number, number][] = [
+  [0.85, 3.7],
+  [1.05, 3.4],
+  [1.0, 1.9],
+  [0.8, 2.2],
+];
+
+/** Le Phénix d'argile : le corps, de la queue aux épaules ; la tête au bout du cou court (jusqu'à huit blocs). */
+const CORPS_DU_PHENIX: Anneau[] = [
+  [1, 0.55, 0.75],
+  [2.4, 0.85, 1.0],
+  [3.8, 0.75, 0.85],
+  [4.8, 0.4, 0.45],
+];
+const Z_DE_LA_TETE_DU_PHENIX = -0.35;
+const TETE_DU_PHENIX: Anneau[] = [
+  [6.0, 0.3, 0.3],
+  [6.6, 0.48, 0.52],
+  [7.5, 0.45, 0.48],
+  [8, 0.22, 0.22],
+];
+/** L'aile droite du Phénix, repliée sur le flanc (x, y) ; la gauche en miroir. */
+const AILE_DU_PHENIX: [number, number][] = [
+  [0.8, 4.4],
+  [1.0, 4.0],
+  [0.95, 2.1],
+  [0.75, 2.4],
+];
 
 const TETE_DU_MAMMOUTH: Anneau[] = [
   [5.0, 0.8, 0.75, -1.2],
@@ -887,6 +931,103 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
     // Une tache sur chaque flanc, tournée vers son côté.
     veines: (T, a) => {
       for (const s of [-1, 1]) plaque(pose(T, repere([s * 0.61, HAUT_DU_CORPS_DU_CHEVAL + 0.05, 0.35], 0, -s * (Math.PI / 2), 0)), 0, 0, 0.34, 0.24 * a.veines, 6, a.lueur, () => 0);
+    },
+  },
+  // EMC 5e (EMC-2) : le strict nécessaire, Archipéo étant en pause. L'Oie d'opale, sans flamme ni symbole : debout, le
+  // corps ovale, la queue relevée derrière, le long cou dressé, la tête petite et son bec court ; les ailes repliées sur
+  // les flancs, dont les plumes s'allument.
+  'civics-5e-equality-solidarity': {
+    nom: 'l’Oie d’opale',
+    allume: 'les plumes de ses ailes',
+    sansFlamme: true,
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DE_L_OIE, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      // La queue, relevée vers l'arrière.
+      pointe(T, [0, 2.8, 0.8], 0.25, 0.6, a.pierre, [Math.PI / 2 - 0.6, 0, 0], 3);
+      // Le long cou, des épaules à la tête.
+      tube(
+        T,
+        [
+          [0, 4.0, -0.25],
+          [0, 5.2, -0.45],
+          [0, 6.4, Z_DE_LA_TETE_DE_L_OIE],
+        ],
+        [0.3, 0.24, 0.24],
+        4,
+        a.pierre,
+      );
+      fuseau(T, TETE_DE_L_OIE, 5, a.pierre, { z: Z_DE_LA_TETE_DE_L_OIE, bas: false });
+      // Le bec, court, vers l'avant.
+      pointe(T, [0, 7.1, devant(TETE_DE_L_OIE, 5, 7.1, Z_DE_LA_TETE_DE_L_OIE).z + 0.05], 0.12, 0.35, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      for (const c of [-1, 1]) dalle(T, AILE_DE_L_OIE.map(([x, y]): [number, number] => [c * x, y]), -0.6, 0.6, a.pierre);
+      orbites(T, a, 0, 7.45, devant(TETE_DE_L_OIE, 5, 7.45, Z_DE_LA_TETE_DE_L_OIE).z, 0.2, 0.11);
+    },
+    veines: (T, a) => {
+      // Un fil de lueur le long de chaque aile repliée, de l'épaule à la pointe.
+      for (const c of [-1, 1])
+        veine(
+          T,
+          [
+            [c * 1.0, 3.5],
+            [c * 0.95, 2.2],
+          ],
+          0.09 * a.veines,
+          a.lueur,
+          () => -0.62,
+        );
+    },
+  },
+  // Latin-grec 5e (LCA-2) : le strict nécessaire, Archipéo étant en pause. Le Phénix d'argile, sans flamme : il renaît
+  // en se rallumant, sans feu ; un oiseau de terre cuite, les ailes repliées, la longue queue qui retombe derrière
+  // jusqu'au socle, une petite huppe couchée vers l'arrière, rien de dressé.
+  'lca-5e-legends': {
+    nom: 'le Phénix d’argile',
+    allume: 'les plumes de ses ailes',
+    sansFlamme: true,
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DU_PHENIX, 6, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
+      // La longue queue, qui retombe derrière jusqu'au socle.
+      tube(
+        T,
+        [
+          [0, 2.4, 0.8],
+          [0, 1.8, 1.5],
+          [0, 1.05, 2.0],
+        ],
+        [0.35, 0.28, 0.18],
+        4,
+        a.pierre,
+      );
+      // Le cou court, des épaules à la tête.
+      tube(
+        T,
+        [
+          [0, 4.6, -0.2],
+          [0, 6.1, Z_DE_LA_TETE_DU_PHENIX],
+        ],
+        [0.32, 0.28],
+        4,
+        a.pierre,
+      );
+      fuseau(T, TETE_DU_PHENIX, 5, a.pierre, { z: Z_DE_LA_TETE_DU_PHENIX, bas: false });
+      pointe(T, [0, 6.9, devant(TETE_DU_PHENIX, 5, 6.9, Z_DE_LA_TETE_DU_PHENIX).z + 0.05], 0.12, 0.35, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      // La huppe, couchée vers l'arrière de la tête.
+      pointe(T, [0, 7.6, Z_DE_LA_TETE_DU_PHENIX + 0.3], 0.1, 0.5, a.pierre, [Math.PI / 2 + 0.9, 0, 0], 3);
+      for (const c of [-1, 1]) dalle(T, AILE_DU_PHENIX.map(([x, y]): [number, number] => [c * x, y]), -0.55, 0.55, a.pierre);
+      orbites(T, a, 0, 7.25, devant(TETE_DU_PHENIX, 5, 7.25, Z_DE_LA_TETE_DU_PHENIX).z, 0.22, 0.12);
+    },
+    veines: (T, a) => {
+      for (const c of [-1, 1])
+        veine(
+          T,
+          [
+            [c * 0.95, 4.1],
+            [c * 0.9, 2.4],
+          ],
+          0.09 * a.veines,
+          a.lueur,
+          () => -0.57,
+        );
     },
   },
 };

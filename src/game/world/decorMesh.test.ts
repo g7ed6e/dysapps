@@ -160,7 +160,9 @@ it('tout le décor en un, deux ou trois appels de dessin (avec ses lueurs, ses f
     // Aux Îles du Ciel, depuis que les îles ont grandi (GD-11, 8 octobre 2026), il reste peu de décor (des rochers, le
     // grand phare) : ses 4 720 triangles passent les 3 804 de ses cubes, sous les 5 000.
     expect(cout.triangles, a).toBeLessThan(a === '3e' ? Math.max(avant, 5000) : avant);
-    expect(cout.triangles, a).toBeLessThanOrEqual(15_000);
+    // Aux Îles Brumeuses, 15 338 depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec de 5e : sacs
+    // de farine, caisse, rocher de tuf ; 13 632 avant), dans l'enveloppe du décor du 5e (world/budget.ts).
+    expect(cout.triangles, a).toBeLessThanOrEqual(a === '5e' ? 15_400 : 15_000);
     // Des couleurs finies, dans l'espace linéaire.
     for (const f of [maillage.decor, maillage.lueurs, maillage.fumees.facettes]) {
       expect(f.positions.length).toBe(f.elements.length * 9);

@@ -1,0 +1,240 @@
+{
+  "id": "lca-5e-legends-gr-founding-1",
+  "biome": "lca-5e-legends",
+  "type": "gr-founding",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-5e-legends-gr-founding-1-0",
+      "prompt": "Selon la légende, Athéna gagne la ville d’Athènes en offrant …",
+      "spoken": "Selon la légende, Athéna gagne la ville d’Athènes en offrant  (mot manquant) ",
+      "choices": [
+        "une source",
+        "un olivier",
+        "un cheval"
+      ],
+      "answer": "un olivier",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Poséidon fait jaillir une source d’eau salée ; Athéna offre l’olivier, plus utile. Les Athéniens la choisissent, et la ville porte son nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des cités et leurs légendes",
+          "lines": [
+            "Athènes : Athéna et Poséidon se disputent la ville ; Athéna offre l’olivier et gagne.",
+            "Mycènes : selon la légende, le héros Persée la fonde.",
+            "Troie : une ville d’Asie Mineure, en Turquie aujourd’hui, assiégée dix ans par les Grecs.",
+            "Marseille, Massalia : fondée vers 600 avant J.-C. par des Grecs de Phocée.",
+            "Carthage : fondée par la reine Didon, venue de Tyr, en Phénicie.",
+            "L’Iliade, d’Homère : un poème sur la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-1-1",
+      "prompt": "Marseille a été fondée par des …",
+      "spoken": "Marseille a été fondée par des  (mot manquant) ",
+      "choices": [
+        "Grecs",
+        "Romains",
+        "Gaulois"
+      ],
+      "answer": "Grecs",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Des Grecs venus de Phocée fondent Massalia vers 600 avant J.-C. C’est l’une des plus anciennes villes de France.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des cités et leurs légendes",
+          "lines": [
+            "Athènes : Athéna et Poséidon se disputent la ville ; Athéna offre l’olivier et gagne.",
+            "Mycènes : selon la légende, le héros Persée la fonde.",
+            "Troie : une ville d’Asie Mineure, en Turquie aujourd’hui, assiégée dix ans par les Grecs.",
+            "Marseille, Massalia : fondée vers 600 avant J.-C. par des Grecs de Phocée.",
+            "Carthage : fondée par la reine Didon, venue de Tyr, en Phénicie.",
+            "L’Iliade, d’Homère : un poème sur la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-1-2",
+      "prompt": "La fondation de Marseille, selon la légende\nDes marins grecs arrivent de Phocée.\nLeur chef, Protis, épouse Gyptis, la fille du roi du pays.\nEnsemble, ils fondent Massalia.",
+      "question": "D’où viennent les fondateurs de Marseille ?",
+      "spoken": "La fondation de Marseille, selon la légende. Des marins grecs arrivent de Phocée. Leur chef, Protis, épouse Gyptis, la fille du roi du pays. Ensemble, ils fondent Massalia.",
+      "choices": [
+        "de Rome",
+        "de Phocée",
+        "de Carthage"
+      ],
+      "answer": "de Phocée",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "Les fondateurs viennent de Phocée, une cité grecque d’Asie Mineure. Ils appellent la ville Massalia.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des cités et leurs légendes",
+          "lines": [
+            "Athènes : Athéna et Poséidon se disputent la ville ; Athéna offre l’olivier et gagne.",
+            "Mycènes : selon la légende, le héros Persée la fonde.",
+            "Troie : une ville d’Asie Mineure, en Turquie aujourd’hui, assiégée dix ans par les Grecs.",
+            "Marseille, Massalia : fondée vers 600 avant J.-C. par des Grecs de Phocée.",
+            "Carthage : fondée par la reine Didon, venue de Tyr, en Phénicie.",
+            "L’Iliade, d’Homère : un poème sur la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-1-3",
+      "prompt": "Selon la légende, Mycènes a été fondée par le héros …",
+      "spoken": "Selon la légende, Mycènes a été fondée par le héros  (mot manquant) ",
+      "choices": [
+        "Ulysse",
+        "Achille",
+        "Persée"
+      ],
+      "answer": "Persée",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Selon la légende, Persée, le héros qui a vaincu Méduse, fonde Mycènes. Plus tard, son roi Agamemnon mène les Grecs contre Troie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des cités et leurs légendes",
+          "lines": [
+            "Athènes : Athéna et Poséidon se disputent la ville ; Athéna offre l’olivier et gagne.",
+            "Mycènes : selon la légende, le héros Persée la fonde.",
+            "Troie : une ville d’Asie Mineure, en Turquie aujourd’hui, assiégée dix ans par les Grecs.",
+            "Marseille, Massalia : fondée vers 600 avant J.-C. par des Grecs de Phocée.",
+            "Carthage : fondée par la reine Didon, venue de Tyr, en Phénicie.",
+            "L’Iliade, d’Homère : un poème sur la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-1-4",
+      "prompt": "Les Grecs assiègent Troie pendant …",
+      "spoken": "Les Grecs assiègent Troie pendant  (mot manquant) ",
+      "choices": [
+        "dix jours",
+        "un an",
+        "dix ans"
+      ],
+      "answer": "dix ans",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Le siège de Troie dure dix ans ; il finit par la ruse du cheval de bois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des cités et leurs légendes",
+          "lines": [
+            "Athènes : Athéna et Poséidon se disputent la ville ; Athéna offre l’olivier et gagne.",
+            "Mycènes : selon la légende, le héros Persée la fonde.",
+            "Troie : une ville d’Asie Mineure, en Turquie aujourd’hui, assiégée dix ans par les Grecs.",
+            "Marseille, Massalia : fondée vers 600 avant J.-C. par des Grecs de Phocée.",
+            "Carthage : fondée par la reine Didon, venue de Tyr, en Phénicie.",
+            "L’Iliade, d’Homère : un poème sur la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-1-5",
+      "prompt": "Le cheval de Troie\nLes Grecs construisent un grand cheval de bois.\nDes soldats se cachent dedans.\nLes Troyens font entrer le cheval dans leur ville.",
+      "question": "Pourquoi ce cheval est-il une ruse ?",
+      "spoken": "Le cheval de Troie. Les Grecs construisent un grand cheval de bois. Des soldats se cachent dedans. Les Troyens font entrer le cheval dans leur ville.",
+      "choices": [
+        "il cache des soldats grecs",
+        "il est trop grand pour la porte",
+        "c’est un cadeau des dieux"
+      ],
+      "answer": "il cache des soldats grecs",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "Le cheval cache des soldats : la nuit, ils sortent et ouvrent les portes de Troie. Aujourd’hui, un « cheval de Troie » est un programme qui se cache dans un ordinateur pour l’attaquer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des cités et leurs légendes",
+          "lines": [
+            "Athènes : Athéna et Poséidon se disputent la ville ; Athéna offre l’olivier et gagne.",
+            "Mycènes : selon la légende, le héros Persée la fonde.",
+            "Troie : une ville d’Asie Mineure, en Turquie aujourd’hui, assiégée dix ans par les Grecs.",
+            "Marseille, Massalia : fondée vers 600 avant J.-C. par des Grecs de Phocée.",
+            "Carthage : fondée par la reine Didon, venue de Tyr, en Phénicie.",
+            "L’Iliade, d’Homère : un poème sur la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-1-6",
+      "prompt": "Selon la légende, Carthage a été fondée par la reine …",
+      "spoken": "Selon la légende, Carthage a été fondée par la reine  (mot manquant) ",
+      "choices": [
+        "Hélène",
+        "Didon",
+        "Pénélope"
+      ],
+      "answer": "Didon",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Didon, une princesse de Tyr, en Phénicie, fonde Carthage, en Afrique du Nord. Hélène est la reine de Sparte enlevée par Pâris ; Pénélope, l’épouse d’Ulysse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des cités et leurs légendes",
+          "lines": [
+            "Athènes : Athéna et Poséidon se disputent la ville ; Athéna offre l’olivier et gagne.",
+            "Mycènes : selon la légende, le héros Persée la fonde.",
+            "Troie : une ville d’Asie Mineure, en Turquie aujourd’hui, assiégée dix ans par les Grecs.",
+            "Marseille, Massalia : fondée vers 600 avant J.-C. par des Grecs de Phocée.",
+            "Carthage : fondée par la reine Didon, venue de Tyr, en Phénicie.",
+            "L’Iliade, d’Homère : un poème sur la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-1-7",
+      "prompt": "L’Iliade, le poème d’Homère, raconte …",
+      "spoken": "L’Iliade, le poème d’Homère, raconte  (mot manquant) ",
+      "choices": [
+        "la guerre de Troie",
+        "la fondation de Rome",
+        "le retour d’Ulysse"
+      ],
+      "answer": "la guerre de Troie",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "L’Iliade raconte un épisode de la guerre de Troie (Ilion, l’autre nom de Troie) ; l’Odyssée raconte le retour d’Ulysse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des cités et leurs légendes",
+          "lines": [
+            "Athènes : Athéna et Poséidon se disputent la ville ; Athéna offre l’olivier et gagne.",
+            "Mycènes : selon la légende, le héros Persée la fonde.",
+            "Troie : une ville d’Asie Mineure, en Turquie aujourd’hui, assiégée dix ans par les Grecs.",
+            "Marseille, Massalia : fondée vers 600 avant J.-C. par des Grecs de Phocée.",
+            "Carthage : fondée par la reine Didon, venue de Tyr, en Phénicie.",
+            "L’Iliade, d’Homère : un poème sur la guerre de Troie."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-5e-legends",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -136,6 +136,9 @@ const ORDER: (string | ExerciseDef[])[] = [
   'physics-chemistry-5e-matter-universe-mixtures-density-2', 'physics-chemistry-5e-matter-universe-universe-atoms-1', 'physics-chemistry-5e-matter-universe-universe-atoms-2',
   'technology-5e-design-specifications-1', 'technology-5e-design-specifications-2', 'technology-5e-design-technical-solutions-1',
   'technology-5e-design-technical-solutions-2', 'technology-5e-design-life-cycle-1', 'technology-5e-design-life-cycle-2', 'technology-5e-design-project-management-1', 'technology-5e-design-project-management-2',
+  // Enseignement moral et civique (Fournil des partages, 5e).
+  'civics-5e-equality-solidarity-gender-equality-1', 'civics-5e-equality-solidarity-gender-equality-2', 'civics-5e-equality-solidarity-discrimination-1',
+  'civics-5e-equality-solidarity-discrimination-2', 'civics-5e-equality-solidarity-solidarity-1', 'civics-5e-equality-solidarity-solidarity-2',
   // Source des espèces, Vigie des signaux, Bassin des maquettes, 4e.
   'life-earth-sciences-4e-cells-evolution-cells-nutrition-1', 'life-earth-sciences-4e-cells-evolution-cells-nutrition-2', 'life-earth-sciences-4e-cells-evolution-heredity-1',
   'life-earth-sciences-4e-cells-evolution-heredity-2', 'life-earth-sciences-4e-cells-evolution-species-evolution-1', 'life-earth-sciences-4e-cells-evolution-species-evolution-2',
@@ -165,6 +168,10 @@ const ORDER: (string | ExerciseDef[])[] = [
   'lv2-3e-travel-de-on-the-road-2', 'lv2-3e-travel-de-connectives-1', 'lv2-3e-travel-de-connectives-2', 'lv2-3e-travel-de-media-1', 'lv2-3e-travel-de-media-2', 'lv2-3e-travel-es-past-1', 'lv2-3e-travel-es-past-2',
   'lv2-3e-travel-es-stories-1', 'lv2-3e-travel-es-stories-2', 'lv2-3e-travel-es-countries-1', 'lv2-3e-travel-es-countries-2', 'lv2-3e-travel-es-connectives-1',
   'lv2-3e-travel-es-connectives-2', 'lv2-3e-travel-es-media-1', 'lv2-3e-travel-es-media-2',
+  // Latin et grec (Grotte des légendes, 5e) : le latin puis le grec ; l’alphabet grec attend sa police (en attente).
+  'lca-5e-legends-la-founding-1', 'lca-5e-legends-la-founding-2', 'lca-5e-legends-la-gods-1', 'lca-5e-legends-la-gods-2', 'lca-5e-legends-la-cases-1',
+  'lca-5e-legends-la-cases-2', 'lca-5e-legends-gr-founding-1', 'lca-5e-legends-gr-founding-2', 'lca-5e-legends-gr-gods-1', 'lca-5e-legends-gr-gods-2',
+  'lca-5e-legends-gr-alphabet-1', 'lca-5e-legends-gr-alphabet-2',
 ];
 
 const metaOf = ({ id, biome, type, level }: ExerciseMeta): ExerciseMeta => ({ id, biome, type, level });

@@ -783,6 +783,55 @@ const VOIX = fromLayers(
   },
 );
 
+// Mie : un capybara boulanger, à quatre pattes, de profil, la tête vers les x croissants : le corps en tonneau brun
+// roux, la grosse tête carrée au museau sombre, deux petites oreilles, les yeux sur les flancs de la tête ; sa toque
+// blanche de boulanger sur la tête et, sur le dos, un pain doré qu'il porte au fournil. Sans tablier ni insigne. Sept de
+// long, quatre de large, sept de haut. Cinq couleurs, les yeux compris (proposition de l'artiste technique 3D).
+const MIE = fromLayers(
+  [
+    ['.D..D..', '.......', '.......', '.D..D..'],
+    ['BBBBB..', 'BBBBB..', 'BBBBB..', 'BBBBB..'],
+    ['BBBBBB.', 'BBBBBBD', 'BBBBBBD', 'BBBBBB.'],
+    ['.BBBBEB', '.BBBBBB', '.BBBBBB', '.BBBBEB'],
+    ['....D..', '.PP.BB.', '.PP.BB.', '....D..'],
+    ['.......', '....TT.', '....TT.', '.......'],
+    ['.......', '...TTTT', '...TTTT', '.......'],
+  ],
+  {
+    B: '#8a5c3a',
+    D: '#3e2a1e',
+    // L'œil, sur le flanc de la tête : sombre de côté, le dessus brun (vu d'en haut, la tête reste unie).
+    E: { color: '#1f1a16', top: '#8a5c3a' },
+    P: '#d39a4c',
+    T: '#f6f2ea',
+  },
+);
+
+// Lyre : un gecko conteur, debout sur ses pattes de derrière, de face : jaune d'ocre semé de taches brunes, le ventre
+// clair, la grosse tête ronde aux yeux sur les côtés ; sa queue épaisse posée au sol derrière lui, en crosse ; les pieds
+// sous le corps, les doigts en avant (le corps les touche par une face). Il tient de la main droite sa petite lyre de
+// bois, tournée vers l'élève : deux montants, la caisse en bas, la traverse en haut, le milieu vide, trois sur trois
+// (consultant Blocland, 9 octobre 2026). Ni casque ni couronne. Huit de large, cinq de profond, sept de haut. Cinq
+// couleurs, les yeux compris (proposition de l'artiste technique 3D).
+const LYRE = fromLayers(
+  [
+    ['.Y..Y...', '.Y..Y...', '........', '..YY....', '...Y....'],
+    ['........', '.YWWY...', '.YYYY...', '..Y.....', '........'],
+    ['.....LLL', '.YWWY...', '.SYYS...', '........', '........'],
+    ['....YL.L', '.YWWY...', '.YYYY...', '........', '........'],
+    ['.....LLL', '..YY....', '..SS....', '........', '........'],
+    ['..YY....', '.EYYE...', '.YSYY...', '........', '........'],
+    ['........', '.YYYY...', '..YY....', '........', '........'],
+  ],
+  {
+    Y: '#d8aa4a',
+    S: '#6e4a26',
+    W: '#f0e2b8',
+    E: { color: '#1f1a16', top: '#d8aa4a' },
+    L: '#8a5a2e',
+  },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': MOUSSO,
   'french-6e-letter-confusion': TUNEL,
@@ -821,6 +870,7 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'life-earth-sciences-5e-active-planet': HUMUS,
   'physics-chemistry-5e-matter-universe': PERLE,
   'technology-5e-design': RABOT,
+  'civics-5e-equality-solidarity': MIE,
   'life-earth-sciences-4e-cells-evolution': NECTAR,
   'physics-chemistry-4e-signals-circuits': RADAR,
   'technology-4e-modeling': MANIVELLE,
@@ -836,4 +886,5 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'english-3e-comprehension': ECHO,
   'english-3e-grammar': KNIGHT,
   'lv2-3e-travel': TIMBRE,
+  'lca-5e-legends': LYRE,
 };

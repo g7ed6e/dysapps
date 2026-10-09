@@ -39,14 +39,17 @@ import { layoutCache, type Rectangle } from '../placement';
  * au 4e, aucune baleine n'est plus dans le cadre de la vue du port. Depuis GD-12 (une forme par île, 8 octobre 2026), les
  * îles du 6e ont changé de place : aucune de ses clairières n'est plus cachée depuis le port, aucune baleine n'y est
  * replacée. Au 5e, depuis ses formes (9 octobre 2026), le cadre élargi et approfondi : la clairière de 35, 438, au coin
- * du fond à l'ouest, a un point de son rond caché par le Carrefour ; la baleine nage deux cases plus loin, en 37, 439.
+ * du fond à l'ouest, a un point de son rond caché par le Carrefour ; la baleine nageait deux cases plus loin, en 37, 439.
+ * Depuis le Fournil des partages et la Grotte des légendes (EMC-2, LCA-2), posés au rang du fond, dans ce coin, la clairière
+ * du coin (38, 441) est cachée par le Fournil depuis le port, et aucune autre de ce coin ne se voit entière : la baleine
+ * nage entre les deux îles, en 57, 393 (un rond de 4 cases, entier dans la vue du port).
  * Au 4e, depuis ses formes (9 octobre 2026), le cadre approfondi ramène deux clairières du fond dans la vue du port,
  * en partie cachées par des îles : la baleine de 32, 739 nage en 37, 740, celle de 119, 736 en 110, 740 ; la première
  * six cases plus à l'est, en 43, 738, depuis que l'Imprimerie recule d'un pas et le Théâtre avance d'un pas
  * (relecture du 9 octobre 2026 : en 37, 740, cinq points de son rond passaient derrière une île).
  */
 export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
-  '5e': [{ de: { x: 35, y: 438 }, vers: { x: 37, y: 439 } }],
+  '5e': [{ de: { x: 38, y: 441 }, vers: { x: 57, y: 393 } }],
   '4e': [
     { de: { x: 32, y: 739 }, vers: { x: 43, y: 738 } },
     { de: { x: 119, y: 736 }, vers: { x: 110, y: 740 } },

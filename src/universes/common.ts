@@ -407,6 +407,11 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     lines: ['Toc, toc ! Je mesure deux fois avant de couper.', 'Du bambou pour ma scierie : réponds à une question.', 'Un objet répond à un besoin. Cherche lequel.'],
     home: 'Ma scierie est finie. Mes plans sont punaisés au mur.',
   },
+  'civics-5e-equality-solidarity': {
+    greeting: 'Bonjour, bâtisseur ! Au fournil, on partage le pain avec tout le monde. Chaque bonne réponse te donne de la farine. La farine, c’est le blé moulu.',
+    lines: ['Une miche, des parts égales : chacun a la sienne.', 'De la farine pour mon fournil : lis le document.', 'Aider les autres, c’est la solidarité.'],
+    home: 'Mon fournil est fini. Il y a du pain pour chacun.',
+  },
   'life-earth-sciences-4e-cells-evolution': {
     greeting: 'Bonjour, bâtisseur ! À la source, on regarde comment le vivant se transmet et change. Chaque bonne réponse te donne un pétale.',
     lines: ['Je butine fleur après fleur, sans me presser.', 'Des pétales pour ma pépinière : réponds à une question.', 'Un petit ressemble à ses parents, mais pas tout à fait.'],
@@ -447,5 +452,10 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
       'Je range les lettres une par une dans mon casier, comme les bardeaux sur le mur : une rangée après l’autre.',
     ],
     home: 'Ma poste est finie ! Chaque lettre a sa place ici, et toi aussi.',
+  },
+  'lca-5e-legends': {
+    greeting: 'Bonjour, bâtisseur ! Dans ma grotte, je garde les vieilles légendes. Chaque bonne réponse te donne du tuf. Le tuf, c’est une pierre tendre.',
+    lines: ['Chaque légende a commencé par une histoire racontée.', 'Du tuf pour mon abri : lis la phrase et sa traduction.', 'Les mots d’hier vivent encore dans les nôtres.'],
+    home: 'Mon abri est fini. Les légendes y sont à l’abri.',
   },
 };
