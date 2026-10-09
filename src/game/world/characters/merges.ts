@@ -16,7 +16,7 @@ import { rgb } from '../decor/brush';
 import { LUEUR } from './colors';
 export { allumageDuGardien } from './glow';
 import { lueursDeNuit, type FacettesDePersonnage, type V3 } from './painted';
-import { couleursAllumees, ECHELLE_DANS_LE_MONDE } from './sentinel';
+import { couleursAllumees, ECHELLE_DANS_LE_MONDE, lueurDuTriangle } from './sentinel';
 import { sentinelleDuMonde } from './paintedSentinels';
 import type { Niveau } from './imported/models';
 
@@ -210,8 +210,9 @@ export function couleursDesGardiens(
 
 /**
  * Ce qui brille chez les Gardiens d'une fusion (quatre nombres par sommet, comme `FusionDesCreatures.lueur`) : la
- * flamme et les veines, de la couleur de la lueur, au poids de leur degré d'allumage ; le reste suit la lumière. Avec
- * `seul`, comme pour `couleursDesGardiens`, seule la plage de ce Gardien est réécrite.
+ * flamme et les veines, de la couleur de la lueur, au poids de leur degré d'allumage ; un peu la pierre d'un modèle
+ * importé (`lueurDuTriangle`) ; le reste suit la lumière. Avec `seul`, comme pour `couleursDesGardiens`, seule la plage
+ * de ce Gardien est réécrite.
  */
 export function lueursDesGardiens(
   f: FusionDesGardiens,
@@ -220,19 +221,18 @@ export function lueursDesGardiens(
   seul?: BiomeId,
 ): Float32Array {
   const [r, g, b] = rgb(LUEUR).map((v) => lineaire(v / 255));
-  for (const p of f.plages) {
-    if (seul && p.id !== seul) continue;
+  f.plages.forEach((p, i) => {
+    if (seul && p.id !== seul) return;
     dans.fill(0, p.debut * 12, p.fin * 12);
     const d = Math.min(1, Math.max(0, degres[p.id] ?? 0));
-    if (!d) continue;
-    for (let v = p.debut * 3; v < p.fin * 3; v++) {
-      if (!f.lueur[v]) continue;
-      dans[v * 4] = r;
-      dans[v * 4 + 1] = g;
-      dans[v * 4 + 2] = b;
-      dans[v * 4 + 3] = d;
+    if (!d) return;
+    const m = f.modeles[i];
+    for (let t = 0; t < m.pieces.length; t++) {
+      const a = lueurDuTriangle(m, t, d);
+      if (!a) continue;
+      for (let v = (p.debut + t) * 3; v < (p.debut + t + 1) * 3; v++) dans.set([r, g, b, a], v * 4);
     }
-  }
+  });
   return dans;
 }
 

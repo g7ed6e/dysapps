@@ -49,10 +49,10 @@ export const RENDER_BUDGET = {
  * Les Premiers Rivages (6e) dépassent les 60 000 des tablettes depuis les deux îles d'histoire-géographie (HG-2) : relevé
  * par le mainteneur le 6 octobre 2026 (« Budget on augmente pour l'instant »), à la somme de leurs enveloppes, puis du
  * même mot pour les trois îles de sciences (SC-2) : de 63 400 à 72 800. La mesure sur tablette reste à faire. Puis à
- * 75 500 pour les personnages importés du 6e (modèles TRELLIS, de près sur l'île où l'on est ; à valider par le
- * mainteneur), à la somme des enveloppes (75 490).
+ * 75 750 pour les personnages importés du 6e (modèles TRELLIS, de près sur l'île où l'on est ; à valider par le
+ * mainteneur), à la somme des enveloppes (75 740).
  */
-export const RENDER_BUDGET_6E = { triangles: 75_500, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_6E = { triangles: 75_750, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
  * Les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
@@ -279,10 +279,10 @@ export const ENVELOPPES: Record<
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
   // Les personnages importés du 6e (modèles TRELLIS retravaillés, choix « Monde et fiches » du mainteneur, 9 octobre
   // 2026) : de loin partout (environ 200 triangles), de près sur l'île où l'on est (environ 1 500), au pire de l'île qui
-  // coûte le plus. Mesurés : créatures 4 254 (Bulle de près), Gardiens 4 814, socle commun compris. Créatures 3 650 →
-  // 4 300, Gardiens 2 780 → 4 850 aux Premiers Rivages ; la somme passe de 72 770 à 75 490 (`RENDER_BUDGET_6E`).
+  // coûte le plus. Mesurés : créatures 4 254 (Bulle de près), Gardiens 5 054, socle commun et son anneau compris. Créatures
+  // 3 650 → 4 300, Gardiens 2 780 → 5 100 aux Premiers Rivages ; la somme passe de 72 770 à 75 740 (`RENDER_BUDGET_6E`).
   creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 4_300, drawCalls: 1 }, autres: { triangles: 3_200, drawCalls: 1 } },
-  gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 4_850, drawCalls: 1 }, autres: { triangles: 2_780, drawCalls: 1 } },
+  gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 5_100, drawCalls: 1 }, autres: { triangles: 2_780, drawCalls: 1 } },
   scene: {
     lot: 'socle',
     nom: 'Dans la scène : étiquettes, flèche, fanion, balises',

@@ -659,6 +659,16 @@ const CAPTURES = [
       { nom: `histoire-geo-${ile}-gardien-apres${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, fiche: { genre: 'gardien', id: ile }, ...autres },
     ]),
   ),
+  // Les personnages importés du 6e dans Archipéo (famille `personnages-importes`), à retirer une fois le lot fusionné ; à
+  // prendre avec `--rendu archipeo`. Le front de rallumage au défi du Golem de roche, à une, deux et trois épreuves
+  // réussies (`reussir`) ; le Grand Chêne, sa fiche ouverte, éteint (`sansIles`) et rallumé, de jour et de nuit ; la vue
+  // de l'archipel en recul, de jour et de nuit (les créatures de loin, les Gardiens rallumés).
+  ...[1, 2, 3].map((reussir) => ({ nom: `personnages-importes-defi-golem-${reussir}`, vue: 'défi', famille: 'personnages-importes', ile: 'french-6e-letter-confusion', debout: 'french-6e-letter-confusion', reussir })),
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    { nom: `personnages-importes-chene-eteint${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', sansIles: ['french-6e-phonology'], fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
+    { nom: `personnages-importes-chene-rallume${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
+    { nom: `personnages-importes-archipel-recul${suffixe}`, vue: 'archipel', famille: 'personnages-importes', ile: 'maths-6e-calculation', zoomer: -10, ...autres },
+  ]),
   { nom: 'histoire-geo-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
   { nom: 'histoire-geo-mes-blocs', vue: 'île', famille: 'histoire-geo', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [

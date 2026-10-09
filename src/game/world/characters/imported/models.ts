@@ -68,7 +68,7 @@ export function modeleImporte(genre: Genre, id: BiomeId, niveau: Niveau): Facett
 /** Range un modèle lu (par la vue ou par un test), mis au format du personnage. */
 export function enregistrer(genre: Genre, id: BiomeId, niveau: Niveau, lu: ModeleLu): FacettesDePersonnage {
   const quarts = SIXIEME[id]?.[genre === 'gardien' ? 3 : 4] ?? 0;
-  const f = genre === 'gardien' ? sentinelleImportee(lu, quarts) : creatureImportee(id, lu, quarts);
+  const f = genre === 'gardien' ? sentinelleImportee(lu, quarts) : creatureImportee(id, lu, quarts, niveau);
   charges.set(cle(genre, id, niveau), f);
   return f;
 }
@@ -125,6 +125,23 @@ function teinteDu(colors: Float32Array, t: number): Couleur {
   return (c[0] << 16) | (c[1] << 8) | c[2];
 }
 
+/** La clarté (de 0 à 1, comme le L de TSL) sous laquelle une couleur de créature vue de loin est remontée. */
+const CLARTE_DE_LOIN = 0.42;
+
+/**
+ * Une couleur de créature vue de loin, remontée à `CLARTE_DE_LOIN` au moins, sa teinte gardée : petite et loin de la
+ * caméra, une créature sombre (brun, vert de mousse, bleu nuit) ne se lit plus que comme une tache noire.
+ */
+function eclaircie(c: Couleur): Couleur {
+  const k = rgb(c).map((v) => v / 255);
+  const clarte = (Math.max(...k) + Math.min(...k)) / 2;
+  if (clarte >= CLARTE_DE_LOIN) return c;
+  // Mélangée vers le blanc, juste assez pour atteindre la clarté voulue (une couleur noire devient un gris moyen).
+  const u = (CLARTE_DE_LOIN - clarte) / (1 - clarte);
+  const [r, g, b] = k.map((v) => Math.round((v + (1 - v) * u) * 255));
+  return (r << 16) | (g << 8) | b;
+}
+
 /** Un petit hasard fixe par triangle (le lichen), de 0 à 1. */
 const hasard = (t: number) => {
   const x = Math.sin(t * 12.9898 + 78.233) * 43758.5453;
@@ -160,10 +177,8 @@ function sentinelleImportee(lu: ModeleLu, quarts: number): FacettesDePersonnage 
     pieces: Int32Array.from([...socle.pieces, ...new Array<number>(n).fill(statue)]),
     teintes: Int32Array.from([...socle.teintes, ...teintes]),
     table: [...socle.table, { nom: 'sculpture', pivot: [0, HAUT_DU_SOCLE, 0] }],
-    palette: [
-      { couleur: SENTINELLE.pierre, role: 'dominante' },
-      { couleur: SENTINELLE.lichen, role: 'dominante' },
-    ],
+    // Celle du socle : la pierre et le lichen, et la lueur de son anneau.
+    palette: socle.palette,
     hauteurs,
   };
   return { ...f, colors: couleursAllumees(f, 0) };
@@ -173,7 +188,7 @@ function sentinelleImportee(lu: ModeleLu, quarts: number): FacettesDePersonnage 
  * Une créature importée, à la taille de son gabarit, ses couleurs (quatre au plus, celles du modèle) nuancées selon la
  * facette comme une créature dessinée en code. Une seule pièce, le corps : elle se promène sans lever le bras.
  */
-function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number): FacettesDePersonnage {
+function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niveau): FacettesDePersonnage {
   const espece = (ESPECES_6E as Partial<Record<BiomeId, Espece>>)[id];
   if (!espece) throw new Error(`Pas d’espèce pour ${id}`);
   const taille = tailleDe(espece);
@@ -183,7 +198,7 @@ function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number): FacettesDe
   const teintes = new Int32Array(n);
   const colors = new Float32Array(positions.length);
   for (let t = 0; t < n; t++) {
-    teintes[t] = teinteDu(lu.colors, t);
+    teintes[t] = niveau === 'loin' ? eclaircie(teinteDu(lu.colors, t)) : teinteDu(lu.colors, t);
     const k = rgb(teintes[t]);
     const w = NUANCE[0] + (NUANCE[1] - NUANCE[0]) * clamp(0.5 + 0.5 * normals[t * 9 + 1], 0, 1);
     const c = [lineaire((k[0] / 255) * w), lineaire((k[1] / 255) * w), lineaire((k[2] / 255) * w)];

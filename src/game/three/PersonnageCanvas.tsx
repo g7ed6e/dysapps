@@ -11,7 +11,7 @@ import { lineaire } from '../world/landMesh';
 import { rgb } from '../world/decor/brush';
 import { LUEUR } from '../world/characters/colors';
 import { modeleDuPortrait } from '../world/characters/portrait';
-import { couleursAllumees, degresDAllumage, type Allumage } from '../world/characters/sentinel';
+import { couleursAllumees, degresDAllumage, lueurDuTriangle, type Allumage } from '../world/characters/sentinel';
 import { cadrageSerre } from './tightFraming';
 import { materiauALueur } from './paintedCharacters';
 
@@ -89,7 +89,7 @@ export default function PersonnageCanvas({
     g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(f.colors), 3));
     g.setAttribute('lueur', new THREE.BufferAttribute(new Float32Array((f.positions.length / 3) * 4), 4));
     const k = rgb(LUEUR).map((v) => lineaire(v / 255));
-    /** Peint la sentinelle à un degré : sa pierre, et ce qui brille (la flamme et les veines) au poids de leurs lueurs. */
+    /** Peint la sentinelle à un degré : sa pierre, et ce qui brille (flamme, veines, anneau, pierre importée) au poids de ses lueurs. */
     const peindre = (d: { pierre: number; lueurs: number }) => {
       if (kind !== 'guardian') return;
       const couleurs = g.getAttribute('color') as THREE.BufferAttribute;
@@ -97,16 +97,10 @@ export default function PersonnageCanvas({
       couleursAllumees(f, d, couleurs.array as Float32Array<ArrayBuffer>);
       const l = lueur.array as Float32Array;
       l.fill(0);
-      if (d.lueurs > 0)
-        for (let t = 0; t < f.pieces.length; t++) {
-          if (f.table[f.pieces[t]].lueur !== 'allumage') continue;
-          for (let v = t * 3; v < t * 3 + 3; v++) {
-            l[v * 4] = k[0];
-            l[v * 4 + 1] = k[1];
-            l[v * 4 + 2] = k[2];
-            l[v * 4 + 3] = d.lueurs;
-          }
-        }
+      for (let t = 0; t < f.pieces.length; t++) {
+        const a = lueurDuTriangle(f, t, d);
+        if (a) for (let v = t * 3; v < t * 3 + 3; v++) l.set([k[0], k[1], k[2], a], v * 4);
+      }
       couleurs.needsUpdate = true;
       lueur.needsUpdate = true;
     };

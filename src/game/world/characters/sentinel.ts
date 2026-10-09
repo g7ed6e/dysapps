@@ -91,6 +91,8 @@ const SOCLE: Anneau[] = [
   [0.85, 1.78],
   [HAUT_DU_SOCLE, 1.88],
 ];
+/** L'anneau du socle d'une sentinelle importée (`socleSeul`) : sa hauteur, du bas et du haut. */
+const ANNEAU = [0.5, 0.66] as const;
 /** Le foyer, sur le devant du socle : son centre en Z et le haut de sa coupe. */
 export const FOYER = { z: -1.3, haut: 1.12 } as const;
 
@@ -332,6 +334,26 @@ export function frontDeLueur(lueurs: number, h: number): number {
 }
 
 /**
+ * La part de lumière propre de la pierre d'une sentinelle importée rallumée : assez pour se voir la nuit, assez peu
+ * pour garder le modelé de la statue (DA, relecture des modèles importés : « une émission chaude Sable »).
+ */
+const EMISSION_DE_PIERRE = 0.35;
+
+/**
+ * Le poids de la lueur du triangle `t` d'une sentinelle (0 : il suit la lumière de la scène ; 1 : il brille de la
+ * couleur `LUEUR`) : une flamme, des veines ou l'anneau du socle, au degré des lueurs ; la pierre d'une sentinelle
+ * importée, un peu, à mesure qu'elle se réchauffe (le socle non : son anneau suffit).
+ */
+export function lueurDuTriangle(f: FacettesDePersonnage, t: number, degre: Allumage): number {
+  const { pierre, lueurs } = degresDAllumage(degre);
+  const piece = f.table[f.pieces[t]];
+  if (piece.lueur === 'allumage') return lueurs;
+  const h = f.hauteurs?.[t];
+  if (h === undefined || piece.nom === 'socle') return 0;
+  return EMISSION_DE_PIERRE * Math.max(pierre, frontDeLueur(lueurs, h));
+}
+
+/**
  * Les couleurs d'une sentinelle au degré `degre`, sommet par sommet, dans l'espace linéaire (écrites dans `dans` s'il
  * est donné) : la teinte de `allumage`, nuancée selon la facette comme tout personnage ; une lueur perd sa nuance à
  * mesure qu'elle s'allume, et brille pleinement à 1.
@@ -360,7 +382,12 @@ export function couleursAllumees(f: FacettesDePersonnage, degre: Allumage, dans 
  * perdu son propre socle à la coupe (scripts/rendu/modeles/couper.py).
  */
 export function socleSeul(): FacettesDePersonnage {
-  const f = peindrePersonnage([{ nom: 'socle', pivot: [0, 0, 0], dessiner: (T, pot) => socle(T, new Atelier(pot), false) }]);
+  const f = peindrePersonnage([
+    { nom: 'socle', pivot: [0, 0, 0], dessiner: (T, pot) => socle(T, new Atelier(pot), false) },
+    // Un anneau de cendre tout autour du socle, qui s'allume avec la statue : rallumée, elle se distingue d'un arbre
+    // ou d'une pierre au soleil par autre chose que sa couleur (DA, relecture des modèles importés).
+    { nom: 'anneau', pivot: [0, 0, 0], lueur: 'allumage', dessiner: (T, pot) => bandeauDuSocle(T, [0, 1, 2, 3, 4, 5, 6, 7], ANNEAU[0], ANNEAU[1], new Atelier(pot).lueur) },
+  ]);
   return { ...f, colors: couleursAllumees(f, 0) };
 }
 
