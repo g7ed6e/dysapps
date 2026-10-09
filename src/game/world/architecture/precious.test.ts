@@ -74,9 +74,9 @@ describe('La tôle et la tenture, peintes', () => {
 
   it('le shader peint les joints, les plis et le galon, avec les rôles joint et galon du kit ; de loin, ils s’effacent', () => {
     // Puis le brun des pilotis (l'encadrement d'une galerie) et le liseré de l'eau (le reste, 9 octobre 2026).
-    expect(ROLES_PEINTS).toEqual(['poteau', 'soubassement', 'chaperon', 'joint', 'galon', 'pilotis', 'lisere']);
+    expect(ROLES_PEINTS).toEqual(['poteau', 'soubassement', 'chaperon', 'joint', 'galon', 'pilotis']);
     expect(MOTIF_GLSL).toContain(`uniform vec3 uRoles[${ROLES_PEINTS.length * 2}]`);
-    expect(MOTIF_GLSL).toContain('vec3 galon = delave ? uRoles[11] : uRoles[4];');
+    expect(MOTIF_GLSL).toContain('vec3 galon = delave ? uRoles[10] : uRoles[4];');
     expect(MOTIF_GLSL).toContain(`fract(u / ${SHEET_METAL.pas.toFixed(4)})`);
     // Les joints et les plis, au quart de case, s'effacent deux fois plus tôt que le colombage (référent dys) : à 4 pixels
     // par motif, plus rien ; entiers à 8.
@@ -140,6 +140,11 @@ describe('Au 6e, dans le monde', () => {
     // Le reste (9 octobre 2026) y ajoute le végétal du cœur (troncs nus, bouchons, blé…) et le mât de la Halle.
     expect(poteaux.some((p) => p.cube.bridge)).toBe(true);
     expect(poteaux.some((p) => p.cube.tag === port && jetee.has(`${p.cube.x},${p.cube.y}`))).toBe(true);
+    // Chaque poteau de bois vient d'une liaison, de la jetée, du cœur d'une île (aucun lieu) ou du mât de la Halle.
+    const formes = [woodenPost(true), woodenPost(false)].map((d) => JSON.stringify(d));
+    const debout = poteaux.filter((p) => formes.includes(JSON.stringify(p.dessin)));
+    expect(debout.length).toBeGreaterThan(10);
+    for (const { cube: c } of debout) expect(Boolean(c.bridge) || (c.tag === port && jetee.has(`${c.x},${c.y}`)) || !c.place || c.place === 'assembly', cle(c)).toBe(true);
     for (const c of cubes.filter((c) => c.texture === 'tronc' && !c.ghost && !c.decor && (c.bridge || (c.tag === port && jetee.has(`${c.x},${c.y}`))))) expect(archi.remplacees.has(cle(c)), cle(c)).toBe(true);
   });
 

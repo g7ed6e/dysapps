@@ -800,12 +800,20 @@ const CAPTURES = [
   // `familles-6e-cadran-*`, la jetée et le feu de port `familles-6e-port-bac*`, la salle pleine `familles-6e-salle-fond*`.
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
     { nom: `familles-6e-mine${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
-    { nom: `familles-6e-mare${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-fractions', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
+    { nom: `familles-6e-mare${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-fractions', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2, ...autres },
     { nom: `familles-6e-gardien${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'history-6e-antiquity', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
   ]),
   { nom: 'familles-6e-liaison-bout-nuit', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', zoomer: 3, finesse: 2, nuit: true },
-  { nom: 'familles-6e-cone', vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-decimals', posees: 'toutes', zoomer: 3, finesse: 2 },
-  { nom: 'familles-6e-boulier', vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-calculation', posees: 'toutes', zoomer: 3, finesse: 2 },
+  { nom: 'familles-6e-cone', vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-decimals', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-6e-boulier', vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-calculation', posees: 'toutes', zoomer: 2, sansEtiquettes: true, finesse: 2 },
+  // Retouches du 9 octobre 2026 : le cône de recul ; le tas de fouille (history-6e-antiquity) et la dune en gradins avec
+  // son tas (french-6e-word-spelling) ; le champ de blé (french-6e-grammar-spelling), de près et de loin ; les étiquettes
+  // des îles cachées sur les objets du cœur (`sansEtiquettes`).
+  { nom: 'familles-6e-cone-loin', vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-decimals', posees: 'toutes', zoomer: -6, finesse: 2 },
+  { nom: 'familles-6e-fouille', vue: 'île', famille: 'familles-sixieme', ile: 'history-6e-antiquity', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-6e-dune', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-word-spelling', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-6e-ble', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-6e-ble-loin', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', posees: 'toutes', zoomer: -6, finesse: 2 },
   { nom: 'familles-6e-cabine-baie-nuit', vue: 'île', famille: 'familles-sixieme', ile: 'english-6e-vocabulary', posees: 'toutes', zoomer: 3, finesse: 2, nuit: true },
   { nom: 'familles-6e-liaison-loin', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', zoomer: -6, finesse: 2 },
   { nom: 'familles-6e-halle-cour', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', lieu: 'assembly', sansPanneau: true, zoomer: 4, finesse: 2 },
@@ -1147,6 +1155,22 @@ async function zoomerLaVue(page, zoomer) {
   for (let i = 0; i < Math.abs(zoomer); i++) await page.keyboard.press(zoomer > 0 ? '+' : '-');
 }
 
+/**
+ * Cache les étiquettes des îles (`sansEtiquettes`) : une bulle passagère invisible sur toute la scène, sous laquelle
+ * elles se cachent sans bouger (src/game/coveredZones.ts), comme sous le mot de la baleine. Le monde reste tel quel.
+ */
+async function cacherLesEtiquettes(page) {
+  await page.evaluate(() => {
+    const scene = document.querySelector('[data-scene]');
+    if (!scene) return;
+    const bulles = document.createElement('div');
+    bulles.dataset.couvre = 'bulle';
+    bulles.style.cssText = 'position:fixed;inset:0;pointer-events:none;opacity:0';
+    bulles.appendChild(document.createElement('div')).style.cssText = 'position:absolute;inset:0';
+    scene.appendChild(bulles);
+  });
+}
+
 /** Masque le panneau en plein écran (`sansPanneau`) : le monde dessous se voit, et reprend le focus (il n'est plus inerte). */
 async function masquerLePanneau(page) {
   await page.addStyleTag({ content: '.world-page > .island-sheet { display: none !important }' });
@@ -1364,13 +1388,14 @@ async function scenes() {
               fiche: c.fiche,
               zoomer: c.zoomer,
               sansPanneau: c.sansPanneau,
+              sansEtiquettes: c.sansEtiquettes,
               reussir: c.reussir,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, posees, cliquer, amenager, fiche, zoomer, reussir, sansPanneau } of views) {
+    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, posees, cliquer, amenager, fiche, zoomer, reussir, sansPanneau, sansEtiquettes } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -1454,13 +1479,15 @@ async function scenes() {
         // Le monde sans le panneau qui le couvre (`sansPanneau` : la fiche d'un monument, la caméra déjà posée sur lui) :
         // le panneau masqué, le monde rendu au toucher et au clavier pour le zoom.
         if (sansPanneau) await masquerLePanneau(page);
+        // Le monde sans les étiquettes des îles (`sansEtiquettes` : un objet du cœur, que le nom de l'île couvrait).
+        if (sansEtiquettes) await cacherLesEtiquettes(page);
         // La Carte zoomée (`zoomer`) : la touche +, le monde ayant le focus, autour du centre de la place libre.
         if (zoomer) await zoomerLaVue(page, zoomer);
         // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.
         // Le panneau masqué (`sansPanneau`) agrandit la place libre : la caméra repart vers un autre cadrage, qu'on laisse
         // se poser comme après un zoom (sans ces pas, la vue de loin du grand moulin se prenait la caméra en route, à un
         // point qui changeait d'une prise à l'autre).
-        for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer || amenager || sansPanneau ? 16 : 0)); i++) {
+        for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer || amenager || sansPanneau || sansEtiquettes ? 16 : 0)); i++) {
           await page.clock.runFor(125);
           await page.waitForTimeout(30);
         }

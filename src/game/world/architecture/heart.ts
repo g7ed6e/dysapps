@@ -14,11 +14,12 @@
 //   de la salle des trophées.
 // Code pur, sans Three.js.
 import type { VoxelCube } from '../cube';
-import type { TextureKind } from '../pixels';
+import type { Rotation } from './choices';
 import { familyOf } from './families';
-import { beam, bead, cap, chalkLoaf, crate, darkPost, deck, dialSlab, EMPTY, foliage, hangingCrate, HEART, mound, pavilion, rock, slab, spire, trunk, waterNeighbours, waterSheet, wheat } from './heartPieces';
+import { beam, bead, cap, chalkLoaf, coneCorner, coneSide, coneStep, crate, darkPost, deck, dialSlab, EMPTY, foliage, hangingCrate, HEART, mound, pavilion, rock, slab, spire, trunk, waterNeighbours, waterSheet, wheat } from './heartPieces';
 import type { RestContext, RestDrawing } from './kits/types';
 import { woodenPost } from './lowPieces';
+import { SIDES } from './neighborhood';
 import { HEART_MOTIFS, MOTIF, type Fond, type PeintureDuMur } from './paint';
 import { estUnePlaceDeTrophee } from '../trophyHall';
 
@@ -40,30 +41,30 @@ const GLAZED = uniform('matiere', HEART_MOTIFS.glazing, 0);
 const DOOR = uniform('matiere', MOTIF.vantail, 0);
 /** Un toit peint dans la couverture de son île (sa matière, `toit` : world/roofs.ts). */
 const ROOF = uniform('matiere', 0, 0);
-/** La case du sommet du cône des Décimaux : la braise mate. */
+/** La case du sommet du cône des Décimaux, quand elle n'est pas sur un cône entier : la braise mate. */
 const EMBER = uniform('braise', 0, 0);
 
-/** Les voisines horizontales (+x, +y, −x, −y), comme `SIDES`. */
-const SIDES: readonly (readonly [number, number])[] = [
-  [1, 0],
-  [0, 1],
-  [-1, 0],
-  [0, -1],
-];
+/** Les six voisines d'une case : ses quatre côtés (`SIDES`), puis dessus et dessous. */
+const DIRS6: readonly (readonly [number, number, number])[] = [...SIDES.map(([x, y]) => [x, y, 0] as const), [0, 0, 1], [0, 0, -1]];
+
+/** Ce qu'une pierre bâtie porte : un cadran, de l'or, une lanterne. */
+const BUILT_ON = new Set(['cadran', 'or', 'lanterne']);
 
 const tex = (c: VoxelCube | undefined) => (c ? (c.texture ?? 'couleur') : undefined);
+const keyOf = (c: VoxelCube) => `${c.x},${c.y},${c.z}`;
 
 /** Les cases d'une même matière reliées à `c` (de face en face, au plus `max`). */
 function sameMaterial(c: VoxelCube, at: RestContext['at'], max = 64): VoxelCube[] {
   const t = tex(c);
-  const seen = new Set<string>([`${c.x},${c.y},${c.z}`]);
+  const seen = new Set<string>([keyOf(c)]);
   const out = [c];
   for (let i = 0; i < out.length && out.length < max; i++) {
     const d = out[i];
-    for (const [dx, dy, dz] of [...SIDES.map(([x, y]) => [x, y, 0] as const), [0, 0, 1] as const, [0, 0, -1] as const]) {
+    for (const [dx, dy, dz] of DIRS6) {
       const n = at(d.x + dx, d.y + dy, d.z + dz);
-      const k = `${d.x + dx},${d.y + dy},${d.z + dz}`;
-      if (!n || seen.has(k) || tex(n) !== t) continue;
+      if (!n || tex(n) !== t) continue;
+      const k = keyOf(n);
+      if (seen.has(k)) continue;
       seen.add(k);
       out.push(n);
     }
@@ -72,11 +73,81 @@ function sameMaterial(c: VoxelCube, at: RestContext['at'], max = 64): VoxelCube[
 }
 
 /**
- * Une pierre bâtie (le pilier de l'Horloge, le cône des Décimaux, la pile du feu de port) : son volume porte un cadran,
- * de l'or ou une lanterne. Sinon, c'est une pierre posée là (isolée, ou un amas) : un rocher.
+ * Le cône des Décimaux, lu sur son volume de pierre : une première rangée de 3 × 3 autour de son axe, une colonne sur
+ * l'axe jusqu'à `top`, de l'or juste au-dessus (la braise).
  */
-function isBuiltStone(c: VoxelCube, at: RestContext['at']): boolean {
-  return sameMaterial(c, at).some((d) => ['cadran', 'or', 'lanterne'].includes(tex(at(d.x, d.y, d.z + 1)) ?? ''));
+interface Cone {
+  x: number;
+  y: number;
+  base: number;
+  top: number;
+}
+
+/** Le verdict d'un volume de pierre, retenu pour chacune de ses cases. */
+interface StoneVolume {
+  /** Il porte un cadran, de l'or ou une lanterne : un pilier (l'Horloge, la pile du feu de port), pas un rocher. */
+  built: boolean;
+  cone: Cone | null;
+}
+
+/** Les verdicts déjà rendus, par monde lu (`at` : un par construction) et par case. */
+const volumes = new WeakMap<RestContext['at'], Map<string, StoneVolume>>();
+
+/** Le volume de pierre d'une case : son verdict, calculé une fois pour toutes ses cases. */
+function stoneVolume(c: VoxelCube, at: RestContext['at']): StoneVolume {
+  let known = volumes.get(at);
+  if (!known) volumes.set(at, (known = new Map()));
+  const v = known.get(keyOf(c));
+  if (v) return v;
+  const cells = sameMaterial(c, at);
+  const out: StoneVolume = { built: cells.some((d) => BUILT_ON.has(tex(at(d.x, d.y, d.z + 1)) ?? '')), cone: coneOf(cells, at) };
+  for (const d of cells) known.set(keyOf(d), out);
+  return out;
+}
+
+/** Le cône d'un volume de pierre, s'il en a exactement la forme (sinon il reste un pilier lissé). */
+function coneOf(cells: readonly VoxelCube[], at: RestContext['at']): Cone | null {
+  const tops = cells.filter((d) => tex(at(d.x, d.y, d.z + 1)) === 'or');
+  if (tops.length !== 1) return null;
+  const t = tops[0];
+  const base = Math.min(...cells.map((d) => d.z));
+  if (t.z <= base || cells.length !== 9 + (t.z - base)) return null;
+  const fits = cells.every((d) => (d.z === base ? Math.abs(d.x - t.x) <= 1 && Math.abs(d.y - t.y) <= 1 : d.x === t.x && d.y === t.y && d.z <= t.z));
+  return fits ? { x: t.x, y: t.y, base, top: t.z } : null;
+}
+
+/** La largeur de la cheminée du cône à `h` cases au-dessus de sa première rangée (de 1 à `HEART.cone.top` au sommet). */
+function coneWidth(k: Cone, h: number): number {
+  const height = k.top - k.base + HEART.cone.ember;
+  return 1 - ((1 - HEART.cone.top) * h) / height;
+}
+
+/** Le quart de tour d'un pan de la jupe (vers +x, +y, −x, −y) et d'un coin (+x +y, −x +y, −x −y, +x −y). */
+const SIDE_TURN = new Map<string, Rotation>([
+  ['1,0', 0],
+  ['0,1', 1],
+  ['-1,0', 2],
+  ['0,-1', 3],
+]);
+const CORNER_TURN = new Map<string, Rotation>([
+  ['1,1', 0],
+  ['-1,1', 1],
+  ['-1,-1', 2],
+  ['1,-1', 3],
+]);
+
+/**
+ * Une pierre du cône des Décimaux : sur la première rangée, le cœur en pilier (caché), les bords en pans de jupe, les
+ * coins en croupes ; au-dessus, la cheminée en troncs de pyramide qui se resserrent.
+ */
+function coneStone(c: VoxelCube, k: Cone): RestDrawing {
+  if (c.z > k.base) return { family: 'pierre', piece: coneStep(coneWidth(k, c.z - k.base - 1), coneWidth(k, c.z - k.base), 1, false) };
+  const d = `${c.x - k.x},${c.y - k.y}`;
+  const side = SIDE_TURN.get(d);
+  if (side !== undefined) return { family: 'pierre', piece: coneSide(), rotation: side };
+  const corner = CORNER_TURN.get(d);
+  if (corner !== undefined) return { family: 'pierre', piece: coneCorner(), rotation: corner };
+  return { family: 'pierre', paint: PILLAR };
 }
 
 /** Brique et sable : les perles du boulier, la borne de brique, la dune, le tas. */
@@ -155,10 +226,13 @@ function heartOf(c: VoxelCube, at: RestContext['at']): RestDrawing | undefined {
     case 'planches':
       // Le bouchon d'un poteau de la jetée (sa lanterne pas encore allumée) : le poteau continue ; sinon, le tablier.
       return tex(below) === 'tronc' ? { family: 'vegetal', piece: woodenPost(!above) } : deckOf(c, at);
-    case 'pierre':
+    case 'pierre': {
       if (tex(above) === 'or' && !below) return { family: 'pierre', paint: CAPPED };
-      if (isBuiltStone(c, at)) return { family: 'pierre', paint: PILLAR };
+      const v = stoneVolume(c, at);
+      if (v.cone) return coneStone(c, v.cone);
+      if (v.built) return { family: 'pierre', paint: PILLAR };
       return { family: 'pierre', piece: rock(seedOf(c), false) };
+    }
     case 'galet':
       return { family: 'pierre', piece: rock(seedOf(c), true) };
     case 'obsidienne':
@@ -172,6 +246,11 @@ function heartOf(c: VoxelCube, at: RestContext['at']): RestDrawing | undefined {
     case 'or': {
       const t = tex(below);
       if (t === 'cadran') return { family: 'precieux', piece: spire() };
+      if (t === 'pierre' && below) {
+        // Le sommet du cône : la dernière case de sa cheminée, son dessus seul en braise, ses flancs de pierre.
+        const k = stoneVolume(below, at).cone;
+        if (k) return { family: 'precieux', piece: coneStep(coneWidth(k, k.top - k.base), HEART.cone.top, HEART.cone.ember, true) };
+      }
       if (t === 'pierre' && tex(at(c.x, c.y, c.z - 2)) === 'pierre') return { family: 'precieux', paint: EMBER };
       if (!below) return { family: 'vegetal', piece: wheat() };
       return { family: 'precieux', paint: GOLD };
@@ -262,7 +341,7 @@ function placeOf(c: VoxelCube, ctx: RestContext): RestDrawing | undefined {
 /** Le reste du 6e : le dessin d'un bloc que rien d'autre ne prend (voir l'en-tête), ou `undefined`. */
 export function restOf6e(c: VoxelCube, ctx: RestContext): RestDrawing | undefined {
   const { origin, at } = ctx;
-  const t = c.texture as TextureKind | undefined;
+  const t = c.texture;
   switch (origin) {
     case 'coeur':
       return heartOf(c, at);

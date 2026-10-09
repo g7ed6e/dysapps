@@ -52,6 +52,10 @@ export interface Facette {
   ownMotif?: boolean;
   /** Le motif peint (0 ou absent : aucun). */
   motif?: number;
+  /** La couleur du bloc de dessous, au lieu de celle de son bloc (les flancs de pierre de la case de braise du cône). */
+  colourBelow?: boolean;
+  /** Sa couleur tenue à l'écart du fantôme Brume (le pain de craie, ./heartPieces.ts : `apartFromGhost`). */
+  ghostApart?: boolean;
 }
 
 /** Une pièce dessinée, dans l'orientation de référence de sa forme. */

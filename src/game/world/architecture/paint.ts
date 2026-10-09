@@ -181,9 +181,11 @@ export const DRAPE = { pli: 0.25, clair: 1.14, sombre: 0.8, galon: 0.08 } as con
  * - `straw` : sur les flancs du champ de blé, les stries de la tôle, dans un ton plus sombre de la matière (la paille) ;
  * - `glazing` : la verrière, des petits bois dans le brun des poteaux au bord et au milieu de chaque case ;
  * - `gallery` : l'entrée d'une galerie, un encadrement de bois (le brun des pilotis) au bord du volume seulement, côté u
- *   bas (`MOTIF.montante`), côté u haut (`MOTIF.descendante`) et en haut (`MOTIF.chaperon`) ;
- * - `waterRim` : sur le dessus d'une nappe d'eau, le liseré clair au bord de la nappe seulement, côté −x
- *   (`MOTIF.montante`), +x (`MOTIF.descendante`), −y de la grille (`MOTIF.chaperon`), +y (`MOTIF.sabliereHaute`).
+ *   bas (`MOTIF.montante`), côté u haut (`MOTIF.descendante`) et en haut (`MOTIF.chaperon`).
+ * `planksAlongY` et `straw` sont le même nombre : le shader les lit sur des faces différentes (le dessus d'un tablier, les
+ * flancs du blé), et le dessus du champ de blé n'en porte jamais (heart.test.ts le vérifie). Le liseré d'une nappe d'eau
+ * n'est pas peint : ce sont des bandes de géométrie (./heartPieces.ts, `waterSheet`), le shader lisant `fract` de la
+ * position débordait d'un pixel d'une case sur l'autre et traçait des tirets entre deux cases d'eau.
  */
 export const HEART_MOTIFS = {
   planksAlongX: MOTIF.bardage | MOTIF.vertical | MOTIF.montante,
@@ -191,10 +193,9 @@ export const HEART_MOTIFS = {
   straw: MOTIF.bardage | MOTIF.vertical | MOTIF.descendante,
   glazing: MOTIF.colombage | MOTIF.vertical,
   gallery: MOTIF.vantail | MOTIF.vertical,
-  waterRim: MOTIF.plein | MOTIF.vertical,
 } as const;
 
-/** Les mesures des dessins peints du cœur : le pas et le joint du plancher, les petits bois, le ton des stries, le liseré de l'eau. */
+/** Les mesures des dessins du cœur : le pas et le joint du plancher, les petits bois, le ton des stries, la largeur du liseré de l'eau. */
 export const HEART_PAINT = { pas: 0.25, joint: 0.02, petitBois: 0.035, paille: 0.72, lisere: 0.06 } as const;
 
 /**
@@ -231,7 +232,7 @@ export function pointsDuCadran(): [number, number][] {
 }
 
 /** Les rôles peints par le shader, dans l'ordre de l'uniforme `uRoles` (puis les mêmes, délavés). */
-export const ROLES_PEINTS = ['poteau', 'soubassement', 'chaperon', 'joint', 'galon', 'pilotis', 'lisere'] as const;
+export const ROLES_PEINTS = ['poteau', 'soubassement', 'chaperon', 'joint', 'galon', 'pilotis'] as const;
 
 /** L'indice d'un rôle peint dans `uRoles`, délavé ou non. */
 const roleIndex = (r: (typeof ROLES_PEINTS)[number], delave: boolean) => ROLES_PEINTS.indexOf(r) + (delave ? ROLES_PEINTS.length : 0);
@@ -403,7 +404,6 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
   vec3 joint = delave ? uRoles[${roleIndex('joint', true)}] : uRoles[${roleIndex('joint', false)}];
   vec3 galon = delave ? uRoles[${roleIndex('galon', true)}] : uRoles[${roleIndex('galon', false)}];
   vec3 cadreDeBois = delave ? uRoles[${roleIndex('pilotis', true)}] : uRoles[${roleIndex('pilotis', false)}];
-  vec3 lisere = delave ? uRoles[${roleIndex('lisere', true)}] : uRoles[${roleIndex('lisere', false)}];
   int genre = m & 3;
   bool vertical = (m & ${MOTIF.vertical}) != 0;
   if (an.y > 0.5) {
@@ -416,17 +416,6 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
       float q = fract(w / ${HEART_PAINT.pas.toFixed(4)});
       float j = bandeDuMotif(min(q, 1.0 - q) * ${HEART_PAINT.pas.toFixed(4)}, ${HEART_PAINT.joint.toFixed(4)}, dw);
       return mix(c, bois, j * loinDuPlancher);
-    }
-    if (genre == ${MOTIF.plein} && vertical) {
-      // Le liseré d'une nappe d'eau, au bord de la nappe seulement (une bande nette, sans fondu de loin).
-      const float L = ${HEART_PAINT.lisere.toFixed(4)};
-      vec2 f = fract(pos.xz);
-      float bord = 0.0;
-      if ((m & ${MOTIF.montante}) != 0) bord = max(bord, 1.0 - smoothstep(L - 0.5 * du, L + 0.5 * du, f.x));
-      if ((m & ${MOTIF.descendante}) != 0) bord = max(bord, smoothstep(1.0 - L - 0.5 * du, 1.0 - L + 0.5 * du, f.x));
-      if ((m & ${MOTIF.chaperon}) != 0) bord = max(bord, 1.0 - smoothstep(L - 0.5 * dz, L + 0.5 * dz, f.y));
-      if ((m & ${MOTIF.sabliereHaute}) != 0) bord = max(bord, smoothstep(1.0 - L - 0.5 * dz, 1.0 - L + 0.5 * dz, f.y));
-      return mix(c, lisere, bord);
     }
     if ((m & ${MOTIF.cadran}) != 0) {
       // Le cadran sur le dessus d'une dalle (le rouage) : le même disque à douze points, sans aiguilles.

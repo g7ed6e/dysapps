@@ -5,11 +5,14 @@
 // moins ; ce qui pousse (le rocher, le petit arbre, le buisson) reprend les primitives du décor (../decor/brush.ts :
 // l'icosaèdre bosselé, le tronc de cône à cinq pans), aux proportions de ses formes communes (../decor/common.ts),
 // réduites à la case. Code pur, sans Three.js.
-import { hasardDe, icosaedre, Pinceau, tronconique, type Peindre } from '../decor/brush';
-import { HEART_MOTIFS, MOTIF } from './paint';
+import { hasardDe, icosaedre, Pinceau, rgb, tronconique, type Peindre } from '../decor/brush';
+import { mixColor } from '../daylight';
+import { BRUME, type Couleur } from '../palette';
+import { HEART_MOTIFS, HEART_PAINT, MOTIF } from './paint';
 import { frustum, normalOf } from './precious';
-import { boiteDansLaCase, type DessinDePiece, type Facette, type V3 } from './rooms';
+import { boiteDansLaCase, FACES, type DessinDePiece, type Facette, type V3 } from './rooms';
 import { woodenPost } from './lowPieces';
+import { SIDES } from './neighborhood';
 
 /** Les mesures des pièces du cœur, en part de case. */
 export const HEART = {
@@ -26,18 +29,18 @@ export const HEART = {
   /** Le tablier : le bas du plancher (son haut est celui de la case). */
   deck: 0.8,
   /**
-   * L'eau en nappe : sa hauteur sous une margelle (le puits), celle d'une mare posée au sol, le rayon du nénuphar et sa
-   * hauteur au-dessus de la nappe (le liseré est peint : `HEART_PAINT.lisere`).
+   * L'eau en nappe : sa hauteur sous une margelle (le puits), celle d'une mare posée au sol (0,05 : l'eau se lit dans le
+   * sol, pas sur une table), le rayon du nénuphar et sa hauteur au-dessus de la nappe (le liseré : `HEART_PAINT.lisere`).
    */
-  water: { level: 0.8, pond: 0.15, lily: 0.22, lilyLift: 0.02 },
+  water: { level: 0.8, pond: 0.05, lily: 0.22, lilyLift: 0.02 },
   /** Le champ de blé : sa hauteur. */
   wheat: 0.5,
   /** Le chaperon brun de la cabine : sa hauteur. */
   cap: 0.25,
   /** Une perle du boulier : son retrait de chaque côté. */
   bead: 0.08,
-  /** Le pain de craie. */
-  chalk: { side: 0.8, height: 0.6 },
+  /** Le pain de craie ; l'écart RVB minimal de sa teinte avec le fantôme Brume (référent dys). */
+  chalk: { side: 0.8, height: 0.6, ghostGap: 70 },
   /** Le tas de sable de fouille. */
   mound: { base: 1, top: 0.5, height: 0.6 },
   /** La traverse de la potence : sa section, sous le haut de la case. */
@@ -46,6 +49,11 @@ export const HEART = {
   rock: { radius: 0.42, flat: 0.68, low: 0.5, bump: 0.16 },
   /** Le petit arbre : le tronc (bas, haut), la couronne ; le buisson. */
   tree: { trunk: [0.15, 0.12], crown: 0.45, bush: 0.42 },
+  /**
+   * Le cône des Décimaux : la jupe de sa première rangée descend de 1 (contre le cœur) à 0 (au bord) ; au-dessus, sa
+   * cheminée se resserre de la case entière à `top` au sommet, dont la case de braise monte de `ember`.
+   */
+  cone: { top: 0.5, ember: 0.6 },
 } as const;
 
 /** Les dessins déjà faits (une rangée de pièces qui filent ne se réunit que sur un même dessin, ./assembly.ts). */
@@ -145,38 +153,38 @@ function deckOf(alongX: boolean): DessinDePiece {
   return { facettes, couvre: box.couvre, filant: true };
 }
 
-/** Les côtés d'une case, dans l'ordre des bits du masque d'une nappe : +x, +y, −x, −y. */
-const WATER_SIDES = 4;
-
-
 /**
- * L'eau en nappe : un dessus plat (le rôle `nappe`) à `level` de la case, un liseré clair peint au bord de la nappe
- * seulement (pas du côté d'une autre case d'eau : `neighbours`, 4 bits +x, +y, −x, −y), ses flancs sombres
- * (`flanc`), sans dessous ni flanc contre une margelle (`walled`). Ni reflet ni mouvement. `lily` : un nénuphar posé
- * dessus (un octogone vert, 6 triangles).
+ * L'eau en nappe : un dessus plat (le rôle `nappe`) à `level` de la case, cerné d'un liseré clair (le rôle `lisere`, des
+ * bandes de `HEART_PAINT.lisere`) au bord de la nappe seulement, pas du côté d'une autre case d'eau (`neighbours`, 4 bits
+ * +x, +y, −x, −y) : une mare de plusieurs cases se lit d'une seule nappe. Ses flancs sombres (`flanc`), sans dessous ni
+ * flanc contre une margelle (`walled`). Ni reflet ni mouvement. `lily` : un nénuphar posé dessus (un octogone vert,
+ * 6 triangles). Le liseré est en géométrie, pas peint : 2 triangles par bord.
  */
 export function waterSheet(level: number, neighbours: number, lily: boolean, walled = 0): DessinDePiece {
   return once(`eau|${level}|${neighbours}|${lily}|${walled}`, () => {
-    const has = (i: number) => (neighbours & (1 << i)) !== 0;
-    // Le liseré, peint au bord de la nappe (le shader : `HEART_MOTIFS.waterRim`), pas du côté d'une autre case d'eau.
-    const rim = HEART_MOTIFS.waterRim | (has(2) ? 0 : MOTIF.montante) | (has(0) ? 0 : MOTIF.descendante) | (has(3) ? 0 : MOTIF.chaperon) | (has(1) ? 0 : MOTIF.sabliereHaute);
-    const facettes: Facette[] = [
-      {
-        points: [
-          [0, 0, level],
-          [1, 0, level],
-          [1, 1, level],
-          [0, 1, level],
-        ],
-        normale: UP,
-        face: 'dessus',
-        role: 'nappe',
-        motif: rim,
-      },
-    ];
+    const rim = (i: number) => (neighbours & (1 << i) ? 0 : HEART_PAINT.lisere);
+    const [e, n, w, s] = [rim(0), rim(1), rim(2), rim(3)];
+    const flat = (x0: number, x1: number, y0: number, y1: number, role: 'nappe' | 'lisere'): Facette => ({
+      points: [
+        [x0, y0, level],
+        [x1, y0, level],
+        [x1, y1, level],
+        [x0, y1, level],
+      ],
+      normale: UP,
+      face: 'dessus',
+      role,
+      motif: 0,
+    });
+    const facettes: Facette[] = [flat(w, 1 - e, s, 1 - n, 'nappe')];
+    // Les bandes du liseré : celles de −y et +y de bout en bout, celles de −x et +x entre elles.
+    if (s) facettes.push(flat(0, 1, 0, s, 'lisere'));
+    if (n) facettes.push(flat(0, 1, 1 - n, 1, 'lisere'));
+    if (w) facettes.push(flat(0, w, s, 1 - n, 'lisere'));
+    if (e) facettes.push(flat(1 - e, 1, s, 1 - n, 'lisere'));
     const box = boiteDansLaCase(0, 1, 0, 1, 0, level);
     // Les flancs, sauf contre une margelle (`walled`, 4 bits comme `neighbours`) : là, jamais vus.
-    const sideBit = (n: V3) => (n[0] > 0 ? 0 : n[1] > 0 ? 1 : n[0] < 0 ? 2 : 3);
+    const sideBit = (v: V3) => (v[0] > 0 ? 0 : v[1] > 0 ? 1 : v[0] < 0 ? 2 : 3);
     facettes.push(...box.facettes.filter((f) => isSide(f) && !(walled & (1 << sideBit(f.normale)))).map((f): Facette => ({ ...f, role: 'flanc', motif: 0 })));
     if (lily) {
       const r = HEART.water.lily;
@@ -188,22 +196,19 @@ export function waterSheet(level: number, neighbours: number, lily: boolean, wal
   });
 }
 
-/** Le masque des voisines d'eau d'une case (+x, +y, −x, −y) : `isWater(dx, dy)`. */
+/** Le masque des voisines d'eau d'une case (+x, +y, −x, −y, l'ordre de `SIDES`) : `isWater(dx, dy)`. */
 export function waterNeighbours(isWater: (dx: number, dy: number) => boolean): number {
-  const dirs = [
-    [1, 0],
-    [0, 1],
-    [-1, 0],
-    [0, -1],
-  ];
   let m = 0;
-  for (let i = 0; i < WATER_SIDES; i++) if (isWater(dirs[i][0], dirs[i][1])) m |= 1 << i;
+  SIDES.forEach(([dx, dy], i) => {
+    if (isWater(dx, dy)) m |= 1 << i;
+  });
   return m;
 }
 
 /**
  * Le champ de blé : une bande basse de toute la case, dans la paille (le rôle `paille`), ses flancs striés comme la tôle,
- * dans un ton plus sombre de la paille (`HEART_MOTIFS.straw`) ; il file le long de y (une rangée d'un tenant).
+ * dans un ton plus sombre de la paille (`HEART_MOTIFS.straw`) ; il file le long de y (une rangée d'un tenant). Son dessus
+ * n'a aucun motif : `straw` y serait lu comme les joints d'un tablier (`HEART_MOTIFS.planksAlongY`, le même nombre).
  */
 export function wheat(): DessinDePiece {
   return once('ble', () => {
@@ -227,13 +232,35 @@ export function bead(): DessinDePiece {
 
 /**
  * Le pain de craie : une boîte en retrait (0,8 × 0,8, 0,6 de haut), son dessus d'un seul tenant, dans une teinte plus
- * sombre de la craie (le chaperon d'un mur plein).
+ * sombre de la craie (le chaperon d'un mur plein). Ses faces gardent leur écart avec le fantôme (`ghostApart`,
+ * world/construction.ts : `apartFromGhost`) : une craie claire ne se confond jamais avec une case à poser.
  */
 export function chalkLoaf(): DessinDePiece {
-  const { side, height } = HEART.chalk;
-  const [a, b] = [0.5 - side / 2, 0.5 + side / 2];
-  const box = boiteDansLaCase(a, b, a, b, 0, height);
-  return { facettes: painted(without(box.facettes, DOWN), 0, MOTIF.plein | MOTIF.pierreEntiere), couvre: 0 };
+  return once('craie', () => {
+    const { side, height } = HEART.chalk;
+    const [a, b] = [0.5 - side / 2, 0.5 + side / 2];
+    const box = boiteDansLaCase(a, b, a, b, 0, height);
+    return { facettes: painted(without(box.facettes, DOWN), 0, MOTIF.plein | MOTIF.pierreEntiere).map((f) => ({ ...f, ghostApart: true })), couvre: 0 };
+  });
+}
+
+/** L'écart entre deux couleurs, en RVB (la distance euclidienne de 0 à 441). */
+export function rgbGap(a: Couleur, b: Couleur): number {
+  const [p, q] = [rgb(a), rgb(b)];
+  return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
+}
+
+/** Le gris neutre vers lequel une teinte trop proche du fantôme s'assombrit (celui du soubassement du kit du 6e). */
+const NEUTRAL_GREY = 0x8a8f84;
+
+/**
+ * Une teinte tenue à `HEART.chalk.ghostGap` du fantôme Brume au moins (le référent dys) : telle quelle si elle en est
+ * assez loin, sinon menée vers un gris neutre, par pas de 5 %, jusqu'à l'écart.
+ */
+export function apartFromGhost(c: Couleur): Couleur {
+  let out = c;
+  for (let t = 0.05; rgbGap(out, BRUME) < HEART.chalk.ghostGap && t <= 1; t += 0.05) out = mixColor(c, NEUTRAL_GREY, t);
+  return out;
 }
 
 /** Le tas de sable de fouille : un tronc de pyramide bas (comme le précieux, ./precious.ts), 10 triangles. */
@@ -283,11 +310,21 @@ function fromBrush(draw: (P: Pinceau) => void): Facette[] {
  * (pierre, galet, obsidienne) ; un galet est plus bas (`low`). 20 triangles ; le hasard, tiré de la case, ne change pas.
  */
 export function rock(seed: string, low: boolean): DessinDePiece {
-  const { radius: r, flat, bump } = HEART.rock;
-  const sy = low ? HEART.rock.low : flat;
+  return once(`rocher|${seed}|${low}`, () => {
+    const { radius: r, flat, bump } = HEART.rock;
+    const sy = low ? HEART.rock.low : flat;
+    return bumpy(seed, [0.5, r * sy, 0.5], r / (1 + bump), sy, bump);
+  });
+}
+
+/**
+ * Un icosaèdre bosselé du décor (le rocher, la couronne, le buisson), son hasard et sa rotation tirés de `seed` : le même
+ * dessin d'une construction à l'autre.
+ */
+function bumpy(seed: string, centre: [number, number, number], r: number, sy: number, bump: number): DessinDePiece {
   const hasard = hasardDe(seed);
   const rot = hasard() * Math.PI * 2;
-  return { facettes: fromBrush((P) => icosaedre(P, [0.5, r * sy, 0.5], r / (1 + bump), sy, bump, hasard, NEUTRE, rot)), couvre: 0 };
+  return { facettes: fromBrush((P) => icosaedre(P, centre, r, sy, bump, hasard, NEUTRE, rot)), couvre: 0 };
 }
 
 /**
@@ -301,12 +338,66 @@ export function trunk(): DessinDePiece {
 
 /** La couronne du petit arbre, ou un buisson (`bush`) : l'icosaèdre du feuillage, plus bas pour le buisson. 20 triangles. */
 export function foliage(seed: string, bush: boolean): DessinDePiece {
-  const hasard = hasardDe(seed);
-  const rot = hasard() * Math.PI * 2;
-  const r = bush ? HEART.tree.bush : HEART.tree.crown;
-  const sy = bush ? 0.72 : 0.86;
-  const bump = 0.12;
-  return { facettes: fromBrush((P) => icosaedre(P, [0.5, r * sy * (1 + bump), 0.5], r / (1 + bump), sy, bump, hasard, NEUTRE, rot)), couvre: 0 };
+  return once(`feuillage|${seed}|${bush}`, () => {
+    const r = bush ? HEART.tree.bush : HEART.tree.crown;
+    const sy = bush ? 0.72 : 0.86;
+    const bump = 0.12;
+    return bumpy(seed, [0.5, r * sy * (1 + bump), 0.5], r / (1 + bump), sy, bump);
+  });
+}
+
+// ---------- Le cône des Décimaux ----------
+
+/** Une facette du cône : ses points, sa normale calculée, le dessus de sa matière si elle regarde vers le haut. */
+const coneFacet = (points: V3[]): Facette => {
+  const normale = normalOf(points);
+  return { points, normale, face: normale[2] > 0.5 ? 'dessus' : 'cote', motif: 0 };
+};
+
+/**
+ * Un pan de la jupe du cône, au milieu d'un bord de sa première rangée : un prisme couché, haut de 1 contre le cœur (−x
+ * dans l'orientation de référence), à 0 au bord (+x). Posé d'un quart de tour par bord : vers +x, +y, −x, −y. Ses deux
+ * bouts sont ceux des coins voisins (l'assemblage les retire) : on en voit 2 triangles.
+ */
+export function coneSide(): DessinDePiece {
+  return once('cone|pan', () => ({
+    facettes: [
+      coneFacet([[1, 0, 0], [1, 1, 0], [0, 1, 1], [0, 0, 1]]),
+      coneFacet([[0, 0, 0], [1, 0, 0], [0, 0, 1]]),
+      coneFacet([[0, 1, 0], [0, 1, 1], [1, 1, 0]]),
+      coneFacet([[0, 0, 0], [0, 0, 1], [0, 1, 1], [0, 1, 0]]),
+    ],
+    couvre: FACES.ouest,
+  }));
+}
+
+/**
+ * Un coin de la jupe : la croupe d'un toit en pavillon, haute de 1 au coin du cœur (0, 0 dans l'orientation de
+ * référence, le coin +x +y), à 0 aux deux bords libres. Posé d'un quart de tour par coin. 2 triangles vus.
+ */
+export function coneCorner(): DessinDePiece {
+  return once('cone|coin', () => ({
+    facettes: [
+      coneFacet([[0, 0, 1], [1, 0, 0], [1, 1, 0]]),
+      coneFacet([[0, 0, 1], [1, 1, 0], [0, 1, 0]]),
+      coneFacet([[0, 0, 0], [1, 0, 0], [0, 0, 1]]),
+      coneFacet([[0, 0, 0], [0, 0, 1], [0, 1, 0]]),
+    ],
+    couvre: 0,
+  }));
+}
+
+/**
+ * Une case de la cheminée du cône : un tronc de pyramide de la largeur `from` (en bas) à `to` (en haut), sur la hauteur
+ * `height`. Sans dessus quand une autre case le coiffe ; la case du sommet (`ember`) : son dessus seul en braise mate
+ * (le rôle `braise`), ses flancs dans la pierre du cône (`colourBelow` : la couleur du bloc de dessous).
+ */
+export function coneStep(from: number, to: number, height: number, ember: boolean): DessinDePiece {
+  return once(`cone|${from}|${to}|${height}|${ember}`, () => {
+    const [top, ...sides] = frustum(from, from, to, to, 0, height);
+    const facettes: Facette[] = ember ? [{ ...top, role: 'braise' }, ...sides.map((f) => ({ ...f, colourBelow: true }))] : sides;
+    return { facettes, couvre: from >= 1 ? FACES.bas : 0 };
+  });
 }
 
 /** Une case sans dessin (la feuille d'un nénuphar, que la nappe d'en dessous porte). */

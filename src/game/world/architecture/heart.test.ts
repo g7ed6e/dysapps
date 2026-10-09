@@ -2,9 +2,11 @@
 // au coût d'un cube ou moins pour ce qui est fait de main d'homme, dans sa case.
 import type { VoxelCube } from '../cube';
 import { restOf6e } from './heart';
-import { bead, crate, deck, dialSlab, foliage, mound, pavilion, rock, slab, spire, trunk, waterSheet, wheat, chalkLoaf, cap, beam, darkPost, hangingCrate, HEART } from './heartPieces';
-import { trianglesDe, type DessinDePiece } from './rooms';
-import { HEART_MOTIFS, MOTIF } from './paint';
+import { apartFromGhost, bead, crate, deck, dialSlab, foliage, mound, pavilion, rgbGap, rock, slab, spire, trunk, waterSheet, wheat, chalkLoaf, cap, beam, darkPost, hangingCrate, HEART, coneSide, coneCorner } from './heartPieces';
+import { facettesPosees, trianglesDe, type DessinDePiece } from './rooms';
+import { assemblerLesPieces } from './assembly';
+import { BRUME } from '../palette';
+import { HEART_MOTIFS, HEART_PAINT, MOTIF } from './paint';
 import type { RestContext, RestDrawing } from './kits';
 
 const cube = (x: number, y: number, z: number, texture?: string, extra: Partial<VoxelCube> = {}): VoxelCube => ({ x, y, z, color: '#3b2d20', ...(texture ? { texture } : {}), tag: 'ile', ...extra }) as VoxelCube;
@@ -43,7 +45,7 @@ describe('Les pièces du cœur (./heartPieces.ts)', () => {
   });
 
   it('rien ne sort de sa case (le toucher prend toute la case)', () => {
-    const pieces = [crate(MOTIF.bardage, true, true), bead(), dialSlab(), mound(), wheat(), chalkLoaf(), cap(), pavilion(), spire(), deck(false), beam(true), hangingCrate(), waterSheet(0.8, 0, true), rock('a', false), rock('b', true), trunk(), foliage('c', false), foliage('d', true)];
+    const pieces = [coneSide(), coneCorner(), crate(MOTIF.bardage, true, true), bead(), dialSlab(), mound(), wheat(), chalkLoaf(), cap(), pavilion(), spire(), deck(false), beam(true), hangingCrate(), waterSheet(0.8, 0, true), rock('a', false), rock('b', true), trunk(), foliage('c', false), foliage('d', true)];
     for (const d of pieces)
       for (const f of d.facettes)
         for (const p of f.points) for (const v of p) expect(v).toBeGreaterThanOrEqual(-1e-9), expect(v).toBeLessThanOrEqual(1 + 1e-9);
@@ -61,14 +63,22 @@ describe('Les pièces du cœur (./heartPieces.ts)', () => {
     expect(deck(true)).toBe(d);
   });
 
-  it('l’eau en nappe : un dessus plat, son liseré peint au bord de la nappe seulement, ses flancs sombres hors de la margelle', () => {
+  it('l’eau en nappe : un dessus plat, son liseré en bandes au bord de la nappe seulement, ses flancs sombres hors de la margelle', () => {
     const seule = waterSheet(0.8, 0, false);
     const dessus = seule.facettes.filter((f) => f.normale[2] > 0);
-    expect(dessus.map((f) => f.role)).toEqual(['nappe']);
-    expect(dessus[0].motif).toBe(HEART_MOTIFS.waterRim | MOTIF.montante | MOTIF.descendante | MOTIF.chaperon | MOTIF.sabliereHaute);
+    expect(dessus.map((f) => f.role)).toEqual(['nappe', 'lisere', 'lisere', 'lisere', 'lisere']);
+    // Rien n'est peint par le shader sur la nappe (le liseré peint débordait d'une case sur l'autre : des tirets).
+    expect(dessus.every((f) => !f.motif)).toBe(true);
     expect(seule.facettes.filter((f) => f.role === 'flanc')).toHaveLength(4);
-    // Une voisine d'eau à l'est : pas de liseré de ce côté ; une margelle tout autour : aucun flanc.
-    expect((waterSheet(0.8, 1, false).facettes[0].motif ?? 0) & MOTIF.descendante).toBe(0);
+    // Une voisine d'eau à l'est : pas de liseré de ce côté, la nappe va jusqu'au bord ; partout, une seule hauteur.
+    const est = waterSheet(0.8, 1, false).facettes.filter((f) => f.normale[2] > 0);
+    expect(est.filter((f) => f.role === 'lisere')).toHaveLength(3);
+    expect(Math.max(...est[0].points.map((p) => p[0]))).toBe(1);
+    expect(est.filter((f) => f.role === 'lisere').every((f) => f.points.every((p) => p[0] < 1 || p[1] < HEART_PAINT.lisere + 1e-9 || p[1] > 1 - HEART_PAINT.lisere - 1e-9))).toBe(true);
+    expect(new Set(est.flatMap((f) => f.points.map((p) => p[2])))).toEqual(new Set([0.8]));
+    // Entourée d'eau : la nappe seule, de bord à bord.
+    expect(waterSheet(0.8, 0b1111, false).facettes.filter((f) => f.role === 'lisere')).toHaveLength(0);
+    // Une margelle tout autour : aucun flanc.
     expect(waterSheet(0.8, 0, false, 0b1111).facettes.filter((f) => f.role === 'flanc')).toHaveLength(0);
     expect(waterSheet(0.8, 0, true, 0b1111).facettes.filter((f) => f.role === 'feuille').length).toBeGreaterThan(0);
   });
@@ -77,7 +87,10 @@ describe('Les pièces du cœur (./heartPieces.ts)', () => {
     expect(trianglesDe(rock('x', false))).toBe(20);
     expect(trianglesDe(trunk())).toBe(10);
     expect(trianglesDe(foliage('x', true))).toBe(20);
-    expect(rock('x', false)).toEqual(rock('x', false));
+    // Le même dessin, fait une fois (une reconstruction ne refait ni le pinceau ni l'icosaèdre).
+    expect(rock('x', false)).toBe(rock('x', false));
+    expect(foliage('x', true)).toBe(foliage('x', true));
+    expect(rock('x', false)).not.toBe(rock('x', true));
     expect(rock('x', false).facettes.every((f) => f.role === undefined)).toBe(true);
   });
 });
@@ -102,8 +115,43 @@ describe('Le reste du 6e (./heart.ts)', () => {
     const r = monde([socle, or]);
     expect(r(socle)).toMatchObject({ paint: { motifs: [MOTIF.plein | MOTIF.chaperon, MOTIF.plein | MOTIF.chaperon, MOTIF.plein | MOTIF.chaperon, MOTIF.plein | MOTIF.chaperon, MOTIF.plein | MOTIF.pierreEntiere, 0] } });
     expect(r(or)).toMatchObject({ paint: { fond: 'galon' } });
-    const cone = [cube(5, 5, 1, 'pierre'), cube(5, 5, 2, 'pierre'), cube(5, 5, 3, 'or')];
-    expect(monde(cone)(cone[2])).toMatchObject({ paint: { fond: 'braise' } });
+    // Deux pierres et de l'or, sans la forme du cône : la braise peinte sur la case.
+    const pile = [cube(5, 5, 1, 'pierre'), cube(5, 5, 2, 'pierre'), cube(5, 5, 3, 'or')];
+    expect(monde(pile)(pile[2])).toMatchObject({ paint: { fond: 'braise' } });
+  });
+
+  it('le cône des Décimaux : une jupe en pans et croupes, une cheminée qui se resserre, la braise sur le seul dessus du sommet', () => {
+    const jupe = [-1, 0, 1].flatMap((dx) => [-1, 0, 1].map((dy) => cube(10 + dx, 10 + dy, 1, 'pierre')));
+    const colonne = cube(10, 10, 2, 'pierre');
+    const sommet = cube(10, 10, 3, 'or');
+    const r = monde([...jupe, colonne, sommet]);
+    const coeur = jupe[4];
+    expect(r(coeur)).toMatchObject({ paint: { fond: 'matiere' } });
+    expect(r(cube(11, 10, 1, 'pierre'))).toEqual({ family: 'pierre', piece: coneSide(), rotation: 0 });
+    expect(r(cube(10, 9, 1, 'pierre'))).toEqual({ family: 'pierre', piece: coneSide(), rotation: 3 });
+    expect(r(cube(9, 11, 1, 'pierre'))).toEqual({ family: 'pierre', piece: coneCorner(), rotation: 1 });
+    // Assemblée autour du cœur (plein) : les bouts des pans et des coins se touchent et disparaissent, 2 triangles par case.
+    const pieces = jupe
+      .filter((c) => c !== coeur)
+      .map((c) => {
+        const d = r(c) as { piece: DessinDePiece; rotation: number };
+        return { cube: c, piece: 'jupe', rotation: d.rotation, dessin: d.piece, facettes: facettesPosees(d.piece, d.rotation, c.x, c.y, c.z) };
+      });
+    const vues = assemblerLesPieces(pieces, (x, y, z) => x === 10 && y === 10 && z === 1, () => '');
+    expect(vues.reduce((n, v) => n + v.facette.points.length - 2, 0)).toBe(16);
+    expect(vues.every((v) => v.facette.normale[2] > 0)).toBe(true);
+    // La cheminée : de la case entière à la largeur du sommet, sans dessus sous la braise.
+    const col = pieceOf(r(colonne));
+    expect(col.facettes.every((f) => f.normale[2] < 0.99)).toBe(true);
+    const haut = pieceOf(r(sommet));
+    const largeur = (d: DessinDePiece, z: number) => d.facettes.flatMap((f) => f.points).reduce((w, p) => (Math.abs(p[2] - z) < 1e-9 ? Math.max(w, 2 * Math.abs(p[0] - 0.5)) : w), 0);
+    expect(largeur(col, 0)).toBeCloseTo(1);
+    expect(largeur(haut, 0)).toBeCloseTo(largeur(col, 1));
+    expect(largeur(haut, HEART.cone.ember)).toBeCloseTo(HEART.cone.top);
+    expect(haut.facettes.filter((f) => f.role === 'braise').map((f) => f.normale)).toEqual([[0, 0, 1]]);
+    expect(haut.facettes.filter((f) => f.role !== 'braise').every((f) => f.colourBelow && f.normale[2] < 0.99)).toBe(true);
+    // Au plus 34 triangles pour tout le cône (jupe 16, cheminée 8, sommet 10).
+    expect(trianglesDe(col) + trianglesDe(haut)).toBeLessThanOrEqual(18);
   });
 
   it('les pierres posées là (isolées, en amas), les galets et l’obsidienne : des rochers', () => {
@@ -156,7 +204,11 @@ describe('Le reste du 6e (./heart.ts)', () => {
     expect(trianglesDe(pieceOf(r(arbre[2])))).toBe(20);
     expect(trianglesDe(pieceOf(r(nenuphar)))).toBe(0);
     expect(pieceOf(r(mare[0])).facettes.some((f) => f.role === 'feuille')).toBe(true);
-    expect(pieceOf(r(mare[0])).facettes[0].motif! & MOTIF.descendante).toBe(0);
+    // La mare de deux cases : une seule nappe, pas de liseré entre elles (côté +x de la première), posée à 0,05.
+    const premiere = pieceOf(r(mare[0])).facettes.filter((f) => f.role === 'lisere');
+    expect(premiere.some((f) => f.points.every((p) => p[0] > 0.5))).toBe(false);
+    expect(pieceOf(r(mare[0])).facettes[0].points[0][2]).toBe(HEART.water.pond);
+    expect(HEART.water.pond).toBeLessThanOrEqual(0.05);
     expect(trianglesDe(pieceOf(r(poteau)))).toBeLessThanOrEqual(10);
   });
 
@@ -170,8 +222,24 @@ describe('Le reste du 6e (./heart.ts)', () => {
     expect(trianglesDe(pieceOf(monde(bouchon)(bouchon[1])))).toBeLessThanOrEqual(10);
   });
 
-  it('la craie (le Préau des délégués) : un pain de craie, si elle est posée au cœur', () => {
+  it('la craie (le Préau des délégués) : un pain de craie, si elle est posée au cœur, tenu à l’écart du fantôme', () => {
     expect(pieceOf(monde([cube(0, 0, 1, 'craie')])(cube(0, 0, 1, 'craie')))).toEqual(chalkLoaf());
+    expect(chalkLoaf().facettes.every((f) => f.ghostApart)).toBe(true);
+    // Une craie claire hypothétique (#EEEEE6, à 10 du fantôme Brume) : menée vers le gris jusqu'à 70 d'écart au moins.
+    expect(rgbGap(0xeeeee6, BRUME)).toBeLessThan(HEART.chalk.ghostGap);
+    expect(rgbGap(apartFromGhost(0xeeeee6), BRUME)).toBeGreaterThanOrEqual(HEART.chalk.ghostGap);
+    // Le chaperon du dessus (plus sombre que les flancs, dans le shader) ne fait que s'en écarter davantage.
+    expect(apartFromGhost(0xeeeee6)).not.toBe(0xeeeee6);
+    // Une teinte déjà loin du fantôme ne change pas.
+    expect(apartFromGhost(0x8a8f84)).toBe(0x8a8f84);
+  });
+
+  it('le champ de blé : ses flancs striés, jamais le motif du tablier sur son dessus (`straw` et `planksAlongY` sont le même nombre)', () => {
+    expect(HEART_MOTIFS.straw).toBe(HEART_MOTIFS.planksAlongY);
+    const dessus = wheat().facettes.filter((f) => f.normale[2] > 0);
+    expect(dessus.length).toBeGreaterThan(0);
+    expect(dessus.every((f) => (f.motif ?? 0) !== HEART_MOTIFS.straw)).toBe(true);
+    expect(wheat().facettes.filter((f) => f.normale[2] === 0).every((f) => f.motif === HEART_MOTIFS.straw)).toBe(true);
   });
 
   it('les petites constructions : l’eau du puits sous la margelle, un pavillon seul, une rangée de toits peinte ; le verre hors d’un mur en verrière', () => {

@@ -52,6 +52,7 @@ export { KITS, kitVide, type CaseDuLieu, type Kit } from './kits';
 export { CUBE_EXCEPTIONS, FAMILIES_TO_CONFIRM, familyOf, MATERIAL_FAMILIES, materialsOf } from './families';
 export { bacDePierre, barriere, marche, PIECES_BASSES, woodenPost } from './lowPieces';
 export { bell, crystal, ingot, PRECIOUS, RESTING_HEIGHT } from './precious';
+export { apartFromGhost } from './heartPieces';
 export { estUnLieuDuVillage } from './places';
 
 /** Une pièce dessinée, posée : le bloc qu'elle remplace (sa couleur, son île, son lieu), sa pièce, et ses facettes dans le monde. */
@@ -348,7 +349,12 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
   return out;
 }
 
-/** Les blocs posés d'un monde, par case (ni fantôme, ni décor, ni borne, ni sol), pour le reste. */
+/**
+ * Les blocs posés d'un monde, par case (ni fantôme, ni décor, ni borne, ni sol), pour le reste. Un index à part de celui
+ * de world/construction.ts (`solides`) : `architectureDe` est pure et appelée sans la construction (les tests, le
+ * budget), et le reste ne lit pas les mêmes blocs (`solides` garde le sol et le décor, qui ne sont pas des voisins du
+ * dessin). Fait une fois par construction, seulement quand le kit a un reste.
+ */
 function blocsPosesDe(cubes: readonly VoxelCube[]): Map<string, VoxelCube> {
   const out = new Map<string, VoxelCube>();
   for (const c of cubes) if (!c.ghost && !c.sol && !c.decor && !c.quest && Number.isInteger(c.x) && Number.isInteger(c.y) && Number.isInteger(c.z)) out.set(cle(c.x, c.y, c.z), c);

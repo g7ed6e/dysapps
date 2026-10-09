@@ -44,7 +44,7 @@
 // des rôles (`settings.ts`), ce que le shader reprend (`shader.ts`), le genre des blocs (`kinds.ts`), le phare de
 // Grimoire (`lighthouse.ts`), les bâtiments et les lieux que le kit reprend (`buildings.ts`). Il en réexporte les noms publics.
 import type { Cell } from './view';
-import { architectureDe, assemblerLesPieces, crystal, ingot, type Kit, KITS, MOTIF, motifDesRangees, RANGEES, rangeesReunies, RESTING_HEIGHT } from './architecture';
+import { apartFromGhost, architectureDe, assemblerLesPieces, crystal, ingot, type Kit, KITS, MOTIF, motifDesRangees, RANGEES, rangeesReunies, RESTING_HEIGHT } from './architecture';
 import type { VoxelCube } from '../Voxel';
 import { ambianceDe, type Couleur, couleurDeMatiere, type Faces, MATIERES } from './palette';
 import { DELAVE, eclaircir, type FacettesDuDecor, hex, Pinceau, rgb } from './decor/brush';
@@ -929,11 +929,14 @@ export function maillageDeLaConstruction(
     const estPlein = (x: number, y: number, z: number) => plein.has(cle(x, y, z)) || sous.has(cle(x, y, z));
     const cleDeCouleur = (c: VoxelCube) => `${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${c.tag ?? ''}`;
     for (const { facette: f, cube: c, min, max } of assemblerLesPieces(archi.pieces, estPlein, cleDeCouleur)) {
-      const couleurs = couleursDe(c);
-      const col = f.role ? couleurDuRole(a, kit, f.role, c.muted) : f.face === 'dessus' ? couleurs.dessus : couleurs.cote;
+      // La couleur du bloc de dessous (les flancs de pierre de la braise du cône), sinon celle du bloc ; tenue à l'écart du
+      // fantôme pour le pain de craie.
+      const couleurs = couleursDe((f.colourBelow && solides.get(cle(c.x, c.y, c.z - 1))) || c);
+      const teinteDeLaFacette = f.role ? couleurDuRole(a, kit, f.role, c.muted) : f.face === 'dessus' ? couleurs.dessus : couleurs.cote;
+      const col = f.ghostApart ? apartFromGhost(teinteDeLaFacette) : teinteDeLaFacette;
       // Le motif du bloc lui-même (le bloc assemblé suspendu de la Halle), sinon celui de la facette, délavé sur une île fermée.
       const motif = f.ownMotif
-        ? !c.muted && c.texture && c.texture in MOTIF_ASSEMBLE
+        ? !c.muted && c.texture && Object.hasOwn(MOTIF_ASSEMBLE, c.texture)
           ? MOTIF_ASSEMBLE[c.texture as BlocAssemble]
           : 0
         : f.motif && c.muted
