@@ -423,6 +423,141 @@ Pour tous les items :
    - indice : Lis la ligne qui commence par « Elle passe ».
    - explication : La soie passe de marchand en marchand, à travers l’Asie. Romains et Chinois ne se rencontrent presque jamais.
 
+## Qui parle ? · `viewpoints`
+
+- description : Qui a écrit le document, pour qui, dans quel but : un document exprime un point de vue.
+- compétences : c3.hg.demarches.point-de-vue · c3.hg.demarches.document · c3.hg.demarches.lexique · c3.hg.histoire.rome-mythe · c3.hg.histoire.empire-romain
+- bravo : Bien vu !
+- erreur : {explanation}
+- bloc gagné : history-6e-antiquity
+- blocs : 4
+- XP : 12
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `history-6e-antiquity-viewpoints-1`
+
+- consigne : Choisis le mot qui complète la phrase. Le rappel est affiché.
+
+Pour tous les items :
+- trou lu : (mot manquant)
+- aide « Qui parle ? » :
+  - L’auteur : celui qui a écrit le document, ou qui l’a fait faire.
+  - Le destinataire : celui pour qui le document est fait.
+  - Un témoin : celui qui a vu de ses yeux ce qu’il raconte.
+  - Un point de vue : ce que pense l’auteur. Un éloge dit du bien, une critique dit du mal.
+  - Devant un document, demande-toi : qui parle ? Pour qui ? Dans quel but ?
+
+1. énoncé : Celui qui a écrit un document est son … .
+   - choix : destinataire · auteur · témoin
+   - réponse : auteur
+   - indice : Qui a tenu la plume ?
+   - explication : L’auteur écrit le document, ou le fait écrire. Le destinataire le reçoit. Un témoin a vu ce qu’il raconte, mais il n’écrit pas toujours.
+2. énoncé : Un gouverneur écrit une lettre à l’empereur : l’empereur est le … de la lettre.
+   - choix : auteur · témoin · destinataire
+   - réponse : destinataire
+   - indice : Qui reçoit la lettre ?
+   - explication : L’empereur reçoit la lettre : il en est le destinataire. L’auteur, c’est le gouverneur, qui l’écrit.
+3. énoncé : Un auteur qui a vu lui-même ce qu’il raconte est un … .
+   - choix : témoin · destinataire · héros
+   - réponse : témoin
+   - indice : Il était là quand c’est arrivé.
+   - explication : Un témoin a vu les faits de ses yeux. Un historien qui écrit longtemps après n’est pas un témoin : il raconte ce que d’autres ont dit ou écrit.
+4. énoncé : Ce que pense l’auteur d’un document, c’est son … .
+   - choix : titre · point de vue · résumé
+   - réponse : point de vue
+   - indice : C’est son avis.
+   - explication : Le point de vue, c’est l’avis de l’auteur. Deux auteurs peuvent raconter le même fait avec deux points de vue différents. Le titre et le résumé ne disent pas ce qu’il pense.
+5. énoncé : Un discours qui dit seulement du bien de Rome est un … de Rome.
+   - choix : résumé · reproche · éloge
+   - réponse : éloge
+   - indice : Le discours dit-il du bien ou du mal ?
+   - explication : Un éloge dit du bien. Un reproche dit du mal. Un résumé redit l’essentiel en peu de mots.
+6. énoncé : Les Romains racontent que Romulus est le fils du dieu Mars. Ils veulent montrer que Rome est … par les dieux.
+   - choix : protégée · oubliée · punie
+   - réponse : protégée
+   - indice : Un fondateur fils d’un dieu : est-ce une bonne ou une mauvaise chose pour Rome ?
+   - explication : Avec un fondateur fils de Mars, Rome se dit protégée par les dieux, donc faite pour dominer. C’est une légende, racontée pour la gloire de Rome.
+7. énoncé : Rome montre la louve et les jumeaux sur ses pièces de monnaie : elle met en … sa légende.
+   - choix : doute · scène · ordre
+   - réponse : scène
+   - indice : Rome veut-elle cacher sa légende, ou la montrer à tous ?
+   - explication : Mettre en scène, c’est montrer à tous, comme au théâtre : sur les pièces, chacun voit la légende de Rome. Mettre en doute, ce serait ne pas y croire.
+8. énoncé : Sur un mur de Pompéi, on lit : « Votez pour Polybius, il apporte du bon pain ! » Ce texte veut … les habitants.
+   - choix : informer · convaincre · remercier
+   - réponse : convaincre
+   - indice : « Votez pour » : que veut l’auteur ?
+   - explication : « Votez pour » : l’auteur veut que les habitants votent pour Polybius, et il donne une raison, le bon pain. C’est une affiche pour une élection : elle dit le point de vue de ceux qui soutiennent Polybius.
+
+### Niveau 2 · `history-6e-antiquity-viewpoints-2`
+
+- consigne : Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.
+
+Pour tous les items :
+- aide « Questionner un document » :
+  - Qui l’a écrit ? Un Romain, un ennemi de Rome, l’empereur lui-même ?
+  - Pour qui ? Les Romains, l’empereur, les peuples vaincus ?
+  - Dans quel but ? Se vanter, convaincre, faire un éloge, critiquer.
+  - Un auteur qui parle de lui-même se montre sous son meilleur jour.
+  - Le sens implicite : ce que le document veut dire sans l’écrire en toutes lettres.
+
+1. énoncé : "D’après Suétone, un historien romain\nL’empereur Auguste a embelli Rome.\nIl pouvait se vanter de laisser en marbre\nune ville qu’il avait reçue en briques."
+   - question : Qui se vante dans ce document ?
+   - lu : D’après Suétone, un historien romain. L’empereur Auguste a embelli Rome. Il pouvait se vanter de laisser en marbre une ville qu’il avait reçue en briques.
+   - choix : l’historien Suétone · l’empereur Auguste · les habitants de Rome
+   - réponse : l’empereur Auguste
+   - indice : Lis la troisième ligne : qui pouvait se vanter ?
+   - explication : Suétone écrit le texte, mais c’est Auguste qui se vante : Suétone rapporte ce qu’il disait. Auguste veut qu’on retienne les beaux monuments de son règne. Les habitants de Rome ne parlent pas dans ce document.
+2. énoncé : "D’après un texte d’Auguste, gravé devant son tombeau\n« J’ai agrandi les frontières de toutes les provinces.\nSur terre et sur mer, j’ai ramené la paix. »"
+   - question : Dans quel but Auguste a-t-il fait graver ce texte ?
+   - lu : D’après un texte d’Auguste, gravé devant son tombeau. J’ai agrandi les frontières de toutes les provinces. Sur terre et sur mer, j’ai ramené la paix.
+   - choix : pour raconter ses défaites · pour donner des ordres à l’armée · pour qu’on se souvienne de ses réussites
+   - réponse : pour qu’on se souvienne de ses réussites
+   - indice : De quoi Auguste parle-t-il : de ses succès ou de ses échecs ?
+   - explication : Auguste parle de lui-même et ne cite que ses réussites. Gravé devant son tombeau, le texte est fait pour que tous s’en souviennent. Ses défaites n’y sont pas : c’est son point de vue.
+3. énoncé : "D’après Tite-Live, historien romain, sous l’empereur Auguste\nLe peuple romain dit que Mars est son père.\nSa gloire à la guerre est si grande\nque les autres peuples doivent l’accepter,\ncomme ils acceptent sa domination."
+   - question : Dans quel but Tite-Live parle-t-il de cette origine ?
+   - lu : D’après Tite-Live, historien romain, sous l’empereur Auguste. Le peuple romain dit que Mars est son père. Sa gloire à la guerre est si grande que les autres peuples doivent l’accepter, comme ils acceptent sa domination.
+   - choix : pour montrer que Rome mérite de dominer · pour prouver que Mars a existé · pour se moquer des Romains
+   - réponse : pour montrer que Rome mérite de dominer
+   - indice : Relis les deux dernières lignes.
+   - explication : Tite-Live ne dit pas que la légende est vraie. Il dit que Rome, par ses victoires, a le droit de se dire fille de Mars : pour lui, Rome mérite de dominer. C’est le point de vue d’un Romain : la légende ne prouve rien sur Mars, et Tite-Live ne se moque pas des Romains.
+4. énoncé : "Virgile, poète romain, sous l’empereur Auguste\nDans son poème, le dieu Jupiter parle des Romains :\n« Je leur ai donné un empire sans fin. »"
+   - question : Quelle idée ce poème veut-il faire passer ?
+   - lu : Virgile, poète romain, sous l’empereur Auguste. Dans son poème, le dieu Jupiter parle des Romains : Je leur ai donné un empire sans fin.
+   - choix : Rome doit arrêter ses conquêtes · les dieux veulent que Rome domine · Jupiter protège les ennemis de Rome
+   - réponse : les dieux veulent que Rome domine
+   - indice : Selon le poème, qui a donné l’empire aux Romains ?
+   - explication : Dans le poème, c’est Jupiter, le roi des dieux, qui donne l’empire aux Romains : leur domination serait voulue par les dieux. Virgile écrit sous Auguste, pour la gloire de Rome.
+5. énoncé : "D’après La Guerre des Gaules, de Jules César\nCésar raconte lui-même sa conquête de la Gaule.\nIl écrit pour les Romains.\nLes Gaulois n’ont pas laissé de récit de cette guerre."
+   - question : Pourquoi faut-il lire ce récit avec prudence ?
+   - lu : D’après La Guerre des Gaules, de Jules César. César raconte lui-même sa conquête de la Gaule. Il écrit pour les Romains. Les Gaulois n’ont pas laissé de récit de cette guerre.
+   - choix : César écrit des siècles après la guerre · César raconte sa propre guerre · César ne parle pas de ses soldats
+   - réponse : César raconte sa propre guerre
+   - indice : Qui raconte, et de quelle guerre parle-t-il ?
+   - explication : César raconte sa propre guerre, pour les Romains : il se montre sous son meilleur jour. Et les Gaulois n’ont pas laissé leur version : on n’entend qu’un seul point de vue. César écrit pendant la guerre ou juste après, pas des siècles plus tard.
+6. énoncé : "D’après Tacite, historien romain\nIl rapporte le discours d’un chef ennemi de Rome,\nau nord de l’actuelle Grande-Bretagne :\n« Là où ils font un désert, ils disent qu’ils ont donné la paix. »"
+   - question : Que pense ce chef de la paix romaine ?
+   - lu : D’après Tacite, historien romain. Il rapporte le discours d’un chef ennemi de Rome, au nord de l’actuelle Grande-Bretagne : Là où ils font un désert, ils disent qu’ils ont donné la paix.
+   - choix : elle protège les peuples · elle cache des destructions · elle enrichit les vaincus
+   - réponse : elle cache des destructions
+   - indice : Relis la dernière ligne : un désert, c’est un lieu plein ou vide ?
+   - explication : Pour ce chef, les Romains détruisent tout, puis appellent cela la paix. C’est une critique, le point de vue d’un ennemi de Rome. Auguste, lui, parle de la paix comme d’une réussite.
+7. énoncé : "D’après Aelius Aristide, un Grec, dans un discours à Rome\n« Aujourd’hui, Grecs et étrangers vont où ils veulent,\nsans crainte, d’un bout à l’autre de l’empire. »"
+   - question : Comment l’auteur voit-il l’Empire romain ?
+   - lu : D’après Aelius Aristide, un Grec, dans un discours à Rome. Aujourd’hui, Grecs et étrangers vont où ils veulent, sans crainte, d’un bout à l’autre de l’empire.
+   - choix : il en fait l’éloge · il le critique · il n’en donne pas d’avis
+   - réponse : il en fait l’éloge
+   - indice : Voyager partout sans crainte : est-ce une bonne ou une mauvaise chose ?
+   - explication : Voyager partout sans crainte : l’auteur dit du bien de l’empire, c’est un éloge. Il parle à Rome, devant des Romains, pour honorer Rome. Le chef ennemi de Rome, chez Tacite, voit la paix romaine autrement.
+8. énoncé : "L’autel de Rome et d’Auguste, à Lyon\nChaque année, les représentants de soixante peuples gaulois s’y réunissent.\nIls y honorent Rome et l’empereur."
+   - question : Que montrent les Gaulois en honorant Rome ?
+   - lu : L’autel de Rome et d’Auguste, à Lyon. Chaque année, les représentants de soixante peuples gaulois s’y réunissent. Ils y honorent Rome et l’empereur.
+   - choix : leur révolte contre Rome · leur fidélité à Rome · leur victoire sur Rome
+   - réponse : leur fidélité à Rome
+   - indice : Honorer quelqu’un, est-ce être pour lui ou contre lui ?
+   - explication : En honorant Rome et l’empereur, les Gaulois montrent qu’ils lui sont fidèles. Le document ne l’écrit pas en toutes lettres : c’est son sens implicite. Les Gaulois vivent désormais à la romaine : c’est la romanisation.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

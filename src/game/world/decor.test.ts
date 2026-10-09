@@ -1,11 +1,13 @@
 import type { VoxelCube } from './cube';
 import { getArchipelago } from './archipelago';
 import { toutConstruit } from './budget';
-import { DECOR_BATI, REPERES, decorPose, kindOf } from './decor';
+import { BIOMES } from '../biomes';
+import { DECOR_BATI, REPERES, TRIANGLE_DU_BELVEDERE, decorPose, kindOf } from './decor';
+import { zoneDesPlans } from './plans';
 import { champDuSol, landMesh, poseDuDecor, signatureDuChamp } from './landMesh';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 import { walkGround } from './paths';
-import { creaturePlacements, seaDecor, worldCubes } from './terrain';
+import { type BorneVue, cacheUneBorne, creaturePlacements, cubesDeLIle, groundHeight, LAYOUT_PAD, questStations, seaDecor, versLaCamera, worldCubes } from './terrain';
 
 const parties = (a: ArchipelagoId) => {
   const { progress, world: village } = toutConstruit();
@@ -85,11 +87,11 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
         "maths-6e-calculation/foyer@83,21",
       ],
       [
+        "maths-5e-proportionality/barque@77,320",
         "maths-5e-proportionality/barque@82,306",
-        "maths-5e-proportionality/barque@87,310",
-        "maths-5e-proportionality/caisse@79,310",
-        "maths-5e-proportionality/fanion@73,310",
-        "maths-5e-proportionality/fanion@77,310",
+        "maths-5e-proportionality/caisse@86,310",
+        "maths-5e-proportionality/fanion@80,310",
+        "maths-5e-proportionality/fanion@89,310",
         "maths-5e-proportionality/foyer@91,315",
       ],
       [
@@ -109,3 +111,31 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
     ]
   `);
 }, 30_000);
+
+// Le Belvédère de Thalès (GD-14, DA et consultant Blocland) : le kiosque de marbre du décor cachait le kiosque de Théo que
+// bâtit le plan ; un triangle 3-4-5 de marbre posé au sol, d'un bloc de haut, le remplace.
+it('le Belvédère : un triangle 3-4-5 de marbre d’un bloc de haut, qui ne cache ni une borne ni une case des plans, et ne se pose sur aucune', () => {
+  const id = 'maths-3e-geometry';
+  const index = BIOMES.findIndex((b) => b.id === id);
+  const sol = (x: number, y: number) => groundHeight(index, x, y);
+  const cases = new Set(TRIANGLE_DU_BELVEDERE.map(([x, y]) => `${x + LAYOUT_PAD.x},${y + LAYOUT_PAD.y}`));
+  // Un côté de 3 cases, l'autre de 4, le grand côté en marches : 3 + 4 cases, une marche de moins que la diagonale.
+  expect(TRIANGLE_DU_BELVEDERE.filter(([, y]) => y === 0).length).toBe(3);
+  expect(TRIANGLE_DU_BELVEDERE.filter(([x]) => x === 7).length).toBe(4);
+  const cubes = cubesDeLIle(id, {}, undefined, false).filter((c) => !c.sol && !c.quest && !c.place && cases.has(`${c.x},${c.y}`));
+  expect(cubes.length).toBe(TRIANGLE_DU_BELVEDERE.length);
+  for (const c of cubes) {
+    expect(c.z, `${c.x},${c.y}`).toBe(sol(c.x, c.y) + 1);
+  }
+  const vers = versLaCamera(id);
+  const bornes: BorneVue[] = questStations(id).map((b) => ({ x: b.x, y: b.y, base: sol(b.x, b.y) }));
+  for (const b of bornes) expect(cases.has(`${b.x},${b.y}`), `borne ${b.x},${b.y}`).toBe(false);
+  // Les cases des plans portent comme une borne (deux cubes sur le sol) : aucune n'est cachée par le triangle.
+  const z = zoneDesPlans(id);
+  const plans: BorneVue[] = [];
+  for (let x = z.x; x < z.x + z.w; x++) for (let y = z.y; y < z.y + z.h; y++) plans.push({ x, y, base: sol(x, y) });
+  for (const c of cubes) {
+    expect(cacheUneBorne(bornes, vers, c.x, c.y, c.z), `borne, ${c.x},${c.y}`).toBe(false);
+    expect(cacheUneBorne(plans, vers, c.x, c.y, c.z), `plan, ${c.x},${c.y}`).toBe(false);
+  }
+});

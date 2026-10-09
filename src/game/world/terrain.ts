@@ -20,7 +20,7 @@ import { decalageDesPlans, isPlanDone, planCells, type PlanDef, plansFor } from 
 import { lv2Courante } from '../../core/settings';
 import { type Atelier, atelierModel, casesDuVillage, PLACE_IDS, placeCells, placeCube, placeSpot, schoolModel, trophyModel, VILLAGE_PLACES } from './terrain/village';
 import { cleDeCube, DEPTH, fade, GROUND_COLOR, groundHeight, islandOrigin, LAYOUT_PAD, origineDe, taperLayers, TEXTURES, underground } from './terrain/base';
-import { cacheUneBorne, presDUneBorne, questStations, rangeeDevantLesBornes } from './terrain/markers';
+import { cacheUneBorne, ETAGES_DE_LA_BORNE, presDUneBorne, questStations, rangeeDevantLesBornes } from './terrain/markers';
 import { versLaCameraDuDessin } from './terrain/view';
 import { abordsDansLesMarges, bridge, bridgePath, nearSentier, piedsDesOuvrages } from './terrain/links';
 import { guardianTrophy } from './terrain/guardians';
@@ -33,7 +33,7 @@ import { seaDecorShown } from './terrain/sea';
 
 export { avatarHome, DEPTH, fade, FIN_DU_PLATEAU_DES_ECOLES, groundHeight, ISLAND, islandCenter, islandOrigin, LAYOUT_PAD, origineDe } from './terrain/base';
 export { bornesDesLieux, type CadreDeCases, cadreDeLaLiaison, cadreDeTraversee, cameraDeLIle, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, HORS_DE_LA_COLONNE, ileDeLaVueGlissee, islandAt, overviewBounds, projectionDeLaVueDeLIle, terresDe, versLaCamera, VIEW_YAW_MAX, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, LAGOON_FRAMING, islandViewPullBack, islandViewTarget, VUE_DE_L_ILE, VUE_DE_L_ILE_PANNEAU_OUVERT, worldBounds } from './terrain/view';
-export { type BorneVue, cacheUneBorne, PLACES_DES_BORNES_DES_ECOLES, placesDesBornes, PORTEE_DEVANT_LA_BORNE, questStations, rangeeDevantLesBornes } from './terrain/markers';
+export { bornesDansLeMonde, type BorneVue, cacheUneBorne, ETAGES_DE_LA_BORNE, PLACES_DES_BORNES_DES_ECOLES, placesDesBornes, PORTEE_DEVANT_LA_BORNE, questStations, rangeeDevantLesBornes } from './terrain/markers';
 export { avatarRoute, BAC_LONG, boardingRoute, bridgePath, casesDeLOuvrage, placesDeLaFleche, portsDAttache, premierCoude, routeAt, routeLengths, tablier } from './terrain/links';
 export { ASSEMBLAGE_SIZE, type Atelier, atelierModel, cacheUnLieu, casesDesLieux, HALLE, lieuxVus, placeDoor, placeSpot, schoolModel, TROPHY_AT, TROPHY_SIZE, TROPHY_SLOTS, trophyModel, VILLAGE_PLACES } from './terrain/village';
 export { CREATURE_STEPS, creatureDuMonde, creaturePlacements, creatureSpot, gardienDuMonde, GUARDIAN_SQUARE, guardianSpot, partDuGardienVue, QUARTS_DE_TOUR, QUARTS_DE_TOUR_DE_LA_CREATURE, SEUIL_DU_GARDIEN_VU } from './terrain/creatures';
@@ -231,7 +231,7 @@ function poserLIle(
     cubes.push({
       x: ox + st.x,
       y: oy + st.y,
-      z: oz + base + 1,
+      z: oz + base + ETAGES_DE_LA_BORNE.socle,
       color: tone(block.side),
       top: block.top,
       texture: block.texture,
@@ -242,7 +242,7 @@ function poserLIle(
     cubes.push({
       x: ox + st.x,
       y: oy + st.y,
-      z: oz + base + 2,
+      z: oz + base + ETAGES_DE_LA_BORNE.ardoise,
       color: tone('#3a4a6a'),
       top: '#2f3d5c',
       texture: 'borne',
@@ -250,8 +250,8 @@ function poserLIle(
       quest,
       muted,
     });
-    taken.add(cleDeCube(ox + st.x, oy + st.y, base + 1));
-    taken.add(cleDeCube(ox + st.x, oy + st.y, base + 2));
+    taken.add(cleDeCube(ox + st.x, oy + st.y, base + ETAGES_DE_LA_BORNE.socle));
+    taken.add(cleDeCube(ox + st.x, oy + st.y, base + ETAGES_DE_LA_BORNE.ardoise));
   }
   // L'école, la salle des trophées et le lieu où l'on assemble (sur l'île de l'école de l'archipel) : on les touche pour
   // entrer, comme une borne.

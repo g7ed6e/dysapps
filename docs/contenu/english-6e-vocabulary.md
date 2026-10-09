@@ -541,6 +541,158 @@ Pour tous les items :
    - indice : Trouve la ligne du mot apple, puis lis le nombre au début.
    - explication : one apple = une pomme. two, c’est pour les bananes, et for four veut dire pour quatre personnes.
 
+## Famous people · `famous-people`
+
+- description : Rencontrer des personnes et des personnages célèbres du monde anglophone, puis dire ce qu’on ressent devant un tableau, un dessin ou une photo.
+- compétences : c3.en.culture.personnes · c3.en.culture.arts
+- langue : en
+- bravo : Bien lu !
+- erreur : {explanation}
+- bloc gagné : english-6e-vocabulary
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `english-6e-vocabulary-famous-people-1`
+
+- consigne : Lis la question, puis la fiche en anglais, et choisis la bonne réponse. Le lexique est affiché.
+
+Pour tous les items :
+- langue des choix : fr
+- aide « Lire une fiche » :
+  - Lis d’abord la question, puis cherche la ligne qui répond.
+  - name = le nom ; job = le métier ; nickname = le surnom
+  - famous = célèbre ; nationality = la nationalité
+  - he can = il sait ; lives in = habite à ; follows = suit
+  - wears = porte (un vêtement) ; was = était (le passé de is)
+
+1. énoncé : "Name: William Shakespeare\nJob: writer\nNationality: English\nFamous play: Romeo and Juliet"
+   - question : Quel était le métier de William Shakespeare ?
+   - lu : Name, William Shakespeare. Job, writer. Nationality, English. Famous play, Romeo and Juliet.
+   - choix : Écrivain · Peintre · Chanteur
+   - réponse : Écrivain
+   - indice : Trouve la ligne Job. Le mot ressemble au verbe write, écrire.
+   - explication : writer = écrivain : le mot vient de write, écrire. Shakespeare a écrit des pièces de théâtre, comme Roméo et Juliette. Un peintre se dit painter, un chanteur singer.
+2. énoncé : "Name: Neil Armstrong\nJob: astronaut\nNationality: American\nFamous for: the first man on the Moon, in 1969"
+   - question : Où Neil Armstrong est-il allé en 1969 ?
+   - lu : Name, Neil Armstrong. Job, astronaut. Nationality, American. Famous for, the first man on the Moon, in nineteen sixty-nine.
+   - choix : Sur la Lune · Sur Mars · En haut d’une montagne
+   - réponse : Sur la Lune
+   - indice : Lis la dernière ligne jusqu’au bout. Moon et mountain commencent tous les deux par mo.
+   - explication : the Moon = la Lune : en 1969, Neil Armstrong est le premier homme à marcher sur la Lune. Personne n’est encore allé sur Mars, et une montagne se dit mountain.
+3. énoncé : "Name: Florence Nightingale\nJob: nurse\nNationality: British\nNickname: the Lady with the Lamp"
+   - question : Quel objet est dans le surnom de Florence Nightingale ?
+   - lu : Name, Florence Nightingale. Job, nurse. Nationality, British. Nickname, the Lady with the Lamp.
+   - choix : Une lampe · Une lettre · Un livre
+   - réponse : Une lampe
+   - indice : Trouve la ligne Nickname, puis lis le dernier mot : il ressemble à un mot français.
+   - explication : the Lady with the Lamp = la dame à la lampe. Cette infirmière (nurse) passait voir les soldats blessés la nuit, une lampe à la main. Une lettre se dit letter, un livre book.
+4. énoncé : "Sherlock Holmes\nHe lives in London, in Baker Street.\nHe is a detective.\nHis friend is Doctor Watson."
+   - question : Quel est le métier de Sherlock Holmes ?
+   - lu : Sherlock Holmes. He lives in London, in Baker Street. He is a detective. His friend is Doctor Watson.
+   - choix : Détective · Médecin · Policier
+   - réponse : Détective
+   - indice : Lis la ligne He is a. La dernière ligne parle de son ami, pas de lui.
+   - explication : He is a detective = il est détective : il mène des enquêtes. Le docteur, c’est son ami Watson. Un policier se dit a police officer.
+5. énoncé : "Alice in Wonderland\nAlice is a little girl.\nShe sees a white rabbit with a watch.\nShe follows it down a hole."
+   - question : Quel animal Alice suit-elle ?
+   - lu : Alice in Wonderland. Alice is a little girl. She sees a white rabbit with a watch. She follows it down a hole.
+   - choix : Un lapin blanc · Un chat blanc · Une souris blanche
+   - réponse : Un lapin blanc
+   - indice : Cherche le mot juste après white : c’est l’animal.
+   - explication : a white rabbit = un lapin blanc : Alice le suit dans un trou. Un chat se dit cat, une souris mouse.
+6. énoncé : "Peter Pan\nPeter is a boy. He lives in Neverland.\nHe never grows up.\nHe can fly!"
+   - question : Que sait faire Peter Pan ?
+   - lu : Peter Pan. Peter is a boy. He lives in Neverland. He never grows up. He can fly!
+   - choix : Voler · Nager · Grandir
+   - réponse : Voler
+   - indice : Cherche le petit mot can : il dit ce qu’on sait faire.
+   - explication : He can fly = il sait voler. He never grows up = il ne grandit jamais : Peter reste un enfant. Nager se dit swim.
+7. énoncé : "Peter Rabbit\nPeter is a little rabbit.\nHe wears a blue jacket.\nHe likes the vegetables in Mr McGregor’s garden."
+   - question : De quelle couleur est la veste de Peter ?
+   - lu : Peter Rabbit. Peter is a little rabbit. He wears a blue jacket. He likes the vegetables in Mister McGregor’s garden.
+   - choix : Bleue · Noire · Marron
+   - réponse : Bleue
+   - indice : blue et black commencent tous les deux par bl : lis le mot jusqu’au bout.
+   - explication : a blue jacket = une veste bleue (jacket = veste). Noir se dit black, marron brown.
+8. énoncé : "Queen Elizabeth II\nShe was the Queen of the United Kingdom\nfor seventy years."
+   - question : Pendant combien d’années Élisabeth a-t-elle été reine ?
+   - lu : Queen Elizabeth the Second. She was the Queen of the United Kingdom for seventy years.
+   - choix : 7 ans · 17 ans · 70 ans
+   - réponse : 70 ans
+   - indice : Écoute la fin du nombre : -teen (de 13 à 19) ou -ty (20, 30, 40…) ?
+   - explication : seventy = 70 : -ty, ce sont les dizaines. Elle a été reine de 1952 à 2022. 17 se dit seventeen (-teen), et 7 seven.
+
+### Niveau 2 · `english-6e-vocabulary-famous-people-2`
+
+- consigne : Lis la question, puis le petit texte en anglais. Choisis le mot qui dit ce qu’on ressent. Le lexique est affiché.
+
+Pour tous les items :
+- aide « Dire ce qu’on ressent » :
+  - Lis ce que fait la personne, puis choisis le mot qui va avec.
+  - happy = content ; sad = triste ; tired = fatigué
+  - angry = en colère ; scared = qui a peur ; surprised = surpris
+  - smile = sourire ; cry = pleurer ; shout = crier
+  - funny = drôle ; scary = qui fait peur ; beautiful = beau
+
+1. énoncé : "A painting\nIt’s Ben’s birthday.\nHe has a big cake and a lot of presents.\nHe is smiling."
+   - question : Comment se sent Ben ?
+   - lu : A painting. It’s Ben’s birthday. He has a big cake and a lot of presents. He is smiling.
+   - choix : happy · sad · tired
+   - réponse : happy
+   - indice : Lis la dernière ligne : que fait Ben ?
+   - explication : He is smiling = il sourit : c’est son anniversaire, il est content, happy. sad = triste, tired = fatigué.
+2. énoncé : "A drawing\nA girl is in her bedroom.\nHer cat is lost.\nShe is crying."
+   - question : Comment se sent la fille ?
+   - lu : A drawing. A girl is in her bedroom. Her cat is lost. She is crying.
+   - choix : sad · happy · angry
+   - réponse : sad
+   - indice : Son chat est perdu, lost. Et que fait-elle sur la dernière ligne ?
+   - explication : She is crying = elle pleure : son chat est perdu, elle est triste, sad. happy = content, angry = en colère.
+3. énoncé : "A photo\nA dark forest at night.\nA big wolf is behind a tree.\nA little rabbit sees the wolf."
+   - question : Comment se sent le petit lapin ?
+   - lu : A photo. A dark forest at night. A big wolf is behind a tree. A little rabbit sees the wolf.
+   - choix : scared · happy · tired
+   - réponse : scared
+   - indice : La nuit, dans la forêt, le lapin voit un grand loup. Que ressent-il ?
+   - explication : Le petit lapin voit un grand loup, la nuit : il a peur, scared. happy = content, tired = fatigué.
+4. énoncé : "A painting\nA man is in his garden.\nA dog is eating his flowers!\nHe shouts: Stop it, bad dog!"
+   - question : Comment se sent l’homme ?
+   - lu : A painting. A man is in his garden. A dog is eating his flowers! He shouts: Stop it, bad dog!
+   - choix : angry · happy · scared
+   - réponse : angry
+   - indice : Le chien mange ses fleurs. Et que fait l’homme sur la dernière ligne ?
+   - explication : He shouts = il crie : le chien mange ses fleurs, l’homme est en colère, angry. happy = content, scared = qui a peur.
+5. énoncé : "A drawing\nIt’s eleven o’clock at night.\nA boy is on the sofa.\nHe wants to go to bed."
+   - question : Comment se sent le garçon ?
+   - lu : A drawing. It’s eleven o’clock at night. A boy is on the sofa. He wants to go to bed.
+   - choix : tired · angry · surprised
+   - réponse : tired
+   - indice : Il est tard, et le garçon veut aller au lit, go to bed. Pourquoi ?
+   - explication : Il est 11 h du soir et il veut aller se coucher : il est fatigué, tired. angry = en colère, surprised = surpris.
+6. énoncé : "A drawing\nA cat in a big hat\nis dancing on the table."
+   - question : Que peux-tu dire devant ce dessin ?
+   - lu : A drawing. A cat in a big hat is dancing on the table.
+   - choix : It’s funny! · It’s sad. · It’s scary!
+   - réponse : It’s funny!
+   - indice : Un chat avec un grand chapeau qui danse sur la table : ça fait rire, pleurer ou peur ?
+   - explication : It’s funny! = c’est drôle ! Un chat qui danse avec un chapeau fait rire. sad = triste, scary = qui fait peur.
+7. énoncé : "A painting\nAn old castle at night.\nA ghost with red eyes is at the window."
+   - question : Que peux-tu dire devant ce tableau ?
+   - lu : A painting. An old castle at night. A ghost with red eyes is at the window.
+   - choix : It’s scary! · It’s funny! · It’s sad.
+   - réponse : It’s scary!
+   - indice : La nuit, un fantôme aux yeux rouges à la fenêtre : ça fait rire, pleurer ou peur ?
+   - explication : It’s scary! = ça fait peur ! Un fantôme, a ghost, aux yeux rouges, la nuit. funny = drôle, sad = triste.
+8. énoncé : "A photo\nA beach in the evening.\nThe sky is pink, orange and gold."
+   - question : Que peux-tu dire devant cette photo ?
+   - lu : A photo. A beach in the evening. The sky is pink, orange and gold.
+   - choix : It’s beautiful! · It’s scary! · It’s sad.
+   - réponse : It’s beautiful!
+   - indice : Une plage le soir, un ciel rose, orange et doré : c’est beau, triste ou effrayant ?
+   - explication : It’s beautiful! = c’est beau ! Le ciel du soir a de belles couleurs. scary = qui fait peur, sad = triste.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |
