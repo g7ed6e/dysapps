@@ -113,7 +113,7 @@ it('chaque élément du décor est posé sur la pente, au milieu de sa case, san
   }
 }, 30_000);
 
-it('l’habillage de la mer affleure, la cascade tombe du bord de sa case jusqu’à l’eau', () => {
+it('l’habillage de la mer affleure ; plus aucune cascade dans le monde', () => {
   const { elements, maillage } = monde('5e');
   const mer = elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'ecueil' || e.genre === 'banc');
   expect(mer.length).toBeGreaterThan(20);
@@ -126,27 +126,10 @@ it('l’habillage de la mer affleure, la cascade tombe du bord de sa case jusqu�
   // Aux Îles Brumeuses, huit cascades jusqu'à GD-11 (celle du Relais des voyageurs, LV2, qui a son lac, celles du Bourg
   // des chroniques et du Delta des ressources, HG-3, deux de plus avec les îles de sciences, SC-3) ; trois depuis que
   // les îles ont grandi (GD-11, 8 octobre 2026), aucune depuis leurs formes (GD-12, 9 octobre 2026) : une île qui a sa
-  // forme a une côte plate. Celles des Anciens Ateliers partent avec leurs formes (GD-12, 9 octobre 2026) : une île qui a
-  // sa forme n'a plus de mare, d'où l'eau débordait. Restent les deux des Îles du Ciel, jusqu'à leurs formes ; chacune
-  // tombe du bord de sa case jusqu'à la mer.
-  for (const a of ARCHIPELAGO_IDS.filter((a) => a !== '3e')) expect(monde(a).elements.filter((e) => e.genre === 'cascade'), a).toEqual([]);
-  const ateliers = monde('3e');
-  const CASCADES_SUR_LA_GREVE = ['english-3e-comprehension/cascade@5,932', 'english-3e-grammar/cascade@138,932'];
-  const cascades = ateliers.elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'cascade');
-  expect(cascades.length).toBe(2);
-  for (const { e, i } of cascades) {
-    const pts = sommets(ateliers.maillage, i);
-    const col = colonneEn(ateliers.champ, e.x, e.y)!;
-    expect(col, e.id).toBeTruthy();
-    // Du haut de la case du bord (sur la pente) jusqu'à la mer.
-    expect(Math.max(...pts.map((p) => p[1])), e.id).toBeLessThanOrEqual(col.haut + 1 + 0.1);
-    expect(Math.max(...pts.map((p) => p[1])), e.id).toBeGreaterThan(col.haut);
-    // Jusque sous le niveau de la mer ; seules les deux connues des Îles du Ciel s'arrêtent sur la grève, au ras de l'eau
-    // (relecture du code, GD-12) : une autre cascade qui s'arrêterait au-dessus de la mer se verrait.
-    expect(Math.min(...pts.map((p) => p[1])), e.id).toBeLessThanOrEqual(CASCADES_SUR_LA_GREVE.includes(e.id) ? 0.1 : -0.3);
-    // Collée à la falaise : jamais plus d'une case et demie de son bord.
-    for (const p of pts) expect(Math.hypot(p[0] - (e.x + 0.5), p[2] - (e.y + 0.5)), e.id).toBeLessThan(1.75);
-  }
+  // forme a une côte plate. Celles des Anciens Ateliers, puis les deux des Îles du Ciel (le Studio des ondes et le Château
+  // des hypothèses), partent avec leurs formes (GD-12, 9 octobre 2026) : une île qui a sa forme n'a plus de mare, d'où
+  // l'eau débordait. Le code des cascades reste (decor.ts, decorMesh.ts), pour une cascade qui tomberait d'un pic.
+  for (const a of ARCHIPELAGO_IDS) expect(monde(a).elements.filter((e) => e.genre === 'cascade'), a).toEqual([]);
 });
 
 it('tout le décor en un, deux ou trois appels de dessin (avec ses lueurs, ses fumées), en moins de triangles que ses cubes', () => {

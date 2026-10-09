@@ -70,11 +70,12 @@ function dansLeCadre(cam: THREE.Camera, t: { w: number; h: number }, marge: numb
 describe('Le cadrage des grands repères', () => {
   it('le grand phare est le repère de son île et de la vue de l’archipel depuis ses voisines, pas au-delà', () => {
     expect(repereDeLaVue('maths-3e-functions', null)).toBe(R);
-    // Ses voisines depuis une forme par île (GD-12) : le Belvédère, les deux observatoires, le Studio des ondes, le Château
-    // des hypothèses et le Verger de la santé ; pas le Refuge des carnets ni le Kiosque des témoins, plus loin.
-    for (const zone of ['maths-3e-functions', 'maths-3e-geometry', 'maths-3e-statistics', 'french-3e-close-reading', 'english-3e-comprehension', 'english-3e-grammar', 'life-earth-sciences-3e-human-body'] as BiomeId[])
+    // Ses voisines depuis une forme par île (GD-12) : le Belvédère, les deux observatoires, le Château des hypothèses et
+    // le Verger de la santé ; pas le Refuge des carnets, le Kiosque des témoins ni le Studio des ondes, plus loin depuis
+    // que les îles du Ciel s'écartent de huit cases (relecture du 9 octobre 2026).
+    for (const zone of ['maths-3e-functions', 'maths-3e-geometry', 'maths-3e-statistics', 'french-3e-close-reading', 'english-3e-grammar', 'life-earth-sciences-3e-human-body'] as BiomeId[])
       expect(repereDeLaVue(null, zone), zone).toBe(R);
-    for (const zone of ['lv2-3e-travel', 'history-3e-twentieth-century', 'french-6e-phonology', 'maths-4e-algebra'] as BiomeId[]) expect(repereDeLaVue(null, zone), zone).toBeNull();
+    for (const zone of ['lv2-3e-travel', 'history-3e-twentieth-century', 'english-3e-comprehension', 'french-6e-phonology', 'maths-4e-algebra'] as BiomeId[]) expect(repereDeLaVue(null, zone), zone).toBeNull();
     expect(repereDeLaVue('french-3e-close-reading', null)).toBeNull();
   });
 
