@@ -439,4 +439,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Voix.
 - posée : Urne posée chez Voix !
 
-> Forme, pour l’artiste technique 3D : une table de 3 fossiles sur deux pieds de barrière, l’urne dessus, un cube de craie au milieu ; 6 cubes, 3 cases, 3 de haut. Sobre : aucun drapeau, aucune Marianne, aucun symbole (proposition, à valider par le directeur artistique).
+> Forme, pour l’artiste technique 3D : une table de 3 fossiles sur deux pieds de barrière, l’urne dessus, un cube de craie au milieu ; 6 cubes, 3 cases, 3 de haut. Sobre : aucun drapeau, aucune Marianne, aucun symbole (validée par le directeur artistique le 9 octobre 2026 ; le cube de verre proposé ajoute un appel de dessin et sort de la règle des commandes, bloc de l’île ou finition).
