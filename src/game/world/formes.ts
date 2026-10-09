@@ -409,7 +409,7 @@ export function calmeDeLaForme(f: FormeDeLIle, u: number, v: number, s: number):
 }
 
 /** La forme a-t-elle un lagon (la forme `lagon`, GD-12) ? Sans forme, non. */
-export function hasLagoon(f: FormeDeLIle | null | undefined): f is FormeDeLIle {
+export function hasLagoon(f: FormeDeLIle | null | undefined): f is FormeDeLIle & { forme: 'lagon' } {
   return f?.forme === 'lagon';
 }
 
