@@ -119,16 +119,17 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // HG-3 (même mot) : les autres archipels passent de 55 790 à 62 875 avec leurs six îles d'histoire-géographie, puis à
   // 74 805 avec leurs neuf îles de sciences (SC-3), puis à 74 865 avec les programmes 2025-2026 (deux bornes de plus au
   // 4e, la petite construction de la Forge déplacée), puis à 74 877 avec les commandes relevées à 392 (mainteneur,
-  // 8 octobre 2026 : le pied de la machine d'Ixe et le perchoir de Cléa, au 4e). GD-12, une forme par île (mainteneur,
-  // 9 octobre 2026, carte « Relever ») : aux Îles Brumeuses, le décor à 17 400 et la mer à 6 400, le sol ramené à
-  // 36 600 (78 627) ; la mer à 6 400 aux Anciens Ateliers (75 427), à 6 900 aux Îles du Ciel (75 927).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3 et GD-12) : 72 770 triangles et 25 appels aux Premiers Rivages, 78 627, 75 427 et 75 927 et 24 appels ailleurs', () => {
+  // 8 octobre 2026 : le pied de la machine d'Ixe et le perchoir de Cléa, au 4e), puis à 74 985 avec les quêtes de la 5e
+  // (GD-10). GD-12, une forme par île (mainteneur, 9 octobre 2026, carte « Relever ») : aux Îles Brumeuses, le décor à
+  // 17 400 et la mer à 6 400, le sol ramené à 36 500 (78 635) ; la mer à 6 400 aux Anciens Ateliers (75 535), à 6 900
+  // aux Îles du Ciel (76 035).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10 et GD-12) : 72 770 triangles et 25 appels aux Premiers Rivages, 78 635, 75 535 et 76 035 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([72_770, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([78_627, 24]);
-    expect([total('4e'), appels('4e')]).toEqual([75_427, 24]);
-    expect([total('3e'), appels('3e')]).toEqual([75_927, 24]);
+    expect([total('5e'), appels('5e')]).toEqual([78_635, 24]);
+    expect([total('4e'), appels('4e')]).toEqual([75_535, 24]);
+    expect([total('3e'), appels('3e')]).toEqual([76_035, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la
@@ -216,8 +217,8 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
     });
 });
 
-it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026), puis 120 avec une seule texture pour les blocs (piste 2, 7 octobre 2026)', () => {
-  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 100_000, drawCalls: 120 });
+it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026), puis 120 avec une seule texture pour les blocs (piste 2, 7 octobre 2026), puis 102 000 triangles pour les grands projets du 4e (GD-10, 8 octobre 2026)', () => {
+  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 102_000, drawCalls: 120 });
 });
 
 /**
@@ -314,15 +315,15 @@ it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tour
   expect(arrangeViewCost(null)).toEqual({ triangles: 0, drawCalls: 0 });
 }, 20_000);
 
-it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus), sauf le sentier au 3e, sous le plafond', () => {
+// Un archipel par test : chacun refait cinq fois le maillage de tout son terrain, plus grand depuis les îlots des grands
+// projets de la 4e et de la 3e (GD-10).
+it.each(ARCHIPELAGO_IDS)('GD-9, %s : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus), sauf le sentier au 3e, sous le plafond', (a) => {
   // Les appels de plus (le sentier au 3e) tiennent sous le plafond au pire de la région : vérifié dans le test du pire cas.
   const { progress, world } = toutConstruit();
-  for (const a of ARCHIPELAGO_IDS) {
-    const terrain = worldCubes(a, progress, world, false);
-    const avant = buildMesh(terrain).length;
-    for (const [kind, n] of [['bac', LONG_LENGTH], ['pont', LONG_LENGTH], ['pont', SHORT_LENGTH], ['sentier', SHORT_LENGTH]] as const) {
-      const plus = APPELS_EN_PLUS_D_UNE_LIAISON[`${a} ${kind}`] ?? 0;
-      expect(buildMesh([...terrain, ...linkCubes(a, kind, n)]).length, `${a} ${kind}`).toBe(avant + plus);
-    }
+  const terrain = worldCubes(a, progress, world, false);
+  const avant = buildMesh(terrain).length;
+  for (const [kind, n] of [['bac', LONG_LENGTH], ['pont', LONG_LENGTH], ['pont', SHORT_LENGTH], ['sentier', SHORT_LENGTH]] as const) {
+    const plus = APPELS_EN_PLUS_D_UNE_LIAISON[`${a} ${kind}`] ?? 0;
+    expect(buildMesh([...terrain, ...linkCubes(a, kind, n)]).length, `${a} ${kind}`).toBe(avant + plus);
   }
 });

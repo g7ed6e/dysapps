@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { clesDeplacees, clesRemplacees } from './chemins.mjs';
-import { ecrireIle, lireIle } from './format.mjs';
+import { ecrireFigure, ecrireIle, lireFigure, lireIle } from './format.mjs';
 
 const DATA = 'src/game/exercises/data';
 
@@ -51,11 +51,24 @@ describe('le format Markdown du contenu', () => {
     items[3].choices = [];
     items[4].aid = { kind: 'rule-card', props: { title: 'Règle : x', lines: ['une ligne'] } };
     items[5].explanation = '';
+    items[6].figure = { kind: 'ratio-table', props: { cols: ['bouteilles', 'livres'], rows: [[2, 2], [6, '?']] } };
+    items[7].figure = { kind: 'right-triangle', props: { a: 3, b: 4, c: '?', labels: ['A', 'B', 'C'] } };
+    items[8].figure = { kind: 'number-line', props: { min: -5, max: 5, points: [-2, 1.5] } };
     const ex = { id: 'english-6e-vocabulary-x-1', biome: 'english-6e-vocabulary', type: 'x', level: 1, instruction: 'Consigne.', items };
     const md = ecrireIle({ id: 'english-6e-vocabulary' }, [ex]);
     expect(lireIle(md).exercices).toEqual([ex]);
     expect(lireIle(md.replace(/\n/g, '\r\n')).exercices).toEqual([ex]);
     expect(lireIle('\uFEFF' + md).exercices).toEqual([ex]);
+  });
+
+  it('lit les figures de maths sur une ligne, et refuse une figure mal écrite', () => {
+    expect(lireFigure('tableau x · f(x) / 2 · 6 / 4 · ?')).toEqual({ kind: 'ratio-table', props: { cols: ['x', 'f(x)'], rows: [[2, 6], [4, '?']] } });
+    expect(lireFigure('droite 0 · 20 / 5 · 10')).toEqual({ kind: 'number-line', props: { min: 0, max: 20, points: [5, 10] } });
+    expect(ecrireFigure(lireFigure('triangle 6 · 8 · ?'))).toBe('triangle 6 · 8 · ?');
+    expect(() => lireFigure('cercle 3')).toThrow(/tableau/);
+    expect(() => lireFigure('tableau x · y / 1')).toThrow(/même longueur/);
+    expect(() => lireFigure('triangle 3 · 4')).toThrow(/trois côtés/);
+    expect(() => lireFigure('droite 5 · 2')).toThrow(/plus grand/);
   });
 
   it('refuse une valeur vide ou avec des espaces au bord écrite sans guillemets', () => {

@@ -45,15 +45,52 @@ export const PROJECTS = PROJECTS_JSON as Project[];
  * La forme des pièces : les étages (z, dans le dessin du grand ouvrage) que chacune couvre, du plus bas au plus haut.
  * Le phare du large, dans Blocland : le socle de glace, la tour rayée, la galerie de lambris, la lanterne de vitraux, le
  * toit ; dans Archipéo, les mêmes étages du modèle taillé (offshoreLighthouse.ts) : le socle, la tour, la corniche,
- * la terrasse, le feu.
+ * la terrasse, le feu. Les grands projets neufs de la 4e et de la 3e (décision du mainteneur, 8 octobre 2026) : leurs
+ * pièces suivent les étages de leur dessin en cubes (./monuments.ts) ; chacune est une tranche de hauteur, posée sur
+ * celles d'en dessous.
  */
-const LAYERS: Record<string, Record<string, readonly [number, number]>> = {
+export const LAYERS: Record<string, Record<string, readonly [number, number]>> = {
   'landmark-5e-1': {
     base: [0, 0],
     tower: [1, 6],
     gallery: [7, 7],
     lantern: [8, 8],
     roof: [9, 10],
+  },
+  // Le portique des docks : le quai et ses conteneurs, les quatre jambes, la poutre et la flèche, la cabine et le treuil.
+  'landmark-4e-3': {
+    quay: [0, 1],
+    legs: [2, 3],
+    beam: [4, 4],
+    cab: [5, 6],
+  },
+  // La tour des signaux : le pied, le treillis, le fût, la tête de bobines.
+  'landmark-4e-4': {
+    foot: [0, 0],
+    lattice: [1, 2],
+    shaft: [3, 5],
+    head: [6, 7],
+  },
+  // La fusée : le pas de tir, le premier étage et ses ailerons, le second étage à hublots, la coiffe.
+  'landmark-3e-3': {
+    pad: [0, 0],
+    stage1: [1, 3],
+    stage2: [4, 6],
+    nose: [7, 9],
+  },
+  // Le château d'eau : le pied, le fût, la cuve, le toit et la couronne de lanternons.
+  'landmark-3e-4': {
+    foot: [0, 1],
+    shaft: [2, 4],
+    tank: [5, 6],
+    crown: [7, 9],
+  },
+  // La colonne des solides : le cube, le cylindre, le tronc de pyramide, la sphère.
+  'landmark-3e-5': {
+    cube: [0, 4],
+    cylinder: [5, 6],
+    pyramid: [7, 8],
+    sphere: [9, 11],
   },
 };
 

@@ -15,6 +15,10 @@
 //   2. donner 2 `french-6e-phonology` chez `maths-6e-calculation` : Donne {objet} à Coco.
 //   3. apporter chez `french-6e-phonology` : Apporte la lanterne à Mousso.
 //
+// À partir de la 5e, la dernière quête de la région montre le projet (GD-10), sans jamais l'exiger : deux champs de
+// plus, ensemble, « - projet : `landmark-5e-1` » (le grand ouvrage) et « - voir : Voir le phare » (le bouton qui le
+// montre une fois la quête finie, tant que le projet ne l'est pas).
+//
 // Trois sortes d'étapes, des gestes qui existent déjà : « mission » (réussir une mission du lieu, n'importe laquelle),
 // « donner N `<bloc>` » (des blocs du stock, de 2 à 4), « apporter » (l'objet, d'un toucher). La dernière étape se fait
 // d'un toucher (« donner » ou « apporter ») : c'est elle qui pose l'objet. Jeton : {objet}, remplacé par le nombre et le
@@ -29,7 +33,11 @@ const CHAMPS = [
   ['icône', 'item'],
   ['fin', 'done'],
 ];
-const PAR_ETIQUETTE = new Map(CHAMPS);
+const FACULTATIFS = [
+  ['projet', 'project'],
+  ['voir', 'see'],
+];
+const PAR_ETIQUETTE = new Map([...CHAMPS, ...FACULTATIFS]);
 const ETAPE = /^\d+\. (mission|apporter|donner (\d+) `([a-z0-9-]+)`) chez `([a-z0-9-]+)` : (.+)$/;
 const SORTES = { mission: 'mission', apporter: 'bring', donner: 'give' };
 
@@ -50,6 +58,7 @@ export function lireQuetes(md, fichier) {
   const finir = () => {
     if (!courante) return;
     for (const [etiquette, cle] of CHAMPS) if (courante[cle] === undefined) throw new Error(`${fichier}, quête ${courante.id} : « ${etiquette} » manque`);
+    if ((courante.project === undefined) !== (courante.see === undefined)) throw new Error(`${fichier}, quête ${courante.id} : « projet » et « voir » vont ensemble`);
     if (courante.steps.length < 3 || courante.steps.length > 4) throw new Error(`${fichier}, quête ${courante.id} : trois ou quatre étapes, lu ${courante.steps.length}`);
     quetes.push(courante);
     courante = null;
@@ -77,7 +86,7 @@ export function lireQuetes(md, fichier) {
     }
     if ((m = /^- (.+?) : (.*)$/.exec(l))) {
       const cle = PAR_ETIQUETTE.get(m[1]);
-      if (!cle) throw erreur(i, `champ inconnu « ${m[1]} » (${CHAMPS.map((c) => c[0]).join(', ')})`);
+      if (!cle) throw erreur(i, `champ inconnu « ${m[1]} » (${[...CHAMPS, ...FACULTATIFS].map((c) => c[0]).join(', ')})`);
       if (courante[cle] !== undefined) throw erreur(i, `« ${m[1]} » écrit deux fois`);
       let v;
       try {
@@ -85,9 +94,9 @@ export function lireQuetes(md, fichier) {
       } catch (e) {
         throw new Error(`${fichier}, ${e.message}`);
       }
-      if (cle === 'item') {
+      if (cle === 'item' || cle === 'project') {
         const id = ID.exec(v)?.[1];
-        if (!id) throw erreur(i, `icône : un bloc entre accents graves, lu « ${v} »`);
+        if (!id) throw erreur(i, `${m[1]} : un identifiant entre accents graves, lu « ${v} »`);
         v = id;
       }
       courante[cle] = v;
@@ -116,9 +125,10 @@ const motsDe = (s) => s.split(' ').length;
 /**
  * Vérifie les quêtes et nomme l'objet posé à la fin : la petite construction suivante de l'habitant de la dernière
  * étape (`<lieu>-fixture-<n>`, après celle de sa commande). `iles` : les îles dans l'ordre de docs/contenu/archipel.md ;
- * `demandes` : les commandes (src/game/world/requests.json) ; `blocs` : les identifiants des blocs connus du jeu.
+ * `demandes` : les commandes (src/game/world/requests.json) ; `blocs` : les identifiants des blocs connus du jeu ;
+ * `projets` : les grands projets (src/game/world/projects.json) et leur classe (`{ monument, classe }`).
  */
-export function verifierQuetes(quetes, iles, demandes, blocs) {
+export function verifierQuetes(quetes, iles, demandes, blocs, projets = []) {
   const parId = new Map(iles.map((b) => [b.id, b]));
   const fixtures = new Map();
   for (const d of demandes) fixtures.set(d.biome, (fixtures.get(d.biome) ?? 0) + 1);
@@ -126,7 +136,14 @@ export function verifierQuetes(quetes, iles, demandes, blocs) {
     const err = (m) => new Error(`docs/contenu/${FICHIER_QUETES}, quête ${q.id} : ${m}`);
     if (!blocs.includes(q.item)) throw err(`icône : « ${q.item} » n’est pas un bloc du jeu`);
     if (!/^(le |la |l’)/.test(q.name)) throw err(`objet : son nom avec l’article (« la lanterne »), lu « ${q.name} »`);
-    for (const [quoi, s] of [['objet', q.name], ['fin', q.done], ...q.steps.map((e, k) => [`étape ${k + 1}`, e.text])]) {
+    if (q.project !== undefined) {
+      const projet = projets.find((p) => p.monument === q.project);
+      if (!projet) throw err(`projet : « ${q.project} » n’est pas un grand projet (docs/contenu/projets.md)`);
+      if (projet.classe !== q.region) throw err(`projet : « ${q.project} » est en ${projet.classe}, la quête en ${q.region}`);
+      if (quetes.filter((r) => r.region === q.region).at(-1) !== q) throw err('projet : seule la dernière quête de la région montre le projet');
+      if (motsDe(q.see) > 3) throw err(`voir : trois mots au plus (« Voir le phare »), lu « ${q.see} »`);
+    }
+    for (const [quoi, s] of [['objet', q.name], ['fin', q.done], ...(q.see ? [['voir', q.see]] : []), ...q.steps.map((e, k) => [`étape ${k + 1}`, e.text])]) {
       if (/['"]/.test(s)) throw err(`${quoi} : apostrophes et guillemets typographiques (’ « »), jamais droits`);
       if (/…|\.\.\./.test(s)) throw err(`${quoi} : pas de « … », la voix le lit mal`);
     }
@@ -150,6 +167,15 @@ export function verifierQuetes(quetes, iles, demandes, blocs) {
     if (motsDe(q.done) > 5 || !q.done.endsWith(` chez ${receveur.creature.name} !`)) throw err(`fin : cinq mots au plus, « … posé(e) chez ${receveur.creature.name} ! »`);
     const n = (fixtures.get(derniere.place) ?? 0) + 1;
     fixtures.set(derniere.place, n);
-    return { id: q.id, region: q.region, name: q.name, item: q.item, fixture: `${derniere.place}-fixture-${n}`, steps: q.steps, done: q.done };
+    return {
+      id: q.id,
+      region: q.region,
+      name: q.name,
+      item: q.item,
+      fixture: `${derniere.place}-fixture-${n}`,
+      steps: q.steps,
+      done: q.done,
+      ...(q.project ? { project: q.project, see: q.see } : {}),
+    };
   });
 }

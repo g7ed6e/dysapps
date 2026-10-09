@@ -485,7 +485,7 @@ function archipelPage(d) {
           s.steps.map((e, k) => [`${k + 1}. ${ETAPE[e.kind]}`, `[${BIOMES.find((b) => b.id === e.place).creature.name}](iles/${e.place}.md)`, `« ${d.stepText(e)} »`]),
         ),
         '',
-        `À la fin : « ${s.done} »`,
+        `À la fin : « ${s.done} »${s.see ? ` ; puis « ${s.see} » mène au grand projet de l’archipel, s’il n’est pas fini (il n’est jamais exigé).` : ''}`,
         '',
       );
     }
@@ -1019,11 +1019,14 @@ function ouvragesPage(d) {
 /** Les grands projets (GD-10) : leurs pièces, de bas en haut, et les deux recettes de chacune, puis leurs questions. */
 function grandsProjets(d) {
   if (d.PROJECTS.length === 0) return [];
-  const recette = (r) => r.ingredients.map((i) => d.blockCount(i.bloc, i.n)).join(' et ');
+  const recette = (r) => {
+    const parts = r.ingredients.map((i) => d.blockCount(i.bloc, i.n));
+    return `${parts.slice(0, -1).join(', ')} et ${parts.at(-1)}`;
+  };
   const lines = [
     '## Les grands projets',
     '',
-    'Dès la 5e, une grande construction devient un **projet** : elle se pose pièce par pièce, de bas en haut. Chaque pièce a deux recettes au choix, des blocs de deux îles de deux matières ; les deux recettes n’ont aucune matière en commun et ne demandent jamais la LV2, si bien qu’une matière difficile ne bloque jamais. La recette choisie pose une question qui mêle ses deux matières, comme celle d’un bloc assemblé : juste, la pièce entière se pose et ses blocs sont pris ; manquée, rien n’est pris. Une pièce commencée bloc par bloc se finit sans rien payer. Voir [Les monuments](../manuel/blocland.md#les-monuments) dans le manuel.',
+    'Dès la 5e, une grande construction devient un **projet** : elle se pose pièce par pièce, de bas en haut. Chaque pièce a deux recettes au choix, des blocs de deux îles de deux matières (de trois îles de trois matières en 3e) ; les deux recettes n’ont aucune matière en commun et ne demandent jamais la LV2, si bien qu’une matière difficile ne bloque jamais. La recette choisie pose une question qui mêle deux de ses matières, jamais plus, comme celle d’un bloc assemblé : juste, la pièce entière se pose et ses blocs sont pris ; manquée, rien n’est pris. Une pièce commencée bloc par bloc se finit sans rien payer. Voir [Les monuments](../manuel/blocland.md#les-monuments) dans le manuel.',
     '',
   ];
   for (const p of d.PROJECTS) {
@@ -1033,8 +1036,13 @@ function grandsProjets(d) {
   }
   const name = (id) => d.BIOMES.find((x) => x.id === id)?.name ?? id;
   for (const q of d.QUESTIONS_PROJETS) {
-    const r = d.PROJECTS.flatMap((p) => p.pieces.flatMap((x) => x.recipes)).find((x) => x.bank === q.bloc);
-    lines.push(`### Les questions : ${r.ingredients.map((i) => name(i.bloc)).join(' et ')}`, '');
+    // Les îles de la question : celles de toutes les recettes qui la posent (en 3e, la troisième île d'une recette n'a pas
+    // de question).
+    const recettes = d.PROJECTS.flatMap((p) => p.pieces.flatMap((x) => x.recipes)).filter((x) => x.bank === q.bloc);
+    if (recettes.length === 0) throw new Error(`grands projets : la banque ${q.bloc} n'est posée par aucune recette`);
+    const iles = recettes[0].ingredients.map((i) => i.bloc).filter((b) => recettes.every((r) => r.ingredients.some((i) => i.bloc === b)));
+    if (iles.length === 0) throw new Error(`grands projets : les recettes de la banque ${q.bloc} n'ont aucune île commune`);
+    lines.push(`### Les questions : ${iles.map(name).join(' et ')}`, '');
     lines.push(programmeLine(q.programme, d, ''), '');
     lines.push(`Consigne : « ${q.instruction} »${q.lang === 'en' ? ' Le texte à lire est en anglais, lu en voix anglaise ; la question, l’indice et l’aide sont en français.' : ''}`, '');
     lines.push('<details>', `<summary>Questions : ${q.items.length}</summary>`, '');

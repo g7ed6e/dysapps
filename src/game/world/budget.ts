@@ -60,9 +60,11 @@ export const RENDER_BUDGET_6E = { triangles: 72_800, drawCalls: RENDER_BUDGET.dr
  * du même mot, de 62 900 à 74 900, à la somme des enveloppes « autres » (74 805, 74 865 depuis les programmes
  * 2025-2026 : deux bornes de plus au 4e ; 74 877 depuis les commandes relevées à 392, 8 octobre 2026). Mesurés tout construit, « Dans la
  * scène » à part : 69 880 aux Îles Brumeuses, 67 080 aux Anciens Ateliers, 63 791 aux Îles du Ciel. La mesure sur
- * tablette reste à faire. Puis, avec une forme par île (GD-12) : relevé de 74 900 à 78 700 (mainteneur, 9 octobre 2026,
- * carte « Relever »), pour le décor et la mer des Îles Brumeuses, plus grandes (78 700 aux Îles Brumeuses, la somme
- * de leurs enveloppes). Mesuré tout construit, « Dans la scène » à part : 74 391 aux Îles Brumeuses.
+ * tablette reste à faire. Puis de 74 900 à 75 000 pour les quêtes de la 5e (GD-10, validé par le mainteneur le 8 octobre
+ * 2026) : la somme des « autres » passe à 74 985 (commandes 392 → 500). Puis, avec une forme par île (GD-12) : relevé à
+ * 78 700 (mainteneur, 9 octobre 2026, carte « Relever »), pour le décor et la mer des Îles Brumeuses, plus grandes
+ * (78 635 aux Îles Brumeuses, la somme de leurs enveloppes). Mesuré tout construit, « Dans la scène » à part : 74 391
+ * aux Îles Brumeuses.
  */
 export const RENDER_BUDGET_AUTRES = { triangles: 78_700, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
@@ -92,9 +94,12 @@ export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls
  * 2026, « Côte amincie » : sans relever le plafond) : au pire de la région aménagée (`npm run rendu:budget`, avant → après),
  * 97 928 → 93 570 triangles et 102 → 109 appels aux Premiers Rivages, 90 336 → 86 110 et 87 → 90 aux Îles Brumeuses,
  * 99 174 → 98 582 et 85 → 84 aux Anciens Ateliers, 98 138 → 95 180 et 64 → 60 aux Îles du Ciel.
+ * Relevé à 102 000 triangles pour les deux grands projets neufs des Anciens Ateliers (GD-10, mainteneur, 8 octobre
+ * 2026, « Plafond relevé ») : leurs îlots, des piliers de roche à l'altitude du 4e, et leurs dessins portent le pire de la
+ * région aménagée à 100 448 triangles au pire, 460 de plus avec le glissé d'un choix ; les autres archipels restent sous 100 000.
  * La mesure sur tablette reste à faire.
  */
-export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 100_000, drawCalls: 120 } as const;
+export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 102_000, drawCalls: 120 } as const;
 
 /** Un poste du budget d'Archipéo : une part de la scène, et le lot qui la dessine. */
 export type Poste = 'sol' | 'mer' | 'faune' | 'decor' | 'construction' | 'commandes' | 'bornes' | 'navire' | 'bonhomme' | 'creatures' | 'gardiens' | 'scene';
@@ -180,14 +185,14 @@ export const ENVELOPPES: Record<
   // Ciel), les Gardiens de 2 150 à 2 780 (2 775 aux Îles Brumeuses, le budget des statues). La somme des « autres » passe
   // de 62 875 à 74 805 : `RENDER_BUDGET_AUTRES`.
   // GD-12, une forme par île (9 octobre 2026) : aux Îles Brumeuses, le sol mesure 34 692 triangles tout construit ; leur
-  // enveloppe descend à 36 600 pour que la somme tienne sous `RENDER_BUDGET_AUTRES` (78 700) avec le décor et la mer
+  // enveloppe descend à 36 500 pour que la somme tienne sous `RENDER_BUDGET_AUTRES` (78 700, commandes des quêtes de la 5e comprises) avec le décor et la mer
   // relevés.
   sol: {
     lot: 'R4b',
     nom: 'Sol',
     premiersRivages: { triangles: 32_800, drawCalls: 2 },
     autres: { triangles: 37_200, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 36_600, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 36_500, drawCalls: 1 } },
   },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
@@ -254,7 +259,7 @@ export const ENVELOPPES: Record<
     lot: 'GD-7',
     nom: 'Commandes et quêtes (les petites constructions posées, dans le sol et la construction, sans appel de plus)',
     premiersRivages: { triangles: 800, drawCalls: 0 },
-    autres: { triangles: 392, drawCalls: 0 },
+    autres: { triangles: 500, drawCalls: 0 },
   },
   // Le lot de contenu des programmes 2025-2026 (une mission de plus à la Forge et au Cabinet de 4e, et à l'Observatoire
   // de 3e, une de moins au Glacier de 5e) : relevé aux mesures tout construit, comme pour SC-3, confirmé par le
@@ -262,6 +267,10 @@ export const ENVELOPPES: Record<
   // 1 130 → 1 180 ; la petite construction de la Forge, replacée de (10, 3) à (9, 4) avec la mission ajoutée (`calculerLaPlaceDeLaPetiteConstruction`), fige au sol
   // d'autres cases (368 → 374 au 4e) : commandes 370 → 380. La somme des « autres » passe de 74 805 à 74 865, sous
   // `RENDER_BUDGET_AUTRES` (74 900), inchangé.
+  // Les quêtes de la 5e (GD-10) : la tente, le four et la balise portent le poste des Îles Brumeuses à 496 triangles
+  // sur les îles agrandies de GD-11 (`commandesCost`), aucun appel de plus ; aucun autre poste des « autres » n'a cette
+  // marge dans les trois archipels. Commandes 392 → 500, la somme des « autres » de 74 877 à 74 985, sous
+  // `RENDER_BUDGET_AUTRES` relevé à 75 000 (validé par le mainteneur le 8 octobre 2026). Le monde en blocs de Blocland n'en change pas de plafond (30 896 au 5e, sur 100 000).
   bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_450, drawCalls: 1 }, autres: { triangles: 1_180, drawCalls: 1 } },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },

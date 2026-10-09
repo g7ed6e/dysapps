@@ -12,7 +12,7 @@ import { DictationItem } from './DictationItem';
 import { FamiliesScreen } from './FamiliesScreen';
 import { EnclosureScreen } from './EnclosureScreen';
 import { BossScreen } from './BossScreen';
-import { CalculationScreen } from './CalculationScreen';
+import { AssemblyScreen, CalculationScreen } from './CalculationScreen';
 import { StoryScreen } from './StoryScreen';
 
 export interface ScreenAnswer {
@@ -276,5 +276,5 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   algorithms: { component: CalculationScreen, batch: 1 },
   // La question d'un bloc assemblé (GD-2) : un document à lire sur deux matières, sa question, trois choix, le rappel
   // des deux matières toujours affiché (docs/contenu/assemblage.md). Hors des îles : elle se pose à la Fabrique.
-  assembly: { component: CalculationScreen, batch: 1 },
+  assembly: { component: AssemblyScreen, batch: 1 },
 };
