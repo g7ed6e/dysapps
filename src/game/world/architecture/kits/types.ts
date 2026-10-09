@@ -68,6 +68,13 @@ export interface Kit {
    * Un lieu absent garde son dessin.
    */
   lieux?: Partial<Record<VillagePlaceId, LieuDuKit>>;
+  /**
+   * Le lissage (../volumes.ts) : dans les plans à part (les monuments, les petites constructions, les cours, les piliers
+   * du cœur), les cases voisines d'une même matière se lisent comme un seul volume, d'une seule teinte, sans chaperon ni
+   * dessus de pierre par case. Les bâtiments des plans et les lieux du village n'en ont pas besoin : leurs murs sont
+   * déjà réunis, leurs toits en pente.
+   */
+  lissage?: boolean;
 }
 
 /** Un kit vide : aucun bloc remplacé. */
