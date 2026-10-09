@@ -464,7 +464,7 @@ const FICHES: Fiche[] = [
     archipelago: '4e',
     name: 'Le viaduc',
     description: 'Des piles et des arches d’ardoise, un tablier de rails, et une locomotive d’acier qui attend le départ.',
-    islet: { x: 8, y: 640 }, // suit la Gare, au second rang des Anciens Ateliers redessinés (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026) ; plus à l'ouest depuis une forme par île (GD-12, 09/10/2026 : sa place d'avant n'avait plus quatre cases d'eau autour d'elle)
+    islet: { x: 17, y: 648 }, // suit la Gare, au second rang des Anciens Ateliers redessinés (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026)
     reward: { xp: 210, chest: {} },
     done: 'Le viaduc tient bon ! La locomotive siffle au-dessus de la mer.',
     draw: viaduc,
@@ -475,7 +475,7 @@ const FICHES: Fiche[] = [
     archipelago: '4e',
     name: 'L’amphithéâtre',
     description: 'Trois gradins de velours, une scène de parchemin entre deux colonnes, et des projecteurs pour les grands soirs.',
-    islet: { x: 110, y: 650 }, // suit le Théâtre, au second rang des Anciens Ateliers redessinés (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026) ; devant le Théâtre, derrière la Falaise, depuis une forme par île (GD-12, 09/10/2026 : sa place d'avant est dans la terre du Théâtre)
+    islet: { x: 91, y: 685 }, // suit le Théâtre, au second rang des Anciens Ateliers redessinés (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026)
     reward: { xp: 210, chest: {} },
     done: 'L’amphithéâtre est prêt ! Tout le monde des Anciens Ateliers viendra au spectacle.',
     draw: amphitheatre,
@@ -486,7 +486,7 @@ const FICHES: Fiche[] = [
     archipelago: '3e',
     name: 'L’observatoire des étoiles',
     description: 'Un tambour de quartz sous une coupole de lentilles, et une grande lunette pointée vers le ciel.',
-    islet: { x: 62, y: 980 }, // suit l'île calée sur le pas (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026) ; juste derrière l'Observatoire des textes depuis une forme par île (GD-12, 09/10/2026 : sa place d'avant touchait la côte du Verger)
+    islet: { x: 41, y: 969 }, // suit l'île calée sur le pas (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026)
     reward: { xp: 240, chest: {} },
     done: 'L’observatoire des étoiles est ouvert ! On voit plus loin que les nuages.',
     draw: etoiles,
@@ -497,7 +497,7 @@ const FICHES: Fiche[] = [
     archipelago: '3e',
     name: 'Le temple de marbre',
     description: 'Huit colonnes de marbre sur un soubassement de pierre de taille, un toit de prismes et un faîte de miroirs qui brillent au soleil.',
-    islet: { x: 12, y: 890 }, // suit le Belvédère : le Phare a grandi (01/10/2026), la carte s'est calée sur le pas (GD-9) ; recalé avec les îles agrandies (GD-11, 08/10/2026) ; devant le Belvédère, avancé au premier rang, depuis une forme par île (GD-12, 09/10/2026)
+    islet: { x: 1, y: 941 }, // suit le Belvédère : le Phare a grandi (01/10/2026), la carte s'est calée sur le pas (GD-9) ; recalé avec les îles agrandies (GD-11, 08/10/2026)
     reward: { xp: 240, chest: {} },
     done: 'Le temple de marbre brille au-dessus des nuages. Les Îles du Ciel sont fières de toi.',
     draw: temple,
@@ -510,7 +510,7 @@ const FICHES: Fiche[] = [
     archipelago: '4e',
     name: 'Le portique des docks',
     description: 'Une grande grue de port sur ses rails, ses quatre jambes d’acier, sa poutre tendue vers la mer et la cabine du grutier, au-dessus d’une pile de conteneurs.',
-    islet: { x: 94, y: 650 }, // placé le 08/10/2026 avec les îles agrandies (#390), hors des tracés des liaisons ; décalé à l'est de l'Escale le même jour (relecture du directeur artistique) : vu depuis l'Escale, il n'est plus caché derrière son étiquette ; devant l'Escale, à l'est, depuis une forme par île (GD-12, 09/10/2026 : sa place d'avant est au rang du fond, sur une place future)
+    islet: { x: 86, y: 711 }, // placé le 08/10/2026 avec les îles agrandies (#390), hors des tracés des liaisons ; décalé à l'est de l'Escale le même jour (relecture du directeur artistique) : vu depuis l'Escale, il n'est plus caché derrière son étiquette
     reward: { xp: 210, chest: {} },
     done: 'Le portique des docks est debout. La cabine s’allume : les conteneurs peuvent partir vers toutes les îles.',
     draw: portique,
@@ -522,7 +522,7 @@ const FICHES: Fiche[] = [
     archipelago: '4e',
     name: 'La tour des signaux',
     description: 'Un pylône d’acier et de liège, large en bas et fin en haut, dont les bobines envoient des messages d’une île à l’autre.',
-    islet: { x: 30, y: 711 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons ; neuf cases plus à l'est depuis une forme par île (GD-12, 09/10/2026), à côté de la Vigie au coin du fond
+    islet: { x: 21, y: 711 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
     reward: { xp: 210, chest: {} },
     done: 'La tour des signaux est finie. Ses bobines s’allument : les messages passent d’une île à l’autre.',
     draw: tourSignaux,
@@ -534,7 +534,7 @@ const FICHES: Fiche[] = [
     archipelago: '3e',
     name: 'La fusée',
     description: 'Une fusée de marbre sur son pas de tir, avec ses ailerons, son second étage à hublots et sa coiffe pointée vers le ciel.',
-    islet: { x: 146, y: 1021 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons ; suit le Tremplin, passé au rang du fond à l'est, depuis une forme par île (GD-12, 09/10/2026)
+    islet: { x: 67, y: 991 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
     reward: { xp: 240, chest: {} },
     done: 'La fusée est prête sur son pas de tir. Ses hublots s’allument, tournés vers les étoiles.',
     draw: fusee,
@@ -546,7 +546,7 @@ const FICHES: Fiche[] = [
     archipelago: '3e',
     name: 'Le château d’eau',
     description: 'Un fût de marbre qui porte une large cuve, coiffée d’un toit et d’une couronne de lanternons.',
-    islet: { x: 158, y: 956 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons ; une case plus à l'est depuis une forme par île (GD-12, 09/10/2026 : le trèfle du Plateau la couvrait)
+    islet: { x: 157, y: 956 }, // placé le 08/10/2026 avec les îles agrandies (#390) : la place libre la plus proche de son île, hors des tracés des liaisons
     reward: { xp: 240, chest: {} },
     done: 'Le château d’eau est plein. Sa couronne de lanternons s’allume au-dessus des nuages.',
     draw: chateauEau,
@@ -558,7 +558,7 @@ const FICHES: Fiche[] = [
     archipelago: '3e',
     name: 'La colonne des solides',
     description: 'Un cube, un cylindre et un tronc de pyramide posés l’un sur l’autre, et tout en haut une sphère à la ceinture de lumière.',
-    islet: { x: 28, y: 890 }, // placé le 08/10/2026 avec les îles agrandies (#390), hors des tracés des liaisons ; décalé de six cases vers le Phare et de quatre vers le sud le même jour (relecture du directeur artistique) : sur la Carte, l'étiquette du Studio des ondes ne le couvre plus ; devant le Belvédère, à côté du temple, depuis une forme par île (GD-12, 09/10/2026 : sa place d'avant est le cœur du Belvédère)
+    islet: { x: 18, y: 912 }, // placé le 08/10/2026 avec les îles agrandies (#390), hors des tracés des liaisons ; décalé de six cases vers le Phare et de quatre vers le sud le même jour (relecture du directeur artistique) : sur la Carte, l'étiquette du Studio des ondes ne le couvre plus
     reward: { xp: 240, chest: {} },
     done: 'La colonne des solides est montée. La ceinture de la sphère s’allume tout en haut.',
     draw: colonneSolides,

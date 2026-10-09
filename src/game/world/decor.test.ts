@@ -22,10 +22,8 @@ it('les repères, les cascades et l’habillage de la mer ont un nom de décor, 
     }
     for (const c of worldCubes(a, {})) if (bati(c)) vus.add(kindOf(c.decor!));
   }
-  // Chaque genre de repère existe quelque part. Plus de cascade depuis que chaque île a sa forme (GD-12, 9 octobre 2026 :
-  // ni mare ni lac sur sa côte, d'où l'eau débordait).
-  for (const k of [...REPERES, 'ecueil', 'banc']) expect(vus.has(k), k).toBe(true);
-  expect(vus.has('cascade')).toBe(false);
+  // Chaque genre de repère existe quelque part, et les cascades des îles en altitude aussi.
+  for (const k of [...REPERES, 'cascade', 'ecueil', 'banc']) expect(vus.has(k), k).toBe(true);
   // Le décor posé (un arbre, un objet du quai) reste du décor posé.
   expect(decorPose('foret/cœur:arbre@8,2')).toBe(true);
   expect(decorPose('phare/barque@3,4')).toBe(true);
@@ -95,16 +93,16 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
       ],
       [
         "maths-4e-algebra/barque@70,635",
-        "maths-4e-algebra/barque@75,621",
-        "maths-4e-algebra/caisse@79,625",
-        "maths-4e-algebra/fanion@73,625",
-        "maths-4e-algebra/fanion@82,625",
-        "maths-4e-algebra/foyer@83,630",
+        "maths-4e-algebra/barque@75,622",
+        "maths-4e-algebra/caisse@82,626",
+        "maths-4e-algebra/fanion@83,630",
+        "maths-4e-algebra/fanion@84,628",
+        "maths-4e-algebra/foyer@84,634",
       ],
       [
-        "maths-3e-functions/caisse@75,905",
-        "maths-3e-functions/fanion@69,905",
-        "maths-3e-functions/fanion@78,905",
+        "maths-3e-functions/caisse@68,915",
+        "maths-3e-functions/fanion@62,915",
+        "maths-3e-functions/fanion@66,915",
         "maths-3e-functions/foyer@79,907",
       ],
     ]

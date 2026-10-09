@@ -49,11 +49,10 @@ describe('les poignées autour du choix', () => {
     expect(auNordEst.length).toBeGreaterThan(lieux.length / 2);
   });
 
-  it('« Tourner » ne se pose jamais sur la terre d’un autre lieu : il passe à un autre coin (GD-12, le Tremplin des forces au 3e)', () => {
-    const tremplin = arrangeView(world, chooseIsland(world, 'physics-chemistry-3e-motion-energy')!).poignees!;
-    // Au coin nord-est, son radeau se posait sur la Ruche des réseaux, sa voisine réunie : il passe à un autre coin.
-    const [t] = tremplin.liste;
-    expect(Math.sign(t.ox) === DIRECTION_STEP.est.dx && Math.sign(t.oy) === DIRECTION_STEP.nord.dy).toBe(false);
+  it('« Tourner » ne se pose jamais sur la terre d’un autre lieu : il passe à un autre coin (GD-12, relecture du 9 octobre 2026)', () => {
+    // Vu au 3e, sur la première construction de ses formes (le Tremplin des forces choisi, son radeau se posait sur la
+    // Ruche des réseaux) : sur les cartes de départ d'aujourd'hui, aucun lieu n'a besoin d'un autre coin ; le cas
+    // reviendra avec les formes des Îles du Ciel, dans leur pull request.
     for (const a of ARCHIPELAGO_IDS)
       for (const d of mapOf(a)) {
         const c = chooseIsland(world, d.id);

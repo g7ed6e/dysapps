@@ -736,11 +736,9 @@ const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void> = {
     put(peak.x + 1, peak.y, peak.h + 5, BLOCKS[BLOC.toile].side);
     put(peak.x + 1, peak.y, peak.h + 4, BLOCKS[BLOC.toile].side);
   },
-  'grand-phare': ({ def, scenery, named, put }) => {
-    // Le grand phare : tour de pierre 2 × 2 de huit blocs, lanterne de quatre blocs au sommet, toit de prisme. Sur la
-    // côte est, trois cases avant le fond du cœur : le fond du croissant du Phare est arrondi (GD-12, 9 octobre 2026), et
-    // vu de la caméra la lanterne reste à gauche de l'Observatoire des textes, juste derrière (DA-17).
-    const s = findSpot(def, scenery, coeurDe(def).x1 + 1, coeurDe(def).y1 - 3, 2);
+  'grand-phare': ({ def, scenery, backY, named, put }) => {
+    // Le grand phare : tour de pierre 2 × 2 de huit blocs, lanterne de quatre blocs au sommet, toit de prisme.
+    const s = findSpot(def, scenery, coeurDe(def).x1 + 1, backY, 2);
     if (!s) return;
     named(s.x, s.y);
     for (let z = 1; z <= 10; z++)

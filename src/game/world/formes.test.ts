@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { FORMES, FORMES_MARQUEES, TRAIT_MAX, shapeCorner } from './formes';
 import { ARCHIPELAGO_IDS } from './archipelagos';
-import { shapeBox, bornesDuCoeur, coeurDe, inCoeurDOrigine, isLand, LACS, landscape, mapOf, BEACH_RADIUS, coreCornerGround, TERRE_AUTOUR_DU_COEUR } from './map';
+import { shapeBox, bornesDuCoeur, coeurDe, inCoeurDOrigine, isLand, landscape, mapOf, BEACH_RADIUS, coreCornerGround, TERRE_AUTOUR_DU_COEUR } from './map';
 import { silhouetteDe } from './silhouettes';
 import { questStations } from './terrain/markers';
 import { zoneDesPlans } from './plans';
@@ -17,7 +17,7 @@ const LIEUX = ARCHIPELAGO_IDS.flatMap((a) => mapOf(a)).filter((d) => silhouetteD
 /** Jusqu'où regarder autour du cœur : le plus long trait du catalogue (le crochet et le lagon, 9 octobre 2026). */
 const T = TRAIT_MAX;
 /** Les archipels qui ont pris leurs formes, et combien de lieux chacun. */
-const ARCHIPELS_AUX_FORMES: Partial<Record<(typeof ARCHIPELAGO_IDS)[number], number>> = { '6e': 15, '5e': 12, '4e': 12, '3e': 12 };
+const ARCHIPELS_AUX_FORMES: Partial<Record<(typeof ARCHIPELAGO_IDS)[number], number>> = { '6e': 15, '5e': 12 };
 
 /** La case (x, y), au repère du monde, est-elle de la terre de l'île ? */
 const terre = (id: string) => {
@@ -80,7 +80,7 @@ describe('Les formes des îles (GD-12)', () => {
         }
       }
     // Le lagon : l'eau du large qui a de la terre de l'île de part et d'autre, sur les deux axes (au moins 60 cases).
-    const lagon = new Set<string>();
+    let lagon = 0;
     for (const cle of mer) {
       const [x, y] = cle.split(',').map(Number);
       const entre = (dx: number, dy: number) => {
@@ -92,35 +92,9 @@ describe('Les formes des îles (GD-12)', () => {
         }
         return false;
       };
-      if (entre(1, 0) && entre(-1, 0) && entre(0, 1) && entre(0, -1)) lagon.add(cle);
+      if (entre(1, 0) && entre(-1, 0) && entre(0, 1) && entre(0, -1)) lagon++;
     }
-    expect(lagon.size, id).toBeGreaterThanOrEqual(60);
-    // La passe fait au moins quatre cases de large : une fenêtre de 4 × 4 cases d'eau va du large jusque dans le lagon,
-    // en glissant d'une case à la fois (le large s'étend de quatre cases autour de la boîte, pour qu'elle en fasse le tour).
-    const libre = (x: number, y: number) => {
-      if (x < x0 - 4 || y < y0 - 4 || x >= x1 || y >= y1) return false;
-      for (let j = 0; j < 4; j++) for (let i = 0; i < 4; i++) if (est(x + i, y + j)) return false;
-      return true;
-    };
-    const dansLeLagon = (x: number, y: number) => {
-      for (let j = 0; j < 4; j++) for (let i = 0; i < 4; i++) if (lagon.has(`${x + i},${y + j}`)) return true;
-      return false;
-    };
-    const vues = new Set<string>([`${x0},${y0}`]);
-    const fenetres: [number, number][] = [[x0, y0]];
-    let atteint = false;
-    for (let n = 0; n < fenetres.length && !atteint; n++) {
-      const [fx, fy] = fenetres[n];
-      atteint = dansLeLagon(fx, fy);
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const [a, b] = [fx + dx, fy + dy];
-        if (!vues.has(`${a},${b}`) && libre(a, b)) {
-          vues.add(`${a},${b}`);
-          fenetres.push([a, b]);
-        }
-      }
-    }
-    expect(atteint, `${id} : une passe de quatre cases au moins`).toBe(true);
+    expect(lagon, id).toBeGreaterThanOrEqual(60);
     // Toute l'eau de la boîte est la mer (la passe la relie au large), et l'île n'a ni mare ni lac.
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (!est(x, y)) expect(mer.has(`${x},${y}`), `${id} ${x},${y}`).toBe(true);
     expect(landscape(def).filter((l) => l.ground === 'eau'), id).toEqual([]);
@@ -178,11 +152,7 @@ describe('Les formes des îles (GD-12)', () => {
       }
     }
     for (let y = c.y0 - T; y < c.y1 + T; y++) for (let x = c.x0 - T; x < c.x1 + T; x++) if (!est(x, y)) expect(mer.has(`${x},${y}`), `${id} ${x},${y}`).toBe(true);
-    // Le lac dessiné à la main d'une île (`LACS` : le lac d'altitude du Refuge des carnets, 3e) reste : il est son dessin,
-    // derrière le cœur, loin du bord ; le hasard n'en creuse aucun autre.
-    const lac = LACS[def.id];
-    const dansLeLac = (l: { x: number; y: number }) => lac !== undefined && l.x - def.core.x >= lac.x && l.x - def.core.x < lac.x + lac.w && l.y - def.core.y >= lac.y && l.y - def.core.y < lac.y + lac.d;
-    expect(landscape(def).filter((l) => (l.ground === 'eau' || l.h < 0) && !dansLeLac(l)), id).toEqual([]);
+    expect(landscape(def).filter((l) => l.ground === 'eau' || l.h < 0), id).toEqual([]);
   });
 
   it.each(LIEUX.map((d) => d.id))('%s : les coins arrondis du cœur sont dans ses marges, et rien de ce qui y est posé ne s’y tient (point 4)', (id) => {

@@ -37,7 +37,7 @@ import { bridgePath, creatureSpot, placeSpot, questStations, VILLAGE_PLACES } fr
  * leur archipel. Les clés de sauvegarde restent relatives à ce repère.
  */
 const ECOLES: Partial<Record<BiomeId, { archipel: ArchipelagoId; core: { x: number; y: number }; ext: { left: number; right: number; front: number; back: number } | null }>> = {
-  // Les quatre îles-écoles ont pris leur forme (GD-12) : leur côte se lit sur elle (`ext : null`).
+  // La Forêt et le Marché ont pris leur forme (GD-12) : leur côte se lit sur elle (`ext : null`).
   'french-6e-phonology': {
     archipel: '6e',
     core: { x: 67, y: 59 },
@@ -53,12 +53,12 @@ const ECOLES: Partial<Record<BiomeId, { archipel: ArchipelagoId; core: { x: numb
   'maths-4e-algebra': {
     archipel: '4e',
     core: { x: 62, y: 632 },
-    ext: null,
+    ext: { left: 2, right: 2, front: 1, back: 3 },
   },
   'maths-3e-functions': {
     archipel: '3e',
     core: { x: 58, y: 912 },
-    ext: null,
+    ext: { left: 2, right: 2, front: 2, back: 2 },
   },
 };
 const IDS = Object.keys(ECOLES) as BiomeId[];
@@ -197,8 +197,7 @@ it('le quai d’une île-école qui est un port suit sa côte repoussée ; les c
   // (la côte de GD-11 n'en avait qu'une sous sa proue) : il recule d'une case vers le large.
   expect(dockOrigin('maths-5e-proportionality')).toEqual({ x: islandDef('maths-5e-proportionality').core.x + 17, y: islandDef('maths-5e-proportionality').core.y - 18, z: 0 });
   expect(ORIGINE_DU_QUAI['maths-5e-proportionality']).toEqual({ x: 15, y: -12, z: -4 });
-  // À l'Atelier aussi, depuis son croissant (GD-12) : le navire recule d'une case vers le large.
-  expect(dockOrigin('maths-4e-algebra')).toEqual({ x: islandDef('maths-4e-algebra').core.x + 17, y: islandDef('maths-4e-algebra').core.y - 18, z: 2 });
+  expect(dockOrigin('maths-4e-algebra')).toEqual({ x: islandDef('maths-4e-algebra').core.x + 17, y: islandDef('maths-4e-algebra').core.y - 17, z: 2 });
   expect(ORIGINE_DU_QUAI['maths-4e-algebra']).toEqual({ x: 15, y: -14, z: -7 });
   // Le Phare, port des Îles du Ciel, sans étape du Bloc-Navire : le navire s'y pose devant sa côte repoussée.
   expect(dockOrigin('maths-3e-functions')).toEqual({ x: islandDef('maths-3e-functions').core.x + 17, y: islandDef('maths-3e-functions').core.y - 18, z: 9 });

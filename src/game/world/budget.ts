@@ -186,16 +186,13 @@ export const ENVELOPPES: Record<
   // de 62 875 à 74 805 : `RENDER_BUDGET_AUTRES`.
   // GD-12, une forme par île (9 octobre 2026) : aux Îles Brumeuses, le sol mesure 34 692 triangles tout construit ; leur
   // enveloppe descend à 36 500 pour que la somme tienne sous `RENDER_BUDGET_AUTRES` (78 700, commandes des quêtes de la 5e comprises) avec le décor et la mer
-  // relevés. Aux Îles du Ciel, plus de terre dans le ciel (ses dessous et ses parois, environ 3,7 triangles de plus par
-  // case) porte le sol de 34 109 à 38 999 triangles, avec le trait des formes court sur sept îles (5 cases au lieu de 7) :
-  // leur enveloppe monte à 39 000, prise sur leur décor (9 008 mesurés), qui descend de 13 600 à 11 800 : l'échange
-  // entre le sol et le décor est neutre, et la somme du 3e, telle que la compte budget.test.ts, est de 76 035.
+  // relevés.
   sol: {
     lot: 'R4b',
     nom: 'Sol',
     premiersRivages: { triangles: 32_800, drawCalls: 2 },
     autres: { triangles: 37_200, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 36_500, drawCalls: 1 }, '3e': { triangles: 39_000, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 36_500, drawCalls: 1 } },
   },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
@@ -237,14 +234,13 @@ export const ENVELOPPES: Record<
   // Brumeuses) au décor ; la somme ne change pas (62 875).
   // GD-12, une forme par île : aux Îles Brumeuses, plus de terre (le fer du Comptoir, le moulinet du Carrefour) et un
   // cadre approfondi portent le décor de 12 989 à 17 396 triangles (13 632 de maillage, 3 764 de brume). Relevé à
-  // 17 400 aux Îles Brumeuses (mainteneur, 9 octobre 2026, carte « Relever »). Aux Îles du Ciel, 9 008 mesurés : 1 800
-  // passent au sol (voir le sol), 11 800.
+  // 17 400 aux Îles Brumeuses (mainteneur, 9 octobre 2026, carte « Relever »).
   decor: {
     lot: 'R4b',
     nom: 'Décor et repères signatures',
     premiersRivages: { triangles: 13_700, drawCalls: 3 },
     autres: { triangles: 13_600, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 17_400, drawCalls: 3 }, '3e': { triangles: 11_800, drawCalls: 3 } },
+    parArchipel: { '5e': { triangles: 17_400, drawCalls: 3 } },
   },
   construction: {
     lot: 'R5',

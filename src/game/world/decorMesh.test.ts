@@ -4,7 +4,7 @@ import { DECOR_BATI } from './decor';
 import { caseDuDecor, coutDuDecor, ENFONCE, enPrimitives, FAMILLES, FEUILLAGE, FUMEE, maillageDuDecor, rangerLeDecor, TAILLES, valeur, type ElementDeDecor } from './decorMesh';
 import { couleurDuSol } from './palette';
 import { champDuSol, colonneEn, hauteurDuSol, pickCell, piedsSur, type ChampDuSol } from './landMesh';
-import { ARCHIPELAGO_IDS, type ArchipelagoId, inCore, islandDef, landscape } from './map';
+import { ARCHIPELAGO_IDS, type ArchipelagoId, inCore, islandDef } from './map';
 import { buildMesh, faceCount } from './mesher';
 import { ECLAT_DU_FUT, OMBRE_DU_FUT } from './decor/lighthouse';
 import { COULEURS_4E } from './decor/4e';
@@ -126,11 +126,11 @@ it('l’habillage de la mer affleure, la cascade tombe du bord de sa case jusqu�
   // Aux Îles Brumeuses, huit cascades jusqu'à GD-11 (celle du Relais des voyageurs, LV2, qui a son lac, celles du Bourg
   // des chroniques et du Delta des ressources, HG-3, deux de plus avec les îles de sciences, SC-3) ; trois depuis que
   // les îles ont grandi (GD-11, 8 octobre 2026), aucune depuis leurs formes (GD-12, 9 octobre 2026) : une île qui a sa
-  // forme a une côte plate. Les dernières, aux Anciens Ateliers, partent avec leurs formes (GD-12, 9 octobre 2026) : plus
-  // aucune île n'a de mare, d'où l'eau débordait. Si une cascade revient, elle tombe du bord de sa case jusqu'à la mer.
-  for (const a of ARCHIPELAGO_IDS) expect(monde(a).elements.filter((e) => e.genre === 'cascade'), a).toEqual([]);
+  // forme a une côte plate. On regarde celles des Anciens Ateliers.
+  expect(elements.filter((e) => e.genre === 'cascade')).toEqual([]);
   const ateliers = monde('4e');
   const cascades = ateliers.elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'cascade');
+  expect(cascades.length).toBeGreaterThan(0);
   for (const { e, i } of cascades) {
     const pts = sommets(ateliers.maillage, i);
     const col = colonneEn(ateliers.champ, e.x, e.y)!;
@@ -152,11 +152,9 @@ it('tout le décor en un, deux ou trois appels de dessin (avec ses lueurs, ses f
     expect(cout.drawCalls, a).toBeLessThanOrEqual(3);
     const cubes = elements.flatMap((e) => e.cubes);
     const avant = faceCount(buildMesh(cubes, sol)) * 2;
-    // Aux Îles du Ciel, depuis que les îles ont grandi (GD-11, 8 octobre 2026), il restait peu de décor (des rochers, le
-    // grand phare) : ses 4 720 triangles passaient les 3 804 de ses cubes, sous les 5 000. Depuis une forme par île
-    // (GD-12, 9 octobre 2026), le décor revient sur leur côte, surtout des rochers et des buissons, plus chers en facettes
-    // qu'en cubes : 8 504 triangles pour 8 038 (+6 %), sous les 8 600 (point laissé au mainteneur).
-    expect(cout.triangles, a).toBeLessThan(a === '3e' ? Math.max(avant, 8600) : avant);
+    // Aux Îles du Ciel, depuis que les îles ont grandi (GD-11, 8 octobre 2026), il reste peu de décor (des rochers, le
+    // grand phare) : ses 4 720 triangles passent les 3 804 de ses cubes, sous les 5 000.
+    expect(cout.triangles, a).toBeLessThan(a === '3e' ? Math.max(avant, 5000) : avant);
     expect(cout.triangles, a).toBeLessThanOrEqual(15_000);
     // Des couleurs finies, dans l'espace linéaire.
     for (const f of [maillage.decor, maillage.lueurs, maillage.fumees.facettes]) {
@@ -366,18 +364,16 @@ it('écueils et bancs : moins de 2 820 triangles aux Premiers Rivages ; les roch
   const forge = monde('4e');
   const rochers = forge.elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'rocher' && e.id.startsWith('maths-4e-powers/'));
   expect(rochers.length).toBeGreaterThan(5);
-  // Le sol du lieu qui suit la goutte jusqu'à sa pointe (GD-12, `placeGround`) est celui du cœur.
-  const solDuLieu = new Set(landscape(islandDef('maths-4e-powers')).filter((c) => c.placeGround).map((c) => `${c.x},${c.y}`));
   for (const { e, i } of rochers) {
     const col = colonneEn(forge.champ, e.x, e.y)!;
     const m = col.matieres[col.matieres.length - 1];
     if (['herbe', 'mousse', 'sable', 'neige', 'glace', 'terre'].includes(m)) continue;
-    // Les jalons des marges (GD-11) et de la côte (GD-12), sur le sol du cœur (l'acier), gardent la pierre des jalons.
-    if (inCore(islandDef('maths-4e-powers'), e.x, e.y) || solDuLieu.has(`${e.x},${e.y}`)) continue;
+    // Les jalons des marges (GD-11), sur le sol du cœur (l'acier), gardent la pierre des jalons.
+    if (inCore(islandDef('maths-4e-powers'), e.x, e.y)) continue;
     const dessus = triangles(forge.maillage, i).filter((t) => t.n > 0.3);
     const v = Math.max(...dessus.flatMap((t) => t.c.map((c) => valeur(c as [number, number, number]))));
     const roche = valeur(m === 'basalte' ? eclaircir(hex(COULEURS_4E.pierreChaude), 1.14) : couleurDuSol('4e', 'roche').dessus);
-    expect(v / roche, `${e.id} ${m}`).toBeLessThan(1.1 * 1.08 * 1.02);
+    expect(v / roche, e.id).toBeLessThan(1.1 * 1.08 * 1.02);
   }
 });
 

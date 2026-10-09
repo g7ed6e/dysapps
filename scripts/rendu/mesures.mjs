@@ -999,7 +999,7 @@ const CAPTURES = [
   // Une forme par île (GD-12, famille `formes`, à retirer une fois le lot fusionné) : la Carte du 6e à l'ouverture, sur
   // la tablette, la tablette debout et le téléphone, dans la police de lecture puis en OpenDyslexic 32 px ; la Forêt, la
   // Plaine, la Rivière et la Pointe de près ; « Modifier le plan », la Tour du lecteur choisie (`amenager`). Puis
-  // chaque archipel avec ses formes, dont les quatre plus marquées (fer, crochet, lagon, moulinet).
+  // les Collines du Large avec leurs formes, dont deux des quatre plus marquées (le fer et le moulinet).
   ...[
     { suffixe: '' },
     { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
@@ -1027,32 +1027,6 @@ const CAPTURES = [
     ['glacier', 'maths-5e-signed-numbers'],
   ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
   { nom: 'formes-modifier-le-plan-5e', vue: 'carte', famille: 'formes', ile: 'maths-5e-proportionality', amenager: 'english-5e-vocabulary' },
-  // Aux Îles du Ciel (3e, 9 octobre 2026) : la Carte sur la tablette, en OpenDyslexic 32 px et debout, le bonhomme sur le
-  // Kiosque des témoins (les noms tus du portrait) ; le Tremplin (le crochet), la Ruche (le moulinet), le Phare (son grand
-  // phare, avancé sur la côte est) et l'Observatoire des textes de près ; « Modifier le plan », le Tremplin choisi.
-  { nom: 'formes-carte-3e', vue: 'carte', famille: 'formes', ile: 'history-3e-twentieth-century' },
-  { nom: 'formes-carte-3e-od32', vue: 'carte', famille: 'formes', ile: 'history-3e-twentieth-century', reglages: { font: 'opendyslexic', fontSize: 32 } },
-  { nom: 'formes-carte-3e-800x1280', vue: 'carte', famille: 'formes', ile: 'history-3e-twentieth-century', taille: { width: 800, height: 1280 } },
-  ...[
-    ['tremplin', 'physics-chemistry-3e-motion-energy'],
-    ['ruche', 'technology-3e-digital'],
-    ['phare', 'maths-3e-functions'],
-    ['textes', 'french-3e-close-reading'],
-  ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
-  { nom: 'formes-modifier-le-plan-3e', vue: 'carte', famille: 'formes', ile: 'history-3e-twentieth-century', amenager: 'physics-chemistry-3e-motion-energy' },
-  // Aux Monts de Feu (4e, 9 octobre 2026) : la Carte sur la tablette, en OpenDyslexic 32 px et debout, le bonhomme sur
-  // l'Imprimerie des révolutions (les noms tus du portrait) ; le Bassin (le lagon), l'Atelier (son quai), la Forge et la
-  // Falaise (leurs pics) de près ; « Modifier le plan », le Bassin choisi.
-  { nom: 'formes-carte-4e', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions' },
-  { nom: 'formes-carte-4e-od32', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions', reglages: { font: 'opendyslexic', fontSize: 32 } },
-  { nom: 'formes-carte-4e-800x1280', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions', taille: { width: 800, height: 1280 } },
-  ...[
-    ['bassin', 'technology-4e-modeling'],
-    ['atelier', 'maths-4e-algebra'],
-    ['forge', 'maths-4e-powers'],
-    ['falaise', 'french-4e-agreement'],
-  ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
-  { nom: 'formes-modifier-le-plan-4e', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions', amenager: 'technology-4e-modeling' },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

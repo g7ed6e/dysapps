@@ -53,9 +53,6 @@ function gradinsDesTextes(): Modele {
   const G = GRADINS_3E;
   // Les bords de chaque rangée, pour le retrait sur les flancs.
   const bords = new Map<number, [number, number]>();
-  // Seule la terre de l'île monte : depuis une forme par île (GD-12, 9 octobre 2026), l'îlot de l'observatoire des étoiles,
-  // juste derrière elle, garde son sol.
-  const terre = new Set(cases.map((c) => `${c.x},${c.y}`));
   for (const c of cases) {
     const b = bords.get(c.y);
     bords.set(c.y, b ? [Math.min(b[0], c.x), Math.max(b[1], c.x)] : [c.x, c.x]);
@@ -69,11 +66,11 @@ function gradinsDesTextes(): Modele {
   };
   return {
     hauteur(x, y, h) {
-      if (y - fond < 1 || pres(x, y) || !terre.has(`${x},${y}`)) return h;
+      if (y - fond < 1 || pres(x, y)) return h;
       return Math.max(h, G.marche * niveau(x, y));
     },
     dessus(x, y, dh, matiere) {
-      if (y - fond < 1 || pres(x, y) || !terre.has(`${x},${y}`)) return matiere;
+      if (y - fond < 1 || pres(x, y)) return matiere;
       const n = niveau(x, y);
       return n >= G.gradins ? 'neige' : n >= 1 && dh >= G.marche ? 'roche' : matiere;
     },
