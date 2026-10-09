@@ -78,12 +78,14 @@ Pour tous les items :
    - réponse : 20 cm²
    - indice : Une aire est multipliée par le rapport, deux fois.
    - explication : L’aire est multipliée par 2 × 2 = 4 : 5 × 4 = 20 cm². 10 cm², c’est multiplier par 2 seulement, comme une longueur. 7 cm², c’est 5 + 2 : on multiplie, on n’ajoute pas.
+   - figure : tableau côté du carré (cm) · aire (cm²) / 1 · 1 × 1 / 2 · 2 × 2
 4. énoncé : Une boîte de 4 cm³ est agrandie de rapport 2. Son volume devient …
    - lu : Une boîte de 4 centimètres cubes est agrandie de rapport 2. Son volume devient (mot manquant)
    - choix : 8 cm³ · 16 cm³ · 32 cm³
    - réponse : 32 cm³
    - indice : Un volume est multiplié par le rapport, trois fois.
    - explication : Le volume est multiplié par 2 × 2 × 2 = 8 : 4 × 8 = 32 cm³. 8 cm³, c’est multiplier par 2, comme une longueur ; 16 cm³, c’est multiplier par 4, comme une aire.
+   - figure : tableau arête du cube (cm) · volume (cm³) / 1 · 1 × 1 × 1 / 2 · 2 × 2 × 2
 5. énoncé : Une maquette de bateau est une réduction de rapport 1/10. Le vrai mât mesure 3 m. Sur la maquette, il mesure …
    - lu : Une maquette de bateau est une réduction de rapport un dixième. Le vrai mât mesure 3 mètres. Sur la maquette, il mesure (mot manquant)
    - choix : 3 cm · 30 cm · 300 cm
@@ -112,6 +114,7 @@ Pour tous les items :
    - réponse : 15 cm²
    - indice : Une aire est multipliée par le rapport, deux fois.
    - explication : L’aire est multipliée par 0,5 × 0,5 = 0,25 : elle est divisée par 4. 60 ÷ 4 = 15 cm². 30 cm², c’est multiplier par 0,5 une seule fois, comme une longueur. 7,5 cm², c’est diviser par 8, comme un volume.
+   - figure : tableau côté du carré (cm) · aire (cm²) / 2 · 2 × 2 / 1 · 1 × 1
 
 ### Niveau 2 · `maths-3e-geometry-scaling-2`
 

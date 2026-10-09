@@ -113,7 +113,7 @@ Pour tous les items :
    - réponse : 17
    - indice : Calcule d’abord 2 × 6. Puis : quel nombre, moins 5, donne ce résultat ?
    - explication : 2 × 6 = 12, et 17 − 5 = 12 : les deux côtés valent 12. 12 est le résultat de droite, pas le nombre qui manque ; 7, c’est 12 − 5 : on a enlevé au lieu d’ajouter.
-   - figure : droite 0 · 20 / 12
+   - figure : droite 0 · 20
 8. énoncé : 3 × … = 12
    - lu : 3 fois combien égale 12 ?
    - choix : 4 · 9 · 36
@@ -187,7 +187,7 @@ Pour tous les items :
    - réponse : 2/6
    - indice : Écris les nombres plus grands que 4 : 4 en fait-il partie ?
    - explication : Plus grand que 4 : seulement 5 et 6, soit 2 faces sur 6 : 2/6. 3/6 compte aussi le 4, qui n’est pas plus grand que 4 ; 4/6, ce sont les faces de 1 à 4.
-   - figure : droite 1 · 6 / 4
+   - figure : droite 1 · 6
 8. énoncé : "Les lancers de Hugo\nSa pièce est bien équilibrée.\nIl la lance 10 fois.\nIl obtient 7 fois pile."
    - question : Quelle phrase est juste ?
    - lu : Les lancers de Hugo. Sa pièce est bien équilibrée. Il la lance 10 fois. Il obtient 7 fois pile.

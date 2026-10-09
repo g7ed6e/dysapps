@@ -71,7 +71,7 @@ Pour tous les items :
    - réponse : Cléa
    - indice : Le plus près de la surface a l’altitude la plus grande : le nombre le plus près de zéro.
    - explication : −3,8 est le plus près de zéro : c’est le plus grand des trois, Cléa est la plus haute. Ali est le plus profond : 4,2 est plus grand que 3,8, mais −4,2 est plus petit que −3,8.
-   - figure : droite −5 · 0
+   - figure : graduée −5 · −3 / 10
 3. énoncé : Sur la droite graduée, le point marqué a pour abscisse …
    - choix : −2,5 · −1,5 · 1,5
    - réponse : −1,5
@@ -100,7 +100,7 @@ Pour tous les items :
    - réponse : avril
    - indice : Écris 0,8 avec deux chiffres après la virgule, puis compare avec 0,75.
    - explication : 0,8 = 0,80, plus grand que 0,75 : −0,8 est plus loin de zéro que −0,75, donc plus bas. Le niveau le plus bas est en avril. En mars, 75 centièmes, c’est moins que 80 centièmes. En mai, le niveau est au-dessus de zéro.
-   - figure : droite −1 · 1
+   - figure : graduée −1 · 1 / 10
 7. énoncé : La somme d’un nombre et de son opposé vaut toujours …
    - choix : −1 · 0 · 1
    - réponse : 0
@@ -113,7 +113,7 @@ Pour tous les items :
    - réponse : −1,5 ; −1,2 ; 0,4
    - indice : Croissant : du plus petit au plus grand. Le plus petit est le plus loin à gauche de zéro.
    - explication : −1,5 est plus loin de zéro que −1,2 : il est plus petit, il vient en premier. 0,4, le seul positif, vient en dernier. Mettre −1,2 avant −1,5, c’est oublier le signe moins ; 0,4 en premier, c’est l’ordre décroissant.
-   - figure : droite −2 · 1
+   - figure : graduée −2 · 1 / 10
 
 ### Niveau 2 · `maths-4e-algebra-rationals-2`
 
@@ -157,7 +157,7 @@ Pour tous les items :
    - réponse : −3/5
    - indice : Deux nombres négatifs : le plus grand est le plus près de zéro.
    - explication : 3/5 est plus près de zéro que 4/5 : avec le signe moins, −3/5 est plus grande que −4/5. Choisir −4/5, c’est oublier le signe : entre deux négatives, le plus grand numérateur donne la plus petite. Elles ne sont pas égales : −3/5 et −4/5 ne sont pas à la même place sur la droite.
-   - figure : droite −1 · 0
+   - figure : graduée −1 · 0 / 5
 6. énoncé : 2/3 est … 3/4.
    - lu : 2 tiers est (mot manquant) 3 quarts.
    - choix : plus petit que · égal à · plus grand que

@@ -260,6 +260,7 @@ Pour tous les items :
    - réponse : 25 %
    - indice : Tout le disque, c’est 100 %. Combien fait un quart ?
    - explication : Le bus a un quart du disque : 100 ÷ 4 = 25, donc 25 %. 50 %, c’est la moitié : la part de « à pied ». 75 %, c’est tous les autres élèves.
+   - figure : fraction 1/4
 
 ### Niveau 2 · `maths-5e-proportionality-statistics-2`
 
@@ -304,7 +305,7 @@ Pour tous les items :
    - réponse : 1/6
    - indice : Combien de faces portent le 3 ? Combien de faces en tout ?
    - explication : Une seule face porte le 3, sur 6 faces : 1/6. 3/6, c’est prendre la valeur 3 pour un nombre d’issues. 1/3 met le 3 en bas, à la place des 6 faces.
-   - figure : droite 1 · 6 / 3
+   - figure : droite 1 · 6
 6. énoncé : Un sac : 3 boules rouges et 7 bleues. On tire une boule au hasard. La probabilité de tirer une rouge est …
    - lu : Un sac contient 3 boules rouges et 7 boules bleues. On tire une boule au hasard. Quelle est la probabilité de tirer une rouge ?
    - choix : 3/10 · 3/7 · 7/10

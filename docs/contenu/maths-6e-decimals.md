@@ -85,6 +85,7 @@ Pour tous les items :
    - réponse : 5,4
    - indice : Regarde le chiffre des centièmes : 8.
    - explication : Le chiffre des centièmes est 8, entre 5 et 9 : le chiffre des dixièmes passe de 3 à 4, donc 5,4. 5,3, c’est couper sans arrondir ; 5, c’est l’arrondi à l’unité.
+   - figure : graduée 5 · 6 / 10
 4. énoncé : 3,5 m = … cm
    - lu : 3 virgule 5 mètres, c’est combien de centimètres ?
    - choix : 35 cm · 350 cm · 3 500 cm
@@ -119,6 +120,7 @@ Pour tous les items :
    - réponse : 0,7
    - indice : Regarde le chiffre des centièmes : 4.
    - explication : Le chiffre des centièmes est 4, entre 0 et 4 : le chiffre des dixièmes ne change pas, donc 0,7. 0,8, c’est augmenter alors que le chiffre des centièmes est 4 ; 1, c’est l’arrondi à l’unité.
+   - figure : graduée 0 · 1 / 10
 
 ### Niveau 2 · `maths-6e-decimals-rounding-products-2`
 

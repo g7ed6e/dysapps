@@ -89,6 +89,14 @@
       "answer": "5,4",
       "hint": "Regarde le chiffre des centièmes : 8.",
       "explanation": "Le chiffre des centièmes est 8, entre 5 et 9 : le chiffre des dixièmes passe de 3 à 4, donc 5,4. 5,3, c’est couper sans arrondir ; 5, c’est l’arrondi à l’unité.",
+      "figure": {
+        "kind": "graduated-line",
+        "props": {
+          "start": 5,
+          "units": 1,
+          "perUnit": 10
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -295,6 +303,14 @@
       "answer": "0,7",
       "hint": "Regarde le chiffre des centièmes : 4.",
       "explanation": "Le chiffre des centièmes est 4, entre 0 et 4 : le chiffre des dixièmes ne change pas, donc 0,7. 0,8, c’est augmenter alors que le chiffre des centièmes est 4 ; 1, c’est l’arrondi à l’unité.",
+      "figure": {
+        "kind": "graduated-line",
+        "props": {
+          "start": 0,
+          "units": 1,
+          "perUnit": 10
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

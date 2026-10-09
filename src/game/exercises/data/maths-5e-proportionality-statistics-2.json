@@ -152,10 +152,7 @@
         "kind": "number-line",
         "props": {
           "min": 1,
-          "max": 6,
-          "points": [
-            3
-          ]
+          "max": 6
         }
       },
       "aid": {

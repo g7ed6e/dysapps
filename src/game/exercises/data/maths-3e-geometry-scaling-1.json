@@ -90,6 +90,25 @@
       "answer": "20 cm²",
       "hint": "Une aire est multipliée par le rapport, deux fois.",
       "explanation": "L’aire est multipliée par 2 × 2 = 4 : 5 × 4 = 20 cm². 10 cm², c’est multiplier par 2 seulement, comme une longueur. 7 cm², c’est 5 + 2 : on multiplie, on n’ajoute pas.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "côté du carré (cm)",
+            "aire (cm²)"
+          ],
+          "rows": [
+            [
+              1,
+              "1 × 1"
+            ],
+            [
+              2,
+              "2 × 2"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -117,6 +136,25 @@
       "answer": "32 cm³",
       "hint": "Un volume est multiplié par le rapport, trois fois.",
       "explanation": "Le volume est multiplié par 2 × 2 × 2 = 8 : 4 × 8 = 32 cm³. 8 cm³, c’est multiplier par 2, comme une longueur ; 16 cm³, c’est multiplier par 4, comme une aire.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "arête du cube (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              1,
+              "1 × 1 × 1"
+            ],
+            [
+              2,
+              "2 × 2 × 2"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -275,6 +313,25 @@
       "answer": "15 cm²",
       "hint": "Une aire est multipliée par le rapport, deux fois.",
       "explanation": "L’aire est multipliée par 0,5 × 0,5 = 0,25 : elle est divisée par 4. 60 ÷ 4 = 15 cm². 30 cm², c’est multiplier par 0,5 une seule fois, comme une longueur. 7,5 cm², c’est diviser par 8, comme un volume.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "côté du carré (cm)",
+            "aire (cm²)"
+          ],
+          "rows": [
+            [
+              2,
+              "2 × 2"
+            ],
+            [
+              1,
+              "1 × 1"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

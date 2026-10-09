@@ -314,6 +314,13 @@
       "answer": "25 %",
       "hint": "Tout le disque, c’est 100 %. Combien fait un quart ?",
       "explanation": "Le bus a un quart du disque : 100 ÷ 4 = 25, donc 25 %. 50 %, c’est la moitié : la part de « à pied ». 75 %, c’est tous les autres élèves.",
+      "figure": {
+        "kind": "fraction-bar",
+        "props": {
+          "n": 1,
+          "d": 4
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

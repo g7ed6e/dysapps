@@ -140,10 +140,11 @@
       "hint": "Deux nombres négatifs : le plus grand est le plus près de zéro.",
       "explanation": "3/5 est plus près de zéro que 4/5 : avec le signe moins, −3/5 est plus grande que −4/5. Choisir −4/5, c’est oublier le signe : entre deux négatives, le plus grand numérateur donne la plus petite. Elles ne sont pas égales : −3/5 et −4/5 ne sont pas à la même place sur la droite.",
       "figure": {
-        "kind": "number-line",
+        "kind": "graduated-line",
         "props": {
-          "min": -1,
-          "max": 0
+          "start": -1,
+          "units": 1,
+          "perUnit": 5
         }
       },
       "aid": {
