@@ -117,6 +117,42 @@ describe('la mesure d’usage', () => {
     expect(localStorage.getItem('dysapps-usage-waiting')).toBeNull();
   });
 
+  it('envoie en plusieurs lots au-delà de cinquante, garde ce que le navigateur refuse', async () => {
+    const usage = await load();
+    usage.startUsage();
+    for (let i = 0; i < 9; i++) usage.recordError(new Error(`e${i}`));
+    // 10 évènements (le lancement et 9 erreurs) : un lot, parti tout seul au dixième.
+    usage.recordError(new Error('e9'));
+    expect(beacon).toHaveBeenCalledTimes(1);
+    beacon.mockReturnValue(false);
+    usage.recordError(new Error('refusée'));
+    usage.flushUsage();
+    expect(localStorage.getItem('dysapps-usage-waiting')).toContain('refusée');
+    // Sans réseau, 59 erreurs de plus attendent avec la refusée, sans relancer l'envoi à chaque fois.
+    const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
+    for (let i = 0; i < 59; i++) usage.recordError(new Error(`f${i}`));
+    const tries = beacon.mock.calls.length;
+    online.mockReturnValue(true);
+    beacon.mockReturnValue(true);
+    usage.flushUsage();
+    const sizes = ((await sent()) as { events: unknown[] }[]).map((b) => b.events.length);
+    expect(sizes.slice(tries)).toEqual([50, 10]);
+    expect(localStorage.getItem('dysapps-usage-waiting')).toBeNull();
+  });
+
+  it('ignore ce qui a été abîmé ou gardé par une autre version', async () => {
+    localStorage.setItem('dysapps-usage-waiting', '{');
+    let usage = await load();
+    usage.startUsage();
+    usage.flushUsage();
+    localStorage.setItem('dysapps-usage-waiting', JSON.stringify({ version: 'autre', events: [{ kind: 'error', screen: '/', message: 'x' }] }));
+    usage = await load();
+    usage.startUsage();
+    usage.flushUsage();
+    const batches = (await sent()) as { events: { kind: string }[] }[];
+    expect(batches.flatMap((b) => b.events.map((e) => e.kind))).toEqual(['launch']);
+  });
+
   it('oublie ce qui attendait quand le réglage est coupé', async () => {
     const usage = await load();
     usage.startUsage();

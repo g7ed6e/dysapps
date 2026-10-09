@@ -1,10 +1,12 @@
 // La mesure d'usage et de performance (demande du mainteneur, 9 octobre 2026) : combien de lancements, combien de
-// temps sur chaque écran, à quelle fluidité tourne le monde en 3D, quelles erreurs. Anonyme : aucun identifiant, et le Worker n'enregistre pas l'adresse IP (src/worker/index.ts). C'est une mesure
-// d'audience exemptée de consentement au sens de la CNIL (l'exemption vaut aussi pour ce qui est gardé sur
-// l'appareil) ; Réglages › Application permet de la couper.
+// temps sur chaque écran, à quelle fluidité tourne le monde en 3D, quelles erreurs. Anonyme : aucun identifiant, et
+// le Worker n'enregistre pas l'adresse IP (src/worker/index.ts). C'est une mesure d'audience exemptée de consentement
+// au sens de la CNIL (l'exemption vaut aussi pour ce qui est gardé sur l'appareil) ; Réglages › Application permet de
+// la couper.
 // Sans réseau, les évènements qui attendent sont gardés sur l'appareil (`dysapps-usage-waiting`, hors du préfixe des
 // sauvegardes, donc jamais dans le fichier de « Ma sauvegarde ») et partent au retour du réseau, même un autre jour ;
-// envoyés, ou la mesure coupée, ils sont effacés. Mot du mainteneur, 9 octobre 2026 : « ce n'est que de l'analytique ».
+// envoyés, ou la mesure coupée, ils sont effacés ; ceux d'une autre version de l'appli sont laissés de côté. Mot du
+// mainteneur, 9 octobre 2026 : « ce n'est que de l'analytique ».
 // Seulement dans l'application publiée sur Cloudflare (ni le serveur de développement, ni GitHub Pages), et jamais
 // pendant les captures et les mesures (navigateur piloté, `?mesures`). Les évènements attendent en mémoire et partent
 // ensemble quand l'application passe en arrière-plan, ou tous les dix.
@@ -24,7 +26,7 @@ const WAITING_KEY = 'dysapps-usage-waiting';
 /** Garde sur l'appareil ce qui attend l'envoi, ou l'efface quand rien n'attend. */
 function keepWaiting(): void {
   try {
-    if (queue.length > 0) localStorage.setItem(WAITING_KEY, JSON.stringify(queue));
+    if (queue.length > 0) localStorage.setItem(WAITING_KEY, JSON.stringify({ version: APP_VERSION, events: queue }));
     else localStorage.removeItem(WAITING_KEY);
   } catch {
     // Stockage indisponible : ce qui attend reste en mémoire seulement.
@@ -36,7 +38,10 @@ function takeWaiting(): UsageEvent[] {
   try {
     const raw = localStorage.getItem(WAITING_KEY);
     localStorage.removeItem(WAITING_KEY);
-    return raw ? parseUsageEvents(JSON.parse(raw)).slice(-MAX_WAITING) : [];
+    const kept: unknown = raw ? JSON.parse(raw) : null;
+    // Gardés par une autre version : leurs chiffres ne se mêlent pas à ceux de celle-ci.
+    if (typeof kept !== 'object' || kept === null || (kept as { version?: unknown }).version !== APP_VERSION) return [];
+    return parseUsageEvents((kept as { events?: unknown }).events).slice(-MAX_WAITING);
   } catch {
     return [];
   }
@@ -120,9 +125,11 @@ function closeScreen(now = performance.now()): void {
   push({ kind: 'screen', screen, seconds: Math.round((now - since) / 1000), frames, frameMs: Math.round(frameMs), slowFrames });
 }
 
+/** Les évènements arrivés depuis le dernier envoi : ceux qui attendent le réseau ne relancent pas l'envoi à chaque fois. */
+let sinceFlush = 0;
 function push(event: UsageEvent): void {
   queue.push(event);
-  if (queue.length >= FLUSH_AT) flushUsage();
+  if (++sinceFlush >= FLUSH_AT) flushUsage();
 }
 
 /** L'écran affiché change (l'adresse de la page, sans ses paramètres). */
@@ -165,6 +172,7 @@ export function flushUsage(): void {
   if (!started) return;
   const events = queue;
   queue = [];
+  sinceFlush = 0;
   if (launch) {
     events.unshift({ ...launch, firstFrameMs });
     launch = null;
@@ -176,7 +184,7 @@ export function flushUsage(): void {
   if (events.length === 0) return;
   // Sans réseau, les évènements attendent son retour, sur l'appareil ; les plus anciens partent les premiers.
   if (navigator.onLine === false) {
-    queue = [...events, ...queue].slice(-MAX_WAITING);
+    queue = events.slice(-MAX_WAITING);
     keepWaiting();
     return;
   }
@@ -195,9 +203,8 @@ export function flushUsage(): void {
     // Pas d'envoi possible : comme un refus du navigateur, plus bas.
   }
   // Refusé par le navigateur : la même chose attend le prochain envoi ; au-delà de MAX_EVENTS, le reste aussi.
-  if (!sent) queue = [...events, ...queue].slice(-MAX_WAITING);
-  else if (events.length > MAX_EVENTS) queue = [...events.slice(MAX_EVENTS), ...queue].slice(-MAX_WAITING);
+  queue = sent ? events.slice(MAX_EVENTS) : events.slice(-MAX_WAITING);
   keepWaiting();
   // Plus de MAX_EVENTS attendaient : le reste part dans un second envoi.
-  if (sent && queue.length >= MAX_EVENTS) flushUsage();
+  if (sent && queue.length > 0) flushUsage();
 }
