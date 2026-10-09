@@ -8,7 +8,7 @@
 #
 # <quarts de tour> : ceux de src/game/world/characters/imported/models.ts (le modèle tourné vers l'élève). Réglages,
 # facultatifs : cou=0.6 (le haut du dos, en fraction de la hauteur), queue=non (pas de queue), jambes=non (pas de
-# jambes : ni marche ni os de jambe), bras=non (pas de bras qui balancent), bras=L ou bras=R (un seul bras). Quarts et réglages de chaque créature : la colonne « squelette » de
+# jambes : ni marche ni os de jambe), bras=non (pas de bras qui balancent), bras=L ou bras=R (un seul bras), leve=L ou leve=R (la main levée au-dessus de l'épaule). Quarts et réglages de chaque créature : la colonne « squelette » de
 # docs/univers/archipeo/personnages/modeles/reglages.csv. Relire ensuite la planche d'apercu_squelette.py.
 #
 # Écrit final-1500.glb sans normales ni indices (le jeu calcule les siennes), avec JOINTS_0 et WEIGHTS_0 (quatre os par
@@ -200,7 +200,9 @@ def find_arms(q, h, crotch, neck, centre):
 def find_tail(q, h, crotch, neck):
     """La queue : ce qui dépasse franchement derrière le tronc (vers +Z), entre les jambes et le cou."""
     band = q[(q[:, 1] > crotch) & (q[:, 1] < neck)]
-    back = np.percentile(band[:, 2], 95)
+    # Le dos : celui du milieu du corps (une queue portée sur le côté ne le recule pas).
+    middle = band[np.abs(band[:, 0] - np.median(band[:, 0])) < 0.1 * h]
+    back = np.percentile(middle[:, 2], 95)
     cand = q[(q[:, 2] > back + 0.1 * h) & (q[:, 1] > 0.05 * h) & (q[:, 1] < neck)]
     if len(cand) < 0.02 * len(q):
         return None
@@ -278,7 +280,9 @@ def rig(q, h, settings):
             w[f"shin.{side}"] = k * lower
             for n in ("hips", "spine", "head"):
                 w[n] = w[n] * (1 - k)
-    arms = {} if settings.get("bras") == "non" else find_arms(dense, h, crotch, neck, cx)
+    # Les bras se cherchent sans ce qui dépasse franchement derrière le dos (une queue portée sur le côté).
+    back = np.percentile(torso[np.abs(torso[:, 0] - cx) < 0.1 * h][:, 2], 95)
+    arms = {} if settings.get("bras") == "non" else find_arms(dense[dense[:, 2] < back + 0.05 * h], h, crotch, neck, cx)
     # bras=L ou bras=R : un seul bras se détache du corps (l'autre est pris dans le manteau, ou tient le ventre).
     arms = {k: v for k, v in arms.items() if settings.get("bras") not in ("L", "R") or (k < 0) == (settings["bras"] == "L")}
     if arms:
@@ -300,6 +304,9 @@ def rig(q, h, settings):
         # L'outil tenu touche la main : ce qui dépasse sans toucher le bras (une queue, un pied) reste au corps.
         held = held * touching(q, (held > 0.05) | (beside > 0.5), beside > 0.5)
         k = np.maximum(beside, held) * smooth((shoulder + 0.02 * h - y) / (0.08 * h))
+        if settings.get("leve") == name[-1]:
+            # La main levée (un marteau brandi au-dessus de l'épaule) : ce qui dépasse sur le côté, à toute hauteur.
+            k = np.maximum(k, beside * touching(q, beside > 0.5, k > 0.5))
         w[name] = k
         for n in [b[0] for b in bones if b[0] != name]:
             if n in w:
