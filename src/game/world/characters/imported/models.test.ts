@@ -114,7 +114,7 @@ describe('Le squelette de Mousso (scripts/rendu/modeles/squelette.py)', () => {
 
   it('de près, Mousso a ses os, placés dans son corps, et quatre poids de somme 1 par sommet ; de loin, aucun', () => {
     const f = modeleImporte('creature', MOUSSO, 'pres')!;
-    expect(f.skin?.bones.map((b) => b.name)).toEqual(['hips', 'spine', 'head', 'thigh.L', 'shin.L', 'thigh.R', 'shin.R']);
+    expect(f.skin?.bones.map((b) => b.name)).toEqual(['hips', 'spine', 'head', 'thigh.L', 'shin.L', 'thigh.R', 'shin.R', 'arm.L', 'arm.R']);
     const { bas, haut, large } = cadre(f.positions);
     for (const b of f.skin!.bones) {
       expect(b.head[1], b.name).toBeGreaterThanOrEqual(bas);
@@ -126,8 +126,17 @@ describe('Le squelette de Mousso (scripts/rendu/modeles/squelette.py)', () => {
       const somme = f.skin!.weights[v * 4] + f.skin!.weights[v * 4 + 1] + f.skin!.weights[v * 4 + 2] + f.skin!.weights[v * 4 + 3];
       expect(somme).toBeCloseTo(1, 5);
     }
-    // Les pieds suivent les jambes, la tête suit la tête.
+    // Les pieds suivent les jambes, la tête suit la tête, les mains (à mi-hauteur, le plus sur les côtés) les bras.
     const lourd = (v: number) => f.skin!.bones[f.skin!.joints[v * 4]].name;
+    const mains = [1, -1].map((signe) => {
+      let meilleur = -1;
+      for (let v = 0; v < f.positions.length / 3; v++) {
+        const y = f.positions[v * 3 + 1];
+        if (y > 0.3 * haut && y < 0.55 * haut && (meilleur < 0 || signe * (f.positions[meilleur * 3] - f.positions[v * 3]) > 0)) meilleur = v;
+      }
+      return lourd(meilleur);
+    });
+    expect(mains.sort()).toEqual(['arm.L', 'arm.R']);
     for (let v = 0; v < f.positions.length / 3; v++) {
       if (f.positions[v * 3 + 1] < 0.05 * haut) expect(lourd(v)).toMatch(/^shin\./);
       if (f.positions[v * 3 + 1] > 0.85 * haut) expect(lourd(v)).toBe('head');

@@ -113,7 +113,13 @@ function geometrieDe(f: Fusion, lueur?: Float32Array): THREE.BufferGeometry {
  * des cycles de 4 s ou plus ; quand elle fait un pas, ses jambes vont au rythme du sautillé (`strollAt`). Amplitudes
  * en radians, périodes en secondes ; les mêmes que l'aperçu des squelettes (scripts/rendu/modeles/apercu_squelette.py).
  */
-export const GESTES = { souffle: [0.04, 4.5], regard: [0.2, 7], queue: [0.3, 4], pas: { angle: 0.3, cadence: 8 } } as const;
+export const GESTES = {
+  souffle: [0.04, 4.5],
+  regard: [0.2, 7],
+  queue: [0.3, 4],
+  // La marche : les jambes, les bras à l'inverse des jambes, le buste penché en avant et qui tourne un peu avec le pas.
+  pas: { angle: 0.45, cadence: 8, bras: 0.5, buste: 0.08, penche: 0.06 },
+} as const;
 
 /**
  * Les os d'un squelette, chacun à sa place de repos (relative à son parent), et le maillage qui les porte. Sans
@@ -162,7 +168,7 @@ interface Promeneur {
   decalage: THREE.Vector3;
   milieu: { x: number; y: number };
   phase: number;
-  /** Les os de son squelette, par nom (hanches, dos, tête, jambes, queue), s'il en a un. */
+  /** Les os de son squelette, par nom (hanches, dos, tête, jambes, bras, queue), s'il en a un. */
   membres: Map<string, THREE.Bone>;
 }
 
@@ -177,18 +183,29 @@ const cycle = ([angle, periode]: readonly [number, number], t: number, decalage 
 
 /**
  * Joue les gestes d'une créature qui a un squelette (`GESTES`). `pas` : où elle en est de son pas, de 0 à 1 (0 au
- * repos) ; ses jambes partent et reviennent en douceur, sans à-coup au début ni à la fin du pas (référent dys).
+ * repos) ; ses membres partent et reviennent en douceur sur le premier et le dernier cinquième du pas, sans à-coup
+ * (référent dys), et balancent en plein entre les deux.
  */
 function bouger(membres: Map<string, THREE.Bone>, t: number, phase: number, pas: number, dureeDuPas: number): void {
-  tourner(membres, 'spine', 'x', cycle(GESTES.souffle, t + phase));
+  const elan = adoucir(Math.min(pas, 1 - pas) / 0.2);
+  const k = elan * Math.sin(pas * dureeDuPas * GESTES.pas.cadence);
+  tourner(membres, 'spine', 'x', cycle(GESTES.souffle, t + phase) - GESTES.pas.penche * elan);
+  tourner(membres, 'spine', 'y', GESTES.pas.buste * k);
   tourner(membres, 'head', 'y', cycle(GESTES.regard, t + phase));
   tourner(membres, 'tail.1', 'y', cycle(GESTES.queue, t + phase));
   tourner(membres, 'tail.2', 'y', 1.2 * cycle(GESTES.queue, t + phase, 0.9));
-  const k = Math.sin(Math.PI * pas) * Math.sin(pas * dureeDuPas * GESTES.pas.cadence);
   tourner(membres, 'thigh.L', 'x', GESTES.pas.angle * k);
   tourner(membres, 'thigh.R', 'x', -GESTES.pas.angle * k);
   tourner(membres, 'shin.L', 'x', -0.8 * GESTES.pas.angle * Math.max(0, -k));
   tourner(membres, 'shin.R', 'x', -0.8 * GESTES.pas.angle * Math.max(0, k));
+  tourner(membres, 'arm.L', 'x', -GESTES.pas.bras * k);
+  tourner(membres, 'arm.R', 'x', GESTES.pas.bras * k);
+}
+
+/** De 0 à 1 sans à-coup (sa pente est nulle aux deux bouts). */
+function adoucir(x: number): number {
+  const c = Math.min(1, Math.max(0, x));
+  return c * c * (3 - 2 * c);
 }
 
 /**

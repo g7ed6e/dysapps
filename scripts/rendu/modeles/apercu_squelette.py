@@ -13,7 +13,7 @@ from squelette import Frame  # noqa: E402
 
 # Les mêmes que GESTES dans paintedCharacters.ts : amplitudes en radians, périodes en secondes.
 REST = {"breath": (0.04, 4.5), "look": (0.2, 7.0), "tail": (0.3, 4.0)}
-WALK = {"swing": 0.3, "pace": 8.0}
+WALK = {"swing": 0.45, "pace": 8.0, "arms": 0.5, "twist": 0.08, "lean": 0.06}
 
 COLORS = [(200, 200, 200), (120, 160, 230), (240, 200, 60), (230, 90, 90), (170, 60, 60), (90, 200, 120), (40, 140, 70),
           (190, 120, 230), (120, 60, 170)]
@@ -54,8 +54,13 @@ def pose(bones, heads, t, walking):
         r["thigh.R"] = rot("x", -WALK["swing"] * k)
         r["shin.L"] = rot("x", -0.8 * WALK["swing"] * max(0, -k))
         r["shin.R"] = rot("x", -0.8 * WALK["swing"] * max(0, k))
+        # Les bras balancent à l'inverse des jambes ; le buste se penche un peu et tourne avec le pas.
+        r["arm.L"] = rot("x", -WALK["arms"] * k)
+        r["arm.R"] = rot("x", WALK["arms"] * k)
     a, p = REST["breath"]
-    r["spine"] = rot("x", a * np.sin(2 * np.pi * t / p))
+    r["spine"] = rot("x", a * np.sin(2 * np.pi * t / p) - (WALK["lean"] if walking else 0))
+    if walking:
+        r["spine"] = r["spine"] @ rot("y", WALK["twist"] * np.sin(t * WALK["pace"]))
     a, p = REST["look"]
     r["head"] = rot("y", a * np.sin(2 * np.pi * t / p))
     a, p = REST["tail"]

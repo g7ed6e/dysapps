@@ -1,5 +1,5 @@
 # Pose le squelette type d'une créature d'Archipéo sur son modèle de près (final-1500.glb) et range ses poids dans le
-# même fichier : un squelette commun aux bipèdes et aux oiseaux (hanches, dos, tête, deux jambes en deux os, une queue
+# même fichier : un squelette commun aux bipèdes et aux oiseaux (hanches, dos, tête, deux bras, deux jambes en deux os, une queue
 # en deux os quand le modèle en a une), placé d'après la forme du modèle, et des poids calculés par régions (une jambe ne
 # prend que ce qui l'entoure sous l'entrejambe : un bâton tenu à côté suit le corps). Le jeu anime ces os par le code
 # (src/game/three/paintedCharacters.ts) : le fichier ne porte ni geste ni image clé.
@@ -8,7 +8,7 @@
 #
 # <quarts de tour> : ceux de src/game/world/characters/imported/models.ts (le modèle tourné vers l'élève). Réglages,
 # facultatifs : cou=0.6 (le haut du dos, en fraction de la hauteur), queue=non (pas de queue), jambes=non (pas de
-# jambes : ni marche ni os de jambe). Quarts et réglages de chaque créature : la colonne « squelette » de
+# jambes : ni marche ni os de jambe), bras=non (pas de bras qui balancent). Quarts et réglages de chaque créature : la colonne « squelette » de
 # docs/univers/archipeo/personnages/modeles/reglages.csv. Relire ensuite la planche d'apercu_squelette.py.
 #
 # Écrit final-1500.glb sans normales ni indices (le jeu calcule les siennes), avec JOINTS_0 et WEIGHTS_0 (quatre os par
@@ -167,6 +167,34 @@ def find_legs(q, h):
     return crotch, legs
 
 
+def find_arms(q, h, crotch, neck, centre):
+    """Les deux bras : de chaque côté, un creux entre le tronc et le bras qui pend, entre l'entrejambe et le cou. Pour
+    chacun : la limite entre le tronc et le bras (en x), l'épaule et le bas de la main (en y)."""
+    limits = {-1: [], 1: []}
+    for y0 in np.arange(crotch + 0.02 * h, neck - 0.08 * h, 0.02 * h):
+        s = q[(q[:, 1] >= y0) & (q[:, 1] < y0 + 0.02 * h)]
+        xs = np.sort(s[:, 0])
+        gaps, mid = np.diff(xs), (xs[:-1] + xs[1:]) / 2
+        for side in (-1, 1):
+            off = (mid - centre) * side
+            ok = (off > 0.1 * h) & (off < 0.32 * h) & (gaps > 0.006 * h)
+            if ok.any():
+                k = np.flatnonzero(ok)[np.argmax(gaps[ok])]
+                limits[side].append(mid[k])
+    arms = {}
+    for side, found in limits.items():
+        if len(found) < 2:
+            continue
+        limit = float(np.median(found))
+        out = q[(q[:, 0] - limit) * side > 0.01 * h]
+        out = out[(out[:, 1] < neck) & (out[:, 1] > crotch)]
+        if len(out) < 50:
+            continue
+        hand = float(np.percentile(out[:, 1], 2))
+        arms[side] = (limit, neck - 0.06 * h, hand, float(np.median(out[:, 0])), float(np.median(out[:, 2])))
+    return arms
+
+
 def find_tail(q, h, crotch, neck):
     """La queue : ce qui dépasse franchement derrière le tronc (vers +Z), entre les jambes et le cou."""
     band = q[(q[:, 1] > crotch) & (q[:, 1] < neck)]
@@ -226,6 +254,28 @@ def rig(q, h, settings):
             w[f"thigh.{side}"] = k * (1 - lower)
             w[f"shin.{side}"] = k * lower
             for n in ("hips", "spine", "head"):
+                w[n] = w[n] * (1 - k)
+    arms = {} if settings.get("bras") == "non" else find_arms(dense, h, crotch, neck, cx)
+    if arms:
+        # Ce qui dépasse devant ou derrière le corps, tranche par tranche : le corps est la bande du milieu, en x.
+        outside = np.zeros(len(q))
+        for y0 in np.arange(0, neck, 0.02 * h):
+            band = (y >= y0) & (y < y0 + 0.02 * h)
+            middle = dense[(dense[:, 1] >= y0 - 0.02 * h) & (dense[:, 1] < y0 + 0.04 * h) & (np.abs(dense[:, 0] - cx) < 0.1 * h)]
+            if len(middle):
+                front, back = np.percentile(middle[:, 2], [1, 99])
+                outside[band] = np.maximum(front - q[band, 2], q[band, 2] - back)
+    for side, (limit, shoulder, hand, ax, az) in arms.items():
+        name = "arm." + ("L" if side < 0 else "R")
+        bones.append((name, 1, [ax, shoulder, az]))
+        # Le bras prend ce qui dépasse du tronc sur le côté, au-dessus de l'entrejambe (pas les pieds), et, de son côté,
+        # ce qui dépasse devant ou derrière le corps (l'outil tenu) ; à l'épaule, il se fond au dos.
+        beside = smooth(((q[:, 0] - limit) * side) / (0.02 * h)) * smooth((y - crotch) / (0.03 * h))
+        held = smooth(((q[:, 0] - cx) * side - 0.12 * h) / (0.02 * h)) * smooth(outside / (0.02 * h))
+        k = np.maximum(beside, held) * smooth((shoulder + 0.02 * h - y) / (0.08 * h))
+        w[name] = k
+        for n in [b[0] for b in bones if b[0] != name]:
+            if n in w:
                 w[n] = w[n] * (1 - k)
     tail = None if settings.get("queue") == "non" else find_tail(dense, h, crotch, neck)
     if tail:
