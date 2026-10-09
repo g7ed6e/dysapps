@@ -23,6 +23,7 @@ import {
   moveIsland,
   moveLanding,
   moveStation,
+  placeIn,
   nearestFreeSpot,
   stepSpot,
   stationSpots,
@@ -40,7 +41,8 @@ import {
   turnIsland,
 } from './arrange';
 import { toutConstruit } from './budget';
-import { fittingPlaces, frameOf, posesOfLayout } from './footprint';
+import { fittingPlaces, footprintOf, frameOf, gapBetween, GAP_BETWEEN_PLACES, monumentIslet, placedIsland, poseOfSpot, posesOfLayout } from './footprint';
+import { getMonument, MONUMENT_ISLET } from './monuments';
 import { placesOf, startingPlaces } from './routing';
 import { LAYOUT_LAST_SPOT, sanitizeLayout } from './savedLayout';
 import { questStations } from './terrain/markers';
@@ -496,5 +498,46 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
     expect(settleNewPlaces(w)).toBe(w);
     const deplace = apres(moveIsland(w, VOLCAN, freeSpots(w, VOLCAN).find((s) => s.x !== startingSpot(VOLCAN).x)!));
     expect(settleNewPlaces(deplace)).toBe(deplace);
+  });
+});
+
+// L'îlot détaché du grand phare du large (GD-12, carte « Détacher », mainteneur, 9 octobre 2026) : il ne suit plus le
+// Glacier dans « Modifier le plan », et le Glacier ne vient pas dessus.
+describe('l’îlot détaché du grand phare du large', () => {
+  const GLACIER: BiomeId = 'maths-5e-signed-numbers';
+  const phare = getMonument('landmark-5e-1')!;
+  const kiosque = getMonument('landmark-5e-2')!;
+
+  it('déplacer le Glacier ne déplace pas le phare ; un îlot attaché suit toujours son lieu', () => {
+    expect(phare.detache).toBe(true);
+    expect(kiosque.detache).toBeUndefined();
+    const w = partie();
+    const ailleurs = freeSpots(w, GLACIER).find((s) => s.x !== startingSpot(GLACIER).x || s.y !== startingSpot(GLACIER).y)!;
+    const deplace = apres(moveIsland(w, GLACIER, ailleurs));
+    const def = placeIn(deplace, GLACIER);
+    expect(def.core).not.toEqual(placeIn(w, GLACIER).core);
+    expect(monumentIslet(phare, def)).toEqual(phare.islet);
+    expect(footprintOf(GLACIER, def).find((p) => p.genre === 'monument')).toMatchObject({ x0: phare.islet.x, y0: phare.islet.y, fixe: true });
+    // Le kiosque, attaché au Manoir, le suit d'autant que lui.
+    const manoir = placeIn(w, kiosque.biome);
+    const bouge = placedIsland(kiosque.biome, { x: manoir.core.x + 4, y: manoir.core.y, quarts: manoir.quarts });
+    expect(monumentIslet(kiosque, bouge)).toEqual({ x: kiosque.islet.x + 4, y: kiosque.islet.y });
+  });
+
+  it('le Glacier ne vient pas sur son îlot : aucune place à moins de quatre cases d’eau de lui', () => {
+    const w = partie();
+    const ilot = { x0: phare.islet.x, y0: phare.islet.y, x1: phare.islet.x + MONUMENT_ISLET, y1: phare.islet.y + MONUMENT_ISLET };
+    const max = LAYOUT_LAST_SPOT['5e'];
+    let pres = 0;
+    for (let x = 0; x <= max.x; x++)
+      for (let y = 0; y <= max.y; y++) {
+        const spot = { x, y, turn: spotOf(w, GLACIER).turn };
+        const terre = footprintOf(GLACIER, placedIsland(GLACIER, poseOfSpot('5e', spot))).filter((p) => !p.fixe);
+        if (!terre.some((r) => gapBetween(r, ilot) < GAP_BETWEEN_PLACES)) continue;
+        pres++;
+        expect(isFreeSpot(w, GLACIER, spot), `${x},${y}`).toBe(false);
+        expect(fittingPlaces('5e', { [GLACIER]: spot }), `${x},${y}`).toBeNull();
+      }
+    expect(pres).toBeGreaterThan(0);
   });
 });
