@@ -40,7 +40,7 @@ export function monumentIsletFree(a: ArchipelagoId, links: readonly string[], x0
 /**
  * Le point du monde où tombe la clé (0, 0, 0) d'un monument : une case de son plan (`planCells`, clé relative au cœur
  * de son île, figée par `ORIGINE_DES_MONUMENTS`) est dessinée en `monumentAnchor + case`. Le rendu suit l'îlot
- * (`monumentIslet`, la case (0, 0, 0) du plan au-dessus de son coin intérieur ; il suit son lieu, GD-9) ; les clés des
+ * (`monumentIslet`, la case (0, 0, 0) du plan au-dessus de son coin intérieur ; il suit son lieu, GD-9, sauf un îlot détaché) ; les clés des
  * sauvegardes, elles, ne bougent pas
  * si l'îlot ou le cœur bougent.
  */
@@ -91,7 +91,7 @@ export function monumentIslets(a: ArchipelagoId, village: World, cubes: VoxelCub
     const place: PlaceId = `monument:${m.id}`;
     const n = MONUMENT_ISLET;
     const land: { x: number; y: number }[] = [];
-    // L'îlot suit le lieu au large duquel il se tient (GD-9, `monumentIslet`) ; le monument garde son orientation.
+    // L'îlot suit le lieu au large duquel il se tient (GD-9, `monumentIslet`), sauf un îlot détaché (`MonumentDef.detache`), qui reste à sa place ; le monument garde son orientation.
     const ilot = monumentIslet(m);
     for (let dx = 0; dx < n; dx++)
       for (let dy = 0; dy < n; dy++) {

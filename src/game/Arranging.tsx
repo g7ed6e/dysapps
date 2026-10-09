@@ -33,6 +33,7 @@ import {
   turnChoice,
 } from './world/arrangeMode';
 import { type ArrangeSession, canUndo, hasChanged, recordPose, resetToEntry, startArranging, undoLast } from './world/arrangeSession';
+import { type CoinDuChoix, coinDeTournerDe } from './world/arrangeHandles';
 import { arrangeView } from './world/arrangeView';
 import { getBridge } from './world/archipelago';
 import { DESCENTE_MS, GESTE_DU_LIEU, GESTE_SOUS_LE_SOL, gestureZone } from './world/arrangeGesture';
@@ -784,7 +785,18 @@ export function useAmenagement({
 
   // Le nom du lieu choisi se pose sur son fantôme (la 3D l'écrit au-dessus) ; son étiquette sur l'île se tait.
   const nomChoisi = choix?.genre === 'lieu' ? nom(choix.id) : undefined;
-  const vue = useMemo(() => (choix ? { ...arrangeView(world, choix, glisse), ...(nomChoisi && choix.genre === 'lieu' ? { nom: nomChoisi, lieu: choix.id } : {}) } : null), [world, choix, nomChoisi, glisse]);
+  // Le coin de « Tourner » d'un lieu choisi (principe dys : toujours au même endroit) : gardé d'une vue à la suivante,
+  // il ne change ni à chaque quart de tour ni à chaque pas, seulement quand il gêne (world/arrangeHandles.ts).
+  const coinGarde = useRef<{ id: BiomeId; coin: CoinDuChoix } | null>(null);
+  const vue = useMemo(() => {
+    if (!choix) return null;
+    const garde = choix.genre === 'lieu' && coinGarde.current?.id === choix.id ? coinGarde.current.coin : null;
+    return { ...arrangeView(world, choix, glisse, garde), ...(nomChoisi && choix.genre === 'lieu' ? { nom: nomChoisi, lieu: choix.id } : {}) };
+  }, [world, choix, nomChoisi, glisse]);
+  useEffect(() => {
+    const coin = coinDeTournerDe(vue?.poignees);
+    if (choix?.genre === 'lieu' && coin) coinGarde.current = { id: choix.id, coin };
+  }, [vue, choix]);
   const reunirAvec = choix?.genre === 'lieu' && sameSpot(choix.spot, spotOf(world, choix.id)) ? voisinAReunir(world, choix.id) : null;
   const placePrise = useMemo(() => (choix ? !choiceFits(world, choix) : false), [world, choix]);
   return {

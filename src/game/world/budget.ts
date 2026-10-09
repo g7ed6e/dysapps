@@ -61,9 +61,12 @@ export const RENDER_BUDGET_6E = { triangles: 72_800, drawCalls: RENDER_BUDGET.dr
  * 2025-2026 : deux bornes de plus au 4e ; 74 877 depuis les commandes relevées à 392, 8 octobre 2026). Mesurés tout construit, « Dans la
  * scène » à part : 69 880 aux Îles Brumeuses, 67 080 aux Anciens Ateliers, 63 791 aux Îles du Ciel. La mesure sur
  * tablette reste à faire. Puis de 74 900 à 75 000 pour les quêtes de la 5e (GD-10, validé par le mainteneur le 8 octobre
- * 2026) : la somme des « autres » passe à 74 985 (commandes 392 → 500).
+ * 2026) : la somme des « autres » passe à 74 985 (commandes 392 → 500). Puis, avec une forme par île (GD-12) : relevé à
+ * 78 700 (mainteneur, 9 octobre 2026, carte « Relever »), pour le décor et la mer des Îles Brumeuses, plus grandes
+ * (78 635 aux Îles Brumeuses, la somme de leurs enveloppes). Mesuré tout construit, « Dans la scène » à part : 74 391
+ * aux Îles Brumeuses.
  */
-export const RENDER_BUDGET_AUTRES = { triangles: 75_000, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_AUTRES = { triangles: 78_700, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
@@ -111,9 +114,13 @@ export interface Enveloppe {
  * Les postes du budget (docs/univers/archipeo/cadrage.md §6, « Le budget par poste »), décidés le 28 septembre
  * 2026 : chaque lot de rendu tient ses postes dans leur enveloppe, et la somme tient dans `RENDER_BUDGET`. Les Premiers
  * Rivages ont leur colonne (leur phare, leur volcan) ; les trois autres archipels partagent la leur. Chaque lot n'écrit
- * que sa ligne ; le socle les a toutes posées.
+ * que sa ligne ; le socle les a toutes posées. Une enveloppe propre à un des trois autres archipels s'écrit dans
+ * `parArchipel` (GD-12, une forme par île : leurs îles n'ont plus la même taille).
  */
-export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'socle'; nom: string; premiersRivages: Enveloppe; autres: Enveloppe }> = {
+export const ENVELOPPES: Record<
+  Poste,
+  { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'socle'; nom: string; premiersRivages: Enveloppe; autres: Enveloppe; parArchipel?: Partial<Record<Exclude<ArchipelagoId, '6e'>, Enveloppe>> }
+> = {
   // Proposition de l'artiste technique 3D pour le Jardin des heures (LV2, 4e), à valider par le mainteneur : au bout de
   // la crête, à six blocs d'altitude, l'île ajoute 2 775 triangles au sol des Anciens Ateliers (21 268 → 24 043). Les
   // enveloppes « autres » en passent 1 100 au sol, pris sur la mer, la faune, le décor, la construction, le navire et
@@ -177,7 +184,16 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // commandes de 280 à 370 (368), les bornes de 870 à 1 130 (1 120), les créatures de 2 450 à 3 200 (3 181 aux Îles du
   // Ciel), les Gardiens de 2 150 à 2 780 (2 775 aux Îles Brumeuses, le budget des statues). La somme des « autres » passe
   // de 62 875 à 74 805 : `RENDER_BUDGET_AUTRES`.
-  sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 32_800, drawCalls: 2 }, autres: { triangles: 37_200, drawCalls: 1 } },
+  // GD-12, une forme par île (9 octobre 2026) : aux Îles Brumeuses, le sol mesure 34 692 triangles tout construit ; leur
+  // enveloppe descend à 36 500 pour que la somme tienne sous `RENDER_BUDGET_AUTRES` (78 700, commandes des quêtes de la 5e comprises) avec le décor et la mer
+  // relevés.
+  sol: {
+    lot: 'R4b',
+    nom: 'Sol',
+    premiersRivages: { triangles: 32_800, drawCalls: 2 },
+    autres: { triangles: 37_200, drawCalls: 1 },
+    parArchipel: { '5e': { triangles: 36_500, drawCalls: 1 } },
+  },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
   // passent 1 600 du navire, de la mer, des créatures et des bornes (qui ont de la marge dans les trois archipels) au
@@ -189,7 +205,17 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // pour le décor, 7 069 pour la construction, aux Îles Brumeuses) ; puis 20 du navire (420 partout) aux bornes, qui
   // n'avaient plus de marge (700 aux Îles Brumeuses) ; la somme ne change pas (52 300). Le refuge, retouché (île plus
   // profonde de deux rangs, pour un lac loin du bord), porte le sol du 3e à 22 505.
-  mer: { lot: 'R4b', nom: 'Mer', premiersRivages: { triangles: 7_100, drawCalls: 1 }, autres: { triangles: 5_850, drawCalls: 1 } },
+  // GD-12, une forme par île : la mer couvre le cadre approfondi de chaque région (6 264 aux Îles Brumeuses). Relevée
+  // à 6 400 aux Îles Brumeuses et aux Anciens Ateliers, à 6 900 aux Îles du Ciel (mainteneur, 9 octobre 2026, carte
+  // « Relever »). Celles des Anciens Ateliers (6 400) et des Îles du Ciel (6 900) sont relevées d'avance, pour les
+  // pull requests de leurs formes, qui approfondiront leurs cadres : sur main, leur mer tient encore sous 5 850.
+  mer: {
+    lot: 'R4b',
+    nom: 'Mer',
+    premiersRivages: { triangles: 7_100, drawCalls: 1 },
+    autres: { triangles: 5_850, drawCalls: 1 },
+    parArchipel: { '5e': { triangles: 6_400, drawCalls: 1 }, '4e': { triangles: 6_400, drawCalls: 1 }, '3e': { triangles: 6_900, drawCalls: 1 } },
+  },
   // Un appel de plus pendant le passage de la baleine (son écume) : voir `APPEL_DU_PASSAGE`.
   // Proposition de l'artiste technique 3D pour les missions ajoutées en 6e (étapes de contenu C-1 à C-5), à valider par
   // le mainteneur : 36 bornes de 28 triangles portent le poste des Premiers Rivages à 1 008, au-dessus de ses 1 000.
@@ -207,7 +233,16 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // 24 cases (168 × 112) sème plus d'écueils dans sa mer, et leur décor passe à 11 660 triangles (mesuré tout construit,
   // `npm run rendu:budget`). Les enveloppes « autres » en passent 160 de la construction (6 679 au plus, aux Îles
   // Brumeuses) au décor ; la somme ne change pas (62 875).
-  decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 13_700, drawCalls: 3 }, autres: { triangles: 13_600, drawCalls: 3 } },
+  // GD-12, une forme par île : aux Îles Brumeuses, plus de terre (le fer du Comptoir, le moulinet du Carrefour) et un
+  // cadre approfondi portent le décor de 12 989 à 17 396 triangles (13 632 de maillage, 3 764 de brume). Relevé à
+  // 17 400 aux Îles Brumeuses (mainteneur, 9 octobre 2026, carte « Relever »).
+  decor: {
+    lot: 'R4b',
+    nom: 'Décor et repères signatures',
+    premiersRivages: { triangles: 13_700, drawCalls: 3 },
+    autres: { triangles: 13_600, drawCalls: 3 },
+    parArchipel: { '5e': { triangles: 17_400, drawCalls: 3 } },
+  },
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
@@ -256,7 +291,7 @@ export const APPEL_DU_PASSAGE = 1;
 /** L'enveloppe d'un poste dans un archipel. */
 export function enveloppeDe(poste: Poste, a: ArchipelagoId): Enveloppe {
   const e = ENVELOPPES[poste];
-  return a === '6e' ? e.premiersRivages : e.autres;
+  return a === '6e' ? e.premiersRivages : (e.parArchipel?.[a] ?? e.autres);
 }
 
 /** Une partie où tout est construit : trois étoiles partout, Gardiens vaincus, tous les plans, ouvrages, étapes du navire et ponts. */

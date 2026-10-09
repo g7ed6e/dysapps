@@ -6,7 +6,8 @@
 // une flèche en cubes dessus (une tige longue, la pointe large en triangle à marches, sans biais) ; « Tourner » : un arc
 // ouvert, sa pointe en marches (↷). Dans Archipéo (rattrapage), un radeau de trois planches, une flèche peinte à plat ;
 // « Tourner » : une flèche en arc fin peinte sur une bouée ronde à huit pans, sa pointe marquée, dans le même sens (↷).
-// Quand une terre occupe la place d'une poignée, la flèche se pose quand même là, par-dessus, toujours visible.
+// Quand une terre occupe la place d'une poignée, la flèche se pose quand même là, par-dessus, toujours visible ; sauf
+// « Tourner » d'un lieu, qui passe à un autre coin plutôt que sur la terre d'un autre lieu (GD-12, 9 octobre 2026).
 // Indisponible (au bord de la carte) : le radeau gris pierre, la pointe disparaît (la tige seule) ; une arrivée ou une
 // borne, qui ne vont que le long de leur côte ou de leur rangée, ne montrent pas leurs flèches indisponibles. Le choix sur une
 // place prise (choix 3 du mainteneur, 6 octobre 2026) : une croix grise, bordée de sombre, au milieu de son emprise.
@@ -14,8 +15,10 @@
 // Ici : où se tient chaque poignée (à une place du bord de l'emprise du choix, jamais plus loin, par-dessus la terre si
 // l'eau n'est pas là), sa forme (sommets et couleurs, en cases, dans le repère de Three : x, hauteur, y) et ce
 // qu'elle coûte. Code pur, sans Three.js ; la 3D les dessine en un seul maillage (three/arrangeHandles.ts).
+import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
-import { DIRECTION_STEP } from './arrange';
+import { DIRECTION_STEP, joinedWith, othersFootprintsOf } from './arrange';
+import { archipelagoOfIsland } from './archipelagos';
 import { type ArrangeChoice, canTurn, choiceFits, stepChoice } from './arrangeMode';
 import type { Rectangle } from './placement';
 import type { CleDePoignee, PoigneeDuMonde, PoigneesDuChoix } from './view';
@@ -65,13 +68,13 @@ function brasDeLaCroix(rx: number, ry: number): number {
 
 /**
  * Les poignées d'un choix autour de son emprise `r` (en cases du monde), l'eau à la hauteur `z` (le dessus) : chaque
- * flèche de son côté, « Tourner » au coin nord-est, chacune à une place (`ECART`) du bord de l'emprise, et à
+ * flèche de son côté, « Tourner » à un coin (`coinDeTourner`, le nord-est d'ordinaire ; `garde`, le coin qu'il occupait), chacune à une place (`ECART`) du bord de l'emprise, et à
  * `ELOIGNEMENT` demi-côtés au moins du milieu. Jamais plus loin (mainteneur, 6 octobre 2026) : une poignée qui tombe
  * sur une terre y reste, par-dessus (la 3D la dessine devant le décor) ; « toujours visible » prime sur l'eau libre.
  * Calculé à chaque échelle de `ECHELLES`. « Tourner » seulement pour ce qui tourne (`canTurn`) ; pour une arrivée ou une
  * borne, seulement les flèches qui mènent quelque part.
  */
-export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z: number): PoigneesDuChoix {
+export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z: number, garde: CoinDuChoix | null = null): PoigneesDuChoix {
   const cx = (r.x0 + r.x1) / 2;
   const cy = (r.y0 + r.y1) / 2;
   const rx = (r.x1 - r.x0) / 2;
@@ -87,13 +90,16 @@ export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z:
     // Une arrivée ou une borne ne va que le long de sa côte ou de sa rangée : une flèche qui ne mène nulle part n'y est
     // pas montrée (deux radeaux gris à tige courte, côte à côte, s'y lisaient comme des dalles).
     if (!dispo && (c.genre === 'arrivee' || c.genre === 'borne')) continue;
-    const sens = SENS[cle];
-    const places: number[] = [];
-    for (const e of ECHELLES) {
-      const demi = (COTE_DU_RADEAU / 2) * e;
-      const loin = (rayon: number) => Math.max(rayon + ECART + demi, ELOIGNEMENT * e);
-      places.push(sens.dx * loin(rx), sens.dy * loin(ry));
-    }
+    const placesVers = (sens: CoinDuChoix) => {
+      const places: number[] = [];
+      for (const e of ECHELLES) {
+        const demi = (COTE_DU_RADEAU / 2) * e;
+        const loin = (rayon: number) => Math.max(rayon + ECART + demi, ELOIGNEMENT * e);
+        places.push(sens.dx * loin(rx), sens.dy * loin(ry));
+      }
+      return places;
+    };
+    const places = cle === 'tourner' && c.genre === 'lieu' ? coinDeTourner(world, c.id, r, placesVers, garde) : placesVers(SENS[cle]);
     liste.push({ cle, ox: places[0], oy: places[1], places, dispo });
   }
   const demi = COTE_DU_RADEAU / 2;
@@ -113,6 +119,78 @@ export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z:
     emprise,
     ...(choiceFits(world, c) ? {} : { prise: { bras: brasDeLaCroix(rx, ry) } }),
   };
+}
+
+/**
+ * L'échelle des radeaux sur la Carte de la tablette, la région entière cadrée (3,4 à 4 pixels par case : un radeau de
+ * `POIGNEE_MIN_PX` y fait 12 à 14 cases, l'échelle 4 à 5) ; au-delà (un téléphone, la Carte de loin), un radeau de vingt
+ * cases touche toujours une terre, et « Tourner » garde son coin.
+ */
+const ECHELLE_DE_LA_CARTE = 5;
+
+/** Un coin de l'emprise d'un choix : le côté de « Tourner » (−1 ou 1 sur x et sur y, dans le sens de `SENS`). */
+export interface CoinDuChoix {
+  dx: number;
+  dy: number;
+}
+
+/** Le coin où se tient « Tourner » d'un choix (le signe de sa place), ou `null` s'il n'en a pas. */
+export function coinDeTournerDe(p: PoigneesDuChoix | undefined): CoinDuChoix | null {
+  const q = p?.liste.find((k) => k.cle === 'tourner');
+  return q ? { dx: Math.sign(q.ox), dy: Math.sign(q.oy) } : null;
+}
+
+/** La distance (en cases) d'un point à un rectangle, nulle dedans. */
+function distanceAuRectangle(x: number, y: number, r: Rectangle): number {
+  return Math.hypot(Math.max(r.x0 - x, 0, x - r.x1), Math.max(r.y0 - y, 0, y - r.y1));
+}
+
+/**
+ * Le coin de « Tourner » pour un lieu choisi (GD-12, relectures du 9 octobre 2026). Un coin gêne quand, à une échelle
+ * de `ECHELLES` jusqu'à celle de la Carte (`ECHELLE_DE_LA_CARTE`), son radeau se pose sur la terre d'un autre lieu (ou
+ * l'îlot d'une de ses grandes constructions, son quai, une réunion : au 3e, le Tremplin des forces choisi, son radeau
+ * se posait sur la Ruche des réseaux). Dans l'ordre :
+ * - le coin qu'il occupait (`garde`), tant qu'il ne gêne pas : « toujours au même endroit », il ne bouge ni à chaque
+ *   quart de tour ni à chaque pas ;
+ * - sinon le coin nord-est, s'il ne gêne pas ;
+ * - sinon le coin libre le plus proche du lieu choisi au regard des autres (`attache` : à toutes les échelles, de
+ *   combien le radeau est plus près du lieu choisi que du plus proche des autres), pour qu'il se lise comme le sien ;
+ * - sinon, aucun coin n'étant libre, celui qui gêne au moins d'échelles, puis le plus proche du lieu choisi.
+ * À égalité, l'ordre des coins : nord-est, nord-ouest, sud-est, sud-ouest.
+ */
+function coinDeTourner(world: World, id: BiomeId, r: Rectangle, placesVers: (sens: CoinDuChoix) => number[], garde: CoinDuChoix | null): number[] {
+  const p = joinedWith(world, id);
+  const autres = othersFootprintsOf(world, archipelagoOfIsland(id), p ? [id, p] : [id]);
+  const cx = (r.x0 + r.x1) / 2;
+  const cy = (r.y0 + r.y1) / 2;
+  const { dx, dy } = SENS.tourner;
+  const coins: CoinDuChoix[] = [{ dx, dy }, { dx: -dx, dy }, { dx, dy: -dy }, { dx: -dx, dy: -dy }];
+  const mesures = coins.map((sens) => {
+    const places = placesVers(sens);
+    let gene = 0;
+    let attache = Infinity;
+    ECHELLES.forEach((e, i) => {
+      if (e > ECHELLE_DE_LA_CARTE) return;
+      const demi = (COTE_DU_RADEAU / 2) * e;
+      const x = cx + places[2 * i];
+      const y = cy + places[2 * i + 1];
+      let plusPres = Infinity;
+      let surLaTerre = false;
+      for (const o of autres) {
+        if (x + demi > o.x0 && x - demi < o.x1 && y + demi > o.y0 && y - demi < o.y1) surLaTerre = true;
+        plusPres = Math.min(plusPres, distanceAuRectangle(x, y, o));
+      }
+      const ecart = plusPres - distanceAuRectangle(x, y, r);
+      if (surLaTerre) gene++;
+      attache = Math.min(attache, ecart);
+    });
+    return { sens, places, gene, attache };
+  });
+  const gardee = garde && mesures.find((m) => m.sens.dx === garde.dx && m.sens.dy === garde.dy);
+  if (gardee && gardee.gene === 0) return gardee.places;
+  if (mesures[0].gene === 0) return mesures[0].places;
+  // Le tri est stable : à égalité, l'ordre des coins (nord-est, nord-ouest, sud-est, sud-ouest).
+  return [...mesures].sort((m1, m2) => m1.gene - m2.gene || m2.attache - m1.attache)[0].places;
 }
 
 /**

@@ -339,6 +339,9 @@ function fitsAt(world: World, id: BiomeId, spot: LayoutSpot, autres: readonly Re
     const def = placedIsland(g.id, poseOfSpot(a, g.spot));
     const rs = footprintOf(g.id, def);
     if (!inFrame(a, rs) || !farEnough(rs, autres)) return false;
+    // L'îlot détaché d'une grande construction ne suit pas son lieu (carte « Détacher ») : le lieu s'en tient loin.
+    const fixes = rs.filter((p) => p.fixe);
+    if (fixes.length && !farEnough(rs.filter((p) => !p.fixe), fixes)) return false;
     defs.push(def);
   }
   if (defs.length < 2) return true;

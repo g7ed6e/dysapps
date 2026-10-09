@@ -37,7 +37,7 @@ import { bridgePath, creatureSpot, placeSpot, questStations, VILLAGE_PLACES } fr
  * leur archipel. Les clés de sauvegarde restent relatives à ce repère.
  */
 const ECOLES: Partial<Record<BiomeId, { archipel: ArchipelagoId; core: { x: number; y: number }; ext: { left: number; right: number; front: number; back: number } | null }>> = {
-  // La Forêt a pris sa forme (GD-12) : sa côte se lit sur elle (`ext : null`).
+  // La Forêt et le Marché ont pris leur forme (GD-12) : leur côte se lit sur elle (`ext : null`).
   'french-6e-phonology': {
     archipel: '6e',
     core: { x: 67, y: 59 },
@@ -46,8 +46,9 @@ const ECOLES: Partial<Record<BiomeId, { archipel: ArchipelagoId; core: { x: numb
   'maths-5e-proportionality': {
     archipel: '5e',
     core: { x: 69, y: 317 },
-    // Deux rangées devant : l'escalier de la jetée ne monte pas sur la rangée nue devant les bornes.
-    ext: { left: 2, right: 3, front: 2, back: 2 },
+    // Son croissant garde deux rangées devant, au pied de la jetée (`TERRE_AUTOUR_DU_COEUR`) : l'escalier ne monte pas
+    // sur la rangée nue devant les bornes.
+    ext: null,
   },
   'maths-4e-algebra': {
     archipel: '4e',
@@ -192,7 +193,9 @@ it('le quai d’une île-école qui est un port suit sa côte repoussée ; les c
     expect(shoreY(id), id).toBeGreaterThanOrEqual(coeurDe(def).y0 - def.ext.front);
     expect(shoreY(id), id).toBeLessThanOrEqual(coeurDe(def).y0);
   }
-  expect(dockOrigin('maths-5e-proportionality')).toEqual({ x: islandDef('maths-5e-proportionality').core.x + 17, y: islandDef('maths-5e-proportionality').core.y - 17, z: 0 });
+  // Au Marché, depuis sa forme (GD-12), la rive droite du croissant garde ses deux rangées de terre sous tout le navire
+  // (la côte de GD-11 n'en avait qu'une sous sa proue) : il recule d'une case vers le large.
+  expect(dockOrigin('maths-5e-proportionality')).toEqual({ x: islandDef('maths-5e-proportionality').core.x + 17, y: islandDef('maths-5e-proportionality').core.y - 18, z: 0 });
   expect(ORIGINE_DU_QUAI['maths-5e-proportionality']).toEqual({ x: 15, y: -12, z: -4 });
   expect(dockOrigin('maths-4e-algebra')).toEqual({ x: islandDef('maths-4e-algebra').core.x + 17, y: islandDef('maths-4e-algebra').core.y - 17, z: 2 });
   expect(ORIGINE_DU_QUAI['maths-4e-algebra']).toEqual({ x: 15, y: -14, z: -7 });

@@ -19,6 +19,12 @@ export interface MonumentDef extends PlanDef {
   /** Le coin de l'îlot dans le monde (x, y) : placé une fois pour toutes, loin des îles, des ouvrages et des baleines. */
   islet: { x: number; y: number };
   /**
+   * L'îlot détaché (carte « Détacher », mainteneur, 9 octobre 2026) : il reste à `islet` quand son lieu bouge ou tourne
+   * dans « Modifier le plan », au lieu de le suivre (exception à GD-9). Il compte toujours dans l'emprise de son lieu,
+   * à sa place fixe : un obstacle pour les autres lieux, et pour son lieu lui-même (`footprint.ts`).
+   */
+  detache?: true;
+  /**
    * Le bloc qui s'allume quand le monument est fini (toutes ses cases posées, et seulement alors) : ses cubes prennent la
    * lueur des lanternes (`VoxelCube.lit`). Le phare du large : sa lanterne de vitraux (GD-10, « à la fin, le phare
    * s'allume »).
@@ -441,7 +447,8 @@ const FICHES: Fiche[] = [
     archipelago: '5e',
     name: 'Le phare du large',
     description: 'Une haute tour rayée de tuiles et de glace, une galerie de lambris et une lanterne de vitraux, pour les navires qui passent.',
-    islet: { x: 56, y: 348 }, // 4 cases à l'ouest et 7 en arrière : le Marché a grandi (01/10/2026), le Glacier s'est écarté ; 3 de plus pour le bac du Carrefour (GD-7) ; recalé avec les îles agrandies (GD-11, 08/10/2026)
+    islet: { x: 77, y: 387 }, // au loin, derrière le Marais, entre le Carrefour et la Prairie, détaché du Glacier (GD-12, cartes « Détacher » et « 29 au Manoir », mainteneur, 9 octobre 2026 : tout à l'est de la rangée, où le Manoir garde le plus de places libres, 29 au pire quart de tour) : dans la vue de l'archipel depuis le Glacier, entier, haut dans le cadre, entre les noms du Marais et du Carrefour, sans en porter aucun ; hors de la vue du Glacier. Devant le Glacier (38, 298 ; 46, 304 ; 38, 304), il venait au premier plan, coupé par le bas, sous les boutons ; sa place de main (56, 348), entre le Glacier et le Marais, est prise par le Carrefour agrandi. Si loin, l'îlot qui suivrait le Glacier lui ôterait presque toutes ses places libres : il ne le suit plus (`detache`)
+    detache: true,
     reward: { xp: 180, chest: {} },
     done: 'Le phare du large s’allume ! Plus aucun navire ne se perd entre les Collines.',
     draw: phareLarge,
@@ -453,7 +460,7 @@ const FICHES: Fiche[] = [
     archipelago: '5e',
     name: 'Le kiosque à musique',
     description: 'Un kiosque rond au plancher de lambris, huit poteaux et un toit rayé de toile et de tuiles, pour les fanfares du dimanche.',
-    islet: { x: 85, y: 350 }, // suit l'île calée sur le pas (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026)
+    islet: { x: 117, y: 383 }, // derrière le Manoir, à droite, monté au second rang à côté du Marais (GD-12, 9 octobre 2026) ; avant, suit l'île calée sur le pas (GD-9), recalé avec les îles agrandies (GD-11)
     reward: { xp: 180, chest: {} },
     done: 'Le kiosque à musique est fini ! La fanfare des Collines peut jouer.',
     draw: kiosqueMusique,

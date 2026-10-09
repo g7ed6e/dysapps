@@ -31,10 +31,14 @@ import type { Layout, LayoutSpot } from './savedLayout';
  * la tablette. Le Glacier et la Gare ne tournent toujours pas ; la Grammaire (5e) et le Refuge des carnets (3e), dans des
  * régions plus pleines, n'avaient plus de place libre tournés non plus. Depuis GD-11 (les îlots des Gardiens retirés),
  * chaque lieu mobile trouve une place tourné (arrange.test.ts) ; les îles agrandies tiennent dans les mêmes cadres.
+ * Depuis une forme par île (GD-12, 9 octobre 2026), les cadres s'approfondissent encore, vers l'est et le fond
+ * seulement (le coin ne bouge pas : les places des sauvegardes se comptent depuis lui, `LAYOUT_LAST_SPOT`), pour deux
+ * places d'îles futures : 176 × 160 aux Îles Brumeuses (+8 vers l'est, +20 au fond, et non les 32 demandés : au-delà,
+ * « Modifier le plan » ne cadre plus toute la région sur la tablette, camera.test.ts).
  */
 const REGION_FRAMES: Readonly<Record<ArchipelagoId, Readonly<Rectangle>>> = Object.freeze({
   '6e': Object.freeze({ x0: -20, y0: -13, x1: 172, y1: 131 }),
-  '5e': Object.freeze({ x0: 21, y0: 289, x1: 189, y1: 429 }),
+  '5e': Object.freeze({ x0: 21, y0: 289, x1: 197, y1: 449 }),
   '4e': Object.freeze({ x0: -6, y0: 584, x1: 162, y1: 724 }),
   '3e': Object.freeze({ x0: -30, y0: 880, x1: 178, y1: 1000 }),
 });
@@ -128,9 +132,11 @@ export function boxOf(rs: readonly Rectangle[]): Rectangle {
 
 /**
  * L'îlot d'une grande construction dans le monde : il se tient au large de son lieu (`MonumentDef.biome`) et le suit
- * quand il bouge (GD-9) ; `islet` est sa place sur la carte de départ.
+ * quand il bouge (GD-9) ; `islet` est sa place sur la carte de départ. Un îlot détaché (`MonumentDef.detache`, carte
+ * « Détacher », 9 octobre 2026) reste à `islet`, où que soit son lieu.
  */
 export function monumentIslet(m: MonumentDef, def: IslandDef = islandDef(m.biome)): { x: number; y: number } {
+  if (m.detache) return { ...m.islet };
   const depart = startingIsland(m.biome).core;
   const depuis = { x: m.islet.x - depart.x, y: m.islet.y - depart.y };
   const r = turnRectangle({ x0: depuis.x, y0: depuis.y, x1: depuis.x + MONUMENT_ISLET, y1: depuis.y + MONUMENT_ISLET }, def.quarts);
@@ -147,16 +153,20 @@ function monumentRectangle(m: MonumentDef, def: IslandDef = islandDef(m.biome)):
 export interface FootprintPart extends Rectangle {
   lieu: BiomeId;
   genre: 'terre' | 'monument' | 'quai';
+  /** L'îlot détaché d'une grande construction (`MonumentDef.detache`) : il ne bouge pas avec son lieu. */
+  fixe?: true;
 }
 
 /**
  * L'emprise d'un lieu dans le monde, à sa place (ou à celle de `def`) : les rectangles de sa terre (son Gardien s'y tient,
- * GD-11), de ses grandes constructions, du quai (le port ne bouge pas : il est au point de départ).
+ * GD-11), de ses grandes constructions, du quai (le port ne bouge pas : il est au point de départ). L'îlot détaché d'une
+ * grande construction y est à sa place fixe (`fixe`) : son lieu ne s'en approche pas plus que d'un autre lieu
+ * (`tooSmallGaps`, et `fitsAt` dans arrange.ts).
  */
 export function footprintOf(id: BiomeId, def: IslandDef = islandDef(id)): FootprintPart[] {
   const a = getArchipelago(archipelagoOfIsland(id));
   const out: FootprintPart[] = landRectangles(def).map((r) => ({ lieu: id, genre: 'terre', ...r }));
-  for (const m of monumentsOf(a.classe)) if (m.biome === id) out.push({ lieu: id, genre: 'monument', ...monumentRectangle(m, def) });
+  for (const m of monumentsOf(a.classe)) if (m.biome === id) out.push({ lieu: id, genre: 'monument', ...monumentRectangle(m, def), ...(m.detache && { fixe: true as const }) });
   if (a.port === id) {
     // Le quai suit son lieu (il est dessiné depuis sa côte) ; le lieu du port, au point de départ, ne tourne pas.
     const d = dockBox(id);
@@ -225,6 +235,17 @@ export function tooSmallGaps(a: ArchipelagoId, lieux: readonly IslandDef[], boug
   const c = frameOf(a);
   const parts = lieux.map((d) => partsOf(footprintOf(d.id, d)));
   parts.forEach((ps, i) => {
+    // Un lieu et son îlot détaché, qui ne le suit pas : le même écart qu'entre deux lieux.
+    const fixes = ps.filter((p) => p.fixe);
+    if (fixes.length) {
+      const min = bouge(lieux[i].id) ? GAP_BETWEEN_PLACES : 1;
+      for (const p of ps)
+        if (!p.fixe)
+          for (const q of fixes) {
+            const gap = gapBetweenParts(p, q, min);
+            if (gap < min) out.push({ place: p.lieu, other: q.lieu, kind: p.genre, gap });
+          }
+    }
     if (bouge(lieux[i].id))
       for (const p of ps) {
         const dehors = Math.min(p.box.x0 - c.x0, p.box.y0 - c.y0, c.x1 - p.box.x1, c.y1 - p.box.y1);
@@ -247,6 +268,7 @@ export function tooSmallGaps(a: ArchipelagoId, lieux: readonly IslandDef[], boug
 interface PartOfPlace {
   lieu: BiomeId;
   genre: FootprintPart['genre'];
+  fixe?: true;
   rects: readonly Rectangle[];
   box: Rectangle;
 }
@@ -255,7 +277,7 @@ function partsOf(fp: readonly FootprintPart[]): PartOfPlace[] {
   const out: PartOfPlace[] = [];
   const terre = fp.filter((p) => p.genre === 'terre');
   if (terre.length) out.push({ lieu: terre[0].lieu, genre: 'terre', rects: terre, box: boxOf(terre) });
-  for (const p of fp) if (p.genre !== 'terre') out.push({ lieu: p.lieu, genre: p.genre, rects: [p], box: p });
+  for (const p of fp) if (p.genre !== 'terre') out.push({ lieu: p.lieu, genre: p.genre, rects: [p], box: p, ...(p.fixe && { fixe: true as const }) });
   return out;
 }
 

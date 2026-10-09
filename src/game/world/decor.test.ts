@@ -68,7 +68,8 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
   // Plaine, la barque de la grève et le foyer laissent sa place à la boutique de Coco (GD-7, PR 3, retouche du directeur
   // artistique : les objets du quai réservent celle de la petite construction de l'île-port). Depuis GD-11, les îles-ports
   // ont grandi et changé de place : les mêmes objets, à de nouvelles cases ; à la Plaine, de nouveau avec sa forme (GD-12),
-  // puis avec sa corne jusqu'à sept cases et son coin de plage (8 octobre 2026).
+  // puis avec sa corne jusqu'à sept cases et son coin de plage (8 octobre 2026) ; au Marché, avec son croissant et son quai
+  // (GD-12, 9 octobre 2026).
   const quai = ARCHIPELAGO_IDS.map((a) =>
     [...new Set(parties(a)[1].filter((c) => c.decor && c.tag === getArchipelago(a).port && !bati(c) && !/arbre|sapin|buisson|fleur|rocher|roseau|souche|champignon|cristal/.test(kindOf(c.decor))).map((c) => c.decor))].sort(),
   );
@@ -83,12 +84,12 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
         "maths-6e-calculation/foyer@83,21",
       ],
       [
-        "maths-5e-proportionality/barque@77,320",
-        "maths-5e-proportionality/barque@82,307",
-        "maths-5e-proportionality/caisse@87,311",
-        "maths-5e-proportionality/fanion@90,313",
-        "maths-5e-proportionality/fanion@91,311",
-        "maths-5e-proportionality/foyer@92,323",
+        "maths-5e-proportionality/barque@82,306",
+        "maths-5e-proportionality/barque@87,310",
+        "maths-5e-proportionality/caisse@79,310",
+        "maths-5e-proportionality/fanion@73,310",
+        "maths-5e-proportionality/fanion@77,310",
+        "maths-5e-proportionality/foyer@91,315",
       ],
       [
         "maths-4e-algebra/barque@70,635",

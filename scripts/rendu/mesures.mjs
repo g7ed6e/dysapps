@@ -980,7 +980,8 @@ const CAPTURES = [
   { nom: 'gd-11-carte-6e-390x844', vue: 'carte', famille: 'gardiens', ile: 'history-6e-antiquity', taille: { width: 390, height: 844 } },
   // Une forme par île (GD-12, famille `formes`, à retirer une fois le lot fusionné) : la Carte du 6e à l'ouverture, sur
   // la tablette, la tablette debout et le téléphone, dans la police de lecture puis en OpenDyslexic 32 px ; la Forêt, la
-  // Plaine, la Rivière et la Pointe de près ; « Modifier le plan », la Tour du lecteur choisie (`amenager`).
+  // Plaine, la Rivière et la Pointe de près ; « Modifier le plan », la Tour du lecteur choisie (`amenager`). Puis
+  // les Collines du Large avec leurs formes, dont deux des quatre plus marquées (le fer et le moulinet).
   ...[
     { suffixe: '' },
     { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
@@ -996,6 +997,18 @@ const CAPTURES = [
     ['pointe', 'geography-6e-living'],
   ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
   { nom: 'formes-modifier-le-plan', vue: 'carte', famille: 'formes', ile: 'french-6e-phonology', amenager: 'french-6e-reading' },
+  // Aux Îles Brumeuses (5e, 9 octobre 2026) : la Carte sur la tablette, dans la police de lecture puis en OpenDyslexic
+  // 32 px, et debout ; le Comptoir (le fer), le Carrefour (le moulinet) et le Glacier de près ; « Modifier le plan », le
+  // Comptoir choisi.
+  { nom: 'formes-carte-5e', vue: 'carte', famille: 'formes', ile: 'maths-5e-proportionality' },
+  { nom: 'formes-carte-5e-od32', vue: 'carte', famille: 'formes', ile: 'maths-5e-proportionality', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  { nom: 'formes-carte-5e-800x1280', vue: 'carte', famille: 'formes', ile: 'maths-5e-proportionality', taille: { width: 800, height: 1280 } },
+  ...[
+    ['comptoir', 'english-5e-vocabulary'],
+    ['carrefour', 'french-5e-homophones'],
+    ['glacier', 'maths-5e-signed-numbers'],
+  ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
+  { nom: 'formes-modifier-le-plan-5e', vue: 'carte', famille: 'formes', ile: 'maths-5e-proportionality', amenager: 'english-5e-vocabulary' },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
