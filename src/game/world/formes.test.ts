@@ -17,7 +17,7 @@ const LIEUX = ARCHIPELAGO_IDS.flatMap((a) => mapOf(a)).filter((d) => silhouetteD
 /** Jusqu'où regarder autour du cœur : le plus long trait du catalogue (le crochet et le lagon, 9 octobre 2026). */
 const T = TRAIT_MAX;
 /** Les archipels qui ont pris leurs formes, et combien de lieux chacun. */
-const ARCHIPELS_AUX_FORMES: Partial<Record<(typeof ARCHIPELAGO_IDS)[number], number>> = { '6e': 15, '5e': 12, '3e': 12 };
+const ARCHIPELS_AUX_FORMES: Partial<Record<(typeof ARCHIPELAGO_IDS)[number], number>> = { '6e': 15, '5e': 12, '4e': 12, '3e': 12 };
 
 /** La case (x, y), au repère du monde, est-elle de la terre de l'île ? */
 const terre = (id: string) => {
@@ -80,7 +80,7 @@ describe('Les formes des îles (GD-12)', () => {
         }
       }
     // Le lagon : l'eau du large qui a de la terre de l'île de part et d'autre, sur les deux axes (au moins 60 cases).
-    let lagon = 0;
+    const lagon = new Set<string>();
     for (const cle of mer) {
       const [x, y] = cle.split(',').map(Number);
       const entre = (dx: number, dy: number) => {
@@ -92,9 +92,35 @@ describe('Les formes des îles (GD-12)', () => {
         }
         return false;
       };
-      if (entre(1, 0) && entre(-1, 0) && entre(0, 1) && entre(0, -1)) lagon++;
+      if (entre(1, 0) && entre(-1, 0) && entre(0, 1) && entre(0, -1)) lagon.add(cle);
     }
-    expect(lagon, id).toBeGreaterThanOrEqual(60);
+    expect(lagon.size, id).toBeGreaterThanOrEqual(60);
+    // La passe fait au moins quatre cases de large : une fenêtre de 4 × 4 cases d'eau va du large jusque dans le lagon,
+    // en glissant d'une case à la fois (le large s'étend de quatre cases autour de la boîte, pour qu'elle en fasse le tour).
+    const libre = (x: number, y: number) => {
+      if (x < x0 - 4 || y < y0 - 4 || x >= x1 || y >= y1) return false;
+      for (let j = 0; j < 4; j++) for (let i = 0; i < 4; i++) if (est(x + i, y + j)) return false;
+      return true;
+    };
+    const dansLeLagon = (x: number, y: number) => {
+      for (let j = 0; j < 4; j++) for (let i = 0; i < 4; i++) if (lagon.has(`${x + i},${y + j}`)) return true;
+      return false;
+    };
+    const vues = new Set<string>([`${x0},${y0}`]);
+    const fenetres: [number, number][] = [[x0, y0]];
+    let atteint = false;
+    for (let n = 0; n < fenetres.length && !atteint; n++) {
+      const [fx, fy] = fenetres[n];
+      atteint = dansLeLagon(fx, fy);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const [a, b] = [fx + dx, fy + dy];
+        if (!vues.has(`${a},${b}`) && libre(a, b)) {
+          vues.add(`${a},${b}`);
+          fenetres.push([a, b]);
+        }
+      }
+    }
+    expect(atteint, `${id} : une passe de quatre cases au moins`).toBe(true);
     // Toute l'eau de la boîte est la mer (la passe la relie au large), et l'île n'a ni mare ni lac.
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (!est(x, y)) expect(mer.has(`${x},${y}`), `${id} ${x},${y}`).toBe(true);
     expect(landscape(def).filter((l) => l.ground === 'eau'), id).toEqual([]);

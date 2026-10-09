@@ -45,6 +45,12 @@ const PLACES_FUTURES: Partial<Record<ArchipelagoId, readonly { nom: string; core
     { nom: 'EMC', core: { x: -14, y: 992 }, forme: { forme: 'trefle', vers: 'devant' } },
     { nom: 'latin ou grec', core: { x: 22, y: 992 }, forme: { forme: 'galet', vers: 'devant' } },
   ],
+  // Aux Monts de Feu, au rang du fond, entre la Vigie et le Bassin : l'EMC en trèfle derrière l'Escale, le latin ou le
+  // grec en galet derrière le Théâtre (9 octobre 2026).
+  '4e': [
+    { nom: 'EMC', core: { x: 74, y: 716 }, forme: { forme: 'trefle', vers: 'devant' } },
+    { nom: 'latin ou grec', core: { x: 106, y: 716 }, forme: { forme: 'galet', vers: 'devant' } },
+  ],
 };
 
 it('les places des îles futures (GD-12) : dans le cadre, à quatre cases d’eau de toute emprise de départ', () => {
@@ -114,7 +120,7 @@ it('le relief : plat, collines de 0 à 2, montagne de 6 à 9, volcan avec son cr
   }
 });
 
-it('le paysage : du décor sur chaque île, jamais sur l’eau ni la lave, des lacs sur quelques îles, de la neige sur les sommets', () => {
+it('le paysage : du décor sur chaque île, jamais sur l’eau ni la lave, les lacs dessinés, de la neige sur les sommets', () => {
   let lakes = 0;
   for (const def of MAP) {
     const cells = landscape(def);
@@ -136,7 +142,9 @@ it('le paysage : du décor sur chaque île, jamais sur l’eau ni la lave, des l
         def.id,
       ).toBe(true);
   }
-  expect(lakes).toBeGreaterThanOrEqual(3);
+  // Depuis que chaque île a sa forme (GD-12, les quatre archipels le 9 octobre 2026), plus de mare au hasard : restent les
+  // lacs dessinés (`LACS`), chacun sur son île.
+  expect(lakes).toBe(Object.keys(LACS).length);
 });
 
 it('aucun pont ne traverse la terre d’une autre île', () => {
