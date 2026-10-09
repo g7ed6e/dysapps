@@ -288,7 +288,7 @@ export function versLaCameraDuDessin(id: BiomeId): [number, number, number] {
  * `towards` (en part du chemin du milieu du cœur au milieu du lagon), et la caméra recule de `pullBack` fois, pour que le
  * lagon et sa passe tiennent à côté du cœur.
  */
-export const LAGOON_FRAMING = { towards: 0.55, pullBack: 1.3 } as const;
+const LAGOON_FRAMING = { towards: 0.55, pullBack: 1.3 } as const;
 
 
 /**
