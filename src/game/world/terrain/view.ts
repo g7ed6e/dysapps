@@ -3,7 +3,7 @@
 import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, mapOf, startingIsland, MAP } from '../map';
 import { dockBox } from '../harbor';
 import { type BridgeDef, getArchipelago, islandsOf } from '../archipelago';
-import { type BiomeId, BIOMES } from '../../biomes';
+import { type BiomeId, BIOMES, estLieuDOption } from '../../biomes';
 import { BAC_LONG, bridgePath } from './links';
 import { islandCenter } from './base';
 import { layoutCache } from '../placement';
@@ -99,7 +99,7 @@ export const VIEW_YAW_MAX = (40 * Math.PI) / 180;
  * La zone que la caméra cadre quand le bonhomme se tient sur une île : cette île et ses voisines (reliées par un
  * ouvrage, construit ou non). Sur une île du bord, les voisines tirent l'image vers le continent : moins de mer.
  *
- * L'île de la LV2 (le Relais au 5e, le Jardin des heures au 4e) n'élargit jamais le cadrage de sa voisine (DA, 28/09,
+ * Un lieu d'option (GD-13 ; l'île de la LV2, le Relais au 5e, le Jardin des heures au 4e) n'élargit jamais le cadrage de sa voisine (DA, 28/09,
  * LV2-4) : avec « Pas de LV2 », la vue reste celle d'avant l'île ; avec une LV2, elle ne l'accueillerait que si son
  * Gardien et son étiquette tenaient entiers au-dessus des boutons en 1024 × 768, 1280 × 800 et 800 × 1280 sans que
  * l'île du bonhomme rapetisse, ce qui n'est pas le cas (au bout de la crête, l'étiquette sort de l'écran à gauche, de
@@ -111,7 +111,8 @@ export const VIEW_YAW_MAX = (40 * Math.PI) / 180;
 export function viewZone(home: BiomeId): { minX: number; maxX: number; minY: number; maxY: number } {
   const ids = new Set<BiomeId>([home]);
   for (const other of neighboursOf(home)) {
-    if (BIOMES.find((x) => x.id === other)?.subject === 'lv2') continue;
+    const voisine = BIOMES.find((x) => x.id === other);
+    if (voisine && estLieuDOption(voisine)) continue;
     ids.add(other);
   }
   let minX = Infinity;

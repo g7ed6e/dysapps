@@ -184,7 +184,7 @@ it('la matière la moins jouée se mesure par île : l’anglais, avec deux île
   // histoire-géographie : 2 missions sur 2 îles (1), fermées ; chaque science : 2 missions sur son île (2), fermée.
   const sciences = { ...joue('life-earth-sciences-6e-living-world', 2), ...joue('physics-chemistry-6e-matter-energy', 2), ...joue('technology-6e-objects', 2) };
   const progress = { ...joue('french-6e-phonology', 2), ...joue('maths-6e-calculation', 3), ...joue('english-6e-grammar', 1), ...joue('history-6e-antiquity', 2), ...sciences };
-  expect(partJouee(progress, '6e')).toEqual({ french: 0.4, maths: 1, english: 0.5, 'history-geography': 1, 'life-earth-sciences': 2, 'physics-chemistry': 2, technology: 2 });
+  expect(partJouee(progress, '6e')).toEqual({ french: 0.4, maths: 1, english: 0.5, 'history-geography': 1, 'life-earth-sciences': 2, 'physics-chemistry': 2, technology: 2, civics: 0 });
   // En missions seules, l'anglais (1) serait le moins joué ; divisé par ses îles, c'est le français.
   const state = sanitizeState({ progress, stock: { [BLOC.bois]: 4 }, world: { links: ['french-6e-phonology-english-6e-grammar'] } });
   expect(ouvrageSuggere(state, '6e')).toMatchObject({
@@ -200,7 +200,7 @@ it('la matière la moins jouée se mesure par île : l’anglais, avec deux île
 it('à égalité, l’ordre des matières de l’archipel : le français, puis les maths, puis l’anglais', () => {
   // Une mission sur chaque île de la 6e : chaque matière à 1.
   const egal = Object.assign({}, ...islandsOf('6e').map((b) => joue(b.id, 1)));
-  expect(partJouee(egal, '6e')).toEqual({ french: 1, maths: 1, english: 1, 'history-geography': 1, 'life-earth-sciences': 1, 'physics-chemistry': 1, technology: 1 });
+  expect(partJouee(egal, '6e')).toEqual({ french: 1, maths: 1, english: 1, 'history-geography': 1, 'life-earth-sciences': 1, 'physics-chemistry': 1, technology: 1, civics: 0 });
   const choix = ouvragesParSuggestion(sanitizeState({ progress: egal }), [ouvrage('french-6e-phonology-english-6e-grammar'), ouvrage('maths-6e-calculation-maths-6e-fractions'), ouvrage('french-6e-phonology-french-6e-grammar-spelling')]);
   expect(choix.map((b) => b.id)).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'maths-6e-calculation-maths-6e-fractions', 'french-6e-phonology-english-6e-grammar']);
 });

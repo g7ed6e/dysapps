@@ -54,6 +54,14 @@ Les mots et les phrases de la LV2 sont lus avec sa voix : espagnole d’Espagne 
 
 Au menu, la LV2 prend le nom de la langue choisie, à côté de l’anglais. Ses missions sont sur l’île de LV2 de chaque archipel, à partir de la 5e : le Relais des voyageurs en 5e, le Jardin des heures en 4e et le Refuge des carnets en 3e (voir [Le monde de Blocland](blocland.md)). La question, la phrase ou le document dans la langue s’écoutent avec le bouton Écouter ; les réponses écrites dans la langue, elles, ne sont pas lues à voix haute.
 
+## Option latin ou grec
+
+Certains collégiens suivent, de la 5e à la 3e, l’option **latin** ou l’option **grec** (langues et cultures de l’Antiquité). Le réglage **Option latin ou grec** propose **Latin**, **Grec** ou **Pas d’option**, le choix par défaut. Il ne dépend pas de la LV2 : un élève peut avoir l’espagnol et le latin, ou pas de LV2 et le grec. Le choix est gardé sur l’appareil et se change à tout moment : ce qui est construit reste, et chaque option garde ses étoiles.
+
+Avec **Pas d’option**, l’option n’apparaît nulle part, et rien dans le jeu n’en dépend. Avec une option, elle prendra au menu le nom de l’option choisie (« Latin » ou « Grec ») et ses missions seront sur une île de chaque archipel, de la 5e à la 3e, en bout de chemin, comme la LV2. Ces îles ne sont pas encore dans le monde : pour l’instant, le choix est seulement gardé.
+
+Les mots latins et grecs ne sont jamais découpés en syllabes colorées : ils s’affichent tels quels, et la voix les dit avec une seule prononciation, toujours la même (voir [Principes dys](../pedagogie/principes.md)).
+
 ## Au démarrage
 
 Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’île où se tient le bonhomme ; le menu est dans le village (bouton Menu, trois traits). Ce n’est plus un réglage. Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre sur le menu en page.

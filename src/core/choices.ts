@@ -83,13 +83,19 @@ export interface Parsed {
   unit: string;
 }
 
-/** « −1 200,5 cm » → { value: -1200.5, decimals: 1, unit: ' cm' } ; undefined si ce n'est pas un nombre. */
+/** Une année avant notre ère (« 753 avant J.-C. ») : elle compte en négatif, pour que l'ordre croissant soit celui du temps. */
+const AVANT_J_C = /^\s*avant J\.-C\.$/;
+
+/**
+ * « −1 200,5 cm » → { value: -1200.5, decimals: 1, unit: ' cm' } ; « 753 avant J.-C. » → { value: -753, … } (rangées
+ * dans l'ordre croissant, 753, 509 et 44 avant J.-C. suivent la frise) ; undefined si ce n'est pas un nombre.
+ */
 export function parseNumber(c: Choice): Parsed | undefined {
   if (typeof c === 'number') return Number.isFinite(c) ? { value: c, decimals: (String(c).split('.')[1] ?? '').length, unit: '' } : undefined;
   const m = /^\s*([-−]?)(\d{1,3}(?:[   ]\d{3})+|\d+)(?:[.,](\d+))?([^\d/]*)$/.exec(c);
   if (!m) return undefined;
   const value = Number(`${m[1] ? '-' : ''}${m[2].replace(/\D/g, '')}.${m[3] ?? '0'}`);
-  return { value, decimals: (m[3] ?? '').length, unit: m[4] };
+  return { value: AVANT_J_C.test(m[4]) ? -value : value, decimals: (m[3] ?? '').length, unit: m[4] };
 }
 
 /** Écrit un nombre comme ses voisins : même signe moins, même séparateur de milliers, même virgule, même unité. */
@@ -115,7 +121,8 @@ function placeNumber(choices: Choice[], parsed: Parsed[], at: number, target: nu
   const answer = values[at];
   const unit = parsed[0].unit;
   // Des entiers qui se suivent : on décale la fenêtre, sans descendre sous 1 (pas de « 0 syllabe »).
-  if (parsed.every((p) => p.decimals === 0) && values.every((v, i) => i === 0 || v === values[i - 1] + 1)) {
+  // Jamais pour des années avant notre ère : la fenêtre écrirait « −753 avant J.-C. ».
+  if (!AVANT_J_C.test(unit) && parsed.every((p) => p.decimals === 0) && values.every((v, i) => i === 0 || v === values[i - 1] + 1)) {
     const start = Math.max(Math.min(1, values[0]), answer - target);
     return values.map((_, i) => formatLike(start + i, choices, unit, 0));
   }

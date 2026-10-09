@@ -15,7 +15,7 @@ export type Cycle = 3 | 4;
  * seulement) attendent leurs îles, ouvertes comme la LV2 par un réglage (cadrage du contenu, « LCA »).
  */
 export type Discipline =
-  | Exclude<Subject, 'lv2'>
+  | Exclude<Subject, 'lv2' | 'lca'>
   | 'german'
   | 'spanish'
   | 'latin'

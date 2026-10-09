@@ -29,12 +29,19 @@ it('sans LV2, le Gardien du Relais ne propose pas de défi ; chaque langue a ses
 });
 
 it('la matière LV2 prend le nom de la langue choisie, et disparaît avec « Pas de LV2 »', () => {
-  expect(subjectInfo('lv2', 'es').title).toBe('Espagnol');
-  expect(subjectInfo('lv2', 'de').title).toBe('Allemand');
-  expect(subjectInfo('english', 'de').title).toBe('Anglais');
-  expect(visibleSubjects('es')).toContain('lv2');
-  expect(visibleSubjects('none')).not.toContain('lv2');
-  expect(visibleSubjects('none')).toEqual(['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology']);
+  expect(subjectInfo('lv2', { lv2: 'es', lca: 'none' }).title).toBe('Espagnol');
+  expect(subjectInfo('lv2', { lv2: 'de', lca: 'none' }).title).toBe('Allemand');
+  expect(subjectInfo('english', { lv2: 'de', lca: 'la' }).title).toBe('Anglais');
+  expect(visibleSubjects({ lv2: 'es', lca: 'none' })).toContain('lv2');
+  expect(visibleSubjects({ lv2: 'none', lca: 'none' })).not.toContain('lv2');
+  // L'EMC et le latin ou grec n'ont pas encore d'île au jeu : ils n'apparaissent nulle part.
+  expect(visibleSubjects({ lv2: 'none', lca: 'gr' })).toEqual(['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology']);
+});
+
+it('l’option latin ou grec prend le nom de l’option choisie (GD-13)', () => {
+  expect(subjectInfo('lca', { lv2: 'es', lca: 'la' }).title).toBe('Latin');
+  expect(subjectInfo('lca', { lv2: 'es', lca: 'gr' }).title).toBe('Grec');
+  expect(subjectInfo('civics', { lv2: 'es', lca: 'gr' }).title).toBe('EMC');
 });
 
 it('avec « Pas de LV2 », aucun pont ne mène au Relais ; avec une LV2, le pont depuis le Comptoir est proposé', () => {

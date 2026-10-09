@@ -117,8 +117,8 @@ it('« Tu y es » se réécoute sur la ligne, se lit en lecture automatique et s
     expect(sousMissions.textContent).toBe('');
     const coco = document.querySelector(`[data-commande="${COCO}"]`) as HTMLElement;
     await userEvent.click(within(coco).getByRole('button', { name: /Y aller/ }));
-    // Le bouton de lecture de la ligne le relit.
-    expect(within(coco).getByRole('button', { name: /Écouter : Coco : Il me faut.*Tu y es : joue une mission ici\./ })).toBeInTheDocument();
+    // Le bouton de lecture de la ligne le relit (son nom est son étiquette seule, « Écouter »).
+    const relire = within(coco).getByRole('button', { name: 'Écouter' });
     // Lu tout de suite, la lecture automatique étant réglée.
     expect(dit.some((t) => t.includes('Tu y es'))).toBe(true);
     // Sous le titre « Missions », là où le panneau défile, avec son bouton de lecture.
@@ -126,7 +126,10 @@ it('« Tu y es » se réécoute sur la ligne, se lit en lecture automatique et s
     expect(titre.nextElementSibling).toBe(sousMissions);
     expect(sousMissions).toHaveAttribute('role', 'status');
     expect(sousMissions.textContent).toContain('Tu y es : joue une mission ici.');
-    expect(within(sousMissions).getByRole('button', { name: /Écouter : Tu y es/ })).toBeInTheDocument();
+    await userEvent.click(within(sousMissions).getByRole('button', { name: 'Écouter' }));
+    expect(dit.at(-1)).toMatch(/Tu y es/);
+    await userEvent.click(relire);
+    expect(dit.at(-1)).toMatch(/Coco : Il me faut.*Tu y es : joue une mission ici\./);
   } finally {
     vi.unstubAllGlobals();
   }

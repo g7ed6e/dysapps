@@ -1,4 +1,5 @@
 // Synthèse vocale du navigateur (gratuite, sans serveur).
+import { motsEtrangersCourants, segmentsForSpeech } from './foreignWords';
 
 export function isSpeechAvailable(): boolean {
   return typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
@@ -6,15 +7,16 @@ export function isSpeechAvailable(): boolean {
 
 /**
  * Langue d'un texte lu : le français (consignes, corrections), ou la langue vivante travaillée (anglais, et en LV2
- * allemand ou espagnol) pour ses mots et ses phrases.
+ * allemand ou espagnol) pour ses mots et ses phrases ; l'italien seulement pour un mot cité sur l'île du latin et du grec
+ * (./foreignWords.ts).
  */
-export type Lang = 'fr' | 'en' | 'de' | 'es';
+export type Lang = 'fr' | 'en' | 'de' | 'es' | 'it';
 
 /**
  * L'accent de chaque langue : français de France, anglais britannique (celui des manuels du collège), allemand
  * d'Allemagne et espagnol d'Espagne (ceux des manuels de LV2).
  */
-const LOCALES: Record<Lang, string> = { fr: 'fr-FR', en: 'en-GB', de: 'de-DE', es: 'es-ES' };
+const LOCALES: Record<Lang, string> = { fr: 'fr-FR', en: 'en-GB', de: 'de-DE', es: 'es-ES', it: 'it-IT' };
 
 /** Une langue vivante lue par sa propre voix (pas le français). */
 export type LangueVivante = Exclude<Lang, 'fr'>;
@@ -128,19 +130,27 @@ function cardinalEnMots(n: number): string {
   return n <= 16 ? UNITES[n] : n < 20 ? `dix-${UNITES[n - 10]}` : n === 20 ? 'vingt' : 'vingt-et-un';
 }
 
+/**
+ * Lit un texte. Sur une île qui a des mots marqués (le latin, le grec, une langue vivante citée : ./foreignWords.ts), un
+ * texte français se lit en morceaux, chacun dans sa voix ; `onEnd` vient après le dernier.
+ */
 export function speak(text: string, rate = 0.9, onEnd?: () => void, lang: Lang = 'fr'): void {
   if (!isSpeechAvailable() || !text.trim()) return;
   window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(pourLaVoix(text, lang));
-  utterance.lang = LOCALES[lang];
-  utterance.rate = rate;
-  const voice = pickVoice(window.speechSynthesis.getVoices(), lang);
-  if (voice) utterance.voice = voice;
-  if (onEnd) {
-    utterance.onend = onEnd;
-    utterance.onerror = onEnd;
-  }
-  window.speechSynthesis.speak(utterance);
+  const segments = lang === 'fr' ? segmentsForSpeech(text, motsEtrangersCourants()) : [{ text, lang }];
+  const voices = window.speechSynthesis.getVoices();
+  segments.forEach((s, i) => {
+    const utterance = new SpeechSynthesisUtterance(pourLaVoix(s.text, s.lang));
+    utterance.lang = LOCALES[s.lang];
+    utterance.rate = rate;
+    const voice = pickVoice(voices, s.lang);
+    if (voice) utterance.voice = voice;
+    if (onEnd && i === segments.length - 1) {
+      utterance.onend = onEnd;
+      utterance.onerror = onEnd;
+    }
+    window.speechSynthesis.speak(utterance);
+  });
 }
 
 export function stopSpeaking(): void {

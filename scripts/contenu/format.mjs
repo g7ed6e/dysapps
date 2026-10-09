@@ -9,7 +9,7 @@
 //   # Baie des mots                          ← le nom de l'île
 //   > une note                               ← ignorée
 //   ## Écoute · `first-listening`            ← une mission : son titre et son identifiant
-//   - description : …                        ← la mission (description, compétences, lv2)
+//   - description : …                        ← la mission (description, compétences, lv2 ou option, en attente)
 //   - consigne : Écoute le mot anglais, …    ← champs communs à tous ses niveaux
 //   ### Niveau 1 · `english-6e-vocabulary-first-listening-1` ← un niveau : l'identifiant de l'exercice
 //   - langue : en                            ← champs propres à ce niveau
@@ -34,14 +34,16 @@
 // est remplacé ; « clé des items : mot » (ou lettre, ou paragraphe) donne la clé ; « mot troué : en[f]ant » donne
 // le mot, avant, après et la réponse.
 //
-// En fin de fichier, « ## Les plans » donne les plans des bâtiments de l'île en tableau (scripts/contenu/plans.mjs), puis
-// « ## Les demandes », les commandes de son habitant (scripts/contenu/demandes.mjs).
+// En fin de fichier, « ## La voix » donne les mots qui ne sont pas du français et comment la voix les dit
+// (scripts/contenu/voix.mjs), « ## Les plans » les plans des bâtiments de l'île en tableau (scripts/contenu/plans.mjs),
+// puis « ## Les demandes », les commandes de son habitant (scripts/contenu/demandes.mjs).
 //
 // Une valeur qui a un saut de ligne, des espaces au bord, qui est vide ou qui commence par « " »
 // s'écrit comme une chaîne JSON entre guillemets. Une liste s'écrit « a · b · c », ou en sous-liste si un élément
 // contient « · ».
 import { ecrireDemandes, lireDemandes, TITRE_DEMANDES } from './demandes.mjs';
 import { ecrirePlans, lirePlans, TITRE_PLANS } from './plans.mjs';
+import { ecrireVoix, lireVoix, TITRE_VOIX } from './voix.mjs';
 import { aGuillemets, ecrireTexte, lireTexte } from './texte.mjs';
 
 /** Champs de l'île, dans l'en-tête (son nom est le titre « # … ») : [étiquette, chemin dans le JSON]. */
@@ -61,6 +63,11 @@ const MISSION = [
   ['description', 'description', 'texte'],
   ['compétences', 'programme', 'liste'],
   ['lv2', 'lv2', 'texte'],
+  // Sur l'île du latin et du grec (matière `lca`) : l'option de la mission, `la` ou `gr` (GD-13, comme `lv2`).
+  ['option', 'option', 'texte'],
+  // Une mission écrite et relue, gardée hors du jeu tant que ce qu'il lui faut manque (la police grecque de
+  // « L'alphabet grec ») : la raison, en quelques mots. `missionsJouables` ne la propose pas.
+  ['en attente', 'waiting', 'texte'],
 ];
 const PAR_ETIQUETTE_MISSION = new Map(MISSION.map((c) => [c[0], c]));
 
@@ -373,7 +380,7 @@ function commune(valeurs) {
  * lecture du trou, mot troué) ne s'écrit pas ; les items courts s'écrivent en tableau.
  */
 export function ecrireIle(ile, exercices, plans = [], demandes = []) {
-  verifierCles(ile, new Set(['id', 'name', 'exercises', 'block', ...ILE.map((c) => c[1].split('.')[0])]), ile.id);
+  verifierCles(ile, new Set(['id', 'name', 'exercises', 'block', 'foreignWords', ...ILE.map((c) => c[1].split('.')[0])]), ile.id);
   const entete = ILE.filter(([, chemin]) => obtenir(ile, chemin) !== undefined).map(([etiquette, chemin]) => `${etiquette} : ${ecrireTexte(obtenir(ile, chemin))}`);
   const lignes = ['---', `lieu : ${ile.id}`, ...entete, '---', '', `# ${ile.name ?? ile.id}`, ''];
   const missions = [...(ile.exercises ?? [])];
@@ -419,7 +426,7 @@ export function ecrireIle(ile, exercices, plans = [], demandes = []) {
       lignes.push(...ecrireItems(ex.items, clesParItem), '');
     });
   }
-  lignes.push(...ecrirePlans(ile.id, plans), ...ecrireDemandes(ile.id, demandes));
+  lignes.push(...ecrireVoix(ile.foreignWords), ...ecrirePlans(ile.id, plans), ...ecrireDemandes(ile.id, demandes));
   return lignes.join('\n');
 }
 
@@ -428,12 +435,21 @@ export function ecrireIle(ile, exercices, plans = [], demandes = []) {
 /** Lit le Markdown d'une île : { ile, missions: [{ id, titre }], biome, exercices, plans, demandes }. */
 export function lireIle(md, fichier = 'md') {
   const toutes = md.replace(/^\uFEFF/, '').split(/\r?\n/);
-  // « ## Les plans », puis « ## Les demandes », s'ils y sont, closent le fichier : scripts/contenu/plans.mjs et
-  // scripts/contenu/demandes.mjs les lisent.
+  // « ## La voix », « ## Les plans », puis « ## Les demandes », s'ils y sont, closent le fichier, dans cet ordre :
+  // scripts/contenu/voix.mjs, plans.mjs et demandes.mjs les lisent.
+  const debutVoix = toutes.indexOf(TITRE_VOIX);
   const debutPlans = toutes.indexOf(TITRE_PLANS);
   const debutDemandes = toutes.indexOf(TITRE_DEMANDES);
-  if (debutPlans !== -1 && debutDemandes !== -1 && debutDemandes < debutPlans) throw new Error(`${fichier}, ligne ${debutDemandes + 1} : « ${TITRE_DEMANDES} » vient après « ${TITRE_PLANS} »`);
-  const finDuContenu = [debutPlans, debutDemandes].find((n) => n !== -1) ?? toutes.length;
+  const sections = [
+    [TITRE_VOIX, debutVoix],
+    [TITRE_PLANS, debutPlans],
+    [TITRE_DEMANDES, debutDemandes],
+  ].filter(([, n]) => n !== -1);
+  for (let k = 1; k < sections.length; k++) {
+    if (sections[k][1] < sections[k - 1][1]) throw new Error(`${fichier}, ligne ${sections[k][1] + 1} : « ${sections[k][0]} » vient après « ${sections[k - 1][0]} »`);
+  }
+  const finDuContenu = sections[0]?.[1] ?? toutes.length;
+  const finDe = (debut) => sections.find(([, n]) => n > debut)?.[1];
   const lignes = toutes.slice(0, finDuContenu);
   let ile = null;
   const biome = {};
@@ -658,12 +674,13 @@ export function lireIle(md, fichier = 'md') {
   // La ressource d'un lieu porte l'identifiant du lieu : elle ne s'écrit pas.
   biome.block = ile;
   const champsIle = Object.fromEntries(['module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'].filter((k) => biome[k] !== undefined).map((k) => [k, biome[k]]));
+  const foreignWords = debutVoix === -1 ? undefined : lireVoix(toutes.slice(debutVoix, finDe(debutVoix)), debutVoix, fichier);
   return {
     ile,
     missions: missions.map((d) => ({ id: d.id, titre: d.title })),
-    biome: { id: ile, ...(nom === undefined ? {} : { name: nom }), ...champsIle, exercises },
+    biome: { id: ile, ...(nom === undefined ? {} : { name: nom }), ...champsIle, exercises, ...(foreignWords ? { foreignWords } : {}) },
     exercices: exercices.map(ordonner),
-    plans: debutPlans === -1 ? [] : lirePlans(toutes.slice(debutPlans, debutDemandes === -1 ? undefined : debutDemandes), debutPlans, fichier, ile),
+    plans: debutPlans === -1 ? [] : lirePlans(toutes.slice(debutPlans, finDe(debutPlans)), debutPlans, fichier, ile),
     demandes: debutDemandes === -1 ? [] : lireDemandes(toutes.slice(debutDemandes), debutDemandes, fichier, ile),
   };
 }

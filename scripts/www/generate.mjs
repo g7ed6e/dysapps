@@ -147,7 +147,9 @@ const SUBJECT_NAME = {
   'life-earth-sciences': 'SVT',
   'physics-chemistry': 'Physique-chimie',
   technology: 'Technologie',
+  civics: 'EMC',
   lv2: 'LV2 (espagnol ou allemand)',
+  lca: 'Latin ou grec (option)',
 };
 /** Les matières, dans l'ordre du portail. */
 const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
@@ -160,7 +162,9 @@ const SUBJECT_DE = {
   'life-earth-sciences': 'de SVT',
   'physics-chemistry': 'de physique-chimie',
   technology: 'de technologie',
+  civics: 'd’EMC',
   lv2: 'de LV2',
+  lca: 'de latin ou grec',
 };
 // Quand arrive la première commande d'un archipel, selon `SEUIL_DE_LA_PREMIERE_COMMANDE` (src/game/world/requests.ts).
 const QUAND_LA_PREMIERE_COMMANDE = {
@@ -556,6 +560,9 @@ function islandPage(b, d) {
   for (const q of b.exercises) {
     const exos = EXERCISES.filter((e) => e.biome === b.id && e.type === q.id).sort((a, c) => a.level - c.level);
     lines.push(`### ${q.title}`, '', `*${q.description}*`, '');
+    // L'île du latin et du grec (GD-13) : l'option de chaque mission ; une mission gardée hors du jeu le dit.
+    if (q.option) lines.push(`Option ${q.option === 'la' ? 'latin' : 'grec'} : cette mission se joue quand l’élève a choisi ${q.option === 'la' ? 'le latin' : 'le grec'} dans les Réglages.`, '');
+    if (q.waiting) lines.push(`Cette mission n’est pas encore proposée dans le jeu : elle attend ${q.waiting}.`, '');
     lines.push(programmeLine([...q.programme, ...exos.flatMap((e) => e.programme ?? [])], d, '../'), '');
     if (b.id === 'french-6e-word-spelling' && q.id === 'sight-words') lines.push('Les mots dictés viennent de la liste officielle des mots-outils (fin de CP, fin de CE1) : voir [Programmes officiels](../programmes.md#mots-outils).', '');
     if (exos.length === 0) {

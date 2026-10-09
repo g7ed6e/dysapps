@@ -3,6 +3,7 @@ import { Icon } from '../../components/Icon';
 import { RichText, frenchTypography } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
+import { Marked } from '../../components/ForeignWords';
 import { langAttr } from '../../core/speech';
 import { Aid } from './Aid';
 import type { AidData } from './maths';
@@ -109,7 +110,7 @@ export function CalculationScreen({ items, answered, onAnswer, ruledOut, onHelp,
         <div className="calcul-help">
           {hintShown ? (
             <p className="calcul-hint" role="status">
-              <Icon name="lightbulb" /> {hint} <SpeakButton text={hint} compact />
+              <Icon name="lightbulb" /> <Marked text={hint} /> <SpeakButton text={hint} compact />
             </p>
           ) : (
             <button

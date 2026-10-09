@@ -69,7 +69,8 @@ it('calcul : énoncé et réponses en anglais, indice lu en français', async ()
   await user.click(screen.getByRole('button', { name: /^Écouter/ }));
   expect(utterances.at(-1)).toEqual({ text: 'She (mot manquant) a cat.', lang: 'en-GB' });
   await user.click(screen.getByRole('button', { name: /Un indice/ }));
-  await user.click(screen.getByRole('button', { name: /Écouter : Avec she/ }));
+  // Le nom du bouton est son étiquette seule : le texte lu (parfois écrit pour la voix) n'en fait pas partie.
+  await user.click(within(screen.getByRole('status')).getByRole('button', { name: 'Écouter' }));
   expect(utterances.at(-1)).toEqual({ text: 'Avec she : has got.', lang: 'fr-FR' });
 });
 
@@ -215,7 +216,7 @@ it('lexique : une ligne « mot = sens » porte un bouton qui lit ses mots anglai
   renderScreen(CalculationScreen, { question: 'Que faut-il faire ?', prompt: 'PUSH', choices: ['Pousser', 'Tirer'], answer: 'Pousser', aid }, 'en');
   const [methode, lexique] = within(screen.getByRole('figure')).getAllByRole('listitem');
   expect(within(methode).queryByRole('button')).toBeNull();
-  await user.click(screen.getByRole('button', { name: 'Écouter : push, pull' }));
+  await user.click(within(lexique).getByRole('button', { name: 'Écouter' }));
   expect(utterances.at(-1)).toMatchObject({ text: 'push, pull', lang: 'en-GB' });
   expect(lexique.textContent).toBe('push = pousser, pull = tirer');
 });

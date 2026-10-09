@@ -19,7 +19,7 @@ import { useASuivre } from '../components/useNextUp';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../universes';
-import { blockCount, estIleLv2, getBiome, guardianTitle, missionsJouables, type BiomeId, type BlockId } from './biomes';
+import { blockCount, getBiome, guardianTitle, missionsJouables, sansSonOption, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { isBossBeaten, isBossOpen } from './boss';
 import { useConstruireUnOuvrage, withArticle } from './Bridges';
@@ -210,7 +210,7 @@ function FicheDeLaBorne({ id, onClose }: Props & { id: string }) {
   const ile: BiomeId = borne?.ile ?? 'french-6e-phonology';
   const mission = borne?.mission ?? '';
   const biome = borne ? getBiome(ile) : undefined;
-  const exercise = biome ? missionsJouables(biome, settings.lv2).find((m) => m.id === mission) : undefined;
+  const exercise = biome ? missionsJouables(biome, settings.lv2, settings.lca).find((m) => m.id === mission) : undefined;
   const def = pickExercise(ile, mission, levelFor(state, mission), state.progress);
   const unlocked = isBiomeUnlocked(ile, state.world.links);
   const jouable = Boolean(def && unlocked && exercise);
@@ -408,7 +408,9 @@ function FicheDeLOuvrage({ id, onBuilt, onClose, onVoirOuvrage }: Props & { id: 
   const world = { progress: state.progress, plans: state.world.parts };
   const etat = bridgeState(def, links, world);
   const have = payableBlocks(state.stock);
-  const sansLv2 = settings.lv2 === 'none' && [def.from, def.to].some((i) => getBiome(i)?.subject === 'lv2');
+  // Une liaison vers un lieu d'option sans son option (« Pas de LV2 », « Pas d'option », GD-13) ne se construit pas.
+  const sansOption = [def.from, def.to].map((i) => sansSonOption(getBiome(i), settings)).find((x) => x !== null) ?? null;
+  const sansLv2 = sansOption !== null;
   const pret = etat === 'buildable' && have >= def.cost && !sansLv2;
   // Un ouvrage qui ouvre une île : ses départs possibles, du plus proche au plus loin.
   const open = reachableIslands(links);
@@ -422,8 +424,8 @@ function FicheDeLOuvrage({ id, onBuilt, onClose, onVoirOuvrage }: Props & { id: 
   const quoi = withArticle(kind);
   const depuis = ferme ? `${quoi.charAt(0).toUpperCase()}${quoi.slice(1)} part ${ofPlace(depart)}. ` : '';
   const numero = ferme && departs.length > 1 && rang >= 0 ? `Départ ${rang + 1} sur ${departs.length}. ` : '';
-  const phrase = sansLv2
-    ? 'Choisis d’abord une LV2 dans les Réglages.'
+  const phrase = sansOption
+    ? sansOption.liaison
     : etat === 'far'
       ? `Il faut d’abord un chemin jusqu’${toPlace(a)} ou ${toPlace(b)}.`
       : etat === 'blocked'
@@ -513,7 +515,7 @@ function FicheDeLIlePale({ ile, fiche, onVoirOuvrage, onClose }: Props & { ile: 
   const textes = useTextes();
   const biome = getBiome(ile);
   if (!biome) return null;
-  const indice = accueilDeLIle(state, ile, estIleLv2(biome) && settings.lv2 === 'none', textes);
+  const indice = accueilDeLIle(state, ile, sansSonOption(biome, settings), textes);
   const premier = nearestDeparture(ile, state.world.links);
   return (
     <Fiche
