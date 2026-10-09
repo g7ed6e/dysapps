@@ -36,15 +36,12 @@ export function ApplicationSection() {
               ? 'Pas de connexion : réessaie plus tard.'
               : 'L’application se met à jour toute seule ; ce bouton sert à ne pas attendre.'}
       </p>
-      {/* La mesure d'usage anonyme (core/usage.ts) : ce qu'elle compte, en une phrase. */}
-      <label className="toggle">
+      {/* La mesure d'usage anonyme (core/usage.ts) : le libellé dit l'effet, le manuel le détail. À part du statut de
+          la mise à jour, juste au-dessus. */}
+      <label className="toggle settings-usage">
         <input type="checkbox" checked={settings.usageStats} onChange={(e) => update({ usageStats: e.target.checked })} />
-        Aider à améliorer l’appli
+        Envoyer des chiffres anonymes
       </label>
-      <p className="settings-note">
-        L’appli compte ses lancements, le temps passé sur chaque écran et sa fluidité, sans savoir qui tu es. Rien n’est écrit
-        sur ton appareil.
-      </p>
       {/* Ouverts dans un nouvel onglet : l'appli reste où elle était. */}
       <div className="settings-links">
         <a className="button" href={DOCS_URL} target="_blank" rel="noopener noreferrer">

@@ -17,7 +17,10 @@ const body = JSON.stringify({
   events: [{ kind: 'screen', screen: '/adventure', seconds: 5, frames: 0, frameMs: 0, slowFrames: 0 }],
 });
 
-const post = (url: string, init: RequestInit = {}) => new Request(url, { method: 'POST', body, ...init });
+const post = (url: string, init: RequestInit = {}) => {
+  const text = typeof init.body === 'string' ? init.body : body;
+  return new Request(url, { method: 'POST', ...init, body: text, headers: { 'Content-Length': String(text.length), ...(init.headers as Record<string, string>) } });
+};
 
 describe('le Worker', () => {
   it('écrit les évènements d’un envoi, avec le canal de l’adresse', async () => {

@@ -3,10 +3,10 @@
 // seulement ; le workflow « Mesure d'usage » (.github/workflows/usage.yml) le lance et l'affiche dans son résumé.
 // Il faut deux variables : CLOUDFLARE_ACCOUNT_ID et CLOUDFLARE_API_TOKEN (un jeton « Account Analytics Read »).
 // `node scripts/pilotage/usage.mjs [jours] [canal]` : 30 jours et la production par défaut ; canal « preview » pour les
-// aperçus des branches. Les colonnes suivent toDataPoint (src/core/usageEvents.ts).
+// aperçus des branches. Les colonnes suivent toDataPoint (src/core/usageEvents.ts). Analytics Engine garde trois mois.
 
 const DATASET = 'dysapps_usage';
-const days = Math.max(1, Math.min(90, Number(process.argv[2]) || 30));
+const days = Math.max(1, Math.min(90, Math.trunc(Number(process.argv[2])) || 30));
 const channel = process.argv[3] === 'preview' ? 'preview' : 'production';
 const { CLOUDFLARE_ACCOUNT_ID: account, CLOUDFLARE_API_TOKEN: token } = process.env;
 
@@ -82,6 +82,6 @@ const out = [
   '## Appareils (fenêtre arrondie à 100 px)\n',
   table(['Fenêtre', 'Densité', 'Ouverte', 'Lancements'], devices.map((r) => [`${r.width} × ${r.height}`, r.dpr, r.mode === 'installed' ? 'installée' : 'navigateur', n(r.n)])),
   '## Erreurs\n',
-  table(['Message', 'Écran', 'Version', 'Nombre'], errors.map((r) => [r.message.replaceAll('|', '\\|'), `\`${r.screen}\``, r.version, n(r.n)])),
+  table(['Message', 'Écran', 'Version', 'Nombre'], errors.map((r) => [`\`${String(r.message).replace(/[`|\n\r]/g, ' ')}\``, `\`${r.screen}\``, r.version, n(r.n)])),
 ];
 console.log(out.join('\n'));

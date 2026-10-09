@@ -58,7 +58,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 
 ### La mesure d’usage
 
-Demandée par le mainteneur le 9 octobre 2026 (« le but est d’avoir des inputs sur l’usage, les perfs ») : sur Cloudflare, gratuite, sans bandeau (mesure d’audience exemptée de consentement, CNIL). L’appli compte, sans identifiant, les lancements, le temps et la fluidité par écran, les appareils (fenêtre arrondie) et les erreurs ; le Worker (`src/worker/`) les écrit dans Workers Analytics Engine, le workflow « Mesure d’usage » les résume. Réglages › Application, « Aider à améliorer l’appli », la coupe. En pull request ; attend les secrets du mainteneur pour la lecture.
+Demandée par le mainteneur le 9 octobre 2026 (« le but est d’avoir des inputs sur l’usage, les perfs ») : sur Cloudflare, gratuite, sans bandeau (mesure d’audience exemptée de consentement, CNIL). L’appli compte, sans identifiant, les lancements, le temps et la fluidité par écran, les appareils (fenêtre arrondie) et les erreurs ; le Worker (`src/worker/`) les écrit dans Workers Analytics Engine, le workflow « Mesure d’usage » les résume. Réglages › Application, « Envoyer des chiffres anonymes », la coupe. En pull request ; attend les secrets du mainteneur pour la lecture.
 
 ### L’accessibilité dans l’appli
 

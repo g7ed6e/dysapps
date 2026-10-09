@@ -8,7 +8,7 @@
 import { APP_VERSION } from './appUpdate';
 import { reglagesCourants } from './settings';
 import { universAffiche } from './universe';
-import { type LaunchEvent, MAX_EVENTS, screenOf, SLOW_FRAME_MS, type UsageBatch, type UsageEvent } from './usageEvents';
+import { cleanMessage, type LaunchEvent, MAX_EVENTS, screenOf, SLOW_FRAME_MS, type UsageBatch, type UsageEvent } from './usageEvents';
 
 /** L'application publiée à la racine : Cloudflare, pas GitHub Pages ni le serveur de développement. */
 const published = () => import.meta.env.PROD && import.meta.env.BASE_URL === '/' && typeof window !== 'undefined';
@@ -31,6 +31,8 @@ let launch: LaunchEvent | null = null;
 let current: OpenScreen | null = null;
 let queue: UsageEvent[] = [];
 let firstFrameMs = 0;
+/** Les écrans ouverts depuis le lancement : la première image ne compte que sur le premier. */
+let screensOpened = 0;
 
 /** La mesure est-elle permise ici ? Le réglage se relit à chaque envoi : le couper efface ce qui attendait. */
 function allowed(): boolean {
@@ -68,7 +70,7 @@ export function startUsage(): void {
     flushUsage();
   });
   window.addEventListener('error', (e) => recordError(e.message));
-  window.addEventListener('unhandledrejection', (e) => recordError(e.reason instanceof Error ? e.reason.message : String(e.reason)));
+  window.addEventListener('unhandledrejection', (e) => recordError(e.reason));
 }
 
 /** L'écran que l'application cachée retrouvera en revenant. */
@@ -98,14 +100,20 @@ export function usageScreen(pathname: string): void {
   const screen = screenOf(pathname);
   if (current?.screen === screen) return;
   closeScreen();
-  paused = null;
-  if (!document.hidden) openScreen(screen);
+  // Cachée, l'application rouvrira cet écran en revenant.
+  paused = screen;
+  if (!document.hidden) {
+    openScreen(screen);
+    paused = null;
+  }
+  screensOpened++;
 }
 
 /** Une image du monde en 3D vient d'être dessinée, `ms` après la précédente (la boucle du monde, three/loop.ts). */
 export function usageFrame(ms: number): void {
   if (!started) return;
-  if (firstFrameMs === 0) firstFrameMs = Math.round(performance.now());
+  // La première image du monde, s'il est le premier écran ouvert (sinon elle compterait le temps passé ailleurs).
+  if (firstFrameMs === 0 && screensOpened <= 1) firstFrameMs = Math.round(performance.now());
   if (!current || ms <= 0 || ms > MAX_FRAME_MS) return;
   current.frames++;
   current.frameMs += ms;
@@ -113,7 +121,9 @@ export function usageFrame(ms: number): void {
 }
 
 let lastError = '';
-function recordError(message: string): void {
+/** Une erreur : celles de la page, et celles que React attrape (limites d'erreur, `main.tsx`). */
+export function recordError(raw: unknown): void {
+  const message = cleanMessage(raw instanceof Error ? raw.message : String(raw ?? ''));
   if (!started || !message || message === lastError) return;
   lastError = message;
   push({ kind: 'error', screen: current?.screen ?? paused ?? '/', message });

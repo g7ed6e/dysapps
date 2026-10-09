@@ -51,6 +51,31 @@ describe('la mesure d’usage', () => {
     expect(Object.keys(batch).sort()).toEqual(['events', 'universe', 'version', 'view']);
   });
 
+  it('coupe l’écran quand l’appli est cachée et le rouvre au retour', async () => {
+    vi.useFakeTimers();
+    const usage = await load();
+    usage.startUsage();
+    usage.usageScreen('/adventure');
+    vi.advanceTimersByTime(2000);
+    const hidden = vi.spyOn(document, 'hidden', 'get').mockReturnValue(true);
+    document.dispatchEvent(new Event('visibilitychange'));
+    // Changé pendant que l'appli est cachée : c'est cet écran qui se rouvre.
+    usage.usageScreen('/reglages');
+    vi.advanceTimersByTime(60_000);
+    hidden.mockReturnValue(false);
+    document.dispatchEvent(new Event('visibilitychange'));
+    vi.advanceTimersByTime(4000);
+    usage.flushUsage();
+    const batches = (await sent()) as { events: { kind: string; screen?: string; seconds?: number }[] }[];
+    const screens = batches.flatMap((b) => b.events).filter((e) => e.kind === 'screen');
+    expect(screens).toEqual([expect.objectContaining({ screen: '/adventure', seconds: 2 })]);
+    usage.usageScreen('/succes');
+    usage.flushUsage();
+    const again = ((await sent()) as { events: { screen?: string; seconds?: number }[] }[]).flatMap((b) => b.events);
+    expect(again.at(-1)).toEqual(expect.objectContaining({ screen: '/reglages', seconds: 4 }));
+    hidden.mockRestore();
+  });
+
   it('oublie ce qui attendait quand le réglage est coupé', async () => {
     const usage = await load();
     usage.startUsage();

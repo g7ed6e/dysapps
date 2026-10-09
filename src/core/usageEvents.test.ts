@@ -1,4 +1,4 @@
-import { parseUsageBatch, screenOf, toDataPoint, type UsageBatch } from './usageEvents';
+import { cleanMessage, parseUsageBatch, screenOf, toDataPoint, type UsageBatch } from './usageEvents';
 
 const batch = (events: unknown[]) => ({ version: '1.42.0', universe: 'blocland', view: '3d', events });
 
@@ -10,6 +10,13 @@ describe('screenOf', () => {
   });
   it('remplace un segment inattendu', () => {
     expect(screenOf('/app/Élève Dupont')).toBe('/app/x');
+  });
+});
+
+describe('cleanMessage', () => {
+  it('garde le message sur une ligne, sans adresse ni texte cité', () => {
+    expect(cleanMessage('Unexpected token \'x\', "{\"nom\":\"Léa\"}" is not valid JSON')).toBe('Unexpected token "…" is not valid JSON');
+    expect(cleanMessage('Failed to fetch https://exemple.fr/a?b=c\nsuite')).toBe('Failed to fetch <url> suite');
   });
 });
 

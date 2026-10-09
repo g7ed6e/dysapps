@@ -19,8 +19,10 @@ export async function handleUsage(request: Request, env: Env): Promise<Response>
   // Seulement depuis l'application elle-même (le navigateur pose cet en-tête, un autre site ne peut pas le changer).
   const site = request.headers.get('Sec-Fetch-Site');
   if (site !== null && site !== 'same-origin') return empty(403);
-  const declared = Number(request.headers.get('Content-Length') ?? 0);
-  if (declared > MAX_BYTES) return empty(413);
+  // `sendBeacon` donne toujours la taille : sans elle, rien n'est lu.
+  const declared = request.headers.get('Content-Length');
+  if (declared === null) return empty(411);
+  if (Number(declared) > MAX_BYTES) return empty(413);
   const text = await request.text();
   if (text.length > MAX_BYTES) return empty(413);
   let raw: unknown;

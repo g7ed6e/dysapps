@@ -34,13 +34,13 @@ interface ScreenEvent {
 }
 
 /** Une erreur de l'application, sans sa pile. */
-interface ErrorEvent {
+interface UsageErrorEvent {
   kind: 'error';
   screen: string;
   message: string;
 }
 
-export type UsageEvent = LaunchEvent | ScreenEvent | ErrorEvent;
+export type UsageEvent = LaunchEvent | ScreenEvent | UsageErrorEvent;
 
 /** Un envoi : ce qui vaut pour tous ses évènements, puis les évènements. */
 export interface UsageBatch {
@@ -62,6 +62,19 @@ const MAX_MESSAGE = 120;
 /** Une adresse d'écran : des segments en minuscules, chiffres et tirets, au plus quatre. */
 const SCREEN = /^(\/[a-z0-9-]{1,48}){0,4}\/?$/;
 const WORD = /^[a-z0-9.-]{1,24}$/;
+
+/**
+ * Le message d'une erreur tel qu'on le garde : sur une ligne, sans adresse ni texte entre guillemets (une erreur de
+ * lecture JSON cite un morceau de ce qu'elle lisait : tout ce qui va du premier guillemet au dernier), au plus 120 signes.
+ */
+export function cleanMessage(message: string): string {
+  return message
+    .replace(/[\u0000-\u001f\u007f]+/g, ' ')
+    .replace(/[a-z][a-z0-9+.-]*:\/\/\S+/gi, '<url>')
+    .replace(/["'«`].*["'»`]/, '"…"')
+    .trim()
+    .slice(0, MAX_MESSAGE);
+}
 
 /** L'adresse d'un écran telle qu'on la mesure : sans paramètres, au plus quatre segments, `/x` pour un segment inattendu. */
 export function screenOf(pathname: string): string {
@@ -100,7 +113,7 @@ function parseEvent(raw: unknown): UsageEvent | null {
   }
   if (e.kind === 'error') {
     if (typeof e.screen !== 'string' || !SCREEN.test(e.screen) || typeof e.message !== 'string') return null;
-    return { kind: 'error', screen: e.screen, message: e.message.slice(0, MAX_MESSAGE) };
+    return { kind: 'error', screen: e.screen, message: cleanMessage(e.message) };
   }
   return null;
 }
