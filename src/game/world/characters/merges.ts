@@ -138,16 +138,14 @@ const ECART_POUR_CHANGER = 3;
  * regard est en pleine mer. Une seule île à la fois : le budget compte le pire cas d'une île de près.
  */
 export function ileRegardee(places: PersonnagePlace[], x: number, z: number, actuelle: BiomeId | null): BiomeId | null {
-  const distances = new Map<BiomeId, number>();
+  let [meilleure, dMin, dActuelle] = [actuelle, Infinity, Infinity];
   for (const p of places) {
     const [px, , pz] = pointDePose(p);
     const d = Math.hypot(px - x, pz - z);
-    distances.set(p.id, Math.min(d, distances.get(p.id) ?? Infinity));
+    if (d < dMin) [meilleure, dMin] = [p.id, d];
+    if (p.id === actuelle) dActuelle = Math.min(dActuelle, d);
   }
-  let [meilleure, dMin] = [actuelle, Infinity];
-  for (const [id, d] of distances) if (d < dMin) [meilleure, dMin] = [id, d];
   if (dMin > PORTEE_DU_REGARD) return actuelle;
-  const dActuelle = actuelle === null ? Infinity : (distances.get(actuelle) ?? Infinity);
   return dMin < dActuelle - ECART_POUR_CHANGER ? meilleure : actuelle;
 }
 

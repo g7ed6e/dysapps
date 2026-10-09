@@ -38,7 +38,7 @@ export interface Personnages extends PartieDeLaScene {
   approcher(id: BiomeId | null): void;
   /**
    * Le point que la caméra regarde (`x`, `z`, dans la scène) : l'île dont un personnage en est le plus près passe de près
-   * (`ileRegardee`), même si le bonhomme est ailleurs.
+   * (`ileRegardee`), même si le bonhomme est ailleurs, au deuxième relevé de suite qui la désigne.
    */
   viser(x: number, z: number): void;
   /** Le moment du rallumage (lot 6) : la sentinelle de ce Gardien se rallume en fondu ; `null` : plus de moment. */
@@ -267,6 +267,8 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
   const tetes = new Map<BiomeId, { objet: THREE.Object3D; ecart: THREE.Vector3 }>();
   let places: NonNullable<WorldViewProps['creatures']> | null = null;
   let pres: BiomeId | null = null;
+  /** L'île que le dernier relevé du regard a désignée, pas encore de près (`viser`). */
+  let candidate: BiomeId | null = null;
   // Le rallumage demandé avant que les personnages d'Archipéo soient chargés.
   let rallumage: { id: BiomeId | null; dureeMs: number } | null = null;
   let fini = false;
@@ -311,7 +313,15 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
       if (places) habits?.poserLesCreatures(places, pres);
     },
     viser: (x, z) => {
-      if (places) p.approcher(ileRegardee(places, x, z, pres));
+      if (!places) return;
+      // Deux relevés de suite sur la même île avant de refaire la fusion : un glissé qui traverse l'archipel ne la refait
+      // pas à chaque île survolée, seulement quand la vue s'arrête (expert frontend).
+      const id = ileRegardee(places, x, z, pres);
+      if (id === pres) candidate = null;
+      else if (id === candidate) {
+        candidate = null;
+        p.approcher(id);
+      } else candidate = id;
     },
     rallumer: (id, dureeMs) => {
       rallumage = { id, dureeMs };
