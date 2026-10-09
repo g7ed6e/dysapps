@@ -70,7 +70,7 @@ Pour tous les items :
    - choix : 12 cm² · 20 cm² · 24 cm²
    - réponse : 24 cm²
    - indice : Relis la première ligne du rappel.
-   - explication : Aire = base × hauteur = 6 × 4 = 24 cm². 12 divise par 2 : c’est la formule du triangle. 20 est le périmètre, le tour de la figure.
+   - explication : Aire = base × hauteur = 6 × 4 = 24 cm². 12 divise par 2 : c’est la formule du triangle. 20, c’est 2 × (6 + 4) : on a pris la hauteur pour un côté et calculé le tour.
 2. énoncé : Un parallélogramme a une base de 5 cm, un côté penché de 4 cm et une hauteur de 3 cm. Son aire est …
    - lu : Un parallélogramme a une base de 5 centimètres, un côté penché de 4 centimètres et une hauteur de 3 centimètres. Son aire est (mot manquant).
    - choix : 15 cm² · 18 cm² · 20 cm²
@@ -87,31 +87,36 @@ Pour tous les items :
    - choix : 17 cm³ · 30 cm³ · 60 cm³
    - réponse : 60 cm³
    - indice : Relis la ligne du prisme dans le rappel.
-   - explication : Volume = aire de la base × hauteur = 12 × 5 = 60 cm³. 17 vient de 12 + 5 : il faut multiplier. Et on ne divise pas par 2.
+   - explication : Volume = aire de la base × hauteur = 12 × 5 = 60 cm³. 17 vient de 12 + 5 : il faut multiplier. 30 divise par 2 : le volume d’un prisme ne se divise pas.
+   - figure : tableau aire de la base (cm²) · hauteur (cm) · volume (cm³) / 12 · 5 · ?
 5. énoncé : Un cylindre a une base d’aire 20 cm² et une hauteur de 3 cm. Son volume est …
    - lu : Un cylindre a une base d’aire 20 centimètres carrés et une hauteur de 3 centimètres. Son volume est (mot manquant).
    - choix : 23 cm³ · 60 cm³ · 120 cm³
    - réponse : 60 cm³
    - indice : Le cylindre se calcule comme le prisme droit.
-   - explication : Volume = aire de la base × hauteur = 20 × 3 = 60 cm³. 23 vient de 20 + 3 : il faut multiplier. Et 120 multiplie encore par 2 : la hauteur ne compte qu’une fois.
+   - explication : Volume = aire de la base × hauteur = 20 × 3 = 60 cm³. 23 vient de 20 + 3 : il faut multiplier. 120 multiplie encore par 2 : on ne double rien, la hauteur ne compte qu’une fois.
+   - figure : tableau aire de la base (cm²) · hauteur (cm) · volume (cm³) / 20 · 3 · ?
 6. énoncé : La base d’un prisme droit est un triangle d’aire 6 cm². Le prisme mesure 10 cm de haut. Son volume est …
    - lu : La base d’un prisme droit est un triangle d’aire 6 centimètres carrés. Le prisme mesure 10 centimètres de haut. Son volume est (mot manquant).
    - choix : 16 cm³ · 60 cm³ · 120 cm³
    - réponse : 60 cm³
    - indice : L’aire de la base est déjà donnée.
    - explication : Volume = aire de la base × hauteur = 6 × 10 = 60 cm³. 16 vient de 6 + 10 : il faut multiplier. L’aire du triangle est déjà calculée : 120 la double, alors qu’on ne la touche plus.
+   - figure : tableau aire de la base (cm²) · hauteur (cm) · volume (cm³) / 6 · 10 · ?
 7. énoncé : La base d’un prisme droit est un rectangle de 3 cm sur 4 cm. Sa hauteur est 2 cm. Son volume est …
    - lu : La base d’un prisme droit est un rectangle de 3 centimètres sur 4 centimètres. Sa hauteur est 2 centimètres. Son volume est (mot manquant).
    - choix : 9 cm³ · 14 cm³ · 24 cm³
    - réponse : 24 cm³
    - indice : Calcule d’abord l’aire du rectangle de base.
-   - explication : Aire de la base = 3 × 4 = 12 cm². Volume = 12 × 2 = 24 cm³. 14 ajoute la hauteur au lieu de la multiplier.
+   - explication : Aire de la base = 3 × 4 = 12 cm². Volume = 12 × 2 = 24 cm³. 14 ajoute la hauteur au lieu de la multiplier ; 9 additionne les trois longueurs.
+   - figure : tableau longueur (cm) · largeur (cm) · hauteur (cm) · volume (cm³) / 3 · 4 · 2 · ?
 8. énoncé : Un cube a des arêtes de 10 cm. Son volume est 10³ cm³, soit …
    - lu : Un cube a des arêtes de 10 centimètres. Son volume est 10 puissance 3 centimètres cubes, soit (mot manquant).
    - choix : 30 cm³ · 100 cm³ · 1 000 cm³
    - réponse : 1 000 cm³
    - indice : 10³, c’est 10 × 10 × 10.
    - explication : Volume = 10 × 10 × 10 = 10³ = 1 000 cm³. 10 × 3 = 30 n’est pas une puissance, et 10² = 100 cm² est l’aire d’une seule face.
+   - figure : tableau arête (cm) · arête (cm) · arête (cm) · volume (cm³) / 10 · 10 · 10 · ?
 
 ### Niveau 2 · `maths-4e-powers-volumes-2`
 
@@ -128,6 +133,7 @@ Pour tous les items :
    - réponse : 20 cm³
    - indice : Relis la ligne de la pyramide dans le rappel.
    - explication : Volume = 15 × 4 ÷ 3 = 60 ÷ 3 = 20 cm³. 60, c’est le volume du prisme : il manque « divisé par 3 ». Et on divise par 3, pas par 2.
+   - figure : tableau aire de la base (cm²) · hauteur (cm) · volume (cm³) / 15 · 4 · ?
 2. énoncé : Le volume d’un cône de rayon r et de hauteur h est …
    - choix : π × r² × h · π × r² × h ÷ 3 · π × r × h ÷ 3
    - réponse : π × r² × h ÷ 3
@@ -137,37 +143,42 @@ Pour tous les items :
    - choix : la moitié de · le tiers de · le double de
    - réponse : le tiers de
    - indice : Compare les deux lignes du rappel.
-   - explication : Les deux formules ne diffèrent que par « divisé par 3 » : la pyramide a le tiers du volume du prisme. Il faut trois pyramides pour remplir le prisme.
+   - explication : Les deux formules ne diffèrent que par « divisé par 3 » : la pyramide a le tiers du volume du prisme. Il faut trois pyramides pour remplir le prisme. La moitié, c’est diviser par 2 comme pour un triangle ; le double, c’est retourner la comparaison.
 4. énoncé : Une pyramide a une base carrée de 3 cm de côté et une hauteur de 5 cm. Son volume est …
    - lu : Une pyramide a une base carrée de 3 centimètres de côté et une hauteur de 5 centimètres. Son volume est (mot manquant).
    - choix : 5 cm³ · 15 cm³ · 45 cm³
    - réponse : 15 cm³
    - indice : Calcule d’abord l’aire du carré de base.
    - explication : Aire de la base = 3 × 3 = 9 cm². Volume = 9 × 5 ÷ 3 = 45 ÷ 3 = 15 cm³. 45 oublie de diviser par 3, et 5 prend le côté au lieu de l’aire du carré.
+   - figure : tableau côté (cm) · aire de la base (cm²) · hauteur (cm) · volume (cm³) / 3 · ? · 5 · ?
 5. énoncé : Un cône a une base d’aire 12 cm² et une hauteur de 6 cm. Son volume est …
    - lu : Un cône a une base d’aire 12 centimètres carrés et une hauteur de 6 centimètres. Son volume est (mot manquant).
    - choix : 24 cm³ · 36 cm³ · 72 cm³
    - réponse : 24 cm³
    - indice : Le cône se calcule comme la pyramide.
    - explication : Volume = 12 × 6 ÷ 3 = 72 ÷ 3 = 24 cm³. 72, c’est le volume du cylindre, et 36 divise par 2 au lieu de 3.
+   - figure : tableau aire de la base (cm²) · hauteur (cm) · volume (cm³) / 12 · 6 · ?
 6. énoncé : Un cylindre a un rayon de 2 cm et une hauteur de 5 cm. Son volume est …
    - lu : Un cylindre a un rayon de 2 centimètres et une hauteur de 5 centimètres. Son volume est (mot manquant).
    - choix : 10π cm³ · 20π cm³ · 80π cm³
    - réponse : 20π cm³
    - indice : Calcule d’abord l’aire du disque de base : π × r².
    - explication : Aire de la base = π × 2² = 4π cm². Volume = 4π × 5 = 20π cm³. 10π oublie le carré du rayon, et 80π prend le diamètre, 4 cm, pour le rayon.
+   - figure : tableau rayon (cm) · aire de la base (cm²) · hauteur (cm) · volume (cm³) / 2 · ? · 5 · ?
 7. énoncé : Un cône a un rayon de 3 cm et une hauteur de 4 cm. Son volume est …
    - lu : Un cône a un rayon de 3 centimètres et une hauteur de 4 centimètres. Son volume est (mot manquant).
    - choix : 4π cm³ · 12π cm³ · 36π cm³
    - réponse : 12π cm³
    - indice : Aire du disque de base, fois la hauteur, puis divisé par 3.
    - explication : Aire de la base = π × 3² = 9π cm². Volume = 9π × 4 ÷ 3 = 36π ÷ 3 = 12π cm³. 36π oublie de diviser par 3, et 4π oublie le carré du rayon.
+   - figure : tableau rayon (cm) · aire de la base (cm²) · hauteur (cm) · volume (cm³) / 3 · ? · 4 · ?
 8. énoncé : Une chambre mesure 4 m de long, 3 m de large et 2 m de haut. Son volume est …
    - lu : Une chambre mesure 4 mètres de long, 3 mètres de large et 2 mètres de haut. Son volume est (mot manquant).
    - choix : 9 m³ · 24 m² · 24 m³
    - réponse : 24 m³
    - indice : Un volume se compte en unités cubes.
    - explication : La chambre est un prisme droit à base rectangulaire : 4 × 3 × 2 = 24 m³, en mètres cubes. 24 m² est une aire, et 9 additionne les longueurs.
+   - figure : tableau longueur (m) · largeur (m) · hauteur (m) · volume / 4 · 3 · 2 · ?
 
 ## Les plans
 

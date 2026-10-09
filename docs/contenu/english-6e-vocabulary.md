@@ -543,7 +543,7 @@ Pour tous les items :
 
 ## Famous people · `famous-people`
 
-- description : Rencontrer des personnes et des personnages célèbres du monde anglophone, puis dire ce qu’on ressent devant une image.
+- description : Rencontrer des personnes et des personnages célèbres du monde anglophone, puis dire ce qu’on ressent devant un tableau, un dessin ou une photo.
 - compétences : c3.en.culture.personnes · c3.en.culture.arts
 - langue : en
 - bravo : Bien lu !
@@ -626,7 +626,7 @@ Pour tous les items :
 
 ### Niveau 2 · `english-6e-vocabulary-famous-people-2`
 
-- consigne : Lis la question, puis la description de l’image en anglais, et choisis le mot qui dit ce qu’on ressent. Le lexique est affiché.
+- consigne : Lis la question, puis le petit texte en anglais. Choisis le mot qui dit ce qu’on ressent. Le lexique est affiché.
 
 Pour tous les items :
 - aide « Dire ce qu’on ressent » :

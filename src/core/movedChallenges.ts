@@ -27,7 +27,7 @@ const MISSIONS_BEFORE_MOVE = {
  * d'avant, par langue sur le lieu de la LV2. Un défi ouvert avant l'ajout le reste jusqu'à ce qu'il soit réussi, comme
  * au déplacement. Données figées : elles décrivent le jeu d'avant le lot.
  */
-const MISSIONS_BEFORE_ADDITIONS = {
+const MISSIONS_BEFORE_ADDITIONS: Partial<Record<BiomeId, readonly (readonly string[])[]>> = {
   'english-3e-grammar': [['for-since', 'if', 'passive']],
   'english-4e-grammar': [['future', 'modals', 'present-perfect', 'traditions']],
   'english-5e-grammar': [['ing', 'past-simple', 'comparatives']],
@@ -57,7 +57,7 @@ const MISSIONS_BEFORE_ADDITIONS = {
   'technology-4e-modeling': [['energy-chain', 'information-chain', 'simulation']],
   'technology-5e-design': [['specifications', 'technical-solutions', 'life-cycle']],
   'technology-6e-objects': [['object-function', 'materials', 'information-networks']],
-} as const satisfies Partial<Record<BiomeId, readonly (readonly string[])[]>>;
+};
 
 /** Un lieu touché par le déplacement ou par l'ajout de missions : seul l'un d'eux peut garder son défi ouvert. */
 export const isMovedPlace = (id: string): id is BiomeId => Object.hasOwn(MISSIONS_BEFORE_MOVE, id) || Object.hasOwn(MISSIONS_BEFORE_ADDITIONS, id);
@@ -91,12 +91,9 @@ export function challengesOpenBeforeAdditions(progress: Readonly<Record<string, 
   const won = Object.entries(progress)
     .filter(([, p]) => starsOf(p) >= STARS_TO_UNLOCK)
     .map(([id]) => id);
-  const places = Object.keys(MISSIONS_BEFORE_ADDITIONS) as (keyof typeof MISSIONS_BEFORE_ADDITIONS)[];
-  return places
-    .filter((place) => starsOf(progress[bossId(place)]) < STARS_TO_BEAT)
-    .filter((place) =>
-      (MISSIONS_BEFORE_ADDITIONS[place] as readonly (readonly string[])[]).some((missions) =>
-        missions.every((m) => won.some((id) => id.startsWith(`${place}-${m}-`))),
-      ),
-    );
+  // Object.entries perd le type des clés : ce sont bien des lieux.
+  return (Object.entries(MISSIONS_BEFORE_ADDITIONS) as [BiomeId, readonly (readonly string[])[]][])
+    .filter(([place]) => starsOf(progress[bossId(place)]) < STARS_TO_BEAT)
+    .filter(([place, avant]) => avant.some((missions) => missions.every((m) => won.some((id) => id.startsWith(`${place}-${m}-`)))))
+    .map(([place]) => place);
 }

@@ -4,7 +4,7 @@
   "type": "messages",
   "level": 1,
   "lang": "en",
-  "instruction": "Lis la question, puis le panneau ou la consigne en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "instruction": "Lis la question, puis le document en anglais. Choisis la bonne réponse. Le lexique est affiché.",
   "items": [
     {
       "key": "english-3e-grammar-messages-1-0",

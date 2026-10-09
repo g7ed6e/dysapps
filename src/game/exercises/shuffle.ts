@@ -1,11 +1,11 @@
 // Les réponses possibles des items d'une partie sont placées avec la graine de la partie : la bonne réponse change de
 // place d'une partie à l'autre, et sur une partie elle prend chaque place autant de fois (voir `core/choices.ts`).
-// Les listes de nombres restent dans l'ordre croissant. Hors maths, leurs pièges sont ceux du fichier (13 contre 30,
-// à l'oreille ; le 2, le 12 ou le 20 juin) : on n'en calcule pas d'autres, la réponse garde la place de son rang.
-// Un exercice généré (maths) tire déjà la place de la réponse dans ses générateurs, avec ses vrais pièges : ses choix
-// restent tels quels (replacer une réponse chiffrée inventerait des pièges, ou changerait les nombres de l'énoncé).
-import { parseHour, parseNumber, placeChoices } from '../../core/choices';
-import { BIOMES } from '../biomes';
+// Les listes de nombres (fractions comprises) restent dans l'ordre croissant, avec les pièges du fichier : 13 contre 30,
+// à l'oreille ; le 2, le 12 ou le 20 juin ; en maths écrites en Markdown, ceux que nomment les explications. On n'en
+// calcule pas d'autres, la réponse garde la place de son rang. Un exercice généré (maths) tire déjà la place de la
+// réponse dans ses générateurs, avec ses vrais pièges : ses choix restent tels quels (replacer une réponse chiffrée
+// inventerait des pièges, ou changerait les nombres de l'énoncé).
+import { parseFraction, parseHour, parseNumber, placeChoices } from '../../core/choices';
 import { seeded } from '../../core/random';
 import type { AssemblageDef, ExerciseDef, ExerciseItem } from './types';
 
@@ -15,17 +15,7 @@ export function shuffleRunChoices(def: ExerciseDef, items: ExerciseItem[], seed:
   const rng = seeded(`${seed}:choix:${def.id}`);
   // Les premiers tirages de graines voisines se ressemblent : on en jette quelques-uns.
   for (let k = 0; k < 4; k++) rng();
-  return placeChoices(items, rng, piegesDe(def));
-}
-
-/**
- * Les maths produites par le code calculent leurs pièges voisins ; ailleurs, et dans une mission de maths écrite en
- * Markdown (sans `generate`), dont les explications nomment les pièges, ceux du fichier restent. Une question
- * d'assemblage (GD-2) n'a pas d'île : ses pièges sont écrits exprès, un de chaque matière.
- */
-export function piegesDe(def: Pick<ExerciseDef, 'type' | 'generate'> & { biome?: string }): 'calcules' | 'du-fichier' {
-  if (def.type === 'assembly' || !def.generate) return 'du-fichier';
-  return BIOMES.find((b) => b.id === def.biome)?.subject === 'maths' ? 'calcules' : 'du-fichier';
+  return placeChoices(items, rng, 'du-fichier');
 }
 
 const EXPOSANTS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
@@ -47,6 +37,8 @@ export function valeursDesNombres(choices: unknown): number[] | undefined {
   const liste = choices as (string | number)[];
   const heures = liste.map((c) => parseHour(c));
   if (heures.every((h): h is number => h !== undefined)) return heures;
+  const fractions = liste.map(parseFraction);
+  if (liste.some((c) => String(c).includes('/')) && fractions.every((f): f is number => f !== undefined)) return fractions;
   const scientifiques = liste.map(puissanceDeDix);
   if (scientifiques.every((v): v is number => v !== undefined)) return scientifiques;
   const parsed = liste.map((c) => parseNumber(c));
@@ -64,7 +56,7 @@ export function placerChoixAssemblage(def: AssemblageDef, seed: string): Exercis
   const phrases = placeChoices(
     def.items.filter((it) => !valeursDesNombres(it.choices)),
     rng,
-    piegesDe(def),
+    'du-fichier',
   );
   return def.items.map((it) => {
     const valeurs = valeursDesNombres(it.choices);

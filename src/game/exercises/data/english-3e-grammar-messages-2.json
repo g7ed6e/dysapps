@@ -19,7 +19,7 @@
       "choicesLang": "fr",
       "answer": "19 h 15",
       "hint": "Let’s meet veut dire « retrouvons-nous ». Trouve sa ligne, puis pense à pm.",
-      "explanation": "let’s meet at 7:15 pm = retrouvons-nous à 7 h 15 du soir, soit 19 h 15 (pm : on ajoute 12). 19 h 30, c’est l’heure où le film commence (starts).",
+      "explanation": "let’s meet at 7:15 pm = retrouvons-nous à 7 h 15 du soir, soit 19 h 15 (pm : on ajoute 12). 19 h 30, c’est l’heure où le film commence (starts) ; 7 h 15, ce serait le matin.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -75,7 +75,7 @@
       "choicesLang": "fr",
       "answer": "12 livres",
       "hint": "Trouve le prix, puis regarde le mot qui le suit : each.",
-      "explanation": "£12 each = 12 livres chacun : un billet coûte 12 livres. 24 livres, ce serait le prix des deux billets.",
+      "explanation": "£12 each = 12 livres chacun : un billet coûte 12 livres. 24 livres, ce serait le prix des deux billets ; 2 livres oublie le 1 de 12.",
       "aid": {
         "kind": "rule-card",
         "props": {

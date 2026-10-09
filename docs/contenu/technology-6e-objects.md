@@ -513,7 +513,7 @@ Pour tous les items :
    - choix : la lumière s’allume 2 minutes après l’appui · la lumière reste allumée 2 minutes, puis s’éteint · la lumière clignote 2 fois
    - réponse : la lumière reste allumée 2 minutes, puis s’éteint
    - indice : Lis les trois instructions dans l’ordre.
-   - explication : D’abord la lumière s’allume, puis le programme attend 2 minutes, puis il l’éteint. Elle s’allume tout de suite, sans attendre : l’attente vient après.
+   - explication : D’abord la lumière s’allume, puis le programme attend 2 minutes, puis il l’éteint. Elle s’allume tout de suite, sans attendre : l’attente vient après. Et rien ne la fait clignoter : elle s’allume une seule fois.
 3. énoncé : "Le programme du robot\nRépéter 3 fois :\navancer de 1 case."
    - question : De combien de cases le robot avance-t-il en tout ?
    - lu : Le programme du robot. Répéter 3 fois, avancer de 1 case.
@@ -553,7 +553,7 @@ Pour tous les items :
    - choix : tourner à gauche au lieu de droite · répéter 4 fois au lieu de 3 · avancer de 3 cases au lieu de 2
    - réponse : répéter 4 fois au lieu de 3
    - indice : Combien de côtés a un carré ?
-   - explication : Un carré a 4 côtés : avec 3 répétitions, le robot n’en fait que 3. Il faut répéter 4 fois. Tourner à gauche ferait aussi un carré, mais de l’autre côté, toujours avec un côté de moins.
+   - explication : Un carré a 4 côtés : avec 3 répétitions, le robot n’en fait que 3. Il faut répéter 4 fois. Tourner à gauche ferait aussi un carré, mais de l’autre côté, toujours avec un côté de moins. Avancer de 3 cases agrandirait le carré sans le fermer.
 
 ## Les plans
 

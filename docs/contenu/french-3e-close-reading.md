@@ -819,9 +819,9 @@ Pour tous les items :
    - réponse : une fable
    - indice : Ces deux vers donnent une leçon. Que va faire l’histoire qui suit ?
    - explication : Ces deux vers donnent la morale, la leçon que l’histoire va montrer : c’est une fable, « Le Loup et l’Agneau ». Personne n’y raconte sa vie, et aucun nom de personnage n’est écrit devant une réplique.
-2. énoncé : "Je veux montrer à mes semblables un homme dans toute la vérité de la nature, et cet homme, ce sera moi.\nJean-Jacques Rousseau, 1782"
+2. énoncé : "Je veux montrer à mes semblables un homme dans toute la vérité de la nature, et cet homme, ce sera moi.\nJean-Jacques Rousseau, publié en 1782"
    - question : De quel genre est ce texte ?
-   - lu : Je veux montrer à mes semblables un homme dans toute la vérité de la nature, et cet homme, ce sera moi. Jean-Jacques Rousseau, mille sept cent quatre-vingt-deux.
+   - lu : Je veux montrer à mes semblables un homme dans toute la vérité de la nature, et cet homme, ce sera moi. Jean-Jacques Rousseau, publié en mille sept cent quatre-vingt-deux.
    - choix : un roman · une autobiographie · une fable
    - réponse : une autobiographie
    - indice : Qui est « cet homme » que l’auteur veut montrer ?
@@ -871,7 +871,7 @@ Pour tous les items :
 
 ### Niveau 2 · `french-3e-close-reading-literary-eras-2`
 
-- consigne : Lis l’œuvre et sa date, puis situe-la dans son siècle, son mouvement ou son contexte. Le rappel est affiché.
+- consigne : Lis l’œuvre et sa date. Situe-la dans son époque. Le rappel est affiché.
 
 Pour tous les items :
 - aide « Repères d’histoire littéraire » :
@@ -909,13 +909,13 @@ Pour tous les items :
    - réponse : les Lumières
    - indice : En quel siècle est 1759 ? Contre quoi se bat Voltaire ?
    - explication : 1759 est au XVIIIe siècle, et Voltaire combat l’injustice par la raison et le rire : c’est l’esprit des Lumières.
-5. énoncé : "Jean-Jacques Rousseau, Les Confessions, 1782\nRousseau raconte sa vie, depuis son enfance."
+5. énoncé : "Jean-Jacques Rousseau, Les Confessions, publiées en 1782\nRousseau, mort en 1778, y raconte sa vie depuis son enfance."
    - question : En quel siècle paraissent Les Confessions ?
-   - lu : Jean-Jacques Rousseau, Les Confessions, mille sept cent quatre-vingt-deux. Rousseau raconte sa vie, depuis son enfance.
+   - lu : Jean-Jacques Rousseau, Les Confessions, publiées en mille sept cent quatre-vingt-deux. Rousseau, mort en mille sept cent soixante-dix-huit, y raconte sa vie depuis son enfance.
    - choix : au XVIIe siècle · au XIXe siècle · au XVIIIe siècle
    - réponse : au XVIIIe siècle
    - indice : 1782 est entre quelles années du rappel ?
-   - explication : 1782 est entre 1701 et 1800 : c’est le XVIIIe siècle, celui des Lumières. Les années en 17 sont au XVIIIe siècle, pas au XVIIe.
+   - explication : 1782 est entre 1701 et 1800 : c’est le XVIIIe siècle, celui des Lumières. Rousseau les a écrites de son vivant ; elles paraissent en 1782, quatre ans après sa mort, toujours au XVIIIe siècle. Les années en 17 sont au XVIIIe siècle, pas au XVIIe.
 6. énoncé : "Victor Hugo, Les Contemplations, 1856\nDemain, dès l’aube, à l’heure où blanchit la campagne,\nJe partirai. Vois-tu, je sais que tu m’attends."
    - question : À quel mouvement appartient ce poème ?
    - lu : Victor Hugo, Les Contemplations, mille huit cent cinquante-six. Demain, dès l’aube, à l’heure où blanchit la campagne, je partirai. Vois-tu, je sais que tu m’attends.

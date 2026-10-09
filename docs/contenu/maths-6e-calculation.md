@@ -115,6 +115,7 @@ Pour tous les items :
    - réponse : 5
    - indice : Trouve la ligne du foot et celle de la natation. Combien de plus ?
    - explication : Foot : 9, natation : 4. 9 − 4 = 5 élèves de plus. 13, c’est 9 + 4 : on a ajouté au lieu de chercher l’écart ; 4, c’est la natation seule.
+   - figure : diagramme foot · danse · natation · hand / 9 · 6 · 4 · 6
 
 ### Niveau 2 · `maths-6e-calculation-measures-2`
 
@@ -169,6 +170,7 @@ Pour tous les items :
    - réponse : 300 dm²
    - indice : 1 m², c’est combien de dm² ?
    - explication : 1 m² = 100 dm², donc 3 m² = 300 dm². 30 dm², c’est multiplier par 10 comme pour une longueur ; pour une aire, c’est 10 × 10 = 100.
+   - figure : tableau m² · dm² / 1 · 100 / 3 · ?
 8. énoncé : "Les sorties possibles\nMusée : 8 €, 2 h\nCinéma : 6 €, 2 h\nZoo : 12 €, 4 h\nPiscine : 4 €, 1 h\nLa classe veut : moins de 7 €, et au moins 2 h."
    - question : Quelle sortie choisir ?
    - lu : Les sorties possibles. Musée, 8 euros, 2 heures. Cinéma, 6 euros, 2 heures. Zoo, 12 euros, 4 heures. Piscine, 4 euros, 1 heure. La classe veut moins de 7 euros, et au moins 2 heures.
@@ -176,6 +178,7 @@ Pour tous les items :
    - réponse : le cinéma
    - indice : Écarte d’abord les sorties à 7 € ou plus. Puis regarde la durée.
    - explication : Moins de 7 € : le cinéma et la piscine. Au moins 2 h : seul le cinéma, 2 h ; la piscine ne dure qu’1 h. Le musée dure 2 h, mais coûte 8 €.
+   - figure : tableau sortie · prix (€) · durée (h) / musée · 8 · 2 / cinéma · 6 · 2 / zoo · 12 · 4 / piscine · 4 · 1
 
 ## Les plans
 

@@ -8,18 +8,18 @@
   "items": [
     {
       "key": "english-5e-grammar-portraits-2-0",
-      "prompt": "Alice is a girl in a story by Lewis Carroll.\nOne day, she follows a white rabbit.\nShe falls down a hole into Wonderland.",
-      "question": "Qu’est-ce qu’Alice suit ?",
-      "spoken": "Alice is a girl in a story by Lewis Carroll. One day, she follows a white rabbit. She falls down a hole into Wonderland.",
+      "prompt": "Long John Silver is a pirate in Treasure Island, by Robert Louis Stevenson.\nHe has only one leg.\nHe wants the treasure for himself.",
+      "question": "Que veut Long John Silver ?",
+      "spoken": "Long John Silver is a pirate in Treasure Island, by Robert Louis Stevenson. He has only one leg. He wants the treasure for himself.",
       "choices": [
-        "Un lapin blanc",
-        "Un chat blanc",
-        "Une souris blanche"
+        "Le trésor pour lui seul",
+        "Rentrer chez lui",
+        "Un bateau neuf"
       ],
       "choicesLang": "fr",
-      "answer": "Un lapin blanc",
-      "hint": "Lis la deuxième ligne : ce qu’elle suit vient juste après le verbe.",
-      "explanation": "she follows a white rabbit = elle suit un lapin blanc. Un chat se dit a cat, une souris a mouse.",
+      "answer": "Le trésor pour lui seul",
+      "hint": "Lis la dernière ligne : treasure ressemble à un mot français.",
+      "explanation": "He wants the treasure for himself = il veut le trésor pour lui seul. Le titre le dit aussi : Treasure Island, l’île au trésor. Le texte ne parle ni de rentrer chez lui (go home) ni d’un bateau neuf (a new ship).",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -28,7 +28,7 @@
             "Lis d’abord la question, puis cherche la phrase qui répond.",
             "author = l’auteur ; character = le personnage ; story = l’histoire",
             "real = vrai, qui existe ; invented = inventé ; famous = célèbre",
-            "follow = suivre ; grow up = grandir ; want = vouloir"
+            "only = seulement ; grow up = grandir ; want = vouloir"
           ]
         }
       }
@@ -55,7 +55,7 @@
             "Lis d’abord la question, puis cherche la phrase qui répond.",
             "author = l’auteur ; character = le personnage ; story = l’histoire",
             "real = vrai, qui existe ; invented = inventé ; famous = célèbre",
-            "follow = suivre ; grow up = grandir ; want = vouloir"
+            "only = seulement ; grow up = grandir ; want = vouloir"
           ]
         }
       }
@@ -82,7 +82,7 @@
             "Lis d’abord la question, puis cherche la phrase qui répond.",
             "author = l’auteur ; character = le personnage ; story = l’histoire",
             "real = vrai, qui existe ; invented = inventé ; famous = célèbre",
-            "follow = suivre ; grow up = grandir ; want = vouloir"
+            "only = seulement ; grow up = grandir ; want = vouloir"
           ]
         }
       }
@@ -109,7 +109,7 @@
             "Lis d’abord la question, puis cherche la phrase qui répond.",
             "author = l’auteur ; character = le personnage ; story = l’histoire",
             "real = vrai, qui existe ; invented = inventé ; famous = célèbre",
-            "follow = suivre ; grow up = grandir ; want = vouloir"
+            "only = seulement ; grow up = grandir ; want = vouloir"
           ]
         }
       }
@@ -136,7 +136,7 @@
             "Lis d’abord la question, puis cherche la phrase qui répond.",
             "author = l’auteur ; character = le personnage ; story = l’histoire",
             "real = vrai, qui existe ; invented = inventé ; famous = célèbre",
-            "follow = suivre ; grow up = grandir ; want = vouloir"
+            "only = seulement ; grow up = grandir ; want = vouloir"
           ]
         }
       }

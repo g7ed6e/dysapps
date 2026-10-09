@@ -45,7 +45,7 @@
       ],
       "answer": "la lumière reste allumée 2 minutes, puis s’éteint",
       "hint": "Lis les trois instructions dans l’ordre.",
-      "explanation": "D’abord la lumière s’allume, puis le programme attend 2 minutes, puis il l’éteint. Elle s’allume tout de suite, sans attendre : l’attente vient après.",
+      "explanation": "D’abord la lumière s’allume, puis le programme attend 2 minutes, puis il l’éteint. Elle s’allume tout de suite, sans attendre : l’attente vient après. Et rien ne la fait clignoter : elle s’allume une seule fois.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -212,7 +212,7 @@
       ],
       "answer": "répéter 4 fois au lieu de 3",
       "hint": "Combien de côtés a un carré ?",
-      "explanation": "Un carré a 4 côtés : avec 3 répétitions, le robot n’en fait que 3. Il faut répéter 4 fois. Tourner à gauche ferait aussi un carré, mais de l’autre côté, toujours avec un côté de moins.",
+      "explanation": "Un carré a 4 côtés : avec 3 répétitions, le robot n’en fait que 3. Il faut répéter 4 fois. Tourner à gauche ferait aussi un carré, mais de l’autre côté, toujours avec un côté de moins. Avancer de 3 cases agrandirait le carré sans le fermer.",
       "aid": {
         "kind": "rule-card",
         "props": {

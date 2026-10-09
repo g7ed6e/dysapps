@@ -12,7 +12,7 @@ import type { DrawKey } from '../engine/state';
 import { ILES } from '../islands';
 import { BLOCS_A_QUESTIONS, CATALOG, UNORDERED, loadAllExercises, loadAssemblage } from './index';
 import { SCREEN_TYPES } from './registry';
-import { piegesDe, placerChoixAssemblage, valeursDesNombres } from './shuffle';
+import { placerChoixAssemblage, valeursDesNombres } from './shuffle';
 import type { AssemblageDef } from './types';
 
 // Les banques des grands projets (GD-10, docs/contenu/projets.md) se vérifient comme les blocs assemblés : chacune avec
@@ -80,9 +80,8 @@ it('les questions d’assemblage ne sont ni dans une île ni au catalogue des mi
   expect(CATALOG.some((e) => e.type === 'assembly')).toBe(false);
   expect(UNORDERED).toEqual([]);
   expect(BIOMES.some((b) => b.exercises.some((m) => m.id === 'assembly'))).toBe(false);
-  // Elles s'affichent sur l'écran à document, avec les pièges du fichier.
+  // Elles s'affichent sur l'écran à document (leurs pièges, ceux du fichier : placerChoixAssemblage).
   expect(SCREEN_TYPES.assembly.batch).toBe(1);
-  for (const def of QUESTIONS.values()) expect(piegesDe(def)).toBe('du-fichier');
 });
 
 describe.each(BANQUES.map((r) => [r.bloc, r] as const))('les questions du bloc %s', (bloc, recette) => {

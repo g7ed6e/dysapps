@@ -17,6 +17,23 @@
       "answer": "60",
       "hint": "Aire de la base × hauteur.",
       "explanation": "15 × 4 = 60 cm³. 30, c’est diviser par 2 comme pour l’aire d’un triangle : le volume du prisme ne se divise pas. 19, c’est 15 + 4.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              15,
+              4,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

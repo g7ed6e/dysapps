@@ -1484,7 +1484,7 @@ Pour tous les items :
 
 ### Niveau 2 · `lv2-4e-daily-life-de-signs-2`
 
-- consigne : Lis et écoute la phrase en allemand, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.
+- consigne : Lis et écoute la phrase en allemand. Choisis la bonne réaction. La règle est affichée.
 - programme : c4.de.dialoguer.reagir
 - bravo : Bien réagi !
 

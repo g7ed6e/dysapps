@@ -4,7 +4,7 @@
   "type": "portraits",
   "level": 1,
   "lang": "en",
-  "instruction": "Lis la question, puis le portrait ou la scène en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "instruction": "Lis la question, puis le texte en anglais. Choisis la bonne réponse. Le lexique est affiché.",
   "items": [
     {
       "key": "english-5e-grammar-portraits-1-0",
@@ -29,7 +29,7 @@
             "hair = les cheveux ; eyes = les yeux ; tall = grand",
             "kind = gentil ; funny = drôle ; good at = fort en",
             "yearbook = l’album de fin d’année ; dream = le rêve ; job = le métier",
-            "Ce que fait la personne sur l’image : is reading = lit, is running = court"
+            "Ce que fait la personne : is reading = lit, is running = court"
           ]
         }
       }
@@ -57,7 +57,7 @@
             "hair = les cheveux ; eyes = les yeux ; tall = grand",
             "kind = gentil ; funny = drôle ; good at = fort en",
             "yearbook = l’album de fin d’année ; dream = le rêve ; job = le métier",
-            "Ce que fait la personne sur l’image : is reading = lit, is running = court"
+            "Ce que fait la personne : is reading = lit, is running = court"
           ]
         }
       }
@@ -85,7 +85,7 @@
             "hair = les cheveux ; eyes = les yeux ; tall = grand",
             "kind = gentil ; funny = drôle ; good at = fort en",
             "yearbook = l’album de fin d’année ; dream = le rêve ; job = le métier",
-            "Ce que fait la personne sur l’image : is reading = lit, is running = court"
+            "Ce que fait la personne : is reading = lit, is running = court"
           ]
         }
       }
@@ -113,7 +113,7 @@
             "hair = les cheveux ; eyes = les yeux ; tall = grand",
             "kind = gentil ; funny = drôle ; good at = fort en",
             "yearbook = l’album de fin d’année ; dream = le rêve ; job = le métier",
-            "Ce que fait la personne sur l’image : is reading = lit, is running = court"
+            "Ce que fait la personne : is reading = lit, is running = court"
           ]
         }
       }
@@ -141,7 +141,7 @@
             "hair = les cheveux ; eyes = les yeux ; tall = grand",
             "kind = gentil ; funny = drôle ; good at = fort en",
             "yearbook = l’album de fin d’année ; dream = le rêve ; job = le métier",
-            "Ce que fait la personne sur l’image : is reading = lit, is running = court"
+            "Ce que fait la personne : is reading = lit, is running = court"
           ]
         }
       }

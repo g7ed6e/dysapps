@@ -16,7 +16,7 @@
       ],
       "answer": "14",
       "hint": "Quelle opération passe en premier : + ou × ?",
-      "explanation": "La multiplication passe avant l’addition : 3 × 4 = 12, puis 2 + 12 = 14. 20, c’est calculer de gauche à droite : 2 + 3 = 5, puis 5 × 4.",
+      "explanation": "La multiplication passe avant l’addition : 3 × 4 = 12, puis 2 + 12 = 14. 20, c’est calculer de gauche à droite : 2 + 3 = 5, puis 5 × 4. 9, c’est 2 + 3 + 4 : on a ajouté au lieu de multiplier.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -42,7 +42,7 @@
       ],
       "answer": "21",
       "hint": "Que calcules-tu d’abord, quand il y a des parenthèses ?",
-      "explanation": "Les parenthèses d’abord : 5 + 2 = 7, puis 7 × 3 = 21. 11, c’est oublier les parenthèses : 5 + 2 × 3.",
+      "explanation": "Les parenthèses d’abord : 5 + 2 = 7, puis 7 × 3 = 21. 11, c’est oublier les parenthèses : 5 + 2 × 3. 10, c’est 5 + 2 + 3 : on a ajouté au lieu de multiplier.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -68,7 +68,7 @@
       ],
       "answer": "16",
       "hint": "Relis l’ordre du rappel : − ou ÷, lequel vient d’abord ?",
-      "explanation": "La division d’abord : 8 ÷ 2 = 4, puis 20 − 4 = 16. 6, c’est calculer de gauche à droite : 20 − 8 = 12, puis 12 ÷ 2.",
+      "explanation": "La division d’abord : 8 ÷ 2 = 4, puis 20 − 4 = 16. 6, c’est calculer de gauche à droite : 20 − 8 = 12, puis 12 ÷ 2. 24, c’est 20 + 4 : on a ajouté au lieu d’enlever.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -94,7 +94,7 @@
       ],
       "answer": "8",
       "hint": "Calcule d’abord ce qui est entre parenthèses.",
-      "explanation": "Les parenthèses d’abord : 4 + 6 = 10, puis 18 − 10 = 8. 20, c’est oublier les parenthèses : 18 − 4 = 14, puis 14 + 6.",
+      "explanation": "Les parenthèses d’abord : 4 + 6 = 10, puis 18 − 10 = 8. 20, c’est oublier les parenthèses : 18 − 4 = 14, puis 14 + 6. 28, c’est 18 + 10 : on a ajouté au lieu d’enlever.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -146,7 +146,7 @@
       ],
       "answer": "8",
       "hint": "Quel nombre, multiplié par lui-même, donne 64 ?",
-      "explanation": "8 × 8 = 64 : 64 est le carré de 8. 32, c’est la moitié de 64 : 32 × 2 = 64, mais le carré n’est pas le double.",
+      "explanation": "8 × 8 = 64 : 64 est le carré de 8. 32, c’est la moitié de 64 : 32 × 2 = 64, mais le carré n’est pas le double. 62, c’est 64 − 2.",
       "aid": {
         "kind": "rule-card",
         "props": {

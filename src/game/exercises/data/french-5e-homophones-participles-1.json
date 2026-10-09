@@ -3,7 +3,7 @@
   "biome": "french-5e-homophones",
   "type": "participles",
   "level": 1,
-  "instruction": "Choisis la forme qui complète la phrase : participe passé ou infinitif. La règle est affichée : lis-la avant de répondre.",
+  "instruction": "Choisis la forme qui complète la phrase : participe passé ou infinitif. La règle est affichée.",
   "items": [
     {
       "key": "french-5e-homophones-participles-1-0",
@@ -16,7 +16,7 @@
       ],
       "answer": "arrivées",
       "hint": "Qui est-ce qui est arrivé ? Une fille ou un garçon, un ou plusieurs ?",
-      "explanation": "On peut dire « sont vendues » : c’est le participe passé. Avec être, il s’accorde avec le sujet « mes cousines », féminin pluriel : « arrivées ». On ne dit pas « sont vendre » : « arriver » ne va pas.",
+      "explanation": "On peut dire « sont vendues » : c’est le participe passé. Avec être, il s’accorde avec le sujet « mes cousines », féminin pluriel : « arrivées ». « arrivé », sans accord, irait avec un seul garçon. On ne dit pas « sont vendre » : « arriver » ne va pas.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -68,7 +68,7 @@
       ],
       "answer": "née",
       "hint": "Qui est née ? Une femme ou un homme ?",
-      "explanation": "Avec être, le participe s’accorde avec le sujet « ma grand-mère », féminin singulier : « née », avec un e. « né » irait avec « mon grand-père ».",
+      "explanation": "Avec être, le participe s’accorde avec le sujet « ma grand-mère », féminin singulier : « née », avec un e. « né » irait avec « mon grand-père », « nés » avec plusieurs personnes.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -120,7 +120,7 @@
       ],
       "answer": "sortis",
       "hint": "Qui est-ce qui est sorti ? Un ou plusieurs ?",
-      "explanation": "Avec être, le participe s’accorde avec le sujet « les garçons », masculin pluriel : « sortis », avec un s. On ne dit pas « sont vendre » : « sortir » ne va pas.",
+      "explanation": "Avec être, le participe s’accorde avec le sujet « les garçons », masculin pluriel : « sortis », avec un s. « sorti » irait avec un seul garçon. On ne dit pas « sont vendre » : « sortir » ne va pas.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -172,7 +172,7 @@
       ],
       "answer": "allées",
       "hint": "Le verbe être est juste avant le trou. Qui est-ce qui est allé ?",
-      "explanation": "« sont » est l’auxiliaire être : on peut dire « elles sont venues », c’est le participe passé. Il s’accorde avec « elles », féminin pluriel : « allées ». Le verbe qui suit, « danser », est à l’infinitif.",
+      "explanation": "« sont » est l’auxiliaire être : on peut dire « elles sont venues », c’est le participe passé. Il s’accorde avec « elles », féminin pluriel : « allées ». « allé » oublie l’accord ; « aller » ne va pas, car on ne dit pas « elles sont vendre ». Le verbe qui suit, « danser », est à l’infinitif.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -198,7 +198,7 @@
       ],
       "answer": "rentrées",
       "hint": "Qui est-ce qui est rentré ? Une ou plusieurs, filles ou garçons ?",
-      "explanation": "On peut dire « sont vendues » : c’est le participe passé. Avec être, il s’accorde avec le sujet « les joueuses », féminin pluriel : « rentrées ».",
+      "explanation": "On peut dire « sont vendues » : c’est le participe passé. Avec être, il s’accorde avec le sujet « les joueuses », féminin pluriel : « rentrées ». « rentré » oublie l’accord ; « rentrer » ne va pas, car on ne dit pas « sont vendre ».",
       "aid": {
         "kind": "rule-card",
         "props": {

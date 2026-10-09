@@ -4,7 +4,7 @@
   "type": "de-media",
   "level": 2,
   "lang": "de",
-  "instruction": "Tu remplis une fiche d’inscription sous la dictée. Écoute la ligne, puis choisis le mot bien écrit. La règle est affichée.",
+  "instruction": "Écoute la ligne de la fiche. Choisis le mot bien écrit. La règle est affichée.",
   "programme": [
     "c4.de.ecrire.dictee-fiche"
   ],

@@ -152,6 +152,25 @@
       "answer": "14 cm",
       "hint": "Une longueur est multipliée par le rapport.",
       "explanation": "Les longueurs sont multipliées par 2 : 7 × 2 = 14 cm. 9 cm, c’est 7 + 2 : on multiplie, on n’ajoute pas. 28 cm, c’est multiplier par 2 × 2, ce qui vaut pour les aires.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "segment (cm)",
+            "image (cm)"
+          ],
+          "rows": [
+            [
+              1,
+              2
+            ],
+            [
+              7,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -179,6 +198,25 @@
       "answer": "une réduction",
       "hint": "Que devient une longueur multipliée par 0,5 ?",
       "explanation": "Multiplier par 0,5, c’est prendre la moitié : les longueurs diminuent, l’image est une réduction. Un rapport plus grand que 1 donnerait un agrandissement. La même taille, c’est un rapport de 1.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "longueur (cm)",
+            "image (cm)"
+          ],
+          "rows": [
+            [
+              1,
+              0.5
+            ],
+            [
+              4,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

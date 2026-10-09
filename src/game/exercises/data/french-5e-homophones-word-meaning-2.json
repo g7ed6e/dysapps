@@ -3,7 +3,7 @@
   "biome": "french-5e-homophones",
   "type": "word-meaning",
   "level": 2,
-  "instruction": "Choisis le mot qui complète la phrase. La règle est affichée : lis-la avant de répondre.",
+  "instruction": "Choisis le mot qui complète la phrase. La règle est affichée.",
   "programme": [
     "c4.fr.5e.vocabulaire.formation",
     "c4.fr.5e.vocabulaire.relations",

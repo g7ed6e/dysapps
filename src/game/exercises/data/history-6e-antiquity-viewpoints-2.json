@@ -7,17 +7,17 @@
   "items": [
     {
       "key": "history-6e-antiquity-viewpoints-2-0",
-      "prompt": "D’après Suétone, un historien romain\nL’empereur Auguste se vantait souvent :\n« J’ai trouvé Rome en briques,\nje la laisse en marbre. »",
+      "prompt": "D’après Suétone, un historien romain\nL’empereur Auguste a embelli Rome.\nIl pouvait se vanter de laisser en marbre\nune ville qu’il avait reçue en briques.",
       "question": "Qui se vante dans ce document ?",
-      "spoken": "D’après Suétone, un historien romain. L’empereur Auguste se vantait souvent : J’ai trouvé Rome en briques, je la laisse en marbre.",
+      "spoken": "D’après Suétone, un historien romain. L’empereur Auguste a embelli Rome. Il pouvait se vanter de laisser en marbre une ville qu’il avait reçue en briques.",
       "choices": [
         "l’historien Suétone",
         "l’empereur Auguste",
         "les habitants de Rome"
       ],
       "answer": "l’empereur Auguste",
-      "hint": "Lis la deuxième ligne : qui se vantait ?",
-      "explanation": "Suétone écrit le texte, mais c’est Auguste qui se vante : Suétone rapporte ses paroles. Auguste veut qu’on retienne les beaux monuments de son règne.",
+      "hint": "Lis la troisième ligne : qui pouvait se vanter ?",
+      "explanation": "Suétone écrit le texte, mais c’est Auguste qui se vante : Suétone rapporte ce qu’il disait. Auguste veut qu’on retienne les beaux monuments de son règne. Les habitants de Rome ne parlent pas dans ce document.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -61,9 +61,9 @@
     },
     {
       "key": "history-6e-antiquity-viewpoints-2-2",
-      "prompt": "D’après Tite-Live, historien romain, sous l’empereur Auguste\n« Le dieu Mars est le père de Romulus.\nLes peuples doivent l’accepter,\ncomme ils acceptent notre domination. »",
-      "question": "Dans quel but Tite-Live raconte-t-il cette origine ?",
-      "spoken": "D’après Tite-Live, historien romain, sous l’empereur Auguste. Le dieu Mars est le père de Romulus. Les peuples doivent l’accepter, comme ils acceptent notre domination.",
+      "prompt": "D’après Tite-Live, historien romain, sous l’empereur Auguste\nLe peuple romain dit que Mars est son père.\nSa gloire à la guerre est si grande\nque les autres peuples doivent l’accepter,\ncomme ils acceptent sa domination.",
+      "question": "Dans quel but Tite-Live parle-t-il de cette origine ?",
+      "spoken": "D’après Tite-Live, historien romain, sous l’empereur Auguste. Le peuple romain dit que Mars est son père. Sa gloire à la guerre est si grande que les autres peuples doivent l’accepter, comme ils acceptent sa domination.",
       "choices": [
         "pour montrer que Rome mérite de dominer",
         "pour prouver que Mars a existé",
@@ -71,7 +71,7 @@
       ],
       "answer": "pour montrer que Rome mérite de dominer",
       "hint": "Relis les deux dernières lignes.",
-      "explanation": "Pour Tite-Live, un fondateur fils de Mars montre que Rome est faite pour dominer les autres peuples. C’est le point de vue d’un Romain : la légende ne prouve rien sur Mars.",
+      "explanation": "Tite-Live ne dit pas que la légende est vraie. Il dit que Rome, par ses victoires, a le droit de se dire fille de Mars : pour lui, Rome mérite de dominer. C’est le point de vue d’un Romain : la légende ne prouve rien sur Mars, et Tite-Live ne se moque pas des Romains.",
       "aid": {
         "kind": "rule-card",
         "props": {

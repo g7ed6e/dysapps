@@ -16,7 +16,30 @@
       ],
       "answer": "le prix",
       "hint": "Relis la première ligne du rappel.",
-      "explanation": "« Le prix en fonction du nombre de places » : le prix dépend du nombre de places. Plus on prend de places, plus on paie. Le nombre de places, lui, on le choisit.",
+      "explanation": "« Le prix en fonction du nombre de places » : le prix dépend du nombre de places. Plus on prend de places, plus on paie. Le nombre de places, lui, on le choisit. Et l’un dépend bien de l’autre : « aucun des deux » ne va pas.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "places",
+            "prix (€)"
+          ],
+          "rows": [
+            [
+              1,
+              8
+            ],
+            [
+              2,
+              16
+            ],
+            [
+              3,
+              24
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -41,7 +64,7 @@
       ],
       "answer": "12 h",
       "hint": "Cherche la plus grande température, puis lis l’heure sur la même ligne.",
-      "explanation": "La plus grande température est 19 degrés, sur la ligne de 12 h. À 14 h, la dernière ligne, il fait 17 degrés : la température a baissé.",
+      "explanation": "La plus grande température est 19 degrés, sur la ligne de 12 h. À 14 h, la dernière ligne, il fait 17 degrés : la température a baissé. À 10 h, il ne fait que 15 degrés.",
       "figure": {
         "kind": "ratio-table",
         "props": {
@@ -93,7 +116,7 @@
       ],
       "answer": "3 × n",
       "hint": "Essaie ta formule sur chaque ligne du tableau.",
-      "explanation": "Sur chaque ligne, le prix est 3 fois le nombre : 3 × 1 = 3, 3 × 2 = 6, 3 × 4 = 12. n + 2 marche sur la première ligne seulement : 2 + 2 = 4, pas 6.",
+      "explanation": "Sur chaque ligne, le prix est 3 fois le nombre : 3 × 1 = 3, 3 × 2 = 6, 3 × 4 = 12. n + 2 marche sur la première ligne seulement : 2 + 2 = 4, pas 6. n + 3 ne marche sur aucune : 1 + 3 = 4, pas 3.",
       "figure": {
         "kind": "ratio-table",
         "props": {
@@ -141,7 +164,30 @@
       ],
       "answer": "4 × c",
       "hint": "Un carré a quatre côtés de même longueur.",
-      "explanation": "Le périmètre, c’est le tour : 4 côtés de longueur c, donc P = 4 × c. c × c, c’est l’aire du carré, pas son tour.",
+      "explanation": "Le périmètre, c’est le tour : 4 côtés de longueur c, donc P = 4 × c. c × c, c’est l’aire du carré, pas son tour. c + 4 ajoute 4 au lieu de multiplier par 4.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "côté c",
+            "périmètre P"
+          ],
+          "rows": [
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              3,
+              12
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -167,6 +213,29 @@
       "answer": "c²",
       "hint": "L’aire d’un carré : côté fois côté.",
       "explanation": "L’aire du carré, c’est côté fois côté : c × c, qu’on écrit c², c au carré. 2 × c, c’est le double : le carré n’est pas le double. 4 × c, c’est le périmètre.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "côté c",
+            "aire A"
+          ],
+          "rows": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              9
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -192,6 +261,16 @@
       "answer": "n − 1",
       "hint": "Essaie avec un nombre : juste avant 10, il y a 9.",
       "explanation": "Juste avant n, il y a 1 de moins : n − 1. Pour n = 10, 10 − 1 = 9. n + 1 vient juste après. 1 − n met les nombres dans le mauvais ordre : 1 − 10 ne fait pas 9.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 5,
+          "max": 15,
+          "points": [
+            10
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -216,7 +295,7 @@
       ],
       "answer": "5 cm",
       "hint": "Compare les hauteurs des deux premières lignes.",
-      "explanation": "Il passe de 4 cm à 9 cm : 9 − 4 = 5, il grandit de 5 cm. 9 cm, c’est sa hauteur à la semaine 2, pas ce qu’il a grandi.",
+      "explanation": "Il passe de 4 cm à 9 cm : 9 − 4 = 5, il grandit de 5 cm. 9 cm, c’est sa hauteur à la semaine 2, et 4 cm sa hauteur à la semaine 1 : ni l’une ni l’autre ne dit ce qu’il a grandi.",
       "figure": {
         "kind": "ratio-table",
         "props": {
@@ -265,6 +344,25 @@
       "answer": "3 × n",
       "hint": "Le triple, c’est trois fois le nombre.",
       "explanation": "Le triple, c’est 3 fois le nombre : 3 × n. n³, c’est le cube, n × n × n. n + 3, c’est ajouter 3.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "n",
+            "triple de n"
+          ],
+          "rows": [
+            [
+              2,
+              6
+            ],
+            [
+              5,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

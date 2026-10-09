@@ -35,9 +35,9 @@
     },
     {
       "key": "french-3e-close-reading-literary-eras-1-1",
-      "prompt": "Je veux montrer à mes semblables un homme dans toute la vérité de la nature, et cet homme, ce sera moi.\nJean-Jacques Rousseau, 1782",
+      "prompt": "Je veux montrer à mes semblables un homme dans toute la vérité de la nature, et cet homme, ce sera moi.\nJean-Jacques Rousseau, publié en 1782",
       "question": "De quel genre est ce texte ?",
-      "spoken": "Je veux montrer à mes semblables un homme dans toute la vérité de la nature, et cet homme, ce sera moi. Jean-Jacques Rousseau, mille sept cent quatre-vingt-deux.",
+      "spoken": "Je veux montrer à mes semblables un homme dans toute la vérité de la nature, et cet homme, ce sera moi. Jean-Jacques Rousseau, publié en mille sept cent quatre-vingt-deux.",
       "choices": [
         "un roman",
         "une autobiographie",

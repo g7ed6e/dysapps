@@ -3,7 +3,7 @@
   "biome": "french-3e-close-reading",
   "type": "literary-eras",
   "level": 2,
-  "instruction": "Lis l’œuvre et sa date, puis situe-la dans son siècle, son mouvement ou son contexte. Le rappel est affiché.",
+  "instruction": "Lis l’œuvre et sa date. Situe-la dans son époque. Le rappel est affiché.",
   "items": [
     {
       "key": "french-3e-close-reading-literary-eras-2-0",
@@ -115,9 +115,9 @@
     },
     {
       "key": "french-3e-close-reading-literary-eras-2-4",
-      "prompt": "Jean-Jacques Rousseau, Les Confessions, 1782\nRousseau raconte sa vie, depuis son enfance.",
+      "prompt": "Jean-Jacques Rousseau, Les Confessions, publiées en 1782\nRousseau, mort en 1778, y raconte sa vie depuis son enfance.",
       "question": "En quel siècle paraissent Les Confessions ?",
-      "spoken": "Jean-Jacques Rousseau, Les Confessions, mille sept cent quatre-vingt-deux. Rousseau raconte sa vie, depuis son enfance.",
+      "spoken": "Jean-Jacques Rousseau, Les Confessions, publiées en mille sept cent quatre-vingt-deux. Rousseau, mort en mille sept cent soixante-dix-huit, y raconte sa vie depuis son enfance.",
       "choices": [
         "au XVIIe siècle",
         "au XIXe siècle",
@@ -125,7 +125,7 @@
       ],
       "answer": "au XVIIIe siècle",
       "hint": "1782 est entre quelles années du rappel ?",
-      "explanation": "1782 est entre 1701 et 1800 : c’est le XVIIIe siècle, celui des Lumières. Les années en 17 sont au XVIIIe siècle, pas au XVIIe.",
+      "explanation": "1782 est entre 1701 et 1800 : c’est le XVIIIe siècle, celui des Lumières. Rousseau les a écrites de son vivant ; elles paraissent en 1782, quatre ans après sa mort, toujours au XVIIIe siècle. Les années en 17 sont au XVIIIe siècle, pas au XVIIe.",
       "aid": {
         "kind": "rule-card",
         "props": {

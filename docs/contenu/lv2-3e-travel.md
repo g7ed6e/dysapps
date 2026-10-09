@@ -1447,7 +1447,7 @@ Pour tous les items :
 
 ### Niveau 2 · `lv2-3e-travel-de-media-2`
 
-- consigne : Tu remplis une fiche d’inscription sous la dictée. Écoute la ligne, puis choisis le mot bien écrit. La règle est affichée.
+- consigne : Écoute la ligne de la fiche. Choisis le mot bien écrit. La règle est affichée.
 - programme : c4.de.ecrire.dictee-fiche
 - bravo : Bien écrit !
 

@@ -65,6 +65,7 @@ Pour tous les items :
    - réponse : 12 cm
    - indice : Une longueur est multipliée par le rapport.
    - explication : Les longueurs sont multipliées par 3 : 4 × 3 = 12 cm. 7 cm, c’est 4 + 3 : on multiplie, on n’ajoute pas. 1 cm, c’est 4 − 3 : un agrandissement ne rapetisse pas.
+   - figure : tableau figure (cm) · image (cm) / 1 · 3 / 4 · ?
 2. énoncé : On agrandit une figure de rapport 2. Un angle de 40° devient …
    - lu : On agrandit une figure de rapport 2. Un angle de 40 degrés devient (mot manquant)
    - choix : 20° · 40° · 80°
@@ -84,24 +85,27 @@ Pour tous les items :
    - indice : Un volume est multiplié par le rapport, trois fois.
    - explication : Le volume est multiplié par 2 × 2 × 2 = 8 : 4 × 8 = 32 cm³. 8 cm³, c’est multiplier par 2, comme une longueur ; 16 cm³, c’est multiplier par 4, comme une aire.
 5. énoncé : Une maquette de bateau est une réduction de rapport 1/10. Le vrai mât mesure 3 m. Sur la maquette, il mesure …
-   - lu : Une maquette de bateau est une réduction de rapport 1 sur 10. Le vrai mât mesure 3 mètres. Sur la maquette, il mesure (mot manquant)
+   - lu : Une maquette de bateau est une réduction de rapport un dixième. Le vrai mât mesure 3 mètres. Sur la maquette, il mesure (mot manquant)
    - choix : 3 cm · 30 cm · 300 cm
    - réponse : 30 cm
    - indice : Écris 3 mètres en centimètres, puis divise par 10.
    - explication : 3 m = 300 cm, et 300 ÷ 10 = 30 cm. 300 cm, c’est la vraie longueur, sans réduction. 3 cm, c’est diviser par 100 au lieu de 10.
+   - figure : tableau maquette (cm) · vrai bateau (cm) / 1 · 10 / ? · 300
 6. énoncé : "Carte de randonnée\nÉchelle : 1 / 25 000\nSur la carte, le sentier mesure 4 cm."
    - question : Quelle est la vraie longueur du sentier ?
    - lu : Carte de randonnée. Échelle, 1 sur 25 000. Sur la carte, le sentier mesure 4 centimètres.
    - choix : 1 km · 10 km · 100 km
    - réponse : 1 km
    - indice : Calcule d’abord en centimètres. 1 kilomètre, c’est 100 000 centimètres.
-   - explication : 4 × 25 000 = 100 000 cm, et 100 000 cm = 1 000 m = 1 km. 10 km et 100 km viennent d’une erreur dans la conversion des centimètres en kilomètres.
+   - explication : 4 × 25 000 = 100 000 cm, et 100 000 cm = 1 000 m = 1 km. 10 km et 100 km viennent d’une erreur de conversion : 100 000 cm, ce n’est ni 10 000 m ni 100 000 m, c’est 1 000 m.
+   - figure : tableau carte (cm) · terrain (cm) / 1 · 25 000 / 4 · ?
 7. énoncé : Un rectangle large de 3 cm devient large de 12 cm. Le rapport d’agrandissement est …
    - lu : Un rectangle large de 3 centimètres devient large de 12 centimètres. Le rapport d’agrandissement est (mot manquant)
    - choix : 4 · 9 · 36
    - réponse : 4
    - indice : Par combien faut-il multiplier 3 pour obtenir 12 ?
    - explication : 3 × 4 = 12 : le rapport est 4. 9, c’est 12 − 3 : le rapport multiplie, il ne s’ajoute pas. 36, c’est 3 × 12.
+   - figure : droite 0 · 12 / 3 · 12
 8. énoncé : Une figure de 60 cm² est réduite de rapport 0,5. Son aire devient …
    - lu : Une figure de 60 centimètres carrés est réduite de rapport 0,5. Son aire devient (mot manquant)
    - choix : 7,5 cm² · 15 cm² · 30 cm²
@@ -234,12 +238,14 @@ Pour tous les items :
    - réponse : 14 cm
    - indice : Une longueur est multipliée par le rapport.
    - explication : Les longueurs sont multipliées par 2 : 7 × 2 = 14 cm. 9 cm, c’est 7 + 2 : on multiplie, on n’ajoute pas. 28 cm, c’est multiplier par 2 × 2, ce qui vaut pour les aires.
+   - figure : tableau segment (cm) · image (cm) / 1 · 2 / 7 · ?
 7. énoncé : Une homothétie de rapport 0,5 transforme une figure en …
    - lu : Une homothétie de rapport 0,5 transforme une figure en (mot manquant)
    - choix : un agrandissement · une réduction · une figure de même taille
    - réponse : une réduction
    - indice : Que devient une longueur multipliée par 0,5 ?
    - explication : Multiplier par 0,5, c’est prendre la moitié : les longueurs diminuent, l’image est une réduction. Un rapport plus grand que 1 donnerait un agrandissement. La même taille, c’est un rapport de 1.
+   - figure : tableau longueur (cm) · image (cm) / 1 · 0,5 / 4 · ?
 8. énoncé : Parmi ces transformations, celle qui peut changer les longueurs, c’est …
    - lu : Parmi ces transformations, celle qui peut changer les longueurs, c’est (mot manquant)
    - choix : l’homothétie · la rotation · la symétrie centrale
@@ -263,7 +269,7 @@ Pour tous les items :
    - choix : égaux · semblables, mais pas égaux · peut-être différents
    - réponse : égaux
    - indice : Relis la deuxième ligne du rappel.
-   - explication : Les trois côtés sont égaux deux à deux : cela suffit, les triangles sont égaux. On peut les superposer : leurs angles sont aussi les mêmes. Avec ces trois longueurs, on ne peut construire qu’un seul triangle.
+   - explication : Les trois côtés sont égaux deux à deux : cela suffit, les triangles sont égaux. On peut les superposer : leurs angles sont aussi les mêmes. Avec ces trois longueurs, on ne peut construire qu’un seul triangle. Ils sont aussi semblables, mais « pas égaux » est faux.
 2. énoncé : "Deux triangles ont les mêmes angles :\n40°, 60° et 80°."
    - question : Ces deux triangles sont-ils forcément égaux ?
    - lu : Deux triangles ont les mêmes angles : 40 degrés, 60 degrés et 80 degrés.
@@ -291,12 +297,13 @@ Pour tous les items :
    - réponse : non, le troisième côté n’a pas doublé
    - indice : Pour des triangles semblables, chaque côté est multiplié par le même nombre.
    - explication : 2 × 2 = 4 et 3 × 2 = 6, mais 4 × 2 = 8, pas 7 : les longueurs ne sont pas proportionnelles, les triangles ne sont pas semblables. Grandir ne suffit pas, deux côtés sur trois non plus : il faut le même rapport pour les trois.
+   - figure : tableau triangle 1 (cm) · triangle 2 (cm) / 2 · 4 / 3 · 6 / 4 · 7
 6. énoncé : Un quadrilatère dont les côtés opposés sont parallèles deux à deux est …
    - lu : Un quadrilatère dont les côtés opposés sont parallèles deux à deux est (mot manquant)
    - choix : un parallélogramme · forcément un carré · forcément un rectangle
    - réponse : un parallélogramme
    - indice : Relis l’avant-dernière ligne du rappel.
-   - explication : Des côtés opposés parallèles deux à deux : c’est la définition du parallélogramme. Le carré et le rectangle en sont des cas particuliers : il leur faut en plus quatre angles droits. Ce n’est donc pas forcément l’un d’eux.
+   - explication : Des côtés opposés parallèles deux à deux : c’est la définition du parallélogramme. Le rectangle et le carré en sont des cas particuliers : le rectangle a en plus quatre angles droits ; le carré, quatre angles droits et quatre côtés égaux. Ce n’est donc pas forcément l’un d’eux.
 7. énoncé : Les diagonales d’un quadrilatère se coupent en leur milieu. Ce quadrilatère est …
    - lu : Les diagonales d’un quadrilatère se coupent en leur milieu. Ce quadrilatère est (mot manquant)
    - choix : un parallélogramme · forcément un rectangle · forcément un losange
@@ -310,6 +317,7 @@ Pour tous les items :
    - réponse : 5 cm
    - indice : O est-il au bout de la diagonale, ou en son milieu ?
    - explication : Les diagonales d’un parallélogramme se coupent en leur milieu : O est le milieu de la diagonale qui va de A à C : 10 ÷ 2 = 5 cm. 10 cm, c’est toute la diagonale. 20 cm, c’est le double.
+   - figure : droite 0 · 10 / 0 · 10
 
 ## Les plans
 

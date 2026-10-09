@@ -4,9 +4,7 @@ import foret from './data/french-6e-phonology-syllables-warmup-002.json';
 import { loadAllExercises } from './index';
 import { runItems } from './run';
 import type { ExerciseDef, ExerciseItem } from './types';
-import { piegesDe, shuffleRunChoices } from './shuffle';
-import { placeChoices } from '../../core/choices';
-import { seeded } from '../../core/random';
+import { shuffleRunChoices } from './shuffle';
 
 const EXERCISES = await loadAllExercises();
 
@@ -59,25 +57,30 @@ it('garde les nombres dans l’ordre croissant, mais décale la fenêtre pour qu
   expect(run.filter((i) => at(i) === 1).length).toBeLessThanOrEqual(Math.ceil(run.length / 3) + 1);
 });
 
-it('pièges calculés : déplace la réponse d’une liste de nombres en retournant un piège, et l’écrit comme ses voisins', () => {
-  const items = [{ key: 'k', choices: ['−3', '1 200', '2 000,5'], answer: '1 200' }];
-  const lists = ['a', 'b', 'c', 'd', 'e', 'f'].map((seed) => placeChoices(items, seeded(seed), 'calcules')[0].choices);
-  const value = (c: string) => Number(c.replace('−', '-').replace(/\s/g, '').replace(',', '.'));
-  for (const list of lists) {
-    expect(list).toContain('1 200');
-    expect(list.map(value)).toEqual([...list.map(value)].sort((a, b) => a - b));
-  }
-  expect(lists.flat()).toContain('2 403');
-  expect(new Set(lists.map((l) => l.indexOf('1 200'))).size).toBeGreaterThan(1);
-  // Une liste de nombres que l'auteur n'a pas rangée reste telle quelle.
+it('une liste de nombres que l’auteur n’a pas rangée reste telle quelle', () => {
   const loose = { id: 'l', items: [{ key: 'k', choices: ['5', '2', '9'], answer: '2' }] } as unknown as ExerciseDef;
   expect(shuffleRunChoices(loose, loose.items, 'a')[0].choices).toEqual(['5', '2', '9']);
 });
 
 it('maths écrites en Markdown (sans générateur) : les pièges du fichier restent ceux de l’auteur', () => {
   const def = { id: 'm', biome: 'maths-6e-calculation', items: [{ key: 'k', choices: ['300', '3 000', '30 000'], answer: '3 000' }] } as unknown as ExerciseDef;
-  expect(piegesDe(def)).toBe('du-fichier');
   for (const seed of ['a', 'b', 'c', 'd']) expect(shuffleRunChoices(def, def.items, seed)[0].choices).toEqual(['300', '3 000', '30 000']);
+});
+
+it('des fractions se rangent dans l’ordre croissant, et des vitesses rangées ne se mélangent pas', () => {
+  const def = {
+    id: 'f',
+    biome: 'maths-6e-fractions',
+    items: [
+      { key: 'a', choices: ['3', '3/5', '3/10'], answer: '3/5' },
+      { key: 'b', choices: ['15 km/h', '60 km/h', '90 km/h'], answer: '60 km/h' },
+    ],
+  } as unknown as ExerciseDef;
+  for (const seed of ['a', 'b', 'c', 'd']) {
+    const [a, b] = shuffleRunChoices(def, def.items, seed);
+    expect(a.choices).toEqual(['3/10', '3/5', '3']);
+    expect(b.choices).toEqual(['15 km/h', '60 km/h', '90 km/h']);
+  }
 });
 
 it('hors maths, des nombres entendus gardent leurs pièges : 3, 13, 30 restent 3, 13, 30', () => {

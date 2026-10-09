@@ -16,7 +16,7 @@
       ],
       "answer": "égaux",
       "hint": "Relis la deuxième ligne du rappel.",
-      "explanation": "Les trois côtés sont égaux deux à deux : cela suffit, les triangles sont égaux. On peut les superposer : leurs angles sont aussi les mêmes. Avec ces trois longueurs, on ne peut construire qu’un seul triangle.",
+      "explanation": "Les trois côtés sont égaux deux à deux : cela suffit, les triangles sont égaux. On peut les superposer : leurs angles sont aussi les mêmes. Avec ces trois longueurs, on ne peut construire qu’un seul triangle. Ils sont aussi semblables, mais « pas égaux » est faux.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -146,6 +146,29 @@
       "answer": "non, le troisième côté n’a pas doublé",
       "hint": "Pour des triangles semblables, chaque côté est multiplié par le même nombre.",
       "explanation": "2 × 2 = 4 et 3 × 2 = 6, mais 4 × 2 = 8, pas 7 : les longueurs ne sont pas proportionnelles, les triangles ne sont pas semblables. Grandir ne suffit pas, deux côtés sur trois non plus : il faut le même rapport pour les trois.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "triangle 1 (cm)",
+            "triangle 2 (cm)"
+          ],
+          "rows": [
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              4,
+              7
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -172,7 +195,7 @@
       ],
       "answer": "un parallélogramme",
       "hint": "Relis l’avant-dernière ligne du rappel.",
-      "explanation": "Des côtés opposés parallèles deux à deux : c’est la définition du parallélogramme. Le carré et le rectangle en sont des cas particuliers : il leur faut en plus quatre angles droits. Ce n’est donc pas forcément l’un d’eux.",
+      "explanation": "Des côtés opposés parallèles deux à deux : c’est la définition du parallélogramme. Le rectangle et le carré en sont des cas particuliers : le rectangle a en plus quatre angles droits ; le carré, quatre angles droits et quatre côtés égaux. Ce n’est donc pas forcément l’un d’eux.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -228,6 +251,17 @@
       "answer": "5 cm",
       "hint": "O est-il au bout de la diagonale, ou en son milieu ?",
       "explanation": "Les diagonales d’un parallélogramme se coupent en leur milieu : O est le milieu de la diagonale qui va de A à C : 10 ÷ 2 = 5 cm. 10 cm, c’est toute la diagonale. 20 cm, c’est le double.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 0,
+          "max": 10,
+          "points": [
+            0,
+            10
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

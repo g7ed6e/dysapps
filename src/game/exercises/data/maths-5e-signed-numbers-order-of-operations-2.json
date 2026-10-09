@@ -17,7 +17,30 @@
       ],
       "answer": "(5 + 3) × 2",
       "hint": "Le programme ajoute d’abord. Comment garder cet ordre ?",
-      "explanation": "On ajoute d’abord, puis on multiplie le résultat : il faut des parenthèses, (5 + 3) × 2. Sans elles, 5 + 3 × 2 ferait la multiplication en premier.",
+      "explanation": "On ajoute d’abord, puis on multiplie le résultat : il faut des parenthèses, (5 + 3) × 2. Sans elles, 5 + 3 × 2 ferait la multiplication en premier. 5 × 2 + 3 multiplie avant d’ajouter : l’ordre du programme est changé.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "étape",
+            "nombre"
+          ],
+          "rows": [
+            [
+              "départ",
+              5
+            ],
+            [
+              "ajoute 3",
+              "?"
+            ],
+            [
+              "multiplie par 2",
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -39,12 +62,35 @@
       "spoken": "Programme de calcul. Choisis 4. Multiplie par 3. Enlève 2.",
       "choices": [
         "4",
-        "6",
-        "10"
+        "10",
+        "14"
       ],
       "answer": "10",
       "hint": "Suis les lignes dans l’ordre, une à une.",
-      "explanation": "4 × 3 = 12, puis 12 − 2 = 10 : c’est 4 × 3 − 2. 4, c’est 4 × (3 − 2) : on a enlevé avant de multiplier.",
+      "explanation": "4 × 3 = 12, puis 12 − 2 = 10 : c’est 4 × 3 − 2. 4, c’est 4 × (3 − 2) : on a enlevé avant de multiplier. 14, c’est 12 + 2 : on a ajouté au lieu d’enlever.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "étape",
+            "nombre"
+          ],
+          "rows": [
+            [
+              "départ",
+              4
+            ],
+            [
+              "multiplie par 3",
+              "?"
+            ],
+            [
+              "enlève 2",
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -72,6 +118,29 @@
       "answer": "100",
       "hint": "Le carré porte sur le résultat de l’addition.",
       "explanation": "6 + 4 = 10, puis 10² = 10 × 10 = 100 : c’est (6 + 4)². 22, c’est 6 + 4², le carré du 4 seul. 20, c’est 10 × 2 : le double, pas le carré.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "étape",
+            "nombre"
+          ],
+          "rows": [
+            [
+              "départ",
+              6
+            ],
+            [
+              "ajoute 4",
+              "?"
+            ],
+            [
+              "au carré",
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -123,7 +192,26 @@
       ],
       "answer": "7",
       "hint": "Quel nombre, multiplié par 5, donne 35 ?",
-      "explanation": "L’inverse de × 5, c’est ÷ 5 : x = 35 ÷ 5 = 7. On vérifie : 5 × 7 = 35. 30, c’est 35 − 5 : on a enlevé au lieu de diviser.",
+      "explanation": "L’inverse de × 5, c’est ÷ 5 : x = 35 ÷ 5 = 7. On vérifie : 5 × 7 = 35. 30, c’est 35 − 5 : on a enlevé au lieu de diviser. 175, c’est 35 × 5 : on a refait la même opération au lieu de l’inverse.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "x",
+            "5 × x"
+          ],
+          "rows": [
+            [
+              1,
+              5
+            ],
+            [
+              "?",
+              35
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -149,7 +237,26 @@
       ],
       "answer": "8",
       "hint": "3x veut dire 3 × x.",
-      "explanation": "3x, c’est 3 × x. L’inverse de × 3, c’est ÷ 3 : x = 24 ÷ 3 = 8. On vérifie : 3 × 8 = 24. 72, c’est 24 × 3 : on a refait la même opération au lieu de l’inverse.",
+      "explanation": "3x, c’est 3 × x. L’inverse de × 3, c’est ÷ 3 : x = 24 ÷ 3 = 8. On vérifie : 3 × 8 = 24. 72, c’est 24 × 3 : on a refait la même opération au lieu de l’inverse. 21, c’est 24 − 3 : on a enlevé au lieu de diviser.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "x",
+            "3x"
+          ],
+          "rows": [
+            [
+              1,
+              3
+            ],
+            [
+              "?",
+              24
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -176,7 +283,7 @@
       ],
       "answer": "x + 12 = 30",
       "hint": "On lui donne des billes : en a-t-elle plus, ou moins ?",
-      "explanation": "Au début, x billes ; on en ajoute 12 ; on obtient 30 : x + 12 = 30. On lui en donne : c’est une addition, pas une soustraction.",
+      "explanation": "Au début, x billes ; on en ajoute 12 ; on obtient 30 : x + 12 = 30. On lui en donne : c’est une addition. x − 12 = 30 enlèverait des billes ; 12 × x = 30 multiplierait au lieu d’ajouter.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -202,7 +309,17 @@
       ],
       "answer": "18",
       "hint": "Quel nombre, plus 2, donne 20 ?",
-      "explanation": "L’inverse de + 2, c’est − 2 : x = 20 − 2 = 18. On vérifie : 18 + 2 = 20. 10, c’est 20 ÷ 2 : x + 2, ce n’est pas 2x.",
+      "explanation": "L’inverse de + 2, c’est − 2 : x = 20 − 2 = 18. On vérifie : 18 + 2 = 20. 10, c’est 20 ÷ 2 : x + 2, ce n’est pas 2x. 22, c’est 20 + 2 : on a refait la même opération au lieu de l’inverse.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 10,
+          "max": 20,
+          "points": [
+            20
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

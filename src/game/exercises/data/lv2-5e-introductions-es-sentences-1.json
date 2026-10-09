@@ -4,7 +4,7 @@
   "type": "es-sentences",
   "level": 1,
   "lang": "es",
-  "instruction": "Lis et écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée : lis-la avant de répondre.",
+  "instruction": "Lis et écoute la question en espagnol. Choisis la bonne réponse. La règle est affichée.",
   "items": [
     {
       "key": "lv2-5e-introductions-es-sentences-1-0",

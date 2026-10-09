@@ -18,6 +18,25 @@
       "answer": "non : 10 km coûteraient alors 24 €",
       "hint": "10 kilomètres, c’est le double de 5 kilomètres. Le prix est-il le double ?",
       "explanation": "10 km, c’est 5 km × 2. Si c’était proportionnel, le prix serait 12 € × 2 = 24 €. Il est de 20 € : ce n’est pas proportionnel. Monter ensemble ne suffit pas, ajouter non plus : il faut multiplier par le même nombre.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "distance (km)",
+            "prix (€)"
+          ],
+          "rows": [
+            [
+              5,
+              12
+            ],
+            [
+              10,
+              20
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -134,6 +153,25 @@
       "answer": "9 €",
       "hint": "Prends d’abord 10 pour cent : divise par 10. Puis double.",
       "explanation": "10 % de 45 €, c’est 4,50 € ; 20 %, c’est le double : 9 €. 25 €, c’est 45 − 20 : un pourcentage ne se retire pas comme des euros. 36 €, c’est ce qui reste quand on enlève 20 %.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "pourcentage",
+            "montant (€)"
+          ],
+          "rows": [
+            [
+              "100 %",
+              45
+            ],
+            [
+              "20 %",
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -205,6 +243,25 @@
       "answer": "4 m",
       "hint": "Calcule d’abord en centimètres, puis convertis en mètres.",
       "explanation": "4 cm × 100 = 400 cm, et 400 cm = 4 m. 40 m et 0,4 m viennent d’une erreur de conversion : 100 cm font 1 m.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "plan (cm)",
+            "réalité (cm)"
+          ],
+          "rows": [
+            [
+              1,
+              100
+            ],
+            [
+              4,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -280,6 +337,25 @@
       "answer": "3 cm",
       "hint": "Écris d’abord 6 mètres en centimètres. Puis divise par 200.",
       "explanation": "6 m = 600 cm, et 600 ÷ 200 = 3 : le mur mesure 3 cm sur le plan. 30 cm et 0,3 cm viennent d’une erreur dans la conversion des mètres en centimètres.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "plan (cm)",
+            "réalité (cm)"
+          ],
+          "rows": [
+            [
+              1,
+              200
+            ],
+            [
+              "?",
+              600
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

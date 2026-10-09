@@ -165,6 +165,9 @@ it('rattrape une ancienne sauvegarde : les parties des missions déjà terminée
 });
 
 it('le lieu de la LV2 a cinq parties, posées par les missions des deux langues ensemble, sans dépendre du réglage', () => {
+  // Le bâtiment compte les missions d'une seule langue : les deux en ont autant, sur chaque lieu de LV2.
+  for (const b of BIOMES.filter((x) => x.exercises.some((e) => e.lv2 !== undefined)))
+    expect(b.exercises.filter((e) => e.lv2 === 'es').length, b.id).toBe(b.exercises.filter((e) => e.lv2 === 'de').length);
   const id = 'lv2-5e-introductions';
   expect(partiesDe(id)).toHaveLength(5);
   const types = BIOMES.find((b) => b.id === id)!.exercises;

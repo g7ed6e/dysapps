@@ -43,6 +43,13 @@
       "answer": "impossible",
       "hint": "Quels nombres sont écrits sur un dé à six faces ?",
       "explanation": "Les faces vont de 1 à 6 : aucune face ne porte 7. L’évènement est impossible, sa probabilité est 0. « Peu probable » voudrait dire qu’il arrive quelquefois : ici, jamais.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 1,
+          "max": 6
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -69,6 +76,13 @@
       "answer": "3",
       "hint": "Écris les nombres pairs de 1 à 6.",
       "explanation": "Les nombres pairs du dé sont 2, 4 et 6 : 3 issues. 2, c’est oublier le 6. 6, c’est toutes les issues du dé, pairs et impairs.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 1,
+          "max": 6
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -94,7 +108,20 @@
       ],
       "answer": "1/2",
       "hint": "Une pièce a deux faces. Combien donnent pile ?",
-      "explanation": "2 issues, pile ou face, avec la même chance ; 1 seule donne pile : 1 sur 2, 1/2. 2, c’est le nombre d’issues : une probabilité n’est jamais plus grande que 1. 1 voudrait dire que pile est certain.",
+      "explanation": "2 issues, pile ou face, avec la même chance ; 1 seule donne pile : 1 issue sur 2, donc 1/2, un demi. 2, c’est le nombre d’issues : une probabilité n’est jamais plus grande que 1. 1 voudrait dire que pile est certain.",
+      "figure": {
+        "kind": "bar-list",
+        "props": {
+          "values": [
+            1,
+            1
+          ],
+          "labels": [
+            "pile",
+            "face"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -121,6 +148,16 @@
       "answer": "1/6",
       "hint": "Combien de faces portent le 3 ? Combien de faces en tout ?",
       "explanation": "Une seule face porte le 3, sur 6 faces : 1/6. 3/6, c’est prendre la valeur 3 pour un nombre d’issues. 1/3 met le 3 en bas, à la place des 6 faces.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 1,
+          "max": 6,
+          "points": [
+            3
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -147,6 +184,19 @@
       "answer": "3/10",
       "hint": "Combien de boules en tout dans le sac ?",
       "explanation": "3 + 7 = 10 boules en tout, dont 3 rouges : 3/10. 3/7 compare aux bleues, pas à toutes les boules. 7/10, c’est la probabilité de tirer une bleue.",
+      "figure": {
+        "kind": "bar-list",
+        "props": {
+          "values": [
+            3,
+            7
+          ],
+          "labels": [
+            "rouges",
+            "bleues"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -172,7 +222,14 @@
       ],
       "answer": "0,25",
       "hint": "Une chance sur 4, c’est 1 divisé par 4.",
-      "explanation": "Une chance sur 4, c’est 1/4, et 1 ÷ 4 = 0,25, soit 25 %. 0,4, c’est écrire le 4 après la virgule : 0,4, c’est 4 sur 10. 4 est plus grand que 1 : ce n’est pas une probabilité.",
+      "explanation": "Une chance sur 4, c’est 1/4, et 1 ÷ 4 = 0,25, soit 25 %. 0,4, c’est écrire le 4 après la virgule : 0,4, c’est 4 dixièmes. 4 est plus grand que 1 : ce n’est pas une probabilité.",
+      "figure": {
+        "kind": "fraction-bar",
+        "props": {
+          "n": 1,
+          "d": 4
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -199,6 +256,13 @@
       "answer": "près de 1",
       "hint": "Lis bien : « ne pas gagner ». Est-ce rare, ou presque sûr ?",
       "explanation": "Gagner au loto est très rare, donc ne pas gagner est presque certain : près de 1. Près de 0, c’est la place de « gagner au loto ». Au milieu, c’est une chance sur deux, comme pile ou face.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 0,
+          "max": 1
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

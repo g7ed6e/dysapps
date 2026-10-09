@@ -1,7 +1,6 @@
 import { BIOMES, BLOCKS } from '../biomes';
 import { CATALOG, UNORDERED, exercisesOf, loadAllExercises, pickExercise, questProgress } from './index';
 import { SCREEN_TYPES } from './registry';
-import { piegesDe } from './shuffle';
 import { CalculationScreen } from './CalculationScreen';
 import { DictationItem } from './DictationItem';
 import { fillTemplate } from './types';
@@ -407,7 +406,7 @@ it('des choix qui sont tous des nombres de même unité sont rangés : sinon la 
 it('hors maths, placer les choix n’en invente aucun (pas de « 38 juin ») : seuls les calculs ont des pièges calculés', () => {
   const inventes: string[] = [];
   for (const def of EXERCISES) {
-    if (piegesDe(def) === 'calcules') continue;
+    if (def.generate) continue;
     for (const it of def.items) {
       const choices = it.choices;
       if (!Array.isArray(choices) || choices.length < 2) continue;
@@ -448,7 +447,7 @@ it('hors maths, la bonne réponse d’une liste rangée (nombres, heures) change
   // (« 2, 3, 4 syllabes ») se décalent en partie : hors du compte.
   const trop: string[] = [];
   for (const def of EXERCISES) {
-    if (piegesDe(def) !== 'du-fichier') continue;
+    if (def.generate) continue;
     const rangs = new Map<number, number[]>();
     for (const it of def.items) {
       const choices = it.choices;

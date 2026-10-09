@@ -72,7 +72,7 @@
       ],
       "answer": "le dioxyde de carbone",
       "hint": "Relis la ligne « Brûler » du rappel.",
-      "explanation": "En brûlant, le pétrole, le charbon et le gaz rejettent du dioxyde de carbone, qui retient la chaleur. L’oxygène, lui, n’est pas rejeté : il est utilisé pour brûler.",
+      "explanation": "En brûlant, le pétrole, le charbon et le gaz rejettent du dioxyde de carbone, qui retient la chaleur. L’oxygène, lui, n’est pas rejeté : il est utilisé pour brûler. L’hydrogène n’est pas rejeté non plus.",
       "aid": {
         "kind": "rule-card",
         "props": {

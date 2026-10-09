@@ -16,7 +16,7 @@
       ],
       "answer": "24 cm²",
       "hint": "Relis la première ligne du rappel.",
-      "explanation": "Aire = base × hauteur = 6 × 4 = 24 cm². 12 divise par 2 : c’est la formule du triangle. 20 est le périmètre, le tour de la figure.",
+      "explanation": "Aire = base × hauteur = 6 × 4 = 24 cm². 12 divise par 2 : c’est la formule du triangle. 20, c’est 2 × (6 + 4) : on a pris la hauteur pour un côté et calculé le tour.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -94,7 +94,24 @@
       ],
       "answer": "60 cm³",
       "hint": "Relis la ligne du prisme dans le rappel.",
-      "explanation": "Volume = aire de la base × hauteur = 12 × 5 = 60 cm³. 17 vient de 12 + 5 : il faut multiplier. Et on ne divise pas par 2.",
+      "explanation": "Volume = aire de la base × hauteur = 12 × 5 = 60 cm³. 17 vient de 12 + 5 : il faut multiplier. 30 divise par 2 : le volume d’un prisme ne se divise pas.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              12,
+              5,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -120,7 +137,24 @@
       ],
       "answer": "60 cm³",
       "hint": "Le cylindre se calcule comme le prisme droit.",
-      "explanation": "Volume = aire de la base × hauteur = 20 × 3 = 60 cm³. 23 vient de 20 + 3 : il faut multiplier. Et 120 multiplie encore par 2 : la hauteur ne compte qu’une fois.",
+      "explanation": "Volume = aire de la base × hauteur = 20 × 3 = 60 cm³. 23 vient de 20 + 3 : il faut multiplier. 120 multiplie encore par 2 : on ne double rien, la hauteur ne compte qu’une fois.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              20,
+              3,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -147,6 +181,23 @@
       "answer": "60 cm³",
       "hint": "L’aire de la base est déjà donnée.",
       "explanation": "Volume = aire de la base × hauteur = 6 × 10 = 60 cm³. 16 vient de 6 + 10 : il faut multiplier. L’aire du triangle est déjà calculée : 120 la double, alors qu’on ne la touche plus.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              6,
+              10,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -172,7 +223,26 @@
       ],
       "answer": "24 cm³",
       "hint": "Calcule d’abord l’aire du rectangle de base.",
-      "explanation": "Aire de la base = 3 × 4 = 12 cm². Volume = 12 × 2 = 24 cm³. 14 ajoute la hauteur au lieu de la multiplier.",
+      "explanation": "Aire de la base = 3 × 4 = 12 cm². Volume = 12 × 2 = 24 cm³. 14 ajoute la hauteur au lieu de la multiplier ; 9 additionne les trois longueurs.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "longueur (cm)",
+            "largeur (cm)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              3,
+              4,
+              2,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -199,6 +269,25 @@
       "answer": "1 000 cm³",
       "hint": "10³, c’est 10 × 10 × 10.",
       "explanation": "Volume = 10 × 10 × 10 = 10³ = 1 000 cm³. 10 × 3 = 30 n’est pas une puissance, et 10² = 100 cm² est l’aire d’une seule face.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "arête (cm)",
+            "arête (cm)",
+            "arête (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              10,
+              10,
+              10,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

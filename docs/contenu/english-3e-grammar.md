@@ -353,7 +353,7 @@ Pour tous les items :
 
 ### Niveau 1 · `english-3e-grammar-messages-1`
 
-- consigne : Lis la question, puis le panneau ou la consigne en anglais, et choisis la bonne réponse. Le lexique est affiché.
+- consigne : Lis la question, puis le document en anglais. Choisis la bonne réponse. Le lexique est affiché.
 
 Pour tous les items :
 - langue des choix : fr
@@ -439,7 +439,7 @@ Pour tous les items :
    - langue des choix : fr
    - réponse : 19 h 15
    - indice : Let’s meet veut dire « retrouvons-nous ». Trouve sa ligne, puis pense à pm.
-   - explication : let’s meet at 7:15 pm = retrouvons-nous à 7 h 15 du soir, soit 19 h 15 (pm : on ajoute 12). 19 h 30, c’est l’heure où le film commence (starts).
+   - explication : let’s meet at 7:15 pm = retrouvons-nous à 7 h 15 du soir, soit 19 h 15 (pm : on ajoute 12). 19 h 30, c’est l’heure où le film commence (starts) ; 7 h 15, ce serait le matin.
 2. énoncé : "Dear Grandma,\nI’m in Scotland with my class.\nIt’s cold and rainy, but the castles are amazing!\nLove,\nLina"
    - question : Quel temps fait-il en Écosse ?
    - lu : Dear Grandma, I’m in Scotland with my class. It’s cold and rainy, but the castles are amazing! Love, Lina.
@@ -455,7 +455,7 @@ Pour tous les items :
    - langue des choix : fr
    - réponse : 12 livres
    - indice : Trouve le prix, puis regarde le mot qui le suit : each.
-   - explication : £12 each = 12 livres chacun : un billet coûte 12 livres. 24 livres, ce serait le prix des deux billets.
+   - explication : £12 each = 12 livres chacun : un billet coûte 12 livres. 24 livres, ce serait le prix des deux billets ; 2 livres oublie le 1 de 12.
 4. énoncé : "Hello Hugo,\nWelcome to Bristol!\nPlease bring a towel and warm clothes.\nWe have sheets for your bed.\nSee you on Saturday,\nThe Smith family"
    - question : Qu’est-ce que Hugo doit apporter ?
    - lu : Hello Hugo, welcome to Bristol! Please bring a towel and warm clothes. We have sheets for your bed. See you on Saturday, the Smith family.

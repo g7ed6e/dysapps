@@ -589,7 +589,7 @@ Pour tous les items :
 
 ### Niveau 1 · `lv2-5e-introductions-es-sentences-1`
 
-- consigne : Lis et écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée : lis-la avant de répondre.
+- consigne : Lis et écoute la question en espagnol. Choisis la bonne réponse. La règle est affichée.
 - bravo : Bien répondu !
 
 Pour tous les items :
@@ -1296,7 +1296,7 @@ Pour tous les items :
 
 ### Niveau 1 · `lv2-5e-introductions-de-sentences-1`
 
-- consigne : Lis et écoute la phrase en allemand, puis choisis la phrase qui va avec. La règle est affichée : lis-la avant de répondre.
+- consigne : Lis et écoute la phrase en allemand. Choisis la phrase qui va avec. La règle est affichée.
 - programme : c4.de.5e.langue.phrase
 - bravo : Bien construit !
 

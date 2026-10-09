@@ -590,7 +590,7 @@ Pour tous les items :
    - choix : De Normandie · D’Écosse · De Londres
    - réponse : De Normandie
    - indice : Lis la deuxième ligne : Duke of veut dire duc de.
-   - explication : Duke of Normandy = duc de Normandie : Guillaume le Conquérant vient de France. En 1066, il gagne la bataille d’Hastings et devient roi d’Angleterre : une histoire commune aux deux pays.
+   - explication : Duke of Normandy = duc de Normandie : Guillaume le Conquérant vient de Normandie, une région de la France d’aujourd’hui. En 1066, il gagne la bataille d’Hastings et devient roi d’Angleterre : une histoire commune aux deux pays.
 6. énoncé : "Hadrian’s Wall\nThe Romans built this wall\nin the north of England."
    - question : Qui a construit ce mur ?
    - lu : Hadrian’s Wall. The Romans built this wall in the north of England.

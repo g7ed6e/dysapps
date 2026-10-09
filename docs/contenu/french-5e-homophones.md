@@ -371,7 +371,7 @@ Pour tous les items :
 
 ### Niveau 1 · `french-5e-homophones-participles-1`
 
-- consigne : Choisis la forme qui complète la phrase : participe passé ou infinitif. La règle est affichée : lis-la avant de répondre.
+- consigne : Choisis la forme qui complète la phrase : participe passé ou infinitif. La règle est affichée.
 
 Pour tous les items :
 - aide « Participe passé ou infinitif ? » :
@@ -385,7 +385,7 @@ Pour tous les items :
    - choix : arrivées · arrivé · arriver
    - réponse : arrivées
    - indice : Qui est-ce qui est arrivé ? Une fille ou un garçon, un ou plusieurs ?
-   - explication : On peut dire « sont vendues » : c’est le participe passé. Avec être, il s’accorde avec le sujet « mes cousines », féminin pluriel : « arrivées ». On ne dit pas « sont vendre » : « arriver » ne va pas.
+   - explication : On peut dire « sont vendues » : c’est le participe passé. Avec être, il s’accorde avec le sujet « mes cousines », féminin pluriel : « arrivées ». « arrivé », sans accord, irait avec un seul garçon. On ne dit pas « sont vendre » : « arriver » ne va pas.
 2. énoncé : Il va … ses devoirs avant le dîner.
    - choix : terminer · terminé · terminés
    - réponse : terminer
@@ -395,7 +395,7 @@ Pour tous les items :
    - choix : née · né · nés
    - réponse : née
    - indice : Qui est née ? Une femme ou un homme ?
-   - explication : Avec être, le participe s’accorde avec le sujet « ma grand-mère », féminin singulier : « née », avec un e. « né » irait avec « mon grand-père ».
+   - explication : Avec être, le participe s’accorde avec le sujet « ma grand-mère », féminin singulier : « née », avec un e. « né » irait avec « mon grand-père », « nés » avec plusieurs personnes.
 4. énoncé : Ma mère veut … le salon.
    - choix : ranger · rangé · rangée
    - réponse : ranger
@@ -405,7 +405,7 @@ Pour tous les items :
    - choix : sortis · sorti · sortir
    - réponse : sortis
    - indice : Qui est-ce qui est sorti ? Un ou plusieurs ?
-   - explication : Avec être, le participe s’accorde avec le sujet « les garçons », masculin pluriel : « sortis », avec un s. On ne dit pas « sont vendre » : « sortir » ne va pas.
+   - explication : Avec être, le participe s’accorde avec le sujet « les garçons », masculin pluriel : « sortis », avec un s. « sorti » irait avec un seul garçon. On ne dit pas « sont vendre » : « sortir » ne va pas.
 6. énoncé : Papa doit … la voiture devant la maison.
    - choix : garer · garé · garée
    - réponse : garer
@@ -415,16 +415,16 @@ Pour tous les items :
    - choix : allées · allé · aller
    - réponse : allées
    - indice : Le verbe être est juste avant le trou. Qui est-ce qui est allé ?
-   - explication : « sont » est l’auxiliaire être : on peut dire « elles sont venues », c’est le participe passé. Il s’accorde avec « elles », féminin pluriel : « allées ». Le verbe qui suit, « danser », est à l’infinitif.
+   - explication : « sont » est l’auxiliaire être : on peut dire « elles sont venues », c’est le participe passé. Il s’accorde avec « elles », féminin pluriel : « allées ». « allé » oublie l’accord ; « aller » ne va pas, car on ne dit pas « elles sont vendre ». Le verbe qui suit, « danser », est à l’infinitif.
 8. énoncé : Après le match, les joueuses sont … dans les vestiaires.
    - choix : rentrées · rentré · rentrer
    - réponse : rentrées
    - indice : Qui est-ce qui est rentré ? Une ou plusieurs, filles ou garçons ?
-   - explication : On peut dire « sont vendues » : c’est le participe passé. Avec être, il s’accorde avec le sujet « les joueuses », féminin pluriel : « rentrées ».
+   - explication : On peut dire « sont vendues » : c’est le participe passé. Avec être, il s’accorde avec le sujet « les joueuses », féminin pluriel : « rentrées ». « rentré » oublie l’accord ; « rentrer » ne va pas, car on ne dit pas « sont vendre ».
 
 ### Niveau 2 · `french-5e-homophones-participles-2`
 
-- consigne : Choisis la forme qui complète la phrase. Avec avoir, cherche le COD et sa place. La règle est affichée : lis-la avant de répondre.
+- consigne : Choisis la forme qui complète la phrase. La règle est affichée.
 
 Pour tous les items :
 - aide « Participe passé avec avoir » :
@@ -438,22 +438,22 @@ Pour tous les items :
    - choix : trouvée · trouvé · trouver
    - réponse : trouvée
    - indice : J’ai trouvé quoi ? Que remplace « l’ » ?
-   - explication : « l’ » remplace « ta trousse » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin singulier : « trouvée ».
+   - explication : « l’ » remplace « ta trousse » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin singulier : « trouvée ». « trouvé » oublie l’accord ; « trouver » ne va pas, car on ne dit pas « je l’ai vendre ».
 2. énoncé : J’ai … tes baskets dans l’entrée.
    - choix : rangé · rangées · ranger
    - réponse : rangé
    - indice : J’ai rangé quoi ? Le COD est-il avant ou après le verbe ?
-   - explication : Le COD, « tes baskets », est placé après le verbe : pas d’accord, « rangé ». On ne dit pas « j’ai vendre » : l’infinitif ne va pas.
+   - explication : Le COD, « tes baskets », est placé après le verbe : pas d’accord, « rangé », et non « rangées ». On ne dit pas « j’ai vendre » : l’infinitif ne va pas.
 3. énoncé : Mes lunettes ? Je les ai … partout.
    - choix : cherchées · cherché · chercher
    - réponse : cherchées
    - indice : J’ai cherché quoi ? Que remplace « les » ?
-   - explication : « les » remplace « mes lunettes » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin pluriel : « cherchées ».
+   - explication : « les » remplace « mes lunettes » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin pluriel : « cherchées ». « cherché » oublie l’accord ; « chercher » ne va pas après « ai ».
 4. énoncé : Mes grands-parents ? Je leur ai … une carte.
    - choix : envoyé · envoyés · envoyer
    - réponse : envoyé
    - indice : J’ai envoyé quoi ? Et à qui ?
-   - explication : « leur » veut dire « à eux » : ce n’est pas un COD. Le COD, « une carte », est placé après le verbe : pas d’accord, « envoyé ».
+   - explication : « leur » veut dire « à eux » : ce n’est pas un COD. Le COD, « une carte », est placé après le verbe : pas d’accord, « envoyé ». « envoyés » s’accorderait avec « leur », qui n’est pas un COD.
 5. énoncé : Ces photos, je vais les … demain.
    - choix : imprimer · imprimées · imprimé
    - réponse : imprimer
@@ -463,7 +463,7 @@ Pour tous les items :
    - choix : rendu · rendue · rendre
    - réponse : rendu
    - indice : J’ai rendu quoi ? Et à qui ?
-   - explication : « lui » veut dire « à elle » : ce n’est pas un COD. Le COD, « son livre », est placé après le verbe : pas d’accord, « rendu ».
+   - explication : « lui » veut dire « à elle » : ce n’est pas un COD. Le COD, « son livre », est placé après le verbe : pas d’accord, « rendu ». « rendue » s’accorderait avec « lui », qui n’est pas un COD.
 7. énoncé : Léa a … ses copines au cinéma.
    - choix : emmené · emmenée · emmenées
    - réponse : emmené
@@ -473,13 +473,13 @@ Pour tous les items :
    - choix : mises · mis · mettre
    - réponse : mises
    - indice : Tu as mis quoi ? Que remplace « les » ?
-   - explication : « les » remplace « les clés » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin pluriel : « mises ».
+   - explication : « les » remplace « les clés » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin pluriel : « mises ». « mis » oublie l’accord ; « mettre » ne va pas après « as ».
 
 ## Le sens des mots · `word-meaning`
 
 - description : Le sens d’un mot par la phrase et par sa formation : synonymes, contraires, sens figuré, registres.
 - compétences : c4.fr.5e.vocabulaire.sens · c4.fr.5e.vocabulaire.relations · c4.fr.5e.vocabulaire.reemploi · c4.fr.5e.vocabulaire.formation
-- consigne : Choisis le mot qui complète la phrase. La règle est affichée : lis-la avant de répondre.
+- consigne : Choisis le mot qui complète la phrase. La règle est affichée.
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : french-5e-homophones

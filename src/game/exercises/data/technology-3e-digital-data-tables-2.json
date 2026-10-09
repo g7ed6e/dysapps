@@ -127,7 +127,7 @@
       ],
       "answer": "100 euros",
       "hint": "Ajoute les trois dépenses.",
-      "explanation": "30 + 50 + 20 = 100 : le tableur affiche 100 euros. 80 euros, c’est oublier le goûter.",
+      "explanation": "30 + 50 + 20 = 100 : le tableur affiche 100 euros. 80 euros, c’est oublier le goûter ; 50 euros, c’est le musée seul.",
       "aid": {
         "kind": "rule-card",
         "props": {

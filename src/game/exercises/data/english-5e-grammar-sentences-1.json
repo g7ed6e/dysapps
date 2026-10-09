@@ -4,7 +4,7 @@
   "type": "sentences",
   "level": 1,
   "lang": "en",
-  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée.",
   "items": [
     {
       "key": "english-5e-grammar-sentences-1-0",

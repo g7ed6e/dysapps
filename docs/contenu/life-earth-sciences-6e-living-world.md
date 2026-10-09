@@ -443,9 +443,9 @@ Pour tous les items :
    - réponse : cellules
    - indice : Relis la première ligne du rappel.
    - explication : Tous les êtres vivants sont faits de cellules : c’est ce qu’ils ont en commun. Une plante n’a pas de muscles, et certains êtres vivants n’ont aucun organe, mais tous ont des cellules.
-2. énoncé : "Trois observations au microscope\nPeau d’oignon : des cellules collées les unes aux autres.\nIntérieur de la joue : des cellules collées les unes aux autres.\nGoutte d’eau de mare : de tout petits êtres vivants, chacun fait d’une seule cellule."
+2. énoncé : "Au microscope\nPeau d’oignon : des cellules.\nIntérieur de la joue : des cellules.\nEau de mare : de petits êtres d’une seule cellule."
    - question : Que montrent ces observations ?
-   - lu : Trois observations au microscope. Peau d’oignon, des cellules collées les unes aux autres. Intérieur de la joue, des cellules collées les unes aux autres. Goutte d’eau de mare, de tout petits êtres vivants, chacun fait d’une seule cellule.
+   - lu : Au microscope. Peau d’oignon, des cellules. Intérieur de la joue, des cellules. Eau de mare, de petits êtres d’une seule cellule.
    - choix : seules les plantes ont des cellules · seuls les animaux ont des cellules · tous ces êtres vivants ont des cellules
    - réponse : tous ces êtres vivants ont des cellules
    - indice : Sur quelles lignes trouve-t-on le mot « cellule » ?
@@ -467,9 +467,9 @@ Pour tous les items :
    - réponse : unicellulaire
    - indice : « Uni » veut dire un seul.
    - explication : Faite d’une seule cellule, la paramécie est unicellulaire. Pluricellulaire veut dire fait de nombreuses cellules, comme un chat ou un chêne.
-6. énoncé : "Trois moments de l’histoire de la vie, dans le désordre\nIl y a 66 millions d’années : les grands dinosaures disparaissent.\nIl y a environ 300 000 ans : les premiers humains de notre espèce.\nIl y a plus de 3 milliards d’années : les premiers êtres vivants, faits d’une seule cellule."
+6. énoncé : "Il y a combien de temps ?\nFin des grands dinosaures : 66 millions d’années.\nPremiers humains de notre espèce : 300 000 ans.\nPremiers êtres vivants : plus de 3 milliards d’années."
    - question : Quel moment est le plus ancien ?
-   - lu : Trois moments de l’histoire de la vie, dans le désordre. Il y a soixante-six millions d’années, les grands dinosaures disparaissent. Il y a environ trois cent mille ans, les premiers humains de notre espèce. Il y a plus de trois milliards d’années, les premiers êtres vivants, faits d’une seule cellule.
+   - lu : Il y a combien de temps ? Fin des grands dinosaures, soixante-six millions d’années. Premiers humains de notre espèce, trois cent mille ans. Premiers êtres vivants, plus de trois milliards d’années.
    - choix : la fin des grands dinosaures · les premiers humains · les premiers êtres vivants
    - réponse : les premiers êtres vivants
    - indice : Cherche le mot « milliards » : c’est le plus grand.
@@ -517,7 +517,7 @@ Pour tous les items :
    - choix : l’oxygène · l’hydrogène · le dioxyde de carbone
    - réponse : le dioxyde de carbone
    - indice : Relis la ligne « Brûler » du rappel.
-   - explication : En brûlant, le pétrole, le charbon et le gaz rejettent du dioxyde de carbone, qui retient la chaleur. L’oxygène, lui, n’est pas rejeté : il est utilisé pour brûler.
+   - explication : En brûlant, le pétrole, le charbon et le gaz rejettent du dioxyde de carbone, qui retient la chaleur. L’oxygène, lui, n’est pas rejeté : il est utilisé pour brûler. L’hydrogène n’est pas rejeté non plus.
 4. énoncé : Venir au collège à vélo plutôt qu’en voiture, pour rejeter moins de gaz : c’est une action d’…
    - choix : adaptation · atténuation · observation
    - réponse : atténuation

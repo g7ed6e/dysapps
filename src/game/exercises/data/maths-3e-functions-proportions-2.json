@@ -17,6 +17,21 @@
       "answer": "1,2",
       "hint": "Après la hausse, le prix fait combien de pour cent du prix de départ ?",
       "explanation": "Après une hausse de 20 %, le prix fait 100 % + 20 % = 120 % du prix de départ : on multiplie par 1,2. 1,02 ferait une hausse de 2 % seulement. 20, c’est le nombre du pourcentage, pas ce par quoi on multiplie.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "prix de départ (€)",
+            "prix après la hausse (€)"
+          ],
+          "rows": [
+            [
+              10,
+              12
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -43,6 +58,25 @@
       "answer": "35 €",
       "hint": "Après la baisse, quel pourcentage du prix reste-t-il ?",
       "explanation": "Baisser de 30 %, c’est garder 70 % : 50 × 0,7 = 35 €. 15 €, c’est la baisse elle-même, pas le nouveau prix. 65 €, c’est une hausse de 30 % : ici, le prix baisse.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "pourcentage",
+            "prix (€)"
+          ],
+          "rows": [
+            [
+              "100 %",
+              50
+            ],
+            [
+              "70 %",
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -69,6 +103,21 @@
       "answer": "baissé de 15 %",
       "hint": "0,85, c’est 85 pour cent. Combien manque-t-il pour faire 100 pour cent ?",
       "explanation": "0,85 = 85 % : il reste 85 % du prix, il a donc baissé de 100 − 85 = 15 %. Une baisse de 85 % laisserait 15 % du prix. Un coefficient plus petit que 1 fait baisser, jamais monter.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "prix de départ (€)",
+            "prix après (€)"
+          ],
+          "rows": [
+            [
+              100,
+              85
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -95,6 +144,25 @@
       "answer": "15 km/h",
       "hint": "Combien de kilomètres en une heure ?",
       "explanation": "45 ÷ 3 = 15 : il parcourt 15 km en une heure, soit 15 km/h. 135, c’est 45 × 3 ; 42, c’est 45 − 3 : la vitesse divise la distance par la durée.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "durée (h)",
+            "distance (km)"
+          ],
+          "rows": [
+            [
+              3,
+              45
+            ],
+            [
+              1,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -121,6 +189,25 @@
       "answer": "60 km",
       "hint": "30 minutes, c’est quelle part d’une heure ?",
       "explanation": "30 min, c’est une demi-heure : 120 ÷ 2 = 60 km. 3 600 km, c’est 120 × 30 : des kilomètres par heure ne se multiplient pas par des minutes. 90 km, c’est 120 − 30.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "temps",
+            "distance (km)"
+          ],
+          "rows": [
+            [
+              "1 h",
+              120
+            ],
+            [
+              "30 min",
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -147,6 +234,25 @@
       "answer": "3 L/min",
       "hint": "Combien de litres en une minute ?",
       "explanation": "12 ÷ 4 = 3 : le robinet verse 3 litres par minute, soit 3 L/min. 48, c’est 12 × 4 ; 8, c’est 12 − 4 : le débit divise le volume par la durée.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "durée (min)",
+            "volume (L)"
+          ],
+          "rows": [
+            [
+              4,
+              12
+            ],
+            [
+              1,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -173,6 +279,25 @@
       "answer": "50 000 L",
       "hint": "Combien de litres dans 1 mètre cube ? Regarde la dernière ligne du rappel.",
       "explanation": "1 m³ = 1 000 L, donc 50 m³ = 50 × 1 000 = 50 000 L. 500 L et 5 000 L viennent d’un mauvais nombre de zéros : 1 m³ vaut 1 000 litres, pas 10 ni 100.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "m³",
+            "L"
+          ],
+          "rows": [
+            [
+              1,
+              "1 000"
+            ],
+            [
+              50,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -199,6 +324,25 @@
       "answer": "1 500 cm³",
       "hint": "Combien de centimètres cubes dans 1 litre ? Puis multiplie par 1,5.",
       "explanation": "1 L = 1 dm³ = 1 000 cm³, donc 1,5 L = 1,5 × 1 000 = 1 500 cm³. 150 cm³ et 15 cm³ : on a multiplié par 100 ou par 10, au lieu de 1 000.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "L",
+            "cm³"
+          ],
+          "rows": [
+            [
+              1,
+              "1 000"
+            ],
+            [
+              1.5,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

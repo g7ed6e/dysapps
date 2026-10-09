@@ -202,6 +202,23 @@
       "answer": "5",
       "hint": "Trouve la ligne du foot et celle de la natation. Combien de plus ?",
       "explanation": "Foot : 9, natation : 4. 9 − 4 = 5 élèves de plus. 13, c’est 9 + 4 : on a ajouté au lieu de chercher l’écart ; 4, c’est la natation seule.",
+      "figure": {
+        "kind": "bar-list",
+        "props": {
+          "values": [
+            9,
+            6,
+            4,
+            6
+          ],
+          "labels": [
+            "foot",
+            "danse",
+            "natation",
+            "hand"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

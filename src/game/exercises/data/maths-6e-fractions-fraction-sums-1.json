@@ -10,13 +10,26 @@
       "prompt": "2/5 + 1/5 = …",
       "spoken": "2 cinquièmes plus un cinquième, c’est combien ?",
       "choices": [
-        "3/5",
         "3/10",
+        "3/5",
         "3"
       ],
       "answer": "3/5",
       "hint": "Ce sont des cinquièmes : combien de cinquièmes en tout ?",
       "explanation": "2 cinquièmes plus 1 cinquième font 3 cinquièmes : 3/5. On n’ajoute pas les dénominateurs : 3/10 est faux. Et 3 seul oublie que ce sont des cinquièmes.",
+      "figure": {
+        "kind": "compare-bars",
+        "props": {
+          "a": [
+            2,
+            5
+          ],
+          "b": [
+            1,
+            5
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -37,12 +50,25 @@
       "spoken": "7 huitièmes moins 3 huitièmes, c’est combien ?",
       "choices": [
         "4/8",
-        "4",
-        "10/8"
+        "10/8",
+        "4"
       ],
       "answer": "4/8",
       "hint": "Ce sont des huitièmes : on enlève 3 huitièmes à 7 huitièmes.",
       "explanation": "7 − 3 = 4, et le dénominateur reste 8 : 4/8. 10/8, c’est ajouter au lieu d’enlever ; 4 seul oublie les huitièmes.",
+      "figure": {
+        "kind": "compare-bars",
+        "props": {
+          "a": [
+            7,
+            8
+          ],
+          "b": [
+            3,
+            8
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -62,13 +88,26 @@
       "prompt": "1 − 1/4 = …",
       "spoken": "1 moins un quart, c’est combien ?",
       "choices": [
-        "3/4",
         "0",
+        "3/4",
         "5/4"
       ],
       "answer": "3/4",
       "hint": "1, c’est combien de quarts ?",
       "explanation": "1 = 4/4. 4 quarts moins 1 quart, il reste 3 quarts : 3/4. 0, c’est faire 1 − 1 en oubliant les quarts ; 5/4, c’est ajouter.",
+      "figure": {
+        "kind": "compare-bars",
+        "props": {
+          "a": [
+            4,
+            4
+          ],
+          "b": [
+            1,
+            4
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -88,13 +127,26 @@
       "prompt": "1/2 + 1/4 = …",
       "spoken": "un demi plus un quart, c’est combien ?",
       "choices": [
-        "3/4",
         "2/6",
-        "2/4"
+        "2/4",
+        "3/4"
       ],
       "answer": "3/4",
       "hint": "Écris d’abord 1/2 en quarts.",
       "explanation": "1/2 = 2/4, donc 2/4 + 1/4 = 3/4. 2/6, c’est ajouter les numérateurs et les dénominateurs ; 2/4, c’est ajouter les numérateurs sans changer 1/2 en quarts.",
+      "figure": {
+        "kind": "compare-bars",
+        "props": {
+          "a": [
+            1,
+            2
+          ],
+          "b": [
+            1,
+            4
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -114,13 +166,20 @@
       "prompt": "3 × 2/7 = …",
       "spoken": "3 fois 2 septièmes, c’est combien ?",
       "choices": [
-        "6/7",
         "6/21",
-        "5/7"
+        "5/7",
+        "6/7"
       ],
       "answer": "6/7",
       "hint": "3 fois 2 septièmes, c’est 2/7 + 2/7 + 2/7.",
       "explanation": "3 × 2 = 6 septièmes : 6/7. On ne multiplie pas le dénominateur : 6/21 est faux. 5/7, c’est 3 + 2 : on a ajouté.",
+      "figure": {
+        "kind": "fraction-bar",
+        "props": {
+          "n": 2,
+          "d": 7
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -140,13 +199,20 @@
       "prompt": "4 × 1/4 = …",
       "spoken": "4 fois un quart, c’est combien ?",
       "choices": [
-        "1",
         "4/16",
+        "1",
         "5/4"
       ],
       "answer": "1",
       "hint": "4 quarts, c’est combien d’unités ?",
       "explanation": "4 fois 1 quart font 4 quarts, et 4/4 = 1. 4/16, c’est multiplier aussi le dénominateur ; 5/4, c’est ajouter 4 et 1.",
+      "figure": {
+        "kind": "fraction-bar",
+        "props": {
+          "n": 1,
+          "d": 4
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -173,6 +239,16 @@
       "answer": "17",
       "hint": "Calcule d’abord 2 × 6. Puis : quel nombre, moins 5, donne ce résultat ?",
       "explanation": "2 × 6 = 12, et 17 − 5 = 12 : les deux côtés valent 12. 12 est le résultat de droite, pas le nombre qui manque ; 7, c’est 12 − 5 : on a enlevé au lieu d’ajouter.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 0,
+          "max": 20,
+          "points": [
+            12
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -199,6 +275,19 @@
       "answer": "4",
       "hint": "Dans la table de 3, quel nombre donne 12 ?",
       "explanation": "3 × 4 = 12. 9, c’est 12 − 3 : on a enlevé au lieu de chercher dans la table. 36, c’est 3 × 12.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 0,
+          "max": 12,
+          "points": [
+            3,
+            6,
+            9,
+            12
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

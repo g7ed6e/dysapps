@@ -515,7 +515,7 @@ Pour tous les items :
 - description : Remplir une fiche de renseignements et écrire un message simple en anglais, en choisissant le bon mot.
 - compétences : c4.en.ecrire.dictee-fiche
 - langue : en
-- consigne : Choisis ce qui complète la fiche ou le message en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne : Choisis ce qui complète la fiche ou le message en anglais. La règle est affichée.
 - bravo : Bien écrit !
 - erreur : {explanation}
 - bloc gagné : english-4e-grammar

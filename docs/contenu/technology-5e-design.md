@@ -544,7 +544,7 @@ Pour tous les items :
    - choix : l’idée A · l’idée B · l’idée C
    - réponse : l’idée B
    - indice : Laquelle utilise le moins de matière, et une matière recyclée ?
-   - explication : L’idée B utilise une seule boîte, en carton recyclé : moins de matière, et une matière qui se recycle encore. L’idée C double la matière.
+   - explication : L’idée B utilise une seule boîte, en carton recyclé : moins de matière, et une matière qui se recycle encore. L’idée A ajoute du plastique ; l’idée C double la matière.
 7. énoncé : "Revue de projet, semaine 4\nPrévu : le prototype est fini.\nFait : le prototype est fini.\nLa suite : le tester."
    - question : Où en est le projet ?
    - lu : Revue de projet, semaine 4. Prévu, le prototype est fini. Fait, le prototype est fini. La suite, le tester.

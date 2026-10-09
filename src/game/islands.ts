@@ -1183,7 +1183,7 @@ export const ILES = [
       {
         "id": "famous-people",
         "title": "Famous people",
-        "description": "Rencontrer des personnes et des personnages célèbres du monde anglophone, puis dire ce qu’on ressent devant une image.",
+        "description": "Rencontrer des personnes et des personnages célèbres du monde anglophone, puis dire ce qu’on ressent devant un tableau, un dessin ou une photo.",
         "programme": [
           "c3.en.culture.personnes",
           "c3.en.culture.arts"

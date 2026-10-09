@@ -179,6 +179,25 @@
       "answer": "300 dm²",
       "hint": "1 m², c’est combien de dm² ?",
       "explanation": "1 m² = 100 dm², donc 3 m² = 300 dm². 30 dm², c’est multiplier par 10 comme pour une longueur ; pour une aire, c’est 10 × 10 = 100.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "m²",
+            "dm²"
+          ],
+          "rows": [
+            [
+              1,
+              100
+            ],
+            [
+              3,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -207,6 +226,38 @@
       "answer": "le cinéma",
       "hint": "Écarte d’abord les sorties à 7 € ou plus. Puis regarde la durée.",
       "explanation": "Moins de 7 € : le cinéma et la piscine. Au moins 2 h : seul le cinéma, 2 h ; la piscine ne dure qu’1 h. Le musée dure 2 h, mais coûte 8 €.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "sortie",
+            "prix (€)",
+            "durée (h)"
+          ],
+          "rows": [
+            [
+              "musée",
+              8,
+              2
+            ],
+            [
+              "cinéma",
+              6,
+              2
+            ],
+            [
+              "zoo",
+              12,
+              4
+            ],
+            [
+              "piscine",
+              4,
+              1
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

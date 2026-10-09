@@ -3,20 +3,20 @@
   "biome": "french-6e-reading",
   "type": "tense-values",
   "level": 1,
-  "instruction": "Lis la question, puis la phrase. Trouve quand se passe l’action, ou le temps du verbe. Le rappel est affiché.",
+  "instruction": "Lis la question, puis la phrase. Trouve quand se passe l’action. Le rappel est affiché.",
   "items": [
     {
       "key": "french-6e-reading-tense-values-1-0",
       "prompt": "Samedi prochain, je joue un match de hand.",
-      "question": "À quel temps est le verbe « joue » ?",
+      "question": "Quand se passe l’action ?",
       "choices": [
-        "présent",
-        "futur",
-        "imparfait"
+        "dans le futur",
+        "dans le présent",
+        "dans le passé"
       ],
-      "answer": "présent",
-      "hint": "Regarde la forme du verbe, pas le mot « prochain ».",
-      "explanation": "« je joue » est la forme du présent. Le match aura lieu samedi prochain, dans le futur : le temps du verbe n’est pas toujours le moment de l’action. Au futur, on écrirait « je jouerai ».",
+      "answer": "dans le futur",
+      "hint": "Cherche les mots qui disent quand.",
+      "explanation": "« Samedi prochain » place le match dans le futur. Le verbe « joue » est pourtant au présent : le temps du verbe n’est pas toujours le moment de l’action.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -60,15 +60,15 @@
     {
       "key": "french-6e-reading-tense-values-1-2",
       "prompt": "Hier, j’ai oublié mon cahier de maths.",
-      "question": "À quel temps est le verbe « ai oublié » ?",
+      "question": "Quand se passe l’action ?",
       "choices": [
-        "passé composé",
-        "présent",
-        "imparfait"
+        "dans le passé",
+        "dans le présent",
+        "dans le futur"
       ],
-      "answer": "passé composé",
-      "hint": "Le verbe est fait de deux mots. Lesquels ?",
-      "explanation": "« ai oublié » a deux mots : l’auxiliaire avoir au présent, puis le participe passé « oublié ». C’est le passé composé : l’action est passée et finie. Le mot « ai », seul, serait au présent.",
+      "answer": "dans le passé",
+      "hint": "Lis le premier mot de la phrase.",
+      "explanation": "« Hier » place l’action dans le passé. Le verbe « ai oublié », au passé composé, dit aussi une action passée et finie : ici, le temps et le moment vont ensemble.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -137,16 +137,16 @@
     },
     {
       "key": "french-6e-reading-tense-values-1-5",
-      "prompt": "Chaque mercredi, je vais au judo.",
-      "question": "Que dit le présent dans cette phrase ?",
+      "prompt": "L’an dernier, j’habitais à Lyon.",
+      "question": "Quand se passe l’action ?",
       "choices": [
-        "une action qui se répète",
-        "une action finie",
-        "une action qui n’a lieu qu’une fois"
+        "dans le passé",
+        "dans le présent",
+        "dans le futur"
       ],
-      "answer": "une action qui se répète",
-      "hint": "Lis les deux premiers mots.",
-      "explanation": "« Chaque mercredi » : l’action revient toutes les semaines. Le présent dit ici une habitude. Une action finie se dirait au passé composé : « j’ai fait du judo ».",
+      "answer": "dans le passé",
+      "hint": "Cherche les mots qui disent quand.",
+      "explanation": "« L’an dernier » place l’action dans le passé : aujourd’hui, j’habite ailleurs. Le verbe « habitais », à l’imparfait, va avec ce moment.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -163,16 +163,16 @@
     },
     {
       "key": "french-6e-reading-tense-values-1-6",
-      "prompt": "Je finirai mon exposé dimanche.",
-      "question": "À quel temps est le verbe « finirai » ?",
+      "prompt": "Chut ! Le bébé dort.",
+      "question": "Quand se passe l’action ?",
       "choices": [
-        "futur",
-        "présent",
-        "passé composé"
+        "dans le présent",
+        "dans le passé",
+        "dans le futur"
       ],
-      "answer": "futur",
-      "hint": "Regarde la fin du verbe.",
-      "explanation": "« finirai » finit par « -rai », la marque du futur avec « je ». Ici, le temps du verbe et le moment de l’action vont ensemble : dimanche, c’est plus tard.",
+      "answer": "dans le présent",
+      "hint": "Pourquoi dit-on « Chut ! » ?",
+      "explanation": "On dit « Chut ! » pendant que le bébé dort : l’action se passe au moment où l’on parle. Le verbe « dort », au présent, va avec ce moment.",
       "aid": {
         "kind": "rule-card",
         "props": {

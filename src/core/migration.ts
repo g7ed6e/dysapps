@@ -29,6 +29,9 @@ import { RETIRED_ITEMS, STARS_KEPT_IN_MISSION, movedExerciseId, movedItemId } fr
  * les lieux ouverts le restent, et la migration, qui repasse à la lecture suivante, ne retrouve plus les défis gardés
  * ouverts sur une progression déjà déplacée. Les étoiles et la file de révision ne se perdent pas : `moveExercises`
  * réunit les deux identifiants. La mise à jour est proposée, jamais imposée (docs/conception/deploiement.md).
+ *
+ * Au format 5, le même onglet perd aussi les lieux ajoutés de `challengesKeptOpen`, mais rien ne se perd : il
+ * enregistre au format 4, et la règle de l'ajout repasse au chargement suivant, sur une progression qui n'a pas bougé.
  */
 export const GAME_VERSION = 5;
 /** Le format des exercices déplacés par les programmes de 2025-2026. */

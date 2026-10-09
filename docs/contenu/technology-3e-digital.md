@@ -531,7 +531,7 @@ Pour tous les items :
    - choix : 50 euros · 80 euros · 100 euros
    - réponse : 100 euros
    - indice : Ajoute les trois dépenses.
-   - explication : 30 + 50 + 20 = 100 : le tableur affiche 100 euros. 80 euros, c’est oublier le goûter.
+   - explication : 30 + 50 + 20 = 100 : le tableur affiche 100 euros. 80 euros, c’est oublier le goûter ; 50 euros, c’est le musée seul.
 6. énoncé : "Le thermomètre connecté\nIl mesure la température toutes les heures.\nIl garde ses mesures dans un fichier."
    - question : Quel type de données ce fichier garde-t-il ?
    - lu : Le thermomètre connecté. Il mesure la température toutes les heures. Il garde ses mesures dans un fichier.

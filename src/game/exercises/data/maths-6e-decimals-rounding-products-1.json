@@ -17,6 +17,16 @@
       "answer": "13",
       "hint": "Regarde le chiffre des dixièmes, juste après la virgule.",
       "explanation": "Le chiffre des dixièmes est 7, entre 5 et 9 : l’unité augmente de 1, 12,7 donne 13. 12, c’est couper après la virgule ; 10, c’est arrondir à la dizaine.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 10,
+          "max": 15,
+          "points": [
+            12.7
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -42,7 +52,17 @@
       ],
       "answer": "8",
       "hint": "À l’unité, il ne reste aucun chiffre après la virgule.",
-      "explanation": "Le chiffre des dixièmes est 4, entre 0 et 4 : on garde 8. 8,4, c’est l’arrondi au dixième, pas à l’unité.",
+      "explanation": "Le chiffre des dixièmes est 4, entre 0 et 4 : on garde 8. 8,4, c’est l’arrondi au dixième, pas à l’unité ; 9, c’est augmenter alors que le chiffre des dixièmes est 4.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 7,
+          "max": 10,
+          "points": [
+            8.42
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -95,6 +115,25 @@
       "answer": "350 cm",
       "hint": "1 mètre, c’est combien de centimètres ?",
       "explanation": "1 m = 100 cm, donc 3,5 m = 3,5 × 100 = 350 cm. 35 cm, c’est multiplier par 10 ; 3 500 cm, par 1 000.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "m",
+            "cm"
+          ],
+          "rows": [
+            [
+              1,
+              100
+            ],
+            [
+              3.5,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -120,7 +159,26 @@
       ],
       "answer": "4 000 m",
       "hint": "Kilo veut dire mille.",
-      "explanation": "1 km = 1 000 m, donc 4 km = 4 000 m. 400 m, c’est multiplier par 100, comme pour les centimètres.",
+      "explanation": "1 km = 1 000 m, donc 4 km = 4 000 m. 400 m, c’est multiplier par 100, comme pour les centimètres ; 40 m, par 10.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "km",
+            "m"
+          ],
+          "rows": [
+            [
+              1,
+              "1 000"
+            ],
+            [
+              4,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -147,6 +205,25 @@
       "answer": "2,5 m",
       "hint": "Le mètre est plus grand que le centimètre : le nombre devient plus petit.",
       "explanation": "100 cm = 1 m, donc 250 cm = 250 ÷ 100 = 2,5 m. 25 m, c’est diviser par 10 ; 0,25 m, par 1 000.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "cm",
+            "m"
+          ],
+          "rows": [
+            [
+              100,
+              1
+            ],
+            [
+              250,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -173,6 +250,25 @@
       "answer": "0,08 m",
       "hint": "8 cm, c’est moins qu’un mètre.",
       "explanation": "8 cm = 8 ÷ 100 = 0,08 m : 8 centièmes de mètre. 800 m, c’est multiplier au lieu de diviser ; 0,8 m, c’est diviser par 10.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "cm",
+            "m"
+          ],
+          "rows": [
+            [
+              100,
+              1
+            ],
+            [
+              8,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -198,7 +294,7 @@
       ],
       "answer": "0,7",
       "hint": "Regarde le chiffre des centièmes : 4.",
-      "explanation": "Le chiffre des centièmes est 4, entre 0 et 4 : le chiffre des dixièmes ne change pas, donc 0,7. 1, c’est l’arrondi à l’unité.",
+      "explanation": "Le chiffre des centièmes est 4, entre 0 et 4 : le chiffre des dixièmes ne change pas, donc 0,7. 0,8, c’est augmenter alors que le chiffre des centièmes est 4 ; 1, c’est l’arrondi à l’unité.",
       "aid": {
         "kind": "rule-card",
         "props": {

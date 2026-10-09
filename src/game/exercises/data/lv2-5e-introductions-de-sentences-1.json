@@ -4,7 +4,7 @@
   "type": "de-sentences",
   "level": 1,
   "lang": "de",
-  "instruction": "Lis et écoute la phrase en allemand, puis choisis la phrase qui va avec. La règle est affichée : lis-la avant de répondre.",
+  "instruction": "Lis et écoute la phrase en allemand. Choisis la phrase qui va avec. La règle est affichée.",
   "programme": [
     "c4.de.5e.langue.phrase"
   ],

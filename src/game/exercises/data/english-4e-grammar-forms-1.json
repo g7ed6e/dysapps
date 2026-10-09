@@ -4,7 +4,7 @@
   "type": "forms",
   "level": 1,
   "lang": "en",
-  "instruction": "Choisis ce qui complète la fiche ou le message en anglais. La règle est affichée : lis-la avant de répondre.",
+  "instruction": "Choisis ce qui complète la fiche ou le message en anglais. La règle est affichée.",
   "items": [
     {
       "key": "english-4e-grammar-forms-1-0",

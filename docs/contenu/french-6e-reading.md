@@ -423,7 +423,7 @@ Pour tous les items :
 
 - blocs : 4
 - XP : 12
-- consigne : Lis la question, puis la phrase. Trouve quand se passe l’action, ou le temps du verbe. Le rappel est affiché.
+- consigne : Lis la question, puis la phrase. Trouve quand se passe l’action. Le rappel est affiché.
 
 Pour tous les items :
 - aide « Le moment de l’action, le temps du verbe » :
@@ -434,11 +434,11 @@ Pour tous les items :
   - Le présent peut aussi dire une habitude. Le dimanche, je dors tard.
 
 1. énoncé : Samedi prochain, je joue un match de hand.
-   - question : À quel temps est le verbe « joue » ?
-   - choix : présent · futur · imparfait
-   - réponse : présent
-   - indice : Regarde la forme du verbe, pas le mot « prochain ».
-   - explication : « je joue » est la forme du présent. Le match aura lieu samedi prochain, dans le futur : le temps du verbe n’est pas toujours le moment de l’action. Au futur, on écrirait « je jouerai ».
+   - question : Quand se passe l’action ?
+   - choix : dans le futur · dans le présent · dans le passé
+   - réponse : dans le futur
+   - indice : Cherche les mots qui disent quand.
+   - explication : « Samedi prochain » place le match dans le futur. Le verbe « joue » est pourtant au présent : le temps du verbe n’est pas toujours le moment de l’action.
 2. énoncé : Demain, Léo dort chez son cousin.
    - question : Quand se passe l’action ?
    - choix : dans le futur · dans le présent · dans le passé
@@ -446,11 +446,11 @@ Pour tous les items :
    - indice : Cherche le mot qui dit quand.
    - explication : Le mot « Demain » place l’action dans le futur. Le verbe « dort » est au présent, mais l’action n’a pas encore eu lieu.
 3. énoncé : Hier, j’ai oublié mon cahier de maths.
-   - question : À quel temps est le verbe « ai oublié » ?
-   - choix : passé composé · présent · imparfait
-   - réponse : passé composé
-   - indice : Le verbe est fait de deux mots. Lesquels ?
-   - explication : « ai oublié » a deux mots : l’auxiliaire avoir au présent, puis le participe passé « oublié ». C’est le passé composé : l’action est passée et finie. Le mot « ai », seul, serait au présent.
+   - question : Quand se passe l’action ?
+   - choix : dans le passé · dans le présent · dans le futur
+   - réponse : dans le passé
+   - indice : Lis le premier mot de la phrase.
+   - explication : « Hier » place l’action dans le passé. Le verbe « ai oublié », au passé composé, dit aussi une action passée et finie : ici, le temps et le moment vont ensemble.
 4. énoncé : Le car part dans dix minutes.
    - question : Quand le car part-il ?
    - choix : dans le futur · dans le présent · dans le passé
@@ -463,18 +463,18 @@ Pour tous les items :
    - réponse : dans le présent
    - indice : Cherche les mots qui disent quand.
    - explication : « En ce moment » : l’action se passe au moment où l’on parle. Ici, le verbe au présent et le moment de l’action vont ensemble.
-6. énoncé : Chaque mercredi, je vais au judo.
-   - question : Que dit le présent dans cette phrase ?
-   - choix : une action qui se répète · une action finie · une action qui n’a lieu qu’une fois
-   - réponse : une action qui se répète
-   - indice : Lis les deux premiers mots.
-   - explication : « Chaque mercredi » : l’action revient toutes les semaines. Le présent dit ici une habitude. Une action finie se dirait au passé composé : « j’ai fait du judo ».
-7. énoncé : Je finirai mon exposé dimanche.
-   - question : À quel temps est le verbe « finirai » ?
-   - choix : futur · présent · passé composé
-   - réponse : futur
-   - indice : Regarde la fin du verbe.
-   - explication : « finirai » finit par « -rai », la marque du futur avec « je ». Ici, le temps du verbe et le moment de l’action vont ensemble : dimanche, c’est plus tard.
+6. énoncé : L’an dernier, j’habitais à Lyon.
+   - question : Quand se passe l’action ?
+   - choix : dans le passé · dans le présent · dans le futur
+   - réponse : dans le passé
+   - indice : Cherche les mots qui disent quand.
+   - explication : « L’an dernier » place l’action dans le passé : aujourd’hui, j’habite ailleurs. Le verbe « habitais », à l’imparfait, va avec ce moment.
+7. énoncé : Chut ! Le bébé dort.
+   - question : Quand se passe l’action ?
+   - choix : dans le présent · dans le passé · dans le futur
+   - réponse : dans le présent
+   - indice : Pourquoi dit-on « Chut ! » ?
+   - explication : On dit « Chut ! » pendant que le bébé dort : l’action se passe au moment où l’on parle. Le verbe « dort », au présent, va avec ce moment.
 8. énoncé : Tom dit à Inès : « J’ai gagné ! »
    - question : Quand Tom a-t-il gagné ?
    - choix : avant de parler · pendant qu’il parle · après avoir parlé

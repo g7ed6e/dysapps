@@ -65,6 +65,7 @@ Pour tous les items :
    - réponse : non : 10 km coûteraient alors 24 €
    - indice : 10 kilomètres, c’est le double de 5 kilomètres. Le prix est-il le double ?
    - explication : 10 km, c’est 5 km × 2. Si c’était proportionnel, le prix serait 12 € × 2 = 24 €. Il est de 20 € : ce n’est pas proportionnel. Monter ensemble ne suffit pas, ajouter non plus : il faut multiplier par le même nombre.
+   - figure : tableau distance (km) · prix (€) / 5 · 12 / 10 · 20
 2. énoncé : 2 kg de pommes coûtent 7 €. 6 kg coûtent …
    - lu : 2 kilos de pommes coûtent 7 euros. 6 kilos coûtent (mot manquant)
    - choix : 11 € · 21 € · 42 €
@@ -85,6 +86,7 @@ Pour tous les items :
    - réponse : 9 €
    - indice : Prends d’abord 10 pour cent : divise par 10. Puis double.
    - explication : 10 % de 45 €, c’est 4,50 € ; 20 %, c’est le double : 9 €. 25 €, c’est 45 − 20 : un pourcentage ne se retire pas comme des euros. 36 €, c’est ce qui reste quand on enlève 20 %.
+   - figure : tableau pourcentage · montant (€) / 100 % · 45 / 20 % · ?
 5. énoncé : Dans une classe de 25 élèves, 10 viennent à vélo. Cela fait … des élèves.
    - lu : Dans une classe de 25 élèves, 10 viennent à vélo. Cela fait (mot manquant) des élèves.
    - choix : 10 % · 25 % · 40 %
@@ -98,6 +100,7 @@ Pour tous les items :
    - réponse : 4 m
    - indice : Calcule d’abord en centimètres, puis convertis en mètres.
    - explication : 4 cm × 100 = 400 cm, et 400 cm = 4 m. 40 m et 0,4 m viennent d’une erreur de conversion : 100 cm font 1 m.
+   - figure : tableau plan (cm) · réalité (cm) / 1 · 100 / 4 · ?
 7. énoncé : Un des prix ne suit pas la même règle que les autres : c’est …
    - lu : Un des prix ne suit pas la même règle que les autres : c’est (mot manquant)
    - choix : 12 € · 20 € · 30 €
@@ -111,6 +114,7 @@ Pour tous les items :
    - réponse : 3 cm
    - indice : Écris d’abord 6 mètres en centimètres. Puis divise par 200.
    - explication : 6 m = 600 cm, et 600 ÷ 200 = 3 : le mur mesure 3 cm sur le plan. 30 cm et 0,3 cm viennent d’une erreur dans la conversion des mètres en centimètres.
+   - figure : tableau plan (cm) · réalité (cm) / 1 · 200 / ? · 600
 
 ### Niveau 2 · `maths-3e-functions-proportions-2`
 
@@ -128,48 +132,56 @@ Pour tous les items :
    - réponse : 1,2
    - indice : Après la hausse, le prix fait combien de pour cent du prix de départ ?
    - explication : Après une hausse de 20 %, le prix fait 100 % + 20 % = 120 % du prix de départ : on multiplie par 1,2. 1,02 ferait une hausse de 2 % seulement. 20, c’est le nombre du pourcentage, pas ce par quoi on multiplie.
+   - figure : tableau prix de départ (€) · prix après la hausse (€) / 10 · 12
 2. énoncé : Un jean à 50 € baisse de 30 %. Il coûte maintenant …
    - lu : Un jean à 50 euros baisse de 30 pour cent. Il coûte maintenant (mot manquant)
    - choix : 15 € · 35 € · 65 €
    - réponse : 35 €
    - indice : Après la baisse, quel pourcentage du prix reste-t-il ?
    - explication : Baisser de 30 %, c’est garder 70 % : 50 × 0,7 = 35 €. 15 €, c’est la baisse elle-même, pas le nouveau prix. 65 €, c’est une hausse de 30 % : ici, le prix baisse.
+   - figure : tableau pourcentage · prix (€) / 100 % · 50 / 70 % · ?
 3. énoncé : Un prix multiplié par 0,85 a …
    - lu : Un prix multiplié par 0,85 a (mot manquant)
    - choix : baissé de 15 % · baissé de 85 % · augmenté de 85 %
    - réponse : baissé de 15 %
    - indice : 0,85, c’est 85 pour cent. Combien manque-t-il pour faire 100 pour cent ?
    - explication : 0,85 = 85 % : il reste 85 % du prix, il a donc baissé de 100 − 85 = 15 %. Une baisse de 85 % laisserait 15 % du prix. Un coefficient plus petit que 1 fait baisser, jamais monter.
+   - figure : tableau prix de départ (€) · prix après (€) / 100 · 85
 4. énoncé : Un cycliste parcourt 45 km en 3 h. Sa vitesse moyenne est de …
    - lu : Un cycliste parcourt 45 kilomètres en 3 heures. Sa vitesse moyenne est de (mot manquant)
    - choix : 15 km/h · 42 km/h · 135 km/h
    - réponse : 15 km/h
    - indice : Combien de kilomètres en une heure ?
    - explication : 45 ÷ 3 = 15 : il parcourt 15 km en une heure, soit 15 km/h. 135, c’est 45 × 3 ; 42, c’est 45 − 3 : la vitesse divise la distance par la durée.
+   - figure : tableau durée (h) · distance (km) / 3 · 45 / 1 · ?
 5. énoncé : Un train roule à 120 km/h pendant 30 min. Il parcourt …
    - lu : Un train roule à 120 kilomètres par heure pendant 30 minutes. Il parcourt (mot manquant)
    - choix : 60 km · 90 km · 3 600 km
    - réponse : 60 km
    - indice : 30 minutes, c’est quelle part d’une heure ?
    - explication : 30 min, c’est une demi-heure : 120 ÷ 2 = 60 km. 3 600 km, c’est 120 × 30 : des kilomètres par heure ne se multiplient pas par des minutes. 90 km, c’est 120 − 30.
+   - figure : tableau temps · distance (km) / 1 h · 120 / 30 min · ?
 6. énoncé : Un robinet remplit un seau de 12 L en 4 min. Son débit est de …
    - lu : Un robinet remplit un seau de 12 litres en 4 minutes. Son débit est de (mot manquant)
    - choix : 3 L/min · 8 L/min · 48 L/min
    - réponse : 3 L/min
    - indice : Combien de litres en une minute ?
    - explication : 12 ÷ 4 = 3 : le robinet verse 3 litres par minute, soit 3 L/min. 48, c’est 12 × 4 ; 8, c’est 12 − 4 : le débit divise le volume par la durée.
+   - figure : tableau durée (min) · volume (L) / 4 · 12 / 1 · ?
 7. énoncé : Une piscine de 50 m³, pleine, contient …
    - lu : Une piscine de 50 mètres cubes, pleine, contient (mot manquant)
    - choix : 500 L · 5 000 L · 50 000 L
    - réponse : 50 000 L
    - indice : Combien de litres dans 1 mètre cube ? Regarde la dernière ligne du rappel.
    - explication : 1 m³ = 1 000 L, donc 50 m³ = 50 × 1 000 = 50 000 L. 500 L et 5 000 L viennent d’un mauvais nombre de zéros : 1 m³ vaut 1 000 litres, pas 10 ni 100.
+   - figure : tableau m³ · L / 1 · 1 000 / 50 · ?
 8. énoncé : Une bouteille de 1,5 L a un volume de …
    - lu : Une bouteille de 1,5 litre a un volume de (mot manquant)
    - choix : 15 cm³ · 150 cm³ · 1 500 cm³
    - réponse : 1 500 cm³
    - indice : Combien de centimètres cubes dans 1 litre ? Puis multiplie par 1,5.
    - explication : 1 L = 1 dm³ = 1 000 cm³, donc 1,5 L = 1,5 × 1 000 = 1 500 cm³. 150 cm³ et 15 cm³ : on a multiplié par 100 ou par 10, au lieu de 1 000.
+   - figure : tableau L · cm³ / 1 · 1 000 / 1,5 · ?
 
 ## Se repérer · `coordinates`
 

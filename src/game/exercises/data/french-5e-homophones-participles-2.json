@@ -3,7 +3,7 @@
   "biome": "french-5e-homophones",
   "type": "participles",
   "level": 2,
-  "instruction": "Choisis la forme qui complète la phrase. Avec avoir, cherche le COD et sa place. La règle est affichée : lis-la avant de répondre.",
+  "instruction": "Choisis la forme qui complète la phrase. La règle est affichée.",
   "items": [
     {
       "key": "french-5e-homophones-participles-2-0",
@@ -16,7 +16,7 @@
       ],
       "answer": "trouvée",
       "hint": "J’ai trouvé quoi ? Que remplace « l’ » ?",
-      "explanation": "« l’ » remplace « ta trousse » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin singulier : « trouvée ».",
+      "explanation": "« l’ » remplace « ta trousse » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin singulier : « trouvée ». « trouvé » oublie l’accord ; « trouver » ne va pas, car on ne dit pas « je l’ai vendre ».",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -42,7 +42,7 @@
       ],
       "answer": "rangé",
       "hint": "J’ai rangé quoi ? Le COD est-il avant ou après le verbe ?",
-      "explanation": "Le COD, « tes baskets », est placé après le verbe : pas d’accord, « rangé ». On ne dit pas « j’ai vendre » : l’infinitif ne va pas.",
+      "explanation": "Le COD, « tes baskets », est placé après le verbe : pas d’accord, « rangé », et non « rangées ». On ne dit pas « j’ai vendre » : l’infinitif ne va pas.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -68,7 +68,7 @@
       ],
       "answer": "cherchées",
       "hint": "J’ai cherché quoi ? Que remplace « les » ?",
-      "explanation": "« les » remplace « mes lunettes » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin pluriel : « cherchées ».",
+      "explanation": "« les » remplace « mes lunettes » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin pluriel : « cherchées ». « cherché » oublie l’accord ; « chercher » ne va pas après « ai ».",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -94,7 +94,7 @@
       ],
       "answer": "envoyé",
       "hint": "J’ai envoyé quoi ? Et à qui ?",
-      "explanation": "« leur » veut dire « à eux » : ce n’est pas un COD. Le COD, « une carte », est placé après le verbe : pas d’accord, « envoyé ».",
+      "explanation": "« leur » veut dire « à eux » : ce n’est pas un COD. Le COD, « une carte », est placé après le verbe : pas d’accord, « envoyé ». « envoyés » s’accorderait avec « leur », qui n’est pas un COD.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -146,7 +146,7 @@
       ],
       "answer": "rendu",
       "hint": "J’ai rendu quoi ? Et à qui ?",
-      "explanation": "« lui » veut dire « à elle » : ce n’est pas un COD. Le COD, « son livre », est placé après le verbe : pas d’accord, « rendu ».",
+      "explanation": "« lui » veut dire « à elle » : ce n’est pas un COD. Le COD, « son livre », est placé après le verbe : pas d’accord, « rendu ». « rendue » s’accorderait avec « lui », qui n’est pas un COD.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -198,7 +198,7 @@
       ],
       "answer": "mises",
       "hint": "Tu as mis quoi ? Que remplace « les » ?",
-      "explanation": "« les » remplace « les clés » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin pluriel : « mises ».",
+      "explanation": "« les » remplace « les clés » : c’est le COD, placé avant le verbe. Le participe s’accorde avec lui, féminin pluriel : « mises ». « mis » oublie l’accord ; « mettre » ne va pas après « as ».",
       "aid": {
         "kind": "rule-card",
         "props": {

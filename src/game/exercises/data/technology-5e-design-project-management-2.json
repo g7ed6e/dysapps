@@ -155,7 +155,7 @@
       ],
       "answer": "l’idée B",
       "hint": "Laquelle utilise le moins de matière, et une matière recyclée ?",
-      "explanation": "L’idée B utilise une seule boîte, en carton recyclé : moins de matière, et une matière qui se recycle encore. L’idée C double la matière.",
+      "explanation": "L’idée B utilise une seule boîte, en carton recyclé : moins de matière, et une matière qui se recycle encore. L’idée A ajoute du plastique ; l’idée C double la matière.",
       "aid": {
         "kind": "rule-card",
         "props": {

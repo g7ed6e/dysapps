@@ -357,7 +357,7 @@ Pour tous les items :
 - description : Nier, demander, relier, nuancer : don’t, does, but, so, very, too.
 - compétences : c4.en.5e.langue.phrase · c3.en.langue.groupe-nominal
 - langue : en
-- consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-5e-grammar
@@ -485,7 +485,7 @@ Pour tous les items :
 
 ### Niveau 1 · `english-5e-grammar-portraits-1`
 
-- consigne : Lis la question, puis le portrait ou la scène en anglais, et choisis la bonne réponse. Le lexique est affiché.
+- consigne : Lis la question, puis le texte en anglais. Choisis la bonne réponse. Le lexique est affiché.
 
 Pour tous les items :
 - aide « Décrire quelqu’un » :
@@ -493,7 +493,7 @@ Pour tous les items :
   - hair = les cheveux ; eyes = les yeux ; tall = grand
   - kind = gentil ; funny = drôle ; good at = fort en
   - yearbook = l’album de fin d’année ; dream = le rêve ; job = le métier
-  - Ce que fait la personne sur l’image : is reading = lit, is running = court
+  - Ce que fait la personne : is reading = lit, is running = court
 
 1. énoncé : "Hi! My name is Maya and I’m twelve.\nI have long black hair and brown eyes.\nI love music. I play the guitar."
    - question : De quelle couleur sont les cheveux de Maya ?
@@ -578,16 +578,16 @@ Pour tous les items :
   - Lis d’abord la question, puis cherche la phrase qui répond.
   - author = l’auteur ; character = le personnage ; story = l’histoire
   - real = vrai, qui existe ; invented = inventé ; famous = célèbre
-  - follow = suivre ; grow up = grandir ; want = vouloir
+  - only = seulement ; grow up = grandir ; want = vouloir
 
-1. énoncé : "Alice is a girl in a story by Lewis Carroll.\nOne day, she follows a white rabbit.\nShe falls down a hole into Wonderland."
-   - question : Qu’est-ce qu’Alice suit ?
-   - lu : Alice is a girl in a story by Lewis Carroll. One day, she follows a white rabbit. She falls down a hole into Wonderland.
-   - choix : Un lapin blanc · Un chat blanc · Une souris blanche
+1. énoncé : "Long John Silver is a pirate in Treasure Island, by Robert Louis Stevenson.\nHe has only one leg.\nHe wants the treasure for himself."
+   - question : Que veut Long John Silver ?
+   - lu : Long John Silver is a pirate in Treasure Island, by Robert Louis Stevenson. He has only one leg. He wants the treasure for himself.
+   - choix : Le trésor pour lui seul · Rentrer chez lui · Un bateau neuf
    - langue des choix : fr
-   - réponse : Un lapin blanc
-   - indice : Lis la deuxième ligne : ce qu’elle suit vient juste après le verbe.
-   - explication : she follows a white rabbit = elle suit un lapin blanc. Un chat se dit a cat, une souris a mouse.
+   - réponse : Le trésor pour lui seul
+   - indice : Lis la dernière ligne : treasure ressemble à un mot français.
+   - explication : He wants the treasure for himself = il veut le trésor pour lui seul. Le titre le dit aussi : Treasure Island, l’île au trésor. Le texte ne parle ni de rentrer chez lui (go home) ni d’un bateau neuf (a new ship).
 2. énoncé : "Sherlock Holmes is a famous detective.\nArthur Conan Doyle invented him in 1887.\nIn the stories, Holmes lives in Baker Street, a real street in London."
    - question : Qu’est-ce qui est réel dans ce texte ?
    - lu : Sherlock Holmes is a famous detective. Arthur Conan Doyle invented him in eighteen eighty-seven. In the stories, Holmes lives in Baker Street, a real street in London.

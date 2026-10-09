@@ -501,13 +501,13 @@ Pour tous les items :
   - Un auteur qui parle de lui-même se montre sous son meilleur jour.
   - Le sens implicite : ce que le document veut dire sans l’écrire en toutes lettres.
 
-1. énoncé : "D’après Suétone, un historien romain\nL’empereur Auguste se vantait souvent :\n« J’ai trouvé Rome en briques,\nje la laisse en marbre. »"
+1. énoncé : "D’après Suétone, un historien romain\nL’empereur Auguste a embelli Rome.\nIl pouvait se vanter de laisser en marbre\nune ville qu’il avait reçue en briques."
    - question : Qui se vante dans ce document ?
-   - lu : D’après Suétone, un historien romain. L’empereur Auguste se vantait souvent : J’ai trouvé Rome en briques, je la laisse en marbre.
+   - lu : D’après Suétone, un historien romain. L’empereur Auguste a embelli Rome. Il pouvait se vanter de laisser en marbre une ville qu’il avait reçue en briques.
    - choix : l’historien Suétone · l’empereur Auguste · les habitants de Rome
    - réponse : l’empereur Auguste
-   - indice : Lis la deuxième ligne : qui se vantait ?
-   - explication : Suétone écrit le texte, mais c’est Auguste qui se vante : Suétone rapporte ses paroles. Auguste veut qu’on retienne les beaux monuments de son règne.
+   - indice : Lis la troisième ligne : qui pouvait se vanter ?
+   - explication : Suétone écrit le texte, mais c’est Auguste qui se vante : Suétone rapporte ce qu’il disait. Auguste veut qu’on retienne les beaux monuments de son règne. Les habitants de Rome ne parlent pas dans ce document.
 2. énoncé : "D’après un texte d’Auguste, gravé devant son tombeau\n« J’ai agrandi les frontières de toutes les provinces.\nSur terre et sur mer, j’ai ramené la paix. »"
    - question : Dans quel but Auguste a-t-il fait graver ce texte ?
    - lu : D’après un texte d’Auguste, gravé devant son tombeau. J’ai agrandi les frontières de toutes les provinces. Sur terre et sur mer, j’ai ramené la paix.
@@ -515,13 +515,13 @@ Pour tous les items :
    - réponse : pour qu’on se souvienne de ses réussites
    - indice : De quoi Auguste parle-t-il : de ses succès ou de ses échecs ?
    - explication : Auguste parle de lui-même et ne cite que ses réussites. Gravé devant son tombeau, le texte est fait pour que tous s’en souviennent. Ses défaites n’y sont pas : c’est son point de vue.
-3. énoncé : "D’après Tite-Live, historien romain, sous l’empereur Auguste\n« Le dieu Mars est le père de Romulus.\nLes peuples doivent l’accepter,\ncomme ils acceptent notre domination. »"
-   - question : Dans quel but Tite-Live raconte-t-il cette origine ?
-   - lu : D’après Tite-Live, historien romain, sous l’empereur Auguste. Le dieu Mars est le père de Romulus. Les peuples doivent l’accepter, comme ils acceptent notre domination.
+3. énoncé : "D’après Tite-Live, historien romain, sous l’empereur Auguste\nLe peuple romain dit que Mars est son père.\nSa gloire à la guerre est si grande\nque les autres peuples doivent l’accepter,\ncomme ils acceptent sa domination."
+   - question : Dans quel but Tite-Live parle-t-il de cette origine ?
+   - lu : D’après Tite-Live, historien romain, sous l’empereur Auguste. Le peuple romain dit que Mars est son père. Sa gloire à la guerre est si grande que les autres peuples doivent l’accepter, comme ils acceptent sa domination.
    - choix : pour montrer que Rome mérite de dominer · pour prouver que Mars a existé · pour se moquer des Romains
    - réponse : pour montrer que Rome mérite de dominer
    - indice : Relis les deux dernières lignes.
-   - explication : Pour Tite-Live, un fondateur fils de Mars montre que Rome est faite pour dominer les autres peuples. C’est le point de vue d’un Romain : la légende ne prouve rien sur Mars.
+   - explication : Tite-Live ne dit pas que la légende est vraie. Il dit que Rome, par ses victoires, a le droit de se dire fille de Mars : pour lui, Rome mérite de dominer. C’est le point de vue d’un Romain : la légende ne prouve rien sur Mars, et Tite-Live ne se moque pas des Romains.
 4. énoncé : "Virgile, poète romain, sous l’empereur Auguste\nDans son poème, le dieu Jupiter parle des Romains :\n« Je leur ai donné un empire sans fin. »"
    - question : Quelle idée ce poème veut-il faire passer ?
    - lu : Virgile, poète romain, sous l’empereur Auguste. Dans son poème, le dieu Jupiter parle des Romains : Je leur ai donné un empire sans fin.

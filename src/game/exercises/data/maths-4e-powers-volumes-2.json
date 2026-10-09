@@ -17,6 +17,23 @@
       "answer": "20 cm³",
       "hint": "Relis la ligne de la pyramide dans le rappel.",
       "explanation": "Volume = 15 × 4 ÷ 3 = 60 ÷ 3 = 20 cm³. 60, c’est le volume du prisme : il manque « divisé par 3 ». Et on divise par 3, pas par 2.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              15,
+              4,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -66,7 +83,7 @@
       ],
       "answer": "le tiers de",
       "hint": "Compare les deux lignes du rappel.",
-      "explanation": "Les deux formules ne diffèrent que par « divisé par 3 » : la pyramide a le tiers du volume du prisme. Il faut trois pyramides pour remplir le prisme.",
+      "explanation": "Les deux formules ne diffèrent que par « divisé par 3 » : la pyramide a le tiers du volume du prisme. Il faut trois pyramides pour remplir le prisme. La moitié, c’est diviser par 2 comme pour un triangle ; le double, c’est retourner la comparaison.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -92,6 +109,25 @@
       "answer": "15 cm³",
       "hint": "Calcule d’abord l’aire du carré de base.",
       "explanation": "Aire de la base = 3 × 3 = 9 cm². Volume = 9 × 5 ÷ 3 = 45 ÷ 3 = 15 cm³. 45 oublie de diviser par 3, et 5 prend le côté au lieu de l’aire du carré.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "côté (cm)",
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              3,
+              "?",
+              5,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -117,6 +153,23 @@
       "answer": "24 cm³",
       "hint": "Le cône se calcule comme la pyramide.",
       "explanation": "Volume = 12 × 6 ÷ 3 = 72 ÷ 3 = 24 cm³. 72, c’est le volume du cylindre, et 36 divise par 2 au lieu de 3.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              12,
+              6,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -142,6 +195,25 @@
       "answer": "20π cm³",
       "hint": "Calcule d’abord l’aire du disque de base : π × r².",
       "explanation": "Aire de la base = π × 2² = 4π cm². Volume = 4π × 5 = 20π cm³. 10π oublie le carré du rayon, et 80π prend le diamètre, 4 cm, pour le rayon.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "rayon (cm)",
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              2,
+              "?",
+              5,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -167,6 +239,25 @@
       "answer": "12π cm³",
       "hint": "Aire du disque de base, fois la hauteur, puis divisé par 3.",
       "explanation": "Aire de la base = π × 3² = 9π cm². Volume = 9π × 4 ÷ 3 = 36π ÷ 3 = 12π cm³. 36π oublie de diviser par 3, et 4π oublie le carré du rayon.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "rayon (cm)",
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              3,
+              "?",
+              4,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -192,6 +283,25 @@
       "answer": "24 m³",
       "hint": "Un volume se compte en unités cubes.",
       "explanation": "La chambre est un prisme droit à base rectangulaire : 4 × 3 × 2 = 24 m³, en mètres cubes. 24 m² est une aire, et 9 additionne les longueurs.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "longueur (m)",
+            "largeur (m)",
+            "hauteur (m)",
+            "volume"
+          ],
+          "rows": [
+            [
+              4,
+              3,
+              2,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -53,7 +53,7 @@ créature : Lavi
 - descend à : 0.5
 
 Pour tous les items :
-- trou lu : " (nombre manquant) "
+- trou lu : " (mot manquant) "
 
 ### Niveau 1 · `maths-6e-decimals-rounding-products-1`
 
@@ -71,12 +71,14 @@ Pour tous les items :
    - réponse : 13
    - indice : Regarde le chiffre des dixièmes, juste après la virgule.
    - explication : Le chiffre des dixièmes est 7, entre 5 et 9 : l’unité augmente de 1, 12,7 donne 13. 12, c’est couper après la virgule ; 10, c’est arrondir à la dizaine.
+   - figure : droite 10 · 15 / 12,7
 2. énoncé : 8,42 arrondi à l’unité, c’est …
    - lu : 8 virgule 42, arrondi à l’unité, c’est combien ?
    - choix : 8 · 8,4 · 9
    - réponse : 8
    - indice : À l’unité, il ne reste aucun chiffre après la virgule.
-   - explication : Le chiffre des dixièmes est 4, entre 0 et 4 : on garde 8. 8,4, c’est l’arrondi au dixième, pas à l’unité.
+   - explication : Le chiffre des dixièmes est 4, entre 0 et 4 : on garde 8. 8,4, c’est l’arrondi au dixième, pas à l’unité ; 9, c’est augmenter alors que le chiffre des dixièmes est 4.
+   - figure : droite 7 · 10 / 8,42
 3. énoncé : 5,38 arrondi au dixième, c’est …
    - lu : 5 virgule 38, arrondi au dixième, c’est combien ?
    - choix : 5 · 5,3 · 5,4
@@ -89,30 +91,34 @@ Pour tous les items :
    - réponse : 350 cm
    - indice : 1 mètre, c’est combien de centimètres ?
    - explication : 1 m = 100 cm, donc 3,5 m = 3,5 × 100 = 350 cm. 35 cm, c’est multiplier par 10 ; 3 500 cm, par 1 000.
+   - figure : tableau m · cm / 1 · 100 / 3,5 · ?
 5. énoncé : 4 km = … m
    - lu : 4 kilomètres, c’est combien de mètres ?
    - choix : 40 m · 400 m · 4 000 m
    - réponse : 4 000 m
    - indice : Kilo veut dire mille.
-   - explication : 1 km = 1 000 m, donc 4 km = 4 000 m. 400 m, c’est multiplier par 100, comme pour les centimètres.
+   - explication : 1 km = 1 000 m, donc 4 km = 4 000 m. 400 m, c’est multiplier par 100, comme pour les centimètres ; 40 m, par 10.
+   - figure : tableau km · m / 1 · 1 000 / 4 · ?
 6. énoncé : 250 cm = … m
    - lu : 250 centimètres, c’est combien de mètres ?
    - choix : 0,25 m · 2,5 m · 25 m
    - réponse : 2,5 m
    - indice : Le mètre est plus grand que le centimètre : le nombre devient plus petit.
    - explication : 100 cm = 1 m, donc 250 cm = 250 ÷ 100 = 2,5 m. 25 m, c’est diviser par 10 ; 0,25 m, par 1 000.
+   - figure : tableau cm · m / 100 · 1 / 250 · ?
 7. énoncé : 8 cm = … m
    - lu : 8 centimètres, c’est combien de mètres ?
    - choix : 0,08 m · 0,8 m · 800 m
    - réponse : 0,08 m
    - indice : 8 cm, c’est moins qu’un mètre.
    - explication : 8 cm = 8 ÷ 100 = 0,08 m : 8 centièmes de mètre. 800 m, c’est multiplier au lieu de diviser ; 0,8 m, c’est diviser par 10.
+   - figure : tableau cm · m / 100 · 1 / 8 · ?
 8. énoncé : 0,74 arrondi au dixième, c’est …
    - lu : 0 virgule 74, arrondi au dixième, c’est combien ?
    - choix : 0,7 · 0,8 · 1
    - réponse : 0,7
    - indice : Regarde le chiffre des centièmes : 4.
-   - explication : Le chiffre des centièmes est 4, entre 0 et 4 : le chiffre des dixièmes ne change pas, donc 0,7. 1, c’est l’arrondi à l’unité.
+   - explication : Le chiffre des centièmes est 4, entre 0 et 4 : le chiffre des dixièmes ne change pas, donc 0,7. 0,8, c’est augmenter alors que le chiffre des centièmes est 4 ; 1, c’est l’arrondi à l’unité.
 
 ### Niveau 2 · `maths-6e-decimals-rounding-products-2`
 
@@ -130,13 +136,13 @@ Pour tous les items :
    - choix : 0,08 · 0,8 · 8
    - réponse : 0,08
    - indice : 4 × 2 = 8. Combien de chiffres après la virgule en tout ?
-   - explication : 4 × 2 = 8. Il y a un chiffre après la virgule dans 0,4 et un dans 0,2 : deux en tout, donc 0,08. 0,8 n’en a qu’un. Multiplier par un nombre plus petit que 1 donne un résultat plus petit.
+   - explication : 4 × 2 = 8. Il y a un chiffre après la virgule dans 0,4 et un dans 0,2 : deux en tout, donc 0,08. 0,8 n’en a qu’un ; 8 n’en a plus aucun. Multiplier par un nombre plus petit que 1 donne un résultat plus petit.
 2. énoncé : 1,5 × 3 = …
    - lu : 1 virgule 5 fois 3, c’est combien ?
    - choix : 0,45 · 4,5 · 45
    - réponse : 4,5
    - indice : 15 × 3 = 45. Combien de chiffres après la virgule en tout ?
-   - explication : 15 × 3 = 45, et un seul chiffre après la virgule, celui de 1,5 : 4,5. Contrôle : 3 fois un peu plus de 1, c’est un peu plus de 3. 45 a perdu sa virgule.
+   - explication : 15 × 3 = 45, et un seul chiffre après la virgule, celui de 1,5 : 4,5. Contrôle : 3 fois un peu plus de 1, c’est un peu plus de 3. 45 a perdu sa virgule ; 0,45 a deux chiffres après la virgule au lieu d’un.
 3. énoncé : 1,2 × 0,3 = …
    - lu : 1 virgule 2 fois 0 virgule 3, c’est combien ?
    - choix : 0,036 · 0,36 · 3,6
@@ -149,7 +155,7 @@ Pour tous les items :
    - choix : Environ 30 : la virgule est mal placée. · Environ 300 : le résultat est juste. · Environ 30 : le résultat est juste.
    - réponse : Environ 30 : la virgule est mal placée.
    - indice : Arrondis 4,9 et 6,1 à l’unité, puis multiplie.
-   - explication : 4,9 est proche de 5, 6,1 proche de 6 : 5 × 6 = 30. Le résultat doit être proche de 30, pas de 300 : la virgule est mal placée. Le bon résultat est 29,89.
+   - explication : 4,9 est proche de 5, 6,1 proche de 6 : 5 × 6 = 30. Le résultat doit être proche de 30, pas de 300 : la virgule est mal placée. Le bon résultat est 29,89. « Environ 300 » reprend le résultat de Léo au lieu de le contrôler ; et 298,9, loin de 30, ne peut pas être juste.
 5. énoncé : "Au marché\nLe tissu coûte 3 € le mètre.\nNina en achète 2,5 m."
    - question : Combien paie-t-elle ?
    - lu : Au marché. Le tissu coûte 3 euros le mètre. Nina en achète 2 virgule 5 mètres.
@@ -157,6 +163,7 @@ Pour tous les items :
    - réponse : 7,5 €
    - indice : 2,5 mètres à 3 € chacun : on ajoute, ou on multiplie ?
    - explication : 2,5 fois 3 € : 25 × 3 = 75, et un chiffre après la virgule, donc 7,5 €. 5,5 €, c’est 3 + 2,5 : on a ajouté au lieu de multiplier. 75 € a perdu sa virgule.
+   - figure : tableau mètres · prix (€) / 1 · 3 / 2,5 · ?
 6. énoncé : 2,384 arrondi au centième, c’est …
    - lu : 2 virgule 384, arrondi au centième, c’est combien ?
    - choix : 2,38 · 2,39 · 2,4
@@ -169,12 +176,14 @@ Pour tous les items :
    - réponse : 7
    - indice : Pour l’unité, seul le chiffre des dixièmes compte.
    - explication : Le chiffre des dixièmes est 4 : on garde 7. Arrondir d’abord à 7,5, puis à 8, c’est arrondir deux fois : 7,48 est plus près de 7 que de 8.
+   - figure : droite 6 · 9 / 7,48
 8. énoncé : 2,4 km = … m
    - lu : 2 virgule 4 kilomètres, c’est combien de mètres ?
    - choix : 24 m · 240 m · 2 400 m
    - réponse : 2 400 m
    - indice : 1 kilomètre, c’est combien de mètres ?
    - explication : 1 km = 1 000 m, donc 2,4 km = 2,4 × 1 000 = 2 400 m. 240 m, c’est multiplier par 100 ; 24 m, par 10.
+   - figure : tableau km · m / 1 · 1 000 / 2,4 · ?
 
 ## Les plans
 

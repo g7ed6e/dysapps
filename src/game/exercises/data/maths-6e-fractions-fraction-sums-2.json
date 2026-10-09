@@ -18,6 +18,13 @@
       "answer": "20 €",
       "hint": "Combien vaut une part ? Puis : Tom en a deux.",
       "explanation": "Une part vaut 30 ÷ 3 = 10 €. Tom a 2 parts : 2 × 10 = 20 €, les 2/3 de 30 €. 10 €, c’est une seule part ; 15 €, c’est couper la barre en 2.",
+      "figure": {
+        "kind": "fraction-bar",
+        "props": {
+          "n": 2,
+          "d": 3
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -44,7 +51,14 @@
       ],
       "answer": "8 billes",
       "hint": "Les 24 billes sont partagées en 3 parts égales.",
-      "explanation": "24 ÷ 3 = 8 : une part, celle de Léa, vaut 8 billes. Sam a 16 billes, et 8 + 16 = 24. 12, c’est couper en 2 parts au lieu de 3.",
+      "explanation": "24 ÷ 3 = 8 : une part, celle de Léa, vaut 8 billes. Sam a 16 billes, et 8 + 16 = 24 : 16, c’est la part de Sam, pas celle de Léa. 12, c’est couper en 2 parts au lieu de 3.",
+      "figure": {
+        "kind": "fraction-bar",
+        "props": {
+          "n": 1,
+          "d": 3
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -66,12 +80,25 @@
       "spoken": "Le gâteau. Inès mange un quart du gâteau. Noé en mange 2 quarts.",
       "choices": [
         "1/4",
-        "3/4",
-        "3/8"
+        "3/8",
+        "3/4"
       ],
       "answer": "1/4",
       "hint": "Combien de quarts sont mangés ? Le gâteau entier, c’est 4/4.",
       "explanation": "Ils mangent 1/4 + 2/4 = 3/4. Il reste 4/4 − 3/4 = 1/4. 3/4, c’est la part mangée, pas ce qui reste ; 3/8, c’est ajouter les dénominateurs.",
+      "figure": {
+        "kind": "compare-bars",
+        "props": {
+          "a": [
+            1,
+            4
+          ],
+          "b": [
+            2,
+            4
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -99,6 +126,33 @@
       "answer": "16",
       "hint": "Combien de bâtonnets ajoute-t-on à chaque étape ?",
       "explanation": "On ajoute 3 bâtonnets à chaque étape : 10, puis 13 à l’étape 4, puis 16 à l’étape 5. 13, c’est l’étape 4 ; 20, c’est 5 fois 4, comme si chaque étape ajoutait 4.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "étape",
+            "bâtonnets"
+          ],
+          "rows": [
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              7
+            ],
+            [
+              3,
+              10
+            ],
+            [
+              5,
+              "?"
+            ]
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -125,7 +179,18 @@
       ],
       "answer": "On multiplie par 2.",
       "hint": "Vérifie ta règle sur chaque étape, pas seulement sur la première.",
-      "explanation": "3 × 2 = 6, 6 × 2 = 12, 12 × 2 = 24 : on multiplie par 2 à chaque étape. « On ajoute 3 » ne marche que pour la première : 6 + 3 ne donne pas 12.",
+      "explanation": "3 × 2 = 6, 6 × 2 = 12, 12 × 2 = 24 : on multiplie par 2 à chaque étape. « On ajoute 3 » ne marche que pour la première étape : 6 + 3 ne donne pas 12. « On ajoute 6 » ne marche pas non plus : 3 + 6 ne donne pas 6.",
+      "figure": {
+        "kind": "bar-list",
+        "props": {
+          "values": [
+            3,
+            6,
+            12,
+            24
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -146,13 +211,26 @@
       "question": "Quelle est la probabilité de tirer une bille rouge ?",
       "spoken": "Le sac de billes. Il y a 3 billes rouges et 1 bille bleue. On tire une bille au hasard, sans regarder.",
       "choices": [
-        "3/4",
+        "1/4",
         "1/2",
-        "1/4"
+        "3/4"
       ],
       "answer": "3/4",
       "hint": "Combien de billes en tout ? Combien de rouges ?",
       "explanation": "4 billes en tout, dont 3 rouges : la probabilité est 3/4. Deux couleurs ne font pas une chance sur deux : il y a plus de rouges. 1/4, c’est la bille bleue.",
+      "figure": {
+        "kind": "bar-list",
+        "props": {
+          "values": [
+            3,
+            1
+          ],
+          "labels": [
+            "rouges",
+            "bleues"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -180,6 +258,16 @@
       "answer": "2/6",
       "hint": "Écris les nombres plus grands que 4 : 4 en fait-il partie ?",
       "explanation": "Plus grand que 4 : seulement 5 et 6, soit 2 faces sur 6 : 2/6. 3/6 compte aussi le 4, qui n’est pas plus grand que 4 ; 4/6, ce sont les faces de 1 à 4.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 1,
+          "max": 6,
+          "points": [
+            4
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -207,6 +295,19 @@
       "answer": "Sur 10 lancers, c’est possible : la probabilité de pile reste 1/2.",
       "hint": "La pièce change-t-elle après des lancers ?",
       "explanation": "La pièce est équilibrée : pile a toujours une chance sur deux, 1/2. Sur peu de lancers, on peut obtenir 7 piles. 7/10 est ce qu’Hugo a observé, pas la probabilité. Et la pièce ne se souvient pas des lancers d’avant.",
+      "figure": {
+        "kind": "bar-list",
+        "props": {
+          "values": [
+            7,
+            3
+          ],
+          "labels": [
+            "pile",
+            "face"
+          ]
+        }
+      },
       "aid": {
         "kind": "rule-card",
         "props": {

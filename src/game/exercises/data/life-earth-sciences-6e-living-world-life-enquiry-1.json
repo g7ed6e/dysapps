@@ -34,9 +34,9 @@
     },
     {
       "key": "life-earth-sciences-6e-living-world-life-enquiry-1-1",
-      "prompt": "Trois observations au microscope\nPeau d’oignon : des cellules collées les unes aux autres.\nIntérieur de la joue : des cellules collées les unes aux autres.\nGoutte d’eau de mare : de tout petits êtres vivants, chacun fait d’une seule cellule.",
+      "prompt": "Au microscope\nPeau d’oignon : des cellules.\nIntérieur de la joue : des cellules.\nEau de mare : de petits êtres d’une seule cellule.",
       "question": "Que montrent ces observations ?",
-      "spoken": "Trois observations au microscope. Peau d’oignon, des cellules collées les unes aux autres. Intérieur de la joue, des cellules collées les unes aux autres. Goutte d’eau de mare, de tout petits êtres vivants, chacun fait d’une seule cellule.",
+      "spoken": "Au microscope. Peau d’oignon, des cellules. Intérieur de la joue, des cellules. Eau de mare, de petits êtres d’une seule cellule.",
       "choices": [
         "seules les plantes ont des cellules",
         "seuls les animaux ont des cellules",
@@ -144,9 +144,9 @@
     },
     {
       "key": "life-earth-sciences-6e-living-world-life-enquiry-1-5",
-      "prompt": "Trois moments de l’histoire de la vie, dans le désordre\nIl y a 66 millions d’années : les grands dinosaures disparaissent.\nIl y a environ 300 000 ans : les premiers humains de notre espèce.\nIl y a plus de 3 milliards d’années : les premiers êtres vivants, faits d’une seule cellule.",
+      "prompt": "Il y a combien de temps ?\nFin des grands dinosaures : 66 millions d’années.\nPremiers humains de notre espèce : 300 000 ans.\nPremiers êtres vivants : plus de 3 milliards d’années.",
       "question": "Quel moment est le plus ancien ?",
-      "spoken": "Trois moments de l’histoire de la vie, dans le désordre. Il y a soixante-six millions d’années, les grands dinosaures disparaissent. Il y a environ trois cent mille ans, les premiers humains de notre espèce. Il y a plus de trois milliards d’années, les premiers êtres vivants, faits d’une seule cellule.",
+      "spoken": "Il y a combien de temps ? Fin des grands dinosaures, soixante-six millions d’années. Premiers humains de notre espèce, trois cent mille ans. Premiers êtres vivants, plus de trois milliards d’années.",
       "choices": [
         "la fin des grands dinosaures",
         "les premiers humains",

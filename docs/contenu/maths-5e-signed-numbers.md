@@ -46,7 +46,7 @@ créature : Frimas
 - descend à : 0.5
 
 Pour tous les items :
-- trou lu : " (nombre manquant) "
+- trou lu : " (mot manquant) "
 
 ### Niveau 1 · `maths-5e-signed-numbers-order-of-operations-1`
 
@@ -63,25 +63,25 @@ Pour tous les items :
    - choix : 9 · 14 · 20
    - réponse : 14
    - indice : Quelle opération passe en premier : + ou × ?
-   - explication : La multiplication passe avant l’addition : 3 × 4 = 12, puis 2 + 12 = 14. 20, c’est calculer de gauche à droite : 2 + 3 = 5, puis 5 × 4.
+   - explication : La multiplication passe avant l’addition : 3 × 4 = 12, puis 2 + 12 = 14. 20, c’est calculer de gauche à droite : 2 + 3 = 5, puis 5 × 4. 9, c’est 2 + 3 + 4 : on a ajouté au lieu de multiplier.
 2. énoncé : (5 + 2) × 3 = …
    - lu : La parenthèse 5 plus 2, fois 3, combien ?
    - choix : 10 · 11 · 21
    - réponse : 21
    - indice : Que calcules-tu d’abord, quand il y a des parenthèses ?
-   - explication : Les parenthèses d’abord : 5 + 2 = 7, puis 7 × 3 = 21. 11, c’est oublier les parenthèses : 5 + 2 × 3.
+   - explication : Les parenthèses d’abord : 5 + 2 = 7, puis 7 × 3 = 21. 11, c’est oublier les parenthèses : 5 + 2 × 3. 10, c’est 5 + 2 + 3 : on a ajouté au lieu de multiplier.
 3. énoncé : 20 − 8 ÷ 2 = …
    - lu : 20 moins 8 divisé par 2, combien ?
    - choix : 6 · 16 · 24
    - réponse : 16
    - indice : Relis l’ordre du rappel : − ou ÷, lequel vient d’abord ?
-   - explication : La division d’abord : 8 ÷ 2 = 4, puis 20 − 4 = 16. 6, c’est calculer de gauche à droite : 20 − 8 = 12, puis 12 ÷ 2.
+   - explication : La division d’abord : 8 ÷ 2 = 4, puis 20 − 4 = 16. 6, c’est calculer de gauche à droite : 20 − 8 = 12, puis 12 ÷ 2. 24, c’est 20 + 4 : on a ajouté au lieu d’enlever.
 4. énoncé : 18 − (4 + 6) = …
    - lu : 18 moins la parenthèse 4 plus 6, combien ?
    - choix : 8 · 20 · 28
    - réponse : 8
    - indice : Calcule d’abord ce qui est entre parenthèses.
-   - explication : Les parenthèses d’abord : 4 + 6 = 10, puis 18 − 10 = 8. 20, c’est oublier les parenthèses : 18 − 4 = 14, puis 14 + 6.
+   - explication : Les parenthèses d’abord : 4 + 6 = 10, puis 18 − 10 = 8. 20, c’est oublier les parenthèses : 18 − 4 = 14, puis 14 + 6. 28, c’est 18 + 10 : on a ajouté au lieu d’enlever.
 5. énoncé : 7² = …
    - lu : 7 au carré, combien ?
    - choix : 9 · 14 · 49
@@ -93,7 +93,7 @@ Pour tous les items :
    - choix : 8 · 32 · 62
    - réponse : 8
    - indice : Quel nombre, multiplié par lui-même, donne 64 ?
-   - explication : 8 × 8 = 64 : 64 est le carré de 8. 32, c’est la moitié de 64 : 32 × 2 = 64, mais le carré n’est pas le double.
+   - explication : 8 × 8 = 64 : 64 est le carré de 8. 32, c’est la moitié de 64 : 32 × 2 = 64, mais le carré n’est pas le double. 62, c’est 64 − 2.
 7. énoncé : 10³ = …
    - lu : 10 au cube, combien ?
    - choix : 30 · 100 · 1 000
@@ -123,14 +123,16 @@ Pour tous les items :
    - choix : (5 + 3) × 2 · 5 + 3 × 2 · 5 × 2 + 3
    - réponse : (5 + 3) × 2
    - indice : Le programme ajoute d’abord. Comment garder cet ordre ?
-   - explication : On ajoute d’abord, puis on multiplie le résultat : il faut des parenthèses, (5 + 3) × 2. Sans elles, 5 + 3 × 2 ferait la multiplication en premier.
+   - explication : On ajoute d’abord, puis on multiplie le résultat : il faut des parenthèses, (5 + 3) × 2. Sans elles, 5 + 3 × 2 ferait la multiplication en premier. 5 × 2 + 3 multiplie avant d’ajouter : l’ordre du programme est changé.
+   - figure : tableau étape · nombre / départ · 5 / ajoute 3 · ? / multiplie par 2 · ?
 2. énoncé : "Programme de calcul\nChoisis 4.\nMultiplie par 3.\nEnlève 2."
    - question : Quel nombre obtiens-tu ?
    - lu : Programme de calcul. Choisis 4. Multiplie par 3. Enlève 2.
-   - choix : 4 · 6 · 10
+   - choix : 4 · 10 · 14
    - réponse : 10
    - indice : Suis les lignes dans l’ordre, une à une.
-   - explication : 4 × 3 = 12, puis 12 − 2 = 10 : c’est 4 × 3 − 2. 4, c’est 4 × (3 − 2) : on a enlevé avant de multiplier.
+   - explication : 4 × 3 = 12, puis 12 − 2 = 10 : c’est 4 × 3 − 2. 4, c’est 4 × (3 − 2) : on a enlevé avant de multiplier. 14, c’est 12 + 2 : on a ajouté au lieu d’enlever.
+   - figure : tableau étape · nombre / départ · 4 / multiplie par 3 · ? / enlève 2 · ?
 3. énoncé : "Programme de calcul\nChoisis 6.\nAjoute 4.\nCalcule le carré du résultat."
    - question : Quel nombre obtiens-tu ?
    - lu : Programme de calcul. Choisis 6. Ajoute 4. Calcule le carré du résultat.
@@ -138,6 +140,7 @@ Pour tous les items :
    - réponse : 100
    - indice : Le carré porte sur le résultat de l’addition.
    - explication : 6 + 4 = 10, puis 10² = 10 × 10 = 100 : c’est (6 + 4)². 22, c’est 6 + 4², le carré du 4 seul. 20, c’est 10 × 2 : le double, pas le carré.
+   - figure : tableau étape · nombre / départ · 6 / ajoute 4 · ? / au carré · ?
 4. énoncé : 2 × 5² = …
    - lu : 2 fois 5 au carré, combien ?
    - choix : 20 · 50 · 100
@@ -149,26 +152,29 @@ Pour tous les items :
    - choix : 7 · 30 · 175
    - réponse : 7
    - indice : Quel nombre, multiplié par 5, donne 35 ?
-   - explication : L’inverse de × 5, c’est ÷ 5 : x = 35 ÷ 5 = 7. On vérifie : 5 × 7 = 35. 30, c’est 35 − 5 : on a enlevé au lieu de diviser.
+   - explication : L’inverse de × 5, c’est ÷ 5 : x = 35 ÷ 5 = 7. On vérifie : 5 × 7 = 35. 30, c’est 35 − 5 : on a enlevé au lieu de diviser. 175, c’est 35 × 5 : on a refait la même opération au lieu de l’inverse.
+   - figure : tableau x · 5 × x / 1 · 5 / ? · 35
 6. énoncé : 3x = 24. Alors x = …
    - lu : 3 x égale 24. Combien vaut x ?
    - choix : 8 · 21 · 72
    - réponse : 8
    - indice : 3x veut dire 3 × x.
-   - explication : 3x, c’est 3 × x. L’inverse de × 3, c’est ÷ 3 : x = 24 ÷ 3 = 8. On vérifie : 3 × 8 = 24. 72, c’est 24 × 3 : on a refait la même opération au lieu de l’inverse.
+   - explication : 3x, c’est 3 × x. L’inverse de × 3, c’est ÷ 3 : x = 24 ÷ 3 = 8. On vérifie : 3 × 8 = 24. 72, c’est 24 × 3 : on a refait la même opération au lieu de l’inverse. 21, c’est 24 − 3 : on a enlevé au lieu de diviser.
+   - figure : tableau x · 3x / 1 · 3 / ? · 24
 7. énoncé : "Léa a des billes.\nOn lui en donne 12.\nElle en a maintenant 30.\nx est le nombre de billes du début."
    - question : Quelle équation traduit ce problème ?
    - lu : Léa a des billes. On lui en donne 12. Elle en a maintenant 30. x est le nombre de billes du début.
    - choix : x + 12 = 30 · x − 12 = 30 · 12 × x = 30
    - réponse : x + 12 = 30
    - indice : On lui donne des billes : en a-t-elle plus, ou moins ?
-   - explication : Au début, x billes ; on en ajoute 12 ; on obtient 30 : x + 12 = 30. On lui en donne : c’est une addition, pas une soustraction.
+   - explication : Au début, x billes ; on en ajoute 12 ; on obtient 30 : x + 12 = 30. On lui en donne : c’est une addition. x − 12 = 30 enlèverait des billes ; 12 × x = 30 multiplierait au lieu d’ajouter.
 8. énoncé : x + 2 = 20. Alors x = …
    - lu : x plus 2 égale 20. Combien vaut x ?
    - choix : 10 · 18 · 22
    - réponse : 18
    - indice : Quel nombre, plus 2, donne 20 ?
-   - explication : L’inverse de + 2, c’est − 2 : x = 20 − 2 = 18. On vérifie : 18 + 2 = 20. 10, c’est 20 ÷ 2 : x + 2, ce n’est pas 2x.
+   - explication : L’inverse de + 2, c’est − 2 : x = 20 − 2 = 18. On vérifie : 18 + 2 = 20. 10, c’est 20 ÷ 2 : x + 2, ce n’est pas 2x. 22, c’est 20 + 2 : on a refait la même opération au lieu de l’inverse.
+   - figure : droite 10 · 20 / 20
 
 ## Mesures et angles · `conversions-angles`
 
@@ -184,7 +190,7 @@ Pour tous les items :
 - descend à : 0.5
 
 Pour tous les items :
-- trou lu : " (nombre manquant) "
+- trou lu : " (mot manquant) "
 
 ### Niveau 1 · `maths-5e-signed-numbers-conversions-angles-1`
 
@@ -202,48 +208,56 @@ Pour tous les items :
    - réponse : 3 000
    - indice : Combien de mètres dans 1 kilomètre ?
    - explication : 1 km = 1 000 m, donc 3 km = 3 × 1 000 = 3 000 m. 300, c’est faire × 100, comme pour les centimètres dans un mètre. 30 000, c’est un zéro de trop.
+   - figure : tableau km · m / 1 · 1 000 / 3 · ?
 2. énoncé : 250 cm = … m
    - lu : 250 centimètres, combien de mètres ?
    - choix : 0,25 · 2,5 · 25 000
    - réponse : 2,5
    - indice : 100 cm font 1 m. Le mètre est plus grand : le nombre devient plus petit.
    - explication : 100 cm = 1 m, donc 250 cm = 250 ÷ 100 = 2,5 m. 25 000, c’est multiplier au lieu de diviser. 0,25, c’est diviser par 1 000.
+   - figure : tableau cm · m / 100 · 1 / 250 · ?
 3. énoncé : 5 m² = … dm²
    - lu : 5 mètres carrés, combien de décimètres carrés ?
    - choix : 50 · 500 · 5 000
    - réponse : 500
    - indice : Pour les aires, de combien multiplie-t-on à chaque unité ?
    - explication : 1 m² = 100 dm², donc 5 m² = 5 × 100 = 500 dm². 50, c’est faire × 10, comme pour les longueurs. 5 000, c’est faire × 1 000, comme pour les volumes.
+   - figure : tableau m² · dm² / 1 · 100 / 5 · ?
 4. énoncé : 2 dm³ = … cm³
    - lu : 2 décimètres cubes, combien de centimètres cubes ?
    - choix : 20 · 200 · 2 000
    - réponse : 2 000
    - indice : Pour les volumes, de combien multiplie-t-on à chaque unité ?
    - explication : 1 dm³ = 1 000 cm³, donc 2 dm³ = 2 × 1 000 = 2 000 cm³. 200, c’est faire × 100, comme pour les aires. 20, c’est faire × 10, comme pour les longueurs.
+   - figure : tableau dm³ · cm³ / 1 · 1 000 / 2 · ?
 5. énoncé : Une brique de lait contient 1 L. Son volume est … cm³.
    - lu : Une brique de lait contient 1 litre. Son volume, en centimètres cubes, c’est combien ?
    - choix : 10 · 100 · 1 000
    - réponse : 1 000
    - indice : 1 L, c’est combien de dm³ ? Puis convertis en cm³.
-   - explication : 1 L = 1 dm³, et 1 dm³ = 1 000 cm³ : la brique fait 1 000 cm³. 100, c’est faire × 100, comme pour les aires.
+   - explication : 1 L = 1 dm³, et 1 dm³ = 1 000 cm³ : la brique fait 1 000 cm³. 100, c’est faire × 100, comme pour les aires ; 10, c’est faire × 10, comme pour les longueurs.
+   - figure : tableau L · dm³ · cm³ / 1 · 1 · ?
 6. énoncé : 500 mL = … L
    - lu : 500 millilitres, combien de litres ?
    - choix : 0,05 · 0,5 · 5
    - réponse : 0,5
    - indice : 1 000 mL font 1 L.
    - explication : 1 L = 1 000 mL, donc 500 mL = 500 ÷ 1 000 = 0,5 L : un demi-litre. 5, c’est diviser par 100. 0,05, c’est diviser par 10 000.
+   - figure : tableau mL · L / 1 000 · 1 / 500 · ?
 7. énoncé : Un cube de 3 cm de côté a un volume de … cm³.
    - lu : Un cube de 3 centimètres de côté. Quel est son volume, en centimètres cubes ?
    - choix : 9 · 12 · 27
    - réponse : 27
    - indice : Côté × côté × côté : trois fois le même nombre.
    - explication : 3 × 3 × 3 = 27 cm³. 9, c’est 3 × 3, l’aire d’une seule face. 12, c’est 4 × 3, le tour d’une face.
+   - figure : tableau côté (cm) · côté (cm) · côté (cm) · volume (cm³) / 3 · 3 · 3 · ?
 8. énoncé : Un pavé mesure 5 cm, 4 cm et 2 cm. Son volume est … cm³.
    - lu : Un pavé mesure 5 centimètres de long, 4 de large et 2 de haut. Quel est son volume, en centimètres cubes ?
    - choix : 11 · 20 · 40
    - réponse : 40
    - indice : Multiplie les trois longueurs.
    - explication : 5 × 4 × 2 = 40 cm³. 20, c’est 5 × 4, l’aire du fond, sans la hauteur. 11, c’est 5 + 4 + 2 : on additionne au lieu de multiplier.
+   - figure : tableau longueur (cm) · largeur (cm) · hauteur (cm) · volume (cm³) / 5 · 4 · 2 · ?
 
 ### Niveau 2 · `maths-5e-signed-numbers-conversions-angles-2`
 
@@ -262,6 +276,7 @@ Pour tous les items :
    - réponse : 60
    - indice : Aire de la base × hauteur.
    - explication : 15 × 4 = 60 cm³. 30, c’est diviser par 2 comme pour l’aire d’un triangle : le volume du prisme ne se divise pas. 19, c’est 15 + 4.
+   - figure : tableau aire de la base (cm²) · hauteur (cm) · volume (cm³) / 15 · 4 · ?
 2. énoncé : Un disque a un rayon de 5 cm. Son aire est … cm².
    - lu : Un disque a un rayon de 5 centimètres. Quelle est son aire, en centimètres carrés ?
    - choix : 5π · 10π · 25π
