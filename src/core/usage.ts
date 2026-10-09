@@ -1,18 +1,46 @@
 // La mesure d'usage et de performance (demande du mainteneur, 9 octobre 2026) : combien de lancements, combien de
-// temps sur chaque écran, à quelle fluidité tourne le monde en 3D, quelles erreurs. Anonyme : aucun identifiant, rien
-// n'est écrit sur l'appareil, et le Worker n'enregistre pas l'adresse IP (src/worker/index.ts). C'est une mesure
-// d'audience exemptée de consentement au sens de la CNIL ; Réglages › Application permet de la couper.
+// temps sur chaque écran, à quelle fluidité tourne le monde en 3D, quelles erreurs. Anonyme : aucun identifiant, et le Worker n'enregistre pas l'adresse IP (src/worker/index.ts). C'est une mesure
+// d'audience exemptée de consentement au sens de la CNIL (l'exemption vaut aussi pour ce qui est gardé sur
+// l'appareil) ; Réglages › Application permet de la couper.
+// Sans réseau, les évènements qui attendent sont gardés sur l'appareil (`dysapps-usage-waiting`, hors du préfixe des
+// sauvegardes, donc jamais dans le fichier de « Ma sauvegarde ») et partent au retour du réseau, même un autre jour ;
+// envoyés, ou la mesure coupée, ils sont effacés. Mot du mainteneur, 9 octobre 2026 : « ce n'est que de l'analytique ».
 // Seulement dans l'application publiée sur Cloudflare (ni le serveur de développement, ni GitHub Pages), et jamais
 // pendant les captures et les mesures (navigateur piloté, `?mesures`). Les évènements attendent en mémoire et partent
 // ensemble quand l'application passe en arrière-plan, ou tous les dix.
 import { APP_VERSION } from './appUpdate';
 import { reglagesCourants } from './settings';
 import { universAffiche } from './universe';
-import { cleanMessage, type LaunchEvent, MAX_EVENTS, screenOf, SLOW_FRAME_MS, type UsageBatch, type UsageEvent } from './usageEvents';
+import { cleanMessage, type LaunchEvent, MAX_EVENTS, parseUsageEvents, screenOf, SLOW_FRAME_MS, type UsageBatch, type UsageEvent } from './usageEvents';
 
 /** L'application publiée à la racine : Cloudflare, pas GitHub Pages ni le serveur de développement. */
 const published = () => import.meta.env.PROD && import.meta.env.BASE_URL === '/' && typeof window !== 'undefined';
 const FLUSH_AT = 10;
+/** Au plus ce nombre d'évènements attend l'envoi (sans réseau, ou envoi refusé) ; les plus anciens se perdent. */
+const MAX_WAITING = 200;
+/** Ce qui attend le réseau, sur l'appareil ; sans le préfixe `dysapps:`, la sauvegarde dans un fichier ne le copie pas. */
+const WAITING_KEY = 'dysapps-usage-waiting';
+
+/** Garde sur l'appareil ce qui attend l'envoi, ou l'efface quand rien n'attend. */
+function keepWaiting(): void {
+  try {
+    if (queue.length > 0) localStorage.setItem(WAITING_KEY, JSON.stringify(queue));
+    else localStorage.removeItem(WAITING_KEY);
+  } catch {
+    // Stockage indisponible : ce qui attend reste en mémoire seulement.
+  }
+}
+
+/** Reprend ce qui attendait d'un lancement d'avant, vérifié comme le Worker le vérifiera. */
+function takeWaiting(): UsageEvent[] {
+  try {
+    const raw = localStorage.getItem(WAITING_KEY);
+    localStorage.removeItem(WAITING_KEY);
+    return raw ? parseUsageEvents(JSON.parse(raw)).slice(-MAX_WAITING) : [];
+  } catch {
+    return [];
+  }
+}
 /** Un passage plus court n'est pas compté (une redirection, un retour aussitôt). */
 const MIN_SCREEN_MS = 1000;
 /** Un écart plus long entre deux images est une pause (onglet caché, boucle arrêtée), pas une image lente. */
@@ -56,6 +84,7 @@ export function startUsage(): void {
     dpr: round(window.devicePixelRatio || 1, 0.5),
     installed: window.matchMedia?.('(display-mode: standalone)').matches === true,
   };
+  queue = takeWaiting();
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       closeScreen();
@@ -69,6 +98,8 @@ export function startUsage(): void {
     closeScreen();
     flushUsage();
   });
+  // Le réseau revient : ce qui attendait part.
+  window.addEventListener('online', () => flushUsage());
   window.addEventListener('error', (e) => recordError(e.message));
   window.addEventListener('unhandledrejection', (e) => recordError(e.reason));
 }
@@ -138,7 +169,17 @@ export function flushUsage(): void {
     events.unshift({ ...launch, firstFrameMs });
     launch = null;
   }
-  if (events.length === 0 || !allowed()) return;
+  if (!allowed()) {
+    keepWaiting();
+    return;
+  }
+  if (events.length === 0) return;
+  // Sans réseau, les évènements attendent son retour, sur l'appareil ; les plus anciens partent les premiers.
+  if (navigator.onLine === false) {
+    queue = [...events, ...queue].slice(-MAX_WAITING);
+    keepWaiting();
+    return;
+  }
   const settings = reglagesCourants();
   const batch: UsageBatch = {
     version: APP_VERSION,
@@ -146,10 +187,17 @@ export function flushUsage(): void {
     view: settings?.worldView ?? '3d',
     events: events.slice(0, MAX_EVENTS),
   };
+  let sent = false;
   try {
     // En texte simple : la requête part même quand la page se ferme, sans requête préalable.
-    navigator.sendBeacon(`${import.meta.env.BASE_URL}api/usage`, new Blob([JSON.stringify(batch)], { type: 'text/plain' }));
+    sent = navigator.sendBeacon(`${import.meta.env.BASE_URL}api/usage`, new Blob([JSON.stringify(batch)], { type: 'text/plain' }));
   } catch {
-    // Pas d'envoi possible : la mesure se perd, l'application continue.
+    // Pas d'envoi possible : comme un refus du navigateur, plus bas.
   }
+  // Refusé par le navigateur : la même chose attend le prochain envoi ; au-delà de MAX_EVENTS, le reste aussi.
+  if (!sent) queue = [...events, ...queue].slice(-MAX_WAITING);
+  else if (events.length > MAX_EVENTS) queue = [...events.slice(MAX_EVENTS), ...queue].slice(-MAX_WAITING);
+  keepWaiting();
+  // Plus de MAX_EVENTS attendaient : le reste part dans un second envoi.
+  if (sent && queue.length >= MAX_EVENTS) flushUsage();
 }

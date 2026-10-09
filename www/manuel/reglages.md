@@ -92,7 +92,7 @@ L’ancienne section **Expérimental** (« Essayer le nouveau dessin du monde »
 
 La version installée est affichée, avec le bouton **Vérifier les mises à jour** (ou **Mettre à jour maintenant** quand une version est prête). Voir [Démarrer](demarrer.md#les-mises-a-jour).
 
-La case **Envoyer des chiffres anonymes** est cochée au départ. L’appli envoie alors ses lancements, le temps passé sur chaque écran, la fluidité du monde en 3D, la taille de l’écran et ses erreurs. Elle n’envoie ni nom, ni progression, ni identifiant ; l’adresse IP n’est pas gardée. Ces chiffres servent seulement à améliorer l’appli. Décocher la case arrête tout envoi, tout de suite.
+La case **Envoyer des chiffres anonymes** est cochée au départ. L’appli envoie alors ses lancements, le temps passé sur chaque écran, la fluidité du monde en 3D, la taille de l’écran et ses erreurs. Elle n’envoie ni nom, ni progression, ni identifiant ; l’adresse IP n’est pas gardée. Ces chiffres servent seulement à améliorer l’appli. Sans réseau, ils attendent sur l’appareil et partent quand le réseau revient. Décocher la case arrête tout envoi, tout de suite, et efface ce qui attendait.
 
 Deux liens s’ouvrent dans un nouvel onglet : **La documentation** (ce site, https://g7ed6e.github.io/dysapps/) et **Le code sur GitHub** (https://github.com/g7ed6e/dysapps).
 

@@ -21,6 +21,7 @@ describe('la mesure d’usage', () => {
     vi.unstubAllEnvs();
     vi.useRealTimers();
     vi.restoreAllMocks();
+    localStorage.clear();
     settings?.retenirReglages(null);
   });
 
@@ -88,11 +89,40 @@ describe('la mesure d’usage', () => {
     expect(batch.events[0]).toEqual(expect.objectContaining({ kind: 'launch', firstFrameMs: 0 }));
   });
 
+  it('garde les chiffres en mémoire sans réseau et les envoie à son retour', async () => {
+    const usage = await load();
+    const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
+    usage.startUsage();
+    usage.flushUsage();
+    expect(beacon).not.toHaveBeenCalled();
+    online.mockReturnValue(true);
+    window.dispatchEvent(new Event('online'));
+    const [batch] = (await sent()) as { events: { kind: string }[] }[];
+    expect(batch.events.map((e) => e.kind)).toEqual(['launch']);
+  });
+
+  it('garde sur l’appareil ce qui attend le réseau, d’un lancement à l’autre', async () => {
+    const first = await load();
+    const online = vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
+    first.startUsage();
+    first.flushUsage();
+    expect(localStorage.getItem('dysapps-usage-waiting')).toContain('launch');
+    // L'appli relancée avec le réseau : les deux lancements partent ensemble, puis plus rien n'attend.
+    online.mockReturnValue(true);
+    const second = await load();
+    second.startUsage();
+    second.flushUsage();
+    const [batch] = (await sent()) as { events: { kind: string }[] }[];
+    expect(batch.events.map((e) => e.kind)).toEqual(['launch', 'launch']);
+    expect(localStorage.getItem('dysapps-usage-waiting')).toBeNull();
+  });
+
   it('oublie ce qui attendait quand le réglage est coupé', async () => {
     const usage = await load();
     usage.startUsage();
     settings.retenirReglages({ ...settings.DEFAULT_SETTINGS, usageStats: false });
     usage.flushUsage();
     expect(beacon).not.toHaveBeenCalled();
+    expect(localStorage.getItem('dysapps-usage-waiting')).toBeNull();
   });
 });

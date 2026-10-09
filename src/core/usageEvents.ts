@@ -118,6 +118,11 @@ function parseEvent(raw: unknown): UsageEvent | null {
   return null;
 }
 
+/** Les évènements bien formés d'une liste (ceux gardés sur l'appareil en attendant le réseau, src/core/usage.ts). */
+export function parseUsageEvents(raw: unknown): UsageEvent[] {
+  return Array.isArray(raw) ? raw.map(parseEvent).filter((e): e is UsageEvent => e !== null) : [];
+}
+
 /** L'envoi vérifié, ou `null` s'il n'a pas la forme attendue ; les évènements mal formés sont laissés de côté. */
 export function parseUsageBatch(raw: unknown): UsageBatch | null {
   if (typeof raw !== 'object' || raw === null) return null;
