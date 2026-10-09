@@ -952,28 +952,37 @@ const ABEILLE = fromLayers(
   { T: '#e0a83a', B: '#5a3c1e', A: '#eef4f2', G: '#8e989c', K: '#1f1a16' },
 );
 
-// L'Hirondelle de nacre (EMC, 6e ; sans flamme, aucun symbole) : posée sur une petite poutre, de face, le corps mince,
-// la tête ronde et courte, le bec sombre devant, sous les yeux, un rang plus bas (collés, ils faisaient un masque) ; les ailes ouvertes en faux, de l'épaule vers l'extérieur puis vers le
-// bas, jusqu'à leur pointe, à mi-corps, leur bord d'attaque plus clair, nacré ; derrière, sous le corps, sa queue
-// fourchue s'écarte en deux brins qu'on voit de face, de part et d'autre de la poutre. Le dos, les ailes et la tête de
-// nacre bleutée, le ventre blanc, la gorge rose nacré (DA, relecture des captures emc-2 : mince et fourchue, elle ne se
-// lit plus comme un gorille). Douze de haut, neuf de large. Six couleurs, les yeux compris.
+// L'Hirondelle de nacre (EMC, 6e ; sans flamme, aucun symbole) : posée de profil sur une petite poutre, le long des x,
+// la tête vers les x croissants (à gauche de l'écran, loin du nom de l'île, fiche du Gardien ouverte) ; le corps penché,
+// la tête petite et ronde, sans rien sur ses côtés, l'œil sur le flanc de la tête, un bec d'un bloc qui dépasse devant ;
+// les ailes repliées le long du dos, leur bord d'attaque plus clair, jusqu'au-dessus de la queue ; derrière, la queue
+// en V, longue, ses deux brins qui s'écartent à plat : la caméra de l'île, haute, la voit de trois quarts. La nacre
+// pâle du dos et des ailes, le ventre blanc, la gorge rose pâle, la pointe des ailes et des brins d'une nacre plus
+// soutenue (DA, relecture des captures emc-2, passe 2 : de face, tête large et ailes ouvertes, elle se lisait comme un
+// koala). Dix de long, cinq de large, huit de haut. Neuf couleurs, la poutre, les yeux et le bec compris.
 const HIRONDELLE = fromLayers(
   [
-    ['...SSS...', '...SSS...', '.........', '.N.....N.'],
-    ['.........', '...WWW...', '...NNN...', '..N...N..'],
-    ['.........', '...WWW...', '...NNN...', '...NNN...'],
-    ['.........', 'N..WWW..N', 'N..NNN..N', '.........'],
-    ['.........', 'N..WWW..N', 'N..NNN..N', '.........'],
-    ['.........', 'LN.WWW.NL', 'NN.NNN.NN', '.........'],
-    ['.........', '.LNWWWNL.', '.NNNNNNN.', '.........'],
-    ['.........', '..LPPPL..', '..NNNNN..', '.........'],
-    ['....K....', '...PPP...', '...NNN...', '.........'],
-    ['.........', '...NNN...', '...NNN...', '.........'],
-    ['.........', '...KNK...', '...NNN...', '.........'],
-    ['.........', '....N....', '...NNN...', '.........'],
+    ['..........', '..........', '....SS....', '..........', '..........'],
+    ['....SS....', '....SS....', '....SS....', '....SS....', '....SS....'],
+    ['..........', '.....G....', '..........', '.....G....', '..........'],
+    ['D.........', 'DNNNWWW...', '..NNWWW...', 'DNNNWWW...', 'D.........'],
+    ['..DNN.....', '...NNWWW..', '...NNWWW..', '...NNWWW..', '..DNN.....'],
+    ['....NNL...', '....NNWP..', '....NNWP..', '....NNWP..', '....NNL...'],
+    ['.....LL...', '.....NNNP.', '.....NNNPB', '.....NNNP.', '.....LL...'],
+    ['..........', '.......NE.', '.......NN.', '.......NE.', '..........'],
   ],
-  { N: '#8ea4d8', L: '#cad6f0', W: '#f6f2ec', P: '#e8b4ba', K: '#1f1a16', S: '#8a6236' },
+  {
+    N: '#c8d3ee',
+    L: '#eef2fb',
+    W: '#fdfbf6',
+    P: '#f2c2c8',
+    D: '#8ea4d8',
+    // L'œil, sur le flanc de la tête : sombre de côté, le dessus de nacre (vu d'en haut, la tête reste claire).
+    E: { color: '#1f1a16', top: '#c8d3ee' },
+    B: '#3a3a42',
+    G: '#4a4a52',
+    S: '#8a6236',
+  },
 );
 
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {

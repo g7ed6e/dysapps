@@ -224,6 +224,11 @@ export interface BlockDef {
   rare?: boolean;
   /** Un bloc assemblé (GD-2) : il ne se gagne nulle part, il s'assemble dans le lieu du village prévu pour ça. */
   assemble?: boolean;
+  /**
+   * Un ou deux bâtons pâles, de ces couleurs, couchés sur le dessus de son icône (`BlockIcon`, Voxel.tsx, et le bloc des
+   * étiquettes, world/labelCanvas.ts) : un aplat sombre seul ne dit pas ce qu'est le bloc (la craie se lisait charbon).
+   */
+  batons?: readonly [string] | readonly [string, string];
 }
 
 export type BlockTexture =
@@ -344,8 +349,10 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // tableau ; blanc, jaune pâle, rose pâle et bleu pâle. Distinct du sel (blanc, quatre cristaux cernés) et du fossile
   // (beige, une spirale) par les bâtons et le fond sombre, pas par la teinte seule (proposition de l'artiste technique 3D,
   // à valider par le directeur artistique). Le dessus de l'icône, l'ardoise du tableau un ton plus clair : en blanc, elle se
-  // lisait comme du sel ou de la neige (DA, relecture des captures emc-2).
-  'civics-6e-democratic-society': { id: 'civics-6e-democratic-society', name: 'Craie', top: '#4c6458', side: '#3e5248', texture: 'craie' },
+  // lisait comme du sel ou de la neige (DA, relecture des captures emc-2) ; deux bâtons de craie couchés dessus, blanc et
+  // rose pâle, pas tout à fait parallèles (ni un signe égal, ni la fente d'une urne) : unie, l'ardoise se lisait comme du
+  // charbon (passe 2).
+  'civics-6e-democratic-society': { id: 'civics-6e-democratic-society', name: 'Craie', top: '#4c6458', side: '#3e5248', texture: 'craie', batons: ['#f2efe6', '#eec4c4'] },
   // Le bloc du Bourg des chroniques (histoire, 5e) : un violet profond parcouru de filets d'or, comme une page enluminée,
   // distinct de l'obsidienne par les filets et par un violet plus clair.
   'history-5e-middle-ages': { id: 'history-5e-middle-ages', name: 'Enluminure', top: '#6a4c9c', side: '#4e3878', texture: 'enluminure' },

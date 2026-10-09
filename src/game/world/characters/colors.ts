@@ -71,12 +71,14 @@ export const SENTINELLE = {
   /**
    * L'Hirondelle de nacre (EMC-2) : éteinte, trois pierres à peine teintées (le dos un peu bleu, le ventre un peu plus
    * clair, la gorge un peu rose) ; rallumée, ses couleurs à elle, le dos et les ailes de nacre bleutée, le ventre blanc,
-   * la gorge rose nacré, au lieu du Sable, qui en faisait un totem de bois (DA, relecture des captures emc-2).
+   * la gorge rose nacré, au lieu du Sable, qui en faisait un totem de bois (DA, relecture des captures emc-2). Rallumée,
+   * des valeurs claires : à l'ombre, une nacre moyenne paraissait gris ardoise ; la nacre pâle, le ventre presque blanc,
+   * la gorge rose pâle (DA, relecture des captures emc-2, passe 2).
    */
   nacre: 0x8a8d92,
-  nacreRallumee: 0x9db0d6,
+  nacreRallumee: 0xcad5ee,
   ventre: 0x9a9891,
-  ventreRallume: 0xf1eee8,
+  ventreRallume: 0xfdfbf6,
   gorge: 0x938a88,
-  gorgeRallumee: 0xe4a9b0,
+  gorgeRallumee: 0xf3c6cc,
 } as const satisfies Record<string, Couleur>;

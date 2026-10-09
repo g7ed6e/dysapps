@@ -715,10 +715,11 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
     allume: 'les plumes de ses ailes',
     sansFlamme: true,
     sculpture: (T, a) => {
-      // Le ventre blanc devant (la face 5), la gorge rose en haut de la poitrine ; le reste de nacre.
-      fuseau(T, CORPS_DE_L_HIRONDELLE, 6, parFace((k, j) => (j === 5 ? (k === 2 ? a.gorge : a.ventre) : k === 1 && (j === 0 || j === 4) ? a.ventre : a.nacre)), { bas: false });
-      // La tête : la gorge rose sous le bec (la face de devant, en bas), le reste de nacre.
-      fuseau(T, TETE_DE_L_HIRONDELLE, 5, parFace((k, j) => (k === 0 && j === 4 ? a.gorge : a.nacre)), { bas: false });
+      // Le ventre blanc devant (la face 5) et sur les deux faces voisines, du ventre à la poitrine ; la gorge rose en haut
+      // de la poitrine ; le reste de nacre (passe 2 des captures emc-2 : le blanc et le rose plus présents).
+      fuseau(T, CORPS_DE_L_HIRONDELLE, 6, parFace((k, j) => (j === 5 ? (k === 2 ? a.gorge : a.ventre) : k >= 1 && (j === 0 || j === 4) ? a.ventre : a.nacre)), { bas: false });
+      // La tête : la gorge rose sous le bec, la face de devant et ses deux voisines, en bas ; le reste de nacre.
+      fuseau(T, TETE_DE_L_HIRONDELLE, 5, parFace((k, j) => (k === 0 && (j === 4 || j === 3 || j === 0) ? a.gorge : a.nacre)), { bas: false });
       // Le bec, fin et court, vers l'avant.
       pointe(T, [0, 6.75, devant(TETE_DE_L_HIRONDELLE, 5, 6.75).z + 0.05], 0.1, 0.5, a.nacre, [-Math.PI / 2, 0, 0], 3);
       // Les ailes en faux, minces : l'emplanture, puis la lame qui plonge.

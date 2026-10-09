@@ -751,20 +751,30 @@ const NAVETTE = fromLayers(
 // Voix : un panda roux délégué, debout sur ses pattes de derrière (jamais assis comme Rouxel, le renard) : roux, le
 // masque blanc (les joues, le museau, les sourcils), la truffe et les yeux sombres, deux oreilles rondes bordées de
 // blanc, les pattes et le bas du ventre brun sombre ; sa grande queue annelée, roux et fauve, se dresse derrière lui. Il
-// tient son carnet de délégué, une feuille blanche, sans écharpe ni insigne. Quatre couleurs.
+// lève une patte droite au-dessus de la tête pour prendre la parole, un bloc d'écart avec l'oreille, la paume ouverte,
+// fauve, tournée vers l'élève ; de l'autre, il tient devant sa poitrine son carnet de délégué, une page claire bleutée
+// sous une couverture de cuir (vue d'en haut), sans écharpe ni insigne (DA, relecture des captures emc-2, passe 2 : la
+// patte était à l'horizontale, le carnet ne se voyait pas). Cinq couleurs.
 const VOIX = fromLayers(
   [
-    ['.D.D..', '......', '......', '......'],
-    ['.D.D..', '.D.D..', '......', '......'],
-    ['.DDD..', '.RRR..', '..R...', '.RRR..'],
-    ['DRRRDW', '.RRR..', '......', '.LLL..'],
-    ['.RRR.W', '.RRR..', '......', '.RRR..'],
-    ['RWDWR.', 'RRRRR.', 'RRRRR.', '.LLL..'],
-    ['WDRDW.', 'RRRRR.', 'RRRRR.', '..R...'],
-    ['RWRWR.', 'RRRRR.', 'RRRRR.', '......'],
-    ['W...W.', 'R...R.', '......', '......'],
+    ['.......', '.D.D...', '.D.D...', '.......', '.......'],
+    ['DFF....', 'DDDD...', '.RRR...', '..R....', '.RRR...'],
+    ['.FF....', '.RRRDD.', '.RRR...', '.......', '.LLL...'],
+    ['.......', 'RWDWR.D', 'RRRRR..', 'RRRRR..', '.RRR...'],
+    ['.......', 'WDRDW.D', 'RRRRR..', 'RRRRR..', '.LLL...'],
+    ['.......', 'RWRWR.D', 'RRRRR..', 'RRRRR..', '..R....'],
+    ['.......', 'W...W.D', 'R...R..', '.......', '.......'],
+    ['......L', '......D', '.......', '.......', '.......'],
+    ['......L', '.......', '.......', '.......', '.......'],
   ],
-  { R: '#b8532c', W: '#f2ebe0', D: '#3a2622', L: '#dca468' },
+  {
+    R: '#b8532c',
+    W: '#f2ebe0',
+    D: '#3a2622',
+    L: '#dca468',
+    // Le carnet : la page devant, claire et bleutée (le masque est blanc chaud), la couverture de cuir sur le dessus.
+    F: { color: '#dfe8f4', top: '#8a5a32' },
+  },
 );
 
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {

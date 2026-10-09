@@ -104,9 +104,9 @@ describe('L’allumage des sentinelles', () => {
     expect(allumage(SENTINELLE.roche, 1)).toBe(SENTINELLE.roche);
     // L'Hirondelle de nacre : pierre teintée éteinte, ses couleurs rallumée (DA, relecture des captures emc-2).
     expect(allumage(SENTINELLE.nacre, 0)).toBe(SENTINELLE.nacre);
-    expect(allumage(SENTINELLE.nacre, 1)).toBe(0x9db0d6);
-    expect(allumage(SENTINELLE.ventre, 1)).toBe(0xf1eee8);
-    expect(allumage(SENTINELLE.gorge, 1)).toBe(0xe4a9b0);
+    expect(allumage(SENTINELLE.nacre, 1)).toBe(0xcad5ee);
+    expect(allumage(SENTINELLE.ventre, 1)).toBe(0xfdfbf6);
+    expect(allumage(SENTINELLE.gorge, 1)).toBe(0xf3c6cc);
     expect(allumage(SENTINELLE.pierre, -1)).toBe(0x8e8c84);
     expect(allumage(SENTINELLE.pierre, 2)).toBe(0xdaa66a);
   });

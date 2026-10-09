@@ -79,8 +79,8 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
     "gardiens": "2761 c4c6c3a2",
   },
   "6e": {
-    "creatures": "3936 d6089298 31d5f16f",
-    "gardiens": "2943 abd2b29d",
+    "creatures": "3936 590f93aa f7987484",
+    "gardiens": "2943 94ac8bf3",
   },
   "bonhomme": "472 045a95c7 1032f390",
 }
@@ -95,7 +95,7 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "carrefour": "180 ae511a7a",
   "carriere": "142 449d334d",
   "chateau": "219 d8494e2b",
-  "civics-6e-democratic-society": "199 b4fd769e",
+  "civics-6e-democratic-society": "199 b3add03c",
   "comptoir": "236 4c494f3d",
   "donnees": "216 67b894e6",
   "falaise": "235 6bcf243a",
