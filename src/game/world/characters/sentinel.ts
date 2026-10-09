@@ -95,8 +95,9 @@ const SOCLE: Anneau[] = [
 export const FOYER = { z: -1.3, haut: 1.12 } as const;
 
 /** Le socle octogonal, le même pour toutes les sentinelles, et la coupe du foyer. */
-function socle(T: Trace, a: Atelier): void {
+function socle(T: Trace, a: Atelier, foyer = true): void {
   fuseau(T, SOCLE, 8, a.moussue((k, j) => k === 0 && (j === 0 || j === 3 || j === 5)), { bas: false });
+  if (!foyer) return;
   fuseau(
     T,
     [
@@ -318,6 +319,18 @@ export function degresDAllumage(a: Allumage): { pierre: number; lueurs: number }
   return typeof a === 'number' ? { pierre: clamp(a, 0, 1), lueurs: clamp(a, 0, 1) } : { pierre: clamp(a.pierre, 0, 1), lueurs: clamp(a.lueurs, 0, 1) };
 }
 
+/** La largeur du front qui monte dans une sentinelle importée, en part de sa hauteur. */
+const FRONT = 0.12;
+
+/**
+ * Le degré de la pierre d'une sentinelle importée à la hauteur `h` (0 : le bas de la statue, 1 : le haut) quand ses
+ * lueurs sont à `lueurs` : la pierre se réchauffe des pieds vers la tête, d'un front doux ; entière à 1.
+ */
+export function frontDeLueur(lueurs: number, h: number): number {
+  if (lueurs <= 0) return 0;
+  return clamp(((1 + FRONT) * lueurs - h) / FRONT, 0, 1);
+}
+
 /**
  * Les couleurs d'une sentinelle au degré `degre`, sommet par sommet, dans l'espace linéaire (écrites dans `dans` s'il
  * est donné) : la teinte de `allumage`, nuancée selon la facette comme tout personnage ; une lueur perd sa nuance à
@@ -327,7 +340,9 @@ export function couleursAllumees(f: FacettesDePersonnage, degre: Allumage, dans 
   const { pierre, lueurs: dl } = degresDAllumage(degre);
   const lueurs = new Set(f.palette.filter((p) => p.role === 'lueur').map((p) => p.couleur));
   for (let t = 0; t < f.teintes.length; t++) {
-    const d = lueurs.has(f.teintes[t]) ? dl : pierre;
+    // Une sentinelle importée n'a ni flamme ni veines : ses lueurs montent dans la pierre, des pieds vers la tête.
+    const h = f.hauteurs?.[t];
+    const d = lueurs.has(f.teintes[t]) ? dl : h === undefined ? pierre : Math.max(pierre, frontDeLueur(dl, h));
     const k = rgb(allumage(f.teintes[t], d));
     const ny = f.normals[t * 9 + 1];
     let w = NUANCE[0] + (NUANCE[1] - NUANCE[0]) * clamp(0.5 + 0.5 * ny, 0, 1);
@@ -339,6 +354,15 @@ export function couleursAllumees(f: FacettesDePersonnage, degre: Allumage, dans 
 }
 
 // ---------- La sentinelle entière ----------
+
+/**
+ * Le socle commun seul, sans foyer, éteint : celui d'une sentinelle importée (./imported/models.ts), dont le modèle a
+ * perdu son propre socle à la coupe (scripts/rendu/modeles/couper.py).
+ */
+export function socleSeul(): FacettesDePersonnage {
+  const f = peindrePersonnage([{ nom: 'socle', pivot: [0, 0, 0], dessiner: (T, pot) => socle(T, new Atelier(pot), false) }]);
+  return { ...f, colors: couleursAllumees(f, 0) };
+}
 
 /**
  * Les quatre pièces d'une sentinelle ; `ou` : où elle se montre (une statue longue, `tour`, s'y tourne) ; `veines` : la

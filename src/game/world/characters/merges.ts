@@ -18,6 +18,7 @@ export { allumageDuGardien } from './glow';
 import { lueursDeNuit, type FacettesDePersonnage, type V3 } from './painted';
 import { couleursAllumees, ECHELLE_DANS_LE_MONDE } from './sentinel';
 import { sentinelleDuMonde } from './paintedSentinels';
+import type { Niveau } from './imported/models';
 
 /** Ce qu'une fusion lit d'un personnage placé sur la grille (une créature, un Gardien). */
 export interface PersonnagePlace {
@@ -68,6 +69,8 @@ export interface FusionDesCreatures extends Fusion {
 export interface FusionDesGardiens extends Fusion {
   /** Pour chaque sommet, 1 s'il est d'une pièce qui s'allume (flamme, veines), sinon 0. */
   lueur: Float32Array;
+  /** Le modèle de chaque Gardien, dans l'ordre des plages (de près ou de loin : `couleursDesGardiens` le repeint). */
+  modeles: FacettesDePersonnage[];
 }
 
 /** Le bonhomme : un os par pièce (tête, corps, bras, jambes), dans son repère (les pieds en 0). */
@@ -117,9 +120,18 @@ const ajoute = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 /** Les pièces d'une créature portées par son bras : le bras et son outil (le reste suit le corps). */
 const PIECES_DU_BRAS: ReadonlySet<string> = new Set(['bras', 'outil']);
 
-/** Les créatures placées, en un maillage : l'os `2i` porte le corps de la i-ième, l'os `2i + 1` son bras et son outil. */
-export function fusionDesCreatures(places: PersonnagePlace[]): FusionDesCreatures {
-  const modeles = places.map((p) => creaturePeinte(p.id));
+/**
+ * Le niveau d'un personnage dans le monde : de près sur l'île où l'on est (`pres`), de loin ailleurs. Seul un modèle
+ * importé a deux niveaux (./imported/models.ts) ; un modèle dessiné en code est le même aux deux.
+ */
+const niveauDans = (id: BiomeId, pres: BiomeId | null): Niveau => (id === pres ? 'pres' : 'loin');
+
+/**
+ * Les créatures placées, en un maillage : l'os `2i` porte le corps de la i-ième, l'os `2i + 1` son bras et son outil.
+ * `pres` : l'île où l'on est, dont la créature est de près.
+ */
+export function fusionDesCreatures(places: PersonnagePlace[], pres: BiomeId | null = null): FusionDesCreatures {
+  const modeles = places.map((p) => creaturePeinte(p.id, niveauDans(p.id, pres)));
   const total = modeles.reduce((n, f) => n + f.pieces.length, 0);
   const base = vide(total);
   const os = new Uint16Array(total * 3);
@@ -158,10 +170,11 @@ export function fusionDesCreatures(places: PersonnagePlace[]): FusionDesCreature
 
 /**
  * Les Gardiens placés, en sentinelles, en un maillage fixe, éteints (`couleursDesGardiens` donne les autres degrés), à
- * l'échelle du monde (`ECHELLE_DANS_LE_MONDE`, DA-5), les pieds sur leur case.
+ * l'échelle du monde (`ECHELLE_DANS_LE_MONDE`, DA-5), les pieds sur leur case. `pres` : l'île où l'on est, dont le
+ * Gardien est de près.
  */
-export function fusionDesGardiens(places: PersonnagePlace[]): FusionDesGardiens {
-  const modeles = places.map((p) => sentinelleDuMonde(p.id));
+export function fusionDesGardiens(places: PersonnagePlace[], pres: BiomeId | null = null): FusionDesGardiens {
+  const modeles = places.map((p) => sentinelleDuMonde(p.id, niveauDans(p.id, pres)));
   const total = modeles.reduce((n, f) => n + f.pieces.length, 0);
   const base = vide(total);
   const lueur = new Float32Array(total * 3);
@@ -174,7 +187,7 @@ export function fusionDesGardiens(places: PersonnagePlace[]): FusionDesGardiens 
     base.plages.push({ id: p.id, debut: t0, fin: t0 + f.pieces.length });
     t0 += f.pieces.length;
   });
-  return { ...base, lueur };
+  return { ...base, lueur, modeles };
 }
 
 /**
@@ -188,10 +201,10 @@ export function couleursDesGardiens(
   dans = new Float32Array(f.colors.length),
   seul?: BiomeId,
 ): Float32Array {
-  for (const p of f.plages) {
-    if (seul && p.id !== seul) continue;
-    couleursAllumees(sentinelleDuMonde(p.id), degres[p.id] ?? 0, dans.subarray(p.debut * 9, p.fin * 9));
-  }
+  f.plages.forEach((p, i) => {
+    if (seul && p.id !== seul) return;
+    couleursAllumees(f.modeles[i], degres[p.id] ?? 0, dans.subarray(p.debut * 9, p.fin * 9));
+  });
   return dans;
 }
 

@@ -2,7 +2,7 @@
 
 Chaque personnage passe d’une image de concept (ce dossier, `<nom>.webp`) à un modèle 3D brut, puis à un modèle réduit et peint au budget du jeu. Le dépôt garde le modèle retravaillé ; le brut est gardé dans la Bibliothèque du projet (`archipeo/personnages-3d/bruts/<nom>.glb`, décision du mainteneur, 9 octobre 2026), pour ne jamais avoir à refaire un passage : le brut coûte un passage sur TRELLIS.2, pris sur le quota du compte du mainteneur.
 
-Ces modèles ne sont pas encore dans le jeu : l’application ne les importe ni ne les charge.
+Les modèles du 6e sont dans le jeu, dans l’univers Archipéo : de près dans le défi, les fiches et sur l’île où l’on est, de loin ailleurs dans l’archipel (lus par `src/game/world/characters/imported/`, voir [Les fichiers](../../../architecture/fichiers.md)). Le jeu les tourne face à l’élève (un quart de tour par modèle, relevé dans `models.ts`) : le passage dans Blender n’a pas à les tourner. Un dossier sans ses deux fichiers garde le personnage dessiné en code.
 
 ## Où sont les fichiers
 

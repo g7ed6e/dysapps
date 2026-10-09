@@ -2,9 +2,11 @@
 // défi en sentinelle. Un maillage, un appel de dessin, sur fond transparent. La créature respire (et peut tourner
 // lentement) ; la sentinelle ne bouge jamais, seul son allumage change, en fondu (lot 6). Quand l'appareil demande moins
 // d'animations, rien ne bouge et l'allumage change d'un coup. VoxelCanvas.tsx reste celui du monde en blocs.
-import { useEffect, useRef } from 'react';
+import { use, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
+import { chargerLesModeles } from '../importedCharacters';
+import { archipelagoOfIsland } from '../world/archipelagos';
 import { lineaire } from '../world/landMesh';
 import { rgb } from '../world/decor/brush';
 import { LUEUR } from '../world/characters/colors';
@@ -51,6 +53,8 @@ export default function PersonnageCanvas({
   className,
   label,
 }: PersonnageCanvasProps) {
+  // Les modèles importés de son archipel, chargés une fois (sinon, celui dessiné en code).
+  use(chargerLesModeles(archipelagoOfIsland(id)));
   const host = useRef<HTMLDivElement>(null);
   const { pierre, lueurs } = degresDAllumage(allumage);
   // L'allumage demandé et son fondu, lus par la scène sans la refaire ; `relancer` repart la boucle d'une scène immobile.

@@ -586,6 +586,13 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [creatures, reduceMotion, archipelago]);
 
+  // ---- L'île où l'on est : ses personnages d'Archipéo importés de près, ceux des autres îles de loin (aucune sur la Carte)
+  const pres = map ? null : (home ?? null);
+  useEffect(() => {
+    world.current?.personnages.approcher(pres);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pres, reduceMotion, archipelago]);
+
   // ---- Les créatures qui font signe (GD-4, étape 1) : un geste à l'arrivée sur leur île, puis l'icône de la notion
   const signesKey = signes.map((x) => `${x.id}:${x.icone}:${x.bloc ?? ''}`).join('|');
   useEffect(() => {

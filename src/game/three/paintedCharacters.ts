@@ -241,12 +241,12 @@ export function habiller(
 
   return {
     membres: bonhomme.squelette.map((o, i) => ({ os: corpsDuBonhomme.bones[i] as THREE.Object3D, sens: PAS[o.nom] ?? 0 })).filter((m) => m.sens),
-    poserLesCreatures: (placements) => {
+    poserLesCreatures: (placements, pres = null) => {
       vider();
       const lesCreatures = placements.filter((c) => (c.kind ?? 'creature') === 'creature');
       const gardiens = placements.filter((c) => c.kind === 'guardian');
       if (lesCreatures.length) {
-        const f = fusionDesCreatures(lesCreatures);
+        const f = fusionDesCreatures(lesCreatures, pres);
         const { mesh, bones } = squelette(geometrieDe(f, f.lueur), f.os, f.squelette, matCreatures.materiau);
         scene.add(mesh);
         maillages.push(mesh);
@@ -268,7 +268,7 @@ export function habiller(
         });
       }
       if (gardiens.length) {
-        const f = fusionDesGardiens(gardiens);
+        const f = fusionDesGardiens(gardiens, pres);
         // Chaque sentinelle se pose sur le sol à facettes, comme ses cubes (jamais dedans) : on descend ses sommets.
         gardiens.forEach((c, i) => {
           const o = pointDePose(c);
