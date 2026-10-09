@@ -50,6 +50,22 @@ export function mesuresAutoDepuis(href: string): boolean {
   return params(href).get('mesures') === 'auto';
 }
 
+/** L'adresse qui lance la mesure automatique depuis la page `href` (le bouton des Réglages) : `?mesures=auto`, au départ. */
+export function adresseDeLaMesure(href: string): string {
+  const url = new URL(href);
+  url.searchParams.set('mesures', 'auto');
+  url.hash = '#/';
+  return url.href;
+}
+
+/** L'adresse qui rend la vraie partie après la mesure : sans `?mesures`, sur les Réglages, d'où on l'a lancée. */
+export function adresseSansMesure(href: string): string {
+  const url = new URL(href);
+  url.searchParams.delete('mesures');
+  url.hash = '#/reglages';
+  return url.href;
+}
+
 const here = () => (typeof window === 'undefined' ? '' : window.location.href);
 
 let lu: { brut: string | null; choix: ChoixUnivers } | null = null;

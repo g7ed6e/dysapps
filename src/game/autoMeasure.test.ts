@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { partieDeLaPose, partieDeMesure, resumerLesImages, tableauDesMesures } from './autoMeasure';
-import { mesuresAutoDepuis, mesuresDepuis } from './rendering';
+import { adresseDeLaMesure, adresseSansMesure, mesuresAutoDepuis, mesuresDepuis } from './rendering';
 
 describe('la mesure automatique', () => {
   it('se demande par ?mesures=auto, qui montre aussi le compteur', () => {
@@ -8,6 +8,16 @@ describe('la mesure automatique', () => {
     expect(mesuresDepuis('https://x.dev/?mesures=auto#/adventure')).toBe(true);
     expect(mesuresAutoDepuis('https://x.dev/?mesures#/adventure')).toBe(false);
     expect(mesuresAutoDepuis('https://x.dev/#/adventure?mesures=auto')).toBe(false);
+  });
+
+  it('se lance depuis les Réglages et rend la vraie partie sur les Réglages, sans ?mesures', () => {
+    const lancee = adresseDeLaMesure('https://x.dev/dysapps/?rendu=blocs#/reglages');
+    expect(lancee).toBe('https://x.dev/dysapps/?rendu=blocs&mesures=auto#/');
+    expect(mesuresAutoDepuis(lancee)).toBe(true);
+    const rendue = adresseSansMesure(lancee);
+    expect(rendue).toBe('https://x.dev/dysapps/?rendu=blocs#/reglages');
+    expect(mesuresDepuis(rendue)).toBe(false);
+    expect(adresseSansMesure('https://x.dev/?mesures=auto#/adventure/map')).toBe('https://x.dev/#/reglages');
   });
 
   it('résume une fenêtre d’images : images par seconde et la plus longue', () => {
