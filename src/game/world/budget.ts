@@ -210,12 +210,15 @@ export const ENVELOPPES: Record<
   // 1 764 mesurés aux Premiers Rivages (`npm run rendu:budget`, 9 octobre 2026). L'enveloppe passe de 1 700 à 1 800, les
   // 100 que l'EMC y avait ajoutés (1 450 → 1 550) ; la somme des Premiers Rivages reste celle de l'EMC, 73 390, sous les
   // 76 500 de `RENDER_BUDGET_6E`. Le sol y mesure 32 150, sous ses 32 550.
+  // GD-12, une forme par île, aux Îles du Ciel : le sol mesure 38 994 triangles (36 930 avant). Il prend 2 070 au décor
+  // du même archipel (8 910 mesurés pour 13 600) : sol 39 000, décor 11 530, la somme ne change pas (mainteneur,
+  // 9 octobre 2026, carte « Échanger »).
   sol: {
     lot: 'R4b',
     nom: 'Sol',
     premiersRivages: { triangles: 32_550, drawCalls: 2 },
     autres: { triangles: 36_930, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 36_230, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 36_230, drawCalls: 1 }, '3e': { triangles: 39_000, drawCalls: 1 } },
   },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
@@ -264,7 +267,7 @@ export const ENVELOPPES: Record<
     nom: 'Décor et repères signatures',
     premiersRivages: { triangles: 13_700, drawCalls: 3 },
     autres: { triangles: 13_600, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 17_400, drawCalls: 3 } },
+    parArchipel: { '5e': { triangles: 17_400, drawCalls: 3 }, '3e': { triangles: 11_530, drawCalls: 3 } },
   },
   construction: {
     lot: 'R5',

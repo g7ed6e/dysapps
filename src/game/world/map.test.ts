@@ -23,17 +23,17 @@ it('chaque île a une place, une altitude selon sa classe, et son cœur fait par
 
 it('la côte écrite d’un lieu qui a une forme (GD-12) est celle de sa forme', () => {
   // La carte de départ l'écrit en dur, pour ne pas calculer un masque par lieu à l'import de map.ts. Les lieux des
-  // Basses Terres (16, avec le Préau des délégués d'EMC-2), des Collines du Large (12) et des Monts de Feu (12) ont leur
-  // forme (GD-12) ; les Îles du Ciel la prendront dans leur pull request (formes.test.ts compte les lieux de chaque archipel).
+  // Basses Terres (16, avec le Préau des délégués d'EMC-2), des Collines du Large (12), des Monts de Feu (12) et des Îles
+  // du Ciel (12) ont leur forme (GD-12 ; formes.test.ts compte les lieux de chaque archipel).
   const formes = MAP.filter((d) => silhouetteDe(d.id).forme);
-  expect(formes.length).toBe(40);
+  expect(formes.length).toBe(52);
   for (const d of formes) expect(d.ext, d.id).toEqual(etendueDuLieu(d, silhouetteDe(d.id).forme!));
 });
 
 /**
  * Les places gardées pour des îles futures (GD-12, coordination du 9 octobre 2026) : deux par archipel, l'éducation
  * morale et civique et le latin ou le grec, chacune avec un premier dessin de forme du catalogue, sans créer le lieu
- * (docs/gameplay/propositions/GD-12.md). Une île de la carte de départ ne s'y pose pas.
+ * (docs/gameplay/propositions/archives/GD-12.md). Une île de la carte de départ ne s'y pose pas.
  */
 const PLACES_FUTURES: Partial<Record<ArchipelagoId, readonly { nom: string; core: { x: number; y: number }; forme: FormeDeLIle }[]>> = {
   '5e': [
@@ -45,6 +45,12 @@ const PLACES_FUTURES: Partial<Record<ArchipelagoId, readonly { nom: string; core
   '4e': [
     { nom: 'EMC', core: { x: 74, y: 716 }, forme: { forme: 'trefle', vers: 'devant' } },
     { nom: 'latin ou grec', core: { x: 106, y: 716 }, forme: { forme: 'galet', vers: 'devant' } },
+  ],
+  // Aux Îles du Ciel, au rang du fond, à l'ouest : l'EMC en trèfle au coin, derrière le Kiosque des témoins, le latin ou
+  // le grec en galet à côté, derrière le Verger de la santé (9 octobre 2026).
+  '3e': [
+    { nom: 'EMC', core: { x: -14, y: 996 }, forme: { forme: 'trefle', vers: 'devant' } },
+    { nom: 'latin ou grec', core: { x: 22, y: 996 }, forme: { forme: 'galet', vers: 'devant' } },
   ],
 };
 
@@ -144,9 +150,9 @@ it('le paysage : du décor sur chaque île, jamais sur l’eau ni la lave, les l
         def.id,
       ).toBe(true);
   }
-  // Une île qui a sa forme (GD-12) n'a plus de mare au hasard : restent les lacs dessinés (`LACS`), chacun sur son île, et
-  // les mares des deux îles des Îles du Ciel d'où tombent leurs cascades, jusqu'à leurs formes.
-  expect(lakes).toBe(Object.keys(LACS).length + 2);
+  // Une île qui a sa forme (GD-12) n'a plus de mare au hasard : restent les lacs dessinés (`LACS`), chacun sur son île ;
+  // les mares des deux îles des Îles du Ciel d'où tombaient leurs cascades sont parties avec leurs formes.
+  expect(lakes).toBe(Object.keys(LACS).length);
 });
 
 it('aucun pont ne traverse la terre d’une autre île', () => {

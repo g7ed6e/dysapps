@@ -139,7 +139,7 @@ it('place les îles de chaque archipel dans leur bande, à leur altitude', () =>
   const phare = cubes.filter((c) => c.tag === 'maths-3e-functions');
   expect(phare.some((c) => c.z === 9)).toBe(true);
   expect(phare.some((c) => c.z < 9 - DEPTH && c.texture === 'pierre')).toBe(true);
-  // (Seule une cascade descend jusqu'à la mer ; le quai du Phare est à hauteur d'île.)
+  // (Le quai du Phare est à hauteur d'île ; aucune cascade ne descend jusqu'à la mer.)
   expect(phare.some((c) => c.z <= 0 && c.texture !== 'eau' && c.texture !== 'nuage')).toBe(false);
   // Chaque archipel occupe sa bande : les étendues ne se recouvrent pas, et une scène ne contient que ses îles.
   for (let i = 0; i + 1 < ARCHIPELAGO_IDS.length; i++) {
@@ -479,7 +479,7 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
   });
 });
 
-it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan, les cascades des Îles du Ciel', () => {
+it('les repères : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan ; plus aucune cascade', () => {
   const cubes = allCubes({}, village(everything), false);
   const of = (id: string) => cubes.filter((c) => c.tag === id && !c.bridge);
   const foret = of('french-6e-phonology');
@@ -490,11 +490,10 @@ it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phar
   expect(of('maths-6e-decimals').some((c) => c.color === '#a9a4a0')).toBe(true);
   expect(of('french-6e-letter-confusion').some((c) => c.texture === 'toile')).toBe(true);
   expect(of('french-5e-conjugation').filter((c) => c.color === '#d9453f').length).toBeGreaterThanOrEqual(20);
-  // Une cascade, une colonne d'eau d'une île en altitude jusqu'au niveau de la mer : il n'en reste qu'aux Îles du Ciel, qui
-  // n'ont pas encore leurs formes (GD-12, 9 octobre 2026 ; une île qui a sa forme n'a plus de mare d'où l'eau déborde).
+  // Une cascade, une colonne d'eau d'une île en altitude jusqu'au niveau de la mer : plus aucune depuis les formes des
+  // Îles du Ciel (GD-12, 9 octobre 2026 ; une île qui a sa forme n'a plus de mare d'où l'eau déborde).
   const falls = cubes.filter((c) => c.texture === 'eau' && c.z === 0 && BIOMES.some((b) => b.id === c.tag && islandCenter(b.id).z > 0));
-  expect(falls.length).toBeGreaterThanOrEqual(1);
-  for (const c of falls) expect(c.tag).toMatch(/-3e-/);
+  expect(falls).toEqual([]);
   // La brume des sommets : sous les douze Îles du Ciel (le Refuge des carnets, le Kiosque des témoins, le Plateau des
   // territoires et les trois îles de sciences de SC-3 compris), nulle part ailleurs.
   expect(mistPatches('3e').length).toBe(12);

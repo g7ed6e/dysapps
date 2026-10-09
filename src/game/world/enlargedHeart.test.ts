@@ -58,7 +58,7 @@ const ECOLES: Partial<Record<BiomeId, { archipel: ArchipelagoId; core: { x: numb
   'maths-3e-functions': {
     archipel: '3e',
     core: { x: 58, y: 912 },
-    ext: { left: 2, right: 2, front: 2, back: 2 },
+    ext: null,
   },
 };
 const IDS = Object.keys(ECOLES) as BiomeId[];
