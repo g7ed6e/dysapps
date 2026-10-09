@@ -748,6 +748,41 @@ const NAVETTE = fromLayers(
   { V: '#9ac860', L: '#c8e48e', W: '#8a6236', F: '#e8e0cc', K: '#1f1a16' },
 );
 
+// Voix : un panda roux délégué, debout sur ses pattes de derrière (jamais assis comme Rouxel, le renard) : roux, le
+// masque blanc (les joues, le museau, les sourcils), la truffe et les yeux sombres, deux oreilles rondes bordées de
+// blanc, les pattes et le bas du ventre brun sombre ; sa grande queue annelée, roux et fauve, se dresse derrière lui. Il
+// lève une patte droite au-dessus de la tête pour prendre la parole, un bloc d'écart avec l'oreille, la paume ouverte,
+// fauve, tournée vers l'élève ; devant sa poitrine, il tient son carnet de délégué, sans écharpe ni insigne (DA,
+// relecture des captures emc-2, passe 2 : la patte était à l'horizontale, le carnet ne se voyait pas). Le carnet est
+// posé à plat, sans rotation : une plaque de deux cubes de large, trois de profondeur, un de haut, la couverture bleu
+// nuit sur le dessus, ce que voit la caméra haute, les pages blanc cassé sur ses tranches ; à hauteur de poitrine, deux
+// cubes au-dessus du sol, contre le pelage roux, juste sous le masque blanc, sans patte sombre à côté (passe 3 : en bloc
+// clair de 2 × 2 au ras du sol, il se lisait comme une pierre ; passe 4 : debout, il se lisait comme un pilier ou une
+// porte, la tranche ne se voyait pas, et la nuit il se fondait dans le sol sombre). Il dépasse de trois rangées devant
+// le corps, ce qui porte l'emprise de 7 × 5 à 7 × 7 cases ; il ne cache pas la truffe, un cube plus haut. Pas de
+// demi-cube ni d'inclinaison dans les créatures de Blocland. Six couleurs.
+const VOIX = fromLayers(
+  [
+    ['.......', '.......', '.......', '.D.D...', '.D.D...', '.......', '.......'],
+    ['.......', '.......', '.......', 'DDDD...', '.RRR...', '..R....', '.RRR...'],
+    ['.PP....', '.PP....', '.PP....', '.RRRDD.', '.RRR...', '.......', '.LLL...'],
+    ['.......', '.......', '.......', 'RWDWR.D', 'RRRRR..', 'RRRRR..', '.RRR...'],
+    ['.......', '.......', '.......', 'WDRDW.D', 'RRRRR..', 'RRRRR..', '.LLL...'],
+    ['.......', '.......', '.......', 'RWRWR.D', 'RRRRR..', 'RRRRR..', '..R....'],
+    ['.......', '.......', '.......', 'W...W.D', 'R...R..', '.......', '.......'],
+    ['.......', '.......', '......L', '......D', '.......', '.......', '.......'],
+    ['.......', '.......', '......L', '.......', '.......', '.......', '.......'],
+  ],
+  {
+    R: '#b8532c',
+    W: '#f2ebe0',
+    D: '#3a2622',
+    L: '#dca468',
+    // Le carnet, à plat : les pages blanc cassé sur les tranches, la couverture bleu nuit sur le dessus.
+    P: { color: '#e5ebe3', top: '#142b38' },
+  },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': MOUSSO,
   'french-6e-letter-confusion': TUNEL,
@@ -782,6 +817,7 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'life-earth-sciences-6e-living-world': FOUGERE,
   'physics-chemistry-6e-matter-energy': BULLE,
   'technology-6e-objects': BOULON,
+  'civics-6e-democratic-society': VOIX,
   'life-earth-sciences-5e-active-planet': HUMUS,
   'physics-chemistry-5e-matter-universe': PERLE,
   'technology-5e-design': RABOT,

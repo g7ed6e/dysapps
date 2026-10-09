@@ -387,6 +387,11 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     lines: ['Un objet a une fonction : à quoi sert-il ?', 'Du carton pour mon atelier : réponds à une question.', 'Chaque outil a sa place. Chaque mot du rappel aussi.'],
     home: 'Mon atelier est complet. Chaque outil a sa place.',
   },
+  'civics-6e-democratic-society': {
+    greeting: 'Bonjour, bâtisseur ! Au préau, on apprend à vivre ensemble. Chaque bonne réponse te donne de la craie. La craie, c’est pour écrire au tableau.',
+    lines: ['Ici, chacun peut prendre la parole, à son tour.', 'De la craie pour mon préau : lis la règle, puis réponds.', 'Un délégué parle pour toute la classe.'],
+    home: 'Mon préau est fini. Tout le monde peut s’y abriter.',
+  },
   'life-earth-sciences-5e-active-planet': {
     greeting: 'Bonjour, bâtisseur ! Ici, on regarde la Terre : ses roches, son climat, ses ressources. Chaque bonne réponse te donne une strate. Une strate, c’est une couche de roche.',
     lines: ['Je laboure doucement, une couche après l’autre. Prends ton temps, toi aussi.', 'Des strates pour ma station : lis un document.', 'Le sol est vivant : regarde bien qui l’habite.'],

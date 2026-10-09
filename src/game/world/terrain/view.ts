@@ -3,7 +3,7 @@
 import { type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, coeurDe, islandDef, type IslandDef, landBox, mapOf, startingIsland, MAP } from '../map';
 import { dockBox } from '../harbor';
 import { type BridgeDef, getArchipelago, islandsOf } from '../archipelago';
-import { type BiomeId, BIOMES } from '../../biomes';
+import { type BiomeId, BIOMES, estLieuDOption } from '../../biomes';
 import { BAC_LONG, bridgePath } from './links';
 import { islandCenter } from './base';
 import { layoutCache, turnDirection } from '../placement';
@@ -101,7 +101,7 @@ export const VIEW_YAW_MAX = (40 * Math.PI) / 180;
  * La zone que la caméra cadre quand le bonhomme se tient sur une île : cette île et ses voisines (reliées par un
  * ouvrage, construit ou non). Sur une île du bord, les voisines tirent l'image vers le continent : moins de mer.
  *
- * L'île de la LV2 (le Relais au 5e, le Jardin des heures au 4e) n'élargit jamais le cadrage de sa voisine (DA, 28/09,
+ * Un lieu d'option (GD-13 ; l'île de la LV2, le Relais au 5e, le Jardin des heures au 4e) n'élargit jamais le cadrage de sa voisine (DA, 28/09,
  * LV2-4) : avec « Pas de LV2 », la vue reste celle d'avant l'île ; avec une LV2, elle ne l'accueillerait que si son
  * Gardien et son étiquette tenaient entiers au-dessus des boutons en 1024 × 768, 1280 × 800 et 800 × 1280 sans que
  * l'île du bonhomme rapetisse, ce qui n'est pas le cas (au bout de la crête, l'étiquette sort de l'écran à gauche, de
@@ -113,7 +113,8 @@ export const VIEW_YAW_MAX = (40 * Math.PI) / 180;
 export function viewZone(home: BiomeId): { minX: number; maxX: number; minY: number; maxY: number } {
   const ids = new Set<BiomeId>([home]);
   for (const other of neighboursOf(home)) {
-    if (BIOMES.find((x) => x.id === other)?.subject === 'lv2') continue;
+    const voisine = BIOMES.find((x) => x.id === other);
+    if (voisine && estLieuDOption(voisine)) continue;
     ids.add(other);
   }
   let minX = Infinity;
@@ -163,7 +164,7 @@ const COLONNE_D_AVANT_LES_FORMES: Partial<Record<ArchipelagoId, number>> = { '6e
  * Les îles qui ne comptent pas dans la colonne centrale : le Refuge des carnets (3e), posé au bord de l'archipel, ne fait
  * pas pivoter les caméras des autres îles, qui gardent leur cadrage (DA, LV2-5) ; de même la Fouille des siècles et la
  * Pointe des paysages (6e, HG-2), au bout du second rang, puis la Vallée du vivant, le Laboratoire des éléments et le
- * Hangar des inventions (6e, SC-2), aux places qui restaient : le dessin des autres îles ne change pas ; et les six îles
+ * Hangar des inventions (6e, SC-2), aux places qui restaient, et le Préau des délégués (6e, EMC-2) : le dessin des autres îles ne change pas ; et les six îles
  * d'histoire-géographie de 5e à 3e (HG-3) : comptées, celles des Îles Brumeuses, au-delà du cadre d'avant, faisaient
  * tourner toutes les caméras du 5e de plusieurs degrés (et avec elles la place des petites constructions) ; de même les
  * neuf îles de sciences de 5e à 3e (SC-3). Le Relais des
@@ -177,6 +178,7 @@ export const HORS_DE_LA_COLONNE: readonly BiomeId[] = [
   'life-earth-sciences-6e-living-world',
   'physics-chemistry-6e-matter-energy',
   'technology-6e-objects',
+  'civics-6e-democratic-society',
   'history-5e-middle-ages',
   'geography-5e-resources',
   'history-4e-revolutions',

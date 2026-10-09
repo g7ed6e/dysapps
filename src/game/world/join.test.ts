@@ -53,11 +53,11 @@ afterEach(() => {
 });
 
 describe('Réunir deux lieux', () => {
-  it('sur la carte de départ, les voisines au plus près peuvent déjà se réunir (GD-12) : la Tour et la Baie, la Rivière et le Laboratoire, le Volcan et le Hangar ; la Ferme et le Volcan (depuis que la Ferme tourne son trèfle vers le fond, quatre cases d’eau devant elle)', () => {
+  it('sur la carte de départ, les voisines au plus près peuvent déjà se réunir (GD-12) : la Tour et la Baie, la Rivière et le Laboratoire, le Volcan et le Hangar ; la Ferme et le Volcan (depuis que la Ferme tourne son trèfle vers le fond, quatre cases d’eau devant elle) ; le Préau (EMC-2) et la Tour, et la Ferme', () => {
     const w = toutConstruit().world;
-    expect(joinCandidates(w, 'french-6e-reading')).toEqual(['english-6e-vocabulary']);
+    expect(joinCandidates(w, 'french-6e-reading')).toEqual(['english-6e-vocabulary', 'civics-6e-democratic-society']);
     expect(joinCandidates(w, 'maths-6e-fractions')).toEqual(['physics-chemistry-6e-matter-energy']);
-    expect(joinCandidates(w, 'french-6e-grammar-spelling')).toEqual([VOLCAN]);
+    expect(joinCandidates(w, 'french-6e-grammar-spelling')).toEqual([VOLCAN, 'civics-6e-democratic-society']);
     expect(joinCandidates(w, VOLCAN)).toEqual(['french-6e-grammar-spelling', 'technology-6e-objects']);
   });
 
@@ -96,21 +96,25 @@ describe('Réunir deux lieux', () => {
   });
 
   it('la paire bouge et tourne d’un bloc, et le repère des cases de la construction ne change pas', () => {
-    const { w, autre } = voisins();
-    const w2 = apres(joinIslands(w, VOLCAN, autre));
-    const avant = planCells(cles(w2, VOLCAN)).map((c) => c.key).sort();
+    // La Rivière et le Laboratoire, voisins sur la carte de départ : depuis le Préau (EMC-2), le Volcan réuni n'a plus de
+    // place où aller.
+    const RIVIERE: BiomeId = 'maths-6e-fractions';
+    const w = toutConstruit().world;
+    const autre = joinCandidates(w, RIVIERE)[0];
+    const w2 = apres(joinIslands(w, RIVIERE, autre));
+    const avant = planCells(cles(w2, RIVIERE)).map((c) => c.key).sort();
     // Tourner : les deux tournent ensemble, toujours réunis, la même construction.
-    const t = turnIsland(w2, VOLCAN);
+    const t = turnIsland(w2, RIVIERE);
     if (t.ok) {
       expect(spotOf(t.world, autre).turn).toBe((spotOf(w2, autre).turn + 1) % 4);
-      expect(planCells(cles(t.world, VOLCAN)).map((c) => c.key).sort()).toEqual(avant);
+      expect(planCells(cles(t.world, RIVIERE)).map((c) => c.key).sort()).toEqual(avant);
     }
     // Déplacer : le second suit le premier, du même pas.
-    const ailleurs = freeSpots(w2, VOLCAN).find((s) => s.x !== spotOf(w2, VOLCAN).x || s.y !== spotOf(w2, VOLCAN).y)!;
-    const w3 = apres(moveIsland(w2, VOLCAN, ailleurs));
-    expect(spotOf(w3, autre).x - spotOf(w3, VOLCAN).x).toBe(spotOf(w2, autre).x - spotOf(w2, VOLCAN).x);
-    expect(spotOf(w3, autre).y - spotOf(w3, VOLCAN).y).toBe(spotOf(w2, autre).y - spotOf(w2, VOLCAN).y);
-    expect(planCells(cles(w3, VOLCAN)).map((c) => c.key).sort()).toEqual(avant);
+    const ailleurs = freeSpots(w2, RIVIERE).find((s) => s.x !== spotOf(w2, RIVIERE).x || s.y !== spotOf(w2, RIVIERE).y)!;
+    const w3 = apres(moveIsland(w2, RIVIERE, ailleurs));
+    expect(spotOf(w3, autre).x - spotOf(w3, RIVIERE).x).toBe(spotOf(w2, autre).x - spotOf(w2, RIVIERE).x);
+    expect(spotOf(w3, autre).y - spotOf(w3, RIVIERE).y).toBe(spotOf(w2, autre).y - spotOf(w2, RIVIERE).y);
+    expect(planCells(cles(w3, RIVIERE)).map((c) => c.key).sort()).toEqual(avant);
   });
 
   it('la carte de départ garde les lieux réunis où ils sont (ils ne se séparent plus)', () => {

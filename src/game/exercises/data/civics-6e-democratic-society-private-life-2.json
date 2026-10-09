@@ -1,0 +1,244 @@
+{
+  "id": "civics-6e-democratic-society-private-life-2",
+  "biome": "civics-6e-democratic-society",
+  "type": "private-life",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-6e-democratic-society-private-life-2-0",
+      "prompt": "La loi du 7 juillet 2023\nElle fixe la majorité numérique à 15 ans.\nAvant 15 ans, elle prévoit l’accord d’un parent pour s’inscrire sur un réseau social.",
+      "question": "Lina a 13 ans. Que prévoit cette loi pour qu’elle s’inscrive sur un réseau social ?",
+      "spoken": "La loi du sept juillet deux mille vingt-trois. Elle fixe la majorité numérique à 15 ans. Avant 15 ans, elle prévoit l’accord d’un parent pour s’inscrire sur un réseau social.",
+      "choices": [
+        "rien, elle a l’âge",
+        "l’accord d’un parent",
+        "l’accord de ses amis"
+      ],
+      "answer": "l’accord d’un parent",
+      "hint": "13 ans, c’est avant ou après 15 ans ?",
+      "explanation": "Lina a moins de 15 ans : la loi de 2023 prévoit l’accord d’un parent pour qu’elle s’inscrive sur un réseau social. Beaucoup de réseaux demandent aussi un âge minimum.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Protéger sa vie privée en ligne",
+          "lines": [
+            "Avant de publier : est-ce que je montre quelqu’un ? A-t-il dit oui ?",
+            "Partager ses données personnelles le moins possible.",
+            "Un compte privé limite qui voit ce que l’on publie.",
+            "Une publication peut être copiée et rester longtemps.",
+            "Ce que l’on publie construit l’image que les autres ont de nous en ligne.",
+            "La majorité numérique : l’âge fixé par la loi pour s’inscrire seul sur un réseau social."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-2-1",
+      "prompt": "Photo de la sortie scolaire\nOn y voit Hugo et Sarah.\nTom veut la publier sur son compte.",
+      "question": "Que doit faire Tom d’abord ?",
+      "spoken": "Photo de la sortie scolaire. On y voit Hugo et Sarah. Tom veut la publier sur son compte.",
+      "choices": [
+        "ajouter un filtre",
+        "la publier vite",
+        "demander l’accord de Hugo et de Sarah"
+      ],
+      "answer": "demander l’accord de Hugo et de Sarah",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Hugo et Sarah ont un droit sur leur image : Tom leur demande leur accord avant de publier. Un filtre ne change rien à ce droit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Protéger sa vie privée en ligne",
+          "lines": [
+            "Avant de publier : est-ce que je montre quelqu’un ? A-t-il dit oui ?",
+            "Partager ses données personnelles le moins possible.",
+            "Un compte privé limite qui voit ce que l’on publie.",
+            "Une publication peut être copiée et rester longtemps.",
+            "Ce que l’on publie construit l’image que les autres ont de nous en ligne.",
+            "La majorité numérique : l’âge fixé par la loi pour s’inscrire seul sur un réseau social."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-2-2",
+      "prompt": "Les réglages du compte de Sami\nCompte : public.\nQui voit ses photos : tout le monde.",
+      "question": "Que peut faire Sami pour que seuls ses amis voient ses photos ?",
+      "spoken": "Les réglages du compte de Sami. Compte, public. Qui voit ses photos, tout le monde.",
+      "choices": [
+        "passer son compte en privé",
+        "publier plus de photos",
+        "changer de pseudo"
+      ],
+      "answer": "passer son compte en privé",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Un compte privé limite qui voit les publications. Un nouveau pseudo ne cache pas les photos.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Protéger sa vie privée en ligne",
+          "lines": [
+            "Avant de publier : est-ce que je montre quelqu’un ? A-t-il dit oui ?",
+            "Partager ses données personnelles le moins possible.",
+            "Un compte privé limite qui voit ce que l’on publie.",
+            "Une publication peut être copiée et rester longtemps.",
+            "Ce que l’on publie construit l’image que les autres ont de nous en ligne.",
+            "La majorité numérique : l’âge fixé par la loi pour s’inscrire seul sur un réseau social."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-2-3",
+      "prompt": "Un jeu en ligne\nNom du jeu : Planète Bulle.\nTon avatar : bleu.\nLe jeu demande ton adresse.",
+      "question": "Laquelle est une donnée personnelle à protéger ?",
+      "spoken": "Un jeu en ligne. Nom du jeu, Planète Bulle. Ton avatar, bleu. Le jeu demande ton adresse.",
+      "choices": [
+        "le nom du jeu",
+        "ton adresse",
+        "la couleur de ton avatar"
+      ],
+      "answer": "ton adresse",
+      "hint": "Laquelle permet de savoir où tu habites ?",
+      "explanation": "L’adresse permet de te trouver : c’est une donnée personnelle, à ne pas donner à un jeu en ligne. Le nom du jeu et la couleur de l’avatar ne disent rien de toi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Protéger sa vie privée en ligne",
+          "lines": [
+            "Avant de publier : est-ce que je montre quelqu’un ? A-t-il dit oui ?",
+            "Partager ses données personnelles le moins possible.",
+            "Un compte privé limite qui voit ce que l’on publie.",
+            "Une publication peut être copiée et rester longtemps.",
+            "Ce que l’on publie construit l’image que les autres ont de nous en ligne.",
+            "La majorité numérique : l’âge fixé par la loi pour s’inscrire seul sur un réseau social."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-2-4",
+      "prompt": "Les photos et les messages publiés construisent peu à peu la … numérique d’une personne.",
+      "spoken": "Les photos et les messages publiés construisent peu à peu la  (mot manquant)  numérique d’une personne.",
+      "choices": [
+        "santé",
+        "majorité",
+        "réputation"
+      ],
+      "answer": "réputation",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Ce que l’on publie, et ce que d’autres publient sur nous, forme la réputation numérique : l’image que les autres ont de nous en ligne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Protéger sa vie privée en ligne",
+          "lines": [
+            "Avant de publier : est-ce que je montre quelqu’un ? A-t-il dit oui ?",
+            "Partager ses données personnelles le moins possible.",
+            "Un compte privé limite qui voit ce que l’on publie.",
+            "Une publication peut être copiée et rester longtemps.",
+            "Ce que l’on publie construit l’image que les autres ont de nous en ligne.",
+            "La majorité numérique : l’âge fixé par la loi pour s’inscrire seul sur un réseau social."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-2-5",
+      "prompt": "Le droit à l’oubli\nOn peut demander à un site d’effacer une donnée sur soi.\nMais une copie peut déjà circuler ailleurs.",
+      "question": "Pourquoi faut-il réfléchir avant de publier ?",
+      "spoken": "Le droit à l’oubli. On peut demander à un site d’effacer une donnée sur soi. Mais une copie peut déjà circuler ailleurs.",
+      "choices": [
+        "parce qu’effacer partout est difficile",
+        "parce que publier est interdit",
+        "parce que les photos s’effacent seules"
+      ],
+      "answer": "parce qu’effacer partout est difficile",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "On peut demander l’effacement d’une donnée, mais une copie peut déjà circuler ailleurs. Mieux vaut réfléchir avant de publier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Protéger sa vie privée en ligne",
+          "lines": [
+            "Avant de publier : est-ce que je montre quelqu’un ? A-t-il dit oui ?",
+            "Partager ses données personnelles le moins possible.",
+            "Un compte privé limite qui voit ce que l’on publie.",
+            "Une publication peut être copiée et rester longtemps.",
+            "Ce que l’on publie construit l’image que les autres ont de nous en ligne.",
+            "La majorité numérique : l’âge fixé par la loi pour s’inscrire seul sur un réseau social."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-2-6",
+      "prompt": "La santé d’un camarade fait partie de sa vie privée. La raconter dans un groupe sans son accord, c’est …",
+      "spoken": "La santé d’un camarade fait partie de sa vie privée. La raconter dans un groupe sans son accord, c’est  (mot manquant) ",
+      "choices": [
+        "exercer sa liberté d’expression",
+        "ne pas respecter sa vie privée",
+        "protéger ses données"
+      ],
+      "answer": "ne pas respecter sa vie privée",
+      "hint": "La santé est-elle une chose que chacun peut raconter à la place de l’autre ?",
+      "explanation": "La santé fait partie de la vie privée : la raconter sans accord ne respecte pas ce droit. La liberté d’expression ne permet pas de dévoiler la vie privée des autres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Protéger sa vie privée en ligne",
+          "lines": [
+            "Avant de publier : est-ce que je montre quelqu’un ? A-t-il dit oui ?",
+            "Partager ses données personnelles le moins possible.",
+            "Un compte privé limite qui voit ce que l’on publie.",
+            "Une publication peut être copiée et rester longtemps.",
+            "Ce que l’on publie construit l’image que les autres ont de nous en ligne.",
+            "La majorité numérique : l’âge fixé par la loi pour s’inscrire seul sur un réseau social."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-2-7",
+      "prompt": "Les conseils de la CNIL\nUn mot de passe long.\nAvec des lettres, des chiffres et des signes.\nUn mot de passe différent pour chaque compte.",
+      "question": "Pourquoi un mot de passe différent pour chaque compte ?",
+      "spoken": "Les conseils de la Commission nationale de l’informatique et des libertés. Un mot de passe long. Avec des lettres, des chiffres et des signes. Un mot de passe différent pour chaque compte.",
+      "choices": [
+        "pour s’en souvenir plus facilement",
+        "parce que chaque site le choisit",
+        "si l’un est découvert, les autres restent protégés"
+      ],
+      "answer": "si l’un est découvert, les autres restent protégés",
+      "hint": "Que se passe-t-il si le même mot de passe ouvre tous tes comptes ?",
+      "explanation": "Avec un mot de passe par compte, si l’un est découvert, les autres restent protégés. Cette commission veille à la protection des données personnelles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Protéger sa vie privée en ligne",
+          "lines": [
+            "Avant de publier : est-ce que je montre quelqu’un ? A-t-il dit oui ?",
+            "Partager ses données personnelles le moins possible.",
+            "Un compte privé limite qui voit ce que l’on publie.",
+            "Une publication peut être copiée et rester longtemps.",
+            "Ce que l’on publie construit l’image que les autres ont de nous en ligne.",
+            "La majorité numérique : l’âge fixé par la loi pour s’inscrire seul sur un réseau social."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-6e-democratic-society",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

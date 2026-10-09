@@ -37,7 +37,7 @@ export function ChoiceItem({ items, answered, onAnswer, ruledOut, lang = 'fr', p
             <Syllabified text={prompt} />
           </p>
         )}
-        <SpeakButton text={spoken} label="Écouter" lang={lang} />
+        <SpeakButton text={spoken} label="Écouter" lang={lang} shown={String(prompt)} />
       </div>
       {aid && (
         <div className="aid calcul-aid">

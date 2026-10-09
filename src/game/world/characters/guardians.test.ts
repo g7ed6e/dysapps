@@ -30,3 +30,42 @@ describe('Le Cerf des sous-bois (DA, SC-2)', () => {
     for (const y of cotes) expect(pointes(y), `côté ${y}`).toBe(3);
   });
 });
+
+describe('L’Hirondelle de nacre (DA, relecture des captures emc-2, passe 2)', () => {
+  const cubes = GUARDIAN_CUBES['civics-6e-democratic-society'];
+  const max = (k: 'x' | 'y' | 'z') => Math.max(...cubes.map((c) => c[k]));
+
+  it('de profil, la tête vers les x croissants : un bec d’un bloc qui dépasse devant la tête', () => {
+    const bout = cubes.filter((c) => c.x === max('x'));
+    expect(bout).toHaveLength(1);
+    const tete = cubes.filter((c) => c.x === max('x') - 1);
+    expect(tete.every((c) => c.z >= bout[0].z - 1)).toBe(true);
+  });
+
+  it('une tête petite, sans rien sur ses côtés : à sa hauteur, rien de plus large qu’elle', () => {
+    const haut = max('z');
+    const largeur = (z: number) => new Set(cubes.filter((c) => c.z === z).map((c) => c.y)).size;
+    expect(largeur(haut)).toBeLessThanOrEqual(3);
+    expect(cubes.filter((c) => c.z === haut)).toHaveLength(6);
+  });
+
+  it('une queue en V, longue, qui s’ouvre à plat : vue d’en haut, deux brins et l’encoche entre eux', () => {
+    const queue = cubes.filter((c) => c.x <= 1);
+    const ys = [...new Set(queue.map((c) => c.y))].sort((a, b) => a - b);
+    expect(ys[0]).toBe(0);
+    expect(ys[ys.length - 1]).toBe(max('y'));
+    // L'encoche : au bout de la queue, le milieu est vide.
+    expect(queue.some((c) => c.y === max('y') / 2)).toBe(false);
+  });
+
+  it('le corps clair : la nacre pâle, le ventre blanc (aucune teinte sombre hors des yeux, du bec, des pattes et de la poutre)', () => {
+    const lum = (hex: string) => {
+      const n = parseInt(hex.slice(1), 16);
+      return ((n >> 16) & 255) * 0.3 + ((n >> 8) & 255) * 0.59 + (n & 255) * 0.11;
+    };
+    const plumes = cubes.filter((c) => c.z >= 3 && lum(c.color) > 80);
+    expect(plumes.length).toBeGreaterThan(cubes.length / 2);
+    const tons = plumes.map((c) => lum(c.color));
+    expect(tons.reduce((a, b) => a + b, 0) / tons.length).toBeGreaterThan(200);
+  });
+});

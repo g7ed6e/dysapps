@@ -40,13 +40,14 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
     expect(MAP.find((i) => i.id === b.to)).toBeDefined();
   }
   // Toutes les liaisons posées sans voyage : seules les Premiers Rivages ; avec les voyages : tout.
-  expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(15);
+  expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(16);
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
-  // GD-9 : une liaison possible entre chaque paire de lieux d'une même région (105 en 6e depuis les îles de sciences de
-  // SC-2, 66 dans les trois autres depuis celles de SC-3, 36 depuis les îles d'histoire-géographie de HG-3, 21 avant).
-  expect(BRIDGES).toHaveLength(105 + 3 * 66);
+  // GD-9 : une liaison possible entre chaque paire de lieux d'une même région (120 en 6e depuis l'île d'EMC d'EMC-2, 105
+  // depuis les îles de sciences de SC-2 ; 66 dans les trois autres depuis celles de SC-3, 36 depuis les îles
+  // d'histoire-géographie de HG-3, 21 avant).
+  expect(BRIDGES).toHaveLength(120 + 3 * 66);
   expect(VOYAGES.map((v) => v.id)).toEqual(['passage-5e', 'passage-4e', 'passage-3e']);
-  expect(BIOMES.length).toBe(51);
+  expect(BIOMES.length).toBe(52);
   // Le Relais des voyageurs (LV2) reste en bout de chemin : la liaison la plus proche vient du Comptoir.
   expect(remainingPath('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary']).map((b) => b.id)).toEqual(['english-5e-vocabulary-lv2-5e-introductions']);
   expect(isBiomeUnlocked('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary', 'english-5e-vocabulary-lv2-5e-introductions'])).toBe(true);
@@ -95,8 +96,10 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
   ).toEqual([
     // Depuis les formes des îles (GD-12, 8 octobre 2026) : la Ferme s'atteint depuis la Plaine, la Tour depuis la Forêt ;
     // le Hangar, au coin de devant derrière le Volcan, par le Volcan (comme le Laboratoire, par la Rivière, depuis SC-2),
-    // et, depuis la boîte du trait (8 octobre 2026), aussi depuis la Forêt : sa liaison (95 cases) tient désormais.
+    // et, depuis la boîte du trait (8 octobre 2026), aussi depuis la Forêt : sa liaison (95 cases) tenait alors. Le Préau
+    // (EMC-2), à l'ouest au rang du milieu, s'atteint depuis la Forêt, et coupe la liaison de la Forêt au Hangar.
     'french-6e-grammar-spelling-maths-6e-calculation',
+    'french-6e-phonology-civics-6e-democratic-society',
     'french-6e-phonology-english-6e-grammar',
     'french-6e-phonology-english-6e-vocabulary',
     'french-6e-phonology-french-6e-letter-confusion',
@@ -105,7 +108,6 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
     'french-6e-phonology-geography-6e-living',
     'french-6e-phonology-history-6e-antiquity',
     'french-6e-phonology-life-earth-sciences-6e-living-world',
-    'french-6e-phonology-technology-6e-objects',
     'maths-6e-calculation-maths-6e-decimals',
     'maths-6e-calculation-maths-6e-fractions',
   ]);
@@ -117,13 +119,14 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
   expect(bridgeState(getBridge('french-6e-word-spelling-maths-6e-fractions')!, [])).toBe('far');
   expect(isBiomeUnlocked('french-6e-grammar-spelling', ['french-6e-phonology-french-6e-grammar-spelling'])).toBe(true);
   expect(isBiomeUnlocked('french-6e-reading', ['french-6e-phonology-french-6e-grammar-spelling'])).toBe(false);
-  // Depuis la Ferme (GD-12) : ses voisines de devant (le Volcan, le Hangar), la Tour derrière son bras de mer, la Plaine.
+  // Depuis la Ferme (GD-12) : ses voisines de devant (le Volcan, le Hangar), la Plaine, et le Préau à sa gauche (EMC-2),
+  // qui se met entre elle et la Tour : la liaison vers la Tour ne tient plus.
   expect(
     buildableBridges(['french-6e-phonology-french-6e-grammar-spelling'], 'french-6e-grammar-spelling')
       .map((b) => b.id)
       .sort(),
   ).toEqual([
-    'french-6e-grammar-spelling-french-6e-reading',
+    'french-6e-grammar-spelling-civics-6e-democratic-society',
     'french-6e-grammar-spelling-maths-6e-calculation',
     'french-6e-grammar-spelling-maths-6e-decimals',
     'french-6e-grammar-spelling-technology-6e-objects',
@@ -157,6 +160,7 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
       .sort(),
   ).toEqual([
     'french-6e-grammar-spelling-maths-6e-calculation',
+    'french-6e-phonology-civics-6e-democratic-society',
     'french-6e-phonology-english-6e-grammar',
     'french-6e-phonology-english-6e-vocabulary',
     'french-6e-phonology-french-6e-letter-confusion',
@@ -165,7 +169,7 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
     'french-6e-phonology-geography-6e-living',
     'french-6e-phonology-history-6e-antiquity',
     'french-6e-phonology-life-earth-sciences-6e-living-world',
-    'french-6e-phonology-technology-6e-objects',
+    // Le Hangar ne s'atteint plus depuis la Forêt : le Préau des délégués (EMC-2) coupe sa liaison.
     // Depuis les formes des îles (GD-12, 9 octobre 2026), quatre depuis le Marché : le Comptoir, le Marais et le Glacier
     // par un pont, le Carrefour par un bac de 46 cases. Le Manoir, monté au second rang derrière le fer du Comptoir, ne
     // s'y trace plus, ni le Bourg, le Relais et la Menuiserie (des bacs de 86, 45 et 73 cases depuis GD-11).

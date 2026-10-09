@@ -7,6 +7,7 @@ import { SaveFilePanel } from '../components/SaveFilePanel';
 import { Syllabified } from '../components/Syllabified';
 import { OptionRow, Slider } from './settings/controls';
 import { Lv2Section } from './settings/Lv2Section';
+import { LcaSection } from './settings/LcaSection';
 import { UniverseSection } from './settings/UniverseSection';
 import { ApplicationSection } from './settings/ApplicationSection';
 import { EraseSection } from './settings/EraseSection';
@@ -127,6 +128,8 @@ export function SettingsPage() {
         </fieldset>
 
         <Lv2Section />
+
+        <LcaSection />
 
         <fieldset className="panel">
           <legend>Vue du monde</legend>

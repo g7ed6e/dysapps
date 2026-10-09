@@ -52,6 +52,18 @@ export class Atelier {
   get roche(): Peindre {
     return this.pot(SENTINELLE.roche, 'dominante');
   }
+  /** Le dos et les ailes de l'Hirondelle de nacre : nacre bleutée rallumée (`SENTINELLE.nacre`). */
+  get nacre(): Peindre {
+    return this.pot(SENTINELLE.nacre, 'dominante');
+  }
+  /** Son ventre, blanc rallumé (`SENTINELLE.ventre`). */
+  get ventre(): Peindre {
+    return this.pot(SENTINELLE.ventre, 'dominante');
+  }
+  /** Sa gorge, rose nacré rallumée (`SENTINELLE.gorge`). */
+  get gorge(): Peindre {
+    return this.pot(SENTINELLE.gorge, 'dominante');
+  }
   get orbite(): Peindre {
     return this.pot(SENTINELLE.orbite, 'yeux');
   }
@@ -292,6 +304,9 @@ const ALLUMAGE = new Map<Couleur, [Couleur, Couleur]>([
   [SENTINELLE.pierre, [SENTINELLE.pierre, SENTINELLE.rallumee]],
   [SENTINELLE.lichen, [SENTINELLE.lichen, SENTINELLE.rallumee]],
   [SENTINELLE.rameau, [SENTINELLE.rameau, SENTINELLE.feuillage]],
+  [SENTINELLE.nacre, [SENTINELLE.nacre, SENTINELLE.nacreRallumee]],
+  [SENTINELLE.ventre, [SENTINELLE.ventre, SENTINELLE.ventreRallume]],
+  [SENTINELLE.gorge, [SENTINELLE.gorge, SENTINELLE.gorgeRallumee]],
   [LUEUR, [SENTINELLE.cendre, LUEUR]],
 ]);
 

@@ -39,6 +39,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Vallée du vivant](https://g7ed6e.github.io/dysapps/pedagogie/iles/life-earth-sciences-6e-living-world.html) (SVT) | Fougère | escargot jardinier | escargot jardinier | Le Cerf des sous-bois |
 | [Laboratoire des éléments](https://g7ed6e.github.io/dysapps/pedagogie/iles/physics-chemistry-6e-matter-energy.html) (Physique-chimie) | Bulle | goutte chimiste | poulpe chimiste | L’Alambic de verre |
 | [Hangar des inventions](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-6e-objects.html) (Technologie) | Pince | fourmi bricoleuse | fourmi bricoleuse | L’Automate de laiton |
+| [Préau des délégués](https://g7ed6e.github.io/dysapps/pedagogie/iles/civics-6e-democratic-society.html) (EMC) | Voix | panda roux délégué | panda roux délégué | L’Hirondelle de nacre |
 
 ### Le Grand Chêne, Forêt des sons
 
@@ -159,6 +160,14 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Au défi | L’Automate de laiton fait tourner sa clé : « Me voilà tout gris. Tu as ouvert tous mes objets : dis-moi à quoi ils servent. » | L’Automate de laiton dit doucement : « Les boutons de ma poitrine sont éteints. Tu as essayé tous les objets du hangar : dis-moi à quoi ils servent. » |
 | À la fin | Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Pince. | Mes boutons se rallument. Le hangar est à toi, et à Pince. |
 | Pince à l’arrivée | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. |
+
+### L’Hirondelle de nacre, Préau des délégués
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Hirondelle de nacre ouvre une aile : « Me voilà toute grise. Tu as fait le tour de mon préau : dis-moi comment on vit ensemble. » | L’Hirondelle de nacre dit doucement : « Les plumes de mes ailes sont éteintes. Tu as fait le tour du préau : dis-moi comment on vit ensemble. » |
+| À la fin | Je me rallume, de la queue jusqu’au bec. Le préau est à toi, et à Voix. | Mes ailes se rallument. Le préau est à toi, et à Voix. |
+| Voix à l’arrivée | Bonjour, bâtisseur ! Au préau, on apprend à vivre ensemble. Chaque bonne réponse te donne de la craie. La craie, c’est pour écrire au tableau. | Bonjour, bâtisseur ! Au préau, on apprend à vivre ensemble. Chaque bonne réponse te donne de la craie. La craie, c’est pour écrire au tableau. |
 
 ## Les Collines du Large (Blocland), les Îles Brumeuses (Archipéo), 5e
 

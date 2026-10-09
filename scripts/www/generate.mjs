@@ -147,7 +147,9 @@ const SUBJECT_NAME = {
   'life-earth-sciences': 'SVT',
   'physics-chemistry': 'Physique-chimie',
   technology: 'Technologie',
+  civics: 'EMC',
   lv2: 'LV2 (espagnol ou allemand)',
+  lca: 'Latin ou grec (option)',
 };
 /** Les matières, dans l'ordre du portail. */
 const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
@@ -160,7 +162,9 @@ const SUBJECT_DE = {
   'life-earth-sciences': 'de SVT',
   'physics-chemistry': 'de physique-chimie',
   technology: 'de technologie',
+  civics: 'd’EMC',
   lv2: 'de LV2',
+  lca: 'de latin ou grec',
 };
 // Quand arrive la première commande d'un archipel, selon `SEUIL_DE_LA_PREMIERE_COMMANDE` (src/game/world/requests.ts).
 const QUAND_LA_PREMIERE_COMMANDE = {
@@ -302,6 +306,10 @@ function programmesPage(d) {
     '',
     'Les langues vivantes suivent, en 6e et en 5e, les programmes des classes de collège publiés en 2025, un par langue : l’anglais dès la 6e, la deuxième langue vivante (LV2), l’allemand ou l’espagnol, à partir de la 5e. En 4e et en 3e, elles suivent le programme de 2020, commun à toutes les langues, avec les mêmes compétences et les mêmes pages.',
     '',
+    'L’enseignement moral et civique suit, de la 6e à la 3e, le programme du CP à la terminale, rangé par classe : chaque thème d’une classe est une compétence.',
+    '',
+    'Le latin et le grec ancien, enseignements de complément (option langues et cultures de l’Antiquité, LCA), suivent de la 5e à la 3e le programme de 2016 : des thèmes de culture et un tableau de langue communs à la 5e et à la 4e, puis une 3e de latin et une 3e de grec ; la lecture et la traduction valent pour tout le cycle. Le Bulletin officiel ne publie ce texte qu’en HTML : les pages indiquées sont celles de la copie PDF citée dans les sources.',
+    '',
     table(
       ['Cycle', 'Discipline', 'Compétences', 'Travaillées', 'À couvrir', 'Hors périmètre'],
       // Une discipline absente d'un cycle (les LV2 n'ont que le cycle 4) n'a pas de ligne.
@@ -366,7 +374,8 @@ function programmesPage(d) {
     '',
     `Les programmes viennent du jeu de données [${SOURCES.c3.dataset}](${SOURCES.c3.datasetUrl}) publié sur data.gouv.fr par le ministère de l’Éducation nationale, sous ${SOURCES.c3.licence.name} ([texte de la licence](${SOURCES.c3.licence.url})) : réutilisation libre, avec mention de la source et de la date. Quand une discipline suit un programme plus récent, publié au Bulletin officiel ou sur éduscol, ses domaines citent ce texte ; ce sont des informations publiques, réutilisables librement avec la même mention ([code des relations entre le public et l’administration](${INFORMATIONS_PUBLIQUES.url})).`,
     '',
-    ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl}) : ${s.pages} pages, ${s.legal}, pour ${s.classes.join(', ')}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
+    // Un texte publié en HTML seulement (pdfCopyBy) : la copie PDF citée, son auteur, et le lien vers la page officielle.
+    ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl})${s.pdfCopyBy ? ` (copie PDF faite par ${s.pdfCopyBy} ; [texte officiel au Bulletin officiel](${s.datasetUrl}), en HTML)` : ''} : ${s.pages} pages, ${s.legal}, pour ${s.classes.join(', ')}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
     '',
     'Les libellés de cette page sont des résumés fidèles du texte officiel, écrits pour tenir sur une ligne ; le texte officiel fait foi.',
     '',
@@ -560,6 +569,9 @@ function islandPage(b, d) {
   for (const q of b.exercises) {
     const exos = EXERCISES.filter((e) => e.biome === b.id && e.type === q.id).sort((a, c) => a.level - c.level);
     lines.push(`### ${q.title}`, '', `*${q.description}*`, '');
+    // L'île du latin et du grec (GD-13) : l'option de chaque mission ; une mission gardée hors du jeu le dit.
+    if (q.option) lines.push(`Option ${q.option === 'la' ? 'latin' : 'grec'} : cette mission se joue quand l’élève a choisi ${q.option === 'la' ? 'le latin' : 'le grec'} dans les Réglages.`, '');
+    if (q.waiting) lines.push(`Cette mission n’est pas encore proposée dans le jeu : elle attend ${q.waiting}.`, '');
     lines.push(programmeLine([...q.programme, ...exos.flatMap((e) => e.programme ?? [])], d, '../'), '');
     if (b.id === 'french-6e-word-spelling' && q.id === 'sight-words') lines.push('Les mots dictés viennent de la liste officielle des mots-outils (fin de CP, fin de CE1) : voir [Programmes officiels](../programmes.md#mots-outils).', '');
     if (exos.length === 0) {

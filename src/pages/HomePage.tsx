@@ -21,7 +21,7 @@ import { nomDuRole, useTextes } from '../universes';
  * Les expéditions du menu : les deux langues côte à côte, puis l'histoire-géo et les trois sciences (SVT,
  * physique-chimie, technologie), même sans LV2 (« Pas de LV2 »).
  */
-const EXPEDITIONS: Subject[] = ['maths', 'french', 'english', 'lv2', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology'];
+const EXPEDITIONS: Subject[] = ['maths', 'french', 'english', 'lv2', 'lca', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'civics'];
 
 /**
  * Le menu d'Archipéo, dans l'ordre du dossier : l'identité, ton village, « Reprendre l'aventure » vers la prochaine
@@ -132,13 +132,13 @@ export function HomePage() {
 
       {/* Les Expéditions : une matière chacune, ses missions en deux touchers. */}
       <nav className="grid home-menu" aria-label="Menu principal">
-        {EXPEDITIONS.filter((id) => visibleSubjects(settings.lv2).includes(id)).map((id) => (
+        {EXPEDITIONS.filter((id) => visibleSubjects(settings).includes(id)).map((id) => (
           <Link key={id} to={`/matiere/${id}`} className={`panel menu-tile subject-card subject-${id}`}>
             <span className="subject-icon">
               <Icon name={SUBJECTS[id].icon} size="2.2rem" />
             </span>
             <span className="menu-tile-text">
-              <span className="subject-title">{subjectInfo(id, settings.lv2).title}</span>
+              <span className="subject-title">{subjectInfo(id, settings).title}</span>
               <span className="subject-expedition">Expédition {SUBJECTS[id].expedition}</span>
             </span>
           </Link>

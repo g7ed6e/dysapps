@@ -27,20 +27,23 @@ afterEach(() => {
   applyLayout(undefined);
 });
 
-/** La Tour du lecteur (6e) : un lieu ordinaire, avec une grande construction au large, deux liaisons, une commande. */
+/**
+ * Les deux lieux du 6e qui ont une grande construction au large, des liaisons, une commande : la Tour du lecteur, de face
+ * ou retournée, et la Ferme des accords, d'un quart de tour. Depuis le Préau des délégués (EMC-2), la Tour ne trouve plus
+ * de place tournée d'un quart, ni la Ferme de place de face hors de la sienne.
+ */
 const TOUR: BiomeId = 'french-6e-reading';
+const FERME: BiomeId = 'french-6e-grammar-spelling';
+const lieuTourne = (q: number): BiomeId => (q % 2 === 0 ? TOUR : FERME);
 
 /** La partie toute construite, ses commandes livrées. */
 const partie = toutConstruitAvecLesCommandes();
 
-/**
- * Une place libre de la Tour à l'orientation `q`, hors de sa place de départ, la plus loin possible. Depuis les formes
- * des îles (GD-12), la Tour et son observatoire ne tournent d'un quart qu'à un ou deux pas de leur place.
- */
-function placeLoin(q: LayoutTurn) {
-  const d = startingSpot(TOUR);
+/** Une place libre du lieu à l'orientation `q`, hors de sa place de départ, la plus loin possible. */
+function placeLoin(lieu: BiomeId, q: LayoutTurn) {
+  const d = startingSpot(lieu);
   const loin = (s: { x: number; y: number }) => Math.abs(s.x - d.x) + Math.abs(s.y - d.y);
-  const libres = freeSpots(partie.world, TOUR, q)
+  const libres = freeSpots(partie.world, lieu, q)
     .filter((s) => loin(s) >= 1)
     .sort((s, t) => loin(s) - loin(t));
   expect(libres.length, `orientation ${q}`).toBeGreaterThan(0);
@@ -54,9 +57,9 @@ function relue(layout: Layout): Layout | undefined {
 }
 
 /** Les cubes d'un lieu dans le monde (sans ses liaisons ni sa grande construction), en texte. */
-function cubesDuLieu(atelier: 'fabrique' | 'halle', world: World = partie.world): string[] {
+function cubesDuLieu(lieu: BiomeId, atelier: 'fabrique' | 'halle', world: World = partie.world): string[] {
   return worldCubes('6e', partie.progress, world, false, [], true, atelier)
-    .filter((c) => c.tag === TOUR && !c.bridge && !c.place?.startsWith('monument:'))
+    .filter((c) => c.tag === lieu && !c.bridge && !c.place?.startsWith('monument:'))
     .map((c) => `${c.x},${c.y},${c.z},${c.color},${c.top ?? ''},${c.quest ?? ''},${c.muted ?? ''}`)
     .sort();
 }
@@ -70,7 +73,8 @@ for (const univers of ['blocland', 'archipeo'] as const)
 
     for (const q of ORIENTATIONS)
       it(`un lieu déplacé, ${q} quart(s) de tour`, () => {
-        const def0 = startingIsland(TOUR);
+        const LIEU = lieuTourne(q);
+        const def0 = startingIsland(LIEU);
         const tourne = (x: number, y: number, pose: { x: number; y: number }) => {
           const t = turnCell(x - def0.core.x, y - def0.core.y, q as Quarts);
           return { x: pose.x + t.x, y: pose.y + t.y };
@@ -78,16 +82,16 @@ for (const univers of ['blocland', 'archipeo'] as const)
         // Tout, sur la carte de départ.
         applyLayout(undefined);
         const cubes0 = worldCubes('6e', partie.progress, partie.world, false, [], true, atelier);
-        const lieu0 = cubesDuLieu(atelier);
-        const gardien0 = guardianPlacements('6e', partie.progress, partie.world.links, true).find((g) => g.id === TOUR)!;
-        const creature0 = creaturePlacements('6e', partie.world.links).find((c) => c.id === TOUR)!;
-        const m = monumentsOf('6e').find((x) => x.biome === TOUR)!;
+        const lieu0 = cubesDuLieu(LIEU, atelier);
+        const gardien0 = guardianPlacements('6e', partie.progress, partie.world.links, true).find((g) => g.id === LIEU)!;
+        const creature0 = creaturePlacements('6e', partie.world.links).find((c) => c.id === LIEU)!;
+        const m = monumentsOf('6e').find((x) => x.biome === LIEU)!;
         const ilot0 = monumentIslet(m);
-        const yaw0 = viewYaw(TOUR);
+        const yaw0 = viewYaw(LIEU);
 
         // La disposition, écrite par l'action et relue comme une sauvegarde.
-        const spot = placeLoin(q);
-        const r = moveIsland(partie.world, TOUR, spot);
+        const spot = placeLoin(LIEU, q);
+        const r = moveIsland(partie.world, LIEU, spot);
         if (!r.ok) throw new Error(r.reason);
         const layout = relue(r.world.layout!)!;
         expect(layout).toEqual(r.world.layout);
@@ -95,8 +99,8 @@ for (const univers of ['blocland', 'archipeo'] as const)
         applyLayout(layout);
         expect(layoutVersion()).not.toBe(avant);
         const pose = poseOfSpot('6e', spot);
-        expect(islandDef(TOUR).core).toEqual({ x: pose.x, y: pose.y });
-        expect(islandDef(TOUR).quarts).toBe(q);
+        expect(islandDef(LIEU).core).toEqual({ x: pose.x, y: pose.y });
+        expect(islandDef(LIEU).quarts).toBe(q);
 
         // Le terrain, le décor, les bornes et la commande livrée : les mêmes cubes, à la nouvelle place, tournés d'un bloc.
         const attendus = lieu0
@@ -106,16 +110,16 @@ for (const univers of ['blocland', 'archipeo'] as const)
             return [p.x, p.y, ...reste].join(',');
           })
           .sort();
-        expect(cubesDuLieu(atelier, r.world)).toEqual(attendus);
+        expect(cubesDuLieu(LIEU, atelier, r.world)).toEqual(attendus);
         // Les bornes, que la grille trouve sous leurs cubes.
         const grille = grilleDe('6e');
         const monde = worldCubes('6e', partie.progress, r.world, false, [], true, atelier);
-        for (const st of questStations(TOUR)) {
-          const p = grille.versMonde(grille.placeDe({ genre: 'borne', id: `${TOUR}:${st.typeId}` })!);
-          expect(monde.some((c) => c.x === p.x && c.y === p.y && c.quest === `${TOUR}:${st.typeId}`)).toBe(true);
+        for (const st of questStations(LIEU)) {
+          const p = grille.versMonde(grille.placeDe({ genre: 'borne', id: `${LIEU}:${st.typeId}` })!);
+          expect(monde.some((c) => c.x === p.x && c.y === p.y && c.quest === `${LIEU}:${st.typeId}`)).toBe(true);
         }
         // Le Gardien sur son île (GD-11), la créature.
-        const gardien = guardianPlacements('6e', partie.progress, r.world.links, true).find((g) => g.id === TOUR)!;
+        const gardien = guardianPlacements('6e', partie.progress, r.world.links, true).find((g) => g.id === LIEU)!;
         const attendre = (cells: string[]) =>
           cells
             .map((k) => {
@@ -125,7 +129,7 @@ for (const univers of ['blocland', 'archipeo'] as const)
             })
             .sort();
         expect(cellules(gardien)).toEqual(attendre(cellules(gardien0)));
-        const creature = creaturePlacements('6e', r.world.links).find((c) => c.id === TOUR)!;
+        const creature = creaturePlacements('6e', r.world.links).find((c) => c.id === LIEU)!;
         expect(cellules(creature)).toEqual(attendre(cellules(creature0)));
         // La grande construction au large suit son lieu ; son îlot reste carré.
         const ilot = monumentIslet(m);
@@ -137,15 +141,15 @@ for (const univers of ['blocland', 'archipeo'] as const)
         expect(monde.some((c) => c.place === `monument:${m.id}` && c.x === ilot.x + milieu && c.y === ilot.y + milieu)).toBe(true);
         expect(monumentCenter(m).x).toBe(ilot.x + (n - 1) / 2);
         // La vue du lieu tourne avec lui ; le centre de l'île (étiquette, Carte) la suit.
-        expect(viewYaw(TOUR)).toBeCloseTo(yaw0 + (q * Math.PI) / 2, 9);
-        expect(islandCenter(TOUR).x).toBe(pose.x + 8);
+        expect(viewYaw(LIEU)).toBeCloseTo(yaw0 + (q * Math.PI) / 2, 9);
+        expect(islandCenter(LIEU).x).toBe(pose.x + 8);
         // Ses liaisons arrivent sur sa côte, ou attendent d'être reposées.
         const relink = linksToRelink(r.world, '6e');
-        for (const [id, t] of routesIn(r.world, '6e')) if (t && (t.depuis.lieu === TOUR || t.vers.lieu === TOUR)) expect(relink).not.toContain(id);
+        for (const [id, t] of routesIn(r.world, '6e')) if (t && (t.depuis.lieu === LIEU || t.vers.lieu === LIEU)) expect(relink).not.toContain(id);
 
         // Revenu à la carte de départ : le monde d'avant, à l'identique.
         applyLayout(undefined);
-        expect(islandDef(TOUR)).toBe(def0);
+        expect(islandDef(LIEU)).toBe(def0);
         expect(JSON.stringify(worldCubes('6e', partie.progress, partie.world, false, [], true, atelier))).toBe(JSON.stringify(cubes0));
       });
   });

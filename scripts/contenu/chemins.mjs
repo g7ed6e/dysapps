@@ -28,7 +28,7 @@ export const PROJETS = join(racine, 'src/game/world/projects.json');
 /** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
 const CHAMPS_ILE = ['name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'];
 const CHAMPS_MISSION = ['description', 'programme'];
-const MATIERES = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'lv2'];
+const MATIERES = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'civics', 'lv2', 'lca'];
 const CLASSES = ['6e', '5e', '4e', '3e'];
 
 /** L'ordre des îles : docs/contenu/archipel.md, une ligne « 1. `french-6e-phonology` » par lieu. */
@@ -63,6 +63,10 @@ export function produire() {
     for (const m of biome.exercises) {
       for (const k of CHAMPS_MISSION) if (m[k] === undefined || m[k].length === 0) throw new Error(`${fichier}, mission ${m.id} : « ${k === 'programme' ? 'compétences' : k} » manque`);
       if (m.lv2 !== undefined && !['es', 'de'].includes(m.lv2)) throw new Error(`${fichier}, mission ${m.id} : « lv2 » vaut es ou de, lu « ${m.lv2} »`);
+      // L'île du latin et du grec (GD-13) : chaque mission dit son option, comme celles de la LV2 leur langue.
+      if (biome.subject === 'lca' && !['la', 'gr'].includes(m.option)) throw new Error(`${fichier}, mission ${m.id} : « option » vaut la ou gr, lu « ${m.option ?? ''} »`);
+      if (biome.subject !== 'lca' && m.option !== undefined) throw new Error(`${fichier}, mission ${m.id} : « option » ne se donne que sur l’île du latin et du grec`);
+      if (m.waiting !== undefined && !m.waiting.trim()) throw new Error(`${fichier}, mission ${m.id} : « en attente » dit ce qui manque`);
     }
     iles.add(ile);
     biomes.set(ile, biome);

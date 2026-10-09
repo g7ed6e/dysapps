@@ -21,6 +21,20 @@ describe('les heures parmi les choix', () => {
   });
 });
 
+describe('les années avant notre ère parmi les choix', () => {
+  it('« 753 avant J.-C. » compte en négatif : l’ordre croissant est celui de la frise', () => {
+    expect(parseNumber('753 avant J.-C.')).toEqual({ value: -753, decimals: 0, unit: ' avant J.-C.' });
+    expect(parseNumber('1914')?.value).toBe(1914);
+    const valeurs = ['753 avant J.-C.', '509 avant J.-C.', '44 avant J.-C.'].map((c) => parseNumber(c)!.value);
+    expect(valeurs).toEqual([...valeurs].sort((a, b) => a - b));
+  });
+
+  it('hors des maths, des années qui se suivent avant notre ère restent celles du fichier, jamais « −753 avant J.-C. »', () => {
+    const choix = ['753 avant J.-C.', '752 avant J.-C.', '751 avant J.-C.'];
+    for (const place of [0, 1, 2]) expect(placeAnswer(choix, '752 avant J.-C.', place, () => 0.5, 'du-fichier').every((c) => !String(c).includes('−') && !String(c).startsWith('-'))).toBe(true);
+  });
+});
+
 it('pièges calculés : déplace la réponse d’une liste de nombres en retournant un piège, et l’écrit comme ses voisins', () => {
   const items = [{ key: 'k', choices: ['−3', '1 200', '2 000,5'], answer: '1 200' }];
   const lists = ['a', 'b', 'c', 'd', 'e', 'f'].map((seed) => placeChoices(items, seeded(seed), 'calcules')[0].choices);

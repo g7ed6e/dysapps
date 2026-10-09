@@ -302,6 +302,14 @@ export const BLOCLAND = {
         beaten: 'Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Pince.',
       },
     },
+    'civics-6e-democratic-society': {
+      challenge: 'L’Hirondelle de nacre ouvre une aile : « Me voilà toute grise. Tu as fait le tour de mon préau : dis-moi comment on vit ensemble. »',
+      guardianSays: {
+        hit: 'Juste. Une plume de mon aile reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le rappel, cherche le mot de la règle, et reprends.',
+        beaten: 'Je me rallume, de la queue jusqu’au bec. Le préau est à toi, et à Voix.',
+      },
+    },
     'life-earth-sciences-5e-active-planet': {
       challenge: 'La Tortue d’ocre lève lentement la tête : « Me voilà toute grise. Tu as parcouru toute ma prairie : dis-moi comment change la Terre. »',
       guardianSays: {
@@ -465,6 +473,7 @@ export const BLOCLAND = {
     'life-earth-sciences-6e-living-world': 'escargot jardinier',
     'physics-chemistry-6e-matter-energy': 'goutte chimiste',
     'technology-6e-objects': 'fourmi bricoleuse',
+    'civics-6e-democratic-society': 'panda roux délégué',
     'life-earth-sciences-5e-active-planet': 'ver de terre laboureur',
     'physics-chemistry-5e-matter-universe': 'canard saunier',
     'technology-5e-design': 'pic-vert menuisier',

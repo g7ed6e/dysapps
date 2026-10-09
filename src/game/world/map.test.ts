@@ -23,10 +23,10 @@ it('chaque île a une place, une altitude selon sa classe, et son cœur fait par
 
 it('la côte écrite d’un lieu qui a une forme (GD-12) est celle de sa forme', () => {
   // La carte de départ l'écrit en dur, pour ne pas calculer un masque par lieu à l'import de map.ts. Les lieux des
-  // Basses Terres (15), des Collines du Large (12) et des Monts de Feu (12) ont leur forme (GD-12) ; les Îles du Ciel la
-  // prendront dans leur pull request (formes.test.ts compte les lieux de chaque archipel).
+  // Basses Terres (16, avec le Préau des délégués d'EMC-2), des Collines du Large (12) et des Monts de Feu (12) ont leur
+  // forme (GD-12) ; les Îles du Ciel la prendront dans leur pull request (formes.test.ts compte les lieux de chaque archipel).
   const formes = MAP.filter((d) => silhouetteDe(d.id).forme);
-  expect(formes.length).toBe(39);
+  expect(formes.length).toBe(40);
   for (const d of formes) expect(d.ext, d.id).toEqual(etendueDuLieu(d, silhouetteDe(d.id).forme!));
 });
 

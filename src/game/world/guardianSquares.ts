@@ -2,7 +2,7 @@
 // chaque île garde le carré de 5 × 5 cases que la recherche de GD-11 (`guardianSpot`, ./terrain/creatures.ts) lui a
 // donné, en cases depuis l'origine de son cœur, le lieu pas tourné, avec le palier qui l'a donné. Une île qui prend une
 // forme garde ce carré (la recherche, sur sa nouvelle côte, en trouverait un autre) ; sa forme le tient toujours sur sa
-// terre (./map.ts). Pour les îles sans forme, la recherche le retrouve : terrain.test.ts compare les 51 carrés à cette
+// terre (./map.ts). Pour les îles sans forme, la recherche le retrouve : terrain.test.ts compare les 52 carrés à cette
 // table. Trois carrés ont bougé avec la cinquième mission (GD-14, 9 octobre 2026) : le Hangar des inventions, le Manoir
 // du passé et le Belvédère de Thalès, dont une borne de plus touchait le carré. Le Manoir du passé a ensuite pris sa forme
 // (GD-12, 5e) : en (0, 14), l'étiquette de l'île se posait sur la tête du Gardien et le toit du manoir bâti lui couvrait le
@@ -21,7 +21,7 @@ export interface GuardianSquare {
   repli?: true;
 }
 
-/** Les 51 carrés des Gardiens de GD-11, la LV2 par défaut. */
+/** Les 52 carrés des Gardiens de GD-11, la LV2 par défaut. */
 export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<GuardianSquare>>>> = {
   'french-6e-phonology': { x: 16, y: 19, palier: 3 },
   'french-6e-grammar-spelling': { x: 17, y: 11, palier: 3 },
@@ -38,6 +38,7 @@ export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<Gu
   'life-earth-sciences-6e-living-world': { x: -1, y: 13, palier: 3 },
   'physics-chemistry-6e-matter-energy': { x: -2, y: 13, palier: 1 },
   'technology-6e-objects': { x: 15, y: 13, palier: 1 },
+  'civics-6e-democratic-society': { x: 13, y: -1, palier: 1 },
   'maths-5e-signed-numbers': { x: -3, y: 14, palier: 3 },
   'maths-5e-proportionality': { x: 17, y: 18, palier: 3 },
   'french-5e-homophones': { x: -2, y: 14, palier: 1 },
