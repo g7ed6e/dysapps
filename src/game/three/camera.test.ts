@@ -62,8 +62,11 @@ function dansLeCadre(cam: THREE.Camera, t: { w: number; h: number }, marge: numb
 describe('Le cadrage des grands repères', () => {
   it('le grand phare est le repère de son île et de la vue de l’archipel depuis ses voisines, pas au-delà', () => {
     expect(repereDeLaVue('maths-3e-functions', null)).toBe(R);
-    for (const zone of ['maths-3e-functions', 'maths-3e-geometry', 'maths-3e-statistics', 'french-3e-close-reading'] as BiomeId[]) expect(repereDeLaVue(null, zone), zone).toBe(R);
-    for (const zone of ['english-3e-comprehension', 'english-3e-grammar', 'french-6e-phonology', 'maths-4e-algebra'] as BiomeId[]) expect(repereDeLaVue(null, zone), zone).toBeNull();
+    // Ses voisines depuis une forme par île (GD-12) : le Belvédère, les deux observatoires, le Studio des ondes, le Château
+    // des hypothèses et le Verger de la santé ; pas le Refuge des carnets ni le Kiosque des témoins, plus loin.
+    for (const zone of ['maths-3e-functions', 'maths-3e-geometry', 'maths-3e-statistics', 'french-3e-close-reading', 'english-3e-comprehension', 'english-3e-grammar', 'life-earth-sciences-3e-human-body'] as BiomeId[])
+      expect(repereDeLaVue(null, zone), zone).toBe(R);
+    for (const zone of ['lv2-3e-travel', 'history-3e-twentieth-century', 'french-6e-phonology', 'maths-4e-algebra'] as BiomeId[]) expect(repereDeLaVue(null, zone), zone).toBeNull();
     expect(repereDeLaVue('french-3e-close-reading', null)).toBeNull();
   });
 
@@ -565,10 +568,12 @@ describe('Une longue traversée (GD-7)', () => {
     }
   });
 
-  it('le cadre fixe seulement à une taille lisible : gardé en 1024 × 768 et 800 × 1280 (et au Phare, 3e), la caméra suit le bonhomme en 390 × 844', () => {
-    const liens = ['maths-6e-calculation-french-6e-word-spelling', 'maths-3e-functions-english-3e-grammar'];
+  it('le cadre fixe seulement à une taille lisible : gardé en 1024 × 768 et 800 × 1280 (et aux Îles du Ciel, 3e), la caméra suit le bonhomme en 390 × 844', () => {
+    // Aux Îles du Ciel, depuis une forme par île (GD-12), plus aucune liaison du Phare ne fait une longue traversée : celle
+    // du Belvédère au Château des hypothèses longe le Phare, sur le rang de devant.
+    const liens = ['maths-6e-calculation-french-6e-word-spelling', 'maths-3e-geometry-english-3e-grammar'];
     const port = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', liens)!;
-    const phare = avatarRoute('maths-3e-functions', 'english-3e-grammar', liens)!;
+    const phare = avatarRoute('maths-3e-geometry', 'english-3e-grammar', liens)!;
     // La vue entière, panneau fermé (il attend l'arrivée), sous la barre du haut (80 px).
     const cas = [
       { nom: '6e, 1024 × 768', archipel: '6e' as const, route: port, w: 1024, h: 688, fixe: true },

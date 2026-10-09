@@ -37,7 +37,7 @@ import { bridgePath, creatureSpot, placeSpot, questStations, VILLAGE_PLACES } fr
  * leur archipel. Les clés de sauvegarde restent relatives à ce repère.
  */
 const ECOLES: Partial<Record<BiomeId, { archipel: ArchipelagoId; core: { x: number; y: number }; ext: { left: number; right: number; front: number; back: number } | null }>> = {
-  // La Forêt et le Marché ont pris leur forme (GD-12) : leur côte se lit sur elle (`ext : null`).
+  // La Forêt, le Marché et le Phare ont pris leur forme (GD-12) : leur côte se lit sur elle (`ext : null`).
   'french-6e-phonology': {
     archipel: '6e',
     core: { x: 67, y: 59 },
@@ -58,7 +58,7 @@ const ECOLES: Partial<Record<BiomeId, { archipel: ArchipelagoId; core: { x: numb
   'maths-3e-functions': {
     archipel: '3e',
     core: { x: 58, y: 912 },
-    ext: { left: 2, right: 2, front: 2, back: 2 },
+    ext: null,
   },
 };
 const IDS = Object.keys(ECOLES) as BiomeId[];

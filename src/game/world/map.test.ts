@@ -39,6 +39,12 @@ const PLACES_FUTURES: Partial<Record<ArchipelagoId, readonly { nom: string; core
     { nom: 'EMC', core: { x: 29, y: 405 }, forme: { forme: 'trefle', vers: 'devant' } },
     { nom: 'latin ou grec', core: { x: 65, y: 405 }, forme: { forme: 'galet', vers: 'devant', short: true } },
   ],
+  // Aux Îles du Ciel, au rang du fond, à l'ouest : l'EMC en trèfle au coin, derrière le Kiosque des témoins, le latin ou
+  // le grec en galet à côté, derrière le Verger de la santé (9 octobre 2026).
+  '3e': [
+    { nom: 'EMC', core: { x: -14, y: 992 }, forme: { forme: 'trefle', vers: 'devant' } },
+    { nom: 'latin ou grec', core: { x: 22, y: 992 }, forme: { forme: 'galet', vers: 'devant' } },
+  ],
 };
 
 it('les places des îles futures (GD-12) : dans le cadre, à quatre cases d’eau de toute emprise de départ', () => {

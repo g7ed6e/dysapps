@@ -155,7 +155,7 @@ function yawDuLieu(home: BiomeId): number {
  * La colonne centrale d'un archipel dont les îles ont pris leur forme (GD-12), figée à sa valeur d'avant : les formes
  * ont déplacé les îles et élargi leurs côtes, la colonne aurait bougé, et avec elle la vue de chaque île.
  */
-const COLONNE_D_AVANT_LES_FORMES: Partial<Record<ArchipelagoId, number>> = { '6e': 72.5, '5e': 92.5 };
+const COLONNE_D_AVANT_LES_FORMES: Partial<Record<ArchipelagoId, number>> = { '6e': 72.5, '5e': 92.5, '3e': 64 };
 
 /**
  * Les îles qui ne comptent pas dans la colonne centrale : le Refuge des carnets (3e), posé au bord de l'archipel, ne fait

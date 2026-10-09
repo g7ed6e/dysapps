@@ -94,7 +94,7 @@ export const LAYOUT_LAST_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: numb
   '6e': { x: 48, y: 36 },
   '5e': { x: 44, y: 40 },
   '4e': { x: 42, y: 35 },
-  '3e': { x: 52, y: 30 },
+  '3e': { x: 52, y: 38 },
 };
 
 /**

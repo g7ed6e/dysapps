@@ -152,9 +152,11 @@ it('tout le décor en un, deux ou trois appels de dessin (avec ses lueurs, ses f
     expect(cout.drawCalls, a).toBeLessThanOrEqual(3);
     const cubes = elements.flatMap((e) => e.cubes);
     const avant = faceCount(buildMesh(cubes, sol)) * 2;
-    // Aux Îles du Ciel, depuis que les îles ont grandi (GD-11, 8 octobre 2026), il reste peu de décor (des rochers, le
-    // grand phare) : ses 4 720 triangles passent les 3 804 de ses cubes, sous les 5 000.
-    expect(cout.triangles, a).toBeLessThan(a === '3e' ? Math.max(avant, 5000) : avant);
+    // Aux Îles du Ciel, depuis que les îles ont grandi (GD-11, 8 octobre 2026), il restait peu de décor (des rochers, le
+    // grand phare) : ses 4 720 triangles passaient les 3 804 de ses cubes, sous les 5 000. Depuis une forme par île
+    // (GD-12, 9 octobre 2026), le décor revient sur leur côte, surtout des rochers et des buissons, plus chers en facettes
+    // qu'en cubes : 8 504 triangles pour 8 038 (+6 %), sous les 8 600 (point laissé au mainteneur).
+    expect(cout.triangles, a).toBeLessThan(a === '3e' ? Math.max(avant, 8600) : avant);
     expect(cout.triangles, a).toBeLessThanOrEqual(15_000);
     // Des couleurs finies, dans l'espace linéaire.
     for (const f of [maillage.decor, maillage.lueurs, maillage.fumees.facettes]) {

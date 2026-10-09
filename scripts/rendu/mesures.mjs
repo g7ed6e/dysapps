@@ -1027,6 +1027,19 @@ const CAPTURES = [
     ['glacier', 'maths-5e-signed-numbers'],
   ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
   { nom: 'formes-modifier-le-plan-5e', vue: 'carte', famille: 'formes', ile: 'maths-5e-proportionality', amenager: 'english-5e-vocabulary' },
+  // Aux Îles du Ciel (3e, 9 octobre 2026) : la Carte sur la tablette, en OpenDyslexic 32 px et debout, le bonhomme sur le
+  // Kiosque des témoins (les noms tus du portrait) ; le Tremplin (le crochet), la Ruche (le moulinet), le Phare (son grand
+  // phare, avancé sur la côte est) et l'Observatoire des textes de près ; « Modifier le plan », le Tremplin choisi.
+  { nom: 'formes-carte-3e', vue: 'carte', famille: 'formes', ile: 'history-3e-twentieth-century' },
+  { nom: 'formes-carte-3e-od32', vue: 'carte', famille: 'formes', ile: 'history-3e-twentieth-century', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  { nom: 'formes-carte-3e-800x1280', vue: 'carte', famille: 'formes', ile: 'history-3e-twentieth-century', taille: { width: 800, height: 1280 } },
+  ...[
+    ['tremplin', 'physics-chemistry-3e-motion-energy'],
+    ['ruche', 'technology-3e-digital'],
+    ['phare', 'maths-3e-functions'],
+    ['textes', 'french-3e-close-reading'],
+  ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
+  { nom: 'formes-modifier-le-plan-3e', vue: 'carte', famille: 'formes', ile: 'history-3e-twentieth-century', amenager: 'physics-chemistry-3e-motion-energy' },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

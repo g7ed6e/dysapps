@@ -100,9 +100,9 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
         "maths-4e-algebra/foyer@84,634",
       ],
       [
-        "maths-3e-functions/caisse@68,915",
-        "maths-3e-functions/fanion@62,915",
-        "maths-3e-functions/fanion@66,915",
+        "maths-3e-functions/caisse@75,905",
+        "maths-3e-functions/fanion@69,905",
+        "maths-3e-functions/fanion@78,905",
         "maths-3e-functions/foyer@79,907",
       ],
     ]

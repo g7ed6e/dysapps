@@ -589,10 +589,19 @@ const STARTING_MAP: MapPlace[] = [
   // n'avait plus de marge, garde ses rangs (le devant du Phare l'a agrandie de deux cases, le fond la reprend), et le
   // col n'y perd que deux cases. Les îles du bord (le Studio, le Château, le Refuge) ne bougent pas : la colonne
   // centrale et la largeur restent. Le temple de marbre suit le Belvédère, le grand phare la côte repoussée (decor/3e.ts).
-  { id: 'maths-3e-geometry', region: 'montagne', core: { x: 18, y: 932 }, repere: { x: 18, y: 930 }, deplacee: { x: -2, y: 0 }, altitude: 9, ext: e(2, 2, 1, 5), relief: 'montagne', seed: 41 },
-  { id: 'maths-3e-functions', region: 'hauteurs', core: { x: 58, y: 912 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'collines', seed: 42 },
-  { id: 'maths-3e-statistics', region: 'hauteurs', core: { x: 94, y: 932 }, repere: { x: 98, y: 930 }, deplacee: { x: 2, y: 0 }, altitude: 9, ext: e(3, 2, 2, 2), relief: 'collines', seed: 43 },
-  { id: 'french-3e-close-reading', region: 'hauteurs', core: { x: 58, y: 964 }, repere: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(2, 2, 1, 4), relief: 'collines', seed: 44 },
+  // GD-12 (09/10/2026, une forme par île) : trois rangs sur le pas (y 912, 952 et 992), chaque lieu à quatre à huit
+  // cases d'eau de ses voisines, pour que les voisines puissent se réunir (huit paires au départ, sept avant). Devant, le
+  // Studio, le Belvédère, le Phare (qui ne bouge pas), le Château et le Refuge ; au second rang, le Kiosque, le Verger,
+  // l'Observatoire des textes (juste derrière le Phare, comme avant : DA-17), l'Observatoire des données et le Plateau ;
+  // au rang du fond, la Ruche et le Tremplin, à l'est, et deux places pour des îles futures, à l'ouest (map.test.ts).
+  // La Ruche et le Tremplin, un pas plus à l'est que le Plateau : sur la Carte, en OpenDyslexic, le bonhomme sur le
+  // Phare, le nom de l'Observatoire des textes se posait plus près de la Ruche que de son île. Le cadre gagne 32 cases
+  // vers le fond (footprint.ts). Chaque lieu garde la vue de sa place de GD-11 (`vueDepuis`) et son dessin (`repere`) ;
+  // la colonne d'avant les formes reste celle des caméras (terrain/view.ts).
+  { id: 'maths-3e-geometry', region: 'montagne', core: { x: 22, y: 912 }, vueDepuis: { x: 18, y: 932 }, repere: { x: 18, y: 930 }, deplacee: { x: -2, y: 0 }, altitude: 9, ext: e(2, 2, 3, 7), relief: 'montagne', seed: 41 },
+  { id: 'maths-3e-functions', region: 'hauteurs', core: { x: 58, y: 912 }, altitude: 9, ext: e(5, 2, 7, 2), relief: 'collines', seed: 42 },
+  { id: 'maths-3e-statistics', region: 'hauteurs', core: { x: 94, y: 952 }, vueDepuis: { x: 94, y: 932 }, repere: { x: 98, y: 930 }, deplacee: { x: 2, y: 0 }, altitude: 9, ext: e(4, 3, 2, 5), relief: 'collines', seed: 43 },
+  { id: 'french-3e-close-reading', region: 'hauteurs', core: { x: 58, y: 952 }, vueDepuis: { x: 58, y: 964 }, repere: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(4, 5, 2, 3), relief: 'collines', seed: 44 },
   // Anglais 6e : au rang du fond, à l'ouest (GD-12), la Baie au coin, l'Horloge à côté, un pas plus au fond (leur isthme
   // est retiré, GD-9).
   { id: 'english-6e-vocabulary', region: 'basses-terres', core: { x: -12, y: 99 }, vueDepuis: { x: 32, y: 107 }, repere: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, ext: e(5, 2, 3, 2), relief: 'plat', seed: 51 },
@@ -626,14 +635,14 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'lv2-4e-daily-life', region: 'basses-terres', core: { x: 138, y: 632 }, repere: { x: 190, y: 632 }, altitude: 6, ext: e(1, 2, 1, 3), relief: 'plat', seed: 95 },
   { id: 'english-4e-grammar', region: 'feu', core: { x: 2, y: 664 }, repere: { x: -2, y: 632 }, altitude: 6, ext: e(3, 2, 1, 3), relief: 'collines', seed: 72 },
   // Anglais 3e : de part et d'autre de l'arc, le Studio avant le Belvédère, le Château après l'Observatoire des données.
-  { id: 'english-3e-comprehension', region: 'hauteurs', core: { x: -14, y: 912 }, altitude: 9, ext: e(2, 3, 1, 3), relief: 'collines', seed: 81 },
-  { id: 'english-3e-grammar', region: 'hauteurs', core: { x: 126, y: 912 }, repere: { x: 130, y: 912 }, altitude: 9, ext: e(3, 2, 1, 3), relief: 'collines', seed: 82 },
+  { id: 'english-3e-comprehension', region: 'hauteurs', core: { x: -10, y: 912 }, vueDepuis: { x: -14, y: 912 }, repere: { x: -14, y: 912 }, altitude: 9, ext: e(4, 3, 5, 5), relief: 'collines', seed: 81 },
+  { id: 'english-3e-grammar', region: 'hauteurs', core: { x: 90, y: 912 }, vueDepuis: { x: 126, y: 912 }, repere: { x: 130, y: 912 }, altitude: 9, ext: e(2, 2, 5, 5), relief: 'collines', seed: 82 },
   // LV2 3e : à l'est du Château, en bout de chemin : rien n'en dépend. Un refuge d'altitude, bas et arrondi (intention du
   // 3e, §3), son lac d'altitude au fond, sur l'herbe (`LACS`). Avancé de 16 cases, à hauteur du Château (SC-3, consultant
   // UX UI) : un cran derrière, au bord gauche de la Carte, son nom se taisait en OpenDyslexic quand le bonhomme y était
   // et qu'il était la destination (la bulle et le médaillon prennent la place, la Géographie et le Château bordent
   // dessus et dessous) ; son dessin reste celui de sa place d'avant (`repere`).
-  { id: 'lv2-3e-travel', region: 'montagne', core: { x: 158, y: 912 }, repere: { x: 158, y: 926 }, altitude: 9, ext: e(1, 1, 1, 8), relief: 'plat', seed: 96 },
+  { id: 'lv2-3e-travel', region: 'montagne', core: { x: 130, y: 912 }, vueDepuis: { x: 158, y: 912 }, repere: { x: 158, y: 926 }, altitude: 9, ext: e(2, 2, 5, 7), relief: 'plat', seed: 96 },
   // Histoire-géographie de 5e à 3e (HG-3, DA, 6 octobre 2026) : deux îles par archipel, fermées au départ (on les
   // relie), sur le pas des places, à quatre cases d'eau au moins de leurs voisines ; leur terre est plate, sans relief
   // ni pic, comme au 6e. Aux Îles Brumeuses, le Bourg des chroniques et le Delta des ressources au second rang, au-delà
@@ -645,8 +654,8 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'geography-5e-resources', region: 'basses-terres', core: { x: 173, y: 405 }, vueDepuis: { x: 161, y: 365 }, repere: { x: 157, y: 365 }, altitude: 3, ext: e(3, 3, 7, 5), relief: 'plat', seed: 64 },
   { id: 'history-4e-revolutions', region: 'basses-terres', core: { x: 34, y: 676 }, repere: { x: 30, y: 676 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 73 },
   { id: 'geography-4e-globalization', region: 'basses-terres', core: { x: 62, y: 676 }, repere: { x: 58, y: 676 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 74 },
-  { id: 'history-3e-twentieth-century', region: 'basses-terres', core: { x: -18, y: 964 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 83 },
-  { id: 'geography-3e-france', region: 'basses-terres', core: { x: 130, y: 964 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 84 },
+  { id: 'history-3e-twentieth-century', region: 'basses-terres', core: { x: -10, y: 952 }, vueDepuis: { x: -18, y: 964 }, repere: { x: -18, y: 964 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'plat', seed: 83 },
+  { id: 'geography-3e-france', region: 'basses-terres', core: { x: 126, y: 952 }, vueDepuis: { x: 130, y: 964 }, repere: { x: 130, y: 964 }, altitude: 9, ext: e(3, 3, 5, 5), relief: 'plat', seed: 84 },
   // Sciences de 5e à 3e (SC-3, DA, 6 octobre 2026) : trois îles par archipel, fermées au départ (on les relie), sur le
   // pas des places, à quatre cases d'eau au moins de leurs voisines (leur Gardien sur leur île depuis GD-11) ; terre plate,
   // sans relief ni pic, comme l'histoire-géographie. Les cadres des régions n'avaient plus qu'une place libre chacun :
@@ -666,9 +675,9 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'life-earth-sciences-4e-cells-evolution', region: 'basses-terres', core: { x: -2, y: 592 }, repere: { x: -2, y: 604 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 75 },
   { id: 'physics-chemistry-4e-signals-circuits', region: 'basses-terres', core: { x: -2, y: 704 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 76 },
   { id: 'technology-4e-modeling', region: 'basses-terres', core: { x: 110, y: 704 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 77 },
-  { id: 'life-earth-sciences-3e-human-body', region: 'basses-terres', core: { x: 10, y: 980 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 85 },
-  { id: 'physics-chemistry-3e-motion-energy', region: 'basses-terres', core: { x: 90, y: 972 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 86 },
-  { id: 'technology-3e-digital', region: 'basses-terres', core: { x: 158, y: 980 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 87 },
+  { id: 'life-earth-sciences-3e-human-body', region: 'basses-terres', core: { x: 22, y: 952 }, vueDepuis: { x: 10, y: 980 }, repere: { x: 10, y: 980 }, altitude: 9, ext: e(2, 2, 5, 3), relief: 'plat', seed: 85 },
+  { id: 'physics-chemistry-3e-motion-energy', region: 'basses-terres', core: { x: 134, y: 992 }, vueDepuis: { x: 90, y: 972 }, repere: { x: 90, y: 972 }, altitude: 9, ext: e(2, 12, 2, 4), relief: 'plat', seed: 86 },
+  { id: 'technology-3e-digital', region: 'basses-terres', core: { x: 98, y: 992 }, vueDepuis: { x: 158, y: 980 }, repere: { x: 158, y: 980 }, altitude: 9, ext: e(7, 7, 7, 7), relief: 'plat', seed: 87 },
 ];
 
 /**
