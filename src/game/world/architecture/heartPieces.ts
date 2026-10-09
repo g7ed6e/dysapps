@@ -11,7 +11,7 @@ import { BRUME, type Couleur } from '../palette';
 import { HEART_MOTIFS, HEART_PAINT, MOTIF } from './paint';
 import { frustum, normalOf } from './precious';
 import { boiteDansLaCase, FACES, type DessinDePiece, type Facette, type V3 } from './rooms';
-import { woodenPost } from './lowPieces';
+import { PIECES_BASSES, woodenPost } from './lowPieces';
 import { SIDES } from './neighborhood';
 
 /** Les mesures des pièces du cœur, en part de case. */
@@ -26,6 +26,8 @@ export const HEART = {
   awning: 0.25,
   /** La planche du panneau indicateur (au 5e) : son épaisseur, son bas et son haut dans la case. */
   signBoard: { thick: 0.15, bottom: 0.3, top: 0.8 },
+  /** L'épi d'un roseau du Marais (au 5e, l'or posé sur un poteau de bois) : son côté et sa hauteur, plus petits que sa case. */
+  reedHead: { side: 0.45, height: 0.7 },
   /** La plate-bande de rizière (au 5e) : sa hauteur. */
   paddy: 0.3,
   /** La flèche d'or : sa base et sa hauteur. */
@@ -256,16 +258,20 @@ export function rgbGap(a: Couleur, b: Couleur): number {
   return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
 }
 
+/** La marge de l'écart au fantôme : l'arrondi de l'aller et retour en couleur linéaire (world/construction.ts). */
+const GHOST_MARGIN = 1;
+
 /** Le gris neutre vers lequel une teinte trop proche du fantôme s'assombrit (celui du soubassement du kit du 6e). */
 const NEUTRAL_GREY = 0x8a8f84;
 
 /**
  * Une teinte tenue à `HEART.chalk.ghostGap` du fantôme Brume au moins (le référent dys) : telle quelle si elle en est
- * assez loin, sinon menée vers un gris neutre, par pas de 5 %, jusqu'à l'écart.
+ * assez loin, sinon menée vers un gris neutre, par pas de 5 %, jusqu'à l'écart plus un point (`GHOST_MARGIN`) : l'aller
+ * et retour en couleur linéaire du maillage arrondit d'un point au plus, et l'écart reste de 70 au moins à l'écran.
  */
 export function apartFromGhost(c: Couleur): Couleur {
   let out = c;
-  for (let i = 1; rgbGap(out, BRUME) < HEART.chalk.ghostGap && i <= 20; i++) out = mixColor(c, NEUTRAL_GREY, i / 20);
+  for (let i = 1; rgbGap(out, BRUME) < HEART.chalk.ghostGap + GHOST_MARGIN && i <= 20; i++) out = mixColor(c, NEUTRAL_GREY, i / 20);
   return out;
 }
 
@@ -421,15 +427,44 @@ export function awning(): DessinDePiece {
 }
 
 /**
- * La planche d'un panneau indicateur (au 5e) : une planche mince, de toute la longueur de sa case vers le poteau qui la
- * porte (le long de x, ou de y), à mi-hauteur ; sans flèche ni rien qui ressemble à une lettre, sans dessous. 10 triangles.
+ * Le couvercle d'une petite construction (au 5e, la tuile posée sur la glace de la glacière de Pudding) : une nappe mince,
+ * de l'épaisseur de l'auvent, posée au bas de sa case sur ce qu'elle couvre (en haut de sa case, elle flotterait au-dessus
+ * de la glace), d'un seul tenant le long d'une rangée ; elle cache le dessus qu'elle couvre. 10 triangles.
  */
-export function signBoard(alongX: boolean): DessinDePiece {
-  return once(`panneau|${alongX}`, () => {
+export function lid(): DessinDePiece {
+  return once('couvercle', () => {
+    const box = boiteDansLaCase(0, 1, 0, 1, 0, HEART.awning);
+    return { facettes: without(box.facettes, DOWN), couvre: FACES.bas, filant: true };
+  });
+}
+
+/**
+ * La planche d'un panneau indicateur (au 5e) : une planche mince, à mi-hauteur, de toute la longueur de sa case, qui se
+ * prolonge jusqu'à la face du poteau qui la porte (`post` : le côté du poteau, le long de x ou de y), sans jour entre eux
+ * (retouches du 9 octobre 2026) ; sans flèche ni rien qui ressemble à une lettre, sans dessous. 10 triangles.
+ */
+export function signBoard(post: readonly [number, number]): DessinDePiece {
+  const [dx, dy] = post;
+  return once(`panneau|${dx}|${dy}`, () => {
     const { thick, bottom, top } = HEART.signBoard;
     const [a, b] = [0.5 - thick / 2, 0.5 + thick / 2];
-    const box = alongX ? boiteDansLaCase(0, 1, a, b, bottom, top) : boiteDansLaCase(a, b, 0, 1, bottom, top);
+    // Jusqu'à la face du poteau carré (../lowPieces.ts), dans la case voisine.
+    const reach = 0.5 - PIECES_BASSES.woodenPost / 2;
+    const along = (d: number): [number, number] => [d < 0 ? -reach : 0, d > 0 ? 1 + reach : 1];
+    const box = dx !== 0 ? boiteDansLaCase(...along(dx), a, b, bottom, top) : boiteDansLaCase(a, b, ...along(dy), bottom, top);
     return { facettes: without(box.facettes, DOWN), couvre: 0 };
+  });
+}
+
+/**
+ * L'épi d'un roseau (au 5e, le Marais des temps : l'or posé en haut d'un poteau de bois) : une boîte plus petite que sa
+ * case, posée sur le poteau, dans la couleur de sa matière ; sans dessous. 10 triangles.
+ */
+export function reedHead(): DessinDePiece {
+  return once('epi', () => {
+    const { side, height } = HEART.reedHead;
+    const [a, b] = [0.5 - side / 2, 0.5 + side / 2];
+    return { facettes: without(boiteDansLaCase(a, b, a, b, 0, height).facettes, DOWN), couvre: 0 };
   });
 }
 

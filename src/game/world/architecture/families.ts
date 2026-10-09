@@ -156,6 +156,9 @@ export const MATERIAL_FAMILIES: Record<Exclude<TextureKind, ExceptionTexture>, M
   vitrail: 'verre',
   enluminure: 'colombage',
   riziere: 'colombage',
+  // Le nuage : des congères, tas bas dans la neige (comme le tas de sable de fouille), de la famille de la pierre et non
+  // de l'eau (directeur artistique, retouches du 9 octobre 2026) ; le 3e reverra s'il pose du nuage dans une construction.
+  nuage: 'pierre',
 
   // Proposées par analogie (aucune n'est posée au 6e ni au 5e), à valider par le directeur artistique.
   ardoise: 'pierre',
@@ -181,14 +184,10 @@ export const MATERIAL_FAMILIES: Record<Exclude<TextureKind, ExceptionTexture>, M
   parchemin: 'toile',
   reliure: 'toile',
   petale: 'vegetal',
-  nuage: 'eau',
   lave: 'eau',
 };
 
-/**
- * Les matières rangées par analogie, à valider par le directeur artistique (aucune n'est posée au 6e ; au 5e, seul le
- * nuage, que le reste dessine en congère, ./heart.ts).
- */
+/** Les matières rangées par analogie, à valider par le directeur artistique (aucune n'est posée au 6e ni au 5e). */
 export const FAMILIES_TO_CONFIRM: readonly TextureKind[] = [
   'ardoise',
   'gres',
@@ -213,7 +212,6 @@ export const FAMILIES_TO_CONFIRM: readonly TextureKind[] = [
   'parchemin',
   'reliure',
   'petale',
-  'nuage',
   'lave',
 ];
 

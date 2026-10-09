@@ -19,8 +19,12 @@
 //   le dessus de la toile sont menés vers le gris neutre jusqu'à 70 d'écart RVB avec Brume (`ghostApart`) ; les congères
 //   sont dans la neige du kit.
 // - L'auvent rayé de l'échoppe du Marché (toile et ardoise, une colonne sur deux), celui du Comptoir (tuile et terre
-//   cuite) et le toit en damier du kiosque sont peints à plat (`flat`) ; le lanterneau du kiosque en verrière, ses
-//   poteaux de tourbe en poteaux carrés de 0,3 case dans leur teinte, son plancher de lambris bardé.
+//   cuite) et le toit en damier du kiosque sont peints à plat (`flat`) ; chaque rang du toit du kiosque est un seul
+//   volume lissé, toile et tuile confondues (`oneVolume`, retouches du 9 octobre 2026 : plus d'arête par case), le
+//   damier peint par leurs couleurs ; le lanterneau du kiosque en verrière de vitrail, assombrie comme une vitre
+//   (`panes` : une verrière ambrée, et non un bloc d'or), ses poteaux de tourbe en poteaux carrés de 0,3 case dans leur
+//   teinte (#44382A sur les côtés, sous le toit : sombres par la lumière, pas par la couleur), son plancher de lambris
+//   bardé.
 // Le verre et les lanternes ne deviennent jamais des pièces.
 import { materialsOf } from '../families';
 import { bacDePierre, PIECE_SEULE_ET_BASSE } from '../lowPieces';
@@ -48,6 +52,14 @@ function isFlat(c: VoxelCube): boolean {
   if (c.place === KIOSQUE) return c.texture === 'toile' || c.texture === 'tuile';
   return ECHOPPES.has(c.tag ?? '') && !c.place && !c.petiteConstruction && etapesDe('5e', 1, 2).has(cle(c.x, c.y, c.z));
 }
+
+/** Le toit en damier du kiosque : un volume par rang, toile et tuile confondues. */
+function kiosqueRoofRow(c: VoxelCube): string | undefined {
+  return c.place === KIOSQUE && (c.texture === 'toile' || c.texture === 'tuile') ? `kiosque-toit:${c.z}` : undefined;
+}
+
+/** Le lanterneau du kiosque : une verrière de vitrail, peinte comme une vitre. */
+const isKiosqueLantern = (c: VoxelCube) => c.place === KIOSQUE && c.texture === 'vitrail';
 
 /** Ce qui fait masse sans être un toit, au-dessus d'une tuile : elle le porte, c'est un mur. */
 const ROOFS = new Set(['toit', 'tuile', 'lanterne']);
@@ -125,6 +137,8 @@ export const KIT_5E: Kit = {
   byMaterial: { bambou: () => 'verticalBoards', riziere, enluminure, tourbe },
   tilesInWalls: tileInWall,
   flat: isFlat,
+  oneVolume: kiosqueRoofRow,
+  panes: isKiosqueLantern,
   ghostApart: ['glace', 'sel', 'toile'],
   // Les lieux du village (./shared.ts) : l'école et les piliers de la salle des trophées en mur plein de pierre grise.
   lieux: villagePlaces({ school: { famille: 'pierre', dessin: 'masonry' }, pillars: { famille: 'pierre', dessin: 'masonry' } }),

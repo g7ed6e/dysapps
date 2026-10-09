@@ -16,14 +16,15 @@
 //   Marché, la tuile du Comptoir) en nappes minces, la toile ou la tuile seule au sol en ballot ; la tour de lambris du
 //   Manoir comme la cabine (bardée, son chapeau) ; le thermomètre et la stalagmite de glace, le rocher à strates en
 //   piliers lissés ; les congères (le nuage) et le tas de sel en tas bas ; le montoir de dalles et le plateau
-//   d'enluminure en dalles ; la rizière en plate-bande ; les planches des panneaux indicateurs le long de leur poteau ;
-//   le pied de planches d'un pupitre en caisse ; le verre posé sur un bloc (le thermomètre) en verrière ; l'escalier en
-//   marches ; dans une petite construction, la tuile d'un toit comme le toit.
+//   d'enluminure en dalles ; la rizière en plate-bande ; les planches des panneaux indicateurs jusqu'à leur poteau ;
+//   l'or en haut d'un poteau (les roseaux du Marais) en épi plus petit que sa case ; le pied de planches d'un pupitre en
+//   caisse ; le verre posé sur un bloc (le thermomètre) en verrière ; l'escalier en marches ; dans une petite
+//   construction, la tuile d'un toit comme le toit, celle posée sur la glace (la glacière) en couvercle mince.
 // Code pur, sans Three.js.
 import type { VoxelCube } from '../cube';
 import type { Rotation } from './choices';
 import { familyOf } from './families';
-import { awning, beam, bead, cap, chalkLoaf, coneCorner, coneSide, coneStep, crate, darkPost, deck, dialSlab, EMPTY, foliage, hangingCrate, HEART, mound, paddyBed, pavilion, rock, signBoard, slab, snowDrift, spire, trunk, waterNeighbours, waterSheet, wheat } from './heartPieces';
+import { awning, beam, bead, cap, chalkLoaf, coneCorner, coneSide, coneStep, crate, darkPost, deck, dialSlab, EMPTY, foliage, hangingCrate, HEART, lid, mound, paddyBed, pavilion, reedHead, rock, signBoard, slab, snowDrift, spire, trunk, waterNeighbours, waterSheet, wheat } from './heartPieces';
 import type { RestContext, RestDrawing } from './kits/types';
 import { stepOf, woodenPost } from './lowPieces';
 import { SIDES } from './neighborhood';
@@ -239,12 +240,12 @@ function awningOf(c: VoxelCube, at: RestContext['at']): RestDrawing {
 }
 
 /**
- * Le panneau d'un poteau indicateur (le panneau posé contre un poteau de bois, à la même hauteur) : une planche mince le
- * long de lui ; ailleurs (posé au sol), une caisse bardée.
+ * Le panneau d'un poteau indicateur (le panneau posé contre un poteau de bois, à la même hauteur) : une planche mince
+ * jusqu'à lui ; ailleurs (posé au sol), une caisse bardée.
  */
 function signOf(c: VoxelCube, at: RestContext['at']): RestDrawing {
   const post = SIDES.find(([dx, dy]) => tex(at(c.x + dx, c.y + dy, c.z)) === 'tronc');
-  return post ? { family: 'bardage', piece: signBoard(post[0] !== 0) } : crateOf(c, at, MOTIF.bardage);
+  return post ? { family: 'bardage', piece: signBoard(post) } : crateOf(c, at, MOTIF.bardage);
 }
 
 /** Le décor du cœur d'une île, le quai, le Gardien. */
@@ -285,6 +286,8 @@ function heartOf(c: VoxelCube, at: RestContext['at']): RestDrawing | undefined {
       }
       if (t === 'pierre' && tex(at(c.x, c.y, c.z - 2)) === 'pierre') return { family: 'precieux', paint: EMBER };
       if (!below) return { family: 'vegetal', piece: wheat() };
+      // En haut d'un poteau de bois (les roseaux du Marais, 5e) : un épi plus petit que sa case.
+      if (t === 'tronc') return { family: 'vegetal', piece: reedHead() };
       return { family: 'precieux', paint: GOLD };
     }
     case 'cabine':
@@ -322,7 +325,7 @@ function heartOf(c: VoxelCube, at: RestContext['at']): RestDrawing | undefined {
     case 'strate':
       return { family: 'pierre', paint: PILLAR };
     case 'nuage':
-      return { family: 'eau', piece: snowDrift() };
+      return { family: 'pierre', piece: snowDrift() };
     case 'sel':
       // Le tas : ce qui porte un autre sel en pilier lissé, chaque sommet en tas bas.
       return tex(above) === 'sel' ? { family: 'pierre', paint: PILLAR } : { family: 'pierre', piece: mound() };
@@ -409,7 +412,13 @@ export function restOf(c: VoxelCube, ctx: RestContext): RestDrawing | undefined 
     case 'petite':
       if (t === 'eau') return waterOf(c, at, HEART.water.level);
       // Un toit seul : un pavillon ; une rangée de toits (qui ne fait pas de pente) : un toit plat, peint dans la couverture
-      // (la tuile, dans sa matière : le couvercle de la glacière, le toit de la cabane de Frimas, au 5e).
+      // (la tuile, dans sa matière : le toit de la cabane de Frimas, au 5e).
+      // Une tuile posée sur la glace, rien dessus (le couvercle de la glacière, au 5e) : un couvercle mince.
+      // Une rangée le long de x : un quart de tour, pour qu'elle se dessine d'un seul tenant (./assembly.ts).
+      if (t === 'tuile' && tex(at(c.x, c.y, c.z - 1)) === 'glace' && !at(c.x, c.y, c.z + 1)) {
+        const alongX = [1, -1].some((dx) => tex(at(c.x + dx, c.y, c.z)) === 'tuile');
+        return { family: 'toit', piece: lid(), rotation: alongX ? 1 : 0 };
+      }
       if (t === 'toit' || t === 'tuile') return hasSideNeighbour(c, at) ? roofOf(c, at) : { family: 'toit', piece: pavilion() };
       if (t === 'verre') return isWindow(c, at) ? undefined : { family: 'verre', paint: GLAZED };
       return undefined;

@@ -32,15 +32,18 @@ const VOISINES: readonly (readonly [number, number, number])[] = [
 /**
  * Les volumes d'une même matière (clé `x,y,z` → son volume, partagé par toutes ses cases) : les cubes que `groupe`
  * range dans un même plan à part (`null` : hors du lissage), de même texture, même couleur et même état, réunis de
- * face en face. Les cubes hors de la grille n'en font pas partie.
+ * face en face. Les cubes hors de la grille n'en font pas partie. `oneVolume` : le nom du volume d'un bloc que le kit
+ * réunit à d'autres matières (au 5e, chaque rang du toit en damier du kiosque, toile et tuile confondues).
  */
-export function volumesDeMatiere(cubes: readonly VoxelCube[], groupe: (c: VoxelCube) => string | null): Map<string, VolumeDeMatiere> {
+export function volumesDeMatiere(cubes: readonly VoxelCube[], groupe: (c: VoxelCube) => string | null, oneVolume?: (c: VoxelCube) => string | undefined): Map<string, VolumeDeMatiere> {
   const matiereDe = new Map<string, { c: VoxelCube; m: string }>();
   for (const c of cubes) {
     if (!Number.isInteger(c.x) || !Number.isInteger(c.y) || !Number.isInteger(c.z)) continue;
     const g = groupe(c);
     if (g === null) continue;
-    matiereDe.set(cle(c.x, c.y, c.z), { c, m: `${g}|${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}` });
+    const un = oneVolume?.(c);
+    const matiere = un !== undefined ? `volume:${un}` : `${c.texture ?? ''}|${c.color}|${c.top ?? ''}`;
+    matiereDe.set(cle(c.x, c.y, c.z), { c, m: `${g}|${matiere}|${c.muted ? 1 : 0}` });
   }
   const out = new Map<string, VolumeDeMatiere>();
   for (const [k, { c, m }] of matiereDe) {

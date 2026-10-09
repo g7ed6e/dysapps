@@ -138,6 +138,22 @@ describe('Le phare du large du 5e (revue d’ensemble, DA-4 : Archipéo seulemen
     const [t0, t1] = g.phareDuLarge!.opaque;
     for (let t = t0; t < t1; t++) expect(g.opaque.motifs[g.opaque.indices[3 * t]]).not.toBe(MOTIF_ASSEMBLE.vitrail);
     expect(g.fantomes.indices.length).toBeGreaterThan(0);
+    // Le soubassement remplit le socle de 5 × 5 cases (il ne se perd plus dans le sable de l'îlot) : son pan le plus
+    // proche à plus de 2,4 cases de l'axe, rien hors des cases du socle.
+    const socle = new Pinceau();
+    dessinerPhareDuLarge(socle, new Pinceau(), { ...pose!, pieces: new Set(['base']) });
+    const s = socle.fin();
+    let ecart = 0;
+    for (let i = 0; i < s.positions.length; i += 3) ecart = Math.max(ecart, Math.abs(s.positions[i] - pose!.cx), Math.abs(s.positions[i + 2] - pose!.cz));
+    expect(ecart).toBeGreaterThan(2.4);
+    expect(ecart).toBeLessThanOrEqual(2.5);
+    // La galerie finie, la lanterne pas encore : la corniche s'arrête au haut des cases de la galerie, sans entrer dans
+    // les fantômes de la lanterne.
+    const galerie = phareDuLarge(worldCubes('5e', progress, avec((z) => z <= 7), false)).pose!;
+    expect([...galerie.pieces!]).toEqual(['base', 'tower', 'gallery']);
+    const P1 = new Pinceau();
+    dessinerPhareDuLarge(P1, new Pinceau(), galerie);
+    expect(hauteur(P1)).toBeCloseTo(o.z + 8);
     // Tout sauf le toit : la corniche et la terrasse, sans corbeille ni feu.
     const sansToit = phareDuLarge(worldCubes('5e', progress, avec((z) => z <= 8), false)).pose!;
     expect(sansToit.pieces!.size).toBe(4);

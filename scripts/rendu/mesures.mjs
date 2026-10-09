@@ -777,8 +777,10 @@ const CAPTURES = [
   // Les familles du 5e dans Archipéo (le 5e au niveau du 6e, 9 octobre 2026, famille `familles-cinquieme`), à retirer une
   // fois le lot fusionné ; à prendre avec `--rendu archipeo`. Les étiquettes des îles cachées sur le cœur
   // (`sansEtiquettes`), les panneaux des lieux et des monuments masqués (`sansPanneau`). Le Glacier (le dôme, la balise,
-  // les congères) et la Saline (le sel), de près, la cour de leur île à moitié posée (`partie` « cour-mi ») : la glace
-  // et le sel bâtis à côté d'un fantôme, pour juger leur écart à Brume ; le Glacier aussi de nuit. Le Marché (l'échoppe
+  // les congères) et la Saline (le sel), de près, les murs de leur premier plan à moitié posés (`partie` « murs-mi » : une
+  // case sur deux de glace ou de sel bâtie, l'autre en fantôme Brume, côte à côte), pour juger leur écart à Brume, tous
+  // les succès déjà gagnés (`succes`) pour que le bandeau « Succès débloqué » ne couvre pas la scène ; le Glacier aussi de
+  // nuit. Le Marché (l'échoppe
   // de toile et son auvent), le Comptoir (l'échoppe de tuile, la tente, la glacière), le Bourg (le logis d'enluminure,
   // le four, l'écritoire), le Delta (le moulin, la rizière), le Marais (la hutte de tourbe, les mares, de jour et de
   // nuit), le Manoir (la tour de lambris, la serre) ; le phare du large pièce par pièce (`etages` : le socle, la tour, la
@@ -789,7 +791,8 @@ const CAPTURES = [
     vue: 'île',
     famille: 'familles-cinquieme',
     ile: 'maths-5e-signed-numbers',
-    partie: 'cour-mi',
+    partie: 'murs-mi',
+    succes: 'tous',
     posees: 'toutes',
     zoomer: 3,
     sansEtiquettes: true,
@@ -812,7 +815,7 @@ const CAPTURES = [
     ...autres,
   })),
   { nom: 'familles-5e-manoir', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-grammar', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
-  { nom: 'familles-5e-saline', vue: 'île', famille: 'familles-cinquieme', ile: 'physics-chemistry-5e-matter-universe', partie: 'cour-mi', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-5e-saline', vue: 'île', famille: 'familles-cinquieme', ile: 'physics-chemistry-5e-matter-universe', partie: 'murs-mi', succes: 'tous', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
   // Le phare du large (world/offshoreLighthouse.ts, LAYERS) posé jusqu'à un étage : le socle (1), la tour (7), la
   // galerie (8), la lanterne (9) ; puis fini, de nuit (son feu).
   ...[
@@ -834,7 +837,9 @@ const CAPTURES = [
   { nom: 'familles-5e-phare-etapes-fini-nuit', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-signed-numbers', lieu: 'landmark-5e-1', sansPanneau: true, nuit: true, zoomer: 3, finesse: 2 },
   { nom: 'familles-5e-kiosque', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-grammar', lieu: 'landmark-5e-2', sansPanneau: true, zoomer: 3, finesse: 2 },
   { nom: 'familles-5e-kiosque-loin', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-grammar', lieu: 'landmark-5e-2', sansPanneau: true, finesse: 2 },
-  { nom: 'familles-5e-ecole', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', lieu: 'school', sansPanneau: true, zoomer: 4, finesse: 2 },
+  // L'école : le lieu `school` se prenait sur l'échoppe du Marché ; la vue de la cour de la Halle (mêmes réglages, l'école
+  // au premier plan) recadrée sur l'école (`recadre`, relevé sur la capture du 9 octobre 2026).
+  { nom: 'familles-5e-ecole', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', lieu: 'assembly', sansPanneau: true, zoomer: 4, recadre: { x: 270, y: 330, width: 250, height: 270 }, finesse: 3 },
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
     nom: `familles-5e-salle-fond${suffixe}`,
     vue: 'île',

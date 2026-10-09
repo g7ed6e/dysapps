@@ -43,6 +43,8 @@ describe('La table commune « matière → famille »', () => {
     expect(de('toile', 'or', 'cristal', 'velours', 'eau')).toEqual(['toile', 'precieux', 'precieux', 'precieux', 'eau']);
     // Le 5e (9 octobre 2026).
     expect(de('glace', 'dalle', 'strate', 'sel', 'tourbe')).toEqual(Array(5).fill('pierre'));
+    // Le nuage en congères, tas bas : de la famille de la pierre (retouches du 9 octobre 2026).
+    expect(familyOf('nuage')).toBe('pierre');
     expect(de('panneau', 'lambris', 'bambou')).toEqual(Array(3).fill('bardage'));
     expect(de('vitrail', 'enluminure', 'riziere')).toEqual(['verre', 'colombage', 'colombage']);
     // Une couleur seule (sans matière) n'a pas de famille.
@@ -53,7 +55,7 @@ describe('La table commune « matière → famille »', () => {
   it('les matières rangées par analogie sont dans la table, une seule fois ; celles du 5e n’y sont plus', () => {
     for (const t of FAMILIES_TO_CONFIRM) expect(familyOf(t), t).not.toBeNull();
     expect(new Set(FAMILIES_TO_CONFIRM).size).toBe(FAMILIES_TO_CONFIRM.length);
-    for (const t of ['glace', 'dalle', 'strate', 'sel', 'tourbe', 'panneau', 'lambris', 'bambou', 'vitrail', 'enluminure', 'riziere'] as const) expect(FAMILIES_TO_CONFIRM, t).not.toContain(t);
+    for (const t of ['glace', 'dalle', 'strate', 'sel', 'tourbe', 'panneau', 'lambris', 'bambou', 'vitrail', 'enluminure', 'riziere', 'nuage'] as const) expect(FAMILIES_TO_CONFIRM, t).not.toContain(t);
   });
 
   it('elle s’active au 6e et au 5e : seuls le 4e et le 3e restent vides', () => {
@@ -62,8 +64,6 @@ describe('La table commune « matière → famille »', () => {
     for (const a of ['4e', '3e'] as const) expect(KITS[a].matieres, a).toEqual({});
   });
 
-  /** Les matières rangées par analogie qu'un archipel pose : au 5e, le nuage (les congères du Glacier, dessinées par le reste). */
-  const ANALOGIES_POSEES: Record<'6e' | '5e', string[]> = { '6e': [], '5e': ['nuage'] };
 
   for (const a of ['6e', '5e'] as const)
   it(`au ${a}, tout construit avec les commandes et les quêtes : aucune autre matière rangée par analogie, et ce qui reste en blocs est nommé`, () => {
@@ -71,7 +71,7 @@ describe('La table commune « matière → famille »', () => {
     const cubes = worldCubes(a, progress, village, false, [], false, 'halle');
     const { reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
     const restes = sansToursDuCoeur(reste).filter((c) => !c.quest);
-    for (const c of restes) if (!ANALOGIES_POSEES[a].includes(c.texture ?? '')) expect((FAMILIES_TO_CONFIRM as readonly string[]).includes(c.texture ?? ''), `${c.texture}`).toBe(false);
+    for (const c of restes) expect((FAMILIES_TO_CONFIRM as readonly string[]).includes(c.texture ?? ''), `${c.texture}`).toBe(false);
     const archi = architectureDe(a, restes, { batiments: batimentsDe(a), cours: coursDe(a), toitures: blocsDArchipeoDe(a), caseDuLieu });
     const cle = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z}`;
     const pris = new Set([...archi.remplacees, ...archi.peints.keys()]);

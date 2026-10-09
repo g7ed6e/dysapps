@@ -157,6 +157,16 @@ const auxPonts = (m: MaillageDeLaConstruction) => (m.ponts ?? []).reduce((n, p) 
 /** Les triangles des pièces d'architecture dessinées (lot 7) : comptées à part, au plus un cube pour ce qui est fait de main d'homme. */
 const auxPieces = (m: MaillageDeLaConstruction) => (m.pieces ?? []).reduce((n, p) => n + p.opaque[1] - p.opaque[0], 0);
 
+/** Les cases des pièces d'architecture dessinées (lot 7) : celles de chaque pièce, ou de chaque rangée d'un tenant. */
+function casesEnPiece(m: MaillageDeLaConstruction): number {
+  const vues = new Set<string>();
+  for (const p of m.pieces ?? [])
+    for (let i = 0; i < p.cases.length; i += 6)
+      for (let x = p.cases[i]; x <= p.cases[i + 3]; x++)
+        for (let y = p.cases[i + 1]; y <= p.cases[i + 4]; y++) for (let z = p.cases[i + 2]; z <= p.cases[i + 5]; z++) vues.add(cle(x, y, z));
+  return vues.size;
+}
+
 /** Un triangle d'une lanterne : le toucher retrouve la case de la lanterne. */
 function dansUneLanterne(lanternes: Map<string, VoxelCube>, t: { centre: { x: number; y: number; z: number }; n: { x: number; y: number; z: number } }) {
   const { cell } = caseDeLaConstruction(t.centre, t.n);
@@ -187,11 +197,15 @@ describe('La construction taillée (lot R5)', () => {
         expect(cout.drawCalls, `${a} ${etat}`).toBeLessThanOrEqual(enveloppeDe('construction', a).drawCalls);
       }
       // Et bien moins que les cubes d'avant (bornes comprises, qui sortent vers leur poste), sans compter les ponts de
-      // pierre et de bois du 5e (un modèle qui remplace ses cubes de planches) ni les pièces d'architecture dessinées
-      // (lot 7 : les rochers, arbres, congères et poteaux du reste, comptés à part), dans l'enveloppe ci-dessus.
+      // pierre et de bois du 5e (un modèle qui remplace ses cubes de planches), dans l'enveloppe ci-dessus. Au 5e
+      // seulement, sans compter non plus les pièces d'architecture dessinées (lot 7 : les rochers, arbres, congères et
+      // poteaux du reste), bornées à part : au plus un cube (10 triangles) par case en pièce, en moyenne.
       const { cubes, sol } = monde(a);
       const m = maillageDeLaConstruction(a, cubes, sol);
-      expect(coutDeLaConstruction(m).triangles - auxPonts(m) - auxPieces(m), a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.7);
+      const total = coutDeLaConstruction(m).triangles;
+      const pieces = a === '5e' ? auxPieces(m) : 0;
+      expect(total - auxPonts(m) - pieces, a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.7);
+      if (a === '5e') expect(pieces, a).toBeLessThanOrEqual(10 * casesEnPiece(m));
     }
   }, 60_000);
 
@@ -591,25 +605,26 @@ describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur a
   const dansLaCase = (m: MaillageDeLaConstruction, x: number, y: number) =>
     triangles(m.opaque).filter((t) => t.p.every(([px, , pz]) => px > x + 0.05 && px < x + 0.95 && pz > y + 0.05 && pz < y + 0.95));
 
-  for (const a of ['6e', '5e'] as const)
-  it(`au ${a}, chaque trophée est plus petit que sa case : il ne touche ni le pilier voisin ni la sablière, le fond se voit au-dessus`, () => {
-    const { m, cubes, coin, places } = avecLesTrophees(a);
-    // Les 24 trophées sont dans le monde, à leur place.
-    const poses = new Set(cubes.filter((c) => c.place === 'trophies').map((c) => cle(c.x, c.y, c.z)));
-    for (const p of places) expect(poses.has(cle(p.x, p.y, p.z))).toBe(true);
-    const toit = coin.z + 4;
-    for (const p of places) {
-      const t = dansLaCase(m, p.x, p.y).filter((u) => u.p.every(([, h]) => h >= p.z - 1 && h <= p.z + 1));
-      expect(t.length, cle(p.x, p.y, p.z)).toBeGreaterThan(0);
-      // De l'ombre au-dessus : le haut du trophée du second rang est à plus d'une demi-case sous le toit.
-      const haut = Math.max(...dansLaCase(m, p.x, p.y).map((u) => Math.max(...u.p.map(([, h]) => h))));
-      expect(haut, cle(p.x, p.y, p.z)).toBeLessThanOrEqual(coin.z + 2 + 2 * TROPHEE.hauteur + 1e-6);
-      expect(toit - haut).toBeGreaterThanOrEqual(0.5);
-    }
-    // Les deux rangs : celui du socle, puis le second, plus étroit, posé sur lui.
-    expect(TROPHEE.haut).toBeLessThan(TROPHEE.bas);
-    expect(TROPHEE.bas).toBeLessThan(1);
-  });
+  for (const a of ['6e', '5e'] as const) {
+    it(`au ${a}, chaque trophée est plus petit que sa case : il ne touche ni le pilier voisin ni la sablière, le fond se voit au-dessus`, () => {
+      const { m, cubes, coin, places } = avecLesTrophees(a);
+      // Les 24 trophées sont dans le monde, à leur place.
+      const poses = new Set(cubes.filter((c) => c.place === 'trophies').map((c) => cle(c.x, c.y, c.z)));
+      for (const p of places) expect(poses.has(cle(p.x, p.y, p.z))).toBe(true);
+      const toit = coin.z + 4;
+      for (const p of places) {
+        const t = dansLaCase(m, p.x, p.y).filter((u) => u.p.every(([, h]) => h >= p.z - 1 && h <= p.z + 1));
+        expect(t.length, cle(p.x, p.y, p.z)).toBeGreaterThan(0);
+        // De l'ombre au-dessus : le haut du trophée du second rang est à plus d'une demi-case sous le toit.
+        const haut = Math.max(...dansLaCase(m, p.x, p.y).map((u) => Math.max(...u.p.map(([, h]) => h))));
+        expect(haut, cle(p.x, p.y, p.z)).toBeLessThanOrEqual(coin.z + 2 + 2 * TROPHEE.hauteur + 1e-6);
+        expect(toit - haut).toBeGreaterThanOrEqual(0.5);
+      }
+      // Les deux rangs : celui du socle, puis le second, plus étroit, posé sur lui.
+      expect(TROPHEE.haut).toBeLessThan(TROPHEE.bas);
+      expect(TROPHEE.bas).toBeLessThan(1);
+    });
+  }
 
   it('ailleurs, tant que le kit de l’archipel ne reprend pas la salle, les trophées restent des blocs entiers (et Blocland les garde)', () => {
     for (const a of ['4e', '3e'] as const) {

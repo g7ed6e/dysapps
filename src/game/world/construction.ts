@@ -380,7 +380,9 @@ export function maillageDeLaConstruction(
     // plus sombres.
     const k0 = cle(c.x, c.y, c.z);
     const lisse = Boolean(archi?.lisses.size && archi.lisses.has(k0) && !archi.remplacees.has(k0));
-    const k = `${repeint ?? ''}|${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${couvert ? `toit:${c.tag}` : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}|${lisse ? 1 : 0}`;
+    // Un verre que le kit peint comme une vitre (le lanterneau du kiosque, au 5e).
+    const vitre = Boolean(kit.panes?.(c));
+    const k = `${repeint ?? ''}|${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${couvert ? `toit:${c.tag}` : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}|${lisse ? 1 : 0}|${vitre ? 1 : 0}`;
     let f = vues.get(k);
     if (f) return f;
     const delave = (x: Faces): Faces => (c.muted ? { dessus: mixColor(x.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(x.cote, DELAVE[0], DELAVE[1]) } : x);
@@ -414,9 +416,11 @@ export function maillageDeLaConstruction(
       const x = hex(c.color);
       f = { dessus: c.top ? hex(c.top) : mixColor(x, 0xffffff, 0.12), cote: x };
     }
+    if (vitre) f = { dessus: eclaircir(f.dessus, VITRE_DE_JOUR), cote: eclaircir(f.cote, VITRE_DE_JOUR) };
     if (lisse) f = { dessus: mixColor(f.dessus, f.cote, 0.5), cote: f.cote };
     // Une matière que le kit tient loin du fantôme Brume (au 5e : la glace, le sel, la toile ; le référent dys).
-    if (role === null && !options.navire && kit.ghostApart?.includes(c.texture as TextureKind)) f = { dessus: apartFromGhost(f.dessus), cote: apartFromGhost(f.cote) };
+    const texture = c.texture;
+    if (role === null && !options.navire && texture !== undefined && kit.ghostApart?.some((t) => t === texture)) f = { dessus: apartFromGhost(f.dessus), cote: apartFromGhost(f.cote) };
     vues.set(k, f);
     return f;
   };

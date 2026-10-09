@@ -105,6 +105,17 @@ export interface Kit {
    * le toit en damier du kiosque) : sa matière unie, sans dessus sous un autre bloc posé.
    */
   flat?: (c: VoxelCube) => boolean;
+  /**
+   * Le lissage d'un bloc avec d'autres matières (au 5e : chaque rang du toit en damier du kiosque, un seul volume, toile
+   * et tuile confondues, le damier peint dessus par leurs couleurs) : le nom de son volume ; `undefined` : le volume de
+   * sa seule matière.
+   */
+  oneVolume?: (c: VoxelCube) => string | undefined;
+  /**
+   * Un bloc de verre peint comme une vitre, plus sombre que sa matière (au 5e : le lanterneau de vitrail du kiosque, une
+   * verrière ambrée, et non un bloc d'or) : ses couleurs assombries comme celles des fenêtres (`VITRE_DE_JOUR`).
+   */
+  panes?: (c: VoxelCube) => boolean;
   /** Les matières tenues loin du fantôme Brume (../heartPieces.ts, `apartFromGhost` ; au 5e : la glace, le sel, la toile). */
   ghostApart?: readonly TextureKind[];
   /**

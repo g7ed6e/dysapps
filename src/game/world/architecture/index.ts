@@ -309,7 +309,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
   };
   // Les volumes lissés (./volumes.ts), fantômes compris : tous, pour la teinte (world/construction.ts) ; la peinture ne
   // lisse que les monuments et les petites constructions (`groupeDe`), les cours gardant la leur.
-  const volumes = kit.lissage ? volumesDeMatiere(cubes, (c) => (LUMIERES.has(c.texture ?? '') ? null : groupeDuLissage(c, batiments))) : null;
+  const volumes = kit.lissage ? volumesDeMatiere(cubes, (c) => (LUMIERES.has(c.texture ?? '') ? null : groupeDuLissage(c, batiments)), kit.oneVolume) : null;
   if (volumes) out.lisses = volumes;
   const choisis: { c: VoxelCube; famille: Famille; v: Voisinage; piece: IdDePiece; rotation: Rotation; sansDecharge?: boolean; groupe: string; rangees: number; lisse?: boolean; dessin?: DessinDePiece | ManiereDuMur }[] = [];
   const poteaux: VoxelCube[] = [];

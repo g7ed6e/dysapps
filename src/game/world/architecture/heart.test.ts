@@ -228,6 +228,8 @@ describe('Le reste du 6e (./heart.ts)', () => {
     // Une craie claire hypothétique (#EEEEE6, à 10 du fantôme Brume) : menée vers le gris jusqu'à 70 d'écart au moins.
     expect(rgbGap(0xeeeee6, BRUME)).toBeLessThan(HEART.chalk.ghostGap);
     expect(rgbGap(apartFromGhost(0xeeeee6), BRUME)).toBeGreaterThanOrEqual(HEART.chalk.ghostGap);
+    // Avec un point de marge : l'arrondi du maillage (en couleur linéaire, puis à l'écran) ne la ramène pas sous 70.
+    expect(rgbGap(apartFromGhost(0xeeeee6), BRUME)).toBeGreaterThanOrEqual(HEART.chalk.ghostGap + 1);
     // Le chaperon du dessus (plus sombre que les flancs, dans le shader) ne fait que s'en écarter davantage.
     expect(apartFromGhost(0xeeeee6)).not.toBe(0xeeeee6);
     // Une teinte déjà loin du fantôme ne change pas.

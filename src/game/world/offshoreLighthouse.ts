@@ -9,8 +9,9 @@
 // `LAYERS`), et toutes celles d'en dessous, laisse la place à sa pièce du modèle (intention du directeur artistique,
 // 9 octobre 2026) : le socle au soubassement, la tour au fût, la galerie à la corniche (et au haut du fût), la lanterne
 // à la terrasse (le parapet), le toit à la corbeille de fer et au feu, qui ne s'allume que le phare fini. Le modèle tient
-// dans les cases du monument (5 × 5 au pied, 3 × 3 pour la tour, 11 de haut) ; les cases des pièces pas encore finies
-// restent des cubes et des fantômes, comme pour tout plan.
+// dans les cases du monument (5 × 5 au pied, 3 × 3 pour la tour, 11 de haut) ; une pièce ne monte jamais dans les cases
+// d'une pièce pas encore finie (le fût sous la galerie, la corniche sous la lanterne) ; les cases des pièces pas encore
+// finies restent des cubes et des fantômes, comme pour tout plan.
 import type { VoxelCube } from '../Voxel';
 import { mixColor } from './daylight';
 import { DELAVE, lueur, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './decor/brush';
@@ -43,7 +44,11 @@ export const COULEURS_DU_PHARE_DU_LARGE = {
  */
 export const MESURES_DU_PHARE_DU_LARGE = {
   pans: 12,
-  soubassement: { haut: 1, rayon: [2.3, 2.1] },
+  /**
+   * Le soubassement remplit les 5 × 5 cases du socle (retouches du 9 octobre 2026 : plus petit, il se perdait dans le
+   * sable de l'îlot) : un pan à plat à 2,45 case de l'axe (le rayon fois cos 15°), ses coins dans les cases du socle.
+   */
+  soubassement: { haut: 1, rayon: [2.53, 2.35] },
   tour: { bas: 1, haut: 8, rayon: [1.45, 1.15] },
   corniche: { haut: 8.35, rayon: 1.5 },
   parapet: { haut: 8.95, rayon: 1.5, epaisseur: 0.22 },
@@ -64,6 +69,9 @@ export const MESURES_DU_PHARE_DU_LARGE = {
  * `LAYERS`), au-dessus du pied du monument.
  */
 const FUT_SANS_GALERIE = LAYERS[PHARE_DU_LARGE].tower[1] + 1;
+
+/** Le haut de la corniche tant que la lanterne n'est pas finie : le haut de la dernière case de la galerie. */
+const CORNICHE_SANS_LANTERNE = LAYERS[PHARE_DU_LARGE].gallery[1] + 1;
 
 /**
  * Les hublots du fût (GD-2, proposition du consultant Archipéo) : les vitraux du monument, ronds, à mi-hauteur, sur les
@@ -199,16 +207,19 @@ export function dessinerPhareDuLarge(P: Pinceau, L: Pinceau, o: PoseDuPhareDuLar
   // Un pan à plat vers la caméra (au sud).
   const rot = Math.PI / n;
   if (drawn(o, 'base')) tronconique(P, cx, cz, at(0), at(M.soubassement.haut), M.soubassement.rayon[0], M.soubassement.rayon[1], n, rot, peint(C.soubassement));
+  // La corniche déborde de la tour et porte la plate-forme du feu : tant que la lanterne n'est pas finie, elle s'arrête
+  // au haut des cases de la galerie (elle n'entre pas dans les fantômes de la lanterne), puis reprend sa hauteur.
+  const t = M.tour;
+  const corniche = drawn(o, 'lantern') ? { bas: t.haut, haut: M.corniche.haut } : { bas: CORNICHE_SANS_LANTERNE - (M.corniche.haut - t.haut), haut: CORNICHE_SANS_LANTERNE };
   // Le fût : jusqu'au haut de la tour du plan tant que la galerie n'est pas finie (il ne monte pas dans ses fantômes),
-  // puis entier.
+  // puis jusqu'au pied de la corniche.
+  const rayonDuFut = (h: number) => t.rayon[0] + ((t.rayon[1] - t.rayon[0]) * (h - t.bas)) / (t.haut - t.bas);
   if (drawn(o, 'tower')) {
-    const t = M.tour;
-    const top = drawn(o, 'gallery') ? t.haut : FUT_SANS_GALERIE;
-    const rayon = t.rayon[0] + ((t.rayon[1] - t.rayon[0]) * (top - t.bas)) / (t.haut - t.bas);
-    tronconique(P, cx, cz, at(t.bas), at(top), t.rayon[0], rayon, n, rot, peint(C.pierre), false);
+    const top = drawn(o, 'gallery') ? corniche.bas : FUT_SANS_GALERIE;
+    tronconique(P, cx, cz, at(t.bas), at(top), t.rayon[0], rayonDuFut(top), n, rot, peint(C.pierre), false);
   }
-  // La corniche déborde de la tour et porte la plate-forme du feu ; le parapet (la terrasse) en fait le tour.
-  if (drawn(o, 'gallery')) tronconique(P, cx, cz, at(M.tour.haut), at(M.corniche.haut), M.tour.rayon[1], M.corniche.rayon, n, rot, peint(C.corniche));
+  // Le parapet (la terrasse) fait le tour de la corniche.
+  if (drawn(o, 'gallery')) tronconique(P, cx, cz, at(corniche.bas), at(corniche.haut), rayonDuFut(corniche.bas), M.corniche.rayon, n, rot, peint(C.corniche));
   if (drawn(o, 'lantern')) anneauCreux(P, cx, cz, at(M.corniche.haut), at(M.parapet.haut), M.parapet.rayon, M.parapet.epaisseur, n, peint(C.corniche));
   if (!drawn(o, 'roof')) return;
   tronconique(P, cx, cz, at(M.corbeille.bas), at(M.corbeille.haut), M.corbeille.rayon[0], M.corbeille.rayon[1], 6, 0, peint(C.fer));
