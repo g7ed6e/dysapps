@@ -1,7 +1,7 @@
 // Les bornes des missions : leur place sur l'île, et ce qui ne doit jamais les cacher dans la vue de l'île.
 import { type BiomeId, BIOMES, missionsJouables } from '../../biomes';
-import { coeurDe, islandDef } from '../map';
-import { isSchoolIsland } from './base';
+import { coeurDe, islandDef, toWorld } from '../map';
+import { groundHeight, isSchoolIsland } from './base';
 import { versLaCameraDuDessin, VUE_DE_L_ILE } from './view';
 import { chosenStation, layoutCache } from '../placement';
 
@@ -42,6 +42,35 @@ export function questStations(id: BiomeId): { typeId: string; x: number; y: numb
     const p = chosenStation(`${id}:${st.typeId}`);
     return p ? { typeId: st.typeId, x: p.x, y: p.y } : st;
   });
+}
+
+/** Une borne de mission dans le monde : le milieu de sa case (x, y de la grille) et le dessus de son ardoise (z). */
+export interface BorneDuMonde {
+  x: number;
+  y: number;
+  sommet: number;
+}
+
+const bornesDuMonde = layoutCache<BiomeId, readonly BorneDuMonde[]>();
+
+/**
+ * Les bornes de mission d'un lieu dans le monde, le lieu posé et tourné (`toWorld`), à leur place réelle
+ * (`questStations`) : le milieu de leur case, et le dessus de leur ardoise (le socle et l'ardoise, deux cubes sur le sol,
+ * comme les pose world/terrain.ts ; la pointe de leur bulle se pose `SIGNE.auDessus` plus haut). La caméra les garde
+ * dans le cadre au téléphone (three/camera/framings.ts, `cadrerLesBornes`). Gardé jusqu'au prochain changement de
+ * disposition.
+ */
+export function bornesDansLeMonde(id: BiomeId): readonly BorneDuMonde[] {
+  const connues = bornesDuMonde.get(id);
+  if (connues) return connues;
+  const def = islandDef(id);
+  const index = BIOMES.findIndex((b) => b.id === id);
+  const out = questStations(id).map((st): BorneDuMonde => {
+    const w = toWorld(def, st.x, st.y);
+    return { x: w.x + 0.5, y: w.y + 0.5, sommet: def.altitude + groundHeight(index, st.x, st.y) + 3 };
+  });
+  bornesDuMonde.set(id, out);
+  return out;
 }
 
 /** Les bornes de mission d'un lieu à leur place de la carte de départ, dans son repère. */

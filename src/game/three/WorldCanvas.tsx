@@ -256,8 +256,11 @@ export default function WorldCanvas({
     const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant, lecteurDePlaceLibre(el), ileVisee);
     const affordance = creerAffordance(derniers, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
+    // La taille de la vue, tenue à jour par `resize` : la caméra y cadre les bornes au téléphone.
+    const vue = { w: el.clientWidth, h: el.clientHeight };
     const lecture = {
       place: lecteurDePlaceLibre(el),
+      vue,
       // L'île de la flèche, ou la case où elle se pose sur un ouvrage (GD-7) : le cadrage garde la flèche dans la vue.
       destination: () => {
         const { ouvrage, pointe, island } = bornes.donneesDeLaFleche();
@@ -430,6 +433,8 @@ export default function WorldCanvas({
       const w = el.clientWidth;
       const h = el.clientHeight;
       if (!w || !h) return;
+      vue.w = w;
+      vue.h = h;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);

@@ -14,10 +14,12 @@ import { neighboursOf } from '../world/linkGeometry';
 import { archipelagoOfIsland } from '../world/archipelagos';
 import { dispositionEnGrille } from '../world/grid';
 import { placeLibre, type Rect } from '../freeSpace';
-import { avatarRoute, bridgePath, cadreDeLaLiaison, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
+import { avatarRoute, bornesDansLeMonde, bridgePath, cadreDeLaLiaison, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
 import { getBridge } from '../world/archipelago';
-import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera';
-import { ZOOM_DE_LA_CARTE } from './camera/framings';
+import { AUTOUR_DE_LA_DESTINATION, BORNES_AU_TELEPHONE, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera';
+import { cadrerLesBornes, ZOOM_DE_LA_CARTE } from './camera/framings';
+import { RESERVE_DU_BAS } from '../freeSpace';
+import { SIGNE } from '../world/affordance';
 import type { Derniers, Instant, Monde } from './scenePart';
 
 /** La scène de la tablette de référence (1024 × 768, moins la barre du haut) ; la vue d'une île, à gauche du panneau. */
@@ -627,4 +629,105 @@ it('le recadrage d’une fiche (lot 2 de « Toucher le monde ») : un glissement
   // Visé au-dessus de l'horizon (le ciel) : rien ne bouge.
   cam.lookAt(20, 40, 30);
   expect(decalagePourViser(cam, objet, { x: 0, y: 0.5 }, new THREE.Vector3()).length()).toBe(0);
+});
+
+// Les bornes au téléphone (GD-14, consultant UX UI) : sur les îles-écoles à cinq places (x = 0 à 16), la borne de la
+// mission 1 sortait par le bord droit de l'écran en portrait. La caméra glisse de côté, ou recule, juste ce qu'il faut ;
+// la tablette garde son cadrage. Sans WebGL : on projette les bornes avec la caméra calculée.
+describe('Les bornes au téléphone en portrait (GD-14)', () => {
+  /** La caméra de la vue de l'île (`island`) ou du bonhomme posé sur `home`, dans une vue `t` dont la caméra connaît la taille. */
+  function cadrer(habillage: Habillage, t: { w: number; h: number }, island: BiomeId | null, home: BiomeId): THREE.PerspectiveCamera {
+    const a = archipelagoOfIsland(home);
+    const b = worldBounds(a);
+    const monde: Monde = { scene: new THREE.Scene(), archipel: a, habillage, surface: null, etendue: b, centre: { x: (b.minX + b.maxX) / 2, y: (b.minY + b.maxY) / 2 }, largeur: Math.max(b.maxX - b.minX, b.maxY - b.minY), liaisons: () => [] };
+    const camera = new THREE.PerspectiveCamera(40, t.w / t.h, 0.5, 2000);
+    const focus = { island, seq: 0 } as unknown as Derniers['focus'];
+    const derniers = { current: { carte: false, focus, home, forceDay: true, sons: false } as unknown as Derniers };
+    const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+    const lecture = { place: () => ({ libre: { x0: 0, y0: 0, x1: t.w, y1: t.h }, w: t.w, h: t.h, saut: false }), destination: () => null, vue: t };
+    creerCamera(monde, camera, new THREE.Object3D(), derniers, instant, lecture).cadrer(focus, false, home);
+    camera.updateMatrixWorld();
+    return camera;
+  }
+  /**
+   * Le plus petit écart, en pixels CSS, entre une borne de `id` (sa bulle la plus grande, son pied) et ce qu'elle ne doit
+   * pas passer : la marge des bords, la barre du bas, la colonne de droite (Menu et classes). Négatif : elle déborde.
+   */
+  function jeu(cam: THREE.Camera, t: { w: number; h: number }, id: BiomeId): number {
+    const B = BORNES_AU_TELEPHONE;
+    let min = Infinity;
+    for (const b of bornesDansLeMonde(id)) {
+      const pointe = ecran(cam, t, b.x, b.sommet + SIGNE.auDessus, b.y);
+      const pied = ecran(cam, t, b.x, b.sommet - 2, b.y);
+      const haut = pointe.y - B.hautBulle;
+      const plafond = pointe.x + B.demiBulle > t.w - B.colonne.largeur - B.marge ? B.colonne.bas + B.marge : B.marge;
+      min = Math.min(min, pointe.x - B.demiBulle - B.marge, t.w - B.marge - (pointe.x + B.demiBulle), haut - plafond, t.h - RESERVE_DU_BAS - B.marge - pied.y);
+    }
+    return min;
+  }
+  const ECOLES = ['maths-5e-proportionality', 'maths-4e-algebra', 'maths-3e-functions'] as BiomeId[];
+  const TELEPHONES = [
+    { w: 390, h: 844 },
+    { w: 360, h: 740 },
+  ];
+
+  it('les îles-écoles du 5e au 3e : leurs bornes à 0, 4, 8, 12 et 16 (quatre au 4e), comme sur les captures', () => {
+    for (const id of ECOLES) {
+      const xs = bornesDansLeMonde(id).map((b) => b.x - bornesDansLeMonde(id)[0].x);
+      expect(xs, id).toEqual(id === 'maths-4e-algebra' ? [0, 4, 8, 12] : [0, 4, 8, 12, 16]);
+    }
+  });
+
+  it.each(Object.keys(HABILLAGES) as (keyof typeof HABILLAGES)[])('%s : chaque borne et sa bulle tiennent dans la vue, à 24 px des bords, hors de la colonne et de la barre du bas', (u) => {
+    for (const id of ECOLES)
+      for (const t of TELEPHONES)
+        for (const island of [id, null]) {
+          const vue = island ? 'vue de l’île' : 'bonhomme posé';
+          const marge = jeu(cadrer(HABILLAGES[u], t, island, id), t, id);
+          expect(marge, `${id}, ${vue}, ${t.w} × ${t.h}`).toBeGreaterThanOrEqual(-0.5);
+        }
+  });
+
+  it('juste ce qu’il faut : dans la vue de l’île du Marché, la borne la plus serrée est à la marge, pas plus loin', () => {
+    const t = TELEPHONES[0];
+    for (const u of ['blocland', 'archipeo'] as const) {
+      const marge = jeu(cadrer(HABILLAGES[u], t, 'maths-5e-proportionality', 'maths-5e-proportionality'), t, 'maths-5e-proportionality');
+      expect(marge, u).toBeGreaterThanOrEqual(-0.5);
+      expect(marge, u).toBeLessThan(1);
+    }
+  });
+
+  it('la tablette garde son cadrage : en paysage, panneau ouvert ou en portrait, rien ne glisse ni ne recule', () => {
+    const target = new THREE.Vector3(10, 4, 10);
+    const pos = new THREE.Vector3(30, 30, -10);
+    const bornes = bornesDansLeMonde('maths-5e-proportionality');
+    for (const [w, h] of [[1024, 688], [1024, 768], [1280, 800], [505, 688], [768, 1024], [844, 390]]) {
+      const r = cadrerLesBornes(target, pos, bornes, w, h, 40);
+      expect(r.glisse.length(), `${w} × ${h}`).toBe(0);
+      expect(r.recul, `${w} × ${h}`).toBe(1);
+    }
+    // Les bornes y tiennent déjà : à la tablette de référence, en paysage, la vue de l'île les montre entières.
+    for (const u of ['blocland', 'archipeo'] as const)
+      for (const id of ECOLES) {
+        const t = { w: 1024, h: 688 };
+        const cam = cadrer(HABILLAGES[u], t, id, id);
+        for (const b of bornesDansLeMonde(id)) {
+          const p = ecran(cam, t, b.x, b.sommet + SIGNE.auDessus, b.y);
+          expect(p.x > BORNES_AU_TELEPHONE.demiBulle && p.x < t.w - BORNES_AU_TELEPHONE.demiBulle && p.y < t.h - RESERVE_DU_BAS, `${u} ${id}`).toBe(true);
+        }
+      }
+  });
+
+  it('au téléphone, ni le nord ni la direction de vue ne changent : la caméra glisse à plat et recule seulement', () => {
+    const t = TELEPHONES[0];
+    const cam = cadrer(HABILLAGES.blocland, t, 'maths-5e-proportionality', 'maths-5e-proportionality');
+    const c = islandCenter('maths-5e-proportionality');
+    const r = cadrerLesBornes(new THREE.Vector3(c.x, c.z + 1, c.y), new THREE.Vector3(c.x + 30, c.z + 40, c.y - 30), bornesDansLeMonde('maths-5e-proportionality'), t.w, t.h, 40);
+    expect(r.glisse.y).toBeCloseTo(0, 9);
+    expect(r.recul).toBeGreaterThanOrEqual(1);
+    // La vue de l'île garde la direction de celle de la tablette, qui ne glisse pas.
+    const d = cam.getWorldDirection(new THREE.Vector3());
+    const tablette = cadrer(HABILLAGES.blocland, { w: 1024, h: 688 }, 'maths-5e-proportionality', 'maths-5e-proportionality').getWorldDirection(new THREE.Vector3());
+    expect(d.angleTo(tablette)).toBeLessThan(1e-6);
+  });
 });
