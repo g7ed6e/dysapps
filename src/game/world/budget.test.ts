@@ -209,8 +209,8 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
     });
 });
 
-it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026), puis 120 avec une seule texture pour les blocs (piste 2, 7 octobre 2026)', () => {
-  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 100_000, drawCalls: 120 });
+it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026), puis 120 avec une seule texture pour les blocs (piste 2, 7 octobre 2026), puis 102 000 triangles pour les grands projets du 4e (GD-10, 8 octobre 2026)', () => {
+  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 102_000, drawCalls: 120 });
 });
 
 /**
@@ -305,15 +305,15 @@ it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tour
   expect(arrangeViewCost(null)).toEqual({ triangles: 0, drawCalls: 0 });
 }, 20_000);
 
-it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus), sauf le sentier au 3e, sous le plafond', () => {
+// Un archipel par test : chacun refait cinq fois le maillage de tout son terrain, plus grand depuis les îlots des grands
+// projets de la 4e et de la 3e (GD-10).
+it.each(ARCHIPELAGO_IDS)('GD-9, %s : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus), sauf le sentier au 3e, sous le plafond', (a) => {
   // Les appels de plus (le sentier au 3e) tiennent sous le plafond au pire de la région : vérifié dans le test du pire cas.
   const { progress, world } = toutConstruit();
-  for (const a of ARCHIPELAGO_IDS) {
-    const terrain = worldCubes(a, progress, world, false);
-    const avant = buildMesh(terrain).length;
-    for (const [kind, n] of [['bac', LONG_LENGTH], ['pont', LONG_LENGTH], ['pont', SHORT_LENGTH], ['sentier', SHORT_LENGTH]] as const) {
-      const plus = APPELS_EN_PLUS_D_UNE_LIAISON[`${a} ${kind}`] ?? 0;
-      expect(buildMesh([...terrain, ...linkCubes(a, kind, n)]).length, `${a} ${kind}`).toBe(avant + plus);
-    }
+  const terrain = worldCubes(a, progress, world, false);
+  const avant = buildMesh(terrain).length;
+  for (const [kind, n] of [['bac', LONG_LENGTH], ['pont', LONG_LENGTH], ['pont', SHORT_LENGTH], ['sentier', SHORT_LENGTH]] as const) {
+    const plus = APPELS_EN_PLUS_D_UNE_LIAISON[`${a} ${kind}`] ?? 0;
+    expect(buildMesh([...terrain, ...linkCubes(a, kind, n)]).length, `${a} ${kind}`).toBe(avant + plus);
   }
 });

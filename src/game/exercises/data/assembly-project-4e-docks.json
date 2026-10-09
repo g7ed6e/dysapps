@@ -1,0 +1,309 @@
+{
+  "id": "assembly-project-4e-docks",
+  "bloc": "project-4e-docks",
+  "type": "assembly",
+  "level": 1,
+  "instruction": "Lis le document, calcule, puis choisis la phrase juste. Le rappel est affiché.",
+  "programme": [
+    "c4.ma.a.puissances",
+    "c4.ma.a.ecritures-ordres-de-grandeur",
+    "c4.hg.geographie.mondialisation",
+    "c4.hg.espace.localiser",
+    "c4.hg.demarches.document",
+    "c4.hg.demarches.lexique"
+  ],
+  "items": [
+    {
+      "key": "project-4e-docks-0",
+      "prompt": "Un porte-conteneurs\nIl transporte 10⁴ conteneurs d’Asie vers l’Europe.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Un porte-conteneurs. Il transporte dix puissance quatre conteneurs d’Asie vers l’Europe.",
+      "choices": [
+        "Il porte 10 000 conteneurs : c’est un flux de marchandises.",
+        "Il porte 40 conteneurs : c’est un flux de marchandises.",
+        "Il porte 10 000 conteneurs : c’est un flux de personnes."
+      ],
+      "answer": "Il porte 10 000 conteneurs : c’est un flux de marchandises.",
+      "hint": "D’abord : combien de zéros après le 1 ? Puis : que transporte un conteneur ?",
+      "explanation": "10⁴, c’est un 1 suivi de 4 zéros : 10 000. 40, c’est 10 × 4 : la base fois l’exposant. Un conteneur est une boîte pour les marchandises : le navire porte un flux de marchandises, pas de personnes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "10 puissance 4, et les flux",
+          "lines": [
+            "10 puissance n, c’est un 1 suivi de n zéros : 10⁴ = 10 000.",
+            "Un conteneur porte des marchandises ; un flux, c’est ce qui circule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-docks-1",
+      "prompt": "Le canal de Suez relie la mer Méditerranée et la mer Rouge.\nCe matin, 4² navires l’ont traversé.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le canal de Suez relie la mer Méditerranée et la mer Rouge. Ce matin, quatre au carré navires l’ont traversé.",
+      "choices": [
+        "16 navires ont relié la Méditerranée et la mer Rouge.",
+        "8 navires ont relié la Méditerranée et la mer Rouge.",
+        "16 navires ont relié l’Atlantique et le Pacifique."
+      ],
+      "answer": "16 navires ont relié la Méditerranée et la mer Rouge.",
+      "hint": "D’abord : 4², c’est 4 fois quoi ? Puis : quelles mers le document nomme-t-il ?",
+      "explanation": "4² = 4 × 4 = 16. 8, c’est 4 × 2 : le carré n’est pas le double. Le document dit que Suez relie la Méditerranée et la mer Rouge ; l’Atlantique et le Pacifique, c’est le canal de Panama.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le carré, et le canal",
+          "lines": [
+            "4², c’est 4 × 4 (pas 4 × 2).",
+            "Canal : une voie d’eau creusée pour relier deux mers."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-docks-2",
+      "prompt": "Le voyage d’un tee-shirt : plus de 10⁴ kilomètres.\nCoton cultivé en Inde, couture au Bangladesh, vente en France.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le voyage d’un tee-shirt : plus de dix puissance quatre kilomètres. Coton cultivé en Inde, couture au Bangladesh, vente en France.",
+      "choices": [
+        "Cousu au Bangladesh, il voyage plus de 10 000 kilomètres.",
+        "Cousu au Bangladesh, il voyage plus de 1 000 kilomètres.",
+        "Cousu en France, il voyage plus de 10 000 kilomètres."
+      ],
+      "answer": "Cousu au Bangladesh, il voyage plus de 10 000 kilomètres.",
+      "hint": "D’abord : combien de zéros après le 1 ? Puis : où est-il cousu, dans le document ?",
+      "explanation": "10⁴ = 10 000 : quatre zéros. 1 000, c’est 10³ : un zéro oublié. Le document dit que la couture se fait au Bangladesh ; en France, le tee-shirt est vendu. Une étape par pays : c’est la mondialisation.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "10 puissance 4, et le document",
+          "lines": [
+            "10 puissance n, c’est un 1 suivi de n zéros : 10³ = 1 000 ; 10⁴ = 10 000.",
+            "Une ligne du document, une étape : où l’on cultive, où l’on coud, où l’on vend."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-docks-3",
+      "prompt": "Shanghai, en Chine : le premier port à conteneurs du monde.\nUn de ses quais décharge 10³ conteneurs par jour.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Shanghai, en Chine : le premier port à conteneurs du monde. Un de ses quais décharge dix puissance trois conteneurs par jour.",
+      "choices": [
+        "Dans ce port d’Asie, un quai décharge 1 000 conteneurs par jour.",
+        "Dans ce port d’Asie, un quai décharge 30 conteneurs par jour.",
+        "Dans ce port d’Europe, un quai décharge 1 000 conteneurs par jour."
+      ],
+      "answer": "Dans ce port d’Asie, un quai décharge 1 000 conteneurs par jour.",
+      "hint": "D’abord : combien de zéros après le 1 ? Puis : sur quel continent est la Chine ?",
+      "explanation": "10³ = 10 × 10 × 10 = 1 000. 30, c’est 10 × 3 : la base fois l’exposant. La Chine est en Asie : Shanghai est un port d’Asie, le premier du monde pour les conteneurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "10 puissance 3, et les continents",
+          "lines": [
+            "10³ = 10 × 10 × 10 = 1 000.",
+            "La Chine et l’Inde sont en Asie ; la France et les Pays-Bas, en Europe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-docks-4",
+      "prompt": "Le Havre, en France, sur la Manche\nUn navire y arrive avec 2 × 10⁴ tonnes de marchandises.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le Havre, en France, sur la Manche. Un navire y arrive avec deux fois dix puissance quatre tonnes de marchandises.",
+      "choices": [
+        "Un navire arrive en Europe avec 20 000 tonnes.",
+        "Un navire arrive en Europe avec 200 000 tonnes.",
+        "Un navire arrive en Asie avec 20 000 tonnes."
+      ],
+      "answer": "Un navire arrive en Europe avec 20 000 tonnes.",
+      "hint": "D’abord : écris 10⁴, puis prends-le 2 fois. Puis : sur quel continent est la France ?",
+      "explanation": "10⁴ = 10 000, et 2 × 10 000 = 20 000 tonnes. 200 000 a un zéro de trop : 10⁴ n’en a que quatre. Le Havre est en France : le navire arrive en Europe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "2 × 10⁴, et les continents",
+          "lines": [
+            "2 × 10⁴ = 2 × 10 000 = 20 000.",
+            "La France est en Europe ; la Chine, en Asie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-docks-5",
+      "prompt": "Le détroit de Malacca, en Asie : un passage de mer étroit entre deux terres.\nEn une heure, 2³ navires l’ont franchi.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le détroit de Malacca, en Asie : un passage de mer étroit entre deux terres. En une heure, deux puissance trois navires l’ont franchi.",
+      "choices": [
+        "8 navires ont franchi ce passage naturel entre deux terres.",
+        "6 navires ont franchi ce passage naturel entre deux terres.",
+        "8 navires ont franchi ce canal creusé entre deux mers."
+      ],
+      "answer": "8 navires ont franchi ce passage naturel entre deux terres.",
+      "hint": "D’abord : 2³, c’est 2 × 2 × 2. Puis : un détroit, est-il creusé ?",
+      "explanation": "2³ = 2 × 2 × 2 = 8. 6, c’est 2 × 3 : la base fois l’exposant. Un détroit est un passage de mer naturel entre deux terres ; un canal, lui, est creusé pour relier deux mers.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "2 puissance 3, et le détroit",
+          "lines": [
+            "2³, c’est 2 × 2 × 2 : trois fois le 2.",
+            "Détroit : un passage de mer étroit entre deux terres ; canal : une voie d’eau creusée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-docks-6",
+      "prompt": "Une firme de vêtements\nElle a des usines et des magasins dans 10² pays.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Une firme de vêtements. Elle a des usines et des magasins dans dix au carré pays.",
+      "choices": [
+        "Présente dans 100 pays, c’est une firme transnationale.",
+        "Présente dans 20 pays, c’est une firme transnationale.",
+        "Présente dans 100 pays, c’est une firme nationale."
+      ],
+      "answer": "Présente dans 100 pays, c’est une firme transnationale.",
+      "hint": "D’abord : 10², c’est 10 fois quoi ? Puis : une firme dans beaucoup de pays, comment s’appelle-t-elle ?",
+      "explanation": "10² = 10 × 10 = 100. 20, c’est 10 × 2 : le carré n’est pas le double. Une firme présente dans beaucoup de pays est transnationale ; une firme nationale reste dans un seul pays.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "10 au carré, et la firme",
+          "lines": [
+            "10² = 10 × 10 = 100.",
+            "Firme transnationale : une entreprise présente dans beaucoup de pays."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-docks-7",
+      "prompt": "Le canal de Panama relie l’océan Atlantique et l’océan Pacifique.\nIl évite aux navires un détour de plus de 10⁴ kilomètres.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le canal de Panama relie l’océan Atlantique et l’océan Pacifique. Il évite aux navires un détour de plus de dix puissance quatre kilomètres.",
+      "choices": [
+        "Atlantique et Pacifique : plus de 10 000 kilomètres évités.",
+        "Atlantique et Pacifique : plus de 100 000 kilomètres évités.",
+        "Méditerranée et mer Rouge : plus de 10 000 kilomètres évités."
+      ],
+      "answer": "Atlantique et Pacifique : plus de 10 000 kilomètres évités.",
+      "hint": "D’abord : combien de zéros après le 1 ? Puis : quels océans le document nomme-t-il ?",
+      "explanation": "10⁴ = 10 000 : quatre zéros. 100 000 a un zéro de trop : c’est 10⁵. Le document dit que Panama relie l’Atlantique et le Pacifique ; la Méditerranée et la mer Rouge, c’est le canal de Suez.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "10 puissance 4, et le canal",
+          "lines": [
+            "10 puissance n, c’est un 1 suivi de n zéros : 10⁴ = 10 000.",
+            "Canal : une voie d’eau creusée pour relier deux mers ou deux océans."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-docks-8",
+      "prompt": "La ZEE (zone économique exclusive) : la mer qu’un pays est seul à exploiter.\nElle va jusqu’à 2 × 10² milles marins des côtes.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "La zone économique exclusive : la mer qu’un pays est seul à exploiter. Elle va jusqu’à deux fois dix au carré milles marins des côtes.",
+      "choices": [
+        "Jusqu’à 200 milles des côtes, seul ce pays exploite la mer.",
+        "Jusqu’à 2 000 milles des côtes, seul ce pays exploite la mer.",
+        "Jusqu’à 200 milles des côtes, tous les pays exploitent la mer."
+      ],
+      "answer": "Jusqu’à 200 milles des côtes, seul ce pays exploite la mer.",
+      "hint": "D’abord : écris 10², puis prends-le 2 fois. Puis : que veut dire « exclusive » ?",
+      "explanation": "10² = 100, et 2 × 100 = 200 milles marins. 2 000 a un zéro de trop : 10² n’en a que deux. La ZEE est exclusive : seul le pays de la côte exploite cette mer, ses poissons et son sous-sol.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "2 × 10², et la ZEE",
+          "lines": [
+            "2 × 10² = 2 × 100 = 200.",
+            "ZEE : la mer que seul le pays de la côte exploite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-docks-9",
+      "prompt": "Un navire part de Shanghai, en Chine, pour Le Havre, en France.\nIl porte 10 rangées de 10² conteneurs.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Un navire part de Shanghai, en Chine, pour Le Havre, en France. Il porte dix rangées de dix au carré conteneurs.",
+      "choices": [
+        "Il porte 1 000 conteneurs, d’Asie vers l’Europe.",
+        "Il porte 110 conteneurs, d’Asie vers l’Europe.",
+        "Il porte 1 000 conteneurs, d’Europe vers l’Asie."
+      ],
+      "answer": "Il porte 1 000 conteneurs, d’Asie vers l’Europe.",
+      "hint": "D’abord : 10 rangées de 100, c’est 10 fois 100. Puis : d’où part le navire ?",
+      "explanation": "10² = 100, et 10 rangées de 100 : 10 × 100 = 1 000, soit 10³. 110, c’est 10 + 100 : on a ajouté au lieu de multiplier. Le navire part de Chine, en Asie, pour la France, en Europe : d’Asie vers l’Europe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "10 fois 10², et le trajet",
+          "lines": [
+            "10 × 10² = 10 × 100 = 1 000 = 10³.",
+            "Un flux part d’un lieu vers un autre : lis « part de », puis « pour »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-docks-10",
+      "prompt": "Sous la mer, des câbles transportent les données d’Internet.\nUn câble neuf relie 3² pays.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Sous la mer, des câbles transportent les données d’Internet. Un câble neuf relie trois au carré pays.",
+      "choices": [
+        "Il relie 9 pays : c’est un flux d’informations.",
+        "Il relie 6 pays : c’est un flux d’informations.",
+        "Il relie 9 pays : c’est un flux de marchandises."
+      ],
+      "answer": "Il relie 9 pays : c’est un flux d’informations.",
+      "hint": "D’abord : 3², c’est 3 fois quoi ? Puis : les données d’Internet, qu’est-ce que c’est ?",
+      "explanation": "3² = 3 × 3 = 9. 6, c’est 3 × 2 : le carré n’est pas le double. Les données d’Internet sont des informations : le câble porte un flux d’informations ; les marchandises voyagent dans les navires.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le carré, et les flux",
+          "lines": [
+            "3² = 3 × 3 (pas 3 × 2).",
+            "Flux : ce qui circule, des marchandises, des personnes, des informations."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-docks-11",
+      "prompt": "Sur le quai, les conteneurs sont rangés en carré.\n5 rangées de 5 conteneurs : 5² conteneurs.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Sur le quai, les conteneurs sont rangés en carré. Cinq rangées de cinq conteneurs : cinq au carré conteneurs.",
+      "choices": [
+        "Il y a 25 conteneurs, de grandes boîtes en métal.",
+        "Il y a 10 conteneurs, de grandes boîtes en métal.",
+        "Il y a 25 conteneurs, de grands navires."
+      ],
+      "answer": "Il y a 25 conteneurs, de grandes boîtes en métal.",
+      "hint": "D’abord : 5², c’est 5 fois quoi ? Puis : un conteneur, qu’est-ce que c’est ?",
+      "explanation": "5² = 5 × 5 = 25. 10, c’est 5 × 2 : le carré n’est pas le double. Un conteneur est une grande boîte en métal pour les marchandises ; le navire qui les porte est un porte-conteneurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le carré, et le conteneur",
+          "lines": [
+            "5² = 5 × 5 (pas 5 × 2).",
+            "Conteneur : une grande boîte en métal pour les marchandises."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien construit !",
+    "wrong": "{explanation}"
+  }
+}
