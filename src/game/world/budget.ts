@@ -60,9 +60,10 @@ export const RENDER_BUDGET_6E = { triangles: 72_800, drawCalls: RENDER_BUDGET.dr
  * du même mot, de 62 900 à 74 900, à la somme des enveloppes « autres » (74 805, 74 865 depuis les programmes
  * 2025-2026 : deux bornes de plus au 4e ; 74 877 depuis les commandes relevées à 392, 8 octobre 2026). Mesurés tout construit, « Dans la
  * scène » à part : 69 880 aux Îles Brumeuses, 67 080 aux Anciens Ateliers, 63 791 aux Îles du Ciel. La mesure sur
- * tablette reste à faire.
+ * tablette reste à faire. Puis de 74 900 à 75 000 pour les quêtes de la 5e (GD-10, validé par le mainteneur le 8 octobre
+ * 2026) : la somme des « autres » passe à 74 985 (commandes 392 → 500).
  */
-export const RENDER_BUDGET_AUTRES = { triangles: 74_900, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_AUTRES = { triangles: 75_000, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
@@ -224,7 +225,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
     lot: 'GD-7',
     nom: 'Commandes et quêtes (les petites constructions posées, dans le sol et la construction, sans appel de plus)',
     premiersRivages: { triangles: 800, drawCalls: 0 },
-    autres: { triangles: 392, drawCalls: 0 },
+    autres: { triangles: 500, drawCalls: 0 },
   },
   // Le lot de contenu des programmes 2025-2026 (une mission de plus à la Forge et au Cabinet de 4e, et à l'Observatoire
   // de 3e, une de moins au Glacier de 5e) : relevé aux mesures tout construit, comme pour SC-3, confirmé par le
@@ -232,6 +233,10 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // 1 130 → 1 180 ; la petite construction de la Forge, replacée de (10, 3) à (9, 4) avec la mission ajoutée (`calculerLaPlaceDeLaPetiteConstruction`), fige au sol
   // d'autres cases (368 → 374 au 4e) : commandes 370 → 380. La somme des « autres » passe de 74 805 à 74 865, sous
   // `RENDER_BUDGET_AUTRES` (74 900), inchangé.
+  // Les quêtes de la 5e (GD-10) : la tente, le four et la balise portent le poste des Îles Brumeuses à 496 triangles
+  // sur les îles agrandies de GD-11 (`commandesCost`), aucun appel de plus ; aucun autre poste des « autres » n'a cette
+  // marge dans les trois archipels. Commandes 392 → 500, la somme des « autres » de 74 877 à 74 985, sous
+  // `RENDER_BUDGET_AUTRES` relevé à 75 000 (validé par le mainteneur le 8 octobre 2026). Le monde en blocs de Blocland n'en change pas de plafond (30 896 au 5e, sur 100 000).
   bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_450, drawCalls: 1 }, autres: { triangles: 1_180, drawCalls: 1 } },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
