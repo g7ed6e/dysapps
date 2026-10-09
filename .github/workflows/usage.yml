@@ -1,0 +1,38 @@
+name: Mesure d'usage
+
+# Le résumé de la mesure d'usage anonyme (src/core/usage.ts), lu dans Workers Analytics Engine par
+# scripts/pilotage/usage.mjs, affiché dans le résumé de l'exécution. Lancé à la main (onglet Actions, « Run workflow »).
+# Il faut deux secrets du dépôt : CLOUDFLARE_ACCOUNT_ID et CLOUDFLARE_ANALYTICS_TOKEN (jeton « Account Analytics Read »).
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: Nombre de jours
+        default: '30'
+      channel:
+        description: production, ou preview pour les aperçus des branches
+        default: production
+
+permissions: {}
+
+jobs:
+  usage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+      - name: Résumé
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_ANALYTICS_TOKEN }}
+          DAYS: ${{ inputs.days }}
+          CHANNEL: ${{ inputs.channel }}
+        run: node scripts/pilotage/usage.mjs "$DAYS" "$CHANNEL" >> "$GITHUB_STEP_SUMMARY"

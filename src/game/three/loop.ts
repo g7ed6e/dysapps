@@ -3,6 +3,7 @@
 // visible et l'onglet actif ; et si l'appareil peine (images trop longues), on baisse la finesse du rendu.
 import * as THREE from 'three';
 import type { Meter } from './meter';
+import { usageFrame } from '../../core/usage';
 import type { Derniers, Instant, PartieDeLaScene } from './scenePart';
 
 /** Ce que la boucle fait tourner. */
@@ -55,7 +56,8 @@ export function lancerLaBoucle({ el, renderer, scene, camera, meter, deplacement
       if (++slowFrames > 30) renderer.setPixelRatio(1);
     } else slowFrames = 0;
     // Jamais négatif : une horloge qui recule (celle, figée, des captures de la documentation) ne remonte pas le temps.
-    const dt = Math.max(0, Math.min(0.1, (nowMs - lastFrame) / 1000));
+    const dtMs = nowMs - lastFrame;
+    const dt = Math.max(0, Math.min(0.1, dtMs / 1000));
     lastFrame = nowMs;
     if (!prete()) return;
     instant.now = performance.now();
@@ -67,6 +69,8 @@ export function lancerLaBoucle({ el, renderer, scene, camera, meter, deplacement
     signaler();
     renderer.render(scene, camera);
     meter?.tick(renderer.info, nowMs);
+    // La fluidité du monde, pour la mesure d'usage anonyme (core/usage.ts).
+    usageFrame(dtMs);
   };
   const start = () => {
     lastFrame = performance.now();

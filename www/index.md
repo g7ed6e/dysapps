@@ -2,7 +2,7 @@
 
 ![Le logo de Blocland : une île en blocs sur la mer, avec son grand chêne](/blocland.svg){.bl-logo}
 
-<p class="lead"><strong>DysApps</strong> est un jeu d’entraînement pour les <strong>élèves dys du collège</strong> (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, en français, en mathématiques et en anglais. Tout tient dans le navigateur, sans compte ni serveur : la progression reste sur l’appareil.</p>
+<p class="lead"><strong>DysApps</strong> est un jeu d’entraînement pour les <strong>élèves dys du collège</strong> (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, en français, en mathématiques et en anglais. Tout tient dans le navigateur, sans compte : la progression reste sur l’appareil.</p>
 
 L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.workers.dev/>. Elle s’installe comme une application (PWA) et fonctionne hors ligne après la première visite.
 

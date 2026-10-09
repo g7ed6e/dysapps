@@ -92,6 +92,8 @@ L’ancienne section **Expérimental** (« Essayer le nouveau dessin du monde »
 
 La version installée est affichée, avec le bouton **Vérifier les mises à jour** (ou **Mettre à jour maintenant** quand une version est prête). Voir [Démarrer](demarrer.md#les-mises-a-jour).
 
+La case **Envoyer des chiffres anonymes** est cochée au départ. L’appli envoie alors ses lancements, le temps passé sur chaque écran, la fluidité du monde en 3D, la taille de l’écran et ses erreurs. Elle n’envoie ni nom, ni progression, ni identifiant ; l’adresse IP n’est pas gardée. Ces chiffres servent seulement à améliorer l’appli. Sans réseau, ils attendent sur l’appareil et partent quand le réseau revient. Décocher la case arrête tout envoi, tout de suite, et efface ce qui attendait.
+
 Deux liens s’ouvrent dans un nouvel onglet : **La documentation** (ce site, https://g7ed6e.github.io/dysapps/) et **Le code sur GitHub** (https://github.com/g7ed6e/dysapps).
 
 **Mesurer l’appareil** dit si l’appareil dessine le monde sans à-coups. L’appli se recharge, prend une partie déjà toute construite, fait seule le tour du monde du 6e (une île, l’archipel, la Carte, « Modifier le plan », la pose d’une partie) et affiche à la fin un tableau de chiffres, avec **Copier**. **Réglages**, à tout moment, recharge l’appli sur les Réglages. La vraie partie n’est pas touchée : rien de ce qui se passe pendant la mesure n’est enregistré.

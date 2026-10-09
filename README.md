@@ -1,6 +1,6 @@
 # DysApps
 
-**Archipéo**, le jeu d’entraînement de DysApps, pour les **élèves dys du collège** (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, en français, en mathématiques et en anglais. Tout tient dans le navigateur, sans compte ni serveur : la progression reste sur l’appareil.
+**Archipéo**, le jeu d’entraînement de DysApps, pour les **élèves dys du collège** (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, en français, en mathématiques et en anglais. Tout tient dans le navigateur, sans compte : la progression reste sur l’appareil.
 
 - **Application** : https://dysapps.guillaume-delahaye.workers.dev/ (s’installe comme une application, fonctionne hors ligne)
 - **Documentation** : https://g7ed6e.github.io/dysapps/ (manuel utilisateur et contenu pédagogique)

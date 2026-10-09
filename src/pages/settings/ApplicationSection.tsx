@@ -1,6 +1,7 @@
-// La section Application des réglages : la version, la mise à jour, les liens (sortie de SettingsPage.tsx, qualité du
-// code, lot 8).
+// La section Application des réglages : la version, la mise à jour, la mesure d'usage, les liens (sortie de
+// SettingsPage.tsx, qualité du code, lot 8).
 import { Icon } from '../../components/Icon';
+import { useSettings } from '../../core/SettingsContext';
 import { APP_VERSION, applyUpdate, checkForUpdate, useAppUpdate } from '../../core/appUpdate';
 import { adresseDeLaMesure } from '../../game/rendering';
 
@@ -12,6 +13,7 @@ const lancerLaMesure = () => window.location.assign(adresseDeLaMesure(window.loc
 
 export function ApplicationSection() {
   const appUpdate = useAppUpdate();
+  const { settings, update } = useSettings();
   return (
     <fieldset className="panel">
       <legend>Application</legend>
@@ -34,6 +36,12 @@ export function ApplicationSection() {
               ? 'Pas de connexion : réessaie plus tard.'
               : 'L’application se met à jour toute seule ; ce bouton sert à ne pas attendre.'}
       </p>
+      {/* La mesure d'usage anonyme (core/usage.ts) : le libellé dit l'effet, le manuel le détail. À part du statut de
+          la mise à jour, juste au-dessus. */}
+      <label className="toggle settings-usage">
+        <input type="checkbox" checked={settings.usageStats} onChange={(e) => update({ usageStats: e.target.checked })} />
+        Envoyer des chiffres anonymes
+      </label>
       {/* Ouverts dans un nouvel onglet : l'appli reste où elle était. */}
       <div className="settings-links">
         <a className="button" href={DOCS_URL} target="_blank" rel="noopener noreferrer">

@@ -1,6 +1,6 @@
 # Les fichiers
 
-DysApps est une application web statique : React 19, TypeScript, Vite, Three.js pour la 3D, Vitest pour les tests. Aucun serveur, aucune API : tout tourne dans le navigateur et tout est enregistré dans le stockage local.
+DysApps est une application web statique : React 19, TypeScript, Vite, Three.js pour la 3D, Vitest pour les tests. Tout tourne dans le navigateur et tout est enregistré dans le stockage local. Le seul serveur est le Worker de Cloudflare (`src/worker/`), qui reçoit la mesure d’usage anonyme et ne sert rien d’autre.
 
 ## Arborescence
 
@@ -9,7 +9,8 @@ src/
   apps/          missions du portail (un dossier par mission) + registry.ts (catalogue)
   game/          l'aventure : biomes, moteur, exercices, monde 3D, plans, Gardiens
   components/    Layout (barre du haut d’Archipéo, bouton Menu seul hors du monde dans Blocland, transitions ; pas d’onglets), FocusMode (mode concentration, menu pause), Loading, TitleScreen, QuizSession, QuestMenu, SpeakButton, Syllabified, XpBar, RecordTag, LevelCard (la carte d’une mission dans la grille du portail), useSheetClearance, useAnswerKeys…
-  core/          réglages, synthèse vocale, progression et gamification, stockage, syllabes
+  core/          réglages, synthèse vocale, progression et gamification, stockage, syllabes, mesure d'usage
+  worker/        le Worker de Cloudflare : reçoit la mesure d'usage anonyme, laisse le reste aux fichiers servis
   pages/         accueil, matière, mission, réglages (ses sections et contrôles dans settings/), succès
   curriculum/    le référentiel des programmes officiels (cycles 3 et 4 : français, maths, anglais), les exclusions
                  motivées, la liste des mots-outils ; sert aux tests et à la documentation, pas à l'application
@@ -62,7 +63,13 @@ public/          icônes, police Luciole
 - `legacyIds.ts` : les identifiants d’avant les mots neutres (les mots de Blocland : `foret`, `bois`, `abattage`…) et leur traduction, figés ; seules `migration.ts` et les anciennes adresses (`translatePath`) les lisent. Un identifiant nouveau naît neutre.
 - `saveFile.ts` : la sauvegarde dans un fichier (Réglages → Ma sauvegarde) : copie telles quelles les valeurs rangées sous le préfixe `dysapps:` ; le fichier est à la version 2 (`format: 'dysapps-backup'`, `date`, `app`, `data`) et un fichier de la version 1 (`dysapps-sauvegarde`, `appli`, `donnees`) se lit toujours ; la restauration vérifie le fichier (format, clés, JSON, taille), remplace tout ou rien, puis passe par `migrateStorage`.
 - `appUpdate.ts` : la mise à jour de la PWA (bande « Mettre à jour », bouton dans les réglages).
+- `usage.ts` : la mesure d’usage anonyme (demande du mainteneur, 9 octobre 2026). `startUsage` (appelé par `main.tsx`) garde le lancement (démarrage, première image du monde, fenêtre arrondie à 100 px, densité, appli installée ou non) ; `usageScreen` (le composant `UsageScreen` de `App.tsx`) suit l’écran affiché, sans paramètres ; `usageFrame` (la boucle du monde, `game/three/loop.ts`) compte les images et celles de plus de 50 ms ; les erreurs de la page et celles qu’attrapent les limites d’erreur de React (`onCaughtError` de `main.tsx`) s’y ajoutent, nettoyées par `cleanMessage`. Les évènements attendent en mémoire et partent ensemble (`navigator.sendBeacon` vers `/api/usage`) quand l’appli passe en arrière-plan, ou tous les dix. Aucun identifiant. Sans réseau (ou un envoi refusé), les évènements attendent sur l’appareil, sous `dysapps-usage-waiting` (hors du préfixe `dysapps:`, donc jamais dans le fichier de « Ma sauvegarde »), 200 au plus, et partent au retour du réseau (`online`) ou au lancement suivant, relus par `parseUsageEvents` (seulement s’ils ont été gardés par la même version) ; envoyés, ou la mesure coupée, ils sont effacés. Un envoi accepté par le navigateur mais perdu en route (réseau qui ne passe pas) ne se rattrape pas (mot du mainteneur, 9 octobre 2026 : « ce n’est que de l’analytique »). Seulement dans l’application publiée à la racine (ni `npm run dev`, ni GitHub Pages), jamais pour un navigateur piloté (captures, tests) ni avec `?mesures` ; le réglage `usageStats` (Réglages › Application, « Envoyer des chiffres anonymes ») la coupe, et ce qui attendait est effacé. C’est une mesure d’audience exemptée de consentement au sens de la CNIL (finalité limitée, statistiques anonymes, aucun recoupement ni transmission).
+- `usageEvents.ts` : la forme d’un envoi de la mesure d’usage, partagée par l’appli et le Worker : `screenOf` (l’adresse d’un écran, quatre segments au plus), `cleanMessage` (le message d’une erreur sur une ligne, sans adresse ni texte cité, 120 signes au plus), `parseUsageBatch` (la vérification, qui ne croit rien de ce qui arrive : genres, bornes, 50 évènements et 16 Kio au plus) et `toDataPoint` (la ligne de Workers Analytics Engine, colonnes figées que lit `scripts/pilotage/usage.mjs`).
 - `useLoaded.ts` : attend un contenu chargé à la demande (un exercice, un défi de Gardien) ; un échec remonte à la limite d’erreur de la page (`components/ErrorBoundary.tsx`, message et bouton « Recharger »).
+
+## Le Worker (`src/worker/`)
+
+- `index.ts` : le Worker de Cloudflare (`main` de `wrangler.jsonc`). Les fichiers de `dist/` sont servis sans passer par lui ; il ne reçoit que `/api/…` (`run_worker_first`). `POST /api/usage` : seulement depuis l’application elle-même (`Sec-Fetch-Site`), sa taille (`Content-Length` quand il est là, et le corps lu sans jamais dépasser 16 Kio), vérifié par `parseUsageBatch`, puis chaque évènement est écrit dans le jeu de données `dysapps_usage` de Workers Analytics Engine, avec le canal déduit de l’adresse (`production` sous `dysapps.…`, sinon `preview`) ; jamais l’adresse IP ni un en-tête ; les journaux d’invocation du Worker sont coupés (`observability.logs.invocation_logs` de `wrangler.jsonc`). Analytics Engine garde les données trois mois. Toute autre adresse `/api/…` répond 404.
 
 ## Le jeu (`src/game/`)
 

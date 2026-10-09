@@ -30,6 +30,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 
 | Quoi | Chantier | Recommandation |
 | --- | --- | --- |
+| La mesure d’usage : créer un jeton d’API Cloudflare (« Account Analytics Read ») et les secrets `CLOUDFLARE_ACCOUNT_ID` et `CLOUDFLARE_ANALYTICS_TOKEN` du dépôt, puis lancer le workflow « Mesure d’usage » | Mesure d’usage | En pull request |
 | Confier l’en-tête commun des écrans de calcul, qui fait défiler d’environ 124 px sur tablette (Faisceaux, Relevés, Thalès) | — | Un fil court, relu par le référent dys ; personne ne l’a pour l’instant |
 | Entendre sur iPad et Android un nombre de dix chiffres lu en milliards (Nombres géants) | C-2 | — |
 | La recherche « rien d’emprunté » sur « Jardin des heures » et ses replis | LV2-4 | — |
@@ -54,6 +55,10 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 - Sur téléphone en grand texte : le défilement du panneau de la Carte et le nom de destination jamais sous le panneau (DA-31) ; les noms d’îles sous la bulle de la baleine (DA-10).
 
 ## Les chantiers
+
+### La mesure d’usage
+
+Demandée par le mainteneur le 9 octobre 2026 (« le but est d’avoir des inputs sur l’usage, les perfs ») : sur Cloudflare, gratuite, sans bandeau (mesure d’audience exemptée de consentement, CNIL). L’appli compte, sans identifiant, les lancements, le temps et la fluidité par écran, les appareils (fenêtre arrondie) et les erreurs ; le Worker (`src/worker/`) les écrit dans Workers Analytics Engine, le workflow « Mesure d’usage » les résume. Réglages › Application, « Envoyer des chiffres anonymes », la coupe. En pull request ; attend les secrets du mainteneur pour la lecture.
 
 ### L’accessibilité dans l’appli
 
