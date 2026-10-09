@@ -187,6 +187,8 @@ Demandé par le mainteneur le 5 octobre 2026 (« faire un peu de qualité de cod
 
 Huit agents dans `.claude/agents/`, décrits dans [Contribuer](../conception/contribuer.md#les-agents). Le dernier venu, le **consultant UX UI** (`consultant-ux-ui`, demandé par le mainteneur le 1er octobre 2026), relit l’ergonomie et l’interface des écrans communes aux univers, sous l’autorité du directeur artistique, avec ses [bonnes pratiques UX UI](../ux-ui/bonnes-pratiques.md) ; il est consulté avant toute pull request qui change un écran, un composant, la navigation ou un parcours.
 
+Les relecteurs tournent sur **Sonnet** (choix du mainteneur, 9 octobre 2026, pour consommer moins) : l’expert frontend, le référent dys, le consultant UX UI et les consultants de Blocland et d’Archipéo ; le directeur artistique garde **Opus** ; l’artiste technique 3D et le directeur du contenu pédagogique prennent le modèle du fil qui les lance.
+
 L’**artiste technique 3D** a une section « Optimiser une scène » (mot du mainteneur, 6 octobre 2026, après l’étude Babylon.js qui a trouvé l’élimination hors champ coupée sur le terrain) : mesurer chaque vue dans le navigateur, dire d’où viennent les appels par objet et par matériau, passer une liste (élimination hors champ, matériaux, fusion et instanciation, sprites, transparence, objets immobiles, allocations), rendre les chiffres par vue et ce qui reste à mesurer sur tablette.
 
 ### L’allègement de l’interface
