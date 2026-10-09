@@ -1,9 +1,30 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { render } from '@testing-library/react';
+import { createElement } from 'react';
+import { Aid } from '../../src/game/exercises/Aid';
+import { AID_COMPONENTS } from '../../src/game/exercises/maths';
 import { clesDeplacees, clesRemplacees } from './chemins.mjs';
 import { ecrireFigure, ecrireIle, lireFigure, lireIle } from './format.mjs';
 
 const DATA = 'src/game/exercises/data';
+
+/** Des figures de géométrie bien écrites, une par variante (aller-retour, rendu). */
+const FIGURES_DE_GEOMETRIE = [
+  'angles 40 · 60 · ?', 'angles 80 · ? · ? / isocèle', 'angles 90 · 35 · ?', 'angles ? · ? · ? / équilatéral', 'angles 45 · 75 · ?',
+  'angle 120', 'angle 45', 'angle plat 130 · ?', 'angle croisé 70 · ?',
+  'plane rectangle 5 · 3 / aire ?', 'plane carré 6 / aire ?', 'plane parallélogramme 6 · 4 / aire ?', 'plane parallélogramme 5 · 3 · 4 / aire ?',
+  'plane triangle 8 · 5 / aire ?', 'plane disque 5 / aire ?', 'plane cercle 4 / diamètre ?', 'plane cercle 2,5', 'plane médiatrice 7 · ?',
+  'plane partagé 3 / x · 4 / ? · ?', 'plane partagé ? / a · b / 7a · 7b',
+  'solide cubes 4 · 2 · 3', 'solide cubes 3 · 2 · 2 / 2 · 2 · 3', 'solide cube 1', 'solide cylindre 3 · 2 / volume ?', 'solide cylindre',
+  'solide cône r · h', 'solide cône 3 · 4 / volume ?', 'solide prisme-pyramide h',
+  'image translation', 'image axiale', 'image centrale / arc ?', 'image rotation 90 / angle 50 · ?', 'image rotation −90', 'image axiale / aire 12 · ?',
+  'image homothétie 2 / angle 40 · ?', 'image centrale / aire 12 cm² · ? / arc ?',
+  'repère', 'repère A 4 · −2', 'repère C 2 · 3 / D −6 · 6',
+];
+
+/** Les autres figures bien écrites. */
+const AUTRES_FIGURES = ['tableau x · f(x) / 2 · 6 / 4 · ?', 'triangle 6 · 8 · ?', 'droite 0 · 20 / 5 · 10', 'graduée −1 · 0 / 5 / −0,4', 'graduée 0 · 1 / 10', 'fraction 3/5', 'fractions 3/5 · 3/10', 'diagramme lundi · mardi / 10 · 20', 'diagramme 4 · 0,5', 'graphique 2 · −1'];
 
 /** Les exercices du jeu, rangés par île. */
 function parIle() {
@@ -108,23 +129,21 @@ describe('le format Markdown du contenu', () => {
   });
 
   it('réécrit chaque figure de géométrie telle qu’elle a été lue', () => {
-    const lignes = [
-      'angles 40 · 60 · ?', 'angles 80 · ? · ? / isocèle', 'angles 90 · 35 · ?', 'angles ? · ? · ? / équilatéral', 'angles 45 · 75 · ?',
-      'angle 120', 'angle 45', 'angle plat 130 · ?', 'angle croisé 70 · ?',
-      'plane rectangle 5 · 3 / aire ?', 'plane carré 6 / aire ?', 'plane parallélogramme 6 · 4 / aire ?', 'plane parallélogramme 5 · 3 · 4 / aire ?',
-      'plane triangle 8 · 5 / aire ?', 'plane disque 5 / aire ?', 'plane cercle 4 / diamètre ?', 'plane cercle 2,5', 'plane médiatrice 7 · ?',
-      'plane partagé 3 / x · 4 / ? · ?', 'plane partagé ? / a · b / 7a · 7b',
-      'solide cubes 4 · 2 · 3', 'solide cubes 3 · 2 · 2 / 2 · 2 · 3', 'solide cube 1', 'solide cylindre 3 · 2 / volume ?', 'solide cylindre',
-      'solide cône r · h', 'solide cône 3 · 4 / volume ?', 'solide prisme-pyramide h',
-      'image translation', 'image axiale', 'image centrale / arc ?', 'image rotation 90 / angle 50 · ?', 'image rotation −90', 'image axiale / aire 12 · ?',
-      'image homothétie 2 / angle 40 · ?', 'image centrale / aire 12 cm² · ? / arc ?',
-      'repère', 'repère A 4 · −2', 'repère C 2 · 3 / D −6 · 6',
-    ];
-    for (const l of lignes) expect(ecrireFigure(lireFigure(l))).toBe(l);
+    for (const l of FIGURES_DE_GEOMETRIE) expect(ecrireFigure(lireFigure(l))).toBe(l);
     // Dans une île : la figure passe par le Markdown et revient identique.
-    const items = lignes.map((l, n) => ({ key: `maths-6e-calculation-x-1-${n}`, prompt: `Question ${n}`, choices: ['a', 'b'], answer: 'a', figure: lireFigure(l) }));
+    const items = FIGURES_DE_GEOMETRIE.map((l, n) => ({ key: `maths-6e-calculation-x-1-${n}`, prompt: `Question ${n}`, choices: ['a', 'b'], answer: 'a', figure: lireFigure(l) }));
     const ex = { id: 'maths-6e-calculation-x-1', biome: 'maths-6e-calculation', type: 'x', level: 1, items };
     expect(lireIle(ecrireIle({ id: 'maths-6e-calculation' }, [ex])).exercices).toEqual([ex]);
+  });
+
+  it('dessine chaque figure bien écrite, et chaque figure du jeu : aucune ne disparaît en silence', () => {
+    const duJeu = readdirSync(DATA).flatMap((f) => JSON.parse(readFileSync(join(DATA, f), 'utf8')).items.flatMap((it) => (it.figure ? [it.figure] : [])));
+    for (const figure of [...[...FIGURES_DE_GEOMETRIE, ...AUTRES_FIGURES].map(lireFigure), ...duJeu]) {
+      expect(AID_COMPONENTS[figure.kind], figure.kind).toBeDefined();
+      const { container, unmount } = render(createElement(Aid, { aid: figure }));
+      expect(container.querySelector('[role="img"], table'), JSON.stringify(figure)).not.toBeNull();
+      unmount();
+    }
   });
 
   it('refuse une figure de géométrie mal écrite, en disant comment l’écrire', () => {
@@ -135,6 +154,10 @@ describe('le format Markdown du contenu', () => {
       'angles 80 · 60 · ? / rectangle': /équilatéral/,
       'angles 50 · ? · ? / équilatéral': /équilatéral/,
       'angle 200': /angle 120/,
+      'angle 10': /de 20 à 180/,
+      'angles 90 · 75 · ?': /20° au moins/,
+      'angles 150 · ? · ? / isocèle': /20° au moins/,
+      'angle plat 170 · ?': /de 20 à 180/,
       'angle ?': /angle 120/,
       'angle plat 130 · 60': /somme 180°/,
       'angle croisé 70 · 80': /opposé par le sommet/,

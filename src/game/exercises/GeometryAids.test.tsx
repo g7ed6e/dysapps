@@ -111,7 +111,7 @@ describe('PlaneFigure', () => {
   it('dit la médiatrice et le rectangle partagé sans la valeur cherchée', () => {
     render(<PlaneFigure shape="bisector" values={[7, '?']} />);
     expect(screen.getByRole('img')).toHaveAccessibleName(
-      'Le segment [AB] et sa médiatrice, qui le coupe en son milieu à angle droit. Le point M est sur la médiatrice : MA = 7, MB à trouver.',
+      'Le segment AB et sa médiatrice, qui le coupe en son milieu à angle droit. Le point M est sur la médiatrice : la longueur MA vaut 7, la longueur MB est à trouver.',
     );
     render(<PlaneFigure shape="split" values={[3]} widths={['x', 4]} areas={['?', '?']} />);
     expect(screen.getAllByRole('img')[1]).toHaveAccessibleName('Un rectangle de hauteur 3, partagé en 2 parts de largeurs x et 4 ; l’aire de chaque part est à trouver.');
@@ -155,7 +155,7 @@ describe('SolidFigure', () => {
 
   it('dessine le cône et le prisme à côté de la pyramide', () => {
     render(<SolidFigure solid="cone" values={['r', 'h']} />);
-    expect(screen.getByRole('img')).toHaveAccessibleName('Un cône de rayon r et de hauteur h, la hauteur en pointillé.');
+    expect(screen.getByRole('img')).toHaveAccessibleName('Un solide à une base en disque et un sommet : rayon r, hauteur h, la hauteur en pointillé.');
     render(<SolidFigure solid="prism-pyramid" values={['h']} />);
     expect(screen.getByText('prisme droit')).toBeInTheDocument();
     expect(screen.getByText('pyramide')).toBeInTheDocument();
@@ -163,13 +163,26 @@ describe('SolidFigure', () => {
 });
 
 describe('TransformationFigure', () => {
-  it('choisit un triangle du quadrillage dont l’angle du haut a l’air de sa mesure', () => {
+  it('choisit un triangle du quadrillage dont l’angle marqué a l’air de sa mesure, assez profond pour l’écrire dedans', () => {
     for (const angle of [40, 50, 60, 70]) {
-      const [top, q, r] = gridTriangle(angle);
-      expect([top, q, r].flat().every(Number.isInteger)).toBe(true);
-      expect(top[1]).toBeGreaterThan(Math.max(q[1], r[1]));
-      expect(Math.abs(angleAt(top, q, r) - angle)).toBeLessThan(2.5);
+      const [v, q, r] = gridTriangle(angle, 4, 4);
+      expect([v, q, r].flat().every(Number.isInteger)).toBe(true);
+      expect(Math.abs(angleAt(v, q, r) - angle)).toBeLessThan(2.5);
+      // La distance du sommet marqué au côté opposé : trois cases au moins.
+      const depth = Math.abs((q[0] - v[0]) * (r[1] - v[1]) - (q[1] - v[1]) * (r[0] - v[0])) / Math.hypot(r[0] - q[0], r[1] - q[1]);
+      expect(depth).toBeGreaterThanOrEqual(3);
     }
+  });
+
+  it('fait partir l’arc de la rotation d’un autre sommet que l’angle marqué', () => {
+    const { container } = render(<TransformationFigure transform="rotation" amount={90} angles={[50, '?']} />);
+    const [shape, image] = [...container.querySelectorAll('polygon.geo-shape')].map(vertices);
+    const arc = container.querySelector('path.geo-dash')?.getAttribute('d') ?? '';
+    const [start, end] = [/^M ([\d.-]+) ([\d.-]+)/.exec(arc), / ([\d.-]+) ([\d.-]+)$/.exec(arc)].map((m) => [Number(m?.[1]), Number(m?.[2])] as Point);
+    const near = (a: Point, b: Point) => Math.hypot(a[0] - b[0], a[1] - b[1]) < 0.5;
+    expect(shape.some((p) => near(p, start))).toBe(true);
+    expect(near(shape[0], start)).toBe(false);
+    expect(near(image[0], end)).toBe(false);
   });
 
   it('pose la figure et son image sur des points du quadrillage', () => {
@@ -192,6 +205,15 @@ describe('TransformationFigure', () => {
         expect([...ys].some((g) => Math.abs(g - y) < 0.11)).toBe(true);
       }
       unmount();
+    }
+  });
+
+  it('écrit une mesure trop fermée hors de l’angle, dans le dessin', () => {
+    const { container } = render(<AngleFigure layout="single" values={[20]} />);
+    const [, , width, height] = (container.querySelector('svg')?.getAttribute('viewBox') ?? '').split(' ').map(Number);
+    for (const text of container.querySelectorAll('text')) {
+      const [x, y] = [Number(text.getAttribute('x')), Number(text.getAttribute('y'))];
+      expect(x > 0 && x < width && y > 0 && y < height, text.textContent ?? '').toBe(true);
     }
   });
 
@@ -219,16 +241,39 @@ describe('TransformationFigure', () => {
   });
 });
 
+describe('les descriptions lues', () => {
+  it('ne nomment jamais la transformation ni le solide qu’une question peut demander', () => {
+    const figures = [
+      <TransformationFigure key="t" transform="translation" />,
+      <TransformationFigure key="a" transform="reflection" />,
+      <TransformationFigure key="aa" transform="reflection" areas={[12, '?']} />,
+      <TransformationFigure key="c" transform="point-reflection" arc="?" />,
+      <TransformationFigure key="r" transform="rotation" amount={90} angles={[50, '?']} />,
+      <TransformationFigure key="h" transform="dilation" amount={2} angles={[40, '?']} />,
+      <SolidFigure key="cy" solid="cylinder" />,
+      <SolidFigure key="cyv" solid="cylinder" values={[3, 2]} volume="?" />,
+      <SolidFigure key="co" solid="cone" values={['r', 'h']} />,
+    ];
+    for (const figure of figures) {
+      const { container, unmount } = render(figure);
+      const words = `${container.querySelector('[role="img"]')?.getAttribute('aria-label')} ${container.textContent}`;
+      expect(words).not.toMatch(/translation|symétrie|axiale|centrale|rotation|homothétie|demi-tour|cylindre|cône/i);
+      unmount();
+    }
+  });
+});
+
 describe('CoordinatePlane', () => {
   it('va de −6 à 6 et nomme ses axes', () => {
     const { container } = render(<CoordinatePlane points={[]} />);
     expect(screen.getByRole('img')).toHaveAccessibleName(
-      'Repère gradué de −6 à 6 sur les deux axes, une graduation par unité : l’axe des abscisses, horizontal, et l’axe des ordonnées, vertical. Chaque demi-axe porte son signe : « + » à droite et en haut, « − » à gauche et en bas.',
+      'Repère gradué de −6 à 6 sur les deux axes, une graduation par unité, un nombre écrit sur deux : l’axe des abscisses, horizontal, et l’axe des ordonnées, vertical. Chaque demi-axe porte son signe : « + » à droite et en haut, « − » à gauche et en bas.',
     );
     expect(screen.getByText('axe des abscisses')).toBeInTheDocument();
     expect(screen.getByText('axe des ordonnées')).toBeInTheDocument();
     const ticks = [...container.querySelectorAll('.geo-tick-label')].map((t) => t.textContent);
-    expect(ticks).toHaveLength(26);
+    // Un nombre sur deux, sur chaque axe : −6, −4… 6.
+    expect(ticks).toHaveLength(14);
     expect(ticks).toContain('−6');
     expect(ticks.join()).not.toContain('-');
     expect([...container.querySelectorAll('.geo-sign')].map((t) => t.textContent)).toEqual(['+', '−', '+', '−']);

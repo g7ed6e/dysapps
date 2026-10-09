@@ -5181,7 +5181,7 @@ button.island-quest:active {
   background: var(--yellow);
   border-style: dashed;
 }
-/* Figures de géométrie (GeometryAids.tsx) : triangle et angles, angle, figure plane, solide, figure et son image, repère.
+/* Figures de géométrie (GeometryAids/) : triangle et angles, angle, figure plane, solide, figure et son image, repère.
    Traits épais de la couleur du texte, fond uni, cotes à la police de l'application (un halo de la couleur du panneau
    les détache des traits) ; la valeur cherchée « ? » ressort en violet. Rien d'animé. */
 .geometry {
@@ -5189,8 +5189,10 @@ button.island-quest:active {
 }
 .geometry svg {
   width: 100%;
-  /* Bornée par la hauteur de l'écran : sur une tablette à l'horizontale, la figure laisse place à la règle et aux réponses. */
-  max-width: min(24rem, 60vh);
+  /* Bornée par la hauteur de l'écran, comme le graphique : sur une tablette à l'horizontale, aucune figure ne prend plus
+     de 45 % de la hauteur, et laisse place à la règle et aux réponses. */
+  max-width: min(24rem, 45vh);
+  max-height: 45vh;
   display: block;
   margin: 0 auto;
   color: var(--text);
@@ -5277,7 +5279,9 @@ button.island-quest:active {
 .geometry text {
   fill: currentColor;
   font-family: var(--font-family);
-  font-size: 18px;
+  /* 21 dans le repère du dessin, comme le graphique : des dessins de 330 de large au plus gardent le texte à 18 px au
+     moins sur un téléphone. */
+  font-size: 21px;
   paint-order: stroke;
   stroke: var(--surface);
   stroke-width: 4px;

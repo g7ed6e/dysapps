@@ -32,7 +32,7 @@
 // « ? » sur 5,38, sans le nombre), « figure : fraction 3/5 » (barre de fraction), « figure : fractions 3/5 · 3/10 » (deux barres à
 // comparer), « figure : diagramme lundi · mardi / 10 · 20 » (diagramme en barres : les noms, puis les nombres ; les
 // nombres seuls sans noms) et « figure : graphique 2 · 1 » (la droite y = 2 × x + 1 dans un repère).
-// Les figures de géométrie (src/game/exercises/GeometryAids.tsx), tracées à l'échelle, « ? » pour la valeur cherchée :
+// Les figures de géométrie (src/game/exercises/GeometryAids/), tracées à l'échelle, « ? » pour la valeur cherchée :
 // « angles 40 · 60 · ? » (un triangle et ses trois angles, au besoin « / isocèle » ou « / équilatéral »), « angle 120 »,
 // « angle plat 130 · ? » ou « angle croisé 70 · ? » (un angle seul, deux angles côte à côte, un angle et son opposé par le
 // sommet), « plane rectangle 5 · 3 / aire ? » (et carré, parallélogramme, triangle, disque, cercle « / diamètre ? »,
@@ -192,7 +192,7 @@ const SORTES_DE_FIGURE = 'tableau|triangle|droite|graduée|fraction|fractions|di
 const SORTES_ATTENDUES =
   '« tableau … », « triangle … », « droite … », « graduée … », « fraction … », « fractions … », « diagramme … », « graphique … », « angles … », « angle … », « plane … », « solide … », « image … » ou « repère »';
 
-// ---------- Figures de géométrie (src/game/exercises/GeometryAids.tsx) ----------
+// ---------- Figures de géométrie (src/game/exercises/GeometryAids/) ----------
 
 /** Les mots du contenu → les noms des données, pour chaque sorte de figure de géométrie. */
 const MARQUES_TRIANGLE = { isocèle: 'isosceles', équilatéral: 'equilateral' };
@@ -205,10 +205,12 @@ const motDe = (table, valeur) => Object.keys(table).find((k) => table[k] === val
 const cotes = (texte) => texte.split(' · ').map(nombreOuTexte);
 /** Une cote d'une figure : un nombre positif, ou un texte non vide. */
 const coteValide = (v) => (typeof v === 'number' ? v > 0 : v !== '');
-/** Une mesure d'angle : « ? », ou un nombre entre 0 et 180 (exclus). */
-const angleValide = (v) => v === '?' || (typeof v === 'number' && v > 0 && v < 180);
+/** Le plus petit angle qu'une figure dessine : plus fermé, sa mesure ne tiendrait pas dans l'angle. */
+const ANGLE_MIN = 20;
+/** Une mesure d'angle : « ? », ou un nombre de 20 à 180 (exclu). */
+const angleValide = (v) => v === '?' || (typeof v === 'number' && v >= ANGLE_MIN && v < 180);
 
-/** Les angles donnés font-ils un triangle ? (Même règle que `triangleAngles` de GeometryAids.tsx.) */
+/** Les angles donnés font-ils un triangle ? (Même règle que `triangleAngles` de GeometryAids/TriangleAngles.tsx.) */
 function trianglePossible(angles, marques) {
   const n = angles.map((v) => (typeof v === 'number' ? v : undefined));
   if (marques === 'equilateral') return n.every((v) => v === undefined || v === 60);
@@ -220,7 +222,9 @@ function trianglePossible(angles, marques) {
   }
   const manquants = n.filter((v) => v === undefined).length;
   const somme = n.reduce((s, v) => s + (v ?? 0), 0);
-  return manquants === 0 ? Math.abs(somme - 180) < 1e-6 : manquants === 1 && somme < 180;
+  const traces = n.map((v) => v ?? (manquants === 1 ? 180 - somme : NaN));
+  // Les angles calculés pour le tracé ne sont pas plus fermés que ceux qu'on écrit.
+  return traces.every((v) => v >= ANGLE_MIN) && Math.abs(traces[0] + traces[1] + traces[2] - 180) < 1e-6;
 }
 
 function lireAngles(reste, brut) {
@@ -229,7 +233,7 @@ function lireAngles(reste, brut) {
   const marques = marque === undefined ? undefined : MARQUES_TRIANGLE[marque];
   if (trop.length || angles.length !== 3 || !angles.every(angleValide) || (marque !== undefined && !marques) || !trianglePossible(angles, marques))
     throw new Error(
-      `figure : un triangle s'écrit « angles 40 · 60 · ? », ses trois angles (« ? » pour un angle à trouver, un seul sauf « / isocèle », où les deux derniers sont égaux, ou « / équilatéral »), de somme 180°, lu « ${brut} »`,
+      `figure : un triangle s'écrit « angles 40 · 60 · ? », ses trois angles (« ? » pour un angle à trouver, un seul sauf « / isocèle », où les deux derniers sont égaux, ou « / équilatéral »), de somme 180°, chacun de 20° au moins, lu « ${brut} »`,
     );
   return { kind: 'triangle-angles', props: { angles, ...(marques && { marks: marques }) } };
 }
@@ -243,10 +247,12 @@ function lireAngle(reste, brut) {
     values.every(angleValide) &&
     (layout === 'single'
       ? values.length === 1 && nombres.length === 1
-      : values.length === 2 && nombres.length >= 1 && (nombres.length === 1 || (layout === 'straight' ? nombres[0] + nombres[1] === 180 : nombres[0] === nombres[1])));
+      : values.length === 2 &&
+        nombres.length >= 1 &&
+        (layout === 'straight' ? (nombres.length === 1 ? 180 - nombres[0] >= ANGLE_MIN : nombres[0] + nombres[1] === 180) : nombres.length === 1 || nombres[0] === nombres[1]));
   if (!ok)
     throw new Error(
-      `figure : un angle s'écrit « angle 120 » (un angle seul), « angle plat 130 · ? » (deux angles côte à côte, de somme 180°) ou « angle croisé 70 · ? » (un angle, puis l'angle opposé par le sommet), des mesures entre 0 et 180, lu « ${brut} »`,
+      `figure : un angle s'écrit « angle 120 » (un angle seul), « angle plat 130 · ? » (deux angles côte à côte, de somme 180°) ou « angle croisé 70 · ? » (un angle, puis l'angle opposé par le sommet), des mesures de 20 à 180, lu « ${brut} »`,
     );
   return { kind: 'angle', props: { layout, values } };
 }
