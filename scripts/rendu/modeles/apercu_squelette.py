@@ -10,10 +10,10 @@ from PIL import Image, ImageDraw
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from squelette import Frame  # noqa: E402
+from marche import ALLURE, pattes_courtes, pose as marche  # noqa: E402
 
-# Les mêmes que GESTES dans paintedCharacters.ts : amplitudes en radians, périodes en secondes.
+# Les mêmes que GESTES dans paintedCharacters.ts : amplitudes en radians, périodes en secondes ; la marche dans marche.py.
 REST = {"breath": (0.04, 4.5), "look": (0.2, 7.0), "tail": (0.3, 4.0)}
-WALK = {"swing": 0.45, "pace": 8.0, "arms": 0.5, "twist": 0.08, "lean": 0.06}
 
 COLORS = [(200, 200, 200), (120, 160, 230), (240, 200, 60), (230, 90, 90), (170, 60, 60), (90, 200, 120), (40, 140, 70),
           (190, 120, 230), (120, 60, 170)]
@@ -42,41 +42,36 @@ def rot(axis, a):
     c, s = np.cos(a), np.sin(a)
     if axis == "x":
         return np.array([[1, 0, 0], [0, c, -s], [0, s, c]])
-    return np.array([[c, 0, s], [0, 1, 0], [-s, 0, c]])
+    if axis == "y":
+        return np.array([[c, 0, s], [0, 1, 0], [-s, 0, c]])
+    return np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
 
 
 def pose(bones, heads, t, walking):
-    """Pour chaque os, sa rotation (repère du jeu) au temps t."""
-    r = {}
+    """Pour chaque os, sa rotation (repère du jeu) au temps t : le repos, et le cycle de marche du jeu (marche.py)."""
+    euler = {}
     if walking:
-        k = np.sin(t * WALK["pace"])
-        r["thigh.L"] = rot("x", WALK["swing"] * k)
-        r["thigh.R"] = rot("x", -WALK["swing"] * k)
-        r["shin.L"] = rot("x", -0.8 * WALK["swing"] * max(0, -k))
-        r["shin.R"] = rot("x", -0.8 * WALK["swing"] * max(0, k))
-        # Les bras balancent à l'inverse des jambes ; le buste se penche un peu et tourne avec le pas.
-        r["arm.L"] = rot("x", -WALK["arms"] * k)
-        r["arm.R"] = rot("x", WALK["arms"] * k)
+        allure = dict(ALLURE, dandine=ALLURE["dandine"] * pattes_courtes({b["name"]: heads[i][1] for i, b in enumerate(bones)}))
+        for name, axis, angle in marche(allure, t * ALLURE["cadence"], 1)[0]:
+            euler.setdefault(name, {})[axis] = euler.get(name, {}).get(axis, 0) + angle
     a, p = REST["breath"]
-    r["spine"] = rot("x", a * np.sin(2 * np.pi * t / p) - (WALK["lean"] if walking else 0))
-    if walking:
-        r["spine"] = r["spine"] @ rot("y", WALK["twist"] * np.sin(t * WALK["pace"]))
+    euler.setdefault("spine", {})["x"] = a * np.sin(2 * np.pi * t / p) - (ALLURE["penche"] if walking else 0)
     a, p = REST["look"]
-    r["head"] = rot("y", a * np.sin(2 * np.pi * t / p))
+    euler.setdefault("head", {})["y"] = euler["head"].get("y", 0) + a * np.sin(2 * np.pi * t / p)
     a, p = REST["tail"]
-    r["tail.1"] = rot("y", a * np.sin(2 * np.pi * t / p))
-    r["tail.2"] = rot("y", 1.2 * a * np.sin(2 * np.pi * t / p - 0.9))
+    euler["tail.1"] = {"y": a * np.sin(2 * np.pi * t / p)}
+    euler["tail.2"] = {"y": 1.2 * a * np.sin(2 * np.pi * t / p - 0.9)}
+    # L'ordre des angles d'Euler de three.js (« XYZ ») : la matrice vaut Rx · Ry · Rz.
+    r = {n: rot("x", e.get("x", 0)) @ rot("y", e.get("y", 0)) @ rot("z", e.get("z", 0)) for n, e in euler.items()}
     mats = []
     for i, b in enumerate(bones):
         R = r.get(b["name"], np.eye(3))
-        local = (R, heads[i])
         if b["parent"] < 0:
             mats.append((R, heads[i] - R @ heads[i]))
         else:
             PR, Pt = mats[b["parent"]]
             # La rotation de l'os autour de sa tête, puis celle de son parent.
             mats.append((PR @ R, PR @ (heads[i] - R @ heads[i]) + Pt))
-        del local
     return mats
 
 

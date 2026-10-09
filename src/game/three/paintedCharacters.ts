@@ -117,9 +117,11 @@ export const GESTES = {
   souffle: [0.04, 4.5],
   regard: [0.2, 7],
   queue: [0.3, 4],
-  // La marche : les jambes, les bras à l'inverse des jambes, le buste penché en avant et qui tourne un peu avec le pas.
-  // `dandine` : le roulis des hanches des créatures à pattes courtes (une taupe en manteau), qui se dandinent.
-  pas: { angle: 0.45, cadence: 8, bras: 0.5, buste: 0.08, penche: 0.06, dandine: 0.1 },
+  // La marche (`poseDeMarche`) : la cuisse (`angle`), les bras à l'inverse des jambes, le buste penché en avant ;
+  // `bassin` : sa rotation avec la jambe qui avance, `buste` celle des épaules à l'inverse ; `bascule` : le bassin qui
+  // descend du côté de la jambe en l'air ; `dandine` : le roulis des créatures à pattes courtes (une taupe en
+  // manteau) ; `monte` : de combien le corps monte quand les jambes se croisent (en hauteurs de case).
+  pas: { angle: 0.45, cadence: 8, bras: 0.45, buste: 0.06, penche: 0.06, dandine: 0.1, bassin: 0.07, bascule: 0.05, monte: 0.04 },
 } as const;
 
 /** Une allure : les amplitudes de la marche (`GESTES.pas`). */
@@ -130,7 +132,7 @@ export type Allure = { readonly [K in keyof typeof GESTES.pas]: number };
  */
 export const ALLURES: Partial<Record<BiomeId, Partial<Allure>>> = {
   // Rouxel, le renard : une marche fine et distinguée, à petits pas, les bras à peine balancés, le buste droit.
-  'french-6e-word-spelling': { angle: 0.28, bras: 0.18, buste: 0, penche: -0.03 },
+  'french-6e-word-spelling': { angle: 0.3, bras: 0.18, buste: 0.02, bassin: 0.05, bascule: 0.03, penche: -0.03, monte: 0.025 },
   // Bloquette, la brebis : son râteau, tenu comme un bâton de marche, balance peu.
   'french-6e-grammar-spelling': { bras: 0.2 },
 };
@@ -199,27 +201,74 @@ function tourner(membres: Map<string, THREE.Bone>, nom: string, axe: 'x' | 'y' |
 /** Un cycle de geste (`GESTES`) au temps `t`, décalé de la phase de la créature et de `decalage` (en radians). */
 const cycle = ([angle, periode]: readonly [number, number], t: number, decalage = 0) => angle * Math.sin((2 * Math.PI * t) / periode - decalage);
 
+/** De 0 à 1 et retour, en cloche sans à-coup, autour de `centre` dans le cycle (angles en radians), sur `largeur`. */
+function cloche(x: number, centre: number, largeur: number): number {
+  const d = Math.abs(Math.atan2(Math.sin(x - centre), Math.cos(x - centre))) / (largeur / 2);
+  return d >= 1 ? 0 : 0.5 + 0.5 * Math.cos(Math.PI * d);
+}
+
+/**
+ * La pose d'une marche à un instant : un cycle de marche réel, ramené à nos os (hanche, genou, bassin, épaule ; pas
+ * de cheville ni de coude). `phi` : l'angle dans le cycle de la jambe gauche (la droite a un demi-cycle d'écart) ;
+ * `elan` : de 0 à 1, l'ampleur du moment (0 à l'arrêt). Pour une jambe (repères des cycles de marche humains) :
+ * - la cuisse va de l'avant (au contact du talon, `phi` = π/2) à l'arrière (à la poussée, −π/2) ;
+ * - le genou est presque tendu au contact, plie un peu en recevant le poids (une quinzaine de degrés), se tend en
+ *   appui, puis plie fort pendant que la jambe repasse devant (une soixantaine de degrés, mise à l'échelle de
+ *   l'allure), pour que le pied ne frotte pas le sol ;
+ * - le bassin tourne avec la jambe qui avance, et descend un peu du côté de la jambe en l'air ; les épaules tournent à
+ *   l'inverse du bassin, et la tête reste droite ;
+ * - les bras balancent à l'inverse des jambes, un rien en retard ;
+ * - le corps est au plus bas juste après le contact et au plus haut quand les jambes se croisent (`haut`, de 0 à 1).
+ */
+export function poseDeMarche(allure: Allure, phi: number, elan: number): { angles: [nom: string, axe: 'x' | 'y' | 'z', angle: number][]; haut: number } {
+  const jambe = (p: number) => {
+    // Le genou : la cloche du poids reçu (juste après le contact), puis celle du pas en l'air (avant le croisement).
+    const genou = 0.5 * cloche(p, Math.PI / 2 + 0.6, 1.2) + 2.2 * cloche(p, -0.6, 2.6);
+    return { cuisse: allure.angle * Math.sin(p), genou: -allure.angle * genou };
+  };
+  const g = jambe(phi);
+  const d = jambe(phi + Math.PI);
+  const s = Math.sin(phi);
+  const c = Math.cos(phi);
+  const bras = allure.bras * Math.sin(phi - 0.35);
+  return {
+    angles: [
+      ['thigh.L', 'x', elan * g.cuisse],
+      ['shin.L', 'x', elan * g.genou],
+      ['thigh.R', 'x', elan * d.cuisse],
+      ['shin.R', 'x', elan * d.genou],
+      // Le bassin : il tourne avec la jambe gauche qui avance et descend du côté de la jambe en l'air, sous un buste
+      // qui reste droit ; une créature à pattes courtes se dandine (tout son corps penche sur la patte posée).
+      ['hips', 'y', elan * -allure.bassin * s],
+      ['hips', 'z', elan * (allure.bascule - allure.dandine) * c],
+      ['spine', 'y', elan * (allure.bassin + allure.buste) * s],
+      ['spine', 'z', elan * -allure.bascule * c],
+      ['head', 'y', elan * -allure.buste * s],
+      ['arm.L', 'x', elan * -bras],
+      ['arm.R', 'x', elan * bras],
+    ],
+    haut: elan * (0.5 + 0.5 * Math.cos(2 * phi)),
+  };
+}
+
 /**
  * Joue les gestes d'une créature qui a un squelette (`GESTES`, et son `allure` pour la marche). `pas` : où elle en
  * est de son pas, de 0 à 1 (0 au repos) ; ses membres partent et reviennent en douceur sur le premier et le dernier
- * cinquième du pas, sans à-coup (référent dys), et balancent en plein entre les deux.
+ * cinquième du pas, sans à-coup (référent dys), et suivent entre les deux un cycle de marche (`poseDeMarche`).
+ * Rend la hauteur du corps (de 0 à 1) : le jeu le soulève d'autant de `allure.monte`.
  */
-function bouger(membres: Map<string, THREE.Bone>, allure: Allure, t: number, phase: number, pas: number, dureeDuPas: number): void {
+function bouger(membres: Map<string, THREE.Bone>, allure: Allure, t: number, phase: number, pas: number, dureeDuPas: number): number {
   const elan = adoucir(Math.min(pas, 1 - pas) / 0.2);
-  const k = elan * Math.sin(pas * dureeDuPas * allure.cadence);
+  const courtes = pattesCourtes(membres);
+  const { angles, haut } = poseDeMarche({ ...allure, dandine: allure.dandine * courtes }, pas * dureeDuPas * allure.cadence, elan);
+  for (const [nom, axe, angle] of angles) tourner(membres, nom, axe, angle);
   tourner(membres, 'spine', 'x', cycle(GESTES.souffle, t + phase) - allure.penche * elan);
-  tourner(membres, 'spine', 'y', allure.buste * k);
-  tourner(membres, 'head', 'y', cycle(GESTES.regard, t + phase));
+  // La tête regarde de côté au repos, et reste droite quand le buste tourne.
+  const tete = membres.get('head');
+  if (tete) tete.rotation.y += cycle(GESTES.regard, t + phase);
   tourner(membres, 'tail.1', 'y', cycle(GESTES.queue, t + phase));
   tourner(membres, 'tail.2', 'y', 1.2 * cycle(GESTES.queue, t + phase, 0.9));
-  tourner(membres, 'thigh.L', 'x', allure.angle * k);
-  tourner(membres, 'thigh.R', 'x', -allure.angle * k);
-  tourner(membres, 'shin.L', 'x', -0.8 * allure.angle * Math.max(0, -k));
-  tourner(membres, 'shin.R', 'x', -0.8 * allure.angle * Math.max(0, k));
-  tourner(membres, 'arm.L', 'x', -allure.bras * k);
-  tourner(membres, 'arm.R', 'x', allure.bras * k);
-  // Le poids passe sur la patte posée : le corps penche de son côté.
-  tourner(membres, 'hips', 'z', -allure.dandine * pattesCourtes(membres) * k);
+  return haut;
 }
 
 /**
@@ -410,12 +459,14 @@ export function habiller(
       }
       for (const q of promeneurs) {
         const { dx, dy, bob } = strollAt(q.stroll, instant.now, t);
-        poser(q, dx, dy, bob);
+        poser(q, dx, dy, q.membres.size ? 0 : bob);
         // Le geste lent : le bras se lève et redescend, en cinq secondes (coupé avec « Réduire les animations »).
         q.bras.rotation.x = -GESTE.angle * Math.max(0, Math.sin(((t + q.phase) / GESTE.periode) * Math.PI * 2));
         if (q.membres.size) {
           const pas = q.stroll.start ? Math.min(1, (instant.now - q.stroll.start) / q.stroll.duration) : 0;
-          bouger(q.membres, q.allure, t, q.phase, pas, q.stroll.duration / 1000);
+          // Une créature à squelette ne sautille pas : son corps monte et descend avec ses pas.
+          const haut = bouger(q.membres, q.allure, t, q.phase, pas, q.stroll.duration / 1000);
+          poser(q, dx, dy, q.allure.monte * haut);
         }
       }
     },
