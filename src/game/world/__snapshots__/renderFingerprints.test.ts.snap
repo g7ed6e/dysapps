@@ -36,10 +36,10 @@ exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 5e 1`] =
 exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 6e 1`] = `
 {
   "ambiance": "5c500312",
-  "décor (lueurs)": "38ac7a33",
-  "décor (primitives)": "f195941b",
-  "décor (style a)": "b3e5485d",
-  "modelé dessiné": "20c1c5f1",
-  "relief": "edb763ea",
+  "décor (lueurs)": "12087f0b",
+  "décor (primitives)": "cc22d421",
+  "décor (style a)": "acd56eda",
+  "modelé dessiné": "4e1d40ab",
+  "relief": "718f9141",
 }
 `;

@@ -1,5 +1,6 @@
 // Les petites constructions des commandes (GD-7, PR 3) : chaque forme tient les limites du directeur artistique, et se
 // pose sur son île à côté de la créature sans rien chevaucher.
+import { silhouetteDe } from './silhouettes';
 import { STORIES } from './stories';
 import { DEFAULT_SETTINGS, retenirReglages, type Lv2Choice } from '../../core/settings';
 import { BIOMES, BLOC, BLOCKS, type BlockId } from '../biomes';
@@ -145,9 +146,12 @@ describe('La place de chaque petite construction : une donnée fixe, que le calc
       retenirReglages(null);
     }
   };
+  // Une île qui a pris sa forme (GD-12) garde la place écrite de ses petites constructions, à la même case : le calcul,
+  // sur sa nouvelle côte, en trouverait parfois une autre. Ses places restent vérifiées une à une (plus bas).
+  const calculees = PLACED_FIXTURES.filter((c) => !silhouetteDe(c.biome).forme);
   it.each(['es', 'de', 'none'] as const)('LV2 %s', (lv2) => {
-    const trouvees = avecLv2(lv2, () => Object.fromEntries(PLACED_FIXTURES.map((c) => [c.fixture, calculerLaPlaceDeLaPetiteConstruction(c.biome, c.fixture)])));
-    const ecrites = Object.fromEntries(PLACED_FIXTURES.map((c) => [c.fixture, placeDeLaPetiteConstruction(c.biome, c.fixture)]));
+    const trouvees = avecLv2(lv2, () => Object.fromEntries(calculees.map((c) => [c.fixture, calculerLaPlaceDeLaPetiteConstruction(c.biome, c.fixture)])));
+    const ecrites = Object.fromEntries(calculees.map((c) => [c.fixture, placeDeLaPetiteConstruction(c.biome, c.fixture)]));
     expect(trouvees).toEqual(ecrites);
   }, 30_000);
 });

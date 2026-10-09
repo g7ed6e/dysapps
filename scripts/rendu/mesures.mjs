@@ -927,6 +927,24 @@ const CAPTURES = [
     ['belvedere', 'maths-3e-geometry'],
   ].map(([court, ile]) => ({ nom: `gd-11-${court}-panneau`, vue: 'île', famille: 'gardiens', ile, voir: '.island-sheet' })),
   { nom: 'gd-11-carte-6e-390x844', vue: 'carte', famille: 'gardiens', ile: 'history-6e-antiquity', taille: { width: 390, height: 844 } },
+  // Une forme par île (GD-12, famille `formes`, à retirer une fois le lot fusionné) : la Carte du 6e à l'ouverture, sur
+  // la tablette, la tablette debout et le téléphone, dans la police de lecture puis en OpenDyslexic 32 px ; la Forêt, la
+  // Plaine, la Rivière et la Pointe de près ; « Modifier le plan », la Tour du lecteur choisie (`amenager`).
+  ...[
+    { suffixe: '' },
+    { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
+    { suffixe: '-390x844', taille: { width: 390, height: 844 } },
+  ].flatMap(({ suffixe, ...autres }) => [
+    { nom: `formes-carte-6e${suffixe}`, vue: 'carte', famille: 'formes', ile: 'french-6e-phonology', ...autres },
+    { nom: `formes-carte-6e${suffixe}-od32`, vue: 'carte', famille: 'formes', ile: 'french-6e-phonology', reglages: { font: 'opendyslexic', fontSize: 32 }, ...autres },
+  ]),
+  ...[
+    ['foret', 'french-6e-phonology'],
+    ['plaine', 'maths-6e-calculation'],
+    ['riviere', 'maths-6e-fractions'],
+    ['pointe', 'geography-6e-living'],
+  ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
+  { nom: 'formes-modifier-le-plan', vue: 'carte', famille: 'formes', ile: 'french-6e-phonology', amenager: 'french-6e-reading' },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
@@ -1255,6 +1273,7 @@ async function scenes() {
               etages: c.etages,
               posees: c.posees,
               cliquer: c.cliquer,
+              amenager: c.amenager,
               fiche: c.fiche,
               zoomer: c.zoomer,
               sansPanneau: c.sansPanneau,
@@ -1264,7 +1283,7 @@ async function scenes() {
           )
         : []),
     ];
-    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, posees, cliquer, fiche, zoomer, reussir, sansPanneau } of views) {
+    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, posees, cliquer, amenager, fiche, zoomer, reussir, sansPanneau } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -1333,6 +1352,15 @@ async function scenes() {
           await ouvrirLePanneauPour(page, cliquer);
           await page.locator(cliquer).first().click();
         }
+        // « Modifier le plan » sur la Carte, un lieu choisi (`amenager`, GD-12) : le bouton, puis le toucher du lieu, sans
+        // viser la scène (`window.__dysappsAmenager`) ; au téléphone en grand texte, on reste sur la Carte.
+        if (amenager) {
+          await page.getByRole('button', { name: /^Modifier le plan/ }).first().click();
+          await page.clock.runFor(125);
+          const rester = page.getByRole('button', { name: /Rester sur la Carte/ });
+          if (await rester.count()) await rester.first().click();
+          await page.evaluate((id) => window.__dysappsAmenager?.({ genre: 'ile', id }), amenager);
+        }
         // La fiche d'un objet ouverte une fois la scène prête (`fiche`, Toucher le monde, lot 2), comme d'un toucher :
         // le temps que la caméra glisse pour la laisser voir (16 pas, deux secondes de la scène).
         if (fiche) await page.evaluate((objet) => window.__dysappsFiche?.(objet), fiche);
@@ -1345,7 +1373,7 @@ async function scenes() {
         // Le panneau masqué (`sansPanneau`) agrandit la place libre : la caméra repart vers un autre cadrage, qu'on laisse
         // se poser comme après un zoom (sans ces pas, la vue de loin du grand moulin se prenait la caméra en route, à un
         // point qui changeait d'une prise à l'autre).
-        for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer || sansPanneau ? 16 : 0)); i++) {
+        for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer || amenager || sansPanneau ? 16 : 0)); i++) {
           await page.clock.runFor(125);
           await page.waitForTimeout(30);
         }

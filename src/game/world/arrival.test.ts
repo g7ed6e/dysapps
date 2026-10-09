@@ -76,12 +76,13 @@ describe('Toucher le sol : la case d’arrivée', () => {
   });
 
   it('l’eau se reconnaît (en marche, un toucher sur l’eau le fait arriver)', () => {
-    const { cubes, ground } = monde('6e');
+    // Aux Îles Brumeuses : les îles des Premiers Rivages, qui ont une forme (GD-12), n'ont plus ni mare ni lac.
+    const { cubes, ground } = monde('5e');
     const eau = cubes.find((c) => c.texture === 'eau');
     expect(eau).toBeDefined();
     const top = Math.max(...cubes.filter((c) => c.x === eau!.x && c.y === eau!.y && !c.ghost).map((c) => c.z));
     if (top === eau!.z) expect(toucheLEau(ground, { x: eau!.x + 0.5, y: eau!.y + 0.5 })).toBe(true);
-    const home = avatarHome('french-6e-phonology');
+    const home = avatarHome('maths-5e-proportionality');
     expect(toucheLEau(ground, home)).toBe(false);
   });
 

@@ -19,6 +19,8 @@ afterEach(() => {
 
 const partie = toutConstruit();
 const VOLCAN: BiomeId = 'maths-6e-decimals';
+/** La Rivière des fractions : depuis les formes des îles (GD-12), le Volcan n'a plus que deux places, la Rivière beaucoup. */
+const RIVIERE: BiomeId = 'maths-6e-fractions';
 
 function apres(r: ReturnType<typeof moveIsland>): World {
   if (!r.ok) throw new Error(`refusée : ${r.reason}`);
@@ -39,12 +41,12 @@ describe('les écueils cachés sous une île posée dessus (« Cacher »)', () =
     const ecueils = [...ecueilsDe('6e')].map((k) => k.split(',').map(Number));
     // Une place libre dont l'emprise couvre au moins un écueil.
     const couvre = (spot: Parameters<typeof poseOfSpot>[1]) =>
-      footprintOf(VOLCAN, placedIsland(VOLCAN, poseOfSpot('6e', spot))).some((p) => ecueils.some(([x, y]) => x >= p.x0 && x < p.x1 && y >= p.y0 && y < p.y1));
-    const spot = freeSpots(w, VOLCAN).find(couvre);
+      footprintOf(RIVIERE, placedIsland(RIVIERE, poseOfSpot('6e', spot))).some((p) => ecueils.some(([x, y]) => x >= p.x0 && x < p.x1 && y >= p.y0 && y < p.y1));
+    const spot = freeSpots(w, RIVIERE).find(couvre);
     expect(spot, 'une place libre sur des écueils').toBeDefined();
-    const w2 = apres(moveIsland(w, VOLCAN, spot!));
+    const w2 = apres(moveIsland(w, RIVIERE, spot!));
     applyLayout(w2.layout);
-    const parts = footprintOf(VOLCAN, islandDef(VOLCAN));
+    const parts = footprintOf(RIVIERE, islandDef(RIVIERE));
     const sous = ecueils.filter(([x, y]) => parts.some((p) => x >= p.x0 && x < p.x1 && y >= p.y0 && y < p.y1));
     expect(sous.length).toBeGreaterThan(0);
     const cubes = worldCubes('6e', partie.progress, w2, false, [], true);

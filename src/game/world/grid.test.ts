@@ -109,6 +109,7 @@ describe('La disposition en grille', () => {
     const a = '6e';
     const { g } = grilleDe(a);
     let essais = 0;
+    let traverses = 0;
     for (const from of islandsOf(a))
       for (const to of islandsOf(a)) {
         if (from.id === to.id) continue;
@@ -119,12 +120,14 @@ describe('La disposition en grille', () => {
         if (g.ileEn(p) !== from.id) continue;
         const retour = g.trajet({ genre: 'ile', id: g.ileEn(p) }, { genre: 'ile', id: from.id }, { depart: p });
         expect(retour!.etapes.every((e) => e.ile !== to.id), `${from.id} → ${to.id}`).toBe(true);
-        // Parti de l'île visée (ce que faisait la page) : il finissait de traverser jusqu'à elle avant de revenir.
+        // Parti de l'île visée (ce que faisait la page) : il finissait de traverser jusqu'à elle avant de revenir, sur la
+        // plupart des trajets (depuis les formes des îles, GD-12, pas sur tous : de la Forêt au Laboratoire, non).
         const avant = g.trajet({ genre: 'ile', id: to.id }, { genre: 'ile', id: from.id }, { depart: p });
-        expect(avant!.etapes.some((e) => e.ile === to.id)).toBe(true);
+        if (avant!.etapes.some((e) => e.ile === to.id)) traverses++;
         essais++;
       }
     expect(essais).toBeGreaterThan(0);
+    expect(traverses).toBeGreaterThan(essais / 2);
   }, 30_000);
 
   it('le trajet jusqu’à la porte d’un lieu du village : celui d’avant', () => {

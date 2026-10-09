@@ -6,7 +6,8 @@ import { getArchipelago } from './archipelago';
 import { dockBox } from './harbor';
 import { BIOMES } from '../biomes';
 import { ARCHIPELAGO_IDS } from './archipelagos';
-import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, isthmusOf, startingIsland } from './map';
+import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, isLand, isthmusOf, landBox, startingIsland } from './map';
+import { silhouetteDe } from './silhouettes';
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
 import { STEP, type PlacePose, type Rectangle, turnRectangle } from './placement';
 import type { Layout, LayoutSpot } from './savedLayout';
@@ -61,8 +62,68 @@ export function gapBetween(r: Rectangle, s: Rectangle): number {
 export function landRectangle(def: IslandDef): Rectangle {
   const c = coeurDe(def);
   const local = { x0: c.x0 - def.ext.left - def.core.x, y0: c.y0 - def.ext.front - def.core.y, x1: c.x1 + def.ext.right - def.core.x, y1: c.y1 + def.ext.back - def.core.y };
+  return autourDuLieu(def, local);
+}
+
+/** Un rectangle du repère d'un lieu (relatif à l'origine de son cœur, le lieu pas tourné) dans le monde, le lieu posé et tourné. */
+function autourDuLieu(def: IslandDef, local: Rectangle): Rectangle {
   const r = turnRectangle(local, def.quarts);
   return { x0: def.core.x + r.x0, y0: def.core.y + r.y0, x1: def.core.x + r.x1, y1: def.core.y + r.y1 };
+}
+
+/**
+ * La hauteur des bandes qui couvrent la terre d'un lieu qui a une forme (`landRectangles`) : deux rangées de cases, une
+ * bande par morceau de terre d'un seul tenant sur ces deux rangées. Elles suivent la côte à une case près, sans
+ * multiplier les rectangles que comparent les écarts (`tooSmallGaps`) et le traceur des liaisons.
+ */
+const BANDE = 2;
+
+const bandesLocales = new Map<BiomeId, readonly Rectangle[]>();
+
+/**
+ * La terre propre d'un lieu en rectangles, dans le monde, le lieu tourné : un seul, `landRectangle`, pour une île sans
+ * forme ; des bandes qui suivent sa côte pour une île qui a une forme (GD-12), si bien que deux lieux s'emboîtent, à
+ * `GAP_BETWEEN_PLACES` cases d'eau de côte à côte, et non plus de rectangle à rectangle. Calculées une fois dans le
+ * repère du lieu (son dessin ne dépend pas de sa place).
+ */
+export function landRectangles(def: IslandDef): Rectangle[] {
+  if (!silhouetteDe(def.id).forme) return [landRectangle(def)];
+  let locales = bandesLocales.get(def.id);
+  if (!locales) bandesLocales.set(def.id, (locales = bandesDeLaTerre(def)));
+  return locales.map((r) => autourDuLieu(def, r));
+}
+
+/** Les bandes de la terre d'un lieu (`landRectangles`), dans son repère, le lieu pas tourné. */
+function bandesDeLaTerre(def: IslandDef): readonly Rectangle[] {
+  const droit: IslandDef = { ...def, quarts: 0 };
+  const b = landBox(droit);
+  const out: Rectangle[] = [];
+  for (let y0 = b.y0; y0 < b.y1; y0 += BANDE) {
+    const y1 = Math.min(b.y1, y0 + BANDE);
+    let debut: number | null = null;
+    for (let x = b.x0; x <= b.x1; x++) {
+      let terre = false;
+      for (let y = y0; y < y1 && !terre && x < b.x1; y++) terre = isLand(droit, x, y);
+      if (terre && debut === null) debut = x;
+      if (!terre && debut !== null) {
+        out.push({ x0: debut - def.core.x, y0: y0 - def.core.y, x1: x - def.core.x, y1: y1 - def.core.y });
+        debut = null;
+      }
+    }
+  }
+  // Deux bandes l'une sur l'autre, de même largeur, n'en font qu'une.
+  const fondues: Rectangle[] = [];
+  for (const r of out) {
+    const dessous = fondues.find((f) => f.x0 === r.x0 && f.x1 === r.x1 && f.y1 === r.y0);
+    if (dessous) dessous.y1 = r.y1;
+    else fondues.push({ ...r });
+  }
+  return Object.freeze(fondues.map((r) => Object.freeze(r)));
+}
+
+/** La boîte de rectangles : le plus petit rectangle qui les tient tous. */
+export function boxOf(rs: readonly Rectangle[]): Rectangle {
+  return { x0: Math.min(...rs.map((r) => r.x0)), y0: Math.min(...rs.map((r) => r.y0)), x1: Math.max(...rs.map((r) => r.x1)), y1: Math.max(...rs.map((r) => r.y1)) };
 }
 
 /**
@@ -94,7 +155,7 @@ export interface FootprintPart extends Rectangle {
  */
 export function footprintOf(id: BiomeId, def: IslandDef = islandDef(id)): FootprintPart[] {
   const a = getArchipelago(archipelagoOfIsland(id));
-  const out: FootprintPart[] = [{ lieu: id, genre: 'terre', ...landRectangle(def) }];
+  const out: FootprintPart[] = landRectangles(def).map((r) => ({ lieu: id, genre: 'terre', ...r }));
   for (const m of monumentsOf(a.classe)) if (m.biome === id) out.push({ lieu: id, genre: 'monument', ...monumentRectangle(m, def) });
   if (a.port === id) {
     // Le quai suit son lieu (il est dessiné depuis sa côte) ; le lieu du port, au point de départ, ne tourne pas.
@@ -162,11 +223,11 @@ export interface TooSmallGap {
 export function tooSmallGaps(a: ArchipelagoId, lieux: readonly IslandDef[], bouge: (id: BiomeId) => boolean = () => true): TooSmallGap[] {
   const out: TooSmallGap[] = [];
   const c = frameOf(a);
-  const parts = lieux.map((d) => footprintOf(d.id, d));
+  const parts = lieux.map((d) => partsOf(footprintOf(d.id, d)));
   parts.forEach((ps, i) => {
     if (bouge(lieux[i].id))
       for (const p of ps) {
-        const dehors = Math.min(p.x0 - c.x0, p.y0 - c.y0, c.x1 - p.x1, c.y1 - p.y1);
+        const dehors = Math.min(p.box.x0 - c.x0, p.box.y0 - c.y0, c.x1 - p.box.x1, c.y1 - p.box.y1);
         if (dehors < 0) out.push({ place: p.lieu, other: null, kind: p.genre, gap: dehors });
       }
     for (let j = i + 1; j < parts.length; j++) {
@@ -174,12 +235,37 @@ export function tooSmallGaps(a: ArchipelagoId, lieux: readonly IslandDef[], boug
       const min = bouge(lieux[i].id) || bouge(lieux[j].id) ? GAP_BETWEEN_PLACES : 1;
       for (const p of ps)
         for (const q of parts[j]) {
-          const gap = gapBetween(p, q);
+          const gap = gapBetweenParts(p, q, min);
           if (gap < min) out.push({ place: p.lieu, other: q.lieu, kind: p.genre, gap });
         }
     }
   });
   return out;
+}
+
+/** Une part d'emprise d'un lieu, ses rectangles réunis (les bandes de sa terre n'en font qu'une) et leur boîte. */
+interface PartOfPlace {
+  lieu: BiomeId;
+  genre: FootprintPart['genre'];
+  rects: readonly Rectangle[];
+  box: Rectangle;
+}
+
+function partsOf(fp: readonly FootprintPart[]): PartOfPlace[] {
+  const out: PartOfPlace[] = [];
+  const terre = fp.filter((p) => p.genre === 'terre');
+  if (terre.length) out.push({ lieu: terre[0].lieu, genre: 'terre', rects: terre, box: boxOf(terre) });
+  for (const p of fp) if (p.genre !== 'terre') out.push({ lieu: p.lieu, genre: p.genre, rects: [p], box: p });
+  return out;
+}
+
+/** L'écart entre deux parts : le plus petit entre leurs rectangles ; au-delà de `assez`, leurs boîtes suffisent. */
+function gapBetweenParts(p: PartOfPlace, q: PartOfPlace, assez: number): number {
+  const loin = gapBetween(p.box, q.box);
+  if (loin >= assez) return loin;
+  let min = Infinity;
+  for (const r of p.rects) for (const s of q.rects) min = Math.min(min, gapBetween(r, s));
+  return min;
 }
 
 /**

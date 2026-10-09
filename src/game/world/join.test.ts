@@ -28,10 +28,10 @@ function apres(r: ReturnType<typeof moveIsland>): World {
   return r.world;
 }
 
-/** Le Volcan posé à la première place libre où il a un voisin ouvert à réunir, et ce voisin. */
+/** Le Volcan déplacé à la première place libre où il a un voisin ouvert à réunir, et ce voisin. */
 function voisins(): { w: World; autre: BiomeId } {
   const w = toutConstruit().world;
-  for (const s of freeSpots(w, VOLCAN)) {
+  for (const s of ailleurs(w)) {
     const r = moveIsland(w, VOLCAN, s);
     if (!r.ok) continue;
     const c = joinCandidates(r.world, VOLCAN).filter((id) => !isFixedPlace(id));
@@ -39,6 +39,9 @@ function voisins(): { w: World; autre: BiomeId } {
   }
   throw new Error('aucune place voisine');
 }
+
+/** Les places libres du Volcan, hors de sa place de départ. */
+const ailleurs = (w: World) => freeSpots(w, VOLCAN).filter((s) => s.x !== startingSpot(VOLCAN).x || s.y !== startingSpot(VOLCAN).y);
 
 const cles = (w: World, a: BiomeId) => {
   const j = joinsIn(w, '6e').find((x) => x.pair.includes(a))!;
@@ -50,11 +53,12 @@ afterEach(() => {
 });
 
 describe('Réunir deux lieux', () => {
-  it('sur la carte de départ, la Tour et la Ferme (leur isthme d’avant) peuvent déjà se réunir ; la Rivière, loin de tous, non ; le Volcan, depuis que les îles ont grandi (GD-11), avec le Hangar', () => {
+  it('sur la carte de départ, les voisines au plus près peuvent déjà se réunir (GD-12) : la Tour et la Baie, la Rivière et le Laboratoire, le Volcan et le Hangar ; la Ferme et le Volcan (depuis que la Ferme tourne son trèfle vers le fond, quatre cases d’eau devant elle)', () => {
     const w = toutConstruit().world;
-    expect(joinCandidates(w, 'french-6e-reading')).toEqual(['french-6e-grammar-spelling']);
-    expect(joinCandidates(w, 'maths-6e-fractions')).toEqual([]);
-    expect(joinCandidates(w, VOLCAN)).toEqual(['technology-6e-objects']);
+    expect(joinCandidates(w, 'french-6e-reading')).toEqual(['english-6e-vocabulary']);
+    expect(joinCandidates(w, 'maths-6e-fractions')).toEqual(['physics-chemistry-6e-matter-energy']);
+    expect(joinCandidates(w, 'french-6e-grammar-spelling')).toEqual([VOLCAN]);
+    expect(joinCandidates(w, VOLCAN)).toEqual(['french-6e-grammar-spelling', 'technology-6e-objects']);
   });
 
   it('deux voisins au plus près : 4 cases de long au moins, sur l’eau, des deux côtes à l’autre', () => {
@@ -173,9 +177,9 @@ describe('Réunir deux lieux', () => {
     const w = toutConstruit().world;
     expect(startingMapState(w, '6e')).toBe('pareille');
     // Un lieu remis à sa place de départ, écrite dans la disposition : rien ne changerait.
-    const remis = apres(moveIsland(apres(moveIsland(w, VOLCAN, freeSpots(w, VOLCAN)[0])), VOLCAN, startingSpot(VOLCAN)));
+    const remis = apres(moveIsland(apres(moveIsland(w, VOLCAN, ailleurs(w)[0])), VOLCAN, startingSpot(VOLCAN)));
     expect(startingMapState(remis, '6e')).toBe('pareille');
-    expect(startingMapState(apres(moveIsland(w, VOLCAN, freeSpots(w, VOLCAN)[0])), '6e')).toBe('possible');
+    expect(startingMapState(apres(moveIsland(w, VOLCAN, ailleurs(w)[0])), '6e')).toBe('possible');
   });
 
   it('l’identifiant de la construction dit ses deux lieux, d’une même région', () => {

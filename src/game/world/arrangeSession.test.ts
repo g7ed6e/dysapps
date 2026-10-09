@@ -49,12 +49,14 @@ describe('Annuler, et ↶', () => {
   it('une liaison reposée revient à l’ancienne ; une liaison payée entre-temps reste', () => {
     const w0 = toutConstruit().world;
     let trouve: { s: ReturnType<typeof freeSpots>[number]; id: string } | null = null;
-    for (const turn of [1, 2, 3] as const)
-      for (const p of freeSpots(w0, VOLCAN, turn)) {
-        const c = linksBrokenBy(w0, VOLCAN, p);
+    // La Mine des lettres : depuis les formes des îles (GD-12), elle a des places qui défont une liaison.
+    const MINE: BiomeId = 'french-6e-letter-confusion';
+    for (const turn of [1, 2, 3, 0] as const)
+      for (const p of freeSpots(w0, MINE, turn)) {
+        const c = linksBrokenBy(w0, MINE, p);
         if (c.length && !trouve) trouve = { s: p, id: c[0] };
       }
-    const a = poser(startArranging(w0), w0, moveIsland(w0, VOLCAN, trouve!.s));
+    const a = poser(startArranging(w0), w0, moveIsland(w0, MINE, trouve!.s));
     const vers = relinkChoices(a.world, trouve!.id).find((id) => id !== trouve!.id);
     if (!vers) return;
     const b = poser(a.session, a.world, relinkBetween(a.world, trouve!.id, vers));

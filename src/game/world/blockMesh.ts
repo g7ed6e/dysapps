@@ -273,6 +273,17 @@ export function blockRegions(cubes: readonly VoxelCube[], morceau = COTE_D_UN_MO
   return regions;
 }
 
+/**
+ * Une région du monde touche-t-elle l'un de ces rectangles (en cases, bornes hautes exclues) ? Dans « Modifier le plan »,
+ * les régions que touche le lieu soulevé se dessinent face par face (three/cubes.ts) ; une région qui ne fait que border
+ * un rectangle n'en a aucun sommet dedans (le test de la zone est strict, three/arrange.ts).
+ */
+export function chunkTouches(region: Pick<BlockRegion, 'rx' | 'ry' | 'morceau'>, zones: readonly { x0: number; y0: number; x1: number; y1: number }[]): boolean {
+  const [x0, y0] = [region.rx * region.morceau, region.ry * region.morceau];
+  const [x1, y1] = [x0 + region.morceau, y0 + region.morceau];
+  return zones.some((z) => z.x0 < x1 && z.x1 > x0 && z.y0 < y1 && z.y1 > y0);
+}
+
 /** Les morceaux d'une seule région : ses faces, que ses voisins de bord cachent ou montrent comme dans le monde entier. */
 export function buildRegionMesh(region: BlockRegion, options: Omit<BlockMeshOptions, 'morceau'> = {}): BlockChunk[] {
   const { rx, ry, morceau } = region;
