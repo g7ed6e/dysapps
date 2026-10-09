@@ -212,6 +212,11 @@ export interface ContexteDuMur {
    * plein ou bardé n'a de soubassement qu'à partir de `RANGEES_DU_SOUBASSEMENT`. Sans lui, le soubassement est posé.
    */
   rangees?: number;
+  /**
+   * Le mur fait partie d'un volume lissé (./volumes.ts) : ni chaperon ni dessus de pierre, un seul dessus dans sa
+   * matière ; `rangees` compte alors les cases du volume empilées à la colonne du bloc.
+   */
+  lisse?: boolean;
 }
 
 /** Les quatre côtés : +x, +y, −x, −y (comme `SIDES`). */
@@ -270,13 +275,14 @@ function cadranSur(v: Voisinage): boolean {
  *   au-dessus, décharge au rez, sur une face du dehors quand un seul de ses deux voisins le long de la face manque (le
  *   bout ou l'angle d'une façade : jamais sur un mur droit), et jamais sous un chaperon (le panneau y est trop court).
  * Un chaperon ne se pose que sur un mur qui ne monte plus (rien de sa classe un cran plus haut à côté : les gradins
- * d'un dôme n'en ont pas).
+ * d'un dôme n'en ont pas), et jamais sur un volume lissé (`lisse`).
  */
 export function peintureDuMur(v: Voisinage, maniere: ManiereDuMur, contexte: ContexteDuMur = {}): PeintureDuMur {
   const pied = v.dessous === 'rien';
   // Le soubassement d'un mur plein ou bardé : au pied d'un mur d'au moins trois rangées.
   const socle = pied && (contexte.rangees ?? RANGEES_DU_SOUBASSEMENT) >= RANGEES_DU_SOUBASSEMENT ? MOTIF.soubassement : 0;
-  const chaperon = v.dessus === 'rien' && v.monte === 0;
+  // Un volume lissé n'a qu'un dessus, dans sa matière : aucun chaperon, ni bande ni dessus gris, case par case.
+  const chaperon = !contexte.lisse && v.dessus === 'rien' && v.monte === 0;
   const haut = chaperon ? MOTIF.pierreEntiere : 0;
   const bandes = chaperon ? MOTIF.chaperon : 0;
   const partout = (cotes: number, fond: Fond): PeintureDuMur => ({ fond, motifs: [cotes, cotes, cotes, cotes, haut, 0] });
