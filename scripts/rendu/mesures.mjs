@@ -723,6 +723,22 @@ const CAPTURES = [
   })),
   { nom: 'familles-6e-tour-lecteur', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-reading', posees: 'toutes', zoomer: 1, finesse: 2 },
   { nom: 'familles-6e-portillon', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', posees: 'toutes', zoomer: 3, finesse: 2 },
+  // Le métal, le précieux et le végétal (9 octobre 2026) : le laboratoire de Bulle de près, de jour, de nuit, et pendant
+  // le fondu de sa pose (la ruine à mi-chemin : `partie` « un-plan », `poseA` 0,5) ; l'établi de Pince ; l'escalier de
+  // Grimoire est `familles-6e-escalier-tour` ; la salle des trophées pleine (tous les succès) de près, cadrée comme
+  // `lieux-trophees-tous`, puis sans cadre ; le clocheton de l'école ; le port, sa jetée et le long bac (ses poteaux),
+  // de jour et de nuit (les lanternes) ; le bout d'une liaison (le poteau et sa lanterne) à la Mine des lettres.
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    { nom: `familles-6e-labo${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'physics-chemistry-6e-matter-energy', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
+    { nom: `familles-6e-port-bac${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-calculation', zoomer: 2, finesse: 2, ...autres },
+  ]),
+  { nom: 'familles-6e-labo-fondu', vue: 'île', famille: 'familles-sixieme', ile: 'physics-chemistry-6e-matter-energy', partie: 'un-plan', pose: 1, poseA: 0.5, finesse: 2 },
+  { nom: 'familles-6e-etabli', vue: 'île', famille: 'familles-sixieme', ile: 'technology-6e-objects', posees: 'toutes', zoomer: 3, finesse: 2 },
+  { nom: 'familles-6e-salle-pleine', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', succes: 'tous', recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'familles-6e-salle-pleine-nuit', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', succes: 'tous', nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'familles-6e-salle-pleine-ile', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', succes: 'tous', zoomer: 2, finesse: 2 },
+  { nom: 'familles-6e-clocheton', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', zoomer: 4, finesse: 2 },
+  { nom: 'familles-6e-liaison-bout', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', zoomer: 3, finesse: 2 },
   // Les six îles d'histoire-géographie des 5e, 4e et 3e (lot HG-3, famille `histoire-geo-college`), à retirer une fois le
   // lot fusionné : chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`)
   // et tout construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la

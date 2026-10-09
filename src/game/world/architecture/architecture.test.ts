@@ -111,8 +111,8 @@ describe('L’architecture modulaire', () => {
 
 describe('Le kit des Premiers Rivages (lot 7b)', () => {
   it('porte les couleurs de l’archipel par rôle (intention du directeur artistique)', () => {
-    expect(KIT_6E.couleurs).toEqual({ poteau: 0x795643, remplissage: 0xd9c7a8, soubassement: 0x8a8f84, chaperon: 0x8a8f84, bardage: 0xb1815e, pilotis: 0x6e4c30 });
-    expect(KIT_6E.murs).toEqual({ colombage: 'colombage', bardage: 'bardage', pierre: 'plein' });
+    expect(KIT_6E.couleurs).toEqual({ poteau: 0x795643, remplissage: 0xd9c7a8, soubassement: 0x8a8f84, chaperon: 0x8a8f84, bardage: 0xb1815e, pilotis: 0x6e4c30, tole: 0xa4aab0, joint: 0x7e848a, galon: 0xcca22e });
+    expect(KIT_6E.murs).toEqual({ colombage: 'colombage', bardage: 'bardage', pierre: 'plein', metal: 'tole' });
     // La finition, matière par matière : la porte peinte, la marche dessinée ; la barrière attend le budget.
     expect(Object.keys(KIT_6E.finitions ?? {}).sort()).toEqual(['escalier', 'marche', 'porte']);
     // Le verre et les lanternes n'ont pas de famille : ils ne deviennent jamais des pièces.
@@ -160,6 +160,11 @@ describe('Le kit des Premiers Rivages (lot 7b)', () => {
     expect(monuments.length).toBeGreaterThan(20);
     for (const p of [...archi.pieces, ...archi.peints.values()]) {
       if (p.cube.place?.startsWith('monument:')) continue;
+      // Les poteaux de bois des liaisons et de la jetée (le végétal) : d'aucun plan.
+      if (p.famille === 'vegetal') {
+        expect(p.cube.texture).toBe('tronc');
+        continue;
+      }
       expect(p.cube.place).toBeUndefined();
       expect(batiments.has(cle(p.cube))).toBe(true);
     }

@@ -22,6 +22,10 @@
 //   bardé suit la même règle du soubassement ;
 // - bardage aux pignons (sur les bâtiments de bois du quai, la règle attend qu'on en pose : option (c) du directeur
 //   artistique, 30/09, voir kits/6e.ts) ; la nuit, rien ne s'allume : la lumière de la scène assombrit tout.
+// Le métal et le velours (intention du directeur artistique, 9 octobre 2026) : la tôle, des joints verticaux mats tous
+// les quarts de case (`TOLE`, le rôle `joint`), le soubassement à partir de trois rangées et un chaperon mince ; la
+// tenture, des plis d'un quart de case dans la teinte du velours et un galon d'or en haut (`TENTURE`, le rôle `galon`).
+// De loin, les joints et les plis s'effacent : le mur est uni.
 // Code pur, sans Three.js : le GLSL est une chaîne, que three/construction.ts insère dans le shader des blocs.
 import type { Voisinage } from './neighborhood';
 
@@ -61,6 +65,12 @@ export const MOTIF = {
    * pied ne se peignent que sur sa rangée du pied, celles de la tête que sur sa rangée de la tête (`RANGEES`).
    */
   rangees: 1 << 12,
+  /**
+   * Des lignes verticales au lieu des bandes horizontales : sur le bardage, la tôle (des joints tous les quarts de case,
+   * le métal) ; sur un mur plein, la tenture (des plis d'un quart de case, le velours), dont le chaperon est un galon.
+   * Les deux bits du genre étant pris, c'est un bit à part (lot du métal et du précieux, 9 octobre 2026).
+   */
+  vertical: 1 << 13,
 } as const;
 
 /**
@@ -68,7 +78,7 @@ export const MOTIF = {
  * rangée du pied, sur quatre bits à partir du bit `pied`, et celle de sa rangée de la tête, à partir du bit `tete`. Un
  * rectangle a donc au plus 16 rangées.
  */
-export const RANGEES = { pied: 13, tete: 17, masque: 15, max: 16 } as const;
+export const RANGEES = { pied: 14, tete: 18, masque: 15, max: 16 } as const;
 
 /** Le premier bit au-dessus de tous ceux d'un mur peint : les blocs assemblés commencent au-delà (construction/shader.ts). */
 export const MOTIF_FIN = 1 << (RANGEES.tete + 4);
@@ -150,6 +160,20 @@ export const COLOMBAGE = {
 } as const;
 
 /**
+ * La tôle (le métal, `aimant`) : des plaques à joints verticaux peints, tous les quarts de case, mats, sans rivet ni
+ * reflet (intention du directeur artistique, 9 octobre 2026) ; de loin, le mur devient uni. `joint` : la demi-largeur
+ * d'un joint, en part de case ; `pas` : l'écart entre deux joints.
+ */
+export const TOLE = { pas: 0.25, joint: 0.02 } as const;
+
+/**
+ * La tenture (le velours du fond de la salle des trophées) : des plis verticaux, une bande claire puis une sombre d'un
+ * quart de case chacune, dans la teinte de la matière (`clair`, `sombre` : ses parts, en couleur linéaire), et un galon
+ * d'or peint en haut (`galon`, en part de case ; le rôle `galon` du kit).
+ */
+export const TENTURE = { pli: 0.25, clair: 1.14, sombre: 0.8, galon: 0.08 } as const;
+
+/**
  * Un mur plein n'a de soubassement qu'à partir de tant de rangées (décision du directeur artistique, 8 octobre 2026) :
  * plus bas, la bande de pierre prenait la moitié du mur, et la teinte de la matière se perdait.
  */
@@ -183,10 +207,13 @@ export function pointsDuCadran(): [number, number][] {
 }
 
 /** Les rôles peints par le shader, dans l'ordre de l'uniforme `uRoles` (puis les mêmes, délavés). */
-export const ROLES_PEINTS = ['poteau', 'soubassement', 'chaperon'] as const;
+export const ROLES_PEINTS = ['poteau', 'soubassement', 'chaperon', 'joint', 'galon'] as const;
+
+/** L'indice d'un rôle peint dans `uRoles`, délavé ou non. */
+const indiceDuRole = (r: (typeof ROLES_PEINTS)[number], delave: boolean) => ROLES_PEINTS.indexOf(r) + (delave ? ROLES_PEINTS.length : 0);
 
 /** La couleur de fond d'un mur peint : la couleur de ses faces, avant le motif. */
-type Fond = 'remplissage' | 'bardage' | 'matiere' | 'soubassement';
+type Fond = 'remplissage' | 'bardage' | 'matiere' | 'soubassement' | 'tole';
 
 /** Un mur peint : son fond et le motif de chacune de ses faces (ordre des bits de `FACES` : +x, +y, −x, −y, haut, bas). */
 export interface PeintureDuMur {
@@ -196,9 +223,9 @@ export interface PeintureDuMur {
 
 /**
  * Comment peindre un mur d'une famille : un colombage (le bois), un mur plein (la pierre), un bardage (des clins dans la
- * teinte de sa matière), un vantail (la porte, dans son encadrement).
+ * teinte de sa matière), un vantail (la porte, dans son encadrement), la tôle (le métal), la tenture (le velours).
  */
-export type ManiereDuMur = 'colombage' | 'plein' | 'bardage' | 'vantail';
+export type ManiereDuMur = 'colombage' | 'plein' | 'bardage' | 'vantail' | 'tole' | 'tenture';
 
 export interface ContexteDuMur {
   /** Le bâtiment est bardé (les bâtiments du quai), au lieu du colombage. */
@@ -288,6 +315,17 @@ export function peintureDuMur(v: Voisinage, maniere: ManiereDuMur, contexte: Con
   const partout = (cotes: number, fond: Fond): PeintureDuMur => ({ fond, motifs: [cotes, cotes, cotes, cotes, haut, 0] });
   if (maniere === 'vantail') return { fond: 'matiere', motifs: [MOTIF.vantail, MOTIF.vantail, MOTIF.vantail, MOTIF.vantail, 0, 0] };
   if (maniere === 'bardage') return partout(MOTIF.bardage | bandes, 'matiere');
+  // La tôle : ses joints, le soubassement à partir de trois rangées, un chaperon mince sans toit (comme un mur plein), et
+  // un dessus dans sa teinte (le kit : `tole`), sans dessus gris ; aux pignons aussi.
+  if (maniere === 'tole') {
+    const b = MOTIF.bardage | MOTIF.vertical | socle | bandes;
+    return { fond: 'tole', motifs: [b, b, b, b, 0, 0] };
+  }
+  // La tenture : ses plis, et le galon en haut du mur (sous le toit, ou sans rien dessus) ; ni soubassement ni chaperon.
+  if (maniere === 'tenture') {
+    const b = MOTIF.plein | MOTIF.vertical | (v.dessus !== 'mur' ? MOTIF.chaperon : 0);
+    return { fond: 'matiere', motifs: [b, b, b, b, 0, 0] };
+  }
   if (maniere === 'plein') {
     const base = MOTIF.plein | socle | bandes;
     const disque = cadranSur(v);
@@ -330,10 +368,13 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
   int m = int(motif + 0.5);
   if (m <= 0) return c;
   bool delave = (m & ${MOTIF.delave}) != 0;
-  vec3 bois = delave ? uRoles[3] : uRoles[0];
-  vec3 socle = delave ? uRoles[4] : uRoles[1];
-  vec3 chap = delave ? uRoles[5] : uRoles[2];
+  vec3 bois = delave ? uRoles[${indiceDuRole('poteau', true)}] : uRoles[${indiceDuRole('poteau', false)}];
+  vec3 socle = delave ? uRoles[${indiceDuRole('soubassement', true)}] : uRoles[${indiceDuRole('soubassement', false)}];
+  vec3 chap = delave ? uRoles[${indiceDuRole('chaperon', true)}] : uRoles[${indiceDuRole('chaperon', false)}];
+  vec3 joint = delave ? uRoles[${indiceDuRole('joint', true)}] : uRoles[${indiceDuRole('joint', false)}];
+  vec3 galon = delave ? uRoles[${indiceDuRole('galon', true)}] : uRoles[${indiceDuRole('galon', false)}];
   int genre = m & 3;
+  bool vertical = (m & ${MOTIF.vertical}) != 0;
   // Le dessus d'un chaperon : de pierre, ou, sur un mur plein, la teinte sombre de sa matière.
   if (an.y > 0.5) return (m & ${MOTIF.pierreEntiere}) != 0 ? (genre == ${MOTIF.plein} ? c * ${CHAPERON_DE_LA_PIERRE.toFixed(4)} : chap) : c;
   float fu = fract(u);
@@ -384,14 +425,27 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
       bois_ = max(bois_, bandeDuMotif(length(p - (a + t * d)), ${COLOMBAGE.decharge.toFixed(4)}, max(du, dv)));
     }
     c = mix(c, bois, bois_ * loin);
+  } else if (genre == ${MOTIF.bardage} && vertical) {
+    // La tôle : un joint mat tous les quarts de case, le long de la face ; de loin, le mur uni.
+    float q = fract(u / ${TOLE.pas.toFixed(4)});
+    float j = bandeDuMotif(min(q, 1.0 - q) * ${TOLE.pas.toFixed(4)}, ${TOLE.joint.toFixed(4)}, du);
+    c = mix(c, joint, j * loin);
+  } else if (genre == ${MOTIF.plein} && vertical) {
+    // La tenture : des plis, une bande claire puis une sombre d'un quart de case, en douceur (un cosinus, sans arête).
+    float pli = 0.5 + 0.5 * cos(3.14159265 * u / ${TENTURE.pli.toFixed(4)});
+    c *= mix(1.0, mix(${TENTURE.sombre.toFixed(4)}, ${TENTURE.clair.toFixed(4)}, pli), loin);
   } else if (genre == ${MOTIF.bardage}) {
     float q = fract(pos.y / ${COLOMBAGE.planche.toFixed(4)});
     float joint = bandeDuMotif(min(q, 1.0 - q) * ${COLOMBAGE.planche.toFixed(4)}, ${COLOMBAGE.joint.toFixed(4)}, dv);
     c *= 1.0 - 0.18 * joint * loin;
   }
   if ((m & ${MOTIF.soubassement}) != 0) c = mix(c, socle, 1.0 - smoothstep(S - 0.5 * dv, S + 0.5 * dv, fv));
-  if ((m & ${MOTIF.chaperon}) != 0 && genre == ${MOTIF.plein}) {
-    // Le chaperon d'un mur plein : une bande mince, la teinte de sa matière plus sombre, sans trait d'ombre.
+  if ((m & ${MOTIF.chaperon}) != 0 && genre == ${MOTIF.plein} && vertical) {
+    // Le galon d'or de la tenture, en haut du mur.
+    const float G = ${TENTURE.galon.toFixed(4)};
+    c = mix(c, galon, smoothstep(1.0 - G - 0.5 * dv, 1.0 - G + 0.5 * dv, fv));
+  } else if ((m & ${MOTIF.chaperon}) != 0 && (genre == ${MOTIF.plein} || vertical)) {
+    // Le chaperon d'un mur plein ou de tôle : une bande mince, la teinte de sa matière plus sombre, sans trait d'ombre.
     const float CP = ${COLOMBAGE.chaperonPlein.toFixed(4)};
     c = mix(c, c * ${CHAPERON_DE_LA_PIERRE.toFixed(4)}, smoothstep(1.0 - CP - 0.5 * dv, 1.0 - CP + 0.5 * dv, fv));
   } else if ((m & ${MOTIF.chaperon}) != 0) {
