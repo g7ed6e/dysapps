@@ -1,7 +1,7 @@
 // Le reste du 6e (./heart.ts, ./heartPieces.ts) : chaque objet du cœur, du quai, des liaisons et des lieux a son dessin,
 // au coût d'un cube ou moins pour ce qui est fait de main d'homme, dans sa case.
 import type { VoxelCube } from '../cube';
-import { restOf6e } from './heart';
+import { restOf } from './heart';
 import { apartFromGhost, bead, crate, deck, dialSlab, foliage, mound, pavilion, rgbGap, rock, slab, spire, trunk, waterSheet, wheat, chalkLoaf, cap, beam, darkPost, hangingCrate, HEART, coneSide, coneCorner } from './heartPieces';
 import { facettesPosees, trianglesDe, type DessinDePiece } from './rooms';
 import { assemblerLesPieces } from './assembly';
@@ -14,7 +14,7 @@ const cube = (x: number, y: number, z: number, texture?: string, extra: Partial<
 /** Le contexte d'un petit monde de cubes. */
 function monde(cubes: VoxelCube[], origin: RestContext['origin'] = 'coeur'): (c: VoxelCube) => RestDrawing | undefined {
   const par = new Map(cubes.map((c) => [`${c.x},${c.y},${c.z}`, c]));
-  return (c) => restOf6e(c, { origin, at: (x, y, z) => par.get(`${x},${y},${z}`), place: null });
+  return (c) => restOf(c, { origin, at: (x, y, z) => par.get(`${x},${y},${z}`), place: null });
 }
 
 const pieceOf = (d: RestDrawing | undefined): DessinDePiece => {
@@ -228,6 +228,8 @@ describe('Le reste du 6e (./heart.ts)', () => {
     // Une craie claire hypothétique (#EEEEE6, à 10 du fantôme Brume) : menée vers le gris jusqu'à 70 d'écart au moins.
     expect(rgbGap(0xeeeee6, BRUME)).toBeLessThan(HEART.chalk.ghostGap);
     expect(rgbGap(apartFromGhost(0xeeeee6), BRUME)).toBeGreaterThanOrEqual(HEART.chalk.ghostGap);
+    // Avec un point de marge : l'arrondi du maillage (en couleur linéaire, puis à l'écran) ne la ramène pas sous 70.
+    expect(rgbGap(apartFromGhost(0xeeeee6), BRUME)).toBeGreaterThanOrEqual(HEART.chalk.ghostGap + 1);
     // Le chaperon du dessus (plus sombre que les flancs, dans le shader) ne fait que s'en écarter davantage.
     expect(apartFromGhost(0xeeeee6)).not.toBe(0xeeeee6);
     // Une teinte déjà loin du fantôme ne change pas.

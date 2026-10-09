@@ -97,7 +97,7 @@ describe('Le lissage : un volume par matière', () => {
     const enLineaire = (c: number) => [(c >> 16) & 255, (c >> 8) & 255, c & 255].map((k) => lineaire(k / 255));
     const sable = couleurDeMatiere('6e', 'sable');
     /** Les couleurs des faces tournées vers le haut, à la plus haute cote. */
-    const dessusDe = (cubes: VoxelCube[], a: '6e' | '5e' = '6e') => {
+    const dessusDe = (cubes: VoxelCube[], a: '6e' | '4e' = '6e') => {
       const haut = triangles(maillageDeLaConstruction(a, cubes, solSous(cubes))).filter((x) => x.n[2] > 0.5);
       const cote = Math.max(...haut.flatMap((x) => x.p.map((p) => p[2])));
       const dessus = haut.filter((x) => x.p.every((p) => Math.abs(p[2] - cote) < 1e-4));
@@ -114,10 +114,10 @@ describe('Le lissage : un volume par matière', () => {
     proche(dessusDe(volume), mixColor(sable.dessus, sable.cote, 0.5));
     expect(mixColor(sable.dessus, sable.cote, 0.5)).not.toBe(sable.dessus);
     expect(triangles(maillageDeLaConstruction('6e', volume, solSous(volume)))).toHaveLength(2 + 4 * 2);
-    // La même colonne au 5e, sans lissage : la convention dessus clair, côtés plus sombres.
-    const sable5 = couleurDeMatiere('5e', 'sable');
-    expect(architectureDe('5e', volume).lisses.size).toBe(0);
-    proche(dessusDe(volume, '5e'), sable5.dessus);
+    // La même colonne au 4e, sans lissage : la convention dessus clair, côtés plus sombres.
+    const sable4 = couleurDeMatiere('4e', 'sable');
+    expect(architectureDe('4e', volume).lisses.size).toBe(0);
+    proche(dessusDe(volume, '4e'), sable4.dessus);
     // Une case isolée du 6e, hors de tout volume : son dessus garde la couleur de dessus de sa matière.
     const seule = [petite(0, 0, 1, 'sable')];
     expect(architectureDe('6e', seule, { surLeVide: () => false }).lisses.get(`${LOIN},${LOIN},1`)?.cases ?? 1).toBe(1);
@@ -170,8 +170,9 @@ describe('Le lissage : un volume par matière', () => {
     expect(architectureDe('6e', muret, { kit: KITS['6e'], batiments, surLeVide: () => false }).lisses.size).toBe(0);
   });
 
-  it('le 5e, le 4e et le 3e n’ont pas de lissage', () => {
-    for (const a of ['5e', '4e', '3e'] as const) {
+  it('le 4e et le 3e n’ont pas de lissage ; le 5e, si', () => {
+    expect(KITS['5e'].lissage).toBe(true);
+    for (const a of ['4e', '3e'] as const) {
       expect(KITS[a].lissage).toBeUndefined();
       expect(architectureDe(a, [petite(0, 0, 1), petite(0, 0, 2)]).lisses.size).toBe(0);
     }
