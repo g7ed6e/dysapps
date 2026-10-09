@@ -47,6 +47,7 @@ export type TextureKind =
   | 'fossile'
   | 'aimant'
   | 'carton'
+  | 'craie'
   | 'strate'
   | 'sel'
   | 'bambou'
@@ -305,6 +306,41 @@ function carton(t: TonsDuCarton): Painter {
     if (u === 0) return creux;
     if (u === 1) return clair;
     return fond;
+  };
+}
+
+/** Les tons de la craie : l'ardoise du tableau, son grain, et les quatre bâtons (blanc, jaune, rose, bleu) avec leur ombre. */
+type TonsDeLaCraie = { ardoise: string; grain: string; batons: readonly [string, string, string, string]; ombre: number };
+
+/**
+ * De la craie (le Préau des délégués, EMC 6e ; proposition de l'artiste technique 3D, à valider par le directeur
+ * artistique) : sur le côté, des bâtons de craie couchés, deux pixels de haut, tous les quatre pixels, décalés d'un rang
+ * à l'autre, blanc, jaune pâle, rose pâle et bleu pâle, sur l'ardoise vert sombre d'un tableau ; le pixel du bas de
+ * chaque bâton un peu plus sombre. Sur le dessus, les bouts carrés de quatre bâtons, un par couleur. Sans hasard : les
+ * bâtons et le fond sombre la séparent du sel (blanc, quatre cristaux cernés), du fossile (beige, une spirale), du
+ * marbre (des veines) et de l'ardoise (grise, sans bâton). Le motif se raccorde d'un bloc à l'autre.
+ */
+function craie(t: TonsDeLaCraie, face: 'top' | 'side'): Painter {
+  const ardoise = hexToRgb(t.ardoise);
+  const grainRgb = hexToRgb(t.grain);
+  const batons = t.batons.map(hexToRgb);
+  const ombres = batons.map(([r, g, b]): [number, number, number] => [r * t.ombre, g * t.ombre, b * t.ombre]);
+  const fond = (x: number, y: number) => (hacher(x, y) < 60 ? grainRgb : ardoise);
+  if (face === 'top')
+    return (x, y) => {
+      const [u, v] = [x % 8, y % 8];
+      if (u === 0 || u === 7 || v === 0 || v === 7) return fond(x, y);
+      if ((u === 1 || u === 6) && (v === 1 || v === 6)) return fond(x, y);
+      const k = Math.floor(x / 8) + 2 * Math.floor(y / 8);
+      return v === 6 ? ombres[k] : batons[k];
+    };
+  return (x, y) => {
+    const rang = Math.floor(y / 4);
+    const v = y % 4;
+    if (v !== 1 && v !== 2) return fond(x, y);
+    // Un bâton de onze pixels, puis l'ardoise, décalé de cinq pixels à chaque rang.
+    if ((x + rang * 5) % 16 >= 11) return fond(x, y);
+    return v === 2 ? ombres[rang] : batons[rang];
   };
 }
 
@@ -982,6 +1018,11 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
   carton: {
     top: carton({ carton: '#b98d5a', creux: '#8a6a40', clair: '#cca474' }),
     side: carton({ carton: '#9a7246', creux: '#6e5030', clair: '#ae8858' }),
+  },
+  // Craie (le Préau des délégués, EMC 6e) : des bâtons de craie de quatre couleurs pâles sur l'ardoise d'un tableau.
+  craie: {
+    top: craie({ ardoise: '#3e5248', grain: '#465c51', batons: ['#f2efe6', '#f0e2a0', '#eec4c4', '#c4d8ec'], ombre: 0.86 }, 'top'),
+    side: craie({ ardoise: '#3e5248', grain: '#465c51', batons: ['#f2efe6', '#f0e2a0', '#eec4c4', '#c4d8ec'], ombre: 0.86 }, 'side'),
   },
   // Les blocs des îles de sciences de 5e à 3e (SC-3) : chacun son motif obligatoire (DA).
   // Strate (la Prairie des climats, SVT 5e) : trois couches de roche sur le côté, la terre brune dessus.

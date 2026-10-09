@@ -45,4 +45,8 @@ export const SILHOUETTES_6E = {
   'physics-chemistry-6e-matter-energy': { pics: [], forme: { forme: 'trefle', vers: 'fond' } },
   // Le Hangar des inventions : une presqu'île, le bras à droite ; la cale d'où sortent les inventions.
   'technology-6e-objects': { pics: [], forme: { forme: 'presquile', vers: 'droite' } },
+  // Le Préau des délégués : un croissant ouvert devant, ses deux cornes en hémicycle autour de la baie, comme les
+  // délégués assis en rond (proposition de l'artiste technique 3D, à trancher par le directeur artistique ; l'autre
+  // forme qui tient à sa place sans toucher le cadre : le galet, la cour ronde).
+  'civics-6e-democratic-society': { pics: [], forme: { forme: 'croissant', vers: 'devant' } },
 } satisfies Partial<Record<BiomeId, Silhouette>>;

@@ -427,6 +427,7 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   BLOC.fossile,
   BLOC.aimant,
   BLOC.carton,
+  BLOC.craie,
   BLOC.strate,
   BLOC.sel,
   BLOC.bambou,

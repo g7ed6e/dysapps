@@ -210,10 +210,7 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.te.fonctionnement.donnees': A_COUVRIR('Décrire un objet par des données (descripteurs, types), le bit, trier et filtrer un tableau : prévu sur la question sur un document, à la Ruche des réseaux ou au Bassin des maquettes.'),
   'c4.te.fonctionnement.depanner': A_COUVRIR('Repérer une panne et formuler une hypothèse sur un objet décrit en mots (ses symptômes, ses pièces) ; réparer reste au travail de l’atelier.'),
   'c4.te.conception.projet': A_COUVRIR('Lire un diagramme de planification des tâches, les étapes d’un projet, l’écoconception : prévu à la Menuiserie des objets, sur la question sur un document.'),
-  // ---------- Enseignement moral et civique, 6e (cycle 3) et 5e à 3e (cycle 4), EMC-1 ----------
-  'c3.emc.6e.representer.interet-general': EMC,
-  'c3.emc.6e.laicite.ecole': EMC,
-  'c3.emc.6e.vie-privee.droit': EMC,
+  // ---------- Enseignement moral et civique, 5e à 3e (cycle 4), EMC-1 ; la 6e est couverte au Préau des délégués (EMC-2) ----------
   'c4.emc.5e.egalite.discriminations': EMC,
   'c4.emc.5e.solidarite.echelles': EMC,
   'c4.emc.4e.etat-de-droit.libertes': EMC,

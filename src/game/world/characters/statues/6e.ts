@@ -3,7 +3,7 @@
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../template';
 import { devant, fuseau, pave, pose, repere, type Anneau } from '../painted';
-import { dalle, orbites, plaque, tube, veineSur, type Statue } from '../sentinel';
+import { dalle, orbites, plaque, tube, veine, veineSur, type Statue } from '../sentinel';
 import { deTroisQuarts, dragonAssis, surLeSocle, ventreDuDragon, HAUTEUR_DU_DRAGON } from './common';
 
 const TRONC: Anneau[] = [
@@ -169,7 +169,35 @@ const BALLON: Anneau[] = [
   [5.7, 0.34],
   [7.7, 0.28],
   [8, 0.38],
-];/** Le petit flacon où tombe le bec. */
+];/** L'Hirondelle de nacre : le corps, de la queue aux épaules, puis la tête, ronde, jusqu'à huit blocs. */
+const CORPS_DE_L_HIRONDELLE: Anneau[] = [
+  [1, 0.55, 0.5],
+  [2.4, 0.85, 0.75],
+  [4.0, 0.8, 0.7],
+  [5.0, 0.42, 0.42],
+];
+const TETE_DE_L_HIRONDELLE: Anneau[] = [
+  [4.9, 0.42, 0.42],
+  [5.9, 0.6, 0.58],
+  [7.3, 0.55, 0.52],
+  [8, 0.25, 0.25],
+];
+/** L'aile droite de l'Hirondelle, de face (x, y) : de l'épaule, dans le corps, à sa pointe, plus bas ; la gauche en miroir. */
+const AILE_DE_L_HIRONDELLE: [number, number][] = [
+  [0.6, 4.6],
+  [2.4, 3.2],
+  [2.3, 2.7],
+  [0.7, 3.7],
+];
+/** Le brin droit de sa queue fourchue (x, y), derrière le corps ; le gauche en miroir. */
+const BRIN_DE_LA_QUEUE: [number, number][] = [
+  [0.1, 2.3],
+  [0.35, 2.3],
+  [0.95, 1.05],
+  [0.65, 1.05],
+];
+
+/** Le petit flacon où tombe le bec. */
 const FLACON: Anneau[] = [
   [1, 0.42],
   [1.8, 0.45],
@@ -664,6 +692,39 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
     veines: (T, a) => {
       // Les trois boutons en colonne sur la poitrine.
       for (const y of [3.6, 4.3, 5.0]) plaque(T, 0, y, 0.16, 0.16, 5, a.lueur, () => -0.7);
+    },
+  },
+  // EMC 6e (EMC-2) : le strict nécessaire, Archipéo étant en pause. L'Hirondelle de nacre, sans flamme ni symbole : de
+  // face, les ailes ouvertes en longues pointes de chaque côté, la queue fourchue derrière ; ce sont les plumes de ses
+  // ailes qui s'allument.
+  'civics-6e-democratic-society': {
+    nom: 'l’Hirondelle de nacre',
+    allume: 'les plumes de ses ailes',
+    sansFlamme: true,
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DE_L_HIRONDELLE, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      fuseau(T, TETE_DE_L_HIRONDELLE, 5, a.pierre, { bas: false });
+      // Le bec, court, vers l'avant.
+      pointe(T, [0, 6.3, devant(TETE_DE_L_HIRONDELLE, 5, 6.3).z + 0.05], 0.12, 0.3, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      // Les ailes ouvertes : de l'épaule, elles descendent vers leur pointe, minces.
+      for (const c of [-1, 1]) dalle(T, AILE_DE_L_HIRONDELLE.map(([x, y]): [number, number] => [c * x, y]), -0.14, 0.14, a.pierre);
+      // La queue fourchue, derrière : deux brins qui s'écartent vers le bas.
+      for (const c of [-1, 1]) dalle(T, BRIN_DE_LA_QUEUE.map(([x, y]): [number, number] => [c * x, y]), 0.55, 0.7, a.pierre);
+      orbites(T, a, 0, 6.75, devant(TETE_DE_L_HIRONDELLE, 5, 6.75).z, 0.22, 0.12);
+    },
+    veines: (T, a) => {
+      // Un fil de lueur le long de chaque aile, de l'épaule à la pointe.
+      for (const c of [-1, 1])
+        veine(
+          T,
+          [
+            [c * 0.85, 4.2],
+            [c * 2.05, 3.15],
+          ],
+          0.09 * a.veines,
+          a.lueur,
+          () => -0.15,
+        );
     },
   },
 };

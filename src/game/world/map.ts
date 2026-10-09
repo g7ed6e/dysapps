@@ -612,6 +612,14 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'life-earth-sciences-6e-living-world', region: 'basses-terres', core: { x: 68, y: 107 }, vueDepuis: { x: 96, y: 111 }, repere: { x: 152, y: 139 }, altitude: 0, ext: e(7, 5, 2, 2), relief: 'plat', seed: 55 },
   { id: 'physics-chemistry-6e-matter-energy', region: 'basses-terres', core: { x: 140, y: 15 }, vueDepuis: { x: 152, y: 15 }, repere: { x: 124, y: 139 }, altitude: 0, ext: e(3, 4, 5, 7), relief: 'plat', seed: 56 },
   { id: 'technology-6e-objects', region: 'basses-terres', core: { x: -12, y: -5 }, vueDepuis: { x: -12, y: 11 }, repere: { x: 96, y: 139 }, altitude: 0, ext: e(3, 7, 2, 2), relief: 'plat', seed: 57 },
+  // EMC 6e (EMC-2) : le Préau des délégués, dans la seule poche libre du cadre de la région depuis GD-12, à l'ouest,
+  // au rang du milieu, entre le Hangar et la Tour, à gauche de la Ferme ; fermé au départ (on le relie). Le coin du fond
+  // à l'ouest (proposition du directeur artistique) est pris par la Baie depuis GD-12. Des quatre places de la poche
+  // (x −12 ou −8, y 31 ou 35), celles du fond laissent le Hangar tourner, et (−8, 35) tait le moins de noms sur la Carte
+  // de la tablette en OpenDyslexic 32 px (mapLabels.test.ts) ; aucune ne laisse tourner la Tour, qui ne tournait que dans
+  // cette poche (à trancher, arrange.test.ts). Terre plate, comme les autres îles des matières entrées après les
+  // premières.
+  { id: 'civics-6e-democratic-society', region: 'basses-terres', core: { x: -8, y: 35 }, altitude: 0, ext: e(2, 2, 7, 3), relief: 'plat', seed: 58 },
   // Anglais 5e : une colonne à droite du Marché et du Marais.
   { id: 'english-5e-vocabulary', region: 'basses-terres', core: { x: 101, y: 321 }, vueDepuis: { x: 105, y: 321 }, repere: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 10, 2), relief: 'plat', seed: 61 },
   { id: 'english-5e-grammar', region: 'hauteurs', core: { x: 101, y: 357 }, vueDepuis: { x: 101, y: 365 }, repere: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 7, 3), relief: 'collines', seed: 62 },

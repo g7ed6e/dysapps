@@ -16,6 +16,7 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
   "carrefour": "263 67e39f4d",
   "carriere": "257 8b141147",
   "chateau": "311 5bec53dd",
+  "civics-6e-democratic-society": "277 d461214d",
   "comptoir": "229 d9d44216",
   "donnees": "270 88e948f7",
   "falaise": "275 dfc8c813",
@@ -78,8 +79,8 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
     "gardiens": "2761 c4c6c3a2",
   },
   "6e": {
-    "creatures": "3635 c737d9cc 0a25499a",
-    "gardiens": "2744 b0368731",
+    "creatures": "3912 324cc392 b45b39e7",
+    "gardiens": "2931 14a55e9e",
   },
   "bonhomme": "472 045a95c7 1032f390",
 }
@@ -94,6 +95,7 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "carrefour": "180 ae511a7a",
   "carriere": "142 449d334d",
   "chateau": "219 d8494e2b",
+  "civics-6e-democratic-society": "187 0b672ce8",
   "comptoir": "236 4c494f3d",
   "donnees": "216 67b894e6",
   "falaise": "235 6bcf243a",

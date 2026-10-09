@@ -1,0 +1,251 @@
+{
+  "id": "civics-6e-democratic-society-school-secularism-2",
+  "biome": "civics-6e-democratic-society",
+  "type": "school-secularism",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-6e-democratic-society-school-secularism-2-0",
+      "prompt": "Le règlement du collège public\nLes élèves sont libres de croire ou de ne pas croire.\nAucun élève ne fait pression sur un autre pour sa croyance.",
+      "question": "Que protège ce règlement ?",
+      "spoken": "Le règlement du collège public. Les élèves sont libres de croire ou de ne pas croire. Aucun élève ne fait pression sur un autre pour sa croyance.",
+      "choices": [
+        "une seule religion au collège",
+        "la liberté de conscience de chaque élève",
+        "le droit de ne pas venir en cours"
+      ],
+      "answer": "la liberté de conscience de chaque élève",
+      "hint": "Lis la première règle : libres de quoi ?",
+      "explanation": "Le règlement protège la liberté de conscience de chaque élève : croire ou ne pas croire, sans pression des autres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’école laïque",
+          "lines": [
+            "Chacun est libre de croire ou de ne pas croire.",
+            "Personne ne peut imposer sa croyance aux autres.",
+            "Personne ne peut être traité moins bien à cause de sa croyance.",
+            "Les professeurs de l’école publique ne montrent ni leur religion ni leurs opinions.",
+            "Les cours apprennent des connaissances, les mêmes pour tous.",
+            "Loi du 15 mars 2004 : à l’école publique, pas de signe religieux ostensible.",
+            "Ostensible : très visible."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-2-1",
+      "prompt": "Le cours d’histoire\nLe professeur présente les dieux des Grecs.\nPuis la croyance des Hébreux en un Dieu unique.\nC’est au programme de 6e.",
+      "question": "Ce cours oblige-t-il les élèves à croire ?",
+      "spoken": "Le cours d’histoire. Le professeur présente les dieux des Grecs. Puis la croyance des Hébreux en un Dieu unique. C’est au programme de sixième.",
+      "choices": [
+        "oui, il faut croire ce qui est dit",
+        "oui, il faut choisir une religion",
+        "non, il apprend des connaissances"
+      ],
+      "answer": "non, il apprend des connaissances",
+      "hint": "Un cours apprend des connaissances : demande-t-il de croire ?",
+      "explanation": "Le professeur enseigne ce que croyaient les Grecs et les Hébreux : ce sont des connaissances. Il ne demande à personne d’y croire, ni de ne pas y croire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’école laïque",
+          "lines": [
+            "Chacun est libre de croire ou de ne pas croire.",
+            "Personne ne peut imposer sa croyance aux autres.",
+            "Personne ne peut être traité moins bien à cause de sa croyance.",
+            "Les professeurs de l’école publique ne montrent ni leur religion ni leurs opinions.",
+            "Les cours apprennent des connaissances, les mêmes pour tous.",
+            "Loi du 15 mars 2004 : à l’école publique, pas de signe religieux ostensible.",
+            "Ostensible : très visible."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-2-2",
+      "prompt": "Les professeurs de l’école publique ne montrent pas leur religion en classe : c’est leur devoir de …",
+      "spoken": "Les professeurs de l’école publique ne montrent pas leur religion en classe : c’est leur devoir de  (mot manquant) ",
+      "choices": [
+        "solidarité",
+        "neutralité",
+        "fraternité"
+      ],
+      "answer": "neutralité",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Les professeurs et les personnels ont un devoir de neutralité : ils ne montrent ni leur religion ni leurs opinions en classe. Ainsi, aucun élève ne subit de pression.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’école laïque",
+          "lines": [
+            "Chacun est libre de croire ou de ne pas croire.",
+            "Personne ne peut imposer sa croyance aux autres.",
+            "Personne ne peut être traité moins bien à cause de sa croyance.",
+            "Les professeurs de l’école publique ne montrent ni leur religion ni leurs opinions.",
+            "Les cours apprennent des connaissances, les mêmes pour tous.",
+            "Loi du 15 mars 2004 : à l’école publique, pas de signe religieux ostensible.",
+            "Ostensible : très visible."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-2-3",
+      "prompt": "D’après la loi du 15 mars 2004\nLieu : les écoles, collèges et lycées publics.\nInterdit à un élève : un signe religieux ostensible, c’est-à-dire très visible.",
+      "question": "Où cette loi s’applique-t-elle ?",
+      "spoken": "D’après la loi du quinze mars deux mille quatre. Lieu, les écoles, collèges et lycées publics. Interdit à un élève, un signe religieux ostensible, c’est-à-dire très visible.",
+      "choices": [
+        "dans les écoles privées seulement",
+        "dans toute la rue",
+        "dans les écoles, collèges et lycées publics"
+      ],
+      "answer": "dans les écoles, collèges et lycées publics",
+      "hint": "Lis la ligne « Lieu ».",
+      "explanation": "La loi de 2004 s’applique aux élèves des écoles, collèges et lycées publics. Dans la rue, chacun peut montrer sa religion, dans le respect de la loi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’école laïque",
+          "lines": [
+            "Chacun est libre de croire ou de ne pas croire.",
+            "Personne ne peut imposer sa croyance aux autres.",
+            "Personne ne peut être traité moins bien à cause de sa croyance.",
+            "Les professeurs de l’école publique ne montrent ni leur religion ni leurs opinions.",
+            "Les cours apprennent des connaissances, les mêmes pour tous.",
+            "Loi du 15 mars 2004 : à l’école publique, pas de signe religieux ostensible.",
+            "Ostensible : très visible."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-2-4",
+      "prompt": "La Charte de la laïcité à l’École\nElle est affichée dans les écoles et collèges publics.\nElle explique la laïcité aux élèves et aux parents.",
+      "question": "Où trouve-t-on cette Charte ?",
+      "spoken": "La Charte de la laïcité à l’École. Elle est affichée dans les écoles et collèges publics. Elle explique la laïcité aux élèves et aux parents.",
+      "choices": [
+        "dans les écoles et collèges publics",
+        "seulement à la mairie",
+        "seulement dans les lieux de culte"
+      ],
+      "answer": "dans les écoles et collèges publics",
+      "hint": "Lis la ligne qui contient le mot « affichée ».",
+      "explanation": "La Charte de la laïcité est affichée dans les écoles et collèges publics. Elle explique aux élèves et aux parents pourquoi l’école est laïque.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’école laïque",
+          "lines": [
+            "Chacun est libre de croire ou de ne pas croire.",
+            "Personne ne peut imposer sa croyance aux autres.",
+            "Personne ne peut être traité moins bien à cause de sa croyance.",
+            "Les professeurs de l’école publique ne montrent ni leur religion ni leurs opinions.",
+            "Les cours apprennent des connaissances, les mêmes pour tous.",
+            "Loi du 15 mars 2004 : à l’école publique, pas de signe religieux ostensible.",
+            "Ostensible : très visible."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-2-5",
+      "prompt": "Deux élèves\nLéa croit en Dieu.\nNoé ne croit pas en Dieu.\nIls en parlent et restent amis.",
+      "question": "Que montre cette discussion ?",
+      "spoken": "Deux élèves. Léa croit en Dieu. Noé ne croit pas en Dieu. Ils en parlent et restent amis.",
+      "choices": [
+        "l’un des deux doit changer d’avis",
+        "chacun a sa liberté de conscience",
+        "ils n’ont pas le droit d’en parler"
+      ],
+      "answer": "chacun a sa liberté de conscience",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Croire ou ne pas croire : chacun est libre. On peut en parler et rester amis, sans imposer sa croyance à l’autre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’école laïque",
+          "lines": [
+            "Chacun est libre de croire ou de ne pas croire.",
+            "Personne ne peut imposer sa croyance aux autres.",
+            "Personne ne peut être traité moins bien à cause de sa croyance.",
+            "Les professeurs de l’école publique ne montrent ni leur religion ni leurs opinions.",
+            "Les cours apprennent des connaissances, les mêmes pour tous.",
+            "Loi du 15 mars 2004 : à l’école publique, pas de signe religieux ostensible.",
+            "Ostensible : très visible."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-2-6",
+      "prompt": "Traiter quelqu’un moins bien à cause de sa croyance est une …",
+      "spoken": "Traiter quelqu’un moins bien à cause de sa croyance est une  (mot manquant) ",
+      "choices": [
+        "opinion",
+        "liberté",
+        "discrimination"
+      ],
+      "answer": "discrimination",
+      "hint": "Est-ce juste de traiter quelqu’un moins bien pour ce qu’il croit ?",
+      "explanation": "Traiter quelqu’un moins bien à cause de sa croyance est une discrimination, punie par la loi. La laïcité protège tous les élèves.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’école laïque",
+          "lines": [
+            "Chacun est libre de croire ou de ne pas croire.",
+            "Personne ne peut imposer sa croyance aux autres.",
+            "Personne ne peut être traité moins bien à cause de sa croyance.",
+            "Les professeurs de l’école publique ne montrent ni leur religion ni leurs opinions.",
+            "Les cours apprennent des connaissances, les mêmes pour tous.",
+            "Loi du 15 mars 2004 : à l’école publique, pas de signe religieux ostensible.",
+            "Ostensible : très visible."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-school-secularism-2-7",
+      "prompt": "L’école publique ne dit pas qu’une religion est vraie ou fausse : son enseignement est …",
+      "spoken": "L’école publique ne dit pas qu’une religion est vraie ou fausse : son enseignement est  (mot manquant) ",
+      "choices": [
+        "laïque",
+        "religieux",
+        "facultatif"
+      ],
+      "answer": "laïque",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "L’enseignement public est laïque : il apprend des connaissances, sans dire qu’une religion est vraie ou fausse. Il est obligatoire pour tous.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’école laïque",
+          "lines": [
+            "Chacun est libre de croire ou de ne pas croire.",
+            "Personne ne peut imposer sa croyance aux autres.",
+            "Personne ne peut être traité moins bien à cause de sa croyance.",
+            "Les professeurs de l’école publique ne montrent ni leur religion ni leurs opinions.",
+            "Les cours apprennent des connaissances, les mêmes pour tous.",
+            "Loi du 15 mars 2004 : à l’école publique, pas de signe religieux ostensible.",
+            "Ostensible : très visible."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-6e-democratic-society",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

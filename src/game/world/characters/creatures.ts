@@ -748,6 +748,25 @@ const NAVETTE = fromLayers(
   { V: '#9ac860', L: '#c8e48e', W: '#8a6236', F: '#e8e0cc', K: '#1f1a16' },
 );
 
+// Voix : un panda roux délégué, debout sur ses pattes de derrière (jamais assis comme Rouxel, le renard) : roux, le
+// masque blanc (les joues, le museau, les sourcils), la truffe et les yeux sombres, deux oreilles rondes bordées de
+// blanc, les pattes et le bas du ventre brun sombre ; sa grande queue annelée, roux et fauve, se dresse derrière lui. Il
+// tient son carnet de délégué, une feuille blanche, sans écharpe ni insigne. Quatre couleurs.
+const VOIX = fromLayers(
+  [
+    ['.D.D..', '......', '......', '......'],
+    ['.D.D..', '.D.D..', '......', '......'],
+    ['.DDD..', '.RRR..', '..R...', '.RRR..'],
+    ['DRRRDW', '.RRR..', '......', '.LLL..'],
+    ['.RRR.W', '.RRR..', '......', '.RRR..'],
+    ['RWDWR.', 'RRRRR.', 'RRRRR.', '.LLL..'],
+    ['WDRDW.', 'RRRRR.', 'RRRRR.', '..R...'],
+    ['RWRWR.', 'RRRRR.', 'RRRRR.', '......'],
+    ['W...W.', 'R...R.', '......', '......'],
+  ],
+  { R: '#b8532c', W: '#f2ebe0', D: '#3a2622', L: '#dca468' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': MOUSSO,
   'french-6e-letter-confusion': TUNEL,
@@ -782,6 +801,7 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'life-earth-sciences-6e-living-world': FOUGERE,
   'physics-chemistry-6e-matter-energy': BULLE,
   'technology-6e-objects': BOULON,
+  'civics-6e-democratic-society': VOIX,
   'life-earth-sciences-5e-active-planet': HUMUS,
   'physics-chemistry-5e-matter-universe': PERLE,
   'technology-5e-design': RABOT,

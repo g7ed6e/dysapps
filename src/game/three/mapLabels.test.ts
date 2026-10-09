@@ -317,7 +317,9 @@ const TUS_EN_OD32: Record<string, string[]> = {
   // place sur leur île ; la Vallée du vivant (le bonhomme sur la Fouille) et la Mine des lettres (sur la Forêt, comme la
   // capture `formes-carte-6e-od32`) n'en trouvent plus.
   'history-6e-antiquity': ['geography-6e-living', 'life-earth-sciences-6e-living-world'],
-  'french-6e-phonology': ['french-6e-letter-confusion', 'geography-6e-living'],
+  // Trois, le bonhomme sur la Forêt, depuis le Préau des délégués (EMC-2, mesurés) : la Fouille des siècles se tait aussi
+  // (au plafond du référent dys).
+  'french-6e-phonology': ['french-6e-letter-confusion', 'history-6e-antiquity', 'geography-6e-living'],
 };
 
 /**
@@ -408,12 +410,15 @@ const SILENCED_IN_PORTRAIT_6E: Record<string, string[]> = {
 
 /**
  * Les mêmes en OpenDyslexic 32 px (GD-12, 8 octobre 2026, mesurés) : quatre, un de plus que le plafond du référent dys
- * (`SILENCED_NAMES_CAP`). Dans la page, le bonhomme sur la Forêt, trois (capture `formes-carte-6e-800x1280-od32`) : la
+ * (`SILENCED_NAMES_CAP`) ; cinq et six depuis le Préau des délégués (EMC-2). Dans la page, le bonhomme sur la Forêt, trois (capture `formes-carte-6e-800x1280-od32`) : la
  * mesure de jsdom en tait un de plus. Régression connue, au pilotage.
  */
 const SILENCED_IN_PORTRAIT_6E_OD32: Record<string, string[]> = {
-  'history-6e-antiquity': ['french-6e-word-spelling', 'geography-6e-living', 'life-earth-sciences-6e-living-world', 'physics-chemistry-6e-matter-energy'],
-  'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-word-spelling', 'geography-6e-living', 'physics-chemistry-6e-matter-energy'],
+  // Depuis le Préau des délégués (EMC-2, mesurés) : cinq, le bonhomme sur la Fouille (le nom du Préau se tait aussi) ;
+  // six, le bonhomme sur la Forêt (la Plaine des nombres et la Vallée du vivant se taisent aussi). Jusqu'à trois de plus
+  // que le plafond du référent dys : régression à trancher (référent dys, UX UI), au pilotage.
+  'history-6e-antiquity': ['french-6e-word-spelling', 'geography-6e-living', 'life-earth-sciences-6e-living-world', 'physics-chemistry-6e-matter-energy', 'civics-6e-democratic-society'],
+  'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-word-spelling', 'maths-6e-calculation', 'geography-6e-living', 'life-earth-sciences-6e-living-world', 'physics-chemistry-6e-matter-energy'],
 };
 
 /** Trois noms tus au plus sur une Carte (référent dys). */
@@ -518,14 +523,15 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     }
   }, 20_000);
 
-  it('6e, portrait 800 × 1280, deux univers, dans Luciole et en OpenDyslexic 32 px : trois noms tus au plus dans Luciole (quatre en OpenDyslexic, régression connue), jamais ceux de la destination ni de l’île du bonhomme, chacun sur son île (GD-12, UX UI)', () => {
+  it('6e, portrait 800 × 1280, deux univers, dans Luciole et en OpenDyslexic 32 px : trois noms tus au plus dans Luciole (six en OpenDyslexic depuis le Préau, régression connue), jamais ceux de la destination ni de l’île du bonhomme, chacun sur son île (GD-12, UX UI)', () => {
     for (const ici of ['history-6e-antiquity', islandsOf('6e')[0].id] as BiomeId[]) {
       const destination = destinationDuJeu(ici);
       for (const [univers, mot] of Object.entries(ETATS)) {
         // Dans Luciole, puis en OpenDyslexic 32 px.
         for (const [police, chasse, ecran, attendus, plafond] of [
           ['luciole', 1, PORTRAIT_800, SILENCED_IN_PORTRAIT_6E, SILENCED_NAMES_CAP],
-          ['opendyslexic', CHASSE_OD32, PORTRAIT_800_OD32, SILENCED_IN_PORTRAIT_6E_OD32, SILENCED_NAMES_CAP + 1],
+          // Trois de plus que le plafond depuis le Préau des délégués (EMC-2), régression à trancher.
+          ['opendyslexic', CHASSE_OD32, PORTRAIT_800_OD32, SILENCED_IN_PORTRAIT_6E_OD32, SILENCED_NAMES_CAP + 3],
         ] as const) {
           const carte = laCarte('6e', mot, police, chasse, destination, true, ecran, ici);
           const dit = (quoi: string) => `${univers}, ${police}, bonhomme sur ${ici}, ${quoi}`;

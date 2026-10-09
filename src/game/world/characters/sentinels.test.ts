@@ -161,11 +161,12 @@ describe('Les Gardiens en sentinelles', () => {
 
   // 2 100 depuis les deux Gardiens d'histoire-géographie du 6e (HG-2, mainteneur, 6 octobre 2026 : 2 065 mesurés), 2 780
   // depuis les trois Gardiens de sciences (SC-2, même mot : 2 756 mesurés) ; les six des 5e, 4e et 3e (HG-3, même mot)
-  // y tiennent (2 144 mesurés aux Îles Brumeuses).
-  it('tiennent dans leur budget : 2 780 triangles au plus par archipel, toutes ensemble', () => {
+  // y tiennent (2 144 mesurés aux Îles Brumeuses). Aux Premiers Rivages, 2 950 depuis l'Hirondelle de nacre (EMC-2,
+  // mainteneur, 9 octobre 2026 : 2 931 mesurés).
+  it('tiennent dans leur budget : 2 950 triangles au plus aux Premiers Rivages, 2 780 ailleurs, toutes ensemble', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const somme = BIOMES.filter((b) => b.classe === a).reduce((n, b) => n + nbTriangles(sentinellePeinte(b.id)), 0);
-      expect(somme, a).toBeLessThanOrEqual(2_780);
+      expect(somme, a).toBeLessThanOrEqual(a === '6e' ? 2_950 : 2_780);
     }
   });
 

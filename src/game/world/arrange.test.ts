@@ -151,13 +151,15 @@ describe('les places des lieux', () => {
     expect(loin).toBeDefined();
   });
 
-  it('dans chaque région, chaque lieu mobile de la carte de départ peut tourner (à sa place ou ailleurs) (GD-11)', () => {
+  it('dans chaque région, chaque lieu mobile de la carte de départ peut tourner (à sa place ou ailleurs), sauf la Tour depuis le Préau (GD-11)', () => {
     // Jusqu'à GD-11, l'îlot du Gardien prenait la place qui manquait à quatre lieux (HG-3, SC-3) ; le Gardien se tient
-    // désormais sur son île, et chaque lieu trouve une place, tourné.
+    // désormais sur son île, et chaque lieu trouve une place, tourné. Depuis le Préau des délégués (EMC-2), posé dans la
+    // seule poche libre des Premiers Rivages, la Tour du lecteur ne trouve plus de place tournée : elle ne tournait que
+    // dans cette poche. À trancher par le directeur artistique et le mainteneur (une place pour le Préau, ou la Tour fixe).
     const w = partie();
     const sans: string[] = [];
     for (const a of ARCHIPELAGO_IDS) for (const id of placesOf(a).filter((p) => !isFixedPlace(p))) if (!turnIsland(w, id).ok) sans.push(id);
-    expect(sans).toEqual([]);
+    expect(sans).toEqual(['french-6e-reading']);
   });
 
   it('tourner un lieu d’un quart de tour, quatre fois, le ramène à son orientation', () => {
@@ -174,17 +176,18 @@ describe('les places des lieux', () => {
 
 describe('les liaisons à reposer', () => {
   /**
-   * Le lieu qu'on déplace ici : la Mine des lettres, entre la Forêt et la Carrière. Depuis les formes des îles (GD-12),
-   * la mer est plus large entre les lieux et les liaisons se retracent presque partout ; la Mine a encore des places
+   * Le lieu qu'on déplace ici : la Carrière des mots. Depuis les formes des îles (GD-12), la mer est plus large entre
+   * les lieux et les liaisons se retracent presque partout ; depuis le Préau (EMC-2), la Mine des lettres n'a plus de
+   * place qui en défasse une, la Carrière en a encore (quatre)
    * qui en défont.
    */
-  const MINE: BiomeId = 'french-6e-letter-confusion';
+  const CARRIERE: BiomeId = 'french-6e-word-spelling';
 
-  /** Une place de la Mine (tournée ou non) qui défait au moins une de ses liaisons. */
+  /** Une place de la Carrière (tournée ou non) qui défait au moins une de ses liaisons. */
   function placeQuiDefait(w: World) {
     for (const turn of [1, 2, 3, 0] as const)
-      for (const s of freeSpots(w, MINE, turn)) {
-        const cassees = linksBrokenBy(w, MINE, s);
+      for (const s of freeSpots(w, CARRIERE, turn)) {
+        const cassees = linksBrokenBy(w, CARRIERE, s);
         if (cassees.length) return { s, cassees };
       }
     throw new Error('aucune place ne défait de liaison');
@@ -193,7 +196,7 @@ describe('les liaisons à reposer', () => {
   it('une liaison qui ne tient plus devient « à reposer » : construite, gardée, ses lieux restent ouverts', () => {
     const w = partie();
     const { s, cassees } = placeQuiDefait(w);
-    const w2 = apres(moveIsland(w, MINE, s));
+    const w2 = apres(moveIsland(w, CARRIERE, s));
     expect(linksToRelink(w2, '6e')).toEqual(cassees);
     expect(w2.links).toEqual(w.links);
     expect(reachableIslands(w2.links)).toEqual(reachableIslands(w.links));
@@ -207,7 +210,7 @@ describe('les liaisons à reposer', () => {
   it('elle se repose gratuitement entre deux voisins au choix, sans fermer un lieu ni en défaire une autre', () => {
     const w = partie();
     const { s, cassees } = placeQuiDefait(w);
-    const w2 = apres(moveIsland(w, MINE, s));
+    const w2 = apres(moveIsland(w, CARRIERE, s));
     const id = cassees[0];
     const choix = relinkChoices(w2, id);
     expect(choix.length).toBeGreaterThan(0);
@@ -225,7 +228,7 @@ describe('les liaisons à reposer', () => {
   it('revenir à la carte de départ vide la disposition et rend les liaisons posées, aucune perdue', () => {
     const w = partie();
     const { s } = placeQuiDefait(w);
-    const w2 = apres(moveIsland(w, MINE, s));
+    const w2 = apres(moveIsland(w, CARRIERE, s));
     const w3 = backToStartingMap(w2, '6e')!;
     expect(w3.layout).toBeUndefined();
     expect(w3.links).toEqual(w.links);

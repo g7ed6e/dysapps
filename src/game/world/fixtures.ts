@@ -121,6 +121,9 @@ const FORMES: Record<string, Cube[]> = {
   // Pince, l'établi (DA, SC-2) : un plateau de trois cartons sur deux pieds de barrière, la barre de trois aimants
   // dessus. L'aimant remplace le bois, déjà demandé dans l'archipel (docs/contenu, à valider par le DA).
   'technology-6e-objects-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 0, 1, BLOC.carton), ...rangee(0, 2, 0, 2, BLOC.aimant)],
+  // Voix, l'urne (proposition de l'artiste technique 3D, sobre ; aucun drapeau, aucun symbole) : une table de trois
+  // fossiles sur deux pieds de barrière, l'urne dessus, un cube de craie au milieu.
+  'civics-6e-democratic-society-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 0, 1, BLOC.fossile), [1, 0, 2, BLOC.craie]],
 
   // Les objets posés à la fin des quêtes de 6e (GD-10, consultant Blocland ; docs/contenu/quetes.md).
   // Mousso, la lanterne : un banc de trois bois, une barrière au milieu, la lanterne dessus.
@@ -380,6 +383,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'life-earth-sciences-6e-living-world-fixture-1': [3, 9],
   'physics-chemistry-6e-matter-energy-fixture-1': [1, 11],
   'technology-6e-objects-fixture-1': [8, 6],
+  'civics-6e-democratic-society-fixture-1': [8, 9],
   'english-5e-vocabulary-fixture-1': [-1, 12],
   'english-5e-vocabulary-fixture-2': [-5, 2],
   'english-5e-grammar-fixture-1': [10, 3],

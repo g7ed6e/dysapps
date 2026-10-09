@@ -162,7 +162,7 @@ const COLONNE_D_AVANT_LES_FORMES: Partial<Record<ArchipelagoId, number>> = { '6e
  * Les îles qui ne comptent pas dans la colonne centrale : le Refuge des carnets (3e), posé au bord de l'archipel, ne fait
  * pas pivoter les caméras des autres îles, qui gardent leur cadrage (DA, LV2-5) ; de même la Fouille des siècles et la
  * Pointe des paysages (6e, HG-2), au bout du second rang, puis la Vallée du vivant, le Laboratoire des éléments et le
- * Hangar des inventions (6e, SC-2), aux places qui restaient : le dessin des autres îles ne change pas ; et les six îles
+ * Hangar des inventions (6e, SC-2), aux places qui restaient, et le Préau des délégués (6e, EMC-2) : le dessin des autres îles ne change pas ; et les six îles
  * d'histoire-géographie de 5e à 3e (HG-3) : comptées, celles des Îles Brumeuses, au-delà du cadre d'avant, faisaient
  * tourner toutes les caméras du 5e de plusieurs degrés (et avec elles la place des petites constructions) ; de même les
  * neuf îles de sciences de 5e à 3e (SC-3). Le Relais des
@@ -176,6 +176,7 @@ export const HORS_DE_LA_COLONNE: readonly BiomeId[] = [
   'life-earth-sciences-6e-living-world',
   'physics-chemistry-6e-matter-energy',
   'technology-6e-objects',
+  'civics-6e-democratic-society',
   'history-5e-middle-ages',
   'geography-5e-resources',
   'history-4e-revolutions',

@@ -1,7 +1,7 @@
 // L'architecte du village : le dessin des bâtiments des îles, en trois étapes (les murs, le toit, la cour), calculé à partir
 // d'une forme (maison, tour, dôme, échoppe, hutte, kiosque, relais, jardin, refuge,
 // musée, quartier, logis, moulin, halle, entrepôt, bibliothèque, mairie, serre, laboratoire, atelier, station, chalet, scierie,
-// pépinière, pavillon, usine, infirmerie, gymnase, poste) et du bloc de l'île. Les cases sont relatives à la zone des
+// pépinière, pavillon, usine, infirmerie, gymnase, poste, préau) et du bloc de l'île. Les cases sont relatives à la zone des
 // plans de l'île (6 × 5 cases, z = 0 : premier bloc sur le sol) ; la façade et la porte sont devant (y bas), la cour aussi.
 // Les blocs de finition (toit, porte, lanterne, barrière, escalier) viennent des coffres des étapes précédentes : un coffre
 // donne exactement ceux de l'étape suivante (voir plans.ts).
@@ -45,6 +45,7 @@ type BuildingStyle =
   | { kind: 'serre' }
   | { kind: 'laboratoire' }
   | { kind: 'atelier' }
+  | { kind: 'preau' }
   | { kind: 'station' }
   | { kind: 'chalet' }
   | { kind: 'scierie' }
@@ -73,6 +74,7 @@ const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   'life-earth-sciences-6e-living-world': { kind: 'serre' },
   'physics-chemistry-6e-matter-energy': { kind: 'laboratoire' },
   'technology-6e-objects': { kind: 'atelier' },
+  'civics-6e-democratic-society': { kind: 'preau' },
   // Îles Brumeuses (5e)
   'maths-5e-signed-numbers': { kind: 'dome' },
   'maths-5e-proportionality': { kind: 'echoppe' },
@@ -784,6 +786,28 @@ function atelier(b: BlockId): Stages {
   return [without(walls, [...porte, lanterne]), roof, yard(b, 1, y0)];
 }
 
+/**
+ * Le préau (le préau de Voix, EMC 6e ; proposition de l'artiste technique 3D, à valider par le directeur artistique) :
+ * un abri ouvert devant, où l'on se réunit ; aucun drapeau, aucun symbole. Le préau : le mur du fond de craie, six de
+ * large, deux blocs de haut, deux retours sur les côtés et deux piliers devant, le banc de bois au fond. Le toit du
+ * préau : le toit bas à deux pans sur toute la largeur, posé sur les piliers, et une lanterne au mur du fond, sous le
+ * toit. La cour du préau : la barrière ouverte au milieu sur deux cases (ouverte à tous), deux lanternes aux bouts, deux
+ * bancs de bois devant les piliers. Sans porte : rien ne ferme le préau.
+ */
+function preau(b: BlockId): Stages {
+  const [y0, h] = [2, 2];
+  const lanterne: [number, number, number] = [3, y0 + 2, 1];
+  const walls: ArchCell[] = [];
+  for (let z = 0; z < h; z++) {
+    for (let x = 0; x < ZW; x++) walls.push({ x, y: y0 + 2, z, block: b });
+    for (const x of [0, ZW - 1]) walls.push({ x, y: y0 + 1, z, block: b }, { x, y: y0, z, block: b });
+  }
+  walls.push({ x: 2, y: y0 + 1, z: 0, block: BLOC.bois }, { x: 3, y: y0 + 1, z: 0, block: BLOC.bois });
+  const roof: ArchCell[] = [{ x: lanterne[0], y: lanterne[1], z: lanterne[2], block: BLOC.lanterne }, ...toitADeuxPans(b, 0, y0, ZW, h)];
+  const cour: ArchCell[] = [...frontFence([2, 3], [0, ZW - 1]), { x: 1, y: 1, z: 0, block: BLOC.bois }, { x: ZW - 2, y: 1, z: 0, block: BLOC.bois }];
+  return [without(walls, [lanterne]), roof, cour];
+}
+
 // ---------- Les bâtiments des îles de sciences de 5e à 3e (SC-3) ----------
 // Décision du directeur artistique (6 octobre 2026) : les murs du bloc de l'île, le toit de l'univers (rouge dans Blocland,
 // sa couverture dans Archipéo, `roofs.ts`), aucun fronton, aucune pièce nouvelle : les blocs de finition de toujours
@@ -1004,6 +1028,8 @@ export function buildingStages(biome: BiomeId, block: BlockId): Stages {
       return laboratoire(block);
     case 'atelier':
       return atelier(block);
+    case 'preau':
+      return preau(block);
     case 'station':
       return weatherStation(block);
     case 'chalet':

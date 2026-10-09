@@ -108,6 +108,7 @@ export const MATERIAL_FAMILIES: Record<Exclude<TextureKind, ExceptionTexture>, M
   obsidienne: 'pierre',
   sable: 'pierre',
   fossile: 'pierre',
+  craie: 'pierre',
   mosaique: 'pierre',
   taille: 'pierre',
   marbre: 'pierre',

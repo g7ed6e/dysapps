@@ -952,6 +952,26 @@ const ABEILLE = fromLayers(
   { T: '#e0a83a', B: '#5a3c1e', A: '#eef4f2', G: '#8e989c', K: '#1f1a16' },
 );
 
+// L'Hirondelle de nacre (EMC, 6e ; sans flamme, aucun symbole) : posée sur une petite poutre, de face, les ailes
+// ouvertes en longues pointes de chaque côté ; le dos, les ailes et la tête de nacre bleutée, le ventre blanc, la gorge
+// rose nacré, le bec et les yeux sombres ; derrière, sous la poutre, sa queue fourchue se lit de face par ses deux
+// pointes écartées. Dix de haut, neuf de large. Cinq couleurs, les yeux compris.
+const HIRONDELLE = fromLayers(
+  [
+    ['.........', '...SSS...', '.........', '.N.....N.'],
+    ['.........', '...K.K...', '.........', '..N...N..'],
+    ['...WWW...', '..WWWWW..', '..NNNNN..', '...N.N...'],
+    ['..WWWWW..', '..WWWWW..', '..NNNNN..', '....N....'],
+    ['..WWWWW..', 'N.WWWWW.N', '..NNNNN..', '.........'],
+    ['..PPPPP..', 'NNWWWWWNN', '..NNNNN..', '.........'],
+    ['...PPP...', '.NNNNNNN.', '..NNNNN..', '.........'],
+    ['....P....', '...NNN...', '...NNN...', '.........'],
+    ['....K....', '...KNK...', '...NNN...', '.........'],
+    ['.........', '...NNN...', '...NNN...', '.........'],
+  ],
+  { N: '#a9b6d2', W: '#f6f2ec', P: '#e8bcc0', K: '#1f1a16', S: '#8a6236' },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': GRAND_CHENE,
   'french-6e-letter-confusion': GOLEM,
@@ -986,6 +1006,7 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'life-earth-sciences-6e-living-world': CERF,
   'physics-chemistry-6e-matter-energy': ALAMBIC,
   'technology-6e-objects': AUTOMATE,
+  'civics-6e-democratic-society': HIRONDELLE,
   'life-earth-sciences-5e-active-planet': TORTUE,
   'physics-chemistry-5e-matter-universe': FLAMANT,
   'technology-5e-design': CHEVAL_A_BASCULE,

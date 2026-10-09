@@ -354,6 +354,9 @@ export const MATIERES: Record<TextureKind, Faces> = {
   aimant: { dessus: 0xa4aab0, cote: 0x8c9298 },
   // Le carton du Hangar : un brun clair, plus jaune que la terre, plus terne que les planches.
   carton: { dessus: 0xb98d5a, cote: 0x9a7246 },
+  // La craie du Préau : un blanc de craie chaud, plus jaune que le sel, plus clair que le fossile (le tableau vert et les
+  // bâtons de couleur restent au motif de Blocland).
+  craie: { dessus: 0xe6e1d4, cote: 0xcfc8b6 },
   // Les blocs des îles de sciences de 5e à 3e (SC-3) : la couleur de leur bloc (biomes.ts).
   strate: { dessus: 0x9a6a44, cote: 0x8a5a3a },
   sel: { dessus: 0xece8e2, cote: 0xc8ccd0 },

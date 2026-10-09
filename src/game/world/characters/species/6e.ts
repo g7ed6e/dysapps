@@ -465,4 +465,58 @@ export const ESPECES_6E = {
       },
     },
   },
+  // EMC 6e (EMC-2) : le strict nécessaire, Archipéo étant en pause. Voix, panda roux délégué : debout, roux, le masque
+  // clair, deux oreilles rondes, sa grande queue annelée tendue sur le côté ; un gilet de lin, son carnet de délégué à
+  // la main (une couverture de cuir, une page de lin), l'autre main levée pour prendre la parole. Ni écharpe ni insigne.
+  // La main levée et la queue le séparent de Lavi et de Rouxel en silhouette (le plus fort recouvrement : 0,81 avec Lavi,
+  // de trois quarts côté outil ; silhouettes.test.ts).
+  'civics-6e-democratic-society': {
+    nom: 'Voix',
+    metier: 'délégué',
+    dominante: 0xb0522c,
+    marque: { couleur: 0xe6dcc8, ou: ['museau'] },
+    tenue: { couleur: TENUE.lin, vetements: ['gilet'] },
+    museau: { forme: 'museau', long: 0.14, r: 0.09 },
+    // La main levée, pour prendre la parole.
+    autreBras: { rx: 0, rz: 2.6 },
+    coiffe: (T, k) => {
+      // Les oreilles rondes, courtes et larges : rien de pointu (Rouxel, le renard, a les siennes en pointe).
+      for (const c of [-1, 1])
+        fuseau(
+          pose(T, repere([c * 0.17, 2.4, 0.03], 0, 0, -c * 0.35)),
+          [
+            [0, 0.07],
+            [0.08, 0.1],
+            [0.16, 0],
+          ],
+          4,
+          k.dom,
+        );
+    },
+    corps: (T, k) => {
+      // La grande queue annelée, roux et clair en alternance, tendue sur le côté droit : elle se voit de face et de trois
+      // quarts, et reste près de sa case (0,75).
+      fuseau(
+        pose(T, repere([0.08, 0.8, 0.2], 0.3, 0, -1.1)),
+        [
+          [0, 0.08],
+          [0.16, 0.2],
+          [0.34, 0.22],
+          [0.5, 0.19],
+          [0.62, 0.1],
+          [0.68, 0],
+        ],
+        5,
+        parFace((s) => (s % 2 === 1 ? k.marque : k.dom)),
+      );
+    },
+    outil: {
+      // Le carnet de délégué : une couverture de cuir, une page de lin devant.
+      pose: [-0.3, 0, 0],
+      dessiner: (T, k) => {
+        pave(T, -0.11, 0, -0.02, 0.11, 0.28, 0, k.cuir);
+        pave(T, -0.09, 0.02, -0.035, 0.09, 0.26, -0.02, k.lin);
+      },
+    },
+  },
 } satisfies Partial<Record<BiomeId, Espece>>;

@@ -26,7 +26,7 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
     expect(drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
   }
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
-  expect(RENDER_BUDGET_6E).toEqual({ triangles: 72_800, drawCalls: 40 });
+  expect(RENDER_BUDGET_6E).toEqual({ triangles: 76_500, drawCalls: 40 });
   // GD-12 : 78 700 ailleurs (mainteneur, 9 octobre 2026, carte « Relever »).
   expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 78_700, drawCalls: 40 });
 });

@@ -31,9 +31,9 @@ import { startingPlaces } from './routing';
 const partie = (): World => toutConstruit().world;
 const VOLCAN: BiomeId = 'maths-6e-decimals';
 // Depuis les formes des îles (GD-12), le Volcan, au coin de devant, n'a que deux places : on glisse la Rivière, on défait
-// une liaison avec la Mine.
+// une liaison avec la Carrière (la Mine n'en défait plus depuis le Préau, EMC-2).
 const RIVIERE: BiomeId = 'maths-6e-fractions';
-const MINE: BiomeId = 'french-6e-letter-confusion';
+const CARRIERE: BiomeId = 'french-6e-word-spelling';
 
 describe('choisir', () => {
   it('le lieu de départ ne se choisit pas ; un autre lieu part de sa place', () => {
@@ -176,10 +176,10 @@ describe('une borne, une arrivée, une liaison à reposer', () => {
 
   it('une liaison séparée se repose entre deux voisins, gratuitement', () => {
     const w = partie();
-    // Une place de la Mine qui défait une de ses liaisons.
-    const base = chooseIsland(w, MINE)!;
+    // Une place de la Carrière qui défait une de ses liaisons.
+    const base = chooseIsland(w, CARRIERE)!;
     if (base.genre !== 'lieu') throw new Error('lieu');
-    const spot = ([1, 2, 3, 0] as const).flatMap((t) => freeSpots(w, MINE, t)).find((s) => linksBrokenBy(w, MINE, s).length)!;
+    const spot = ([1, 2, 3, 0] as const).flatMap((t) => freeSpots(w, CARRIERE, t)).find((s) => linksBrokenBy(w, CARRIERE, s).length)!;
     const c = { ...base, spot };
     const r = poseChoice(w, c);
     if (!r.ok) throw new Error(r.reason);

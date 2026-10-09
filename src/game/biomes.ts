@@ -48,6 +48,7 @@ export const BIOME_IDS = [
   'life-earth-sciences-6e-living-world',
   'physics-chemistry-6e-matter-energy',
   'technology-6e-objects',
+  'civics-6e-democratic-society',
   'history-5e-middle-ages',
   'geography-5e-resources',
   'life-earth-sciences-5e-active-planet',
@@ -109,6 +110,7 @@ export type BlockId =
   | 'life-earth-sciences-6e-living-world'
   | 'physics-chemistry-6e-matter-energy'
   | 'technology-6e-objects'
+  | 'civics-6e-democratic-society'
   | 'history-5e-middle-ages'
   | 'geography-5e-resources'
   | 'history-4e-revolutions'
@@ -179,6 +181,7 @@ export const BLOC = {
   fossile: 'life-earth-sciences-6e-living-world',
   aimant: 'physics-chemistry-6e-matter-energy',
   carton: 'technology-6e-objects',
+  craie: 'civics-6e-democratic-society',
   enluminure: 'history-5e-middle-ages',
   riziere: 'geography-5e-resources',
   fonte: 'history-4e-revolutions',
@@ -258,6 +261,7 @@ export type BlockTexture =
   | 'fossile'
   | 'aimant'
   | 'carton'
+  | 'craie'
   | 'enluminure'
   | 'riziere'
   | 'fonte'
@@ -336,6 +340,11 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // Le bloc du Hangar des inventions (technologie, 6e) : du carton ondulé brun clair, ses cannelures verticales,
   // distinct des planches et de la terre par le motif (DA, SC-2).
   'technology-6e-objects': { id: 'technology-6e-objects', name: 'Carton', top: '#b98d5a', side: '#9a7246', texture: 'carton' },
+  // Le bloc du Préau des délégués (EMC, 6e) : des bâtons de craie couchés, côte à côte, sur l'ardoise vert sombre d'un
+  // tableau ; blanc, jaune pâle, rose pâle et bleu pâle. Distinct du sel (blanc, quatre cristaux cernés) et du fossile
+  // (beige, une spirale) par les bâtons et le fond sombre, pas par la teinte seule (proposition de l'artiste technique 3D,
+  // à valider par le directeur artistique).
+  'civics-6e-democratic-society': { id: 'civics-6e-democratic-society', name: 'Craie', top: '#e8e4d8', side: '#3e5248', texture: 'craie' },
   // Le bloc du Bourg des chroniques (histoire, 5e) : un violet profond parcouru de filets d'or, comme une page enluminée,
   // distinct de l'obsidienne par les filets et par un violet plus clair.
   'history-5e-middle-ages': { id: 'history-5e-middle-ages', name: 'Enluminure', top: '#6a4c9c', side: '#4e3878', texture: 'enluminure' },
@@ -419,7 +428,7 @@ export function ofBlock(id: BlockId): string {
  * dys). Les autres blocs sont des objets qu’on compte : « 5 toits », « 2 lanternes ».
  */
 const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
-  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'physics-chemistry-5e-matter-universe', 'technology-5e-design', 'technology-4e-modeling', 'life-earth-sciences-3e-human-body', 'technology-3e-digital', 'trophy-gold'],
+  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'civics-6e-democratic-society', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'physics-chemistry-5e-matter-universe', 'technology-5e-design', 'technology-4e-modeling', 'life-earth-sciences-3e-human-body', 'technology-3e-digital', 'trophy-gold'],
 );
 
 /** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */
