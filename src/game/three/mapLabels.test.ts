@@ -435,8 +435,10 @@ const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>
  * que la Carte cadre les lieux d'aujourd'hui (deux ponts du 5e y taisaient un nom de plus depuis GD-11).
  */
 const TUS_SUR_UN_OUVRAGE_DANS_ARCHIPEO: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
-  // Depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec de 5e, mesuré).
-  '5e': { 'maths-5e-signed-numbers-maths-5e-proportionality depuis maths-5e-proportionality': ['life-earth-sciences-5e-active-planet', 'lca-5e-legends'] },
+  // Depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec de 5e, mesuré). Depuis les places à côté
+  // de l'île au dernier recours (`placesACote`, piste B du consultant UX UI, 9 octobre 2026), la Grotte des légendes se
+  // montre : un nom tu au lieu de deux.
+  '5e': { 'maths-5e-signed-numbers-maths-5e-proportionality depuis maths-5e-proportionality': ['life-earth-sciences-5e-active-planet'] },
 };
 
 /**

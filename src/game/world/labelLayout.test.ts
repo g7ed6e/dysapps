@@ -301,9 +301,17 @@ describe('étiquettes entières ou absentes (DA-10)', () => {
     expect(r.visibles).toEqual([true, true]);
     const falaise = boxes[0].y + r.offsets[0].dy;
     expect(falaise - boxes[0].h / 2).toBeGreaterThanOrEqual(400 + 32 + 6);
-    // Sans place libre hors de la garde (le bas du cadre), il se cache.
+    // Sans place libre sous son île (le bas du cadre), au dernier recours, il se pose à côté d'elle, à sa hauteur, hors
+    // de la garde (piste B du consultant UX UI, 9 octobre 2026 ; avant, il se cachait).
     const bas = placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [fleche], bounds: { w: 1024, h: 470 }, gap: 6 }, { weights: [1, 2] });
-    expect(bas.visibles).toEqual([false, true]);
+    expect(bas.visibles).toEqual([true, true]);
+    expect(boxes[0].y + bas.offsets[0].dy).toBe(iles[0].y);
+    // La garde de la destination va de 464 à 536 px de large (72 px au moins autour de son île).
+    expect(Math.abs(boxes[0].x + bas.offsets[0].dx - iles[1].x) - boxes[0].w / 2).toBeGreaterThan(36 + 6);
+    // Sans place non plus à côté (à droite, le bord du cadre ; à gauche, l'interface), il se cache.
+    const gauche: LabelBox = { x: 150, y: 235, w: 300, h: 470 };
+    const serre = placerEtiquettes(boxes, iles, { zones: [gauche], bulles: [], obstacles: [fleche], bounds: { w: 620, h: 470 }, gap: 6 }, { weights: [1, 2] });
+    expect(serre.visibles).toEqual([false, true]);
   });
 });
 
