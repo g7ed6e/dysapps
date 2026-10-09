@@ -44,9 +44,9 @@ describe('les îles de docs/contenu/', () => {
     }
   });
 
-  it('ont des missions uniques dans tout le jeu, quatre au plus par île et par LV2', () => {
+  it('ont des missions uniques dans tout le jeu, cinq au plus par île et par LV2 (GD-14)', () => {
     const ids = BIOMES.flatMap((b) => b.exercises.map((m) => m.id));
     expect(ids.filter((id, n) => ids.indexOf(id) !== n)).toEqual([]);
-    for (const b of BIOMES) for (const lv2 of ['es', 'de'] as const) expect(missionsJouables(b, lv2).length, `${b.id} (${lv2})`).toBeLessThanOrEqual(4);
+    for (const b of BIOMES) for (const lv2 of ['es', 'de'] as const) expect(missionsJouables(b, lv2).length, `${b.id} (${lv2})`).toBeLessThanOrEqual(5);
   });
 });

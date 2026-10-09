@@ -461,10 +461,10 @@ function placerSansSouples(
       if (entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds) && !obstacles.some((v) => overlap(at, v, gap) > 0)) dessus = { i: destination, at };
     }
     reparerLaCarte(boxes, iles, offsets, visibles, vues, { couvert, obstacles, bounds, gap, recherche: vue.recherche === undefined ? rechercheDuCadrage() : vue.recherche }, poids, horsDeLaGarde, autreQueLaDestination, dessus);
-    // Trois noms ne se taisent jamais sur la Carte : celui de la prochaine destination, celui de l'île touchée
-    // (`carte.selected`, référent dys, 9 octobre 2026) et celui de l'île où se tient le bonhomme (`carte.avatarIsland`,
-    // DA, HG-3).
-    const neverHidden = [...new Set([destination, carte.selected, carte.avatarIsland])].filter((i): i is number => i !== undefined && gardees.includes(i));
+    // Trois noms ne se taisent jamais sur la Carte : celui de la prochaine destination, celui de l'île où se tient le
+    // bonhomme (`carte.avatarIsland`, DA, HG-3) et celui de l'île touchée (`carte.selected`, référent dys, 9 octobre
+    // 2026), dans cet ordre : si la place manque, l'île touchée cède, jamais la destination ni le bonhomme.
+    const neverHidden = [...new Set([destination, carte.avatarIsland, carte.selected])].filter((i): i is number => i !== undefined && gardees.includes(i));
     if (neverHidden.some((i) => !visibles[i])) {
       // Les noms qu'ils font taire cherchent encore une place près de leur île, sans pousser ceux-là.
       const repair = (o: LabelOffset[], v: boolean[], m: Map<number, LabelBox>, covered: number[]) => reparerLaCarte(boxes, iles, o, v, m, { couvert, obstacles, bounds, gap, recherche: null }, poids, horsDeLaGarde, (j) => !neverHidden.includes(j), null, covered);
@@ -524,7 +524,7 @@ const KEPT_NAME_PLACES = 8;
 
 /**
  * Sur la Carte, les noms qui ne se taisent jamais tant que leur île se voit (`kept` : la prochaine destination, l'île
- * touchée, puis l'île du bonhomme ; DA, HG-3 ; référent dys, 9 octobre 2026). Un tel nom encore tu essaie les places simples autour de son île (dessus, dessous, de
+ * du bonhomme, puis l'île touchée ; DA, HG-3 ; référent dys, 9 octobre 2026). Un tel nom encore tu essaie les places simples autour de son île (dessus, dessous, de
  * côté ; dessus et dessous passent le médaillon ou la bulle posés sur l'île : sa place de plus, sous son île, consultant
  * UX UI), puis celles de la dernière chance (`TRIES_FINS`), puis dessus et dessous glissés de côté pour tenir dans le
  * cadre (la distance à l'île comptée sans le repère passé) : entière, hors de l'interface et des repères (la bulle, le
@@ -583,7 +583,8 @@ function showAtAllCosts(
       const covered = [...state.vues].filter(([, v]) => overlap(at, v, gap) > 0).map(([j]) => j);
       const keptCovered = covered.some((j) => kept.includes(j));
       // Avec `yieldLater`, une place sur un nom gardé après lui (`kept` va du plus prioritaire au moins) se prend aussi,
-      // en dernier, si ce nom trouve ensuite une autre place ; jamais sur un nom gardé avant lui.
+      // en dernier ; ce nom cherche ensuite une autre place, et se tait s'il n'en trouve pas. Jamais sur un nom gardé
+      // avant lui.
       if (!keptCovered || (yieldLater && !covered.some((j) => kept.indexOf(j) !== -1 && kept.indexOf(j) < kept.indexOf(i)))) candidates.push({ at, covered, keptCovered });
     }
     // Le tri est stable : à autant de noms couverts, la place la plus proche (les places simples d'abord). Une place sur
@@ -605,9 +606,10 @@ function showAtAllCosts(
       vues.set(i, at);
       if (covered.length) repair(offsets, visibles, vues, covered);
       if (keptCovered) {
-        // Le nom gardé qu'elle couvre cherche sa place à son tour ; sans place, celle-ci ne se prend pas.
+        // Le nom gardé qu'elle couvre cherche sa place à son tour ; sans place, celle-ci ne se prend que s'il vient après
+        // lui (l'île touchée cède à la destination et au bonhomme), jamais si un nom gardé avant lui se tait.
         showAtAllCosts(kept, boxes, iles, { offsets, visibles, vues }, vue, isFree, repair, { ecart, levels });
-        if (kept.some((j) => (state.visibles[j] || j === i) && !visibles[j])) continue;
+        if (kept.some((j) => kept.indexOf(j) <= kept.indexOf(i) && (state.visibles[j] || j === i) && !visibles[j])) continue;
       }
       const n = visibles.filter(Boolean).length;
       if (!best || n > best.n) best = { offsets, visibles, vues, n };
@@ -873,6 +875,40 @@ export function placerDAbordSimplement<R extends { offsets: LabelOffset[]; visib
     return onAnotherIsland({ ...b, w, x: b.x + simple.offsets[i].dx, y: b.y + simple.offsets[i].dy }, i, iles);
   });
   return aReprendre ? placer(rechercheDuCadrage()) : simple;
+}
+
+/** Combien de noms de plus que la Carte sans lui le nom de l'île touchée peut taire (référent dys, 9 octobre 2026). */
+export const TAIRE_POUR_L_ILE_TOUCHEE = 1;
+
+/**
+ * Sur la Carte, l'île touchée (`CarteDesEtiquettes.selected`) ne garde son nom que s'il fait taire au plus
+ * `TAIRE_POUR_L_ILE_TOUCHEE` nom de plus, parmi les îles qui se voient, que la Carte sans lui (où rien n'est touché) ;
+ * sinon il cède, et la Carte est celle où rien n'est touché ; de même s'il se tait malgré tout en taisant plus de noms
+ * qu'elle (référent dys, 9 octobre 2026 : au 6e, en portrait 800 × 1280 en OpenDyslexic 32 px, la Ferme des accords
+ * touchée en taisait deux). `placer(false)` place les noms avec l'île touchée, `placer(true)` sans elle ; la Carte sans
+ * lui ne se calcule que si celle avec lui tait plus d'un autre nom ou tait le sien.
+ */
+export function avecLIleTouchee<R extends { visibles: boolean[] }>(
+  iles: { x: number; y: number }[],
+  vue: { zones: LabelBox[]; bulles: LabelBox[]; bounds: { w: number; h: number } },
+  touchee: number | undefined,
+  placer: (sansLui: boolean) => R,
+): R {
+  const avec = placer(false);
+  if (touchee === undefined || touchee < 0) return avec;
+  const couvert = [...vue.zones, ...vue.bulles];
+  const seVoient = iles
+    .map((_, i) => i)
+    .filter((i) => {
+      const p = { ...iles[i], w: 1, h: 1 };
+      return i !== touchee && !horsDuCadre(p, vue.bounds) && !couvert.some((z) => overlap(p, z, 0) > 0);
+    });
+  const tus = (v: boolean[]) => seVoient.filter((i) => !v[i]).length;
+  const nAvec = tus(avec.visibles);
+  const montre = avec.visibles[touchee];
+  if (montre && nAvec <= TAIRE_POUR_L_ILE_TOUCHEE) return avec;
+  const sans = placer(true);
+  return nAvec <= tus(sans.visibles) + (montre ? TAIRE_POUR_L_ILE_TOUCHEE : 0) ? avec : sans;
 }
 
 /** Ce que reçoit la recherche complète de la Carte (voir `chercherToutesLesPlaces`). */

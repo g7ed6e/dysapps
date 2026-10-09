@@ -28,7 +28,17 @@
 // composant de l'aide visuelle des missions : « figure : tableau x · f(x) / 2 · 6 / 4 · ? » (tableau de proportionnalité :
 // l'en-tête, puis une ligne par « / »), « figure : triangle 3 · 4 · ? » (triangle rectangle : les deux côtés de l'angle
 // droit, puis l'hypoténuse), « figure : droite 0 · 20 / 5 · 10 » (droite graduée : du premier au dernier nombre, puis les
-// points marqués).
+// points marqués), « figure : graduée 5 · 6 / 10 / 5,38 » (droite d'un entier à un autre, chaque unité en 10 parts, un
+// « ? » sur 5,38, sans le nombre), « figure : fraction 3/5 » (barre de fraction), « figure : fractions 3/5 · 3/10 » (deux barres à
+// comparer), « figure : diagramme lundi · mardi / 10 · 20 » (diagramme en barres : les noms, puis les nombres ; les
+// nombres seuls sans noms) et « figure : graphique 2 · 1 » (la droite y = 2 × x + 1 dans un repère).
+// Les figures de géométrie (src/game/exercises/GeometryAids/), tracées à l'échelle, « ? » pour la valeur cherchée :
+// « angles 40 · 60 · ? » (un triangle et ses trois angles, au besoin « / isocèle » ou « / équilatéral »), « angle 120 »,
+// « angle plat 130 · ? » ou « angle croisé 70 · ? » (un angle seul, deux angles côte à côte, un angle et son opposé par le
+// sommet), « plane rectangle 5 · 3 / aire ? » (et carré, parallélogramme, triangle, disque, cercle « / diamètre ? »,
+// médiatrice « 7 · ? », partagé « 3 / x · 4 / ? · ? »), « solide cubes 4 · 2 · 3 » (et cube, cylindre, cône,
+// prisme-pyramide), « image rotation 90 / angle 50 · ? » (une figure et son image sur un quadrillage : translation,
+// axiale, centrale, rotation, homothétie) et « repère A 4 · −2 » (un repère de −6 à 6, vide ou avec des points nommés).
 //
 // Ce qui se déduit ne s'écrit pas : « trou lu : blank » (pour tous les items) donne « lu » = l'énoncé dont le « … »
 // est remplacé ; « clé des items : mot » (ou lettre, ou paragraphe) donne la clé ; « mot troué : en[f]ant » donne
@@ -180,10 +190,188 @@ function ecrireAide(aide, entete, retrait) {
 const nombreOuTexte = (v) => (/^−?\d+(,\d+)?$/.test(v) ? Number(v.replace('−', '-').replace(',', '.')) : v);
 const ecrireNombre = (v) => (typeof v === 'number' ? String(v).replace('-', '−').replace('.', ',') : v);
 
-/** Une figure écrite « tableau … », « triangle … » ou « droite … » → sa description en données (`{ kind, props }`). */
+/** Une fraction écrite « 3/5 » → [3, 5], ou null. */
+const fractionLue = (v) => {
+  const m = /^(\d+)\/(\d+)$/.exec(v);
+  return m && Number(m[2]) > 0 ? [Number(m[1]), Number(m[2])] : null;
+};
+const SORTES_DE_FIGURE = 'tableau|triangle|droite|graduée|fraction|fractions|diagramme|graphique|angles|angle|plane|solide|image|repère';
+const SORTES_ATTENDUES =
+  '« tableau … », « triangle … », « droite … », « graduée … », « fraction … », « fractions … », « diagramme … », « graphique … », « angles … », « angle … », « plane … », « solide … », « image … » ou « repère »';
+
+// ---------- Figures de géométrie (src/game/exercises/GeometryAids/) ----------
+
+/** Les mots du contenu → les noms des données, pour chaque sorte de figure de géométrie. */
+const MARQUES_TRIANGLE = { isocèle: 'isosceles', équilatéral: 'equilateral' };
+const FORMES_PLANES = { rectangle: 'rectangle', carré: 'square', parallélogramme: 'parallelogram', triangle: 'triangle', disque: 'disc', cercle: 'circle', médiatrice: 'bisector', partagé: 'split' };
+const SOLIDES = { cubes: 'cubes', cube: 'cube', cylindre: 'cylinder', cône: 'cone', 'prisme-pyramide': 'prism-pyramid' };
+const TRANSFORMATIONS = { translation: 'translation', axiale: 'reflection', centrale: 'point-reflection', rotation: 'rotation', homothétie: 'dilation' };
+const motDe = (table, valeur) => Object.keys(table).find((k) => table[k] === valeur);
+
+/** Une liste « a · b · c » de cotes : des nombres (virgule française, signe « − ») ou des textes (« ? », « r », « 7a »). */
+const cotes = (texte) => texte.split(' · ').map(nombreOuTexte);
+/** Une cote d'une figure : un nombre positif, ou un texte non vide. */
+const coteValide = (v) => (typeof v === 'number' ? v > 0 : v !== '');
+/** Le plus petit angle qu'une figure dessine : plus fermé, sa mesure ne tiendrait pas dans l'angle. */
+const ANGLE_MIN = 20;
+/** Une mesure d'angle : « ? », ou un nombre de 20 à 180 (exclu). */
+const angleValide = (v) => v === '?' || (typeof v === 'number' && v >= ANGLE_MIN && v < 180);
+
+/** Les angles donnés font-ils un triangle ? (Même règle que `triangleAngles` de GeometryAids/TriangleAngles.tsx.) */
+function trianglePossible(angles, marques) {
+  const n = angles.map((v) => (typeof v === 'number' ? v : undefined));
+  if (marques === 'equilateral') return n.every((v) => v === undefined || v === 60);
+  if (marques === 'isosceles') {
+    n[1] ??= n[2];
+    n[2] ??= n[1];
+    if (n[0] !== undefined && n[1] === undefined) n[1] = n[2] = (180 - n[0]) / 2;
+    if (n[1] !== n[2]) return false;
+  }
+  const manquants = n.filter((v) => v === undefined).length;
+  const somme = n.reduce((s, v) => s + (v ?? 0), 0);
+  const traces = n.map((v) => v ?? (manquants === 1 ? 180 - somme : NaN));
+  // Les angles calculés pour le tracé ne sont pas plus fermés que ceux qu'on écrit.
+  return traces.every((v) => v >= ANGLE_MIN) && Math.abs(traces[0] + traces[1] + traces[2] - 180) < 1e-6;
+}
+
+function lireAngles(reste, brut) {
+  const [valeurs, marque, ...trop] = reste.split(' / ');
+  const angles = cotes(valeurs);
+  const marques = marque === undefined ? undefined : MARQUES_TRIANGLE[marque];
+  if (trop.length || angles.length !== 3 || !angles.every(angleValide) || (marque !== undefined && !marques) || !trianglePossible(angles, marques))
+    throw new Error(
+      `figure : un triangle s'écrit « angles 40 · 60 · ? », ses trois angles (« ? » pour un angle à trouver, un seul sauf « / isocèle », où les deux derniers sont égaux, ou « / équilatéral »), de somme 180°, chacun de 20° au moins, lu « ${brut} »`,
+    );
+  return { kind: 'triangle-angles', props: { angles, ...(marques && { marks: marques }) } };
+}
+
+function lireAngle(reste, brut) {
+  const m = /^(?:(plat|croisé) )?(.+)$/.exec(reste);
+  const layout = m[1] === 'plat' ? 'straight' : m[1] === 'croisé' ? 'crossed' : 'single';
+  const values = cotes(m[2]);
+  const nombres = values.filter((v) => typeof v === 'number');
+  const ok =
+    values.every(angleValide) &&
+    (layout === 'single'
+      ? values.length === 1 && nombres.length === 1
+      : values.length === 2 &&
+        nombres.length >= 1 &&
+        (layout === 'straight' ? (nombres.length === 1 ? 180 - nombres[0] >= ANGLE_MIN : nombres[0] + nombres[1] === 180) : nombres.length === 1 || nombres[0] === nombres[1]));
+  if (!ok)
+    throw new Error(
+      `figure : un angle s'écrit « angle 120 » (un angle seul), « angle plat 130 · ? » (deux angles côte à côte, de somme 180°) ou « angle croisé 70 · ? » (un angle, puis l'angle opposé par le sommet), des mesures de 20 à 180, lu « ${brut} »`,
+    );
+  return { kind: 'angle', props: { layout, values } };
+}
+
+/** Le nombre de cotes de chaque forme plane : [au moins, au plus]. */
+const COTES_PLANES = { rectangle: [2, 2], square: [1, 1], parallelogram: [2, 3], triangle: [2, 2], disc: [1, 1], circle: [1, 1], bisector: [2, 2], split: [1, 1] };
+
+function lirePlane(reste, brut) {
+  const [tete, ...suite] = reste.split(' / ');
+  const espace = tete.indexOf(' ');
+  const shape = FORMES_PLANES[espace === -1 ? tete : tete.slice(0, espace)];
+  const values = espace === -1 ? [] : cotes(tete.slice(espace + 1));
+  const [min, max] = COTES_PLANES[shape] ?? [1, 0];
+  let question = {};
+  let ok = values.length >= min && values.length <= max && values.every(coteValide);
+  if (shape === 'split') {
+    const [largeurs, aires] = suite.map(cotes);
+    ok &&= suite.length === 2 && largeurs.length >= 2 && aires.length === largeurs.length && [...largeurs, ...aires].every(coteValide);
+    if (ok) question = { widths: largeurs, areas: aires };
+  } else if (suite.length) {
+    const attendue = shape === 'circle' ? 'diamètre ?' : shape === 'bisector' ? undefined : 'aire ?';
+    ok &&= suite.length === 1 && suite[0] === attendue;
+    question = shape === 'circle' ? { diameter: '?' } : { area: '?' };
+  }
+  if (!ok)
+    throw new Error(
+      `figure : une figure plane s'écrit « plane rectangle 5 · 3 / aire ? », « plane carré 6 », « plane parallélogramme 5 · 3 · 4 » (base, hauteur, côté penché au besoin), « plane triangle 8 · 5 » (base, hauteur), « plane disque 5 » ou « plane cercle 4 / diamètre ? » (le rayon), « plane médiatrice 7 · ? » (MA, MB) ou « plane partagé 3 / x · 4 / ? · ? » (la hauteur, les largeurs, les aires), lu « ${brut} »`,
+    );
+  return { kind: 'plane-figure', props: { shape, values, ...question } };
+}
+
+/** Le nombre de cotes de chaque solide (hors pavés de petits cubes) : les valeurs possibles. */
+const COTES_SOLIDES = { cube: [1], cylinder: [0, 2], cone: [2], 'prism-pyramid': [1] };
+
+function lireSolide(reste, brut) {
+  const [tete, ...suite] = reste.split(' / ');
+  const espace = tete.indexOf(' ');
+  const solid = SOLIDES[espace === -1 ? tete : tete.slice(0, espace)];
+  const values = espace === -1 ? [] : cotes(tete.slice(espace + 1));
+  if (solid === 'cubes') {
+    const boxes = [values, ...suite.map(cotes)];
+    if (boxes.length > 2 || !boxes.every((b) => b.length === 3 && b.every((v) => Number.isInteger(v) && v >= 1 && v <= 8)))
+      throw new Error(`figure : des pavés de petits cubes s'écrivent « solide cubes 4 · 2 · 3 » (longueur, largeur, couches, des entiers de 1 à 8), et au besoin « / » une deuxième boîte, lu « ${brut} »`);
+    return { kind: 'solid', props: { solid, boxes } };
+  }
+  const volume = suite.length === 1 && suite[0] === 'volume ?' && (solid === 'cylinder' || solid === 'cone');
+  if (!COTES_SOLIDES[solid]?.includes(values.length) || !values.every(coteValide) || suite.length > 1 || (suite.length === 1 && !volume))
+    throw new Error(
+      `figure : un solide s'écrit « solide cubes 4 · 2 · 3 », « solide cube 1 » (l'arête, en cm), « solide cylindre 3 · 2 / volume ? » (rayon, hauteur, ou rien), « solide cône r · h » ou « solide prisme-pyramide h » (la hauteur), lu « ${brut} »`,
+    );
+  return { kind: 'solid', props: { solid, ...(values.length && { values }), ...(volume && { volume: '?' }) } };
+}
+
+function lireImage(reste, brut) {
+  const [tete, ...options] = reste.split(' / ');
+  const [nom, quantite, ...trop] = tete.split(' ');
+  const transform = TRANSFORMATIONS[nom];
+  const amount = quantite === undefined ? undefined : nombreOuTexte(quantite);
+  const props = { transform, ...(amount !== undefined && { amount }) };
+  let ok =
+    transform !== undefined &&
+    trop.length === 0 &&
+    (transform === 'rotation'
+      ? Number.isInteger(amount) && amount % 90 === 0 && amount !== 0 && Math.abs(amount) < 360
+      : transform === 'dilation'
+        ? amount === 2 || amount === 3
+        : amount === undefined);
+  // Les options, dans cet ordre : « angle a · b » ou « aire a · b », puis « arc ? » (symétrie centrale).
+  let rang = 0;
+  for (const option of options) {
+    const m = /^(angle|aire|arc) (.+)$/.exec(option);
+    const place = m ? { angle: 1, aire: 1, arc: 2 }[m[1]] : 0;
+    if (!m || place <= rang) {
+      ok = false;
+      break;
+    }
+    rang = place;
+    if (m[1] === 'arc') {
+      ok &&= transform === 'point-reflection' && m[2] === '?';
+      props.arc = '?';
+    } else {
+      const valeurs = cotes(m[2]);
+      ok &&= valeurs.length === 2 && valeurs.every(m[1] === 'angle' ? angleValide : coteValide);
+      props[m[1] === 'angle' ? 'angles' : 'areas'] = valeurs;
+    }
+  }
+  if (!ok)
+    throw new Error(
+      `figure : une figure et son image s'écrivent « image translation », « image axiale », « image centrale », « image rotation 90 » (un multiple de 90) ou « image homothétie 2 » (rapport 2 ou 3), puis au besoin « / angle 50 · ? » ou « / aire 12 · ? » (la figure, puis son image), et « / arc ? » pour la symétrie centrale, lu « ${brut} »`,
+    );
+  return { kind: 'transformation', props };
+}
+
+function lireRepere(reste, brut) {
+  const lignes = reste === undefined ? [] : reste.split(' / ');
+  const points = lignes.map((l) => {
+    const m = /^([A-Z](?:[0-9]|′)?) (.+)$/.exec(l);
+    const xy = m ? cotes(m[2]) : [];
+    return xy.length === 2 && xy.every((v) => Number.isInteger(v) && Math.abs(v) <= 6) ? { name: m[1], x: xy[0], y: xy[1] } : null;
+  });
+  if (points.some((p) => !p) || new Set(points.map((p) => p.name)).size !== points.length)
+    throw new Error(`figure : un repère s'écrit « repère », vide, ou « repère A 4 · −2 / B 1 · 3 » (un nom en majuscule, puis deux entiers de −6 à 6), lu « ${brut} »`);
+  return { kind: 'coordinate-plane', props: { points } };
+}
+
+const FIGURES_DE_GEOMETRIE = { angles: lireAngles, angle: lireAngle, plane: lirePlane, solide: lireSolide, image: lireImage, repère: lireRepere };
+
+/** Une figure écrite « tableau … », « triangle … », « angles … », « repère »… (voir l'en-tête du fichier) → sa description en données (`{ kind, props }`). */
 export function lireFigure(brut) {
-  const m = /^(tableau|triangle|droite) (.+)$/.exec(brut);
-  if (!m) throw new Error(`figure : « tableau … », « triangle … » ou « droite … » attendu, lu « ${brut} »`);
+  const m = new RegExp(`^(${SORTES_DE_FIGURE})(?: (.+))?$`).exec(brut);
+  if (!m || (m[2] === undefined && m[1] !== 'repère')) throw new Error(`figure : ${SORTES_ATTENDUES} attendu, lu « ${brut} »`);
+  if (Object.hasOwn(FIGURES_DE_GEOMETRIE, m[1])) return FIGURES_DE_GEOMETRIE[m[1]](m[2], brut);
   const lignes = m[2].split(' / ').map((l) => l.split(' · '));
   if (m[1] === 'tableau') {
     if (lignes.length < 2 || lignes.some((l) => l.length !== lignes[0].length)) throw new Error(`figure : un tableau a un en-tête et des lignes de même longueur, lu « ${brut} »`);
@@ -193,6 +381,39 @@ export function lireFigure(brut) {
     if (lignes.length !== 1 || lignes[0].length !== 3) throw new Error(`figure : un triangle a trois côtés, lu « ${brut} »`);
     const [a, b, c] = lignes[0].map(nombreOuTexte);
     return { kind: 'right-triangle', props: { a, b, c, labels: ['A', 'B', 'C'] } };
+  }
+  if (m[1] === 'graduée') {
+    const [bornes, parts, point] = lignes;
+    const [debut, fin] = (bornes ?? []).map(nombreOuTexte);
+    const parUnite = parts?.length === 1 ? nombreOuTexte(parts[0]) : undefined;
+    const marque = point?.length === 1 ? nombreOuTexte(point[0]) : undefined;
+    const entiers = [debut, fin, parUnite].every(Number.isInteger) && bornes.length === 2 && debut < fin && parUnite >= 2;
+    const cran = entiers && marque !== undefined ? (marque - debut) * parUnite : 0;
+    if (!entiers || lignes.length > 3 || (point && (typeof marque !== 'number' || Math.abs(cran - Math.round(cran)) > 1e-9 || cran < 0 || cran > (fin - debut) * parUnite)))
+      throw new Error(`figure : une droite graduée en parts va d'un entier à un plus grand, puis « / » le nombre de parts par unité, et au besoin « / » le point marqué d'un « ? », sur une graduation, lu « ${brut} »`);
+    return { kind: 'graduated-line', props: { start: debut, units: fin - debut, perUnit: parUnite, ...(point && { point: Math.round(cran) }) } };
+  }
+  if (m[1] === 'fraction') {
+    const f = fractionLue(m[2]);
+    if (!f || f[0] > f[1]) throw new Error(`figure : une fraction s'écrit « 3/5 », au plus une unité, lu « ${brut} »`);
+    return { kind: 'fraction-bar', props: { n: f[0], d: f[1] } };
+  }
+  if (m[1] === 'fractions') {
+    const fs = lignes.length === 1 ? lignes[0].map(fractionLue) : [];
+    if (fs.length !== 2 || fs.some((f) => !f || f[0] > f[1])) throw new Error(`figure : deux fractions à comparer s'écrivent « 3/5 · 3/10 », au plus une unité chacune, lu « ${brut} »`);
+    return { kind: 'compare-bars', props: { a: fs[0], b: fs[1] } };
+  }
+  if (m[1] === 'diagramme') {
+    const valeurs = lignes.at(-1).map(nombreOuTexte);
+    if (lignes.length > 2 || valeurs.some((v) => typeof v !== 'number' || v < 0) || (lignes.length === 2 && lignes[0].length !== valeurs.length))
+      throw new Error(`figure : un diagramme donne ses noms puis, après « / », autant de nombres positifs, lu « ${brut} »`);
+    return { kind: 'bar-list', props: { values: valeurs, ...(lignes.length === 2 && { labels: lignes[0] }) } };
+  }
+  if (m[1] === 'graphique') {
+    const [a, b] = lignes[0].map(nombreOuTexte);
+    if (lignes.length !== 1 || lignes[0].length !== 2 || typeof a !== 'number' || typeof b !== 'number')
+      throw new Error(`figure : un graphique donne a puis b de la droite y = a × x + b, lu « ${brut} »`);
+    return { kind: 'graph', props: { a, b } };
   }
   const [bornes, points] = lignes;
   if (lignes.length > 2 || bornes.length !== 2) throw new Error(`figure : une droite va d'un nombre à un autre, lu « ${brut} »`);
@@ -206,10 +427,31 @@ export function lireFigure(brut) {
 export function ecrireFigure(figure) {
   const { kind, props } = figure;
   const ligne = (l) => l.map(ecrireNombre).join(' · ');
-  if (kind === 'ratio-table' && Object.keys(props).join() === 'cols,rows') return `tableau ${[props.cols, ...props.rows].map(ligne).join(' / ')}`;
-  if (kind === 'right-triangle' && Object.keys(props).join() === 'a,b,c,labels' && props.labels.join() === 'A,B,C') return `triangle ${ligne([props.a, props.b, props.c])}`;
-  if (kind === 'number-line' && ['min,max', 'min,max,points'].includes(Object.keys(props).join()))
+  const cles = Object.keys(props).join();
+  if (kind === 'ratio-table' && cles === 'cols,rows') return `tableau ${[props.cols, ...props.rows].map(ligne).join(' / ')}`;
+  if (kind === 'right-triangle' && cles === 'a,b,c,labels' && props.labels.join() === 'A,B,C') return `triangle ${ligne([props.a, props.b, props.c])}`;
+  if (kind === 'number-line' && ['min,max', 'min,max,points'].includes(cles))
     return `droite ${ligne([props.min, props.max])}${props.points ? ` / ${ligne(props.points)}` : ''}`;
+  if (kind === 'graduated-line' && ['start,units,perUnit', 'start,units,perUnit,point'].includes(cles))
+    return `graduée ${ligne([props.start, props.start + props.units])} / ${props.perUnit}${props.point === undefined ? '' : ` / ${ecrireNombre(Number((props.start + props.point / props.perUnit).toFixed(6)))}`}`;
+  if (kind === 'fraction-bar' && cles === 'n,d') return `fraction ${props.n}/${props.d}`;
+  if (kind === 'compare-bars' && cles === 'a,b') return `fractions ${props.a.join('/')} · ${props.b.join('/')}`;
+  if (kind === 'bar-list' && ['values', 'values,labels'].includes(cles)) return `diagramme ${props.labels ? `${props.labels.join(' · ')} / ` : ''}${ligne(props.values)}`;
+  if (kind === 'graph' && cles === 'a,b') return `graphique ${ligne([props.a, props.b])}`;
+  if (kind === 'triangle-angles' && ['angles', 'angles,marks'].includes(cles)) return `angles ${ligne(props.angles)}${props.marks ? ` / ${motDe(MARQUES_TRIANGLE, props.marks)}` : ''}`;
+  if (kind === 'angle' && cles === 'layout,values') return `angle ${{ single: '', straight: 'plat ', crossed: 'croisé ' }[props.layout]}${ligne(props.values)}`;
+  if (kind === 'plane-figure' && ['shape,values', 'shape,values,area', 'shape,values,diameter', 'shape,values,widths,areas'].includes(cles)) {
+    const question = props.widths ? ` / ${ligne(props.widths)} / ${ligne(props.areas)}` : props.area !== undefined ? ` / aire ${props.area}` : props.diameter !== undefined ? ` / diamètre ${props.diameter}` : '';
+    return `plane ${motDe(FORMES_PLANES, props.shape)} ${ligne(props.values)}${question}`;
+  }
+  if (kind === 'solid' && props.solid === 'cubes' && cles === 'solid,boxes') return `solide cubes ${props.boxes.map(ligne).join(' / ')}`;
+  if (kind === 'solid' && ['solid', 'solid,values', 'solid,volume', 'solid,values,volume'].includes(cles))
+    return `solide ${motDe(SOLIDES, props.solid)}${props.values ? ` ${ligne(props.values)}` : ''}${props.volume !== undefined ? ` / volume ${props.volume}` : ''}`;
+  if (kind === 'transformation' && /^transform(,amount)?(,angles|,areas)?(,arc)?$/.test(cles)) {
+    const options = [props.angles && `angle ${ligne(props.angles)}`, props.areas && `aire ${ligne(props.areas)}`, props.arc !== undefined && `arc ${props.arc}`].filter(Boolean);
+    return `image ${motDe(TRANSFORMATIONS, props.transform)}${props.amount !== undefined ? ` ${ecrireNombre(props.amount)}` : ''}${options.map((o) => ` / ${o}`).join('')}`;
+  }
+  if (kind === 'coordinate-plane' && cles === 'points') return `repère${props.points.map((p, i) => `${i ? ' /' : ''} ${p.name} ${ligne([p.x, p.y])}`).join('')}`;
   throw new Error(`figure non prise en charge : ${JSON.stringify(figure)}`);
 }
 
@@ -349,7 +591,9 @@ function etiquetteColonne(k) {
 function ecrireItems(items, clesParItem) {
   const colonnes = ORDRE_COLONNES.filter((k) => clesParItem.some((cles) => cles.includes(k)));
   const cases = items.map((it, i) => colonnes.map((k) => (clesParItem[i].includes(k) ? enCase(it, k) : '')));
-  if (items.length >= 2 && colonnes.length >= 1 && colonnes.length <= 5 && cases.every((ligne) => ligne.every((c) => c !== null))) {
+  // Un champ sans colonne (la figure, l'aide) ne tient pas dans un tableau : les items s'écrivent alors numérotés.
+  const sansColonne = clesParItem.some((cles) => cles.some((k) => !colonnes.includes(k)));
+  if (!sansColonne && items.length >= 2 && colonnes.length >= 1 && colonnes.length <= 5 && cases.every((ligne) => ligne.every((c) => c !== null))) {
     const rangee = (cellules) => `| ${cellules.join(' | ')} |`;
     return [rangee(colonnes.map(etiquetteColonne)), rangee(colonnes.map(() => '---')), ...cases.map(rangee)];
   }

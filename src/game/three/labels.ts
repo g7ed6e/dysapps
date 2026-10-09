@@ -11,7 +11,10 @@ import { visageDuJoueur } from '../world/characters/face';
 import { CASE, PLAQUE, caseALEcran, dessinerLaCase } from './signs';
 import { tenirDansLaPlace, type PlaceLue } from '../freeSpace';
 import { reperesDe } from '../world/framing';
-import { boiteDesPoints, boitesDuTrace, placerAvecLaFlecheDOuvrage, placerDAbordSimplement, recoupe, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { layoutVersion } from '../world/placement';
+import { boitesDesBornes } from './camera/framings';
+import type { BiomeId } from '../biomes';
+import { avecLIleTouchee, boiteDesPoints, boitesDuTrace, placerAvecLaFlecheDOuvrage, placerDAbordSimplement, recoupe, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { HAUTEUR_DES_NOMS, islandCenter } from '../world/terrain';
 import { bridgesOf, otherEnd } from '../world/archipelago';
 import { estUnBiome } from '../biomes';
@@ -335,7 +338,7 @@ export function creerEtiquettes(
       return [{ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: 2 * r.rayon * parPx + 8, h: Math.abs(a.y - b.y) }];
     });
   /** Ce que visait la caméra au dernier écart hors de la Carte. */
-  const vise = { pos: new THREE.Vector3(), target: new THREE.Vector3(), w: 0, h: 0, n: 0, ids: [] as number[], zones: '', tenues: 0, plaques: -1, poignees: -1 };
+  const vise = { pos: new THREE.Vector3(), target: new THREE.Vector3(), w: 0, h: 0, n: 0, ids: [] as number[], zones: '', tenues: 0, plaques: -1, poignees: -1, disposition: -1 };
   /**
    * Les étiquettes tenues, en un nombre (sans rien allouer à chaque image) : l'indice de l'île de la flèche « Commence
    * ici », celui de l'île touchée (`keepShown`) et celui de l'île la plus proche du bonhomme, plus un (0 : aucune), en
@@ -379,7 +382,9 @@ export function creerEtiquettes(
    * de l'île d'arrivée de l'ouvrage qu'elle désigne, qui pèse autant si cela ne tait aucun nom (`placerEtiquettes`) : son
    * nom se pose au bout du tracé.
    */
-  const carteDesEtiquettes = (sprites: THREE.Sprite[]) => {
+  /** Avec `sansLIleTouchee`, la Carte où rien n'est touché (`avecLIleTouchee`). */
+  const carteDesEtiquettes = (sprites: THREE.Sprite[], sansLIleTouchee = false) => {
+    const touchee = sansLIleTouchee ? null : keptId;
     // La destination : l'île de la flèche, ou celle d'où part l'ouvrage qu'elle désigne (GD-7).
     const { island, depuis, arrivee } = donnees();
     const destination = island ?? depuis;
@@ -388,12 +393,12 @@ export function creerEtiquettes(
     const weights = mapLabelWeights(
       sprites.map((s) => ({ id: s.userData.id as string, closed: Boolean(s.userData.fermee) })),
       destination,
-      keptId,
+      touchee,
     );
     // L'île du bonhomme et l'île touchée : leur nom ne se tait jamais, comme celui de la destination (DA, HG-3 ;
     // référent dys, 9 octobre 2026).
     const avatarIsland = avatarIslandIndex(sprites);
-    const selected = keptId === null ? -1 : sprites.findIndex((s) => s.userData.id === keptId);
+    const selected = touchee === null ? -1 : sprites.findIndex((s) => s.userData.id === touchee);
     return {
       weights,
       ...(indice >= 0 ? { destination: indice } : {}),
@@ -421,7 +426,8 @@ export function creerEtiquettes(
     const tenuesCle = spread ? 0 : ilesTenues(sprites);
     const plaquesVersion = plaques?.version ?? 0;
     const poigneesVersion = poignees?.version ?? 0;
-    if (!spread && labelLayout && vise.plaques === plaquesVersion && vise.poignees === poigneesVersion && vise.tenues === tenuesCle && vise.n === sprites.length && vise.w === W && vise.h === H && vise.zones === zonesCle && vise.pos.equals(camGoal.pos) && vise.target.equals(camGoal.target) && sprites.every((s, i) => vise.ids[i] === s.id)) return;
+    const disposition = layoutVersion();
+    if (!spread && labelLayout && vise.disposition === disposition && vise.plaques === plaquesVersion && vise.poignees === poigneesVersion && vise.tenues === tenuesCle && vise.n === sprites.length && vise.w === W && vise.h === H && vise.zones === zonesCle && vise.pos.equals(camGoal.pos) && vise.target.equals(camGoal.target) && sprites.every((s, i) => vise.ids[i] === s.id)) return;
     const lui = bonhomme();
     const av = lui.position;
     // Hors de la Carte, les îles dont le nom ne se tait jamais tant qu'elles se voient : celle de la flèche « Commence
@@ -430,10 +436,11 @@ export function creerEtiquettes(
     vise.tenues = tenuesCle;
     vise.plaques = plaquesVersion;
     vise.poignees = poigneesVersion;
+    vise.disposition = disposition;
     const montre = donnees();
     // Sur la Carte, le médaillon est un obstacle tant que le bonhomme se voit : l'écart se refait quand il paraît (sans
     // quoi le médaillon, montré après le calcul, se posait sur un nom : la Pointe des paysages au 6e, DA, HG-3).
-    const marks = spread ? `${montre.ouvrage ?? montre.island ?? ''}:${lui.visible ? av.toArray().map((v) => v.toFixed(0)) : '-'}:${keptId ?? ''}` : `reperes:${tenues.join(',')}:plaques${plaquesVersion}`;
+    const marks = spread ? `${montre.ouvrage ?? montre.island ?? ''}:${lui.visible ? av.toArray().map((v) => v.toFixed(0)) : '-'}:${keptId ?? ''}` : `reperes:${tenues.join(',')}:plaques${plaquesVersion}:disposition${disposition}`;
     const key = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}@${marks}@${zonesCle}@p${poigneesVersion}`;
     // Sur la Carte, l'écart est autre : au retour, il se refait.
     if (spread) vise.n = -1;
@@ -475,10 +482,11 @@ export function creerEtiquettes(
     const ouvrage = spread ? montre.ouvrage : null;
     const pointes: readonly Pointe[] = ouvrage ? (montre.pointes ?? []) : [];
     const marques = spread ? marksOnScreen(goalCamera, W, H, ouvrage ? null : laPointe()) : null;
-    // Hors de la Carte : les grands repères d'Archipéo, et les plaques des créatures (GD-4, GD-7), qu'aucune étiquette ne couvre.
+    // Hors de la Carte : les grands repères d'Archipéo, les plaques des créatures (GD-4, GD-7) et les bornes des îles
+    // avec leur bulle (GD-14), qu'aucune étiquette ne couvre.
     const obstacles = marques
       ? [marques.arrow, marques.beacon].filter((b): b is LabelBox => b !== null)
-      : [...colonnes(goalCamera, W, H), ...(plaques?.boites(goalCamera, W, H) ?? [])];
+      : [...colonnes(goalCamera, W, H), ...(plaques?.boites(goalCamera, W, H) ?? []), ...boitesDesBornes(goalCamera, W, H, sprites.map((s) => s.userData.id as BiomeId))];
     const carte = spread ? carteDesEtiquettes(sprites) : null;
     // Le tracé de l'ouvrage, un obstacle souple : les étiquettes l'évitent si elles peuvent, sans se taire pour lui.
     const souples = ouvrage ? souplesDuTrace(goalCamera, W, H) : [];
@@ -492,11 +500,18 @@ export function creerEtiquettes(
     let sansSigne: boolean[];
     if (ouvrage && carte) {
       const fleches = pointes.map((p) => marksOnScreen(goalCamera, W, H, p).arrow).filter((b): b is LabelBox => b !== null);
-      const r = placerDAbordSimplement(boxes, iles, vue, (recherche) => replierLesSignes(boxes, etroites, (b) => placerAvecLaFlecheDOuvrage(fleches, b, iles, { ...vue, recherche }, carte)), etroites);
+      const r = avecLIleTouchee(iles, vue, carte.selected, (sansLui) => {
+        const c = sansLui ? carteDesEtiquettes(sprites, true) : carte;
+        return placerDAbordSimplement(boxes, iles, vue, (recherche) => replierLesSignes(boxes, etroites, (b) => placerAvecLaFlecheDOuvrage(fleches, b, iles, { ...vue, recherche }, c)), etroites);
+      });
       placeDeLOuvrage = { ouvrage, i: r.fleche };
       ({ offsets, visibles, sansSigne } = r);
     } else if (carte)
-      ({ offsets, visibles, sansSigne } = placerDAbordSimplement(boxes, iles, vue, (recherche) => replierLesSignes(boxes, etroites, (b) => placerEtiquettes(b, iles, { ...vue, recherche }, carte, tenues)), etroites));
+      ({ offsets, visibles, sansSigne } = avecLIleTouchee(iles, vue, carte.selected, (sansLui) => {
+        // L'île touchée cède si son nom tait plus d'un nom de plus que la Carte sans lui (référent dys).
+        const c = sansLui ? carteDesEtiquettes(sprites, true) : carte;
+        return placerDAbordSimplement(boxes, iles, vue, (recherche) => replierLesSignes(boxes, etroites, (b) => placerEtiquettes(b, iles, { ...vue, recherche }, c, tenues)), etroites);
+      }));
     else ({ offsets, visibles, sansSigne } = replierLesSignes(boxes, etroites, (b) => placerEtiquettes(b, iles, vue, carte, tenues)));
     labelLayout = { key, offsets };
     offsets.forEach((o, i) => {

@@ -23,7 +23,7 @@ import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { getArchipelago, islandsOf } from '../world/archipelago';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from '../world/archipelagos';
-import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerDAbordSimplement, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset, type RechercheDuCadrage } from '../world/labelLayout';
+import { avecLIleTouchee, boitesDuTrace, placerAvecLaFlecheDOuvrage, placerDAbordSimplement, placerEtiquettes, replierLesSignes, separateMark, type CarteDesEtiquettes, type LabelBox, type LabelOffset, type RechercheDuCadrage } from '../world/labelLayout';
 import { avatarHome, casesDeLOuvrage, islandCenter } from '../world/terrain';
 import { BRIDGES, getBridge, linkWholeRegion, NOMS_ARCHIPELS, VOYAGES } from '../world/archipelago';
 import { archipelagoOfIsland } from '../world/archipelagos';
@@ -224,24 +224,23 @@ function laCarte(
   const touchee = selected ? iles.findIndex((b) => b.id === selected) : -1;
   const weights = mapLabelWeights(iles.map((b) => ({ id: b.id, closed: fermees.includes(b.id) })), dest, selected);
   const poids = { weights, ...(parDefaut && indice >= 0 ? { destination: indice } : {}), ...(arrivee >= 0 ? { arrivee } : {}), avatarIsland, ...(touchee >= 0 ? { selected: touchee } : {}) };
+  // La Carte où rien n'est touché (`avecLIleTouchee`, comme `labels.ts`).
+  const poidsSansLui: CarteDesEtiquettes = { weights: mapLabelWeights(iles.map((b) => ({ id: b.id, closed: fermees.includes(b.id) })), dest, null), ...(parDefaut && indice >= 0 ? { destination: indice } : {}), ...(arrivee >= 0 ? { arrivee } : {}), avatarIsland };
   // Le tracé de l'ouvrage, que les étiquettes évitent si elles peuvent (`souplesDuTrace`).
   const souples = parDefaut && def ? boitesDuTrace(casesDeLOuvrage(def, POSEES).map((p) => ecran(p.x + 0.5, p.z + 1, p.y + 0.5))) : [];
   // Le placement simple d'abord, puis une recherche complète pour tout le placement du cadrage s'il tait un nom ou en
   // pose un sur une autre île, comme `labels.ts` (`placerDAbordSimplement`).
   const vue = { zones, bulles: [], bounds: cadre, gap: 6, souples };
   let recherche: RechercheDuCadrage | null = null;
-  const placer = (r: RechercheDuCadrage | null) => (b: LabelBox[]) =>
+  const placer = (r: RechercheDuCadrage | null, p: CarteDesEtiquettes) => (b: LabelBox[]) =>
     places.length
-      ? placerAvecLaFlecheDOuvrage(fleches, b, points, { ...vue, obstacles: [fanion], recherche: r }, poids)
-      : { fleche: 0, ...placerEtiquettes(b, points, { ...vue, obstacles: [flecheEn(ecran(d.x + 0.5, d.z + 8, d.y + 0.5)), fanion], recherche: r }, poids) };
+      ? placerAvecLaFlecheDOuvrage(fleches, b, points, { ...vue, obstacles: [fanion], recherche: r }, p)
+      : { fleche: 0, ...placerEtiquettes(b, points, { ...vue, obstacles: [flecheEn(ecran(d.x + 0.5, d.z + 8, d.y + 0.5)), fanion], recherche: r }, p) };
   const etroites = parDefaut ? sansBloc.map((b) => b.w) : [];
-  const place: { visibles: boolean[]; offsets: LabelOffset[]; fleche: number; sansSigne?: boolean[] } = placerDAbordSimplement(
-    boxes,
-    points,
-    vue,
-    (r) => ((recherche = r), parDefaut ? replierLesSignes(boxes, etroites, placer(r)) : placer(r)(boxes)),
-    etroites,
-  );
+  const place: { visibles: boolean[]; offsets: LabelOffset[]; fleche: number; sansSigne?: boolean[] } = avecLIleTouchee(points, vue, poids.selected, (sansLui) => {
+    const p = sansLui ? poidsSansLui : poids;
+    return placerDAbordSimplement(boxes, points, vue, (r) => ((recherche = r), parDefaut ? replierLesSignes(boxes, etroites, placer(r, p)) : placer(r, p)(boxes)), etroites);
+  });
   // Une étiquette repliée sans le bloc de son île (`replierLesSignes`) a sa largeur étroite.
   const { visibles, offsets, fleche: prise, sansSigne } = place;
   const fleche = places.length ? fleches[prise] : flecheEn(ecran(d.x + 0.5, d.z + 8, d.y + 0.5));
@@ -333,10 +332,11 @@ const TUS_EN_OD32: Record<string, string[]> = {
   // 8 octobre 2026) : l'Horloge des verbes et le Volcan des décimaux, que l'écart posait sur une voisine, reprennent une
   // place sur leur île ; la Vallée du vivant (le bonhomme sur la Fouille) et la Mine des lettres (sur la Forêt, comme la
   // capture `formes-carte-6e-od32`) n'en trouvent plus.
-  'history-6e-antiquity': ['geography-6e-living', 'life-earth-sciences-6e-living-world'],
-  // Trois, le bonhomme sur la Forêt, depuis le Préau des délégués (EMC-2, mesurés) : la Fouille des siècles se tait aussi
-  // (au plafond du référent dys).
-  'french-6e-phonology': ['french-6e-letter-confusion', 'history-6e-antiquity', 'geography-6e-living'],
+  // Depuis les missions du programme (GD-14, 9 octobre 2026 : une borne de plus, le Gardien du Hangar des inventions
+  // derrière la bande de devant), mesurés : la Carrière des mots seule, le bonhomme sur la Fouille ; aucun sur la Forêt.
+  // Avec le Préau des délégués (EMC-2) en plus de GD-14, mesurés : la Carrière des mots seule, dans les deux cas.
+  'history-6e-antiquity': ['french-6e-word-spelling'],
+  'french-6e-phonology': ['french-6e-word-spelling'],
 };
 
 /**
@@ -400,7 +400,9 @@ const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string,
  * Le téléphone 390 × 844, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX UI). La
  * Carte y est au plancher et cadre la destination (la Forêt des sons) ; les îles glissent au milieu de la place, en
  * hauteur, quand elles y tiennent (`cadrageDeLaCarte`). Un seul nom se taisait avant GD-11 (le Hangar des inventions, en
- * bas à droite) ; depuis, trois ou quatre (ci-dessous), et cinq ou six noms se montrent. Le cadrage de la tablette qui
+ * bas à droite) ; GD-11 en a tu trois ou quatre ; depuis GD-14, de nouveau un seul, deux avec le Préau des délégués
+ * (EMC-2, ci-dessous), et sept noms se montrent.
+ * Le cadrage de la tablette qui
  * compte le nom le plus haut monté d'une demi-étiquette ne vaut pas ici (portrait, au plancher).
  */
 const TUS_AU_TELEPHONE: Record<string, string[]> = {
@@ -409,32 +411,34 @@ const TUS_AU_TELEPHONE: Record<string, string[]> = {
   // pas ensemble dans la place (`cadrageDeLaCarte`) : son nom glisse au bord de l'écran, sous le médaillon
   // (`showAtAllCosts`), et l'Horloge des verbes se tait à sa place. Régression connue, au pilotage. Depuis les formes
   // des îles (GD-12), les colonnes de côté sur quatre rangs et le rang du fond en quinconce : un nom tu le bonhomme sur
-  // la Fouille (la Mine des lettres), trois sur la Forêt (le Volcan se montre). Deux sur la Forêt depuis le dernier
-  // recours de la Carte (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026) : la Fouille se montre.
-  'history-6e-antiquity': ['french-6e-letter-confusion'],
-  'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-grammar-spelling'],
+  // la Fouille (la Mine des lettres), trois sur la Forêt (le Volcan se montre).
+  // Depuis les missions du programme (GD-14, 9 octobre 2026), mesurés : un seul nom tu dans les deux cas, le Hangar des
+  // inventions. Avec le Préau des délégués (EMC-2) en plus, mesurés : deux, le Hangar et le Préau, au même bord.
+  'history-6e-antiquity': ['technology-6e-objects', 'civics-6e-democratic-society'],
+  'french-6e-phonology': ['technology-6e-objects', 'civics-6e-democratic-society'],
 };
 
 /**
  * Le portrait 800 × 1280 au 6e, dans Luciole, selon l'île du bonhomme : les noms qui se taisent (mesurés, GD-12, 8 octobre
- * 2026 ; trois au plus, référent dys) : la Pointe des paysages, dans les deux cas.
+ * 2026 ; trois au plus, référent dys) : aucun depuis GD-14.
  */
 const SILENCED_IN_PORTRAIT_6E: Record<string, string[]> = {
-  'history-6e-antiquity': ['geography-6e-living'],
-  'french-6e-phonology': ['geography-6e-living'],
+  // Depuis les missions du programme (GD-14, 9 octobre 2026), mesurés : aucun.
+  'history-6e-antiquity': [],
+  'french-6e-phonology': [],
 };
 
 /**
  * Les mêmes en OpenDyslexic 32 px (GD-12, 8 octobre 2026, mesurés) : quatre, un de plus que le plafond du référent dys
- * (`SILENCED_NAMES_CAP`) ; cinq et six depuis le Préau des délégués (EMC-2) ; deux et trois depuis le dernier recours de
- * la Carte (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026), au plafond.
+ * (`SILENCED_NAMES_CAP`) sur la Fouille ; trois sur la Forêt depuis GD-14, quatre avec le Préau des délégués (EMC-2). La page est à revoir sur la capture
+ * `formes-carte-6e-800x1280-od32`. Régression connue, au pilotage.
  */
 const SILENCED_IN_PORTRAIT_6E_OD32: Record<string, string[]> = {
-  // Le bonhomme sur la Fouille : la Carrière des mots et la Pointe des paysages (le Préau, le Laboratoire et la Vallée
-  // du vivant se montrent). Sur la Forêt : la Mine des lettres, la Carrière et la Pointe (la Plaine, le Laboratoire et la
-  // Vallée se montrent).
-  'history-6e-antiquity': ['french-6e-word-spelling', 'geography-6e-living'],
-  'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-word-spelling', 'geography-6e-living'],
+  // Depuis les missions du programme (GD-14, 9 octobre 2026), mesurés : la Mine des lettres à la place de la Vallée du
+  // vivant sur la Fouille ; trois sur la Forêt. Avec le Préau des délégués (EMC-2) en plus de GD-14, mesurés : quatre
+  // dans les deux cas, la Ferme des accords à la place du Laboratoire des éléments sur la Fouille.
+  'history-6e-antiquity': ['french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'geography-6e-living'],
+  'french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'geography-6e-living'],
 };
 
 /** Trois noms tus au plus sur une Carte (référent dys). */
@@ -446,11 +450,8 @@ const SILENCED_NAMES_CAP = 3;
  */
 const TUS_L_ILE_TOUCHEE = SILENCED_NAMES_CAP + 1;
 
-/**
- * Les noms montrés sur le téléphone, selon l'île du bonhomme (sept avant GD-11, six puis sept depuis GD-12 sur la Fouille ;
- * six sur la Forêt depuis le dernier recours de la Carte).
- */
-const NOMS_MONTRES_AU_TELEPHONE: Record<string, number> = { 'history-6e-antiquity': 7, 'french-6e-phonology': 6 };
+/** Les noms montrés sur le téléphone, selon l'île du bonhomme (sept avant GD-11, six puis sept depuis GD-12 sur la Fouille). */
+const NOMS_MONTRES_AU_TELEPHONE: Record<string, number> = { 'history-6e-antiquity': 7, 'french-6e-phonology': 7 };
 
 /**
  * À l'ouverture de la Carte, sans panneau, en OpenDyslexic (taille normale, puis 10 % plus large), les noms qui se
@@ -549,15 +550,16 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     }
   }, 20_000);
 
-  it('6e, portrait 800 × 1280, deux univers, dans Luciole et en OpenDyslexic 32 px : trois noms tus au plus, jamais ceux de la destination ni de l’île du bonhomme, chacun sur son île (GD-12, UX UI ; référent dys)', () => {
+  it('6e, portrait 800 × 1280, deux univers, dans Luciole et en OpenDyslexic 32 px : trois noms tus au plus dans Luciole (quatre en OpenDyslexic, régression connue), jamais ceux de la destination ni de l’île du bonhomme, chacun sur son île (GD-12, UX UI ; référent dys)', () => {
     for (const ici of ['history-6e-antiquity', islandsOf('6e')[0].id] as BiomeId[]) {
       const destination = destinationDuJeu(ici);
       for (const [univers, mot] of Object.entries(ETATS)) {
         // Dans Luciole, puis en OpenDyslexic 32 px.
         for (const [police, chasse, ecran, attendus, plafond] of [
           ['luciole', 1, PORTRAIT_800, SILENCED_IN_PORTRAIT_6E, SILENCED_NAMES_CAP],
-          // Au plafond depuis le dernier recours de la Carte (trois de plus depuis le Préau des délégués, EMC-2).
-          ['opendyslexic', CHASSE_OD32, PORTRAIT_800_OD32, SILENCED_IN_PORTRAIT_6E_OD32, SILENCED_NAMES_CAP],
+          // Un de plus que le plafond (régression connue de GD-12 et GD-14, acceptée par le mainteneur le 9 octobre 2026,
+          // « Pointe plus tard » : au pilotage), avec le Préau des délégués (EMC-2) aussi.
+          ['opendyslexic', CHASSE_OD32, PORTRAIT_800_OD32, SILENCED_IN_PORTRAIT_6E_OD32, SILENCED_NAMES_CAP + 1],
         ] as const) {
           const carte = laCarte('6e', mot, police, chasse, destination, true, ecran, ici);
           const dit = (quoi: string) => `${univers}, ${police}, bonhomme sur ${ici}, ${quoi}`;
@@ -609,12 +611,18 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
   const TOUCHEE_SANS_PLACE: Record<string, string[]> = {
     // La Carrière des mots, au bord gauche, entre la Pointe des paysages (dessus) et le Laboratoire (dessous), la Mine à
     // côté ; la Mine, entre la Carrière, la Forêt et la Rivière : toute place de leur nom est plus près d'une voisine.
-    'portrait-od32:history-6e-antiquity': ['french-6e-word-spelling'],
-    'portrait-od32:french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-word-spelling'],
+    // La Mine des lettres, depuis GD-14 et le Préau des délégués (EMC-2) : sa seule place couvre le nom de la Forêt des
+    // sons, la destination ; l'île touchée cède à la destination et au bonhomme (mesuré).
+    // La Ferme des accords, depuis GD-14 et le Préau : montrée, elle taisait deux noms de plus que la Carte sans elle ;
+    // elle cède (`avecLIleTouchee`, référent dys, mesuré), dans les deux cas.
+    'portrait-od32:history-6e-antiquity': ['french-6e-word-spelling', 'french-6e-letter-confusion', 'french-6e-grammar-spelling'],
+    'portrait-od32:french-6e-phonology': ['french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling'],
     // La Pointe, au bord du rang du fond, sous le nom de la Fouille ; la Mine, le bonhomme sur la Forêt.
     'tablette-od32:history-6e-antiquity': ['geography-6e-living'],
     'tablette-od32:french-6e-phonology': ['french-6e-letter-confusion'],
-    'telephone:french-6e-phonology': ['french-6e-letter-confusion'],
+    'telephone:french-6e-phonology': ['french-6e-letter-confusion', 'civics-6e-democratic-society'],
+    // Le Préau des délégués, au bord du téléphone sous le Hangar, depuis GD-14 et EMC-2 ensemble (mesuré).
+    'telephone:history-6e-antiquity': ['civics-6e-democratic-society'],
   };
   it('6e, l’île touchée garde son nom, sauf sans aucune place qui tienne (mesuré) ; jamais aux dépens de la destination ni du bonhomme (référent dys)', () => {
     for (const ici of ['history-6e-antiquity', islandsOf('6e')[0].id] as BiomeId[]) {

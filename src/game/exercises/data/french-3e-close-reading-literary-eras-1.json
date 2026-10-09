@@ -1,0 +1,246 @@
+{
+  "id": "french-3e-close-reading-literary-eras-1",
+  "biome": "french-3e-close-reading",
+  "type": "literary-eras",
+  "level": 1,
+  "instruction": "Lis l’extrait, puis trouve son genre. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "french-3e-close-reading-literary-eras-1-0",
+      "prompt": "La raison du plus fort est toujours la meilleure :\nNous l’allons montrer tout à l’heure.\nJean de La Fontaine, 1668",
+      "question": "De quel genre est ce texte ?",
+      "spoken": "La raison du plus fort est toujours la meilleure : nous l’allons montrer tout à l’heure. Jean de La Fontaine, mille six cent soixante-huit.",
+      "choices": [
+        "une fable",
+        "une autobiographie",
+        "une pièce de théâtre"
+      ],
+      "answer": "une fable",
+      "hint": "Ces deux vers donnent une leçon. Que va faire l’histoire qui suit ?",
+      "explanation": "Ces deux vers donnent la morale, la leçon que l’histoire va montrer : c’est une fable, « Le Loup et l’Agneau ». Personne n’y raconte sa vie, et aucun nom de personnage n’est écrit devant une réplique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître un genre",
+          "lines": [
+            "Théâtre : des répliques, avec le nom du personnage qui parle.",
+            "Poésie : des vers, des rimes, des sons qui se répondent.",
+            "Fable : un court récit en vers, souvent avec des animaux, et une morale.",
+            "Conte : « Il était une fois », un temps et un lieu lointains.",
+            "Roman : un long récit inventé. Autobiographie : l’auteur raconte sa vie, avec « je ».",
+            "Lettre : on écrit à quelqu’un, avec « vous » ou « tu »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-1-1",
+      "prompt": "Je veux montrer à mes semblables un homme dans toute la vérité de la nature, et cet homme, ce sera moi.\nJean-Jacques Rousseau, publié en 1782",
+      "question": "De quel genre est ce texte ?",
+      "spoken": "Je veux montrer à mes semblables un homme dans toute la vérité de la nature, et cet homme, ce sera moi. Jean-Jacques Rousseau, publié en mille sept cent quatre-vingt-deux.",
+      "choices": [
+        "un roman",
+        "une autobiographie",
+        "une fable"
+      ],
+      "answer": "une autobiographie",
+      "hint": "Qui est « cet homme » que l’auteur veut montrer ?",
+      "explanation": "« Cet homme, ce sera moi » : l’auteur annonce qu’il va raconter sa propre vie, avec « je ». C’est une autobiographie, « Les Confessions ». Un roman raconte une histoire inventée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître un genre",
+          "lines": [
+            "Théâtre : des répliques, avec le nom du personnage qui parle.",
+            "Poésie : des vers, des rimes, des sons qui se répondent.",
+            "Fable : un court récit en vers, souvent avec des animaux, et une morale.",
+            "Conte : « Il était une fois », un temps et un lieu lointains.",
+            "Roman : un long récit inventé. Autobiographie : l’auteur raconte sa vie, avec « je ».",
+            "Lettre : on écrit à quelqu’un, avec « vous » ou « tu »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-1-2",
+      "prompt": "Harpagon. — Au voleur ! au voleur ! à l’assassin ! au meurtrier !\nMolière, 1668",
+      "question": "De quel genre est ce texte ?",
+      "spoken": "Harpagon. Au voleur ! au voleur ! à l’assassin ! au meurtrier ! Molière, mille six cent soixante-huit.",
+      "choices": [
+        "un poème",
+        "une pièce de théâtre",
+        "une lettre"
+      ],
+      "answer": "une pièce de théâtre",
+      "hint": "Qu’est-ce qui est écrit devant les paroles ?",
+      "explanation": "Le nom du personnage, Harpagon, est écrit devant ses paroles : c’est une réplique de théâtre, dans « L’Avare ». Les points d’exclamation montrent qu’il crie, sur la scène.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître un genre",
+          "lines": [
+            "Théâtre : des répliques, avec le nom du personnage qui parle.",
+            "Poésie : des vers, des rimes, des sons qui se répondent.",
+            "Fable : un court récit en vers, souvent avec des animaux, et une morale.",
+            "Conte : « Il était une fois », un temps et un lieu lointains.",
+            "Roman : un long récit inventé. Autobiographie : l’auteur raconte sa vie, avec « je ».",
+            "Lettre : on écrit à quelqu’un, avec « vous » ou « tu »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-1-3",
+      "prompt": "Les sanglots longs\nDes violons\nDe l’automne\nBlessent mon cœur\nD’une langueur\nMonotone.\nPaul Verlaine, 1866",
+      "question": "De quel genre est ce texte ?",
+      "spoken": "Les sanglots longs des violons de l’automne blessent mon cœur d’une langueur monotone. Paul Verlaine, mille huit cent soixante-six.",
+      "choices": [
+        "un conte",
+        "un roman",
+        "un poème"
+      ],
+      "answer": "un poème",
+      "hint": "Regarde la longueur des lignes, puis la fin des mots.",
+      "explanation": "Des lignes courtes, qui commencent par une majuscule : ce sont des vers. « Longs » et « violons », « cœur » et « langueur » riment. C’est un poème, « Chanson d’automne ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître un genre",
+          "lines": [
+            "Théâtre : des répliques, avec le nom du personnage qui parle.",
+            "Poésie : des vers, des rimes, des sons qui se répondent.",
+            "Fable : un court récit en vers, souvent avec des animaux, et une morale.",
+            "Conte : « Il était une fois », un temps et un lieu lointains.",
+            "Roman : un long récit inventé. Autobiographie : l’auteur raconte sa vie, avec « je ».",
+            "Lettre : on écrit à quelqu’un, avec « vous » ou « tu »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-1-4",
+      "prompt": "Il était une fois une petite fille de village, la plus jolie qu’on eût su voir.\nCharles Perrault, 1697",
+      "question": "De quel genre est ce texte ?",
+      "spoken": "Il était une fois une petite fille de village, la plus jolie qu’on eût su voir. Charles Perrault, mille six cent quatre-vingt-dix-sept.",
+      "choices": [
+        "une autobiographie",
+        "un conte",
+        "une lettre"
+      ],
+      "answer": "un conte",
+      "hint": "Relis les quatre premiers mots.",
+      "explanation": "« Il était une fois » ouvre un conte : un temps lointain, sans date, et une héroïne sans nom. C’est le début du « Petit Chaperon rouge ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître un genre",
+          "lines": [
+            "Théâtre : des répliques, avec le nom du personnage qui parle.",
+            "Poésie : des vers, des rimes, des sons qui se répondent.",
+            "Fable : un court récit en vers, souvent avec des animaux, et une morale.",
+            "Conte : « Il était une fois », un temps et un lieu lointains.",
+            "Roman : un long récit inventé. Autobiographie : l’auteur raconte sa vie, avec « je ».",
+            "Lettre : on écrit à quelqu’un, avec « vous » ou « tu »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-1-5",
+      "prompt": "Dans la plaine rase, sous la nuit sans étoiles, d’une obscurité et d’une épaisseur d’encre, un homme suivait seul la grande route de Marchiennes à Montsou.\nÉmile Zola, 1885",
+      "question": "De quel genre est ce texte ?",
+      "spoken": "Dans la plaine rase, sous la nuit sans étoiles, d’une obscurité et d’une épaisseur d’encre, un homme suivait seul la grande route de Marchiennes à Montsou. Émile Zola, mille huit cent quatre-vingt-cinq.",
+      "choices": [
+        "une autobiographie",
+        "un roman",
+        "une fable"
+      ],
+      "answer": "un roman",
+      "hint": "Qui raconte : quelqu’un qui dit « je », ou un narrateur qui parle d’« un homme » ?",
+      "explanation": "Un narrateur raconte, en prose, l’histoire d’« un homme » qu’il ne nomme pas encore : c’est le début d’un roman, « Germinal ». L’auteur ne dit pas « je » et ne raconte pas sa vie : ce n’est pas une autobiographie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître un genre",
+          "lines": [
+            "Théâtre : des répliques, avec le nom du personnage qui parle.",
+            "Poésie : des vers, des rimes, des sons qui se répondent.",
+            "Fable : un court récit en vers, souvent avec des animaux, et une morale.",
+            "Conte : « Il était une fois », un temps et un lieu lointains.",
+            "Roman : un long récit inventé. Autobiographie : l’auteur raconte sa vie, avec « je ».",
+            "Lettre : on écrit à quelqu’un, avec « vous » ou « tu »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-1-6",
+      "prompt": "Don Diègue. — Rodrigue, as-tu du cœur ?\nDon Rodrigue. — Tout autre que mon père\nL’éprouverait sur l’heure.\nPierre Corneille, 1637",
+      "question": "De quel genre est ce texte ?",
+      "spoken": "Don Diègue. Rodrigue, as-tu du cœur ? Don Rodrigue. Tout autre que mon père l’éprouverait sur l’heure. Pierre Corneille, mille six cent trente-sept.",
+      "choices": [
+        "une lettre",
+        "une autobiographie",
+        "une pièce de théâtre"
+      ],
+      "answer": "une pièce de théâtre",
+      "hint": "Qu’est-ce qui est écrit devant chaque réplique ?",
+      "explanation": "Deux personnages se parlent, et leur nom est écrit devant leurs paroles : c’est une pièce de théâtre, « Le Cid ». Elle est écrite en vers, mais ce sont des répliques, dites sur la scène.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître un genre",
+          "lines": [
+            "Théâtre : des répliques, avec le nom du personnage qui parle.",
+            "Poésie : des vers, des rimes, des sons qui se répondent.",
+            "Fable : un court récit en vers, souvent avec des animaux, et une morale.",
+            "Conte : « Il était une fois », un temps et un lieu lointains.",
+            "Roman : un long récit inventé. Autobiographie : l’auteur raconte sa vie, avec « je ».",
+            "Lettre : on écrit à quelqu’un, avec « vous » ou « tu »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-1-7",
+      "prompt": "Je m’en vais vous mander la chose la plus étonnante, la plus surprenante, la plus merveilleuse.\nMadame de Sévigné, à monsieur de Coulanges, le 15 décembre 1670",
+      "question": "De quel genre est ce texte ?",
+      "spoken": "Je m’en vais vous mander la chose la plus étonnante, la plus surprenante, la plus merveilleuse. Madame de Sévigné, à monsieur de Coulanges, le quinze décembre mille six cent soixante-dix.",
+      "choices": [
+        "une lettre",
+        "un poème",
+        "un conte"
+      ],
+      "answer": "une lettre",
+      "hint": "« Mander », c’est faire savoir. À qui Madame de Sévigné parle-t-elle ?",
+      "explanation": "Madame de Sévigné écrit à quelqu’un, « vous », pour lui annoncer une nouvelle, et le texte porte une date : c’est une lettre. « Mander » veut dire faire savoir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître un genre",
+          "lines": [
+            "Théâtre : des répliques, avec le nom du personnage qui parle.",
+            "Poésie : des vers, des rimes, des sons qui se répondent.",
+            "Fable : un court récit en vers, souvent avec des animaux, et une morale.",
+            "Conte : « Il était une fois », un temps et un lieu lointains.",
+            "Roman : un long récit inventé. Autobiographie : l’auteur raconte sa vie, avec « je ».",
+            "Lettre : on écrit à quelqu’un, avec « vous » ou « tu »."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

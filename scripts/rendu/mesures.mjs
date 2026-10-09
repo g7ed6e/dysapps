@@ -1009,6 +1009,38 @@ const CAPTURES = [
     ['pointe', 'geography-6e-living'],
   ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
   { nom: 'formes-modifier-le-plan', vue: 'carte', famille: 'formes', ile: 'french-6e-phonology', amenager: 'french-6e-reading' },
+  // Cinq missions par île (GD-14, famille `cinq-missions`, à retirer une fois le lot fusionné) : la Plaine des nombres
+  // (cinq bornes au pas de 3), son bâtiment à une, deux et trois parties (le bas, le milieu, le haut du premier plan) ;
+  // le Volcan des décimaux, dont le premier plan n'a que deux rangées, à deux et trois parties ; le Marché des
+  // proportions, île-école à cinq bornes, son quai décalé ; les trois Gardiens replacés ; la Carte du 6e au téléphone.
+  ...[1, 2, 3].map((n) => ({ nom: `cinq-missions-plaine-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-calculation', partie: 'avant', missions: n })),
+  { nom: 'cinq-missions-plaine', vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-calculation' },
+  ...[2, 3, 4].map((n) => ({ nom: `cinq-missions-volcan-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-decimals', partie: 'avant', missions: n })),
+  { nom: 'cinq-missions-marche', vue: 'île', famille: 'cinq-missions', ile: 'maths-5e-proportionality' },
+  // Au téléphone (consultant UX UI) : les îles-écoles du 5e au 3e, dont la borne de la mission 1 frôle le bord droit, et
+  // les cinq bornes empilées du Relais des voyageurs, en portrait et en paysage.
+  ...[
+    ['marche', 'maths-5e-proportionality'],
+    ['atelier', 'maths-4e-algebra'],
+    ['fonctions', 'maths-3e-functions'],
+    ['relais', 'lv2-5e-introductions'],
+  ].map(([court, ile]) => ({ nom: `cinq-missions-${court}-390x844`, vue: 'île', famille: 'cinq-missions', ile, taille: { width: 390, height: 844 } })),
+  { nom: 'cinq-missions-relais-844x390', vue: 'île', famille: 'cinq-missions', ile: 'lv2-5e-introductions', taille: { width: 844, height: 390 } },
+  // Au téléphone en grand texte (référent dys, consultant UX UI) : les classes passent en rangée en haut, la barre du bas
+  // sur deux lignes ; les bornes se cadrent sous elles, le nom de l'île hors des bornes.
+  ...[
+    ['marche', 'maths-5e-proportionality'],
+    ['fonctions', 'maths-3e-functions'],
+  ].map(([court, ile]) => ({ nom: `cinq-missions-${court}-390x844-grand-texte`, vue: 'île', famille: 'cinq-missions', ile, taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } })),
+  // L'autre île-école à cinq missions (la borne près de la porte de l'école), et les étapes du Belvédère.
+  { nom: 'cinq-missions-fonctions', vue: 'île', famille: 'cinq-missions', ile: 'maths-3e-functions' },
+  ...[1, 2, 3].map((n) => ({ nom: `cinq-missions-belvedere-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-3e-geometry', partie: 'avant', missions: n })),
+  ...[
+    ['hangar', 'technology-6e-objects'],
+    ['manoir', 'english-5e-grammar'],
+    ['belvedere', 'maths-3e-geometry'],
+  ].map(([court, ile]) => ({ nom: `cinq-missions-${court}`, vue: 'île', famille: 'cinq-missions', ile })),
+  { nom: 'cinq-missions-carte-6e-390x844', vue: 'carte', famille: 'cinq-missions', ile: 'history-6e-antiquity', taille: { width: 390, height: 844 } },
   // Aux Îles Brumeuses (5e, 9 octobre 2026) : la Carte sur la tablette, dans la police de lecture puis en OpenDyslexic
   // 32 px, et debout ; le Comptoir (le fer), le Carrefour (le moulinet) et le Glacier de près ; « Modifier le plan », le
   // Comptoir choisi.

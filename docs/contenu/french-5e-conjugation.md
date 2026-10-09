@@ -537,6 +537,139 @@ Pour tous les items :
    - indice : Lequel des deux verbes est au futur antérieur ?
    - explication : « Aurai fini » est au futur antérieur : les devoirs seront finis avant la sortie. La phrase dit « je sortirai » en premier, mais cette action a lieu après.
 
+## La phrase et ses fonctions · `sentence-grammar`
+
+- description : Les types et les formes de phrases, l’oral et l’écrit, les paroles rapportées, puis les fonctions dans la phrase.
+- compétences : c4.fr.5e.grammaire.phrase · c4.fr.5e.grammaire.oral-ecrit · c4.fr.5e.grammaire.paroles-rapportees · c4.fr.5e.grammaire.constituants
+- bravo : Bonne route !
+- erreur : {explanation}
+- bloc gagné : french-5e-conjugation
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `french-5e-conjugation-sentence-grammar-1`
+
+- consigne : Lis la phrase, puis réponds à la question. La règle est affichée.
+
+Pour tous les items :
+- aide « La phrase » :
+  - Type déclaratif : on informe. Interrogatif : on demande. Impératif : on donne un ordre.
+  - Forme négative : ne… pas, ne… plus, ne… jamais. À l’écrit, le « ne » ne s’oublie pas.
+  - Phrase simple : un verbe conjugué. Complexe : plusieurs. Non verbale : aucun.
+  - Coordonnées : reliées par mais, ou, et, donc, or, ni, car. Juxtaposées : par une virgule seule.
+  - Discours direct : deux-points et guillemets. Indirect : après « dit que », sans guillemets.
+
+1. énoncé : « Ferme la porte, s’il te plaît. » Quel est le type de la phrase ?
+   - lu : Ferme la porte, s’il te plaît. Quel est le type de la phrase ?
+   - choix : déclaratif · interrogatif · impératif
+   - réponse : impératif
+   - indice : La phrase finit par un point. Donne-t-elle une information, ou demande-t-elle d’agir ?
+   - explication : La phrase demande de fermer la porte, avec un verbe sans sujet écrit : c’est un ordre poli, type impératif. Le point final ne suffit pas à la rendre déclarative.
+2. énoncé : « Tu viens avec nous ? » Quel est le type de la phrase ?
+   - lu : Tu viens avec nous ? Quel est le type de la phrase ?
+   - choix : interrogatif · déclaratif · impératif
+   - réponse : interrogatif
+   - indice : Regarde le signe à la fin de la phrase.
+   - explication : Les mots sont rangés comme dans une phrase déclarative, mais le point d’interrogation montre une question : type interrogatif. C’est une question de l’oral, où la voix monte ; à l’écrit soigné, on écrit plutôt « Viens-tu avec nous ? ».
+3. énoncé : Léo dit : « J’ai pas fini. » Comment l’écrire dans une rédaction ?
+   - lu : Léo dit : J’ai pas fini. Comment l’écrire dans une rédaction ?
+   - choix : J’ai pas fini. · Je n’ai pas fini.
+   - réponse : Je n’ai pas fini.
+   - indice : À l’oral, un petit mot de la négation disparaît souvent. Lequel ?
+   - explication : À l’oral, on avale souvent le « ne ». À l’écrit, la négation garde ses deux mots, « ne » et « pas » : je n’ai pas fini.
+4. énoncé : « Attention, chien méchant ! » Quelle sorte de phrase est-ce ?
+   - lu : Attention, chien méchant ! Quelle sorte de phrase est-ce ?
+   - choix : phrase simple · phrase complexe · phrase non verbale
+   - réponse : phrase non verbale
+   - indice : Cherche un verbe conjugué dans la phrase.
+   - explication : La phrase n’a aucun verbe conjugué : c’est une phrase non verbale. Elle a pourtant un sens complet, une majuscule et un signe final.
+5. énoncé : « Tom et Léa préparent un gâteau. » Quelle sorte de phrase est-ce ?
+   - lu : Tom et Léa préparent un gâteau. Quelle sorte de phrase est-ce ?
+   - choix : phrase complexe · phrase simple · phrase non verbale
+   - réponse : phrase simple
+   - indice : Compte les verbes conjugués, pas les noms.
+   - explication : Un seul verbe conjugué, « préparent », avec deux noms pour sujet : c’est une phrase simple. « Et » relie ici deux noms, pas deux propositions.
+6. énoncé : « J’ai couru, mais j’ai raté le bus. » Comment les deux propositions sont-elles reliées ?
+   - lu : J’ai couru, mais j’ai raté le bus. Comment les deux propositions sont-elles reliées ?
+   - choix : elles sont juxtaposées · elles sont coordonnées
+   - réponse : elles sont coordonnées
+   - indice : Il y a une virgule, et aussi un petit mot. Est-il dans la liste de la règle ?
+   - explication : « Mais » relie les deux propositions : elles sont coordonnées. Avec la virgule seule, elles seraient juxtaposées : « J’ai couru, j’ai raté le bus. »
+7. énoncé : Le guide annonce que le musée ferme à midi. Discours direct ou indirect ?
+   - lu : Le guide annonce que le musée ferme à midi. Discours direct ou indirect ?
+   - choix : direct · indirect
+   - réponse : indirect
+   - indice : Cherche les guillemets, puis les mots « annonce que ».
+   - explication : Ni deux-points ni guillemets : les paroles viennent après « annonce que ». C’est le discours indirect. Au discours direct, on lirait : Le guide annonce : « Le musée ferme à midi. »
+8. énoncé : Quelle phrase rapporte au discours direct les mots exacts de Maman ?
+   - lu : Quelle phrase rapporte au discours direct les mots exacts de Maman ?
+   - choix : Maman dit qu’il est l’heure. · Maman dit : « Il est l’heure. » · Maman dit : il est l’heure.
+   - réponse : Maman dit : « Il est l’heure. »
+   - indice : Au discours direct, deux signes encadrent les mots exacts. Relis la règle.
+   - explication : Au discours direct, les mots exacts viennent après les deux-points, entre guillemets, avec une majuscule : Maman dit : « Il est l’heure. » Sans guillemets, on ne voit pas où commencent ses mots ; avec « dit que », c’est le discours indirect.
+
+### Niveau 2 · `french-5e-conjugation-sentence-grammar-2`
+
+- consigne : Lis la phrase, puis trouve la fonction du groupe demandé. La règle est affichée.
+
+Pour tous les items :
+- aide « Les fonctions dans la phrase » :
+  - Sujet : il répond à « qui est-ce qui ? » ou « qu’est-ce qui ? » devant le verbe.
+  - COD : le verbe, puis « qui ? » ou « quoi ? », sans à ni de. COI : le verbe, puis « à qui ? », « à quoi ? » ou « de quoi ? ».
+  - Attribut du sujet : après être, sembler, devenir, rester ; il dit comment est le sujet.
+  - Complément circonstanciel : où ? quand ? pourquoi ? comment ? On peut le déplacer ou l’enlever.
+
+1. énoncé : « Chaque soir, mon oncle arrose ses tomates. » Quelle est la fonction de « ses tomates » ?
+   - lu : Chaque soir, mon oncle arrose ses tomates. Quelle est la fonction de « ses tomates » ?
+   - choix : COD · COI · complément circonstanciel de temps
+   - réponse : COD
+   - indice : Mon oncle arrose quoi ? Y a-t-il « à » ou « de » devant ?
+   - explication : Mon oncle arrose quoi ? Ses tomates, sans « à » ni « de » : c’est le COD. « Chaque soir » est le complément circonstanciel de temps.
+2. énoncé : « Dans la cour, les enfants jouent au ballon. » Quelle est la fonction de « dans la cour » ?
+   - lu : Dans la cour, les enfants jouent au ballon. Quelle est la fonction de « dans la cour » ?
+   - choix : sujet · complément circonstanciel de lieu · COD
+   - réponse : complément circonstanciel de lieu
+   - indice : Ce groupe dit-il qui joue, ou où l’on joue ?
+   - explication : Où les enfants jouent-ils ? Dans la cour : complément circonstanciel de lieu. Il est en tête de phrase, mais le sujet est « les enfants » : ce sont eux qui jouent.
+3. énoncé : « Ma sœur semble fatiguée. » Quelle est la fonction de « fatiguée » ?
+   - lu : Ma sœur semble fatiguée. Quelle est la fonction de « fatiguée » ?
+   - choix : COD · complément circonstanciel de manière · attribut du sujet
+   - réponse : attribut du sujet
+   - indice : Quel est le verbe ? Le mot dit-il comment est ma sœur ?
+   - explication : Après « sembler », comme après « être », « fatiguée » dit comment est ma sœur, et s’accorde avec elle : attribut du sujet. Un COD désignerait autre chose que le sujet.
+4. énoncé : « Ce chien ressemble à un loup. » Quelle est la fonction de « à un loup » ?
+   - lu : Ce chien ressemble à un loup. Quelle est la fonction de « à un loup » ?
+   - choix : COI · COD · attribut du sujet
+   - réponse : COI
+   - indice : Ce chien ressemble à quoi ? Regarde le petit mot devant le groupe.
+   - explication : Ce chien ressemble à quoi ? À un loup : le groupe suit le verbe avec « à », et on ne peut pas l’enlever. C’est un COI. Un COD n’a pas de « à » ; un attribut suit être, sembler ou devenir.
+5. énoncé : « Après les cours, nous jouons au parc. » Quelle est la fonction de « après les cours » ?
+   - lu : Après les cours, nous jouons au parc. Quelle est la fonction de « après les cours » ?
+   - choix : complément circonstanciel de lieu · complément circonstanciel de temps · sujet
+   - réponse : complément circonstanciel de temps
+   - indice : Ce groupe répond-il à « où ? » ou à « quand ? » ?
+   - explication : Quand jouons-nous ? Après les cours : complément circonstanciel de temps. On peut le déplacer : « Nous jouons au parc après les cours. » C’est « au parc » qui dit où.
+6. énoncé : « Léo referme doucement la porte. » Quelle est la fonction de « doucement » ?
+   - lu : Léo referme doucement la porte. Quelle est la fonction de « doucement » ?
+   - choix : complément circonstanciel de manière · COD · complément circonstanciel de temps
+   - réponse : complément circonstanciel de manière
+   - indice : Comment Léo referme-t-il la porte ?
+   - explication : Comment Léo referme-t-il la porte ? Doucement : complément circonstanciel de manière. On peut l’enlever. Le COD, c’est « la porte ».
+7. énoncé : « Les élèves restent en classe à cause de la pluie. » Quelle est la fonction de « à cause de la pluie » ?
+   - lu : Les élèves restent en classe à cause de la pluie. Quelle est la fonction de « à cause de la pluie » ?
+   - choix : COI · complément circonstanciel de manière · complément circonstanciel de cause
+   - réponse : complément circonstanciel de cause
+   - indice : Pourquoi les élèves restent-ils en classe ? Peut-on enlever ce groupe ?
+   - explication : Pourquoi restent-ils en classe ? À cause de la pluie : complément circonstanciel de cause. Il commence par « à », mais on peut l’enlever ou le déplacer : ce n’est pas un COI.
+8. énoncé : « Au bout du chemin apparaît la maison de mes grands-parents. » Quel est le sujet de « apparaît » ?
+   - lu : Au bout du chemin apparaît la maison de mes grands-parents. Quel est le sujet de « apparaît » ?
+   - choix : au bout du chemin · mes grands-parents · la maison de mes grands-parents
+   - réponse : la maison de mes grands-parents
+   - indice : Qu’est-ce qui apparaît ? Le sujet peut être placé après le verbe.
+   - explication : Qu’est-ce qui apparaît ? La maison de mes grands-parents : c’est le sujet, placé après le verbe. « Au bout du chemin » dit où ; « mes grands-parents » n’est qu’une partie du groupe sujet.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

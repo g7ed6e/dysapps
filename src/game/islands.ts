@@ -213,6 +213,14 @@ export const ILES = [
           "c3.fr.langue.attribut-gn",
           "c3.fr.langue.phrase-complexe"
         ]
+      },
+      {
+        "id": "tense-values",
+        "title": "Les temps du récit",
+        "description": "Lis une phrase ou un petit récit : trouve quand se passe l’action, et ce que dit le temps du verbe.",
+        "programme": [
+          "c3.fr.langue.valeurs-des-temps"
+        ]
       }
     ]
   },
@@ -263,6 +271,20 @@ export const ILES = [
           "c3.ma.grandeurs.perimetre",
           "c3.ma.grandeurs.durees"
         ]
+      },
+      {
+        "id": "measures",
+        "title": "Mesures et figures",
+        "description": "Aire, volume, angles et solides, puis triangles, cercles et petits tableaux, tout dit en mots et en nombres.",
+        "programme": [
+          "c3.ma.grandeurs.aire",
+          "c3.ma.grandeurs.volume",
+          "c3.ma.espace.angles",
+          "c3.ma.espace.figures-solides",
+          "c3.ma.espace.relations",
+          "c3.ma.espace.triangles",
+          "c3.ma.donnees.donnees"
+        ]
       }
     ]
   },
@@ -311,6 +333,16 @@ export const ILES = [
         "description": "Pose l’opération, puis la division : partage en parts égales et trouve ce qui reste.",
         "programme": [
           "c3.ma.nombres.calcul-pose"
+        ]
+      },
+      {
+        "id": "fraction-sums",
+        "title": "Calculer avec des fractions",
+        "description": "Ajoute, enlève et multiplie des fractions, puis résous un problème avec un schéma en barre, une suite ou le hasard.",
+        "programme": [
+          "c3.ma.nombres.fractions-operations",
+          "c3.ma.nombres.algebre",
+          "c3.ma.donnees.probabilites"
         ]
       }
     ]
@@ -363,6 +395,16 @@ export const ILES = [
         "programme": [
           "c3.ma.nombres.grands-entiers"
         ]
+      },
+      {
+        "id": "rounding-products",
+        "title": "Arrondis et produits",
+        "description": "Arrondis un décimal, convertis une longueur en mètres, puis multiplie deux décimaux et vérifie avec un ordre de grandeur.",
+        "programme": [
+          "c3.ma.nombres.arrondi",
+          "c3.ma.nombres.produit-decimaux",
+          "c3.ma.grandeurs.unites-conversions"
+        ]
       }
     ]
   },
@@ -404,6 +446,27 @@ export const ILES = [
         "programme": [
           "c4.ma.5e.nombres.fractions",
           "c4.ma.5e.nombres.calcul-fractions"
+        ]
+      },
+      {
+        "id": "order-of-operations",
+        "title": "Priorités",
+        "description": "Les priorités et les parenthèses, les carrés et le cube de 10, puis les programmes de calcul et les équations simples.",
+        "programme": [
+          "c4.ma.5e.nombres.operations",
+          "c4.ma.5e.nombres.puissances",
+          "c4.ma.5e.nombres.equations"
+        ]
+      },
+      {
+        "id": "conversions-angles",
+        "title": "Mesures et angles",
+        "description": "Convertir des longueurs, des aires, des volumes et des litres, calculer un volume, puis les angles et l’aire d’un triangle.",
+        "programme": [
+          "c4.ma.5e.geometrie.conversions",
+          "c4.ma.5e.geometrie.espace",
+          "c4.ma.5e.geometrie.angles",
+          "c4.ma.5e.geometrie.triangles"
         ]
       }
     ]
@@ -447,6 +510,24 @@ export const ILES = [
         "programme": [
           "c4.ma.5e.proportionnalite.proportionnalite",
           "c3.ma.proportionnalite.echelle"
+        ]
+      },
+      {
+        "id": "formulas",
+        "title": "Formules",
+        "description": "Lire un tableau de valeurs et écrire une formule, puis remplacer la lettre, tester une égalité et développer.",
+        "programme": [
+          "c4.ma.5e.proportionnalite.fonctions",
+          "c4.ma.5e.nombres.calcul-litteral"
+        ]
+      },
+      {
+        "id": "statistics",
+        "title": "Statistiques et chances",
+        "description": "Lire un tableau, calculer une fréquence et une moyenne, puis dire les chances d’un évènement.",
+        "programme": [
+          "c4.ma.5e.donnees.statistiques",
+          "c4.ma.5e.donnees.probabilites"
         ]
       }
     ]
@@ -494,6 +575,27 @@ export const ILES = [
           "c4.fr.5e.vocabulaire.orthographe",
           "c4.fr.5e.grammaire.classes-de-mots",
           "c3.fr.langue.orthographe-grammaticale"
+        ]
+      },
+      {
+        "id": "participles",
+        "title": "Participes passés",
+        "description": "Participe passé ou infinitif, accord avec être, puis avec avoir quand le COD est placé avant.",
+        "programme": [
+          "c4.fr.5e.grammaire.accords",
+          "c3.fr.langue.participe-passe-avoir",
+          "c3.fr.langue.finales-en-e"
+        ]
+      },
+      {
+        "id": "word-meaning",
+        "title": "Le sens des mots",
+        "description": "Le sens d’un mot par la phrase et par sa formation : synonymes, contraires, sens figuré, registres.",
+        "programme": [
+          "c4.fr.5e.vocabulaire.sens",
+          "c4.fr.5e.vocabulaire.relations",
+          "c4.fr.5e.vocabulaire.reemploi",
+          "c4.fr.5e.vocabulaire.formation"
         ]
       }
     ]
@@ -549,6 +651,17 @@ export const ILES = [
           "c4.fr.5e.grammaire.formes-verbales",
           "c3.fr.langue.temps-a-memoriser"
         ]
+      },
+      {
+        "id": "sentence-grammar",
+        "title": "La phrase et ses fonctions",
+        "description": "Les types et les formes de phrases, l’oral et l’écrit, les paroles rapportées, puis les fonctions dans la phrase.",
+        "programme": [
+          "c4.fr.5e.grammaire.phrase",
+          "c4.fr.5e.grammaire.oral-ecrit",
+          "c4.fr.5e.grammaire.paroles-rapportees",
+          "c4.fr.5e.grammaire.constituants"
+        ]
       }
     ]
   },
@@ -601,6 +714,14 @@ export const ILES = [
           "c4.ma.a.calcul-relatifs",
           "c4.ma.a.calcul-fractions"
         ]
+      },
+      {
+        "id": "volumes",
+        "title": "Aires et volumes",
+        "description": "Aire du parallélogramme, volumes du prisme droit et du cylindre, puis de la pyramide et du cône.",
+        "programme": [
+          "c4.ma.c.aires-volumes"
+        ]
       }
     ]
   },
@@ -640,6 +761,15 @@ export const ILES = [
         "description": "Équations du premier degré, en une puis deux étapes, puis tester une égalité et les équations produits.",
         "programme": [
           "c4.ma.a.equations"
+        ]
+      },
+      {
+        "id": "rationals",
+        "title": "Relatifs et fractions",
+        "description": "Opposé, comparer, ranger et encadrer des relatifs, puis fractions égales, comparer, ranger et inverse.",
+        "programme": [
+          "c4.ma.a.relatifs",
+          "c4.ma.a.fractions"
         ]
       }
     ]
@@ -691,6 +821,15 @@ export const ILES = [
         "programme": [
           "c4.fr.langue.morphologie-verbale",
           "c4.fr.langue.participe-passe"
+        ]
+      },
+      {
+        "id": "tense-meaning",
+        "title": "Temps et ponctuation",
+        "description": "Ce que disent les temps et les modes, puis le rôle des signes de ponctuation.",
+        "programme": [
+          "c4.fr.langue.valeurs-des-temps",
+          "c4.fr.langue.ponctuation"
         ]
       }
     ]
@@ -789,6 +928,24 @@ export const ILES = [
         "programme": [
           "c4.ma.d.trigonometrie"
         ]
+      },
+      {
+        "id": "scaling",
+        "title": "Agrandir",
+        "description": "Agrandir ou réduire : longueurs, angles, aires, volumes et échelle d’une carte, puis les angles du triangle et des droites parallèles.",
+        "programme": [
+          "c4.ma.c.agrandissement",
+          "c4.ma.d.angles-triangles"
+        ]
+      },
+      {
+        "id": "transformations",
+        "title": "Transformer",
+        "description": "Translation, symétries, rotation, homothétie : ce qui change et ce qui reste ; puis triangles égaux, triangles semblables et parallélogramme.",
+        "programme": [
+          "c4.ma.d.transformations",
+          "c4.ma.d.triangles-parallelogramme"
+        ]
       }
     ]
   },
@@ -879,6 +1036,25 @@ export const ILES = [
           "c4.ma.b.image-antecedent",
           "c4.ma.b.lineaire-affine"
         ]
+      },
+      {
+        "id": "proportions",
+        "title": "Proportions",
+        "description": "Reconnaître la proportionnalité, pourcentages et échelles, puis évolutions, vitesse, débit et conversions.",
+        "programme": [
+          "c4.ma.b.proportionnalite",
+          "c4.ma.b.pourcentages-echelles",
+          "c4.ma.c.grandeurs-composees",
+          "c4.ma.c.conversions"
+        ]
+      },
+      {
+        "id": "coordinates",
+        "title": "Se repérer",
+        "description": "Sur une droite graduée, dans un repère du plan, dans un pavé droit, puis sur la Terre : latitude et longitude.",
+        "programme": [
+          "c4.ma.d.reperage"
+        ]
       }
     ]
   },
@@ -940,6 +1116,14 @@ export const ILES = [
           "c4.fr.langue.passif",
           "c4.fr.langue.subordonnees"
         ]
+      },
+      {
+        "id": "literary-eras",
+        "title": "Genres et époques",
+        "description": "Reconnaître le genre d’un extrait, puis situer une œuvre dans son siècle, son mouvement et son contexte.",
+        "programme": [
+          "c4.fr.lecture.genres-epoques"
+        ]
       }
     ]
   },
@@ -994,6 +1178,15 @@ export const ILES = [
           "c3.en.lire.textes-courts",
           "c3.en.lire.mots-isoles",
           "c3.en.culture.vie-quotidienne"
+        ]
+      },
+      {
+        "id": "famous-people",
+        "title": "Famous people",
+        "description": "Rencontrer des personnes et des personnages célèbres du monde anglophone, puis dire ce qu’on ressent devant un tableau, un dessin ou une photo.",
+        "programme": [
+          "c3.en.culture.personnes",
+          "c3.en.culture.arts"
         ]
       }
     ]
@@ -1099,6 +1292,16 @@ export const ILES = [
           "c4.en.5e.comprendre.oral-ecrit",
           "c4.en.5e.langue.lexique"
         ]
+      },
+      {
+        "id": "united-kingdom",
+        "title": "The UK",
+        "description": "Le Royaume-Uni : ses nations, son histoire, ses lieux, ses façons de parler et la vie de ses élèves, dans un petit document à lire.",
+        "programme": [
+          "c4.en.5e.culture.royaume-uni",
+          "c4.en.5e.culture.langues-lieux",
+          "c4.en.5e.culture.ecole-loisirs"
+        ]
       }
     ]
   },
@@ -1138,6 +1341,25 @@ export const ILES = [
         "description": "Taller than, the tallest, more… than, better, the best.",
         "programme": [
           "c4.en.5e.langue.groupe-nominal"
+        ]
+      },
+      {
+        "id": "sentences",
+        "title": "Phrases",
+        "description": "Nier, demander, relier, nuancer : don’t, does, but, so, very, too.",
+        "programme": [
+          "c4.en.5e.langue.phrase",
+          "c3.en.langue.groupe-nominal"
+        ]
+      },
+      {
+        "id": "portraits",
+        "title": "Portraits",
+        "description": "Lire un portrait, un personnage de livre ou un message, et demander de l’aide en anglais.",
+        "programme": [
+          "c4.en.5e.culture.portrait",
+          "c4.en.5e.culture.reel-imaginaire",
+          "c4.en.5e.interagir.mediation"
         ]
       }
     ]
@@ -1240,6 +1462,14 @@ export const ILES = [
           "c3.en.culture.imaginaire",
           "c4.en.culture.voyages-rencontres"
         ]
+      },
+      {
+        "id": "forms",
+        "title": "Forms",
+        "description": "Remplir une fiche de renseignements et écrire un message simple en anglais, en choisissant le bon mot.",
+        "programme": [
+          "c4.en.ecrire.dictee-fiche"
+        ]
       }
     ]
   },
@@ -1330,6 +1560,15 @@ export const ILES = [
         "programme": [
           "c4.en.langue.modaux-passif"
         ]
+      },
+      {
+        "id": "messages",
+        "title": "Messages",
+        "description": "Lire un panneau, une consigne, un message ; demander et donner l’heure, un prix, le temps qu’il fait.",
+        "programme": [
+          "c4.en.lire.consignes-panneaux",
+          "c4.en.dialoguer.echanges-sociaux"
+        ]
       }
     ]
   },
@@ -1387,6 +1626,18 @@ export const ILES = [
           "c3.hg.temps.periodes",
           "c3.hg.demarches.lexique",
           "c3.hg.demarches.document"
+        ]
+      },
+      {
+        "id": "viewpoints",
+        "title": "Qui parle ?",
+        "description": "Qui a écrit le document, pour qui, dans quel but : un document exprime un point de vue.",
+        "programme": [
+          "c3.hg.demarches.point-de-vue",
+          "c3.hg.demarches.document",
+          "c3.hg.demarches.lexique",
+          "c3.hg.histoire.rome-mythe",
+          "c3.hg.histoire.empire-romain"
         ]
       }
     ]
@@ -1497,6 +1748,17 @@ export const ILES = [
           "c3.sv.terre.chaines-alimentaires",
           "c3.sv.demarches.responsable"
         ]
+      },
+      {
+        "id": "life-enquiry",
+        "title": "Enquêter sur le vivant",
+        "description": "La cellule, les tailles et les temps du vivant, puis le réchauffement climatique lu dans des données, et la différence entre une preuve et une croyance.",
+        "programme": [
+          "c3.sv.vivant.cellule",
+          "c3.sv.terre.climat",
+          "c3.sv.demarches.esprit-critique",
+          "c3.sv.demarches.situer"
+        ]
       }
     ]
   },
@@ -1546,6 +1808,16 @@ export const ILES = [
           "c3.pc.matiere.circuit",
           "c3.pc.demarches.langages"
         ]
+      },
+      {
+        "id": "materials-light",
+        "title": "Matériaux, transformations et saisons",
+        "description": "Trier des matériaux et reconnaître une transformation chimique, puis l’air, les pictogrammes de danger, le jour, la nuit et les saisons.",
+        "programme": [
+          "c3.pc.matiere.materiaux",
+          "c3.pc.matiere.transformations",
+          "c3.pc.matiere.lumiere"
+        ]
       }
     ]
   },
@@ -1590,6 +1862,15 @@ export const ILES = [
           "c3.te.objets.information",
           "c3.te.demarches.numerique",
           "c3.te.objets.evolution"
+        ]
+      },
+      {
+        "id": "solve-program",
+        "title": "Résoudre et programmer",
+        "description": "Comparer des solutions à un problème technique en tenant compte d’une contrainte, puis lire un programme simple, dire ce qu’il fait et le critiquer.",
+        "programme": [
+          "c3.te.objets.probleme",
+          "c3.te.objets.programmer"
         ]
       }
     ]
@@ -1872,6 +2153,14 @@ export const ILES = [
           "c4.te.usages.choisir",
           "c4.te.fonctionnement.materiaux"
         ]
+      },
+      {
+        "id": "project-management",
+        "title": "Mener un projet",
+        "description": "Les étapes d’un projet et la revue de projet, puis lire un planning des tâches et penser à la planète dès la conception.",
+        "programme": [
+          "c4.te.conception.projet"
+        ]
       }
     ]
   },
@@ -2120,6 +2409,14 @@ export const ILES = [
           "c4.te.conception.valider",
           "c4.te.usages.interactions"
         ]
+      },
+      {
+        "id": "troubleshooting",
+        "title": "Dépanner",
+        "description": "Repérer la pièce défectueuse d’un objet en panne et suivre un protocole de dépannage, puis la fiabilité, la réparabilité et la sécurité à l’atelier.",
+        "programme": [
+          "c4.te.fonctionnement.depanner"
+        ]
       }
     ]
   },
@@ -2362,6 +2659,14 @@ export const ILES = [
         "programme": [
           "c4.te.fonctionnement.programme"
         ]
+      },
+      {
+        "id": "data-tables",
+        "title": "Données et tableaux",
+        "description": "Décrire un objet par des données (descripteur, type, bit), puis trier, filtrer et calculer dans un petit tableau.",
+        "programme": [
+          "c4.te.fonctionnement.donnees"
+        ]
       }
     ]
   },
@@ -2420,6 +2725,16 @@ export const ILES = [
         "lv2": "es"
       },
       {
+        "id": "es-sentences",
+        "title": "Frases",
+        "description": "Poser une question, dire non ; puis lire une date, comparer, et, ou, mais, au Mexique.",
+        "programme": [
+          "c4.es.5e.langue.phrase",
+          "c4.es.5e.culture.axes"
+        ],
+        "lv2": "es"
+      },
+      {
         "id": "de-greetings",
         "title": "Hallo",
         "description": "Se présenter : une question en allemand, la bonne réponse (sein et haben).",
@@ -2456,6 +2771,16 @@ export const ILES = [
         "description": "L’article du nom, toujours avec sa majuscule (das Mädchen).",
         "programme": [
           "c4.de.5e.langue.groupe-nominal"
+        ],
+        "lv2": "de"
+      },
+      {
+        "id": "de-sentences",
+        "title": "Sätze",
+        "description": "Les types de phrase et la place du verbe ; puis des messages sur les Länder, avec und, aber, oder, denn.",
+        "programme": [
+          "c4.de.5e.langue.phrase",
+          "c4.de.5e.culture.axes"
         ],
         "lv2": "de"
       }
@@ -2519,6 +2844,16 @@ export const ILES = [
         "lv2": "es"
       },
       {
+        "id": "es-signs",
+        "title": "Carteles y mensajes",
+        "description": "Un panneau, une consigne, un petit message ; puis réagir à une proposition, dire ce qu’on ressent.",
+        "programme": [
+          "c4.es.lire.consignes-panneaux",
+          "c4.es.dialoguer.reagir"
+        ],
+        "lv2": "es"
+      },
+      {
         "id": "de-time",
         "title": "Wie spät ist es?",
         "description": "L’heure entendue : Viertel nach, halb ; puis où est-on, qui parle ?",
@@ -2557,6 +2892,16 @@ export const ILES = [
         "programme": [
           "c4.de.langue.groupe-nominal",
           "c4.de.langue.lexique"
+        ],
+        "lv2": "de"
+      },
+      {
+        "id": "de-signs",
+        "title": "Schilder",
+        "description": "Des panneaux, des consignes et un petit message ; puis réagir à une proposition ou à un sentiment.",
+        "programme": [
+          "c4.de.lire.consignes-panneaux",
+          "c4.de.dialoguer.reagir"
         ],
         "lv2": "de"
       }
@@ -2619,6 +2964,16 @@ export const ILES = [
         "lv2": "es"
       },
       {
+        "id": "es-media",
+        "title": "Medios y fichas",
+        "description": "Un programme de télévision, une affiche de concert, un message sur un réseau ; puis remplir une fiche.",
+        "programme": [
+          "c4.es.culture.langages",
+          "c4.es.ecrire.dictee-fiche"
+        ],
+        "lv2": "es"
+      },
+      {
         "id": "de-past",
         "title": "Wohin bist du gefahren?",
         "description": "Le Perfekt avec haben, puis haben ou sein.",
@@ -2657,6 +3012,16 @@ export const ILES = [
         "programme": [
           "c4.de.langue.phrase-complexe",
           "c4.de.langue.lexique"
+        ],
+        "lv2": "de"
+      },
+      {
+        "id": "de-media",
+        "title": "Medien",
+        "description": "Des médias inventés à lire : programme de télé, affiche, message ; puis une fiche remplie sous la dictée.",
+        "programme": [
+          "c4.de.culture.langages",
+          "c4.de.ecrire.dictee-fiche"
         ],
         "lv2": "de"
       }

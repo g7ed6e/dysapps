@@ -1,0 +1,220 @@
+{
+  "id": "french-4e-agreement-tense-meaning-2",
+  "biome": "french-4e-agreement",
+  "type": "tense-meaning",
+  "level": 2,
+  "instruction": "Ponctuation : lis la phrase, puis réponds à la question. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-4e-agreement-tense-meaning-2-0",
+      "prompt": "« J’ai rangé mes livres … mes cahiers et mes crayons. » Quel signe va à la place du trou ?",
+      "spoken": "J’ai rangé mes livres (signe manquant) mes cahiers et mes crayons. Quel signe va à la place du trou ?",
+      "choices": [
+        "un point",
+        "une virgule",
+        "deux-points"
+      ],
+      "answer": "une virgule",
+      "hint": "Les livres, les cahiers et les crayons forment-ils une liste ?",
+      "explanation": "Livres, cahiers et crayons forment une liste : la virgule sépare les mots d’une liste, et « et » relie les deux derniers. Un point couperait la phrase en deux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les signes de ponctuation",
+          "lines": [
+            "Virgule : sépare les mots d’une liste, isole celui à qui l’on parle, encadre un groupe qu’on peut enlever.",
+            "Point-virgule : relie deux propositions proches par le sens. Après lui, pas de majuscule.",
+            "Deux-points : annoncent une liste, une explication ou des paroles.",
+            "Une relative entre virgules parle de tous ; sans virgules, elle trie : seulement certains."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-2-1",
+      "prompt": "« J’ai trois matières préférées : le dessin, l’anglais et le sport. » À quoi servent les deux-points ?",
+      "spoken": "J’ai trois matières préférées : le dessin, l’anglais et le sport. À quoi servent les deux-points ?",
+      "choices": [
+        "annoncer une liste",
+        "annoncer une explication",
+        "annoncer des paroles"
+      ],
+      "answer": "annoncer une liste",
+      "hint": "Que vient-il après les deux-points ?",
+      "explanation": "Après les deux-points viennent les trois matières : les deux-points annoncent une liste. Personne ne parle, et rien n’est expliqué.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les signes de ponctuation",
+          "lines": [
+            "Virgule : sépare les mots d’une liste, isole celui à qui l’on parle, encadre un groupe qu’on peut enlever.",
+            "Point-virgule : relie deux propositions proches par le sens. Après lui, pas de majuscule.",
+            "Deux-points : annoncent une liste, une explication ou des paroles.",
+            "Une relative entre virgules parle de tous ; sans virgules, elle trie : seulement certains."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-2-2",
+      "prompt": "« Tom reste au lit : il a de la fièvre. » À quoi servent les deux-points ?",
+      "spoken": "Tom reste au lit : il a de la fièvre. À quoi servent les deux-points ?",
+      "choices": [
+        "annoncer des paroles",
+        "annoncer une liste",
+        "annoncer une explication"
+      ],
+      "answer": "annoncer une explication",
+      "hint": "La fin de la phrase dit-elle pourquoi Tom reste au lit ?",
+      "explanation": "« Il a de la fièvre » dit pourquoi Tom reste au lit : les deux-points annoncent une explication, ici une cause. Il n’y a ni liste, ni paroles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les signes de ponctuation",
+          "lines": [
+            "Virgule : sépare les mots d’une liste, isole celui à qui l’on parle, encadre un groupe qu’on peut enlever.",
+            "Point-virgule : relie deux propositions proches par le sens. Après lui, pas de majuscule.",
+            "Deux-points : annoncent une liste, une explication ou des paroles.",
+            "Une relative entre virgules parle de tous ; sans virgules, elle trie : seulement certains."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-2-3",
+      "prompt": "Léa crie : « Attends-moi ! » À quoi servent les deux-points ?",
+      "spoken": "Léa crie : Attends-moi ! À quoi servent les deux-points ?",
+      "choices": [
+        "annoncer une explication",
+        "annoncer des paroles",
+        "annoncer une liste"
+      ],
+      "answer": "annoncer des paroles",
+      "hint": "Après les deux-points, qui parle ? Regarde les guillemets.",
+      "explanation": "Après « crie », les deux-points annoncent les mots exacts de Léa, entre guillemets : des paroles rapportées au discours direct.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les signes de ponctuation",
+          "lines": [
+            "Virgule : sépare les mots d’une liste, isole celui à qui l’on parle, encadre un groupe qu’on peut enlever.",
+            "Point-virgule : relie deux propositions proches par le sens. Après lui, pas de majuscule.",
+            "Deux-points : annoncent une liste, une explication ou des paroles.",
+            "Une relative entre virgules parle de tous ; sans virgules, elle trie : seulement certains."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-2-4",
+      "prompt": "« Le jour se lève ; les oiseaux chantent déjà. » À quoi sert le point-virgule ?",
+      "spoken": "Le jour se lève ; les oiseaux chantent déjà. À quoi sert le point-virgule ?",
+      "choices": [
+        "relier deux propositions proches",
+        "annoncer une liste",
+        "séparer deux phrases sans lien"
+      ],
+      "answer": "relier deux propositions proches",
+      "hint": "Les deux parties de la phrase parlent-elles du même moment ?",
+      "explanation": "Le point-virgule relie deux propositions qui vont ensemble : le jour se lève, et au même moment les oiseaux chantent. Il sépare moins qu’un point, et la suite ne prend pas de majuscule.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les signes de ponctuation",
+          "lines": [
+            "Virgule : sépare les mots d’une liste, isole celui à qui l’on parle, encadre un groupe qu’on peut enlever.",
+            "Point-virgule : relie deux propositions proches par le sens. Après lui, pas de majuscule.",
+            "Deux-points : annoncent une liste, une explication ou des paroles.",
+            "Une relative entre virgules parle de tous ; sans virgules, elle trie : seulement certains."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-2-5",
+      "prompt": "« Léo, range ta chambre. » Que montre la virgule ?",
+      "spoken": "Léo, range ta chambre. Que montre la virgule ?",
+      "choices": [
+        "Léo est le sujet",
+        "on parle à Léo",
+        "on fait une liste"
+      ],
+      "answer": "on parle à Léo",
+      "hint": "Y a-t-il un sujet écrit devant « range » ?",
+      "explanation": "La virgule isole Léo, celui à qui l’on parle ; « range » est à l’impératif, sans sujet. Sans virgule, « Léo range sa chambre » dirait ce que fait Léo.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les signes de ponctuation",
+          "lines": [
+            "Virgule : sépare les mots d’une liste, isole celui à qui l’on parle, encadre un groupe qu’on peut enlever.",
+            "Point-virgule : relie deux propositions proches par le sens. Après lui, pas de majuscule.",
+            "Deux-points : annoncent une liste, une explication ou des paroles.",
+            "Une relative entre virgules parle de tous ; sans virgules, elle trie : seulement certains."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-2-6",
+      "prompt": "« Les élèves, qui étaient fatigués, sont rentrés. » Tous les élèves étaient-ils fatigués ?",
+      "spoken": "Les élèves, qui étaient fatigués, sont rentrés. Tous les élèves étaient-ils fatigués ?",
+      "choices": [
+        "oui, tous",
+        "non, seulement certains"
+      ],
+      "answer": "oui, tous",
+      "hint": "La relative est entre virgules. Relis la dernière ligne de la règle.",
+      "explanation": "Entre virgules, la relative ajoute une précision sur tous les élèves : ils étaient tous fatigués, et ils sont tous rentrés. On pourrait l’enlever sans changer qui est rentré.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les signes de ponctuation",
+          "lines": [
+            "Virgule : sépare les mots d’une liste, isole celui à qui l’on parle, encadre un groupe qu’on peut enlever.",
+            "Point-virgule : relie deux propositions proches par le sens. Après lui, pas de majuscule.",
+            "Deux-points : annoncent une liste, une explication ou des paroles.",
+            "Une relative entre virgules parle de tous ; sans virgules, elle trie : seulement certains."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-2-7",
+      "prompt": "« Les élèves qui étaient fatigués sont rentrés. » De quels élèves parle la phrase ?",
+      "spoken": "Les élèves qui étaient fatigués sont rentrés. De quels élèves parle la phrase ?",
+      "choices": [
+        "de tous les élèves",
+        "seulement des élèves fatigués"
+      ],
+      "answer": "seulement des élèves fatigués",
+      "hint": "Il n’y a pas de virgules autour de la relative. Relis la dernière ligne de la règle.",
+      "explanation": "Sans virgules, la relative trie les élèves : la phrase ne parle que de ceux qui étaient fatigués, et ce sont eux qui sont rentrés. Avec des virgules, elle parlerait de tous.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les signes de ponctuation",
+          "lines": [
+            "Virgule : sépare les mots d’une liste, isole celui à qui l’on parle, encadre un groupe qu’on peut enlever.",
+            "Point-virgule : relie deux propositions proches par le sens. Après lui, pas de majuscule.",
+            "Deux-points : annoncent une liste, une explication ou des paroles.",
+            "Une relative entre virgules parle de tous ; sans virgules, elle trie : seulement certains."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-agreement",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

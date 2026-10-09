@@ -787,6 +787,157 @@ Pour tous les items :
    - indice : J’étudie où ?
    - explication : « Où » reprend « le collège » et dit où j’étudie : complément de lieu.
 
+## Genres et époques · `literary-eras`
+
+- description : Reconnaître le genre d’un extrait, puis situer une œuvre dans son siècle, son mouvement et son contexte.
+- compétences : c4.fr.lecture.genres-epoques
+- bravo : Bien lu !
+- erreur : {explanation}
+- bloc gagné : french-3e-close-reading
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `french-3e-close-reading-literary-eras-1`
+
+- consigne : Lis l’extrait, puis trouve son genre. Le rappel est affiché.
+
+Pour tous les items :
+- aide « Reconnaître un genre » :
+  - Théâtre : des répliques, avec le nom du personnage qui parle.
+  - Poésie : des vers, des rimes, des sons qui se répondent.
+  - Fable : un court récit en vers, souvent avec des animaux, et une morale.
+  - Conte : « Il était une fois », un temps et un lieu lointains.
+  - Roman : un long récit inventé. Autobiographie : l’auteur raconte sa vie, avec « je ».
+  - Lettre : on écrit à quelqu’un, avec « vous » ou « tu ».
+
+1. énoncé : "La raison du plus fort est toujours la meilleure :\nNous l’allons montrer tout à l’heure.\nJean de La Fontaine, 1668"
+   - question : De quel genre est ce texte ?
+   - lu : La raison du plus fort est toujours la meilleure : nous l’allons montrer tout à l’heure. Jean de La Fontaine, mille six cent soixante-huit.
+   - choix : une fable · une autobiographie · une pièce de théâtre
+   - réponse : une fable
+   - indice : Ces deux vers donnent une leçon. Que va faire l’histoire qui suit ?
+   - explication : Ces deux vers donnent la morale, la leçon que l’histoire va montrer : c’est une fable, « Le Loup et l’Agneau ». Personne n’y raconte sa vie, et aucun nom de personnage n’est écrit devant une réplique.
+2. énoncé : "Je veux montrer à mes semblables un homme dans toute la vérité de la nature, et cet homme, ce sera moi.\nJean-Jacques Rousseau, publié en 1782"
+   - question : De quel genre est ce texte ?
+   - lu : Je veux montrer à mes semblables un homme dans toute la vérité de la nature, et cet homme, ce sera moi. Jean-Jacques Rousseau, publié en mille sept cent quatre-vingt-deux.
+   - choix : un roman · une autobiographie · une fable
+   - réponse : une autobiographie
+   - indice : Qui est « cet homme » que l’auteur veut montrer ?
+   - explication : « Cet homme, ce sera moi » : l’auteur annonce qu’il va raconter sa propre vie, avec « je ». C’est une autobiographie, « Les Confessions ». Un roman raconte une histoire inventée.
+3. énoncé : "Harpagon. — Au voleur ! au voleur ! à l’assassin ! au meurtrier !\nMolière, 1668"
+   - question : De quel genre est ce texte ?
+   - lu : Harpagon. Au voleur ! au voleur ! à l’assassin ! au meurtrier ! Molière, mille six cent soixante-huit.
+   - choix : un poème · une pièce de théâtre · une lettre
+   - réponse : une pièce de théâtre
+   - indice : Qu’est-ce qui est écrit devant les paroles ?
+   - explication : Le nom du personnage, Harpagon, est écrit devant ses paroles : c’est une réplique de théâtre, dans « L’Avare ». Les points d’exclamation montrent qu’il crie, sur la scène.
+4. énoncé : "Les sanglots longs\nDes violons\nDe l’automne\nBlessent mon cœur\nD’une langueur\nMonotone.\nPaul Verlaine, 1866"
+   - question : De quel genre est ce texte ?
+   - lu : Les sanglots longs des violons de l’automne blessent mon cœur d’une langueur monotone. Paul Verlaine, mille huit cent soixante-six.
+   - choix : un conte · un roman · un poème
+   - réponse : un poème
+   - indice : Regarde la longueur des lignes, puis la fin des mots.
+   - explication : Des lignes courtes, qui commencent par une majuscule : ce sont des vers. « Longs » et « violons », « cœur » et « langueur » riment. C’est un poème, « Chanson d’automne ».
+5. énoncé : "Il était une fois une petite fille de village, la plus jolie qu’on eût su voir.\nCharles Perrault, 1697"
+   - question : De quel genre est ce texte ?
+   - lu : Il était une fois une petite fille de village, la plus jolie qu’on eût su voir. Charles Perrault, mille six cent quatre-vingt-dix-sept.
+   - choix : une autobiographie · un conte · une lettre
+   - réponse : un conte
+   - indice : Relis les quatre premiers mots.
+   - explication : « Il était une fois » ouvre un conte : un temps lointain, sans date, et une héroïne sans nom. C’est le début du « Petit Chaperon rouge ».
+6. énoncé : "Dans la plaine rase, sous la nuit sans étoiles, d’une obscurité et d’une épaisseur d’encre, un homme suivait seul la grande route de Marchiennes à Montsou.\nÉmile Zola, 1885"
+   - question : De quel genre est ce texte ?
+   - lu : Dans la plaine rase, sous la nuit sans étoiles, d’une obscurité et d’une épaisseur d’encre, un homme suivait seul la grande route de Marchiennes à Montsou. Émile Zola, mille huit cent quatre-vingt-cinq.
+   - choix : une autobiographie · un roman · une fable
+   - réponse : un roman
+   - indice : Qui raconte : quelqu’un qui dit « je », ou un narrateur qui parle d’« un homme » ?
+   - explication : Un narrateur raconte, en prose, l’histoire d’« un homme » qu’il ne nomme pas encore : c’est le début d’un roman, « Germinal ». L’auteur ne dit pas « je » et ne raconte pas sa vie : ce n’est pas une autobiographie.
+7. énoncé : "Don Diègue. — Rodrigue, as-tu du cœur ?\nDon Rodrigue. — Tout autre que mon père\nL’éprouverait sur l’heure.\nPierre Corneille, 1637"
+   - question : De quel genre est ce texte ?
+   - lu : Don Diègue. Rodrigue, as-tu du cœur ? Don Rodrigue. Tout autre que mon père l’éprouverait sur l’heure. Pierre Corneille, mille six cent trente-sept.
+   - choix : une lettre · une autobiographie · une pièce de théâtre
+   - réponse : une pièce de théâtre
+   - indice : Qu’est-ce qui est écrit devant chaque réplique ?
+   - explication : Deux personnages se parlent, et leur nom est écrit devant leurs paroles : c’est une pièce de théâtre, « Le Cid ». Elle est écrite en vers, mais ce sont des répliques, dites sur la scène.
+8. énoncé : "Je m’en vais vous mander la chose la plus étonnante, la plus surprenante, la plus merveilleuse.\nMadame de Sévigné, à monsieur de Coulanges, le 15 décembre 1670"
+   - question : De quel genre est ce texte ?
+   - lu : Je m’en vais vous mander la chose la plus étonnante, la plus surprenante, la plus merveilleuse. Madame de Sévigné, à monsieur de Coulanges, le quinze décembre mille six cent soixante-dix.
+   - choix : une lettre · un poème · un conte
+   - réponse : une lettre
+   - indice : « Mander », c’est faire savoir. À qui Madame de Sévigné parle-t-elle ?
+   - explication : Madame de Sévigné écrit à quelqu’un, « vous », pour lui annoncer une nouvelle, et le texte porte une date : c’est une lettre. « Mander » veut dire faire savoir.
+
+### Niveau 2 · `french-3e-close-reading-literary-eras-2`
+
+- consigne : Lis l’œuvre et sa date. Situe-la dans son époque. Le rappel est affiché.
+
+Pour tous les items :
+- aide « Repères d’histoire littéraire » :
+  - Le Moyen Âge, jusque vers 1500 : chansons de geste, romans de chevalerie.
+  - Le XVIIe siècle, de 1601 à 1700 : le classicisme (Corneille, Molière, La Fontaine).
+  - Le XVIIIe siècle, de 1701 à 1800 : les Lumières (Voltaire, Rousseau), la raison contre l’injustice.
+  - Le XIXe siècle, de 1801 à 1900 : le romantisme (Hugo) dit les sentiments ; le réalisme (Balzac, Zola) peint la société.
+  - Le XXe siècle, de 1901 à 2000 : des œuvres marquées par les deux guerres mondiales.
+
+1. énoncé : "La Chanson de Roland, vers 1100\nLe chevalier Roland se bat jusqu’à la mort pour son roi, Charlemagne."
+   - question : À quelle époque appartient cette œuvre ?
+   - lu : La Chanson de Roland, vers l’an mille cent. Le chevalier Roland se bat jusqu’à la mort pour son roi, Charlemagne.
+   - choix : le Moyen Âge · le XVIIe siècle · les Lumières
+   - réponse : le Moyen Âge
+   - indice : Regarde la date, puis la première ligne du rappel.
+   - explication : Vers 1100, c’est bien avant 1500 : le Moyen Âge. Un chevalier fidèle à son roi, c’est le héros d’une chanson de geste.
+2. énoncé : "Pierre Corneille, Le Cid, 1637\nRodrigue doit venger son père, mais il aime la fille de l’ennemi."
+   - question : En quel siècle Corneille écrit-il Le Cid ?
+   - lu : Pierre Corneille, Le Cid, mille six cent trente-sept. Rodrigue doit venger son père, mais il aime la fille de l’ennemi.
+   - choix : au XVIe siècle · au XVIIe siècle · au XVIIIe siècle
+   - réponse : au XVIIe siècle
+   - indice : 1637 est entre quelles années du rappel ?
+   - explication : 1637 est entre 1601 et 1700 : c’est le XVIIe siècle. Les années en 16 sont au XVIIe siècle, pas au XVIe.
+3. énoncé : "Jean de La Fontaine, Fables, 1668\nDes animaux parlent, et chaque fable donne une leçon sur les hommes."
+   - question : À quel mouvement appartiennent ces fables ?
+   - lu : Jean de La Fontaine, Fables, mille six cent soixante-huit. Des animaux parlent, et chaque fable donne une leçon sur les hommes.
+   - choix : les Lumières · le romantisme · le classicisme
+   - réponse : le classicisme
+   - indice : En quel siècle est 1668 ? Cherche ce siècle dans le rappel.
+   - explication : 1668 est au XVIIe siècle, comme Corneille et Molière : c’est le classicisme. Les Lumières viennent au siècle suivant.
+4. énoncé : "Voltaire, Candide, 1759\nUn conte où Voltaire se moque de la guerre, de l’intolérance et de l’injustice."
+   - question : À quel mouvement appartient ce conte ?
+   - lu : Voltaire, Candide, mille sept cent cinquante-neuf. Un conte où Voltaire se moque de la guerre, de l’intolérance et de l’injustice.
+   - choix : les Lumières · le classicisme · le réalisme
+   - réponse : les Lumières
+   - indice : En quel siècle est 1759 ? Contre quoi se bat Voltaire ?
+   - explication : 1759 est au XVIIIe siècle, et Voltaire combat l’injustice par la raison et le rire : c’est l’esprit des Lumières.
+5. énoncé : "Jean-Jacques Rousseau, Les Confessions, publiées en 1782\nRousseau, mort en 1778, y raconte sa vie depuis son enfance."
+   - question : En quel siècle paraissent Les Confessions ?
+   - lu : Jean-Jacques Rousseau, Les Confessions, publiées en mille sept cent quatre-vingt-deux. Rousseau, mort en mille sept cent soixante-dix-huit, y raconte sa vie depuis son enfance.
+   - choix : au XVIIe siècle · au XIXe siècle · au XVIIIe siècle
+   - réponse : au XVIIIe siècle
+   - indice : 1782 est entre quelles années du rappel ?
+   - explication : 1782 est entre 1701 et 1800 : c’est le XVIIIe siècle, celui des Lumières. Rousseau les a écrites de son vivant ; elles paraissent en 1782, quatre ans après sa mort, toujours au XVIIIe siècle. Les années en 17 sont au XVIIIe siècle, pas au XVIIe.
+6. énoncé : "Victor Hugo, Les Contemplations, 1856\nDemain, dès l’aube, à l’heure où blanchit la campagne,\nJe partirai. Vois-tu, je sais que tu m’attends."
+   - question : À quel mouvement appartient ce poème ?
+   - lu : Victor Hugo, Les Contemplations, mille huit cent cinquante-six. Demain, dès l’aube, à l’heure où blanchit la campagne, je partirai. Vois-tu, je sais que tu m’attends.
+   - choix : les Lumières · le romantisme · le classicisme
+   - réponse : le romantisme
+   - indice : Le poète dit « je » et parle de ce qu’il ressent. En quel siècle est 1856 ?
+   - explication : 1856 est au XIXe siècle, et le poète dit ses sentiments, avec « je » : c’est le romantisme, dont Hugo est le grand poète.
+7. énoncé : "Émile Zola, Germinal, 1885\nLe roman montre la vie dure des mineurs du nord de la France, et leur grève."
+   - question : À quel mouvement appartient ce roman ?
+   - lu : Émile Zola, Germinal, mille huit cent quatre-vingt-cinq. Le roman montre la vie dure des mineurs du nord de la France, et leur grève.
+   - choix : le romantisme · le réalisme · les Lumières
+   - réponse : le réalisme
+   - indice : Le roman dit-il les sentiments du poète, ou peint-il la société ?
+   - explication : Zola peint la société de son temps, le travail et la misère des mineurs : c’est le réalisme, que Zola pousse plus loin et appelle le naturalisme. Le romantisme dit d’abord les sentiments.
+8. énoncé : "Henri Barbusse, Le Feu, 1916\nUn soldat raconte la vie de ses camarades dans les tranchées."
+   - question : Dans quel contexte Barbusse écrit-il ce roman ?
+   - lu : Henri Barbusse, Le Feu, mille neuf cent seize. Un soldat raconte la vie de ses camarades dans les tranchées.
+   - choix : la Révolution française · la Première Guerre mondiale · la Seconde Guerre mondiale
+   - réponse : la Première Guerre mondiale
+   - indice : Regarde la date : quelle guerre a lieu en 1916 ?
+   - explication : En 1916, la France est dans la Première Guerre mondiale, de 1914 à 1918, la guerre des tranchées. La Seconde Guerre mondiale commence en 1939.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

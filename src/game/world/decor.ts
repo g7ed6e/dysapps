@@ -38,6 +38,22 @@ function tree(put: Put, x: number, y: number, base: number, tall = 2): void {
   put(x, y, base + tall + 2, LEAF, id);
 }
 
+/**
+ * Le triangle 3-4-5 du Belvédère de Thalès, dans la grille du décor : le côté de 3 cases (7 à 9, y = 0), celui de 4 cases
+ * (x = 7, y 0 à 3), et le grand côté en marches (9, 1) et (8, 2), sans diagonale. Deux rangées plus près des bornes que
+ * l'ancien kiosque (7 à 10, 2 à 5) : posé là, un bloc de haut cachait le bas de la première rangée des plans.
+ */
+export const TRIANGLE_DU_BELVEDERE: readonly (readonly [number, number])[] = [
+  [7, 0],
+  [8, 0],
+  [9, 0],
+  [7, 1],
+  [7, 2],
+  [7, 3],
+  [9, 1],
+  [8, 2],
+];
+
 /** Décor propre à chaque biome, en coordonnées relatives à l'île. `h` donne la hauteur du sol d'une case. */
 export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => void> = {
   'french-6e-phonology': (put, h) => {
@@ -248,15 +264,9 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.bois].side);
   },
   'maths-3e-geometry': (put, h) => {
-    // Un kiosque : quatre colonnes de marbre et un toit de marbre, un triangle 3-4-5 au sol.
-    for (const [x, y] of [
-      [7, 2],
-      [10, 2],
-      [7, 5],
-      [10, 5],
-    ] as const)
-      for (let z = 1; z <= 3; z++) put(x, y, h(x, y) + z, BLOCKS[BLOC.marbre].side);
-    for (let dx = 7; dx <= 10; dx++) for (let dy = 2; dy <= 5; dy++) put(dx, dy, h(dx, dy) + 4, BLOCKS[BLOC.marbre].side);
+    // Un triangle rectangle 3-4-5 de marbre posé au sol, d'un bloc de haut : un côté de 3 cases, l'autre de 4, le grand
+    // côté en marches (GD-14 : le kiosque de marbre du décor cachait le kiosque de Théo que bâtit le plan).
+    for (const [x, y] of TRIANGLE_DU_BELVEDERE) put(x, y, h(x, y) + 1, BLOCKS[BLOC.marbre].side);
     put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.marbre].side);
     put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },

@@ -1,8 +1,11 @@
 // Les cadrages de la caméra : les vues (île, suivi, Carte, voyage), le cadrage de la Carte selon la place libre et la
 // destination, celui de la traversée, et le décalage qui vise un point au-dessus du sol.
 import * as THREE from 'three';
-import { bornesDesLieux, type CadreDeCases, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, islandCenter, terresDe, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
-import type { PlaceLue, Rect } from '../../freeSpace';
+import { bornesDansLeMonde, bornesDesLieux, type CadreDeCases, ETAGES_DE_LA_BORNE, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, islandCenter, terresDe, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
+import { type PlaceLue, type Rect, RESERVE_DU_BAS } from '../../freeSpace';
+import { BULLE, SIGNE } from '../../world/affordance';
+import { PLAQUE } from '../signs';
+import type { LabelBox } from '../../world/labelLayout';
 import type { BiomeId } from '../../biomes';
 import type { ArchipelagoId } from '../../world/archipelago';
 import { mapOf } from '../../world/map';
@@ -93,6 +96,12 @@ export interface LectureDeLaCarte {
   place(contexte: string): PlaceLue;
   /** L'île sous la flèche de la Carte, ou le point du monde où elle pose sa pointe (un ouvrage, GD-7), ou `null`. */
   destination(): DestinationDeLaCarte;
+  /**
+   * La taille de la vue, en pixels CSS, et ce que l'interface y pose (`ui`, un nouvel objet à chaque relecture), tenus à
+   * jour quand ils changent (pas relus dans la page image par image) : les bornes s'y cadrent au téléphone
+   * (`cadrerLesBornes`). Sans elle, une vue de tablette.
+   */
+  vue?: Readonly<{ w: number; h: number; ui?: InterfaceDeLaVue | null }>;
 }
 
 /** Ce que la flèche de la Carte désigne : une île, ou le point du monde (x, y au sol, z en hauteur) de sa pointe. */
@@ -458,4 +467,157 @@ export function decalagePourViser(cam: THREE.PerspectiveCamera, point: THREE.Vec
   const t = (point.y - o.y) / d.y;
   if (t <= 0) return out.set(0, 0, 0);
   return out.set(point.x - (o.x + d.x * t), 0, point.z - (o.z + d.z * t));
+}
+
+/**
+ * Les bornes de mission au téléphone en portrait (GD-14, consultant UX UI) : les bornes de l'île et leur bulle tiennent
+ * entières dans la vue, à `marge` pixels CSS de ses bords, sous les boutons du haut et au-dessus de la barre du bas
+ * (`InterfaceDeLaVue`). Seulement
+ * dans une vue plus étroite que `largeurMax` (un téléphone en portrait ; la tablette, même panneau ouvert, garde son
+ * cadrage). La bulle la plus grande (`BULLE.prochainePx`, la prochaine chose à faire) : sa plaque, de `demiBulle` de part
+ * et d'autre de sa pointe, et `hautBulle` au-dessus d'elle (la pointe, puis la plaque, ../signs.ts, `PLAQUE`).
+ */
+export const BORNES_AU_TELEPHONE = {
+  largeurMax: 480,
+  marge: 24,
+  demiBulle: BULLE.prochainePx / 2,
+  hautBulle: Math.ceil(((PLAQUE.pointe.bas - PLAQUE.y) * BULLE.prochainePx) / PLAQUE.cote),
+} as const;
+
+/**
+ * Ce que l'interface pose sur la vue, lu dans la page (three/WorldCanvas.tsx) : les boutons du haut (Menu et la colonne,
+ * ou la rangée en grand texte au téléphone, des classes : `data-couvre="bouton"`), et la hauteur de la barre du bas
+ * (`--barre-h`, ../../useBubblePlacement.ts), en pixels CSS. Sans elle (un test), aucun bouton et `RESERVE_DU_BAS`.
+ */
+export interface InterfaceDeLaVue {
+  boutons: readonly LabelBox[];
+  barre: number;
+}
+
+/** Ce que `cadrerLesBornes` a fait : le glissement à plat de la cible et de la caméra, puis le recul (1 : aucun). */
+export interface CadrageDesBornes {
+  glisse: THREE.Vector3;
+  recul: number;
+}
+
+const HAUT = new THREE.Vector3(0, 1, 0);
+
+/**
+ * Le moins qu'il faut pour que les bornes `bornes` (et leur bulle) tiennent dans une vue `w` × `h` (pixels CSS) vue de
+ * `pos` vers `target` (champ vertical `fov`), au téléphone en portrait (`BORNES_AU_TELEPHONE`) : si elles débordent d'un
+ * côté, la cible et la caméra glissent à plat, de côté, juste assez ; si elles ne tiennent pas en largeur, la caméra
+ * recule d'abord vers l'arrière de sa direction. Ni le nord ni la direction de vue ne changent. Si elles tiennent déjà,
+ * ou hors du téléphone : rien (`glisse` nul, `recul` 1). Le bas : la borne la plus proche reste au-dessus de la barre du
+ * bas (`ui.barre`) ; le haut : chaque bulle sous la marge du haut et sous les boutons du haut qu'elle croise (`ui.boutons`,
+ * lus dans la page : la colonne des classes, ou leur rangée en grand texte) ; la caméra glisse alors vers l'avant ou
+ * l'arrière.
+ * Calculé sans caméra : la projection de `THREE.PerspectiveCamera.lookAt`, refaite.
+ */
+export function cadrerLesBornes(
+  target: THREE.Vector3,
+  pos: THREE.Vector3,
+  bornes: readonly { x: number; y: number; sommet: number }[],
+  w: number,
+  h: number,
+  fov: number,
+  ui: InterfaceDeLaVue | null = null,
+): CadrageDesBornes {
+  const out: CadrageDesBornes = { glisse: new THREE.Vector3(), recul: 1 };
+  const B = BORNES_AU_TELEPHONE;
+  if (w >= h || w > B.largeurMax || bornes.length === 0) return out;
+  const t = target.clone();
+  const p = pos.clone();
+  const tanV = Math.tan((fov * Math.PI) / 360);
+  const tanH = tanV * (w / h);
+  const f = new THREE.Vector3();
+  const r = new THREE.Vector3();
+  const u = new THREE.Vector3();
+  const v = new THREE.Vector3();
+  /** Où se pose à l'écran (pixels CSS) le point (x, hauteur z, y) du monde ; `profondeur` : sa distance le long de la vue. */
+  const ecran = (x: number, z: number, y: number) => {
+    v.set(x, z, y).sub(p);
+    const profondeur = v.dot(f);
+    return { x: ((v.dot(r) / (profondeur * tanH) + 1) / 2) * w, y: ((1 - v.dot(u) / (profondeur * tanV)) / 2) * h, profondeur };
+  };
+  const lo = B.marge;
+  const hi = w - B.marge;
+  const haut = B.marge;
+  const bas = h - Math.max(RESERVE_DU_BAS, ui?.barre ?? 0) - B.marge;
+  // Les boutons du haut de la vue (au-dessus de son milieu) : une bulle qui passe sous l'un d'eux se tient `marge` plus bas.
+  const boutons = (ui?.boutons ?? []).filter((b) => b.y < h / 2);
+  for (let i = 0; i < 8; i++) {
+    f.subVectors(t, p).normalize();
+    r.crossVectors(f, HAUT).normalize();
+    u.crossVectors(r, f);
+    let gauche = { x: Infinity, profondeur: 1 };
+    let droite = { x: -Infinity, profondeur: 1 };
+    /** Le plus petit écart entre le haut d'une bulle et le haut qui lui est permis (négatif : elle monte trop haut). */
+    let dessus = { y: Infinity, profondeur: 1 };
+    let dessous = { y: -Infinity, profondeur: 1 };
+    for (const b of bornes) {
+      const pointe = ecran(b.x, b.sommet + SIGNE.auDessus, b.y);
+      const pied = ecran(b.x, b.sommet - ETAGES_DE_LA_BORNE.ardoise, b.y);
+      if (pointe.x - B.demiBulle < gauche.x) gauche = { x: pointe.x - B.demiBulle, profondeur: pointe.profondeur };
+      if (pointe.x + B.demiBulle > droite.x) droite = { x: pointe.x + B.demiBulle, profondeur: pointe.profondeur };
+      // Le haut permis de la bulle : sous chaque bouton du haut au-dessus duquel elle passe (à `marge` près de côté), sinon
+      // la marge du haut.
+      let plafond: number = haut;
+      for (const o of boutons)
+        if (pointe.x + B.demiBulle + B.marge > o.x - o.w / 2 && pointe.x - B.demiBulle - B.marge < o.x + o.w / 2) plafond = Math.max(plafond, o.y + o.h / 2 + B.marge);
+      if (pointe.y - B.hautBulle - plafond < dessus.y) dessus = { y: pointe.y - B.hautBulle - plafond, profondeur: pointe.profondeur };
+      if (pied.y > dessous.y) dessous = { y: pied.y, profondeur: pied.profondeur };
+    }
+    const large = droite.x - gauche.x;
+    if (large > hi - lo) {
+      // Trop large : la caméra recule (la part des bulles, de taille fixe, ne rapetisse pas).
+      const k = (large - 2 * B.demiBulle) / (hi - lo - 2 * B.demiBulle);
+      p.sub(t).multiplyScalar(k * 1.01).add(t);
+      out.recul *= k * 1.01;
+      continue;
+    }
+    // Le glissement de côté (en cases) qui pose le bord qui déborde sur la marge : un point à la profondeur `z` bouge à
+    // l'écran de −s / (z tanH) × w / 2 quand la caméra glisse de `s` vers la droite de la vue.
+    const dx = gauche.x < lo ? lo - gauche.x : droite.x > hi ? hi - droite.x : 0;
+    const profondeurX = gauche.x < lo ? gauche.profondeur : droite.profondeur;
+    // De même, vers l'avant (le haut de l'écran) : à plat, la projection du haut de la vue sur le sol.
+    const dy = dessous.y > bas ? bas - dessous.y : dessus.y < 0 ? -dessus.y : 0;
+    if (dx === 0 && dy === 0) break;
+    const s = (-dx * profondeurX * tanH) / (w / 2);
+    v.copy(r).multiplyScalar(s);
+    if (dy !== 0) {
+      // Glisser vers l'avant à plat de `a` cases fait monter un point à l'écran (vers le haut) d'environ a·(u·avant) / (z tanV) × h / 2.
+      const avant = new THREE.Vector3(f.x, 0, f.z).normalize();
+      const z = dy < 0 ? dessous.profondeur : dessus.profondeur;
+      const a = (-dy * z * tanV) / (h / 2) / Math.max(0.2, avant.dot(u));
+      v.addScaledVector(avant, -a);
+    }
+    t.add(v);
+    p.add(v);
+    out.glisse.add(v);
+  }
+  return out;
+}
+
+/**
+ * Les boîtes à l'écran (pixels CSS d'une vue `W` × `H`, vue par `cam`) des bornes des lieux `ids` avec leur bulle la plus
+ * grande (de la plaque au pied de la borne) : aucune étiquette d'île ne s'y pose (three/labels.ts, GD-14 : au Phare des
+ * fonctions, au téléphone, le nom de l'île couvrait une borne). Seules celles devant la caméra et dans la vue.
+ */
+export function boitesDesBornes(cam: THREE.Camera, W: number, H: number, ids: readonly BiomeId[]): LabelBox[] {
+  const B = BORNES_AU_TELEPHONE;
+  const out: LabelBox[] = [];
+  const p = new THREE.Vector3();
+  const vu = (x: number, z: number, y: number) => {
+    p.set(x, z, y).project(cam);
+    return p.z > 1 ? null : { x: ((p.x + 1) / 2) * W, y: ((1 - p.y) / 2) * H };
+  };
+  for (const id of ids)
+    for (const b of bornesDansLeMonde(id)) {
+      const pointe = vu(b.x, b.sommet + SIGNE.auDessus, b.y);
+      const pied = pointe && vu(b.x, b.sommet - ETAGES_DE_LA_BORNE.ardoise, b.y);
+      if (!pointe || !pied || pointe.x < -B.demiBulle || pointe.x > W + B.demiBulle || pied.y < 0 || pointe.y - B.hautBulle > H) continue;
+      const haut = pointe.y - B.hautBulle;
+      out.push({ x: pointe.x, y: (haut + pied.y) / 2, w: 2 * B.demiBulle, h: pied.y - haut });
+    }
+  return out;
 }

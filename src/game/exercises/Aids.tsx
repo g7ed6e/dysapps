@@ -12,8 +12,10 @@ export function NumberLineInt({ min, max, points = [], jump }: { min: number; ma
   const n = max - min;
   const x = (v: number) => 16 + ((v - min) / n) * 288;
   const every = n > 14 ? 5 : 1;
-  const fmt = (v: number) => (v < 0 ? `−${-v}` : String(v));
-  const label = `Droite graduée de ${fmt(min)} à ${fmt(max)}${points.length ? `, points marqués : ${points.map(fmt).join(', ')}` : ''}${jump ? `, bond de ${fmt(jump[0])} à ${fmt(jump[1])}` : ''}`;
+  const fmt = (v: number) => (v < 0 ? `−${String(-v).replace('.', ',')}` : String(v).replace('.', ','));
+  // Le nombre de points, jamais leur valeur : lire l'abscisse d'un point est souvent la question.
+  const marked = points.length === 1 ? ', un point marqué' : points.length ? `, ${points.length} points marqués` : '';
+  const label = `Droite graduée de ${fmt(min)} à ${fmt(max)}${marked}${jump ? `, bond de ${fmt(jump[0])} à ${fmt(jump[1])}` : ''}`;
   return (
     <figure className="number-line int-line">
       <svg viewBox="0 0 320 80" role="img" aria-label={label}>
