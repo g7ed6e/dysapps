@@ -6,7 +6,8 @@
 // une flèche en cubes dessus (une tige longue, la pointe large en triangle à marches, sans biais) ; « Tourner » : un arc
 // ouvert, sa pointe en marches (↷). Dans Archipéo (rattrapage), un radeau de trois planches, une flèche peinte à plat ;
 // « Tourner » : une flèche en arc fin peinte sur une bouée ronde à huit pans, sa pointe marquée, dans le même sens (↷).
-// Quand une terre occupe la place d'une poignée, la flèche se pose quand même là, par-dessus, toujours visible.
+// Quand une terre occupe la place d'une poignée, la flèche se pose quand même là, par-dessus, toujours visible ; sauf
+// « Tourner » d'un lieu, qui passe à un autre coin plutôt que sur la terre d'un autre lieu (GD-12, 9 octobre 2026).
 // Indisponible (au bord de la carte) : le radeau gris pierre, la pointe disparaît (la tige seule) ; une arrivée ou une
 // borne, qui ne vont que le long de leur côte ou de leur rangée, ne montrent pas leurs flèches indisponibles. Le choix sur une
 // place prise (choix 3 du mainteneur, 6 octobre 2026) : une croix grise, bordée de sombre, au milieu de son emprise.
@@ -14,8 +15,10 @@
 // Ici : où se tient chaque poignée (à une place du bord de l'emprise du choix, jamais plus loin, par-dessus la terre si
 // l'eau n'est pas là), sa forme (sommets et couleurs, en cases, dans le repère de Three : x, hauteur, y) et ce
 // qu'elle coûte. Code pur, sans Three.js ; la 3D les dessine en un seul maillage (three/arrangeHandles.ts).
+import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
-import { DIRECTION_STEP } from './arrange';
+import { DIRECTION_STEP, joinedWith, othersFootprintsOf } from './arrange';
+import { archipelagoOfIsland } from './archipelagos';
 import { type ArrangeChoice, canTurn, choiceFits, stepChoice } from './arrangeMode';
 import type { Rectangle } from './placement';
 import type { CleDePoignee, PoigneeDuMonde, PoigneesDuChoix } from './view';
@@ -87,13 +90,16 @@ export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z:
     // Une arrivée ou une borne ne va que le long de sa côte ou de sa rangée : une flèche qui ne mène nulle part n'y est
     // pas montrée (deux radeaux gris à tige courte, côte à côte, s'y lisaient comme des dalles).
     if (!dispo && (c.genre === 'arrivee' || c.genre === 'borne')) continue;
-    const sens = SENS[cle];
-    const places: number[] = [];
-    for (const e of ECHELLES) {
-      const demi = (COTE_DU_RADEAU / 2) * e;
-      const loin = (rayon: number) => Math.max(rayon + ECART + demi, ELOIGNEMENT * e);
-      places.push(sens.dx * loin(rx), sens.dy * loin(ry));
-    }
+    const placesVers = (sens: { dx: number; dy: number }) => {
+      const places: number[] = [];
+      for (const e of ECHELLES) {
+        const demi = (COTE_DU_RADEAU / 2) * e;
+        const loin = (rayon: number) => Math.max(rayon + ECART + demi, ELOIGNEMENT * e);
+        places.push(sens.dx * loin(rx), sens.dy * loin(ry));
+      }
+      return places;
+    };
+    const places = cle === 'tourner' && c.genre === 'lieu' ? coinDeTourner(world, c.id, cx, cy, placesVers) : placesVers(SENS[cle]);
     liste.push({ cle, ox: places[0], oy: places[1], places, dispo });
   }
   const demi = COTE_DU_RADEAU / 2;
@@ -113,6 +119,45 @@ export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z:
     emprise,
     ...(choiceFits(world, c) ? {} : { prise: { bras: brasDeLaCroix(rx, ry) } }),
   };
+}
+
+/**
+ * L'échelle des radeaux sur la Carte de la tablette, la région entière cadrée (3,4 à 4 pixels par case : un radeau de
+ * `POIGNEE_MIN_PX` y fait 12 à 14 cases, l'échelle 4 à 5) ; au-delà (un téléphone, la Carte de loin), un radeau de vingt
+ * cases touche toujours une terre, et « Tourner » garde son coin.
+ */
+const ECHELLE_DE_LA_CARTE = 5;
+
+/**
+ * Le coin de « Tourner » pour un lieu choisi : le coin nord-est, sauf si son radeau s'y pose sur la terre d'un autre lieu
+ * (ou l'îlot d'une de ses grandes constructions, son quai, une réunion) ; alors le premier autre coin où il n'en touche
+ * aucune (au 3e, le Tremplin des forces choisi, son radeau se posait sur la Ruche des réseaux : GD-12, relecture du 9
+ * octobre 2026). Compté à chaque échelle de `ECHELLES` jusqu'à celle de la Carte (`ECHELLE_DE_LA_CARTE`) : le coin où
+ * le radeau touche une terre au moins d'échelles ; à égalité, le premier (nord-est, nord-ouest, sud-est, sud-ouest).
+ */
+function coinDeTourner(world: World, id: BiomeId, cx: number, cy: number, placesVers: (sens: { dx: number; dy: number }) => number[]): number[] {
+  const p = joinedWith(world, id);
+  const autres = othersFootprintsOf(world, archipelagoOfIsland(id), p ? [id, p] : [id]);
+  const { dx, dy } = SENS.tourner;
+  let meilleur: number[] = [];
+  let moinsDeTerre = Infinity;
+  for (const sens of [{ dx, dy }, { dx: -dx, dy }, { dx, dy: -dy }, { dx: -dx, dy: -dy }]) {
+    const places = placesVers(sens);
+    let surLaTerre = 0;
+    ECHELLES.forEach((e, i) => {
+      if (e > ECHELLE_DE_LA_CARTE) return;
+      const demi = (COTE_DU_RADEAU / 2) * e;
+      const x = cx + places[2 * i];
+      const y = cy + places[2 * i + 1];
+      if (autres.some((r) => x + demi > r.x0 && x - demi < r.x1 && y + demi > r.y0 && y - demi < r.y1)) surLaTerre++;
+    });
+    if (surLaTerre < moinsDeTerre) {
+      meilleur = places;
+      moinsDeTerre = surLaTerre;
+    }
+    if (surLaTerre === 0) break;
+  }
+  return meilleur;
 }
 
 /**

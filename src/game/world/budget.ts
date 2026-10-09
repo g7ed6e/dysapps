@@ -119,7 +119,7 @@ export interface Enveloppe {
  */
 export const ENVELOPPES: Record<
   Poste,
-  { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'socle'; nom: string; premiersRivages: Enveloppe; autres: Enveloppe; parArchipel?: Partial<Record<ArchipelagoId, Enveloppe>> }
+  { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'socle'; nom: string; premiersRivages: Enveloppe; autres: Enveloppe; parArchipel?: Partial<Record<Exclude<ArchipelagoId, '6e'>, Enveloppe>> }
 > = {
   // Proposition de l'artiste technique 3D pour le Jardin des heures (LV2, 4e), à valider par le mainteneur : au bout de
   // la crête, à six blocs d'altitude, l'île ajoute 2 775 triangles au sol des Anciens Ateliers (21 268 → 24 043). Les
@@ -188,8 +188,8 @@ export const ENVELOPPES: Record<
   // enveloppe descend à 36 500 pour que la somme tienne sous `RENDER_BUDGET_AUTRES` (78 700, commandes des quêtes de la 5e comprises) avec le décor et la mer
   // relevés. Aux Îles du Ciel, plus de terre dans le ciel (ses dessous et ses parois, environ 3,7 triangles de plus par
   // case) porte le sol de 34 109 à 38 999 triangles, avec le trait des formes court sur sept îles (5 cases au lieu de 7) :
-  // leur enveloppe monte à 39 000, prise sur leur décor (9 008 mesurés), qui descend de 13 600 à 11 800 ; la somme du 3e
-  // ne change pas (75 535).
+  // leur enveloppe monte à 39 000, prise sur leur décor (9 008 mesurés), qui descend de 13 600 à 11 800 : l'échange
+  // entre le sol et le décor est neutre, et la somme du 3e, telle que la compte budget.test.ts, est de 76 035.
   sol: {
     lot: 'R4b',
     nom: 'Sol',

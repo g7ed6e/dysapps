@@ -248,13 +248,14 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
     /** Les étiquettes montrées posées sur la flèche. */
     surLaFleche: iles.filter((_, i) => visibles[i] && recouvre({ ...boxes[i], x: boxes[i].x + offsets[i].dx, y: boxes[i].y + offsets[i].dy }, fleche)).map((b) => b.id),
     dessus: new Map(iles.map((b, i) => [b.id, points[i].y - (boxes[i].y + offsets[i].dy)])),
-    /** Les îles dont le nom, montré, est plus près d'une autre île que de la sienne, vu de son milieu. */
+    /** Les îles dont le nom, montré, est plus près d'une autre île que de la sienne, vu de son milieu (`onAnotherIsland`). */
     ailleurs: iles
       .filter((_, i) => {
         if (!visibles[i]) return false;
         const at = { x: boxes[i].x + offsets[i].dx, y: boxes[i].y + offsets[i].dy, w: boxes[i].w / 2, h: boxes[i].h };
         const loin = (p: { x: number; y: number }) => Math.hypot(Math.max(0, Math.abs(p.x - at.x) - at.w / 2), Math.max(0, Math.abs(p.y - at.y) - at.h / 2));
-        return points.some((p, j) => j !== i && loin(p) < loin(points[i]));
+        // Deux îles sous son milieu, à la même distance : il désigne la plus proche de son centre, de côté (`onAnotherIsland`).
+        return points.some((p, j) => j !== i && (loin(p) < loin(points[i]) || (loin(p) === loin(points[i]) && Math.abs(p.x - at.x) < Math.abs(points[i].x - at.x))));
       })
       .map((b) => b.id),
   };

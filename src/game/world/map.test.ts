@@ -22,10 +22,10 @@ it('chaque île a une place, une altitude selon sa classe, et son cœur fait par
 });
 
 it('la côte écrite d’un lieu qui a une forme (GD-12) est celle de sa forme', () => {
-  // La carte de départ l'écrit en dur, pour ne pas calculer un masque par lieu à l'import de map.ts (formes.test.ts
-  // compte les lieux de chaque archipel).
+  // La carte de départ l'écrit en dur, pour ne pas calculer un masque par lieu à l'import de map.ts. Chaque lieu des
+  // quatre archipels a sa forme (GD-12).
   const formes = MAP.filter((d) => silhouetteDe(d.id).forme);
-  expect(formes.length).toBeGreaterThanOrEqual(15);
+  expect(formes.length).toBe(MAP.length);
   for (const d of formes) expect(d.ext, d.id).toEqual(etendueDuLieu(d, silhouetteDe(d.id).forme!));
 });
 

@@ -1,9 +1,9 @@
 // Les poignées du mode « Modifier le plan » dans le monde (GD-9, intention du directeur artistique du 6 octobre 2026) :
-// chacune de son côté, sur l'eau, à une place du bord de l'emprise du choix ; « Tourner » au coin nord-est et seulement
-// pour ce qui tourne ; indisponible au bord de la carte ; sans se toucher à aucune échelle ; leur forme sous le budget
+// chacune de son côté, sur l'eau, à une place du bord de l'emprise du choix ; « Tourner » au coin nord-est (un autre
+// coin si son radeau y tomberait sur un autre lieu) et seulement pour ce qui tourne ; indisponible au bord de la carte ; sans se toucher à aucune échelle ; leur forme sous le budget
 // (400 triangles, un appel), sans le jaune des places libres ; la croix grise d'une place prise.
 import { describe, expect, it } from 'vitest';
-import { currentLandings, DIRECTION_STEP, routesIn, spotOf } from './arrange';
+import { currentLandings, DIRECTION_STEP, othersFootprintsOf, routesIn, spotOf } from './arrange';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import {
   bordDeLaCroix,
@@ -29,7 +29,7 @@ const lieux = mapOf('6e').map((d) => d.id);
 const unLieu = lieux.map((id) => chooseIsland(world, id)).find((c) => c !== null)!;
 
 describe('les poignées autour du choix', () => {
-  it('un lieu : seul « Tourner », au coin nord-est, hors de l’emprise du fantôme ; aucune flèche (« trop de boutons », 7 octobre 2026)', () => {
+  it('un lieu : seul « Tourner », au coin nord-est d’ordinaire, hors de l’emprise du fantôme ; aucune flèche (« trop de boutons », 7 octobre 2026)', () => {
     const v = arrangeView(world, unLieu);
     const p = v.poignees!;
     expect(p.liste.map((q) => q.cle)).toEqual(['tourner']);
@@ -40,8 +40,33 @@ describe('les poignées autour du choix', () => {
     const demi = COTE_DU_RADEAU / 2;
     // Hors de l'emprise, d'au moins une place.
     expect(x + demi <= r.x0 - 1 + 1e-9 || x - demi >= r.x1 + 1 - 1e-9 || y + demi <= r.y0 - 1 + 1e-9 || y - demi >= r.y1 + 1 - 1e-9).toBe(true);
-    expect(Math.sign(q.ox)).toBe(DIRECTION_STEP.est.dx);
-    expect(Math.sign(q.oy)).toBe(DIRECTION_STEP.nord.dy);
+    // Au coin nord-est d'ordinaire (ailleurs quand il y tomberait sur un autre lieu : le test suivant).
+    const auNordEst = lieux.filter((id) => {
+      const c = chooseIsland(world, id);
+      const t = c && arrangeView(world, c).poignees!.liste[0];
+      return t && Math.sign(t.ox) === DIRECTION_STEP.est.dx && Math.sign(t.oy) === DIRECTION_STEP.nord.dy;
+    });
+    expect(auNordEst.length).toBeGreaterThan(lieux.length / 2);
+  });
+
+  it('« Tourner » ne se pose jamais sur la terre d’un autre lieu : il passe à un autre coin (GD-12, le Tremplin des forces au 3e)', () => {
+    const tremplin = arrangeView(world, chooseIsland(world, 'physics-chemistry-3e-motion-energy')!).poignees!;
+    // Au coin nord-est, son radeau se posait sur la Ruche des réseaux, sa voisine réunie : il passe à un autre coin.
+    const [t] = tremplin.liste;
+    expect(Math.sign(t.ox) === DIRECTION_STEP.est.dx && Math.sign(t.oy) === DIRECTION_STEP.nord.dy).toBe(false);
+    for (const a of ARCHIPELAGO_IDS)
+      for (const d of mapOf(a)) {
+        const c = chooseIsland(world, d.id);
+        if (!c) continue;
+        const p = arrangeView(world, c).poignees!;
+        const autres = othersFootprintsOf(world, a, [d.id]);
+        const [q] = p.liste;
+        const x = p.cx + q.ox;
+        const y = p.cy + q.oy;
+        const demi = COTE_DU_RADEAU / 2;
+        // À l'échelle 1, le radeau sur l'eau, hors de toute autre emprise.
+        expect(autres.some((r) => x + demi > r.x0 && x - demi < r.x1 && y + demi > r.y0 && y - demi < r.y1), d.id).toBe(false);
+      }
   });
 
   it('aucun lieu ne montre de flèche ; « Tourner » sert toujours', () => {

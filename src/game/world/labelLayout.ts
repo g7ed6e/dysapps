@@ -620,11 +620,22 @@ function milieu(r: LabelBox): LabelBox {
   return { ...r, w: r.w / 2 };
 }
 
-/** Le nom `i`, posé en `at`, est-il plus près d'une autre île que de la sienne, vu de son milieu (`milieu`) ? */
+/**
+ * Le nom `i`, posé en `at`, est-il plus près d'une autre île que de la sienne, vu de son milieu (`milieu`) ? Deux îles
+ * toutes deux sous le milieu d'un nom large sont à la même distance de lui : c'est alors celle qui est le plus près du
+ * centre du nom, de côté, qu'il désigne. Sans cela, sur la Carte en OpenDyslexic 32 px, un nom de 400 px se centrait
+ * au-dessus de la voisine dont le nom s'était tu (au 3e, le Kiosque des témoins au-dessus du Verger de la santé ; au 4e,
+ * debout, le Jardin des heures entre son île et la Falaise des accords : GD-12, relecture du 9 octobre 2026).
+ */
 function onAnotherIsland(at: LabelBox, i: number, iles: readonly { x: number; y: number }[]): boolean {
   const m = milieu(at);
   const d = distanceA(m, iles[i]);
-  return iles.some((q, j) => j !== i && distanceA(m, q) < d);
+  const cote = Math.abs(iles[i].x - at.x);
+  return iles.some((q, j) => {
+    if (j === i) return false;
+    const e = distanceA(m, q);
+    return e < d || (e === d && Math.abs(q.x - at.x) < cote);
+  });
 }
 
 /**
@@ -663,10 +674,8 @@ function reparerLaCarte(
     const ile = iles[i];
     if (!entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds)) return false;
     if (distanceA(at, ile) > distanceA(b, ile) + ECART_MAX * b.h) return false;
-    // Pas plus près d'une autre île que de la sienne, vu du milieu du nom (voir `milieu`).
-    const m = milieu(at);
-    const d = distanceA(m, ile);
-    return !iles.some((q, j) => j !== i && distanceA(m, q) < d);
+    // Pas plus près d'une autre île que de la sienne, vu du milieu du nom (voir `milieu`, `onAnotherIsland`).
+    return !onAnotherIsland(at, i, iles);
   };
   /** La place `at` est-elle hors des repères, et libre pour le nom `i` (la garde de la destination) ? */
   const horsDesReperes = (i: number, at: LabelBox) => !obstacles.some((v) => overlap(at, v, gap) > 0) && libre(i, at);
@@ -810,9 +819,7 @@ export function placerDAbordSimplement<R extends { offsets: LabelOffset[]; visib
     if (!ileVue(i)) return false;
     if (!simple.visibles[i]) return true;
     const w = simple.sansSigne?.[i] && etroites[i] !== undefined ? etroites[i]! : b.w;
-    const m = milieu({ ...b, w, x: b.x + simple.offsets[i].dx, y: b.y + simple.offsets[i].dy });
-    const d = distanceA(m, iles[i]);
-    return iles.some((q, j) => j !== i && distanceA(m, q) < d);
+    return onAnotherIsland({ ...b, w, x: b.x + simple.offsets[i].dx, y: b.y + simple.offsets[i].dy }, i, iles);
   });
   return aReprendre ? placer(rechercheDuCadrage()) : simple;
 }
@@ -854,11 +861,7 @@ interface DemandeDeRecherche {
 function chercherToutesLesPlaces(d: DemandeDeRecherche): void {
   const { boxes, iles, vues, tientSeule, horsDesReperes, bounds, gap, poussable, voulue, poser, recherche } = d;
   let noms = boxes.map((_, i) => i).filter(d.ileVue);
-  const surSonIle = (i: number, at: LabelBox) => {
-    const m = milieu(at);
-    const loin = distanceA(m, iles[i]);
-    return !iles.some((q, j) => j !== i && distanceA(m, q) < loin);
-  };
+  const surSonIle = (i: number, at: LabelBox) => !onAnotherIsland(at, i, iles);
   const tus = noms.filter((i) => !vues.has(i));
   const ailleurs = noms.some((i) => poussable(i) && vues.has(i) && !surSonIle(i, vues.get(i)!));
   // Le nom de la destination n'est pas à la place voulue (comparée par ses coordonnées : `poser` la pose telle quelle).

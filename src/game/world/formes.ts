@@ -1,5 +1,6 @@
 // Les formes des îles (GD-12, « Une forme par île », décision du mainteneur du 8 octobre 2026) : un petit catalogue de
-// sept formes de nature (le galet, le croissant, le haricot, la presqu'île, la goutte, le trèfle, la cacahuète), que
+// onze formes, sept de nature (le galet, le croissant, le haricot, la presqu'île, la goutte, le trèfle, la cacahuète) et
+// quatre plus marquées (le fer à cheval, le crochet, le lagon, le moulinet, 9 octobre 2026), que
 // chaque île prend à la main (./silhouettes/), orientée (vers le devant, le fond, la gauche ou la droite, et en miroir).
 // La forme se pose autour du cœur, qui ne bouge pas : c'est la terre autour qui change. Chaque forme est une distance
 // signée (en cases) à son bord, faite de quelques volumes simples (disques, gélules, rectangles arrondis), lue dans le
@@ -7,7 +8,7 @@
 // 22, 13 pour un cœur de 26). Le bruit de la graine de l'île casse ensuite le contour à la case près (./map.ts).
 // Code pur, sans Three.js.
 
-/** Les sept formes du catalogue (docs/gameplay/propositions/GD-12.md, §1). */
+/** Les onze formes du catalogue (docs/gameplay/propositions/GD-12.md, §1 et « Les quatre »). */
 export type FormeId = 'galet' | 'croissant' | 'haricot' | 'presquile' | 'goutte' | 'trefle' | 'cacahuete' | 'fer' | 'crochet' | 'lagon' | 'moulinet';
 
 /**
@@ -115,7 +116,7 @@ const FEATURE_REACH = FEATURE_BOX + 0.8;
  */
 const TRAIT_DU_FER = 10;
 const TRAIT_LONG = 12;
-const REACH_FER = TRAIT_DU_FER + 0.8;
+const FER_REACH = TRAIT_DU_FER + 0.8;
 const REACH_LONG = TRAIT_LONG + 0.8;
 
 /** Le plus long trait du catalogue, en cases depuis le bord du cœur (la boîte la plus profonde d'une forme). */
@@ -258,7 +259,7 @@ const SHAPE_CATALOGUE: Readonly<Record<FormeId, ShapeDrawing>> = {
     side: -1,
     trait: TRAIT_DU_FER,
     distance: (u, v, s) => {
-      const dehors = rectangleArrondi(u, v, 0, -(s + REACH_FER / 2), s + 2, REACH_FER / 2, 5);
+      const dehors = rectangleArrondi(u, v, 0, -(s + FER_REACH / 2), s + 2, FER_REACH / 2, 5);
       return unionDouce(body(u, v, s), Math.max(dehors, -eauDuFer(u, v, s)), 2);
     },
     feature: (u, v, s) => v < -s && Math.abs(u) > 7,
@@ -295,23 +296,28 @@ const SHAPE_CATALOGUE: Readonly<Record<FormeId, ShapeDrawing>> = {
     calme: (u, v, s) => eauDuLagon(u, v, s) < 3,
   },
   // Le moulinet : quatre bras de huit cases de large, un par coin, tournés dans le même sens, qui s'avancent de sept
-  // cases sur chacun des quatre côtés : sa boîte est la même à chaque quart de tour. Un lobe couvre chaque coin.
+  // cases sur chacun des quatre côtés : sa boîte est la même à chaque quart de tour. Un lobe couvre chaque coin. Entre
+  // deux bras, l'échancrure descend jusqu'aux deux cases de terre autour du cœur, sans bruit de côte ni congé qui la
+  // comble (mainteneur, carte « Creuser », 9 octobre 2026) : sur la Carte, on voit quatre bras, et non un carré.
   moulinet: {
     side: -1,
     partout: true,
-    distance: (u, v, s) => {
-      // Le bras de devant part du coin de gauche ; les trois autres sont le même, tourné d'un, deux, trois quarts de tour.
-      const bras = (a: number, b: number) => rectangleArrondi(a, b, -(s - 4), -(s + FEATURE_REACH / 2 - 1), 4, FEATURE_REACH / 2 + 1, 3);
-      return unionDouce(body(u, v, s), Math.min(bras(u, v), bras(-v, u), bras(-u, -v), bras(v, -u)), 2);
-    },
+    distance: (u, v, s) => unionDouce(body(u, v, s), brasDuMoulinet(u, v, s), 1),
     feature: () => false,
     corners: () => ['terre', 'terre', 'terre', 'terre'],
+    calme: (u, v, s) => brasDuMoulinet(u, v, s) > 2,
   },
 };
 
+/** Les quatre bras du moulinet (distance signée) : celui de devant part du coin de gauche, les trois autres sont le même, tourné d'un, deux, trois quarts de tour. */
+function brasDuMoulinet(u: number, v: number, s: number): number {
+  const bras = (a: number, b: number) => rectangleArrondi(a, b, -(s - 4), -(s + FEATURE_REACH / 2 - 1), 4, FEATURE_REACH / 2 + 1, 3);
+  return Math.min(bras(u, v), bras(-v, u), bras(-u, -v), bras(v, -u));
+}
+
 /** L'eau de la baie du fer et de sa passe (distance signée, négative dans l'eau), dans le repère propre de la forme. */
 function eauDuFer(u: number, v: number, s: number): number {
-  return Math.min(rectangleArrondi(u, v, 0, -(s + 3.5), 7, 2.5, 2), rectangleArrondi(u, v, 0, -(s + REACH_FER), 4, 4, 1));
+  return Math.min(rectangleArrondi(u, v, 0, -(s + 3.5), 7, 2.5, 2), rectangleArrondi(u, v, 0, -(s + FER_REACH), 4, 4, 1));
 }
 
 /** L'eau du lagon et de sa passe (distance signée, négative dans l'eau), dans le repère propre de la forme. */

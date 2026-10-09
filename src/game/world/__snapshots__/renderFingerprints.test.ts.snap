@@ -6,8 +6,8 @@ exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 3e 1`] =
   "décor (lueurs)": "f2b373df",
   "décor (primitives)": "bd7346a3",
   "décor (style a)": "a92a0152",
-  "modelé dessiné": "fb594494",
-  "relief": "47494ca2",
+  "modelé dessiné": "a870aac6",
+  "relief": "1cc74989",
 }
 `;
 
@@ -28,7 +28,7 @@ exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 5e 1`] =
   "décor (lueurs)": "13fe3a3b",
   "décor (primitives)": "b864ed38",
   "décor (style a)": "e5be8e65",
-  "modelé dessiné": "09a50e60",
+  "modelé dessiné": "ca2c057a",
   "relief": "7477ff40",
 }
 `;
