@@ -148,12 +148,10 @@ it('la rangée extérieure des marges est cassée de loin en loin (une pierre, u
 it('dans le cœur d’une île-école, les bornes, la créature, les lieux et la zone des plans gardent leur place', () => {
   for (const id of IDS) {
     const def = islandDef(id);
-    // Les bornes au pas de 4, centrées sur la visée (redistribution « Trois bandes », 02/10/2026).
-    expect(questStations(id).map((s) => [s.x, s.y]), id).toEqual([
-      [4, 1],
-      [8, 1],
-      [12, 1],
-    ]);
+    // Les bornes au pas de 4, centrées sur la visée (redistribution « Trois bandes », 02/10/2026) : trois missions aux
+    // places du milieu, quatre penchent d'une place à gauche, cinq les prennent toutes (GD-14).
+    const attendues = { 3: [4, 8, 12], 4: [0, 4, 8, 12], 5: [0, 4, 8, 12, 16] }[questStations(id).length];
+    expect(questStations(id).map((s) => [s.x, s.y]), id).toEqual(attendues?.map((x) => [x, 1]));
     const spot = creatureSpot(id);
     const decorDesMarges = new Set(margesDuCoeur(def).filter((m) => m.decor).map((m) => `${m.x - def.core.x},${m.y - def.core.y}`));
     expect(decorDesMarges.has(`${spot.x},${spot.y}`), id).toBe(false);

@@ -5181,6 +5181,140 @@ button.island-quest:active {
   background: var(--yellow);
   border-style: dashed;
 }
+/* Figures de géométrie (GeometryAids/) : triangle et angles, angle, figure plane, solide, figure et son image, repère.
+   Traits épais de la couleur du texte, fond uni, cotes à la police de l'application (un halo de la couleur du panneau
+   les détache des traits) ; la valeur cherchée « ? » ressort en violet. Rien d'animé. */
+.geometry {
+  margin: 0;
+}
+.geometry svg {
+  width: 100%;
+  /* Bornée par la hauteur de l'écran, comme le graphique : sur une tablette à l'horizontale, aucune figure ne prend plus
+     de 45 % de la hauteur, et laisse place à la règle et aux réponses. Jamais sous 15rem pourtant : sur un téléphone à
+     l'horizontale, 45 % ferait tomber les lettres des figures hautes vers 10 px ; mieux vaut faire défiler. */
+  max-width: min(24rem, max(45vh, 15rem));
+  max-height: max(45vh, 15rem);
+  display: block;
+  margin: 0 auto;
+  color: var(--text);
+}
+.geometry .geo-shape {
+  fill: color-mix(in srgb, var(--cyan) 25%, var(--surface));
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.geometry .geo-image {
+  fill: color-mix(in srgb, var(--yellow) 40%, var(--surface));
+}
+.geometry .geo-outline {
+  fill: var(--surface);
+}
+.geometry .geo-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.geometry .geo-thin {
+  stroke-width: 2;
+}
+.geometry .geo-dash {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-dasharray: 7 6;
+}
+.geometry .geo-right {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.geometry .geo-tick {
+  stroke: currentColor;
+  stroke-width: 3;
+}
+.geometry .geo-arc {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+}
+.geometry .geo-arrowhead,
+.geometry .geo-point {
+  fill: currentColor;
+}
+.geometry .geo-grid {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.3;
+}
+/* L'axe d'une symétrie : un trait mixte, en couleur, qui ne se confond ni avec le quadrillage ni avec une figure. */
+.geometry .geo-axis {
+  stroke: var(--violet);
+  stroke-width: 3;
+  stroke-dasharray: 12 5 3 5;
+}
+.geometry .geo-plot-point {
+  fill: var(--violet);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.geometry .geo-face {
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.geometry .geo-front {
+  fill: color-mix(in srgb, var(--cyan) 30%, var(--surface));
+}
+.geometry .geo-top {
+  fill: color-mix(in srgb, var(--cyan) 12%, var(--surface));
+}
+.geometry .geo-side {
+  fill: color-mix(in srgb, var(--cyan) 55%, var(--surface));
+}
+.geometry .geo-cube-line {
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.geometry text {
+  fill: currentColor;
+  font-family: var(--font-family);
+  /* 21 dans le repère du dessin, comme le graphique : des dessins de 330 de large au plus gardent le texte à 18 px au
+     moins sur un téléphone. */
+  font-size: 21px;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+/* Les réglages d'espacement ne s'appliquent pas aux cotes : « −1 » et « 0 » espacés se liraient « −10 ». */
+.geometry .geo-text {
+  letter-spacing: 0;
+  word-spacing: 0;
+}
+.geometry .geo-name {
+  font-weight: 700;
+}
+/* Les signes « + » et « − » des demi-axes du repère vide : plus grands que les nombres. */
+.geometry .geo-sign {
+  font-size: 28px;
+}
+.geometry text.ask {
+  fill: var(--violet);
+  font-weight: 700;
+}
+.geometry .geo-arc.ask,
+.geometry .geo-line.ask {
+  stroke: var(--violet);
+}
+:root[data-theme="night"] .geometry text.ask,
+:root[data-theme="night"] .geometry .geo-plot-point {
+  fill: var(--yellow);
+}
+:root[data-theme="night"] .geometry :is(.geo-arc.ask, .geo-line.ask, .geo-axis) {
+  stroke: var(--yellow);
+}
 /* Graphique d'une fonction : quadrillage discret, axes fléchés, nombres à taille de l'interface (un halo de la couleur
    du panneau les détache du quadrillage et de la droite), une droite épaisse avec ses points aux intersections. Rien
    d'animé. */

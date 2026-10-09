@@ -95,13 +95,13 @@ it('la file de révision suit : l’exercice change, la clé de l’item jamais'
   expect(g.spaced.map(({ due, stage, streak }) => ({ due, stage, streak }))).toEqual(kept.map(({ due, stage, streak }) => ({ due, stage, streak })));
 });
 
-it('le stock, les niveaux adaptés, les parties posées et les liaisons restent tels quels ; la partie passe au format 4', () => {
+it('le stock, les niveaux adaptés, les parties posées et les liaisons restent tels quels ; la partie passe au dernier format', () => {
   const g = translateGame(FORMAT_3) as typeof FORMAT_3;
   expect(g.stock).toEqual(FORMAT_3.stock);
   expect(g.types).toEqual(FORMAT_3.types);
   expect(g.world).toEqual(FORMAT_3.world);
-  expect(GAME_VERSION).toBe(4);
-  expect(sanitizeState(FORMAT_3).version).toBe(4);
+  expect(GAME_VERSION).toBe(5);
+  expect(sanitizeState(FORMAT_3).version).toBe(5);
   expect(sanitizeState(FORMAT_3).progress['maths-4e-powers-subtracting-1']).toEqual(P(2, 3, 0.8));
 });
 
@@ -123,13 +123,13 @@ it('une très ancienne partie (identifiants d’avant les mots neutres) passe pa
   expect(g.spaced[0].itemId).toBe('maths-4e-powers-subtracting-1:mul-3-4');
 });
 
-it('la sauvegarde de l’appareil passe au format 4, et « Ma dernière mission » suit la mission déplacée, sous son nouveau nom', () => {
+it('la sauvegarde de l’appareil passe au dernier format, et « Ma dernière mission » suit la mission déplacée, sous son nouveau nom', () => {
   localStorage.clear();
   localStorage.setItem('dysapps:game', JSON.stringify(FORMAT_3));
   localStorage.setItem('dysapps:resume', JSON.stringify({ path: '/adventure/maths-5e-signed-numbers/subtracting', label: 'Crevasses' }));
   migrateStorage();
   const game = JSON.parse(localStorage.getItem('dysapps:game')!) as { version: number; progress: Record<string, unknown> };
-  expect(game.version).toBe(4);
+  expect(game.version).toBe(5);
   expect(game.progress['maths-4e-powers-subtracting-3']).toEqual(P(3, 2, 1));
   // L'adresse reste celle d'avant dans la sauvegarde : lastPlace la suit à la lecture, avec le libellé de sa nouvelle place.
   expect(JSON.parse(localStorage.getItem('dysapps:resume')!)).toEqual({ path: '/adventure/maths-5e-signed-numbers/subtracting', label: 'Crevasses' });
@@ -248,33 +248,35 @@ it('le bâtiment d’un lieu qui perd ou reçoit une mission : rien de posé ne 
   const garde = (s: { world: { parts: Record<string, string[]> } }, parts: Record<string, string[]>) => {
     for (const [plan, keys] of Object.entries(parts)) expect(s.world.parts[plan], plan).toEqual(expect.arrayContaining(keys));
   };
-  // Le Glacier a trois missions : trois parties, une par plan, aux noms des plans (plus de « bas » ni de « haut »).
-  expect(partiesDe('maths-5e-signed-numbers').map((p) => p.nom)).toEqual([p0.name, p1.name, p2.name]);
+  // Le Glacier a reçu deux missions au 9 octobre 2026 (GD-14) : cinq parties ; l'igloo n'a que deux rangées, il se
+  // coupe en deux, et le dôme aussi.
+  expect(partiesDe('maths-5e-signed-numbers').map((p) => p.nom).at(-1)).toBe(p2.name);
 
   // 1 partie sur 4, posée par le Thermomètre (qui reste) : le premier plan s'achève à l'ouverture, rien ne s'enlève.
   const un = ouvrir({ 'maths-5e-signed-numbers-thermometer-1': P(2, 1, 0.8) }, { [p0.id]: bas });
   garde(un, { [p0.id]: bas });
   expect(partiesPosees('maths-5e-signed-numbers', un.world.parts)).toBe(1);
-  // 1 partie sur 4, posée par les Crevasses (parties à la Forge) : le bas reste posé, la partie suivante est le premier plan.
+  // 1 partie sur 4, posée par les Crevasses (parties à la Forge) : le bas reste posé ; la partie suivante est le haut
+  // de l'igloo (GD-14).
   const crevasses = ouvrir({ 'maths-5e-signed-numbers-subtracting-1': P(2, 1, 0.8) }, { [p0.id]: bas });
   garde(crevasses, { [p0.id]: bas });
-  expect(partiesPosees('maths-5e-signed-numbers', crevasses.world.parts)).toBe(0);
-  expect(prochainePartie('maths-5e-signed-numbers', crevasses.world.parts)?.nom).toBe(p0.name);
-  // 3 parties sur 4 (le premier plan entier, le deuxième) : 2 sur 3, la suivante est le troisième plan.
+  expect(partiesPosees('maths-5e-signed-numbers', crevasses.world.parts)).toBe(1);
+  expect(prochainePartie('maths-5e-signed-numbers', crevasses.world.parts)?.nom).toBe('Le haut de l’igloo de Frimas');
+  // 3 parties sur 4 (le premier plan entier, le deuxième) : 4 sur 5, la suivante est le troisième plan.
   const trois = ouvrir(
     { 'maths-5e-signed-numbers-thermometer-1': P(2, 1, 0.8), 'maths-5e-signed-numbers-adding-1': P(2, 1, 0.8), 'maths-5e-signed-numbers-subtracting-1': P(2, 1, 0.8) },
     { [p0.id]: all(p0), [p1.id]: all(p1) },
   );
   garde(trois, { [p0.id]: all(p0), [p1.id]: all(p1) });
-  expect(partiesPosees('maths-5e-signed-numbers', trois.world.parts)).toBe(2);
+  expect(partiesPosees('maths-5e-signed-numbers', trois.world.parts)).toBe(4);
   expect(prochainePartie('maths-5e-signed-numbers', trois.world.parts)?.nom).toBe(p2.name);
 
-  // La Forge finie à 3 sur 3 reçoit le Fourneau : quatre parties, toutes posées ; le Fourneau joué n'en pose aucune.
+  // La Forge finie à 3 sur 3 reçoit le Fourneau (puis Volumes, GD-14) : cinq parties, toutes posées ; le Fourneau joué n'en pose aucune.
   const forge = plansFor('maths-4e-powers');
   const finie = Object.fromEntries(forge.map((p) => [p.id, all(p)]));
   const f = ouvrir({ 'maths-4e-powers-powers-1': P(3, 1, 1), 'maths-4e-powers-square-roots-1': P(3, 1, 1), 'maths-4e-powers-scientific-notation-1': P(3, 1, 1) }, finie);
   garde(f, finie);
-  expect(partiesDe('maths-4e-powers')).toHaveLength(4);
+  expect(partiesDe('maths-4e-powers')).toHaveLength(5);
   expect(prochainePartie('maths-4e-powers', f.world.parts)).toBeNull();
   const fourneau = poserLesPartiesDues({ ...f, progress: { ...f.progress, 'maths-4e-powers-subtracting-1': { stars: 2, attempts: 1, best: 0.8 } } }, 'maths-4e-powers', '2026-10-08');
   expect(fourneau.pose).toBeNull();

@@ -1,0 +1,242 @@
+{
+  "id": "lv2-5e-introductions-de-sentences-1",
+  "biome": "lv2-5e-introductions",
+  "type": "de-sentences",
+  "level": 1,
+  "lang": "de",
+  "instruction": "Lis et écoute la phrase en allemand. Choisis la phrase qui va avec. La règle est affichée.",
+  "programme": [
+    "c4.de.5e.langue.phrase"
+  ],
+  "items": [
+    {
+      "key": "lv2-5e-introductions-de-sentences-1-0",
+      "prompt": "Ja, ich habe eine Katze.",
+      "spoken": "Ja, ich habe eine Katze.",
+      "choices": [
+        "Wo ist deine Katze?",
+        "Hast du eine Katze?",
+        "Wie heißt deine Katze?"
+      ],
+      "answer": "Hast du eine Katze?",
+      "hint": "La réponse commence par ja : quelle question attend ja ou nein ?",
+      "explanation": "On répond ja ou nein à une question sans mot en W : le verbe hast vient en 1re place. Wo (où) et wie (comment) attendent un lieu ou un nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase allemande",
+          "lines": [
+            "Une phrase : le verbe en 2e place. Heute ist es kalt.",
+            "Question avec wo, was, wie : le verbe juste après. Was machst du?",
+            "Question sans mot en W : le verbe en 1re place. Kommst du?",
+            "Un ordre : le verbe en 1re place. Komm bitte!",
+            "Un préverbe (aus, ein, mit) va à la fin : Sie sieht glücklich aus.",
+            "und, aber, oder, denn ne comptent pas : le verbe reste en 2e place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-1-1",
+      "prompt": "Ich wohne in Leipzig.",
+      "spoken": "Ich wohne in Leipzig.",
+      "choices": [
+        "Wo wohnst du?",
+        "Wo du wohnst?",
+        "Wie wohnst du?"
+      ],
+      "answer": "Wo wohnst du?",
+      "hint": "La réponse dit un lieu. Après le mot en W, où va le verbe ?",
+      "explanation": "Wo wohnst du? = Où habites-tu ? Après wo, le verbe vient tout de suite, puis du. Wo du wohnst? suit l’ordre du français ; wie veut dire comment.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase allemande",
+          "lines": [
+            "Une phrase : le verbe en 2e place. Heute ist es kalt.",
+            "Question avec wo, was, wie : le verbe juste après. Was machst du?",
+            "Question sans mot en W : le verbe en 1re place. Kommst du?",
+            "Un ordre : le verbe en 1re place. Komm bitte!",
+            "Un préverbe (aus, ein, mit) va à la fin : Sie sieht glücklich aus.",
+            "und, aber, oder, denn ne comptent pas : le verbe reste en 2e place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-1-2",
+      "prompt": "Die Tür ist offen und es ist kalt.",
+      "spoken": "Die Tür ist offen und es ist kalt.",
+      "choices": [
+        "Bitte die Tür schließ!",
+        "Die Tür bitte schließ!",
+        "Schließ bitte die Tür!"
+      ],
+      "answer": "Schließ bitte die Tür!",
+      "hint": "Pour donner un ordre, où va le verbe ?",
+      "explanation": "Schließ bitte die Tür! = Ferme la porte, s’il te plaît ! Dans un ordre, le verbe schließ vient en 1re place, jamais à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase allemande",
+          "lines": [
+            "Une phrase : le verbe en 2e place. Heute ist es kalt.",
+            "Question avec wo, was, wie : le verbe juste après. Was machst du?",
+            "Question sans mot en W : le verbe en 1re place. Kommst du?",
+            "Un ordre : le verbe en 1re place. Komm bitte!",
+            "Un préverbe (aus, ein, mit) va à la fin : Sie sieht glücklich aus.",
+            "und, aber, oder, denn ne comptent pas : le verbe reste en 2e place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-1-3",
+      "prompt": "Warum ist Paul nicht da?",
+      "spoken": "Warum ist Paul nicht da?",
+      "choices": [
+        "Heute er ist krank.",
+        "Heute ist er krank.",
+        "Er heute ist krank."
+      ],
+      "answer": "Heute ist er krank.",
+      "hint": "Heute est en 1re place. Où va le verbe ?",
+      "explanation": "Heute ist er krank = aujourd’hui, il est malade. Le verbe ist reste en 2e place : la phrase commence par heute, alors er vient après le verbe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase allemande",
+          "lines": [
+            "Une phrase : le verbe en 2e place. Heute ist es kalt.",
+            "Question avec wo, was, wie : le verbe juste après. Was machst du?",
+            "Question sans mot en W : le verbe en 1re place. Kommst du?",
+            "Un ordre : le verbe en 1re place. Komm bitte!",
+            "Un préverbe (aus, ein, mit) va à la fin : Sie sieht glücklich aus.",
+            "und, aber, oder, denn ne comptent pas : le verbe reste en 2e place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-1-4",
+      "prompt": "Magst du Mathe?",
+      "spoken": "Magst du Mathe?",
+      "choices": [
+        "Mathe finde ich super!",
+        "Mathe ich finde super!",
+        "Ich Mathe finde super!"
+      ],
+      "answer": "Mathe finde ich super!",
+      "hint": "Mathe est en 1re place. Où va le verbe ?",
+      "explanation": "Mathe finde ich super = les maths, je trouve ça super. Le verbe finde reste en 2e place, juste après Mathe ; ich vient après.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase allemande",
+          "lines": [
+            "Une phrase : le verbe en 2e place. Heute ist es kalt.",
+            "Question avec wo, was, wie : le verbe juste après. Was machst du?",
+            "Question sans mot en W : le verbe en 1re place. Kommst du?",
+            "Un ordre : le verbe en 1re place. Komm bitte!",
+            "Un préverbe (aus, ein, mit) va à la fin : Sie sieht glücklich aus.",
+            "und, aber, oder, denn ne comptent pas : le verbe reste en 2e place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-1-5",
+      "prompt": "Ist deine Mutter müde?",
+      "spoken": "Ist deine Mutter müde?",
+      "choices": [
+        "Ja, sie aussieht müde.",
+        "Ja, sie sieht aus müde.",
+        "Ja, sie sieht müde aus."
+      ],
+      "answer": "Ja, sie sieht müde aus.",
+      "hint": "aussehen : où va le préverbe aus ?",
+      "explanation": "aussehen = avoir l’air : sie sieht müde aus (elle a l’air fatiguée). Le verbe sieht en 2e place, le préverbe aus tout à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase allemande",
+          "lines": [
+            "Une phrase : le verbe en 2e place. Heute ist es kalt.",
+            "Question avec wo, was, wie : le verbe juste après. Was machst du?",
+            "Question sans mot en W : le verbe en 1re place. Kommst du?",
+            "Un ordre : le verbe en 1re place. Komm bitte!",
+            "Un préverbe (aus, ein, mit) va à la fin : Sie sieht glücklich aus.",
+            "und, aber, oder, denn ne comptent pas : le verbe reste en 2e place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-1-6",
+      "prompt": "Hast du bald Geburtstag?",
+      "spoken": "Hast du bald Geburtstag?",
+      "choices": [
+        "Ja, ich lade dich ein!",
+        "Ja, ich einlade dich!",
+        "Ja, ich lade ein dich!"
+      ],
+      "answer": "Ja, ich lade dich ein!",
+      "hint": "einladen : où va le préverbe ein ?",
+      "explanation": "einladen = inviter : ich lade dich ein (je t’invite). Le verbe lade en 2e place, le préverbe ein tout à la fin, après dich.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase allemande",
+          "lines": [
+            "Une phrase : le verbe en 2e place. Heute ist es kalt.",
+            "Question avec wo, was, wie : le verbe juste après. Was machst du?",
+            "Question sans mot en W : le verbe en 1re place. Kommst du?",
+            "Un ordre : le verbe en 1re place. Komm bitte!",
+            "Un préverbe (aus, ein, mit) va à la fin : Sie sieht glücklich aus.",
+            "und, aber, oder, denn ne comptent pas : le verbe reste en 2e place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-1-7",
+      "prompt": "Kommt Lisa heute?",
+      "spoken": "Kommt Lisa heute?",
+      "choices": [
+        "Nein, denn ist sie krank.",
+        "Nein, denn sie ist krank.",
+        "Nein, denn sie krank ist."
+      ],
+      "answer": "Nein, denn sie ist krank.",
+      "hint": "denn ne compte pas : après lui, l’ordre est celui d’une phrase simple.",
+      "explanation": "denn = car : nein, denn sie ist krank (non, car elle est malade). Après denn, on garde l’ordre d’une phrase simple : sie, puis le verbe ist.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase allemande",
+          "lines": [
+            "Une phrase : le verbe en 2e place. Heute ist es kalt.",
+            "Question avec wo, was, wie : le verbe juste après. Was machst du?",
+            "Question sans mot en W : le verbe en 1re place. Kommst du?",
+            "Un ordre : le verbe en 1re place. Komm bitte!",
+            "Un préverbe (aus, ein, mit) va à la fin : Sie sieht glücklich aus.",
+            "und, aber, oder, denn ne comptent pas : le verbe reste en 2e place."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien construit !"
+  },
+  "reward": {
+    "block": "lv2-5e-introductions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

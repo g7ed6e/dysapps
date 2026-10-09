@@ -1,0 +1,387 @@
+{
+  "id": "maths-3e-functions-proportions-1",
+  "biome": "maths-3e-functions",
+  "type": "proportions",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-3e-functions-proportions-1-0",
+      "prompt": "Prix d’un taxi\n5 km : 12 €\n10 km : 20 €",
+      "question": "Le prix est-il proportionnel à la distance ?",
+      "spoken": "Prix d’un taxi. 5 kilomètres, 12 euros. 10 kilomètres, 20 euros.",
+      "choices": [
+        "oui : quand la distance monte, le prix monte",
+        "non : 10 km coûteraient alors 24 €",
+        "oui : on ajoute 5 km et 8 €"
+      ],
+      "answer": "non : 10 km coûteraient alors 24 €",
+      "hint": "10 kilomètres, c’est le double de 5 kilomètres. Le prix est-il le double ?",
+      "explanation": "10 km, c’est 5 km × 2. Si c’était proportionnel, le prix serait 12 € × 2 = 24 €. Il est de 20 € : ce n’est pas proportionnel. Monter ensemble ne suffit pas, ajouter non plus : il faut multiplier par le même nombre.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "distance (km)",
+            "prix (€)"
+          ],
+          "rows": [
+            [
+              5,
+              12
+            ],
+            [
+              10,
+              20
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Proportions, pourcentages, échelles",
+          "lines": [
+            "Proportionnel : d’une colonne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "p % d’un nombre : on le multiplie par p, puis on divise par 100.",
+            "Échelle 1/n : 1 cm sur le plan, c’est n cm en vrai.",
+            "1 m = 100 cm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-proportions-1-1",
+      "prompt": "2 kg de pommes coûtent 7 €. 6 kg coûtent …",
+      "spoken": "2 kilos de pommes coûtent 7 euros. 6 kilos coûtent (mot manquant)",
+      "choices": [
+        "11 €",
+        "21 €",
+        "42 €"
+      ],
+      "answer": "21 €",
+      "hint": "6 kilos, c’est combien de fois 2 kilos ?",
+      "explanation": "6 kg, c’est 3 fois 2 kg : le prix est 3 fois 7 €, soit 21 €. 11 €, c’est ajouter 4 comme aux kilos : on multiplie, on n’ajoute pas. 42 €, c’est 6 × 7 : 7 € est le prix de 2 kg, pas d’un seul.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "masse (kg)",
+            "prix (€)"
+          ],
+          "rows": [
+            [
+              2,
+              7
+            ],
+            [
+              6,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Proportions, pourcentages, échelles",
+          "lines": [
+            "Proportionnel : d’une colonne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "p % d’un nombre : on le multiplie par p, puis on divise par 100.",
+            "Échelle 1/n : 1 cm sur le plan, c’est n cm en vrai.",
+            "1 m = 100 cm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-proportions-1-2",
+      "prompt": "Pour 4 crêpes, il faut 100 g de farine. Pour 6 crêpes, il faut …",
+      "spoken": "Pour 4 crêpes, il faut 100 grammes de farine. Pour 6 crêpes, il faut (mot manquant)",
+      "choices": [
+        "102 g",
+        "150 g",
+        "600 g"
+      ],
+      "answer": "150 g",
+      "hint": "Cherche d’abord la farine pour 2 crêpes.",
+      "explanation": "Pour 2 crêpes, 100 ÷ 2 = 50 g. 6 crêpes, c’est 3 fois 2 crêpes : 3 × 50 = 150 g. 102 g, c’est ajouter 2 comme aux crêpes ; 600 g, c’est 100 × 6, comme si 100 g faisaient une seule crêpe.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "crêpes",
+            "farine (g)"
+          ],
+          "rows": [
+            [
+              4,
+              100
+            ],
+            [
+              6,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Proportions, pourcentages, échelles",
+          "lines": [
+            "Proportionnel : d’une colonne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "p % d’un nombre : on le multiplie par p, puis on divise par 100.",
+            "Échelle 1/n : 1 cm sur le plan, c’est n cm en vrai.",
+            "1 m = 100 cm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-proportions-1-3",
+      "prompt": "20 % de 45 € font …",
+      "spoken": "20 pour cent de 45 euros font (mot manquant)",
+      "choices": [
+        "9 €",
+        "25 €",
+        "36 €"
+      ],
+      "answer": "9 €",
+      "hint": "Prends d’abord 10 pour cent : divise par 10. Puis double.",
+      "explanation": "10 % de 45 €, c’est 4,50 € ; 20 %, c’est le double : 9 €. 25 €, c’est 45 − 20 : un pourcentage ne se retire pas comme des euros. 36 €, c’est ce qui reste quand on enlève 20 %.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "pourcentage",
+            "montant (€)"
+          ],
+          "rows": [
+            [
+              "100 %",
+              45
+            ],
+            [
+              "20 %",
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Proportions, pourcentages, échelles",
+          "lines": [
+            "Proportionnel : d’une colonne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "p % d’un nombre : on le multiplie par p, puis on divise par 100.",
+            "Échelle 1/n : 1 cm sur le plan, c’est n cm en vrai.",
+            "1 m = 100 cm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-proportions-1-4",
+      "prompt": "Dans une classe de 25 élèves, 10 viennent à vélo. Cela fait … des élèves.",
+      "spoken": "Dans une classe de 25 élèves, 10 viennent à vélo. Cela fait (mot manquant) des élèves.",
+      "choices": [
+        "10 %",
+        "25 %",
+        "40 %"
+      ],
+      "answer": "40 %",
+      "hint": "Pour 100 élèves au lieu de 25, combien viendraient à vélo ?",
+      "explanation": "25 × 4 = 100, donc 10 × 4 = 40 : 40 élèves sur 100, c’est 40 %. 10 %, c’est confondre le nombre d’élèves et le pourcentage. 25 %, c’est reprendre l’effectif de la classe.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "élèves à vélo",
+            "élèves en tout"
+          ],
+          "rows": [
+            [
+              10,
+              25
+            ],
+            [
+              "?",
+              100
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Proportions, pourcentages, échelles",
+          "lines": [
+            "Proportionnel : d’une colonne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "p % d’un nombre : on le multiplie par p, puis on divise par 100.",
+            "Échelle 1/n : 1 cm sur le plan, c’est n cm en vrai.",
+            "1 m = 100 cm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-proportions-1-5",
+      "prompt": "Sur un plan à l’échelle 1/100, une chambre mesure 4 cm de long. En vrai, elle mesure …",
+      "spoken": "Sur un plan à l’échelle 1 sur 100, une chambre mesure 4 centimètres de long. En vrai, elle mesure (mot manquant)",
+      "choices": [
+        "0,4 m",
+        "4 m",
+        "40 m"
+      ],
+      "answer": "4 m",
+      "hint": "Calcule d’abord en centimètres, puis convertis en mètres.",
+      "explanation": "4 cm × 100 = 400 cm, et 400 cm = 4 m. 40 m et 0,4 m viennent d’une erreur de conversion : 100 cm font 1 m.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "plan (cm)",
+            "réalité (cm)"
+          ],
+          "rows": [
+            [
+              1,
+              100
+            ],
+            [
+              4,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Proportions, pourcentages, échelles",
+          "lines": [
+            "Proportionnel : d’une colonne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "p % d’un nombre : on le multiplie par p, puis on divise par 100.",
+            "Échelle 1/n : 1 cm sur le plan, c’est n cm en vrai.",
+            "1 m = 100 cm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-proportions-1-6",
+      "prompt": "Un des prix ne suit pas la même règle que les autres : c’est …",
+      "spoken": "Un des prix ne suit pas la même règle que les autres : c’est (mot manquant)",
+      "choices": [
+        "12 €",
+        "20 €",
+        "30 €"
+      ],
+      "answer": "30 €",
+      "hint": "Pour chaque ligne, cherche le prix d’un seul ticket.",
+      "explanation": "12 ÷ 3 = 4 € et 20 ÷ 5 = 4 € : un ticket coûte 4 €. Pour 8 tickets, il faudrait 8 × 4 = 32 €, pas 30 € : le tableau n’est pas de proportionnalité. 12 € et 20 € suivent la règle.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "tickets",
+            "prix (€)"
+          ],
+          "rows": [
+            [
+              3,
+              12
+            ],
+            [
+              5,
+              20
+            ],
+            [
+              8,
+              30
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Proportions, pourcentages, échelles",
+          "lines": [
+            "Proportionnel : d’une colonne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "p % d’un nombre : on le multiplie par p, puis on divise par 100.",
+            "Échelle 1/n : 1 cm sur le plan, c’est n cm en vrai.",
+            "1 m = 100 cm."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-proportions-1-7",
+      "prompt": "Sur un plan à l’échelle 1/200, un mur de 6 m mesure …",
+      "spoken": "Sur un plan à l’échelle 1 sur 200, un mur de 6 mètres mesure (mot manquant)",
+      "choices": [
+        "0,3 cm",
+        "3 cm",
+        "30 cm"
+      ],
+      "answer": "3 cm",
+      "hint": "Écris d’abord 6 mètres en centimètres. Puis divise par 200.",
+      "explanation": "6 m = 600 cm, et 600 ÷ 200 = 3 : le mur mesure 3 cm sur le plan. 30 cm et 0,3 cm viennent d’une erreur dans la conversion des mètres en centimètres.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "plan (cm)",
+            "réalité (cm)"
+          ],
+          "rows": [
+            [
+              1,
+              200
+            ],
+            [
+              "?",
+              600
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Proportions, pourcentages, échelles",
+          "lines": [
+            "Proportionnel : d’une colonne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "p % d’un nombre : on le multiplie par p, puis on divise par 100.",
+            "Échelle 1/n : 1 cm sur le plan, c’est n cm en vrai.",
+            "1 m = 100 cm."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-functions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

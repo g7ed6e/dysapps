@@ -6,8 +6,12 @@
  *
  * - 3 missions : une partie par plan.
  * - 2 missions : le premier plan, puis les deux autres ensemble.
- * - 4 missions (et le lieu de la LV2, qui en a quatre par langue) : le premier plan en deux, par la hauteur (« Le bas
- *   du four de Rouxel », puis « Le haut… »), puis les deux autres.
+ * - 4 missions : le premier plan en deux, par la hauteur (« Le bas du four de Rouxel », puis « Le haut… »), puis les
+ *   deux autres.
+ * - 5 missions (GD-14) : le premier plan en trois rangées entières (« Le bas du nid de Coco », « Le milieu… »,
+ *   « Le haut… »), puis les deux autres ; un premier plan de deux rangées se coupe en deux, puis le deuxième plan aussi
+ *   (« Le bas du toit de la hutte », « Le haut… »), puis le troisième.
+ * Le lieu de la LV2 compte les missions d'une seule langue (les deux langues en ont autant).
  */
 import { BIOMES, type BiomeDef, type BiomeId } from '../biomes';
 import { isPlanDone, planCells, plansFor, type PlanDef } from './plans';
@@ -23,13 +27,19 @@ export interface Partie {
   cases: { plan: PlanDef; keys: string[] }[];
 }
 
-/** Un lieu a au plus quatre parties : le lieu de la LV2 compte les quatre missions d'une langue. */
-const PARTIES_MAX = 4;
+/** Un lieu a au plus cinq parties, comme il a au plus cinq missions (GD-14). */
+const PARTIES_MAX = 5;
 
-/** Le nombre de parties du bâtiment d'un lieu : autant que de missions, de 2 à 4 (0 sans bâtiment). */
+/** Les missions d'un lieu qui comptent pour son bâtiment : sur le lieu de la LV2, celles d'une seule langue. */
+function missionsDuBatiment(biome: Pick<BiomeDef, 'exercises'>): number {
+  const langue = biome.exercises.find((x) => x.lv2 !== undefined)?.lv2;
+  return langue === undefined ? biome.exercises.length : biome.exercises.filter((x) => x.lv2 === langue).length;
+}
+
+/** Le nombre de parties du bâtiment d'un lieu : autant que de missions, de 2 à 5 (0 sans bâtiment). */
 export function nombreDeParties(biome: Pick<BiomeDef, 'id' | 'exercises'>): number {
   if (plansFor(biome.id).length < 3) return 0;
-  return Math.max(2, Math.min(PARTIES_MAX, biome.exercises.length));
+  return Math.max(2, Math.min(PARTIES_MAX, missionsDuBatiment(biome)));
 }
 
 /** Un nom en milieu de phrase, après deux-points : sa minuscule (« Partie posée : le toit de la cabane »). */
@@ -60,7 +70,7 @@ function ensemble(a: string, b: string): string {
   return `${a} et ${minuscule(b)}`;
 }
 
-/** Le premier plan coupé en deux par la hauteur : les rangées du bas jusqu'à la moitié des cases au moins, puis le reste. */
+/** Un plan coupé en deux par la hauteur : les rangées du bas jusqu'à la moitié des cases au moins, puis le reste. */
 function enDeux(plan: PlanDef): [string[], string[]] {
   const cells = planCells(plan);
   const hauteurs = [...new Set(cells.map((c) => c.z))].sort((a, b) => a - b);
@@ -80,6 +90,32 @@ function enDeux(plan: PlanDef): [string[], string[]] {
     return [tout.slice(0, m), tout.slice(m)];
   }
   return [bas, haut];
+}
+
+/**
+ * Un plan coupé en `k` parts par la hauteur, en rangées entières (GD-14) : chaque part prend des rangées qui se suivent,
+ * au plus près d'un `k`-ième des cases. `null` si le plan a moins de `k` rangées : une part serait une demi-rangée, et
+ * son nom (« le milieu ») mentirait.
+ */
+function enRangees(plan: PlanDef, k: 2 | 3): string[][] | null {
+  const cells = planCells(plan);
+  const hauteurs = [...new Set(cells.map((c) => c.z))].sort((a, b) => a - b);
+  if (hauteurs.length < k) return null;
+  const parRangee = hauteurs.map((z) => cells.filter((c) => c.z === z).length);
+  const somme = (de: number, a: number) => parRangee.slice(de, a).reduce((t, n) => t + n, 0);
+  // Les coupes (une liste croissante de rangs de rangées) qui donnent les parts les plus égales.
+  const coupes = (debut: number, reste: number): number[][] =>
+    reste === 0 ? [[]] : Array.from({ length: hauteurs.length - reste - debut + 1 }, (_, d) => debut + d).flatMap((i) => coupes(i + 1, reste - 1).map((c) => [i, ...c]));
+  let meilleure: number[] = [];
+  let ecart = Infinity;
+  for (const c of coupes(1, k - 1)) {
+    const bornes = [0, ...c, hauteurs.length];
+    const parts = bornes.slice(1).map((b, i) => somme(bornes[i], b));
+    const e = Math.max(...parts) * 1000 + parts.reduce((t, n) => t + n * n, 0);
+    if (e < ecart) [ecart, meilleure] = [e, c];
+  }
+  const limites = [-Infinity, ...meilleure.map((i) => hauteurs[i]), Infinity];
+  return limites.slice(1).map((haut, i) => cells.filter((c) => c.z >= limites[i] && c.z < haut).map((c) => c.key));
 }
 
 const CACHE = new Map<BiomeId, Partie[]>();
@@ -108,6 +144,31 @@ export function partiesDe(id: BiomeId): Partie[] {
       { nom: plans[1].name, cases: [tout(plans[1])] },
       { nom: plans[2].name, cases: [tout(plans[2])] },
     ];
+  } else if (n === 5) {
+    // Le premier plan en trois rangées entières ; s'il n'en a que deux, ses deux rangées, puis le deuxième plan en deux.
+    const trois = enRangees(plans[0], 3);
+    if (trois) {
+      const [bas, milieu, haut] = trois;
+      parties = [
+        { nom: `Le bas ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: bas }] },
+        { nom: `Le milieu ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: milieu }] },
+        { nom: `Le haut ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: haut }] },
+        { nom: plans[1].name, cases: [tout(plans[1])] },
+        { nom: plans[2].name, cases: [tout(plans[2])] },
+      ];
+    } else {
+      // Un plan d'une seule rangée retomberait sur enDeux, qui coupe la rangée : aucun lieu n'en a (parts.test.ts le
+      // vérifie sur tout lieu à cinq parties).
+      const [bas, haut] = enRangees(plans[0], 2) ?? enDeux(plans[0]);
+      const [basDuDeuxieme, hautDuDeuxieme] = enRangees(plans[1], 2) ?? enDeux(plans[1]);
+      parties = [
+        { nom: `Le bas ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: bas }] },
+        { nom: `Le haut ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: haut }] },
+        { nom: `Le bas ${complement(plans[1].name)}`, cases: [{ plan: plans[1], keys: basDuDeuxieme }] },
+        { nom: `Le haut ${complement(plans[1].name)}`, cases: [{ plan: plans[1], keys: hautDuDeuxieme }] },
+        { nom: plans[2].name, cases: [tout(plans[2])] },
+      ];
+    }
   }
   const out = parties.map((p, i) => ({ ...p, biome: id, rang: i + 1, total: parties.length }));
   CACHE.set(id, out);

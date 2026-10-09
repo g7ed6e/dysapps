@@ -6,7 +6,7 @@ import type { ExerciseItem } from '../game/exercises/types';
 import { sanitizeState } from '../game/engine';
 import { grantAccess } from '../game/world/archipelago';
 import { translateGame } from './migration';
-import { challengesOpenBeforeMove } from './movedChallenges';
+import { challengesOpenBeforeAdditions, challengesOpenBeforeMove } from './movedChallenges';
 
 const P = (stars: number) => ({ stars, attempts: 1, best: 0.8 });
 const LINKS = grantAccess([], ['maths-5e-signed-numbers', 'french-5e-conjugation', 'maths-4e-powers', 'french-4e-vocabulary']);
@@ -49,10 +49,10 @@ it('la Forge et le Glacier : une mission arrivée ou partie ne referme pas un d�
   };
   const s = sanitizeState(format3({ ...forge, ...glacier }));
   expect(s.world.challengesKeptOpen).toEqual(['maths-4e-powers', 'maths-5e-signed-numbers']);
-  // Les Icebergs ont perdu leur niveau étoilé, mais pas leurs étoiles (gardées au niveau 2) : la règle d'aujourd'hui
-  // dit oui elle aussi, et le champ le garde ouvert quoi qu'il arrive.
+  // Les Icebergs ont perdu leur niveau étoilé, mais pas leurs étoiles (gardées au niveau 2). Le Glacier a reçu deux
+  // missions depuis (GD-14) : la règle d'aujourd'hui dit non, le champ le garde ouvert quoi qu'il arrive.
   expect(s.progress['maths-5e-signed-numbers-fractions-2']).toEqual({ stars: 3, attempts: 0, best: 0.8 });
-  expect(isBossUnlocked(getBiome('maths-5e-signed-numbers')!, s.progress)).toBe(true);
+  expect(isBossUnlocked(getBiome('maths-5e-signed-numbers')!, s.progress)).toBe(false);
   for (const id of ['maths-4e-powers', 'maths-5e-signed-numbers']) expect(isBossOpen(getBiome(id)!, s.progress, s.world.challengesKeptOpen), id).toBe(true);
   // Sans rien de ce qui part au Fourneau, la Forge a une mission sans étoile : son défi reste ouvert quand même.
   const f = sanitizeState(format3(forge));
@@ -74,13 +74,13 @@ it('un défi qui n’était pas ouvert ne s’ouvre pas ; un défi réussi quitt
   expect(isBossOpen(getBiome('french-5e-conjugation')!, apres.progress, apres.world.challengesKeptOpen)).toBe(true);
 });
 
-it('seulement à la migration d’une sauvegarde plus ancienne : une partie neuve ou déjà au format 4 garde la règle entière', () => {
+it('seulement à la migration d’une sauvegarde plus ancienne : une partie neuve ou déjà au dernier format garde la règle entière', () => {
   expect(sanitizeState({}).world.challengesKeptOpen).toBeUndefined();
-  const format4 = { ...format3(MARAIS), version: 4 };
+  const format4 = { ...format3(MARAIS), version: 5 };
   expect((translateGame(format4) as typeof format4).world).toEqual(format4.world);
   expect(sanitizeState(format4).world.challengesKeptOpen).toBeUndefined();
   // Un lieu inconnu ou en double, dans une sauvegarde abîmée, est ignoré.
-  const abimee = sanitizeState({ version: 4, world: { parts: {}, log: [], links: [], challengesKeptOpen: ['nulle-part', 'maths-4e-powers', 'maths-4e-powers', 3] } });
+  const abimee = sanitizeState({ version: 5, world: { parts: {}, log: [], links: [], challengesKeptOpen: ['nulle-part', 'maths-4e-powers', 'maths-4e-powers', 3] } });
   expect(abimee.world.challengesKeptOpen).toEqual(['maths-4e-powers']);
 });
 
@@ -93,4 +93,33 @@ it('le défi gardé ouvert du Marais tire les Reflets au niveau 1, avec leur tab
     expect(r.exerciseId).toBe('french-5e-conjugation-tense-recognition-1');
     for (const item of r.items) expect(item.aid, item.key).toBeTruthy();
   }
+});
+
+it('les missions ajoutées le 9 octobre 2026 (GD-14, format 5) ne referment pas un défi ouvert, pour chaque langue de la LV2', () => {
+  const format4 = (progress: Record<string, unknown>) => ({ version: 4, progress, world: { parts: {}, log: [], links: [] } });
+  // Le Nid : deux étoiles dans les quatre missions d'avant, rien aux Mesures arrivées depuis.
+  const nid = {
+    'maths-6e-calculation-times-tables-1': P(2),
+    'maths-6e-calculation-make-ten-2': P(3),
+    'maths-6e-calculation-doubles-halves-1': P(2),
+    'maths-6e-calculation-word-problems-1': P(2),
+  };
+  // Le Relais des voyageurs : l'espagnol seul, sans les Frases arrivées depuis.
+  const relais = {
+    'lv2-5e-introductions-es-greetings-1': P(2),
+    'lv2-5e-introductions-es-numbers-1': P(2),
+    'lv2-5e-introductions-es-family-1': P(2),
+    'lv2-5e-introductions-es-articles-1': P(2),
+  };
+  const s = sanitizeState(format4({ ...nid, ...relais }));
+  expect(s.world.challengesKeptOpen).toEqual(['lv2-5e-introductions', 'maths-6e-calculation']);
+  const calcul = getBiome('maths-6e-calculation')!;
+  expect(isBossUnlocked(calcul, s.progress)).toBe(false);
+  expect(isBossOpen(calcul, s.progress, s.world.challengesKeptOpen)).toBe(true);
+  // Une mission d'avant sans étoile, ou le défi déjà réussi : rien à garder.
+  const { 'maths-6e-calculation-word-problems-1': _, ...presque } = nid;
+  expect(challengesOpenBeforeAdditions(presque)).toEqual([]);
+  expect(challengesOpenBeforeAdditions({ ...nid, 'maths-6e-calculation-challenge': P(3) })).toEqual([]);
+  // Une partie déjà au format 5 ne repasse pas par la règle.
+  expect(sanitizeState({ ...format4(nid), version: 5 }).world.challengesKeptOpen).toBeUndefined();
 });
