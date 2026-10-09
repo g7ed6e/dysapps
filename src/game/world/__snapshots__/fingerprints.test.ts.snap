@@ -159,10 +159,10 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, partie mi-parcours 1`] = `
 {
-  "créatures et Gardiens": "e463458a",
-  "cubes": "0aa6886e",
-  "cubes avec créatures": "2f6ce821",
-  "décor posé sur la pente": "265b5ee8",
+  "créatures et Gardiens": "bf0bd635",
+  "cubes": "333f77ee",
+  "cubes avec créatures": "358e9406",
+  "décor posé sur la pente": "11fcef40",
   "navire": "ff34b497",
   "sol (facettes)": "072dfa2d",
   "sol (lave)": "13fe3a3b",
@@ -172,23 +172,23 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, partie tout construit 1`] = `
 {
-  "créatures et Gardiens": "50f90ae5",
-  "cubes": "5a5c3c08",
-  "cubes avec créatures": "31b49b4d",
-  "décor posé sur la pente": "d67640ae",
+  "créatures et Gardiens": "25821e91",
+  "cubes": "0b9b0270",
+  "cubes avec créatures": "2e2e020c",
+  "décor posé sur la pente": "6c1bcf4e",
   "navire": "ff34b497",
   "sol (facettes)": "5ffde7b5",
   "sol (lave)": "13fe3a3b",
-  "trajets depuis le port": "b4750be0",
+  "trajets depuis le port": "35b4ae30",
 }
 `;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, partie vierge 1`] = `
 {
   "créatures et Gardiens": "f3ca7696",
-  "cubes": "85d27a6c",
-  "cubes avec créatures": "f319bf83",
-  "décor posé sur la pente": "12c21bab",
+  "cubes": "d70e77de",
+  "cubes avec créatures": "92533221",
+  "décor posé sur la pente": "edacc909",
   "navire": "215fac1e",
   "sol (facettes)": "e8fe3269",
   "sol (lave)": "13fe3a3b",

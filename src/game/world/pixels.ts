@@ -316,7 +316,7 @@ type TonsDeLaCraie = { ardoise: string; grain: string; batons: readonly [string,
  * De la craie (le Préau des délégués, EMC 6e ; proposition de l'artiste technique 3D, à valider par le directeur
  * artistique) : sur le côté, des bâtons de craie couchés, deux pixels de haut, tous les quatre pixels, décalés d'un rang
  * à l'autre, blanc, jaune pâle, rose pâle et bleu pâle, sur l'ardoise vert sombre d'un tableau ; le pixel du bas de
- * chaque bâton un peu plus sombre. Sur le dessus, les bouts carrés de quatre bâtons, un par couleur. Sans hasard : les
+ * chaque bâton un peu plus sombre. Le dessus, l'ardoise seule, au même grain. Sans hasard : les
  * bâtons et le fond sombre la séparent du sel (blanc, quatre cristaux cernés), du fossile (beige, une spirale), du
  * marbre (des veines) et de l'ardoise (grise, sans bâton). Le motif se raccorde d'un bloc à l'autre.
  */
@@ -326,14 +326,9 @@ function craie(t: TonsDeLaCraie, face: 'top' | 'side'): Painter {
   const batons = t.batons.map(hexToRgb);
   const ombres = batons.map(([r, g, b]): [number, number, number] => [r * t.ombre, g * t.ombre, b * t.ombre]);
   const fond = (x: number, y: number) => (hacher(x, y) < 60 ? grainRgb : ardoise);
-  if (face === 'top')
-    return (x, y) => {
-      const [u, v] = [x % 8, y % 8];
-      if (u === 0 || u === 7 || v === 0 || v === 7) return fond(x, y);
-      if ((u === 1 || u === 6) && (v === 1 || v === 6)) return fond(x, y);
-      const k = Math.floor(x / 8) + 2 * Math.floor(y / 8);
-      return v === 6 ? ombres[k] : batons[k];
-    };
+  // Le dessus, l'ardoise seule : en sol (la cour du Préau), les bouts de bâtons pastel criblaient la cour de points (DA,
+  // relecture des captures emc-2) ; les bâtons restent sur les côtés, aux piliers et au mur.
+  if (face === 'top') return fond;
   return (x, y) => {
     const rang = Math.floor(y / 4);
     const v = y % 4;

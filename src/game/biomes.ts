@@ -343,8 +343,9 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // Le bloc du Préau des délégués (EMC, 6e) : des bâtons de craie couchés, côte à côte, sur l'ardoise vert sombre d'un
   // tableau ; blanc, jaune pâle, rose pâle et bleu pâle. Distinct du sel (blanc, quatre cristaux cernés) et du fossile
   // (beige, une spirale) par les bâtons et le fond sombre, pas par la teinte seule (proposition de l'artiste technique 3D,
-  // à valider par le directeur artistique).
-  'civics-6e-democratic-society': { id: 'civics-6e-democratic-society', name: 'Craie', top: '#e8e4d8', side: '#3e5248', texture: 'craie' },
+  // à valider par le directeur artistique). Le dessus de l'icône, l'ardoise du tableau un ton plus clair : en blanc, elle se
+  // lisait comme du sel ou de la neige (DA, relecture des captures emc-2).
+  'civics-6e-democratic-society': { id: 'civics-6e-democratic-society', name: 'Craie', top: '#4c6458', side: '#3e5248', texture: 'craie' },
   // Le bloc du Bourg des chroniques (histoire, 5e) : un violet profond parcouru de filets d'or, comme une page enluminée,
   // distinct de l'obsidienne par les filets et par un violet plus clair.
   'history-5e-middle-ages': { id: 'history-5e-middle-ages', name: 'Enluminure', top: '#6a4c9c', side: '#4e3878', texture: 'enluminure' },

@@ -952,24 +952,28 @@ const ABEILLE = fromLayers(
   { T: '#e0a83a', B: '#5a3c1e', A: '#eef4f2', G: '#8e989c', K: '#1f1a16' },
 );
 
-// L'Hirondelle de nacre (EMC, 6e ; sans flamme, aucun symbole) : posée sur une petite poutre, de face, les ailes
-// ouvertes en longues pointes de chaque côté ; le dos, les ailes et la tête de nacre bleutée, le ventre blanc, la gorge
-// rose nacré, le bec et les yeux sombres ; derrière, sous la poutre, sa queue fourchue se lit de face par ses deux
-// pointes écartées. Dix de haut, neuf de large. Cinq couleurs, les yeux compris.
+// L'Hirondelle de nacre (EMC, 6e ; sans flamme, aucun symbole) : posée sur une petite poutre, de face, le corps mince,
+// la tête ronde et courte, le bec sombre devant, sous les yeux, un rang plus bas (collés, ils faisaient un masque) ; les ailes ouvertes en faux, de l'épaule vers l'extérieur puis vers le
+// bas, jusqu'à leur pointe, à mi-corps, leur bord d'attaque plus clair, nacré ; derrière, sous le corps, sa queue
+// fourchue s'écarte en deux brins qu'on voit de face, de part et d'autre de la poutre. Le dos, les ailes et la tête de
+// nacre bleutée, le ventre blanc, la gorge rose nacré (DA, relecture des captures emc-2 : mince et fourchue, elle ne se
+// lit plus comme un gorille). Douze de haut, neuf de large. Six couleurs, les yeux compris.
 const HIRONDELLE = fromLayers(
   [
-    ['.........', '...SSS...', '.........', '.N.....N.'],
-    ['.........', '...K.K...', '.........', '..N...N..'],
-    ['...WWW...', '..WWWWW..', '..NNNNN..', '...N.N...'],
-    ['..WWWWW..', '..WWWWW..', '..NNNNN..', '....N....'],
-    ['..WWWWW..', 'N.WWWWW.N', '..NNNNN..', '.........'],
-    ['..PPPPP..', 'NNWWWWWNN', '..NNNNN..', '.........'],
-    ['...PPP...', '.NNNNNNN.', '..NNNNN..', '.........'],
-    ['....P....', '...NNN...', '...NNN...', '.........'],
-    ['....K....', '...KNK...', '...NNN...', '.........'],
+    ['...SSS...', '...SSS...', '.........', '.N.....N.'],
+    ['.........', '...WWW...', '...NNN...', '..N...N..'],
+    ['.........', '...WWW...', '...NNN...', '...NNN...'],
+    ['.........', 'N..WWW..N', 'N..NNN..N', '.........'],
+    ['.........', 'N..WWW..N', 'N..NNN..N', '.........'],
+    ['.........', 'LN.WWW.NL', 'NN.NNN.NN', '.........'],
+    ['.........', '.LNWWWNL.', '.NNNNNNN.', '.........'],
+    ['.........', '..LPPPL..', '..NNNNN..', '.........'],
+    ['....K....', '...PPP...', '...NNN...', '.........'],
     ['.........', '...NNN...', '...NNN...', '.........'],
+    ['.........', '...KNK...', '...NNN...', '.........'],
+    ['.........', '....N....', '...NNN...', '.........'],
   ],
-  { N: '#a9b6d2', W: '#f6f2ec', P: '#e8bcc0', K: '#1f1a16', S: '#8a6236' },
+  { N: '#8ea4d8', L: '#cad6f0', W: '#f6f2ec', P: '#e8b4ba', K: '#1f1a16', S: '#8a6236' },
 );
 
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {

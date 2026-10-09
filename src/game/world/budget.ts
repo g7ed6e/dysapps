@@ -178,6 +178,9 @@ export const ENVELOPPES: Record<
   // Les enveloppes qui n'avaient plus de marge passent, avec une petite marge, sans lot d'optimisation (Archipéo en
   // pause) : les commandes de 800 à 850, les bornes de 1 450 à 1 550, les créatures de 3 650 à 3 950, les Gardiens de
   // 2 780 à 2 950. La somme des Premiers Rivages passe de 72 770 à 73 390, sous les 76 500.
+  // Retouches de la relecture des captures emc-2 (DA), dans ces enveloppes : l'Hirondelle de nacre redessinée en oiseau
+  // (187 → 199 triangles ; les Gardiens 2 931 → 2 943), Voix la patte levée, paume ouverte (277 → 301 ; les créatures
+  // 3 912 → 3 936), sans appel de plus.
   // Les six îles d'histoire-géographie des 5e, 4e et 3e (HG-3) : enveloppes « autres » relevées du même mot, aux valeurs
   // mesurées tout construit (le plus gourmand des trois archipels) avec une petite marge : le sol de 24 850 à 29 850
   // (29 800 aux Anciens Ateliers), le décor de 10 500 à 11 500 (11 466 aux Îles Brumeuses), les commandes de 200 à 280

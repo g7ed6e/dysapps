@@ -477,8 +477,18 @@ export const ESPECES_6E = {
     marque: { couleur: 0xe6dcc8, ou: ['museau'] },
     tenue: { couleur: TENUE.lin, vetements: ['gilet'] },
     museau: { forme: 'museau', long: 0.14, r: 0.09 },
-    // La main levée, pour prendre la parole.
-    autreBras: { rx: 0, rz: 2.6 },
+    // La patte levée droite au-dessus de la tête, pour prendre la parole (pas un salut, bras en biais ; DA, relecture des
+    // captures emc-2).
+    autreBras: { rx: 0, rz: 3.05 },
+    autreMain: {
+      // L'avant-bras qui monte plus haut que les oreilles, puis la paume ouverte tournée vers l'élève : une patte plate,
+      // sombre, plus large que le bras.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        pave(T, -0.055, -0.02, -0.05, 0.055, 0.32, 0.05, k.dom);
+        pave(T, -0.095, 0.3, -0.03, 0.095, 0.54, 0.02, k.cuir);
+      },
+    },
     coiffe: (T, k) => {
       // Les oreilles rondes, courtes et larges : rien de pointu (Rouxel, le renard, a les siennes en pointe).
       for (const c of [-1, 1])
@@ -514,8 +524,8 @@ export const ESPECES_6E = {
       // Le carnet de délégué : une couverture de cuir, une page de lin devant.
       pose: [-0.3, 0, 0],
       dessiner: (T, k) => {
-        pave(T, -0.11, 0, -0.02, 0.11, 0.28, 0, k.cuir);
-        pave(T, -0.09, 0.02, -0.035, 0.09, 0.26, -0.02, k.lin);
+        pave(T, -0.15, -0.02, -0.02, 0.15, 0.36, 0, k.cuir);
+        pave(T, -0.13, 0, -0.035, 0.13, 0.34, -0.02, k.lin);
       },
     },
   },

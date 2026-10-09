@@ -111,13 +111,22 @@ export interface CreatureSpot {
 }
 
 /**
- * Où la créature d'une île se tient (case relative au cœur) : la place la plus proche de (2, 4) où elle et ses pas
- * ne touchent ni le décor, ni la zone des plans, ni le bonhomme, ni une colline, ni l'eau. On préfère une place
- * d'où elle peut se promener ; sinon elle reste immobile. Sur une île-école, ni elle ni ses pas ne se tiennent entre la
- * caméra de l'île et un lieu du village, l'emprise réservée de la salle des trophées comprise (`cacheUnLieu`) : devant
- * le cœur, aucune place ne la tient hors de leur vue, elle va derrière la salle, sur les quatre îles-écoles (à la Forêt
- * des sons, un arbre du décor lui a laissé la place : `DECOR.foret`) (GD-3, retouches du directeur artistique) ; depuis
- * que les îles ont grandi (GD-11), la règle l'y tient.
+ * La place que vise l'habitant d'une île, quand ce n'est pas (2, 4) : au Préau des délégués, sous le nom de l'île dans
+ * la vue de l'île fiche du Gardien ouverte, Voix disparaissait derrière l'étiquette (DA, relecture des captures emc-2) ;
+ * trois cases vers −x, il passe à droite de l'étiquette, à côté des bornes, sans rien cacher.
+ */
+const CIBLE_DE_L_HABITANT: Partial<Record<BiomeId, { x: number; y: number }>> = {
+  'civics-6e-democratic-society': { x: -1, y: 4 },
+};
+
+/**
+ * Où la créature d'une île se tient (case relative au cœur) : la place la plus proche de (2, 4), ou de sa cible
+ * (`CIBLE_DE_L_HABITANT`), où elle et ses pas ne touchent ni le décor, ni la zone des plans, ni le bonhomme, ni une
+ * colline, ni l'eau. On préfère une place d'où elle peut se promener ; sinon elle reste immobile. Sur une île-école,
+ * ni elle ni ses pas ne se tiennent entre la caméra de l'île et un lieu du village, l'emprise réservée de la salle des
+ * trophées comprise (`cacheUnLieu`) : devant le cœur, aucune place ne la tient hors de leur vue, elle va derrière la
+ * salle, sur les quatre îles-écoles (à la Forêt des sons, un arbre du décor lui a laissé la place : `DECOR.foret`)
+ * (GD-3, retouches du directeur artistique) ; depuis que les îles ont grandi (GD-11), la règle l'y tient.
  */
 export function creatureSpot(id: BiomeId): CreatureSpot {
   const cle = `${id}:${lv2Courante()}`;
@@ -151,20 +160,21 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   // Sur une île-école, derrière la salle des trophées : depuis que les îles ont grandi (GD-11), les marges du cœur
   // offrent des places sur le côté, devant elle.
   const derriere = isSchoolIsland(id) ? TROPHY_AT.y + TROPHY_SIZE.d : -Infinity;
+  const cible = CIBLE_DE_L_HABITANT[id] ?? { x: 2, y: 4 };
   let best: CreatureSpot | null = null;
   let bestScore = Infinity;
   for (let x = coeur.x0 - 2; x < coeur.x1; x++) {
     for (let y = Math.max(coeur.y0, derriere); y < coeur.y1; y++) {
       if (!fits(x, y, [0, 0])) continue;
       const steps = CREATURE_STEPS.filter((st) => fits(x, y, st));
-      const score = Math.abs(x - 2) + Math.abs(y - 4) - 2 * (steps.length - 1);
+      const score = Math.abs(x - cible.x) + Math.abs(y - cible.y) - 2 * (steps.length - 1);
       if (score < bestScore) {
         best = { x, y, steps };
         bestScore = score;
       }
     }
   }
-  const spot = best ?? { x: 2, y: 4, steps: [[0, 0]] };
+  const spot = best ?? { ...cible, steps: [[0, 0]] };
   creatureSpots.set(cle, spot);
   return spot;
 }

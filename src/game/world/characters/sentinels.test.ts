@@ -102,6 +102,11 @@ describe('L’allumage des sentinelles', () => {
     // Le rocher de la Tortue d'ocre reste gris, rallumé ou non (DA, SC-3).
     expect(allumage(SENTINELLE.roche, 0)).toBe(SENTINELLE.roche);
     expect(allumage(SENTINELLE.roche, 1)).toBe(SENTINELLE.roche);
+    // L'Hirondelle de nacre : pierre teintée éteinte, ses couleurs rallumée (DA, relecture des captures emc-2).
+    expect(allumage(SENTINELLE.nacre, 0)).toBe(SENTINELLE.nacre);
+    expect(allumage(SENTINELLE.nacre, 1)).toBe(0x9db0d6);
+    expect(allumage(SENTINELLE.ventre, 1)).toBe(0xf1eee8);
+    expect(allumage(SENTINELLE.gorge, 1)).toBe(0xe4a9b0);
     expect(allumage(SENTINELLE.pierre, -1)).toBe(0x8e8c84);
     expect(allumage(SENTINELLE.pierre, 2)).toBe(0xdaa66a);
   });
@@ -162,7 +167,8 @@ describe('Les Gardiens en sentinelles', () => {
   // 2 100 depuis les deux Gardiens d'histoire-géographie du 6e (HG-2, mainteneur, 6 octobre 2026 : 2 065 mesurés), 2 780
   // depuis les trois Gardiens de sciences (SC-2, même mot : 2 756 mesurés) ; les six des 5e, 4e et 3e (HG-3, même mot)
   // y tiennent (2 144 mesurés aux Îles Brumeuses). Aux Premiers Rivages, 2 950 depuis l'Hirondelle de nacre (EMC-2,
-  // mainteneur, 9 octobre 2026 : 2 931 mesurés).
+  // mainteneur, 9 octobre 2026 : 2 931 mesurés ; 2 943 depuis qu'elle est redessinée en oiseau, relecture des captures
+  // emc-2).
   it('tiennent dans leur budget : 2 950 triangles au plus aux Premiers Rivages, 2 780 ailleurs, toutes ensemble', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const somme = BIOMES.filter((b) => b.classe === a).reduce((n, b) => n + nbTriangles(sentinellePeinte(b.id)), 0);
@@ -229,8 +235,17 @@ describe('Les Gardiens en sentinelles', () => {
       });
 
       it('de la pierre, du lichen, des orbites et la lueur, rien d’autre', () => {
-        // (Et le rameau de la Colombe d'albâtre, vert une fois rallumée, HG-3 ; le rocher gris de la Tortue d'ocre, SC-3.)
-        const permises = new Set<number>([SENTINELLE.pierre, SENTINELLE.lichen, SENTINELLE.orbite, LUEUR, ...(b.id === 'history-3e-twentieth-century' ? [SENTINELLE.rameau] : []), ...(b.id === 'life-earth-sciences-5e-active-planet' ? [SENTINELLE.roche] : [])]);
+        // (Et le rameau de la Colombe d'albâtre, vert une fois rallumée, HG-3 ; le rocher gris de la Tortue d'ocre, SC-3 ;
+        // la nacre, le ventre et la gorge de l'Hirondelle de nacre, EMC-2.)
+        const permises = new Set<number>([
+          SENTINELLE.pierre,
+          SENTINELLE.lichen,
+          SENTINELLE.orbite,
+          LUEUR,
+          ...(b.id === 'history-3e-twentieth-century' ? [SENTINELLE.rameau] : []),
+          ...(b.id === 'life-earth-sciences-5e-active-planet' ? [SENTINELLE.roche] : []),
+          ...(b.id === 'civics-6e-democratic-society' ? [SENTINELLE.nacre, SENTINELLE.ventre, SENTINELLE.gorge] : []),
+        ]);
         for (const p of f.palette) expect(permises.has(p.couleur), p.couleur.toString(16)).toBe(true);
       });
 
