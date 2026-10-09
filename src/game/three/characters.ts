@@ -29,6 +29,11 @@ export interface Personnages extends PartieDeLaScene {
   /** Un nouvel itinéraire du bonhomme. */
   marcher(avatar: NonNullable<EnCasesDuMonde['avatar']>): void;
   poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>): void;
+  /**
+   * L'île où l'on est (`null` : aucune, la Carte) : ses personnages d'Archipéo importés sont de près, ceux des autres
+   * îles de loin (./paintedCharacters.ts) ; les personnages en cubes n'en font rien.
+   */
+  approcher(id: BiomeId | null): void;
   /** Le moment du rallumage (lot 6) : la sentinelle de ce Gardien se rallume en fondu ; `null` : plus de moment. */
   rallumer(id: BiomeId | null, dureeMs: number): void;
   /** Le geste de la créature qui se souvient (GD-4, étape 1) : un saut lent, qui commence à `debut` (`performance.now`). */
@@ -44,7 +49,8 @@ export interface Personnages extends PartieDeLaScene {
 export interface Habits {
   /** Les bras et les jambes du bonhomme, et le sens de leur balancement quand il marche. */
   membres: { os: THREE.Object3D; sens: number }[];
-  poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>): void;
+  /** Pose les créatures et les Gardiens ; `pres` : l'île où l'on est (ses personnages importés de près). */
+  poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>, pres?: BiomeId | null): void;
   /** Les créatures bougent (rien avec « Réduire les animations »). */
   animer(t: number, reduit: boolean): void;
   /**
@@ -253,17 +259,19 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
    */
   const tetes = new Map<BiomeId, { objet: THREE.Object3D; ecart: THREE.Vector3 }>();
   let places: NonNullable<WorldViewProps['creatures']> | null = null;
+  let pres: BiomeId | null = null;
   // Le rallumage demandé avant que les personnages d'Archipéo soient chargés.
   let rallumage: { id: BiomeId | null; dureeMs: number } | null = null;
   let fini = false;
   const vetir = (h: Habits) => {
     habits = h;
     if (rallumage) h.rallumer?.(rallumage.id, rallumage.dureeMs);
-    if (places) h.poserLesCreatures(places);
+    if (places) h.poserLesCreatures(places, pres);
   };
   if (monde.habillage.personnages === 'modeles')
-    import('./paintedCharacters')
-      .then(({ habiller }) => {
+    // Les personnages importés de l'archipel arrivent avec eux (ceux qui manquent restent dessinés en code).
+    Promise.all([import('./paintedCharacters'), import('../importedCharacters').then(({ chargerLesModeles }) => chargerLesModeles(monde.archipel))])
+      .then(([{ habiller }]) => {
         if (!fini) vetir(habiller(monde, champ, instant, lumiere, avatarGroup, creaturesGroup));
       })
       // Le morceau ne se charge pas (réseau coupé, nouvelle version publiée) : les personnages en cubes, plutôt que rien.
@@ -288,7 +296,12 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     },
     poserLesCreatures: (creatures) => {
       places = creatures;
-      habits?.poserLesCreatures(creatures);
+      habits?.poserLesCreatures(creatures, pres);
+    },
+    approcher: (id) => {
+      if (id === pres) return;
+      pres = id;
+      if (places) habits?.poserLesCreatures(places, pres);
     },
     rallumer: (id, dureeMs) => {
       rallumage = { id, dureeMs };

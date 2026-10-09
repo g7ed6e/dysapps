@@ -26,12 +26,12 @@ Chaque fichier a une place ; `scripts/structure.test.mjs` vérifie en CI la raci
 | Le site public (élèves, familles, enseignants, orthophonistes) | `www/` : accueil, `www/manuel/`, `www/pedagogie/` ; chaque page au sommaire `www/_theme/nav.json` ; thème et configuration dans `www/_theme/` et `www/.vitepress/` |
 | La conception transverse (code, règles dys, contenu, exercices, programmes, contribuer, déploiement) | `docs/conception/` |
 | Le game design commun (index, systèmes construits, décisions, fiches `propositions/GD-<n>.md`, celles entièrement construites dans `propositions/archives/`, personnages) | `docs/gameplay/` |
-| Les univers : règles communes (`univers.md`), puis par univers son cadrage, sa fiche, son game design propre, ses intentions et esquisses | `docs/univers/`, `docs/univers/archipeo/`, `docs/univers/blocland/` ; le dossier fourni par le mainteneur, figé, dans `docs/univers/archipeo/source/` ; les images de concept des personnages d’Archipéo (WebP, avec leur fiche et leurs prompts), entrée de la 3D, dans `docs/univers/archipeo/personnages/` (demandé par le mainteneur le 7 octobre 2026) ; Archipéo est en pause depuis le 2 octobre 2026, son dossier est gelé, sauf le rattrapage du jeu de Blocland décidé le 4 octobre 2026 |
+| Les univers : règles communes (`univers.md`), puis par univers son cadrage, sa fiche, son game design propre, ses intentions et esquisses | `docs/univers/`, `docs/univers/archipeo/`, `docs/univers/blocland/` ; le dossier fourni par le mainteneur, figé, dans `docs/univers/archipeo/source/` ; les images de concept des personnages d’Archipéo (WebP, avec leur fiche et leurs prompts), entrée de la 3D, dans `docs/univers/archipeo/personnages/` (demandé par le mainteneur le 7 octobre 2026), et leurs modèles 3D retravaillés dans `personnages/modeles/<nom>/`, seuls fichiers de `docs/` que l’application importe (`src/game/importedCharacters.ts`, compactés au build) ; Archipéo est en pause depuis le 2 octobre 2026, son dossier est gelé, sauf le rattrapage du jeu de Blocland décidé le 4 octobre 2026 |
 | L’interface (UX UI) | `docs/ux-ui/` |
 | Le rendu (le style) | `docs/rendu/` ; le budget reste dans le code |
 | Le pilotage (où en est chaque chantier) | `docs/pilotage/chantiers.md`, seule page du dossier |
 | Les fichiers servis tels quels (icônes, polices, écrans de lancement) | `public/` |
-| Les scripts (build, contenu, site, rendu, version) | `scripts/`, ou son sous-dossier `contenu/`, `pilotage/`, `programme/`, `rendu/`, `www/` |
+| Les scripts (build, contenu, site, rendu, modèles 3D, version) | `scripts/`, ou son sous-dossier `contenu/`, `pilotage/`, `programme/`, `rendu/`, `www/` |
 | Les agents et les skills | `.claude/agents/<agent>.md`, `.claude/skills/<skill>/` (`SKILL.md` et ses ressources) |
 | Les livrables de travail (captures, maquettes, notes de fil) | hors du dépôt : la Bibliothèque du projet, ou la branche `captures` |
 

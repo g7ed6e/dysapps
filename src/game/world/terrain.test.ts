@@ -2,7 +2,7 @@ import { islandsOf } from './archipelago';
 import { GD11_GUARDIAN_SQUARES } from './guardianSquares';
 import { placedLinksOf } from './linkGeometry';
 import { BLOC, BIOMES, missionsJouables } from '../biomes';
-import { ARCHIPELAGO_IDS, CORE, MAP, bornesDuCoeur, coeurDe, isLand, islandDef, landBox, landCells, mapOf, startingIsland } from './map';
+import { ARCHIPELAGO_IDS, CORE, MAP, bornesDuCoeur, coeurDe, isLand, islandDef, lagoonWater, landBox, landCells, mapOf, startingIsland } from './map';
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
 import { PLAN_ZONE, planCells, plansFor } from './plans';
@@ -354,6 +354,21 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     }
   });
 
+  it('la vue d’une île qui a un lagon cadre son lagon et sa passe, panneau ouvert, au-dessus des boutons (GD-12, le Bassin des maquettes)', () => {
+    // Visée au milieu de son cœur, le lagon tombait sous le panneau de l'île (relecture du 9 octobre 2026).
+    const V = VUE_DE_L_ILE_PANNEAU_OUVERT;
+    const avecLagon = MAP.filter((d) => lagoonWater(d).length > 0);
+    expect(avecLagon.map((d) => d.id)).toEqual(['technology-4e-modeling']);
+    for (const def of avecLagon) {
+      const { projeter } = projectionDeLaVueDeLIle(def.id);
+      for (const c of lagoonWater(def))
+        for (const [i, j] of [[0, 0], [1, 0], [0, 1], [1, 1]]) {
+          const [u, v] = projeter(c.x + i, c.y + j, 0);
+          expect(u >= 0 && u <= V.largeur && v >= 0 && v <= V.hauteur - V.bas, `${def.id} (${c.x}, ${c.y})`).toBe(true);
+        }
+    }
+  });
+
   it('la sentinelle que la place du Gardien laisse voir est celle que dessine Archipéo', () => {
     expect(SENTINELLE_DANS_LE_MONDE.demiLargeur).toBeCloseTo(DEMI_LARGEUR_DE_SENTINELLE * ECHELLE_DANS_LE_MONDE, 9);
     expect(SENTINELLE_DANS_LE_MONDE.hauteur).toBeCloseTo(HAUTEUR_DANS_LE_MONDE, 9);
@@ -461,7 +476,7 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
   });
 });
 
-it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan, une cascade jusqu’à la mer', () => {
+it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan, les cascades des Îles du Ciel', () => {
   const cubes = allCubes({}, village(everything), false);
   const of = (id: string) => cubes.filter((c) => c.tag === id && !c.bridge);
   const foret = of('french-6e-phonology');
@@ -472,9 +487,11 @@ it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phar
   expect(of('maths-6e-decimals').some((c) => c.color === '#a9a4a0')).toBe(true);
   expect(of('french-6e-letter-confusion').some((c) => c.texture === 'toile')).toBe(true);
   expect(of('french-5e-conjugation').filter((c) => c.color === '#d9453f').length).toBeGreaterThanOrEqual(20);
-  // Au moins une île en altitude a une cascade : une colonne d'eau qui descend jusqu'au niveau de la mer.
+  // Une cascade, une colonne d'eau d'une île en altitude jusqu'au niveau de la mer : il n'en reste qu'aux Îles du Ciel, qui
+  // n'ont pas encore leurs formes (GD-12, 9 octobre 2026 ; une île qui a sa forme n'a plus de mare d'où l'eau déborde).
   const falls = cubes.filter((c) => c.texture === 'eau' && c.z === 0 && BIOMES.some((b) => b.id === c.tag && islandCenter(b.id).z > 0));
   expect(falls.length).toBeGreaterThanOrEqual(1);
+  for (const c of falls) expect(c.tag).toMatch(/-3e-/);
   // La brume des sommets : sous les douze Îles du Ciel (le Refuge des carnets, le Kiosque des témoins, le Plateau des
   // territoires et les trois îles de sciences de SC-3 compris), nulle part ailleurs.
   expect(mistPatches('3e').length).toBe(12);

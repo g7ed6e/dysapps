@@ -6,7 +6,7 @@
 // pour le rendu Archipéo, le sol (R2), la mer et la faune (R3), le décor (R4), la construction taillée, les bornes et
 // le navire (R5), et les personnages fusionnés (R6). Vérifié par world/budget.test.ts.
 import { AVATAR_PARTS } from '../Avatar';
-import { BIOMES, type BlockId } from '../biomes';
+import { BIOMES, type BiomeId, type BlockId } from '../biomes';
 import { CATALOG } from '../exercises';
 import { ARCHIPELAGOS, grantAccess, linkWholeRegion, VOYAGES } from './archipelago';
 import { ALTITUDE, type ArchipelagoId, DANS_LE_CIEL, mapOf } from './map';
@@ -48,9 +48,11 @@ export const RENDER_BUDGET = {
 /**
  * Les Premiers Rivages (6e) dépassent les 60 000 des tablettes depuis les deux îles d'histoire-géographie (HG-2) : relevé
  * par le mainteneur le 6 octobre 2026 (« Budget on augmente pour l'instant »), à la somme de leurs enveloppes, puis du
- * même mot pour les trois îles de sciences (SC-2) : de 63 400 à 72 800. La mesure sur tablette reste à faire.
+ * même mot pour les trois îles de sciences (SC-2) : de 63 400 à 72 800. La mesure sur tablette reste à faire. Puis à
+ * 75 750 pour les personnages importés du 6e (modèles TRELLIS, de près sur l'île où l'on est ; à valider par le
+ * mainteneur), à la somme des enveloppes (75 740).
  */
-export const RENDER_BUDGET_6E = { triangles: 72_800, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_6E = { triangles: 75_750, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
  * Les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
@@ -280,8 +282,12 @@ export const ENVELOPPES: Record<
   bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_700, drawCalls: 1 }, autres: { triangles: 1_450, drawCalls: 1 } },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
-  creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 3_650, drawCalls: 1 }, autres: { triangles: 3_200, drawCalls: 1 } },
-  gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 2_780, drawCalls: 1 }, autres: { triangles: 2_780, drawCalls: 1 } },
+  // Les personnages importés du 6e (modèles TRELLIS retravaillés, choix « Monde et fiches » du mainteneur, 9 octobre
+  // 2026) : de loin partout (environ 200 triangles), de près sur l'île où l'on est (environ 1 500), au pire de l'île qui
+  // coûte le plus. Mesurés : créatures 4 254 (Bulle de près), Gardiens 5 054, socle commun et son anneau compris. Créatures
+  // 3 650 → 4 300, Gardiens 2 780 → 5 100 aux Premiers Rivages ; la somme passe de 72 770 à 75 740 (`RENDER_BUDGET_6E`).
+  creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 4_300, drawCalls: 1 }, autres: { triangles: 3_200, drawCalls: 1 } },
+  gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 5_100, drawCalls: 1 }, autres: { triangles: 2_780, drawCalls: 1 } },
   scene: {
     lot: 'socle',
     nom: 'Dans la scène : étiquettes, flèche, fanion, balises',
@@ -610,17 +616,23 @@ export function fauneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
 
 /**
  * Les personnages d'Archipéo (lot R6) dans un archipel tout construit : le bonhomme, les créatures fusionnées et les
- * Gardiens en sentinelles fusionnés (./characters/merges.ts), un appel de dessin chacun.
+ * Gardiens en sentinelles fusionnés (./characters/merges.ts), un appel de dessin chacun ; les personnages importés
+ * (./characters/imported/models.ts), s'ils sont chargés, au pire cas : de près sur l'île qui coûte le plus.
  */
 export function personnagesCost(a: ArchipelagoId): Record<'bonhomme' | 'creatures' | 'gardiens', { triangles: number; drawCalls: number }> {
   const { progress, world: village } = toutConstruit();
-  const creatures = fusionDesCreatures(creaturePlacements(a, village.links));
-  const gardiens = fusionDesGardiens(guardianPlacements(a, progress, village.links));
+  const lesCreatures = creaturePlacements(a, village.links);
+  const lesGardiens = guardianPlacements(a, progress, village.links);
+  // Au pire, on est sur l'île dont les personnages importés de près coûtent le plus (de loin partout ailleurs).
+  const iles: (BiomeId | null)[] = [null, ...new Set([...lesCreatures, ...lesGardiens].map((c) => c.id))];
+  const pire = (cout: (pres: BiomeId | null) => number) => Math.max(...iles.map(cout));
+  const creatures = pire((pres) => trianglesDeLaFusion(fusionDesCreatures(lesCreatures, pres)));
+  const gardiens = pire((pres) => trianglesDeLaFusion(fusionDesGardiens(lesGardiens, pres)));
   const appel = (n: number) => (n > 0 ? 1 : 0);
   return {
     bonhomme: { triangles: trianglesDeLaFusion(fusionDuBonhomme()), drawCalls: 1 },
-    creatures: { triangles: trianglesDeLaFusion(creatures), drawCalls: appel(trianglesDeLaFusion(creatures)) },
-    gardiens: { triangles: trianglesDeLaFusion(gardiens), drawCalls: appel(trianglesDeLaFusion(gardiens)) },
+    creatures: { triangles: creatures, drawCalls: appel(creatures) },
+    gardiens: { triangles: gardiens, drawCalls: appel(gardiens) },
   };
 }
 

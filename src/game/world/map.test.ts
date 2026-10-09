@@ -23,10 +23,10 @@ it('chaque île a une place, une altitude selon sa classe, et son cœur fait par
 
 it('la côte écrite d’un lieu qui a une forme (GD-12) est celle de sa forme', () => {
   // La carte de départ l'écrit en dur, pour ne pas calculer un masque par lieu à l'import de map.ts. Les lieux des
-  // Basses Terres (15) et des Collines du Large (12) ont leur forme (GD-12) ; les deux autres archipels la prendront,
-  // chacun dans sa pull request (formes.test.ts compte les lieux de chaque archipel).
+  // Basses Terres (15), des Collines du Large (12) et des Monts de Feu (12) ont leur forme (GD-12) ; les Îles du Ciel la
+  // prendront dans leur pull request (formes.test.ts compte les lieux de chaque archipel).
   const formes = MAP.filter((d) => silhouetteDe(d.id).forme);
-  expect(formes.length).toBe(27);
+  expect(formes.length).toBe(39);
   for (const d of formes) expect(d.ext, d.id).toEqual(etendueDuLieu(d, silhouetteDe(d.id).forme!));
 });
 
@@ -39,6 +39,12 @@ const PLACES_FUTURES: Partial<Record<ArchipelagoId, readonly { nom: string; core
   '5e': [
     { nom: 'EMC', core: { x: 29, y: 405 }, forme: { forme: 'trefle', vers: 'devant' } },
     { nom: 'latin ou grec', core: { x: 65, y: 405 }, forme: { forme: 'galet', vers: 'devant', short: true } },
+  ],
+  // Aux Monts de Feu, au rang du fond, entre la Vigie et le Bassin : l'EMC en trèfle derrière l'Escale, le latin ou le
+  // grec en galet derrière le Théâtre (9 octobre 2026).
+  '4e': [
+    { nom: 'EMC', core: { x: 74, y: 716 }, forme: { forme: 'trefle', vers: 'devant' } },
+    { nom: 'latin ou grec', core: { x: 106, y: 716 }, forme: { forme: 'galet', vers: 'devant' } },
   ],
 };
 
@@ -58,6 +64,13 @@ it('les places des îles futures (GD-12) : dans le cadre, à quatre cases d’ea
         for (const e of emprises) expect(gapBetween(r, e), `${a} ${f.nom} et ${e.lieu}`).toBeGreaterThanOrEqual(GAP_BETWEEN_PLACES);
         for (const g of futures) if (g !== f) for (const s of g.rects) expect(gapBetween(r, s), `${a} ${f.nom} et ${g.nom}`).toBeGreaterThanOrEqual(GAP_BETWEEN_PLACES);
       }
+  }
+});
+
+it('la terre de chaque lieu, forme comprise, tient dans le cadre de sa région (GD-12)', () => {
+  for (const a of ARCHIPELAGO_IDS) {
+    const c = frameOf(a);
+    for (const d of mapOf(a)) for (const k of landCells(d)) expect(k.x >= c.x0 && k.x < c.x1 && k.y >= c.y0 && k.y < c.y1, `${a} ${d.id} (${k.x}, ${k.y})`).toBe(true);
   }
 });
 
@@ -109,7 +122,7 @@ it('le relief : plat, collines de 0 à 2, montagne de 6 à 9, volcan avec son cr
   }
 });
 
-it('le paysage : du décor sur chaque île, jamais sur l’eau ni la lave, des lacs sur quelques îles, de la neige sur les sommets', () => {
+it('le paysage : du décor sur chaque île, jamais sur l’eau ni la lave, les lacs dessinés, de la neige sur les sommets', () => {
   let lakes = 0;
   for (const def of MAP) {
     const cells = landscape(def);
@@ -131,7 +144,9 @@ it('le paysage : du décor sur chaque île, jamais sur l’eau ni la lave, des l
         def.id,
       ).toBe(true);
   }
-  expect(lakes).toBeGreaterThanOrEqual(3);
+  // Une île qui a sa forme (GD-12) n'a plus de mare au hasard : restent les lacs dessinés (`LACS`), chacun sur son île, et
+  // les mares des deux îles des Îles du Ciel d'où tombent leurs cascades, jusqu'à leurs formes.
+  expect(lakes).toBe(Object.keys(LACS).length + 2);
 });
 
 it('aucun pont ne traverse la terre d’une autre île', () => {

@@ -659,6 +659,16 @@ const CAPTURES = [
       { nom: `histoire-geo-${ile}-gardien-apres${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, fiche: { genre: 'gardien', id: ile }, ...autres },
     ]),
   ),
+  // Les personnages importés du 6e dans Archipéo (famille `personnages-importes`), à retirer une fois le lot fusionné ; à
+  // prendre avec `--rendu archipeo`. Le front de rallumage au défi de l'Amphore peinte (des questions à choix), à une, deux et trois épreuves
+  // réussies (`reussir`) ; le Grand Chêne, sa fiche ouverte, éteint (`sansIles`) et rallumé, de jour et de nuit ; la vue
+  // de l'archipel en recul, de jour et de nuit (les créatures de loin, les Gardiens rallumés).
+  ...[1, 2, 3].map((reussir) => ({ nom: `personnages-importes-defi-amphore-${reussir}`, vue: 'défi', famille: 'personnages-importes', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir })),
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    { nom: `personnages-importes-chene-eteint${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', sansIles: ['french-6e-phonology'], fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
+    { nom: `personnages-importes-chene-rallume${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
+    { nom: `personnages-importes-archipel-recul${suffixe}`, vue: 'archipel', famille: 'personnages-importes', ile: 'maths-6e-calculation', zoomer: -10, ...autres },
+  ]),
   { nom: 'histoire-geo-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
   { nom: 'histoire-geo-mes-blocs', vue: 'île', famille: 'histoire-geo', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
@@ -1122,6 +1132,25 @@ const CAPTURES = [
     ['glacier', 'maths-5e-signed-numbers'],
   ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
   { nom: 'formes-modifier-le-plan-5e', vue: 'carte', famille: 'formes', ile: 'maths-5e-proportionality', amenager: 'english-5e-vocabulary' },
+  // Aux Monts de Feu (4e, 9 octobre 2026) : la Carte sur la tablette, en OpenDyslexic 32 px et debout, le bonhomme sur
+  // l'Imprimerie des révolutions (les noms tus du portrait) ; le Bassin (le lagon), l'Atelier (son quai), la Forge et la
+  // Falaise (leurs pics), la Gare (son quai qui file) de près ; « Modifier le plan », le Bassin choisi, puis la Vigie et
+  // la Source, aux deux autres coins de la région, le bonhomme sur elles.
+  { nom: 'formes-carte-4e', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions' },
+  { nom: 'formes-carte-4e-od32', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  { nom: 'formes-carte-4e-800x1280', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions', taille: { width: 800, height: 1280 } },
+  ...[
+    ['bassin', 'technology-4e-modeling'],
+    ['atelier', 'maths-4e-algebra'],
+    ['forge', 'maths-4e-powers'],
+    ['falaise', 'french-4e-agreement'],
+    ['gare', 'english-4e-grammar'],
+  ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
+  { nom: 'formes-modifier-le-plan-4e', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions', amenager: 'technology-4e-modeling' },
+  ...[
+    ['vigie', 'physics-chemistry-4e-signals-circuits'],
+    ['source', 'life-earth-sciences-4e-cells-evolution'],
+  ].map(([court, ile]) => ({ nom: `formes-modifier-le-plan-4e-${court}`, vue: 'carte', famille: 'formes', ile, amenager: ile })),
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

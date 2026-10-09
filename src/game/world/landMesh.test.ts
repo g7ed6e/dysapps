@@ -536,9 +536,9 @@ it('le rebord plat de la dalle : la Forge reste plate jusqu’à son bord, la ro
   const coeur = coeurDe(islandDef('maths-4e-powers'));
   const dalle = champ.colonnes.filter((c) => c.x >= coeur.x0 && c.x < coeur.x1 && c.y >= coeur.y0 && c.y < coeur.y1);
   const matiere = (c: { matieres: string[] }) => c.matieres[c.matieres.length - 1];
-  const laDalle = matiere(dalle[0]);
+  // Sa matière, celle du milieu du cœur : ses coins arrondis en côte (GD-12) ne sont plus de la dalle.
+  const laDalle = matiere(colonneEn(champ, Math.floor((coeur.x0 + coeur.x1) / 2), Math.floor((coeur.y0 + coeur.y1) / 2))!);
   const dessus = (c: { matieres: string[] }) => couleurDeMatiere('4e', matiere(c) as never).dessus;
-  let rebord = 0;
   for (const c of dalle) {
     if (matiere(c) !== laDalle) continue;
     const L = c.haut + 1;
@@ -571,12 +571,13 @@ it('le rebord plat de la dalle : la Forge reste plate jusqu’à son bord, la ro
     ]) {
       const v = colonneEn(champ, c.x + dx, c.y + dy);
       if (!v || v.haut !== c.haut + 1 || v.fixe || ecartDeCouleur(dessus(c), dessus(v)) <= CONTRASTE) continue;
-      rebord++;
       expect([v.coins[j0], v.coins[j1]], `${v.x},${v.y}`).toEqual([c.coins[k0], c.coins[k1]]);
     }
     // Toucher le bord de la dalle redonne sa case.
     const h = hauteurDuSol(champ, c.x + 0.97, c.y + 0.03)!;
     expect(pickCell(champ, { x: c.x + 0.97, y: h, z: c.y + 0.03 }, { x: 0, y: 1, z: 0 })?.cell).toEqual({ x: c.x, y: c.y, z: c.haut });
   }
-  expect(rebord).toBeGreaterThan(20);
+  // (Avant sa forme, plus de vingt bords de roche touchaient la dalle. Depuis sa goutte, GD-12, 9 octobre 2026, le sol du
+  // lieu, l'acier, suit la goutte jusqu'à sa pointe, au fond, et monte d'un bloc au pied du pic, comme la pierre de la
+  // Mine au 6e : la roche touche l'acier plus haut, hors du cœur.)
 });

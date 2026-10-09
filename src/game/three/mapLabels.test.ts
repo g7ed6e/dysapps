@@ -279,8 +279,13 @@ const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
   // Mesurés de nouveau depuis que la Carte cadre les lieux d'aujourd'hui et, au plancher, l'île du bonhomme hors de la
   // place avec la destination (GD-11, consultant UX UI) : six Cartes avant, quatre depuis, trois depuis une forme par
   // île aux Îles Brumeuses (GD-12, 9 octobre 2026 : le Delta n'y est plus sous le nom du Relais).
+  // Aux Monts de Feu, depuis une forme par île (GD-12, 9 octobre 2026), trois Cartes (deux avant) : l'Escale des
+  // échanges se tait aussi vers le Théâtre (le Cabinet des mots avant), le Jardin des heures vers la Falaise. Depuis
+  // que le Théâtre avance d'un pas et l'Imprimerie recule d'un pas (relecture du 9 octobre 2026), toujours trois : vers le
+  // Théâtre, le Cabinet des mots se tait à la place de l'Escale.
   '4e:maths-4e-powers': ['geography-4e-globalization'],
   '4e:english-4e-comprehension': ['french-4e-vocabulary'],
+  '4e:french-4e-agreement': ['lv2-4e-daily-life'],
   '3e:english-3e-grammar': ['lv2-3e-travel'],
 };
 
@@ -329,7 +334,17 @@ const TUS_EN_OD32: Record<string, string[]> = {
  */
 const TUS_VERS_UNE_DESTINATION: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
   // Depuis que la Carte cadre les lieux d'aujourd'hui et, au plancher, l'île du bonhomme avec la destination (GD-11,
-  // consultant UX UI) : aucun (cinq destinations en taisaient un depuis la grille de GD-11, trois sur main).
+  // consultant UX UI) : aucun (cinq destinations en taisaient un depuis la grille de GD-11, trois sur main). Aux Monts
+  // de Feu, depuis une forme par île (GD-12, 9 octobre 2026), le cadre a un rang de plus au fond, sous le panneau :
+  // trois destinations taisaient cinq noms ; depuis que le Théâtre avance d'un pas et l'Imprimerie recule d'un pas
+  // (relecture du 9 octobre 2026), deux destinations, trois noms : vers la Source, au coin de devant, l'Escale et le
+  // Bassin, au coin opposé ; vers la Vigie, le Cabinet (régression, au pilotage). Le Bassin deux pas plus au fond n'en
+  // taisait plus qu'un, mais coupait un morceau de plus du monde en blocs (six appels de plus) et défaisait sa réunion
+  // avec le Cabinet.
+  '4e': {
+    'life-earth-sciences-4e-cells-evolution': ['geography-4e-globalization', 'technology-4e-modeling'],
+    'physics-chemistry-4e-signals-circuits': ['french-4e-vocabulary'],
+  },
 };
 
 /**
@@ -339,8 +354,17 @@ const TUS_VERS_UNE_DESTINATION: Partial<Record<ArchipelagoId, Record<string, str
 const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
   // Mesurés de nouveau depuis que la Carte cadre les lieux d'aujourd'hui (GD-11, consultant UX UI) : deux ouvrages taisent
   // un nom (douze avant, cinq sur main) ; un seul depuis une forme par île aux Îles Brumeuses (GD-12, 9 octobre 2026 :
-  // l'ouvrage entre le Manoir et la Prairie, qui a changé de place, ne tait plus la Menuiserie).
+  // l'ouvrage entre le Manoir et la Prairie, qui a changé de place, ne tait plus la Menuiserie). Aux Monts de Feu, depuis une
+  // forme par île (GD-12, 9 octobre 2026), cinq flèches taisaient un nom chacune (aucune avant) ; trois depuis que le
+  // Théâtre avance d'un pas et l'Imprimerie recule d'un pas (relecture du 9 octobre 2026) : le Bassin des maquettes, au
+  // coin du fond, sous le panneau, depuis les deux bouts de l'ouvrage de l'Atelier à la Forge et depuis la Source vers la
+  // Forge (régression, au pilotage). Les deux îles d'histoire-géographie ne se taisent plus l'une vers l'autre.
   '3e': { 'geography-3e-france-technology-3e-digital depuis geography-3e-france': ['technology-3e-digital'] },
+  '4e': {
+    'maths-4e-algebra-maths-4e-powers depuis maths-4e-algebra': ['technology-4e-modeling'],
+    'maths-4e-algebra-maths-4e-powers depuis maths-4e-powers': ['technology-4e-modeling'],
+    'maths-4e-powers-life-earth-sciences-4e-cells-evolution depuis life-earth-sciences-4e-cells-evolution': ['technology-4e-modeling'],
+  },
 };
 
 /**
@@ -364,14 +388,10 @@ const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string,
   // le cadrage compte le nom le plus haut monté d'une demi-étiquette (huit noms tus au lieu de treize) : le Kiosque des
   // témoins ne se tait plus que vers le Belvédère de Thalès (quatre destinations avant).
   // Au 5e, depuis une forme par île (GD-12, 9 octobre 2026), une seule destination : vers la Saline des mélanges, le
-  // nom du Delta des ressources, sa voisine, se tait ; il n'est jamais posé sur une autre île (`ailleurs` vide).
+  // nom du Delta des ressources, sa voisine, se tait ; il n'est jamais posé sur une autre île (`ailleurs` vide). Aux Monts
+  // de Feu, depuis une forme par île, aucune (trois destinations avant).
   '5e': {
     'physics-chemistry-5e-matter-universe': ['geography-5e-resources'],
-  },
-  '4e': {
-    'french-4e-agreement': ['lv2-4e-daily-life'],
-    'english-4e-comprehension': ['french-4e-vocabulary'],
-    'geography-4e-globalization': ['history-4e-revolutions'],
   },
   '3e': {
     'maths-3e-geometry': ['history-3e-twentieth-century', 'physics-chemistry-3e-motion-energy'],

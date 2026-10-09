@@ -1,7 +1,7 @@
 import { enveloppeDe, toutConstruit } from './budget';
 import { mixColor } from './daylight';
 import { champDuSol, colonneEn, NIVEAU_EAU, RIVAGE } from './landMesh';
-import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
+import { ARCHIPELAGO_IDS, type ArchipelagoId, islandDef, lagoonWater, landCells } from './map';
 import {
   BORD,
   cadreDeLaMer,
@@ -164,6 +164,44 @@ describe('la carte de la mer', () => {
     expect(luminance(c)).toBeLessThan(luminance(mer));
     expect(luminance(c)).toBeLessThan(luminance(lagon));
     expect(PORTEE).toBe(8);
+  });
+
+  it('l’eau du lagon d’une île est un haut-fond : le Bleu lagon jusqu’à sa passe, sans écume (GD-12, le Bassin des maquettes)', () => {
+    const a = '4e';
+    const { terres } = reel(a);
+    const lagon = lagoonWater(islandDef('technology-4e-modeling'));
+    expect(lagon.length).toBeGreaterThanOrEqual(60);
+    const fonds = new Set(terres.filter((t) => t.shallow).map((t) => `${t.x},${t.y}`));
+    expect(fonds).toEqual(new Set(lagon.map((c) => `${c.x},${c.y}`)));
+    const carte = carteDeLaMer(a, terres, worldBounds(a));
+    const bleu = compense(eauxDe(a).lagon, exposition(a));
+    for (const c of lagon) {
+      const i = Math.floor((c.x + 0.5 - carte.x0) * PAR_CASE);
+      const j = Math.floor((c.y + 0.5 - carte.y0) * PAR_CASE);
+      const o = (j * carte.l + i) * 4;
+      expect((carte.data[o] << 16) | (carte.data[o + 1] << 8) | carte.data[o + 2], `${c.x},${c.y}`).toBe(bleu);
+      // De l'eau : la distance à la terre n'y est pas nulle (pas de liseré d'écume au milieu du lagon).
+      expect(carte.data[o + 3], `${c.x},${c.y}`).toBeGreaterThan(0);
+    }
+    // Hors de l'anneau de terre, le dégradé de la passe ne change la mer que devant l'île (sa passe tournée vers le
+    // Cabinet, vers les y plus petits), à six cases au plus de son bord, jamais au-delà de sa largeur (relecture du
+    // 9 octobre 2026 : pas de halo sous l'anneau ni de l'autre côté de l'île).
+    const sans = carteDeLaMer(a, terres.filter((t) => !t.shallow), worldBounds(a));
+    const anneau = landCells(islandDef('technology-4e-modeling'));
+    const surLAnneau = new Set(anneau.map((c) => `${c.x},${c.y}`));
+    const bord = { x0: Math.min(...anneau.map((c) => c.x)), x1: Math.max(...anneau.map((c) => c.x)), y0: Math.min(...anneau.map((c) => c.y)) };
+    let changees = 0;
+    for (let o = 0; o < carte.l * carte.h; o++) {
+      if (carte.data[4 * o] === sans.data[4 * o] && carte.data[4 * o + 1] === sans.data[4 * o + 1] && carte.data[4 * o + 2] === sans.data[4 * o + 2]) continue;
+      const x = carte.x0 + Math.floor((o % carte.l) / PAR_CASE);
+      const y = carte.y0 + Math.floor(Math.floor(o / carte.l) / PAR_CASE);
+      if (surLAnneau.has(`${x},${y}`) || fonds.has(`${x},${y}`)) continue;
+      changees++;
+      expect(x >= bord.x0 && x <= bord.x1 && y <= bord.y0 && y >= bord.y0 - 6, `${x},${y}`).toBe(true);
+    }
+    expect(changees).toBeGreaterThan(0);
+    // La signature distingue un haut-fond d'une terre.
+    expect(signatureDesTerres(terres)).not.toBe(signatureDesTerres(terres.map(({ x, y, ecueil }) => (ecueil ? { x, y, ecueil } : { x, y }))));
   });
 });
 

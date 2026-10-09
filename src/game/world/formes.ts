@@ -320,9 +320,12 @@ function eauDuFer(u: number, v: number, s: number): number {
   return Math.min(rectangleArrondi(u, v, 0, -(s + 3.5), 7, 2.5, 2), rectangleArrondi(u, v, 0, -(s + FER_REACH), 4, 4, 1));
 }
 
+/** Le milieu du lagon, en cases devant le bord du cœur (dans le repère propre de la forme, en −v). */
+export const LAGOON_MIDDLE = 5.5;
+
 /** L'eau du lagon et de sa passe (distance signée, négative dans l'eau), dans le repère propre de la forme. */
 function eauDuLagon(u: number, v: number, s: number): number {
-  const lagon = rectangleArrondi(u, v, 0, -(s + 5.5), 7, 3.5, 2);
+  const lagon = rectangleArrondi(u, v, 0, -(s + LAGOON_MIDDLE), 7, 3.5, 2);
   const passe = rectangleArrondi(u, v, -4.5, -(s + REACH_LONG - 1), 2.5, 4, 1);
   return Math.min(lagon, passe);
 }
@@ -403,6 +406,21 @@ export function calmeDeLaForme(f: FormeDeLIle, u: number, v: number, s: number):
   if (!c) return false;
   const [a, b] = toShapeFrame(f, u, v, SCRATCH_POINT);
   return c(a, b, s);
+}
+
+/** La forme a-t-elle un lagon (la forme `lagon`, GD-12) ? Sans forme, non. */
+export function hasLagoon(f: FormeDeLIle | null | undefined): f is FormeDeLIle & { forme: 'lagon' } {
+  return f?.forme === 'lagon';
+}
+
+/**
+ * Le point (`u`, `v`, repère du cœur) est-il dans l'eau du lagon ou de sa passe (la forme `lagon`) ? Hors du lagon,
+ * toujours non. La mer d'Archipéo y peint ses hauts-fonds (./sea.ts).
+ */
+export function inLagoon(f: FormeDeLIle, u: number, v: number, s: number): boolean {
+  if (!hasLagoon(f)) return false;
+  const [a, b] = toShapeFrame(f, u, v, SCRATCH_POINT);
+  return eauDuLagon(a, b, s) < 0;
 }
 
 /** Le côté du cœur vers lequel s'avance le trait d'une forme tournée, dans le repère du cœur (−1 ou 1 sur `u` ou `v`). */

@@ -46,6 +46,7 @@ Depuis le lot R3, **la mer et la faune** sont peintes aussi (`src/game/world/sea
 
 - la mer se lit en profondeur : le Bleu lagon de la planche (`#178078`) sur les hauts-fonds autour des îles, la teinte de mer de l’archipel un peu plus loin, puis le large, qui s’enfonce vers la Nuit océan (`#142B38`) ; les rochers et les bancs semés en mer ne font pas de lagon, seulement de l’écume ;
 - au ras de chaque côte, rocher ou pilotis, **un liseré d’écume** couleur Brume (`#E5EBE3`), et plus loin une ligne plus pâle ; il respire doucement ; le sable se détache du lagon comme sur la planche (2,2 pour 1) et l’écume à plus de 3 pour 1 ;
+- l’eau du lagon d’une île (le Bassin des maquettes, GD-12, 9 octobre 2026) est peinte en hauts-fonds Bleu lagon jusqu’à la passe, sans écume, et rejoint la mer en deux cases devant elle ; la vue de l’île recule pour la cadrer ;
 - **une houle légère** : de grandes facettes irrégulières, soulevées de quelques centimètres au large et calmes près des côtes, qui prennent la lumière chacune à sa façon ;
 - aux Îles du Ciel, le même principe fait le plancher de nuages : bleuté sous les îles, blanc au loin, une houle plus ample et plus lente, sans écume ; ses nappes des sommets ne sont jamais deux pareilles (centre, taille, opacité et contour tirés à graine fixe) et ne débordent jamais sur une autre île, un îlot ou un pont ;
 - aux Îles du Ciel, le massif enneigé du lointain est posé sur ce plancher : ses bouts et son pied se perdent dans les nuages, rien n’y est coupé net ni ne flotte ;
@@ -85,6 +86,10 @@ Dans Archipéo, depuis le lot R6, **les personnages** sont peints (`src/game/wor
 - la silhouette est bordée d’un pixel dans la teinte sombre de sa dominante, jamais noire ; **la nuit, le bord du côté éclairé (en haut à gauche) devient un liseré clair et froid** (`#B8CCE0`) d’un pixel, qui détache le personnage du sol sombre ;
 - une créature a une ombre de contact, sombre et nette, sous ses pieds, plus marquée la nuit ;
 - ce qui brille la nuit fait au moins 3 × 3 pixels, avec un halo chaud d’un pixel sur ce qui l’entoure, fixe (il ne clignote jamais).
+
+### Les personnages importés du 6e (9 octobre 2026)
+
+Au 6e, les Gardiens et les créatures ne sont plus dessinés en code : ce sont les modèles faits à partir des concepts, un de près et un de loin (décision du mainteneur, « Monde et fiches »). Le Gardien est une statue de pierre et de lichen sur le socle commun, sans flamme ni veines ; il se réchauffe des pieds vers la tête à chaque épreuve réussie, et rallumé, sa pierre luit un peu au Sable et un anneau brille autour du socle. Les valeurs sont dans [Le style](../../rendu/style.md#créatures-et-gardiens). Un modèle qui ne se charge pas laisse la place au dessin en code.
 
 ### Les bulles et la Carte (4 octobre 2026)
 
