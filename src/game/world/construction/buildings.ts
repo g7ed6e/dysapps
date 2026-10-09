@@ -5,7 +5,10 @@ import type { VoxelCube } from '../../Voxel';
 import { LAYOUT_PAD, origineDe, placeSpot, VILLAGE_PLACES } from '../terrain';
 import { type ArchipelagoId, islandDef, mapOf } from '../map';
 import { decalageDesPlans, planCells, plansFor } from '../plans';
-import { type CaseDuLieu, estUnLieuDuVillage } from '../architecture';
+// Les lieux et le type de leurs cases, pris à leur fichier (et non à ../architecture) : les kits d'architecture lisent
+// les étapes des plans d'ici (`etapesDe`), sans boucle d'imports.
+import { estUnLieuDuVillage } from '../architecture/places';
+import type { CaseDuLieu } from '../architecture/kits/types';
 import { layoutCache } from '../placement';
 
 /**
@@ -37,7 +40,29 @@ export function sansToursDuCoeur(cubes: VoxelCube[]): VoxelCube[] {
 /** Les étapes d'un bâtiment qui prennent le kit d'architecture : les murs et le toit (world/architect.ts, `Stages`). */
 export const ETAPES_DU_BATIMENT = 2;
 
-const batiments = layoutCache<ArchipelagoId, ReadonlyMap<string, string>>();
+/** Les cases des étapes des plans d'un archipel, par archipel et par tranche d'étapes (`de`, `a`), vidées avec la disposition. */
+const etapes = layoutCache<string, ReadonlyMap<string, string>>();
+
+/**
+ * Les cases des étapes `de` à `jusqua` (exclue) des plans de chaque île d'un archipel, posées ou non (clé `x,y,z` du
+ * monde), et la texture de leur bloc dans Archipéo. Comme world/terrain.ts : la case (x, y, z) d'un plan est posée en
+ * (cœur + x, cœur + y, altitude + z + 1), décalée au fond de la zone au Marché et à l'Atelier (`decalageDesPlans`).
+ */
+export function etapesDe(a: ArchipelagoId, de: number, jusqua: number): ReadonlyMap<string, string> {
+  const k = `${a}|${de}|${jusqua}`;
+  const deja = etapes.get(k);
+  if (deja) return deja;
+  const out = new Map<string, string>();
+  for (const def of mapOf(a))
+    for (const plan of plansFor(def.id).slice(de, jusqua)) {
+      const d = decalageDesPlans(plan);
+      planCells(plan).forEach((c, i) => {
+        out.set(`${def.core.x + c.x + d.x},${def.core.y + c.y + d.y},${def.altitude + c.z + d.z + 1}`, BLOCKS[plan.cells[i].archipeo ?? c.block].texture);
+      });
+    }
+  etapes.set(k, out);
+  return out;
+}
 
 /**
  * Les bâtiments des îles d'un archipel (lot 7b), entiers, posés ou non : les cases des murs et du toit de chaque île
@@ -46,23 +71,8 @@ const batiments = layoutCache<ArchipelagoId, ReadonlyMap<string, string>>();
  * plus (l'école, la salle des trophées, le lieu où l'on assemble : ils prennent le kit par `caseDuLieu`).
  */
 export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
-  const deja = batiments.get(a);
-  if (deja) return deja;
-  const out = new Map<string, string>();
-  for (const def of mapOf(a))
-    for (const plan of plansFor(def.id).slice(0, ETAPES_DU_BATIMENT)) {
-      // Comme world/terrain.ts : la case (x, y, z) d'un plan est posée en (cœur + x, cœur + y, altitude + z + 1), décalée
-      // au fond de la zone au Marché et à l'Atelier (`decalageDesPlans`).
-      const d = decalageDesPlans(plan);
-      planCells(plan).forEach((c, i) => {
-        out.set(`${def.core.x + c.x + d.x},${def.core.y + c.y + d.y},${def.altitude + c.z + d.z + 1}`, BLOCKS[plan.cells[i].archipeo ?? c.block].texture);
-      });
-    }
-  batiments.set(a, out);
-  return out;
+  return etapesDe(a, 0, ETAPES_DU_BATIMENT);
 }
-
-const cours = layoutCache<ArchipelagoId, ReadonlyMap<string, string>>();
 
 /**
  * Les cours des îles d'un archipel (la table commune, 8 octobre 2026) : les cases de la troisième étape du plan de chaque
@@ -70,18 +80,7 @@ const cours = layoutCache<ArchipelagoId, ReadonlyMap<string, string>>();
  * la texture de leur bloc. Elles prennent le kit sur leur propre plan : la cour n'allonge pas un mur.
  */
 export function coursDe(a: ArchipelagoId): ReadonlyMap<string, string> {
-  const deja = cours.get(a);
-  if (deja) return deja;
-  const out = new Map<string, string>();
-  for (const def of mapOf(a))
-    for (const plan of plansFor(def.id).slice(ETAPES_DU_BATIMENT, ETAPES_DU_BATIMENT + 1)) {
-      const d = decalageDesPlans(plan);
-      planCells(plan).forEach((c, i) => {
-        out.set(`${def.core.x + c.x + d.x},${def.core.y + c.y + d.y},${def.altitude + c.z + d.z + 1}`, BLOCKS[plan.cells[i].archipeo ?? c.block].texture);
-      });
-    }
-  cours.set(a, out);
-  return out;
+  return etapesDe(a, ETAPES_DU_BATIMENT, ETAPES_DU_BATIMENT + 1);
 }
 
 const blocsDArchipeo = layoutCache<ArchipelagoId, ReadonlyMap<string, string>>();

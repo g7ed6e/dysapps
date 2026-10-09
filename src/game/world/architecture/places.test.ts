@@ -259,7 +259,7 @@ describe('Les lieux du village au kit du 6e', () => {
     expect([...lieuxTouches].sort()).toEqual(['assembly', 'school', 'trophies']);
   });
 
-  it('au 6e, les monuments prennent la table commune (8 octobre 2026) ; au 5e, au 4e et au 3e, l’école, la salle et la Halle gardent leur dessin', () => {
+  it('au 6e, les monuments prennent la table commune (8 octobre 2026) ; au 4e et au 3e, l’école, la salle et la Halle gardent leur dessin', () => {
     const { progress, world: village } = toutConstruit();
     const tous = worldCubes('6e', progress, village, false).filter((c) => !c.sol);
     const archi = archiDe('6e', tous);
@@ -267,7 +267,7 @@ describe('Les lieux du village au kit du 6e', () => {
     expect(monuments.length).toBeGreaterThan(0);
     // Chaque bloc peint d'un monument, dans la famille de sa matière (la table commune).
     for (const p of monuments) expect(p.famille).toBe(familyOf(p.cube.texture));
-    for (const a of ['5e', '4e', '3e'] as const) {
+    for (const a of ['4e', '3e'] as const) {
       const { cubes } = lieux(a, TOUS.slice(0, 6));
       const autre = archiDe(a, cubes);
       expect(autre.pieces.length + autre.peints.size + autre.couverts.size).toBe(0);

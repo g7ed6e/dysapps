@@ -89,6 +89,31 @@ export interface Kit {
   /** La finition, matière par matière (la porte, la barrière, la marche) : elle passe avant `pieces` et `murs`. */
   finitions?: Partial<Record<TextureKind, DessinDeFinition>>;
   /**
+   * Le dessin d'une matière d'une autre famille que sa famille ne dit pas seule (au 5e : le bambou en clins verticaux, la
+   * rizière seule et basse en plate-bande, l'enluminure d'une petite construction) : comme la finition, avant `pieces` et
+   * `murs` ; `undefined` : le dessin de sa famille.
+   */
+  byMaterial?: Partial<Record<TextureKind, DessinDeFinition>>;
+  /**
+   * Une tuile posée en mur, et non en toit (au 5e : les murs de l'échoppe du Comptoir, le four de Vélin, la tour rayée du
+   * phare du large) : un mur plein de sa matière, lu comme un mur par ses voisines. `plan` : la texture de chaque case du
+   * plan du bloc, fantômes compris.
+   */
+  tilesInWalls?: (c: VoxelCube, plan: (x: number, y: number, z: number) => string | undefined) => boolean;
+  /**
+   * Un bloc que le kit peint à plat, sans pièce ni mur, d'après sa place (au 5e : l'auvent rayé de l'échoppe du Marché,
+   * le toit en damier du kiosque tant qu'il n'est pas fini) : sa matière unie, sans dessus sous un autre bloc posé.
+   */
+  flat?: (c: VoxelCube) => boolean;
+  /**
+   * Les blocs d'un monument que le kit dessine d'un seul tenant (au 5e : le toit en pavillon du kiosque et sa verrière),
+   * lus sur tout le plan du monument (`plan` : ses blocs, fantômes compris) : la pièce de la case, `null` (rien : une case
+   * que le dessin d'une autre traverse), ou `undefined` (le dessin ordinaire).
+   */
+  monumentPieces?: (c: VoxelCube, plan: readonly VoxelCube[]) => DessinDePiece | null | undefined;
+  /** Les matières tenues loin du fantôme Brume (../heartPieces.ts, `apartFromGhost` ; au 5e : la glace, le sel, la toile). */
+  ghostApart?: readonly TextureKind[];
+  /**
    * Les lieux du village qui prennent le kit (l'école, la salle des trophées, le lieu où l'on assemble) : la famille de chacun de leurs blocs, lue
    * sur sa place dans le modèle du lieu, pas sur la seule texture (la table « bloc vers matière » reste celle des plans).
    * Un lieu absent garde son dessin.

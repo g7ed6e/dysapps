@@ -35,7 +35,11 @@ export type Role =
   /** Le vert du nénuphar posé sur la nappe. */
   | 'feuille'
   /** La paille du champ de blé. */
-  | 'paille';
+  | 'paille'
+  /** La pierre des lieux du village au 5e (la pierre grise de l'école et de la salle des trophées). */
+  | 'masonry'
+  /** La neige des congères du Glacier (au 5e), tenue loin du fantôme. */
+  | 'snow';
 
 /** Une facette d'une pièce : un polygone convexe (3 ou 4 sommets) et sa normale. */
 export interface Facette {

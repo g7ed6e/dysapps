@@ -5,8 +5,9 @@
 // fait échouer la compilation et la CI (./families.test.ts). Les blocs taillés ne restent qu'en exceptions nommées
 // (`CUBE_EXCEPTIONS`).
 //
-// Le kit d'un archipel (./kits/) dit ce qu'il sait dessiner de chaque famille ; la table ne s'active qu'au 6e (les
-// Premiers Rivages) : au 5e, au 4e et au 3e, le kit est vide et rien ne change. Code pur, sans Three.js.
+// Le kit d'un archipel (./kits/) dit ce qu'il sait dessiner de chaque famille ; la table s'active au 6e (les Premiers
+// Rivages) et au 5e (les Collines du Large, 9 octobre 2026) : au 4e et au 3e, le kit est vide et rien ne change. Code
+// pur, sans Three.js.
 import type { TextureKind } from '../pixels';
 
 /** Les familles du dessin peint (vocabulaire du directeur artistique). */
@@ -88,9 +89,10 @@ type ExceptionTexture = 'borne';
 
 /**
  * La famille de chaque matière. Les matières relevées par le directeur artistique (biomes.ts, architect.ts,
- * fixtures.ts, monuments.ts, decor.ts, terrain/links.ts, terrain/port.ts, vehicle.ts) d'abord ; puis celles qu'aucun
- * bloc du 6e ne pose, que l'artiste technique 3D range par analogie, à valider par le directeur artistique avant les
- * lots du 5e, du 4e et du 3e (`FAMILIES_TO_CONFIRM`).
+ * fixtures.ts, monuments.ts, decor.ts, terrain/links.ts, terrain/port.ts, vehicle.ts) d'abord ; puis celles du 5e,
+ * validées par le directeur artistique le 9 octobre 2026 ; puis celles qu'aucun bloc du 6e ni du 5e ne pose, que
+ * l'artiste technique 3D range par analogie, à valider par le directeur artistique avant les lots du 4e et du 3e
+ * (`FAMILIES_TO_CONFIRM`).
  */
 export const MATERIAL_FAMILIES: Record<Exclude<TextureKind, ExceptionTexture>, MaterialFamily> = {
   // Le colombage.
@@ -140,23 +142,35 @@ export const MATERIAL_FAMILIES: Record<Exclude<TextureKind, ExceptionTexture>, M
   velours: 'precieux',
   eau: 'eau',
 
-  // Proposées par analogie (aucune n'est posée au 6e), à valider par le directeur artistique.
+  // Le 5e (directeur artistique, 9 octobre 2026) : la glace, la dalle, la strate, le sel et la tourbe (un mur de mottes
+  // plein) en pierre ; le panneau, le lambris et le bambou (des clins verticaux, ./kits/5e.ts) en bardage ; le vitrail
+  // en verre (jamais une pièce) ; l'enluminure (le logis à étage en avancée) et la rizière (dans un mur, comme la terre
+  // de la Ferme ; seule au sol, une plate-bande) en colombage.
   glace: 'pierre',
-  ardoise: 'pierre',
   dalle: 'pierre',
-  gres: 'pierre',
   strate: 'pierre',
   sel: 'pierre',
+  tourbe: 'pierre',
+  panneau: 'bardage',
+  lambris: 'bardage',
+  bambou: 'bardage',
+  vitrail: 'verre',
+  enluminure: 'colombage',
+  riziere: 'colombage',
+  // Le nuage : des congères, tas bas dans la neige (comme le tas de sable de fouille), de la famille de la pierre et non
+  // de l'eau (directeur artistique, retouches du 9 octobre 2026) ; le 3e reverra s'il pose du nuage dans une construction.
+  nuage: 'pierre',
+
+  // Proposées par analogie (aucune n'est posée au 6e ni au 5e), à valider par le directeur artistique.
+  ardoise: 'pierre',
+  gres: 'pierre',
   basalte: 'pierre',
   savon: 'pierre',
   cire: 'pierre',
   quartz: 'precieux',
   prisme: 'precieux',
-  panneau: 'bardage',
-  lambris: 'bardage',
   osier: 'bardage',
   bardeau: 'bardage',
-  bambou: 'bardage',
   liege: 'bardage',
   acier: 'metal',
   rail: 'metal',
@@ -166,37 +180,25 @@ export const MATERIAL_FAMILIES: Record<Exclude<TextureKind, ExceptionTexture>, M
   ressort: 'metal',
   engrenage: 'metal',
   bobine: 'metal',
-  vitrail: 'verre',
   miroir: 'verre',
   calque: 'toile',
   parchemin: 'toile',
-  enluminure: 'toile',
   reliure: 'toile',
-  tourbe: 'vegetal',
-  riziere: 'vegetal',
   petale: 'vegetal',
-  nuage: 'eau',
   lave: 'eau',
 };
 
-/** Les matières rangées par analogie, à valider par le directeur artistique (aucune n'est posée au 6e). */
+/** Les matières rangées par analogie, à valider par le directeur artistique (aucune n'est posée au 6e ni au 5e). */
 export const FAMILIES_TO_CONFIRM: readonly TextureKind[] = [
-  'glace',
   'ardoise',
-  'dalle',
   'gres',
-  'strate',
-  'sel',
   'basalte',
   'savon',
   'cire',
   'quartz',
   'prisme',
-  'panneau',
-  'lambris',
   'osier',
   'bardeau',
-  'bambou',
   'liege',
   'acier',
   'rail',
@@ -206,16 +208,11 @@ export const FAMILIES_TO_CONFIRM: readonly TextureKind[] = [
   'ressort',
   'engrenage',
   'bobine',
-  'vitrail',
   'miroir',
   'calque',
   'parchemin',
-  'enluminure',
   'reliure',
-  'tourbe',
-  'riziere',
   'petale',
-  'nuage',
   'lave',
 ];
 

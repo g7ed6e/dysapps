@@ -66,7 +66,7 @@ export { ALLUMAGE, ARETE, ARETE_DU_VERRE, ARETE_FANTOME, BISEAU, couleursDesRole
 export { BISEAU_GLSL, type BlocAssemble, detailDuMotif, ECLAT_GLSL, eclatDeFenetre, eclatDuBiseau, MOTIF_ASSEMBLE, MOTIF_ASSEMBLE_DEBUT, MOTIF_ASSEMBLE_GLSL, opaciteDesFantomes, SANS_BISEAU, TEINTE_GLSL, teinteDeCase } from './construction/shader';
 export { genresDesBlocs } from './construction/kinds';
 export { CREME_DU_PHARE, phareDeGrimoire } from './construction/lighthouse';
-export { batimentsDe, blocsDArchipeoDe, caseDuLieu, coursDe, enBlocsDArchipeo, ETAPES_DU_BATIMENT, sansToursDuCoeur } from './construction/buildings';
+export { batimentsDe, blocsDArchipeoDe, caseDuLieu, coursDe, enBlocsDArchipeo, ETAPES_DU_BATIMENT, etapesDe, sansToursDuCoeur } from './construction/buildings';
 
 // ---------- Le maillage ----------
 
@@ -384,7 +384,7 @@ export function maillageDeLaConstruction(
     let f = vues.get(k);
     if (f) return f;
     const delave = (x: Faces): Faces => (c.muted ? { dessus: mixColor(x.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(x.cote, DELAVE[0], DELAVE[1]) } : x);
-    const role = fond === 'remplissage' || fond === 'bardage' || fond === 'soubassement' || fond === 'tole' || fond === 'galon' || fond === 'braise' ? couleurDuRole(a, kit, fond, c.muted) : null;
+    const role = fond === 'remplissage' || fond === 'bardage' || fond === 'soubassement' || fond === 'tole' || fond === 'galon' || fond === 'braise' || fond === 'masonry' ? couleurDuRole(a, kit, fond, c.muted) : null;
     if (role !== null) f = { dessus: role, cote: role };
     else if (repeint) f = delave(couleurDeMatiere(a, repeint));
     else if (couvert) f = couleursDuToit(a, c.tag, c.muted);
@@ -415,6 +415,9 @@ export function maillageDeLaConstruction(
       f = { dessus: c.top ? hex(c.top) : mixColor(x, 0xffffff, 0.12), cote: x };
     }
     if (lisse) f = { dessus: mixColor(f.dessus, f.cote, 0.5), cote: f.cote };
+    // Une matière que le kit tient loin du fantôme Brume (au 5e : la glace, le sel, la toile ; le référent dys).
+    const texture = c.texture;
+    if (role === null && !options.navire && texture !== undefined && kit.ghostApart?.some((t) => t === texture)) f = { dessus: apartFromGhost(f.dessus), cote: apartFromGhost(f.cote) };
     vues.set(k, f);
     return f;
   };
@@ -904,8 +907,9 @@ export function maillageDeLaConstruction(
     dessinerPhareDuLarge(P, L, large.pose);
     const [t0] = O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 });
     // Ses hublots (GD-2, consultant Archipéo) : les vitraux du monument, ronds sur le fût, à mi-hauteur ; un carré de
-    // cadre jaune posé sur le pan, que le shader peint en hublot (`MOTIF_ASSEMBLE.vitrail`). Deux triangles chacun ; aucun sur une île fermée.
-    if (!large.pose.muted) {
+    // cadre jaune posé sur le pan, que le shader peint en hublot (`MOTIF_ASSEMBLE.vitrail`). Deux triangles chacun ; aucun sur une île fermée,
+    // ni avant que la lanterne (les vitraux du grand projet) soit finie.
+    if (!large.pose.muted && (large.pose.pieces?.has('lantern') ?? true)) {
       const cadre = couleurDeMatiere(a, 'vitrail').cote;
       const sansBiseau = mode === 'peint' ? [0, 1, 2, 3].map(() => [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU]) : undefined;
       for (const h of hublotsDuPhareDuLarge(large.pose))
