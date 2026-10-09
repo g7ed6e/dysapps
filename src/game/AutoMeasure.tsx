@@ -2,12 +2,14 @@
 // partie toute construite des mesures (world/budget.ts) jouée en mémoire, puis le tour des vues du 6e (l'île, reculée,
 // l'archipel, reculé, la Carte, l'ouverture et la fermeture de « Modifier le plan », la pose d'une partie en vague) ;
 // à la fin, un tableau à copier. Chargé à part (React.lazy), seulement avec cette adresse : aucun élève ne le voit.
-// La vraie partie revient en rechargeant la page sans `?mesures=auto`.
+// Elle se lance aussi depuis les Réglages (« Mesurer la tablette », pages/settings/ApplicationSection.tsx). La vraie partie
+// revient par « Revenir au jeu » (la page rechargée sans `?mesures`, sur les Réglages), à tout moment.
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBlocland } from './BloclandContext';
 import { BIOMES, type BiomeId } from './biomes';
 import { toutConstruitAvecLesCommandes } from './world/budget';
+import { adresseSansMesure } from './rendering';
 import { type LigneDeMesure, partieDeLaPose, partieDeMesure, resumerLesImages, tableauDesMesures } from './autoMeasure';
 import { MODIFIER_LE_PLAN } from './ArrangeBar';
 
@@ -149,7 +151,7 @@ export default function AutoMeasure() {
       } catch {
         // Stockage indisponible : rien n'a été écrit.
       }
-      finir('Mesure finie. Pour retrouver ta partie, recharge la page sans « ?mesures=auto ».');
+      finir('Mesure finie.');
     })();
   }, [chargerPourLesMesures, navigate]);
 
@@ -162,6 +164,9 @@ export default function AutoMeasure() {
       setCopie(false);
     }
   };
+
+  // La page rechargée sans `?mesures` : la sauvegarde, gelée pendant la mesure, revient telle quelle.
+  const revenir = () => window.location.assign(adresseSansMesure(window.location.href));
 
   return (
     <div
@@ -181,14 +186,17 @@ export default function AutoMeasure() {
       }}
     >
       <div role="status">{etape}</div>
-      {resultat && (
-        <>
-          <button type="button" className="button" onClick={copier} style={{ margin: '8px 0' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, margin: '8px 0' }}>
+        {resultat && (
+          <button type="button" className="button" onClick={copier}>
             {copie ? 'Copié' : 'Copier'}
           </button>
-          <pre style={{ whiteSpace: 'pre-wrap', userSelect: 'text', margin: 0 }}>{resultat}</pre>
-        </>
-      )}
+        )}
+        <button type="button" className="button" onClick={revenir}>
+          Revenir au jeu
+        </button>
+      </div>
+      {resultat && <pre style={{ whiteSpace: 'pre-wrap', userSelect: 'text', margin: 0 }}>{resultat}</pre>}
     </div>
   );
 }

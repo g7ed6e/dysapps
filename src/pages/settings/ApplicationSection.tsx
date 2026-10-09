@@ -2,6 +2,7 @@
 // code, lot 8).
 import { Icon } from '../../components/Icon';
 import { APP_VERSION, applyUpdate, checkForUpdate, useAppUpdate } from '../../core/appUpdate';
+import { adresseDeLaMesure } from '../../game/rendering';
 
 const DOCS_URL = 'https://g7ed6e.github.io/dysapps/';
 const REPO_URL = 'https://github.com/g7ed6e/dysapps';
@@ -39,6 +40,12 @@ export function ApplicationSection() {
           <Icon name="globe" /> Le code sur GitHub
         </a>
       </div>
+      {/* La mesure automatique (game/AutoMeasure.tsx), pour le mainteneur sur la tablette : la page se recharge avec
+          `?mesures=auto`, qui joue une partie toute construite en mémoire ; la vraie partie n'est pas touchée. */}
+      <button type="button" className="button" onClick={() => window.location.assign(adresseDeLaMesure(window.location.href))}>
+        <Icon name="gauge" /> Mesurer la tablette
+      </button>
+      <p className="settings-note">Le jeu fait seul le tour du monde et donne ses chiffres. Ta partie ne change pas.</p>
     </fieldset>
   );
 }

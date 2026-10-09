@@ -94,6 +94,8 @@ La version installée est affichée, avec le bouton **Vérifier les mises à jou
 
 Deux liens s’ouvrent dans un nouvel onglet : **La documentation** (ce site, https://g7ed6e.github.io/dysapps/) et **Le code sur GitHub** (https://github.com/g7ed6e/dysapps).
 
+**Mesurer la tablette** dit si l’appareil dessine le monde sans à-coups. L’appli se recharge, prend une partie déjà toute construite, fait seule le tour du monde du 6e (une île, l’archipel, la Carte, « Modifier le plan », la pose d’une partie) et affiche à la fin un tableau de chiffres, avec **Copier**. **Revenir au jeu**, à tout moment, recharge l’appli sur les Réglages. La vraie partie n’est pas touchée : rien de ce qui se passe pendant la mesure n’est enregistré.
+
 ## Ma sauvegarde
 
 **Enregistrer ma progression** range dans un fichier (`dysapps-progression-<date>.json`) tout ce que l’appli garde sur l’appareil : XP, succès, étoiles, blocs, bâtiments, répétition espacée et réglages. Sur iPhone et iPad, la feuille de partage s’ouvre pour le ranger (Fichiers, e-mail) ; ailleurs, et quand l’appareil ne sait pas partager ce fichier, il se télécharge.

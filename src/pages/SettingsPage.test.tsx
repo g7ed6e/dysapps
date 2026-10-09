@@ -45,3 +45,17 @@ it('« Vue du monde » : la lumière du monde, l’heure réelle par défaut ou 
   expect(within(lumiere).getByRole('radio', { name: 'Toujours le jour' })).toBeChecked();
   expect(JSON.parse(localStorage.getItem('dysapps:settings')!).worldLight).toBe('day');
 });
+
+it('« Application » : le bouton qui lance la mesure automatique', () => {
+  localStorage.clear();
+  render(
+    <SettingsProvider>
+      <ProgressProvider>
+        <MemoryRouter>
+          <SettingsPage />
+        </MemoryRouter>
+      </ProgressProvider>
+    </SettingsProvider>,
+  );
+  expect(within(screen.getByRole('group', { name: 'Application' })).getByRole('button', { name: 'Mesurer la tablette' })).toBeInTheDocument();
+});
