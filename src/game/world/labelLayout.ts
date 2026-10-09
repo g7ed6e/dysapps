@@ -882,7 +882,7 @@ export function placerDAbordSimplement<R extends { offsets: LabelOffset[]; visib
 }
 
 /** Combien de noms de plus que la Carte sans lui le nom de l'île touchée peut taire (référent dys, 9 octobre 2026). */
-export const TAIRE_POUR_L_ILE_TOUCHEE = 1;
+const TAIRE_POUR_L_ILE_TOUCHEE = 1;
 
 /**
  * Sur la Carte, l'île touchée (`CarteDesEtiquettes.selected`) ne garde son nom que s'il fait taire au plus
