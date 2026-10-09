@@ -334,8 +334,8 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     }
     if (!estDuPlan(c) || LUMIERES.has(c.texture ?? '')) continue;
     // Dessiné d'un seul tenant sur tout le monument (le toit en pavillon du kiosque) : `null`, la case ne dessine rien.
-    const g = kit.monumentPieces && c.place && estUnMonument(c.place) ? c.place : null;
-    const tenant = g ? kit.monumentPieces!(c, autres.get(g) ?? []) : undefined;
+    const pieces = c.place && estUnMonument(c.place) ? kit.monumentPieces : undefined;
+    const tenant = pieces?.(c, autres.get(c.place ?? '') ?? []);
     if (tenant !== undefined) {
       dUnTenant.push({ c, dessin: tenant ?? EMPTY });
       continue;
