@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import { HABILLAGES } from '../skin';
 import { toutConstruit } from '../world/budget';
 import { buildMesh, drawCallsOf } from '../world/mesher';
+import { startingIsland } from '../world/map';
+import { placeIslands } from '../world/placement';
 import { gardienDuMonde, guardianPlacements } from '../world/terrain';
 import type { Instant, Monde } from './scenePart';
 import { creerPersonnages } from './characters';
@@ -131,6 +133,39 @@ describe('Le rallumage d’un Gardien en cubes', () => {
     p.animer?.(0, 0.016, true);
     expect(couleursVisibles(p, id).some(estPierre)).toBe(false);
     p.dispose();
+  });
+
+  it('sur une île tournée (GD-9), il se rallume tourné comme le Gardien posé, pendant le fondu et après', () => {
+    let maintenant = 1000;
+    vi.spyOn(performance, 'now').mockImplementation(() => maintenant);
+    // Un Gardien plus large que profond : un quart de tour change son emprise.
+    const tourne = gardiens.find((g) => {
+      const m = gardienDuMonde(g.id);
+      return Math.max(...m.map((c) => c.x)) - Math.min(...m.map((c) => c.x)) !== Math.max(...m.map((c) => c.y)) - Math.min(...m.map((c) => c.y));
+    })!.id;
+    const d = startingIsland(tourne);
+    placeIslands(new Map([[tourne, { x: d.core.x, y: d.core.y, quarts: 1 }]]));
+    try {
+      const p = creerPersonnages(monde(), () => null, instant(), null);
+      p.poserLesCreatures(guardianPlacements('6e', progress, village.links));
+      const group = () => p.creatures.children.find((c) => c.userData.creature === tourne && c.userData.kind === 'guardian')!;
+      // L'emprise de ses maillages dans son groupe (le groupe se balance pendant l'animation).
+      const boite = () => {
+        const g = group();
+        const b = new THREE.Box3().setFromObject(g).translate(g.position.clone().negate());
+        return [...b.min.toArray(), ...b.max.toArray()].map((v) => Math.round(v * 1000) / 1000);
+      };
+      const pose = boite();
+      p.rallumer(tourne, 1000);
+      expect(boite(), 'pendant le fondu').toEqual(pose);
+      maintenant = 2000;
+      p.animer?.(1, 0.016, false);
+      expect(couleursVisibles(p, tourne).some(estPierre)).toBe(false);
+      expect(boite(), 'rallumé').toEqual(pose);
+      p.dispose();
+    } finally {
+      placeIslands(null);
+    }
   });
 
   it('reposé pendant le fondu, il le reprend et libère les couches d’avant', () => {

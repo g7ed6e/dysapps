@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
 import { BIOMES } from '../biomes';
-import { freeSpots, guardianOf, moveGuardian, startingSpot } from './arrange';
-import { casesWord, DIRECTIONS, distanceWords, directionWords, guardianSentence, guardianSigns, ofPlace, placeSentence, placeSigns, placeSignsSentence, thePlace, toPlace } from './placeSentence';
+import { freeSpots, startingSpot } from './arrange';
+import { casesWord, DIRECTIONS, distanceWords, directionWords, ofPlace, placeSentence, placeSigns, placeSignsSentence, thePlace, toPlace } from './placeSentence';
 import { lieuDAssemblage } from './assembly';
 import { agreeWithPlace, joinedSentence } from './placeArticle';
 
@@ -84,8 +84,8 @@ describe('où est une place, en mots', () => {
 
   it('dit le voisin le plus proche, sa direction et l’écart, avec les noms de l’univers', () => {
     const id: BiomeId = 'english-6e-vocabulary';
-    // Derrière la Forêt des sons, à côté de l'Horloge des verbes, à sa droite sur la Carte.
-    expect(placeSentence(VIDE, id)).toMatch(/^à l’est de l’Horloge des verbes, à \d+ cases?$/);
+    // Au coin du fond, à l'ouest, derrière la Tour du lecteur (GD-12), au-dessus d'elle sur la Carte.
+    expect(placeSentence(VIDE, id)).toMatch(/^au nord de la Tour du lecteur, à \d+ cases?$/);
     expect(placeSentence(VIDE, id, startingSpot(id), (x) => `Lieu ${x}`)).toMatch(/du Lieu /);
     // Une autre place, une autre phrase (le fantôme la dit à chaque calage).
     const ailleurs = freeSpots(VIDE, id).find((s) => Math.abs(s.x - startingSpot(id).x) + Math.abs(s.y - startingSpot(id).y) > 2);
@@ -95,32 +95,12 @@ describe('où est une place, en mots', () => {
   it('la ligne de signes (piste A) : le voisin, la flèche, le nombre ; dite en mots, la même phrase', () => {
     const id: BiomeId = 'english-6e-vocabulary';
     const s = placeSigns(VIDE, id)!;
-    expect(s).toMatchObject({ voisin: 'Horloge des verbes', direction: { mot: 'est', icone: 'est' } });
+    expect(s).toMatchObject({ voisin: 'Tour du lecteur', direction: { mot: 'nord', icone: 'nord' } });
     expect(s.cases).toBeGreaterThan(0);
     expect(placeSignsSentence(s)).toBe(placeSentence(VIDE, id));
     expect(placeSignsSentence({ voisin: 'Mine des lettres', direction: DIRECTIONS[3], cases: 4 })).toBe('au nord-ouest de la Mine des lettres, à 4 cases');
     expect(casesWord(1)).toBe('1 case');
     // Huit flèches, une par direction, toutes différentes.
     expect(new Set(DIRECTIONS.map((d) => d.icone)).size).toBe(8);
-  });
-
-  it('l’îlot d’un Gardien : « au sud de son île », puis le côté où il va', () => {
-    const id: BiomeId = 'maths-6e-decimals';
-    expect(guardianSentence(VIDE, id)).toBe('au sud de son île');
-    const r = moveGuardian(VIDE, id, { side: 'right', step: -1 });
-    expect(r.ok).toBe(true);
-    if (r.ok) {
-      expect(guardianOf(r.world, id).side).toBe('right');
-      expect(guardianSentence(r.world, id)).toMatch(/ouest de son île$/);
-    }
-  });
-
-  it('l’îlot d’un Gardien en signes, comme un lieu : son île pour repère, la flèche, l’écart', () => {
-    const id: BiomeId = 'maths-6e-decimals';
-    const s = guardianSigns(VIDE, id, undefined, () => 'Volcan');
-    expect(s.voisin).toBe('Volcan');
-    expect(s.direction.mot).toBe('sud');
-    expect(s.cases).toBeGreaterThanOrEqual(1);
-    expect(placeSignsSentence(s)).toMatch(/^au sud du Volcan, à \d+ cases?$/);
   });
 });

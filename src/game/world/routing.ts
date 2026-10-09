@@ -5,13 +5,14 @@
 // aucun lieu, aucun écueil, aucune autre liaison. Courte (un pont), elle fait 36 cases au plus ; longue (un bac), 96.
 // Code pur, sans Three.js : il trace les liaisons posées, dans l'ordre où elles l'ont été, puis dit si une liaison de
 // plus tiendrait, et le geste « Aménager » s'en servira (`spotPossible`).
+import { onFixedGuardianSquare } from './guardianSquares';
+import { silhouetteDe } from './silhouettes';
 import { BIOMES, type BiomeId } from '../biomes';
 import { ARCHIPELAGOS, type BridgeDef } from './archipelago';
 import { decorate, LANDMARK_OF, landmark } from './decor';
 import { frameOf, LINK_GAP, tooSmallGaps, footprintOf } from './footprint';
-import { type ArchipelagoId, bornesDuCoeur, CORE, isLand, isLandInWorld, isthmusOf, type IslandDef, landCells, landscape, margesDuCoeur, noise, reliefHeight, tirage, toWorld } from './map';
+import { type ArchipelagoId, CORE, isLand, isLandInWorld, isthmusOf, type IslandDef, landCells, landscape, margesDuCoeur, noise, reliefHeight, tirage, toWorld } from './map';
 import { LOW } from './paths';
-import type { GuardianPlace } from './savedLayout';
 import { type Rectangle, type Side, SIDES, STEP, type Quarts, turnDirection, TOWARDS_SEA } from './placement';
 
 /** La longueur d'une liaison courte (un pont, un sentier entre deux voisins), en cases sur l'eau. */
@@ -161,8 +162,8 @@ function lineOffset(q: Quarts): { colonnes: number; rangees: number } {
  * Les arrivées possibles d'un lieu, dans son repère (le lieu pas tourné), calculées une fois par orientation : elles ne
  * dépendent que de son dessin. Sur chaque côté, à chaque pas de la grille du monde (`lineOffset`) : la case de
  * côte la plus au large de la colonne (ou de la rangée), si elle a de la terre ; jamais sous un décor haut (elle et la
- * suivante vers l'intérieur), ni devant les bornes (la bande de devant, sur toute la largeur du cœur). `pas` : le rang
- * de sa ligne, en pas.
+ * suivante vers l'intérieur), ni devant les bornes (la bande de devant, sur la largeur du cœur d'origine). `pas` : le
+ * rang de sa ligne, en pas.
  */
 export function possibleLandings(def: IslandDef): readonly LocalLanding[] {
   const cleDuLieu = `${def.id}:${def.quarts}`;
@@ -171,7 +172,6 @@ export function possibleLandings(def: IslandDef): readonly LocalLanding[] {
   const decalage = lineOffset(def.quarts);
   const terre = new Set(landCells(def).filter((c) => isLand(def, c.x, c.y)).map((c) => `${c.x - def.core.x},${c.y - def.core.y}`));
   const haut = tallDecor(def);
-  const coeur = bornesDuCoeur(def);
   const out: LocalLanding[] = [];
   let x0 = Infinity;
   let y0 = Infinity;
@@ -189,8 +189,11 @@ export function possibleLandings(def: IslandDef): readonly LocalLanding[] {
   let marche = walkableCache.get(def.id);
   if (!marche) walkableCache.set(def.id, (marche = walkableCells(def, haut)));
   const ouLonMarche = marche;
+  const forme = silhouetteDe(def.id).forme !== undefined;
   const libre = (x: number, y: number, dx: number, dy: number) => {
     for (let k = 0; k <= 1; k++) if (haut.has(`${x - k * dx},${y - k * dy}`)) return false;
+    // Ni l'arrivée ni sa case d'entrée sur le carré figé du Gardien d'une île qui a sa forme (GD-12).
+    for (let k = 0; k <= 1; k++) if (onFixedGuardianSquare(def.id, forme, x - k * dx, y - k * dy)) return false;
     // Le bonhomme doit pouvoir gagner le cœur du lieu à pied depuis son arrivée.
     return ouLonMarche.has(`${x},${y}`);
   };
@@ -200,8 +203,10 @@ export function possibleLandings(def: IslandDef): readonly LocalLanding[] {
     const [debut, fin] = vertical ? [x0, x1] : [y0, y1];
     const d = vertical ? decalage.colonnes : decalage.rangees;
     for (let p = Math.ceil((debut - d) / STEP) * STEP + d; p <= fin; p += STEP) {
-      // Devant le cœur, la bande des bornes : aucune arrivée.
-      if (cote === 'devant' && p >= coeur.x0 && p < coeur.x1) continue;
+      // Devant les bornes, la bande du cœur d'origine (où elles se tiennent) : aucune arrivée. Devant les marges d'un cœur
+      // agrandi (GD-11), une arrivée reste possible : sans elle, deux lieux l'un devant l'autre ne se reliaient plus
+      // par un pont droit.
+      if (cote === 'devant' && p >= 0 && p < CORE) continue;
       // La case de côte la plus au large sur cette ligne.
       let best: { x: number; y: number } | null = null;
       for (const k of terre) {
@@ -287,6 +292,10 @@ class Grid {
     const ly = y - this.y0;
     return lx < 0 || ly < 0 || lx >= this.w || ly >= this.h ? -1 : ly * this.w + lx;
   }
+  /** Une copie : ce qui est dur se copie, les lieux proches (fixés à la construction) se partagent. */
+  copie(): Grid {
+    return Object.assign(Object.create(Grid.prototype) as Grid, { ...this, dur: this.dur.slice() });
+  }
   /** Marque un rectangle élargi de `marge` cases. */
   rectangle(r: { x0: number; y0: number; x1: number; y1: number }, marge: number, f: (i: number) => void): void {
     for (let x = r.x0 - marge; x < r.x1 + marge; x++)
@@ -313,11 +322,6 @@ export interface RegionPlans {
    * ne relie deux lieux réunis (elle les relierait deux fois).
    */
   reunions?: readonly { pair: readonly [BiomeId, BiomeId]; zone: Rectangle }[];
-  /**
-   * La place du Gardien de chaque lieu (GD-9) : contre son lieu, déplacé autour, ou détaché (choix 4a du mainteneur) ;
-   * son îlot est dur là où il se tient, et sa place de départ redevient de l'eau. Sans elle, l'îlot est devant son lieu.
-   */
-  gardiens?: (id: BiomeId) => GuardianPlace | undefined;
 }
 
 /** Une arrivée choisie : un côté du lieu (dans son repère) et sa place le long de ce côté, en pas. */
@@ -360,7 +364,7 @@ export class RegionRouter {
     this.g = g;
     // Ce qui est dur : la terre de chaque lieu, ses îlots et son quai (et leur abord), les écueils (et leur abord).
     for (const d of lieux)
-      for (const p of footprintOf(d.id, d, plans.gardiens?.(d.id))) {
+      for (const p of footprintOf(d.id, d)) {
         if (p.genre === 'terre') {
           const bit = 1 << this.rang.get(d.id)!;
           g.rectangle(p, LINK_GAP - 1, (i) => (g.pres[i] |= bit));
@@ -393,12 +397,36 @@ export class RegionRouter {
     }
   }
 
+  /**
+   * Une copie qu'on peut poser sans toucher l'original : la grille et les arrivées prises se copient, le reste (fixé à
+   * la construction) se partage. Poser après une copie revient à refaire le traceur depuis le début, en moins cher.
+   * Le constructeur est sauté : un champ que `poser` change doit être copié ici (le test « une copie du traceur »).
+   */
+  copie(): RegionRouter {
+    return Object.assign(Object.create(RegionRouter.prototype) as RegionRouter, {
+      ...this,
+      g: this.g.copie(),
+      prises: new Set(this.prises),
+      cotesPris: new Set(this.cotesPris),
+    });
+  }
+
+  // Les clés d'une arrivée, faites une fois : `libre` est appelé pour chaque paire d'arrivées de chaque essai.
+  private readonly cles = new Map<Anchor, { arrivee: string; cote: string }>();
+
+  private clesDe(c: Anchor): { arrivee: string; cote: string } {
+    let k = this.cles.get(c);
+    if (!k) this.cles.set(c, (k = { arrivee: `${c.lieu}|${c.cote}|${c.pas}`, cote: `${c.lieu}|${c.cote}` }));
+    return k;
+  }
+
   private cle(c: Anchor): string {
-    return `${c.lieu}|${c.cote}|${c.pas}`;
+    return this.clesDe(c).arrivee;
   }
 
   private libre(c: Anchor): boolean {
-    return !this.prises.has(this.cle(c)) && (this.depart.has(c.lieu) || !this.cotesPris.has(`${c.lieu}|${c.cote}`));
+    const k = this.clesDe(c);
+    return !this.prises.has(k.arrivee) && (this.depart.has(c.lieu) || !this.cotesPris.has(k.cote));
   }
 
   /** Le tracé que prendrait une liaison de `max` cases au plus, sans la poser ; `null` si elle ne tient pas. */
@@ -430,8 +458,8 @@ export class RegionRouter {
     if (!best) return null;
     this.prises.add(this.cle(best.depuis));
     this.prises.add(this.cle(best.vers));
-    this.cotesPris.add(`${best.depuis.lieu}|${best.depuis.cote}`);
-    this.cotesPris.add(`${best.vers.lieu}|${best.vers.cote}`);
+    this.cotesPris.add(this.clesDe(best.depuis).cote);
+    this.cotesPris.add(this.clesDe(best.vers).cote);
     for (const c of best.cases) this.g.rectangle({ x0: c.x, y0: c.y, x1: c.x + 1, y1: c.y + 1 }, LINK_GAP - 1, (i) => (this.g.dur[i] = 1));
     return best;
   }

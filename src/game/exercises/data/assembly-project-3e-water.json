@@ -1,0 +1,503 @@
+{
+  "id": "assembly-project-3e-water",
+  "bloc": "project-3e-water",
+  "type": "assembly",
+  "level": 1,
+  "instruction": "Lis le document, calcule, puis choisis la phrase juste. Le rappel est affiché.",
+  "programme": [
+    "c4.ma.b.image-antecedent",
+    "c4.ma.b.lineaire-affine",
+    "c4.hg.geographie.amenager",
+    "c4.hg.geographie.dynamiques-france",
+    "c4.hg.demarches.document",
+    "c4.hg.demarches.lexique"
+  ],
+  "items": [
+    {
+      "key": "project-3e-water-0",
+      "prompt": "La commune construit un château d’eau.\nVolume pompé en t heures, en mètres cubes : V(t) = 20 × t.",
+      "question": "Quelle phrase est juste pour 3 heures ?",
+      "spoken": "La commune construit un château d’eau. Volume pompé en t heures, en mètres cubes : V de t égale 20 fois t.",
+      "choices": [
+        "On pompe 60 mètres cubes ; c’est la commune qui aménage.",
+        "On pompe 23 mètres cubes ; c’est la commune qui aménage.",
+        "On pompe 60 mètres cubes ; c’est l’État qui aménage."
+      ],
+      "answer": "On pompe 60 mètres cubes ; c’est la commune qui aménage.",
+      "hint": "D’abord : remplace t par 3. Puis : qui construit, dans le document ?",
+      "explanation": "V(3) = 20 × 3 = 60 mètres cubes. 23, c’est 20 + 3 : on multiplie par t, on ne l’ajoute pas. Le document dit que la commune construit : c’est elle qui aménage son territoire, pas l’État.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "heures",
+            "mètres cubes"
+          ],
+          "rows": [
+            [
+              1,
+              20
+            ],
+            [
+              3,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’image, et qui aménage",
+          "lines": [
+            "V(3), l’image de 3 : on remplace t par 3.",
+            "Aménager : transformer un territoire pour mieux y vivre (la commune, la région, l’État)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-water-1",
+      "prompt": "Un village de montagne, de faible densité\nVolume pompé : V(t) = 10 × t. La cuve en tient 50 mètres cubes.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Un village de montagne, de faible densité. Volume pompé : V de t égale 10 fois t. La cuve en tient 50 mètres cubes.",
+      "choices": [
+        "La cuve est pleine en 5 heures, dans un village peu peuplé.",
+        "La cuve est pleine en 500 heures, dans un village peu peuplé.",
+        "La cuve est pleine en 5 heures, dans un village très peuplé."
+      ],
+      "answer": "La cuve est pleine en 5 heures, dans un village peu peuplé.",
+      "hint": "D’abord : quel nombre t donne 10 × t = 50 ? Puis : que veut dire faible densité ?",
+      "explanation": "On cherche l’antécédent de 50 : 10 × 5 = 50, donc 5 heures. 500, c’est 50 × 10 : on a multiplié au lieu de diviser. Faible densité : peu d’habitants pour beaucoup d’espace.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "heures",
+            "mètres cubes"
+          ],
+          "rows": [
+            [
+              1,
+              10
+            ],
+            [
+              "?",
+              50
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’antécédent, et la densité",
+          "lines": [
+            "Antécédent de 50 : le nombre t tel que 10 × t = 50.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-water-2",
+      "prompt": "À La Réunion, en outre-mer, une usine rend l’eau de mer potable.\nPrix pour x mètres cubes, en euros : f(x) = 2x + 30.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "À La Réunion, en outre-mer, une usine rend l’eau de mer potable. Prix pour x mètres cubes, en euros : f de x égale 2 x plus 30.",
+      "choices": [
+        "f est affine ; La Réunion est un territoire ultramarin.",
+        "f est linéaire ; La Réunion est un territoire ultramarin.",
+        "f est affine ; La Réunion est en France métropolitaine."
+      ],
+      "answer": "f est affine ; La Réunion est un territoire ultramarin.",
+      "hint": "D’abord : y a-t-il un nombre ajouté après 2x ? Puis : où est La Réunion, dans le document ?",
+      "explanation": "f(x) = 2x + 30 a un nombre ajouté, 30 : elle est affine, pas linéaire. Une fonction linéaire s’écrit a × x, sans rien ajouter. Le document dit « en outre-mer » : La Réunion est un territoire ultramarin, loin de la France métropolitaine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Affine, et l’outre-mer",
+          "lines": [
+            "Linéaire : f(x) = a × x. Affine : f(x) = a × x + b.",
+            "Ultramarin : qui est en outre-mer, loin de l’Europe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-water-3",
+      "prompt": "Une route neuve relie une vallée isolée à la ville.\nUn camion-citerne y livre V(n) = 4 × n mètres cubes en n voyages.",
+      "question": "Quelle phrase est juste pour 5 voyages ?",
+      "spoken": "Une route neuve relie une vallée isolée à la ville. Un camion-citerne y livre V de n égale 4 fois n mètres cubes en n voyages.",
+      "choices": [
+        "20 mètres cubes livrés : la route désenclave la vallée.",
+        "9 mètres cubes livrés : la route désenclave la vallée.",
+        "20 mètres cubes livrés : la route enclave la vallée."
+      ],
+      "answer": "20 mètres cubes livrés : la route désenclave la vallée.",
+      "hint": "D’abord : remplace n par 5. Puis : la route isole-t-elle la vallée, ou la relie-t-elle ?",
+      "explanation": "V(5) = 4 × 5 = 20 mètres cubes. 9, c’est 4 + 5 : on multiplie par n, on ne l’ajoute pas. Une vallée isolée est enclavée ; la route la relie à la ville : elle la désenclave. Dé- dit le contraire.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "voyages",
+            "mètres cubes"
+          ],
+          "rows": [
+            [
+              1,
+              4
+            ],
+            [
+              5,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’image, et désenclaver",
+          "lines": [
+            "V(5), l’image de 5 : on remplace n par 5.",
+            "Enclavé : isolé. Désenclaver : relier au reste du pays."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-water-4",
+      "prompt": "Un canal d’irrigation arrose les champs de maïs.\nIl apporte V(t) = 6 × t mètres cubes en t heures ; un champ en demande 30.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Un canal d’irrigation arrose les champs de maïs. Il apporte V de t égale 6 fois t mètres cubes en t heures ; un champ en demande 30.",
+      "choices": [
+        "Il faut 5 heures ; l’agriculture est du secteur primaire.",
+        "Il faut 180 heures ; l’agriculture est du secteur primaire.",
+        "Il faut 5 heures ; l’agriculture est du secteur secondaire."
+      ],
+      "answer": "Il faut 5 heures ; l’agriculture est du secteur primaire.",
+      "hint": "D’abord : quel nombre t donne 6 × t = 30 ? Puis : l’agriculture, l’industrie, les services : quel secteur est le premier ?",
+      "explanation": "On cherche l’antécédent de 30 : 6 × 5 = 30, donc 5 heures. 180, c’est 30 × 6 : on a multiplié au lieu de diviser. Le champ est un espace productif agricole : l’agriculture est le secteur primaire ; l’industrie, le secondaire.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "heures",
+            "mètres cubes"
+          ],
+          "rows": [
+            [
+              1,
+              6
+            ],
+            [
+              "?",
+              30
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’antécédent, et les secteurs",
+          "lines": [
+            "Antécédent de 30 : le nombre t tel que 6 × t = 30.",
+            "Primaire : l’agriculture ; secondaire : l’industrie ; tertiaire : les services."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-water-5",
+      "prompt": "Une aire urbaine : une ville, ses banlieues et ses communes périurbaines.\nSon usine d’eau envoie f(t) = 7 × t mètres cubes en t secondes.",
+      "question": "Quelle phrase est juste pour 3 secondes ?",
+      "spoken": "Une aire urbaine : une ville, ses banlieues et ses communes périurbaines. Son usine d’eau envoie f de t égale 7 fois t mètres cubes en t secondes.",
+      "choices": [
+        "21 mètres cubes, pour toute l’aire urbaine.",
+        "10 mètres cubes, pour toute l’aire urbaine.",
+        "21 mètres cubes, pour la ville centre seule."
+      ],
+      "answer": "21 mètres cubes, pour toute l’aire urbaine.",
+      "hint": "D’abord : remplace t par 3. Puis : une aire urbaine, est-ce seulement la ville centre ?",
+      "explanation": "f(3) = 7 × 3 = 21 mètres cubes. 10, c’est 7 + 3 : on multiplie par t, on ne l’ajoute pas. Le document le dit : l’aire urbaine, c’est la ville, ses banlieues et ses communes périurbaines, pas la ville centre seule.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "secondes",
+            "mètres cubes"
+          ],
+          "rows": [
+            [
+              1,
+              7
+            ],
+            [
+              3,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’image, et l’aire urbaine",
+          "lines": [
+            "f(3), l’image de 3 : on remplace t par 3.",
+            "Aire urbaine : une ville, ses banlieues et ses communes périurbaines."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-water-6",
+      "prompt": "Le château d’eau du bourg est payé par la commune et par l’Union européenne.\nIl se remplit de 8 mètres cubes chaque heure.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le château d’eau du bourg est payé par la commune et par l’Union européenne. Il se remplit de 8 mètres cubes chaque heure.",
+      "choices": [
+        "En x heures, f(x) = 8x ; deux acteurs paient le château d’eau.",
+        "En x heures, f(x) = x + 8 ; deux acteurs paient le château d’eau.",
+        "En x heures, f(x) = 8x ; seule la commune paie le château d’eau."
+      ],
+      "answer": "En x heures, f(x) = 8x ; deux acteurs paient le château d’eau.",
+      "hint": "D’abord : chaque heure ajoute 8 : en x heures, combien de fois 8 ? Puis : qui paie, dans le document ?",
+      "explanation": "8 mètres cubes chaque heure : en x heures, 8 fois x, f(x) = 8x, une fonction linéaire. x + 8 n’ajouterait que 8 en tout. Le document nomme deux acteurs : la commune et l’Union européenne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fonction linéaire, et les acteurs",
+          "lines": [
+            "Autant chaque heure : le volume est proportionnel au temps, f(x) = a × x.",
+            "Qui aménage ? La commune, le département, la région, l’État, l’Union européenne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-water-7",
+      "prompt": "Commune A : l’eau coule au robinet. Commune B : des coupures chaque semaine.\nLa commune B achète f(x) = 5x mètres cubes d’eau pour x citernes.",
+      "question": "Quelle phrase est juste pour 4 citernes ?",
+      "spoken": "Commune A : l’eau coule au robinet. Commune B : des coupures chaque semaine. La commune B achète f de x égale 5 x mètres cubes d’eau pour x citernes.",
+      "choices": [
+        "20 mètres cubes ; il y a des inégalités entre les deux communes.",
+        "9 mètres cubes ; il y a des inégalités entre les deux communes.",
+        "20 mètres cubes ; les deux communes ont le même accès à l’eau."
+      ],
+      "answer": "20 mètres cubes ; il y a des inégalités entre les deux communes.",
+      "hint": "D’abord : remplace x par 4. Puis : les deux communes ont-elles l’eau de la même façon ?",
+      "explanation": "f(4) = 5 × 4 = 20 mètres cubes. 9, c’est 5 + 4 : on multiplie par x, on ne l’ajoute pas. La commune A a l’eau au robinet, la B des coupures : c’est un écart entre territoires, une inégalité.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "citernes",
+            "mètres cubes"
+          ],
+          "rows": [
+            [
+              1,
+              5
+            ],
+            [
+              4,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’image, et les inégalités",
+          "lines": [
+            "f(4), l’image de 4 : on remplace x par 4.",
+            "Inégalités : des écarts entre les territoires, de richesse ou de services."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-water-8",
+      "prompt": "Toulouse, une métropole, attire chaque année de nouveaux habitants.\nUne de ses usines nettoie f(t) = 2 × t mètres cubes d’eau en t secondes.",
+      "question": "Quelle phrase est juste pour 16 mètres cubes ?",
+      "spoken": "Toulouse, une métropole, attire chaque année de nouveaux habitants. Une de ses usines nettoie f de t égale 2 fois t mètres cubes d’eau en t secondes.",
+      "choices": [
+        "8 secondes ; Toulouse attire des habitants.",
+        "32 secondes ; Toulouse attire des habitants.",
+        "8 secondes ; Toulouse perd des habitants."
+      ],
+      "answer": "8 secondes ; Toulouse attire des habitants.",
+      "hint": "D’abord : quel nombre t donne 2 × t = 16 ? Puis : que dit le document des habitants ?",
+      "explanation": "On cherche l’antécédent de 16 : 2 × 8 = 16, donc 8 secondes. 32, c’est 16 × 2 : on a multiplié au lieu de diviser. Le document dit que Toulouse attire de nouveaux habitants : une métropole attire.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "secondes",
+            "mètres cubes"
+          ],
+          "rows": [
+            [
+              1,
+              2
+            ],
+            [
+              "?",
+              16
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’antécédent, et la métropole",
+          "lines": [
+            "Antécédent de 16 : le nombre t tel que 2 × t = 16.",
+            "Métropole : une grande ville qui attire et commande une région."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-water-9",
+      "prompt": "Une usine d’eau en bouteille, dans les Vosges\nElle remplit f(x) = 6x bouteilles en x secondes.",
+      "question": "Quelle phrase est juste pour 5 secondes ?",
+      "spoken": "Une usine d’eau en bouteille, dans les Vosges. Elle remplit f de x égale 6 x bouteilles en x secondes.",
+      "choices": [
+        "30 bouteilles ; l’usine est un espace productif du secteur secondaire.",
+        "11 bouteilles ; l’usine est un espace productif du secteur secondaire.",
+        "30 bouteilles ; l’usine est un espace productif du secteur primaire."
+      ],
+      "answer": "30 bouteilles ; l’usine est un espace productif du secteur secondaire.",
+      "hint": "D’abord : remplace x par 5. Puis : une usine, c’est l’agriculture ou l’industrie ?",
+      "explanation": "f(5) = 6 × 5 = 30 bouteilles. 11, c’est 6 + 5 : on multiplie par x, on ne l’ajoute pas. Une usine fabrique : c’est l’industrie, le secteur secondaire ; le primaire, c’est l’agriculture.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "secondes",
+            "bouteilles"
+          ],
+          "rows": [
+            [
+              1,
+              6
+            ],
+            [
+              5,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’image, et les secteurs",
+          "lines": [
+            "f(5), l’image de 5 : on remplace x par 5.",
+            "Primaire : l’agriculture ; secondaire : l’industrie ; tertiaire : les services."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-water-10",
+      "prompt": "Une ville moyenne change ses tuyaux, avec l’aide de l’État.\nEau qui arrive : 1 heure, 4 mètres cubes ; 2 heures, 8 ; 3 heures, 12.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Une ville moyenne change ses tuyaux, avec l’aide de l’État. Eau qui arrive : 1 heure, 4 mètres cubes ; 2 heures, 8 ; 3 heures, 12.",
+      "choices": [
+        "f est linéaire ; l’État aide la ville.",
+        "f n’est pas linéaire ; l’État aide la ville.",
+        "f est linéaire ; la ville aménage seule."
+      ],
+      "answer": "f est linéaire ; l’État aide la ville.",
+      "hint": "D’abord : 4, 8, 12, c’est toujours combien de fois le nombre d’heures ? Puis : la ville est-elle seule, dans le document ?",
+      "explanation": "4, 8, 12 : toujours 4 fois le nombre d’heures. Le volume est proportionnel au temps : f(x) = 4x, une fonction linéaire. Dire qu’elle n’est pas linéaire est faux : le volume est toujours 4 fois le nombre d’heures. Le document dit que l’État aide la ville : elle n’aménage pas seule.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "heures",
+            "mètres cubes"
+          ],
+          "rows": [
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              8
+            ],
+            [
+              3,
+              12
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le tableau, et les acteurs",
+          "lines": [
+            "Proportionnel : on multiplie toujours par le même nombre, f(x) = a × x.",
+            "Qui aménage ? La commune, le département, la région, l’État, l’Union européenne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-water-11",
+      "prompt": "Une ville du littoral attire de nombreux touristes l’été.\nSon château d’eau livre f(x) = 9x mètres cubes en x minutes.",
+      "question": "Quelle phrase est juste pour 45 mètres cubes ?",
+      "spoken": "Une ville du littoral attire de nombreux touristes l’été. Son château d’eau livre f de x égale 9 x mètres cubes en x minutes.",
+      "choices": [
+        "Il faut 5 minutes ; le tourisme fait vivre ce littoral.",
+        "Il faut 36 minutes ; le tourisme fait vivre ce littoral.",
+        "Il faut 5 minutes ; l’industrie fait vivre ce littoral."
+      ],
+      "answer": "Il faut 5 minutes ; le tourisme fait vivre ce littoral.",
+      "hint": "D’abord : quel nombre x donne 9 × x = 45 ? Puis : qui vient l’été, dans le document ?",
+      "explanation": "On cherche l’antécédent de 45 : 9 × 5 = 45, donc 5 minutes. 36, c’est 45 − 9 : on a enlevé au lieu de diviser. Le document parle de touristes : le tourisme est un service, il fait vivre ce littoral.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "minutes",
+            "mètres cubes"
+          ],
+          "rows": [
+            [
+              1,
+              9
+            ],
+            [
+              "?",
+              45
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’antécédent, et le littoral",
+          "lines": [
+            "Antécédent de 45 : le nombre x tel que 9 × x = 45.",
+            "Un espace productif : un lieu où l’on produit, champ, usine, ou plage pour le tourisme."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien construit !",
+    "wrong": "{explanation}"
+  }
+}

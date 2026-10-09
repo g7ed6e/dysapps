@@ -4,12 +4,12 @@
 // l'appelant (les textes de l'univers) ; sans eux, ceux du jeu. Code pur, sans Three.js.
 import { type BiomeId, getBiome } from '../biomes';
 import type { World } from '../engine/state';
-import { guardianOf, placeIn, spotOf } from './arrange';
-import { archipelagoOfIsland, type IslandDef } from './map';
-import { footprintOf, gapBetween, landRectangle, placedIsland, poseOfSpot } from './footprint';
+import { placeIn, spotOf } from './arrange';
+import { archipelagoOfIsland } from './map';
+import { gapBetween, landRectangle, placedIsland, poseOfSpot } from './footprint';
 import { STEP, type Rectangle } from './placement';
 import { placesOf } from './routing';
-import type { LayoutGuardian, LayoutSpot } from './savedLayout';
+import type { LayoutSpot } from './savedLayout';
 import { ofPlace } from './placeArticle';
 
 export { ofPlace, thePlace, toPlace } from './placeArticle';
@@ -110,24 +110,4 @@ export function placeSigns(world: World, id: BiomeId, spot: LayoutSpot = spotOf(
   }
   if (!voisin) return null;
   return { voisin: nom(voisin.id), direction: directionOf(milieu(voisin.r), milieu(ici)), cases: casesOf(voisin.ecart) };
-}
-
-/** Où est l'îlot d'un Gardien autour de son lieu (à sa place par défaut) : « au nord de son île ». */
-export function guardianSentence(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'> = guardianOf(world, id)): string {
-  const def: IslandDef = placeIn(world, id);
-  const parts = footprintOf(id, def, g);
-  const terre = parts.find((p) => p.genre === 'terre')!;
-  const ilot = parts.find((p) => p.genre === 'ilot')!;
-  return `${directionWords(milieu(terre), milieu(ilot))} de son île`;
-}
-
-/**
- * Où est l'îlot d'un Gardien (à sa place par défaut), en signes, comme un lieu : son île pour repère, la direction et
- * l'écart en cases (« Mine des lettres ↑ 1 ⬚ »), dits en mots par `placeSignsSentence`.
- */
-export function guardianSigns(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'> = guardianOf(world, id), nom: PlaceName = NOM_DU_JEU): PlaceSigns {
-  const parts = footprintOf(id, placeIn(world, id), g);
-  const terre = parts.find((p) => p.genre === 'terre')!;
-  const ilot = parts.find((p) => p.genre === 'ilot')!;
-  return { voisin: nom(id), direction: directionOf(milieu(terre), milieu(ilot)), cases: casesOf(gapBetween(terre, ilot)) };
 }

@@ -48,6 +48,8 @@ const REGLES = [
   'world/recipes',
   // Les grands projets (GD-10) : leurs pièces et leurs recettes, produites depuis docs/contenu/projets.md.
   'world/projects',
+  // Le projet mis en avant parmi ceux d'un archipel (GD-10, 4e et 3e) : déduit de la sauvegarde.
+  'world/projectChoice',
   // Les commandes des habitants (GD-7), les quêtes (GD-10) et la forme de leurs petites constructions, en repère propre.
   'world/requests',
   'world/fixtures',
@@ -58,6 +60,8 @@ const REGLES = [
   'world/layout',
   // La disposition des régions dans la sauvegarde (GD-9) : sa forme seulement ; qu'elle tienne se vérifie dans la grille.
   'world/savedLayout',
+  // Le côté du cœur des îles, en cases : la sauvegarde le lit pour borner une borne déplacée ; la grille le réexporte.
+  'world/coreSide',
   // L'article devant le nom d'un lieu (« la Forêt des sons », « du Volcan ») : des mots seulement, partagés par les phrases.
   'world/placeArticle',
 ];
@@ -76,7 +80,6 @@ const GRILLE = [
   'world/terrain/links',
   'world/terrain/village',
   'world/terrain/creatures',
-  'world/terrain/islets',
   'world/terrain/guardians',
   'world/terrain/fixture',
   'world/terrain/fixtureCheck',
@@ -99,6 +102,9 @@ const GRILLE = [
   'world/silhouettes/5e',
   'world/silhouettes/4e',
   'world/silhouettes/3e',
+  // La forme de chaque île (GD-12), en repère d'île : le catalogue des formes, et les carrés des Gardiens qu'elles gardent.
+  'world/formes',
+  'world/guardianSquares',
   // Les modèles des personnages en cubes, en repère propre : la grille les pose, les vues les dessinent (R6).
   'world/characters/ascii',
   'world/characters/creatures',

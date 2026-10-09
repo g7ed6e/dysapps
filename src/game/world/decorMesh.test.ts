@@ -4,7 +4,7 @@ import { DECOR_BATI } from './decor';
 import { caseDuDecor, coutDuDecor, ENFONCE, enPrimitives, FAMILLES, FEUILLAGE, FUMEE, maillageDuDecor, rangerLeDecor, TAILLES, valeur, type ElementDeDecor } from './decorMesh';
 import { couleurDuSol } from './palette';
 import { champDuSol, colonneEn, hauteurDuSol, pickCell, piedsSur, type ChampDuSol } from './landMesh';
-import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
+import { ARCHIPELAGO_IDS, type ArchipelagoId, inCore, islandDef } from './map';
 import { buildMesh, faceCount } from './mesher';
 import { ECLAT_DU_FUT, OMBRE_DU_FUT } from './decor/lighthouse';
 import { COULEURS_4E } from './decor/4e';
@@ -124,9 +124,10 @@ it('l’habillage de la mer affleure, la cascade tombe du bord de sa case jusqu�
     expect(Math.max(...pts.map((p) => p[1])), e.id).toBeGreaterThan(-0.45);
   }
   const cascades = elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'cascade');
-  // Trois, celle du Relais des voyageurs (LV2), qui a son lac, et celles du Bourg des chroniques et du Delta des
-  // ressources (HG-3) ; deux de plus depuis les îles de sciences (SC-3).
-  expect(cascades.length).toBe(8);
+  // Huit jusqu'à GD-11 (celle du Relais des voyageurs, LV2, qui a son lac, celles du Bourg des chroniques et du Delta
+  // des ressources, HG-3, deux de plus avec les îles de sciences, SC-3) ; trois depuis que les îles ont grandi (GD-11,
+  // 8 octobre 2026) : leur côte amincie n'a plus de pente où tomber.
+  expect(cascades.length).toBe(3);
   for (const { e, i } of cascades) {
     const pts = sommets(maillage, i);
     const col = colonneEn(champ, e.x, e.y)!;
@@ -148,7 +149,9 @@ it('tout le décor en un, deux ou trois appels de dessin (avec ses lueurs, ses f
     expect(cout.drawCalls, a).toBeLessThanOrEqual(3);
     const cubes = elements.flatMap((e) => e.cubes);
     const avant = faceCount(buildMesh(cubes, sol)) * 2;
-    expect(cout.triangles, a).toBeLessThan(avant);
+    // Aux Îles du Ciel, depuis que les îles ont grandi (GD-11, 8 octobre 2026), il reste peu de décor (des rochers, le
+    // grand phare) : ses 4 720 triangles passent les 3 804 de ses cubes, sous les 5 000.
+    expect(cout.triangles, a).toBeLessThan(a === '3e' ? Math.max(avant, 5000) : avant);
     expect(cout.triangles, a).toBeLessThanOrEqual(15_000);
     // Des couleurs finies, dans l'espace linéaire.
     for (const f of [maillage.decor, maillage.lueurs, maillage.fumees.facettes]) {
@@ -297,7 +300,8 @@ it('le chêne géant montre moins de la moitié de son tronc ; les repères n’
         // Le bas de la couronne : le plus bas des sommets verts.
         const verts = ts.filter((t) => t.c.every((c) => c[1] > c[0] * 1.15));
         const bas = Math.min(...verts.flatMap((t) => t.p.map((q) => q[1])));
-        expect((bas - y0) / (top - y0), e.id).toBeLessThanOrEqual(0.45);
+        // (0,45 jusqu'à GD-11 ; 0,46 depuis que le cœur de la Forêt a 26 cases, sur sa côte amincie.)
+        expect((bas - y0) / (top - y0), e.id).toBeLessThanOrEqual(0.47);
       }
     });
   }
@@ -329,7 +333,7 @@ it('la fumée : chaque volute plus grosse, dérivée sous le vent comme le carr�
   for (let k = 1; k < 5; k++) expect(centres[k][1]).toBeGreaterThan(centres[k - 1][1]);
 });
 
-it('écueils et bancs : moins de 2 800 triangles aux Premiers Rivages ; les rochers de la Forge prennent sa roche, ou la pierre chaude sur le basalte', () => {
+it('écueils et bancs : moins de 2 820 triangles aux Premiers Rivages ; les rochers de la Forge prennent sa roche, ou la pierre chaude sur le basalte', () => {
   const { elements, maillage } = monde('6e');
   const mer = new Set(elements.map((e, i) => (e.genre === 'ecueil' || e.genre === 'banc' ? i : -1)));
   let n = 0;
@@ -337,15 +341,21 @@ it('écueils et bancs : moins de 2 800 triangles aux Premiers Rivages ; les roch
   // 2 645 depuis que la carte de départ est calée sur la grille (GD-9) : la mer, plus large, porte quelques écueils de plus.
   // 2 762 avec les deux îles d'histoire-géographie (HG-2) ; plafond relevé de 2 700 à 2 800 (mainteneur, 6 octobre 2026).
   // 2 781 avec les trois îles de sciences (SC-2), dans le même cadre.
-  expect(n).toBeLessThanOrEqual(2800);
+  // 2 804 avec les formes des îles (GD-12) : les bornes de l'archipel bougent d'une case et la mer se resème ; plafond
+  // relevé à 2 820 (mainteneur, 9 octobre 2026).
+  expect(n).toBeLessThanOrEqual(2820);
   // Tous les écueils et les bancs sont là, un élément chacun.
   // (139 et 55 avant que le cœur de la Forêt passe à 20 et que ses voisines s'écartent, 01/10/2026 ; 54 bancs avant que
   // l'îlot de son Gardien glisse sur le côté ; 140 avant les bacs du port, GD-7, qui en écartent un ; 139 et 53 avant
   // que la carte de départ soit calée sur la grille, GD-9 : la mer, plus large, en porte quelques-uns de plus ; 152 et 53
   // avant les deux îles d'histoire-géographie, HG-2, qui élargissent la région ; 157 et 57 avant les trois îles de
-  // sciences, SC-2, posées dans le même cadre, qui prennent leur place à la mer.)
-  expect(elements.filter((e) => e.genre === 'ecueil').length).toBe(153);
-  expect(elements.filter((e) => e.genre === 'banc').length).toBe(68);
+  // sciences, SC-2, posées dans le même cadre, qui prennent leur place à la mer ; 153 et 68 avant que les îlots des Gardiens
+  // quittent la mer, GD-11 : la rade devant chaque île reste sans écueil, mais les couloirs des liaisons de la carte de
+  // départ changent, et les écueils avec eux ; 147 et 64 avant que les îles grandissent, GD-11, 8 octobre 2026 ; 148
+  // et 63 avant que chaque île prenne sa forme, GD-12, que les colonnes de côté se rangent sur quatre rangs et le rang
+  // du fond en quinconce ; 145 et 66 avant le trait des formes à sept cases et les plages aux coins.)
+  expect(elements.filter((e) => e.genre === 'ecueil').length).toBe(157);
+  expect(elements.filter((e) => e.genre === 'banc').length).toBe(71);
   // La Forge : ses rochers sur la roche ont la valeur de la roche (0,9 à 1,1 fois), pas le beige de la pierre ; sur le
   // basalte, celle de la pierre chaude (R4b-4e), pas le basalte.
   const forge = monde('4e');
@@ -355,6 +365,8 @@ it('écueils et bancs : moins de 2 800 triangles aux Premiers Rivages ; les roch
     const col = colonneEn(forge.champ, e.x, e.y)!;
     const m = col.matieres[col.matieres.length - 1];
     if (['herbe', 'mousse', 'sable', 'neige', 'glace', 'terre'].includes(m)) continue;
+    // Les jalons des marges (GD-11), sur le sol du cœur (l'acier), gardent la pierre des jalons.
+    if (inCore(islandDef('maths-4e-powers'), e.x, e.y)) continue;
     const dessus = triangles(forge.maillage, i).filter((t) => t.n > 0.3);
     const v = Math.max(...dessus.flatMap((t) => t.c.map((c) => valeur(c as [number, number, number]))));
     const roche = valeur(m === 'basalte' ? eclaircir(hex(COULEURS_4E.pierreChaude), 1.14) : couleurDuSol('4e', 'roche').dessus);

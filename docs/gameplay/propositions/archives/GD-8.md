@@ -55,3 +55,5 @@ Mesures de l’artiste technique 3D (`npm run rendu:budget`, scripts sur `worldC
 4 octobre 2026, mainteneur : « je préfère la sémantique de rallumer le gardien (Archipéo) plutôt que de les vaincre », puis « A+ ».
 
 7 octobre 2026, amendement par [GD-9](../GD-9.md) (choix 4a, 5a et 6a du mainteneur) : le Gardien devient détachable. Son îlot peut se tenir n'importe où dans sa région, à 4 cases d'eau au moins de tout lieu, et ne suit plus son lieu ; sa fiche nomme son lieu, « Rallumer » y ouvre le défi sans trajet du bonhomme. Le Gardien d'un lieu fermé reste caché. Le reste de cette fiche ne change pas.
+
+8 octobre 2026, amendement par [GD-11](../GD-11.md) (mainteneur) : le gardien se tient sur la terre de son lieu, sur un carré libre de 5 × 5 cases, sans îlot ni pas japonais (la piste B, écartée le 4 octobre parce qu'il cachait une borne ou l'habitant, revient avec une place cherchée hors des bornes, des chantiers et de l'habitant) ; dans Blocland, il est dessiné à la moitié de sa taille. Le reste de cette fiche ne change pas.

@@ -45,8 +45,9 @@ it('avec « Pas de LV2 », aucun pont ne mène au Relais ; avec une LV2, le pont
   expect(buildableBridges(faits, 'english-5e-vocabulary', undefined, 'none').some((b) => b.to === 'lv2-5e-introductions' || b.from === 'lv2-5e-introductions')).toBe(false);
   // Depuis GD-9, chaque paire de lieux de la région a sa liaison : le Relais en a une avec chacun, dont le Comptoir.
   expect(bridgesOf('lv2-5e-introductions').map((b) => b.id)).toContain('english-5e-vocabulary-lv2-5e-introductions');
-  // Avec une LV2, le départ proposé vers le Relais est le Comptoir, le seul lieu relié d'où une liaison tienne.
-  expect(versRelais('es')).toEqual(['english-5e-vocabulary-lv2-5e-introductions']);
+  // Avec une LV2, les départs proposés vers le Relais, le plus court d'abord (celui de « Relier ») : le Comptoir, par un
+  // pont, et, depuis que les îles ont grandi (GD-11, 8 octobre 2026), le Marché, par un bac de 45 cases.
+  expect(versRelais('es')).toEqual(['english-5e-vocabulary-lv2-5e-introductions', 'maths-5e-proportionality-lv2-5e-introductions']);
 });
 
 it('« À revoir » ne propose que les missions de la LV2 choisie', () => {

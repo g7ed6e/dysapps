@@ -223,8 +223,9 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   // Les îles fermées ne sont pas listées une par une, seulement comptées.
   expect(screen.queryByText(/île fermée/)).not.toBeInTheDocument();
   expect(screen.getByLabelText(/sur des îles que tu ouvriras plus tard/)).toBeInTheDocument();
-  await user.click(screen.getByRole('link', { name: /Carte de Blocland/ }));
-  expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
+  // Le lien vers la Carte suffit : la page qu'il ouvre, déjà rendue au début du test, dessine toutes les îles des
+  // quatre archipels ; la rouvrir coûtait plus d'une seconde sur la CI.
+  expect(screen.getByRole('link', { name: /Carte de Blocland/ })).toHaveAttribute('href', '/adventure');
 });
 
 it('en vue simple, les bandeaux de récompense attendent que le mot des grandes étapes soit fermé (DA-9)', async () => {
@@ -270,14 +271,15 @@ it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () =
 it('quand la prochaine destination est un ouvrage, « Reprendre l’aventure » et « Y aller » ouvrent son île sur lui, mis en avant', async () => {
   const { getBiome, missionsJouables } = await import('./game/biomes');
   const { exercisesOf } = await import('./game/exercises');
-  // La Forêt, la Plaine, la Mine et la Rivière jouées, 4 blocs, le bonhomme sur la Forêt : la liaison de la Forêt vers la Baie, île d’anglais
-  // jamais jouée (GD-9 : la suggestion part du lieu relié le plus proche du lieu fermé).
+  // La Forêt, la Plaine, la Mine et la Rivière jouées, 4 blocs, le bonhomme sur la Forêt : la liaison de la Forêt vers l’Horloge, île
+  // d’anglais jamais jouée (GD-9 : la suggestion part du lieu relié le plus proche du lieu fermé ; GD-11 : l’Horloge est
+  // désormais la plus proche).
   const iles = ['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion', 'maths-6e-fractions'] as const;
   const progress = Object.fromEntries(iles.flatMap((ile) => missionsJouables(getBiome(ile)!).map((m) => [exercisesOf(ile, m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }])));
   const world = { place: 'french-6e-phonology', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
   localStorage.setItem('dysapps:game', JSON.stringify({ progress, stock: { 'french-6e-phonology': 4 }, world }));
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
-  const lien = '/adventure/french-6e-phonology?worksite=french-6e-phonology-english-6e-vocabulary';
+  const lien = '/adventure/french-6e-phonology?worksite=french-6e-phonology-english-6e-grammar';
   renderAt('/');
   expect(screen.getByRole('link', { name: /Reprendre l’aventure/ })).toHaveAttribute('href', lien);
   document.body.innerHTML = '';
@@ -286,7 +288,7 @@ it('quand la prochaine destination est un ouvrage, « Reprendre l’aventure » 
   expect(screen.getByRole('link', { name: /Y aller/ })).toHaveAttribute('href', lien);
   document.body.innerHTML = '';
   renderAt(lien);
-  expect(document.querySelector('[data-bridge="french-6e-phonology-english-6e-vocabulary"]')).toHaveClass('bridge-highlight');
+  expect(document.querySelector('[data-bridge="french-6e-phonology-english-6e-grammar"]')).toHaveClass('bridge-highlight');
 });
 
 it('surligne les syllabes en couleurs alternées quand le réglage est actif', () => {

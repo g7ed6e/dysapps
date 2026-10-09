@@ -5,7 +5,7 @@ import { getArchipelago } from '../archipelago';
 import { placedLinksOf } from '../linkGeometry';
 import { dockBox, dockOrigin } from '../harbor';
 import { MONUMENT_ISLET, type MonumentDef, monumentsOf } from '../monuments';
-import { isletInWorld, monumentIslet } from '../footprint';
+import { monumentIslet } from '../footprint';
 import { isPlanDone, ORIGINE_DES_MONUMENTS, planCells, type PlanDef, planOrigin } from '../plans';
 import type { World } from '../../engine';
 import type { PlaceId, VoxelCube } from '../cube';
@@ -15,7 +15,7 @@ import { whaleSpots } from './sea';
 import { DEPTH, origineDe, taperLayers, TEXTURES } from './base';
 
 /**
- * Où un îlot de monument ne va pas : la terre des îles et leur abord (trois cases), les îlots des Gardiens, le port et sa
+ * Où un îlot de monument ne va pas : la terre des îles et leur abord (trois cases), le port et sa
  * jetée, les ouvrages et leur abord, la place des baleines. Sert à placer les monuments (une fois) et à le vérifier.
  */
 export function monumentBlocked(a: ArchipelagoId, links: readonly string[]): (x: number, y: number) => boolean {
@@ -23,11 +23,7 @@ export function monumentBlocked(a: ArchipelagoId, links: readonly string[]): (x:
   const near = (x: number, y: number, r: number) => {
     for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) solid.add(`${x + dx},${y + dy}`);
   };
-  for (const def of mapOf(a)) {
-    for (const c of landCells(def)) near(c.x, c.y, 3);
-    const r = isletInWorld(def);
-    for (let x = r.x0; x < r.x1; x++) for (let y = r.y0; y < r.y1; y++) near(x, y, 2);
-  }
+  for (const def of mapOf(a)) for (const c of landCells(def)) near(c.x, c.y, 3);
   for (const def of placedLinksOf(a, links)) for (const c of bridgePath(def, links)) near(c.x, c.y, 3);
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) near(x, y, 3);

@@ -18,7 +18,7 @@ import type { Rectangle } from './placement';
  * libre ; `conflit`, une place qu'il couvre, trop près d'un autre lieu, barrée de deux `barre` en biais. `lien` : la ligne
  * en pointillés entre un Gardien détaché et son lieu (choix 4a).
  */
-export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix' | 'grille' | 'empreinte' | 'conflit' | 'barre' | 'lien' | 'socle';
+export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix' | 'grille' | 'empreinte' | 'conflit' | 'barre' | 'socle';
 
 /**
  * Une case du dessin du mode, en cases du monde : un carré plat posé sur le dessus de la case (z + 1), bordé d'un
@@ -29,19 +29,22 @@ export interface ArrangeCell {
   y: number;
   z: number;
   genre: ArrangeCellKind;
-  /** Le côté du carré, en cases (une place libre d'un lieu : 3 ; d'un îlot de Gardien : 2). */
+  /** Le côté du carré, en cases (une place libre d'un lieu : 3). */
   l?: number;
   /** Une barre de croix : tournée de tant (radians) sur l'eau, mince ; sans elle, un carré droit. */
   angle?: number;
-  /** Dessinée au-dessus des poignées (la ligne d'un Gardien détaché vers son lieu, choix 4a), dans un maillage à part. */
-  dessus?: boolean;
 }
 
 /** Le dessin du mode pendant un choix (./arrangeView.ts). */
 export interface ArrangeView {
   cases: ArrangeCell[];
-  /** L'emprise du choix à sa place d'avant (le lieu, ou l'îlot du Gardien), soulevée tant qu'il est choisi ; ou rien. */
+  /** L'emprise du choix à sa place d'avant (le lieu), soulevée tant qu'il est choisi ; ou rien. */
   souleve: Rectangle | null;
+  /**
+   * Ce qui se soulève vraiment, dans `souleve` : les bandes de la terre du lieu et de sa réunion, une case de plus tout
+   * autour (GD-12, `liftPartsOf`), quand un lieu a une forme ; sans elles, tout `souleve`.
+   */
+  liftParts?: readonly Rectangle[];
   /** Le milieu du fantôme : la vue le suit s'il sort de l'écran. */
   suivre: { x: number; y: number; z: number };
   /** Les liaisons qui ne tiendraient plus après la pose (leur nombre se dit dans la barre). */
@@ -126,6 +129,8 @@ export interface ArrangeGesture {
    */
   phase: 'demonte' | 'remonte' | 'descend';
   zone: Rectangle;
+  /** Ce qui se joue vraiment, dans `zone` (GD-12, `liftPartsOf`) : sans elles, toute la zone. */
+  zoneParts?: readonly Rectangle[];
   /**
    * L'autre place du geste (la nouvelle pendant le démontage, l'ancienne pendant le remontage) : le voile de brume
    * d'Archipéo glisse de l'une à l'autre.

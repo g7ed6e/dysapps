@@ -93,14 +93,21 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
       .map((b) => b.id)
       .sort(),
   ).toEqual([
+    // Depuis les formes des îles (GD-12, 8 octobre 2026) : la Ferme s'atteint depuis la Plaine, la Tour depuis la Forêt ;
+    // le Hangar, au coin de devant derrière le Volcan, par le Volcan (comme le Laboratoire, par la Rivière, depuis SC-2),
+    // et, depuis la boîte du trait (8 octobre 2026), aussi depuis la Forêt : sa liaison (95 cases) tient désormais.
+    'french-6e-grammar-spelling-maths-6e-calculation',
     'french-6e-phonology-english-6e-grammar',
     'french-6e-phonology-english-6e-vocabulary',
-    'french-6e-phonology-french-6e-grammar-spelling',
     'french-6e-phonology-french-6e-letter-confusion',
+    'french-6e-phonology-french-6e-reading',
+    'french-6e-phonology-french-6e-word-spelling',
+    'french-6e-phonology-geography-6e-living',
     'french-6e-phonology-history-6e-antiquity',
+    'french-6e-phonology-life-earth-sciences-6e-living-world',
+    'french-6e-phonology-technology-6e-objects',
     'maths-6e-calculation-maths-6e-decimals',
     'maths-6e-calculation-maths-6e-fractions',
-    'maths-6e-calculation-technology-6e-objects',
   ]);
   expect(isBiomeUnlocked('maths-6e-decimals', ['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-maths-6e-decimals'])).toBe(true);
   // La Rivière s'atteint par la Plaine ou par la Mine.
@@ -110,11 +117,17 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
   expect(bridgeState(getBridge('french-6e-word-spelling-maths-6e-fractions')!, [])).toBe('far');
   expect(isBiomeUnlocked('french-6e-grammar-spelling', ['french-6e-phonology-french-6e-grammar-spelling'])).toBe(true);
   expect(isBiomeUnlocked('french-6e-reading', ['french-6e-phonology-french-6e-grammar-spelling'])).toBe(false);
+  // Depuis la Ferme (GD-12) : ses voisines de devant (le Volcan, le Hangar), la Tour derrière son bras de mer, la Plaine.
   expect(
     buildableBridges(['french-6e-phonology-french-6e-grammar-spelling'], 'french-6e-grammar-spelling')
       .map((b) => b.id)
       .sort(),
-  ).toEqual(['french-6e-grammar-spelling-french-6e-reading']);
+  ).toEqual([
+    'french-6e-grammar-spelling-french-6e-reading',
+    'french-6e-grammar-spelling-maths-6e-calculation',
+    'french-6e-grammar-spelling-maths-6e-decimals',
+    'french-6e-grammar-spelling-technology-6e-objects',
+  ]);
   // Un pont construit sans chemin jusqu'à lui n'ouvre rien.
   expect(isBiomeUnlocked('french-6e-reading', ['french-6e-grammar-spelling-french-6e-reading'])).toBe(false);
 });
@@ -143,18 +156,26 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
       .map((b) => b.id)
       .sort(),
   ).toEqual([
+    'french-6e-grammar-spelling-maths-6e-calculation',
     'french-6e-phonology-english-6e-grammar',
     'french-6e-phonology-english-6e-vocabulary',
-    'french-6e-phonology-french-6e-grammar-spelling',
     'french-6e-phonology-french-6e-letter-confusion',
+    'french-6e-phonology-french-6e-reading',
+    'french-6e-phonology-french-6e-word-spelling',
+    'french-6e-phonology-geography-6e-living',
     'french-6e-phonology-history-6e-antiquity',
+    'french-6e-phonology-life-earth-sciences-6e-living-world',
+    'french-6e-phonology-technology-6e-objects',
     'maths-5e-proportionality-english-5e-grammar',
     'maths-5e-proportionality-english-5e-vocabulary',
+    'maths-5e-proportionality-french-5e-conjugation',
+    // Depuis que les îles ont grandi (GD-11, 8 octobre 2026), trois bacs de plus depuis le Marché (86, 73 et 45 cases).
+    'maths-5e-proportionality-history-5e-middle-ages',
+    'maths-5e-proportionality-lv2-5e-introductions',
     'maths-5e-proportionality-technology-5e-design',
     'maths-5e-signed-numbers-maths-5e-proportionality',
     'maths-6e-calculation-maths-6e-decimals',
     'maths-6e-calculation-maths-6e-fractions',
-    'maths-6e-calculation-technology-6e-objects',
   ]);
 });
 
@@ -188,8 +209,8 @@ it('le chemin vers une île part des départs de son archipel ; l’accès offer
   expect(pathTo('english-4e-comprehension').map((b) => b.id)).toEqual(['maths-4e-algebra-english-4e-comprehension']);
   // Ce qu'il reste à poser (GD-9) : le plus court chemin de liaisons qui tiennent, depuis les lieux déjà reliés.
   expect(remainingPath('maths-6e-fractions', []).map((b) => b.id)).toEqual(['maths-6e-calculation-maths-6e-fractions']);
-  expect(remainingPath('french-6e-reading', []).map((b) => b.id)).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-french-6e-reading']);
-  expect(remainingPath('french-5e-homophones', ['passage-5e']).map((b) => b.id)).toEqual(['maths-5e-signed-numbers-maths-5e-proportionality', 'maths-5e-signed-numbers-french-5e-homophones']);
+  expect(remainingPath('french-6e-reading', []).map((b) => b.id)).toEqual(['french-6e-phonology-french-6e-reading']);
+  expect(remainingPath('french-5e-homophones', ['passage-5e']).map((b) => b.id)).toEqual(['maths-5e-proportionality-french-5e-conjugation', 'french-5e-homophones-french-5e-conjugation']);
   expect(remainingPath('english-4e-comprehension', ['passage-5e', 'passage-4e']).map((b) => b.id)).toEqual(['maths-4e-algebra-english-4e-comprehension']);
   expect(remainingPath('french-6e-reading', ['french-6e-phonology-french-6e-reading'])).toEqual([]);
   expect(grantAccess([], ['maths-5e-signed-numbers']).sort()).toEqual(['maths-5e-signed-numbers-maths-5e-proportionality', 'passage-5e']);
@@ -200,11 +221,11 @@ it('les anciennes sauvegardes gardent leurs îles ouvertes : voyages et chemin o
   expect(bridgesFromLegacyProgress({})).toEqual([]);
   expect(bridgesFromLegacyProgress({ 'french-6e-phonology-syllables-1': { stars: 1 } })).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
   // Sous l'ancienne règle, la Ferme s'ouvrait après la Carrière : on offre le chemin nouveau vers elle (GD-9 : la
-  // liaison depuis le lieu relié le plus proche).
+  // liaison depuis le lieu relié le plus proche ; depuis les formes des îles, GD-12, la Plaine).
   const old = { 'french-6e-phonology-a': { stars: 1 }, 'french-6e-letter-confusion-a': { stars: 2 }, 'french-6e-word-spelling-a': { stars: 1 } };
-  expect(bridgesFromLegacyProgress(old).sort()).toEqual(['french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
+  expect(bridgesFromLegacyProgress(old).sort()).toEqual(['french-6e-grammar-spelling-maths-6e-calculation', 'french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
   // Sanitize : sauvegarde sans `bridges` → migration ; avec → identifiants inconnus filtrés, îles jouées gardées ouvertes.
-  expect(sanitizeState({ progress: old }).world.links.sort()).toEqual(['french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
+  expect(sanitizeState({ progress: old }).world.links.sort()).toEqual(['french-6e-grammar-spelling-maths-6e-calculation', 'french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
   expect(sanitizeState({ progress: old, world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x', 'french-6e-phonology-french-6e-letter-confusion'] } }).world.links.sort()).toEqual(['french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
   expect(sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x'] } }).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
   // Le continent d'avant : un escalier vers le Glacier valait l'accès aux Collines. Le voyage et le sentier sont offerts,

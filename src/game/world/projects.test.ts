@@ -4,7 +4,7 @@ import { planCells } from './plans';
 import { tirageNeuf } from './assembly';
 import { BLOCKS } from '../biomes';
 import { BLOCS_A_QUESTIONS } from '../exercises';
-import { PROJECTS, buildPiece, canPay, nextPiece, pieceCells, pieceState, piecesBuilt, projectNeeds, projectOf } from './projects';
+import { LAYERS, PROJECTS, buildPiece, canPay, nextPiece, pieceCells, pieceState, piecesBuilt, projectNeeds, projectOf } from './projects';
 
 const phare = projectOf('landmark-5e-1')!;
 const avec = (stock: GameState['stock'], parts: string[] = []): GameState => ({
@@ -14,20 +14,24 @@ const avec = (stock: GameState['stock'], parts: string[] = []): GameState => ({
 });
 const recette = (index: number, r: number) => Object.fromEntries(phare.pieces[index].recipes[r].ingredients.map((i) => [i.bloc, i.n]));
 
-it('le phare du large est le seul projet, en cinq pièces de bas en haut', () => {
-  expect(PROJECTS.map((p) => p.monument)).toEqual(['landmark-5e-1']);
+it('le phare du large et les cinq grands projets neufs de la 4e et de la 3e, chacun en pièces de bas en haut', () => {
+  expect(PROJECTS.map((p) => p.monument)).toEqual(['landmark-5e-1', 'landmark-4e-3', 'landmark-4e-4', 'landmark-3e-3', 'landmark-3e-4', 'landmark-3e-5']);
   expect(phare.pieces.map((p) => p.id)).toEqual(['base', 'tower', 'gallery', 'lantern', 'roof']);
+  // Les pièces du contenu (docs/contenu/projets.md) sont celles de leur forme (LAYERS), dans le même ordre.
+  for (const p of PROJECTS) expect(p.pieces.map((x) => x.id), p.monument).toEqual(Object.keys(LAYERS[p.monument] ?? {}));
 });
 
-it('les pièces couvrent chaque case du phare une seule fois', () => {
-  const keys = phare.pieces.flatMap((_, i) => pieceCells(phare, i).map((c) => c.key));
-  expect(new Set(keys).size).toBe(keys.length);
-  expect(keys.sort()).toEqual(
-    planCells(getMonument('landmark-5e-1')!)
-      .map((c) => c.key)
-      .sort(),
-  );
-  phare.pieces.forEach((_, i) => expect(pieceCells(phare, i).length).toBeGreaterThan(0));
+it('les pièces couvrent chaque case de leur grand ouvrage une seule fois', () => {
+  for (const p of PROJECTS) {
+    const keys = p.pieces.flatMap((_, i) => pieceCells(p, i).map((c) => c.key));
+    expect(new Set(keys).size, p.monument).toBe(keys.length);
+    expect(keys.sort(), p.monument).toEqual(
+      planCells(getMonument(p.monument)!)
+        .map((c) => c.key)
+        .sort(),
+    );
+    p.pieces.forEach((_, i) => expect(pieceCells(p, i).length, `${p.monument} ${i}`).toBeGreaterThan(0));
+  }
 });
 
 it('une bonne réponse pose la pièce entière et prend les blocs de la recette choisie', () => {

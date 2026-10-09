@@ -13,7 +13,7 @@ import { ALTITUDE, type ArchipelagoId, DANS_LE_CIEL, mapOf } from './map';
 import { appelsDuSol, champDuSol, landMesh, poseDuDecor, trianglesDuSol } from './landMesh';
 import { modelerLeSol } from './drawnModel';
 import { buildMesh, drawCallsOf, faceCount } from './mesher';
-import { buildBlockMesh, chunkFaceCount, type BlockChunk } from './blockMesh';
+import { blockRegions, buildBlockMesh, buildRegionMesh, chunkFaceCount, type BlockChunk } from './blockMesh';
 import { hiddenBottomLevel } from './sea';
 import { MONUMENTS } from './monuments';
 import { PLANS, planCells } from './plans';
@@ -58,10 +58,10 @@ export const RENDER_BUDGET_6E = { triangles: 72_800, drawCalls: RENDER_BUDGET.dr
  * relevé à la somme des enveloppes « autres » (62 875). Mesurés tout construit, « Dans la scène » compris : 57 336 aux
  * Îles Brumeuses, 55 292 aux Anciens Ateliers, 52 531 aux Îles du Ciel. Puis, avec leurs neuf îles de sciences (SC-3),
  * du même mot, de 62 900 à 74 900, à la somme des enveloppes « autres » (74 805, 74 865 depuis les programmes
- * 2025-2026 : deux bornes de plus au 4e). Mesurés tout construit, « Dans la
+ * 2025-2026 : deux bornes de plus au 4e ; 74 877 depuis les commandes relevées à 392, 8 octobre 2026). Mesurés tout construit, « Dans la
  * scène » à part : 69 880 aux Îles Brumeuses, 67 080 aux Anciens Ateliers, 63 791 aux Îles du Ciel. La mesure sur
  * tablette reste à faire. Puis de 74 900 à 75 000 pour les quêtes de la 5e (GD-10, validé par le mainteneur le 8 octobre
- * 2026) : la somme des « autres » passe à 74 965 (commandes 380 → 480) ; 69 938 mesurés aux Îles Brumeuses.
+ * 2026) : la somme des « autres » passe à 74 985 (commandes 392 → 500).
  */
 export const RENDER_BUDGET_AUTRES = { triangles: 75_000, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
@@ -87,9 +87,16 @@ export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls
  * texture pour les blocs, les faces voisines fondues ; « Ok démarre piste 2 », puis « 1 » pour 120, mainteneur, 7
  * octobre 2026) : aux Premiers Rivages, 33 340 triangles et 100 appels tout construit, 102 au pire de la région
  * aménagée. Les triangles restent à 100 000 : pendant « Modifier le plan », le terrain se dessine face par face
- * (97 860 triangles au pire aux Premiers Rivages, 99 150 aux Anciens Ateliers). La mesure sur tablette reste à faire.
+ * (97 860 triangles au pire aux Premiers Rivages, 99 150 aux Anciens Ateliers). Les îles agrandies (GD-11, 8 octobre
+ * 2026, « Côte amincie » : sans relever le plafond) : au pire de la région aménagée (`npm run rendu:budget`, avant → après),
+ * 97 928 → 93 570 triangles et 102 → 109 appels aux Premiers Rivages, 90 336 → 86 110 et 87 → 90 aux Îles Brumeuses,
+ * 99 174 → 98 582 et 85 → 84 aux Anciens Ateliers, 98 138 → 95 180 et 64 → 60 aux Îles du Ciel.
+ * Relevé à 102 000 triangles pour les deux grands projets neufs des Anciens Ateliers (GD-10, mainteneur, 8 octobre
+ * 2026, « Plafond relevé ») : leurs îlots, des piliers de roche à l'altitude du 4e, et leurs dessins portent le pire de la
+ * région aménagée à 100 448 triangles au pire, 460 de plus avec le glissé d'un choix ; les autres archipels restent sous 100 000.
+ * La mesure sur tablette reste à faire.
  */
-export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 100_000, drawCalls: 120 } as const;
+export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 102_000, drawCalls: 120 } as const;
 
 /** Un poste du budget d'Archipéo : une part de la scène, et le lot qui la dessine. */
 export type Poste = 'sol' | 'mer' | 'faune' | 'decor' | 'construction' | 'commandes' | 'bornes' | 'navire' | 'bonhomme' | 'creatures' | 'gardiens' | 'scene';
@@ -211,12 +218,14 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // l'escalier) sont des petites constructions, comptées dans ce poste (`toutConstruitAvecLesCommandes`) : 758 triangles
   // mesurés aux Premiers Rivages (`npm run rendu:budget`), toutes commandes livrées et toutes quêtes finies. Les commandes
   // passent de 640 à 800, pris sur la marge du navire (650 → 490 ; 408 mesurés), la somme inchangée (72 770) ; aucun
-  // appel de plus.
+  // appel de plus. Hors des Premiers Rivages, 380 → 392 (choix du mainteneur, 8 octobre 2026 : « Relever à 392 ») : au
+  // 4e, le pied de la machine d'Ixe (+4) et le perchoir de Cléa (+8) portent les commandes à 392 mesurés.
+  // La somme des « autres » passe de 74 865 à 74 877, sous `RENDER_BUDGET_AUTRES` (74 900), inchangé.
   commandes: {
     lot: 'GD-7',
     nom: 'Commandes et quêtes (les petites constructions posées, dans le sol et la construction, sans appel de plus)',
     premiersRivages: { triangles: 800, drawCalls: 0 },
-    autres: { triangles: 480, drawCalls: 0 },
+    autres: { triangles: 500, drawCalls: 0 },
   },
   // Le lot de contenu des programmes 2025-2026 (une mission de plus à la Forge et au Cabinet de 4e, et à l'Observatoire
   // de 3e, une de moins au Glacier de 5e) : relevé aux mesures tout construit, comme pour SC-3, confirmé par le
@@ -224,10 +233,10 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // 1 130 → 1 180 ; la petite construction de la Forge, replacée de (10, 3) à (9, 4) avec la mission ajoutée (`calculerLaPlaceDeLaPetiteConstruction`), fige au sol
   // d'autres cases (368 → 374 au 4e) : commandes 370 → 380. La somme des « autres » passe de 74 805 à 74 865, sous
   // `RENDER_BUDGET_AUTRES` (74 900), inchangé.
-  // Les quêtes de la 5e (GD-10) : la tente, le four et la balise portent le poste des Îles Brumeuses de 374 à 476
-  // triangles (`npm run rendu:budget`), aucun appel de plus ; aucun autre poste des « autres » n'a 90 de marge dans les
-  // trois archipels. Commandes 380 → 480, la somme des « autres » de 74 865 à 74 965, sous `RENDER_BUDGET_AUTRES` relevé
-  // à 75 000 (validé par le mainteneur le 8 octobre 2026). Le monde en blocs de Blocland n'en change pas de plafond (30 896 au 5e, sur 100 000).
+  // Les quêtes de la 5e (GD-10) : la tente, le four et la balise portent le poste des Îles Brumeuses à 496 triangles
+  // sur les îles agrandies de GD-11 (`commandesCost`), aucun appel de plus ; aucun autre poste des « autres » n'a cette
+  // marge dans les trois archipels. Commandes 392 → 500, la somme des « autres » de 74 877 à 74 985, sous
+  // `RENDER_BUDGET_AUTRES` relevé à 75 000 (validé par le mainteneur le 8 octobre 2026). Le monde en blocs de Blocland n'en change pas de plafond (30 896 au 5e, sur 100 000).
   bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_450, drawCalls: 1 }, autres: { triangles: 1_180, drawCalls: 1 } },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
@@ -454,32 +463,64 @@ export function linkTriangles(a: ArchipelagoId, kind: BridgeKind, longueur: numb
 }
 
 /**
+ * Dans « Modifier le plan », le lieu choisi et sa réunion se soulèvent sommet par sommet : les morceaux du monde qu'ils
+ * touchent se dessinent face par face, les autres gardent leurs faces fondues (three/cubes.ts, piste 1 du budget de
+ * GD-12). Ils tiennent dans tant de morceaux de côté, où qu'ils soient posés : deux lieux réunis, une case de plus tout
+ * autour, ne dépassent pas `(MORCEAUX_DU_CHOIX − 1) × 32 + 1` cases de côté (budget.test.ts).
+ */
+export const MORCEAUX_DU_CHOIX = 4;
+
+/**
+ * Ce que coûtent de plus, au pire, les morceaux du lieu soulevé dessinés face par face : sur le monde d'aujourd'hui, la
+ * fenêtre de `MORCEAUX_DU_CHOIX` × `MORCEAUX_DU_CHOIX` morceaux où les faces non fondues pèsent le plus.
+ */
+export function choiceUnfusedCost(cubes: readonly VoxelCube[], options: { hiddenBottomsUpTo?: number }): number {
+  const plus = new Map<string, number>();
+  for (const r of blockRegions(cubes).values()) {
+    const unes = chunkFaceCount(buildRegionMesh(r, { ...options, fondre: false }));
+    const fondues = chunkFaceCount(buildRegionMesh(r, { ...options, fondre: true }));
+    plus.set(`${r.rx},${r.ry}`, (unes - fondues) * 2);
+  }
+  const cles = [...plus.keys()].map((k) => k.split(',').map(Number));
+  let pire = 0;
+  for (const [rx0] of cles)
+    for (const [, ry0] of cles) {
+      let n = 0;
+      for (let i = 0; i < MORCEAUX_DU_CHOIX; i++) for (let j = 0; j < MORCEAUX_DU_CHOIX; j++) n += plus.get(`${rx0 + i},${ry0 + j}`) ?? 0;
+      pire = Math.max(pire, n);
+    }
+  return pire;
+}
+
+/**
  * Le pire cas d'une région aménagée (GD-9), tout construit, commandes posées et bulles comprises : le monde d'aujourd'hui
  * sans ses liaisons (`base`), puis autant de liaisons que l'élève peut en poser (`maxLinks`), toutes au plus long —
  * celles qui ouvrent un lieu (lieux − 1, longues : des bacs de 96 cases sur la mer, des ponts dans le ciel), les autres
  * des raccourcis entre lieux ouverts (36 cases au plus, `SHORT_LINK`) — et les réunions : un lieu ne se réunit qu'à un
  * seul autre (lieux ÷ 2 au plus), chacune au plus large (`joinTriangles`). Une réunion est un côté du même graphe
  * planaire que les liaisons (elle ne croise aucune liaison, et aucune liaison ne relie deux lieux réunis) : chacune
- * prend la place d'un raccourci. Les triangles comptés face par face, comme le terrain se dessine pendant « Modifier le
- * plan » (three/cubes.ts : il n'y fond pas ses faces), le pire moment ; les appels, les mêmes dans le mode et hors de lui
- * (un par morceau du monde et par passe).
+ * prend la place d'un raccourci. Le pire moment est « Modifier le plan », un lieu choisi : le terrain fondu, comme hors
+ * du mode, et les morceaux du lieu soulevé face par face (`choix`, `choiceUnfusedCost`) ; les liaisons et les réunions
+ * comptées face par face. Les appels, les mêmes dans le mode et hors de lui (un par morceau du monde et par passe).
  */
-export function worstCaseOfRegion(a: ArchipelagoId): { base: number; liaisons: number; reunions: number; triangles: number; drawCalls: number } {
+export function worstCaseOfRegion(a: ArchipelagoId): { base: number; choix: number; liaisons: number; reunions: number; triangles: number; drawCalls: number } {
   const partie = toutConstruitAvecLesCommandes();
   const terrain = worldCubes(a, partie.progress, partie.world, false);
-  const scene = sceneCost(a, true, false, partie);
-  const appels = sceneCost(a, true, true, partie).drawCalls;
+  const scene = sceneCost(a, true, true, partie);
   const signes = signesCost();
   const dessous = { hiddenBottomsUpTo: hiddenBottomLevel(a) };
-  const liaisonsDAujourdhui = (faceCount(buildMesh(terrain, [], dessous)) - faceCount(buildMesh(terrain.filter((c) => !c.bridge), [], dessous))) * 2;
-  const base = scene.triangles + signes.triangles - liaisonsDAujourdhui;
+  const sansLiaisons = terrain.filter((c) => !c.bridge);
+  const fondu = (cubes: readonly VoxelCube[]) => chunkFaceCount(buildBlockMesh([...cubes], { ...dessous, fondre: true })) * 2;
+  const liaisonsDAujourdhui = fondu(terrain) - fondu(sansLiaisons);
+  const choix = choiceUnfusedCost(sansLiaisons, dessous);
+  const base = scene.triangles + signes.triangles - liaisonsDAujourdhui + choix;
   const lieux = mapOf(a).length;
   const longue = linkTriangles(a, DANS_LE_CIEL[a] ? 'pont' : 'bac', LONG_LENGTH);
   const raccourci = linkTriangles(a, 'pont', SHORT_LENGTH);
   const nReunions = Math.floor(lieux / 2);
   const liaisons = (lieux - 1) * longue + (maxLinks(lieux) - (lieux - 1) - nReunions) * raccourci;
   const reunions = nReunions * joinTriangles(a);
-  return { base, liaisons, reunions, triangles: base + liaisons + reunions, drawCalls: appels + signes.drawCalls };
+  return { base, choix, liaisons, reunions, triangles: base + liaisons + reunions, drawCalls: scene.drawCalls + signes.drawCalls };
 }
 
 /**

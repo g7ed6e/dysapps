@@ -1,7 +1,8 @@
 import { BIOMES } from '../biomes';
-import { ALTITUDE, ARCHIPELAGO_IDS, CORE, LACS, isLand, islandDef, landBox, landCells, landscape, MAP, reliefHeight } from './map';
+import { ALTITUDE, ARCHIPELAGO_IDS, CORE, etendueDuLieu, LACS, isLand, islandDef, landBox, landCells, landscape, margesDuCoeur, MAP, reliefHeight } from './map';
+import { silhouetteDe } from './silhouettes';
 import { BRIDGES, LINKS_BEFORE_GD9, linkWholeRegion, VOYAGES } from './archipelago';
-import { ISLET_H, ISLET_W, bossIsletOrigin, worldCubes } from './terrain';
+import { worldCubes } from './terrain';
 
 it('chaque île a une place, une altitude selon sa classe, et son cœur fait partie de sa terre', () => {
   expect(MAP.map((d) => d.id).sort()).toEqual(BIOMES.map((b) => b.id).sort());
@@ -17,22 +18,22 @@ it('chaque île a une place, une altitude selon sa classe, et son cœur fait par
   }
 });
 
-it('aucune terre ne chevauche une autre, ni l’îlot d’un Gardien', () => {
+it('la côte écrite d’un lieu qui a une forme (GD-12) est celle de sa forme', () => {
+  // La carte de départ l'écrit en dur, pour ne pas calculer quinze masques à l'import de map.ts.
+  const formes = MAP.filter((d) => silhouetteDe(d.id).forme);
+  expect(formes.length).toBe(15);
+  for (const d of formes) expect(d.ext, d.id).toEqual(etendueDuLieu(d, silhouetteDe(d.id).forme!));
+});
+
+it('aucune terre ne chevauche une autre', () => {
   const owner = new Map<string, string>();
-  BIOMES.forEach((b, i) => {
+  BIOMES.forEach((b) => {
     const def = islandDef(b.id);
     for (const c of landCells(def)) {
       const key = `${c.x},${c.y}`;
       expect(owner.get(key), `${b.id} chevauche ${owner.get(key)} en ${key}`).toBeUndefined();
       owner.set(key, b.id);
     }
-    const islet = bossIsletOrigin(i);
-    for (let x = 0; x < ISLET_W; x++)
-      for (let y = 0; y < ISLET_H; y++) {
-        const key = `${islet.x + x},${islet.y + y}`;
-        expect(owner.get(key), `îlot de ${b.id} sur ${owner.get(key)} en ${key}`).toBeUndefined();
-        owner.set(key, `îlot-${b.id}`);
-      }
   });
 });
 
@@ -76,8 +77,10 @@ it('le paysage : du décor sur chaque île, jamais sur l’eau ni la lave, des l
   let lakes = 0;
   for (const def of MAP) {
     const cells = landscape(def);
+    // Sur sa côte, ou ses jalons dans les marges du cœur : une côte d'une case (amincie par GD-11) est tout entière au
+    // bord, sans décor.
     expect(
-      cells.some((c) => c.decor),
+      cells.some((c) => c.decor) || margesDuCoeur(def).some((c) => c.decor),
       def.id,
     ).toBe(true);
     for (const c of cells) {
@@ -95,12 +98,7 @@ it('le paysage : du décor sur chaque île, jamais sur l’eau ni la lave, des l
   expect(lakes).toBeGreaterThanOrEqual(3);
 });
 
-it('aucun pont ne traverse l’îlot d’un Gardien ni la terre d’une autre île', () => {
-  const islets = new Set<string>();
-  BIOMES.forEach((_, i) => {
-    const o = bossIsletOrigin(i);
-    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) islets.add(`${o.x + x},${o.y + y}`);
-  });
+it('aucun pont ne traverse la terre d’une autre île', () => {
   const land = new Map<string, string>();
   for (const def of MAP) for (const c of landCells(def)) land.set(`${c.x},${c.y}`, def.id);
   // Les liaisons qu'une partie peut avoir (GD-9) : toute une région reliée, et la sauvegarde d'avant, avec ses tracés d'origine.
@@ -112,7 +110,6 @@ it('aucun pont ne traverse l’îlot d’un Gardien ni la terre d’une autre î
   const bridges = ARCHIPELAGO_IDS.flatMap((a) => worldCubes(a, {}, { parts: {}, log: [], links: all }, false)).filter((c) => c.bridge);
   for (const c of bridges) {
     const key = `${c.x},${c.y}`;
-    expect(islets.has(key), `pont sur un îlot en ${key}`).toBe(false);
     const owner = land.get(key);
     if (owner) {
       const def = BRIDGES.find((b) => b.id === c.bridge)!;

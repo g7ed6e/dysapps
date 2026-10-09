@@ -1,5 +1,5 @@
 // Le monde suit la disposition sauvegardée (GD-9) : un lieu déplacé et tourné (quatre orientations), lu dans la
-// sauvegarde, emporte tout ce qui dépend de sa place (terrain, décor, îlot et Gardien, créature, bornes, liaisons,
+// sauvegarde, emporte tout ce qui dépend de sa place (terrain, décor, Gardien, créature, bornes, liaisons,
 // grande construction au large, cadrage de sa vue, commandes), dans les deux univers ; revenu à la carte de départ, le
 // monde est exactement celui d'avant (aucun cache ne garde l'ancienne place).
 import { afterEach, describe, expect, it } from 'vitest';
@@ -7,13 +7,12 @@ import type { BiomeId } from '../biomes';
 import { sanitizeState, EMPTY_STATE } from '../engine';
 import type { World } from '../engine/state';
 import { applyLayout } from './appliedLayout';
-import { freeGuardianSpots, freeSpots, isFixedPlace, linksToRelink, moveGuardian, moveIsland, placeIn, routesIn, startingSpot } from './arrange';
+import { freeSpots, isFixedPlace, linksToRelink, moveIsland, routesIn, startingSpot } from './arrange';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import { placesOf } from './routing';
 import { toutConstruitAvecLesCommandes } from './budget';
 import { PLAFOND_DU_MONDE_EN_BLOCS, worstCaseOfRegion } from './budget';
-import { detachedIsletCorner, footprintOf, gapBetween, guardianIsletRectangle, isletInWorld, monumentIslet, poseOfSpot } from './footprint';
-import { placeDeLaBrume } from './decor/mist';
+import { monumentIslet, poseOfSpot } from './footprint';
 import { grilleDe } from './grid';
 import { placedLinksOf } from './linkGeometry';
 import { islandDef, startingIsland } from './map';
@@ -21,7 +20,7 @@ import { MONUMENT_ISLET, monumentsOf } from './monuments';
 import { layoutVersion, ORIENTATIONS, type Quarts, turnCell, turnPoint } from './placement';
 import type { Layout, LayoutTurn } from './savedLayout';
 import { HABILLAGES } from './skin';
-import { creaturePlacements, guardianPlacements, islandCenter, questStations, viewYaw, whaleSpots, worldCubes } from './terrain';
+import { creaturePlacements, guardianPlacements, islandCenter, questStations, viewYaw, worldCubes } from './terrain';
 import { monumentCenter } from './terrain/monuments';
 
 afterEach(() => {
@@ -34,10 +33,16 @@ const TOUR: BiomeId = 'french-6e-reading';
 /** La partie toute construite, ses commandes livrées. */
 const partie = toutConstruitAvecLesCommandes();
 
-/** Une place libre de la Tour à l'orientation `q`, loin de sa place de départ. */
+/**
+ * Une place libre de la Tour à l'orientation `q`, hors de sa place de départ, la plus loin possible. Depuis les formes
+ * des îles (GD-12), la Tour et son observatoire ne tournent d'un quart qu'à un ou deux pas de leur place.
+ */
 function placeLoin(q: LayoutTurn) {
   const d = startingSpot(TOUR);
-  const libres = freeSpots(partie.world, TOUR, q).filter((s) => Math.abs(s.x - d.x) + Math.abs(s.y - d.y) >= 3);
+  const loin = (s: { x: number; y: number }) => Math.abs(s.x - d.x) + Math.abs(s.y - d.y);
+  const libres = freeSpots(partie.world, TOUR, q)
+    .filter((s) => loin(s) >= 1)
+    .sort((s, t) => loin(s) - loin(t));
   expect(libres.length, `orientation ${q}`).toBeGreaterThan(0);
   return libres[libres.length - 1];
 }
@@ -109,7 +114,7 @@ for (const univers of ['blocland', 'archipeo'] as const)
           const p = grille.versMonde(grille.placeDe({ genre: 'borne', id: `${TOUR}:${st.typeId}` })!);
           expect(monde.some((c) => c.x === p.x && c.y === p.y && c.quest === `${TOUR}:${st.typeId}`)).toBe(true);
         }
-        // Le Gardien sur son îlot, la créature.
+        // Le Gardien sur son île (GD-11), la créature.
         const gardien = guardianPlacements('6e', partie.progress, r.world.links, true).find((g) => g.id === TOUR)!;
         const attendre = (cells: string[]) =>
           cells
@@ -166,7 +171,7 @@ describe('les liaisons à reposer quittent le dessin', () => {
 });
 
 describe('le budget, des lieux déplacés et tournés (GD-9)', () => {
-  it.each(ARCHIPELAGO_IDS)('%s : le pire cas reste sous 100 000 triangles et 120 appels', (a) => {
+  it.each(ARCHIPELAGO_IDS)('%s : le pire cas reste dans le plafond du monde en blocs', (a) => {
     // Chaque lieu qui bouge, tourné d'un quart et posé à la place libre la plus loin de la sienne ; de face s'il n'a
     // aucune place tourné (aux Îles Brumeuses, depuis les îles d'histoire-géographie de HG-3, seul le Relais en a une).
     let w: World = partie.world;
@@ -184,26 +189,5 @@ describe('le budget, des lieux déplacés et tournés (GD-9)', () => {
     const pire = worstCaseOfRegion(a);
     expect(pire.triangles).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
     expect(pire.drawCalls).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
-  });
-});
-
-describe('le décor lit la vraie place de l’îlot d’un Gardien détaché (choix 4a du mainteneur)', () => {
-  it('la brume et les baleines évitent sa nouvelle place', () => {
-    const w = partie.world;
-    const terre = footprintOf(TOUR, placeIn(w, TOUR)).find((p) => p.genre === 'terre')!;
-    const loin = freeGuardianSpots(w, TOUR).filter((g) => g.spot).sort((g, h) => gapBetween(guardianIsletRectangle(placeIn(w, TOUR), h), terre) - gapBetween(guardianIsletRectangle(placeIn(w, TOUR), g), terre))[0];
-    const r = moveGuardian(w, TOUR, loin);
-    if (!r.ok) throw new Error('place');
-    const avant = isletInWorld(islandDef(TOUR));
-    applyLayout(r.world.layout);
-    const apres = isletInWorld(islandDef(TOUR));
-    const k = detachedIsletCorner('6e', loin.spot!);
-    expect(apres).toEqual({ x0: k.x, y0: k.y, x1: k.x + 13, y1: k.y + 12 });
-    expect(apres).not.toEqual(avant);
-    // La brume n'a plus sa place sur l'îlot, à sa nouvelle place.
-    const brume = placeDeLaBrume('6e', w.links);
-    expect(brume(apres.x0 + 6, apres.y0 + 6)).toBe(false);
-    // Aucune baleine n'y fait surface.
-    for (const b of whaleSpots('6e', w.links)) expect(b.x >= apres.x0 - 1 && b.x < apres.x1 + 1 && b.y >= apres.y0 - 1 && b.y < apres.y1 + 1).toBe(false);
   });
 });

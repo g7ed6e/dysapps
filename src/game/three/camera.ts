@@ -104,7 +104,7 @@ export function creerCamera(
   let ouvertures = 0;
   let surLaCarte = false;
   let contexte = { ouvertures: -1, destination: '', cle: '' };
-  let cadrageCarte: { lue: PlaceLue | null; destination: string; aspect: number; target: THREE.Vector3; pos: THREE.Vector3; echelle: number; zoomMax: number } | null = null;
+  let cadrageCarte: { lue: PlaceLue | null; destination: string; bonhomme: BiomeId | null; region: boolean; aspect: number; target: THREE.Vector3; pos: THREE.Vector3; echelle: number; zoomMax: number } | null = null;
   /**
    * Le cadrage de la Carte, recalculé seulement quand la place libre lue (le même objet tant qu'elle ne change pas) ou
    * la destination changent (pas image par image). `saut` : sans mouvement.
@@ -116,16 +116,20 @@ export function creerCamera(
     const cle = cleDeLaDestination(destination);
     if (contexte.ouvertures !== ouvertures || contexte.destination !== cle) contexte = { ouvertures, destination: cle, cle: `${ouvertures}|${cle}` };
     const lue = carte?.place(contexte.cle) ?? null;
-    if (!cadrageCarte || cadrageCarte.lue !== lue || cadrageCarte.destination !== cle || (!lue && cadrageCarte.aspect !== aspect)) {
+    // Le cadre de la région entière dans le mode « Aménager » (les places libres s'y voient) ; sinon, les lieux
+    // d'aujourd'hui, et au plancher l'île du bonhomme avec la destination (`cadrageDeLaCarte`).
+    const bonhomme = derniers.current.home;
+    const region = derniers.current.amenager !== 'non';
+    if (!cadrageCarte || cadrageCarte.lue !== lue || cadrageCarte.destination !== cle || cadrageCarte.bonhomme !== bonhomme || cadrageCarte.region !== region || (!lue && cadrageCarte.aspect !== aspect)) {
       // Sans lecture (un test) : une vue de tablette, moins la bande des boutons du bas.
       const w = lue ? Math.max(1, lue.w) : HAUTEUR_DE_TABLETTE * aspect;
       const h = lue ? Math.max(1, lue.h) : HAUTEUR_DE_TABLETTE;
       const libre = lue?.libre ?? { x0: 0, y0: 0, x1: w, y1: h - RESERVE_DU_BAS };
-      const c = cadrageDeLaCarte(monde.archipel, destination, w, h, libre);
+      const c = cadrageDeLaCarte(monde.archipel, destination, w, h, libre, { bonhomme, region });
       // Au plus près, une île remplit la moitié du petit côté de la place libre (`ZOOM_DE_LA_CARTE` ; jamais moins près qu’à l’ouverture).
       const cote = Math.max(1, Math.min(libre.x1 - libre.x0, libre.y1 - libre.y0));
       const zoomMax = Math.max(1, (ZOOM_DE_LA_CARTE.ile * cote) / (LARGEUR_D_UNE_ILE * c.echelle));
-      cadrageCarte = { lue, destination: cle, aspect, ...c, zoomMax };
+      cadrageCarte = { lue, destination: cle, bonhomme, region, aspect, ...c, zoomMax };
     }
     return { target: cadrageCarte.target, pos: cadrageCarte.pos, saut: lue?.saut ?? false };
   };

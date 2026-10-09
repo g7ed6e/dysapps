@@ -674,8 +674,9 @@ export default function WorldCanvas({
   // ---- Les objets touchables (world/affordance.ts) : leurs zones de toucher, et une bulle au-dessus de ceux
   // qui sont à faire (trois au plus sur l'île où l'on est, la prochaine chose à faire mise en avant).
   const signesDuMonde = useMemo(
-    () => signesDesObjets({ cubes, quests, creatures, vehicle, etats: etatsDesObjets }),
-    [cubes, quests, creatures, vehicle, etatsDesObjets],
+    // Les Gardiens d'Archipéo sont des sentinelles : leur bulle et leur zone suivent la statue, pas les cubes du Gardien.
+    () => signesDesObjets({ cubes, quests, creatures, vehicle, etats: etatsDesObjets, gardiens: habillageDe(rendu).personnages === 'modeles' ? 'sentinelles' : 'cubes' }),
+    [cubes, quests, creatures, vehicle, etatsDesObjets, rendu],
   );
   useEffect(() => {
     world.current?.affordance.poser(signesDuMonde);

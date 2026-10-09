@@ -12,7 +12,7 @@
 //   sont tracés. Sans la brume de profondeur : de la couleur de l'horizon, elle s'y fondrait.
 import { getArchipelago } from '../archipelago';
 import { placedLinksOf } from '../linkGeometry';
-import { isletInWorld, monumentIslet } from '../footprint';
+import { monumentIslet } from '../footprint';
 import { dockBox } from '../harbor';
 import { lineaire, NIVEAU_EAU } from '../landMesh';
 import { landBox, landCells, mapOf, smoothNoise, type ArchipelagoId } from '../map';
@@ -69,11 +69,7 @@ export function placeDeLaBrume(a: ArchipelagoId, links: readonly string[]): (x: 
   const cle = (x: number, y: number) => (x + 16384) * 32768 + (y + 16384);
   const interdit = new Set<number>();
   const terre = new Set<number>();
-  for (const def of mapOf(a)) {
-    for (const c of landCells(def)) terre.add(cle(c.x, c.y));
-    const r = isletInWorld(def);
-    for (let x = r.x0 - 1; x <= r.x1; x++) for (let y = r.y0 - 1; y <= r.y1; y++) interdit.add(cle(x, y));
-  }
+  for (const def of mapOf(a)) for (const c of landCells(def)) terre.add(cle(c.x, c.y));
   for (const def of placedLinksOf(a, links))
     for (const c of bridgePath(def, links)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) interdit.add(cle(c.x + dx, c.y + dy));
   const quai = dockBox(getArchipelago(a).port);
@@ -214,10 +210,6 @@ export function bordDesNappes(a: ArchipelagoId, links: readonly string[]): (i: n
   const cle = (x: number, y: number) => (x + 16384) * 32768 + (y + 16384);
   const boites = ilesDesNappes(a);
   const interdit = new Set<number>();
-  for (const def of mapOf(a)) {
-    const r = isletInWorld(def);
-    for (let x = r.x0 - 1; x <= r.x1; x++) for (let y = r.y0 - 1; y <= r.y1; y++) interdit.add(cle(x, y));
-  }
   for (const def of placedLinksOf(a, links))
     for (const c of bridgePath(def, links)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) interdit.add(cle(c.x + dx, c.y + dy));
   const dans = (b: { x0: number; y0: number; x1: number; y1: number }, x: number, y: number) => x >= b.x0 && x <= b.x1 && y >= b.y0 && y <= b.y1;

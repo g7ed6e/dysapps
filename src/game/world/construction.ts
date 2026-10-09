@@ -7,7 +7,8 @@
 //   la scène). Les faces coplanaires d'une même couleur sont fusionnées en rectangles (fusion gloutonne par plan, par
 //   sens et par couleur) ; chaque bloc garde sa teinte, à ± `TEINTE` de luminosité, que le shader tire de sa case
 //   (`TEINTE_GLSL` sur `floor(position - normal * 0.25)`, ou l'attribut `teintes` pour un bloc hors de la grille) : la
-//   fusion ne l'efface pas. Le biseau des arêtes saillantes (celles où deux faces visibles d'un bloc se rencontrent) est
+//   fusion ne l'efface pas ; un bloc lissé (au 6e, ./architecture/volumes.ts) prend celle de son volume, une seule
+//   d'une case à l'autre. Le biseau des arêtes saillantes (celles où deux faces visibles d'un bloc se rencontrent) est
 //   peint par défaut : l'attribut `biseaux` donne la distance aux bords saillants de chaque rectangle, et le shader
 //   incline la normale sur une bande de `BISEAU` case, sans un triangle de plus. Le biseau taillé en géométrie (bandes,
 //   coins, petits triangles qui ferment un bout contre un bloc sans biseau) reste une option : il triple les triangles.
@@ -369,7 +370,13 @@ export function maillageDeLaConstruction(
     const couvert = c.texture === 'toit' || Boolean(c.place && archi?.couverts.has(cle(c.x, c.y, c.z)));
     // Un bloc d'un lieu peut prendre la couleur d'une autre matière (la souche du clocheton, en pierre de taille).
     const repeint = c.place ? archi?.matieres.get(cle(c.x, c.y, c.z)) : undefined;
-    const k = `${repeint ?? ''}|${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${couvert ? `toit:${c.tag}` : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}`;
+    // Dans un volume lissé (et seulement là), le dessus prend le milieu entre le dessus et les côtés de sa matière
+    // (décision du directeur artistique, 8 octobre 2026), même d'une seule case (le sable des angles du moulin) : les
+    // pièces dessinées (le bac « pièce seule ») et les bâtiments des plans gardent la convention dessus clair, côtés
+    // plus sombres.
+    const k0 = cle(c.x, c.y, c.z);
+    const lisse = Boolean(archi?.lisses.size && archi.lisses.has(k0) && !archi.remplacees.has(k0));
+    const k = `${repeint ?? ''}|${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${couvert ? `toit:${c.tag}` : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}|${lisse ? 1 : 0}`;
     let f = vues.get(k);
     if (f) return f;
     const delave = (x: Faces): Faces => (c.muted ? { dessus: mixColor(x.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(x.cote, DELAVE[0], DELAVE[1]) } : x);
@@ -403,6 +410,7 @@ export function maillageDeLaConstruction(
       const x = hex(c.color);
       f = { dessus: c.top ? hex(c.top) : mixColor(x, 0xffffff, 0.12), cote: x };
     }
+    if (lisse) f = { dessus: mixColor(f.dessus, f.cote, 0.5), cote: f.cote };
     vues.set(k, f);
     return f;
   };
@@ -436,9 +444,16 @@ export function maillageDeLaConstruction(
     if (d === BAS && sous.has(cle(c.x, c.y, c.z - 1))) return false;
     return true;
   };
-  /** La teinte à porter par sommet : 0 sur la grille (le shader la calcule), celle de sa case d'origine hors de la grille. */
-  const teinteDe = (c: VoxelCube) =>
-    Number.isInteger(c.x) && Number.isInteger(c.y) && Number.isInteger(c.z) ? 0 : teinteDeCase(Math.floor(c.x), Math.floor(c.y), Math.floor(c.z));
+  /**
+   * La teinte à porter par sommet : 0 sur la grille (le shader la calcule), celle de sa case d'origine hors de la grille ;
+   * celle de la case d'ancrage de son volume pour un bloc lissé (./architecture/volumes.ts) : une seule teinte par
+   * volume, sans joint d'une case à l'autre, et la fusion en fait un rectangle par face.
+   */
+  const teinteDe = (c: VoxelCube) => {
+    const volume = archi?.lisses.size ? archi.lisses.get(cle(c.x, c.y, c.z)) : undefined;
+    if (volume) return teinteDeCase(volume.ancre.x, volume.ancre.y, volume.ancre.z);
+    return Number.isInteger(c.x) && Number.isInteger(c.y) && Number.isInteger(c.z) ? 0 : teinteDeCase(Math.floor(c.x), Math.floor(c.y), Math.floor(c.z));
+  };
   const taille = (c: VoxelCube) => b > 0 && genres.get(c) === 'bloc';
   /** Le verre hors d'un mur porte une arête par case (dessinée par le shader). */
   const areteDe = (c: VoxelCube) => (c.texture === 'verre' && genres.get(c) === 'bloc' && !cremeDuPhare(c) ? 1 : 0);

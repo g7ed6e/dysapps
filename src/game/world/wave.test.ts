@@ -115,7 +115,7 @@ it('trouve dans le monde les cases de chaque partie, et le monde sans elles les 
   }
 }, 30_000);
 
-it('reste dans le plafond du monde en blocs pendant la vague (PLAFOND_DU_MONDE_EN_BLOCS : 100 000 triangles, 120 appels)', () => {
+it('reste dans le plafond du monde en blocs pendant la vague (PLAFOND_DU_MONDE_EN_BLOCS : 102 000 triangles, 120 appels)', () => {
   const { progress, world } = toutConstruit();
   for (const a of ARCHIPELAGO_IDS) {
     // L'archipel tout construit, sauf la partie qui se pose en vague : la pire de ses parties.

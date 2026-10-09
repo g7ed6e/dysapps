@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
-import { freeSpots, linksBrokenBy, moveIsland, relinkBetween, relinkChoices, startingSpot, turnGuardian } from './arrange';
+import { freeSpots, linksBrokenBy, moveIsland, relinkBetween, relinkChoices, startingSpot, turnIsland } from './arrange';
 import { canUndo, hasChanged, recordPose, resetToEntry, startArranging, undoLast } from './arrangeSession';
 import { toutConstruit } from './budget';
 
@@ -22,7 +22,7 @@ describe('Annuler, et ↶', () => {
     expect(undoLast(s, w0)).toBeNull();
     const place = freeSpots(w0, VOLCAN).find((p) => p.x !== startingSpot(VOLCAN).x)!;
     const a = poser(s, w0, moveIsland(w0, VOLCAN, place));
-    const b = poser(a.session, a.world, turnGuardian(a.world, VOLCAN));
+    const b = poser(a.session, a.world, turnIsland(a.world, VOLCAN));
     s = b.session;
     expect(hasChanged(s, b.world)).toBe(true);
     const u1 = undoLast(s, b.world)!;
@@ -36,7 +36,7 @@ describe('Annuler, et ↶', () => {
     const w0 = toutConstruit().world;
     const place = freeSpots(w0, VOLCAN).find((p) => p.x !== startingSpot(VOLCAN).x)!;
     const a = poser(startArranging(w0), w0, moveIsland(w0, VOLCAN, place));
-    const b = poser(a.session, a.world, turnGuardian(a.world, VOLCAN));
+    const b = poser(a.session, a.world, turnIsland(a.world, VOLCAN));
     const r = resetToEntry(b.session, b.world);
     expect(r.world).toEqual(w0);
     expect(hasChanged(r.session, r.world)).toBe(false);
@@ -49,12 +49,14 @@ describe('Annuler, et ↶', () => {
   it('une liaison reposée revient à l’ancienne ; une liaison payée entre-temps reste', () => {
     const w0 = toutConstruit().world;
     let trouve: { s: ReturnType<typeof freeSpots>[number]; id: string } | null = null;
-    for (const turn of [1, 2, 3] as const)
-      for (const p of freeSpots(w0, VOLCAN, turn)) {
-        const c = linksBrokenBy(w0, VOLCAN, p);
+    // La Mine des lettres : depuis les formes des îles (GD-12), elle a des places qui défont une liaison.
+    const MINE: BiomeId = 'french-6e-letter-confusion';
+    for (const turn of [1, 2, 3, 0] as const)
+      for (const p of freeSpots(w0, MINE, turn)) {
+        const c = linksBrokenBy(w0, MINE, p);
         if (c.length && !trouve) trouve = { s: p, id: c[0] };
       }
-    const a = poser(startArranging(w0), w0, moveIsland(w0, VOLCAN, trouve!.s));
+    const a = poser(startArranging(w0), w0, moveIsland(w0, MINE, trouve!.s));
     const vers = relinkChoices(a.world, trouve!.id).find((id) => id !== trouve!.id);
     if (!vers) return;
     const b = poser(a.session, a.world, relinkBetween(a.world, trouve!.id, vers));

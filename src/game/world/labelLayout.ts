@@ -372,8 +372,10 @@ function placerSansSouples(
   boxes.forEach((b, i) => {
     if (!visibles[i]) return;
     const at = { ...b, x: b.x + offsets[i].dx, y: b.y + offsets[i].dy };
-    // Un autre nom posé sur l'île de destination ou contre sa flèche s'y lirait : il cherche une autre place.
+    // Un autre nom posé sur l'île de destination ou contre sa flèche s'y lirait : il cherche une autre place. Sur la
+    // Carte, de même, un nom que l'écart laisse plus près d'une autre île que de la sienne, vu de son milieu (GD-12).
     if (garde && i !== destination && overlap(at, garde, 0) > 0) visibles[i] = false;
+    else if (carte && onAnotherIsland(at, i, iles)) visibles[i] = false;
     else vues.set(i, at);
   });
   const autour = gardees.filter((i) => !visibles[i]).sort((a, b) => poids(b) - poids(a) || a - b);
@@ -450,6 +452,16 @@ function placerSansSouples(
       const repair = (o: LabelOffset[], v: boolean[], m: Map<number, LabelBox>, covered: number[]) => reparerLaCarte(boxes, iles, o, v, m, { couvert, obstacles, bounds, gap, recherche: null }, poids, horsDeLaGarde, (j) => !neverHidden.includes(j), null, covered);
       showAtAllCosts(neverHidden, boxes, iles, { offsets, visibles, vues }, { couvert, obstacles, bounds, gap }, horsDeLaGarde, repair);
     }
+    // Mieux vaut taire un nom que le poser sur une autre île, où on le lirait (directeur artistique, GD-12) : un nom
+    // encore posé plus près d'une autre île que de la sienne, vu de son milieu, se tait, sauf ceux qui ne se taisent
+    // jamais (glissés au bord de l'écran, ils se lisent à l'aplomb de leur île, `showAtAllCosts`).
+    // (Retirer l'entrée lue pendant le parcours d'une Map ne saute aucune des suivantes.)
+    for (const [i, at] of vues)
+      if (!neverHidden.includes(i) && onAnotherIsland(at, i, iles)) {
+        vues.delete(i);
+        visibles[i] = false;
+        offsets[i] = { dx: 0, dy: 0 };
+      }
     return { offsets, visibles };
   }
   // Une étiquette tenue dont l'île se voit ne se tait jamais : sans place simple libre, elle garde la place que lui donne
@@ -482,7 +494,7 @@ const KEPT_NAME_PLACES = 8;
  * UX UI), puis celles de la dernière chance (`TRIES_FINS`), puis dessus et dessous glissés de côté pour tenir dans le
  * cadre (la distance à l'île comptée sans le repère passé) : entière, hors de l'interface et des repères (la bulle, le
  * médaillon, la flèche d'un ouvrage), pas plus loin de son île que d'`ECART_MAX` hauteurs de plus, pas plus près d'une
- * autre île que de la sienne (vu de son milieu), hors de la garde de la destination (`isFree`), sans couvrir l'autre nom
+ * autre île que de la sienne (vu de son milieu ; glissé de côté, vu de l'aplomb de son île), hors de la garde de la destination (`isFree`), sans couvrir l'autre nom
  * gardé. Les noms montrés qu'elle couvre se taisent, puis cherchent une autre place (`repair`) ; parmi les
  * `KEPT_NAME_PLACES` places qui en font taire le moins, celle qui montre le plus de noms à la fin l'emporte. Sans aucune
  * place qui tienne, il se tait. Modifie `state`.
@@ -519,13 +531,16 @@ function showAtAllCosts(
     // la Ruche des réseaux, au bord gauche de la Carte du 3e en OpenDyslexic, le bonhomme dessus : consultant UX UI, SC-3).
     const slid = simple
       .slice(0, 2)
-      .map((s, k) => ({ at: { ...s, x: clamp(s.x, b.w / 2 + gap, bounds.w - b.w / 2 - gap) }, passed: Math.abs(s.y - natural[k]) }))
+      .map((s, k) => ({ at: { ...s, x: clamp(s.x, b.w / 2 + gap, bounds.w - b.w / 2 - gap) }, passed: Math.abs(s.y - natural[k]), glisse: true }))
       .filter((s) => s.at.x !== ile.x);
     const candidates: { at: LabelBox; covered: number[] }[] = [];
-    for (const { at, passed } of [...[...simple, ...placesAutour(b, bounds, gap)].map((at) => ({ at, passed: 0 })), ...slid]) {
+    for (const { at, passed, glisse } of [...[...simple, ...placesAutour(b, bounds, gap)].map((at) => ({ at, passed: 0, glisse: false })), ...slid]) {
       if (!entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds) || obstacles.some((v) => overlap(at, v, gap) > 0) || !isFree(i, at)) continue;
       if (distanceA(at, ile) - passed > distanceA(b, ile) + ECART_MAX * b.h) continue;
-      const half = milieu(at);
+      // Glissé au bord de l'écran, le nom se lit juste au-dessus ou au-dessous de son île (sous le médaillon) : il désigne
+      // l'île sous lui à l'aplomb de la sienne, pas celle sous son milieu, qu'une île au bord n'atteint plus (au
+      // téléphone, au 6e, la Fouille des siècles et la Vallée du vivant ; référent dys, consultant UX UI, GD-11).
+      const half = glisse ? { ...at, x: ile.x, w: 0 } : milieu(at);
       const d = distanceA(half, ile);
       if (iles.some((q, j) => j !== i && distanceA(half, q) < d)) continue;
       const covered = [...state.vues].filter(([, v]) => overlap(at, v, gap) > 0).map(([j]) => j);
@@ -605,6 +620,13 @@ function milieu(r: LabelBox): LabelBox {
   return { ...r, w: r.w / 2 };
 }
 
+/** Le nom `i`, posé en `at`, est-il plus près d'une autre île que de la sienne, vu de son milieu (`milieu`) ? */
+function onAnotherIsland(at: LabelBox, i: number, iles: readonly { x: number; y: number }[]): boolean {
+  const m = milieu(at);
+  const d = distanceA(m, iles[i]);
+  return iles.some((q, j) => j !== i && distanceA(m, q) < d);
+}
+
 /**
  * Sur la Carte, la dernière chance des noms tus (voir `placerEtiquettes`) : chacun, le plus lourd d'abord, essaie les
  * places autour de sa place voulue (`TRIES_FINS`) ; une place se prend si le nom y est entier, hors de l'interface et
@@ -650,7 +672,25 @@ function reparerLaCarte(
   const horsDesReperes = (i: number, at: LabelBox) => !obstacles.some((v) => overlap(at, v, gap) > 0) && libre(i, at);
   /** La place `at` tient-elle pour le nom `i`, sans compter les autres noms ? */
   const tient = (i: number, at: LabelBox) => tientSeule(i, at) && horsDesReperes(i, at);
-  const genes = (at: LabelBox, sauf: number[]) => [...vues].filter(([j, v]) => !sauf.includes(j) && overlap(at, v, gap) > 0).map(([j]) => j);
+  /** Les noms montrés que la place `at` couvre, hors de `chaine` et de `j` (sans copier `vues` : `deplacer` l'appelle des milliers de fois). */
+  const genes = (at: LabelBox, chaine: readonly number[], j: number) => {
+    const g: number[] = [];
+    for (const [k, v] of vues) if (k !== j && !chaine.includes(k) && overlap(at, v, gap) > 0) g.push(k);
+    return g;
+  };
+  /**
+   * Les places autour du nom `j` qui tiennent (`tient`), vérifiées une fois par réparation : elles ne dépendent ni des
+   * autres noms ni des places promises. Au 6e, en OpenDyslexic 32 px, un nom sans place relançait `deplacer` 25 000 fois
+   * par ouverture de la Carte, chaque fois avec toutes ses places à vérifier (GD-12, 8 octobre 2026). Le cache suppose
+   * que `libre` (la garde de la destination, lue par `tient`) ne lit aucun état qui change pendant la réparation : s'il
+   * venait à lire les noms déjà posés ou les places promises, ce cache rendrait des places qui ne tiennent plus.
+   */
+  const fitCache = new Map<number, LabelBox[]>();
+  const placesThatFit = (j: number) => {
+    let l = fitCache.get(j);
+    if (!l) fitCache.set(j, (l = placesAutour(boxes[j], bounds, gap).filter((q) => tient(j, q))));
+    return l;
+  };
   const poser = (i: number, at: LabelBox) => {
     offsets[i] = { dx: at.x - boxes[i].x, dy: at.y - boxes[i].y };
     visibles[i] = true;
@@ -662,9 +702,9 @@ function reparerLaCarte(
    * `chaine` : les noms qui quittent déjà leur place (elle ne compte plus).
    */
   const deplacer = (j: number, pris: LabelBox[], chaine: number[], reste: number, places?: LabelBox[]): [number, LabelBox][] | null => {
-    for (const q of places ?? placesAutour(boxes[j], bounds, gap)) {
-      if (pris.some((p) => overlap(q, p, gap) > 0) || (!places && !tient(j, q))) continue;
-      const g = genes(q, [...chaine, j]);
+    for (const q of places ?? placesThatFit(j)) {
+      if (pris.some((p) => overlap(q, p, gap) > 0)) continue;
+      const g = genes(q, chaine, j);
       if (!g.length) return [[j, q]];
       if (reste <= 0 || g.length > 2 || g.some((k) => !poussable(k) || poids(k) > poids(j))) continue;
       const suite: [number, LabelBox][] = [[j, q]];

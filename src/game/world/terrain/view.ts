@@ -4,7 +4,6 @@ import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type Islan
 import { dockBox } from '../harbor';
 import { type BridgeDef, getArchipelago, islandsOf } from '../archipelago';
 import { type BiomeId, BIOMES } from '../../biomes';
-import { ISLET_GAP, ISLET_H } from './islets';
 import { BAC_LONG, bridgePath } from './links';
 import { islandCenter } from './base';
 import { layoutCache } from '../placement';
@@ -26,20 +25,45 @@ export function worldBounds(a: ArchipelagoId): {
 }
 
 /**
- * L'étendue de la carte de départ d'une région, qui ne bouge jamais, terres, îlots et port compris : la mer y est
+ * La mer gardée devant chaque île (côté caméra), en cases : celle que prenait l'îlot de son Gardien et son eau jusqu'à
+ * GD-11 (8 octobre 2026). Le Gardien parti sur son île, la mer de la région reste semée de même (`bornesDeDepart`) ; la
+ * Carte, elle, ne la cadre plus (`bornesDesLieux`, `terresDe`).
+ */
+const MER_DEVANT = 15;
+
+/**
+ * L'étendue de la carte de départ d'une région, qui ne bouge jamais, terres et port compris : la mer y est
  * semée une fois pour toutes (`seaDecor`), serrée autour des lieux plutôt qu'au bord du cadre.
  */
 export function bornesDeDepart(a: ArchipelagoId): { minX: number; maxX: number; minY: number; maxY: number } {
   return bornesDesIles(a, MAP.filter((d) => archipelagoOfIsland(d.id) === a).map((d) => startingIsland(d.id)));
 }
 
-/** L'étendue des lieux d'une région à leur place d'aujourd'hui (déplacés ou non, GD-9), îlots et port compris. */
+/**
+ * L'étendue des lieux d'une région à leur place d'aujourd'hui (déplacés ou non, GD-9), port compris, sans la mer gardée
+ * devant eux : ce que la Carte cadre à l'ouverture (three/camera/framings.ts).
+ */
 export function bornesDesLieux(a: ArchipelagoId): { minX: number; maxX: number; minY: number; maxY: number } {
-  return bornesDesIles(a, mapOf(a));
+  return bornesDesIles(a, mapOf(a), 2);
 }
 
-/** Les bornes de quelques îles d'un archipel, et de son port (la colonne centrale, `colonneCentrale`). */
-function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[]): { minX: number; maxX: number; minY: number; maxY: number } {
+type Bornes = { minX: number; maxX: number; minY: number; maxY: number };
+
+/**
+ * Les terres des lieux d'une région à leur place d'aujourd'hui, une à une, et le quai de son port, chacune avec deux
+ * cases de marge (la couronne d'un grand arbre, l'écume d'une cascade débordent de la terre). La Carte les cadre à
+ * l'ouverture (three/camera/framings.ts) : vue de biais, une île au fond prend moins de place qu'un coin du rectangle
+ * qui les entoure toutes (GD-11, consultant UX UI).
+ */
+export function terresDe(a: ArchipelagoId): Bornes[] {
+  return [...mapOf(a).map((def) => landBox(def)), dockBox(getArchipelago(a).port)].map((b) => ({ minX: b.x0 - 2, maxX: b.x1 + 2, minY: b.y0 - 2, maxY: b.y1 + 2 }));
+}
+
+/**
+ * Les bornes de quelques îles d'un archipel, et de son port (la colonne centrale, `colonneCentrale`) ; `devant` : la mer
+ * gardée devant chaque île, côté caméra (`MER_DEVANT` par défaut).
+ */
+function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[], devant = MER_DEVANT): Bornes {
   let minX = Infinity;
   let maxX = -Infinity;
   let minY = Infinity;
@@ -49,7 +73,7 @@ function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[]): { minX: nu
     // Deux cases de marge : la couronne d'un grand arbre, l'écume d'une cascade débordent de la terre.
     minX = Math.min(minX, b.x0 - 2);
     maxX = Math.max(maxX, b.x1 + 2);
-    minY = Math.min(minY, b.y0 - ISLET_H - ISLET_GAP);
+    minY = Math.min(minY, b.y0 - devant);
     maxY = Math.max(maxY, b.y1 + 2);
   }
   const dock = dockBox(getArchipelago(a).port);
@@ -118,12 +142,20 @@ export function viewYaw(home: BiomeId): number {
  * qui pourrait cacher une borne est tiré pour cette vue.
  */
 function yawDuLieu(home: BiomeId): number {
-  const def = startingIsland(home);
+  const depart = startingIsland(home);
+  // Depuis sa place d'avant GD-12, si les formes l'ont fait bouger (`vueDepuis`) : la vue de l'île ne change pas.
+  const def = depart.vueDepuis ? { ...depart, core: depart.vueDepuis } : depart;
   const c = coeurDe(def);
   // Seul l'écart est-ouest compte : la caméra regarde toujours vers le nord, on la tourne vers la colonne centrale.
   const dx = colonneCentrale(archipelagoOfIsland(home)) - (c.x0 + c.x1) / 2;
   return VIEW_YAW_MAX * Math.max(-1, Math.min(1, dx / 50));
 }
+
+/**
+ * La colonne centrale d'un archipel dont les îles ont pris leur forme (GD-12), figée à sa valeur d'avant : les formes
+ * ont déplacé les îles et élargi leurs côtes, la colonne aurait bougé, et avec elle la vue de chaque île.
+ */
+const COLONNE_D_AVANT_LES_FORMES: Partial<Record<ArchipelagoId, number>> = { '6e': 72.5 };
 
 /**
  * Les îles qui ne comptent pas dans la colonne centrale : le Refuge des carnets (3e), posé au bord de l'archipel, ne fait
@@ -167,6 +199,8 @@ const colonnes = new Map<ArchipelagoId, number>();
  * `HORS_DE_LA_COLONNE`) et de son port, sur la carte de départ.
  */
 function colonneCentrale(a: ArchipelagoId): number {
+  const figee = COLONNE_D_AVANT_LES_FORMES[a];
+  if (figee !== undefined) return figee;
   const connue = colonnes.get(a);
   if (connue !== undefined) return connue;
   // La carte de départ : la colonne ne bouge pas quand l'élève déplace un lieu (GD-9).
@@ -209,6 +243,12 @@ export const VUE_DE_L_ILE = { dx: 0.7, dy: -0.7, up: 0.9 };
 
 /** La distance de la caméra de la vue d'une île au point visé (en paysage ; la vue en portrait recule, three/camera.ts). */
 export const DISTANCE_DE_LA_VUE_DE_L_ILE = 30;
+
+/**
+ * À combien de cases au-dessus du sol de son île flotte le nom d'une île (three/labels.ts) : la place du Gardien évite
+ * l'étiquette dans la vue de l'île (./creatures.ts, `guardianSpot`).
+ */
+export const HAUTEUR_DES_NOMS = 12;
 
 /** La caméra vise un bloc au-dessus du point qu'elle regarde (le centre d'une île à son altitude, le bonhomme). */
 export const VISEE_AU_DESSUS_DU_SOL = 1;

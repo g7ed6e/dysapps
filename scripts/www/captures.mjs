@@ -149,7 +149,9 @@ const SHOTS = [
   // Relier une île pâle (GD-9) : la fiche de l'ouvrage proposé, puis le départ suivant.
   { name: 'fiche-relier', state: EARLY_MINE, go: '/adventure/french-6e-phonology', act: relierDepuisUneAutreIle('maths-6e-fractions') },
   // Aménager sa région (GD-9) : sur la Carte, le mode ouvert, un lieu choisi et son fantôme calé sur une place libre.
-  { name: 'amenager', state: MID, go: '/adventure/map', act: amenager('maths-6e-fractions', { x: 150, y: 100 }) },
+  // La Rivière des fractions choisie, décalée au clavier sur une place libre, sans être posée : toucher la mer relâche le
+  // choix depuis #385, il ne le pose plus.
+  { name: 'amenager', state: MID, go: '/adventure/map', act: arrangeWithKeyboard('maths-6e-fractions', ['Nord', 'Est', 'Sud', 'Ouest'], 'libre') },
   // Choix 1b du mainteneur (7 octobre 2026) : le lieu glissé au doigt, tenu sur une place libre (la grille sur l'eau,
   // l'empreinte jaune sur son socle), puis sur une place prise (les cases grises barrées) ; et un Gardien posé au plus
   // loin au sud de son lieu, son lieu choisi (la ligne en pointillés entre eux, choix 4a).
@@ -334,21 +336,30 @@ function amenager(ile, point) {
     await page.waitForTimeout(2500);
   };
 }
-/** Choisit un lieu, puis touche une flèche, cran par cran (au plus 12 par direction), jusqu'à une place prise. */
-function amenagerPlacePrise(ile, fleches) {
+/** Les touches du clavier qui décalent le choix d'un cran, par direction (les flèches ne sont plus des boutons, #385). */
+const TOUCHES = { Est: 'ArrowRight', Nord: 'ArrowUp', Ouest: 'ArrowLeft', Sud: 'ArrowDown' };
+/**
+ * Choisit un lieu, puis le décale au clavier, cran par cran (au plus 12 par direction), jusqu'à une place prise
+ * (`cherche: 'prise'`) ou, dès le premier cran, une place libre (`cherche: 'libre'`), sans le poser.
+ */
+function arrangeWithKeyboard(ile, fleches, cherche = 'prise') {
   return async (page) => {
     await amenagerChoisir(ile)(page);
     for (const fleche of fleches) {
       for (let i = 0; i < 12; i++) {
-        await page.getByRole('button', { name: fleche, exact: true }).click();
+        await page.keyboard.press(TOUCHES[fleche]);
         await page.waitForTimeout(300);
         const ligne = (await page.locator('.arrange-signes').textContent()) ?? '';
-        if (ligne.includes('Place prise')) return page.waitForTimeout(2500);
         if (ligne.includes('Plus de place')) break;
+        if (ligne.includes('Place prise') === (cherche === 'prise')) return page.waitForTimeout(2500);
       }
     }
     await page.waitForTimeout(2500);
   };
+}
+/** Choisit un lieu, puis le décale au clavier jusqu'à une place prise : la croix grise, « Place prise ». */
+function amenagerPlacePrise(ile, fleches) {
+  return arrangeWithKeyboard(ile, fleches, 'prise');
 }
 /**
  * Choix 1b du mainteneur (7 octobre 2026) : choisit un lieu (ou son Gardien), le prend au doigt et le glisse, cran par

@@ -24,6 +24,12 @@
 //   | --- | --- |
 //   | [en]fant | en · an · in |
 //
+// Une figure de maths (`figure`, dessinée au-dessus des réponses, sans donner la réponse) s'écrit sur une ligne, avec un
+// composant de l'aide visuelle des missions : « figure : tableau x · f(x) / 2 · 6 / 4 · ? » (tableau de proportionnalité :
+// l'en-tête, puis une ligne par « / »), « figure : triangle 3 · 4 · ? » (triangle rectangle : les deux côtés de l'angle
+// droit, puis l'hypoténuse), « figure : droite 0 · 20 / 5 · 10 » (droite graduée : du premier au dernier nombre, puis les
+// points marqués).
+//
 // Ce qui se déduit ne s'écrit pas : « trou lu : blank » (pour tous les items) donne « lu » = l'énoncé dont le « … »
 // est remplacé ; « clé des items : mot » (ou lettre, ou paragraphe) donne la clé ; « mot troué : en[f]ant » donne
 // le mot, avant, après et la réponse.
@@ -163,6 +169,43 @@ function ecrireAide(aide, entete, retrait) {
   return [`${retrait}${entete.replace('%', ecrireTexte(aide.props.title))}`, ...aide.props.lines.map((l) => `${retrait}  - ${ecrireTexte(l)}`)];
 }
 
+/** Un nombre écrit en chiffres reste un nombre ; le reste (« ? », « f(x) ») reste un texte. */
+const nombreOuTexte = (v) => (/^−?\d+(,\d+)?$/.test(v) ? Number(v.replace('−', '-').replace(',', '.')) : v);
+const ecrireNombre = (v) => (typeof v === 'number' ? String(v).replace('-', '−').replace('.', ',') : v);
+
+/** Une figure écrite « tableau … », « triangle … » ou « droite … » → sa description en données (`{ kind, props }`). */
+export function lireFigure(brut) {
+  const m = /^(tableau|triangle|droite) (.+)$/.exec(brut);
+  if (!m) throw new Error(`figure : « tableau … », « triangle … » ou « droite … » attendu, lu « ${brut} »`);
+  const lignes = m[2].split(' / ').map((l) => l.split(' · '));
+  if (m[1] === 'tableau') {
+    if (lignes.length < 2 || lignes.some((l) => l.length !== lignes[0].length)) throw new Error(`figure : un tableau a un en-tête et des lignes de même longueur, lu « ${brut} »`);
+    return { kind: 'ratio-table', props: { cols: lignes[0], rows: lignes.slice(1).map((l) => l.map(nombreOuTexte)) } };
+  }
+  if (m[1] === 'triangle') {
+    if (lignes.length !== 1 || lignes[0].length !== 3) throw new Error(`figure : un triangle a trois côtés, lu « ${brut} »`);
+    const [a, b, c] = lignes[0].map(nombreOuTexte);
+    return { kind: 'right-triangle', props: { a, b, c, labels: ['A', 'B', 'C'] } };
+  }
+  const [bornes, points] = lignes;
+  if (lignes.length > 2 || bornes.length !== 2) throw new Error(`figure : une droite va d'un nombre à un autre, lu « ${brut} »`);
+  const [min, max] = bornes.map(nombreOuTexte);
+  const marques = (points ?? []).map(nombreOuTexte);
+  if (![min, max, ...marques].every((v) => typeof v === 'number') || min >= max) throw new Error(`figure : une droite va d'un nombre à un plus grand, lu « ${brut} »`);
+  return { kind: 'number-line', props: { min, max, ...(points && { points: marques }) } };
+}
+
+/** L'inverse de `lireFigure`. */
+export function ecrireFigure(figure) {
+  const { kind, props } = figure;
+  const ligne = (l) => l.map(ecrireNombre).join(' · ');
+  if (kind === 'ratio-table' && Object.keys(props).join() === 'cols,rows') return `tableau ${[props.cols, ...props.rows].map(ligne).join(' / ')}`;
+  if (kind === 'right-triangle' && Object.keys(props).join() === 'a,b,c,labels' && props.labels.join() === 'A,B,C') return `triangle ${ligne([props.a, props.b, props.c])}`;
+  if (kind === 'number-line' && ['min,max', 'min,max,points'].includes(Object.keys(props).join()))
+    return `droite ${ligne([props.min, props.max])}${props.points ? ` / ${ligne(props.points)}` : ''}`;
+  throw new Error(`figure non prise en charge : ${JSON.stringify(figure)}`);
+}
+
 function verifierCles(objet, attendues, ou) {
   for (const k of Object.keys(objet)) if (!attendues.has(k)) throw new Error(`${ou} : champ inconnu « ${k} » (à ajouter à scripts/contenu/format.mjs)`);
 }
@@ -171,8 +214,9 @@ const CLES_NIVEAU = new Set(['id', 'biome', 'type', 'level', 'items', 'feedback'
 
 /** Les champs d'un item, dans l'ordre d'écriture : la clé (si elle n'est pas celle par défaut), les champs du tableau ITEM, l'aide. */
 function champsItem(it, defaut) {
-  for (const k of Object.keys(it)) if (k !== 'aid' && !PAR_CLE_ITEM.has(k)) throw new Error(`${defaut} : champ inconnu « ${k} » (à ajouter à scripts/contenu/format.mjs)`);
+  for (const k of Object.keys(it)) if (k !== 'aid' && k !== 'figure' && !PAR_CLE_ITEM.has(k)) throw new Error(`${defaut} : champ inconnu « ${k} » (à ajouter à scripts/contenu/format.mjs)`);
   const cles = ITEM.map((c) => c[1]).filter((k) => it[k] !== undefined && !(k === 'key' && it.key === defaut));
+  if (it.figure !== undefined) cles.push('figure');
   if (it.aid !== undefined) cles.push('aid');
   return cles;
 }
@@ -254,6 +298,7 @@ function estTroue(it) {
 
 function ecrireChampItem(it, k) {
   if (k === 'aid') return ecrireAide(it.aid, '- aide « % » :', '');
+  if (k === 'figure') return [`- figure : ${ecrireFigure(it.figure)}`];
   if (k === TROUE) return [`- mot troué : ${ecrireTexte(`${it.before}[${it.answer}]${it.after}`)}`];
   const [etiquette, , type] = PAR_CLE_ITEM.get(k);
   return ecrireChamp(etiquette, type, it[k], '');
@@ -279,7 +324,7 @@ function champsEcrits(it, defaut, partages, trou) {
 
 /** Un champ écrit dans une case de tableau, ou null s'il n'y tient pas (aide, liste en sous-liste). */
 function enCase(it, k) {
-  if (k === 'aid' || (Array.isArray(it[k]) && it[k].length === 0)) return null;
+  if (k === 'aid' || k === 'figure' || (Array.isArray(it[k]) && it[k].length === 0)) return null;
   const lignes = ecrireChampItem(it, k);
   if (lignes.length !== 1) return null;
   const v = lignes[0].slice(lignes[0].indexOf(' : ') + 3);
@@ -462,6 +507,15 @@ export function lireIle(md, fichier = 'md') {
     const m = /^(.+?) :(?: (.*))?$/.exec(texte);
     if (!m) throw erreur(`« étiquette : valeur » attendu, lu « ${texte} »`);
     const [, etiquette, brut = ''] = m;
+    if (table === PAR_ETIQUETTE_ITEM && etiquette === 'figure') {
+      if (cible.figure !== undefined) throw erreur('figure écrite deux fois');
+      try {
+        cible.figure = lireFigure(brut);
+      } catch (e) {
+        throw erreur(e.message);
+      }
+      return;
+    }
     if (table === PAR_ETIQUETTE_ITEM && (etiquette === 'trou lu' || etiquette === 'clé des items')) {
       if (cible !== pourTous) throw erreur(`« ${etiquette} » va dans « Pour tous les items »`);
       const k = etiquette === 'trou lu' ? TROU : CLE;
@@ -614,10 +668,11 @@ export function lireIle(md, fichier = 'md') {
   };
 }
 
-/** L'ordre des champs d'un item dans le JSON produit : celui du tableau ITEM, puis l'aide. */
+/** L'ordre des champs d'un item dans le JSON produit : celui du tableau ITEM, puis la figure, puis l'aide. */
 function ordonnerItem(it) {
   const sortie = {};
   for (const [, k] of ITEM) if (it[k] !== undefined) sortie[k] = it[k];
+  if (it.figure !== undefined) sortie.figure = it.figure;
   if (it.aid !== undefined) sortie.aid = it.aid;
   return sortie;
 }

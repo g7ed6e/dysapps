@@ -1,12 +1,12 @@
-// Le mode « Aménager » (GD-9, L5) : ce que l'élève a choisi (un lieu, un Gardien, une borne, une arrivée, une liaison à
-// reposer), où se tient son fantôme, et ce que font les gestes de la barre du mode : toucher une place du lieu d'une borne ou
+// Le mode « Aménager » (GD-9, L5) : ce que l'élève a choisi (un lieu, une borne, une arrivée, une liaison à reposer ;
+// le Gardien suit son île, GD-11), où se tient son fantôme, et ce que font les gestes de la barre du mode : toucher une place du lieu d'une borne ou
 // d'une arrivée (elle s'y cale, sur la place libre la plus proche), les flèches (un cran, même sur une place prise, que le fantôme montre d'une croix
 // grise ; « Plus de place par là » au bord de la carte ; 6 octobre 2026, choix 3 du mainteneur), « Tourner », « Poser ». La phrase écrite et lue dit toujours où. Les actions elles-mêmes sont dans ./arrange.ts ; ici, le choix
 // en cours et son fantôme ; un lieu réuni emmène son voisin et leur réunion. Code pur, sans Three.js.
 import { thePlace } from './placeArticle';
 import { type BiomeId, getBiome } from '../biomes';
 import type { World } from '../engine/state';
-import { getBridge, isBiomeUnlocked } from './archipelago';
+import { getBridge } from './archipelago';
 import { SIDE_OF } from './appliedLayout';
 import {
   type ArrangeResult,
@@ -15,25 +15,16 @@ import {
   type Direction,
   freeLandings,
   freeStationSpots,
-  GUARDIAN_FACING_TEXT,
-  guardianFacing,
-  guardianOf,
   hasFreeSpot,
   isFixedPlace,
-  isFreeGuardianSpot,
   isFreeSpot,
-  isletMiddle,
-  guardianPlaceNear,
-  type GuardianPlaceAt,
   spotNear,
   landingSpots,
   type LinkEnd,
-  moveGuardian,
   moveIsland,
   moveLanding,
   moveStation,
   nearestFreeSpot,
-  nearestGuardianSpot,
   nextIn,
   placeIn,
   relinkBetween,
@@ -41,22 +32,19 @@ import {
   spotOf,
   stationOf,
   stationSpots,
-  stepGuardianSpot,
   stepSpot,
-  turnGuardian,
 } from './arrange';
 import { archipelagoOfIsland, toWorld } from './map';
 import { poseOfSpot } from './footprint';
 import { turnedSide, type Quarts, type Side } from './placement';
 import { type LinkPhrases, linkPhrases } from './linkWord';
-import { guardianSentence, ofPlace, placeSentence, type PlaceName } from './placeSentence';
+import { ofPlace, placeSentence, type PlaceName } from './placeSentence';
 import { anchorInWorld, possibleLandings } from './routing';
-import type { GuardianPlace, LayoutLanding, LayoutSpot, LayoutTurn } from './savedLayout';
+import type { LayoutLanding, LayoutSpot, LayoutTurn } from './savedLayout';
 
 /** Ce que l'élève a choisi dans le mode, et où se tient son fantôme. */
 export type ArrangeChoice =
   | { genre: 'lieu'; id: BiomeId; spot: LayoutSpot }
-  | { genre: 'gardien'; id: BiomeId; place: GuardianPlace }
   | { genre: 'borne'; key: string; place: { x: number; y: number } }
   | { genre: 'arrivee'; link: string; end: LinkEnd; landing: LayoutLanding }
   /** Une liaison à reposer, et la liaison entre deux voisins où la reposer (`null` : aucune ne se pose). */
@@ -70,16 +58,6 @@ const NOM_DU_JEU: PlaceName = (id) => getBiome(id)?.name ?? id;
 export function chooseIsland(world: World, id: BiomeId): ArrangeChoice | null {
   if (isFixedPlace(id)) return null;
   return { genre: 'lieu', id, spot: spotOf(world, id) };
-}
-
-/**
- * Toucher un Gardien : son îlot part de sa place (contre son lieu, ou détaché : choix 4a du mainteneur) ; `null` pour le
- * Gardien d'un lieu encore fermé, caché et qui ne se déplace pas avant l'ouverture (choix 6a).
- */
-export function chooseGuardian(world: World, id: BiomeId): ArrangeChoice | null {
-  if (!isBiomeUnlocked(id, world.links)) return null;
-  const g = guardianOf(world, id);
-  return { genre: 'gardien', id, place: { side: g.side, step: g.step, ...(g.spot ? { spot: g.spot } : {}) } };
 }
 
 /** Toucher une borne (clé « lieu:mission ») : elle part de sa place ; `null` si elle n'existe pas. */
@@ -130,7 +108,7 @@ function middleOfSpot(id: BiomeId, spot: LayoutSpot): { x: number; y: number } {
 
 /** Le lieu d'un choix. */
 export function placeOfChoice(c: ArrangeChoice): BiomeId {
-  if (c.genre === 'lieu' || c.genre === 'gardien') return c.id;
+  if (c.genre === 'lieu') return c.id;
   if (c.genre === 'borne') return c.key.split(':')[0] as BiomeId;
   const b = getBridge(c.link)!;
   return c.genre === 'arrivee' && c.end === 'to' ? b.to : b.from;
@@ -141,17 +119,13 @@ export function placeOfChoice(c: ArrangeChoice): BiomeId {
 /**
  * Un point touché (en cases du monde) : le fantôme se cale sur la place libre la plus proche ; le même choix s'il n'y en a
  * aucune. Seules une borne ou une arrivée se calent ainsi au toucher (la mer touchée relâche le choix, mainteneur,
- * 7 octobre 2026) ; un lieu ou un Gardien se glissent. Une liaison à reposer ne se cale pas : on choisit ses voisins dans la liste.
+ * 7 octobre 2026) ; un lieu se glisse. Une liaison à reposer ne se cale pas : on choisit ses voisins dans la liste.
  */
 export function snapChoice(world: World, c: ArrangeChoice, point: { x: number; y: number }): ArrangeChoice {
   switch (c.genre) {
     case 'lieu': {
       const s = nearestFreeSpot(world, c.id, point, c.spot.turn);
       return s ? { ...c, spot: s } : c;
-    }
-    case 'gardien': {
-      const g = nearestGuardianSpot(world, c.id, point);
-      return g ? { ...c, place: g } : c;
     }
     case 'borne': {
       const p = closest(freeStationSpots(world, c.key), (q) => stationInWorld(world, c.key, q), point);
@@ -170,29 +144,20 @@ export function snapChoice(world: World, c: ArrangeChoice, point: { x: number; y
 
 // ---------- Glisser (7 octobre 2026, choix 1b, 2a et 3a du mainteneur) ----------
 
-/** Le milieu d'un choix qui se glisse au doigt (un lieu, l'îlot d'un Gardien), en cases du monde ; `null` pour les autres. */
-export function choiceMiddle(world: World, c: ArrangeChoice): { x: number; y: number } | null {
-  if (c.genre === 'lieu') return middleOfSpot(c.id, c.spot);
-  if (c.genre === 'gardien') return isletMiddle(world, c.id, c.place);
-  return null;
+/** Le milieu d'un choix qui se glisse au doigt (un lieu), en cases du monde ; `null` pour les autres. */
+export function choiceMiddle(c: ArrangeChoice): { x: number; y: number } | null {
+  return c.genre === 'lieu' ? middleOfSpot(c.id, c.spot) : null;
 }
 
 /**
  * Le doigt glisse le choix, son milieu voulu en `point` (en cases du monde) : le fantôme se cale sur la place de la grille
  * la plus proche, libre ou prise (sur une place prise, l'empreinte le montre en gris pierre, barrée) ; le même choix au
- * bord de la carte, ou pour un choix qui ne se glisse pas. `placesDuGardien` : les places de l'îlot du Gardien glissé,
- * calculées une fois au départ du glissé (`guardianPlacesAt`).
+ * bord de la carte, ou pour un choix qui ne se glisse pas.
  */
-export function dragChoice(world: World, c: ArrangeChoice, point: { x: number; y: number }, placesDuGardien?: readonly GuardianPlaceAt[]): ArrangeChoice {
-  if (c.genre === 'lieu') {
-    const s = spotNear(world, c.id, point, c.spot.turn);
-    return s ? { ...c, spot: s } : c;
-  }
-  if (c.genre === 'gardien') {
-    const g = guardianPlaceNear(world, c.id, point, placesDuGardien);
-    return g ? { ...c, place: g } : c;
-  }
-  return c;
+export function dragChoice(world: World, c: ArrangeChoice, point: { x: number; y: number }): ArrangeChoice {
+  if (c.genre !== 'lieu') return c;
+  const s = spotNear(world, c.id, point, c.spot.turn);
+  return s ? { ...c, spot: s } : c;
 }
 
 /**
@@ -205,10 +170,6 @@ export function stepChoice(world: World, c: ArrangeChoice, dir: Direction): Arra
     case 'lieu': {
       const s = stepSpot(world, c.id, c.spot, dir);
       return s && { ...c, spot: s };
-    }
-    case 'gardien': {
-      const g = stepGuardianSpot(world, c.id, c.place, dir);
-      return g && { ...c, place: g };
     }
     case 'borne': {
       const at = (q: { x: number; y: number }) => stationInWorld(world, c.key, q);
@@ -241,8 +202,6 @@ export function choiceFits(world: World, c: ArrangeChoice): boolean {
   switch (c.genre) {
     case 'lieu':
       return isFreeSpot(world, c.id, c.spot);
-    case 'gardien':
-      return isFreeGuardianSpot(world, c.id, c.place);
     case 'borne':
       return freeStationSpots(world, c.key).some((p) => p.x === c.place.x && p.y === c.place.y);
     case 'arrivee':
@@ -252,8 +211,8 @@ export function choiceFits(world: World, c: ArrangeChoice): boolean {
   }
 }
 
-/** Le lieu choisi a-t-il « Tourner » (un lieu, un Gardien) ? */
-export const canTurn = (c: ArrangeChoice | null): boolean => c?.genre === 'lieu' || c?.genre === 'gardien';
+/** Le choix a-t-il « Tourner » (un lieu ; le Gardien tourne avec son île, GD-11) ? */
+export const canTurn = (c: ArrangeChoice | null): boolean => c?.genre === 'lieu';
 
 /**
  * « Tourner » un lieu choisi : son fantôme pivote d'un quart de tour, à sa place, même si elle est prise (choix 3 du
@@ -272,8 +231,6 @@ export function poseChoice(world: World, c: ArrangeChoice): ArrangeResult {
   switch (c.genre) {
     case 'lieu':
       return moveIsland(world, c.id, c.spot);
-    case 'gardien':
-      return moveGuardian(world, c.id, c.place);
     case 'borne':
       return moveStation(world, c.key, c.place);
     case 'arrivee':
@@ -281,18 +238,6 @@ export function poseChoice(world: World, c: ArrangeChoice): ArrangeResult {
     case 'liaison':
       return c.to ? relinkBetween(world, c.link, c.to) : { ok: false, reason: 'liaison' };
   }
-}
-
-/** Tourner un Gardien choisi : un quart de tour, tout de suite (↶ le défait), et sa phrase. */
-export function turnGuardianNow(world: World, id: BiomeId): { result: ArrangeResult; sentence: string } {
-  const result = turnGuardian(world, id);
-  if (!result.ok) return { result, sentence: '' };
-  // Détaché (choix 4a) : ce qu'il regarde se lit depuis son îlot vers son lieu.
-  const g = guardianOf(result.world, id);
-  const ilot = isletMiddle(result.world, id, g);
-  const lieu = placeIn(result.world, id).core;
-  const sentence = GUARDIAN_FACING_TEXT[guardianFacing(g, { dx: lieu.x + 8 - ilot.x, dy: lieu.y + 8 - ilot.y })];
-  return { result, sentence };
 }
 
 // ---------- Les phrases ----------
@@ -314,8 +259,6 @@ export function choiceSentence(world: World, c: ArrangeChoice, nom: PlaceName = 
       const ou = placeSentence(world, c.id, c.spot, nom);
       return `${nom(c.id)} : ${ou}.`;
     }
-    case 'gardien':
-      return `Le Gardien ${ofPlace(nom(c.id))} : ${guardianSentence(world, c.id, c.place)}.`;
     case 'borne': {
       const id = c.key.split(':')[0] as BiomeId;
       const { rang, n, debout } = rangDeLaBorne(world, c);
@@ -353,8 +296,6 @@ export function poseSentence(after: World, c: ArrangeChoice, nom: PlaceName = NO
   switch (c.genre) {
     case 'lieu':
       return `${nom(c.id)} : ${placeSentence(after, c.id, spotOf(after, c.id), nom)}.`;
-    case 'gardien':
-      return `Le Gardien ${ofPlace(nom(c.id))} : ${guardianSentence(after, c.id)}.`;
     case 'borne':
       return choiceSentence(after, c, nom, mot);
     case 'arrivee':
