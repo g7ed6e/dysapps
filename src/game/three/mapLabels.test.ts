@@ -286,15 +286,24 @@ const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
   '4e:maths-4e-powers': ['geography-4e-globalization'],
   '4e:english-4e-comprehension': ['french-4e-vocabulary'],
   '4e:french-4e-agreement': ['lv2-4e-daily-life'],
-  '3e:english-3e-grammar': ['lv2-3e-travel'],
+  // Au 3e, depuis une forme par île (GD-12, 9 octobre 2026), le bonhomme sur le Kiosque des témoins, à l'ouest : le cadre
+  // a 32 cases de plus vers le fond. Huit Cartes taisent un nom (une avant), jamais plus d'un.
+  '3e:maths-3e-functions': ['maths-3e-geometry'],
+  '3e:french-3e-close-reading': ['maths-3e-statistics'],
+  '3e:english-3e-comprehension': ['english-3e-grammar'],
+  '3e:english-3e-grammar': ['geography-3e-france'],
+  '3e:history-3e-twentieth-century': ['french-3e-close-reading'],
+  '3e:geography-3e-france': ['maths-3e-statistics'],
+  '3e:life-earth-sciences-3e-human-body': ['french-3e-close-reading'],
+  '3e:technology-3e-digital': ['physics-chemistry-3e-motion-energy'],
 };
 
 /**
  * Au 3e, en portrait, le bonhomme sur le Verger de la santé (la capture `sciences-college-carte-3e-800x1280`), vers la
- * destination du jeu tout construit (l'ouvrage depuis l'Observatoire des textes) : le Plateau des territoires se tait, dans
- * Luciole (la page le montre ainsi), son île dans le cadre.
+ * destination du jeu tout construit (l'ouvrage depuis l'Observatoire des textes) : aucun nom ne se taisait ; depuis une
+ * forme par île (GD-12, 9 octobre 2026), le Plateau des territoires se tait, dans Luciole, son île dans le cadre.
  */
-const TUS_EN_PORTRAIT_AU_VERGER: string[] = [];
+const TUS_EN_PORTRAIT_AU_VERGER: string[] = ['geography-3e-france'];
 
 /**
  * Au 3e, sur la tablette en OpenDyslexic 32 px, le bonhomme sur le Verger de la santé : les noms qui se taisent. Un seul
@@ -302,9 +311,10 @@ const TUS_EN_PORTRAIT_AU_VERGER: string[] = [];
  * encore trois depuis que la Carte cadre les lieux d'aujourd'hui : le Verger et le Kiosque sont en haut à droite, sous la
  * colonne des classes, qui prend la place de leurs noms. Quatre depuis que le cadrage compte le nom le plus haut monté
  * d'une demi-étiquette (`cadrageDeLaCarte`, consultant UX UI) : le Belvédère de Thalès, le Château des hypothèses, le
- * Kiosque et la Ruche des réseaux ; l'Observatoire des textes se montre. Régression connue de GD-11, au pilotage.
+ * Kiosque et la Ruche des réseaux ; l'Observatoire des textes se montre. Régression connue de GD-11, au pilotage. Un
+ * seul depuis une forme par île (GD-12, 9 octobre 2026) : le Kiosque des témoins.
  */
-const TUS_EN_OD32_AU_VERGER = ['maths-3e-geometry', 'english-3e-grammar', 'history-3e-twentieth-century', 'technology-3e-digital'];
+const TUS_EN_OD32_AU_VERGER = ['history-3e-twentieth-century'];
 
 /**
  * La tablette en OpenDyslexic 32 px, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX
@@ -358,8 +368,8 @@ const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>
   // forme par île (GD-12, 9 octobre 2026), cinq flèches taisaient un nom chacune (aucune avant) ; trois depuis que le
   // Théâtre avance d'un pas et l'Imprimerie recule d'un pas (relecture du 9 octobre 2026) : le Bassin des maquettes, au
   // coin du fond, sous le panneau, depuis les deux bouts de l'ouvrage de l'Atelier à la Forge et depuis la Source vers la
-  // Forge (régression, au pilotage). Les deux îles d'histoire-géographie ne se taisent plus l'une vers l'autre.
-  '3e': { 'geography-3e-france-technology-3e-digital depuis geography-3e-france': ['technology-3e-digital'] },
+  // Forge (régression, au pilotage). Les deux îles d'histoire-géographie ne se taisent plus l'une vers l'autre. Aux Îles du
+  // Ciel, aucun depuis une forme par île (l'ouvrage entre le Plateau et la Ruche taisait la Ruche).
   '4e': {
     'maths-4e-algebra-maths-4e-powers depuis maths-4e-algebra': ['technology-4e-modeling'],
     'maths-4e-algebra-maths-4e-powers depuis maths-4e-powers': ['technology-4e-modeling'],
@@ -389,15 +399,17 @@ const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string,
   // témoins ne se tait plus que vers le Belvédère de Thalès (quatre destinations avant).
   // Au 5e, depuis une forme par île (GD-12, 9 octobre 2026), une seule destination : vers la Saline des mélanges, le
   // nom du Delta des ressources, sa voisine, se tait ; il n'est jamais posé sur une autre île (`ailleurs` vide). Aux Monts
-  // de Feu, depuis une forme par île, aucune (trois destinations avant).
+  // de Feu, depuis une forme par île, aucune (trois destinations avant). Au 3e, depuis une forme
+  // par île, cinq destinations taisent chacune un nom (quatre destinations, huit noms avant).
   '5e': {
     'physics-chemistry-5e-matter-universe': ['geography-5e-resources'],
   },
   '3e': {
-    'maths-3e-geometry': ['history-3e-twentieth-century', 'physics-chemistry-3e-motion-energy'],
-    'maths-3e-statistics': ['french-3e-close-reading', 'geography-3e-france', 'technology-3e-digital'],
-    'english-3e-grammar': ['lv2-3e-travel'],
-    'geography-3e-france': ['physics-chemistry-3e-motion-energy', 'technology-3e-digital'],
+    'english-3e-grammar': ['geography-3e-france'],
+    'geography-3e-france': ['maths-3e-statistics'],
+    'life-earth-sciences-3e-human-body': ['history-3e-twentieth-century'],
+    'physics-chemistry-3e-motion-energy': ['geography-3e-france'],
+    'technology-3e-digital': ['physics-chemistry-3e-motion-energy'],
   },
 };
 
@@ -456,11 +468,12 @@ const NOMS_MONTRES_AU_TELEPHONE: Record<string, number> = { 'history-6e-antiquit
  * Carte cadre les lieux d'aujourd'hui, plus aucun au 4e ; au 3e, le Kiosque des témoins, en haut à droite sous la colonne
  * des classes, n'avait pas de place. Depuis que le cadrage compte le nom le plus haut monté d'une demi-étiquette
  * (consultant UX UI), le Kiosque se montre en taille normale, mais le Belvédère de Thalès et l'Observatoire des textes se
- * taisent ; à ×1,1, le Kiosque se tait encore. Régression connue, au pilotage.
+ * taisent ; à ×1,1, le Kiosque se tait encore. Régression connue, au pilotage. Depuis une forme par île (GD-12,
+ * 9 octobre 2026), en taille normale, l'Observatoire des textes se tait ; à ×1,1, le Plateau des territoires.
  */
 const TUS_EN_OD_A_L_OUVERTURE: Partial<Record<string, string[]>> = {
-  '3e:1': ['maths-3e-geometry', 'french-3e-close-reading'],
-  '3e:1.1': ['history-3e-twentieth-century'],
+  '3e:1': ['french-3e-close-reading'],
+  '3e:1.1': ['geography-3e-france'],
 };
 
 /**
