@@ -34,7 +34,7 @@ import type { VoxelCube } from '../cube';
 import type { ArchipelagoId } from '../archipelagos';
 import type { TextureKind } from '../pixels';
 import { pieceDe, type IdDePiece, type Rotation } from './choices';
-import { KITS, kitRempli, type CaseDuLieu, type Famille, type Kit } from './kits';
+import { KITS, kitRempli, type CaseDuLieu, type Famille, type Kit, type RestOrigin } from './kits';
 import { lieuxDuKit } from './places';
 import { getMonument } from '../monuments';
 import { peintureDuMur, type ManiereDuMur, type PeintureDuMur } from './paint';
@@ -52,6 +52,7 @@ export { KITS, kitVide, type CaseDuLieu, type Kit } from './kits';
 export { CUBE_EXCEPTIONS, FAMILIES_TO_CONFIRM, familyOf, MATERIAL_FAMILIES, materialsOf } from './families';
 export { bacDePierre, barriere, marche, PIECES_BASSES, woodenPost } from './lowPieces';
 export { bell, crystal, ingot, PRECIOUS, RESTING_HEIGHT } from './precious';
+export { apartFromGhost } from './heartPieces';
 export { estUnLieuDuVillage } from './places';
 
 /** Une pièce dessinée, posée : le bloc qu'elle remplace (sa couleur, son île, son lieu), sa pièce, et ses facettes dans le monde. */
@@ -90,6 +91,8 @@ export interface Architecture {
   matieres: Map<string, TextureKind>;
   /** Les volumes lissés (clé `x,y,z` → son volume, ./volumes.ts), quand le kit le dit : une teinte par volume. */
   lisses: Map<string, VolumeDeMatiere>;
+  /** Les murs peints dont le dessus n'est jamais vu (un toit caché sous un autre) : il n'est pas émis (clé `x,y,z`). */
+  sansDessus: Set<string>;
 }
 
 const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
@@ -191,7 +194,7 @@ function indexDesBatiments(batiments: ReadonlyMap<string, string>): IndexDuPlan 
  */
 export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], options: OptionsDeLArchitecture = {}): Architecture {
   const kit = options.kit ?? KITS[a];
-  const out: Architecture = { remplacees: new Set(), pieces: [], couvre: new Map(), peints: new Map(), triangles: 0, couverts: new Set(), matieres: new Map(), lisses: new Map() };
+  const out: Architecture = { remplacees: new Set(), pieces: [], couvre: new Map(), peints: new Map(), triangles: 0, couverts: new Set(), matieres: new Map(), lisses: new Map(), sansDessus: new Set() };
   // Un kit sans pièce ni mur peint ne remplace rien : pas même l'index du plan à faire.
   if (!kitRempli(kit)) return out;
   // Le plan entier, fantômes compris ; les bâtiments entiers quand ils sont donnés (la cour n'allonge pas un mur, et un
@@ -341,5 +344,57 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
       poser(c, 'vegetal', dessus ? 'mur.seul.pied.chaperon' : 'mur.seul.pied.mur', 0, woodenPost(dessus));
     }
   }
+  // Le reste (au 6e, ./heart.ts) : ce que rien d'autre n'a pris, lu sur les blocs posés autour de lui.
+  if (kit.reste) dessinerLeReste(kit.reste, cubes, out, poser, options);
   return out;
+}
+
+/**
+ * Les blocs posés d'un monde, par case (ni fantôme, ni décor, ni borne, ni sol), pour le reste. Un index à part de celui
+ * de world/construction.ts (`solides`) : `architectureDe` est pure et appelée sans la construction (les tests, le
+ * budget), et le reste ne lit pas les mêmes blocs (`solides` garde le sol et le décor, qui ne sont pas des voisins du
+ * dessin). Fait une fois par construction, seulement quand le kit a un reste.
+ */
+function blocsPosesDe(cubes: readonly VoxelCube[]): Map<string, VoxelCube> {
+  const out = new Map<string, VoxelCube>();
+  for (const c of cubes) if (!c.ghost && !c.sol && !c.decor && !c.quest && Number.isInteger(c.x) && Number.isInteger(c.y) && Number.isInteger(c.z)) out.set(cle(c.x, c.y, c.z), c);
+  return out;
+}
+
+/** D'où vient un bloc du reste (le cœur d'une île, une liaison…), ou `null` : un monument, qui garde son plan. */
+function origineDe(c: VoxelCube, options: OptionsDeLArchitecture): RestOrigin | null {
+  if (c.bridge) return 'liaison';
+  if (c.place) return estUnMonument(c.place) ? null : 'lieu';
+  if (c.petiteConstruction) return 'petite';
+  const k = cle(c.x, c.y, c.z);
+  if (!options.batiments || options.batiments.has(k)) return 'batiment';
+  return options.cours?.has(k) ? 'cour' : 'coeur';
+}
+
+/**
+ * Le reste : chaque bloc posé que ni une pièce ni un mur peint n'a pris (sauf une lanterne, ce qu'un modèle remplace et
+ * ce que le kit exclut) reçoit le dessin que le kit lui donne : une pièce, posée à sa place, ou une peinture.
+ */
+function dessinerLeReste(
+  reste: NonNullable<Kit['reste']>,
+  cubes: readonly VoxelCube[],
+  out: Architecture,
+  poser: (c: VoxelCube, famille: Famille, piece: IdDePiece, rotation: Rotation, dessin: DessinDePiece) => void,
+  options: OptionsDeLArchitecture,
+): void {
+  const poses = blocsPosesDe(cubes);
+  const at = (x: number, y: number, z: number) => poses.get(cle(x, y, z));
+  for (const c of poses.values()) {
+    const k = cle(c.x, c.y, c.z);
+    if (c.texture === 'lanterne' || out.remplacees.has(k) || out.peints.has(k) || options.exclure?.(c)) continue;
+    const origin = origineDe(c, options);
+    if (!origin) continue;
+    const d = reste(c, { origin, at, place: origin === 'lieu' ? (options.caseDuLieu?.(c) ?? null) : null });
+    if (!d) continue;
+    if ('piece' in d) poser(c, d.family, 'mur.seul.pied.chaperon', d.rotation ?? 0, d.piece);
+    else {
+      out.peints.set(k, { cube: c, famille: d.family, piece: 'mur.seul.pied.chaperon', rotation: 0, peinture: d.paint });
+      if (d.hiddenTop) out.sansDessus.add(k);
+    }
+  }
 }
