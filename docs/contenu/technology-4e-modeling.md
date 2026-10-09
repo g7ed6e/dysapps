@@ -419,6 +419,144 @@ Pour tous les items :
    - indice : Quand la courbe devient-elle plate ?
    - explication : La courbe devient plate à 60 minutes : la charge ne monte plus, la batterie est pleine. À 30 minutes, elle monte encore.
 
+## Dépanner · `troubleshooting`
+
+- description : Repérer la pièce défectueuse d’un objet en panne et suivre un protocole de dépannage, puis la fiabilité, la réparabilité et la sécurité à l’atelier.
+- compétences : c4.te.fonctionnement.depanner
+- consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- bravo : Bien vu !
+- erreur : {explanation}
+- bloc gagné : technology-4e-modeling
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- trou lu : " (mot manquant) "
+
+### Niveau 1 · `technology-4e-modeling-troubleshooting-1`
+
+Pour tous les items :
+- aide « Dépanner un objet » :
+  - Une panne : l’objet ne fait plus sa fonction.
+  - Le symptôme : ce que l’on voit ou entend qui ne va pas.
+  - Une pièce défectueuse se voit souvent : fil coupé, dent cassée, pile qui a coulé.
+  - Le protocole : les vérifications à faire, dans l’ordre.
+  - On vérifie une seule chose à la fois, la plus simple d’abord.
+  - On remplace la pièce défectueuse par une pièce pareille.
+
+1. énoncé : La lampe torche ne s’allume plus : c’est le … de la panne.
+   - choix : protocole · symptôme · remplacement
+   - réponse : symptôme
+   - indice : Relis la ligne « Le symptôme » du rappel.
+   - explication : Ce que l’on voit qui ne va pas, ici la lampe qui reste éteinte, est le symptôme. Le protocole, ce sont les vérifications pour trouver la cause.
+2. énoncé : "La lampe torche de Yanis\nElle ne s’allume plus.\nL’ampoule n’a pas de trace.\nLa pile a coulé : une poudre blanche la recouvre."
+   - question : Quelle pièce est défectueuse ?
+   - lu : La lampe torche de Yanis. Elle ne s’allume plus. L’ampoule n’a pas de trace. La pile a coulé : une poudre blanche la recouvre.
+   - choix : l’ampoule · l’interrupteur · la pile
+   - réponse : la pile
+   - indice : Cherche la pièce qui montre un défaut qui se voit.
+   - explication : Une pile qui a coulé est abîmée : c’est la pièce défectueuse, à remplacer. L’ampoule ne montre aucune trace.
+3. énoncé : Les vérifications à faire, dans l’ordre, pour trouver l’origine d’une panne forment le …
+   - choix : cahier des charges · protocole · symptôme
+   - réponse : protocole
+   - indice : Relis la ligne « Le protocole » du rappel.
+   - explication : Le protocole de dépannage dit quoi vérifier, et dans quel ordre. Le cahier des charges dit ce que l’objet doit faire.
+4. énoncé : "La petite voiture électrique\nLe moteur tourne : on l’entend.\nLes roues ne bougent pas.\nUne dent de l’engrenage est cassée."
+   - question : Quelle pièce faut-il remplacer ?
+   - lu : La petite voiture électrique. Le moteur tourne : on l’entend. Les roues ne bougent pas. Une dent de l’engrenage est cassée.
+   - choix : le moteur · l’engrenage · la batterie
+   - réponse : l’engrenage
+   - indice : Le moteur tourne : il marche. Quelle pièce est abîmée ?
+   - explication : L’engrenage à la dent cassée ne transmet plus le mouvement aux roues : c’est lui qu’on remplace. Le moteur marche, puisqu’on l’entend tourner.
+5. énoncé : Pour trouver une panne, on commence par vérifier ce qui est le plus …
+   - choix : cher · neuf · simple à vérifier
+   - réponse : simple à vérifier
+   - indice : Relis la ligne « On vérifie une seule chose » du rappel.
+   - explication : On vérifie d’abord le plus simple, comme la pile ou la prise : souvent, la panne vient de là, et on évite de démonter pour rien.
+6. énoncé : "La lampe de chevet ne s’allume pas\nLa prise est bien branchée.\nUne ampoule neuve ne s’allume pas non plus.\nLe fil est coupé près du pied."
+   - question : Quelle pièce est défectueuse ?
+   - lu : La lampe de chevet ne s’allume pas. La prise est bien branchée. Une ampoule neuve ne s’allume pas non plus. Le fil est coupé près du pied.
+   - choix : la prise · l’ampoule · le fil
+   - réponse : le fil
+   - indice : Une ampoule neuve ne s’allume pas : le défaut vient donc d’ailleurs.
+   - explication : Le fil coupé ne laisse plus passer le courant : c’est la pièce défectueuse. L’ampoule n’y est pour rien, puisqu’une neuve ne s’allume pas non plus.
+7. énoncé : Un objet qui ne fait plus sa fonction est en …
+   - choix : charge · marche · panne
+   - réponse : panne
+   - indice : Relis la première ligne du rappel.
+   - explication : Un objet qui ne fait plus sa fonction est en panne. En marche, il la fait ; en charge, il reçoit de l’énergie.
+8. énoncé : "La sonnette sans fil\nOn appuie sur le bouton : rien ne sonne.\nLe voyant du bouton ne s’allume pas.\nLe carillon sonne avec un autre bouton."
+   - question : Quelle pièce vérifier d’abord ?
+   - lu : La sonnette sans fil. On appuie sur le bouton : rien ne sonne. Le voyant du bouton ne s’allume pas. Le carillon sonne avec un autre bouton.
+   - choix : la pile du bouton · le carillon · le fil du carillon
+   - réponse : la pile du bouton
+   - indice : Le carillon marche avec un autre bouton : la panne est-elle de son côté ?
+   - explication : Le carillon marche : la panne vient du bouton, dont le voyant reste éteint. Sa pile est la chose la plus simple à vérifier.
+
+### Niveau 2 · `technology-4e-modeling-troubleshooting-2`
+
+Pour tous les items :
+- aide « Fiabilité, réparation, sécurité » :
+  - Fiable : l’objet marche longtemps sans panne.
+  - Durable : l’objet dure longtemps, entretenu et réparé.
+  - L’indice de réparabilité : une note sur 10. Plus elle est haute, plus l’objet se répare facilement.
+  - Des vis plutôt que de la colle : l’objet se démonte.
+  - Pour trouver l’origine d’une panne : la vérification la plus simple d’abord.
+  - À l’atelier : lunettes de protection, outil adapté, appareil débranché.
+
+1. énoncé : "Deux ordinateurs portables, au même prix\nOrdinateur A : indice de réparabilité, 8 sur 10.\nOrdinateur B : indice de réparabilité, 3 sur 10."
+   - question : Lequel se répare le plus facilement ?
+   - lu : Deux ordinateurs portables, au même prix. Ordinateur A, indice de réparabilité, 8 sur 10. Ordinateur B, indice de réparabilité, 3 sur 10.
+   - choix : l’ordinateur A · l’ordinateur B · c’est pareil
+   - réponse : l’ordinateur A
+   - indice : Relis la ligne « L’indice de réparabilité » du rappel.
+   - explication : 8 sur 10, c’est une note plus haute que 3 sur 10 : l’ordinateur A se répare plus facilement. Il pourra servir plus longtemps.
+2. énoncé : Une bouilloire qui marche des années sans tomber en panne est …
+   - choix : réparable · fiable · recyclable
+   - réponse : fiable
+   - indice : Relis la ligne « Fiable » du rappel.
+   - explication : Marcher longtemps sans panne, c’est être fiable. Réparable veut dire qu’on peut la réparer quand elle tombe en panne.
+3. énoncé : "Deux casques audio\nCasque A : vissé, les coussinets se changent.\nCasque B : collé, rien ne se démonte."
+   - question : Lequel est le plus durable ?
+   - lu : Deux casques audio. Casque A, vissé, les coussinets se changent. Casque B, collé, rien ne se démonte.
+   - choix : le casque A · le casque B · c’est pareil
+   - réponse : le casque A
+   - indice : Lequel peut être réparé ?
+   - explication : Le casque A se démonte : on change les coussinets usés, et il dure longtemps. Le casque B, collé, ne se répare pas.
+4. énoncé : Pour percer une planche à l’atelier, on met des lunettes de …
+   - choix : soleil · lecture · protection
+   - réponse : protection
+   - indice : Relis la ligne « À l’atelier » du rappel.
+   - explication : Les lunettes de protection gardent les yeux des copeaux qui volent. Des lunettes de soleil ne protègent pas des chocs.
+5. énoncé : "Le protocole pour la console qui ne s’allume plus\nVérification 1 : la prise.\nVérification 2 : le câble.\nVérification 3 : l’alimentation, à l’intérieur."
+   - question : Pourquoi vérifier la prise en premier ?
+   - lu : Le protocole pour la console qui ne s’allume plus. Vérification 1, la prise. Vérification 2, le câble. Vérification 3, l’alimentation, à l’intérieur.
+   - choix : c’est la plus chère · c’est la plus simple à vérifier · c’est la plus solide
+   - réponse : c’est la plus simple à vérifier
+   - indice : Relis la ligne « Pour trouver l’origine d’une panne » du rappel.
+   - explication : La prise se vérifie en un geste, sans rien ouvrir : on commence par elle. L’intérieur de la console se vérifie en dernier.
+6. énoncé : "Le capteur de lumière de la veilleuse est cassé\nPièce 1 : un capteur de lumière pareil.\nPièce 2 : un capteur de chaleur.\nPièce 3 : une ampoule plus forte."
+   - question : Quelle pièce mettre à la place ?
+   - lu : Le capteur de lumière de la veilleuse est cassé. Pièce 1, un capteur de lumière pareil. Pièce 2, un capteur de chaleur. Pièce 3, une ampoule plus forte.
+   - choix : la pièce 1 · la pièce 2 · la pièce 3
+   - réponse : la pièce 1
+   - indice : On remplace une pièce par une pièce qui fait la même chose.
+   - explication : Seul un capteur de lumière pareil repère la nuit comme avant. Un capteur de chaleur ne voit pas la lumière, et l’ampoule n’est pas en panne.
+7. énoncé : Avant d’ouvrir la lampe pour changer son fil, on la …
+   - choix : laisse branchée · allume · débranche
+   - réponse : débranche
+   - indice : Relis la ligne « À l’atelier » du rappel.
+   - explication : On débranche toujours un appareil avant de l’ouvrir : sans courant, on ne risque pas de choc électrique.
+8. énoncé : "Le robot ne roule plus\nLe moteur ne tourne pas.\nCause possible 1 : la batterie est vide.\nCause possible 2 : le moteur est abîmé."
+   - question : Quelle vérification faire d’abord ?
+   - lu : Le robot ne roule plus. Le moteur ne tourne pas. Cause possible 1, la batterie est vide. Cause possible 2, le moteur est abîmé.
+   - choix : changer le moteur · recharger la batterie, puis réessayer · changer les roues
+   - réponse : recharger la batterie, puis réessayer
+   - indice : Quelle vérification est la plus simple ?
+   - explication : Recharger la batterie est simple : si le robot roule ensuite, la panne venait de là. On ne change le moteur que si le robot ne roule toujours pas.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

@@ -408,6 +408,146 @@ Pour tous les items :
    - indice : Relis la ligne « La pile » du rappel.
    - explication : La pile est le générateur : elle fournit l’énergie au circuit. La lampe, qui la reçoit, est un récepteur.
 
+## Matériaux, transformations et saisons · `materials-light`
+
+- description : Trier des matériaux et reconnaître une transformation chimique, puis l’air, les pictogrammes de danger, le jour, la nuit et les saisons.
+- compétences : c3.pc.matiere.materiaux · c3.pc.matiere.transformations · c3.pc.matiere.lumiere
+- consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- bravo : Bien vu !
+- erreur : {explanation}
+- bloc gagné : physics-chemistry-6e-matter-energy
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- trou lu : " (mot manquant) "
+
+### Niveau 1 · `physics-chemistry-6e-matter-energy-materials-light-1`
+
+Pour tous les items :
+- aide « Matériaux et transformations » :
+  - L’aimant attire le fer et l’acier, pas l’aluminium ni le cuivre.
+  - Conducteur thermique : il laisse passer la chaleur, comme les métaux.
+  - Isolant thermique : il retient la chaleur, comme le bois ou la laine.
+  - Dans la nature, un déchet met des mois, ou des siècles, à disparaître.
+  - Transformation chimique : une matière nouvelle apparaît.
+  - Ses signes : un gaz se forme, ou la couleur change.
+
+1. énoncé : "Sur le tapis du centre de tri\nUne boîte de conserve en acier.\nUne canette en aluminium.\nUne bouteille en plastique.\nUn gros aimant passe au-dessus."
+   - question : Quel déchet l’aimant soulève-t-il ?
+   - lu : Sur le tapis du centre de tri. Une boîte de conserve en acier. Une canette en aluminium. Une bouteille en plastique. Un gros aimant passe au-dessus.
+   - choix : la canette en aluminium · la boîte de conserve en acier · la bouteille en plastique
+   - réponse : la boîte de conserve en acier
+   - indice : Relis la première ligne du rappel.
+   - explication : L’aimant attire l’acier : il soulève la boîte de conserve, et le tri est fait. L’aluminium est un métal, mais l’aimant ne l’attire pas.
+2. énoncé : Un matériau qui laisse passer la chaleur est un conducteur …
+   - choix : électrique · thermique · lumineux
+   - réponse : thermique
+   - indice : « Thermique » veut dire : qui a rapport à la chaleur.
+   - explication : Laisser passer la chaleur, c’est être conducteur thermique. Conducteur électrique veut dire : qui laisse passer le courant.
+3. énoncé : "Trois cuillères dans un bol d’eau chaude\nCuillère en métal : le manche devient vite chaud.\nCuillère en bois : le manche reste froid.\nCuillère en plastique : le manche reste presque froid."
+   - question : Quelle cuillère est le meilleur conducteur thermique ?
+   - lu : Trois cuillères dans un bol d’eau chaude. Cuillère en métal, le manche devient vite chaud. Cuillère en bois, le manche reste froid. Cuillère en plastique, le manche reste presque froid.
+   - choix : la cuillère en bois · la cuillère en plastique · la cuillère en métal
+   - réponse : la cuillère en métal
+   - indice : Dans quelle cuillère la chaleur monte-t-elle jusqu’au manche ?
+   - explication : La chaleur de l’eau monte vite dans le métal : c’est le meilleur conducteur thermique. Le bois et le plastique la retiennent : ce sont des isolants thermiques.
+4. énoncé : "Combien de temps pour disparaître dans la nature ?\nMouchoir en papier : quelques mois.\nBouteille en plastique : des centaines d’années.\nBouteille en verre : des milliers d’années."
+   - question : Quel déchet reste le plus longtemps ?
+   - lu : Combien de temps pour disparaître dans la nature ? Mouchoir en papier, quelques mois. Bouteille en plastique, des centaines d’années. Bouteille en verre, des milliers d’années.
+   - choix : le mouchoir en papier · la bouteille en plastique · la bouteille en verre
+   - réponse : la bouteille en verre
+   - indice : Des centaines, ou des milliers : lequel est le plus grand ?
+   - explication : Des milliers d’années, c’est plus que des centaines : la bouteille en verre reste le plus longtemps. Le plastique dure très longtemps aussi, et le papier disparaît en quelques mois.
+5. énoncé : De la limaille de fer, de tout petits grains de fer, est mélangée à du sable. Pour la retirer, on utilise …
+   - choix : un aimant · un filtre · de l’eau
+   - réponse : un aimant
+   - indice : Relis la première ligne du rappel.
+   - explication : L’aimant attire le fer, pas le sable : il retire la limaille. Un filtre ne sépare pas deux solides, et le fer comme le sable tombent au fond de l’eau.
+6. énoncé : "Vinaigre et bicarbonate\nOn verse du vinaigre sur de la poudre de bicarbonate.\nDes bulles apparaissent : un gaz se forme.\nLa poudre disparaît."
+   - question : Que s’est-il passé ?
+   - lu : Vinaigre et bicarbonate. On verse du vinaigre sur de la poudre de bicarbonate. Des bulles apparaissent, un gaz se forme. La poudre disparaît.
+   - choix : la poudre a fondu · une transformation chimique · la poudre s’est seulement dissoute
+   - réponse : une transformation chimique
+   - indice : Un gaz nouveau apparaît-il ?
+   - explication : Un gaz se forme : une matière nouvelle apparaît, c’est une transformation chimique. Une poudre qui se dissout seulement ne fait pas de bulles ; et rien ne chauffe ici pour la faire fondre.
+7. énoncé : "Deux mélanges\nMélange 1 : du sel dans l’eau. On ne voit plus le sel. Rien d’autre ne change.\nMélange 2 : du jus de chou rouge et du vinaigre. Le jus violet devient rose."
+   - question : Quel mélange montre une transformation chimique ?
+   - lu : Deux mélanges. Mélange 1, du sel dans l’eau. On ne voit plus le sel. Rien d’autre ne change. Mélange 2, du jus de chou rouge et du vinaigre. Le jus violet devient rose.
+   - choix : le mélange 1 · le mélange 2 · les deux
+   - réponse : le mélange 2
+   - indice : Relis la dernière ligne du rappel.
+   - explication : Dans le mélange 2, la couleur change : c’est le signe d’une transformation chimique. Dans le mélange 1, le sel se dissout seulement : l’eau salée garde sa couleur.
+8. énoncé : Dans une transformation chimique, de nouvelles matières …
+   - choix : fondent · apparaissent · s’évaporent
+   - réponse : apparaissent
+   - indice : Relis la ligne « Transformation chimique » du rappel.
+   - explication : Une transformation chimique fait apparaître des matières nouvelles, comme un gaz. Fondre ou s’évaporer, ce sont des changements d’état : la matière reste la même.
+
+### Niveau 2 · `physics-chemistry-6e-matter-energy-materials-light-2`
+
+Pour tous les items :
+- aide « L’air, les dangers, le Soleil » :
+  - L’air : surtout de l’azote, puis de l’oxygène.
+  - Le dioxyde de carbone retient la chaleur : c’est un gaz à effet de serre.
+  - Pictogramme de danger : un losange au bord rouge, un dessin noir dedans.
+  - La Terre tourne sur elle-même en un jour. Le côté face au Soleil est dans le jour.
+  - En été, le Soleil monte haut et le jour est long.
+  - En hiver, le Soleil reste bas et le jour est court.
+
+1. énoncé : "Ce qu’il y a dans 100 litres d’air\nAzote : 78 litres.\nOxygène : 21 litres.\nAutres gaz : 1 litre."
+   - question : Quel gaz y a-t-il le plus dans l’air ?
+   - lu : Ce qu’il y a dans cent litres d’air. Azote, soixante-dix-huit litres. Oxygène, vingt et un litres. Autres gaz, un litre.
+   - choix : l’oxygène · l’azote · le dioxyde de carbone
+   - réponse : l’azote
+   - indice : Cherche le plus grand nombre de litres.
+   - explication : L’azote fait 78 litres sur 100 : c’est le gaz le plus abondant de l’air. L’oxygène, que l’on respire, n’en fait que 21.
+2. énoncé : Parmi les gaz de l’air, un gaz à effet de serre est …
+   - choix : l’azote · le dioxyde de carbone · l’oxygène
+   - réponse : le dioxyde de carbone
+   - indice : Relis la deuxième ligne du rappel.
+   - explication : Le dioxyde de carbone retient la chaleur autour de la Terre : c’est un gaz à effet de serre. L’azote et l’oxygène, les deux gaz principaux de l’air, n’en sont pas.
+3. énoncé : "Le pictogramme d’un déboucheur pour évier\nUn losange au bord rouge.\nDedans, en noir : des gouttes qui rongent une main et une plaque."
+   - question : Quel danger annonce ce pictogramme ?
+   - lu : Le pictogramme d’un déboucheur pour évier. Un losange au bord rouge. Dedans, en noir, des gouttes qui rongent une main et une plaque.
+   - choix : le produit prend feu facilement · le produit ronge la peau · le produit peut exploser
+   - réponse : le produit ronge la peau
+   - indice : Que font les gouttes à la main, sur le dessin ?
+   - explication : Les gouttes rongent la main : le produit est corrosif, il brûle la peau et les yeux. On le manipule avec des gants. Une flamme dessinée, elle, voudrait dire qu’il prend feu facilement.
+4. énoncé : "Le pictogramme d’une bombe de laque\nUn losange au bord rouge.\nDedans, en noir : une flamme."
+   - question : Où ranger cette bombe ?
+   - lu : Le pictogramme d’une bombe de laque. Un losange au bord rouge. Dedans, en noir, une flamme.
+   - choix : près du radiateur · au soleil, sur la fenêtre · loin de la chaleur et des flammes
+   - réponse : loin de la chaleur et des flammes
+   - indice : Que dit le dessin de la flamme ?
+   - explication : La flamme veut dire que le produit prend feu facilement. On le range loin de la chaleur et des flammes : ni près du radiateur, ni au soleil.
+5. énoncé : Le jour et la nuit alternent parce que la Terre tourne …
+   - choix : autour du Soleil · sur elle-même · autour de la Lune
+   - réponse : sur elle-même
+   - indice : Relis la quatrième ligne du rappel.
+   - explication : En tournant sur elle-même, en un jour, la Terre présente chaque endroit au Soleil, puis le cache : c’est le jour, puis la nuit. Le tour du Soleil, lui, dure une année.
+6. énoncé : "Une maquette dans la classe, dans le noir\nUne lampe joue le Soleil.\nUn globe joue la Terre. Il tourne sur lui-même.\nUne gommette sur la France passe du côté éclairé au côté sombre."
+   - question : Que vit la France à ce moment-là ?
+   - lu : Une maquette dans la classe, dans le noir. Une lampe joue le Soleil. Un globe joue la Terre. Il tourne sur lui-même. Une gommette sur la France passe du côté éclairé au côté sombre.
+   - choix : le lever du Soleil · midi · le coucher du Soleil
+   - réponse : le coucher du Soleil
+   - indice : La France quitte le côté éclairé : le jour commence, ou il finit ?
+   - explication : La France passe du côté éclairé au côté sombre : le jour finit, c’est le coucher du Soleil. Le lever, c’est l’inverse : du côté sombre au côté éclairé.
+7. énoncé : "Deux journées à Paris\nLe 21 juin : à midi, le Soleil est très haut. Le jour dure environ 16 heures.\nLe 21 décembre : à midi, le Soleil reste bas. Le jour dure environ 8 heures."
+   - question : Pourquoi fait-il plus chaud en juin ?
+   - lu : Deux journées à Paris. Le 21 juin, à midi, le Soleil est très haut. Le jour dure environ seize heures. Le 21 décembre, à midi, le Soleil reste bas. Le jour dure environ huit heures.
+   - choix : la Terre est plus près du Soleil · le Soleil est plus haut et le jour plus long · il y a moins de nuages
+   - réponse : le Soleil est plus haut et le jour plus long
+   - indice : Compare les deux lignes : la hauteur du Soleil, puis la durée du jour.
+   - explication : En juin, le Soleil monte plus haut et éclaire plus longtemps : le sol reçoit plus de chaleur. La distance au Soleil n’y est pour rien : la Terre en est même un peu plus près en janvier.
+8. énoncé : À midi, l’ombre d’un bâton est plus courte en été qu’en hiver, car en été le Soleil est plus …
+   - choix : bas · haut · loin
+   - réponse : haut
+   - indice : Relis la ligne « En été » du rappel.
+   - explication : Plus le Soleil est haut dans le ciel, plus l’ombre est courte. En été, il monte haut : l’ombre de midi raccourcit. En hiver, il reste bas : l’ombre s’allonge.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

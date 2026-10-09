@@ -222,7 +222,8 @@ describe('la sauvegarde', () => {
   it('une sauvegarde d’avant les commandes se lit sans rien perdre, sans champ nouveau', () => {
     const ancienne = { progress: joue(FORET, PLAINE), stock: { [BLOC.bois]: 4 }, world: { parts: {}, log: [], links: [PONT_FERME], place: PLAINE } };
     const lue = sanitizeState(structuredClone(ancienne));
-    expect(lue.world).toEqual({ parts: lue.world.parts, log: [], links: [PONT_FERME], place: PLAINE });
+    // Le défi de la Plaine, ouvert avant les missions du 9 octobre 2026, le reste (GD-14, format 5) : le seul champ ajouté.
+    expect(lue.world).toEqual({ parts: lue.world.parts, log: [], links: [PONT_FERME], place: PLAINE, challengesKeptOpen: [PLAINE] });
     expect('requests' in lue.world).toBe(false);
     expect(lue.stock).toEqual({ [BLOC.bois]: 4 });
     expect(Object.keys(lue.progress)).toEqual(Object.keys(ancienne.progress));

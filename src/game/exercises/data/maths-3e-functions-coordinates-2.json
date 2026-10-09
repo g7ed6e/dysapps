@@ -1,0 +1,232 @@
+{
+  "id": "maths-3e-functions-coordinates-2",
+  "biome": "maths-3e-functions",
+  "type": "coordinates",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-3e-functions-coordinates-2-0",
+      "prompt": "Dans un repère de l’espace, le point P a pour coordonnées (2 ; 5 ; 3). Son altitude est …",
+      "spoken": "Dans un repère de l’espace, le point P a pour coordonnées 2 point-virgule 5 point-virgule 3. Son altitude est (mot manquant)",
+      "choices": [
+        "2",
+        "3",
+        "5"
+      ],
+      "answer": "3",
+      "hint": "L’ordre est toujours le même : abscisse, ordonnée, puis altitude.",
+      "explanation": "Dans (2 ; 5 ; 3), l’abscisse est 2, l’ordonnée 5, et l’altitude, la dernière, est 3. 2 est l’abscisse ; 5 est l’ordonnée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Pavé droit et sphère terrestre",
+          "lines": [
+            "Dans un pavé droit, un point a trois coordonnées : (abscisse ; ordonnée ; altitude).",
+            "L’altitude dit à quelle hauteur est le point. Au sol, elle vaut 0.",
+            "Sur la Terre, un lieu se repère par sa latitude et sa longitude, en degrés.",
+            "Latitude : au nord ou au sud de l’équateur, de 0° à 90°.",
+            "Longitude : à l’est ou à l’ouest du méridien de Greenwich, de 0° à 180°."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-2-1",
+      "prompt": "Un pavé droit a un sommet à l’origine O.\nLongueur : 4, sur l’axe des abscisses.\nLargeur : 3, sur l’axe des ordonnées.\nHauteur : 2, sur l’axe des altitudes.",
+      "question": "Quelles sont les coordonnées du sommet le plus loin de O ?",
+      "spoken": "Un pavé droit a un sommet à l’origine O. Longueur, 4, sur l’axe des abscisses. Largeur, 3, sur l’axe des ordonnées. Hauteur, 2, sur l’axe des altitudes.",
+      "choices": [
+        "(2 ; 3 ; 4)",
+        "(4 ; 3 ; 0)",
+        "(4 ; 3 ; 2)"
+      ],
+      "answer": "(4 ; 3 ; 2)",
+      "hint": "Le sommet le plus loin de O est au bout de la longueur, au bout de la largeur, et en haut.",
+      "explanation": "Le sommet le plus loin de O est au bout des trois arêtes : abscisse 4, ordonnée 3, altitude 2, soit (4 ; 3 ; 2). (2 ; 3 ; 4) inverse l’ordre des coordonnées. (4 ; 3 ; 0) est le sommet juste en dessous, au sol.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Pavé droit et sphère terrestre",
+          "lines": [
+            "Dans un pavé droit, un point a trois coordonnées : (abscisse ; ordonnée ; altitude).",
+            "L’altitude dit à quelle hauteur est le point. Au sol, elle vaut 0.",
+            "Sur la Terre, un lieu se repère par sa latitude et sa longitude, en degrés.",
+            "Latitude : au nord ou au sud de l’équateur, de 0° à 90°.",
+            "Longitude : à l’est ou à l’ouest du méridien de Greenwich, de 0° à 180°."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-2-2",
+      "prompt": "Un pavé droit est posé sur le sol. Il mesure 2 de haut. Un sommet du bas a pour coordonnées (4 ; 0 ; 0). Le sommet juste au-dessus a pour coordonnées …",
+      "spoken": "Un pavé droit est posé sur le sol. Il mesure 2 de haut. Un sommet du bas a pour coordonnées 4 point-virgule 0 point-virgule 0. Le sommet juste au-dessus a pour coordonnées (mot manquant)",
+      "choices": [
+        "(4 ; 0 ; 2)",
+        "(4 ; 2 ; 0)",
+        "(6 ; 0 ; 0)"
+      ],
+      "answer": "(4 ; 0 ; 2)",
+      "hint": "Monter change une seule coordonnée : laquelle ?",
+      "explanation": "Monter de 2 ne change que l’altitude, la dernière coordonnée : 0 + 2 = 2, d’où (4 ; 0 ; 2). (4 ; 2 ; 0) met les 2 sur l’ordonnée : ce point est sur le sol. (6 ; 0 ; 0) les ajoute à l’abscisse : ce point avance, il ne monte pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Pavé droit et sphère terrestre",
+          "lines": [
+            "Dans un pavé droit, un point a trois coordonnées : (abscisse ; ordonnée ; altitude).",
+            "L’altitude dit à quelle hauteur est le point. Au sol, elle vaut 0.",
+            "Sur la Terre, un lieu se repère par sa latitude et sa longitude, en degrés.",
+            "Latitude : au nord ou au sud de l’équateur, de 0° à 90°.",
+            "Longitude : à l’est ou à l’ouest du méridien de Greenwich, de 0° à 180°."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-2-3",
+      "prompt": "Un lieu situé sur l’équateur a une latitude de …",
+      "spoken": "Un lieu situé sur l’équateur a une latitude de (mot manquant)",
+      "choices": [
+        "0°",
+        "90°",
+        "180°"
+      ],
+      "answer": "0°",
+      "hint": "La latitude dit à quelle distance on est de l’équateur, vers le nord ou vers le sud.",
+      "explanation": "La latitude se compte à partir de l’équateur : sur l’équateur, elle vaut 0°. 90°, c’est la latitude d’un pôle. 180° n’est pas une latitude : elle va de 0° à 90°, au nord ou au sud.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Pavé droit et sphère terrestre",
+          "lines": [
+            "Dans un pavé droit, un point a trois coordonnées : (abscisse ; ordonnée ; altitude).",
+            "L’altitude dit à quelle hauteur est le point. Au sol, elle vaut 0.",
+            "Sur la Terre, un lieu se repère par sa latitude et sa longitude, en degrés.",
+            "Latitude : au nord ou au sud de l’équateur, de 0° à 90°.",
+            "Longitude : à l’est ou à l’ouest du méridien de Greenwich, de 0° à 180°."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-2-4",
+      "prompt": "Le pôle Nord a une latitude de …",
+      "spoken": "Le pôle Nord a une latitude de (mot manquant)",
+      "choices": [
+        "0°",
+        "90° Nord",
+        "180° Nord"
+      ],
+      "answer": "90° Nord",
+      "hint": "De l’équateur au pôle, on fait un quart de tour de la Terre.",
+      "explanation": "De l’équateur au pôle Nord, on fait un quart de tour : 360 ÷ 4 = 90°. Le pôle Nord est à 90° Nord, la plus grande latitude. 0°, c’est l’équateur. 180° serait un demi-tour : ce n’est plus une latitude.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Pavé droit et sphère terrestre",
+          "lines": [
+            "Dans un pavé droit, un point a trois coordonnées : (abscisse ; ordonnée ; altitude).",
+            "L’altitude dit à quelle hauteur est le point. Au sol, elle vaut 0.",
+            "Sur la Terre, un lieu se repère par sa latitude et sa longitude, en degrés.",
+            "Latitude : au nord ou au sud de l’équateur, de 0° à 90°.",
+            "Longitude : à l’est ou à l’ouest du méridien de Greenwich, de 0° à 180°."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-2-5",
+      "prompt": "Paris, en France\nLatitude : environ 49° Nord\nLongitude : environ 2° Est",
+      "question": "Quelle est la longitude de Paris ?",
+      "spoken": "Paris, en France. Latitude, environ 49 degrés Nord. Longitude, environ 2 degrés Est.",
+      "choices": [
+        "2° Est",
+        "2° Nord",
+        "49° Nord"
+      ],
+      "answer": "2° Est",
+      "hint": "La longitude se compte vers l’est ou vers l’ouest.",
+      "explanation": "La longitude dit à l’est ou à l’ouest du méridien de Greenwich : Paris est à environ 2° Est. 49° Nord est sa latitude, au nord de l’équateur. 2° Nord mélange les deux : une longitude n’est jamais au nord.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Pavé droit et sphère terrestre",
+          "lines": [
+            "Dans un pavé droit, un point a trois coordonnées : (abscisse ; ordonnée ; altitude).",
+            "L’altitude dit à quelle hauteur est le point. Au sol, elle vaut 0.",
+            "Sur la Terre, un lieu se repère par sa latitude et sa longitude, en degrés.",
+            "Latitude : au nord ou au sud de l’équateur, de 0° à 90°.",
+            "Longitude : à l’est ou à l’ouest du méridien de Greenwich, de 0° à 180°."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-2-6",
+      "prompt": "Un lieu a une longitude de 0°. Il est sur …",
+      "spoken": "Un lieu a une longitude de 0 degré. Il est sur (mot manquant)",
+      "choices": [
+        "le méridien de Greenwich",
+        "l’équateur",
+        "le pôle Nord"
+      ],
+      "answer": "le méridien de Greenwich",
+      "hint": "La longitude se compte à partir de quelle ligne ?",
+      "explanation": "La longitude se compte à partir du méridien de Greenwich, qui va d’un pôle à l’autre : une longitude de 0°, c’est sur ce méridien. L’équateur, c’est une latitude de 0°. Le pôle Nord, c’est une latitude de 90° Nord.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Pavé droit et sphère terrestre",
+          "lines": [
+            "Dans un pavé droit, un point a trois coordonnées : (abscisse ; ordonnée ; altitude).",
+            "L’altitude dit à quelle hauteur est le point. Au sol, elle vaut 0.",
+            "Sur la Terre, un lieu se repère par sa latitude et sa longitude, en degrés.",
+            "Latitude : au nord ou au sud de l’équateur, de 0° à 90°.",
+            "Longitude : à l’est ou à l’ouest du méridien de Greenwich, de 0° à 180°."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-2-7",
+      "prompt": "Un bateau est à la latitude 20° Nord. Il navigue vers le sud et descend de 30°. Sa nouvelle latitude est …",
+      "spoken": "Un bateau est à la latitude 20 degrés Nord. Il navigue vers le sud et descend de 30 degrés. Sa nouvelle latitude est (mot manquant)",
+      "choices": [
+        "10° Nord",
+        "10° Sud",
+        "50° Nord"
+      ],
+      "answer": "10° Sud",
+      "hint": "Après 20 degrés vers le sud, le bateau est sur l’équateur. Combien de degrés reste-t-il ?",
+      "explanation": "20° vers le sud amènent le bateau sur l’équateur. Il lui reste 30 − 20 = 10° : il passe au sud, à 10° Sud. 10° Nord oublie qu’il a passé l’équateur. 50° Nord, c’est 20 + 30 : il serait monté vers le nord.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Pavé droit et sphère terrestre",
+          "lines": [
+            "Dans un pavé droit, un point a trois coordonnées : (abscisse ; ordonnée ; altitude).",
+            "L’altitude dit à quelle hauteur est le point. Au sol, elle vaut 0.",
+            "Sur la Terre, un lieu se repère par sa latitude et sa longitude, en degrés.",
+            "Latitude : au nord ou au sud de l’équateur, de 0° à 90°.",
+            "Longitude : à l’est ou à l’ouest du méridien de Greenwich, de 0° à 180°."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien repéré !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-functions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -421,6 +421,145 @@ Pour tous les items :
    - indice : Relis la dernière ligne du document.
    - explication : La canette recyclée redevient de l’aluminium : on prend moins de roche, et on consomme bien moins d’énergie.
 
+## Mener un projet · `project-management`
+
+- description : Les étapes d’un projet et la revue de projet, puis lire un planning des tâches et penser à la planète dès la conception.
+- compétences : c4.te.conception.projet
+- consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- bravo : Bien vu !
+- erreur : {explanation}
+- bloc gagné : technology-5e-design
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- trou lu : " (mot manquant) "
+
+### Niveau 1 · `technology-5e-design-project-management-1`
+
+Pour tous les items :
+- aide « Mener un projet » :
+  - Les étapes : le besoin, le cahier des charges, les solutions.
+  - Puis on fabrique le prototype, et on le teste.
+  - Une tâche : un travail à faire, avec une durée.
+  - Une tâche peut devoir attendre la fin d’une autre.
+  - La revue de projet : l’équipe compare ce qui est fait et ce qui était prévu.
+
+1. énoncé : Dans un projet, on écrit le cahier des charges, puis on cherche des …
+   - choix : besoins · solutions · normes
+   - réponse : solutions
+   - indice : Relis la première ligne du rappel.
+   - explication : Le cahier des charges dit ce que l’objet doit faire : ensuite, on cherche des solutions. Le besoin, lui, vient avant le cahier des charges.
+2. énoncé : "Les étapes du projet de la boîte à goûter\nÉtape 1 : dire le besoin.\nÉtape 2 : écrire le cahier des charges.\nÉtape 3 : chercher des solutions.\nÉtape 4 : fabriquer, puis tester."
+   - question : Que fait l’équipe juste après le cahier des charges ?
+   - lu : Les étapes du projet de la boîte à goûter. Étape 1, dire le besoin. Étape 2, écrire le cahier des charges. Étape 3, chercher des solutions. Étape 4, fabriquer, puis tester.
+   - choix : elle dit le besoin · elle cherche des solutions · elle fabrique
+   - réponse : elle cherche des solutions
+   - indice : Cherche la ligne juste sous « Étape 2 ».
+   - explication : Après le cahier des charges, à l’étape 3, l’équipe cherche des solutions. Le besoin vient avant, la fabrication après.
+3. énoncé : Un travail à faire dans le projet, avec une durée, s’appelle une …
+   - choix : fonction · revue · tâche
+   - réponse : tâche
+   - indice : Relis la ligne « Une tâche » du rappel.
+   - explication : Un travail à faire, avec sa durée, est une tâche : découper, peindre, assembler. Une fonction, c’est ce que fait l’objet.
+4. énoncé : "Le planning de l’équipe\nTâche A : dessiner le croquis, 1 semaine.\nTâche B : découper les pièces, 2 semaines.\nTâche C : peindre, 1 semaine."
+   - question : Quelle tâche dure le plus longtemps ?
+   - lu : Le planning de l’équipe. Tâche A, dessiner le croquis, 1 semaine. Tâche B, découper les pièces, 2 semaines. Tâche C, peindre, 1 semaine.
+   - choix : la tâche A · la tâche B · la tâche C
+   - réponse : la tâche B
+   - indice : Cherche la plus grande durée.
+   - explication : Découper les pièces dure 2 semaines : c’est la tâche B. Les tâches A et C durent 1 semaine chacune.
+5. énoncé : Quand l’équipe se réunit pour comparer ce qui est fait et ce qui était prévu, c’est une … de projet.
+   - choix : tâche · revue · fiche
+   - réponse : revue
+   - indice : Relis la dernière ligne du rappel.
+   - explication : La revue de projet sert à faire le point : ce qui est fait, ce qui était prévu, et la suite. Une tâche, c’est un travail à faire.
+6. énoncé : "La revue de projet du porte-clés\nLe planning prévoyait : les pièces découpées.\nFait : le croquis seulement.\nLes pièces ne sont pas découpées."
+   - question : Que montre la revue de projet ?
+   - lu : La revue de projet du porte-clés. Le planning prévoyait, les pièces découpées. Fait, le croquis seulement. Les pièces ne sont pas découpées.
+   - choix : le projet est en avance · le projet est fini · le projet est en retard
+   - réponse : le projet est en retard
+   - indice : Compare ce qui était prévu et ce qui est fait.
+   - explication : Les pièces devaient être découpées, et elles ne le sont pas : le projet est en retard. La revue sert à le voir, pour réorganiser la suite.
+7. énoncé : Avant de tester le prototype, il faut d’abord le …
+   - choix : recycler · fabriquer · réparer
+   - réponse : fabriquer
+   - indice : Relis la deuxième ligne du rappel.
+   - explication : On fabrique le prototype, puis on le teste. On ne peut ni le réparer ni le recycler avant qu’il existe.
+8. énoncé : "Le planning du support de téléphone\nTâche 1 : tracer les pièces.\nTâche 2 : découper les pièces, après la tâche 1.\nTâche 3 : assembler, après la tâche 2."
+   - question : Quelle tâche attend la fin du découpage ?
+   - lu : Le planning du support de téléphone. Tâche 1, tracer les pièces. Tâche 2, découper les pièces, après la tâche 1. Tâche 3, assembler, après la tâche 2.
+   - choix : la tâche 1 · la tâche 2 · la tâche 3
+   - réponse : la tâche 3
+   - indice : Le découpage, c’est la tâche 2. Quelle ligne dit « après la tâche 2 » ?
+   - explication : On assemble après avoir découpé : la tâche 3 attend la fin de la tâche 2. La tâche 2, elle, attend la fin de la tâche 1.
+
+### Niveau 2 · `technology-5e-design-project-management-2`
+
+Pour tous les items :
+- aide « Le planning et l’écoconception » :
+  - Le planning : chaque tâche, sa durée et son ordre.
+  - « Après la tâche A » : elle attend la fin de la tâche A.
+  - « Sans attendre » : elle peut se faire en même temps.
+  - Si une tâche prend du retard, celles qui l’attendent aussi.
+  - La revue de projet : en avance, dans les temps, ou en retard ?
+  - L’écoconception : penser à la planète dès la conception de l’objet (moins de matière, matériaux recyclables, objet réparable).
+
+1. énoncé : "Le planning de la mangeoire à oiseaux\nTâche A : tracer les planches.\nTâche B : découper les planches, après la tâche A.\nTâche C : écrire la notice, sans attendre."
+   - question : Quelle tâche peut se faire en même temps que la tâche A ?
+   - lu : Le planning de la mangeoire à oiseaux. Tâche A, tracer les planches. Tâche B, découper les planches, après la tâche A. Tâche C, écrire la notice, sans attendre.
+   - choix : la tâche B · la tâche C · aucune
+   - réponse : la tâche C
+   - indice : Cherche la tâche qui n’attend personne.
+   - explication : La tâche C se fait sans attendre : un élève écrit la notice pendant qu’un autre trace. La tâche B, elle, attend la fin de la tâche A.
+2. énoncé : "Le planning de la lampe\nTâche A : brancher les fils.\nTâche B : fixer la lampe, après la tâche A.\nTâche C : décorer le pied, sans attendre."
+   - question : La tâche A prend du retard. Quelle autre tâche est retardée ?
+   - lu : Le planning de la lampe. Tâche A, brancher les fils. Tâche B, fixer la lampe, après la tâche A. Tâche C, décorer le pied, sans attendre.
+   - choix : la tâche B · la tâche C · aucune
+   - réponse : la tâche B
+   - indice : Quelle tâche attend la fin de la tâche A ?
+   - explication : La tâche B se fait après la tâche A : si A prend du retard, B aussi. La tâche C n’attend personne : elle n’est pas retardée.
+3. énoncé : « Tâche C, après la tâche B » : la tâche C doit … la fin de la tâche B.
+   - choix : remplacer · attendre · éviter
+   - réponse : attendre
+   - indice : Relis la deuxième ligne du rappel.
+   - explication : « Après la tâche B » veut dire que la tâche C commence quand la tâche B est finie : elle l’attend.
+4. énoncé : Penser à la planète dès la conception de l’objet, c’est l’…
+   - choix : emballage · recyclage · écoconception
+   - réponse : écoconception
+   - indice : Relis la dernière ligne du rappel.
+   - explication : L’écoconception pense à la planète dès la conception, avant de fabriquer. Le recyclage arrive à la fin de vie de l’objet.
+5. énoncé : "Deux boîtes à crayons, pour le même usage\nBoîte A : vissée, on change une pièce cassée.\nBoîte B : collée, on la jette si une pièce casse."
+   - question : Laquelle est la mieux écoconçue ?
+   - lu : Deux boîtes à crayons, pour le même usage. Boîte A, vissée, on change une pièce cassée. Boîte B, collée, on la jette si une pièce casse.
+   - choix : la boîte A · la boîte B · c’est pareil
+   - réponse : la boîte A
+   - indice : Laquelle peut se réparer ?
+   - explication : La boîte A se démonte et se répare : elle dure plus longtemps. La boîte B, collée, part à la poubelle à la première pièce cassée.
+6. énoncé : "Trois idées pour l’emballage du jeu\nIdée A : une boîte en plastique, sous un film.\nIdée B : une boîte en carton recyclé, sans plastique.\nIdée C : deux boîtes, l’une dans l’autre."
+   - question : Quelle idée suit l’écoconception ?
+   - lu : Trois idées pour l’emballage du jeu. Idée A, une boîte en plastique, sous un film. Idée B, une boîte en carton recyclé, sans plastique. Idée C, deux boîtes, l’une dans l’autre.
+   - choix : l’idée A · l’idée B · l’idée C
+   - réponse : l’idée B
+   - indice : Laquelle utilise le moins de matière, et une matière recyclée ?
+   - explication : L’idée B utilise une seule boîte, en carton recyclé : moins de matière, et une matière qui se recycle encore. L’idée A ajoute du plastique ; l’idée C double la matière.
+7. énoncé : "Revue de projet, semaine 4\nPrévu : le prototype est fini.\nFait : le prototype est fini.\nLa suite : le tester."
+   - question : Où en est le projet ?
+   - lu : Revue de projet, semaine 4. Prévu, le prototype est fini. Fait, le prototype est fini. La suite, le tester.
+   - choix : en avance · dans les temps · en retard
+   - réponse : dans les temps
+   - indice : Compare la ligne « Prévu » et la ligne « Fait ».
+   - explication : Ce qui est fait est ce qui était prévu : le projet est dans les temps. En avance, le test serait déjà fait.
+8. énoncé : "Les étapes d’un projet, dans le désordre\nTester le prototype.\nÉcrire le cahier des charges.\nFabriquer le prototype."
+   - question : Quelle étape vient en premier ?
+   - lu : Les étapes d’un projet, dans le désordre. Tester le prototype. Écrire le cahier des charges. Fabriquer le prototype.
+   - choix : écrire le cahier des charges · fabriquer le prototype · tester le prototype
+   - réponse : écrire le cahier des charges
+   - indice : Avant de fabriquer, il faut savoir ce que l’objet doit faire.
+   - explication : On écrit d’abord le cahier des charges, puis on fabrique le prototype, et enfin on le teste. Tester vient en dernier, même si c’est la première ligne.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

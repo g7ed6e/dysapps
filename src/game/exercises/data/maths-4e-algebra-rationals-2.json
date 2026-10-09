@@ -1,0 +1,293 @@
+{
+  "id": "maths-4e-algebra-rationals-2",
+  "biome": "maths-4e-algebra",
+  "type": "rationals",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-4e-algebra-rationals-2-0",
+      "prompt": "Une fraction égale à 4/6 est …",
+      "spoken": "Une fraction égale à 4 sixièmes est (mot manquant)",
+      "choices": [
+        "6/9",
+        "5/7",
+        "6/8"
+      ],
+      "answer": "6/9",
+      "hint": "Pour chaque réponse, calcule les produits en croix.",
+      "explanation": "4 × 9 = 36 et 6 × 6 = 36 : les produits en croix sont égaux, donc 4/6 = 6/9. Ajouter le même nombre en haut et en bas ne garde pas l’égalité : pour 5/7, 4 × 7 = 28 mais 6 × 5 = 30 ; pour 6/8, 4 × 8 = 32 mais 6 × 6 = 36.",
+      "figure": {
+        "kind": "fraction-bar",
+        "props": {
+          "n": 4,
+          "d": 6
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fractions",
+          "lines": [
+            "Égales : a/b = c/d quand a × d = b × c (les produits en croix).",
+            "Même dénominateur : la plus grande a le plus grand numérateur.",
+            "Sinon : on les écrit avec le même dénominateur.",
+            "Négatives : la plus grande est la plus près de zéro.",
+            "L’inverse de a/b est b/a : leur produit fait 1.",
+            "L’opposé change le signe ; l’inverse retourne la fraction."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-2-1",
+      "prompt": "Les fractions 5/8 et 15/24 sont …",
+      "spoken": "Les fractions 5 huitièmes et 15 vingt-quatrièmes sont (mot manquant)",
+      "choices": [
+        "égales",
+        "différentes",
+        "inverses"
+      ],
+      "answer": "égales",
+      "hint": "Calcule 5 fois 24, puis 8 fois 15.",
+      "explanation": "5 × 24 = 120 et 8 × 15 = 120 : les produits en croix sont égaux, les fractions sont égales. Leurs nombres sont différents, mais elles désignent le même nombre. Inverses, leur produit ferait 1.",
+      "figure": {
+        "kind": "fraction-bar",
+        "props": {
+          "n": 5,
+          "d": 8
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fractions",
+          "lines": [
+            "Égales : a/b = c/d quand a × d = b × c (les produits en croix).",
+            "Même dénominateur : la plus grande a le plus grand numérateur.",
+            "Sinon : on les écrit avec le même dénominateur.",
+            "Négatives : la plus grande est la plus près de zéro.",
+            "L’inverse de a/b est b/a : leur produit fait 1.",
+            "L’opposé change le signe ; l’inverse retourne la fraction."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-2-2",
+      "prompt": "L’inverse de 2/7 est …",
+      "spoken": "L’inverse de 2 septièmes est (mot manquant)",
+      "choices": [
+        "−7/2",
+        "−2/7",
+        "7/2"
+      ],
+      "answer": "7/2",
+      "hint": "L’inverse retourne la fraction, sans changer son signe.",
+      "explanation": "2/7 × 7/2 = 14/14 = 1 : l’inverse de 2/7 est 7/2. −2/7, c’est l’opposé. −7/2 retourne la fraction mais change aussi le signe : le produit ferait −1.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fractions",
+          "lines": [
+            "Égales : a/b = c/d quand a × d = b × c (les produits en croix).",
+            "Même dénominateur : la plus grande a le plus grand numérateur.",
+            "Sinon : on les écrit avec le même dénominateur.",
+            "Négatives : la plus grande est la plus près de zéro.",
+            "L’inverse de a/b est b/a : leur produit fait 1.",
+            "L’opposé change le signe ; l’inverse retourne la fraction."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-2-3",
+      "prompt": "L’inverse de 5 est …",
+      "spoken": "L’inverse de 5 est  (mot manquant) ",
+      "choices": [
+        "−5",
+        "0,2",
+        "0,5"
+      ],
+      "answer": "0,2",
+      "hint": "Cherche le nombre qui, multiplié par 5, donne 1.",
+      "explanation": "5 × 0,2 = 1 : l’inverse de 5 est 1/5, c’est-à-dire 0,2. 0,5 vaut 1/2 : c’est l’inverse de 2. −5 est l’opposé de 5.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fractions",
+          "lines": [
+            "Égales : a/b = c/d quand a × d = b × c (les produits en croix).",
+            "Même dénominateur : la plus grande a le plus grand numérateur.",
+            "Sinon : on les écrit avec le même dénominateur.",
+            "Négatives : la plus grande est la plus près de zéro.",
+            "L’inverse de a/b est b/a : leur produit fait 1.",
+            "L’opposé change le signe ; l’inverse retourne la fraction."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-2-4",
+      "prompt": "Entre −3/5 et −4/5, la plus grande est …",
+      "spoken": "Entre moins 3 cinquièmes et moins 4 cinquièmes, la plus grande est (mot manquant)",
+      "choices": [
+        "−4/5",
+        "−3/5",
+        "aucune, elles sont égales"
+      ],
+      "answer": "−3/5",
+      "hint": "Deux nombres négatifs : le plus grand est le plus près de zéro.",
+      "explanation": "3/5 est plus près de zéro que 4/5 : avec le signe moins, −3/5 est plus grande que −4/5. Choisir −4/5, c’est oublier le signe : entre deux négatives, le plus grand numérateur donne la plus petite. Elles ne sont pas égales : −3/5 et −4/5 ne sont pas à la même place sur la droite.",
+      "figure": {
+        "kind": "graduated-line",
+        "props": {
+          "start": -1,
+          "units": 1,
+          "perUnit": 5
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fractions",
+          "lines": [
+            "Égales : a/b = c/d quand a × d = b × c (les produits en croix).",
+            "Même dénominateur : la plus grande a le plus grand numérateur.",
+            "Sinon : on les écrit avec le même dénominateur.",
+            "Négatives : la plus grande est la plus près de zéro.",
+            "L’inverse de a/b est b/a : leur produit fait 1.",
+            "L’opposé change le signe ; l’inverse retourne la fraction."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-2-5",
+      "prompt": "2/3 est … 3/4.",
+      "spoken": "2 tiers est (mot manquant) 3 quarts.",
+      "choices": [
+        "plus petit que",
+        "égal à",
+        "plus grand que"
+      ],
+      "answer": "plus petit que",
+      "hint": "Écris les deux fractions en douzièmes.",
+      "explanation": "2/3 = 8/12 et 3/4 = 9/12 : 8 douzièmes, c’est moins que 9 douzièmes. Elles ne sont pas égales, même s’il manque une part à chacune : les parts n’ont pas la même taille. Et 2/3 n’est pas plus grand : 8 douzièmes, c’est moins que 9.",
+      "figure": {
+        "kind": "compare-bars",
+        "props": {
+          "a": [
+            2,
+            3
+          ],
+          "b": [
+            3,
+            4
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fractions",
+          "lines": [
+            "Égales : a/b = c/d quand a × d = b × c (les produits en croix).",
+            "Même dénominateur : la plus grande a le plus grand numérateur.",
+            "Sinon : on les écrit avec le même dénominateur.",
+            "Négatives : la plus grande est la plus près de zéro.",
+            "L’inverse de a/b est b/a : leur produit fait 1.",
+            "L’opposé change le signe ; l’inverse retourne la fraction."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-2-6",
+      "prompt": "Dans l’ordre croissant, 1/2 ; 5/8 et 3/8 se rangent ainsi : …",
+      "spoken": "Dans l’ordre croissant, un demi ; 5 huitièmes et 3 huitièmes se rangent ainsi : (mot manquant)",
+      "choices": [
+        "3/8 ; 1/2 ; 5/8",
+        "1/2 ; 3/8 ; 5/8",
+        "5/8 ; 1/2 ; 3/8"
+      ],
+      "answer": "3/8 ; 1/2 ; 5/8",
+      "hint": "Combien de huitièmes font une moitié ?",
+      "explanation": "1/2 = 4/8. En huitièmes : 3/8, puis 4/8, puis 5/8. Mettre 1/2 en premier parce que ses nombres sont petits, c’est l’erreur : il vaut 4 huitièmes. 5/8 ; 1/2 ; 3/8, c’est l’ordre décroissant.",
+      "figure": {
+        "kind": "compare-bars",
+        "props": {
+          "a": [
+            1,
+            2
+          ],
+          "b": [
+            3,
+            8
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fractions",
+          "lines": [
+            "Égales : a/b = c/d quand a × d = b × c (les produits en croix).",
+            "Même dénominateur : la plus grande a le plus grand numérateur.",
+            "Sinon : on les écrit avec le même dénominateur.",
+            "Négatives : la plus grande est la plus près de zéro.",
+            "L’inverse de a/b est b/a : leur produit fait 1.",
+            "L’opposé change le signe ; l’inverse retourne la fraction."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-algebra-rationals-2-7",
+      "prompt": "Pour que les fractions soient égales : 3/5 = …/20",
+      "spoken": "Pour que les fractions soient égales : 3 cinquièmes égale (mot manquant) vingtièmes.",
+      "choices": [
+        "4",
+        "12",
+        "18"
+      ],
+      "answer": "12",
+      "hint": "Par combien passe-t-on de 5 à 20 ? Fais pareil en haut.",
+      "explanation": "5 × 4 = 20, donc 3 × 4 = 12 : 3/5 = 12/20. Vérifie : 3 × 20 = 60 et 5 × 12 = 60. 18, c’est ajouter 15 en haut comme en bas : l’égalité ne tient pas. 4 est le multiplicateur, pas le numérateur.",
+      "figure": {
+        "kind": "fraction-bar",
+        "props": {
+          "n": 3,
+          "d": 5
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fractions",
+          "lines": [
+            "Égales : a/b = c/d quand a × d = b × c (les produits en croix).",
+            "Même dénominateur : la plus grande a le plus grand numérateur.",
+            "Sinon : on les écrit avec le même dénominateur.",
+            "Négatives : la plus grande est la plus près de zéro.",
+            "L’inverse de a/b est b/a : leur produit fait 1.",
+            "L’opposé change le signe ; l’inverse retourne la fraction."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-4e-algebra",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

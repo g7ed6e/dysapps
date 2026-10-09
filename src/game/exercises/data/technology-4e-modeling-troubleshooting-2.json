@@ -1,0 +1,243 @@
+{
+  "id": "technology-4e-modeling-troubleshooting-2",
+  "biome": "technology-4e-modeling",
+  "type": "troubleshooting",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-4e-modeling-troubleshooting-2-0",
+      "prompt": "Deux ordinateurs portables, au même prix\nOrdinateur A : indice de réparabilité, 8 sur 10.\nOrdinateur B : indice de réparabilité, 3 sur 10.",
+      "question": "Lequel se répare le plus facilement ?",
+      "spoken": "Deux ordinateurs portables, au même prix. Ordinateur A, indice de réparabilité, 8 sur 10. Ordinateur B, indice de réparabilité, 3 sur 10.",
+      "choices": [
+        "l’ordinateur A",
+        "l’ordinateur B",
+        "c’est pareil"
+      ],
+      "answer": "l’ordinateur A",
+      "hint": "Relis la ligne « L’indice de réparabilité » du rappel.",
+      "explanation": "8 sur 10, c’est une note plus haute que 3 sur 10 : l’ordinateur A se répare plus facilement. Il pourra servir plus longtemps.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fiabilité, réparation, sécurité",
+          "lines": [
+            "Fiable : l’objet marche longtemps sans panne.",
+            "Durable : l’objet dure longtemps, entretenu et réparé.",
+            "L’indice de réparabilité : une note sur 10. Plus elle est haute, plus l’objet se répare facilement.",
+            "Des vis plutôt que de la colle : l’objet se démonte.",
+            "Pour trouver l’origine d’une panne : la vérification la plus simple d’abord.",
+            "À l’atelier : lunettes de protection, outil adapté, appareil débranché."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-2-1",
+      "prompt": "Une bouilloire qui marche des années sans tomber en panne est …",
+      "spoken": "Une bouilloire qui marche des années sans tomber en panne est  (mot manquant) ",
+      "choices": [
+        "réparable",
+        "fiable",
+        "recyclable"
+      ],
+      "answer": "fiable",
+      "hint": "Relis la ligne « Fiable » du rappel.",
+      "explanation": "Marcher longtemps sans panne, c’est être fiable. Réparable veut dire qu’on peut la réparer quand elle tombe en panne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fiabilité, réparation, sécurité",
+          "lines": [
+            "Fiable : l’objet marche longtemps sans panne.",
+            "Durable : l’objet dure longtemps, entretenu et réparé.",
+            "L’indice de réparabilité : une note sur 10. Plus elle est haute, plus l’objet se répare facilement.",
+            "Des vis plutôt que de la colle : l’objet se démonte.",
+            "Pour trouver l’origine d’une panne : la vérification la plus simple d’abord.",
+            "À l’atelier : lunettes de protection, outil adapté, appareil débranché."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-2-2",
+      "prompt": "Deux casques audio\nCasque A : vissé, les coussinets se changent.\nCasque B : collé, rien ne se démonte.",
+      "question": "Lequel est le plus durable ?",
+      "spoken": "Deux casques audio. Casque A, vissé, les coussinets se changent. Casque B, collé, rien ne se démonte.",
+      "choices": [
+        "le casque A",
+        "le casque B",
+        "c’est pareil"
+      ],
+      "answer": "le casque A",
+      "hint": "Lequel peut être réparé ?",
+      "explanation": "Le casque A se démonte : on change les coussinets usés, et il dure longtemps. Le casque B, collé, ne se répare pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fiabilité, réparation, sécurité",
+          "lines": [
+            "Fiable : l’objet marche longtemps sans panne.",
+            "Durable : l’objet dure longtemps, entretenu et réparé.",
+            "L’indice de réparabilité : une note sur 10. Plus elle est haute, plus l’objet se répare facilement.",
+            "Des vis plutôt que de la colle : l’objet se démonte.",
+            "Pour trouver l’origine d’une panne : la vérification la plus simple d’abord.",
+            "À l’atelier : lunettes de protection, outil adapté, appareil débranché."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-2-3",
+      "prompt": "Pour percer une planche à l’atelier, on met des lunettes de …",
+      "spoken": "Pour percer une planche à l’atelier, on met des lunettes de  (mot manquant) ",
+      "choices": [
+        "soleil",
+        "lecture",
+        "protection"
+      ],
+      "answer": "protection",
+      "hint": "Relis la ligne « À l’atelier » du rappel.",
+      "explanation": "Les lunettes de protection gardent les yeux des copeaux qui volent. Des lunettes de soleil ne protègent pas des chocs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fiabilité, réparation, sécurité",
+          "lines": [
+            "Fiable : l’objet marche longtemps sans panne.",
+            "Durable : l’objet dure longtemps, entretenu et réparé.",
+            "L’indice de réparabilité : une note sur 10. Plus elle est haute, plus l’objet se répare facilement.",
+            "Des vis plutôt que de la colle : l’objet se démonte.",
+            "Pour trouver l’origine d’une panne : la vérification la plus simple d’abord.",
+            "À l’atelier : lunettes de protection, outil adapté, appareil débranché."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-2-4",
+      "prompt": "Le protocole pour la console qui ne s’allume plus\nVérification 1 : la prise.\nVérification 2 : le câble.\nVérification 3 : l’alimentation, à l’intérieur.",
+      "question": "Pourquoi vérifier la prise en premier ?",
+      "spoken": "Le protocole pour la console qui ne s’allume plus. Vérification 1, la prise. Vérification 2, le câble. Vérification 3, l’alimentation, à l’intérieur.",
+      "choices": [
+        "c’est la plus chère",
+        "c’est la plus simple à vérifier",
+        "c’est la plus solide"
+      ],
+      "answer": "c’est la plus simple à vérifier",
+      "hint": "Relis la ligne « Pour trouver l’origine d’une panne » du rappel.",
+      "explanation": "La prise se vérifie en un geste, sans rien ouvrir : on commence par elle. L’intérieur de la console se vérifie en dernier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fiabilité, réparation, sécurité",
+          "lines": [
+            "Fiable : l’objet marche longtemps sans panne.",
+            "Durable : l’objet dure longtemps, entretenu et réparé.",
+            "L’indice de réparabilité : une note sur 10. Plus elle est haute, plus l’objet se répare facilement.",
+            "Des vis plutôt que de la colle : l’objet se démonte.",
+            "Pour trouver l’origine d’une panne : la vérification la plus simple d’abord.",
+            "À l’atelier : lunettes de protection, outil adapté, appareil débranché."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-2-5",
+      "prompt": "Le capteur de lumière de la veilleuse est cassé\nPièce 1 : un capteur de lumière pareil.\nPièce 2 : un capteur de chaleur.\nPièce 3 : une ampoule plus forte.",
+      "question": "Quelle pièce mettre à la place ?",
+      "spoken": "Le capteur de lumière de la veilleuse est cassé. Pièce 1, un capteur de lumière pareil. Pièce 2, un capteur de chaleur. Pièce 3, une ampoule plus forte.",
+      "choices": [
+        "la pièce 1",
+        "la pièce 2",
+        "la pièce 3"
+      ],
+      "answer": "la pièce 1",
+      "hint": "On remplace une pièce par une pièce qui fait la même chose.",
+      "explanation": "Seul un capteur de lumière pareil repère la nuit comme avant. Un capteur de chaleur ne voit pas la lumière, et l’ampoule n’est pas en panne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fiabilité, réparation, sécurité",
+          "lines": [
+            "Fiable : l’objet marche longtemps sans panne.",
+            "Durable : l’objet dure longtemps, entretenu et réparé.",
+            "L’indice de réparabilité : une note sur 10. Plus elle est haute, plus l’objet se répare facilement.",
+            "Des vis plutôt que de la colle : l’objet se démonte.",
+            "Pour trouver l’origine d’une panne : la vérification la plus simple d’abord.",
+            "À l’atelier : lunettes de protection, outil adapté, appareil débranché."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-2-6",
+      "prompt": "Avant d’ouvrir la lampe pour changer son fil, on la …",
+      "spoken": "Avant d’ouvrir la lampe pour changer son fil, on la  (mot manquant) ",
+      "choices": [
+        "laisse branchée",
+        "allume",
+        "débranche"
+      ],
+      "answer": "débranche",
+      "hint": "Relis la ligne « À l’atelier » du rappel.",
+      "explanation": "On débranche toujours un appareil avant de l’ouvrir : sans courant, on ne risque pas de choc électrique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fiabilité, réparation, sécurité",
+          "lines": [
+            "Fiable : l’objet marche longtemps sans panne.",
+            "Durable : l’objet dure longtemps, entretenu et réparé.",
+            "L’indice de réparabilité : une note sur 10. Plus elle est haute, plus l’objet se répare facilement.",
+            "Des vis plutôt que de la colle : l’objet se démonte.",
+            "Pour trouver l’origine d’une panne : la vérification la plus simple d’abord.",
+            "À l’atelier : lunettes de protection, outil adapté, appareil débranché."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-2-7",
+      "prompt": "Le robot ne roule plus\nLe moteur ne tourne pas.\nCause possible 1 : la batterie est vide.\nCause possible 2 : le moteur est abîmé.",
+      "question": "Quelle vérification faire d’abord ?",
+      "spoken": "Le robot ne roule plus. Le moteur ne tourne pas. Cause possible 1, la batterie est vide. Cause possible 2, le moteur est abîmé.",
+      "choices": [
+        "changer le moteur",
+        "recharger la batterie, puis réessayer",
+        "changer les roues"
+      ],
+      "answer": "recharger la batterie, puis réessayer",
+      "hint": "Quelle vérification est la plus simple ?",
+      "explanation": "Recharger la batterie est simple : si le robot roule ensuite, la panne venait de là. On ne change le moteur que si le robot ne roule toujours pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fiabilité, réparation, sécurité",
+          "lines": [
+            "Fiable : l’objet marche longtemps sans panne.",
+            "Durable : l’objet dure longtemps, entretenu et réparé.",
+            "L’indice de réparabilité : une note sur 10. Plus elle est haute, plus l’objet se répare facilement.",
+            "Des vis plutôt que de la colle : l’objet se démonte.",
+            "Pour trouver l’origine d’une panne : la vérification la plus simple d’abord.",
+            "À l’atelier : lunettes de protection, outil adapté, appareil débranché."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-4e-modeling",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

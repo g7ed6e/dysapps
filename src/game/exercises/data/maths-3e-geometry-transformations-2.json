@@ -1,0 +1,294 @@
+{
+  "id": "maths-3e-geometry-transformations-2",
+  "biome": "maths-3e-geometry",
+  "type": "transformations",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-3e-geometry-transformations-2-0",
+      "prompt": "Deux triangles ont des côtés de 3 cm, 4 cm et 6 cm, tous les deux. Ces triangles sont …",
+      "spoken": "Deux triangles ont des côtés de 3 centimètres, 4 centimètres et 6 centimètres, tous les deux. Ces triangles sont (mot manquant)",
+      "choices": [
+        "égaux",
+        "semblables, mais pas égaux",
+        "peut-être différents"
+      ],
+      "answer": "égaux",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Les trois côtés sont égaux deux à deux : cela suffit, les triangles sont égaux. On peut les superposer : leurs angles sont aussi les mêmes. Avec ces trois longueurs, on ne peut construire qu’un seul triangle. Ils sont aussi semblables, mais « pas égaux » est faux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles et parallélogramme",
+          "lines": [
+            "Triangles égaux : on peut les superposer. Mêmes côtés, mêmes angles.",
+            "Pour le savoir, il suffit de 3 côtés égaux, ou d’un angle égal entre 2 côtés égaux, ou d’un côté égal entre 2 angles égaux.",
+            "Triangles semblables : leurs angles sont égaux deux à deux.",
+            "Triangles semblables : leurs longueurs sont proportionnelles.",
+            "Parallélogramme : ses côtés opposés sont parallèles deux à deux.",
+            "Un quadrilatère dont les diagonales se coupent en leur milieu est un parallélogramme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-2-1",
+      "prompt": "Deux triangles ont les mêmes angles :\n40°, 60° et 80°.",
+      "question": "Ces deux triangles sont-ils forcément égaux ?",
+      "spoken": "Deux triangles ont les mêmes angles : 40 degrés, 60 degrés et 80 degrés.",
+      "choices": [
+        "oui, ils ont les mêmes angles",
+        "oui, leurs angles font 180°",
+        "non, l’un peut être plus grand"
+      ],
+      "answer": "non, l’un peut être plus grand",
+      "hint": "Un agrandissement garde les angles. Garde-t-il les longueurs ?",
+      "explanation": "Les mêmes angles disent que les triangles sont semblables : même forme. Mais l’un peut être un agrandissement de l’autre, avec des côtés plus longs. Ils ne sont donc pas forcément égaux. Les angles d’un triangle font toujours 180° : cela ne prouve rien.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles et parallélogramme",
+          "lines": [
+            "Triangles égaux : on peut les superposer. Mêmes côtés, mêmes angles.",
+            "Pour le savoir, il suffit de 3 côtés égaux, ou d’un angle égal entre 2 côtés égaux, ou d’un côté égal entre 2 angles égaux.",
+            "Triangles semblables : leurs angles sont égaux deux à deux.",
+            "Triangles semblables : leurs longueurs sont proportionnelles.",
+            "Parallélogramme : ses côtés opposés sont parallèles deux à deux.",
+            "Un quadrilatère dont les diagonales se coupent en leur milieu est un parallélogramme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-2-2",
+      "prompt": "Deux triangles sont semblables. Le petit a des côtés de 3 cm, 4 cm et 5 cm. Le plus petit côté du grand mesure 6 cm. Son plus grand côté mesure …",
+      "spoken": "Deux triangles sont semblables. Le petit a des côtés de 3 centimètres, 4 centimètres et 5 centimètres. Le plus petit côté du grand mesure 6 centimètres. Son plus grand côté mesure (mot manquant)",
+      "choices": [
+        "8 cm",
+        "10 cm",
+        "30 cm"
+      ],
+      "answer": "10 cm",
+      "hint": "Par combien multiplie-t-on 3 pour obtenir 6 ? Fais pareil avec 5.",
+      "explanation": "Les longueurs sont proportionnelles : 3 × 2 = 6, donc le plus grand côté est 5 × 2 = 10 cm. 8 cm, c’est 5 + 3 : on a ajouté, comme de 3 à 6, au lieu de multiplier. 30 cm, c’est 5 × 6 : 6 est une longueur, pas le rapport.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "petit triangle (cm)",
+            "grand triangle (cm)"
+          ],
+          "rows": [
+            [
+              3,
+              6
+            ],
+            [
+              5,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles et parallélogramme",
+          "lines": [
+            "Triangles égaux : on peut les superposer. Mêmes côtés, mêmes angles.",
+            "Pour le savoir, il suffit de 3 côtés égaux, ou d’un angle égal entre 2 côtés égaux, ou d’un côté égal entre 2 angles égaux.",
+            "Triangles semblables : leurs angles sont égaux deux à deux.",
+            "Triangles semblables : leurs longueurs sont proportionnelles.",
+            "Parallélogramme : ses côtés opposés sont parallèles deux à deux.",
+            "Un quadrilatère dont les diagonales se coupent en leur milieu est un parallélogramme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-2-3",
+      "prompt": "Deux triangles ont un angle de 50°, entre deux côtés de 4 cm et 7 cm. Ces triangles sont …",
+      "spoken": "Deux triangles ont un angle de 50 degrés, entre deux côtés de 4 centimètres et 7 centimètres. Ces triangles sont (mot manquant)",
+      "choices": [
+        "égaux",
+        "semblables, mais pas égaux",
+        "peut-être différents"
+      ],
+      "answer": "égaux",
+      "hint": "L’angle est entre les deux côtés. Relis la deuxième ligne du rappel.",
+      "explanation": "Un angle égal, placé entre deux côtés égaux : c’est un des cas d’égalité. Les triangles sont égaux, le troisième côté a forcément la même longueur. Ils sont aussi semblables, mais « pas égaux » est faux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles et parallélogramme",
+          "lines": [
+            "Triangles égaux : on peut les superposer. Mêmes côtés, mêmes angles.",
+            "Pour le savoir, il suffit de 3 côtés égaux, ou d’un angle égal entre 2 côtés égaux, ou d’un côté égal entre 2 angles égaux.",
+            "Triangles semblables : leurs angles sont égaux deux à deux.",
+            "Triangles semblables : leurs longueurs sont proportionnelles.",
+            "Parallélogramme : ses côtés opposés sont parallèles deux à deux.",
+            "Un quadrilatère dont les diagonales se coupent en leur milieu est un parallélogramme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-2-4",
+      "prompt": "Triangle 1 : côtés de 2 cm, 3 cm et 4 cm\nTriangle 2 : côtés de 4 cm, 6 cm et 7 cm",
+      "question": "Ces deux triangles sont-ils semblables ?",
+      "spoken": "Triangle 1, côtés de 2 centimètres, 3 centimètres et 4 centimètres. Triangle 2, côtés de 4 centimètres, 6 centimètres et 7 centimètres.",
+      "choices": [
+        "oui, chaque côté a grandi",
+        "oui, deux côtés ont doublé",
+        "non, le troisième côté n’a pas doublé"
+      ],
+      "answer": "non, le troisième côté n’a pas doublé",
+      "hint": "Pour des triangles semblables, chaque côté est multiplié par le même nombre.",
+      "explanation": "2 × 2 = 4 et 3 × 2 = 6, mais 4 × 2 = 8, pas 7 : les longueurs ne sont pas proportionnelles, les triangles ne sont pas semblables. Grandir ne suffit pas, deux côtés sur trois non plus : il faut le même rapport pour les trois.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "triangle 1 (cm)",
+            "triangle 2 (cm)"
+          ],
+          "rows": [
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              6
+            ],
+            [
+              4,
+              7
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles et parallélogramme",
+          "lines": [
+            "Triangles égaux : on peut les superposer. Mêmes côtés, mêmes angles.",
+            "Pour le savoir, il suffit de 3 côtés égaux, ou d’un angle égal entre 2 côtés égaux, ou d’un côté égal entre 2 angles égaux.",
+            "Triangles semblables : leurs angles sont égaux deux à deux.",
+            "Triangles semblables : leurs longueurs sont proportionnelles.",
+            "Parallélogramme : ses côtés opposés sont parallèles deux à deux.",
+            "Un quadrilatère dont les diagonales se coupent en leur milieu est un parallélogramme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-2-5",
+      "prompt": "Un quadrilatère dont les côtés opposés sont parallèles deux à deux est …",
+      "spoken": "Un quadrilatère dont les côtés opposés sont parallèles deux à deux est (mot manquant)",
+      "choices": [
+        "un parallélogramme",
+        "forcément un carré",
+        "forcément un rectangle"
+      ],
+      "answer": "un parallélogramme",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Des côtés opposés parallèles deux à deux : c’est la définition du parallélogramme. Le rectangle et le carré en sont des cas particuliers : le rectangle a en plus quatre angles droits ; le carré, quatre angles droits et quatre côtés égaux. Ce n’est donc pas forcément l’un d’eux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles et parallélogramme",
+          "lines": [
+            "Triangles égaux : on peut les superposer. Mêmes côtés, mêmes angles.",
+            "Pour le savoir, il suffit de 3 côtés égaux, ou d’un angle égal entre 2 côtés égaux, ou d’un côté égal entre 2 angles égaux.",
+            "Triangles semblables : leurs angles sont égaux deux à deux.",
+            "Triangles semblables : leurs longueurs sont proportionnelles.",
+            "Parallélogramme : ses côtés opposés sont parallèles deux à deux.",
+            "Un quadrilatère dont les diagonales se coupent en leur milieu est un parallélogramme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-2-6",
+      "prompt": "Les diagonales d’un quadrilatère se coupent en leur milieu. Ce quadrilatère est …",
+      "spoken": "Les diagonales d’un quadrilatère se coupent en leur milieu. Ce quadrilatère est (mot manquant)",
+      "choices": [
+        "un parallélogramme",
+        "forcément un rectangle",
+        "forcément un losange"
+      ],
+      "answer": "un parallélogramme",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Des diagonales qui se coupent en leur milieu : c’est la propriété du parallélogramme. Pour un rectangle, il faudrait aussi des diagonales de même longueur. Pour un losange, des diagonales perpendiculaires.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles et parallélogramme",
+          "lines": [
+            "Triangles égaux : on peut les superposer. Mêmes côtés, mêmes angles.",
+            "Pour le savoir, il suffit de 3 côtés égaux, ou d’un angle égal entre 2 côtés égaux, ou d’un côté égal entre 2 angles égaux.",
+            "Triangles semblables : leurs angles sont égaux deux à deux.",
+            "Triangles semblables : leurs longueurs sont proportionnelles.",
+            "Parallélogramme : ses côtés opposés sont parallèles deux à deux.",
+            "Un quadrilatère dont les diagonales se coupent en leur milieu est un parallélogramme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-transformations-2-7",
+      "prompt": "ABCD est un parallélogramme.\nSes diagonales se coupent en O.\nAC = 10 cm.",
+      "question": "Combien mesure le segment qui va de A à O ?",
+      "spoken": "A B C D est un parallélogramme. Ses diagonales se coupent en O. A C égale 10 centimètres.",
+      "choices": [
+        "5 cm",
+        "10 cm",
+        "20 cm"
+      ],
+      "answer": "5 cm",
+      "hint": "O est-il au bout de la diagonale, ou en son milieu ?",
+      "explanation": "Les diagonales d’un parallélogramme se coupent en leur milieu : O est le milieu de la diagonale qui va de A à C : 10 ÷ 2 = 5 cm. 10 cm, c’est toute la diagonale. 20 cm, c’est le double.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 0,
+          "max": 10,
+          "points": [
+            0,
+            10
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Triangles et parallélogramme",
+          "lines": [
+            "Triangles égaux : on peut les superposer. Mêmes côtés, mêmes angles.",
+            "Pour le savoir, il suffit de 3 côtés égaux, ou d’un angle égal entre 2 côtés égaux, ou d’un côté égal entre 2 angles égaux.",
+            "Triangles semblables : leurs angles sont égaux deux à deux.",
+            "Triangles semblables : leurs longueurs sont proportionnelles.",
+            "Parallélogramme : ses côtés opposés sont parallèles deux à deux.",
+            "Un quadrilatère dont les diagonales se coupent en leur milieu est un parallélogramme."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
