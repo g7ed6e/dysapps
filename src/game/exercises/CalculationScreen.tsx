@@ -17,8 +17,10 @@ import type { ScreenProps } from './registry';
  * devient un document à lire (panneau, menu, horaire), encadré, une ligne par « \n », lu dans sa langue ; un document
  * en français (Observatoire des textes) est découpé en syllabes quand le réglage est actif. Un document peut porter une
  * image (`image`, un emoji) : le visuel qui l'accompagne (Signs), affiché devant lui, sans jamais donner la réponse.
+ * `listenToChoices` (les questions des blocs assemblés et des grands projets) : une réponse en langue étrangère a son
+ * bouton Écouter, à côté d'elle.
  */
-export function CalculationScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr' }: ScreenProps) {
+export function CalculationScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr', listenToChoices = false }: ScreenProps & { listenToChoices?: boolean }) {
   const item = items[0];
   const prompt = String(item.prompt ?? '');
   const spoken = String(item.spoken ?? prompt);
@@ -79,7 +81,7 @@ export function CalculationScreen({ items, answered, onAnswer, ruledOut, onHelp,
           const isAnswer = answered && choice === answer;
           // Au deuxième essai, la réponse déjà tentée reste barrée.
           const isWrong = Boolean(answered && chosen === choice && choice !== answer) || Boolean(ruledOut?.includes(choice));
-          return (
+          const button = (
             <button
               key={choice}
               type="button"
@@ -91,6 +93,15 @@ export function CalculationScreen({ items, answered, onAnswer, ruledOut, onHelp,
                 <RichText text={choice} lang={choicesLang} />
               </span>
             </button>
+          );
+          // Une question mêlée en anglais (GD-10) : chaque réponse s'écoute à part, à côté de son bouton, sans le toucher.
+          return listenToChoices && choicesLang !== 'fr' ? (
+            <div key={choice} className="choice-listen">
+              {button}
+              <SpeakButton text={choice} label="Écouter la réponse" compact lang={choicesLang} />
+            </div>
+          ) : (
+            button
           );
         })}
       </div>
@@ -116,4 +127,9 @@ export function CalculationScreen({ items, answered, onAnswer, ruledOut, onHelp,
       )}
     </div>
   );
+}
+
+/** L'écran des questions mêlées (blocs assemblés, grands projets) : le même, chaque réponse en anglais s'écoute à part. */
+export function AssemblyScreen(props: ScreenProps) {
+  return <CalculationScreen {...props} listenToChoices />;
 }

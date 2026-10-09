@@ -23,6 +23,8 @@ import {
 import { nextDestination, type Destination } from './destination';
 import { islandState, type IslandStateDef } from './islandState';
 import { monumentsOf } from './monuments';
+import { projectReady, suggestedProject } from './projectChoice';
+import { projectOf } from './projects';
 import { stageBuildingAt, stageTo } from './vehicle';
 import type { VoyageLeg } from './voyage';
 
@@ -114,8 +116,14 @@ export function etatsDesObjets(state: GameState, a: ArchipelagoId): EtatsDesObje
     navirePret: Boolean(etape && (nextFillable(state, etape) || canLaunch(state, etape).ok)),
     chantiersPrets: [
       ...BRIDGES.filter((b) => ici.has(b.from) && buildBridge(b.id, links, state.stock, monde).ok).map((b) => b.id),
+      // Un monument posé case par case : un bloc à poser. Un grand projet (GD-10) : une pièce à poser, et un seul projet de
+      // l'archipel à la fois, celui que le jeu met en avant (le choix se fait dans le monde, en 4e et en 3e).
       ...monumentsOf(a)
-        .filter((m) => nextFillable(state, m))
+        .filter((m) => {
+          const project = projectOf(m.id);
+          if (!project) return nextFillable(state, m);
+          return projectReady(state, project) && suggestedProject(state, a) === project;
+        })
         .map((m) => m.id),
     ],
   };

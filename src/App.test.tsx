@@ -223,8 +223,9 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   // Les îles fermées ne sont pas listées une par une, seulement comptées.
   expect(screen.queryByText(/île fermée/)).not.toBeInTheDocument();
   expect(screen.getByLabelText(/sur des îles que tu ouvriras plus tard/)).toBeInTheDocument();
-  await user.click(screen.getByRole('link', { name: /Carte de Blocland/ }));
-  expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
+  // Le lien vers la Carte suffit : la page qu'il ouvre, déjà rendue au début du test, dessine toutes les îles des
+  // quatre archipels ; la rouvrir coûtait plus d'une seconde sur la CI.
+  expect(screen.getByRole('link', { name: /Carte de Blocland/ })).toHaveAttribute('href', '/adventure');
 });
 
 it('en vue simple, les bandeaux de récompense attendent que le mot des grandes étapes soit fermé (DA-9)', async () => {

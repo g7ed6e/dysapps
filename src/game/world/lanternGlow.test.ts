@@ -51,8 +51,10 @@ describe('la lueur des lanternes allumées (GD-10)', () => {
     expect(coutDesLueurs(avecEau)).toEqual({ triangles: 2 * 21 + 2, drawCalls: 2 });
   });
 
-  it('le phare du large fini, au 5e : deux appels la nuit, aucun ailleurs', () => {
+  it('les grands projets finis, la nuit : un maillage et un halo par monument allumé (le phare au 5e, deux en 4e, trois en 3e), rien au 6e', () => {
     expect(lueursCost('5e')).toEqual({ triangles: 44, drawCalls: 2 });
-    for (const a of ['6e', '4e', '3e'] as const) expect(lueursCost(a)).toEqual({ triangles: 0, drawCalls: 0 });
+    expect(lueursCost('4e')).toEqual({ triangles: 72, drawCalls: 3 });
+    expect(lueursCost('3e')).toEqual({ triangles: 54, drawCalls: 4 });
+    expect(lueursCost('6e')).toEqual({ triangles: 0, drawCalls: 0 });
   });
 });

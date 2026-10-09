@@ -1106,6 +1106,23 @@ button.app-card:active {
 .choice:disabled {
   cursor: default;
 }
+/* Une réponse en langue étrangère d'une question mêlée et son haut-parleur : la réponse prend toute la case, le
+   haut-parleur reste à droite, centré, à la même place pour les trois réponses, assez écarté pour ne pas toucher l'autre. */
+.choice-listen {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.choice-listen > .choice {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.choice-listen > .speak-button {
+  flex: none;
+  min-width: 48px;
+  min-height: 48px;
+}
 .choice.wrong {
   border-color: var(--error);
   background: var(--error-bg);
@@ -7009,8 +7026,18 @@ fieldset {
     display: flex;
     flex-wrap: wrap;
   }
-  :root[data-texte="grand"] .choices.short > .choice {
+  :root[data-texte="grand"] .choices.short > :is(.choice, .choice-listen) {
     flex: 1 1 auto;
+  }
+  /* Une réponse et son haut-parleur : la réponse garde toute la largeur pour qu'un mot ne s'y coupe pas, le haut-parleur
+     passe juste dessous, à droite, à la même place pour les trois réponses. */
+  :root[data-texte="grand"] .choice-listen {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+  }
+  :root[data-texte="grand"] .choice-listen > .speak-button {
+    align-self: flex-end;
   }
   :root[data-texte="grand"] .enclos-pens {
     flex-wrap: wrap;
