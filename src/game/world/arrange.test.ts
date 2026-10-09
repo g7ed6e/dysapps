@@ -407,14 +407,16 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
     expect(Object.keys(w.layout ?? {})).toEqual([a]);
   });
 
-  it('au 4e (SC-3, puis GD-11) : le Château des hypothèses, posé sur la place de départ de la Source des espèces, sort désormais du cadre ; il se décale, seul, à la place libre la plus proche : la sienne, sur la carte de départ', () => {
+  it('au 4e (SC-3, GD-11, puis GD-12) : le Château des hypothèses, posé sur la place de départ de la Source des espèces, ne tient plus ; il se décale, seul, à la place libre la plus proche', () => {
     const lieu: BiomeId = 'english-4e-grammar';
     const ici = startingSpot('life-earth-sciences-4e-cells-evolution');
     expect(fittingPlaces('4e', { [lieu]: ici })).toBeNull();
     const avant: World = { ...partie(), layout: { '4e': { islands: { [lieu]: ici } } } };
     const w = settleNewPlaces(avant);
-    expect(Object.keys(w.layout?.['4e']?.islands ?? {})).toEqual([]);
-    expect(spotOf(w, lieu)).toEqual(startingSpot(lieu));
+    // De GD-11 à GD-12, c'était sa place de la carte de départ ; depuis les formes des îles (9 octobre 2026), une place
+    // à quatre pas de la sienne, vers la Source.
+    expect(w.layout?.['4e']?.islands).toEqual({ [lieu]: { x: 2, y: 18, turn: 0 } });
+    expect(fittingPlaces('4e', w.layout!['4e']!.islands!)).not.toBeNull();
     expect(w.links).toBe(avant.links);
   });
 

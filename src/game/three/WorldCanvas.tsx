@@ -287,15 +287,20 @@ export default function WorldCanvas({
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
     // Une poignée du mode sort de la place libre : la Carte glisse pour poser le milieu du choix au milieu de la place
     // libre (pas pendant un glissé de l'élève ; une fois le doigt levé).
-    const ramenerLesPoignees = (p: { cx: number; cy: number; z: number }) => {
+    // Avec `ecart` (GD-12, relecture UX UI du 9 octobre 2026) : la Carte glisse juste de quoi les ramener dans la place,
+    // le milieu du choix posé là où la caméra visée le montre, décalé d'autant ; le cadre de la région reste entier.
+    const ramenerLesPoignees = (p: { cx: number; cy: number; z: number }, ecart: { x: number; y: number } | null) => {
       if (cadrage.glissant) return false;
       const libre = lirePlaceReelle(el);
       const w = Math.max(1, el.clientWidth);
       const h = Math.max(1, el.clientHeight);
-      cadrage.recadrer(new THREE.Vector3(p.cx, p.z, p.cy), { x: (libre.x0 + libre.x1) / w - 1, y: 1 - (libre.y0 + libre.y1) / h });
+      const point = new THREE.Vector3(p.cx, p.z, p.cy);
+      const vu = ecart ? cadrage.auBut(point, w, h) : null;
+      const ou = vu && ecart ? { x: vu.x + ecart.x, y: vu.y + ecart.y } : { x: (libre.x0 + libre.x1) / 2, y: (libre.y0 + libre.y1) / 2 };
+      cadrage.recadrer(point, { x: (2 * ou.x) / w - 1, y: 1 - (2 * ou.y) / h });
       return true;
     };
-    const amenagement = creerAmenagement(monde, reduceMotion, camera, el, lumiere, () => ecranDuModeRef.current, ramenerLesPoignees);
+    const amenagement = creerAmenagement(monde, reduceMotion, camera, el, lumiere, () => ecranDuModeRef.current, ramenerLesPoignees, () => cadrage.cameraAuBut());
     world.current = {
       amenagement,
       garderEnVue: ({ rect: r, z }) => {

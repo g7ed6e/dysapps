@@ -8,6 +8,10 @@ import { repereDeLaVue } from '../world/framing';
 import { GRAND_PHARE_3E } from '../world/decor/3e';
 import { PHARE, PHARES } from '../world/decor/lighthouse';
 import { islandDef, landBox, mapOf } from '../world/map';
+import { chooseIsland } from '../world/arrangeMode';
+import { arrangeView } from '../world/arrangeView';
+import { COTE_DU_RADEAU, ecartVersLaPlace, placerALEchelle, POIGNEE_MIN_PX } from '../world/arrangeHandles';
+import { toutConstruit } from '../world/budget';
 import { BRIDGES, linkWholeRegion, VOYAGES } from '../world/archipelago';
 import { ARCHIPELAGO_IDS } from '../world/archipelagos';
 import { neighboursOf } from '../world/linkGeometry';
@@ -156,6 +160,68 @@ describe('La Carte dans la place libre (DA-31)', () => {
         expect(p.x >= libre.x0 && p.x <= libre.x1 && p.y >= libre.y0 && p.y <= libre.y1, `${a} (${x}, ${y})`).toBe(true);
       }
     }
+  });
+
+  it('« Modifier le plan » garde le cadre entier, quelle que soit la destination, sous la phrase de la place (GD-12, relecture UX UI)', () => {
+    // La tablette, la phrase de la place en haut, Menu et bonhomme contournés à droite, Annuler et Valider en bas.
+    const V = { w: 1024, h: 768 };
+    const libre = { x0: 0, y0: 88, x1: 960, y1: 698 };
+    for (const a of ARCHIPELAGO_IDS)
+      for (const def of mapOf(a)) {
+        const c = cadrageDeLaCarte(a, def.id, V.w, V.h, libre, { region: true });
+        expect(c.auPlancher, `${a} ${def.id}`).toBe(false);
+        const b = worldBounds(a);
+        for (const [x, y] of [[b.minX, b.minY], [b.maxX, b.minY], [b.minX, b.maxY], [b.maxX, b.maxY]]) {
+          const p = vu(c, V, x, def.altitude, y);
+          expect(p.x >= libre.x0 && p.x <= libre.x1 && p.y >= libre.y0 && p.y <= libre.y1, `${a} ${def.id} (${x}, ${y})`).toBe(true);
+        }
+      }
+  });
+
+  it('« Modifier le plan » : un lieu choisi, son radeau « Tourner » tient dans la place, ou la Carte glisse de peu, le cadre de la région à l’écran (GD-12, relecture UX UI)', () => {
+    // La Carte se juge à sa place visée (three/arrange.ts) : choisi pendant son glissé vers le cadre de la région, le
+    // Bassin des maquettes (au coin du fond du 4e) se posait au milieu de la place, et la Source des espèces sortait au
+    // coin opposé. Le radeau à l'échelle que lui donne la vue (three/arrangeHandles.ts, `echelleVoulue`).
+    const V = { w: 1024, h: 768 };
+    const { world } = toutConstruit();
+    const ecart = { x: 0, y: 0 };
+    for (const libre of [{ x0: 0, y0: 88, x1: 960, y1: 698 }, { x0: 0, y0: 88, x1: 1024, y1: 700 }])
+      for (const a of ARCHIPELAGO_IDS) {
+        const c = cadrageDeLaCarte(a, null, V.w, V.h, libre, { region: true });
+        const cam = new THREE.PerspectiveCamera(40, V.w / V.h, 0.5, 1e5);
+        cam.position.copy(c.pos);
+        cam.lookAt(c.target);
+        cam.updateMatrixWorld();
+        const regard = cam.getWorldDirection(new THREE.Vector3());
+        for (const def of mapOf(a)) {
+          const choix = chooseIsland(world, def.id);
+          const p = choix && arrangeView(world, choix).poignees;
+          if (!p?.liste.length) continue;
+          const profondeur = new THREE.Vector3(p.cx, p.z, p.cy).sub(cam.position).dot(regard);
+          const parPixel = (2 * profondeur * Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2)) / V.h;
+          const s = Math.max(1, (POIGNEE_MIN_PX * parPixel) / (COTE_DU_RADEAU * Math.max(0.5, Math.abs(regard.y))));
+          const centres = new Float32Array(2 * p.liste.length);
+          placerALEchelle(p, s, centres);
+          const d = (COTE_DU_RADEAU / 2) * s;
+          const ici = new Float32Array(5 * p.liste.length);
+          p.liste.forEach((_, k) => {
+            const coins = [-d, d].flatMap((dx) => [-d, d].map((dy) => vu(c, V, centres[2 * k] + dx, p.z, centres[2 * k + 1] + dy)));
+            const x0 = Math.min(...coins.map((q) => q.x));
+            const x1 = Math.max(...coins.map((q) => q.x));
+            const y0 = Math.min(...coins.map((q) => q.y));
+            const y1 = Math.max(...coins.map((q) => q.y));
+            ici.set([k, (x0 + x1) / 2, (y0 + y1) / 2, x1 - x0, y1 - y0], 5 * k);
+          });
+          ecartVersLaPlace(ici, p.liste.length, libre, 4, ecart);
+          expect(Math.hypot(ecart.x, ecart.y), `${a} ${def.id}`).toBeLessThanOrEqual(24);
+          // La Carte glissée d'autant : les quatre coins du cadre de la région restent à l'écran.
+          const b = worldBounds(a);
+          for (const [x, y] of [[b.minX, b.minY], [b.maxX, b.minY], [b.minX, b.maxY], [b.maxX, b.maxY]]) {
+            const q = vu(c, V, x, def.altitude, y);
+            expect(q.x + ecart.x >= 0 && q.x + ecart.x <= V.w && q.y + ecart.y >= 0 && q.y + ecart.y <= V.h, `${a} ${def.id} (${x}, ${y})`).toBe(true);
+          }
+        }
+      }
   });
 
   it('au plancher, l’île du bonhomme hors de la place y entre avec la destination quand les deux y tiennent ; sinon, la destination seule (GD-11, consultant UX UI)', () => {
