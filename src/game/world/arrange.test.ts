@@ -163,7 +163,9 @@ describe('les places des lieux', () => {
     // montré pour eux (directeur artistique, 9 octobre 2026).
     const w = partie();
     const sans: string[] = [];
-    const sansTourner = ['french-5e-conjugation', 'english-5e-vocabulary', 'english-5e-grammar'] as BiomeId[];
+    // Aux Anciens Ateliers, l'Escale des échanges de même, depuis la Porte des libertés et la Colonnade des cités ; aux
+    // Îles du Ciel, l'Observatoire des textes, depuis le Forum des débats et le Bosquet des sages.
+    const sansTourner = ['french-5e-conjugation', 'english-5e-vocabulary', 'english-5e-grammar', 'geography-4e-globalization', 'french-3e-close-reading'] as BiomeId[];
     for (const a of ARCHIPELAGO_IDS)
       for (const id of placesOf(a).filter((p) => !isFixedPlace(p) && placeTurns(p))) if (!turnIsland(w, id).ok) sans.push(id);
     expect(sans).toEqual(['french-6e-reading']);

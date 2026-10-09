@@ -33,7 +33,7 @@ import type { Layout, LayoutSpot } from './savedLayout';
  * chaque lieu mobile trouve une place tourné (arrange.test.ts) ; les îles agrandies tiennent dans les mêmes cadres.
  * Depuis une forme par île (GD-12, 9 octobre 2026), les cadres s'approfondissent encore, vers l'est et le fond
  * seulement (le coin ne bouge pas : les places des sauvegardes se comptent depuis lui, `LAYOUT_LAST_SPOT`), pour deux
- * places d'îles futures : 176 × 160 aux Îles Brumeuses (+8 vers l'est, +20 au fond, et non les 32 demandés : au-delà,
+ * places d'îles futures, occupées depuis par l'EMC et le latin-grec (EMC-2, LCA-2) : 176 × 160 aux Îles Brumeuses (+8 vers l'est, +20 au fond, et non les 32 demandés : au-delà,
  * « Modifier le plan » ne cadre plus toute la région sur la tablette, camera.test.ts) ; 168 × 164 aux Anciens Ateliers (+24 au fond : le rang du fond porte la Vigie,
  * le Bassin et, entre eux, les deux places futures) ; 208 × 152 aux Îles du Ciel (+32 au fond : le rang du fond porte
  * le Tremplin, la Ruche et les deux places futures).

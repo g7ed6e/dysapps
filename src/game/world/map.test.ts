@@ -1,8 +1,6 @@
 import { BIOMES } from '../biomes';
-import type { BiomeId } from '../biomes';
-import { ALTITUDE, ARCHIPELAGO_IDS, type ArchipelagoId, CORE, etendueDuLieu, LACS, isLand, islandDef, landBox, landCells, landscape, mapOf, margesDuCoeur, MAP, reliefHeight } from './map';
-import type { FormeDeLIle } from './formes';
-import { footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, landRectangles } from './footprint';
+import { ALTITUDE, ARCHIPELAGO_IDS, CORE, etendueDuLieu, LACS, isLand, islandDef, landBox, landCells, landscape, mapOf, margesDuCoeur, MAP, reliefHeight } from './map';
+import { frameOf } from './footprint';
 import { silhouetteDe } from './silhouettes';
 import { BRIDGES, LINKS_BEFORE_GD9, linkWholeRegion, VOYAGES } from './archipelago';
 import { worldCubes } from './terrain';
@@ -24,51 +22,12 @@ it('chaque île a une place, une altitude selon sa classe, et son cœur fait par
 it('la côte écrite d’un lieu qui a une forme (GD-12) est celle de sa forme', () => {
   // La carte de départ l'écrit en dur, pour ne pas calculer un masque par lieu à l'import de map.ts. Les lieux des
   // Basses Terres (16, avec le Préau des délégués d'EMC-2), des Collines du Large (14, avec le Fournil des partages et la
-  // Grotte des légendes d'EMC-2 et LCA-2), des Monts de Feu (12) et des Îles du Ciel (12) ont leur forme (GD-12 ;
-  // formes.test.ts compte les lieux de chaque archipel).
+  // Grotte des légendes d'EMC-2 et LCA-2), des Monts de Feu (14, avec la Porte des libertés et la Colonnade des cités)
+  // et des Îles du Ciel (14, avec le Forum des débats et le Bosquet des sages) ont leur forme (GD-12 ; formes.test.ts
+  // compte les lieux de chaque archipel). Les places que GD-12 gardait pour l'EMC et le latin-grec sont toutes occupées.
   const formes = MAP.filter((d) => silhouetteDe(d.id).forme);
-  expect(formes.length).toBe(54);
+  expect(formes.length).toBe(58);
   for (const d of formes) expect(d.ext, d.id).toEqual(etendueDuLieu(d, silhouetteDe(d.id).forme!));
-});
-
-/**
- * Les places gardées pour des îles futures (GD-12, coordination du 9 octobre 2026) : deux par archipel, l'éducation
- * morale et civique et le latin ou le grec, chacune avec un premier dessin de forme du catalogue, sans créer le lieu
- * (docs/gameplay/propositions/archives/GD-12.md). Une île de la carte de départ ne s'y pose pas. Celles du 5e sont
- * occupées depuis EMC-2 et LCA-2 : le Fournil des partages en (29, 405), la Grotte des légendes en (65, 405), à leurs formes.
- */
-const PLACES_FUTURES: Partial<Record<ArchipelagoId, readonly { nom: string; core: { x: number; y: number }; forme: FormeDeLIle }[]>> = {
-  // Aux Monts de Feu, au rang du fond, entre la Vigie et le Bassin : l'EMC en trèfle derrière l'Escale, le latin ou le
-  // grec en galet derrière le Théâtre (9 octobre 2026).
-  '4e': [
-    { nom: 'EMC', core: { x: 74, y: 716 }, forme: { forme: 'trefle', vers: 'devant' } },
-    { nom: 'latin ou grec', core: { x: 106, y: 716 }, forme: { forme: 'galet', vers: 'devant' } },
-  ],
-  // Aux Îles du Ciel, au rang du fond, à l'ouest : l'EMC en trèfle au coin, derrière le Kiosque des témoins, le latin ou
-  // le grec en galet à côté, derrière le Verger de la santé (9 octobre 2026).
-  '3e': [
-    { nom: 'EMC', core: { x: -14, y: 996 }, forme: { forme: 'trefle', vers: 'devant' } },
-    { nom: 'latin ou grec', core: { x: 22, y: 996 }, forme: { forme: 'galet', vers: 'devant' } },
-  ],
-};
-
-it('les places des îles futures (GD-12) : dans le cadre, à quatre cases d’eau de toute emprise de départ', () => {
-  for (const [a, places] of Object.entries(PLACES_FUTURES) as [ArchipelagoId, (typeof PLACES_FUTURES)['5e']][]) {
-    const cadre = frameOf(a);
-    const modele = mapOf(a)[0];
-    const emprises = mapOf(a).flatMap((d) => footprintOf(d.id, d));
-    const futures = places!.map((p) => {
-      // Un lieu sans nom, pour son seul masque (le masque se garde par identifiant).
-      const def = { ...modele, id: `futur-${a}-${p.nom}` as BiomeId, core: p.core, deplacee: undefined, vueDepuis: undefined, repere: p.core };
-      return { nom: p.nom, rects: landRectangles({ ...def, ext: etendueDuLieu(def, p.forme) }) };
-    });
-    for (const f of futures)
-      for (const r of f.rects) {
-        expect(Math.min(r.x0 - cadre.x0, r.y0 - cadre.y0, cadre.x1 - r.x1, cadre.y1 - r.y1), `${a} ${f.nom} dans le cadre`).toBeGreaterThanOrEqual(0);
-        for (const e of emprises) expect(gapBetween(r, e), `${a} ${f.nom} et ${e.lieu}`).toBeGreaterThanOrEqual(GAP_BETWEEN_PLACES);
-        for (const g of futures) if (g !== f) for (const s of g.rects) expect(gapBetween(r, s), `${a} ${f.nom} et ${g.nom}`).toBeGreaterThanOrEqual(GAP_BETWEEN_PLACES);
-      }
-  }
 });
 
 it('la terre de chaque lieu, forme comprise, tient dans le cadre de sa région (GD-12)', () => {

@@ -105,8 +105,9 @@ describe('les commandes des habitants en Markdown', () => {
     const demandes = JSON.parse(sortie.get(DEMANDES));
     expect(readFileSync(DEMANDES, 'utf8')).toBe(sortie.get(DEMANDES));
     const scolaires = ilesDuJeu().filter((b) => !estLieuDOption(b));
-    // 50 depuis le Fournil des partages (EMC-2) ; la Grotte des légendes (LCA-2), lieu d'option, n'a pas de commande.
-    expect(scolaires).toHaveLength(50);
+    // 50 depuis le Fournil des partages (EMC-2), 52 depuis la Porte des libertés et le Forum des débats ; la Grotte des
+    // légendes, la Colonnade des cités et le Bosquet des sages (LCA-2), lieux d'option, n'ont pas de commande.
+    expect(scolaires).toHaveLength(52);
     expect(demandes.map((d) => d.biome)).toEqual(scolaires.map((b) => b.id));
     expect(new Set(demandes.map((d) => d.id)).size).toBe(demandes.length);
     expect(new Set(demandes.map((d) => d.fixture)).size).toBe(demandes.length);

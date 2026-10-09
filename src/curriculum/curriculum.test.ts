@@ -75,7 +75,8 @@ it('le latin et le grec suivent le programme de LCA de 2016 : la culture de 5e e
     laCommuns.map((e) => [e.id, e.classes, e.competence, e.page]),
   );
   // Ce que l'écran ne fait pas (lire à voix haute, traduire soi-même, commenter) est hors périmètre ; le reste, à couvrir,
-  // sauf ce que travaille déjà la Grotte des légendes (5e, LCA-2), sorti des exclusions (game/curriculum.test.ts).
+  // sauf ce que travaillent déjà la Grotte des légendes (5e), la Colonnade des cités (4e) et le Bosquet des sages (3e, LCA-2),
+  // sorti des exclusions (game/curriculum.test.ts).
   for (const e of [...la, ...gr]) {
     const hors = /\.lecture\.(lire-oralement|traduire|interpreter)$/.test(e.id);
     const kind = EXCLUSIONS[e.id as keyof typeof EXCLUSIONS]?.kind;

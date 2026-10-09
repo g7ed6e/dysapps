@@ -1,0 +1,240 @@
+{
+  "id": "civics-4e-rights-freedoms-freedoms-1",
+  "biome": "civics-4e-rights-freedoms",
+  "type": "freedoms",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-1-0",
+      "prompt": "Créer un club avec d’autres personnes, c’est exercer la liberté d’…",
+      "spoken": "Créer un club avec d’autres personnes, c’est exercer la liberté d’ (mot manquant) ",
+      "choices": [
+        "opinion",
+        "association",
+        "expression"
+      ],
+      "answer": "association",
+      "hint": "Relis la deuxième ligne du rappel : que fait-on en créant un club à plusieurs ?",
+      "explanation": "Créer un club ou une association avec d’autres : c’est la liberté d’association, une liberté collective, fixée par la loi de 1901.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les libertés et leurs limites",
+          "lines": [
+            "Les libertés individuelles : circuler (aller et venir), penser, croire, s’exprimer.",
+            "Les libertés collectives : se réunir, s’associer, manifester, publier un journal.",
+            "Ma liberté s’arrête où commence celle des autres.",
+            "La loi encadre les libertés.",
+            "L’ordre public : la sécurité, la tranquillité, la salubrité (l’hygiène et la santé), la dignité.",
+            "L’injure : insulter une personne. La loi la punit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-1-1",
+      "prompt": "Aller et venir où l’on veut dans le pays, c’est la liberté de …",
+      "spoken": "Aller et venir où l’on veut dans le pays, c’est la liberté de  (mot manquant) ",
+      "choices": [
+        "réunion",
+        "presse",
+        "circulation"
+      ],
+      "answer": "circulation",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Aller et venir librement, c’est la liberté de circulation : une liberté individuelle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les libertés et leurs limites",
+          "lines": [
+            "Les libertés individuelles : circuler (aller et venir), penser, croire, s’exprimer.",
+            "Les libertés collectives : se réunir, s’associer, manifester, publier un journal.",
+            "Ma liberté s’arrête où commence celle des autres.",
+            "La loi encadre les libertés.",
+            "L’ordre public : la sécurité, la tranquillité, la salubrité (l’hygiène et la santé), la dignité.",
+            "L’injure : insulter une personne. La loi la punit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-1-2",
+      "prompt": "Déclaration des droits de l’homme et du citoyen, 1789\nArticle 4 : « La liberté consiste à pouvoir faire tout ce qui ne nuit pas à autrui. »",
+      "question": "Que veut dire cet article ?",
+      "spoken": "Déclaration des droits de l’homme et du citoyen, mille sept cent quatre-vingt-neuf. Article 4 : La liberté consiste à pouvoir faire tout ce qui ne nuit pas à autrui.",
+      "choices": [
+        "ma liberté s’arrête où commence celle des autres",
+        "on peut tout faire, sans limite",
+        "la liberté est réservée aux adultes"
+      ],
+      "answer": "ma liberté s’arrête où commence celle des autres",
+      "hint": "« Autrui », ce sont les autres. Que dit l’article sur eux ?",
+      "explanation": "On est libre de faire tout ce qui ne nuit pas aux autres : ma liberté s’arrête où commence celle des autres. « Autrui » veut dire les autres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les libertés et leurs limites",
+          "lines": [
+            "Les libertés individuelles : circuler (aller et venir), penser, croire, s’exprimer.",
+            "Les libertés collectives : se réunir, s’associer, manifester, publier un journal.",
+            "Ma liberté s’arrête où commence celle des autres.",
+            "La loi encadre les libertés.",
+            "L’ordre public : la sécurité, la tranquillité, la salubrité (l’hygiène et la santé), la dignité.",
+            "L’injure : insulter une personne. La loi la punit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-1-3",
+      "prompt": "Les journaux publient sans demander l’accord du gouvernement : c’est la liberté de la …",
+      "spoken": "Les journaux publient sans demander l’accord du gouvernement : c’est la liberté de la  (mot manquant) ",
+      "choices": [
+        "presse",
+        "conscience",
+        "circulation"
+      ],
+      "answer": "presse",
+      "hint": "Comment appelle-t-on l’ensemble des journaux ?",
+      "explanation": "C’est la liberté de la presse, encadrée par la loi du 29 juillet 1881. Les journaux n’ont pas à demander d’autorisation avant de publier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les libertés et leurs limites",
+          "lines": [
+            "Les libertés individuelles : circuler (aller et venir), penser, croire, s’exprimer.",
+            "Les libertés collectives : se réunir, s’associer, manifester, publier un journal.",
+            "Ma liberté s’arrête où commence celle des autres.",
+            "La loi encadre les libertés.",
+            "L’ordre public : la sécurité, la tranquillité, la salubrité (l’hygiène et la santé), la dignité.",
+            "L’injure : insulter une personne. La loi la punit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-1-4",
+      "prompt": "Manifester se fait à plusieurs : c’est une liberté …",
+      "spoken": "Manifester se fait à plusieurs : c’est une liberté  (mot manquant) ",
+      "choices": [
+        "individuelle",
+        "collective",
+        "privée"
+      ],
+      "answer": "collective",
+      "hint": "Seul, ou à plusieurs ?",
+      "explanation": "Manifester, se réunir, s’associer : ces libertés se vivent à plusieurs, ce sont des libertés collectives.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les libertés et leurs limites",
+          "lines": [
+            "Les libertés individuelles : circuler (aller et venir), penser, croire, s’exprimer.",
+            "Les libertés collectives : se réunir, s’associer, manifester, publier un journal.",
+            "Ma liberté s’arrête où commence celle des autres.",
+            "La loi encadre les libertés.",
+            "L’ordre public : la sécurité, la tranquillité, la salubrité (l’hygiène et la santé), la dignité.",
+            "L’injure : insulter une personne. La loi la punit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-1-5",
+      "prompt": "Une nuit dans un immeuble\nUne fête dans un appartement.\nLa musique très forte à 3 heures du matin.\nLes voisins ne peuvent pas dormir.",
+      "question": "Quelle partie de l’ordre public est touchée ?",
+      "spoken": "Une nuit dans un immeuble. Une fête dans un appartement. La musique très forte à 3 heures du matin. Les voisins ne peuvent pas dormir.",
+      "choices": [
+        "la salubrité",
+        "la dignité",
+        "la tranquillité"
+      ],
+      "answer": "la tranquillité",
+      "hint": "Lis la dernière ligne du document : qu’est-ce qui manque aux voisins ?",
+      "explanation": "Le bruit la nuit empêche les voisins de dormir : il trouble la tranquillité, une partie de l’ordre public. La salubrité, c’est l’hygiène et la santé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les libertés et leurs limites",
+          "lines": [
+            "Les libertés individuelles : circuler (aller et venir), penser, croire, s’exprimer.",
+            "Les libertés collectives : se réunir, s’associer, manifester, publier un journal.",
+            "Ma liberté s’arrête où commence celle des autres.",
+            "La loi encadre les libertés.",
+            "L’ordre public : la sécurité, la tranquillité, la salubrité (l’hygiène et la santé), la dignité.",
+            "L’injure : insulter une personne. La loi la punit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-1-6",
+      "prompt": "Avoir ses idées et ses croyances, sans être inquiété, c’est la liberté d’…",
+      "spoken": "Avoir ses idées et ses croyances, sans être inquiété, c’est la liberté d’ (mot manquant) ",
+      "choices": [
+        "opinion",
+        "association",
+        "entreprendre"
+      ],
+      "answer": "opinion",
+      "hint": "Penser ce que l’on veut : quel mot dit un avis, une idée ?",
+      "explanation": "Avoir ses idées sans être inquiété, c’est la liberté d’opinion, une liberté individuelle (article 10 de la Déclaration de 1789).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les libertés et leurs limites",
+          "lines": [
+            "Les libertés individuelles : circuler (aller et venir), penser, croire, s’exprimer.",
+            "Les libertés collectives : se réunir, s’associer, manifester, publier un journal.",
+            "Ma liberté s’arrête où commence celle des autres.",
+            "La loi encadre les libertés.",
+            "L’ordre public : la sécurité, la tranquillité, la salubrité (l’hygiène et la santé), la dignité.",
+            "L’injure : insulter une personne. La loi la punit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-1-7",
+      "prompt": "On peut critiquer une idée ; mais insulter une personne est puni par la loi : c’est une …",
+      "spoken": "On peut critiquer une idée ; mais insulter une personne est puni par la loi : c’est une  (mot manquant) ",
+      "choices": [
+        "critique",
+        "injure",
+        "opinion"
+      ],
+      "answer": "injure",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "La liberté d’expression permet de critiquer. Insulter une personne est une injure, punie par la loi, en ligne comme ailleurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les libertés et leurs limites",
+          "lines": [
+            "Les libertés individuelles : circuler (aller et venir), penser, croire, s’exprimer.",
+            "Les libertés collectives : se réunir, s’associer, manifester, publier un journal.",
+            "Ma liberté s’arrête où commence celle des autres.",
+            "La loi encadre les libertés.",
+            "L’ordre public : la sécurité, la tranquillité, la salubrité (l’hygiène et la santé), la dignité.",
+            "L’injure : insulter une personne. La loi la punit."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-4e-rights-freedoms",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

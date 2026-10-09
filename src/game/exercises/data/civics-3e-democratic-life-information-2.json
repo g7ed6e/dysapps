@@ -1,0 +1,250 @@
+{
+  "id": "civics-3e-democratic-life-information-2",
+  "biome": "civics-3e-democratic-life",
+  "type": "information",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-3e-democratic-life-information-2-0",
+      "prompt": "Une photo partagée des milliers de fois\nUn requin nage dans une rue inondée.\nAucun média sérieux n’en parle.\nUne recherche montre que l’image est un montage.",
+      "question": "Que faut-il en conclure ?",
+      "spoken": "Une photo partagée des milliers de fois. Un requin nage dans une rue inondée. Aucun média sérieux n’en parle. Une recherche montre que l’image est un montage.",
+      "choices": [
+        "c’est une fausse information",
+        "c’est vrai, puisqu’elle est très partagée",
+        "c’est un savoir prouvé"
+      ],
+      "answer": "c’est une fausse information",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "L’image est un montage : c’est une fausse information, même partagée des milliers de fois. Le nombre de partages ne prouve rien.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vérifier une information",
+          "lines": [
+            "Qui l’a écrite ? Quand ? D’où vient-elle ?",
+            "Recouper : la chercher dans d’autres sources sérieuses.",
+            "Une image peut être retouchée, ou sortie de son contexte.",
+            "Un hypertrucage : une vidéo fabriquée par une intelligence artificielle.",
+            "Le complotisme : croire, sans preuve, qu’un groupe caché organise tout en secret.",
+            "Un lanceur d’alerte révèle un danger pour tous ; une loi de 2022 le protège.",
+            "Être très partagée ne rend pas une information vraie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-2-1",
+      "prompt": "Une vidéo d’une personne célèbre\nOn l’entend dire une phrase étonnante.\nSa voix et son visage ont été fabriqués par une intelligence artificielle.",
+      "question": "Comment appelle-t-on une telle vidéo ?",
+      "spoken": "Une vidéo d’une personne célèbre. On l’entend dire une phrase étonnante. Sa voix et son visage ont été fabriqués par une intelligence artificielle.",
+      "choices": [
+        "un reportage",
+        "un hypertrucage",
+        "un sondage"
+      ],
+      "answer": "un hypertrucage",
+      "hint": "Relis la quatrième ligne du rappel : la vidéo est-elle vraie ?",
+      "explanation": "Une vidéo fabriquée par une intelligence artificielle, qui fait dire à quelqu’un ce qu’il n’a pas dit, est un hypertrucage. Avant de la croire, on cherche la source.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vérifier une information",
+          "lines": [
+            "Qui l’a écrite ? Quand ? D’où vient-elle ?",
+            "Recouper : la chercher dans d’autres sources sérieuses.",
+            "Une image peut être retouchée, ou sortie de son contexte.",
+            "Un hypertrucage : une vidéo fabriquée par une intelligence artificielle.",
+            "Le complotisme : croire, sans preuve, qu’un groupe caché organise tout en secret.",
+            "Un lanceur d’alerte révèle un danger pour tous ; une loi de 2022 le protège.",
+            "Être très partagée ne rend pas une information vraie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-2-2",
+      "prompt": "Croire, sans preuve, qu’un groupe caché dirige le monde en secret, c’est du …",
+      "spoken": "Croire, sans preuve, qu’un groupe caché dirige le monde en secret, c’est du  (mot manquant) ",
+      "choices": [
+        "journalisme",
+        "complotisme",
+        "civisme"
+      ],
+      "answer": "complotisme",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Le complotisme voit partout un complot caché, sans preuve. Il se nourrit souvent de désinformation, et parfois de racisme et d’antisémitisme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vérifier une information",
+          "lines": [
+            "Qui l’a écrite ? Quand ? D’où vient-elle ?",
+            "Recouper : la chercher dans d’autres sources sérieuses.",
+            "Une image peut être retouchée, ou sortie de son contexte.",
+            "Un hypertrucage : une vidéo fabriquée par une intelligence artificielle.",
+            "Le complotisme : croire, sans preuve, qu’un groupe caché organise tout en secret.",
+            "Un lanceur d’alerte révèle un danger pour tous ; une loi de 2022 le protège.",
+            "Être très partagée ne rend pas une information vraie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-2-3",
+      "prompt": "Une médecin découvre qu’un médicament est dangereux\nElle alerte les autorités, puis le public.\nLe médicament est retiré.\nDes malades sont protégés.",
+      "question": "Comment appelle-t-on cette personne ?",
+      "spoken": "Une médecin découvre qu’un médicament est dangereux. Elle alerte les autorités, puis le public. Le médicament est retiré. Des malades sont protégés.",
+      "choices": [
+        "une influenceuse",
+        "une complotiste",
+        "une lanceuse d’alerte"
+      ],
+      "answer": "une lanceuse d’alerte",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Elle révèle un danger pour tous : c’est une lanceuse d’alerte. Elle prend des risques pour informer, et une loi de 2022 la protège.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vérifier une information",
+          "lines": [
+            "Qui l’a écrite ? Quand ? D’où vient-elle ?",
+            "Recouper : la chercher dans d’autres sources sérieuses.",
+            "Une image peut être retouchée, ou sortie de son contexte.",
+            "Un hypertrucage : une vidéo fabriquée par une intelligence artificielle.",
+            "Le complotisme : croire, sans preuve, qu’un groupe caché organise tout en secret.",
+            "Un lanceur d’alerte révèle un danger pour tous ; une loi de 2022 le protège.",
+            "Être très partagée ne rend pas une information vraie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-2-4",
+      "prompt": "Les lanceurs d’alerte prennent des risques pour … le public.",
+      "spoken": "Les lanceurs d’alerte prennent des risques pour  (mot manquant)  le public.",
+      "choices": [
+        "informer",
+        "tromper",
+        "divertir"
+      ],
+      "answer": "informer",
+      "hint": "Que révèle un lanceur d’alerte : un danger caché, ou une blague ?",
+      "explanation": "Les lanceurs d’alerte révèlent un danger pour informer le public. La loi du 21 mars 2022 les protège mieux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vérifier une information",
+          "lines": [
+            "Qui l’a écrite ? Quand ? D’où vient-elle ?",
+            "Recouper : la chercher dans d’autres sources sérieuses.",
+            "Une image peut être retouchée, ou sortie de son contexte.",
+            "Un hypertrucage : une vidéo fabriquée par une intelligence artificielle.",
+            "Le complotisme : croire, sans preuve, qu’un groupe caché organise tout en secret.",
+            "Un lanceur d’alerte révèle un danger pour tous ; une loi de 2022 le protège.",
+            "Être très partagée ne rend pas une information vraie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-2-5",
+      "prompt": "Deux titres sur le même fait\nSite A : « Le collège fermé un jour pour travaux. »\nSite B : « Scandale : le collège ferme pour toujours ! »\nSite de la mairie : fermeture d’un jour.",
+      "question": "Quel titre est fiable ?",
+      "spoken": "Deux titres sur le même fait. Site A : Le collège fermé un jour pour travaux. Site B : Scandale, le collège ferme pour toujours ! Site de la mairie : fermeture d’un jour.",
+      "choices": [
+        "le titre du site B",
+        "le titre du site A",
+        "aucun des deux"
+      ],
+      "answer": "le titre du site A",
+      "hint": "Lequel dit la même chose que la mairie ?",
+      "explanation": "Le site A dit la même chose que la mairie : on a recoupé. Le site B exagère pour faire réagir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vérifier une information",
+          "lines": [
+            "Qui l’a écrite ? Quand ? D’où vient-elle ?",
+            "Recouper : la chercher dans d’autres sources sérieuses.",
+            "Une image peut être retouchée, ou sortie de son contexte.",
+            "Un hypertrucage : une vidéo fabriquée par une intelligence artificielle.",
+            "Le complotisme : croire, sans preuve, qu’un groupe caché organise tout en secret.",
+            "Un lanceur d’alerte révèle un danger pour tous ; une loi de 2022 le protège.",
+            "Être très partagée ne rend pas une information vraie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-2-6",
+      "prompt": "Pour un sondage national, on interroge environ 1 000 personnes choisies pour ressembler à toute la …",
+      "spoken": "Pour un sondage national, on interroge environ mille personnes choisies pour ressembler à toute la (mot manquant)",
+      "choices": [
+        "ville de Paris",
+        "clientèle du journal",
+        "population"
+      ],
+      "answer": "population",
+      "hint": "Un sondage national veut l’avis de qui ?",
+      "explanation": "Ce groupe, l’échantillon, ressemble à toute la population : âges, régions, métiers. C’est ce qui rend le sondage utile, mais jamais certain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vérifier une information",
+          "lines": [
+            "Qui l’a écrite ? Quand ? D’où vient-elle ?",
+            "Recouper : la chercher dans d’autres sources sérieuses.",
+            "Une image peut être retouchée, ou sortie de son contexte.",
+            "Un hypertrucage : une vidéo fabriquée par une intelligence artificielle.",
+            "Le complotisme : croire, sans preuve, qu’un groupe caché organise tout en secret.",
+            "Un lanceur d’alerte révèle un danger pour tous ; une loi de 2022 le protège.",
+            "Être très partagée ne rend pas une information vraie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-2-7",
+      "prompt": "Une information fausse peut être très partagée : avant de la partager à son tour, il faut la …",
+      "spoken": "Une information fausse peut être très partagée : avant de la partager à son tour, il faut la  (mot manquant) ",
+      "choices": [
+        "vérifier",
+        "commenter",
+        "aimer"
+      ],
+      "answer": "vérifier",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Être très partagée ne rend pas une information vraie : on la vérifie avant de la partager. Partager une fausse information, c’est la répandre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Vérifier une information",
+          "lines": [
+            "Qui l’a écrite ? Quand ? D’où vient-elle ?",
+            "Recouper : la chercher dans d’autres sources sérieuses.",
+            "Une image peut être retouchée, ou sortie de son contexte.",
+            "Un hypertrucage : une vidéo fabriquée par une intelligence artificielle.",
+            "Le complotisme : croire, sans preuve, qu’un groupe caché organise tout en secret.",
+            "Un lanceur d’alerte révèle un danger pour tous ; une loi de 2022 le protège.",
+            "Être très partagée ne rend pas une information vraie."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-3e-democratic-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

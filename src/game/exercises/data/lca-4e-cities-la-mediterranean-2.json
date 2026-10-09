@@ -1,0 +1,242 @@
+{
+  "id": "lca-4e-cities-la-mediterranean-2",
+  "biome": "lca-4e-cities",
+  "type": "la-mediterranean",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-4e-cities-la-mediterranean-2-0",
+      "prompt": "Des cités qui s’unissent contre un ennemi commun forment une …",
+      "spoken": "Des cités qui s’unissent contre un ennemi commun forment une  (mot manquant) ",
+      "choices": [
+        "alliance",
+        "province",
+        "colonie"
+      ],
+      "answer": "alliance",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Une alliance unit des cités contre un ennemi commun. Une colonie est une cité fondée au loin ; une province, un territoire conquis par Rome.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Cités, alliances et conflits",
+          "lines": [
+            "Une alliance : des cités s’unissent contre un ennemi commun.",
+            "Rome s’allie aux cités d’Italie, puis les domine peu à peu.",
+            "Une puissance maritime domine la mer, avec sa flotte et ses ports.",
+            "Une puissance terrestre domine la terre, avec son armée.",
+            "Athènes est une puissance maritime ; Sparte, une puissance terrestre.",
+            "Un comptoir : un port de commerce fondé loin de chez soi, comme ceux des Phéniciens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-2-1",
+      "prompt": "Athènes au cinquième siècle avant J.-C.\nElle a la plus grande flotte de Grèce.\nElle contrôle des îles et des ports de la mer Égée.\nSes rameurs sont des citoyens pauvres, payés pour ramer.",
+      "question": "Quel genre de puissance est Athènes ?",
+      "spoken": "Athènes au cinquième siècle avant Jésus-Christ. Elle a la plus grande flotte de Grèce. Elle contrôle des îles et des ports de la mer Égée. Ses rameurs sont des citoyens pauvres, payés pour ramer.",
+      "choices": [
+        "une puissance terrestre",
+        "une puissance maritime",
+        "une petite cité sans armée"
+      ],
+      "answer": "une puissance maritime",
+      "hint": "Relis la troisième et la cinquième ligne du rappel.",
+      "explanation": "Avec sa flotte et ses ports, Athènes domine la mer : c’est une puissance maritime. Sparte, elle, compte sur son armée de terre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Cités, alliances et conflits",
+          "lines": [
+            "Une alliance : des cités s’unissent contre un ennemi commun.",
+            "Rome s’allie aux cités d’Italie, puis les domine peu à peu.",
+            "Une puissance maritime domine la mer, avec sa flotte et ses ports.",
+            "Une puissance terrestre domine la terre, avec son armée.",
+            "Athènes est une puissance maritime ; Sparte, une puissance terrestre.",
+            "Un comptoir : un port de commerce fondé loin de chez soi, comme ceux des Phéniciens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-2-2",
+      "prompt": "Sparte, avec son armée de citoyens-soldats, est une puissance …",
+      "spoken": "Sparte, avec son armée de citoyens-soldats, est une puissance  (mot manquant) ",
+      "choices": [
+        "maritime",
+        "commerciale",
+        "terrestre"
+      ],
+      "answer": "terrestre",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Sparte est une puissance terrestre : ses citoyens sont des soldats, entraînés dès l’enfance.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Cités, alliances et conflits",
+          "lines": [
+            "Une alliance : des cités s’unissent contre un ennemi commun.",
+            "Rome s’allie aux cités d’Italie, puis les domine peu à peu.",
+            "Une puissance maritime domine la mer, avec sa flotte et ses ports.",
+            "Une puissance terrestre domine la terre, avec son armée.",
+            "Athènes est une puissance maritime ; Sparte, une puissance terrestre.",
+            "Un comptoir : un port de commerce fondé loin de chez soi, comme ceux des Phéniciens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-2-3",
+      "prompt": "Les Phéniciens\nUn peuple de marins, venu de l’actuel Liban.\nIls fondent des comptoirs sur les côtes de la Méditerranée.\nCarthage est l’un d’eux, devenu une grande cité.",
+      "question": "Pourquoi les Phéniciens fondent-ils des comptoirs ?",
+      "spoken": "Les Phéniciens. Un peuple de marins, venu de l’actuel Liban. Ils fondent des comptoirs sur les côtes de la Méditerranée. Carthage est l’un d’eux, devenu une grande cité.",
+      "choices": [
+        "pour faire du commerce",
+        "pour y cultiver de grandes terres",
+        "pour y vivre à l’abri des guerres"
+      ],
+      "answer": "pour faire du commerce",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Un comptoir est un port de commerce : les Phéniciens, grands marins, y échangent des marchandises. Carthage, fondée par des Phéniciens de Tyr, devient une grande puissance.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Cités, alliances et conflits",
+          "lines": [
+            "Une alliance : des cités s’unissent contre un ennemi commun.",
+            "Rome s’allie aux cités d’Italie, puis les domine peu à peu.",
+            "Une puissance maritime domine la mer, avec sa flotte et ses ports.",
+            "Une puissance terrestre domine la terre, avec son armée.",
+            "Athènes est une puissance maritime ; Sparte, une puissance terrestre.",
+            "Un comptoir : un port de commerce fondé loin de chez soi, comme ceux des Phéniciens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-2-4",
+      "prompt": "Rome s’allie d’abord aux cités d’Italie, puis …",
+      "spoken": "Rome s’allie d’abord aux cités d’Italie, puis (mot manquant)",
+      "choices": [
+        "les quitte",
+        "les domine",
+        "leur obéit"
+      ],
+      "answer": "les domine",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Rome fait des alliances avec les cités d’Italie, puis les domine peu à peu : au début des guerres puniques, elle contrôle presque toute l’Italie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Cités, alliances et conflits",
+          "lines": [
+            "Une alliance : des cités s’unissent contre un ennemi commun.",
+            "Rome s’allie aux cités d’Italie, puis les domine peu à peu.",
+            "Une puissance maritime domine la mer, avec sa flotte et ses ports.",
+            "Une puissance terrestre domine la terre, avec son armée.",
+            "Athènes est une puissance maritime ; Sparte, une puissance terrestre.",
+            "Un comptoir : un port de commerce fondé loin de chez soi, comme ceux des Phéniciens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-2-5",
+      "prompt": "Le mot « maritime » vient du latin mare, qui veut dire …",
+      "spoken": "Le mot maritime vient du latin maré, qui veut dire (mot manquant)",
+      "choices": [
+        "le port",
+        "le marin",
+        "la mer"
+      ],
+      "answer": "la mer",
+      "hint": "Pense à mare nostrum.",
+      "explanation": "Mare, la mer, a donné maritime, marin, marée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Cités, alliances et conflits",
+          "lines": [
+            "Une alliance : des cités s’unissent contre un ennemi commun.",
+            "Rome s’allie aux cités d’Italie, puis les domine peu à peu.",
+            "Une puissance maritime domine la mer, avec sa flotte et ses ports.",
+            "Une puissance terrestre domine la terre, avec son armée.",
+            "Athènes est une puissance maritime ; Sparte, une puissance terrestre.",
+            "Un comptoir : un port de commerce fondé loin de chez soi, comme ceux des Phéniciens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-2-6",
+      "prompt": "La première guerre punique\nElle se joue surtout en Sicile et sur la mer.\nAu départ, Rome n’a presque pas de flotte.\nElle en construit une et gagne la guerre.",
+      "question": "Que montre cette guerre ?",
+      "spoken": "La première guerre punique. Elle se joue surtout en Sicile et sur la mer. Au départ, Rome n’a presque pas de flotte. Elle en construit une et gagne la guerre.",
+      "choices": [
+        "une puissance terrestre peut devenir maritime",
+        "Carthage n’a pas de flotte",
+        "la guerre se passe dans les Alpes"
+      ],
+      "answer": "une puissance terrestre peut devenir maritime",
+      "hint": "Lis les deux dernières lignes du document.",
+      "explanation": "Rome, puissance terrestre, construit une flotte et bat Carthage sur la mer : elle devient aussi une puissance maritime, et prend la Sicile.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Cités, alliances et conflits",
+          "lines": [
+            "Une alliance : des cités s’unissent contre un ennemi commun.",
+            "Rome s’allie aux cités d’Italie, puis les domine peu à peu.",
+            "Une puissance maritime domine la mer, avec sa flotte et ses ports.",
+            "Une puissance terrestre domine la terre, avec son armée.",
+            "Athènes est une puissance maritime ; Sparte, une puissance terrestre.",
+            "Un comptoir : un port de commerce fondé loin de chez soi, comme ceux des Phéniciens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-2-7",
+      "prompt": "Rome et Carthage\n264 avant J.-C. : début de la première guerre punique.\n218 avant J.-C. : Hannibal franchit les Alpes.\n146 avant J.-C. : Carthage est détruite.",
+      "question": "Quel événement est le plus récent ?",
+      "spoken": "Rome et Carthage. Deux cent soixante-quatre avant Jésus-Christ : début de la première guerre punique. Deux cent dix-huit avant Jésus-Christ : Hannibal franchit les Alpes. Cent quarante-six avant Jésus-Christ : Carthage est détruite.",
+      "choices": [
+        "le début de la première guerre punique",
+        "le passage des Alpes",
+        "la destruction de Carthage"
+      ],
+      "answer": "la destruction de Carthage",
+      "hint": "Avant J.-C., on compte à rebours : le plus petit nombre est le plus proche de nous.",
+      "explanation": "Avant J.-C., on compte à rebours : 146 est plus récent que 218 et 264. La destruction de Carthage termine les guerres puniques.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Cités, alliances et conflits",
+          "lines": [
+            "Une alliance : des cités s’unissent contre un ennemi commun.",
+            "Rome s’allie aux cités d’Italie, puis les domine peu à peu.",
+            "Une puissance maritime domine la mer, avec sa flotte et ses ports.",
+            "Une puissance terrestre domine la terre, avec son armée.",
+            "Athènes est une puissance maritime ; Sparte, une puissance terrestre.",
+            "Un comptoir : un port de commerce fondé loin de chez soi, comme ceux des Phéniciens."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-4e-cities",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

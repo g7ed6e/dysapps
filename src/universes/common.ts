@@ -427,6 +427,16 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     lines: ['Je tourne ma manivelle tout doucement : un tour à la fois.', 'Du liège pour mon usine : réponds à une question.', 'Un schéma se lit case par case, dans l’ordre.'],
     home: 'Mon usine est finie. Toutes mes maquettes tournent.',
   },
+  'civics-4e-rights-freedoms': {
+    greeting: 'Bonjour, bâtisseur ! Ici, la porte est ouverte, et je veille sur elle. Chaque bonne réponse te donne un pavé. Un pavé, c’est une pierre de la rue.',
+    lines: ['Tu es libre, tant que tu respectes la liberté des autres.', 'Des pavés pour ma loge : relis le rappel.', 'Je veille sans jamais faire peur.'],
+    home: 'Ma loge est finie. Chacun passe librement.',
+  },
+  'civics-3e-democratic-life': {
+    greeting: 'Bonjour, bâtisseur ! Au forum, chacun donne son avis et écoute celui des autres. Chaque bonne réponse te donne de l’acajou. L’acajou, c’est un bois rouge et solide.',
+    lines: ['Un débat, c’est écouter avant de répondre.', 'De l’acajou pour ma tribune : lis le document.', 'Une information se vérifie dans plusieurs sources.'],
+    home: 'Ma tribune est finie. Chacun peut y parler, à son tour.',
+  },
   'life-earth-sciences-3e-human-body': {
     greeting: 'Bonjour, bâtisseur ! Au verger, on prend soin du corps : bouger, dormir, bien manger. Chaque bonne réponse te donne du savon.',
     lines: ['Je mange doucement, et je fais des pauses. Toi aussi.', 'Du savon pour mon infirmerie : réponds à une question.', 'Le rappel a les mots qu’il faut : relis-le.'],
@@ -457,5 +467,15 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     greeting: 'Bonjour, bâtisseur ! Dans ma grotte, je garde les vieilles légendes. Chaque bonne réponse te donne du tuf. Le tuf, c’est une pierre tendre.',
     lines: ['Chaque légende a commencé par une histoire racontée.', 'Du tuf pour mon abri : lis la phrase et sa traduction.', 'Les mots d’hier vivent encore dans les nôtres.'],
     home: 'Mon abri est fini. Les légendes y sont à l’abri.',
+  },
+  'lca-4e-cities': {
+    greeting: 'Bonjour, bâtisseur ! Je porte l’eau dans toute la cité. Chaque bonne réponse te donne une fresque. Une fresque, c’est une peinture sur un mur.',
+    lines: ['Dans la cité, chacun a sa place : à la maison et sur la place.', 'Des fresques pour ma maison : lis le document.', 'La mer relie toutes les cités.'],
+    home: 'Ma maison est finie. Et la fontaine coule pour tous.',
+  },
+  'lca-3e-ideas': {
+    greeting: 'Bonjour, bâtisseur ! J’écris tout sur ma tablette de cire. Chaque bonne réponse te donne du laurier. Le laurier, c’est l’arbre des sages.',
+    lines: ['Les Anciens nous ont laissé des mots et des idées.', 'Du laurier pour ma bibliothèque : lis le rappel.', 'Une racine grecque se cache dans beaucoup de nos mots.'],
+    home: 'Ma bibliothèque est finie. Les idées y sont rangées.',
   },
 };

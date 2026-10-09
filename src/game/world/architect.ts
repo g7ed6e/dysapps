@@ -1,7 +1,8 @@
 // L'architecte du village : le dessin des bâtiments des îles, en trois étapes (les murs, le toit, la cour), calculé à partir
 // d'une forme (maison, tour, dôme, échoppe, hutte, kiosque, relais, jardin, refuge,
 // musée, quartier, logis, moulin, halle, entrepôt, bibliothèque, mairie, serre, laboratoire, atelier, station, chalet, scierie,
-// pépinière, pavillon, usine, infirmerie, gymnase, poste, préau, fournil, grotte) et du bloc de l'île. Les cases sont relatives à la zone des
+// pépinière, pavillon, usine, infirmerie, gymnase, poste, préau, fournil, grotte, loge, colonnade, tribune,
+// bosquet) et du bloc de l'île. Les cases sont relatives à la zone des
 // plans de l'île (6 × 5 cases, z = 0 : premier bloc sur le sol) ; la façade et la porte sont devant (y bas), la cour aussi.
 // Les blocs de finition (toit, porte, lanterne, barrière, escalier) viennent des coffres des étapes précédentes : un coffre
 // donne exactement ceux de l'étape suivante (voir plans.ts).
@@ -48,6 +49,10 @@ type BuildingStyle =
   | { kind: 'preau' }
   | { kind: 'fournil' }
   | { kind: 'grotte' }
+  | { kind: 'loge' }
+  | { kind: 'colonnade' }
+  | { kind: 'tribune' }
+  | { kind: 'bosquet' }
   | { kind: 'station' }
   | { kind: 'chalet' }
   | { kind: 'scierie' }
@@ -94,6 +99,12 @@ const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   // EMC 5e (EMC-2) et latin-grec 5e (LCA-2)
   'civics-5e-equality-solidarity': { kind: 'fournil' },
   'lca-5e-legends': { kind: 'grotte' },
+  // EMC 4e (EMC-2) et latin-grec 4e (LCA-2)
+  'civics-4e-rights-freedoms': { kind: 'loge' },
+  'lca-4e-cities': { kind: 'colonnade' },
+  // EMC 3e (EMC-2) et latin-grec 3e (LCA-2)
+  'civics-3e-democratic-life': { kind: 'tribune' },
+  'lca-3e-ideas': { kind: 'bosquet' },
   // Anciens Ateliers (4e)
   'maths-4e-algebra': { kind: 'maison' },
   'maths-4e-powers': { kind: 'maison', chimney: 2 },
@@ -866,6 +877,129 @@ function grotte(b: BlockId): Stages {
   return [without(abri, [lanterne]), porche, cercle];
 }
 
+/**
+ * La loge (la loge de Loquet, EMC 4e ; proposition de l'artiste technique 3D, à valider par le directeur artistique) :
+ * la loge du portier à côté d'une porte ouverte, qu'aucun vantail ne ferme (la porte des libertés) ; aucun drapeau,
+ * aucun symbole, aucune arme, ni grille ni barrière. La loge : une petite salle de pavés, trois sur trois, deux blocs de
+ * haut, à gauche, et à droite les deux piliers de la porte, trois blocs de haut, le passage libre entre eux. Le toit de
+ * la loge : la porte de la loge, une fenêtre éclairée sur la porte de la ville (le portier veille), le toit à deux pans,
+ * et le linteau de pavés sur les deux piliers, une lanterne posée au milieu. La place de la loge : la marche, deux
+ * bornes de pavés de part et d'autre du passage, chacune sa lanterne, un banc de planches le long du bord, et le seuil de pavés devant le passage.
+ */
+function loge(b: BlockId): Stages {
+  const doorX = 1;
+  const windows: [number, number, number][] = [[2, 3, 1]];
+  const piliers: ArchCell[] = [];
+  for (const x of [3, 5]) for (let z = 0; z < 3; z++) piliers.push({ x, y: 3, z, block: b });
+  const linteau: ArchCell[] = [];
+  for (let x = 3; x <= 5; x++) linteau.push({ x, y: 3, z: 3, block: b });
+  linteau.push({ x: 4, y: 3, z: 4, block: BLOC.lanterne });
+  const roof = [...ouvertures([doorX, 2, 0], windows), ...deuxPans(0, 2, 2, 2, b, 0, 2), ...linteau];
+  const place: ArchCell[] = [
+    { x: doorX, y: 1, z: 0, block: BLOC.escalier },
+    { x: 3, y: 1, z: 0, block: b },
+    { x: 3, y: 1, z: 1, block: BLOC.lanterne },
+    { x: 5, y: 1, z: 0, block: b },
+    { x: 5, y: 1, z: 1, block: BLOC.lanterne },
+    { x: 0, y: 0, z: 0, block: BLOC.bois },
+    { x: 0, y: 1, z: 0, block: BLOC.bois },
+    { x: 4, y: 2, z: 0, block: b },
+  ];
+  return [without([...room(b, 0, 3, 2), ...piliers], [[doorX, 2, 0], ...windows]), roof, place];
+}
+
+/**
+ * La colonnade (la maison de Figue, latin-grec 4e ; proposition de l'artiste technique 3D, à valider par le directeur
+ * artistique) : une maison de la cité, sa colonnade et sa fontaine ; ni temple, ni fronton, ni statue, aucun dieu. La
+ * maison : quatre sur trois, deux blocs de haut, ses murs de fresque, à gauche. La colonnade : le toit à deux pans de la
+ * maison, la porte et une fenêtre éclairée, et à droite trois colonnes de pierre de taille, deux blocs de haut, une case
+ * sur deux, sous un entablement de pierre de taille de deux cases de large qui rejoint le toit : on y marche à l'ombre.
+ * La fontaine : devant la maison, un bassin de pierre de taille, l'eau (du verre) au milieu, et derrière lui le pilier de
+ * fresque d'où l'eau coule, une lanterne sur chaque bout du bassin ; la marche devant la porte.
+ */
+function colonnade(b: BlockId): Stages {
+  const doorX = 2;
+  const windows: [number, number, number][] = [[0, 2, 1]];
+  const portique: ArchCell[] = [];
+  for (const y of [0, 2, 4]) for (let z = 0; z < 2; z++) portique.push({ x: 5, y, z, block: BLOC.taille });
+  for (const x of [4, 5]) for (let y = 0; y < 5; y++) portique.push({ x, y, z: 2, block: BLOC.taille });
+  const roof = [...ouvertures([doorX, 2, 0], windows), ...deuxPans(0, 3, 2, 2, b, 0, 3), ...portique];
+  const fontaine: ArchCell[] = [
+    { x: 0, y: 0, z: 0, block: BLOC.taille },
+    { x: 1, y: 0, z: 0, block: BLOC.verre },
+    { x: 2, y: 0, z: 0, block: BLOC.taille },
+    { x: 0, y: 0, z: 1, block: BLOC.lanterne },
+    { x: 2, y: 0, z: 1, block: BLOC.lanterne },
+    { x: 1, y: 1, z: 0, block: b },
+    { x: 1, y: 1, z: 1, block: b },
+    { x: doorX, y: 1, z: 0, block: BLOC.escalier },
+  ];
+  return [without(room(b, 0, 4, 2), [[doorX, 2, 0], ...windows]), roof, fontaine];
+}
+
+/**
+ * La tribune (la tribune de Brio, EMC 3e ; proposition de l'artiste technique 3D, à valider par le directeur artistique) :
+ * une estrade couverte, ouverte devant, d'où chacun donne son avis ; ni drapeau, ni emblème, ni pupitre officiel (le
+ * pupitre est la commande de Brio). La tribune : l'estrade d'acajou, quatre sur trois, un bloc de haut, son mur du fond,
+ * deux blocs de plus, et les deux poteaux de devant. Le toit de la tribune : le toit à deux pans sur les poteaux et le mur,
+ * ses pignons d'acajou, une fenêtre éclairée dans le mur du fond. Le parvis : les deux marches qui montent à l'estrade,
+ * deux bancs de planches de chaque côté au premier rang, pour écouter, et deux poteaux de barrière, chacun sa lanterne.
+ */
+function tribune(b: BlockId): Stages {
+  const fenetre: [number, number, number] = [2, 4, 2];
+  const estrade: ArchCell[] = [];
+  for (let x = 1; x <= 4; x++) for (let y = 2; y <= 4; y++) estrade.push({ x, y, z: 0, block: b });
+  for (let x = 1; x <= 4; x++) for (let z = 1; z <= 2; z++) estrade.push({ x, y: 4, z, block: b });
+  for (const x of [1, 4]) for (let z = 1; z <= 2; z++) estrade.push({ x, y: 2, z, block: b });
+  const roof: ArchCell[] = [{ x: fenetre[0], y: fenetre[1], z: fenetre[2], block: BLOC.lanterne }, ...deuxPans(1, 4, 2, 3, b, 1, 4)];
+  const parvis: ArchCell[] = [
+    { x: 2, y: 1, z: 0, block: BLOC.escalier },
+    { x: 3, y: 1, z: 0, block: BLOC.escalier },
+    { x: 0, y: 0, z: 0, block: BLOC.bois },
+    { x: 1, y: 0, z: 0, block: BLOC.bois },
+    { x: 4, y: 0, z: 0, block: BLOC.bois },
+    { x: 5, y: 0, z: 0, block: BLOC.bois },
+    { x: 0, y: 1, z: 0, block: BLOC.barriere },
+    { x: 0, y: 1, z: 1, block: BLOC.lanterne },
+    { x: 5, y: 1, z: 0, block: BLOC.barriere },
+    { x: 5, y: 1, z: 1, block: BLOC.lanterne },
+  ];
+  return [without(estrade, [fenetre]), roof, parvis];
+}
+
+/**
+ * Le bosquet (la bibliothèque de Stylet, latin-grec 3e ; proposition de l'artiste technique 3D, à valider par le
+ * directeur artistique) : une bibliothèque, des gradins et une allée de lauriers ; ni temple, ni statue, aucun dieu. La
+ * bibliothèque : trois sur trois, deux blocs de haut, de pierre de taille, à gauche, la porte et une fenêtre éclairée sur
+ * le côté. Les gradins : le toit à deux pans de la bibliothèque, ses pignons de pierre de taille, et à droite trois
+ * gradins de pierre de taille qui montent vers le fond, face au devant, où l'on s'assoit pour écouter. L'allée des
+ * lauriers : la marche devant la porte, entre deux rangs de lauriers (le bloc de l'île), un laurier haut à chaque bout,
+ * un autre devant les gradins, et une borne de pierre de taille qui porte une lanterne.
+ */
+function bosquet(b: BlockId): Stages {
+  const doorX = 1;
+  const windows: [number, number, number][] = [[0, 3, 1]];
+  const gradins: ArchCell[] = [];
+  for (let x = 3; x <= 5; x++) {
+    gradins.push({ x, y: 3, z: 0, block: BLOC.taille });
+    for (let z = 0; z < 2; z++) gradins.push({ x, y: 4, z, block: BLOC.taille });
+  }
+  const roof = [...ouvertures([doorX, 2, 0], windows), ...deuxPans(0, 2, 2, 2, BLOC.taille, 0, 2), ...gradins];
+  const allee: ArchCell[] = [
+    { x: doorX, y: 1, z: 0, block: BLOC.escalier },
+    { x: 0, y: 0, z: 0, block: b },
+    { x: 0, y: 0, z: 1, block: b },
+    { x: 0, y: 1, z: 0, block: b },
+    { x: 2, y: 0, z: 0, block: b },
+    { x: 2, y: 0, z: 1, block: b },
+    { x: 2, y: 1, z: 0, block: b },
+    { x: 4, y: 1, z: 0, block: b },
+    { x: 5, y: 1, z: 0, block: BLOC.taille },
+    { x: 5, y: 1, z: 1, block: BLOC.lanterne },
+  ];
+  return [without(room(BLOC.taille, 0, 3, 2), [[doorX, 2, 0], ...windows]), roof, allee];
+}
+
 // ---------- Les bâtiments des îles de sciences de 5e à 3e (SC-3) ----------
 // Décision du directeur artistique (6 octobre 2026) : les murs du bloc de l'île, le toit de l'univers (rouge dans Blocland,
 // sa couverture dans Archipéo, `roofs.ts`), aucun fronton, aucune pièce nouvelle : les blocs de finition de toujours
@@ -1092,6 +1226,14 @@ export function buildingStages(biome: BiomeId, block: BlockId): Stages {
       return fournil(block);
     case 'grotte':
       return grotte(block);
+    case 'loge':
+      return loge(block);
+    case 'colonnade':
+      return colonnade(block);
+    case 'tribune':
+      return tribune(block);
+    case 'bosquet':
+      return bosquet(block);
     case 'station':
       return weatherStation(block);
     case 'chalet':

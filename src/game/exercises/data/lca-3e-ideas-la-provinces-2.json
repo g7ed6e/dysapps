@@ -1,0 +1,241 @@
+{
+  "id": "lca-3e-ideas-la-provinces-2",
+  "biome": "lca-3e-ideas",
+  "type": "la-provinces",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-3e-ideas-la-provinces-2-0",
+      "prompt": "Croire en plusieurs dieux, comme les Romains, c’est le …",
+      "spoken": "Croire en plusieurs dieux, comme les Romains, c’est le  (mot manquant) ",
+      "choices": [
+        "monothéisme",
+        "polythéisme",
+        "christianisme"
+      ],
+      "answer": "polythéisme",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Poly- veut dire plusieurs, theos veut dire dieu : le polythéisme. Mono- veut dire un seul : le monothéisme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Croire, à Rome et dans les provinces",
+          "lines": [
+            "Le polythéisme : croire en plusieurs dieux, comme Jupiter, Junon, Minerve.",
+            "Le monothéisme : croire en un seul Dieu, comme le judaïsme et le christianisme.",
+            "Rome accepte les dieux des peuples conquis, si l’on honore aussi ses dieux et l’empereur.",
+            "Les chrétiens refusent d’honorer l’empereur comme un dieu : ils sont parfois persécutés.",
+            "En 313, l’empereur Constantin autorise le christianisme.",
+            "À la fin du quatrième siècle, le christianisme devient la religion officielle de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-2-1",
+      "prompt": "Les dieux des autres\nLes Romains adoptent Isis, une déesse venue d’Égypte.\nIls lui construisent des temples, à Rome même.\nIls continuent d’honorer Jupiter.",
+      "question": "Que montre ce document ?",
+      "spoken": "Les dieux des autres. Les Romains adoptent Isis, une déesse venue d’Égypte. Ils lui construisent des temples, à Rome même. Ils continuent d’honorer Jupiter.",
+      "choices": [
+        "les Romains acceptent des dieux étrangers",
+        "les Romains n’ont qu’un dieu",
+        "les Romains interdisent les dieux d’Égypte"
+      ],
+      "answer": "les Romains acceptent des dieux étrangers",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Les Romains accueillent les dieux des peuples conquis, comme Isis, tant que l’on honore aussi les dieux de Rome.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Croire, à Rome et dans les provinces",
+          "lines": [
+            "Le polythéisme : croire en plusieurs dieux, comme Jupiter, Junon, Minerve.",
+            "Le monothéisme : croire en un seul Dieu, comme le judaïsme et le christianisme.",
+            "Rome accepte les dieux des peuples conquis, si l’on honore aussi ses dieux et l’empereur.",
+            "Les chrétiens refusent d’honorer l’empereur comme un dieu : ils sont parfois persécutés.",
+            "En 313, l’empereur Constantin autorise le christianisme.",
+            "À la fin du quatrième siècle, le christianisme devient la religion officielle de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-2-2",
+      "prompt": "Les chrétiens sont parfois persécutés, car ils refusent …",
+      "spoken": "Les chrétiens sont parfois persécutés, car ils refusent (mot manquant)",
+      "choices": [
+        "de payer l’impôt",
+        "d’honorer l’empereur comme un dieu",
+        "de parler latin"
+      ],
+      "answer": "d’honorer l’empereur comme un dieu",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Pour les chrétiens, il n’y a qu’un Dieu : ils refusent le culte de l’empereur. Rome y voit un refus de l’ordre romain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Croire, à Rome et dans les provinces",
+          "lines": [
+            "Le polythéisme : croire en plusieurs dieux, comme Jupiter, Junon, Minerve.",
+            "Le monothéisme : croire en un seul Dieu, comme le judaïsme et le christianisme.",
+            "Rome accepte les dieux des peuples conquis, si l’on honore aussi ses dieux et l’empereur.",
+            "Les chrétiens refusent d’honorer l’empereur comme un dieu : ils sont parfois persécutés.",
+            "En 313, l’empereur Constantin autorise le christianisme.",
+            "À la fin du quatrième siècle, le christianisme devient la religion officielle de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-2-3",
+      "prompt": "En 313, l’empereur … autorise le christianisme.",
+      "spoken": "En trois cent treize, l’empereur (mot manquant) autorise le christianisme.",
+      "choices": [
+        "Auguste",
+        "Néron",
+        "Constantin"
+      ],
+      "answer": "Constantin",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "En 313, Constantin autorise les chrétiens à pratiquer leur religion. Néron, lui, les avait persécutés, en 64.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Croire, à Rome et dans les provinces",
+          "lines": [
+            "Le polythéisme : croire en plusieurs dieux, comme Jupiter, Junon, Minerve.",
+            "Le monothéisme : croire en un seul Dieu, comme le judaïsme et le christianisme.",
+            "Rome accepte les dieux des peuples conquis, si l’on honore aussi ses dieux et l’empereur.",
+            "Les chrétiens refusent d’honorer l’empereur comme un dieu : ils sont parfois persécutés.",
+            "En 313, l’empereur Constantin autorise le christianisme.",
+            "À la fin du quatrième siècle, le christianisme devient la religion officielle de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-2-4",
+      "prompt": "Trois dates\nEn 64 : Néron persécute les chrétiens de Rome.\nEn 313 : Constantin autorise le christianisme.\nÀ la fin du quatrième siècle : il devient la religion officielle.",
+      "question": "Que montre cette chronologie ?",
+      "spoken": "Trois dates. En soixante-quatre : Néron persécute les chrétiens de Rome. En trois cent treize : Constantin autorise le christianisme. À la fin du quatrième siècle : il devient la religion officielle.",
+      "choices": [
+        "le christianisme, persécuté, devient religion officielle",
+        "le christianisme disparaît",
+        "Rome redevient polythéiste"
+      ],
+      "answer": "le christianisme, persécuté, devient religion officielle",
+      "hint": "Lis les trois lignes dans l’ordre.",
+      "explanation": "En un peu plus de trois siècles, le christianisme passe de religion persécutée à religion officielle de l’Empire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Croire, à Rome et dans les provinces",
+          "lines": [
+            "Le polythéisme : croire en plusieurs dieux, comme Jupiter, Junon, Minerve.",
+            "Le monothéisme : croire en un seul Dieu, comme le judaïsme et le christianisme.",
+            "Rome accepte les dieux des peuples conquis, si l’on honore aussi ses dieux et l’empereur.",
+            "Les chrétiens refusent d’honorer l’empereur comme un dieu : ils sont parfois persécutés.",
+            "En 313, l’empereur Constantin autorise le christianisme.",
+            "À la fin du quatrième siècle, le christianisme devient la religion officielle de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-2-5",
+      "prompt": "Le mot « théologie », l’étude de Dieu, vient du grec theos, qui veut dire …",
+      "spoken": "Le mot théologie, l’étude de Dieu, vient du grec téoss, qui veut dire (mot manquant)",
+      "choices": [
+        "dieu",
+        "temple",
+        "prière"
+      ],
+      "answer": "dieu",
+      "hint": "Pense à polythéisme : croire en plusieurs quoi ?",
+      "explanation": "Theos, dieu, a donné théologie, polythéisme, monothéisme. Le latin a emprunté beaucoup de mots savants au grec.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Croire, à Rome et dans les provinces",
+          "lines": [
+            "Le polythéisme : croire en plusieurs dieux, comme Jupiter, Junon, Minerve.",
+            "Le monothéisme : croire en un seul Dieu, comme le judaïsme et le christianisme.",
+            "Rome accepte les dieux des peuples conquis, si l’on honore aussi ses dieux et l’empereur.",
+            "Les chrétiens refusent d’honorer l’empereur comme un dieu : ils sont parfois persécutés.",
+            "En 313, l’empereur Constantin autorise le christianisme.",
+            "À la fin du quatrième siècle, le christianisme devient la religion officielle de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-2-6",
+      "prompt": "Le judaïsme et le christianisme sont des religions …",
+      "spoken": "Le judaïsme et le christianisme sont des religions  (mot manquant) ",
+      "choices": [
+        "polythéistes",
+        "romaines",
+        "monothéistes"
+      ],
+      "answer": "monothéistes",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le judaïsme et le christianisme croient en un seul Dieu : ce sont des monothéismes. Le christianisme est né en Judée, une province romaine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Croire, à Rome et dans les provinces",
+          "lines": [
+            "Le polythéisme : croire en plusieurs dieux, comme Jupiter, Junon, Minerve.",
+            "Le monothéisme : croire en un seul Dieu, comme le judaïsme et le christianisme.",
+            "Rome accepte les dieux des peuples conquis, si l’on honore aussi ses dieux et l’empereur.",
+            "Les chrétiens refusent d’honorer l’empereur comme un dieu : ils sont parfois persécutés.",
+            "En 313, l’empereur Constantin autorise le christianisme.",
+            "À la fin du quatrième siècle, le christianisme devient la religion officielle de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-2-7",
+      "prompt": "La Maison carrée de Nîmes\nUn temple romain, bâti au temps d’Auguste.\nIl est consacré à deux jeunes princes de la famille d’Auguste.\nOn peut encore le voir aujourd’hui.",
+      "question": "À qui ce temple est-il consacré ?",
+      "spoken": "La Maison carrée de Nîmes. Un temple romain, bâti au temps d’Auguste. Il est consacré à deux jeunes princes de la famille d’Auguste. On peut encore le voir aujourd’hui.",
+      "choices": [
+        "au Dieu des chrétiens",
+        "à la famille de l’empereur",
+        "à la déesse Isis"
+      ],
+      "answer": "à la famille de l’empereur",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "La Maison carrée honore des proches d’Auguste : le culte de l’empereur et de sa famille unit les provinces à Rome. Nîmes, en Gaule, est une ville très romanisée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Croire, à Rome et dans les provinces",
+          "lines": [
+            "Le polythéisme : croire en plusieurs dieux, comme Jupiter, Junon, Minerve.",
+            "Le monothéisme : croire en un seul Dieu, comme le judaïsme et le christianisme.",
+            "Rome accepte les dieux des peuples conquis, si l’on honore aussi ses dieux et l’empereur.",
+            "Les chrétiens refusent d’honorer l’empereur comme un dieu : ils sont parfois persécutés.",
+            "En 313, l’empereur Constantin autorise le christianisme.",
+            "À la fin du quatrième siècle, le christianisme devient la religion officielle de l’Empire."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-3e-ideas",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

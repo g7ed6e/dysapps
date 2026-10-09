@@ -43,4 +43,8 @@ export const SILHOUETTES_3E = {
   // Le Tremplin des forces : un crochet vers l'est, la piste d'élan ; la Ruche des réseaux : un moulinet, ses quatre bras.
   'physics-chemistry-3e-motion-energy': { pics: [], forme: { forme: 'crochet', vers: 'droite' } },
   'technology-3e-digital': { pics: [], forme: { forme: 'moulinet', vers: 'devant' } },
+  // EMC (EMC-2) : le Forum des débats en trèfle, des voix qui partent en trois directions. Latin-grec (LCA-2) : le
+  // Bosquet des sages en galet, un bois rond. Plats, sans pic, le trait court (`short`) comme les autres îles du ciel.
+  'civics-3e-democratic-life': { pics: [], forme: { forme: 'trefle', vers: 'devant', short: true } },
+  'lca-3e-ideas': { pics: [], forme: { forme: 'galet', vers: 'devant', short: true } },
 } satisfies Partial<Record<BiomeId, Silhouette>>;

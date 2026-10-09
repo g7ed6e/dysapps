@@ -1,0 +1,239 @@
+{
+  "id": "lca-3e-ideas-la-heritage-1",
+  "biome": "lca-3e-ideas",
+  "type": "la-heritage",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-3e-ideas-la-heritage-1-0",
+      "prompt": "Le français, l’italien et l’espagnol viennent du latin : ce sont des langues …",
+      "spoken": "Le français, l’italien et l’espagnol viennent du latin : ce sont des langues  (mot manquant) ",
+      "choices": [
+        "romanes",
+        "germaniques",
+        "grecques"
+      ],
+      "answer": "romanes",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Les langues romanes viennent du latin parlé dans l’Empire : français, italien, espagnol, portugais, roumain. L’anglais et l’allemand sont des langues germaniques.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le latin, de Rome à aujourd’hui",
+          "lines": [
+            "Les langues romanes, nées du latin : français, italien, espagnol, portugais, roumain.",
+            "Au Moyen Âge, des moines copient les textes antiques ; les savants écrivent en latin.",
+            "À la Renaissance, des savants redécouvrent les auteurs grecs et latins.",
+            "Rome a conquis la Grèce, mais les Romains admirent ses arts et apprennent le grec.",
+            "Cicéron, grand orateur, enseigne l’art de convaincre : la rhétorique.",
+            "Des expressions latines s’emploient encore : un curriculum vitae, un alter ego, et cetera."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-1-1",
+      "prompt": "Le mot latin nox, noctis : la nuit\nitalien : notte\nespagnol : noche\nfrançais : nuit, nocturne",
+      "question": "Pourquoi ces mots se ressemblent-ils ?",
+      "spoken": "Le mot latin noks, noktiss : la nuit. Italien : notte. Espagnol : noche. Français : nuit, nocturne.",
+      "choices": [
+        "ils viennent du grec",
+        "ils viennent du même mot latin",
+        "le français les a pris à l’italien"
+      ],
+      "answer": "ils viennent du même mot latin",
+      "hint": "Lis le titre du document.",
+      "explanation": "Notte, noche et nuit viennent tous de nox, noctis : le latin est la langue mère des langues romanes. « Nocturne » garde une forme proche du latin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le latin, de Rome à aujourd’hui",
+          "lines": [
+            "Les langues romanes, nées du latin : français, italien, espagnol, portugais, roumain.",
+            "Au Moyen Âge, des moines copient les textes antiques ; les savants écrivent en latin.",
+            "À la Renaissance, des savants redécouvrent les auteurs grecs et latins.",
+            "Rome a conquis la Grèce, mais les Romains admirent ses arts et apprennent le grec.",
+            "Cicéron, grand orateur, enseigne l’art de convaincre : la rhétorique.",
+            "Des expressions latines s’emploient encore : un curriculum vitae, un alter ego, et cetera."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-1-2",
+      "prompt": "Au Moyen Âge, qui recopie les textes antiques ?",
+      "choices": [
+        "les chevaliers",
+        "les marchands",
+        "les moines"
+      ],
+      "answer": "les moines",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Dans les monastères, des moines copistes recopient à la main les textes latins : beaucoup d’œuvres antiques nous sont parvenues ainsi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le latin, de Rome à aujourd’hui",
+          "lines": [
+            "Les langues romanes, nées du latin : français, italien, espagnol, portugais, roumain.",
+            "Au Moyen Âge, des moines copient les textes antiques ; les savants écrivent en latin.",
+            "À la Renaissance, des savants redécouvrent les auteurs grecs et latins.",
+            "Rome a conquis la Grèce, mais les Romains admirent ses arts et apprennent le grec.",
+            "Cicéron, grand orateur, enseigne l’art de convaincre : la rhétorique.",
+            "Des expressions latines s’emploient encore : un curriculum vitae, un alter ego, et cetera."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-1-3",
+      "prompt": "Horace, poète latin\n« La Grèce conquise a conquis son farouche vainqueur\net a porté les arts dans le Latium sauvage. »\nfarouche : sauvage, rude ; Latium : la région de Rome.",
+      "question": "Que veut dire Horace ?",
+      "spoken": "Horace, poète latin. La Grèce conquise a conquis son farouche vainqueur et a porté les arts dans le Latium sauvage. Farouche : sauvage, rude ; Latium : la région de Rome.",
+      "choices": [
+        "la Grèce a conquis Rome par les armes",
+        "Rome a vaincu la Grèce, puis adopté ses arts",
+        "Rome a détruit la culture grecque"
+      ],
+      "answer": "Rome a vaincu la Grèce, puis adopté ses arts",
+      "hint": "Qui a gagné la guerre ? Et qui a gagné par les arts ?",
+      "explanation": "Rome a vaincu la Grèce par les armes, mais les Romains ont adopté les arts, la philosophie et le théâtre des Grecs : c’est la Grèce qui a « conquis » Rome.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le latin, de Rome à aujourd’hui",
+          "lines": [
+            "Les langues romanes, nées du latin : français, italien, espagnol, portugais, roumain.",
+            "Au Moyen Âge, des moines copient les textes antiques ; les savants écrivent en latin.",
+            "À la Renaissance, des savants redécouvrent les auteurs grecs et latins.",
+            "Rome a conquis la Grèce, mais les Romains admirent ses arts et apprennent le grec.",
+            "Cicéron, grand orateur, enseigne l’art de convaincre : la rhétorique.",
+            "Des expressions latines s’emploient encore : un curriculum vitae, un alter ego, et cetera."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-1-4",
+      "prompt": "Le grand orateur romain qui enseigne l’art de convaincre est …",
+      "spoken": "Le grand orateur romain qui enseigne l’art de convaincre est  (mot manquant) ",
+      "choices": [
+        "Cicéron",
+        "César",
+        "Virgile"
+      ],
+      "answer": "Cicéron",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Cicéron est le plus grand orateur de Rome ; ses discours servent encore de modèles pour apprendre la rhétorique. Virgile est un poète ; César, un général et un homme politique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le latin, de Rome à aujourd’hui",
+          "lines": [
+            "Les langues romanes, nées du latin : français, italien, espagnol, portugais, roumain.",
+            "Au Moyen Âge, des moines copient les textes antiques ; les savants écrivent en latin.",
+            "À la Renaissance, des savants redécouvrent les auteurs grecs et latins.",
+            "Rome a conquis la Grèce, mais les Romains admirent ses arts et apprennent le grec.",
+            "Cicéron, grand orateur, enseigne l’art de convaincre : la rhétorique.",
+            "Des expressions latines s’emploient encore : un curriculum vitae, un alter ego, et cetera."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-1-5",
+      "prompt": "Un « curriculum vitae » raconte …",
+      "spoken": "Un curriculum vité raconte (mot manquant)",
+      "choices": [
+        "le parcours d’une vie",
+        "la vie d’un personnage célèbre",
+        "un voyage autour du monde"
+      ],
+      "answer": "le parcours d’une vie",
+      "hint": "Pense au mot « vital » : de quoi parle-t-il ?",
+      "explanation": "Curriculum vitae veut dire « le parcours de la vie » : c’est le document qui présente les études et le travail d’une personne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le latin, de Rome à aujourd’hui",
+          "lines": [
+            "Les langues romanes, nées du latin : français, italien, espagnol, portugais, roumain.",
+            "Au Moyen Âge, des moines copient les textes antiques ; les savants écrivent en latin.",
+            "À la Renaissance, des savants redécouvrent les auteurs grecs et latins.",
+            "Rome a conquis la Grèce, mais les Romains admirent ses arts et apprennent le grec.",
+            "Cicéron, grand orateur, enseigne l’art de convaincre : la rhétorique.",
+            "Des expressions latines s’emploient encore : un curriculum vitae, un alter ego, et cetera."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-1-6",
+      "prompt": "« Et cetera », écrit « etc. », veut dire …",
+      "spoken": "Ètsétéra, écrit en abrégé e, t, c, veut dire (mot manquant)",
+      "choices": [
+        "et c’est terminé",
+        "et pourtant",
+        "et les autres choses"
+      ],
+      "answer": "et les autres choses",
+      "hint": "Quand écrit-on « etc. » à la fin d’une liste ?",
+      "explanation": "Et cetera veut dire « et les autres choses » : on l’écrit quand une liste pourrait continuer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le latin, de Rome à aujourd’hui",
+          "lines": [
+            "Les langues romanes, nées du latin : français, italien, espagnol, portugais, roumain.",
+            "Au Moyen Âge, des moines copient les textes antiques ; les savants écrivent en latin.",
+            "À la Renaissance, des savants redécouvrent les auteurs grecs et latins.",
+            "Rome a conquis la Grèce, mais les Romains admirent ses arts et apprennent le grec.",
+            "Cicéron, grand orateur, enseigne l’art de convaincre : la rhétorique.",
+            "Des expressions latines s’emploient encore : un curriculum vitae, un alter ego, et cetera."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-1-7",
+      "prompt": "À la Renaissance, des savants …",
+      "spoken": "À la Renaissance, des savants  (mot manquant) ",
+      "choices": [
+        "oublient le latin",
+        "redécouvrent les auteurs grecs et latins",
+        "inventent l’alphabet"
+      ],
+      "answer": "redécouvrent les auteurs grecs et latins",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "À la Renaissance, les humanistes relisent les auteurs antiques et les impriment : on retrouve le goût des textes anciens.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le latin, de Rome à aujourd’hui",
+          "lines": [
+            "Les langues romanes, nées du latin : français, italien, espagnol, portugais, roumain.",
+            "Au Moyen Âge, des moines copient les textes antiques ; les savants écrivent en latin.",
+            "À la Renaissance, des savants redécouvrent les auteurs grecs et latins.",
+            "Rome a conquis la Grèce, mais les Romains admirent ses arts et apprennent le grec.",
+            "Cicéron, grand orateur, enseigne l’art de convaincre : la rhétorique.",
+            "Des expressions latines s’emploient encore : un curriculum vitae, un alter ego, et cetera."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-3e-ideas",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

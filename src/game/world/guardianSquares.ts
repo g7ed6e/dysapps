@@ -21,7 +21,7 @@ export interface GuardianSquare {
   repli?: true;
 }
 
-/** Les 54 carrés des Gardiens de GD-11, la LV2 par défaut. */
+/** Les 58 carrés des Gardiens de GD-11, la LV2 par défaut. */
 export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<GuardianSquare>>>> = {
   'french-6e-phonology': { x: 16, y: 19, palier: 3 },
   'french-6e-grammar-spelling': { x: 17, y: 11, palier: 3 },
@@ -53,6 +53,8 @@ export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<Gu
   'technology-5e-design': { x: -2, y: 13, palier: 3 },
   'civics-5e-equality-solidarity': { x: 13, y: -2, palier: 1 },
   'lca-5e-legends': { x: 14, y: -2, palier: 1 },
+  'civics-4e-rights-freedoms': { x: 14, y: 0, palier: 3 },
+  'lca-4e-cities': { x: -4, y: 15, palier: 1 },
   'maths-4e-powers': { x: 15, y: 10, palier: 1 },
   'maths-4e-algebra': { x: 16, y: 17, palier: 3 },
   'french-4e-agreement': { x: 0, y: 14, palier: 3 },
@@ -77,6 +79,8 @@ export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<Gu
   'life-earth-sciences-3e-human-body': { x: 12, y: -2, palier: 1 },
   'physics-chemistry-3e-motion-energy': { x: -2, y: 13, palier: 3 },
   'technology-3e-digital': { x: -2, y: 13, palier: 1 },
+  'civics-3e-democratic-life': { x: 13, y: -2, palier: 1 },
+  'lca-3e-ideas': { x: 12, y: 17, palier: 1 },
 };
 
 /**

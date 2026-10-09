@@ -432,4 +432,67 @@ export const ESPECES_3E = {
       },
     },
   },
+  // EMC 3e (EMC-2) : le strict nécessaire, Archipéo étant en pause. Brio, macareux orateur : le dos noir, la face et le
+  // ventre blancs, le gros bec court ; rond, les pattes courtes, les ailes ouvertes ; une écharpe de lin, aucun insigne ;
+  // à la main, ses notes roulées (le pupitre est sa commande).
+  'civics-3e-democratic-life': {
+    nom: 'Brio',
+    metier: 'orateur',
+    dominante: 0x2a2a30,
+    marque: { couleur: 0xd8d4cc, ou: ['visage', 'ventre'] },
+    tenue: { couleur: TENUE.lin, vetements: ['echarpe'] },
+    museau: { forme: 'bec', long: 0.2, r: 0.09, y: 2.18 },
+    // Le macareux : rond de corps, les pattes courtes, la grosse tête.
+    silhouette: { largeur: 0.36, profondeur: 0.32, ventre: 0.1, jambes: 0.4, tete: 0.28, crane: 1 },
+    // Les deux ailes ouvertes de l'orateur, qui s'adresse à tous : elles le séparent de Mémo et d'Olive en silhouette.
+    bras: { rz: 0.5 },
+    autreBras: { rz: 0.5 },
+    corps: (T, k) => {
+      // La queue courte et noire, pointée vers le sol.
+      pointe(T, [0, 0.95, 0.24], 0.1, 0.28, k.dom, [2.4, 0, 0], 3);
+    },
+    outil: {
+      // Ses notes roulées, de lin.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => manche(T, -0.12, 0.2, 0.035, k.lin, 4),
+    },
+  },
+  // Latin-grec 3e (LCA-2) : le strict nécessaire, Archipéo étant en pause. Stylet, huppe scribe : rose orangé, le long
+  // bec fin et sombre, la huppe dressée sur la tête, les ailes rayées de sombre dans le dos ; une ceinture de cuir ; à
+  // la main, le stylet de fer, et dans l'autre sa tablette de cire, le cadre de bois.
+  'lca-3e-ideas': {
+    nom: 'Stylet',
+    metier: 'scribe',
+    dominante: 0xc88a5e,
+    marque: { couleur: 0x2a2420, ou: ['museau'] },
+    tenue: { couleur: TENUE.cuir, vetements: ['ceinture'] },
+    museau: { forme: 'bec', long: 0.34, r: 0.035, y: 2.2 },
+    silhouette: { largeur: 0.27, profondeur: 0.25, jambes: 0.7, jambe: 0.045, tete: 0.24 },
+    coiffe: (T, k) => {
+      // La huppe : trois plumes dressées, du front vers la nuque, de plus en plus couchées.
+      for (const [z, rx] of [
+        [-0.08, 0.15],
+        [0.02, -0.2],
+        [0.12, -0.55],
+      ] as const)
+        pointe(T, [0, 2.4, z], 0.04, 0.26, k.dom, [rx, 0, 0], 3);
+    },
+    corps: (T, k) => {
+      // Les ailes repliées dans le dos, rayées : trois bandes sombres.
+      for (const y of [1.2, 1.42, 1.64]) pave(T, -0.2, y, 0.22, 0.2, y + 0.08, 0.27, k.marque);
+    },
+    outil: {
+      // Le stylet de fer.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => manche(T, -0.06, 0.24, 0.012, k.fer, 3),
+    },
+    autreMain: {
+      // La tablette de cire : le cadre de bois, la cire de lin.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        pave(T, -0.12, -0.15, -0.025, 0.12, 0.15, 0.025, k.bois);
+        pave(T, -0.1, -0.13, -0.035, 0.1, 0.13, -0.02, k.lin);
+      },
+    },
+  },
 } satisfies Partial<Record<BiomeId, Espece>>;

@@ -1,0 +1,9 @@
+{
+  "id": "civics-3e-democratic-life-3",
+  "biome": "civics-3e-democratic-life",
+  "name": "Le parvis de la tribune",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Un parvis pour écouter tous les avis. La tribune est finie, bâtisseur."
+}

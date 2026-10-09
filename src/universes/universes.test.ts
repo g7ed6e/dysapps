@@ -55,7 +55,8 @@ describe('les textes d’univers', () => {
     // leurs propres cas plus bas. Le Hibou renvoie à l’aide sous la question (programmes 2025-2026 : Sens et Nuances
     // affichent un rappel, pas une règle). Le Gardien et l'espèce du Préau des délégués (EMC-2) l'ont changée, puis ceux du
     // Fournil des partages (EMC-2) et de la Grotte des légendes (LCA-2), puis le Phénix d’argile qui se dresse dans son nid
-    // et se rallume jusqu’à la huppe (consultant Blocland, 9 octobre 2026).
+    // et se rallume jusqu’à la huppe (consultant Blocland, 9 octobre 2026), puis ceux de la Porte des libertés et du Forum
+    // des débats (EMC-2), de la Colonnade des cités et du Bosquet des sages (LCA-2).
     const t = textesDe('blocland');
     const textes = Object.fromEntries(
       BIOMES.map((b) => {
@@ -63,7 +64,7 @@ describe('les textes d’univers', () => {
         return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
-    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('fe28d542cdceec8fdeb460b39d1c37d7f4d77b71c48adf28149ceff6c480ab90');
+    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('4bbf57dc3e463b24ecda9ab5350e788907031cdf76d983d8d1ef01ce344423e7');
     const l = t.libelles;
     expect([l.dejaFait, l.etoiles, l.etoilesSur3(2), l.resistance(2, 6), l.dejaFaitArene('Le Grand Chêne')]).toEqual([
       'Déjà rallumé. On rejoue ?',
@@ -182,8 +183,9 @@ describe('les textes communs (J8, U4)', () => {
       // Les îles venues après U4 (le Jardin des heures, LV2-4 ; le Refuge des carnets, LV2-5 ; la Fouille des siècles et la
       // Pointe des paysages, HG-2 ; la Vallée du vivant, le Laboratoire des éléments et le Hangar des inventions, SC-2 ;
       // les six îles d'histoire-géographie de 5e, 4e et 3e, HG-3 ; les neuf îles de sciences de 5e, 4e et 3e, SC-3 ; le
-      // Préau des délégués, EMC-2 ; le Fournil des partages, EMC-2, et la Grotte des légendes, LCA-2) n'ont
-      // pas de réplique « d'avant » : hors de l'empreinte.
+      // Préau des délégués, EMC-2 ; le Fournil des partages, la Porte des libertés et le Forum des débats, EMC-2, la Grotte
+      // des légendes, la Colonnade des cités et le Bosquet des sages, LCA-2) n'ont pas de réplique « d'avant » : hors de
+      // l'empreinte.
       const APRES_U4: readonly string[] = [
         'lv2-4e-daily-life',
         'lv2-3e-travel',
@@ -195,6 +197,10 @@ describe('les textes communs (J8, U4)', () => {
         'civics-6e-democratic-society',
         'civics-5e-equality-solidarity',
         'lca-5e-legends',
+        'civics-4e-rights-freedoms',
+        'lca-4e-cities',
+        'civics-3e-democratic-life',
+        'lca-3e-ideas',
         'history-5e-middle-ages',
         'geography-5e-resources',
         'history-4e-revolutions',

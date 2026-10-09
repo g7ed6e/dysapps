@@ -95,9 +95,11 @@ export function isFixedPlace(id: BiomeId): boolean {
  * Les lieux qui se déplacent mais ne tournent pas : aux Îles Brumeuses, depuis le Fournil des partages et la Grotte des
  * légendes posés aux deux places que GD-12 gardait au rang du fond, le Marais des temps, le Comptoir et le Manoir du
  * passé ne trouvent plus de place tournée ; plutôt que « Tourner » toujours refusé (« Pas de place »), ils n'ont pas de
- * « Tourner » (directeur artistique, 9 octobre 2026).
+ * « Tourner » (directeur artistique, 9 octobre 2026). De même aux Anciens Ateliers, depuis la Porte des libertés et la
+ * Colonnade des cités, pour l'Escale des échanges, et aux Îles du Ciel, depuis le Forum des débats et le Bosquet des
+ * sages, pour l'Observatoire des textes (propositions de l'artiste technique 3D, à valider par le directeur artistique).
  */
-const PLACES_THAT_DO_NOT_TURN: ReadonlySet<BiomeId> = new Set<BiomeId>(['french-5e-conjugation', 'english-5e-vocabulary', 'english-5e-grammar']);
+const PLACES_THAT_DO_NOT_TURN: ReadonlySet<BiomeId> = new Set<BiomeId>(['french-5e-conjugation', 'english-5e-vocabulary', 'english-5e-grammar', 'geography-4e-globalization', 'french-3e-close-reading']);
 
 /** Le lieu a-t-il « Tourner » ? Tous, sauf ceux qui ne tournent pas (`PLACES_THAT_DO_NOT_TURN`). */
 export function placeTurns(id: BiomeId): boolean {

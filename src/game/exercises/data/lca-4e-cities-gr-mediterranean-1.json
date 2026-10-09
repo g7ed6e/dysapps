@@ -1,0 +1,241 @@
+{
+  "id": "lca-4e-cities-gr-mediterranean-1",
+  "biome": "lca-4e-cities",
+  "type": "gr-mediterranean",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-4e-cities-gr-mediterranean-1-0",
+      "prompt": "Une cité grecque, avec sa ville, ses campagnes et ses lois, se dit en grec …",
+      "spoken": "Une cité grecque, avec sa ville, ses campagnes et ses lois, se dit en grec  (mot manquant) ",
+      "choices": [
+        "polis",
+        "oikos",
+        "agora"
+      ],
+      "answer": "polis",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "La polis est la cité : une ville, ses campagnes, ses lois. Polis a donné « politique », ce qui concerne la cité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les Grecs et la mer",
+          "lines": [
+            "La Grèce est faite de montagnes, d’îles et de côtes : la mer relie les cités.",
+            "Une cité grecque, la polis : une ville et ses campagnes, avec ses lois et ses dieux.",
+            "Il n’y a pas de pays « Grèce » : des centaines de cités indépendantes.",
+            "La trière : un navire de guerre à trois rangs de rameurs.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée et de la mer Noire.",
+            "Le Pirée : le port d’Athènes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-1-1",
+      "prompt": "Le navire de guerre grec à trois rangs de rameurs s’appelle la …",
+      "spoken": "Le navire de guerre grec à trois rangs de rameurs s’appelle la  (mot manquant) ",
+      "choices": [
+        "galère",
+        "trière",
+        "pirogue"
+      ],
+      "answer": "trière",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "La trière a trois rangs de rameurs (tri- veut dire trois). Rapide, elle frappe les navires ennemis avec son éperon, à l’avant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les Grecs et la mer",
+          "lines": [
+            "La Grèce est faite de montagnes, d’îles et de côtes : la mer relie les cités.",
+            "Une cité grecque, la polis : une ville et ses campagnes, avec ses lois et ses dieux.",
+            "Il n’y a pas de pays « Grèce » : des centaines de cités indépendantes.",
+            "La trière : un navire de guerre à trois rangs de rameurs.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée et de la mer Noire.",
+            "Le Pirée : le port d’Athènes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-1-2",
+      "prompt": "Le port d’Athènes\nAthènes est à quelques kilomètres de la mer.\nSon port, le Pirée, accueille les navires de commerce et la flotte.\nDe longs murs relient la ville au port.",
+      "question": "Pourquoi construire de longs murs entre Athènes et le Pirée ?",
+      "spoken": "Le port d’Athènes. Athènes est à quelques kilomètres de la mer. Son port, le Pirée, accueille les navires de commerce et la flotte. De longs murs relient la ville au port.",
+      "choices": [
+        "pour protéger la route vers la mer",
+        "pour marquer la frontière de la cité",
+        "pour abriter les navires"
+      ],
+      "answer": "pour protéger la route vers la mer",
+      "hint": "Lis la dernière ligne du document : que relient les murs ?",
+      "explanation": "Les longs murs protègent la route entre Athènes et son port : même entourée d’ennemis sur terre, la ville reçoit ses vivres par la mer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les Grecs et la mer",
+          "lines": [
+            "La Grèce est faite de montagnes, d’îles et de côtes : la mer relie les cités.",
+            "Une cité grecque, la polis : une ville et ses campagnes, avec ses lois et ses dieux.",
+            "Il n’y a pas de pays « Grèce » : des centaines de cités indépendantes.",
+            "La trière : un navire de guerre à trois rangs de rameurs.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée et de la mer Noire.",
+            "Le Pirée : le port d’Athènes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-1-3",
+      "prompt": "Les Grecs ne forment pas un seul pays, mais des centaines de …",
+      "spoken": "Les Grecs ne forment pas un seul pays, mais des centaines de  (mot manquant) ",
+      "choices": [
+        "provinces",
+        "cités",
+        "royaumes"
+      ],
+      "answer": "cités",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "La Grèce antique compte des centaines de cités indépendantes, comme Athènes, Sparte ou Corinthe. Elles partagent la langue, les dieux et les jeux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les Grecs et la mer",
+          "lines": [
+            "La Grèce est faite de montagnes, d’îles et de côtes : la mer relie les cités.",
+            "Une cité grecque, la polis : une ville et ses campagnes, avec ses lois et ses dieux.",
+            "Il n’y a pas de pays « Grèce » : des centaines de cités indépendantes.",
+            "La trière : un navire de guerre à trois rangs de rameurs.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée et de la mer Noire.",
+            "Le Pirée : le port d’Athènes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-1-4",
+      "prompt": "Le port d’Athènes s’appelle …",
+      "spoken": "Le port d’Athènes s’appelle  (mot manquant) ",
+      "choices": [
+        "Olympie",
+        "Massalia",
+        "le Pirée"
+      ],
+      "answer": "le Pirée",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Le Pirée est le port d’Athènes ; c’est encore aujourd’hui le grand port de la Grèce. Olympie est le sanctuaire des jeux ; Massalia, l’ancien nom de Marseille.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les Grecs et la mer",
+          "lines": [
+            "La Grèce est faite de montagnes, d’îles et de côtes : la mer relie les cités.",
+            "Une cité grecque, la polis : une ville et ses campagnes, avec ses lois et ses dieux.",
+            "Il n’y a pas de pays « Grèce » : des centaines de cités indépendantes.",
+            "La trière : un navire de guerre à trois rangs de rameurs.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée et de la mer Noire.",
+            "Le Pirée : le port d’Athènes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-1-5",
+      "prompt": "Pourquoi partir ?\nLa cité manque de terres pour nourrir tout le monde.\nUn groupe part en bateau, avec un chef.\nIl fonde une cité nouvelle, au bord de la mer.",
+      "question": "Comment s’appelle cette cité nouvelle ?",
+      "spoken": "Pourquoi partir ? La cité manque de terres pour nourrir tout le monde. Un groupe part en bateau, avec un chef. Il fonde une cité nouvelle, au bord de la mer.",
+      "choices": [
+        "une colonie",
+        "un comptoir",
+        "une province"
+      ],
+      "answer": "une colonie",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "C’est une colonie : une cité nouvelle, libre, mais liée à sa cité d’origine. Un comptoir n’est qu’un port de commerce.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les Grecs et la mer",
+          "lines": [
+            "La Grèce est faite de montagnes, d’îles et de côtes : la mer relie les cités.",
+            "Une cité grecque, la polis : une ville et ses campagnes, avec ses lois et ses dieux.",
+            "Il n’y a pas de pays « Grèce » : des centaines de cités indépendantes.",
+            "La trière : un navire de guerre à trois rangs de rameurs.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée et de la mer Noire.",
+            "Le Pirée : le port d’Athènes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-1-6",
+      "prompt": "Les cités grecques sont reliées surtout par …",
+      "spoken": "Les cités grecques sont reliées surtout par  (mot manquant) ",
+      "choices": [
+        "les routes",
+        "les fleuves",
+        "la mer"
+      ],
+      "answer": "la mer",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Montagnes et îles rendent les routes difficiles : la mer relie les cités grecques. On circule et on commerce en bateau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les Grecs et la mer",
+          "lines": [
+            "La Grèce est faite de montagnes, d’îles et de côtes : la mer relie les cités.",
+            "Une cité grecque, la polis : une ville et ses campagnes, avec ses lois et ses dieux.",
+            "Il n’y a pas de pays « Grèce » : des centaines de cités indépendantes.",
+            "La trière : un navire de guerre à trois rangs de rameurs.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée et de la mer Noire.",
+            "Le Pirée : le port d’Athènes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-1-7",
+      "prompt": "Des colonies grecques\nMassalia : Marseille, en France.\nNéapolis : Naples, en Italie.\nByzance : Istanbul, en Turquie.",
+      "question": "Que montre ce document ?",
+      "spoken": "Des colonies grecques. Massalia : Marseille, en France. Néapolis : Naples, en Italie. Byzance : Istanbul, en Turquie.",
+      "choices": [
+        "ces villes sont toutes en Grèce",
+        "des Grecs ont fondé des villes loin de la Grèce",
+        "ces villes ont été fondées par Rome"
+      ],
+      "answer": "des Grecs ont fondé des villes loin de la Grèce",
+      "hint": "Lis le titre du document, puis la cinquième ligne du rappel.",
+      "explanation": "Marseille, Naples et Istanbul sont d’anciennes colonies grecques : les Grecs se sont installés tout autour de la Méditerranée, jusqu’à la mer Noire. Néapolis veut dire « la ville nouvelle ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les Grecs et la mer",
+          "lines": [
+            "La Grèce est faite de montagnes, d’îles et de côtes : la mer relie les cités.",
+            "Une cité grecque, la polis : une ville et ses campagnes, avec ses lois et ses dieux.",
+            "Il n’y a pas de pays « Grèce » : des centaines de cités indépendantes.",
+            "La trière : un navire de guerre à trois rangs de rameurs.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée et de la mer Noire.",
+            "Le Pirée : le port d’Athènes."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-4e-cities",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

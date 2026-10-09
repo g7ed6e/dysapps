@@ -231,6 +231,20 @@ export const ENVELOPPES: Record<
   // sol 41 250 → 41 210 (41 203), la faune 1 180 → 1 140 (1 132), la mer 6 300 → 6 270 (6 264), les créatures
   // 3 500 → 3 485 (3 480), les commandes 550 → 545 (540). La somme des Îles Brumeuses reste 85 945, sous
   // `RENDER_BUDGET_AUTRES` (86 000), inchangé ; aucun appel de plus.
+  // La Porte des libertés et la Colonnade des cités (EMC et latin-grec de 4e) : enveloppes des Anciens Ateliers posées aux
+  // valeurs mesurées tout construit (`npm run rendu:budget`, 9 octobre 2026), avant → après, avec une petite marge : le
+  // sol 36 752 → 43 721 (enveloppe 43 750), les créatures 3 014 → 3 544 (3 550 : Loquet et Figue), les Gardiens
+  // 2 652 → 3 029 (3 050 : le Lynx d'agate et la Cigale d'argile) ; le décor (11 473 → 12 418), la construction
+  // (5 746 → 6 432), les commandes (392 → 440 : le panneau d'affichage) et les bornes (1 344 → 1 428 : six de plus)
+  // tiennent dans les leurs ; aucun appel de plus. La somme des Anciens Ateliers passe de 75 535 à 82 975, sous
+  // `RENDER_BUDGET_AUTRES` (86 000), inchangé (proposition de l'artiste technique 3D, à valider par le mainteneur).
+  // Le Forum des débats et le Bosquet des sages (EMC et latin-grec de 3e) : de même aux Îles du Ciel, le sol
+  // 38 994 → 44 895 (enveloppe 44 900 : deux îles du ciel, leurs dessous et leurs parois ; leur forme n'y change presque
+  // rien, deux galets en coûtaient 44 825), les créatures 3 184 → 3 645 (3 650 : Brio et Stylet), les Gardiens
+  // 2 771 → 3 222 (3 250 : l'Étourneau d'étain et le Centaure d'argile) ; le décor (8 910 → 10 573), la construction
+  // (6 878), les commandes (370 : le pupitre) et les bornes (1 428) tiennent dans les leurs ; aucun appel de plus. La
+  // somme des Îles du Ciel passe de 75 535 à 82 355, sous `RENDER_BUDGET_AUTRES` (86 000), inchangé (proposition de
+  // l'artiste technique 3D, à valider par le mainteneur).
   // GD-12, une forme par île, aux Îles du Ciel : le sol mesure 38 994 triangles (36 930 avant). Il prend 2 070 au décor
   // du même archipel (8 910 mesurés pour 13 600) : sol 39 000, décor 11 530, la somme ne change pas (mainteneur,
   // 9 octobre 2026, carte « Échanger »).
@@ -239,7 +253,7 @@ export const ENVELOPPES: Record<
     nom: 'Sol',
     premiersRivages: { triangles: 32_550, drawCalls: 2 },
     autres: { triangles: 36_930, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 41_210, drawCalls: 1 }, '3e': { triangles: 39_000, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 41_210, drawCalls: 1 }, '4e': { triangles: 43_750, drawCalls: 1 }, '3e': { triangles: 44_900, drawCalls: 1 } },
   },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
@@ -347,14 +361,14 @@ export const ENVELOPPES: Record<
     nom: 'Créatures',
     premiersRivages: { triangles: 4_600, drawCalls: 1 },
     autres: { triangles: 3_200, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 3_485, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 3_485, drawCalls: 1 }, '4e': { triangles: 3_550, drawCalls: 1 }, '3e': { triangles: 3_650, drawCalls: 1 } },
   },
   gardiens: {
     lot: 'R6',
     nom: 'Gardiens en sentinelles',
     premiersRivages: { triangles: 5_200, drawCalls: 1 },
     autres: { triangles: 2_780, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 3_150, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 3_150, drawCalls: 1 }, '4e': { triangles: 3_050, drawCalls: 1 }, '3e': { triangles: 3_250, drawCalls: 1 } },
   },
   scene: {
     lot: 'socle',

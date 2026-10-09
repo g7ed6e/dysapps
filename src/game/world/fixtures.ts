@@ -265,6 +265,13 @@ const FORMES: Record<string, Cube[]> = {
   // Manivelle, le moteur : deux bobines au sol aux bouts, la troisième dessus, au milieu, sur une barrière (quatre
   // cubes au moins).
   'technology-4e-modeling-fixture-1': [[0, 0, 0, BLOC.bobine], [2, 0, 0, BLOC.bobine], [1, 0, 0, 'fence'], [1, 0, 1, BLOC.bobine]],
+  // Loquet, le panneau d'affichage (EMC-2 ; proposition de l'artiste technique 3D, sobre : aucun texte, aucun symbole,
+  // aucun drapeau) : le panneau de trois pétales de la Source des espèces, debout sur deux pieds de barrière, un toit
+  // au-dessus de son milieu pour l'abriter de la pluie.
+  'civics-4e-rights-freedoms-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 0, 1, BLOC.petale), [1, 0, 2, 'roof']],
+  // Brio, le pupitre (EMC-2 ; proposition de l'artiste technique 3D, sobre : aucun texte, aucun emblème) : un pied de
+  // deux barrières, le plateau de trois savons du Verger de la santé posé dessus.
+  'civics-3e-democratic-life-fixture-1': [[1, 0, 0, 'fence'], [1, 0, 1, 'fence'], ...rangee(0, 2, 0, 2, BLOC.savon)],
   // Olive, la veilleuse : deux cires en colonne, une lanterne dessus (sans flamme), un savon à son pied (quatre cubes au
   // moins).
   'life-earth-sciences-3e-human-body-fixture-1': [...colonne(0, 0, 0, 1, BLOC.cire), [0, 0, 2, 'lantern'], [1, 0, 0, BLOC.savon]],
@@ -401,7 +408,9 @@ const PLACES: Record<string, readonly [number, number]> = {
   'life-earth-sciences-4e-cells-evolution-fixture-1': [11, 3],
   'physics-chemistry-4e-signals-circuits-fixture-1': [-2, 10],
   'technology-4e-modeling-fixture-1': [2, 11],
+  'civics-4e-rights-freedoms-fixture-1': [-4, 5],
   'life-earth-sciences-3e-human-body-fixture-1': [6, 11],
+  'civics-3e-democratic-life-fixture-1': [-2, 8],
   'physics-chemistry-3e-motion-energy-fixture-1': [-1, 12],
   'technology-3e-digital-fixture-1': [5, 3],
 };

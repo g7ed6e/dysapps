@@ -37,4 +37,10 @@ export const SILHOUETTES_4E = {
   'physics-chemistry-4e-signals-circuits': { pics: [], forme: { forme: 'presquile', vers: 'devant', short: true } },
   // Le Bassin des maquettes : un lagon, la mer elle-même dans un anneau de terre, sa passe devant.
   'technology-4e-modeling': { pics: [], forme: { forme: 'lagon', vers: 'devant' } },
+  // L'EMC (EMC-2) et le latin-grec (LCA-2), des îles plates, sans pic, aux formes que GD-12 a gardées pour leurs places
+  // (map.test.ts) : la Porte des libertés, un trèfle ouvert devant, la place de la loge au milieu de ses trois lobes ; la
+  // Colonnade des cités, un galet ouvert devant, le rond de la cité autour de sa fontaine (propositions de l'artiste
+  // technique 3D, à trancher par le directeur artistique).
+  'civics-4e-rights-freedoms': { pics: [], forme: { forme: 'trefle', vers: 'devant' } },
+  'lca-4e-cities': { pics: [], forme: { forme: 'galet', vers: 'devant' } },
 } satisfies Partial<Record<BiomeId, Silhouette>>;

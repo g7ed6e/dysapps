@@ -78,6 +78,10 @@ export const TEXTURES: Record<string, string> = {
   [BLOCKS[BLOC.petale].side]: 'petale',
   [BLOCKS[BLOC.bobine].side]: 'bobine',
   [BLOCKS[BLOC.liege].side]: 'liege',
+  [BLOCKS[BLOC.pave].side]: 'pave',
+  [BLOCKS[BLOC.fresque].side]: 'fresque',
+  [BLOCKS[BLOC.acajou].side]: 'acajou',
+  [BLOCKS[BLOC.laurier].side]: 'laurier',
   [BLOCKS[BLOC.savon].side]: 'savon',
   [BLOCKS[BLOC.ressort].side]: 'ressort',
   [BLOCKS[BLOC.cire].side]: 'cire',
@@ -180,7 +184,7 @@ const VENUES_AU_MILIEU: readonly string[] = [
 ];
 
 /**
- * Les îles entrées au milieu de la liste après les précédentes (l'EMC, EMC-2 ; le latin-grec, LCA-2) : elles ne
+ * Les îles entrées au milieu de la liste après les précédentes (l'EMC, EMC-2 ; le latin-grec, LCA-2 ; de la 6e à la 3e) : elles ne
  * comptent dans le rang d'aucune île, pas même des îles venues au milieu (`VENUES_AU_MILIEU`), dont le relief ne bouge
  * pas non plus.
  */
@@ -188,6 +192,10 @@ const ENTREES_ENSUITE: readonly string[] = [
   'civics-6e-democratic-society',
   'civics-5e-equality-solidarity',
   'lca-5e-legends',
+  'civics-4e-rights-freedoms',
+  'lca-4e-cities',
+  'civics-3e-democratic-life',
+  'lca-3e-ideas',
 ];
 
 let rangsDuDessin: readonly number[] | undefined;

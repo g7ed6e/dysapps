@@ -170,10 +170,13 @@ describe('Les Gardiens en sentinelles', () => {
   // mainteneur, 9 octobre 2026 : 2 931 mesurés ; 2 943 depuis qu'elle est redessinée en oiseau, relecture des captures
   // emc-2). Aux Îles Brumeuses, 3 150 depuis l'Oie d'opale et le Phénix d'argile (EMC et latin-grec de 5e : 3 147
   // mesurés, `enveloppeDe('gardiens', '5e')`, en attente de la décision du mainteneur sur le budget du 5e).
-  it('tiennent dans leur budget : 2 950 triangles au plus aux Premiers Rivages, 3 150 aux Îles Brumeuses, 2 780 ailleurs, toutes ensemble', () => {
+  // Aux Anciens Ateliers, 3 050 depuis le Lynx d'agate et la Cigale d'argile (EMC et latin-grec de 4e : 3 029 mesurés,
+  // `enveloppeDe('gardiens', '4e')`). Aux Îles du Ciel, 3 250 depuis l'Étourneau d'étain et le Centaure d'argile (EMC et
+  // latin-grec de 3e : 3 222 mesurés, `enveloppeDe('gardiens', '3e')`).
+  it('tiennent dans leur budget : 2 950 triangles au plus aux Premiers Rivages, 3 150 aux Îles Brumeuses, 3 050 aux Anciens Ateliers, 3 250 aux Îles du Ciel', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const somme = BIOMES.filter((b) => b.classe === a).reduce((n, b) => n + nbTriangles(sentinellePeinte(b.id)), 0);
-      expect(somme, a).toBeLessThanOrEqual(a === '6e' ? 2_950 : a === '5e' ? 3_150 : 2_780);
+      expect(somme, a).toBeLessThanOrEqual(a === '6e' ? 2_950 : a === '5e' ? 3_150 : a === '4e' ? 3_050 : 3_250);
     }
   });
 

@@ -399,4 +399,71 @@ export const ESPECES_4E = {
       },
     },
   },
+  // EMC 4e (EMC-2) : le strict nécessaire, Archipéo étant en pause. Loquet, pangolin portier : trapu, brun d'olive,
+  // le museau long et fin, le dos couvert d'écailles plus claires ; sa queue épaisse posée au sol derrière lui ; une
+  // écharpe de lin, aucun uniforme ni insigne ; à la main, la grande clé de laiton de la porte (un outil, jamais une arme).
+  'civics-4e-rights-freedoms': {
+    nom: 'Loquet',
+    metier: 'portier',
+    dominante: 0x7e6440,
+    marque: { couleur: 0xe0bfa0, ou: ['visage', 'ventre'] },
+    tenue: { couleur: TENUE.lin, vetements: ['echarpe'] },
+    museau: { forme: 'museau', long: 0.2, r: 0.06 },
+    // Le pangolin debout : haut sur pattes, la petite tête au crâne bas.
+    silhouette: { largeur: 0.31, profondeur: 0.28, ventre: 0.08, jambes: 0.6, tete: 0.19, crane: 0.9 },
+    corps: (T, k) => {
+      // La queue épaisse du pangolin, posée au sol derrière lui.
+      pointe(T, [0, 1.0, 0.2], 0.15, 0.9, k.dom, [2.6, 0, 0], 4);
+      // Les écailles du dos : trois rangs de plaques plus claires.
+      for (const [y, l] of [
+        [1.15, 0.3],
+        [1.45, 0.28],
+        [1.75, 0.24],
+      ] as const)
+        pave(T, -l, y, 0.24, l, y + 0.1, 0.3, k.marque);
+    },
+    outil: {
+      // La grande clé de laiton : la tige, le panneton en bas, l'anneau en haut.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.05, 0.36, 0.02, k.laiton, 4);
+        pave(T, 0.02, -0.05, -0.015, 0.09, 0.03, 0.015, k.laiton);
+        disque(pose(T, repere([0, 0.42, 0], Math.PI / 2, 0, 0)), 0, 0.07, 0.03, k.laiton, 6);
+      },
+    },
+  },
+  // Latin-grec 4e (LCA-2) : le strict nécessaire, Archipéo étant en pause. Figue, âne porteur d'eau : gris, trapu, le
+  // museau clair, deux longues oreilles dressées ; une écharpe de lin ; à la main, une outre de cuir (l'eau de la
+  // fontaine). Ni casque ni couronne.
+  'lca-4e-cities': {
+    nom: 'Figue',
+    metier: 'porteur d’eau',
+    dominante: 0x8c8a86,
+    marque: { couleur: 0xdcd6cc, ou: ['museau', 'ventre'] },
+    tenue: { couleur: TENUE.lin, vetements: ['echarpe'] },
+    museau: { forme: 'museau', long: 0.14, r: 0.11 },
+    // L'âne : large de corps, le ventre rond, la grosse tête.
+    silhouette: { largeur: 0.46, profondeur: 0.36, ventre: 0.14, jambes: 0.45, tete: 0.29, crane: 1 },
+    coiffe: (T, k) => {
+      // Les longues oreilles de l'âne, dressées, un peu écartées.
+      for (const c of [-1, 1]) pointe(T, [c * 0.13, 2.32, 0], 0.07, 0.36, k.dom, [0, 0, -c * 0.2], 4, 0.04);
+    },
+    outil: {
+      // L'outre de cuir, tenue par le col : la panse ronde, le col noué.
+      pose: [0, 0, 0],
+      dessiner: (T, k) =>
+        fuseau(
+          T,
+          [
+            [-0.3, 0],
+            [-0.26, 0.1],
+            [-0.12, 0.14],
+            [0, 0.08],
+            [0.06, 0.06],
+          ],
+          6,
+          k.cuir,
+        ),
+    },
+  },
 } satisfies Partial<Record<BiomeId, Espece>>;

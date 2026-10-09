@@ -1,0 +1,240 @@
+{
+  "id": "lca-4e-cities-gr-agora-1",
+  "biome": "lca-4e-cities",
+  "type": "gr-agora",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-4e-cities-gr-agora-1-0",
+      "prompt": "La grande place d’Athènes, cœur de la vie publique, s’appelle l’…",
+      "spoken": "La grande place d’Athènes, cœur de la vie publique, s’appelle l’ (mot manquant) ",
+      "choices": [
+        "agora",
+        "ecclésia",
+        "acropole"
+      ],
+      "answer": "agora",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "L’agora est la place publique : on y fait ses courses, on y discute, on y juge. L’acropole est la ville haute, avec les temples, dont le Parthénon.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Athènes",
+          "lines": [
+            "L’agora : la grande place d’Athènes, avec son marché, ses temples, ses tribunaux.",
+            "L’ecclésia : l’assemblée des citoyens, qui vote les lois sur la colline de la Pnyx.",
+            "Un citoyen : un homme libre, né de parents athéniens, d’au moins dix-huit ans.",
+            "Les femmes, les étrangers (les métèques) et les esclaves ne sont pas citoyens.",
+            "À l’ecclésia, on vote à main levée.",
+            "L’ostracisme : un vote pour chasser pendant dix ans un citoyen jugé dangereux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-1-1",
+      "prompt": "L’assemblée des citoyens d’Athènes s’appelle l’…",
+      "spoken": "L’assemblée des citoyens d’Athènes s’appelle l’ (mot manquant) ",
+      "choices": [
+        "agora",
+        "ecclésia",
+        "oikos"
+      ],
+      "answer": "ecclésia",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "L’ecclésia réunit les citoyens pour voter les lois. Plus tard, les chrétiens ont repris ce mot pour leur assemblée : c’est l’origine du mot « Église ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Athènes",
+          "lines": [
+            "L’agora : la grande place d’Athènes, avec son marché, ses temples, ses tribunaux.",
+            "L’ecclésia : l’assemblée des citoyens, qui vote les lois sur la colline de la Pnyx.",
+            "Un citoyen : un homme libre, né de parents athéniens, d’au moins dix-huit ans.",
+            "Les femmes, les étrangers (les métèques) et les esclaves ne sont pas citoyens.",
+            "À l’ecclésia, on vote à main levée.",
+            "L’ostracisme : un vote pour chasser pendant dix ans un citoyen jugé dangereux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-1-2",
+      "prompt": "Qui est citoyen à Athènes ?\nDion, vingt ans, fils de deux Athéniens : oui.\nSôsias, un étranger installé à Athènes : non.\nMélitta, fille d’un citoyen : non.",
+      "question": "Pourquoi Mélitta n’est-elle pas citoyenne ?",
+      "spoken": "Qui est citoyen à Athènes ? Dion, vingt ans, fils de deux Athéniens : oui. Sôsias, un étranger installé à Athènes : non. Mélitta, fille d’un citoyen : non.",
+      "choices": [
+        "elle est trop pauvre",
+        "c’est une femme",
+        "elle est étrangère"
+      ],
+      "answer": "c’est une femme",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Les femmes ne sont pas citoyennes, même filles de citoyens : elles ne votent pas. Seuls les hommes libres, nés de parents athéniens, sont citoyens.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Athènes",
+          "lines": [
+            "L’agora : la grande place d’Athènes, avec son marché, ses temples, ses tribunaux.",
+            "L’ecclésia : l’assemblée des citoyens, qui vote les lois sur la colline de la Pnyx.",
+            "Un citoyen : un homme libre, né de parents athéniens, d’au moins dix-huit ans.",
+            "Les femmes, les étrangers (les métèques) et les esclaves ne sont pas citoyens.",
+            "À l’ecclésia, on vote à main levée.",
+            "L’ostracisme : un vote pour chasser pendant dix ans un citoyen jugé dangereux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-1-3",
+      "prompt": "Les étrangers qui vivent à Athènes s’appellent les …",
+      "spoken": "Les étrangers qui vivent à Athènes s’appellent les  (mot manquant) ",
+      "choices": [
+        "éphèbes",
+        "esclaves",
+        "métèques"
+      ],
+      "answer": "métèques",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Les métèques sont des étrangers libres installés à Athènes : ils travaillent, paient une taxe, combattent pour la cité, mais ne votent pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Athènes",
+          "lines": [
+            "L’agora : la grande place d’Athènes, avec son marché, ses temples, ses tribunaux.",
+            "L’ecclésia : l’assemblée des citoyens, qui vote les lois sur la colline de la Pnyx.",
+            "Un citoyen : un homme libre, né de parents athéniens, d’au moins dix-huit ans.",
+            "Les femmes, les étrangers (les métèques) et les esclaves ne sont pas citoyens.",
+            "À l’ecclésia, on vote à main levée.",
+            "L’ostracisme : un vote pour chasser pendant dix ans un citoyen jugé dangereux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-1-4",
+      "prompt": "Un tesson de poterie\nSur ce morceau de vase, un citoyen a gravé un nom : Thémistocle.\nDes milliers de citoyens font de même : il doit quitter Athènes pour dix ans.",
+      "question": "De quel vote s’agit-il ?",
+      "spoken": "Un tesson de poterie. Sur ce morceau de vase, un citoyen a gravé un nom : Thémistocle. Des milliers de citoyens font de même : il doit quitter Athènes pour dix ans.",
+      "choices": [
+        "l’élection d’un roi",
+        "l’ostracisme",
+        "le vote d’une loi"
+      ],
+      "answer": "l’ostracisme",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "L’ostracisme chasse pour dix ans un citoyen jugé dangereux. On écrit son nom sur un ostrakon, un tesson de poterie. D’où « ostraciser » : mettre à l’écart.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Athènes",
+          "lines": [
+            "L’agora : la grande place d’Athènes, avec son marché, ses temples, ses tribunaux.",
+            "L’ecclésia : l’assemblée des citoyens, qui vote les lois sur la colline de la Pnyx.",
+            "Un citoyen : un homme libre, né de parents athéniens, d’au moins dix-huit ans.",
+            "Les femmes, les étrangers (les métèques) et les esclaves ne sont pas citoyens.",
+            "À l’ecclésia, on vote à main levée.",
+            "L’ostracisme : un vote pour chasser pendant dix ans un citoyen jugé dangereux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-1-5",
+      "prompt": "À l’ecclésia, les citoyens votent le plus souvent …",
+      "spoken": "À l’ecclésia, les citoyens votent le plus souvent  (mot manquant) ",
+      "choices": [
+        "à main levée",
+        "en criant",
+        "par tirage au sort"
+      ],
+      "answer": "à main levée",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "À l’ecclésia, on vote à main levée. Beaucoup de magistrats, eux, sont tirés au sort parmi les citoyens : c’est une autre façon de choisir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Athènes",
+          "lines": [
+            "L’agora : la grande place d’Athènes, avec son marché, ses temples, ses tribunaux.",
+            "L’ecclésia : l’assemblée des citoyens, qui vote les lois sur la colline de la Pnyx.",
+            "Un citoyen : un homme libre, né de parents athéniens, d’au moins dix-huit ans.",
+            "Les femmes, les étrangers (les métèques) et les esclaves ne sont pas citoyens.",
+            "À l’ecclésia, on vote à main levée.",
+            "L’ostracisme : un vote pour chasser pendant dix ans un citoyen jugé dangereux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-1-6",
+      "prompt": "Le mot « démocratie » vient de dêmos, le peuple, et kratos, …",
+      "spoken": "Le mot démocratie vient de dêmoss, le peuple, et kratoss, (mot manquant)",
+      "choices": [
+        "la loi",
+        "la cité",
+        "le pouvoir"
+      ],
+      "answer": "le pouvoir",
+      "hint": "Dans une démocratie, qui décide ?",
+      "explanation": "dêmos (le peuple) et kratos (le pouvoir) : la démocratie, c’est le pouvoir du peuple. À Athènes, le peuple, ce sont les citoyens.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Athènes",
+          "lines": [
+            "L’agora : la grande place d’Athènes, avec son marché, ses temples, ses tribunaux.",
+            "L’ecclésia : l’assemblée des citoyens, qui vote les lois sur la colline de la Pnyx.",
+            "Un citoyen : un homme libre, né de parents athéniens, d’au moins dix-huit ans.",
+            "Les femmes, les étrangers (les métèques) et les esclaves ne sont pas citoyens.",
+            "À l’ecclésia, on vote à main levée.",
+            "L’ostracisme : un vote pour chasser pendant dix ans un citoyen jugé dangereux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-1-7",
+      "prompt": "Un citoyen athénien est un homme libre, né de parents …",
+      "spoken": "Un citoyen athénien est un homme libre, né de parents  (mot manquant) ",
+      "choices": [
+        "athéniens",
+        "riches",
+        "grecs"
+      ],
+      "answer": "athéniens",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Pour être citoyen, il faut être un homme libre, né d’un père et d’une mère athéniens. Un Grec d’une autre cité est un étranger à Athènes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Athènes",
+          "lines": [
+            "L’agora : la grande place d’Athènes, avec son marché, ses temples, ses tribunaux.",
+            "L’ecclésia : l’assemblée des citoyens, qui vote les lois sur la colline de la Pnyx.",
+            "Un citoyen : un homme libre, né de parents athéniens, d’au moins dix-huit ans.",
+            "Les femmes, les étrangers (les métèques) et les esclaves ne sont pas citoyens.",
+            "À l’ecclésia, on vote à main levée.",
+            "L’ostracisme : un vote pour chasser pendant dix ans un citoyen jugé dangereux."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-4e-cities",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -2,9 +2,72 @@
 // statue et ce qui s'allume. Six îles pour 1 800 triangles, socles compris.
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../template';
-import { devant, facette, fuseau, pave, pose, repere, type Anneau, type V3 } from '../painted';
+import { devant, facette, fuseau, pave, pose, repere, type Anneau, type Trace, type V3 } from '../painted';
 import { dalle, etoile, orbites, plaque, tube, veine, veineSur, type Statue } from '../sentinel';
 import { ailesDeployees, dragonAssis, HAUTEUR_DU_DRAGON, surLeSocle } from './common';
+
+/** L'Étourneau d'étain, debout sur ses pattes : le corps, du ventre aux épaules ; la tête au bout du cou court (huit blocs). */
+const CORPS_DE_L_ETOURNEAU: Anneau[] = [
+  [2.4, 0.5, 0.65],
+  [3.4, 0.85, 0.95],
+  [4.8, 0.75, 0.85],
+  [5.8, 0.4, 0.45],
+];
+const Z_DE_LA_TETE_DE_L_ETOURNEAU = -0.35;
+const TETE_DE_L_ETOURNEAU: Anneau[] = [
+  [6.2, 0.3, 0.3],
+  [6.8, 0.46, 0.48],
+  [7.6, 0.42, 0.45],
+  [8, 0.2, 0.2],
+];
+/** L'aile droite de l'Étourneau, repliée sur le flanc et le dos (x, y) ; la gauche en miroir. */
+const AILE_DE_L_ETOURNEAU: [number, number][] = [
+  [0.8, 5.4],
+  [1.0, 5.0],
+  [0.9, 3.0],
+  [0.7, 3.3],
+];
+/** Le fil de lueur d'une aile de l'Étourneau, sur son flanc (z, y), le long de `AILE_DE_L_ETOURNEAU`. */
+const FIL_DE_L_AILE_DE_L_ETOURNEAU: [number, number][] = [
+  [-0.4, 4.85],
+  [0.15, 4.1],
+  [0.4, 3.3],
+];
+
+/** Le Centaure d'argile : le corps du cheval, couché le long de Z, du poitrail à la croupe (le long, la largeur, la hauteur). */
+const CORPS_DU_CENTAURE: Anneau[] = [
+  [0, 0.45, 0.5],
+  [0.4, 0.62, 0.62],
+  [1.8, 0.6, 0.6],
+  [2.3, 0.4, 0.45],
+];
+/** Le buste, dressé sur le poitrail ; la tête au-dessus (huit blocs). */
+const BUSTE_DU_CENTAURE: Anneau[] = [
+  [3.0, 0.45, 0.38],
+  [4.4, 0.55, 0.4],
+  [5.6, 0.6, 0.42],
+  [6.0, 0.28, 0.28],
+];
+const Z_DU_BUSTE_DU_CENTAURE = -0.35;
+const TETE_DU_CENTAURE: Anneau[] = [
+  [6.0, 0.24, 0.24],
+  [6.5, 0.4, 0.4],
+  [7.5, 0.38, 0.4],
+  [8, 0.2, 0.2],
+];
+/** Le motif de lueur de chaque flanc du cheval (z, y) : une ligne brisée, de l'épaule à la croupe. */
+const MOTIF_DU_FLANC_DU_CENTAURE: [number, number][] = [
+  [-0.1, 2.75],
+  [0.45, 3.0],
+  [1.0, 2.75],
+  [1.5, 3.0],
+];
+
+/**
+ * Le flanc d'une sentinelle, en dalle le long de Z (`s` : −1 à gauche, 1 à droite ; `x`, son écart à l'axe) : le −Z
+ * d'une veine y regarde vers l'extérieur, et son x court le long de Z (comme `surLeFlanc` des Îles Brumeuses).
+ */
+const surLeFlanc = (T: Trace, s: -1 | 1, x: number) => pose(T, repere([s * x, 0, 0], 0, -s * (Math.PI / 2), 0));
 
 const CORPS_DU_SPHINX: Anneau[] = [
   [2.2, 1.1, 1.2, 0.2],
@@ -892,6 +955,111 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
     // Deux cases hexagonales sur chaque aile, côte à côte : deux lueurs.
     veines: (T, a) => {
       for (const s of [-1, 1]) for (const [x, y] of [[0.75, 6.65], [1.2, 6.85]]) plaque(pose(T, repereDAileDAbeille(s)), s * x, y, 0.2 * a.veines, 0.2, 6, a.lueur, () => -0.05);
+    },
+  },
+  // EMC 3e (EMC-2) : le strict nécessaire, Archipéo étant en pause. L'Étourneau d'étain, sans flamme ni symbole :
+  // debout sur ses pattes, le corps rond, la queue courte, le bec long et pointu ; les ailes repliées sur le dos, dont
+  // les plumes s'allument, un fil sur le flanc de chacune.
+  'civics-3e-democratic-life': {
+    nom: 'l’Étourneau d’étain',
+    allume: 'les plumes de son dos',
+    sansFlamme: true,
+    sculpture: (T, a) => {
+      // Les pattes, du socle au ventre.
+      for (const x of [-0.3, 0.3])
+        tube(
+          T,
+          [
+            [x, 1, -0.1],
+            [x, 2.6, 0],
+          ],
+          0.12,
+          4,
+          a.pierre,
+        );
+      fuseau(T, CORPS_DE_L_ETOURNEAU, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      // La queue courte, vers l'arrière et le bas.
+      pointe(T, [0, 3.4, 0.8], 0.25, 0.8, a.pierre, [Math.PI / 2 + 0.5, 0, 0], 3);
+      // Le cou court, des épaules à la tête.
+      tube(
+        T,
+        [
+          [0, 5.6, -0.2],
+          [0, 6.4, Z_DE_LA_TETE_DE_L_ETOURNEAU],
+        ],
+        [0.32, 0.28],
+        4,
+        a.pierre,
+      );
+      fuseau(T, TETE_DE_L_ETOURNEAU, 5, a.pierre, { z: Z_DE_LA_TETE_DE_L_ETOURNEAU, bas: false });
+      // Le bec long et pointu, vers l'avant.
+      pointe(T, [0, 7.05, devant(TETE_DE_L_ETOURNEAU, 5, 7.05, Z_DE_LA_TETE_DE_L_ETOURNEAU).z + 0.05], 0.12, 0.55, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      for (const c of [-1, 1]) dalle(T, AILE_DE_L_ETOURNEAU.map(([x, y]): [number, number] => [c * x, y]), -0.55, 0.6, a.pierre);
+      orbites(T, a, 0, 7.4, devant(TETE_DE_L_ETOURNEAU, 5, 7.4, Z_DE_LA_TETE_DE_L_ETOURNEAU).z, 0.2, 0.11);
+    },
+    // Un fil de lueur sur le flanc de chaque aile, de l'épaule (devant, en haut) à la pointe (derrière, en bas).
+    veines: (T, a) => {
+      for (const s of [-1, 1] as const)
+        veine(
+          surLeFlanc(T, s, 1.0),
+          FIL_DE_L_AILE_DE_L_ETOURNEAU.map(([z, y]): [number, number] => [s * z, y]),
+          0.09 * a.veines,
+          a.lueur,
+          (y) => -0.05 * ((y - 3.0) / 2.4),
+        );
+    },
+  },
+  // Latin-grec 3e (LCA-2) : le strict nécessaire, Archipéo étant en pause. Le Centaure d'argile, sans flamme, sans arme
+  // (ni arc ni lance) ni dieu : le corps du cheval couché vers l'arrière sur ses quatre pattes, la queue, le buste dressé
+  // sur le poitrail ; il tient devant lui un livre ouvert ; les motifs de ses flancs s'allument.
+  'lca-3e-ideas': {
+    nom: 'le Centaure d’argile',
+    allume: 'les motifs de son flanc',
+    sansFlamme: true,
+    sculpture: (T, a) => {
+      // Les quatre pattes, du socle au ventre.
+      for (const x of [-0.35, 0.35])
+        for (const z of [-0.2, 1.5])
+          tube(
+            T,
+            [
+              [x, 1, z],
+              [x, 2.4, z],
+            ],
+            0.13,
+            3,
+            a.pierre,
+          );
+      fuseau(pose(T, repere([0, 2.85, -0.45], Math.PI / 2, 0, 0)), CORPS_DU_CENTAURE, 5, a.moussue((k, j) => k === 1 && j % 2 === 0));
+      // La queue, qui retombe derrière la croupe.
+      pointe(T, [0, 3.0, 1.75], 0.14, 0.8, a.pierre, [Math.PI / 2 + 1.0, 0, 0], 3);
+      fuseau(T, BUSTE_DU_CENTAURE, 5, a.pierre, { z: Z_DU_BUSTE_DU_CENTAURE, bas: false });
+      // Les bras, des épaules au livre ; le livre ouvert, tenu devant la poitrine.
+      for (const s of [-1, 1])
+        tube(
+          T,
+          [
+            [s * 0.55, 5.4, Z_DU_BUSTE_DU_CENTAURE],
+            [s * 0.45, 4.7, -0.9],
+          ],
+          0.12,
+          4,
+          a.pierre,
+        );
+      pave(T, -0.5, 4.5, -1.05, 0.5, 5.05, -0.9, a.pierre);
+      fuseau(T, TETE_DU_CENTAURE, 5, a.pierre, { z: Z_DU_BUSTE_DU_CENTAURE, bas: false });
+      orbites(T, a, 0, 7.05, devant(TETE_DU_CENTAURE, 5, 7.05, Z_DU_BUSTE_DU_CENTAURE).z, 0.2, 0.1);
+    },
+    // Un motif de lueur sur chaque flanc du cheval, une ligne brisée de l'épaule à la croupe.
+    veines: (T, a) => {
+      for (const s of [-1, 1] as const)
+        veine(
+          surLeFlanc(T, s, 0.6),
+          MOTIF_DU_FLANC_DU_CENTAURE.map(([z, y]): [number, number] => [s * z, y]),
+          0.09 * a.veines,
+          a.lueur,
+          () => 0,
+        );
     },
   },
 };

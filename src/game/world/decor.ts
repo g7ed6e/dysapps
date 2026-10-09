@@ -441,6 +441,34 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.liege].side);
     put(9, 3, h(9, 3) + 3, BLOCKS[BLOC.tuile].side);
   },
+  // L'EMC et le latin-grec de 4e (EMC-2, LCA-2) : sobres, quelques blocs au sol, aucune lanterne ni symbole.
+  'civics-4e-rights-freedoms': (put, h) => {
+    // Une pile de pavés au bord de la rue : deux au sol, un dessus.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.pave].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.pave].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.pave].side);
+  },
+  'lca-4e-cities': (put, h) => {
+    // Un pan de mur peint, deux fresques en long, et un banc de pierre devant.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.fresque].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.fresque].side);
+    put(9, 2, h(9, 2) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  // L'EMC et le latin-grec de 3e (EMC-2, LCA-2) : de même, sobres, aucun drapeau ni symbole.
+  'civics-3e-democratic-life': (put, h) => {
+    // Un banc d'acajou pour écouter : trois planches au sol, un dossier derrière.
+    for (let x = 8; x <= 10; x++) put(x, 3, h(x, 3) + 1, BLOCKS[BLOC.acajou].side);
+    put(9, 4, h(9, 4) + 1, BLOCKS[BLOC.acajou].side);
+    put(9, 4, h(9, 4) + 2, BLOCKS[BLOC.acajou].side);
+  },
+  'lca-3e-ideas': (put, h) => {
+    // Un laurier taillé en boule sur son tronc, et un bloc de pierre où s'asseoir.
+    put(9, 3, h(9, 3) + 1, TRUNK);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.laurier].side);
+    put(10, 3, h(10, 3) + 2, BLOCKS[BLOC.laurier].side);
+    put(9, 3, h(9, 3) + 3, BLOCKS[BLOC.laurier].side);
+    put(10, 2, h(10, 2) + 1, BLOCKS[BLOC.pierre].side);
+  },
   'life-earth-sciences-3e-human-body': (put, h) => {
     // Un arbre fruitier : deux fruits rouges pendus sous le feuillage. Trois cases à gauche de l'axe qui va de la caméra à
     // la porte de l'infirmerie, qu'il cachait (DA, relecture des captures).
