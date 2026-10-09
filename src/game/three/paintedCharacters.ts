@@ -107,15 +107,33 @@ function geometrieDe(f: Fusion, lueur?: Float32Array): THREE.BufferGeometry {
   return g;
 }
 
-/** Les os d'un squelette, chacun à sa place de repos (relative à son parent), et le maillage qui les porte. */
-function squelette(g: THREE.BufferGeometry, os: Uint16Array, table: Os[], materiau: THREE.Material): { mesh: THREE.SkinnedMesh; bones: THREE.Bone[] } {
+/**
+ * Les gestes d'une créature qui a un squelette (scripts/rendu/modeles/squelette.py), lents et jamais ensemble
+ * (référent dys, 9 octobre 2026) : au repos, elle respire (le dos), regarde de côté (la tête) et balance la queue, sur
+ * des cycles de 4 s ou plus ; quand elle fait un pas, ses jambes vont au rythme du sautillé (`strollAt`). Amplitudes
+ * en radians, périodes en secondes ; les mêmes que l'aperçu des squelettes (scripts/rendu/modeles/apercu_squelette.py).
+ */
+export const GESTES = { souffle: [0.04, 4.5], regard: [0.2, 7], queue: [0.3, 4], pas: { angle: 0.3, cadence: 8 } } as const;
+
+/**
+ * Les os d'un squelette, chacun à sa place de repos (relative à son parent), et le maillage qui les porte. Sans
+ * `poids`, chaque sommet suit son os seul.
+ */
+function squelette(
+  g: THREE.BufferGeometry,
+  os: Uint16Array,
+  table: Os[],
+  materiau: THREE.Material,
+  lesPoids?: { joints: Uint16Array; weights: Float32Array },
+): { mesh: THREE.SkinnedMesh; bones: THREE.Bone[] } {
   const n = os.length;
-  const index = new Uint16Array(n * 4);
-  const poids = new Float32Array(n * 4);
-  for (let v = 0; v < n; v++) {
-    index[v * 4] = os[v];
-    poids[v * 4] = 1;
-  }
+  const index = lesPoids?.joints ?? new Uint16Array(n * 4);
+  const poids = lesPoids?.weights ?? new Float32Array(n * 4);
+  if (!lesPoids)
+    for (let v = 0; v < n; v++) {
+      index[v * 4] = os[v];
+      poids[v * 4] = 1;
+    }
   g.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(index, 4));
   g.setAttribute('skinWeight', new THREE.Float32BufferAttribute(poids, 4));
   const mesh = new THREE.SkinnedMesh(g, materiau);
@@ -144,6 +162,26 @@ interface Promeneur {
   decalage: THREE.Vector3;
   milieu: { x: number; y: number };
   phase: number;
+  /** Les os de son squelette, par nom (hanches, dos, tête, jambes, queue), s'il en a un. */
+  membres: Map<string, THREE.Bone>;
+}
+
+/** Joue les gestes d'une créature qui a un squelette (`GESTES`) : `marche` quand elle fait un pas. */
+function bouger(membres: Map<string, THREE.Bone>, t: number, phase: number, marche: boolean): void {
+  const cycle = ([angle, periode]: readonly [number, number], decalage = 0) => angle * Math.sin((2 * Math.PI * (t + phase)) / periode - decalage);
+  const tourner = (nom: string, axe: 'x' | 'y', angle: number) => {
+    const b = membres.get(nom);
+    if (b) b.rotation[axe] = angle;
+  };
+  tourner('spine', 'x', cycle(GESTES.souffle));
+  tourner('head', 'y', cycle(GESTES.regard));
+  tourner('tail.1', 'y', cycle(GESTES.queue));
+  tourner('tail.2', 'y', 1.2 * cycle(GESTES.queue, 0.9));
+  const k = marche ? Math.sin(t * GESTES.pas.cadence) : 0;
+  tourner('thigh.L', 'x', GESTES.pas.angle * k);
+  tourner('thigh.R', 'x', -GESTES.pas.angle * k);
+  tourner('shin.L', 'x', -0.8 * GESTES.pas.angle * Math.max(0, -k));
+  tourner('shin.R', 'x', -0.8 * GESTES.pas.angle * Math.max(0, k));
 }
 
 /**
@@ -247,7 +285,7 @@ export function habiller(
       const gardiens = placements.filter((c) => c.kind === 'guardian');
       if (lesCreatures.length) {
         const f = fusionDesCreatures(lesCreatures, pres);
-        const { mesh, bones } = squelette(geometrieDe(f, f.lueur), f.os, f.squelette, matCreatures.materiau);
+        const { mesh, bones } = squelette(geometrieDe(f, f.lueur), f.os, f.squelette, matCreatures.materiau, f.poids);
         scene.add(mesh);
         maillages.push(mesh);
         const strolls = startStrolls(lesCreatures, performance.now());
@@ -262,6 +300,7 @@ export function habiller(
             decalage: new THREE.Vector3((b[0] + b[3]) / 2 - pivot[0], (b[1] + b[4]) / 2 - pivot[1], (b[2] + b[5]) / 2 - pivot[2]),
             milieu: { x: pivot[0] - c.origin.x, y: pivot[2] - c.origin.y },
             phase: (i * 1.7) % GESTE.periode,
+            membres: new Map(f.squelette.flatMap((o, k) => (k >= 2 * lesCreatures.length && o.id === c.id ? [[o.nom, bones[k]] as const] : []))),
           };
           poser(promeneur, 0, 0, 0);
           return promeneur;
@@ -315,6 +354,7 @@ export function habiller(
         poser(q, dx, dy, bob);
         // Le geste lent : le bras se lève et redescend, en cinq secondes (coupé avec « Réduire les animations »).
         q.bras.rotation.x = -GESTE.angle * Math.max(0, Math.sin(((t + q.phase) / GESTE.periode) * Math.PI * 2));
+        if (q.membres.size) bouger(q.membres, t, q.phase, q.stroll.start !== 0);
       }
     },
     rallumer: (id, dureeMs) => {

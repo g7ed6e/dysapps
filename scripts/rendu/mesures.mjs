@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, gardiens ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, squelette, sciences, sciences-college, familles-sixieme, gardiens ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -669,6 +669,18 @@ const CAPTURES = [
     { nom: `personnages-importes-chene-rallume${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
     { nom: `personnages-importes-archipel-recul${suffixe}`, vue: 'archipel', famille: 'personnages-importes', ile: 'maths-6e-calculation', zoomer: -10, ...autres },
   ]),
+  // Le squelette de Mousso (famille `squelette`), à retirer une fois le lot fusionné ; à prendre avec `--rendu archipeo`.
+  // Mousso de près, sa fiche ouverte et la vue zoomée, à quatre instants (6 pas, 0,75 s, entre deux) : il respire,
+  // tourne la tête et marche.
+  ...[0, 1, 2, 3].map((k) => ({
+    nom: `squelette-mousso-${k}`,
+    vue: 'île',
+    famille: 'squelette',
+    ile: 'french-6e-phonology',
+    fiche: { genre: 'creature', id: 'french-6e-phonology' },
+    zoomer: 3,
+    pasEnPlus: 16 + 6 * k,
+  })),
   { nom: 'histoire-geo-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
   { nom: 'histoire-geo-mes-blocs', vue: 'île', famille: 'histoire-geo', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [

@@ -51,11 +51,20 @@ export interface Fusion {
   plages: Plage[];
 }
 
-/** Les créatures d'un archipel : un os pour chacune (son corps), un pour son bras et son outil. */
+/**
+ * Les créatures d'un archipel : un os pour chacune (son corps), un pour son bras et son outil ; et, après ceux de toutes
+ * les créatures, les os d'une créature importée qui a un squelette (de près : hanches, dos, tête, jambes, queue), portés
+ * par son corps.
+ */
 export interface FusionDesCreatures extends Fusion {
-  /** Pour chaque sommet, son os dans `squelette`. */
+  /** Pour chaque sommet, son os dans `squelette` (le plus lourd, quand il en a plusieurs). */
   os: Uint16Array;
   squelette: Os[];
+  /**
+   * Quand une créature a un squelette : quatre os (dans `squelette`) et quatre poids par sommet, pour toute la fusion
+   * (un sommet des autres créatures suit son seul os, au poids 1). Absent sinon : chaque sommet suit `os`.
+   */
+  poids?: { joints: Uint16Array; weights: Float32Array };
   /** La boîte de chaque créature (le toucher), dans la scène : [x0, y0, z0, x1, y1, z1]. */
   boites: { id: BiomeId; boite: [number, number, number, number, number, number] }[];
   /**
@@ -161,6 +170,9 @@ export function fusionDesCreatures(places: PersonnagePlace[], pres: BiomeId | nu
   const squelette: Os[] = [];
   const boites: FusionDesCreatures['boites'] = [];
   const lueur = new Float32Array(total * 12);
+  const avecOs = modeles.some((f) => f.skin);
+  const joints = new Uint16Array(avecOs ? total * 12 : 0);
+  const weights = new Float32Array(avecOs ? total * 12 : 0);
   let t0 = 0;
   places.forEach((p, i) => {
     const f = modeles[i];
@@ -188,7 +200,31 @@ export function fusionDesCreatures(places: PersonnagePlace[], pres: BiomeId | nu
     base.plages.push({ id: p.id, debut: t0, fin: t0 + f.pieces.length });
     t0 += f.pieces.length;
   });
-  return { ...base, os, squelette, boites, lueur };
+  if (!avecOs) return { ...base, os, squelette, boites, lueur };
+  // Les os des squelettes, après ceux de toutes les créatures ; un sommet sans squelette suit son os seul.
+  for (let v = 0; v < os.length; v++) {
+    joints[v * 4] = os[v];
+    weights[v * 4] = 1;
+  }
+  places.forEach((p, i) => {
+    const skin = modeles[i].skin;
+    if (!skin) return;
+    const o = pointDePose(p);
+    const premier = squelette.length;
+    for (const b of skin.bones) squelette.push({ id: p.id, nom: b.name, parent: b.parent < 0 ? 2 * i : premier + b.parent, pivot: ajoute(o, b.head) });
+    const { debut, fin } = base.plages[i];
+    for (let v = debut * 3; v < fin * 3; v++) {
+      const k = (v - debut * 3) * 4;
+      let lourd = 0;
+      for (let j = 0; j < 4; j++) {
+        joints[v * 4 + j] = premier + skin.joints[k + j];
+        weights[v * 4 + j] = skin.weights[k + j];
+        if (skin.weights[k + j] > skin.weights[k + lourd]) lourd = j;
+      }
+      os[v] = premier + skin.joints[k + lourd];
+    }
+  });
+  return { ...base, os, squelette, boites, lueur, poids: { joints, weights } };
 }
 
 /**
