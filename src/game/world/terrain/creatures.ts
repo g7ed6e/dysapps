@@ -113,10 +113,12 @@ export interface CreatureSpot {
 /**
  * La place que vise l'habitant d'une île, quand ce n'est pas (2, 4) : au Préau des délégués, sous le nom de l'île dans
  * la vue de l'île fiche du Gardien ouverte, Voix disparaissait derrière l'étiquette (DA, relecture des captures emc-2) ;
- * trois cases vers −x, il passe à droite de l'étiquette, à côté des bornes, sans rien cacher.
+ * trois cases vers −x, il passe à droite de l'étiquette, à côté des bornes, sans rien cacher. Depuis que son carnet est
+ * posé à plat devant lui (passe 4), son modèle a deux rangées de plus devant le corps : il vise (−1, 3), son corps passe
+ * une case en arrière, et le milieu de son emprise, où se pose la créature d'Archipéo, ne bouge pas.
  */
 const CIBLE_DE_L_HABITANT: Partial<Record<BiomeId, { x: number; y: number }>> = {
-  'civics-6e-democratic-society': { x: -1, y: 4 },
+  'civics-6e-democratic-society': { x: -1, y: 3 },
 };
 
 /**
