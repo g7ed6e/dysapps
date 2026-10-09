@@ -273,7 +273,7 @@ const FICHES: Fiche[] = [
     archipelago: '5e',
     name: 'Le phare du large',
     description: 'Une haute tour rayée de tuiles et de glace, une galerie de lambris et une lanterne de vitraux, pour les navires qui passent.',
-    islet: { x: 56, y: 348 }, // 4 cases à l'ouest et 7 en arrière : le Marché a grandi (01/10/2026), le Glacier s'est écarté ; 3 de plus pour le bac du Carrefour (GD-7) ; recalé avec les îles agrandies (GD-11, 08/10/2026)
+    islet: { x: 38, y: 298 }, // devant le Glacier, au large (GD-12, 9 octobre 2026) : derrière lui, le moulinet du Carrefour prend la place ; avant, à l'ouest du Marché, recalé avec les îles agrandies (GD-11)
     reward: { xp: 180, chest: {} },
     done: 'Le phare du large s’allume ! Plus aucun navire ne se perd entre les Collines.',
     draw: phareLarge,
@@ -285,7 +285,7 @@ const FICHES: Fiche[] = [
     archipelago: '5e',
     name: 'Le kiosque à musique',
     description: 'Un kiosque rond au plancher de lambris, huit poteaux et un toit rayé de toile et de tuiles, pour les fanfares du dimanche.',
-    islet: { x: 85, y: 350 }, // suit l'île calée sur le pas (GD-9, 05/10/2026) ; recalé avec les îles agrandies (GD-11, 08/10/2026)
+    islet: { x: 117, y: 383 }, // derrière le Manoir, à droite, monté au second rang à côté du Marais (GD-12, 9 octobre 2026) ; avant, suit l'île calée sur le pas (GD-9), recalé avec les îles agrandies (GD-11)
     reward: { xp: 180, chest: {} },
     done: 'Le kiosque à musique est fini ! La fanfare des Collines peut jouer.',
     draw: kiosqueMusique,

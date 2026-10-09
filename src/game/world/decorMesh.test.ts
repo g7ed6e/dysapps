@@ -114,7 +114,7 @@ it('chaque élément du décor est posé sur la pente, au milieu de sa case, san
 }, 30_000);
 
 it('l’habillage de la mer affleure, la cascade tombe du bord de sa case jusqu’à l’eau', () => {
-  const { elements, maillage, champ } = monde('5e');
+  const { elements, maillage } = monde('5e');
   const mer = elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'ecueil' || e.genre === 'banc');
   expect(mer.length).toBeGreaterThan(20);
   for (const { e, i } of mer) {
@@ -123,14 +123,17 @@ it('l’habillage de la mer affleure, la cascade tombe du bord de sa case jusqu�
     expect(Math.min(...pts.map((p) => p[1])), e.id).toBeLessThan(-0.45);
     expect(Math.max(...pts.map((p) => p[1])), e.id).toBeGreaterThan(-0.45);
   }
-  const cascades = elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'cascade');
-  // Huit jusqu'à GD-11 (celle du Relais des voyageurs, LV2, qui a son lac, celles du Bourg des chroniques et du Delta
-  // des ressources, HG-3, deux de plus avec les îles de sciences, SC-3) ; trois depuis que les îles ont grandi (GD-11,
-  // 8 octobre 2026) : leur côte amincie n'a plus de pente où tomber.
-  expect(cascades.length).toBe(3);
+  // Aux Îles Brumeuses, huit cascades jusqu'à GD-11 (celle du Relais des voyageurs, LV2, qui a son lac, celles du Bourg
+  // des chroniques et du Delta des ressources, HG-3, deux de plus avec les îles de sciences, SC-3) ; trois depuis que
+  // les îles ont grandi (GD-11, 8 octobre 2026), aucune depuis leurs formes (GD-12, 9 octobre 2026) : une île qui a sa
+  // forme a une côte plate. On regarde celles des Anciens Ateliers.
+  expect(elements.filter((e) => e.genre === 'cascade')).toEqual([]);
+  const ateliers = monde('4e');
+  const cascades = ateliers.elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'cascade');
+  expect(cascades.length).toBeGreaterThan(0);
   for (const { e, i } of cascades) {
-    const pts = sommets(maillage, i);
-    const col = colonneEn(champ, e.x, e.y)!;
+    const pts = sommets(ateliers.maillage, i);
+    const col = colonneEn(ateliers.champ, e.x, e.y)!;
     expect(col, e.id).toBeTruthy();
     // Du haut de la case du bord (sur la pente) jusqu'à la mer.
     expect(Math.max(...pts.map((p) => p[1])), e.id).toBeLessThanOrEqual(col.haut + 1 + 0.1);

@@ -166,13 +166,12 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
     'french-6e-phonology-history-6e-antiquity',
     'french-6e-phonology-life-earth-sciences-6e-living-world',
     'french-6e-phonology-technology-6e-objects',
-    'maths-5e-proportionality-english-5e-grammar',
+    // Depuis les formes des îles (GD-12, 9 octobre 2026), quatre depuis le Marché : le Comptoir, le Marais et le Glacier
+    // par un pont, le Carrefour par un bac de 46 cases. Le Manoir, monté au second rang derrière le fer du Comptoir, ne
+    // s'y trace plus, ni le Bourg, le Relais et la Menuiserie (des bacs de 86, 45 et 73 cases depuis GD-11).
     'maths-5e-proportionality-english-5e-vocabulary',
     'maths-5e-proportionality-french-5e-conjugation',
-    // Depuis que les îles ont grandi (GD-11, 8 octobre 2026), trois bacs de plus depuis le Marché (86, 73 et 45 cases).
-    'maths-5e-proportionality-history-5e-middle-ages',
-    'maths-5e-proportionality-lv2-5e-introductions',
-    'maths-5e-proportionality-technology-5e-design',
+    'maths-5e-proportionality-french-5e-homophones',
     'maths-5e-signed-numbers-maths-5e-proportionality',
     'maths-6e-calculation-maths-6e-decimals',
     'maths-6e-calculation-maths-6e-fractions',
@@ -210,7 +209,8 @@ it('le chemin vers une île part des départs de son archipel ; l’accès offer
   // Ce qu'il reste à poser (GD-9) : le plus court chemin de liaisons qui tiennent, depuis les lieux déjà reliés.
   expect(remainingPath('maths-6e-fractions', []).map((b) => b.id)).toEqual(['maths-6e-calculation-maths-6e-fractions']);
   expect(remainingPath('french-6e-reading', []).map((b) => b.id)).toEqual(['french-6e-phonology-french-6e-reading']);
-  expect(remainingPath('french-5e-homophones', ['passage-5e']).map((b) => b.id)).toEqual(['maths-5e-proportionality-french-5e-conjugation', 'french-5e-homophones-french-5e-conjugation']);
+  // Le Carrefour, depuis les formes des îles (GD-12) : un bac direct depuis le Marché, et non plus par le Marais.
+  expect(remainingPath('french-5e-homophones', ['passage-5e']).map((b) => b.id)).toEqual(['maths-5e-proportionality-french-5e-homophones']);
   expect(remainingPath('english-4e-comprehension', ['passage-5e', 'passage-4e']).map((b) => b.id)).toEqual(['maths-4e-algebra-english-4e-comprehension']);
   expect(remainingPath('french-6e-reading', ['french-6e-phonology-french-6e-reading'])).toEqual([]);
   expect(grantAccess([], ['maths-5e-signed-numbers']).sort()).toEqual(['maths-5e-signed-numbers-maths-5e-proportionality', 'passage-5e']);

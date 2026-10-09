@@ -361,11 +361,12 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
 
   it('au 5e (HG-3) : une île déplacée vers l’est, là où entrent le Bourg et le Delta, reste où l’élève l’a mise ; les deux lieux nouveaux se posent à côté', () => {
     // Une sauvegarde d'avant HG-3 : la Grammaire (english-5e-grammar) posée à l'est, dans le cadre d'alors (144 cases de
-    // large), sur les places de départ du Bourg des chroniques et du Delta des ressources.
+    // large), sur les places de départ du Bourg des chroniques et du Delta des ressources (depuis les formes des îles,
+    // GD-12, le Bourg au second rang, le Delta au troisième : la Grammaire posée entre eux, sur leurs deux places).
     const BOURG: BiomeId = 'history-5e-middle-ages';
     const DELTA: BiomeId = 'geography-5e-resources';
     const GRAMMAIRE: BiomeId = 'english-5e-grammar';
-    const ici = { x: 29, y: 19, turn: 0 as const };
+    const ici = { x: 33, y: 19, turn: 0 as const };
     const avant: World = { ...partie(), layout: { '5e': { islands: { [GRAMMAIRE]: ici } } } };
     expect(fittingPlaces('5e', { [GRAMMAIRE]: ici })).toBeNull();
     const w = settleNewPlaces(avant);

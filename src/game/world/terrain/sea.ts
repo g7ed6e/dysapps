@@ -38,10 +38,11 @@ import { layoutCache, type Rectangle } from '../placement';
  * nage en 79, 362, la seule clairière visible à moins de 80 cases (un rond de 4 cases, au nord du Marais) ;
  * au 4e, aucune baleine n'est plus dans le cadre de la vue du port. Depuis GD-12 (une forme par île, 8 octobre 2026), les
  * îles du 6e ont changé de place : aucune de ses clairières n'est plus cachée depuis le port, aucune baleine n'y est
- * replacée.
+ * replacée. Au 5e, depuis ses formes (9 octobre 2026), le cadre élargi et approfondi : la clairière de 35, 438, au coin
+ * du fond à l'ouest, a un point de son rond caché par le Carrefour ; la baleine nage deux cases plus loin, en 37, 439.
  */
 export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
-  '5e': [{ de: { x: 38, y: 414 }, vers: { x: 79, y: 362 } }],
+  '5e': [{ de: { x: 35, y: 438 }, vers: { x: 37, y: 439 } }],
 };
 
 /**

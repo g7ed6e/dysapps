@@ -1,4 +1,4 @@
-import { toutConstruit } from './budget';
+import { enveloppeDe, toutConstruit } from './budget';
 import { mixColor } from './daylight';
 import { champDuSol, colonneEn, NIVEAU_EAU, RIVAGE } from './landMesh';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
@@ -215,8 +215,9 @@ describe('la houle et la grille', () => {
       const loin = Math.max(b.maxX - b.minX, b.maxY - b.minY) * 4;
       const g = grilleDeLaMer(b, loin);
       // 6 200 aux Premiers Rivages depuis que la mer couvre tout le cadre de la région (GD-9) ; les îles de sciences (SC-2)
-      // tiennent dans le même cadre.
-      expect(trianglesDeLaGrille(g), a).toBeLessThanOrEqual(6300);
+      // tiennent dans le même cadre. Depuis une forme par île (GD-12), l'enveloppe de la mer de chaque archipel : 6 400
+      // aux Îles Brumeuses et aux Anciens Ateliers, 6 900 aux Îles du Ciel (mainteneur, 9 octobre 2026, carte « Relever »).
+      expect(trianglesDeLaGrille(g), a).toBeLessThanOrEqual(enveloppeDe('mer', a).triangles);
       let minX = Infinity;
       let maxX = -Infinity;
       for (let t = 0; t < g.indices.length; t += 3) {

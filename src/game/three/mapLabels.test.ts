@@ -276,8 +276,8 @@ const ETATS = { blocland: 'Bâtie', archipeo: 'Restaurée' };
  */
 const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
   // Mesurés de nouveau depuis que la Carte cadre les lieux d'aujourd'hui et, au plancher, l'île du bonhomme hors de la
-  // place avec la destination (GD-11, consultant UX UI) : six Cartes avant, quatre depuis.
-  '5e:lv2-5e-introductions': ['geography-5e-resources'],
+  // place avec la destination (GD-11, consultant UX UI) : six Cartes avant, quatre depuis, trois depuis une forme par
+  // île aux Îles Brumeuses (GD-12, 9 octobre 2026 : le Delta n'y est plus sous le nom du Relais).
   '4e:maths-4e-powers': ['geography-4e-globalization'],
   '4e:english-4e-comprehension': ['french-4e-vocabulary'],
   '3e:english-3e-grammar': ['lv2-3e-travel'],
@@ -335,8 +335,8 @@ const TUS_VERS_UNE_DESTINATION: Partial<Record<ArchipelagoId, Record<string, str
  */
 const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
   // Mesurés de nouveau depuis que la Carte cadre les lieux d'aujourd'hui (GD-11, consultant UX UI) : deux ouvrages taisent
-  // un nom (douze avant, cinq sur main).
-  '5e': { 'english-5e-grammar-life-earth-sciences-5e-active-planet depuis life-earth-sciences-5e-active-planet': ['technology-5e-design'] },
+  // un nom (douze avant, cinq sur main) ; un seul depuis une forme par île aux Îles Brumeuses (GD-12, 9 octobre 2026 :
+  // l'ouvrage entre le Manoir et la Prairie, qui a changé de place, ne tait plus la Menuiserie).
   '3e': { 'geography-3e-france-technology-3e-digital depuis geography-3e-france': ['technology-3e-digital'] },
 };
 
@@ -360,10 +360,10 @@ const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string,
   // destinations au 4e, neuf au 3e (seize destinations avant dans Blocland, treize sur main). Au 3e, quatre depuis que
   // le cadrage compte le nom le plus haut monté d'une demi-étiquette (huit noms tus au lieu de treize) : le Kiosque des
   // témoins ne se tait plus que vers le Belvédère de Thalès (quatre destinations avant).
-  // Au 5e, vers les Ressources, le nom du Moyen Âge, que l'écart posait sur l'île des Ressources, se tait : mieux vaut le
-  // taire que le poser sur une autre île (directeur artistique, GD-12, 8 octobre 2026).
+  // Au 5e, depuis une forme par île (GD-12, 9 octobre 2026), une seule destination : vers la Saline des mélanges, le
+  // nom du Delta des ressources, sa voisine, se tait ; il n'est jamais posé sur une autre île (`ailleurs` vide).
   '5e': {
-    'geography-5e-resources': ['history-5e-middle-ages'],
+    'physics-chemistry-5e-matter-universe': ['geography-5e-resources'],
   },
   '4e': {
     'french-4e-agreement': ['lv2-4e-daily-life'],

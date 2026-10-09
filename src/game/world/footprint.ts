@@ -31,10 +31,14 @@ import type { Layout, LayoutSpot } from './savedLayout';
  * la tablette. Le Glacier et la Gare ne tournent toujours pas ; la Grammaire (5e) et le Refuge des carnets (3e), dans des
  * régions plus pleines, n'avaient plus de place libre tournés non plus. Depuis GD-11 (les îlots des Gardiens retirés),
  * chaque lieu mobile trouve une place tourné (arrange.test.ts) ; les îles agrandies tiennent dans les mêmes cadres.
+ * Depuis une forme par île (GD-12, 9 octobre 2026), les cadres s'approfondissent encore, vers l'est et le fond
+ * seulement (le coin ne bouge pas : les places des sauvegardes se comptent depuis lui, `LAYOUT_LAST_SPOT`), pour deux
+ * places d'îles futures : 176 × 160 aux Îles Brumeuses (+8 vers l'est, +20 au fond, et non les 32 demandés : au-delà,
+ * « Modifier le plan » ne cadre plus toute la région sur la tablette, camera.test.ts).
  */
 const REGION_FRAMES: Readonly<Record<ArchipelagoId, Readonly<Rectangle>>> = Object.freeze({
   '6e': Object.freeze({ x0: -20, y0: -13, x1: 172, y1: 131 }),
-  '5e': Object.freeze({ x0: 21, y0: 289, x1: 189, y1: 429 }),
+  '5e': Object.freeze({ x0: 21, y0: 289, x1: 197, y1: 449 }),
   '4e': Object.freeze({ x0: -6, y0: 584, x1: 162, y1: 724 }),
   '3e': Object.freeze({ x0: -30, y0: 880, x1: 178, y1: 1000 }),
 });

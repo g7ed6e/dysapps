@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { FEATURE_BOX, FORMES, shapeCorner } from './formes';
+import { FORMES, FORMES_MARQUEES, TRAIT_MAX, shapeCorner } from './formes';
+import { ARCHIPELAGO_IDS } from './archipelagos';
 import { shapeBox, bornesDuCoeur, coeurDe, inCoeurDOrigine, isLand, landscape, mapOf, BEACH_RADIUS, coreCornerGround, TERRE_AUTOUR_DU_COEUR } from './map';
 import { silhouetteDe } from './silhouettes';
 import { questStations } from './terrain/markers';
@@ -11,9 +12,12 @@ import { GD11_GUARDIAN_SQUARES, GUARDIAN_SQUARE_SIDE } from './guardianSquares';
 import { AVATAR_HOME } from './terrain/base';
 
 // Les formes des îles (GD-12, piste 1 du directeur artistique, « formes contenues », 8 octobre 2026), lues sur la terre
-// telle que le jeu la dessine (bruit et retouches compris), île par île, aux Premiers Rivages.
-const LIEUX = mapOf('6e').filter((d) => silhouetteDe(d.id).forme);
-const T = FEATURE_BOX;
+// telle que le jeu la dessine (bruit et retouches compris), île par île, dans chaque archipel qui a pris ses formes.
+const LIEUX = ARCHIPELAGO_IDS.flatMap((a) => mapOf(a)).filter((d) => silhouetteDe(d.id).forme);
+/** Jusqu'où regarder autour du cœur : le plus long trait du catalogue (le crochet et le lagon, 9 octobre 2026). */
+const T = TRAIT_MAX;
+/** Les archipels qui ont pris leurs formes, et combien de lieux chacun. */
+const ARCHIPELS_AUX_FORMES: Partial<Record<(typeof ARCHIPELAGO_IDS)[number], number>> = { '6e': 15, '5e': 12 };
 
 /** La case (x, y), au repère du monde, est-elle de la terre de l'île ? */
 const terre = (id: string) => {
@@ -27,9 +31,11 @@ function profondeurs(id: string): { gauche: number; droite: number; devant: numb
   const c = coeurDe(def);
   const est = terre(id);
   const cote = c.x1 - c.x0;
+  // Sur toute la largeur de la boîte, et pas seulement en face du cœur : la corne du Marché, au port, s'avance devant
+  // à côté de lui (son cœur de 26 cases la pousse au-delà de sa première colonne).
   const profondeur = (dedans: (k: number, i: number) => boolean) => {
     let p = 0;
-    for (let i = 0; i < cote; i++) for (let k = 1; k <= T; k++) if (dedans(k, i)) p = Math.max(p, k);
+    for (let i = -T; i < cote + T; i++) for (let k = 1; k <= T; k++) if (dedans(k, i)) p = Math.max(p, k);
     return p;
   };
   return {
@@ -41,9 +47,57 @@ function profondeurs(id: string): { gauche: number; droite: number; devant: numb
 }
 
 describe('Les formes des îles (GD-12)', () => {
-  it('les quinze lieux des Premiers Rivages ont leur forme, prise dans le catalogue', () => {
-    expect(LIEUX).toHaveLength(15);
+  it('chaque lieu des archipels qui ont pris leurs formes a la sienne, prise dans le catalogue', () => {
+    for (const a of ARCHIPELAGO_IDS) expect(mapOf(a).filter((d) => silhouetteDe(d.id).forme).length, a).toBe(ARCHIPELS_AUX_FORMES[a] ?? 0);
     for (const d of LIEUX) expect(FORMES).toContain(silhouetteDe(d.id).forme!.forme);
+  });
+
+  it('les formes plus marquées (9 octobre 2026) : au plus deux par archipel, un seul moulinet, une seule forme longue aux Monts de Feu', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const formes = mapOf(a).map((d) => silhouetteDe(d.id).forme?.forme);
+      expect(formes.filter((f) => f && FORMES_MARQUEES.includes(f)).length, a).toBeLessThanOrEqual(2);
+      expect(formes.filter((f) => f === 'moulinet').length, a).toBeLessThanOrEqual(1);
+    }
+    expect(mapOf('4e').filter((d) => ['fer', 'crochet', 'lagon'].includes(silhouetteDe(d.id).forme?.forme ?? '')).length).toBeLessThanOrEqual(1);
+  });
+
+  it.each(LIEUX.filter((d) => silhouetteDe(d.id).forme!.forme === 'lagon').map((d) => d.id))('%s : le lagon reste relié à la mer, par sa passe, sans mare fermée', (id) => {
+    const def = LIEUX.find((d) => d.id === id)!;
+    const c = coeurDe(def);
+    const est = terre(id);
+    // L'eau entourée par la terre de l'île sur trois côtés au moins, dans sa boîte : celle du lagon et de sa passe. On la
+    // gagne depuis le large, de proche en proche, sans passer sur la terre.
+    const k = shapeBox(silhouetteDe(id).forme!);
+    const [x0, y0, x1, y1] = [c.x0 - k.gauche - 1, c.y0 - k.devant - 1, c.x1 + k.droite + 1, c.y1 + k.fond + 1];
+    const mer = new Set<string>([`${x0},${y0}`]);
+    const file: [number, number][] = [[x0, y0]];
+    for (let n = 0; n < file.length; n++)
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const [a, b] = [file[n][0] + dx, file[n][1] + dy];
+        if (a >= x0 && a < x1 && b >= y0 && b < y1 && !est(a, b) && !mer.has(`${a},${b}`)) {
+          mer.add(`${a},${b}`);
+          file.push([a, b]);
+        }
+      }
+    // Le lagon : l'eau du large qui a de la terre de l'île de part et d'autre, sur les deux axes (au moins 60 cases).
+    let lagon = 0;
+    for (const cle of mer) {
+      const [x, y] = cle.split(',').map(Number);
+      const entre = (dx: number, dy: number) => {
+        let [i, j] = [x, y];
+        while (i >= x0 && i < x1 && j >= y0 && j < y1) {
+          if (est(i, j)) return true;
+          i += dx;
+          j += dy;
+        }
+        return false;
+      };
+      if (entre(1, 0) && entre(-1, 0) && entre(0, 1) && entre(0, -1)) lagon++;
+    }
+    expect(lagon, id).toBeGreaterThanOrEqual(60);
+    // Toute l'eau de la boîte est la mer (la passe la relie au large), et l'île n'a ni mare ni lac.
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) if (!est(x, y)) expect(mer.has(`${x},${y}`), `${id} ${x},${y}`).toBe(true);
+    expect(landscape(def).filter((l) => l.ground === 'eau'), id).toEqual([]);
   });
 
   it.each(LIEUX.map((d) => d.id))('%s : la terre tient dans sa boîte ; son trait va jusqu’à son bord, deux cases de terre au moins ailleurs', (id) => {

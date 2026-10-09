@@ -8,9 +8,17 @@
 // Code pur, sans Three.js.
 
 /** Les sept formes du catalogue (docs/gameplay/propositions/GD-12.md, §1). */
-export type FormeId = 'galet' | 'croissant' | 'haricot' | 'presquile' | 'goutte' | 'trefle' | 'cacahuete';
+export type FormeId = 'galet' | 'croissant' | 'haricot' | 'presquile' | 'goutte' | 'trefle' | 'cacahuete' | 'fer' | 'crochet' | 'lagon' | 'moulinet';
 
-export const FORMES: readonly FormeId[] = ['galet', 'croissant', 'haricot', 'presquile', 'goutte', 'trefle', 'cacahuete'];
+/**
+ * Le catalogue : les sept formes du 8 octobre 2026, puis les quatre formes plus marquées que le mainteneur a ajoutées le
+ * 9 octobre 2026 (« Les quatre ») : le fer, le crochet, le lagon et le moulinet (au plus deux par archipel, aux Monts
+ * de Feu une seule longue, un seul moulinet par archipel).
+ */
+export const FORMES: readonly FormeId[] = ['galet', 'croissant', 'haricot', 'presquile', 'goutte', 'trefle', 'cacahuete', 'fer', 'crochet', 'lagon', 'moulinet'];
+
+/** Les quatre formes plus marquées du 9 octobre 2026 (voir `FORMES`). */
+export const FORMES_MARQUEES: readonly FormeId[] = ['fer', 'crochet', 'lagon', 'moulinet'];
 
 /** Le côté vers lequel une forme tourne ce qui la distingue (l'ouverture du croissant, la pointe de la goutte, le bras…). */
 type Vers = 'devant' | 'fond' | 'gauche' | 'droite';
@@ -91,7 +99,7 @@ export const BOITE_DE_LA_FORME = 5;
  * lisaient encore comme des carrés aux coins arrondis sur la Carte). La boîte d'une forme n'est donc plus carrée : un
  * lieu tourné ne tient plus forcément à sa place, et le glissé ne propose que les places où il tient (./arrange.ts).
  */
-export const FEATURE_BOX = 7;
+const FEATURE_BOX = 7;
 
 /**
  * Le bord le plus lointain que dessine une forme, depuis le bord du cœur : un peu au-delà de sa boîte (`FAR_REACH`), ou de
@@ -100,6 +108,18 @@ export const FEATURE_BOX = 7;
  */
 const FAR_REACH = BOITE_DE_LA_FORME + 0.8;
 const FEATURE_REACH = FEATURE_BOX + 0.8;
+
+/**
+ * Le trait des formes plus marquées (mainteneur, 9 octobre 2026, cadrage du directeur artistique) : le fer jusqu'à dix
+ * cases, le crochet et le lagon jusqu'à douze ; le moulinet à sept, mais sur ses quatre côtés.
+ */
+const TRAIT_DU_FER = 10;
+const TRAIT_LONG = 12;
+const REACH_FER = TRAIT_DU_FER + 0.8;
+const REACH_LONG = TRAIT_LONG + 0.8;
+
+/** Le plus long trait du catalogue, en cases depuis le bord du cœur (la boîte la plus profonde d'une forme). */
+export const TRAIT_MAX = TRAIT_LONG;
 
 /**
  * Le bord d'une forme là où elle ne s'avance pas (son côté opposé, les creux de ses flancs, le fond de ses baies), depuis
@@ -140,6 +160,12 @@ function body(u: number, v: number, s: number): number {
  */
 interface ShapeDrawing {
   side: -1 | 1;
+  /** Jusqu'où va son trait, en cases depuis le bord du cœur : `FEATURE_BOX` sans autre mot. */
+  trait?: number;
+  /** Le trait sur ses quatre côtés (le moulinet) : sa boîte est la même à chaque quart de tour. */
+  partout?: true;
+  /** Là où le bruit de la côte ne touche jamais la forme (le lagon et sa passe), dans son repère propre. */
+  calme?: (u: number, v: number, s: number) => boolean;
   distance: (u: number, v: number, s: number, quai: boolean) => number;
   feature: (u: number, v: number, s: number, quai: boolean) => boolean;
   corners: (quai: boolean) => ShapeCorners;
@@ -224,7 +250,76 @@ const SHAPE_CATALOGUE: Readonly<Record<FormeId, ShapeDrawing>> = {
     feature: () => false,
     corners: () => ALL_BEACH,
   },
+  // Le fer à cheval : deux cornes de six cases de large s'avancent devant jusqu'à dix cases, autour d'une baie de
+  // quatorze cases de large, et se referment au bout sur une passe de huit (le croissant, lui, s'ouvre en grand ; avec
+  // une passe de dix, les pointes ne rentraient que d'une case, on les confondait). La
+  // baie descend jusqu'aux deux cases du corps. Les coins de devant sous les cornes, ceux du fond en plage.
+  fer: {
+    side: -1,
+    trait: TRAIT_DU_FER,
+    distance: (u, v, s) => {
+      const dehors = rectangleArrondi(u, v, 0, -(s + REACH_FER / 2), s + 2, REACH_FER / 2, 5);
+      return unionDouce(body(u, v, s), Math.max(dehors, -eauDuFer(u, v, s)), 2);
+    },
+    feature: (u, v, s) => v < -s && Math.abs(u) > 7,
+    corners: () => ['terre', 'terre', 'plage', 'plage'],
+    // Le bruit de la côte ne touche ni la baie ni la passe : les deux pointes se referment pareil.
+    calme: (u, v, s) => eauDuFer(u, v, s) < 2,
+  },
+  // Le crochet : un bras de huit cases part du coin de devant à droite, s'avance jusqu'à douze cases, puis revient sous le
+  // cœur en une barre de quatre cases ; entre la barre et le corps, une anse d'environ huit cases de fond, ouverte à
+  // gauche. Deux îles voisines ne se distinguent jamais par le seul miroir du crochet.
+  crochet: {
+    side: -1,
+    trait: TRAIT_LONG,
+    distance: (u, v, s) => {
+      const bras = rectangleArrondi(u, v, s - 0.5, -(s + REACH_LONG / 2 - 0.5), 4.5, REACH_LONG / 2 + 0.5, 2.5);
+      const barre = rectangleArrondi(u, v, s / 2 - 2, -(s + REACH_LONG - 2), s / 2 + 3, 2, 2);
+      return unionDouce(body(u, v, s), Math.min(bras, barre), 2);
+    },
+    feature: (u, v, s) => v < -s && (u > s - 5 || v < -(s + REACH_LONG - 4.5)),
+    corners: () => ['plage', 'trait', 'plage', 'plage'],
+  },
+  // Le lagon : devant, un anneau de terre (sept cases de large sur les flancs, trois au large) entoure un lagon de
+  // quatorze cases sur sept, qui s'ouvre sur la mer par une passe de cinq cases, à gauche. L'eau du lagon est la mer
+  // elle-même ; le bruit de la côte n'y touche jamais (`calme`), si bien que ni la passe ne se ferme ni une mare ne s'ouvre.
+  lagon: {
+    side: -1,
+    trait: TRAIT_LONG,
+    distance: (u, v, s) => {
+      const dehors = rectangleArrondi(u, v, 0, -(s + REACH_LONG / 2), s + 3, REACH_LONG / 2, 5);
+      return unionDouce(body(u, v, s), Math.max(dehors, -eauDuLagon(u, v, s)), 2);
+    },
+    feature: () => false,
+    corners: () => ['terre', 'terre', 'plage', 'plage'],
+    calme: (u, v, s) => eauDuLagon(u, v, s) < 3,
+  },
+  // Le moulinet : quatre bras de huit cases de large, un par coin, tournés dans le même sens, qui s'avancent de sept
+  // cases sur chacun des quatre côtés : sa boîte est la même à chaque quart de tour. Un lobe couvre chaque coin.
+  moulinet: {
+    side: -1,
+    partout: true,
+    distance: (u, v, s) => {
+      // Le bras de devant part du coin de gauche ; les trois autres sont le même, tourné d'un, deux, trois quarts de tour.
+      const bras = (a: number, b: number) => rectangleArrondi(a, b, -(s - 4), -(s + FEATURE_REACH / 2 - 1), 4, FEATURE_REACH / 2 + 1, 3);
+      return unionDouce(body(u, v, s), Math.min(bras(u, v), bras(-v, u), bras(-u, -v), bras(v, -u)), 2);
+    },
+    feature: () => false,
+    corners: () => ['terre', 'terre', 'terre', 'terre'],
+  },
 };
+
+/** L'eau de la baie du fer et de sa passe (distance signée, négative dans l'eau), dans le repère propre de la forme. */
+function eauDuFer(u: number, v: number, s: number): number {
+  return Math.min(rectangleArrondi(u, v, 0, -(s + 3.5), 7, 2.5, 2), rectangleArrondi(u, v, 0, -(s + REACH_FER), 4, 4, 1));
+}
+
+/** L'eau du lagon et de sa passe (distance signée, négative dans l'eau), dans le repère propre de la forme. */
+function eauDuLagon(u: number, v: number, s: number): number {
+  const lagon = rectangleArrondi(u, v, 0, -(s + 5.5), 7, 3.5, 2);
+  const passe = rectangleArrondi(u, v, -4.5, -(s + REACH_LONG - 1), 2.5, 4, 1);
+  return Math.min(lagon, passe);
+}
 
 /**
  * La distance signée au bord d'une forme du catalogue, dans son repère propre : ce qui la distingue tourné vers le
@@ -285,6 +380,23 @@ export function inShapeFeature(f: FormeDeLIle, u: number, v: number, s: number):
 export function shapeCorner(f: FormeDeLIle, su: -1 | 1, sv: -1 | 1): ShapeCorner {
   const [a, b] = toShapeFrame(f, su, sv, SCRATCH_POINT);
   return SHAPE_CATALOGUE[f.forme].corners(f.quai === true)[(b < 0 ? 0 : 2) + (a < 0 ? 0 : 1)];
+}
+
+/**
+ * Jusqu'où va le trait d'une forme, en cases depuis le bord du cœur (`short` : la boîte, `BOITE_DE_LA_FORME`), et s'il
+ * s'avance sur ses quatre côtés (le moulinet).
+ */
+export function traitDeLaForme(f: FormeDeLIle): { cases: number; partout: boolean } {
+  const d = SHAPE_CATALOGUE[f.forme];
+  return { cases: f.short ? BOITE_DE_LA_FORME : (d.trait ?? FEATURE_BOX), partout: d.partout === true };
+}
+
+/** Le point (`u`, `v`, repère du cœur) est-il là où le bruit de la côte ne touche pas la forme (le lagon) ? */
+export function calmeDeLaForme(f: FormeDeLIle, u: number, v: number, s: number): boolean {
+  const c = SHAPE_CATALOGUE[f.forme].calme;
+  if (!c) return false;
+  const [a, b] = toShapeFrame(f, u, v, SCRATCH_POINT);
+  return c(a, b, s);
 }
 
 /** Le côté du cœur vers lequel s'avance le trait d'une forme tournée, dans le repère du cœur (−1 ou 1 sur `u` ou `v`). */

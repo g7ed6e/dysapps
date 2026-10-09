@@ -1,5 +1,8 @@
 import { BIOMES } from '../biomes';
-import { ALTITUDE, ARCHIPELAGO_IDS, CORE, etendueDuLieu, LACS, isLand, islandDef, landBox, landCells, landscape, margesDuCoeur, MAP, reliefHeight } from './map';
+import type { BiomeId } from '../biomes';
+import { ALTITUDE, ARCHIPELAGO_IDS, type ArchipelagoId, CORE, etendueDuLieu, LACS, isLand, islandDef, landBox, landCells, landscape, mapOf, margesDuCoeur, MAP, reliefHeight } from './map';
+import type { FormeDeLIle } from './formes';
+import { footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, landRectangles } from './footprint';
 import { silhouetteDe } from './silhouettes';
 import { BRIDGES, LINKS_BEFORE_GD9, linkWholeRegion, VOYAGES } from './archipelago';
 import { worldCubes } from './terrain';
@@ -19,10 +22,42 @@ it('chaque île a une place, une altitude selon sa classe, et son cœur fait par
 });
 
 it('la côte écrite d’un lieu qui a une forme (GD-12) est celle de sa forme', () => {
-  // La carte de départ l'écrit en dur, pour ne pas calculer quinze masques à l'import de map.ts.
+  // La carte de départ l'écrit en dur, pour ne pas calculer un masque par lieu à l'import de map.ts (formes.test.ts
+  // compte les lieux de chaque archipel).
   const formes = MAP.filter((d) => silhouetteDe(d.id).forme);
-  expect(formes.length).toBe(15);
+  expect(formes.length).toBeGreaterThanOrEqual(15);
   for (const d of formes) expect(d.ext, d.id).toEqual(etendueDuLieu(d, silhouetteDe(d.id).forme!));
+});
+
+/**
+ * Les places gardées pour des îles futures (GD-12, coordination du 9 octobre 2026) : deux par archipel, l'éducation
+ * morale et civique et le latin ou le grec, chacune avec un premier dessin de forme du catalogue, sans créer le lieu
+ * (docs/gameplay/propositions/GD-12.md). Une île de la carte de départ ne s'y pose pas.
+ */
+const PLACES_FUTURES: Partial<Record<ArchipelagoId, readonly { nom: string; core: { x: number; y: number }; forme: FormeDeLIle }[]>> = {
+  '5e': [
+    { nom: 'EMC', core: { x: 29, y: 405 }, forme: { forme: 'trefle', vers: 'devant' } },
+    { nom: 'latin ou grec', core: { x: 65, y: 405 }, forme: { forme: 'galet', vers: 'devant', short: true } },
+  ],
+};
+
+it('les places des îles futures (GD-12) : dans le cadre, à quatre cases d’eau de toute emprise de départ', () => {
+  for (const [a, places] of Object.entries(PLACES_FUTURES) as [ArchipelagoId, (typeof PLACES_FUTURES)['5e']][]) {
+    const cadre = frameOf(a);
+    const modele = mapOf(a)[0];
+    const emprises = mapOf(a).flatMap((d) => footprintOf(d.id, d));
+    const futures = places!.map((p) => {
+      // Un lieu sans nom, pour son seul masque (le masque se garde par identifiant).
+      const def = { ...modele, id: `futur-${a}-${p.nom}` as BiomeId, core: p.core, deplacee: undefined, vueDepuis: undefined, repere: p.core };
+      return { nom: p.nom, rects: landRectangles({ ...def, ext: etendueDuLieu(def, p.forme) }) };
+    });
+    for (const f of futures)
+      for (const r of f.rects) {
+        expect(Math.min(r.x0 - cadre.x0, r.y0 - cadre.y0, cadre.x1 - r.x1, cadre.y1 - r.y1), `${a} ${f.nom} dans le cadre`).toBeGreaterThanOrEqual(0);
+        for (const e of emprises) expect(gapBetween(r, e), `${a} ${f.nom} et ${e.lieu}`).toBeGreaterThanOrEqual(GAP_BETWEEN_PLACES);
+        for (const g of futures) if (g !== f) for (const s of g.rects) expect(gapBetween(r, s), `${a} ${f.nom} et ${g.nom}`).toBeGreaterThanOrEqual(GAP_BETWEEN_PLACES);
+      }
+  }
 });
 
 it('aucune terre ne chevauche une autre', () => {

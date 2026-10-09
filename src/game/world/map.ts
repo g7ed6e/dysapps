@@ -6,7 +6,7 @@
 import type { BiomeId } from '../biomes';
 import { archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
 import { silhouetteDe } from './silhouettes';
-import { BOITE_DE_LA_FORME, FEATURE_BOX, type ShapeCorner, featureSide, shapeCorner, inShapeFeature, distanceALaForme, type FormeDeLIle } from './formes';
+import { BOITE_DE_LA_FORME, type ShapeCorner, calmeDeLaForme, featureSide, shapeCorner, inShapeFeature, distanceALaForme, traitDeLaForme, type FormeDeLIle } from './formes';
 import { GD11_GUARDIAN_SQUARES, GUARDIAN_SQUARE_SIDE } from './guardianSquares';
 import { layoutCache, unturnCell, chosenPose, type Quarts, turnCell, turnRectangle } from './placement';
 
@@ -400,6 +400,8 @@ function rawShapeCell(def: IslandDef, f: FormeDeLIle, b: Readonly<Bornes>, s: nu
   // Au port, devant le cœur, la rive reste droite sur la largeur du quai et du Bloc-Navire (sans bruit) : la jetée en part.
   if (f.quai && v < -s && u > 4 && u < 16) return d < 0 ? 1 : 0;
   if (d < -a) return 1;
+  // Le lagon et sa passe : sans bruit (GD-12, les formes plus marquées).
+  if (calmeDeLaForme(f, u, v, s)) return d < 0 ? 1 : 0;
   const t = tirage(def, def.core.x + x, def.core.y + y);
   return d + (smoothNoise(def.seed + 101, t.x, t.y, BRUIT_DE_LA_FORME.onde) - 0.5) * 2 * a < 0 ? 1 : 0;
 }
@@ -413,12 +415,15 @@ export interface ShapeBox {
 }
 
 /**
- * La boîte d'une forme (GD-12) : `BOITE_DE_LA_FORME` cases au-delà du cœur, `FEATURE_BOX` du côté de son trait
- * (./formes.ts, décision du mainteneur du 8 octobre 2026).
+ * La boîte d'une forme (GD-12) : `BOITE_DE_LA_FORME` cases au-delà du cœur, son trait du côté de son trait
+ * (`FEATURE_BOX`, décision du mainteneur du 8 octobre 2026 ; plus loin pour le fer, le crochet et le lagon, 9 octobre
+ * 2026), ou de ses quatre côtés (le moulinet) (./formes.ts).
  */
 export function shapeBox(f: FormeDeLIle): ShapeBox {
   const t = featureSide(f);
-  const [B, T] = [BOITE_DE_LA_FORME, f.short ? BOITE_DE_LA_FORME : FEATURE_BOX];
+  const trait = traitDeLaForme(f);
+  const [B, T] = [BOITE_DE_LA_FORME, trait.cases];
+  if (trait.partout) return { gauche: T, droite: T, devant: T, fond: T };
   return { gauche: t.u < 0 ? T : B, droite: t.u > 0 ? T : B, devant: t.v < 0 ? T : B, fond: t.v > 0 ? T : B };
 }
 
@@ -558,13 +563,18 @@ const STARTING_MAP: MapPlace[] = [
   // dessin (`deplacee`) ; le grand phare du large recule (monuments.ts). Le Marais, le Carrefour et le Relais ne bougent
   // pas : le pont du Marché au Marais était long (30 cases), celui du Comptoir au Relais y perd deux cases ; écarter
   // aussi le Relais, pour garder la colonne centrale, élargissait la mer semée de 157 triangles de décor, au-delà de son
-  // enveloppe : la colonne recule d'une case, et les caméras du 5e tournent de 0,8°.
-  { id: 'maths-5e-signed-numbers', region: 'montagne', core: { x: 33, y: 321 }, repere: { x: 38, y: 320 }, deplacee: { x: -2, y: 0 }, altitude: 3, ext: e(3, 3, 2, 5), relief: 'montagne', seed: 21 },
+  // enveloppe : la colonne recule d'une case, et les caméras du 5e tournent de 0,8°. Depuis une forme par île (GD-12,
+  // 9 octobre 2026), chaque lieu est sur le pas des places, à quatre cases d'eau au moins de ses voisines, et garde la
+  // vue de sa place d'avant (`vueDepuis`) : le Carrefour (un moulinet) reste au second rang, à l'ouest, derrière le
+  // Glacier ; le Marais et le Manoir y restent, la Prairie passe derrière le Manoir, la Saline derrière le Bourg, le
+  // Delta au coin du fond, à l'est. Le rang du fond, à l'ouest, garde deux places pour des îles futures (map.test.ts).
+  // La colonne d'avant les formes reste celle des caméras (terrain/view.ts).
+  { id: 'maths-5e-signed-numbers', region: 'montagne', core: { x: 33, y: 321 }, repere: { x: 38, y: 320 }, deplacee: { x: -2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 21 },
   // Le Marché garde deux rangées de côte devant (GD-11 amincit les autres côtes d'une case) : sinon l'escalier de sa jetée
   // monterait sur la rangée nue devant ses bornes.
-  { id: 'maths-5e-proportionality', region: 'marais', core: { x: 69, y: 317 }, altitude: 3, ext: e(2, 3, 2, 2), relief: 'plat', seed: 22 },
-  { id: 'french-5e-homophones', region: 'basses-terres', core: { x: 33, y: 373 }, repere: { x: 40, y: 362 }, altitude: 3, ext: e(3, 3, 2, 3), relief: 'collines', seed: 23 },
-  { id: 'french-5e-conjugation', region: 'marais', core: { x: 65, y: 373 }, repere: { x: 69, y: 367 }, altitude: 3, ext: e(3, 3, 1, 3), relief: 'plat', seed: 24 },
+  { id: 'maths-5e-proportionality', region: 'marais', core: { x: 69, y: 317 }, altitude: 3, ext: e(5, 2, 7, 3), relief: 'plat', seed: 22 },
+  { id: 'french-5e-homophones', region: 'basses-terres', core: { x: 33, y: 365 }, vueDepuis: { x: 33, y: 373 }, repere: { x: 40, y: 362 }, altitude: 3, ext: e(7, 7, 7, 7), relief: 'collines', seed: 23 },
+  { id: 'french-5e-conjugation', region: 'marais', core: { x: 69, y: 357 }, vueDepuis: { x: 65, y: 373 }, repere: { x: 69, y: 367 }, altitude: 3, ext: e(3, 2, 4, 7), relief: 'plat', seed: 24 },
   // Anciens Ateliers (4e), sur les monts : redessinés en deux rangs dans leur cadre de 160 × 112 (GD-9, 05/10/2026 ;
   // ils étaient en ligne). Port : l'Atelier, au point de départ. Devant, la Forge, l'Atelier, la Falaise et, au bout,
   // l'île de la LV2 ; derrière, la Gare, le Théâtre et le Cabinet. Chacun garde son dessin (`repere`).
@@ -603,10 +613,10 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'physics-chemistry-6e-matter-energy', region: 'basses-terres', core: { x: 140, y: 15 }, vueDepuis: { x: 152, y: 15 }, repere: { x: 124, y: 139 }, altitude: 0, ext: e(3, 4, 5, 7), relief: 'plat', seed: 56 },
   { id: 'technology-6e-objects', region: 'basses-terres', core: { x: -12, y: -5 }, vueDepuis: { x: -12, y: 11 }, repere: { x: 96, y: 139 }, altitude: 0, ext: e(3, 7, 2, 2), relief: 'plat', seed: 57 },
   // Anglais 5e : une colonne à droite du Marché et du Marais.
-  { id: 'english-5e-vocabulary', region: 'basses-terres', core: { x: 105, y: 321 }, repere: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 1, 3), relief: 'plat', seed: 61 },
-  { id: 'english-5e-grammar', region: 'hauteurs', core: { x: 101, y: 365 }, repere: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 1, 3), relief: 'collines', seed: 62 },
+  { id: 'english-5e-vocabulary', region: 'basses-terres', core: { x: 101, y: 321 }, vueDepuis: { x: 105, y: 321 }, repere: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 10, 2), relief: 'plat', seed: 61 },
+  { id: 'english-5e-grammar', region: 'hauteurs', core: { x: 101, y: 357 }, vueDepuis: { x: 101, y: 365 }, repere: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 7, 3), relief: 'collines', seed: 62 },
   // LV2 5e : à l'est du Comptoir, dans son alignement (le pont reste droit), en bout de chemin : rien n'en dépend.
-  { id: 'lv2-5e-introductions', region: 'basses-terres', core: { x: 137, y: 321 }, repere: { x: 133, y: 320 }, altitude: 3, ext: e(1, 2, 1, 3), relief: 'plat', seed: 94 },
+  { id: 'lv2-5e-introductions', region: 'basses-terres', core: { x: 133, y: 321 }, vueDepuis: { x: 137, y: 321 }, repere: { x: 133, y: 320 }, altitude: 3, ext: e(2, 2, 7, 5), relief: 'plat', seed: 94 },
   // Anglais 4e : au second rang, la Gare derrière la Forge, le Théâtre à côté du Cabinet.
   { id: 'english-4e-comprehension', region: 'hauteurs', core: { x: 94, y: 660 }, repere: { x: 158, y: 618 }, altitude: 6, ext: e(2, 3, 1, 3), relief: 'collines', seed: 71 },
   // LV2 4e : au bout du premier rang, après la Falaise, en bout de chemin : rien n'en dépend. Sur la Carte au grand
@@ -629,9 +639,10 @@ const STARTING_MAP: MapPlace[] = [
   // ni pic, comme au 6e. Aux Îles Brumeuses, le Bourg des chroniques et le Delta des ressources au second rang, au-delà
   // du Manoir (le cadre du 5e s'élargit de 24 cases vers l'est) ; aux Anciens Ateliers, l'Imprimerie des révolutions et
   // l'Escale des échanges derrière la Gare ; aux Îles du Ciel, le Kiosque des témoins derrière le Studio et le Plateau
-  // des territoires derrière le Château.
-  { id: 'history-5e-middle-ages', region: 'basses-terres', core: { x: 133, y: 365 }, repere: { x: 129, y: 365 }, altitude: 3, ext: e(1, 1, 1, 1), relief: 'plat', seed: 63 },
-  { id: 'geography-5e-resources', region: 'basses-terres', core: { x: 161, y: 365 }, repere: { x: 157, y: 365 }, altitude: 3, ext: e(1, 1, 1, 1), relief: 'plat', seed: 64 },
+  // des territoires derrière le Château. Depuis GD-12 (9 octobre 2026), aux Îles Brumeuses, le Bourg derrière le
+  // Relais et le Delta au coin du fond, à l'est.
+  { id: 'history-5e-middle-ages', region: 'basses-terres', core: { x: 137, y: 357 }, vueDepuis: { x: 133, y: 365 }, repere: { x: 129, y: 365 }, altitude: 3, ext: e(4, 3, 2, 7), relief: 'plat', seed: 63 },
+  { id: 'geography-5e-resources', region: 'basses-terres', core: { x: 173, y: 405 }, vueDepuis: { x: 161, y: 365 }, repere: { x: 157, y: 365 }, altitude: 3, ext: e(3, 3, 7, 5), relief: 'plat', seed: 64 },
   { id: 'history-4e-revolutions', region: 'basses-terres', core: { x: 34, y: 676 }, repere: { x: 30, y: 676 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 73 },
   { id: 'geography-4e-globalization', region: 'basses-terres', core: { x: 62, y: 676 }, repere: { x: 58, y: 676 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 74 },
   { id: 'history-3e-twentieth-century', region: 'basses-terres', core: { x: -18, y: 964 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 83 },
@@ -647,10 +658,11 @@ const STARTING_MAP: MapPlace[] = [
   // des espèces au coin de devant, à l'ouest, avant la Forge (sa terre cuite loin du Théâtre et de l'Imprimerie), la
   // Vigie des signaux derrière la Gare et le Bassin des maquettes derrière le Théâtre et le Cabinet, au rang du fond ;
   // aux Îles du Ciel, le Verger de la santé à côté du Kiosque (sa terre cuite loin du Belvédère et du Plateau), le
-  // Tremplin des forces entre l'Observatoire des textes et le Plateau, la Ruche des réseaux derrière le Refuge.
-  { id: 'life-earth-sciences-5e-active-planet', region: 'basses-terres', core: { x: 101, y: 409 }, altitude: 3, ext: e(1, 1, 1, 1), relief: 'plat', seed: 65 },
-  { id: 'physics-chemistry-5e-matter-universe', region: 'basses-terres', core: { x: 145, y: 409 }, altitude: 3, ext: e(1, 1, 1, 1), relief: 'plat', seed: 66 },
-  { id: 'technology-5e-design', region: 'basses-terres', core: { x: 169, y: 309 }, repere: { x: 165, y: 309 }, altitude: 3, ext: e(1, 1, 1, 1), relief: 'plat', seed: 67 },
+  // Tremplin des forces entre l'Observatoire des textes et le Plateau, la Ruche des réseaux derrière le Refuge. Depuis
+  // GD-12 (9 octobre 2026), aux Îles Brumeuses, la Prairie et la Saline au rang du fond, la Menuiserie au coin de devant.
+  { id: 'life-earth-sciences-5e-active-planet', region: 'basses-terres', core: { x: 101, y: 405 }, vueDepuis: { x: 101, y: 409 }, repere: { x: 101, y: 409 }, altitude: 3, ext: e(4, 4, 3, 7), relief: 'plat', seed: 65 },
+  { id: 'physics-chemistry-5e-matter-universe', region: 'basses-terres', core: { x: 141, y: 405 }, vueDepuis: { x: 145, y: 409 }, repere: { x: 145, y: 409 }, altitude: 3, ext: e(7, 2, 2, 2), relief: 'plat', seed: 66 },
+  { id: 'technology-5e-design', region: 'basses-terres', core: { x: 165, y: 309 }, vueDepuis: { x: 169, y: 309 }, repere: { x: 165, y: 309 }, altitude: 3, ext: e(2, 2, 7, 2), relief: 'plat', seed: 67 },
   { id: 'life-earth-sciences-4e-cells-evolution', region: 'basses-terres', core: { x: -2, y: 592 }, repere: { x: -2, y: 604 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 75 },
   { id: 'physics-chemistry-4e-signals-circuits', region: 'basses-terres', core: { x: -2, y: 704 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 76 },
   { id: 'technology-4e-modeling', region: 'basses-terres', core: { x: 110, y: 704 }, altitude: 6, ext: e(1, 1, 1, 1), relief: 'plat', seed: 77 },
