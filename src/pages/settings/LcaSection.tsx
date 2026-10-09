@@ -6,7 +6,7 @@ import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
 import { OptionRow } from './controls';
 
-const LCA_TEXTE = 'De la 5e à la 3e, si tu suis l’option au collège. Elle ne change rien à ta LV2. Tu peux en changer quand tu veux : ce que tu as construit reste, et chaque option garde ses étoiles.';
+const LCA_TEXTE = 'De la 5e à la 3e. Ta LV2 ne change pas. Tu peux en changer quand tu veux : ce que tu as construit reste, et chaque option garde ses étoiles.';
 
 export function LcaSection() {
   const { settings, update } = useSettings();

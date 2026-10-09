@@ -1,10 +1,11 @@
+import { StrictMode, useEffect } from 'react';
 import { render, screen } from '@testing-library/react';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ForeignWordsProvider, Marked } from './ForeignWords';
 import { SpeakButton } from './SpeakButton';
 import { Syllabified } from './Syllabified';
 import { RichText } from './math/RichText';
-import type { ForeignWord } from '../core/foreignWords';
+import { motsEtrangersCourants, type ForeignWord } from '../core/foreignWords';
 
 const MOTS: ForeignWord[] = [
   { word: 'rosam', lang: 'la', spoken: 'rossamm' },
@@ -67,5 +68,27 @@ describe('le bouton Écouter d’un texte écrit pour la voix', () => {
     avec(<SpeakButton text="Pouélla rossamm amatt" shown="Puella rosam amat" />);
     expect(screen.getByRole('button', { name: 'Écouter : Puella rosam amat' })).toBeInTheDocument();
     expect(document.body.innerHTML).not.toContain('rossamm');
+  });
+
+  it('en mode strict, la consigne lue par un enfant pendant que ses effets se refont a les mots ; au démontage, ils partent', async () => {
+    const vus: (readonly ForeignWord[] | undefined)[] = [];
+    function Consigne() {
+      useEffect(() => {
+        vus.push(motsEtrangersCourants());
+      }, []);
+      return null;
+    }
+    const { unmount } = render(
+      <StrictMode>
+        <ForeignWordsProvider words={MOTS}>
+          <Consigne />
+        </ForeignWordsProvider>
+      </StrictMode>,
+    );
+    expect(vus.length).toBe(2);
+    expect(vus.every((v) => v === MOTS)).toBe(true);
+    unmount();
+    await Promise.resolve();
+    expect(motsEtrangersCourants()).toBeUndefined();
   });
 });

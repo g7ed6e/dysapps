@@ -2,7 +2,7 @@
 // qu'on y joue : les textes affichés les marquent dans leur langue, sans syllabes colorées, et la voix les dit comme
 // l'écrit leur « lu », jamais affiché.
 import { createContext, useContext, useEffect, type ReactNode } from 'react';
-import { retenirMotsEtrangers, splitForeignWords, type ForeignWord } from '../core/foreignWords';
+import { oublierMotsEtrangers, retenirMotsEtrangers, splitForeignWords, type ForeignWord } from '../core/foreignWords';
 
 const ForeignWordsContext = createContext<readonly ForeignWord[] | undefined>(undefined);
 
@@ -14,13 +14,13 @@ export function useForeignWords(): readonly ForeignWord[] | undefined {
 /**
  * Pose les mots marqués d'une île pour l'affichage (ce contexte) et pour la voix (`retenirMotsEtrangers`), le temps d'y
  * jouer. La voix les reçoit avant le premier rendu des enfants, comme les réglages (`retenirReglages`) : la consigne lue
- * dès l'ouverture de l'écran les a déjà.
+ * dès l'ouverture de l'écran les a déjà. Au démontage, l'oubli attend la fin des effets (`oublierMotsEtrangers`).
  */
 export function ForeignWordsProvider({ words, children }: { words: readonly ForeignWord[] | undefined; children: ReactNode }) {
   retenirMotsEtrangers(words);
   useEffect(() => {
     retenirMotsEtrangers(words);
-    return () => retenirMotsEtrangers(undefined);
+    return oublierMotsEtrangers;
   }, [words]);
   return <ForeignWordsContext.Provider value={words?.length ? words : undefined}>{children}</ForeignWordsContext.Provider>;
 }

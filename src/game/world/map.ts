@@ -516,7 +516,7 @@ export function etendueDuLieu(def: IslandDef, f: FormeDeLIle): IslandDef['ext'] 
 }
 
 /**
- * Les cinquante et une îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
+ * Les cinquante-deux îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  *

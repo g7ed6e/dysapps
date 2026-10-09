@@ -79,6 +79,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 - **Pas de syllabes colorées sur le latin et le grec** : le découpage du français tromperait l’élève, par exemple sur une terminaison. Les mots sont marqués dans leur langue pour les lecteurs d’écran ; une terminaison se montre à part par un trait (ros-am), jamais par la seule couleur.
 - **Une lettre grecque se nomme après la réponse** : la question ne lit jamais une lettre grecque, son nom donnerait la réponse ; l’explication la nomme ensuite.
 - **Un mot grec dans une seule police** : un mot en lettres grecques s’affiche toujours en entier dans une police qui a tout l’alphabet, la police choisie si elle l’a, sinon une seule police sans empattement, à la taille et aux espacements choisis. C’est la seule exception à « le texte se lit dans la police choisie ».
+- **Une langue vivante citée garde sa langue** : un mot italien, espagnol ou anglais cité dans une île de latin ou de grec est marqué dans sa langue et lu par la voix de cette langue.
 
 ## Ce que travaille chaque île
 

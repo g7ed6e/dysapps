@@ -111,6 +111,8 @@ export function segmentsForSpeech(text: string, words: readonly ForeignWord[] | 
 }
 
 let courants: readonly ForeignWord[] | undefined;
+/** Compte les poses : un oubli différé ne vaut que si personne n'a reposé de mots entre-temps. */
+let poses = 0;
 
 /**
  * Les mots de l'île dont on joue une mission (`ForeignWordsProvider`), que la voix applique à tout texte français qu'elle
@@ -118,6 +120,18 @@ let courants: readonly ForeignWord[] | undefined;
  */
 export function retenirMotsEtrangers(words: readonly ForeignWord[] | undefined): void {
   courants = words?.length ? words : undefined;
+  poses++;
+}
+
+/**
+ * Oublie les mots retenus, après les effets en cours : un fournisseur qui se démonte ne les retire pas à celui qui se
+ * monte dans le même commit, ni, en mode strict, à la consigne lue par un enfant pendant que ses effets se refont.
+ */
+export function oublierMotsEtrangers(): void {
+  const pose = poses;
+  queueMicrotask(() => {
+    if (poses === pose) courants = undefined;
+  });
 }
 
 export function motsEtrangersCourants(): readonly ForeignWord[] | undefined {
