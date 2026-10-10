@@ -237,7 +237,7 @@ function echelleDuGardien(id: BiomeId, f: FacettesDePersonnage): number {
   if (h === undefined) return ECHELLE_DANS_LE_MONDE;
   let haut = 0;
   for (let i = 1; i < f.positions.length; i += 3) haut = Math.max(haut, f.positions[i]);
-  return h / haut;
+  return haut > 0 ? h / haut : ECHELLE_DANS_LE_MONDE;
 }
 
 /**

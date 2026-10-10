@@ -24,7 +24,8 @@ function milieuDuGardien(id: BiomeId): { x: number; y: number } {
  * (lot 6) : le pied du Gardien plus 1,6 bloc à son échelle (`echelle`, l'habillage) ; à l'échelle 1, le milieu d'une
  * sentinelle de 5,2 blocs (DA-5 : world/characters/sentinel.ts, `HAUTEUR_DANS_LE_MONDE` ; un test y tient les deux
  * ensemble), et d'autant plus haut que le Gardien est plus haut que la sentinelle (`GUARDIAN_WORLD_HEIGHTS`, le Grand
- * Chêne). La grille y ancre le Gardien (world/grid.ts).
+ * Chêne), à l'échelle de l'habillage elle aussi : dans Blocland, le Grand Chêne (6,5 blocs, le plus haut des Gardiens
+ * du 6e) se vise 0,2 bloc plus haut. La grille y ancre le Gardien (world/grid.ts).
  */
 export function guardianCenter(id: BiomeId, echelle = 1): { x: number; y: number; z: number } {
   const def = islandDef(id);
