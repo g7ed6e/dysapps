@@ -1,7 +1,7 @@
 // Les cadrages de la caméra : les vues (île, suivi, Carte, voyage), le cadrage de la Carte selon la place libre et la
 // destination, celui de la traversée, et le décalage qui vise un point au-dessus du sol.
 import * as THREE from 'three';
-import { bornesDansLeMonde, bornesDesLieux, type CadreDeCases, ETAGES_DE_LA_BORNE, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, islandCenter, terresDe, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
+import { bornesDansLeMonde, bornesDesLieux, type CadreDeCases, ETAGES_DE_LA_BORNE, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, islandCenter, terresDe, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, VUE_DE_LA_CARTE, worldBounds } from '../../world/terrain';
 import { type PlaceLue, type Rect, RESERVE_DU_BAS } from '../../freeSpace';
 import { BULLE, SIGNE } from '../../world/affordance';
 import { PLAQUE } from '../signs';
@@ -27,7 +27,7 @@ export const FOLLOW_MAX = 64;
 const MARGE_DE_LA_TRAVERSEE = 8;
 
 /** La Carte : presque à la verticale, le même nord ; la distance se règle sur la place libre (`cadrageDeLaCarte`). */
-const MAP_VIEW = { dx: 0.03, dy: -0.4, up: 1 };
+const MAP_VIEW = VUE_DE_LA_CARTE;
 
 const MAP_FOV = 40;
 

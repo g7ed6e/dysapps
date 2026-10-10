@@ -248,6 +248,12 @@ export function ileDeLaVueGlissee(a: ArchipelagoId, ici: BiomeId, d: { x: number
   return islandAt(a, c.x + d.x, c.y + d.z);
 }
 
+/**
+ * La direction de la caméra de la Carte (x, y de la grille, et hauteur) : presque à la verticale, le même nord, un peu
+ * tournée (dx). Elle penche les directions vues à l'écran (world/placeSentence.ts les dit telles qu'on les voit).
+ */
+export const VUE_DE_LA_CARTE = { dx: 0.03, dy: -0.4, up: 1 };
+
 /** La direction de la vue d'une île (x, y de la grille, et hauteur) : de trois quarts avant-droite, plus haute que la vue du bonhomme. */
 export const VUE_DE_L_ILE = { dx: 0.7, dy: -0.7, up: 0.9 };
 
