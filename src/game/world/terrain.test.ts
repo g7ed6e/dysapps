@@ -18,6 +18,7 @@ import { dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleRestZ, VEHICL
 import { VEHICLE_STAGES } from './vehicle';
 import { recetteDeLArchipel } from './assembly';
 import { toutConstruit } from './budget';
+import { ILES_A_PARVIS } from './terrain/parvis';
 import { decorPose } from './decor';
 import { bridgesOf, isBiomeUnlocked } from './archipelago';
 import { routeDeDepart } from './linkGeometry';
@@ -167,7 +168,9 @@ it('le cœur a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les 
         if (h) raised++;
       }
     }
-    expect(raised).toBeGreaterThan(4);
+    // Les îles à parvis gardent un cœur plat : le plateau y tombait sur l'allée (DA, captures emc-4e-3e-2).
+    if (ILES_A_PARVIS.has(BIOMES[i].id)) expect(raised).toBe(0);
+    else expect(raised).toBeGreaterThan(4);
     expect(raised).toBeLessThan((ISLAND * ISLAND) / 2);
   });
   // Aucun cube en double.

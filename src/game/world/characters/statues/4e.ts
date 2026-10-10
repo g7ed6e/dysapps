@@ -3,7 +3,7 @@
 // socles compris.
 import type { BiomeId } from '../../../biomes';
 import { anneau, pointe } from '../template';
-import { devant, facette, fuseau, pave, pose, repere, type Anneau, type Trace, type V3 } from '../painted';
+import { devant, facette, fuseau, parFace, pave, pose, repere, type Anneau, type Trace, type V3 } from '../painted';
 import { bandeauDuSocle, dalle, orbites, plaque, tube, veine, veineSur, type Statue } from '../sentinel';
 
 /**
@@ -198,12 +198,14 @@ const TETE_DU_LYNX: Anneau[] = [
 ];
 
 /**
- * La Cigale d'argile, de profil, couchée le long de X, la tête vers +X, sur une souche (DA, captures emc-4e-3e-1) : le
- * corps trapu, de la pointe de l'abdomen au thorax (le long, la demi-hauteur, la demi-largeur), puis la tête.
+ * La Cigale d'argile, de profil, couchée le long de X, la tête vers +X, à même une souche large, plus de poteau (DA,
+ * captures emc-4e-3e-1 puis emc-4e-3e-2) : le corps trapu, de la pointe de l'abdomen au thorax (le long, la
+ * demi-hauteur, la demi-largeur), puis la tête. `souche` : le dessus de la souche, que le ventre touche ; la hauteur
+ * reste celle de la revue d'ensemble (DA-5, environ cinq blocs socle compris).
  */
 const CIGALE = { y: 3.95, queue: -1.1, souche: 3.4, faite: 4.75 } as const;
 const CORPS_DE_LA_CIGALE: Anneau[] = [
-  [0, 0.12, 0.12],
+  [0, 0, 0],
   [0.4, 0.5, 0.52],
   [1.6, 0.58, 0.62],
   [2.2, 0.5, 0.55],
@@ -212,6 +214,14 @@ const TETE_DE_LA_CIGALE: Anneau[] = [
   [0, 0.48, 0.55],
   [0.45, 0.42, 0.5],
   [0.62, 0.18, 0.2],
+];
+/**
+ * Un gros œil de la Cigale, qui ressort de la tête (DA, captures emc-4e-3e-2) : un tronc de cône court, de la tête vers
+ * le dehors (+Y de son repère), au bout plat ; sur l'œil qui regarde l'élève, ce bout est l'orbite sombre.
+ */
+const OEIL_DE_LA_CIGALE: Anneau[] = [
+  [0, 0.27],
+  [0.38, 0.19],
 ];
 /**
  * Une aile de la Cigale, dans son repère : du faîte du toit (y = 0) vers le bas et le dehors (|y| croissant), plus
@@ -809,7 +819,7 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
     },
   },
   // Latin-grec 4e (LCA-2) : le strict nécessaire, Archipéo étant en pause. La Cigale d'argile, sans flamme : de profil,
-  // couchée sur une souche, comme une cigale de terre cuite ; le corps trapu, deux gros yeux qui saillent de chaque côté
+  // couchée à même une souche large, comme une cigale de terre cuite ; le corps trapu, deux gros yeux qui saillent de chaque côté
   // de la tête, les ailes repliées en toit sur le dos, plus longues que le corps et plus claires ; leurs nervures
   // s'allument (DA, captures emc-4e-3e-1).
   'lca-4e-cities': {
@@ -818,23 +828,31 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
     sansFlamme: true,
     tour: TOURS_DE_LA_CIGALE,
     sculpture: (T, a) => {
-      // La souche, du socle au ventre.
+      // La souche, du socle au ventre : large, la Cigale couchée à même son dessus (plus de poteau).
       fuseau(
         T,
         [
-          [1, 0.55],
-          [CIGALE.souche, 0.45],
+          [1, 1.0],
+          [CIGALE.souche, 0.88],
         ],
         5,
         a.moussue((k, j) => k === 0 && j % 2 === 0),
+        { bas: false },
       );
       // Le corps, couché le long de X, la tête au bout.
       fuseau(pose(T, repere([CIGALE.queue, CIGALE.y, 0], 0, 0, -Math.PI / 2)), CORPS_DE_LA_CIGALE, 6, a.pierre);
       const xTete = CIGALE.queue + CORPS_DE_LA_CIGALE[CORPS_DE_LA_CIGALE.length - 1][0];
       fuseau(pose(T, repere([xTete, CIGALE.y, 0], 0, 0, -Math.PI / 2)), TETE_DE_LA_CIGALE, 6, a.pierre);
-      // Les gros yeux, qui saillent de chaque côté de la tête ; l'orbite, sombre, au bout de celui qui regarde l'élève.
-      for (const s of [-1, 1]) pointe(T, [xTete + 0.25, CIGALE.y + 0.22, s * 0.42], 0.22, 0.32, a.pierre, [s * (Math.PI / 2), 0, 0], 3);
-      orbites(T, a, xTete + 0.25, CIGALE.y + 0.22, -0.42 - 0.3, 0, 0.16);
+      // Les gros yeux, qui ressortent de chaque côté de la tête (DA, captures emc-4e-3e-2).
+      // Le bout de l'œil côté élève (−Z) est l'orbite ; celui de l'autre, jamais vu, n'est pas fermé (le budget du poste).
+      for (const s of [-1, 1])
+        fuseau(
+          pose(T, repere([xTete + 0.25, CIGALE.y + 0.22, s * 0.38], s * (Math.PI / 2), 0, 0)),
+          OEIL_DE_LA_CIGALE,
+          5,
+          parFace((_, j) => (j === -2 ? a.orbite : a.pierre)),
+          { bas: false, haut: s === -1 },
+        );
       // Les ailes, en toit sur le dos, d'une terre plus claire.
       for (const c of [-1, 1] as const) dalle(pose(T, repereDeLAile(c)), aileDeLaCigale(c), 0, 0.08, a.ventre);
     },

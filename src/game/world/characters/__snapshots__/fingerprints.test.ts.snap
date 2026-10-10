@@ -73,12 +73,12 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
 exports[`Empreintes des personnages en facettes > les fusions, archipel par archipel (tout construit) 1`] = `
 {
   "3e": {
-    "creatures": "3645 13101daf daaa3144",
+    "creatures": "3645 2e67fb0f 4a0ebaa4",
     "gardiens": "3230 4bb2a616",
   },
   "4e": {
-    "creatures": "3544 c5f8590e 14be4f6d",
-    "gardiens": "3047 c4408873",
+    "creatures": "3544 1ab76ad0 7a0534a5",
+    "gardiens": "3047 fefb45c0",
   },
   "5e": {
     "creatures": "3480 2ee61dd6 d35811f0",
@@ -124,7 +124,7 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "horloge": "172 899e1347",
   "jardin": "258 1f00506c",
   "lca-3e-ideas": "252 ed7676f4",
-  "lca-4e-cities": "188 076c10cd",
+  "lca-4e-cities": "188 96e315f3",
   "lca-5e-legends": "199 4e444962",
   "life-earth-sciences-3e-human-body": "213 2ba0210c",
   "life-earth-sciences-4e-cells-evolution": "213 61e2cc34",

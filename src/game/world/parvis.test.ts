@@ -33,7 +33,7 @@ describe('Le cœur d’herbe et le parvis (DA, captures emc-4e-3e-1)', () => {
       const b = bornesDuCoeur(def);
       const bloc = BLOCKS[BIOMES.find((x) => x.id === id)!.block].side;
       const sol = solDuCoeur(id);
-      const compte = { herbe: 0, allee: 0, bordure: 0 };
+      const compte = { herbe: 0, allee: 0, bordure: 0, seuil: 0 };
       for (let y = b.y0; y < b.y1; y++)
         for (let x = b.x0; x < b.x1; x++) {
           const s = sol.get(`${x},${y}`);
@@ -41,16 +41,22 @@ describe('Le cœur d’herbe et le parvis (DA, captures emc-4e-3e-1)', () => {
           const genre = caseDuParvis(id, x, y);
           const teinte = (couleur: string) => (s.muted ? fade(couleur) : couleur);
           if (genre === 'allee') expect(s.color, `${x},${y}`).toBe(teinte(bloc));
-          else if (genre === 'bordure') expect(s.color, `${x},${y}`).toBe(teinte(BLOCKS[BLOC.pierre].side));
+          else if (genre === 'bordure' || genre === 'seuil') expect(s.color, `${x},${y}`).toBe(teinte(BLOCKS[BLOC.pierre].side));
           // Hors du parvis, jamais le bloc de l'île au sol (le sable des coins arrondis, la terre de la côte restent).
           else expect(s.color, `${x},${y}`).not.toBe(teinte(bloc));
-          if (genre) compte[genre === 'allee' ? 'allee' : 'bordure']++;
+          if (genre) compte[genre]++;
           else if (s.color === teinte(GRASS)) compte.herbe++;
         }
-      // L'allée va du bord de devant (y0) à la rangée qui touche la zone des plans : deux cases de large.
-      expect(compte.allee).toBe(2 * (PLAN_ZONE.y - b.y0));
+      // L'allée va du bord de devant (y0) à la rangée qui touche la zone des plans, son seuil de pierre (DA,
+      // captures emc-4e-3e-2) : deux cases de large.
+      expect(compte.allee).toBe(2 * (PLAN_ZONE.y - 1 - b.y0));
+      expect(compte.seuil).toBe(2);
       expect(compte.bordure).toBe(2 * (PLAN_ZONE.y - b.y0));
       expect(compte.herbe).toBeGreaterThan(300);
+      // Le parvis est à plat, du bord de devant au seuil : aucune marche d'herbe ne le chevauche (DA, captures emc-4e-3e-2).
+      const hauteurs = new Set<number>();
+      for (let y = b.y0; y < PLAN_ZONE.y; y++) for (let x = PLAN_ZONE.x - 1; x <= PLAN_ZONE.x + PLAN_ZONE.w; x++) hauteurs.add(sol.get(`${x},${y}`)!.z);
+      expect([...hauteurs]).toHaveLength(1);
     });
   }
 

@@ -1042,8 +1042,8 @@ const PHENIX = fromLayers(
 // Le Lynx d'agate (EMC, 4e ; sans flamme, aucun symbole ; vigilant, jamais menaçant) : assis, de profil, le long des
 // x, la tête vers les x croissants ; les pattes de devant droites, les pattes claires ; la queue courte et carrée, deux
 // blocs de haut au bout noir, posée derrière ; la tête haute, de larges favoris clairs qui débordent des joues
-// vers le bas, les oreilles aux pinceaux noirs de deux blocs (DA, captures emc-4e-3e-1). L'agate : un ambre chaud, le
-// ventre crème, et sur les flancs des taches en deux tons, brun et rouille, en alternance (ce sont elles qui se
+// vers le bas, les oreilles aux pinceaux noirs de deux blocs (DA, captures emc-4e-3e-1), et un bloc clair sur chaque
+// joue, au-dessus des favoris (DA, captures emc-4e-3e-2). L'agate : un ambre chaud, le ventre crème, et sur les flancs des taches en deux tons, brun et rouille, en alternance (ce sont elles qui se
 // rallument). Neuf de long, cinq de large, onze de haut. Six couleurs, les yeux compris (proposition de l'artiste
 // technique 3D).
 const LYNX = fromLayers(
@@ -1054,7 +1054,7 @@ const LYNX = fromLayers(
     ['...UA....', '...AAAA..', '...AAAC..', '...AAAA..', '...AU....'],
     ['......C..', '....AAA..', '....AAC..', '....AAA..', '......C..'],
     ['.....CC..', '.....AAC.', '.....AACD', '.....AAC.', '.....CC..'],
-    ['.........', '.....DAE.', '.....AAA.', '.....DAE.', '.........'],
+    ['......C..', '.....DAE.', '.....AAA.', '.....DAE.', '......C..'],
     ['.........', '.....AA..', '.....AA..', '.....AA..', '.........'],
     ['.........', '.....A...', '.........', '.....A...', '.........'],
     ['.........', '.....D...', '.........', '.....D...', '.........'],

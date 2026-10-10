@@ -5,6 +5,7 @@ import { fadeRgb, hexToRgb } from '../../../core/color';
 import { BASALT, CRYSTAL, GRASS, HAY, LAVA, LEAF, MOSS, PINE, SNOW, TRUNK, WATER } from '../decor';
 import { type BiomeId, BIOMES, BLOC, BLOCKS } from '../../biomes';
 import { ARCHIPELAGOS } from '../archipelago';
+import { ILES_A_PARVIS } from './parvis';
 
 /** Côté du cœur d'origine d'une île (en blocs) : le repère des clés ; l'étendue du cœur d'une île est `coeurDe` (./map). */
 export const ISLAND = CORE;
@@ -217,6 +218,11 @@ export function groundHeight(index: number, x: number, y: number): number {
   const ly = y - LAYOUT_PAD.y;
   if (lx < 0 || ly < 0 || lx >= LAYOUT || ly >= LAYOUT) return 0;
   if (x >= FIN_DU_PLATEAU_DES_ECOLES && estIndexDEcole(index)) return 0;
+  // Sur une île à parvis, le plateau tombait presque entier sur l'allée et sa bordure : sa marche d'herbe chevauchait le
+  // parvis près du bord de devant, et une bande d'une case restait seule à côté (DA, captures emc-4e-3e-2, 10 octobre
+  // 2026). Le cœur y reste plat : le parvis va d'un seul niveau du bord de devant à l'ouvrage, dans les deux univers.
+  const id = BIOMES[index]?.id;
+  if (id && ILES_A_PARVIS.has(id)) return 0;
   const fromBack = LAYOUT - 1 - lx;
   const shape = rangDuDessin(index) % 3;
   // Le plateau est à l'arrière-droite, devant la zone des plans (qui reste plate).

@@ -216,7 +216,7 @@ function poserLIle(
     // Dans un coin arrondi du cœur d'une île qui a une forme (GD-12), le sable de la plage ou le sol de la côte.
     const coin = coreCornerGround(def, c.x, c.y);
     const parvis = coin ? null : caseDuParvis(biome.id, x, y);
-    putSol(c.x, c.y, top, coin ? GROUND_COLOR[coin] : parvis === 'allee' ? block.side : parvis === 'bordure' ? BLOCKS[BLOC.pierre].side : sol);
+    putSol(c.x, c.y, top, coin ? GROUND_COLOR[coin] : parvis === 'allee' ? block.side : parvis === 'bordure' || parvis === 'seuil' ? BLOCKS[BLOC.pierre].side : sol);
   }
   // Le paysage autour du cœur : collines, pics, lacs, cratère, sable des plages, neige des sommets, puis le décor.
   const scenery = landscape(def);
