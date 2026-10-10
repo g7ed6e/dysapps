@@ -1,6 +1,6 @@
 ---
 name: modeles-3d
-description: Faire entrer un personnage d'Archipéo en 3D dans le jeu, du concept au modèle peint en aplats (TRELLIS.2, lot.py, squelette.py, aplats.py, contrôle, models.ts, relectures). À lire avant de générer, retravailler ou repeindre un modèle importé.
+description: Faire entrer un personnage ou un monument d'Archipéo en 3D dans le jeu, du concept au modèle peint (TRELLIS.2, lot.py, squelette.py, aplats.py, monument_lowpoly.py, monument_etapes.py, contrôle, models.ts, relectures). À lire avant de générer, retravailler ou repeindre un modèle importé.
 ---
 
 # La chaîne des modèles 3D d'Archipéo
@@ -45,6 +45,18 @@ Toujours dans cet ordre : `lot.py`, puis `squelette.py`, puis `aplats.py` en der
 - `src/game/importedCharacters.ts` : l'adresse des fichiers (`import.meta.glob`) couvre la classe.
 - Les tests de `src/game/world/characters/imported/` vérifient que chaque créature de `reglages.csv` est peinte avec ses cibles et que son corps se détache de l'herbe : `npx vitest run src/game/world/characters/imported`.
 - Budget : compter le pire cas en triangles de l'archipel (plafonds dans `src/game/world/budget.ts`, `npm run rendu:budget`) ; un dépassement est une décision du mainteneur.
+
+## Les monuments
+
+Un monument d'Archipéo (`src/game/world/monuments.ts`) suit les étapes 1 et 2 (concept dans la Bibliothèque, `generation/monuments/`, choix dans `monuments/pistes.md`), puis sa propre chaîne, sans squelette ni aplats : il garde les couleurs de sa texture.
+
+1. `python3.11 scripts/rendu/modeles/aligner.py -- <brut.glb> <dossier>/1-aligne.glb 0` pose le socle à plat.
+2. `python3.11 scripts/rendu/modeles/monument_lowpoly.py -- <dossier>/1-aligne.glb <dossier>/final-3000.glb 3000` (`pip install bpy numpy fast-simplification`) réduit à 3 000 triangles (budget du mainteneur, 9 octobre 2026) sans remaillage, qui casse les pièces fines (ailes du moulin), et peint chaque facette de sa couleur d'origine, ramenée à une palette de huit couleurs. Le Decimate de Blender cale vers 7 000 triangles sur un brut de TRELLIS : la réduction passe par `fast-simplification` (licence MIT).
+3. `python3.11 scripts/rendu/modeles/monument_etapes.py -- <dossier>/final-3000.glb <dossier> 0.33 0.66` coupe les étapes de chantier (une part de la hauteur par étape ; le phare du large en cinq pièces : `0.2 0.4 0.6 0.8` ; le grand moulin coupé à `0.33 0.58`, sous la bande sombre du toit) : la coupe est refermée et peinte de la couleur claire voisine, une paroi intérieure sombre mise à nu prend la même, un petit morceau en l'air (une pale coupée de son moyeu) part, les piles posées au sol restent.
+4. Contrôle : `rendre_controle.py -- etape-1.glb etape-2.glb final-3000.glb etapes.png`. Les fichiers vont dans `docs/univers/archipeo/monuments/modeles/<nom>/` (`final-3000.glb`, `etape-<n>.glb`, `controle.png`).
+5. Dans le jeu : `src/game/importedMonuments.ts` les charge pour Archipéo seulement ; l'étape affichée suit l'avancée du plan, cases et fantômes inchangés.
+
+`retirer_avant.py` (ôter une partie devant un plan vertical et au-dessus d'une hauteur, coupe refermée) et `reduire_uni.py` (réduire un modèle d'une seule couleur de pierre) ont servi au Centaure d'argile, que le modèle d'images ne savait pas dessiner : un brut à deux têtes dont on a retiré la tête de cheval.
 
 ## Relire et livrer
 
