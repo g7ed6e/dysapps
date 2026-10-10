@@ -669,7 +669,7 @@ const CAPTURES = [
     { nom: `personnages-importes-chene-rallume${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
     { nom: `personnages-importes-archipel-recul${suffixe}`, vue: 'archipel', famille: 'personnages-importes', ile: 'maths-6e-calculation', zoomer: -10, ...autres },
   ]),
-  // Les Gardiens de la 5e importés dans Archipéo (famille `gardiens-5e`), à retirer une fois le lot fusionné ; à prendre
+  // Les Gardiens de la 5e importés dans Archipéo (famille `gardiens-cinquieme`), à retirer une fois le lot fusionné ; à prendre
   // avec `--rendu archipeo`. Quatre Gardiens éteints sur leur île, la fiche ouverte (le Mammouth sur la glace, le
   // Spectre, l'Hydre, la Diligence) ; l'archipel en recul, tous éteints puis rallumés (leur version de loin).
   ...[
@@ -677,9 +677,9 @@ const CAPTURES = [
     ['english-5e-grammar', 'spectre'],
     ['french-5e-conjugation', 'hydre'],
     ['lv2-5e-introductions', 'diligence'],
-  ].map(([ile, nom]) => ({ nom: `gardiens-5e-${nom}-eteint`, vue: 'île', famille: 'gardiens-5e', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile } })),
-  { nom: 'gardiens-5e-archipel-recul-eteints', vue: 'archipel', famille: 'gardiens-5e', ile: 'maths-5e-signed-numbers', zoomer: -10, sansIles: { classe: '5e' } },
-  { nom: 'gardiens-5e-archipel-recul', vue: 'archipel', famille: 'gardiens-5e', ile: 'maths-5e-signed-numbers', zoomer: -10 },
+  ].map(([ile, nom]) => ({ nom: `gardiens-5e-${nom}-eteint`, vue: 'île', famille: 'gardiens-cinquieme', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile } })),
+  { nom: 'gardiens-5e-archipel-recul-eteints', vue: 'archipel', famille: 'gardiens-cinquieme', ile: 'maths-5e-signed-numbers', zoomer: -10, sansIles: { classe: '5e' } },
+  { nom: 'gardiens-5e-archipel-recul', vue: 'archipel', famille: 'gardiens-cinquieme', ile: 'maths-5e-signed-numbers', zoomer: -10 },
   { nom: 'histoire-geo-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
   { nom: 'histoire-geo-mes-blocs', vue: 'île', famille: 'histoire-geo', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
