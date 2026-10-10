@@ -47,10 +47,15 @@ Les Gardiens (coupe du socle en part de la hauteur, triangles des deux versions)
 | Tortue d'ocre (Prairie, 5e) | 0,12 | 1 401 | 199 |
 | Diligence de cuivre (Relais, 5e) | 0,12 | 1 475 | 214 |
 | Flamant de sel (Saline, 5e) | 0,12 | 1 307 | 172 |
+| Hirondelle de nacre (Préau, 6e) | 0,12 | 1 336 | 182 |
+| Oie d’opale (Fournil, 5e) | 0,17 | 846 | 128 |
+| Phénix d’argile (Grotte, 5e) | 0,11 | 1 335 | 156 |
 
 Les créatures (sans socle, rien à couper). Leurs fichiers sont peints en aplats clairs par `aplats.py` (voir plus bas), d’après les couleurs choisies par le directeur artistique le 10 octobre 2026 dans la colonne « aplats » de `reglages.csv`. Écart connu : Robin n’a pas la gorge orange de son concept (aucune de ses quatre couleurs ne la porte) ; elle attend un lot qui touche la géométrie. Les créatures de la 5e sont peintes de même, d’après les couleurs choisies par le directeur artistique le 10 octobre 2026. Écarts connus : chez Sillon, le chapeau de paille est pris dans la zone sombre de la tête ; chez Rabot, la huppe et le tablier partagent un rouille, et le bec est dans le vert du dos ; chez Humus, le bâton est pris dans la peau ; chez Perle, le manche du râteau est pris dans l’orange du bec ; le laiton de la balance de Bazar passe dans le lin. Rabot, Kroa et Sema, au corps vert, ont été jugés sur l’herbe le 10 octobre 2026 par le directeur artistique : lisibles, aplats gardés.
 
 Les créatures de la 5e ont leur squelette (10 octobre 2026, réglages dans `reglages.csv`). `squelette.py` ne trouve pas de jambes à Vélin, Frimas, Rabot et Kroa (courtes, sous le vêtement ou la queue) : comme Humus, qui n’en a pas, ils respirent et tournent la tête sans marcher. Sillon non plus (`jambes=non`) : le manche de sa faucille suivrait sa patte. Pudding, Bazar et les oiseaux aux longues plumes (Sillon, Lina, Perle) sont pesés par surface (`aire=oui`), pour que la veste de Pudding ne s’étire pas à la marche ; la queue de Bazar suit son corps (`queue=non`).
+
+Les personnages du Préau des délégués (6e), du Fournil des partages et de la Grotte des légendes (5e), îles d’EMC et de latin-grec, suivent la même chaîne (10 octobre 2026). Mie, au corps rond, ne marche pas (`jambes=non`) ; la queue de Lyre traîne au sol (`queue=sol`) ; Voix tient son livre à deux mains, ses bras ne balancent pas (`bras=non`) et `squelette.py` ne lui trouve pas de jambes. Écart connu : la tête de Lyre, jaune taché de brun dans le concept, est prise dans le lin de la tunique (aucune de ses quatre couleurs ne la sépare). L’Oie d’opale tourne de 2,25 quarts, de trois quarts vers l’élève comme dans son concept (2,5 la ferait déborder de ses cinq cases). La version de loin du Phénix d’argile est refaite par `loin.py` à 160 triangles, pour que les Gardiens de la 5e tiennent leur enveloppe.
 
 | Créature | 1 500 | 200 |
 | --- | --- | --- |
@@ -81,6 +86,9 @@ Les créatures de la 5e ont leur squelette (10 octobre 2026, réglages dans `reg
 | Humus (Prairie, 5e) | 1 500 | 200 |
 | Lina (Relais, 5e) | 1 500 | 200 |
 | Perle (Saline, 5e) | 1 500 | 200 |
+| Voix (Préau, 6e) | 1 500 | 200 |
+| Mie (Fournil, 5e) | 1 500 | 200 |
+| Lyre (Grotte, 5e) | 1 500 | 200 |
 
 Les versions de loin de la Tortue d’ocre, de l’Hydre des marais, du Colporteur et de la Diligence de cuivre sont tirées de leur version de près (réduite à 200 triangles environ ; pour l’Hydre et la Diligence, remaillée en voxels d’abord), pour garder ce qui les fait reconnaître : la carapace sans éclats, les têtes, le chapeau et la hotte, la caisse et les roues. Le Spectre du manoir se tourne de trois quarts et demi de tour, pour montrer sa lanterne de face. Le Cheval à bascule garde ses patins : ils font partie du personnage, on ne coupe rien.
 
