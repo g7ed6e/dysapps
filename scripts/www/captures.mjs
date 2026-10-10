@@ -109,7 +109,7 @@ const DONE6 = {
 /** Les Premiers Rivages reconstruits, avec de quoi poser toute la digue entre la Tour et la Ferme (91 cases, une marche). */
 const REUNIR = {
   ...DONE6,
-  game: { ...DONE6.game, stock: { ...DONE6.game.stock, 'french-6e-reading': 100, 'french-6e-grammar-spelling': 100 }, world: { ...DONE6.game.world, place: 'french-6e-reading' } },
+  game: { ...DONE6.game, stock: { ...DONE6.game.stock, 'french-6e-reading': 100, 'civics-6e-democratic-society': 100 }, world: { ...DONE6.game.world, place: 'french-6e-reading' } },
 };
 /** Arrivé dans les Îles Brumeuses. */
 const COLLINES = { ...DONE6, game: { ...DONE6.game, world: { ...DONE6.game.world, place: 'maths-5e-proportionality' } } };
@@ -174,10 +174,10 @@ const SHOTS = [
   // Choix 2a, pour les relectures : la Rivière des fractions choisie, au milieu des Premiers Rivages (quelques ouvrages,
   // la Carte lisible) ; la place qui la collerait à un voisin porte l'icône de Réunir, sur la jointure.
   { name: 'amenager-reunir-places', state: MID, go: '/adventure/map', act: amenagerChoisir('maths-6e-fractions'), surDemande: true },
-  // Réunir deux lieux (GD-9, point 10) : la Tour du lecteur choisie, « Réunir » touché, la question, « Réunir avec la
-  // Ferme des accords », « Valider » ; la digue finie depuis son panneau, puis regardée de près sur la Carte (l'herbe
+  // Réunir deux lieux (GD-9, point 10) : la Tour du lecteur choisie, « Réunir » touché, la question, « Réunir avec le
+  // Préau des délégués » (son voisin du dessous depuis l'EMC, #409), « Valider » ; la digue finie depuis son panneau, puis regardée de près sur la Carte (l'herbe
   // sur la pierre, la marche).
-  { name: 'reunir', state: REUNIR, go: '/adventure/map', act: reunir('french-6e-reading', 'french-6e-grammar-spelling') },
+  { name: 'reunir', state: REUNIR, go: '/adventure/map', act: reunir('french-6e-reading', 'civics-6e-democratic-society') },
   // Pour les relectures, sur demande : le mode au téléphone, la question de « Réunir », et le geste tenu au milieu du
   // démontage (on ne doit voir aucun creux dans la couche qui reste).
   { name: 'telephone-amenager', state: MID, go: '/adventure/map', size: PHONE, act: amenager('maths-6e-fractions', { x: 150, y: 100 }), surDemande: true },
@@ -503,12 +503,16 @@ function reunirQuestion(ile) {
     await page.waitForTimeout(800);
   };
 }
-/** Réunit `ile` à `autre` (la question, puis « Réunir »), ferme le mode, ouvre leur digue, la pose entière et referme son panneau. */
+/**
+ * Réunit `ile` à `autre` (la question, puis « Réunir avec » le nom d'`autre`, jamais le premier venu : un voisin
+ * ajouté changerait la digue), ferme le mode, ouvre leur digue, la pose entière et referme son panneau.
+ */
 function reunir(ile, autre) {
   const question = reunirQuestion(ile);
+  const nom = BIOMES.find((b) => b.id === autre).name;
   return async (page) => {
     await question(page);
-    await page.getByRole('button', { name: /^Réunir avec / }).first().click();
+    await page.getByRole('button', { name: new RegExp(`^Réunir avec .*${nom}$`) }).click();
     await page.waitForTimeout(800);
     await page.getByRole('button', { name: 'Valider', exact: true }).click();
     await page.evaluate((id) => (location.hash = `#/adventure/join.${id}`), `${ile}.${autre}`);
