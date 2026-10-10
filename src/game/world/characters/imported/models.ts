@@ -198,7 +198,8 @@ function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niv
   const n = positions.length / 9;
   // Les couleurs du modèle mises en aplats (./flatColors.ts), sans triangle isolé ; de loin, éclaircies.
   const aplats = FLAT_COLORS[id];
-  const sources = Int32Array.from({ length: n }, (_, t) => (aplats ? flatColor(aplats, teinteDu(lu.colors, t)) : teinteDu(lu.colors, t)));
+  const cible = aplats ? flatColor(aplats) : (c: Couleur) => c;
+  const sources = Int32Array.from({ length: n }, (_, t) => cible(teinteDu(lu.colors, t)));
   const teintes = (aplats ? smoothIsolated(lu.positions, sources) : sources).map((c) => (niveau === 'loin' ? eclaircie(c) : c));
   const colors = new Float32Array(positions.length);
   for (let t = 0; t < n; t++) {

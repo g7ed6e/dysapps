@@ -660,7 +660,7 @@ const CAPTURES = [
     ]),
   ),
   // Les aplats des créatures importées du 6e (famille `aplats`), à retirer une fois le lot fusionné ; à prendre avec
-  // `--rendu archipeo`. Chaque créature de près, sa fiche ouverte comme d'un toucher, son île restaurée ; et l'archipel en
+  // `--rendu archipeo`. Chaque créature de près, sa fiche ouverte comme d'un toucher, son île restaurée, et quatre de nuit ; et l'archipel en
   // recul, de jour et de nuit (les créatures de loin).
   ...[
     'french-6e-phonology',
@@ -679,6 +679,17 @@ const CAPTURES = [
     'physics-chemistry-6e-matter-energy',
     'technology-6e-objects',
   ].map((ile) => ({ nom: `aplats-${ile}`, vue: 'île', famille: 'aplats', ile, posees: 'toutes', fiche: { genre: 'creature', id: ile }, zoomer: 2 })),
+  // De nuit, de près : les créatures sur les îles sombres ou de leur couleur (référent dys, consultant Archipéo).
+  ...['french-6e-phonology', 'french-6e-reading', 'maths-6e-decimals', 'physics-chemistry-6e-matter-energy'].map((ile) => ({
+    nom: `aplats-${ile}-nuit`,
+    vue: 'île',
+    famille: 'aplats',
+    ile,
+    posees: 'toutes',
+    fiche: { genre: 'creature', id: ile },
+    zoomer: 2,
+    nuit: true,
+  })),
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
     nom: `aplats-archipel-recul${suffixe}`,
     vue: 'archipel',

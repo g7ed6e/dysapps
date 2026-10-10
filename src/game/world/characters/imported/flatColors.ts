@@ -47,16 +47,19 @@ const channels = (c: Couleur) => [(c >> 16) & 255, (c >> 8) & 255, c & 255];
 /**
  * La couleur cible d'une couleur du modèle : celle de la source la plus proche. Le modèle de loin a ses propres quatre
  * couleurs, voisines de celles de près, et le compactage du build peut les décaler d'un cran : la plus proche suffit.
+ * Rend la fonction qui la cherche, la table lue une fois.
  */
-export function flatColor(table: Record<number, Couleur>, c: Couleur): Couleur {
-  const [r, g, b] = channels(c);
-  let [best, distance] = [c, Infinity];
-  for (const [source, target] of Object.entries(table)) {
-    const [sr, sg, sb] = channels(Number(source));
-    const d = (r - sr) ** 2 + (g - sg) ** 2 + (b - sb) ** 2;
-    if (d < distance) [best, distance] = [target, d];
-  }
-  return best;
+export function flatColor(table: Record<number, Couleur>): (c: Couleur) => Couleur {
+  const pairs = Object.entries(table).map(([source, target]) => [channels(Number(source)), target] as const);
+  return (c) => {
+    const [r, g, b] = channels(c);
+    let [best, distance] = [c, Infinity];
+    for (const [[sr, sg, sb], target] of pairs) {
+      const d = (r - sr) ** 2 + (g - sg) ** 2 + (b - sb) ** 2;
+      if (d < distance) [best, distance] = [target, d];
+    }
+    return best;
+  };
 }
 
 /**
@@ -66,12 +69,21 @@ export function flatColor(table: Record<number, Couleur>, c: Couleur): Couleur {
  */
 export function smoothIsolated(positions: Float32Array, colors: Int32Array): Int32Array {
   const n = colors.length;
-  const vertex = (i: number) => `${positions[i * 3]},${positions[i * 3 + 1]},${positions[i * 3 + 2]}`;
-  const edges = new Map<string, number[]>();
+  // Chaque sommet reçoit un numéro (les triangles ne partagent pas leurs sommets : on les retrouve par leur position),
+  // puis chaque arête une clé numérique, sans chaîne par arête.
+  const ids = new Map<string, number>();
+  const vertex = new Int32Array(n * 3);
+  for (let i = 0; i < n * 3; i++) {
+    const key = `${positions[i * 3]},${positions[i * 3 + 1]},${positions[i * 3 + 2]}`;
+    let id = ids.get(key);
+    if (id === undefined) ids.set(key, (id = ids.size));
+    vertex[i] = id;
+  }
+  const edges = new Map<number, number[]>();
   for (let t = 0; t < n; t++)
     for (let k = 0; k < 3; k++) {
-      const [a, b] = [vertex(t * 3 + k), vertex(t * 3 + ((k + 1) % 3))];
-      const key = a < b ? `${a}|${b}` : `${b}|${a}`;
+      const [a, b] = [vertex[t * 3 + k], vertex[t * 3 + ((k + 1) % 3)]];
+      const key = Math.min(a, b) * n * 3 + Math.max(a, b);
       const list = edges.get(key);
       if (list) list.push(t);
       else edges.set(key, [t]);
