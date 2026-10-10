@@ -1,6 +1,5 @@
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import { translatePath } from '../core/legacyIds';
-import { MENU_PATH } from '../core/paths';
 import { appsBySubject, subjectInfo, visibleSubjects, type Subject } from '../apps/registry';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { Icon } from '../components/Icon';
@@ -13,6 +12,7 @@ import { Creature } from '../game/Creatures';
 import { questProgress } from '../game/exercises';
 import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked } from '../game/world/archipelago';
 import { useTextes } from '../universes';
+import { useHomeLink } from '../game/useImmersive';
 
 /** « de français », « d’anglais », « d’histoire-géo », « de SVT » : la matière après « Les îles » (un sigle garde ses capitales). */
 function ofSubject(title: string): string {
@@ -28,6 +28,7 @@ function classesOf(classes: Classe[]): string {
 
 export function SubjectPage() {
   const { subject } = useParams();
+  const home = useHomeLink();
   const { state } = useBlocland();
   const { settings } = useSettings();
   const univers = useUnivers();
@@ -51,8 +52,8 @@ export function SubjectPage() {
           <Icon name="back" /> Missions
         </Link>
       ) : (
-        <Link to={MENU_PATH} className="back-link">
-          <Icon name="back" /> Menu
+        <Link to={home.to} className="back-link">
+          <Icon name="back" /> {home.label}
         </Link>
       )}
       <h1 className={`page-title title-${subject}`}>

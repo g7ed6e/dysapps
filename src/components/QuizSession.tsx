@@ -13,7 +13,7 @@ import { useHaptics } from '../core/haptics';
 import { Stars } from '../game/Stars';
 import { starsFor } from '../core/stars';
 import { useHoldCelebrations } from './Celebrations';
-import { MENU_PATH } from '../core/paths';
+import { useHomeLink } from '../game/useImmersive';
 import { useOptionalBlocland } from '../game/BloclandContext';
 import { BLOCKS, getBiome, ofBlock } from '../game/biomes';
 import { BlockIcon } from '../game/Voxel';
@@ -77,6 +77,7 @@ const COMBO_FROM = 3;
  * L'erreur fait partie du jeu : joker (indice) disponible, puis correction.
  */
 export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exitLabel = 'Retour', next: nextStep, after }: Props) {
+  const home = useHomeLink();
   const { answer, completeSession } = useProgress();
   // Les missions du portail se jouent à l'école du village : elles rapportent des blocs de son île.
   const blocland = useOptionalBlocland();
@@ -111,7 +112,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
   // Mode concentration pendant la partie ; « Quitter » ramène au choix des missions (ou au menu).
   const navigate = useNavigate();
   const haptics = useHaptics();
-  useFocusMode(phase !== 'summary', () => (onExit ? onExit() : navigate(MENU_PATH)), 'L’XP des réponses déjà données est gardée.');
+  useFocusMode(phase !== 'summary', () => (onExit ? onExit() : navigate(home.to)), 'L’XP des réponses déjà données est gardée.');
 
   const question = questions[index];
   const hasJoker = Boolean(question.hint || question.aid);
@@ -256,7 +257,7 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
                 <Icon name="play" /> {exitLabel}
               </button>
             ) : (
-              <Link to={MENU_PATH} className="button primary" autoFocus>
+              <Link to={home.to} className="button primary" autoFocus>
                 <Icon name="play" /> Continuer
               </Link>
             )}
@@ -269,8 +270,8 @@ export function QuizSession({ appId, makeQuestions, maxAttempts = 2, onExit, exi
               </button>
             )}
             {(nextStep || onExit) && (
-              <Link to={MENU_PATH} className="button">
-                <Icon name="home" /> Menu
+              <Link to={home.to} className="button">
+                <Icon name="home" /> {home.label}
               </Link>
             )}
           </div>

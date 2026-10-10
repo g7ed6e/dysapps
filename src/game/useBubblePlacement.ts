@@ -4,30 +4,33 @@ import { useLayoutEffect, type RefObject } from 'react';
  * Les bulles du bas du monde (tutoriel, mot de la baleine, rallumage) se posent entre ce qui occupe le haut de la scène
  * et la barre du bas, dont la hauteur change avec la taille du texte (deux lignes de boutons sur téléphone, DA-24).
  * On mesure l'un et l'autre et on les donne à la scène (`--barre-h`, `--haut-h`) : une bulle ne passe jamais sous la
- * barre ni sur le haut (DA-25). On donne aussi la largeur de la colonne de droite (Pause et la rangée de classes,
- * `--colonne-w`) : le panneau du haut s'arrête avant elle, aucun bouton ne se pose sur son texte (DA-31). Et son bas
- * (`--colonne-bas`) : « Recentrer » se pose dessous, qu'il y ait ou non le choix de l'archipel.
+ * barre ni sur le haut (DA-25). On donne aussi la largeur de la colonne de droite (Réglages et la rangée de classes, `--colonne-w`)
+ * et le bord droit de celle de gauche (les accès directs, `--gauche-droite`) : le panneau du haut se pose entre les deux,
+ * aucun bouton ne se pose sur son texte (DA-31). Et le bas de celle de droite (`--colonne-bas`) : « Recentrer » se pose
+ * dessous, qu'il y ait ou non le choix de l'archipel.
  */
 export function usePlaceDesBulles(stageRef: RefObject<HTMLElement | null>, voyage: boolean) {
   useLayoutEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
-    // Le haut occupé : les lignes du haut (la Carte, les paroles) et le bouton Pause, en haut à droite. Relus à chaque
-    // mesure : le bouton Pause disparaît pendant un voyage et revient ensuite (nouveau nœud).
+    // Le haut occupé : les lignes du haut (la Carte, les paroles). Relus à chaque mesure : les colonnes disparaissent
+    // pendant un voyage et reviennent ensuite (nouveaux nœuds).
     const trouver = () => ({
       bar: stage.querySelector<HTMLElement>('.world-bar'),
-      tops: [...stage.querySelectorAll<HTMLElement>('.world-overlay-top, [data-tuto="menu"]')],
-      colonne: [...stage.querySelectorAll<HTMLElement>('[data-tuto="menu"], .world-archipel')],
+      tops: [...stage.querySelectorAll<HTMLElement>('.world-overlay-top')],
+      colonne: [...stage.querySelectorAll<HTMLElement>('.world-settings, .world-archipel')],
+      gauche: [...stage.querySelectorAll<HTMLElement>('.world-shortcuts')],
     });
-    const { bar, tops, colonne } = trouver();
+    const { bar, tops, colonne, gauche } = trouver();
     // N'écrire une variable que si elle change : chaque écriture réagence ce que l'on observe.
     const poser = (nom: string, px: number) => {
       const v = `${px}px`;
       if (stage.style.getPropertyValue(nom) !== v) stage.style.setProperty(nom, v);
     };
     const place = () => {
-      const { bar, tops, colonne } = trouver();
+      const { bar, tops, colonne, gauche } = trouver();
       const s = stage.getBoundingClientRect();
+      poser('--gauche-droite', Math.ceil(Math.max(0, ...gauche.map((e) => e.getBoundingClientRect().right - s.left))));
       poser('--colonne-w', Math.ceil(Math.max(0, ...colonne.map((e) => e.getBoundingClientRect().width))));
       poser('--colonne-bas', Math.ceil(Math.max(0, ...colonne.map((e) => e.getBoundingClientRect().bottom - s.top))));
       // Une barre masquée (bulle ouverte sur téléphone en grand texte) ne prend plus de place.
@@ -44,7 +47,7 @@ export function usePlaceDesBulles(stageRef: RefObject<HTMLElement | null>, voyag
       cancelAnimationFrame(image);
       image = requestAnimationFrame(place);
     });
-    for (const el of [stage, bar, ...tops, ...colonne]) if (el) observer.observe(el);
+    for (const el of [stage, bar, ...tops, ...colonne, ...gauche]) if (el) observer.observe(el);
     return () => {
       cancelAnimationFrame(image);
       observer.disconnect();

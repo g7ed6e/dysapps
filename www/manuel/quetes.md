@@ -1,6 +1,6 @@
 # Les missions du portail
 
-La page **Missions** (par le menu) mène aux pages **Français**, **Maths** et **Anglais**, qui listent les missions du portail, puis, sous « Dans Blocland » (ou « Dans l’aventure »), les îles de la même matière, de la 6e à la 3e. Les mêmes missions se trouvent derrière les trois portes de l’[école du village](blocland.md#lecole-du-village), dans l’aventure. L’Histoire-géo, la SVT, la Physique-chimie, la Technologie, l’EMC, la deuxième langue et le latin ou le grec n’ont que leurs îles : leur page s’ouvre depuis le menu. Une mission du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
+La page **Missions** (par le menu en page, ou par le bouton Missions de la barre du bas du village) mène aux pages **Français**, **Maths** et **Anglais**, qui listent les missions du portail, puis, sous « Dans Blocland » (ou « Dans l’aventure »), les îles de la même matière, de la 6e à la 3e. Les mêmes missions se trouvent derrière les trois portes de l’[école du village](blocland.md#lecole-du-village), dans l’aventure. L’Histoire-géo, la SVT, la Physique-chimie, la Technologie, l’EMC, la deuxième langue et le latin ou le grec n’ont que leurs îles : leur page s’ouvre depuis le menu. Une mission du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
 
 ![La page Missions : trois cartes, Français, Maths et Anglais, avec le nombre de missions disponibles.](/captures/quetes.jpg)
 
@@ -19,7 +19,7 @@ Chaque écran tient sans défiler :
 
 ## Le mode concentration
 
-Pendant une partie (mission du portail, mission ou défi du Gardien dans l’aventure), le bouton Menu et le lien retour disparaissent : il ne reste que la question et un bouton **Pause** (⏸), en haut à droite. Le **menu pause** propose :
+Pendant une partie (mission du portail, mission ou défi du Gardien dans l’aventure), la croix (le bouton Menu en vue simple) et le lien retour disparaissent : il ne reste que la question et un bouton **Pause** (⏸), en haut à droite. Le **menu pause** propose :
 
 ![Le mode concentration : seulement la consigne, le mot « village », les réponses et le bouton Pause.](/captures/quete-ile.jpg)
 
@@ -29,11 +29,11 @@ Pendant une partie (mission du portail, mission ou défi du Gardien dans l’ave
 - des **réglages rapides** : taille du texte (A− et A+), syllabes en couleurs, lecture des consignes à voix haute ;
 - **Quitter la partie** : retour au choix des missions (ou, dans l’aventure, à l’île, dans le monde). Le menu dit ce qui est gardé : l’XP des réponses déjà données ; dans l’aventure, les blocs se gagnent en finissant la mission.
 
-Le **bouton retour** du téléphone ou du navigateur ouvre le menu pause au lieu de quitter sans prévenir. Une fois le bilan affiché, le bouton Menu revient, et le bouton retour ramène à la page d’avant.
+Le **bouton retour** du téléphone ou du navigateur ouvre le menu pause au lieu de quitter sans prévenir. Une fois le bilan affiché, la croix revient, et le bouton retour ramène à la page d’avant.
 
 ## Le bilan
 
-Le **bilan** parle en étoiles et en mots, pas en pourcentage : des étoiles comme dans l’aventure (une pour terminer, deux à partir de 70 %, trois à partir de 90 %), « 7 sur 8 du premier coup » et, s’il y en a, « et 1 trouvée ensuite, avec le joker ou au deuxième essai ». Le **record** d’une mission, sur sa carte, est aussi en étoiles. Les récompenses arrivent l’une après l’autre (étoiles, score, XP, puis les **blocs pour le village** : ceux de l’île de l’école de l’archipel où se tient le bonhomme, par exemple « +8 blocs de bois pour le village (école de Forêt des sons) », et le coffre de régularité s’il tombe ce jour-là). En premier vient **la suite logique** : **Mission suivante : Comparer** (la mission d’après dans la liste), sinon le retour au choix des missions ; puis **Rejouer** et **Menu**.
+Le **bilan** parle en étoiles et en mots, pas en pourcentage : des étoiles comme dans l’aventure (une pour terminer, deux à partir de 70 %, trois à partir de 90 %), « 7 sur 8 du premier coup » et, s’il y en a, « et 1 trouvée ensuite, avec le joker ou au deuxième essai ». Le **record** d’une mission, sur sa carte, est aussi en étoiles. Les récompenses arrivent l’une après l’autre (étoiles, score, XP, puis les **blocs pour le village** : ceux de l’île de l’école de l’archipel où se tient le bonhomme, par exemple « +8 blocs de bois pour le village (école de Forêt des sons) », et le coffre de régularité s’il tombe ce jour-là). En premier vient **la suite logique** : **Mission suivante : Comparer** (la mission d’après dans la liste), sinon le retour au choix des missions ; puis **Rejouer** et **Monde**, qui ramène au monde (**Menu** en vue simple).
 
 ![Le bilan d'une mission sans faute : trois étoiles, « 4 sur 4 du premier coup », +75 XP, +6 blocs de bois pour le village.](/captures/quete-fin.jpg)
 
@@ -41,7 +41,7 @@ Il n’y a **pas de chronomètre**. Une mission terminée donne un bonus d’XP,
 
 ## Le Tutoriel
 
-Dans le menu, et non dans une matière, car il mélange français et maths : une mission d’entraînement de quatre questions pour prendre les commandes en main (consigne, réponses, joker, correction). La première fois, il est en tête du menu en page sous « Commencer ici » ; ensuite, un lien « Revoir le tutoriel » reste en bas du menu. Le menu du village a aussi sa ligne « Tutoriel ». Son retour mène au menu.
+Dans le menu, et non dans une matière, car il mélange français et maths : une mission d’entraînement de quatre questions pour prendre les commandes en main (consigne, réponses, joker, correction). La première fois, il est en tête du menu en page sous « Commencer ici » ; ensuite, un lien « Revoir le tutoriel » reste en bas du menu. Dans le village, il est dans les Réglages. Son retour mène au menu.
 
 ## Français
 
