@@ -24,6 +24,9 @@
 // référence (world/decor/lighthouse.ts), en facettes peintes dans l'opaque (sa lanterne dans les fenêtres).
 // Le phare du large (5e, revue d'ensemble du directeur artistique, DA-4) : fini, le monument laisse la place à sa tour
 // ronde de pierre à feu ouvert (./offshoreLighthouse.ts), dans l'opaque (son feu dans les fenêtres).
+// Les monuments importés (./monumentModels.ts, chargés à la demande) : l'étape de chantier que suit l'avancée du plan
+// remplace les cubes posés, dans l'opaque (le feu du phare du large fini dans les fenêtres) ; les fantômes restent.
+// Chargé, le phare du large importé prend la place de son modèle taillé.
 //
 // L'architecture modulaire (lot 7, ./architecture/) : un bloc posé d'un plan d'île dont le kit de l'archipel peint le
 // mur garde sa géométrie et sa fusion, avec un motif par face (le colombage, le bardage, le soubassement, le chaperon,
@@ -51,7 +54,8 @@ import { DELAVE, eclaircir, type FacettesDuDecor, hex, Pinceau, rgb } from './de
 import { lineaire } from './landMesh';
 import type { ArchipelagoId } from './map';
 import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './bridges';
-import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, phareDuLarge } from './offshoreLighthouse';
+import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, PHARE_DU_LARGE, phareDuLarge } from './offshoreLighthouse';
+import { getImportedMonuments, type ImportedMonument, monumentsVersion } from './monumentModels';
 import { estUnePlaceDeTrophee } from './trophyHall';
 import { mixColor } from './daylight';
 import { couleursDuToit, toitDe } from './roofs';
@@ -146,6 +150,14 @@ export interface MaillageDeLaConstruction {
   phareDuLarge?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[] };
   /** Les pièces d'architecture (./architecture/) : leurs triangles de l'opaque et la case de chacun, une tranche par île. */
   pieces?: TrancheDesPieces[];
+  /** Les monuments importés (./monumentModels.ts) : comme `phare`, leurs triangles et les cases posées qu'ils remplacent. */
+  monuments?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[]; halo?: HaloDuFeu }[];
+}
+
+/** Le halo d'un feu allumé la nuit (repère Three) : son centre et son côté ; un sprite additif, fixe (three/construction.ts). */
+interface HaloDuFeu {
+  centre: [number, number, number];
+  cote: number;
 }
 
 export interface OptionsDeLaConstruction {
@@ -205,15 +217,17 @@ export type FenetresDuMonde = Map<VoxelCube, { genre: 'vitre' | 'lanterne' | 'lu
  * `eclatDeFenetre` que la 3D : les tests de l'allumage le comparent au maillage. Les bornes n'en ont pas, ni les cases que le phare de
  * Grimoire remplace en 3D.
  */
-export function fenetresDe(cubes: VoxelCube[]): FenetresDuMonde {
+export function fenetresDe(cubes: VoxelCube[], imported: readonly ImportedMonument[] = getImportedMonuments(cubes)): FenetresDuMonde {
   // Les cases que le phare de Grimoire remplace en 3D ne s'allument pas (sa lanterne est à lui).
   const phare = phareDeGrimoire(cubes);
-  const genres = genresDesBlocs(cubes.filter((c) => !c.quest && !c.sol && !phare?.remplacees.has(cle(c.x, c.y, c.z))));
+  // Ni celles qu'un monument importé remplace (./monumentModels.ts) ; `imported` : déjà calculés, pour ne pas les refaire.
+  const importedCells = new Set(imported.flatMap((m) => [...m.replaced]));
+  const genres = genresDesBlocs(cubes.filter((c) => !c.quest && !c.sol && !phare?.remplacees.has(cle(c.x, c.y, c.z)) && !importedCells.has(cle(c.x, c.y, c.z))));
   const decalages = decalagesDe(genres);
   const out: FenetresDuMonde = new Map();
   // La lueur de fin d'un grand projet ; celle du phare du large est à son modèle (son feu).
   const large = phareDuLarge(cubes).remplacees;
-  const allumes = allumesALaFin(cubes.filter((c) => !c.quest && !large.has(cle(c.x, c.y, c.z))));
+  const allumes = allumesALaFin(cubes.filter((c) => !c.quest && !large.has(cle(c.x, c.y, c.z)) && !importedCells.has(cle(c.x, c.y, c.z))));
   for (const [c, g] of genres) {
     if (allumes.has(c)) out.set(c, { genre: 'lueur', decalage: 0 });
     else if (g === 'vitre' || g === 'lanterne') out.set(c, { genre: g, decalage: decalages.get(c) ?? -1 });
@@ -317,21 +331,24 @@ export function maillageDeLaConstruction(
   const phare = options.navire ? null : phareDeGrimoire(cubes, a);
   // Les ponts de pierre et de bois du 5e : un pont construit laisse la place à son modèle (./bridges.ts).
   const ponts = options.navire ? null : pontsDePierreEtDeBois(cubes);
-  // Le phare du large du 5e : fini, il laisse la place à son modèle (./offshoreLighthouse.ts).
-  const large = options.navire ? null : phareDuLarge(cubes);
-  const parUnModele = (c: VoxelCube) => {
+  // Les monuments importés (./monumentModels.ts), chargés : l'étape du chantier remplace les cubes posés.
+  const imported = options.navire ? [] : getImportedMonuments(cubes);
+  const importedCells = new Set(imported.flatMap((m) => [...m.replaced]));
+  // Le phare du large du 5e : ses pièces finies laissent la place à son modèle (./offshoreLighthouse.ts), sauf s'il est importé.
+  const large = options.navire || imported.some((m) => m.id === PHARE_DU_LARGE) ? null : phareDuLarge(cubes);
+  const byModel = (c: VoxelCube) => {
     const k = cle(c.x, c.y, c.z);
-    return Boolean(phare?.remplacees.has(k) || ponts?.remplacees.has(k) || large?.remplacees.has(k));
+    return Boolean(phare?.remplacees.has(k) || ponts?.remplacees.has(k) || large?.remplacees.has(k) || importedCells.has(k));
   };
   // La lueur de fin d'un grand projet (./construction/endGlow.ts) : ses blocs restent des blocs, dans les fenêtres.
-  const allumes = options.navire ? new Set<VoxelCube>() : allumesALaFin(cubes.filter((c) => !c.quest && !parUnModele(c)));
+  const allumes = options.navire ? new Set<VoxelCube>() : allumesALaFin(cubes.filter((c) => !c.quest && !byModel(c)));
   // L'architecture modulaire (lot 7) : le voisinage se lit sur le plan entier (tous les cubes, fantômes compris) ; les
   // cases déjà prises par un modèle restent au modèle, et celles du phare de Grimoire en chantier à leur bloc. Seuls les
   // plans des îles prennent le kit de l'archipel (un kit passé à la main, celui d'un test, prend tout le plan).
   const kit = options.kit ?? KITS[a];
   // Les blocs en retrait de leur case (`Kit.insetBlocks`, au 3e les lanternons du château d'eau), posés : chacun à part.
   const enRetrait = new Set<VoxelCube>();
-  if (!options.navire && kit.insetBlocks) for (const c of cubes) if (!c.ghost && !c.quest && !parUnModele(c) && kit.insetBlocks(c)) enRetrait.add(c);
+  if (!options.navire && kit.insetBlocks) for (const c of cubes) if (!c.ghost && !c.quest && !byModel(c) && kit.insetBlocks(c)) enRetrait.add(c);
   // Sur le vide : rien de solide sous la case jusqu'à l'eau, ou jusqu'au large (`PROFONDEUR` cases plus bas) ; les pilotis.
   const solides = new Map<string, VoxelCube>();
   for (const c of [...cubes, ...sol]) if (!c.ghost && !c.quest) solides.set(cle(c.x, c.y, c.z), c);
@@ -349,7 +366,7 @@ export function maillageDeLaConstruction(
   const archi = options.navire
     ? null
     : architectureDe(a, cubes, {
-        exclure: (c) => parUnModele(c) || allumes.has(c) || enRetrait.has(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
+        exclure: (c) => byModel(c) || allumes.has(c) || enRetrait.has(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
         kit,
         batiments: options.kit ? undefined : batimentsDe(a),
         cours: options.kit ? undefined : coursDe(a),
@@ -357,7 +374,7 @@ export function maillageDeLaConstruction(
         surLeVide,
         caseDuLieu,
       });
-  const avantLesPieces = cubes.filter((c) => (options.bornes || !c.quest) && !parUnModele(c));
+  const avantLesPieces = cubes.filter((c) => (options.bornes || !c.quest) && !byModel(c));
   const dessines = archi?.remplacees.size ? avantLesPieces.filter((c) => !archi.remplacees.has(cle(c.x, c.y, c.z))) : avantLesPieces;
   // Le genre des blocs se lit avant les pièces : une vitre prise entre deux pièces de mur reste une vitre.
   const genres = genresDesBlocs(avantLesPieces);
@@ -982,6 +999,15 @@ export function maillageDeLaConstruction(
     };
   }
 
+  // ---- Les monuments importés : l'étape du chantier dans l'opaque, le feu du phare du large fini dans les fenêtres
+  // (allumé le premier, sans pulser).
+  const monumentsDrawing: NonNullable<MaillageDeLaConstruction['monuments']> = imported.map((m) => ({
+    opaque: O.facettes(m.opaque, { biseaux: mode === 'peint', teinte: 1 }),
+    fenetres: F.facettes(m.fire, { extra: 0 }),
+    cellules: m.cellules,
+    ...(m.halo ? { halo: m.halo } : {}),
+  }));
+
   // ---- Les pièces d'architecture dessinées (lot 7) : assemblées (sans les facettes contre un bloc plein ni celles que
   // deux pièces partagent ; une rangée d'un tenant), dans l'opaque, à la fin, aux couleurs de la matière du bloc qu'elles
   // remplacent (ou d'un rôle du kit), avec sa teinte ; les cases de chaque triangle, pour le toucher (toute la case).
@@ -1024,6 +1050,7 @@ export function maillageDeLaConstruction(
   if (dessinDesPonts) m.ponts = dessinDesPonts;
   if (dessinDuLarge) m.phareDuLarge = dessinDuLarge;
   if (dessinDesPieces) m.pieces = dessinDesPieces;
+  if (monumentsDrawing.length) m.monuments = monumentsDrawing;
   return m;
 }
 
@@ -1031,9 +1058,11 @@ export function maillageDeLaConstruction(
 export function coutDeLaConstruction(m: MaillageDeLaConstruction): { triangles: number; drawCalls: number; opaque: number; fantomes: number; fenetres: number } {
   const t = (g: GroupeDeConstruction) => g.indices.length / 3;
   const groupes = [m.opaque, m.fantomes, m.fenetres];
+  // Un halo (la nuit) : un sprite, deux triangles, un appel.
+  const halos = (m.monuments ?? []).filter((q) => q.halo).length;
   return {
-    triangles: groupes.reduce((n, g) => n + t(g), 0),
-    drawCalls: groupes.filter((g) => g.indices.length > 0).length,
+    triangles: groupes.reduce((n, g) => n + t(g), 0) + 2 * halos,
+    drawCalls: groupes.filter((g) => g.indices.length > 0).length + halos,
     opaque: t(m.opaque),
     fantomes: t(m.fantomes),
     fenetres: t(m.fenetres),
@@ -1067,7 +1096,7 @@ export function caseDeLaConstruction(point: { x: number; y: number; z: number },
  * La case touchée sur un modèle qui remplace des cubes (`groupe` : le maillage touché, `triangle` : l'indice du
  * triangle), et la case devant, du côté où la facette regarde le plus :
  * - une pièce d'architecture (lot 7) : sa case, toute la case, lue dans la table triangle → case ;
- * - le phare de Grimoire ou le phare du large : la case remplacée la plus proche du point touché.
+ * - le phare de Grimoire, le phare du large ou un monument importé : la case remplacée la plus proche du point touché.
  * `null` si le triangle n'est à aucun d'eux (un bloc taillé : `caseDeLaConstruction`).
  */
 export function caseDeLaPiece(
@@ -1093,8 +1122,8 @@ export function caseDeLaPiece(
       const { next } = caseDeLaConstruction({ x: cell.x + 0.5, y: cell.z + 0.5, z: cell.y + 0.5 }, normale);
       return { cell, next: { x: next.x, y: next.y, z: next.z } };
     }
-  // Le phare de Grimoire, ou le phare du large : celui dont les triangles contiennent le triangle touché.
-  const p = [m.phare, m.phareDuLarge].find((q) => q && triangle >= q[groupe][0] && triangle < q[groupe][1] && q.cellules.length);
+  // Le phare de Grimoire, le phare du large ou un monument importé : celui dont les triangles contiennent le triangle touché.
+  const p = [m.phare, m.phareDuLarge, ...(m.monuments ?? [])].find((q) => q && triangle >= q[groupe][0] && triangle < q[groupe][1] && q.cellules.length);
   if (!p) return null;
   // Repère Three : le point (x, hauteur, y), un quart de case derrière la facette, comme `caseDeLaConstruction`.
   const q = { x: point.x - normale.x * 0.25, y: point.z - normale.z * 0.25, z: point.y - normale.y * 0.25 };
@@ -1115,9 +1144,11 @@ export interface CacheDeLaConstruction {
   iles: Map<string, { signature: string; maillage: MaillageDeLaConstruction }>;
   /** Le nombre de cubes du sol : s'il change, tout est refait. */
   sol: number;
+  /** La version des monuments importés (./monumentModels.ts) : un modèle arrivé, tout est refait. */
+  monuments: number;
 }
 
-export const cacheDeLaConstruction = (): CacheDeLaConstruction => ({ iles: new Map(), sol: -1 });
+export const cacheDeLaConstruction = (): CacheDeLaConstruction => ({ iles: new Map(), sol: -1, monuments: -1 });
 
 /**
  * La construction d'un archipel, île par île : chaque île (les cubes d'une même étiquette) a son maillage, gardé tant
@@ -1130,9 +1161,10 @@ export function construireParIle(
   sol: VoxelCube[],
   cache: CacheDeLaConstruction,
 ): { maillage: MaillageDeLaConstruction; refaites: number; change: boolean } {
-  if (cache.sol !== sol.length) {
+  if (cache.sol !== sol.length || cache.monuments !== monumentsVersion()) {
     cache.iles.clear();
     cache.sol = sol.length;
+    cache.monuments = monumentsVersion();
   }
   const parIle = new Map<string, VoxelCube[]>();
   for (const c of cubes) {
@@ -1227,6 +1259,8 @@ export function miseBoutABout(liste: MaillageDeLaConstruction[]): MaillageDeLaCo
     const decaler = (t: [number, number]): [number, number] => [t[0] + o.debuts[i], t[1] + o.debuts[i]];
     for (const p of x.ponts ?? []) (m.ponts ??= []).push({ opaque: decaler(p.opaque) });
     for (const p of x.pieces ?? []) (m.pieces ??= []).push({ opaque: decaler(p.opaque), cases: p.cases });
+    for (const q of x.monuments ?? [])
+      (m.monuments ??= []).push({ opaque: decaler(q.opaque), fenetres: [q.fenetres[0] + f.debuts[i], q.fenetres[1] + f.debuts[i]], cellules: q.cellules, ...(q.halo ? { halo: q.halo } : {}) });
   });
   return m;
 }

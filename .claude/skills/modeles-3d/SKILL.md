@@ -1,6 +1,6 @@
 ---
 name: modeles-3d
-description: Faire entrer un personnage d'Archipéo en 3D dans le jeu, du concept au modèle peint en aplats (TRELLIS.2, lot.py, squelette.py, aplats.py, contrôle, models.ts, relectures). À lire avant de générer, retravailler ou repeindre un modèle importé.
+description: Faire entrer un personnage ou un monument d'Archipéo en 3D dans le jeu, du concept au modèle peint (TRELLIS.2, lot.py, squelette.py, aplats.py, monument_lowpoly.py, monument_etapes.py, contrôle, models.ts, relectures). À lire avant de générer, retravailler ou repeindre un modèle importé.
 ---
 
 # La chaîne des modèles 3D d'Archipéo
@@ -45,6 +45,19 @@ Toujours dans cet ordre : `lot.py`, puis `squelette.py`, puis `aplats.py` en der
 - `src/game/importedCharacters.ts` : l'adresse des fichiers (`import.meta.glob`) couvre la classe.
 - Les tests de `src/game/world/characters/imported/` vérifient que chaque créature de `reglages.csv` est peinte avec ses cibles et que son corps se détache de l'herbe : `npx vitest run src/game/world/characters/imported`.
 - Budget : compter le pire cas en triangles de l'archipel (plafonds dans `src/game/world/budget.ts`, `npm run rendu:budget`) ; un dépassement est une décision du mainteneur.
+
+## Les monuments
+
+Un monument d'Archipéo (`src/game/world/monuments.ts`) suit les étapes 1 et 2 (concept dans la Bibliothèque, `generation/monuments/`, choix dans `monuments/pistes.md`), puis sa propre chaîne, sans squelette : low poly en aplats francs (choix du mainteneur, 10 octobre 2026), quatre à six couleurs par monument, jamais de texture.
+
+1. `python3.11 scripts/rendu/modeles/aligner.py -- <brut.glb> <dossier>/1-aligne.glb 0` pose le socle à plat.
+2. `python3.11 scripts/rendu/modeles/monument_lowpoly.py -- <dossier>/1-aligne.glb <dossier>/low.glb <nom>` (`pip install bpy numpy fast-simplification`) remaille le brut en voxels (0,008 de sa plus grande dimension ; le phare du large 0,004), puis le réduit à 3 000 triangles par le Decimate de Blender (fast-simplification en secours quand il cale) : sans remaillage, la réduction laisse éclats, trous et ailes déchirées. Chaque facette prend une seule couleur, lue dans la texture du brut sans ses faces internes noires, puis ramenée à l'une des couleurs cibles du monument dans `docs/univers/archipeo/monuments/modeles/reglages.csv` (une ligne par monument ; une grappe bleutée prend l'ardoise ; un triangle isolé prend la couleur qui l'entoure). Le script affiche chaque grappe et sa cible : changer une cible, c'est changer la table et relancer.
+3. `python3.11 scripts/rendu/modeles/monument_etapes.py -- <dossier>/final-3000.glb <dossier> 0.33 0.66` coupe les étapes de chantier (une part de la hauteur par étape ; le phare du large en cinq pièces : `0.2 0.4 0.6 0.8` ; le grand moulin coupé à `0.33 0.58`, sous la bande sombre du toit) : la coupe est refermée et peinte de la couleur claire voisine, une paroi intérieure sombre mise à nu prend la même, un petit morceau en l'air (une pale coupée de son moyeu) part (sauf un prisme de huit sommets, un cadre de fenêtre posé par les retouches), les piles posées au sol restent.
+3 bis. Retouches après relecture : `python3.11 scripts/rendu/modeles/monument_retouches.py -- <nom> <entrée.glb> <sortie.glb>` repeint par zones, retire une pièce mal sortie de TRELLIS, ajoute une forme simple ou étire une tour, monument par monument (demandes du directeur artistique et du consultant Archipéo, 10 octobre 2026 : toit rayé et piliers sombres du kiosque, coupole et tambour contrastés de l'observatoire des étoiles, toit et faîte du temple, longue-vue en laiton et dalle nette de l'observatoire des baleines, flamme pleine et tour étirée du phare, gradins pleins de l'amphithéâtre, deux arches et locomotive grossie du viaduc ; `moulin` pose des fenêtres rectangulaires nettes, cadre de bois et fond d'ardoise, à la place des creux qui se lisaient comme des chiffres ; `moulin-etape` ôte les bouts d'aile d'une étape du moulin). Sur le modèle réduit (`low.glb`), dont il fait `final-3000.glb` , avant de recouper les étapes ; une réduction qui garde les couleurs (`simplifier`) tient le viaduc dans 3 000 triangles.
+4. Contrôle : `rendre_controle.py -- etape-1.glb etape-2.glb final-3000.glb etapes.png`. Les fichiers vont dans `docs/univers/archipeo/monuments/modeles/<nom>/` (`final-3000.glb`, `etape-<n>.glb`, `controle.png`).
+5. Dans le jeu : `src/game/importedMonuments.ts` les charge pour Archipéo seulement ; l'étape affichée suit l'avancée du plan, cases et fantômes inchangés.
+
+`retirer_avant.py` (ôter une partie devant un plan vertical et au-dessus d'une hauteur, coupe refermée) et `reduire_uni.py` (réduire un modèle d'une seule couleur de pierre) ont servi au Centaure d'argile, que le modèle d'images ne savait pas dessiner : un brut à deux têtes dont on a retiré la tête de cheval.
 
 ## Relire et livrer
 

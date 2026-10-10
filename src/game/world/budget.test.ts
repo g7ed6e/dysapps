@@ -1,7 +1,8 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
 import { chargerLesModelesDuDisque } from './characters/imported/fromDisk.testing';
-import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
+import { loadMonumentsFromDisk } from './monumentModels.fromDisk.testing';
+import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionAtWorstMonumentStage, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseIsland, choiceMiddle, dragChoice } from './arrangeMode';
 import { placeTurns } from './arrange';
@@ -28,10 +29,12 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
     expect(drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
   }
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
-  expect(RENDER_BUDGET_6E).toEqual({ triangles: 76_500, drawCalls: 40 });
+  expect(RENDER_BUDGET_6E).toEqual({ triangles: 81_500, drawCalls: 40 });
   // GD-12 : 78 700 ailleurs (mainteneur, 9 octobre 2026, carte « Relever ») ; relevé à 86 000 par le mainteneur le
-  // 9 octobre 2026 pour le Fournil des partages et la Grotte des légendes (5e).
-  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 86_700, drawCalls: 40 });
+  // 9 octobre 2026 pour le Fournil des partages et la Grotte des légendes (5e) ; à 86 700 pour les personnages importés
+  // de la 5e (mainteneur, 10 octobre 2026). Les monuments importés d'Archipéo : 81 500 et 91 700 (86 700 + 5 000, relevés
+  // par le mainteneur le 10 octobre 2026).
+  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 91_700, drawCalls: 40 });
 });
 
 it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : un appel de plus au plus, sous le plafond', () => {
@@ -134,14 +137,15 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // Bosquet des sages (3e) : les Îles du Ciel à 82 855 ; aux mesures (world/budget.ts), sous `RENDER_BUDGET_AUTRES`
   // (86 000), inchangé. Révision de GD-12 (la Porte et la Colonnade au flanc ouest, le cadre élargi ; en attente du mot
   // du mainteneur) : la mer à 7 150 aux Anciens Ateliers (83 725), toujours sous 86 000. Les Gardiens et les créatures
-  // importés de la 5e : les Îles Brumeuses à 86 685, sous `RENDER_BUDGET_AUTRES` relevé à 86 700 (mainteneur, 10 octobre 2026).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e) : 76 290 triangles et 25 appels aux Premiers Rivages, 86 685, 82 975 et 82 855 et 24 appels ailleurs (83 725 au 4e depuis la révision de GD-12)', () => {
+  // importés de la 5e : les Îles Brumeuses à 86 685 (mainteneur, 10 octobre 2026). Les monuments importés d'Archipéo : la
+  // construction prend 5 000 partout (81 290, 91 685, 88 725, 87 855).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés) : 81 290 triangles et 25 appels aux Premiers Rivages, 91 685, 88 725 et 87 855 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([76_290, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([86_685, 24]);
-    expect([total('4e'), appels('4e')]).toEqual([83_725, 24]);
-    expect([total('3e'), appels('3e')]).toEqual([82_855, 24]);
+    expect([total('6e'), appels('6e')]).toEqual([81_290, 25]);
+    expect([total('5e'), appels('5e')]).toEqual([91_685, 24]);
+    expect([total('4e'), appels('4e')]).toEqual([88_725, 24]);
+    expect([total('3e'), appels('3e')]).toEqual([87_855, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la
@@ -240,6 +244,22 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
         expect(cout.drawCalls, `${a} ${p}`).toBe(1);
       }
   }, 60_000);
+
+  // Les monuments importés d'Archipéo, lus sur le disque comme la vue les charge : la construction au pire de leurs
+  // chantiers, à chaque palier de la salle des trophées. (En dernier aussi : chargés, ils remplacent leurs cubes.)
+  it('R5 : avec les monuments importés, la construction tient son enveloppe au pire de leurs chantiers et de la salle des trophées, dans chaque archipel', () => {
+    const enBlocs = Object.fromEntries(ARCHIPELAGO_IDS.map((a) => [a, constructionCost(a).triangles]));
+    loadMonumentsFromDisk();
+    const blocs = BADGES.map((b) => trophyBlock(b.id));
+    for (const a of ARCHIPELAGO_IDS) {
+      // Chargés, les deux monuments de l'archipel remplacent leurs cubes : de 3 500 à 5 000 triangles de plus (le phare et
+      // le viaduc retouchés sont plus légers).
+      expect(constructionAtWorstMonumentStage(a).triangles - enBlocs[a], a).toBeGreaterThan(3_000);
+      const m = constructionAtWorstMonumentStage(a, blocs);
+      expect(m.triangles, a).toBeLessThanOrEqual(enveloppeDe('construction', a).triangles);
+      expect(m.drawCalls, a).toBeLessThanOrEqual(enveloppeDe('construction', a).drawCalls);
+    }
+  }, 120_000);
 });
 
 it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026), puis 120 avec une seule texture pour les blocs (piste 2, 7 octobre 2026), puis 102 000 triangles pour les grands projets du 4e (GD-10, 8 octobre 2026)', () => {
