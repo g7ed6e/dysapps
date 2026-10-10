@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, emc-cinquieme, emc-quatre-trois ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, emc-cinquieme, emc-quatre-trois ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -203,6 +203,12 @@ const CAPTURES = [
     sansPonts: ['passage-4e', 'passage-3e'],
     ...format,
   })),
+  // La Nef (GD-15, famille `nef`, à retirer une fois le lot fusionné) : le voilier fini au port du 6e, sa fiche ouverte ;
+  // au Marché, le voilier avec les pièces du dirigeable en fantôme, puis le dirigeable fini ; l'aile se voit avec `fusee`.
+  { nom: 'nef-voilier', vue: 'île', famille: 'nef', ile: 'maths-6e-calculation', sansIles: { classe: '5e' }, sansPonts: ['passage-5e', 'passage-4e', 'passage-3e'], fiche: { genre: 'navire', port: 'maths-6e-calculation' } },
+  { nom: 'nef-dirigeable-vide', vue: 'île', famille: 'nef', ile: 'maths-5e-proportionality', partie: 'ballon-vide', sansIles: { classe: '4e' }, sansPonts: ['passage-4e', 'passage-3e'], fiche: { genre: 'navire', port: 'maths-5e-proportionality' } },
+  { nom: 'nef-dirigeable', vue: 'île', famille: 'nef', ile: 'maths-5e-proportionality', sansIles: { classe: '4e' }, sansPonts: ['passage-4e', 'passage-3e'] },
+  { nom: 'nef-archipel', vue: 'archipel', famille: 'nef', ile: 'maths-5e-proportionality', sansIles: { classe: '4e' }, sansPonts: ['passage-4e', 'passage-3e'] },
   // Les réacteurs du Bloc-Navire sous la coque (famille `fusee`, à retirer une fois le lot fusionné) : le navire tout
   // construit à quai dans les Îles du Ciel, de jour et de nuit, puis aux Anciens Ateliers, où il plane au-dessus de l'eau
   // le temps de poser ses réacteurs (sans le voyage vers le 3e ni les îles du 3e : le navire y reste) ; sa fiche ouverte
@@ -1603,6 +1609,8 @@ async function scenes() {
       }
     // Le réacteur du Bloc-Navire (famille `fusee`) : rien de posé, ou sa première moitié.
     if (partie === 'reacteur-vide') delete plans['navire-reacteur'];
+    // Le dirigeable de la Nef (famille `nef`) : rien de posé.
+    if (partie === 'ballon-vide') delete plans['navire-ballon'];
     if (partie === 'reacteur-mi') plans['navire-reacteur'] = plans['navire-reacteur'].slice(0, Math.ceil(plans['navire-reacteur'].length / 2));
     // Sur chaque île : le premier plan posé, rien après.
     if (partie === 'un-plan')
