@@ -390,19 +390,23 @@ export const ENVELOPPES: Record<
   // 3 650 → 4 300, Gardiens 2 780 → 5 100 aux Premiers Rivages ; la somme passe de 72 770 à 75 740 (`RENDER_BUDGET_6E`).
   // Avec le Préau des délégués (EMC-2), dessiné en code : créatures 4 560 → 4 600, Gardiens 5 152 → 5 200 ; avec les
   // bornes à 1 800, la somme des Premiers Rivages fait 76 290, sous les 76 500 de `RENDER_BUDGET_6E`.
+  // Les personnages de la 4e en modèles TRELLIS (10 octobre 2026, mesurés au pire par `budget.test.ts`, R6) : créatures
+  // 3 544 → 4 044 (enveloppe 3 550 → 4 100), Gardiens 3 047 → 4 659 (enveloppe 3 050 → 4 735). La somme des enveloppes
+  // des Anciens Ateliers passe de 88 225 à 90 460 sans la scène, de 88 725 à 90 960 avec ses 500, sous
+  // `RENDER_BUDGET_AUTRES` (91 700), inchangé ; rien n'est pris au sol (proposition, à valider par le mainteneur).
   creatures: {
     lot: 'R6',
     nom: 'Créatures',
     premiersRivages: { triangles: 4_600, drawCalls: 1 },
     autres: { triangles: 3_200, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 4_225, drawCalls: 1 }, '4e': { triangles: 3_550, drawCalls: 1 }, '3e': { triangles: 3_650, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 4_225, drawCalls: 1 }, '4e': { triangles: 4_100, drawCalls: 1 }, '3e': { triangles: 3_650, drawCalls: 1 } },
   },
   gardiens: {
     lot: 'R6',
     nom: 'Gardiens en sentinelles',
     premiersRivages: { triangles: 5_200, drawCalls: 1 },
     autres: { triangles: 2_780, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 4_700, drawCalls: 1 }, '4e': { triangles: 3_050, drawCalls: 1 }, '3e': { triangles: 3_250, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 4_700, drawCalls: 1 }, '4e': { triangles: 4_735, drawCalls: 1 }, '3e': { triangles: 3_250, drawCalls: 1 } },
   },
   scene: {
     lot: 'socle',
