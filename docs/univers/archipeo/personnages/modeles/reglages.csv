@@ -23,7 +23,7 @@
 6e-horloge-creature-tick;-;0
 6e-laboratoire-creature-bulle;-;0
 6e-mine-creature-tunel;-;0;0 bras=non
-6e-plaine-creature-coco;-;0
+6e-plaine-creature-coco;-;0;3 aire=oui
 6e-pointe-creature-boussole;-;0
 6e-riviere-creature-nenu;-;0
 6e-tour-creature-grimoire;-;0;0 cou=0.82 bras=non

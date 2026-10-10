@@ -121,15 +121,23 @@ class Frame:
         return np.stack([self.c[0] - x, q[:, 1] + self.c[1], self.c[2] - z], 1)
 
 
-def surface(q, per_triangle=40, seed=1):
+def surface(q, per_triangle=40, seed=1, by_area=False):
     """Des points tirés sur la surface des triangles : les sommets d'un modèle à grandes facettes sont trop clairsemés
-    pour y lire un creux entre deux jambes."""
+    pour y lire un creux entre deux jambes. `per_triangle` points par triangle ; avec `by_area`, autant en moyenne,
+    mais répartis selon l'aire (réglage aire=oui : un détail fin aux mille petits triangles, la spirale d'une
+    carapace, ne pèse alors pas plus lourd qu'une grande facette)."""
     tri = q.reshape(-1, 3, 3)
-    r = np.random.default_rng(seed).random((len(tri), per_triangle, 2))
-    flip = r.sum(2) > 1
+    rng = np.random.default_rng(seed)
+    if by_area:
+        area = np.linalg.norm(np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0]), axis=1)
+        pick = rng.choice(len(tri), size=per_triangle * len(tri), p=area / area.sum())
+    else:
+        pick = np.repeat(np.arange(len(tri)), per_triangle)
+    r = rng.random((len(pick), 2))
+    flip = r.sum(1) > 1
     r[flip] = 1 - r[flip]
-    a, b, c = tri[:, None, 0], tri[:, None, 1], tri[:, None, 2]
-    return (a + r[..., :1] * (b - a) + r[..., 1:] * (c - a)).reshape(-1, 3)
+    a, b, c = tri[pick, 0], tri[pick, 1], tri[pick, 2]
+    return a + r[:, :1] * (b - a) + r[:, 1:] * (c - a)
 
 
 def find_legs(q, h):
@@ -161,6 +169,14 @@ def find_legs(q, h):
     legs = []
     for side in (below[:, 0] < cut, below[:, 0] >= cut):
         s = below[side]
+        # Un bâton planté à côté du pied n'est pas la jambe : de ce côté, le paquet le plus proche du milieu.
+        xs = np.sort(s[:, 0])
+        breaks = np.flatnonzero(np.diff(xs) > 0.03 * h)
+        if len(breaks):
+            edges = np.concatenate([[xs[0] - 1], (xs[breaks] + xs[breaks + 1]) / 2, [xs[-1] + 1]])
+            groups = list(zip(edges[:-1], edges[1:]))
+            nearest = min(groups, key=lambda g: min(abs(g[0] - cut), abs(g[1] - cut)))
+            s = s[(s[:, 0] > nearest[0]) & (s[:, 0] < nearest[1])]
         centre = np.array([np.median(s[:, 0]), np.median(s[:, 2])])
         # Son épaisseur : mesurée au bas de la jambe, où ne descend ni bras ni outil.
         foot = s[s[:, 1] < 0.4 * crotch]
@@ -250,7 +266,7 @@ def smooth(x):
 
 def rig(q, h, settings, col=None):
     """Les os (nom, parent, tête dans le repère du jeu) et quatre os et poids par sommet."""
-    dense = surface(q)
+    dense = surface(q, by_area=settings.get("aire") == "oui")
     legs = None if settings.get("jambes") == "non" else find_legs(dense, h)
     crotch = legs[0] if legs else 0.3 * h
     neck = float(settings.get("cou", 0.6)) * h
