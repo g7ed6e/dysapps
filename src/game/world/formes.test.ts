@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { FORMES, FORMES_MARQUEES, TRAIT_MAX, shapeCorner } from './formes';
 import { ARCHIPELAGO_IDS } from './archipelagos';
-import { shapeBox, bornesDuCoeur, coeurDe, inCoeurDOrigine, isLand, landscape, mapOf, BEACH_RADIUS, coreCornerGround, TERRE_AUTOUR_DU_COEUR } from './map';
+import { shapeBox, bornesDuCoeur, coeurDe, inCoeurDOrigine, isLand, LACS, landscape, mapOf, BEACH_RADIUS, coreCornerGround, TERRE_AUTOUR_DU_COEUR } from './map';
 import { silhouetteDe } from './silhouettes';
 import { questStations } from './terrain/markers';
 import { zoneDesPlans } from './plans';
@@ -16,8 +16,12 @@ import { AVATAR_HOME } from './terrain/base';
 const LIEUX = ARCHIPELAGO_IDS.flatMap((a) => mapOf(a)).filter((d) => silhouetteDe(d.id).forme);
 /** Jusqu'où regarder autour du cœur : le plus long trait du catalogue (le crochet et le lagon, 9 octobre 2026). */
 const T = TRAIT_MAX;
-/** Les archipels qui ont pris leurs formes, et combien de lieux chacun. */
-const ARCHIPELS_AUX_FORMES: Partial<Record<(typeof ARCHIPELAGO_IDS)[number], number>> = { '6e': 16, '5e': 12, '4e': 12 };
+/**
+ * Les archipels qui ont pris leurs formes, et combien de lieux chacun. Au 5e, 14 depuis le Fournil des partages et la
+ * Grotte des légendes (EMC-2, LCA-2), posés aux deux places que GD-12 avait gardées ; au 4e, 14 depuis la Porte des
+ * libertés et la Colonnade des cités.
+ */
+const ARCHIPELS_AUX_FORMES: Partial<Record<(typeof ARCHIPELAGO_IDS)[number], number>> = { '6e': 16, '5e': 14, '4e': 14, '3e': 14 };
 
 /** La case (x, y), au repère du monde, est-elle de la terre de l'île ? */
 const terre = (id: string) => {
@@ -178,7 +182,11 @@ describe('Les formes des îles (GD-12)', () => {
       }
     }
     for (let y = c.y0 - T; y < c.y1 + T; y++) for (let x = c.x0 - T; x < c.x1 + T; x++) if (!est(x, y)) expect(mer.has(`${x},${y}`), `${id} ${x},${y}`).toBe(true);
-    expect(landscape(def).filter((l) => l.ground === 'eau' || l.h < 0), id).toEqual([]);
+    // Le lac dessiné à la main d'une île (`LACS` : le lac d'altitude du Refuge des carnets, 3e) reste : il est son dessin,
+    // derrière le cœur, loin du bord ; le hasard n'en creuse aucun autre.
+    const lac = LACS[def.id];
+    const dansLeLac = (l: { x: number; y: number }) => lac !== undefined && l.x - def.core.x >= lac.x && l.x - def.core.x < lac.x + lac.w && l.y - def.core.y >= lac.y && l.y - def.core.y < lac.y + lac.d;
+    expect(landscape(def).filter((l) => (l.ground === 'eau' || l.h < 0) && !dansLeLac(l)), id).toEqual([]);
   });
 
   it.each(LIEUX.map((d) => d.id))('%s : les coins arrondis du cœur sont dans ses marges, et rien de ce qui y est posé ne s’y tient (point 4)', (id) => {

@@ -8,9 +8,16 @@ export type ArchipelagoId = Classe;
 /** Les archipels, du premier (le départ) au dernier. */
 export const ARCHIPELAGO_IDS: ArchipelagoId[] = ['6e', '5e', '4e', '3e'];
 
+/** Les îles par identifiant (la première de ce nom, comme `BIOMES.find`) : l'archipel d'une île se lit très souvent. */
+let ilesParId: Map<string, (typeof BIOMES)[number]> | undefined;
+
 /** La classe (l'archipel) d'une île. */
 export function archipelagoOfIsland(id: BiomeId): ArchipelagoId {
-  const biome = BIOMES.find((b) => b.id === id);
+  if (!ilesParId) {
+    ilesParId = new Map();
+    for (const b of BIOMES) if (!ilesParId.has(b.id)) ilesParId.set(b.id, b);
+  }
+  const biome = ilesParId.get(id);
   if (!biome) throw new Error(`Île inconnue : ${id}`);
   return biome.classe;
 }

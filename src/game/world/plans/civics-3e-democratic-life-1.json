@@ -1,0 +1,9 @@
+{
+  "id": "civics-3e-democratic-life-1",
+  "biome": "civics-3e-democratic-life",
+  "name": "La tribune de Brio",
+  "reward": {
+    "xp": 40
+  },
+  "done": "Ma tribune ! Chacun pourra y donner son avis. Merci, bâtisseur."
+}

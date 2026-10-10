@@ -1,7 +1,7 @@
 // Le relief de marche des Anciens Ateliers (4e), île par île, en repère d'île (./types.ts). Il est commun à Blocland : le
 // changer change ses îles et ses empreintes. Un gradin propre à Archipéo s'écrit dans ../drawnModel/4e.ts (U2).
 // La forme de chaque île (GD-12, « Une forme par île », décision du mainteneur du 8 octobre 2026), un seul champ,
-// `forme` : choisie à la main d'après son sujet ou son nom (docs/gameplay/propositions/GD-12.md), tournée pour garder la
+// `forme` : choisie à la main d'après son sujet ou son nom (docs/gameplay/propositions/archives/GD-12.md), tournée pour garder la
 // mer entre voisines. Changer la forme d'une île, c'est changer ce champ, puis récrire sa côte dans la carte de départ
 // (`ext`, ../map.ts : map.test.ts dit laquelle). Une seule forme longue aux Monts de Feu (directeur artistique,
 // 9 octobre 2026) : le lagon du Bassin, ouvert devant par sa passe. Le trait des formes y est court (`short`, 5 cases au
@@ -37,4 +37,10 @@ export const SILHOUETTES_4E = {
   'physics-chemistry-4e-signals-circuits': { pics: [], forme: { forme: 'presquile', vers: 'devant', short: true } },
   // Le Bassin des maquettes : un lagon, la mer elle-même dans un anneau de terre, sa passe devant.
   'technology-4e-modeling': { pics: [], forme: { forme: 'lagon', vers: 'devant' } },
+  // L'EMC (EMC-2) et le latin-grec (LCA-2), des îles plates, sans pic, aux formes que GD-12 a gardées pour leurs places
+  // (map.test.ts) : la Porte des libertés, un trèfle ouvert devant, la place de la loge au milieu de ses trois lobes ; la
+  // Colonnade des cités, un galet ouvert devant, le rond de la cité autour de sa fontaine (propositions de l'artiste
+  // technique 3D, à trancher par le directeur artistique).
+  'civics-4e-rights-freedoms': { pics: [], forme: { forme: 'trefle', vers: 'devant' } },
+  'lca-4e-cities': { pics: [], forme: { forme: 'galet', vers: 'devant' } },
 } satisfies Partial<Record<BiomeId, Silhouette>>;

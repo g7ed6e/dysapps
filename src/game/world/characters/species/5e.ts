@@ -360,4 +360,69 @@ export const ESPECES_5E = {
       },
     },
   },
+  // EMC 5e (EMC-2) : le strict nécessaire, Archipéo étant en pause. Mie, capybara boulanger : large, brun roux, le gros
+  // museau carré, deux petites oreilles rondes ; un tablier de lin, une toque de lin sur la tête ; la pelle à pain de bois
+  // à la main. Ni insigne ni drapeau.
+  'civics-5e-equality-solidarity': {
+    nom: 'Mie',
+    metier: 'boulanger',
+    // Le gabarit standard (les trapus et les élancés sont ceux du directeur artistique) : large de torse, court sur pattes.
+    silhouette: { largeur: 0.4, profondeur: 0.34, ventre: 0.1, jambes: 0.45, tete: 0.32, crane: 1 },
+    // La pelle à pain tenue loin du corps.
+    bras: { rz: 0.45 },
+    dominante: 0x8a5c3a,
+    marque: { couleur: 0x3e2a1e, ou: ['museau'] },
+    tenue: { couleur: TENUE.lin, vetements: ['tablier'] },
+    museau: { forme: 'museau', long: 0.12, r: 0.13 },
+    coiffe: (T, k) => {
+      // La toque : un cylindre de lin, plus large en haut.
+      fuseau(
+        T,
+        [
+          [2.36, 0.16],
+          [2.52, 0.17],
+          [2.62, 0.22],
+          [2.66, 0],
+        ],
+        6,
+        k.lin,
+      );
+      // Les oreilles, petites et rondes, sur les côtés de la tête.
+      for (const c of [-1, 1]) pave(T, c * 0.24, 2.22, -0.03, c * 0.3, 2.3, 0.05, k.dom);
+    },
+    outil: {
+      // La pelle à pain : un long manche de bois, sa palette plate au bout.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.7, 0.4, 0.025, k.bois, 3);
+        pave(T, -0.12, 0.4, -0.015, 0.12, 0.62, 0.015, k.bois);
+      },
+    },
+  },
+  // Latin-grec 5e (LCA-2) : le strict nécessaire, Archipéo étant en pause. Lyre, gecko conteur : mince, jaune d'ocre
+  // taché de brun, la tête ronde et large, sa queue épaisse posée au sol derrière lui ; une écharpe de lin ; sa petite
+  // lyre de bois à la main (deux montants, une traverse, trois cordes de laiton). Ni casque ni couronne.
+  'lca-5e-legends': {
+    nom: 'Lyre',
+    metier: 'conteur',
+    dominante: 0xd8aa4a,
+    marque: { couleur: 0xf0e2b8, ou: ['ventre'] },
+    tenue: { couleur: TENUE.lin, vetements: ['echarpe'] },
+    silhouette: { largeur: 0.26, profondeur: 0.22, tete: 0.34, teteProfondeur: 0.28, crane: 1, jambes: 0.55 },
+    // La lyre levée à hauteur d'épaule, loin du corps.
+    bras: { rx: 0.5, rz: 0.6 },
+    corps: (T, k) => {
+      // La queue épaisse du gecko, qui descend au sol sur le côté gauche, en crosse.
+      pointe(T, [-0.15, 0.75, 0.15], 0.14, 0.6, k.dom, [0.6, 0, 2.2], 4, 0.09);
+    },
+    outil: {
+      // La lyre : deux montants de bois, la traverse en haut, trois cordes de laiton.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        for (const x of [-0.12, 0.12]) pave(T, x - 0.02, -0.05, -0.02, x + 0.02, 0.32, 0.02, k.bois);
+        pave(T, -0.14, 0.3, -0.025, 0.14, 0.35, 0.025, k.bois);
+        for (const x of [-0.05, 0, 0.05]) pave(T, x - 0.006, 0, -0.006, x + 0.006, 0.3, 0.006, k.laiton);
+      },
+    },
+  },
 } satisfies Partial<Record<BiomeId, Espece>>;

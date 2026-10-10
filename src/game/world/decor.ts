@@ -411,6 +411,19 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.bois].side);
     put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.bois].side);
   },
+  // L'EMC et le latin-grec de 5e (EMC-2, LCA-2) : sobres, quelques blocs au sol, aucune lanterne ni symbole.
+  'civics-5e-equality-solidarity': (put, h) => {
+    // Des sacs de farine contre une caisse de planches : deux sacs au sol, la caisse à côté.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.farine].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.farine].side);
+    put(9, 4, h(9, 4) + 1, BLOCKS[BLOC.bois].side);
+  },
+  'lca-5e-legends': (put, h) => {
+    // Un rocher de tuf, deux blocs en marche, comme l'entrée d'une petite grotte.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.tuf].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.tuf].side);
+    put(10, 3, h(10, 3) + 2, BLOCKS[BLOC.tuf].side);
+  },
   'life-earth-sciences-4e-cells-evolution': (put, h) => {
     // Une vasque d'eau d'une case, cerclée de galets.
     for (let x = 8; x <= 10; x++)
@@ -427,6 +440,34 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.bois].side);
     put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.liege].side);
     put(9, 3, h(9, 3) + 3, BLOCKS[BLOC.tuile].side);
+  },
+  // L'EMC et le latin-grec de 4e (EMC-2, LCA-2) : sobres, quelques blocs au sol, aucune lanterne ni symbole.
+  'civics-4e-rights-freedoms': (put, h) => {
+    // Une pile de pavés au bord de la rue : deux au sol, un dessus.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.pave].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.pave].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.pave].side);
+  },
+  'lca-4e-cities': (put, h) => {
+    // Un pan de mur peint, deux fresques en long, et un banc de pierre devant.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.fresque].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.fresque].side);
+    put(9, 2, h(9, 2) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  // L'EMC et le latin-grec de 3e (EMC-2, LCA-2) : de même, sobres, aucun drapeau ni symbole.
+  'civics-3e-democratic-life': (put, h) => {
+    // Un banc d'acajou pour écouter : trois planches au sol, un dossier derrière.
+    for (let x = 8; x <= 10; x++) put(x, 3, h(x, 3) + 1, BLOCKS[BLOC.acajou].side);
+    put(9, 4, h(9, 4) + 1, BLOCKS[BLOC.acajou].side);
+    put(9, 4, h(9, 4) + 2, BLOCKS[BLOC.acajou].side);
+  },
+  'lca-3e-ideas': (put, h) => {
+    // Un laurier taillé en boule sur son tronc, et un bloc de pierre où s'asseoir.
+    put(9, 3, h(9, 3) + 1, TRUNK);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.laurier].side);
+    put(10, 3, h(10, 3) + 2, BLOCKS[BLOC.laurier].side);
+    put(9, 3, h(9, 3) + 3, BLOCKS[BLOC.laurier].side);
+    put(10, 2, h(10, 2) + 1, BLOCKS[BLOC.pierre].side);
   },
   'life-earth-sciences-3e-human-body': (put, h) => {
     // Un arbre fruitier : deux fruits rouges pendus sous le feuillage. Trois cases à gauche de l'axe qui va de la caméra à
@@ -751,9 +792,11 @@ const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void> = {
     put(peak.x + 1, peak.y, peak.h + 5, BLOCKS[BLOC.toile].side);
     put(peak.x + 1, peak.y, peak.h + 4, BLOCKS[BLOC.toile].side);
   },
-  'grand-phare': ({ def, scenery, backY, named, put }) => {
-    // Le grand phare : tour de pierre 2 × 2 de huit blocs, lanterne de quatre blocs au sommet, toit de prisme.
-    const s = findSpot(def, scenery, coeurDe(def).x1 + 1, backY, 2);
+  'grand-phare': ({ def, scenery, named, put }) => {
+    // Le grand phare : tour de pierre 2 × 2 de huit blocs, lanterne de quatre blocs au sommet, toit de prisme. Sur la
+    // côte est, trois cases avant le fond du cœur : le fond du croissant du Phare est arrondi (GD-12, 9 octobre 2026), et
+    // vu de la caméra la lanterne reste à gauche de l'Observatoire des textes, juste derrière (DA-17).
+    const s = findSpot(def, scenery, coeurDe(def).x1 + 1, coeurDe(def).y1 - 3, 2);
     if (!s) return;
     named(s.x, s.y);
     for (let z = 1; z <= 10; z++)

@@ -116,6 +116,9 @@ export const MATERIAL_FAMILIES: Record<Exclude<TextureKind, ExceptionTexture>, M
   marbre: 'pierre',
   cadran: 'pierre',
   lentille: 'pierre',
+  // La farine (l'enduit blanc cassé du Fournil) et le tuf de la Grotte (directeur artistique, 9 octobre 2026).
+  farine: 'pierre',
+  tuf: 'pierre',
   // Le métal.
   aimant: 'metal',
   // Le toit.
@@ -186,6 +189,14 @@ export const MATERIAL_FAMILIES: Record<Exclude<TextureKind, ExceptionTexture>, M
   reliure: 'toile',
   petale: 'vegetal',
   lave: 'eau',
+  // Le pavé de la Porte des libertés (EMC 4e) et la fresque de la Colonnade des cités (latin-grec 4e) : un mur plein,
+  // de granit ou d'enduit peint (proposées par analogie, posées au 4e seulement).
+  pave: 'pierre',
+  fresque: 'pierre',
+  // L'acajou du Forum des débats (EMC 3e), des planches comme le lambris ; le laurier du Bosquet des sages (latin-grec
+  // 3e), du végétal (proposées par analogie, posées au 3e seulement).
+  acajou: 'bardage',
+  laurier: 'vegetal',
 };
 
 /** Les matières rangées par analogie, à valider par le directeur artistique (aucune n'est posée au 6e ni au 5e). */
@@ -214,6 +225,10 @@ export const FAMILIES_TO_CONFIRM: readonly TextureKind[] = [
   'reliure',
   'petale',
   'lave',
+  'pave',
+  'fresque',
+  'acajou',
+  'laurier',
 ];
 
 /** La famille d'une matière, ou `null` (une exception, ou ce qui n'est pas une matière : une couleur seule). */

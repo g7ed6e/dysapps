@@ -34,9 +34,10 @@ it('la matière LV2 prend le nom de la langue choisie, et disparaît avec « Pas
   expect(subjectInfo('english', { lv2: 'de', lca: 'la' }).title).toBe('Anglais');
   expect(visibleSubjects({ lv2: 'es', lca: 'none' })).toContain('lv2');
   expect(visibleSubjects({ lv2: 'none', lca: 'none' })).not.toContain('lv2');
-  // Le latin ou grec n'a pas encore d'île au jeu : il n'apparaît nulle part. L'EMC en a une depuis le Préau des
-  // délégués (EMC-2).
-  expect(visibleSubjects({ lv2: 'none', lca: 'gr' })).toEqual(['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'civics']);
+  // L'EMC a une île depuis le Préau des délégués (EMC-2) ; le latin ou grec depuis la Grotte des légendes (LCA-2), qui
+  // n'apparaît qu'avec l'option choisie (GD-13).
+  expect(visibleSubjects({ lv2: 'none', lca: 'gr' })).toEqual(['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'civics', 'lca']);
+  expect(visibleSubjects({ lv2: 'none', lca: 'none' })).not.toContain('lca');
 });
 
 it('l’option latin ou grec prend le nom de l’option choisie (GD-13)', () => {

@@ -1,0 +1,241 @@
+{
+  "id": "lca-3e-ideas-gr-greek-world-2",
+  "biome": "lca-3e-ideas",
+  "type": "gr-greek-world",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-3e-ideas-gr-greek-world-2-0",
+      "prompt": "Socrate sur l’agora\nIl pose des questions aux passants.\nIl leur montre qu’ils ne savent pas ce qu’ils croient savoir.\nOn lui prête la phrase : « Je sais que je ne sais rien. »",
+      "question": "Que fait Socrate ?",
+      "spoken": "Socrate sur l’agora. Il pose des questions aux passants. Il leur montre qu’ils ne savent pas ce qu’ils croient savoir. On lui prête la phrase : Je sais que je ne sais rien.",
+      "choices": [
+        "il donne des ordres",
+        "il pose des questions pour faire réfléchir",
+        "il écrit des livres"
+      ],
+      "answer": "il pose des questions pour faire réfléchir",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "Socrate interroge pour faire réfléchir : c’est le dialogue. Il n’a rien écrit ; nous le connaissons surtout par son élève Platon.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandes figures de la Grèce",
+          "lines": [
+            "Socrate, un philosophe d’Athènes, interroge tout le monde ; il n’écrit rien.",
+            "Platon, son élève, rapporte ses dialogues.",
+            "Démosthène, un grand orateur d’Athènes, parle contre Philippe, le roi de Macédoine.",
+            "Alexandre, fils de Philippe, conquiert l’Empire perse ; il meurt en 323 avant J.-C.",
+            "Il fonde de nombreuses villes, dont Alexandrie, en Égypte.",
+            "Après lui vient l’époque hellénistique : la culture grecque se répand dans tout l’Orient."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-2-1",
+      "prompt": "Nous connaissons les idées de Socrate grâce à …",
+      "spoken": "Nous connaissons les idées de Socrate grâce à  (mot manquant) ",
+      "choices": [
+        "son élève Platon",
+        "ses propres livres",
+        "Alexandre"
+      ],
+      "answer": "son élève Platon",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Socrate n’a rien écrit : son élève Platon rapporte ses dialogues, où Socrate interroge ceux qu’il rencontre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandes figures de la Grèce",
+          "lines": [
+            "Socrate, un philosophe d’Athènes, interroge tout le monde ; il n’écrit rien.",
+            "Platon, son élève, rapporte ses dialogues.",
+            "Démosthène, un grand orateur d’Athènes, parle contre Philippe, le roi de Macédoine.",
+            "Alexandre, fils de Philippe, conquiert l’Empire perse ; il meurt en 323 avant J.-C.",
+            "Il fonde de nombreuses villes, dont Alexandrie, en Égypte.",
+            "Après lui vient l’époque hellénistique : la culture grecque se répand dans tout l’Orient."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-2-2",
+      "prompt": "Démosthène prononce des discours contre …",
+      "spoken": "Démosthène prononce des discours contre  (mot manquant) ",
+      "choices": [
+        "Socrate",
+        "Philippe de Macédoine",
+        "Périclès"
+      ],
+      "answer": "Philippe de Macédoine",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Démosthène appelle les Athéniens à résister à Philippe de Macédoine, le père d’Alexandre. Ces discours s’appellent les Philippiques ; une « philippique » est un discours violent contre quelqu’un.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandes figures de la Grèce",
+          "lines": [
+            "Socrate, un philosophe d’Athènes, interroge tout le monde ; il n’écrit rien.",
+            "Platon, son élève, rapporte ses dialogues.",
+            "Démosthène, un grand orateur d’Athènes, parle contre Philippe, le roi de Macédoine.",
+            "Alexandre, fils de Philippe, conquiert l’Empire perse ; il meurt en 323 avant J.-C.",
+            "Il fonde de nombreuses villes, dont Alexandrie, en Égypte.",
+            "Après lui vient l’époque hellénistique : la culture grecque se répand dans tout l’Orient."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-2-3",
+      "prompt": "Démosthène prépare ses discours\nIl les écrit avec soin, souvent la nuit, à la lampe.\nUn rival se moque : ses discours « sentent la lampe ».\nDémosthène devient pourtant le plus grand orateur d’Athènes.",
+      "question": "Pourquoi le rival dit-il que ses discours « sentent la lampe » ?",
+      "spoken": "Démosthène prépare ses discours. Il les écrit avec soin, souvent la nuit, à la lampe. Un rival se moque : ses discours sentent la lampe. Démosthène devient pourtant le plus grand orateur d’Athènes.",
+      "choices": [
+        "il les prépare la nuit, avec soin",
+        "il les invente sur place, sans préparation",
+        "il les lit dans le noir"
+      ],
+      "answer": "il les prépare la nuit, avec soin",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "Selon Plutarque, Démosthène écrit ses discours avec soin, la nuit, à la lumière d’une lampe à huile. Son rival se moque de ce travail ; Démosthène, lui, devient le plus grand orateur d’Athènes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandes figures de la Grèce",
+          "lines": [
+            "Socrate, un philosophe d’Athènes, interroge tout le monde ; il n’écrit rien.",
+            "Platon, son élève, rapporte ses dialogues.",
+            "Démosthène, un grand orateur d’Athènes, parle contre Philippe, le roi de Macédoine.",
+            "Alexandre, fils de Philippe, conquiert l’Empire perse ; il meurt en 323 avant J.-C.",
+            "Il fonde de nombreuses villes, dont Alexandrie, en Égypte.",
+            "Après lui vient l’époque hellénistique : la culture grecque se répand dans tout l’Orient."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-2-4",
+      "prompt": "Alexandre le Grand meurt en …",
+      "spoken": "Alexandre le Grand meurt en  (mot manquant) ",
+      "choices": [
+        "490 avant J.-C.",
+        "399 avant J.-C.",
+        "323 avant J.-C."
+      ],
+      "answer": "323 avant J.-C.",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Alexandre meurt à Babylone en 323 avant J.-C., à trente-deux ans. Ses généraux se partagent son empire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandes figures de la Grèce",
+          "lines": [
+            "Socrate, un philosophe d’Athènes, interroge tout le monde ; il n’écrit rien.",
+            "Platon, son élève, rapporte ses dialogues.",
+            "Démosthène, un grand orateur d’Athènes, parle contre Philippe, le roi de Macédoine.",
+            "Alexandre, fils de Philippe, conquiert l’Empire perse ; il meurt en 323 avant J.-C.",
+            "Il fonde de nombreuses villes, dont Alexandrie, en Égypte.",
+            "Après lui vient l’époque hellénistique : la culture grecque se répand dans tout l’Orient."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-2-5",
+      "prompt": "La ville d’Égypte fondée par Alexandre s’appelle …",
+      "spoken": "La ville d’Égypte fondée par Alexandre s’appelle  (mot manquant) ",
+      "choices": [
+        "Athènes",
+        "Alexandrie",
+        "Byzance"
+      ],
+      "answer": "Alexandrie",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Alexandrie, en Égypte, devient un grand centre du savoir, avec sa bibliothèque et son phare, l’une des sept merveilles du monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandes figures de la Grèce",
+          "lines": [
+            "Socrate, un philosophe d’Athènes, interroge tout le monde ; il n’écrit rien.",
+            "Platon, son élève, rapporte ses dialogues.",
+            "Démosthène, un grand orateur d’Athènes, parle contre Philippe, le roi de Macédoine.",
+            "Alexandre, fils de Philippe, conquiert l’Empire perse ; il meurt en 323 avant J.-C.",
+            "Il fonde de nombreuses villes, dont Alexandrie, en Égypte.",
+            "Après lui vient l’époque hellénistique : la culture grecque se répand dans tout l’Orient."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-2-6",
+      "prompt": "L’époque hellénistique\nAprès la mort d’Alexandre, ses généraux se partagent son empire.\nDe l’Égypte à l’Iran, on parle grec dans les villes.\nÀ Alexandrie, le savant Ératosthène mesure la Terre.",
+      "question": "Que montre ce document ?",
+      "spoken": "L’époque hellénistique. Après la mort d’Alexandre, ses généraux se partagent son empire. De l’Égypte à l’Iran, on parle grec dans les villes. À Alexandrie, le savant Ératosthène mesure la Terre.",
+      "choices": [
+        "la culture grecque se répand en Orient",
+        "la Grèce disparaît",
+        "le grec est interdit"
+      ],
+      "answer": "la culture grecque se répand en Orient",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "À l’époque hellénistique, la langue et la culture grecques se répandent de l’Égypte à l’Iran. « Hellénistique » vient de Hellên, le Grec.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandes figures de la Grèce",
+          "lines": [
+            "Socrate, un philosophe d’Athènes, interroge tout le monde ; il n’écrit rien.",
+            "Platon, son élève, rapporte ses dialogues.",
+            "Démosthène, un grand orateur d’Athènes, parle contre Philippe, le roi de Macédoine.",
+            "Alexandre, fils de Philippe, conquiert l’Empire perse ; il meurt en 323 avant J.-C.",
+            "Il fonde de nombreuses villes, dont Alexandrie, en Égypte.",
+            "Après lui vient l’époque hellénistique : la culture grecque se répand dans tout l’Orient."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-2-7",
+      "prompt": "Le mot « philosophie » vient du grec philos, qui aime, et sophia, …",
+      "spoken": "Le mot philosophie vient du grec filoss, qui aime, et sofia, (mot manquant)",
+      "choices": [
+        "la parole",
+        "la science",
+        "la sagesse"
+      ],
+      "answer": "la sagesse",
+      "hint": "Un philosophe cherche à comprendre et à bien vivre : qu’aime-t-il ?",
+      "explanation": "Philos (qui aime) et sophia (la sagesse) : le philosophe aime la sagesse. Socrate se disait philosophe, pas savant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandes figures de la Grèce",
+          "lines": [
+            "Socrate, un philosophe d’Athènes, interroge tout le monde ; il n’écrit rien.",
+            "Platon, son élève, rapporte ses dialogues.",
+            "Démosthène, un grand orateur d’Athènes, parle contre Philippe, le roi de Macédoine.",
+            "Alexandre, fils de Philippe, conquiert l’Empire perse ; il meurt en 323 avant J.-C.",
+            "Il fonde de nombreuses villes, dont Alexandrie, en Égypte.",
+            "Après lui vient l’époque hellénistique : la culture grecque se répand dans tout l’Orient."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-3e-ideas",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

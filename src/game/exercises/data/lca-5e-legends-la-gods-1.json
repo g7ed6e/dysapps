@@ -1,0 +1,239 @@
+{
+  "id": "lca-5e-legends-la-gods-1",
+  "biome": "lca-5e-legends",
+  "type": "la-gods",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-5e-legends-la-gods-1-0",
+      "prompt": "Chez les Romains, le roi des dieux s’appelle …",
+      "spoken": "Chez les Romains, le roi des dieux s’appelle  (mot manquant) ",
+      "choices": [
+        "Mars",
+        "Jupiter",
+        "Neptune"
+      ],
+      "answer": "Jupiter",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Jupiter est le roi des dieux romains ; il lance la foudre. Les Grecs l’appellent Zeus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de Rome, et leur nom grec",
+          "lines": [
+            "Jupiter : le roi des dieux, maître de la foudre (Zeus).",
+            "Neptune : dieu de la mer ; son trident est une fourche à trois dents (Poséidon).",
+            "Mars : le dieu de la guerre (Arès).",
+            "Vénus : la déesse de l’amour et de la beauté (Aphrodite).",
+            "Mercure : le messager des dieux, aux sandales ailées (Hermès).",
+            "Minerve : la déesse de la sagesse (Athéna)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-1-1",
+      "prompt": "Neptune, le dieu romain de la mer, s’appelle chez les Grecs …",
+      "spoken": "Neptune, le dieu romain de la mer, s’appelle chez les Grecs  (mot manquant) ",
+      "choices": [
+        "Poséidon",
+        "Hermès",
+        "Arès"
+      ],
+      "answer": "Poséidon",
+      "hint": "Relis la deuxième ligne du rappel, entre parenthèses.",
+      "explanation": "Neptune chez les Romains, Poséidon chez les Grecs : le même dieu de la mer, avec son trident.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de Rome, et leur nom grec",
+          "lines": [
+            "Jupiter : le roi des dieux, maître de la foudre (Zeus).",
+            "Neptune : dieu de la mer ; son trident est une fourche à trois dents (Poséidon).",
+            "Mars : le dieu de la guerre (Arès).",
+            "Vénus : la déesse de l’amour et de la beauté (Aphrodite).",
+            "Mercure : le messager des dieux, aux sandales ailées (Hermès).",
+            "Minerve : la déesse de la sagesse (Athéna)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-1-2",
+      "prompt": "Le dieu romain de la guerre a donné son nom au mois de …",
+      "spoken": "Le dieu romain de la guerre a donné son nom au mois de  (mot manquant) ",
+      "choices": [
+        "mai",
+        "juin",
+        "mars"
+      ],
+      "answer": "mars",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Mars, dieu de la guerre, a donné son nom au mois de mars, et au mardi, le jour de Mars.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de Rome, et leur nom grec",
+          "lines": [
+            "Jupiter : le roi des dieux, maître de la foudre (Zeus).",
+            "Neptune : dieu de la mer ; son trident est une fourche à trois dents (Poséidon).",
+            "Mars : le dieu de la guerre (Arès).",
+            "Vénus : la déesse de l’amour et de la beauté (Aphrodite).",
+            "Mercure : le messager des dieux, aux sandales ailées (Hermès).",
+            "Minerve : la déesse de la sagesse (Athéna)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-1-3",
+      "prompt": "Les jours de la semaine\nmardi : le jour de Mars.\nmercredi : le jour de Mercure.\nvendredi : le jour de Vénus.",
+      "question": "Quel jour porte le nom du messager des dieux ?",
+      "spoken": "Les jours de la semaine. Mardi, le jour de Mars. Mercredi, le jour de Mercure. Vendredi, le jour de Vénus.",
+      "choices": [
+        "mardi",
+        "mercredi",
+        "vendredi"
+      ],
+      "answer": "mercredi",
+      "hint": "Cherche le messager dans le rappel, puis son jour dans le document.",
+      "explanation": "Mercure est le messager des dieux : mercredi est le jour de Mercure (Mercurii dies, en latin).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de Rome, et leur nom grec",
+          "lines": [
+            "Jupiter : le roi des dieux, maître de la foudre (Zeus).",
+            "Neptune : dieu de la mer ; son trident est une fourche à trois dents (Poséidon).",
+            "Mars : le dieu de la guerre (Arès).",
+            "Vénus : la déesse de l’amour et de la beauté (Aphrodite).",
+            "Mercure : le messager des dieux, aux sandales ailées (Hermès).",
+            "Minerve : la déesse de la sagesse (Athéna)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-1-4",
+      "prompt": "La déesse de la sagesse s’appelle Minerve chez les Romains et … chez les Grecs.",
+      "spoken": "La déesse de la sagesse s’appelle Minerve chez les Romains et (mot manquant) chez les Grecs.",
+      "choices": [
+        "Aphrodite",
+        "Héra",
+        "Athéna"
+      ],
+      "answer": "Athéna",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Minerve chez les Romains, Athéna chez les Grecs : la déesse de la sagesse. Son oiseau est la chouette.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de Rome, et leur nom grec",
+          "lines": [
+            "Jupiter : le roi des dieux, maître de la foudre (Zeus).",
+            "Neptune : dieu de la mer ; son trident est une fourche à trois dents (Poséidon).",
+            "Mars : le dieu de la guerre (Arès).",
+            "Vénus : la déesse de l’amour et de la beauté (Aphrodite).",
+            "Mercure : le messager des dieux, aux sandales ailées (Hermès).",
+            "Minerve : la déesse de la sagesse (Athéna)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-1-5",
+      "prompt": "La plus grande planète du système solaire porte le nom du roi des dieux romains : …",
+      "spoken": "La plus grande planète du système solaire porte le nom du roi des dieux romains : (mot manquant)",
+      "choices": [
+        "Mars",
+        "Vénus",
+        "Jupiter"
+      ],
+      "answer": "Jupiter",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Jupiter, la plus grande planète, porte le nom du roi des dieux. Mercure, Vénus, Mars et Saturne portent aussi des noms de dieux romains.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de Rome, et leur nom grec",
+          "lines": [
+            "Jupiter : le roi des dieux, maître de la foudre (Zeus).",
+            "Neptune : dieu de la mer ; son trident est une fourche à trois dents (Poséidon).",
+            "Mars : le dieu de la guerre (Arès).",
+            "Vénus : la déesse de l’amour et de la beauté (Aphrodite).",
+            "Mercure : le messager des dieux, aux sandales ailées (Hermès).",
+            "Minerve : la déesse de la sagesse (Athéna)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-1-6",
+      "prompt": "Vénus, la déesse de l’amour, s’appelle chez les Grecs …",
+      "spoken": "Vénus, la déesse de l’amour, s’appelle chez les Grecs  (mot manquant) ",
+      "choices": [
+        "Aphrodite",
+        "Athéna",
+        "Artémis"
+      ],
+      "answer": "Aphrodite",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Vénus chez les Romains, Aphrodite chez les Grecs : la déesse de l’amour et de la beauté. Selon la légende, elle est la mère d’Énée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de Rome, et leur nom grec",
+          "lines": [
+            "Jupiter : le roi des dieux, maître de la foudre (Zeus).",
+            "Neptune : dieu de la mer ; son trident est une fourche à trois dents (Poséidon).",
+            "Mars : le dieu de la guerre (Arès).",
+            "Vénus : la déesse de l’amour et de la beauté (Aphrodite).",
+            "Mercure : le messager des dieux, aux sandales ailées (Hermès).",
+            "Minerve : la déesse de la sagesse (Athéna)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-1-7",
+      "prompt": "Le trident est l’objet du dieu …",
+      "spoken": "Le trident est l’objet du dieu  (mot manquant) ",
+      "choices": [
+        "Mars",
+        "Neptune",
+        "Mercure"
+      ],
+      "answer": "Neptune",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le trident, une fourche à trois dents, est l’objet de Neptune, dieu de la mer. Tri- veut dire trois, comme dans triangle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de Rome, et leur nom grec",
+          "lines": [
+            "Jupiter : le roi des dieux, maître de la foudre (Zeus).",
+            "Neptune : dieu de la mer ; son trident est une fourche à trois dents (Poséidon).",
+            "Mars : le dieu de la guerre (Arès).",
+            "Vénus : la déesse de l’amour et de la beauté (Aphrodite).",
+            "Mercure : le messager des dieux, aux sandales ailées (Hermès).",
+            "Minerve : la déesse de la sagesse (Athéna)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-5e-legends",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

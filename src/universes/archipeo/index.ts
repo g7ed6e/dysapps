@@ -339,6 +339,14 @@ export const ARCHIPEO = {
         beaten: 'Ma robe se rallume. La menuiserie est à toi, et à Rabot.',
       },
     },
+    'civics-5e-equality-solidarity': {
+      challenge: 'L’Oie d’opale dit doucement : « Les plumes de mes ailes sont éteintes. Tu as fait le tour du fournil : dis-moi ce qu’est l’égalité. »',
+      guardianSays: {
+        hit: 'Une plume de mon aile s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Mes ailes se rallument. Le fournil est à toi, et à Mie.',
+      },
+    },
     'life-earth-sciences-4e-cells-evolution': {
       challenge: 'La Girafe d’ambre dit doucement : « Les taches de mon cou sont éteintes. Tu as vu grandir tout ce qui vit à la source : dis-moi comment le vivant se transmet. »',
       guardianSays: {
@@ -361,6 +369,22 @@ export const ARCHIPEO = {
         hit: 'Un rayon de ma roue s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Relis le schéma, compare le modèle et l’objet, et reprends.',
         beaten: 'Ma roue se rallume. Le bassin est à toi, et à Manivelle.',
+      },
+    },
+    'civics-4e-rights-freedoms': {
+      challenge: 'Le Lynx d’agate dit doucement : « Les taches de mon pelage sont éteintes. Tu as passé la porte : dis-moi ce que protègent les libertés. »',
+      guardianSays: {
+        hit: 'Une tache de mon pelage s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le rappel, cherche le droit dont on parle, et reprends.',
+        beaten: 'Mon pelage se rallume. La porte est à toi, et à Loquet.',
+      },
+    },
+    'civics-3e-democratic-life': {
+      challenge: 'L’Étourneau d’étain dit doucement : « Les plumes de mon dos sont éteintes. Tu as écouté tout le forum : dis-moi comment vit la démocratie. »',
+      guardianSays: {
+        hit: 'Une plume de mon dos s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, cherche qui décide, et reprends.',
+        beaten: 'Mes plumes se rallument. Le forum est à toi, et à Brio.',
       },
     },
     'life-earth-sciences-3e-human-body': {
@@ -393,6 +417,30 @@ export const ARCHIPEO = {
         hit: 'Le bord de mes ailes brille un peu plus. C’est juste.',
         miss: 'Rien ne s’éteint. Lis bien la question, relis la règle, et reprends.',
         beaten: 'Le bord de mes ailes se rallume. Le refuge est à toi, et à Timbre.',
+      },
+    },
+    'lca-5e-legends': {
+      challenge: 'Le Phénix d’argile dit doucement : « Les plumes de mes ailes sont éteintes. Tu as écouté les légendes de la grotte : raconte-les-moi. »',
+      guardianSays: {
+        hit: 'Une plume de mon aile s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis la traduction, cherche le mot du rappel, et reprends.',
+        beaten: 'Je renais, mes ailes se rallument. La grotte est à toi, et à Lyre.',
+      },
+    },
+    'lca-4e-cities': {
+      challenge: 'La Cigale d’argile dit doucement : « Les nervures de mes ailes sont éteintes. Tu as visité la cité : dis-moi comment on y vivait. »',
+      guardianSays: {
+        hit: 'Une nervure de mon aile s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Mes ailes se rallument. La colonnade est à toi, et à Figue.',
+      },
+    },
+    'lca-3e-ideas': {
+      challenge: 'Le Centaure d’argile dit doucement : « Les motifs de mon flanc sont éteints. Tu as parcouru le bosquet : dis-moi ce que les Anciens nous ont laissé. »',
+      guardianSays: {
+        hit: 'Un motif de mon flanc s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le rappel, cherche la racine du mot, et reprends.',
+        beaten: 'Mon flanc se rallume. Le bosquet est à toi, et à Stylet.',
       },
     },
     'english-5e-grammar': {
@@ -465,6 +513,9 @@ export const ARCHIPEO = {
     'lv2-5e-introductions': 'cigogne voyageuse',
     'lv2-4e-daily-life': 'écureuil cuisinier',
     'lv2-3e-travel': 'loutre factrice',
+    'lca-5e-legends': 'gecko conteur',
+    'lca-4e-cities': 'âne porteur d’eau',
+    'lca-3e-ideas': 'huppe scribe',
     'english-5e-grammar': 'chat du manoir',
     'english-4e-comprehension': 'lutin souffleur',
     'english-4e-grammar': 'blaireau chef de gare',
@@ -485,9 +536,12 @@ export const ARCHIPEO = {
     'life-earth-sciences-5e-active-planet': 'ver de terre météorologue',
     'physics-chemistry-5e-matter-universe': 'canard saunier',
     'technology-5e-design': 'pic-vert menuisier',
+    'civics-5e-equality-solidarity': 'capybara boulanger',
     'life-earth-sciences-4e-cells-evolution': 'colibri butineur',
     'physics-chemistry-4e-signals-circuits': 'suricate guetteur',
     'technology-4e-modeling': 'otarie maquettiste',
+    'civics-4e-rights-freedoms': 'pangolin portier',
+    'civics-3e-democratic-life': 'macareux orateur',
     'life-earth-sciences-3e-human-body': 'koala soigneur',
     'physics-chemistry-3e-motion-energy': 'tatou rouleur',
     'technology-3e-digital': 'chenille tisseuse',

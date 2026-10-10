@@ -516,7 +516,7 @@ export function etendueDuLieu(def: IslandDef, f: FormeDeLIle): IslandDef['ext'] 
 }
 
 /**
- * Les cinquante-deux îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
+ * Les cinquante-huit îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  *
@@ -567,7 +567,8 @@ const STARTING_MAP: MapPlace[] = [
   // 9 octobre 2026), chaque lieu est sur le pas des places, à quatre cases d'eau au moins de ses voisines, et garde la
   // vue de sa place d'avant (`vueDepuis`) : le Carrefour (un moulinet) reste au second rang, à l'ouest, derrière le
   // Glacier ; le Marais et le Manoir y restent, la Prairie passe derrière le Manoir, la Saline derrière le Bourg, le
-  // Delta au coin du fond, à l'est. Le rang du fond, à l'ouest, garde deux places pour des îles futures (map.test.ts).
+  // Delta au coin du fond, à l'est. Le rang du fond, à l'ouest, gardait deux places pour des îles futures : le Fournil
+  // des partages et la Grotte des légendes les occupent (EMC-2, LCA-2).
   // La colonne d'avant les formes reste celle des caméras (terrain/view.ts).
   { id: 'maths-5e-signed-numbers', region: 'montagne', core: { x: 33, y: 321 }, repere: { x: 38, y: 320 }, deplacee: { x: -2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 21 },
   // Le Marché garde deux rangées de côte devant (GD-11 amincit les autres côtes d'une case) : sinon l'escalier de sa jetée
@@ -582,7 +583,8 @@ const STARTING_MAP: MapPlace[] = [
   // à quatre à huit cases d'eau de ses voisines (sept paires à réunir au départ). Devant, la Source, la Forge, l'Atelier
   // (qui ne bouge pas), la Falaise et le Jardin ; au second rang, la Gare, l'Imprimerie, l'Escale, le Théâtre et le
   // Cabinet ; au rang du fond, la Vigie au coin de l'ouest, derrière la Gare, le Bassin au coin de l'est, et entre eux
-  // deux places pour des îles futures (map.test.ts). Chaque place est celle où les noms des îles se tiennent le mieux
+  // deux places pour des îles futures (la Porte des libertés et la Colonnade des cités les ont occupées, avant de passer au
+  // flanc ouest : voir plus bas). Chaque place est celle où les noms des îles se tiennent le mieux
   // sur la Carte (three/mapLabels.test.ts) : la Vigie au centre du rang du fond taisait les noms de l'Imprimerie et de
   // l'Escale, panneau ouvert ; la Falaise un pas plus en avant ne pose plus le nom du Jardin, en portrait, près d'une
   // autre île. Le cadre gagne 24 cases vers le fond (footprint.ts). Chaque lieu garde la vue de sa place de GD-11
@@ -602,10 +604,25 @@ const STARTING_MAP: MapPlace[] = [
   // n'avait plus de marge, garde ses rangs (le devant du Phare l'a agrandie de deux cases, le fond la reprend), et le
   // col n'y perd que deux cases. Les îles du bord (le Studio, le Château, le Refuge) ne bougent pas : la colonne
   // centrale et la largeur restent. Le temple de marbre suit le Belvédère, le grand phare la côte repoussée (decor/3e.ts).
-  { id: 'maths-3e-geometry', region: 'montagne', core: { x: 18, y: 932 }, repere: { x: 18, y: 930 }, deplacee: { x: -2, y: 0 }, altitude: 9, ext: e(2, 2, 1, 5), relief: 'montagne', seed: 41 },
-  { id: 'maths-3e-functions', region: 'hauteurs', core: { x: 58, y: 912 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'collines', seed: 42 },
-  { id: 'maths-3e-statistics', region: 'hauteurs', core: { x: 94, y: 932 }, repere: { x: 98, y: 930 }, deplacee: { x: 2, y: 0 }, altitude: 9, ext: e(3, 2, 2, 2), relief: 'collines', seed: 43 },
-  { id: 'french-3e-close-reading', region: 'hauteurs', core: { x: 58, y: 964 }, repere: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(2, 2, 1, 4), relief: 'collines', seed: 44 },
+  // GD-12 (09/10/2026, une forme par île) : trois rangs sur le pas (devant, y 908 et 912 ; au second rang, y 952 et
+  // 956 ; au fond, y 996 et 1000). Devant, le Studio, le Belvédère, le Phare (qui ne bouge pas), le Château et le
+  // Refuge ; au second rang, le Kiosque, le Verger, l'Observatoire des textes (juste derrière le Phare, comme avant :
+  // DA-17 ; un pas plus au fond, le grand phare sortait du bas de la vue de l'archipel depuis lui), l'Observatoire des
+  // données et le Plateau ; au rang du fond, la Ruche et le Tremplin, à l'est, et deux places pour des îles futures, à
+  // l'ouest (le Forum des débats et le Bosquet des sages les occupent). Relecture du 9 octobre 2026 : chaque lieu a au plus une voisine à moins de huit cases d'eau,
+  // celle avec qui il se réunit (le Phare et le Belvédère, l'Observatoire des données et celui des textes, le Kiosque et
+  // le Verger, la Ruche et le Tremplin) ; toutes les autres sont à huit cases au moins (quatre cases de vide entre deux
+  // îles flottantes ne se voient presque plus). Le Belvédère avance d'un demi-pas pour faire face à la corne du Phare
+  // (y 908 ; à y 912, leur côte commune n'avait que trois cases et ils ne se réunissaient pas) ; le Studio part au coin
+  // de l'ouest (x −22) : entre lui et le Belvédère, les îlots du temple et de la colonne, hors de l'axe des caméras
+  // (monuments.ts). Le second rang est à y 952 et 956, la Ruche à y 1000, le Plateau un pas à l'est : sur la Carte, le
+  // moins de noms tus parmi les places essayées. Le cadre gagne 32 cases vers le fond (footprint.ts). Chaque lieu garde
+  // la vue de sa place de GD-11 (`vueDepuis`) et son dessin (`repere`) ; la colonne d'avant les formes reste celle des
+  // caméras (terrain/view.ts).
+  { id: 'maths-3e-geometry', region: 'montagne', core: { x: 22, y: 908 }, vueDepuis: { x: 18, y: 932 }, repere: { x: 18, y: 930 }, deplacee: { x: -2, y: 0 }, altitude: 9, ext: e(2, 2, 3, 7), relief: 'montagne', seed: 41 },
+  { id: 'maths-3e-functions', region: 'hauteurs', core: { x: 58, y: 912 }, altitude: 9, ext: e(5, 2, 7, 2), relief: 'collines', seed: 42 },
+  { id: 'maths-3e-statistics', region: 'hauteurs', core: { x: 94, y: 956 }, vueDepuis: { x: 94, y: 932 }, repere: { x: 98, y: 930 }, deplacee: { x: 2, y: 0 }, altitude: 9, ext: e(4, 3, 2, 5), relief: 'collines', seed: 43 },
+  { id: 'french-3e-close-reading', region: 'hauteurs', core: { x: 58, y: 952 }, vueDepuis: { x: 58, y: 964 }, repere: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(4, 5, 2, 3), relief: 'collines', seed: 44 },
   // Anglais 6e : au rang du fond, à l'ouest (GD-12), la Baie au coin, l'Horloge à côté, un pas plus au fond (leur isthme
   // est retiré, GD-9).
   { id: 'english-6e-vocabulary', region: 'basses-terres', core: { x: -12, y: 99 }, vueDepuis: { x: 32, y: 107 }, repere: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, ext: e(5, 2, 3, 2), relief: 'plat', seed: 51 },
@@ -649,14 +666,14 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'lv2-4e-daily-life', region: 'basses-terres', core: { x: 130, y: 632 }, vueDepuis: { x: 138, y: 632 }, repere: { x: 190, y: 632 }, altitude: 6, ext: e(3, 4, 5, 5), relief: 'plat', seed: 95 },
   { id: 'english-4e-grammar', region: 'feu', core: { x: 2, y: 672 }, vueDepuis: { x: 2, y: 664 }, repere: { x: -2, y: 632 }, altitude: 6, ext: e(2, 5, 2, 2), relief: 'collines', seed: 72 },
   // Anglais 3e : de part et d'autre de l'arc, le Studio avant le Belvédère, le Château après l'Observatoire des données.
-  { id: 'english-3e-comprehension', region: 'hauteurs', core: { x: -14, y: 912 }, altitude: 9, ext: e(2, 3, 1, 3), relief: 'collines', seed: 81 },
-  { id: 'english-3e-grammar', region: 'hauteurs', core: { x: 126, y: 912 }, repere: { x: 130, y: 912 }, altitude: 9, ext: e(3, 2, 1, 3), relief: 'collines', seed: 82 },
+  { id: 'english-3e-comprehension', region: 'hauteurs', core: { x: -22, y: 912 }, vueDepuis: { x: -14, y: 912 }, repere: { x: -14, y: 912 }, altitude: 9, ext: e(4, 3, 5, 5), relief: 'collines', seed: 81 },
+  { id: 'english-3e-grammar', region: 'hauteurs', core: { x: 94, y: 912 }, vueDepuis: { x: 126, y: 912 }, repere: { x: 130, y: 912 }, altitude: 9, ext: e(2, 2, 5, 5), relief: 'collines', seed: 82 },
   // LV2 3e : à l'est du Château, en bout de chemin : rien n'en dépend. Un refuge d'altitude, bas et arrondi (intention du
   // 3e, §3), son lac d'altitude au fond, sur l'herbe (`LACS`). Avancé de 16 cases, à hauteur du Château (SC-3, consultant
   // UX UI) : un cran derrière, au bord gauche de la Carte, son nom se taisait en OpenDyslexic quand le bonhomme y était
   // et qu'il était la destination (la bulle et le médaillon prennent la place, la Géographie et le Château bordent
   // dessus et dessous) ; son dessin reste celui de sa place d'avant (`repere`).
-  { id: 'lv2-3e-travel', region: 'montagne', core: { x: 158, y: 912 }, repere: { x: 158, y: 926 }, altitude: 9, ext: e(1, 1, 1, 8), relief: 'plat', seed: 96 },
+  { id: 'lv2-3e-travel', region: 'montagne', core: { x: 130, y: 912 }, vueDepuis: { x: 158, y: 912 }, repere: { x: 158, y: 926 }, altitude: 9, ext: e(2, 2, 5, 7), relief: 'plat', seed: 96 },
   // Histoire-géographie de 5e à 3e (HG-3, DA, 6 octobre 2026) : deux îles par archipel, fermées au départ (on les
   // relie), sur le pas des places, à quatre cases d'eau au moins de leurs voisines ; leur terre est plate, sans relief
   // ni pic, comme au 6e. Aux Îles Brumeuses, le Bourg des chroniques et le Delta des ressources au second rang, au-delà
@@ -669,8 +686,8 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'geography-5e-resources', region: 'basses-terres', core: { x: 173, y: 405 }, vueDepuis: { x: 161, y: 365 }, repere: { x: 157, y: 365 }, altitude: 3, ext: e(3, 3, 7, 5), relief: 'plat', seed: 64 },
   { id: 'history-4e-revolutions', region: 'basses-terres', core: { x: 38, y: 676 }, vueDepuis: { x: 34, y: 676 }, repere: { x: 30, y: 676 }, altitude: 6, ext: e(2, 3, 5, 3), relief: 'plat', seed: 73 },
   { id: 'geography-4e-globalization', region: 'basses-terres', core: { x: 70, y: 672 }, vueDepuis: { x: 62, y: 676 }, repere: { x: 58, y: 676 }, altitude: 6, ext: e(2, 2, 5, 5), relief: 'plat', seed: 74 },
-  { id: 'history-3e-twentieth-century', region: 'basses-terres', core: { x: -18, y: 964 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 83 },
-  { id: 'geography-3e-france', region: 'basses-terres', core: { x: 130, y: 964 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 84 },
+  { id: 'history-3e-twentieth-century', region: 'basses-terres', core: { x: -10, y: 952 }, vueDepuis: { x: -18, y: 964 }, repere: { x: -18, y: 964 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'plat', seed: 83 },
+  { id: 'geography-3e-france', region: 'basses-terres', core: { x: 134, y: 956 }, vueDepuis: { x: 130, y: 964 }, repere: { x: 130, y: 964 }, altitude: 9, ext: e(3, 3, 5, 5), relief: 'plat', seed: 84 },
   // Sciences de 5e à 3e (SC-3, DA, 6 octobre 2026) : trois îles par archipel, fermées au départ (on les relie), sur le
   // pas des places, à quatre cases d'eau au moins de leurs voisines (leur Gardien sur leur île depuis GD-11) ; terre plate,
   // sans relief ni pic, comme l'histoire-géographie. Les cadres des régions n'avaient plus qu'une place libre chacun :
@@ -688,12 +705,40 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'life-earth-sciences-5e-active-planet', region: 'basses-terres', core: { x: 101, y: 405 }, vueDepuis: { x: 101, y: 409 }, repere: { x: 101, y: 409 }, altitude: 3, ext: e(4, 4, 3, 7), relief: 'plat', seed: 65 },
   { id: 'physics-chemistry-5e-matter-universe', region: 'basses-terres', core: { x: 141, y: 405 }, vueDepuis: { x: 145, y: 409 }, repere: { x: 145, y: 409 }, altitude: 3, ext: e(7, 2, 2, 2), relief: 'plat', seed: 66 },
   { id: 'technology-5e-design', region: 'basses-terres', core: { x: 165, y: 309 }, vueDepuis: { x: 169, y: 309 }, repere: { x: 165, y: 309 }, altitude: 3, ext: e(2, 2, 7, 2), relief: 'plat', seed: 67 },
+  // EMC 5e (EMC-2) et latin-grec 5e (LCA-2) : le Fournil des partages et la Grotte des légendes, aux deux places que GD-12
+  // a gardées au rang du fond des Îles Brumeuses, du côté des x bas (à droite sur la Carte, « à l'est » pour la phrase
+  // d'une place ; map.test.ts), derrière le Carrefour et la Prairie ; fermés au départ (on les relie). La Grotte est un lieu d'option (GD-13) : fermée sans l'option latin ou grec, aucune liaison
+  // ne la propose alors, rien n'en dépend. Terre plate, comme les autres îles des matières entrées après les premières.
+  { id: 'civics-5e-equality-solidarity', region: 'basses-terres', core: { x: 29, y: 405 }, altitude: 3, ext: e(4, 4, 7, 5), relief: 'plat', seed: 68 },
+  { id: 'lca-5e-legends', region: 'basses-terres', core: { x: 65, y: 405 }, altitude: 3, ext: e(3, 4, 2, 5), relief: 'plat', seed: 97 },
   { id: 'life-earth-sciences-4e-cells-evolution', region: 'basses-terres', core: { x: 2, y: 592 }, vueDepuis: { x: -2, y: 592 }, repere: { x: -2, y: 604 }, altitude: 6, ext: e(2, 2, 5, 2), relief: 'plat', seed: 75 },
   { id: 'physics-chemistry-4e-signals-circuits', region: 'basses-terres', core: { x: 2, y: 716 }, vueDepuis: { x: -2, y: 704 }, repere: { x: -2, y: 704 }, altitude: 6, ext: e(2, 2, 5, 2), relief: 'plat', seed: 76 },
   { id: 'technology-4e-modeling', region: 'basses-terres', core: { x: 138, y: 716 }, vueDepuis: { x: 110, y: 704 }, repere: { x: 110, y: 704 }, altitude: 6, ext: e(3, 4, 12, 2), relief: 'plat', seed: 77 },
-  { id: 'life-earth-sciences-3e-human-body', region: 'basses-terres', core: { x: 10, y: 980 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 85 },
-  { id: 'physics-chemistry-3e-motion-energy', region: 'basses-terres', core: { x: 90, y: 972 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 86 },
-  { id: 'technology-3e-digital', region: 'basses-terres', core: { x: 158, y: 980 }, altitude: 9, ext: e(1, 1, 1, 1), relief: 'plat', seed: 87 },
+  // EMC 4e (EMC-2) et latin-grec 4e (LCA-2) : la Porte des libertés et la Colonnade des cités. GD-12 leur gardait deux
+  // places au rang du fond des Anciens Ateliers, entre la Vigie et le Bassin ; là, chacune pile derrière une île du
+  // second rang, leurs noms se posaient sur la bande de cette île et se taisaient sur la Carte (consultant UX UI). Révision
+  // de GD-12 (piste A du directeur artistique, 9 octobre 2026, en attente du mot du mainteneur) : une colonne au flanc ouest,
+  // la Porte au premier rang, après le Jardin (x 174, y 632), la Colonnade au rang du fond, après le Bassin (x 174,
+  // y 716), le second rang vide entre elles. Essais du 10 octobre 2026 : la Porte en x 166, dans le même morceau du
+  // monde en blocs que le Jardin, taisait plus de noms sans rendre d'appel de dessin ; la Colonnade un, deux ou trois
+  // pas plus en avant (y 712, 708, 704) taisait un peu moins de noms, mais sa grille de glissé passait le plafond de
+  // 480 triangles (budget.test.ts) et la baleine replacée du 4e perdait son eau (terrain.test.ts) ; le cadre s'élargit vers l'ouest (footprint.ts). Au 3e, la même piste taisait autant de noms (le
+  // cadre plus large dézoome la Carte) : le Forum et le Bosquet restent au rang du fond. Chacune garde le dessin et la
+  // vue de sa place d'avant (`repere`, `vueDepuis`) : formes et côtes inchangées. Fermées au départ (on les relie). La Colonnade est un lieu d'option
+  // (GD-13) : fermée sans l'option latin ou grec, aucune liaison ne la propose alors, rien n'en dépend. Terre plate,
+  // comme les autres îles des matières entrées après les premières.
+  { id: 'civics-4e-rights-freedoms', region: 'basses-terres', core: { x: 174, y: 632 }, vueDepuis: { x: 74, y: 716 }, repere: { x: 74, y: 716 }, altitude: 6, ext: e(3, 3, 7, 5), relief: 'plat', seed: 78 },
+  { id: 'lca-4e-cities', region: 'basses-terres', core: { x: 174, y: 716 }, vueDepuis: { x: 106, y: 716 }, repere: { x: 106, y: 716 }, altitude: 6, ext: e(3, 4, 3, 7), relief: 'plat', seed: 98 },
+  { id: 'life-earth-sciences-3e-human-body', region: 'basses-terres', core: { x: 22, y: 952 }, vueDepuis: { x: 10, y: 980 }, repere: { x: 10, y: 980 }, altitude: 9, ext: e(2, 2, 5, 3), relief: 'plat', seed: 85 },
+  { id: 'physics-chemistry-3e-motion-energy', region: 'basses-terres', core: { x: 134, y: 996 }, vueDepuis: { x: 90, y: 972 }, repere: { x: 90, y: 972 }, altitude: 9, ext: e(2, 12, 2, 4), relief: 'plat', seed: 86 },
+  { id: 'technology-3e-digital', region: 'basses-terres', core: { x: 98, y: 1000 }, vueDepuis: { x: 158, y: 980 }, repere: { x: 158, y: 980 }, altitude: 9, ext: e(7, 7, 7, 7), relief: 'plat', seed: 87 },
+  // EMC 3e (EMC-2) et latin-grec 3e (LCA-2) : le Forum des débats et le Bosquet des sages, aux deux places que GD-12
+  // a gardées au rang du fond des Îles du Ciel, à l'ouest : le Forum au coin, derrière le Kiosque des témoins, le
+  // Bosquet à côté, derrière le Verger de la santé (map.test.ts) ; fermés au départ (on les relie). Le Bosquet est un lieu
+  // d'option (GD-13) : fermé sans l'option latin ou grec, aucune liaison ne le propose alors, rien n'en dépend. Terre
+  // plate, comme les autres îles des matières entrées après les premières.
+  { id: 'civics-3e-democratic-life', region: 'basses-terres', core: { x: -14, y: 996 }, altitude: 9, ext: e(3, 3, 5, 5), relief: 'plat', seed: 79 },
+  { id: 'lca-3e-ideas', region: 'basses-terres', core: { x: 22, y: 996 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'plat', seed: 99 },
 ];
 
 /**

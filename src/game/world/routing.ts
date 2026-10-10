@@ -173,12 +173,13 @@ export function possibleLandings(def: IslandDef): readonly LocalLanding[] {
   const terre = new Set(landCells(def).filter((c) => isLand(def, c.x, c.y)).map((c) => `${c.x - def.core.x},${c.y - def.core.y}`));
   const haut = tallDecor(def);
   const out: LocalLanding[] = [];
+  // Les cases de terre lues une fois, dans l'ordre de `terre` : chaque ligne de la grille les reparcourt.
+  const cases = [...terre].map((k) => k.split(',').map(Number) as [number, number]);
   let x0 = Infinity;
   let y0 = Infinity;
   let x1 = -Infinity;
   let y1 = -Infinity;
-  for (const k of terre) {
-    const [x, y] = k.split(',').map(Number);
+  for (const [x, y] of cases) {
     x0 = Math.min(x0, x);
     y0 = Math.min(y0, y);
     x1 = Math.max(x1, x);
@@ -209,8 +210,7 @@ export function possibleLandings(def: IslandDef): readonly LocalLanding[] {
       if (cote === 'devant' && p >= 0 && p < CORE) continue;
       // La case de côte la plus au large sur cette ligne.
       let best: { x: number; y: number } | null = null;
-      for (const k of terre) {
-        const [x, y] = k.split(',').map(Number);
+      for (const [x, y] of cases) {
         if ((vertical ? x : y) !== p) continue;
         if (!best || (vertical ? (y - best.y) * dy > 0 : (x - best.x) * dx > 0)) best = { x, y };
       }

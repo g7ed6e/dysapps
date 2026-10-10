@@ -3,7 +3,7 @@
 // coin si son radeau y tomberait sur un autre lieu) et seulement pour ce qui tourne ; indisponible au bord de la carte ; sans se toucher à aucune échelle ; leur forme sous le budget
 // (400 triangles, un appel), sans le jaune des places libres ; la croix grise d'une place prise.
 import { describe, expect, it } from 'vitest';
-import { currentLandings, DIRECTION_STEP, othersFootprintsOf, routesIn, spotOf } from './arrange';
+import { currentLandings, DIRECTION_STEP, othersFootprintsOf, placeTurns, routesIn, spotOf } from './arrange';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import {
   bordDeLaCroix,
@@ -81,6 +81,11 @@ describe('les poignées autour du choix', () => {
         const p = arrangeView(world, c).poignees!;
         const autres = othersFootprintsOf(world, a, [d.id]);
         const [q] = p.liste;
+        // Un lieu qui ne tourne pas (le Marais, le Comptoir, le Manoir, directeur artistique) n'a pas de « Tourner ».
+        if (!placeTurns(d.id)) {
+          expect(q, d.id).toBeUndefined();
+          continue;
+        }
         const x = p.cx + q.ox;
         const y = p.cy + q.oy;
         const demi = COTE_DU_RADEAU / 2;
@@ -89,12 +94,13 @@ describe('les poignées autour du choix', () => {
       }
   });
 
-  it('aucun lieu ne montre de flèche ; « Tourner » sert toujours', () => {
+  it('aucun lieu ne montre de flèche ; « Tourner » sert toujours, sauf aux lieux qui ne tournent pas, qui n’en ont pas', () => {
     for (const id of lieux) {
       const c = chooseIsland(world, id);
       if (!c) continue;
       const p = arrangeView(world, c).poignees!;
       expect(p.liste.every((q) => q.cle === 'tourner' && q.dispo), id).toBe(true);
+      expect(p.liste.length, id).toBe(placeTurns(id) ? 1 : 0);
     }
   });
 

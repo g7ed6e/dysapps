@@ -254,6 +254,9 @@ const FORMES: Record<string, Cube[]> = {
   // leur pied ne faisaient pas une salière) ; quatre de haut, la seule à dépasser trois. Sa place est voulue
   // (`WANTED_PLACES`).
   'technology-5e-design-fixture-1': [...colonne(0, 0, 0, 2, BLOC.sel), [0, 0, 3, 'roof']],
+  // Mie, la table ronde (EMC-2 ; proposition de l'artiste technique 3D, sobre, aucun symbole) : un plateau en croix,
+  // les trois rizières en travers et deux farines aux bouts, vu d'en haut presque rond, sur un pied de barrière au milieu.
+  'civics-5e-equality-solidarity-fixture-1': [[1, 1, 0, 'fence'], ...rangee(0, 2, 1, 1, BLOC.riziere), [1, 0, 1, BLOC.farine], [1, 2, 1, BLOC.farine]],
   // Nectar, la jardinière : trois lièges en rang (trois cases de large au plus : les barrières se posent sur les lièges
   // des bouts, pas à côté).
   'life-earth-sciences-4e-cells-evolution-fixture-1': [...rangee(0, 2, 0, 0, BLOC.liege), [0, 0, 1, 'fence'], [2, 0, 1, 'fence']],
@@ -262,6 +265,13 @@ const FORMES: Record<string, Cube[]> = {
   // Manivelle, le moteur : deux bobines au sol aux bouts, la troisième dessus, au milieu, sur une barrière (quatre
   // cubes au moins).
   'technology-4e-modeling-fixture-1': [[0, 0, 0, BLOC.bobine], [2, 0, 0, BLOC.bobine], [1, 0, 0, 'fence'], [1, 0, 1, BLOC.bobine]],
+  // Loquet, le panneau d'affichage (EMC-2 ; proposition de l'artiste technique 3D, sobre : aucun texte, aucun symbole,
+  // aucun drapeau) : le panneau de trois pétales de la Source des espèces, debout sur deux pieds de barrière, un toit
+  // au-dessus de son milieu pour l'abriter de la pluie.
+  'civics-4e-rights-freedoms-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 0, 1, BLOC.petale), [1, 0, 2, 'roof']],
+  // Brio, le pupitre (EMC-2 ; proposition de l'artiste technique 3D, sobre : aucun texte, aucun emblème) : un pied de
+  // deux barrières, le plateau de trois savons du Verger de la santé posé dessus.
+  'civics-3e-democratic-life-fixture-1': [[1, 0, 0, 'fence'], [1, 0, 1, 'fence'], ...rangee(0, 2, 0, 2, BLOC.savon)],
   // Olive, la veilleuse : deux cires en colonne, une lanterne dessus (sans flamme), un savon à son pied (quatre cubes au
   // moins).
   'life-earth-sciences-3e-human-body-fixture-1': [...colonne(0, 0, 0, 1, BLOC.cire), [0, 0, 2, 'lantern'], [1, 0, 0, BLOC.savon]],
@@ -394,10 +404,13 @@ const PLACES: Record<string, readonly [number, number]> = {
   'life-earth-sciences-5e-active-planet-fixture-1': [1, 10],
   'physics-chemistry-5e-matter-universe-fixture-1': [1, 11],
   'technology-5e-design-fixture-1': [10, 3],
+  'civics-5e-equality-solidarity-fixture-1': [-2, 12],
   'life-earth-sciences-4e-cells-evolution-fixture-1': [11, 3],
   'physics-chemistry-4e-signals-circuits-fixture-1': [-2, 10],
   'technology-4e-modeling-fixture-1': [2, 11],
+  'civics-4e-rights-freedoms-fixture-1': [-4, 5],
   'life-earth-sciences-3e-human-body-fixture-1': [6, 11],
+  'civics-3e-democratic-life-fixture-1': [-2, 8],
   'physics-chemistry-3e-motion-energy-fixture-1': [-1, 12],
   'technology-3e-digital-fixture-1': [5, 3],
 };

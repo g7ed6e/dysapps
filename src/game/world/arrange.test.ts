@@ -24,6 +24,7 @@ import {
   moveLanding,
   moveStation,
   placeIn,
+  placeTurns,
   nearestFreeSpot,
   stepSpot,
   stationSpots,
@@ -40,6 +41,7 @@ import {
   stationOf,
   turnIsland,
 } from './arrange';
+import { canTurn, chooseIsland, turnChoice } from './arrangeMode';
 import { toutConstruit } from './budget';
 import { fittingPlaces, footprintOf, frameOf, gapBetween, GAP_BETWEEN_PLACES, monumentIslet, placedIsland, poseOfSpot, posesOfLayout } from './footprint';
 import { getMonument, MONUMENT_ISLET } from './monuments';
@@ -151,15 +153,31 @@ describe('les places des lieux', () => {
     expect(loin).toBeDefined();
   });
 
-  it('dans chaque région, chaque lieu mobile de la carte de départ peut tourner (à sa place ou ailleurs), sauf la Tour depuis le Préau (GD-11)', () => {
+  it('dans chaque région, chaque lieu mobile de la carte de départ peut tourner (à sa place ou ailleurs), sauf la Tour depuis le Préau ; le Marais, le Comptoir et le Manoir n’ont pas « Tourner » (GD-11, DA)', () => {
     // Jusqu'à GD-11, l'îlot du Gardien prenait la place qui manquait à quatre lieux (HG-3, SC-3) ; le Gardien se tient
     // désormais sur son île, et chaque lieu trouve une place, tourné. Depuis le Préau des délégués (EMC-2), posé dans la
     // seule poche libre des Premiers Rivages, la Tour du lecteur ne trouve plus de place tournée : elle ne tournait que
-    // dans cette poche. À trancher par le directeur artistique et le mainteneur (une place pour le Préau, ou la Tour fixe).
+    // dans cette poche (accepté, décision du 9 octobre 2026). Aux Îles Brumeuses, depuis le Fournil des partages et la
+    // Grotte des légendes (EMC-2, LCA-2), posés aux deux places que GD-12 avait gardées au rang du fond, le Marais des
+    // temps, le Comptoir et le Manoir n'y trouvent plus de place tournée : ils ne tournent plus, « Tourner » n'est plus
+    // montré pour eux (directeur artistique, 9 octobre 2026).
     const w = partie();
     const sans: string[] = [];
-    for (const a of ARCHIPELAGO_IDS) for (const id of placesOf(a).filter((p) => !isFixedPlace(p))) if (!turnIsland(w, id).ok) sans.push(id);
+    // Aux Îles du Ciel, l'Observatoire des textes de même, depuis le Forum des débats et le Bosquet des sages. Aux Anciens
+    // Ateliers, la Porte des libertés et la Colonnade des cités au flanc ouest (révision de GD-12, en attente du mot du
+    // mainteneur) : l'Escale des échanges y retrouve une place tournée, elle tourne de nouveau.
+    const sansTourner = ['french-5e-conjugation', 'english-5e-vocabulary', 'english-5e-grammar', 'french-3e-close-reading'] as BiomeId[];
+    for (const a of ARCHIPELAGO_IDS)
+      for (const id of placesOf(a).filter((p) => !isFixedPlace(p) && placeTurns(p))) if (!turnIsland(w, id).ok) sans.push(id);
     expect(sans).toEqual(['french-6e-reading']);
+    for (const id of sansTourner) {
+      expect(placeTurns(id), id).toBe(false);
+      expect(turnIsland(w, id), id).toEqual({ ok: false, reason: 'fixe' });
+      const c = chooseIsland(w, id)!;
+      expect(canTurn(c), id).toBe(false);
+      if (c.genre === 'lieu') expect(turnChoice(w, c), id).toBeNull();
+    }
+    expect(ARCHIPELAGO_IDS.flatMap((a) => placesOf(a)).filter((p) => !placeTurns(p)).sort()).toEqual([...sansTourner].sort());
   });
 
   it('tourner un lieu d’un quart de tour, quatre fois, le ramène à son orientation', () => {

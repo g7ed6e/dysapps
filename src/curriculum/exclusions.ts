@@ -26,13 +26,13 @@ const FABRIQUER = HORS('Fabriquer, mesurer pour de vrai, travailler en équipe :
 
 const FIGURE = A_COUVRIR('Géométrie de 5e : il faut des figures dessinées (parallélogrammes, symétrie centrale), que les écrans d’exercice n’ont pas encore.');
 const ORAL_ECRIT_LIBRE = HORS('Production orale et écrite libre : hors de ce que peut faire une application sans micro ni rédaction.');
-// Enseignement moral et civique (docs/conception/cadrage-contenu.md, « EMC ») : le référentiel est écrit (EMC-1) ; la
-// forme dans le jeu : une île par classe (EMC-2).
-const EMC = A_COUVRIR('Enseignement moral et civique : une île par classe (choix du mainteneur, 8 octobre 2026), à construire.');
+// Enseignement moral et civique (docs/conception/cadrage-contenu.md, « EMC ») : une île par classe (EMC-2), de la 6e à
+// la 3e (Préau des délégués, Fournil des partages, Porte des libertés, Forum des débats) ; tout le référentiel est couvert.
 // Latin et grec ancien, option LCA (docs/conception/cadrage-contenu.md, « LCA ») : le référentiel est écrit (LCA-1) ; la
-// forme dans le jeu : une île par classe de la 5e à la 3e, ouverte selon le réglage de l'option, comme la LV2.
-const LCA = A_COUVRIR('Latin et grec (option LCA) : une île par classe de la 5e à la 3e, ouverte selon le réglage Latin, Grec ou Pas d’option, comme la LV2 (choix du mainteneur, 8 octobre 2026), à construire.');
-const LCA_PRONONCER = A_COUVRIR('Prononciation et alphabet : à travailler sur l’écrit (lettres, règles de lecture, syllabes), dans une île LCA à construire ; une voix sûre pour le latin et le grec sur la tablette reste à vérifier.');
+// forme dans le jeu : une île par classe de la 5e à la 3e, ouverte selon le réglage de l'option, comme la LV2. Les trois
+// îles sont posées (LCA-2) ; ce qui reste exclu est la lecture et la langue qu'aucune mission ne cite encore.
+const LCA = A_COUVRIR('Latin et grec (option LCA) : les trois îles (Grotte des légendes, Colonnade des cités, Bosquet des sages) travaillent la culture et le lexique ; cette compétence de lecture ou de langue reste à couvrir dans l’une d’elles.');
+const LCA_PRONONCER = A_COUVRIR('Prononciation et alphabet : à travailler sur l’écrit (lettres, règles de lecture, syllabes), dans une île LCA ; une voix sûre pour le latin et le grec sur la tablette reste à vérifier.');
 const LCA_LIRE_ORAL = HORS('Lire à voix haute un texte latin ou grec : il faudrait un micro et une écoute de l’élève ; la prononciation se travaille à part, sur l’écrit.');
 const LCA_TRADUIRE = HORS('Traduire soi-même et justifier ses choix : de la rédaction, hors de ce que fait un écran à choix ; l’application fait reconnaître le sens d’un mot, d’une forme ou d’une phrase (indices, langue).');
 const LCA_COMMENTER = HORS('Interpréter, commenter, comparer des traductions : un travail d’écriture et de débat en classe, hors d’une application d’entraînement.');
@@ -113,68 +113,27 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 4, technologie (BO n° 9 du 29 février 2024) : fabriquer, réparer et programmer un objet réel restent à la classe ----------
   'c4.te.conception.prototype': FABRIQUER,
   'c4.te.conception.programmer': HORS('Programmer un objet réel : demande un éditeur de programme et un système à commander, hors du périmètre de l’application (comme c4.ma.e.programmation). Comprendre un programme court et le traduire en langage naturel se fait à la Ruche des réseaux (« Lire un programme », c4.te.fonctionnement.programme).'),
-  // ---------- Enseignement moral et civique, 5e à 3e (cycle 4), EMC-1 ; la 6e est couverte au Préau des délégués (EMC-2) ----------
-  'c4.emc.5e.egalite.discriminations': EMC,
-  'c4.emc.5e.solidarite.echelles': EMC,
-  'c4.emc.4e.etat-de-droit.libertes': EMC,
-  'c4.emc.4e.defense.securite': EMC,
-  'c4.emc.3e.regles.constitution': EMC,
-  'c4.emc.3e.opinion.information': EMC,
-  'c4.emc.3e.engagement.collectif': EMC,
-  // ---------- Latin et grec ancien, option LCA (cycle 4, programme de 2016), LCA-1 ----------
-  'c4.la.reperes.chronologie': LCA,
-  'c4.la.reperes.heritage': LCA,
-  'c4.la.culture.origines-rome': LCA,
-  'c4.la.culture.republique': LCA,
-  'c4.la.culture.vie-privee': LCA,
-  'c4.la.culture.vie-publique': LCA,
-  'c4.la.culture.mediterranee': LCA,
-  'c4.la.3e.culture.republique-principat': LCA,
-  'c4.la.3e.culture.empire': LCA,
-  'c4.la.3e.culture.vie-sociale': LCA,
-  'c4.la.3e.culture.mediterranee': LCA,
+  // ---------- Latin et grec ancien, option LCA (cycle 4, programme de 2016), LCA-1 ; ce que travaillent la Grotte des légendes (5e), la Colonnade des cités (4e) et le Bosquet des sages (3e, LCA-2) en est sorti ----------
   'c4.la.lecture.indices': LCA,
-  'c4.la.lecture.situer': LCA,
   'c4.la.lecture.dictionnaire': LCA,
   'c4.la.lecture.lire-oralement': LCA_LIRE_ORAL,
   'c4.la.lecture.traduire': LCA_TRADUIRE,
   'c4.la.lecture.interpreter': LCA_COMMENTER,
   'c4.la.langue.prononciation': LCA_PRONONCER,
-  'c4.la.langue.cas-fonctions': LCA,
-  'c4.la.langue.declinaisons': LCA,
   'c4.la.langue.pronoms': LCA,
   'c4.la.langue.verbe': LCA,
   'c4.la.langue.syntaxe': LCA,
-  'c4.la.langue.lexique': LCA,
-  'c4.la.langue.intercomprehension': LCA,
   'c4.la.3e.langue.nominale': LCA,
   'c4.la.3e.langue.verbe': LCA,
   'c4.la.3e.langue.syntaxe': LCA,
-  'c4.la.3e.langue.lexique': LCA,
-  'c4.gr.reperes.chronologie': LCA,
-  'c4.gr.reperes.heritage': LCA,
-  'c4.gr.culture.origines-rome': LCA,
-  'c4.gr.culture.republique': LCA,
-  'c4.gr.culture.vie-privee': LCA,
-  'c4.gr.culture.vie-publique': LCA,
-  'c4.gr.culture.mediterranee': LCA,
-  'c4.gr.3e.culture.mythe-histoire': LCA,
-  'c4.gr.3e.culture.unite-diversite': LCA,
-  'c4.gr.3e.culture.vie-sociale': LCA,
-  'c4.gr.3e.culture.mediterranee': LCA,
   'c4.gr.lecture.indices': LCA,
-  'c4.gr.lecture.situer': LCA,
   'c4.gr.lecture.dictionnaire': LCA,
   'c4.gr.lecture.lire-oralement': LCA_LIRE_ORAL,
   'c4.gr.lecture.traduire': LCA_TRADUIRE,
   'c4.gr.lecture.interpreter': LCA_COMMENTER,
-  'c4.gr.langue.alphabet': LCA_PRONONCER,
   'c4.gr.langue.cas-fonctions': LCA,
-  'c4.gr.langue.lexique': LCA,
-  'c4.gr.langue.intercomprehension': LCA,
   'c4.gr.3e.langue.alphabet': LCA_PRONONCER,
   'c4.gr.3e.langue.nominale': LCA,
   'c4.gr.3e.langue.verbe': LCA,
   'c4.gr.3e.langue.syntaxe': LCA,
-  'c4.gr.3e.langue.lexique': LCA,
 };

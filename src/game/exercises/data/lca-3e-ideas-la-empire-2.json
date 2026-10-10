@@ -1,0 +1,241 @@
+{
+  "id": "lca-3e-ideas-la-empire-2",
+  "biome": "lca-3e-ideas",
+  "type": "la-empire",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-3e-ideas-la-empire-2-0",
+      "prompt": "Le pont du Gard\nUn pont romain à trois étages d’arches, près de Nîmes.\nIl porte un canal, tout en haut.\nL’eau d’une source arrive ainsi jusqu’à la ville.",
+      "question": "Qu’est-ce que le pont du Gard ?",
+      "spoken": "Le pont du Gard. Un pont romain à trois étages d’arches, près de Nîmes. Il porte un canal, tout en haut. L’eau d’une source arrive ainsi jusqu’à la ville.",
+      "choices": [
+        "une partie d’un aqueduc",
+        "un pont pour les chars",
+        "une muraille"
+      ],
+      "answer": "une partie d’un aqueduc",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Le pont du Gard porte l’aqueduc qui amène l’eau à Nîmes. Aqua, l’eau, et ducere, conduire : un aqueduc conduit l’eau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Empire romain",
+          "lines": [
+            "La légion : une grande unité de l’armée, d’environ cinq mille soldats.",
+            "La Paix romaine (pax romana) : deux siècles sans grande guerre à l’intérieur de l’Empire.",
+            "La romanisation : les peuples conquis adoptent la langue, les lois, la vie des Romains.",
+            "Les Romains construisent partout des routes, des thermes, des amphithéâtres, des aqueducs.",
+            "Un aqueduc : un canal qui amène l’eau d’une source jusqu’à une ville.",
+            "Des empereurs célèbres : Auguste, Néron, Trajan, Hadrien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-2-1",
+      "prompt": "Une grande unité de l’armée romaine, d’environ cinq mille soldats, est une …",
+      "spoken": "Une grande unité de l’armée romaine, d’environ cinq mille soldats, est une  (mot manquant) ",
+      "choices": [
+        "cohorte",
+        "légion",
+        "flotte"
+      ],
+      "answer": "légion",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "La légion compte environ cinq mille soldats, divisés en cohortes, plus petites. Le mot « légionnaire » en vient.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Empire romain",
+          "lines": [
+            "La légion : une grande unité de l’armée, d’environ cinq mille soldats.",
+            "La Paix romaine (pax romana) : deux siècles sans grande guerre à l’intérieur de l’Empire.",
+            "La romanisation : les peuples conquis adoptent la langue, les lois, la vie des Romains.",
+            "Les Romains construisent partout des routes, des thermes, des amphithéâtres, des aqueducs.",
+            "Un aqueduc : un canal qui amène l’eau d’une source jusqu’à une ville.",
+            "Des empereurs célèbres : Auguste, Néron, Trajan, Hadrien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-2-2",
+      "prompt": "Pendant la Paix romaine, l’Empire connaît …",
+      "spoken": "Pendant la Paix romaine, l’Empire connaît  (mot manquant) ",
+      "choices": [
+        "une guerre civile sans fin",
+        "la fin du commerce",
+        "deux siècles sans grande guerre intérieure"
+      ],
+      "answer": "deux siècles sans grande guerre intérieure",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "La pax romana dure environ deux siècles : les guerres se font aux frontières, l’intérieur est en paix, et le commerce se développe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Empire romain",
+          "lines": [
+            "La légion : une grande unité de l’armée, d’environ cinq mille soldats.",
+            "La Paix romaine (pax romana) : deux siècles sans grande guerre à l’intérieur de l’Empire.",
+            "La romanisation : les peuples conquis adoptent la langue, les lois, la vie des Romains.",
+            "Les Romains construisent partout des routes, des thermes, des amphithéâtres, des aqueducs.",
+            "Un aqueduc : un canal qui amène l’eau d’une source jusqu’à une ville.",
+            "Des empereurs célèbres : Auguste, Néron, Trajan, Hadrien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-2-3",
+      "prompt": "Lugdunum, en Gaule\nUne ville fondée par les Romains en 43 avant J.-C.\nOn y trouve un forum, un théâtre, des aqueducs.\nOn y parle latin.",
+      "question": "Que montre ce document ?",
+      "spoken": "Lugdunum, en Gaule. Une ville fondée par les Romains en quarante-trois avant Jésus-Christ. On y trouve un forum, un théâtre, des aqueducs. On y parle latin.",
+      "choices": [
+        "la destruction de la Gaule",
+        "la romanisation de la Gaule",
+        "l’indépendance de la Gaule"
+      ],
+      "answer": "la romanisation de la Gaule",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Lugdunum, aujourd’hui Lyon, a un forum, un théâtre, des aqueducs, et l’on y parle latin : c’est la romanisation, la Gaule vit à la romaine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Empire romain",
+          "lines": [
+            "La légion : une grande unité de l’armée, d’environ cinq mille soldats.",
+            "La Paix romaine (pax romana) : deux siècles sans grande guerre à l’intérieur de l’Empire.",
+            "La romanisation : les peuples conquis adoptent la langue, les lois, la vie des Romains.",
+            "Les Romains construisent partout des routes, des thermes, des amphithéâtres, des aqueducs.",
+            "Un aqueduc : un canal qui amène l’eau d’une source jusqu’à une ville.",
+            "Des empereurs célèbres : Auguste, Néron, Trajan, Hadrien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-2-4",
+      "prompt": "Le mot « aqueduc » vient du latin aqua, qui veut dire …",
+      "spoken": "Le mot aqueduc vient du latin akwa, qui veut dire (mot manquant)",
+      "choices": [
+        "l’eau",
+        "la pierre",
+        "le pont"
+      ],
+      "answer": "l’eau",
+      "hint": "Pense à « aquarium ».",
+      "explanation": "Aqua, l’eau, a donné aqueduc, aquarium, aquatique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Empire romain",
+          "lines": [
+            "La légion : une grande unité de l’armée, d’environ cinq mille soldats.",
+            "La Paix romaine (pax romana) : deux siècles sans grande guerre à l’intérieur de l’Empire.",
+            "La romanisation : les peuples conquis adoptent la langue, les lois, la vie des Romains.",
+            "Les Romains construisent partout des routes, des thermes, des amphithéâtres, des aqueducs.",
+            "Un aqueduc : un canal qui amène l’eau d’une source jusqu’à une ville.",
+            "Des empereurs célèbres : Auguste, Néron, Trajan, Hadrien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-2-5",
+      "prompt": "L’empereur Hadrien fait construire un mur dans le nord de l’Angleterre actuelle, pour …",
+      "spoken": "L’empereur Hadrien fait construire un mur dans le nord de l’Angleterre actuelle, pour (mot manquant)",
+      "choices": [
+        "séparer deux provinces romaines",
+        "porter un aqueduc",
+        "protéger la frontière"
+      ],
+      "answer": "protéger la frontière",
+      "hint": "Un mur au bout de l’Empire : à quoi sert-il ?",
+      "explanation": "Le mur d’Hadrien marque et protège la frontière nord de l’Empire. On peut encore en voir de longues parties.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Empire romain",
+          "lines": [
+            "La légion : une grande unité de l’armée, d’environ cinq mille soldats.",
+            "La Paix romaine (pax romana) : deux siècles sans grande guerre à l’intérieur de l’Empire.",
+            "La romanisation : les peuples conquis adoptent la langue, les lois, la vie des Romains.",
+            "Les Romains construisent partout des routes, des thermes, des amphithéâtres, des aqueducs.",
+            "Un aqueduc : un canal qui amène l’eau d’une source jusqu’à une ville.",
+            "Des empereurs célèbres : Auguste, Néron, Trajan, Hadrien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-2-6",
+      "prompt": "Les routes romaines servent d’abord à …",
+      "spoken": "Les routes romaines servent d’abord à  (mot manquant) ",
+      "choices": [
+        "transporter l’eau jusqu’aux villes",
+        "déplacer vite les légions",
+        "marquer les frontières des provinces"
+      ],
+      "answer": "déplacer vite les légions",
+      "hint": "Qui doit aller vite jusqu’aux frontières de l’Empire ?",
+      "explanation": "Les voies romaines permettent aux légions, aux messagers et aux marchands d’aller vite. D’où le proverbe : « Tous les chemins mènent à Rome. »",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Empire romain",
+          "lines": [
+            "La légion : une grande unité de l’armée, d’environ cinq mille soldats.",
+            "La Paix romaine (pax romana) : deux siècles sans grande guerre à l’intérieur de l’Empire.",
+            "La romanisation : les peuples conquis adoptent la langue, les lois, la vie des Romains.",
+            "Les Romains construisent partout des routes, des thermes, des amphithéâtres, des aqueducs.",
+            "Un aqueduc : un canal qui amène l’eau d’une source jusqu’à une ville.",
+            "Des empereurs célèbres : Auguste, Néron, Trajan, Hadrien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-2-7",
+      "prompt": "Trajan\nEmpereur de 98 à 117 après J.-C.\nSous son règne, l’Empire atteint sa plus grande taille.\nUne colonne, à Rome, raconte ses victoires.",
+      "question": "Que se passe-t-il sous Trajan ?",
+      "spoken": "Trajan. Empereur de quatre-vingt-dix-huit à cent dix-sept après Jésus-Christ. Sous son règne, l’Empire atteint sa plus grande taille. Une colonne, à Rome, raconte ses victoires.",
+      "choices": [
+        "l’Empire atteint sa plus grande taille",
+        "l’Empire est coupé en deux",
+        "Rome est fondée"
+      ],
+      "answer": "l’Empire atteint sa plus grande taille",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "Sous Trajan, l’Empire est le plus grand de son histoire. La colonne Trajane, à Rome, raconte ses guerres contre les Daces.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Empire romain",
+          "lines": [
+            "La légion : une grande unité de l’armée, d’environ cinq mille soldats.",
+            "La Paix romaine (pax romana) : deux siècles sans grande guerre à l’intérieur de l’Empire.",
+            "La romanisation : les peuples conquis adoptent la langue, les lois, la vie des Romains.",
+            "Les Romains construisent partout des routes, des thermes, des amphithéâtres, des aqueducs.",
+            "Un aqueduc : un canal qui amène l’eau d’une source jusqu’à une ville.",
+            "Des empereurs célèbres : Auguste, Néron, Trajan, Hadrien."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-3e-ideas",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

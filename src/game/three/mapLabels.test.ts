@@ -298,17 +298,54 @@ const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
   // recours de la Carte (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026) : au 4e, vers les Puissances, la
   // Mondialisation se montre. Mesurés de nouveau avec les formes des Monts de Feu (GD-12, #407, 9 octobre 2026) : toujours
   // deux Cartes au 4e, les mêmes (sans le dernier recours, #407 en mesurait trois, avec la Mondialisation vers les Puissances).
-  '4e:english-4e-comprehension': ['french-4e-vocabulary'],
-  '4e:french-4e-agreement': ['lv2-4e-daily-life'],
-  '3e:english-3e-grammar': ['lv2-3e-travel'],
+  // EMC et latin-grec 4e/3e, accepté par le mainteneur le 10 octobre 2026 (en attente) : la Colonnade des cités,
+  // au flanc ouest, île au rang du fond derrière une île du second rang, se tait vers quatre destinations ; vers la
+  // Compréhension et vers les Accords, plus aucun nom tu.
+  '4e:english-4e-grammar': ['lca-4e-cities'],
+  '4e:french-4e-vocabulary': ['lca-4e-cities'],
+  '4e:physics-chemistry-4e-signals-circuits': ['lca-4e-cities'],
+  '4e:technology-4e-modeling': ['lca-4e-cities'],
+  // Au 3e, depuis une forme par île (GD-12, 9 octobre 2026), le bonhomme sur le Kiosque des témoins, à l'ouest : le cadre
+  // a 32 cases de plus vers le fond. Huit Cartes taisaient un nom (une avant), jamais plus d'un. Depuis la relecture du
+  // 9 octobre 2026 (les îles à huit cases de leurs voisines, sauf quatre paires réunies), sept Cartes, huit noms : vers le
+  // Studio des ondes, au coin de l'ouest, le Plateau et le Tremplin, au bord est, se taisent ensemble (régression, au
+  // pilotage ; d'autres places essayées en taisaient de huit à onze, ou sortaient le grand phare de la vue de
+  // l'Observatoire des textes). Cinq Cartes, six noms, depuis le dernier recours de la Carte (`ECART_DU_DERNIER_RECOURS`,
+  // référent dys, 9 octobre 2026) : vers la Géométrie et vers la Grammaire, plus aucun.
+  // EMC et latin-grec 4e/3e, accepté par le mainteneur le 10 octobre 2026 (en attente) : le Forum des débats et
+  // le Bosquet des sages au rang du fond, le cadre s'allonge ; en portrait, les îles des coins du fond (le Verger, le
+  // Kiosque, l'Observatoire des textes, le Plateau) se taisent : onze Cartes, trois noms au plus (douze Cartes et
+  // quatre noms vers le Château des hypothèses, au-delà du plafond de trois du référent dys, avant que l'île du bonhomme
+  // entre dans la place par sa terre entière, plus bas).
+  '3e:civics-3e-democratic-life': ['life-earth-sciences-3e-human-body'],
+  '3e:english-3e-comprehension': ['french-3e-close-reading', 'history-3e-twentieth-century', 'geography-3e-france'],
+  // Depuis que l'île du bonhomme entre dans la place par sa terre entière en portrait (`cadrageDeLaCarte`, DA, captures
+  // emc-4e-3e-1) : vers le Château des hypothèses, l'Observatoire des textes se montre, et vers le Plateau, plus aucun
+  // nom tu.
+  '3e:english-3e-grammar': ['maths-3e-statistics', 'geography-3e-france', 'life-earth-sciences-3e-human-body'],
+  '3e:french-3e-close-reading': ['maths-3e-statistics', 'life-earth-sciences-3e-human-body'],
+  '3e:lca-3e-ideas': ['geography-3e-france'],
+  '3e:life-earth-sciences-3e-human-body': ['french-3e-close-reading'],
+  '3e:maths-3e-functions': ['life-earth-sciences-3e-human-body'],
+  '3e:maths-3e-geometry': ['history-3e-twentieth-century'],
+  '3e:maths-3e-statistics': ['french-3e-close-reading', 'geography-3e-france', 'physics-chemistry-3e-motion-energy'],
+  '3e:physics-chemistry-3e-motion-energy': ['french-3e-close-reading'],
+  '3e:technology-3e-digital': ['geography-3e-france', 'physics-chemistry-3e-motion-energy'],
+  // Au 5e, depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec, 9 octobre 2026, mesuré) : vers le
+  // Marais des temps, le nom du Carrefour des homophones, son voisin, se tait.
+  '5e:french-5e-conjugation': ['french-5e-homophones'],
 };
 
 /**
  * Au 3e, en portrait, le bonhomme sur le Verger de la santé (la capture `sciences-college-carte-3e-800x1280`), vers la
- * destination du jeu tout construit (l'ouvrage depuis l'Observatoire des textes) : le Plateau des territoires se tait, dans
- * Luciole (la page le montre ainsi), son île dans le cadre.
+ * destination du jeu tout construit (l'ouvrage depuis l'Observatoire des textes) : aucun nom ne se taisait ; depuis une
+ * forme par île (GD-12, 9 octobre 2026), le Plateau des territoires se taisait, dans Luciole, son île dans le cadre ;
+ * depuis la relecture du 9 octobre 2026, l'Observatoire des textes, sa voisine, à sa place ; aucun depuis le dernier
+ * recours de la Carte (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026).
  */
-const TUS_EN_PORTRAIT_AU_VERGER: string[] = [];
+// EMC et latin-grec 4e/3e, accepté par le mainteneur le 10 octobre 2026 (en attente) : le Verger
+// de la santé, au coin du fond en portrait, se tait lui-même vers l'ouvrage du jeu tout construit.
+const TUS_EN_PORTRAIT_AU_VERGER: string[] = ['life-earth-sciences-3e-human-body'];
 
 /**
  * Au 3e, sur la tablette en OpenDyslexic 32 px, le bonhomme sur le Verger de la santé : les noms qui se taisent. Un seul
@@ -316,10 +353,12 @@ const TUS_EN_PORTRAIT_AU_VERGER: string[] = [];
  * encore trois depuis que la Carte cadre les lieux d'aujourd'hui : le Verger et le Kiosque sont en haut à droite, sous la
  * colonne des classes, qui prend la place de leurs noms. Quatre depuis que le cadrage compte le nom le plus haut monté
  * d'une demi-étiquette (`cadrageDeLaCarte`, consultant UX UI) : le Belvédère de Thalès, le Château des hypothèses, le
- * Kiosque et la Ruche des réseaux ; l'Observatoire des textes se montre. Deux depuis le dernier recours de la Carte
- * (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026) : le Château des hypothèses et la Ruche se montrent.
+ * Kiosque et la Ruche des réseaux ; l'Observatoire des textes se montre. Régression connue de GD-11, au pilotage. Un
+ * seul depuis une forme par île (GD-12, 9 octobre 2026) : le Kiosque des témoins ; aucun depuis la relecture du
+ * 9 octobre 2026 (les îles du Ciel à huit cases de leurs voisines) et le dernier recours de la Carte
+ * (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026).
  */
-const TUS_EN_OD32_AU_VERGER = ['maths-3e-geometry', 'history-3e-twentieth-century'];
+const TUS_EN_OD32_AU_VERGER: string[] = [];
 
 /**
  * La tablette en OpenDyslexic 32 px, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX
@@ -358,8 +397,33 @@ const TUS_VERS_UNE_DESTINATION: Partial<Record<ArchipelagoId, Record<string, str
   // taisait plus qu'un, mais coupait un morceau de plus du monde en blocs (six appels de plus) et défaisait sa réunion
   // avec le Cabinet.
   '4e': {
+    // EMC et latin-grec 4e/3e, accepté par le mainteneur le 10 octobre 2026 (en attente) : la Porte des libertés et la
+    // Colonnade des cités, îles au rang du fond derrière une île du second rang, se taisent vers l'Imprimerie et vers
+    // les Puissances.
+    'history-4e-revolutions': ['civics-4e-rights-freedoms'],
     'life-earth-sciences-4e-cells-evolution': ['geography-4e-globalization', 'technology-4e-modeling'],
+    'maths-4e-powers': ['lca-4e-cities'],
     'physics-chemistry-4e-signals-circuits': ['french-4e-vocabulary'],
+  },
+  // Au 5e, depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec, 9 octobre 2026, mesurés) : trois
+  // destinations taisent un ou deux noms. Vers le Glacier des relatifs, cinq se taisaient, au-delà du plafond de trois du
+  // référent dys (Bloquant du consultant UX UI) ; aucun depuis que la recherche d'un nom tu de moins laisse aussi de côté,
+  // à son tour, un nom montré (`chercherToutesLesPlaces`) : tous se posent, la Prairie des climats au dernier recours.
+  '5e': {
+    'english-5e-vocabulary': ['physics-chemistry-5e-matter-universe'],
+    'french-5e-homophones': ['geography-5e-resources', 'technology-5e-design'],
+    'geography-5e-resources': ['civics-5e-equality-solidarity'],
+  },
+};
+
+/**
+ * Les mêmes, dans Archipéo, là où ils diffèrent (« Restaurée » est plus large que « Bâtie », UX UI, SC-3) : au 5e,
+ * depuis le Fournil des partages et la Grotte des légendes (mesurés), vers le Glacier des relatifs, un seul nom se tait.
+ */
+const TUS_VERS_UNE_DESTINATION_DANS_ARCHIPEO: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
+  '5e': {
+    'english-5e-vocabulary': ['lca-5e-legends'],
+    'maths-5e-signed-numbers': ['life-earth-sciences-5e-active-planet'],
   },
 };
 
@@ -374,8 +438,23 @@ const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>
   // forme par île (GD-12, 9 octobre 2026), cinq flèches taisaient un nom chacune (aucune avant) ; trois depuis que le
   // Théâtre avance d'un pas et l'Imprimerie recule d'un pas (relecture du 9 octobre 2026) : le Bassin des maquettes, au
   // coin du fond, sous le panneau, depuis les deux bouts de l'ouvrage de l'Atelier à la Forge et depuis la Source vers la
-  // Forge (régression, au pilotage). Les deux îles d'histoire-géographie ne se taisent plus l'une vers l'autre.
-  '3e': { 'geography-3e-france-technology-3e-digital depuis geography-3e-france': ['technology-3e-digital'] },
+  // Forge (régression, au pilotage). Les deux îles d'histoire-géographie ne se taisent plus l'une vers l'autre. Aux Îles du
+  // Ciel, aucun depuis une forme par île (l'ouvrage entre le Plateau et la Ruche taisait la Ruche).
+  // Au 5e, depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec, 9 octobre 2026, mesurés) : cinq
+  // flèches taisent un ou deux noms.
+  '5e': {
+    'maths-5e-proportionality-french-5e-conjugation depuis french-5e-conjugation': ['lca-5e-legends'],
+    'maths-5e-signed-numbers-maths-5e-proportionality depuis maths-5e-proportionality': ['physics-chemistry-5e-matter-universe', 'lca-5e-legends'],
+    'maths-5e-signed-numbers-maths-5e-proportionality depuis maths-5e-signed-numbers': ['physics-chemistry-5e-matter-universe', 'lca-5e-legends'],
+    'technology-5e-design-lv2-5e-introductions depuis lv2-5e-introductions': ['civics-5e-equality-solidarity'],
+    'technology-5e-design-lv2-5e-introductions depuis technology-5e-design': ['physics-chemistry-5e-matter-universe'],
+  },
+  // EMC et latin-grec 4e/3e, accepté par le mainteneur le 10 octobre 2026 (en attente) : le Kiosque des témoins,
+  // au coin du fond, sous le panneau, depuis les deux bouts de l'ouvrage du Tremplin à la Ruche.
+  '3e': {
+    'physics-chemistry-3e-motion-energy-technology-3e-digital depuis physics-chemistry-3e-motion-energy': ['history-3e-twentieth-century'],
+    'physics-chemistry-3e-motion-energy-technology-3e-digital depuis technology-3e-digital': ['history-3e-twentieth-century'],
+  },
   '4e': {
     'maths-4e-algebra-maths-4e-powers depuis maths-4e-algebra': ['technology-4e-modeling'],
     'maths-4e-algebra-maths-4e-powers depuis maths-4e-powers': ['technology-4e-modeling'],
@@ -387,7 +466,12 @@ const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>
  * Les mêmes, dans Archipéo, là où ils diffèrent (« Restaurée » est plus large que « Bâtie », UX UI, SC-3) : aucun depuis
  * que la Carte cadre les lieux d'aujourd'hui (deux ponts du 5e y taisaient un nom de plus depuis GD-11).
  */
-const TUS_SUR_UN_OUVRAGE_DANS_ARCHIPEO: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {};
+const TUS_SUR_UN_OUVRAGE_DANS_ARCHIPEO: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
+  // Depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec de 5e, mesuré). Depuis les places à côté
+  // de l'île au dernier recours (`placesACote`, piste B du consultant UX UI, 9 octobre 2026), la Grotte des légendes se
+  // montre : un nom tu au lieu de deux.
+  '5e': { 'maths-5e-signed-numbers-maths-5e-proportionality depuis maths-5e-proportionality': ['life-earth-sciences-5e-active-planet'] },
+};
 
 /**
  * La tablette à l'ouverture de la Carte, en OpenDyslexic, le bonhomme sur la destination (il y est arrivé) : les noms
@@ -405,13 +489,31 @@ const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string,
   // témoins ne se tait plus que vers le Belvédère de Thalès (quatre destinations avant).
   // Au 5e, depuis une forme par île (GD-12, 9 octobre 2026), une seule destination : vers la Saline des mélanges, le
   // nom du Delta des ressources, sa voisine, se tait ; il n'est jamais posé sur une autre île (`ailleurs` vide). Aux Monts
-  // de Feu, depuis une forme par île, aucune (trois destinations avant).
+  // de Feu, depuis une forme par île, aucune (trois destinations avant). Au 3e, depuis une forme
+  // par île, cinq destinations taisaient chacune un nom (quatre destinations, huit noms avant) ; depuis la relecture du
+  // 9 octobre 2026, deux destinations, trois noms (vers l'Observatoire des données et vers la Ruche des réseaux).
+  // Au 5e, depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec, 9 octobre 2026, mesurés) : sept
+  // destinations, un nom chacune ; la Grotte et le Fournil, voisins au rang du fond, se taisent l'un vers l'autre.
   '5e': {
+    'civics-5e-equality-solidarity': ['lca-5e-legends'],
+    'french-5e-conjugation': ['french-5e-homophones'],
+    'lca-5e-legends': ['civics-5e-equality-solidarity'],
+    'life-earth-sciences-5e-active-planet': ['lca-5e-legends'],
+    'lv2-5e-introductions': ['physics-chemistry-5e-matter-universe'],
+    'maths-5e-proportionality': ['french-5e-conjugation'],
     'physics-chemistry-5e-matter-universe': ['geography-5e-resources'],
   },
+  // EMC et latin-grec 4e/3e, accepté par le mainteneur le 10 octobre 2026 (en attente) : au 4e, la Colonnade des
+  // cités et l'Imprimerie des révolutions, îles au rang du fond derrière une île du second rang, se taisent vers le
+  // Bassin et vers l'Escale ; au 3e, vers le Phare, l'Observatoire des textes et le Plateau, au coin du fond.
+  '4e': {
+    'geography-4e-globalization': ['history-4e-revolutions'],
+    'technology-4e-modeling': ['lca-4e-cities'],
+  },
   '3e': {
-    'maths-3e-statistics': ['french-3e-close-reading', 'geography-3e-france'],
-    'english-3e-grammar': ['technology-3e-digital'],
+    'maths-3e-functions': ['french-3e-close-reading', 'geography-3e-france'],
+    'maths-3e-statistics': ['geography-3e-france', 'physics-chemistry-3e-motion-energy'],
+    'technology-3e-digital': ['physics-chemistry-3e-motion-energy'],
   },
 };
 
@@ -478,12 +580,12 @@ const NOMS_MONTRES_AU_TELEPHONE: Record<string, number> = { 'history-6e-antiquit
  * Carte cadre les lieux d'aujourd'hui, plus aucun au 4e ; au 3e, le Kiosque des témoins, en haut à droite sous la colonne
  * des classes, n'avait pas de place. Depuis que le cadrage compte le nom le plus haut monté d'une demi-étiquette
  * (consultant UX UI), le Kiosque se montre en taille normale, mais le Belvédère de Thalès et l'Observatoire des textes se
- * taisent ; à ×1,1, le Kiosque se tait encore. Régression connue, au pilotage. Depuis le dernier recours de la Carte
- * (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026), le Belvédère se montre en taille normale.
+ * taisent ; à ×1,1, le Kiosque se tait encore. Régression connue, au pilotage. Depuis une forme par île (GD-12,
+ * 9 octobre 2026), en taille normale, l'Observatoire des textes se tait ; à ×1,1, le Plateau des territoires. Depuis
+ * la relecture du 9 octobre 2026 (les îles du Ciel à huit cases de leurs voisines) et le dernier recours de la Carte
+ * (`ECART_DU_DERNIER_RECOURS`, référent dys, 9 octobre 2026), plus aucun, en taille normale comme à ×1,1.
  */
 const TUS_EN_OD_A_L_OUVERTURE: Partial<Record<string, string[]>> = {
-  '3e:1': ['french-3e-close-reading'],
-  '3e:1.1': ['history-3e-twentieth-century'],
 };
 
 /**
@@ -777,7 +879,7 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
         const t = nomsTus(a, mot, 'atkinson-hyperlegible', 1, dest);
         if (t.length) tus[dest] = t;
       }
-      expect(tus, univers).toEqual(TUS_VERS_UNE_DESTINATION[a] ?? {});
+      expect(tus, univers).toEqual({ ...TUS_VERS_UNE_DESTINATION[a], ...(univers === 'archipeo' ? TUS_VERS_UNE_DESTINATION_DANS_ARCHIPEO[a] : {}) });
     }
   });
 
@@ -826,7 +928,7 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     30_000,
   );
 
-  it('3e, le bonhomme sur le Verger de la santé (les captures de SC-3), deux univers : en OpenDyslexic 32 px sur la tablette, les noms tus mesurés ; en portrait 800 × 1280, chaque île dans le cadre, chaque nom entier, aucun nom tu (référent dys, UX UI, SC-3)', () => {
+  it('3e, le bonhomme sur le Verger de la santé (les captures de SC-3), deux univers : en OpenDyslexic 32 px sur la tablette, les noms tus mesurés ; en portrait 800 × 1280, chaque île dans le cadre, chaque nom entier, les noms tus mesurés (référent dys, UX UI, SC-3)', () => {
     const ici: BiomeId = 'life-earth-sciences-3e-human-body';
     const destination = destinationDuJeu(ici);
     for (const [univers, mot] of Object.entries(ETATS)) {

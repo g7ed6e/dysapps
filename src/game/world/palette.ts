@@ -361,6 +361,18 @@ export const MATIERES: Record<TextureKind, Faces> = {
   strate: { dessus: 0x9a6a44, cote: 0x8a5a3a },
   sel: { dessus: 0xece8e2, cote: 0xc8ccd0 },
   bambou: { dessus: 0xcdb46a, cote: 0xb49c4e },
+  // La farine du Fournil : le blanc de la farine dessus, la toile de jute du sac sur les côtés (le motif reste à Blocland).
+  farine: { dessus: 0xf4e9cf, cote: 0xbfa274 },
+  // Le tuf de la Grotte : une pierre tendre rosée, plus rose que le fossile, loin du bambou (directeur artistique).
+  tuf: { dessus: 0xd6b4a0, cote: 0xb08e7c },
+  // Le pavé de la Porte : un granit gris bleuté ; la fresque de la Colonnade : l'enduit crème dessus, le rouge pompéien
+  // du panneau sur les côtés (propositions de l'artiste technique 3D ; le motif reste à Blocland).
+  pave: { dessus: 0x8f99a3, cote: 0x717b86 },
+  fresque: { dessus: 0xeadcc0, cote: 0xa94a3e },
+  // L'acajou du Forum : un bois rouge sombre ; le laurier du Bosquet : un vert sombre (propositions de l'artiste
+  // technique 3D ; le motif reste à Blocland).
+  acajou: { dessus: 0x8a4632, cote: 0x6c3022 },
+  laurier: { dessus: 0x5a7a40, cote: 0x46653a },
   petale: { dessus: 0xe88fb4, cote: 0xc8638e },
   bobine: { dessus: 0xc47a3c, cote: 0xb5652e },
   liege: { dessus: 0xb0785a, cote: 0x93603f },

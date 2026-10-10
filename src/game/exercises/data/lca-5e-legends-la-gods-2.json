@@ -1,0 +1,240 @@
+{
+  "id": "lca-5e-legends-la-gods-2",
+  "biome": "lca-5e-legends",
+  "type": "la-gods",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-5e-legends-la-gods-2-0",
+      "prompt": "Horatius Coclès\nLes Étrusques attaquent Rome.\nSeul sur un pont, Horatius Coclès les arrête.\nDerrière lui, les Romains détruisent le pont.",
+      "question": "Pourquoi Horatius Coclès est-il un héros pour les Romains ?",
+      "spoken": "Horatius Coclès. Les Étrusques attaquent Rome. Seul sur un pont, Horatius Coclès les arrête. Derrière lui, les Romains détruisent le pont.",
+      "choices": [
+        "il a construit le pont",
+        "il défend Rome seul, avec courage",
+        "il est devenu roi des Étrusques"
+      ],
+      "answer": "il défend Rome seul, avec courage",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "Horatius Coclès tient le pont seul pendant que les Romains le détruisent : les Étrusques ne passent pas. Tite-Live raconte cet exploit, un modèle de courage pour les Romains.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros de Rome, mots venus des dieux",
+          "lines": [
+            "Horatius Coclès défend seul un pont contre les Étrusques.",
+            "Clélie, prisonnière des Étrusques, s’enfuit à la nage avec d’autres jeunes filles.",
+            "Cincinnatus, un paysan, sauve Rome, puis retourne à ses champs.",
+            "Le poète Ovide raconte des métamorphoses : des transformations.",
+            "Narcisse aime son reflet ; Écho, une nymphe, divinité de la nature, ne peut que répéter.",
+            "Vulcain, dieu du feu, a donné « volcan » ; Cérès, déesse des moissons, « céréale »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-2-1",
+      "prompt": "Clélie, prisonnière du roi étrusque, s’enfuit avec d’autres jeunes filles en traversant le Tibre …",
+      "spoken": "Clélie, prisonnière du roi étrusque, s’enfuit avec d’autres jeunes filles en traversant le Tibre (mot manquant)",
+      "choices": [
+        "à la nage",
+        "en bateau",
+        "sur un pont"
+      ],
+      "answer": "à la nage",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Selon Tite-Live, Clélie traverse le Tibre à la nage avec d’autres jeunes filles. Admiratif, le roi étrusque lui rend la liberté.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros de Rome, mots venus des dieux",
+          "lines": [
+            "Horatius Coclès défend seul un pont contre les Étrusques.",
+            "Clélie, prisonnière des Étrusques, s’enfuit à la nage avec d’autres jeunes filles.",
+            "Cincinnatus, un paysan, sauve Rome, puis retourne à ses champs.",
+            "Le poète Ovide raconte des métamorphoses : des transformations.",
+            "Narcisse aime son reflet ; Écho, une nymphe, divinité de la nature, ne peut que répéter.",
+            "Vulcain, dieu du feu, a donné « volcan » ; Cérès, déesse des moissons, « céréale »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-2-2",
+      "prompt": "Cincinnatus sauve Rome, puis …",
+      "spoken": "Cincinnatus sauve Rome, puis  (mot manquant) ",
+      "choices": [
+        "devient roi",
+        "quitte Rome pour toujours",
+        "retourne cultiver ses champs"
+      ],
+      "answer": "retourne cultiver ses champs",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Cincinnatus reçoit tout le pouvoir pour sauver Rome ; la guerre gagnée, il le rend et retourne à ses champs. Les Romains admirent ce héros modeste.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros de Rome, mots venus des dieux",
+          "lines": [
+            "Horatius Coclès défend seul un pont contre les Étrusques.",
+            "Clélie, prisonnière des Étrusques, s’enfuit à la nage avec d’autres jeunes filles.",
+            "Cincinnatus, un paysan, sauve Rome, puis retourne à ses champs.",
+            "Le poète Ovide raconte des métamorphoses : des transformations.",
+            "Narcisse aime son reflet ; Écho, une nymphe, divinité de la nature, ne peut que répéter.",
+            "Vulcain, dieu du feu, a donné « volcan » ; Cérès, déesse des moissons, « céréale »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-2-3",
+      "prompt": "Le mot « volcan » vient du nom de …, le dieu romain du feu et de la forge.",
+      "spoken": "Le mot volcan vient du nom de (mot manquant), le dieu romain du feu et de la forge.",
+      "choices": [
+        "Vulcain",
+        "Mars",
+        "Neptune"
+      ],
+      "answer": "Vulcain",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Vulcain est le dieu du feu et de la forge ; selon la légende, sa forge est sous un volcan. Son nom a donné le mot « volcan ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros de Rome, mots venus des dieux",
+          "lines": [
+            "Horatius Coclès défend seul un pont contre les Étrusques.",
+            "Clélie, prisonnière des Étrusques, s’enfuit à la nage avec d’autres jeunes filles.",
+            "Cincinnatus, un paysan, sauve Rome, puis retourne à ses champs.",
+            "Le poète Ovide raconte des métamorphoses : des transformations.",
+            "Narcisse aime son reflet ; Écho, une nymphe, divinité de la nature, ne peut que répéter.",
+            "Vulcain, dieu du feu, a donné « volcan » ; Cérès, déesse des moissons, « céréale »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-2-4",
+      "prompt": "Narcisse, d’après Ovide\nNarcisse est un jeune homme très beau.\nIl se penche sur une source et voit son reflet.\nIl en tombe amoureux et ne le quitte plus.",
+      "question": "Une personne « narcissique » est une personne qui …",
+      "spoken": "Narcisse, d’après Ovide. Narcisse est un jeune homme très beau. Il se penche sur une source et voit son reflet. Il en tombe amoureux et ne le quitte plus.",
+      "choices": [
+        "aime les fleurs",
+        "aime trop sa propre image",
+        "aime les autres plus que soi"
+      ],
+      "answer": "aime trop sa propre image",
+      "hint": "Lis la dernière ligne du document : de qui Narcisse tombe-t-il amoureux ?",
+      "explanation": "Narcisse tombe amoureux de son propre reflet : une personne narcissique s’admire trop elle-même. Le narcisse, la fleur, porte aussi son nom, mais « narcissique » parle de l’image de soi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros de Rome, mots venus des dieux",
+          "lines": [
+            "Horatius Coclès défend seul un pont contre les Étrusques.",
+            "Clélie, prisonnière des Étrusques, s’enfuit à la nage avec d’autres jeunes filles.",
+            "Cincinnatus, un paysan, sauve Rome, puis retourne à ses champs.",
+            "Le poète Ovide raconte des métamorphoses : des transformations.",
+            "Narcisse aime son reflet ; Écho, une nymphe, divinité de la nature, ne peut que répéter.",
+            "Vulcain, dieu du feu, a donné « volcan » ; Cérès, déesse des moissons, « céréale »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-2-5",
+      "prompt": "Les céréales, comme le blé, doivent leur nom à …, la déesse des moissons.",
+      "spoken": "Les céréales, comme le blé, doivent leur nom à (mot manquant), la déesse des moissons.",
+      "choices": [
+        "Vénus",
+        "Minerve",
+        "Cérès"
+      ],
+      "answer": "Cérès",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Cérès est la déesse romaine des moissons ; « céréale » vient de son nom. Les Grecs l’appellent Déméter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros de Rome, mots venus des dieux",
+          "lines": [
+            "Horatius Coclès défend seul un pont contre les Étrusques.",
+            "Clélie, prisonnière des Étrusques, s’enfuit à la nage avec d’autres jeunes filles.",
+            "Cincinnatus, un paysan, sauve Rome, puis retourne à ses champs.",
+            "Le poète Ovide raconte des métamorphoses : des transformations.",
+            "Narcisse aime son reflet ; Écho, une nymphe, divinité de la nature, ne peut que répéter.",
+            "Vulcain, dieu du feu, a donné « volcan » ; Cérès, déesse des moissons, « céréale »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-2-6",
+      "prompt": "Dans la montagne, on crie et la voix revient : c’est l’écho. Ce mot vient d’une nymphe qui ne peut que …",
+      "spoken": "Dans la montagne, on crie et la voix revient : c’est l’écho. Ce mot vient d’une nymphe qui ne peut que  (mot manquant) ",
+      "choices": [
+        "chanter",
+        "répéter",
+        "se taire"
+      ],
+      "answer": "répéter",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Dans le récit d’Ovide, la nymphe Écho ne peut que répéter les derniers mots qu’elle entend : l’écho répète nos cris.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros de Rome, mots venus des dieux",
+          "lines": [
+            "Horatius Coclès défend seul un pont contre les Étrusques.",
+            "Clélie, prisonnière des Étrusques, s’enfuit à la nage avec d’autres jeunes filles.",
+            "Cincinnatus, un paysan, sauve Rome, puis retourne à ses champs.",
+            "Le poète Ovide raconte des métamorphoses : des transformations.",
+            "Narcisse aime son reflet ; Écho, une nymphe, divinité de la nature, ne peut que répéter.",
+            "Vulcain, dieu du feu, a donné « volcan » ; Cérès, déesse des moissons, « céréale »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-gods-2-7",
+      "prompt": "Ovide raconte des métamorphoses. Une métamorphose est une …",
+      "spoken": "Ovide raconte des métamorphoses. Une métamorphose est une  (mot manquant) ",
+      "choices": [
+        "transformation",
+        "bataille",
+        "fête"
+      ],
+      "answer": "transformation",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Une métamorphose est une transformation : chez Ovide, la nymphe Daphné devient un laurier. La chenille, elle aussi, se métamorphose en papillon.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros de Rome, mots venus des dieux",
+          "lines": [
+            "Horatius Coclès défend seul un pont contre les Étrusques.",
+            "Clélie, prisonnière des Étrusques, s’enfuit à la nage avec d’autres jeunes filles.",
+            "Cincinnatus, un paysan, sauve Rome, puis retourne à ses champs.",
+            "Le poète Ovide raconte des métamorphoses : des transformations.",
+            "Narcisse aime son reflet ; Écho, une nymphe, divinité de la nature, ne peut que répéter.",
+            "Vulcain, dieu du feu, a donné « volcan » ; Cérès, déesse des moissons, « céréale »."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-5e-legends",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -2,6 +2,7 @@
 // se touchent dans un carré de 48 pixels autour d'eux, les autres objets directement ; rien sur la Carte ni pendant le
 // voyage. Les bulles sont dessinées par ./signs.ts (signs.test.ts).
 import * as THREE from 'three';
+import { onTestFinished } from 'vitest';
 import type { BiomeId } from '../biomes';
 import { cleDeLObjet, SIGNE, signesDesObjets, zoneDuToucher, type EtatDuSigne, type ObjetTouche, type SigneDObjet, type ToucherDirect } from '../world/affordance';
 import { BIOMES } from '../biomes';
@@ -11,6 +12,7 @@ import { ARCHIPELAGO_IDS, archipelagoOfIsland } from '../world/archipelagos';
 import { linkWholeRegion, VOYAGES } from '../world/archipelago';
 
 import { HABILLAGES } from '../skin';
+import { DEFAULT_SETTINGS, retenirReglages } from '../../core/settings';
 import { creerAffordance } from './affordance';
 import { creerCamera } from './camera';
 import type { Derniers, Instant, Monde } from './scenePart';
@@ -95,6 +97,9 @@ it('au téléphone (390 × 844), toucher à côté de la borne la plus proche du
   // d'une borne, la borne gagne (`zoneRetenue`, world/affordance.test.ts).
   const liens = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => linkWholeRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
   const taille = { w: 390, h: 844 };
+  // Avec l'option latin : sans elle, la Grotte des légendes (GD-13) n'a aucune borne.
+  retenirReglages({ ...DEFAULT_SETTINGS, lca: 'la' });
+  onTestFinished(() => retenirReglages(null));
   for (const ile of BIOMES.filter((b) => guardianSpot(b.id).y <= QUEST_ROW + 1).map((b) => b.id)) {
     const a = archipelagoOfIsland(ile);
     const cubes = worldCubes(a, {}, { parts: {}, log: [], links: liens }, false);

@@ -508,6 +508,19 @@
     }
   },
   {
+    "id": "civics-5e-equality-solidarity-request-1",
+    "biome": "civics-5e-equality-solidarity",
+    "block": "geography-5e-resources",
+    "count": 3,
+    "fixture": "civics-5e-equality-solidarity-fixture-1",
+    "blocland": {
+      "name": "la table ronde",
+      "ask": "Il me faut {objet} pour ma table ronde. Joue une mission du Delta des ressources.",
+      "ready": "Tu as les {blocs} ! Livre-les à Mie.",
+      "done": "Table ronde posée chez Mie !"
+    }
+  },
+  {
     "id": "history-4e-revolutions-request-1",
     "biome": "history-4e-revolutions",
     "block": "french-4e-agreement",
@@ -573,6 +586,19 @@
     }
   },
   {
+    "id": "civics-4e-rights-freedoms-request-1",
+    "biome": "civics-4e-rights-freedoms",
+    "block": "life-earth-sciences-4e-cells-evolution",
+    "count": 3,
+    "fixture": "civics-4e-rights-freedoms-fixture-1",
+    "blocland": {
+      "name": "le panneau d’affichage",
+      "ask": "Il me faut {objet} pour mon panneau d’affichage. Joue une mission de la Source des espèces.",
+      "ready": "Tu as les {blocs} ! Livre-les à Loquet.",
+      "done": "Panneau d’affichage posé chez Loquet !"
+    }
+  },
+  {
     "id": "history-3e-twentieth-century-request-1",
     "biome": "history-3e-twentieth-century",
     "block": "maths-3e-statistics",
@@ -635,6 +661,19 @@
       "ask": "Il me faut {objet} pour mon carillon. Joue une mission du Tremplin des forces.",
       "ready": "Tu as les {blocs} ! Livre-les à Navette.",
       "done": "Carillon posé chez Navette !"
+    }
+  },
+  {
+    "id": "civics-3e-democratic-life-request-1",
+    "biome": "civics-3e-democratic-life",
+    "block": "life-earth-sciences-3e-human-body",
+    "count": 3,
+    "fixture": "civics-3e-democratic-life-fixture-1",
+    "blocland": {
+      "name": "le pupitre",
+      "ask": "Il me faut {objet} pour mon pupitre. Joue une mission du Verger de la santé.",
+      "ready": "Tu as les {blocs} ! Livre-les à Brio.",
+      "done": "Pupitre posé chez Brio !"
     }
   }
 ]

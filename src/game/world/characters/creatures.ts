@@ -783,6 +783,176 @@ const VOIX = fromLayers(
   },
 );
 
+// Mie : un capybara boulanger, à quatre pattes, de profil, la tête vers les x croissants : le corps en tonneau brun
+// roux, la grosse tête carrée au museau sombre, deux petites oreilles, les yeux sur les flancs de la tête ; sa toque
+// blanche de boulanger sur la tête et, sur le dos, un pain doré qu'il porte au fournil. Sans tablier ni insigne. Sept de
+// long, quatre de large, sept de haut. Cinq couleurs, les yeux compris (proposition de l'artiste technique 3D).
+const MIE = fromLayers(
+  [
+    ['.D..D..', '.......', '.......', '.D..D..'],
+    ['BBBBB..', 'BBBBB..', 'BBBBB..', 'BBBBB..'],
+    ['BBBBBB.', 'BBBBBBD', 'BBBBBBD', 'BBBBBB.'],
+    ['.BBBBEB', '.BBBBBB', '.BBBBBB', '.BBBBEB'],
+    ['....D..', '.PP.BB.', '.PP.BB.', '....D..'],
+    ['.......', '....TT.', '....TT.', '.......'],
+    ['.......', '...TTTT', '...TTTT', '.......'],
+  ],
+  {
+    B: '#8a5c3a',
+    D: '#3e2a1e',
+    // L'œil, sur le flanc de la tête : sombre de côté, le dessus brun (vu d'en haut, la tête reste unie).
+    E: { color: '#1f1a16', top: '#8a5c3a' },
+    P: '#d39a4c',
+    T: '#f6f2ea',
+  },
+);
+
+// Lyre : un gecko conteur, debout sur ses pattes de derrière, de face : jaune d'ocre semé de taches brunes, le ventre
+// clair, la grosse tête ronde aux yeux sur les côtés ; sa queue épaisse posée au sol derrière lui, en crosse ; les pieds
+// sous le corps, les doigts en avant (le corps les touche par une face). Il tient de la main droite sa petite lyre de
+// bois, tournée vers l'élève. Carrée, trois sur trois, elle se lisait de face comme un cadre, une porte ou un tableau
+// (DA, relecture des captures emc-5e-3) : la caisse étroite en bas, posée dans la main, deux bras plus écartés qui
+// montent, la traverse, dont les bouts des bras dépassent comme deux cornes, et entre eux trois cordes de laiton plus
+// claires, d'un clair et d'un mi-clair en alternance pour qu'elles se distinguent sans vide entre elles. Ni casque ni
+// couronne. Neuf de large, cinq de profond, neuf de haut. Sept couleurs, les yeux compris (proposition de l'artiste
+// technique 3D).
+const LYRE = fromLayers(
+  [
+    ['Y..Y.....', 'Y..Y.....', '.........', '.YY......', '..Y......'],
+    ['.........', 'YWWY.....', 'YYYY.....', '.Y.......', '.........'],
+    ['.........', 'YWWY.....', 'SYYS.....', '.........', '.........'],
+    ['...YYLLL.', 'YWWY.....', 'YYYY.....', '.........', '.........'],
+    ['....LCKCL', '.YY......', '.SS......', '.........', '.........'],
+    ['.YY.LCKCL', 'EYYE.....', 'YSYY.....', '.........', '.........'],
+    ['....LCKCL', 'YYYY.....', '.YY......', '.........', '.........'],
+    ['....LLLLL', '.........', '.........', '.........', '.........'],
+    ['....L...L', '.........', '.........', '.........', '.........'],
+  ],
+  {
+    Y: '#d8aa4a',
+    S: '#6e4a26',
+    W: '#f0e2b8',
+    E: { color: '#1f1a16', top: '#d8aa4a' },
+    L: '#8a5a2e',
+    // Les cordes : un laiton clair, et la corde du milieu un ton plus soutenu.
+    C: '#f6e8b4',
+    K: '#e2c27a',
+  },
+);
+
+// Loquet : un pangolin portier, debout sur ses pattes de derrière (le pangolin marche ainsi), de profil, la tête vers
+// les x croissants : le corps couvert d'écailles brun d'olive, en rangées décalées d'un bloc d'une rangée à l'autre,
+// une écaille sur deux plus sombre ; le ventre et le museau long et fin de peau claire ; la queue large et plate posée
+// au sol derrière lui, sur toute sa largeur (DA, captures emc-4e-3e-1). Il tient de sa patte, du côté de l'élève, la
+// grande clé de laiton de la porte, debout, son anneau en haut, son panneton en bas (un outil, jamais une arme). Ni
+// casquette ni uniforme ni insigne. Huit de long, quatre de large, neuf de haut. Six couleurs, les yeux compris
+// (proposition de l'artiste technique 3D).
+const LOQUET = fromLayers(
+  [
+    ['OS......', 'SO.DD...', 'OS.DD...', 'SO......'],
+    ['........', '.OSSS...', '.SOSS...', '........'],
+    ['...OS.KK', '..OSSF..', '..SOSF..', '...OS...'],
+    ['...SODK.', '..SOSF..', '..OSSF..', '...SO...'],
+    ['...OS.K.', '..OSOF..', '..SOSF..', '...OS...'],
+    ['......KK', '..SOSS..', '..OSOS..', '...SS...'],
+    ['........', '...SSFFF', '...SSFFF', '........'],
+    ['........', '...OSEF.', '...OSEF.', '........'],
+    ['........', '...SO...', '...SO...', '........'],
+  ],
+  {
+    S: '#7e6440',
+    O: '#54422a',
+    F: '#e0bfa0',
+    D: '#3e2a1e',
+    // L'œil, sur le côté de la tête : sombre de côté, le dessus de peau claire.
+    E: { color: '#1f1a16', top: '#e0bfa0' },
+    K: '#d6b04a',
+  },
+);
+
+// Figue : un âne porteur d'eau, à quatre pattes, de profil, la tête vers les x croissants, du côté d'où la caméra de
+// la Colonnade le regarde : la tête large, la face vers elle, le museau clair au milieu, un œil de chaque côté, les deux
+// longues oreilles dressées aux deux bords de la tête, écartées, leur bout sombre, la crinière sombre derrière (DA,
+// captures emc-4e-3e-1) ; gris, les sabots et la queue sombres ; sur le dos, le bât : une sangle sombre et, de chaque
+// côté, une jarre de terre cuite, l'eau au col. Sans harnais ni ornement. Neuf de long, quatre de large, neuf de haut.
+// Six couleurs, les yeux compris (proposition de l'artiste technique 3D).
+const FIGUE = fromLayers(
+  [
+    ['.........', '.D...D...', '.D...D...', '.........'],
+    ['.........', '.G...G...', '.G...G...', '.........'],
+    ['..JJ.....', 'DGGGGG...', '.GGGGG...', '..JJ.....'],
+    ['..JJ.....', '.GGGGGG..', '.GGGGGG..', '..JJ.....'],
+    ['..O......', '..D...G..', '..D...G..', '..O......'],
+    ['.......G.', '......GGM', '......GGM', '.......G.'],
+    ['.......GE', '......DGG', '......DGG', '.......GE'],
+    ['.......G.', '.........', '.........', '.......G.'],
+    ['.......D.', '.........', '.........', '.......D.'],
+  ],
+  {
+    G: '#8c8a86',
+    M: '#dcd6cc',
+    D: '#3e3634',
+    E: { color: '#1f1a16', top: '#8c8a86' },
+    J: '#c4703e',
+    // Le col de la jarre, l'eau dessus.
+    O: { color: '#c4703e', top: '#6ea8c8' },
+  },
+);
+
+// Brio : un macareux orateur, debout, de profil, le bec vers les x croissants : le dos, les ailes et la calotte noirs, le
+// plastron et la face blancs, le gros bec orange au bout rouge, les pattes orange. Il se tient droit, prêt à prendre la
+// parole, sans pupitre (le pupitre est sa commande) ni insigne. Sept de long, quatre de large, huit de haut. Cinq
+// couleurs, les yeux compris (proposition de l'artiste technique 3D).
+const BRIO = fromLayers(
+  [
+    ['.......', '..OOO..', '..OOO..', '.......'],
+    ['..KW...', '.KKWW..', '.KKWW..', '..KW...'],
+    ['..KW...', '.KKWW..', '.KKWW..', '..KW...'],
+    ['.KKW...', '.KKWW..', '.KKWW..', '.KKW...'],
+    ['..K....', '.KKWW..', '.KKWW..', '..K....'],
+    ['.......', '..KWW..', '..KWW..', '.......'],
+    ['.......', '..KWEOR', '..KWEOR', '.......'],
+    ['.......', '..KKK..', '..KKK..', '.......'],
+  ],
+  {
+    K: '#2a2a30',
+    W: '#f2efe6',
+    O: '#e8742a',
+    R: '#c8402a',
+    // L'œil, sur le côté de la face blanche.
+    E: { color: '#1f1a16', top: '#f2efe6' },
+  },
+);
+
+// Stylet : une huppe scribe, de profil, le bec vers les x croissants : le corps rose orangé, les ailes et la queue
+// rayées de noir et de blanc, la huppe orange aux pointes noires, le long bec fin et sombre. Du côté de l'élève, elle
+// tient debout sa tablette de cire, la cire claire devant, le cadre de bois dessus. Neuf de long, quatre de large, neuf
+// de haut. Huit couleurs, les yeux compris (proposition de l'artiste technique 3D).
+const STYLET = fromLayers(
+  [
+    ['.........', '...D.D...', '...D.D...', '.........'],
+    ['.........', '...D.D...', '...D.D...', '.........'],
+    ['......T..', '.BBPPP...', '.BBPPP...', '.........'],
+    ['..WBWBT..', 'BWBPPPP..', 'BWBPPPP..', '..WBWB...'],
+    ['..BWBWT..', '.BWPPPP..', '.BWPPPP..', '..BWBW...'],
+    ['.........', '....PPP..', '....PPP..', '.........'],
+    ['.........', '....PEPLL', '....PEPLL', '.........'],
+    ['.........', '..CCCC...', '..CCCC...', '.........'],
+    ['.........', '..BCBC...', '..BCBC...', '.........'],
+  ],
+  {
+    P: '#d89a6a',
+    B: '#1f1c1a',
+    W: '#f2ece0',
+    D: '#4a4440',
+    C: '#e08a3a',
+    L: '#3a3430',
+    // La tablette : la cire de face, le cadre de bois dessus.
+    T: { color: '#e0c060', top: '#8a5a34' },
+    E: { color: '#1f1a16', top: '#d89a6a' },
+  },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': MOUSSO,
   'french-6e-letter-confusion': TUNEL,
@@ -821,9 +991,12 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'life-earth-sciences-5e-active-planet': HUMUS,
   'physics-chemistry-5e-matter-universe': PERLE,
   'technology-5e-design': RABOT,
+  'civics-5e-equality-solidarity': MIE,
   'life-earth-sciences-4e-cells-evolution': NECTAR,
   'physics-chemistry-4e-signals-circuits': RADAR,
   'technology-4e-modeling': MANIVELLE,
+  'civics-4e-rights-freedoms': LOQUET,
+  'civics-3e-democratic-life': BRIO,
   'life-earth-sciences-3e-human-body': OLIVE,
   'physics-chemistry-3e-motion-energy': VIRAGE,
   'technology-3e-digital': NAVETTE,
@@ -836,4 +1009,7 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'english-3e-comprehension': ECHO,
   'english-3e-grammar': KNIGHT,
   'lv2-3e-travel': TIMBRE,
+  'lca-5e-legends': LYRE,
+  'lca-4e-cities': FIGUE,
+  'lca-3e-ideas': STYLET,
 };

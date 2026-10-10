@@ -1,0 +1,240 @@
+{
+  "id": "lca-5e-legends-la-cases-1",
+  "biome": "lca-5e-legends",
+  "type": "la-cases",
+  "level": 1,
+  "instruction": "Lis la phrase latine et sa traduction, ou la question, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-5e-legends-la-cases-1-0",
+      "prompt": "En latin, la fin du mot qui change selon sa fonction s’appelle le …",
+      "spoken": "En latin, la fin du mot qui change selon sa fonction s’appelle le  (mot manquant) ",
+      "choices": [
+        "cas",
+        "genre",
+        "temps"
+      ],
+      "answer": "cas",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Le cas, c’est la forme du mot selon sa fonction : rosa (sujet), rosam (complément d’objet). Le français le fait encore avec ses pronoms : il, le, lui.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le cas dit la fonction",
+          "lines": [
+            "En latin, la fin du mot change selon sa fonction : c’est le cas.",
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, le complément du nom (« de ») : ros-ae · domin-i",
+            "L’ordre des mots est libre : c’est la fin du mot qui compte.",
+            "Déclinaison : toutes les formes d’un mot ; rosa : 1re déclinaison, dominus : 2e."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-1-1",
+      "prompt": "Une phrase latine\nPuella rosam amat.\nLa jeune fille aime la rose.",
+      "question": "Dans cette phrase, quelle est la fonction de rosam ?",
+      "spoken": "Une phrase latine. Pouélla rossamm amatt. La jeune fille aime la rose.",
+      "choices": [
+        "sujet",
+        "complément d’objet direct",
+        "complément du nom"
+      ],
+      "answer": "complément d’objet direct",
+      "hint": "Regarde la fin du mot, puis compare-la avec le rappel.",
+      "explanation": "rosam finit en -am : c’est l’accusatif, le cas du complément d’objet direct. La jeune fille, puella, au nominatif, est le sujet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le cas dit la fonction",
+          "lines": [
+            "En latin, la fin du mot change selon sa fonction : c’est le cas.",
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, le complément du nom (« de ») : ros-ae · domin-i",
+            "L’ordre des mots est libre : c’est la fin du mot qui compte.",
+            "Déclinaison : toutes les formes d’un mot ; rosa : 1re déclinaison, dominus : 2e."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-1-2",
+      "prompt": "Le sujet d’une phrase latine est au …",
+      "spoken": "Le sujet d’une phrase latine est au  (mot manquant) ",
+      "choices": [
+        "génitif",
+        "accusatif",
+        "nominatif"
+      ],
+      "answer": "nominatif",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le sujet est au nominatif : rosa, dominus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le cas dit la fonction",
+          "lines": [
+            "En latin, la fin du mot change selon sa fonction : c’est le cas.",
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, le complément du nom (« de ») : ros-ae · domin-i",
+            "L’ordre des mots est libre : c’est la fin du mot qui compte.",
+            "Déclinaison : toutes les formes d’un mot ; rosa : 1re déclinaison, dominus : 2e."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-1-3",
+      "prompt": "Une phrase latine\nServum dominus vocat.\nLe maître appelle l’esclave.",
+      "question": "Pourquoi dominus est-il le sujet ?",
+      "spoken": "Une phrase latine. Sérwoumm dominouss wokatt. Le maître appelle l’esclave.",
+      "choices": [
+        "parce qu’il est au nominatif",
+        "parce qu’il est le premier mot",
+        "parce qu’il est à l’accusatif"
+      ],
+      "answer": "parce qu’il est au nominatif",
+      "hint": "Relis la cinquième ligne du rappel : l’ordre des mots compte-t-il ?",
+      "explanation": "dominus est au nominatif : c’est le sujet, même s’il n’est pas en premier. servum finit en -um : c’est l’accusatif, le complément. En latin, l’ordre des mots est libre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le cas dit la fonction",
+          "lines": [
+            "En latin, la fin du mot change selon sa fonction : c’est le cas.",
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, le complément du nom (« de ») : ros-ae · domin-i",
+            "L’ordre des mots est libre : c’est la fin du mot qui compte.",
+            "Déclinaison : toutes les formes d’un mot ; rosa : 1re déclinaison, dominus : 2e."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-1-4",
+      "prompt": "À quel cas est le mot dominum ?",
+      "spoken": "À quel cas est le mot dominoumm ?",
+      "choices": [
+        "nominatif",
+        "accusatif",
+        "génitif"
+      ],
+      "answer": "accusatif",
+      "hint": "Compare la fin du mot avec les lignes du rappel.",
+      "explanation": "dominum finit en -um : c’est l’accusatif de dominus, le cas du complément d’objet direct.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le cas dit la fonction",
+          "lines": [
+            "En latin, la fin du mot change selon sa fonction : c’est le cas.",
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, le complément du nom (« de ») : ros-ae · domin-i",
+            "L’ordre des mots est libre : c’est la fin du mot qui compte.",
+            "Déclinaison : toutes les formes d’un mot ; rosa : 1re déclinaison, dominus : 2e."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-1-5",
+      "prompt": "Quel mot est au génitif, le cas du complément du nom ?",
+      "choices": [
+        "rosa",
+        "rosam",
+        "rosae"
+      ],
+      "answer": "rosae",
+      "hint": "Cherche le génitif dans le rappel.",
+      "explanation": "rosae est au génitif : « de la rose ». Par exemple, odor rosae, le parfum de la rose.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le cas dit la fonction",
+          "lines": [
+            "En latin, la fin du mot change selon sa fonction : c’est le cas.",
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, le complément du nom (« de ») : ros-ae · domin-i",
+            "L’ordre des mots est libre : c’est la fin du mot qui compte.",
+            "Déclinaison : toutes les formes d’un mot ; rosa : 1re déclinaison, dominus : 2e."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-1-6",
+      "prompt": "Une phrase latine\nLupa geminos nutrit.\nLa louve nourrit les jumeaux.",
+      "question": "Quel mot latin est le sujet ?",
+      "spoken": "Une phrase latine. Loupa guéminoss noutritt. La louve nourrit les jumeaux.",
+      "choices": [
+        "lupa",
+        "geminos",
+        "nutrit"
+      ],
+      "answer": "lupa",
+      "hint": "Qui nourrit ? Cherche ce mot dans la phrase latine.",
+      "explanation": "lupa, la louve, est au nominatif, comme rosa : c’est le sujet. geminos, les jumeaux, est à l’accusatif pluriel : le complément. nutrit est le verbe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le cas dit la fonction",
+          "lines": [
+            "En latin, la fin du mot change selon sa fonction : c’est le cas.",
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, le complément du nom (« de ») : ros-ae · domin-i",
+            "L’ordre des mots est libre : c’est la fin du mot qui compte.",
+            "Déclinaison : toutes les formes d’un mot ; rosa : 1re déclinaison, dominus : 2e."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-1-7",
+      "prompt": "En français aussi, les pronoms changent selon leur fonction : « il » est sujet, « le » est …",
+      "spoken": "En français aussi, les pronoms changent selon leur fonction : le pronom il est sujet ; le pronom le est (mot manquant)",
+      "choices": [
+        "sujet",
+        "complément du nom",
+        "complément d’objet direct"
+      ],
+      "answer": "complément d’objet direct",
+      "hint": "Remplace dans une phrase : « Je vois le chien » devient « Je le vois ».",
+      "explanation": "« le » remplace un complément d’objet direct : « je le vois ». Comme le latin, le français change la forme de ses pronoms selon la fonction : il, le, lui.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le cas dit la fonction",
+          "lines": [
+            "En latin, la fin du mot change selon sa fonction : c’est le cas.",
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, le complément du nom (« de ») : ros-ae · domin-i",
+            "L’ordre des mots est libre : c’est la fin du mot qui compte.",
+            "Déclinaison : toutes les formes d’un mot ; rosa : 1re déclinaison, dominus : 2e."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-5e-legends",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

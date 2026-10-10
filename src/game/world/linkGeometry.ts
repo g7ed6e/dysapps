@@ -149,8 +149,24 @@ interface LinksState {
 
 const states = layoutCache<string, LinksState>();
 
+/**
+ * Le dernier appel de `stateOf` de chaque région, sa liste `built` recopiée : les règles redemandent le tracé pour la
+ * même liste des milliers de fois de suite (chaque liaison de `buildableBridges`, de `linksToIsland`…), et la comparer
+ * coûte moins que refaire ses liaisons posées et leur clé.
+ */
+const derniers = layoutCache<ArchipelagoId, { built: readonly string[]; etat: LinksState }>();
+
 /** Le tracé des liaisons posées d'une région (mémorisé par disposition et par liste de liaisons posées). */
 function stateOf(a: ArchipelagoId, built: readonly string[]): LinksState {
+  const dernier = derniers.get(a);
+  if (dernier && dernier.built.length === built.length && dernier.built.every((id, i) => id === built[i])) return dernier.etat;
+  const etat = tracerLesLiaisons(a, built);
+  derniers.set(a, { built: [...built], etat });
+  return etat;
+}
+
+/** Le tracé des liaisons posées d'une région, repris des listes déjà tracées (`states`) quand il le peut. */
+function tracerLesLiaisons(a: ArchipelagoId, built: readonly string[]): LinksState {
   const posees = placedOf(a, built);
   const cle = `${a}|${posees.map((b) => b.id).join(',')}`;
   let e = states.get(cle);

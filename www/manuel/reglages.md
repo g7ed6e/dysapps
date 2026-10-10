@@ -58,7 +58,7 @@ Au menu, la LV2 prend le nom de la langue choisie, à côté de l’anglais. Ses
 
 Certains collégiens suivent, de la 5e à la 3e, l’option **latin** ou l’option **grec** (langues et cultures de l’Antiquité). Le réglage **Option latin ou grec** propose **Latin**, **Grec** ou **Pas d’option**, le choix par défaut. Il ne dépend pas de la LV2 : un élève peut avoir l’espagnol et le latin, ou pas de LV2 et le grec. Le choix est gardé sur l’appareil et se change à tout moment : ce qui est construit reste, et chaque option garde ses étoiles.
 
-Avec **Pas d’option**, l’option n’apparaît nulle part, et rien dans le jeu n’en dépend. Avec une option, elle prendra au menu le nom de l’option choisie (« Latin » ou « Grec ») et ses missions seront sur une île de chaque archipel, de la 5e à la 3e, en bout de chemin, comme la LV2. Ces îles ne sont pas encore dans le monde : pour l’instant, le choix est seulement gardé.
+Avec **Pas d’option**, l’option n’apparaît nulle part, et rien dans le jeu n’en dépend. Avec une option, elle prend au menu le nom de l’option choisie (« Latin » ou « Grec »), et ses missions sont sur une île de chaque archipel, de la 5e à la 3e, en bout de chemin, comme la LV2. Ce sont la **Grotte des légendes** en 5e, la **Colonnade des cités** en 4e et le **Bosquet des sages** en 3e (voir [Le monde de Blocland](blocland.md)).
 
 Les mots latins et grecs ne sont jamais découpés en syllabes colorées : ils s’affichent tels quels, et la voix les dit avec une seule prononciation, toujours la même (voir [Principes dys](../pedagogie/principes.md)).
 

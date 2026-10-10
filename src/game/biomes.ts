@@ -54,19 +54,25 @@ export const BIOME_IDS = [
   'life-earth-sciences-5e-active-planet',
   'physics-chemistry-5e-matter-universe',
   'technology-5e-design',
+  'civics-5e-equality-solidarity',
   'history-4e-revolutions',
   'geography-4e-globalization',
   'life-earth-sciences-4e-cells-evolution',
   'physics-chemistry-4e-signals-circuits',
   'technology-4e-modeling',
+  'civics-4e-rights-freedoms',
   'history-3e-twentieth-century',
   'geography-3e-france',
   'life-earth-sciences-3e-human-body',
   'physics-chemistry-3e-motion-energy',
   'technology-3e-digital',
+  'civics-3e-democratic-life',
   'lv2-5e-introductions',
   'lv2-4e-daily-life',
   'lv2-3e-travel',
+  'lca-5e-legends',
+  'lca-4e-cities',
+  'lca-3e-ideas',
 ] as const;
 export type BiomeId = (typeof BIOME_IDS)[number];
 
@@ -120,17 +126,23 @@ export type BlockId =
   | 'life-earth-sciences-5e-active-planet'
   | 'physics-chemistry-5e-matter-universe'
   | 'technology-5e-design'
+  | 'civics-5e-equality-solidarity'
   | 'life-earth-sciences-4e-cells-evolution'
   | 'physics-chemistry-4e-signals-circuits'
   | 'technology-4e-modeling'
+  | 'civics-4e-rights-freedoms'
   | 'life-earth-sciences-3e-human-body'
   | 'physics-chemistry-3e-motion-energy'
   | 'technology-3e-digital'
+  | 'civics-3e-democratic-life'
   | 'trophy-gold'
   | 'trophy-crystal'
   | 'lv2-5e-introductions'
   | 'lv2-4e-daily-life'
   | 'lv2-3e-travel'
+  | 'lca-5e-legends'
+  | 'lca-4e-cities'
+  | 'lca-3e-ideas'
   | 'compound-6e'
   | 'compound-5e'
   | 'compound-4e'
@@ -191,15 +203,21 @@ export const BLOC = {
   strate: 'life-earth-sciences-5e-active-planet',
   sel: 'physics-chemistry-5e-matter-universe',
   bambou: 'technology-5e-design',
+  farine: 'civics-5e-equality-solidarity',
   petale: 'life-earth-sciences-4e-cells-evolution',
   bobine: 'physics-chemistry-4e-signals-circuits',
   liege: 'technology-4e-modeling',
+  pave: 'civics-4e-rights-freedoms',
   savon: 'life-earth-sciences-3e-human-body',
   ressort: 'physics-chemistry-3e-motion-energy',
   cire: 'technology-3e-digital',
+  acajou: 'civics-3e-democratic-life',
   dalle: 'lv2-5e-introductions',
   osier: 'lv2-4e-daily-life',
   bardeau: 'lv2-3e-travel',
+  tuf: 'lca-5e-legends',
+  fresque: 'lca-4e-cities',
+  laurier: 'lca-3e-ideas',
   poutre: 'compound-6e',
   vitrail: 'compound-5e',
   engrenage: 'compound-4e',
@@ -276,17 +294,23 @@ export type BlockTexture =
   | 'strate'
   | 'sel'
   | 'bambou'
+  | 'farine'
   | 'petale'
   | 'bobine'
   | 'liege'
+  | 'pave'
   | 'savon'
   | 'ressort'
   | 'cire'
+  | 'acajou'
   | 'or'
   | 'cristal'
   | 'dalle'
   | 'osier'
   | 'bardeau'
+  | 'tuf'
+  | 'fresque'
+  | 'laurier'
   | 'poutre'
   | 'vitrail'
   | 'engrenage'
@@ -379,18 +403,33 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   'physics-chemistry-5e-matter-universe': { id: 'physics-chemistry-5e-matter-universe', name: 'Sel', top: '#ece8e2', side: '#c8ccd0', texture: 'sel' },
   // Le bloc de la Menuiserie des objets (technologie, 5e) : des cannes de bambou, leurs bouts ronds dessus, verticales sur les côtés, nœuds #6f7a34.
   'technology-5e-design': { id: 'technology-5e-design', name: 'Bambou', top: '#cdb46a', side: '#b49c4e', texture: 'bambou' },
+  // Le bloc du Fournil des partages (EMC, 5e) : un sac de farine, la toile de jute brun clair tissée en croix sur les
+  // côtés, la farine blanc chaud qui déborde en haut, le dessus de farine poudrée de son (couleurs du directeur
+  // artistique, 9 octobre 2026). Distinct du sel (des cristaux cernés), de la craie (des bâtons sur
+  // l'ardoise) et du sable (un grain seul) par la trame de la toile et la bande de farine.
+  'civics-5e-equality-solidarity': { id: 'civics-5e-equality-solidarity', name: 'Farine', top: '#f4e9cf', side: '#bfa274', texture: 'farine' },
   // Le bloc de la Source des espèces (SVT, 4e) : des pétales roses en écailles, un cœur jaune.
   'life-earth-sciences-4e-cells-evolution': { id: 'life-earth-sciences-4e-cells-evolution', name: 'Pétale', top: '#e88fb4', side: '#c8638e', texture: 'petale' },
   // Le bloc de la Vigie des signaux (physique-chimie, 4e) : du fil de cuivre enroulé, l’axe gris dessus, les spires #8a4a22 sur les côtés.
   'physics-chemistry-4e-signals-circuits': { id: 'physics-chemistry-4e-signals-circuits', name: 'Bobine', top: '#c47a3c', side: '#b5652e', texture: 'bobine' },
   // Le bloc du Bassin des maquettes (technologie, 4e) : du liège cannelle moucheté de #4e3020 et de #d0a070.
   'technology-4e-modeling': { id: 'technology-4e-modeling', name: 'Liège', top: '#b0785a', side: '#93603f', texture: 'liege' },
+  // Le bloc de la Porte des libertés (EMC, 4e) : des pavés de granit gris bleuté, bombés, en rangs décalés, leurs joints
+  // de sable sombre, un reflet clair en haut de chaque pavé (proposition de l'artiste technique 3D, à valider par le
+  // directeur artistique). Distinct de la pierre (mouchetée de gris neutre), de la dalle (grandes dalles beiges), de la
+  // pierre de taille (blocs crème) et du galet (bleu, rond) par ses petits pavés en rangs et sa teinte.
+  'civics-4e-rights-freedoms': { id: 'civics-4e-rights-freedoms', name: 'Pavé', top: '#8f99a3', side: '#717b86', texture: 'pave' },
   // Le bloc du Verger de la santé (SVT, 3e) : un savon vert menthe, une rainure et un ovale en relief #d8f0e4.
   'life-earth-sciences-3e-human-body': { id: 'life-earth-sciences-3e-human-body', name: 'Savon', top: '#a6d8c0', side: '#86bfa4', texture: 'savon' },
   // Le bloc du Tremplin des forces (physique-chimie, 3e) : un métal gris, un ressort en zigzag laiton #d6b04a.
   'physics-chemistry-3e-motion-energy': { id: 'physics-chemistry-3e-motion-energy', name: 'Ressort', top: '#5a606a', side: '#4a4f58', texture: 'ressort' },
   // Le bloc de la Ruche des réseaux (technologie, 3e) : de la cire couleur miel, des alvéoles en traits fins #8f5f1e.
   'technology-3e-digital': { id: 'technology-3e-digital', name: 'Cire', top: '#d9a03c', side: '#b98030', texture: 'cire' },
+  // Le bloc du Forum des débats (EMC, 3e) : de l'acajou, un bois rouge et solide, en planches debout, leur fil plus
+  // sombre, un reflet ciré sur chaque planche ; le dessus, le bout des planches et ses cernes (proposition de l'artiste
+  // technique 3D, à valider par le directeur artistique). Distinct du toit et de la brique (rouges, sans fil de bois),
+  // du lambris (brun, sans rouge) et des planches (claires) par sa teinte et ses planches debout.
+  'civics-3e-democratic-life': { id: 'civics-3e-democratic-life', name: 'Acajou', top: '#8a4632', side: '#6c3022', texture: 'acajou' },
   'trophy-gold': { id: 'trophy-gold', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   'trophy-crystal': { id: 'trophy-crystal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Le bloc du Relais des voyageurs (LV2, 5e) : des dalles de 8 × 8 décalées, distinctes de la pierre de taille par le motif.
@@ -401,6 +440,21 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // Le bloc du Refuge des carnets (LV2, 3e) : des bardeaux de bois en écailles décalées, au bas arrondi, distincts de la
   // tuile, de la brique et de la dalle par le motif ; un bois brun chaud, jamais gris comme la pierre.
   'lv2-3e-travel': { id: 'lv2-3e-travel', name: 'Bardeau', top: '#96724e', side: '#7c5c3e', texture: 'bardeau' },
+  // Le bloc de la Grotte des légendes (latin-grec, 5e) : du tuf, la pierre tendre des grottes, rosé, semé de pores
+  // sombres bordés d'un pixel clair (couleurs du directeur artistique, 9 octobre 2026). Distinct du fossile (une
+  // spirale), du grès rose (des assises roses), du bambou et de la pierre (mouchetée de gris) par les pores et sa teinte.
+  'lca-5e-legends': { id: 'lca-5e-legends', name: 'Tuf', top: '#d6b4a0', side: '#b08e7c', texture: 'tuf' },
+  // Le bloc de la Colonnade des cités (latin-grec, 4e) : une fresque de maison romaine, sur le côté une frise ocre jaune
+  // en haut, un panneau rouge pompéien cerné d'un filet crème, une guirlande verte au milieu, le bas sombre ; le dessus,
+  // l'enduit crème, bordé d'un filet rouge (proposition de l'artiste technique 3D, à valider par le directeur
+  // artistique). Distincte de la brique (des rangs et du mortier), de la tuile (des écailles) et du toit par ses bandes
+  // peintes et son filet.
+  'lca-4e-cities': { id: 'lca-4e-cities', name: 'Fresque', top: '#eadcc0', side: '#a94a3e', texture: 'fresque' },
+  // Le bloc du Bosquet des sages (latin-grec, 3e) : du laurier, des feuilles longues et pointues, vert sombre et lustré,
+  // deux à deux le long de tiges en biais, leur nervure plus claire (proposition de l'artiste technique 3D, à valider par
+  // le directeur artistique). Distinct du feuillage des arbres (des touffes rondes), de la rizière (vert tendre) et de la
+  // craie (vert de gris) par ses feuilles en épi et son vert sombre.
+  'lca-3e-ideas': { id: 'lca-3e-ideas', name: 'Laurier', top: '#5a7a40', side: '#46653a', texture: 'laurier' },
   // Blocs assemblés (GD-2) : aucune île ne les donne, on les assemble sur l'île de l'école (world/assembly.ts). Leur nom
   // ici est celui de Blocland ; chaque univers donne le sien, écrit dans docs/contenu/assemblage.md.
   'compound-6e': { id: 'compound-6e', name: 'Poutre', top: '#dcba86', side: '#c49a64', texture: 'poutre', assemble: true },
@@ -436,7 +490,7 @@ export function ofBlock(id: BlockId): string {
  * dys). Les autres blocs sont des objets qu’on compte : « 5 toits », « 2 lanternes ».
  */
 const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
-  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'civics-6e-democratic-society', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'physics-chemistry-5e-matter-universe', 'technology-5e-design', 'technology-4e-modeling', 'life-earth-sciences-3e-human-body', 'technology-3e-digital', 'trophy-gold'],
+  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'civics-6e-democratic-society', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'physics-chemistry-5e-matter-universe', 'technology-5e-design', 'civics-5e-equality-solidarity', 'lca-5e-legends', 'civics-3e-democratic-life', 'lca-3e-ideas', 'technology-4e-modeling', 'life-earth-sciences-3e-human-body', 'technology-3e-digital', 'trophy-gold'],
 );
 
 /** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */

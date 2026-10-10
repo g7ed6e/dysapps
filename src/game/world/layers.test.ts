@@ -86,6 +86,8 @@ const GRILLE = [
   'world/terrain/sea',
   'world/terrain/port',
   'world/terrain/monuments',
+  // Le parvis des îles au cœur d'herbe (EMC et latin-grec du 4e et du 3e) : l'allée et sa bordure, en repère d'île.
+  'world/terrain/parvis',
   'world/decor',
   'world/whalePass',
   'world/grid',

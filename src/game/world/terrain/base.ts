@@ -5,6 +5,7 @@ import { fadeRgb, hexToRgb } from '../../../core/color';
 import { BASALT, CRYSTAL, GRASS, HAY, LAVA, LEAF, MOSS, PINE, SNOW, TRUNK, WATER } from '../decor';
 import { type BiomeId, BIOMES, BLOC, BLOCKS } from '../../biomes';
 import { ARCHIPELAGOS } from '../archipelago';
+import { ILES_A_PARVIS } from './parvis';
 
 /** Côté du cœur d'origine d'une île (en blocs) : le repère des clés ; l'étendue du cœur d'une île est `coeurDe` (./map). */
 export const ISLAND = CORE;
@@ -17,9 +18,16 @@ const TAPER = 3;
 
 /** Couleur délavée d'une île verrouillée (même calcul que la texture délavée en 3D). */
 export function fade(color: string): string {
-  const [r, g, b] = fadeRgb(...hexToRgb(color)).map(Math.round);
-  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+  let delavee = DELAVEES.get(color);
+  if (delavee === undefined) {
+    const [r, g, b] = fadeRgb(...hexToRgb(color)).map(Math.round);
+    DELAVEES.set(color, (delavee = `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`));
+  }
+  return delavee;
 }
+
+/** Les couleurs déjà délavées : une île fermée en demande des milliers, de quelques dizaines de couleurs. */
+const DELAVEES = new Map<string, string>();
 
 /** Textures 3D par couleur de décor (les couleurs servent aussi à la vue simple et aux îles verrouillées). */
 export const TEXTURES: Record<string, string> = {
@@ -73,9 +81,15 @@ export const TEXTURES: Record<string, string> = {
   [BLOCKS[BLOC.strate].side]: 'strate',
   [BLOCKS[BLOC.sel].side]: 'sel',
   [BLOCKS[BLOC.bambou].side]: 'bambou',
+  [BLOCKS[BLOC.farine].side]: 'farine',
+  [BLOCKS[BLOC.tuf].side]: 'tuf',
   [BLOCKS[BLOC.petale].side]: 'petale',
   [BLOCKS[BLOC.bobine].side]: 'bobine',
   [BLOCKS[BLOC.liege].side]: 'liege',
+  [BLOCKS[BLOC.pave].side]: 'pave',
+  [BLOCKS[BLOC.fresque].side]: 'fresque',
+  [BLOCKS[BLOC.acajou].side]: 'acajou',
+  [BLOCKS[BLOC.laurier].side]: 'laurier',
   [BLOCKS[BLOC.savon].side]: 'savon',
   [BLOCKS[BLOC.ressort].side]: 'ressort',
   [BLOCKS[BLOC.cire].side]: 'cire',
@@ -178,10 +192,19 @@ const VENUES_AU_MILIEU: readonly string[] = [
 ];
 
 /**
- * Les îles entrées au milieu de la liste après les précédentes (l'EMC, EMC-2) : elles ne comptent dans le rang d'aucune
- * île, pas même des îles venues au milieu (`VENUES_AU_MILIEU`), dont le relief ne bouge pas non plus.
+ * Les îles entrées au milieu de la liste après les précédentes (l'EMC, EMC-2 ; le latin-grec, LCA-2 ; de la 6e à la 3e) : elles ne
+ * comptent dans le rang d'aucune île, pas même des îles venues au milieu (`VENUES_AU_MILIEU`), dont le relief ne bouge
+ * pas non plus.
  */
-const ENTREES_ENSUITE: readonly string[] = ['civics-6e-democratic-society'];
+const ENTREES_ENSUITE: readonly string[] = [
+  'civics-6e-democratic-society',
+  'civics-5e-equality-solidarity',
+  'lca-5e-legends',
+  'civics-4e-rights-freedoms',
+  'lca-4e-cities',
+  'civics-3e-democratic-life',
+  'lca-3e-ideas',
+];
 
 let rangsDuDessin: readonly number[] | undefined;
 
@@ -202,6 +225,11 @@ export function groundHeight(index: number, x: number, y: number): number {
   const ly = y - LAYOUT_PAD.y;
   if (lx < 0 || ly < 0 || lx >= LAYOUT || ly >= LAYOUT) return 0;
   if (x >= FIN_DU_PLATEAU_DES_ECOLES && estIndexDEcole(index)) return 0;
+  // Sur une île à parvis, le plateau tombait presque entier sur l'allée et sa bordure : sa marche d'herbe chevauchait le
+  // parvis près du bord de devant, et une bande d'une case restait seule à côté (DA, captures emc-4e-3e-2, 10 octobre
+  // 2026). Le cœur y reste plat : le parvis va d'un seul niveau du bord de devant à l'ouvrage, dans les deux univers.
+  const id = BIOMES[index]?.id;
+  if (id && ILES_A_PARVIS.has(id)) return 0;
   const fromBack = LAYOUT - 1 - lx;
   const shape = rangDuDessin(index) % 3;
   // Le plateau est à l'arrière-droite, devant la zone des plans (qui reste plate).

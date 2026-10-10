@@ -91,6 +91,23 @@ export function isFixedPlace(id: BiomeId): boolean {
   return startingPlaces(archipelagoOfIsland(id)).includes(id);
 }
 
+/**
+ * Les lieux qui se déplacent mais ne tournent pas : aux Îles Brumeuses, depuis le Fournil des partages et la Grotte des
+ * légendes posés aux deux places que GD-12 gardait au rang du fond, le Marais des temps, le Comptoir et le Manoir du
+ * passé ne trouvent plus de place tournée ; plutôt que « Tourner » toujours refusé (« Pas de place »), ils n'ont pas de
+ * « Tourner » (directeur artistique, 9 octobre 2026). De même aux Îles du Ciel, depuis le Forum des débats et le Bosquet
+ * des sages, pour l'Observatoire des textes (proposition de l'artiste technique 3D, à valider par le directeur
+ * artistique). L'Escale des échanges (4e), qui n'en trouvait plus non plus depuis la Porte des libertés et la Colonnade
+ * des cités, la retrouve depuis que ces deux îles sont au flanc ouest (révision de GD-12, en attente du mot du
+ * mainteneur) : elle tourne de nouveau.
+ */
+const PLACES_THAT_DO_NOT_TURN: ReadonlySet<BiomeId> = new Set<BiomeId>(['french-5e-conjugation', 'english-5e-vocabulary', 'english-5e-grammar', 'french-3e-close-reading']);
+
+/** Le lieu a-t-il « Tourner » ? Tous, sauf ceux qui ne tournent pas (`PLACES_THAT_DO_NOT_TURN`). */
+export function placeTurns(id: BiomeId): boolean {
+  return !PLACES_THAT_DO_NOT_TURN.has(id);
+}
+
 /** La place d'un lieu sur la carte de départ, en pas depuis le coin du cadre de sa région. */
 export function startingSpot(id: BiomeId): LayoutSpot {
   const d = startingIsland(id);
@@ -704,7 +721,7 @@ export function turnIsland(world: World, id: BiomeId): ArrangeResult {
   const s = spotOf(world, id);
   const turn = ((s.turn + 1) % 4) as LayoutTurn;
   const ici = { ...s, turn };
-  if (groupOf(world, id).some(isFixedPlace)) return { ok: false, reason: 'fixe' };
+  if (groupOf(world, id).some((g) => isFixedPlace(g) || !placeTurns(g))) return { ok: false, reason: 'fixe' };
   if (isFreeSpot(world, id, ici)) return moveIsland(world, id, ici);
   const a = archipelagoOfIsland(id);
   const proche = nearestFreeSpot(world, id, middleOf(a, s), turn);
