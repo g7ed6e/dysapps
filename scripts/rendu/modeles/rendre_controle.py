@@ -1,19 +1,25 @@
-# Rendu de controle cote a cote (vue de trois quarts) de trois .glb : original, 1500 et 200 triangles.
+# Rendu de controle cote a cote (vue de trois quarts, depuis l'avant gauche) de plusieurs .glb.
 # Usage : blender -b -P rendre_controle.py -- original.glb v1500.glb v200.glb controle.png
+#         python3.11 rendre_controle.py -- [echelle] a.glb b.glb ... controle.png
+# Chaque modele est ramene a la meme taille, sauf avec « echelle » : tous gardent l'echelle du plus grand, pour comparer
+# une etape de chantier et le batiment entier, ou le modele de pres et sa version de loin (batiments.py).
 import bpy, sys, math
 from mathutils import Vector
 
 a = sys.argv[sys.argv.index("--") + 1:]
+commune = "echelle" in a
+a = [x for x in a if x != "echelle"]
+fichiers, sortie = a[:-1], a[-1]
 bpy.ops.wm.read_factory_settings(use_empty=True)
 s = bpy.context.scene
 s.render.engine = "BLENDER_WORKBENCH"
 s.display.shading.light = "STUDIO"
 s.display.shading.color_type = "VERTEX"
-s.render.resolution_x, s.render.resolution_y = 1536, 512
+s.render.resolution_x, s.render.resolution_y = 512 * len(fichiers), 512
 s.world = bpy.data.worlds.new("w"); s.world.color = (0.75, 0.75, 0.75)
 
-decalage = 0.0
-for chemin in a[:3]:
+lots = []
+for chemin in fichiers:
     avant = set(bpy.data.objects)
     bpy.ops.import_scene.gltf(filepath=chemin)
     objs = [o for o in bpy.data.objects if o not in avant and o.type == "MESH"]
@@ -21,16 +27,29 @@ for chemin in a[:3]:
         o.data.transform(o.matrix_world); o.matrix_world.identity()
     pts = [v.co for o in objs for v in o.data.vertices]
     lo = Vector([min(p[i] for p in pts) for i in range(3)]); hi = Vector([max(p[i] for p in pts) for i in range(3)])
-    taille = max(hi - lo)
-    for o in objs:  # meme taille pour les trois, cote a cote, poses au sol
-        o.scale = (1 / taille,) * 3
-        o.location = Vector((decalage, 0, 0)) - (lo + hi) / 2 / taille * Vector((1, 1, 0)) - Vector((0, 0, lo.z / taille))
-    decalage += 1.2
-
-cd = bpy.data.cameras.new("c"); cd.type = "ORTHO"; cd.ortho_scale = 4.2
+    lots.append((objs, lo, hi))
+plus_grand = max(max(hi - lo) for _, lo, hi in lots)
+cd = bpy.data.cameras.new("c"); cd.type = "ORTHO"
 cam = bpy.data.objects.new("c", cd); s.collection.objects.link(cam); s.camera = cam
-centre = Vector((1.2, 0, 0.3)); t = math.radians(-35)
-cam.location = centre + Vector((math.sin(t) * 6, -math.cos(t) * 6, 3))
-cam.rotation_euler = (centre - cam.location).to_track_quat("-Z", "Y").to_euler()
-s.render.filepath = a[3]
+t = math.radians(-35)
+vers = Vector((math.sin(t) * 6, -math.cos(t) * 6, 3))   # du centre vers la camera
+avant = -vers.normalized(); droite = avant.cross(Vector((0, 0, 1))).normalized(); haut = droite.cross(avant)
+# cote a cote dans l'image : decales le long de l'axe droit de la camera, poses au sol, meme taille (ou meme echelle)
+pas = Vector((droite.x, droite.y, 0)).normalized() * 1.3
+for i, (objs, lo, hi) in enumerate(lots):
+    taille = plus_grand if commune else max(hi - lo)
+    for o in objs:
+        o.scale = (1 / taille,) * 3
+        o.location = pas * i - (lo + hi) / 2 / taille * Vector((1, 1, 0)) - Vector((0, 0, lo.z / taille))
+bpy.context.view_layer.update()
+pts = [o.matrix_world @ v.co for objs, _, _ in lots for o in objs for v in o.data.vertices]
+u = [p.dot(droite) for p in pts]; w = [p.dot(haut) for p in pts]
+# le cadre tient tous les modeles, avec une marge
+cx, cy = (min(u) + max(u)) / 2, (min(w) + max(w)) / 2
+rapport = s.render.resolution_x / s.render.resolution_y
+cd.ortho_scale = 1.08 * max(max(u) - min(u), (max(w) - min(w)) * rapport)
+centre = droite * cx + haut * cy
+cam.location = centre + vers
+cam.rotation_euler = avant.to_track_quat("-Z", "Y").to_euler()
+s.render.filepath = sortie
 bpy.ops.render.render(write_still=True)

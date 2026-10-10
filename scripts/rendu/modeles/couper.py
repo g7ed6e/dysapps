@@ -5,6 +5,9 @@
 #
 # hauteur : ou couper, en part de la hauteur du modele depuis le bas (0.08 = 8 %). Si on l'omet, le script
 # cherche lui-meme le dessus du socle : la hauteur ou l'emprise au sol retrecit nettement.
+# socle (a la place de la hauteur) : le batiment d'un plan, pose sur une dalle serree autour des murs, dont l'emprise ne
+# retrecit presque pas ; la coupe passe un pour cent au-dessus du dessus de la dalle, son plus grand palier horizontal
+# (batiment_mesures.py ; la planche du 10 octobre 2026 gardait la dalle de la cabine, de la hutte, du four et du musee).
 # haut|bas : la partie gardee (haut par defaut, donc le socle part).
 # Le modele est d'abord redresse sur Z et pose a z = 0 (comme aligner.py ne le fait pas : lancer aligner.py avant
 # si le socle doit aussi etre aligne nord-sud).
@@ -14,7 +17,8 @@ from mathutils import Vector
 
 a = sys.argv[sys.argv.index("--") + 1:]
 entree, sortie = a[0], a[1]
-hauteur = float(a[2]) if len(a) > 2 and a[2] not in ("haut", "bas") else None
+hauteur = float(a[2]) if len(a) > 2 and a[2] not in ("haut", "bas", "socle") else None
+socle = len(a) > 2 and a[2] == "socle"
 garder = a[-1] if a[-1] in ("haut", "bas") else "haut"
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -34,6 +38,20 @@ def emprise(z):  # surface au sol (rectangle englobant) des points proches de la
     return (max(p.x for p in tranche) - min(p.x for p in tranche)) * (max(p.y for p in tranche) - min(p.y for p in tranche))
 
 
+if socle:
+    import numpy as np
+    import batiment_mesures as BM
+    V = np.array([v.co[:] for o in objets for v in o.data.vertices])
+    F, n = [], 0
+    for o in objets:
+        F += [[i + n for i in p.vertices[:3]] for p in o.data.polygons]
+        n += len(o.data.vertices)
+    V, F = BM.souder(V, np.array(F))
+    dessus = BM.dessus_du_socle(V, F)
+    if dessus is not None:
+        hauteur = (dessus - zmin) / h + 0.01
+    else:
+        print("pas de dalle nette : on cherche ou l'emprise retrecit")
 if hauteur is None:
     # le socle est large et plat : on monte tant que l'emprise reste proche de celle du bas,
     # et on coupe juste au-dessus, la ou elle retrecit franchement

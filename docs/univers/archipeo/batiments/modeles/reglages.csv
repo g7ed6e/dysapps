@@ -1,6 +1,43 @@
-# Couleurs cibles des aplats du bâtiment de chaque île (sRVB), lues par scripts/rendu/modeles/monument_lowpoly.py comme
-# celles des monuments : chaque grappe de facettes du modèle prend la plus proche. D'après l'avis du directeur artistique
-# sur l'essai de la forge (10 octobre 2026) : pierre claire, pierre des murs, tuiles, bois de la poutre, fond de l'ouverture.
-# batiment;cibles;voxel (part de la plus grande dimension, 0,008 si vide)
-6e-batiment-forge-de-tunel;bdb8ad 8f8c86 a14f3c 6b4a2e 3a2a22
-6e-batiment-cabane-de-mousso;a27a4e 6e8c50 6b4a2e 3a2a22 5a4632 a8a39a
+# Réglages des bâtiments des plans d'Archipéo, une ligne par bâtiment, lus par scripts/rendu/modeles/batiments.py (la
+# chaîne entière d'un bâtiment, depuis son brut TRELLIS) et monument_lowpoly.py.
+# cibles : les couleurs des aplats (sRVB), dans l'ordre murs, toit, poutre ou bandeau, fond sombre de l'ouverture,
+# signature (cibles-57.csv, d'après les concepts, remises dans cet ordre) : la première est toujours celle des murs (la
+# grappe qui couvre le plus les murs la prend, et la coupe de l'étape 1 s'en ferme), la deuxième celle du toit (la grappe
+# qui couvre le plus le toit la prend si aucune ne l'a prise) ; a8a39a, la pierre du socle, ne va qu'au socle, que la
+# chaîne retire. Avis du directeur artistique sur l'essai de la forge (10 octobre 2026).
+# voxel : la finesse du remaillage, en part de la plus grande dimension (0,008 si vide).
+# avant-toit : la hauteur de la coupe de l'étape 1, en part de la hauteur du modèle sans son socle : au ras de
+# l'avant-toit (au-dessus de la poutre ou du bandeau), sous la galerie de la lanterne d'un phare, sous le dôme ou le chaume
+# d'un bâtiment rond. Vide : batiments.py la lit sur le modèle (le plus grand élargissement en montant) et l'inscrit.
+# quarts : les quarts de tour qu'aligner.py ajoute pour mettre la façade (la porte) au sud. Vide : lu de même et inscrit.
+# batiment;cibles;voxel;avant-toit;quarts
+6e-batiment-forge-de-tunel;8f8c86 a14f3c bdb8ad 6b4a2e 3a2a22;;0.410;0
+6e-batiment-cabane-de-mousso;a27a4e 6e8c50 6b4a2e 3a2a22 5a4632 a8a39a;;0.550;0
+6e-batiment-four-de-rouxel;cdb088 4e6378 b9824e 6b4a2e 3a2a22 a8a39a;;0.580;1
+6e-batiment-etable-de-bloquette;e2d8c4 4e6378 6b4a2e 3a2a22 d9b864 a8a39a;;0.460;1
+6e-batiment-phare-de-grimoire;e2d8c4 4e6378 6b4a2e 3a2a22 e8c877 a8a39a;;0.550;0
+6e-batiment-nid-de-coco;e2d8c4 a04a38 6b4a2e 3a2a22 2e2e30 a8a39a;;0.485;0
+6e-batiment-hutte-de-nenu;b9c2a0 b08a54 6b4a2e 3a2a22 5e8a5a 8e8a80;;0.535;2
+6e-batiment-abri-de-lavi;c98e5a 4e6378 55504c 6b4a2e 3a2a22 a8a39a;;0.615;3
+6e-batiment-cabine-de-robin;e2d8c4 4e6378 c8643c 3a2a22 4a4f55 a8a39a;;0.700;3
+6e-batiment-tour-de-tick;8e8a80 4e6378 6b4a2e 3a2a22 ede3c8 b08a4a;;0.760;0
+6e-batiment-musee-de-silex;d9b07a 4e6378 efe6d2 3a2a22 b8673e a8a39a;;0.870;0
+6e-batiment-quartier-de-boussole;e2d8c4 4e6378 daa66a 6b4a2e 3a2a22 a8a39a;;0.395;3
+6e-batiment-serre-de-fougere;8e8a80 a9c9a4 6b4a2e 3a2a22 b8673e 5e8a5a;;0.590;2
+6e-batiment-laboratoire-de-bulle;e2d8c4 4e6378 6b4a2e 3a2a22 b5703c a8a39a;;0.500;1
+6e-batiment-atelier-de-pince;8e8a80 4e6378 6b4a2e 3a2a22 c9a24a a8a39a;;0.620;1
+6e-batiment-preau-de-voix;d08a56 4e6378 6b4a2e 3a2a22 c9a24a a8a39a;;0.605;1
+5e-batiment-igloo-de-frimas;b8d0dc eef2f0 7fa0b4 2e3a44 a8a39a;;0.450;3
+5e-batiment-echoppe-de-bazar;e6dcc4 56685e 5e4430 33291f 438b82 8a6236;;0.675;1
+5e-batiment-cabane-de-sema;e6dcc4 56685e 6e9a4e 33291f 9aa39a a8a39a;;0.595;0
+5e-batiment-hutte-de-kroa;7e8a6a a08a5a 5e4430 33291f 6a5a44 a8a39a;;0.390;0
+5e-batiment-boutique-de-pudding;e6dcc4 56685e 8a3a34 5e4430 33291f a8a39a;;0.660;1
+5e-batiment-salon-de-moustache;9aa39a 4a5a52 e6dcc4 33291f a8a39a;;0.570;2
+5e-batiment-logis-de-velin;9aa39a 56685e e6dcc4 5e4430 33291f a8a39a;;0.635;1
+5e-batiment-moulin-de-sillon;e6dcc4 56685e 5e4430 33291f 8a6236 a8a39a;;0.630;1
+5e-batiment-station-d-humus;d4b07a 56685e 5e4430 33291f 8a6236 a8a39a;;0.500;0
+5e-batiment-chalet-de-perle;e8cfc4 56685e 5e4430 33291f f4f2ee a8a39a;;0.555;1
+5e-batiment-scierie-de-rabot;b08a5a 56685e 5e4430 33291f 8a6236 d9c08a;;0.585;1
+5e-batiment-fournil-de-mie;ead9bc 56685e 5e4430 33291f c98e5a a8a39a;;0.490;3
+5e-batiment-auberge-de-lina;e6dcc4 56685e 438b82 33291f 5e4430 a8a39a;;0.565;1
+5e-batiment-abri-de-lyre;c08a5a 56685e 8a938a 5e4430 33291f a8a39a;;0.700;1

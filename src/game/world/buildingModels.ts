@@ -1,7 +1,7 @@
 // Les bâtiments des plans d'Archipéo importés (décision du mainteneur, 10 octobre 2026 : « low poly avec aplats », comme
 // les monuments, ./monumentModels.ts) : un modèle TRELLIS par île, réduit à 3 000 triangles de près, coupé en une étape
-// de chantier, et sa version de loin en volumes simples (scripts/rendu/modeles/batiment_loin.py, une trentaine de
-// triangles, jamais plus de `BUILDING_FAR_TRIANGLES`). Code pur, sans DOM ni Three.js : le registre des modèles, l'étape
+// de chantier, et sa version de loin en volumes simples qui suivent sa silhouette (scripts/rendu/modeles/batiment_loin.py,
+// jamais plus de `BUILDING_FAR_TRIANGLES`) ; toute la chaîne : scripts/rendu/modeles/batiments.py. Code pur, sans DOM ni Three.js : le registre des modèles, l'étape
 // que montre un bâtiment et la pose du modèle sur son île, que la construction taillée (./construction.ts) et le budget
 // lisent. Ce qui charge les fichiers est à part (../importedBuildings.ts, et le disque pour les tests et le budget :
 // ./buildingModels.fromDisk.testing.ts).
@@ -31,9 +31,41 @@ interface BuildingModel {
   quarterTurns: number;
 }
 
-/** Les bâtiments qui ont leur modèle, par île (les autres gardent leurs blocs). */
+/**
+ * Les bâtiments qui ont leur modèle, par île (les autres gardent leurs blocs) : l'île est celle du plan `<île>-1`, dont
+ * le nom est celui du bâtiment. La façade est déjà au sud dans les fichiers (colonne `quarts` de reglages.csv).
+ */
 export const BUILDING_MODELS: Readonly<Partial<Record<BiomeId, BuildingModel>>> = {
   'french-6e-letter-confusion': { folder: '6e-batiment-forge-de-tunel', quarterTurns: 0 },
+  'french-6e-phonology': { folder: '6e-batiment-cabane-de-mousso', quarterTurns: 0 },
+  'french-6e-word-spelling': { folder: '6e-batiment-four-de-rouxel', quarterTurns: 0 },
+  'french-6e-grammar-spelling': { folder: '6e-batiment-etable-de-bloquette', quarterTurns: 0 },
+  'french-6e-reading': { folder: '6e-batiment-phare-de-grimoire', quarterTurns: 0 },
+  'maths-6e-calculation': { folder: '6e-batiment-nid-de-coco', quarterTurns: 0 },
+  'maths-6e-fractions': { folder: '6e-batiment-hutte-de-nenu', quarterTurns: 0 },
+  'maths-6e-decimals': { folder: '6e-batiment-abri-de-lavi', quarterTurns: 0 },
+  'english-6e-vocabulary': { folder: '6e-batiment-cabine-de-robin', quarterTurns: 0 },
+  'english-6e-grammar': { folder: '6e-batiment-tour-de-tick', quarterTurns: 0 },
+  'history-6e-antiquity': { folder: '6e-batiment-musee-de-silex', quarterTurns: 0 },
+  'geography-6e-living': { folder: '6e-batiment-quartier-de-boussole', quarterTurns: 0 },
+  'life-earth-sciences-6e-living-world': { folder: '6e-batiment-serre-de-fougere', quarterTurns: 0 },
+  'physics-chemistry-6e-matter-energy': { folder: '6e-batiment-laboratoire-de-bulle', quarterTurns: 0 },
+  'technology-6e-objects': { folder: '6e-batiment-atelier-de-pince', quarterTurns: 0 },
+  'civics-6e-democratic-society': { folder: '6e-batiment-preau-de-voix', quarterTurns: 0 },
+  'maths-5e-signed-numbers': { folder: '5e-batiment-igloo-de-frimas', quarterTurns: 0 },
+  'maths-5e-proportionality': { folder: '5e-batiment-echoppe-de-bazar', quarterTurns: 0 },
+  'french-5e-homophones': { folder: '5e-batiment-cabane-de-sema', quarterTurns: 0 },
+  'french-5e-conjugation': { folder: '5e-batiment-hutte-de-kroa', quarterTurns: 0 },
+  'english-5e-vocabulary': { folder: '5e-batiment-boutique-de-pudding', quarterTurns: 0 },
+  'english-5e-grammar': { folder: '5e-batiment-salon-de-moustache', quarterTurns: 0 },
+  'history-5e-middle-ages': { folder: '5e-batiment-logis-de-velin', quarterTurns: 0 },
+  'geography-5e-resources': { folder: '5e-batiment-moulin-de-sillon', quarterTurns: 0 },
+  'life-earth-sciences-5e-active-planet': { folder: '5e-batiment-station-d-humus', quarterTurns: 0 },
+  'physics-chemistry-5e-matter-universe': { folder: '5e-batiment-chalet-de-perle', quarterTurns: 0 },
+  'technology-5e-design': { folder: '5e-batiment-scierie-de-rabot', quarterTurns: 0 },
+  'civics-5e-equality-solidarity': { folder: '5e-batiment-fournil-de-mie', quarterTurns: 0 },
+  'lv2-5e-introductions': { folder: '5e-batiment-auberge-de-lina', quarterTurns: 0 },
+  'lca-5e-legends': { folder: '5e-batiment-abri-de-lyre', quarterTurns: 0 },
 };
 
 /** Les fichiers d'un bâtiment : l'étape 1 et le modèle entier, de près et de loin. */
