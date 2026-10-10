@@ -55,7 +55,7 @@ import { lineaire } from './landMesh';
 import type { ArchipelagoId } from './map';
 import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './bridges';
 import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, PHARE_DU_LARGE, phareDuLarge } from './offshoreLighthouse';
-import { monumentsImportes, versionDesMonuments } from './monumentModels';
+import { getImportedMonuments, type ImportedMonument, monumentsVersion } from './monumentModels';
 import { estUnePlaceDeTrophee } from './trophyHall';
 import { mixColor } from './daylight';
 import { couleursDuToit, toitDe } from './roofs';
@@ -211,17 +211,17 @@ export type FenetresDuMonde = Map<VoxelCube, { genre: 'vitre' | 'lanterne' | 'lu
  * `eclatDeFenetre` que la 3D : les tests de l'allumage le comparent au maillage. Les bornes n'en ont pas, ni les cases que le phare de
  * Grimoire remplace en 3D.
  */
-export function fenetresDe(cubes: VoxelCube[]): FenetresDuMonde {
+export function fenetresDe(cubes: VoxelCube[], imported: readonly ImportedMonument[] = getImportedMonuments(cubes)): FenetresDuMonde {
   // Les cases que le phare de Grimoire remplace en 3D ne s'allument pas (sa lanterne est à lui).
   const phare = phareDeGrimoire(cubes);
-  // Ni celles qu'un monument importé remplace (./monumentModels.ts).
-  const importees = new Set(monumentsImportes(cubes).flatMap((m) => [...m.remplacees]));
-  const genres = genresDesBlocs(cubes.filter((c) => !c.quest && !c.sol && !phare?.remplacees.has(cle(c.x, c.y, c.z)) && !importees.has(cle(c.x, c.y, c.z))));
+  // Ni celles qu'un monument importé remplace (./monumentModels.ts) ; `imported` : déjà calculés, pour ne pas les refaire.
+  const importedCells = new Set(imported.flatMap((m) => [...m.replaced]));
+  const genres = genresDesBlocs(cubes.filter((c) => !c.quest && !c.sol && !phare?.remplacees.has(cle(c.x, c.y, c.z)) && !importedCells.has(cle(c.x, c.y, c.z))));
   const decalages = decalagesDe(genres);
   const out: FenetresDuMonde = new Map();
   // La lueur de fin d'un grand projet ; celle du phare du large est à son modèle (son feu).
   const large = phareDuLarge(cubes).remplacees;
-  const allumes = allumesALaFin(cubes.filter((c) => !c.quest && !large.has(cle(c.x, c.y, c.z)) && !importees.has(cle(c.x, c.y, c.z))));
+  const allumes = allumesALaFin(cubes.filter((c) => !c.quest && !large.has(cle(c.x, c.y, c.z)) && !importedCells.has(cle(c.x, c.y, c.z))));
   for (const [c, g] of genres) {
     if (allumes.has(c)) out.set(c, { genre: 'lueur', decalage: 0 });
     else if (g === 'vitre' || g === 'lanterne') out.set(c, { genre: g, decalage: decalages.get(c) ?? -1 });
@@ -326,23 +326,23 @@ export function maillageDeLaConstruction(
   // Les ponts de pierre et de bois du 5e : un pont construit laisse la place à son modèle (./bridges.ts).
   const ponts = options.navire ? null : pontsDePierreEtDeBois(cubes);
   // Les monuments importés (./monumentModels.ts), chargés : l'étape du chantier remplace les cubes posés.
-  const importes = options.navire ? [] : monumentsImportes(cubes);
-  const importees = new Set(importes.flatMap((m) => [...m.remplacees]));
+  const imported = options.navire ? [] : getImportedMonuments(cubes);
+  const importedCells = new Set(imported.flatMap((m) => [...m.replaced]));
   // Le phare du large du 5e : ses pièces finies laissent la place à son modèle (./offshoreLighthouse.ts), sauf s'il est importé.
-  const large = options.navire || importes.some((m) => m.id === PHARE_DU_LARGE) ? null : phareDuLarge(cubes);
-  const parUnModele = (c: VoxelCube) => {
+  const large = options.navire || imported.some((m) => m.id === PHARE_DU_LARGE) ? null : phareDuLarge(cubes);
+  const byModel = (c: VoxelCube) => {
     const k = cle(c.x, c.y, c.z);
-    return Boolean(phare?.remplacees.has(k) || ponts?.remplacees.has(k) || large?.remplacees.has(k) || importees.has(k));
+    return Boolean(phare?.remplacees.has(k) || ponts?.remplacees.has(k) || large?.remplacees.has(k) || importedCells.has(k));
   };
   // La lueur de fin d'un grand projet (./construction/endGlow.ts) : ses blocs restent des blocs, dans les fenêtres.
-  const allumes = options.navire ? new Set<VoxelCube>() : allumesALaFin(cubes.filter((c) => !c.quest && !parUnModele(c)));
+  const allumes = options.navire ? new Set<VoxelCube>() : allumesALaFin(cubes.filter((c) => !c.quest && !byModel(c)));
   // L'architecture modulaire (lot 7) : le voisinage se lit sur le plan entier (tous les cubes, fantômes compris) ; les
   // cases déjà prises par un modèle restent au modèle, et celles du phare de Grimoire en chantier à leur bloc. Seuls les
   // plans des îles prennent le kit de l'archipel (un kit passé à la main, celui d'un test, prend tout le plan).
   const kit = options.kit ?? KITS[a];
   // Les blocs en retrait de leur case (`Kit.insetBlocks`, au 3e les lanternons du château d'eau), posés : chacun à part.
   const enRetrait = new Set<VoxelCube>();
-  if (!options.navire && kit.insetBlocks) for (const c of cubes) if (!c.ghost && !c.quest && !parUnModele(c) && kit.insetBlocks(c)) enRetrait.add(c);
+  if (!options.navire && kit.insetBlocks) for (const c of cubes) if (!c.ghost && !c.quest && !byModel(c) && kit.insetBlocks(c)) enRetrait.add(c);
   // Sur le vide : rien de solide sous la case jusqu'à l'eau, ou jusqu'au large (`PROFONDEUR` cases plus bas) ; les pilotis.
   const solides = new Map<string, VoxelCube>();
   for (const c of [...cubes, ...sol]) if (!c.ghost && !c.quest) solides.set(cle(c.x, c.y, c.z), c);
@@ -360,7 +360,7 @@ export function maillageDeLaConstruction(
   const archi = options.navire
     ? null
     : architectureDe(a, cubes, {
-        exclure: (c) => parUnModele(c) || allumes.has(c) || enRetrait.has(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
+        exclure: (c) => byModel(c) || allumes.has(c) || enRetrait.has(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
         kit,
         batiments: options.kit ? undefined : batimentsDe(a),
         cours: options.kit ? undefined : coursDe(a),
@@ -368,7 +368,7 @@ export function maillageDeLaConstruction(
         surLeVide,
         caseDuLieu,
       });
-  const avantLesPieces = cubes.filter((c) => (options.bornes || !c.quest) && !parUnModele(c));
+  const avantLesPieces = cubes.filter((c) => (options.bornes || !c.quest) && !byModel(c));
   const dessines = archi?.remplacees.size ? avantLesPieces.filter((c) => !archi.remplacees.has(cle(c.x, c.y, c.z))) : avantLesPieces;
   // Le genre des blocs se lit avant les pièces : une vitre prise entre deux pièces de mur reste une vitre.
   const genres = genresDesBlocs(avantLesPieces);
@@ -995,9 +995,9 @@ export function maillageDeLaConstruction(
 
   // ---- Les monuments importés : l'étape du chantier dans l'opaque, le feu du phare du large fini dans les fenêtres
   // (allumé le premier, sans pulser).
-  const dessinDesMonuments: NonNullable<MaillageDeLaConstruction['monuments']> = importes.map((m) => ({
+  const monumentsDrawing: NonNullable<MaillageDeLaConstruction['monuments']> = imported.map((m) => ({
     opaque: O.facettes(m.opaque, { biseaux: mode === 'peint', teinte: 1 }),
-    fenetres: F.facettes(m.feu, { extra: 0 }),
+    fenetres: F.facettes(m.fire, { extra: 0 }),
     cellules: m.cellules,
   }));
 
@@ -1043,7 +1043,7 @@ export function maillageDeLaConstruction(
   if (dessinDesPonts) m.ponts = dessinDesPonts;
   if (dessinDuLarge) m.phareDuLarge = dessinDuLarge;
   if (dessinDesPieces) m.pieces = dessinDesPieces;
-  if (dessinDesMonuments.length) m.monuments = dessinDesMonuments;
+  if (monumentsDrawing.length) m.monuments = monumentsDrawing;
   return m;
 }
 
@@ -1152,10 +1152,10 @@ export function construireParIle(
   sol: VoxelCube[],
   cache: CacheDeLaConstruction,
 ): { maillage: MaillageDeLaConstruction; refaites: number; change: boolean } {
-  if (cache.sol !== sol.length || cache.monuments !== versionDesMonuments()) {
+  if (cache.sol !== sol.length || cache.monuments !== monumentsVersion()) {
     cache.iles.clear();
     cache.sol = sol.length;
-    cache.monuments = versionDesMonuments();
+    cache.monuments = monumentsVersion();
   }
   const parIle = new Map<string, VoxelCube[]>();
   for (const c of cubes) {

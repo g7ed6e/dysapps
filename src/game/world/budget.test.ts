@@ -1,8 +1,8 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
 import { chargerLesModelesDuDisque } from './characters/imported/fromDisk.testing';
-import { chargerLesMonumentsDuDisque } from './monumentModels.fromDisk.testing';
-import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionAuPireDesMonuments, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
+import { loadMonumentsFromDisk } from './monumentModels.fromDisk.testing';
+import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionAtWorstMonumentStage, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseIsland, choiceMiddle, dragChoice } from './arrangeMode';
 import { placeTurns } from './arrange';
@@ -245,12 +245,12 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // chantiers, à chaque palier de la salle des trophées. (En dernier aussi : chargés, ils remplacent leurs cubes.)
   it('R5 : avec les monuments importés, la construction tient son enveloppe au pire de leurs chantiers et de la salle des trophées, dans chaque archipel', () => {
     const enBlocs = Object.fromEntries(ARCHIPELAGO_IDS.map((a) => [a, constructionCost(a).triangles]));
-    chargerLesMonumentsDuDisque();
+    loadMonumentsFromDisk();
     const blocs = BADGES.map((b) => trophyBlock(b.id));
     for (const a of ARCHIPELAGO_IDS) {
       // Chargés, les deux monuments de l'archipel remplacent leurs cubes : environ 5 000 triangles de plus.
-      expect(constructionAuPireDesMonuments(a).triangles - enBlocs[a], a).toBeGreaterThan(4_000);
-      const m = constructionAuPireDesMonuments(a, blocs);
+      expect(constructionAtWorstMonumentStage(a).triangles - enBlocs[a], a).toBeGreaterThan(4_000);
+      const m = constructionAtWorstMonumentStage(a, blocs);
       expect(m.triangles, a).toBeLessThanOrEqual(enveloppeDe('construction', a).triangles);
       expect(m.drawCalls, a).toBeLessThanOrEqual(enveloppeDe('construction', a).drawCalls);
     }

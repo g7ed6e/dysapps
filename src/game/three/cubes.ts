@@ -139,14 +139,14 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   /** Les derniers cubes reçus, et s'il faut refaire le terrain avec eux à la prochaine image (la vague lancée ou arrêtée). */
   let derniers: VoxelCube[] = [];
   let aRefaire = false;
-  let fini = false;
+  let disposed = false;
   // Archipéo : les monuments importés de l'archipel (world/monumentModels.ts), chargés à la demande ; arrivés, la
   // construction est refaite à la prochaine image. Un fichier qui manque (hors ligne) : le monument garde ses blocs.
   if (taille)
     import('../importedMonuments')
-      .then(({ chargerLesMonuments }) => chargerLesMonuments(archipel))
-      .then((nouveau) => {
-        if (nouveau && !fini && derniers.length) aRefaire = true;
+      .then(({ loadMonuments }) => loadMonuments(archipel))
+      .then((loadedNew) => {
+        if (loadedNew && !disposed && derniers.length) aRefaire = true;
       })
       .catch(() => {});
 
@@ -489,7 +489,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       }
     },
     dispose: () => {
-      fini = true;
+      disposed = true;
       neplusSuivreLeMode();
       neplusSuivreLesZones();
       vague = null;

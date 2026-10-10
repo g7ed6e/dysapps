@@ -1,8 +1,8 @@
 import { existsSync } from 'node:fs';
 import type { VoxelCube } from '../Voxel';
 import { cacheDeLaConstruction, caseDeLaPiece, construireParIle, coutDeLaConstruction, maillageDeLaConstruction } from './construction';
-import { EMPRISE_DU_MONUMENT, estUnFeu, etapeAffichee, etapesDuMonument, fichierDeLEtape, MODELES_DES_MONUMENTS, monumentCharge, monumentsImportes } from './monumentModels';
-import { chargerLesMonumentsDuDisque, fichierDuMonument } from './monumentModels.fromDisk.testing';
+import { MONUMENT_FOOTPRINT, isFire, shownStage, monumentStages, stageFile, MONUMENT_MODELS, isMonumentLoaded, getImportedMonuments } from './monumentModels';
+import { loadMonumentsFromDisk, monumentFile } from './monumentModels.fromDisk.testing';
 import { getMonument, MONUMENTS } from './monuments';
 import { LAYERS } from './projects';
 
@@ -25,78 +25,78 @@ function chantier(id: string, posees: number | ((c: { z: number }) => boolean), 
 
 describe('Le choix de l’étape d’un chantier', () => {
   it('deux étapes : les cubes sous un tiers, l’étape 1 dès un tiers, l’étape 2 dès deux tiers, le modèle entier fini', () => {
-    expect(etapeAffichee(0, 90, 2)).toBe(0);
-    expect(etapeAffichee(29, 90, 2)).toBe(0);
-    expect(etapeAffichee(30, 90, 2)).toBe(1);
-    expect(etapeAffichee(59, 90, 2)).toBe(1);
-    expect(etapeAffichee(60, 90, 2)).toBe(2);
-    expect(etapeAffichee(89, 90, 2)).toBe(2);
-    expect(etapeAffichee(90, 90, 2)).toBe(3);
+    expect(shownStage(0, 90, 2)).toBe(0);
+    expect(shownStage(29, 90, 2)).toBe(0);
+    expect(shownStage(30, 90, 2)).toBe(1);
+    expect(shownStage(59, 90, 2)).toBe(1);
+    expect(shownStage(60, 90, 2)).toBe(2);
+    expect(shownStage(89, 90, 2)).toBe(2);
+    expect(shownStage(90, 90, 2)).toBe(3);
     // Un plan qui ne se divise pas juste : 116 cases, le tiers à 38,67 (39 posées).
-    expect(etapeAffichee(38, 116, 2)).toBe(0);
-    expect(etapeAffichee(39, 116, 2)).toBe(1);
+    expect(shownStage(38, 116, 2)).toBe(0);
+    expect(shownStage(39, 116, 2)).toBe(1);
   });
 
   it('quatre étapes : un cinquième, deux, trois, quatre, puis le modèle entier', () => {
-    expect([0, 19, 20, 40, 60, 80, 99, 100].map((n) => etapeAffichee(n, 100, 4))).toEqual([0, 0, 1, 2, 3, 4, 4, 5]);
+    expect([0, 19, 20, 40, 60, 80, 99, 100].map((n) => shownStage(n, 100, 4))).toEqual([0, 0, 1, 2, 3, 4, 4, 5]);
   });
 
   it('un plan vide ne montre rien', () => {
-    expect(etapeAffichee(0, 0, 2)).toBe(0);
+    expect(shownStage(0, 0, 2)).toBe(0);
   });
 });
 
 describe('Le registre des monuments importés', () => {
   it('les huit monuments classés, et eux seuls (les grands projets neufs de la 4e et de la 3e gardent leurs blocs)', () => {
-    expect(Object.keys(MODELES_DES_MONUMENTS).sort()).toEqual(['landmark-3e-1', 'landmark-3e-2', 'landmark-4e-1', 'landmark-4e-2', 'landmark-5e-1', 'landmark-5e-2', 'landmark-6e-1', 'landmark-6e-2']);
-    for (const id of Object.keys(MODELES_DES_MONUMENTS)) expect(getMonument(id), id).toBeDefined();
-    expect(MONUMENTS.filter((m) => !MODELES_DES_MONUMENTS[m.id]).map((m) => m.id)).toEqual(['landmark-4e-3', 'landmark-4e-4', 'landmark-3e-3', 'landmark-3e-4', 'landmark-3e-5']);
+    expect(Object.keys(MONUMENT_MODELS).sort()).toEqual(['landmark-3e-1', 'landmark-3e-2', 'landmark-4e-1', 'landmark-4e-2', 'landmark-5e-1', 'landmark-5e-2', 'landmark-6e-1', 'landmark-6e-2']);
+    for (const id of Object.keys(MONUMENT_MODELS)) expect(getMonument(id), id).toBeDefined();
+    expect(MONUMENTS.filter((m) => !MONUMENT_MODELS[m.id]).map((m) => m.id)).toEqual(['landmark-4e-3', 'landmark-4e-4', 'landmark-3e-3', 'landmark-3e-4', 'landmark-3e-5']);
   });
 
   it('chaque étape et chaque modèle entier est dans le dépôt (le phare du large : quatre étapes, ses cinq pièces)', () => {
-    expect(MODELES_DES_MONUMENTS['landmark-5e-1'].etapes).toBe(Object.keys(LAYERS['landmark-5e-1']).length - 1);
-    for (const id of Object.keys(MODELES_DES_MONUMENTS)) for (const e of etapesDuMonument(id)) expect(existsSync(fichierDuMonument(id, e)), `${id} ${e}`).toBe(true);
-    expect(fichierDeLEtape(1, 2)).toBe('etape-1.glb');
-    expect(fichierDeLEtape(3, 2)).toBe('final-3000.glb');
-    expect(etapesDuMonument('landmark-5e-1')).toEqual([1, 2, 3, 4, 5]);
-    expect(etapesDuMonument('landmark-4e-3')).toEqual([]);
+    expect(MONUMENT_MODELS['landmark-5e-1'].stages).toBe(Object.keys(LAYERS['landmark-5e-1']).length - 1);
+    for (const id of Object.keys(MONUMENT_MODELS)) for (const e of monumentStages(id)) expect(existsSync(monumentFile(id, e)), `${id} ${e}`).toBe(true);
+    expect(stageFile(1, 2)).toBe('etape-1.glb');
+    expect(stageFile(3, 2)).toBe('final-3000.glb');
+    expect(monumentStages('landmark-5e-1')).toEqual([1, 2, 3, 4, 5]);
+    expect(monumentStages('landmark-4e-3')).toEqual([]);
   });
 
   it('pas chargé : le monument garde ses blocs', () => {
-    expect(monumentCharge('landmark-6e-2')).toBe(false);
-    expect(monumentsImportes(chantier('landmark-6e-2', Infinity))).toEqual([]);
+    expect(isMonumentLoaded('landmark-6e-2')).toBe(false);
+    expect(getImportedMonuments(chantier('landmark-6e-2', Infinity))).toEqual([]);
   });
 
   it('le feu : l’orangé vif du phare, pas ses pierres ni son fer', () => {
     const lin = (h: number) => [16, 8, 0].map((s) => Math.pow(((h >> s) & 255) / 255, 2.2)) as [number, number, number];
-    expect(estUnFeu(...lin(0xed9547))).toBe(true);
-    for (const h of [0x676d75, 0x1c181c, 0xd1cfc9, 0xb67d6a, 0x9d8262]) expect(estUnFeu(...lin(h)), h.toString(16)).toBe(false);
+    expect(isFire(...lin(0xed9547))).toBe(true);
+    for (const h of [0x676d75, 0x1c181c, 0xd1cfc9, 0xb67d6a, 0x9d8262]) expect(isFire(...lin(h)), h.toString(16)).toBe(false);
   });
 });
 
 describe('Les monuments importés dans la construction taillée', () => {
-  beforeAll(() => chargerLesMonumentsDuDisque());
+  beforeAll(() => loadMonumentsFromDisk());
 
   it('chargés : toutes les étapes de chaque monument', () => {
-    for (const id of Object.keys(MODELES_DES_MONUMENTS)) expect(monumentCharge(id), id).toBe(true);
+    for (const id of Object.keys(MONUMENT_MODELS)) expect(isMonumentLoaded(id), id).toBe(true);
   });
 
   it('l’étape suit l’avancée du plan, remplace les cubes posés, et tient dans l’emprise, au pied du monument', () => {
     const id = 'landmark-6e-2';
     const n = getMonument(id)!.cells.length;
     const o = { x: 40, y: 60, z: 2 };
-    expect(monumentsImportes(chantier(id, Math.ceil(n / 3) - 1, o))).toEqual([]);
+    expect(getImportedMonuments(chantier(id, Math.ceil(n / 3) - 1, o))).toEqual([]);
     for (const [posees, etape] of [
       [Math.ceil(n / 3), 1],
       [Math.ceil((2 * n) / 3), 2],
       [n, 3],
     ] as const) {
       const cubes = chantier(id, posees, o);
-      const [m] = monumentsImportes(cubes);
-      expect(m.etape, `${posees}`).toBe(etape);
-      expect(m.remplacees.size).toBe(posees);
+      const [m] = getImportedMonuments(cubes);
+      expect(m.stage, `${posees}`).toBe(etape);
+      expect(m.replaced.size).toBe(posees);
       expect(m.cellules).toHaveLength(posees);
-      expect(m.feu.positions.length).toBe(0);
+      expect(m.fire.positions.length).toBe(0);
       // Le modèle au milieu des 7 × 7 de l'emprise (les cases du plan vont de 0 à 6), posé au pied (z = 2).
       const p = m.opaque.positions;
       let [x0, x1, y0, z0, z1] = [Infinity, -Infinity, Infinity, Infinity, -Infinity];
@@ -104,9 +104,9 @@ describe('Les monuments importés dans la construction taillée', () => {
         [x0, x1, y0, z0, z1] = [Math.min(x0, p[i]), Math.max(x1, p[i]), Math.min(y0, p[i + 1]), Math.min(z0, p[i + 2]), Math.max(z1, p[i + 2])];
       }
       expect(x0).toBeGreaterThanOrEqual(o.x - 1e-3);
-      expect(x1).toBeLessThanOrEqual(o.x + EMPRISE_DU_MONUMENT + 1e-3);
+      expect(x1).toBeLessThanOrEqual(o.x + MONUMENT_FOOTPRINT + 1e-3);
       expect(z0).toBeGreaterThanOrEqual(o.y - 1e-3);
-      expect(z1).toBeLessThanOrEqual(o.y + EMPRISE_DU_MONUMENT + 1e-3);
+      expect(z1).toBeLessThanOrEqual(o.y + MONUMENT_FOOTPRINT + 1e-3);
       expect(y0).toBeCloseTo(o.z, 1);
     }
   });
@@ -140,15 +140,15 @@ describe('Les monuments importés dans la construction taillée', () => {
     const couches = Object.values(LAYERS[id]);
     const jusqua = (k: number) => (c: { z: number }) => c.z <= couches[k - 1][1];
     for (let k = 1; k <= 4; k++) {
-      const [m] = monumentsImportes(chantier(id, jusqua(k)));
-      expect(m.etape, `${k}`).toBe(k);
-      expect(m.feu.positions.length).toBe(0);
+      const [m] = getImportedMonuments(chantier(id, jusqua(k)));
+      expect(m.stage, `${k}`).toBe(k);
+      expect(m.fire.positions.length).toBe(0);
     }
-    const [fini] = monumentsImportes(chantier(id, Infinity));
-    expect(fini.etape).toBe(5);
-    expect(fini.feu.positions.length).toBeGreaterThan(0);
-    const [ferme] = monumentsImportes(chantier(id, Infinity, undefined, true));
-    expect(ferme.feu.positions.length).toBe(0);
+    const [fini] = getImportedMonuments(chantier(id, Infinity));
+    expect(fini.stage).toBe(5);
+    expect(fini.fire.positions.length).toBeGreaterThan(0);
+    const [ferme] = getImportedMonuments(chantier(id, Infinity, undefined, true));
+    expect(ferme.fire.positions.length).toBe(0);
     // Dans la construction : le modèle importé à la place du modèle taillé, son feu dans les fenêtres.
     const m = maillageDeLaConstruction('5e', chantier(id, Infinity));
     expect(m.phareDuLarge).toBeUndefined();
@@ -160,7 +160,7 @@ describe('Les monuments importés dans la construction taillée', () => {
     const cache = cacheDeLaConstruction();
     construireParIle('3e', cubes, [], cache);
     expect(construireParIle('3e', cubes, [], cache).refaites).toBe(0);
-    chargerLesMonumentsDuDisque();
+    loadMonumentsFromDisk();
     const r = construireParIle('3e', cubes, [], cache);
     expect(r.refaites).toBe(1);
     expect(r.maillage.monuments).toHaveLength(1);

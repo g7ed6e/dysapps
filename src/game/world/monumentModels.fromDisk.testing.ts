@@ -4,24 +4,24 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { lireGlb } from './characters/imported/glb';
-import { enregistrerUnMonument, etapesDuMonument, fichierDeLEtape, MODELES_DES_MONUMENTS } from './monumentModels';
+import { registerMonument, monumentStages, stageFile, MONUMENT_MODELS } from './monumentModels';
 
 // Par l'adresse du module (et non `__dirname`) : `npm run rendu:budget` le charge aussi, en module ES.
-const DOSSIER_DES_MODELES = resolve(dirname(fileURLToPath(import.meta.url)), '../../../docs/univers/archipeo/monuments/modeles');
+const MODELS_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '../../../docs/univers/archipeo/monuments/modeles');
 
 /** Le chemin du fichier d'une étape d'un monument. */
-export const fichierDuMonument = (id: string, etape: number): string => {
-  const { nom, etapes } = MODELES_DES_MONUMENTS[id];
-  return resolve(DOSSIER_DES_MODELES, nom, fichierDeLEtape(etape, etapes));
+export const monumentFile = (id: string, stage: number): string => {
+  const { folder, stages } = MONUMENT_MODELS[id];
+  return resolve(MODELS_DIR, folder, stageFile(stage, stages));
 };
 
 /** Charge depuis le disque toutes les étapes des monuments importés qui existent. */
-export function chargerLesMonumentsDuDisque(): void {
-  for (const id of Object.keys(MODELES_DES_MONUMENTS))
-    for (const etape of etapesDuMonument(id)) {
-      const f = fichierDuMonument(id, etape);
-      if (!existsSync(f)) continue;
-      const b = readFileSync(f);
-      enregistrerUnMonument(id, etape, lireGlb(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)));
+export function loadMonumentsFromDisk(): void {
+  for (const id of Object.keys(MONUMENT_MODELS))
+    for (const stage of monumentStages(id)) {
+      const file = monumentFile(id, stage);
+      if (!existsSync(file)) continue;
+      const bytes = readFileSync(file);
+      registerMonument(id, stage, lireGlb(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)));
     }
 }
