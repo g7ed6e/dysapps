@@ -609,8 +609,7 @@ const STARTING_MAP: MapPlace[] = [
   // Refuge ; au second rang, le Kiosque, le Verger, l'Observatoire des textes (juste derrière le Phare, comme avant :
   // DA-17 ; un pas plus au fond, le grand phare sortait du bas de la vue de l'archipel depuis lui), l'Observatoire des
   // données et le Plateau ; au rang du fond, la Ruche et le Tremplin, à l'est, et deux places pour des îles futures, à
-  // l'ouest (le Forum des débats et le Bosquet des sages les ont occupées, avant de passer au flanc est : voir plus bas).
-  // Relecture du 9 octobre 2026 : chaque lieu a au plus une voisine à moins de huit cases d'eau,
+  // l'ouest (le Forum des débats et le Bosquet des sages les occupent). Relecture du 9 octobre 2026 : chaque lieu a au plus une voisine à moins de huit cases d'eau,
   // celle avec qui il se réunit (le Phare et le Belvédère, l'Observatoire des données et celui des textes, le Kiosque et
   // le Verger, la Ruche et le Tremplin) ; toutes les autres sont à huit cases au moins (quatre cases de vide entre deux
   // îles flottantes ne se voient presque plus). Le Belvédère avance d'un demi-pas pour faire face à la corne du Phare
@@ -720,7 +719,11 @@ const STARTING_MAP: MapPlace[] = [
   // second rang, leurs noms se posaient sur la bande de cette île et se taisaient sur la Carte (consultant UX UI). Révision
   // de GD-12 (piste A du directeur artistique, 9 octobre 2026, en attente du mot du mainteneur) : une colonne au flanc est,
   // la Porte au premier rang, après le Jardin (x 174, y 632), la Colonnade au rang du fond, après le Bassin (x 174,
-  // y 716), le second rang vide entre elles ; le cadre s'élargit vers l'est (footprint.ts). Chacune garde le dessin et la
+  // y 716), le second rang vide entre elles. Essais du 10 octobre 2026 : la Porte en x 166, dans le même morceau du
+  // monde en blocs que le Jardin, taisait plus de noms sans rendre d'appel de dessin ; la Colonnade un, deux ou trois
+  // pas plus en avant (y 712, 708, 704) taisait un peu moins de noms, mais sa grille de glissé passait le plafond de
+  // 480 triangles (budget.test.ts) et la baleine replacée du 4e perdait son eau (terrain.test.ts) ; le cadre s'élargit vers l'est (footprint.ts). Au 3e, la même piste taisait autant de noms (le
+  // cadre plus large dézoome la Carte) : le Forum et le Bosquet restent au rang du fond. Chacune garde le dessin et la
   // vue de sa place d'avant (`repere`, `vueDepuis`) : formes et côtes inchangées. Fermées au départ (on les relie). La Colonnade est un lieu d'option
   // (GD-13) : fermée sans l'option latin ou grec, aucune liaison ne la propose alors, rien n'en dépend. Terre plate,
   // comme les autres îles des matières entrées après les premières.
@@ -729,16 +732,13 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'life-earth-sciences-3e-human-body', region: 'basses-terres', core: { x: 22, y: 952 }, vueDepuis: { x: 10, y: 980 }, repere: { x: 10, y: 980 }, altitude: 9, ext: e(2, 2, 5, 3), relief: 'plat', seed: 85 },
   { id: 'physics-chemistry-3e-motion-energy', region: 'basses-terres', core: { x: 134, y: 996 }, vueDepuis: { x: 90, y: 972 }, repere: { x: 90, y: 972 }, altitude: 9, ext: e(2, 12, 2, 4), relief: 'plat', seed: 86 },
   { id: 'technology-3e-digital', region: 'basses-terres', core: { x: 98, y: 1000 }, vueDepuis: { x: 158, y: 980 }, repere: { x: 158, y: 980 }, altitude: 9, ext: e(7, 7, 7, 7), relief: 'plat', seed: 87 },
-  // EMC 3e (EMC-2) et latin-grec 3e (LCA-2) : le Forum des débats et le Bosquet des sages. GD-12 leur gardait deux places
-  // au rang du fond des Îles du Ciel, à l'ouest, derrière le Kiosque des témoins et le Verger de la santé, où leurs noms
-  // se taisaient. Révision de GD-12 (piste A du directeur artistique, 9 octobre 2026, en attente du mot du mainteneur) :
-  // une colonne au flanc est, le Forum au premier rang, après le Refuge (x 182, y 912), le Bosquet au rang du fond,
-  // après le Tremplin (x 182, y 996) ; le cadre s'élargit vers l'est (footprint.ts). Chacun garde le dessin et la vue de
-  // sa place d'avant (`repere`, `vueDepuis`). Fermés au départ (on les relie). Le Bosquet est un lieu
+  // EMC 3e (EMC-2) et latin-grec 3e (LCA-2) : le Forum des débats et le Bosquet des sages, aux deux places que GD-12
+  // a gardées au rang du fond des Îles du Ciel, à l'ouest : le Forum au coin, derrière le Kiosque des témoins, le
+  // Bosquet à côté, derrière le Verger de la santé (map.test.ts) ; fermés au départ (on les relie). Le Bosquet est un lieu
   // d'option (GD-13) : fermé sans l'option latin ou grec, aucune liaison ne le propose alors, rien n'en dépend. Terre
   // plate, comme les autres îles des matières entrées après les premières.
-  { id: 'civics-3e-democratic-life', region: 'basses-terres', core: { x: 182, y: 912 }, vueDepuis: { x: -14, y: 996 }, repere: { x: -14, y: 996 }, altitude: 9, ext: e(3, 3, 5, 5), relief: 'plat', seed: 79 },
-  { id: 'lca-3e-ideas', region: 'basses-terres', core: { x: 182, y: 996 }, vueDepuis: { x: 22, y: 996 }, repere: { x: 22, y: 996 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'plat', seed: 99 },
+  { id: 'civics-3e-democratic-life', region: 'basses-terres', core: { x: -14, y: 996 }, altitude: 9, ext: e(3, 3, 5, 5), relief: 'plat', seed: 79 },
+  { id: 'lca-3e-ideas', region: 'basses-terres', core: { x: 22, y: 996 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'plat', seed: 99 },
 ];
 
 /**

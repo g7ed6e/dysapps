@@ -1,49 +1,49 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"1d6467e8"`;
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"78bf3bf6"`;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, les ouvrages, l’embarquement et les voyages 1`] = `
 {
   "embarquement": "f1f4d24c",
-  "ouvrages": "d65c556f",
+  "ouvrages": "a822ed68",
   "voyages": "e6548dc9",
 }
 `;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie mi-parcours 1`] = `
 {
-  "créatures et Gardiens": "856db378",
-  "cubes": "adbcc73a",
-  "cubes avec créatures": "c28851ee",
-  "décor posé sur la pente": "c3d854f1",
+  "créatures et Gardiens": "a8d9b3c1",
+  "cubes": "977e9b10",
+  "cubes avec créatures": "c5c5f18b",
+  "décor posé sur la pente": "92b7ed25",
   "navire": "4b6ff664",
-  "sol (facettes)": "a7245e08",
+  "sol (facettes)": "5d7c57a9",
   "sol (lave)": "13fe3a3b",
-  "trajets depuis le port": "92eec890",
+  "trajets depuis le port": "ffe1d698",
 }
 `;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie tout construit 1`] = `
 {
-  "créatures et Gardiens": "238bd723",
-  "cubes": "98907623",
-  "cubes avec créatures": "052e74d1",
-  "décor posé sur la pente": "df520ca9",
+  "créatures et Gardiens": "3fc9ca1c",
+  "cubes": "e3ff932a",
+  "cubes avec créatures": "5069efbb",
+  "décor posé sur la pente": "faf1117c",
   "navire": "4b6ff664",
-  "sol (facettes)": "da8aeb52",
+  "sol (facettes)": "b02c7ff8",
   "sol (lave)": "13fe3a3b",
-  "trajets depuis le port": "21a0e550",
+  "trajets depuis le port": "0039ac2a",
 }
 `;
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie vierge 1`] = `
 {
   "créatures et Gardiens": "741638a5",
-  "cubes": "01486e36",
-  "cubes avec créatures": "01486e36",
-  "décor posé sur la pente": "79528e4b",
+  "cubes": "e1fd6e9e",
+  "cubes avec créatures": "e1fd6e9e",
+  "décor posé sur la pente": "b85e91e5",
   "navire": "4bb9b2d8",
-  "sol (facettes)": "10b2b958",
+  "sol (facettes)": "e8ec020f",
   "sol (lave)": "13fe3a3b",
   "trajets depuis le port": "5757bb64",
 }
