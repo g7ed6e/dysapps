@@ -66,7 +66,7 @@ const CINQUIEME: Partial<Record<BiomeId, Ligne>> = {
   'life-earth-sciences-5e-active-planet': ['prairie', 'tortue-d-ocre', 'humus', 0, 3],
   'physics-chemistry-5e-matter-universe': ['saline', 'flamant-de-sel', 'perle', 1, 3],
   'technology-5e-design': ['menuiserie', 'cheval-a-bascule', 'rabot', 0, 0],
-  'civics-5e-equality-solidarity': ['fournil', 'oie-d-opale', 'mie', 2.5, 3],
+  'civics-5e-equality-solidarity': ['fournil', 'oie-d-opale', 'mie', 2.25, 3],
   'lca-5e-legends': ['grotte', 'phenix-d-argile', 'lyre', 0, 0],
 };
 
