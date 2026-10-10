@@ -36,9 +36,9 @@ beforeAll(() => chargerLesModelesDuDisque());
 /** Les îles dont la créature est importée (au 6e ; la 5e n'a encore que ses Gardiens). */
 const AVEC_CREATURE = ILES_IMPORTEES.filter((id) => nomDuModele('creature', id));
 
-it('les seize îles du 6e et les quatorze de la 5e ont leur Gardien et leur créature, de près et de loin', () => {
-  expect(ILES_IMPORTEES).toHaveLength(30);
-  expect(AVEC_CREATURE).toHaveLength(30);
+it('les seize îles du 6e, les quatorze de la 5e et les quatorze de la 4e ont leur Gardien et leur créature, de près et de loin', () => {
+  expect(ILES_IMPORTEES).toHaveLength(44);
+  expect(AVEC_CREATURE).toHaveLength(44);
   for (const id of ILES_IMPORTEES)
     for (const genre of GENRES)
       for (const niveau of NIVEAUX) {

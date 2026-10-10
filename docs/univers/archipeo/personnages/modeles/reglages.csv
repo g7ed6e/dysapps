@@ -59,3 +59,31 @@
 6e-preau-creature-voix;-;0;0 bras=non;733017>c4622e 0a1588>5a8cc8 0e0504>5a3428 d5cece>ece8de;Voix : le pelage roux, la veste bleu ciel, les jambes, les mains et le livre en brun sombre chaud, le masque blanc du visage et la chemise.
 5e-fournil-creature-mie;-;0;3 jambes=non aire=oui;462912>b8875a d3d2d2>ece8de 956a3c>c88a48 b3a9a1>ece8de;Mie : le pelage brun clair du capybara, la toque et le tablier blancs en une seule zone de lin, le pain doré.
 5e-grotte-creature-lyre;-;0;0 queue=sol;8f5738>a8643c e8cd70>e2c46a eadfb8>ece4d0 c19f56>e2c46a;Lyre : les bandes du dos et de la queue, la lyre et la bordure en un seul brun terre cuite, la peau jaune sable en une seule zone avec ses ombres, la tunique de lin.
+4e-atelier-gardien-golem-des-equations;0.12;0
+4e-bassin-gardien-grand-bi-d-erable;0.12;0
+4e-cabinet-gardien-hibou-lexicographe;0.12;0
+4e-colonnade-gardien-cigale-d-argile;0.47;0
+4e-escale-gardien-poulpe-de-corail;0.12;0
+4e-falaise-gardien-belier-de-granit;0.18;0
+4e-forge-gardien-titan-d-acier;0.12;0
+4e-gare-gardien-locomotive-de-fer;0.12;0
+4e-imprimerie-gardien-paon-de-faience;0.12;0
+4e-jardin-gardien-soleil-de-cuivre;0.12;0
+4e-porte-gardien-lynx-d-agate;0.12;0
+4e-source-gardien-girafe-d-ambre;0.12;0
+4e-theatre-gardien-masque;0.12;0
+4e-vigie-gardien-cloche-de-cobalt;0.12;0
+4e-atelier-creature-ixe;-;0;1;cfbda5>d8ccac b8a77a>d8b25a e5d383>d8b25a 8c7d5d>a8884a;Ixe : le tablier de lin, le corps de laiton en une seule zone, les articulations en laiton plus sombre.
+4e-bassin-creature-manivelle;-;0;0 bras=non;2e2620>a0826a 54483d>a0826a 937b56>b06a3e cdc7bb>d8ccac;Manivelle : le pelage brun taupe en une seule zone, la barque de bois, le tablier de lin.
+4e-cabinet-creature-plume;-;0;1;101214>5e6a7e 51271f>a8603c f7f3f6>ece8de 9b734a>c09060;Plume : le plumage noir en bleu ardoise clair, le gilet de cuir, le ventre et les épaules blancs, la boîte de fiches en bois clair.
+4e-colonnade-creature-figue;-;0;1;646361>9a9ca0 665133>c0704a 9b968c>d8ccac 141210>4a4644;Figue : le pelage gris clair, l’amphore en terre cuite, la tunique de lin, les sabots, la crinière et le bout des oreilles restent sombres.
+4e-escale-creature-fret;-;0;1 jambes=non bras=non aire=oui;a3120a>d0583c 9f8771>d8ccac 85150a>d0583c 231816>3e3a3a;Fret : la carapace rouge corail en une seule zone, le gilet de lin, les yeux et le crochet restent sombres.
+4e-falaise-creature-clea;-;0;1;604130>a8603c 86634d>c8885a d6d3d0>ece8de 291a13>5a3c2c;Cléa : le pantalon roux, le gilet et le sac de cuir clair, le pelage et la chemise blancs, les bottes, la ceinture et les cornes en brun sombre chaud.
+4e-forge-creature-braise;-;0;1 aire=oui;3d3936>b0aca6 2b2521>8a5636 140d0a>8a5636 747473>8a9098;Braise : la pierre gris clair, le tablier et la ceinture de cuir en une seule zone, les têtes de marteau en fer.
+4e-gare-creature-vapeur;-;0;1;4c1202>c4523c 272324>7a7c84 eae9e9>ece8de 6d686a>9a9ca0;Vapeur : le gilet et la casquette rouge brique, les pattes et le corps gris sombre, les bandes blanches du masque et de la queue, la tête grise et la lanterne.
+4e-imprimerie-creature-typo;-;0;0 queue=sol;686564>b4b6ba 643725>a8603c f2bab8>e8a8a0 cc8f90>e8a8a0;Typo : le pelage gris souris clair, le tablier de cuir, les oreilles, la queue et les pattes roses en une seule zone.
+4e-jardin-creature-muscade;-;0;1;75401d>c06a3a dcd7d2>ece8de a0633e>d8a46a 4f2a10>c06a3a;Muscade : le pelage roux en une seule zone avec ses ombres, la toque et le tablier blancs, le museau et la cuillère en bois clair.
+4e-porte-creature-loquet;-;0;2 jambes=non aire=oui queue=non;31271b>a08a6c 1e150c>a08a6c 796952>c8b490 050f01>6a9a68;Loquet : les écailles taupe en une seule zone, le bord clair des écailles et de la queue, le gilet vert.
+4e-source-creature-nectar;-;0;0 bras=non;927e6b>c09060 393026>6a5040 507059>78b070 cfcdc8>ece8de;Nectar : le livre et la poitrine en bois clair, le bout des ailes, le bec et les pattes en brun sombre chaud, le plumage vert, le tablier de lin.
+4e-theatre-creature-puck;-;0;3;6a936e>8cbc90 162019>76827c c7c3c0>d8ccac be9848>e2c46a;Puck : la peau vert d’eau clair, le pantalon, le béret et les chaussures gris ardoise, le gilet de lin, la clochette de laiton.
+4e-vigie-creature-radar;-;0;0 queue=sol;946c4a>c89a68 443222>8a6444 c4b39b>ece4d0 b09662>e0c08a;Radar : le pelage beige roux, le masque, le dos et le bout de la queue plus sombres, l’écharpe de lin, le ventre et la longue-vue sable clair.

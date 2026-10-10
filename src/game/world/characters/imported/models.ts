@@ -16,6 +16,7 @@ import { NUANCE, type FacettesDePersonnage, type V3 } from '../painted';
 import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, HAUT_DU_SOCLE, HAUTEUR_DE_SENTINELLE, socleSeul } from '../sentinel';
 import { ESPECES_6E } from '../species/6e';
 import { ESPECES_5E } from '../species/5e';
+import { ESPECES_4E } from '../species/4e';
 import { tailleDe, type Espece } from '../template';
 import type { ModeleLu } from './glb';
 
@@ -70,9 +71,28 @@ const CINQUIEME: Partial<Record<BiomeId, Ligne>> = {
   'lca-5e-legends': ['grotte', 'phenix-d-argile', 'lyre', 0, 0],
 };
 
+/** La 4e. */
+const QUATRIEME: Partial<Record<BiomeId, Ligne>> = {
+  'maths-4e-powers': ['forge', 'titan-d-acier', 'braise', 1, 1],
+  'maths-4e-algebra': ['atelier', 'golem-des-equations', 'ixe', 1, 1],
+  'french-4e-agreement': ['falaise', 'belier-de-granit', 'clea', 0, 1],
+  'french-4e-vocabulary': ['cabinet', 'hibou-lexicographe', 'plume', 1, 1],
+  'english-4e-comprehension': ['theatre', 'masque', 'puck', 0, 3],
+  'english-4e-grammar': ['gare', 'locomotive-de-fer', 'vapeur', 1, 1],
+  'lv2-4e-daily-life': ['jardin', 'soleil-de-cuivre', 'muscade', 1, 1],
+  'history-4e-revolutions': ['imprimerie', 'paon-de-faience', 'typo', 0, 0],
+  'geography-4e-globalization': ['escale', 'poulpe-de-corail', 'fret', 1, 1],
+  'life-earth-sciences-4e-cells-evolution': ['source', 'girafe-d-ambre', 'nectar', 1, 0],
+  'physics-chemistry-4e-signals-circuits': ['vigie', 'cloche-de-cobalt', 'radar', 1, 0],
+  'technology-4e-modeling': ['bassin', 'grand-bi-d-erable', 'manivelle', 1, 0],
+  'civics-4e-rights-freedoms': ['porte', 'lynx-d-agate', 'loquet', 0, 2],
+  'lca-4e-cities': ['colonnade', 'cigale-d-argile', 'figue', 3, 1],
+};
+
 const LIGNES: Partial<Record<BiomeId, [classe: string, ligne: Ligne]>> = Object.fromEntries([
   ...Object.entries(SIXIEME).map(([id, l]) => [id, ['6e', l]]),
   ...Object.entries(CINQUIEME).map(([id, l]) => [id, ['5e', l]]),
+  ...Object.entries(QUATRIEME).map(([id, l]) => [id, ['4e', l]]),
 ]);
 
 /** Le nom du modèle d'un personnage (« 6e-mine-gardien-golem-de-roche »), ou rien si l'île n'en a pas encore. */
@@ -224,7 +244,7 @@ function sentinelleImportee(lu: ModeleLu, quarts: number): FacettesDePersonnage 
  * corps : elle se promène sans lever le bras. De près, son squelette s'il en a un (scripts/rendu/modeles/squelette.py),
  * placé comme ses sommets : la vue l'anime.
  */
-const ESPECES_IMPORTEES: Partial<Record<BiomeId, Espece>> = { ...ESPECES_6E, ...ESPECES_5E };
+const ESPECES_IMPORTEES: Partial<Record<BiomeId, Espece>> = { ...ESPECES_6E, ...ESPECES_5E, ...ESPECES_4E };
 
 function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niveau): FacettesDePersonnage {
   const espece = ESPECES_IMPORTEES[id];
