@@ -27,7 +27,7 @@ import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
 import { bridge, type CaseDOuvrage } from './terrain/links';
 import { DEPTH } from './terrain/base';
 import { GAP_BETWEEN_PLACES, landRectangle } from './footprint';
-import { STEP } from './placement';
+import { layoutCache, STEP } from './placement';
 import { JOIN_FILL, JOIN_MAX_STEPS } from './join';
 import { SHORT_LENGTH, LONG_LENGTH } from './routing';
 import type { BridgeKind } from './archipelago';
@@ -390,6 +390,9 @@ export function enveloppeDe(poste: Poste, a: ArchipelagoId): Enveloppe {
   return a === '6e' ? e.premiersRivages : (e.parArchipel?.[a] ?? e.autres);
 }
 
+/** Les liaisons de `toutConstruit`, tracées une fois par disposition : chaque appel en reçoit sa copie. */
+const liaisonsDeToutConstruit = layoutCache<'toutes', readonly string[]>();
+
 /** Une partie où tout est construit : trois étoiles partout, Gardiens vaincus, tous les plans, ouvrages, étapes du navire et ponts. */
 export function toutConstruit() {
   const progress: Record<string, { stars: number; attempts: number; best: number }> = Object.fromEntries([
@@ -399,9 +402,12 @@ export function toutConstruit() {
   const plans = Object.fromEntries([...PLANS, ...VEHICLE_STAGES, ...MONUMENTS].map((p) => [p.id, planCells(p).map((c) => c.key)]));
   // Chaque région toute reliée (GD-9), la liaison la plus courte vers chaque lieu ; un lieu qu'aucune liaison n'atteint
   // (une disposition à l'étroit) s'ouvre quand même (`grantAccess`). Le pire cas des liaisons se compte à part (`worstCaseOfRegion`).
-  const relie = ARCHIPELAGOS.reduce<string[]>((links, a) => linkWholeRegion(a.classe, links), VOYAGES.map((v) => v.id));
-  const bridges = grantAccess(relie, BIOMES.map((b) => b.id));
-  return { progress, world: { parts: plans, log: [], links: bridges } };
+  let liees = liaisonsDeToutConstruit.get('toutes');
+  if (!liees) {
+    const relie = ARCHIPELAGOS.reduce<string[]>((links, a) => linkWholeRegion(a.classe, links), VOYAGES.map((v) => v.id));
+    liaisonsDeToutConstruit.set('toutes', (liees = grantAccess(relie, BIOMES.map((b) => b.id))));
+  }
+  return { progress, world: { parts: plans, log: [], links: [...liees] } };
 }
 
 /**

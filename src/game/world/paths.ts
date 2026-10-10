@@ -127,11 +127,20 @@ export function walkPath(ground: WalkGround, from: Cell, to: Cell): Cell[] | nul
   const maxX = Math.max(sx, tx) + MARGIN;
   const minY = Math.min(sy, ty) - MARGIN;
   const maxY = Math.max(sy, ty) + MARGIN;
+  // Tout se passe dans ce cadre (hors de lui, aucune case n'est libre) : chaque case y a son rang, et le sol de chaque
+  // case ne se lit qu'une fois (`feetAt` est demandé jusqu'à vingt-quatre fois par case).
+  const largeur = maxY - minY + 1;
+  const rang = (x: number, y: number) => (x - minX) * largeur + (y - minY);
+  const n = (maxX - minX + 1) * largeur;
+  const lus = new Float64Array(n).fill(NaN);
   const feetAt = (x: number, y: number): number | undefined => {
     if (x === sx && y === sy) return from.z;
     if (x === tx && y === ty) return to.z;
     if (x < minX || x > maxX || y < minY || y > maxY) return undefined;
-    return ground.feet.get(key(x, y));
+    const i = rang(x, y);
+    let z = lus[i];
+    if (Number.isNaN(z)) lus[i] = z = ground.feet.get(key(x, y)) ?? Infinity;
+    return z === Infinity ? undefined : z;
   };
   // A* : distance parcourue + distance à vol d'oiseau (octile).
   const h = (x: number, y: number) => {
@@ -139,17 +148,18 @@ export function walkPath(ground: WalkGround, from: Cell, to: Cell): Cell[] | nul
     const dy = Math.abs(y - ty);
     return Math.max(dx, dy) + (Math.SQRT2 - 1) * Math.min(dx, dy);
   };
-  const g = new Map<string, number>([[key(sx, sy), 0]]);
-  const prev = new Map<string, string>();
+  const g = new Float64Array(n).fill(Infinity);
+  g[rang(sx, sy)] = 0;
+  const prev = new Int32Array(n).fill(-1);
   const open: { x: number; y: number; f: number }[] = [{ x: sx, y: sy, f: h(sx, sy) }];
-  const done = new Set<string>();
+  const done = new Uint8Array(n);
   while (open.length) {
     let best = 0;
     for (let i = 1; i < open.length; i++) if (open[i].f < open[best].f) best = i;
     const cur = open.splice(best, 1)[0];
-    const ck = key(cur.x, cur.y);
-    if (done.has(ck)) continue;
-    done.add(ck);
+    const ck = rang(cur.x, cur.y);
+    if (done[ck]) continue;
+    done[ck] = 1;
     if (cur.x === tx && cur.y === ty) break;
     const cz = feetAt(cur.x, cur.y)!;
     for (const [dx, dy] of DIRS) {
@@ -164,20 +174,21 @@ export function walkPath(ground: WalkGround, from: Cell, to: Cell): Cell[] | nul
         const b = feetAt(cur.x, cur.y + dy);
         if (a === undefined || b === undefined || Math.abs(a - cz) > reach || Math.abs(b - cz) > reach) continue;
       }
-      const nk = key(nx, ny);
-      const cost = g.get(ck)! + (dx && dy ? Math.SQRT2 : 1) + (nz !== cz ? 0.5 : 0);
-      if (cost < (g.get(nk) ?? Infinity)) {
-        g.set(nk, cost);
-        prev.set(nk, ck);
+      const nk = rang(nx, ny);
+      const cost = g[ck] + (dx && dy ? Math.SQRT2 : 1) + (nz !== cz ? 0.5 : 0);
+      if (cost < g[nk]) {
+        g[nk] = cost;
+        prev[nk] = ck;
         open.push({ x: nx, y: ny, f: cost + h(nx, ny) });
       }
     }
   }
-  const end = key(tx, ty);
-  if (!prev.has(end)) return null;
+  const end = rang(tx, ty);
+  if (prev[end] < 0) return null;
   const cells: Cell[] = [];
-  for (let k: string | undefined = end; k; k = prev.get(k)) {
-    const [x, y] = k.split(',').map(Number);
+  for (let k = end; k >= 0; k = prev[k]) {
+    const x = minX + Math.floor(k / largeur);
+    const y = minY + (k % largeur);
     cells.unshift({ x, y, z: feetAt(x, y)! });
   }
   cells[0] = from;

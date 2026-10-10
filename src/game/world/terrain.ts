@@ -180,7 +180,7 @@ function poserLIle(
   const putWorld = (x: number, y: number, z: number, color: string, decor?: string, sol?: true) => {
     taken.add(cleDeCube(x, y, z));
     placed.add(cleDeCube(x, y, oz + z));
-    cubes.push({
+    const cube: VoxelCube = {
       x,
       y,
       z: oz + z,
@@ -189,8 +189,10 @@ function poserLIle(
       tag: biome.id,
       muted: unlocked ? undefined : true,
       decor: decor ? `${biome.id}/${decor}` : undefined,
-      ...(sol ? { sol } : {}),
-    });
+    };
+    // En dernier, comme avant (l'ordre des clés fait les empreintes), sans objet de plus à chaque cube.
+    if (sol) cube.sol = sol;
+    cubes.push(cube);
   };
   // Le sol et la roche de l'île : le rendu Archipéo les dessine en facettes (world/landMesh.ts).
   const putSol = (x: number, y: number, z: number, color: string) => putWorld(x, y, z, color, undefined, true);

@@ -18,9 +18,16 @@ const TAPER = 3;
 
 /** Couleur délavée d'une île verrouillée (même calcul que la texture délavée en 3D). */
 export function fade(color: string): string {
-  const [r, g, b] = fadeRgb(...hexToRgb(color)).map(Math.round);
-  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+  let delavee = DELAVEES.get(color);
+  if (delavee === undefined) {
+    const [r, g, b] = fadeRgb(...hexToRgb(color)).map(Math.round);
+    DELAVEES.set(color, (delavee = `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`));
+  }
+  return delavee;
 }
+
+/** Les couleurs déjà délavées : une île fermée en demande des milliers, de quelques dizaines de couleurs. */
+const DELAVEES = new Map<string, string>();
 
 /** Textures 3D par couleur de décor (les couleurs servent aussi à la vue simple et aux îles verrouillées). */
 export const TEXTURES: Record<string, string> = {
