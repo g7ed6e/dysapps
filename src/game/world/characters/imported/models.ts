@@ -15,6 +15,7 @@ import { SENTINELLE } from '../colors';
 import { NUANCE, type FacettesDePersonnage, type V3 } from '../painted';
 import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, HAUT_DU_SOCLE, HAUTEUR_DE_SENTINELLE, socleSeul } from '../sentinel';
 import { ESPECES_6E } from '../species/6e';
+import { ESPECES_5E } from '../species/5e';
 import { tailleDe, type Espece } from '../template';
 import type { ModeleLu } from './glb';
 
@@ -26,10 +27,13 @@ export type Niveau = 'pres' | 'loin';
 export const FICHIER: Record<Niveau, string> = { pres: 'final-1500.glb', loin: 'final-200.glb' };
 
 /**
- * Le lieu de chaque île du 6e, les noms de son Gardien et de sa créature (comme ceux des dossiers des modèles), et de
- * combien de quarts de tour chacun se tourne pour faire face à l'élève (relevé sur les modèles, vus des quatre côtés).
+ * Le lieu de chaque île qui a ses modèles, les noms de son Gardien et de sa créature (comme ceux des dossiers des
+ * modèles ; pas de créature : la sienne reste dessinée en code), et de combien de quarts de tour chacun se tourne pour
+ * faire face à l'élève (relevé sur les modèles, vus des quatre côtés).
  */
-const SIXIEME: Partial<Record<BiomeId, [lieu: string, gardien: string, creature: string, quartsDuGardien: number, quartsDeLaCreature: number]>> = {
+type Ligne = [lieu: string, gardien: string, creature: string | null, quartsDuGardien: number, quartsDeLaCreature: number];
+
+const SIXIEME: Partial<Record<BiomeId, Ligne>> = {
   'french-6e-phonology': ['foret', 'grand-chene', 'mousso', 0, 1],
   'french-6e-letter-confusion': ['mine', 'golem-de-roche', 'tunel', 1, 0],
   'french-6e-word-spelling': ['carriere', 'dune-vivante', 'rouxel', 1, 1],
@@ -47,15 +51,38 @@ const SIXIEME: Partial<Record<BiomeId, [lieu: string, gardien: string, creature:
   'technology-6e-objects': ['hangar', 'automate-de-laiton', 'pince', 1, 1],
 };
 
+/** La 5e. */
+const CINQUIEME: Partial<Record<BiomeId, Ligne>> = {
+  'maths-5e-signed-numbers': ['glacier', 'mammouth-de-givre', 'frimas', 0, 0],
+  'maths-5e-proportionality': ['marche', 'colporteur', 'bazar', 1, 3],
+  'french-5e-homophones': ['carrefour', 'sphinx-des-routes', 'sema', 0, 0],
+  'french-5e-conjugation': ['marais', 'hydre-des-marais', 'kroa', 1, 2],
+  'english-5e-vocabulary': ['comptoir', 'reine-du-marche', 'pudding', 1, 1],
+  'english-5e-grammar': ['manoir', 'spectre-du-manoir', 'moustache', 3.5, 1],
+  'lv2-5e-introductions': ['relais', 'diligence-de-cuivre', 'lina', 1, 1],
+  'history-5e-middle-ages': ['bourg', 'griffon-d-email', 'velin', 2, 1],
+  'geography-5e-resources': ['delta', 'libellule-de-jade', 'sillon', 0, 1],
+  'life-earth-sciences-5e-active-planet': ['prairie', 'tortue-d-ocre', 'humus', 0, 3],
+  'physics-chemistry-5e-matter-universe': ['saline', 'flamant-de-sel', 'perle', 1, 3],
+  'technology-5e-design': ['menuiserie', 'cheval-a-bascule', 'rabot', 0, 0],
+};
+
+const LIGNES: Partial<Record<BiomeId, [classe: string, ligne: Ligne]>> = Object.fromEntries([
+  ...Object.entries(SIXIEME).map(([id, l]) => [id, ['6e', l]]),
+  ...Object.entries(CINQUIEME).map(([id, l]) => [id, ['5e', l]]),
+]);
+
 /** Le nom du modèle d'un personnage (« 6e-mine-gardien-golem-de-roche »), ou rien si l'île n'en a pas encore. */
 export function nomDuModele(genre: Genre, id: BiomeId): string | null {
-  const l = SIXIEME[id];
+  const l = LIGNES[id];
   if (!l) return null;
-  return `6e-${l[0]}-${genre}-${genre === 'gardien' ? l[1] : l[2]}`;
+  const [classe, [lieu, gardien, creature]] = l;
+  const nom = genre === 'gardien' ? gardien : creature;
+  return nom ? `${classe}-${lieu}-${genre}-${nom}` : null;
 }
 
-/** Les îles qui ont leurs modèles importés. */
-export const ILES_IMPORTEES = Object.keys(SIXIEME) as BiomeId[];
+/** Les îles qui ont des modèles importés (un Gardien au moins). */
+export const ILES_IMPORTEES = Object.keys(LIGNES) as BiomeId[];
 
 const charges = new Map<string, FacettesDePersonnage>();
 const cle = (genre: Genre, id: BiomeId, niveau: Niveau) => `${genre}:${id}:${niveau}`;
@@ -67,7 +94,7 @@ export function modeleImporte(genre: Genre, id: BiomeId, niveau: Niveau): Facett
 
 /** Range un modèle lu (par la vue ou par un test), mis au format du personnage. */
 export function enregistrer(genre: Genre, id: BiomeId, niveau: Niveau, lu: ModeleLu): FacettesDePersonnage {
-  const quarts = SIXIEME[id]?.[genre === 'gardien' ? 3 : 4] ?? 0;
+  const quarts = LIGNES[id]?.[1][genre === 'gardien' ? 3 : 4] ?? 0;
   const f = genre === 'gardien' ? sentinelleImportee(lu, quarts) : creatureImportee(id, lu, quarts, niveau);
   charges.set(cle(genre, id, niveau), f);
   return f;
@@ -194,8 +221,10 @@ function sentinelleImportee(lu: ModeleLu, quarts: number): FacettesDePersonnage 
  * corps : elle se promène sans lever le bras. De près, son squelette s'il en a un (scripts/rendu/modeles/squelette.py),
  * placé comme ses sommets : la vue l'anime.
  */
+const ESPECES_IMPORTEES: Partial<Record<BiomeId, Espece>> = { ...ESPECES_6E, ...ESPECES_5E };
+
 function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niveau): FacettesDePersonnage {
-  const espece = (ESPECES_6E as Partial<Record<BiomeId, Espece>>)[id];
+  const espece = ESPECES_IMPORTEES[id];
   if (!espece) throw new Error(`Pas d’espèce pour ${id}`);
   const taille = tailleDe(espece);
   const place = repere(lu.positions, (h) => taille / h, 0, quarts);

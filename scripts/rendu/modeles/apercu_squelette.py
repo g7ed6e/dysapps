@@ -57,7 +57,7 @@ def pose(bones, heads, t, walking):
     a, p = REST["breath"]
     euler.setdefault("spine", {})["x"] = a * np.sin(2 * np.pi * t / p) - (ALLURE["penche"] if walking else 0)
     a, p = REST["look"]
-    euler.setdefault("head", {})["y"] = euler["head"].get("y", 0) + a * np.sin(2 * np.pi * t / p)
+    euler.setdefault("head", {})["y"] = euler.get("head", {}).get("y", 0) + a * np.sin(2 * np.pi * t / p)
     a, p = REST["tail"]
     euler["tail.1"] = {"y": a * np.sin(2 * np.pi * t / p)}
     euler["tail.2"] = {"y": 1.2 * a * np.sin(2 * np.pi * t / p - 0.9)}
