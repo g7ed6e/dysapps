@@ -2,7 +2,7 @@
 
 Chaque personnage passe d’une image de concept (ce dossier, `<nom>.webp`) à un modèle 3D brut, puis à un modèle réduit et peint au budget du jeu. Le dépôt garde le modèle retravaillé ; le brut est gardé dans la Bibliothèque du projet (`archipeo/personnages-3d/bruts/<nom>.glb`, décision du mainteneur, 9 octobre 2026), pour ne jamais avoir à refaire un passage : le brut coûte un passage sur TRELLIS.2, pris sur le quota du compte du mainteneur.
 
-Les modèles du 6e, de la 5e et de la 4e sont dans le jeu, dans l’univers Archipéo : de près dans le défi, les fiches et sur l’île où l’on est, de loin ailleurs dans l’archipel (lus par `src/game/world/characters/imported/`, voir [Les fichiers](../../../architecture/fichiers.md)). Le jeu les tourne face à l’élève (un quart de tour par modèle, relevé dans `models.ts`) : le passage dans Blender n’a pas à les tourner. Un dossier sans ses deux fichiers garde le personnage dessiné en code.
+Les modèles du 6e, de la 5e, de la 4e et de la 3e sont dans le jeu, dans l’univers Archipéo : de près dans le défi, les fiches et sur l’île où l’on est, de loin ailleurs dans l’archipel (lus par `src/game/world/characters/imported/`, voir [Les fichiers](../../../architecture/fichiers.md)). Le jeu les tourne face à l’élève (un quart de tour par modèle, relevé dans `models.ts`) : le passage dans Blender n’a pas à les tourner. Un dossier sans ses deux fichiers garde le personnage dessiné en code.
 
 ## Où sont les fichiers
 
@@ -64,6 +64,20 @@ Les Gardiens (coupe du socle en part de la hauteur, triangles des deux versions)
 | Grand-bi d’érable (Bassin, 4e) | 0,12 | 1 335 | 172 |
 | Lynx d’agate (Porte, 4e) | 0,12 | 1 212 | 158 |
 | Cigale d’argile (Colonnade, 4e) | 0,47 | 994 | 135 |
+| Sphinx de marbre (Belvédère, 3e) | 0,12 | 1 262 | 167 |
+| Comptable des étoiles (Données, 3e) | 0,12 | 1 247 | 156 |
+| Dragon de lumière (Phare, 3e) | 0,12 | 1 449 | 178 |
+| Grand Lecteur (Textes, 3e) | 0,12 | 1 304 | 169 |
+| Grande Antenne (Studio, 3e) | 0,12 | 1 330 | 163 |
+| Dragon gallois (Château, 3e) | 0,12 | 1 309 | 196 |
+| Papillon de cuivre (Refuge, 3e) | 0,12 | 1 293 | 149 |
+| Colombe d’albâtre (Kiosque, 3e) | 0,12 | 1 204 | 168 |
+| Cerf de lauze (Plateau, 3e) | 0,12 | 1 342 | 171 |
+| Dauphin de turquoise (Verger, 3e) | 0,12 | 1 150 | 142 |
+| Kangourou de rubis (Tremplin, 3e) | 0,12 | 1 121 | 154 |
+| Abeille de topaze (Ruche, 3e) | 0,12 | 1 379 | 171 |
+| Étourneau d’étain (Forum, 3e) | 0,12 | 1 247 | 152 |
+| Centaure d’argile (Bosquet, 3e) | 0,12 | 1 355 | 168 |
 
 Les créatures (sans socle, rien à couper). Leurs fichiers sont peints en aplats clairs par `aplats.py` (voir plus bas), d’après les couleurs choisies par le directeur artistique le 10 octobre 2026 dans la colonne « aplats » de `reglages.csv`. Écart connu : Robin n’a pas la gorge orange de son concept (aucune de ses quatre couleurs ne la porte) ; elle attend un lot qui touche la géométrie. Les créatures de la 5e sont peintes de même, d’après les couleurs choisies par le directeur artistique le 10 octobre 2026. Écarts connus : chez Sillon, le chapeau de paille est pris dans la zone sombre de la tête ; chez Rabot, la huppe et le tablier partagent un rouille, et le bec est dans le vert du dos ; chez Humus, le bâton est pris dans la peau ; chez Perle, le manche du râteau est pris dans l’orange du bec ; le laiton de la balance de Bazar passe dans le lin. Rabot, Kroa et Sema, au corps vert, ont été jugés sur l’herbe le 10 octobre 2026 par le directeur artistique : lisibles, aplats gardés.
 
@@ -72,6 +86,8 @@ Les créatures de la 5e ont leur squelette (10 octobre 2026, réglages dans `reg
 Les personnages du Préau des délégués (6e), du Fournil des partages et de la Grotte des légendes (5e), îles d’EMC et de latin-grec, suivent la même chaîne (10 octobre 2026). Mie, au corps rond, ne marche pas (`jambes=non`) ; la queue de Lyre traîne au sol (`queue=sol`) ; Voix tient son livre à deux mains, ses bras ne balancent pas (`bras=non`) et `squelette.py` ne lui trouve pas de jambes. Écart connu : la tête de Lyre, jaune taché de brun dans le concept, est prise dans le lin de la tunique (aucune de ses quatre couleurs ne la sépare). L’Oie d’opale tourne de 2,25 quarts, de trois quarts vers l’élève comme dans son concept (2,5 la ferait déborder de ses cinq cases). La version de loin du Phénix d’argile est refaite par `loin.py` à 160 triangles, pour que les Gardiens de la 5e tiennent leur enveloppe.
 
 Les Gardiens et les créatures de la 4e suivent la même chaîne (10 octobre 2026). Le socle haut de la Cigale d’argile est coupé à 0,47 (un disque fin reste sous ses pattes), celui du Bélier de granit à 0,18. Squelettes : Manivelle tient sa barque à deux mains et Nectar son livre, leurs bras ne balancent pas (`bras=non`) ; la queue de Typo et celle de Radar traînent au sol (`queue=sol`) ; Fret, crabe sans jambes lisibles, et Loquet, au corps rond, ne marchent pas ; Plume n’a pas de jambes trouvées. Braise, Fret et Loquet sont pesés par surface (`aire=oui`). Aplats choisis par le directeur artistique ; le pantalon de Puck et le corps de Vapeur, trop sombres pour se détacher de l’herbe, sont éclaircis d’un ton (76827c, 7a7c84). Reprises après la première relecture du directeur artistique : la Locomotive de fer, froissée par la réduction, est refaite depuis le brut coupé par `loin.py` (remaillage en voxels de 0,01 avant la réduction pour la version de près, de 0,025 pour celle de loin) ; les versions de loin du Grand-bi, du Poulpe, du Bélier et de la Cigale sont refaites par `loin.py` (sans remaillage : un voxel plus gros les éparpille) ; Manivelle est tournée d’un demi-quart (0,5, `squelette.py` accepte les demi-quarts) pour montrer son visage et sa barque, et le petit sac qui flottait à côté d’elle est retiré. Écarts connus : Loquet a perdu le ventre crème de son concept ; la gorge rose de Nectar n’est dans aucune de ses quatre couleurs.
+
+Les Gardiens et les créatures de la 3e suivent la même chaîne (10 octobre 2026) ; le brut du Centaure d’argile est celui fait par le fil des concepts EMC et latin-grec. Tous les socles sont coupés à 0,12. Le Dragon gallois prend sa version de loin de `loin.py` (ses ailes se lisent mieux). Virage, que la réduction réduisait à une boule, est réduit avec un remaillage en voxels de 0,012 au lieu de 0,006. Pour tenir dans leurs cinq cases, la Colombe d’albâtre se tourne de face, le Cerf de lauze, le Centaure d’argile et l’Étourneau d’étain aussi. Squelettes : Stat ne balance pas les bras (`bras=non`), Jalon ne balance que celui du bâton (`bras=R`), Virage et Olive ne balancent pas les bras ; `squelette.py` ne trouve pas de jambes à Stylet, Knight, Stat, Mémo, Timbre et Navette (sous la robe ou le corps), qui ne marchent pas. Aplats choisis par le directeur artistique. Écarts connus : la veste prune de Brio est dans le bleu ardoise de sa tête (même couleur source) ; le bas du ventre de Stat prend le laiton de sa longue-vue ; les mains de Fi prennent le jaune de ses vitres ; le bâton de Jalon est dans le rouge du corps ; le ballon et la ceinture de Virage sont dans sa carapace ; le livre ou la lettre de Stylet, Mémo et Timbre sont pris dans le corps ; le dos de la robe d’Astra est gris. Navette, au corps vert, est à juger sur l’herbe.
 
 | Créature | 1 500 | 200 |
 | --- | --- | --- |
@@ -119,6 +135,20 @@ Les Gardiens et les créatures de la 4e suivent la même chaîne (10 octobre 202
 | Manivelle (Bassin, 4e) | 1 222 | 146 |
 | Loquet (Porte, 4e) | 1 500 | 198 |
 | Figue (Colonnade, 4e) | 1 500 | 200 |
+| Théo (Belvédère, 3e) | 1 500 | 200 |
+| Stat (Données, 3e) | 1 500 | 200 |
+| Fi (Phare, 3e) | 1 500 | 200 |
+| Astra (Textes, 3e) | 1 500 | 200 |
+| Écho (Studio, 3e) | 1 500 | 200 |
+| Knight (Château, 3e) | 1 500 | 200 |
+| Timbre (Refuge, 3e) | 1 500 | 200 |
+| Mémo (Kiosque, 3e) | 1 500 | 200 |
+| Jalon (Plateau, 3e) | 1 500 | 200 |
+| Olive (Verger, 3e) | 1 500 | 200 |
+| Virage (Tremplin, 3e) | 1 500 | 200 |
+| Navette (Ruche, 3e) | 1 500 | 200 |
+| Brio (Forum, 3e) | 1 500 | 200 |
+| Stylet (Bosquet, 3e) | 1 500 | 200 |
 
 Les versions de loin de la Tortue d’ocre, de l’Hydre des marais, du Colporteur et de la Diligence de cuivre sont tirées de leur version de près (réduite à 200 triangles environ ; pour l’Hydre et la Diligence, remaillée en voxels d’abord), pour garder ce qui les fait reconnaître : la carapace sans éclats, les têtes, le chapeau et la hotte, la caisse et les roues. Le Spectre du manoir se tourne de trois quarts et demi de tour, pour montrer sa lanterne de face. Le Cheval à bascule garde ses patins : ils font partie du personnage, on ne coupe rien.
 

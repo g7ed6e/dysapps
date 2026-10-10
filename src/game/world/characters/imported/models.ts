@@ -16,6 +16,7 @@ import { NUANCE, type FacettesDePersonnage, type V3 } from '../painted';
 import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, HAUT_DU_SOCLE, HAUTEUR_DE_SENTINELLE, socleSeul } from '../sentinel';
 import { ESPECES_6E } from '../species/6e';
 import { ESPECES_5E } from '../species/5e';
+import { ESPECES_3E } from '../species/3e';
 import { ESPECES_4E } from '../species/4e';
 import { tailleDe, type Espece } from '../template';
 import type { ModeleLu } from './glb';
@@ -89,10 +90,29 @@ const QUATRIEME: Partial<Record<BiomeId, Ligne>> = {
   'lca-4e-cities': ['colonnade', 'cigale-d-argile', 'figue', 3, 1],
 };
 
+/** La 3e. */
+const TROISIEME: Partial<Record<BiomeId, Ligne>> = {
+  'maths-3e-geometry': ['belvedere', 'sphinx-de-marbre', 'theo', 0, 3],
+  'maths-3e-statistics': ['donnees', 'comptable-des-etoiles', 'stat', 1, 0],
+  'maths-3e-functions': ['phare', 'dragon-de-lumiere', 'fi', 1, 1],
+  'french-3e-close-reading': ['textes', 'grand-lecteur', 'astra', 1, 1],
+  'english-3e-comprehension': ['studio', 'grande-antenne', 'echo', 0, 0],
+  'english-3e-grammar': ['chateau', 'dragon-gallois', 'knight', 0, 0],
+  'lv2-3e-travel': ['refuge', 'papillon-de-cuivre', 'timbre', 0, 0],
+  'history-3e-twentieth-century': ['kiosque', 'colombe-d-albatre', 'memo', 2, 0],
+  'geography-3e-france': ['plateau', 'cerf-de-lauze', 'jalon', 0, 3],
+  'life-earth-sciences-3e-human-body': ['verger', 'dauphin-de-turquoise', 'olive', 0, 1],
+  'physics-chemistry-3e-motion-energy': ['tremplin', 'kangourou-de-rubis', 'virage', 0, 1],
+  'technology-3e-digital': ['ruche', 'abeille-de-topaze', 'navette', 1, 0],
+  'civics-3e-democratic-life': ['forum', 'etourneau-d-etain', 'brio', 0, 3],
+  'lca-3e-ideas': ['bosquet', 'centaure-d-argile', 'stylet', 0, 0],
+};
+
 const LIGNES: Partial<Record<BiomeId, [classe: string, ligne: Ligne]>> = Object.fromEntries([
   ...Object.entries(SIXIEME).map(([id, l]) => [id, ['6e', l]]),
   ...Object.entries(CINQUIEME).map(([id, l]) => [id, ['5e', l]]),
   ...Object.entries(QUATRIEME).map(([id, l]) => [id, ['4e', l]]),
+  ...Object.entries(TROISIEME).map(([id, l]) => [id, ['3e', l]]),
 ]);
 
 /** Le nom du modèle d'un personnage (« 6e-mine-gardien-golem-de-roche »), ou rien si l'île n'en a pas encore. */
@@ -244,7 +264,7 @@ function sentinelleImportee(lu: ModeleLu, quarts: number): FacettesDePersonnage 
  * corps : elle se promène sans lever le bras. De près, son squelette s'il en a un (scripts/rendu/modeles/squelette.py),
  * placé comme ses sommets : la vue l'anime.
  */
-const ESPECES_IMPORTEES: Partial<Record<BiomeId, Espece>> = { ...ESPECES_6E, ...ESPECES_5E, ...ESPECES_4E };
+const ESPECES_IMPORTEES: Partial<Record<BiomeId, Espece>> = { ...ESPECES_6E, ...ESPECES_5E, ...ESPECES_4E, ...ESPECES_3E };
 
 function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niveau): FacettesDePersonnage {
   const espece = ESPECES_IMPORTEES[id];
