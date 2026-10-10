@@ -1,0 +1,11 @@
+# Couleurs cibles des aplats de chaque monument (sRVB), lues par scripts/rendu/modeles/monument_lowpoly.py : chaque
+# grappe de facettes du modèle prend la plus proche. D'après les concepts (monuments/pistes.md de la Bibliothèque).
+# monument;cibles;voxel (part de la plus grande dimension, 0,008 si vide)
+6e-monument-grand-moulin;d6c8ab 8c5a3c 46628a
+6e-monument-observatoire-des-baleines;a65a3e 8c5a3c cc9438 6f8fb0 a3a3a6 d6c8ab
+5e-monument-kiosque-a-musique;6b452b cca975 bd3333 f2e6cc e6ad38
+5e-monument-phare-du-large;9a9ea6 7a8088 ed9547 d6c8ab;0.004
+4e-monument-viaduc;5e6066 7a7c82 5c7699 a8a39a
+4e-monument-amphitheatre;b8262f e3d3b0 a39d92 8c5a3c 52575f
+3e-monument-observatoire-des-etoiles;f2ecdc 4d70a8 cc9438 998c7a
+3e-monument-temple-de-marbre;ece8df 8094b2 ffd14d bdb8ad d19e6b

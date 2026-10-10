@@ -29,7 +29,7 @@ const REGLES = [
       String.raw`pilotage/chantiers\.md`,
       String.raw`contenu/(${page}|portail/${page})`,
       String.raw`gameplay/(${page}|propositions/(GD-\d+|modele)\.md|propositions/archives/GD-\d+\.md)`,
-      String.raw`univers/(${page}|blocland/${page}|archipeo/(${page}|intentions/${page}|personnages/(${page}|[3-6]e-[a-z0-9-]+-(creature|gardien)-[a-z0-9-]+\.webp|modeles/(reglages\.csv|[3-6]e-[a-z0-9-]+-(creature|gardien)-[a-z0-9-]+/(final-\d+\.glb|controle\.png)))|monuments/modeles/[3-6]e-monument-[a-z0-9-]+/(final-\d+|etape-\d)\.glb|monuments/modeles/[3-6]e-monument-[a-z0-9-]+/controle\.png|esquisses/(${page}|atelier/[a-z0-9-]+\.(html|js|mjs))|source/.+))`,
+      String.raw`univers/(${page}|blocland/${page}|archipeo/(${page}|intentions/${page}|personnages/(${page}|[3-6]e-[a-z0-9-]+-(creature|gardien)-[a-z0-9-]+\.webp|modeles/(reglages\.csv|[3-6]e-[a-z0-9-]+-(creature|gardien)-[a-z0-9-]+/(final-\d+\.glb|controle\.png)))|monuments/modeles/reglages\.csv|monuments/modeles/[3-6]e-monument-[a-z0-9-]+/(final-\d+|etape-\d)\.glb|monuments/modeles/[3-6]e-monument-[a-z0-9-]+/controle\.png|esquisses/(${page}|atelier/[a-z0-9-]+\.(html|js|mjs))|source/.+))`,
     ].join('|')})$`),
     consigne: 'docs/ ne tient que la documentation interne : architecture/, conception/, gameplay/ (propositions/GD-<n>.md, construites dans propositions/archives/), univers/ (archipeo/ et ses images de concept personnages/*.webp, avec leurs modèles 3D personnages/modeles/<nom>/, et les modèles 3D des monuments monuments/modeles/<nom>/, blocland/), ux-ui/, rendu/, contenu/, pilotage/ (chantiers.md seul) ; une page <nom>.md, sauf les esquisses et le dossier source d’Archipéo',
   },
