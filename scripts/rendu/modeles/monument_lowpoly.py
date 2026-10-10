@@ -47,7 +47,7 @@ if VOXEL > 0:
     r = o.modifiers.new("v", "REMESH"); r.mode = "VOXEL"; r.voxel_size = max(o.dimensions) * VOXEL
     bpy.ops.object.modifier_apply(modifier="v")
 for _ in range(6):   # le Decimate cale parfois au-dessus de la cible (pieces detachees) : on repasse
-    d = o.modifiers.new("t", "TRIANGULATE"); bpy.ops.object.modifier_apply(modifier="t")
+    o.modifiers.new("t", "TRIANGULATE"); bpy.ops.object.modifier_apply(modifier="t")
     n = len(o.data.polygons)
     if n <= N * 1.02: break
     d = o.modifiers.new("d", "DECIMATE"); d.decimate_type = "COLLAPSE"; d.ratio = N / n
@@ -87,13 +87,18 @@ def lab(c, lw=.35):
     return np.stack([(116 * f[:, 1] - 16) * lw, 500 * (f[:, 0] - f[:, 1]), 200 * (f[:, 1] - f[:, 2])], 1)
 
 X = lab(S)
+if (aire > 0).sum() < K:
+    raise SystemExit(f"{NOM} : moins de {K} facettes dont la couleur se lit dans la texture")
 C = X[np.random.default_rng(1).choice(len(X), K, replace=False, p=aire / aire.sum())]
 for _ in range(40):
     g = ((X[:, None] - C[None]) ** 2).sum(2).argmin(1)
     C = np.array([np.average(X[g == k], 0, aire[g == k]) if aire[g == k].sum() > 0 else C[k] for k in range(K)])
 T = np.array([[(c >> 16 & 255) / 255, (c >> 8 & 255) / 255, (c & 255) / 255] for c in cibles])
-TL = lab(T); CL = C.copy(); CL[:, 0] += 12 * .35   # l'ombre peinte : une grappe est plus sombre que sa cible
+# l'ombre peinte rend une grappe plus sombre que sa cible : on la remonte de 12 points de luminance L* (mesure sur le
+# moulin : un mur clair au soleil et a l'ombre se lit a 10 a 15 points sous sa cible), comptes a 35 % comme le reste
+TL = lab(T); CL = C.copy(); CL[:, 0] += 12 * .35
 choix = ((CL[:, None] - TL[None]) ** 2).sum(2).argmin(1)
+# une grappe nettement bleutee (b* sous -4 : au-dela du bruit d'un gris) prend la cible la plus bleue, meme sombre
 choix[CL[:, 2] < -4] = TL[:, 2].argmin()
 for k in np.argsort([-aire[g == k].sum() for k in range(K)]):
     m = np.average(S[g == k], 0, aire[g == k]) if aire[g == k].sum() > 0 else np.zeros(3)

@@ -2,7 +2,7 @@
 # apres les captures du 10 octobre 2026 : repeindre par zones, retirer une piece mal sortie de TRELLIS, ajouter une
 # forme simple (gradins, flamme, dalle), etirer une tour. Couleurs en sRGB, comme le .glb.
 #   python monument_retouches.py -- <nom> entree.glb sortie.glb
-# <nom> : moulin-etape (une etape du grand moulin), kiosque, observatoire-etoiles, temple, observatoire-baleines, phare, amphitheatre, viaduc
+# <nom> : moulin, moulin-etape (une etape du grand moulin), kiosque, observatoire-etoiles, temple, observatoire-baleines, phare, amphitheatre, viaduc
 import bpy, bmesh, sys, math
 from mathutils import Vector
 
@@ -183,12 +183,64 @@ elif nom == "viaduc":
     zt = tablier + hausse - 0.15 * H
     for f in faces():
         if f not in loco and f.calc_center_median().z > zt: peindre(f, (0.47, 0.48, 0.50))
+elif nom == "moulin":
+    # fenetres nettes (directeur artistique, 10 octobre 2026) : les creux des fenetres, de la couleur du mur, se lisaient
+    # comme des chiffres (un « 8 », un « 6 ») ; chacun devient un rectangle simple, cadre de bois et fond d'ardoise,
+    # pose sur le mur. Places relevees sur le modele en aplats (angle autour de l'axe en degres, hauteur du centre).
+    # couleurs du fichier (celles de reglages.csv) : le calque de couleur les lit encodees en sRVB
+    def fichier(h): return tuple(x * 12.92 if x <= 0.0031308 else 1.055 * x ** (1 / 2.4) - 0.055 for x in ((h >> 16 & 255) / 255, (h >> 8 & 255) / 255, (h & 255) / 255))
+    MUR, BOIS, FOND = fichier(0xd6c8ab), fichier(0x8c5a3c), fichier(0x46628a)
+    for angle, zc in ((-105.0, 0.224), (-104.0, 0.415), (107.0, 0.225)):
+        t = math.radians(angle); u = Vector((math.cos(t), math.sin(t), 0)); v = Vector((-math.sin(t), math.cos(t), 0))
+        zz = Z0 + zc * H
+        proches = [f for f in faces() if abs(f.calc_center_median().z - zz) < 0.07 * H
+                   and abs(math.remainder(math.atan2(f.calc_center_median().y, f.calc_center_median().x) - t, 2 * math.pi)) < math.radians(14)]
+        mur = sorted(r(f) for f in proches if abs(f.normal.z) < 0.5 and abs(f.calc_center_median().z - zz) < 0.03 * H and r(f) < 0.24)
+        rmur = mur[len(mur) * 3 // 4] if mur else 0.2   # le mur, pas les ailes ni le socle
+        for f in proches:
+            if r(f) < rmur - 0.004: peindre(f, MUR)   # le creux prend la couleur du mur
+        for demi_l, demi_h, prof, c in ((0.040, 0.055, 0.016, BOIS), (0.027, 0.042, 0.022, FOND)):
+            o_ = u * rmur
+            coins = [o_ + v * sx * demi_l for sx in (-1, 1)]
+            bas = [Vector((p.x, p.y, zz - demi_h)) for p in (coins[0] - u * 0.012, coins[1] - u * 0.012, coins[1] + u * prof, coins[0] + u * prof)]
+            prisme([(p.x, p.y, p.z) for p in bas], 2 * demi_h, c, c)
 elif nom == "moulin-etape":
     # etape de chantier du grand moulin coupee sous le moyeu : le bout d'aile qui depasse de la tour part (il se lisait
     # comme un debris) ; la tour garde son rayon, mesure sur le couvercle de la coupe
     cap = [r(f) for f in faces() if f.normal.z > 0.9 and z(f) > 0.95]
     rmax = max(cap) if cap else 0.2
     retirer(f for f in faces() if z(f) > 0.45 and max(math.hypot(v.co.x, v.co.y) for v in f.verts) > rmax * 1.06)
+    # les eclats d'aile restes en haut de la tour (bois brun, au-dessus des fenetres) ; les cadres des fenetres, des
+    # prismes a part de huit sommets, restent
+    cadres = set()
+    for f in faces():
+        if f in cadres: continue
+        ile, pile, vus = set(), [f], set()
+        while pile:
+            g = pile.pop()
+            if g in ile: continue
+            ile.add(g); vus.update(g.verts)
+            pile.extend(h for e in g.edges for h in e.link_faces if h not in ile)
+            if len(vus) > 8: break
+        if len(vus) == 8: cadres |= ile
+    retirer(f for f in faces() if f not in cadres and z(f) > 0.74 and f.normal.z < 0.9 and couleur(f)[0] - couleur(f)[2] > 0.2)
+    # et ce qui reste de l'arbre du moyeu (vers -138 degres) : des facettes qui ne regardent pas vers l'exterieur
+    def hors_mur(f):
+        c = f.calc_center_median(); rc = math.hypot(c.x, c.y) or 1e-6
+        return (f.normal.x * c.x + f.normal.y * c.y) / rc < 0.6 and abs(f.normal.z) < 0.95
+    retirer(f for f in faces() if f not in cadres and z(f) > 0.8 and hors_mur(f)
+            and abs(math.remainder(math.atan2(f.calc_center_median().y, f.calc_center_median().x) - math.radians(-138), 2 * math.pi)) < math.radians(25))
+    # puis les petits bouts restes seuls (moins de 30 facettes), cadres mis a part
+    vus = set()
+    for f in faces():
+        if f in vus or f in cadres: continue
+        ile, pile = set(), [f]
+        while pile:
+            g = pile.pop()
+            if g in ile: continue
+            ile.add(g); pile.extend(h for e in g.edges for h in e.link_faces if h not in ile)
+        vus |= ile
+        if len(ile) < 30: retirer(ile)
 else:
     raise SystemExit(f"monument inconnu : {nom}")
 

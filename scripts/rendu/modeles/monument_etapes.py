@@ -70,7 +70,8 @@ for i, part in enumerate(parts, 1):
     # on garde le plus gros morceau, ceux qui touchent le sol (piles d'un pont posees sur leur dalle) et les gros ;
     # les petits morceaux en l'air (une pale coupee de son moyeu) partent
     sol = min(zs) + (max(zs) - min(zs)) * 0.02
-    retires = [ile for ile in iles[1:] if min(v.co.z for v in ile) > sol and len(ile) < len(iles[0]) * 0.25]
+    # (un prisme de huit sommets pose par monument_retouches.py, un cadre de fenetre, reste)
+    retires = [ile for ile in iles[1:] if min(v.co.z for v in ile) > sol and len(ile) < len(iles[0]) * 0.25 and len(ile) != 8]
     for ile in retires:
         bmesh.ops.delete(bm, geom=ile, context="VERTS")
     bm.to_mesh(o.data); bm.free(); o.data.update()
