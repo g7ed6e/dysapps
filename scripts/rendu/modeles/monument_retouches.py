@@ -141,6 +141,9 @@ elif nom == "phare":
     cone(0.06, 0.02, zc - 0.02, 0.07, 0.18, FEU, 5, 0.4)
     cone(-0.04, 0.03, zc - 0.02, 0.07, 0.15, FEU, 5, 1.1)
     cylindre(0.0, 0.0, Z0, 0.34, 0.05, (0.55, 0.57, 0.60), (0.42, 0.45, 0.50), 12)
+    # les facettes presque noires du creux de la corbeille (un trou sous la flamme, de jour comme de nuit) : fer gris
+    for f in faces():
+        if sum(couleur(f)) < 0.35: peindre(f, (0.32, 0.34, 0.38))
 
 elif nom == "amphitheatre":
     # les eclats rouges partent ; trois gradins pleins en arc de cercle, velours rouge dessus, pierre devant
@@ -158,8 +161,9 @@ elif nom == "viaduc":
     loco = set(f for f in faces() if z(f) > 0.86 or (z(f) > 0.8 and couleur(f)[2] - couleur(f)[0] > 0.05))
     # la locomotive se detache du tablier : elle bouge sans tirer ses facettes
     loco = set(g for g in bmesh.ops.split(bm, geom=list(loco))["geom"] if isinstance(g, bmesh.types.BMFace))
+    # le haut du fichier melange la locomotive (bleutee) et des eclats du tablier : ceux-ci prennent la pierre du tablier
     for f in loco:
-        if couleur(f)[2] - couleur(f)[0] > 0.0: peindre(f, (0.36, 0.46, 0.60))
+        peindre(f, (0.36, 0.46, 0.60) if couleur(f)[2] - couleur(f)[0] > 0.0 else (0.47, 0.48, 0.50))
     pont = simplifier([f for f in faces() if f not in loco], 900)   # deux ponts et la locomotive tiennent dans 3 000
     ys = [v.co.y for f in pont for v in f.verts]; L = max(ys) - min(ys)
     r_ = bmesh.ops.duplicate(bm, geom=pont)
@@ -173,7 +177,12 @@ elif nom == "viaduc":
     hausse = (tablier - Z0 - 0.12 * H) * (ETIRE - 1)   # le tablier monte d'autant que les piles s'allongent
     c = sum((v.co for v in vl), Vector()) / len(vl)
     for v in vl:
-        v.co = Vector((c.x, c.y, c.z)) + (v.co - c) * 1.3 + Vector((0, L * 0.485, hausse))
+        d = v.co - c   # plus longue et plus haute, pas plus large que le tablier
+        v.co = Vector((c.x + d.x * 1.05, c.y + d.y * 1.6, c.z + d.z * 1.8)) + Vector((0, L * 0.485, hausse))
+    # le dessus du tablier, un amas de facettes grises (rails, eclats), d'une seule teinte de pierre
+    zt = tablier + hausse - 0.15 * H
+    for f in faces():
+        if f not in loco and f.calc_center_median().z > zt: peindre(f, (0.47, 0.48, 0.50))
 elif nom == "moulin-etape":
     # etape de chantier du grand moulin coupee sous le moyeu : le bout d'aile qui depasse de la tour part (il se lisait
     # comme un debris) ; la tour garde son rayon, mesure sur le couvercle de la coupe

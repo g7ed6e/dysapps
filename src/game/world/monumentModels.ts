@@ -239,12 +239,13 @@ export function isFire(r: number, g: number, b: number): boolean {
 
 /**
  * Le halo d'un feu allumé : centré sur lui, de `HALO_DU_FEU` fois sa taille (au moins `HALO_DU_FEU_MIN` cases), pour qu'il
- * marque nettement la nuit et se voie de loin depuis l'archipel, sans lumière dynamique (un sprite, un appel).
+ * marque la nuit et se voie de loin depuis l'archipel sans éclairer l'île voisine (calé sur la lanterne du phare de
+ * Blocland, directeur artistique, 10 octobre 2026), sans lumière dynamique (un sprite, un appel).
  */
-export const HALO_DU_FEU = 5;
-export const HALO_DU_FEU_MIN = 7;
+export const HALO_DU_FEU = 3;
+export const HALO_DU_FEU_MIN = 4;
 /** L'opacité du halo en pleine nuit (additif : il éclaircit, jamais ne voile) ; elle suit le degré de nuit, sans pulser. */
-export const OPACITE_DU_HALO_DU_FEU = 0.8;
+export const OPACITE_DU_HALO_DU_FEU = 0.45;
 function fireHalo(f: ReturnType<typeof shell>): ImportedMonument['halo'] {
   if (!f.pos.length) return null;
   const lo = [Infinity, Infinity, Infinity];
