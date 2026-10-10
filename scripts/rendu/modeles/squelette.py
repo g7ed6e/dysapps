@@ -7,7 +7,7 @@
 #   python3 squelette.py -- <dossier d'un modèle> <quarts de tour> [réglages]
 #
 # <quarts de tour> : ceux de src/game/world/characters/imported/models.ts (le modèle tourné vers l'élève). Réglages,
-# facultatifs : cou=0.6 (le haut du dos, en fraction de la hauteur), queue=non (pas de queue), jambes=non (pas de
+# facultatifs : cou=0.6 (le haut du dos, en fraction de la hauteur), queue=non (pas de queue), queue=sol (une queue posée au sol), jambes=non (pas de
 # jambes : ni marche ni os de jambe), bras=non (pas de bras qui balancent), bras=L ou bras=R (un seul bras), leve=L ou leve=R (la main levée au-dessus de l'épaule),
 # teinte=L ou teinte=R (un bras collé au corps, pris à sa couleur, la plus sombre du modèle). Quarts et réglages de chaque créature : la colonne « squelette » de
 # docs/univers/archipeo/personnages/modeles/reglages.csv. Relire ensuite la planche d'apercu_squelette.py.
@@ -140,9 +140,14 @@ def surface(q, per_triangle=40, seed=1, by_area=False):
     return a + r[:, :1] * (b - a) + r[:, 1:] * (c - a)
 
 
-def find_legs(q, h):
+def find_legs(q, h, ground_tail=False):
     """Les deux jambes : sous l'entrejambe, les sommets se séparent en deux paquets de part et d'autre du milieu."""
     split = []
+    if ground_tail:
+        # Une queue posée au sol (réglage queue=sol, une salamandre) n'est pas une jambe : on ne cherche les jambes
+        # que sous le corps.
+        body = q[q[:, 1] > 0.3 * h]
+        q = q[q[:, 2] < np.percentile(body[:, 2], 60)]
     centre = np.median(q[:, 0])
     for y0 in np.arange(0.02, 0.5, 0.02) * h:
         s = q[(q[:, 1] >= y0) & (q[:, 1] < y0 + 0.02 * h)]
@@ -267,7 +272,7 @@ def smooth(x):
 def rig(q, h, settings, col=None):
     """Les os (nom, parent, tête dans le repère du jeu) et quatre os et poids par sommet."""
     dense = surface(q, by_area=settings.get("aire") == "oui")
-    legs = None if settings.get("jambes") == "non" else find_legs(dense, h)
+    legs = None if settings.get("jambes") == "non" else find_legs(dense, h, settings.get("queue") == "sol")
     crotch = legs[0] if legs else 0.3 * h
     neck = float(settings.get("cou", 0.6)) * h
     torso = dense[(dense[:, 1] > crotch) & (dense[:, 1] < neck)]

@@ -28,7 +28,7 @@
 6e-riviere-creature-nenu;-;0;3 aire=oui cou=0.7 bras=R leve=R
 6e-tour-creature-grimoire;-;0;0 cou=0.82 bras=non
 6e-vallee-creature-fougere;-;0
-6e-volcan-creature-lavi;-;0
+6e-volcan-creature-lavi;-;0;0 queue=sol aire=oui bras=non
 5e-bourg-gardien-griffon-d-email;0.12;0
 5e-carrefour-gardien-sphinx-des-routes;0.12;0
 5e-comptoir-gardien-reine-du-marche;0.12;0
