@@ -30,6 +30,7 @@ TABLES = [os.path.join(ICI, "../../../docs/univers/archipeo", t, "modeles/reglag
 cibles = None
 BATIMENT = False   # le nom est dans la table des batiments : les regles des batiments (plus bas)
 AVANT_TOIT = None  # la hauteur de l'avant-toit lue dans la table (colonne 4), en part de la hauteur sans le socle
+RETOUCHES = []     # les retouches du batiment (colonne 6 de sa ligne), voir plus bas
 for table in TABLES:
     if not os.path.exists(table): continue
     for ligne in csv.reader((l for l in open(table, encoding="utf-8") if not l.startswith("#")), delimiter=";"):
@@ -38,6 +39,7 @@ for table in TABLES:
             if VOXEL is None and len(ligne) > 2 and ligne[2].strip(): VOXEL = float(ligne[2])
             BATIMENT = table.endswith(os.path.join("batiments", "modeles", "reglages.csv"))
             if BATIMENT and len(ligne) > 3 and ligne[3].strip(): AVANT_TOIT = float(ligne[3])
+            if BATIMENT and len(ligne) > 5: RETOUCHES = ligne[5].split()
 if VOXEL is None: VOXEL = 0.008
 if K is None: K = 12 if BATIMENT else 6
 if not cibles:
@@ -193,11 +195,72 @@ for _ in range(2):    # triangles isoles
     lab_f = neuf
 
 if BATIMENT:
+    # Les ouvertures (avis du directeur artistique, 10 octobre 2026 : une porte se lit comme un trou sombre, de pres comme
+    # de loin). Le fond sombre de la ligne (3a2a22 au 6e, 33291f au 5e ; sinon sa cible la plus sombre) l'emporte sur
+    # toute face en retrait, porte, arche, etal ou four, quelle que soit la couleur que sa grappe a prise : une face entre
+    # le socle et l'avant-toit d'ou moins de 40 % du ciel se voit (des rayons lances autour de sa normale, sans compter le
+    # socle) est au fond d'un creux ; un mur sous un grand avant-toit en voit plus de la moitie.
+    from mathutils import Vector
+    fonds = [i for i, c in enumerate(cibles) if c in (0x3A2A22, 0x33291F)]
+    fond = fonds[0] if fonds else sombre
+    taille = max(z1 - z0, np.ptp(Vb[:, 0]), np.ptp(Vb[:, 1]))
+    garde = [p.index for p in me.polygons if p.center.z >= pied]
+    arbre_b = BVHTree.FromPolygons([v.co for v in me.vertices], [me.polygons[i].vertices[:] for i in garde])
+    # 48 directions en cosinus autour de la normale (spirale de Fibonacci), les memes pour toutes les faces
+    nr = 48
+    u = (np.arange(nr) + 0.5) / nr; phi = np.arange(nr) * np.pi * (3 - np.sqrt(5))
+    loc = np.c_[np.sqrt(u) * np.cos(phi), np.sqrt(u) * np.sin(phi), np.sqrt(1 - u)]
+
+    def ciel(p):
+        n = np.array(p.normal[:]); t = np.cross(n, (0, 0, 1) if abs(n[2]) < 0.9 else (1, 0, 0)); t /= np.linalg.norm(t)
+        b = np.cross(n, t); o = Vector(p.center + p.normal * (0.004 * taille))
+        return sum(arbre_b.ray_cast(o, Vector(d))[0] is None for d in loc @ np.array([t, b, n])) / nr
+
+    retrait = np.zeros(len(me.polygons), bool)
+    for p in me.polygons:
+        if pied + 0.01 * taille < p.center.z < toit_z and p.normal.z < 0.9:
+            retrait[p.index] = ciel(p) < 0.4
+    lab_f[retrait] = fond
+    if os.environ.get("DIAG"):
+        np.savez(os.environ["DIAG"], ctr=ctr, nor=np.array([p.normal[:] for p in me.polygons]), S=S, lab=lab_f, aire=aire,
+                 V=np.array([v.co[:] for v in me.vertices]), F=np.array([p.vertices[:] for p in me.polygons]), pied=pied, toit=toit_z, g=g)
+    print(f"retrait : {100 * aire[retrait].sum() / aire.sum():.1f} % de la surface prend le fond #{cibles[fond]:06x}")
+
+    # Les retouches d'un batiment (colonne 6 de sa ligne, demandes du directeur artistique et du consultant Archipeo,
+    # 10 octobre 2026), des mots separes par des espaces :
+    #   murs=tout          toute grappe surtout sur les murs prend la cible des murs (le bleu glace de l'igloo de Frimas) ;
+    #   grappe=src>dst     la grappe dont la couleur moyenne lue (journal « grappe #… ») est la plus proche de src prend dst :
+    #                      une signature fondue dans une cible voisine (le pot de la serre, la roue dentee de l'atelier) ;
+    #   toit=tout          toute face du toit (au-dessus de l'avant-toit, tournee vers le haut) prend la cible du toit ;
+    #   zone=a-b:src>dst   entre a et b (part de la hauteur depuis le socle), les faces de couleur src prennent dst
+    #                      (src * : toutes) ; zone=a-b:src>dst:v pour les faces verticales seulement. Le maillage est
+    #                      d'abord recoupe aux hauteurs a et b : la bande suit une ligne droite, pas les grands triangles
+    #                      d'un mur (le bandeau de la cabane de Sema sortait en coins) ;
+    #   loin-...           lues par batiment_loin.py (la version de loin).
+    rang = {c: i for i, c in enumerate(cibles)}
+    hauteur = (ctr[:, 2] - pied) / (z1 - pied)
+    nzf = np.array([p.normal.z for p in me.polygons])
+    for r in RETOUCHES:
+        if r == "murs=tout":
+            for k in range(K):
+                if part(zone_murs, k) >= 0.5 and part(zone_toit, k) < 0.4:
+                    lab_f[(g == k) & ~retrait & (lab_f != fond)] = 0
+        elif r.startswith("grappe="):
+            src, dst = r[7:].split(">")
+            h = int(src, 16); h = np.array([h >> 16 & 255, h >> 8 & 255, h & 255]) / 255
+            k = int(np.argmin(((moy - h) ** 2).sum(1)))
+            lab_f[(g == k) & ~retrait] = rang[int(dst, 16)]
+        elif r == "toit=tout":
+            lab_f[zone_toit] = 1
+        elif r.startswith("zone="):
+            pass   # apres la peinture, sur le maillage recoupe (plus bas)
+        elif not r.startswith("loin-"):
+            raise SystemExit(f"{NOM} : retouche inconnue {r}")
     # la facade : le cote ou le sombre (porte, ouverture) couvre le plus de murs ; « facade q » donne le nombre de
     # quarts de tour a passer a aligner.py pour la mettre au sud (-Y), ou le jeu l'attend
     nor = np.array([p.normal[:] for p in me.polygons])
     # le fond sombre lu dans la texture (une ouverture est sombre dans le brut, quelle que soit la cible qu'elle a prise)
-    vu = (S @ np.array([.2126, .7152, .0722]) < 0.16) & ~inconnu
+    vu = ((S @ np.array([.2126, .7152, .0722]) < 0.16) & ~inconnu) | retrait
     vu &= (np.abs(nor[:, 2]) < 0.3) & (ctr[:, 2] > pied) & (ctr[:, 2] < toit_z)
     # au plus pres du mur exterieur de ce cote (le fond d'un batiment creux, vu par la porte, ne compte pas) ; un autre
     # cote ne l'emporte sur le sud que nettement (la forge a aussi une fenetre de cote)
@@ -217,6 +280,39 @@ for p in me.polygons:   # valeurs sRVB ecrites telles quelles, comme le reste de
     c = (*T[lab_f[p.index]], 1.0)
     for li in p.loop_indices: attr.data[li].color = c
     p.use_smooth = False
+if BATIMENT and any(r.startswith("zone=") for r in RETOUCHES):
+    import bmesh
+    from mathutils import Vector
+    bm = bmesh.new(); bm.from_mesh(me)
+    couche = bm.loops.layers.color[attr.name]
+    for r in RETOUCHES:
+        if not r.startswith("zone="):
+            continue
+        champs = r[5:].split(":")
+        za, zb = (pied + float(x) * (z1 - pied) for x in champs[0].split("-"))
+        src, dst = champs[1].split(">")
+        for z in (za, zb):
+            bmesh.ops.bisect_plane(bm, geom=bm.verts[:] + bm.edges[:] + bm.faces[:], plane_co=Vector((0, 0, z)),
+                                   plane_no=Vector((0, 0, 1)))
+        # la couche de bmesh rend les octets tels qu'ils sont ranges (sRVB) : l'attribut, lui, les rend lineaires
+        code = lambda v: np.where(v <= 0.0031308, v * 12.92, 1.055 * np.power(v, 1 / 2.4) - 0.055)
+        a_src = None if src == "*" else code(T[cibles.index(int(src, 16))])
+        a_dst = (*code(T[cibles.index(int(dst, 16))]), 1.0)
+        for f in bm.faces:
+            f.normal_update()
+            c = f.calc_center_median()
+            if not (za <= c.z <= zb):
+                continue
+            if a_src is not None and np.abs(np.array(f.loops[0][couche][:3]) - a_src).max() > 0.006:
+                continue
+            if len(champs) > 2 and champs[2] == "v" and abs(f.normal.z) >= 0.3:
+                continue
+            for l in f.loops:
+                l[couche] = a_dst
+    bmesh.ops.triangulate(bm, faces=bm.faces[:])
+    bm.to_mesh(me); bm.free()
+    for p in me.polygons:
+        p.use_smooth = False
 me.materials.clear()
 while me.uv_layers: me.uv_layers.remove(me.uv_layers[0])
 print(f"{NOM} : {len(me.polygons)} triangles")

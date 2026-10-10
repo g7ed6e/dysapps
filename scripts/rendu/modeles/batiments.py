@@ -35,7 +35,7 @@ import batiment_mesures as BM  # noqa: E402
 TABLE = os.path.normpath(os.path.join(ICI, "../../../docs/univers/archipeo/batiments/modeles/reglages.csv"))
 SORTIE = os.path.dirname(TABLE)
 LANCER = [bpy.app.binary_path, "-b", "-P"] if bpy.app.binary_path else [sys.executable]
-COLONNES = ["batiment", "cibles", "voxel", "avant-toit", "quarts"]
+COLONNES = ["batiment", "cibles", "voxel", "avant-toit", "quarts", "retouches"]
 
 
 def lire_table():
@@ -53,7 +53,7 @@ def ecrire_table(entete, lignes):
     with open(TABLE, "w", encoding="utf-8") as f:
         f.writelines(entete)
         for d in lignes:
-            f.write(";".join(d[c] for c in COLONNES) + "\n")
+            f.write(";".join(d[c] for c in COLONNES).rstrip(";") + "\n")
 
 
 def lancer(script, *args):
@@ -93,8 +93,15 @@ def un_batiment(nom, brut, d):
         d["quarts"] = str(quarts)
     elif facade:
         print(f"  attention : la facade lue est a {facade} quart(s) de tour du sud (quarts = {quarts} dans la table)")
-    print("  " + "\n  ".join(l for l in journal.splitlines() if l.startswith(("grappe", "socle", "facade"))))
+    print("  " + "\n  ".join(l for l in journal.splitlines() if l.startswith(("grappe", "socle", "facade", "retrait"))))
     print("  " + next(l for l in lancer("couper.py", low, final, "socle").splitlines() if l.startswith("coupe")))
+    # le sol pose par couper.py sous un batiment creux, et les bandes des retouches zone=, ajoutent des triangles : au-dela
+    # des 3 000 (BUILDING_NEAR_TRIANGLES), on refait les aplats d'autant moins de triangles (le salon de Moustache)
+    n = len(maillage(final)[1])
+    if n > 3000:
+        journal = lancer("monument_lowpoly.py", aligne, low, nom, 3000 - (n - 3000) - 20)
+        print(f"  {n} triangles : refait a {3000 - (n - 3000) - 20}")
+        print("  " + next(l for l in lancer("couper.py", low, final, "socle").splitlines() if l.startswith("coupe")))
     if not d["avant-toit"].strip():
         V, F = maillage(final)
         d["avant-toit"] = f"{BM.avant_toit(V, F)[0]:.3f}"
@@ -103,9 +110,9 @@ def un_batiment(nom, brut, d):
     final = shutil.move(final, os.path.join(dossier, "final-3000.glb"))
     shutil.rmtree(travail)
     print("  " + lancer("monument_etapes.py", final, dossier, toit, f"couleur={murs}", "plein").strip().splitlines()[-1])
-    loin = lancer("batiment_loin.py", final, dossier, toit)
+    loin = lancer("batiment_loin.py", final, dossier, toit, *(r for r in d["retouches"].split() if r.startswith("loin-")))
     print("  " + "\n  ".join(l for l in loin.splitlines() if "colonne" in l or "triangles" in l))
-    lancer("rendre_controle.py", "echelle", os.path.join(dossier, "etape-1.glb"), final, os.path.join(dossier, "loin-etape-1.glb"),
+    lancer("rendre_controle.py", "echelle", "soleil", os.path.join(dossier, "etape-1.glb"), final, os.path.join(dossier, "loin-etape-1.glb"),
            os.path.join(dossier, "loin.glb"), os.path.join(dossier, "controle.png"))
     print(f"  avant-toit {toit}, quarts {quarts}")
 

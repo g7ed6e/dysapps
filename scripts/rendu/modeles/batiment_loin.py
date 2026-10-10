@@ -33,6 +33,7 @@ import batiment_mesures as BM  # noqa: E402
 
 args = sys.argv[sys.argv.index("--") + 1:]
 SOURCE, FOLDER, EAVE = args[0], args[1], float(args[2])
+RETOUCHES = args[3:]   # les retouches « loin-... » de la ligne du batiment (reglages.csv), plus bas
 BUDGET = 200       # triangles au plus (BUILDING_FAR_TRIANGLES, src/game/world/buildingModels.ts)
 NIVEAUX = 100      # coupes
 TOLERANCE = 0.008  # ecart (part de la hauteur) en dessous duquel une hauteur part meme si le budget n'est pas atteint
@@ -74,6 +75,9 @@ def dominante(sel):
 
 # la couleur des murs : celle qui couvre le plus les facettes verticales entre 15 % de la hauteur et l'avant-toit
 sombre = min(range(len(palette)), key=lambda i: luminance(palette[i]))
+# le fond sombre des ouvertures : celui de la ligne (3a2a22 au 6e, 33291f au 5e), sinon la couleur la plus sombre
+FONDS = [tuple(round(((c >> s & 255) / 255), 4) for s in (16, 8, 0)) for c in (0x3A2A22, 0x33291F)]
+sombre = next((palette.index(p) for p in palette for f in FONDS if max(abs(a - b) for a, b in zip(p, f)) < 0.003), sombre)
 if luminance(palette[sombre]) > 0.25:
     sombre = None
 murs_sel = (np.abs(normale_f[:, 2]) < 0.5) & (centre_f[:, 2] > z0 + 0.15 * H) & (centre_f[:, 2] < eave)
@@ -184,7 +188,8 @@ def triangles(c):
 
 
 def total(cols=None):
-    return sum(triangles(c) for c in (colonnes if cols is None else cols)) + 2   # + l'ouverture
+    # + l'ouverture, et le disque d'une retouche loin-disque
+    return sum(triangles(c) for c in (colonnes if cols is None else cols)) + 2 + 6 * any(r.startswith("loin-disque=") for r in RETOUCHES)
 
 
 def volume(c):
@@ -224,6 +229,49 @@ colonnes = [c for c in colonnes if c is corps or c["Z"][-1] > z0 + 0.5 * (eave -
 # les miettes (moins de 0,5 % du volume du corps : un montant de galerie, un eclat) ne se voient pas de loin
 gros = max(volume(c) for c in colonnes)
 colonnes = [c for c in colonnes if volume(c) >= 0.005 * gros]
+# Les retouches de loin d'un batiment (colonne retouches de sa ligne dans reglages.csv, demandes du directeur artistique
+# et du consultant Archipeo, 10 octobre 2026) :
+#   loin-cube        ce qui se detache du corps (une cheminee) et le haut etroit du corps (un lanternon) deviennent de
+#                    simples prismes droits ;
+#   loin-etages      les hauteurs ou la couleur dominante change restent, jusqu'en haut (deux toits l'un sur l'autre) ;
+#   loin-sans        ce qui se detache du corps sous l'avant-toit, ou plus court qu'un dixieme de la hauteur, part (un
+#                    volume decale, parasite, un rebord) ;
+#   loin-droit       le corps, du sol a l'avant-toit, reste dans l'aplomb median de ses murs (une marquise, un etal en
+#                    saillie, une annexe basse ne le deforment plus) ;
+#   loin-murs        les faces verticales du corps (murs, pignons) prennent toutes la couleur des murs (une roue, un
+#                    bardage) ;
+#   loin-disque=hex  un disque de cette couleur (un cadran) se pose sur la facade, a la place et a la taille de ses
+#                    facettes tournees vers le sud dans le modele de pres.
+if "loin-sans" in RETOUCHES:
+    # sous l'avant-toit, ou trop courte pour etre une cheminee (moins de 10 % de la hauteur : un rebord, un anneau)
+    colonnes = [c for c in colonnes if c is corps or (c["Z"][0] > eave and c["Z"][-1] - c["Z"][0] > 0.1 * H)]
+if "loin-cube" in RETOUCHES:
+    for c in colonnes:
+        if c is not corps:
+            c["A"][:] = np.median(c["A"], 0)
+            c["force"] = {0, len(c["Z"]) - 1}
+    # et le haut du corps, au-dessus de l'avant-toit, quand il est etroit dans les deux sens (un lanternon pose sur le
+    # faite ; le haut d'un toit a deux pans, etroit dans un seul sens, reste)
+    if murs_z.sum() >= 3:
+        ref = np.median(corps["A"][murs_z], 0)
+        lx, ly = ref[0] + ref[M // 2], ref[M // 4] + ref[3 * M // 4]
+        A = corps["A"]
+        etroit = (corps["Z"] > eave) & (A[:, 0] + A[:, M // 2] < 0.5 * lx) & (A[:, M // 4] + A[:, 3 * M // 4] < 0.5 * ly)
+        if etroit.sum() >= 2:
+            k0 = int(np.nonzero(etroit)[0].min())
+            A[k0:] = np.median(A[k0:], 0)
+            corps["force"] = {k for k in corps["force"] if k < k0} | {k0, len(corps["Z"]) - 1}
+if "loin-etages" in RETOUCHES:
+    # les hauteurs ou la couleur dominante change sur tout le tour (un toit, un mur, un autre toit : les deux toits du
+    # quartier de Boussole) restent, au-dessus de l'avant-toit aussi
+    tour = [dominante((zmin_f <= z) & (zmax_f >= z)) for z in corps["Z"]]
+    for k in range(1, len(tour) - 1):
+        if tour[k] != tour[k - 1]:
+            corps["force"] |= {k - 1, k}
+if "loin-droit" in RETOUCHES and murs_z.sum() >= 3:
+    ref = np.median(corps["A"][murs_z], 0)
+    bas = corps["Z"] < eave - 0.006 * H
+    corps["A"][bas] = ref
 simplifier()
 while total() > BUDGET and len(colonnes) > 1:
     # toujours trop : la plus petite colonne part (un tonneau avant le toit), et on reprend
@@ -295,7 +343,10 @@ def construire(entier):
                 if np.linalg.norm(n) < 1e-7 * H * H:
                     continue   # cote nul (le chanfrein d'un rectangle)
                 largeur = max(np.linalg.norm(P[b] - P[a]), np.linalg.norm(Q[b] - Q[a]))
-                bande[k] = (quad, couleur_face(n / np.linalg.norm(n), za, zb, app), largeur)
+                col = couleur_face(n / np.linalg.norm(n), za, zb, app)
+                if "loin-murs" in RETOUCHES and c is corps and abs(n[2]) < 0.2 * np.linalg.norm(n):
+                    col = couleur_murs
+                bande[k] = (quad, col, largeur)
             # un chanfrein etroit (le coin d'un rectangle) prend la couleur du plus large de ses deux voisins : sa
             # propre lecture tombe sur une arete, un cadre de porte, un coin d'ombre
             plus_large = max((v[2] for v in bande.values()), default=0)
@@ -315,6 +366,10 @@ def construire(entier):
     if ouverture is not None and (entier or ouverture[3] <= eave + 1e-9):
         x0, x1, zb, zt = ouverture
         polys.append(([(x0, devant(zb), zb), (x1, devant(zb), zb), (x1, devant(zt), zt), (x0, devant(zt), zt)], sombre))
+    if disque is not None and (entier or disque[1] + disque[2] <= eave + 1e-9):
+        x, z, r, i = disque
+        y = devant_disque(z)
+        polys.append(([(x + r * np.cos(t), y, z + r * np.sin(t)) for t in np.arange(8) * np.pi / 4], i))
     return polys
 
 
@@ -328,7 +383,10 @@ if sombre is not None and corps is not None:
     front_y = -app[k_sud]
     largeur = app[0] + app[M // 2]
     # une porte part du sol : le sombre du bas des murs seulement (pas le cadran d'une horloge, ni une fenetre haute)
-    front = (cidx == sombre) & (normale_f[:, 1] < -0.6) & (centre_f[:, 2] < z0 + 0.6 * (eave - z0)) & (centre_f[:, 1] < front_y + 0.3 * (app[M // 4] + app[k_sud]))
+    front = (cidx == sombre) & (normale_f[:, 1] < -0.6) & (centre_f[:, 2] < z0 + 0.6 * (eave - z0))
+    # pres du mur de facade ; sinon (un preau ouvert, une arche qui traverse : le fond est loin derriere) a toute profondeur
+    if (front & (centre_f[:, 1] < front_y + 0.3 * (app[M // 4] + app[k_sud]))).any():
+        front &= centre_f[:, 1] < front_y + 0.3 * (app[M // 4] + app[k_sud])
     if front.any():
         q, w8 = centre_f[front], aire_f[front]
 
@@ -352,6 +410,25 @@ if sombre is not None and corps is not None:
             gz = corps["Z"][corps["garde"]]
             ga = corps["A"][corps["garde"], k_sud]
             devant = lambda z: -float(np.interp(z, gz, ga)) - 0.004 * H
+
+
+# le disque (loin-disque=hex) : les facettes de cette couleur tournees vers le sud, leur centre et un rayon de meme aire
+disque = None
+for r in RETOUCHES:
+    if r.startswith("loin-disque="):
+        cible = tuple(round(((int(r.split("=")[1], 16) >> s_ & 255) / 255), 4) for s_ in (16, 8, 0))
+        i = next((palette.index(p) for p in palette if max(abs(a - b) for a, b in zip(p, cible)) < 0.003), None)
+        sel = (cidx == i) & (normale_f[:, 1] < -0.5) if i is not None else np.zeros(len(F), bool)
+        if sel.any():
+            w8 = aire_f[sel] * -normale_f[sel, 1]
+            x, z = np.average(centre_f[sel, 0], weights=w8), np.average(centre_f[sel, 2], weights=w8)
+            disque = (x, z, float(np.sqrt(w8.sum() / np.pi)), i)
+            k_sud_d = int(np.argmax(DIRS @ np.array([0, -1])))
+            gz_d = corps["Z"][corps["garde"]]
+            ga_d = corps["A"][corps["garde"], k_sud_d]
+            devant_disque = lambda z: -float(np.interp(z, gz_d, ga_d)) - 0.008 * H
+        else:
+            print(f"loin-disque : pas de facette {r.split('=')[1]} tournee vers le sud")
 
 
 def write(polys, path):

@@ -38,6 +38,57 @@ def emprise(z):  # surface au sol (rectangle englobant) des points proches de la
     return (max(p.x for p in tranche) - min(p.x for p in tranche)) * (max(p.y for p in tranche) - min(p.y for p in tranche))
 
 
+def sol_interieur(bm, avant, zc):
+    """Le batiment d'un plan : la coupe du socle ouvre le sol d'un batiment creux (la dalle en faisait le sol), et par sa
+    porte on voyait a travers lui le fond de la scene (l'etable de Bloquette, la cabane de Mousso). On pose un sol plat,
+    juste au-dessus de la coupe, la ou le modele entoure le point (un plafond au-dessus, des murs sur trois cotes au
+    moins, vus de l'interieur), en bandes d'une rangee de grille chacune ; il prend, comme la coupe refermee, la couleur
+    la plus sombre du modele : le fond d'une porte se lit sombre jusqu'au sol (avis du directeur artistique, 10 octobre
+    2026)."""
+    from mathutils.bvhtree import BVHTree
+    couche = bm.loops.layers.color.active or (bm.loops.layers.color.values() or [None])[0]
+    if couche is None:
+        return
+    lum = lambda c: 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+    sombre = min((tuple(f.loops[0][couche]) for f in avant), key=lum)
+    arbre = BVHTree.FromBMesh(bm)
+    xs = [v.co.x for v in bm.verts]; ys = [v.co.y for v in bm.verts]; zs = [v.co.z for v in bm.verts]
+    x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+    pas = max(x1 - x0, y1 - y0) / 32
+    z = zc + 0.003 * (max(zs) - zc)
+
+    def dedans(x, y):
+        o = Vector((x, y, z))
+        def touche(d):
+            loc, n, _, _ = arbre.ray_cast(o, d)
+            return loc is not None and n.dot(d) < 0   # une face vue de son cote exterieur : l'interieur d'une piece
+        if not touche(Vector((0, 0, 1))):
+            return False
+        return sum(touche(d) for d in (Vector((1, 0, 0)), Vector((-1, 0, 0)), Vector((0, 1, 0)), Vector((0, -1, 0)))) >= 3
+
+    nx, ny = int((x1 - x0) / pas) + 1, int((y1 - y0) / pas) + 1
+    for j in range(ny):
+        y = y0 + (j + 0.5) * pas
+        i = 0
+        while i < nx:
+            if not dedans(x0 + (i + 0.5) * pas, y):
+                i += 1
+                continue
+            k = i
+            while k + 1 < nx and dedans(x0 + (k + 1.5) * pas, y):
+                k += 1
+            a, b = x0 + i * pas, x0 + (k + 1) * pas
+            f = bm.faces.new([bm.verts.new((a, y - pas / 2, z)), bm.verts.new((b, y - pas / 2, z)),
+                              bm.verts.new((b, y + pas / 2, z)), bm.verts.new((a, y + pas / 2, z))])
+            f.normal_update()
+            i = k + 1
+    # la coupe refermee et le sol prennent le sombre (le dessous ne se voit pas ; sans cela, des couleurs interpolees)
+    for f in bm.faces:
+        if f not in avant:
+            for l in f.loops:
+                l[couche] = sombre
+
+
 if socle:
     import numpy as np
     import batiment_mesures as BM
@@ -66,12 +117,18 @@ print(f"coupe a {hauteur:.0%} de la hauteur, partie gardee : {garder}")
 
 for o in objets:
     bm = bmesh.new(); bm.from_mesh(o.data)
+    if socle:
+        # le .glb a facettes plates arrive desoude : soude, la coupe forme des boucles fermees que l'on sait remplir
+        bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-6)
     geom = bm.verts[:] + bm.edges[:] + bm.faces[:]
     r = bmesh.ops.bisect_plane(bm, geom=geom, plane_co=Vector((0, 0, zc)), plane_no=Vector((0, 0, 1)),
                                clear_inner=(garder == "haut"), clear_outer=(garder == "bas"))
     bord = [e for e in r["geom_cut"] if isinstance(e, bmesh.types.BMEdge)]
     if bord:
+        avant = set(bm.faces)
         bmesh.ops.holes_fill(bm, edges=bord)  # referme la coupe
+        if socle:
+            sol_interieur(bm, avant, zc)
     bm.to_mesh(o.data); bm.free()
     if garder == "haut":
         o.data.transform(__import__("mathutils").Matrix.Translation((0, 0, -zc)))  # repose la coupe sur z = 0
