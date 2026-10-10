@@ -12,7 +12,7 @@
 import type { VoxelCube } from '../Voxel';
 import { DELAVE, rgb, type FacettesDuDecor } from './decor/brush';
 import { lineaire } from './landMesh';
-import { getMonument } from './monuments';
+import { getMonument, MONUMENT_ISLET } from './monuments';
 import { LAYERS } from './projects';
 import type { Cell } from './view';
 import type { ModeleLu } from './characters/imported/glb';
@@ -28,16 +28,25 @@ interface MonumentModel {
    * l'élève (−Z, le devant du plan, en y = 0) : le viaduc, long dans le .glb, prend la longueur de son plan (x).
    */
   quarterTurns: number;
+  /**
+   * Un décalage du modèle dans l'emprise, en cases (x, puis z : le devant du plan est en −z, du côté de la caméra de
+   * jeu), quand son voisin le cache : le viaduc, collé sous la falaise de la Gare du futur, avance vers la caméra.
+   */
+  shift?: { x: number; z: number };
 }
 
 /** Les huit monuments qui ont leur modèle (les grands projets neufs de la 4e et de la 3e gardent leurs blocs). */
 export const MONUMENT_MODELS: Readonly<Record<string, MonumentModel>> = {
   'landmark-6e-1': { folder: '6e-monument-observatoire-des-baleines', stages: 2, quarterTurns: 0 },
-  'landmark-6e-2': { folder: '6e-monument-grand-moulin', stages: 2, quarterTurns: 0 },
+  // Le grand moulin : ses ailes sont dans le plan du fond de sa face −X (.glb) ; trois quarts de tour de plus (en tout
+  // −X du fichier vers −z) les mettent de face à la caméra de jeu, le X des quatre ailes en plein devant (relu sur les
+  // planches, directeur artistique, 10 octobre 2026). Les sept autres montrent déjà leur devant (porte, escalier,
+  // scène) ou n'en ont pas.
+  'landmark-6e-2': { folder: '6e-monument-grand-moulin', stages: 2, quarterTurns: 3 },
   // Le phare du large, en cinq pièces comme son grand projet (GD-10, ./projects.ts) : une étape par pièce posée.
   'landmark-5e-1': { folder: '5e-monument-phare-du-large', stages: 4, quarterTurns: 0 },
   'landmark-5e-2': { folder: '5e-monument-kiosque-a-musique', stages: 2, quarterTurns: 0 },
-  'landmark-4e-1': { folder: '4e-monument-viaduc', stages: 2, quarterTurns: 1 },
+  'landmark-4e-1': { folder: '4e-monument-viaduc', stages: 2, quarterTurns: 1, shift: { x: 0, z: -2 } },
   'landmark-4e-2': { folder: '4e-monument-amphitheatre', stages: 2, quarterTurns: 0 },
   'landmark-3e-1': { folder: '3e-monument-observatoire-des-etoiles', stages: 2, quarterTurns: 0 },
   'landmark-3e-2': { folder: '3e-monument-temple-de-marbre', stages: 2, quarterTurns: 0 },
@@ -45,6 +54,13 @@ export const MONUMENT_MODELS: Readonly<Record<string, MonumentModel>> = {
 
 /** Le côté de l'emprise d'un monument, en cases : le modèle y tient, centré (./monuments.ts, les 7 × 7 du milieu de l'îlot). */
 export const MONUMENT_FOOTPRINT = 7;
+
+/**
+ * Le plus long côté, au sol, qu'un modèle peut prendre en grandissant pour ne pas être plus bas que son plan : celui de
+ * l'îlot (9 cases, ./monuments.ts) ; au-delà, il déborderait sur l'eau. Un modèle très large et bas (le viaduc, le phare
+ * du large) peut donc rester sous la hauteur de son plan.
+ */
+export const MONUMENT_MAX_SPAN = MONUMENT_ISLET;
 
 /** Le fichier de l'étape `etape` (1 à `etapes`), ou du modèle entier (`etapes + 1`). */
 export function stageFile(stage: number, stages: number): string {
@@ -74,6 +90,8 @@ export function shownStage(placedCubes: number, total: number, stages: number): 
 const loaded = new Map<string, ModeleLu>();
 /** Les modèles posés au pied, centrés et à l'échelle, faits une fois par étape. */
 const placed = new Map<string, LocalFacets>();
+/** L'échelle et le centre de chaque modèle entier (les étapes la partagent). */
+const fits = new Map<string, Fit>();
 let version = 0;
 const keyOf = (id: string, stage: number) => `${id}:${stage}`;
 
@@ -82,6 +100,7 @@ export function registerMonument(id: string, stage: number, read: ModeleLu): voi
   loaded.set(keyOf(id, stage), read);
   // L'échelle de toutes les étapes vient du modèle entier : on les refait.
   for (const k of placed.keys()) if (k.startsWith(`${id}:`)) placed.delete(k);
+  fits.delete(id);
   version++;
 }
 
@@ -101,38 +120,71 @@ interface LocalFacets {
   positions: Float32Array;
   normals: Float32Array;
   colors: Float32Array;
+  /** La hauteur de coupe de l'étape (le haut du tronçon), en cases au-dessus du pied. */
+  top: number;
+}
+
+/** La boîte du plan en cubes d'un monument : sa largeur (x), sa profondeur et sa hauteur, en cases. */
+interface PlanBox {
+  w: number;
+  d: number;
+  h: number;
+}
+
+/** Comment le modèle entier se pose : l'échelle, le centre au sol (avant échelle) et le pied. */
+interface Fit {
+  k: number;
+  cx: number;
+  cz: number;
+  y0: number;
 }
 
 /**
- * Met une étape au format du monde : tournée face à l'élève (le demi-tour, puis `quarts` quarts), centrée sur le milieu
- * de l'emprise du modèle entier, à l'échelle où le modèle entier tient dans `MONUMENT_FOOTPRINT` cases, posée à y = 0 ;
- * une normale par facette (les facettes sont plates).
+ * L'échelle du modèle entier. Règle : un monument fini n'est jamais plus petit ni plus bas que la silhouette de son plan
+ * en cubes. L'échelle est la plus grande de : celle où son plus long côté au sol tient dans `MONUMENT_FOOTPRINT` cases,
+ * et celles où il couvre la largeur, la profondeur et la hauteur du plan ; bornée à `MONUMENT_MAX_SPAN` cases au sol (le
+ * débord, au plus jusqu'au bord de l'îlot). Quand la borne l'emporte, la hauteur du plan n'est pas atteinte.
  */
-function placeLocally(stage: ModeleLu, whole: ModeleLu, quarterTurns: number): LocalFacets {
-  const tourner = (x: number, z: number): [number, number] => {
-    let [u, v] = [-x, -z];
-    for (let q = 0; q < ((quarterTurns % 4) + 4) % 4; q++) [u, v] = [-v, u];
-    return [u, v];
-  };
-  let [x0, x1, z0, z1, y0] = [Infinity, -Infinity, Infinity, -Infinity, Infinity];
+function fitOf(whole: ModeleLu, quarterTurns: number, plan: PlanBox): Fit {
+  let [x0, x1, z0, z1, y0, y1] = [Infinity, -Infinity, Infinity, -Infinity, Infinity, -Infinity];
   const p = whole.positions;
   for (let i = 0; i < p.length; i += 3) {
-    const [u, v] = tourner(p[i], p[i + 2]);
+    const [u, v] = turn(p[i], p[i + 2], quarterTurns);
     x0 = Math.min(x0, u);
     x1 = Math.max(x1, u);
     z0 = Math.min(z0, v);
     z1 = Math.max(z1, v);
     y0 = Math.min(y0, p[i + 1]);
+    y1 = Math.max(y1, p[i + 1]);
   }
-  const k = MONUMENT_FOOTPRINT / Math.max(x1 - x0, z1 - z0, 1e-6);
-  const [cx, cz] = [(x0 + x1) / 2, (z0 + z1) / 2];
+  const [w, d, h] = [Math.max(x1 - x0, 1e-6), Math.max(z1 - z0, 1e-6), Math.max(y1 - y0, 1e-6)];
+  const ground = MONUMENT_FOOTPRINT / Math.max(w, d);
+  const wanted = Math.max(ground, plan.w / w, plan.d / d, plan.h / h);
+  return { k: Math.max(ground, Math.min(wanted, MONUMENT_MAX_SPAN / Math.max(w, d))), cx: (x0 + x1) / 2, cz: (z0 + z1) / 2, y0 };
+}
+
+/** Le demi-tour qui met la façade (+Z d'un .glb) face à l'élève (−Z), puis `quarterTurns` quarts de tour. */
+function turn(x: number, z: number, quarterTurns: number): [number, number] {
+  let [u, v] = [-x, -z];
+  for (let q = 0; q < ((quarterTurns % 4) + 4) % 4; q++) [u, v] = [-v, u];
+  return [u, v];
+}
+
+/**
+ * Met une étape au format du monde : tournée, centrée sur le milieu de l'emprise du modèle entier (plus `shift`), à
+ * l'échelle de `fitOf`, posée à y = 0 ; une normale par facette (les facettes sont plates).
+ */
+function placeLocally(stage: ModeleLu, fit: Fit, quarterTurns: number, shift: { x: number; z: number }): LocalFacets {
+  const { k, cx, cz, y0 } = fit;
   const q = stage.positions;
   const positions = new Float32Array(q.length);
+  let top = 0;
   for (let i = 0; i < q.length; i += 3) {
-    const [u, v] = tourner(q[i], q[i + 2]);
-    positions[i] = (u - cx) * k;
+    const [u, v] = turn(q[i], q[i + 2], quarterTurns);
+    positions[i] = (u - cx) * k + shift.x;
     positions[i + 1] = (q[i + 1] - y0) * k;
-    positions[i + 2] = (v - cz) * k;
+    positions[i + 2] = (v - cz) * k + shift.z;
+    top = Math.max(top, positions[i + 1]);
   }
   const normals = new Float32Array(q.length);
   for (let t = 0; t < positions.length; t += 9) {
@@ -142,7 +194,18 @@ function placeLocally(stage: ModeleLu, whole: ModeleLu, quarterTurns: number): L
     const l = Math.hypot(n[0], n[1], n[2]) || 1;
     for (let s = 0; s < 3; s++) for (let j = 0; j < 3; j++) normals[t + 3 * s + j] = n[j] / l;
   }
-  return { positions, normals, colors: stage.colors };
+  return { positions, normals, colors: stage.colors, top };
+}
+
+/** La boîte du plan d'un monument. */
+function planBox(id: string): PlanBox | null {
+  const plan = getMonument(id);
+  if (!plan?.cells.length) return null;
+  const span = (k: 'x' | 'y' | 'z') => {
+    const v = plan.cells.map((c) => c[k]);
+    return Math.max(...v) - Math.min(...v) + 1;
+  };
+  return { w: span('x'), d: span('y'), h: span('z') };
 }
 
 /** Une étape posée en local, faite une fois (`null` si le monument n'est pas tout chargé). */
@@ -154,8 +217,12 @@ function localStage(id: string, stage: number): LocalFacets | null {
   if (!f) {
     const read = loaded.get(k);
     const whole = loaded.get(keyOf(id, m.stages + 1));
-    if (!read || !whole) return null;
-    placed.set(k, (f = placeLocally(read, whole, m.quarterTurns)));
+    const box = planBox(id);
+    if (!read || !whole || !box) return null;
+    let fit = fits.get(id);
+    if (!fit) fits.set(id, (fit = fitOf(whole, m.quarterTurns, box)));
+    // Le décalage ne vaut que pour le modèle posé : le plan, ses cases et le toucher ne bougent pas.
+    placed.set(k, (f = placeLocally(read, fit, m.quarterTurns, m.shift ?? { x: 0, z: 0 })));
   }
   return f;
 }
@@ -170,6 +237,26 @@ export function isFire(r: number, g: number, b: number): boolean {
   return R > 0.8 && G > 0.4 && R - B > 0.45;
 }
 
+/**
+ * Le halo d'un feu allumé : centré sur lui, de `HALO_DU_FEU` fois sa taille (au moins `HALO_DU_FEU_MIN` cases), pour qu'il
+ * marque nettement la nuit et se voie de loin depuis l'archipel, sans lumière dynamique (un sprite, un appel).
+ */
+export const HALO_DU_FEU = 5;
+export const HALO_DU_FEU_MIN = 7;
+/** L'opacité du halo en pleine nuit (additif : il éclaircit, jamais ne voile) ; elle suit le degré de nuit, sans pulser. */
+export const OPACITE_DU_HALO_DU_FEU = 0.8;
+function fireHalo(f: ReturnType<typeof shell>): ImportedMonument['halo'] {
+  if (!f.pos.length) return null;
+  const lo = [Infinity, Infinity, Infinity];
+  const hi = [-Infinity, -Infinity, -Infinity];
+  for (let i = 0; i < f.pos.length; i++) {
+    lo[i % 3] = Math.min(lo[i % 3], f.pos[i]);
+    hi[i % 3] = Math.max(hi[i % 3], f.pos[i]);
+  }
+  const size = Math.max(hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]);
+  return { centre: [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2], cote: Math.max(HALO_DU_FEU_MIN, HALO_DU_FEU * size) };
+}
+
 /** Un monument importé tel que le monde le montre : l'étape, ses facettes posées dans le monde, les cases qu'elle remplace. */
 export interface ImportedMonument {
   id: string;
@@ -179,6 +266,8 @@ export interface ImportedMonument {
   opaque: FacettesDuDecor;
   /** Son feu, allumé la nuit (seulement fini, sur une île ouverte, pour un monument qui s'allume) ; sinon vide. */
   fire: FacettesDuDecor;
+  /** Le halo du feu, la nuit (un sprite additif, fixe : three/construction.ts) ; `null` sans feu. */
+  halo: { centre: [number, number, number]; cote: number } | null;
   /** Les cases posées que le modèle remplace (pour le toucher et la construction : leurs clés « x,y,z »). */
   cellules: Cell[];
   replaced: Set<string>;
@@ -208,14 +297,21 @@ export function getImportedMonuments(cubes: readonly VoxelCube[]): ImportedMonum
     if (!plan || !plan.cells.length) continue;
     const placedCubes = own.filter((c) => !c.ghost);
     const foot = Math.min(...own.map((c) => c.z));
-    const stage = LAYERS[id] ? finishedPieces(id, own, foot, m.stages) : shownStage(placedCubes.length, own.length, m.stages);
+    const oy = foot - Math.min(...plan.cells.map((c) => c.z));
+    let stage = LAYERS[id] ? finishedPieces(id, own, foot, m.stages) : shownStage(placedCubes.length, own.length, m.stages);
+    // Une étape ne s'affiche que si toutes les cases du plan sous sa hauteur de coupe sont posées : sinon les fantômes de
+    // ces cases seraient dessinés dans le tronçon ; on retombe sur l'étape d'avant, ou sur les cubes. Le phare du large,
+    // posé pièce par pièce de bas en haut, n'est pas concerné.
+    const under = (top: number) => (c: VoxelCube) => c.z - oy + 0.5 < top;
+    if (!LAYERS[id]) while (stage > 0 && stage <= m.stages && own.some((c) => c.ghost && under(localStage(id, stage)?.top ?? 0)(c))) stage--;
     const local = stage > 0 ? localStage(id, stage) : null;
     if (!local) continue;
     // Le coin de l'emprise : les cases du plan sont posées en (coin + case) ; le modèle au milieu des 7 × 7.
-    const minOf = (k: 'x' | 'y' | 'z', l: readonly { x: number; y: number; z: number }[]) => Math.min(...l.map((c) => c[k]));
+    const minOf = (k: 'x' | 'y', l: readonly { x: number; y: number }[]) => Math.min(...l.map((c) => c[k]));
     const ox = minOf('x', own) - minOf('x', plan.cells) + MONUMENT_FOOTPRINT / 2;
     const oz = minOf('y', own) - minOf('y', plan.cells) + MONUMENT_FOOTPRINT / 2;
-    const oy = foot - minOf('z', plan.cells);
+    // Les cases que l'étape remplace : celles qu'elle recouvre ; au-dessus de sa coupe, les cubes posés restent.
+    const covered = stage > m.stages || LAYERS[id] ? placedCubes : placedCubes.filter(under(local.top));
     const muted = placedCubes.some((c) => c.muted);
     const lit = stage > m.stages && plan.litWhenDone !== undefined && !muted;
     const opaque = shell();
@@ -233,8 +329,9 @@ export function getImportedMonuments(cubes: readonly VoxelCube[]): ImportedMonum
         else target.col.push(col[i], col[i + 1], col[i + 2]);
       }
     }
-    const replaced = new Set(placedCubes.map((c) => cellKey(c.x, c.y, c.z)));
-    out.push({ id, stage, opaque: finish(opaque), fire: finish(fire), cellules: placedCubes.map((c) => ({ x: c.x, y: c.y, z: c.z })), replaced });
+    const replaced = new Set(covered.map((c) => cellKey(c.x, c.y, c.z)));
+    const halo = fireHalo(fire);
+    out.push({ id, stage, opaque: finish(opaque), fire: finish(fire), halo, cellules: covered.map((c) => ({ x: c.x, y: c.y, z: c.z })), replaced });
   }
   return out;
 }

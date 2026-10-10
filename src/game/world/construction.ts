@@ -151,7 +151,13 @@ export interface MaillageDeLaConstruction {
   /** Les pièces d'architecture (./architecture/) : leurs triangles de l'opaque et la case de chacun, une tranche par île. */
   pieces?: TrancheDesPieces[];
   /** Les monuments importés (./monumentModels.ts) : comme `phare`, leurs triangles et les cases posées qu'ils remplacent. */
-  monuments?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[] }[];
+  monuments?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[]; halo?: HaloDuFeu }[];
+}
+
+/** Le halo d'un feu allumé la nuit (repère Three) : son centre et son côté ; un sprite additif, fixe (three/construction.ts). */
+export interface HaloDuFeu {
+  centre: [number, number, number];
+  cote: number;
 }
 
 export interface OptionsDeLaConstruction {
@@ -999,6 +1005,7 @@ export function maillageDeLaConstruction(
     opaque: O.facettes(m.opaque, { biseaux: mode === 'peint', teinte: 1 }),
     fenetres: F.facettes(m.fire, { extra: 0 }),
     cellules: m.cellules,
+    ...(m.halo ? { halo: m.halo } : {}),
   }));
 
   // ---- Les pièces d'architecture dessinées (lot 7) : assemblées (sans les facettes contre un bloc plein ni celles que
@@ -1051,9 +1058,11 @@ export function maillageDeLaConstruction(
 export function coutDeLaConstruction(m: MaillageDeLaConstruction): { triangles: number; drawCalls: number; opaque: number; fantomes: number; fenetres: number } {
   const t = (g: GroupeDeConstruction) => g.indices.length / 3;
   const groupes = [m.opaque, m.fantomes, m.fenetres];
+  // Un halo (la nuit) : un sprite, deux triangles, un appel.
+  const halos = (m.monuments ?? []).filter((q) => q.halo).length;
   return {
-    triangles: groupes.reduce((n, g) => n + t(g), 0),
-    drawCalls: groupes.filter((g) => g.indices.length > 0).length,
+    triangles: groupes.reduce((n, g) => n + t(g), 0) + 2 * halos,
+    drawCalls: groupes.filter((g) => g.indices.length > 0).length + halos,
     opaque: t(m.opaque),
     fantomes: t(m.fantomes),
     fenetres: t(m.fenetres),
@@ -1251,7 +1260,7 @@ export function miseBoutABout(liste: MaillageDeLaConstruction[]): MaillageDeLaCo
     for (const p of x.ponts ?? []) (m.ponts ??= []).push({ opaque: decaler(p.opaque) });
     for (const p of x.pieces ?? []) (m.pieces ??= []).push({ opaque: decaler(p.opaque), cases: p.cases });
     for (const q of x.monuments ?? [])
-      (m.monuments ??= []).push({ opaque: decaler(q.opaque), fenetres: [q.fenetres[0] + f.debuts[i], q.fenetres[1] + f.debuts[i]], cellules: q.cellules });
+      (m.monuments ??= []).push({ opaque: decaler(q.opaque), fenetres: [q.fenetres[0] + f.debuts[i], q.fenetres[1] + f.debuts[i]], cellules: q.cellules, ...(q.halo ? { halo: q.halo } : {}) });
   });
   return m;
 }
