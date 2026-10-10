@@ -1,5 +1,6 @@
 // Les personnages d'Archipéo dans la scène 3D (lot R6) : sans WebGL (jsdom), on vérifie l'arbre de la scène, le toucher,
 // le matériau à lueur, « Réduire les animations » et la libération des ressources.
+import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { HABILLAGES, type Habillage } from '../skin';
 import { toutConstruit } from '../world/budget';
@@ -7,7 +8,7 @@ import { creaturePlacements, guardianPlacements } from '../world/terrain';
 import { fusionDesCreatures, fusionDesGardiens } from '../world/characters/merges';
 import type { Instant, Monde } from './scenePart';
 import { creerPersonnages } from './characters';
-import { materiauALueur } from './paintedCharacters';
+import { GESTES, materiauALueur, poseDeMarche } from './paintedCharacters';
 
 const { progress, world: village } = toutConstruit();
 
@@ -151,5 +152,42 @@ describe('Les personnages d’Archipéo dans la scène 3D', () => {
     p.animer!(0, 0.1, true);
     for (const [vivant, v] of lisere()) expect(v).toBe(vivant ? 1 : 0);
     p.dispose();
+  });
+});
+
+describe('Le cycle de marche des créatures à squelette (poseDeMarche)', () => {
+  it('l’aperçu hors du jeu (scripts/rendu/modeles/marche.py) marche comme le jeu', () => {
+    const py = readFileSync('scripts/rendu/modeles/marche.py', 'utf8');
+    const allure = JSON.parse(/^ALLURE = (\{[^}]*\})/m.exec(py)![1]) as Record<string, number>;
+    expect(allure).toEqual(GESTES.pas);
+  });
+
+  const angle = (phi: number, nom: string, axe = 'x', elan = 1) =>
+    poseDeMarche(GESTES.pas, phi, elan).angles.find(([n, a]) => n === nom && a === axe)![2];
+
+  it('le genou est tendu au contact du talon, plie un peu en recevant le poids, et fort quand la jambe repasse devant', () => {
+    const contact = Math.PI / 2;
+    expect(angle(contact, 'thigh.L')).toBeCloseTo(GESTES.pas.angle, 5);
+    expect(Math.abs(angle(contact, 'shin.L'))).toBeLessThan(0.01);
+    const poids = -angle(contact + 0.6, 'shin.L');
+    const enLAir = -angle(-0.6, 'shin.L');
+    expect(poids).toBeGreaterThan(0.15);
+    expect(poids).toBeLessThan(0.3);
+    expect(enLAir).toBeGreaterThan(0.9);
+    expect(enLAir).toBeLessThan(1.1);
+    // La jambe droite fait la même chose un demi-cycle plus tard.
+    expect(angle(contact + Math.PI, 'shin.R')).toBeCloseTo(angle(contact, 'shin.L'), 5);
+  });
+
+  it('le corps est au plus haut quand les jambes se croisent, au plus bas au contact ; rien ne bouge à l’arrêt', () => {
+    expect(poseDeMarche(GESTES.pas, 0, 1).haut).toBeCloseTo(1, 5);
+    expect(poseDeMarche(GESTES.pas, Math.PI / 2, 1).haut).toBeCloseTo(0, 5);
+    const arret = poseDeMarche(GESTES.pas, 1.3, 0);
+    expect(arret.haut).toBe(0);
+    for (const [, , a] of arret.angles) expect(Math.abs(a)).toBe(0);
+  });
+
+  it('la tête reste droite : le bassin et les épaules tournent à l’inverse, et la tête compense', () => {
+    for (const phi of [0.4, 1.2, 2.5, 4]) expect(angle(phi, 'hips', 'y') + angle(phi, 'spine', 'y') + angle(phi, 'head', 'y')).toBeCloseTo(0, 6);
   });
 });

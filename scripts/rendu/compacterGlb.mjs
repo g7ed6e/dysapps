@@ -1,7 +1,9 @@
 // Compacte un modèle .glb des personnages d'Archipéo pour l'application publiée (vite.config.ts, au build) : les mêmes
 // triangles et couleurs, sans normales (le jeu calcule les siennes, à facettes plates), les positions en entiers de
 // 16 bits ramenés par la translation et l'échelle du nœud (KHR_mesh_quantization), les couleurs en octets, sans
-// indices. Environ trois fois plus léger ; src/game/world/characters/imported/glb.ts lit les deux.
+// indices. Environ trois fois plus léger ; src/game/world/characters/imported/glb.ts lit les deux. Le squelette d'un
+// modèle qui en a un (scripts/rendu/modeles/squelette.py) suit tel quel : ses os, et quatre os et poids en octets par
+// sommet.
 
 const GLB = 0x46546c67;
 const JSON_CHUNK = 0x4e4f534a;
@@ -59,12 +61,22 @@ export function compacterGlb(bytes) {
   // Sans indices : à facettes plates, les sommets ne se partagent presque pas, et les indices pèsent plus qu'ils n'épargnent.
   const indices = prim.indices === undefined ? null : valeurs(json, bin, prim.indices, 1);
   const n = indices ? indices.length : lesPos.length / 3;
+  const bones = json.extras?.bones;
+  const skin = bones && prim.attributes.JOINTS_0 !== undefined && prim.attributes.WEIGHTS_0 !== undefined;
+  const lesJts = skin ? valeurs(json, bin, prim.attributes.JOINTS_0, 4) : null;
+  const lesWts = skin ? valeurs(json, bin, prim.attributes.WEIGHTS_0, 4) : null;
   const pos = new Float64Array(n * 3);
   const col = new Float64Array(n * 3);
+  const jts = new Float64Array(skin ? n * 4 : 0);
+  const wts = new Float64Array(skin ? n * 4 : 0);
   for (let i = 0; i < n; i++) {
     const v = indices ? indices[i] : i;
     pos.set(lesPos.subarray(v * 3, v * 3 + 3), i * 3);
     col.set(lesCol.subarray(v * 3, v * 3 + 3), i * 3);
+    if (skin) {
+      jts.set(lesJts.subarray(v * 4, v * 4 + 4), i * 4);
+      wts.set(lesWts.subarray(v * 4, v * 4 + 4), i * 4);
+    }
   }
   const [t0, s0] = [node.translation ?? [0, 0, 0], node.scale ?? [1, 1, 1]];
   const min = [Infinity, Infinity, Infinity];
@@ -76,12 +88,18 @@ export function compacterGlb(bytes) {
   }
   const translation = min.map((m, k) => (m + max[k]) / 2);
   const scale = max.map((m, k) => Math.max((m - min[k]) / 2, 1e-9));
-  // Positions : 3 × int16 sur 8 octets ; couleurs : 3 × uint8 sur 4 octets (glTF aligne chaque élément sur 4).
-  const out = new ArrayBuffer(n * 12);
+  // Positions : 3 × int16 sur 8 octets ; couleurs : 3 × uint8 sur 4 octets (glTF aligne chaque élément sur 4) ; os et
+  // poids : 4 × uint8 chacun.
+  const out = new ArrayBuffer(n * (skin ? 20 : 12));
   const view = new DataView(out);
   for (let v = 0; v < n; v++) {
     for (let k = 0; k < 3; k++) view.setInt16(v * 8 + k * 2, Math.round(((pos[v * 3 + k] - translation[k]) / scale[k]) * 32767), true);
     for (let k = 0; k < 3; k++) view.setUint8(n * 8 + v * 4 + k, Math.round(Math.min(1, Math.max(0, col[v * 3 + k])) * 255));
+    if (skin)
+      for (let k = 0; k < 4; k++) {
+        view.setUint8(n * 12 + v * 4 + k, jts[v * 4 + k]);
+        view.setUint8(n * 16 + v * 4 + k, Math.round(wts[v * 4 + k] * 255));
+      }
   }
   const gltf = {
     asset: { version: '2.0', generator: 'dysapps compacterGlb' },
@@ -90,16 +108,30 @@ export function compacterGlb(bytes) {
     scene: 0,
     scenes: [{ nodes: [0] }],
     nodes: [{ mesh: 0, translation, scale }],
-    meshes: [{ primitives: [{ attributes: { POSITION: 0, COLOR_0: 1 } }] }],
+    meshes: [{ primitives: [{ attributes: { POSITION: 0, COLOR_0: 1, ...(skin ? { JOINTS_0: 2, WEIGHTS_0: 3 } : {}) } }] }],
     buffers: [{ byteLength: out.byteLength }],
     bufferViews: [
       { buffer: 0, byteOffset: 0, byteLength: n * 8, byteStride: 8 },
       { buffer: 0, byteOffset: n * 8, byteLength: n * 4, byteStride: 4 },
+      ...(skin
+        ? [
+            { buffer: 0, byteOffset: n * 12, byteLength: n * 4 },
+            { buffer: 0, byteOffset: n * 16, byteLength: n * 4 },
+          ]
+        : []),
     ],
     accessors: [
       { bufferView: 0, componentType: 5122, normalized: true, count: n, type: 'VEC3', min: [-1, -1, -1], max: [1, 1, 1] },
       { bufferView: 1, componentType: 5121, normalized: true, count: n, type: 'VEC3' },
+      ...(skin
+        ? [
+            { bufferView: 2, componentType: 5121, count: n, type: 'VEC4' },
+            { bufferView: 3, componentType: 5121, normalized: true, count: n, type: 'VEC4' },
+          ]
+        : []),
     ],
+    // Les têtes des os restent dans le repère des positions lues (après la translation et l'échelle du nœud).
+    ...(skin ? { extras: { bones } } : {}),
   };
   const text = new TextEncoder().encode(JSON.stringify(gltf));
   const jsonLength = pad4(text.length);

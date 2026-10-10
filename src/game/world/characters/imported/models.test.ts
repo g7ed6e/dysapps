@@ -5,6 +5,7 @@ import { SENTINELLE } from '../colors';
 import { ESPECES } from '../paintedCreatures';
 import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, frontDeLueur, HAUTEUR_DE_SENTINELLE } from '../sentinel';
 import { tailleDe } from '../template';
+import { fusionDesCreatures } from '../merges';
 import { FLAT_COLORS, smoothIsolated } from './flatColors';
 import { lireGlb } from './glb';
 import { chargerLesModelesDuDisque, fichierDuModele } from './fromDisk.testing';
@@ -103,12 +104,84 @@ it('le modèle compacté au build se lit comme l’original, à moins d’un mil
     const a = lireGlb(brut);
     const c = compacterGlb(new Uint8Array(brut));
     const b = lireGlb(c.buffer.slice(c.byteOffset, c.byteOffset + c.byteLength) as ArrayBuffer);
-    expect(c.byteLength).toBeLessThan(brut.byteLength / 2);
+    // Un export de Blender (normales, couleurs sur 16 bits, indices) fond de plus de moitié ; un modèle à squelette,
+    // déjà écrit sans normales ni indices par squelette.py, ne gagne que ses positions.
+    expect(c.byteLength).toBeLessThan(brut.byteLength / (a.skin ? 1.25 : 2));
     expect(b.positions.length).toBe(a.positions.length);
     const { haut } = cadre(a.positions);
     for (let i = 0; i < a.positions.length; i++) expect(Math.abs(b.positions[i] - a.positions[i])).toBeLessThan(haut / 1000);
     for (let i = 0; i < a.colors.length; i++) expect(Math.abs(b.colors[i] - a.colors[i])).toBeLessThan(1 / 255 + 1e-6);
   }
+});
+
+describe('Le squelette de Mousso (scripts/rendu/modeles/squelette.py)', () => {
+  const MOUSSO = 'french-6e-phonology' as const;
+
+  it('de près, Mousso a ses os, placés dans son corps, et quatre poids de somme 1 par sommet ; de loin, aucun', () => {
+    const f = modeleImporte('creature', MOUSSO, 'pres')!;
+    expect(f.skin?.bones.map((b) => b.name)).toEqual(['hips', 'spine', 'head', 'thigh.L', 'shin.L', 'thigh.R', 'shin.R', 'arm.L', 'arm.R']);
+    const { bas, haut, large } = cadre(f.positions);
+    for (const b of f.skin!.bones) {
+      expect(b.head[1], b.name).toBeGreaterThanOrEqual(bas);
+      expect(b.head[1], b.name).toBeLessThanOrEqual(haut);
+      expect(Math.max(Math.abs(b.head[0]), Math.abs(b.head[2])), b.name).toBeLessThanOrEqual(large);
+    }
+    expect(f.skin!.joints.length).toBe((f.positions.length / 3) * 4);
+    for (let v = 0; v < f.positions.length / 3; v++) {
+      const somme = f.skin!.weights[v * 4] + f.skin!.weights[v * 4 + 1] + f.skin!.weights[v * 4 + 2] + f.skin!.weights[v * 4 + 3];
+      expect(somme).toBeCloseTo(1, 5);
+    }
+    // Les pieds suivent les jambes, la tête suit la tête, les mains (à mi-hauteur, le plus sur les côtés) les bras.
+    const lourd = (v: number) => f.skin!.bones[f.skin!.joints[v * 4]].name;
+    const mains = [1, -1].map((signe) => {
+      let meilleur = -1;
+      for (let v = 0; v < f.positions.length / 3; v++) {
+        const y = f.positions[v * 3 + 1];
+        if (y > 0.3 * haut && y < 0.55 * haut && (meilleur < 0 || signe * (f.positions[meilleur * 3] - f.positions[v * 3]) > 0)) meilleur = v;
+      }
+      return lourd(meilleur);
+    });
+    expect(mains.sort()).toEqual(['arm.L', 'arm.R']);
+    for (let v = 0; v < f.positions.length / 3; v++) {
+      if (f.positions[v * 3 + 1] < 0.05 * haut) expect(lourd(v)).toMatch(/^shin\./);
+      if (f.positions[v * 3 + 1] > 0.85 * haut) expect(lourd(v)).toBe('head');
+    }
+    expect(modeleImporte('creature', MOUSSO, 'loin')!.skin).toBeUndefined();
+  });
+
+  it('le compactage du build garde ses os et ses poids', () => {
+    const brut = lu(fichierDuModele(nomDuModele('creature', MOUSSO)!, 'pres'));
+    const a = lireGlb(brut);
+    const c = compacterGlb(new Uint8Array(brut));
+    const b = lireGlb(c.buffer.slice(c.byteOffset, c.byteOffset + c.byteLength) as ArrayBuffer);
+    expect(b.skin?.bones).toEqual(a.skin!.bones);
+    expect(b.skin!.joints).toEqual(a.skin!.joints);
+    expect(b.skin!.weights).toEqual(a.skin!.weights);
+  });
+
+  it('dans la fusion, ses os suivent ceux de toutes les créatures, portés par son corps', () => {
+    const places = [
+      { id: 'french-6e-letter-confusion' as const, origin: { x: 0, y: 0, z: 0 }, cubes: [{ x: 0, y: 0, z: 0 }] },
+      { id: MOUSSO, origin: { x: 10, y: 0, z: 0 }, cubes: [{ x: 0, y: 0, z: 0 }] },
+    ];
+    const f = fusionDesCreatures(places, MOUSSO);
+    const os = f.squelette.slice(4);
+    expect(os.map((o) => o.nom)).toEqual(modeleImporte('creature', MOUSSO, 'pres')!.skin!.bones.map((b) => b.name));
+    expect(os.every((o) => o.id === MOUSSO)).toBe(true);
+    expect(os[0].parent).toBe(2);
+    const { debut, fin } = f.plages[1];
+    for (let v = debut * 3; v < fin * 3; v++) {
+      expect(f.poids!.joints[v * 4]).toBeGreaterThanOrEqual(4);
+      expect(f.os[v]).toBeGreaterThanOrEqual(4);
+    }
+    // L'autre créature suit son seul os, au poids 1.
+    for (let v = f.plages[0].debut * 3; v < f.plages[0].fin * 3; v++) {
+      expect(f.poids!.joints[v * 4]).toBe(f.os[v]);
+      expect(f.poids!.weights[v * 4]).toBe(1);
+    }
+    // De loin, plus de squelette ni de poids.
+    expect(fusionDesCreatures(places).poids).toBeUndefined();
+  });
 });
 
 it('chaque créature a ses aplats : les quatre couleurs de son modèle de près, chacune avec sa cible', () => {

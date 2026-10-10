@@ -61,6 +61,11 @@ export interface FacettesDePersonnage {
    * 1 (le haut) : ses lueurs y montent des pieds vers la tête (`couleursAllumees`). Absent d'un modèle dessiné en code.
    */
   hauteurs?: Float32Array;
+  /**
+   * Le squelette d'une créature importée qui en a un, de près (./imported/models.ts) : ses os, la tête de chacun dans le
+   * repère du modèle, et quatre os et poids par sommet. Absent ailleurs : chaque triangle suit sa pièce.
+   */
+  skin?: { bones: { name: string; parent: number; head: V3 }[]; joints: Uint8Array; weights: Float32Array };
 }
 
 /** La nuance d'une facette selon qu'elle regarde le ciel ou le sol : de `NUANCE[0]` (dessous) à `NUANCE[1]` (dessus). */

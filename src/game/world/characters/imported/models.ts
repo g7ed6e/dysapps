@@ -12,7 +12,7 @@ import { rgb } from '../../decor/brush';
 import { clamp } from '../../../../core/math';
 import type { Couleur } from '../../palette';
 import { SENTINELLE } from '../colors';
-import { NUANCE, type FacettesDePersonnage } from '../painted';
+import { NUANCE, type FacettesDePersonnage, type V3 } from '../painted';
 import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, HAUT_DU_SOCLE, HAUTEUR_DE_SENTINELLE, socleSeul } from '../sentinel';
 import { ESPECES_6E } from '../species/6e';
 import { tailleDe, type Espece } from '../template';
@@ -78,9 +78,10 @@ export function enregistrer(genre: Genre, id: BiomeId, niveau: Niveau, lu: Model
 
 /**
  * Tourne le modèle face à l'élève (le visage vers −Z ; un .glb le tourne vers +Z, puis de `quarts` quarts de tour), le
- * centre sur ses pieds et le met à l'échelle `k(hauteur, demi-largeur)`, posé à la hauteur `y0`.
+ * centre sur ses pieds et le met à l'échelle `k(hauteur, demi-largeur)`, posé à la hauteur `y0` : ce que devient chaque
+ * point du fichier (un sommet, la tête d'un os).
  */
-function placer(p: Float32Array, k: (hauteur: number, demiLargeur: number) => number, y0: number, quarts: number): Float32Array {
+function repere(p: Float32Array, k: (hauteur: number, demiLargeur: number) => number, y0: number, quarts: number): (x: number, y: number, z: number) => V3 {
   let [x0, y1, z0, x1, yh, z1] = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
   for (let i = 0; i < p.length; i += 3) {
     x0 = Math.min(x0, p[i]);
@@ -94,13 +95,16 @@ function placer(p: Float32Array, k: (hauteur: number, demiLargeur: number) => nu
   const s = k(yh - y1, Math.max(x1 - x0, z1 - z0) / 2);
   const a = (quarts * Math.PI) / 2;
   const [ca, sa] = [Math.round(Math.cos(a)), Math.round(Math.sin(a))];
+  return (px, py, pz) => {
+    const [x, z] = [-(px - cx) * s, -(pz - cz) * s];
+    return [x * ca + z * sa, (py - y1) * s + y0, -x * sa + z * ca];
+  };
+}
+
+/** Les sommets du modèle placés (`repere`). */
+function placer(p: Float32Array, place: (x: number, y: number, z: number) => V3): Float32Array {
   const out = new Float32Array(p.length);
-  for (let i = 0; i < p.length; i += 3) {
-    const [x, z] = [-(p[i] - cx) * s, -(p[i + 2] - cz) * s];
-    out[i] = x * ca + z * sa;
-    out[i + 1] = (p[i + 1] - y1) * s + y0;
-    out[i + 2] = -x * sa + z * ca;
-  }
+  for (let i = 0; i < p.length; i += 3) out.set(place(p[i], p[i + 1], p[i + 2]), i);
   return out;
 }
 
@@ -160,7 +164,7 @@ const LICHEN = 0.45;
 function sentinelleImportee(lu: ModeleLu, quarts: number): FacettesDePersonnage {
   const socle = socleSeul();
   const hauteurUtile = HAUTEUR_DE_SENTINELLE - HAUT_DU_SOCLE;
-  const positions = placer(lu.positions, (h, w) => Math.min(hauteurUtile / h, DEMI_LARGEUR_DE_SENTINELLE / w), HAUT_DU_SOCLE, quarts);
+  const positions = placer(lu.positions, repere(lu.positions, (h, w) => Math.min(hauteurUtile / h, DEMI_LARGEUR_DE_SENTINELLE / w), HAUT_DU_SOCLE, quarts));
   const normals = normalesPlates(positions);
   const n = positions.length / 9;
   const teintes = new Int32Array(n);
@@ -187,13 +191,15 @@ function sentinelleImportee(lu: ModeleLu, quarts: number): FacettesDePersonnage 
 
 /**
  * Une créature importée, à la taille de son gabarit, ses couleurs (celles du modèle mises en aplats) nuancées selon la
- * facette comme une créature dessinée en code. Une seule pièce, le corps : elle se promène sans lever le bras.
+ * facette comme une créature dessinée en code. Une seule pièce, le corps : elle se promène sans lever le bras. De près,
+ * son squelette s'il en a un (scripts/rendu/modeles/squelette.py), placé comme ses sommets : la vue l'anime.
  */
 function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niveau): FacettesDePersonnage {
   const espece = (ESPECES_6E as Partial<Record<BiomeId, Espece>>)[id];
   if (!espece) throw new Error(`Pas d’espèce pour ${id}`);
   const taille = tailleDe(espece);
-  const positions = placer(lu.positions, (h) => taille / h, 0, quarts);
+  const place = repere(lu.positions, (h) => taille / h, 0, quarts);
+  const positions = placer(lu.positions, place);
   const normals = normalesPlates(positions);
   const n = positions.length / 9;
   // Les couleurs du modèle mises en aplats (./flatColors.ts), sans triangle isolé ; de loin, éclaircies.
@@ -216,6 +222,9 @@ function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niv
     teintes,
     table: [{ nom: 'corps', pivot: [0, 0, 0] }],
     palette: [...new Set(teintes)].map((couleur) => ({ couleur, role: 'dominante' as const })),
+    ...(niveau === 'pres' && lu.skin
+      ? { skin: { bones: lu.skin.bones.map((b) => ({ name: b.name, parent: b.parent, head: place(...b.head) })), joints: lu.skin.joints, weights: lu.skin.weights } }
+      : {}),
   };
 }
 
