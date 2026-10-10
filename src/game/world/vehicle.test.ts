@@ -20,7 +20,7 @@ it('trois étapes, de port en port, faites de blocs gagnables dans leur archipel
     expect(s.biome).toBe(ARCHIPELAGOS[i].port);
     expect(s.cells.length).toBeGreaterThanOrEqual(16);
     expect(s.kit.length).toBeGreaterThanOrEqual(1);
-    // Les cases tiennent dans l'encombrement de la Nef .
+    // Les cases tiennent dans l'encombrement de la Nef.
     for (const c of [...s.cells, ...s.kit, ...s.kept]) {
       expect(c.x).toBeGreaterThanOrEqual(0);
       expect(c.x).toBeLessThan(VEHICLE_SIZE.w);
