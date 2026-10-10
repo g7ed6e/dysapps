@@ -251,6 +251,14 @@ it('Archipéo (décision du 4 octobre 2026) : les commandes arrivent et s’affi
   expect(screen.getByTestId('etat').textContent).toContain(`commandes ${COCO},${MOUSSO} ·`);
 });
 
+it('Archipéo : chaque commande montre l’habitant d’Archipéo, en facettes, jamais celui de Blocland en cubes', async () => {
+  sauver({ progress: joue(FORET, PLAINE), stock: {}, world: { parts: {}, log: [], links: [], place: FORET, requests: [COCO] } }, 'archipeo');
+  ouvrir();
+  const liste = screen.getByRole('list', { name: 'Les commandes des habitants' });
+  await vi.waitFor(() => expect(liste.querySelector('.personnage-svg')).not.toBeNull(), { timeout: 5000 });
+  expect(liste.querySelector('svg.creature:not(.personnage-svg)')).toBeNull();
+});
+
 describe('l’entraide (GD-10) en tête de la liste', () => {
   const DUNES = 'maths-6e-calculation-french-6e-word-spelling';
   it('la dernière étape faite ici : sa phrase de fin reste, au-dessus de la quête suivante arrivée avec elle', async () => {
