@@ -18,9 +18,10 @@ const LIEUX = ARCHIPELAGO_IDS.flatMap((a) => mapOf(a)).filter((d) => silhouetteD
 const T = TRAIT_MAX;
 /**
  * Les archipels qui ont pris leurs formes, et combien de lieux chacun. Au 5e, 14 depuis le Fournil des partages et la
- * Grotte des légendes (EMC-2, LCA-2), posés aux deux places que GD-12 avait gardées.
+ * Grotte des légendes (EMC-2, LCA-2), posés aux deux places que GD-12 avait gardées ; au 4e, 14 depuis la Porte des
+ * libertés et la Colonnade des cités.
  */
-const ARCHIPELS_AUX_FORMES: Partial<Record<(typeof ARCHIPELAGO_IDS)[number], number>> = { '6e': 16, '5e': 14, '4e': 12, '3e': 12 };
+const ARCHIPELS_AUX_FORMES: Partial<Record<(typeof ARCHIPELAGO_IDS)[number], number>> = { '6e': 16, '5e': 14, '4e': 14, '3e': 14 };
 
 /** La case (x, y), au repère du monde, est-elle de la terre de l'île ? */
 const terre = (id: string) => {

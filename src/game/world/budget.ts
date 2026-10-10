@@ -27,7 +27,7 @@ import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
 import { bridge, type CaseDOuvrage } from './terrain/links';
 import { DEPTH } from './terrain/base';
 import { GAP_BETWEEN_PLACES, landRectangle } from './footprint';
-import { STEP } from './placement';
+import { layoutCache, STEP } from './placement';
 import { JOIN_FILL, JOIN_MAX_STEPS } from './join';
 import { SHORT_LENGTH, LONG_LENGTH } from './routing';
 import type { BridgeKind } from './archipelago';
@@ -231,6 +231,20 @@ export const ENVELOPPES: Record<
   // sol 41 250 → 41 210 (41 203), la faune 1 180 → 1 140 (1 132), la mer 6 300 → 6 270 (6 264), les créatures
   // 3 500 → 3 485 (3 480), les commandes 550 → 545 (540). La somme des Îles Brumeuses reste 85 945, sous
   // `RENDER_BUDGET_AUTRES` (86 000), inchangé ; aucun appel de plus.
+  // La Porte des libertés et la Colonnade des cités (EMC et latin-grec de 4e) : enveloppes des Anciens Ateliers posées aux
+  // valeurs mesurées tout construit (`npm run rendu:budget`, 9 octobre 2026), avant → après, avec une petite marge : le
+  // sol 36 752 → 43 721 (enveloppe 43 750), les créatures 3 014 → 3 544 (3 550 : Loquet et Figue), les Gardiens
+  // 2 652 → 3 029 (3 050 : le Lynx d'agate et la Cigale d'argile) ; le décor (11 473 → 12 418), la construction
+  // (5 746 → 6 432), les commandes (392 → 440 : le panneau d'affichage) et les bornes (1 344 → 1 428 : six de plus)
+  // tiennent dans les leurs ; aucun appel de plus. La somme des Anciens Ateliers passe de 75 535 à 82 975, sous
+  // `RENDER_BUDGET_AUTRES` (86 000), inchangé (proposition de l'artiste technique 3D, à valider par le mainteneur).
+  // Le Forum des débats et le Bosquet des sages (EMC et latin-grec de 3e) : de même aux Îles du Ciel, le sol
+  // 38 994 → 44 895 (enveloppe 44 900 : deux îles du ciel, leurs dessous et leurs parois ; leur forme n'y change presque
+  // rien, deux galets en coûtaient 44 825), les créatures 3 184 → 3 645 (3 650 : Brio et Stylet), les Gardiens
+  // 2 771 → 3 222 (3 250 : l'Étourneau d'étain et le Centaure d'argile) ; le décor (8 910 → 10 573), la construction
+  // (6 878), les commandes (370 : le pupitre) et les bornes (1 428) tiennent dans les leurs ; aucun appel de plus. La
+  // somme des Îles du Ciel passe de 75 535 à 82 355, sous `RENDER_BUDGET_AUTRES` (86 000), inchangé (proposition de
+  // l'artiste technique 3D, à valider par le mainteneur).
   // GD-12, une forme par île, aux Îles du Ciel : le sol mesure 38 994 triangles (36 930 avant). Il prend 2 070 au décor
   // du même archipel (8 910 mesurés pour 13 600) : sol 39 000, décor 11 530, la somme ne change pas (mainteneur,
   // 9 octobre 2026, carte « Échanger »).
@@ -239,7 +253,7 @@ export const ENVELOPPES: Record<
     nom: 'Sol',
     premiersRivages: { triangles: 32_550, drawCalls: 2 },
     autres: { triangles: 36_930, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 41_210, drawCalls: 1 }, '3e': { triangles: 39_000, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 41_210, drawCalls: 1 }, '4e': { triangles: 43_750, drawCalls: 1 }, '3e': { triangles: 44_900, drawCalls: 1 } },
   },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
@@ -256,12 +270,15 @@ export const ENVELOPPES: Record<
   // à 6 400 aux Îles Brumeuses et aux Anciens Ateliers, à 6 900 aux Îles du Ciel (mainteneur, 9 octobre 2026, carte
   // « Relever »). Celles des Anciens Ateliers (6 400) et des Îles du Ciel (6 900) sont relevées d'avance, pour les
   // pull requests de leurs formes, qui approfondiront leurs cadres : sur main, leur mer tient encore sous 5 850.
+  // Révision de GD-12 (les îles EMC et d'option du 4e au flanc ouest, en attente du mot du mainteneur) : le cadre des
+  // Anciens Ateliers s'élargit de 36 cases vers l'ouest ; leur mer mesure 7 150 triangles (6 160 avant). Proposition de
+  // l'artiste technique 3D, à valider par le mainteneur : 7 150.
   mer: {
     lot: 'R4b',
     nom: 'Mer',
     premiersRivages: { triangles: 7_100, drawCalls: 1 },
     autres: { triangles: 5_850, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 6_270, drawCalls: 1 }, '4e': { triangles: 6_400, drawCalls: 1 }, '3e': { triangles: 6_900, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 6_270, drawCalls: 1 }, '4e': { triangles: 7_150, drawCalls: 1 }, '3e': { triangles: 6_900, drawCalls: 1 } },
   },
   // Un appel de plus pendant le passage de la baleine (son écume) : voir `APPEL_DU_PASSAGE`.
   // Proposition de l'artiste technique 3D pour les missions ajoutées en 6e (étapes de contenu C-1 à C-5), à valider par
@@ -347,14 +364,14 @@ export const ENVELOPPES: Record<
     nom: 'Créatures',
     premiersRivages: { triangles: 4_600, drawCalls: 1 },
     autres: { triangles: 3_200, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 3_485, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 3_485, drawCalls: 1 }, '4e': { triangles: 3_550, drawCalls: 1 }, '3e': { triangles: 3_650, drawCalls: 1 } },
   },
   gardiens: {
     lot: 'R6',
     nom: 'Gardiens en sentinelles',
     premiersRivages: { triangles: 5_200, drawCalls: 1 },
     autres: { triangles: 2_780, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 3_150, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 3_150, drawCalls: 1 }, '4e': { triangles: 3_050, drawCalls: 1 }, '3e': { triangles: 3_250, drawCalls: 1 } },
   },
   scene: {
     lot: 'socle',
@@ -373,6 +390,9 @@ export function enveloppeDe(poste: Poste, a: ArchipelagoId): Enveloppe {
   return a === '6e' ? e.premiersRivages : (e.parArchipel?.[a] ?? e.autres);
 }
 
+/** Les liaisons de `toutConstruit`, tracées une fois par disposition : chaque appel en reçoit sa copie. */
+const liaisonsDeToutConstruit = layoutCache<'toutes', readonly string[]>();
+
 /** Une partie où tout est construit : trois étoiles partout, Gardiens vaincus, tous les plans, ouvrages, étapes du navire et ponts. */
 export function toutConstruit() {
   const progress: Record<string, { stars: number; attempts: number; best: number }> = Object.fromEntries([
@@ -382,9 +402,12 @@ export function toutConstruit() {
   const plans = Object.fromEntries([...PLANS, ...VEHICLE_STAGES, ...MONUMENTS].map((p) => [p.id, planCells(p).map((c) => c.key)]));
   // Chaque région toute reliée (GD-9), la liaison la plus courte vers chaque lieu ; un lieu qu'aucune liaison n'atteint
   // (une disposition à l'étroit) s'ouvre quand même (`grantAccess`). Le pire cas des liaisons se compte à part (`worstCaseOfRegion`).
-  const relie = ARCHIPELAGOS.reduce<string[]>((links, a) => linkWholeRegion(a.classe, links), VOYAGES.map((v) => v.id));
-  const bridges = grantAccess(relie, BIOMES.map((b) => b.id));
-  return { progress, world: { parts: plans, log: [], links: bridges } };
+  let liees = liaisonsDeToutConstruit.get('toutes');
+  if (!liees) {
+    const relie = ARCHIPELAGOS.reduce<string[]>((links, a) => linkWholeRegion(a.classe, links), VOYAGES.map((v) => v.id));
+    liaisonsDeToutConstruit.set('toutes', (liees = grantAccess(relie, BIOMES.map((b) => b.id))));
+  }
+  return { progress, world: { parts: plans, log: [], links: [...liees] } };
 }
 
 /**

@@ -436,13 +436,24 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   BLOC.petale,
   BLOC.bobine,
   BLOC.liege,
+  BLOC.pave,
+  BLOC.fresque,
+  BLOC.acajou,
+  BLOC.laurier,
   BLOC.savon,
   BLOC.ressort,
   BLOC.cire,
 ];
 
+/** Les ouvrages par identifiant (le premier de ce nom, comme `BRIDGES.find`) : le tracé des liaisons les lit très souvent. */
+let ouvragesParId: Map<string, BridgeDef> | undefined;
+
 export function getBridge(id: string): BridgeDef | undefined {
-  return BRIDGES.find((b) => b.id === id);
+  if (!ouvragesParId) {
+    ouvragesParId = new Map();
+    for (const b of BRIDGES) if (!ouvragesParId.has(b.id)) ouvragesParId.set(b.id, b);
+  }
+  return ouvragesParId.get(id);
 }
 
 /** Les ouvrages qui touchent une île. */

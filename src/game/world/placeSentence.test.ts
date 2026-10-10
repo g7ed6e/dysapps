@@ -23,6 +23,14 @@ describe('où est une place, en mots', () => {
     expect(directionWords(o, { x: 10, y: -9 })).toBe('au sud-ouest');
   });
 
+  it('l’angle est celui de l’écran de la Carte, pas de la grille : près d’une limite, la caméra peut changer le mot', () => {
+    const o = { x: 0, y: 0 };
+    // 67,3° sur la grille (le Forum des débats depuis le Belvédère, 3e), 70° à l'écran : au nord.
+    expect(directionWords(o, { x: -Math.cos((67.3 * Math.PI) / 180), y: Math.sin((67.3 * Math.PI) / 180) })).toBe('au nord');
+    // 111° sur la grille (la Grotte des légendes depuis le port, 5e), 117° à l'écran : au nord-ouest.
+    expect(directionWords(o, { x: -Math.cos((111 * Math.PI) / 180), y: Math.sin((111 * Math.PI) / 180) })).toBe('au nord-ouest');
+  });
+
   it('« à 2 cases » : l’écart d’eau en cases de la grille des places, une au moins', () => {
     expect(distanceWords(8)).toBe('à 2 cases');
     expect(distanceWords(4)).toBe('à 1 case');

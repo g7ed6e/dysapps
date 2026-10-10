@@ -106,15 +106,6 @@ describe('les mots du mode « Aménager » et la caméra de la Carte', () => {
         // Loin des limites entre deux secteurs (la perspective penche un peu les droites), le mot est celui de l'écran.
         const angle = (Math.atan2(-d.y, d.x) / (Math.PI / 4)) % 1;
         if (Math.abs(Math.abs(angle) - 0.5) < 0.15) continue;
-        // Une seule exception, nommée : la Grotte des légendes (5e) est à 111° du port sur la grille, à 1,4° de la limite
-        // entre le nord et le nord-ouest ; la perspective de la Carte la penche de 11° (122° à l'écran, au nord-ouest), et
-        // la phrase, calculée sur la grille (`directionWords`, sans caméra), dit « au nord ». Limite connue, au pilotage
-        // (consultant UX UI, 9 octobre 2026).
-        if (lieux[i] === 'lca-5e-legends') {
-          expect(directionWords(u, v), `${a} ${lieux[i]}`).toBe('au nord');
-          expect(motALEcran(d), `${a} ${lieux[i]}`).toBe('au nord-ouest');
-          continue;
-        }
         expect(directionWords(u, v), `${a} ${lieux[i]}`).toBe(motALEcran(d));
       }
     });

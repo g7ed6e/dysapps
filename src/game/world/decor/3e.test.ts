@@ -172,10 +172,12 @@ it('le massif posé sur le plancher (DA-20) : ses bouts se perdent sous les nuag
 });
 
 // Environ 40 triangles par île : 320 au plus pour sept îles, 400 pour neuf depuis le Kiosque des témoins et le Plateau des
-// territoires (HG-3 : 378 mesurés), 520 pour douze depuis les îles de sciences (SC-3 : 504 mesurés).
-it('les nappes des sommets : une seule couche plate sous chaque île, sous son sol, environ 500 triangles, qui s’efface vers ses bords', () => {
+// territoires (HG-3 : 378 mesurés), 520 pour douze depuis les îles de sciences (SC-3 : 504 mesurés), 600 pour quatorze
+// depuis le Forum des débats et le Bosquet des sages (EMC-2, LCA-2 : 588 mesurés ; proposition de l'artiste technique 3D,
+// à valider par le mainteneur).
+it('les nappes des sommets : une seule couche plate sous chaque île, sous son sol, environ 600 triangles, qui s’efface vers ses bords', () => {
   const n = nappesDesSommets('3e', [])!;
-  expect(n.indices.length / 3).toBeLessThanOrEqual(520);
+  expect(n.indices.length / 3).toBeLessThanOrEqual(600);
   const hauteurs = new Set<number>();
   for (let v = 0; v < n.positions.length / 3; v++) {
     hauteurs.add(n.positions[v * 3 + 1]);

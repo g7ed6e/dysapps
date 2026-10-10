@@ -16,6 +16,8 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
   "carrefour": "263 67e39f4d",
   "carriere": "257 8b141147",
   "chateau": "311 5bec53dd",
+  "civics-3e-democratic-life": "200 6566df0d",
+  "civics-4e-rights-freedoms": "279 ab6fceec",
   "civics-5e-equality-solidarity": "259 bb0df356",
   "civics-6e-democratic-society": "301 cdceb237",
   "comptoir": "229 d9d44216",
@@ -36,6 +38,8 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
   "history-6e-antiquity": "229 6d0369ad",
   "horloge": "265 f170a175",
   "jardin": "291 cc1e4f78",
+  "lca-3e-ideas": "264 df3649c9",
+  "lca-4e-cities": "251 4b3724ab",
   "lca-5e-legends": "258 4b77f7eb",
   "life-earth-sciences-3e-human-body": "245 0362f3cf",
   "life-earth-sciences-4e-cells-evolution": "228 4f11c08e",
@@ -69,12 +73,12 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
 exports[`Empreintes des personnages en facettes > les fusions, archipel par archipel (tout construit) 1`] = `
 {
   "3e": {
-    "creatures": "3181 bb6d9d4e 423a5a79",
-    "gardiens": "2771 72943e4d",
+    "creatures": "3645 2e67fb0f 4a0ebaa4",
+    "gardiens": "3230 4bb2a616",
   },
   "4e": {
-    "creatures": "3014 c60f1749 3cb9904e",
-    "gardiens": "2652 c324506b",
+    "creatures": "3544 1ab76ad0 7a0534a5",
+    "gardiens": "3047 fefb45c0",
   },
   "5e": {
     "creatures": "3480 2ee61dd6 d35811f0",
@@ -97,6 +101,8 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "carrefour": "180 ae511a7a",
   "carriere": "142 449d334d",
   "chateau": "219 d8494e2b",
+  "civics-3e-democratic-life": "207 a89f8f25",
+  "civics-4e-rights-freedoms": "207 c8984518",
   "civics-5e-equality-solidarity": "187 bb4aee15",
   "civics-6e-democratic-society": "199 b3add03c",
   "comptoir": "236 4c494f3d",
@@ -117,6 +123,8 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "history-6e-antiquity": "190 c078b9a1",
   "horloge": "172 899e1347",
   "jardin": "258 1f00506c",
+  "lca-3e-ideas": "252 ed7676f4",
+  "lca-4e-cities": "188 96e315f3",
   "lca-5e-legends": "199 4e444962",
   "life-earth-sciences-3e-human-body": "213 2ba0210c",
   "life-earth-sciences-4e-cells-evolution": "213 61e2cc34",

@@ -164,7 +164,7 @@ const COLONNE_D_AVANT_LES_FORMES: Partial<Record<ArchipelagoId, number>> = { '6e
  * Les îles qui ne comptent pas dans la colonne centrale : le Refuge des carnets (3e), posé au bord de l'archipel, ne fait
  * pas pivoter les caméras des autres îles, qui gardent leur cadrage (DA, LV2-5) ; de même la Fouille des siècles et la
  * Pointe des paysages (6e, HG-2), au bout du second rang, puis la Vallée du vivant, le Laboratoire des éléments et le
- * Hangar des inventions (6e, SC-2), aux places qui restaient, et le Préau des délégués (6e, EMC-2), puis le Fournil des partages et la Grotte des légendes (5e, EMC-2 et LCA-2), aux deux places gardées par GD-12 : le dessin des autres îles ne change pas ; et les six îles
+ * Hangar des inventions (6e, SC-2), aux places qui restaient, et le Préau des délégués (6e, EMC-2), puis le Fournil des partages et la Grotte des légendes (5e, EMC-2 et LCA-2) la Porte des libertés et la Colonnade des cités (4e), le Forum des débats et le Bosquet des sages (3e), aux deux places gardées par GD-12 dans chaque archipel : le dessin des autres îles ne change pas ; et les six îles
  * d'histoire-géographie de 5e à 3e (HG-3) : comptées, celles des Îles Brumeuses, au-delà du cadre d'avant, faisaient
  * tourner toutes les caméras du 5e de plusieurs degrés (et avec elles la place des petites constructions) ; de même les
  * neuf îles de sciences de 5e à 3e (SC-3). Le Relais des
@@ -181,6 +181,10 @@ export const HORS_DE_LA_COLONNE: readonly BiomeId[] = [
   'civics-6e-democratic-society',
   'civics-5e-equality-solidarity',
   'lca-5e-legends',
+  'civics-4e-rights-freedoms',
+  'lca-4e-cities',
+  'civics-3e-democratic-life',
+  'lca-3e-ideas',
   'history-5e-middle-ages',
   'geography-5e-resources',
   'history-4e-revolutions',
@@ -243,6 +247,12 @@ export function ileDeLaVueGlissee(a: ArchipelagoId, ici: BiomeId, d: { x: number
   const c = islandCenter(ici);
   return islandAt(a, c.x + d.x, c.y + d.z);
 }
+
+/**
+ * La direction de la caméra de la Carte (x, y de la grille, et hauteur) : presque à la verticale, le même nord, un peu
+ * tournée (dx). Elle penche les directions vues à l'écran (world/placeSentence.ts les dit telles qu'on les voit).
+ */
+export const VUE_DE_LA_CARTE = { dx: 0.03, dy: -0.4, up: 1 };
 
 /** La direction de la vue d'une île (x, y de la grille, et hauteur) : de trois quarts avant-droite, plus haute que la vue du bonhomme. */
 export const VUE_DE_L_ILE = { dx: 0.7, dy: -0.7, up: 0.9 };

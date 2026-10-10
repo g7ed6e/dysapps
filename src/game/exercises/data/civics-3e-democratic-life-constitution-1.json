@@ -1,0 +1,240 @@
+{
+  "id": "civics-3e-democratic-life-constitution-1",
+  "biome": "civics-3e-democratic-life",
+  "type": "constitution",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-3e-democratic-life-constitution-1-0",
+      "prompt": "Le Parlement est formé de l’Assemblée nationale et du …",
+      "spoken": "Le Parlement est formé de l’Assemblée nationale et du  (mot manquant) ",
+      "choices": [
+        "gouvernement",
+        "Sénat",
+        "Conseil constitutionnel"
+      ],
+      "answer": "Sénat",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Le Parlement réunit l’Assemblée nationale et le Sénat. Le gouvernement, lui, fait partie du pouvoir exécutif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Constitution de la Ve République",
+          "lines": [
+            "4 octobre 1958 : la Constitution de la Ve République.",
+            "Le pouvoir législatif : le Parlement, qui vote les lois.",
+            "Le Parlement : l’Assemblée nationale et le Sénat.",
+            "Le pouvoir exécutif : le président de la République et le gouvernement.",
+            "Le pouvoir judiciaire : les juges.",
+            "Séparer les pouvoirs : aucun ne les a tous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-1-1",
+      "prompt": "Voter les lois est le rôle du pouvoir …",
+      "spoken": "Voter les lois est le rôle du pouvoir  (mot manquant) ",
+      "choices": [
+        "exécutif",
+        "judiciaire",
+        "législatif"
+      ],
+      "answer": "législatif",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le pouvoir législatif vote les lois : c’est le Parlement. L’exécutif les applique, le judiciaire juge.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Constitution de la Ve République",
+          "lines": [
+            "4 octobre 1958 : la Constitution de la Ve République.",
+            "Le pouvoir législatif : le Parlement, qui vote les lois.",
+            "Le Parlement : l’Assemblée nationale et le Sénat.",
+            "Le pouvoir exécutif : le président de la République et le gouvernement.",
+            "Le pouvoir judiciaire : les juges.",
+            "Séparer les pouvoirs : aucun ne les a tous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-1-2",
+      "prompt": "Le pouvoir de juger appartient aux juges : c’est le pouvoir …",
+      "spoken": "Le pouvoir de juger appartient aux juges : c’est le pouvoir  (mot manquant) ",
+      "choices": [
+        "judiciaire",
+        "législatif",
+        "exécutif"
+      ],
+      "answer": "judiciaire",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Le pouvoir judiciaire appartient aux juges. Il est séparé des deux autres pouvoirs : la justice est indépendante.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Constitution de la Ve République",
+          "lines": [
+            "4 octobre 1958 : la Constitution de la Ve République.",
+            "Le pouvoir législatif : le Parlement, qui vote les lois.",
+            "Le Parlement : l’Assemblée nationale et le Sénat.",
+            "Le pouvoir exécutif : le président de la République et le gouvernement.",
+            "Le pouvoir judiciaire : les juges.",
+            "Séparer les pouvoirs : aucun ne les a tous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-1-3",
+      "prompt": "Article 1 de la Constitution\n« La France est une République indivisible, laïque, démocratique et sociale. »",
+      "question": "Que veut dire « laïque » ici ?",
+      "spoken": "Article 1 de la Constitution. La France est une République indivisible, laïque, démocratique et sociale.",
+      "choices": [
+        "l’État choisit une religion",
+        "l’État est indépendant des religions",
+        "les religions sont interdites"
+      ],
+      "answer": "l’État est indépendant des religions",
+      "hint": "La laïcité interdit-elle de croire ?",
+      "explanation": "Une République laïque : l’autorité politique est indépendante des religions, et chacun reste libre de croire ou de ne pas croire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Constitution de la Ve République",
+          "lines": [
+            "4 octobre 1958 : la Constitution de la Ve République.",
+            "Le pouvoir législatif : le Parlement, qui vote les lois.",
+            "Le Parlement : l’Assemblée nationale et le Sénat.",
+            "Le pouvoir exécutif : le président de la République et le gouvernement.",
+            "Le pouvoir judiciaire : les juges.",
+            "Séparer les pouvoirs : aucun ne les a tous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-1-4",
+      "prompt": "Le président de la République et le gouvernement forment le pouvoir …",
+      "spoken": "Le président de la République et le gouvernement forment le pouvoir  (mot manquant) ",
+      "choices": [
+        "législatif",
+        "judiciaire",
+        "exécutif"
+      ],
+      "answer": "exécutif",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Le président de la République et le gouvernement forment le pouvoir exécutif : ils dirigent le pays et font appliquer les lois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Constitution de la Ve République",
+          "lines": [
+            "4 octobre 1958 : la Constitution de la Ve République.",
+            "Le pouvoir législatif : le Parlement, qui vote les lois.",
+            "Le Parlement : l’Assemblée nationale et le Sénat.",
+            "Le pouvoir exécutif : le président de la République et le gouvernement.",
+            "Le pouvoir judiciaire : les juges.",
+            "Séparer les pouvoirs : aucun ne les a tous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-1-5",
+      "prompt": "Une révision de la Constitution, en 1962\nAvant : le président est élu par des élus.\nAprès : il est élu par tous les électeurs.\nC’est le suffrage universel direct.",
+      "question": "Qui élit le président de la République depuis 1962 ?",
+      "spoken": "Une révision de la Constitution, en mille neuf cent soixante-deux. Avant : le président est élu par des élus. Après : il est élu par tous les électeurs. C’est le suffrage universel direct.",
+      "choices": [
+        "tous les électeurs",
+        "les députés seulement",
+        "le Sénat"
+      ],
+      "answer": "tous les électeurs",
+      "hint": "Lis la ligne « Après ».",
+      "explanation": "Depuis la révision de 1962, tous les électeurs élisent le président de la République : c’est le suffrage universel direct.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Constitution de la Ve République",
+          "lines": [
+            "4 octobre 1958 : la Constitution de la Ve République.",
+            "Le pouvoir législatif : le Parlement, qui vote les lois.",
+            "Le Parlement : l’Assemblée nationale et le Sénat.",
+            "Le pouvoir exécutif : le président de la République et le gouvernement.",
+            "Le pouvoir judiciaire : les juges.",
+            "Séparer les pouvoirs : aucun ne les a tous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-1-6",
+      "prompt": "Depuis la révision de 2000, le président de la République est élu pour …",
+      "spoken": "Depuis la révision de deux mille, le président de la République est élu pour (mot manquant)",
+      "choices": [
+        "5 ans",
+        "6 ans",
+        "7 ans"
+      ],
+      "answer": "5 ans",
+      "hint": "Avant 2000, le mandat durait 7 ans : il a été raccourci.",
+      "explanation": "Depuis la révision de 2000, le mandat du président dure 5 ans : c’est le quinquennat. Avant, il durait 7 ans : le septennat.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Constitution de la Ve République",
+          "lines": [
+            "4 octobre 1958 : la Constitution de la Ve République.",
+            "Le pouvoir législatif : le Parlement, qui vote les lois.",
+            "Le Parlement : l’Assemblée nationale et le Sénat.",
+            "Le pouvoir exécutif : le président de la République et le gouvernement.",
+            "Le pouvoir judiciaire : les juges.",
+            "Séparer les pouvoirs : aucun ne les a tous."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-1-7",
+      "prompt": "Séparer les pouvoirs législatif, exécutif et judiciaire évite le … d’une seule personne.",
+      "spoken": "Séparer les pouvoirs législatif, exécutif et judiciaire évite le  (mot manquant)  d’une seule personne.",
+      "choices": [
+        "vote",
+        "pouvoir absolu",
+        "débat"
+      ],
+      "answer": "pouvoir absolu",
+      "hint": "Relis la dernière ligne du rappel : que se passerait-il si un seul les avait tous ?",
+      "explanation": "Si une seule personne faisait les lois, les appliquait et jugeait, son pouvoir serait absolu. La séparation des pouvoirs protège nos libertés.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Constitution de la Ve République",
+          "lines": [
+            "4 octobre 1958 : la Constitution de la Ve République.",
+            "Le pouvoir législatif : le Parlement, qui vote les lois.",
+            "Le Parlement : l’Assemblée nationale et le Sénat.",
+            "Le pouvoir exécutif : le président de la République et le gouvernement.",
+            "Le pouvoir judiciaire : les juges.",
+            "Séparer les pouvoirs : aucun ne les a tous."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-3e-democratic-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

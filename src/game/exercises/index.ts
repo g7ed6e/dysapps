@@ -146,6 +146,9 @@ const ORDER: (string | ExerciseDef[])[] = [
   'physics-chemistry-4e-signals-circuits-electric-circuits-2', 'physics-chemistry-4e-signals-circuits-chemical-reactions-1', 'physics-chemistry-4e-signals-circuits-chemical-reactions-2',
   'technology-4e-modeling-energy-chain-1', 'technology-4e-modeling-energy-chain-2', 'technology-4e-modeling-information-chain-1',
   'technology-4e-modeling-information-chain-2', 'technology-4e-modeling-simulation-1', 'technology-4e-modeling-simulation-2', 'technology-4e-modeling-troubleshooting-1', 'technology-4e-modeling-troubleshooting-2',
+  // Enseignement moral et civique (Porte des libertés, 4e).
+  'civics-4e-rights-freedoms-freedoms-1', 'civics-4e-rights-freedoms-freedoms-2', 'civics-4e-rights-freedoms-justice-1',
+  'civics-4e-rights-freedoms-justice-2', 'civics-4e-rights-freedoms-security-defence-1', 'civics-4e-rights-freedoms-security-defence-2',
   // Verger de la santé, Tremplin des forces, Ruche des réseaux, 3e.
   'life-earth-sciences-3e-human-body-effort-brain-1', 'life-earth-sciences-3e-human-body-effort-brain-2', 'life-earth-sciences-3e-human-body-digestion-microbes-1',
   'life-earth-sciences-3e-human-body-digestion-microbes-2', 'life-earth-sciences-3e-human-body-puberty-reproduction-1', 'life-earth-sciences-3e-human-body-puberty-reproduction-2',
@@ -153,6 +156,9 @@ const ORDER: (string | ExerciseDef[])[] = [
   'physics-chemistry-3e-motion-energy-energy-power-2', 'physics-chemistry-3e-motion-energy-acids-bases-1', 'physics-chemistry-3e-motion-energy-acids-bases-2',
   'technology-3e-digital-computer-networks-1', 'technology-3e-digital-computer-networks-2', 'technology-3e-digital-connected-objects-1',
   'technology-3e-digital-connected-objects-2', 'technology-3e-digital-algorithms-1', 'technology-3e-digital-algorithms-2', 'technology-3e-digital-data-tables-1', 'technology-3e-digital-data-tables-2',
+  // Enseignement moral et civique (Forum des débats, 3e).
+  'civics-3e-democratic-life-constitution-1', 'civics-3e-democratic-life-constitution-2', 'civics-3e-democratic-life-information-1',
+  'civics-3e-democratic-life-information-2', 'civics-3e-democratic-life-civic-engagement-1', 'civics-3e-democratic-life-civic-engagement-2',
   // LV2 (Relais des voyageurs, 5e) : une mission par langue et par thème, l’allemand puis l’espagnol.
   'lv2-5e-introductions-de-greetings-1', 'lv2-5e-introductions-de-greetings-2', 'lv2-5e-introductions-de-numbers-1', 'lv2-5e-introductions-de-numbers-2', 'lv2-5e-introductions-de-family-1',
   'lv2-5e-introductions-de-family-2', 'lv2-5e-introductions-de-articles-1', 'lv2-5e-introductions-de-articles-2', 'lv2-5e-introductions-de-sentences-1', 'lv2-5e-introductions-de-sentences-2', 'lv2-5e-introductions-es-greetings-1', 'lv2-5e-introductions-es-greetings-2',
@@ -172,6 +178,14 @@ const ORDER: (string | ExerciseDef[])[] = [
   'lca-5e-legends-la-founding-1', 'lca-5e-legends-la-founding-2', 'lca-5e-legends-la-gods-1', 'lca-5e-legends-la-gods-2', 'lca-5e-legends-la-cases-1',
   'lca-5e-legends-la-cases-2', 'lca-5e-legends-gr-founding-1', 'lca-5e-legends-gr-founding-2', 'lca-5e-legends-gr-gods-1', 'lca-5e-legends-gr-gods-2',
   'lca-5e-legends-gr-alphabet-1', 'lca-5e-legends-gr-alphabet-2',
+  // Latin et grec (Colonnade des cités, 4e) : le latin puis le grec.
+  'lca-4e-cities-la-home-1', 'lca-4e-cities-la-home-2', 'lca-4e-cities-la-forum-1', 'lca-4e-cities-la-forum-2', 'lca-4e-cities-la-mediterranean-1',
+  'lca-4e-cities-la-mediterranean-2', 'lca-4e-cities-gr-home-1', 'lca-4e-cities-gr-home-2', 'lca-4e-cities-gr-agora-1', 'lca-4e-cities-gr-agora-2',
+  'lca-4e-cities-gr-mediterranean-1', 'lca-4e-cities-gr-mediterranean-2',
+  // Latin et grec (Bosquet des sages, 3e) : le latin puis le grec.
+  'lca-3e-ideas-la-empire-1', 'lca-3e-ideas-la-empire-2', 'lca-3e-ideas-la-provinces-1', 'lca-3e-ideas-la-provinces-2', 'lca-3e-ideas-la-heritage-1',
+  'lca-3e-ideas-la-heritage-2', 'lca-3e-ideas-gr-myth-history-1', 'lca-3e-ideas-gr-myth-history-2', 'lca-3e-ideas-gr-greek-world-1', 'lca-3e-ideas-gr-greek-world-2',
+  'lca-3e-ideas-gr-heritage-1', 'lca-3e-ideas-gr-heritage-2',
 ];
 
 const metaOf = ({ id, biome, type, level }: ExerciseMeta): ExerciseMeta => ({ id, biome, type, level });

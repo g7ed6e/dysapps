@@ -366,6 +366,22 @@ export const BLOCLAND = {
         beaten: 'Je me rallume, des roues jusqu’à la selle. Le Bassin est à toi, et à Manivelle.',
       },
     },
+    'civics-4e-rights-freedoms': {
+      challenge: 'Le Lynx d’agate ouvre un œil : « Me voilà tout gris. Tu as passé la porte : dis-moi ce que protègent les libertés. »',
+      guardianSays: {
+        hit: 'Juste. Une tache de mon pelage reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le rappel, cherche le droit dont on parle, et reprends.',
+        beaten: 'Je me rallume, des pattes jusqu’au bout des oreilles. La porte est à toi, et à Loquet.',
+      },
+    },
+    'civics-3e-democratic-life': {
+      challenge: 'L’Étourneau d’étain penche la tête : « Me voilà tout gris. Tu as écouté tout le forum : dis-moi comment vit la démocratie. »',
+      guardianSays: {
+        hit: 'Juste. Une plume de mon dos reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche qui décide, et reprends.',
+        beaten: 'Je me rallume, de la queue jusqu’au bec. Le forum est à toi, et à Brio.',
+      },
+    },
     'life-earth-sciences-3e-human-body': {
       challenge: 'Le Dauphin de turquoise souffle doucement : « Me voilà tout gris. Tu as fait le tour du verger : dis-moi comment ton corps fonctionne. »',
       guardianSays: {
@@ -404,6 +420,22 @@ export const BLOCLAND = {
         hit: 'Juste. Une plume de mon aile reprend sa couleur.',
         miss: 'Mes couleurs restent. Relis la traduction, cherche le mot du rappel, et reprends.',
         beaten: 'Je renais, et je me rallume, de la queue jusqu’à la huppe. La grotte est à toi, et à Lyre.',
+      },
+    },
+    'lca-4e-cities': {
+      challenge: 'La Cigale d’argile chante tout bas : « Me voilà toute grise. Tu as visité la cité : dis-moi comment on y vivait. »',
+      guardianSays: {
+        hit: 'Juste. Un bout de mon aile reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, des pattes jusqu’aux antennes. La colonnade est à toi, et à Figue.',
+      },
+    },
+    'lca-3e-ideas': {
+      challenge: 'Le Centaure d’argile pose son livre : « Me voilà tout gris. Tu as parcouru le bosquet : dis-moi ce que les Anciens nous ont laissé. »',
+      guardianSays: {
+        hit: 'Juste. Un sabot reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le rappel, cherche la racine du mot, et reprends.',
+        beaten: 'Je me rallume, des sabots jusqu’à la tête. Le bosquet est à toi, et à Stylet.',
       },
     },
     'english-5e-grammar': {
@@ -479,6 +511,8 @@ export const BLOCLAND = {
     'lv2-4e-daily-life': 'écureuil cuisinier',
     'lv2-3e-travel': 'loutre factrice',
     'lca-5e-legends': 'gecko conteur',
+    'lca-4e-cities': 'âne porteur d’eau',
+    'lca-3e-ideas': 'huppe scribe',
     'history-6e-antiquity': 'ourson fouilleur',
     'geography-6e-living': 'tortue géographe',
     'history-5e-middle-ages': 'lapin enlumineur',
@@ -498,6 +532,8 @@ export const BLOCLAND = {
     'life-earth-sciences-4e-cells-evolution': 'colibri butineur',
     'physics-chemistry-4e-signals-circuits': 'suricate guetteur',
     'technology-4e-modeling': 'lémurien maquettiste',
+    'civics-4e-rights-freedoms': 'pangolin portier',
+    'civics-3e-democratic-life': 'macareux orateur',
     'life-earth-sciences-3e-human-body': 'koala soigneur',
     'physics-chemistry-3e-motion-energy': 'tatou rouleur',
     'technology-3e-digital': 'chenille tisseuse',

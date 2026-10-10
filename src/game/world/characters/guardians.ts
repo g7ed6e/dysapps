@@ -1039,6 +1039,127 @@ const PHENIX = fromLayers(
   },
 );
 
+// Le Lynx d'agate (EMC, 4e ; sans flamme, aucun symbole ; vigilant, jamais menaçant) : assis, de profil, le long des
+// x, la tête vers les x croissants ; les pattes de devant droites, les pattes claires ; la queue courte et carrée, deux
+// blocs de haut au bout noir, posée derrière ; la tête haute, de larges favoris clairs qui débordent des joues
+// vers le bas, les oreilles aux pinceaux noirs de deux blocs (DA, captures emc-4e-3e-1), et un bloc clair sur chaque
+// joue, au-dessus des favoris (DA, captures emc-4e-3e-2). L'agate : un ambre chaud, le ventre crème, et sur les flancs des taches en deux tons, brun et rouille, en alternance (ce sont elles qui se
+// rallument). Neuf de long, cinq de large, onze de haut. Six couleurs, les yeux compris (proposition de l'artiste
+// technique 3D).
+const LYNX = fromLayers(
+  [
+    ['..AAA....', '..AAAAC..', '..AAAA...', '..AAAAC..', '..AAA....'],
+    ['..TAU....', '..AAA.A..', 'DAAAAA...', '..AAA.A..', '..UAT....'],
+    ['...ATA...', '..AAAAA..', 'DAAAAAC..', '..AAAAA..', '...ATA...'],
+    ['...UA....', '...AAAA..', '...AAAC..', '...AAAA..', '...AU....'],
+    ['......C..', '....AAA..', '....AAC..', '....AAA..', '......C..'],
+    ['.....CC..', '.....AAC.', '.....AACD', '.....AAC.', '.....CC..'],
+    ['......C..', '.....DAE.', '.....AAA.', '.....DAE.', '......C..'],
+    ['.........', '.....AA..', '.....AA..', '.....AA..', '.........'],
+    ['.........', '.....A...', '.........', '.....A...', '.........'],
+    ['.........', '.....D...', '.........', '.....D...', '.........'],
+    ['.........', '.....D...', '.........', '.....D...', '.........'],
+  ],
+  {
+    A: '#c8864a',
+    C: '#efd9b4',
+    T: '#6e3e22',
+    U: '#b0502e',
+    D: '#2a1e18',
+    E: { color: '#1f1a16', top: '#c8864a' },
+  },
+);
+
+// La Cigale d'argile (latin-grec, 4e ; sans flamme, aucun dieu ni symbole) : de profil, le long des x, la tête vers les
+// x croissants, posée sur un socle sombre de quatre blocs ; une cigale de terre cuite, comme celles qu'on accroche aux
+// murs : le corps trapu, ocre rouge ; la tête et ses deux gros yeux qui saillent de chaque côté ; les ailes repliées en
+// toit sur le dos, d'une terre plus claire, plus longues que le corps (elles le dépassent d'un bloc derrière),
+// leurs nervures plus sombres en alternance (ce sont elles qui se rallument). Dans le monde, tournée de trois quarts de tour
+// (`QUARTS_DE_TOUR_DU_GARDIEN`) : la caméra de la Colonnade, à l'est, la voit de profil, la tête vers le devant (DA, captures
+// emc-4e-3e-1). Huit de long, cinq de large, huit de haut (le socle la hausse : son habitant, Figue, en a neuf, GD-11). Cinq couleurs, les yeux compris (proposition de l'artiste
+// technique 3D).
+const CIGALE = fromLayers(
+  [
+    ['........', '..DDD...', '..DDD...', '..DDD...', '........'],
+    ['........', '..DDD...', '..DDD...', '..DDD...', '........'],
+    ['........', '..DDD...', '..DDD...', '..DDD...', '........'],
+    ['........', '..DDD...', '..DDD...', '..DDD...', '........'],
+    ['........', '.AAAAAAA', '.AAAAAAA', '.AAAAAAA', '........'],
+    ['WVWVWV.E', '.AAAAAAA', '.AAAAAAA', '.AAAAAAA', 'WVWVWV.E'],
+    ['........', 'VWVWVW..', 'WWWWWW..', 'VWVWVW..', '........'],
+    ['........', '........', 'WVWVWV..', '........', '........'],
+  ],
+  {
+    A: '#c4703e',
+    W: '#efc896',
+    V: '#a8603a',
+    D: '#5a3a24',
+    E: { color: '#2a1c16', top: '#2a1c16' },
+  },
+);
+
+// L'Étourneau d'étain (EMC, 3e ; sans flamme, aucun symbole) : perché sur une souche sombre de trois blocs, de profil, le
+// bec jaune vers les x croissants ; le corps gris d'étain, les ailes plus sombres, la queue courte. Sur le dos, les plumes
+// en damier, sombres et claires (ce sont elles qui se rallument). Neuf de long, cinq de large, neuf de haut. Neuf
+// couleurs, les yeux compris (proposition de l'artiste technique 3D).
+const ETOURNEAU = fromLayers(
+  [
+    ['.........', '...DDD...', '...DDD...', '...DDD...', '.........'],
+    ['.........', '...DDD...', '...DDD...', '...DDD...', '.........'],
+    ['.........', '...DDD...', '...DDD...', '...DDD...', '.........'],
+    ['.........', '....L....', '.........', '....L....', '.........'],
+    ['.........', '..SSSSS..', '.TSSSSS..', '..SSSSS..', '.........'],
+    ['.........', '..WWWWS..', 'TTSSSSS..', '..WWWWS..', '.........'],
+    ['.........', '..PQPQSS.', '..QPQPSS.', '..PQPQSS.', '.........'],
+    ['.........', '......SE.', '......SSB', '......SE.', '.........'],
+    ['.........', '.........', '......SS.', '.........', '.........'],
+  ],
+  {
+    S: '#9aa2aa',
+    W: '#4a5058',
+    P: '#5c6672',
+    Q: '#d0d6dc',
+    T: '#3a3e46',
+    B: '#e0b030',
+    L: '#c07060',
+    D: '#5a3a24',
+    E: { color: '#1f1a16', top: '#9aa2aa' },
+  },
+);
+
+// Le Centaure d'argile (latin-grec, 3e ; sans flamme, aucun dieu, aucune arme : ni arc ni lance) : de profil, la tête
+// vers les x croissants ; le corps de cheval, et au-dessus du poitrail le torse, droit, de terre cuite ; une petite tête
+// (un bloc de long, bien moins que celle d'un cheval), les cheveux d'une terre plus foncée derrière ; il tient à deux
+// mains, devant lui, un livre ouvert en V, le dos de cuir en bas, les deux pages claires levées de part et d'autre (DA,
+// captures emc-4e-3e-1). Les sabots sombres, la queue d'une terre plus foncée ; sur ses flancs, des motifs d'une terre
+// plus claire, en alternance (ce sont eux qui se rallument). Neuf de long, cinq de large, onze de haut. Six couleurs,
+// les yeux compris (proposition de l'artiste technique 3D).
+const CENTAURE = fromLayers(
+  [
+    ['.........', '.H..H....', '.........', '.H..H....', '.........'],
+    ['.........', '.A..A....', '.........', '.A..A....', '.........'],
+    ['.........', '.A..A....', 'R........', '.A..A....', '.........'],
+    ['.........', '.AAAAA...', 'RAAAAA...', '.AAAAA...', '.........'],
+    ['.........', '.MAMAM...', 'RAAAAA...', '.MAMAM...', '.........'],
+    ['.........', '....AA...', '....AA...', '....AA...', '.........'],
+    ['.........', '....AAAK.', '....AA.K.', '....AAAK.', '.........'],
+    ['.........', '....AAP.P', '....AAP.P', '....AAP.P', '.........'],
+    ['.........', '.........', '.....A...', '.........', '.........'],
+    ['.........', '....HE...', '....HA...', '....HE...', '.........'],
+    ['.........', '.....A...', '....HA...', '.....A...', '.........'],
+  ],
+  {
+    A: '#c4703e',
+    M: '#e2a466',
+    H: '#5a3a24',
+    R: '#9a5030',
+    // Le livre : le dos de cuir en bas, les deux pages claires en V.
+    K: '#7a4a2a',
+    P: '#f2ead8',
+    E: { color: '#2a1c16', top: '#c4703e' },
+  },
+);
+
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': GRAND_CHENE,
   'french-6e-letter-confusion': GOLEM,
@@ -1081,6 +1202,8 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'life-earth-sciences-4e-cells-evolution': GIRAFE,
   'physics-chemistry-4e-signals-circuits': CLOCHE,
   'technology-4e-modeling': GRAND_BI,
+  'civics-4e-rights-freedoms': LYNX,
+  'civics-3e-democratic-life': ETOURNEAU,
   'life-earth-sciences-3e-human-body': DAUPHIN,
   'physics-chemistry-3e-motion-energy': KANGOUROU,
   'technology-3e-digital': ABEILLE,
@@ -1094,4 +1217,6 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'english-3e-grammar': DRAGON_G,
   'lv2-3e-travel': PAPILLON,
   'lca-5e-legends': PHENIX,
+  'lca-4e-cities': CIGALE,
+  'lca-3e-ideas': CENTAURE,
 };

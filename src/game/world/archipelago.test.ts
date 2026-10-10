@@ -44,10 +44,11 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
   // GD-9 : une liaison possible entre chaque paire de lieux d'une même région (120 en 6e depuis l'île d'EMC d'EMC-2, 105
   // depuis les îles de sciences de SC-2 ; 91 en 5e depuis le Fournil des partages et la Grotte des légendes, EMC-2 et
-  // LCA-2 ; 66 dans les deux autres depuis celles de SC-3, 36 depuis les îles d'histoire-géographie de HG-3, 21 avant).
-  expect(BRIDGES).toHaveLength(120 + 91 + 2 * 66);
+  // LCA-2, 91 en 4e depuis la Porte des libertés et la Colonnade des cités, 91 en 3e depuis le Forum des débats et le
+  // Bosquet des sages ; 66 au 3e avant, depuis les îles de SC-3, 36 depuis les îles d'histoire-géographie de HG-3, 21 avant).
+  expect(BRIDGES).toHaveLength(120 + 3 * 91);
   expect(VOYAGES.map((v) => v.id)).toEqual(['passage-5e', 'passage-4e', 'passage-3e']);
-  expect(BIOMES.length).toBe(54);
+  expect(BIOMES.length).toBe(58);
   // Le Relais des voyageurs (LV2) reste en bout de chemin : la liaison la plus proche vient du Comptoir.
   expect(remainingPath('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary']).map((b) => b.id)).toEqual(['english-5e-vocabulary-lv2-5e-introductions']);
   expect(isBiomeUnlocked('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary', 'english-5e-vocabulary-lv2-5e-introductions'])).toBe(true);

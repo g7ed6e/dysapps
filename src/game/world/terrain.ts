@@ -22,6 +22,7 @@ import { type Atelier, atelierModel, casesDuVillage, PLACE_IDS, placeCells, plac
 import { cleDeCube, DEPTH, fade, GROUND_COLOR, groundHeight, islandOrigin, LAYOUT_PAD, origineDe, taperLayers, TEXTURES, underground } from './terrain/base';
 import { cacheUneBorne, ETAGES_DE_LA_BORNE, presDUneBorne, questStations, rangeeDevantLesBornes } from './terrain/markers';
 import { versLaCameraDuDessin } from './terrain/view';
+import { caseDuParvis, ILES_A_PARVIS } from './terrain/parvis';
 import { abordsDansLesMarges, bridge, bridgePath, nearSentier, piedsDesOuvrages } from './terrain/links';
 import { guardianTrophy } from './terrain/guardians';
 import { creatureDuMonde, creatureSpot, decorSousLeGardien, guardianSpot, surLeCarreDuGardien } from './terrain/creatures';
@@ -32,7 +33,7 @@ import { joinsBetween } from './terrain/joins';
 import { seaDecorShown } from './terrain/sea';
 
 export { avatarHome, DEPTH, fade, FIN_DU_PLATEAU_DES_ECOLES, groundHeight, ISLAND, islandCenter, islandOrigin, LAYOUT_PAD, origineDe } from './terrain/base';
-export { bornesDesLieux, type CadreDeCases, cadreDeLaLiaison, cadreDeTraversee, cameraDeLIle, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, HORS_DE_LA_COLONNE, ileDeLaVueGlissee, islandAt, overviewBounds, projectionDeLaVueDeLIle, terresDe, versLaCamera, VIEW_YAW_MAX, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, islandViewPullBack, islandViewTarget, VUE_DE_L_ILE, VUE_DE_L_ILE_PANNEAU_OUVERT, worldBounds } from './terrain/view';
+export { bornesDesLieux, type CadreDeCases, cadreDeLaLiaison, cadreDeTraversee, cameraDeLIle, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, HORS_DE_LA_COLONNE, ileDeLaVueGlissee, islandAt, overviewBounds, projectionDeLaVueDeLIle, terresDe, versLaCamera, VIEW_YAW_MAX, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, islandViewPullBack, islandViewTarget, VUE_DE_L_ILE, VUE_DE_L_ILE_PANNEAU_OUVERT, VUE_DE_LA_CARTE, worldBounds } from './terrain/view';
 export { bornesDansLeMonde, type BorneVue, cacheUneBorne, ETAGES_DE_LA_BORNE, PLACES_DES_BORNES_DES_ECOLES, placesDesBornes, PORTEE_DEVANT_LA_BORNE, questStations, rangeeDevantLesBornes } from './terrain/markers';
 export { avatarRoute, BAC_LONG, boardingRoute, bridgePath, casesDeLOuvrage, placesDeLaFleche, portsDAttache, premierCoude, routeAt, routeLengths, tablier } from './terrain/links';
 export { ASSEMBLAGE_SIZE, type Atelier, atelierModel, cacheUnLieu, casesDesLieux, HALLE, lieuxVus, placeDoor, placeSpot, schoolModel, TROPHY_AT, TROPHY_SIZE, TROPHY_SLOTS, trophyModel, VILLAGE_PLACES } from './terrain/village';
@@ -156,8 +157,10 @@ function poserLIle(
   // à la serre ; et le Refuge des carnets (DA, LV2-5) : le bardeau reste aux murs ; la Fouille des siècles et la Pointe
   // des paysages (HG-2) : la mosaïque et le chaume restent aux plans, au décor et aux commandes, l'archipel le plus chargé
   // garde un sol calme ; de même les six îles d'histoire-géographie de 5e à 3e (HG-3), toutes les îles de la matière, et
-  // toutes les îles de sciences (SC-2 en 6e, SC-3 de la 5e à la 3e).
+  // toutes les îles de sciences (SC-2 en 6e, SC-3 de la 5e à la 3e) ; et les îles d'EMC et de latin-grec du 4e et du 3e,
+  // où le bloc de l'île ne reste au sol qu'en parvis (./terrain/parvis.ts).
   const grassy =
+    ILES_A_PARVIS.has(biome.id) ||
     biome.id === 'french-6e-phonology' ||
     biome.id === 'french-6e-grammar-spelling' ||
     biome.id === 'maths-6e-calculation' ||
@@ -177,7 +180,7 @@ function poserLIle(
   const putWorld = (x: number, y: number, z: number, color: string, decor?: string, sol?: true) => {
     taken.add(cleDeCube(x, y, z));
     placed.add(cleDeCube(x, y, oz + z));
-    cubes.push({
+    const cube: VoxelCube = {
       x,
       y,
       z: oz + z,
@@ -186,8 +189,10 @@ function poserLIle(
       tag: biome.id,
       muted: unlocked ? undefined : true,
       decor: decor ? `${biome.id}/${decor}` : undefined,
-      ...(sol ? { sol } : {}),
-    });
+    };
+    // En dernier, comme avant (l'ordre des clés fait les empreintes), sans objet de plus à chaque cube.
+    if (sol) cube.sol = sol;
+    cubes.push(cube);
   };
   // Le sol et la roche de l'île : le rendu Archipéo les dessine en facettes (world/landMesh.ts).
   const putSol = (x: number, y: number, z: number, color: string) => putWorld(x, y, z, color, undefined, true);
@@ -212,7 +217,8 @@ function poserLIle(
     if (top > 0) putSol(c.x, c.y, 0, BLOCKS[BLOC.terre].side);
     // Dans un coin arrondi du cœur d'une île qui a une forme (GD-12), le sable de la plage ou le sol de la côte.
     const coin = coreCornerGround(def, c.x, c.y);
-    putSol(c.x, c.y, top, coin ? GROUND_COLOR[coin] : sol);
+    const parvis = coin ? null : caseDuParvis(biome.id, x, y);
+    putSol(c.x, c.y, top, coin ? GROUND_COLOR[coin] : parvis === 'allee' ? block.side : parvis === 'bordure' || parvis === 'seuil' ? BLOCKS[BLOC.pierre].side : sol);
   }
   // Le paysage autour du cœur : collines, pics, lacs, cratère, sable des plages, neige des sommets, puis le décor.
   const scenery = landscape(def);
@@ -303,6 +309,9 @@ function poserLIle(
     return false;
   };
   const effaceSousLeGardien = guardianSpot(biome.id).palier === 3;
+  // Sur une île à parvis, un élément de la côte ou des marges qui toucherait l'allée ou sa bordure n'est pas posé.
+  const aParvis = ILES_A_PARVIS.has(biome.id);
+  const surLeParvis = (cases: readonly { x: number; y: number }[]) => cases.some((p) => caseDuParvis(biome.id, p.x - ox, p.y - oy) !== null);
   for (let k = 0; k < scenery.length + marges.length; k++) {
     const c = k < scenery.length ? scenery[k] : marges[k - scenery.length];
     if (!c.decor || nearSentier(def, c.x, c.y)) continue;
@@ -321,6 +330,11 @@ function poserLIle(
       const cases: { x: number; y: number }[] = [];
       decorate((x, y) => cases.push({ x: x - def.core.x, y: y - def.core.y }), c.decor, c.x, c.y, r);
       if (decorSousLeGardien(biome.id, cases)) continue;
+    }
+    if (aParvis) {
+      const cases: { x: number; y: number }[] = [];
+      decorate((x, y) => cases.push({ x, y }), c.decor, c.x, c.y, r);
+      if (surLeParvis(cases)) continue;
     }
     if (!presDUneBorne(bornes, c.x, c.y, 1) && !presDUnLieu(c.x, c.y) && !piedProche) {
       decorate(poser, c.decor, c.x, c.y, r);

@@ -1,0 +1,240 @@
+{
+  "id": "lca-4e-cities-la-mediterranean-1",
+  "biome": "lca-4e-cities",
+  "type": "la-mediterranean",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-4e-cities-la-mediterranean-1-0",
+      "prompt": "Rome et Carthage s’affrontent dans les guerres …",
+      "spoken": "Rome et Carthage s’affrontent dans les guerres  (mot manquant) ",
+      "choices": [
+        "médiques",
+        "puniques",
+        "gauloises"
+      ],
+      "answer": "puniques",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Les trois guerres puniques opposent Rome et Carthage, de 264 à 146 avant J.-C. Les guerres médiques, elles, opposent les Grecs et les Perses.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rome et Carthage",
+          "lines": [
+            "Carthage : une cité de marins et de marchands, en Afrique du Nord, près de Tunis.",
+            "Rome et Carthage s’affrontent dans trois guerres : les guerres puniques.",
+            "« Punique » vient de Poeni, le nom latin des Carthaginois.",
+            "Hannibal, un général carthaginois, franchit les Alpes avec des éléphants.",
+            "En 146 avant J.-C., Rome détruit Carthage.",
+            "Mare nostrum, « notre mer » : c’est ainsi que les Romains appellent la Méditerranée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-1-1",
+      "prompt": "Carthage se trouve …",
+      "spoken": "Carthage se trouve  (mot manquant) ",
+      "choices": [
+        "en Afrique du Nord",
+        "en Grèce",
+        "en Espagne"
+      ],
+      "answer": "en Afrique du Nord",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Carthage se trouve en Afrique du Nord, près de Tunis, en Tunisie aujourd’hui. C’est une grande puissance de la mer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rome et Carthage",
+          "lines": [
+            "Carthage : une cité de marins et de marchands, en Afrique du Nord, près de Tunis.",
+            "Rome et Carthage s’affrontent dans trois guerres : les guerres puniques.",
+            "« Punique » vient de Poeni, le nom latin des Carthaginois.",
+            "Hannibal, un général carthaginois, franchit les Alpes avec des éléphants.",
+            "En 146 avant J.-C., Rome détruit Carthage.",
+            "Mare nostrum, « notre mer » : c’est ainsi que les Romains appellent la Méditerranée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-1-2",
+      "prompt": "Hannibal\nEn 218 avant J.-C., il part d’Espagne avec son armée.\nIl franchit les Pyrénées, puis les Alpes, avec des éléphants.\nIl entre en Italie par le nord.",
+      "question": "Par où Hannibal entre-t-il en Italie ?",
+      "spoken": "Hannibal. En deux cent dix-huit avant Jésus-Christ, il part d’Espagne avec son armée. Il franchit les Pyrénées, puis les Alpes, avec des éléphants. Il entre en Italie par le nord.",
+      "choices": [
+        "par la mer",
+        "par les Alpes",
+        "par l’Afrique"
+      ],
+      "answer": "par les Alpes",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "Hannibal arrive par les Alpes, au nord, là où Rome ne l’attend pas. Rome domine alors la mer : il passe par la terre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rome et Carthage",
+          "lines": [
+            "Carthage : une cité de marins et de marchands, en Afrique du Nord, près de Tunis.",
+            "Rome et Carthage s’affrontent dans trois guerres : les guerres puniques.",
+            "« Punique » vient de Poeni, le nom latin des Carthaginois.",
+            "Hannibal, un général carthaginois, franchit les Alpes avec des éléphants.",
+            "En 146 avant J.-C., Rome détruit Carthage.",
+            "Mare nostrum, « notre mer » : c’est ainsi que les Romains appellent la Méditerranée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-1-3",
+      "prompt": "Le mot « punique » vient de Poeni, le nom que les Romains donnent aux …",
+      "spoken": "Le mot punique vient de Poïni, le nom que les Romains donnent aux (mot manquant)",
+      "choices": [
+        "Grecs",
+        "Gaulois",
+        "Carthaginois"
+      ],
+      "answer": "Carthaginois",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Poeni, ce sont les Carthaginois, d’origine phénicienne : d’où « guerres puniques ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rome et Carthage",
+          "lines": [
+            "Carthage : une cité de marins et de marchands, en Afrique du Nord, près de Tunis.",
+            "Rome et Carthage s’affrontent dans trois guerres : les guerres puniques.",
+            "« Punique » vient de Poeni, le nom latin des Carthaginois.",
+            "Hannibal, un général carthaginois, franchit les Alpes avec des éléphants.",
+            "En 146 avant J.-C., Rome détruit Carthage.",
+            "Mare nostrum, « notre mer » : c’est ainsi que les Romains appellent la Méditerranée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-1-4",
+      "prompt": "En 146 avant J.-C., Rome … Carthage.",
+      "spoken": "En cent quarante-six avant Jésus-Christ, Rome (mot manquant) Carthage.",
+      "choices": [
+        "s’allie avec",
+        "détruit",
+        "fonde"
+      ],
+      "answer": "détruit",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "En 146 avant J.-C., à la fin de la troisième guerre punique, Rome détruit Carthage. Elle domine désormais l’ouest de la Méditerranée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rome et Carthage",
+          "lines": [
+            "Carthage : une cité de marins et de marchands, en Afrique du Nord, près de Tunis.",
+            "Rome et Carthage s’affrontent dans trois guerres : les guerres puniques.",
+            "« Punique » vient de Poeni, le nom latin des Carthaginois.",
+            "Hannibal, un général carthaginois, franchit les Alpes avec des éléphants.",
+            "En 146 avant J.-C., Rome détruit Carthage.",
+            "Mare nostrum, « notre mer » : c’est ainsi que les Romains appellent la Méditerranée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-1-5",
+      "prompt": "Les Romains appellent la Méditerranée mare nostrum, « notre … ».",
+      "spoken": "Les Romains appellent la Méditerranée maré nostroumm : notre (mot manquant)",
+      "choices": [
+        "mer",
+        "terre",
+        "lac"
+      ],
+      "answer": "mer",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Mare nostrum, notre mer : peu à peu, Rome contrôle toutes les côtes de la Méditerranée. Mare a donné « marin » et « maritime ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rome et Carthage",
+          "lines": [
+            "Carthage : une cité de marins et de marchands, en Afrique du Nord, près de Tunis.",
+            "Rome et Carthage s’affrontent dans trois guerres : les guerres puniques.",
+            "« Punique » vient de Poeni, le nom latin des Carthaginois.",
+            "Hannibal, un général carthaginois, franchit les Alpes avec des éléphants.",
+            "En 146 avant J.-C., Rome détruit Carthage.",
+            "Mare nostrum, « notre mer » : c’est ainsi que les Romains appellent la Méditerranée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-1-6",
+      "prompt": "Deux puissances\nCarthage : une grande flotte, des ports de commerce sur les côtes.\nRome : une armée de citoyens, puissante sur terre.\nPour vaincre Carthage, Rome construit une flotte.",
+      "question": "Pourquoi Rome construit-elle une flotte ?",
+      "spoken": "Deux puissances. Carthage : une grande flotte, des ports de commerce sur les côtes. Rome : une armée de citoyens, puissante sur terre. Pour vaincre Carthage, Rome construit une flotte.",
+      "choices": [
+        "pour faire du commerce seulement",
+        "pour traverser les Alpes",
+        "pour combattre Carthage sur la mer"
+      ],
+      "answer": "pour combattre Carthage sur la mer",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Carthage domine la mer, Rome la terre : pour la vaincre, Rome doit se battre aussi sur la mer. Elle construit une flotte pendant la première guerre punique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rome et Carthage",
+          "lines": [
+            "Carthage : une cité de marins et de marchands, en Afrique du Nord, près de Tunis.",
+            "Rome et Carthage s’affrontent dans trois guerres : les guerres puniques.",
+            "« Punique » vient de Poeni, le nom latin des Carthaginois.",
+            "Hannibal, un général carthaginois, franchit les Alpes avec des éléphants.",
+            "En 146 avant J.-C., Rome détruit Carthage.",
+            "Mare nostrum, « notre mer » : c’est ainsi que les Romains appellent la Méditerranée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-mediterranean-1-7",
+      "prompt": "Hannibal, le grand ennemi de Rome, est un général …",
+      "spoken": "Hannibal, le grand ennemi de Rome, est un général  (mot manquant) ",
+      "choices": [
+        "carthaginois",
+        "gaulois",
+        "grec"
+      ],
+      "answer": "carthaginois",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Hannibal est carthaginois. Il remporte de grandes victoires en Italie, mais Rome le bat à Zama, en Afrique, en 202 avant J.-C.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rome et Carthage",
+          "lines": [
+            "Carthage : une cité de marins et de marchands, en Afrique du Nord, près de Tunis.",
+            "Rome et Carthage s’affrontent dans trois guerres : les guerres puniques.",
+            "« Punique » vient de Poeni, le nom latin des Carthaginois.",
+            "Hannibal, un général carthaginois, franchit les Alpes avec des éléphants.",
+            "En 146 avant J.-C., Rome détruit Carthage.",
+            "Mare nostrum, « notre mer » : c’est ainsi que les Romains appellent la Méditerranée."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-4e-cities",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

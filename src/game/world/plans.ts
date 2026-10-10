@@ -138,6 +138,18 @@ import fournilCour from './plans/civics-5e-equality-solidarity-3.json';
 import grotteAbri from './plans/lca-5e-legends-1.json';
 import grottePorche from './plans/lca-5e-legends-2.json';
 import grotteCercle from './plans/lca-5e-legends-3.json';
+import porteLoge from './plans/civics-4e-rights-freedoms-1.json';
+import porteToit from './plans/civics-4e-rights-freedoms-2.json';
+import portePlace from './plans/civics-4e-rights-freedoms-3.json';
+import colonnadeMaison from './plans/lca-4e-cities-1.json';
+import colonnadeColonnade from './plans/lca-4e-cities-2.json';
+import colonnadeFontaine from './plans/lca-4e-cities-3.json';
+import forumTribune from './plans/civics-3e-democratic-life-1.json';
+import forumToit from './plans/civics-3e-democratic-life-2.json';
+import forumParvis from './plans/civics-3e-democratic-life-3.json';
+import bosquetBibliotheque from './plans/lca-3e-ideas-1.json';
+import bosquetGradins from './plans/lca-3e-ideas-2.json';
+import bosquetAllee from './plans/lca-3e-ideas-3.json';
 import prairiePlan1 from './plans/life-earth-sciences-5e-active-planet-1.json';
 import prairiePlan2 from './plans/life-earth-sciences-5e-active-planet-2.json';
 import prairiePlan3 from './plans/life-earth-sciences-5e-active-planet-3.json';
@@ -384,6 +396,18 @@ const PLAN_FILES = [
   grotteAbri,
   grottePorche,
   grotteCercle,
+  porteLoge,
+  porteToit,
+  portePlace,
+  colonnadeMaison,
+  colonnadeColonnade,
+  colonnadeFontaine,
+  forumTribune,
+  forumToit,
+  forumParvis,
+  bosquetBibliotheque,
+  bosquetGradins,
+  bosquetAllee,
   prairiePlan1,
   prairiePlan2,
   prairiePlan3,

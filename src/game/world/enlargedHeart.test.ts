@@ -203,6 +203,24 @@ it('le quai d’une île-école qui est un port suit sa côte repoussée ; les c
   expect(ORIGINE_DU_QUAI['maths-3e-functions']).toBeUndefined();
 });
 
+/**
+ * Les cases d'eau entre deux terres : la plus petite distance (en cases, diagonales comprises) d'une case de l'une à une
+ * case de l'autre, moins un. Les cases de `a` vues de la plus proche du cadre de `b` à la plus lointaine : dès que le
+ * cadre est plus loin que le meilleur écart trouvé, aucune case ne peut faire mieux (le même nombre, sans tout comparer).
+ */
+function ecartEntre(a: readonly { x: number; y: number }[], b: readonly { x: number; y: number }[]): number {
+  let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
+  for (const q of b) [x0, y0, x1, y1] = [Math.min(x0, q.x), Math.min(y0, q.y), Math.max(x1, q.x), Math.max(y1, q.y)];
+  const versLeCadre = (p: { x: number; y: number }) => Math.max(x0 - p.x, p.x - x1, 0, y0 - p.y, p.y - y1) - 1;
+  const proches = a.map((p) => ({ p, borne: versLeCadre(p) })).sort((u, v) => u.borne - v.borne);
+  let ecart = Infinity;
+  for (const { p, borne } of proches) {
+    if (borne >= ecart) break;
+    for (const q of b) ecart = Math.min(ecart, Math.max(Math.abs(p.x - q.x), Math.abs(p.y - q.y)) - 1);
+  }
+  return ecart;
+}
+
 it('les voisines d’une île-école s’écartent : les bras de mer restent ouverts', () => {
   for (const id of IDS) {
     const { archipel } = ECOLES[id]!;
@@ -213,9 +231,7 @@ it('les voisines d’une île-école s’écartent : les bras de mer restent ouv
       for (let j = i + 1; j < terres.length; j++) {
         const [a, b] = [terres[i], terres[j]];
         if (a.ile === b.ile || isthmusOf(a.ile) === b.ile) continue;
-        let ecart = Infinity;
-        for (const p of a.cases) for (const q of b.cases) ecart = Math.min(ecart, Math.max(Math.abs(p.x - q.x), Math.abs(p.y - q.y)) - 1);
-        expect(ecart, `${a.id} / ${b.id}`).toBeGreaterThanOrEqual(2);
+        expect(ecartEntre(a.cases, b.cases), `${a.id} / ${b.id}`).toBeGreaterThanOrEqual(2);
       }
   }
 });

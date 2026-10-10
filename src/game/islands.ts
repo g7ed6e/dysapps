@@ -2461,6 +2461,46 @@ export const ILES = [
     ]
   },
   {
+    "id": "civics-4e-rights-freedoms",
+    "name": "Porte des libertés",
+    "module": "Défendre les droits et les libertés",
+    "subject": "civics",
+    "classe": "4e",
+    "description": "Les libertés et leurs limites, l’État de droit et la justice, puis la sécurité de chacun et la défense du pays.",
+    "block": "civics-4e-rights-freedoms",
+    "guardian": "le Lynx d’agate",
+    "icon": "door-open",
+    "creature": {
+      "name": "Loquet"
+    },
+    "exercises": [
+      {
+        "id": "freedoms",
+        "title": "Les libertés",
+        "description": "Les libertés individuelles et collectives, ce qui les limite (la liberté des autres et l’ordre public), en classe comme en ligne.",
+        "programme": [
+          "c4.emc.4e.etat-de-droit.libertes"
+        ]
+      },
+      {
+        "id": "justice",
+        "title": "L’État de droit et la justice",
+        "description": "L’État de droit, où l’État lui-même obéit au droit ; la Constitution au-dessus des lois ; une justice indépendante et son organisation.",
+        "programme": [
+          "c4.emc.4e.etat-de-droit.libertes"
+        ]
+      },
+      {
+        "id": "security-defence",
+        "title": "Sécurité et défense",
+        "description": "La sûreté, droit de la Déclaration de 1789 : les forces de sécurité intérieure, les armées qui défendent le pays, la cyberdéfense, la guerre de l’information et la police de l’environnement.",
+        "programme": [
+          "c4.emc.4e.defense.securite"
+        ]
+      }
+    ]
+  },
+  {
     "id": "history-3e-twentieth-century",
     "name": "Kiosque des témoins",
     "module": "Histoire, de 1914 à nos jours",
@@ -2706,6 +2746,46 @@ export const ILES = [
         "description": "Décrire un objet par des données (descripteur, type, bit), puis trier, filtrer et calculer dans un petit tableau.",
         "programme": [
           "c4.te.fonctionnement.donnees"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "civics-3e-democratic-life",
+    "name": "Forum des débats",
+    "module": "Faire vivre la démocratie",
+    "subject": "civics",
+    "classe": "3e",
+    "description": "La Constitution de la Ve République et l’Union européenne, l’opinion et l’information à l’ère du numérique, puis les élections et l’engagement des citoyens.",
+    "block": "civics-3e-democratic-life",
+    "guardian": "l’Étourneau d’étain",
+    "icon": "megaphone",
+    "creature": {
+      "name": "Brio"
+    },
+    "exercises": [
+      {
+        "id": "constitution",
+        "title": "La Constitution",
+        "description": "La Constitution de 1958, la séparation des pouvoirs et le contrôle du gouvernement, une République laïque, ses révisions, puis les institutions européennes.",
+        "programme": [
+          "c4.emc.3e.regles.constitution"
+        ]
+      },
+      {
+        "id": "information",
+        "title": "S’informer",
+        "description": "L’opinion publique, les médias et les sondages, puis vérifier une information, repérer la désinformation et le complotisme, et distinguer savoir, opinion et croyance.",
+        "programme": [
+          "c4.emc.3e.opinion.information"
+        ]
+      },
+      {
+        "id": "civic-engagement",
+        "title": "S’engager",
+        "description": "Les élections et le référendum, le vote, puis l’engagement politique, syndical, associatif, dans les institutions et au collège, et la liberté de manifester.",
+        "programme": [
+          "c4.emc.3e.engagement.collectif"
         ]
       }
     ]
@@ -3419,6 +3499,662 @@ export const ILES = [
         "word": "kosmos",
         "lang": "grc-Latn",
         "spoken": "kosmoss"
+      }
+    ]
+  },
+  {
+    "id": "lca-4e-cities",
+    "name": "Colonnade des cités",
+    "module": "Vie privée, vie publique, Méditerranée",
+    "subject": "lca",
+    "classe": "4e",
+    "description": "La maison et la famille, la vie publique de la cité, puis la Méditerranée des cités, de Rome à Carthage et d’Athènes à Syracuse.",
+    "block": "lca-4e-cities",
+    "guardian": "la Cigale d’argile",
+    "icon": "scroll-text",
+    "creature": {
+      "name": "Figue"
+    },
+    "exercises": [
+      {
+        "id": "la-home",
+        "title": "La maison et la famille",
+        "description": "La famille romaine, ses noms et ses âges, puis la maison : la domus, l’insula et la journée d’un Romain.",
+        "programme": [
+          "c4.la.culture.vie-privee",
+          "c4.la.langue.lexique",
+          "c4.la.langue.intercomprehension"
+        ],
+        "option": "la"
+      },
+      {
+        "id": "la-forum",
+        "title": "Le forum et les jeux",
+        "description": "La vie publique à Rome : le forum, le Sénat, les élections et les magistrats, patriciens et plébéiens, puis les jeux, le théâtre et les fêtes.",
+        "programme": [
+          "c4.la.culture.vie-publique",
+          "c4.la.culture.republique",
+          "c4.la.langue.lexique"
+        ],
+        "option": "la"
+      },
+      {
+        "id": "la-mediterranean",
+        "title": "Mare nostrum",
+        "description": "Rome et Carthage, les guerres puniques, puis les alliances et les conflits entre cités, puissances de la terre et puissances de la mer.",
+        "programme": [
+          "c4.la.culture.mediterranee",
+          "c4.la.reperes.chronologie",
+          "c4.la.lecture.situer"
+        ],
+        "option": "la"
+      },
+      {
+        "id": "gr-home",
+        "title": "La maison et la famille grecques",
+        "description": "La famille et la maison à Athènes, le banquet, puis l’enfance : l’école, le sport, l’éphébie, et la place des esclaves.",
+        "programme": [
+          "c4.gr.culture.vie-privee",
+          "c4.gr.culture.vie-publique",
+          "c4.gr.langue.lexique"
+        ],
+        "option": "gr"
+      },
+      {
+        "id": "gr-agora",
+        "title": "Agora, théâtre et jeux",
+        "description": "La vie publique à Athènes : l’agora, l’assemblée, les citoyens et le vote, puis le théâtre, les jeux Olympiques et les fêtes.",
+        "programme": [
+          "c4.gr.culture.vie-publique",
+          "c4.gr.culture.republique",
+          "c4.gr.langue.lexique"
+        ],
+        "option": "gr"
+      },
+      {
+        "id": "gr-mediterranean",
+        "title": "Cités de la mer",
+        "description": "Les cités grecques et la mer, la trière et le Pirée, les colonies, puis les Phéniciens, Carthage et la Sicile disputée : alliances, conflits, puissances de la terre et de la mer.",
+        "programme": [
+          "c4.gr.culture.mediterranee",
+          "c4.gr.reperes.chronologie",
+          "c4.gr.lecture.situer"
+        ],
+        "option": "gr"
+      }
+    ],
+    "foreignWords": [
+      {
+        "word": "Marcus Tullius Cicero",
+        "lang": "la",
+        "spoken": "Markouss Toulliouss Kikéro"
+      },
+      {
+        "word": "Tullius",
+        "lang": "la",
+        "spoken": "Toulliouss"
+      },
+      {
+        "word": "Tullia",
+        "lang": "la",
+        "spoken": "Toullia"
+      },
+      {
+        "word": "pater familias",
+        "lang": "la",
+        "spoken": "patèrr familiass"
+      },
+      {
+        "word": "familia",
+        "lang": "la",
+        "spoken": "familia"
+      },
+      {
+        "word": "famulus",
+        "lang": "la",
+        "spoken": "famoulouss"
+      },
+      {
+        "word": "bulla",
+        "lang": "la",
+        "spoken": "boulla"
+      },
+      {
+        "word": "matrona",
+        "lang": "la",
+        "spoken": "matrona"
+      },
+      {
+        "word": "mater",
+        "lang": "la",
+        "spoken": "matèrr"
+      },
+      {
+        "word": "pater",
+        "lang": "la",
+        "spoken": "patèrr"
+      },
+      {
+        "word": "frater",
+        "lang": "la",
+        "spoken": "fratèrr"
+      },
+      {
+        "word": "magister",
+        "lang": "la",
+        "spoken": "maguistèrr"
+      },
+      {
+        "word": "magistra",
+        "lang": "la",
+        "spoken": "maguistra"
+      },
+      {
+        "word": "puella",
+        "lang": "la",
+        "spoken": "pouélla"
+      },
+      {
+        "word": "pati",
+        "lang": "la",
+        "spoken": "pati"
+      },
+      {
+        "word": "domus",
+        "lang": "la",
+        "spoken": "domouss"
+      },
+      {
+        "word": "dominus",
+        "lang": "la",
+        "spoken": "dominouss"
+      },
+      {
+        "word": "insula",
+        "lang": "la",
+        "spoken": "innsoula"
+      },
+      {
+        "word": "pluvia",
+        "lang": "la",
+        "spoken": "plouwia"
+      },
+      {
+        "word": "candidus",
+        "lang": "la",
+        "spoken": "kanndidouss"
+      },
+      {
+        "word": "toga candida",
+        "lang": "la",
+        "spoken": "toga kanndida"
+      },
+      {
+        "word": "plebs",
+        "lang": "la",
+        "spoken": "plèbs"
+      },
+      {
+        "word": "civis",
+        "lang": "la",
+        "spoken": "kiwiss"
+      },
+      {
+        "word": "civitas",
+        "lang": "la",
+        "spoken": "kiwitass"
+      },
+      {
+        "word": "panem et circenses",
+        "lang": "la",
+        "spoken": "panèmm ètt kirkénnsèss"
+      },
+      {
+        "word": "circenses",
+        "lang": "la",
+        "spoken": "kirkénnsèss"
+      },
+      {
+        "word": "circus",
+        "lang": "la",
+        "spoken": "kirkouss"
+      },
+      {
+        "word": "Circus Maximus",
+        "lang": "la",
+        "spoken": "Kirkouss Maksimouss"
+      },
+      {
+        "word": "persona",
+        "lang": "la",
+        "spoken": "pèrsona"
+      },
+      {
+        "word": "Poeni",
+        "lang": "la",
+        "spoken": "Poïni"
+      },
+      {
+        "word": "mare nostrum",
+        "lang": "la",
+        "spoken": "maré nostroumm"
+      },
+      {
+        "word": "mare",
+        "lang": "la",
+        "spoken": "maré"
+      },
+      {
+        "word": "pes, pedis",
+        "lang": "la",
+        "spoken": "pèss, pédiss"
+      },
+      {
+        "word": "oikos",
+        "lang": "grc-Latn",
+        "spoken": "oïkoss"
+      },
+      {
+        "word": "kurios",
+        "lang": "grc-Latn",
+        "spoken": "kurioss"
+      },
+      {
+        "word": "gunê",
+        "lang": "grc-Latn",
+        "spoken": "gunê"
+      },
+      {
+        "word": "andrôn",
+        "lang": "grc-Latn",
+        "spoken": "anndrônn"
+      },
+      {
+        "word": "anêr, andros",
+        "lang": "grc-Latn",
+        "spoken": "anêrr, anndross"
+      },
+      {
+        "word": "sumposion",
+        "lang": "grc-Latn",
+        "spoken": "summpossionn"
+      },
+      {
+        "word": "peri",
+        "lang": "grc-Latn",
+        "spoken": "péri"
+      },
+      {
+        "word": "stulos",
+        "lang": "grc-Latn",
+        "spoken": "stuloss"
+      },
+      {
+        "word": "gumnos",
+        "lang": "grc-Latn",
+        "spoken": "gumnoss"
+      },
+      {
+        "word": "gramma",
+        "lang": "grc-Latn",
+        "spoken": "gramma"
+      },
+      {
+        "word": "pais, paidos",
+        "lang": "grc-Latn",
+        "spoken": "païss, païdoss"
+      },
+      {
+        "word": "dêmos",
+        "lang": "grc-Latn",
+        "spoken": "dêmoss"
+      },
+      {
+        "word": "kratos",
+        "lang": "grc-Latn",
+        "spoken": "kratoss"
+      },
+      {
+        "word": "nomos",
+        "lang": "grc-Latn",
+        "spoken": "nomoss"
+      },
+      {
+        "word": "khoros",
+        "lang": "grc-Latn",
+        "spoken": "koross"
+      },
+      {
+        "word": "ostrakon",
+        "lang": "grc-Latn",
+        "spoken": "ostrakonn"
+      },
+      {
+        "word": "polis",
+        "lang": "grc-Latn",
+        "spoken": "poliss"
+      }
+    ]
+  },
+  {
+    "id": "lca-3e-ideas",
+    "name": "Bosquet des sages",
+    "module": "Histoire, société et héritage",
+    "subject": "lca",
+    "classe": "3e",
+    "description": "De la République à l’Empire et de Minos à Alexandre, la vie dans la cité et dans les provinces, puis ce que le latin et le grec nous ont transmis.",
+    "block": "lca-3e-ideas",
+    "guardian": "le Centaure d’argile",
+    "icon": "scroll-text",
+    "creature": {
+      "name": "Stylet"
+    },
+    "exercises": [
+      {
+        "id": "la-empire",
+        "title": "De la République à l’Empire",
+        "description": "La fin de la République, de César à Auguste, puis l’Empire romain : la légion, la Paix romaine, la romanisation, des empereurs.",
+        "programme": [
+          "c4.la.3e.culture.republique-principat",
+          "c4.la.3e.culture.empire",
+          "c4.la.reperes.chronologie"
+        ],
+        "option": "la"
+      },
+      {
+        "id": "la-provinces",
+        "title": "Rome, la ville et les provinces",
+        "description": "La ville et la campagne, citoyens et non-citoyens, puis les religions de l’Empire, des dieux de Rome au christianisme, à Rome et dans les provinces.",
+        "programme": [
+          "c4.la.3e.culture.vie-sociale",
+          "c4.la.3e.langue.lexique",
+          "c4.la.reperes.chronologie"
+        ],
+        "option": "la"
+      },
+      {
+        "id": "la-heritage",
+        "title": "L’héritage latin",
+        "description": "Le latin de Rome à aujourd’hui : la Grèce admirée par Rome, la transmission des textes, les langues romanes et les expressions latines, puis les préverbes et les familles de mots.",
+        "programme": [
+          "c4.la.3e.culture.mediterranee",
+          "c4.la.3e.langue.lexique",
+          "c4.la.reperes.heritage",
+          "c4.la.langue.intercomprehension"
+        ],
+        "option": "la"
+      },
+      {
+        "id": "gr-myth-history",
+        "title": "Du mythe à l’histoire",
+        "description": "La Crète de Minos et Mycènes, entre mythes et fouilles, puis Athènes, de ses mythes fondateurs à la démocratie.",
+        "programme": [
+          "c4.gr.3e.culture.mythe-histoire",
+          "c4.gr.reperes.chronologie",
+          "c4.gr.lecture.situer"
+        ],
+        "option": "gr"
+      },
+      {
+        "id": "gr-greek-world",
+        "title": "La Grèce, unie et divisée",
+        "description": "Les cités grecques unies contre les Perses, puis divisées, Athènes contre Sparte ; Socrate, Démosthène, Alexandre et l’époque hellénistique.",
+        "programme": [
+          "c4.gr.3e.culture.unite-diversite",
+          "c4.gr.3e.culture.vie-sociale",
+          "c4.gr.reperes.heritage"
+        ],
+        "option": "gr"
+      },
+      {
+        "id": "gr-heritage",
+        "title": "L’héritage grec",
+        "description": "De la Grèce à nous : Rome élève des Grecs, les savants et les médecins grecs, la transmission par Byzance, les savants arabes et la Renaissance, puis les racines grecques de nos mots.",
+        "programme": [
+          "c4.gr.3e.culture.mediterranee",
+          "c4.gr.3e.langue.lexique",
+          "c4.gr.reperes.heritage",
+          "c4.gr.langue.intercomprehension"
+        ],
+        "option": "gr"
+      }
+    ],
+    "foreignWords": [
+      {
+        "word": "imperator",
+        "lang": "la",
+        "spoken": "immpératorr"
+      },
+      {
+        "word": "imperare",
+        "lang": "la",
+        "spoken": "immpéraré"
+      },
+      {
+        "word": "princeps",
+        "lang": "la",
+        "spoken": "prinnkèps"
+      },
+      {
+        "word": "pax romana",
+        "lang": "la",
+        "spoken": "paks romana"
+      },
+      {
+        "word": "aqua",
+        "lang": "la",
+        "spoken": "akwa"
+      },
+      {
+        "word": "ducere",
+        "lang": "la",
+        "spoken": "doukéré"
+      },
+      {
+        "word": "dux, ducis",
+        "lang": "la",
+        "spoken": "douks, doukiss"
+      },
+      {
+        "word": "deducere",
+        "lang": "la",
+        "spoken": "dédoukéré"
+      },
+      {
+        "word": "mittere",
+        "lang": "la",
+        "spoken": "mittéré"
+      },
+      {
+        "word": "portare",
+        "lang": "la",
+        "spoken": "portaré"
+      },
+      {
+        "word": "civis",
+        "lang": "la",
+        "spoken": "kiwiss"
+      },
+      {
+        "word": "urbs",
+        "lang": "la",
+        "spoken": "ourbs"
+      },
+      {
+        "word": "rus",
+        "lang": "la",
+        "spoken": "rouss"
+      },
+      {
+        "word": "peregrinus",
+        "lang": "la",
+        "spoken": "pérégrinouss"
+      },
+      {
+        "word": "Cornelia",
+        "lang": "la",
+        "spoken": "Kornélia"
+      },
+      {
+        "word": "nox, noctis",
+        "lang": "la",
+        "spoken": "noks, noktiss"
+      },
+      {
+        "word": "vita",
+        "lang": "la",
+        "spoken": "wita"
+      },
+      {
+        "word": "durus",
+        "lang": "la",
+        "spoken": "dourouss"
+      },
+      {
+        "word": "theos",
+        "lang": "grc-Latn",
+        "spoken": "téoss"
+      },
+      {
+        "word": "barbaros",
+        "lang": "grc-Latn",
+        "spoken": "barbaross"
+      },
+      {
+        "word": "philos",
+        "lang": "grc-Latn",
+        "spoken": "filoss"
+      },
+      {
+        "word": "sophia",
+        "lang": "grc-Latn",
+        "spoken": "sofia"
+      },
+      {
+        "word": "Hellên",
+        "lang": "grc-Latn",
+        "spoken": "héllênn"
+      },
+      {
+        "word": "mathêma",
+        "lang": "grc-Latn",
+        "spoken": "matêma"
+      },
+      {
+        "word": "historia",
+        "lang": "grc-Latn",
+        "spoken": "historia"
+      },
+      {
+        "word": "gê",
+        "lang": "grc-Latn",
+        "spoken": "guê"
+      },
+      {
+        "word": "graphein",
+        "lang": "grc-Latn",
+        "spoken": "grafeïnn"
+      },
+      {
+        "word": "skholê",
+        "lang": "grc-Latn",
+        "spoken": "skolê"
+      },
+      {
+        "word": "phôs, phôtos",
+        "lang": "grc-Latn",
+        "spoken": "fôss, fôtoss"
+      },
+      {
+        "word": "anthrôpos",
+        "lang": "grc-Latn",
+        "spoken": "anntrôposs"
+      },
+      {
+        "word": "phobos",
+        "lang": "grc-Latn",
+        "spoken": "foboss"
+      },
+      {
+        "word": "hudôr",
+        "lang": "grc-Latn",
+        "spoken": "udôrr"
+      },
+      {
+        "word": "pur, puros",
+        "lang": "grc-Latn",
+        "spoken": "purr, puross"
+      },
+      {
+        "word": "hippos",
+        "lang": "grc-Latn",
+        "spoken": "hipposs"
+      },
+      {
+        "word": "potamos",
+        "lang": "grc-Latn",
+        "spoken": "potamoss"
+      },
+      {
+        "word": "pous, podos",
+        "lang": "grc-Latn",
+        "spoken": "pouss, podoss"
+      },
+      {
+        "word": "odous, odontos",
+        "lang": "grc-Latn",
+        "spoken": "odouss, odonntoss"
+      },
+      {
+        "word": "kardia",
+        "lang": "grc-Latn",
+        "spoken": "kardia"
+      },
+      {
+        "word": "monos",
+        "lang": "grc-Latn",
+        "spoken": "monoss"
+      },
+      {
+        "word": "logos",
+        "lang": "grc-Latn",
+        "spoken": "logoss"
+      },
+      {
+        "word": "arkhê",
+        "lang": "grc-Latn",
+        "spoken": "arkê"
+      },
+      {
+        "word": "kratos",
+        "lang": "grc-Latn",
+        "spoken": "kratoss"
+      },
+      {
+        "word": "dêmos",
+        "lang": "grc-Latn",
+        "spoken": "dêmoss"
+      },
+      {
+        "word": "pathos",
+        "lang": "grc-Latn",
+        "spoken": "patoss"
+      },
+      {
+        "word": "notte",
+        "lang": "it"
+      },
+      {
+        "word": "noche",
+        "lang": "es"
+      },
+      {
+        "word": "photograph",
+        "lang": "en"
+      },
+      {
+        "word": "fotografía",
+        "lang": "es"
       }
     ]
   }

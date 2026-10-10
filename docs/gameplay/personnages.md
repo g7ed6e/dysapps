@@ -315,7 +315,9 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Source des espèces](https://g7ed6e.github.io/dysapps/pedagogie/iles/life-earth-sciences-4e-cells-evolution.html) (SVT) | Nectar | colibri butineur | colibri butineur | La Girafe d’ambre |
 | [Vigie des signaux](https://g7ed6e.github.io/dysapps/pedagogie/iles/physics-chemistry-4e-signals-circuits.html) (Physique-chimie) | Radar | suricate guetteur | suricate guetteur | La Cloche de cobalt |
 | [Bassin des maquettes](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-4e-modeling.html) (Technologie) | Manivelle | lémurien maquettiste | otarie maquettiste | Le Grand-bi d’érable |
+| [Porte des libertés](https://g7ed6e.github.io/dysapps/pedagogie/iles/civics-4e-rights-freedoms.html) (EMC) | Loquet | pangolin portier | pangolin portier | Le Lynx d’agate |
 | [Jardin des heures](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-4e-daily-life.html) (LV2 (espagnol ou allemand)) | Muscade | écureuil cuisinier | écureuil cuisinier | Le Soleil de cuivre |
+| [Colonnade des cités](https://g7ed6e.github.io/dysapps/pedagogie/iles/lca-4e-cities.html) (Latin ou grec (option)) | Figue | âne porteur d’eau | âne porteur d’eau | La Cigale d’argile |
 
 ### Le Titan d’acier, Forge des puissances
 
@@ -405,6 +407,14 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | À la fin | Je me rallume, des roues jusqu’à la selle. Le Bassin est à toi, et à Manivelle. | Ma roue se rallume. Le bassin est à toi, et à Manivelle. |
 | Manivelle à l’arrivée | Bonjour, bâtisseur ! Au bassin, on fait des maquettes pour comprendre les machines. Chaque bonne réponse te donne du liège. Le liège, c’est une écorce très légère : il flotte. | Bonjour, bâtisseur ! Au bassin, on fait des maquettes pour comprendre les machines. Chaque bonne réponse te donne du liège. Le liège, c’est une écorce très légère : il flotte. |
 
+### Le Lynx d’agate, Porte des libertés
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Lynx d’agate ouvre un œil : « Me voilà tout gris. Tu as passé la porte : dis-moi ce que protègent les libertés. » | Le Lynx d’agate dit doucement : « Les taches de mon pelage sont éteintes. Tu as passé la porte : dis-moi ce que protègent les libertés. » |
+| À la fin | Je me rallume, des pattes jusqu’au bout des oreilles. La porte est à toi, et à Loquet. | Mon pelage se rallume. La porte est à toi, et à Loquet. |
+| Loquet à l’arrivée | Bonjour, bâtisseur ! Ici, la porte est ouverte, et je veille sur elle. Chaque bonne réponse te donne un pavé. Un pavé, c’est une pierre de la rue. | Bonjour, bâtisseur ! Ici, la porte est ouverte, et je veille sur elle. Chaque bonne réponse te donne un pavé. Un pavé, c’est une pierre de la rue. |
+
 ### Le Soleil de cuivre, Jardin des heures
 
 |  | Blocland | Archipéo |
@@ -412,6 +422,14 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Au défi | Le Soleil de cuivre se lève au-dessus du jardin : « Mes rayons sont tout gris. Tu as suivi toute ma journée : dis-moi l’heure, et raconte ta journée. » | Le Soleil de cuivre dit doucement depuis son socle : « Mes rayons sont éteints. Tu as suivi toutes les heures du jardin : écoute bien, et raconte-moi ta journée. » |
 | À la fin | Je me rallume, tous rayons dehors ! Le Jardin est à toi, et à Muscade. | Mes rayons se rallument. Le jardin est à toi, et à Muscade. |
 | Muscade à l’arrivée | Salut, bâtisseur ! Au Jardin des heures, on dit l’heure, on raconte sa journée, on lit l’horaire et le menu, dans ta deuxième langue. Appuie sur Écouter : la voix lit chaque phrase pour toi. Chaque bonne réponse, c’est un bloc d’osier, le bois tressé des paniers, pour le village. | Salut, bâtisseur ! Au Jardin des heures, on dit l’heure, on raconte sa journée, on lit l’horaire et le menu, dans ta deuxième langue. Appuie sur Écouter : la voix lit chaque phrase pour toi. Chaque bonne réponse, c’est un bloc d’osier, le bois tressé des paniers, pour le village. |
+
+### La Cigale d’argile, Colonnade des cités
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | La Cigale d’argile chante tout bas : « Me voilà toute grise. Tu as visité la cité : dis-moi comment on y vivait. » | La Cigale d’argile dit doucement : « Les nervures de mes ailes sont éteintes. Tu as visité la cité : dis-moi comment on y vivait. » |
+| À la fin | Je me rallume, des pattes jusqu’aux antennes. La colonnade est à toi, et à Figue. | Mes ailes se rallument. La colonnade est à toi, et à Figue. |
+| Figue à l’arrivée | Bonjour, bâtisseur ! Je porte l’eau dans toute la cité. Chaque bonne réponse te donne une fresque. Une fresque, c’est une peinture sur un mur. | Bonjour, bâtisseur ! Je porte l’eau dans toute la cité. Chaque bonne réponse te donne une fresque. Une fresque, c’est une peinture sur un mur. |
 
 ## Les Îles du Ciel, 3e
 
@@ -428,7 +446,9 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Verger de la santé](https://g7ed6e.github.io/dysapps/pedagogie/iles/life-earth-sciences-3e-human-body.html) (SVT) | Olive | koala soigneur | koala soigneur | Le Dauphin de turquoise |
 | [Tremplin des forces](https://g7ed6e.github.io/dysapps/pedagogie/iles/physics-chemistry-3e-motion-energy.html) (Physique-chimie) | Virage | tatou rouleur | tatou rouleur | Le Kangourou de rubis |
 | [Ruche des réseaux](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-3e-digital.html) (Technologie) | Navette | chenille tisseuse | chenille tisseuse | L’Abeille de topaze |
+| [Forum des débats](https://g7ed6e.github.io/dysapps/pedagogie/iles/civics-3e-democratic-life.html) (EMC) | Brio | macareux orateur | macareux orateur | L’Étourneau d’étain |
 | [Refuge des carnets](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-3e-travel.html) (LV2 (espagnol ou allemand)) | Timbre | loutre factrice | loutre factrice | Le Papillon de cuivre |
+| [Bosquet des sages](https://g7ed6e.github.io/dysapps/pedagogie/iles/lca-3e-ideas.html) (Latin ou grec (option)) | Stylet | huppe scribe | huppe scribe | Le Centaure d’argile |
 
 ### Le Sphinx de marbre, Belvédère de Thalès
 
@@ -518,6 +538,14 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | À la fin | Bzzz ! Je me rallume, des antennes jusqu’aux rayures. La Ruche est à toi, et à Navette. | Les cases de mes ailes se rallument. La ruche est à toi, et à Navette. |
 | Navette à l’arrivée | Bonjour, bâtisseur ! À la ruche, les messages voyagent d’un point à l’autre, comme dans un réseau. Chaque bonne réponse te donne de la cire. Les abeilles font leurs cases en cire. | Bonjour, bâtisseur ! À la ruche, les messages voyagent d’un point à l’autre, comme dans un réseau. Chaque bonne réponse te donne de la cire. Les abeilles font leurs cases en cire. |
 
+### L’Étourneau d’étain, Forum des débats
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Étourneau d’étain penche la tête : « Me voilà tout gris. Tu as écouté tout le forum : dis-moi comment vit la démocratie. » | L’Étourneau d’étain dit doucement : « Les plumes de mon dos sont éteintes. Tu as écouté tout le forum : dis-moi comment vit la démocratie. » |
+| À la fin | Je me rallume, de la queue jusqu’au bec. Le forum est à toi, et à Brio. | Mes plumes se rallument. Le forum est à toi, et à Brio. |
+| Brio à l’arrivée | Bonjour, bâtisseur ! Au forum, chacun donne son avis et écoute celui des autres. Chaque bonne réponse te donne de l’acajou. L’acajou, c’est un bois rouge et solide. | Bonjour, bâtisseur ! Au forum, chacun donne son avis et écoute celui des autres. Chaque bonne réponse te donne de l’acajou. L’acajou, c’est un bois rouge et solide. |
+
 ### Le Papillon de cuivre, Refuge des carnets
 
 |  | Blocland | Archipéo |
@@ -525,4 +553,12 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Au défi | Le Papillon de cuivre attend devant le refuge : « Mes ailes sont toutes grises. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. » | Le Papillon de cuivre dit doucement : « Le bord de mes ailes est éteint. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. » |
 | À la fin | Je me rallume, jusqu’au bout des antennes. Le refuge est à toi, et à Timbre. | Le bord de mes ailes se rallume. Le refuge est à toi, et à Timbre. |
 | Timbre à l’arrivée | Bonjour, bâtisseur ! Au refuge, les voyageurs racontent leurs voyages dans ta deuxième langue. Appuie sur Écouter : la voix lit la question et l’histoire pour toi. Chaque bonne réponse te donne un bardeau. Les bardeaux, ce sont les petites planches de bois qui couvrent les murs du refuge. | Bonjour, bâtisseur ! Au refuge, les voyageurs racontent leurs voyages dans ta deuxième langue. Appuie sur Écouter : la voix lit la question et l’histoire pour toi. Chaque bonne réponse te donne un bardeau. Les bardeaux, ce sont les petites planches de bois qui couvrent les murs du refuge. |
+
+### Le Centaure d’argile, Bosquet des sages
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Centaure d’argile pose son livre : « Me voilà tout gris. Tu as parcouru le bosquet : dis-moi ce que les Anciens nous ont laissé. » | Le Centaure d’argile dit doucement : « Les motifs de mon flanc sont éteints. Tu as parcouru le bosquet : dis-moi ce que les Anciens nous ont laissé. » |
+| À la fin | Je me rallume, des sabots jusqu’à la tête. Le bosquet est à toi, et à Stylet. | Mon flanc se rallume. Le bosquet est à toi, et à Stylet. |
+| Stylet à l’arrivée | Bonjour, bâtisseur ! J’écris tout sur ma tablette de cire. Chaque bonne réponse te donne du laurier. Le laurier, c’est l’arbre des sages. | Bonjour, bâtisseur ! J’écris tout sur ma tablette de cire. Chaque bonne réponse te donne du laurier. Le laurier, c’est l’arbre des sages. |
 

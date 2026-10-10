@@ -1,0 +1,240 @@
+{
+  "id": "lca-3e-ideas-la-provinces-1",
+  "biome": "lca-3e-ideas",
+  "type": "la-provinces",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-3e-ideas-la-provinces-1-0",
+      "prompt": "Un grand domaine à la campagne, avec sa maison et ses terres, est une …",
+      "spoken": "Un grand domaine à la campagne, avec sa maison et ses terres, est une  (mot manquant) ",
+      "choices": [
+        "domus",
+        "insula",
+        "villa"
+      ],
+      "answer": "villa",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "La villa est un domaine à la campagne : une maison, des terres, des esclaves qui les cultivent. Le mot a donné « ville » et « village ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ville et campagne, citoyens et non-citoyens",
+          "lines": [
+            "La ville (urbs) : forum, thermes, immeubles. La campagne (rus) : les champs.",
+            "La villa : un grand domaine à la campagne, où travaillent des esclaves.",
+            "Un citoyen romain vote, sert dans les légions et il est protégé par les lois de Rome.",
+            "Ne sont pas citoyens : les esclaves, et les étrangers libres, les pérégrins.",
+            "Un affranchi : un esclave libéré par son maître.",
+            "En 212 après J.-C., Caracalla fait citoyens presque tous les habitants libres de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-1-1",
+      "prompt": "Le mot « urbain » vient du latin urbs, qui veut dire …",
+      "spoken": "Le mot urbain vient du latin ourbs, qui veut dire (mot manquant)",
+      "choices": [
+        "la ville",
+        "la campagne",
+        "le palais"
+      ],
+      "answer": "la ville",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Urbs, la ville, et pour un Romain, Rome elle-même, a donné urbain et urbanisme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ville et campagne, citoyens et non-citoyens",
+          "lines": [
+            "La ville (urbs) : forum, thermes, immeubles. La campagne (rus) : les champs.",
+            "La villa : un grand domaine à la campagne, où travaillent des esclaves.",
+            "Un citoyen romain vote, sert dans les légions et il est protégé par les lois de Rome.",
+            "Ne sont pas citoyens : les esclaves, et les étrangers libres, les pérégrins.",
+            "Un affranchi : un esclave libéré par son maître.",
+            "En 212 après J.-C., Caracalla fait citoyens presque tous les habitants libres de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-1-2",
+      "prompt": "Tiron\nTiron est l’esclave de Cicéron, qui lui fait confiance.\nIl écrit très vite et note ses discours.\nCicéron le libère : Tiron devient un homme libre.",
+      "question": "Que devient Tiron ?",
+      "spoken": "Tiron. Tiron est l’esclave de Cicéron, qui lui fait confiance. Il écrit très vite et note ses discours. Cicéron le libère : Tiron devient un homme libre.",
+      "choices": [
+        "un sénateur",
+        "un affranchi",
+        "un pérégrin"
+      ],
+      "answer": "un affranchi",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Libéré par Cicéron, Tiron devient un affranchi. On lui attribue une écriture rapide, les « notes tironiennes ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ville et campagne, citoyens et non-citoyens",
+          "lines": [
+            "La ville (urbs) : forum, thermes, immeubles. La campagne (rus) : les champs.",
+            "La villa : un grand domaine à la campagne, où travaillent des esclaves.",
+            "Un citoyen romain vote, sert dans les légions et il est protégé par les lois de Rome.",
+            "Ne sont pas citoyens : les esclaves, et les étrangers libres, les pérégrins.",
+            "Un affranchi : un esclave libéré par son maître.",
+            "En 212 après J.-C., Caracalla fait citoyens presque tous les habitants libres de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-1-3",
+      "prompt": "Un étranger libre qui vit dans l’Empire, sans être citoyen, est un …",
+      "spoken": "Un étranger libre qui vit dans l’Empire, sans être citoyen, est un  (mot manquant) ",
+      "choices": [
+        "affranchi",
+        "pérégrin",
+        "patricien"
+      ],
+      "answer": "pérégrin",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Le pérégrin est un étranger libre : il vit dans l’Empire, mais n’a pas la citoyenneté romaine. Peregrinus a donné « pèlerin », le voyageur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ville et campagne, citoyens et non-citoyens",
+          "lines": [
+            "La ville (urbs) : forum, thermes, immeubles. La campagne (rus) : les champs.",
+            "La villa : un grand domaine à la campagne, où travaillent des esclaves.",
+            "Un citoyen romain vote, sert dans les légions et il est protégé par les lois de Rome.",
+            "Ne sont pas citoyens : les esclaves, et les étrangers libres, les pérégrins.",
+            "Un affranchi : un esclave libéré par son maître.",
+            "En 212 après J.-C., Caracalla fait citoyens presque tous les habitants libres de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-1-4",
+      "prompt": "En 212 après J.-C., l’empereur Caracalla …",
+      "spoken": "En deux cent douze après Jésus-Christ, l’empereur Caracalla (mot manquant)",
+      "choices": [
+        "supprime l’esclavage",
+        "interdit les jeux",
+        "donne la citoyenneté à presque tous les habitants libres"
+      ],
+      "answer": "donne la citoyenneté à presque tous les habitants libres",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "L’édit de Caracalla, en 212, fait citoyens presque tous les habitants libres de l’Empire. Les esclaves, eux, restent esclaves.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ville et campagne, citoyens et non-citoyens",
+          "lines": [
+            "La ville (urbs) : forum, thermes, immeubles. La campagne (rus) : les champs.",
+            "La villa : un grand domaine à la campagne, où travaillent des esclaves.",
+            "Un citoyen romain vote, sert dans les légions et il est protégé par les lois de Rome.",
+            "Ne sont pas citoyens : les esclaves, et les étrangers libres, les pérégrins.",
+            "Un affranchi : un esclave libéré par son maître.",
+            "En 212 après J.-C., Caracalla fait citoyens presque tous les habitants libres de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-1-5",
+      "prompt": "Une Romaine\nCornelia est la fille d’un citoyen.\nElle est citoyenne.\nElle ne peut pas voter.",
+      "question": "Quel droit Cornelia n’a-t-elle pas ?",
+      "spoken": "Une Romaine. Kornélia est la fille d’un citoyen. Elle est citoyenne. Elle ne peut pas voter.",
+      "choices": [
+        "être citoyenne",
+        "voter",
+        "aller au théâtre"
+      ],
+      "answer": "voter",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Les Romaines sont citoyennes, mais elles ne votent pas et ne peuvent pas être magistrates.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ville et campagne, citoyens et non-citoyens",
+          "lines": [
+            "La ville (urbs) : forum, thermes, immeubles. La campagne (rus) : les champs.",
+            "La villa : un grand domaine à la campagne, où travaillent des esclaves.",
+            "Un citoyen romain vote, sert dans les légions et il est protégé par les lois de Rome.",
+            "Ne sont pas citoyens : les esclaves, et les étrangers libres, les pérégrins.",
+            "Un affranchi : un esclave libéré par son maître.",
+            "En 212 après J.-C., Caracalla fait citoyens presque tous les habitants libres de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-1-6",
+      "prompt": "Le mot « rural » vient du latin rus, qui veut dire …",
+      "spoken": "Le mot rural vient du latin rouss, qui veut dire (mot manquant)",
+      "choices": [
+        "la ville",
+        "la route",
+        "la campagne"
+      ],
+      "answer": "la campagne",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Rus, la campagne, a donné rural et rustique. À l’inverse, urbs, la ville, a donné « urbain ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ville et campagne, citoyens et non-citoyens",
+          "lines": [
+            "La ville (urbs) : forum, thermes, immeubles. La campagne (rus) : les champs.",
+            "La villa : un grand domaine à la campagne, où travaillent des esclaves.",
+            "Un citoyen romain vote, sert dans les légions et il est protégé par les lois de Rome.",
+            "Ne sont pas citoyens : les esclaves, et les étrangers libres, les pérégrins.",
+            "Un affranchi : un esclave libéré par son maître.",
+            "En 212 après J.-C., Caracalla fait citoyens presque tous les habitants libres de l’Empire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-provinces-1-7",
+      "prompt": "Un citoyen romain a le droit de …",
+      "spoken": "Un citoyen romain a le droit de  (mot manquant) ",
+      "choices": [
+        "voter et servir dans les légions",
+        "ne jamais travailler",
+        "devenir roi"
+      ],
+      "answer": "voter et servir dans les légions",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Le citoyen vote, sert dans les légions et il est protégé par les lois de Rome. Rome n’a plus de roi depuis 509 avant J.-C.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ville et campagne, citoyens et non-citoyens",
+          "lines": [
+            "La ville (urbs) : forum, thermes, immeubles. La campagne (rus) : les champs.",
+            "La villa : un grand domaine à la campagne, où travaillent des esclaves.",
+            "Un citoyen romain vote, sert dans les légions et il est protégé par les lois de Rome.",
+            "Ne sont pas citoyens : les esclaves, et les étrangers libres, les pérégrins.",
+            "Un affranchi : un esclave libéré par son maître.",
+            "En 212 après J.-C., Caracalla fait citoyens presque tous les habitants libres de l’Empire."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-3e-ideas",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

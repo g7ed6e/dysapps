@@ -18,6 +18,7 @@ import { dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleRestZ, VEHICL
 import { VEHICLE_STAGES } from './vehicle';
 import { recetteDeLArchipel } from './assembly';
 import { toutConstruit } from './budget';
+import { ILES_A_PARVIS } from './terrain/parvis';
 import { decorPose } from './decor';
 import { bridgesOf, isBiomeUnlocked } from './archipelago';
 import { routeDeDepart } from './linkGeometry';
@@ -167,7 +168,9 @@ it('le cœur a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les 
         if (h) raised++;
       }
     }
-    expect(raised).toBeGreaterThan(4);
+    // Les îles à parvis gardent un cœur plat : le plateau y tombait sur l'allée (DA, captures emc-4e-3e-2).
+    if (ILES_A_PARVIS.has(BIOMES[i].id)) expect(raised).toBe(0);
+    else expect(raised).toBeGreaterThan(4);
     expect(raised).toBeLessThan((ISLAND * ISLAND) / 2);
   });
   // Aucun cube en double.
@@ -175,7 +178,11 @@ it('le cœur a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les 
 });
 
 it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas construits), tous dans leur archipel', () => {
-  const bridgeCubes = (bridges: string[], id: string) => allCubes({}, village(bridges)).filter((c) => c.bridge === id);
+  // Les cubes d'une liaison ne sont que dans l'archipel de son départ (terrain.ts, `entreLesIles`) : lui seul est construit.
+  const bridgeCubes = (bridges: string[], id: string) => {
+    const b = BRIDGES.find((x) => x.id === id);
+    return b ? worldCubes(archipelagoOf(b.from).classe, {}, village(bridges)).filter((c) => c.bridge === id) : [];
+  };
   // Forêt–Mine : un sentier sur l'isthme, constructible dès le début, donc en fantôme : des pierres de gué sur le sol.
   const trail = bridgeCubes([], 'french-6e-phonology-french-6e-letter-confusion');
   expect(trail.length).toBeGreaterThanOrEqual(4);
@@ -282,11 +289,12 @@ it('avec les sentinelles (Archipéo, lot 6), le Gardien est là dès l’ouvertu
 });
 
 describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octobre 2026)', () => {
-  it('GD-12 : les 54 carrés des Gardiens ne bougent pas, qu’une île ait pris sa forme ou non', () => {
+  it('GD-12 : les 58 carrés des Gardiens ne bougent pas, qu’une île ait pris sa forme ou non', () => {
     // Une île qui a sa forme garde le carré de GD-11 (figé) ; les autres le retrouvent par la recherche. Le seuil de 75 %
     // et la part vue de chaque Gardien se vérifient plus bas, sur les mêmes carrés.
-    // 54 depuis le Fournil des partages et la Grotte des légendes (EMC-2, LCA-2).
-    expect(Object.keys(GD11_GUARDIAN_SQUARES)).toHaveLength(54);
+    // 54 depuis le Fournil des partages et la Grotte des légendes (EMC-2, LCA-2), 56 depuis la Porte des libertés et la
+    // Colonnade des cités, 58 depuis le Forum des débats et le Bosquet des sages.
+    expect(Object.keys(GD11_GUARDIAN_SQUARES)).toHaveLength(58);
     expect(Object.keys(GD11_GUARDIAN_SQUARES).sort()).toEqual(BIOMES.map((b) => b.id).sort());
     for (const b of BIOMES) {
       const s = guardianSpot(b.id);
@@ -310,12 +318,16 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     // Avec le Préau des délégués (EMC-2), au palier 1 sur un côté de devant, mesurés après GD-14 : 22, 0 et 30, dont 7
     // sur un côté. Le Fournil des partages et la Grotte des légendes (EMC-2, LCA-2) au palier 1, sur un côté de devant,
     // mesurés après GD-14 : 24, 0 et 30, dont 9 sur un côté (la Grotte un rang plus haut que sa recherche, (15, −3), pour
-    // tenir entière dans la vue panneau ouvert).
+    // tenir entière dans la vue panneau ouvert). La Porte des libertés au palier 3, sur un côté de devant, en (14, 0), deux
+    // rangs plus haut et une case plus près que sa recherche, (15, −2), pour tenir entière dans la vue panneau ouvert ; la
+    // Colonnade des cités au palier 1, derrière la bande : 25, 0 et 31, dont 10 sur un côté. Le Forum des débats au palier
+    // 1, sur un côté de devant, et le Bosquet des sages au palier 1, derrière la bande, aux places de leur recherche :
+    // 27, 0 et 31, dont 11 sur un côté.
     expect(BIOMES.filter((b) => guardianSpot(b.id).repli).map((b) => b.id)).toEqual([]);
     const paliers = (n: number) => BIOMES.filter((b) => guardianSpot(b.id).palier === n).map((b) => b.id);
-    expect(paliers(1)).toHaveLength(24);
+    expect(paliers(1)).toHaveLength(27);
     expect(paliers(2)).toEqual([]);
-    expect(paliers(3)).toHaveLength(30);
+    expect(paliers(3)).toHaveLength(31);
     expect(BIOMES.filter((b) => guardianSpot(b.id).y <= QUEST_ROW + 1).map((b) => b.id)).toEqual([
       'english-4e-comprehension',
       'civics-6e-democratic-society',
@@ -323,8 +335,10 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
       'history-4e-revolutions',
       'geography-4e-globalization',
       'life-earth-sciences-4e-cells-evolution',
+      'civics-4e-rights-freedoms',
       'history-3e-twentieth-century',
       'life-earth-sciences-3e-human-body',
+      'civics-3e-democratic-life',
       'lca-5e-legends',
     ]);
   });
@@ -499,9 +513,10 @@ it('les repères : un grand arbre à la Forêt, un phare au Phare, de la fumée 
   // Îles du Ciel (GD-12, 9 octobre 2026 ; une île qui a sa forme n'a plus de mare d'où l'eau déborde).
   const falls = cubes.filter((c) => c.texture === 'eau' && c.z === 0 && BIOMES.some((b) => b.id === c.tag && islandCenter(b.id).z > 0));
   expect(falls).toEqual([]);
-  // La brume des sommets : sous les douze Îles du Ciel (le Refuge des carnets, le Kiosque des témoins, le Plateau des
-  // territoires et les trois îles de sciences de SC-3 compris), nulle part ailleurs.
-  expect(mistPatches('3e').length).toBe(12);
+  // La brume des sommets : sous les quatorze Îles du Ciel (le Refuge des carnets, le Kiosque des témoins, le Plateau des
+  // territoires, les trois îles de sciences de SC-3, le Forum des débats et le Bosquet des sages compris), nulle part
+  // ailleurs.
+  expect(mistPatches('3e').length).toBe(14);
   for (const m of mistPatches('3e')) expect(m.z).toBe(7.5);
   expect(mistPatches('6e')).toEqual([]);
   // Un repère par archipel du collège aussi : l'aiguille de glace du Glacier, le haut-fourneau de la Forge.

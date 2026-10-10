@@ -53,6 +53,10 @@ export type TextureKind =
   | 'bambou'
   | 'farine'
   | 'tuf'
+  | 'pave'
+  | 'fresque'
+  | 'acajou'
+  | 'laurier'
   | 'petale'
   | 'bobine'
   | 'liege'
@@ -397,6 +401,108 @@ function tuf(t: TonsDuTuf): Painter {
       if (x >= px && x < px + w && y === py + 1) return bord;
     }
     return hacher(x, y) < 100 ? clair : pierre;
+  };
+}
+
+// ---------- Les blocs des îles d'EMC et de latin-grec de 4e (EMC-2, LCA-2) ----------
+
+/** Les tons du pavé : deux granits (un pavé sur trois un peu plus sombre), le reflet, l'ombre et le joint de sable. */
+type TonsDuPave = { granit: string; autre: string; reflet: string; ombre: string; joint: string };
+
+/**
+ * Des pavés (la Porte des libertés, EMC 4e ; proposition de l'artiste technique 3D, à valider par le directeur
+ * artistique) : des pavés de trois pixels sur trois, quatre par rang, joints d'un pixel de sable sombre, les rangs
+ * décalés de deux pixels ; chaque pavé bombé, son coin du haut éclairé (trois pixels), son coin du bas dans l'ombre
+ * (trois pixels) ; un pavé sur trois environ d'un granit un peu plus sombre, tiré d'un hachage du pavé. Le même dessin
+ * dessus et sur les côtés (une rue pavée, un mur de pavés). Les petits pavés en rangs le séparent de la pierre (mouchetée),
+ * de la dalle (grandes dalles), de la brique (rangs de briques longues) et du galet (ronds).
+ */
+function pave(t: TonsDuPave): Painter {
+  const [granit, autre, reflet, ombre, joint] = [t.granit, t.autre, t.reflet, t.ombre, t.joint].map(hexToRgb);
+  return (x, y) => {
+    const rang = y >> 2;
+    const dx = (x + (rang % 2) * 2) % 16;
+    const u = dx % 4;
+    const v = y % 4;
+    if (u === 3 || v === 3) return joint;
+    if (u + v <= 1) return reflet;
+    if (u + v >= 3) return ombre;
+    return hacher(dx >> 2, rang + 5) < 330 ? autre : granit;
+  };
+}
+
+/** Les tons de la fresque : la frise ocre et ses points, le filet crème, le panneau rouge, la guirlande, le bas sombre. */
+type TonsDeLaFresque = { frise: string; point: string; filet: string; panneau: string; grain: string; guirlande: string; bas: string };
+
+/** La guirlande verte au milieu du panneau de la fresque : un feston de six pixels et ses deux feuilles. */
+const GUIRLANDE_DE_LA_FRESQUE: ReadonlySet<string> = new Set(['5,6', '10,6', '5,7', '10,7', '6,8', '7,8', '8,8', '9,8']);
+
+/**
+ * De la fresque (la Colonnade des cités, latin-grec 4e ; proposition de l'artiste technique 3D, à valider par le
+ * directeur artistique) : le mur peint d'une maison romaine. Sur le côté, en haut, une frise ocre jaune de trois pixels,
+ * un point sombre tous les quatre pixels au milieu ; un filet crème ; le panneau rouge pompéien, cerné d'un filet crème
+ * (à un pixel des bords, pour que deux fresques voisines se lisent comme deux panneaux), un grain plus sombre tiré d'un
+ * hachage, une guirlande verte en feston au milieu ; en bas, trois pixels sombres (le soubassement peint). Sur le
+ * dessus, l'enduit crème au grain léger, bordé d'un filet rouge. Aucun personnage, aucun dieu, aucun symbole : des
+ * bandes, un filet, un feston. Ses bandes peintes la séparent de la brique (des rangs et du mortier), de la tuile (des
+ * écailles), du toit et du velours (unis).
+ */
+function fresque(t: TonsDeLaFresque, face: 'top' | 'side'): Painter {
+  const [frise, point, filet, panneau, grain, guirlande, bas] = [t.frise, t.point, t.filet, t.panneau, t.grain, t.guirlande, t.bas].map(hexToRgb);
+  if (face === 'top') return (x, y) => (x === 0 || y === 0 || x === 15 || y === 15 ? panneau : hacher(x, y) < 80 ? grain : filet);
+  return (x, y) => {
+    if (y < 3) return y === 1 && x % 4 === 1 ? point : frise;
+    if (y === 3) return filet;
+    if (y >= 13) return bas;
+    if (y === 12 || ((x === 1 || x === 14) && y >= 4)) return filet;
+    if (GUIRLANDE_DE_LA_FRESQUE.has(`${x},${y}`)) return guirlande;
+    return hacher(x, y) < 90 ? grain : panneau;
+  };
+}
+
+// ---------- Les blocs des îles d'EMC et de latin-grec de 3e (EMC-2, LCA-2) ----------
+
+/** Les tons de l'acajou : le bois, son fil sombre, le reflet ciré, le joint entre deux planches, les cernes du dessus. */
+type TonsDeLAcajou = { bois: string; fil: string; reflet: string; joint: string; cerne: string };
+
+/**
+ * De l'acajou (le Forum des débats, EMC 3e ; proposition de l'artiste technique 3D, à valider par le directeur
+ * artistique) : sur le côté, quatre planches debout de quatre pixels, un joint sombre d'un pixel entre elles, le fil du
+ * bois en traits verticaux d'un pixel, interrompus, tirés d'un hachage, et un reflet ciré d'un pixel au bord gauche de
+ * chaque planche ; sur le dessus, le bout des planches, des cernes en arcs. Ses planches debout le séparent des planches
+ * (claires, couchées), du lambris (brun, couché) et du bambou (des cannes et leurs nœuds).
+ */
+function acajou(t: TonsDeLAcajou, face: 'top' | 'side'): Painter {
+  const [bois, fil, reflet, joint, cerne] = [t.bois, t.fil, t.reflet, t.joint, t.cerne].map(hexToRgb);
+  return (x, y) => {
+    const u = x % 4;
+    if (u === 3) return joint;
+    if (face === 'top') return (y + u * u) % 5 === 0 ? cerne : bois;
+    if (u === 0) return reflet;
+    return hacher(x, y >> 1) < 220 ? fil : bois;
+  };
+}
+
+/** Les tons du laurier : le fond des feuilles, la feuille, sa nervure claire, la tige. */
+type TonsDuLaurier = { fond: string; feuille: string; nervure: string; tige: string };
+
+/**
+ * Du laurier (le Bosquet des sages, latin-grec 3e ; proposition de l'artiste technique 3D, à valider par le directeur
+ * artistique) : des rameaux en biais, tous les huit pixels, leur tige d'un pixel ; de chaque côté de la tige, des
+ * feuilles longues et pointues de trois pixels, deux à deux, leur nervure plus claire au milieu ; entre les rameaux, le
+ * vert sombre du fond. Le même dessin dessus et sur les côtés. Ses feuilles en épi le séparent du feuillage des arbres
+ * (des touffes) et de la mousse (unie).
+ */
+function laurier(t: TonsDuLaurier): Painter {
+  const [fond, feuille, nervure, tige] = [t.fond, t.feuille, t.nervure, t.tige].map(hexToRgb);
+  return (x, y) => {
+    // La distance à la tige du rameau, en biais (x + y), et la place le long de la tige (x − y).
+    const d = (((x + y) % 8) + 8) % 8;
+    const l = (((x - y) % 6) + 6) % 6;
+    if (d === 0) return tige;
+    if ((d === 1 || d === 7) && l !== 5) return l === 2 ? nervure : feuille;
+    if ((d === 2 || d === 6) && (l === 1 || l === 2 || l === 3)) return feuille;
+    return fond;
   };
 }
 
@@ -1105,6 +1211,26 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
   tuf: {
     top: tuf({ pierre: '#d6b4a0', clair: '#e2c4b2', pore: '#6e5048', bord: '#e8d2c4' }),
     side: tuf({ pierre: '#b08e7c', clair: '#bf9e8c', pore: '#5a423a', bord: '#c8a898' }),
+  },
+  // Pavé (la Porte des libertés, EMC 4e) : des pavés de granit gris bleuté en rangs décalés, joints de sable sombre.
+  pave: {
+    top: pave({ granit: '#8f99a3', autre: '#838d97', reflet: '#aeb6be', ombre: '#6c7680', joint: '#4e4a44' }),
+    side: pave({ granit: '#717b86', autre: '#67717c', reflet: '#8e98a2', ombre: '#56606a', joint: '#3e3a36' }),
+  },
+  // Fresque (la Colonnade des cités, latin-grec 4e) : la frise ocre, le panneau rouge cerné de crème, un feston vert.
+  fresque: {
+    top: fresque({ frise: '#d6a84a', point: '#6a4a2a', filet: '#eadcc0', panneau: '#a94a3e', grain: '#dccdae', guirlande: '#5e7a3e', bas: '#3c302c' }, 'top'),
+    side: fresque({ frise: '#d6a84a', point: '#6a4a2a', filet: '#eadcc0', panneau: '#a94a3e', grain: '#9a4036', guirlande: '#5e7a3e', bas: '#3c302c' }, 'side'),
+  },
+  // Acajou (le Forum des débats, EMC 3e) : des planches debout d'un bois rouge, leur fil, un reflet ciré.
+  acajou: {
+    top: acajou({ bois: '#8a4632', fil: '#74382a', reflet: '#a85e44', joint: '#4a2018', cerne: '#6c3022' }, 'top'),
+    side: acajou({ bois: '#6c3022', fil: '#5a2618', reflet: '#8a4632', joint: '#3a1610', cerne: '#5a2618' }, 'side'),
+  },
+  // Laurier (le Bosquet des sages, latin-grec 3e) : des rameaux en biais, leurs feuilles longues deux à deux.
+  laurier: {
+    top: laurier({ fond: '#3e5a30', feuille: '#5a7a40', nervure: '#8aa66a', tige: '#5e4a2c' }),
+    side: laurier({ fond: '#344e2a', feuille: '#46653a', nervure: '#76925a', tige: '#4e3e24' }),
   },
   // Pétale (la Source des espèces, SVT 4e) : des pétales en écailles, un cœur jaune.
   petale: {

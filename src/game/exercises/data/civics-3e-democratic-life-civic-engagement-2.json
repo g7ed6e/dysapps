@@ -1,0 +1,242 @@
+{
+  "id": "civics-3e-democratic-life-civic-engagement-2",
+  "biome": "civics-3e-democratic-life",
+  "type": "civic-engagement",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-2-0",
+      "prompt": "L’engagement de Yanis, 15 ans\nChaque samedi, il aide dans une association.\nIl soigne des animaux abandonnés.\nIl n’est pas payé.",
+      "question": "Quelle forme d’engagement est-ce ?",
+      "spoken": "L’engagement de Yanis, 15 ans. Chaque samedi, il aide dans une association. Il soigne des animaux abandonnés. Il n’est pas payé.",
+      "choices": [
+        "un engagement syndical",
+        "un engagement associatif",
+        "un mandat politique"
+      ],
+      "answer": "un engagement associatif",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "Yanis aide dans une association, sans être payé : c’est un engagement associatif, bénévole, ici pour la cause animale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "S’engager",
+          "lines": [
+            "L’engagement politique : militer dans un parti, être candidat, exercer un mandat.",
+            "L’engagement syndical : un syndicat défend les intérêts des salariés.",
+            "L’engagement associatif : agir avec d’autres pour une cause, souvent bénévolement.",
+            "S’engager dans les institutions : l’armée, la police, la justice, l’éducation.",
+            "Au collège : délégués, conseil de la vie collégienne, conseil d’administration.",
+            "Manifester : une liberté, déclarée à l’avance aux autorités."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-2-1",
+      "prompt": "Un syndicat défend les intérêts des …",
+      "spoken": "Un syndicat défend les intérêts des  (mot manquant) ",
+      "choices": [
+        "députés",
+        "journalistes",
+        "salariés"
+      ],
+      "answer": "salariés",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Un syndicat défend les intérêts des salariés : salaires, conditions de travail. S’y engager, c’est l’engagement syndical.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "S’engager",
+          "lines": [
+            "L’engagement politique : militer dans un parti, être candidat, exercer un mandat.",
+            "L’engagement syndical : un syndicat défend les intérêts des salariés.",
+            "L’engagement associatif : agir avec d’autres pour une cause, souvent bénévolement.",
+            "S’engager dans les institutions : l’armée, la police, la justice, l’éducation.",
+            "Au collège : délégués, conseil de la vie collégienne, conseil d’administration.",
+            "Manifester : une liberté, déclarée à l’avance aux autorités."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-2-2",
+      "prompt": "Au collège\nLes délégués élisent des représentants des élèves.\nCes élèves siègent au conseil d’administration.\nIls votent avec les adultes sur la vie du collège.",
+      "question": "Que montre ce document ?",
+      "spoken": "Au collège. Les délégués élisent des représentants des élèves. Ces élèves siègent au conseil d’administration. Ils votent avec les adultes sur la vie du collège.",
+      "choices": [
+        "les élèves participent aux décisions du collège",
+        "seuls les adultes décident au collège",
+        "les délégués dirigent le collège"
+      ],
+      "answer": "les élèves participent aux décisions du collège",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Des élèves élus votent au conseil d’administration : ils participent aux décisions. C’est la démocratie scolaire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "S’engager",
+          "lines": [
+            "L’engagement politique : militer dans un parti, être candidat, exercer un mandat.",
+            "L’engagement syndical : un syndicat défend les intérêts des salariés.",
+            "L’engagement associatif : agir avec d’autres pour une cause, souvent bénévolement.",
+            "S’engager dans les institutions : l’armée, la police, la justice, l’éducation.",
+            "Au collège : délégués, conseil de la vie collégienne, conseil d’administration.",
+            "Manifester : une liberté, déclarée à l’avance aux autorités."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-2-3",
+      "prompt": "Pour une manifestation sur la voie publique, les organisateurs font une déclaration … aux autorités.",
+      "spoken": "Pour une manifestation sur la voie publique, les organisateurs font une déclaration  (mot manquant)  aux autorités.",
+      "choices": [
+        "secrète",
+        "préalable",
+        "facultative"
+      ],
+      "answer": "préalable",
+      "hint": "Relis la dernière ligne du rappel : avant, ou après ?",
+      "explanation": "Une manifestation sur la voie publique se déclare à l’avance : c’est une déclaration préalable. Manifester reste une liberté.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "S’engager",
+          "lines": [
+            "L’engagement politique : militer dans un parti, être candidat, exercer un mandat.",
+            "L’engagement syndical : un syndicat défend les intérêts des salariés.",
+            "L’engagement associatif : agir avec d’autres pour une cause, souvent bénévolement.",
+            "S’engager dans les institutions : l’armée, la police, la justice, l’éducation.",
+            "Au collège : délégués, conseil de la vie collégienne, conseil d’administration.",
+            "Manifester : une liberté, déclarée à l’avance aux autorités."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-2-4",
+      "prompt": "Trois métiers au service de tous\nGendarme.\nJuge.\nProfesseur.",
+      "question": "Où ces personnes s’engagent-elles ?",
+      "spoken": "Trois métiers au service de tous. Gendarme. Juge. Professeur.",
+      "choices": [
+        "dans un parti politique",
+        "dans une entreprise privée",
+        "dans les institutions de l’État"
+      ],
+      "answer": "dans les institutions de l’État",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Gendarme, juge, professeur : ces métiers servent l’État et tous les citoyens. C’est un engagement dans les institutions.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "S’engager",
+          "lines": [
+            "L’engagement politique : militer dans un parti, être candidat, exercer un mandat.",
+            "L’engagement syndical : un syndicat défend les intérêts des salariés.",
+            "L’engagement associatif : agir avec d’autres pour une cause, souvent bénévolement.",
+            "S’engager dans les institutions : l’armée, la police, la justice, l’éducation.",
+            "Au collège : délégués, conseil de la vie collégienne, conseil d’administration.",
+            "Manifester : une liberté, déclarée à l’avance aux autorités."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-2-5",
+      "prompt": "Un citoyen élu conseiller municipal exerce un …",
+      "spoken": "Un citoyen élu conseiller municipal exerce un  (mot manquant) ",
+      "choices": [
+        "mandat",
+        "contrat",
+        "stage"
+      ],
+      "answer": "mandat",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Un élu exerce un mandat : une mission confiée par les électeurs, pour une durée fixée. C’est un engagement politique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "S’engager",
+          "lines": [
+            "L’engagement politique : militer dans un parti, être candidat, exercer un mandat.",
+            "L’engagement syndical : un syndicat défend les intérêts des salariés.",
+            "L’engagement associatif : agir avec d’autres pour une cause, souvent bénévolement.",
+            "S’engager dans les institutions : l’armée, la police, la justice, l’éducation.",
+            "Au collège : délégués, conseil de la vie collégienne, conseil d’administration.",
+            "Manifester : une liberté, déclarée à l’avance aux autorités."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-2-6",
+      "prompt": "Un conseil municipal en séance\nLa séance est publique.\nLes habitants peuvent venir écouter.\nLes décisions sont publiées.",
+      "question": "Pourquoi la séance est-elle publique ?",
+      "spoken": "Un conseil municipal en séance. La séance est publique. Les habitants peuvent venir écouter. Les décisions sont publiées.",
+      "choices": [
+        "pour que le maire décide seul",
+        "pour que les habitants puissent suivre et contrôler les décisions",
+        "pour que les habitants votent à la place des élus"
+      ],
+      "answer": "pour que les habitants puissent suivre et contrôler les décisions",
+      "hint": "Que peuvent faire les habitants qui écoutent et lisent les décisions ?",
+      "explanation": "Les séances publiques permettent aux habitants de suivre et de contrôler ce que décident leurs élus. Ils ne votent pas à leur place.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "S’engager",
+          "lines": [
+            "L’engagement politique : militer dans un parti, être candidat, exercer un mandat.",
+            "L’engagement syndical : un syndicat défend les intérêts des salariés.",
+            "L’engagement associatif : agir avec d’autres pour une cause, souvent bénévolement.",
+            "S’engager dans les institutions : l’armée, la police, la justice, l’éducation.",
+            "Au collège : délégués, conseil de la vie collégienne, conseil d’administration.",
+            "Manifester : une liberté, déclarée à l’avance aux autorités."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-2-7",
+      "prompt": "Voter, s’engager dans une association, manifester : ce sont des façons de participer à la vie …",
+      "spoken": "Voter, s’engager dans une association, manifester : ce sont des façons de participer à la vie  (mot manquant) ",
+      "choices": [
+        "privée",
+        "démocratique",
+        "scolaire"
+      ],
+      "answer": "démocratique",
+      "hint": "Ces gestes concernent-ils seulement soi, ou la vie de tous les citoyens ?",
+      "explanation": "Voter, s’engager, manifester : chaque citoyen fait vivre la démocratie. Elle n’est jamais finie, elle dépend de l’engagement de chacun.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "S’engager",
+          "lines": [
+            "L’engagement politique : militer dans un parti, être candidat, exercer un mandat.",
+            "L’engagement syndical : un syndicat défend les intérêts des salariés.",
+            "L’engagement associatif : agir avec d’autres pour une cause, souvent bénévolement.",
+            "S’engager dans les institutions : l’armée, la police, la justice, l’éducation.",
+            "Au collège : délégués, conseil de la vie collégienne, conseil d’administration.",
+            "Manifester : une liberté, déclarée à l’avance aux autorités."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-3e-democratic-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

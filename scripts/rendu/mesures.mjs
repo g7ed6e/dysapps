@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, gardiens, emc-cinquieme ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, gardiens, emc-cinquieme, emc-quatre-trois ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -1050,6 +1050,48 @@ const CAPTURES = [
     ['-farine-sel', { 'physics-chemistry-5e-matter-universe': 5, 'civics-5e-equality-solidarity': 6 }],
     ['-tuf-bambou', { 'technology-5e-design': 4, 'lca-5e-legends': 3 }],
   ].map(([suffixe, inventaire]) => ({ nom: `emc5-mes-blocs${suffixe}`, vue: 'île', famille: 'emc-cinquieme', ile: 'civics-5e-equality-solidarity', lieu: 'stock', inventaire })),
+  // La Porte des libertés et la Colonnade des cités (4e), le Forum des débats et le Bosquet des sages (3e) (lot EMC et LCA
+  // de 4e et de 3e, famille `emc-quatre-trois`), à retirer une fois le lot fusionné : chacun en plan rapproché, de jour
+  // et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`) et tout construit ; la fiche de son
+  // Gardien, éteint puis rallumé ; sa créature, sa fiche ouverte ; la commande livrée (le panneau d'affichage de Loquet,
+  // le pupitre de Brio). Les îles de latin-grec avec l'option latin (`lca: 'la'`) : sans option, elles n'ont pas de
+  // mission. Puis les quatre défis neufs, sur la tablette et au téléphone en portrait ; « Mes blocs » de chaque archipel
+  // avec ses deux blocs neufs en poche ; et la Carte de chaque archipel tout construit, l'option latin choisie, sur la
+  // tablette, en portrait 800 × 1280 et en OpenDyslexic 32 px, pour les noms des îles.
+  ...[
+    ['emc4', 'porte', 'civics-4e-rights-freedoms', {}],
+    ['emc4', 'colonnade', 'lca-4e-cities', { reglages: { lca: 'la' } }],
+    ['emc3', 'forum', 'civics-3e-democratic-life', {}],
+    ['emc3', 'bosquet', 'lca-3e-ideas', { reglages: { lca: 'la' } }],
+  ].flatMap(([lot, lieu, ile, option]) => [
+    ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+      { nom: `${lot}-${lieu}-avant${suffixe}`, vue: 'île', famille: 'emc-quatre-trois', ile, sansIles: [ile], zoomer: 2, ...option, ...autres },
+      { nom: `${lot}-${lieu}-apres${suffixe}`, vue: 'île', famille: 'emc-quatre-trois', ile, zoomer: 2, ...option, ...autres },
+      { nom: `${lot}-${lieu}-gardien-avant${suffixe}`, vue: 'île', famille: 'emc-quatre-trois', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile }, zoomer: 2, ...option, ...autres },
+      { nom: `${lot}-${lieu}-gardien-apres${suffixe}`, vue: 'île', famille: 'emc-quatre-trois', ile, fiche: { genre: 'gardien', id: ile }, zoomer: 2, ...option, ...autres },
+      { nom: `${lot}-${lieu}-creature${suffixe}`, vue: 'île', famille: 'emc-quatre-trois', ile, fiche: { genre: 'creature', id: ile }, zoomer: 2, ...option, ...autres },
+    ]),
+    { nom: `${lot}-${lieu}-defi`, vue: 'défi', famille: 'emc-quatre-trois', ile, debout: ile, ...option },
+    { nom: `${lot}-${lieu}-defi-390x844`, vue: 'défi', famille: 'emc-quatre-trois', ile, debout: ile, taille: { width: 390, height: 844 }, ...option },
+  ]),
+  ...[
+    ['emc4', 'porte', 'civics-4e-rights-freedoms'],
+    ['emc3', 'forum', 'civics-3e-democratic-life'],
+  ].map(([lot, lieu, ile]) => ({ nom: `${lot}-${lieu}-commande`, vue: 'île', famille: 'emc-quatre-trois', ile, posees: 'toutes' })),
+  ...[
+    ['emc4', { 'technology-4e-modeling': 4, 'civics-4e-rights-freedoms': 6, 'lca-4e-cities': 3 }],
+    ['emc3', { 'technology-3e-digital': 4, 'civics-3e-democratic-life': 6, 'lca-3e-ideas': 3 }],
+  ].map(([lot, inventaire]) => ({ nom: `${lot}-mes-blocs`, vue: 'île', famille: 'emc-quatre-trois', ile: Object.keys(inventaire)[1], lieu: 'stock', inventaire, reglages: { lca: 'la' } })),
+  ...[
+    ['emc4', 'civics-4e-rights-freedoms'],
+    ['emc3', 'civics-3e-democratic-life'],
+  ].flatMap(([lot, ile]) =>
+    [
+      { suffixe: '', reglages: { lca: 'la' } },
+      { suffixe: '-800x1280', taille: { width: 800, height: 1280 }, reglages: { lca: 'la' } },
+      { suffixe: '-od32', reglages: { font: 'opendyslexic', fontSize: 32, lca: 'la' } },
+    ].map(({ suffixe, ...autres }) => ({ nom: `${lot}-carte${suffixe}`, vue: 'carte', famille: 'emc-quatre-trois', ile, ...autres })),
+  ),
   // Les neuf îles de sciences des 5e, 4e et 3e (lot SC-3, famille `sciences-college`), à retirer une fois le lot fusionné :
   // chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`) et tout
   // construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la petite

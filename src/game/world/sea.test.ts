@@ -254,7 +254,8 @@ describe('la houle et la grille', () => {
       const g = grilleDeLaMer(b, loin);
       // 6 200 aux Premiers Rivages depuis que la mer couvre tout le cadre de la région (GD-9) ; les îles de sciences (SC-2)
       // tiennent dans le même cadre. Depuis une forme par île (GD-12), l'enveloppe de la mer de chaque archipel : 6 400
-      // aux Îles Brumeuses et aux Anciens Ateliers, 6 900 aux Îles du Ciel (mainteneur, 9 octobre 2026, carte « Relever »).
+      // aux Îles Brumeuses et aux Anciens Ateliers, 6 900 aux Îles du Ciel (mainteneur, 9 octobre 2026, carte « Relever ») ;
+      // depuis la révision de GD-12 (le cadre du 4e élargi vers l'ouest), 7 150 aux Anciens Ateliers.
       expect(trianglesDeLaGrille(g), a).toBeLessThanOrEqual(enveloppeDe('mer', a).triangles);
       let minX = Infinity;
       let maxX = -Infinity;

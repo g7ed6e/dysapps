@@ -46,14 +46,15 @@ import { layoutCache, type Rectangle } from '../placement';
  * Au 4e, depuis ses formes (9 octobre 2026), le cadre approfondi ramène deux clairières du fond dans la vue du port,
  * en partie cachées par des îles : la baleine de 32, 739 nage en 37, 740, celle de 119, 736 en 110, 740 ; la première
  * six cases plus à l'est, en 43, 738, depuis que l'Imprimerie recule d'un pas et le Théâtre avance d'un pas
- * (relecture du 9 octobre 2026 : en 37, 740, cinq points de son rond passaient derrière une île).
+ * (relecture du 9 octobre 2026 : en 37, 740, cinq points de son rond passaient derrière une île). Depuis la Porte des
+ * libertés et la Colonnade des cités (EMC-2, LCA-2), posées au rang du fond, la clairière de 119, 736 n'est plus libre
+ * (la Colonnade y est) : la baleine qui en venait n'a plus à être replacée, une autre clairière, au large, la remplace ;
+ * celle de 43, 738 a deux points de son rond, plus large, derrière une île : elle nage trois cases plus à l'est et deux
+ * plus au fond, en 46, 740.
  */
 export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
   '5e': [{ de: { x: 38, y: 441 }, vers: { x: 57, y: 393 } }],
-  '4e': [
-    { de: { x: 32, y: 739 }, vers: { x: 43, y: 738 } },
-    { de: { x: 119, y: 736 }, vers: { x: 110, y: 740 } },
-  ],
+  '4e': [{ de: { x: 32, y: 739 }, vers: { x: 46, y: 740 } }],
 };
 
 /**

@@ -1,0 +1,240 @@
+{
+  "id": "lca-4e-cities-gr-home-1",
+  "biome": "lca-4e-cities",
+  "type": "gr-home",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-4e-cities-gr-home-1-0",
+      "prompt": "Chez les Grecs, la maison et tous ceux qui y vivent forment l’…",
+      "spoken": "Chez les Grecs, la maison et tous ceux qui y vivent forment l’ (mot manquant) ",
+      "choices": [
+        "oikos",
+        "agora",
+        "andrôn"
+      ],
+      "answer": "oikos",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "L’oikos, c’est la maison et toute la famille, esclaves compris. L’agora est la place publique ; l’andrôn, une salle de la maison.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille à Athènes",
+          "lines": [
+            "L’oikos : la maison et tous ceux qui y vivent, esclaves compris.",
+            "Le père, le kurios, est le chef de la famille.",
+            "La femme d’un citoyen vit surtout à la maison ; elle dirige l’oikos.",
+            "Le gynécée : la partie de la maison réservée aux femmes.",
+            "L’andrôn : la salle où le maître reçoit ses invités, pour le banquet.",
+            "Le banquet se dit en grec sumposion : « boire ensemble »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-1-1",
+      "prompt": "La partie de la maison réservée aux femmes s’appelle le …",
+      "spoken": "La partie de la maison réservée aux femmes s’appelle le  (mot manquant) ",
+      "choices": [
+        "andrôn",
+        "gynécée",
+        "péristyle"
+      ],
+      "answer": "gynécée",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Le gynécée est la partie des femmes ; gunê veut dire la femme, comme dans gynécologue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille à Athènes",
+          "lines": [
+            "L’oikos : la maison et tous ceux qui y vivent, esclaves compris.",
+            "Le père, le kurios, est le chef de la famille.",
+            "La femme d’un citoyen vit surtout à la maison ; elle dirige l’oikos.",
+            "Le gynécée : la partie de la maison réservée aux femmes.",
+            "L’andrôn : la salle où le maître reçoit ses invités, pour le banquet.",
+            "Le banquet se dit en grec sumposion : « boire ensemble »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-1-2",
+      "prompt": "Le banquet\nLe soir, le maître reçoit ses amis dans l’andrôn.\nIls mangent allongés, puis boivent et discutent.\nLes femmes de la famille n’y sont pas invitées.",
+      "question": "Qui participe au banquet ?",
+      "spoken": "Le banquet. Le soir, le maître reçoit ses amis dans l’andrôn. Ils mangent allongés, puis boivent et discutent. Les femmes de la famille n’y sont pas invitées.",
+      "choices": [
+        "toute la famille",
+        "les femmes seulement",
+        "le maître et ses amis"
+      ],
+      "answer": "le maître et ses amis",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "Le maître reçoit ses amis, des hommes, dans l’andrôn. Le banquet grec est un moment de discussion ; le philosophe Platon en a fait un livre, Le Banquet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille à Athènes",
+          "lines": [
+            "L’oikos : la maison et tous ceux qui y vivent, esclaves compris.",
+            "Le père, le kurios, est le chef de la famille.",
+            "La femme d’un citoyen vit surtout à la maison ; elle dirige l’oikos.",
+            "Le gynécée : la partie de la maison réservée aux femmes.",
+            "L’andrôn : la salle où le maître reçoit ses invités, pour le banquet.",
+            "Le banquet se dit en grec sumposion : « boire ensemble »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-1-3",
+      "prompt": "Un « symposium » est une réunion où l’on discute. Le mot vient du grec sumposion, qui veut dire …",
+      "spoken": "Un symposium est une réunion où l’on discute. Le mot vient du grec summpossionn, qui veut dire (mot manquant)",
+      "choices": [
+        "manger ensemble",
+        "boire ensemble",
+        "parler ensemble"
+      ],
+      "answer": "boire ensemble",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Sumposion, boire ensemble : c’est le banquet grec, où l’on boit en discutant. Aujourd’hui, un symposium est une réunion de spécialistes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille à Athènes",
+          "lines": [
+            "L’oikos : la maison et tous ceux qui y vivent, esclaves compris.",
+            "Le père, le kurios, est le chef de la famille.",
+            "La femme d’un citoyen vit surtout à la maison ; elle dirige l’oikos.",
+            "Le gynécée : la partie de la maison réservée aux femmes.",
+            "L’andrôn : la salle où le maître reçoit ses invités, pour le banquet.",
+            "Le banquet se dit en grec sumposion : « boire ensemble »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-1-4",
+      "prompt": "À Athènes, le chef de la famille est …",
+      "spoken": "À Athènes, le chef de la famille est  (mot manquant) ",
+      "choices": [
+        "le père",
+        "la mère",
+        "le fils aîné"
+      ],
+      "answer": "le père",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le père, le kurios, est le chef de l’oikos : il décide pour sa femme, ses enfants et ses esclaves, comme le pater familias à Rome.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille à Athènes",
+          "lines": [
+            "L’oikos : la maison et tous ceux qui y vivent, esclaves compris.",
+            "Le père, le kurios, est le chef de la famille.",
+            "La femme d’un citoyen vit surtout à la maison ; elle dirige l’oikos.",
+            "Le gynécée : la partie de la maison réservée aux femmes.",
+            "L’andrôn : la salle où le maître reçoit ses invités, pour le banquet.",
+            "Le banquet se dit en grec sumposion : « boire ensemble »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-1-5",
+      "prompt": "La femme d’un citoyen athénien\nElle sort peu, sauf pour les fêtes religieuses.\nElle dirige les esclaves et les réserves de la maison.\nElle ne vote pas.",
+      "question": "Que dirige-t-elle ?",
+      "spoken": "La femme d’un citoyen athénien. Elle sort peu, sauf pour les fêtes religieuses. Elle dirige les esclaves et les réserves de la maison. Elle ne vote pas.",
+      "choices": [
+        "l’assemblée",
+        "la maison",
+        "l’armée"
+      ],
+      "answer": "la maison",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "La femme d’un citoyen dirige la maison : les réserves, le travail des esclaves, les jeunes enfants. Elle n’a aucun droit politique : elle ne vote pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille à Athènes",
+          "lines": [
+            "L’oikos : la maison et tous ceux qui y vivent, esclaves compris.",
+            "Le père, le kurios, est le chef de la famille.",
+            "La femme d’un citoyen vit surtout à la maison ; elle dirige l’oikos.",
+            "Le gynécée : la partie de la maison réservée aux femmes.",
+            "L’andrôn : la salle où le maître reçoit ses invités, pour le banquet.",
+            "Le banquet se dit en grec sumposion : « boire ensemble »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-1-6",
+      "prompt": "Le mot « économie » vient du grec oikos, qui veut dire …",
+      "spoken": "Le mot économie vient du grec oïkoss, qui veut dire (mot manquant)",
+      "choices": [
+        "la monnaie",
+        "le marché",
+        "la maison"
+      ],
+      "answer": "la maison",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "oikos (la maison) et nomos (la règle) : l’économie, c’était d’abord bien gérer sa maison.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille à Athènes",
+          "lines": [
+            "L’oikos : la maison et tous ceux qui y vivent, esclaves compris.",
+            "Le père, le kurios, est le chef de la famille.",
+            "La femme d’un citoyen vit surtout à la maison ; elle dirige l’oikos.",
+            "Le gynécée : la partie de la maison réservée aux femmes.",
+            "L’andrôn : la salle où le maître reçoit ses invités, pour le banquet.",
+            "Le banquet se dit en grec sumposion : « boire ensemble »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-1-7",
+      "prompt": "La salle où le maître reçoit ses invités s’appelle l’…",
+      "spoken": "La salle où le maître reçoit ses invités s’appelle l’ (mot manquant) ",
+      "choices": [
+        "oikos",
+        "gynécée",
+        "andrôn"
+      ],
+      "answer": "andrôn",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "L’andrôn est la salle des hommes (anêr, andros : l’homme) : on y reçoit les invités. Le mot androïde, un robot à forme humaine, a la même racine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille à Athènes",
+          "lines": [
+            "L’oikos : la maison et tous ceux qui y vivent, esclaves compris.",
+            "Le père, le kurios, est le chef de la famille.",
+            "La femme d’un citoyen vit surtout à la maison ; elle dirige l’oikos.",
+            "Le gynécée : la partie de la maison réservée aux femmes.",
+            "L’andrôn : la salle où le maître reçoit ses invités, pour le banquet.",
+            "Le banquet se dit en grec sumposion : « boire ensemble »."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-4e-cities",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

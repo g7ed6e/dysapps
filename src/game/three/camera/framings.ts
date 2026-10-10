@@ -1,14 +1,14 @@
 // Les cadrages de la caméra : les vues (île, suivi, Carte, voyage), le cadrage de la Carte selon la place libre et la
 // destination, celui de la traversée, et le décalage qui vise un point au-dessus du sol.
 import * as THREE from 'three';
-import { bornesDansLeMonde, bornesDesLieux, type CadreDeCases, ETAGES_DE_LA_BORNE, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, islandCenter, terresDe, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
+import { bornesDansLeMonde, bornesDesLieux, type CadreDeCases, ETAGES_DE_LA_BORNE, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, islandCenter, terresDe, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, VUE_DE_LA_CARTE, worldBounds } from '../../world/terrain';
 import { type PlaceLue, type Rect, RESERVE_DU_BAS } from '../../freeSpace';
 import { BULLE, SIGNE } from '../../world/affordance';
 import { PLAQUE } from '../signs';
 import type { LabelBox } from '../../world/labelLayout';
 import type { BiomeId } from '../../biomes';
 import type { ArchipelagoId } from '../../world/archipelago';
-import { mapOf } from '../../world/map';
+import { islandDef, landBox, mapOf } from '../../world/map';
 
 /** Direction de la caméra (x, y de la grille) et hauteur relative : vue de trois quarts, côté visage des créatures. */
 export const VIEW = { dx: 0.3, dy: -0.95, up: 0.42 };
@@ -27,7 +27,7 @@ export const FOLLOW_MAX = 64;
 const MARGE_DE_LA_TRAVERSEE = 8;
 
 /** La Carte : presque à la verticale, le même nord ; la distance se règle sur la place libre (`cadrageDeLaCarte`). */
-const MAP_VIEW = { dx: 0.03, dy: -0.4, up: 1 };
+const MAP_VIEW = VUE_DE_LA_CARTE;
 
 const MAP_FOV = 40;
 
@@ -146,6 +146,18 @@ export function cadrageDeLaCarte(
   const b = bonhomme && bonhomme !== destination ? islandCenter(bonhomme) : null;
   const ileDuBonhomme = b ? new THREE.Vector3(b.x + 0.5, b.z, b.y + 0.5) : null;
   let avecLeBonhomme = false;
+  /**
+   * En portrait, les coins de la terre de l'île du bonhomme (`landBox`), au sol : elle entre dans la place par sa terre
+   * entière, plutôt que par son milieu et ce qui entoure une destination, trop large pour tenir avec elle sur l'écran
+   * debout (DA, captures emc-4e-3e-1 : la Porte des libertés, au flanc ouest du 4e, coupée par le bord gauche).
+   */
+  const terreDuBonhomme =
+    b && bonhomme && h > w
+      ? (() => {
+          const t = landBox(islandDef(bonhomme));
+          return [t.x0, t.x1].flatMap((x) => [t.y0, t.y1].map((y) => new THREE.Vector3(x, b.z, y)));
+        })()
+      : null;
   /** La destination et ce qui l'entoure comptent dans ce qui doit tenir (voir « Modifier le plan », plus bas). */
   let withDestination = true;
   const sol = dest?.y ?? altitude;
@@ -175,12 +187,18 @@ export function cadrageDeLaCarte(
         const q = ecran(p);
         ajouter(q.x, q.y);
       }
-    for (const p of [withDestination ? dest : null, avecLeBonhomme ? ileDuBonhomme : null]) {
+    for (const p of [withDestination ? dest : null, avecLeBonhomme && !terreDuBonhomme ? ileDuBonhomme : null]) {
       if (!p) continue;
       const q = ecran(p);
       ajouter(q.x - A.cote, q.y - A.haut);
       ajouter(q.x + A.cote, q.y + A.bas);
     }
+    // En portrait, l'île du bonhomme par sa terre (voir `terreDuBonhommeDehors`).
+    if (avecLeBonhomme && terreDuBonhomme)
+      for (const p of terreDuBonhomme) {
+        const q = ecran(p);
+        ajouter(q.x, q.y);
+      }
     return r;
   };
   /** À l'écran, les lieux d'aujourd'hui (îlots et port compris) et leurs noms (`HAUTEUR_DES_NOMS` au-dessus de chaque île). */
@@ -296,7 +314,18 @@ export function cadrageDeLaCarte(
     const ey = pousser(r.y0, r.y1, libre.y0 + M, libre.y1 - M);
     v.copy(ileDuBonhomme).project(cam);
     const q = { x: ((v.x + 1) / 2) * w, y: ((1 - v.y) / 2) * h };
-    const horsDeLaPlace = q.x < libre.x0 || q.x > libre.x1 || q.y < libre.y0 || q.y > libre.y1;
+    // En portrait, l'île du bonhomme compte hors de la place dès que sa terre en déborde, même son milieu dedans : au 4e,
+    // en 800 × 1280, la Porte des libertés, au flanc ouest, était coupée par le bord gauche, et son nom se posait à
+    // mi-chemin d'elle et du Jardin des heures (DA, captures emc-4e-3e-1). En paysage, son milieu seul, comme avant.
+    const terreDuBonhommeDehors = () =>
+      terreDuBonhomme !== null &&
+      terreDuBonhomme.some((p) => {
+        v.copy(p).project(cam);
+        const px = ((v.x + 1) / 2) * w;
+        const py = ((1 - v.y) / 2) * h;
+        return px < libre.x0 + M || px > libre.x1 - M || py < libre.y0 + M || py > libre.y1 - M;
+      });
+    const horsDeLaPlace = q.x < libre.x0 || q.x > libre.x1 || q.y < libre.y0 || q.y > libre.y1 || terreDuBonhommeDehors();
     avecLeBonhomme = horsDeLaPlace && (ex !== 0 || ey !== 0) && r.x1 - r.x0 <= lw && r.y1 - r.y0 <= lh;
     if (avecLeBonhomme) {
       vise.x = (r.x0 + r.x1) / 2 + ex;
