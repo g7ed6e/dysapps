@@ -287,7 +287,7 @@ export function WorldPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapOpen]);
-  // La Nef amarré au port de l'archipel : un objet à part, qui tangue.
+  // La Nef amarrée au port de l'archipel : un objet à part, qui tangue.
   const vehicle = useMemo(() => vehiclePlacement(a, state.progress, state.world), [a, state.progress, state.world]);
   // Le panneau de l'île ouverte, en plein écran par-dessus le monde : il ne s'ouvre que par son bouton dans la barre,
   // jamais tout seul (ni à l'arrivée sur une île, ni au retour d'un exercice ou de la Carte).

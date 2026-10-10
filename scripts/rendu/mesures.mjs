@@ -205,10 +205,10 @@ const CAPTURES = [
   })),
   // La Nef (GD-15, famille `nef`, à retirer une fois le lot fusionné) : le voilier fini au port du 6e, sa fiche ouverte ;
   // au Marché, le voilier avec les pièces du dirigeable en fantôme, puis le dirigeable fini ; l'aile se voit avec `fusee`.
-  { nom: 'nef-voilier', vue: 'île', famille: 'nef', ile: 'maths-6e-calculation', sansIles: { classe: '5e' }, sansPonts: ['passage-5e', 'passage-4e', 'passage-3e'], fiche: { genre: 'navire', port: 'maths-6e-calculation' } },
-  { nom: 'nef-dirigeable-vide', vue: 'île', famille: 'nef', ile: 'maths-5e-proportionality', partie: 'ballon-vide', sansIles: { classe: '4e' }, sansPonts: ['passage-4e', 'passage-3e'], fiche: { genre: 'navire', port: 'maths-5e-proportionality' } },
-  { nom: 'nef-dirigeable', vue: 'île', famille: 'nef', ile: 'maths-5e-proportionality', sansIles: { classe: '4e' }, sansPonts: ['passage-4e', 'passage-3e'] },
-  { nom: 'nef-archipel', vue: 'archipel', famille: 'nef', ile: 'maths-5e-proportionality', sansIles: { classe: '4e' }, sansPonts: ['passage-4e', 'passage-3e'] },
+  { nom: 'nef-voilier', vue: 'île', famille: 'nef', ile: 'maths-6e-calculation', sansIles: 'autres-classes', sansPonts: ['passage-5e', 'passage-4e', 'passage-3e'], fiche: { genre: 'navire', port: 'maths-6e-calculation' } },
+  { nom: 'nef-dirigeable-vide', vue: 'île', famille: 'nef', ile: 'maths-5e-proportionality', partie: 'ballon-vide', sansIles: { classe: ['4e', '3e'] }, sansPonts: ['passage-4e', 'passage-3e'], fiche: { genre: 'navire', port: 'maths-5e-proportionality' } },
+  { nom: 'nef-dirigeable', vue: 'île', famille: 'nef', ile: 'maths-5e-proportionality', sansIles: { classe: ['4e', '3e'] }, sansPonts: ['passage-4e', 'passage-3e'] },
+  { nom: 'nef-archipel', vue: 'archipel', famille: 'nef', ile: 'maths-5e-proportionality', sansIles: { classe: ['4e', '3e'] }, sansPonts: ['passage-4e', 'passage-3e'] },
   // Les réacteurs du Bloc-Navire sous la coque (famille `fusee`, à retirer une fois le lot fusionné) : le navire tout
   // construit à quai dans les Îles du Ciel, de jour et de nuit, puis aux Anciens Ateliers, où il plane au-dessus de l'eau
   // le temps de poser ses réacteurs (sans le voyage vers le 3e ni les îles du 3e : le navire y reste) ; sa fiche ouverte
@@ -1710,7 +1710,7 @@ async function scenes() {
                 c.sansIles === 'autres-classes'
                   ? BIOMES.filter((b) => b.classe !== classe(c.ile)).map((b) => b.id)
                   : c.sansIles?.classe
-                    ? BIOMES.filter((b) => b.classe === c.sansIles.classe).map((b) => b.id)
+                    ? BIOMES.filter((b) => [c.sansIles.classe].flat().includes(b.classe)).map((b) => b.id)
                     : c.sansIles,
               debout: c.debout,
               reglages: c.reglages,
