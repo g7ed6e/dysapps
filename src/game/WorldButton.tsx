@@ -2,13 +2,14 @@
 // d'écran, écrit dessous en grand texte quand `mot` est demandé, et montré dans une petite étiquette quand le doigt
 // reste posé une demi-seconde (consultant UX UI et référent dys, 10 octobre 2026 : une icône seule ne se reconnaît pas
 // toujours). Un bouton « vide » (rien à reprendre, aucune révision) reste à sa place, délavé : le toucher dit pourquoi,
-// dans la même étiquette, au lieu de ne rien faire.
+// dans la même étiquette, au lieu de ne rien faire. Au clavier et à la souris, l'étiquette vient au focus et au survol
+// (avis du référent dys) ; elle reste cinq secondes, le temps de la lire.
 import { useEffect, useRef, useState, type ReactNode, type Ref } from 'react';
 import { Icon, type AnyIconName } from '../components/Icon';
 
 /** Le temps du doigt posé avant que le nom ne s'affiche, et le temps qu'il reste affiché. */
 const APPUI_LONG_MS = 500;
-const ETIQUETTE_MS = 2200;
+const ETIQUETTE_MS = 5000;
 
 interface Props {
   icon: AnyIconName;
@@ -47,6 +48,10 @@ export function WorldButton({ icon, name, word, empty, count, className, pressed
     cacher.current = window.setTimeout(() => setEtiquette(null), ETIQUETTE_MS);
   };
   const lever = () => window.clearTimeout(appui.current);
+  const effacer = () => {
+    window.clearTimeout(cacher.current);
+    setEtiquette(null);
+  };
   return (
     <span className={`world-button${className ? ` ${className}` : ''}`}>
       <button
@@ -67,7 +72,17 @@ export function WorldButton({ icon, name, word, empty, count, className, pressed
           }, APPUI_LONG_MS);
         }}
         onPointerUp={lever}
-        onPointerLeave={lever}
+        onPointerEnter={(e) => {
+          if (e.pointerType === 'mouse') montrer(name);
+        }}
+        onPointerLeave={(e) => {
+          lever();
+          if (e.pointerType === 'mouse') effacer();
+        }}
+        onFocus={(e) => {
+          if (e.currentTarget.matches(':focus-visible')) montrer(name);
+        }}
+        onBlur={effacer}
         onPointerCancel={lever}
         // Le doigt posé longtemps ne fait que montrer le nom : il n'ouvre rien en se levant.
         onContextMenu={(e) => e.preventDefault()}

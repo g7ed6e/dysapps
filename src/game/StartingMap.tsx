@@ -35,10 +35,10 @@ export function StartingMapButton() {
     setRevenue(Boolean(apres));
   };
   const vide =
-    retour === 'bloquee' ? 'des lieux réunis bloquent le retour, déplace-les avec « Modifier le plan »' : retour === 'pareille' ? (revenue ? 'c’est fait' : 'les lieux sont à leur place de départ') : undefined;
+    retour === 'bloquee' ? 'des lieux réunis bloquent le retour' : retour === 'pareille' ? (revenue ? 'c’est fait' : 'les lieux sont à leur place de départ') : undefined;
   return (
     <>
-      <WorldButton icon="history" name={STARTING_MAP} className="world-bar-depart" empty={vide} pressed={confirmer} controls={confirmer ? 'confirmer-depart' : undefined} onClick={() => setConfirmer(!confirmer)}>
+      <WorldButton icon="defaire" name={STARTING_MAP} className="world-bar-depart" empty={vide} pressed={confirmer} controls={confirmer ? 'confirmer-depart' : undefined} onClick={() => setConfirmer(!confirmer)}>
         <Icon name="map" size={16} className="world-bar-depart-carte" />
       </WorldButton>
       {confirmer && retour === 'possible' && (
@@ -52,7 +52,7 @@ export function StartingMapButton() {
           </p>
           <div className="world-confirm-buttons">
             <button type="button" className="button primary" aria-label="Revenir à la carte de départ" onClick={revenir}>
-              <Icon name="history" /> Revenir
+              <Icon name="defaire" /> Revenir
             </button>
             <IconButton icone="close" nom="Non, garder ma carte" mot="Non" onClick={() => setConfirmer(false)} />
           </div>

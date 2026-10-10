@@ -19,7 +19,7 @@ it('le doigt posé une demi-seconde montre le nom du bouton, sans rien ouvrir en
   fireEvent.pointerUp(bouton);
   fireEvent.click(bouton);
   expect(ouvrir).toHaveBeenCalledTimes(1);
-  act(() => vi.advanceTimersByTime(2200));
+  act(() => vi.advanceTimersByTime(5000));
   expect(screen.getByRole('status')).toBeEmptyDOMElement();
 });
 
@@ -31,4 +31,13 @@ it('un bouton vide reste à sa place, délavé : son toucher dit pourquoi au lie
   fireEvent.click(bouton);
   expect(reprendre).not.toHaveBeenCalled();
   expect(screen.getByRole('status')).toHaveTextContent('pas encore de mission');
+});
+
+it('au survol de la souris, le nom s’affiche, et s’efface quand elle part', () => {
+  render(<WorldButton icon="trophy" name="Salle des trophées" onClick={() => {}} />);
+  const bouton = screen.getByRole('button', { name: 'Salle des trophées' });
+  fireEvent.pointerEnter(bouton, { pointerType: 'mouse' });
+  expect(screen.getByRole('status')).toHaveTextContent('Salle des trophées');
+  fireEvent.pointerLeave(bouton, { pointerType: 'mouse' });
+  expect(screen.getByRole('status')).toBeEmptyDOMElement();
 });
