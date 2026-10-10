@@ -14,7 +14,7 @@
 6e-tour-gardien-chouette-de-verre;0.12;0
 6e-vallee-gardien-cerf-des-sous-bois;0.12;0
 6e-volcan-gardien-dragon-de-cendre;0.12;0
-6e-baie-creature-robin;-;0
+6e-baie-creature-robin;-;0;0 queue=sol aire=oui bras=non
 6e-carriere-creature-rouxel;-;0;1 bras=R leve=R teinte=L
 6e-ferme-creature-bloquette;-;0;3 bras=R leve=R
 6e-foret-creature-mousso;-;0;1 cou=0.72 queue=non
