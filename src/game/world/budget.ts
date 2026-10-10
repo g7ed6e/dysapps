@@ -275,9 +275,9 @@ export const ENVELOPPES: Record<
   // à 6 400 aux Îles Brumeuses et aux Anciens Ateliers, à 6 900 aux Îles du Ciel (mainteneur, 9 octobre 2026, carte
   // « Relever »). Celles des Anciens Ateliers (6 400) et des Îles du Ciel (6 900) sont relevées d'avance, pour les
   // pull requests de leurs formes, qui approfondiront leurs cadres : sur main, leur mer tient encore sous 5 850.
-  // Révision de GD-12 (les îles EMC et d'option du 4e au flanc ouest, en attente du mot du mainteneur) : le cadre des
-  // Anciens Ateliers s'élargit de 36 cases vers l'ouest ; leur mer mesure 7 150 triangles (6 160 avant). Proposition de
-  // l'artiste technique 3D, à valider par le mainteneur : 7 150.
+  // Révision de GD-12 (les îles EMC et d'option du 4e au flanc ouest) : le cadre des
+  // Anciens Ateliers s'élargit de 36 cases vers l'ouest ; leur mer mesure 7 150 triangles (6 160 avant). Enveloppe
+  // validée par le mainteneur le 10 octobre 2026 : 7 150.
   mer: {
     lot: 'R4b',
     nom: 'Mer',
