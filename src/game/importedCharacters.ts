@@ -7,7 +7,7 @@ import { lireGlb } from './world/characters/imported/glb';
 import { enregistrer, FICHIER, ILES_IMPORTEES, modeleImporte, nomDuModele, type Genre, type Niveau } from './world/characters/imported/models';
 
 /** L'adresse de chaque fichier, par son chemin dans le dépôt (« …/modeles/<nom>/final-200.glb »). */
-const ADRESSES = import.meta.glob('../../docs/univers/archipeo/personnages/modeles/{6e-*,5e-*,4e-*}/final-*.glb', {
+const ADRESSES = import.meta.glob('../../docs/univers/archipeo/personnages/modeles/{6e-*,5e-*,4e-*,3e-*}/final-*.glb', {
   query: '?url',
   import: 'default',
   eager: true,

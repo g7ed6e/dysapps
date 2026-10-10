@@ -87,3 +87,31 @@
 4e-source-creature-nectar;-;0;0 bras=non;927e6b>c09060 393026>6a5040 507059>78b070 cfcdc8>ece8de;Nectar : le livre et la poitrine en bois clair, le bout des ailes, le bec et les pattes en brun sombre chaud, le plumage vert, le tablier de lin.
 4e-theatre-creature-puck;-;0;3;6a936e>8cbc90 162019>76827c c7c3c0>d8ccac be9848>e2c46a;Puck : la peau vert d’eau clair, le pantalon, le béret et les chaussures gris ardoise, le gilet de lin, la clochette de laiton.
 4e-vigie-creature-radar;-;0;0 queue=sol;946c4a>c89a68 443222>8a6444 c4b39b>ece4d0 b09662>e0c08a;Radar : le pelage beige roux, le masque, le dos et le bout de la queue plus sombres, l’écharpe de lin, le ventre et la longue-vue sable clair.
+3e-belvedere-gardien-sphinx-de-marbre;0.12;0
+3e-bosquet-gardien-centaure-d-argile;0.12;0
+3e-chateau-gardien-dragon-gallois;0.12;0
+3e-donnees-gardien-comptable-des-etoiles;0.12;0
+3e-forum-gardien-etourneau-d-etain;0.12;0
+3e-kiosque-gardien-colombe-d-albatre;0.12;0
+3e-phare-gardien-dragon-de-lumiere;0.12;0
+3e-plateau-gardien-cerf-de-lauze;0.12;0
+3e-refuge-gardien-papillon-de-cuivre;0.12;0
+3e-ruche-gardien-abeille-de-topaze;0.12;0
+3e-studio-gardien-grande-antenne;0.12;0
+3e-textes-gardien-grand-lecteur;0.12;0
+3e-tremplin-gardien-kangourou-de-rubis;0.12;0
+3e-verger-gardien-dauphin-de-turquoise;0.12;0
+3e-belvedere-creature-theo;-;0;3;475360>7e94aa 191b28>3e4450 b3b7b6>e2e4de 8b6041>b07a48;Théo : les ailes, le dos et les pattes bleu ardoise clair, le cou et la poitrine gris perle, la huppe, le bout du bec et les doigts en ardoise sombre, le bâton en bois.
+3e-bosquet-creature-stylet;-;0;0;bbad8d>d8ccac 2c2117>4a4644 8d6e4e>c8885a d5d0c6>ece8de;Stylet : la robe de lin, la tête, la huppe et les mains roux clair, le bec, le bout de la huppe, la queue et les pattes sombres, les bandes blanches des ailes.
+3e-chateau-creature-knight;-;0;0;565658>b4b6ba 986e69>e8a8a0 1b648b>5a8cc8 4e3b2d>a8784a;Knight : le pelage gris clair, la tunique et la bannière bleues, les oreilles, les mains, les pieds et la queue roses, la hampe en bois.
+3e-donnees-creature-stat;-;0;0 bras=non;040607>5a6e9a 1d1c1c>9a9ca0 6c5d3b>d8b25a 838382>ece8de;Stat : la cape bleu nuit éclaircie, la tête, les flancs et les pattes gris clair, la longue-vue de laiton, le ventre et le masque crème.
+3e-forum-creature-brio;-;0;3;100d0e>6e7890 c9cad4>ece8de ed6d11>e8783a 4c4340>6e7890;Brio : le plumage noir et la veste en bleu ardoise clair, le ventre, le masque et le rouleau blancs, le bec et les pattes orange.
+3e-kiosque-creature-memo;-;0;0;d7c6b2>d8ccac 65432d>b07a52 4e3625>5a3c2c 9a816d>b07a52;Mémo : le gilet de lin et le masque clair, le pelage brun clair en une seule zone, les mains, les pieds et le bout de la queue en brun sombre chaud.
+3e-phare-creature-fi;-;0;1;373b40>6a80a8 535152>9a9ca0 c8aa9f>f2dc96 664d26>d8b25a;Fi : le manteau et les jambes bleu ardoise clair, la lanterne en pierre grise, les vitres allumées jaune pâle, le bidon de laiton.
+3e-plateau-creature-jalon;-;0;3 bras=R;6b2c1d>c0604a 4d1d15>9a5040 b58561>d8b080 030201>2e2422;Jalon : le corps rouge brique clair, les pattes, les antennes et les mains d'un ton plus sombre, la ceinture et les bandes du bâton en cuir clair.
+3e-refuge-creature-timbre;-;0;0;281f1b>a08a7c 5a473d>a08a7c e5ddd5>ece8de a78974>e0c8a0;Timbre : le pelage taupe clair en une seule zone, la gorge, le masque et la lettre blancs, le bas du ventre et la sacoche en sable clair.
+3e-ruche-creature-navette;-;0;0;5bd367>9ccf86 c19a74>c09060 3b783a>5a8a50 e4e3d2>ece8cc;Navette : le corps vert tendre, la navette en bois clair, les pieds, le bout de la queue et les yeux en vert sombre, le ventre et l'écharpe crème.
+3e-studio-creature-echo;-;0;0;3f3856>8a82b0 24212c>5a5478 b5b4be>ece8de 0c0b0e>3e3a44;Écho : le corps violet clair, la membrane des ailes et le casque d'un violet plus sombre, le gilet de lin, le micro et les orteils sombres.
+3e-textes-creature-astra;-;0;1;111110>4a4644 40413f>9a9ca0 c6c6c2>ece8de 7a7a76>d8ccac;Astra : la robe et les ailes claires, les plis de la robe en lin, la tête, les bras et le livre gris clair, les jambes et les antennes sombres.
+3e-tremplin-creature-virage;-;0;1 bras=non;3a2e25>9a7458 775f4a>9a7458 0e0a07>9a7458 ac9477>e0c8a0;Virage : la carapace brune en une seule zone, le museau, le ventre, les pattes et la queue en sable clair.
+3e-verger-creature-olive;-;0;1 bras=non;6d6d6a>b4b6ba b3b0a9>ece8de 1f1816>4a4644 434342>b4b6ba;Olive : le pelage gris clair en une seule zone, le tablier, le sac et l'intérieur des oreilles en lin blanc, le nez et les pieds sombres.
