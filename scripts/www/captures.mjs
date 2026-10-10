@@ -119,6 +119,19 @@ const COLLINES = { ...DONE6, game: { ...DONE6.game, world: { ...DONE6.game.world
 
 const FOREST_QUEST = BIOMES.find((b) => b.id === 'french-6e-phonology').exercises[0].id;
 
+/** Au milieu des Premiers Rivages, avec des révisions dues et deux commandes : les accès directs du haut à gauche. */
+const ACCES = {
+  ...MID,
+  game: {
+    ...MID.game,
+    spaced: Object.keys(MID.game.progress)
+      .filter((id) => id.startsWith('french-6e-phonology-') && !id.endsWith('-challenge'))
+      .slice(0, 2)
+      .map((id) => ({ itemId: `${id}:revision`, due: '2000-01-01', stage: 0, streak: 0 })),
+    world: { ...MID.game.world, requests: ['french-6e-phonology-request-1', 'maths-6e-calculation-request-1'] },
+  },
+};
+
 /**
  * name: fichier ; state: partie préparée ; view: vue du monde ; go: adresse ; act: gestes avant la capture ; whale: ce
  * que la baleine a déjà dit ; renommage: l'écran des nouveaux noms des archipels reste à dire (noté dit sinon).
@@ -128,8 +141,8 @@ const SHOTS = [
   // Le menu en page n'existe plus qu'en vue simple ; dans le monde, plus de Menu (10 octobre 2026) : les accès directs.
   { name: 'menu', state: MID, view: 'list', go: '/menu' },
   { name: 'telephone-menu', state: MID, view: 'list', go: '/menu', size: PHONE },
-  { name: 'acces-directs', state: MID, go: '/adventure/french-6e-phonology' },
-  { name: 'commandes-village', state: MID, go: '/adventure/requests' },
+  { name: 'acces-directs', state: ACCES, go: '/adventure/french-6e-phonology', act: fermerLesBandeaux },
+  { name: 'commandes-village', state: ACCES, go: '/adventure/requests', act: fermerLesBandeaux },
   { name: 'village-premiere-visite', go: '/adventure', tutorial: true },
   { name: 'panneau-ile', state: EARLY, go: '/adventure/french-6e-phonology', act: openSheet },
   { name: 'plan-en-cours', state: EARLY, go: '/adventure/french-6e-phonology' },
