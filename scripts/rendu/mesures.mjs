@@ -669,7 +669,7 @@ const CAPTURES = [
     { nom: `personnages-importes-chene-rallume${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
     { nom: `personnages-importes-archipel-recul${suffixe}`, vue: 'archipel', famille: 'personnages-importes', ile: 'maths-6e-calculation', zoomer: -10, ...autres },
   ]),
-  // Les Gardiens de la 5e importés dans Archipéo (famille `gardiens-cinquieme`), à retirer une fois le lot fusionné ; à prendre
+  // Les Gardiens et les créatures de la 5e importés dans Archipéo (famille `gardiens-cinquieme`), à retirer une fois le lot fusionné ; à prendre
   // avec `--rendu archipeo`. Quatre Gardiens éteints sur leur île, la fiche ouverte (le Mammouth sur la glace, le
   // Spectre, l'Hydre, la Diligence) ; l'archipel en recul, tous éteints puis rallumés (leur version de loin).
   ...[
@@ -678,6 +678,16 @@ const CAPTURES = [
     ['french-5e-conjugation', 'hydre'],
     ['lv2-5e-introductions', 'diligence'],
   ].map(([ile, nom]) => ({ nom: `gardiens-5e-${nom}-eteint`, vue: 'île', famille: 'gardiens-cinquieme', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile } })),
+  // Des créatures de la 5e sur l'herbe, leur fiche ouverte : Rabot, Kroa, Sema (le corps contre l'herbe, demandé par le
+  // directeur artistique), Pudding, Lina, Sillon (leur pose).
+  ...[
+    ['technology-5e-design', 'rabot'],
+    ['french-5e-conjugation', 'kroa'],
+    ['french-5e-homophones', 'sema'],
+    ['english-5e-vocabulary', 'pudding'],
+    ['lv2-5e-introductions', 'lina'],
+    ['geography-5e-resources', 'sillon'],
+  ].map(([ile, nom]) => ({ nom: `creatures-5e-${nom}`, vue: 'île', famille: 'gardiens-cinquieme', ile, fiche: { genre: 'creature', id: ile } })),
   { nom: 'gardiens-5e-archipel-recul-eteints', vue: 'archipel', famille: 'gardiens-cinquieme', ile: 'maths-5e-signed-numbers', zoomer: -10, sansIles: { classe: '5e' } },
   { nom: 'gardiens-5e-archipel-recul', vue: 'archipel', famille: 'gardiens-cinquieme', ile: 'maths-5e-signed-numbers', zoomer: -10 },
   { nom: 'histoire-geo-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },

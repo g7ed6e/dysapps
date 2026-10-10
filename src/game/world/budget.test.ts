@@ -227,10 +227,10 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
       }
     });
 
-  // Les personnages importés (6e, Gardiens de la 5e), lus sur le disque comme la vue les charge : au pire, de
+  // Les personnages importés (6e et 5e), lus sur le disque comme la vue les charge : au pire, de
   // près sur l'île qui coûte le plus, de loin ailleurs. (En dernier : une fois chargés, ils remplacent les dessinés
   // en code dans ce fichier.)
-  it('R6 : avec les personnages importés (6e, Gardiens de la 5e), créatures et Gardiens tiennent leur enveloppe aux Premiers Rivages et aux Îles Brumeuses', () => {
+  it('R6 : avec les personnages importés (6e et 5e), créatures et Gardiens tiennent leur enveloppe aux Premiers Rivages et aux Îles Brumeuses', () => {
     chargerLesModelesDuDisque();
     for (const a of ['6e', '5e'] as const)
       for (const p of ['creatures', 'gardiens'] as const) {

@@ -2,7 +2,7 @@
 
 Chaque personnage passe d’une image de concept (ce dossier, `<nom>.webp`) à un modèle 3D brut, puis à un modèle réduit et peint au budget du jeu. Le dépôt garde le modèle retravaillé ; le brut est gardé dans la Bibliothèque du projet (`archipeo/personnages-3d/bruts/<nom>.glb`, décision du mainteneur, 9 octobre 2026), pour ne jamais avoir à refaire un passage : le brut coûte un passage sur TRELLIS.2, pris sur le quota du compte du mainteneur.
 
-Les modèles du 6e et les Gardiens de la 5e sont dans le jeu, dans l’univers Archipéo : de près dans le défi, les fiches et sur l’île où l’on est, de loin ailleurs dans l’archipel (lus par `src/game/world/characters/imported/`, voir [Les fichiers](../../../architecture/fichiers.md)). Le jeu les tourne face à l’élève (un quart de tour par modèle, relevé dans `models.ts`) : le passage dans Blender n’a pas à les tourner. Un dossier sans ses deux fichiers garde le personnage dessiné en code.
+Les modèles du 6e et de la 5e sont dans le jeu, dans l’univers Archipéo : de près dans le défi, les fiches et sur l’île où l’on est, de loin ailleurs dans l’archipel (lus par `src/game/world/characters/imported/`, voir [Les fichiers](../../../architecture/fichiers.md)). Le jeu les tourne face à l’élève (un quart de tour par modèle, relevé dans `models.ts`) : le passage dans Blender n’a pas à les tourner. Un dossier sans ses deux fichiers garde le personnage dessiné en code.
 
 ## Où sont les fichiers
 
@@ -49,6 +49,8 @@ Les Gardiens (coupe du socle en part de la hauteur, triangles des deux versions)
 | Flamant de sel (Saline, 5e) | 0,12 | 1 307 | 172 |
 
 Les créatures (sans socle, rien à couper). Leurs fichiers sont peints en aplats clairs par `aplats.py` (voir plus bas), d’après les couleurs choisies par le directeur artistique le 10 octobre 2026 dans la colonne « aplats » de `reglages.csv`. Écart connu : Robin n’a pas la gorge orange de son concept (aucune de ses quatre couleurs ne la porte) ; elle attend un lot qui touche la géométrie. Les créatures de la 5e sont peintes de même, d’après les couleurs choisies par le directeur artistique le 10 octobre 2026. Écarts connus : chez Sillon, le chapeau de paille est pris dans la zone sombre de la tête ; chez Rabot, la huppe et le tablier partagent un rouille, et le bec est dans le vert du dos ; chez Humus, le bâton est pris dans la peau ; chez Perle, le manche du râteau est pris dans l’orange du bec ; le laiton de la balance de Bazar passe dans le lin. Rabot, Kroa et Sema, au corps vert, sont à juger sur l’herbe une fois dans le jeu.
+
+Les créatures de la 5e ont leur squelette (10 octobre 2026, réglages dans `reglages.csv`). `squelette.py` ne trouve pas de jambes à Vélin, Frimas, Rabot et Kroa (courtes, sous le vêtement ou la queue) : comme Humus, qui n’en a pas, ils respirent et tournent la tête sans marcher. Sillon garde sa faucille au corps (`bras=non`), Pudding est pesé par surface (`aire=oui`) pour que sa veste ne s’étire pas à la marche.
 
 | Créature | 1 500 | 200 |
 | --- | --- | --- |

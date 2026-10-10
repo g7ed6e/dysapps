@@ -38,7 +38,7 @@ const AVEC_CREATURE = ILES_IMPORTEES.filter((id) => nomDuModele('creature', id))
 
 it('les quinze îles du 6e ont leur Gardien et leur créature, les douze de la 5e leur Gardien, de près et de loin', () => {
   expect(ILES_IMPORTEES).toHaveLength(27);
-  expect(AVEC_CREATURE).toHaveLength(15);
+  expect(AVEC_CREATURE).toHaveLength(27);
   for (const id of ILES_IMPORTEES)
     for (const genre of GENRES)
       for (const niveau of NIVEAUX) {
@@ -213,8 +213,15 @@ it('chaque créature est peinte en aplats, de près et de loin : ses couleurs so
 
 it('de près, le corps d’une créature (sa couleur la plus étendue) se détache de l’herbe', () => {
   for (const id of AVEC_CREATURE) {
+    // Étendue = surface : une faucille ou un chapeau sombre fait de mille petits triangles n'est pas le corps.
+    const { teintes, positions: p } = modeleImporte('creature', id, 'pres')!;
     const parts = new Map<number, number>();
-    for (const c of modeleImporte('creature', id, 'pres')!.teintes) parts.set(c, (parts.get(c) ?? 0) + 1);
+    teintes.forEach((c, t) => {
+      const o = t * 9;
+      const [ux, uy, uz] = [p[o + 3] - p[o], p[o + 4] - p[o + 1], p[o + 5] - p[o + 2]];
+      const [vx, vy, vz] = [p[o + 6] - p[o], p[o + 7] - p[o + 1], p[o + 8] - p[o + 2]];
+      parts.set(c, (parts.get(c) ?? 0) + Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx));
+    });
     const corps = [...parts].sort((x, y) => y[1] - x[1])[0][0];
     // L'herbe du 6e a une clarté de 0,36.
     expect(clarte(corps), id).toBeGreaterThan(0.4);

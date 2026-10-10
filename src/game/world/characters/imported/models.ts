@@ -15,6 +15,7 @@ import { SENTINELLE } from '../colors';
 import { NUANCE, type FacettesDePersonnage, type V3 } from '../painted';
 import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, HAUT_DU_SOCLE, HAUTEUR_DE_SENTINELLE, socleSeul } from '../sentinel';
 import { ESPECES_6E } from '../species/6e';
+import { ESPECES_5E } from '../species/5e';
 import { tailleDe, type Espece } from '../template';
 import type { ModeleLu } from './glb';
 
@@ -50,20 +51,20 @@ const SIXIEME: Partial<Record<BiomeId, Ligne>> = {
   'technology-6e-objects': ['hangar', 'automate-de-laiton', 'pince', 1, 1],
 };
 
-/** La 5e : les Gardiens seulement pour l'instant (les créatures attendent leur squelette). */
+/** La 5e. */
 const CINQUIEME: Partial<Record<BiomeId, Ligne>> = {
-  'maths-5e-signed-numbers': ['glacier', 'mammouth-de-givre', null, 0, 0],
-  'maths-5e-proportionality': ['marche', 'colporteur', null, 1, 0],
-  'french-5e-homophones': ['carrefour', 'sphinx-des-routes', null, 0, 0],
-  'french-5e-conjugation': ['marais', 'hydre-des-marais', null, 1, 0],
-  'english-5e-vocabulary': ['comptoir', 'reine-du-marche', null, 1, 0],
-  'english-5e-grammar': ['manoir', 'spectre-du-manoir', null, 3.5, 0],
-  'lv2-5e-introductions': ['relais', 'diligence-de-cuivre', null, 1, 0],
-  'history-5e-middle-ages': ['bourg', 'griffon-d-email', null, 2, 0],
-  'geography-5e-resources': ['delta', 'libellule-de-jade', null, 0, 0],
-  'life-earth-sciences-5e-active-planet': ['prairie', 'tortue-d-ocre', null, 0, 0],
-  'physics-chemistry-5e-matter-universe': ['saline', 'flamant-de-sel', null, 1, 0],
-  'technology-5e-design': ['menuiserie', 'cheval-a-bascule', null, 0, 0],
+  'maths-5e-signed-numbers': ['glacier', 'mammouth-de-givre', 'frimas', 0, 0],
+  'maths-5e-proportionality': ['marche', 'colporteur', 'bazar', 1, 3],
+  'french-5e-homophones': ['carrefour', 'sphinx-des-routes', 'sema', 0, 0],
+  'french-5e-conjugation': ['marais', 'hydre-des-marais', 'kroa', 1, 2],
+  'english-5e-vocabulary': ['comptoir', 'reine-du-marche', 'pudding', 1, 1],
+  'english-5e-grammar': ['manoir', 'spectre-du-manoir', 'moustache', 3.5, 1],
+  'lv2-5e-introductions': ['relais', 'diligence-de-cuivre', 'lina', 1, 1],
+  'history-5e-middle-ages': ['bourg', 'griffon-d-email', 'velin', 2, 1],
+  'geography-5e-resources': ['delta', 'libellule-de-jade', 'sillon', 0, 1],
+  'life-earth-sciences-5e-active-planet': ['prairie', 'tortue-d-ocre', 'humus', 0, 3],
+  'physics-chemistry-5e-matter-universe': ['saline', 'flamant-de-sel', 'perle', 1, 3],
+  'technology-5e-design': ['menuiserie', 'cheval-a-bascule', 'rabot', 0, 0],
 };
 
 const LIGNES: Partial<Record<BiomeId, [classe: string, ligne: Ligne]>> = Object.fromEntries([
@@ -221,7 +222,7 @@ function sentinelleImportee(lu: ModeleLu, quarts: number): FacettesDePersonnage 
  * placé comme ses sommets : la vue l'anime.
  */
 function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niveau): FacettesDePersonnage {
-  const espece = (ESPECES_6E as Partial<Record<BiomeId, Espece>>)[id];
+  const espece = ({ ...ESPECES_6E, ...ESPECES_5E } as Partial<Record<BiomeId, Espece>>)[id];
   if (!espece) throw new Error(`Pas d’espèce pour ${id}`);
   const taille = tailleDe(espece);
   const place = repere(lu.positions, (h) => taille / h, 0, quarts);
