@@ -16,6 +16,8 @@ import { buildMesh, drawCallsOf, faceCount } from './mesher';
 import { blockRegions, buildBlockMesh, buildRegionMesh, chunkFaceCount, type BlockChunk } from './blockMesh';
 import { hiddenBottomLevel } from './sea';
 import { MONUMENTS } from './monuments';
+import { isMonumentLoaded, MONUMENT_MODELS } from './monumentModels';
+import { LAYERS } from './projects';
 import { PLANS, planCells } from './plans';
 import { creaturePlacements, guardianPlacements, vehiclePlacement, whaleSpots, worldBounds, worldCubes } from './terrain';
 import { grilleDeLaMer, trianglesDeLaGrille } from './sea';
@@ -51,9 +53,12 @@ export const RENDER_BUDGET = {
  * même mot pour les trois îles de sciences (SC-2) : de 63 400 à 72 800. La mesure sur tablette reste à faire. Puis à
  * 75 750 pour les personnages importés du 6e (modèles TRELLIS, de près sur une île à la fois ; à valider par le
  * mainteneur), à la somme des enveloppes (75 740). Puis à 76 500 pour l'île d'EMC du 6e, le Préau des délégués
- * (EMC-2, décision du mainteneur, 9 octobre 2026).
+ * (EMC-2, décision du mainteneur, 9 octobre 2026). Puis à 81 500 pour les monuments importés d'Archipéo
+ * (./monumentModels.ts ; 3 000 triangles par monument entier, décision du mainteneur, 9 octobre 2026) : la construction
+ * passe de 7 750 à 12 750, la somme des enveloppes de 76 290 à 81 290 (relevé par le mainteneur le 10 octobre 2026 :
+ * deux monuments par archipel en coûtent environ 5 000, et non 3 000 ; la mesure sur l'iPad reste à faire).
  */
-export const RENDER_BUDGET_6E = { triangles: 76_500, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_6E = { triangles: 81_500, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
  * Les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
@@ -71,9 +76,14 @@ export const RENDER_BUDGET_6E = { triangles: 76_500, drawCalls: RENDER_BUDGET.dr
  * 83 000 si nécessaire »), pour le Fournil des partages et la Grotte des légendes (EMC et latin-grec de 5e), que la
  * somme de leurs enveloppes dépassait encore. Puis relevé à 86 000 par le mainteneur le 9 octobre 2026 pour le Fournil
  * des partages et la Grotte des légendes (5e) : mesuré tout construit, avec la cinquième mission (GD-14), « Dans la
- * scène » à part, 84 576 aux Îles Brumeuses (74 664 avant) ; la somme de leurs enveloppes (85 945) y tient.
+ * scène » à part, 84 576 aux Îles Brumeuses (74 664 avant) ; la somme de leurs enveloppes (85 945) y tient. Puis à
+ * 86 700 pour les personnages importés de la 5e (mainteneur, 10 octobre 2026 : 86 685 aux Îles Brumeuses). Puis à 91 700
+ * pour les monuments importés d'Archipéo (./monumentModels.ts ; 3 000 triangles par monument entier, décision du
+ * mainteneur, 9 octobre 2026) : la construction prend 5 000 de plus partout, la somme des enveloppes passe à 91 685 aux
+ * Îles Brumeuses, 88 725 aux Anciens Ateliers, 87 855 aux Îles du Ciel (relevé par le mainteneur le 10 octobre 2026 :
+ * deux monuments par archipel en coûtent environ 5 000, et non 3 000 ; la mesure sur l'iPad reste à faire).
  */
-export const RENDER_BUDGET_AUTRES = { triangles: 86_700, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_AUTRES = { triangles: 91_700, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
@@ -326,12 +336,20 @@ export const ENVELOPPES: Record<
     autres: { triangles: 13_600, drawCalls: 3 },
     parArchipel: { '5e': { triangles: 19_000, drawCalls: 3 }, '3e': { triangles: 11_530, drawCalls: 3 } },
   },
+  // Les monuments importés d'Archipéo (./monumentModels.ts, 3 000 triangles par monument entier, décision du mainteneur,
+  // 9 octobre 2026) : comptés au pire de leurs chantiers (`constructionAtWorstMonumentStage`), ils remplacent leurs cubes
+  // (environ 250 triangles chacun). Mesuré tout construit (`npm run rendu:budget`, 10 octobre 2026), avant → après :
+  // 7 191 → 12 450 aux Premiers Rivages, 7 975 → 12 898 aux Îles Brumeuses (12 866 phare fini ; au pire, sa quatrième
+  // étape et les fantômes de son toit), 6 991 → 12 034 aux Anciens Ateliers, 7 356 → 12 444 aux Îles du Ciel ; au pire
+  // de la salle des trophées (24 succès), 12 698, 13 146, 12 282 et 12 692. Les enveloppes prennent 5 000 partout
+  // (12 750, 13 230 aux Îles Brumeuses, 13 000 ailleurs), aucun appel de plus (proposition de l'artiste technique 3D, à
+  // valider par le mainteneur).
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
-    premiersRivages: { triangles: 7_750, drawCalls: 3 },
-    autres: { triangles: 8_000, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 8_230, drawCalls: 3 } },
+    premiersRivages: { triangles: 12_750, drawCalls: 3 },
+    autres: { triangles: 13_000, drawCalls: 3 },
+    parArchipel: { '5e': { triangles: 13_230, drawCalls: 3 } },
   },
   // Les quêtes des habitants (GD-10, PR 1) : les trois objets posés à la fin des quêtes du 6e (la lanterne, le portillon,
   // l'escalier) sont des petites constructions, comptées dans ce poste (`toutConstruitAvecLesCommandes`) : 758 triangles
@@ -750,6 +768,34 @@ export function constructionCost(a: ArchipelagoId, trophees: readonly BlockId[] 
 }
 
 /**
+ * La construction taillée au pire des chantiers des monuments importés (./monumentModels.ts) : tout construit, chaque
+ * monument chargé à l'étape qui coûte le plus (son modèle d'étape, et les fantômes des cases qui restent), au lieu de son
+ * modèle entier. Un monument se compte seul, sur son îlot (il ne partage aucune face avec son île) : les cases posées
+ * jusqu'au seuil de chaque étape, de bas en haut. Sans monument chargé : la construction tout construite. `npm run
+ * rendu:budget` les charge depuis le disque (scripts/rendu/budget.mjs) ; c'est ce que compte le poste.
+ */
+export function constructionAtWorstMonumentStage(a: ArchipelagoId, trophees: readonly BlockId[] = []): { triangles: number; drawCalls: number } {
+  const { ground, reste, champ } = archipelArchipeo(a, trophees);
+  const all = poseDuDecor(champ, sansToursDuCoeur(reste));
+  const base = coutDeLaConstruction(maillageDeLaConstruction(a, all, ground));
+  let extra = 0;
+  for (const m of MONUMENTS.filter((x) => x.archipelago === a && isMonumentLoaded(x.id))) {
+    const place = `monument:${m.id}`;
+    const own = all.filter((c) => c.place === place && !c.sol).sort((p, q) => p.z - q.z);
+    const sol = ground.filter((c) => c.place === place);
+    const cost = (placed: number) => coutDeLaConstruction(maillageDeLaConstruction(a, own.map((c, i) => ({ ...c, ghost: i >= placed })), sol)).triangles;
+    const whole = cost(own.length);
+    const { stages } = MONUMENT_MODELS[m.id];
+    // Le seuil de chaque étape : au tiers, aux deux tiers (le phare du large : ses pièces, de bas en haut).
+    const layers = LAYERS[m.id] ? Object.values(LAYERS[m.id]) : null;
+    const foot = own[0]?.z ?? 0;
+    const thresholds = Array.from({ length: stages }, (_, i) => (layers ? own.filter((c) => c.z - foot <= layers[i][1]).length : Math.ceil(((i + 1) * own.length) / (stages + 1))));
+    extra += Math.max(0, ...thresholds.map((n) => cost(n) - whole));
+  }
+  return { triangles: base.triangles + extra, drawCalls: base.drawCalls };
+}
+
+/**
  * Les petites constructions des commandes dans Archipéo (GD-7), toutes livrées : ce qu'elles ajoutent à la construction
  * taillée (leurs blocs, dans le même maillage) et au sol (les cases qu'elles figent à plat), sans appel de dessin de plus.
  */
@@ -828,7 +874,7 @@ export const COUTS_DES_POSTES = {
   mer: merCost,
   faune: fauneCost,
   decor: decorCost,
-  construction: (a: ArchipelagoId) => constructionCost(a),
+  construction: (a: ArchipelagoId) => constructionAtWorstMonumentStage(a),
   commandes: commandesCost,
   bornes: bornesCost,
   navire: navireCost,

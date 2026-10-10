@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, personnages-emc-lca, emc-cinquieme, emc-quatre-trois ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, personnages-emc-lca, emc-cinquieme, emc-quatre-trois, monuments ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -702,6 +702,44 @@ const CAPTURES = [
     },
     { nom: `histoire-geo-mosaique-brique-chaume-archipel${suffixe}`, vue: 'archipel', famille: 'histoire-geo', ile: 'history-6e-antiquity', ...autres },
   ]),
+  // Les monuments d'Archipéo en modèles importés (famille `monuments`, à retirer une fois le lot fusionné ; à prendre avec
+  // `--rendu archipeo`) : chacun des huit, fini, de jour, cadré sur son îlot à la distance de jeu (`lieu`, fiche masquée) ;
+  // le phare du large fini de nuit (son feu allumé) ; le grand moulin en chantier (`avancees` : la part des cases posées,
+  // de bas en haut) à l'étape 1 puis à l'étape 2, ses fantômes restants autour du modèle, pour juger le saut cubes →
+  // modèle et les fantômes qui traversent le modèle.
+  ...[
+    ['observatoire-baleines', 'french-6e-reading', 'landmark-6e-1'],
+    ['grand-moulin', 'french-6e-grammar-spelling', 'landmark-6e-2'],
+    ['phare-du-large', 'maths-5e-signed-numbers', 'landmark-5e-1'],
+    ['kiosque', 'english-5e-grammar', 'landmark-5e-2'],
+    ['viaduc', 'english-4e-grammar', 'landmark-4e-1'],
+    ['amphitheatre', 'english-4e-comprehension', 'landmark-4e-2'],
+    ['observatoire-etoiles', 'french-3e-close-reading', 'landmark-3e-1'],
+    ['temple', 'maths-3e-geometry', 'landmark-3e-2'],
+  ].map(([monument, ile, lieu]) => ({ nom: `monuments-${monument}`, vue: 'île', famille: 'monuments', ile, lieu, sansPanneau: true, finesse: 2 })),
+  { nom: 'monuments-phare-du-large-nuit', vue: 'île', famille: 'monuments', ile: 'maths-5e-signed-numbers', lieu: 'landmark-5e-1', sansPanneau: true, nuit: true, finesse: 2 },
+  ...[1, 2].map((etape) => ({
+    nom: `monuments-grand-moulin-etape-${etape}`,
+    vue: 'île',
+    famille: 'monuments',
+    ile: 'french-6e-grammar-spelling',
+    lieu: 'landmark-6e-2',
+    sansPanneau: true,
+    avancees: { 'landmark-6e-2': etape / 3 },
+    finesse: 2,
+  })),
+  // Les cases posées par le haut (le joueur les pose dans l'ordre qu'il veut) : les fantômes des cases basses restent
+  // dans le volume du modèle, pour voir s'ils sont cachés ou traversés.
+  ...[1, 2].map((etape) => ({
+    nom: `monuments-grand-moulin-etape-${etape}-haut`,
+    vue: 'île',
+    famille: 'monuments',
+    ile: 'french-6e-grammar-spelling',
+    lieu: 'landmark-6e-2',
+    sansPanneau: true,
+    avancees: { 'landmark-6e-2': -etape / 3 },
+    finesse: 2,
+  })),
   // Les familles du 6e dans Archipéo (lot 7, la table « matière → famille », famille `familles-sixieme`), à retirer une fois
   // le lot fusionné ; à prendre avec `--rendu archipeo`. De près (`zoomer`), toutes les petites constructions posées :
   // le cadran de l'Horloge des verbes de près, de jour et de nuit, et de loin (l'île reculée, l'archipel) ; la cabine de
@@ -1443,6 +1481,21 @@ function jusquAuxEtages(parCle, etages) {
   return out;
 }
 
+/**
+ * Un monument en chantier (`avancees` : `{ <monument>: part }`, de 0 à 1) : la part de ses cases posées, les plus basses
+ * d'abord (les autres restent en fantômes), ou les plus hautes d'abord si la part est négative. Un tiers et deux tiers : l'étape 1 et l'étape 2 d'un modèle à deux étapes.
+ */
+function jusqueAvancees(parCle, avancees) {
+  if (!avancees) return parCle;
+  const out = { ...parCle };
+  for (const [m, part] of Object.entries(avancees)) {
+    // Une part négative pose les cases les plus hautes d'abord : les fantômes des cases basses restent dans le modèle.
+    const cases = [...(out[m] ?? [])].sort((p, q) => (Number(p.split(',')[2]) - Number(q.split(',')[2])) * (part < 0 ? -1 : 1));
+    out[m] = cases.slice(0, Math.ceil(cases.length * Math.abs(part) - 1e-9));
+  }
+  return out;
+}
+
 function sansLesIles(parCle, iles) {
   if (!iles?.length) return parCle;
   return Object.fromEntries(Object.entries(parCle).filter(([k]) => !iles.some((i) => k.startsWith(`${i}-`))));
@@ -1747,6 +1800,7 @@ async function scenes() {
               commandes: c.commandes,
               quetes: c.quetes,
               etages: c.etages,
+              avancees: c.avancees,
               posees: c.posees,
               cliquer: c.cliquer,
               amenager: c.amenager,
@@ -1760,7 +1814,7 @@ async function scenes() {
           )
         : []),
     ];
-    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, posees, cliquer, amenager, fiche, zoomer, reussir, sansPanneau, sansEtiquettes, defiGagne } of views) {
+    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, avancees, posees, cliquer, amenager, fiche, zoomer, reussir, sansPanneau, sansEtiquettes, defiGagne } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -1793,7 +1847,7 @@ async function scenes() {
             ? { parts: {}, log: [], links: liens ?? [], place: ile ?? at }
             : {
                 ...built,
-                parts: { ...jusquAuxEtages(sansLesIles(plans ?? built.parts, sansIles), etages), ...petitesConstructions(posees) },
+                parts: { ...jusqueAvancees(jusquAuxEtages(sansLesIles(plans ?? built.parts, sansIles), etages), avancees), ...petitesConstructions(posees) },
                 ...(bridges ? { links: bridges } : {}),
                 ...(commandes ? { requests: commandes } : {}),
                 ...(quetes ? { stories: quetes } : {}),
