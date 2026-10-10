@@ -18,6 +18,8 @@
 //   bois de la Halle bardé ; les toits enneigés.
 // - Le temple de marbre : son toit de prismes, un anneau d'une rangée sans pente, peint à plat (`flat`) ; son faîte de
 //   miroirs en verrière basse, d'un seul tenant (`monumentPieces`).
+// - Les huit lanternons de la couronne du château d'eau : chacun en retrait de sa case (`insetBlocks`), un joint entre
+//   deux voisins, pour qu'ils ne se fondent pas en un seul volume.
 // - La coupole de lentilles de l'observatoire des étoiles : un toit en pavillon, comme le kiosque du 5e
 //   (../hippedRoof.ts, `monumentPieces`). Le dôme de Stat reste en gradins lissés (son plan, de 5 sur 4, n'est pas carré :
 //   le pavillon n'a qu'une demi-largeur).
@@ -50,6 +52,9 @@ const isFlat = (c: VoxelCube) => c.place === TEMPLE && c.texture === 'prisme';
  * se pose la grande lunette.
  */
 const observatoryDome = hippedRoofPieces({ place: 'monument:landmark-3e-1', roofs: new Set(['lentille']), crown: { texture: 'lentille', rise: 1 } });
+
+/** Les huit lanternons de prisme de la couronne du château d'eau (world/monuments.ts), chacun en retrait de sa case. */
+const isLantern = (c: VoxelCube) => c.place === 'monument:landmark-3e-4' && c.texture === 'prisme';
 
 /**
  * Ce que le kit dessine d'un seul tenant : le faîte de miroirs du temple, une verrière basse, une rangée d'un seul tenant
@@ -96,6 +101,7 @@ export const KIT_3E: Kit = {
   byMaterial: { aimant: () => 'tole', velours: veloursOf('3e'), petale: bedWhenAlone },
   flat: isFlat,
   monumentPieces,
+  insetBlocks: isLantern,
   ghostApart: ['marbre', 'quartz', 'verre', 'lentille', 'miroir', 'taille', 'prisme', 'toile', 'parchemin', 'savon', 'antenne'],
   snowyRoofs: true,
   // Les lieux du village (./shared.ts) : l'école, les piliers de la salle et le rang de pierre de la Halle en mur plein de

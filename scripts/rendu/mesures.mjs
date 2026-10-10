@@ -940,13 +940,15 @@ const CAPTURES = [
       ['bosquet', 'lca-3e-ideas'],
     ], [
       ['marbre-fantome', 'maths-3e-geometry', true],
-      ['toits-neige-fantome', 'maths-3e-functions', true],
+      // Un toit d'ardoise sous la neige bâti, à côté de sa moitié encore en fantôme.
+      ['toits-neige-fantome', 'maths-3e-functions', true, { partie: 'toit-fantome', zoomer: 4 }],
       ['quartz-fantome', 'maths-3e-statistics'],
     ], [
       ['temple', 'maths-3e-geometry', 'landmark-3e-2'],
       ['etoiles', 'french-3e-close-reading', 'landmark-3e-1', true],
     ], [
-      ['colonne', 'maths-3e-geometry', 'landmark-3e-5', [['cube', 5], ['cylinder', 7], ['pyramid', 9], ['sphere', 12]]],
+      // La colonne, haute de douze étages : de plus loin, pour la voir entière, ceinture du haut comprise.
+      ['colonne', 'maths-3e-geometry', 'landmark-3e-5', [['cube', 5], ['cylinder', 7], ['pyramid', 9], ['sphere', 12]], 1],
       ['chateau-eau', 'geography-3e-france', 'landmark-3e-4', [['foot', 2], ['shaft', 5], ['tank', 7], ['crown', 10]]],
       ['fusee', 'physics-chemistry-3e-motion-energy', 'landmark-3e-3', [['pad', 1], ['stage1', 4], ['stage2', 7], ['nose', 10]]],
     ], 'english-3e-grammar'],
@@ -955,14 +957,14 @@ const CAPTURES = [
     const nuits = (avecNuit) => (avecNuit ? [{ suffixe: '' }, { suffixe: '-nuit', nuit: true }] : [{ suffixe: '' }]);
     return [
       ...iles.flatMap(([nom, ile, avecNuit]) => nuits(avecNuit).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-${nom}${suffixe}`, vue: 'île', famille, ile, ...mi, zoomer: 3, finesse: 2, ...autres }))),
-      ...fantomes.flatMap(([nom, ile, avecNuit]) => nuits(avecNuit).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-${nom}${suffixe}`, vue: 'île', famille, ile, ...mi, zoomer: 5, finesse: 3, ...autres }))),
+      ...fantomes.flatMap(([nom, ile, avecNuit, vue]) => nuits(avecNuit).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-${nom}${suffixe}`, vue: 'île', famille, ile, ...mi, zoomer: 5, finesse: 3, ...vue, ...autres }))),
       ...monuments.flatMap(([nom, ile, lieu, avecNuit]) => [
         ...nuits(avecNuit).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-${nom}${suffixe}`, vue: 'île', famille, ile, lieu, sansPanneau: true, zoomer: 3, finesse: 2, ...autres })),
         ...(avecNuit ? [] : [{ nom: `familles-${classe}-${nom}-loin`, vue: 'île', famille, ile, lieu, sansPanneau: true, finesse: 2 }]),
       ]),
-      ...projets.flatMap(([nom, ile, lieu, pieces]) => [
-        ...pieces.map(([piece, z]) => ({ nom: `familles-${classe}-${nom}-etapes-${piece}`, vue: 'île', famille, ile, lieu, sansPanneau: true, etages: { [lieu]: z }, zoomer: 3, finesse: 2 })),
-        { nom: `familles-${classe}-${nom}-etapes-fini-nuit`, vue: 'île', famille, ile, lieu, sansPanneau: true, nuit: true, zoomer: 3, finesse: 2 },
+      ...projets.flatMap(([nom, ile, lieu, pieces, zoomer = 3]) => [
+        ...pieces.map(([piece, z]) => ({ nom: `familles-${classe}-${nom}-etapes-${piece}`, vue: 'île', famille, ile, lieu, sansPanneau: true, etages: { [lieu]: z }, zoomer, finesse: 2 })),
+        { nom: `familles-${classe}-${nom}-etapes-fini-nuit`, vue: 'île', famille, ile, lieu, sansPanneau: true, nuit: true, zoomer, finesse: 2 },
       ]),
       { nom: `familles-${classe}-ecole`, vue: 'île', famille, ile: ecole, lieu: 'school', sansPanneau: true, zoomer: 4, finesse: 2 },
       { nom: `familles-${classe}-halle-cour`, vue: 'île', famille, ile: ecole, lieu: 'assembly', sansPanneau: true, zoomer: 4, finesse: 2 },
@@ -1625,6 +1627,19 @@ async function scenes() {
       const cells = planCells(cour);
       const restent = new Set(cells.filter((c) => (c.block === 'fence' && c.x === 10) || c.block === 'french-6e-reading').map((c) => c.key));
       plans[cour.id] = cells.map((c) => c.key).filter((k) => !restent.has(k));
+    }
+    // Un toit à moitié fantôme, sur l'île de la vue seulement (famille `familles-troisieme`, `toits-neige-fantome`) : les
+    // murs posés, le toit posé sur sa moitié ouest, sa moitié est encore en fantôme à côté (le reste du plan posé).
+    if (partie === 'toit-fantome') {
+      const l = plansFor(ile);
+      const i = l.findIndex((p) => planCells(p).some((c) => c.block === 'roof'));
+      l.forEach((p, j) => {
+        if (j > i) delete plans[p.id];
+      });
+      const cells = planCells(l[i]);
+      const xs = cells.filter((c) => c.block === 'roof').map((c) => c.x);
+      const milieu = (Math.min(...xs) + Math.max(...xs)) / 2;
+      plans[l[i].id] = cells.filter((c) => c.block !== 'roof' || c.x <= milieu).map((c) => c.key);
     }
     if (partie === 'tour-avant' || partie === 'tour-debut' || partie === 'tour-mi') {
       const l = plansFor('french-6e-reading');

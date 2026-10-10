@@ -61,7 +61,7 @@ import { CREME_DU_PHARE, phareDeGrimoire } from './construction/lighthouse';
 import { cle, decalagesDe, genresDesBlocs } from './construction/kinds';
 import { allumesALaFin } from './construction/endGlow';
 import { type BlocAssemble, MOTIF_ASSEMBLE, SANS_BISEAU, teinteDeCase } from './construction/shader';
-import { BISEAU, couleurDuRole, FANTOME, LANTERNE, PROFONDEUR, RANG_DES_SOCLES, TOILE_DU_NAVIRE, TROPHEE, VERRE_HORS_MUR, VITRE_DE_JOUR } from './construction/settings';
+import { BISEAU, BLOC_EN_RETRAIT, couleurDuRole, FANTOME, LANTERNE, PROFONDEUR, RANG_DES_SOCLES, TOILE_DU_NAVIRE, TROPHEE, VERRE_HORS_MUR, VITRE_DE_JOUR } from './construction/settings';
 import { batimentsDe, blocsDArchipeoDe, caseDuLieu, coursDe, enBlocsDArchipeo } from './construction/buildings';
 export { ALLUMAGE, ARETE, ARETE_DU_VERRE, ARETE_FANTOME, BISEAU, couleursDesRoles, DECALAGE_MAX, ECART_SOMBRE, ECLAT_DU_BISEAU, FANTOME, FENETRES_ALLUMEES, LANTERNES_ALLUMEES, LUEUR, PLEINE_NUIT, TEINTE, TROPHEE, VITRE_DE_JOUR } from './construction/settings';
 export { BISEAU_GLSL, type BlocAssemble, detailDuMotif, ECLAT_GLSL, eclatDeFenetre, eclatDuBiseau, MOTIF_ASSEMBLE, MOTIF_ASSEMBLE_DEBUT, MOTIF_ASSEMBLE_GLSL, opaciteDesFantomes, SANS_BISEAU, TEINTE_GLSL, teinteDeCase } from './construction/shader';
@@ -329,6 +329,9 @@ export function maillageDeLaConstruction(
   // cases déjà prises par un modèle restent au modèle, et celles du phare de Grimoire en chantier à leur bloc. Seuls les
   // plans des îles prennent le kit de l'archipel (un kit passé à la main, celui d'un test, prend tout le plan).
   const kit = options.kit ?? KITS[a];
+  // Les blocs en retrait de leur case (`Kit.insetBlocks`, au 3e les lanternons du château d'eau), posés : chacun à part.
+  const enRetrait = new Set<VoxelCube>();
+  if (!options.navire && kit.insetBlocks) for (const c of cubes) if (!c.ghost && !c.quest && !parUnModele(c) && kit.insetBlocks(c)) enRetrait.add(c);
   // Sur le vide : rien de solide sous la case jusqu'à l'eau, ou jusqu'au large (`PROFONDEUR` cases plus bas) ; les pilotis.
   const solides = new Map<string, VoxelCube>();
   for (const c of [...cubes, ...sol]) if (!c.ghost && !c.quest) solides.set(cle(c.x, c.y, c.z), c);
@@ -346,7 +349,7 @@ export function maillageDeLaConstruction(
   const archi = options.navire
     ? null
     : architectureDe(a, cubes, {
-        exclure: (c) => parUnModele(c) || allumes.has(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
+        exclure: (c) => parUnModele(c) || allumes.has(c) || enRetrait.has(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
         kit,
         batiments: options.kit ? undefined : batimentsDe(a),
         cours: options.kit ? undefined : coursDe(a),
@@ -375,7 +378,7 @@ export function maillageDeLaConstruction(
     }
   // Un fantôme ne cache rien, ni une lanterne ni un trophée (ils ne remplissent plus leur case).
   const plein = new Map<string, VoxelCube>();
-  for (const c of dessines) if (!c.ghost && genres.get(c) !== 'lanterne' && !trophees.has(c)) plein.set(cle(c.x, c.y, c.z), c);
+  for (const c of dessines) if (!c.ghost && genres.get(c) !== 'lanterne' && !trophees.has(c) && !enRetrait.has(c)) plein.set(cle(c.x, c.y, c.z), c);
   const sous = new Set(sol.map((c) => cle(c.x, c.y, c.z)));
 
   // Les couleurs d'un bloc, de jour.
@@ -659,6 +662,28 @@ export function maillageDeLaConstruction(
     q([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0], f.cote);
   };
 
+  /**
+   * Un bloc en retrait de sa case (`BLOC_EN_RETRAIT`) : une boîte sans son dessous (il est posé), aux couleurs de son
+   * bloc ; fini, ses côtés prennent la lueur de fin (les fenêtres, allumés les premiers) et son dessus garde sa couleur.
+   */
+  const enRetraitDeSaCase = (c: VoxelCube) => {
+    const w = BLOC_EN_RETRAIT.large;
+    const [x0, x1, y0, y1] = [c.x + 0.5 - w / 2, c.x + 0.5 + w / 2, c.y + 0.5 - w / 2, c.y + 0.5 + w / 2];
+    const [z0, z1] = [c.z, c.z + BLOC_EN_RETRAIT.haut];
+    const f = couleursDe(c);
+    if (!allumes.has(c)) {
+      boite(O, x0, x1, y0, y1, z0, z1, f, { teinte: teinteDe(c) });
+      return;
+    }
+    const sansBiseau = mode === 'peint' ? [0, 1, 2, 3].map(() => [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU]) : undefined;
+    O.poly([[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], [0, 0, 1], [f.dessus, f.dessus, f.dessus, f.dessus], { teinte: teinteDe(c), biseaux: sansBiseau });
+    const q = (pts: V3[], n: V3) => F.poly(pts, n, [f.cote, f.cote, f.cote, f.cote], { extra: 0 });
+    q([[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]], [0, -1, 0]);
+    q([[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]], [0, 1, 0]);
+    q([[x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1]], [-1, 0, 0]);
+    q([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0]);
+  };
+
   for (const c of trophees.keys()) trophiesByCell.set(cle(c.x, c.y, c.z), c);
 
   // ---- Les faces des blocs, des vitres, des lanternes et des trophées.
@@ -710,6 +735,10 @@ export function maillageDeLaConstruction(
       trophee(c, rang);
       continue;
     }
+    if (enRetrait.has(c)) {
+      enRetraitDeSaCase(c);
+      continue;
+    }
     for (let d = 0; d < 6; d++) {
       if (!visible(c, d)) continue;
       const k = axeDe(d);
@@ -722,6 +751,13 @@ export function maillageDeLaConstruction(
         biseaute(c, d, dir(j, -1)),
         biseaute(c, d, dir(j, 1)),
       ];
+      // La lueur de fin ne prend que les faces verticales (retouches du directeur artistique, 10 octobre 2026 : un aplat
+      // jaune sur le dessus se lisait comme un bloc peint, les hublots de la fusée comme des fenêtres) : le dessus et le
+      // dessous gardent la couleur de leur famille, dans le groupe opaque (assombris la nuit comme le reste).
+      if (allumes.has(c) && axeDe(d) === 2) {
+        rectangle(O, d, plan, base[i], base[i] + 1, base[j], base[j] + 1, SANS_BORDS, couleurDeFace(c, d), undefined, teinteDe(c));
+        continue;
+      }
       if (g !== 'bloc' || !fusion) {
         // Une face seule : les vitres et les lanternes ont chacune leur décalage.
         rectangle(groupeDe(c), d, plan, base[i], base[i] + 1, base[j], base[j] + 1, r, couleurDeFace(c, d), extraDe(c), teinteDe(c), areteDe(c), motifDe(c, d));

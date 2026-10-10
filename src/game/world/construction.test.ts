@@ -575,10 +575,11 @@ describe('Les toits de terre cuite (lot R5)', () => {
         const { cell } = caseDeLaConstruction(t.centre, t.n);
         allumes3D.add(cle(cell.x, cell.y, cell.z));
       });
-      // Un bloc enfermé de tous côtés (le cœur de la ceinture de lentille de la colonne des solides, au 3e) n'a aucune face
+      // La lueur de fin ne prend que les faces verticales (retouches du directeur artistique, 10 octobre 2026) : un bloc
+      // enfermé de ses quatre côtés (le cœur de la ceinture de lentille de la colonne des solides, au 3e) n'a aucune face
       // à allumer.
       const pleins = new Set(cubes.filter((c) => !c.ghost).map((c) => cle(c.x, c.y, c.z)));
-      const enferme = (c: VoxelCube) => [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].every(([dx, dy, dz]) => pleins.has(cle(c.x + dx, c.y + dy, c.z + dz)));
+      const enferme = (c: VoxelCube) => [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0]].every(([dx, dy, dz]) => pleins.has(cle(c.x + dx, c.y + dy, c.z + dz)));
       const allumesOracle = new Set([...f].filter(([c, v]) => v.decalage >= 0 && !(v.genre === 'lueur' && enferme(c))).map(([c]) => cle(c.x, c.y, c.z)));
       expect(allumes3D, a).toEqual(allumesOracle);
       expect(m.opaque.aretes.length, a).toBe(m.opaque.positions.length / 3);

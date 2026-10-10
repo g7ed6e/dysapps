@@ -178,6 +178,74 @@ describe('Les kits du 4e et du 3e : les grands projets, pièce par pièce', () =
   }, 60_000);
 });
 
+describe('La lueur de fin et les lanternons (retouches du 10 octobre 2026)', () => {
+  interface Tri {
+    /** La case du triangle, rentrée d'un quart de case sous sa normale (grille : x, y, hauteur). */
+    case: string;
+    /** Sa normale (repère Three : x, hauteur, y). */
+    n: [number, number, number];
+    /** Ses trois sommets, en grille (x, y). */
+    xy: [number, number][];
+  }
+  /** Les triangles d'un groupe du maillage. */
+  const trisDe = (g: { positions: ArrayLike<number>; normals: ArrayLike<number>; indices: ArrayLike<number> }): Tri[] => {
+    const out: Tri[] = [];
+    for (let t = 0; t < g.indices.length; t += 3) {
+      const ids = [g.indices[t], g.indices[t + 1], g.indices[t + 2]];
+      const c = [0, 1, 2].map((k) => ids.reduce((s, i) => s + g.positions[3 * i + k], 0) / 3);
+      const n: [number, number, number] = [g.normals[3 * ids[0]], g.normals[3 * ids[0] + 1], g.normals[3 * ids[0] + 2]];
+      out.push({
+        case: `${Math.floor(c[0] - n[0] * 0.25)},${Math.floor(c[2] - n[2] * 0.25)},${Math.floor(c[1] - n[1] * 0.25)}`,
+        n,
+        xy: ids.map((i) => [g.positions[3 * i], g.positions[3 * i + 2]]),
+      });
+    }
+    return out;
+  };
+
+  it('la lueur ne prend que les faces verticales ; le dessus d’un bloc allumé reste dans l’opaque', () => {
+    let dessus = 0;
+    for (const a of ['4e', '3e'] as const) {
+      for (const m of monumentsOf(a).filter((x) => LAYERS[x.id])) {
+        const tous = monde(a).filter((c) => c.place === `monument:${m.id}`);
+        const allumes = new Set([...allumesALaFin(tous)].map(cle));
+        const mesh = maillageDeLaConstruction(a, tous);
+        const lueur = trisDe(mesh.fenetres).filter((t) => allumes.has(t.case));
+        expect(lueur.length, m.id).toBeGreaterThan(0);
+        for (const t of lueur) expect(t.n[1], m.id).toBe(0);
+        dessus += trisDe(mesh.opaque).filter((t) => t.n[1] > 0.5 && allumes.has(t.case)).length;
+      }
+    }
+    // Les dessus vus (celui de la cabine du portique est sous la poutre).
+    expect(dessus).toBeGreaterThan(0);
+  }, 60_000);
+
+  it('les huit lanternons du château d’eau : chacun en retrait de sa case, un joint entre deux voisins', () => {
+    const tous = monde('3e').filter((c) => c.place === 'monument:landmark-3e-4');
+    const lanternons = tous.filter((c) => KITS['3e'].insetBlocks?.(c));
+    expect(lanternons.length).toBe(8);
+    for (const a of ['6e', '5e', '4e'] as const) expect(KITS[a].insetBlocks, a).toBeUndefined();
+    const cases = new Set(lanternons.map(cle));
+    for (const k of cases) expect(new Set([...allumesALaFin(tous)].map(cle)).has(k)).toBe(true);
+    // Finis (allumés), puis sur une île fermée (délavés, éteints) : chacun en retrait.
+    for (const m3 of [tous, tous.map((c) => ({ ...c, muted: true }))]) {
+      const mesh = maillageDeLaConstruction('3e', m3);
+      let vus = 0;
+      for (const t of [...trisDe(mesh.opaque), ...trisDe(mesh.fenetres)]) {
+        if (!cases.has(t.case)) continue;
+        vus++;
+        const [x, y] = t.case.split(',').map(Number);
+        for (const [px, py] of t.xy)
+          for (const v of [px - x, py - y]) {
+            expect(v).toBeGreaterThan(0.05);
+            expect(v).toBeLessThan(0.95);
+          }
+      }
+      expect(vus).toBe(8 * 5 * 2);
+    }
+  });
+});
+
 describe('Les kits du 4e et du 3e : les monuments et le reste', () => {
   it('la coupole de lentilles de l’observatoire des étoiles : un toit en pavillon sur son rang bas, la verrière au faîte, plus aucun gradin', () => {
     const tous = monde('3e');

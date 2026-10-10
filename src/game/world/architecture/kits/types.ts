@@ -112,6 +112,12 @@ export interface Kit {
    * traverse), ou `undefined` (le dessin ordinaire).
    */
   monumentPieces?: (c: VoxelCube, plan: readonly VoxelCube[]) => DessinDePiece | { piece: DessinDePiece; rotation: Rotation } | null | undefined;
+  /**
+   * Les blocs que le kit dessine en retrait de leur case, chacun à part (../../construction/settings.ts,
+   * `BLOC_EN_RETRAIT` ; au 3e : les lanternons du château d'eau) : ni lissés ni pris par une pièce, ils ne cachent pas les
+   * faces de leurs voisins ; finis, ils gardent la lueur de fin sur leurs côtés.
+   */
+  insetBlocks?: (c: VoxelCube) => boolean;
   /** Les matières tenues loin du fantôme Brume (../heartPieces.ts, `apartFromGhost` ; au 5e : la glace, le sel, la toile). */
   ghostApart?: readonly TextureKind[];
   /**
