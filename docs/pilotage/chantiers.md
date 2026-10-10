@@ -32,6 +32,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 
 | Quoi | Chantier | Recommandation |
 | --- | --- | --- |
+| Écrire la décision de [GD-15](../gameplay/propositions/GD-15.md) (la Nef qui se métamorphose à chaque passage : « Horizon », « La Nef partout », « La mue », « Blocland d’abord », choisis sur cartes le 10 octobre 2026) | GD-15 | La décider telle quelle ; le code commence par Blocland |
 | Confier l’en-tête commun des écrans de calcul, qui fait défiler d’environ 124 px sur tablette (Faisceaux, Relevés, Thalès) | — | Un fil court, relu par le référent dys ; personne ne l’a pour l’instant |
 | Entendre sur iPad et Android un nombre de dix chiffres lu en milliards (Nombres géants) | C-2 | — |
 | La recherche « rien d’emprunté » sur « Jardin des heures » et ses replis | LV2-4 | — |
@@ -73,6 +74,10 @@ Le contraste élevé et « Réduire les animations » dans l’application (anci
 ### Séparer le jeu du rendu (J)
 
 J0 à J5 et D construits ; l’habillage des univers (objet `Habillage`, textes dans `src/universes/`, couche `univers`) fait avec U4. J6, la disposition en réseau (le monde d’Archipéo en lieux sans marche), est en pause avec Archipéo. Avant J6, à cadrer avec le directeur artistique : la maquette d’une île en réseau (échelle, ce qu’elle montre de loin et de près), la place des Gardiens et des monuments, la Carte et la carte des quatre archipels (lot 8b), la 2D en réseau. J7, le rangement des fichiers en `jeu/` et `disposition/` avec un test des couches sans exception, n’est pas fait.
+
+### La Nef (GD-15)
+
+Demandé par le mainteneur le 10 octobre 2026 (« Idéation refonte (et rename) du bloc navire ») : le Bloc-Navire devient **la Nef**, le même nom dans les deux univers, et change entièrement de forme à chaque passage : voilier (6e), dirigeable (5e), aile (4e, au repos au 3e) ; chaque forme lève un obstacle vu au bord de la région (brume, nuages, îles du ciel) ; on part en touchant la Nef ([GD-15](../gameplay/propositions/GD-15.md)). Choix sur cartes le 10 octobre 2026 : « Horizon », « La Nef partout », « La mue », « Blocland d’abord ». **Fiche proposée**, décision écrite attendue. Puis, dans Blocland : les formes et l’appariement, la mue, la pose et la fiche, la migration ; un obstacle par lot ; Archipéo peint après la mesure de son budget (le 5e à 85 126 triangles sur 86 000).
 
 ### Les nuages qui ne cachent rien
 
