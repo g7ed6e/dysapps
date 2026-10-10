@@ -49,6 +49,7 @@ const SIXIEME: Partial<Record<BiomeId, Ligne>> = {
   'life-earth-sciences-6e-living-world': ['vallee', 'cerf-des-sous-bois', 'fougere', 0, 0],
   'physics-chemistry-6e-matter-energy': ['laboratoire', 'alambic-de-verre', 'bulle', 0, 1],
   'technology-6e-objects': ['hangar', 'automate-de-laiton', 'pince', 1, 1],
+  'civics-6e-democratic-society': ['preau', 'hirondelle-de-nacre', 'voix', 0, 0],
 };
 
 /** La 5e. */
@@ -65,6 +66,8 @@ const CINQUIEME: Partial<Record<BiomeId, Ligne>> = {
   'life-earth-sciences-5e-active-planet': ['prairie', 'tortue-d-ocre', 'humus', 0, 3],
   'physics-chemistry-5e-matter-universe': ['saline', 'flamant-de-sel', 'perle', 1, 3],
   'technology-5e-design': ['menuiserie', 'cheval-a-bascule', 'rabot', 0, 0],
+  'civics-5e-equality-solidarity': ['fournil', 'oie-d-opale', 'mie', 2.25, 3],
+  'lca-5e-legends': ['grotte', 'phenix-d-argile', 'lyre', 0, 0],
 };
 
 const LIGNES: Partial<Record<BiomeId, [classe: string, ligne: Ligne]>> = Object.fromEntries([

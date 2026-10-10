@@ -53,3 +53,9 @@
 5e-prairie-creature-humus;-;0;3 jambes=non bras=non queue=non;53302b>c88c7c 724741>c88c7c 8e6a60>c88c7c b9a389>d8ccac;Humus : le corps rose brun en une seule zone avec le bâton, le bonnet de lin et le tube du pluviomètre.
 5e-relais-creature-lina;-;0;1 aire=oui bras=non queue=non;f3f2f1>ece8de 312b29>4e5058 a42913>e0884c 8e7059>c8a050;Lina : les plumes blanches, le bout des ailes reste sombre, le bec et les pattes orange, le cor de laiton et sa sangle.
 5e-saline-creature-perle;-;0;3 aire=oui bras=non queue=non;f4f1e4>f0ece0 d9d1bf>d8ccac c97c3a>d88a48 452e1f>a07850;Perle : les plumes blanches, le tablier de lin, le bec, les pattes et le manche du râteau orange, la tête du râteau en bois.
+6e-preau-gardien-hirondelle-de-nacre;0.12;0
+5e-fournil-gardien-oie-d-opale;0.17;0
+5e-grotte-gardien-phenix-d-argile;0.11;0
+6e-preau-creature-voix;-;0;0 bras=non;733017>c4622e 0a1588>5a8cc8 0e0504>5a3428 d5cece>ece8de;Voix : le pelage roux, la veste bleu ciel, les jambes, les mains et le livre en brun sombre chaud, le masque blanc du visage et la chemise.
+5e-fournil-creature-mie;-;0;3 jambes=non aire=oui;462912>b8875a d3d2d2>ece8de 956a3c>c88a48 b3a9a1>ece8de;Mie : le pelage brun clair du capybara, la toque et le tablier blancs en une seule zone de lin, le pain doré.
+5e-grotte-creature-lyre;-;0;0 queue=sol;8f5738>a8643c e8cd70>e2c46a eadfb8>ece4d0 c19f56>e2c46a;Lyre : les bandes du dos et de la queue, la lyre et la bordure en un seul brun terre cuite, la peau jaune sable en une seule zone avec ses ombres, la tunique de lin.
