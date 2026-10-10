@@ -96,12 +96,15 @@ def un_batiment(nom, brut, d):
     print("  " + "\n  ".join(l for l in journal.splitlines() if l.startswith(("grappe", "socle", "facade", "retrait"))))
     print("  " + next(l for l in lancer("couper.py", low, final, "socle").splitlines() if l.startswith("coupe")))
     # le sol pose par couper.py sous un batiment creux, et les bandes des retouches zone=, ajoutent des triangles : au-dela
-    # des 3 000 (BUILDING_NEAR_TRIANGLES), on refait les aplats d'autant moins de triangles (le salon de Moustache)
-    n = len(maillage(final)[1])
-    if n > 3000:
-        journal = lancer("monument_lowpoly.py", aligne, low, nom, 3000 - (n - 3000) - 20)
-        print(f"  {n} triangles : refait a {3000 - (n - 3000) - 20}")
+    # des 3 000 (BUILDING_NEAR_TRIANGLES), on refait les aplats d'autant moins de triangles (le salon de Moustache), autant
+    # de fois qu'il le faut : la bande d'une retouche zone= recoupe a nouveau le maillage refait (la hutte de Kroa)
+    n, cible = len(maillage(final)[1]), 3000
+    while n > 3000:
+        cible -= n - 3000 + 20
+        journal = lancer("monument_lowpoly.py", aligne, low, nom, cible)
+        print(f"  {n} triangles : refait a {cible}")
         print("  " + next(l for l in lancer("couper.py", low, final, "socle").splitlines() if l.startswith("coupe")))
+        n = len(maillage(final)[1])
     if not d["avant-toit"].strip():
         V, F = maillage(final)
         d["avant-toit"] = f"{BM.avant_toit(V, F)[0]:.3f}"

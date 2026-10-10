@@ -33,7 +33,7 @@
 5e-batiment-igloo-de-frimas;b8d0dc eef2f0 7fa0b4 2e3a44 a8a39a;;0.450;3;murs=tout
 5e-batiment-echoppe-de-bazar;e6dcc4 56685e 5e4430 33291f 438b82 8a6236;;0.675;1;loin-sans loin-droit
 5e-batiment-cabane-de-sema;e6dcc4 56685e 6e9a4e 33291f 9aa39a a8a39a;;0.595;0;zone=0.555-0.595:e6dcc4>6e9a4e:v
-5e-batiment-hutte-de-kroa;7e8a6a a08a5a 5e4430 33291f 6a5a44 a8a39a;;0.390;0
+5e-batiment-hutte-de-kroa;7e8a6a a08a5a 5e4430 33291f 6a5a44 a8a39a;;0.415;0;murs=tout toit=tout zone=0-0.415:a08a5a>7e8a6a:v
 5e-batiment-boutique-de-pudding;e6dcc4 56685e 8a3a34 5e4430 33291f a8a39a;;0.660;1
 5e-batiment-salon-de-moustache;9aa39a 4a5a52 e6dcc4 33291f a8a39a;;0.570;2;loin-sans
 5e-batiment-logis-de-velin;9aa39a 56685e e6dcc4 5e4430 33291f a8a39a;;0.635;1

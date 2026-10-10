@@ -9,6 +9,7 @@ import { toutConstruit } from './budget';
 import { BUILDING_FAR_TRIANGLES, BUILDING_FILES, BUILDING_MODELS, BUILDING_NEAR_TRIANGLES, buildingCells, buildingFile, buildingTriangles, getImportedBuildings, isBuildingLoaded } from './buildingModels';
 import { buildingPath, loadBuildingsFromDisk } from './buildingModels.fromDisk.testing';
 import { cacheDeLaConstruction, caseDeLaPiece, construireParIle, fenetresDe, maillageDeLaConstruction } from './construction';
+import { lineaire } from './landMesh';
 import { islandDef } from './map';
 import { STEP } from './placement';
 import { frameOf } from './footprint';
@@ -119,6 +120,22 @@ describe('Les bâtiments importés, lus sur le disque', () => {
     // Posés au même pied, à moins d'une case près.
     expect(Math.abs(bp[1][0] - bl[1][0])).toBeLessThan(0.05);
     for (const k of [0, 2]) expect(Math.abs((bp[k][0] + bp[k][1]) / 2 - (bl[k][0] + bl[k][1]) / 2), `axe ${k}`).toBeLessThan(1);
+  });
+
+  it('aux couleurs de ses cibles : les sRVB du fichier ramenées en linéaire (un fond 3a2a22 reste sombre)', () => {
+    const [pres] = deLIle(getImportedBuildings(premiersRivages([Infinity, Infinity, Infinity]), FORGE));
+    const b = readFileSync(buildingPath(FORGE, 'final-3000.glb'));
+    const fichier = lireGlb(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)).colors;
+    expect(pres.opaque.colors.length).toBe(fichier.length);
+    let ecart = 0;
+    for (let i = 0; i < fichier.length; i++) ecart = Math.max(ecart, Math.abs(pres.opaque.colors[i] - lineaire(fichier[i])));
+    expect(ecart).toBeLessThan(1e-6);
+    // le fond des ouvertures de la forge, 3a2a22 : 0,042 en rouge linéaire (et non 0,227, qui s'affichait 838 en sRVB)
+    const fond = [0x3a, 0x2a, 0x22].map((c) => lineaire(c / 255));
+    expect(fond[0]).toBeCloseTo(0.0423, 3);
+    let vu = false;
+    for (let i = 0; i < pres.opaque.colors.length && !vu; i += 3) vu = [0, 1, 2].every((k) => Math.abs(pres.opaque.colors[i + k] - fond[k]) < 1e-3);
+    expect(vu).toBe(true);
   });
 
   it.each(TOUS)('%s, posé sur ses deux plans : au pied du premier rang, dans leur emprise à une demi-case près, pas plus haut qu’eux', (id) => {
