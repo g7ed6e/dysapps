@@ -21,7 +21,7 @@ Le concept est l'image WebP de `docs/univers/archipeo/personnages/<nom>.webp`, a
 
 Copier les bruts et `reglages.csv` dans un dossier de travail, puis `python3.11 scripts/rendu/modeles/lot.py -- <dossier>` (Python 3.11, `pip install bpy numpy` ; sous Linux, `apt-get install libegl1` pour le rendu de contrôle). Il enchaîne `aligner.py` (socle à plat, centré), `lion_lowpoly.py` (réduit à 1 500 et 200 triangles, peint (pierre pour un Gardien, les quatre couleurs principales de la texture pour une créature), `couper.py` (le socle d'un Gardien, à la hauteur de la colonne 2) et `rendre_controle.py` (`controle.png`). Prendre `final-1500.glb`, `final-200.glb` et `controle.png` dans `<dossier>/prets/<nom>/`, les poser dans `docs/univers/archipeo/personnages/modeles/<nom>/`.
 
-Regarder le contrôle : socle pas entièrement parti ou pattes coupées, changer la hauteur et relancer ; modèle de loin réduit à un bloc, le noter dans `modeles.md` (« À reprendre »).
+Regarder le contrôle : socle pas entièrement parti ou pattes coupées, changer la hauteur et relancer ; modèle de loin réduit à un bloc, le refaire depuis sa version de près : `python3.11 scripts/rendu/modeles/loin.py -- final-1500.glb final-200.glb <triangles> [voxel]` (essayer voxel 0, puis 0.02 et 0.03, sans dépasser le nombre de triangles d'avant), puis refaire le contrôle ; sinon, le noter dans `modeles.md` (« À reprendre »).
 
 ## 4. Le squelette d'une créature (`squelette.py`)
 
@@ -41,7 +41,7 @@ Toujours dans cet ordre : `lot.py`, puis `squelette.py`, puis `aplats.py` en der
 
 ## 6. Dans le jeu
 
-- `src/game/world/characters/imported/models.ts` : la ligne de l'île (lieu, Gardien, créature, quarts de chacun, relevés en regardant le modèle des quatre côtés). Le jeu prend les couleurs du fichier telles quelles (de loin, il éclaircit seulement) : aucune couleur ne s'écrit dans le code.
+- `src/game/world/characters/imported/models.ts` : la ligne de l'île (lieu, Gardien, créature, quarts de chacun, relevés en regardant le modèle des quatre côtés ; un demi-quart, comme 3.5, quand le modèle regarde en biais, celui du Spectre du manoir). Le jeu prend les couleurs du fichier telles quelles (de loin, il éclaircit seulement) : aucune couleur ne s'écrit dans le code.
 - `src/game/importedCharacters.ts` : l'adresse des fichiers (`import.meta.glob`) couvre la classe.
 - Les tests de `src/game/world/characters/imported/` vérifient que chaque créature de `reglages.csv` est peinte avec ses cibles et que son corps se détache de l'herbe : `npx vitest run src/game/world/characters/imported`.
 - Budget : compter le pire cas en triangles de l'archipel (plafonds dans `src/game/world/budget.ts`, `npm run rendu:budget`) ; un dépassement est une décision du mainteneur.

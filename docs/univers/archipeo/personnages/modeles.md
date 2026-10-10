@@ -41,11 +41,11 @@ Les Gardiens (coupe du socle en part de la hauteur, triangles des deux versions)
 | Libellule de jade (Delta, 5e) | 0,12 | 1 426 | 200 |
 | Mammouth de givre (Glacier, 5e) | 0,12 | 1 340 | 189 |
 | Spectre du manoir (Manoir, 5e) | 0,12 | 1 271 | 185 |
-| Hydre des marais (Marais, 5e) | 0,12 | 1 347 | 194 |
-| Colporteur (Marché, 5e) | 0,12 | 1 419 | 191 |
+| Hydre des marais (Marais, 5e) | 0,12 | 1 347 | 190 |
+| Colporteur (Marché, 5e) | 0,12 | 1 419 | 186 |
 | Cheval à bascule (Menuiserie, 5e) | 0 (garde ses patins) | 1 512 | 214 |
 | Tortue d'ocre (Prairie, 5e) | 0,12 | 1 401 | 199 |
-| Diligence de cuivre (Relais, 5e) | 0,12 | 1 475 | 216 |
+| Diligence de cuivre (Relais, 5e) | 0,12 | 1 475 | 214 |
 | Flamant de sel (Saline, 5e) | 0,12 | 1 307 | 172 |
 
 Les créatures (sans socle, rien à couper). Leurs fichiers sont peints en aplats clairs par `aplats.py` (voir plus bas), d’après les couleurs choisies par le directeur artistique le 10 octobre 2026 dans la colonne « aplats » de `reglages.csv`. Écart connu : Robin n’a pas la gorge orange de son concept (aucune de ses quatre couleurs ne la porte) ; elle attend un lot qui touche la géométrie. Les créatures de la 5e sont peintes de même, d’après les couleurs choisies par le directeur artistique le 10 octobre 2026. Écarts connus : chez Sillon, le chapeau de paille est pris dans la zone sombre de la tête ; chez Rabot, la huppe et le tablier partagent un rouille, et le bec est dans le vert du dos ; chez Humus, le bâton est pris dans la peau ; chez Perle, le manche du râteau est pris dans l’orange du bec ; le laiton de la balance de Bazar passe dans le lin. Rabot, Kroa et Sema, au corps vert, sont à juger sur l’herbe une fois dans le jeu.
@@ -80,7 +80,7 @@ Les créatures (sans socle, rien à couper). Leurs fichiers sont peints en aplat
 | Lina (Relais, 5e) | 1 500 | 200 |
 | Perle (Saline, 5e) | 1 500 | 200 |
 
-À reprendre : de loin (200 triangles), l’Hydre des marais, le Colporteur et la Diligence de cuivre ne sont plus que des blocs ; de près, tout tient. La version de loin de la Tortue d’ocre est tirée de sa version de près (réduite à 200 triangles), ce qui a retiré les éclats sous la carapace. Le Cheval à bascule garde ses patins : ils font partie du personnage, on ne coupe rien.
+Les versions de loin de la Tortue d’ocre, de l’Hydre des marais, du Colporteur et de la Diligence de cuivre sont tirées de leur version de près (réduite à 200 triangles environ ; pour l’Hydre et la Diligence, remaillée en voxels d’abord), pour garder ce qui les fait reconnaître : la carapace sans éclats, les têtes, le chapeau et la hotte, la caisse et les roues. Le Spectre du manoir se tourne de trois quarts et demi de tour, pour montrer sa lanterne de face. Le Cheval à bascule garde ses patins : ils font partie du personnage, on ne coupe rien.
 
 ## Passer du concept au modèle brut
 

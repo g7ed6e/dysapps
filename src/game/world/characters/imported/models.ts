@@ -57,7 +57,7 @@ const CINQUIEME: Partial<Record<BiomeId, Ligne>> = {
   'french-5e-homophones': ['carrefour', 'sphinx-des-routes', null, 0, 0],
   'french-5e-conjugation': ['marais', 'hydre-des-marais', null, 1, 0],
   'english-5e-vocabulary': ['comptoir', 'reine-du-marche', null, 1, 0],
-  'english-5e-grammar': ['manoir', 'spectre-du-manoir', null, 2, 0],
+  'english-5e-grammar': ['manoir', 'spectre-du-manoir', null, 3.5, 0],
   'lv2-5e-introductions': ['relais', 'diligence-de-cuivre', null, 1, 0],
   'history-5e-middle-ages': ['bourg', 'griffon-d-email', null, 2, 0],
   'geography-5e-resources': ['delta', 'libellule-de-jade', null, 0, 0],
