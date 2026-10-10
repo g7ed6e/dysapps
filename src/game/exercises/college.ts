@@ -8,7 +8,7 @@ import { addSubFractions, compareFractionsC4, mulDivFractions } from './college/
 import { fourthCoef, fourthInt, mapScale, percentChange, percentOf, speed } from './college/proportions';
 import { powerOfNumber, powerOfTen, powerOfTenReverse, primeDecomposition, primeOrDivisor, productOfPowers, scientific, squareRoot } from './college/powers';
 import { developDouble, developSimple, equationOneStep, equationTwoSteps, factorNumber, factorX, productEquation, reduceMixed, reduceSimple, testEquality } from './college/algebra';
-import { pythagoreHyp, pythagoreSide, reciprocalPythagore, reciprocalThales, thales, trigo } from './college/geometry';
+import { pythagoreHyp, pythagoreLogic, pythagoreSide, reciprocalPythagore, reciprocalThales, thales, trigo } from './college/geometry';
 import { frequencyFraction, frequencyPercent, mean, medianRange, probability, readChart } from './college/statistics';
 import { antecedent, graphAntecedent, graphImage, graphLine, imageOf, linearOrAffine } from './college/functions';
 
@@ -17,7 +17,7 @@ export { addRelatifs, compareRelatifs, mulRelatifs } from './college/signedNumbe
 export { percentChange } from './college/proportions';
 export { pow, primeDecomposition, primeFactors, scientific, TO_FACTOR } from './college/powers';
 export { developDouble, equationTwoSteps, factorNumber, factorX, productEquation, testEquality } from './college/algebra';
-export { NOT_RIGHT, pythagoreHyp, pythagoreSide, reciprocalPythagore, reciprocalThales, RECIPROQUE_PYTHAGORE_CHOICES, thales, THALES_CASES } from './college/geometry';
+export { NOT_RIGHT, PYTHAGORE_LOGIC_CHOICES, pythagoreHyp, pythagoreLogic, pythagoreSide, reciprocalPythagore, reciprocalThales, RECIPROQUE_PYTHAGORE_CHOICES, thales, THALES_CASES } from './college/geometry';
 export { mean, SURVEYS } from './college/statistics';
 export { GRAPH_FRAME, graphAntecedent, graphImage, graphLine, READ_ANTECEDENT_RULES, READ_IMAGE_RULES, READ_LINE_RULES } from './college/functions';
 
@@ -89,6 +89,8 @@ const PYTHAGORE = 'Trouve l’hypoténuse : hypoténuse au carré égale la somm
 
 const PYTHAGORE_COTE = 'Trouve un côté de l’angle droit : hypoténuse au carré moins l’autre côté au carré, puis racine carrée.';
 
+const PYTHAGORE_LOGIQUE = 'Lis le raisonnement : ce qu’on sait au départ, puis ce qu’on conclut. Quelle propriété a servi ?';
+
 const THALES = 'Les droites sont parallèles : les longueurs du grand triangle sont celles du petit multipliées par le même nombre.';
 
 const PYTHAGORE_RECIPROQUE = 'Le triangle est-il rectangle ? Compare le carré du plus grand côté à la somme des carrés des deux autres.';
@@ -155,6 +157,12 @@ export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'maths-4e-algebra', type: 'equations', level: 2, instruction: EQUILIBRE_DEUX, generators: [equationTwoSteps], block: 'maths-4e-algebra' }),
   defineData({ biome: 'maths-4e-algebra', type: 'equations', level: 3, instruction: EQUILIBRE_TEST, generators: [testEquality], block: 'maths-4e-algebra' }),
   defineData({ biome: 'maths-4e-algebra', type: 'equations', level: 4, instruction: EQUILIBRE_PRODUIT, generators: [productEquation], block: 'maths-4e-algebra' }),
+  // Pythagore en 4e (programme de 2026, p. 14) : le théorème, sa réciproque et sa contraposée. Le Belvédère de Thalès
+  // (3e) garde sa mission, qui le réinvestit.
+  defineData({ biome: 'maths-4e-algebra', type: 'pythagoras', level: 1, instruction: PYTHAGORE, generators: [pythagoreHyp], block: 'maths-4e-algebra' }),
+  defineData({ biome: 'maths-4e-algebra', type: 'pythagoras', level: 2, instruction: PYTHAGORE_COTE, generators: [pythagoreSide], block: 'maths-4e-algebra' }),
+  defineData({ biome: 'maths-4e-algebra', type: 'pythagoras', level: 3, instruction: PYTHAGORE_RECIPROQUE, generators: [reciprocalPythagore], block: 'maths-4e-algebra' }),
+  defineData({ biome: 'maths-4e-algebra', type: 'pythagoras', level: 4, instruction: PYTHAGORE_LOGIQUE, generators: [pythagoreLogic], block: 'maths-4e-algebra' }),
   defineData({ biome: 'maths-3e-geometry', type: 'pythagoras', level: 1, instruction: PYTHAGORE, generators: [pythagoreHyp], block: 'maths-3e-geometry' }),
   defineData({ biome: 'maths-3e-geometry', type: 'pythagoras', level: 2, instruction: PYTHAGORE_COTE, generators: [pythagoreSide], block: 'maths-3e-geometry' }),
   defineData({ biome: 'maths-3e-geometry', type: 'pythagoras', level: 4, instruction: PYTHAGORE_RECIPROQUE, generators: [reciprocalPythagore], block: 'maths-3e-geometry' }),

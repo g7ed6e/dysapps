@@ -189,6 +189,66 @@ export const reciprocalPythagore: ItemGenerator = (rng) => {
   };
 };
 
+export const PYTHAGORE_LOGIC_CHOICES = ['le théorème', 'la réciproque', 'la contraposée'];
+
+type PythagoreForm = 'theorem' | 'converse' | 'contrapositive';
+
+const PYTHAGORE_FORMS: PythagoreForm[] = ['theorem', 'converse', 'contrapositive'];
+
+/**
+ * Atelier du calcul littéral (4e) : le travail de logique que le programme de 2026 demande en 4e (p. 14). Un
+ * raisonnement complet, ce qu'on sait puis ce qu'on conclut : est-ce le théorème, la réciproque ou la contraposée ?
+ * Les trois reviennent aussi souvent ; le piège est de prendre le théorème pour sa réciproque, puisque les deux parlent
+ * de la même égalité.
+ */
+export const pythagoreLogic: ItemGenerator = (rng) => {
+  const form = PYTHAGORE_FORMS[randomInt(0, PYTHAGORE_FORMS.length - 1, rng)];
+  const [a, b, c] = form === 'contrapositive' ? NOT_RIGHT[randomInt(0, NOT_RIGHT.length - 1, rng)] : TRIPLES[randomInt(0, TRIPLES.length - 1, rng)];
+  const sum = a * a + b * b;
+  const lengths = `AB = ${a} cm, AC = ${b} cm, BC = ${c} cm`;
+  const spokenLengths = `A B égale ${a} centimètres, A C égale ${b} centimètres, B C égale ${c} centimètres`;
+  const squares = `BC² = ${c * c} et AB² + AC² = ${a * a} + ${b * b} = ${sum}`;
+  const spokenSquares = `B C au carré égale ${c * c}, et A B au carré plus A C au carré égale ${sum}`;
+  const reasoning: Record<PythagoreForm, { text: string; spoken: string; why: string }> = {
+    theorem: {
+      text: `ABC est rectangle en A. Donc BC² = AB² + AC², et BC = ${c} cm.`,
+      spoken: `A B C est rectangle en A. Donc B C au carré égale A B au carré plus A C au carré, et B C égale ${c} centimètres.`,
+      why: 'On part d’un triangle rectangle et on conclut l’égalité des carrés : c’est le théorème.',
+    },
+    converse: {
+      text: `${lengths}. ${squares}. C’est égal, donc ABC est rectangle en A.`,
+      spoken: `${spokenLengths}. ${spokenSquares}. C’est égal, donc A B C est rectangle en A.`,
+      why: 'On part de l’égalité des carrés et on conclut que le triangle est rectangle : c’est la réciproque.',
+    },
+    contrapositive: {
+      text: `${lengths}. ${squares}. Ce n’est pas égal, donc ABC n’est pas rectangle.`,
+      spoken: `${spokenLengths}. ${spokenSquares}. Ce n’est pas égal, donc A B C n’est pas rectangle.`,
+      why: 'On part d’une égalité fausse et on conclut que le triangle n’est pas rectangle : c’est la contraposée.',
+    },
+  };
+  const { text, spoken, why } = reasoning[form];
+  return {
+    key: `logpyth-${form}-${a}-${b}-${c}`,
+    prompt: `${text} Quelle propriété a servi ?`,
+    spoken: `${spoken} Quelle propriété a servi ?`,
+    choices: [...PYTHAGORE_LOGIC_CHOICES],
+    answer: PYTHAGORE_LOGIC_CHOICES[PYTHAGORE_FORMS.indexOf(form)],
+    hint: 'Regarde ce qu’on sait au départ, puis ce qu’on conclut à la fin.',
+    explanation: why,
+    aid: {
+      kind: 'rule-card',
+      props: {
+        title: 'Pythagore : trois propriétés',
+        lines: [
+          'Théorème : rectangle, donc égalité des carrés.',
+          'Réciproque : égalité des carrés, donc rectangle.',
+          'Contraposée : pas d’égalité, donc pas rectangle.',
+        ],
+      },
+    },
+  };
+};
+
 /** Les coefficients de la réciproque de Thalès : ceux du niveau 1, et 4. */
 const RECIPROQUE_K = [1.5, 2, 2.5, 3, 4];
 
