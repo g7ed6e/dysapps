@@ -184,6 +184,10 @@ if COULEURS:  # les n couleurs principales (k-moyennes), puis chaque facette pre
     print("couleurs :", ", ".join("#%02X%02X%02X" % tuple(round(v) for v in c) for c in centres))
 print(f"{red.name} : {len(red.data.polygons)} triangles, {nb_lichen} facettes de lichen")
 
+# chaque triangle a ses propres sommets : l'export fusionnerait sinon ceux de deux facettes voisines de meme couleur,
+# et aplats.py ne pourrait plus peindre un triangle sans son voisin (vu sur Frimas, Bazar et Lina)
+bm = bmesh.new(); bm.from_mesh(red.data); bmesh.ops.split_edges(bm, edges=bm.edges[:]); bm.to_mesh(red.data); bm.free()
+
 # export de la seule version reduite, couleurs par sommet, sans texture
 for o in bpy.context.selected_objects:
     o.select_set(False)
