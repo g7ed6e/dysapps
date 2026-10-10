@@ -31,7 +31,7 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
   expect(RENDER_BUDGET_6E).toEqual({ triangles: 76_500, drawCalls: 40 });
   // GD-12 : 78 700 ailleurs (mainteneur, 9 octobre 2026, carte « Relever ») ; relevé à 86 000 par le mainteneur le
   // 9 octobre 2026 pour le Fournil des partages et la Grotte des légendes (5e).
-  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 86_000, drawCalls: 40 });
+  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 86_700, drawCalls: 40 });
 });
 
 it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : un appel de plus au plus, sous le plafond', () => {
@@ -133,12 +133,13 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // La Porte des libertés et la Colonnade des cités (4e) : les Anciens Ateliers à 82 975 ; le Forum des débats et le
   // Bosquet des sages (3e) : les Îles du Ciel à 82 855 ; aux mesures (world/budget.ts), sous `RENDER_BUDGET_AUTRES`
   // (86 000), inchangé. Révision de GD-12 (la Porte et la Colonnade au flanc ouest, le cadre élargi ; en attente du mot
-  // du mainteneur) : la mer à 7 150 aux Anciens Ateliers (83 725), toujours sous 86 000.
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e) : 76 290 triangles et 25 appels aux Premiers Rivages, 85 945, 82 975 et 82 855 et 24 appels ailleurs (83 725 au 4e depuis la révision de GD-12)', () => {
+  // du mainteneur) : la mer à 7 150 aux Anciens Ateliers (83 725), toujours sous 86 000. Les Gardiens et les créatures
+  // importés de la 5e : les Îles Brumeuses à 86 685, sous `RENDER_BUDGET_AUTRES` relevé à 86 700 (mainteneur, 10 octobre 2026).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e) : 76 290 triangles et 25 appels aux Premiers Rivages, 86 685, 82 975 et 82 855 et 24 appels ailleurs (83 725 au 4e depuis la révision de GD-12)', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([76_290, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([85_945, 24]);
+    expect([total('5e'), appels('5e')]).toEqual([86_685, 24]);
     expect([total('4e'), appels('4e')]).toEqual([83_725, 24]);
     expect([total('3e'), appels('3e')]).toEqual([82_855, 24]);
   });

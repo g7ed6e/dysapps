@@ -73,7 +73,7 @@ export const RENDER_BUDGET_6E = { triangles: 76_500, drawCalls: RENDER_BUDGET.dr
  * des partages et la Grotte des légendes (5e) : mesuré tout construit, avec la cinquième mission (GD-14), « Dans la
  * scène » à part, 84 576 aux Îles Brumeuses (74 664 avant) ; la somme de leurs enveloppes (85 945) y tient.
  */
-export const RENDER_BUDGET_AUTRES = { triangles: 86_000, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_AUTRES = { triangles: 86_700, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
@@ -256,16 +256,17 @@ export const ENVELOPPES: Record<
   // Les Gardiens importés de la 5e (TRELLIS, scripts/rendu/modeles/, 10 octobre 2026) : au pire, de près sur l'île qui
   // coûte le plus et de loin ailleurs, 4 684 triangles (`budget.test.ts`, R6) pour 3 147 dessinés en code. Leur enveloppe
   // aux Îles Brumeuses passe de 3 150 à 4 700 ; le sol, mesuré à 35 416 tout construit (`npm run rendu:budget`), cède les
-  // 1 550 : 41 210 → 39 660. Puis les créatures importées de la 5e, avec leur squelette : 4 217 au pire pour 3 480
-  // dessinées en code ; leur enveloppe passe de 3 485 à 4 225, le sol cède les 740 : 39 660 → 38 920 (Gardiens après
-  // reprise de leurs versions de loin : 4 673). La somme des Îles Brumeuses reste 85 945, sous `RENDER_BUDGET_AUTRES`
-  // (86 000), inchangé (mainteneur, 10 octobre 2026, carte « Échanger », deux fois).
+  // 1 550 : 41 210 → 39 660 (mainteneur, 10 octobre 2026, carte « Échanger »). Puis les créatures importées de la 5e,
+  // avec leur squelette : 4 217 au pire pour 3 480 dessinées en code ; leur enveloppe passe de 3 485 à 4 225 sans rien
+  // prendre ailleurs (Gardiens après reprise de leurs versions de loin : 4 673). La somme des Îles Brumeuses passe de
+  // 85 945 à 86 685 : `RENDER_BUDGET_AUTRES` relevé de 86 000 à 86 700 (mainteneur, 10 octobre 2026, carte « Monter le
+  // plafond »).
   sol: {
     lot: 'R4b',
     nom: 'Sol',
     premiersRivages: { triangles: 32_550, drawCalls: 2 },
     autres: { triangles: 36_930, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 38_920, drawCalls: 1 }, '4e': { triangles: 43_750, drawCalls: 1 }, '3e': { triangles: 44_900, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 39_660, drawCalls: 1 }, '4e': { triangles: 43_750, drawCalls: 1 }, '3e': { triangles: 44_900, drawCalls: 1 } },
   },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
