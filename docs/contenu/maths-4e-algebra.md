@@ -180,7 +180,7 @@ Pour tous les items :
    - explication : 5 × 4 = 20, donc 3 × 4 = 12 : 3/5 = 12/20. Vérifie : 3 × 20 = 60 et 5 × 12 = 60. 18, c’est ajouter 15 en haut comme en bas : l’égalité ne tient pas. 4 est le multiplicateur, pas le numérateur.
    - figure : fraction 3/5
 
-## Pythagore · `pythagoras`
+## Pythagore · `pythagorean-theorem`
 
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 

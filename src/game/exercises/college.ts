@@ -89,7 +89,7 @@ const PYTHAGORE = 'Trouve l’hypoténuse : hypoténuse au carré égale la somm
 
 const PYTHAGORE_COTE = 'Trouve un côté de l’angle droit : hypoténuse au carré moins l’autre côté au carré, puis racine carrée.';
 
-const PYTHAGORE_LOGIQUE = 'Lis le raisonnement : ce qu’on sait au départ, puis ce qu’on conclut. Quelle propriété a servi ?';
+const PYTHAGORE_LOGIQUE = 'Le théorème, la réciproque ou la contraposée ? La règle est affichée.';
 
 const THALES = 'Les droites sont parallèles : les longueurs du grand triangle sont celles du petit multipliées par le même nombre.';
 
@@ -159,10 +159,10 @@ export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'maths-4e-algebra', type: 'equations', level: 4, instruction: EQUILIBRE_PRODUIT, generators: [productEquation], block: 'maths-4e-algebra' }),
   // Pythagore en 4e (programme de 2026, p. 14) : le théorème, sa réciproque et sa contraposée. Le Belvédère de Thalès
   // (3e) garde sa mission, qui le réinvestit.
-  defineData({ biome: 'maths-4e-algebra', type: 'pythagoras', level: 1, instruction: PYTHAGORE, generators: [pythagoreHyp], block: 'maths-4e-algebra' }),
-  defineData({ biome: 'maths-4e-algebra', type: 'pythagoras', level: 2, instruction: PYTHAGORE_COTE, generators: [pythagoreSide], block: 'maths-4e-algebra' }),
-  defineData({ biome: 'maths-4e-algebra', type: 'pythagoras', level: 3, instruction: PYTHAGORE_RECIPROQUE, generators: [reciprocalPythagore], block: 'maths-4e-algebra' }),
-  defineData({ biome: 'maths-4e-algebra', type: 'pythagoras', level: 4, instruction: PYTHAGORE_LOGIQUE, generators: [pythagoreLogic], block: 'maths-4e-algebra' }),
+  defineData({ biome: 'maths-4e-algebra', type: 'pythagorean-theorem', level: 1, instruction: PYTHAGORE, generators: [pythagoreHyp], block: 'maths-4e-algebra' }),
+  defineData({ biome: 'maths-4e-algebra', type: 'pythagorean-theorem', level: 2, instruction: PYTHAGORE_COTE, generators: [pythagoreSide], block: 'maths-4e-algebra' }),
+  defineData({ biome: 'maths-4e-algebra', type: 'pythagorean-theorem', level: 3, instruction: PYTHAGORE_RECIPROQUE, generators: [reciprocalPythagore], block: 'maths-4e-algebra' }),
+  defineData({ biome: 'maths-4e-algebra', type: 'pythagorean-theorem', level: 4, instruction: PYTHAGORE_LOGIQUE, generators: [pythagoreLogic], block: 'maths-4e-algebra' }),
   defineData({ biome: 'maths-3e-geometry', type: 'pythagoras', level: 1, instruction: PYTHAGORE, generators: [pythagoreHyp], block: 'maths-3e-geometry' }),
   defineData({ biome: 'maths-3e-geometry', type: 'pythagoras', level: 2, instruction: PYTHAGORE_COTE, generators: [pythagoreSide], block: 'maths-3e-geometry' }),
   defineData({ biome: 'maths-3e-geometry', type: 'pythagoras', level: 4, instruction: PYTHAGORE_RECIPROQUE, generators: [reciprocalPythagore], block: 'maths-3e-geometry' }),

@@ -276,7 +276,7 @@ export const ENVELOPPES: Record<
     nom: 'Sol',
     premiersRivages: { triangles: 32_550, drawCalls: 2 },
     autres: { triangles: 36_930, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 39_660, drawCalls: 1 }, '4e': { triangles: 43_750, drawCalls: 1 }, '3e': { triangles: 44_900, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 39_660, drawCalls: 1 }, '4e': { triangles: 43_740, drawCalls: 1 }, '3e': { triangles: 44_900, drawCalls: 1 } },
   },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
@@ -380,7 +380,9 @@ export const ENVELOPPES: Record<
     nom: 'Bornes (instanciées)',
     premiersRivages: { triangles: 1_800, drawCalls: 1 },
     autres: { triangles: 1_450, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 1_520, drawCalls: 1 } },
+    // Pythagore en 4e (10 octobre 2026) : une cinquième borne à l'Atelier du calcul littéral, 1 428 → 1 456 ; les 10
+    // triangles d'enveloppe sont pris au sol du 4e (43 750 → 43 740), la somme ne change pas.
+    parArchipel: { '5e': { triangles: 1_520, drawCalls: 1 }, '4e': { triangles: 1_460, drawCalls: 1 } },
   },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },

@@ -205,32 +205,34 @@ export const pythagoreLogic: ItemGenerator = (rng) => {
   const form = PYTHAGORE_FORMS[randomInt(0, PYTHAGORE_FORMS.length - 1, rng)];
   const [a, b, c] = form === 'contrapositive' ? NOT_RIGHT[randomInt(0, NOT_RIGHT.length - 1, rng)] : TRIPLES[randomInt(0, TRIPLES.length - 1, rng)];
   const sum = a * a + b * b;
-  const lengths = `AB = ${a} cm, AC = ${b} cm, BC = ${c} cm`;
-  const spokenLengths = `A B égale ${a} centimètres, A C égale ${b} centimètres, B C égale ${c} centimètres`;
-  const squares = `BC² = ${c * c} et AB² + AC² = ${a * a} + ${b * b} = ${sum}`;
-  const spokenSquares = `B C au carré égale ${c * c}, et A B au carré plus A C au carré égale ${sum}`;
-  const reasoning: Record<PythagoreForm, { text: string; spoken: string; why: string }> = {
+  const lengths = `AB = ${a} cm, AC = ${b} cm, BC = ${c} cm.`;
+  const spokenLengths = `A B égale ${a} centimètres, A C égale ${b} centimètres, B C égale ${c} centimètres.`;
+  const squares = `BC² = ${c * c} et AB² + AC² = ${a * a} + ${b * b} = ${sum}.`;
+  const spokenSquares = `B C au carré égale ${c * c}, et A B au carré plus A C au carré égale ${sum}.`;
+  // Ce qu'on sait, puis ce qu'on conclut : une ligne chacun, la question à part.
+  const reasoning: Record<PythagoreForm, { lines: string[]; spoken: string; why: string }> = {
     theorem: {
-      text: `ABC est rectangle en A. Donc BC² = AB² + AC², et BC = ${c} cm.`,
-      spoken: `A B C est rectangle en A. Donc B C au carré égale A B au carré plus A C au carré, et B C égale ${c} centimètres.`,
-      why: 'On part d’un triangle rectangle et on conclut l’égalité des carrés : c’est le théorème.',
+      lines: ['ABC est rectangle en A.', 'Donc BC² = AB² + AC².'],
+      spoken: 'A B C est rectangle en A. Donc B C au carré égale A B au carré plus A C au carré.',
+      why: 'On part d’un triangle rectangle et on conclut l’égalité des carrés : c’est le théorème. La réciproque va dans l’autre sens, de l’égalité vers le triangle rectangle.',
     },
     converse: {
-      text: `${lengths}. ${squares}. C’est égal, donc ABC est rectangle en A.`,
-      spoken: `${spokenLengths}. ${spokenSquares}. C’est égal, donc A B C est rectangle en A.`,
-      why: 'On part de l’égalité des carrés et on conclut que le triangle est rectangle : c’est la réciproque.',
+      lines: [lengths, `${squares} Les deux nombres sont égaux.`, 'Donc ABC est rectangle en A.'],
+      spoken: `${spokenLengths} ${spokenSquares} Les deux nombres sont égaux. Donc A B C est rectangle en A.`,
+      why: 'On part de l’égalité des carrés et on conclut que le triangle est rectangle : c’est la réciproque. Le théorème va dans l’autre sens, du triangle rectangle vers l’égalité.',
     },
     contrapositive: {
-      text: `${lengths}. ${squares}. Ce n’est pas égal, donc ABC n’est pas rectangle.`,
-      spoken: `${spokenLengths}. ${spokenSquares}. Ce n’est pas égal, donc A B C n’est pas rectangle.`,
-      why: 'On part d’une égalité fausse et on conclut que le triangle n’est pas rectangle : c’est la contraposée.',
+      lines: [lengths, `${squares} Les deux nombres sont différents.`, 'Donc ABC n’est pas rectangle.'],
+      spoken: `${spokenLengths} ${spokenSquares} Les deux nombres sont différents. Donc A B C n’est pas rectangle.`,
+      why: 'Les carrés ne sont pas égaux, donc le triangle n’est pas rectangle : c’est la contraposée. Si le triangle était rectangle, le théorème donnerait l’égalité.',
     },
   };
-  const { text, spoken, why } = reasoning[form];
+  const { lines, spoken, why } = reasoning[form];
   return {
     key: `logpyth-${form}-${a}-${b}-${c}`,
-    prompt: `${text} Quelle propriété a servi ?`,
-    spoken: `${spoken} Quelle propriété a servi ?`,
+    question: 'Quelle propriété a servi ?',
+    prompt: lines.join('\n'),
+    spoken,
     choices: [...PYTHAGORE_LOGIC_CHOICES],
     answer: PYTHAGORE_LOGIC_CHOICES[PYTHAGORE_FORMS.indexOf(form)],
     hint: 'Regarde ce qu’on sait au départ, puis ce qu’on conclut à la fin.',

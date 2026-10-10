@@ -773,7 +773,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "pythagoras",
+        "id": "pythagorean-theorem",
         "title": "Pythagore",
         "description": "L’hypoténuse, puis un côté de l’angle droit, puis la réciproque, enfin la logique : théorème, réciproque ou contraposée ?",
         "programme": [
