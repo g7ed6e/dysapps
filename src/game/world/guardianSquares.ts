@@ -92,3 +92,15 @@ export function onFixedGuardianSquare(id: BiomeId, hasShape: boolean, x: number,
   const g = hasShape ? GD11_GUARDIAN_SQUARES[id] : undefined;
   return !!g && x >= g.x && y >= g.y && x < g.x + GUARDIAN_SQUARE_SIDE && y < g.y + GUARDIAN_SQUARE_SIDE;
 }
+
+/**
+ * Les Gardiens d'Archipéo plus hauts dans le monde que la sentinelle commune (5,2 cases, socle compris), en cases, socle
+ * compris : le Grand Chêne est le plus grand arbre de son île et de son archipel (demande du mainteneur, 10 octobre 2026),
+ * une case au moins au-dessus des arbres ordinaires du 6e (directeur artistique). Sa large couronne tient alors sur les
+ * cinq cases de son carré. Dans Blocland, il fait déjà 6,5 blocs (13 couches à l'échelle 0,5), contre 5 au plus pour un
+ * arbre. Données pures, lues par la grille, le dessin des Gardiens et le décor.
+ */
+export const GUARDIAN_WORLD_HEIGHTS: Readonly<Partial<Record<BiomeId, number>>> = { 'french-6e-phonology': 6 };
+
+/** Le plus haut d'un arbre ordinaire du 6e dans Archipéo, au-dessus du sol : une case sous le Grand Chêne. */
+export const TALLEST_TREE_6E = (GUARDIAN_WORLD_HEIGHTS['french-6e-phonology'] ?? 0) - 1;

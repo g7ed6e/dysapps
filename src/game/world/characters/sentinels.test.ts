@@ -8,6 +8,7 @@ import { GRUE } from '../decor/4e';
 import { PHARES } from '../decor/lighthouse';
 import { guardianCenter, guardianPlacements, versLaCamera } from '../terrain';
 import { fusionDesGardiens, pointDePose } from './merges';
+import { GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
 import {
   allumage,
   couleursAllumees,
@@ -355,7 +356,7 @@ describe('Les sentinelles dans le monde (revue d’ensemble du directeur artisti
         for (let t = f.plages[i].debut; t < f.plages[i].fin; t++) for (let k = 0; k < 3; k++) haut = Math.max(haut, f.positions[t * 9 + k * 3 + 1]);
         // Une sentinelle basse (la Diligence) rapetisse de même, à partir de son propre haut.
         const basse = BASSES[p.id];
-        if (!basse) return expect(haut - pied, p.id).toBeCloseTo(HAUTEUR_DANS_LE_MONDE, 2);
+        if (!basse) return expect(haut - pied, p.id).toBeCloseTo(GUARDIAN_WORLD_HEIGHTS[p.id] ?? HAUTEUR_DANS_LE_MONDE, 2);
         expect(haut - pied, p.id).toBeGreaterThanOrEqual(basse[0] * ECHELLE_DANS_LE_MONDE - 0.005);
         expect(haut - pied, p.id).toBeLessThanOrEqual(basse[1] * ECHELLE_DANS_LE_MONDE + 0.005);
       });
@@ -377,7 +378,7 @@ describe('Les sentinelles dans le monde (revue d’ensemble du directeur artisti
       const g = guardianPlacements('6e', progress, village.links).find((p) => p.id === b.id);
       if (!g) continue;
       const pied = pointDePose(g)[1];
-      expect(guardianCenter(b.id).z + 1, b.id).toBeCloseTo(pied + HAUTEUR_DANS_LE_MONDE / 2, 1);
+      expect(guardianCenter(b.id).z + 1, b.id).toBeCloseTo(pied + (GUARDIAN_WORLD_HEIGHTS[b.id] ?? HAUTEUR_DANS_LE_MONDE) / 2, 1);
     }
   });
 });

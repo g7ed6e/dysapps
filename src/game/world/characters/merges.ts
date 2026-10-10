@@ -19,6 +19,7 @@ import { lueursDeNuit, type FacettesDePersonnage, type V3 } from './painted';
 import { couleursAllumees, ECHELLE_DANS_LE_MONDE, lueurDuTriangle } from './sentinel';
 import { sentinelleDuMonde } from './paintedSentinels';
 import type { Niveau } from './imported/models';
+import { GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
 
 /** Ce qu'une fusion lit d'un personnage placé sur la grille (une créature, un Gardien). */
 export interface PersonnagePlace {
@@ -228,6 +229,18 @@ export function fusionDesCreatures(places: PersonnagePlace[], pres: BiomeId | nu
 }
 
 /**
+ * L'échelle d'un Gardien dans le monde : celle de toutes les sentinelles (`ECHELLE_DANS_LE_MONDE`, DA-5), ou celle qui
+ * le porte à sa hauteur propre (`GUARDIAN_WORLD_HEIGHTS`, le Grand Chêne). L'écran du défi le montre à sa taille.
+ */
+function echelleDuGardien(id: BiomeId, f: FacettesDePersonnage): number {
+  const h = GUARDIAN_WORLD_HEIGHTS[id];
+  if (h === undefined) return ECHELLE_DANS_LE_MONDE;
+  let haut = 0;
+  for (let i = 1; i < f.positions.length; i += 3) haut = Math.max(haut, f.positions[i]);
+  return h / haut;
+}
+
+/**
  * Les Gardiens placés, en sentinelles, en un maillage fixe, éteints (`couleursDesGardiens` donne les autres degrés), à
  * l'échelle du monde (`ECHELLE_DANS_LE_MONDE`, DA-5), les pieds sur leur case. `pres` : l'île regardée, dont le
  * Gardien est de près.
@@ -240,7 +253,7 @@ export function fusionDesGardiens(places: PersonnagePlace[], pres: BiomeId | nul
   let t0 = 0;
   places.forEach((p, i) => {
     const f = modeles[i];
-    copier(base, f, pointDePose(p), t0, ECHELLE_DANS_LE_MONDE);
+    copier(base, f, pointDePose(p), t0, echelleDuGardien(p.id, f));
     const brille = f.table.map((q) => q.lueur === 'allumage');
     for (let t = 0; t < f.pieces.length; t++) if (brille[f.pieces[t]]) lueur.fill(1, (t0 + t) * 3, (t0 + t + 1) * 3);
     base.plages.push({ id: p.id, debut: t0, fin: t0 + f.pieces.length });
