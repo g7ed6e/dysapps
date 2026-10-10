@@ -5,6 +5,7 @@ import { SENTINELLE } from '../colors';
 import { ESPECES } from '../paintedCreatures';
 import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, frontDeLueur, HAUTEUR_DE_SENTINELLE } from '../sentinel';
 import { tailleDe } from '../template';
+import { FLAT_COLORS, smoothIsolated } from './flatColors';
 import { lireGlb } from './glb';
 import { chargerLesModelesDuDisque, fichierDuModele } from './fromDisk.testing';
 import { ILES_IMPORTEES, modeleImporte, nomDuModele, type Genre, type Niveau } from './models';
@@ -25,6 +26,9 @@ function cadre(p: Float32Array): { bas: number; haut: number; large: number } {
   }
   return { bas, haut, large };
 }
+
+/** La clarté d'une couleur, de 0 à 1 (le L de TSL). */
+const clarte = (c: number) => (Math.max(c >> 16, (c >> 8) & 255, c & 255) + Math.min(c >> 16, (c >> 8) & 255, c & 255)) / 2 / 255;
 
 beforeAll(() => chargerLesModelesDuDisque());
 
@@ -59,8 +63,7 @@ it('une créature importée a la taille de son gabarit, les pieds au sol', () =>
   }
 });
 
-it('de loin, une créature n’a aucune couleur plus sombre que la clarté 0,42 ; de près, elle garde les siennes', () => {
-  const clarte = (c: number) => (Math.max(c >> 16, (c >> 8) & 255, c & 255) + Math.min(c >> 16, (c >> 8) & 255, c & 255)) / 2 / 255;
+it('de loin, une créature n’a aucune couleur plus sombre que la clarté 0,42 ; de près, elle garde ses accents sombres', () => {
   let sombresDePres = 0;
   for (const id of ILES_IMPORTEES) {
     for (const c of modeleImporte('creature', id, 'loin')!.teintes) expect(clarte(c), id).toBeGreaterThanOrEqual(0.415);
@@ -106,4 +109,39 @@ it('le modèle compacté au build se lit comme l’original, à moins d’un mil
     for (let i = 0; i < a.positions.length; i++) expect(Math.abs(b.positions[i] - a.positions[i])).toBeLessThan(haut / 1000);
     for (let i = 0; i < a.colors.length; i++) expect(Math.abs(b.colors[i] - a.colors[i])).toBeLessThan(1 / 255 + 1e-6);
   }
+});
+
+it('chaque créature a ses aplats : les quatre couleurs de son modèle de près, chacune avec sa cible', () => {
+  const srgb = (v: number) => (v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
+  for (const id of ILES_IMPORTEES) {
+    const table = FLAT_COLORS[id];
+    expect(table, id).toBeDefined();
+    const a = lireGlb(lu(fichierDuModele(nomDuModele('creature', id)!, 'pres')));
+    const duModele = new Set<number>();
+    for (let i = 0; i < a.colors.length; i += 3) {
+      const [r, g, b] = [0, 1, 2].map((j) => Math.round(srgb(a.colors[i + j]) * 255));
+      duModele.add((r << 16) | (g << 8) | b);
+    }
+    expect([...duModele].sort(), id).toEqual(Object.keys(table!).map(Number).sort());
+  }
+});
+
+it('de près, une créature n’a que les couleurs de ses aplats, et son corps se détache de l’herbe', () => {
+  for (const id of ILES_IMPORTEES) {
+    const cibles = new Set(Object.values(FLAT_COLORS[id]!));
+    const f = modeleImporte('creature', id, 'pres')!;
+    for (const c of f.teintes) expect(cibles.has(c), id).toBe(true);
+    // La couleur qui couvre le plus de facettes, le corps, est plus claire que l'herbe (clarté 0,36).
+    const parts = new Map<number, number>();
+    for (const c of f.teintes) parts.set(c, (parts.get(c) ?? 0) + 1);
+    const corps = [...parts].sort((x, y) => y[1] - x[1])[0][0];
+    expect(clarte(corps), id).toBeGreaterThan(0.4);
+  }
+});
+
+it('un triangle seul au milieu d’une autre couleur la prend ; une zone de deux triangles reste', () => {
+  // Une bande de quatre triangles, chacun voisin du suivant par une arête.
+  const p = Float32Array.from([0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 2, 0, 0, 1, 1, 0, 2, 0, 0, 2, 1, 0, 1, 1, 0]);
+  expect([...smoothIsolated(p, Int32Array.from([1, 2, 1, 1]))]).toEqual([1, 1, 1, 1]);
+  expect([...smoothIsolated(p, Int32Array.from([1, 2, 2, 1]))]).toEqual([1, 2, 2, 1]);
 });

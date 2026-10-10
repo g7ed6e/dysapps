@@ -16,6 +16,7 @@ import { NUANCE, type FacettesDePersonnage } from '../painted';
 import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, HAUT_DU_SOCLE, HAUTEUR_DE_SENTINELLE, socleSeul } from '../sentinel';
 import { ESPECES_6E } from '../species/6e';
 import { tailleDe, type Espece } from '../template';
+import { FLAT_COLORS, flatColor, smoothIsolated } from './flatColors';
 import type { ModeleLu } from './glb';
 
 export type Genre = 'gardien' | 'creature';
@@ -185,7 +186,7 @@ function sentinelleImportee(lu: ModeleLu, quarts: number): FacettesDePersonnage 
 }
 
 /**
- * Une créature importée, à la taille de son gabarit, ses couleurs (quatre au plus, celles du modèle) nuancées selon la
+ * Une créature importée, à la taille de son gabarit, ses couleurs (celles du modèle mises en aplats) nuancées selon la
  * facette comme une créature dessinée en code. Une seule pièce, le corps : elle se promène sans lever le bras.
  */
 function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niveau): FacettesDePersonnage {
@@ -195,10 +196,13 @@ function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niv
   const positions = placer(lu.positions, (h) => taille / h, 0, quarts);
   const normals = normalesPlates(positions);
   const n = positions.length / 9;
-  const teintes = new Int32Array(n);
+  // Les couleurs du modèle mises en aplats (./flatColors.ts), sans triangle isolé ; de loin, éclaircies.
+  const aplats = FLAT_COLORS[id];
+  const cible = aplats ? flatColor(aplats) : (c: Couleur) => c;
+  const sources = Int32Array.from({ length: n }, (_, t) => cible(teinteDu(lu.colors, t)));
+  const teintes = (aplats ? smoothIsolated(lu.positions, sources) : sources).map((c) => (niveau === 'loin' ? eclaircie(c) : c));
   const colors = new Float32Array(positions.length);
   for (let t = 0; t < n; t++) {
-    teintes[t] = niveau === 'loin' ? eclaircie(teinteDu(lu.colors, t)) : teinteDu(lu.colors, t);
     const k = rgb(teintes[t]);
     const w = NUANCE[0] + (NUANCE[1] - NUANCE[0]) * clamp(0.5 + 0.5 * normals[t * 9 + 1], 0, 1);
     const c = [lineaire((k[0] / 255) * w), lineaire((k[1] / 255) * w), lineaire((k[2] / 255) * w)];
