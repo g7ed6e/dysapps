@@ -29,14 +29,13 @@
 import { materialsOf } from '../families';
 import { bacDePierre, PIECE_SEULE_ET_BASSE } from '../lowPieces';
 import { restOf } from '../heart';
-import { darkPost, HEART, paddyBed, slab } from '../heartPieces';
-import { crownLantern, inCase, roofOverColumn, type HippedRoof } from '../hippedRoof';
+import { darkPost, HEART, slab } from '../heartPieces';
+import { hippedRoofPieces } from '../hippedRoof';
 import { piecesDeToit } from '../roofs';
 import { etapesDe } from '../../construction/buildings';
 import type { VoxelCube } from '../../cube';
 import type { IdDePiece } from '../choices';
-import type { DessinDePiece } from '../rooms';
-import { FINISHES, piecesSurPilotis, postsOf, villagePlaces } from './shared';
+import { bedWhenAlone, FINISHES, piecesSurPilotis, postsOf, villagePlaces } from './shared';
 import type { Kit } from './types';
 
 /** Le kiosque à musique (world/monuments.ts) : son toit en damier de toile et de tuile, peint à plat. */
@@ -55,87 +54,11 @@ function isFlat(c: VoxelCube): boolean {
   return ECHOPPES.has(c.tag ?? '') && !c.place && !c.petiteConstruction && etapesDe('5e', 1, 2).has(cle(c.x, c.y, c.z));
 }
 
-const ROOF_TEXTURES = new Set(['toile', 'tuile']);
-
-/** Le toit du kiosque, lu sur son plan (fantômes compris) : le pavillon, ses cases, et les bouts de toit des coins coupés. */
-interface KioskRoof {
-  roof: HippedRoof;
-  /** Les cases du plan du kiosque (clé `x,y,z`). */
-  at: ReadonlyMap<string, VoxelCube>;
-  /** Un bloc du toit est-il encore en fantôme ? (La verrière attend le toit fini.) */
-  unfinished: boolean;
-  /** Les colonnes vides des coins coupés que le bord du toit passe, par case du rang bas qui les porte. */
-  corners: ReadonlyMap<string, readonly (readonly [number, number])[]>;
-}
-
-const kioskRoofs = new WeakMap<readonly VoxelCube[], KioskRoof | null>();
-
-/** Le toit en pavillon du kiosque, d'après les cases de son rang bas (le centre, la demi-largeur, la coupe des coins). */
-function kioskRoofOf(plan: readonly VoxelCube[]): KioskRoof | null {
-  const known = kioskRoofs.get(plan);
-  if (known !== undefined) return known;
-  const at = new Map<string, VoxelCube>();
-  for (const c of plan) if (Number.isInteger(c.x) && Number.isInteger(c.y) && Number.isInteger(c.z)) at.set(cle(c.x, c.y, c.z), c);
-  const toit = [...at.values()].filter((c) => ROOF_TEXTURES.has(c.texture ?? ''));
-  let out: KioskRoof | null = null;
-  if (toit.length) {
-    const base = Math.min(...toit.map((c) => c.z));
-    const bas = toit.filter((c) => c.z === base);
-    const cx = bas.reduce((s, c) => s + c.x + 0.5, 0) / bas.length;
-    const cy = bas.reduce((s, c) => s + c.y + 0.5, 0) / bas.length;
-    const half = Math.max(...bas.map((c) => Math.max(Math.abs(c.x + 0.5 - cx), Math.abs(c.y + 0.5 - cy)))) + 0.5;
-    const cut = Math.max(...bas.map((c) => Math.abs(c.x + 0.5 - cx) + Math.abs(c.y + 0.5 - cy))) + 0.5;
-    const roof: HippedRoof = { cx, cy, base, half, cut };
-    // Les coins coupés : une colonne vide sous le bord du toit va à sa voisine vers le centre, le long de son plus grand écart.
-    const corners = new Map<string, [number, number][]>();
-    const dans = new Set(bas.map((c) => `${c.x},${c.y}`));
-    const [x0, x1] = [Math.floor(cx - half), Math.ceil(cx + half)];
-    const [y0, y1] = [Math.floor(cy - half), Math.ceil(cy + half)];
-    for (let x = x0; x < x1; x++)
-      for (let y = y0; y < y1; y++) {
-        if (dans.has(`${x},${y}`) || !roofOverColumn(roof, x, y).length) continue;
-        const dx = x + 0.5 - cx;
-        const dy = y + 0.5 - cy;
-        const pas: [number, number][] = Math.abs(dx) >= Math.abs(dy) ? [[-Math.sign(dx), 0], [0, -Math.sign(dy)]] : [[0, -Math.sign(dy)], [-Math.sign(dx), 0]];
-        const porteur = pas.map(([px, py]) => `${x + px},${y + py}`).find((k) => dans.has(k));
-        if (!porteur) continue;
-        const l = corners.get(porteur) ?? [];
-        l.push([x, y]);
-        corners.set(porteur, l);
-      }
-    out = { roof, at, unfinished: toit.some((c) => c.ghost), corners };
-  }
-  kioskRoofs.set(plan, out);
-  return out;
-}
-
 /**
- * Le toit du kiosque d'un seul tenant : chaque case posée de son rang bas porte le toit en pavillon au-dessus de sa
- * colonne (et les bouts des coins coupés), sauf sous un fantôme (elle reste peinte à plat) ; une case du rang du dessus
- * ne dessine rien sur une case posée (le pavillon passe à travers) ; la case du milieu du lanterneau porte la verrière,
- * une fois le toit fini, les autres vitraux rien. `undefined` : le dessin ordinaire.
+ * Le toit du kiosque d'un seul tenant (../hippedRoof.ts) : le pavillon sur son rang bas de toile et de tuile, la verrière
+ * au faîte sur la case du milieu du lanterneau de vitraux, deux rangs au-dessus.
  */
-function kioskPieces(c: VoxelCube, plan: readonly VoxelCube[]): DessinDePiece | null | undefined {
-  if (c.place !== KIOSQUE) return undefined;
-  const k = kioskRoofOf(plan);
-  if (!k) return undefined;
-  const { roof, at } = k;
-  if (ROOF_TEXTURES.has(c.texture ?? '')) {
-    if (c.z === roof.base) {
-      const dessus = at.get(cle(c.x, c.y, c.z + 1));
-      if (dessus?.ghost) return undefined;
-      const facettes = [roofOverColumn(roof, c.x, c.y), ...(k.corners.get(`${c.x},${c.y}`) ?? []).map(([x, y]) => roofOverColumn(roof, x, y))].flat();
-      return inCase(facettes, c.x, c.y, c.z);
-    }
-    const dessous = at.get(cle(c.x, c.y, roof.base));
-    return dessous && !dessous.ghost ? null : undefined;
-  }
-  if (c.texture === 'vitrail' && !k.unfinished) {
-    const milieu = c.x === Math.floor(roof.cx) && c.y === Math.floor(roof.cy) && c.z === roof.base + 2;
-    return milieu ? inCase(crownLantern(roof), c.x, c.y, c.z) : null;
-  }
-  return undefined;
-}
+const kioskPieces = hippedRoofPieces({ place: KIOSQUE, roofs: new Set(['toile', 'tuile']), crown: { texture: 'vitrail', rise: 2 } });
 
 /** Ce qui fait masse sans être un toit, au-dessus d'une tuile : elle le porte, c'est un mur. */
 const ROOFS = new Set(['toit', 'tuile', 'lanterne']);
@@ -178,12 +101,6 @@ function tourbe(piece: IdDePiece, c: VoxelCube) {
   return c.place === KIOSQUE && forme === 'seul' ? darkPost(tete === 'chaperon') : undefined;
 }
 
-/** La rizière seule au sol (rien dessus, au pied : la cour du moulin du Delta) : une plate-bande. */
-function riziere(piece: IdDePiece) {
-  const [, , pied, tete] = parts(piece);
-  return pied !== 'haut' && tete === 'chaperon' ? paddyBed() : undefined;
-}
-
 export const KIT_5E: Kit = {
   // La table commune, pour les familles que le kit dessine ; la verrière (le vitrail) et la toile tendue en plus du 6e.
   matieres: materialsOf(['colombage', 'bardage', 'pierre', 'toit', 'finition', 'metal', 'verre', 'toile']),
@@ -210,7 +127,8 @@ export const KIT_5E: Kit = {
   bardes: [],
   pieces: { toit: piecesDeToit(), colombage: piecesSurPilotis(), pierre: { [PIECE_SEULE_ET_BASSE]: bacDePierre() } },
   finitions: FINISHES,
-  byMaterial: { bambou: () => 'verticalBoards', riziere, enluminure, tourbe },
+  // La rizière seule au sol (rien dessus, au pied : la cour du moulin du Delta) : une plate-bande (./shared.ts).
+  byMaterial: { bambou: () => 'verticalBoards', riziere: bedWhenAlone, enluminure, tourbe },
   tilesInWalls: tileInWall,
   flat: isFlat,
   monumentPieces: kioskPieces,

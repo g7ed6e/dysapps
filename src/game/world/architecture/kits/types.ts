@@ -107,12 +107,18 @@ export interface Kit {
   flat?: (c: VoxelCube) => boolean;
   /**
    * Les blocs d'un monument que le kit dessine d'un seul tenant (au 5e : le toit en pavillon du kiosque et sa verrière),
-   * lus sur tout le plan du monument (`plan` : ses blocs, fantômes compris) : la pièce de la case, `null` (rien : une case
-   * que le dessin d'une autre traverse), ou `undefined` (le dessin ordinaire).
+   * lus sur tout le plan du monument (`plan` : ses blocs, fantômes compris) : la pièce de la case (et son quart de tour,
+   * pour une rangée qui file le long de x : au 3e, le faîte du temple), `null` (rien : une case que le dessin d'une autre
+   * traverse), ou `undefined` (le dessin ordinaire).
    */
-  monumentPieces?: (c: VoxelCube, plan: readonly VoxelCube[]) => DessinDePiece | null | undefined;
+  monumentPieces?: (c: VoxelCube, plan: readonly VoxelCube[]) => DessinDePiece | { piece: DessinDePiece; rotation: Rotation } | null | undefined;
   /** Les matières tenues loin du fantôme Brume (../heartPieces.ts, `apartFromGhost` ; au 5e : la glace, le sel, la toile). */
   ghostApart?: readonly TextureKind[];
+  /**
+   * Les toits enneigés (au 3e) : le dessus d'un toit d'ardoise du bâti (pas du décor) prend la neige du kit (le rôle
+   * `snow`, loin du fantôme Brume), au lieu de l'ardoise enneigée de world/roofs.ts, qui est Brume lui-même.
+   */
+  snowyRoofs?: boolean;
   /**
    * Les lieux du village qui prennent le kit (l'école, la salle des trophées, le lieu où l'on assemble) : la famille de chacun de leurs blocs, lue
    * sur sa place dans le modèle du lieu, pas sur la seule texture (la table « bloc vers matière » reste celle des plans).

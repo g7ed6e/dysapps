@@ -164,7 +164,15 @@ export const COLOMBAGE = {
  * reflet (intention du directeur artistique, 9 octobre 2026) ; de loin, le mur devient uni. `joint` : la demi-largeur
  * d'un joint, en part de case ; `pas` : l'écart entre deux joints.
  */
-export const SHEET_METAL = { pas: 0.25, joint: 0.02 } as const;
+export const SHEET_METAL = { pas: 0.25, joint: 0.02, teinte: 0.8 } as const;
+
+/**
+ * La tôle teintée (au 4e et au 3e, intention du directeur artistique du 10 octobre 2026) : la tôle dans la teinte de sa
+ * matière (un conteneur bleu, une bobine cuivre), ses joints dans cette teinte à `SHEET_METAL.teinte` (×0,8). Le bit
+ * `pierreEntiere`, qui n'est lu que sur un dessus, dit sur un flanc de tôle « les joints dans la teinte » : aucun bit de
+ * plus, et les rangées d'un mur se réunissent encore (il n'est ni du pied ni de la tête).
+ */
+export const TINTED_SHEET = MOTIF.bardage | MOTIF.vertical | MOTIF.pierreEntiere;
 
 /**
  * La tenture (le velours du fond de la salle des trophées) : des plis verticaux, une bande claire puis une sombre d'un
@@ -254,9 +262,10 @@ export interface PeintureDuMur {
  * teinte de sa matière), un vantail (la porte, dans son encadrement), la tôle (le métal), la tenture (le velours). Au 5e
  * (intention du directeur artistique, 9 octobre 2026) : la toile tendue (`cloth`, les plis de la tenture sans galon), les
  * clins verticaux (`verticalBoards`, le bambou), la verrière (`glazing`, le vitrail) et la maçonnerie des lieux du
- * village (`masonry`, un mur plein dans la pierre du kit, le rôle `masonry`).
+ * village (`masonry`, un mur plein dans la pierre du kit, le rôle `masonry`). Au 4e et au 3e (10 octobre 2026) : la tôle
+ * teintée (`tintedSheet`, la tôle dans la teinte de sa matière, ses joints à ×0,8, `TINTED_SHEET`).
  */
-export type ManiereDuMur = 'colombage' | 'plein' | 'bardage' | 'vantail' | 'tole' | 'tenture' | 'cloth' | 'verticalBoards' | 'glazing' | 'masonry';
+export type ManiereDuMur = 'colombage' | 'plein' | 'bardage' | 'vantail' | 'tole' | 'tintedSheet' | 'tenture' | 'cloth' | 'verticalBoards' | 'glazing' | 'masonry';
 
 export interface ContexteDuMur {
   /** Le bâtiment est bardé (les bâtiments du quai), au lieu du colombage. */
@@ -356,6 +365,11 @@ export function peintureDuMur(v: Voisinage, maniere: ManiereDuMur, contexte: Con
   if (maniere === 'tole') {
     const b = MOTIF.bardage | MOTIF.vertical | socle | bandes;
     return { fond: 'tole', motifs: [b, b, b, b, 0, 0] };
+  }
+  // La tôle teintée : la même, dans la teinte de sa matière, ses joints dans cette teinte, plus sombre.
+  if (maniere === 'tintedSheet') {
+    const b = TINTED_SHEET | socle | bandes;
+    return { fond: 'matiere', motifs: [b, b, b, b, 0, 0] };
   }
   // La tenture : ses plis, et le galon en haut du mur (sous le toit, ou sans rien dessus) ; ni soubassement ni chaperon.
   // La toile tendue : les mêmes plis, sans galon.
@@ -509,8 +523,10 @@ vec3 peindreLeMotif(vec3 c, float motif, vec3 pos, vec3 n) {
     // La tôle : un joint mat tous les quarts de case, le long de la face ; de loin, le mur uni.
     float q = fract(u / ${SHEET_METAL.pas.toFixed(4)});
     float j = bandeDuMotif(min(q, 1.0 - q) * ${SHEET_METAL.pas.toFixed(4)}, ${SHEET_METAL.joint.toFixed(4)}, du);
-    // Les stries du blé (le bit de la décharge descendante) : le même joint, dans un ton plus sombre de la paille.
-    c = mix(c, (m & ${MOTIF.descendante}) != 0 ? c * ${HEART_PAINT.paille.toFixed(4)} : joint, j * loinFin);
+    // Les stries du blé (le bit de la décharge descendante) : le même joint, dans un ton plus sombre de la paille ; la tôle
+    // teintée (le bit du dessus de pierre, sur un flanc) : dans la teinte de sa matière, plus sombre.
+    vec3 trait = (m & ${MOTIF.descendante}) != 0 ? c * ${HEART_PAINT.paille.toFixed(4)} : (m & ${MOTIF.pierreEntiere}) != 0 ? c * ${SHEET_METAL.teinte.toFixed(4)} : joint;
+    c = mix(c, trait, j * loinFin);
   } else if (genre == ${MOTIF.plein} && vertical) {
     // La tenture : des plis, une bande claire puis une sombre d'un quart de case, en douceur (un cosinus, sans arête).
     float pli = 0.5 + 0.5 * cos(3.14159265 * u / ${DRAPE.pli.toFixed(4)});

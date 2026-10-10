@@ -54,11 +54,12 @@ import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './bridges'
 import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, phareDuLarge } from './offshoreLighthouse';
 import { estUnePlaceDeTrophee } from './trophyHall';
 import { mixColor } from './daylight';
-import { couleursDuToit } from './roofs';
+import { couleursDuToit, toitDe } from './roofs';
 import type { TextureKind } from './pixels';
 import { dessinerPhare } from './decor/lighthouse';
 import { CREME_DU_PHARE, phareDeGrimoire } from './construction/lighthouse';
 import { cle, decalagesDe, genresDesBlocs } from './construction/kinds';
+import { allumesALaFin } from './construction/endGlow';
 import { type BlocAssemble, MOTIF_ASSEMBLE, SANS_BISEAU, teinteDeCase } from './construction/shader';
 import { BISEAU, couleurDuRole, FANTOME, LANTERNE, PROFONDEUR, RANG_DES_SOCLES, TOILE_DU_NAVIRE, TROPHEE, VERRE_HORS_MUR, VITRE_DE_JOUR } from './construction/settings';
 import { batimentsDe, blocsDArchipeoDe, caseDuLieu, coursDe, enBlocsDArchipeo } from './construction/buildings';
@@ -193,8 +194,11 @@ const signeDe = (d: number) => (d & 1 ? -1 : 1);
 
 const dir = (axe: number, signe: number) => axe * 2 + (signe > 0 ? 0 : 1);
 
-/** Les vitres et les lanternes d'un monde, et leur décalage d'allumage. */
-export type FenetresDuMonde = Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }>;
+/**
+ * Les vitres et les lanternes d'un monde, et leur décalage d'allumage ; `lueur` : le bloc d'un grand projet fini, qui prend
+ * la lueur de fin (./construction/endGlow.ts), allumé le premier.
+ */
+export type FenetresDuMonde = Map<VoxelCube, { genre: 'vitre' | 'lanterne' | 'lueur'; decalage: number }>;
 
 /**
  * Les vitres et les lanternes d'un monde, avec leur décalage d'allumage (négatif : jamais allumée), selon le même
@@ -206,8 +210,14 @@ export function fenetresDe(cubes: VoxelCube[]): FenetresDuMonde {
   const phare = phareDeGrimoire(cubes);
   const genres = genresDesBlocs(cubes.filter((c) => !c.quest && !c.sol && !phare?.remplacees.has(cle(c.x, c.y, c.z))));
   const decalages = decalagesDe(genres);
-  const out = new Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }>();
-  for (const [c, g] of genres) if (g === 'vitre' || g === 'lanterne') out.set(c, { genre: g, decalage: decalages.get(c) ?? -1 });
+  const out: FenetresDuMonde = new Map();
+  // La lueur de fin d'un grand projet ; celle du phare du large est à son modèle (son feu).
+  const large = phareDuLarge(cubes).remplacees;
+  const allumes = allumesALaFin(cubes.filter((c) => !c.quest && !large.has(cle(c.x, c.y, c.z))));
+  for (const [c, g] of genres) {
+    if (allumes.has(c)) out.set(c, { genre: 'lueur', decalage: 0 });
+    else if (g === 'vitre' || g === 'lanterne') out.set(c, { genre: g, decalage: decalages.get(c) ?? -1 });
+  }
   return out;
 }
 
@@ -313,6 +323,8 @@ export function maillageDeLaConstruction(
     const k = cle(c.x, c.y, c.z);
     return Boolean(phare?.remplacees.has(k) || ponts?.remplacees.has(k) || large?.remplacees.has(k));
   };
+  // La lueur de fin d'un grand projet (./construction/endGlow.ts) : ses blocs restent des blocs, dans les fenêtres.
+  const allumes = options.navire ? new Set<VoxelCube>() : allumesALaFin(cubes.filter((c) => !c.quest && !parUnModele(c)));
   // L'architecture modulaire (lot 7) : le voisinage se lit sur le plan entier (tous les cubes, fantômes compris) ; les
   // cases déjà prises par un modèle restent au modèle, et celles du phare de Grimoire en chantier à leur bloc. Seuls les
   // plans des îles prennent le kit de l'archipel (un kit passé à la main, celui d'un test, prend tout le plan).
@@ -334,7 +346,7 @@ export function maillageDeLaConstruction(
   const archi = options.navire
     ? null
     : architectureDe(a, cubes, {
-        exclure: (c) => parUnModele(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
+        exclure: (c) => parUnModele(c) || allumes.has(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
         kit,
         batiments: options.kit ? undefined : batimentsDe(a),
         cours: options.kit ? undefined : coursDe(a),
@@ -347,6 +359,11 @@ export function maillageDeLaConstruction(
   // Le genre des blocs se lit avant les pièces : une vitre prise entre deux pièces de mur reste une vitre.
   const genres = genresDesBlocs(avantLesPieces);
   const decalages = decalagesDe(genres);
+  // La lueur de fin : comme une vitre, allumée la première (le décalage 0), sans compter parmi les vitres d'un bâtiment.
+  for (const c of allumes) {
+    genres.set(c, 'vitre');
+    decalages.set(c, 0);
+  }
   // Les trophées de la salle des trophées, quand le kit de l'archipel reprend la salle (au 6e, la halle en colombage ;
   // les autres archipels avec leur kit, lot 7c) : plus petits que leur case (`TROPHEE`), et le rang de chacun.
   const trophees = new Map<VoxelCube, number>();
@@ -368,7 +385,8 @@ export function maillageDeLaConstruction(
   /** Le mur peint d'un bloc (lot 7), s'il en est un. */
   const peintDe = (c: VoxelCube) => (archi?.peints.size ? archi.peints.get(cle(c.x, c.y, c.z)) : undefined);
   const couleursDe = (c: VoxelCube): Faces => {
-    const g = genres.get(c);
+    // Un bloc de la lueur de fin garde sa matière le jour (la nuit, la lueur).
+    const g = allumes.has(c) ? 'bloc' : genres.get(c);
     const fond = peintDe(c)?.peinture.fond ?? '';
     // Un toit prend la couverture de son île ; un bloc d'un lieu aussi, quand le kit le dit (le toit de la salle des trophées).
     const couvert = c.texture === 'toit' || Boolean(c.place && archi?.couverts.has(cle(c.x, c.y, c.z)));
@@ -387,7 +405,12 @@ export function maillageDeLaConstruction(
     const role = fond === 'remplissage' || fond === 'bardage' || fond === 'soubassement' || fond === 'tole' || fond === 'galon' || fond === 'braise' || fond === 'masonry' ? couleurDuRole(a, kit, fond, c.muted) : null;
     if (role !== null) f = { dessus: role, cote: role };
     else if (repeint) f = delave(couleurDeMatiere(a, repeint));
-    else if (couvert) f = couleursDuToit(a, c.tag, c.muted);
+    else if (couvert) {
+      // Les toits enneigés du bâti (au 3e, `Kit.snowyRoofs`) : le dessus de l'ardoise dans la neige du kit, tenue à 70 du
+      // fantôme (le voile de l'archipel l'en rapproche).
+      const t = couleursDuToit(a, c.tag, c.muted);
+      f = kit.snowyRoofs && toitDe(c.tag) === 'ardoise' ? { dessus: apartFromGhost(couleurDuRole(a, kit, 'snow', c.muted)), cote: t.cote } : t;
+    }
     else if (g === 'bloc' && cremeDuPhare(c)) {
       const [teinte, force] = ambianceDe(a).voile;
       const creme = mixColor(CREME_DU_PHARE, teinte, force);
@@ -415,8 +438,9 @@ export function maillageDeLaConstruction(
       f = { dessus: c.top ? hex(c.top) : mixColor(x, 0xffffff, 0.12), cote: x };
     }
     if (lisse) f = { dessus: mixColor(f.dessus, f.cote, 0.5), cote: f.cote };
-    // Une matière que le kit tient loin du fantôme Brume (au 5e : la glace, le sel, la toile ; le référent dys).
-    const texture = c.texture;
+    // Une matière que le kit tient loin du fantôme Brume (au 5e : la glace, le sel, la toile ; le référent dys), qu'elle
+    // soit celle du bloc ou celle qu'un lieu lui donne (au 3e, la souche du clocheton en pierre de taille).
+    const texture = repeint ?? c.texture;
     if (role === null && !options.navire && texture !== undefined && kit.ghostApart?.some((t) => t === texture)) f = { dessus: apartFromGhost(f.dessus), cote: apartFromGhost(f.cote) };
     vues.set(k, f);
     return f;

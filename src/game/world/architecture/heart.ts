@@ -21,15 +21,27 @@
 //   l'or en haut d'un poteau (les roseaux du Marais) en épi plus petit que sa case ; le pied de planches d'un pupitre en
 //   caisse ; le verre posé sur un bloc (le thermomètre) en verrière ; l'escalier en marches ; dans une petite
 //   construction, la tuile d'un toit comme le toit, celle posée sur la glace (la glacière) en couvercle mince.
+// - Au 4e et au 3e (les Anciens Ateliers et les Îles du Ciel, intention du directeur artistique du 10 octobre 2026 ; ce qui
+//   suit n'est posé ni au 6e ni au 5e), chaque pièce au coût d'un cube au plus : les lingots d'acier en lingots dans leur
+//   teinte ; l'enclume, la presse de fonte, la paroi d'ardoise, le rocher de grès, les pavés, la pierre de taille, le
+//   marbre, le quartz et la fresque (un pan de mur) en piliers lissés ; les calques, les reliures et la voie ferrée en
+//   dalles (une pile : son bas plein) ; les conteneurs en caisses de tôle teintée ; le liège en planche debout ; l'osier
+//   en bordure basse (seul, un panier) ; le parchemin en ballot ; les colonnes de rideau de velours en tenture ; la
+//   longue-vue et la lunette en tubes couchés (seule, une lentille en tube debout) ; le mât d'antenne en poteau carré
+//   dans sa teinte ; le banc d'acajou en siège et dossier bardé ; l'eau de la vasque en nappe ; le laurier dans les formes
+//   communes (sa couronne, ou un buisson), au cœur comme dans la cour du Bosquet ; le prisme en verrière ; la tête
+//   d'ardoise d'un poteau en épi ; la tuile posée seule sur un bloc (le toit de la maquette) en pavillon ; la pierre qui
+//   porte un mât d'antenne en pilier.
 // Code pur, sans Three.js.
 import type { VoxelCube } from '../cube';
 import type { Rotation } from './choices';
 import { familyOf } from './families';
-import { awning, beam, bead, cap, chalkLoaf, coneCorner, coneSide, coneStep, crate, darkPost, deck, dialSlab, EMPTY, foliage, hangingCrate, HEART, lid, mound, paddyBed, pavilion, reedHead, rock, signBoard, slab, snowDrift, spire, thermometerTube, trunk, waterNeighbours, waterSheet, wheat } from './heartPieces';
+import { awning, beam, bead, cap, chalkLoaf, coneCorner, coneSide, coneStep, crate, darkPost, deck, dialSlab, EMPTY, foliage, hangingCrate, HEART, lid, lyingTube, mound, paddyBed, pavilion, reedHead, rock, signBoard, slab, snowDrift, spire, standingBoard, thermometerTube, trunk, waterNeighbours, waterSheet, wheat } from './heartPieces';
+import { ingot } from './precious';
 import type { RestContext, RestDrawing } from './kits/types';
 import { stepOf, woodenPost } from './lowPieces';
 import { SIDES } from './neighborhood';
-import { HEART_MOTIFS, MOTIF, type Fond, type PeintureDuMur } from './paint';
+import { HEART_MOTIFS, MOTIF, TINTED_SHEET, type Fond, type PeintureDuMur } from './paint';
 import { estUnePlaceDeTrophee } from '../trophyHall';
 
 /** Un mur peint : son fond, le motif de ses quatre flancs (+x, +y, −x, −y), celui de son dessus. */
@@ -56,8 +68,8 @@ const EMBER = uniform('braise', 0, 0);
 /** Les six voisines d'une case : ses quatre côtés (`SIDES`), puis dessus et dessous. */
 const DIRS6: readonly (readonly [number, number, number])[] = [...SIDES.map(([x, y]) => [x, y, 0] as const), [0, 0, 1], [0, 0, -1]];
 
-/** Ce qu'une pierre bâtie porte : un cadran, de l'or, une lanterne. */
-const BUILT_ON = new Set(['cadran', 'or', 'lanterne']);
+/** Ce qu'une pierre bâtie porte : un cadran, de l'or, une lanterne ; au 3e, un mât d'antenne. */
+const BUILT_ON = new Set(['cadran', 'or', 'lanterne', 'antenne']);
 
 const tex = (c: VoxelCube | undefined) => (c ? (c.texture ?? 'couleur') : undefined);
 const keyOf = (c: VoxelCube) => `${c.x},${c.y},${c.z}`;
@@ -249,6 +261,27 @@ function signOf(c: VoxelCube, at: RestContext['at']): RestDrawing {
   return post ? { family: 'bardage', piece: signBoard(post) } : crateOf(c, at, MOTIF.bardage);
 }
 
+/** Un lingot d'acier (au 4e), fait une fois. */
+const INGOT = ingot();
+
+/** Les matières du cœur dessinées en pilier lissé au 4e et au 3e (un volume, sa matière, un seul dessus). */
+const PILLARS_43 = new Set(['fonte', 'gres', 'pave', 'taille', 'marbre', 'quartz', 'fresque']);
+
+/** Un tube couché le long de la voisine qui le porte ou le prolonge (à sa hauteur) ; sans voisine, un tube debout. */
+function tubeOf(c: VoxelCube, at: RestContext['at']): RestDrawing {
+  const along = (dx: number, dy: number) => at(c.x + dx, c.y + dy, c.z) !== undefined || at(c.x - dx, c.y - dy, c.z) !== undefined;
+  const family = familyOf(c.texture) ?? 'metal';
+  if (along(1, 0)) return { family, piece: lyingTube(true) };
+  if (along(0, 1)) return { family, piece: lyingTube(false) };
+  return { family, piece: thermometerTube() };
+}
+
+/** Une pile du cœur (des calques, des reliures, des rails) : une dalle, son bas plein sous une autre de même matière. */
+function sheetOf(c: VoxelCube, at: RestContext['at'], height: number): RestDrawing {
+  const family = familyOf(c.texture) ?? 'pierre';
+  return tex(at(c.x, c.y, c.z + 1)) === tex(c) ? { family, paint: PILLAR } : { family, piece: slab(height) };
+}
+
 /** Le décor du cœur d'une île, le quai, le Gardien. */
 function heartOf(c: VoxelCube, at: RestContext['at']): RestDrawing | undefined {
   const above = at(c.x, c.y, c.z + 1);
@@ -348,16 +381,58 @@ function heartOf(c: VoxelCube, at: RestContext['at']): RestDrawing | undefined {
     case 'escalier':
       return { family: 'finition', piece: stepOf(above !== undefined) };
     case 'toile':
+      return awningOf(c, at);
     case 'tuile':
+      // Posée seule sur un bloc (au 4e, le toit de la maquette de Liège) : un pavillon.
+      if (below && !hasSideNeighbour(c, at)) return { family: 'toit', piece: pavilion() };
       return awningOf(c, at);
     case 'panneau':
       return signOf(c, at);
     case 'craie':
       return { family: 'pierre', piece: chalkLoaf() };
+    // Le 4e et le 3e.
+    case 'acier':
+      // Les lingots, seuls ; l'enclume (deux empilés) en pilier lissé.
+      return tex(above) === 'acier' || tex(below) === 'acier' ? { family: 'metal', paint: PILLAR } : { family: 'metal', piece: INGOT };
+    case 'ardoise':
+      // La tête d'un poteau-lanterne éteint (le Jardin des heures) : un épi ; la paroi en escalier, un pilier lissé.
+      return tex(below) === 'tronc' ? { family: 'pierre', piece: reedHead() } : { family: 'pierre', paint: PILLAR };
+    case 'calque':
+    case 'reliure':
+      return sheetOf(c, at, HEART.slab.sheet);
+    case 'rail':
+      return sheetOf(c, at, HEART.slab.rail);
+    case 'conteneur':
+      return crateOf(c, at, TINTED_SHEET);
+    case 'liege':
+      return { family: 'bardage', piece: standingBoard() };
+    case 'osier':
+      // La bordure du carré potager ; seul (le panier), une caisse bardée.
+      return hasSideNeighbour(c, at) ? { family: 'bardage', piece: slab(HEART.slab.border) } : crateOf(c, at, MOTIF.bardage);
+    case 'parchemin':
+      return crateOf(c, at, MOTIF.plein | MOTIF.vertical);
+    case 'velours':
+      // Les colonnes de rideau et leur frise : la tenture, son galon d'or en haut.
+      return { family: 'precieux', paint: uniform('matiere', MOTIF.plein | MOTIF.vertical | (above ? 0 : MOTIF.chaperon), 0) };
+    case 'bobine':
+    case 'lentille':
+      return tubeOf(c, at);
+    case 'antenne':
+      return { family: 'metal', piece: darkPost(!above) };
+    case 'acajou':
+      // Le dossier (deux empilés) bardé ; le siège, une dalle.
+      return tex(above) === 'acajou' || tex(below) === 'acajou' ? { family: 'bardage', paint: CLAD } : { family: 'bardage', piece: slab(HEART.slab.seat) };
+    case 'laurier':
+      return { family: 'vegetal', piece: foliage(seedOf(c), tex(below) !== 'tronc') };
+    case 'prisme':
+      return { family: 'verre', paint: GLAZED };
+    case 'eau':
+      // La vasque de la Source des espèces : une nappe sous sa margelle de galets.
+      return waterOf(c, at, HEART.water.level);
     case 'couleur':
       return darkOf(c, at);
     default:
-      return undefined;
+      return PILLARS_43.has(tex(c) ?? '') ? { family: familyOf(c.texture) ?? 'pierre', paint: PILLAR } : undefined;
   }
 }
 
@@ -435,6 +510,8 @@ export function restOf(c: VoxelCube, ctx: RestContext): RestDrawing | undefined 
     case 'batiment':
     case 'cour':
       if (t === 'toit' || t === 'tuile') return roofOf(c, at);
+      // Le laurier du Bosquet des sages (3e) : les formes communes, comme au cœur.
+      if (t === 'laurier') return { family: 'vegetal', piece: foliage(seedOf(c), tex(at(c.x, c.y, c.z - 1)) !== 'tronc') };
       if (t === 'verre') return isWindow(c, at) ? undefined : { family: 'verre', paint: GLAZED };
       return undefined;
     case 'lieu':
