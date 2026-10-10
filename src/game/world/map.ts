@@ -397,7 +397,7 @@ function rawShapeCell(def: IslandDef, f: FormeDeLIle, b: Readonly<Bornes>, s: nu
   const d = distanceALaForme(f, u, v, s);
   const a = BRUIT_DE_LA_FORME.amplitude;
   if (d > a) return 0;
-  // Au port, devant le cœur, la rive reste droite sur la largeur du quai et du Bloc-Navire (sans bruit) : la jetée en part.
+  // Au port, devant le cœur, la rive reste droite sur la largeur du quai et de la Nef (sans bruit) : la jetée en part.
   if (f.quai && v < -s && u > 4 && u < 16) return d < 0 ? 1 : 0;
   if (d < -a) return 1;
   // Le lagon et sa passe : sans bruit (GD-12, les formes plus marquées).
@@ -518,7 +518,7 @@ export function etendueDuLieu(def: IslandDef, f: FormeDeLIle): IslandDef['ext'] 
 /**
  * Les cinquante-huit îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
- * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
+ * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille la Nef.
  *
  * GD-9 (05/10/2026) : la carte se cale sur le pas des places (`STEP`, compté depuis le coin du cadre de la région,
  * footprint.ts) ; chaque lieu y bouge de quelques cases et garde son dessin (`repere` : sa place d'avant). Le second

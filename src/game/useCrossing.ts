@@ -1,4 +1,4 @@
-// La traversée du Bloc-Navire (sortie de WorldPage.tsx, qualité du code, lot 6) : le voyage en cours, le voile, le
+// La traversée de la Nef (sortie de WorldPage.tsx, qualité du code, lot 6) : le voyage en cours, le voile, le
 // fondu court d'un voyage déjà fait (`hop`), la cinématique d'un premier voyage (`onBoard`, puis `onLegEnd` à la fin de
 // chaque temps) et l'écran fixe (`arrive`). Les minuteries (`later`) sont annulées quand la page se démonte.
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
@@ -42,7 +42,7 @@ interface Traversee {
 }
 
 export function useTraversee({ a, at, archipelago, biomeId, liens, reduceMotion, textes, settings, speak, navigate, moveTo, launch, launchVoyage, chemin, seTenir, setWalk, setFocus }: Traversee) {
-  // Le voyage en cours (le Bloc-Navire) : le premier voyage vers un archipel (bouton « Embarquer » du port). Les voyages
+  // Le voyage en cours (la Nef) : le premier voyage vers un archipel (bouton « Embarquer » du port). Les voyages
   // déjà faits (retours, « Aller au port », liens et retours d'exercice vers une île d'un autre archipel, sélecteur
   // d'archipel) sont un fondu court (`hop`, plus bas). Une cinématique en deux temps : le départ dans cet archipel, puis, sous un voile, le changement
   // d'archipel et l'arrivée dans le suivant. Si le bonhomme n'est pas au port, il y marche d'abord (`approach`).

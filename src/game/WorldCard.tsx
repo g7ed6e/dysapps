@@ -19,7 +19,7 @@ import { useASuivre } from '../components/useNextUp';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../universes';
-import { blockCount, getBiome, guardianTitle, missionsJouables, sansSonOption, type BiomeId, type BlockId } from './biomes';
+import { BLOCKS, blockCount, getBiome, guardianTitle, missionsJouables, sansSonOption, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { isBossBeaten, isBossOpen } from './boss';
 import { useConstruireUnOuvrage, withArticle } from './Bridges';
@@ -34,7 +34,7 @@ import { shipSummary } from './ShipSection';
 import { Stars } from './Stars';
 import { Creature } from './Creatures';
 import { habillageDuMonde } from './skin';
-import { VoxelScene } from './Voxel';
+import { BlockIcon, VoxelScene } from './Voxel';
 import { GUARDIAN_CUBES } from './world/characters/guardians';
 import { statueDe } from './world/terrain';
 import type { VehicleBuilder } from './useVehicleBuilder';
@@ -353,7 +353,7 @@ function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId
   const manque = !ready && !attend ? ((Object.entries(status.missing) as [BlockId, number][]).find(([b, n]) => n > (state.stock[b] ?? 0)) ?? null) : null;
   const ou = manque ? (earnIsland(manque[0])?.name ?? whereToEarn(manque[0])) : '';
   const manquants = manque ? manque[1] - (state.stock[manque[0]] ?? 0) : 0;
-  const etape = `Étape ${stage.stage} sur ${VEHICLE_STAGES.length}, ${stage.name.charAt(0).toLowerCase()}${stage.name.slice(1)}`;
+  const etape = `Forme ${stage.stage} sur ${VEHICLE_STAGES.length}, ${stage.name.charAt(0).toLowerCase()}${stage.name.slice(1)}`;
   const phrase = ready
     ? `${titre} est prête : pars vers les ${textes.archipels[stage.to]} quand tu veux.`
     : attend && status.complete
@@ -396,7 +396,7 @@ function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId
             </span>{' '}
             {manque && (
               <span className="signe">
-                <Icon name="blocks" /> −{manquants}
+                <BlockIcon top={BLOCKS[manque[0]].top} side={BLOCKS[manque[0]].side} size={28} /> {manquants}
               </span>
             )}
           </p>

@@ -1,5 +1,5 @@
 // Le prochain objectif d'une île, un seul, avec sa jauge : ce qu'il manque pour l'ouvrage suggéré (celui qui ouvre une
-// île de la matière la moins jouée, GD-7), ou pour le Bloc-Navire (le bâtiment de l'île se pose tout seul, une partie par
+// île de la matière la moins jouée, GD-7), ou pour la Nef (le bâtiment de l'île se pose tout seul, une partie par
 // mission réussie : GD-6). Code pur, partagé par le panneau d'île et la prochaine destination. Les noms des archipels
 // viennent de l'appelant (`noms` : ceux de l'univers affiché, GD-1).
 import { thePlace } from './placeArticle';
@@ -236,7 +236,7 @@ export interface Goal {
   ouvrage?: string;
 }
 
-/** Ce qu'il manque au Bloc-Navire, en blocs : « 16 blocs de bois », « 10 briques et 3 blocs de verre ». */
+/** Ce qu'il manque à la Nef, en blocs : « 16 blocs de bois », « 10 briques et 3 blocs de verre ». */
 function missingBlocks(state: GameState, missing: [BlockId, number][]) {
   const left = missing.map(([b, n]) => [b, Math.max(0, n - (state.stock[b] ?? 0))] as const).filter(([, n]) => n > 0);
   const need = missing.reduce((sum, [, n]) => sum + n, 0);
@@ -250,7 +250,7 @@ function missingBlocks(state: GameState, missing: [BlockId, number][]) {
 
 /**
  * Le prochain objectif d'une île, **un seul** : deux objectifs à la fois (des blocs pour un pont, d'autres pour le
- * navire) mélangeaient deux comptes. Ordre : le Bloc-Navire prêt à partir ; ce qu'on peut faire tout de suite
+ * navire) mélangeaient deux comptes. Ordre : la Nef prêt à partir ; ce qu'on peut faire tout de suite
  * (construire un ouvrage, poser les blocs du navire) ; sur l'île d'où part l'ouvrage suggéré de l'archipel
  * (`ouvrageSuggere`), cet ouvrage, même si le navire demande moins de blocs : la prochaine destination et le panneau de
  * l'île disent la même chose (GD-7, une seule source) ; sinon l'objectif le plus proche (le moins de blocs à gagner),
@@ -271,7 +271,7 @@ export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchip
   const dIci = suggere?.ile === island ? suggere.b : null;
   const ouvrage = bridges.length ? objectifDOuvrage(state, dIci ?? ouvragesParSuggestion(state, bridges, island, open)[0], island, lv2, open) : null;
   if (ouvrage) candidates.push(ouvrage);
-  // Le chantier du Bloc-Navire (sur un port, tant que son voyage n'est pas fait).
+  // Le chantier de la Nef (sur un port, tant que son voyage n'est pas fait).
   if (stage && launch && !launch.ok && launch.reason !== 'construit' && launch.reason !== 'loin') {
     if (launch.reason === 'gardiens') {
       const left = launch.missing;
@@ -312,7 +312,7 @@ export function nextGoal(state: GameState, island: BiomeId, noms: NomsArchipels,
 export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): string {
   const bridges = state.world.links;
   const world = { progress: state.progress, plans: state.world.parts };
-  // Une île d'un autre archipel : il faut le Bloc-Navire.
+  // Une île d'un autre archipel : il faut la Nef.
   const archipelago = archipelagoOf(island);
   if (!isArchipelagoReached(archipelago.classe, bridges)) {
     const left = remainingVoyages(island, bridges);

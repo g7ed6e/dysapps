@@ -41,7 +41,7 @@ export function shipSummary(builder: VehicleBuilder, inventory: Partial<Record<B
 }
 
 /**
- * Le Bloc-Navire, sur une île-port : l'étape en chantier (avancement, blocs qu'il manque et où les gagner, Gardiens à
+ * La Nef, sur une île-port : l'étape en chantier (avancement, blocs qu'il manque et où les gagner, Gardiens à
  * vaincre pour le kit, bouton « Poser le bloc suivant »), le bouton « Embarquer » quand tout est prêt, et les boutons
  * pour revenir sur un archipel déjà atteint. Même contenu dans le panneau 3D et en vue simple.
  */

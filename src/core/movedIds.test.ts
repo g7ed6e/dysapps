@@ -160,7 +160,7 @@ it('chaque déplacement mène à un exercice qui existe, et chaque item déplac�
   }
 });
 
-it('un exercice arrivé d’un autre lieu n’ouvre pas son lieu : ni voyage, ni étape du Bloc-Navire, et les étoiles restent', () => {
+it('un exercice arrivé d’un autre lieu n’ouvre pas son lieu : ni voyage, ni étape de la Nef, et les étoiles restent', () => {
   // Un élève de 5e : ses lieux de 5e ouverts, rien au-delà.
   const links = grantAccess([], ['maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation']);
   const cases: [string, BiomeId][] = [

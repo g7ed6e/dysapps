@@ -61,7 +61,7 @@ it('le prochain objectif est unique : d’abord ce qu’on peut faire tout de su
   expect(nextGoal(EMPTY_STATE, 'french-6e-letter-confusion')).toBe('Encore 4 blocs pour le pont vers la Forêt des sons.');
 });
 
-it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses Gardiens, puis l’embarquement', () => {
+it('sur le port, le prochain objectif parle de la Nef : ses blocs, puis ses Gardiens, puis l’embarquement', () => {
   // Au début, sur la Plaine : l'ouvrage suggéré (4 blocs, GD-7) est plus proche que le navire ; rien de joué, le français
   // (depuis les formes des îles, GD-12, le pont vers la Ferme part de la Plaine).
   const fresh = sanitizeState({});
@@ -135,7 +135,7 @@ it('une île fermée dit l’ouvrage précis qui y mène, ou l’île à ouvrir 
   expect(lockedHint(ateliers, 'english-4e-comprehension')).toBe('Pas si vite ! Pour venir ici, pose le bac depuis l’Atelier du calcul littéral : 5 blocs.');
 });
 
-it('une île d’un autre archipel parle du Bloc-Navire : ses blocs, ses Gardiens, l’embarquement, ou l’archipel d’avant', () => {
+it('une île d’un autre archipel parle de la Nef : ses blocs, ses Gardiens, l’embarquement, ou l’archipel d’avant', () => {
   const fresh = sanitizeState({});
   const total = coque.cells.length;
   expect(lockedHint(fresh, 'french-5e-homophones')).toBe(
@@ -236,12 +236,12 @@ it('sans assez de blocs, la suggestion dit ce qu’il manque ; le panneau de l�
   expect(nextGoalInfo(state, 'maths-6e-calculation')?.ouvrage).toBe(s.goal.ouvrage);
 });
 
-it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrage, même si le Bloc-Navire est plus proche (une seule source)', () => {
+it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrage, même si la Nef est plus proche (une seule source)', () => {
   // La Forêt jouée en entier, la Plaine (le port) une fois, l'anglais beaucoup. Les
   // îles jouées sont reliées à la lecture de la sauvegarde. Depuis le Préau des délégués (EMC-2), jamais joué, qui
   // s'atteint par un bac depuis la Forêt : l'EMC est la moins jouée avec la physique-chimie et la technologie, dont les
   // îles ne s'atteignent pas depuis un lieu relié ; la liaison suggérée part de la Forêt, 4 blocs (1 en stock).
-  // Le Bloc-Navire, à son port, n'attend plus qu'une case : 1 bloc, plus proche que les 3 de la liaison.
+  // La Nef, à son port, n'attend plus qu'une case : 1 bloc, plus proche que les 3 de la liaison.
   const progress = {
     ...joue('french-6e-phonology', 99),
     ...joue('maths-6e-calculation', 1),
@@ -261,7 +261,7 @@ it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrag
   // La prochaine destination dit la même phrase, mot pour mot, avec la même jauge.
   const d = nextDestinationDe(state, NOMS_ARCHIPELS, textesDe('blocland').libelles);
   expect(d).toMatchObject({ island: s.ile, text: goal!.text, have: goal!.have, need: goal!.need, ouvrage: goal!.ouvrage });
-  // Le Bloc-Navire prêt à partir reste premier, même sur l'île de départ de l'ouvrage suggéré.
+  // La Nef prêt à partir reste premier, même sur l'île de départ de l'ouvrage suggéré.
   const hull = planCells(coque).map((c) => c.key);
   const pret = sanitizeState({
     progress: { ...progress, ...guardians(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion']) },

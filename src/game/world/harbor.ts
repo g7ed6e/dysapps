@@ -1,4 +1,4 @@
-// Le port d'un archipel : la jetée devant l'île-port, et la place du Bloc-Navire à côté.
+// Le port d'un archipel : la jetée devant l'île-port, et la place de la Nef à côté.
 // Générateur pur (coordonnées du monde), partagé par le terrain 3D, les plans du véhicule et la vue simple.
 import type { BiomeId } from '../biomes';
 import { ALTITUDE, archipelagoOfIsland, coeurDe, isLand, islandDef, type ArchipelagoId, type IslandDef } from './map';

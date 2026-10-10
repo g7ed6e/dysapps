@@ -30,7 +30,7 @@ export interface VillageStage extends VillageStageDef {
   next: string | null;
 }
 
-/** L'archipel suivant, celui où mène le voyage du Bloc-Navire depuis ce port (aucun pour le dernier). */
+/** L'archipel suivant, celui où mène le voyage de la Nef depuis ce port (aucun pour le dernier). */
 function nextArchipelago(a: ArchipelagoId): ArchipelagoId | null {
   const i = ARCHIPELAGOS.findIndex((x) => x.classe === a);
   return ARCHIPELAGOS[i + 1]?.classe ?? null;

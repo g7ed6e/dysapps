@@ -281,7 +281,7 @@ export interface WorldViewProps {
   cubes: VoxelCube[];
   focus: WorldFocus;
   reduceMotion?: boolean;
-  /** Le Bloc-Navire amarré au port : ses cubes locaux (fantômes pour les cases à poser), animé à part. */
+  /** La Nef amarrée au port : ses cubes locaux (fantômes pour les cases à poser), animée à part. */
   vehicle?: VehiclePlacement | null;
   /**
    * Les gestes, traduits en intentions (world/layout.ts) : une île, une borne, un lieu, un ouvrage, une créature, le
@@ -341,7 +341,7 @@ export interface WorldViewProps {
   /** Les bornes de mission : leur case et leur état (à faire, étoiles gagnées, fermée), pour le repère au-dessus. */
   quests?: QuestMark[];
   /**
-   * L'état des autres objets qui portent un signe (Gardiens, Bloc-Navire, chantiers en fantôme ; world/model.ts,
+   * L'état des autres objets qui portent un signe (Gardiens, Nef, chantiers en fantôme ; world/model.ts,
    * `etatsDesObjets`) : le cube au-dessus d'eux, l'or ou la pierre (world/affordance.ts).
    */
   etatsDesObjets?: EtatsDesObjets;

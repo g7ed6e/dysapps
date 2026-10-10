@@ -27,7 +27,7 @@ type Vers = 'devant' | 'fond' | 'gauche' | 'droite';
 /**
  * La forme d'une île : la forme du catalogue, le côté vers lequel elle se tourne (dans le repère de l'île, avant qu'on la
  * tourne : le devant est côté caméra, côté quai) et, s'il le faut, son miroir (gauche et droite échangées, vue depuis
- * ce côté). `quai` : l'île-port, dont la baie garde l'eau du quai et du Bloc-Navire, et une rive droite devant la jetée.
+ * ce côté). `quai` : l'île-port, dont la baie garde l'eau du quai et de la Nef, et une rive droite devant la jetée.
  */
 export interface FormeDeLIle {
   forme: FormeId;
@@ -185,7 +185,7 @@ const SHAPE_CATALOGUE: Readonly<Record<FormeId, ShapeDrawing>> = {
   },
   // Deux cornes qui embrassent une baie : elles s'avancent devant jusqu'au bord de la boîte du trait, tournées l'une vers
   // l'autre ; entre elles, la baie descend jusqu'aux deux cases du corps. Le fond et les flancs restent au corps.
-  // L'île-port n'a qu'une corne, à gauche, accrochée à son flanc : la seconde serait sous le Bloc-Navire. Entre elle et
+  // L'île-port n'a qu'une corne, à gauche, accrochée à son flanc : la seconde serait sous la Nef. Entre elle et
   // la jetée (colonne 16 du cœur, u = 8,5), la rade ; le coin de devant à gauche en plage la prolonge (relecture du
   // directeur artistique, 8 octobre 2026), celui de devant à droite reste carré, la rive droite du quai.
   croissant: {

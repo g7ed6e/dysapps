@@ -173,7 +173,7 @@ function quaySpots(port: BiomeId, links: readonly string[], cubes: VoxelCube[]):
  * éteintes et une barque grise retournée sur la grève ; 2, lanternes allumées, la barque redressée ; 3, la barque amarrée
  * contre la jetée, un foyer qui fume ; 4, une seconde barque sur la grève, des caisses, deux fanions ; 5, une lanterne
  * sur chaque poteau et un feu de port au bout de la jetée. Rien sur la jetée ni à la place du navire ; pas de barque
- * dans les Îles du Ciel. Le Bloc-Navire amarré à côté n'est pas dans le terrain : il tangue, c'est un objet à part
+ * dans les Îles du Ciel. La Nef amarrée à côté n'est pas dans le terrain : elle tangue, c'est un objet à part
  * (`vehiclePlacement`).
  */
 export function harbor(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cubes: VoxelCube[]): void {

@@ -4229,8 +4229,8 @@ figure.class-table {
 .nef-pastille {
   display: inline-grid;
   place-items: center;
-  width: 1.1em;
-  height: 1.1em;
+  width: 1.3em;
+  height: 1.3em;
   border-radius: 50%;
   border: 2px solid currentColor;
 }
@@ -4238,9 +4238,10 @@ figure.class-table {
 .nef-pastille.faite {
   background: currentColor;
 }
+/* La coche prend le fond du panneau sur la pastille à la couleur du texte : le contraste du texte, dans chaque thème. */
 .nef-pastille.faite svg {
-  width: 0.8em;
-  height: 0.8em;
+  width: 0.95em;
+  height: 0.95em;
   color: var(--surface, #fff);
 }
 /* Le nom d'un lieu dans la ligne du haut ne se coupe pas en fin de ligne : il passe entier à la ligne suivante (il ne
@@ -5793,7 +5794,7 @@ details.island-fold-objectif {
   }
 }
 
-/* ---------- Les archipels et le Bloc-Navire ---------- */
+/* ---------- Les archipels et la Nef ---------- */
 
 .biome-archipel {
   margin: -0.4rem 0 1rem;
@@ -5877,7 +5878,7 @@ details.island-fold-objectif {
   align-content: center;
 }
 
-/* ---------- Le voyage du Bloc-Navire ---------- */
+/* ---------- Le voyage de la Nef ---------- */
 
 .world-veil {
   position: absolute;
@@ -5966,7 +5967,7 @@ details.island-fold-objectif {
   display: block;
 }
 
-/* ===== Les plis du panneau d'île : plan, Bloc-Navire, ouvrages ===== */
+/* ===== Les plis du panneau d'île : plan, Nef, ouvrages ===== */
 /* Ouverts quand il y a quelque chose à faire, repliés sinon : une ligne d'état tient lieu de section. */
 .island-fold {
   margin-top: 0.8rem;
@@ -6850,7 +6851,7 @@ button.island-quest {
     max-height: 70%;
   }
   /* En grand texte, jusqu'en haut de la scène (sous la marge du haut) : le titre et le bouton principal restent entiers
-     (le Bloc-Navire, « Embarquer vers … » sur quatre lignes en OpenDyslexic 32 px). */
+     (la Nef, « Embarquer vers … » sur quatre lignes en OpenDyslexic 32 px). */
   :root[data-texte="grand"] .world-fiche-place {
     max-height: calc(100% - var(--barre-h, 4rem) - 1.8rem);
   }

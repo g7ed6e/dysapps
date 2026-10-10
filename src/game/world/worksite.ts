@@ -1,5 +1,5 @@
 // Le chantier que servent les blocs d'une mission : ce que dit le bilan (« Le sentier vers la Mine : 2 blocs sur 3. »)
-// et où mène « Voir le chantier » : un ouvrage, le Bloc-Navire ou un monument. Le bâtiment de l'île n'en fait pas
+// et où mène « Voir le chantier » : un ouvrage, la Nef ou un monument. Le bâtiment de l'île n'en fait pas
 // partie : il se pose tout seul, une partie par mission réussie (GD-6). Code pur, déduit de la sauvegarde, sans rien y
 // ajouter : les chiffres sont ceux du panneau d'île et de « Mes blocs ».
 import { thePlace } from './placeArticle';
@@ -79,7 +79,7 @@ function ouvrage(state: GameState, island: BiomeId, block: BlockId): Worksite | 
 }
 
 /**
- * Le chantier que servent les blocs gagnés sur une île : d'abord le Bloc-Navire de cette île, puis l'ouvrage le moins
+ * Le chantier que servent les blocs gagnés sur une île : d'abord la Nef de cette île, puis l'ouvrage le moins
  * cher qui en part, puis un autre chantier de l'archipel (navire, monument) ; sinon rien, dit tel quel.
  */
 export function worksiteFor(state: GameState, island: BiomeId, block: BlockId): Worksite {

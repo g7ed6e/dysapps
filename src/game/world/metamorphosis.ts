@@ -13,7 +13,8 @@ export interface Flight {
   to: { x: number; y: number; z: number } | null;
 }
 
-const apparence = (c: VoxelCube) => `${c.texture ?? ''}|${c.color}|${c.top ?? ''}`;
+/** L'apparence d'un cube : un cube ne vole que vers une case de même apparence (et un appel de dessin par apparence). */
+export const apparence = (c: VoxelCube) => `${c.texture ?? ''}|${c.color}|${c.top ?? ''}`;
 const distance = (a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z);
 
 /**
@@ -22,7 +23,11 @@ const distance = (a: { x: number; y: number; z: number }, b: { x: number; y: num
  */
 export function metamorphosisFlights(before: readonly VoxelCube[], after: readonly VoxelCube[]): Flight[] {
   const libres = new Map<string, VoxelCube[]>();
-  for (const c of before) libres.set(apparence(c), [...(libres.get(apparence(c)) ?? []), c]);
+  for (const c of before) {
+    const pile = libres.get(apparence(c));
+    if (pile) pile.push(c);
+    else libres.set(apparence(c), [c]);
+  }
   const flights: Flight[] = [];
   const ordre = [...after].sort((a, b) => a.z - b.z || a.y - b.y || a.x - b.x);
   for (const c of ordre) {

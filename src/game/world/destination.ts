@@ -55,7 +55,7 @@ export function lienDeLaDestination(d: Pick<Destination, 'island' | 'ouvrage' | 
 }
 
 /**
- * La destination est-elle le Bloc-Navire (son chantier, ou son départ) ? Le port de son archipel, sans ouvrage ni
+ * La destination est-elle la Nef (son chantier, ou son départ) ? Le port de son archipel, sans ouvrage ni
  * commande, et sa phrase est l'objectif du navire : le prochain objectif du port (`objectifDuPort`, `nextGoalInfo`),
  * quand ce n'est pas un ouvrage. « Y aller » ouvre alors la fiche du navire (lot 2 de « Toucher le monde »).
  */
@@ -68,7 +68,7 @@ export function laDestinationEstLeNavire(d: Destination, objectifDuPort: Goal | 
 /**
  * La prochaine destination, dans l'archipel où se tient le bonhomme : une seule suggestion, qui suit l'élève (GD-7,
  * point 3), la même au menu, sur la Carte et en vue simple. Ordre :
- * 1. le Bloc-Navire prêt à partir (le port) ;
+ * 1. la Nef prêt à partir (le port) ;
  * 2. l'île où se tient le bonhomme, où l'élève est allé de lui-même, quand il y reste quelque chose à faire tout de
  *    suite (un objectif prêt, une mission jamais jouée) ;
  * 3. la plus ancienne commande prête à livrer de l'archipel (GD-7, PR 3, world/requests.ts) : l'île de sa créature,
@@ -79,7 +79,7 @@ export function laDestinationEstLeNavire(d: Destination, objectifDuPort: Goal | 
  * 5. l'ouvrage suggéré (`ouvrageSuggere`) : celui qu'on peut payer et qui ouvre une île de la matière la moins jouée ;
  *    sans assez de blocs, ce qu'il en manque ; la destination est l'île d'où il part, et sa phrase est l'objectif de
  *    cette île (`nextGoalInfo`, une seule source : le panneau de l'île dit la même chose) ;
- * 6. sinon l'objectif qui demande le moins de blocs (le Bloc-Navire) ; rien à faire : le port, avec ce qu'il faut pour
+ * 6. sinon l'objectif qui demande le moins de blocs (la Nef) ; rien à faire : le port, avec ce qu'il faut pour
  *    que le village avance.
  * Déduite de la sauvegarde seule, sans hasard ni horloge : elle ne change pas tant que l'élève n'a rien fait. `noms` :
  * les noms des archipels de l'univers affiché ; `mots` : ses mots pour les Gardiens ; `lv2` : la LV2 choisie.
@@ -101,7 +101,7 @@ export function nextDestination(state: GameState, noms: NomsArchipels, mots: Mot
     ...(commande ? { commande } : {}),
   });
 
-  // 1. Le Bloc-Navire prêt à partir.
+  // 1. La Nef prêt à partir.
   const port = archipelago.port;
   const stage = stageAt(port);
   if (stage && open.has(port) && canLaunch(state, stage).ok) {

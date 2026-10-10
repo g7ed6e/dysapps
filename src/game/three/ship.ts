@@ -7,7 +7,7 @@ import type { BiomeId } from '../biomes';
 import { maillageDeLaConstruction } from '../world/construction';
 import type { VoxelCube } from '../world/cube';
 import { VEHICLE_DECK } from '../world/harbor';
-import { METAMORPHOSIS_MS, metamorphosisFlights, metamorphosisPose, type Flight } from '../world/metamorphosis';
+import { METAMORPHOSIS_MS, apparence, metamorphosisFlights, metamorphosisPose, type Flight } from '../world/metamorphosis';
 import { boardingWalk, startVoyage, voyageFrame, type VoyageRun } from '../world/scene';
 import type { WorldViewProps } from '../world/view';
 import { vehiclePath } from '../world/voyage';
@@ -99,8 +99,9 @@ export function creerNavire(
     const flights = metamorphosisFlights(avant, apres);
     const groupes = new Map<string, Flight[]>();
     for (const f of flights) {
-      const k = `${f.cube.texture ?? ''}|${f.cube.color}|${f.cube.top ?? ''}`;
-      groupes.set(k, [...(groupes.get(k) ?? []), f]);
+      const liste = groupes.get(apparence(f.cube));
+      if (liste) liste.push(f);
+      else groupes.set(apparence(f.cube), [f]);
     }
     const vols: Mue['vols'] = [];
     const meshes: THREE.InstancedMesh[] = [];

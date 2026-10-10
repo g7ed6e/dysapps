@@ -583,7 +583,7 @@ it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur 
   const far = avatarRoute('french-6e-phonology', 'french-6e-reading', ['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-french-6e-reading'])!;
   expect(far[far.length - 1]).toEqual(avatarHome('french-6e-reading'));
   expect(far.some((p) => p.z === 1)).toBe(true);
-  // D'un archipel à l'autre, on ne marche pas : c'est le Bloc-Navire (changement de scène).
+  // D'un archipel à l'autre, on ne marche pas : c'est la Nef (changement de scène).
   expect(avatarRoute('maths-6e-calculation', 'maths-5e-proportionality', ['passage-5e'])).toBeNull();
   // Dans les Collines, on marche à leur altitude. (Le tracé des liaisons suit celles que la partie a posées.)
   const liens = ['passage-5e', 'maths-5e-proportionality-french-5e-conjugation'];
@@ -773,7 +773,7 @@ it('la mer est habillée de rochers et de bancs de sable, loin des terres, des o
   expect(worldCubes('3e', {}).some((c) => c.tag === 'mer')).toBe(false);
 });
 
-it('le port : une jetée dans l’eau devant l’île-port, et le Bloc-Navire à côté, hors de tout', () => {
+it('le port : une jetée dans l’eau devant l’île-port, et la Nef à côté, hors de tout', () => {
   for (const a of ARCHIPELAGOS) {
     const def = islandDef(a.port);
     const cells = dockCells(a.port);

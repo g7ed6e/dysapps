@@ -116,7 +116,7 @@ it('liste les activités d’une matière', () => {
   expect(later).toContainElement(screen.getByRole('heading', { name: 'Archipel de 5e — Les Collines du Large' }));
 });
 
-it('en vue simple, le voyage en Bloc-Navire est un écran avec une phrase et un bouton « Arriver », puis le port d’en face', async () => {
+it('en vue simple, le voyage de la Nef est un écran avec une phrase et un bouton « Arriver », puis le port d’en face', async () => {
   const { VEHICLE_STAGES } = await import('./game/world/vehicle');
   const { planCells } = await import('./game/world/plans');
   const [coque] = VEHICLE_STAGES;
@@ -256,7 +256,7 @@ it('en vue simple, la Carte et la page des quatre archipels renvoient à la list
   // plus que les 5 s par défaut sur la CI.
 }, 15_000);
 
-it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () => {
+it('l’accueil annonce la Nef quand il est prêt à partir', async () => {
   const { VEHICLE_STAGES } = await import('./game/world/vehicle');
   const { planCells } = await import('./game/world/plans');
   const [coque] = VEHICLE_STAGES;

@@ -231,7 +231,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
 
   if (done) {
     const block = BLOCKS[done.block];
-    // Avec les blocs gagnés, l'étape du Bloc-Navire de cet archipel a tout ce qu'il lui faut : on le dit.
+    // Avec les blocs gagnés, l'étape de la Nef de cet archipel a tout ce qu'il lui faut : on le dit.
     const port = archipelagoOf(biome.id).port;
     const stage = stageAt(port);
     const shipReady =

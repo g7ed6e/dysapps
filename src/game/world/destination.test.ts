@@ -60,7 +60,7 @@ it('ensuite, l’ouvrage qui ouvre une île de la matière la moins jouée, depu
   expect(nextDestination(structuredClone(paye))).toEqual(nextDestination(paye));
 });
 
-it('le Bloc-Navire prêt à partir passe devant tout', () => {
+it('la Nef prêt à partir passe devant tout', () => {
   const [coque] = VEHICLE_STAGES;
   const plans = Object.fromEntries(plansFor('maths-6e-calculation').map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const hull = { ...plans, [coque.id]: planCells(coque).map((c) => c.key) };
@@ -75,7 +75,7 @@ it('sans objectif, la destination est le port, avec ce qu’il faut pour le vill
   expect(nextDestination(state).text).toMatch(/\.$/);
 });
 
-it('la destination est le Bloc-Navire quand c’est le port et que sa phrase est l’objectif du navire (« Y aller » ouvre sa fiche)', () => {
+it('la destination est la Nef quand c’est le port et que sa phrase est l’objectif du navire (« Y aller » ouvre sa fiche)', () => {
   const objectif = (state: Etat) => nextGoalInfo(state, 'maths-6e-calculation', NOMS_ARCHIPELS, mots);
   // Au début : une île à explorer, pas le navire.
   const debut = sanitizeState({});

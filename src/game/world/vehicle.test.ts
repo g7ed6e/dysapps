@@ -179,3 +179,12 @@ it('le réacteur passé sous la coque : un réacteur fini derrière la poupe le 
   expect(commence.world.parts[reacteur.id]).toBeUndefined();
   expect(commence.stock).toEqual({ [BLOC.acier]: 18, [BLOC.calque]: 2 });
 });
+
+it('le dessin du Bloc-Navire d’avant la Nef : chaque case a un vrai bloc', () => {
+  for (const s of VEHICLE_STAGES) {
+    const avant = formerVehicleStage(s.id)!;
+    expect(avant.size, s.id).toBeGreaterThan(10);
+    for (const b of avant.values()) expect(BLOCKS[b], s.id).toBeDefined();
+  }
+  expect(formerVehicleStage('autre')).toBeUndefined();
+});

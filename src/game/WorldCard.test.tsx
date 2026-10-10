@@ -141,7 +141,7 @@ it('la Nef : un seul bouton « Poser » quand on peut poser ; « Partir » quand
   const pose = chantier({ stage: VEHICLE_STAGES[0], status: { done: 3, total: 27, complete: false, missing: {} } as unknown as VehicleBuilder['status'], canFill: true, fillAll });
   const { unmount } = ouvrir({ objet: { genre: 'navire', port: PLAINE }, seq: 1, saut: false }, { ship: pose });
   const f = screen.getByRole('dialog', { name: 'La Nef' });
-  expect(f).toHaveTextContent('Étape 1 sur 3, le voilier.');
+  expect(f).toHaveTextContent('Forme 1 sur 3, le voilier.');
   expect(within(f).getAllByRole('button').filter((b) => /Poser/.test(b.textContent ?? ''))).toHaveLength(1);
   await userEvent.click(within(f).getByRole('button', { name: /^Poser$/ }));
   expect(fillAll).toHaveBeenCalled();

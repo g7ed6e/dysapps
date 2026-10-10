@@ -21,7 +21,7 @@ export interface Progress {
   structuresCompleted: number;
   /** Gardiens de biome vaincus. */
   challengesWon: number;
-  /** Voyages du Bloc-Navire (un archipel de plus atteint). */
+  /** Voyages de la Nef (un archipel de plus atteint). */
   passages: number;
   /** Monuments terminés (l'observatoire des baleines…). */
   landmarksCompleted: number;
@@ -297,7 +297,7 @@ export function recordBoss(p: Progress, now = new Date().toISOString()): Progres
   return finish(p, { ...p, challengesWon: p.challengesWon + 1 }, 0, now);
 }
 
-/** Un voyage du Bloc-Navire : l'XP de l'étape et le compteur pour les succès. */
+/** Un voyage de la Nef : l'XP de l'étape et le compteur pour les succès. */
 export function recordVoyage(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {
   return finish(p, { ...p, xp: p.xp + xp, passages: p.passages + 1 }, xp, now);
 }

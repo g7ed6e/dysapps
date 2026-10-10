@@ -1,6 +1,6 @@
 // Moteur Blocland : étoiles, récompenses, répétition espacée, streak et adaptation.
 // Logique pure (l'heure et le hasard sont passés en paramètres) pour être testée facilement.
-// Ce fichier garde les plans, l'assemblage, la fin d'exercice, l'école du village et le Bloc-Navire ; à côté, dans
+// Ce fichier garde les plans, l'assemblage, la fin d'exercice, l'école du village et la Nef ; à côté, dans
 // ./engine/ : l'état d'une partie (`state.ts`), les dates (`dates.ts`), la lecture d'une sauvegarde (`sanitize.ts`),
 // l'apprentissage (`learning.ts`). Il en réexporte les noms publics.
 import { type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome } from './biomes';
@@ -157,7 +157,7 @@ export function disassembleBlock(state: GameState, bloc: BlockId): AssembleResul
   return { state: { ...state, stock: inventory }, ok: true };
 }
 
-/** La prochaine cellule d'un plan que l'on peut poser avec l'inventaire actuel (le Bloc-Navire, bouton « Poser le bloc suivant »). */
+/** La prochaine cellule d'un plan que l'on peut poser avec l'inventaire actuel (la Nef, bouton « Poser le bloc suivant »). */
 export function nextFillable(state: GameState, plan: PlanDef): { x: number; y: number; z: number } | null {
   const done = new Set(state.world.parts[plan.id] ?? []);
   const cell = planCells(plan).find((c) => !done.has(c.key) && (state.stock[c.block] ?? 0) > 0);
@@ -379,9 +379,9 @@ export function moveAvatar(state: GameState, to: BiomeId): GameState {
   return { ...state, world: { ...state.world, place: to } };
 }
 
-// ---------- Le Bloc-Navire ----------
+// ---------- La Nef ----------
 
-/** L'étape du Bloc-Navire en cours : la première dont le voyage n'est pas fait ; `null` quand les trois voyages sont faits. */
+/** L'étape de la Nef en cours : la première dont le voyage n'est pas fait ; `null` quand les trois voyages sont faits. */
 export function currentStage(state: GameState): VehicleStage | null {
   return VEHICLE_STAGES.find((s) => !state.world.links.includes(voyageId(s.to))) ?? null;
 }

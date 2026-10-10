@@ -68,7 +68,7 @@ export function BossPage() {
   const [deborde, setDeborde] = useState(false);
   const ligneRef = useRef<HTMLParagraphElement>(null);
   const ligneId = useId();
-  // Ce Gardien rallumé fait arriver le kit du Bloc-Navire (la voile, le ballon, les feux) : on le dit, avec le chemin du port.
+  // Ce Gardien rallumé fait arriver le kit de la Nef (la voile, le ballon, les feux) : on le dit, avec le chemin du port.
   const [shipHint, setShipHint] = useState<VehicleStage | null>(null);
   const sound = (f: () => void) => settings.sounds && f();
 

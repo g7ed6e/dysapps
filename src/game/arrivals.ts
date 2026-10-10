@@ -3,7 +3,7 @@
 // page du port). Les noms des archipels viennent de l'appelant : ceux de l'univers affiché (GD-1).
 import type { ArchipelagoId, NomsArchipels } from './world/archipelago';
 
-/** Ce qu'il faut savoir du Bloc-Navire en arrivant dans un archipel (rien en 6e : on y commence). */
+/** Ce qu'il faut savoir de la Nef en arrivant dans un archipel (rien en 6e : on y commence). */
 export function pagesDArrivee(a: ArchipelagoId, noms: NomsArchipels): string[] {
   switch (a) {
     case '6e':

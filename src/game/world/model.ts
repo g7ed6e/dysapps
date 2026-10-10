@@ -95,7 +95,7 @@ export function modeleDuMonde(state: GameState, a: ArchipelagoId, noms: NomsArch
 export interface EtatsDesObjets {
   /** Les Gardiens dont le défi est prêt (le losange d'or) ; un Gardien pas encore vaincu, hors de cette liste : la pierre. */
   gardiensPrets: BiomeId[];
-  /** Le Bloc-Navire attend l'élève : un bloc qu'il a en poche à poser sur l'étape en chantier, ou le départ possible. */
+  /** La Nef attend l'élève : un bloc qu'il a en poche à poser sur l'étape en chantier, ou le départ possible. */
   navirePret: boolean;
   /**
    * Les chantiers en fantôme dont l'élève a les blocs : les ouvrages qu'il peut construire tout de suite, et les
@@ -149,7 +149,7 @@ export function capVers(ile: BiomeId, a: ArchipelagoId, bridges: string[]): 'por
   return isBiomeUnlocked(ile, bridges) ? 'voyage' : 'port';
 }
 
-// ---- Le voyage du Bloc-Navire
+// ---- Le voyage de la Nef
 
 /**
  * Le voyage en cours : vers quel archipel, depuis lequel, retour ou premier voyage, écran fixe (`panel`, avec « Réduire

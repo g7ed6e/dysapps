@@ -1,8 +1,8 @@
 // La rangée de classes du monde (lot 2 de « Toucher le monde », demandée par le mainteneur : changer de classe sans
 // fenêtre) : en haut à droite, toujours visible, un bouton par classe dont l'archipel est atteint (6e, 5e…). Un
-// toucher y emmène d'un fondu court, sans la cinématique du Bloc-Navire (réservée au premier voyage vers un archipel).
+// toucher y emmène d'un fondu court, sans la cinématique de la Nef (réservée au premier voyage vers un archipel).
 // La classe où l'on est se reconnaît à sa forme (bord épais et coche), pas seulement à sa couleur, et ne se touche pas.
-// Rien quand une seule classe est atteinte. Ce qu'il faut pour aller plus loin est dans la fiche du Bloc-Navire.
+// Rien quand une seule classe est atteinte. Ce qu'il faut pour aller plus loin est dans la fiche de la Nef.
 import { Icon } from '../components/Icon';
 import { ARCHIPELAGOS, isArchipelagoReached, type ArchipelagoId } from './world/archipelago';
 import { useTextes } from '../universes';

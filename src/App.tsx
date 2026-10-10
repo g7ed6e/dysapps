@@ -146,7 +146,7 @@ function MonumentEntry({ monument }: { monument: MonumentDef }) {
 function JoinEntry({ join }: { join: AppliedJoin }) {
   return <JoinPage builder={useJoinBuilder(join.plan, join.shape)} />;
 }
-// Le voyage en Bloc-Navire : un écran HTML en vue simple ; en 3D, le monde le joue depuis le panneau du port.
+// Le voyage de la Nef : un écran HTML en vue simple ; en 3D, le monde le joue depuis le panneau du port.
 function VoyageEntry() {
   const { vers } = useParams();
   return useImmersive() ? (

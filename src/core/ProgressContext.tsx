@@ -40,7 +40,7 @@ interface ProgressContextValue {
   completeJoin: (xp: number) => ProgressUpdate;
   /** Un Gardien de biome vaincu : succès. */
   beatBoss: () => ProgressUpdate;
-  /** Un voyage du Bloc-Navire : l'XP de l'étape et les succès de voyage. */
+  /** Un voyage de la Nef : l'XP de l'étape et les succès de voyage. */
   launchVoyage: (xp: number) => ProgressUpdate;
   resetProgress: () => void;
   celebrations: Celebration[];
