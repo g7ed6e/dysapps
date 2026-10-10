@@ -50,7 +50,7 @@ import { LIAISON, type LinkPhrases, type LinkWord, linkPhrases } from './world/l
  * Les phrases d'explication de la première fois (GD-9 ; 6 octobre 2026, choix 2a du mainteneur) : l'ouvrage « à
  * reposer », et « Réunir » avec la construction de l'univers (la digue, la jetée). Chacune tient en une phrase, écrite
  * et lue, et ne se montre qu'une fois par appareil (`CLE_DE_L_EXPLICATION`, `CLE_DE_LA_REUNION`, retenues dans
- * l'appareil comme le mot de la baleine). « Tes ouvrages restent. » avant « Revenir » (MenuSheet.tsx) se dit, lui, à
+ * l'appareil comme le mot de la baleine). « Tes ouvrages restent. » avant « Revenir » (StartingMap.tsx) se dit, lui, à
  * chaque fois.
  */
 
