@@ -190,8 +190,9 @@ function sentinelleImportee(lu: ModeleLu, quarts: number): FacettesDePersonnage 
 
 /**
  * Une créature importée, à la taille de son gabarit, ses couleurs (celles du modèle, peint en aplats par
- * scripts/rendu/modeles/aplats.py) nuancées selon la facette comme une créature dessinée en code. Une seule pièce, le corps : elle se promène sans lever le bras. De près,
- * son squelette s'il en a un (scripts/rendu/modeles/squelette.py), placé comme ses sommets : la vue l'anime.
+ * scripts/rendu/modeles/aplats.py) nuancées selon la facette comme une créature dessinée en code. Une seule pièce, le
+ * corps : elle se promène sans lever le bras. De près, son squelette s'il en a un (scripts/rendu/modeles/squelette.py),
+ * placé comme ses sommets : la vue l'anime.
  */
 function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niveau): FacettesDePersonnage {
   const espece = (ESPECES_6E as Partial<Record<BiomeId, Espece>>)[id];
