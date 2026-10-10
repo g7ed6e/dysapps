@@ -155,7 +155,7 @@ export interface MaillageDeLaConstruction {
 }
 
 /** Le halo d'un feu allumé la nuit (repère Three) : son centre et son côté ; un sprite additif, fixe (three/construction.ts). */
-export interface HaloDuFeu {
+interface HaloDuFeu {
   centre: [number, number, number];
   cote: number;
 }
