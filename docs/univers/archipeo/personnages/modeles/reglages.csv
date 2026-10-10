@@ -18,16 +18,16 @@
 6e-carriere-creature-rouxel;-;0;1 bras=R leve=R teinte=L
 6e-ferme-creature-bloquette;-;0;3 bras=R leve=R
 6e-foret-creature-mousso;-;0;1 cou=0.72 queue=non
-6e-fouille-creature-silex;-;0
-6e-hangar-creature-pince;-;0
-6e-horloge-creature-tick;-;0
-6e-laboratoire-creature-bulle;-;0
+6e-fouille-creature-silex;-;0;3 bras=R leve=R
+6e-hangar-creature-pince;-;0;1 aire=oui bras=R leve=R
+6e-horloge-creature-tick;-;0;1 bras=non
+6e-laboratoire-creature-bulle;-;0;1 jambes=non bras=non queue=non
 6e-mine-creature-tunel;-;0;0 bras=non
 6e-plaine-creature-coco;-;0;3 aire=oui
-6e-pointe-creature-boussole;-;0
+6e-pointe-creature-boussole;-;0;1 bras=non
 6e-riviere-creature-nenu;-;0;3 aire=oui cou=0.7 bras=R leve=R
 6e-tour-creature-grimoire;-;0;0 cou=0.82 bras=non
-6e-vallee-creature-fougere;-;0
+6e-vallee-creature-fougere;-;0;0 jambes=non bras=non queue=non
 6e-volcan-creature-lavi;-;0;0 queue=sol aire=oui bras=non
 5e-bourg-gardien-griffon-d-email;0.12;0
 5e-carrefour-gardien-sphinx-des-routes;0.12;0

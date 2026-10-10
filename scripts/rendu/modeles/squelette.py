@@ -376,8 +376,12 @@ def rig(q, h, settings, col=None):
             w[n] = w[n] * (1 - np.maximum(k1, k2))
     names = [b[0] for b in bones]
     m = np.stack([w[n] for n in names], 1)
+    if m.shape[1] < 4:
+        # Moins de quatre os (une créature sans jambes ni bras) : des colonnes vides, le fichier en garde toujours quatre.
+        m = np.pad(m, ((0, 0), (0, 4 - m.shape[1])))
     order = np.argsort(-m, 1)[:, :4]
     top = np.take_along_axis(m, order, 1)
+    order = np.where(order < len(names), order, 0)
     top /= np.maximum(top.sum(1, keepdims=True), 1e-9)
     # Des poids en octets qui font 1 tout juste : le reste va au premier.
     top = np.round(top * 255) / 255

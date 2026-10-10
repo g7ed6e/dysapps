@@ -137,6 +137,10 @@ export const ALLURES: Partial<Record<BiomeId, Partial<Allure>>> = {
   'french-6e-grammar-spelling': { bras: 0.2 },
   // Nenu, la grenouille : sa rame, tenue debout comme un bâton, balance peu.
   'maths-6e-fractions': { bras: 0.2 },
+  // Silex, l'ours : son balai, tenu debout comme un bâton, balance peu.
+  'history-6e-antiquity': { bras: 0.2 },
+  // Pince, la fourmi : sa clé levée balance peu.
+  'technology-6e-objects': { bras: 0.2 },
 };
 
 /** L'allure d'une créature : la marche commune, et ce que la sienne change. */

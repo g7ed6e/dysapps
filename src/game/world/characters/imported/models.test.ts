@@ -101,7 +101,9 @@ it('le modèle compacté au build se lit comme l’original, à moins d’un mil
     const a = lireGlb(brut);
     const c = compacterGlb(new Uint8Array(brut));
     const b = lireGlb(c.buffer.slice(c.byteOffset, c.byteOffset + c.byteLength) as ArrayBuffer);
-    expect(c.byteLength).toBeLessThan(brut.byteLength / 2);
+    // Un export de Blender (normales, couleurs sur 16 bits, indices) fond de plus de moitié ; un modèle à squelette,
+    // déjà écrit sans normales ni indices par squelette.py, ne gagne que ses positions.
+    expect(c.byteLength).toBeLessThan(brut.byteLength / (a.skin ? 1.25 : 2));
     expect(b.positions.length).toBe(a.positions.length);
     const { haut } = cadre(a.positions);
     for (let i = 0; i < a.positions.length; i++) expect(Math.abs(b.positions[i] - a.positions[i])).toBeLessThan(haut / 1000);
