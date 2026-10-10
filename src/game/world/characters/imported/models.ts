@@ -105,7 +105,7 @@ const TROISIEME: Partial<Record<BiomeId, Ligne>> = {
   'physics-chemistry-3e-motion-energy': ['tremplin', 'kangourou-de-rubis', 'virage', 0, 1],
   'technology-3e-digital': ['ruche', 'abeille-de-topaze', 'navette', 1, 0],
   'civics-3e-democratic-life': ['forum', 'etourneau-d-etain', 'brio', 0, 3],
-  'lca-3e-ideas': ['bosquet', 'centaure-d-argile', 'stylet', 0, 0],
+  'lca-3e-ideas': ['bosquet', 'centaure-d-argile', 'stylet', 0.25, 0],
 };
 
 const LIGNES: Partial<Record<BiomeId, [classe: string, ligne: Ligne]>> = Object.fromEntries([
