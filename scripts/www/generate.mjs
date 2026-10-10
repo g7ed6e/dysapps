@@ -306,6 +306,8 @@ function programmesPage(d) {
     '',
     'Les langues vivantes suivent, en 6e et en 5e, les programmes des classes de collège publiés en 2025, un par langue : l’anglais dès la 6e, la deuxième langue vivante (LV2), l’allemand ou l’espagnol, à partir de la 5e. En 4e et en 3e, elles suivent le programme de 2020, commun à toutes les langues, avec les mêmes compétences et les mêmes pages.',
     '',
+    'L’histoire-géographie suit, de la 6e à la 3e, les programmes des cycles 3 et 4 de 2020. Les sciences suivent en 6e le programme du cycle 3 dans sa version de 2023, où l’enseignement de sciences et technologie a été modifié ; de la 5e à la 3e, la SVT et la physique-chimie suivent le programme du cycle 4 de 2020, et la technologie son programme de 2024.',
+    '',
     'L’enseignement moral et civique suit, de la 6e à la 3e, le programme du CP à la terminale, rangé par classe : chaque thème d’une classe est une compétence.',
     '',
     'Le latin et le grec ancien, enseignements de complément (option langues et cultures de l’Antiquité, LCA), suivent de la 5e à la 3e le programme de 2016 : des thèmes de culture et un tableau de langue communs à la 5e et à la 4e, puis une 3e de latin et une 3e de grec ; la lecture et la traduction valent pour tout le cycle. Le Bulletin officiel ne publie ce texte qu’en HTML : les pages indiquées sont celles de la copie PDF citée dans les sources.',
@@ -319,7 +321,7 @@ function programmesPage(d) {
           if (list.length === 0) return [];
           return [[`Cycle ${cycle}`, DISCIPLINES[disc].label, String(list.length), String(count(list, 'travaillee')), String(count(list, 'a-couvrir')), String(count(list, 'hors-perimetre'))]];
         }),
-      ),
+      ).concat([['**Total**', '', `**${PROGRAMME.length}**`, `**${count(PROGRAMME, 'travaillee')}**`, `**${count(PROGRAMME, 'a-couvrir')}**`, `**${count(PROGRAMME, 'hors-perimetre')}**`]]),
     ),
     '',
   ];

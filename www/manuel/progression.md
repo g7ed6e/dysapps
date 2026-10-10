@@ -18,18 +18,16 @@ Une suite de bonnes réponses du premier coup forme un **combo** (« 5 d’affil
 
 ## Par matière : progresser et retravailler
 
-Sur la page Succès, la section **Par matière** montre un panneau par matière (Français, Maths, Anglais) :
+Sur la page Succès, la section **Par matière** montre un panneau par matière : Français, Maths, Anglais, Histoire-géo, SVT, Physique-chimie, Technologie, EMC, puis la deuxième langue (sous le nom de la langue choisie, sauf avec « Pas de LV2 ») et l’option (« Latin » ou « Grec », sauf avec « Pas d’option ») :
 
 - une **jauge d’étoiles** : les étoiles gagnées sur toutes les missions des îles de la matière, de la 6e à la 3e (« 7 / 81 étoiles dans Blocland », ou dans Archipéo pour qui l’a choisi) ;
-- le nombre d’**îles ouvertes** et de **Gardiens rallumés** de la matière, et le **record** des missions du portail déjà jouées ;
+- le nombre d’**îles ouvertes** et de **Gardiens rallumés** de la matière, et le **record** des missions du portail déjà jouées (seuls le français, les maths et l’anglais ont des missions du portail) ;
 - la liste **À retravailler** : les missions à reprendre, la plus faible en premier. Toucher une ligne relance directement la mission.
   - Pour l’aventure : les missions déjà jouées qui n’ont pas encore trois étoiles, sur une île ouverte. La ligne donne l’île et les étoiles.
   - Pour le portail : les missions dont le record est sous 70 %. La ligne donne le record, en étoiles.
   - Cinq missions au plus sont affichées. S’il y en a d’autres, le panneau dit combien il en reste.
   - Une mission jamais jouée n’y figure pas : elle reste « Nouveau » sur la page de la matière.
   - Quand tout est à trois étoiles, le panneau dit « Rien à reprendre pour l’instant. »
-
-Une matière sans île dans l’aventure n’aurait pas de jauge d’étoiles : son panneau ne montrerait que les records de ses missions du portail et ce qu’il faut y retravailler.
 
 Le bouton **Voir la matière** ouvre la page de la matière, avec toutes ses missions et ses îles. Les règles exactes sont dans [Barème et succès](../pedagogie/bareme.md).
 
