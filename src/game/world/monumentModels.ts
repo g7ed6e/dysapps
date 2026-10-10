@@ -164,7 +164,7 @@ function fitOf(whole: ModeleLu, quarterTurns: number, plan: PlanBox): Fit {
 }
 
 /** Le demi-tour qui met la façade (+Z d'un .glb) face à l'élève (−Z), puis `quarterTurns` quarts de tour. */
-function turn(x: number, z: number, quarterTurns: number): [number, number] {
+export function turn(x: number, z: number, quarterTurns: number): [number, number] {
   let [u, v] = [-x, -z];
   for (let q = 0; q < ((quarterTurns % 4) + 4) % 4; q++) [u, v] = [-v, u];
   return [u, v];
@@ -186,7 +186,12 @@ function placeLocally(stage: ModeleLu, fit: Fit, quarterTurns: number, shift: { 
     positions[i + 2] = (v - cz) * k + shift.z;
     top = Math.max(top, positions[i + 1]);
   }
-  const normals = new Float32Array(q.length);
+  return { positions, normals: facetNormals(positions), colors: stage.colors, top };
+}
+
+/** Une normale par facette, la même à ses trois sommets (les facettes d'un modèle en aplats sont plates). */
+export function facetNormals(positions: Float32Array): Float32Array {
+  const normals = new Float32Array(positions.length);
   for (let t = 0; t < positions.length; t += 9) {
     const a = [positions[t + 3] - positions[t], positions[t + 4] - positions[t + 1], positions[t + 5] - positions[t + 2]];
     const b = [positions[t + 6] - positions[t], positions[t + 7] - positions[t + 1], positions[t + 8] - positions[t + 2]];
@@ -194,7 +199,7 @@ function placeLocally(stage: ModeleLu, fit: Fit, quarterTurns: number, shift: { 
     const l = Math.hypot(n[0], n[1], n[2]) || 1;
     for (let s = 0; s < 3; s++) for (let j = 0; j < 3; j++) normals[t + 3 * s + j] = n[j] / l;
   }
-  return { positions, normals, colors: stage.colors, top };
+  return normals;
 }
 
 /** La boîte du plan d'un monument. */
@@ -350,10 +355,11 @@ function finishedPieces(id: string, own: readonly VoxelCube[], foot: number, sta
 }
 
 /** La couleur d'une île fermée, en linéaire, et sa force (./decor/brush.ts, `DELAVE`). */
-const LINEAR_WASH = { color: rgb(DELAVE[0]).map((c) => lineaire(c / 255)), strength: DELAVE[1] };
+export const LINEAR_WASH = { color: rgb(DELAVE[0]).map((c) => lineaire(c / 255)), strength: DELAVE[1] };
 
-const shell = () => ({ pos: [] as number[], nor: [] as number[], col: [] as number[] });
-const finish = (f: ReturnType<typeof shell>): FacettesDuDecor => ({
+/** Des facettes en cours de remplissage (positions, normales, couleurs), puis rendues en tableaux typés (`finish`). */
+export const shell = () => ({ pos: [] as number[], nor: [] as number[], col: [] as number[] });
+export const finish = (f: ReturnType<typeof shell>): FacettesDuDecor => ({
   positions: Float32Array.from(f.pos),
   normals: Float32Array.from(f.nor),
   colors: Float32Array.from(f.col),

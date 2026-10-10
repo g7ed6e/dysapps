@@ -1,0 +1,5 @@
+# Couleurs cibles des aplats du bâtiment de chaque île (sRVB), lues par scripts/rendu/modeles/monument_lowpoly.py comme
+# celles des monuments : chaque grappe de facettes du modèle prend la plus proche. D'après l'avis du directeur artistique
+# sur l'essai de la forge (10 octobre 2026) : pierre claire, pierre des murs, tuiles, bois de la poutre, fond de l'ouverture.
+# batiment;cibles;voxel (part de la plus grande dimension, 0,008 si vide)
+6e-batiment-forge-de-tunel;bdb8ad 8f8c86 a14f3c 6b4a2e 3a2a22

@@ -17,8 +17,10 @@ import { blockRegions, buildBlockMesh, buildRegionMesh, chunkFaceCount, type Blo
 import { hiddenBottomLevel } from './sea';
 import { MONUMENTS } from './monuments';
 import { isMonumentLoaded, MONUMENT_MODELS } from './monumentModels';
+import { BUILDING_FAR_TRIANGLES, BUILDING_NEAR_TRIANGLES, buildingCells, buildingTriangles, isBuildingLoaded } from './buildingModels';
+import { ETAPES_DU_BATIMENT } from './construction/buildings';
 import { LAYERS } from './projects';
-import { PLANS, planCells } from './plans';
+import { PLANS, planCells, plansFor } from './plans';
 import { creaturePlacements, guardianPlacements, vehiclePlacement, whaleSpots, worldBounds, worldCubes } from './terrain';
 import { grilleDeLaMer, trianglesDeLaGrille } from './sea';
 import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
@@ -56,9 +58,13 @@ export const RENDER_BUDGET = {
  * (EMC-2, décision du mainteneur, 9 octobre 2026). Puis à 81 500 pour les monuments importés d'Archipéo
  * (./monumentModels.ts ; 3 000 triangles par monument entier, décision du mainteneur, 9 octobre 2026) : la construction
  * passe de 7 750 à 12 750, la somme des enveloppes de 76 290 à 81 290 (relevé par le mainteneur le 10 octobre 2026 :
- * deux monuments par archipel en coûtent environ 5 000, et non 3 000 ; la mesure sur l'iPad reste à faire).
+ * deux monuments par archipel en coûtent environ 5 000, et non 3 000 ; la mesure sur l'iPad reste à faire). Puis à 85 250
+ * pour les bâtiments des plans importés d'Archipéo (./buildingModels.ts ; décision du mainteneur, 10 octobre 2026 : de
+ * près 3 000 triangles sur l'île où est l'élève, de loin environ 200 ailleurs, « tu peux relever les plafonds ») : relevé
+ * de la différence, les 3 750 que l'enveloppe de la construction prend (12 750 → 16 500 ; mesurée au pire, prévue pour
+ * les seize bâtiments de l'archipel, `constructionAuPire`) ; la somme des enveloppes passe de 81 290 à 85 040.
  */
-export const RENDER_BUDGET_6E = { triangles: 81_500, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_6E = { triangles: 85_250, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
  * Les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
@@ -81,9 +87,13 @@ export const RENDER_BUDGET_6E = { triangles: 81_500, drawCalls: RENDER_BUDGET.dr
  * pour les monuments importés d'Archipéo (./monumentModels.ts ; 3 000 triangles par monument entier, décision du
  * mainteneur, 9 octobre 2026) : la construction prend 5 000 de plus partout, la somme des enveloppes passe à 91 685 aux
  * Îles Brumeuses, 88 725 aux Anciens Ateliers, 87 855 aux Îles du Ciel (relevé par le mainteneur le 10 octobre 2026 :
- * deux monuments par archipel en coûtent environ 5 000, et non 3 000 ; la mesure sur l'iPad reste à faire).
+ * deux monuments par archipel en coûtent environ 5 000, et non 3 000 ; la mesure sur l'iPad reste à faire). Puis à 94 700
+ * pour les bâtiments des plans importés d'Archipéo (./buildingModels.ts ; décision du mainteneur, 10 octobre 2026 : de
+ * près 3 000 triangles, de loin environ 200, « tu peux relever les plafonds ») : relevé de la différence aux Îles
+ * Brumeuses, les 2 970 que leur construction prend (13 230 → 16 200), arrondis ; la somme des enveloppes passe à 94 655
+ * aux Îles Brumeuses, 92 675 aux Anciens Ateliers et 91 805 aux Îles du Ciel (construction « autres » 13 000 → 16 950).
  */
-export const RENDER_BUDGET_AUTRES = { triangles: 91_700, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_AUTRES = { triangles: 94_700, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
@@ -337,19 +347,27 @@ export const ENVELOPPES: Record<
     parArchipel: { '5e': { triangles: 19_000, drawCalls: 3 }, '3e': { triangles: 11_530, drawCalls: 3 } },
   },
   // Les monuments importés d'Archipéo (./monumentModels.ts, 3 000 triangles par monument entier, décision du mainteneur,
-  // 9 octobre 2026) : comptés au pire de leurs chantiers (`constructionAtWorstMonumentStage`), ils remplacent leurs cubes
+  // 9 octobre 2026) : comptés au pire de leurs chantiers (`constructionAuPire`), ils remplacent leurs cubes
   // (environ 250 triangles chacun). Mesuré tout construit (`npm run rendu:budget`, 10 octobre 2026), avant → après :
   // 7 191 → 12 450 aux Premiers Rivages, 7 975 → 12 898 aux Îles Brumeuses (12 866 phare fini ; au pire, sa quatrième
   // étape et les fantômes de son toit), 6 991 → 12 034 aux Anciens Ateliers, 7 356 → 12 444 aux Îles du Ciel ; au pire
   // de la salle des trophées (24 succès), 12 698, 13 146, 12 282 et 12 692. Les enveloppes prennent 5 000 partout
   // (12 750, 13 230 aux Îles Brumeuses, 13 000 ailleurs), aucun appel de plus (proposition de l'artiste technique 3D, à
   // valider par le mainteneur).
+  // Les bâtiments des plans importés d'Archipéo (./buildingModels.ts ; décision du mainteneur, 10 octobre 2026 : de près
+  // 3 000 triangles sur l'île où est l'élève, de loin environ 200 sur toutes les autres, plafonds relevés de la
+  // différence) : comptés au pire (`constructionAuPire`, `batimentsAuPire`), prévus pour toutes les îles même sans modèle
+  // (200 de loin chacune, 3 000 de près sur une), à la place des cubes de leurs deux premiers plans. Mesuré tout construit
+  // (`npm run rendu:budget`, 10 octobre 2026), avant → après : 11 997 → 16 206 aux Premiers Rivages (seize îles, la forge
+  // de Tunel chargée), 12 003 → 15 899 aux Îles Brumeuses, 12 508 → 16 585 aux Anciens Ateliers, 12 735 → 16 691 aux Îles
+  // du Ciel (quatorze îles chacun) ; au pire de la salle des trophées (24 succès), 16 454, 16 147, 16 833 et 16 939. Les
+  // enveloppes : 12 750 → 16 500, 13 230 → 16 200 aux Îles Brumeuses, 13 000 → 16 950 ailleurs ; aucun appel de plus.
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
-    premiersRivages: { triangles: 12_750, drawCalls: 3 },
-    autres: { triangles: 13_000, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 13_230, drawCalls: 3 } },
+    premiersRivages: { triangles: 16_500, drawCalls: 3 },
+    autres: { triangles: 16_950, drawCalls: 3 },
+    parArchipel: { '5e': { triangles: 16_200, drawCalls: 3 } },
   },
   // Les quêtes des habitants (GD-10, PR 1) : les trois objets posés à la fin des quêtes du 6e (la lanterne, le portillon,
   // l'escalier) sont des petites constructions, comptées dans ce poste (`toutConstruitAvecLesCommandes`) : 758 triangles
@@ -768,20 +786,22 @@ export function constructionCost(a: ArchipelagoId, trophees: readonly BlockId[] 
 }
 
 /**
- * La construction taillée au pire des chantiers des monuments importés (./monumentModels.ts) : tout construit, chaque
- * monument chargé à l'étape qui coûte le plus (son modèle d'étape, et les fantômes des cases qui restent), au lieu de son
- * modèle entier. Un monument se compte seul, sur son îlot (il ne partage aucune face avec son île) : les cases posées
- * jusqu'au seuil de chaque étape, de bas en haut. Sans monument chargé : la construction tout construite. `npm run
- * rendu:budget` les charge depuis le disque (scripts/rendu/budget.mjs) ; c'est ce que compte le poste.
+ * La construction taillée au pire des modèles importés : tout construit, chaque monument chargé (./monumentModels.ts) à
+ * l'étape qui coûte le plus (son modèle d'étape, et les fantômes des cases qui restent), au lieu de son modèle entier ;
+ * et le bâtiment des plans de chaque île (./buildingModels.ts) au pire, de près sur une île, de loin sur toutes les
+ * autres (`batimentsAuPire`). Un monument se compte seul, sur son îlot (il ne partage aucune face avec son île) : les
+ * cases posées jusqu'au seuil de chaque étape, de bas en haut. `npm run rendu:budget` charge les modèles depuis le
+ * disque (scripts/rendu/budget.mjs) ; c'est ce que compte le poste.
  */
-export function constructionAtWorstMonumentStage(a: ArchipelagoId, trophees: readonly BlockId[] = []): { triangles: number; drawCalls: number } {
+export function constructionAuPire(a: ArchipelagoId, trophees: readonly BlockId[] = []): { triangles: number; drawCalls: number } {
   const { ground, reste, champ } = archipelArchipeo(a, trophees);
-  const all = poseDuDecor(champ, sansToursDuCoeur(reste));
-  const base = coutDeLaConstruction(maillageDeLaConstruction(a, all, ground));
+  const tous = poseDuDecor(champ, sansToursDuCoeur(reste));
+  const batiments = batimentsAuPire(a, tous, ground);
+  const base = coutDeLaConstruction(maillageDeLaConstruction(a, batiments.sans, ground));
   let extra = 0;
   for (const m of MONUMENTS.filter((x) => x.archipelago === a && isMonumentLoaded(x.id))) {
     const place = `monument:${m.id}`;
-    const own = all.filter((c) => c.place === place && !c.sol).sort((p, q) => p.z - q.z);
+    const own = tous.filter((c) => c.place === place && !c.sol).sort((p, q) => p.z - q.z);
     const sol = ground.filter((c) => c.place === place);
     const cost = (placed: number) => coutDeLaConstruction(maillageDeLaConstruction(a, own.map((c, i) => ({ ...c, ghost: i >= placed })), sol)).triangles;
     const whole = cost(own.length);
@@ -792,7 +812,41 @@ export function constructionAtWorstMonumentStage(a: ArchipelagoId, trophees: rea
     const thresholds = Array.from({ length: stages }, (_, i) => (layers ? own.filter((c) => c.z - foot <= layers[i][1]).length : Math.ceil(((i + 1) * own.length) / (stages + 1))));
     extra += Math.max(0, ...thresholds.map((n) => cost(n) - whole));
   }
-  return { triangles: base.triangles + extra, drawCalls: base.drawCalls };
+  return { triangles: base.triangles + extra + batiments.triangles, drawCalls: base.drawCalls };
+}
+
+/**
+ * Les bâtiments des plans importés d'un archipel au pire (décision du mainteneur, 10 octobre 2026) : prévu pour toutes
+ * ses îles, même celles dont le modèle n'existe pas encore. Les cubes des deux premiers plans de chaque île quittent la
+ * construction (`sans`) ; chaque bâtiment compte de loin, et celui qui coûte le plus de près en plus. Un bâtiment chargé
+ * compte son fichier le plus lourd (l'étape 1 avec le deuxième plan en cubes ou en fantômes, ou le bâtiment entier) ; un
+ * bâtiment à venir, ses plafonds `BUILDING_FAR_TRIANGLES` et `BUILDING_NEAR_TRIANGLES`.
+ */
+export function batimentsAuPire(a: ArchipelagoId, tous: VoxelCube[], ground: VoxelCube[] = []): { sans: VoxelCube[]; triangles: number } {
+  const iles = mapOf(a)
+    .map((d) => d.id)
+    .filter((id) => plansFor(id).length >= ETAPES_DU_BATIMENT);
+  const cases = new Map(iles.map((id) => [id as string, buildingCells(id)]));
+  const dansUnPlan = (c: VoxelCube, plan: 0 | 1) => Boolean(c.tag && !c.sol && !c.place && !c.quest && !c.decor && !c.bridge && cases.get(c.tag)?.[plan].has(`${c.x},${c.y},${c.z}`));
+  const sans = tous.filter((c) => !dansUnPlan(c, 0) && !dansUnPlan(c, 1));
+  let loin = 0;
+  let ecart = 0;
+  for (const id of iles) {
+    let [pres, deLoin] = [BUILDING_NEAR_TRIANGLES, BUILDING_FAR_TRIANGLES];
+    if (isBuildingLoaded(id)) {
+      // Le deuxième plan pendant l'étape 1 : ses cases posées en blocs, ou à poser en fantômes (le plus cher des deux).
+      const second = tous.filter((c) => c.tag === id && dansUnPlan(c, 1));
+      const sol = ground.filter((c) => c.tag === id);
+      const enBlocs = coutDeLaConstruction(maillageDeLaConstruction(a, second.map((c) => ({ ...c, ghost: false })), sol)).triangles;
+      const enFantomes = coutDeLaConstruction(maillageDeLaConstruction(a, second.map((c) => ({ ...c, ghost: true })), sol)).triangles;
+      const plan2 = Math.max(enBlocs, enFantomes);
+      pres = Math.max(buildingTriangles(id, 'final-3000.glb'), buildingTriangles(id, 'etape-1.glb') + plan2);
+      deLoin = Math.max(buildingTriangles(id, 'loin.glb'), buildingTriangles(id, 'loin-etape-1.glb') + plan2);
+    }
+    loin += deLoin;
+    ecart = Math.max(ecart, pres - deLoin);
+  }
+  return { sans, triangles: loin + ecart };
 }
 
 /**
@@ -874,7 +928,7 @@ export const COUTS_DES_POSTES = {
   mer: merCost,
   faune: fauneCost,
   decor: decorCost,
-  construction: (a: ArchipelagoId) => constructionAtWorstMonumentStage(a),
+  construction: (a: ArchipelagoId) => constructionAuPire(a),
   commandes: commandesCost,
   bornes: bornesCost,
   navire: navireCost,

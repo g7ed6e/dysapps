@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, personnages-emc-lca, emc-cinquieme, emc-quatre-trois, monuments ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, personnages-emc-lca, emc-cinquieme, emc-quatre-trois, monuments, batiments ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -740,6 +740,17 @@ const CAPTURES = [
     avancees: { 'landmark-6e-2': -etape / 3 },
     finesse: 2,
   })),
+  // Les bâtiments des plans d'Archipéo en modèles importés (famille `batiments`, à retirer une fois le lot fusionné ; à
+  // prendre avec `--rendu archipeo`) : la forge de Tunel de près, finie, de jour et de nuit ; en chantier, le premier plan
+  // à moitié (les cubes et les fantômes, sans modèle) puis le deuxième à moitié (l'étape 1, coupée au ras de l'avant-toit,
+  // et les fantômes du toit) ; de loin (sa version en volumes), depuis la Tour du lecteur voisine, l'archipel et la Carte.
+  { nom: 'batiments-forge', vue: 'île', famille: 'batiments', ile: 'french-6e-letter-confusion', finesse: 2 },
+  { nom: 'batiments-forge-nuit', vue: 'île', famille: 'batiments', ile: 'french-6e-letter-confusion', nuit: true, finesse: 2 },
+  { nom: 'batiments-forge-murs-mi', vue: 'île', famille: 'batiments', ile: 'french-6e-letter-confusion', partie: 'murs-mi', finesse: 2 },
+  { nom: 'batiments-forge-etape-1', vue: 'île', famille: 'batiments', ile: 'french-6e-letter-confusion', partie: 'toit-mi', finesse: 2 },
+  { nom: 'batiments-forge-loin-ile', vue: 'île', famille: 'batiments', ile: 'french-6e-reading', finesse: 2 },
+  { nom: 'batiments-forge-loin-archipel', vue: 'archipel', famille: 'batiments', ile: 'french-6e-reading' },
+  { nom: 'batiments-forge-carte', vue: 'carte', famille: 'batiments', ile: 'french-6e-letter-confusion' },
   // Les familles du 6e dans Archipéo (lot 7, la table « matière → famille », famille `familles-sixieme`), à retirer une fois
   // le lot fusionné ; à prendre avec `--rendu archipeo`. De près (`zoomer`), toutes les petites constructions posées :
   // le cadran de l'Horloge des verbes de près, de jour et de nuit, et de loin (l'île reculée, l'archipel) ; la cabine de

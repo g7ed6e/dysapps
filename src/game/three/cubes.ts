@@ -5,6 +5,7 @@
 // dans Archipéo, la même pose en fondu, de la pierre des ruines à la couleur du plan (world/fadeMesh.ts).
 import * as THREE from 'three';
 import type { VoxelCube } from '../Voxel';
+import type { BiomeId } from '../biomes';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
 import { cacheDeLaConstruction, caseDeLaConstruction, caseDeLaPiece, construireParIle, couleursDesRoles, miseBoutABout, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
@@ -75,6 +76,11 @@ export interface Cubes extends PartieDeLaScene {
   formeDEclat: THREE.BufferGeometry;
   /** Les matériaux de la construction taillée d'Archipéo (lot R5), que le navire partage (`null` dans le monde en blocs). */
   materiaux: MateriauxDeConstruction | null;
+  /**
+   * L'île de près (`null` : aucune, la Carte), la même que celle des personnages (./characters.ts) : son bâtiment importé
+   * d'Archipéo de près, ceux des autres îles de loin (world/buildingModels.ts). Refait la construction de ces deux îles.
+   */
+  approcher(id: BiomeId | null): void;
 }
 
 interface Spark {
@@ -140,15 +146,24 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   let derniers: VoxelCube[] = [];
   let aRefaire = false;
   let disposed = false;
-  // Archipéo : les monuments importés de l'archipel (world/monumentModels.ts), chargés à la demande ; arrivés, la
-  // construction est refaite à la prochaine image. Un fichier qui manque (hors ligne) : le monument garde ses blocs.
-  if (taille)
+  // Archipéo : les monuments et les bâtiments des plans importés de l'archipel (world/monumentModels.ts,
+  // world/buildingModels.ts), chargés à la demande ; arrivés, la construction est refaite à la prochaine image. Un
+  // fichier qui manque (hors ligne) : le monument ou le bâtiment garde ses blocs.
+  if (taille) {
+    const arrives = (loadedNew: boolean) => {
+      if (loadedNew && !disposed && derniers.length) aRefaire = true;
+    };
     import('../importedMonuments')
       .then(({ loadMonuments }) => loadMonuments(archipel))
-      .then((loadedNew) => {
-        if (loadedNew && !disposed && derniers.length) aRefaire = true;
-      })
+      .then(arrives)
       .catch(() => {});
+    import('../importedBuildings')
+      .then(({ loadBuildings }) => loadBuildings(archipel))
+      .then(arrives)
+      .catch(() => {});
+  }
+  /** L'île de près : son bâtiment importé de près (world/buildingModels.ts). */
+  let pres: BiomeId | null = null;
 
   /** Blocland : les dessous sous l'eau (ou sous le plancher de nuages) ne sont pas dessinés. */
   const dessous: MeshOptions = { hiddenBottomsUpTo: hiddenBottomLevel(archipel) };
@@ -277,7 +292,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     // La construction taillée (lot R5), refaite seulement si ses cubes changent ; les bornes à part, instanciées.
     const construction = poseDuDecor(champ, reste);
     if (taille) {
-      const { maillage, change } = construireParIle(archipel, construction, auSol, taille.cache);
+      const { maillage, change } = construireParIle(archipel, construction, auSol, taille.cache, pres);
       // Le fondu de la pose, au bout du groupe opaque : les tranches des pièces et des phares ne bougent pas.
       const fondu = vague?.fondu ?? null;
       if (change || !taille.maillage || (fondu?.maillage ?? null) !== taille.fondu) {
@@ -459,6 +474,12 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     },
     formeDEclat: sparkGeo,
     materiaux,
+    approcher: (id) => {
+      if (id === pres) return;
+      pres = id;
+      // Blocland n'a pas de bâtiment importé : rien à refaire.
+      if (taille && derniers.length) aRefaire = true;
+    },
     animer: (t, dt, reduit) => {
       // Les fumées bougent, ou prennent leur pose immobile avec « Réduire les animations » (R4b-6e).
       sol?.decor.animer(t, dt, reduit);

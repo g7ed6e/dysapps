@@ -1,7 +1,8 @@
 # Monument low-poly en aplats francs : remaille en voxels un .glb texture (TRELLIS.2), le reduit a N triangles,
 # puis peint chaque facette d'une seule couleur, prise dans une courte liste de couleurs cibles (4 a 6) choisie pour
-# le monument dans docs/univers/archipeo/monuments/modeles/reglages.csv (choix du mainteneur, 10 octobre 2026 :
-# « low poly avec des aplats de couleur »).
+# le monument dans docs/univers/archipeo/monuments/modeles/reglages.csv, ou pour le batiment d'un plan dans
+# docs/univers/archipeo/batiments/modeles/reglages.csv (choix du mainteneur, 10 octobre 2026 : « low poly avec des
+# aplats de couleur »).
 #   (module bpy, avec numpy et fast-simplification)
 #   python monument_lowpoly.py -- entree.glb sortie.glb <nom du dossier> [N=3000] [K=6] [voxel]
 #
@@ -22,15 +23,20 @@ ENTREE, SORTIE, NOM = a[0], a[1], a[2]
 N = int(a[3]) if len(a) > 3 else 3000
 K = int(a[4]) if len(a) > 4 else 6
 VOXEL = float(a[5]) if len(a) > 5 else None
-TABLE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../docs/univers/archipeo/monuments/modeles/reglages.csv")
+# les deux tables : celle des monuments, puis celle des batiments des plans (decision du mainteneur, 10 octobre 2026 :
+# les batiments passent par la meme chaine) ; le nom du dossier n'est que dans l'une des deux
+ICI = os.path.dirname(os.path.abspath(__file__))
+TABLES = [os.path.join(ICI, "../../../docs/univers/archipeo", t, "modeles/reglages.csv") for t in ("monuments", "batiments")]
 cibles = None
-for ligne in csv.reader((l for l in open(TABLE, encoding="utf-8") if not l.startswith("#")), delimiter=";"):
-    if ligne and ligne[0].strip() == NOM:
-        cibles = [int(h, 16) for h in ligne[1].split()]
-        if VOXEL is None and len(ligne) > 2 and ligne[2].strip(): VOXEL = float(ligne[2])
+for table in TABLES:
+    if not os.path.exists(table): continue
+    for ligne in csv.reader((l for l in open(table, encoding="utf-8") if not l.startswith("#")), delimiter=";"):
+        if ligne and ligne[0].strip() == NOM:
+            cibles = [int(h, 16) for h in ligne[1].split()]
+            if VOXEL is None and len(ligne) > 2 and ligne[2].strip(): VOXEL = float(ligne[2])
 if VOXEL is None: VOXEL = 0.008
 if not cibles:
-    raise SystemExit(f"{NOM} : pas de couleurs cibles dans {TABLE}")
+    raise SystemExit(f"{NOM} : pas de couleurs cibles dans {' ni '.join(TABLES)}")
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=ENTREE)

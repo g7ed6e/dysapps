@@ -1,13 +1,18 @@
 # Etapes de chantier d'un monument : coupe le modele reduit (monument_lowpoly.py) par des plans horizontaux et
 # garde le bas, coupe refermee et peinte de la couleur voisine ; les morceaux qui ne tiennent plus au corps du
 # monument (une pale coupee de son moyeu) sont retires.
-#   python monument_etapes.py -- entree.glb dossier_sortie 0.33 0.66
+#   python monument_etapes.py -- entree.glb dossier_sortie 0.33 0.66 [couleur=8f8c86]
 # Sortie : etape-1.glb, etape-2.glb... (la derniere etape, le monument entier, est entree.glb lui-meme)
+# couleur= : la coupe prend la couleur du modele la plus proche de celle-ci, au lieu de la couleur claire voisine (le
+# batiment d'un plan, coupe au ras de l'avant-toit, se ferme en pierre des murs : avis du directeur artistique,
+# 10 octobre 2026).
 import bpy, bmesh, sys, os
 from mathutils import Vector
 
 a = sys.argv[sys.argv.index("--") + 1:]
-entree, dossier, parts = a[0], a[1], [float(x) for x in a[2:]]
+entree, dossier = a[0], a[1]
+parts = [float(x) for x in a[2:] if not x.startswith("couleur=")]
+voulue = next((int(x[8:], 16) for x in a[2:] if x.startswith("couleur=")), None)
 os.makedirs(dossier, exist_ok=True)
 for i, part in enumerate(parts, 1):
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -39,6 +44,13 @@ for i, part in enumerate(parts, 1):
             k = tuple(round(x, 3) for x in g.loops[0][col])
             if sum(k[:3]) > 0.45: tout[k] = tout.get(k, 0) + g.calc_area()
         defaut = max(tout, key=tout.get) if tout else None
+        if voulue is not None:
+            # la couleur du modele la plus proche de la couleur voulue ; bmesh rend les octets du fichier encodes une
+            # seconde fois en sRVB (0x8f lu 0,77) : la couleur voulue est encodee de meme avant la comparaison
+            enc = lambda x: 12.92 * x if x <= 0.0031308 else 1.055 * x ** (1 / 2.4) - 0.055
+            v = [enc((voulue >> s & 255) / 255) for s in (16, 8, 0)]
+            couleurs = {tuple(round(x, 3) for x in g.loops[0][col]) for g in bm.faces}
+            defaut = min(couleurs, key=lambda k: sum((k[j] - v[j]) ** 2 for j in range(3)))
         for f in neuves:
             aires = {}
             for e in f.edges:
@@ -47,7 +59,7 @@ for i, part in enumerate(parts, 1):
                         k = tuple(round(x, 3) for x in g.loops[0][col])
                         if sum(k[:3]) > 0.45:  # jamais une couleur d'ombre (quasi noire) sur la coupe
                             aires[k] = aires.get(k, 0) + g.calc_area()
-            c = max(aires, key=aires.get) if aires else defaut
+            c = defaut if voulue is not None else (max(aires, key=aires.get) if aires else defaut)
             if c:
                 for l in f.loops: l[col] = c
     # une paroi interieure sombre du modele, mise a nu juste sous la coupe, prend la meme couleur que la coupe

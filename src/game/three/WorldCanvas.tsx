@@ -372,7 +372,8 @@ export default function WorldCanvas({
       signaler();
     };
     // Les personnages d'Archipéo importés de près sur l'île que la caméra regarde (le centre de la vue, au niveau de la
-    // mer), relu quatre fois par seconde : une île changée refait la fusion des personnages. Rien sur la Carte.
+    // mer), relu quatre fois par seconde : une île changée refait la fusion des personnages, et la construction de l'île
+    // quittée et de l'île approchée (leur bâtiment importé de près ou de loin). Rien sur la Carte.
     const auNiveauDeLaMer = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
     const regard = new THREE.Raycaster();
     const centreDeLaVue = new THREE.Vector2(0, 0);
@@ -384,6 +385,7 @@ export default function WorldCanvas({
         prochainRegard = t + 0.25;
         regard.setFromCamera(centreDeLaVue, camera);
         if (regard.ray.intersectPlane(auNiveauDeLaMer, pointRegarde)) personnages.viser(pointRegarde.x, pointRegarde.z);
+        cubesDuMonde.approcher(personnages.ileDePres());
       },
       dispose: () => {},
     };
@@ -637,6 +639,8 @@ export default function WorldCanvas({
   const pres = map ? null : (home ?? null);
   useEffect(() => {
     world.current?.personnages.approcher(pres);
+    // Le bâtiment importé de la même île, de près (world/buildingModels.ts).
+    world.current?.cubes.approcher(world.current.personnages.ileDePres());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pres, reduceMotion, archipelago]);
 

@@ -59,6 +59,20 @@ Un monument d'Archipéo (`src/game/world/monuments.ts`) suit les étapes 1 et 2 
 
 `retirer_avant.py` (ôter une partie devant un plan vertical et au-dessus d'une hauteur, coupe refermée) et `reduire_uni.py` (réduire un modèle d'une seule couleur de pierre) ont servi au Centaure d'argile, que le modèle d'images ne savait pas dessiner : un brut à deux têtes dont on a retiré la tête de cheval.
 
+## Les bâtiments
+
+Le bâtiment des plans de chaque île d'Archipéo (les deux premiers plans, `<lieu>-1` les murs et `<lieu>-2` le toit ; la cour, `<lieu>-3`, reste en pièces du code) suit la chaîne des monuments (décision du mainteneur, 10 octobre 2026 : « low poly avec aplats ») : concept, brut TRELLIS (jamais dans le dépôt), puis :
+
+1. `aligner.py -- <brut.glb> <dossier>/1-aligne.glb 0`, comme un monument.
+2. `monument_lowpoly.py -- <dossier>/1-aligne.glb <dossier>/low.glb <nom>` : les cibles du bâtiment sont dans `docs/univers/archipeo/batiments/modeles/reglages.csv` (le script cherche le nom dans la table des monuments, puis dans celle des bâtiments) ; 3 000 triangles, quatre à six aplats.
+3. `couper.py -- <dossier>/low.glb <dossier>/final-3000.glb` retire le socle (le sol de l'île est dessous).
+4. `monument_etapes.py -- <dossier>/final-3000.glb <dossier> 0.44 couleur=8f8c86` : une seule étape, coupée au ras de l'avant-toit, au-dessus de la poutre (la forge : 0,44 de la hauteur), le dessus refermé de la couleur du modèle la plus proche de `couleur=` (la pierre des murs, jamais le brun du toit : avis du directeur artistique). Sans `couleur=`, la couleur claire voisine, comme pour un monument.
+5. `batiment_loin.py -- <dossier>/final-3000.glb <dossier> 0.44` (la même hauteur d'avant-toit) fait la version de loin en volumes simples, tirés du modèle de près : la boîte des murs, un toit à deux pans (son faîtage dans le sens que lisent les pans du modèle), la cheminée (ce qui dépasse le faîtage), l'ouverture sombre et la poutre sur la façade, aux couleurs dominantes du modèle ; `loin.glb` (une trentaine de triangles) et `loin-etape-1.glb` (les murs fermés en pierre). La réduction automatique à 200 triangles (Decimate, fast-simplification, voxels) fait une bouillie : ne pas y revenir.
+6. Contrôle : `rendre_controle.py -- etape-1.glb final-3000.glb loin.glb controle.png`. Les fichiers vont dans `docs/univers/archipeo/batiments/modeles/<classe>-batiment-<nom>/` (`final-3000.glb`, `etape-1.glb`, `loin.glb`, `loin-etape-1.glb`, `controle.png`), la ligne du bâtiment dans `BUILDING_MODELS` (`src/game/world/buildingModels.ts`).
+7. Dans le jeu : `src/game/importedBuildings.ts` les charge pour Archipéo seulement. L'étape 1 se montre quand toutes les cases du premier plan sont posées, le bâtiment entier quand celles du deuxième le sont aussi ; les cases et les fantômes ne changent pas. De près (l'île où se trouve l'élève, ou que la caméra regarde) le modèle de 3 000 triangles, de loin sa version en volumes ; il suit l'île posée et tournée. Hors ligne ou pas chargé : le kit en blocs.
+
+Le prompt des suivants (avis du directeur artistique, 10 octobre 2026) : le bâtiment seul sur un socle bas et serré, sans rien de posé devant (la cour vient du code), murs lisses et toit de deux grands pans sans motif, une ligne horizontale franche sous l'avant-toit (là où se coupe l'étape 1), une grande ouverture sombre sans lueur peinte, une signature épaisse (cheminée, four, lanterne, dôme).
+
 ## Relire et livrer
 
 - Captures : skill `captures` (une famille dans `CAPTURES` de `scripts/rendu/mesures.mjs`, `--rendu archipeo`, la fiche de chaque créature ouverte, de près, de jour et de nuit, et l'archipel en recul), retirée une fois la pull request fusionnée.
