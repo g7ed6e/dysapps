@@ -1,6 +1,6 @@
 # DysApps
 
-**Archipéo**, le jeu d’entraînement de DysApps, pour les **élèves dys du collège** (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, en français, en mathématiques et en anglais. Tout tient dans le navigateur, sans compte ni serveur : la progression reste sur l’appareil.
+**Archipéo**, le jeu d’entraînement de DysApps, pour les **élèves dys du collège** (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, dans les matières du collège : français, mathématiques, anglais, histoire-géographie, SVT, physique-chimie, technologie, enseignement moral et civique (EMC), deuxième langue (espagnol ou allemand) et, en option, latin ou grec. Tout tient dans le navigateur, sans compte ni serveur : la progression reste sur l’appareil.
 
 - **Application** : https://dysapps.guillaume-delahaye.workers.dev/ (s’installe comme une application, fonctionne hors ligne)
 - **Documentation** : https://g7ed6e.github.io/dysapps/ (manuel utilisateur et contenu pédagogique)
@@ -8,8 +8,8 @@
 ## Ce que c’est
 
 - **Les missions du portail** : Homophones, Lecture (textes du domaine public), Tables et calcul mental, Fractions, Nombres décimaux, et en anglais Vocabulaire et Verbes irréguliers (voix anglaise pour les mots anglais). Séances courtes, questions générées, joker avec aide visuelle, correction qui explique.
-- **L’aventure**, dans Blocland (l’univers par défaut) ou Archipéo, au choix dans les Réglages : quatre archipels en 3D, un par classe de la 6e à la 3e, trente-neuf îles en tout, une par thème du programme (dont une de LV2 en 5e, en 4e et en 3e, et deux d’histoire-géographie par classe). Chaque île a sa créature, ses missions, son bloc, ses trois plans à reconstruire et son Gardien. Les exercices réussis donnent des blocs, les blocs ouvrent des ouvrages entre les îles, rebâtissent le village et construisent le Bloc-Navire qui mène à l’archipel suivant. L’école du village de chaque archipel ouvre les missions du portail, qui y rapportent des blocs.
-- **Le programme officiel comme colonne vertébrale** : chaque mission cite les compétences des programmes de français, de mathématiques et de langues vivantes qu’elle travaille ; la documentation montre ce qui est couvert et ce qui reste à faire.
+- **L’aventure**, dans Blocland (l’univers par défaut) ou Archipéo, au choix dans les Réglages : quatre archipels en 3D, un par classe de la 6e à la 3e, cinquante-huit îles en tout, une par thème du programme : en français, en maths et en anglais, et, à chaque classe, deux d’histoire-géographie, trois de sciences (SVT, physique-chimie, technologie) et une d’EMC ; de la 5e à la 3e, une de LV2 et une de l’option latin ou grec. Chaque île a sa créature, ses missions, son bloc, ses trois plans à reconstruire et son Gardien. Les exercices réussis donnent des blocs, les blocs ouvrent des ouvrages entre les îles, rebâtissent le village et construisent le Bloc-Navire qui mène à l’archipel suivant. L’école du village de chaque archipel ouvre les missions du portail, qui y rapportent des blocs.
+- **Le programme officiel comme colonne vertébrale** : chaque mission cite les compétences du programme officiel de sa matière qu’elle travaille ; la documentation montre ce qui est couvert et ce qui reste à faire.
 - **Des règles dys partout** : police adaptée (Luciole par défaut), texte jamais sous 18 px, consignes lues à voix haute, syllabes en couleurs, un item par écran, aide toujours affichée en maths, indice jamais pénalisant, pas de chronomètre, rien ne se perd.
 - **Une motivation façon jeu**, sans stress : XP, rôles, succès, étoiles, blocs, bâtiments, répétition espacée et niveau adapté.
 

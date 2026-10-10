@@ -68,6 +68,9 @@ La cause habituelle est l’effacement des données du site (nettoyage du naviga
 
 ## Contenu
 
+**Quelles matières sont dans l’application ?**
+De la 6e à la 3e, le français, les maths, l’anglais, l’histoire-géographie, la SVT, la physique-chimie, la technologie et l’enseignement moral et civique (EMC) ; de la 5e à la 3e, la deuxième langue (espagnol ou allemand) et l’option latin ou grec. Une LV2 ou une option que l’élève ne suit pas se retire dans les [Réglages](reglages.md#deuxieme-langue-lv2) (« Pas de LV2 », « Pas d’option ») : ses îles restent fermées, et elle n’apparaît ni au menu ni dans la progression. Ce que chaque matière couvre du programme officiel est sur la page [Programmes officiels](../pedagogie/programmes.md).
+
 **Où voir exactement ce que travaille chaque exercice ?**
 Dans [L’archipel](../pedagogie/archipel.md) puis la page de chaque île : consignes, items, aides visuelles, récompenses. Ces pages sont produites à partir des données du jeu à chaque publication.
 
