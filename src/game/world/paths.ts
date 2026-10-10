@@ -217,23 +217,35 @@ function straighten(cells: Cell[], feetAt: (x: number, y: number) => number | un
   return out;
 }
 
-/** La ligne droite de `a` à `b` ne passe que par des cases libres, à la hauteur de `a` (bords compris, de près). */
+/** Les cases que le corps frôle autour d'un point de la ligne (un tiers de case de chaque côté). */
+const FROLEES: readonly (readonly [number, number])[] = [
+  [0, 0],
+  [0.3, 0.3],
+  [-0.3, -0.3],
+  [0.3, -0.3],
+  [-0.3, 0.3],
+];
+
+/**
+ * La ligne droite de `a` à `b` ne passe que par des cases libres, à la hauteur de `a` (bords compris, de près). Deux
+ * points voisins de la ligne frôlent le plus souvent les mêmes cases : une case déjà vue au point d'avant (et libre,
+ * sans quoi on serait sorti) ne se relit pas.
+ */
 function clear(a: Cell, b: Cell, feetAt: (x: number, y: number) => number | undefined): boolean {
   if (a.z !== b.z) return false;
   const n = Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) * 3);
+  const avant = new Float64Array(FROLEES.length * 2).fill(NaN);
   for (let s = 0; s <= n; s++) {
     const t = s / n;
     const x = a.x + (b.x - a.x) * t;
     const y = a.y + (b.y - a.y) * t;
-    // Les cases que le corps frôle (un tiers de case de chaque côté).
-    for (const [ox, oy] of [
-      [0, 0],
-      [0.3, 0.3],
-      [-0.3, -0.3],
-      [0.3, -0.3],
-      [-0.3, 0.3],
-    ]) {
-      if (feetAt(Math.round(x + ox), Math.round(y + oy)) !== a.z) return false;
+    for (let o = 0; o < FROLEES.length; o++) {
+      const cx = Math.round(x + FROLEES[o][0]);
+      const cy = Math.round(y + FROLEES[o][1]);
+      if (cx === avant[2 * o] && cy === avant[2 * o + 1]) continue;
+      if (feetAt(cx, cy) !== a.z) return false;
+      avant[2 * o] = cx;
+      avant[2 * o + 1] = cy;
     }
   }
   return true;

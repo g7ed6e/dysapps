@@ -178,7 +178,11 @@ it('le cœur a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les 
 });
 
 it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas construits), tous dans leur archipel', () => {
-  const bridgeCubes = (bridges: string[], id: string) => allCubes({}, village(bridges)).filter((c) => c.bridge === id);
+  // Les cubes d'une liaison ne sont que dans l'archipel de son départ (terrain.ts, `entreLesIles`) : lui seul est construit.
+  const bridgeCubes = (bridges: string[], id: string) => {
+    const b = BRIDGES.find((x) => x.id === id);
+    return b ? worldCubes(archipelagoOf(b.from).classe, {}, village(bridges)).filter((c) => c.bridge === id) : [];
+  };
   // Forêt–Mine : un sentier sur l'isthme, constructible dès le début, donc en fantôme : des pierres de gué sur le sol.
   const trail = bridgeCubes([], 'french-6e-phonology-french-6e-letter-confusion');
   expect(trail.length).toBeGreaterThanOrEqual(4);
