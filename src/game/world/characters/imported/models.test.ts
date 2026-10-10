@@ -33,12 +33,17 @@ const clarte = (c: number) => (Math.max(c >> 16, (c >> 8) & 255, c & 255) + Math
 
 beforeAll(() => chargerLesModelesDuDisque());
 
-it('les quinze îles du 6e ont leur Gardien et leur créature, de près et de loin', () => {
-  expect(ILES_IMPORTEES).toHaveLength(15);
+/** Les îles dont la créature est importée (au 6e ; la 5e n'a encore que ses Gardiens). */
+const AVEC_CREATURE = ILES_IMPORTEES.filter((id) => nomDuModele('creature', id));
+
+it('les quinze îles du 6e ont leur Gardien et leur créature, les douze de la 5e leur Gardien, de près et de loin', () => {
+  expect(ILES_IMPORTEES).toHaveLength(27);
+  expect(AVEC_CREATURE).toHaveLength(27);
   for (const id of ILES_IMPORTEES)
     for (const genre of GENRES)
       for (const niveau of NIVEAUX) {
-        const nom = nomDuModele(genre, id)!;
+        const nom = nomDuModele(genre, id);
+        if (!nom) continue;
         expect(existsSync(fichierDuModele(nom, niveau)), `${nom} ${niveau}`).toBe(true);
         expect(modeleImporte(genre, id, niveau), `${nom} ${niveau}`).not.toBeNull();
       }
@@ -57,7 +62,7 @@ it('un Gardien importé a la taille d’une sentinelle : 8 blocs, socle compris,
 });
 
 it('une créature importée a la taille de son gabarit, les pieds au sol', () => {
-  for (const id of ILES_IMPORTEES) {
+  for (const id of AVEC_CREATURE) {
     const { bas, haut } = cadre(modeleImporte('creature', id, 'pres')!.positions);
     expect(bas, id).toBeCloseTo(0, 5);
     expect(haut, id).toBeCloseTo(tailleDe(ESPECES[id]), 4);
@@ -66,7 +71,7 @@ it('une créature importée a la taille de son gabarit, les pieds au sol', () =>
 
 it('de loin, une créature n’a aucune couleur plus sombre que la clarté 0,42 ; de près, elle garde ses accents sombres', () => {
   let sombresDePres = 0;
-  for (const id of ILES_IMPORTEES) {
+  for (const id of AVEC_CREATURE) {
     for (const c of modeleImporte('creature', id, 'loin')!.teintes) expect(clarte(c), id).toBeGreaterThanOrEqual(0.415);
     sombresDePres += [...modeleImporte('creature', id, 'pres')!.teintes].filter((c) => clarte(c) < 0.4).length;
   }
@@ -197,7 +202,7 @@ function ciblesDesAplats(): Map<string, Set<number>> {
 
 it('chaque créature est peinte en aplats, de près et de loin : ses couleurs sont les cibles de sa ligne de reglages.csv', () => {
   const table = ciblesDesAplats();
-  for (const id of ILES_IMPORTEES) {
+  for (const id of AVEC_CREATURE) {
     const cibles = table.get(nomDuModele('creature', id)!);
     expect(cibles, id).toBeDefined();
     for (const c of modeleImporte('creature', id, 'pres')!.teintes) expect(cibles!.has(c), id).toBe(true);
@@ -207,9 +212,16 @@ it('chaque créature est peinte en aplats, de près et de loin : ses couleurs so
 });
 
 it('de près, le corps d’une créature (sa couleur la plus étendue) se détache de l’herbe', () => {
-  for (const id of ILES_IMPORTEES) {
+  for (const id of AVEC_CREATURE) {
+    // Étendue = surface : une faucille ou un chapeau sombre fait de mille petits triangles n'est pas le corps.
+    const { teintes, positions: p } = modeleImporte('creature', id, 'pres')!;
     const parts = new Map<number, number>();
-    for (const c of modeleImporte('creature', id, 'pres')!.teintes) parts.set(c, (parts.get(c) ?? 0) + 1);
+    teintes.forEach((c, t) => {
+      const o = t * 9;
+      const [ux, uy, uz] = [p[o + 3] - p[o], p[o + 4] - p[o + 1], p[o + 5] - p[o + 2]];
+      const [vx, vy, vz] = [p[o + 6] - p[o], p[o + 7] - p[o + 1], p[o + 8] - p[o + 2]];
+      parts.set(c, (parts.get(c) ?? 0) + Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx));
+    });
     const corps = [...parts].sort((x, y) => y[1] - x[1])[0][0];
     // L'herbe du 6e a une clarté de 0,36.
     expect(clarte(corps), id).toBeGreaterThan(0.4);

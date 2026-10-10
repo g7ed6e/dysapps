@@ -77,12 +77,13 @@ export const RENDER_BUDGET_6E = { triangles: 81_500, drawCalls: RENDER_BUDGET.dr
  * somme de leurs enveloppes dépassait encore. Puis relevé à 86 000 par le mainteneur le 9 octobre 2026 pour le Fournil
  * des partages et la Grotte des légendes (5e) : mesuré tout construit, avec la cinquième mission (GD-14), « Dans la
  * scène » à part, 84 576 aux Îles Brumeuses (74 664 avant) ; la somme de leurs enveloppes (85 945) y tient. Puis à
- * 91 000 pour les monuments importés d'Archipéo (./monumentModels.ts ; 3 000 triangles par monument entier, décision du
- * mainteneur, 9 octobre 2026) : la construction prend 5 000 de plus partout, la somme des enveloppes passe à 90 945 aux
+ * 86 700 pour les personnages importés de la 5e (mainteneur, 10 octobre 2026 : 86 685 aux Îles Brumeuses). Puis à 91 700
+ * pour les monuments importés d'Archipéo (./monumentModels.ts ; 3 000 triangles par monument entier, décision du
+ * mainteneur, 9 octobre 2026) : la construction prend 5 000 de plus partout, la somme des enveloppes passe à 91 685 aux
  * Îles Brumeuses, 88 725 aux Anciens Ateliers, 87 855 aux Îles du Ciel (relevé par le mainteneur le 10 octobre 2026 :
  * deux monuments par archipel en coûtent environ 5 000, et non 3 000 ; la mesure sur l'iPad reste à faire).
  */
-export const RENDER_BUDGET_AUTRES = { triangles: 91_000, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_AUTRES = { triangles: 91_700, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
@@ -262,12 +263,20 @@ export const ENVELOPPES: Record<
   // GD-12, une forme par île, aux Îles du Ciel : le sol mesure 38 994 triangles (36 930 avant). Il prend 2 070 au décor
   // du même archipel (8 910 mesurés pour 13 600) : sol 39 000, décor 11 530, la somme ne change pas (mainteneur,
   // 9 octobre 2026, carte « Échanger »).
+  // Les Gardiens importés de la 5e (TRELLIS, scripts/rendu/modeles/, 10 octobre 2026) : au pire, de près sur l'île qui
+  // coûte le plus et de loin ailleurs, 4 684 triangles (`budget.test.ts`, R6) pour 3 147 dessinés en code. Leur enveloppe
+  // aux Îles Brumeuses passe de 3 150 à 4 700 ; le sol, mesuré à 35 416 tout construit (`npm run rendu:budget`), cède les
+  // 1 550 : 41 210 → 39 660 (mainteneur, 10 octobre 2026, carte « Échanger »). Puis les créatures importées de la 5e,
+  // avec leur squelette : 4 217 au pire pour 3 480 dessinées en code ; leur enveloppe passe de 3 485 à 4 225 sans rien
+  // prendre ailleurs (Gardiens après reprise de leurs versions de loin : 4 673). La somme des Îles Brumeuses passe de
+  // 85 945 à 86 685 : `RENDER_BUDGET_AUTRES` relevé de 86 000 à 86 700 (mainteneur, 10 octobre 2026, carte « Monter le
+  // plafond »).
   sol: {
     lot: 'R4b',
     nom: 'Sol',
     premiersRivages: { triangles: 32_550, drawCalls: 2 },
     autres: { triangles: 36_930, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 41_210, drawCalls: 1 }, '4e': { triangles: 43_750, drawCalls: 1 }, '3e': { triangles: 44_900, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 39_660, drawCalls: 1 }, '4e': { triangles: 43_750, drawCalls: 1 }, '3e': { triangles: 44_900, drawCalls: 1 } },
   },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
@@ -386,14 +395,14 @@ export const ENVELOPPES: Record<
     nom: 'Créatures',
     premiersRivages: { triangles: 4_600, drawCalls: 1 },
     autres: { triangles: 3_200, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 3_485, drawCalls: 1 }, '4e': { triangles: 3_550, drawCalls: 1 }, '3e': { triangles: 3_650, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 4_225, drawCalls: 1 }, '4e': { triangles: 3_550, drawCalls: 1 }, '3e': { triangles: 3_650, drawCalls: 1 } },
   },
   gardiens: {
     lot: 'R6',
     nom: 'Gardiens en sentinelles',
     premiersRivages: { triangles: 5_200, drawCalls: 1 },
     autres: { triangles: 2_780, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 3_150, drawCalls: 1 }, '4e': { triangles: 3_050, drawCalls: 1 }, '3e': { triangles: 3_250, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 4_700, drawCalls: 1 }, '4e': { triangles: 3_050, drawCalls: 1 }, '3e': { triangles: 3_250, drawCalls: 1 } },
   },
   scene: {
     lot: 'socle',
