@@ -34,6 +34,7 @@
 //   porte un mât d'antenne en pilier.
 // Code pur, sans Three.js.
 import type { VoxelCube } from '../cube';
+import type { TextureKind } from '../pixels';
 import type { Rotation } from './choices';
 import { familyOf } from './families';
 import { awning, beam, bead, cap, chalkLoaf, coneCorner, coneSide, coneStep, crate, darkPost, deck, dialSlab, EMPTY, foliage, hangingCrate, HEART, lid, lyingTube, mound, paddyBed, pavilion, reedHead, rock, signBoard, slab, snowDrift, spire, standingBoard, thermometerTube, trunk, waterNeighbours, waterSheet, wheat } from './heartPieces';
@@ -265,7 +266,7 @@ function signOf(c: VoxelCube, at: RestContext['at']): RestDrawing {
 const INGOT = ingot();
 
 /** Les matières du cœur dessinées en pilier lissé au 4e et au 3e (un volume, sa matière, un seul dessus). */
-const PILLARS_43 = new Set(['fonte', 'gres', 'pave', 'taille', 'marbre', 'quartz', 'fresque']);
+const PILLARS_43: ReadonlySet<string> = new Set(['fonte', 'gres', 'pave', 'taille', 'marbre', 'quartz', 'fresque'] satisfies TextureKind[]);
 
 /** Un tube couché le long de la voisine qui le porte ou le prolonge (à sa hauteur) ; sans voisine, un tube debout. */
 function tubeOf(c: VoxelCube, at: RestContext['at']): RestDrawing {

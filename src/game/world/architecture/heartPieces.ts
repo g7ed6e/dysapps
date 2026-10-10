@@ -525,8 +525,8 @@ export function lyingTube(alongX: boolean): DessinDePiece {
   return once(`tube|${alongX}`, () => {
     const [a, b] = [0.5 - HEART.thermometerTube / 2, 0.5 + HEART.thermometerTube / 2];
     const box = alongX ? boiteDansLaCase(0, 1, a, b, a, b) : boiteDansLaCase(a, b, 0, 1, a, b);
-    const bouts = alongX ? [[1, 0, 0], [-1, 0, 0]] : [[0, 1, 0], [0, -1, 0]];
-    return { facettes: without(box.facettes, DOWN, ...(bouts as V3[])).map((f) => ({ ...f, ghostApart: true })), couvre: 0 };
+    const bouts: V3[] = alongX ? [[1, 0, 0], [-1, 0, 0]] : [[0, 1, 0], [0, -1, 0]];
+    return { facettes: without(box.facettes, DOWN, ...bouts).map((f) => ({ ...f, ghostApart: true })), couvre: 0 };
   });
 }
 
