@@ -58,7 +58,7 @@ Chaque île a son **Gardien**, éteint sur son île, en pierre grise. Pour le ra
 
 ![Le défi « Rallumer le Golem de roche » : le Golem en pierre grise, les pastilles des épreuves réussies (0 sur 4, il en faut 3), sa phrase, et l'épreuve Filon « Pioche seulement les blocs avec la lettre d ».](/captures/gardien.jpg)
 
-Au port, sur la Plaine des nombres, se construit la **Nef**, d’abord un voilier : ses blocs, et les Gardiens à rallumer pour la voile. À chaque archipel, elle change entièrement de forme : voilier, puis dirigeable, puis aile.
+Au port, sur la Plaine des nombres, se construit la **Nef**, d’abord un voilier : ses blocs, et les Gardiens à rallumer pour la voile. À chaque archipel, elle change entièrement de forme : voilier, puis dirigeable, puis fusée.
 
 ![Le chantier de la Nef : les blocs posés, les bois, galets et pierre qui manquent avec l'île où les gagner, et « encore 1 Gardien à rallumer ».](/captures/navire-chantier.jpg)
 

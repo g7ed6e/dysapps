@@ -204,7 +204,7 @@ const CAPTURES = [
     ...format,
   })),
   // La Nef (GD-15, famille `nef`, à retirer une fois le lot fusionné) : le voilier fini au port du 6e, sa fiche ouverte ;
-  // au Marché, le voilier avec les pièces du dirigeable en fantôme, puis le dirigeable fini ; l'aile se voit avec `fusee`.
+  // au Marché, le voilier avec les pièces du dirigeable en fantôme, puis le dirigeable fini ; la fusée de la Nef se voit avec `fusee`.
   { nom: 'nef-voilier', vue: 'île', famille: 'nef', ile: 'maths-6e-calculation', sansIles: 'autres-classes', sansPonts: ['passage-5e', 'passage-4e', 'passage-3e'], fiche: { genre: 'navire', port: 'maths-6e-calculation' } },
   { nom: 'nef-dirigeable-vide', vue: 'île', famille: 'nef', ile: 'maths-5e-proportionality', partie: 'ballon-vide', sansIles: { classe: ['4e', '3e'] }, sansPonts: ['passage-4e', 'passage-3e'], fiche: { genre: 'navire', port: 'maths-5e-proportionality' } },
   { nom: 'nef-dirigeable', vue: 'île', famille: 'nef', ile: 'maths-5e-proportionality', sansIles: { classe: ['4e', '3e'] }, sansPonts: ['passage-4e', 'passage-3e'] },

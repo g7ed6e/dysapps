@@ -22,7 +22,7 @@ export interface VehicleBuilder {
   status: PlanStatus | null;
   /** Peut-on embarquer, et sinon pourquoi. */
   launch: LaunchResult | null;
-  /** Le kit (la voile, le haut de l'enveloppe, l'hélice) est arrivé : assez de Gardiens rallumés. */
+  /** Le kit (la voile, le haut de l'enveloppe, les ailerons) est arrivé : assez de Gardiens rallumés. */
   kit: boolean;
   canFill: boolean;
   notice: string | null;

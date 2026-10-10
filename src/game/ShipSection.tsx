@@ -141,7 +141,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
             <Syllabified
               text={
                 complete
-                  ? 'La Nef a pris ses trois formes : voilier, dirigeable, aile. Elle te porte où tu veux.'
+                  ? 'La Nef a pris ses trois formes : voilier, dirigeable, fusée. Elle te porte où tu veux.'
                   : `La Nef a déjà fait ce voyage. ${here.stage < VEHICLE_STAGES.length ? `Sa prochaine étape se construit au port des ${textes.archipels[here.to]}.` : ''}`
               }
             />

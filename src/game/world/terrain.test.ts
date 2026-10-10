@@ -920,8 +920,8 @@ it('la Nef : le chantier du port montre ses pièces neuves en fantôme sur la fo
   expect(fresh.cubes.filter((c) => c.ghost).length).toBe(voilier.cells.length + voilier.kit.length);
   // Les cubes sont locaux : dans l'encombrement de la Nef.
   for (const c of fresh.cubes) {
-    expect(c.x).toBeGreaterThanOrEqual(-VEHICLE_SIZE.wings);
-    expect(c.x).toBeLessThan(VEHICLE_SIZE.w + VEHICLE_SIZE.wings);
+    expect(c.x).toBeGreaterThanOrEqual(0);
+    expect(c.x).toBeLessThan(VEHICLE_SIZE.w);
     expect(c.y).toBeLessThan(VEHICLE_SIZE.d);
   }
   // Trois Gardiens rallumés, rien de posé : la voile est là, en dur, la coque encore en fantôme.
@@ -948,7 +948,7 @@ it('la Nef : le chantier du port montre ses pièces neuves en fantôme sur la fo
   expect(back.cubes.some((c) => c.ghost)).toBe(false);
   expect(back.building).toBeNull();
   expect(back.form).toBe(2);
-  // Dans les Îles du Ciel, l'aile plane à hauteur de quai.
+  // Dans les Îles du Ciel, la fusée se tient debout à hauteur de quai.
   const ciel = vehiclePlacement('3e', {}, village(['passage-5e', 'passage-4e', 'passage-3e']));
   expect(ciel.afloat).toBe(false);
   expect(ciel.form).toBe(3);

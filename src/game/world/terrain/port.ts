@@ -265,14 +265,14 @@ export interface VehiclePlacement {
   afloat: boolean;
   /** L'étape en chantier sur ce port, s'il y en a une. */
   building: string | null;
-  /** La forme montrée (0 : le voilier pas encore construit ; 1 à 3 : voilier, dirigeable, aile) : quand elle change sur le même port, la Nef mue. */
+  /** La forme montrée (0 : le voilier pas encore construit ; 1 à 3 : voilier, dirigeable, fusée) : quand elle change sur le même port, la Nef mue. */
   form: number;
 }
 
 /**
  * La Nef au quai du port de l'archipel (GD-15). Hors chantier, elle a la forme de la dernière étape partie. Sur le port
  * où une étape se construit, elle garde la forme d'avant, et les pièces neuves se montrent à leur place finale : posées
- * en dur, les autres en fantôme, le kit (voile, haut de l'enveloppe, hélice) en fantôme tant que les Gardiens ne sont pas
+ * en dur, les autres en fantôme, le kit (voile, haut de l'enveloppe, ailerons) en fantôme tant que les Gardiens ne sont pas
  * rallumés. Tout posé et le kit arrivé, elle a mué : elle a sa nouvelle forme (`muee`), avant même de partir.
  */
 export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { stars: number }>, village: World): VehiclePlacement {

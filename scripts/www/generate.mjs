@@ -953,7 +953,7 @@ function ouvragesPage(d) {
     '',
     '## La Nef',
     '',
-    'Un seul véhicule, qui change entièrement de forme à chaque passage : un voilier, puis un dirigeable, puis une aile. Chaque forme se construit sur le quai de l’île-port ; seules ses pièces neuves se posent, le reste est repris de la forme d’avant. Le kit (la voile, le haut de l’enveloppe, l’hélice) arrive avec les Gardiens rallumés de l’archipel ; le reste se pose bloc par bloc. Quand tout est là, la Nef se métamorphose sous les yeux de l’élève. Partir est un bouton ; le voyage fait reste fait, on revient quand on veut.',
+    'Un seul véhicule, qui change entièrement de forme à chaque passage : un voilier, puis un dirigeable, puis une fusée. Chaque forme se construit sur le quai de l’île-port ; seules ses pièces neuves se posent, le reste est repris de la forme d’avant. Le kit (la voile, le haut de l’enveloppe, les ailerons) arrive avec les Gardiens rallumés de l’archipel ; le reste se pose bloc par bloc. Quand tout est là, la Nef se métamorphose sous les yeux de l’élève. Partir est un bouton ; le voyage fait reste fait, on revient quand on veut.',
     '',
     table(
       ['Étape', 'Nom', 'Se construit sur', 'Blocs à poser', 'Kit', 'Gardiens', 'Mène aux', 'XP'],

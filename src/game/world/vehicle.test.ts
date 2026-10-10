@@ -20,10 +20,10 @@ it('trois étapes, de port en port, faites de blocs gagnables dans leur archipel
     expect(s.biome).toBe(ARCHIPELAGOS[i].port);
     expect(s.cells.length).toBeGreaterThanOrEqual(16);
     expect(s.kit.length).toBeGreaterThanOrEqual(1);
-    // Les cases tiennent dans l'encombrement de la Nef (l'aile déborde de chaque côté).
+    // Les cases tiennent dans l'encombrement de la Nef .
     for (const c of [...s.cells, ...s.kit, ...s.kept]) {
-      expect(c.x).toBeGreaterThanOrEqual(-VEHICLE_SIZE.wings);
-      expect(c.x).toBeLessThan(VEHICLE_SIZE.w + VEHICLE_SIZE.wings);
+      expect(c.x).toBeGreaterThanOrEqual(0);
+      expect(c.x).toBeLessThan(VEHICLE_SIZE.w);
       expect(c.y).toBeGreaterThanOrEqual(0);
       expect(c.y).toBeLessThan(VEHICLE_SIZE.d);
       expect(c.z).toBeGreaterThanOrEqual(-VEHICLE_SIZE.below);
@@ -64,8 +64,8 @@ it('la Nef mue à chaque passage (GD-15) : une forme neuve, faite en partie des 
     // Ce que la forme reprend vient de la forme d'avant, bloc par bloc : la coque devient nacelle, puis cabine.
     const dispo = compte(vehicleForm(s.stage - 1));
     for (const [b, n] of Object.entries(compte(s.kept))) expect(n, `${s.id} ${b}`).toBeLessThanOrEqual(dispo[b] ?? 0);
-    // La lanterne de proue passe d'une forme à l'autre (GD-15, le fil qui fait reconnaître la Nef).
-    expect(s.kept.some((c) => c.block === BLOC.lanterne && c.y === 0), s.id).toBe(true);
+    // La lanterne passe d'une forme à l'autre (GD-15, le fil qui fait reconnaître la Nef) : à la proue, puis au nez de la fusée.
+    expect(vehicleForm(s.stage).some((c) => c.block === BLOC.lanterne), s.id).toBe(true);
   });
   // Les formes changent vraiment : la silhouette n'est jamais la même (hauteur ou largeur).
   const boite = (n: number) => {

@@ -232,7 +232,7 @@ export const BADGES: BadgeDef[] = [
   { id: 'patrimoine', icon: 'castle', title: 'Patrimoine', description: 'Terminer un monument, comme l’observatoire des baleines.', earned: (p) => p.landmarksCompleted >= 1 },
   { id: 'capitaine', icon: 'ship', title: 'Capitaine', description: 'Larguer les amarres : premier voyage de la Nef.', earned: (p) => p.passages >= 1 },
   { id: 'aeronaute', icon: 'ship', title: 'Aéronaute', description: 'Mener la Nef au-dessus des nuages et rejoindre les Anciens Ateliers.', earned: (p) => p.passages >= 2 },
-  { id: 'pilote-du-ciel', icon: 'ship', title: 'Pilote du ciel', description: 'Déployer l’aile de la Nef et monter jusqu’aux Îles du Ciel.', earned: (p) => p.passages >= 3 },
+  { id: 'pilote-du-ciel', icon: 'ship', title: 'Pilote du ciel', description: 'Faire de la Nef une fusée et monter jusqu’aux Îles du Ciel.', earned: (p) => p.passages >= 3 },
   { id: 'gardien', icon: 'flame', title: 'Premier Gardien', description: 'Rallumer le Gardien d’une île.', earned: (p) => p.challengesWon >= 1 },
   { id: 'cinq-iles', icon: 'flame', title: 'Maître des cinq îles', description: 'Rallumer cinq Gardiens.', earned: (p) => p.challengesWon >= 5 },
   { id: 'dix-gardiens', icon: 'medal', title: 'Collégien', description: 'Rallumer dix Gardiens.', earned: (p) => p.challengesWon >= 10 },

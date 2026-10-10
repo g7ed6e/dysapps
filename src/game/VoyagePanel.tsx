@@ -29,7 +29,7 @@ export function voyageSentence(to: ArchipelagoId, back: boolean, noms: NomsArchi
   if (back) return `Tu embarques sur ${VEHICLE_NAME}. Retour vers les ${a.name}.`;
   if (to === '5e') return `Tu embarques sur ${VEHICLE_NAME}. Cap sur les ${a.name} !`;
   if (to === '4e') return `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} passe au-dessus des nuages. Cap sur les ${a.name} !`;
-  return `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} déploie son aile et monte vers les ${a.name} !`;
+  return `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} allume ses moteurs et monte vers les ${a.name} !`;
 }
 
 /**

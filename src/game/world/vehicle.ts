@@ -1,8 +1,8 @@
 // La Nef (GD-15) : un seul véhicule, qui change entièrement de forme à chaque passage. Chaque forme se construit sur le
 // quai de l'île-port d'un archipel : le voilier mène aux Îles Brumeuses (par la mer), le dirigeable aux Anciens Ateliers
-// (par les airs), l'aile aux Îles du Ciel. Une forme reprend des cubes de la précédente (`kept` : la coque devient la
-// nacelle, puis la cabine) ; l'élève ne pose que les pièces neuves (`cells`), à leur place finale, hors des cases de la
-// forme d'avant. Les cases « kit » (la voile, le haut de l'enveloppe, l'hélice) ne se gagnent pas : elles arrivent
+// (par les airs), la fusée aux Îles du Ciel. Une forme reprend des cubes de la précédente (`kept` : la coque devient la
+// nacelle, puis le socle de la fusée) ; l'élève ne pose que les pièces neuves (`cells`), à leur place finale, hors des cases de la
+// forme d'avant. Les cases « kit » (la voile, le haut de l'enveloppe, les ailerons) ne se gagnent pas : elles arrivent
 // d'elles-mêmes quand assez de Gardiens de l'archipel sont rallumés.
 import { BLOC, BLOCKS, type BiomeId, type BlockId } from '../biomes';
 import { isBossBeaten } from '../bossCore';
@@ -80,33 +80,36 @@ function dirigeable(): { cells: PlanCell[]; kit: PlanCell[]; kept: PlanCell[] } 
   return { cells, kit: [...bande.slice(4), ...dessus.slice(8)], kept };
 }
 
-/** L'aile (4e, au repos au 3e) : la nacelle devenue cabine sous une verrière de glace, une aile haute en flèche douce, une
- * queue d'ardoise ; le kit, l'hélice à la poupe. */
-function aile(): { cells: PlanCell[]; kit: PlanCell[]; kept: PlanCell[] } {
+/** La fusée (4e, debout au 3e) : la nacelle devenue socle, une coque en croix d'acier, de calque et d'ardoise, dressée sur
+ * la corde de bois devenue quille ; le dessous de l'enveloppe en hublots, son dessus en anneau blanc ; le kit, trois
+ * ailerons de bois (le quatrième est l'autre corde), la bande et la lanterne au nez. */
+function fusee(): { cells: PlanCell[]; kit: PlanCell[]; kept: PlanCell[] } {
+  // La croix de la coque autour de l'axe (2, 4) : son cœur, caché, n'est pas posé.
+  const bras = [
+    [1, 4],
+    [3, 4],
+    [2, 3],
+    [2, 5],
+  ] as const;
   const kept: PlanCell[] = [];
-  fill(kept, 1, 1, 0, 1, 6, 1, BLOC.bois);
-  fill(kept, 3, 1, 0, 1, 6, 1, BLOC.bois);
-  fill(kept, 2, 1, 0, 1, 4, 1, BLOC.sable);
-  fill(kept, 2, 5, 0, 1, 3, 1, BLOC.bois);
-  fill(kept, 1, 2, 1, 3, 2, 1, BLOC.glace);
-  for (const x of [1, 3]) fill(kept, x, 4, 1, 1, 3, 1, BLOC.reliure);
-  fill(kept, 2, 4, 1, 1, 3, 1, BLOC.marbre);
-  fill(kept, 2, 3, 2, 1, 2, 1, BLOC.marbre);
-  fill(kept, 1, 3, 3, 3, 2, 1, BLOC.marbre);
-  kept.push({ x: 2, y: 0, z: 1, block: BLOC.lanterne });
-  // L'aile haute (z 3), en flèche : trois colonnes de chaque côté, la dernière recule d'une case ; elle passe au-dessus
-  // de la jetée et du bonhomme, et reste dans l'emprise du quai (`VEHICLE_SIZE.wings`).
+  fill(kept, 1, 3, 0, 1, 3, 1, BLOC.bois);
+  fill(kept, 3, 3, 0, 1, 3, 1, BLOC.bois);
+  fill(kept, 2, 2, 0, 1, 4, 1, BLOC.sable);
+  fill(kept, 2, 2, 1, 1, 1, 2, BLOC.bois);
+  fill(kept, 2, 5, 1, 1, 1, 5, BLOC.bois);
+  for (const [x, y] of [...bras, [2, 4] as const]) kept.push({ x, y, z: 6, block: BLOC.glace }, { x, y, z: 8, block: BLOC.marbre });
   const cells: PlanCell[] = [];
-  for (const x of [-2, -1, 0, 4, 5, 6]) {
-    const recul = Math.abs(x - 2) === 4 ? 1 : 0;
-    fill(cells, x, 3 + recul, 3, 1, 2, 1, x % 2 === 0 ? BLOC.acier : BLOC.calque);
-  }
-  // La queue, en y = 7 : plus loin, les cases du réacteur d'avant le 5 octobre 2026 (plansV1.ts), qu'une vieille
-  // sauvegarde peut encore porter.
-  fill(cells, 2, 7, 1, 1, 1, 3, BLOC.ardoise);
-  cells.push({ x: 1, y: 7, z: 1, block: BLOC.ardoise }, { x: 3, y: 7, z: 1, block: BLOC.ardoise });
-  const kit: PlanCell[] = [{ x: 2, y: 8, z: 1, block: BLOC.fonte }];
-  for (const [x, z] of [[1, 1], [3, 1], [2, 0], [2, 2]]) kit.push({ x, y: 8, z, block: BLOC.fonte });
+  // La coque de z 1 à 5 (la corde arrière en est le bras de derrière), une rangée de calque au milieu ; la pointe d'ardoise.
+  for (const [x, y] of bras.slice(0, 3)) for (let z = 1; z <= 5; z++) cells.push({ x, y, z, block: z === 3 ? BLOC.calque : BLOC.acier });
+  for (const [x, y] of [...bras, [2, 4] as const]) cells.push({ x, y, z: 9, block: BLOC.ardoise });
+  const kit: PlanCell[] = [];
+  for (const [x, y] of bras) kit.push({ x, y, z: 7, block: BLOC.reliure });
+  for (const [x, y] of [
+    [0, 4],
+    [4, 4],
+    [2, 6],
+  ]) fill(kit, x, y, 1, 1, 1, 2, BLOC.bois);
+  kit.push({ x: 2, y: 4, z: 10, block: BLOC.lanterne });
   return { cells, kit, kept };
 }
 
@@ -129,7 +132,7 @@ function stage(
 export const VEHICLE_STAGES: VehicleStage[] = [
   stage(1, 'navire-coque', 'Le voilier', 'la voile', voilier(), 3, { xp: 120, chest: { [BLOC.lanterne]: 2, [BLOC.barriere]: 4 } }, (archipel) => `La voile est hissée ! Embarque quand tu veux : les ${archipel} t’attendent.`),
   stage(2, 'navire-ballon', 'Le dirigeable', 'l’enveloppe', dirigeable(), 2, { xp: 160, chest: { [BLOC.lanterne]: 2, [BLOC.escalier]: 2 } }, (archipel) => `La Nef est devenue dirigeable ! Embarque quand tu veux : les ${archipel} t’attendent.`),
-  stage(3, 'navire-reacteur', 'L’aile', 'l’hélice', aile(), 2, { xp: 200, chest: { [BLOC.lanterne]: 3 } }, (archipel) => `La Nef a pris son aile ! Embarque quand tu veux : les ${archipel} t’attendent.`),
+  stage(3, 'navire-reacteur', 'La fusée', 'les ailerons', fusee(), 2, { xp: 200, chest: { [BLOC.lanterne]: 3 } }, (archipel) => `La Nef est devenue fusée ! Embarque quand tu veux : les ${archipel} t’attendent.`),
 ];
 
 /** Toutes les cases d'une forme de la Nef (1 à 3) : ce qu'elle reprend, ce qu'on pose, son kit. */
@@ -162,7 +165,7 @@ export function beatenGuardians(a: ArchipelagoId, progress: Record<string, { sta
   return islandsOf(a).filter((b) => isBossBeaten(b.id, progress)).length;
 }
 
-/** Le kit d'une étape (voile, haut de l'enveloppe, hélice) est arrivé : assez de Gardiens rallumés. */
+/** Le kit d'une étape (voile, haut de l'enveloppe, ailerons) est arrivé : assez de Gardiens rallumés. */
 export function kitReady(stage: VehicleStage, progress: Record<string, { stars: number }>): boolean {
   return beatenGuardians(stage.from, progress) >= stage.guardians;
 }
