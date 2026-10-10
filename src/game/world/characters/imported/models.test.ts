@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import type { BiomeId } from '../../../biomes';
 import { compacterGlb } from '../../../../../scripts/rendu/compacterGlb.mjs';
 import { SENTINELLE } from '../colors';
@@ -6,7 +7,6 @@ import { ESPECES } from '../paintedCreatures';
 import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, frontDeLueur, HAUTEUR_DE_SENTINELLE } from '../sentinel';
 import { tailleDe } from '../template';
 import { fusionDesCreatures } from '../merges';
-import { FLAT_COLORS, smoothIsolated } from './flatColors';
 import { lireGlb } from './glb';
 import { chargerLesModelesDuDisque, fichierDuModele } from './fromDisk.testing';
 import { ILES_IMPORTEES, modeleImporte, nomDuModele, type Genre, type Niveau } from './models';
@@ -184,37 +184,34 @@ describe('Le squelette de Mousso (scripts/rendu/modeles/squelette.py)', () => {
   });
 });
 
-it('chaque créature a ses aplats : les quatre couleurs de son modèle de près, chacune avec sa cible', () => {
-  const srgb = (v: number) => (v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
+/** La colonne « aplats » de docs/univers/archipeo/personnages/modeles/reglages.csv : les couleurs cibles de chaque modèle. */
+function ciblesDesAplats(): Map<string, Set<number>> {
+  const lignes = readFileSync(resolve(__dirname, '../../../../../docs/univers/archipeo/personnages/modeles/reglages.csv'), 'utf8').split('\n');
+  return new Map(
+    lignes
+      .map((l) => l.split(';'))
+      .filter((c) => !c[0].startsWith('#') && c[4]?.trim())
+      .map((c) => [c[0], new Set(c[4].split(' ').map((p) => parseInt(p.split('>')[1], 16)))]),
+  );
+}
+
+it('chaque créature est peinte en aplats, de près et de loin : ses couleurs sont les cibles de sa ligne de reglages.csv', () => {
+  const table = ciblesDesAplats();
   for (const id of ILES_IMPORTEES) {
-    const table = FLAT_COLORS[id];
-    expect(table, id).toBeDefined();
-    const a = lireGlb(lu(fichierDuModele(nomDuModele('creature', id)!, 'pres')));
-    const duModele = new Set<number>();
-    for (let i = 0; i < a.colors.length; i += 3) {
-      const [r, g, b] = [0, 1, 2].map((j) => Math.round(srgb(a.colors[i + j]) * 255));
-      duModele.add((r << 16) | (g << 8) | b);
-    }
-    expect([...duModele].sort(), id).toEqual(Object.keys(table!).map(Number).sort());
+    const cibles = table.get(nomDuModele('creature', id)!);
+    expect(cibles, id).toBeDefined();
+    for (const c of modeleImporte('creature', id, 'pres')!.teintes) expect(cibles!.has(c), id).toBe(true);
+    // De loin, les mêmes, éclaircies si elles sont sombres : pas plus de couleurs qu'il n'y a de cibles.
+    expect(new Set(modeleImporte('creature', id, 'loin')!.teintes).size, id).toBeLessThanOrEqual(cibles!.size);
   }
 });
 
-it('de près, une créature n’a que les couleurs de ses aplats, et son corps se détache de l’herbe', () => {
+it('de près, le corps d’une créature (sa couleur la plus étendue) se détache de l’herbe', () => {
   for (const id of ILES_IMPORTEES) {
-    const cibles = new Set(Object.values(FLAT_COLORS[id]!));
-    const f = modeleImporte('creature', id, 'pres')!;
-    for (const c of f.teintes) expect(cibles.has(c), id).toBe(true);
-    // La couleur qui couvre le plus de facettes, le corps, est plus claire que l'herbe (clarté 0,36).
     const parts = new Map<number, number>();
-    for (const c of f.teintes) parts.set(c, (parts.get(c) ?? 0) + 1);
+    for (const c of modeleImporte('creature', id, 'pres')!.teintes) parts.set(c, (parts.get(c) ?? 0) + 1);
     const corps = [...parts].sort((x, y) => y[1] - x[1])[0][0];
+    // L'herbe du 6e a une clarté de 0,36.
     expect(clarte(corps), id).toBeGreaterThan(0.4);
   }
-});
-
-it('un triangle seul au milieu d’une autre couleur la prend ; une zone de deux triangles reste', () => {
-  // Une bande de quatre triangles, chacun voisin du suivant par une arête.
-  const p = Float32Array.from([0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 2, 0, 0, 1, 1, 0, 2, 0, 0, 2, 1, 0, 1, 1, 0]);
-  expect([...smoothIsolated(p, Int32Array.from([1, 2, 1, 1]))]).toEqual([1, 1, 1, 1]);
-  expect([...smoothIsolated(p, Int32Array.from([1, 2, 2, 1]))]).toEqual([1, 2, 2, 1]);
 });

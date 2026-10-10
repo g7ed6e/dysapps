@@ -48,7 +48,7 @@ Les Gardiens (coupe du socle en part de la hauteur, triangles des deux versions)
 | Diligence de cuivre (Relais, 5e) | 0,12 | 1 475 | 216 |
 | Flamant de sel (Saline, 5e) | 0,12 | 1 307 | 172 |
 
-Les créatures (sans socle, rien à couper). Le jeu repeint leurs quatre couleurs en aplats clairs (`src/game/world/characters/imported/flatColors.ts`, choisis par le directeur artistique le 10 octobre 2026) : les fichiers gardent les couleurs tirées de la texture, et une nouvelle passe dans Blender, qui en tirerait d’autres, demande de refaire la table. Écart connu : Robin n’a pas la gorge orange de son concept (aucune de ses quatre couleurs ne la porte) ; elle attend un lot qui touche la géométrie.
+Les créatures (sans socle, rien à couper). Leurs fichiers sont peints en aplats clairs par `aplats.py` (voir plus bas), d’après les couleurs choisies par le directeur artistique le 10 octobre 2026 dans la colonne « aplats » de `reglages.csv`. Écart connu : Robin n’a pas la gorge orange de son concept (aucune de ses quatre couleurs ne la porte) ; elle attend un lot qui touche la géométrie.
 
 | Créature | 1 500 | 200 |
 | --- | --- | --- |
@@ -108,6 +108,18 @@ blender -b -P scripts/rendu/modeles/lot.py -- <dossier de travail>
 Sans Blender, le module Python `bpy` suffit (Python 3.11, `pip install bpy numpy`) : `python scripts/rendu/modeles/lot.py -- <dossier de travail>`. Sous Linux, il faut aussi la bibliothèque `libegl1` pour le rendu de contrôle. Le résultat sort dans `<dossier de travail>/prets/<nom>/` avec un `recapitulatif.csv` : y prendre `final-1500.glb`, `final-200.glb` et `controle.png`.
 
 Si le socle n’est pas entièrement parti, ou si les pattes sont coupées, changer la hauteur dans `reglages.csv` et relancer (le Taureau, au socle plus haut, coupe à 0,16).
+
+Une créature passe ensuite par deux étapes, sur son dossier de `modeles/` (numpy seulement, sans Blender) :
+
+5. `squelette.py` pose son squelette dans le modèle de près (réglages dans la colonne « squelette » de `reglages.csv`), relu sur la planche de `apercu_squelette.py` ;
+6. `aplats.py` peint ses deux modèles en aplats : chacune de ses quatre couleurs (sombres et bigarrées, puisque l’ombre est peinte dans la texture de TRELLIS) prend la couleur cible de la colonne « aplats » de `reglages.csv` (`source>cible` en hexadécimal), deux couleurs de la même matière se fondent en une zone, le modèle de loin prend la cible de la source la plus proche, et un triangle isolé prend la couleur de ses voisins. Seules les couleurs du fichier changent. Relancé sur un modèle déjà en aplats, il ne change rien ; un modèle refait par `lot.py` a d’autres couleurs sources : refaire sa ligne.
+
+```sh
+python3 scripts/rendu/modeles/squelette.py -- docs/univers/archipeo/personnages/modeles/<nom>
+python3 scripts/rendu/modeles/aplats.py -- docs/univers/archipeo/personnages/modeles/<nom>
+```
+
+Puis refaire `controle.png` avec `rendre_controle.py` (brut, 1 500, 200). Le test `src/game/world/characters/imported/models.test.ts` vérifie que chaque créature de la table est bien peinte avec ses cibles. La chaîne entière, du concept au jeu, est décrite pas à pas dans le skill [`modeles-3d`](../../../../.claude/skills/modeles-3d/SKILL.md).
 
 ## À reprendre au modèle 3D
 

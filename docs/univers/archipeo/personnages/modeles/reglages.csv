@@ -1,4 +1,4 @@
-# nom;hauteur de coupe;quarts de tour (lu par scripts/rendu/modeles/lot.py);squelette : quarts de tour du jeu et réglages (scripts/rendu/modeles/squelette.py)
+# nom;hauteur de coupe;quarts de tour (lu par scripts/rendu/modeles/lot.py);squelette : quarts de tour du jeu et réglages (scripts/rendu/modeles/squelette.py);aplats : chaque couleur du modèle de près, source>cible en sRVB, choisies par le directeur artistique (scripts/rendu/modeles/aplats.py);ce que fait chaque zone
 6e-baie-gardien-lion-de-pierre;0.12;0
 6e-ferme-gardien-taureau-de-terre;0.16;0
 6e-plaine-gardien-hanneton-de-bronze;0.12;0
@@ -14,21 +14,21 @@
 6e-tour-gardien-chouette-de-verre;0.12;0
 6e-vallee-gardien-cerf-des-sous-bois;0.12;0
 6e-volcan-gardien-dragon-de-cendre;0.12;0
-6e-baie-creature-robin;-;0;0 queue=sol aire=oui bras=non
-6e-carriere-creature-rouxel;-;0;1 bras=R leve=R teinte=L
-6e-ferme-creature-bloquette;-;0;3 bras=R leve=R
-6e-foret-creature-mousso;-;0;1 cou=0.72 queue=non
-6e-fouille-creature-silex;-;0;3 bras=R leve=R
-6e-hangar-creature-pince;-;0;1 aire=oui bras=R leve=R
-6e-horloge-creature-tick;-;0;1 bras=non
-6e-laboratoire-creature-bulle;-;0;1 jambes=non bras=non queue=non
-6e-mine-creature-tunel;-;0;0 bras=non
-6e-plaine-creature-coco;-;0;3 aire=oui
-6e-pointe-creature-boussole;-;0;1 bras=non
-6e-riviere-creature-nenu;-;0;3 aire=oui cou=0.7 bras=R leve=R
-6e-tour-creature-grimoire;-;0;0 cou=0.82 bras=non
-6e-vallee-creature-fougere;-;0;0 jambes=non bras=non queue=non
-6e-volcan-creature-lavi;-;0;0 queue=sol aire=oui bras=non
+6e-baie-creature-robin;-;0;0 queue=sol aire=oui bras=non;836041>b8743f d5c298>d8c49a 523925>7e5a3e b4a17e>ece4d4;Robin : le corps brun orangé, le ventre clair, la ceinture, la gorge orange du concept attend la géométrie.
+6e-carriere-creature-rouxel;-;0;1 bras=R leve=R teinte=L;d14a15>c8682e 331a0a>3e2a1e 785444>8a5a3c e6d9c3>e6d8c0;Rouxel : le pelage roux, le ventre clair, le tablier, les bottes et les gants restent sombres.
+6e-ferme-creature-bloquette;-;0;3 bras=R leve=R;dcd5c5>e2dccd 3a2d1f>3a3430 bab29d>e2dccd 725c42>9a6440;Bloquette : la laine blanche, le tablier, le museau et les pattes restent sombres.
+6e-foret-creature-mousso;-;0;1 cou=0.72 queue=non;4e6921>78a552 698315>78a552 4b400e>9a6a40 726c4b>b3ae9f;Mousso : la mousse en un vert, le tablier en cuir clair, le plastron de pierre.
+6e-fouille-creature-silex;-;0;3 bras=R leve=R;432f22>a07850 cdcac6>d6c8a4 6a543f>a07850 9b8f83>c8a878;Silex : le pelage, le tablier de lin, le museau.
+6e-hangar-creature-pince;-;0;1 aire=oui bras=R leve=R;643429>b85234 462923>8a4430 23120e>3a2420 656260>8a9098;Pince : la carapace rouge, le tablier, le fer, les pattes fines et les antennes restent sombres.
+6e-horloge-creature-tick;-;0;1 bras=non;372a1e>8a7458 b0a48f>e0d0b0 4a2a06>b06a38 604e3a>8a7458;Tick : le pelage, le museau clair, le gilet.
+6e-laboratoire-creature-bulle;-;0;1 jambes=non bras=non queue=non;1f464d>5f8db4 0d282d>5f8db4 3f747b>5f8db4 afb8b9>e6e2d6;Bulle : les trois bleus sont la même matière, le tablier.
+6e-mine-creature-tunel;-;0;0 bras=non;2e1b0e>a07050 8d897d>cdbf9e 47301f>a07050 615c53>8a9098;Tunel : le pelage brun clair, le gilet de lin, la pioche en fer.
+6e-plaine-creature-coco;-;0;3 aire=oui;470902>c04a3c 78553d>d2bc92 110402>2e2422 310802>c04a3c;Coco : la coccinelle rouge, la ceinture de lin et le bâton, les taches, la tête et les pattes restent sombres.
+6e-pointe-creature-boussole;-;0;1 bras=non;d0ccc8>e8e4da e2e3e2>e8e4da c29e81>e8b47c 654427>8a5a34;Boussole : les plumes blanches, le bec, la sacoche.
+6e-riviere-creature-nenu;-;0;3 aire=oui cou=0.7 bras=R leve=R;463112>cfb07c 043c08>78b060 2a7827>78b060 261003>a87a48;Nénu : la grenouille verte, la cire, la besace.
+6e-tour-creature-grimoire;-;0;0 cou=0.82 bras=non;262329>7a6e62 302a48>827ca8 adaa97>d8ccac 080912>8e6440;Grimoire : la carapace, la robe violette, les pages, le livre et le bord de la carapace.
+6e-vallee-creature-fougere;-;0;0 jambes=non bras=non queue=non;44371b>b06a3e 7f8971>8eac7a 5c674a>8eac7a bab19b>d8ccac;Fougère : le corps vert tendre, la ceinture, le ventre clair.
+6e-volcan-creature-lavi;-;0;0 queue=sol aire=oui bras=non;d26c28>e08a48 4a2c26>8a5636 e68137>e08a48 9c9e9e>a0a6ae;Lavi : la salamandre orange, le tablier, l'outil de fer.
 5e-bourg-gardien-griffon-d-email;0.12;0
 5e-carrefour-gardien-sphinx-des-routes;0.12;0
 5e-comptoir-gardien-reine-du-marche;0.12;0
