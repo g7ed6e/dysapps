@@ -1,5 +1,6 @@
 // Les personnages d'Archipéo dans la scène 3D (lot R6) : sans WebGL (jsdom), on vérifie l'arbre de la scène, le toucher,
 // le matériau à lueur, « Réduire les animations » et la libération des ressources.
+import { readFileSync } from 'node:fs';
 import * as THREE from 'three';
 import { HABILLAGES, type Habillage } from '../skin';
 import { toutConstruit } from '../world/budget';
@@ -155,6 +156,12 @@ describe('Les personnages d’Archipéo dans la scène 3D', () => {
 });
 
 describe('Le cycle de marche des créatures à squelette (poseDeMarche)', () => {
+  it('l’aperçu hors du jeu (scripts/rendu/modeles/marche.py) marche comme le jeu', () => {
+    const py = readFileSync('scripts/rendu/modeles/marche.py', 'utf8');
+    const allure = JSON.parse(/^ALLURE = (\{[^}]*\})/m.exec(py)![1]) as Record<string, number>;
+    expect(allure).toEqual(GESTES.pas);
+  });
+
   const angle = (phi: number, nom: string, axe = 'x', elan = 1) =>
     poseDeMarche(GESTES.pas, phi, elan).angles.find(([n, a]) => n === nom && a === axe)![2];
 

@@ -265,8 +265,7 @@ export function poseDeMarche(allure: Allure, phi: number, elan: number): { angle
  */
 function bouger(membres: Map<string, THREE.Bone>, allure: Allure, t: number, phase: number, pas: number, dureeDuPas: number): number {
   const elan = adoucir(Math.min(pas, 1 - pas) / 0.2);
-  const courtes = pattesCourtes(membres);
-  const { angles, haut } = poseDeMarche({ ...allure, dandine: allure.dandine * courtes }, pas * dureeDuPas * allure.cadence, elan);
+  const { angles, haut } = poseDeMarche(allure, pas * dureeDuPas * allure.cadence, elan);
   for (const [nom, axe, angle] of angles) tourner(membres, nom, axe, angle);
   tourner(membres, 'spine', 'x', cycle(GESTES.souffle, t + phase) - allure.penche * elan);
   // La tête regarde de côté au repos, et reste droite quand le buste tourne.
@@ -401,6 +400,8 @@ export function habiller(
         promeneurs = lesCreatures.map((c, i) => {
           const b = f.boites[i].boite;
           const pivot = f.squelette[2 * i].pivot;
+          const membres = new Map(f.squelette.flatMap((o, k) => (k >= 2 * lesCreatures.length && o.id === c.id ? [[o.nom, bones[k]] as const] : [])));
+          const allure = allureDe(c.id);
           const promeneur: Promeneur = {
             corps: bones[2 * i],
             bras: bones[2 * i + 1],
@@ -409,8 +410,9 @@ export function habiller(
             decalage: new THREE.Vector3((b[0] + b[3]) / 2 - pivot[0], (b[1] + b[4]) / 2 - pivot[1], (b[2] + b[5]) / 2 - pivot[2]),
             milieu: { x: pivot[0] - c.origin.x, y: pivot[2] - c.origin.y },
             phase: (i * 1.7) % GESTE.periode,
-            membres: new Map(f.squelette.flatMap((o, k) => (k >= 2 * lesCreatures.length && o.id === c.id ? [[o.nom, bones[k]] as const] : []))),
-            allure: allureDe(c.id),
+            membres,
+            // Le dandinement selon ses pattes, mesuré une fois sur la pose de repos.
+            allure: { ...allure, dandine: allure.dandine * pattesCourtes(membres) },
           };
           poser(promeneur, 0, 0, 0);
           return promeneur;
@@ -465,15 +467,12 @@ export function habiller(
       }
       for (const q of promeneurs) {
         const { dx, dy, bob } = strollAt(q.stroll, instant.now, t);
-        poser(q, dx, dy, q.membres.size ? 0 : bob);
+        // Une créature à squelette ne sautille pas : son corps monte et descend avec ses pas.
+        const pas = q.stroll.start ? Math.min(1, (instant.now - q.stroll.start) / q.stroll.duration) : 0;
+        const haut = q.membres.size ? q.allure.monte * bouger(q.membres, q.allure, t, q.phase, pas, q.stroll.duration / 1000) : bob;
+        poser(q, dx, dy, haut);
         // Le geste lent : le bras se lève et redescend, en cinq secondes (coupé avec « Réduire les animations »).
         q.bras.rotation.x = -GESTE.angle * Math.max(0, Math.sin(((t + q.phase) / GESTE.periode) * Math.PI * 2));
-        if (q.membres.size) {
-          const pas = q.stroll.start ? Math.min(1, (instant.now - q.stroll.start) / q.stroll.duration) : 0;
-          // Une créature à squelette ne sautille pas : son corps monte et descend avec ses pas.
-          const haut = bouger(q.membres, q.allure, t, q.phase, pas, q.stroll.duration / 1000);
-          poser(q, dx, dy, q.allure.monte * haut);
-        }
       }
     },
     rallumer: (id, dureeMs) => {
