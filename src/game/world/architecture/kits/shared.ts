@@ -1,8 +1,10 @@
-// Ce que les kits d'Archipéo ont en commun (le 6e, la référence, puis le 5e, 9 octobre 2026) : les murs de bois sur
-// pilotis, les poteaux de bois des liaisons et de la jetée du port, les lieux du village (l'école, la salle des trophées,
-// la Halle aux matériaux) et la finition (la porte, la marche, la barrière). Chaque kit les reprend avec ce qui lui est
-// propre (son port, la pierre de ses lieux). Code pur, sans Three.js.
+// Ce que les kits d'Archipéo ont en commun (le 6e, la référence, puis le 5e, 9 octobre 2026, le 4e et le 3e,
+// 10 octobre 2026) : les murs de bois sur pilotis, les poteaux de bois des liaisons et de la jetée du port, les lieux du
+// village (l'école, la salle des trophées, la Halle aux matériaux), la finition (la porte, la marche, la barrière) et la
+// plate-bande d'une matière seule au sol (la rizière, le pétale). Chaque kit les reprend avec ce qui lui est propre (son
+// port, la pierre de ses lieux, le mur de sa Halle : en colombage, sauf au 3e, qui n'en a pas). Code pur, sans Three.js.
 import { boiteDansLaCase, type DessinDePiece, type Facette } from '../rooms';
+import { paddyBed } from '../heartPieces';
 import { barriereDe, marcheDe } from '../lowPieces';
 import { bell } from '../precious';
 import { dockPosts } from '../../harbor';
@@ -13,6 +15,7 @@ import type { TextureKind } from '../../pixels';
 import { MOTIF, type ManiereDuMur } from '../paint';
 import type { IdDeMur, Forme, Tete, IdDePiece } from '../choices';
 import { estUnPilier } from '../../trophyHall';
+import { batimentsDe } from '../../construction/buildings';
 import { HALLE } from '../../terrain';
 import type { CaseDuLieu, Famille, LieuDuKit } from './types';
 
@@ -88,7 +91,7 @@ const isBell = ({ x, y, z, w, texture }: CaseDuLieu) => x === (w - 1) / 2 && y =
 const BELL = bell();
 
 /** Le mur d'un lieu du village : sa famille, et sa manière quand sa famille ne la dit pas seule. */
-interface PlaceWall {
+export interface PlaceWall {
   famille: Famille;
   dessin?: ManiereDuMur;
 }
@@ -107,10 +110,13 @@ interface PlaceWall {
  * - la Halle aux matériaux (le lieu où l'on assemble, dans son dessin d'Archipéo : `atelierModel('halle')`) : ses murs
  *   de bois sur leur rang de pierre en colombage (le rang de pierre devient le soubassement, comme aux maisons), son toit
  *   à deux pentes en pentes et son faîte ; la porte reste ouverte. Le dessin de Blocland (la Fabrique) n'est jamais
- *   repris : la construction taillée est celle d'Archipéo.
+ *   repris : la construction taillée est celle d'Archipéo. `assembly` : le mur de son bois et celui de son rang de pierre,
+ *   quand ce n'est pas le colombage (au 3e, qui n'a pas de colombage : le bois bardé, `Kit.bardes`, sur un rang de pierre
+ *   de taille).
  */
-export function villagePlaces(walls: { school: PlaceWall; pillars: PlaceWall }): Partial<Record<VillagePlaceId, LieuDuKit>> {
+export function villagePlaces(walls: { school: PlaceWall; pillars: PlaceWall; assembly?: { wood: PlaceWall; stone: PlaceWall } }): Partial<Record<VillagePlaceId, LieuDuKit>> {
   const pillars = { ...walls.pillars, sansDecharge: true };
+  const halle: { wood: PlaceWall; stone: PlaceWall } = walls.assembly ?? { wood: { famille: 'colombage' }, stone: { famille: 'colombage' } };
   return {
     school: (m) =>
       m.z <= 3 && (m.texture === 'brique' || m.texture === 'taille')
@@ -137,12 +143,33 @@ export function villagePlaces(walls: { school: PlaceWall; pillars: PlaceWall }):
     assembly: (m) =>
       !dansLaHalle(m)
         ? undefined
-        : m.z <= HALLE.haut && (m.texture === 'planches' || m.texture === 'pierre')
-          ? { famille: 'colombage' }
-          : m.texture === 'toit'
-            ? { famille: 'toit' }
-            : undefined,
+        : m.z <= HALLE.haut && m.texture === 'planches'
+          ? halle.wood
+          : m.z <= HALLE.haut && m.texture === 'pierre'
+            ? halle.stone
+            : m.texture === 'toit'
+              ? { famille: 'toit' }
+              : undefined,
   };
+}
+
+/**
+ * Une matière seule au sol, rien dessus (la rizière de la cour du moulin du Delta au 5e, le pétale de la Source des
+ * espèces au 4e) : une plate-bande dans sa teinte ; ailleurs, `undefined` (le dessin de sa famille).
+ */
+export function bedWhenAlone(piece: IdDePiece): DessinDePiece | undefined {
+  const [, , pied, tete] = piece.split('.');
+  return pied !== 'haut' && tete === 'chaperon' ? paddyBed() : undefined;
+}
+
+/**
+ * Le velours d'un archipel (au 4e et au 3e, intention du directeur artistique du 10 octobre 2026) : dans un mur d'un
+ * bâtiment des plans (la loge de Puck), la tenture de la salle des trophées (ses plis, son galon d'or) ; ailleurs (les
+ * gradins de l'amphithéâtre, la locomotive du viaduc, une cour, une petite construction), un mur plein de sa matière,
+ * lissé, uni.
+ */
+export function veloursOf(a: ArchipelagoId): (piece: IdDePiece, c: VoxelCube) => ManiereDuMur {
+  return (_piece, c) => (!c.place && !c.petiteConstruction && batimentsDe(a).has(`${c.x},${c.y},${c.z}`) ? 'tenture' : 'plein');
 }
 
 /** La finition (la porte en vantail, la marche basse, la barrière en poteaux et lisses), la même dans chaque kit. */

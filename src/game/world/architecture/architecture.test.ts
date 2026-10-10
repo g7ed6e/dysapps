@@ -3,7 +3,7 @@ import { toutConstruit, toutConstruitAvecLesCommandes } from '../budget';
 import { ARCHIPELAGO_IDS } from '../map';
 import { worldCubes } from '../terrain';
 import { batimentsDe, coursDe } from '../construction';
-import { architectureDe, FORMES, KITS, kitVide, MOTIF, pieceDe, voisinageDe, indexDuPlan, type IdDePiece, type Kit } from '.';
+import { architectureDe, FORMES, kitVide, MOTIF, pieceDe, voisinageDe, indexDuPlan, type IdDePiece, type Kit } from '.';
 import { boiteDansLaCase, FACES, facettesPosees, tournerCouvre, trianglesDe, TOUTES_LES_FACES, type DessinDePiece } from './rooms';
 import { KIT_6E } from './kits/6e';
 import { BRUME } from '../palette';
@@ -29,27 +29,23 @@ function kitDEssai(dessin: DessinDePiece): Kit {
 const cube = (x: number, y: number, z: number, texture = 'pierre', autre: Partial<VoxelCube> = {}): VoxelCube => ({ x, y, z, color: '#888888', texture, tag: 'port', ...autre });
 
 describe('L’architecture modulaire', () => {
-  it('la table commune s’active au 6e et au 5e : au 4e et au 3e, aucun bloc remplacé ni peint, sur tout un archipel construit, cours, monuments et petites constructions comprises', () => {
+  it('la table commune s’active partout (le 4e et le 3e le 10 octobre 2026), sur tout un archipel construit, cours, monuments et petites constructions comprises ; un kit vide ne remplace ni ne peint rien', () => {
     const { progress, world: village } = toutConstruitAvecLesCommandes();
     for (const a of ARCHIPELAGO_IDS) {
-      const archi = architectureDe(a, worldCubes(a, progress, village, false), { batiments: batimentsDe(a), cours: coursDe(a) });
-      if (a === '6e' || a === '5e') {
-        expect(archi.pieces.length, a).toBeGreaterThan(0);
-        expect(archi.peints.size, a).toBeGreaterThan(0);
-        // Les monuments, la cour (la troisième étape) et les petites constructions des commandes et des quêtes aussi.
-        const pris = [...archi.pieces.map((p) => p.cube), ...[...archi.peints.values()].map((p) => p.cube)];
-        expect(pris.some((c) => c.place?.startsWith('monument:'))).toBe(true);
-        expect(pris.some((c) => c.petiteConstruction)).toBe(true);
-        expect(pris.some((c) => coursDe(a).has(cle(c)))).toBe(true);
-        continue;
-      }
-      expect(KITS[a].finitions ?? {}, a).toEqual({});
-      expect(Object.keys(KITS[a].matieres), a).toEqual([]);
-      expect(Object.keys(KITS[a].pieces), a).toEqual([]);
-      expect(Object.keys(KITS[a].murs), a).toEqual([]);
-      expect(archi.remplacees.size, a).toBe(0);
-      expect(archi.peints.size, a).toBe(0);
-      expect(archi.triangles, a).toBe(0);
+      const cubes = worldCubes(a, progress, village, false);
+      const archi = architectureDe(a, cubes, { batiments: batimentsDe(a), cours: coursDe(a) });
+      expect(archi.pieces.length, a).toBeGreaterThan(0);
+      expect(archi.peints.size, a).toBeGreaterThan(0);
+      // Les monuments, la cour (la troisième étape) et les petites constructions des commandes et des quêtes aussi.
+      const pris = [...archi.pieces.map((p) => p.cube), ...[...archi.peints.values()].map((p) => p.cube)];
+      expect(pris.some((c) => c.place?.startsWith('monument:')), a).toBe(true);
+      expect(pris.some((c) => c.petiteConstruction), a).toBe(true);
+      expect(pris.some((c) => coursDe(a).has(cle(c))), a).toBe(true);
+      // Un kit vide : rien ne change.
+      const vide = architectureDe(a, cubes, { kit: kitVide(), batiments: batimentsDe(a), cours: coursDe(a) });
+      expect(vide.remplacees.size, a).toBe(0);
+      expect(vide.peints.size, a).toBe(0);
+      expect(vide.triangles, a).toBe(0);
     }
   }, 30_000);
 

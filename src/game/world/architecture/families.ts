@@ -5,9 +5,9 @@
 // fait échouer la compilation et la CI (./families.test.ts). Les blocs taillés ne restent qu'en exceptions nommées
 // (`CUBE_EXCEPTIONS`).
 //
-// Le kit d'un archipel (./kits/) dit ce qu'il sait dessiner de chaque famille ; la table s'active au 6e (les Premiers
-// Rivages) et au 5e (les Collines du Large, 9 octobre 2026) : au 4e et au 3e, le kit est vide et rien ne change. Code
-// pur, sans Three.js.
+// Le kit d'un archipel (./kits/) dit ce qu'il sait dessiner de chaque famille ; la table s'active partout : au 6e (les
+// Premiers Rivages), au 5e (les Collines du Large, 9 octobre 2026), au 4e et au 3e (les Anciens Ateliers et les Îles du
+// Ciel, 10 octobre 2026). Code pur, sans Three.js.
 import type { TextureKind } from '../pixels';
 
 /** Les familles du dessin peint (vocabulaire du directeur artistique). */
@@ -90,9 +90,8 @@ type ExceptionTexture = 'borne';
 /**
  * La famille de chaque matière. Les matières relevées par le directeur artistique (biomes.ts, architect.ts,
  * fixtures.ts, monuments.ts, decor.ts, terrain/links.ts, terrain/port.ts, vehicle.ts) d'abord ; puis celles du 5e,
- * validées par le directeur artistique le 9 octobre 2026 ; puis celles qu'aucun bloc du 6e ni du 5e ne pose, que
- * l'artiste technique 3D range par analogie, à valider par le directeur artistique avant les lots du 4e et du 3e
- * (`FAMILIES_TO_CONFIRM`).
+ * validées par le directeur artistique le 9 octobre 2026 ; puis celles du 4e et du 3e, validées le 10 octobre 2026 (le
+ * basalte et la lave, qu'aucun bloc ne pose, restent à confirmer : `FAMILIES_TO_CONFIRM`).
  */
 export const MATERIAL_FAMILIES: Record<Exclude<TextureKind, ExceptionTexture>, MaterialFamily> = {
   // Le colombage.
@@ -164,17 +163,28 @@ export const MATERIAL_FAMILIES: Record<Exclude<TextureKind, ExceptionTexture>, M
   // de l'eau (directeur artistique, retouches du 9 octobre 2026) ; le 3e reverra s'il pose du nuage dans une construction.
   nuage: 'pierre',
 
-  // Proposées par analogie (aucune n'est posée au 6e ni au 5e), à valider par le directeur artistique.
+  // Le 4e et le 3e (directeur artistique, 10 octobre 2026) : les matières rangées par analogie, confirmées.
+  // - En pierre, un mur plein de leur matière : l'ardoise, le grès, le savon, la cire, le pavé de la Porte des libertés
+  //   et la fresque de la Colonnade des cités (un enduit peint) ; le basalte, qu'aucun bloc ne pose.
   ardoise: 'pierre',
   gres: 'pierre',
   basalte: 'pierre',
   savon: 'pierre',
   cire: 'pierre',
-  quartz: 'precieux',
-  prisme: 'precieux',
+  pave: 'pierre',
+  fresque: 'pierre',
+  // - Changées : le quartz en mur plein (le trophée de quartz reste dessiné à part) ; le pétale en enduit rose dans un mur
+  //   (seul au sol, une plate-bande dans sa teinte : ./kits/shared.ts).
+  quartz: 'pierre',
+  petale: 'pierre',
+  // - En bardage, des clins dans leur teinte : l'osier, le bardeau (les murs du Refuge, sans balcon ni toit de bardeau),
+  //   le liège, l'acajou du Forum des débats.
   osier: 'bardage',
   bardeau: 'bardage',
   liege: 'bardage',
+  acajou: 'bardage',
+  // - En métal, une tôle dans la teinte de sa matière (./kits/4e.ts, ./kits/3e.ts) ; la reliure aussi (changée : la cuve
+  //   du château d'eau, le fuselage de la fusée, le Kiosque des témoins).
   acier: 'metal',
   rail: 'metal',
   antenne: 'metal',
@@ -183,53 +193,25 @@ export const MATERIAL_FAMILIES: Record<Exclude<TextureKind, ExceptionTexture>, M
   ressort: 'metal',
   engrenage: 'metal',
   bobine: 'metal',
+  reliure: 'metal',
+  // - En verre, une verrière : le miroir ; le prisme (changé : les murs de la lanterne de Fi ; au toit du temple, un toit
+  //   lu par sa place) ; le calque (changé : une verrière dépolie, le bureau d'Ixe).
   miroir: 'verre',
-  calque: 'toile',
+  prisme: 'verre',
+  calque: 'verre',
+  // - En toile, en tenture dans un mur : le parchemin.
   parchemin: 'toile',
-  reliure: 'toile',
-  petale: 'vegetal',
-  lave: 'eau',
-  // Le pavé de la Porte des libertés (EMC 4e) et la fresque de la Colonnade des cités (latin-grec 4e) : un mur plein,
-  // de granit ou d'enduit peint (proposées par analogie, posées au 4e seulement).
-  pave: 'pierre',
-  fresque: 'pierre',
-  // L'acajou du Forum des débats (EMC 3e), des planches comme le lambris ; le laurier du Bosquet des sages (latin-grec
-  // 3e), du végétal (proposées par analogie, posées au 3e seulement).
-  acajou: 'bardage',
+  // - En végétal, dans les formes communes (une boule sur son tronc) : le laurier du Bosquet des sages.
   laurier: 'vegetal',
+  // - La lave, qu'aucun bloc ne pose.
+  lave: 'eau',
 };
 
-/** Les matières rangées par analogie, à valider par le directeur artistique (aucune n'est posée au 6e ni au 5e). */
-export const FAMILIES_TO_CONFIRM: readonly TextureKind[] = [
-  'ardoise',
-  'gres',
-  'basalte',
-  'savon',
-  'cire',
-  'quartz',
-  'prisme',
-  'osier',
-  'bardeau',
-  'liege',
-  'acier',
-  'rail',
-  'antenne',
-  'fonte',
-  'conteneur',
-  'ressort',
-  'engrenage',
-  'bobine',
-  'miroir',
-  'calque',
-  'parchemin',
-  'reliure',
-  'petale',
-  'lave',
-  'pave',
-  'fresque',
-  'acajou',
-  'laurier',
-];
+/**
+ * Les matières rangées par analogie qui restent à valider par le directeur artistique : aucun bloc ne les pose (le test
+ * le vérifie). Toutes les autres sont confirmées (le 5e le 9 octobre 2026, le 4e et le 3e le 10 octobre 2026).
+ */
+export const FAMILIES_TO_CONFIRM: readonly TextureKind[] = ['basalte', 'lave'];
 
 /** La famille d'une matière, ou `null` (une exception, ou ce qui n'est pas une matière : une couleur seule). */
 export function familyOf(texture: string | undefined): MaterialFamily | null {

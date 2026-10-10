@@ -3,7 +3,7 @@
 // pyramide d'or et le fond de velours en tenture peinte (9 octobre 2026) ; la porte en vantail, le fût du clocheton en
 // pilier lissé, les socles de marbre à chaperon, la cour de la Halle en poteau, traverse et caisses (le reste, 9 octobre
 // 2026) ; les fenêtres et les trophées restent ce qu'ils sont ; le toucher prend toute la case ; les monuments et les
-// autres archipels ne changent pas.
+// autres archipels prennent leur kit (./kit43.test.ts pour le 4e et le 3e).
 import type { BlockId } from '../../biomes';
 import type { VoxelCube } from '../cube';
 import { BADGES } from '../../../core/progress';
@@ -259,7 +259,7 @@ describe('Les lieux du village au kit du 6e', () => {
     expect([...lieuxTouches].sort()).toEqual(['assembly', 'school', 'trophies']);
   });
 
-  it('au 6e, les monuments prennent la table commune (8 octobre 2026) ; au 4e et au 3e, l’école, la salle et la Halle gardent leur dessin', () => {
+  it('au 6e, les monuments prennent la table commune (8 octobre 2026) ; au 4e et au 3e, l’école, la salle et la Halle prennent leur kit (10 octobre 2026)', () => {
     const { progress, world: village } = toutConstruit();
     const tous = worldCubes('6e', progress, village, false).filter((c) => !c.sol);
     const archi = archiDe('6e', tous);
@@ -270,7 +270,10 @@ describe('Les lieux du village au kit du 6e', () => {
     for (const a of ['4e', '3e'] as const) {
       const { cubes } = lieux(a, TOUS.slice(0, 6));
       const autre = archiDe(a, cubes);
-      expect(autre.pieces.length + autre.peints.size + autre.couverts.size).toBe(0);
+      for (const place of ['school', 'trophies', 'assembly']) {
+        const pris = [...autre.pieces.map((p) => p.cube), ...[...autre.peints.values()].map((p) => p.cube)].filter((c) => c.place === place);
+        expect(pris.length, `${a} ${place}`).toBeGreaterThan(0);
+      }
     }
   });
 });

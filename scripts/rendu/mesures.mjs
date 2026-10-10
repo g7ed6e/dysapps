@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, gardiens, emc-cinquieme, emc-quatre-trois ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, emc-cinquieme, emc-quatre-trois ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -889,6 +889,92 @@ const CAPTURES = [
   { nom: 'familles-5e-halle-cour', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', lieu: 'assembly', sansPanneau: true, zoomer: 4, finesse: 2 },
   { nom: 'familles-5e-liaison-loin', vue: 'île', famille: 'familles-cinquieme', ile: 'french-5e-homophones', zoomer: -6, finesse: 2 },
   { nom: 'familles-5e-archipel-recul', vue: 'archipel', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', posees: 'toutes', zoomer: -10, finesse: 2 },
+  // Les familles du 4e et du 3e dans Archipéo (le 4e et le 3e au niveau du 6e et du 5e, 10 octobre 2026, familles
+  // `familles-quatrieme` et `familles-troisieme`), à retirer une fois le lot fusionné ; à prendre avec `--rendu archipeo`.
+  // Comme au 5e : les étiquettes cachées, les murs du premier plan de l'île de la vue à moitié posés (`partie` « murs-mi »,
+  // aucune mission jouée, le défi gagné gardé, tous les succès), pour juger l'écart des matières claires à Brume ; une
+  // paire « bâti / fantôme » de plus près (`-fantome`) ; les lieux et les monuments panneaux masqués ; les grands projets
+  // pièce par pièce (`etages` : le nombre d'étages posés, le haut de la pièce plus un, ./src/game/world/projects.ts,
+  // LAYERS), puis finis de nuit (la lueur de fin) ; l'école, la cour de la Halle, la salle pleine de face, une liaison de
+  // loin, l'archipel au plus reculé.
+  ...[
+    ['4e', 'familles-quatrieme', 'maths-4e-algebra', [
+      ['forge', 'maths-4e-powers'],
+      ['atelier', 'maths-4e-algebra'],
+      ['falaise', 'french-4e-agreement'],
+      ['cabinet', 'french-4e-vocabulary'],
+      ['theatre', 'english-4e-comprehension', true],
+      ['gare', 'english-4e-grammar'],
+      ['jardin', 'lv2-4e-daily-life'],
+      ['imprimerie', 'history-4e-revolutions'],
+      ['escale', 'geography-4e-globalization'],
+      ['vigie', 'physics-chemistry-4e-signals-circuits'],
+      ['bassin', 'technology-4e-modeling'],
+      ['pepiniere', 'life-earth-sciences-4e-cells-evolution'],
+      ['porte', 'civics-4e-rights-freedoms'],
+      ['colonnade', 'lca-4e-cities'],
+    ], [
+      ['calque-fantome', 'maths-4e-algebra', true],
+      ['fresque-fantome', 'lca-4e-cities'],
+    ], [
+      ['amphitheatre', 'english-4e-comprehension', 'landmark-4e-2'],
+      ['viaduc', 'english-4e-grammar', 'landmark-4e-1'],
+    ], [
+      ['portique', 'geography-4e-globalization', 'landmark-4e-3', [['quay', 2], ['legs', 4], ['beam', 5], ['cab', 7]]],
+      ['tour', 'physics-chemistry-4e-signals-circuits', 'landmark-4e-4', [['foot', 1], ['lattice', 3], ['shaft', 6], ['head', 8]]],
+    ], 'french-4e-agreement'],
+    ['3e', 'familles-troisieme', 'maths-3e-functions', [
+      ['belvedere', 'maths-3e-geometry', true],
+      ['phare', 'maths-3e-functions'],
+      ['donnees', 'maths-3e-statistics'],
+      ['textes', 'french-3e-close-reading'],
+      ['studio', 'english-3e-comprehension'],
+      ['chateau', 'english-3e-grammar'],
+      ['refuge', 'lv2-3e-travel'],
+      ['temoins', 'history-3e-twentieth-century'],
+      ['plateau', 'geography-3e-france'],
+      ['tremplin', 'physics-chemistry-3e-motion-energy'],
+      ['ruche', 'technology-3e-digital'],
+      ['verger', 'life-earth-sciences-3e-human-body'],
+      ['forum', 'civics-3e-democratic-life'],
+      ['bosquet', 'lca-3e-ideas'],
+    ], [
+      ['marbre-fantome', 'maths-3e-geometry', true],
+      // Un toit d'ardoise sous la neige bâti, à côté de sa moitié encore en fantôme : le toit en croix de la lanterne de
+      // Fi, recadré sur le haut de la tour (relevé sur la capture du 10 octobre 2026 : la croix entre x 575 et 750, y 38
+      // et 160), la maison basse au premier plan, toute posée, hors du cadre.
+      ['toits-neige-fantome', 'maths-3e-functions', true, { partie: 'toit-fantome', zoomer: 4, recadre: { x: 480, y: 0, width: 360, height: 270 }, finesse: 4 }],
+      ['quartz-fantome', 'maths-3e-statistics'],
+    ], [
+      ['temple', 'maths-3e-geometry', 'landmark-3e-2'],
+      ['etoiles', 'french-3e-close-reading', 'landmark-3e-1', true],
+    ], [
+      // La colonne, haute de douze étages : de plus loin, pour la voir entière, ceinture du haut comprise.
+      ['colonne', 'maths-3e-geometry', 'landmark-3e-5', [['cube', 5], ['cylinder', 7], ['pyramid', 9], ['sphere', 12]], 1],
+      ['chateau-eau', 'geography-3e-france', 'landmark-3e-4', [['foot', 2], ['shaft', 5], ['tank', 7], ['crown', 10]]],
+      ['fusee', 'physics-chemistry-3e-motion-energy', 'landmark-3e-3', [['pad', 1], ['stage1', 4], ['stage2', 7], ['nose', 10]]],
+    ], 'english-3e-grammar'],
+  ].flatMap(([classe, famille, ecole, iles, fantomes, monuments, projets, liaison]) => {
+    const mi = { partie: 'murs-mi', missions: 0, defiGagne: true, succes: 'tous', posees: 'toutes', sansEtiquettes: true };
+    const nuits = (avecNuit) => (avecNuit ? [{ suffixe: '' }, { suffixe: '-nuit', nuit: true }] : [{ suffixe: '' }]);
+    return [
+      ...iles.flatMap(([nom, ile, avecNuit]) => nuits(avecNuit).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-${nom}${suffixe}`, vue: 'île', famille, ile, ...mi, zoomer: 3, finesse: 2, ...autres }))),
+      ...fantomes.flatMap(([nom, ile, avecNuit, vue]) => nuits(avecNuit).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-${nom}${suffixe}`, vue: 'île', famille, ile, ...mi, zoomer: 5, finesse: 3, ...vue, ...autres }))),
+      ...monuments.flatMap(([nom, ile, lieu, avecNuit]) => [
+        ...nuits(avecNuit).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-${nom}${suffixe}`, vue: 'île', famille, ile, lieu, sansPanneau: true, zoomer: 3, finesse: 2, ...autres })),
+        ...(avecNuit ? [] : [{ nom: `familles-${classe}-${nom}-loin`, vue: 'île', famille, ile, lieu, sansPanneau: true, finesse: 2 }]),
+      ]),
+      ...projets.flatMap(([nom, ile, lieu, pieces, zoomer = 3]) => [
+        ...pieces.map(([piece, z]) => ({ nom: `familles-${classe}-${nom}-etapes-${piece}`, vue: 'île', famille, ile, lieu, sansPanneau: true, etages: { [lieu]: z }, zoomer, finesse: 2 })),
+        { nom: `familles-${classe}-${nom}-etapes-fini-nuit`, vue: 'île', famille, ile, lieu, sansPanneau: true, nuit: true, zoomer, finesse: 2 },
+      ]),
+      { nom: `familles-${classe}-ecole`, vue: 'île', famille, ile: ecole, lieu: 'school', sansPanneau: true, zoomer: 4, finesse: 2 },
+      { nom: `familles-${classe}-halle-cour`, vue: 'île', famille, ile: ecole, lieu: 'assembly', sansPanneau: true, zoomer: 4, finesse: 2 },
+      ...nuits(true).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-salle-fond${suffixe}`, vue: 'île', famille, ile: ecole, lieu: 'trophies', sansPanneau: true, succes: 'tous', zoomer: 4, finesse: 2, ...autres })),
+      { nom: `familles-${classe}-liaison-loin`, vue: 'île', famille, ile: liaison, zoomer: -6, finesse: 2 },
+      ...nuits(true).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-archipel-recul${suffixe}`, vue: 'archipel', famille, ile: ecole, posees: 'toutes', zoomer: -10, finesse: 2, ...autres })),
+    ];
+  }),
   // Les six îles d'histoire-géographie des 5e, 4e et 3e (lot HG-3, famille `histoire-geo-college`), à retirer une fois le
   // lot fusionné : chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`)
   // et tout construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la
@@ -1543,6 +1629,23 @@ async function scenes() {
       const cells = planCells(cour);
       const restent = new Set(cells.filter((c) => (c.block === 'fence' && c.x === 10) || c.block === 'french-6e-reading').map((c) => c.key));
       plans[cour.id] = cells.map((c) => c.key).filter((k) => !restent.has(k));
+    }
+    // Un toit à moitié fantôme, sur l'île de la vue seulement (famille `familles-troisieme`, `toits-neige-fantome`) : les
+    // murs posés, le toit posé sur sa moitié ouest, sa moitié est encore en fantôme à côté (le reste du plan posé). Au
+    // Phare (maths-3e-functions), le toit est une croix de cinq cases sur la tour : la colonne du milieu se partage (sa
+    // moitié sud posée), trois cases posées, deux en fantôme, chacune contre une case de neige ; couper au seul milieu
+    // laissait une case en fantôme sur cinq, qui ne se lisait pas.
+    if (partie === 'toit-fantome') {
+      const l = plansFor(ile);
+      const i = l.findIndex((p) => planCells(p).some((c) => c.block === 'roof'));
+      l.forEach((p, j) => {
+        if (j > i) delete plans[p.id];
+      });
+      const cells = planCells(l[i]);
+      const toit = cells.filter((c) => c.block === 'roof');
+      const mx = (Math.min(...toit.map((c) => c.x)) + Math.max(...toit.map((c) => c.x))) / 2;
+      const my = (Math.min(...toit.map((c) => c.y)) + Math.max(...toit.map((c) => c.y))) / 2;
+      plans[l[i].id] = cells.filter((c) => c.block !== 'roof' || c.x < mx || (c.x === mx && c.y <= my)).map((c) => c.key);
     }
     if (partie === 'tour-avant' || partie === 'tour-debut' || partie === 'tour-mi') {
       const l = plansFor('french-6e-reading');

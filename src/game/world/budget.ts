@@ -231,6 +231,11 @@ export const ENVELOPPES: Record<
   // sol 41 250 → 41 210 (41 203), la faune 1 180 → 1 140 (1 132), la mer 6 300 → 6 270 (6 264), les créatures
   // 3 500 → 3 485 (3 480), les commandes 550 → 545 (540). La somme des Îles Brumeuses reste 85 945, sous
   // `RENDER_BUDGET_AUTRES` (86 000), inchangé ; aucun appel de plus.
+  // Le 4e et le 3e au niveau du 6e et du 5e (10 octobre 2026, `npm run rendu:budget`) : construction des Anciens Ateliers
+  // 6 432 → 6 991 triangles tout construit, 7 239 au pire de la salle (24 succès), commandes 440 → 456 ; des Îles du Ciel
+  // 6 878 → 7 306, 7 554 au pire de la salle, commandes 368 → 430 ; 2 appels. Tout tient dans les enveloppes « autres »
+  // (8 000 / 3, 500 / 0), aucune ne bouge. Retouches du même jour : les huit lanternons du château d'eau en retrait de
+  // leur case, construction des Îles du Ciel 7 306 → 7 356 (7 604 au pire de la salle) ; le 4e inchangé.
   // La Porte des libertés et la Colonnade des cités (EMC et latin-grec de 4e) : enveloppes des Anciens Ateliers posées aux
   // valeurs mesurées tout construit (`npm run rendu:budget`, 9 octobre 2026), avant → après, avec une petite marge : le
   // sol 36 752 → 43 721 (enveloppe 43 750), les créatures 3 014 → 3 544 (3 550 : Loquet et Figue), les Gardiens
@@ -270,9 +275,9 @@ export const ENVELOPPES: Record<
   // à 6 400 aux Îles Brumeuses et aux Anciens Ateliers, à 6 900 aux Îles du Ciel (mainteneur, 9 octobre 2026, carte
   // « Relever »). Celles des Anciens Ateliers (6 400) et des Îles du Ciel (6 900) sont relevées d'avance, pour les
   // pull requests de leurs formes, qui approfondiront leurs cadres : sur main, leur mer tient encore sous 5 850.
-  // Révision de GD-12 (les îles EMC et d'option du 4e au flanc ouest, en attente du mot du mainteneur) : le cadre des
-  // Anciens Ateliers s'élargit de 36 cases vers l'ouest ; leur mer mesure 7 150 triangles (6 160 avant). Proposition de
-  // l'artiste technique 3D, à valider par le mainteneur : 7 150.
+  // Révision de GD-12 (les îles EMC et d'option du 4e au flanc ouest) : le cadre des
+  // Anciens Ateliers s'élargit de 36 cases vers l'ouest ; leur mer mesure 7 150 triangles (6 160 avant). Enveloppe
+  // validée par le mainteneur le 10 octobre 2026 : 7 150.
   mer: {
     lot: 'R4b',
     nom: 'Mer',
