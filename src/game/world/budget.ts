@@ -55,8 +55,8 @@ export const RENDER_BUDGET = {
  * mainteneur), à la somme des enveloppes (75 740). Puis à 76 500 pour l'île d'EMC du 6e, le Préau des délégués
  * (EMC-2, décision du mainteneur, 9 octobre 2026). Puis à 81 500 pour les monuments importés d'Archipéo
  * (./monumentModels.ts ; 3 000 triangles par monument entier, décision du mainteneur, 9 octobre 2026) : la construction
- * passe de 7 750 à 12 750, la somme des enveloppes de 76 290 à 81 290 (proposition de l'artiste technique 3D, à valider
- * par le mainteneur, qui parlait d'environ 3 000 par archipel : deux monuments par archipel en coûtent environ 5 000).
+ * passe de 7 750 à 12 750, la somme des enveloppes de 76 290 à 81 290 (relevé par le mainteneur le 10 octobre 2026 :
+ * deux monuments par archipel en coûtent environ 5 000, et non 3 000 ; la mesure sur l'iPad reste à faire).
  */
 export const RENDER_BUDGET_6E = { triangles: 81_500, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
@@ -79,8 +79,8 @@ export const RENDER_BUDGET_6E = { triangles: 81_500, drawCalls: RENDER_BUDGET.dr
  * scène » à part, 84 576 aux Îles Brumeuses (74 664 avant) ; la somme de leurs enveloppes (85 945) y tient. Puis à
  * 91 000 pour les monuments importés d'Archipéo (./monumentModels.ts ; 3 000 triangles par monument entier, décision du
  * mainteneur, 9 octobre 2026) : la construction prend 5 000 de plus partout, la somme des enveloppes passe à 90 945 aux
- * Îles Brumeuses, 88 725 aux Anciens Ateliers, 87 855 aux Îles du Ciel (proposition de l'artiste technique 3D, à valider
- * par le mainteneur, qui parlait d'environ 3 000 par archipel : deux monuments par archipel en coûtent environ 5 000).
+ * Îles Brumeuses, 88 725 aux Anciens Ateliers, 87 855 aux Îles du Ciel (relevé par le mainteneur le 10 octobre 2026 :
+ * deux monuments par archipel en coûtent environ 5 000, et non 3 000 ; la mesure sur l'iPad reste à faire).
  */
 export const RENDER_BUDGET_AUTRES = { triangles: 91_000, drawCalls: RENDER_BUDGET.drawCalls } as const;
 

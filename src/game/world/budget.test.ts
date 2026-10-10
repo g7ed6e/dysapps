@@ -32,7 +32,7 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
   expect(RENDER_BUDGET_6E).toEqual({ triangles: 81_500, drawCalls: 40 });
   // GD-12 : 78 700 ailleurs (mainteneur, 9 octobre 2026, carte « Relever ») ; relevé à 86 000 par le mainteneur le
   // 9 octobre 2026 pour le Fournil des partages et la Grotte des légendes (5e). Les monuments importés d'Archipéo : 81 500
-  // et 91 000 (proposition de l'artiste technique 3D, à valider par le mainteneur).
+  // et 91 000 (relevés par le mainteneur le 10 octobre 2026).
   expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 91_000, drawCalls: 40 });
 });
 
