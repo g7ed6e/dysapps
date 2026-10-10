@@ -82,6 +82,10 @@ const QUARTS_DE_TOUR_DU_GARDIEN: Partial<Record<BiomeId, number>> = {
   'technology-5e-design': 1,
   'technology-4e-modeling': 1,
   'technology-3e-digital': 1,
+  // La Cigale d'argile (LCA-2) : la caméra de la Colonnade regarde de l'est ; tournée de trois quarts de tour, elle lui
+  // montre son flanc, ses ailes en toit et ses yeux, la tête vers le devant de l'île, de trois quarts (DA, captures
+  // emc-4e-3e-1).
+  'lca-4e-cities': 3,
 };
 
 const personnagesTournes = new Map<string, CubeDeModele[]>();

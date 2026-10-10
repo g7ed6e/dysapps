@@ -3,7 +3,7 @@
 // socles compris.
 import type { BiomeId } from '../../../biomes';
 import { anneau, pointe } from '../template';
-import { devant, facette, fuseau, pave, pose, type Anneau, type Trace, type V3 } from '../painted';
+import { devant, facette, fuseau, pave, pose, repere, type Anneau, type Trace, type V3 } from '../painted';
 import { bandeauDuSocle, dalle, orbites, plaque, tube, veine, veineSur, type Statue } from '../sentinel';
 
 /**
@@ -197,33 +197,48 @@ const TETE_DU_LYNX: Anneau[] = [
   [7.1, 0.25, 0.25],
 ];
 
-/** La Cigale d'argile, accrochée à son pieu, la tête en haut, le dos vers l'élève : l'abdomen, du bout au thorax. */
+/**
+ * La Cigale d'argile, de profil, couchée le long de X, la tête vers +X, sur une souche (DA, captures emc-4e-3e-1) : le
+ * corps trapu, de la pointe de l'abdomen au thorax (le long, la demi-hauteur, la demi-largeur), puis la tête.
+ */
+const CIGALE = { y: 3.95, queue: -1.1, souche: 3.4, faite: 4.75 } as const;
 const CORPS_DE_LA_CIGALE: Anneau[] = [
-  [2.9, 0.08, 0.08],
-  [3.6, 0.38, 0.3],
-  [5.4, 0.5, 0.38],
-  [6.5, 0.45, 0.35],
+  [0, 0.12, 0.12],
+  [0.4, 0.5, 0.52],
+  [1.6, 0.58, 0.62],
+  [2.2, 0.5, 0.55],
 ];
 const TETE_DE_LA_CIGALE: Anneau[] = [
-  [6.5, 0.5, 0.34],
-  [7.0, 0.56, 0.36],
-  [7.4, 0.2, 0.2],
+  [0, 0.48, 0.55],
+  [0.45, 0.42, 0.5],
+  [0.62, 0.18, 0.2],
 ];
-/** Le plan des ailes repliées de la Cigale, devant son dos (vers −Z). */
-const Z_DES_AILES_DE_LA_CIGALE = -0.42;
-/** L'aile droite de la Cigale, repliée en long sur le dos (x, y) ; la gauche en miroir. */
-const AILE_DE_LA_CIGALE: [number, number][] = [
-  [0.04, 6.45],
-  [0.62, 6.25],
-  [0.58, 3.7],
-  [0.08, 2.85],
+/**
+ * Une aile de la Cigale, dans son repère : du faîte du toit (y = 0) vers le bas et le dehors (|y| croissant), plus
+ * longue que le corps, qu'elle dépasse derrière (x, y ; `c` : 1 d'un côté, −1 de l'autre).
+ */
+const aileDeLaCigale = (c: 1 | -1): [number, number][] => [
+  [1.0, 0],
+  [-1.8, 0],
+  [-1.6, c * 1.0],
+  [0.7, c * 1.0],
 ];
-/** La nervure de lueur d'une aile de la Cigale (x, y), le long de son bord extérieur. */
-const NERVURE_DE_LA_CIGALE: [number, number][] = [
-  [0.2, 6.2],
-  [0.42, 5.0],
-  [0.32, 3.5],
+/** La nervure de lueur d'une aile, le long de son milieu (x, y, repère de l'aile). */
+const nervureDeLaCigale = (c: 1 | -1): [number, number][] => [
+  [0.5, c * 0.5],
+  [-0.5, c * 0.55],
+  [-1.5, c * 0.6],
 ];
+/**
+ * Le repère d'une aile : posé au faîte, tourné autour de X pour que son dessus (le −Z du repère, où courent les veines)
+ * regarde en haut et au dehors, et que son y descende vers le dehors en toit.
+ */
+const repereDeLAile = (c: 1 | -1) => repere([0, CIGALE.faite, 0], c === 1 ? Math.PI - 0.65 : 0.65);
+/**
+ * Le tour de la Cigale (DA, captures emc-4e-3e-1) : de profil, son flanc (−Z) vers la caméra de la Colonnade, qui la
+ * regarde de l'est (0,71 ; −0,20, `versLaCameraDuDessin`) ; au défi, la caméra de trois quarts voit déjà son flanc.
+ */
+const TOURS_DE_LA_CIGALE = { monde: deFacePour(0.71, -0.2), defi: 0 };
 
 export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
   'maths-4e-powers': {
@@ -747,8 +762,9 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
     },
   },
   // EMC 4e (EMC-2) : le strict nécessaire, Archipéo étant en pause. Le Lynx d'agate, sans flamme ni symbole, vigilant,
-  // jamais menaçant : assis, les pattes de devant droites, la tête haute, la collerette sur les joues, les oreilles à
-  // pinceaux, la queue courte ; les taches de son pelage s'allument.
+  // jamais menaçant : assis, les pattes de devant droites, la tête haute, de larges favoris clairs sur les joues, les
+  // oreilles aux pinceaux noirs, la queue courte et carrée (DA, captures emc-4e-3e-1) ; les taches de son pelage
+  // s'allument.
   'civics-4e-rights-freedoms': {
     nom: 'le Lynx d’agate',
     allume: 'les taches de son pelage',
@@ -767,16 +783,18 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
           4,
           a.pierre,
         );
-      // La queue courte, posée derrière.
-      pointe(T, [0, 1.3, 0.85], 0.16, 0.45, a.pierre, [Math.PI / 2 - 0.3, 0, 0], 3);
+      // La queue courte et carrée, posée derrière.
+      pave(T, -0.17, 1.0, 0.75, 0.17, 1.34, 1.2, a.pierre);
       fuseau(T, TETE_DU_LYNX, 5, a.pierre, { z: Z_DE_LA_TETE_DU_LYNX, bas: false });
       // Le museau, court, vers l'avant.
       pointe(T, [0, 5.85, devant(TETE_DU_LYNX, 5, 5.85, Z_DE_LA_TETE_DU_LYNX).z + 0.05], 0.16, 0.25, a.pierre, [-Math.PI / 2, 0, 0], 3);
       for (const s of [-1, 1]) {
-        // La collerette, de chaque côté des joues, vers le bas.
-        pointe(T, [s * 0.48, 5.8, Z_DE_LA_TETE_DU_LYNX - 0.1], 0.15, 0.35, a.pierre, [0, 0, s * (Math.PI / 2 + 0.6)], 3);
-        // Les oreilles et leurs pinceaux : une pointe haute et fine, droite, son bout en haut de la sentinelle.
-        pointe(T, [s * 0.24, 7.0, Z_DE_LA_TETE_DU_LYNX], 0.12, 1.0, a.pierre, [0, 0, 0], 3);
+        // Les favoris, clairs, larges, de chaque côté des joues, vers le bas.
+        pointe(T, [s * 0.48, 5.8, Z_DE_LA_TETE_DU_LYNX - 0.1], 0.2, 0.42, a.ventre, [0, 0, s * (Math.PI / 2 + 0.6)], 3);
+        // Les oreilles, puis leurs pinceaux, fins, droits, leur bout en haut de la sentinelle (de pierre : seules les
+        // orbites sont sombres sur une sentinelle).
+        pointe(T, [s * 0.24, 7.0, Z_DE_LA_TETE_DU_LYNX], 0.13, 0.55, a.pierre, [0, 0, 0], 3);
+        pointe(T, [s * 0.24, 7.45, Z_DE_LA_TETE_DU_LYNX], 0.06, 0.55, a.pierre, [0, 0, 0], 3);
       }
       orbites(T, a, 0, 6.25, devant(TETE_DU_LYNX, 5, 6.25, Z_DE_LA_TETE_DU_LYNX).z, 0.2, 0.1);
     },
@@ -790,49 +808,39 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
         plaque(T, x, y, 0.13 * a.veines, 0.15, 6, a.lueur, (yy) => devant(CORPS_DU_LYNX, 6, yy).z);
     },
   },
-  // Latin-grec 4e (LCA-2) : le strict nécessaire, Archipéo étant en pause. La Cigale d'argile, sans flamme : accrochée en
-  // haut d'un pieu, la tête en haut, le dos tourné vers l'élève comme une cigale de terre cuite au mur d'une maison ; les ailes
-  // repliées en long sur le dos, leurs nervures s'allument ; les gros yeux sur les côtés de la tête.
+  // Latin-grec 4e (LCA-2) : le strict nécessaire, Archipéo étant en pause. La Cigale d'argile, sans flamme : de profil,
+  // couchée sur une souche, comme une cigale de terre cuite ; le corps trapu, deux gros yeux qui saillent de chaque côté
+  // de la tête, les ailes repliées en toit sur le dos, plus longues que le corps et plus claires ; leurs nervures
+  // s'allument (DA, captures emc-4e-3e-1).
   'lca-4e-cities': {
     nom: 'la Cigale d’argile',
     allume: 'les nervures de ses ailes',
     sansFlamme: true,
+    tour: TOURS_DE_LA_CIGALE,
     sculpture: (T, a) => {
-      // Le pieu, derrière elle, du socle au-dessus de sa tête.
+      // La souche, du socle au ventre.
       fuseau(
         T,
         [
-          [1, 0.3],
-          [8, 0.26],
+          [1, 0.55],
+          [CIGALE.souche, 0.45],
         ],
         5,
         a.moussue((k, j) => k === 0 && j % 2 === 0),
-        { z: 0.45 },
       );
-      fuseau(T, CORPS_DE_LA_CIGALE, 6, a.pierre, { bas: false });
-      fuseau(T, TETE_DE_LA_CIGALE, 6, a.pierre, { bas: false });
-      // Les gros yeux, de chaque côté de la tête.
-      for (const s of [-1, 1]) pointe(T, [s * 0.5, 6.95, -0.1], 0.16, 0.2, a.pierre, [0, 0, -s * (Math.PI / 2)], 4);
-      for (const c of [-1, 1])
-        dalle(
-          T,
-          AILE_DE_LA_CIGALE.map(([x, y]): [number, number] => [c * x, y]),
-          Z_DES_AILES_DE_LA_CIGALE - 0.08,
-          Z_DES_AILES_DE_LA_CIGALE,
-          a.pierre,
-        );
-      orbites(T, a, 0, 7.05, devant(TETE_DE_LA_CIGALE, 6, 7.05).z, 0.22, 0.1);
+      // Le corps, couché le long de X, la tête au bout.
+      fuseau(pose(T, repere([CIGALE.queue, CIGALE.y, 0], 0, 0, -Math.PI / 2)), CORPS_DE_LA_CIGALE, 6, a.pierre);
+      const xTete = CIGALE.queue + CORPS_DE_LA_CIGALE[CORPS_DE_LA_CIGALE.length - 1][0];
+      fuseau(pose(T, repere([xTete, CIGALE.y, 0], 0, 0, -Math.PI / 2)), TETE_DE_LA_CIGALE, 6, a.pierre);
+      // Les gros yeux, qui saillent de chaque côté de la tête ; l'orbite, sombre, au bout de celui qui regarde l'élève.
+      for (const s of [-1, 1]) pointe(T, [xTete + 0.25, CIGALE.y + 0.22, s * 0.42], 0.22, 0.32, a.pierre, [s * (Math.PI / 2), 0, 0], 3);
+      orbites(T, a, xTete + 0.25, CIGALE.y + 0.22, -0.42 - 0.3, 0, 0.16);
+      // Les ailes, en toit sur le dos, d'une terre plus claire.
+      for (const c of [-1, 1] as const) dalle(pose(T, repereDeLAile(c)), aileDeLaCigale(c), 0, 0.08, a.ventre);
     },
-    // Une nervure de lueur sur chaque aile, le long de son bord.
+    // Une nervure de lueur sur chaque aile, le long de son milieu.
     veines: (T, a) => {
-      for (const c of [-1, 1])
-        veine(
-          T,
-          NERVURE_DE_LA_CIGALE.map(([x, y]): [number, number] => [c * x, y]),
-          0.09 * a.veines,
-          a.lueur,
-          () => Z_DES_AILES_DE_LA_CIGALE - 0.08,
-        );
+      for (const c of [-1, 1] as const) veine(pose(T, repereDeLAile(c)), nervureDeLaCigale(c), 0.09 * a.veines, a.lueur, () => 0);
     },
   },
 };

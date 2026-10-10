@@ -22,6 +22,7 @@ import { type Atelier, atelierModel, casesDuVillage, PLACE_IDS, placeCells, plac
 import { cleDeCube, DEPTH, fade, GROUND_COLOR, groundHeight, islandOrigin, LAYOUT_PAD, origineDe, taperLayers, TEXTURES, underground } from './terrain/base';
 import { cacheUneBorne, ETAGES_DE_LA_BORNE, presDUneBorne, questStations, rangeeDevantLesBornes } from './terrain/markers';
 import { versLaCameraDuDessin } from './terrain/view';
+import { caseDuParvis, ILES_A_PARVIS } from './terrain/parvis';
 import { abordsDansLesMarges, bridge, bridgePath, nearSentier, piedsDesOuvrages } from './terrain/links';
 import { guardianTrophy } from './terrain/guardians';
 import { creatureDuMonde, creatureSpot, decorSousLeGardien, guardianSpot, surLeCarreDuGardien } from './terrain/creatures';
@@ -156,8 +157,10 @@ function poserLIle(
   // à la serre ; et le Refuge des carnets (DA, LV2-5) : le bardeau reste aux murs ; la Fouille des siècles et la Pointe
   // des paysages (HG-2) : la mosaïque et le chaume restent aux plans, au décor et aux commandes, l'archipel le plus chargé
   // garde un sol calme ; de même les six îles d'histoire-géographie de 5e à 3e (HG-3), toutes les îles de la matière, et
-  // toutes les îles de sciences (SC-2 en 6e, SC-3 de la 5e à la 3e).
+  // toutes les îles de sciences (SC-2 en 6e, SC-3 de la 5e à la 3e) ; et les îles d'EMC et de latin-grec du 4e et du 3e,
+  // où le bloc de l'île ne reste au sol qu'en parvis (./terrain/parvis.ts).
   const grassy =
+    ILES_A_PARVIS.has(biome.id) ||
     biome.id === 'french-6e-phonology' ||
     biome.id === 'french-6e-grammar-spelling' ||
     biome.id === 'maths-6e-calculation' ||
@@ -212,7 +215,8 @@ function poserLIle(
     if (top > 0) putSol(c.x, c.y, 0, BLOCKS[BLOC.terre].side);
     // Dans un coin arrondi du cœur d'une île qui a une forme (GD-12), le sable de la plage ou le sol de la côte.
     const coin = coreCornerGround(def, c.x, c.y);
-    putSol(c.x, c.y, top, coin ? GROUND_COLOR[coin] : sol);
+    const parvis = coin ? null : caseDuParvis(biome.id, x, y);
+    putSol(c.x, c.y, top, coin ? GROUND_COLOR[coin] : parvis === 'allee' ? block.side : parvis === 'bordure' ? BLOCKS[BLOC.pierre].side : sol);
   }
   // Le paysage autour du cœur : collines, pics, lacs, cratère, sable des plages, neige des sommets, puis le décor.
   const scenery = landscape(def);
@@ -303,6 +307,9 @@ function poserLIle(
     return false;
   };
   const effaceSousLeGardien = guardianSpot(biome.id).palier === 3;
+  // Sur une île à parvis, un élément de la côte ou des marges qui toucherait l'allée ou sa bordure n'est pas posé.
+  const aParvis = ILES_A_PARVIS.has(biome.id);
+  const surLeParvis = (cases: readonly { x: number; y: number }[]) => cases.some((p) => caseDuParvis(biome.id, p.x - ox, p.y - oy) !== null);
   for (let k = 0; k < scenery.length + marges.length; k++) {
     const c = k < scenery.length ? scenery[k] : marges[k - scenery.length];
     if (!c.decor || nearSentier(def, c.x, c.y)) continue;
@@ -321,6 +328,11 @@ function poserLIle(
       const cases: { x: number; y: number }[] = [];
       decorate((x, y) => cases.push({ x: x - def.core.x, y: y - def.core.y }), c.decor, c.x, c.y, r);
       if (decorSousLeGardien(biome.id, cases)) continue;
+    }
+    if (aParvis) {
+      const cases: { x: number; y: number }[] = [];
+      decorate((x, y) => cases.push({ x, y }), c.decor, c.x, c.y, r);
+      if (surLeParvis(cases)) continue;
     }
     if (!presDUneBorne(bornes, c.x, c.y, 1) && !presDUnLieu(c.x, c.y) && !piedProche) {
       decorate(poser, c.decor, c.x, c.y, r);

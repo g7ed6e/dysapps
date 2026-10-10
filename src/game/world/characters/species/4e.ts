@@ -400,7 +400,8 @@ export const ESPECES_4E = {
     },
   },
   // EMC 4e (EMC-2) : le strict nécessaire, Archipéo étant en pause. Loquet, pangolin portier : trapu, brun d'olive,
-  // le museau long et fin, le dos couvert d'écailles plus claires ; sa queue épaisse posée au sol derrière lui ; une
+  // le museau long et fin, le dos couvert d'écailles plus sombres en rangées décalées ; sa queue large posée au sol
+  // derrière lui (DA, captures emc-4e-3e-1) ; une
   // écharpe de lin, aucun uniforme ni insigne ; à la main, la grande clé de laiton de la porte (un outil, jamais une arme).
   'civics-4e-rights-freedoms': {
     nom: 'Loquet',
@@ -412,15 +413,15 @@ export const ESPECES_4E = {
     // Le pangolin debout : haut sur pattes, la petite tête au crâne bas.
     silhouette: { largeur: 0.31, profondeur: 0.28, ventre: 0.08, jambes: 0.6, tete: 0.19, crane: 0.9 },
     corps: (T, k) => {
-      // La queue épaisse du pangolin, posée au sol derrière lui.
-      pointe(T, [0, 1.0, 0.2], 0.15, 0.9, k.dom, [2.6, 0, 0], 4);
-      // Les écailles du dos : trois rangs de plaques plus claires.
-      for (const [y, l] of [
-        [1.15, 0.3],
-        [1.45, 0.28],
-        [1.75, 0.24],
+      // La queue du pangolin, large et plate, posée au sol derrière lui (DA, captures emc-4e-3e-1) : une pointe aplatie.
+      pointe(T, [0, 1.0, 0.2], 0.27, 0.9, k.dom, [2.6, 0, 0], 4, 0.1);
+      // Les écailles du dos, du brun du cuir, plus sombre que son pelage, en rangées décalées d'un côté à l'autre.
+      for (const [y, x] of [
+        [1.15, -0.1],
+        [1.42, 0.1],
+        [1.69, -0.1],
       ] as const)
-        pave(T, -l, y, 0.24, l, y + 0.1, 0.3, k.marque);
+        pave(T, x - 0.17, y, 0.24, x + 0.17, y + 0.18, 0.3, k.cuir);
     },
     outil: {
       // La grande clé de laiton : la tige, le panneton en bas, l'anneau en haut.

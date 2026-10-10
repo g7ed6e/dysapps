@@ -314,13 +314,16 @@ const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
   // référent dys, 9 octobre 2026) : vers la Géométrie et vers la Grammaire, plus aucun.
   // EMC et latin-grec 4e/3e, accepté par le mainteneur le 10 octobre 2026 (en attente) : le Forum des débats et
   // le Bosquet des sages au rang du fond, le cadre s'allonge ; en portrait, les îles des coins du fond (le Verger, le
-  // Kiosque, l'Observatoire des textes, le Plateau) se taisent : douze Cartes, jusqu'à quatre noms vers le Château des
-  // hypothèses (au-delà du plafond de trois du référent dys, accepté avec le reste).
+  // Kiosque, l'Observatoire des textes, le Plateau) se taisent : onze Cartes, trois noms au plus (douze Cartes et
+  // quatre noms vers le Château des hypothèses, au-delà du plafond de trois du référent dys, avant que l'île du bonhomme
+  // entre dans la place par sa terre entière, plus bas).
   '3e:civics-3e-democratic-life': ['life-earth-sciences-3e-human-body'],
   '3e:english-3e-comprehension': ['french-3e-close-reading', 'history-3e-twentieth-century', 'geography-3e-france'],
-  '3e:english-3e-grammar': ['maths-3e-statistics', 'french-3e-close-reading', 'geography-3e-france', 'life-earth-sciences-3e-human-body'],
+  // Depuis que l'île du bonhomme entre dans la place par sa terre entière en portrait (`cadrageDeLaCarte`, DA, captures
+  // emc-4e-3e-1) : vers le Château des hypothèses, l'Observatoire des textes se montre, et vers le Plateau, plus aucun
+  // nom tu.
+  '3e:english-3e-grammar': ['maths-3e-statistics', 'geography-3e-france', 'life-earth-sciences-3e-human-body'],
   '3e:french-3e-close-reading': ['maths-3e-statistics', 'life-earth-sciences-3e-human-body'],
-  '3e:geography-3e-france': ['life-earth-sciences-3e-human-body'],
   '3e:lca-3e-ideas': ['geography-3e-france'],
   '3e:life-earth-sciences-3e-human-body': ['french-3e-close-reading'],
   '3e:maths-3e-functions': ['life-earth-sciences-3e-human-body'],

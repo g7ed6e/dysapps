@@ -41,20 +41,33 @@ const CORPS_DU_CENTAURE: Anneau[] = [
   [1.8, 0.6, 0.6],
   [2.3, 0.4, 0.45],
 ];
-/** Le buste, dressé sur le poitrail ; la tête au-dessus (huit blocs). */
+/** Le torse, droit au-dessus du poitrail, les épaules carrées ; la tête au-dessus, petite (DA, captures emc-4e-3e-1). */
 const BUSTE_DU_CENTAURE: Anneau[] = [
-  [3.0, 0.45, 0.38],
-  [4.4, 0.55, 0.4],
-  [5.6, 0.6, 0.42],
-  [6.0, 0.28, 0.28],
+  [3.0, 0.42, 0.36],
+  [4.2, 0.46, 0.34],
+  [5.15, 0.52, 0.36],
+  [5.45, 0.2, 0.2],
 ];
 const Z_DU_BUSTE_DU_CENTAURE = -0.35;
 const TETE_DU_CENTAURE: Anneau[] = [
-  [6.0, 0.24, 0.24],
-  [6.5, 0.4, 0.4],
-  [7.5, 0.38, 0.4],
-  [8, 0.2, 0.2],
+  [5.45, 0.17, 0.17],
+  [5.75, 0.29, 0.29],
+  [6.35, 0.27, 0.29],
+  [6.7, 0.13, 0.13],
 ];
+/**
+ * Le livre ouvert, tenu à deux mains devant la poitrine : le dos en bas (y, z), les deux pages qui montent en V, l'une
+ * vers l'avant, l'autre vers le torse (le haut de chacune, en z), sa demi-largeur.
+ */
+const LIVRE_DU_CENTAURE = { dos: [4.55, -0.98], haut: 4.98, pages: [-1.32, -0.64], demi: 0.26 } as const;
+/**
+ * Le tour du Centaure (DA, captures emc-4e-3e-1) : dessiné le corps du cheval le long de Z, il se voyait de face, en
+ * colonne, depuis la caméra du Bosquet, qui le regarde du sud (0,23 ; −0,70, `versLaCameraDuDessin`). Tourné d'un quart
+ * de tour moins un demi-radian, il lui montre son flanc de trois quarts : le torse droit, la petite tête, le livre en
+ * V (`Math.atan2(−dx, −dz)` le montrerait de face, comme `deFacePour`). Au défi, sa caméra de trois quarts le voit
+ * de même, tourné de −0,7.
+ */
+const TOURS_DU_CENTAURE = { monde: Math.atan2(-0.23, 0.7) + Math.PI / 2 - 0.5, defi: -0.7 };
 /** Le motif de lueur de chaque flanc du cheval (z, y) : une ligne brisée, de l'épaule à la croupe. */
 const MOTIF_DU_FLANC_DU_CENTAURE: [number, number][] = [
   [-0.1, 2.75],
@@ -1010,12 +1023,14 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
     },
   },
   // Latin-grec 3e (LCA-2) : le strict nécessaire, Archipéo étant en pause. Le Centaure d'argile, sans flamme, sans arme
-  // (ni arc ni lance) ni dieu : le corps du cheval couché vers l'arrière sur ses quatre pattes, la queue, le buste dressé
-  // sur le poitrail ; il tient devant lui un livre ouvert ; les motifs de ses flancs s'allument.
+  // (ni arc ni lance) ni dieu : le corps du cheval couché vers l'arrière sur ses quatre pattes, la queue, le torse droit
+  // au-dessus du poitrail, une petite tête ; il tient à deux mains, devant lui, un livre ouvert en V, aux pages claires
+  // (DA, captures emc-4e-3e-1) ; les motifs de ses flancs s'allument.
   'lca-3e-ideas': {
     nom: 'le Centaure d’argile',
     allume: 'les motifs de son flanc',
     sansFlamme: true,
+    tour: TOURS_DU_CENTAURE,
     sculpture: (T, a) => {
       // Les quatre pattes, du socle au ventre.
       for (const x of [-0.35, 0.35])
@@ -1034,21 +1049,35 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
       // La queue, qui retombe derrière la croupe.
       pointe(T, [0, 3.0, 1.75], 0.14, 0.8, a.pierre, [Math.PI / 2 + 1.0, 0, 0], 3);
       fuseau(T, BUSTE_DU_CENTAURE, 5, a.pierre, { z: Z_DU_BUSTE_DU_CENTAURE, bas: false });
-      // Les bras, des épaules au livre ; le livre ouvert, tenu devant la poitrine.
+      // Les bras, des épaules aux mains, qui tiennent le livre par les côtés ; le livre ouvert en V, ses pages claires.
+      const L = LIVRE_DU_CENTAURE;
       for (const s of [-1, 1])
         tube(
           T,
           [
-            [s * 0.55, 5.4, Z_DU_BUSTE_DU_CENTAURE],
-            [s * 0.45, 4.7, -0.9],
+            [s * 0.5, 5.05, Z_DU_BUSTE_DU_CENTAURE],
+            [s * (L.demi + 0.05), L.dos[0] + 0.15, L.dos[1]],
           ],
-          0.12,
+          0.11,
           4,
           a.pierre,
         );
-      pave(T, -0.5, 4.5, -1.05, 0.5, 5.05, -0.9, a.pierre);
+      pave(T, -L.demi, L.dos[0] - 0.08, L.dos[1] - 0.06, L.demi, L.dos[0] + 0.02, L.dos[1] + 0.06, a.pierre);
+      for (const zh of L.pages) {
+        const page: V3[] = [
+          [-L.demi, L.dos[0], L.dos[1]],
+          [L.demi, L.dos[0], L.dos[1]],
+          [L.demi, L.haut, zh],
+          [-L.demi, L.haut, zh],
+        ];
+        // Les deux faces de la page : celle du lecteur, et celle qu'on voit de dehors.
+        const milieu: V3 = [0, (L.dos[0] + L.haut) / 2, (L.dos[1] + zh) / 2];
+        const normale: V3 = [0, -(zh - L.dos[1]), L.haut - L.dos[0]];
+        facette(T, page, [milieu[0] + normale[0], milieu[1] + normale[1], milieu[2] + normale[2]], a.ventre);
+        facette(T, [...page].reverse(), [milieu[0] - normale[0], milieu[1] - normale[1], milieu[2] - normale[2]], a.ventre);
+      }
       fuseau(T, TETE_DU_CENTAURE, 5, a.pierre, { z: Z_DU_BUSTE_DU_CENTAURE, bas: false });
-      orbites(T, a, 0, 7.05, devant(TETE_DU_CENTAURE, 5, 7.05, Z_DU_BUSTE_DU_CENTAURE).z, 0.2, 0.1);
+      orbites(T, a, 0, 6.1, devant(TETE_DU_CENTAURE, 5, 6.1, Z_DU_BUSTE_DU_CENTAURE).z, 0.14, 0.08);
     },
     // Un motif de lueur sur chaque flanc du cheval, une ligne brisée de l'épaule à la croupe.
     veines: (T, a) => {

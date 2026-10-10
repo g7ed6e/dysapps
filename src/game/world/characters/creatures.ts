@@ -841,26 +841,27 @@ const LYRE = fromLayers(
 );
 
 // Loquet : un pangolin portier, debout sur ses pattes de derrière (le pangolin marche ainsi), de profil, la tête vers
-// les x croissants : le corps couvert d'écailles brun d'olive, un rang sur deux plus clair, le ventre et le museau long
-// et fin de peau claire, la queue épaisse posée au sol derrière lui. Il tient de sa patte, du côté de l'élève, la
+// les x croissants : le corps couvert d'écailles brun d'olive, en rangées décalées d'un bloc d'une rangée à l'autre,
+// une écaille sur deux plus sombre ; le ventre et le museau long et fin de peau claire ; la queue large et plate posée
+// au sol derrière lui, sur toute sa largeur (DA, captures emc-4e-3e-1). Il tient de sa patte, du côté de l'élève, la
 // grande clé de laiton de la porte, debout, son anneau en haut, son panneton en bas (un outil, jamais une arme). Ni
 // casquette ni uniforme ni insigne. Huit de long, quatre de large, neuf de haut. Six couleurs, les yeux compris
 // (proposition de l'artiste technique 3D).
 const LOQUET = fromLayers(
   [
-    ['........', 'SS.DD...', 'SS.DD...', '........'],
-    ['........', '.SSSS...', '.SSSS...', '........'],
-    ['...LS.KK', '..SSSF..', '..SSSF..', '...LS...'],
-    ['...SLDK.', '..LSSF..', '..LSSF..', '...SL...'],
-    ['...LS.K.', '..SLSF..', '..SLSF..', '...LS...'],
-    ['......KK', '..SSSS..', '..SSSS..', '...SS...'],
+    ['OS......', 'SO.DD...', 'OS.DD...', 'SO......'],
+    ['........', '.OSSS...', '.SOSS...', '........'],
+    ['...OS.KK', '..OSSF..', '..SOSF..', '...OS...'],
+    ['...SODK.', '..SOSF..', '..OSSF..', '...SO...'],
+    ['...OS.K.', '..OSOF..', '..SOSF..', '...OS...'],
+    ['......KK', '..SOSS..', '..OSOS..', '...SS...'],
     ['........', '...SSFFF', '...SSFFF', '........'],
-    ['........', '...LSEF.', '...LSEF.', '........'],
-    ['........', '...SL...', '...SL...', '........'],
+    ['........', '...OSEF.', '...OSEF.', '........'],
+    ['........', '...SO...', '...SO...', '........'],
   ],
   {
     S: '#7e6440',
-    L: '#a88a5c',
+    O: '#54422a',
     F: '#e0bfa0',
     D: '#3e2a1e',
     // L'œil, sur le côté de la tête : sombre de côté, le dessus de peau claire.
@@ -869,10 +870,12 @@ const LOQUET = fromLayers(
   },
 );
 
-// Figue : un âne porteur d'eau, à quatre pattes, de profil, la tête vers les x croissants : gris, le museau clair, les
-// sabots, la queue et le bout des longues oreilles sombres ; sur le dos, le bât : une sangle sombre et, de chaque côté,
-// une jarre de terre cuite, l'eau au col. Sans harnais ni ornement. Neuf de long, quatre de large, neuf de haut. Six
-// couleurs, les yeux compris (proposition de l'artiste technique 3D).
+// Figue : un âne porteur d'eau, à quatre pattes, de profil, la tête vers les x croissants, du côté d'où la caméra de
+// la Colonnade le regarde : la tête large, la face vers elle, le museau clair au milieu, un œil de chaque côté, les deux
+// longues oreilles dressées aux deux bords de la tête, écartées, leur bout sombre, la crinière sombre derrière (DA,
+// captures emc-4e-3e-1) ; gris, les sabots et la queue sombres ; sur le dos, le bât : une sangle sombre et, de chaque
+// côté, une jarre de terre cuite, l'eau au col. Sans harnais ni ornement. Neuf de long, quatre de large, neuf de haut.
+// Six couleurs, les yeux compris (proposition de l'artiste technique 3D).
 const FIGUE = fromLayers(
   [
     ['.........', '.D...D...', '.D...D...', '.........'],
@@ -880,10 +883,10 @@ const FIGUE = fromLayers(
     ['..JJ.....', 'DGGGGG...', '.GGGGG...', '..JJ.....'],
     ['..JJ.....', '.GGGGGG..', '.GGGGGG..', '..JJ.....'],
     ['..O......', '..D...G..', '..D...G..', '..O......'],
-    ['.........', '......GMM', '......GMM', '.........'],
-    ['.........', '......DE.', '......DE.', '.........'],
-    ['.........', '......G..', '......G..', '.........'],
-    ['.........', '......D..', '......D..', '.........'],
+    ['.......G.', '......GGM', '......GGM', '.......G.'],
+    ['.......GE', '......DGG', '......DGG', '.......GE'],
+    ['.......G.', '.........', '.........', '.......G.'],
+    ['.......D.', '.........', '.........', '.......D.'],
   ],
   {
     G: '#8c8a86',

@@ -87,6 +87,10 @@ const BASSES: Partial<Record<BiomeId, [number, number]>> = {
   'lv2-4e-daily-life': [5.8, 6.3],
   // (Plus basse encore depuis la relecture des captures sc-3b : la carapace bien plus large que haute, DA.)
   'life-earth-sciences-5e-active-planet': [3.2, 3.6],
+  // La Cigale d'argile, couchée de profil sur sa souche, et le Centaure d'argile à la petite tête (DA, captures
+  // emc-4e-3e-1).
+  'lca-4e-cities': [4.7, 4.9],
+  'lca-3e-ideas': [6.6, 6.8],
 };
 /** Les sentinelles basses plus longues que hautes. */
 const LONGUES: BiomeId[] = ['lv2-5e-introductions'];
@@ -249,6 +253,9 @@ describe('Les Gardiens en sentinelles', () => {
           ...(b.id === 'history-3e-twentieth-century' ? [SENTINELLE.rameau] : []),
           ...(b.id === 'life-earth-sciences-5e-active-planet' ? [SENTINELLE.roche] : []),
           ...(b.id === 'civics-6e-democratic-society' ? [SENTINELLE.nacre, SENTINELLE.ventre, SENTINELLE.gorge] : []),
+          // Le clair des favoris du Lynx d'agate, des ailes de la Cigale d'argile, des pages du livre du Centaure (DA,
+          // captures emc-4e-3e-1).
+          ...(b.id === 'civics-4e-rights-freedoms' || b.id === 'lca-4e-cities' || b.id === 'lca-3e-ideas' ? [SENTINELLE.ventre] : []),
         ]);
         for (const p of f.palette) expect(permises.has(p.couleur), p.couleur.toString(16)).toBe(true);
       });
@@ -283,8 +290,8 @@ describe('Les Gardiens en sentinelles', () => {
 
 describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligence)', () => {
   const tournees = BIOMES.filter((b) => STATUES[b.id].tour);
-  it('la Diligence, et le Soleil, le Papillon de cuivre et le Grand-bi d’érable, qu’on ne doit pas voir par la tranche ; la Colombe d’albâtre, de trois quarts', () =>
-    expect(tournees.map((b) => b.id).sort()).toEqual(['history-3e-twentieth-century', 'lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions', 'technology-4e-modeling']));
+  it('la Diligence, et le Soleil, le Papillon de cuivre et le Grand-bi d’érable, qu’on ne doit pas voir par la tranche ; la Colombe d’albâtre, la Cigale et le Centaure d’argile, de profil ou de trois quarts', () =>
+    expect(tournees.map((b) => b.id).sort()).toEqual(['history-3e-twentieth-century', 'lca-3e-ideas', 'lca-4e-cities', 'lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions', 'technology-4e-modeling']));
 
   it('le Grand-bi d’érable, dans le monde : la plaque de son guidon, ses yeux, face à la caméra du Bassin (DA, relecture des captures SC-3)', () => {
     const f = sentinellePeinte('technology-4e-modeling');

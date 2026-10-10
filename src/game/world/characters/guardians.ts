@@ -1040,22 +1040,24 @@ const PHENIX = fromLayers(
 );
 
 // Le Lynx d'agate (EMC, 4e ; sans flamme, aucun symbole ; vigilant, jamais menaçant) : assis, de profil, le long des
-// x, la tête vers les x croissants ; les pattes de devant droites, les pattes claires ; la queue courte, son bout noir ;
-// la tête haute, la collerette claire sur les joues, les oreilles à pinceaux noirs. L'agate : un ambre chaud, le
+// x, la tête vers les x croissants ; les pattes de devant droites, les pattes claires ; la queue courte et carrée, deux
+// blocs de haut au bout noir, posée derrière ; la tête haute, de larges favoris clairs qui débordent des joues
+// vers le bas, les oreilles aux pinceaux noirs de deux blocs (DA, captures emc-4e-3e-1). L'agate : un ambre chaud, le
 // ventre crème, et sur les flancs des taches en deux tons, brun et rouille, en alternance (ce sont elles qui se
-// rallument). Neuf de long, cinq de large, dix de haut. Six couleurs, les yeux compris (proposition de l'artiste
+// rallument). Neuf de long, cinq de large, onze de haut. Six couleurs, les yeux compris (proposition de l'artiste
 // technique 3D).
 const LYNX = fromLayers(
   [
     ['..AAA....', '..AAAAC..', '..AAAA...', '..AAAAC..', '..AAA....'],
-    ['..TAU....', '..AAA.A..', '.DAAAA...', '..AAA.A..', '..UAT....'],
-    ['...ATA...', '..AAAAA..', '..AAAAC..', '..AAAAA..', '...ATA...'],
+    ['..TAU....', '..AAA.A..', 'DAAAAA...', '..AAA.A..', '..UAT....'],
+    ['...ATA...', '..AAAAA..', 'DAAAAAC..', '..AAAAA..', '...ATA...'],
     ['...UA....', '...AAAA..', '...AAAC..', '...AAAA..', '...AU....'],
-    ['.........', '....AAA..', '....AAC..', '....AAA..', '.........'],
-    ['......C..', '.....AAC.', '.....AACD', '.....AAC.', '......C..'],
+    ['......C..', '....AAA..', '....AAC..', '....AAA..', '......C..'],
+    ['.....CC..', '.....AAC.', '.....AACD', '.....AAC.', '.....CC..'],
     ['.........', '.....DAE.', '.....AAA.', '.....DAE.', '.........'],
     ['.........', '.....AA..', '.....AA..', '.....AA..', '.........'],
     ['.........', '.....A...', '.........', '.....A...', '.........'],
+    ['.........', '.....D...', '.........', '.....D...', '.........'],
     ['.........', '.....D...', '.........', '.....D...', '.........'],
   ],
   {
@@ -1069,27 +1071,30 @@ const LYNX = fromLayers(
 );
 
 // La Cigale d'argile (latin-grec, 4e ; sans flamme, aucun dieu ni symbole) : de profil, le long des x, la tête vers les
-// x croissants, posée sur une souche sombre de quatre blocs ; une cigale de terre cuite, comme celles qu'on accroche aux murs : le corps
-// ocre rouge, la large tête aux deux gros yeux sur les côtés, les ailes repliées en toit sur le dos, plus longues que
-// le corps, d'une terre plus claire, leurs nervures plus sombres en alternance (ce sont elles qui se rallument). Dix de
-// long, cinq de large, huit de haut (la souche la hausse : son habitant, Figue, en a neuf, GD-11). Cinq couleurs, les yeux compris (proposition de l'artiste technique 3D).
+// x croissants, posée sur un socle sombre de quatre blocs ; une cigale de terre cuite, comme celles qu'on accroche aux
+// murs : le corps trapu, ocre rouge ; la tête et ses deux gros yeux qui saillent de chaque côté ; les ailes repliées en
+// toit sur le dos, d'une terre plus claire, plus longues que le corps (elles le dépassent d'un bloc derrière),
+// leurs nervures plus sombres en alternance (ce sont elles qui se rallument). Dans le monde, tournée de trois quarts de tour
+// (`QUARTS_DE_TOUR_DU_GARDIEN`) : la caméra de la Colonnade, à l'est, la voit de profil, la tête vers le devant (DA, captures
+// emc-4e-3e-1). Huit de long, cinq de large, huit de haut (le socle la hausse : son habitant, Figue, en a neuf, GD-11). Cinq couleurs, les yeux compris (proposition de l'artiste
+// technique 3D).
 const CIGALE = fromLayers(
   [
-    ['..........', '...DDD....', '...DDD....', '...DDD....', '..........'],
-    ['..........', '...DDD....', '...DDD....', '...DDD....', '..........'],
-    ['..........', '...DDD....', '...DDD....', '...DDD....', '..........'],
-    ['..........', '..DDDDD...', '...DDD....', '..DDDDD...', '..........'],
-    ['.......E..', '.AAAAAAAA.', '.AAAAAAAAA', '.AAAAAAAA.', '.......E..'],
-    ['WVWVWV.E..', 'WAAAAAAA..', '.AAAAAAAA.', 'WAAAAAAA..', 'WVWVWV.E..'],
-    ['..........', 'WVWVWVW...', '.WWWWWWAA.', 'WVWVWVW...', '..........'],
-    ['..........', '..........', 'VWVWVWV...', '..........', '..........'],
+    ['........', '..DDD...', '..DDD...', '..DDD...', '........'],
+    ['........', '..DDD...', '..DDD...', '..DDD...', '........'],
+    ['........', '..DDD...', '..DDD...', '..DDD...', '........'],
+    ['........', '..DDD...', '..DDD...', '..DDD...', '........'],
+    ['........', '.AAAAAAA', '.AAAAAAA', '.AAAAAAA', '........'],
+    ['WVWVWV.E', '.AAAAAAA', '.AAAAAAA', '.AAAAAAA', 'WVWVWV.E'],
+    ['........', 'VWVWVW..', 'WWWWWW..', 'VWVWVW..', '........'],
+    ['........', '........', 'WVWVWV..', '........', '........'],
   ],
   {
     A: '#c4703e',
-    W: '#e2a466',
-    V: '#9a5030',
+    W: '#efc896',
+    V: '#a8603a',
     D: '#5a3a24',
-    E: { color: '#2a1c16', top: '#c4703e' },
+    E: { color: '#2a1c16', top: '#2a1c16' },
   },
 );
 
@@ -1123,30 +1128,34 @@ const ETOURNEAU = fromLayers(
 );
 
 // Le Centaure d'argile (latin-grec, 3e ; sans flamme, aucun dieu, aucune arme : ni arc ni lance) : de profil, la tête
-// vers les x croissants ; le corps de cheval et le buste de terre cuite, les sabots sombres, la queue et les cheveux
-// d'une terre plus foncée ; il tient devant lui un livre ouvert, la couverture de cuir, les pages claires dessus. Sur ses
-// flancs, des motifs d'une terre plus claire, en alternance (ce sont eux qui se rallument). Neuf de long, cinq de
-// large, dix de haut. Six couleurs, les yeux compris (proposition de l'artiste technique 3D).
+// vers les x croissants ; le corps de cheval, et au-dessus du poitrail le torse, droit, de terre cuite ; une petite tête
+// (un bloc de long, bien moins que celle d'un cheval), les cheveux d'une terre plus foncée derrière ; il tient à deux
+// mains, devant lui, un livre ouvert en V, le dos de cuir en bas, les deux pages claires levées de part et d'autre (DA,
+// captures emc-4e-3e-1). Les sabots sombres, la queue d'une terre plus foncée ; sur ses flancs, des motifs d'une terre
+// plus claire, en alternance (ce sont eux qui se rallument). Neuf de long, cinq de large, onze de haut. Six couleurs,
+// les yeux compris (proposition de l'artiste technique 3D).
 const CENTAURE = fromLayers(
   [
-    ['.........', '.H...H...', '.........', '.H...H...', '.........'],
-    ['.........', '.A...A...', '.........', '.A...A...', '.........'],
-    ['.........', '.A...A...', 'R........', '.A...A...', '.........'],
-    ['.........', '.AAAAAA..', 'RAAAAAA..', '.AAAAAA..', '.........'],
-    ['.........', '.MAMAMA..', 'RAAAAAA..', '.MAMAMA..', '.........'],
-    ['.........', '.....AA..', '.....AA..', '.....AA..', '.........'],
-    ['.........', '.....AAK.', '.....AAK.', '.....AAK.', '.........'],
-    ['.........', '.....AA..', '.....AA..', '.....AA..', '.........'],
-    ['.........', '.....AE..', '.....AA..', '.....AE..', '.........'],
-    ['.........', '.....RR..', '.....RR..', '.....RR..', '.........'],
+    ['.........', '.H..H....', '.........', '.H..H....', '.........'],
+    ['.........', '.A..A....', '.........', '.A..A....', '.........'],
+    ['.........', '.A..A....', 'R........', '.A..A....', '.........'],
+    ['.........', '.AAAAA...', 'RAAAAA...', '.AAAAA...', '.........'],
+    ['.........', '.MAMAM...', 'RAAAAA...', '.MAMAM...', '.........'],
+    ['.........', '....AA...', '....AA...', '....AA...', '.........'],
+    ['.........', '....AAAK.', '....AA.K.', '....AAAK.', '.........'],
+    ['.........', '....AAP.P', '....AAP.P', '....AAP.P', '.........'],
+    ['.........', '.........', '.....A...', '.........', '.........'],
+    ['.........', '....HE...', '....HA...', '....HE...', '.........'],
+    ['.........', '.....A...', '....HA...', '.....A...', '.........'],
   ],
   {
     A: '#c4703e',
     M: '#e2a466',
     H: '#5a3a24',
     R: '#9a5030',
-    // Le livre : la couverture de cuir de face, les pages claires dessus.
-    K: { color: '#7a4a2a', top: '#f2ead8' },
+    // Le livre : le dos de cuir en bas, les deux pages claires en V.
+    K: '#7a4a2a',
+    P: '#f2ead8',
     E: { color: '#2a1c16', top: '#c4703e' },
   },
 );
