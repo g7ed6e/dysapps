@@ -33,7 +33,7 @@ const clarte = (c: number) => (Math.max(c >> 16, (c >> 8) & 255, c & 255) + Math
 
 beforeAll(() => chargerLesModelesDuDisque());
 
-/** Les îles dont la créature est importée (au 6e ; la 5e n'a encore que ses Gardiens). */
+/** Les îles dont la créature est importée (6e, 5e et 4e). */
 const AVEC_CREATURE = ILES_IMPORTEES.filter((id) => nomDuModele('creature', id));
 
 it('les seize îles du 6e, les quatorze de la 5e et les quatorze de la 4e ont leur Gardien et leur créature, de près et de loin', () => {

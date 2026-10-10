@@ -697,6 +697,17 @@ const CAPTURES = [
     { nom: `quatrieme-${lieu}-gardien-eteint`, vue: 'île', famille: 'personnages-quatrieme', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile } },
     { nom: `quatrieme-${lieu}-creature`, vue: 'île', famille: 'personnages-quatrieme', ile, fiche: { genre: 'creature', id: ile } },
   ]),
+  // Les cinq Gardiens dont la version de loin a été refaite par loin.py, vus de loin, éteints puis rallumés.
+  ...[
+    ['english-4e-grammar', 'gare'],
+    ['technology-4e-modeling', 'bassin'],
+    ['geography-4e-globalization', 'escale'],
+    ['french-4e-agreement', 'falaise'],
+    ['lca-4e-cities', 'colonnade'],
+  ].flatMap(([ile, lieu]) => [
+    { nom: `quatrieme-${lieu}-loin-eteint`, vue: 'archipel', famille: 'personnages-quatrieme', ile, zoomer: -10, sansIles: [ile] },
+    { nom: `quatrieme-${lieu}-loin`, vue: 'archipel', famille: 'personnages-quatrieme', ile, zoomer: -10 },
+  ]),
   { nom: 'quatrieme-archipel-recul-eteints', vue: 'archipel', famille: 'personnages-quatrieme', ile: 'maths-4e-powers', zoomer: -10, sansIles: { classe: '4e' } },
   { nom: 'quatrieme-archipel-recul', vue: 'archipel', famille: 'personnages-quatrieme', ile: 'maths-4e-powers', zoomer: -10 },
   { nom: 'histoire-geo-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },

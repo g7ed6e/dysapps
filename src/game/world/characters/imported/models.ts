@@ -84,7 +84,7 @@ const QUATRIEME: Partial<Record<BiomeId, Ligne>> = {
   'geography-4e-globalization': ['escale', 'poulpe-de-corail', 'fret', 1, 1],
   'life-earth-sciences-4e-cells-evolution': ['source', 'girafe-d-ambre', 'nectar', 1, 0],
   'physics-chemistry-4e-signals-circuits': ['vigie', 'cloche-de-cobalt', 'radar', 1, 0],
-  'technology-4e-modeling': ['bassin', 'grand-bi-d-erable', 'manivelle', 1, 0],
+  'technology-4e-modeling': ['bassin', 'grand-bi-d-erable', 'manivelle', 1, 0.5],
   'civics-4e-rights-freedoms': ['porte', 'lynx-d-agate', 'loquet', 0, 2],
   'lca-4e-cities': ['colonnade', 'cigale-d-argile', 'figue', 3, 1],
 };

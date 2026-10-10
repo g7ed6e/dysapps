@@ -74,7 +74,7 @@
 4e-theatre-gardien-masque;0.12;0
 4e-vigie-gardien-cloche-de-cobalt;0.12;0
 4e-atelier-creature-ixe;-;0;1;cfbda5>d8ccac b8a77a>d8b25a e5d383>d8b25a 8c7d5d>a8884a;Ixe : le tablier de lin, le corps de laiton en une seule zone, les articulations en laiton plus sombre.
-4e-bassin-creature-manivelle;-;0;0 bras=non;2e2620>a0826a 54483d>a0826a 937b56>b06a3e cdc7bb>d8ccac;Manivelle : le pelage brun taupe en une seule zone, la barque de bois, le tablier de lin.
+4e-bassin-creature-manivelle;-;0;0.5 bras=non;2e2620>a0826a 54483d>a0826a 937b56>b06a3e cdc7bb>d8ccac;Manivelle : le pelage brun taupe en une seule zone, la barque de bois, le tablier de lin.
 4e-cabinet-creature-plume;-;0;1;101214>5e6a7e 51271f>a8603c f7f3f6>ece8de 9b734a>c09060;Plume : le plumage noir en bleu ardoise clair, le gilet de cuir, le ventre et les épaules blancs, la boîte de fiches en bois clair.
 4e-colonnade-creature-figue;-;0;1;646361>9a9ca0 665133>c0704a 9b968c>d8ccac 141210>4a4644;Figue : le pelage gris clair, l’amphore en terre cuite, la tunique de lin, les sabots, la crinière et le bout des oreilles restent sombres.
 4e-escale-creature-fret;-;0;1 jambes=non bras=non aire=oui;a3120a>d0583c 9f8771>d8ccac 85150a>d0583c 231816>3e3a3a;Fret : la carapace rouge corail en une seule zone, le gilet de lin, les yeux et le crochet restent sombres.

@@ -107,7 +107,7 @@ def draw(q, col, view, size=400):
 
 def main():
     args = sys.argv[sys.argv.index("--") + 1:]
-    folder, quarts, out = args[0], int(args[1]), args[2]
+    folder, quarts, out = args[0], float(args[1]), args[2]
     pos, col, joints, weights, bones = read(os.path.join(folder, "final-1500.glb"))
     frame = Frame(pos, quarts)
     q = frame.to_game(pos)

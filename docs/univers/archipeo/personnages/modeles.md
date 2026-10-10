@@ -52,18 +52,18 @@ Les Gardiens (coupe du socle en part de la hauteur, triangles des deux versions)
 | Phénix d’argile (Grotte, 5e) | 0,11 | 1 335 | 156 |
 | Titan d’acier (Forge, 4e) | 0,12 | 1 298 | 176 |
 | Golem des équations (Atelier, 4e) | 0,12 | 1 335 | 180 |
-| Bélier de granit (Falaise, 4e) | 0,18 | 1 118 | 158 |
+| Bélier de granit (Falaise, 4e) | 0,18 | 1 118 | 154 |
 | Hibou lexicographe (Cabinet, 4e) | 0,12 | 1 335 | 176 |
 | Masque (Théâtre, 4e) | 0,12 | 1 372 | 198 |
-| Locomotive de fer (Gare, 4e) | 0,12 | 1 359 | 203 |
+| Locomotive de fer (Gare, 4e) | 0,12 | 1 332 | 224 |
 | Soleil de cuivre (Jardin, 4e) | 0,12 | 1 268 | 191 |
 | Paon de faïence (Imprimerie, 4e) | 0,12 | 1 353 | 175 |
-| Poulpe de corail (Escale, 4e) | 0,12 | 1 430 | 196 |
+| Poulpe de corail (Escale, 4e) | 0,12 | 1 430 | 192 |
 | Girafe d’ambre (Source, 4e) | 0,12 | 1 241 | 166 |
 | Cloche de cobalt (Vigie, 4e) | 0,12 | 1 328 | 178 |
-| Grand-bi d’érable (Bassin, 4e) | 0,12 | 1 335 | 177 |
+| Grand-bi d’érable (Bassin, 4e) | 0,12 | 1 335 | 172 |
 | Lynx d’agate (Porte, 4e) | 0,12 | 1 212 | 158 |
-| Cigale d’argile (Colonnade, 4e) | 0,47 | 994 | 139 |
+| Cigale d’argile (Colonnade, 4e) | 0,47 | 994 | 135 |
 
 Les créatures (sans socle, rien à couper). Leurs fichiers sont peints en aplats clairs par `aplats.py` (voir plus bas), d’après les couleurs choisies par le directeur artistique le 10 octobre 2026 dans la colonne « aplats » de `reglages.csv`. Écart connu : Robin n’a pas la gorge orange de son concept (aucune de ses quatre couleurs ne la porte) ; elle attend un lot qui touche la géométrie. Les créatures de la 5e sont peintes de même, d’après les couleurs choisies par le directeur artistique le 10 octobre 2026. Écarts connus : chez Sillon, le chapeau de paille est pris dans la zone sombre de la tête ; chez Rabot, la huppe et le tablier partagent un rouille, et le bec est dans le vert du dos ; chez Humus, le bâton est pris dans la peau ; chez Perle, le manche du râteau est pris dans l’orange du bec ; le laiton de la balance de Bazar passe dans le lin. Rabot, Kroa et Sema, au corps vert, ont été jugés sur l’herbe le 10 octobre 2026 par le directeur artistique : lisibles, aplats gardés.
 
@@ -71,7 +71,7 @@ Les créatures de la 5e ont leur squelette (10 octobre 2026, réglages dans `reg
 
 Les personnages du Préau des délégués (6e), du Fournil des partages et de la Grotte des légendes (5e), îles d’EMC et de latin-grec, suivent la même chaîne (10 octobre 2026). Mie, au corps rond, ne marche pas (`jambes=non`) ; la queue de Lyre traîne au sol (`queue=sol`) ; Voix tient son livre à deux mains, ses bras ne balancent pas (`bras=non`) et `squelette.py` ne lui trouve pas de jambes. Écart connu : la tête de Lyre, jaune taché de brun dans le concept, est prise dans le lin de la tunique (aucune de ses quatre couleurs ne la sépare). L’Oie d’opale tourne de 2,25 quarts, de trois quarts vers l’élève comme dans son concept (2,5 la ferait déborder de ses cinq cases). La version de loin du Phénix d’argile est refaite par `loin.py` à 160 triangles, pour que les Gardiens de la 5e tiennent leur enveloppe.
 
-Les Gardiens et les créatures de la 4e suivent la même chaîne (10 octobre 2026). Le socle haut de la Cigale d’argile est coupé à 0,47 (un disque fin reste sous ses pattes), celui du Bélier de granit à 0,18. Squelettes : Manivelle tient sa barque à deux mains et Nectar son livre, leurs bras ne balancent pas (`bras=non`) ; la queue de Typo et celle de Radar traînent au sol (`queue=sol`) ; Fret, crabe sans jambes lisibles, et Loquet, au corps rond, ne marchent pas ; Plume n’a pas de jambes trouvées. Braise, Fret et Loquet sont pesés par surface (`aire=oui`). Aplats choisis par le directeur artistique ; le pantalon de Puck et le corps de Vapeur, trop sombres pour se détacher de l’herbe, sont éclaircis d’un ton (76827c, 7a7c84). Écarts connus : la barque de Manivelle se fond dans son ventre, et un petit sac flotte à côté d’elle ; Loquet a perdu le ventre crème de son concept ; la gorge rose de Nectar n’est dans aucune de ses quatre couleurs.
+Les Gardiens et les créatures de la 4e suivent la même chaîne (10 octobre 2026). Le socle haut de la Cigale d’argile est coupé à 0,47 (un disque fin reste sous ses pattes), celui du Bélier de granit à 0,18. Squelettes : Manivelle tient sa barque à deux mains et Nectar son livre, leurs bras ne balancent pas (`bras=non`) ; la queue de Typo et celle de Radar traînent au sol (`queue=sol`) ; Fret, crabe sans jambes lisibles, et Loquet, au corps rond, ne marchent pas ; Plume n’a pas de jambes trouvées. Braise, Fret et Loquet sont pesés par surface (`aire=oui`). Aplats choisis par le directeur artistique ; le pantalon de Puck et le corps de Vapeur, trop sombres pour se détacher de l’herbe, sont éclaircis d’un ton (76827c, 7a7c84). Reprises après la première relecture du directeur artistique : la Locomotive de fer, froissée par la réduction, est refaite depuis le brut coupé par `loin.py` (remaillage en voxels de 0,01 avant la réduction pour la version de près, de 0,025 pour celle de loin) ; les versions de loin du Grand-bi, du Poulpe, du Bélier et de la Cigale sont refaites par `loin.py` (sans remaillage : un voxel plus gros les éparpille) ; Manivelle est tournée d’un demi-quart (0,5, `squelette.py` accepte les demi-quarts) pour montrer son visage et sa barque, et le petit sac qui flottait à côté d’elle est retiré. Écarts connus : la barque de Manivelle se fond dans son ventre ; Loquet a perdu le ventre crème de son concept ; la gorge rose de Nectar n’est dans aucune de ses quatre couleurs.
 
 | Créature | 1 500 | 200 |
 | --- | --- | --- |
@@ -116,7 +116,7 @@ Les Gardiens et les créatures de la 4e suivent la même chaîne (10 octobre 202
 | Fret (Escale, 4e) | 1 500 | 200 |
 | Nectar (Source, 4e) | 1 500 | 200 |
 | Radar (Vigie, 4e) | 1 500 | 200 |
-| Manivelle (Bassin, 4e) | 1 500 | 200 |
+| Manivelle (Bassin, 4e) | 1 222 | 146 |
 | Loquet (Porte, 4e) | 1 500 | 198 |
 | Figue (Colonnade, 4e) | 1 500 | 200 |
 
