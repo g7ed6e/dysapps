@@ -135,6 +135,8 @@ export const ALLURES: Partial<Record<BiomeId, Partial<Allure>>> = {
   'french-6e-word-spelling': { angle: 0.3, bras: 0.18, buste: 0.02, bassin: 0.05, bascule: 0.03, penche: -0.03, monte: 0.025 },
   // Bloquette, la brebis : son râteau, tenu comme un bâton de marche, balance peu.
   'french-6e-grammar-spelling': { bras: 0.2 },
+  // Nenu, la grenouille : sa rame, tenue debout comme un bâton, balance peu.
+  'maths-6e-fractions': { bras: 0.2 },
 };
 
 /** L'allure d'une créature : la marche commune, et ce que la sienne change. */
