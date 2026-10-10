@@ -221,8 +221,10 @@ function sentinelleImportee(lu: ModeleLu, quarts: number): FacettesDePersonnage 
  * corps : elle se promène sans lever le bras. De près, son squelette s'il en a un (scripts/rendu/modeles/squelette.py),
  * placé comme ses sommets : la vue l'anime.
  */
+const ESPECES_IMPORTEES: Partial<Record<BiomeId, Espece>> = { ...ESPECES_6E, ...ESPECES_5E };
+
 function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niveau): FacettesDePersonnage {
-  const espece = ({ ...ESPECES_6E, ...ESPECES_5E } as Partial<Record<BiomeId, Espece>>)[id];
+  const espece = ESPECES_IMPORTEES[id];
   if (!espece) throw new Error(`Pas d’espèce pour ${id}`);
   const taille = tailleDe(espece);
   const place = repere(lu.positions, (h) => taille / h, 0, quarts);
