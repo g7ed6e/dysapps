@@ -248,8 +248,9 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
     loadMonumentsFromDisk();
     const blocs = BADGES.map((b) => trophyBlock(b.id));
     for (const a of ARCHIPELAGO_IDS) {
-      // Chargés, les deux monuments de l'archipel remplacent leurs cubes : environ 5 000 triangles de plus.
-      expect(constructionAtWorstMonumentStage(a).triangles - enBlocs[a], a).toBeGreaterThan(4_000);
+      // Chargés, les deux monuments de l'archipel remplacent leurs cubes : de 3 500 à 5 000 triangles de plus (le phare et
+      // le viaduc retouchés sont plus légers).
+      expect(constructionAtWorstMonumentStage(a).triangles - enBlocs[a], a).toBeGreaterThan(3_000);
       const m = constructionAtWorstMonumentStage(a, blocs);
       expect(m.triangles, a).toBeLessThanOrEqual(enveloppeDe('construction', a).triangles);
       expect(m.drawCalls, a).toBeLessThanOrEqual(enveloppeDe('construction', a).drawCalls);

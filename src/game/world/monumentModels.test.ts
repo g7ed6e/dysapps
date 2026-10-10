@@ -226,7 +226,7 @@ describe('Les monuments importés dans la construction taillée', () => {
     const fantomes = maillageDeLaConstruction('6e', cubes.filter((c) => c.ghost));
     expect(apres.fantomes.indices.length).toBe(fantomes.fantomes.indices.length);
     const [t0, t1] = apres.monuments![0].opaque;
-    expect(t1 - t0).toBeGreaterThan(1_000);
+    expect(t1 - t0).toBeGreaterThan(500);
     // Toucher un triangle du modèle : une case posée du monument (le panneau du monument s'ouvre).
     const t = t0 + 10;
     const pos = apres.opaque.positions;
