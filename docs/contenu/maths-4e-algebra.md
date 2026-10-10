@@ -1,9 +1,9 @@
 ---
 lieu : maths-4e-algebra
-module : Calcul littéral et équations
+module : Calcul littéral, équations et Pythagore
 matière : maths
 classe : 4e
-description : Réduire, développer, résoudre une équation : les lettres comme des blocs, la règle affichée.
+description : Réduire, développer, résoudre une équation : les lettres comme des blocs, la règle affichée ; puis Pythagore, sa réciproque et sa contraposée.
 gardien : le Golem des équations
 icône : ruler
 créature : Ixe
@@ -179,6 +179,13 @@ Pour tous les items :
    - indice : Par combien passe-t-on de 5 à 20 ? Fais pareil en haut.
    - explication : 5 × 4 = 20, donc 3 × 4 = 12 : 3/5 = 12/20. Vérifie : 3 × 20 = 60 et 5 × 12 = 60. 18, c’est ajouter 15 en haut comme en bas : l’égalité ne tient pas. 4 est le multiplicateur, pas le numérateur.
    - figure : fraction 3/5
+
+## Pythagore · `pythagorean-theorem`
+
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
+
+- description : L’hypoténuse, puis un côté de l’angle droit, puis la réciproque, enfin la logique : théorème, réciproque ou contraposée ?
+- compétences : c4.ma.d.pythagore · c4.ma.a.carres-racine
 
 ## Les plans
 

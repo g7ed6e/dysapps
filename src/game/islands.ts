@@ -728,10 +728,10 @@ export const ILES = [
   {
     "id": "maths-4e-algebra",
     "name": "Atelier du calcul littéral",
-    "module": "Calcul littéral et équations",
+    "module": "Calcul littéral, équations et Pythagore",
     "subject": "maths",
     "classe": "4e",
-    "description": "Réduire, développer, résoudre une équation : les lettres comme des blocs, la règle affichée.",
+    "description": "Réduire, développer, résoudre une équation : les lettres comme des blocs, la règle affichée ; puis Pythagore, sa réciproque et sa contraposée.",
     "block": "maths-4e-algebra",
     "guardian": "le Golem des équations",
     "icon": "ruler",
@@ -770,6 +770,15 @@ export const ILES = [
         "programme": [
           "c4.ma.a.relatifs",
           "c4.ma.a.fractions"
+        ]
+      },
+      {
+        "id": "pythagorean-theorem",
+        "title": "Pythagore",
+        "description": "L’hypoténuse, puis un côté de l’angle droit, puis la réciproque, enfin la logique : théorème, réciproque ou contraposée ?",
+        "programme": [
+          "c4.ma.d.pythagore",
+          "c4.ma.a.carres-racine"
         ]
       }
     ]

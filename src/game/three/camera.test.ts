@@ -808,10 +808,10 @@ describe('Les bornes au téléphone en portrait (GD-14)', () => {
     expect(montres).toBeGreaterThan(0);
   });
 
-  it('les îles-écoles du 5e au 3e : leurs bornes à 0, 4, 8, 12 et 16 (quatre au 4e), comme sur les captures', () => {
+  it('les îles-écoles du 5e au 3e : leurs bornes à 0, 4, 8, 12 et 16, comme sur les captures', () => {
     for (const id of ECOLES) {
       const xs = bornesDansLeMonde(id).map((b) => b.x - bornesDansLeMonde(id)[0].x);
-      expect(xs, id).toEqual(id === 'maths-4e-algebra' ? [0, 4, 8, 12] : [0, 4, 8, 12, 16]);
+      expect(xs, id).toEqual([0, 4, 8, 12, 16]);
     }
   });
 

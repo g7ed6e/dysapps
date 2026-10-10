@@ -23,7 +23,9 @@ import {
   primeDecomposition,
   primeFactors,
   productEquation,
+  PYTHAGORE_LOGIC_CHOICES,
   pythagoreHyp,
+  pythagoreLogic,
   pythagoreSide,
   RECIPROQUE_PYTHAGORE_CHOICES,
   SURVEYS,
@@ -124,7 +126,8 @@ it('Forge et Atelier : exposants lisibles, notation scientifique et équations c
   // Sept exercices de puissances, puis les trois du Fourneau (relatifs et fractions, venus de la 5e).
   expect(forge).toHaveLength(10);
   expect(forge.filter((e) => e.type === 'subtracting').map((e) => e.level)).toEqual([1, 2, 3]);
-  expect(atelier).toHaveLength(9);
+  // Neuf exercices de calcul littéral, puis les quatre niveaux de Pythagore.
+  expect(atelier).toHaveLength(13);
   for (const def of [...forge, ...atelier]) {
     expect(def.items).toHaveLength(8);
     for (const it of def.items) {
@@ -335,6 +338,37 @@ it('Belvédère, réciproques : la réponse se calcule depuis l’énoncé, les 
     expect(def.items).toHaveLength(8);
     for (const it of def.items) expect((it.aid as { kind: string }).kind).toBe('rule-card');
   }
+});
+
+it('4e : Pythagore, la logique du théorème, de la réciproque et de la contraposée', () => {
+  const rng = seededItems('logique');
+  const seen = new Set<string>();
+  for (let i = 0; i < 300; i++) {
+    const p = pythagoreLogic(rng);
+    const [, form, a, b, c] = p.key.split('-');
+    const right = Number(a) ** 2 + Number(b) ** 2 === Number(c) ** 2;
+    // La contraposée part d'une égalité fausse ; le théorème et la réciproque, d'un vrai triangle rectangle.
+    expect(right).toBe(form !== 'contrapositive');
+    expect(p.choices).toEqual(PYTHAGORE_LOGIC_CHOICES);
+    expect(p.answer).toBe({ theorem: 'le théorème', converse: 'la réciproque', contrapositive: 'la contraposée' }[form]);
+    expect(String(p.spoken)).not.toMatch(/[=²√÷×+−]|\bcm\b/);
+    // Ce qu'on sait, puis ce qu'on conclut, une ligne chacun ; la question est à part.
+    expect(String(p.prompt).split('\n').at(-1)).toMatch(/^Donc /);
+    expect(p.question).toBe('Quelle propriété a servi ?');
+    expect(String(p.hint)).not.toMatch(/[=²√÷×+−]/);
+    seen.add(String(p.answer));
+  }
+  expect([...seen].sort()).toEqual([...PYTHAGORE_LOGIC_CHOICES].sort());
+
+  // La mission de 4e reprend les niveaux du Belvédère, sans le mât, et finit par la logique ; celle de 3e reste.
+  const levels = (biome: string, type: string) => COLLEGE_EXERCISES.filter((e) => e.id.startsWith(`${biome}-${type}-`)).map((e) => e.id);
+  expect(levels('maths-4e-algebra', 'pythagorean-theorem')).toEqual([1, 2, 3, 4].map((n) => `maths-4e-algebra-pythagorean-theorem-${n}`));
+  expect(levels('maths-3e-geometry', 'pythagoras')).toEqual(['maths-3e-geometry-pythagoras-1', 'maths-3e-geometry-pythagoras-2', 'maths-3e-geometry-pythagoras-4']);
+  const logic = COLLEGE_EXERCISES.find((e) => e.id === 'maths-4e-algebra-pythagorean-theorem-4');
+  expect(logic).toBeDefined();
+  if (!logic) return;
+  expect(logic.items).toHaveLength(8);
+  for (const it of logic.items) expect((it.aid as { kind: string }).kind).toBe('rule-card');
 });
 
 it('Glacier et Forge : pendant la partie, une seule bonne réponse et les nombres de l’énoncé', () => {
