@@ -1,5 +1,5 @@
 // Un bouton du monde à icône seule (la barre du bas, les accès directs du haut à gauche) : son nom est dit aux lecteurs
-// d'écran, écrit dessous en grand texte quand `mot` est demandé, et montré dans une petite étiquette quand le doigt
+// d'écran, écrit dessous en grand texte quand `word` est demandé, et montré dans une petite étiquette quand le doigt
 // reste posé une demi-seconde (consultant UX UI et référent dys, 10 octobre 2026 : une icône seule ne se reconnaît pas
 // toujours). Un bouton « vide » (rien à reprendre, aucune révision) reste à sa place, délavé : le toucher dit pourquoi,
 // dans la même étiquette, au lieu de ne rien faire. Au clavier et à la souris, l'étiquette vient au focus et au survol
@@ -48,6 +48,12 @@ export function WorldButton({ icon, name, word, empty, count, className, pressed
     cacher.current = window.setTimeout(() => setEtiquette(null), ETIQUETTE_MS);
   };
   const lever = () => window.clearTimeout(appui.current);
+  // Le doigt (ou la souris) qui sort du bouton après un appui long n'y fera pas de clic : le prochain clic, au clavier ou
+  // au lecteur d'écran, doit agir (expert frontend).
+  const sortir = () => {
+    lever();
+    appuiLong.current = false;
+  };
   const effacer = () => {
     window.clearTimeout(cacher.current);
     setEtiquette(null);
@@ -76,14 +82,14 @@ export function WorldButton({ icon, name, word, empty, count, className, pressed
           if (e.pointerType === 'mouse') montrer(name);
         }}
         onPointerLeave={(e) => {
-          lever();
+          sortir();
           if (e.pointerType === 'mouse') effacer();
         }}
         onFocus={(e) => {
           if (e.currentTarget.matches(':focus-visible')) montrer(name);
         }}
         onBlur={effacer}
-        onPointerCancel={lever}
+        onPointerCancel={sortir}
         // Le doigt posé longtemps ne fait que montrer le nom : il n'ouvre rien en se levant.
         onContextMenu={(e) => e.preventDefault()}
         onClick={() => {

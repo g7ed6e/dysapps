@@ -41,3 +41,15 @@ it('au survol de la souris, le nom s’affiche, et s’efface quand elle part', 
   fireEvent.pointerLeave(bouton, { pointerType: 'mouse' });
   expect(screen.getByRole('status')).toBeEmptyDOMElement();
 });
+
+it('après un appui long, le doigt sorti du bouton ne mange pas le clic suivant (clavier, lecteur d’écran)', () => {
+  vi.useFakeTimers();
+  const ouvrir = vi.fn();
+  render(<WorldButton icon="school" name="École du village" onClick={ouvrir} />);
+  const bouton = screen.getByRole('button', { name: 'École du village' });
+  fireEvent.pointerDown(bouton);
+  act(() => vi.advanceTimersByTime(500));
+  fireEvent.pointerLeave(bouton);
+  fireEvent.click(bouton);
+  expect(ouvrir).toHaveBeenCalledTimes(1);
+});
