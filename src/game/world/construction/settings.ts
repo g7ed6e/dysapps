@@ -34,6 +34,14 @@ export const LANTERNES_ALLUMEES = 2;
 export const LANTERNE = { corps: 0.3, coeur: 0.18 } as const;
 
 /**
+ * Un bloc que le kit dessine en retrait de sa case (`Kit.insetBlocks` : au 3e, les huit lanternons de la couronne du
+ * château d'eau ; retouches du directeur artistique et du consultant d'Archipéo, 10 octobre 2026, ils ne se fondent plus
+ * en un seul volume) : une boîte de `large` case de côté et de `haut` case de haut, posée au milieu de sa case. Entre
+ * deux voisins, un joint de 1 − `large` case.
+ */
+export const BLOC_EN_RETRAIT = { large: 0.78, haut: 0.9 } as const;
+
+/**
  * Un trophée de la salle des trophées, dans Archipéo, quand le kit de l'archipel reprend la salle (GD-3, retouches du
  * directeur artistique : la halle ne se lit plus comme un mur de panneaux) : un bloc plus petit que sa case, au milieu,
  * pour qu'il ne touche ni le pilier voisin ni la sablière et qu'on voie le fond de velours autour et au-dessus de lui.

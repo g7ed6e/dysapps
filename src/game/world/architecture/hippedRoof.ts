@@ -7,7 +7,10 @@
 //   se lit sur la pente (une case de toile, une de tuile), sans arête par case ni redan entre les rangs.
 // - Le morceau sort de la hauteur de sa case (le toit monte jusqu'au faîte), jamais de sa colonne, sauf aux quatre coins
 //   coupés du plan, où le bord du toit, droit, passe sur une case vide : ce bout-là va à la case du coin, sa voisine.
+// - Le même toit coiffe, au 3e, la coupole de lentilles de l'observatoire des étoiles (intention du directeur artistique
+//   du 10 octobre 2026) : `hippedRoofPieces` le lit sur le plan de n'importe quel monument.
 // Code pur, sans Three.js.
+import type { VoxelCube } from '../cube';
 import type { DessinDePiece, Facette, V3 } from './rooms';
 
 /** Les mesures du toit en pavillon, en part de case. */
@@ -203,6 +206,97 @@ export function crownLantern(r: HippedRoof): Facette[] {
 }
 
 /** Des facettes du monde ramenées dans la case (x, y, z) : la pièce de cette case. */
-export function inCase(facettes: readonly Facette[], x: number, y: number, z: number): DessinDePiece {
+function inCase(facettes: readonly Facette[], x: number, y: number, z: number): DessinDePiece {
   return { facettes: facettes.map((f) => ({ ...f, points: f.points.map((p): V3 => [p[0] - x, p[1] - y, p[2] - z]) })), couvre: 0 };
+}
+
+const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
+
+/** Le toit en pavillon d'un monument : le monument, les matières de son toit, le bloc qui porte la verrière du faîte. */
+export interface PlanRoofSpec {
+  /** Le lieu du monument (`monument:<id>`). */
+  place: string;
+  /** Les matières des rangs du toit : le rang le plus bas porte le pavillon. */
+  roofs: ReadonlySet<string>;
+  /** Le bloc qui porte la verrière, une fois le toit fini : sa matière, et sa hauteur en rangs au-dessus du rang bas. */
+  crown: { texture: string; rise: number };
+}
+
+/** Le toit lu sur le plan d'un monument (fantômes compris) : le pavillon, ses cases, et les bouts de toit des coins coupés. */
+interface PlanRoof {
+  roof: HippedRoof;
+  /** Les cases du plan (clé `x,y,z`). */
+  at: ReadonlyMap<string, VoxelCube>;
+  /** Un bloc du toit est-il encore en fantôme ? (La verrière attend le toit fini.) */
+  unfinished: boolean;
+  /** Les colonnes vides des coins coupés que le bord du toit passe, par case du rang bas qui les porte. */
+  corners: ReadonlyMap<string, readonly (readonly [number, number])[]>;
+}
+
+/** Le toit en pavillon d'un plan, d'après les cases de son rang bas (le centre, la demi-largeur, la coupe des coins). */
+function planRoofOf(plan: readonly VoxelCube[], roofs: ReadonlySet<string>): PlanRoof | null {
+  const at = new Map<string, VoxelCube>();
+  for (const c of plan) if (Number.isInteger(c.x) && Number.isInteger(c.y) && Number.isInteger(c.z)) at.set(cle(c.x, c.y, c.z), c);
+  const toit = [...at.values()].filter((c) => roofs.has(c.texture ?? ''));
+  if (!toit.length) return null;
+  const base = Math.min(...toit.map((c) => c.z));
+  const bas = toit.filter((c) => c.z === base);
+  const cx = bas.reduce((s, c) => s + c.x + 0.5, 0) / bas.length;
+  const cy = bas.reduce((s, c) => s + c.y + 0.5, 0) / bas.length;
+  const half = Math.max(...bas.map((c) => Math.max(Math.abs(c.x + 0.5 - cx), Math.abs(c.y + 0.5 - cy)))) + 0.5;
+  const cut = Math.max(...bas.map((c) => Math.abs(c.x + 0.5 - cx) + Math.abs(c.y + 0.5 - cy))) + 0.5;
+  const roof: HippedRoof = { cx, cy, base, half, cut };
+  // Les coins coupés : une colonne vide sous le bord du toit va à sa voisine vers le centre, le long de son plus grand écart.
+  const corners = new Map<string, [number, number][]>();
+  const dans = new Set(bas.map((c) => `${c.x},${c.y}`));
+  const [x0, x1] = [Math.floor(cx - half), Math.ceil(cx + half)];
+  const [y0, y1] = [Math.floor(cy - half), Math.ceil(cy + half)];
+  for (let x = x0; x < x1; x++)
+    for (let y = y0; y < y1; y++) {
+      if (dans.has(`${x},${y}`) || !roofOverColumn(roof, x, y).length) continue;
+      const dx = x + 0.5 - cx;
+      const dy = y + 0.5 - cy;
+      const pas: [number, number][] = Math.abs(dx) >= Math.abs(dy) ? [[-Math.sign(dx), 0], [0, -Math.sign(dy)]] : [[0, -Math.sign(dy)], [-Math.sign(dx), 0]];
+      const porteur = pas.map(([px, py]) => `${x + px},${y + py}`).find((k) => dans.has(k));
+      if (!porteur) continue;
+      const l = corners.get(porteur) ?? [];
+      l.push([x, y]);
+      corners.set(porteur, l);
+    }
+  return { roof, at, unfinished: toit.some((c) => c.ghost), corners };
+}
+
+/**
+ * Le toit en pavillon d'un monument d'un seul tenant (`Kit.monumentPieces`) : chaque case posée de son rang bas porte le
+ * toit au-dessus de sa colonne (et les bouts des coins coupés), sauf sous un fantôme (elle garde son dessin ordinaire) ;
+ * une case d'un rang du dessus ne dessine rien sur une case posée (le pavillon passe à travers) ; la case du milieu qui
+ * porte la verrière la dessine une fois le toit fini, les autres blocs de sa matière rien. `undefined` : le dessin
+ * ordinaire.
+ */
+export function hippedRoofPieces(spec: PlanRoofSpec): (c: VoxelCube, plan: readonly VoxelCube[]) => DessinDePiece | null | undefined {
+  const read = new WeakMap<readonly VoxelCube[], PlanRoof | null>();
+  const roofOf = (plan: readonly VoxelCube[]) => {
+    let k = read.get(plan);
+    if (k === undefined) read.set(plan, (k = planRoofOf(plan, spec.roofs)));
+    return k;
+  };
+  return (c, plan) => {
+    if (c.place !== spec.place) return undefined;
+    const k = roofOf(plan);
+    if (!k) return undefined;
+    const { roof, at } = k;
+    const crown = !k.unfinished && c.texture === spec.crown.texture;
+    if (crown && c.z === roof.base + spec.crown.rise && c.x === Math.floor(roof.cx) && c.y === Math.floor(roof.cy)) return inCase(crownLantern(roof), c.x, c.y, c.z);
+    if (spec.roofs.has(c.texture ?? '')) {
+      if (c.z === roof.base) {
+        const dessus = at.get(cle(c.x, c.y, c.z + 1));
+        if (dessus?.ghost) return undefined;
+        const facettes = [roofOverColumn(roof, c.x, c.y), ...(k.corners.get(`${c.x},${c.y}`) ?? []).map(([x, y]) => roofOverColumn(roof, x, y))].flat();
+        return inCase(facettes, c.x, c.y, c.z);
+      }
+      const dessous = at.get(cle(c.x, c.y, roof.base));
+      return dessous && !dessous.ghost ? null : undefined;
+    }
+    return crown ? null : undefined;
+  };
 }

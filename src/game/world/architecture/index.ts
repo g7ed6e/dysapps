@@ -316,7 +316,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
   const poteaux: VoxelCube[] = [];
   const aPlat: VoxelCube[] = [];
   /** Ce que le kit dessine d'un monument d'un seul tenant (`Kit.monumentPieces`) : posé après les autres pièces. */
-  const dUnTenant: { c: VoxelCube; dessin: DessinDePiece }[] = [];
+  const dUnTenant: { c: VoxelCube; dessin: DessinDePiece; rotation: Rotation }[] = [];
   for (const c of cubes) {
     if (c.place && !estUnMonument(c.place)) {
       const bloc = lieux && lieux.blocs.get(cle(c.x, c.y, c.z));
@@ -337,7 +337,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     const pieces = c.place && estUnMonument(c.place) ? kit.monumentPieces : undefined;
     const tenant = pieces?.(c, autres.get(c.place ?? '') ?? []);
     if (tenant !== undefined) {
-      dUnTenant.push({ c, dessin: tenant ?? EMPTY });
+      dUnTenant.push(tenant && 'piece' in tenant ? { c, dessin: tenant.piece, rotation: tenant.rotation } : { c, dessin: tenant ?? EMPTY, rotation: 0 });
       continue;
     }
     // Peint à plat par le kit (l'auvent rayé, le toit en damier) : d'aucune pièce ni d'aucun mur, il se peint après.
@@ -412,7 +412,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
       poser(c, 'vegetal', dessus ? 'mur.seul.pied.chaperon' : 'mur.seul.pied.mur', 0, woodenPost(dessus));
     }
   }
-  for (const { c, dessin } of dUnTenant) poser(c, familyOf(c.texture) ?? 'toit', 'mur.seul.pied.chaperon', 0, dessin);
+  for (const { c, dessin, rotation } of dUnTenant) poser(c, familyOf(c.texture) ?? 'toit', 'mur.seul.pied.chaperon', rotation, dessin);
   // Ce que le kit peint à plat : sa matière unie, sans dessus sous un bloc posé.
   if (aPlat.length) {
     const poses = new Set<string>();

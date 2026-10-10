@@ -81,7 +81,9 @@ describe('La tôle et la tenture, peintes', () => {
     // Les joints et les plis, au quart de case, s'effacent deux fois plus tôt que le colombage (référent dys) : à 4 pixels
     // par motif, plus rien ; entiers à 8.
     expect(MOTIF_GLSL).toContain(`float loinFin = clamp((${SHEET_METAL.pas.toFixed(4)} / max(du, dv) - 4.0) / 4.0, 0.0, 1.0);`);
-    expect(MOTIF_GLSL).toContain(`c = mix(c, (m & ${MOTIF.descendante}) != 0 ? c * ${HEART_PAINT.paille.toFixed(4)} : joint, j * loinFin);`);
+    // Les joints de la tôle teintée (le 4e et le 3e) : dans la teinte de sa matière, à ×0,8.
+    expect(MOTIF_GLSL).toContain(`vec3 trait = (m & ${MOTIF.descendante}) != 0 ? c * ${HEART_PAINT.paille.toFixed(4)} : (m & ${MOTIF.pierreEntiere}) != 0 ? c * ${SHEET_METAL.teinte.toFixed(4)} : joint;`);
+    expect(MOTIF_GLSL).toContain('c = mix(c, trait, j * loinFin);');
     expect(MOTIF_GLSL).toContain(`pli), loinFin);`);
     expect(MOTIF_GLSL).toContain(`${DRAPE.pli.toFixed(4)}`);
     expect(MOTIF_GLSL).toContain('c = mix(c, galon,');

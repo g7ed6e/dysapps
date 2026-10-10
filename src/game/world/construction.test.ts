@@ -374,9 +374,9 @@ describe('La construction taillée (lot R5)', () => {
   });
 
   it('la fusion ne mêle pas deux matières : une face fusionnée n’a qu’une couleur, et les blocs gardent la leur', () => {
-    // Au 4e, sans kit (au 6e et au 5e, les volumes lissés portent la teinte de leur ancre).
+    // Au 4e, avec un kit vide (les blocs taillés de R5 ; avec leur kit, les volumes lissés portent la teinte de leur ancre).
     const { cubes, sol } = monde('4e');
-    const m = maillageDeLaConstruction('4e', cubes, sol);
+    const m = maillageDeLaConstruction('4e', cubes, sol, { kit: kitVide() });
     const c = m.opaque.colors;
     // Les blocs seulement (quatre sommets et deux triangles par face) : les ponts de pierre et de bois, dessinés à la
     // fin, sont des facettes peintes.
@@ -554,6 +554,11 @@ describe('Les toits de terre cuite (lot R5)', () => {
       for (const [c, { genre, decalage }] of f) {
         expect(c.quest, a).toBeUndefined();
         if (c.muted) expect(decalage, a).toBe(-1);
+        // La lueur de fin d'un grand projet (./construction/endGlow.ts) : allumée la première, hors du compte des vitres.
+        if (genre === 'lueur') {
+          expect(decalage, a).toBe(0);
+          continue;
+        }
         if (decalage < 0) continue;
         const m = genre === 'lanterne' ? parCour : parBatiment;
         const k = `${c.tag}|${c.place ?? ''}`;
@@ -570,17 +575,22 @@ describe('Les toits de terre cuite (lot R5)', () => {
         const { cell } = caseDeLaConstruction(t.centre, t.n);
         allumes3D.add(cle(cell.x, cell.y, cell.z));
       });
-      const allumesOracle = new Set([...f].filter(([, v]) => v.decalage >= 0).map(([c]) => cle(c.x, c.y, c.z)));
+      // La lueur de fin ne prend que les faces verticales (retouches du directeur artistique, 10 octobre 2026) : un bloc
+      // enfermé de ses quatre côtés (le cœur de la ceinture de lentille de la colonne des solides, au 3e) n'a aucune face
+      // à allumer.
+      const pleins = new Set(cubes.filter((c) => !c.ghost).map((c) => cle(c.x, c.y, c.z)));
+      const enferme = (c: VoxelCube) => [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0]].every(([dx, dy, dz]) => pleins.has(cle(c.x + dx, c.y + dy, c.z + dz)));
+      const allumesOracle = new Set([...f].filter(([c, v]) => v.decalage >= 0 && !(v.genre === 'lueur' && enferme(c))).map(([c]) => cle(c.x, c.y, c.z)));
       expect(allumes3D, a).toEqual(allumesOracle);
       expect(m.opaque.aretes.length, a).toBe(m.opaque.positions.length / 3);
     }
-    // Le verre hors d'un mur (au 4e, sans kit) porte l'arête ; les autres blocs non. Au 6e et au 5e, le reste (9 octobre
-    // 2026) le peint en verrière ou en eau : plus aucune arête.
-    const m = maillageDeLaConstruction('4e', monde('4e').cubes, monde('4e').sol);
+    // Le verre hors d'un mur (au 4e, avec un kit vide) porte l'arête ; les autres blocs non. Avec leur kit, le reste
+    // (9 octobre 2026 au 6e et au 5e, 10 octobre au 4e et au 3e) le peint en verrière ou en eau : plus aucune arête.
+    const m = maillageDeLaConstruction('4e', monde('4e').cubes, monde('4e').sol, { kit: kitVide() });
     const avec = [...m.opaque.aretes].filter((v) => v === 1).length;
     expect(avec).toBeGreaterThan(0);
     expect(avec).toBeLessThan(m.opaque.aretes.length / 4);
-    for (const a of ['6e', '5e'] as const) {
+    for (const a of ARCHIPELAGO_IDS) {
       const mk = maillageDeLaConstruction(a, monde(a).cubes, monde(a).sol);
       expect([...mk.opaque.aretes].filter((v) => v === 1).length, a).toBe(0);
     }
@@ -589,7 +599,7 @@ describe('Les toits de terre cuite (lot R5)', () => {
 
 describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur artistique)', () => {
   /** L'archipel avec les 24 succès, rendu comme Archipéo le rend ; les trophées posés, et le coin de leur salle. */
-  function avecLesTrophees(a: ArchipelagoId) {
+  function avecLesTrophees(a: ArchipelagoId, kit?: ReturnType<typeof kitVide>) {
     const { progress, world: village } = toutConstruit();
     const tous = worldCubes(a, progress, village, false, BADGES.map((b) => trophyBlock(b.id)), false, 'halle');
     const sol = tous.filter((c) => c.sol);
@@ -599,13 +609,13 @@ describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur a
     const s = placeSpot('trophies', school)!;
     const coin = { x: s.x, y: s.y, z: islandDef(school).altitude + s.h };
     const places = TROPHY_SLOTS.map((t) => ({ x: coin.x + t.x, y: coin.y + t.y, z: coin.z + t.z }));
-    return { m: maillageDeLaConstruction(a, cubes, sol), cubes, coin, places };
+    return { m: maillageDeLaConstruction(a, cubes, sol, kit ? { kit } : {}), cubes, coin, places };
   }
   /** Les triangles posés au-dessus de l'intérieur d'une case (sans toucher ses bords) : ceux d'un trophée plus petit qu'elle. */
   const dansLaCase = (m: MaillageDeLaConstruction, x: number, y: number) =>
     triangles(m.opaque).filter((t) => t.p.every(([px, , pz]) => px > x + 0.05 && px < x + 0.95 && pz > y + 0.05 && pz < y + 0.95));
 
-  for (const a of ['6e', '5e'] as const) {
+  for (const a of ARCHIPELAGO_IDS) {
     it(`au ${a}, chaque trophée est plus petit que sa case : il ne touche ni le pilier voisin ni la sablière, le fond se voit au-dessus`, () => {
       const { m, cubes, coin, places } = avecLesTrophees(a);
       // Les 24 trophées sont dans le monde, à leur place.
@@ -626,9 +636,9 @@ describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur a
     });
   }
 
-  it('ailleurs, tant que le kit de l’archipel ne reprend pas la salle, les trophées restent des blocs entiers (et Blocland les garde)', () => {
+  it('tant que le kit ne reprend pas la salle (un kit vide), les trophées restent des blocs entiers (et Blocland les garde)', () => {
     for (const a of ['4e', '3e'] as const) {
-      const { m, places } = avecLesTrophees(a);
+      const { m, places } = avecLesTrophees(a, kitVide());
       for (const p of places) expect(dansLaCase(m, p.x, p.y).length, `${a} ${cle(p.x, p.y, p.z)}`).toBe(0);
     }
   });

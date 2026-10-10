@@ -20,8 +20,11 @@ export const HEART = {
   crate: { side: 0.85, stacked: 0.75, height: 0.85 },
   /** Les caisses de la cour de la Halle : la recette et le bloc suspendu. */
   hallCrate: 0.8,
-  /** Les dalles : le rouage de cadrans, l'éclat de mosaïque ; au 5e, le montoir de dalles, le plateau d'enluminure. */
-  slab: { dial: 0.3, mosaic: 0.2, mounting: 0.5, desk: 0.2 },
+  /**
+   * Les dalles : le rouage de cadrans, l'éclat de mosaïque ; au 5e, le montoir de dalles, le plateau d'enluminure ; au 4e
+   * et au 3e, la voie ferrée, une feuille (calque, reliure), le siège du banc d'acajou, la bordure d'osier du potager.
+   */
+  slab: { dial: 0.3, mosaic: 0.2, mounting: 0.5, desk: 0.2, rail: 0.15, sheet: 0.3, seat: 0.5, border: 0.3 },
   /** L'auvent du cœur (au 5e, la toile du Marché, la tuile du Comptoir) : une nappe mince en haut de sa case. */
   awning: 0.25,
   /** La planche du panneau indicateur (au 5e) : son épaisseur, son bas et son haut dans la case. */
@@ -31,8 +34,12 @@ export const HEART = {
    * côté et sa hauteur, plus petits que sa case.
    */
   reedHead: { side: 0.45, height: 0.7 },
-  /** Le tube de verre du thermomètre du Glacier (au 5e) : son côté. */
+  /** Le tube de verre du thermomètre du Glacier (au 5e) : son côté ; aussi celui de la lunette et de la longue-vue (4e, 3e). */
   thermometerTube: 0.5,
+  /** La planche debout (au 4e, le mur de liège de la maquette) : son épaisseur. */
+  standingBoard: 0.15,
+  /** La verrière basse d'un faîte (au 3e, le faîte de miroirs du temple) : sa largeur et sa hauteur. */
+  lowGlazing: { width: 0.6, height: 0.5 },
   /** La plate-bande de rizière (au 5e) : sa hauteur. */
   paddy: 0.3,
   /** La flèche d'or : sa base et sa hauteur. */
@@ -504,6 +511,47 @@ export function paddyBed(): DessinDePiece {
  */
 export function snowDrift(): DessinDePiece {
   return once('congere', () => ({ facettes: mound().facettes.map((f) => ({ ...f, role: 'snow' as const, ghostApart: true })), couvre: 0 }));
+}
+
+// ---------- Le 4e et le 3e : le tube couché, la planche debout, la verrière basse ----------
+
+/**
+ * Un tube couché (au 4e, la longue-vue de cuivre sur son trépied ; au 3e, la lentille au bout de la lunette) : de toute la
+ * longueur de sa case le long de x (`alongX`) ou de y, du côté du tube de verre du thermomètre, à mi-hauteur, sans
+ * dessous ni bouts (deux tubes voisins se touchent, l'assemblage retire leurs bouts communs ; un bout libre se devine,
+ * creux, de très près seulement) ; sa teinte tenue loin du fantôme Brume (`ghostApart`). 6 triangles.
+ */
+export function lyingTube(alongX: boolean): DessinDePiece {
+  return once(`tube|${alongX}`, () => {
+    const [a, b] = [0.5 - HEART.thermometerTube / 2, 0.5 + HEART.thermometerTube / 2];
+    const box = alongX ? boiteDansLaCase(0, 1, a, b, a, b) : boiteDansLaCase(a, b, 0, 1, a, b);
+    const bouts: V3[] = alongX ? [[1, 0, 0], [-1, 0, 0]] : [[0, 1, 0], [0, -1, 0]];
+    return { facettes: without(box.facettes, DOWN, ...bouts).map((f) => ({ ...f, ghostApart: true })), couvre: 0 };
+  });
+}
+
+/**
+ * Une planche debout (au 4e, le mur de liège de la maquette de Liège, posée sur sa caisse) : une planche de 0,15 au milieu
+ * de sa case, de toute sa largeur (le long de x) et de toute sa hauteur, sans dessous. 10 triangles.
+ */
+export function standingBoard(): DessinDePiece {
+  return once('planche-debout', () => {
+    const [a, b] = [0.5 - HEART.standingBoard / 2, 0.5 + HEART.standingBoard / 2];
+    return { facettes: without(boiteDansLaCase(0, 1, a, b, 0, 1).facettes, DOWN), couvre: 0 };
+  });
+}
+
+/**
+ * La verrière basse d'un faîte (au 3e, le faîte de miroirs du temple) : une boîte basse, plus étroite que sa case, de
+ * toute sa longueur le long de y (une rangée d'un seul tenant, ./assembly.ts ; posée d'un quart de tour le long de x),
+ * ses flancs peints de petits bois (`HEART_MOTIFS.glazing`), son dessus uni ; sans dessous. 10 triangles.
+ */
+export function lowGlazing(): DessinDePiece {
+  return once('verriere-basse', () => {
+    const { width, height } = HEART.lowGlazing;
+    const [a, b] = [0.5 - width / 2, 0.5 + width / 2];
+    return { facettes: painted(without(boiteDansLaCase(a, b, 0, 1, 0, height).facettes, DOWN), HEART_MOTIFS.glazing, 0), couvre: 0, filant: true };
+  });
 }
 
 /** Une case sans dessin (la feuille d'un nénuphar, que la nappe d'en dessous porte). */
