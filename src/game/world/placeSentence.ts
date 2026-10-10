@@ -9,7 +9,7 @@ import { archipelagoOfIsland } from './map';
 import { gapBetween, landRectangle, placedIsland, poseOfSpot } from './footprint';
 import { STEP, type Rectangle } from './placement';
 import { placesOf } from './routing';
-import { VUE_DE_LA_CARTE } from './terrain';
+import { VUE_DE_LA_CARTE } from './terrain/view';
 import type { LayoutSpot } from './savedLayout';
 import { ofPlace } from './placeArticle';
 
