@@ -309,7 +309,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
               <li className="reward-ship">
                 <Icon name="ship" size="1.6rem" />
                 <span>
-                  <strong>Le Bloc-Navire a tous ses blocs !</strong> Va les poser au port, sur {getBiome(shipReady.biome)?.name}.
+                  <strong>La Nef a tous ses blocs !</strong> Va les poser au port, sur {getBiome(shipReady.biome)?.name}.
                 </span>
               </li>
             )}

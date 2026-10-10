@@ -6,7 +6,8 @@ import { ARCHIPELAGOS, islandsOf, voyageId } from './archipelago';
 import { VEHICLE_SIZE, dockOrigin } from './harbor';
 import { PLANS, planCells } from './plans';
 import { planV1 } from './plansV1';
-import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageAt, stageFor, stageTo, vehicleAt, vehicleModel } from './vehicle';
+import { formerVehicleStage } from './formerVehicle';
+import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageAt, stageFor, stageTo, vehicleAt, vehicleForm, vehicleModel } from './vehicle';
 
 const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-challenge`, { stars: 2 as const, attempts: 1, best: 1 }]));
 
@@ -19,10 +20,10 @@ it('trois étapes, de port en port, faites de blocs gagnables dans leur archipel
     expect(s.biome).toBe(ARCHIPELAGOS[i].port);
     expect(s.cells.length).toBeGreaterThanOrEqual(16);
     expect(s.kit.length).toBeGreaterThanOrEqual(1);
-    // Les cases tiennent dans l'encombrement du navire ; aucune n'est en double, même entre étapes.
-    for (const c of [...s.cells, ...s.kit]) {
-      expect(c.x).toBeGreaterThanOrEqual(0);
-      expect(c.x).toBeLessThan(VEHICLE_SIZE.w);
+    // Les cases tiennent dans l'encombrement de la Nef (l'aile déborde de chaque côté).
+    for (const c of [...s.cells, ...s.kit, ...s.kept]) {
+      expect(c.x).toBeGreaterThanOrEqual(-VEHICLE_SIZE.wings);
+      expect(c.x).toBeLessThan(VEHICLE_SIZE.w + VEHICLE_SIZE.wings);
       expect(c.y).toBeGreaterThanOrEqual(0);
       expect(c.y).toBeLessThan(VEHICLE_SIZE.d);
       expect(c.z).toBeGreaterThanOrEqual(-VEHICLE_SIZE.below);
@@ -43,12 +44,52 @@ it('trois étapes, de port en port, faites de blocs gagnables dans leur archipel
     expect(stageAt(s.biome)).toBe(s);
     expect(getStage(s.id)).toBe(s);
   });
-  const keys = VEHICLE_STAGES.flatMap((s) => [...s.cells, ...s.kit].map((c) => `${c.x},${c.y},${c.z}`));
-  expect(new Set(keys).size).toBe(keys.length);
   expect(stageAt('french-6e-phonology')).toBeUndefined();
-  // Le modèle SVG grandit avec les voyages.
-  expect(vehicleModel(0).length).toBe(VEHICLE_STAGES[0].cells.length + VEHICLE_STAGES[0].kit.length);
-  expect(vehicleModel(3).length).toBe(keys.length);
+  // Le modèle SVG a la forme de la dernière étape partie (le voilier avant le premier voyage).
+  expect(vehicleModel(0)).toHaveLength(vehicleForm(1).length);
+  expect(vehicleModel(3)).toHaveLength(vehicleForm(3).length);
+});
+
+it('la Nef mue à chaque passage (GD-15) : une forme neuve, faite en partie des cubes de la précédente, sans perte de place', () => {
+  const pos = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z}`;
+  const compte = (cells: { block: string }[]) => cells.reduce<Record<string, number>>((n, c) => ({ ...n, [c.block]: (n[c.block] ?? 0) + 1 }), {});
+  VEHICLE_STAGES.forEach((s, i) => {
+    // Aucune case en double dans une forme.
+    const form = vehicleForm(s.stage).map(pos);
+    expect(new Set(form).size, s.id).toBe(form.length);
+    if (i === 0) return expect(s.kept).toEqual([]);
+    // Les pièces neuves et le kit se montrent à leur place finale, jamais sur une case de la forme d'avant.
+    const avant = new Set(vehicleForm(s.stage - 1).map(pos));
+    for (const c of [...s.cells, ...s.kit]) expect(avant.has(pos(c)), `${s.id} ${pos(c)}`).toBe(false);
+    // Ce que la forme reprend vient de la forme d'avant, bloc par bloc : la coque devient nacelle, puis cabine.
+    const dispo = compte(vehicleForm(s.stage - 1));
+    for (const [b, n] of Object.entries(compte(s.kept))) expect(n, `${s.id} ${b}`).toBeLessThanOrEqual(dispo[b] ?? 0);
+    // La lanterne de proue passe d'une forme à l'autre (GD-15, le fil qui fait reconnaître la Nef).
+    expect(s.kept.some((c) => c.block === BLOC.lanterne && c.y === 0), s.id).toBe(true);
+  });
+  // Les formes changent vraiment : la silhouette n'est jamais la même (hauteur ou largeur).
+  const boite = (n: number) => {
+    const f = vehicleForm(n);
+    return `${Math.min(...f.map((c) => c.x))}-${Math.max(...f.map((c) => c.x))}/${Math.max(...f.map((c) => c.z))}`;
+  };
+  expect(new Set([boite(1), boite(2), boite(3)]).size).toBe(3);
+});
+
+it('le Bloc-Navire d’avant la Nef : une étape finie le reste, des blocs posés à moitié reviennent dans l’inventaire', () => {
+  for (const s of VEHICLE_STAGES) {
+    const avant = [...formerVehicleStage(s.id)!.entries()];
+    const fini = sanitizeState({ world: { parts: { [s.id]: avant.map(([k]) => k) } } });
+    expect(fini.world.parts[s.id], s.id).toEqual(planCells(s).map((c) => c.key));
+    expect(fini.stock).toEqual({});
+    // Une sauvegarde d'avant se reconnaît à une case hors du nouveau dessin (celles qui y tombent se relisent posées).
+    const nouveau = new Set(planCells(s).map((c) => c.key));
+    const moitie = avant.filter(([k]) => !nouveau.has(k)).slice(0, 10);
+    const commence = sanitizeState({ world: { parts: { [s.id]: moitie.map(([k]) => k) } } });
+    expect(commence.world.parts[s.id], s.id).toBeUndefined();
+    const rendu: Record<string, number> = {};
+    for (const [, b] of moitie) rendu[b] = (rendu[b] ?? 0) + 1;
+    expect(commence.stock).toEqual(rendu);
+  }
 });
 
 it('les cases du navire sont sur le quai, devant l’île-port, sous le niveau de son sol quand elle est en altitude', () => {

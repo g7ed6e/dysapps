@@ -28,7 +28,7 @@ Le contenu livré, île par île, est décrit par les pages générées (archipe
 ### La classe affichée
 
 - La classe s’affiche sur les cartes et, au pied, sur le panneau d’une île (« Niveau 5e »). Les pages Français, Maths et Anglais listent les îles de leur matière, de la 6e à la 3e ; les archipels pas encore atteints y sont repliés.
-- Aucune île n’est imposée : un élève de 3e peut commencer par la Forêt. L’anglais donne plus de choix, pas plus d’obstacles : il ne change pas les étapes du Bloc-Navire.
+- Aucune île n’est imposée : un élève de 3e peut commencer par la Forêt. L’anglais donne plus de choix, pas plus d’obstacles : il ne change pas les étapes de la Nef.
 
 ### Les îles par archipel et par matière
 
@@ -62,7 +62,7 @@ Ce qui s’ajoute aux principes dys :
 Plan validé par le mainteneur le 28 septembre 2026.
 
 - **Une LV2 par défaut, l’espagnol** (décision du mainteneur, 28 septembre 2026), la LV2 de la grande majorité des collégiens. Les Réglages proposent **Espagnol** (par défaut), **Allemand** ou **Pas de LV2** (dispense, par exemple dans un PAP ou un PPS). Le choix est gardé par appareil et se change à tout moment. Aucune question n’est posée à l’arrivée : l’île s’ouvre en espagnol, et les Réglages permettent de changer.
-- **La langue non choisie n’apparaît nulle part.** Sans LV2, l’île n’apparaît pas, et rien ne manque ailleurs (ni ouvrage, ni succès, ni étape du Bloc-Navire).
+- **La langue non choisie n’apparaît nulle part.** Sans LV2, l’île n’apparaît pas, et rien ne manque ailleurs (ni ouvrage, ni succès, ni étape de la Nef).
 - **Le programme** : celui de langues vivantes du cycle 4, commun à toutes les langues. La LV2 commence en 5e : cycle 4 seulement, jamais de cycle 3. Niveau A1 visé en 5e et 4e, A2 dans plusieurs activités en fin de 3e. Le référentiel recopie les 20 compétences de l’anglais en `c4.de.*` et `c4.es.*` (mêmes libellés, mêmes pages, domaines `c4-de-*` et `c4-es-*`) ; les mêmes restent hors périmètre (parler en continu, la phonologie produite, l’écriture libre), et le passif reste hors du niveau A2.
 - **Le contenu par classe** :
 

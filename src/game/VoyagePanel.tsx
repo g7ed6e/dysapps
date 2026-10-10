@@ -28,8 +28,8 @@ export function voyageSentence(to: ArchipelagoId, back: boolean, noms: NomsArchi
   if (back && forward) return `Tu embarques sur ${VEHICLE_NAME}. Cap sur les ${a.name}.`;
   if (back) return `Tu embarques sur ${VEHICLE_NAME}. Retour vers les ${a.name}.`;
   if (to === '5e') return `Tu embarques sur ${VEHICLE_NAME}. Cap sur les ${a.name} !`;
-  if (to === '4e') return `Le ballon se gonfle. ${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} s’envole vers les ${a.name} !`;
-  return `Le réacteur s’allume. ${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} monte vers les ${a.name} !`;
+  if (to === '4e') return `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} passe au-dessus des nuages. Cap sur les ${a.name} !`;
+  return `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} déploie son aile et monte vers les ${a.name} !`;
 }
 
 /**
@@ -52,7 +52,7 @@ export function VoyagePanel({ to, back, onArrive }: Props) {
       <h2 id="voyage-title" className="voyage-title">
         <Icon name="ship" /> Le voyage
       </h2>
-      <VoxelScene cubes={vehicleModel(level)} s={9} pad={6} className="voyage-ship" label="Le Bloc-Navire" />
+      <VoxelScene cubes={vehicleModel(level)} s={9} pad={6} className="voyage-ship" label="La Nef" />
       <p className="voyage-text" role="status" aria-live="polite">
         <Syllabified text={text} />
         <SpeakButton text={text} label="Réécouter" compact />

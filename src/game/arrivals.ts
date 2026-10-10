@@ -10,11 +10,11 @@ export function pagesDArrivee(a: ArchipelagoId, noms: NomsArchipels): string[] {
       return [];
     case '5e':
       return [
-        'Le Bloc-Navire reste au port, sur le Marché des proportions. Pour revenir en 6e, ouvre le panneau du Marché et touche Revenir. Pour aller en 4e, il lui faut un ballon : ses blocs se posent ici.',
+        'La Nef reste au port, sur le Marché des proportions. Pour revenir en 6e, ouvre le panneau du Marché et touche Revenir. Pour aller en 4e, elle doit devenir dirigeable : ses blocs se posent ici.',
       ];
     case '4e':
-      return [`Le Bloc-Navire est amarré à l’Atelier du calcul littéral. Son réacteur se construit ici : quand il est prêt, tu monteras jusqu’aux ${noms['3e']}.`];
+      return [`La Nef est amarrée à l’Atelier du calcul littéral. Son aile se construit ici : quand elle est prête, tu monteras jusqu’aux ${noms['3e']}.`];
     case '3e':
-      return ['Le phare de Fi te guide. Le Bloc-Navire peut te ramener sur n’importe quel archipel : ouvre le panneau du Phare et choisis.'];
+      return ['Le phare de Fi te guide. La Nef peut te ramener sur n’importe quel archipel : ouvre le panneau du Phare et choisis.'];
   }
 }

@@ -20,12 +20,12 @@ it('les blocs de finition, l’or et le cristal sont des trophées ; ni les bloc
   for (const b of [BLOC.bois, BLOC.brique, BLOC.poutre]) expect(blocTrophee(b), b).toBe(false);
 });
 
-it('un bloc sert au Bloc-Navire, jamais au bâtiment de son île (il se pose tout seul, GD-6)', () => {
+it('un bloc sert à la Nef, jamais au bâtiment de son île (il se pose tout seul, GD-6)', () => {
   const fresh = sanitizeState({});
   const uses = blockUses(fresh, BLOC.bois);
   expect(uses.map((u) => u.kind)).toEqual(['navire']);
-  expect(uses[0]).toMatchObject({ island: 'maths-6e-calculation', need: 20, enough: false });
-  // Avec assez de blocs, l'étape du navire est faisable.
+  expect(uses[0]).toMatchObject({ island: 'maths-6e-calculation', need: 18, enough: false });
+  // Avec assez de blocs, la forme de la Nef est faisable.
   const rich = sanitizeState({ stock: { [BLOC.bois]: 20 } });
   expect(blockUses(rich, BLOC.bois)[0].enough).toBe(true);
 });
@@ -53,23 +53,23 @@ it('ne regarde que les îles ouvertes de l’archipel où l’on est, et le navi
   const fresh = sanitizeState({});
   // La Mine est fermée : la pierre ne sert qu'au navire, rien sur la Mine.
   expect(blockUses(fresh, BLOC.pierre).some((u) => u.island === 'french-6e-letter-confusion')).toBe(false);
-  // Le sable sert à la coque (navire) même si la Carrière, son île, est fermée.
+  // Le sable sert au voilier (la Nef) même si la Carrière, son île, est fermée.
   expect(blockUses(fresh, BLOC.sable).map((u) => u.kind)).toContain('navire');
   expect(blockUses(fresh, BLOC.sable).some((u) => u.island === 'french-6e-word-spelling')).toBe(false);
-  // Dans les Îles Brumeuses, le ballon se construit sur le Marché ; la coque (voyage fait) n'est plus un chantier.
+  // Dans les Îles Brumeuses, le dirigeable se construit sur le Marché ; le voilier (voyage fait) n'est plus un chantier.
   const away = sanitizeState({ world: { links: ['passage-5e'], place: 'maths-5e-proportionality' } });
   expect(blockUses(away, BLOC.sable)).toEqual([]);
-  expect(blockUses(away, BLOC.toile).map((u) => u.kind)).toContain('navire');
+  expect(blockUses(away, BLOC.glace).map((u) => u.kind)).toContain('navire');
 });
 
-it('les blocs à aller chercher : ceux qui manquent au Bloc-Navire à portée, avec leur île', () => {
+it('les blocs à aller chercher : ceux qui manquent à la Nef à portée, avec leur île', () => {
   const fresh = sanitizeState({ stock: { [BLOC.bois]: 10 } });
   const missing = missingNow(fresh);
   const bois = missing.find((m) => m.block === BLOC.bois)!;
-  // 20 pour la coque, moins 10 en poche ; le bâtiment de la Forêt n'en demande plus (GD-6).
-  expect(bois).toMatchObject({ need: 20 - 10, island: 'french-6e-phonology', closed: false });
+  // 18 pour le voilier, moins 10 en poche ; le bâtiment de la Forêt n'en demande plus (GD-6).
+  expect(bois).toMatchObject({ need: 18 - 10, island: 'french-6e-phonology', closed: false });
   expect(missing.find((m) => m.block === BLOC.brique)).toBeUndefined();
-  // Le galet de la coque se gagne sur la Rivière, encore fermée.
+  // Le galet du voilier se gagne sur la Rivière, encore fermée.
   expect(missing.find((m) => m.block === BLOC.galet)).toMatchObject({ island: 'maths-6e-fractions', closed: true });
   // Rien de la Mine (fermée) ni d'un autre archipel.
   expect(missing.some((m) => m.block === BLOC.pierre && m.need > 1)).toBe(false);

@@ -66,7 +66,7 @@ it('le Bloc-Navire prêt à partir passe devant tout', () => {
   const hull = { ...plans, [coque.id]: planCells(coque).map((c) => c.key) };
   const gardiens = Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion'].map((id) => [`${id}-challenge`, { stars: 2, attempts: 1, best: 1 }]));
   const state = sanitizeState({ progress: { ...gardiens, ...joue('french-6e-phonology', 1) }, world: { place: 'french-6e-phonology', parts: hull, links: ['french-6e-phonology-french-6e-letter-confusion'] } });
-  expect(nextDestination(state)).toMatchObject({ island: 'maths-6e-calculation', text: 'Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !' });
+  expect(nextDestination(state)).toMatchObject({ island: 'maths-6e-calculation', text: 'La Nef est prête : embarque vers les Îles Brumeuses !' });
 });
 
 it('sans objectif, la destination est le port, avec ce qu’il faut pour le village', () => {

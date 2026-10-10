@@ -48,7 +48,7 @@ export function ArchipelagosSheet({ onClose, onGo }: Props) {
           if (next && status) {
             const shipyard = thePlace(getBiome(next.biome)?.name ?? next.biome);
             if (left.length > 1) need = `Il faut d’abord ${VEHICLE_NAME} avec ${left.map((v) => stageTo(v.toClasse)?.short).join(', puis ')}. Commence au port, sur ${shipyard}.`;
-            else if (launch?.ok) need = `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} est prêt sur ${shipyard} : embarque !`;
+            else if (launch?.ok) need = `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} est prête sur ${shipyard} : embarque !`;
             else if (launch && !launch.ok && launch.reason === 'gardiens')
               need = `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} a tous ses blocs sur ${shipyard} : ${textes.libelles.encoreAFaire(launch.missing)}.`;
             else need = `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} se construit sur ${shipyard} : ${status.done} blocs posés sur ${status.total}.`;

@@ -1098,7 +1098,7 @@ export function WorldPage() {
             situer={situer}
             chantier={Boolean(island)}
             className="voxel-canvas-stage"
-            label={`${UNIVERS[univers].nom} en 3D : les ${textes.archipels[a]}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
+            label={`${UNIVERS[univers].nom} en 3D : les ${textes.archipels[a]}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et la Nef au port`}
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />

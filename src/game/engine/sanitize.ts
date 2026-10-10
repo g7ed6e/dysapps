@@ -9,6 +9,7 @@ import { getPlan, planCells } from '../world/plans';
 import { getStage, stageFor } from '../world/vehicle';
 import { getMonument } from '../world/monuments';
 import { casesDeLaPetiteConstruction, estPosee } from '../world/fixtures';
+import { formerVehicleStage } from '../world/formerVehicle';
 import { planV1 } from '../world/plansV1';
 import { bridgesFromLegacyProgress, getBridge, getVoyage, grantAccess, isBiomeUnlocked, legacyReachable } from '../world/archipelago';
 import { lireTirage, recetteDe, type TirageAssemblage } from '../world/assembly';
@@ -146,6 +147,18 @@ export function sanitizeState(input: unknown): GameState {
       const cells = planCells(plan);
       const valid = new Set(cells.map((c) => c.key));
       const saved = [...new Set(keys.filter((k): k is string => typeof k === 'string'))];
+      // Une étape du Bloc-Navire d'avant la Nef (GD-15), reconnue à une case posée hors du nouveau dessin : finie, elle
+      // le reste ; commencée, ses blocs reviennent tous dans l'inventaire (la nouvelle forme se pose de zéro).
+      const navire = formerVehicleStage(id);
+      if (navire && saved.some((k) => !valid.has(k) && navire.has(k))) {
+        if ([...navire.keys()].every((k) => saved.includes(k))) parts[id] = cells.map((c) => c.key);
+        else
+          for (const k of saved) {
+            const b = navire.get(k);
+            if (b) stock[b] = (stock[b] ?? 0) + 1;
+          }
+        continue;
+      }
       const old = saved.some((k) => !valid.has(k)) ? planV1(id) : undefined;
       if (old && [...old.blocks.keys()].every((k) => saved.includes(k))) {
         parts[id] = cells.map((c) => c.key);

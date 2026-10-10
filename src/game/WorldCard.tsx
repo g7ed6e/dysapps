@@ -1,5 +1,5 @@
 // La fiche d'un objet du monde (lot 2 de « Toucher le monde », spécification du consultant UX UI arbitrée par le
-// directeur artistique) : toucher une borne, le Gardien, le Bloc-Navire, un ouvrage en fantôme, une île pâle ou une
+// directeur artistique) : toucher une borne, le Gardien, la Nef, un ouvrage en fantôme, une île pâle ou une
 // créature ouvre SA fiche, toujours à la même place (en bas, au-dessus de la barre ; en paysage, en bas à gauche), qui
 // ne couvre jamais toute l'île. Peu de texte : un titre, une phrase au plus, un bouton principal. Elle reprend les
 // actions qui existent déjà (Jouer, Défier, Poser le bloc suivant, Embarquer, Construire, Livrer, Reprendre, Plus tard)
@@ -66,7 +66,7 @@ export interface FicheOuverte {
 interface Props {
   fiche: FicheOuverte;
   onClose: () => void;
-  /** Le chantier du Bloc-Navire du port de l'archipel. */
+  /** Le chantier de la Nef au port de l'archipel. */
   ship: VehicleBuilder;
   /** Embarquer (`back` : un voyage déjà fait, vers l’île `dest`). */
   onBoard: (to: ArchipelagoId, back: boolean, dest?: BiomeId) => void;
@@ -300,20 +300,34 @@ const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 /** Un point au bout d'une phrase qui n'a pas sa ponctuation finale. */
 const finDePhrase = (text: string) => (/[.!?…]$/.test(text) ? text : `${text}.`);
 
+/** Les trois pastilles des formes de la Nef : faites (coche), en chantier (pleine), à venir (vide), sans la couleur seule. */
+function PastillesDeLaNef({ stage }: { stage: number }) {
+  return (
+    <span className="signe nef-pastilles">
+      {VEHICLE_STAGES.map((s) => (
+        <span key={s.stage} className={`nef-pastille${s.stage < stage ? ' faite' : s.stage === stage ? ' en-cours' : ''}`}>
+          {s.stage < stage && <Icon name="check" />}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /**
- * Le Bloc-Navire : l'étape en chantier sur ce port, ce qui manque et où le gagner (`EarnLink`) ; « Poser le bloc
- * suivant », ou « Embarquer vers… » quand tout est prêt ; « Poser tout ce que j'ai » en second. Le titre et la phrase
- * parlent du même chantier. Le voyage de ce port déjà fait : une phrase vers l'étape suivante, et « Y aller ».
+ * La Nef (GD-15, option A du consultant UX UI) : une ligne de titre, puis en signes les trois pastilles des formes, la
+ * jauge des blocs posés et, s'il en manque, l'icône des blocs suivie de leur nombre, avec où les gagner (`EarnLink`) ;
+ * un seul bouton, « Poser » (tout ce qu'on a), puis « Partir » quand elle est prête. La voix lit tout en mots. Le voyage
+ * de ce port déjà fait : une phrase vers la forme suivante, et « Y aller ».
  */
 function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId }) {
   const { state } = useBlocland();
   const textes = useTextes();
   const { stage, status, launch } = ship;
+  const titre = cap(VEHICLE_NAME);
   if (!stage || !status) {
-    // Le voyage de ce port est fait : la prochaine étape, sur le port d'un autre archipel (ou plus rien à construire).
+    // Le voyage de ce port est fait : la prochaine forme, sur le port d'un autre archipel (ou plus rien à construire).
     const suite = currentStage(state);
-    const titre = cap(VEHICLE_NAME);
-    const phrase = suite ? `La prochaine étape est au port des ${textes.archipels[suite.from]}.` : `${cap(VEHICLE_NAME)} a fait tous ses voyages.`;
+    const phrase = suite ? `Sa prochaine forme se construit au port des ${textes.archipels[suite.from]}.` : `${titre} a fait tous ses voyages.`;
     return (
       <Fiche
         titre={titre}
@@ -333,19 +347,24 @@ function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId
       </Fiche>
     );
   }
-  const titre = `${cap(VEHICLE_NAME)} : étape ${stage.stage} sur ${VEHICLE_STAGES.length}`;
   const ready = Boolean(launch?.ok);
   const attend = launch && !launch.ok && launch.reason === 'gardiens' ? launch : null;
   // Le premier bloc qui manque (dans l'inventaire aussi) : où le gagner.
   const manque = !ready && !attend ? ((Object.entries(status.missing) as [BlockId, number][]).find(([b, n]) => n > (state.stock[b] ?? 0)) ?? null) : null;
   const ou = manque ? (earnIsland(manque[0])?.name ?? whereToEarn(manque[0])) : '';
-  const phrase = manque
-    ? `${status.done} blocs posés sur ${status.total}. Il manque ${blockCount(manque[0], manque[1] - (state.stock[manque[0]] ?? 0))}, `
+  const manquants = manque ? manque[1] - (state.stock[manque[0]] ?? 0) : 0;
+  const etape = `Étape ${stage.stage} sur ${VEHICLE_STAGES.length}, ${stage.name.charAt(0).toLowerCase()}${stage.name.slice(1)}`;
+  const phrase = ready
+    ? `${titre} est prête : pars vers les ${textes.archipels[stage.to]} quand tu veux.`
     : attend && status.complete
       ? textes.libelles.navireAttend(attend.missing)
-      : finDePhrase(shipSummary(ship, state.stock, textes));
-  const lecture = `${titre}. ${phrase}${manque ? `à gagner dans ${ou}.` : ''}`;
+      : manque
+        ? `${status.done} blocs posés sur ${status.total}. Il manque ${blockCount(manque[0], manquants)}, à gagner dans ${ou}.`
+        : finDePhrase(shipSummary(ship, state.stock, textes));
+  const lecture = `${titre}. ${etape}. ${phrase}`;
   const suivant = getArchipelago(stage.to);
+  // En signes tant qu'on construit ; une phrase quand elle attend ses Gardiens ou qu'elle est prête.
+  const enSignes = !ready && !(attend && status.complete);
   return (
     <Fiche
       titre={titre}
@@ -354,32 +373,44 @@ function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId
       onClose={onClose}
       actions={
         ready ? (
-          <button type="button" className="button primary" onClick={() => onBoard(stage.to, false)}>
-            <Icon name="ship" /> Embarquer vers les {textes.archipels[suivant.classe]}
+          <button type="button" className="button primary" aria-label={`Partir vers les ${textes.archipels[suivant.classe]}`} onClick={() => onBoard(stage.to, false)}>
+            <Icon name="ship" /> Partir
           </button>
         ) : (
           !status.complete &&
           ship.canFill && (
-            <>
-              <button type="button" className="button primary" onClick={ship.fillNext}>
-                <Icon name="hammer" /> Poser le bloc suivant
-              </button>
-              <button type="button" className="button" onClick={ship.fillAll}>
-                <Icon name="blocks" /> Poser tout ce que j’ai
-              </button>
-            </>
+            <button type="button" className="button primary" onClick={ship.fillAll}>
+              <Icon name="hammer" /> Poser
+            </button>
           )
         )
       }
     >
-      <p className="world-fiche-phrase">
-        <Syllabified text={frenchTypography(phrase)} />
-        {manque && (
-          <>
-            <EarnLink block={manque[0]} here={port} />.
-          </>
-        )}
-      </p>
+      {enSignes ? (
+        <>
+          <p className="visually-hidden">{frenchTypography(`${etape}. ${phrase}`)}</p>
+          <p className="world-fiche-phrase fiche-signes" aria-hidden="true">
+            <PastillesDeLaNef stage={stage.stage} />{' '}
+            <span className="signe">
+              <Icon name="cube" /> {status.done}/{status.total}
+            </span>{' '}
+            {manque && (
+              <span className="signe">
+                <Icon name="blocks" /> −{manquants}
+              </span>
+            )}
+          </p>
+          {manque && (
+            <p className="world-fiche-phrase">
+              {blockCount(manque[0], manquants)} <EarnLink block={manque[0]} here={port} />.
+            </p>
+          )}
+        </>
+      ) : (
+        <p className="world-fiche-phrase">
+          <PastillesDeLaNef stage={ready ? stage.stage + 1 : stage.stage} /> <Syllabified text={frenchTypography(phrase)} />
+        </p>
+      )}
       <p className="build-status" role="status" aria-live="polite">
         {ship.notice ? frenchTypography(ship.notice) : ''}
       </p>

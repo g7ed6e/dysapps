@@ -18,13 +18,13 @@ Pas pour l’instant : il n’y a pas d’export. Chaque appareil a sa propre pr
 Par la Forêt des sons (français) ou la Plaine des nombres (maths), les deux îles ouvertes au départ. Une bulle bordée d’or montre la prochaine chose à faire. Le tutoriel en trois étapes se rejoue avec le bouton « ? » de la barre du bas.
 
 **Un élève de 4e ou de 3e doit-il refaire la 6e ?**
-Un peu : le Bloc-Navire qui mène en 5e se construit dans les Basses Terres (une cinquantaine de blocs et trois Gardiens rallumés), puis le ballon en 5e, puis le réacteur en 4e. À l’intérieur d’un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans la direction que l’on veut. Les premières missions servent à gagner les blocs du navire et des premiers ouvrages.
+Un peu : la Nef qui mène en 5e se construit dans les Basses Terres (un voilier d’une trentaine de blocs et trois Gardiens rallumés) ; elle devient dirigeable en 5e, puis aile en 4e. À l’intérieur d’un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans la direction que l’on veut. Les premières missions servent à gagner les blocs du navire et des premiers ouvrages.
 
 **Comment passer en 5e (puis en 4e, en 3e) ?**
-Sur l’île-port de l’archipel (la Plaine des nombres en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e), le panneau a une section « Le Bloc-Navire » : poser ses blocs un à un, rallumer les Gardiens demandés (la voile, le ballon ou les feux apparaissent alors), puis toucher « Embarquer ». Le voyage se joue, un toucher le termine tout de suite, et la créature du port d’en face accueille.
+Sur l’île-port de l’archipel (la Plaine des nombres en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e), le panneau a une section « La Nef » : poser ses blocs, rallumer les Gardiens demandés (la voile, le haut de l’enveloppe ou l’hélice apparaissent alors) ; la Nef change de forme sous tes yeux, puis toucher « Embarquer ». Le voyage se joue, un toucher le termine tout de suite, et la créature du port d’en face accueille.
 
 **Peut-on revenir en 6e ?**
-Oui, toujours. Sur le port de l’archipel où l’on est, la section Bloc-Navire a un bouton « Revenir en 6e » (et « Repartir vers 5e » pour repartir). Rien ne se perd, le Bloc-Navire reste construit.
+Oui, toujours. Sur le port de l’archipel où l’on est, la section de la Nef a un bouton « Revenir en 6e » (et « Repartir vers 5e » pour repartir). Rien ne se perd, la Nef garde sa forme.
 
 **Pourquoi la mission propose-t-elle d’autres mots ou d’autres nombres que la dernière fois ?**
 Chaque partie change (autres nombres en maths, autre tirage de mots en français) et le niveau s’adapte. Les étoiles et le meilleur score de la mission sont gardés quelle que soit la variante.
@@ -33,7 +33,7 @@ Chaque partie change (autres nombres en maths, autre tirage de mots en français
 Il faut au moins deux étoiles sur chaque mission de l’île. Toucher la ligne du Gardien dans le panneau dit quelles missions manquent.
 
 **Comment ouvrir une île fermée ?**
-Toucher l’île (ou l’ouvrir depuis la Carte) : sa créature dit l’ouvrage à construire, depuis quelle île, combien de blocs et la condition éventuelle (une mission réussie sur l’île de départ, seulement pour un escalier ; aucun Gardien n’est une condition). Si l’île est dans un autre archipel, elle dit ce qu’il manque au Bloc-Navire, ou l’archipel où aller d’abord.
+Toucher l’île (ou l’ouvrir depuis la Carte) : sa créature dit l’ouvrage à construire, depuis quelle île, combien de blocs et la condition éventuelle (une mission réussie sur l’île de départ, seulement pour un escalier ; aucun Gardien n’est une condition). Si l’île est dans un autre archipel, elle dit ce qu’il manque à la Nef, ou l’archipel où aller d’abord.
 
 ## Affichage et son
 

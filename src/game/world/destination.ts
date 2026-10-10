@@ -106,7 +106,7 @@ export function nextDestination(state: GameState, noms: NomsArchipels, mots: Mot
   const stage = stageAt(port);
   if (stage && open.has(port) && canLaunch(state, stage).ok) {
     const goal = nextGoalInfo(state, port, noms, mots, lv2);
-    return make(port, goal?.text ?? 'Le Bloc-Navire est prêt.', 1, 1);
+    return make(port, goal?.text ?? 'La Nef est prête.', 1, 1);
   }
   // 2. L'île où il est : un objectif prêt, sinon une mission jamais jouée.
   if (open.has(at)) {

@@ -4221,6 +4221,28 @@ figure.class-table {
 .signe svg {
   flex: none;
 }
+/* Les trois pastilles des formes de la Nef (GD-15) : faite (pleine, avec une coche), en chantier (pleine), à venir
+   (un anneau) ; l'état se lit à la forme, pas à la couleur seule. */
+.nef-pastilles {
+  gap: 6px;
+}
+.nef-pastille {
+  display: inline-grid;
+  place-items: center;
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+}
+.nef-pastille.en-cours,
+.nef-pastille.faite {
+  background: currentColor;
+}
+.nef-pastille.faite svg {
+  width: 0.8em;
+  height: 0.8em;
+  color: var(--surface, #fff);
+}
 /* Le nom d'un lieu dans la ligne du haut ne se coupe pas en fin de ligne : il passe entier à la ligne suivante (il ne
    se coupe que s'il ne tient pas seul sur une ligne). */
 .signe-voisin {

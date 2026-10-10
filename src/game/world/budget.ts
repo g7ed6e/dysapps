@@ -23,7 +23,7 @@ import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
 import { trianglesDeLaBrume } from './decor/mist';
 import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliersDe, sansToursDuCoeur } from './construction';
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, planeurDe, trianglesDe } from './fauna';
-import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
+import { VEHICLE_STAGES } from './vehicle';
 import { bridge, type CaseDOuvrage } from './terrain/links';
 import { DEPTH } from './terrain/base';
 import { GAP_BETWEEN_PLACES, landRectangle } from './footprint';
@@ -452,8 +452,7 @@ function modelesEnCubes(a: ArchipelagoId, partie: ReturnType<typeof toutConstrui
   const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
   return [
     ...[...creaturePlacements(a, village.links), ...guardianPlacements(a, progress, village.links)].map((c) => ({ name: c.id, cubes: c.cubes, tints: true as const })),
-    { name: 'coque', cubes: ship.filter((c) => c.z < MAST_TOP) },
-    { name: 'ballon', cubes: ship.filter((c) => c.z >= MAST_TOP) },
+    { name: 'nef', cubes: ship },
     ...AVATAR_PARTS.map((p) => ({ name: p.name, cubes: p.cubes, tints: true as const })),
   ];
 }
@@ -760,12 +759,11 @@ export function bornesCost(a: ArchipelagoId): { triangles: number; drawCalls: nu
   return coutDesPiliers(piliersDe(archipelArchipeo(a).reste));
 }
 
-/** Le Bloc-Navire d'Archipéo (lot R5) : la coque et le ballon en construction taillée (un appel par groupe non vide). */
+/** La Nef d'Archipéo (lot R5, GD-15) : sa forme en construction taillée, d'un seul groupe. */
 export function navireCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
   const { progress, world: village } = toutConstruit();
   const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
-  const parts = [ship.filter((c) => c.z < MAST_TOP), ship.filter((c) => c.z >= MAST_TOP)].map((cubes) => coutDeLaConstruction(maillageDeLaConstruction(a, cubes, [], { navire: true })));
-  return { triangles: parts.reduce((n, p) => n + p.triangles, 0), drawCalls: parts.reduce((n, p) => n + p.drawCalls, 0) };
+  return coutDeLaConstruction(maillageDeLaConstruction(a, ship, [], { navire: true }));
 }
 
 /**

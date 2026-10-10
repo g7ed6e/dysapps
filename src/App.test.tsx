@@ -125,7 +125,7 @@ it('en vue simple, le voyage en Bloc-Navire est un écran avec une phrase et un 
   const user = userEvent.setup();
   renderAt('/adventure/passage/5e');
   expect(screen.getByRole('dialog', { name: /Le voyage/ })).toBeInTheDocument();
-  expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Cap sur les Collines du Large !');
+  expect(document.body.textContent).toContain('Tu embarques sur la Nef. Cap sur les Collines du Large !');
   await user.click(screen.getByRole('button', { name: /Arriver/ }));
   expect(screen.getByRole('heading', { name: /Marché des proportions/ })).toBeInTheDocument();
   const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
@@ -213,8 +213,8 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   renderAt('/adventure');
   await user.click(screen.getByRole('link', { name: /Mes blocs \(4\)/ }));
   expect(screen.getByRole('heading', { level: 1, name: /Mes blocs/ })).toBeInTheDocument();
-  // Le bois sert au Bloc-Navire, jamais au bâtiment de l'île (il se pose tout seul, GD-6) ; le reste se gagne sur la Forêt.
-  expect(screen.getByRole('link', { name: /Bloc-Navire : encore 16 à gagner/ })).toHaveAttribute('href', '/adventure/maths-6e-calculation');
+  // Le bois sert à la Nef, jamais au bâtiment de l'île (il se pose tout seul, GD-6) ; le reste se gagne sur la Forêt.
+  expect(screen.getByRole('link', { name: /Nef : encore 14 à gagner/ })).toHaveAttribute('href', '/adventure/maths-6e-calculation');
   expect(screen.queryByText(/Plan de /)).not.toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Forêt des sons' })).toHaveAttribute('href', '/adventure/french-6e-phonology');
   // D'abord ce qu'on peut faire tout de suite : 4 blocs paient un ouvrage à 3 blocs.
@@ -265,7 +265,7 @@ it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () =
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
   renderAt('/');
   expect(screen.getByRole('link', { name: /Reprendre l’aventure/ })).toHaveAttribute('href', '/adventure/maths-6e-calculation');
-  expect(document.querySelector('.home-destination')).toHaveTextContent(/^Prochaine destination : Plaine.*Bloc-Navire/);
+  expect(document.querySelector('.home-destination')).toHaveTextContent(/^Prochaine destination : Plaine.*Nef/);
 });
 
 it('quand la prochaine destination est un ouvrage, « Reprendre l’aventure » et « Y aller » ouvrent son île sur lui, mis en avant', async () => {

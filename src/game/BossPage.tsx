@@ -279,7 +279,7 @@ export function BossPage() {
           {shipHint && (
             <p className="panel ship-hint" role="status" aria-live="polite">
               <Icon name="ship" />{' '}
-              <Syllabified text={`Le Bloc-Navire a ses Gardiens : ${shipHint.short} est là ! Va au port, sur ${thePlace(getBiome(shipHint.biome)?.name ?? shipHint.biome)}, finir de le construire.`} />{' '}
+              <Syllabified text={`La Nef a ses Gardiens : ${shipHint.short} est là ! Va au port, sur ${thePlace(getBiome(shipHint.biome)?.name ?? shipHint.biome)}, finir de la construire.`} />{' '}
               <Link to={`/adventure/${getArchipelago(shipHint.from).port}`} className="button">
                 <Icon name="ship" /> Aller au port
               </Link>

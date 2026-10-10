@@ -80,12 +80,12 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
         {stage && status && (
           <>
             <p className="ship-purpose">
-              <Syllabified text={`Quand il est prêt, il t’emmène dans les ${textes.archipels[next.classe]}, l’archipel de ${next.classe}.`} />
+              <Syllabified text={`Quand elle est prête, elle t’emmène dans les ${textes.archipels[next.classe]}, l’archipel de ${next.classe}.`} />
             </p>
             <div
               className="plan-track"
               role="progressbar"
-              aria-label={`Avancement du Bloc-Navire`}
+              aria-label={`Avancement de la Nef`}
               aria-valuemin={0}
               aria-valuemax={status.total}
               aria-valuenow={status.done}
@@ -97,7 +97,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
               <strong>{status.done}</strong> / {status.total} blocs posés
             </p>
             {missing.length > 0 && (
-              <ul className="plan-missing" aria-label="Blocs qu’il manque au Bloc-Navire">
+              <ul className="plan-missing" aria-label="Blocs qu’il manque à la Nef">
                 {missing.map(([block, n]) => (
                   <li key={block}>
                     <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
@@ -113,7 +113,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
             </p>
             {!status.complete && (
               <>
-                {in3d && <p className="view-note">Touche une case transparente du Bloc-Navire, au quai, ou utilise le bouton.</p>}
+                {in3d && <p className="view-note">Touche une case transparente de la Nef, au quai, ou utilise le bouton.</p>}
                 <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
                   <Icon name="hammer" /> Poser le bloc suivant
                 </button>
@@ -141,8 +141,8 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
             <Syllabified
               text={
                 complete
-                  ? 'Le Bloc-Navire est complet : voile, ballon, réacteur. Il te porte où tu veux.'
-                  : `Le Bloc-Navire a déjà fait ce voyage. ${here.stage < VEHICLE_STAGES.length ? `Sa prochaine étape se construit au port des ${textes.archipels[here.to]}.` : ''}`
+                  ? 'La Nef a pris ses trois formes : voilier, dirigeable, aile. Elle te porte où tu veux.'
+                  : `La Nef a déjà fait ce voyage. ${here.stage < VEHICLE_STAGES.length ? `Sa prochaine étape se construit au port des ${textes.archipels[here.to]}.` : ''}`
               }
             />
           </p>
@@ -151,7 +151,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
           {builder.notice ?? ''}
         </p>
         {reached.length > 0 && (
-          <ul className="ship-returns" aria-label="Voyager avec le Bloc-Navire">
+          <ul className="ship-returns" aria-label="Voyager avec la Nef">
             {reached.map((a) => {
               const forward = ARCHIPELAGOS.indexOf(a) > ARCHIPELAGOS.indexOf(current);
               return (

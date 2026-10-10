@@ -120,7 +120,7 @@ vi.mock('./three', () => ({
         Toucher la créature de la Forêt
       </button>
       <button type="button" onClick={() => vehicle && onIntent({ genre: 'navire', port: vehicle.port })}>
-        Toucher le Bloc-Navire
+        Toucher la Nef
       </button>
       <button type="button" onClick={() => onIntent({ genre: 'borne', ile: 'french-6e-phonology', mission: 'syllables' })}>
         Toucher une borne de la Forêt
@@ -305,19 +305,19 @@ it('toucher un fantôme du bâtiment de l’île ne pose rien : le bâtiment se 
   expect(within(sheet()!).queryByRole('button', { name: /Poser le bloc suivant|Poser tout ce que j’ai/ })).not.toBeInTheDocument();
 });
 
-it('le Bloc-Navire est amarré au port de l’archipel ; le toucher ouvre sa fiche : l’étape, ce qui manque et où le gagner', async () => {
+it('la Nef est amarrée au port de l’archipel ; le toucher ouvre sa fiche : l’étape, ce qui manque et où le gagner', async () => {
   vuSansAide();
   const user = userEvent.setup();
   renderAt('/adventure');
   // Sur la Plaine, en chantier : ses cases à poser sont en fantôme.
   expect(screen.getByTestId('navire')).toHaveTextContent(/^maths-6e-calculation \d+$/);
-  await user.click(screen.getByRole('button', { name: 'Toucher le Bloc-Navire' }));
+  await user.click(screen.getByRole('button', { name: 'Toucher la Nef' }));
   // Pas de panneau : la fiche, sans quitter le monde.
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
   expect(screen.queryByRole('dialog', { name: /Plaine des nombres/ })).not.toBeInTheDocument();
-  const f = screen.getByRole('dialog', { name: /Le Bloc-Navire\s:\sétape 1 sur 3/ });
-  expect(f.textContent).toMatch(/0 blocs posés sur 45\. Il manque 18 blocs de sable, à gagner dans Carrière des mots\./);
-  expect(within(f).getByRole('link', { name: 'Carrière des mots' })).toHaveAttribute('href', expect.stringMatching(/^\/adventure\//));
+  const f = screen.getByRole('dialog', { name: 'La Nef' });
+  expect(f.textContent).toMatch(/Étape 1 sur 3, le voilier\. 0 blocs posés sur 27\. Il manque 18 blocs de bois, à gagner dans Forêt des sons\./);
+  expect(within(f).getByRole('link', { name: 'Forêt des sons' })).toHaveAttribute('href', expect.stringMatching(/^\/adventure\//));
   // Rien à poser : pas de bouton grisé.
   expect(within(f).queryByRole('button', { name: /Poser/ })).not.toBeInTheDocument();
 });
@@ -335,7 +335,7 @@ it('embarquer joue le voyage en deux temps : le départ, le changement d’archi
   await user.click(screen.getByRole('button', { name: /Embarquer vers l’archipel de 5e/ }));
   // Le départ : la phrase du voyage, le bouton « Arriver », le panneau replié.
   expect(screen.getByTestId('voyage')).toHaveTextContent('depart 1 aller');
-  expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Cap sur les Collines du Large !');
+  expect(document.body.textContent).toContain('Tu embarques sur la Nef. Cap sur les Collines du Large !');
   expect(screen.queryByRole('dialog', { name: /Plaine des nombres/ })).not.toBeInTheDocument();
   // Fin du départ : sous le voile, l'archipel change, puis l'arrivée se joue.
   await user.click(screen.getByRole('button', { name: 'Fin du temps' }));
@@ -444,8 +444,8 @@ it('la page des quatre archipels : où l’on est, ce qui est ouvert, ce qu’il
   expect(sheet.textContent).toContain('Archipel de 6e — Les Basses Terres');
   expect(sheet.textContent).toContain('Tu es ici');
   expect(sheet.textContent).toContain('Archipel de 5e — Les Collines du Large');
-  expect(sheet.textContent).toContain('Le Bloc-Navire se construit sur la Plaine des nombres : 0 blocs posés sur');
-  expect(sheet.textContent).toContain('Il faut d’abord le Bloc-Navire avec la voile, puis le ballon.');
+  expect(sheet.textContent).toContain('La Nef se construit sur la Plaine des nombres : 0 blocs posés sur');
+  expect(sheet.textContent).toContain('Il faut d’abord la Nef avec la voile, puis l’enveloppe.');
   // « Voir le chantier » mène au port ; « Aller au port » aussi, pour l'archipel où l'on est.
   await user.click(screen.getAllByRole('button', { name: 'Voir le chantier' })[0]);
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/maths-6e-calculation');
@@ -463,7 +463,7 @@ it('à la première arrivée dans un archipel, le mot de la créature de l’îl
   const word = await screen.findByRole('dialog', { name: 'Le mot de Bazar' }, { timeout: 3000 });
   expect(word).toHaveTextContent('Bienvenue dans les Collines du Large');
   await user.click(within(word).getByRole('button', { name: 'Suivant' }));
-  expect(word).toHaveTextContent('Le Bloc-Navire reste au port');
+  expect(word).toHaveTextContent('La Nef reste au port');
   await user.click(within(word).getByRole('button', { name: 'J’ai compris' }));
   expect(screen.queryByRole('dialog', { name: 'Le mot de Bazar' })).not.toBeInTheDocument();
   // Déjà dit : Bazar ne le répète pas.
@@ -861,10 +861,10 @@ it('au premier toucher d’une île pâle, sa créature dit ce que sont les ouvr
   expect(ligne()).toBeUndefined();
 });
 
-it('à la première arrivée au port, sa créature parle du Bloc-Navire, une seule fois par appareil', async () => {
+it('à la première arrivée au port, sa créature parle de la Nef, une seule fois par appareil', async () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true, 'map-reshaped': true }));
-  const ligne = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line') && el.textContent?.includes('le Bloc-Navire attend ses blocs'));
+  const ligne = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line') && el.textContent?.includes('la Nef attend ses blocs'));
   const premier = renderAt('/adventure/maths-6e-calculation');
   expect(ligne()).toBeDefined();
   premier.unmount();

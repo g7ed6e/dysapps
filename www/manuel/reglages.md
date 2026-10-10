@@ -76,7 +76,7 @@ Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’î
   Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), l’appli montre la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles », et un ancien choix « Le monde en 2D » redevient « Le monde en 3D ».
 
   Dessous, **La lumière du monde** : deux choix. **L’heure réelle** (par défaut) : la nuit tombe le soir sur le village (crépuscule à 20 h, aube à 7 h, nuit toujours claire). **Toujours le jour** : le village reste en plein jour. Tant que le tutoriel du village n’a pas été vu, c’est le jour, quel que soit ce choix.
-- **Sons dans le village** : les sons d’action (poser, retirer un bloc, partie posée, plan terminé) et ceux du voyage en Bloc-Navire (corne de brume, voile, brûleur, réacteur, carillon d’arrivée).
+- **Sons dans le village** : les sons d’action (poser, retirer un bloc, partie posée, plan terminé) et ceux du voyage de la Nef (corne de brume, voile, brûleur, moteur, carillon d’arrivée).
 - **Ambiance sonore du village** : vent, oiseaux le jour, grillons la nuit ; désactivée par défaut.
 - **Vibrer à la bonne réponse et à la pose d’un bloc** : une vibration très courte, comme dans les jeux ; seulement sur les téléphones Android (Safari ne sait pas vibrer). Activé par défaut.
 - **Pastille sur l’icône de l’appli** : un simple point sur l’icône de l’appli installée quand des révisions attendent aujourd’hui ; pas de nombre, pas de notification. Affiché par Android, les ordinateurs et les iPhone et iPad récents, pour l’appli installée. Activé par défaut.

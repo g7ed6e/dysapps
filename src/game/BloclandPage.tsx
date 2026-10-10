@@ -49,7 +49,7 @@ function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], c
   const left = remainingVoyages(port, state.world.links);
   const first = stageTo(left[0].toClasse)!;
   const shipyard = getBiome(first.biome)?.name ?? first.biome;
-  if (left.length === 1) return `Archipel fermé. Pour y aller, il faut ${VEHICLE_NAME} avec ${first.short} : construis-le au port, sur ${shipyard}.`;
+  if (left.length === 1) return `Archipel fermé. Pour y aller, il faut ${VEHICLE_NAME} avec ${first.short} : construis-la au port, sur ${shipyard}.`;
   const steps = left.map((v) => stageTo(v.toClasse)!.short).join(', puis ');
   return `Archipel fermé. Il faut d’abord ${VEHICLE_NAME} avec ${steps}. Commence au port, sur ${shipyard}.`;
 }
@@ -95,7 +95,7 @@ export function BloclandPage() {
         <p className="hero-kicker">Aventure</p>
         <h1 className="hero-title">{UNIVERS[univers].nom}</h1>
         <p className="hero-text">
-          <Syllabified text="Le village est en ruine. Toi, tu es le bâtisseur. Chaque exercice réussi te donne des blocs pour le reconstruire, puis le Bloc-Navire t’emmène d’archipel en archipel." />
+          <Syllabified text="Le village est en ruine. Toi, tu es le bâtisseur. Chaque exercice réussi te donne des blocs pour le reconstruire, puis la Nef t’emmène d’archipel en archipel." />
         </p>
         <p className="hero-actions">
           <InventoryLink className="button" />
@@ -190,7 +190,7 @@ export function BloclandPage() {
                       </span>
                       {biome.id === a.port && (
                         <span className="tag">
-                          <Icon name="ship" /> Port{status && !status.complete ? ` · Bloc-Navire ${status.done} / ${status.total}` : ''}
+                          <Icon name="ship" /> Port{status && !status.complete ? ` · la Nef ${status.done} / ${status.total}` : ''}
                         </span>
                       )}
                       {!unlocked && (

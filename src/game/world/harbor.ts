@@ -13,10 +13,12 @@ export const DOCK_DX = 16;
 const DOCK_FLAT = 3;
 
 /**
- * Encombrement du Bloc-Navire (coordonnées locales) : 5 de large (x), 11 de long (y, proue en y = 0), 11 de haut au-dessus
- * du plancher (z = 0), et 2 dessous, pour les réacteurs.
+ * Encombrement de la Nef (coordonnées locales) : sa coque fait 5 de large (x), 11 de long (y, proue en y = 0), 11 de haut
+ * au-dessus du plancher (z = 0), et 2 dessous ; l'aile (GD-15) déborde de 2 cases de chaque côté, en hauteur (`wings`) :
+ * à gauche par-dessus la jetée, à droite d'une case au-dessus de l'eau qui sépare le port de ses voisins (l'emprise du
+ * quai, `dockBox`, n'en tient pas compte).
  */
-export const VEHICLE_SIZE = { w: 5, d: 11, h: 11, below: 2 };
+export const VEHICLE_SIZE = { w: 5, d: 11, h: 11, below: 2, wings: 2 };
 /** La case du pont où le bonhomme se tient (sur le plancher, z local 0). */
 export const VEHICLE_DECK = { x: 2, y: 3 };
 

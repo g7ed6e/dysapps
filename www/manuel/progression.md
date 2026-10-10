@@ -33,7 +33,7 @@ Le bouton **Voir la matière** ouvre la page de la matière, avec toutes ses mis
 
 ## Succès
 
-Une vingtaine de succès jalonnent la progression : les premiers pas (première réponse, première mission), les combos (x5, x10), la mission parfaite, la persévérance (10 missions, 50 puis 200 réponses), les rôles atteints (Maçon, Mécanicien, Ingénieur, Architecte dans Blocland ; Cartographe, Bâtisseur, Navigateur, Architecte de l’archipel dans Archipéo), la construction (Premier bâtiment, Maître d’œuvre pour cinq, les bâtiments de cinq îles, puis ceux de toutes les îles des quatre archipels), les Gardiens (un, cinq, dix, tous), les voyages du Bloc-Navire (Capitaine, Aéronaute, Pilote du ciel) et un premier monument (Patrimoine). La liste exacte est dans [Barème et succès](../pedagogie/bareme.md#succes).
+Une vingtaine de succès jalonnent la progression : les premiers pas (première réponse, première mission), les combos (x5, x10), la mission parfaite, la persévérance (10 missions, 50 puis 200 réponses), les rôles atteints (Maçon, Mécanicien, Ingénieur, Architecte dans Blocland ; Cartographe, Bâtisseur, Navigateur, Architecte de l’archipel dans Archipéo), la construction (Premier bâtiment, Maître d’œuvre pour cinq, les bâtiments de cinq îles, puis ceux de toutes les îles des quatre archipels), les Gardiens (un, cinq, dix, tous), les voyages de la Nef (Capitaine, Aéronaute, Pilote du ciel) et un premier monument (Patrimoine). La liste exacte est dans [Barème et succès](../pedagogie/bareme.md#succes).
 
 ## Dans l’aventure
 
@@ -42,7 +42,7 @@ Une vingtaine de succès jalonnent la progression : les premiers pas (première 
 - **Régularité** : jouer plusieurs jours de suite remplit une série ; tous les trois jours, un coffre de blocs. Un jour manqué fissure la série, réparable le lendemain : elle ne repart pas de zéro d’un coup.
 - **Répétition espacée** : un item raté revient le lendemain, puis trois, sept et quinze jours plus tard, jusqu’à trois réussites d’affilée. C’est ainsi que les mots-outils du Coffre à mots ou les homophones se fixent. Dans l’aventure, la créature de l’île fait signe et propose de reprendre, d’une phrase lue à voix haute, en vue simple aussi ([La créature qui se souvient](blocland.md#la-creature-qui-se-souvient)) ; une révision finie rapporte toujours autant de blocs, quel que soit le score. Quand une révision pose une partie du bâtiment, **Voir le bâtiment** passe avant **Révision suivante**, et le panneau de l’île repropose les révisions au retour.
 - **Niveau adapté** par mission : monte après deux bonnes parties (ou une seule quasi parfaite), redescend après deux parties difficiles, toujours présenté positivement.
-- **Le Bloc-Navire** : chaque étape terminée et chaque voyage rapportent de l’XP ; le voyage fait reste fait, on revient quand on veut.
+- **La Nef** : chaque forme terminée et chaque voyage rapportent de l’XP ; le voyage fait reste fait, on revient quand on veut.
 - **Journal du village** : chaque bâtiment terminé est daté ; le profil compte les bâtiments et les Gardiens rallumés.
 
 ## Suivre la progression d’un élève

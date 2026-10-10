@@ -60,7 +60,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     const r = fillPlan(stage, x, y, z);
     if (!r.ok) {
       if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut ${blockCount(r.block, 1)} : ${allerChercher(r.block)}.`);
-      else if (r.reason === 'deja-pose') setNotice('Ce bloc du Bloc-Navire est déjà posé.');
+      else if (r.reason === 'deja-pose') setNotice('Ce bloc de la Nef est déjà posé.');
       sound(playNope);
       return;
     }
@@ -80,7 +80,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   };
   const finished = (done: VehicleStage) => {
     const msg = kit
-      ? `Le Bloc-Navire a tous ses blocs ! ${done.fin(textes.archipels[done.to])}`
+      ? done.fin(textes.archipels[done.to])
       : textes.libelles.navireAttend(done.guardians, done.short);
     setNotice(msg);
     sound(playDone);
@@ -92,7 +92,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     if (!last) return;
     burstAt(last.x, last.y, last.z, last.block);
     if (completed) return finished(stage);
-    setNotice(`${placed} bloc${placed > 1 ? 's' : ''} posé${placed > 1 ? 's' : ''} sur le Bloc-Navire.`);
+    setNotice(`${placed} bloc${placed > 1 ? 's' : ''} posé${placed > 1 ? 's' : ''} sur la Nef.`);
     sound(playPlace);
     haptics.place();
   };

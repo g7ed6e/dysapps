@@ -550,7 +550,7 @@ export const BLOCLAND = {
     resistance: (reste, total) => `Encore ${reste} épreuve${s(reste)} sur ${total} pour lui rendre ses couleurs`,
     dejaFaitArene: (gardien) => `${gardien} a déjà ses couleurs. Tu peux rejouer son défi quand tu veux.`,
     encoreAFaire: (n) => `encore ${n} Gardien${s(n)} à rallumer`,
-    navireAttend: (n, piece) => `Le Bloc-Navire a tous ses blocs ! Il attend encore ${n} Gardien${s(n)} rallumé${s(n)}${piece ? ` pour ${piece}` : ''}.`,
+    navireAttend: (n, piece) => `La Nef a tous ses blocs ! Elle attend encore ${n} Gardien${s(n)} rallumé${s(n)}${piece ? ` pour ${piece}` : ''}.`,
     navireGardiens: (faits, total, archipel, piece) =>
       faits >= total ? `Gardiens : c’est fait ! ${faits} sur ${total}, ${piece} est là.` : `Gardiens : encore ${total - faits} à rallumer dans les ${archipel} pour ${piece}.`,
     faitsSur: (n, total) => `${n} Gardien${s(n)} rallumé${s(n)} sur ${total}`,
@@ -561,7 +561,7 @@ export const BLOCLAND = {
     decouverteOuvrages:
       'Les îles pâles sont fermées. Pour y venir, pose un ouvrage. Il part de l’île de ton choix. Chaque ouvrage coûte le même nombre de blocs.',
     navireGardiensManquants: (n, archipel) => `rallume encore ${n} Gardien${s(n)} des ${archipel}`,
-    decouverteNavire: 'Ici, au port, le Bloc-Navire attend ses blocs. Quand il est prêt, embarque : un autre archipel t’attend, et tu peux toujours revenir.',
+    decouverteNavire: 'Ici, au port, la Nef attend ses blocs. Quand elle est prête, embarque : un autre archipel t’attend, et tu peux toujours revenir.',
   },
   // Les couleurs ne disent que les réussites : « lui rendre ses couleurs », sans accord selon le Gardien (GD-8).
   sentinelles: {
@@ -613,9 +613,9 @@ export const BLOCLAND = {
     parle: 'ecole',
     arrivee: {
       '6e': 'Salut, bâtisseur ! Moi, c’est Mousso, un golem de mousse. Ici, tout se bâtit bloc par bloc, et je t’aide.',
-      '5e': 'Le Bloc-Navire a fait sa traversée ! Moi, c’est Bazar, le raton laveur du marché. Bienvenue dans les Collines du Large : ici, on compte ses blocs avant de bâtir.',
-      '4e': 'Bip. Le Bloc-Navire a fait sa traversée. Moi, c’est Ixe, le robot dessinateur. Bienvenue dans les Monts de Feu : ici, le feu du volcan fait tourner les machines. À toi d’en bâtir !',
-      '3e': 'Le Bloc-Navire a fait sa traversée. Moi, c’est Fi, la lampe du phare. Bienvenue dans les Îles du Ciel : je t’éclaire, bâtisseur, on bâtit tout en haut.',
+      '5e': 'La Nef a fait sa traversée ! Moi, c’est Bazar, le raton laveur du marché. Bienvenue dans les Collines du Large : ici, on compte ses blocs avant de bâtir.',
+      '4e': 'Bip. La Nef a fait sa traversée. Moi, c’est Ixe, le robot dessinateur. Bienvenue dans les Monts de Feu : ici, le feu du volcan fait tourner les machines. À toi d’en bâtir !',
+      '3e': 'La Nef a fait sa traversée. Moi, c’est Fi, la lampe du phare. Bienvenue dans les Îles du Ciel : je t’éclaire, bâtisseur, on bâtit tout en haut.',
     },
     gardiens: (archipel) => `Tous les Gardiens des ${archipel} ont retrouvé leurs couleurs ! Ils veillent sur ton chantier.`,
     port: (ile) => `Chantier fini : ${ile} ! Bloc après bloc, ton archipel grandit.`,
@@ -631,7 +631,7 @@ export const BLOCLAND = {
     'rang-or': { title: 'Mécanicien', description: 'Devenir Mécanicien : tu fais tourner les machines.' },
     'rang-diamant': { title: 'Ingénieur', description: 'Devenir Ingénieur : tu inventes des machines.' },
     'rang-legende': { title: 'Architecte', description: 'Devenir Architecte : tu dessines les plans du village.' },
-    aeronaute: { title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Monts de Feu.' },
+    aeronaute: { title: 'Aéronaute', description: 'Mener la Nef au-dessus des nuages et rejoindre les Monts de Feu.' },
   },
   // Dit une fois par appareil, à un élève qui jouait déjà avant les nouveaux noms (src/game/Renaming.tsx).
   renommage: {

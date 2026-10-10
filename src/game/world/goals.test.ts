@@ -69,9 +69,9 @@ it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses
   // Les ouvrages de la Plaine construits : le chantier du navire.
   const plans = Object.fromEntries(plansFor('maths-6e-calculation').map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const built = ['maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals', 'french-6e-grammar-spelling-maths-6e-calculation'];
-  expect(nextGoal(sanitizeState({ world: { parts: plans, links: built } }), 'maths-6e-calculation')).toMatch(/^Encore \d+ blocs? de (sable|bois)( et \d+ [^.]+)? pour le Bloc-Navire\.$/);
+  expect(nextGoal(sanitizeState({ world: { parts: plans, links: built } }), 'maths-6e-calculation')).toMatch(/^Encore \d+ blocs? de (sable|bois)( et \d+ [^.]+)? pour la Nef\.$/);
   const stocked = sanitizeState({ world: { parts: plans, links: built }, stock: { [BLOC.sable]: 30, [BLOC.bois]: 30, [BLOC.galet]: 10, [BLOC.pierre]: 5 } });
-  expect(nextGoal(stocked, 'maths-6e-calculation')).toBe('Tu as tout pour le Bloc-Navire : pose tes blocs.');
+  expect(nextGoal(stocked, 'maths-6e-calculation')).toBe('Tu as tout pour la Nef : pose tes blocs.');
   // Toutes ses cases posées : il manque des Gardiens.
   const hull = { ...plans, [coque.id]: planCells(coque).map((c) => c.key) };
   const posed = sanitizeState({ world: { parts: hull, links: built }, progress: guardians(['french-6e-phonology']) });
@@ -79,7 +79,7 @@ it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses
   expect(nextGoal(posed, 'maths-6e-calculation', 'archipeo')).toBe('Rallume encore 2 Gardiens des Premiers Rivages pour la voile.');
   // Trois Gardiens : prêt à partir, et c'est la seule phrase.
   const ready = sanitizeState({ world: { parts: hull, links: built }, progress: guardians(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion']) });
-  expect(nextGoal(ready, 'maths-6e-calculation')).toBe('Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !');
+  expect(nextGoal(ready, 'maths-6e-calculation')).toBe('La Nef est prête : embarque vers les Îles Brumeuses !');
   // Parti : plus un mot du navire sur ce port (la Mine, ouverte par son Gardien, est reliée à la Plaine par le pont qui
   // les sépare depuis les formes des îles, GD-12).
   const sailed = sanitizeState({ world: { parts: hull, links: [...built, 'french-6e-letter-confusion-maths-6e-calculation', 'passage-5e'] }, progress: guardians(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion']) });
@@ -139,27 +139,27 @@ it('une île d’un autre archipel parle du Bloc-Navire : ses blocs, ses Gardien
   const fresh = sanitizeState({});
   const total = coque.cells.length;
   expect(lockedHint(fresh, 'french-5e-homophones')).toBe(
-    `Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Finis le Bloc-Navire sur la Plaine des nombres : encore ${total} blocs.`,
+    `Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Finis la Nef sur la Plaine des nombres : encore ${total} blocs.`,
   );
   const hull = { [coque.id]: planCells(coque).map((c) => c.key) };
   expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['french-6e-phonology', 'maths-6e-calculation']) }), 'maths-5e-proportionality')).toBe(
-    'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire attend sur la Plaine des nombres : rallume encore 1 Gardien des Premiers Rivages, puis embarque.',
+    'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. La Nef attend sur la Plaine des nombres : rallume encore 1 Gardien des Premiers Rivages, puis embarque.',
   );
   expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion']) }), 'maths-5e-proportionality')).toBe(
-    'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire est prêt sur la Plaine des nombres : embarque !',
+    'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. La Nef est prête sur la Plaine des nombres : embarque !',
   );
   // Deux archipels plus loin : d'abord le précédent.
-  expect(lockedHint(fresh, 'maths-4e-powers')).toBe('Pas si vite ! Mon île est dans les Anciens Ateliers. Va d’abord jusqu’aux Îles Brumeuses avec le Bloc-Navire.');
+  expect(lockedHint(fresh, 'maths-4e-powers')).toBe('Pas si vite ! Mon île est dans les Anciens Ateliers. Va d’abord jusqu’aux Îles Brumeuses avec la Nef.');
   expect(lockedHint(sanitizeState({ world: { links: ['passage-5e'] } }), 'maths-3e-functions')).toBe(
-    'Pas si vite ! Mon île est dans les Îles du Ciel. Va d’abord jusqu’aux Anciens Ateliers avec le Bloc-Navire.',
+    'Pas si vite ! Mon île est dans les Îles du Ciel. Va d’abord jusqu’aux Anciens Ateliers avec la Nef.',
   );
-  expect(lockedHint(sanitizeState({ world: { links: ['passage-5e', 'passage-4e'] } }), 'maths-3e-functions')).toContain('de l’autre côté du ciel. Finis le Bloc-Navire sur l’Atelier du calcul littéral');
+  expect(lockedHint(sanitizeState({ world: { links: ['passage-5e', 'passage-4e'] } }), 'maths-3e-functions')).toContain('de l’autre côté du ciel. Finis la Nef sur l’Atelier du calcul littéral');
 });
 
 it('dans Archipéo, l’indice d’une île fermée dit un Gardien rallumé, jamais vaincu ni battu', () => {
   const hull = { [coque.id]: planCells(coque).map((c) => c.key) };
   expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['french-6e-phonology', 'maths-6e-calculation']) }), 'maths-5e-proportionality', 'archipeo')).toBe(
-    'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire attend sur la Plaine des nombres : rallume encore 1 Gardien des Premiers Rivages, puis embarque.',
+    'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. La Nef attend sur la Plaine des nombres : rallume encore 1 Gardien des Premiers Rivages, puis embarque.',
   );
   // L'Atelier des textes, au bout du Phare des fonctions, seul lieu relié des Îles du Ciel : la liaison ne demande que
   // des blocs, aucun Gardien (GD-7, GD-9).
@@ -267,7 +267,7 @@ it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrag
     progress: { ...progress, ...guardians(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion']) },
     world: { place: 'french-6e-phonology', links: [], parts: { [coque.id]: hull } },
   });
-  expect(nextGoal(pret, 'maths-6e-calculation')).toBe('Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !');
+  expect(nextGoal(pret, 'maths-6e-calculation')).toBe('La Nef est prête : embarque vers les Îles Brumeuses !');
 });
 
 it('la suggestion ne dépend que de la sauvegarde, et deux élèves de la même classe n’ont pas le même archipel après trois séances', () => {

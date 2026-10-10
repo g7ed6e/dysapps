@@ -260,7 +260,7 @@ function missingBlocks(state: GameState, missing: [BlockId, number][]) {
 export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens, lv2: Lv2Choice = lv2Courante()): Goal | null {
   const stage = stageAt(island);
   const launch = stage ? canLaunch(state, stage) : null;
-  if (stage && launch?.ok) return { text: `${cap(VEHICLE_NAME)} est prêt : embarque vers les ${noms[stage.to]} !`, have: 1, need: 1, ready: true };
+  if (stage && launch?.ok) return { text: `${cap(VEHICLE_NAME)} est prête : embarque vers les ${noms[stage.to]} !`, have: 1, need: 1, ready: true };
   type Candidate = Goal & { ready: boolean };
   const candidates: Candidate[] = [];
   const world = { progress: state.progress, plans: state.world.parts };
@@ -322,7 +322,7 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
     if (left.length > 1) return `${head}. Va d’abord jusqu’aux ${noms[previousArchipelago(archipelago.classe)!.classe]} avec ${VEHICLE_NAME}.`;
     const travel = archipelago.travel === 'mer' ? 'de la mer' : archipelago.travel === 'airs' ? 'des airs' : 'du ciel';
     const launch = canLaunch(state, stage);
-    if (launch.ok) return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} est prêt sur ${port} : embarque !`;
+    if (launch.ok) return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} est prête sur ${port} : embarque !`;
     if (launch.reason === 'gardiens') {
       const k = stage.guardians - beatenGuardians(stage.from, state.progress);
       return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} attend sur ${port} : ${mots.navireGardiensManquants(k, noms[stage.from])}, puis embarque.`;

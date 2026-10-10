@@ -134,23 +134,24 @@ it('une créature sans rien à proposer : son nom et sa phrase, sans bouton prin
   expect(f.querySelector('.world-fiche-actions')).toBeNull();
 });
 
-it('le Bloc-Navire : « Poser le bloc suivant » et « Poser tout ce que j’ai » quand on peut poser ; « Embarquer » quand tout est prêt', async () => {
+it('la Nef : un seul bouton « Poser » quand on peut poser ; « Partir » quand elle est prête (GD-15)', async () => {
   sauver({});
   const { VEHICLE_STAGES } = await import('./world/vehicle');
-  const fillNext = vi.fn();
-  const pose = chantier({ stage: VEHICLE_STAGES[0], status: { done: 3, total: 45, complete: false, missing: {} } as unknown as VehicleBuilder['status'], canFill: true, fillNext });
+  const fillAll = vi.fn();
+  const pose = chantier({ stage: VEHICLE_STAGES[0], status: { done: 3, total: 27, complete: false, missing: {} } as unknown as VehicleBuilder['status'], canFill: true, fillAll });
   const { unmount } = ouvrir({ objet: { genre: 'navire', port: PLAINE }, seq: 1, saut: false }, { ship: pose });
-  const f = screen.getByRole('dialog', { name: /Le Bloc-Navire\s:\sétape 1 sur 3/ });
-  await userEvent.click(within(f).getByRole('button', { name: /Poser le bloc suivant/ }));
-  expect(fillNext).toHaveBeenCalled();
-  expect(within(f).getByRole('button', { name: /Poser tout ce que j’ai/ })).toBeInTheDocument();
+  const f = screen.getByRole('dialog', { name: 'La Nef' });
+  expect(f).toHaveTextContent('Étape 1 sur 3, le voilier.');
+  expect(within(f).getAllByRole('button').filter((b) => /Poser/.test(b.textContent ?? ''))).toHaveLength(1);
+  await userEvent.click(within(f).getByRole('button', { name: /^Poser$/ }));
+  expect(fillAll).toHaveBeenCalled();
   unmount();
   const onBoard = vi.fn();
-  const pret = chantier({ stage: VEHICLE_STAGES[0], status: { done: 45, total: 45, complete: true, missing: {} } as unknown as VehicleBuilder['status'], launch: { ok: true } as VehicleBuilder['launch'] });
+  const pret = chantier({ stage: VEHICLE_STAGES[0], status: { done: 27, total: 27, complete: true, missing: {} } as unknown as VehicleBuilder['status'], launch: { ok: true } as VehicleBuilder['launch'] });
   ouvrir({ objet: { genre: 'navire', port: PLAINE }, seq: 2, saut: false }, { ship: pret, onBoard });
-  const g = screen.getByRole('dialog', { name: /Le Bloc-Navire/ });
-  expect(g).toHaveTextContent('Prêt : embarque !');
-  await userEvent.click(within(g).getByRole('button', { name: /Embarquer vers les Collines du Large/ }));
+  const g = screen.getByRole('dialog', { name: 'La Nef' });
+  expect(g).toHaveTextContent('La Nef est prête : pars vers les Collines du Large quand tu veux.');
+  await userEvent.click(within(g).getByRole('button', { name: 'Partir vers les Collines du Large' }));
   expect(onBoard).toHaveBeenCalledWith('5e', false);
 });
 
@@ -163,12 +164,12 @@ it('le Gardien rallumé : « Rejouer », avec ses étoiles (GD-8)', () => {
   expect(within(f).getByRole('link', { name: 'Rejouer' })).toHaveAttribute('href', `/adventure/${FORET}/challenge`);
 });
 
-it('le Bloc-Navire dont le voyage de ce port est fait : le titre sans étape, la prochaine étape, « Y aller »', async () => {
+it('la Nef dont le voyage de ce port est fait : le titre sans étape, la prochaine forme, « Y aller »', async () => {
   sauver({ world: { parts: {}, log: [], links: ['passage-5e'], place: PLAINE } });
   const onBoard = vi.fn();
   ouvrir({ objet: { genre: 'navire', port: PLAINE }, seq: 1, saut: false }, { onBoard });
-  const f = screen.getByRole('dialog', { name: 'Le Bloc-Navire' });
-  expect(f).toHaveTextContent('La prochaine étape est au port des Collines du Large.');
+  const f = screen.getByRole('dialog', { name: 'La Nef' });
+  expect(f).toHaveTextContent('Sa prochaine forme se construit au port des Collines du Large.');
   expect(f).not.toHaveTextContent('étape 1');
   await userEvent.click(within(f).getByRole('button', { name: /Y aller/ }));
   expect(onBoard).toHaveBeenCalledWith('5e', true, 'maths-5e-proportionality');
