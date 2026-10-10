@@ -44,4 +44,6 @@ if not o.data.color_attributes:
         k.color = (*lin, 1)
     o.data.color_attributes.active_color = c
 print("triangles", len(o.data.polygons))
+# Sans matériau : celui d'un brut porte sa texture, que le fichier embarquerait (dix fois son poids).
+o.data.materials.clear()
 bpy.ops.export_scene.gltf(filepath=dst, use_selection=True, export_texcoords=False, export_vertex_color="ACTIVE", export_all_vertex_colors=False)

@@ -6,7 +6,7 @@
 #
 #   python3 squelette.py -- <dossier d'un modèle> <quarts de tour> [réglages]
 #
-# <quarts de tour> : ceux de src/game/world/characters/imported/models.ts (le modèle tourné vers l'élève). Réglages,
+# <quarts de tour> : ceux de src/game/world/characters/imported/models.ts (le modèle tourné vers l'élève ; un demi-quart, 0.5, tourne de 45 degrés). Réglages,
 # facultatifs : cou=0.6 (le haut du dos, en fraction de la hauteur), queue=non (pas de queue), queue=sol (une queue posée au sol), jambes=non (pas de
 # jambes : ni marche ni os de jambe), bras=non (pas de bras qui balancent), bras=L ou bras=R (un seul bras), leve=L ou leve=R (la main levée au-dessus de l'épaule),
 # teinte=L ou teinte=R (un bras collé au corps, pris à sa couleur, la plus sombre du modèle). Quarts et réglages de chaque créature : la colonne « squelette » de
@@ -108,8 +108,8 @@ class Frame:
     def __init__(self, pos, quarts):
         lo, hi = pos.min(0), pos.max(0)
         self.c = np.array([(lo[0] + hi[0]) / 2, lo[1], (lo[2] + hi[2]) / 2])
-        a = quarts * np.pi / 2
-        self.ca, self.sa = round(np.cos(a)), round(np.sin(a))
+        a = quarts * np.pi / 2  # un demi-quart (0.5) tourne de 45 degrés
+        self.ca, self.sa = (round(np.cos(a)), round(np.sin(a))) if float(quarts).is_integer() else (np.cos(a), np.sin(a))
 
     def to_game(self, p):
         x, y, z = -(p[:, 0] - self.c[0]), p[:, 1] - self.c[1], -(p[:, 2] - self.c[2])
@@ -391,7 +391,7 @@ def rig(q, h, settings, col=None):
 
 def main():
     args = sys.argv[sys.argv.index("--") + 1:]
-    folder, quarts = args[0], int(args[1])
+    folder, quarts = args[0], float(args[1])
     settings = dict(a.split("=", 1) for a in args[2:])
     path = os.path.join(folder, "final-1500.glb")
     pos, col = read_glb(path)
