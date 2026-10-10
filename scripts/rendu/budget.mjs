@@ -38,7 +38,13 @@ const server = await createServer({
 });
 try {
   const load = (p) => server.ssrLoadModule(p);
-  const [budget, { ARCHIPELAGO_IDS }] = await Promise.all([load('/src/game/world/budget.ts'), load('/src/game/world/map.ts')]);
+  const [budget, { ARCHIPELAGO_IDS }, { chargerLesMonumentsDuDisque }] = await Promise.all([
+    load('/src/game/world/budget.ts'),
+    load('/src/game/world/map.ts'),
+    load('/src/game/world/monumentModels.fromDisk.testing.ts'),
+  ]);
+  // Les monuments importés d'Archipéo, comme la vue les charge : la construction se compte au pire de leurs chantiers.
+  chargerLesMonumentsDuDisque();
   const demandes = option('--archipel')?.split(',');
   const inconnus = demandes?.filter((a) => !ARCHIPELAGO_IDS.includes(a)) ?? [];
   if (inconnus.length) throw new Error(`Archipel inconnu : ${inconnus.join(', ')} (${ARCHIPELAGO_IDS.join(', ')})`);
