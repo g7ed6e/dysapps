@@ -1,5 +1,5 @@
 // Le mode bâtisseur : une copie de la partie où tout se construit. Les blocs ne manquent jamais, les ponts sont posés
-// et les Gardiens comptent comme vaincus (le Bloc-Navire peut partir). Il vit en mémoire seulement : la sauvegarde est
+// et les Gardiens comptent comme vaincus (la Nef peut partir). Il vit en mémoire seulement : la sauvegarde est
 // gelée pendant qu'il est ouvert, et le quitter recharge la vraie partie.
 import { BLOCKS, BIOMES, type BlockId } from './biomes';
 import { STARS_TO_BEAT, bossId } from './bossCore';

@@ -166,7 +166,7 @@ export function playVictory(): void {
   setTimeout(() => blip(1047, 1047, 0.8, 0.1, 'triangle'), 320);
 }
 
-// ---------- Le voyage du Bloc-Navire ----------
+// ---------- Le voyage de la Nef ----------
 
 /** La corne de brume du départ : deux notes graves qui se suivent. */
 export function playHorn(): void {

@@ -237,7 +237,7 @@ it('les anciennes sauvegardes gardent leurs îles ouvertes : voyages et chemin o
   expect(sanitizeState({ progress: old, world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x', 'french-6e-phonology-french-6e-letter-confusion'] } }).world.links.sort()).toEqual(['french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
   expect(sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x'] } }).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
   // Le continent d'avant : un escalier vers le Glacier valait l'accès aux Collines. Le voyage et le sentier sont offerts,
-  // et l'étape du Bloc-Navire est complète.
+  // et l'étape de la Nef est complète.
   expect(LEGACY_BRIDGES.map((b) => b.id)).toContain('maths-6e-calculation-maths-5e-signed-numbers');
   expect([...legacyReachable(['maths-6e-calculation-maths-5e-signed-numbers'])].sort()).toEqual(['french-6e-phonology', 'maths-5e-signed-numbers', 'maths-6e-calculation']);
   const climbed = sanitizeState({ world: { links: ['maths-6e-calculation-maths-5e-signed-numbers'] } });

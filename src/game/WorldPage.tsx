@@ -119,10 +119,10 @@ declare global {
 /**
  * Blocland en immersion : le monde en 3D occupe tout l'écran, un archipel à la fois (celui où se tient le bonhomme).
  * On touche une île : la caméra y vole et son panneau glisse depuis le bas (créature, missions, plan, Gardien, et sur le
- * port le Bloc-Navire) sans quitter le monde. On peut replier le panneau pour regarder l'île, puis le rouvrir, sans la
+ * port la Nef) sans quitter le monde. On peut replier le panneau pour regarder l'île, puis le rouvrir, sans la
  * quitter. L'URL /adventure/:ile ouvre le panneau, pour revenir au même endroit après un exercice. /adventure/map est la
  * Carte : tout l'archipel vu du ciel, un fanion sur le bonhomme ; on touche une île pour y aller. Embarquer sur le
- * Bloc-Navire change d'archipel (et de scène).
+ * Nef change d'archipel (et de scène).
  */
 export function WorldPage() {
   const { biomeId } = useParams();
@@ -287,7 +287,7 @@ export function WorldPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapOpen]);
-  // Le Bloc-Navire amarré au port de l'archipel : un objet à part, qui tangue.
+  // La Nef amarrée au port de l'archipel : un objet à part, qui tangue.
   const vehicle = useMemo(() => vehiclePlacement(a, state.progress, state.world), [a, state.progress, state.world]);
   // Le panneau de l'île ouverte, en plein écran par-dessus le monde : il ne s'ouvre que par son bouton dans la barre,
   // jamais tout seul (ni à l'arrivée sur une île, ni au retour d'un exercice ou de la Carte).
@@ -307,7 +307,7 @@ export function WorldPage() {
   // Le modèle du monde (world/model.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const modele = useMemo(() => modeleDuMonde(vu, a, textes.archipels, textes.libelles), [a, vu, settings.lv2, textes]);
-  // Ce qui donne au Gardien, au Bloc-Navire et aux chantiers en fantôme leur signe (l'or ou la pierre, world/affordance.ts).
+  // Ce qui donne au Gardien, à la Nef et aux chantiers en fantôme leur signe (l'or ou la pierre, world/affordance.ts).
   const etats = useMemo(() => etatsDesObjets(vu, a), [vu, a]);
   const quests = useMemo<QuestMark[]>(
     () =>
@@ -420,9 +420,9 @@ export function WorldPage() {
     setReplay((n) => n + 1);
   };
   useAmbience(forceDay);
-  // Le chantier du Bloc-Navire sur le port, et celui d'un monument : case par case (bouton du panneau ou case bleue
+  // Le chantier de la Nef sur le port, et celui d'un monument : case par case (bouton du panneau ou case bleue
   // touchée dans le monde). Le bâtiment de l'île, lui, se pose tout seul, une partie par mission réussie (GD-6).
-  // La fiche du Bloc-Navire a le chantier du port, d'où qu'on la touche.
+  // La fiche de la Nef a le chantier du port, d'où qu'on la touche.
   const ship = useVehicleBuilder(fiche?.objet.genre === 'navire' ? archipelago.port : (island?.id ?? archipelago.port));
   const monumentBuilder = useMonumentBuilder(monument ?? monumentsOf(a)[0]);
   const reunionBuilder = useJoinBuilder(reunion?.plan ?? SANS_REUNION, reunion?.shape ?? null);
@@ -462,7 +462,7 @@ export function WorldPage() {
   // L'élève a fait glisser la vue (la 3D le dit) : « Recentrer » la ramène à son cadrage, d'un appui (`recentrage`).
   const [vueDeplacee, setVueDeplacee] = useState(false);
   const [recentrage, setRecentrage] = useState(0);
-  // Le voyage du Bloc-Navire : un fondu court pour un voyage déjà fait, la cinématique pour le premier (useCrossing.ts).
+  // Le voyage de la Nef : un fondu court pour un voyage déjà fait, la cinématique pour le premier (useCrossing.ts).
   const { voyage, veil, arriveeLue, later, hop, onBoard, arrive, onLegEnd } = useTraversee({
     a,
     at,
@@ -484,7 +484,7 @@ export function WorldPage() {
   });
 
   // L'île de l'URL est cadrée (vol) à chaque changement ; le bonhomme s'y rend si un chemin d'ouvrages y mène.
-  // Une île ouverte d'un autre archipel (« Aller au port », lien, retour d'exercice) : le Bloc-Navire y mène (voyage).
+  // Une île ouverte d'un autre archipel (« Aller au port », lien, retour d'exercice) : la Nef y mène (voyage).
   // Une île d'un archipel pas encore atteint : la scène reste, la caméra cadre le port (le chantier du navire).
   useEffect(() => {
     // La case du sol touchée sur cette île (onIsland), lue une fois : elle ne vaut que pour ce changement d'île.
@@ -558,7 +558,7 @@ export function WorldPage() {
   }, [island?.id, mapOpen, placeOpen, monument?.id, reunion?.plan.id]);
 
   // Ce que le tutoriel ne dit plus, dit au moment où on le rencontre, une fois par appareil, par la créature de l'île :
-  // les ouvrages au premier toucher d'une île pâle, le Bloc-Navire à la première arrivée au port (discoveries.ts).
+  // les ouvrages au premier toucher d'une île pâle, la Nef à la première arrivée au port (discoveries.ts).
   function decouvrir(id: BiomeId): boolean {
     const text = decouverteDeLIle(state, id, { port: archipelago.port, navire: Boolean(ship.stage), textes });
     if (!text) return false;
@@ -600,7 +600,7 @@ export function WorldPage() {
   };
 
   // Un lien vers un chantier (« Voir le chantier », une puce de Blocs, « Y aller ») : le panneau ne s'ouvre plus tout
-  // seul, c'est la fiche de l'objet qui répond, par-dessus le monde (le Bloc-Navire, un ouvrage, la créature qui
+  // seul, c'est la fiche de l'objet qui répond, par-dessus le monde (la Nef, un ouvrage, la créature qui
   // commande, celle de l'étape d'une quête) ; le chantier reste mis en avant si l'élève ouvre le panneau. Une partie (`part`) : la vague, plus bas.
   useEffect(() => {
     if (!island || !chantier) return;
@@ -1098,7 +1098,7 @@ export function WorldPage() {
             situer={situer}
             chantier={Boolean(island)}
             className="voxel-canvas-stage"
-            label={`${UNIVERS[univers].nom} en 3D : les ${textes.archipels[a]}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
+            label={`${UNIVERS[univers].nom} en 3D : les ${textes.archipels[a]}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et la Nef au port`}
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />

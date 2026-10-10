@@ -200,13 +200,13 @@ export interface PlanDef {
   cells: PlanCell[];
   /**
    * Ce que le plan donne quand il est terminé : son XP, et un coffre de blocs. Le coffre des plans d'île est vide (GD-6) :
-   * seules les étapes du Bloc-Navire en ont un.
+   * seules les étapes de la Nef en ont un.
    */
   reward: { xp: number; chest: Partial<Record<BlockId, number>> };
   /** Ce que dit la créature quand le plan est terminé. */
   done: string;
   /**
-   * Où le plan se pose : dans la zone des plans de l'île (par défaut), sur le quai du port (le Bloc-Navire), ou sur l'îlot
+   * Où le plan se pose : dans la zone des plans de l'île (par défaut), sur le quai du port (la Nef), ou sur l'îlot
    * d'un monument (`origin` est alors le coin du monument dans le monde), ou entre deux lieux réunis (GD-9, ./join.ts :
    * ses clés sont dans le repère de la paire).
    */
@@ -467,7 +467,7 @@ export function getPlan(id: string): PlanDef | undefined {
 export const cellKey = (x: number, y: number, z: number) => `${x},${y},${z}`;
 
 /**
- * Cellules d'un plan en coordonnées relatives à l'île (z = 0 : premier bloc sur le sol). Un plan du port (le Bloc-Navire)
+ * Cellules d'un plan en coordonnées relatives à l'île (z = 0 : premier bloc sur le sol). Un plan du port (la Nef)
  * est relatif au coin du navire sur le quai, devant l'île, plus bas que le sol quand l'île est en altitude.
  */
 export function planCells(plan: PlanDef, cells: PlanCell[] = plan.cells): (PlanCell & { key: string })[] {

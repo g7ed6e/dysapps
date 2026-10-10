@@ -41,6 +41,7 @@ const REGLES = [
   // Les parties du bâtiment d'un lieu, une par mission (GD-6) : des cases des plans, posées par les missions terminées.
   'world/parts',
   'world/plansV1',
+  'world/formerVehicle',
   'world/architect',
   'world/monuments',
   // L'assemblage des blocs (GD-2) et ses recettes, produites depuis docs/contenu/assemblage.md par `npm run contenu`.

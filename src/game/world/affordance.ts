@@ -6,7 +6,7 @@
 // faire a la plus grande, bordée d'or, et c'est la seule qui bouge (une montée et descente lente) ; touchée, une bulle
 // s'écrase et rebondit. Ce qui n'est pas encore possible et les lieux n'ont pas de bulle : ils répondent au toucher.
 // Qui est touchable (`signesDesObjets`) : une borne à faire (jamais jouée, ou jouée sans étoile) ou pas jouable, un
-// Gardien pas encore rallumé, le Bloc-Navire, chaque chantier en fantôme (un ouvrage, un monument à bâtir), l'école, la
+// Gardien pas encore rallumé, la Nef, chaque chantier en fantôme (un ouvrage, un monument à bâtir), l'école, la
 // salle des trophées et un monument bâti ; leur état dit qui porte une bulle (« à faire »). Et la zone de toucher : au
 // moins 48 pixels à l'écran autour d'une borne ou d'un Gardien petits (`zoneDuToucher`), qui ne remplace jamais un
 // toucher direct ni une face en chantier. Code pur, sans Three.js : three/signs.ts dessine les bulles (avec les plaques
@@ -236,7 +236,7 @@ export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = 
     const pret = etats ? etats.gardiensPrets.includes(g.id) : true;
     out.push(signeAuDessus({ genre: 'gardien', id: g.id }, pret ? 'aFaire' : 'pasEncore', [g.id], gardiens === 'sentinelles' ? boiteDeLaSentinelle(g) : boiteDuPersonnage(g)));
   }
-  // Le Bloc-Navire : à faire s'il a un bloc à poser ou s'il peut partir, sinon pas encore.
+  // La Nef : à faire s'il a un bloc à poser ou s'il peut partir, sinon pas encore.
   if (vehicle?.cubes.length)
     out.push(signeAuDessus({ genre: 'navire', port: vehicle.port }, etats?.navirePret ? 'aFaire' : 'pasEncore', [vehicle.port], boiteDe(vehicle.cubes, vehicle.origin)));
   return out;
@@ -338,7 +338,7 @@ export function iconeDeLObjet(o: ObjetTouche): AnyIconName {
  * Sur la Carte (Blocland), l'image de la bulle d'or de la prochaine destination : celle de ce qu'on y fait, pour
  * que le même signe dise la même chose partout (piste B, choisie par le mainteneur le 4 octobre 2026). Une commande :
  * le bloc demandé ; un ouvrage : l'icône des ouvrages (GD-7 : celle du pli Ouvrages et de Mes blocs, celle de la
- * maquette choisie) ; le Bloc-Navire : le navire ; sinon (une mission, une île à reprendre) : l'étoile de « Jouer ».
+ * maquette choisie) ; la Nef : le navire ; sinon (une mission, une île à reprendre) : l'étoile de « Jouer ».
  */
 export function imageDeLaDestination(d: { ouvrage?: string; commande?: string; story?: string }, o: { navire: boolean; bloc?: BlockId }): ImageDeLaBulle {
   if ((d.commande || d.story) && o.bloc) return { bloc: o.bloc };

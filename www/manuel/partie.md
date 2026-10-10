@@ -8,7 +8,7 @@ L'application s'ouvre sur l'**écran titre**. Un seul bouton, **Jouer** : ce pre
 
 ![L'écran titre : l'île en blocs de Blocland, « Blocland » et le gros bouton vert Jouer.](/captures/titre.jpg)
 
-Derrière, le **village** est déjà chargé. À la première visite, un tutoriel en trois étapes, lues à voix haute, montre l’essentiel : toucher la Forêt des sons, toucher une borne puis Jouer, les accès directs. Le reste (les ouvrages, le Bloc-Navire) est dit par les créatures, la première fois qu’on le rencontre. Une bulle bordée d’or montre la prochaine chose à faire. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
+Derrière, le **village** est déjà chargé. À la première visite, un tutoriel en trois étapes, lues à voix haute, montre l’essentiel : toucher la Forêt des sons, toucher une borne puis Jouer, les accès directs. Le reste (les ouvrages, la Nef) est dit par les créatures, la première fois qu’on le rencontre. Une bulle bordée d’or montre la prochaine chose à faire. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
 
 ![Première visite du village en 3D : la Forêt des sons en couleurs au centre, les autres îles en ruine, et la première bulle du tutoriel « Bienvenue à Blocland ! ».](/captures/village-premiere-visite.jpg)
 
@@ -36,7 +36,7 @@ Chaque île a un **bâtiment**, avec une partie par mission. Il se pose tout seu
 
 ![La Forêt des sons, panneau fermé : la cabane commencée, murs en bois et fantômes bleutés du reste.](/captures/plan-en-cours.jpg)
 
-Au bilan, une phrase le dit, écrite et lue à voix haute : « Partie posée : la cabane de Mousso. » Mousso remercie, et l'élève gagne de l'XP. La mission suivante posera le toit, puis la cour. Les blocs gagnés, eux, restent dans la poche : ils servent aux ouvrages, au Bloc-Navire et aux monuments.
+Au bilan, une phrase le dit, écrite et lue à voix haute : « Partie posée : la cabane de Mousso. » Mousso remercie, et l'élève gagne de l'XP. La mission suivante posera le toit, puis la cour. Les blocs gagnés, eux, restent dans la poche : ils servent aux ouvrages, à la Nef et aux monuments.
 
 ## Ouvrir les îles
 
@@ -46,7 +46,7 @@ Les autres îles s'ouvrent par des **ouvrages** : un sentier, un pont, un bac. L
 
 Quelques séances plus tard, **Mes blocs** fait le point : ce qu'on peut construire tout de suite (un lien par chantier), puis chaque type de bloc et à quoi il sert.
 
-![Mes blocs : « Tu peux construire », avec le Bloc-Navire, deux monuments et les ouvrages.](/captures/mes-blocs.jpg)
+![Mes blocs : « Tu peux construire », avec la Nef, deux monuments et les ouvrages.](/captures/mes-blocs.jpg)
 
 La **Carte** montre tout l'archipel vu d'en haut : le médaillon à son visage marque l'élève, la bulle bordée d'or la prochaine destination, les îles pâles sont encore fermées.
 
@@ -58,9 +58,9 @@ Chaque île a son **Gardien**, éteint sur son île, en pierre grise. Pour le ra
 
 ![Le défi « Rallumer le Golem de roche » : le Golem en pierre grise, les pastilles des épreuves réussies (0 sur 4, il en faut 3), sa phrase, et l'épreuve Filon « Pioche seulement les blocs avec la lettre d ».](/captures/gardien.jpg)
 
-Au port, sur la Plaine des nombres, se construit le **Bloc-Navire** : ses blocs, et les Gardiens à rallumer pour la voile.
+Au port, sur la Plaine des nombres, se construit la **Nef**, d’abord un voilier : ses blocs, et les Gardiens à rallumer pour la voile. À chaque archipel, elle change entièrement de forme : voilier, puis dirigeable, puis fusée.
 
-![Le chantier du Bloc-Navire : 24 sur 45 blocs posés, les bois, galets et pierre qui manquent avec l'île où les gagner, et « encore 1 Gardien à rallumer ».](/captures/navire-chantier.jpg)
+![Le chantier de la Nef : les blocs posés, les bois, galets et pierre qui manquent avec l'île où les gagner, et « encore 1 Gardien à rallumer ».](/captures/navire-chantier.jpg)
 
 L'**école du village** ouvre les missions du portail (français, maths, anglais). Elles rapportent les blocs de l'île de l'école.
 
@@ -74,7 +74,7 @@ Quand les bâtiments sont finis, les blocs restants servent aux **monuments**, s
 
 ## Les Basses Terres reconstruites
 
-À la fin de la 6e, toutes les îles sont ouvertes et bâties : maisons, tours, huttes, et les Gardiens rallumés, en couleurs sur leurs îles. Le Bloc-Navire emmène alors l'élève dans les **Collines du Large**, l'archipel de 5e.
+À la fin de la 6e, toutes les îles sont ouvertes et bâties : maisons, tours, huttes, et les Gardiens rallumés, en couleurs sur leurs îles. La Nef emmène alors l'élève dans les **Collines du Large**, l'archipel de 5e.
 
 ![Les Basses Terres reconstruites : les îles reliées par des ponts, les maisons aux toits rouges, les Gardiens rallumés en couleurs.](/captures/village-reconstruit.jpg)
 

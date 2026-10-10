@@ -1,5 +1,5 @@
 // La lecture d'une sauvegarde : une partie d'avant les mots neutres se lit traduite (core/migration.ts), puis chaque
-// champ est vérifié et complété ; une vieille sauvegarde (plans v1, ponts, Bloc-Navire…) est remise au format du jour.
+// champ est vérifié et complété ; une vieille sauvegarde (plans v1, ponts, Nef…) est remise au format du jour.
 import { GAME_VERSION, translateGame } from '../../core/migration';
 import { isMovedPlace } from '../../core/movedChallenges';
 import { MOVED_EXERCISES } from '../../core/movedIds';
@@ -9,6 +9,7 @@ import { getPlan, planCells } from '../world/plans';
 import { getStage, stageFor } from '../world/vehicle';
 import { getMonument } from '../world/monuments';
 import { casesDeLaPetiteConstruction, estPosee } from '../world/fixtures';
+import { formerVehicleStage } from '../world/formerVehicle';
 import { planV1 } from '../world/plansV1';
 import { bridgesFromLegacyProgress, getBridge, getVoyage, grantAccess, isBiomeUnlocked, legacyReachable } from '../world/archipelago';
 import { lireTirage, recetteDe, type TirageAssemblage } from '../world/assembly';
@@ -38,7 +39,7 @@ let arrivedCache: ReadonlySet<string> | undefined;
  * Les exercices arrivés d'un autre lieu avec les programmes de 2025-2026 (core/movedIds.ts) : leurs étoiles les ont
  * suivis, mais n'ouvrent pas leur nouveau lieu (décision proposée par le directeur artistique, 7 octobre 2026). Il
  * s'ouvre par les liaisons et le passage, comme les autres : sans cela, une étoile de 5e arrivée à la Forge donnerait
- * aussi le voyage vers la 4e et l'étape du Bloc-Navire, sans défi. Un exercice déplacé dans son propre lieu (le Marais)
+ * aussi le voyage vers la 4e et l'étape de la Nef, sans défi. Un exercice déplacé dans son propre lieu (le Marais)
  * compte encore. La table est calculée à la première lecture : les lieux (`BIOMES`) sont alors chargés, quel que soit
  * l'ordre des imports.
  */
@@ -115,7 +116,7 @@ export function sanitizeState(input: unknown): GameState {
       }
     }
   }
-  // Les plans des îles et les étapes du Bloc-Navire se rangent au même endroit.
+  // Les plans des îles et les étapes de la Nef se rangent au même endroit.
   const anyPlan = (id: string) => getPlan(id) ?? getStage(id) ?? getMonument(id);
   const parts: Record<string, string[]> = {};
   // Les sauvegardes d'avant le nouveau dessin des bâtiments (plansV1.ts) : on les reconnaît à une case posée hors du
@@ -146,6 +147,18 @@ export function sanitizeState(input: unknown): GameState {
       const cells = planCells(plan);
       const valid = new Set(cells.map((c) => c.key));
       const saved = [...new Set(keys.filter((k): k is string => typeof k === 'string'))];
+      // Une étape du Bloc-Navire d'avant la Nef (GD-15), reconnue à une case posée hors du nouveau dessin : finie, elle
+      // le reste ; commencée, ses blocs reviennent tous dans l'inventaire (la nouvelle forme se pose de zéro).
+      const navire = formerVehicleStage(id);
+      if (navire && saved.some((k) => !valid.has(k) && navire.has(k))) {
+        if ([...navire.keys()].every((k) => saved.includes(k))) parts[id] = cells.map((c) => c.key);
+        else
+          for (const k of saved) {
+            const b = navire.get(k);
+            if (b) stock[b] = (stock[b] ?? 0) + 1;
+          }
+        continue;
+      }
       const old = saved.some((k) => !valid.has(k)) ? planV1(id) : undefined;
       if (old && [...old.blocks.keys()].every((k) => saved.includes(k))) {
         parts[id] = cells.map((c) => c.key);
@@ -186,7 +199,7 @@ export function sanitizeState(input: unknown): GameState {
     if (biome) played.add(biome.id);
   }
   links = grantAccess(links, played);
-  // Un voyage fait : son étape du Bloc-Navire est forcément complète (on la dessine entière).
+  // Un voyage fait : son étape de la Nef est forcément complète (on la dessine entière).
   for (const id of links) {
     const stage = stageFor(id);
     if (stage && (parts[stage.id]?.length ?? 0) < stage.cells.length) parts[stage.id] = planCells(stage).map((c) => c.key);

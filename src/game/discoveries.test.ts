@@ -13,7 +13,7 @@ it('l’accueil d’une île : « pas de LV2 », l’accueil de sa créature, ou
   expect(accueilDeLIle(fresh, 'lv2-5e-introductions', sansSonOption(getBiome('lv2-5e-introductions'), { lv2: 'none', lca: 'la' }), textes)).toBe(SANS_LV2);
 });
 
-it('les découvertes : les ouvrages sur une île pâle, le Bloc-Navire au port, une fois par appareil, dans les mots de l’univers', () => {
+it('les découvertes : les ouvrages sur une île pâle, la Nef au port, une fois par appareil, dans les mots de l’univers', () => {
   for (const u of ['blocland', 'archipeo'] as const) {
     localStorage.clear();
     const textes = textesDe(u);

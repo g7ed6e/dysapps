@@ -21,7 +21,7 @@ Cette documentation est à la fois **le manuel** (pour l’élève, la famille, 
 
 ## En deux mots
 
-- **Deux façons de s’entraîner** : les **missions du portail** (Homophones, Lecture, Tables et calcul mental, Fractions, Nombres décimaux, Vocabulaire et Verbes irréguliers en anglais), accessibles depuis les pages Français, Maths et Anglais, et **l’aventure**, dans Blocland (par défaut) ou Archipéo, quatre archipels en 3D (un par classe) où chaque île est un thème du programme d’une matière, et où les exercices réussis donnent des blocs pour reconstruire le village et construire le Bloc-Navire qui mène à l’archipel suivant.
+- **Deux façons de s’entraîner** : les **missions du portail** (Homophones, Lecture, Tables et calcul mental, Fractions, Nombres décimaux, Vocabulaire et Verbes irréguliers en anglais), accessibles depuis les pages Français, Maths et Anglais, et **l’aventure**, dans Blocland (par défaut) ou Archipéo, quatre archipels en 3D (un par classe) où chaque île est un thème du programme d’une matière, et où les exercices réussis donnent des blocs pour reconstruire le village et construire la Nef qui mène à l’archipel suivant.
 - **Des règles dys partout** : police adaptée (Luciole par défaut), texte jamais plus petit que 18 px, consignes lues à voix haute, syllabes en couleurs, une seule tâche par écran, aide visuelle toujours affichée en maths, indice jamais pénalisant, pas de chronomètre, correction qui explique.
 - **Une motivation façon jeu vidéo, sans stress** : XP, rôles, succès, combos, étoiles, blocs et bâtiments, mais rien ne se perd et une erreur rapporte quand même un point d’effort.
 - **Rien ne sort de l’appareil** : pas de compte, pas de statistiques envoyées, pas de service externe.

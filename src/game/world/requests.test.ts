@@ -126,7 +126,7 @@ describe('l’arrivée', () => {
     const avecFerme = etat({ progress: progress6, world: { links: links6, requests: trois } });
     expect(peutCommander(avecFerme, commandeDeLIle(FERME)!)).toBe(true);
     expect(faireArriverUneCommande(avecFerme, '6e').arrivee).toBeNull();
-    // Le 5e : le Bloc-Navire fait, un ouvrage payé ; Bazar (le Marché) commande des panneaux du Carrefour.
+    // Le 5e : la Nef fait, un ouvrage payé ; Bazar (le Marché) commande des panneaux du Carrefour.
     const links5 = [...links6, 'passage-5e', 'maths-5e-proportionality-french-5e-homophones'];
     const au5e = etat({ progress: { ...progress6, ...joue('maths-5e-proportionality') }, world: { links: links5, place: 'maths-5e-proportionality', requests: trois } });
     const r = faireArriverUneCommande(au5e, '5e');

@@ -152,7 +152,7 @@ export interface OptionsDeLaConstruction {
   /**
    * Le biseau des arêtes saillantes : `peint` (par défaut : le shader incline la normale sur une bande de `largeur` le
    * long des arêtes saillantes, sans un triangle de plus), `taille` (en géométrie : bandes, coins et bouts ; trop cher
-   * pour un archipel, gardé pour un petit modèle comme le Bloc-Navire), `aucun`.
+   * pour un archipel, gardé pour un petit modèle comme la Nef), `aucun`.
    */
   biseau?: 'peint' | 'taille' | 'aucun';
   /** La largeur du biseau, en part de case. */
@@ -161,7 +161,7 @@ export interface OptionsDeLaConstruction {
   fusion?: boolean;
   /** Dessiner aussi les bornes (sinon elles sont laissées au poste « Bornes », instanciées à part). */
   bornes?: boolean;
-  /** Les cubes du Bloc-Navire : sa toile prend le crème Brume (et rien n'y devient pièce d'architecture). */
+  /** Les cubes de la Nef : sa toile prend le crème Brume (et rien n'y devient pièce d'architecture). */
   navire?: boolean;
   /** Le kit d'architecture (lot 7, ./architecture/kits/) : par défaut, celui de l'archipel. */
   kit?: Kit;

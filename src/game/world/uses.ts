@@ -1,4 +1,4 @@
-// À quoi servent les blocs que l'élève a en poche, et lesquels lui manquent : le chantier du Bloc-Navire, les monuments
+// À quoi servent les blocs que l'élève a en poche, et lesquels lui manquent : le chantier de la Nef, les monuments
 // de l'archipel, les ouvrages (et l'assemblage, à part). Le bâtiment d'une île n'en prend pas : il se pose tout seul, une
 // partie par mission réussie (GD-6). Code pur, partagé par l'inventaire (« Mes blocs ») et le bilan d'une mission. Un
 // bloc qui ne sert à rien maintenant est dit tel quel ; les blocs de finition, l'or et le cristal sont des trophées.
@@ -23,7 +23,7 @@ export function whereToEarn(block: BlockId): string {
 
 /**
  * Un bloc gardé comme trophée : ni bloc d'île, ni bloc assemblé (les blocs de finition, l'or, le cristal). Depuis GD-6,
- * aucun bâtiment d'île ne les demande ; ils restent dans la sauvegarde et le Bloc-Navire peut encore s'en servir.
+ * aucun bâtiment d'île ne les demande ; ils restent dans la sauvegarde et la Nef peut encore s'en servir.
  */
 export function blocTrophee(block: BlockId): boolean {
   return !earnIsland(block) && !BLOCKS[block].assemble;
@@ -146,7 +146,7 @@ function rank(row: InventoryRow, at: BiomeId): number {
   return blocTrophee(row.block) ? 3 : 2;
 }
 
-/** Les blocs que réclame le chantier du Bloc-Navire à portée et que l'élève n'a pas, avec l'île où les gagner. */
+/** Les blocs que réclame le chantier de la Nef à portée et que l'élève n'a pas, avec l'île où les gagner. */
 export function missingNow(state: GameState): MissingBlock[] {
   const need: Partial<Record<BlockId, number>> = {};
   const stage = shipyard(state);

@@ -98,7 +98,7 @@ interface BloclandContextValue {
    * de la partie ; rien d'autre ne change (ni l'inventaire, ni la progression).
    */
   arrange: (next: Pick<World, 'links' | 'layout'>) => void;
-  /** Largue les amarres du Bloc-Navire : le voyage est fait, le bonhomme arrive au port d'en face. */
+  /** Largue les amarres de la Nef : le voyage est fait, le bonhomme arrive au port d'en face. */
   launch: (stage: VehicleStage) => LaunchResult;
   reset: () => void;
   /** Le mode bâtisseur est-il ouvert ? (une copie de la partie, en mémoire seulement) */

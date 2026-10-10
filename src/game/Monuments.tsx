@@ -74,7 +74,7 @@ function MonumentBody({ builder }: { builder: MonumentBuilder }) {
       )}
       {!open ? (
         <p className="plan-done">
-          <Icon name="lock" /> Archipel fermé : rejoins d’abord les {textes.archipels[monument.archipelago]} avec le Bloc-Navire.
+          <Icon name="lock" /> Archipel fermé : rejoins d’abord les {textes.archipels[monument.archipelago]} avec la Nef.
         </p>
       ) : (
         <section className="plan-section" aria-labelledby={`monument-avancement-${monument.id}`}>

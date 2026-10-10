@@ -40,12 +40,12 @@ interface LibellesGardiens {
   resistance: (reste: number, total: number) => string;
   /** Ce que dit l'arène d'un Gardien dont le défi est déjà réussi (`gardien` : son nom, avec sa majuscule). */
   dejaFaitArene: (gardien: string) => string;
-  /** Ce qu'il manque pour le kit du Bloc-Navire, en bref. */
+  /** Ce qu'il manque pour le kit de la Nef, en bref. */
   encoreAFaire: (n: number) => string;
-  /** Le Bloc-Navire a tous ses blocs, mais pas encore ses Gardiens (`piece` : ce qu'ils apportent, « la voile »). */
+  /** La Nef a tous ses blocs, mais pas encore ses Gardiens (`piece` : ce qu'ils apportent, « la voile »). */
   navireAttend: (n: number, piece?: string) => string;
   /**
-   * Ce que dit la créature du port sur les Gardiens qu'attend le kit du Bloc-Navire (`piece` : « la voile »), ou qu'il
+   * Ce que dit la créature du port sur les Gardiens qu'attend le kit de la Nef (`piece` : « la voile »), ou qu'il
    * est arrivé.
    */
   navireGardiens: (faits: number, total: number, archipel: string, piece: string) => string;
@@ -64,9 +64,9 @@ interface LibellesGardiens {
    * qu'est un ouvrage et ce qu'il demande (des blocs ; une mission réussie pour l'escalier).
    */
   decouverteOuvrages: string;
-  /** Ce que dit la créature d'une île d'un autre archipel quand le Bloc-Navire attend encore des Gardiens (`archipel` : son nom). */
+  /** Ce que dit la créature d'une île d'un autre archipel quand la Nef attend encore des Gardiens (`archipel` : son nom). */
   navireGardiensManquants: (n: number, archipel: string) => string;
-  /** Dite une fois par appareil, à la première arrivée au port, par sa créature, après son accueil : le Bloc-Navire. */
+  /** Dite une fois par appareil, à la première arrivée au port, par sa créature, après son accueil : la Nef. */
   decouverteNavire: string;
 }
 

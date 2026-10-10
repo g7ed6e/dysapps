@@ -423,7 +423,7 @@ export function casesDesPlansDansLeMonde(cases: readonly { plan: PlanDef; keys: 
 
 /** Ce qui est entre les îles, en cases du monde, ajouté à `cubes` : le port, les îlots des monuments, la mer, les ouvrages. */
 function entreLesIles(a: ArchipelagoId, village: World, cubes: VoxelCube[], choisie: string | null, atelier: Atelier): VoxelCube[] {
-  // Le port : la jetée (le Bloc-Navire est un objet à part, voir vehiclePlacement).
+  // Le port : la jetée (la Nef est un objet à part, voir vehiclePlacement).
   harbor(a, village, cubes);
   // Les monuments, chacun sur son îlot au large : bâtis, ou en fantômes à construire.
   monumentIslets(a, village, cubes);

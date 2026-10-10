@@ -8,18 +8,21 @@ import { playDone, playNope, sonDePose } from './sound';
 import { habillageDuMonde } from './skin';
 import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
+import { METAMORPHOSIS_MS } from './world/metamorphosis';
+import { moinsDAnimations } from '../core/motion';
+import { renduDuMonde } from './rendering';
 import { placeAll, type Burst } from './cellByCellPose';
 import { allerChercher } from './world/uses';
 import { useHaptics } from '../core/haptics';
 import { decalageDuQuai } from './world/terrain';
 
 export interface VehicleBuilder {
-  /** Le chantier de ce port : l'étape du Bloc-Navire qui s'y construit, ou `null` (pas un port, ou navire déjà parti d'ici). */
+  /** Le chantier de ce port : l'étape de la Nef qui s'y construit, ou `null` (pas un port, ou navire déjà parti d'ici). */
   stage: VehicleStage | null;
   status: PlanStatus | null;
   /** Peut-on embarquer, et sinon pourquoi. */
   launch: LaunchResult | null;
-  /** Le kit (voile, ballon, feux) est arrivé : assez de Gardiens vaincus. */
+  /** Le kit (la voile, le haut de l'enveloppe, les ailerons) est arrivé : assez de Gardiens rallumés. */
   kit: boolean;
   canFill: boolean;
   notice: string | null;
@@ -32,7 +35,7 @@ export interface VehicleBuilder {
 }
 
 /**
- * Le chantier du Bloc-Navire sur une île-port : l'étape en cours, la pose d'un bloc (bouton ou case bleue touchée), les
+ * Le chantier de la Nef sur une île-port : l'étape en cours, la pose d'un bloc (bouton ou case bleue touchée), les
  * sons et les éclats. Même mécanique que les plans des îles ; le coffre de l'étape arrive avec sa dernière case, l'XP
  * avec le voyage.
  */
@@ -60,7 +63,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     const r = fillPlan(stage, x, y, z);
     if (!r.ok) {
       if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut ${blockCount(r.block, 1)} : ${allerChercher(r.block)}.`);
-      else if (r.reason === 'deja-pose') setNotice('Ce bloc du Bloc-Navire est déjà posé.');
+      else if (r.reason === 'deja-pose') setNotice('Ce bloc de la Nef est déjà posé.');
       sound(playNope);
       return;
     }
@@ -80,11 +83,14 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   };
   const finished = (done: VehicleStage) => {
     const msg = kit
-      ? `Le Bloc-Navire a tous ses blocs ! ${done.fin(textes.archipels[done.to])}`
+      ? done.fin(textes.archipels[done.to])
       : textes.libelles.navireAttend(done.guardians, done.short);
     setNotice(msg);
     sound(playDone);
-    if (settings.autoRead) speak(msg);
+    // La voix attend la fin de la mue de la Nef (GD-15, référent dys) : dans Blocland, quand l'appareil ne demande pas
+    // moins d'animations ; la mue se joue alors 3 s au plus.
+    const mue = kit && renduDuMonde() !== 'archipeo' && !moinsDAnimations();
+    if (settings.autoRead) window.setTimeout(() => speak(msg), mue ? METAMORPHOSIS_MS : 0);
   };
   const fillAll = () => {
     if (!stage) return;
@@ -92,7 +98,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     if (!last) return;
     burstAt(last.x, last.y, last.z, last.block);
     if (completed) return finished(stage);
-    setNotice(`${placed} bloc${placed > 1 ? 's' : ''} posé${placed > 1 ? 's' : ''} sur le Bloc-Navire.`);
+    setNotice(`${placed} bloc${placed > 1 ? 's' : ''} posé${placed > 1 ? 's' : ''} sur la Nef.`);
     sound(playPlace);
     haptics.place();
   };
