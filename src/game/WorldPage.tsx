@@ -26,6 +26,7 @@ import { AvatarFace } from './AvatarFace';
 import { visageDuJoueur } from './world/characters/face';
 import { RequestsSheet, SettingsButton, WorldPlaces, WorldShortcuts } from './WorldShortcuts';
 import { StartingMapButton } from './StartingMap';
+import { WorldButton } from './WorldButton';
 import { ArchipelagoSwitcher } from './ArchipelagoSwitcher';
 import { mesuresAutomatiques, mesuresDemandees } from './rendering';
 import { TrophySheet } from './TrophySheet';
@@ -1106,16 +1107,15 @@ export function WorldPage() {
         {/* En haut à gauche, les accès directs qui remplacent le Menu (10 octobre 2026) : la dernière mission, les
             révisions du jour, les commandes. */}
         {!voyage && !enAmenageant && <WorldShortcuts a={a} requestsOpen={requestsOpen} />}
-        {/* Réglages, seul dans le coin en bas à droite. */}
+        {/* Réglages, dans le coin en haut à droite, au-dessus du choix de l'archipel. */}
         {!voyage && !enAmenageant && <SettingsButton />}
         {/* Après un glissé : en haut à droite, sous le choix de l'archipel s'il y en a un, sans animation. Jamais sur une bulle du haut :
             le temps qu'elle est ouverte, il attend (la vue reste déplacée), et aucun bouton Fermer n'est couvert. */}
         {vueDeplacee && !voyage && !bulleEnHaut && (
           // Un rond avec le visage du joueur, sans mot (mot du mainteneur, 4 octobre 2026, pour Blocland ; choix « 1a » du
           // même jour pour Archipéo) ; ses couleurs suivent l'univers (styles/global.css, `world-recentrer-tete`).
-          <button type="button" className="button world-recentrer world-recentrer-tete" data-couvre="etiquettes" onClick={recentrer} aria-label="Recentrer">
-            <AvatarFace visage={visageDuJoueur(habillage)} />
-          </button>
+          // Comme les autres boutons du monde, son nom se lit au doigt posé, au survol et au focus (WorldButton.tsx).
+          <WorldButton icon={<AvatarFace visage={visageDuJoueur(habillage)} />} name="Recentrer" className="world-recentrer" buttonClassName="world-recentrer-tete" couvre="etiquettes" onClick={recentrer} />
         )}
         <div className="world-overlay-top" data-couvre="scene">
           {ligneDuVoyage && (
@@ -1228,45 +1228,38 @@ export function WorldPage() {
         ) : (
         <nav className="world-bar" data-couvre="scene" aria-label="Village">
           {island && !voyage && (
-            <button
-              type="button"
-              className="button world-bar-ile"
-              aria-pressed={sheetOpen}
-              aria-controls={sheetOpen ? `panneau-${island.id}` : undefined}
+            <WorldButton
+              icon={island.icon}
+              name={island.name}
+              word={island.name}
+              buttonClassName="world-bar-ile"
+              pressed={sheetOpen}
+              controls={sheetOpen ? `panneau-${island.id}` : undefined}
               onClick={() => setSheetOpen(!sheetOpen)}
-              aria-label={sheetOpen ? `Replier le panneau de ${island.name}` : `Ouvrir le panneau de ${island.name}`}
-            >
-              <Icon name={island.icon} /> <span className="world-bar-text">{island.name}</span>
-            </button>
+              ariaLabel={sheetOpen ? `Replier le panneau de ${island.name}` : `Ouvrir le panneau de ${island.name}`}
+            />
           )}
-          <button
-            type="button"
-            className="button"
-            data-tuto="carte"
-            aria-pressed={mapOpen}
-            onClick={() => navigate(mapOpen ? `/adventure/${at}` : '/adventure/map')}
-          >
-            <Icon name="map" /> <span className="world-bar-text">Carte</span>
-          </button>
+          <WorldButton icon="map" name="Carte" word="Carte" tuto="carte" pressed={mapOpen} onClick={() => navigate(mapOpen ? `/adventure/${at}` : '/adventure/map')} />
           {/* Sur la Carte, hors voyage : « Modifier le plan », à sa place fixe, après la Carte. */}
           {mapOpen && !voyage && <ArrangeButton amenagement={amenagement} proposer={proposerLaListe} />}
           {mapOpen && !voyage && <StartingMapButton />}
           {!voyage && (
-            <button
-              type="button"
-              className="button world-bar-blocs"
-              aria-pressed={blocsOpen}
-              aria-label={nomDuBoutonBlocs(pastille)}
-              data-tuto="blocs"
-              aria-controls={blocsOpen ? 'panneau-blocs' : undefined}
+            <WorldButton
+              icon="blocks"
+              name="Blocs"
+              word="Blocs "
+              buttonClassName="world-bar-blocs"
+              pressed={blocsOpen}
+              ariaLabel={nomDuBoutonBlocs(pastille)}
+              tuto="blocs"
+              controls={blocsOpen ? 'panneau-blocs' : undefined}
               onClick={() => (blocsOpen ? fermerLePanneau() : navigate('/adventure/stock'))}
             >
-              <Icon name="blocks" /> <span className="world-bar-text">Blocs </span>
               {/* Le compte : une pastille chiffrée (« 0 » compris), d'or dans Blocland, de sable dans Archipéo. */}
               <span key={rebond} ref={pastilleRef} className={`world-bar-count${rebond ? ' rebondit' : ''}`}>
                 {pastille}
               </span>
-            </button>
+            </WorldButton>
           )}
           {!voyage && <WorldPlaces onHelp={revoirAide} />}
         </nav>

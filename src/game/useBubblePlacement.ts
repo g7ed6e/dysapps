@@ -4,7 +4,7 @@ import { useLayoutEffect, type RefObject } from 'react';
  * Les bulles du bas du monde (tutoriel, mot de la baleine, rallumage) se posent entre ce qui occupe le haut de la scène
  * et la barre du bas, dont la hauteur change avec la taille du texte (deux lignes de boutons sur téléphone, DA-24).
  * On mesure l'un et l'autre et on les donne à la scène (`--barre-h`, `--haut-h`) : une bulle ne passe jamais sous la
- * barre ni sur le haut (DA-25). On donne aussi la largeur de la colonne de droite (la rangée de classes, `--colonne-w`)
+ * barre ni sur le haut (DA-25). On donne aussi la largeur de la colonne de droite (Réglages et la rangée de classes, `--colonne-w`)
  * et le bord droit de celle de gauche (les accès directs, `--gauche-droite`) : le panneau du haut se pose entre les deux,
  * aucun bouton ne se pose sur son texte (DA-31). Et le bas de celle de droite (`--colonne-bas`) : « Recentrer » se pose
  * dessous, qu'il y ait ou non le choix de l'archipel.
@@ -18,7 +18,7 @@ export function usePlaceDesBulles(stageRef: RefObject<HTMLElement | null>, voyag
     const trouver = () => ({
       bar: stage.querySelector<HTMLElement>('.world-bar'),
       tops: [...stage.querySelectorAll<HTMLElement>('.world-overlay-top')],
-      colonne: [...stage.querySelectorAll<HTMLElement>('.world-archipel')],
+      colonne: [...stage.querySelectorAll<HTMLElement>('.world-settings, .world-archipel')],
       gauche: [...stage.querySelectorAll<HTMLElement>('.world-shortcuts')],
     });
     const { bar, tops, colonne, gauche } = trouver();

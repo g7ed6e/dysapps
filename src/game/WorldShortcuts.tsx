@@ -1,7 +1,7 @@
 // Les accès directs du monde, depuis que le Menu n'existe plus (mot du mainteneur, 10 octobre 2026, choix « 1a 2ok
 // 3a ») : en haut à gauche, la dernière mission, les révisions du jour et les commandes ; dans la barre du bas, après
 // île, Carte et Blocs, l'école, les monuments, le lieu où l'on assemble, les missions, les succès et l'aide ; Réglages
-// seul, en bas à droite. Des icônes seules, le nom au doigt posé (WorldButton.tsx). Communs aux deux univers.
+// en haut à droite. Des icônes seules, le nom au doigt posé (WorldButton.tsx). Communs aux deux univers.
 import { useEffect, useEffectEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { lastPlace } from '../core/lastPlace';
@@ -80,7 +80,7 @@ export function WorldPlaces({ onHelp }: { onHelp: () => void }) {
   );
 }
 
-/** Réglages, seul dans le coin en bas à droite. */
+/** Réglages, dans le coin en haut à droite, au-dessus du choix de l'archipel (mot du mainteneur, 10 octobre 2026). */
 export function SettingsButton() {
   const navigate = useNavigate();
   return <WorldButton icon="settings" name="Réglages" className="world-settings" onClick={() => navigate('/reglages')} />;

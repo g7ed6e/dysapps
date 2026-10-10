@@ -659,7 +659,7 @@ it('un monument : on le touche dans le monde, la caméra va sur son îlot, son p
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/landmarks');
 });
 
-it('plus de Menu : les accès directs du haut à gauche, délavés quand ils sont vides, et Réglages en bas à droite', async () => {
+it('plus de Menu : les accès directs du haut à gauche, délavés quand ils sont vides, et Réglages en haut à droite', async () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true, 'map-reshaped': true }));
   const user = userEvent.setup();
@@ -675,7 +675,7 @@ it('plus de Menu : les accès directs du haut à gauche, délavés quand ils son
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
   expect(within(haut).getByRole('button', { name: /^Mes révisions du jour/ })).toHaveAttribute('aria-disabled', 'true');
   expect(within(haut).getByRole('button', { name: /^Commandes/ })).toHaveAttribute('aria-disabled', 'true');
-  // Réglages, seul en bas à droite, hors de la barre.
+  // Réglages, en haut à droite, hors de la barre.
   const reglages = screen.getByRole('button', { name: 'Réglages' });
   expect(within(screen.getByRole('navigation', { name: 'Village' })).queryByRole('button', { name: 'Réglages' })).toBeNull();
   await user.click(reglages);

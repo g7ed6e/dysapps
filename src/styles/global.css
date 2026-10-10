@@ -3796,6 +3796,11 @@ figure.class-table {
   height: auto;
   padding: 4px 10px 6px;
 }
+/* L'enveloppe d'un bouton (WorldButton.tsx) prend la largeur plafonnée de son bouton, pas celle de son mot sur une
+   ligne : sinon un long nom d'île écarte la barre et la fait passer sur deux rangées. */
+:root[data-texte="grand"] .world-bar .world-button {
+  max-width: 200px;
+}
 :root[data-texte="grand"] .world-bar .world-bar-text {
   display: block;
   position: static;
@@ -6527,7 +6532,7 @@ button.app-card {
 }
 
 /* Les accès directs du monde, depuis que le Menu n'existe plus (mot du mainteneur, 10 octobre 2026) : en haut à gauche,
-   en colonne, Reprendre, Révisions et Commandes ; Réglages seul en bas à droite. Des boutons carrés de 56 px, icône de
+   en colonne, Reprendre, Révisions et Commandes ; Réglages en haut à droite, au-dessus du choix de l'archipel. Des boutons carrés de 56 px, icône de
    30 px, comme la barre du bas ; jamais de mot dessous, même en grand texte (choix « 1a ») : le nom se lit au doigt posé
    (`world-button-label`). Communs aux deux univers. */
 .world-button {
@@ -6582,7 +6587,7 @@ button.app-card {
 .world-settings {
   position: absolute;
   right: 0.6rem;
-  bottom: 0.6rem;
+  top: 0.6rem;
   z-index: 3;
 }
 /* Le nom du bouton, au doigt posé ou au toucher d'un bouton vide : une étiquette sur fond uni, à côté du bouton (à
@@ -6615,8 +6620,9 @@ button.app-card {
   transform: translateX(-50%);
 }
 .world-settings .world-button-label {
-  bottom: calc(100% + 8px);
-  right: 0;
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
 }
 /* Le trait entre île, Carte, Blocs et les lieux du village. */
 .world-bar-trait {
@@ -6656,11 +6662,8 @@ button.app-card {
   flex-wrap: wrap;
   gap: 8px;
 }
-/* La barre du bas laisse le coin de Réglages libre ; le panneau du haut part après la colonne de gauche et s'arrête
-   avant celle de droite (le choix de l'archipel), mesurées : aucun bouton ne se pose sur son texte (DA-31). */
-.world-page .world-bar {
-  right: calc(0.6rem + 56px + 0.6rem);
-}
+/* Le panneau du haut part après la colonne de gauche et s'arrête avant celle de droite (Réglages et le choix de
+   l'archipel), mesurées : aucun bouton ne se pose sur son texte (DA-31). */
 .world-page .world-overlay-top {
   left: calc(var(--gauche-droite, 0px) + 0.6rem);
   right: calc(0.6rem + var(--colonne-w, 0px) + 0.5rem);
@@ -6670,7 +6673,7 @@ button.app-card {
 @media (max-width: 640px) {
   :root[data-texte="grand"] .world-page .world-archipel {
     top: 0.6rem;
-    right: 0.6rem;
+    right: calc(0.6rem + 56px + 0.5rem);
     flex-direction: row;
     /* Quatre classes ne tiennent pas sur une ligne à 390 px : elles passent sur deux, sans sortir de l'écran ni couvrir
        la colonne de gauche. */
@@ -6680,7 +6683,7 @@ button.app-card {
   }
   :root[data-texte="grand"] .world-page .world-overlay-top {
     /* Sous la rangée de classes, mesurée (`--colonne-bas`) : sur une ou deux lignes, elle ne couvre jamais le panneau. */
-    top: calc(var(--colonne-bas, calc(0.6rem + 52px)) + 0.5rem);
+    top: calc(var(--colonne-bas, calc(0.6rem + 56px)) + 0.5rem);
     right: 0.6rem;
     /* Le chemin d'ouvrages de la Carte défile au-delà ; des traits pointillés disent qu'il continue, en bas comme en
        haut (useMapPanel.ts). */
@@ -6733,15 +6736,18 @@ button.island-quest {
    Il apparaît d'un coup, sans pousser personne ; la liste des archipels, ouverte, passe par-dessus. */
 .world-recentrer {
   position: absolute;
-  top: calc(var(--colonne-bas, calc(0.6rem + 52px)) + 0.5rem);
+  top: calc(var(--colonne-bas, calc(0.6rem + 56px)) + 0.5rem);
   right: 0.6rem;
   z-index: 2;
-  padding: 0.4rem 0.9rem;
-  gap: 0.4rem;
-  white-space: nowrap;
+}
+/* Son nom, au doigt posé : à sa gauche, il est au bord droit de l'écran. */
+.world-recentrer .world-button-label {
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
 }
 /* Recentrer, dans les deux univers : le rond « toi » de la Carte (clair, bord sombre épais, ombre nette ; jamais d'or),
-   avec le visage du joueur ; 52 px, comme le bouton Menu au-dessus. */
+   avec le visage du joueur ; 52 px. */
 .world-recentrer-tete {
   width: 52px;
   height: 52px;
@@ -6759,7 +6765,8 @@ button.island-quest {
    classe où l'on est se reconnaît à sa forme (bord épais, coche), pas seulement à sa couleur ; elle ne se touche pas. */
 .world-archipel {
   position: absolute;
-  top: 0.6rem;
+  /* Sous Réglages, en haut à droite (mot du mainteneur, 10 octobre 2026). */
+  top: calc(0.6rem + 56px + 0.5rem);
   right: 0.6rem;
   z-index: 3;
   display: flex;

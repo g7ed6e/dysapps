@@ -8,6 +8,7 @@
 // communs aux deux univers. L'état du mode vient de `useAmenagement` (Arranging.tsx).
 import { useEffect, useState } from 'react';
 import { Icon, IconButton } from '../components/Icon';
+import { WorldButton } from './WorldButton';
 import { SpeakButton } from '../components/SpeakButton';
 import { type Amenagement, FLECHES, type LigneDuMode, PLACE_PRISE } from './Arranging';
 import { getBridge } from './world/archipelago';
@@ -44,20 +45,21 @@ export function ArrangeButton({ amenagement, proposer }: { amenagement: Amenagem
   const n = amenagement.aReposer.length;
   const ouvrir = () => (n ? amenagement.ouvrirLaListe() : amenagement.ouvrir());
   return (
-    <button
-      type="button"
-      className="button world-bar-amenager"
-      aria-label={n ? `${MODIFIER_LE_PLAN} (${n} ${n > 1 ? amenagement.mot.pluriel : amenagement.mot.nom} à reposer)` : MODIFIER_LE_PLAN}
+    // Une icône seule, même en grand texte (choix « 1a » du lot « Sans Menu ») : son nom se lit au doigt posé.
+    <WorldButton
+      icon="amenager"
+      name={MODIFIER_LE_PLAN}
+      buttonClassName="world-bar-amenager"
+      ariaLabel={n ? `${MODIFIER_LE_PLAN} (${n} ${n > 1 ? amenagement.mot.pluriel : amenagement.mot.nom} à reposer)` : MODIFIER_LE_PLAN}
       onClick={() => (proposer ? proposer() : ouvrir())}
     >
-      <Icon name="amenager" /> <span className="world-bar-text">{MODIFIER_LE_PLAN}</span>
       {n > 0 && (
         <span className="world-bar-count arrange-count" aria-hidden="true">
           <Icon name="aReposer" size={14} />
           {n}
         </span>
       )}
-    </button>
+    </WorldButton>
   );
 }
 

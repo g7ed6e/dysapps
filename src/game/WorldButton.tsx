@@ -12,7 +12,8 @@ const APPUI_LONG_MS = 500;
 const ETIQUETTE_MS = 5000;
 
 interface Props {
-  icon: AnyIconName;
+  /** Une icône par son nom, ou un dessin (le visage du joueur de Recentrer). */
+  icon: AnyIconName | ReactNode;
   /** Le nom du bouton, dit aux lecteurs d'écran et montré au doigt posé. */
   name: string;
   /** Le mot écrit dessous en grand texte (la barre du bas : île, Carte, Blocs) ; sans lui, l'icône reste seule. */
@@ -21,7 +22,13 @@ interface Props {
   empty?: string;
   /** Une pastille chiffrée (les révisions, les commandes, les blocs). */
   count?: ReactNode;
+  /** Sur le bouton lui-même (`className` va sur son enveloppe, qui porte aussi l'étiquette). */
+  buttonClassName?: string;
   className?: string;
+  /** Ce que lit un lecteur d'écran, quand il dit plus que le nom (« Ouvrir le panneau de… »). */
+  ariaLabel?: string;
+  /** La zone que les noms des îles évitent (`data-couvre`, coveredZones.ts). */
+  couvre?: string;
   pressed?: boolean;
   controls?: string;
   tuto?: string;
@@ -30,7 +37,7 @@ interface Props {
   children?: ReactNode;
 }
 
-export function WorldButton({ icon, name, word, empty, count, className, pressed, controls, tuto, onClick, buttonRef, children }: Props) {
+export function WorldButton({ icon, name, word, empty, count, buttonClassName, className, ariaLabel, couvre, pressed, controls, tuto, onClick, buttonRef, children }: Props) {
   const [etiquette, setEtiquette] = useState<string | null>(null);
   const appui = useRef(0);
   const cacher = useRef(0);
@@ -59,12 +66,12 @@ export function WorldButton({ icon, name, word, empty, count, className, pressed
     setEtiquette(null);
   };
   return (
-    <span className={`world-button${className ? ` ${className}` : ''}`}>
+    <span className={`world-button${className ? ` ${className}` : ''}`} data-couvre={couvre}>
       <button
         type="button"
         ref={buttonRef}
-        className={`button${word === undefined ? ' icone-seule' : ''}${empty ? ' vide' : ''}`}
-        aria-label={empty ? `${name} : ${empty}` : name}
+        className={`button${buttonClassName ? ` ${buttonClassName}` : ''}${word === undefined ? ' icone-seule' : ''}${empty ? ' vide' : ''}`}
+        aria-label={empty ? `${name} : ${empty}` : (ariaLabel ?? name)}
         aria-disabled={empty ? true : undefined}
         aria-pressed={pressed}
         aria-controls={controls}
@@ -101,7 +108,7 @@ export function WorldButton({ icon, name, word, empty, count, className, pressed
           else onClick();
         }}
       >
-        <Icon name={icon} />
+        {typeof icon === 'string' ? <Icon name={icon as AnyIconName} /> : icon}
         {word !== undefined && <span className="world-bar-text">{word}</span>}
         {children}
         {count !== undefined && <span className="world-bar-count">{count}</span>}
