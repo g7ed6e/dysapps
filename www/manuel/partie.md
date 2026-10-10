@@ -8,7 +8,7 @@ L'application s'ouvre sur l'**écran titre**. Un seul bouton, **Jouer** : ce pre
 
 ![L'écran titre : l'île en blocs de Blocland, « Blocland » et le gros bouton vert Jouer.](/captures/titre.jpg)
 
-Derrière, le **village** est déjà chargé. À la première visite, un tutoriel en trois étapes, lues à voix haute, montre l’essentiel : toucher la Forêt des sons, toucher une borne puis Jouer, le bouton Menu. Le reste (les ouvrages, le Bloc-Navire) est dit par les créatures, la première fois qu’on le rencontre. Une bulle bordée d’or montre la prochaine chose à faire. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
+Derrière, le **village** est déjà chargé. À la première visite, un tutoriel en trois étapes, lues à voix haute, montre l’essentiel : toucher la Forêt des sons, toucher une borne puis Jouer, les accès directs. Le reste (les ouvrages, le Bloc-Navire) est dit par les créatures, la première fois qu’on le rencontre. Une bulle bordée d’or montre la prochaine chose à faire. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
 
 ![Première visite du village en 3D : la Forêt des sons en couleurs au centre, les autres îles en ruine, et la première bulle du tutoriel « Bienvenue à Blocland ! ».](/captures/village-premiere-visite.jpg)
 
@@ -82,7 +82,7 @@ Quand les bâtiments sont finis, les blocs restants servent aux **monuments**, s
 
 ## Sur téléphone, en liste
 
-Le même jeu tient sur un téléphone en portrait : le monde sur tout l'écran, la barre du bas en dessous ; le panneau de l'île s'ouvre par-dessus, en plein écran.
+Le même jeu tient sur un téléphone en paysage : le monde sur tout l'écran, la barre du bas en dessous ; le panneau de l'île s'ouvre par-dessus, en plein écran.
 
 ![Sur téléphone : le monde sur tout l'écran, les boutons en icônes dans la barre du bas.](/captures/telephone-village.jpg)
 

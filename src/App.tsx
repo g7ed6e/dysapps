@@ -103,12 +103,13 @@ function MissionEntry() {
 }
 
 // L'appli s'ouvre sur le village. La page Accueil (le menu en page) n'existe plus dans le monde en 3D (mot du mainteneur,
-// 4 octobre 2026) : son adresse ouvre le menu du village. Elle ne reste que pour la vue simple, sans monde.
+// 4 octobre 2026), ni le menu du village (10 octobre 2026) : son adresse ouvre le monde. Elle ne reste que pour la vue
+// simple, sans monde.
 function StartEntry() {
   return useImmersive() ? <Navigate to="/adventure" replace /> : <HomePage />;
 }
 function MenuEntry() {
-  return useImmersive() ? <Navigate to="/adventure/menu" replace /> : <HomePage />;
+  return useImmersive() ? <Navigate to="/adventure" replace /> : <HomePage />;
 }
 
 // En 3D, la carte et les îles sont le monde en plein écran ; sinon, les pages simples (listes accessibles).
@@ -118,11 +119,11 @@ function AventureEntry() {
 function IslandEntry() {
   const { biomeId } = useParams();
   const immersive = useImmersive();
+  // L'ancienne adresse du menu du village (retiré le 10 octobre 2026) : le monde en 3D, le menu en page en vue simple.
+  if (biomeId === 'menu') return <Navigate to={immersive ? '/adventure' : MENU_PATH} replace />;
   if (immersive) return <WorldPage />;
   // La Carte et la page des quatre archipels n'existent qu'en 3D : en vue simple, c'est la liste des îles (déjà par archipel).
   if (biomeId === 'map' || biomeId === 'world') return <Navigate to="/adventure" replace />;
-  // Le menu du village : en vue simple, c'est le menu en page.
-  if (biomeId === 'menu') return <Navigate to={MENU_PATH} replace />;
   // La salle des trophées : en vue simple, c'est la page Succès.
   if (biomeId === 'trophies') return <Navigate to="/succes" replace />;
   // L'école du village : un panneau dans le monde, une page en vue simple.

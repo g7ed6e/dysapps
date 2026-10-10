@@ -109,6 +109,9 @@ export default defineConfig({
         theme_color: '#13283d',
         background_color: '#f3eee3',
         display: 'standalone',
+        // L'appli se joue en paysage (mot du mainteneur, 10 octobre 2026) : Android installé tourne de lui-même ; Safari ne
+        // suit pas cette demande, l'écran « Tourne ton appareil » le dit (components/RotateDevice.tsx).
+        orientation: 'landscape',
         start_url: base,
         scope: base,
         // L'empreinte dans l'adresse fait voir aux appareils qu'une icône a changé (scripts/icones.mjs).

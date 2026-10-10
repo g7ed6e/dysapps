@@ -48,7 +48,7 @@ function PageError() {
           <Icon name="replay" /> Recharger
         </button>
         <Link to="/" className="button">
-          <Icon name="home" /> Menu
+          <Icon name="home" /> Accueil
         </Link>
       </div>
     </>
