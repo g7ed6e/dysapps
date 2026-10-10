@@ -52,7 +52,7 @@ export function monumentAnchor(m: MonumentDef): { x: number; y: number; z: numbe
 }
 
 /**
- * Le point du monde où tombe la clé (0, 0, 0) d'une étape du Bloc-Navire (plan du port) : une case de son plan est
+ * Le point du monde où tombe la clé (0, 0, 0) d'une étape de la Nef (plan du port) : une case de son plan est
  * dessinée en `ancreDuQuai + case`, comme le navire au quai (`dockOrigin`, ses cases locales). Le rendu suit le quai ;
  * les clés des sauvegardes restent celles de `ORIGINE_DU_QUAI`.
  */
@@ -63,7 +63,7 @@ export function ancreDuQuai(plan: PlanDef): { x: number; y: number; z: number } 
 }
 
 /**
- * Ce qui sépare la clé d'une case du Bloc-Navire de la case du plan de son île-port où elle est dessinée (le repère de
+ * Ce qui sépare la clé d'une case de la Nef de la case du plan de son île-port où elle est dessinée (le repère de
  * l'île, un cran plus bas : `rappelsDeLaVue`) : (0, 0, 0) tant que le quai est là où ses clés ont été figées.
  */
 export function decalageDuQuai(plan: PlanDef): { x: number; y: number; z: number } {

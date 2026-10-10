@@ -15,7 +15,7 @@ import { walkGround, walkPath } from './paths';
 import { possibleLandings } from './routing';
 import { TOWARDS_SEA } from './placement';
 import { dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleRestZ, VEHICLE_DECK, VEHICLE_SIZE } from './harbor';
-import { VEHICLE_STAGES } from './vehicle';
+import { VEHICLE_STAGES, vehicleForm } from './vehicle';
 import { recetteDeLArchipel } from './assembly';
 import { toutConstruit } from './budget';
 import { ILES_A_PARVIS } from './terrain/parvis';
@@ -94,7 +94,7 @@ const estPierre = (hex: string) => {
   return v - r === 8 && b - v === 16;
 };
 
-const village = (bridges: string[]) => ({ parts: {}, log: [], links: bridges });
+const village = (bridges: string[]) => ({ parts: {} as Record<string, string[]>, log: [], links: bridges });
 /** Tous les archipels d'un coup, pour les tests qui parcourent toutes les îles. */
 const allCubes = (progress: Record<string, { stars: number }>, v = village([]), withCreatures = true) =>
   ARCHIPELAGO_IDS.flatMap((a) => worldCubes(a, progress, v, withCreatures));
@@ -583,7 +583,7 @@ it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur 
   const far = avatarRoute('french-6e-phonology', 'french-6e-reading', ['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-french-6e-reading'])!;
   expect(far[far.length - 1]).toEqual(avatarHome('french-6e-reading'));
   expect(far.some((p) => p.z === 1)).toBe(true);
-  // D'un archipel à l'autre, on ne marche pas : c'est le Bloc-Navire (changement de scène).
+  // D'un archipel à l'autre, on ne marche pas : c'est la Nef (changement de scène).
   expect(avatarRoute('maths-6e-calculation', 'maths-5e-proportionality', ['passage-5e'])).toBeNull();
   // Dans les Collines, on marche à leur altitude. (Le tracé des liaisons suit celles que la partie a posées.)
   const liens = ['passage-5e', 'maths-5e-proportionality-french-5e-conjugation'];
@@ -773,7 +773,7 @@ it('la mer est habillée de rochers et de bancs de sable, loin des terres, des o
   expect(worldCubes('3e', {}).some((c) => c.tag === 'mer')).toBe(false);
 });
 
-it('le port : une jetée dans l’eau devant l’île-port, et le Bloc-Navire à côté, hors de tout', () => {
+it('le port : une jetée dans l’eau devant l’île-port, et la Nef à côté, hors de tout', () => {
   for (const a of ARCHIPELAGOS) {
     const def = islandDef(a.port);
     const cells = dockCells(a.port);
@@ -902,45 +902,56 @@ it('le bonhomme embarque : de son île à la jetée, planche par planche, jusqu�
   }
 });
 
-it('le Bloc-Navire : le chantier du port montre ses cases en fantôme, les étapes parties sont dessinées entières', () => {
-  const [coque, ballon] = VEHICLE_STAGES;
-  // Le navire n'est pas dans le terrain (il tangue, c'est un objet à part) : le terrain ne garde que la jetée.
+it('la Nef : le chantier du port montre ses pièces neuves en fantôme sur la forme d’avant, puis elle mue (GD-15)', () => {
+  const [voilier, dirigeable] = VEHICLE_STAGES;
+  // La Nef n'est pas dans le terrain (elle tangue, c'est un objet à part) : le terrain ne garde que la jetée.
   // Au large de sa côte de devant (le cœur agrandi et sa côte, GD-11).
   const plaine = islandDef('maths-6e-calculation');
   const terrain = worldCubes('6e', {}, village([]), false).filter((c) => c.tag === 'maths-6e-calculation' && c.y < coeurDe(plaine).y0 - plaine.ext.front);
   expect(terrain.some((c) => c.ghost)).toBe(false);
   expect(terrain.every((c) => c.texture === 'planches' || c.texture === 'escalier' || c.texture === 'tronc' || c.texture === 'lanterne')).toBe(true);
-  // Au début, sur la Plaine : la coque en fantôme (la voile aussi, tant que les Gardiens ne sont pas vaincus), amarrée au quai.
+  // Au début, sur la Plaine : le voilier en fantôme (la voile aussi, tant que les Gardiens ne sont pas rallumés), amarré au quai.
   const fresh = vehiclePlacement('6e', {}, village([]));
   expect(fresh.port).toBe('maths-6e-calculation');
   expect(fresh.origin).toEqual(dockOrigin('maths-6e-calculation'));
   expect(fresh.afloat).toBe(true);
-  expect(fresh.building).toBe(coque.id);
-  expect(fresh.cubes.filter((c) => c.ghost).length).toBe(coque.cells.length + coque.kit.length);
-  // Les cubes sont locaux : dans l'encombrement du navire.
+  expect(fresh.building).toBe(voilier.id);
+  expect(fresh.form).toBe(0);
+  expect(fresh.cubes.filter((c) => c.ghost).length).toBe(voilier.cells.length + voilier.kit.length);
+  // Les cubes sont locaux : dans l'encombrement de la Nef.
   for (const c of fresh.cubes) {
     expect(c.x).toBeGreaterThanOrEqual(0);
     expect(c.x).toBeLessThan(VEHICLE_SIZE.w);
     expect(c.y).toBeLessThan(VEHICLE_SIZE.d);
   }
-  // Trois Gardiens vaincus : la voile est là, en dur.
+  // Trois Gardiens rallumés, rien de posé : la voile est là, en dur, la coque encore en fantôme.
   const guardians = Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion'].map((id) => [`${id}-challenge`, { stars: 2 }]));
-  const sail = vehiclePlacement('6e', guardians, village([])).cubes.filter((c) => c.texture === 'toile');
-  expect(sail).toHaveLength(coque.kit.filter((c) => c.block === BLOC.toile).length);
-  expect(sail.every((c) => !c.ghost)).toBe(true);
-  // Le voyage fait : la coque entière et en dur ; au Marché, le ballon en fantôme au-dessus.
+  const sail = vehiclePlacement('6e', guardians, village([]));
+  expect(sail.cubes.filter((c) => !c.ghost)).toHaveLength(voilier.kit.length);
+  expect(sail.form).toBe(0);
+  // Tout posé et les Gardiens rallumés : la Nef a sa forme, avant même de partir.
+  const pose = village([]);
+  pose.parts[voilier.id] = planCells(voilier).map((c) => c.key);
+  const fini = vehiclePlacement('6e', guardians, pose);
+  expect(fini.form).toBe(1);
+  expect(fini.cubes.some((c) => c.ghost)).toBe(false);
+  expect(fini.cubes).toHaveLength(vehicleForm(1).length);
+  // Le voyage fait : au Marché, le voilier en dur et les pièces du dirigeable en fantôme, à leur place finale.
   const sailed = vehiclePlacement('5e', {}, village(['passage-5e']));
   expect(sailed.port).toBe('maths-5e-proportionality');
-  expect(sailed.building).toBe(ballon.id);
-  expect(sailed.cubes.filter((c) => !c.ghost && c.texture === 'planches').length).toBeGreaterThan(0);
-  expect(sailed.cubes.filter((c) => c.ghost).length).toBe(ballon.cells.length + ballon.kit.length);
-  // Revenu dans les Premiers Rivages après le deuxième voyage : le navire porte son ballon, rien en fantôme, rien à construire ici.
+  expect(sailed.building).toBe(dirigeable.id);
+  expect(sailed.form).toBe(1);
+  expect(sailed.cubes.filter((c) => !c.ghost)).toHaveLength(vehicleForm(1).length);
+  expect(sailed.cubes.filter((c) => c.ghost).length).toBe(dirigeable.cells.length + dirigeable.kit.length);
+  // Revenu dans les Premiers Rivages après le deuxième voyage : la Nef y a la forme du dirigeable, rien en fantôme.
   const back = vehiclePlacement('6e', {}, village(['passage-5e', 'passage-4e']));
   expect(back.cubes.some((c) => c.ghost)).toBe(false);
   expect(back.building).toBeNull();
-  expect(back.cubes.filter((c) => c.texture === 'toile').length).toBeGreaterThan(coque.kit.length);
-  // Dans les Îles du Ciel, il plane à hauteur de quai.
-  expect(vehiclePlacement('3e', {}, village(['passage-5e', 'passage-4e', 'passage-3e'])).afloat).toBe(false);
+  expect(back.form).toBe(2);
+  // Dans les Îles du Ciel, la fusée se tient debout à hauteur de quai.
+  const ciel = vehiclePlacement('3e', {}, village(['passage-5e', 'passage-4e', 'passage-3e']));
+  expect(ciel.afloat).toBe(false);
+  expect(ciel.form).toBe(3);
 });
 
 it('l’école, la salle des trophées et le lieu où l’on assemble : sur l’île de l’école de chaque archipel, libres, leur porte accessible, les ouvrages aussi', () => {

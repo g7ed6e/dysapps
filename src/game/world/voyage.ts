@@ -1,4 +1,4 @@
-// Le voyage du Bloc-Navire, en deux temps séparés par le changement d'archipel (la scène 3D est reconstruite sous un
+// Le voyage de la Nef, en deux temps séparés par le changement d'archipel (la scène 3D est reconstruite sous un
 // voile) : le départ (le bonhomme embarque, le navire s'éloigne) puis l'arrivée (le navire accoste, le bonhomme
 // débarque). Code pur : durées et trajectoire ; le temps qui passe est dans scene.ts, le dessin dans les vues, l'enchaînement
 // dans WorldPage.
@@ -38,12 +38,12 @@ const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) /
 
 /**
  * Où est le navire pendant qu'il s'éloigne, en cases par rapport à son quai : `k` de 0 (amarré) à 1 (loin).
- * La voile glisse vers le large ; le ballon s'élève et l'archipel rétrécit ; le réacteur monte presque à la verticale.
+ * La voile glisse vers le large ; le ballon s'élève et l'archipel rétrécit ; la fusée monte droit, debout, en accélérant.
  * `dy` est négatif : le large est devant l'île (−y). `pitch` : le nez qui se lève, en radians.
  */
 export function vehiclePath(stage: 1 | 2 | 3, k: number): { dx: number; dy: number; dz: number; pitch: number } {
   const t = Math.max(0, Math.min(1, k));
   if (stage === 1) return { dx: 0, dy: -26 * ease(t), dz: 0, pitch: Math.sin(t * Math.PI * 3) * 0.03 };
   if (stage === 2) return { dx: 0, dy: -18 * t, dz: 30 * ease(t), pitch: -0.08 * t };
-  return { dx: 0, dy: -8 * t, dz: 60 * t * t, pitch: -0.25 * t };
+  return { dx: 0, dy: -3 * t, dz: 60 * t * t, pitch: 0 };
 }

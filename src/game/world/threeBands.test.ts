@@ -210,7 +210,7 @@ it('au Marché et à l’Atelier, les plans se dessinent une rangée plus au fon
     if (fond)
       expect(cubes.filter((c) => !c.sol && c.y === zone.y && c.x >= zone.x && c.x < zone.x + zone.w).map((c) => `${c.x},${c.z}`), id).toEqual([]);
   }
-  // Le Bloc-Navire et les monuments gardent leur ancre (`ancreDuQuai`, `monumentAnchor`).
+  // La Nef et les monuments gardent leur ancre (`ancreDuQuai`, `monumentAnchor`).
   expect(decalageDesPlans({ biome: 'maths-5e-proportionality', zone: 'port' })).toEqual({ x: 0, y: 0, z: 0 });
   expect(decalageDesPlans({ biome: 'maths-4e-algebra', zone: 'monument' })).toEqual({ x: 0, y: 0, z: 0 });
 });

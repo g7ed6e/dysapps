@@ -101,7 +101,7 @@ export function finishWalk(walk: Walk | null, now: number): boolean {
   return true;
 }
 
-// ---- Le voyage du Bloc-Navire
+// ---- Le voyage de la Nef
 
 /** Le voyage en cours : son temps (départ ou arrivée), son début, où l'on en est. */
 export interface VoyageRun {

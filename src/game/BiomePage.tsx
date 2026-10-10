@@ -258,7 +258,7 @@ export function BiomePage() {
       {unlocked && stageAt(biome.id) && (
         <>
           <h2 className="section-title">
-            <Icon name="ship" /> Le Bloc-Navire
+            <Icon name="ship" /> La Nef
           </h2>
           <div className="panel plan-panel">
             <ShipSection biome={biome} builder={ship} highlight={chantier === 'vehicle'} onBoard={(to) => navigate(`/adventure/passage/${to}`)} />

@@ -11,7 +11,7 @@ import { getArchipelago } from '../archipelago';
 import { placedLinksOfPlace } from '../linkGeometry';
 import type { World } from '../../engine';
 import { villageStage } from '../villageStage';
-import { kitReady, launchedStages, stageBuildingAt } from '../vehicle';
+import { kitReady, launchedStages, stageBuildingAt, vehicleForm } from '../vehicle';
 import { cacheUneBorne, questStations, rangeeDevantLesBornes } from './markers';
 import { AVATAR_HOME, fade, groundHeight, isSchoolIsland } from './base';
 import { versLaCameraDuDessin } from './view';
@@ -173,7 +173,7 @@ function quaySpots(port: BiomeId, links: readonly string[], cubes: VoxelCube[]):
  * éteintes et une barque grise retournée sur la grève ; 2, lanternes allumées, la barque redressée ; 3, la barque amarrée
  * contre la jetée, un foyer qui fume ; 4, une seconde barque sur la grève, des caisses, deux fanions ; 5, une lanterne
  * sur chaque poteau et un feu de port au bout de la jetée. Rien sur la jetée ni à la place du navire ; pas de barque
- * dans les Îles du Ciel. Le Bloc-Navire amarré à côté n'est pas dans le terrain : il tangue, c'est un objet à part
+ * dans les Îles du Ciel. La Nef amarrée à côté n'est pas dans le terrain : elle tangue, c'est un objet à part
  * (`vehiclePlacement`).
  */
 export function harbor(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cubes: VoxelCube[]): void {
@@ -265,12 +265,15 @@ export interface VehiclePlacement {
   afloat: boolean;
   /** L'étape en chantier sur ce port, s'il y en a une. */
   building: string | null;
+  /** La forme montrée (0 : le voilier pas encore construit ; 1 à 3 : voilier, dirigeable, fusée) : quand elle change sur le même port, la Nef mue. */
+  form: number;
 }
 
 /**
- * Le Bloc-Navire au quai du port de l'archipel. Les étapes déjà parties sont dessinées entières (le navire les porte
- * partout où il accoste) ; celle qui se construit ici montre ses cases posées en dur et les autres en fantôme ; son kit
- * (voile, ballon, feux) arrive avec les Gardiens.
+ * La Nef au quai du port de l'archipel (GD-15). Hors chantier, elle a la forme de la dernière étape partie. Sur le port
+ * où une étape se construit, elle garde la forme d'avant, et les pièces neuves se montrent à leur place finale : posées
+ * en dur, les autres en fantôme, le kit (voile, haut de l'enveloppe, ailerons) en fantôme tant que les Gardiens ne sont pas
+ * rallumés. Tout posé et le kit arrivé, elle a mué : elle a sa nouvelle forme (`muee`), avant même de partir.
  */
 export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { stars: number }>, village: World): VehiclePlacement {
   const port = getArchipelago(a).port;
@@ -281,15 +284,21 @@ export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { st
     cubes.push({ x: c.x, y: c.y, z: c.z, color: bd.side, top: bd.top, texture: bd.texture, tag: port, ghost: ghost || undefined });
   };
   const bridges = village.links;
-  for (const stage of launchedStages(bridges)) for (const c of [...stage.cells, ...stage.kit]) put(c, false);
-  // Le chantier de ce port : l'étape qui s'y construit, si l'étape d'avant est partie.
   const building = stageBuildingAt(port, bridges);
-  if (building) {
-    const done = new Set(village.parts[building.id] ?? []);
-    const placed = planCells(building);
-    building.cells.forEach((c, i) => put(c, !done.has(placed[i].key)));
-    const kit = kitReady(building, progress);
-    for (const c of building.kit) put(c, !kit);
+  const launched = launchedStages(bridges).length;
+  if (!building) {
+    for (const c of vehicleForm(Math.max(1, launched))) put(c, false);
+    return { port, origin, cubes, afloat: vehicleAfloat(a), building: null, form: Math.max(1, launched) };
   }
-  return { port, origin, cubes, afloat: vehicleAfloat(a), building: building?.id ?? null };
+  const done = new Set(village.parts[building.id] ?? []);
+  const placed = planCells(building);
+  const kit = kitReady(building, progress);
+  if (kit && placed.every((c) => done.has(c.key))) {
+    for (const c of vehicleForm(building.stage)) put(c, false);
+    return { port, origin, cubes, afloat: vehicleAfloat(a), building: building.id, form: building.stage };
+  }
+  if (building.stage > 1) for (const c of vehicleForm(building.stage - 1)) put(c, false);
+  building.cells.forEach((c, i) => put(c, !done.has(placed[i].key)));
+  for (const c of building.kit) put(c, !kit);
+  return { port, origin, cubes, afloat: vehicleAfloat(a), building: building.id, form: building.stage - 1 };
 }

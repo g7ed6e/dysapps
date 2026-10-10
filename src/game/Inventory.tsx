@@ -24,14 +24,14 @@ export const READY_SHOWN = 3;
 
 /**
  * L'ordre des chantiers prêts : ceux de l'île du bonhomme d'abord, dans l'ordre de son prochain objectif (l'ouvrage,
- * le Bloc-Navire), puis les autres.
+ * la Nef), puis les autres.
  */
 function readyRank(kind: Use['kind'] | 'ouvrage', here: boolean): number {
   const order = ['ouvrage', 'navire', 'monument'].indexOf(kind);
   return (here ? 0 : 10) + (order < 0 ? 9 : order);
 }
 
-/** « Bloc-Navire : encore 6 à gagner », « Bloc-Navire : tu as tout, pose-les », « La tour : tu peux en poser 4 »,
+/** « Nef : encore 6 à gagner », « Nef : tu as tout, pose-les », « La tour : tu peux en poser 4 »,
  * « Le phare du large, la galerie : encore 4 à gagner ». */
 function libelleDUsage(use: Use, count: number, univers: UniversNomme): string {
   // Un grand projet pose une pièce entière, nommée pour n'avoir rien à retenir : il faut tous ses blocs, comme le navire.

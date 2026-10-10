@@ -655,7 +655,7 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rallumage?.id, rallumage?.seq]);
 
-  // ---- Le Bloc-Navire : la coque (tout ce qui est sous le mât) et le ballon, qui pivote au sommet du mât
+  // ---- La Nef : la coque (tout ce qui est sous le mât) et le ballon, qui pivote au sommet du mât
   useEffect(() => {
     world.current?.navire.poser(vehicle);
     // eslint-disable-next-line react-hooks/exhaustive-deps

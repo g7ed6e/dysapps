@@ -18,7 +18,7 @@ export type Entite =
   | { genre: 'borne'; id: string }
   /** Un lieu du village (l'école, la salle des trophées) sur son île. */
   | { genre: 'lieu'; id: string; ile: BiomeId }
-  /** Un ouvrage (pont, bac, escalier…) ou un voyage du Bloc-Navire. */
+  /** Un ouvrage (pont, bac, escalier…) ou un voyage de la Nef. */
   | { genre: 'ouvrage'; id: string }
   /** Un plan : un bâtiment d'île, une étape du navire ou un monument. */
   | { genre: 'plan'; id: string }
@@ -70,7 +70,7 @@ export interface Disposition {
 
 /** Ce qu'une vue renvoie : un geste traduit en intention ; le jeu décide. */
 /**
- * Ce dont parle une fiche (lot 2 de « Toucher le monde ») : une borne (« île:mission »), un Gardien, le Bloc-Navire, un
+ * Ce dont parle une fiche (lot 2 de « Toucher le monde ») : une borne (« île:mission »), un Gardien, la Nef, un
  * ouvrage, une créature, une île pâle. La vue fait sauter son signe à l'ouverture et garde l'objet hors de la fiche.
  */
 export type ObjetDeLaFiche =

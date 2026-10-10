@@ -553,7 +553,7 @@ export const ARCHIPEO = {
     resistance: (reste, total) => `Encore ${reste} épreuve${s(reste)} sur ${total} pour le rallumer`,
     dejaFaitArene: (gardien) => `${gardien} brille déjà. Tu peux rejouer son défi quand tu veux.`,
     encoreAFaire: (n) => `encore ${n} Gardien${s(n)} à rallumer`,
-    navireAttend: (n, piece) => `Le Bloc-Navire a tous ses blocs ! Il attend encore ${n} Gardien${s(n)} rallumé${s(n)}${piece ? ` pour ${piece}` : ''}.`,
+    navireAttend: (n, piece) => `La Nef a tous ses blocs ! Elle attend encore ${n} Gardien${s(n)} rallumé${s(n)}${piece ? ` pour ${piece}` : ''}.`,
     navireGardiens: (faits, total, archipel, piece) =>
       faits >= total ? `Gardiens : c’est fait ! ${faits} sur ${total}, ${piece} est là.` : `Gardiens : encore ${total - faits} à rallumer dans les ${archipel} pour ${piece}.`,
     faitsSur: (n, total) => `${n} Gardien${s(n)} rallumé${s(n)} sur ${total}`,
@@ -582,9 +582,9 @@ export const ARCHIPEO = {
     parle: 'baleine',
     arrivee: {
       '6e': 'Je suis la baleine. Je passe au large quand tu fais quelque chose de grand.',
-      '5e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles.',
-      '4e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche.',
-      '3e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
+      '5e': 'La Nef a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles.',
+      '4e': 'La Nef a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche.',
+      '3e': 'La Nef a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
     },
     gardiens: (archipel) => `Tous les Gardiens des ${archipel} brillent à nouveau. J’ai vu leur lumière depuis le large.`,
     // Le nom avec son article, « bâti » accordé (« La Plaine des nombres est bâtie. », « Le Marché des proportions est bâti. »).

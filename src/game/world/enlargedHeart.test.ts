@@ -198,7 +198,7 @@ it('le quai d’une île-école qui est un port suit sa côte repoussée ; les c
   // À l'Atelier aussi, depuis son croissant (GD-12) : le navire recule d'une case vers le large.
   expect(dockOrigin('maths-4e-algebra')).toEqual({ x: islandDef('maths-4e-algebra').core.x + 17, y: islandDef('maths-4e-algebra').core.y - 18, z: 2 });
   expect(ORIGINE_DU_QUAI['maths-4e-algebra']).toEqual({ x: 15, y: -14, z: -7 });
-  // Le Phare, port des Îles du Ciel, sans étape du Bloc-Navire : le navire s'y pose devant sa côte repoussée.
+  // Le Phare, port des Îles du Ciel, sans étape de la Nef : le navire s'y pose devant sa côte repoussée.
   expect(dockOrigin('maths-3e-functions')).toEqual({ x: islandDef('maths-3e-functions').core.x + 17, y: islandDef('maths-3e-functions').core.y - 18, z: 9 });
   expect(ORIGINE_DU_QUAI['maths-3e-functions']).toBeUndefined();
 });

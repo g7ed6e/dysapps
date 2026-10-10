@@ -1,4 +1,4 @@
-// Le port d'un archipel : la jetée devant l'île-port, et la place du Bloc-Navire à côté.
+// Le port d'un archipel : la jetée devant l'île-port, et la place de la Nef à côté.
 // Générateur pur (coordonnées du monde), partagé par le terrain 3D, les plans du véhicule et la vue simple.
 import type { BiomeId } from '../biomes';
 import { ALTITUDE, archipelagoOfIsland, coeurDe, isLand, islandDef, type ArchipelagoId, type IslandDef } from './map';
@@ -13,8 +13,8 @@ export const DOCK_DX = 16;
 const DOCK_FLAT = 3;
 
 /**
- * Encombrement du Bloc-Navire (coordonnées locales) : 5 de large (x), 11 de long (y, proue en y = 0), 11 de haut au-dessus
- * du plancher (z = 0), et 2 dessous, pour les réacteurs.
+ * Encombrement de la Nef (coordonnées locales) : 5 de large (x), 11 de long (y, proue en y = 0), 11 de haut au-dessus
+ * du plancher (z = 0), et 2 dessous, pour la quille du dirigeable posé.
  */
 export const VEHICLE_SIZE = { w: 5, d: 11, h: 11, below: 2 };
 /** La case du pont où le bonhomme se tient (sur le plancher, z local 0). */

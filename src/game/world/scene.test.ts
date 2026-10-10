@@ -68,7 +68,7 @@ describe('la marche du bonhomme', () => {
   });
 });
 
-describe('le voyage du Bloc-Navire', () => {
+describe('le voyage de la Nef', () => {
   it('au départ : le bonhomme marche jusqu’au pont, monte à bord, le navire s’éloigne, puis la fin est annoncée une fois', () => {
     const run = startVoyage({ leg: 'depart', stage: 1, back: false }, 0);
     const { walk, sail } = legTiming('depart', false);

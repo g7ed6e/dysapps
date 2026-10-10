@@ -415,6 +415,8 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (glisse || (moved >= SEUIL_DU_GLISSE && !toucherQuiTremble)) return;
     // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
     if (voyageRef.current) return rappels.current.onVoyageSkip?.();
+    // Pendant la mue de la Nef, un toucher la termine (GD-15), et rien d'autre.
+    if (navire.finirLaMue()) return;
     if (derniers.current.amenager !== 'non') return toucherEnAmenageant(e);
     if (derniers.current.carte) return toucherSurLaCarte(e);
     // Une bulle sous le doigt (sa plaque, pas les marges de sa case) passe d'abord : elle est dessinée par-dessus tout

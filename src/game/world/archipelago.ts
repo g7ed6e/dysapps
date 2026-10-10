@@ -1,5 +1,5 @@
 // Les quatre archipels et ce qui relie les îles : les liaisons (pont, bac, sentier) à l'intérieur d'un archipel, et
-// les voyages du Bloc-Navire d'un archipel au suivant. Depuis GD-9, une liaison relie chaque paire de lieux d'une
+// les voyages de la Nef d'un archipel au suivant. Depuis GD-9, une liaison relie chaque paire de lieux d'une
 // région, au même prix, et ne demande rien d'autre que des blocs gagnés n'importe où ; sa nature suit son tracé.
 // Les natures d'avant (escalier taillé, tunnel, col) ne servent plus qu'à relire les anciennes sauvegardes
 // (`LEGACY_BRIDGES`). Une île s'ouvre quand un chemin de liaisons posées (et de voyages faits) y mène depuis une île
@@ -15,7 +15,7 @@ import { premierePartiePosee } from './parts';
 
 export type { ArchipelagoId };
 
-/** Un archipel : une classe, un nom, une île-port (le Bloc-Navire s'y construit et y accoste) et ses îles de départ. */
+/** Un archipel : une classe, un nom, une île-port (la Nef s'y construit et y accoste) et ses îles de départ. */
 export interface ArchipelagoDef {
   classe: ArchipelagoId;
   /**
@@ -330,7 +330,7 @@ export const LEGACY_BRIDGES: LegacyLink[] = [
   b('french-4e-agreement', 'french-3e-close-reading', 'escalier', 7),
 ];
 
-// ---------- Les voyages du Bloc-Navire ----------
+// ---------- Les voyages de la Nef ----------
 
 /** Un voyage : du port d'un archipel au port du suivant. Fait une fois, il reste fait dans les deux sens. */
 export interface VoyageDef {
@@ -376,7 +376,7 @@ export function reachedArchipelagos(bridges: string[]): ArchipelagoDef[] {
   return ARCHIPELAGOS.filter((a) => isArchipelagoReached(a.classe, bridges));
 }
 
-/** Combien de voyages sont faits (le niveau du Bloc-Navire : 0 coque en chantier, 1 voile, 2 ballon, 3 réacteur). */
+/** Combien de voyages sont faits (le niveau de la Nef : 0 coque en chantier, 1 voile, 2 ballon, 3 réacteur). */
 export function launchedCount(bridges: string[]): number {
   return VOYAGES.filter((v) => bridges.includes(v.id)).length;
 }

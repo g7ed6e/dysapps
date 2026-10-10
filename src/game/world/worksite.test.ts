@@ -31,12 +31,12 @@ it('le bâtiment fini ou non, le bilan parle de l’ouvrage le moins cher qui en
   expect(worksiteFor(five, 'french-6e-phonology', BLOC.bois).text).toBe('Le pont vers la Mine des lettres : tu peux le construire !');
 });
 
-it('sur le port, les blocs servent le Bloc-Navire', () => {
+it('sur le port, les blocs servent la Nef', () => {
   const plans = Object.fromEntries(plansFor('maths-6e-calculation').map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const state = sanitizeState({ stock: { [BLOC.sable]: 4 }, world: { place: 'maths-6e-calculation', parts: plans, links: ['maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals'] } });
   const site = worksiteFor(state, 'maths-6e-calculation', BLOC.sable);
   expect(site).toMatchObject({ kind: 'navire', to: '/adventure/maths-6e-calculation?worksite=vehicle' });
-  expect(site.text).toMatch(/^Le Bloc-Navire, la coque et la voile : \d+ blocs sur les \d+ qui manquent\.$/);
+  expect(site.text).toMatch(/^La Nef, le voilier : \d+ blocs sur les \d+ qui manquent\.$/);
   expect(coque.biome).toBe('maths-6e-calculation');
 });
 

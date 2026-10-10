@@ -21,7 +21,7 @@ export interface Progress {
   structuresCompleted: number;
   /** Gardiens de biome vaincus. */
   challengesWon: number;
-  /** Voyages du Bloc-Navire (un archipel de plus atteint). */
+  /** Voyages de la Nef (un archipel de plus atteint). */
   passages: number;
   /** Monuments terminés (l'observatoire des baleines…). */
   landmarksCompleted: number;
@@ -230,9 +230,9 @@ export const BADGES: BadgeDef[] = [
     earned: (p) => p.structuresCompleted >= PLANS.length,
   },
   { id: 'patrimoine', icon: 'castle', title: 'Patrimoine', description: 'Terminer un monument, comme l’observatoire des baleines.', earned: (p) => p.landmarksCompleted >= 1 },
-  { id: 'capitaine', icon: 'ship', title: 'Capitaine', description: 'Larguer les amarres : premier voyage du Bloc-Navire.', earned: (p) => p.passages >= 1 },
-  { id: 'aeronaute', icon: 'ship', title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Anciens Ateliers.', earned: (p) => p.passages >= 2 },
-  { id: 'pilote-du-ciel', icon: 'ship', title: 'Pilote du ciel', description: 'Allumer le réacteur et monter jusqu’aux Îles du Ciel.', earned: (p) => p.passages >= 3 },
+  { id: 'capitaine', icon: 'ship', title: 'Capitaine', description: 'Larguer les amarres : premier voyage de la Nef.', earned: (p) => p.passages >= 1 },
+  { id: 'aeronaute', icon: 'ship', title: 'Aéronaute', description: 'Mener la Nef au-dessus des nuages et rejoindre les Anciens Ateliers.', earned: (p) => p.passages >= 2 },
+  { id: 'pilote-du-ciel', icon: 'ship', title: 'Pilote du ciel', description: 'Faire de la Nef une fusée et monter jusqu’aux Îles du Ciel.', earned: (p) => p.passages >= 3 },
   { id: 'gardien', icon: 'flame', title: 'Premier Gardien', description: 'Rallumer le Gardien d’une île.', earned: (p) => p.challengesWon >= 1 },
   { id: 'cinq-iles', icon: 'flame', title: 'Maître des cinq îles', description: 'Rallumer cinq Gardiens.', earned: (p) => p.challengesWon >= 5 },
   { id: 'dix-gardiens', icon: 'medal', title: 'Collégien', description: 'Rallumer dix Gardiens.', earned: (p) => p.challengesWon >= 10 },
@@ -297,7 +297,7 @@ export function recordBoss(p: Progress, now = new Date().toISOString()): Progres
   return finish(p, { ...p, challengesWon: p.challengesWon + 1 }, 0, now);
 }
 
-/** Un voyage du Bloc-Navire : l'XP de l'étape et le compteur pour les succès. */
+/** Un voyage de la Nef : l'XP de l'étape et le compteur pour les succès. */
 export function recordVoyage(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {
   return finish(p, { ...p, xp: p.xp + xp, passages: p.passages + 1 }, xp, now);
 }

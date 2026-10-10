@@ -54,9 +54,9 @@ interface Props {
   onBuilt?: (to: BiomeDef['id']) => void;
   /** L'ouvrage touché dans le monde : sa proposition est mise en avant. */
   highlight?: string | null;
-  /** Le chantier du Bloc-Navire (sur une île-port). */
+  /** Le chantier de la Nef (sur une île-port). */
   ship?: VehicleBuilder;
-  /** Embarquer sur le Bloc-Navire vers un archipel. */
+  /** Embarquer sur la Nef vers un archipel. */
   onBoard?: (to: ArchipelagoId, back: boolean) => void;
   /** Les parties qui viennent de se poser dans le monde (GD-6), dites en tête du bâtiment une fois la pose finie. */
   posees?: Partie[] | null;
@@ -71,7 +71,7 @@ interface Props {
 /**
  * Le panneau d'une île, qui glisse depuis le bas du monde : la créature (une ligne, la suite dans un pli), ses missions,
  * le Gardien (l'école, la salle des trophées et le lieu où l'on assemble n'y sont plus : ce sont des lieux du monde, lot 2
- * de « Toucher le monde »), le prochain objectif, puis le bâtiment de l'île, le Bloc-Navire (sur un port) et les ouvrages, repliés quand
+ * de « Toucher le monde »), le prochain objectif, puis le bâtiment de l'île, la Nef (sur un port) et les ouvrages, repliés quand
  * il n'y a rien à y faire ; au pied, la matière, la classe et l'archipel. Tout est en HTML (police dys), on ne quitte
  * pas le monde.
  */

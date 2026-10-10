@@ -503,7 +503,7 @@ export function avatarRoute(
 }
 
 /**
- * Le chemin du bonhomme de son île jusqu'au pont du Bloc-Navire : le long de la rangée de devant (sous les bornes),
+ * Le chemin du bonhomme de son île jusqu'au pont de la Nef : le long de la rangée de devant (sous les bornes),
  * puis la jetée planche par planche, puis le bastingage et le pont. À rebours, c'est le débarquement.
  */
 export function boardingRoute(port: BiomeId): { x: number; y: number; z: number }[] {

@@ -76,8 +76,8 @@ describe('les textes d’univers', () => {
     expect([l.encoreAFaire(1), l.encoreAFaire(2), l.navireAttend(1), l.navireAttend(2)]).toEqual([
       'encore 1 Gardien à rallumer',
       'encore 2 Gardiens à rallumer',
-      'Le Bloc-Navire a tous ses blocs ! Il attend encore 1 Gardien rallumé.',
-      'Le Bloc-Navire a tous ses blocs ! Il attend encore 2 Gardiens rallumés.',
+      'La Nef a tous ses blocs ! Elle attend encore 1 Gardien rallumé.',
+      'La Nef a tous ses blocs ! Elle attend encore 2 Gardiens rallumés.',
     ]);
     expect([l.navireGardiens(1, 3, 'Basses Terres', 'la voile'), l.navireGardiens(3, 3, 'Basses Terres', 'la voile')]).toEqual([
       'Gardiens : encore 2 à rallumer dans les Basses Terres pour la voile.',
@@ -237,9 +237,9 @@ describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
     expect(t.baleine.parle).toBe('baleine');
     expect(t.baleine.arrivee).toEqual({
       '6e': 'Je suis la baleine. Je passe au large quand tu fais quelque chose de grand.',
-      '5e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles.',
-      '4e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche.',
-      '3e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
+      '5e': 'La Nef a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles.',
+      '4e': 'La Nef a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche.',
+      '3e': 'La Nef a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
     });
     expect([t.baleine.port('Plaine des nombres'), t.baleine.port('Marché des proportions'), t.baleine.ouvrage('Mine des lettres')]).toEqual([
       'La Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.',
@@ -284,7 +284,7 @@ describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
       { title: 'Ingénieur', description: 'Devenir Ingénieur : tu inventes des machines.' },
       { title: 'Architecte', description: 'Devenir Architecte : tu dessines les plans du village.' },
     ]);
-    expect(succes('aeronaute').description).toBe('Gonfler le ballon du Bloc-Navire et rejoindre les Monts de Feu.');
+    expect(succes('aeronaute').description).toBe('Mener la Nef au-dessus des nuages et rejoindre les Monts de Feu.');
     // Seuls des succès qui existent sont renommés, et leurs identifiants ne changent pas.
     for (const id of Object.keys(t.succes)) expect(BADGES.some((b) => b.id === id)).toBe(true);
   });

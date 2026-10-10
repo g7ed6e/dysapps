@@ -68,7 +68,7 @@ export function BossPage() {
   const [deborde, setDeborde] = useState(false);
   const ligneRef = useRef<HTMLParagraphElement>(null);
   const ligneId = useId();
-  // Ce Gardien rallumé fait arriver le kit du Bloc-Navire (la voile, le ballon, les feux) : on le dit, avec le chemin du port.
+  // Ce Gardien rallumé fait arriver le kit de la Nef (la voile, le ballon, les feux) : on le dit, avec le chemin du port.
   const [shipHint, setShipHint] = useState<VehicleStage | null>(null);
   const sound = (f: () => void) => settings.sounds && f();
 
@@ -279,7 +279,7 @@ export function BossPage() {
           {shipHint && (
             <p className="panel ship-hint" role="status" aria-live="polite">
               <Icon name="ship" />{' '}
-              <Syllabified text={`Le Bloc-Navire a ses Gardiens : ${shipHint.short} est là ! Va au port, sur ${thePlace(getBiome(shipHint.biome)?.name ?? shipHint.biome)}, finir de le construire.`} />{' '}
+              <Syllabified text={`La Nef a ses Gardiens : ${shipHint.short} est là ! Va au port, sur ${thePlace(getBiome(shipHint.biome)?.name ?? shipHint.biome)}, finir de la construire.`} />{' '}
               <Link to={`/adventure/${getArchipelago(shipHint.from).port}`} className="button">
                 <Icon name="ship" /> Aller au port
               </Link>

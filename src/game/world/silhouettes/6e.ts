@@ -22,7 +22,7 @@ export const SILHOUETTES_6E = {
   'french-6e-reading': { pics: [], forme: { forme: 'presquile', vers: 'gauche', short: true } },
   // La Carrière des mots : un haricot, le creux à droite, le front de taille.
   'french-6e-word-spelling': { pics: [], forme: { forme: 'haricot', vers: 'droite' } },
-  // La Plaine des nombres, île-port : un croissant ouvert devant, la rade du Bloc-Navire.
+  // La Plaine des nombres, île-port : un croissant ouvert devant, la rade de la Nef.
   'maths-6e-calculation': { pics: [], forme: { forme: 'croissant', vers: 'devant', quai: true } },
   // La Rivière des fractions : une cacahuète, le petit lobe devant ; la rivière partage l'île en deux parts.
   'maths-6e-fractions': { pics: [], forme: { forme: 'cacahuete', vers: 'devant' } },

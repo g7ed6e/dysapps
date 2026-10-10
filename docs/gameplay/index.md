@@ -159,9 +159,11 @@ La liste des habitants et des gardiens, lieu par lieu, avec ce qui change d’un
 
 ## Le passage
 
-- **Une seule construction qui grandit, trois passages** : elle reçoit un élément nouveau à chaque passage (6e vers 5e, 5e vers 4e, 4e vers 3e). Elle se construit au point de départ des liaisons, élément par élément, avec les ressources de la région ; aucune ressource rare.
+- **Une seule construction qui change entièrement de forme, trois passages** ([GD-15](propositions/GD-15.md)) : à chaque passage (6e vers 5e, 5e vers 4e, 4e vers 3e), elle prend une forme nouvelle, pour la mer, puis pour l’air, puis pour le ciel. Elle se construit au point de départ des liaisons, avec les ressources de la région ; aucune ressource rare. Chaque forme reprend des éléments de la précédente : seules ses pièces neuves se posent, en fantôme à leur place finale ; ce qu’on a posé n’est jamais perdu. Le même nom dans tous les univers, et un fil qui la fait reconnaître d’une forme à l’autre : une lumière à l’avant et une bande de couleur unie.
+- **La mue** : à la dernière pièce posée, sous les yeux de l’élève, la construction passe à sa forme nouvelle, en 3 secondes au plus ; un toucher la termine ; d’un coup quand l’appareil réduit les animations. La voix attend sa fin, la caméra ne bouge pas. La mue n’est pas un départ.
+- **L’obstacle** : chaque forme lève l’obstacle qu’on voit au bord de la région (une brume au large, un mur de nuages, des îles dans le ciel), en volume opaque, sans texte posé dessus.
 - **Les éléments clés arrivent avec les défis** : ils apparaissent quand assez de défis de la région sont réussis (3, puis 2, puis 2), même si des lieux ne sont pas achevés. L’élève pose tout le reste lui-même.
-- **Partir est un acte explicite** (un bouton), jamais l’effet du dernier élément. L’XP et le succès arrivent au départ.
+- **Partir est un acte explicite** (un bouton, « Partir », dans la fiche de la construction ; toucher la construction ouvre sa fiche, jamais un départ d’un seul toucher), jamais l’effet du dernier élément. L’XP et le succès arrivent au départ.
 - **Le premier passage** vers une région se joue en entier (huit secondes au plus) ; un toucher, Entrée, Espace ou Échap le font arriver. Ensuite, changer de région est discret : un fondu d’une demi-seconde, et le choix d’une région atteinte d’un toucher. **On revient toujours** à une région précédente.
 - Un élève de 3e passe d’abord par les régions de 6e, 5e et 4e ; dans une région, rien n’est imposé.
 

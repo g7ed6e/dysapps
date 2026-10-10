@@ -86,7 +86,7 @@ export const ARETE_FANTOME = 0.035;
 /** Les pilotis : une case est sur le vide si rien de solide n'est dessous sur tant de cases (ou si c'est l'eau). */
 export const PROFONDEUR = 6;
 
-/** La toile du Bloc-Navire : le crème Brume. */
+/** La toile de la Nef : le crème Brume. */
 export const TOILE_DU_NAVIRE: Couleur = BRUME;
 
 /**

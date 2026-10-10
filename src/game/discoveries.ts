@@ -1,5 +1,5 @@
 // Ce que dit la créature d'une île quand on y arrive : son accueil (ou ce qu'il faut pour venir, ou « pas de LV2 »),
-// et, une fois par appareil, une découverte que le tutoriel ne dit plus (les ouvrages, le Bloc-Navire). Code pur, sauf
+// et, une fois par appareil, une découverte que le tutoriel ne dit plus (les ouvrages, la Nef). Code pur, sauf
 // la mémoire des découvertes déjà dites (celle des tutoriels).
 import type { TextesUnivers } from '../universes';
 import type { BiomeId, SansOption } from './biomes';
@@ -20,7 +20,7 @@ export function accueilDeLIle(state: GameState, id: BiomeId, sansOption: SansOpt
 
 /**
  * La découverte à dire en arrivant sur une île, si elle n'a pas encore été dite sur cet appareil (elle est alors
- * retenue) : sa phrase, les ouvrages sur une île pâle, le Bloc-Navire sur le port où il attend ses blocs ; `null` sinon.
+ * retenue) : sa phrase, les ouvrages sur une île pâle, la Nef sur le port où il attend ses blocs ; `null` sinon.
  */
 export function decouverteDeLIle(
   state: GameState,
