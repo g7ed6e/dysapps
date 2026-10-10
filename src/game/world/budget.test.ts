@@ -229,13 +229,14 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
 
   // Les personnages importés du 6e, lus sur le disque comme la vue les charge : au pire, de près sur l'île qui coûte le
   // plus, de loin ailleurs. (En dernier : une fois chargés, ils remplacent les dessinés en code dans ce fichier.)
-  it('R6 : avec les personnages importés du 6e, créatures et Gardiens tiennent leur enveloppe aux Premiers Rivages', () => {
+  it('R6 : avec les personnages importés (6e, Gardiens de la 5e), créatures et Gardiens tiennent leur enveloppe aux Premiers Rivages et aux Îles Brumeuses', () => {
     chargerLesModelesDuDisque();
-    for (const p of ['creatures', 'gardiens'] as const) {
-      const cout = personnagesCost('6e')[p];
-      expect(cout.triangles, p).toBeLessThanOrEqual(enveloppeDe(p, '6e').triangles);
-      expect(cout.drawCalls, p).toBe(1);
-    }
+    for (const a of ['6e', '5e'] as const)
+      for (const p of ['creatures', 'gardiens'] as const) {
+        const cout = personnagesCost(a)[p];
+        expect(cout.triangles, `${a} ${p}`).toBeLessThanOrEqual(enveloppeDe(p, a).triangles);
+        expect(cout.drawCalls, `${a} ${p}`).toBe(1);
+      }
   }, 60_000);
 });
 

@@ -253,12 +253,16 @@ export const ENVELOPPES: Record<
   // GD-12, une forme par île, aux Îles du Ciel : le sol mesure 38 994 triangles (36 930 avant). Il prend 2 070 au décor
   // du même archipel (8 910 mesurés pour 13 600) : sol 39 000, décor 11 530, la somme ne change pas (mainteneur,
   // 9 octobre 2026, carte « Échanger »).
+  // Les Gardiens importés de la 5e (TRELLIS, scripts/rendu/modeles/, 10 octobre 2026) : au pire, de près sur l'île qui
+  // coûte le plus et de loin ailleurs, 4 684 triangles (`budget.test.ts`, R6) pour 3 147 dessinés en code. Leur enveloppe
+  // aux Îles Brumeuses passe de 3 150 à 4 700 ; le sol, mesuré à 35 416 tout construit (`npm run rendu:budget`), cède les
+  // 1 550 : 41 210 → 39 660. La somme des Îles Brumeuses reste 85 945, sous `RENDER_BUDGET_AUTRES` (86 000), inchangé.
   sol: {
     lot: 'R4b',
     nom: 'Sol',
     premiersRivages: { triangles: 32_550, drawCalls: 2 },
     autres: { triangles: 36_930, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 41_210, drawCalls: 1 }, '4e': { triangles: 43_750, drawCalls: 1 }, '3e': { triangles: 44_900, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 39_660, drawCalls: 1 }, '4e': { triangles: 43_750, drawCalls: 1 }, '3e': { triangles: 44_900, drawCalls: 1 } },
   },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
@@ -376,7 +380,7 @@ export const ENVELOPPES: Record<
     nom: 'Gardiens en sentinelles',
     premiersRivages: { triangles: 5_200, drawCalls: 1 },
     autres: { triangles: 2_780, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 3_150, drawCalls: 1 }, '4e': { triangles: 3_050, drawCalls: 1 }, '3e': { triangles: 3_250, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 4_700, drawCalls: 1 }, '4e': { triangles: 3_050, drawCalls: 1 }, '3e': { triangles: 3_250, drawCalls: 1 } },
   },
   scene: {
     lot: 'socle',

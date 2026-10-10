@@ -2,7 +2,7 @@
 
 Chaque personnage passe d’une image de concept (ce dossier, `<nom>.webp`) à un modèle 3D brut, puis à un modèle réduit et peint au budget du jeu. Le dépôt garde le modèle retravaillé ; le brut est gardé dans la Bibliothèque du projet (`archipeo/personnages-3d/bruts/<nom>.glb`, décision du mainteneur, 9 octobre 2026), pour ne jamais avoir à refaire un passage : le brut coûte un passage sur TRELLIS.2, pris sur le quota du compte du mainteneur.
 
-Les modèles du 6e sont dans le jeu, dans l’univers Archipéo : de près dans le défi, les fiches et sur l’île où l’on est, de loin ailleurs dans l’archipel (lus par `src/game/world/characters/imported/`, voir [Les fichiers](../../../architecture/fichiers.md)). Le jeu les tourne face à l’élève (un quart de tour par modèle, relevé dans `models.ts`) : le passage dans Blender n’a pas à les tourner. Un dossier sans ses deux fichiers garde le personnage dessiné en code.
+Les modèles du 6e et les Gardiens de la 5e sont dans le jeu, dans l’univers Archipéo : de près dans le défi, les fiches et sur l’île où l’on est, de loin ailleurs dans l’archipel (lus par `src/game/world/characters/imported/`, voir [Les fichiers](../../../architecture/fichiers.md)). Le jeu les tourne face à l’élève (un quart de tour par modèle, relevé dans `models.ts`) : le passage dans Blender n’a pas à les tourner. Un dossier sans ses deux fichiers garde le personnage dessiné en code.
 
 ## Où sont les fichiers
 
@@ -44,7 +44,7 @@ Les Gardiens (coupe du socle en part de la hauteur, triangles des deux versions)
 | Hydre des marais (Marais, 5e) | 0,12 | 1 347 | 194 |
 | Colporteur (Marché, 5e) | 0,12 | 1 419 | 191 |
 | Cheval à bascule (Menuiserie, 5e) | 0 (garde ses patins) | 1 512 | 214 |
-| Tortue d'ocre (Prairie, 5e) | 0,12 | 1 401 | 187 |
+| Tortue d'ocre (Prairie, 5e) | 0,12 | 1 401 | 199 |
 | Diligence de cuivre (Relais, 5e) | 0,12 | 1 475 | 216 |
 | Flamant de sel (Saline, 5e) | 0,12 | 1 307 | 172 |
 
@@ -80,7 +80,7 @@ Les créatures (sans socle, rien à couper). Leurs fichiers sont peints en aplat
 | Lina (Relais, 5e) | 1 500 | 200 |
 | Perle (Saline, 5e) | 1 500 | 200 |
 
-À reprendre : de loin (200 triangles), l’Hydre des marais, le Colporteur et la Diligence de cuivre ne sont plus que des blocs, et des éclats restent sous la Tortue d’ocre ; de près, tout tient. Le Cheval à bascule garde ses patins : ils font partie du personnage, on ne coupe rien.
+À reprendre : de loin (200 triangles), l’Hydre des marais, le Colporteur et la Diligence de cuivre ne sont plus que des blocs ; de près, tout tient. La version de loin de la Tortue d’ocre est tirée de sa version de près (réduite à 200 triangles), ce qui a retiré les éclats sous la carapace. Le Cheval à bascule garde ses patins : ils font partie du personnage, on ne coupe rien.
 
 ## Passer du concept au modèle brut
 
