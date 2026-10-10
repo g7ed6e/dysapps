@@ -584,7 +584,7 @@ const STARTING_MAP: MapPlace[] = [
   // (qui ne bouge pas), la Falaise et le Jardin ; au second rang, la Gare, l'Imprimerie, l'Escale, le Théâtre et le
   // Cabinet ; au rang du fond, la Vigie au coin de l'ouest, derrière la Gare, le Bassin au coin de l'est, et entre eux
   // deux places pour des îles futures (la Porte des libertés et la Colonnade des cités les ont occupées, avant de passer au
-  // flanc est : voir plus bas). Chaque place est celle où les noms des îles se tiennent le mieux
+  // flanc ouest : voir plus bas). Chaque place est celle où les noms des îles se tiennent le mieux
   // sur la Carte (three/mapLabels.test.ts) : la Vigie au centre du rang du fond taisait les noms de l'Imprimerie et de
   // l'Escale, panneau ouvert ; la Falaise un pas plus en avant ne pose plus le nom du Jardin, en portrait, près d'une
   // autre île. Le cadre gagne 24 cases vers le fond (footprint.ts). Chaque lieu garde la vue de sa place de GD-11
@@ -717,12 +717,12 @@ const STARTING_MAP: MapPlace[] = [
   // EMC 4e (EMC-2) et latin-grec 4e (LCA-2) : la Porte des libertés et la Colonnade des cités. GD-12 leur gardait deux
   // places au rang du fond des Anciens Ateliers, entre la Vigie et le Bassin ; là, chacune pile derrière une île du
   // second rang, leurs noms se posaient sur la bande de cette île et se taisaient sur la Carte (consultant UX UI). Révision
-  // de GD-12 (piste A du directeur artistique, 9 octobre 2026, en attente du mot du mainteneur) : une colonne au flanc est,
+  // de GD-12 (piste A du directeur artistique, 9 octobre 2026, en attente du mot du mainteneur) : une colonne au flanc ouest,
   // la Porte au premier rang, après le Jardin (x 174, y 632), la Colonnade au rang du fond, après le Bassin (x 174,
   // y 716), le second rang vide entre elles. Essais du 10 octobre 2026 : la Porte en x 166, dans le même morceau du
   // monde en blocs que le Jardin, taisait plus de noms sans rendre d'appel de dessin ; la Colonnade un, deux ou trois
   // pas plus en avant (y 712, 708, 704) taisait un peu moins de noms, mais sa grille de glissé passait le plafond de
-  // 480 triangles (budget.test.ts) et la baleine replacée du 4e perdait son eau (terrain.test.ts) ; le cadre s'élargit vers l'est (footprint.ts). Au 3e, la même piste taisait autant de noms (le
+  // 480 triangles (budget.test.ts) et la baleine replacée du 4e perdait son eau (terrain.test.ts) ; le cadre s'élargit vers l'ouest (footprint.ts). Au 3e, la même piste taisait autant de noms (le
   // cadre plus large dézoome la Carte) : le Forum et le Bosquet restent au rang du fond. Chacune garde le dessin et la
   // vue de sa place d'avant (`repere`, `vueDepuis`) : formes et côtes inchangées. Fermées au départ (on les relie). La Colonnade est un lieu d'option
   // (GD-13) : fermée sans l'option latin ou grec, aucune liaison ne la propose alors, rien n'en dépend. Terre plate,

@@ -12,7 +12,7 @@
 import type { RGB, V3 } from './polygons';
 
 /** Le bord d'une bande : une ligne horizontale le long de l'axe de la rangée. */
-export interface BordDeBande {
+interface BordDeBande {
   /** L'autre coordonnée horizontale (z pour une rangée le long de x, x pour une rangée le long de z). */
   autre: number;
   /** La hauteur. */

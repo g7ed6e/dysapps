@@ -55,6 +55,18 @@ function motALEcran(d: { x: number; y: number }): string {
   return mots[((s % 8) + 8) % 8];
 }
 
+/** Les lieux dont la phrase (sur la grille) et l'écran ne disent pas la même direction : limites connues, au pilotage. */
+const PHRASE_PENCHEE: Partial<Record<string, { grille: string; ecran: string }>> = {
+  // La Grotte des légendes (5e) est à 111° du port sur la grille, à 1,4° de la limite entre le nord et le nord-ouest ;
+  // la perspective de la Carte la penche de 11° (122° à l'écran, au nord-ouest), et la phrase dit « au nord » (consultant
+  // UX UI, 9 octobre 2026).
+  'lca-5e-legends': { grille: 'au nord', ecran: 'au nord-ouest' },
+  // EMC et latin-grec 4e/3e, accepté par le mainteneur le 10 octobre 2026 (en attente) : le Forum des débats (3e) est à
+  // 67,3° du port sur la grille, à 0,2° de la limite entre le nord-est et le nord ; la perspective le penche de 8° (75° à
+  // l'écran, au nord), et la phrase dit « au nord-est ».
+  'civics-3e-democratic-life': { grille: 'au nord-est', ecran: 'au nord' },
+};
+
 describe('les mots du mode « Aménager » et la caméra de la Carte', () => {
   for (const a of ARCHIPELAGO_IDS) {
     it(`${a} : chaque flèche va du côté qu'elle nomme, et son mot est celui qu'on voit`, () => {
@@ -106,13 +118,12 @@ describe('les mots du mode « Aménager » et la caméra de la Carte', () => {
         // Loin des limites entre deux secteurs (la perspective penche un peu les droites), le mot est celui de l'écran.
         const angle = (Math.atan2(-d.y, d.x) / (Math.PI / 4)) % 1;
         if (Math.abs(Math.abs(angle) - 0.5) < 0.15) continue;
-        // Une seule exception, nommée : la Grotte des légendes (5e) est à 111° du port sur la grille, à 1,4° de la limite
-        // entre le nord et le nord-ouest ; la perspective de la Carte la penche de 11° (122° à l'écran, au nord-ouest), et
-        // la phrase, calculée sur la grille (`directionWords`, sans caméra), dit « au nord ». Limite connue, au pilotage
-        // (consultant UX UI, 9 octobre 2026).
-        if (lieux[i] === 'lca-5e-legends') {
-          expect(directionWords(u, v), `${a} ${lieux[i]}`).toBe('au nord');
-          expect(motALEcran(d), `${a} ${lieux[i]}`).toBe('au nord-ouest');
+        // Deux exceptions, nommées (`PHRASE_PENCHEE`) : la phrase est calculée sur la grille (`directionWords`, sans
+        // caméra), la perspective de la Carte penche les directions proches d'une limite entre deux secteurs.
+        const penchee = PHRASE_PENCHEE[lieux[i]];
+        if (penchee) {
+          expect(directionWords(u, v), `${a} ${lieux[i]}`).toBe(penchee.grille);
+          expect(motALEcran(d), `${a} ${lieux[i]}`).toBe(penchee.ecran);
           continue;
         }
         expect(directionWords(u, v), `${a} ${lieux[i]}`).toBe(motALEcran(d));

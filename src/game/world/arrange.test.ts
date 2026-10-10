@@ -164,7 +164,7 @@ describe('les places des lieux', () => {
     const w = partie();
     const sans: string[] = [];
     // Aux Îles du Ciel, l'Observatoire des textes de même, depuis le Forum des débats et le Bosquet des sages. Aux Anciens
-    // Ateliers, la Porte des libertés et la Colonnade des cités au flanc est (révision de GD-12, en attente du mot du
+    // Ateliers, la Porte des libertés et la Colonnade des cités au flanc ouest (révision de GD-12, en attente du mot du
     // mainteneur) : l'Escale des échanges y retrouve une place tournée, elle tourne de nouveau.
     const sansTourner = ['french-5e-conjugation', 'english-5e-vocabulary', 'english-5e-grammar', 'french-3e-close-reading'] as BiomeId[];
     for (const a of ARCHIPELAGO_IDS)

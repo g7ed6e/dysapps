@@ -38,7 +38,7 @@ import type { Layout, LayoutSpot } from './savedLayout';
  * le Bassin et, entre eux, les deux places futures) ; 208 × 152 aux Îles du Ciel (+32 au fond : le rang du fond porte
  * le Tremplin, la Ruche et les deux places futures). Révision de GD-12 (piste A du directeur artistique, 9 octobre 2026,
  * en attente du mot du mainteneur) : la Porte des libertés et la Colonnade des cités (4e) quittent le rang du fond pour
- * une colonne au flanc est, où leurs noms se lisent sur la Carte ; le cadre des Anciens Ateliers s'élargit vers l'est
+ * une colonne au flanc ouest, où leurs noms se lisent sur la Carte ; le cadre des Anciens Ateliers s'élargit vers l'ouest
  * seulement (le coin ne bouge pas) : 204 × 164 (+36 ; les 38 proposés ne tombent pas sur le pas, 36 laissent une case de
  * mer après la Colonnade, comme le Bassin avant). « Modifier le plan » cadre toujours toute la région sur la tablette en
  * paysage (camera.test.ts) ; en portrait 800 × 1280, la Carte du 4e passe au plancher du zoom. Les Îles du Ciel gardent

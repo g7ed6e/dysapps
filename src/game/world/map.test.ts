@@ -25,7 +25,7 @@ it('la côte écrite d’un lieu qui a une forme (GD-12) est celle de sa forme',
   // Grotte des légendes d'EMC-2 et LCA-2), des Monts de Feu (14, avec la Porte des libertés et la Colonnade des cités)
   // et des Îles du Ciel (14, avec le Forum des débats et le Bosquet des sages) ont leur forme (GD-12 ; formes.test.ts
   // compte les lieux de chaque archipel). Les places que GD-12 gardait pour l'EMC et le latin-grec sont toutes occupées ;
-  // au 4e, la Porte et la Colonnade sont passées au flanc est (révision de GD-12), leur dessin tiré à leur place
+  // au 4e, la Porte et la Colonnade sont passées au flanc ouest (révision de GD-12), leur dessin tiré à leur place
   // d'avant (`repere`) : leur côte ne change pas.
   const formes = MAP.filter((d) => silhouetteDe(d.id).forme);
   expect(formes.length).toBe(58);
