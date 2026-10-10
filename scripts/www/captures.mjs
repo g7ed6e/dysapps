@@ -17,7 +17,8 @@ const DAY = new Date('2026-09-28T10:30:00');
 /** Une heure de nuit (`nuit: true`), pour relire ce que la nuit fait au monde. */
 const NIGHT = new Date('2026-09-28T22:30:00');
 const TABLET = { width: 1024, height: 768 };
-const PHONE = { width: 390, height: 844 };
+/** Le téléphone, en paysage : l'appli ne se joue plus en portrait (mot du mainteneur, 10 octobre 2026). */
+const PHONE = { width: 844, height: 390 };
 
 const server = await createServer({ root, logLevel: 'error', server: { port: 5287, strictPort: false, hmr: false } });
 await server.listen();
@@ -124,10 +125,11 @@ const FOREST_QUEST = BIOMES.find((b) => b.id === 'french-6e-phonology').exercise
  */
 const SHOTS = [
   { name: 'titre', state: EARLY, title: true, go: '/' },
-  // Le menu en page n'existe plus qu'en vue simple : dans le village, `/menu` ouvre le menu du village.
+  // Le menu en page n'existe plus qu'en vue simple ; dans le monde, plus de Menu (10 octobre 2026) : les accès directs.
   { name: 'menu', state: MID, view: 'list', go: '/menu' },
   { name: 'telephone-menu', state: MID, view: 'list', go: '/menu', size: PHONE },
-  { name: 'menu-village', state: MID, go: '/adventure/menu' },
+  { name: 'acces-directs', state: MID, go: '/adventure/french-6e-phonology' },
+  { name: 'commandes-village', state: MID, go: '/adventure/requests' },
   { name: 'village-premiere-visite', go: '/adventure', tutorial: true },
   { name: 'panneau-ile', state: EARLY, go: '/adventure/french-6e-phonology', act: openSheet },
   { name: 'plan-en-cours', state: EARLY, go: '/adventure/french-6e-phonology' },

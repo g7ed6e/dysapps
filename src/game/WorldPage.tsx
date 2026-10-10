@@ -24,9 +24,9 @@ import { getJoin, SANS_REUNION } from './world/join';
 import { getMonument, monumentsOf } from './world/monuments';
 import { AvatarFace } from './AvatarFace';
 import { visageDuJoueur } from './world/characters/face';
-import { MenuSheet } from './MenuSheet';
+import { RequestsSheet, SettingsButton, WorldPlaces, WorldShortcuts } from './WorldShortcuts';
+import { StartingMapButton } from './StartingMap';
 import { ArchipelagoSwitcher } from './ArchipelagoSwitcher';
-import { useBackOpensMenu } from './useBackOpensMenu';
 import { mesuresAutomatiques, mesuresDemandees } from './rendering';
 import { TrophySheet } from './TrophySheet';
 import { AssemblySheet } from './Assembly';
@@ -157,19 +157,14 @@ export function WorldPage() {
   const blocsOpen = biomeId === 'stock';
   // L'école du village : ses trois portes, un panneau à la place de celui d'une île.
   const schoolOpen = biomeId === 'school';
-  // Le menu du village (menu pause), en plein écran : la dernière mission, les révisions, les commandes, l'école, Missions,
-  // Succès, le Tutoriel, puis Réglages tout en bas ; la croix ou Échap le referment.
-  const menuOpen = biomeId === 'menu';
-  // Le menu refermé (la croix, Échap) : le focus revient au bouton Menu, d'où il était parti ; refermé par « Aide du
-  // village », il va à la bulle qui s'ouvre (le tutoriel le prend).
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const menuEtaitOuvert = useRef(menuOpen);
-  const aideDepuisLeMenu = useRef(false);
+  // Les commandes de l'archipel (elles étaient dans le Menu, retiré le 10 octobre 2026) : un panneau par-dessus le monde,
+  // ouvert par le bouton du haut à gauche ; refermé, le focus revient à ce bouton.
+  const requestsOpen = biomeId === 'requests';
+  const requestsEtaitOuvert = useRef(requestsOpen);
   useEffect(() => {
-    if (menuEtaitOuvert.current && !menuOpen && !aideDepuisLeMenu.current) menuButtonRef.current?.focus();
-    aideDepuisLeMenu.current = false;
-    menuEtaitOuvert.current = menuOpen;
-  }, [menuOpen]);
+    if (requestsEtaitOuvert.current && !requestsOpen) document.querySelector<HTMLElement>('.world-shortcuts .world-commandes button')?.focus();
+    requestsEtaitOuvert.current = requestsOpen;
+  }, [requestsOpen]);
   // La salle des trophées : un trophée par succès gagné dans le monde, le profil dans son panneau.
   const trophiesOpen = biomeId === 'trophies';
   // Le lieu où l'on assemble les blocs (GD-2), à côté de l'école.
@@ -181,7 +176,7 @@ export function WorldPage() {
   const monument = biomeId ? getMonument(biomeId) : undefined;
   // La construction qui réunit deux lieux (GD-9) : son panneau, la caméra sur elle.
   const reunion = biomeId ? getJoin(biomeId) : undefined;
-  const panelOpen = mapOpen || mondeOpen || blocsOpen || schoolOpen || menuOpen || trophiesOpen || assemblageOpen || monumentsOpen || Boolean(monument) || Boolean(reunion);
+  const panelOpen = mapOpen || mondeOpen || blocsOpen || schoolOpen || requestsOpen || trophiesOpen || assemblageOpen || monumentsOpen || Boolean(monument) || Boolean(reunion);
   const island = biomeId && !panelOpen ? getBiome(biomeId) : undefined;
   // Le bonhomme : où il se tient ; l'archipel affiché est le sien.
   const at = state.world.place ?? 'french-6e-phonology';
@@ -718,7 +713,7 @@ export function WorldPage() {
     if (moment.phase === 'camera') direLeRallumage(moment.id);
     finirLeRallumage(moment.id);
   };
-  /** Menu, l'archipel, Recentrer ou la barre pendant le moment : la sentinelle allumée, sans cloche ni mot. */
+  /** Un accès direct, l'archipel, Recentrer ou la barre pendant le moment : la sentinelle allumée, sans cloche ni mot. */
   const finirLeRallumageEnSilence = () => {
     if (moment) finirLeRallumage(moment.id);
   };
@@ -843,9 +838,6 @@ export function WorldPage() {
       if (window.__dysappsGlisser === glisser) delete window.__dysappsGlisser;
     };
   }, []);
-
-  // Le bouton retour, dans le village sans panneau, ouvre le menu du village.
-  useBackOpensMenu(!biomeId && !voyage, '/adventure/menu');
 
   const blocksTotal = Object.values(state.stock).reduce((n, v) => n + (v ?? 0), 0);
   // Pendant le vol, la pastille garde le chiffre d'avant : il change une fois, à l'arrivée du dernier bloc.
@@ -1109,25 +1101,14 @@ export function WorldPage() {
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
-        {/* Sous le bouton Menu : une classe par archipel atteint, la sienne marquée ; un toucher change de classe. */}
+        {/* En haut à droite : une classe par archipel atteint, la sienne marquée ; un toucher change de classe. */}
         {!voyage && !enAmenageant && <ArchipelagoSwitcher current={a} bridges={state.world.links} onGo={(to) => hop(getArchipelago(to).port)} />}
-        {/* Le menu du village, toujours en haut à droite, comme la pause d'un jeu. */}
-        {!voyage && (
-          <button
-            type="button"
-            ref={menuButtonRef}
-            className="button world-menu-button"
-            data-tuto="menu"
-            data-couvre="bouton"
-            aria-label="Menu"
-            aria-pressed={menuOpen}
-            aria-controls={menuOpen ? 'panneau-menu' : undefined}
-            onClick={() => navigate(menuOpen ? '/adventure' : '/adventure/menu')}
-          >
-            <Icon name="menu" />
-          </button>
-        )}
-        {/* Après un glissé : sous la colonne de droite (Menu, l'archipel), sans animation. Jamais sur une bulle du haut :
+        {/* En haut à gauche, les accès directs qui remplacent le Menu (10 octobre 2026) : la dernière mission, les
+            révisions du jour, les commandes. */}
+        {!voyage && !enAmenageant && <WorldShortcuts a={a} requestsOpen={requestsOpen} />}
+        {/* Réglages, seul dans le coin en bas à droite. */}
+        {!voyage && !enAmenageant && <SettingsButton />}
+        {/* Après un glissé : en haut à droite, sous le choix de l'archipel s'il y en a un, sans animation. Jamais sur une bulle du haut :
             le temps qu'elle est ouverte, il attend (la vue reste déplacée), et aucun bouton Fermer n'est couvert. */}
         {vueDeplacee && !voyage && !bulleEnHaut && (
           // Un rond avec le visage du joueur, sans mot (mot du mainteneur, 4 octobre 2026, pour Blocland ; choix « 1a » du
@@ -1209,13 +1190,13 @@ export function WorldPage() {
             id="village-immersif"
             replay={replay}
             onClose={() => setTutoDone(true)}
-            targets={[undefined, undefined, '[data-tuto="menu"]']}
+            targets={[undefined, undefined, '[data-tuto="raccourcis"]']}
             steps={[
               // Les bulles (les deux univers depuis le 4 octobre 2026) : plus de flèche jaune dans le monde, la bulle bordée
               // d'or montre ce qu'on peut faire.
               `${UNIVERS[univers].bienvenue} Touche la Forêt des sons pour commencer.`,
               'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. La bulle bordée d’or montre la prochaine chose à faire. Chaque mission te donne des blocs pour construire l’île, et des cubes d’or pour tes étoiles.',
-              'Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, aide, réglages.',
+              'En haut à gauche : ta dernière mission, tes révisions, tes commandes. En bas : l’école, les missions, les succès et l’aide. Garde le doigt sur un bouton pour lire son nom.',
             ]}
           />
           </div>
@@ -1269,6 +1250,7 @@ export function WorldPage() {
           </button>
           {/* Sur la Carte, hors voyage : « Modifier le plan », à sa place fixe, après la Carte. */}
           {mapOpen && !voyage && <ArrangeButton amenagement={amenagement} proposer={proposerLaListe} />}
+          {mapOpen && !voyage && <StartingMapButton />}
           {!voyage && (
             <button
               type="button"
@@ -1286,6 +1268,7 @@ export function WorldPage() {
               </span>
             </button>
           )}
+          {!voyage && <WorldPlaces onHelp={revoirAide} />}
         </nav>
         )}
         {vol?.phase === 'vol' && vol.depart && vol.arrivee && (
@@ -1316,16 +1299,8 @@ export function WorldPage() {
         <MonumentSheet builder={monumentBuilder} onClose={fermerLePanneau} />
       ) : reunion ? (
         <JoinSheet builder={reunionBuilder} onClose={fermerLePanneau} />
-      ) : menuOpen ? (
-        <MenuSheet
-          onClose={() => navigate('/adventure')}
-          onAller={openIsland}
-          onAide={() => {
-            aideDepuisLeMenu.current = true;
-            navigate('/adventure');
-            revoirAide();
-          }}
-        />
+      ) : requestsOpen ? (
+        <RequestsSheet onClose={() => navigate('/adventure')} onAller={openIsland} />
       ) : (
         island &&
         sheetOpen && (

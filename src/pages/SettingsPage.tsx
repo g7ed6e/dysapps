@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { DEFAULT_SETTINGS, FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LABELS, spacingWord, speedWord, WORLD_LIGHT_LABELS, WORLD_VIEW_LABELS, type FontChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { isSpeechAvailable } from '../core/speech';
@@ -159,6 +160,15 @@ export function SettingsPage() {
             <input type="checkbox" checked={settings.appBadge} onChange={(e) => update({ appBadge: e.target.checked })} />
             Pastille sur l’icône de l’appli quand des révisions attendent
           </label>
+        </fieldset>
+
+        {/* Le Tutoriel, qui était une ligne du Menu (retiré le 10 octobre 2026, « 2ok ») : l'aide du village, elle, reste
+            sur le « ? » de la barre du bas. */}
+        <fieldset className="panel">
+          <legend>Tutoriel</legend>
+          <Link to="/app/demo" className="button">
+            <Icon name="compass" /> Prendre les commandes en main
+          </Link>
         </fieldset>
 
         <UniverseSection />

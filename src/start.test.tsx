@@ -33,13 +33,13 @@ function renderAt(path: string, title = false) {
 
 beforeEach(() => sessionStorage.clear());
 
-it('l’appli s’ouvre sur le village ; l’ancienne adresse de l’Accueil ouvre le menu du village', () => {
+it('l’appli s’ouvre sur le village ; l’ancienne adresse de l’Accueil ouvre le village aussi (plus de Menu)', () => {
   renderAt('/');
   expect(screen.getByText('Le village')).toBeInTheDocument();
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure');
   document.body.innerHTML = '';
   renderAt('/menu');
-  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/menu');
+  expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
   expect(screen.queryByRole('navigation', { name: 'Menu principal' })).not.toBeInTheDocument();
 });
 

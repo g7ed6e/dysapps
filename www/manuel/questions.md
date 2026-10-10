@@ -15,7 +15,7 @@ La progression est celle du navigateur. Le plus simple est un profil de navigate
 Pas pour l’instant : il n’y a pas d’export. Chaque appareil a sa propre progression.
 
 **Par où commencer dans l’aventure ?**
-Par la Forêt des sons (français) ou la Plaine des nombres (maths), les deux îles ouvertes au départ. Une bulle bordée d’or montre la prochaine chose à faire. Le tutoriel en trois étapes se rejoue avec la ligne « Aide du village » du menu.
+Par la Forêt des sons (français) ou la Plaine des nombres (maths), les deux îles ouvertes au départ. Une bulle bordée d’or montre la prochaine chose à faire. Le tutoriel en trois étapes se rejoue avec le bouton « ? » de la barre du bas.
 
 **Un élève de 4e ou de 3e doit-il refaire la 6e ?**
 Un peu : le Bloc-Navire qui mène en 5e se construit dans les Basses Terres (une cinquantaine de blocs et trois Gardiens rallumés), puis le ballon en 5e, puis le réacteur en 4e. À l’intérieur d’un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans la direction que l’on veut. Les premières missions servent à gagner les blocs du navire et des premiers ouvrages.

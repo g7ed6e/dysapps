@@ -92,6 +92,7 @@ import {
   VolumeX,
   Vote,
   Wheat,
+  Smartphone,
   Workflow,
   Wrench,
   X,
@@ -209,6 +210,8 @@ export const ICONS = {
   // La vue en liste (« En liste »).
   liste: List,
   tourner: RotateCw,
+  // L'écran « Tourne ton appareil » (components/RotateDevice.tsx).
+  appareil: Smartphone,
   defaire: Undo2,
   // « Poser » : une flèche vers le bas, sur un trait.
   poser: ArrowDownToLine,

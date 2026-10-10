@@ -10,7 +10,7 @@ import { BLOC, getBiome, missionsJouables, type BiomeId } from './biomes';
 import { BloclandProvider, useBlocland } from './BloclandContext';
 import { exercisesOf } from './exercises';
 import { IslandSheet } from './IslandSheet';
-import { MenuSheet } from './MenuSheet';
+import { RequestsSheet } from './WorldShortcuts';
 import { getCommande } from './world/requests';
 import { casesDeLaPetiteConstruction } from './world/fixtures';
 import { StoryLine } from './Stories';
@@ -53,7 +53,7 @@ function ouvrir(ile?: BiomeId, highlight?: string) {
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            {ile ? <IslandSheet biome={getBiome(ile)!} onClose={() => {}} highlight={highlight} /> : <MenuSheet onClose={() => {}} />}
+            {ile ? <IslandSheet biome={getBiome(ile)!} onClose={() => {}} highlight={highlight} /> : <RequestsSheet onClose={() => {}} onAller={() => {}} />}
             <Etat />
           </MemoryRouter>
         </BloclandProvider>
@@ -200,25 +200,16 @@ it('ailleurs, une commande prête mène chez sa créature, sur sa ligne ; jamais
   expect(screen.queryByRole('button', { name: /Livrer/ })).toBeNull();
 });
 
-it('le menu montre la même section, avec « Y aller » seulement, dépliée quand une commande est prête', () => {
-  sauver(pret);
+it('le panneau des commandes (le bouton du haut à gauche) montre la même liste, avec « Y aller » seulement', () => {
+  sauver({ ...pret, world: { ...pret.world, requests: [MOUSSO, COCO] }, stock: { [BLOC.terre]: 4 } });
   ouvrir();
-  const menu = screen.getByRole('dialog', { name: 'Menu' });
-  expect(menu.querySelector('#commandes-menu')?.textContent).toBe(' Commandes · 1 prête');
-  expect(menu.querySelector('details.island-fold-commandes')).toHaveAttribute('open');
-  expect(within(menu).queryByRole('button', { name: /Livrer/ })).toBeNull();
-  expect(within(menu).getAllByRole('link', { name: /Y aller/ })).toHaveLength(2);
+  const panneau = screen.getByRole('dialog', { name: 'Commandes' });
+  expect(panneau.querySelector('#commandes-menu')?.textContent).toMatch(/Commandes · \d/);
+  expect(within(panneau).queryByRole('button', { name: /Livrer/ })).toBeNull();
+  expect(within(panneau).getAllByRole('link', { name: /Y aller/ })).toHaveLength(2);
 });
 
-it('au menu, sans commande prête, la section est repliée, le titre et le compte visibles', () => {
-  sauver({ ...pret, stock: {} });
-  ouvrir();
-  const menu = screen.getByRole('dialog', { name: 'Menu' });
-  expect(menu.querySelector('#commandes-menu')?.textContent).toBe(' Commandes · 2 en attente');
-  expect(menu.querySelector('details.island-fold-commandes')).not.toHaveAttribute('open');
-});
-
-it('au menu du monde 3D, « Y aller » ouvre le panneau de l’île visée, comme un toucher sur l’île', async () => {
+it('au panneau des commandes, « Y aller » ouvre le panneau de l’île visée, comme un toucher sur l’île', async () => {
   sauver(pret);
   const aller = vi.fn();
   render(
@@ -226,7 +217,7 @@ it('au menu du monde 3D, « Y aller » ouvre le panneau de l’île visée, comm
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <MenuSheet onClose={() => {}} onAller={aller} />
+            <RequestsSheet onClose={() => {}} onAller={aller} />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>

@@ -4,9 +4,9 @@
 
 L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.workers.dev/>. Elle fonctionne dans un navigateur récent (Chrome, Edge, Firefox, Safari) sur tablette, téléphone ou ordinateur, sans compte et sans installation obligatoire.
 
-L’application se parcourt comme un jeu. Elle **s’ouvre sur le village**, sur l’île où se tient le bonhomme, après l’écran titre. Dans le village, le bouton **Menu** (trois traits, en haut à droite du monde) ouvre le menu du village : voir [L’aventure](blocland.md#le-menu-du-village). Quatre grands endroits restent toujours au même endroit, avec les mêmes mots :
+L’application se parcourt comme un jeu. Elle **s’ouvre sur le village**, sur l’île où se tient le bonhomme, après l’écran titre. Dans le village, il n’y a pas de menu : chaque endroit a son bouton sur le monde, voir [Les accès directs](blocland.md#les-acces-directs). L’appli se joue en paysage, voir [En paysage](blocland.md#en-paysage). Quatre grands endroits restent toujours au même endroit, avec les mêmes mots :
 
-- **Menu** (adresse `#/menu`) : dans le village, cette adresse ouvre le menu du village. Le menu en page n’existe plus qu’en vue simple (réglage « La liste des îles », ou appareil qui ne sait pas dessiner le monde), où il est l’accueil. De haut en bas :
+- **Menu** (adresse `#/menu`) : dans le village, cette adresse ouvre le monde. Le menu en page n’existe plus qu’en vue simple (réglage « La liste des îles », ou appareil qui ne sait pas dessiner le monde), où il est l’accueil. De haut en bas :
   - **Blocland** et « Chaque bloc construit ton monde. » ;
   - **Ton village** : l’état du village de l’archipel où se tient le bonhomme, en cinq crans (voir [Le village en cinq états](blocland.md#le-village-en-cinq-etats)) ;
   - **Reprendre l’aventure**, le gros bouton, qui mène à la **prochaine destination**, dite en une phrase et lue avec Écouter (« Prochaine destination : Plaine des nombres. Tu peux poser le bac vers Rivière des fractions. Il ouvre une île de maths. » ; l’ordre de la suggestion est dans [L’aventure](blocland.md)) ; en dessous, **Ma dernière mission** (la dernière mission ouverte) et **Mes révisions du jour** quand il y en a, les mêmes mots que dans le menu du village ;
@@ -19,13 +19,13 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village**, sur
 - **Missions** : les missions du portail, par matière (Français, Maths, Anglais).
 - **Succès** : le rôle, l’XP, les étoiles et ce qu’il reste à gagner.
 
-Il n’y a pas de barre du haut, dans Blocland comme dans Archipéo : sur chaque page hors du monde (Missions, une matière, une mission, Réglages, Succès), seul le bouton **Menu** (trois traits) reste en haut à droite, à la même place que dans le monde, et mène au menu. Le village en 3D non plus n’a pas de barre du haut : le monde prend tout l’écran, et le bouton Menu (ou le bouton retour) ouvre le menu du village, qui donne le rôle, la jauge d’XP, les Missions, les Succès, les Réglages et l’Accueil. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf quand l’appareil demande de réduire les animations. Pendant un chargement, le « D » de DysApps sautille au-dessus de « Chargement… ».
+Il n’y a pas de barre du haut, dans Blocland comme dans Archipéo : sur chaque page hors du monde (Missions, une matière, une mission, Réglages, Succès), seule une **croix** reste en haut à droite, et ramène au monde (en vue simple, c’est le bouton **Menu**, trois traits, qui mène au menu en page). Le village en 3D non plus n’a pas de barre du haut : le monde prend tout l’écran, avec ses accès directs. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf quand l’appareil demande de réduire les animations. Pendant un chargement, le « D » de DysApps sautille au-dessus de « Chargement… ».
 
 ![Le menu en page, en vue simple, sur tablette : Blocland, le village des Basses Terres en Réactivation, le bouton Reprendre l'aventure avec la prochaine destination, le rôle, puis les Expéditions.](/captures/menu.jpg)
 
 ![Le menu en page, en vue simple, sur téléphone : le bouton Reprendre l'aventure se voit sans faire défiler.](/captures/telephone-menu.jpg)
 
-![Sur téléphone : le village sans barre du haut, le bouton Menu en haut à droite, le monde sur tout l'écran et la barre du bas.](/captures/telephone-village.jpg)
+![Sur téléphone, en paysage : le village sans barre du haut, les accès directs en haut à gauche, le monde sur tout l'écran, la barre du bas et Réglages dans le coin.](/captures/telephone-village.jpg)
 
 Pendant une partie, l’écran se vide pour laisser toute la place à la question : voir [le mode concentration](quetes.md#le-mode-concentration).
 
@@ -57,14 +57,14 @@ Une appli déjà installée ne prend pas toujours la nouvelle icône ni le nouve
 
 Ce premier toucher sert aussi à **débloquer la voix et les sons** : les navigateurs les gardent muets tant que l’élève n’a pas touché l’écran. Sans lui, la première consigne lue automatiquement pouvait rester silencieuse. L’écran titre ne revient qu’au lancement suivant ; ouverte sur une adresse précise (un lien, un favori), l’application ne propose pas de repartir ailleurs.
 
-Quand des items ratés reviennent (répétition espacée), la créature de leur île fait signe dans le monde et propose de reprendre ([La créature qui se souvient](blocland.md#la-creature-qui-se-souvient)) ; le menu (en page et dans le village) montre aussi **À revoir aujourd’hui** et, si l’appli est installée, un point s’affiche sur son icône (désactivable dans les Réglages).
+Quand des items ratés reviennent (répétition espacée), la créature de leur île fait signe dans le monde et propose de reprendre ([La créature qui se souvient](blocland.md#la-creature-qui-se-souvient)) ; le menu en page montre aussi **À revoir aujourd’hui**, le bouton **Mes révisions du jour** du village porte leur nombre et, si l’appli est installée, un point s’affiche sur son icône (désactivable dans les Réglages).
 
-À l’écran titre comme dans le menu, **Ma dernière mission** ramène à la dernière mission ouverte (du portail ou de l’aventure ; pas le Tutoriel). « Effacer ma progression » l’oublie.
+À l’écran titre, dans le menu en page et en haut à gauche du village, **Ma dernière mission** ramène à la dernière mission ouverte (du portail ou de l’aventure ; pas le Tutoriel). « Effacer ma progression » l’oublie.
 
 ## La première séance
 
 1. **Réglages d’abord, si besoin** : la police, la taille du texte, le thème et la lecture à voix haute se règlent dans Réglages et s’appliquent partout, avec un aperçu. Les valeurs par défaut conviennent à la plupart des élèves dys (Luciole, 20 px, interlignage 1,7, lecture automatique des consignes, syllabes en couleurs). Voir [Réglages et accessibilité](reglages.md).
-2. **Le Tutoriel** (dans le menu en page, carte « Commencer ici » tant qu’on n’a rien joué, puis lien « Revoir le tutoriel » en bas ; depuis le village, ligne « Tutoriel » du menu du village) est une mission d’entraînement de quelques questions pour prendre les commandes en main : lire ou écouter la consigne, toucher une réponse, utiliser le joker, lire la correction.
+2. **Le Tutoriel** (dans le menu en page, carte « Commencer ici » tant qu’on n’a rien joué, puis lien « Revoir le tutoriel » en bas ; depuis le village, dans les Réglages) est une mission d’entraînement de quelques questions pour prendre les commandes en main : lire ou écouter la consigne, toucher une réponse, utiliser le joker, lire la correction.
 3. **Choisir** : une mission du portail (voir [Les missions](quetes.md)) ou l’aventure (voir [L’aventure](blocland.md)). Dans l’aventure, un tutoriel en trois étapes, lues à voix haute, s’affiche en bas de l’écran à la première entrée ; une bulle bordée d’or indique où commencer, et la dernière étape entoure de jaune le bouton Menu.
 
 Les séances sont pensées **courtes** : une mission du portail dure une dizaine de questions ; dans l’aventure, après trois exercices ou dix minutes, l’application propose d’arrêter. Rien n’oblige à continuer, rien ne se perd en s’arrêtant.

@@ -67,8 +67,8 @@ export function useRekindling(progress: Record<string, { stars: number }>, a: Ar
   return { enAttente, noterVu };
 }
 
-/** Les contrôles de la scène qui gardent leur effet pendant un moment : Menu, la rangée de classes, Recentrer, la barre, la fiche. */
-const CONTROLES_DE_LA_SCENE = '.world-menu-button, .world-archipel, .world-recentrer, .world-bar, .world-fiche-place';
+/** Les contrôles de la scène qui gardent leur effet pendant un moment : les accès directs, Réglages, la rangée de classes, Recentrer, la barre, la fiche. */
+const CONTROLES_DE_LA_SCENE = '.world-shortcuts, .world-settings, .world-archipel, .world-recentrer, .world-bar, .world-fiche-place';
 
 /**
  * Le toucher qui saute un moment (le rallumage, la pose d'une partie en vague), n'importe où sur la scène, sauf sur
