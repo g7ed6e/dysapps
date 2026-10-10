@@ -35,7 +35,7 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
   // 9 octobre 2026 pour le Fournil des partages et la Grotte des légendes (5e) ; à 86 700 pour les personnages importés
   // de la 5e (mainteneur, 10 octobre 2026). Les monuments importés d'Archipéo : 81 500 et 91 700 (86 700 + 5 000, relevés
   // par le mainteneur le 10 octobre 2026).
-  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 94_700, drawCalls: 40 });
+  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 94_950, drawCalls: 40 });
 });
 
 it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : un appel de plus au plus, sous le plafond', () => {
@@ -139,14 +139,15 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // (86 000), inchangé. Révision de GD-12 (la Porte et la Colonnade au flanc ouest, le cadre élargi ; en attente du mot
   // du mainteneur) : la mer à 7 150 aux Anciens Ateliers (83 725), toujours sous 86 000. Les Gardiens et les créatures
   // importés de la 5e : les Îles Brumeuses à 86 685 (mainteneur, 10 octobre 2026). Les monuments importés d'Archipéo : la
-  // construction prend 5 000 partout (81 290, 91 685, 88 725, 87 855). Les bâtiments des plans importés (mainteneur,
-  // 10 octobre 2026) : la construction prend 3 750 aux Premiers Rivages, 2 970 aux Îles Brumeuses, 3 950 ailleurs.
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les bâtiments importés) : 85 040 triangles et 25 appels aux Premiers Rivages, 94 655, 92 675 et 91 805 et 24 appels ailleurs', () => {
+  // construction prend 5 000 partout (81 290, 91 685, 88 725, 87 855). Les personnages importés de la 4e : les Anciens
+  // Ateliers à 90 960. Les bâtiments des plans importés (mainteneur, 10 octobre 2026) : la construction prend 3 750 aux
+  // Premiers Rivages, 2 970 aux Îles Brumeuses, 3 950 ailleurs.
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e, les bâtiments importés) : 85 040 triangles et 25 appels aux Premiers Rivages, 94 655, 94 910 et 91 805 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([85_040, 25]);
     expect([total('5e'), appels('5e')]).toEqual([94_655, 24]);
-    expect([total('4e'), appels('4e')]).toEqual([92_675, 24]);
+    expect([total('4e'), appels('4e')]).toEqual([94_910, 24]);
     expect([total('3e'), appels('3e')]).toEqual([91_805, 24]);
   });
 
@@ -234,12 +235,12 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
       }
     });
 
-  // Les personnages importés (6e et 5e), lus sur le disque comme la vue les charge : au pire, de
+  // Les personnages importés (6e, 5e et 4e), lus sur le disque comme la vue les charge : au pire, de
   // près sur l'île qui coûte le plus, de loin ailleurs. (En dernier : une fois chargés, ils remplacent les dessinés
   // en code dans ce fichier.)
-  it('R6 : avec les personnages importés (6e et 5e), créatures et Gardiens tiennent leur enveloppe aux Premiers Rivages et aux Îles Brumeuses', () => {
+  it('R6 : avec les personnages importés (6e, 5e et 4e), créatures et Gardiens tiennent leur enveloppe aux Premiers Rivages, aux Îles Brumeuses et aux Anciens Ateliers', () => {
     chargerLesModelesDuDisque();
-    for (const a of ['6e', '5e'] as const)
+    for (const a of ['6e', '5e', '4e'] as const)
       for (const p of ['creatures', 'gardiens'] as const) {
         const cout = personnagesCost(a)[p];
         expect(cout.triangles, `${a} ${p}`).toBeLessThanOrEqual(enveloppeDe(p, a).triangles);

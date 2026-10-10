@@ -13,11 +13,12 @@ import { CATALOG, exercisesOf } from './exercises';
 import { WorldCard, type FicheOuverte } from './WorldCard';
 import { oublierLesRemises } from './reminders';
 import type { VehicleBuilder } from './useVehicleBuilder';
-import { getCommande, type Commande } from './world/requests';
+import { getCommande } from './world/requests';
 
 const FORET: BiomeId = 'french-6e-phonology';
 const PLAINE: BiomeId = 'maths-6e-calculation';
 const MOUSSO = 'french-6e-phonology-request-1';
+const COCO = 'maths-6e-calculation-request-1';
 
 const joue = (...iles: BiomeId[]) =>
   Object.fromEntries(iles.flatMap((ile) => missionsJouables(getBiome(ile)!).map((m) => [exercisesOf(ile, m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }])));
@@ -45,7 +46,7 @@ function chantier(partiel: Partial<VehicleBuilder>): VehicleBuilder {
   };
 }
 
-function ouvrir(fiche: FicheOuverte, extra: { ship?: VehicleBuilder; commande?: Commande; onLivree?: (c: { id: string }) => boolean; onBoard?: () => void } = {}) {
+function ouvrir(fiche: FicheOuverte, extra: { ship?: VehicleBuilder; onLivree?: (c: { id: string }) => boolean; onBoard?: () => void } = {}) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
@@ -57,7 +58,6 @@ function ouvrir(fiche: FicheOuverte, extra: { ship?: VehicleBuilder; commande?: 
               ship={extra.ship ?? chantier({})}
               onBoard={extra.onBoard ?? (() => {})}
               onBuilt={() => {}}
-              commande={extra.commande}
               onLivree={extra.onLivree}
               onVoirOuvrage={() => {}}
             />
@@ -73,7 +73,7 @@ beforeEach(() => oublierLesRemises());
 it('une créature qui a une commande prête : sa phrase et « Livrer », qui pose la petite construction et dit la phrase', async () => {
   sauver({ progress: joue(FORET, PLAINE), stock: { [BLOC.terre]: 4 }, world: { parts: {}, log: [], links: [], place: FORET, requests: [MOUSSO] } });
   const onLivree = vi.fn(() => true);
-  ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' }, { commande: getCommande(MOUSSO), onLivree });
+  ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' }, { onLivree });
   const f = screen.getByRole('dialog', { name: 'Mousso' });
   expect(f).toHaveTextContent('Tu as les blocs de terre ! Livre-les à Mousso.');
   expect(f).not.toHaveTextContent('Bonjour !');
@@ -82,6 +82,25 @@ it('une créature qui a une commande prête : sa phrase et « Livrer », qui pos
   expect(f).toHaveTextContent('Potager posé chez Mousso !');
   expect(within(f).queryByRole('button', { name: /Livrer/ })).not.toBeInTheDocument();
   expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.requests ?? []).not.toContain(MOUSSO);
+});
+
+it('une commande prête se livre même quand elle n’est pas la prochaine destination (une mission à jouer, une autre commande prête)', async () => {
+  // Une mission de la Forêt jamais jouée : la prochaine destination est cette mission, pas la commande de Mousso ; celle
+  // de Coco, prête aussi, est la plus récente. Les deux créatures proposent quand même « Livrer ».
+  const missions = missionsJouables(getBiome(FORET)!);
+  const derniere = exercisesOf(FORET, missions[missions.length - 1].id)[0].id;
+  const progress = Object.fromEntries(Object.entries(joue(FORET, PLAINE)).filter(([id]) => id !== derniere));
+  sauver({ progress, stock: { [BLOC.terre]: 3, [BLOC.bois]: 3 }, world: { parts: {}, log: [], links: [], place: FORET, requests: [MOUSSO, COCO] } });
+  const onLivree = vi.fn(() => true);
+  const { unmount } = ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' }, { onLivree });
+  await userEvent.click(within(screen.getByRole('dialog', { name: 'Mousso' })).getByRole('button', { name: /Livrer/ }));
+  expect(onLivree).toHaveBeenCalledWith(getCommande(MOUSSO));
+  unmount();
+  ouvrir({ objet: { genre: 'creature', id: PLAINE }, seq: 2, saut: false, phrase: 'Bonjour !' }, { onLivree });
+  const coco = screen.getByRole('dialog', { name: 'Coco' });
+  await userEvent.click(within(coco).getByRole('button', { name: /Livrer/ }));
+  expect(onLivree).toHaveBeenCalledWith(getCommande(COCO));
+  expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.requests).toBeUndefined();
 });
 
 it('l’habitant de l’étape d’une quête (GD-10) : le signe de l’objet, ses étapes, la phrase et « Apporter », qui pose l’objet', async () => {

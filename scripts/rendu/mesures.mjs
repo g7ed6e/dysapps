@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, personnages-emc-lca, emc-cinquieme, emc-quatre-trois, monuments, batiments ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, personnages-quatrieme, emc-cinquieme, emc-quatre-trois, monuments, batiments ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -675,19 +675,41 @@ const CAPTURES = [
     { nom: `personnages-importes-chene-rallume${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
     { nom: `personnages-importes-archipel-recul${suffixe}`, vue: 'archipel', famille: 'personnages-importes', ile: 'maths-6e-calculation', zoomer: -10, ...autres },
   ]),
-  // Les personnages du Préau (6e), du Fournil et de la Grotte (5e) importés dans Archipéo (famille `personnages-emc-lca`),
-  // à retirer une fois le lot fusionné ; à prendre avec `--rendu archipeo`. Sur chaque île : le Gardien éteint, sa fiche
-  // ouverte ; le Gardien rallumé ; la créature sur l'herbe, sa fiche ouverte.
+  // Les Gardiens et les créatures de la 4e importés dans Archipéo (famille `personnages-quatrieme`), à retirer une fois le
+  // lot fusionné ; à prendre avec `--rendu archipeo`. Sur chaque île, la créature sur l'herbe, sa fiche ouverte, et le
+  // Gardien éteint, sa fiche ouverte ; l'archipel en recul, tous éteints puis rallumés (leur version de loin).
   ...[
-    ['civics-6e-democratic-society', 'preau'],
-    ['civics-5e-equality-solidarity', 'fournil'],
-    ['lca-5e-legends', 'grotte'],
+    ['maths-4e-powers', 'forge'],
+    ['maths-4e-algebra', 'atelier'],
+    ['french-4e-agreement', 'falaise'],
+    ['french-4e-vocabulary', 'cabinet'],
+    ['english-4e-comprehension', 'theatre'],
+    ['english-4e-grammar', 'gare'],
+    ['lv2-4e-daily-life', 'jardin'],
+    ['history-4e-revolutions', 'imprimerie'],
+    ['geography-4e-globalization', 'escale'],
+    ['life-earth-sciences-4e-cells-evolution', 'source'],
+    ['physics-chemistry-4e-signals-circuits', 'vigie'],
+    ['technology-4e-modeling', 'bassin'],
+    ['civics-4e-rights-freedoms', 'porte'],
+    ['lca-4e-cities', 'colonnade'],
   ].flatMap(([ile, lieu]) => [
-    { nom: `emc-lca-${lieu}-gardien-eteint`, vue: 'île', famille: 'personnages-emc-lca', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile } },
-    { nom: `emc-lca-${lieu}-gardien`, vue: 'île', famille: 'personnages-emc-lca', ile, fiche: { genre: 'gardien', id: ile } },
-    { nom: `emc-lca-${lieu}-creature`, vue: 'île', famille: 'personnages-emc-lca', ile, fiche: { genre: 'creature', id: ile } },
+    { nom: `quatrieme-${lieu}-gardien-eteint`, vue: 'île', famille: 'personnages-quatrieme', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile } },
+    { nom: `quatrieme-${lieu}-creature`, vue: 'île', famille: 'personnages-quatrieme', ile, fiche: { genre: 'creature', id: ile } },
   ]),
-  { nom: 'emc-lca-5e-archipel-recul', vue: 'archipel', famille: 'personnages-emc-lca', ile: 'civics-5e-equality-solidarity', zoomer: -10 },
+  // Les cinq Gardiens dont la version de loin a été refaite par loin.py, vus de loin, éteints puis rallumés.
+  ...[
+    ['english-4e-grammar', 'gare'],
+    ['technology-4e-modeling', 'bassin'],
+    ['geography-4e-globalization', 'escale'],
+    ['french-4e-agreement', 'falaise'],
+    ['lca-4e-cities', 'colonnade'],
+  ].flatMap(([ile, lieu]) => [
+    { nom: `quatrieme-${lieu}-loin-eteint`, vue: 'archipel', famille: 'personnages-quatrieme', ile, zoomer: -10, sansIles: [ile] },
+    { nom: `quatrieme-${lieu}-loin`, vue: 'archipel', famille: 'personnages-quatrieme', ile, zoomer: -10 },
+  ]),
+  { nom: 'quatrieme-archipel-recul-eteints', vue: 'archipel', famille: 'personnages-quatrieme', ile: 'maths-4e-powers', zoomer: -10, sansIles: { classe: '4e' } },
+  { nom: 'quatrieme-archipel-recul', vue: 'archipel', famille: 'personnages-quatrieme', ile: 'maths-4e-powers', zoomer: -10 },
   { nom: 'histoire-geo-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
   { nom: 'histoire-geo-mes-blocs', vue: 'île', famille: 'histoire-geo', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
