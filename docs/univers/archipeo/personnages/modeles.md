@@ -48,7 +48,7 @@ Les Gardiens (coupe du socle en part de la hauteur, triangles des deux versions)
 | Diligence de cuivre (Relais, 5e) | 0,12 | 1 475 | 216 |
 | Flamant de sel (Saline, 5e) | 0,12 | 1 307 | 172 |
 
-Les créatures (sans socle, rien à couper) :
+Les créatures (sans socle, rien à couper). Le jeu repeint leurs quatre couleurs en aplats clairs (`src/game/world/characters/imported/flatColors.ts`, choisis par le directeur artistique le 10 octobre 2026) : les fichiers gardent les couleurs tirées de la texture, et une nouvelle passe dans Blender, qui en tirerait d’autres, demande de refaire la table.
 
 | Créature | 1 500 | 200 |
 | --- | --- | --- |
