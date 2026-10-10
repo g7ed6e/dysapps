@@ -81,8 +81,8 @@ function dirigeable(): { cells: PlanCell[]; kit: PlanCell[]; kept: PlanCell[] } 
 }
 
 /** La fusée (4e, debout au 3e) : la nacelle devenue socle, une coque en croix d'acier, de calque et d'ardoise, dressée sur
- * la corde de bois devenue quille ; le dessous de l'enveloppe en hublots, son dessus en anneau blanc ; le kit, trois
- * ailerons de bois (le quatrième est l'autre corde), la bande et la lanterne au nez. */
+ * la corde de bois devenue quille ; le dessous de l'enveloppe en hublots, son dessus en anneau blanc, la lanterne au bout
+ * de la pointe ; le kit, trois ailerons de bois (le quatrième est l'autre corde) et la bande. */
 function fusee(): { cells: PlanCell[]; kit: PlanCell[]; kept: PlanCell[] } {
   // La croix de la coque autour de l'axe (2, 4) : son cœur, caché, n'est pas posé.
   const bras = [
@@ -98,10 +98,12 @@ function fusee(): { cells: PlanCell[]; kit: PlanCell[]; kept: PlanCell[] } {
   fill(kept, 2, 2, 1, 1, 1, 2, BLOC.bois);
   fill(kept, 2, 5, 1, 1, 1, 5, BLOC.bois);
   for (const [x, y] of [...bras, [2, 4] as const]) kept.push({ x, y, z: 6, block: BLOC.glace }, { x, y, z: 8, block: BLOC.marbre });
+  // La lanterne du dirigeable vole jusqu'au bout de la pointe.
+  kept.push({ x: 2, y: 4, z: 10, block: BLOC.lanterne });
   const cells: PlanCell[] = [];
-  // La coque de z 1 à 5 (la corde arrière en est le bras de derrière), une rangée de calque au milieu ; la pointe d'ardoise.
+  // La coque de z 1 à 5 (la corde arrière en est le bras de derrière), une rangée de calque au milieu ; la pointe, un seul cube d'ardoise sur l'axe.
   for (const [x, y] of bras.slice(0, 3)) for (let z = 1; z <= 5; z++) cells.push({ x, y, z, block: z === 3 ? BLOC.calque : BLOC.acier });
-  for (const [x, y] of [...bras, [2, 4] as const]) cells.push({ x, y, z: 9, block: BLOC.ardoise });
+  cells.push({ x: 2, y: 4, z: 9, block: BLOC.ardoise });
   const kit: PlanCell[] = [];
   for (const [x, y] of bras) kit.push({ x, y, z: 7, block: BLOC.reliure });
   for (const [x, y] of [
@@ -109,7 +111,6 @@ function fusee(): { cells: PlanCell[]; kit: PlanCell[]; kept: PlanCell[] } {
     [4, 4],
     [2, 6],
   ]) fill(kit, x, y, 1, 1, 1, 2, BLOC.bois);
-  kit.push({ x: 2, y: 4, z: 10, block: BLOC.lanterne });
   return { cells, kit, kept };
 }
 
