@@ -9,6 +9,7 @@ import {
   COMMANDES,
   MAX_COMMANDES_OUVERTES,
   SEUIL_DE_LA_PREMIERE_COMMANDE,
+  commandeALivrerChez,
   commandeDeLIle,
   commandeMiseEnAvant,
   commandesOuvertes,
@@ -215,6 +216,25 @@ describe('la suggestion et le signe', () => {
     expect(signeDeLaCreature({ ...prete, stock: {} }, FORET, { revisions: true, suggeree: MOUSSO })).toEqual({ genre: 'revision' });
     // Coco : sa commande n'est pas prête.
     expect(signeDeLaCreature(prete, PLAINE, { revisions: false, suggeree: MOUSSO })).toBeNull();
+  });
+
+  it('une commande prête se livre chez sa créature même quand autre chose passe avant elle dans la suggestion', () => {
+    // Le bonhomme sur la Forêt, une mission encore jamais jouée : la suggestion est cette mission (étape 2), pas la
+    // commande de Mousso, pourtant prête. La fiche de Mousso doit quand même proposer « Livrer ».
+    const missions = missionsJouables(getBiome(FORET)!);
+    const progress = Object.fromEntries(
+      Object.entries(joue(FORET, PLAINE, FERME)).filter(([id]) => id !== exercisesOf(FORET, missions[missions.length - 1].id)[0].id),
+    );
+    const surLaForet = etat({ progress, stock: { [BLOC.terre]: 3, [BLOC.bois]: 3 }, world: { links: [PONT_FERME], place: FORET, requests: [MOUSSO, COCO] } });
+    expect(nextDestination(surLaForet).commande).toBeUndefined();
+    expect(commandeALivrerChez(surLaForet, FORET)?.id).toBe(MOUSSO);
+    // Deux commandes prêtes : la plus récente aussi se livre chez sa créature, pas seulement la plus ancienne.
+    expect(commandeALivrerChez(surLaForet, PLAINE)?.id).toBe(COCO);
+    // Pas prête, pas arrivée, ou déjà livrée : rien à livrer.
+    expect(commandeALivrerChez({ ...surLaForet, stock: {} }, FORET)).toBeUndefined();
+    expect(commandeALivrerChez(surLaForet, FERME)).toBeUndefined();
+    const livree = livrerLaCommande(surLaForet, MOUSSO);
+    expect(livree.ok && commandeALivrerChez(livree.state, FORET)).toBeUndefined();
   });
 });
 

@@ -41,7 +41,7 @@ import type { VehicleBuilder } from './useVehicleBuilder';
 import { borneDe } from './world/affordance';
 import type { ObjetDeLaFiche } from './world/layout';
 import { KIND_NAME, archipelagoOf, bridgeState, conditionText, getArchipelago, getBridge, isBiomeUnlocked, linkKind, linksToIsland, nearestDeparture, opensAnIsland, otherEnd, payableBlocks, reachableIslands, type ArchipelagoId } from './world/archipelago';
-import { estPrete, texteDeLaCommande, type Commande } from './world/requests';
+import { commandeALivrerChez, texteDeLaCommande } from './world/requests';
 import { canTapStep, openStoryOf, type Story } from './world/stories';
 import { StepButton, StoryBadge, stepSentence, storyBadgeReading, tapTheStep } from './Stories';
 import { ileDeLOuvrage } from './world/model';
@@ -72,8 +72,6 @@ interface Props {
   onBoard: (to: ArchipelagoId, back: boolean, dest?: BiomeId) => void;
   /** Un ouvrage vient d'être construit : l'île d'en face s'ouvre. */
   onBuilt: (to: BiomeId) => void;
-  /** La commande prête et suggérée de la créature (sa plaque), s'il y en a une. */
-  commande?: Commande;
   /** Une commande livrée : la scène pose sa petite construction ; `true` si elle en prend le son. */
   onLivree?: (c: PetiteConstructionAPoser) => boolean;
   /** La commande dont la petite construction se pose : la phrase « posée » attend la fin. */
@@ -575,7 +573,7 @@ function FicheDeLIlePale({ ile, fiche, onVoirOuvrage, onClose }: Props & { ile: 
  * quête de sa région qui se fait chez elle (GD-10), son signe (l'objet, « 2/3 ») et « Donner » ou « Apporter » ; des
  * révisions, « Reprendre » (le bouton principal) et « Plus tard », avec les boutons de la fiche.
  */
-function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePose = null, onClose }: Props & { ile: BiomeId }) {
+function FicheDeLaCreature({ ile, fiche, onLivree, commandeEnCoursDePose = null, onClose }: Props & { ile: BiomeId }) {
   const { state, deliver, tapStory } = useBlocland();
   const { settings } = useSettings();
   const textes = useTextes();
@@ -586,7 +584,10 @@ function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePo
   if (!biome) return null;
   const lieu = textes.assemblage.a;
   const nom = biome.creature.name;
-  const prete = commande && commande.biome === ile && estPrete(state, commande) ? commande : null;
+  // Sa commande prête, qu'elle soit ou non la prochaine destination (celle que montre sa plaque) : « Livrer » dès que
+  // les blocs sont là, sinon elle ne pourrait plus se livrer tant qu'autre chose passe avant elle (une mission à jouer
+  // sur l'île, une autre commande prête).
+  const prete = (textes.commandes && commandeALivrerChez(state, ile)) || null;
   const ouverte = textes.quetes && !prete ? openStoryOf(state.world, archipelagoOf(ile).classe) : null;
   const quete = ouverte && ouverte.step.place === ile ? ouverte : null;
   // L'étape se fait ici d'un toucher : elle passe avant les révisions ; sinon, les révisions d'abord (consultant UX UI).
