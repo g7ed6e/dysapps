@@ -429,7 +429,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
   },
   'civics-4e-rights-freedoms': {
     greeting: 'Bonjour, bâtisseur ! Ici, la porte est ouverte, et je veille sur elle. Chaque bonne réponse te donne un pavé. Un pavé, c’est une pierre de la rue.',
-    lines: ['Tu es libre, tant que tu respectes la liberté des autres.', 'Des pavés pour ma loge : relis le rappel.', 'Je veille sans jamais faire peur.'],
+    lines: ['Tu es libre, tant que tu respectes la liberté des autres.', 'Des pavés pour ma loge : relis le rappel.', 'Je veille, et la porte reste ouverte.'],
     home: 'Ma loge est finie. Chacun passe librement.',
   },
   'civics-3e-democratic-life': {

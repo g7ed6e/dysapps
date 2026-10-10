@@ -788,18 +788,6 @@ function reparerLaCarte(
   const placesThatFit = (j: number) => {
     let l = fitCache.get(j);
     if (!l) fitCache.set(j, (l = lesPlaces(j).filter((q) => tient(j, q))));
-    if (aCote && (globalThis as any).__dbg) {
-      const b = boxes[j];
-      (globalThis as any).__dbg.push({ j, b, ile: iles[j], n: l.length, raisons: placesACote(b, iles[j], gap).map((at) => {
-        const r: string[] = [];
-        if (!entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds)) r.push(outside(at, bounds) >= 1 ? 'cadre' : 'interface');
-        if (distanceA(at, iles[j]) > distanceA(b, iles[j]) + ecart * b.h) r.push('loin');
-        if (onAnotherIsland(at, j, iles)) r.push('autre-ile');
-        if (!horsDesReperes(j, at)) r.push('repere');
-        if (!r.length) r.push('ok:' + genes(at, [], j).join(','));
-        return `${Math.round(at.x - iles[j].x)},${Math.round(at.y - iles[j].y)} ${r.join('+')}`;
-      }) });
-    }
     return l;
   };
   const poser = (i: number, at: LabelBox) => {
