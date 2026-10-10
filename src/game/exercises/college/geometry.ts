@@ -217,12 +217,12 @@ export const pythagoreLogic: ItemGenerator = (rng) => {
       why: 'On part d’un triangle rectangle et on conclut l’égalité des carrés : c’est le théorème. La réciproque va dans l’autre sens, de l’égalité vers le triangle rectangle.',
     },
     converse: {
-      lines: [lengths, `${squares} Les deux nombres sont égaux.`, 'Donc ABC est rectangle en A.'],
+      lines: [lengths, squares, 'Les deux nombres sont égaux.', 'Donc ABC est rectangle en A.'],
       spoken: `${spokenLengths} ${spokenSquares} Les deux nombres sont égaux. Donc A B C est rectangle en A.`,
       why: 'On part de l’égalité des carrés et on conclut que le triangle est rectangle : c’est la réciproque. Le théorème va dans l’autre sens, du triangle rectangle vers l’égalité.',
     },
     contrapositive: {
-      lines: [lengths, `${squares} Les deux nombres sont différents.`, 'Donc ABC n’est pas rectangle.'],
+      lines: [lengths, squares, 'Les deux nombres sont différents.', 'Donc ABC n’est pas rectangle.'],
       spoken: `${spokenLengths} ${spokenSquares} Les deux nombres sont différents. Donc A B C n’est pas rectangle.`,
       why: 'Les carrés ne sont pas égaux, donc le triangle n’est pas rectangle : c’est la contraposée. Si le triangle était rectangle, le théorème donnerait l’égalité.',
     },
