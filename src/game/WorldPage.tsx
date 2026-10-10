@@ -763,13 +763,6 @@ export function WorldPage() {
     return () => window.removeEventListener('keydown', onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [Boolean(ficheVue)]);
-  // La commande prête de la créature de la fiche, celle que montre sa plaque (la prochaine destination).
-  const commandeDeLaFiche = useMemo(() => {
-    if (fiche?.objet.genre !== 'creature' || !destination.commande) return undefined;
-    const id = fiche.objet.id;
-    const c = getCommande(destination.commande);
-    return c && c.biome === id && signes.some((x) => x.id === id && x.bloc) ? c : undefined;
-  }, [fiche, destination.commande, signes]);
   // Le vol, la caméra posée : de la borne de la mission (hors de l'écran : du centre de la scène) jusqu'à la pastille.
   // Jamais par-dessus une fiche, le tutoriel, un mot qui attend, un voyage ou un panneau : le chiffre change, sans vol.
   const empecheLeVol =
@@ -1210,7 +1203,6 @@ export function WorldPage() {
               ship={ship}
               onBoard={onBoard}
               onBuilt={(to) => window.setTimeout(() => navigate(`/adventure/${to}`), 900)}
-              commande={commandeDeLaFiche}
               onLivree={poserLaCommande}
               commandeEnCoursDePose={vague?.commande ?? null}
               onVoirOuvrage={voirOuvrage}
