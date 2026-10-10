@@ -2,7 +2,7 @@
 
 ![Le logo de Blocland : une île en blocs sur la mer, avec son grand chêne](/blocland.svg){.bl-logo}
 
-<p class="lead"><strong>DysApps</strong> est un jeu d’entraînement pour les <strong>élèves dys du collège</strong> (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, dans les matières du collège : français, mathématiques, anglais, histoire-géographie, SVT, physique-chimie, technologie, enseignement moral et civique (EMC), deuxième langue (espagnol ou allemand) et, en option, latin ou grec. Tout tient dans le navigateur, sans compte ni serveur : la progression reste sur l’appareil.</p>
+<p class="lead"><strong>DysApps</strong> est un jeu d’entraînement pour les <strong>élèves dys du collège</strong> (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, dans les matières du collège. Il y a le français, les maths, l’anglais, l’histoire-géographie, les sciences (SVT, physique-chimie, technologie) et l’enseignement moral et civique (EMC) ; à partir de la 5e, la deuxième langue (espagnol ou allemand) et, en option, le latin ou le grec. Tout tient dans le navigateur, sans compte ni serveur : la progression reste sur l’appareil.</p>
 
 L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.workers.dev/>. Elle s’installe comme une application (PWA) et fonctionne hors ligne après la première visite.
 
@@ -14,14 +14,14 @@ Cette documentation est à la fois **le manuel** (pour l’élève, la famille, 
 <li><a href="manuel/demarrer.html"><strong>Démarrer</strong>Installer l’application, la première séance, les mises à jour.</a></li>
 <li><a href="manuel/partie.html"><strong>Une partie commentée</strong>Le jeu en images : de la première mission aux Basses Terres reconstruites.</a></li>
 <li><a href="manuel/blocland.html"><strong>L’aventure</strong>Quatre archipels, cinquante-huit îles à ouvrir, dans toutes les matières, des missions, des blocs, des bâtiments et des Gardiens.</a></li>
-<li><a href="manuel/reglages.html"><strong>Réglages et accessibilité</strong>Police, taille, thèmes, lecture à voix haute, syllabes, animations, LV2, option latin ou grec.</a></li>
+<li><a href="manuel/reglages.html"><strong>Réglages et accessibilité</strong>Police, taille, thèmes, lecture à voix haute, syllabes, animations, deuxième langue, option latin ou grec.</a></li>
 <li><a href="pedagogie/archipel.html"><strong>Le contenu, île par île</strong>Ce que travaille chaque mission, avec ses consignes et ses items.</a></li>
 <li><a href="pedagogie/principes.html"><strong>Principes dys</strong>Les règles que respecte chaque exercice, et pourquoi.</a></li>
 </ul>
 
 ## En deux mots
 
-- **Deux façons de s’entraîner** : les **missions du portail** (Homophones, Lecture, Tables et calcul mental, Fractions, Nombres décimaux, Vocabulaire et Verbes irréguliers en anglais), accessibles depuis les pages Français, Maths et Anglais, et **l’aventure**, dans Blocland (par défaut) ou Archipéo, quatre archipels en 3D (un par classe) où chaque île est un thème du programme, dans l’une des matières et où les exercices réussis donnent des blocs pour reconstruire le village et construire le Bloc-Navire qui mène à l’archipel suivant.
+- **Deux façons de s’entraîner** : les **missions du portail** (Homophones, Lecture, Tables et calcul mental, Fractions, Nombres décimaux, Vocabulaire et Verbes irréguliers en anglais), accessibles depuis les pages Français, Maths et Anglais, et **l’aventure**, dans Blocland (par défaut) ou Archipéo, quatre archipels en 3D (un par classe) où chaque île est un thème du programme d’une matière, et où les exercices réussis donnent des blocs pour reconstruire le village et construire le Bloc-Navire qui mène à l’archipel suivant.
 - **Des règles dys partout** : police adaptée (Luciole par défaut), texte jamais plus petit que 18 px, consignes lues à voix haute, syllabes en couleurs, une seule tâche par écran, aide visuelle toujours affichée en maths, indice jamais pénalisant, pas de chronomètre, correction qui explique.
 - **Une motivation façon jeu vidéo, sans stress** : XP, rôles, succès, combos, étoiles, blocs et bâtiments, mais rien ne se perd et une erreur rapporte quand même un point d’effort.
 - **Rien ne sort de l’appareil** : pas de compte, pas de statistiques envoyées, pas de service externe.
