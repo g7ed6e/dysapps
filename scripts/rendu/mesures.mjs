@@ -940,8 +940,10 @@ const CAPTURES = [
       ['bosquet', 'lca-3e-ideas'],
     ], [
       ['marbre-fantome', 'maths-3e-geometry', true],
-      // Un toit d'ardoise sous la neige bâti, à côté de sa moitié encore en fantôme.
-      ['toits-neige-fantome', 'maths-3e-functions', true, { partie: 'toit-fantome', zoomer: 4 }],
+      // Un toit d'ardoise sous la neige bâti, à côté de sa moitié encore en fantôme : le toit en croix de la lanterne de
+      // Fi, recadré sur le haut de la tour (relevé sur la capture du 10 octobre 2026 : la croix entre x 575 et 750, y 38
+      // et 160), la maison basse au premier plan, toute posée, hors du cadre.
+      ['toits-neige-fantome', 'maths-3e-functions', true, { partie: 'toit-fantome', zoomer: 4, recadre: { x: 480, y: 0, width: 360, height: 270 }, finesse: 4 }],
       ['quartz-fantome', 'maths-3e-statistics'],
     ], [
       ['temple', 'maths-3e-geometry', 'landmark-3e-2'],
@@ -1629,7 +1631,10 @@ async function scenes() {
       plans[cour.id] = cells.map((c) => c.key).filter((k) => !restent.has(k));
     }
     // Un toit à moitié fantôme, sur l'île de la vue seulement (famille `familles-troisieme`, `toits-neige-fantome`) : les
-    // murs posés, le toit posé sur sa moitié ouest, sa moitié est encore en fantôme à côté (le reste du plan posé).
+    // murs posés, le toit posé sur sa moitié ouest, sa moitié est encore en fantôme à côté (le reste du plan posé). Au
+    // Phare (maths-3e-functions), le toit est une croix de cinq cases sur la tour : la colonne du milieu se partage (sa
+    // moitié sud posée), trois cases posées, deux en fantôme, chacune contre une case de neige ; couper au seul milieu
+    // laissait une case en fantôme sur cinq, qui ne se lisait pas.
     if (partie === 'toit-fantome') {
       const l = plansFor(ile);
       const i = l.findIndex((p) => planCells(p).some((c) => c.block === 'roof'));
@@ -1637,9 +1642,10 @@ async function scenes() {
         if (j > i) delete plans[p.id];
       });
       const cells = planCells(l[i]);
-      const xs = cells.filter((c) => c.block === 'roof').map((c) => c.x);
-      const milieu = (Math.min(...xs) + Math.max(...xs)) / 2;
-      plans[l[i].id] = cells.filter((c) => c.block !== 'roof' || c.x <= milieu).map((c) => c.key);
+      const toit = cells.filter((c) => c.block === 'roof');
+      const mx = (Math.min(...toit.map((c) => c.x)) + Math.max(...toit.map((c) => c.x))) / 2;
+      const my = (Math.min(...toit.map((c) => c.y)) + Math.max(...toit.map((c) => c.y))) / 2;
+      plans[l[i].id] = cells.filter((c) => c.block !== 'roof' || c.x < mx || (c.x === mx && c.y <= my)).map((c) => c.key);
     }
     if (partie === 'tour-avant' || partie === 'tour-debut' || partie === 'tour-mi') {
       const l = plansFor('french-6e-reading');

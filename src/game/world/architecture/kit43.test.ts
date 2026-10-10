@@ -9,8 +9,9 @@ import { allumesALaFin, LUEUR_DE_FIN } from '../construction/endGlow';
 import { couleurDuRole } from '../construction/settings';
 import { getMonument, monumentsOf } from '../monuments';
 import { BRUME } from '../palette';
-import { planCells } from '../plans';
+import { planCells, plansFor } from '../plans';
 import { LAYERS } from '../projects';
+import { toitDe } from '../roofs';
 import { worldCubes } from '../terrain';
 import { apartFromGhost, lowGlazing, lyingTube, rgbGap, standingBoard } from './heartPieces';
 import { trianglesDe } from './rooms';
@@ -285,4 +286,45 @@ describe('Les kits du 4e et du 3e : les monuments et le reste', () => {
       for (const f of d.facettes) for (const p of f.points) for (const v of p) expect(v >= -1e-9 && v <= 1 + 1e-9, nom).toBe(true);
     }
   });
+});
+
+describe('Le 3e : un toit sous la neige en chantier', () => {
+  /** Le point (x, y) du plan horizontal à la hauteur `h` est-il sous un triangle tourné vers le haut du groupe ? */
+  function couvert(g: { positions: Float32Array; normals: Float32Array; indices: Uint32Array }, x: number, y: number, h: number): boolean {
+    const { positions: p, normals: n, indices } = g;
+    // Le maillage est dans le repère de Three.js : (x, hauteur, y).
+    for (let t = 0; t < indices.length; t += 3) {
+      const [a, b, c] = [indices[t], indices[t + 1], indices[t + 2]];
+      if (n[3 * a + 1] < 0.5 || Math.abs(p[3 * a + 1] - h) > 1e-4 || Math.abs(p[3 * b + 1] - h) > 1e-4 || Math.abs(p[3 * c + 1] - h) > 1e-4) continue;
+      const cote = (i: number, j: number) => (p[3 * j] - p[3 * i]) * (y - p[3 * i + 2]) - (p[3 * j + 2] - p[3 * i + 2]) * (x - p[3 * i]);
+      const [s1, s2, s3] = [cote(a, b), cote(b, c), cote(c, a)];
+      if ((s1 >= 0 && s2 >= 0 && s3 >= 0) || (s1 <= 0 && s2 <= 0 && s3 <= 0)) return true;
+    }
+    return false;
+  }
+
+  it('le toit de la lanterne de Fi à moitié posé : ses cases encore à poser restent des fantômes, que la neige du toit posé ne couvre pas', () => {
+    expect(KITS['3e'].snowyRoofs).toBe(true);
+    expect(toitDe('maths-3e-functions')).toBe('ardoise');
+    const plan = plansFor('maths-3e-functions').find((p) => planCells(p).some((c) => c.block === 'roof'))!;
+    const cellules = planCells(plan);
+    const toit = cellules.filter((c) => c.block === 'roof');
+    const ouest = Math.min(...toit.map((c) => c.x));
+    const parts = { ...village.parts, [plan.id]: cellules.filter((c) => c.block !== 'roof' || c.x === ouest).map((c) => c.key) };
+    const ile = worldCubes('3e', progress, { ...village, parts }, false, [], false, 'halle').filter((c) => !c.sol && !c.decor && c.tag === 'maths-3e-functions');
+    const fantomes = ile.filter((c) => c.ghost && c.texture === 'toit');
+    const poses = ile.filter((c) => !c.ghost && c.texture === 'toit' && fantomes.some((f) => f.z === c.z && Math.abs(f.x - c.x) + Math.abs(f.y - c.y) === 1));
+    expect(fantomes).toHaveLength(toit.length - toit.filter((c) => c.x === ouest).length);
+    expect(poses.length).toBeGreaterThan(0);
+    const m = maillageDeLaConstruction('3e', ile);
+    for (const f of fantomes) {
+      expect(couvert(m.fantomes, f.x + 0.5, f.y + 0.5, f.z + 1), `fantôme ${cle(f)}`).toBe(true);
+      expect(couvert(m.opaque, f.x + 0.5, f.y + 0.5, f.z + 1), `neige sur ${cle(f)}`).toBe(false);
+    }
+    // La moitié posée, elle, est bien couverte de son toit, sans fantôme.
+    for (const c of poses) {
+      expect(couvert(m.opaque, c.x + 0.5, c.y + 0.5, c.z + 1), `toit ${cle(c)}`).toBe(true);
+      expect(couvert(m.fantomes, c.x + 0.5, c.y + 0.5, c.z + 1), `fantôme sur ${cle(c)}`).toBe(false);
+    }
+  }, 60_000);
 });
