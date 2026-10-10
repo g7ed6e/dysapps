@@ -1,189 +1,74 @@
-// Les îlots des Gardiens : leurs cases, leurs marches, leurs cubes, et le Gardien en pierre ou rallumé.
+// Les Gardiens sur leur île (GD-11) : leur carré, leur place, le bloc d'or du Gardien rallumé, et le Gardien en pierre
+// ou rallumé.
 import { type BiomeDef, type BiomeId, BIOMES, BLOC, BLOCKS } from '../../biomes';
-import { type ArchipelagoId, type Decor, type Ground, isLand, islandDef, type IslandDef, landscape, noise, smoothNoise, tirage } from '../map';
+import { type ArchipelagoId, islandDef } from '../map';
 import type { VoxelCube } from '../cube';
-import { decorate } from '../decor';
+import { turnCell, turnModel, turnPlacedModel, turnPoint } from '../placement';
 import { guardianStatus } from '../../boss';
-import { gardienDuMonde } from './creatures';
-import { ARENA, bossIsletOrigin, glisseDeLIlot, ISLET_CENTER, ISLET_GAP, ISLET_H, ISLET_W, reculDeLIlot, RETOUCHES_DE_L_ILOT } from './islets';
-import { DEPTH, GROUND_COLOR, taperLayers, TEXTURES } from './base';
-
-/** Coin local où poser un Gardien pour qu'il soit centré sur l'îlot. */
-function guardianOffset(id: BiomeId): { x: number; y: number } {
-  const g = gardienDuMonde(id);
-  const mid = (vals: number[]) => (Math.min(...vals) + Math.max(...vals)) / 2;
-  return { x: Math.round(ISLET_CENTER.x - mid(g.map((c) => c.x))), y: Math.round(ISLET_CENTER.y - mid(g.map((c) => c.y))) };
-}
-
-export interface IsletCell {
-  /** Coordonnées du monde. */
-  x: number;
-  y: number;
-  /** Pavé de l'arène (pierre, bordée de galet). */
-  arena: boolean;
-  /** Sous les pieds du Gardien. */
-  guardian: boolean;
-  /** Au bord de l'eau (une voisine n'est pas de la terre). */
-  shore: boolean;
-}
-
-const isletCache = new Map<BiomeId, IsletCell[]>();
+import { etendue, gardienDuMonde, gardienProfond, GUARDIAN_SQUARE, guardianSpot } from './creatures';
+import { TEXTURES } from './base';
 
 /**
- * La terre de l'îlot : une ellipse à la côte irrégulière (bruit lissé, comme les îles), qui porte toujours
- * l'emprise entière de son Gardien ; au milieu, l'arène pavée. Calculée une fois par île.
+ * Le milieu du Gardien dans son carré (repère du cœur, le lieu pas tourné) : au milieu de ses quatre rangées du fond, la
+ * rangée de devant (côté caméra) gardant la place de son bloc d'or ; au milieu du carré pour un Gardien long.
  */
-export function bossIsletCells(id: BiomeId): IsletCell[] {
-  const known = isletCache.get(id);
-  if (known) return known;
+function milieuDuGardien(id: BiomeId): { x: number; y: number } {
+  const s = guardianSpot(id);
+  return { x: s.x + GUARDIAN_SQUARE / 2, y: s.y + (gardienProfond(id) ? GUARDIAN_SQUARE / 2 : (GUARDIAN_SQUARE + 1) / 2) };
+}
+
+/**
+ * Le milieu du Gardien sur son carré (`milieuDuGardien` : une demi-case vers le fond quand son bloc d'or est devant
+ * lui), en cases du monde (une case : son coin bas), le lieu tourné, et la hauteur que vise la caméra du rallumage
+ * (lot 6) : le pied du Gardien plus 1,6 bloc à son échelle (`echelle`, l'habillage) ; à l'échelle 1, le milieu d'une
+ * sentinelle de 5,2 blocs (DA-5 : world/characters/sentinel.ts, `HAUTEUR_DANS_LE_MONDE` ; un test y tient les deux
+ * ensemble). La grille y ancre le Gardien (world/grid.ts).
+ */
+export function guardianCenter(id: BiomeId, echelle = 1): { x: number; y: number; z: number } {
   const def = islandDef(id);
-  const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
-  const off = guardianOffset(id);
-  const under = new Set(gardienDuMonde(id).map((c) => `${off.x + c.x},${off.y + c.y}`));
-  const glisse = glisseDeLIlot(id);
-  const recul = reculDeLIlot(id);
-  const rogne = RETOUCHES_DE_L_ILOT[id]?.rogne ?? 0;
-  const land = new Set<string>();
-  for (let x = 0; x < ISLET_W; x++)
-    for (let y = 0; y < ISLET_H; y++) {
-      const dx = (x - ISLET_CENTER.x) / (ISLET_W / 2);
-      const dy = (y - ISLET_CENTER.y) / (ISLET_H / 2);
-      // Sa côte est tirée là où il se tenait avant de glisser sur le côté : il garde sa forme.
-      const t = tirage(def, o.x + glisse + x, o.y - recul + y);
-      const coast = (smoothNoise(def.seed + 7, t.x, t.y, 3) - 0.5) * 0.3;
-      // Ses rangées de devant rognées (`RETOUCHES_DE_L_ILOT`) ne portent que l'emprise du Gardien.
-      if (under.has(`${x},${y}`) || (y >= rogne && Math.hypot(dx, dy) + coast < 0.98)) land.add(`${x},${y}`);
+  const milieu = milieuDuGardien(id);
+  const m = turnPoint(milieu.x, milieu.y, def.quarts);
+  return { x: def.core.x + m.x - 0.5, y: def.core.y + m.y - 0.5, z: def.altitude + 1 + 1.6 * echelle };
+}
+
+/**
+ * Le Gardien en couleurs, tourné avec son lieu (GD-9) : les cubes du Gardien posé une fois rallumé (`guardianPlacements`),
+ * que le fondu du rallumage refait couche par couche (three/characters.ts).
+ */
+export function gardienTourne(id: BiomeId): ReturnType<typeof gardienDuMonde> {
+  return turnModel(gardienDuMonde(id), islandDef(id).quarts);
+}
+
+/** Les cases du carré du Gardien d'une île, en cases du monde, le lieu tourné : le bonhomme n'y marche pas. */
+export function guardianCells(id: BiomeId): { x: number; y: number }[] {
+  const def = islandDef(id);
+  const s = guardianSpot(id);
+  const out: { x: number; y: number }[] = [];
+  for (let i = 0; i < GUARDIAN_SQUARE; i++)
+    for (let j = 0; j < GUARDIAN_SQUARE; j++) {
+      const t = turnCell(s.x + i, s.y + j, def.quarts);
+      out.push({ x: def.core.x + t.x, y: def.core.y + t.y });
     }
-  const cells: IsletCell[] = [];
-  for (const key of land) {
-    const [x, y] = key.split(',').map(Number);
-    const ax = (x - ISLET_CENTER.x) / ARENA.rx;
-    const ay = (y - ISLET_CENTER.y) / ARENA.ry;
-    cells.push({
-      x: o.x + x,
-      y: o.y + y,
-      arena: ax ** 4 + ay ** 4 <= 1,
-      guardian: under.has(key),
-      shore: [`${x - 1},${y}`, `${x + 1},${y}`, `${x},${y - 1}`, `${x},${y + 1}`].some((k) => !land.has(k)),
-    });
-  }
-  isletCache.set(id, cells);
-  return cells;
+  return out;
 }
 
 /**
- * Les pas japonais : des pierres en quinconce dans l'eau, du fond de l'îlot à la côte de l'île, dans l'axe du
- * Gardien. Posées au niveau du sol de l'île (en altitude, elles flottent comme elle). Quand l'îlot a glissé sur le
- * côté (`ILOT_DE_COTE`), le gué le plus court à trois colonnes au plus de l'axe.
+ * La case du bloc d'or d'un Gardien rallumé (repère du cœur, le lieu pas tourné) : collé à lui, une case devant (côté
+ * caméra), dans son carré ; à côté de lui, à droite, pour un Gardien long (DA, 8 octobre 2026).
  */
-export function bossIsletSteps(id: BiomeId): { x: number; y: number; z: number }[] {
-  const def = islandDef(id);
-  const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
-  const axe = o.x + Math.round(ISLET_CENTER.x);
-  const ilot = bossIsletCells(id);
-  let gue: { x: number; back: number; coast: number } | null = null;
-  for (const d of glisseDeLIlot(id) ? [0, 1, -1, 2, -2, 3, -3] : [0]) {
-    const x = axe + d;
-    const colonne = ilot.filter((c) => c.x === x);
-    if (!colonne.length) continue;
-    const back = Math.max(...colonne.map((c) => c.y));
-    // La côte, droit derrière (l'îlot est toujours devant sa terre : un test le tient) ; sans elle, pas de gué.
-    let coast = back + 1;
-    while (coast <= back + ISLET_H + ISLET_GAP && !isLand(def, x, coast)) coast++;
-    if (!isLand(def, x, coast)) continue;
-    if (!gue || coast - back < gue.coast - gue.back) gue = { x, back, coast };
-  }
-  if (!gue) return [];
-  const steps: { x: number; y: number; z: number }[] = [];
-  for (let y = gue.back + 1; y < gue.coast; y++) steps.push({ x: gue.x + ((y - gue.back) % 2 === 0 ? 1 : 0), y, z: def.altitude });
-  return steps;
+export function trophySpot(id: BiomeId): { x: number; y: number } {
+  const s = guardianSpot(id);
+  return { x: s.x + (gardienProfond(id) ? GUARDIAN_SQUARE - 1 : Math.floor(GUARDIAN_SQUARE / 2)), y: s.y };
 }
 
-/** Le socle du bloc d'or d'un Gardien vaincu : devant lui, à sa droite, sur la terre de l'îlot. */
-function trophySpot(id: BiomeId): { x: number; y: number } {
-  const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
-  const target = { x: o.x + ISLET_CENTER.x + 3, y: o.y + 1 };
-  const free = bossIsletCells(id).filter((c) => !c.guardian && !c.shore);
-  free.sort((p, q) => Math.abs(p.x - target.x) + Math.abs(p.y - target.y) - (Math.abs(q.x - target.x) + Math.abs(q.y - target.y)));
-  return free[0];
-}
-
-/** Le sol de l'îlot hors de l'arène : celui qui domine sur l'île (sans les plages, l'eau ni la lave). */
-function isletGround(def: IslandDef): string {
-  const count = new Map<Ground, number>();
-  for (const c of landscape(def)) if (c.ground !== 'sable' && c.ground !== 'eau' && c.ground !== 'lave') count.set(c.ground, (count.get(c.ground) ?? 0) + 1);
-  let best: Ground = 'herbe';
-  for (const [g, n] of count) if (n > (count.get(best) ?? 0)) best = g;
-  return GROUND_COLOR[best];
-}
-
-/** Le petit décor de l'îlot : celui de l'île, sans les arbres (ils cacheraient le Gardien). */
-const SMALL_DECOR: Decor[] = ['buisson', 'fleur', 'rocher', 'roseau', 'cristal', 'souche', 'champignon'];
-
-/**
- * L'îlot du Gardien en cubes : terre, sol de l'île, arène, petit décor, pas japonais, et le bloc d'or une fois vaincu.
- * Sans `pas` (une sentinelle qui attend, lot 6), l'îlot n'a pas encore ses pas japonais : le chemin s'ouvre avec le défi.
- */
-export function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], pas = true): void {
+/** Le bloc d'or d'un Gardien rallumé, sur un socle de pierre, devant lui (cubes du monde, le lieu pas tourné : il tourne avec l'île). */
+export function guardianTrophy(biome: BiomeDef, cubes: VoxelCube[]): void {
   const def = islandDef(biome.id);
-  const gz = def.altitude;
-  const tag = biome.id;
-  const cells = bossIsletCells(biome.id);
-  const at = new Map(cells.map((c) => [`${c.x},${c.y}`, c]));
-  const block = (x: number, y: number, z: number, color: string, top?: string) =>
-    cubes.push({ x, y, z, color, top, texture: TEXTURES[color], tag });
-  // Le sol et la roche de l'îlot : en facettes dans le rendu Archipéo.
-  const sol = (x: number, y: number, z: number, color: string) => cubes.push({ x, y, z, color, texture: TEXTURES[color], tag, sol: true });
-  const ground = isletGround(def);
-  const sandy = gz === 0 && def.region !== 'feu';
-  for (const c of cells) {
-    for (let d = 1; d <= DEPTH; d++) sol(c.x, c.y, gz - d, BLOCKS[BLOC.terre].side);
-    // L'arène : pierre au milieu, galet sur son pourtour ; autour, le sol de l'île, et du sable au bord de la mer.
-    const rim = c.arena && [`${c.x - 1},${c.y}`, `${c.x + 1},${c.y}`, `${c.x},${c.y - 1}`, `${c.x},${c.y + 1}`].some((k) => !at.get(k)?.arena);
-    const top = c.arena ? (rim ? BLOCKS[BLOC.galet].side : BLOCKS[BLOC.pierre].side) : c.shore && sandy ? BLOCKS[BLOC.sable].side : ground;
-    sol(c.x, c.y, gz, top);
-  }
-  if (gz > 0) for (const t of taperLayers(cells)) sol(t.x, t.y, gz - DEPTH - t.d, BLOCKS[BLOC.pierre].side);
-  // Quelques touches du décor de l'île, hors de l'arène et loin des pieds du Gardien.
-  const kinds = [...new Set(landscape(def).map((c) => c.decor).filter((k): k is Decor => !!k && SMALL_DECOR.includes(k)))];
-  if (kinds.length === 0) kinds.push('rocher');
-  const spots = cells
-    .filter((c) => !c.arena && !c.guardian)
-    .map((c) => {
-      const t = tirage(def, c.x + glisseDeLIlot(def.id), c.y - reculDeLIlot(def.id));
-      return { c, r: noise(def.seed + 8, t.x, t.y) };
-    })
-    .sort((p, q) => q.r - p.r)
-    .slice(0, 5);
-  const trophy = beaten ? trophySpot(biome.id) : null;
-  // Deux touches voisines peuvent vouloir la même case (deux buissons qui se touchent) : un seul cube par case.
-  const placed = new Set<string>();
-  for (const { c, r } of spots) {
-    decorate(
-      (x, y, z, color) => {
-        const cell = at.get(`${x},${y}`);
-        if (!cell || cell.arena || cell.guardian || (trophy && x === trophy.x && y === trophy.y)) return;
-        const key = `${x},${y},${z}`;
-        if (placed.has(key)) return;
-        placed.add(key);
-        block(x, y, gz + z, color);
-      },
-      kinds[Math.floor(r * 97) % kinds.length],
-      c.x,
-      c.y,
-      r,
-    );
-  }
-  if (pas)
-    for (const s of bossIsletSteps(biome.id)) {
-      block(s.x, s.y, s.z, BLOCKS[BLOC.galet].side);
-      if (s.z === 0) block(s.x, s.y, -1, BLOCKS[BLOC.galet].side);
-    }
-  // Rallumé : un bloc d'or sur un socle de pierre, devant lui.
-  if (trophy) {
-    block(trophy.x, trophy.y, gz + 1, BLOCKS[BLOC.pierre].side);
-    block(trophy.x, trophy.y, gz + 2, BLOCKS[BLOC.or].side, BLOCKS[BLOC.or].top);
-  }
+  const t = trophySpot(biome.id);
+  const [x, y, z] = [def.core.x + t.x, def.core.y + t.y, def.altitude];
+  const block = (zz: number, color: string, top?: string) => cubes.push({ x, y, z: zz, color, top, texture: TEXTURES[color], tag: biome.id });
+  block(z + 1, BLOCKS[BLOC.pierre].side);
+  block(z + 2, BLOCKS[BLOC.or].side, BLOCKS[BLOC.or].top);
 }
 
 /**
@@ -217,27 +102,49 @@ export function gardienEnPartieRallume<C extends { z: number; color: string; top
   return cubes.map((c) => (c.z < seuil ? c : { ...c, color: stoneOf(c.color), top: c.top === undefined ? undefined : stoneOf(c.top) }));
 }
 
+/** Un Gardien posé sur son île : ses cubes, son coin, son échelle de dessin et les cases de son carré. */
+export interface GuardianPlacement {
+  id: BiomeId;
+  kind: 'guardian';
+  still: true;
+  beaten: boolean;
+  cubes: VoxelCube[];
+  /** Le coin de ses cubes dans le monde (pas forcément sur une case : son milieu est celui de sa place). */
+  origin: { x: number; y: number; z: number };
+  /** L'échelle de son dessin autour de son pied (GD-11 : 0,5 dans Blocland, 1 dans Archipéo, l'habillage). */
+  echelle: number;
+  /** Les cases de son carré : le bonhomme n'y marche pas. */
+  cases: { x: number; y: number }[];
+}
+
 /**
- * Les Gardiens visibles : éteints, en statue de pierre, tant que leur défi n'est pas réussi ; rallumés, en couleurs,
- * ensuite (GD-8). Avec `sentinelles` (les deux univers depuis GD-8), ceux des îles ouvertes sont là avant que leur
- * défi soit prêt.
+ * Les Gardiens visibles, chacun sur son île (GD-11) : éteints, en statue de pierre, tant que leur défi n'est pas réussi ;
+ * rallumés, en couleurs, ensuite (GD-8). Avec `sentinelles` (les deux univers depuis GD-8), ceux des îles ouvertes sont
+ * là avant que leur défi soit prêt. `echelle` : celle de leur dessin (l'habillage, `echelleDesGardiens`), autour de leur
+ * pied, au milieu de leur place : leurs cubes restent ceux du modèle, de même forme.
  */
 export function guardianPlacements(
   a: ArchipelagoId,
   progress: Record<string, { stars: number }>,
   bridges: string[],
   sentinelles = false,
-): { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] {
-  const out: { id: BiomeId; kind: 'guardian'; still: true; beaten: boolean; cubes: VoxelCube[]; origin: { x: number; y: number; z: number } }[] = [];
-  BIOMES.forEach((b, index) => {
-    if (b.classe !== a) return;
-    const status = guardianStatus(b, progress, bridges, sentinelles);
-    if (status === 'hidden') return;
-    const { x, y, z } = bossIsletOrigin(index);
-    const off = guardianOffset(b.id);
+  keptOpen: readonly string[] = [],
+  echelle = 1,
+): GuardianPlacement[] {
+  const out: GuardianPlacement[] = [];
+  for (const b of BIOMES) {
+    if (b.classe !== a) continue;
+    const status = guardianStatus(b, progress, bridges, sentinelles, keptOpen);
+    if (status === 'hidden') continue;
     const beaten = status === 'beaten';
-    const cubes = beaten ? gardienDuMonde(b.id) : statueDe(gardienDuMonde(b.id));
-    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes, origin: { x: x + off.x, y: y + off.y, z: z + 1 } });
-  });
+    const modele = beaten ? gardienDuMonde(b.id) : statueDe(gardienDuMonde(b.id));
+    const def = islandDef(b.id);
+    const e = etendue(modele);
+    const m = milieuDuGardien(b.id);
+    // Le milieu de ses cubes au milieu de sa place ; sur le lieu tourné (GD-9), il tourne avec lui.
+    const origine = { x: def.core.x + m.x - (e.x0 + e.x1) / 2, y: def.core.y + m.y - (e.y0 + e.y1) / 2, z: def.altitude + 1 };
+    const pose = turnPlacedModel(def.core, origine, modele, def.quarts);
+    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes: pose.cubes, origin: pose.origine, echelle, cases: guardianCells(b.id) });
+  }
   return out;
 }

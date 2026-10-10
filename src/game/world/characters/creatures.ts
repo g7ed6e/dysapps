@@ -428,6 +428,531 @@ const TIMBRE = fromLayers(
   { B: '#5e4b3e', T: '#54433a', C: '#e6d8bc', E: '#1f1a16', O: '#4a3b31', S: '#a8703a', L: '#a8703a' },
 );
 
+// Silex : un ourson fouilleur assis (DA, HG-2), brun, le museau crème et la truffe sombre, deux petites oreilles rondes ;
+// à sa patte droite, debout, un pinceau de fouille (un manche clair, une touffe sombre au bout). Trois couleurs : le
+// manche reprend le crème du museau, la touffe le sombre des yeux (un appel de dessin par couleur).
+const SILEX = fromLayers(
+  [
+    ['.B.B.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['....P', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['....P', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.CCCH', 'BBBBB', 'BBBBB', '.....'],
+    ['..N..', 'BEBEB', 'BBBBB', '.....'],
+    ['.....', 'BBBBB', 'BBBBB', '.....'],
+    ['.....', 'B...B', '.....', '.....'],
+  ],
+  { B: '#6e4a2c', C: '#efe0c0', N: '#1f1a16', E: '#1f1a16', P: '#efe0c0', H: '#1f1a16' },
+);
+
+// Boussole : une tortue géographe (DA, HG-2), la carapace en pavé à marches (un rang large, un rang plus étroit, une case
+// au sommet : les marches se lisent à la forme), quatre pattes aux coins, la tête devant aux yeux sombres, une petite
+// queue derrière. Trois couleurs.
+const BOUSSOLE = fromLayers(
+  [
+    ['.....', 'L...L', '.....', 'L...L', '.....'],
+    ['.HHH.', 'CCCCC', 'CCCCC', 'CCCCC', '..L..'],
+    ['.EHE.', '.CCC.', '.CCC.', '.CCC.', '.....'],
+    ['.....', '.....', '..C..', '.....', '.....'],
+  ],
+  { C: '#5e7a3e', H: '#b4a676', L: '#b4a676', E: '#1f1a16' },
+);
+
+// Vélin : un lapin enlumineur assis (DA, HG-3), gris-fauve au ventre crème (pas le gris-pierre d'une statue, DA), le museau crème à la truffe rose, deux
+// longues oreilles debout, roses dedans ; à sa patte droite, debout, une plume d'enluminure violette à la pointe sombre.
+const VELIN = fromLayers(
+  [
+    ['.B.B.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.CCC.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.CCCK', 'BBBBB', 'BBBBB', '..C..'],
+    ['.CPCF', 'BBBBB', 'BBBBB', '.....'],
+    ['....F', 'BEBEB', 'BBBBB', '.....'],
+    ['.....', 'BBBBB', 'BBBBB', '.....'],
+    ['.P.P.', '.B.B.', '.....', '.....'],
+    ['.....', '.B.B.', '.....', '.....'],
+  ],
+  { B: '#a08870', C: '#f6f1e6', P: '#e0a0a8', E: '#1f1a16', K: '#1f1a16', F: '#6a4c9c' },
+);
+
+// Sillon : un ibis cultivateur (DA, HG-3), blanc, la queue noire, le cou et la tête noirs, le long bec noir qui se
+// courbe vers le bas, perché sur ses deux pattes fines ; un chapeau de paille sur la tête. Trois couleurs.
+const SILLON = fromLayers(
+  [
+    ['.....', '.K.K.', '.....', '.....'],
+    ['.....', '.K.K.', '.....', '.....'],
+    ['.WWW.', 'WWWWW', 'WWWWW', '.WWW.'],
+    ['.WWW.', 'WWWWW', 'WWWWW', '.KKK.'],
+    ['.....', '.WWW.', '.WWW.', '.....'],
+    ['..K..', '..K..', '.....', '.....'],
+    ['..K..', '.KKK.', '.....', '.....'],
+    ['.HHH.', 'HHHHH', '.HHH.', '.....'],
+    ['.....', '.HHH.', '.....', '.....'],
+  ],
+  { W: '#f2efe6', K: '#1f1a16', H: '#d8b860' },
+);
+
+// Typo : une souris imprimeuse (DA, HG-3), grise, deux grandes oreilles rondes, la truffe et la queue roses, un tablier
+// d'encre sombre. Quatre couleurs.
+const TYPO = fromLayers(
+  [
+    ['.G.G.', 'GGGGG', 'GGGGG', '.GGG.'],
+    ['.AAA.', 'GGGGG', 'GGGGG', '.GGG.'],
+    ['.AAA.', 'GGGGG', 'GGGGG', '..P..'],
+    ['.GPG.', 'GGGGG', 'GGGGG', '...P.'],
+    ['.....', 'GEGEG', 'GGGGG', '.....'],
+    ['.....', 'GGGGG', 'GGGGG', '.....'],
+    ['.....', 'GG.GG', '.....', '.....'],
+    ['.....', 'GG.GG', '.....', '.....'],
+  ],
+  { G: '#8c8a86', A: '#2e2622', P: '#e0a0a8', E: '#1f1a16' },
+);
+
+// Fret : un crabe grutier (DA, HG-3), large et bas, rouge, ses deux pinces levées devant, six pattes, deux yeux noirs
+// sur leurs tiges et un casque jaune entre eux. Trois couleurs.
+const FRET = fromLayers(
+  [
+    ['.......', 'R.....R', '.R...R.', 'R.....R', '.......'],
+    ['R.....R', '.RRRRR.', '.RRRRR.', '.RRRRR.', '.......'],
+    ['R.....R', '.RRRRR.', '.RRRRR.', '.RRRRR.', '.......'],
+    ['RR...RR', '..RRR..', '..RRR..', '.......', '.......'],
+    ['.......', '..RHR..', '...H...', '.......', '.......'],
+    ['.......', '..K.K..', '.......', '.......', '.......'],
+  ],
+  { R: '#c8502e', H: '#f2c944', K: '#1f1a16' },
+);
+
+// Mémo : une marmotte bibliothécaire assise (DA, HG-3), brun-gris, le ventre et le museau crème, deux incisives
+// blanches ; elle tient contre elle un livre de reliure bleu-vert. La tête, de trois cubes de large, se pose en ressaut
+// sur le corps, ses deux petites oreilles rentrées d'une colonne, les yeux au-dessus du museau, vus de la caméra (DA,
+// relecture des planches : plus une caisse ouverte). Cinq couleurs.
+const MEMO = fromLayers(
+  [
+    ['.B.B.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.LLL.', 'BCCCB', 'BBBBB', '.BBB.'],
+    ['.LLL.', 'BCCCB', 'BBBBB', '.BBB.'],
+    ['.....', 'BBBBB', 'BBBBB', '.....'],
+    ['.CWC.', '.BBB.', '.BBB.', '.....'],
+    ['..N..', '.EBE.', '.BBB.', '.....'],
+    ['.....', '.BBB.', '.BBB.', '.....'],
+    ['.....', '.B.B.', '.....', '.....'],
+  ],
+  { B: '#8a7058', C: '#e6d8bc', W: '#f6f1e6', N: '#1f1a16', E: '#1f1a16', L: '#2f6f74' },
+);
+
+// Jalon : une fourmi arpenteuse (DA, HG-3), à l'horizontale, ocre sable (DA : plus brun-rouge, la couleur de Pince,
+// la fourmi bricoleuse du Hangar des inventions), trois parties à la file (la tête aux deux antennes, le thorax étroit,
+// le gros abdomen derrière) sur six pattes d'un brun très sombre, plus doux que le noir des yeux (consultant Blocland,
+// HG-3 : en noir, pattes et antennes faisaient une masse plus grande que le corps) ; son jalon d'arpenteur planté, rayé
+// blanc et rouge par deux cubes, d'un cube plus haut que ses antennes (DA, relecture des planches : plus une cheminée ni un phare), à côté de son
+// abdomen, séparé d'elle d'une case. La caméra du Plateau la regarde de l'est (`viewYaw`, −40°), donc de profil, la
+// tête d'un côté, l'abdomen de l'autre ; la mairie se tient plus à l'est et au-delà de l'abdomen (x et y croissants) :
+// le jalon est du côté ouest (x = 0 du modèle), celui qui s'éloigne de la mairie, à hauteur de l'abdomen et non plus
+// au-delà, pour ne pas se lire comme une cheminée sur le toit de la mairie (consultant Blocland et DA, HG-3) ; il n'est
+// jamais entre elle et la caméra. De face (les portraits), derrière elle, à sa gauche.
+const JALON = fromLayers(
+  [
+    ['.......', '..A...A', '..A...A', '..A...A', 'P......', '.......'],
+    ['...RRR.', '...ARA.', '...ARA.', '...RRR.', 'P..RRR.', '....R..'],
+    ['...ERE.', '....R..', '....R..', '...RRR.', 'Q..RRR.', '...RRR.'],
+    ['...A.A.', '.......', '.......', '....R..', 'Q..RRR.', '....R..'],
+    ['..A...A', '.......', '.......', '.......', 'P......', '.......'],
+    ['.......', '.......', '.......', '.......', 'P......', '.......'],
+  ],
+  { R: '#c9a066', A: '#3a2a1a', E: '#1f1a16', P: '#f6f1e6', Q: '#d23a2e' },
+);
+
+// Fougère : un escargot jardinier (DA, SC-2), tourné vers la droite pour montrer sa coquille : la coquille brun roux et
+// sa spirale crème (un « C » ouvert vers le centre), le corps vert sauge sur son pied, deux antennes au bout brun, un
+// petit arrosoir crème posé devant lui. Trois couleurs (un appel de dessin par couleur).
+const FOUGERE = fromLayers(
+  [
+    ['GGGGGGGG.', 'GGGGGGGG.', 'GGGGGGGG.'],
+    ['.RRR..GGC', 'RRRRR.GG.', '.RRR..GG.'],
+    ['RCCCR.GGC', 'RRRRR.GG.', 'RRRRR....'],
+    ['RCRRR.GG.', 'RRRRR.GG.', 'RRRRR....'],
+    ['RCCCR....', 'RRRRR.GG.', 'RRRRR....'],
+    ['.RRR.....', '.RRR..RR.', '.RRR.....'],
+  ],
+  { G: '#8aa878', R: '#9a5530', C: '#efe2c4' },
+);
+
+// Bulle : une goutte d'eau vivante (DA, SC-2), bleu clair et mate, un reflet blanc, deux yeux sombres ; à son côté, une
+// éprouvette blanche, le fond bleu. Trois couleurs.
+const BULLE = fromLayers(
+  [
+    ['.BBB..', 'BBBBBB', 'BBBBB.', 'BBBBB.', '.BBB..'],
+    ['.BBB..', 'BBBBBW', 'BBBBB.', 'BBBBB.', '.BBB..'],
+    ['.KBK..', 'BBBBBW', 'BBBBB.', 'BBBBB.', '.BBB..'],
+    ['.BBW..', '.BBB..', '.BBB..', '.BBB..', '......'],
+    ['......', '..B...', '..B...', '..B...', '......'],
+    ['......', '......', '..B...', '......', '......'],
+  ],
+  { B: '#8ec8ea', W: '#f6f8fa', K: '#1f1a16' },
+);
+
+// Pince : une fourmi bricoleuse debout (DA, SC-2), brun-rouge, trois segments séparés par une taille fine (l'abdomen
+// derrière, le thorax et sa bavette de tablier de cuir, la tête), deux antennes coudées ; la clé plate grise levée à
+// sa droite. Haute et étroite, elle ne se confond pas avec Coco, ronde et rouge vif. Trois couleurs : les yeux
+// reprennent le cuir du tablier.
+const BOULON = fromLayers(
+  [
+    ['.....', '.N.N.', '.....', '.....'],
+    ['.....', '.N.N.', '.NNN.', '.NNN.'],
+    ['.....', '..N..', 'NNNNN', '.NNN.'],
+    ['.TTTM', 'NNNNN', '.NNN.', '.....'],
+    ['....M', '..N..', '.....', '.....'],
+    ['.NNNM', '.NNN.', '.....', '.....'],
+    ['.TNT.', '.NNN.', '.....', '.....'],
+    ['.....', '.N.N.', '.....', '.....'],
+    ['.....', 'N...N', '.....', '.....'],
+  ],
+  { N: '#8e3a26', T: '#5a3a22', M: '#9aa2aa' },
+);
+
+// Humus : un ver de terre laboureur dressé en S (DA, SC-3), rose-brun, des anneaux plus clairs ; à côté de lui, son
+// petit râteau debout, plus court que lui (relecture des captures : un manche de six cubes faisait lampadaire) : les
+// deux dents de fer au sol, la traverse, un manche de bois de trois cubes.
+const HUMUS = fromLayers(
+  [
+    ['.......', '....F.F', '.RA....'],
+    ['.......', '..R.FFF', '..R....'],
+    ['.......', '..A..W.', '.......'],
+    ['.......', '.RR..W.', '.......'],
+    ['.......', '.AR..W.', '.......'],
+    ['..A....', '..R....', '.......'],
+    ['.KRK...', '.RRR...', '.......'],
+    ['.......', '..R....', '.......'],
+  ],
+  { R: '#b07468', A: '#d8a49a', W: '#8a6236', F: '#5c6470', K: '#1f1a16' },
+);
+
+// Perle : un canard saunier (DA, SC-3), blanc, le bec et les pattes orangés ; son râteau à sel en bois debout à côté,
+// la traverse au sol, un manche de trois cubes, plus court que lui (relecture des captures), une colonne vide entre lui
+// et le canard : collé à son flanc, on croyait le canard perché sur un poteau (consultant de Blocland).
+const PERLE = fromLayers(
+  [
+    ['......B', '.O.O..B', '......B', '.......', '.......'],
+    ['.......', 'WWWWW.B', 'WWWWW..', 'WWWWW..', '.......'],
+    ['.......', 'WWWWW.B', 'WWWWW..', 'WWWWW..', '.......'],
+    ['.......', 'WWWWW.B', 'WWWWW..', 'WWWWW..', '.WWW...'],
+    ['.WOW...', '.WWW...', '.WWW...', '.......', '.......'],
+    ['.KWK...', '.WWW...', '.WWW...', '.......', '.......'],
+  ],
+  { W: '#f2efe6', O: '#e0902a', B: '#8a6236', K: '#1f1a16' },
+);
+
+// Rabot : un pic-vert menuisier (DA, SC-3), le dos vert, la crête rouge, un tablier de cuir, son rabot de bois à la main.
+const RABOT = fromLayers(
+  [
+    ['.......', '.K.K...', '.......', '.......', '.......', '.......'],
+    ['.TTT...', 'GGGGG..', 'GGGGG..', 'GGGGG..', '..G....', '..G....'],
+    ['.TTT.WW', 'GGGGGWW', 'GGGGG..', 'GGGGG..', '..G....', '..G....'],
+    ['.TTT.W.', 'GGGGG..', 'GGGGG..', 'GGGGG..', '.......', '.......'],
+    ['.......', 'GGGGG..', 'GGGGG..', 'GGGGG..', '.......', '.......'],
+    ['.GKG...', '.GGG...', '.GGG...', '.......', '.......', '.......'],
+    ['.KGK...', '.GGG...', '.GGG...', '..C....', '.......', '.......'],
+    ['.......', '.CCC...', '.CCC...', '.......', '.......', '.......'],
+  ],
+  { G: '#5e8a3a', C: '#c0392b', T: '#a87a4a', W: '#8a6236', K: '#1f1a16' },
+);
+
+// Nectar : un colibri butineur (DA, SC-3), posé, de profil (son flanc côté y = 0, celui de la caméra de la Source) :
+// le corps vert, la gorge rose sur le devant, la petite tête et ses yeux sur les flancs, le long bec fin de deux cubes
+// brun bois qui avance ; les ailes bleu-vert levées en V au-dessus du dos, la queue derrière. Repris de zéro à la
+// relecture des captures (DA, consultant de Blocland) : plus de tête carrée de face, plus de bouche.
+const NECTAR = fromLayers(
+  [
+    ['........', '....B.B.', '........'],
+    ['....GGG.', '....GGG.', '....GGG.'],
+    ['...PGGG.', '...PGGGG', '...PGGG.'],
+    ['...PGGG.', '...PGGG.', '...PGGG.'],
+    ['..GG....', 'BBGG.V..', '..GG....'],
+    ['..KG....', '..GGV.V.', '..KG....'],
+    ['........', '...V...V', '........'],
+  ],
+  { G: '#3a9a6a', P: '#e07aa0', V: '#3f8fb8', B: '#8a6236', K: '#1f1a16' },
+);
+
+// Radar : un suricate guetteur debout (DA, SC-3), couleur sable, le ventre clair plaqué sur le devant du corps (relecture
+// des captures : détaché devant lui, il se lisait comme un poteau), le masque et les oreilles sombres, les pattes de
+// devant écartées ; la queue au sol, son bout sombre.
+const RADAR = fromLayers(
+  [
+    ['.....', '.S.S.', '.....', '..S..', '..S..', '..S..'],
+    ['.....', '.SCS.', '.SSS.', '.....', '.....', '..D..'],
+    ['.....', '.SCS.', '.SSS.', '.....', '.....', '.....'],
+    ['.....', '.SCS.', '.SSS.', '.....', '.....', '.....'],
+    ['S...S', 'SSCSS', '.SSS.', '.....', '.....', '.....'],
+    ['.....', '.SCS.', '.SSS.', '.....', '.....', '.....'],
+    ['.SDS.', '.SSS.', '.SSS.', '.....', '.....', '.....'],
+    ['.DSD.', '.SSS.', '.SSS.', '.....', '.....', '.....'],
+    ['.....', '.D.D.', '.....', '.....', '.....', '.....'],
+  ],
+  { S: '#c8a878', C: '#ece0c4', D: '#5a4030', K: '#1f1a16' },
+);
+
+// Manivelle : un lémurien maquettiste (DA, SC-3), gris, le ventre clair, le masque sombre, sa longue queue annelée
+// dressée derrière lui ; la manivelle de fer à la main.
+const MANIVELLE = fromLayers(
+  [
+    ['......', '.G.G..', '......', '..W...', '......'],
+    ['..W...', '.GGG..', '.GGG..', '..W...', '......'],
+    ['..W...', '.GGG..', '.GGG..', '......', '..W...'],
+    ['..W..F', '.GGGGF', '.GGG..', '......', '..D...'],
+    ['.....F', '.GGG..', '.GGG..', '......', '..W...'],
+    ['.GDG..', '.GGG..', '.GGG..', '......', '..D...'],
+    ['.KGK..', '.GGG..', '.GGG..', '......', '..W...'],
+    ['......', 'D...D.', '......', '......', '..D...'],
+  ],
+  { G: '#8e8c88', W: '#f2efe6', D: '#2e2c2a', F: '#5c6470', K: '#1f1a16' },
+);
+
+// Olive : un koala soigneur (DA, SC-3), gris, les grandes oreilles rondes, la truffe sombre, un tablier blanc ; sa trousse
+// de toile à la main, sans croix.
+const OLIVE = fromLayers(
+  [
+    ['......', '.G.G..', '......'],
+    ['.WWWTT', '.GGGTT', '.GGG..'],
+    ['.WWWTT', '.GGGTT', '.GGG..'],
+    ['.WWW..', '.GGG..', '.GGG..'],
+    ['.WWW..', '.GGG..', '.GGG..'],
+    ['.GNG..', '.GGG..', '.GGG..'],
+    ['GKGKG.', 'GGGGG.', 'GGGGG.'],
+    ['W...W.', 'G...G.', 'G...G.'],
+  ],
+  { G: '#9a9a96', W: '#f2f0ea', N: '#3a3634', T: '#c8b48a', K: '#1f1a16' },
+);
+
+// Virage : un tatou rouleur (DA, SC-3), sa carapace en bandes, la tête pointue rose, la petite queue derrière.
+const VIRAGE = fromLayers(
+  [
+    ['.....', 'P...P', '.....', 'P...P', '.....', '.....', '..A..'],
+    ['APPPA', 'BBBBB', 'AAAAA', 'BBBBB', 'AAAAA', '..A..', '.....'],
+    ['AKPKA', 'BBBBB', 'AAAAA', 'BBBBB', 'AAAAA', '.....', '.....'],
+    ['.APA.', '.BBB.', '.AAA.', '.BBB.', '.AAA.', '.....', '.....'],
+  ],
+  { A: '#a8845e', B: '#6e5238', P: '#e0b8a0', K: '#1f1a16' },
+);
+
+// Navette : une chenille tisseuse vert tendre (DA, SC-3), couchée de profil (son flanc côté y = 0) : six anneaux au sol,
+// clairs et foncés en alternance, la tête relevée de deux cubes au bout, l'œil sur le flanc, deux antennes ; devant elle,
+// au ras du sol, sa petite navette de bois et sa bobine de fil (relecture des captures : dressée, elle se lisait comme
+// une colonne). Dans le monde, tournée de flanc vers la caméra de la Ruche (`QUARTS_DE_TOUR_DE_LA_CREATURE`).
+const NAVETTE = fromLayers(
+  [
+    ['.WWW.F.', 'VLVLVLV', 'VLVLVLV'],
+    ['.......', 'VLVLVLV', 'VLVLVLV'],
+    ['.......', 'K......', 'V......'],
+    ['.......', 'V......', 'V......'],
+    ['.......', 'K......', 'K......'],
+  ],
+  { V: '#9ac860', L: '#c8e48e', W: '#8a6236', F: '#e8e0cc', K: '#1f1a16' },
+);
+
+// Voix : un panda roux délégué, debout sur ses pattes de derrière (jamais assis comme Rouxel, le renard) : roux, le
+// masque blanc (les joues, le museau, les sourcils), la truffe et les yeux sombres, deux oreilles rondes bordées de
+// blanc, les pattes et le bas du ventre brun sombre ; sa grande queue annelée, roux et fauve, se dresse derrière lui. Il
+// lève une patte droite au-dessus de la tête pour prendre la parole, un bloc d'écart avec l'oreille, la paume ouverte,
+// fauve, tournée vers l'élève ; devant sa poitrine, il tient son carnet de délégué, sans écharpe ni insigne (DA,
+// relecture des captures emc-2, passe 2 : la patte était à l'horizontale, le carnet ne se voyait pas). Le carnet est
+// posé à plat, sans rotation : une plaque de deux cubes de large, trois de profondeur, un de haut, la couverture bleu
+// nuit sur le dessus, ce que voit la caméra haute, les pages blanc cassé sur ses tranches ; à hauteur de poitrine, deux
+// cubes au-dessus du sol, contre le pelage roux, juste sous le masque blanc, sans patte sombre à côté (passe 3 : en bloc
+// clair de 2 × 2 au ras du sol, il se lisait comme une pierre ; passe 4 : debout, il se lisait comme un pilier ou une
+// porte, la tranche ne se voyait pas, et la nuit il se fondait dans le sol sombre). Il dépasse de trois rangées devant
+// le corps, ce qui porte l'emprise de 7 × 5 à 7 × 7 cases ; il ne cache pas la truffe, un cube plus haut. Pas de
+// demi-cube ni d'inclinaison dans les créatures de Blocland. Six couleurs.
+const VOIX = fromLayers(
+  [
+    ['.......', '.......', '.......', '.D.D...', '.D.D...', '.......', '.......'],
+    ['.......', '.......', '.......', 'DDDD...', '.RRR...', '..R....', '.RRR...'],
+    ['.PP....', '.PP....', '.PP....', '.RRRDD.', '.RRR...', '.......', '.LLL...'],
+    ['.......', '.......', '.......', 'RWDWR.D', 'RRRRR..', 'RRRRR..', '.RRR...'],
+    ['.......', '.......', '.......', 'WDRDW.D', 'RRRRR..', 'RRRRR..', '.LLL...'],
+    ['.......', '.......', '.......', 'RWRWR.D', 'RRRRR..', 'RRRRR..', '..R....'],
+    ['.......', '.......', '.......', 'W...W.D', 'R...R..', '.......', '.......'],
+    ['.......', '.......', '......L', '......D', '.......', '.......', '.......'],
+    ['.......', '.......', '......L', '.......', '.......', '.......', '.......'],
+  ],
+  {
+    R: '#b8532c',
+    W: '#f2ebe0',
+    D: '#3a2622',
+    L: '#dca468',
+    // Le carnet, à plat : les pages blanc cassé sur les tranches, la couverture bleu nuit sur le dessus.
+    P: { color: '#e5ebe3', top: '#142b38' },
+  },
+);
+
+// Mie : un capybara boulanger, à quatre pattes, de profil, la tête vers les x croissants : le corps en tonneau brun
+// roux, la grosse tête carrée au museau sombre, deux petites oreilles, les yeux sur les flancs de la tête ; sa toque
+// blanche de boulanger sur la tête et, sur le dos, un pain doré qu'il porte au fournil. Sans tablier ni insigne. Sept de
+// long, quatre de large, sept de haut. Cinq couleurs, les yeux compris (proposition de l'artiste technique 3D).
+const MIE = fromLayers(
+  [
+    ['.D..D..', '.......', '.......', '.D..D..'],
+    ['BBBBB..', 'BBBBB..', 'BBBBB..', 'BBBBB..'],
+    ['BBBBBB.', 'BBBBBBD', 'BBBBBBD', 'BBBBBB.'],
+    ['.BBBBEB', '.BBBBBB', '.BBBBBB', '.BBBBEB'],
+    ['....D..', '.PP.BB.', '.PP.BB.', '....D..'],
+    ['.......', '....TT.', '....TT.', '.......'],
+    ['.......', '...TTTT', '...TTTT', '.......'],
+  ],
+  {
+    B: '#8a5c3a',
+    D: '#3e2a1e',
+    // L'œil, sur le flanc de la tête : sombre de côté, le dessus brun (vu d'en haut, la tête reste unie).
+    E: { color: '#1f1a16', top: '#8a5c3a' },
+    P: '#d39a4c',
+    T: '#f6f2ea',
+  },
+);
+
+// Lyre : un gecko conteur, debout sur ses pattes de derrière, de face : jaune d'ocre semé de taches brunes, le ventre
+// clair, la grosse tête ronde aux yeux sur les côtés ; sa queue épaisse posée au sol derrière lui, en crosse ; les pieds
+// sous le corps, les doigts en avant (le corps les touche par une face). Il tient de la main droite sa petite lyre de
+// bois, tournée vers l'élève. Carrée, trois sur trois, elle se lisait de face comme un cadre, une porte ou un tableau
+// (DA, relecture des captures emc-5e-3) : la caisse étroite en bas, posée dans la main, deux bras plus écartés qui
+// montent, la traverse, dont les bouts des bras dépassent comme deux cornes, et entre eux trois cordes de laiton plus
+// claires, d'un clair et d'un mi-clair en alternance pour qu'elles se distinguent sans vide entre elles. Ni casque ni
+// couronne. Neuf de large, cinq de profond, neuf de haut. Sept couleurs, les yeux compris (proposition de l'artiste
+// technique 3D).
+const LYRE = fromLayers(
+  [
+    ['Y..Y.....', 'Y..Y.....', '.........', '.YY......', '..Y......'],
+    ['.........', 'YWWY.....', 'YYYY.....', '.Y.......', '.........'],
+    ['.........', 'YWWY.....', 'SYYS.....', '.........', '.........'],
+    ['...YYLLL.', 'YWWY.....', 'YYYY.....', '.........', '.........'],
+    ['....LCKCL', '.YY......', '.SS......', '.........', '.........'],
+    ['.YY.LCKCL', 'EYYE.....', 'YSYY.....', '.........', '.........'],
+    ['....LCKCL', 'YYYY.....', '.YY......', '.........', '.........'],
+    ['....LLLLL', '.........', '.........', '.........', '.........'],
+    ['....L...L', '.........', '.........', '.........', '.........'],
+  ],
+  {
+    Y: '#d8aa4a',
+    S: '#6e4a26',
+    W: '#f0e2b8',
+    E: { color: '#1f1a16', top: '#d8aa4a' },
+    L: '#8a5a2e',
+    // Les cordes : un laiton clair, et la corde du milieu un ton plus soutenu.
+    C: '#f6e8b4',
+    K: '#e2c27a',
+  },
+);
+
+// Loquet : un pangolin portier, debout sur ses pattes de derrière (le pangolin marche ainsi), de profil, la tête vers
+// les x croissants : le corps couvert d'écailles brun d'olive, en rangées décalées d'un bloc d'une rangée à l'autre,
+// une écaille sur deux plus sombre ; le ventre et le museau long et fin de peau claire ; la queue large et plate posée
+// au sol derrière lui, sur toute sa largeur (DA, captures emc-4e-3e-1). Il tient de sa patte, du côté de l'élève, la
+// grande clé de laiton de la porte, debout, son anneau en haut, son panneton en bas (un outil, jamais une arme). Ni
+// casquette ni uniforme ni insigne. Huit de long, quatre de large, neuf de haut. Six couleurs, les yeux compris
+// (proposition de l'artiste technique 3D).
+const LOQUET = fromLayers(
+  [
+    ['OS......', 'SO.DD...', 'OS.DD...', 'SO......'],
+    ['........', '.OSSS...', '.SOSS...', '........'],
+    ['...OS.KK', '..OSSF..', '..SOSF..', '...OS...'],
+    ['...SODK.', '..SOSF..', '..OSSF..', '...SO...'],
+    ['...OS.K.', '..OSOF..', '..SOSF..', '...OS...'],
+    ['......KK', '..SOSS..', '..OSOS..', '...SS...'],
+    ['........', '...SSFFF', '...SSFFF', '........'],
+    ['........', '...OSEF.', '...OSEF.', '........'],
+    ['........', '...SO...', '...SO...', '........'],
+  ],
+  {
+    S: '#7e6440',
+    O: '#54422a',
+    F: '#e0bfa0',
+    D: '#3e2a1e',
+    // L'œil, sur le côté de la tête : sombre de côté, le dessus de peau claire.
+    E: { color: '#1f1a16', top: '#e0bfa0' },
+    K: '#d6b04a',
+  },
+);
+
+// Figue : un âne porteur d'eau, à quatre pattes, de profil, la tête vers les x croissants, du côté d'où la caméra de
+// la Colonnade le regarde : la tête large, la face vers elle, le museau clair au milieu, un œil de chaque côté, les deux
+// longues oreilles dressées aux deux bords de la tête, écartées, leur bout sombre, la crinière sombre derrière (DA,
+// captures emc-4e-3e-1) ; gris, les sabots et la queue sombres ; sur le dos, le bât : une sangle sombre et, de chaque
+// côté, une jarre de terre cuite, l'eau au col. Sans harnais ni ornement. Neuf de long, quatre de large, neuf de haut.
+// Six couleurs, les yeux compris (proposition de l'artiste technique 3D).
+const FIGUE = fromLayers(
+  [
+    ['.........', '.D...D...', '.D...D...', '.........'],
+    ['.........', '.G...G...', '.G...G...', '.........'],
+    ['..JJ.....', 'DGGGGG...', '.GGGGG...', '..JJ.....'],
+    ['..JJ.....', '.GGGGGG..', '.GGGGGG..', '..JJ.....'],
+    ['..O......', '..D...G..', '..D...G..', '..O......'],
+    ['.......G.', '......GGM', '......GGM', '.......G.'],
+    ['.......GE', '......DGG', '......DGG', '.......GE'],
+    ['.......G.', '.........', '.........', '.......G.'],
+    ['.......D.', '.........', '.........', '.......D.'],
+  ],
+  {
+    G: '#8c8a86',
+    M: '#dcd6cc',
+    D: '#3e3634',
+    E: { color: '#1f1a16', top: '#8c8a86' },
+    J: '#c4703e',
+    // Le col de la jarre, l'eau dessus.
+    O: { color: '#c4703e', top: '#6ea8c8' },
+  },
+);
+
+// Brio : un macareux orateur, debout, de profil, le bec vers les x croissants : le dos, les ailes et la calotte noirs, le
+// plastron et la face blancs, le gros bec orange au bout rouge, les pattes orange. Il se tient droit, prêt à prendre la
+// parole, sans pupitre (le pupitre est sa commande) ni insigne. Sept de long, quatre de large, huit de haut. Cinq
+// couleurs, les yeux compris (proposition de l'artiste technique 3D).
+const BRIO = fromLayers(
+  [
+    ['.......', '..OOO..', '..OOO..', '.......'],
+    ['..KW...', '.KKWW..', '.KKWW..', '..KW...'],
+    ['..KW...', '.KKWW..', '.KKWW..', '..KW...'],
+    ['.KKW...', '.KKWW..', '.KKWW..', '.KKW...'],
+    ['..K....', '.KKWW..', '.KKWW..', '..K....'],
+    ['.......', '..KWW..', '..KWW..', '.......'],
+    ['.......', '..KWEOR', '..KWEOR', '.......'],
+    ['.......', '..KKK..', '..KKK..', '.......'],
+  ],
+  {
+    K: '#2a2a30',
+    W: '#f2efe6',
+    O: '#e8742a',
+    R: '#c8402a',
+    // L'œil, sur le côté de la face blanche.
+    E: { color: '#1f1a16', top: '#f2efe6' },
+  },
+);
+
+// Stylet : une huppe scribe, de profil, le bec vers les x croissants : le corps rose orangé, les ailes et la queue
+// rayées de noir et de blanc, la huppe orange aux pointes noires, le long bec fin et sombre. Du côté de l'élève, elle
+// tient debout sa tablette de cire, la cire claire devant, le cadre de bois dessus. Neuf de long, quatre de large, neuf
+// de haut. Huit couleurs, les yeux compris (proposition de l'artiste technique 3D).
+const STYLET = fromLayers(
+  [
+    ['.........', '...D.D...', '...D.D...', '.........'],
+    ['.........', '...D.D...', '...D.D...', '.........'],
+    ['......T..', '.BBPPP...', '.BBPPP...', '.........'],
+    ['..WBWBT..', 'BWBPPPP..', 'BWBPPPP..', '..WBWB...'],
+    ['..BWBWT..', '.BWPPPP..', '.BWPPPP..', '..BWBW...'],
+    ['.........', '....PPP..', '....PPP..', '.........'],
+    ['.........', '....PEPLL', '....PEPLL', '.........'],
+    ['.........', '..CCCC...', '..CCCC...', '.........'],
+    ['.........', '..BCBC...', '..BCBC...', '.........'],
+  ],
+  {
+    P: '#d89a6a',
+    B: '#1f1c1a',
+    W: '#f2ece0',
+    D: '#4a4440',
+    C: '#e08a3a',
+    L: '#3a3430',
+    // La tablette : la cire de face, le cadre de bois dessus.
+    T: { color: '#e0c060', top: '#8a5a34' },
+    E: { color: '#1f1a16', top: '#d89a6a' },
+  },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': MOUSSO,
   'french-6e-letter-confusion': TUNEL,
@@ -451,6 +976,30 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-3e-close-reading': ASTRA,
   'english-6e-vocabulary': ROBIN,
   'english-6e-grammar': TICK,
+  'history-6e-antiquity': SILEX,
+  'geography-6e-living': BOUSSOLE,
+  'history-5e-middle-ages': VELIN,
+  'geography-5e-resources': SILLON,
+  'history-4e-revolutions': TYPO,
+  'geography-4e-globalization': FRET,
+  'history-3e-twentieth-century': MEMO,
+  'geography-3e-france': JALON,
+  'life-earth-sciences-6e-living-world': FOUGERE,
+  'physics-chemistry-6e-matter-energy': BULLE,
+  'technology-6e-objects': BOULON,
+  'civics-6e-democratic-society': VOIX,
+  'life-earth-sciences-5e-active-planet': HUMUS,
+  'physics-chemistry-5e-matter-universe': PERLE,
+  'technology-5e-design': RABOT,
+  'civics-5e-equality-solidarity': MIE,
+  'life-earth-sciences-4e-cells-evolution': NECTAR,
+  'physics-chemistry-4e-signals-circuits': RADAR,
+  'technology-4e-modeling': MANIVELLE,
+  'civics-4e-rights-freedoms': LOQUET,
+  'civics-3e-democratic-life': BRIO,
+  'life-earth-sciences-3e-human-body': OLIVE,
+  'physics-chemistry-3e-motion-energy': VIRAGE,
+  'technology-3e-digital': NAVETTE,
   'english-5e-vocabulary': PUDDING,
   'english-5e-grammar': MOUSTACHE,
   'lv2-5e-introductions': LINA,
@@ -460,4 +1009,7 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'english-3e-comprehension': ECHO,
   'english-3e-grammar': KNIGHT,
   'lv2-3e-travel': TIMBRE,
+  'lca-5e-legends': LYRE,
+  'lca-4e-cities': FIGUE,
+  'lca-3e-ideas': STYLET,
 };

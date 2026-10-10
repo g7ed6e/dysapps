@@ -2,8 +2,9 @@
 // île de la matière la moins jouée, GD-7), ou pour le Bloc-Navire (le bâtiment de l'île se pose tout seul, une partie par
 // mission réussie : GD-6). Code pur, partagé par le panneau d'île et la prochaine destination. Les noms des archipels
 // viennent de l'appelant (`noms` : ceux de l'univers affiché, GD-1).
-import { BIOMES, blockCount, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
-import { LV2_LABELS, lv2Courante, type Lv2Choice } from '../../core/settings';
+import { thePlace } from './placeArticle';
+import { BIOMES, blockCount, estLieuDOption, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
+import { LCA_LABELS, LV2_LABELS, lcaCourante, lv2Courante, type Lv2Choice } from '../../core/settings';
 import type { GameState } from '../engine';
 import { canLaunch, planStatus } from '../engine';
 import {
@@ -14,7 +15,10 @@ import {
   conditionMet,
   isArchipelagoReached,
   otherEnd,
-  pathTo,
+  linkKind,
+  linkLength,
+  nearestDeparture,
+  remainingPath,
   payableBlocks,
   previousArchipelago,
   reachableIslands,
@@ -29,21 +33,30 @@ import { VEHICLE_NAME, beatenGuardians, stageAt, stageTo } from './vehicle';
 
 type Matiere = BiomeDef['subject'];
 
-/** L'ordre des matières à égalité : celui de docs/contenu/archipel.md (français, maths, anglais, puis la LV2). */
-const ORDRE_DES_MATIERES: Matiere[] = ['french', 'maths', 'english', 'lv2'];
+/**
+ * L'ordre des matières à égalité : celui de docs/contenu/archipel.md (français, maths, anglais, histoire-géographie, SVT,
+ * physique-chimie, technologie, EMC, puis la LV2 et le latin ou grec).
+ */
+const ORDRE_DES_MATIERES: Matiere[] = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'civics', 'lv2', 'lca'];
+
+/** Les matières dont on mesure la part jouée (toutes sauf les lieux d'option, la LV2 et le latin ou grec, à part : on peut ne pas les avoir ; GD-13). */
+const MATIERES_COMPTEES = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'civics'] as const;
+
+/** Les matières des lieux d'option (GD-13), hors de la part jouée. */
+type MatiereDOption = 'lv2' | 'lca';
 
 /**
  * Combien chaque matière est jouée dans une classe (GD-7, mesure choisie par le mainteneur le 3 octobre 2026) : les
  * missions réussies au moins une fois sur ses îles (`missionsTerminees` : ni le défi du Gardien, ni le portail, ni le
  * mode bâtisseur), divisées par le nombre de ses îles dans la classe, pour qu'une matière n'ait pas l'air moins jouée
- * parce qu'elle a moins d'îles. La LV2 n'est pas comptée : ses îles passent après les autres. Jamais la réussite (les
- * étoiles) : une matière moins réussie n'est pas montrée du doigt.
+ * parce qu'elle a moins d'îles. Les lieux d'option (la LV2, le latin ou grec) ne sont pas comptés : leurs îles passent
+ * après les autres (GD-13). Jamais la réussite (les étoiles) : une matière moins réussie n'est pas montrée du doigt.
  */
-export function partJouee(progress: Record<string, { attempts: number }>, classe: ArchipelagoId): Record<Exclude<Matiere, 'lv2'>, number> {
-  const part = { french: 0, maths: 0, english: 0 };
+export function partJouee(progress: Record<string, { attempts: number }>, classe: ArchipelagoId): Record<Exclude<Matiere, MatiereDOption>, number> {
+  const part = { french: 0, maths: 0, english: 0, 'history-geography': 0, 'life-earth-sciences': 0, 'physics-chemistry': 0, technology: 0, civics: 0 };
   // Un seul passage sur la progression (une sauvegarde pleine compte des centaines d'exercices) : chaque île de la
   // classe ne relit que les siens (`missionsTerminees` départage ensuite les lieux dont le nom en prolonge un autre).
-  const iles = BIOMES.filter((b) => b.classe === classe && b.subject !== 'lv2');
+  const iles = BIOMES.filter((b) => b.classe === classe && !estLieuDOption(b));
   const parIle = new Map<BiomeId, Record<string, { attempts: number }>>(iles.map((b) => [b.id, {}]));
   const marque = `-${classe}-`;
   for (const ex in progress) {
@@ -54,7 +67,7 @@ export function partJouee(progress: Record<string, { attempts: number }>, classe
       if (siens && ex.startsWith(`${b.id}-`)) siens[ex] = p;
     }
   }
-  for (const matiere of ['french', 'maths', 'english'] as const) {
+  for (const matiere of MATIERES_COMPTEES) {
     const deLaMatiere = iles.filter((b) => b.subject === matiere);
     if (deLaMatiere.length) part[matiere] = deLaMatiere.reduce((n, b) => n + missionsTerminees(parIle.get(b.id) ?? {}, b.id), 0) / deLaMatiere.length;
   }
@@ -96,9 +109,9 @@ function arriveeDe(b: BridgeDef, open: Set<BiomeId>, depuis?: BiomeId): BiomeId 
 
 /**
  * Les ouvrages proposés, le suggéré d'abord (GD-7, point 3) ; le même tri pour la prochaine destination et pour le seul
- * « Construire » principal du panneau d'une île. D'abord ceux qui ouvrent une île ; les îles de LV2 après les autres
- * (elles restent en bout de chemin) ; puis ceux qu'on peut payer ; puis l'île de la matière la moins jouée (`partJouee`) ;
- * à égalité, l'ordre des matières, puis le moins cher, puis l'ordre de `BRIDGES`. Déduit de la sauvegarde seule, sans
+ * « Construire » principal du panneau d'une île. D'abord ceux qui ouvrent une île ; les lieux d'option (LV2, latin ou
+ * grec) après les autres (ils restent en bout de chemin, GD-13) ; puis ceux qu'on peut payer ; puis l'île de la matière la moins jouée (`partJouee`) ;
+ * à égalité, l'ordre des matières, puis la plus courte (GD-9 : toutes coûtent le même prix), puis l'ordre de `BRIDGES`. Déduit de la sauvegarde seule, sans
  * hasard ni horloge : la suggestion ne change pas tant que l'élève n'a rien fait.
  */
 export function ouvragesParSuggestion(state: GameState, ouvrages: BridgeDef[], depuis?: BiomeId, open = ouvertes(state)): BridgeDef[] {
@@ -106,14 +119,15 @@ export function ouvragesParSuggestion(state: GameState, ouvrages: BridgeDef[], d
   const cle = (b: BridgeDef) => {
     const arrivee = getBiome(arriveeDe(b, open, depuis));
     const matiere = arrivee?.subject ?? 'lv2';
-    const part = matiere === 'lv2' ? 0 : partsDe(state.progress, archipelagoOf(b.from).classe)[matiere];
+    const option = matiere === 'lv2' || matiere === 'lca';
+    const part = option ? 0 : partsDe(state.progress, archipelagoOf(b.from).classe)[matiere];
     return [
       arrivee && !open.has(arrivee.id) ? 0 : 1,
-      matiere === 'lv2' ? 1 : 0,
+      option ? 1 : 0,
       have >= b.cost ? 0 : 1,
       part,
       ORDRE_DES_MATIERES.indexOf(matiere),
-      b.cost,
+      linkLength(b, state.world.links) ?? Number.MAX_SAFE_INTEGER,
       BRIDGES.indexOf(b),
     ];
   };
@@ -127,10 +141,24 @@ export function ouvragesParSuggestion(state: GameState, ouvrages: BridgeDef[], d
     .map(({ b }) => b);
 }
 
-/** « de français », « de maths », « d'anglais », « d'espagnol » : la matière d'une île, dans « une île de… ». */
+/**
+ * « de français », « de maths », « d'anglais », « d'histoire-géo », « de SVT », « de physique-chimie », « de technologie »,
+ * « d'EMC », « d'espagnol », « de latin » : la matière d'une île, dans « une île de… ».
+ */
 function deLaMatiere(matiere: Matiere, lv2: Lv2Choice): string {
-  const mot = { french: 'français', maths: 'maths', english: 'anglais', lv2: LV2_LABELS[lv2].toLowerCase() }[matiere];
-  return /^[aeiouy]/.test(mot) ? `d’${mot}` : `de ${mot}`;
+  const mot = {
+    french: 'français',
+    maths: 'maths',
+    english: 'anglais',
+    'history-geography': 'histoire-géo',
+    'life-earth-sciences': 'SVT',
+    'physics-chemistry': 'physique-chimie',
+    technology: 'technologie',
+    civics: 'EMC',
+    lv2: LV2_LABELS[lv2].toLowerCase(),
+    lca: lcaCourante() === 'none' ? 'latin ou grec' : LCA_LABELS[lcaCourante()].toLowerCase(),
+  }[matiere];
+  return /^[aeiouyhé]/i.test(mot) ? `d’${mot}` : `de ${mot}`;
 }
 
 /**
@@ -140,12 +168,12 @@ function deLaMatiere(matiere: Matiere, lv2: Lv2Choice): string {
  */
 function objectifDOuvrage(state: GameState, b: BridgeDef, depuis: BiomeId, lv2: Lv2Choice, open = ouvertes(state)): Goal & { ready: boolean; ouvrage: string } {
   const arrivee = getBiome(otherEnd(b, depuis));
-  const what = ouvrageName(b.kind, arrivee?.name ?? b.to);
+  const what = ouvrageName(linkKind(b, state.world.links), arrivee?.name ?? b.to);
   const raison = arrivee && !open.has(arrivee.id) ? `. Il ouvre une île ${deLaMatiere(arrivee.subject, lv2)}` : '';
   const have = Math.min(b.cost, payableBlocks(state.stock));
   const left = b.cost - have;
   return {
-    text: `${left > 0 ? `Encore ${left} bloc${left > 1 ? 's' : ''} pour ${what}` : `Tu peux construire ${what}`}${raison}`,
+    text: `${left > 0 ? `Encore ${left} bloc${left > 1 ? 's' : ''} pour ${what}` : `Tu peux poser ${what}`}${raison}`,
     have,
     need: b.cost,
     ready: left === 0,
@@ -191,10 +219,10 @@ function chercherLOuvrageSuggere(state: GameState, classe: ArchipelagoId, lv2: L
   return { b, ile: open.has(b.from) ? b.from : b.to };
 }
 
-/** « le pont vers la Mine », « l'escalier taillé vers le Carrefour » : le nom d'un ouvrage, le même partout. */
+/** « le pont vers la Mine », « l'escalier taillé vers le Carrefour » : le nom d'un ouvrage, le même partout ; `to`, le nom du lieu, sans article. */
 export function ouvrageName(kind: keyof typeof KIND_NAME, to: string): string {
   const name = KIND_NAME[kind].toLowerCase();
-  return `${/^[aeiouy]/.test(name) ? 'l’' : 'le '}${name}${to ? ` vers ${to}` : ' '}`;
+  return `${/^[aeiouy]/.test(name) ? 'l’' : 'le '}${name}${to ? ` vers ${thePlace(to)}` : ' '}`;
 }
 
 /** Le prochain objectif d'une île : une phrase, et une jauge (`have` sur `need`) quand il se compte. */
@@ -283,14 +311,13 @@ export function nextGoal(state: GameState, island: BiomeId, noms: NomsArchipels,
  */
 export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): string {
   const bridges = state.world.links;
-  const open = reachableIslands(bridges);
   const world = { progress: state.progress, plans: state.world.parts };
   // Une île d'un autre archipel : il faut le Bloc-Navire.
   const archipelago = archipelagoOf(island);
   if (!isArchipelagoReached(archipelago.classe, bridges)) {
     const left = remainingVoyages(island, bridges);
     const stage = stageTo(left[0].toClasse)!;
-    const port = getBiome(stage.biome)?.name ?? stage.biome;
+    const port = thePlace(getBiome(stage.biome)?.name ?? stage.biome);
     const head = `Pas si vite ! Mon île est dans les ${noms[archipelago.classe]}`;
     if (left.length > 1) return `${head}. Va d’abord jusqu’aux ${noms[previousArchipelago(archipelago.classe)!.classe]} avec ${VEHICLE_NAME}.`;
     const travel = archipelago.travel === 'mer' ? 'de la mer' : archipelago.travel === 'airs' ? 'des airs' : 'du ciel';
@@ -304,26 +331,39 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
     const n = status.total - status.done;
     return `${head}, de l’autre côté ${travel}. Finis ${VEHICLE_NAME} sur ${port} : encore ${n} bloc${n > 1 ? 's' : ''}.`;
   }
-  const here = buildableBridges(bridges, island, world);
-  if (here.length) {
-    const b = here.reduce((a, c) => (c.cost < a.cost ? c : a));
+  // La liaison depuis le lieu relié le plus proche (GD-9) : le même départ que « Relier » et le fantôme du monde.
+  const b = nearestDeparture(island, bridges);
+  if (b) {
     const from = getBiome(otherEnd(b, island))?.name ?? '';
-    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b, from)}`;
-    return `Pas si vite ! Pour venir ici, construis ${ouvrageName(b.kind, '')}depuis ${from} : ${b.cost} blocs.${cond}`;
+    const kind = linkKind(b, bridges);
+    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(kind, from)}`;
+    return `Pas si vite ! Pour venir ici, pose ${ouvrageName(kind, '')}depuis ${thePlace(from)} : ${b.cost} blocs.${cond}`;
   }
-  // Trop loin : la première île fermée sur le chemin est celle à ouvrir d'abord.
-  const path = pathTo(island);
-  const next = path.map((b) => (open.has(b.from) ? b.to : b.from)).find((id) => !open.has(id));
-  const name = next && next !== island ? getBiome(next)?.name : undefined;
-  return name
-    ? `Pas si vite ! Ouvre d’abord ${name} : de là, un ouvrage mène jusqu’ici.`
-    : 'Pas si vite ! Construis d’abord un chemin jusqu’à mon île, puis reviens me voir.';
+  return noDirectLinkHint(island, bridges);
 }
+
+/**
+ * Ce que dit un lieu fermé qu'aucune liaison directe n'atteint (GD-9) : l'île à relier d'abord, sur le plus court
+ * chemin (« Relie d'abord X. De là, un ouvrage mène ici. »), sinon qu'aucun passage n'y mène pour l'instant. La fiche
+ * de l'île pâle (`lockedHint`) et son panneau (le pli « Relier ») disent la même phrase.
+ */
+export function noDirectLinkHint(island: BiomeId, bridges: string[]): string {
+  const premiere = remainingPath(island, bridges)[0];
+  const open = reachableIslands(bridges);
+  const avant = premiere ? (open.has(premiere.from) ? premiere.to : premiere.from) : null;
+  return avant && avant !== island ? relieDAbord(getBiome(avant)?.name ?? avant) : AUCUNE_LIAISON;
+}
+
+/** Ce que dit la fiche d'un lieu fermé quand aucun chemin d'ouvrages ne tient jusqu'à lui (GD-9). */
+export const AUCUNE_LIAISON = 'Pas de passage jusqu’ici pour l’instant.';
+
+/** Ce que dit la fiche d'un lieu fermé qu'on atteint en reliant d'abord une autre île (GD-9). */
+const relieDAbord = (ile: string) => `Relie d’abord ${thePlace(ile)}. De là, un ouvrage mène ici.`;
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
 // L'escalier demande une mission réussie sur l'île de départ, qui y pose la première partie de son bâtiment (GD-6) ;
 // aucun ouvrage ne demande un Gardien (GD-7).
-function conditionTextShort(b: { kind: keyof typeof KIND_NAME }, from: string): string {
-  return b.kind === 'escalier' ? `Réussis aussi une mission sur ${from}.` : '';
+function conditionTextShort(kind: keyof typeof KIND_NAME, from: string): string {
+  return kind === 'escalier' ? `Réussis aussi une mission sur ${thePlace(from)}.` : '';
 }

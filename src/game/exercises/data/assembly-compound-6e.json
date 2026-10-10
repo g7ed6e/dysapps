@@ -7,9 +7,9 @@
   "programme": [
     "c3.fr.langue.genre-nombre",
     "c3.fr.langue.accord-sujet-verbe",
-    "c3.fr.langue.homophonie",
+    "c3.fr.langue.orthographe-grammaticale",
     "c3.fr.langue.phonemes-graphemes",
-    "c3.fr.langue.mots-invariables",
+    "c3.fr.langue.mots-frequents",
     "c3.fr.lecture.reprises",
     "c3.fr.lecture.explicite",
     "c3.fr.lecture.lexique-contexte",

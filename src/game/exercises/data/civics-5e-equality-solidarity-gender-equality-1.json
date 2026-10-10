@@ -1,0 +1,240 @@
+{
+  "id": "civics-5e-equality-solidarity-gender-equality-1",
+  "biome": "civics-5e-equality-solidarity",
+  "type": "gender-equality",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-1-0",
+      "prompt": "En France, les femmes votent pour la première fois en 1945. Elles ont obtenu le droit de vote en …",
+      "spoken": "En France, les femmes votent pour la première fois en mille neuf cent quarante-cinq. Elles ont obtenu le droit de vote en (mot manquant)",
+      "choices": [
+        "1944",
+        "1965",
+        "2000"
+      ],
+      "answer": "1944",
+      "hint": "Cherche les mots « droit de vote » dans le rappel.",
+      "explanation": "Les femmes obtiennent le droit de vote en 1944, et votent pour la première fois en 1945. Avant, seuls les hommes votaient.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’égalité, conquise par des lois",
+          "lines": [
+            "Préambule de 1946, dans la Constitution : la loi garantit à la femme des droits égaux à ceux de l’homme.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1965 : une femme mariée peut travailler sans l’accord de son mari.",
+            "1987 : même séparés, les deux parents peuvent exercer ensemble l’autorité parentale.",
+            "2000 : la loi sur la parité, pour l’égal accès des femmes et des hommes aux élections.",
+            "Un stéréotype : une idée toute faite, collée à tout un groupe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-1-1",
+      "prompt": "L’égalité entre les femmes et les hommes est garantie par la …",
+      "spoken": "L’égalité entre les femmes et les hommes est garantie par la  (mot manquant) ",
+      "choices": [
+        "tradition",
+        "Constitution",
+        "politesse"
+      ],
+      "answer": "Constitution",
+      "hint": "Relis la première ligne du rappel : dans quel texte est le préambule de 1946 ?",
+      "explanation": "L’égalité entre les femmes et les hommes est garantie par la Constitution : le préambule de 1946 en fait partie. C’est un principe fondamental de la République.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’égalité, conquise par des lois",
+          "lines": [
+            "Préambule de 1946, dans la Constitution : la loi garantit à la femme des droits égaux à ceux de l’homme.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1965 : une femme mariée peut travailler sans l’accord de son mari.",
+            "1987 : même séparés, les deux parents peuvent exercer ensemble l’autorité parentale.",
+            "2000 : la loi sur la parité, pour l’égal accès des femmes et des hommes aux élections.",
+            "Un stéréotype : une idée toute faite, collée à tout un groupe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-1-2",
+      "prompt": "« Les filles n’aiment pas les maths » : cette idée toute faite est un …",
+      "spoken": "« Les filles n’aiment pas les maths » : cette idée toute faite est un  (mot manquant) ",
+      "choices": [
+        "savoir",
+        "règlement",
+        "stéréotype"
+      ],
+      "answer": "stéréotype",
+      "hint": "Cette idée est-elle vraie pour chaque fille ?",
+      "explanation": "C’est un stéréotype : une idée toute faite, collée à tout un groupe. Chaque personne a ses goûts, fille ou garçon.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’égalité, conquise par des lois",
+          "lines": [
+            "Préambule de 1946, dans la Constitution : la loi garantit à la femme des droits égaux à ceux de l’homme.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1965 : une femme mariée peut travailler sans l’accord de son mari.",
+            "1987 : même séparés, les deux parents peuvent exercer ensemble l’autorité parentale.",
+            "2000 : la loi sur la parité, pour l’égal accès des femmes et des hommes aux élections.",
+            "Un stéréotype : une idée toute faite, collée à tout un groupe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-1-3",
+      "prompt": "Avant et après 1965\nAvant : une femme mariée doit avoir l’accord de son mari pour travailler.\nAprès : elle choisit seule son métier.",
+      "question": "Qu’a changé la loi de 1965 ?",
+      "spoken": "Avant et après mille neuf cent soixante-cinq. Avant : une femme mariée doit avoir l’accord de son mari pour travailler. Après : elle choisit seule son métier.",
+      "choices": [
+        "les femmes obtiennent le droit de vote",
+        "une femme mariée peut travailler sans l’accord de son mari",
+        "les femmes peuvent devenir députées"
+      ],
+      "answer": "une femme mariée peut travailler sans l’accord de son mari",
+      "hint": "Compare la ligne « Avant » et la ligne « Après ».",
+      "explanation": "Depuis 1965, une femme mariée peut exercer un métier sans l’accord de son mari. Le droit de vote, lui, date de 1944.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’égalité, conquise par des lois",
+          "lines": [
+            "Préambule de 1946, dans la Constitution : la loi garantit à la femme des droits égaux à ceux de l’homme.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1965 : une femme mariée peut travailler sans l’accord de son mari.",
+            "1987 : même séparés, les deux parents peuvent exercer ensemble l’autorité parentale.",
+            "2000 : la loi sur la parité, pour l’égal accès des femmes et des hommes aux élections.",
+            "Un stéréotype : une idée toute faite, collée à tout un groupe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-1-4",
+      "prompt": "La loi de 2000 qui veut autant de femmes que d’hommes candidats aux élections est la loi sur la …",
+      "spoken": "La loi de deux mille qui veut autant de femmes que d’hommes candidats aux élections est la loi sur la (mot manquant)",
+      "choices": [
+        "parité",
+        "laïcité",
+        "solidarité"
+      ],
+      "answer": "parité",
+      "hint": "Cherche 2000 dans le rappel.",
+      "explanation": "La loi sur la parité, en 2000, favorise l’égal accès des femmes et des hommes aux élections : sur les listes, autant de femmes que d’hommes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’égalité, conquise par des lois",
+          "lines": [
+            "Préambule de 1946, dans la Constitution : la loi garantit à la femme des droits égaux à ceux de l’homme.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1965 : une femme mariée peut travailler sans l’accord de son mari.",
+            "1987 : même séparés, les deux parents peuvent exercer ensemble l’autorité parentale.",
+            "2000 : la loi sur la parité, pour l’égal accès des femmes et des hommes aux élections.",
+            "Un stéréotype : une idée toute faite, collée à tout un groupe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-1-5",
+      "prompt": "Les métiers rêvés d’une classe de 5e\nSoigner des malades : 7 filles, 2 garçons.\nRéparer des moteurs : 1 fille, 6 garçons.\nEnseigner : 4 filles, 3 garçons.",
+      "question": "Que montre ce document ?",
+      "spoken": "Les métiers rêvés d’une classe de cinquième. Soigner des malades, 7 filles, 2 garçons. Réparer des moteurs, 1 fille, 6 garçons. Enseigner, 4 filles, 3 garçons.",
+      "choices": [
+        "les filles ne peuvent pas réparer de moteurs",
+        "les garçons n’ont pas le droit de soigner",
+        "filles et garçons rêvent souvent de métiers différents"
+      ],
+      "answer": "filles et garçons rêvent souvent de métiers différents",
+      "hint": "Le document parle-t-il de droits, ou de rêves ?",
+      "explanation": "Filles et garçons rêvent souvent de métiers différents, souvent à cause des stéréotypes. Mais la loi ouvre tous les métiers à tous.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’égalité, conquise par des lois",
+          "lines": [
+            "Préambule de 1946, dans la Constitution : la loi garantit à la femme des droits égaux à ceux de l’homme.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1965 : une femme mariée peut travailler sans l’accord de son mari.",
+            "1987 : même séparés, les deux parents peuvent exercer ensemble l’autorité parentale.",
+            "2000 : la loi sur la parité, pour l’égal accès des femmes et des hommes aux élections.",
+            "Un stéréotype : une idée toute faite, collée à tout un groupe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-1-6",
+      "prompt": "Depuis 1987, même séparés, le père et la mère peuvent exercer ensemble l’autorité …",
+      "spoken": "Depuis mille neuf cent quatre-vingt-sept, même séparés, le père et la mère peuvent exercer ensemble l’autorité (mot manquant)",
+      "choices": [
+        "parentale",
+        "municipale",
+        "judiciaire"
+      ],
+      "answer": "parentale",
+      "hint": "De quelle autorité parle-t-on pour des parents ?",
+      "explanation": "L’autorité parentale permet aux parents de décider pour leur enfant. Depuis 1987, même séparés, le père et la mère peuvent l’exercer ensemble, à égalité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’égalité, conquise par des lois",
+          "lines": [
+            "Préambule de 1946, dans la Constitution : la loi garantit à la femme des droits égaux à ceux de l’homme.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1965 : une femme mariée peut travailler sans l’accord de son mari.",
+            "1987 : même séparés, les deux parents peuvent exercer ensemble l’autorité parentale.",
+            "2000 : la loi sur la parité, pour l’égal accès des femmes et des hommes aux élections.",
+            "Un stéréotype : une idée toute faite, collée à tout un groupe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-1-7",
+      "prompt": "« Un garçon ne pleure pas » est un stéréotype, car cette idée …",
+      "spoken": "« Un garçon ne pleure pas » est un stéréotype, car cette idée  (mot manquant) ",
+      "choices": [
+        "est prouvée par la science",
+        "colle la même étiquette à tous les garçons",
+        "est écrite dans la loi"
+      ],
+      "answer": "colle la même étiquette à tous les garçons",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Cette idée colle la même étiquette à tous les garçons, sans les connaître : c’est un stéréotype. Chacun a le droit d’avoir des émotions.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’égalité, conquise par des lois",
+          "lines": [
+            "Préambule de 1946, dans la Constitution : la loi garantit à la femme des droits égaux à ceux de l’homme.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1965 : une femme mariée peut travailler sans l’accord de son mari.",
+            "1987 : même séparés, les deux parents peuvent exercer ensemble l’autorité parentale.",
+            "2000 : la loi sur la parité, pour l’égal accès des femmes et des hommes aux élections.",
+            "Un stéréotype : une idée toute faite, collée à tout un groupe."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-5e-equality-solidarity",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

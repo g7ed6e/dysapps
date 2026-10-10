@@ -1,0 +1,243 @@
+{
+  "id": "physics-chemistry-5e-matter-universe-mixtures-density-2",
+  "biome": "physics-chemistry-5e-matter-universe",
+  "type": "mixtures-density",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-2-0",
+      "prompt": "Une bouteille d’un litre contient …",
+      "spoken": "Une bouteille d’un litre contient  (mot manquant) ",
+      "choices": [
+        "10 millilitres",
+        "100 millilitres",
+        "1 000 millilitres"
+      ],
+      "answer": "1 000 millilitres",
+      "hint": "Relis la ligne « Un litre » du rappel.",
+      "explanation": "Un litre, c’est mille millilitres. 100 millilitres, c’est un petit verre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Masse et volume",
+          "lines": [
+            "La masse se mesure en grammes (g), le volume en millilitres (mL).",
+            "Un litre, c’est mille millilitres.",
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-2-1",
+      "prompt": "Sur la balance\nUne éprouvette vide : 100 g.\nOn y verse 50 g d’eau.",
+      "question": "Que va afficher la balance ?",
+      "spoken": "Sur la balance. Une éprouvette vide, 100 grammes. On y verse 50 grammes d’eau.",
+      "choices": [
+        "50 grammes",
+        "100 grammes",
+        "150 grammes"
+      ],
+      "answer": "150 grammes",
+      "hint": "L’éprouvette et l’eau sont toutes les deux sur la balance.",
+      "explanation": "La balance pèse l’éprouvette et l’eau : 100 plus 50, 150 grammes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Masse et volume",
+          "lines": [
+            "La masse se mesure en grammes (g), le volume en millilitres (mL).",
+            "Un litre, c’est mille millilitres.",
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-2-2",
+      "prompt": "Le caillou dans l’éprouvette\nAvant : l’eau arrive au trait 50 mL.\nOn plonge le caillou.\nAprès : l’eau arrive au trait 60 mL.",
+      "question": "Quel est le volume du caillou ?",
+      "spoken": "Le caillou dans l’éprouvette. Avant, l’eau arrive au trait 50 millilitres. On plonge le caillou. Après, l’eau arrive au trait 60 millilitres.",
+      "choices": [
+        "10 millilitres",
+        "60 millilitres",
+        "110 millilitres"
+      ],
+      "answer": "10 millilitres",
+      "hint": "De combien l’eau est-elle montée ?",
+      "explanation": "Le caillou pousse l’eau, qui monte de 50 à 60 millilitres : 60 moins 50, le caillou a un volume de 10 millilitres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Masse et volume",
+          "lines": [
+            "La masse se mesure en grammes (g), le volume en millilitres (mL).",
+            "Un litre, c’est mille millilitres.",
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-2-3",
+      "prompt": "Deux cailloux de la même roche\nVolume du caillou A : 10 mL (millilitres).\nMasse du caillou A : 30 g (grammes).\nVolume du caillou B : 20 mL, deux fois plus.",
+      "question": "Quelle est la masse du caillou B ?",
+      "spoken": "Deux cailloux de la même roche. Volume du caillou A, dix millilitres. Masse du caillou A, trente grammes. Volume du caillou B, vingt millilitres, deux fois plus.",
+      "choices": [
+        "40 grammes",
+        "50 grammes",
+        "60 grammes"
+      ],
+      "answer": "60 grammes",
+      "hint": "Relis la ligne « Une même matière » du rappel.",
+      "explanation": "Même roche, deux fois plus de volume : deux fois plus de masse. 30 fois 2, 60 grammes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Masse et volume",
+          "lines": [
+            "La masse se mesure en grammes (g), le volume en millilitres (mL).",
+            "Un litre, c’est mille millilitres.",
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-2-4",
+      "prompt": "Le glaçon flotte sur l’eau : à volume égal, la glace a … de masse que l’eau liquide.",
+      "spoken": "Le glaçon flotte sur l’eau : à volume égal, la glace a  (mot manquant)  de masse que l’eau liquide.",
+      "choices": [
+        "plus",
+        "autant",
+        "moins"
+      ],
+      "answer": "moins",
+      "hint": "Relis la ligne « À volume égal » du rappel.",
+      "explanation": "À volume égal, ce qui flotte sur l’eau a moins de masse que l’eau : c’est le cas de la glace. Un millilitre de glace a une masse un peu plus petite qu’un millilitre d’eau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Masse et volume",
+          "lines": [
+            "La masse se mesure en grammes (g), le volume en millilitres (mL).",
+            "Un litre, c’est mille millilitres.",
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-2-5",
+      "prompt": "Deux cubes, chacun de 10 mL\nCube en bois : 6 g.\nCube en fer : 79 g.\n10 mL d’eau : 10 g.",
+      "question": "Lequel coule dans l’eau ?",
+      "spoken": "Deux cubes, chacun de 10 millilitres. Cube en bois, 6 grammes. Cube en fer, 79 grammes. 10 millilitres d’eau, 10 grammes.",
+      "choices": [
+        "le cube en bois",
+        "le cube en fer",
+        "les deux"
+      ],
+      "answer": "le cube en fer",
+      "hint": "Compare chaque cube à la même quantité d’eau.",
+      "explanation": "À volume égal, le fer a une masse plus grande que l’eau, 79 grammes contre 10 : il coule. Le bois, 6 grammes, est plus léger que l’eau : il flotte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Masse et volume",
+          "lines": [
+            "La masse se mesure en grammes (g), le volume en millilitres (mL).",
+            "Un litre, c’est mille millilitres.",
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-2-6",
+      "prompt": "L’huile dans l’éprouvette\nVolume : 100 mL.\nMasse : 90 g.\n100 mL d’eau : 100 g.",
+      "question": "Que fait l’huile versée sur l’eau ?",
+      "spoken": "L’huile dans l’éprouvette. Volume, 100 millilitres. Masse, 90 grammes. 100 millilitres d’eau, 100 grammes.",
+      "choices": [
+        "elle coule au fond",
+        "elle se dissout",
+        "elle flotte"
+      ],
+      "answer": "elle flotte",
+      "hint": "À volume égal, qui a la plus petite masse ?",
+      "explanation": "100 millilitres d’huile ont une masse de 90 grammes, moins que 100 millilitres d’eau : à volume égal, l’huile a moins de masse, elle flotte. Elle ne se dissout pas : huile et eau ne sont pas miscibles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Masse et volume",
+          "lines": [
+            "La masse se mesure en grammes (g), le volume en millilitres (mL).",
+            "Un litre, c’est mille millilitres.",
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-mixtures-density-2-7",
+      "prompt": "Un millilitre d’eau a une masse d’un …",
+      "spoken": "Un millilitre d’eau a une masse d’un  (mot manquant) ",
+      "choices": [
+        "gramme",
+        "kilogramme",
+        "milligramme"
+      ],
+      "answer": "gramme",
+      "hint": "Relis la ligne « L’eau » du rappel.",
+      "explanation": "Un millilitre d’eau a une masse d’un gramme. Un litre, c’est mille millilitres : un litre d’eau a donc une masse de mille grammes, un kilogramme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Masse et volume",
+          "lines": [
+            "La masse se mesure en grammes (g), le volume en millilitres (mL).",
+            "Un litre, c’est mille millilitres.",
+            "Une même matière : deux fois plus de volume, deux fois plus de masse.",
+            "Pour comparer deux matières, on prend le même volume de chacune.",
+            "L’eau : un millilitre a une masse d’un gramme.",
+            "À volume égal, moins de masse que l’eau : ça flotte. Plus : ça coule."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-5e-matter-universe",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

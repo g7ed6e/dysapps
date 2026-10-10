@@ -22,6 +22,8 @@ const REED = '#8fae4f';
 export const CRYSTAL = '#5cd0c8';
 const FLOWERS = ['#e8557a', '#f2c14e', '#f7f2e8', '#b56cd8'];
 const MUSHROOM = '#d9453f';
+/** La paille foncée d'un anneau sur deux de la ruche de la Ruche des réseaux (3e). */
+const SKEP = '#c49a48';
 
 /**
  * Pose un cube ; `decor` nomme l'élément de décor dont il fait partie (un arbre, un buisson, un repère…), « genre@x,y »,
@@ -35,6 +37,22 @@ function tree(put: Put, x: number, y: number, base: number, tall = 2): void {
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) put(x + dx, y + dy, base + tall + 1, LEAF, id);
   put(x, y, base + tall + 2, LEAF, id);
 }
+
+/**
+ * Le triangle 3-4-5 du Belvédère de Thalès, dans la grille du décor : le côté de 3 cases (7 à 9, y = 0), celui de 4 cases
+ * (x = 7, y 0 à 3), et le grand côté en marches (9, 1) et (8, 2), sans diagonale. Deux rangées plus près des bornes que
+ * l'ancien kiosque (7 à 10, 2 à 5) : posé là, un bloc de haut cachait le bas de la première rangée des plans.
+ */
+export const TRIANGLE_DU_BELVEDERE: readonly (readonly [number, number])[] = [
+  [7, 0],
+  [8, 0],
+  [9, 0],
+  [7, 1],
+  [7, 2],
+  [7, 3],
+  [9, 1],
+  [8, 2],
+];
 
 /** Décor propre à chaque biome, en coordonnées relatives à l'île. `h` donne la hauteur du sol d'une case. */
 export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => void> = {
@@ -246,15 +264,9 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.bois].side);
   },
   'maths-3e-geometry': (put, h) => {
-    // Un kiosque : quatre colonnes de marbre et un toit de marbre, un triangle 3-4-5 au sol.
-    for (const [x, y] of [
-      [7, 2],
-      [10, 2],
-      [7, 5],
-      [10, 5],
-    ] as const)
-      for (let z = 1; z <= 3; z++) put(x, y, h(x, y) + z, BLOCKS[BLOC.marbre].side);
-    for (let dx = 7; dx <= 10; dx++) for (let dy = 2; dy <= 5; dy++) put(dx, dy, h(dx, dy) + 4, BLOCKS[BLOC.marbre].side);
+    // Un triangle rectangle 3-4-5 de marbre posé au sol, d'un bloc de haut : un côté de 3 cases, l'autre de 4, le grand
+    // côté en marches (GD-14 : le kiosque de marbre du décor cachait le kiosque de Théo que bâtit le plan).
+    for (const [x, y] of TRIANGLE_DU_BELVEDERE) put(x, y, h(x, y) + 1, BLOCKS[BLOC.marbre].side);
     put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.marbre].side);
     put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
@@ -299,6 +311,194 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.cadran].side);
     put(4, 9, h(4, 9) + 1, BLOCKS[BLOC.cadran].side);
     put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'history-6e-antiquity': (put, h) => {
+    // Sobre (le plus chargé des archipels) : un éclat de sol de mosaïque mis au jour, un tas de sable de fouille, une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.mosaique].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.mosaique].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.sable].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'geography-6e-living': (put, h) => {
+    // Sobre : deux bottes de chaume en bord de champ, une borne de pierre au bord du chemin.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.chaume].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.chaume].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  // Les îles d'histoire-géographie de 5e à 3e (HG-3) : un décor sobre, quelques blocs au sol, aucune lanterne.
+  'history-5e-middle-ages': (put, h) => {
+    // Un pupitre de copiste : un pied de planches, son plateau d'enluminure ; une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.enluminure].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'geography-5e-resources': (put, h) => {
+    // Deux carrés de rizière au bord du delta, une botte de foin ; une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.riziere].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.riziere].side);
+    put(3, 9, h(3, 9) + 1, HAY);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'history-4e-revolutions': (put, h) => {
+    // Deux plaques de fonte empilées (une presse au repos), une caisse de planches ; une pierre. Au coin de l'île, loin du
+    // réverbère de Typo, d'ardoise : la fonte et l'ardoise, deux gris sombres, ne se touchent jamais (DA, relecture des
+    // planches HG-3).
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.fonte].side);
+    put(3, 9, h(3, 9) + 2, BLOCKS[BLOC.fonte].side);
+    put(4, 9, h(4, 9) + 1, BLOCKS[BLOC.bois].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'geography-4e-globalization': (put, h) => {
+    // Deux conteneurs côte à côte sur le quai, une caisse de planches ; une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.conteneur].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.conteneur].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.bois].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'history-3e-twentieth-century': (put, h) => {
+    // Sobre, rien de ludique (DA, HG-3) : une pile de deux reliures, un banc de pierre ; une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.reliure].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.reliure].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.pierre].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'geography-3e-france': (put, h) => {
+    // Une borne de grès rose au bord du chemin, deux blocs de grès ; une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.gres].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.gres].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.gres].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'life-earth-sciences-6e-living-world': (put, h) => {
+    // Sobre (DA, SC-2) : une touffe de fougères au bord du chemin, deux cubes de mousse, une feuille dessus.
+    put(9, 3, h(9, 3) + 1, MOSS);
+    put(10, 3, h(10, 3) + 1, MOSS);
+    put(9, 3, h(9, 3) + 2, LEAF);
+  },
+  'physics-chemistry-6e-matter-energy': (put, h) => {
+    // Sobre (DA, SC-2) : un tas de galets, deux au sol, un dessus.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.galet].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.galet].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.galet].side);
+  },
+  'technology-6e-objects': (put, h) => {
+    // Sobre (DA, SC-2) : une caisse en carton, deux cartons l'un sur l'autre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.carton].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.carton].side);
+  },
+  'civics-6e-democratic-society': (put, h) => {
+    // Sobre, sans drapeau ni symbole : un tableau sur son pied, la craie sur un pied de planches.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.craie].side);
+  },
+  // Les îles de sciences de 5e à 3e (SC-3) : un décor par île (DA), sobre, quelques blocs au sol, aucune lanterne.
+  'life-earth-sciences-5e-active-planet': (put, h) => {
+    // Un rocher à strates : trois cubes de strate en marche.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.strate].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.strate].side);
+    put(10, 3, h(10, 3) + 2, BLOCKS[BLOC.strate].side);
+  },
+  'physics-chemistry-5e-matter-universe': (put, h) => {
+    // Un tas de sel en pyramide : trois cubes de sel au sol, un dessus.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.sel].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.sel].side);
+    put(9, 4, h(9, 4) + 1, BLOCKS[BLOC.sel].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.sel].side);
+  },
+  'technology-5e-design': (put, h) => {
+    // Un tas de planches : deux au sol, une dessus.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.bois].side);
+  },
+  // L'EMC et le latin-grec de 5e (EMC-2, LCA-2) : sobres, quelques blocs au sol, aucune lanterne ni symbole.
+  'civics-5e-equality-solidarity': (put, h) => {
+    // Des sacs de farine contre une caisse de planches : deux sacs au sol, la caisse à côté.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.farine].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.farine].side);
+    put(9, 4, h(9, 4) + 1, BLOCKS[BLOC.bois].side);
+  },
+  'lca-5e-legends': (put, h) => {
+    // Un rocher de tuf, deux blocs en marche, comme l'entrée d'une petite grotte.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.tuf].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.tuf].side);
+    put(10, 3, h(10, 3) + 2, BLOCKS[BLOC.tuf].side);
+  },
+  'life-earth-sciences-4e-cells-evolution': (put, h) => {
+    // Une vasque d'eau d'une case, cerclée de galets.
+    for (let x = 8; x <= 10; x++)
+      for (let y = 2; y <= 4; y++) put(x, y, h(x, y) + 1, x === 9 && y === 3 ? WATER : BLOCKS[BLOC.galet].side);
+  },
+  'physics-chemistry-4e-signals-circuits': (put, h) => {
+    // Une longue-vue de cuivre couchée sur un trépied de bois.
+    for (let z = 1; z <= 2; z++) put(9, 3, h(9, 3) + z, TRUNK);
+    put(9, 3, h(9, 3) + 3, BLOCKS[BLOC.bobine].side);
+    put(10, 3, h(10, 3) + 3, BLOCKS[BLOC.bobine].side);
+  },
+  'technology-4e-modeling': (put, h) => {
+    // Une maquette de maison sur une caisse : la caisse de planches, un mur de liège, un toit de tuile.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.liege].side);
+    put(9, 3, h(9, 3) + 3, BLOCKS[BLOC.tuile].side);
+  },
+  // L'EMC et le latin-grec de 4e (EMC-2, LCA-2) : sobres, quelques blocs au sol, aucune lanterne ni symbole.
+  'civics-4e-rights-freedoms': (put, h) => {
+    // Une pile de pavés au bord de la rue : deux au sol, un dessus.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.pave].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.pave].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.pave].side);
+  },
+  'lca-4e-cities': (put, h) => {
+    // Un pan de mur peint, deux fresques en long, et un banc de pierre devant.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.fresque].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.fresque].side);
+    put(9, 2, h(9, 2) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  // L'EMC et le latin-grec de 3e (EMC-2, LCA-2) : de même, sobres, aucun drapeau ni symbole.
+  'civics-3e-democratic-life': (put, h) => {
+    // Un banc d'acajou pour écouter : trois planches au sol, un dossier derrière.
+    for (let x = 8; x <= 10; x++) put(x, 3, h(x, 3) + 1, BLOCKS[BLOC.acajou].side);
+    put(9, 4, h(9, 4) + 1, BLOCKS[BLOC.acajou].side);
+    put(9, 4, h(9, 4) + 2, BLOCKS[BLOC.acajou].side);
+  },
+  'lca-3e-ideas': (put, h) => {
+    // Un laurier taillé en boule sur son tronc, et un bloc de pierre où s'asseoir.
+    put(9, 3, h(9, 3) + 1, TRUNK);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.laurier].side);
+    put(10, 3, h(10, 3) + 2, BLOCKS[BLOC.laurier].side);
+    put(9, 3, h(9, 3) + 3, BLOCKS[BLOC.laurier].side);
+    put(10, 2, h(10, 2) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'life-earth-sciences-3e-human-body': (put, h) => {
+    // Un arbre fruitier : deux fruits rouges pendus sous le feuillage. Trois cases à gauche de l'axe qui va de la caméra à
+    // la porte de l'infirmerie, qu'il cachait (DA, relecture des captures).
+    const base = h(6, 3);
+    tree(put, 6, 3, base, 2);
+    put(7, 2, base + 2, MUSHROOM, 'arbre@6,3');
+    put(5, 4, base + 2, MUSHROOM, 'arbre@6,3');
+  },
+  'physics-chemistry-3e-motion-energy': (put, h) => {
+    // Un plan incliné de deux marches, une balle au pied.
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(11, 3, h(11, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(11, 3, h(11, 3) + 2, BLOCKS[BLOC.bois].side);
+    put(9, 3, h(9, 3) + 1, FLOWERS[0]);
+  },
+  'technology-3e-digital': (put, h) => {
+    // Une ruche de paille en dôme, sans abeille (DA, relecture des captures : deux cubes faisaient une colonne lisse) :
+    // trois anneaux de paille qui rétrécissent, clair, foncé, clair (la base de 3 × 3, la croix, le sommet d'un cube) ;
+    // l'entrée sombre en bas, du côté de la caméra de l'île (l'est).
+    const base = h(9, 3);
+    for (let x = 8; x <= 10; x++) for (let y = 2; y <= 4; y++) put(x, y, base + 1, x === 10 && y === 3 ? DARK : HAY);
+    for (const [x, y] of [
+      [9, 3],
+      [8, 3],
+      [10, 3],
+      [9, 2],
+      [9, 4],
+    ])
+      put(x, y, base + 2, SKEP);
+    put(9, 3, base + 3, HAY);
   },
   'english-5e-vocabulary': (put, h) => {
     // Un étal : deux poteaux, un auvent de tuiles, une caisse de bois devant ; une pile de tuiles au sol.
@@ -529,10 +729,12 @@ interface OutilsDuRepereEnBlocs {
  */
 const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void> = {
   'grand-arbre': ({ def, scenery, backY, named, put }) => {
-    // Un chêne géant : tronc 2 × 2 de six blocs, large couronne en trois étages. Juste derrière le cœur, deux cases en
+    // Un chêne géant : tronc 2 × 2 de six blocs, large couronne en trois étages. Juste derrière le cœur, six cases en
     // dedans de son bord gauche : depuis que le cœur de la Forêt a 20 cases (01/10/2026), le replat d'avant, quatre cases
-    // à gauche, est au bord de la pente, et le chêne y montrait plus de la moitié de son tronc.
-    const s = findSpot(def, scenery, coeurDe(def).x0 + 2, backY, 2);
+    // à gauche, est au bord de la pente, et le chêne y montrait plus de la moitié de son tronc ; depuis les formes des
+    // îles (GD-12, 8 octobre 2026), le coin du fond de la Forêt s'arrondit, et le chêne s'avance de quatre cases vers le
+    // milieu, où la terre derrière le cœur est la plus profonde.
+    const s = findSpot(def, scenery, coeurDe(def).x0 + 6, backY, 2);
     if (!s) return;
     named(s.x, s.y);
     for (let z = 1; z <= 6; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, TRUNK);
@@ -590,9 +792,11 @@ const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void> = {
     put(peak.x + 1, peak.y, peak.h + 5, BLOCKS[BLOC.toile].side);
     put(peak.x + 1, peak.y, peak.h + 4, BLOCKS[BLOC.toile].side);
   },
-  'grand-phare': ({ def, scenery, backY, named, put }) => {
-    // Le grand phare : tour de pierre 2 × 2 de huit blocs, lanterne de quatre blocs au sommet, toit de prisme.
-    const s = findSpot(def, scenery, coeurDe(def).x1 + 1, backY, 2);
+  'grand-phare': ({ def, scenery, named, put }) => {
+    // Le grand phare : tour de pierre 2 × 2 de huit blocs, lanterne de quatre blocs au sommet, toit de prisme. Sur la
+    // côte est, trois cases avant le fond du cœur : le fond du croissant du Phare est arrondi (GD-12, 9 octobre 2026), et
+    // vu de la caméra la lanterne reste à gauche de l'Observatoire des textes, juste derrière (DA-17).
+    const s = findSpot(def, scenery, coeurDe(def).x1 + 1, coeurDe(def).y1 - 3, 2);
     if (!s) return;
     named(s.x, s.y);
     for (let z = 1; z <= 10; z++)

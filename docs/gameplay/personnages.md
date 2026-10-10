@@ -4,7 +4,7 @@
 
 Cette page est produite à partir des données du jeu (`docs/contenu/` pour les noms, `src/universes/` pour les espèces et les répliques) par `npm run pilotage:personnages`. Elle se corrige dans le code, puis se régénère ; jamais à la main.
 
-Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans les deux univers, le Gardien attend éteint sur son îlot et son défi le **rallume** : une statue de pierre qui reprend ses couleurs dans Blocland, une sentinelle de pierre éteinte dans Archipéo. Les noms des archipels changent d’un univers à l’autre (GD-1), leurs identifiants jamais.
+Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans les deux univers, le Gardien attend éteint sur son île et son défi le **rallume** : une statue de pierre qui reprend ses couleurs dans Blocland, une sentinelle de pierre éteinte dans Archipéo. Les noms des archipels changent d’un univers à l’autre (GD-1), leurs identifiants jamais.
 
 ## Le mot des grandes étapes
 
@@ -17,8 +17,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Arrivée en 4e | Bip. Le Bloc-Navire a fait sa traversée. Moi, c’est Ixe, le robot dessinateur. Bienvenue dans les Monts de Feu : ici, le feu du volcan fait tourner les machines. À toi d’en bâtir ! | Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche. |
 | Arrivée en 3e | Le Bloc-Navire a fait sa traversée. Moi, c’est Fi, la lampe du phare. Bienvenue dans les Îles du Ciel : je t’éclaire, bâtisseur, on bâtit tout en haut. | Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages. |
 | Tous les Gardiens d’un archipel (exemple) | Tous les Gardiens des Basses Terres ont retrouvé leurs couleurs ! Ils veillent sur ton chantier. | Tous les Gardiens des Premiers Rivages brillent à nouveau. J’ai vu leur lumière depuis le large. |
-| Île-port terminée (exemple) | Chantier fini : Plaine des nombres ! Bloc après bloc, ton archipel grandit. | Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau. |
-| Premier ouvrage payé (exemple) | Ton ouvrage tient bon ! Nouvelle île ouverte : Mine des lettres. | Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit. |
+| Île-port terminée (exemple) | Chantier fini : Plaine des nombres ! Bloc après bloc, ton archipel grandit. | La Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau. |
+| Premier ouvrage payé (exemple) | Ton ouvrage tient bon ! Nouvelle île ouverte : Mine des lettres. | Un chemin s’ouvre vers la Mine des lettres. L’archipel s’agrandit. |
 
 ## Les Basses Terres (Blocland), les Premiers Rivages (Archipéo), 6e
 
@@ -34,6 +34,12 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Volcan des décimaux](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-6e-decimals.html) (Maths) | Lavi | salamandre de lave | salamandre de lave | Le Dragon de cendre |
 | [Baie des mots](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-6e-vocabulary.html) (Anglais) | Robin | rouge-gorge des quais | rouge-gorge des quais | Le Lion de pierre |
 | [Horloge des verbes](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-6e-grammar.html) (Anglais) | Tick | hérisson horloger | hérisson horloger | Le Coucou de bronze |
+| [Fouille des siècles](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-6e-antiquity.html) (Histoire-géo) | Silex | ourson fouilleur | ourson des fouilles | L’Amphore peinte |
+| [Pointe des paysages](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-6e-living.html) (Histoire-géo) | Boussole | tortue géographe | pélican des ports | Le Castor de glaise |
+| [Vallée du vivant](https://g7ed6e.github.io/dysapps/pedagogie/iles/life-earth-sciences-6e-living-world.html) (SVT) | Fougère | escargot jardinier | escargot jardinier | Le Cerf des sous-bois |
+| [Laboratoire des éléments](https://g7ed6e.github.io/dysapps/pedagogie/iles/physics-chemistry-6e-matter-energy.html) (Physique-chimie) | Bulle | goutte chimiste | poulpe chimiste | L’Alambic de verre |
+| [Hangar des inventions](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-6e-objects.html) (Technologie) | Pince | fourmi bricoleuse | fourmi bricoleuse | L’Automate de laiton |
+| [Préau des délégués](https://g7ed6e.github.io/dysapps/pedagogie/iles/civics-6e-democratic-society.html) (EMC) | Voix | panda roux délégué | panda roux délégué | L’Hirondelle de nacre |
 
 ### Le Grand Chêne, Forêt des sons
 
@@ -47,8 +53,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Golem de roche gronde doucement : « Ma gemme est grise, et mes lettres se ressemblent toutes. Toi, tu les reconnais ? » | Le Golem de roche dit doucement : « Ma gemme est éteinte, et mes lettres se ressemblent. Regarde-les bien, prends ton temps. » |
-| À la fin | Je me rallume, de mes pieds jusqu’à ma gemme. Bien joué, bâtisseur. | Ma gemme se rallume. La mine est à toi, et à Tunel. |
+| Au défi | Le Golem de roche gronde doucement : « Ma gemme est grise, et mes lettres se ressemblent toutes. Toi, tu les reconnais ? » | Le Golem de roche dit doucement : « Ma poitrine est froide, et mes lettres se ressemblent. Regarde-les bien, prends ton temps. » |
+| À la fin | Je me rallume, de mes pieds jusqu’à ma gemme. Bien joué, bâtisseur. | Ma pierre se rallume. La mine est à toi, et à Tunel. |
 | Tunel à l’arrivée | Bienvenue dans ma mine ! Ici, les lettres se ressemblent, mais mon œil ne se trompe jamais. Pioche les bonnes, je te donne de la pierre. | Bienvenue dans ma mine ! Ici, les lettres se ressemblent, mais mon œil ne se trompe jamais. Pioche les bonnes, je te donne de la pierre. |
 
 ### La Dune vivante, Carrière des mots
@@ -79,8 +85,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Hanneton de bronze bourdonne : « Me voilà tout gris. Tu as compté toute ma plaine : calcule avec moi. » | Le Hanneton de bronze bourdonne doucement : « Mes ailes de bronze sont éteintes. Tu as compté toute ma plaine, calcule avec moi. » |
-| À la fin | Bzzz ! Je me rallume, des pattes aux antennes. La plaine est à toi, et à Coco. | Mes ailes se rallument. La plaine est à toi, et à Coco. |
+| Au défi | Le Hanneton de bronze bourdonne : « Me voilà tout gris. Tu as compté toute ma plaine : calcule avec moi. » | Le Hanneton de bronze bourdonne doucement : « Ma carapace de bronze est éteinte. Tu as compté toute ma plaine, calcule avec moi. » |
+| À la fin | Bzzz ! Je me rallume, des pattes aux antennes. La plaine est à toi, et à Coco. | Ma carapace se rallume. La plaine est à toi, et à Coco. |
 | Coco à l’arrivée | Bonjour, bâtisseur ! Dans ma plaine, on calcule avec les yeux : les points, la boîte de dix, la droite. Chaque calcul réussi, c’est de la brique pour le village. | Bonjour, bâtisseur ! Dans ma plaine, on calcule avec les yeux : les points, la boîte de dix, la droite. Chaque calcul réussi, c’est de la brique pour le village. |
 
 ### Le Brochet d’argent, Rivière des fractions
@@ -95,8 +101,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Dragon de cendre souffle une fumée tiède : « Même ma braise est grise. Tu as gravi tout mon volcan : lis chaque nombre rang par rang. » | Le Dragon de cendre souffle une fumée tiède : « Ma braise est éteinte. Tu as gravi tout mon volcan, lis chaque nombre rang par rang. » |
-| À la fin | Grrr ! Je me rallume, braise au ventre et yeux rouges. Le volcan est à toi, et à Lavi. | Mon ventre de braise se rallume. Le volcan est à toi, et à Lavi. |
+| Au défi | Le Dragon de cendre souffle une fumée tiède : « Même ma braise est grise. Tu as gravi tout mon volcan : lis chaque nombre rang par rang. » | Le Dragon de cendre souffle une fumée tiède : « Mes écailles sont éteintes. Tu as gravi tout mon volcan, lis chaque nombre rang par rang. » |
+| À la fin | Grrr ! Je me rallume, braise au ventre et yeux rouges. Le volcan est à toi, et à Lavi. | Mes écailles se rallument. Le volcan est à toi, et à Lavi. |
 | Lavi à l’arrivée | Salut, bâtisseur ! Sur mon volcan, la virgule sépare les unités des dixièmes. Regarde le tableau avant de répondre. Chaque nombre lu, c’est de l’obsidienne pour le village. | Salut, bâtisseur ! Sur mon volcan, la virgule sépare les unités des dixièmes. Regarde le tableau avant de répondre. Chaque nombre lu, c’est de l’obsidienne pour le village. |
 
 ### Le Lion de pierre, Baie des mots
@@ -115,6 +121,54 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | À la fin | Coucou ! Je me rallume, du cadran au toit pointu. Les verbes sont à toi, et à Tick. | Mon cadran se rallume. Les verbes sont à toi, et à Tick. |
 | Tick à l’arrivée | Hello, bâtisseur ! Dans mon horloge, chaque verbe a sa place : am, is ou are, have ou has. Regarde d’abord le sujet, la règle est affichée. Chaque bon verbe, c’est un cadran pour le village. | Hello, bâtisseur ! Dans mon horloge, chaque verbe a sa place : am, is ou are, have ou has. Regarde d’abord le sujet, la règle est affichée. Chaque bon verbe, c’est un cadran pour le village. |
 
+### L’Amphore peinte, Fouille des siècles
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Amphore peinte t’attend : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. » | L’Amphore peinte dit doucement : « Mes bandes peintes sont éteintes. Tu as relevé toutes les trouvailles : remets chaque époque à sa place. » |
+| À la fin | Je me rallume, du pied jusqu’au col. La Fouille est à toi, et à Silex. | Ma frise se rallume. La fouille est à toi, et à Silex. |
+| Silex à l’arrivée | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. |
+
+### Le Castor de glaise, Pointe des paysages
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Castor de glaise lève la tête : « Me voilà tout gris. Tu as vu tous les paysages de la Pointe : dis-moi où vivent les humains. » | Le Castor de glaise dit doucement : « Les traits de mon pelage sont éteints. Tu as regardé tous les paysages de la Pointe : dis-moi où vivent les humains. » |
+| À la fin | Je me rallume, de la queue jusqu’aux oreilles. La Pointe est à toi, et à Boussole. | Mon pelage se rallume. La pointe est à toi, et à Boussole. |
+| Boussole à l’arrivée | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est de la paille séchée, serrée en bottes. | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est de la paille séchée, serrée en bottes. |
+
+### Le Cerf des sous-bois, Vallée du vivant
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Cerf des sous-bois baisse la tête : « Me voilà tout gris. Tu as parcouru toute ma vallée : range chaque être vivant à sa place. » | Le Cerf des sous-bois dit doucement : « Mon manteau de mousse est éteint. Tu as observé tout le vivant de la vallée : aide-moi à le classer. » |
+| À la fin | Je me rallume, des sabots jusqu’aux bois. La Vallée est à toi, et à Fougère. | Mon manteau se rallume. La vallée est à toi, et à Fougère. |
+| Fougère à l’arrivée | Bonjour, bâtisseur ! Ici, on regarde le vivant : les plantes, les bêtes et la Terre. Chaque bonne réponse te donne un fossile. Un fossile, c’est la trace d’un être vivant très ancien, gardée dans la pierre. | Bonjour, bâtisseur ! Ici, on regarde le vivant : les plantes, les bêtes et la Terre. Chaque bonne réponse te donne un fossile. Un fossile, c’est la trace d’un être vivant très ancien, gardée dans la pierre. |
+
+### L’Alambic de verre, Laboratoire des éléments
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Alambic de verre fait une petite bulle : « Mon ballon est tout gris. Tu as fait toutes mes expériences : aide-moi à les comprendre. » | L’Alambic de verre dit doucement : « Mon ballon de verre est éteint. Tu as fait toutes les expériences du laboratoire : aide-moi à les comprendre. » |
+| À la fin | Blop ! Je me rallume, du pied jusqu’au bec. Le Laboratoire est à toi, et à Bulle. | Mon ballon se rallume. Le laboratoire est à toi, et à Bulle. |
+| Bulle à l’arrivée | Bonjour, bâtisseur ! Ici, on fait des expériences : l’eau, les mouvements et les circuits. Chaque bonne réponse te donne un aimant. Un aimant attire le fer. | Bonjour, bâtisseur ! Ici, on fait des expériences : l’eau, les mouvements et les circuits. Chaque bonne réponse te donne un aimant. Un aimant attire le fer. |
+
+### L’Automate de laiton, Hangar des inventions
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Automate de laiton fait tourner sa clé : « Me voilà tout gris. Tu as ouvert tous mes objets : dis-moi à quoi ils servent. » | L’Automate de laiton dit doucement : « Les boutons de ma poitrine sont éteints. Tu as essayé tous les objets du hangar : dis-moi à quoi ils servent. » |
+| À la fin | Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Pince. | Mes boutons se rallument. Le hangar est à toi, et à Pince. |
+| Pince à l’arrivée | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. |
+
+### L’Hirondelle de nacre, Préau des délégués
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Hirondelle de nacre ouvre une aile : « Me voilà toute grise. Tu as fait le tour de mon préau : dis-moi comment on vit ensemble. » | L’Hirondelle de nacre dit doucement : « Les plumes de mes ailes sont éteintes. Tu as fait le tour du préau : dis-moi comment on vit ensemble. » |
+| À la fin | Je me rallume, de la queue jusqu’au bec. Le préau est à toi, et à Voix. | Mes ailes se rallument. Le préau est à toi, et à Voix. |
+| Voix à l’arrivée | Bonjour, bâtisseur ! Au préau, on apprend à vivre ensemble. Chaque bonne réponse te donne de la craie. La craie, c’est pour écrire au tableau. | Bonjour, bâtisseur ! Au préau, on apprend à vivre ensemble. Chaque bonne réponse te donne de la craie. La craie, c’est pour écrire au tableau. |
+
 ## Les Collines du Large (Blocland), les Îles Brumeuses (Archipéo), 5e
 
 | Île | Créature | Espèce (Blocland) | Espèce (Archipéo) | Gardien |
@@ -125,7 +179,14 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Marais des temps](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-5e-conjugation.html) (Français) | Kroa | triton des roseaux | triton des roseaux | L’Hydre des marais |
 | [Comptoir](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-5e-vocabulary.html) (Anglais) | Pudding | bouledogue marchand | bouledogue marchand | La Reine du marché |
 | [Manoir du passé](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-5e-grammar.html) (Anglais) | Moustache | chat du manoir | chat du manoir | Le Spectre du manoir |
+| [Bourg des chroniques](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-5e-middle-ages.html) (Histoire-géo) | Vélin | lapin enlumineur | lapin enlumineur | Le Griffon d’émail |
+| [Delta des ressources](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-5e-resources.html) (Histoire-géo) | Sillon | ibis cultivateur | ibis des rizières | La Libellule de jade |
+| [Prairie des climats](https://g7ed6e.github.io/dysapps/pedagogie/iles/life-earth-sciences-5e-active-planet.html) (SVT) | Humus | ver de terre laboureur | ver de terre météorologue | La Tortue d’ocre |
+| [Saline des mélanges](https://g7ed6e.github.io/dysapps/pedagogie/iles/physics-chemistry-5e-matter-universe.html) (Physique-chimie) | Perle | canard saunier | canard saunier | Le Flamant de sel |
+| [Menuiserie des objets](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-5e-design.html) (Technologie) | Rabot | pic-vert menuisier | pic-vert menuisier | Le Cheval à bascule |
+| [Fournil des partages](https://g7ed6e.github.io/dysapps/pedagogie/iles/civics-5e-equality-solidarity.html) (EMC) | Mie | capybara boulanger | capybara boulanger | L’Oie d’opale |
 | [Relais des voyageurs](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-5e-introductions.html) (LV2 (espagnol ou allemand)) | Lina | cigogne voyageuse | cigogne voyageuse | La Diligence de cuivre |
+| [Grotte des légendes](https://g7ed6e.github.io/dysapps/pedagogie/iles/lca-5e-legends.html) (Latin ou grec (option)) | Lyre | gecko conteur | gecko conteur | Le Phénix d’argile |
 
 ### Le Mammouth de givre, Glacier des relatifs
 
@@ -155,9 +216,9 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | L’Hydre des marais sort de la vase : « Mes trois cous sont tout gris. Parle-moi du passé, du futur et du doute. » | L’Hydre des marais murmure de ses trois voix : « Mes trois cous sont éteints. Parle-moi du présent, du passé, du futur et du doute. » |
+| Au défi | L’Hydre des marais sort de la vase : « Mes trois cous sont tout gris. Parle-moi du passé, du présent et du futur. » | L’Hydre des marais murmure de ses trois voix : « Mes trois cous sont éteints. Parle-moi du présent, du passé et du futur. » |
 | À la fin | Sss ! Je me rallume, mes trois têtes aussi. Le marais est à toi, et à Kroa. | Mes trois cous se rallument. Le marais est à toi, et à Kroa. |
-| Kroa à l’arrivée | Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le futur, et le subjonctif dans les roseaux. Chaque verbe juste, c’est de la tourbe pour le village. | Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le futur, et le subjonctif dans les roseaux. Chaque verbe juste, c’est de la tourbe pour le village. |
+| Kroa à l’arrivée | Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le présent, le futur. Chaque verbe juste, c’est de la tourbe pour le village. | Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le présent, le futur. Chaque verbe juste, c’est de la tourbe pour le village. |
 
 ### La Reine du marché, Comptoir
 
@@ -175,6 +236,54 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | À la fin | Bouh ! Je me rallume, blanc comme un drap propre. Le manoir est à toi, et à Moustache. | Ma lanterne se rallume sous mon voile. Le manoir est à toi, et à Moustache. |
 | Moustache à l’arrivée | Hello, bâtisseur ! Au manoir, chaque pièce a son temps : ce qui se passe now, ce qui s’est passé yesterday. Cherche le petit mot qui dit quand. Chaque bonne réponse, c’est un lambris pour le village. | Hello, bâtisseur ! Au manoir, chaque pièce a son temps : ce qui se passe now, ce qui s’est passé yesterday. Cherche le petit mot qui dit quand. Chaque bonne réponse, c’est un lambris pour le village. |
 
+### Le Griffon d’émail, Bourg des chroniques
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Griffon d’émail déploie ses ailes : « Mes émaux sont tout gris. Tu as lu toutes les chroniques du bourg : dis-moi en quel siècle vient chaque chose. » | Le Griffon d’émail dit doucement : « Mes émaux sont éteints. Tu as lu toutes les chroniques du bourg : dis-moi en quel siècle vient chaque chose. » |
+| À la fin | Je me rallume, du bec jusqu’à la queue. Le Bourg est à toi, et à Vélin. | Mes émaux se rallument. Le bourg est à toi, et à Vélin. |
+| Vélin à l’arrivée | Bonjour, bâtisseur ! Ici, on écrit les chroniques du Moyen Âge. Chaque bonne réponse te donne un bloc d’enluminure. Une enluminure, c’est une page peinte à la main, avec des traits d’or. | Bonjour, bâtisseur ! Ici, on écrit les chroniques du Moyen Âge. Chaque bonne réponse te donne un bloc d’enluminure. Une enluminure, c’est une page peinte à la main, avec des traits d’or. |
+
+### La Libellule de jade, Delta des ressources
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | La Libellule de jade se pose sur un roseau : « Mes ailes sont toutes grises. Tu as suivi l’eau de tout le delta : dis-moi comment on partage les ressources. » | La Libellule de jade dit doucement : « Les nervures de mes ailes sont éteintes. Tu as suivi l’eau de tout le delta : dis-moi comment on partage les ressources. » |
+| À la fin | Je me rallume, des ailes jusqu’au bout de la queue. Le Delta est à toi, et à Sillon. | Mes ailes se rallument. Le delta est à toi, et à Sillon. |
+| Sillon à l’arrivée | Bonjour, bâtisseur ! Au delta, on partage l’eau, l’énergie et la nourriture. Chaque bonne réponse te donne un bloc de rizière. Une rizière, c’est un champ plein d’eau où pousse le riz. | Bonjour, bâtisseur ! Au delta, on partage l’eau, l’énergie et la nourriture. Chaque bonne réponse te donne un bloc de rizière. Une rizière, c’est un champ plein d’eau où pousse le riz. |
+
+### La Tortue d’ocre, Prairie des climats
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | La Tortue d’ocre lève lentement la tête : « Me voilà toute grise. Tu as parcouru toute ma prairie : dis-moi comment change la Terre. » | La Tortue d’ocre dit doucement : « Les écailles de ma carapace sont éteintes. Tu as relevé le temps de toute la prairie : dis-moi comment change la Terre. » |
+| À la fin | Je me rallume, des pattes jusqu’à la carapace. La Prairie est à toi, et à Humus. | Ma carapace se rallume. La prairie est à toi, et à Humus. |
+| Humus à l’arrivée | Bonjour, bâtisseur ! Ici, on regarde la Terre : ses roches, son climat, ses ressources. Chaque bonne réponse te donne une strate. Une strate, c’est une couche de roche. | Bonjour, bâtisseur ! Ici, on regarde la Terre : ses roches, son climat, ses ressources. Chaque bonne réponse te donne une strate. Une strate, c’est une couche de roche. |
+
+### Le Flamant de sel, Saline des mélanges
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Flamant de sel lève une patte : « Mes plumes sont toutes grises. Tu as fait tous les mélanges de la saline : dis-moi ce qu’il y a dedans. » | Le Flamant de sel dit doucement : « Les grains de sel de mes ailes sont éteints. Tu as fait tous les mélanges de la saline : aide-moi à séparer mes mélanges. » |
+| À la fin | Je me rallume, des pattes jusqu’au bout du bec. La Saline est à toi, et à Perle. | Mes ailes se rallument. La saline est à toi, et à Perle. |
+| Perle à l’arrivée | Bonjour, bâtisseur ! À la saline, on mélange, on sépare, on pèse. Chaque bonne réponse te donne du sel. Le sel, c’est ce qui reste quand l’eau de mer s’en va. | Bonjour, bâtisseur ! À la saline, on mélange, on sépare, on pèse. Chaque bonne réponse te donne du sel. Le sel, c’est ce qui reste quand l’eau de mer s’en va. |
+
+### Le Cheval à bascule, Menuiserie des objets
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Cheval à bascule se balance doucement : « Me voilà tout gris. Tu as vu tous les objets de la menuiserie : dis-moi pourquoi ils sont faits comme ça. » | Le Cheval à bascule dit doucement : « Les taches de ma robe sont éteintes. Tu as vu tous les objets de la menuiserie : dis-moi pourquoi ils sont faits comme ça. » |
+| À la fin | Je me rallume, des patins jusqu’à la crinière. La Menuiserie est à toi, et à Rabot. | Ma robe se rallume. La menuiserie est à toi, et à Rabot. |
+| Rabot à l’arrivée | Bonjour, bâtisseur ! À la menuiserie, on dessine un objet avant de le fabriquer. Chaque bonne réponse te donne du bambou. Le bambou, c’est une grande herbe très solide. | Bonjour, bâtisseur ! À la menuiserie, on dessine un objet avant de le fabriquer. Chaque bonne réponse te donne du bambou. Le bambou, c’est une grande herbe très solide. |
+
+### L’Oie d’opale, Fournil des partages
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Oie d’opale lève le cou : « Me voilà toute grise. Tu as fait le tour du fournil : dis-moi ce qu’est l’égalité. » | L’Oie d’opale dit doucement : « Les plumes de mes ailes sont éteintes. Tu as fait le tour du fournil : dis-moi ce qu’est l’égalité. » |
+| À la fin | Je me rallume, des pattes jusqu’au bec. Le fournil est à toi, et à Mie. | Mes ailes se rallument. Le fournil est à toi, et à Mie. |
+| Mie à l’arrivée | Bonjour, bâtisseur ! Au fournil, on partage le pain avec tout le monde. Chaque bonne réponse te donne de la farine. La farine, c’est le blé moulu. | Bonjour, bâtisseur ! Au fournil, on partage le pain avec tout le monde. Chaque bonne réponse te donne de la farine. La farine, c’est le blé moulu. |
+
 ### La Diligence de cuivre, Relais des voyageurs
 
 |  | Blocland | Archipéo |
@@ -182,6 +291,14 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Au défi | La Diligence de cuivre s’arrête devant l’auberge : « Mon cuivre est tout gris. Tu as accueilli tous mes voyageurs : écoute bien ce qu’ils te disent. » | La Diligence de cuivre dit doucement depuis le ponton : « La boussole de mon siège est éteinte. Tu as fait escale chez mes voyageurs : écoute bien ce qu’ils te disent. » |
 | À la fin | Hue ! Je me rallume, des roues aux lanternes. Le Relais est à toi, et à Lina. | Ma boussole se rallume. Le Relais est à toi, et à Lina. |
 | Lina à l’arrivée | Bonjour, bâtisseur ! Au Relais, les voyageurs se présentent, comptent et parlent de leur famille, dans ta deuxième langue. Écoute bien : la voix lit chaque mot pour toi. Chaque bonne réponse, c’est une dalle pour le village. | Bonjour, bâtisseur ! Au Relais, les voyageurs se présentent, comptent et parlent de leur famille, dans ta deuxième langue. Écoute bien : la voix lit chaque mot pour toi. Chaque bonne réponse, c’est une dalle pour le village. |
+
+### Le Phénix d’argile, Grotte des légendes
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Phénix d’argile se dresse dans son nid : « Me voilà tout gris. Tu as écouté les légendes de la grotte : raconte-les-moi. » | Le Phénix d’argile dit doucement : « Les plumes de mes ailes sont éteintes. Tu as écouté les légendes de la grotte : raconte-les-moi. » |
+| À la fin | Je renais, et je me rallume, de la queue jusqu’à la huppe. La grotte est à toi, et à Lyre. | Je renais, mes ailes se rallument. La grotte est à toi, et à Lyre. |
+| Lyre à l’arrivée | Bonjour, bâtisseur ! Dans ma grotte, je garde les vieilles légendes. Chaque bonne réponse te donne du tuf. Le tuf, c’est une pierre tendre. | Bonjour, bâtisseur ! Dans ma grotte, je garde les vieilles légendes. Chaque bonne réponse te donne du tuf. Le tuf, c’est une pierre tendre. |
 
 ## Les Monts de Feu (Blocland), les Anciens Ateliers (Archipéo), 4e
 
@@ -193,7 +310,14 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Cabinet des mots](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-4e-vocabulary.html) (Français) | Plume | pie collectionneuse | pie collectionneuse | Le Hibou lexicographe |
 | [Théâtre des voix](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-4e-comprehension.html) (Anglais) | Puck | lutin souffleur | lutin souffleur | Le Masque |
 | [Gare du futur](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-4e-grammar.html) (Anglais) | Vapeur | blaireau chef de gare | blaireau chef de gare | La Locomotive de fer |
+| [Imprimerie des révolutions](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-4e-revolutions.html) (Histoire-géo) | Typo | souris imprimeuse | souris imprimeuse | Le Paon de faïence |
+| [Escale des échanges](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-4e-globalization.html) (Histoire-géo) | Fret | crabe grutier | crabe grutier | Le Poulpe de corail |
+| [Source des espèces](https://g7ed6e.github.io/dysapps/pedagogie/iles/life-earth-sciences-4e-cells-evolution.html) (SVT) | Nectar | colibri butineur | colibri butineur | La Girafe d’ambre |
+| [Vigie des signaux](https://g7ed6e.github.io/dysapps/pedagogie/iles/physics-chemistry-4e-signals-circuits.html) (Physique-chimie) | Radar | suricate guetteur | suricate guetteur | La Cloche de cobalt |
+| [Bassin des maquettes](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-4e-modeling.html) (Technologie) | Manivelle | lémurien maquettiste | otarie maquettiste | Le Grand-bi d’érable |
+| [Porte des libertés](https://g7ed6e.github.io/dysapps/pedagogie/iles/civics-4e-rights-freedoms.html) (EMC) | Loquet | pangolin portier | pangolin portier | Le Lynx d’agate |
 | [Jardin des heures](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-4e-daily-life.html) (LV2 (espagnol ou allemand)) | Muscade | écureuil cuisinier | écureuil cuisinier | Le Soleil de cuivre |
+| [Colonnade des cités](https://g7ed6e.github.io/dysapps/pedagogie/iles/lca-4e-cities.html) (Latin ou grec (option)) | Figue | âne porteur d’eau | âne porteur d’eau | La Cigale d’argile |
 
 ### Le Titan d’acier, Forge des puissances
 
@@ -243,6 +367,54 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | À la fin | Tchou ! Je me rallume, jusqu’à la fumée. Les voies sont à toi, et à Vapeur. | Ma lampe se rallume. Les voies sont à toi, et à Vapeur. |
 | Vapeur à l’arrivée | Hello, bâtisseur ! À la gare, on parle de demain (will, going to), de ce qu’on doit faire (must, have to) et de ce qu’on a déjà fait (have been). Chaque bonne réponse, c’est un rail pour le village. | Hello, bâtisseur ! À la gare, on parle de demain (will, going to), de ce qu’on doit faire (must, have to) et de ce qu’on a déjà fait (have been). Chaque bonne réponse, c’est un rail pour le village. |
 
+### Le Paon de faïence, Imprimerie des révolutions
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Paon de faïence ouvre sa roue : « Ma roue est toute grise. Tu as lu toutes les pages de l’imprimerie : dis-moi ce que chaque révolution a changé. » | Le Paon de faïence dit doucement : « Les yeux de ma roue sont éteints. Tu as lu toutes les pages de l’imprimerie : dis-moi ce que chaque révolution a changé. » |
+| À la fin | Je me rallume, de la crête jusqu’au bout de ma roue. L’Imprimerie est à toi, et à Typo. | Ma roue se rallume. L’imprimerie est à toi, et à Typo. |
+| Typo à l’arrivée | Bonjour, bâtisseur ! À l’imprimerie, on imprime les nouvelles des révolutions. Chaque bonne réponse te donne un bloc de fonte. La fonte, c’est un métal lourd, coulé dans un moule. | Bonjour, bâtisseur ! À l’imprimerie, on imprime les nouvelles des révolutions. Chaque bonne réponse te donne un bloc de fonte. La fonte, c’est un métal lourd, coulé dans un moule. |
+
+### Le Poulpe de corail, Escale des échanges
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Poulpe de corail étale ses bras sur son socle : « Mes bras sont tout gris. Tu as vu passer tous les bateaux de l’escale : dis-moi comment le monde échange. » | Le Poulpe de corail dit doucement : « Mes ventouses sont éteintes. Tu as vu passer tous les bateaux de l’escale : dis-moi comment le monde échange. » |
+| À la fin | Je me rallume, de la tête au bout des huit bras. L’Escale est à toi, et à Fret. | Mes bras se rallument. L’escale est à toi, et à Fret. |
+| Fret à l’arrivée | Bonjour, bâtisseur ! À l’escale, les bateaux arrivent du monde entier. Chaque bonne réponse te donne un conteneur. Un conteneur, c’est une grande boîte en métal qui voyage sur les bateaux. | Bonjour, bâtisseur ! À l’escale, les bateaux arrivent du monde entier. Chaque bonne réponse te donne un conteneur. Un conteneur, c’est une grande boîte en métal qui voyage sur les bateaux. |
+
+### La Girafe d’ambre, Source des espèces
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | La Girafe d’ambre baisse son long cou : « Mes taches sont toutes grises. Tu as fait le tour de ma source : dis-moi comment le vivant se transmet et change. » | La Girafe d’ambre dit doucement : « Les taches de mon cou sont éteintes. Tu as vu grandir tout ce qui vit à la source : dis-moi comment le vivant se transmet. » |
+| À la fin | Je me rallume, des sabots jusqu’au bout du cou. La Source est à toi, et à Nectar. | Mon cou se rallume. La source est à toi, et à Nectar. |
+| Nectar à l’arrivée | Bonjour, bâtisseur ! À la source, on regarde comment le vivant se transmet et change. Chaque bonne réponse te donne un pétale. | Bonjour, bâtisseur ! À la source, on regarde comment le vivant se transmet et change. Chaque bonne réponse te donne un pétale. |
+
+### La Cloche de cobalt, Vigie des signaux
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | La Cloche de cobalt tinte tout bas : « Me voilà toute grise. Tu as suivi tous les signaux de la vigie : dis-moi comment ils voyagent. » | La Cloche de cobalt dit doucement : « Mon fil de cuivre est éteint. Tu as écouté toute la vigie : dis-moi comment voyagent la lumière et le son. » |
+| À la fin | Ding, dong ! Je me rallume, et ma lampe aussi. La Vigie est à toi, et à Radar. | Mon fil se rallume, de la cloche jusqu’à la lampe. La vigie est à toi, et à Radar. |
+| Radar à l’arrivée | Bonjour, bâtisseur ! À la vigie, on guette les signaux : la lumière, le son, le courant. Chaque bonne réponse te donne une bobine. Une bobine, c’est du fil de cuivre enroulé. | Bonjour, bâtisseur ! À la vigie, on guette les signaux : la lumière, le son, le courant. Chaque bonne réponse te donne une bobine. Une bobine, c’est du fil de cuivre enroulé. |
+
+### Le Grand-bi d’érable, Bassin des maquettes
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Grand-bi d’érable fait tourner doucement sa grande roue : « Me voilà tout gris. Tu as vu toutes les maquettes du bassin : dis-moi comment l’énergie et l’information circulent. » | Le Grand-bi d’érable dit doucement : « Les rayons de ma roue sont éteints. Tu as essayé toutes les maquettes du bassin : dis-moi comment l’énergie passe d’une pièce à l’autre. » |
+| À la fin | Je me rallume, des roues jusqu’à la selle. Le Bassin est à toi, et à Manivelle. | Ma roue se rallume. Le bassin est à toi, et à Manivelle. |
+| Manivelle à l’arrivée | Bonjour, bâtisseur ! Au bassin, on fait des maquettes pour comprendre les machines. Chaque bonne réponse te donne du liège. Le liège, c’est une écorce très légère : il flotte. | Bonjour, bâtisseur ! Au bassin, on fait des maquettes pour comprendre les machines. Chaque bonne réponse te donne du liège. Le liège, c’est une écorce très légère : il flotte. |
+
+### Le Lynx d’agate, Porte des libertés
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Lynx d’agate ouvre un œil : « Me voilà tout gris. Tu as passé la porte : dis-moi ce que protègent les libertés. » | Le Lynx d’agate dit doucement : « Les taches de mon pelage sont éteintes. Tu as passé la porte : dis-moi ce que protègent les libertés. » |
+| À la fin | Je me rallume, des pattes jusqu’au bout des oreilles. La porte est à toi, et à Loquet. | Mon pelage se rallume. La porte est à toi, et à Loquet. |
+| Loquet à l’arrivée | Bonjour, bâtisseur ! Ici, la porte est ouverte, et je veille sur elle. Chaque bonne réponse te donne un pavé. Un pavé, c’est une pierre de la rue. | Bonjour, bâtisseur ! Ici, la porte est ouverte, et je veille sur elle. Chaque bonne réponse te donne un pavé. Un pavé, c’est une pierre de la rue. |
+
 ### Le Soleil de cuivre, Jardin des heures
 
 |  | Blocland | Archipéo |
@@ -250,6 +422,14 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Au défi | Le Soleil de cuivre se lève au-dessus du jardin : « Mes rayons sont tout gris. Tu as suivi toute ma journée : dis-moi l’heure, et raconte ta journée. » | Le Soleil de cuivre dit doucement depuis son socle : « Mes rayons sont éteints. Tu as suivi toutes les heures du jardin : écoute bien, et raconte-moi ta journée. » |
 | À la fin | Je me rallume, tous rayons dehors ! Le Jardin est à toi, et à Muscade. | Mes rayons se rallument. Le jardin est à toi, et à Muscade. |
 | Muscade à l’arrivée | Salut, bâtisseur ! Au Jardin des heures, on dit l’heure, on raconte sa journée, on lit l’horaire et le menu, dans ta deuxième langue. Appuie sur Écouter : la voix lit chaque phrase pour toi. Chaque bonne réponse, c’est un bloc d’osier, le bois tressé des paniers, pour le village. | Salut, bâtisseur ! Au Jardin des heures, on dit l’heure, on raconte sa journée, on lit l’horaire et le menu, dans ta deuxième langue. Appuie sur Écouter : la voix lit chaque phrase pour toi. Chaque bonne réponse, c’est un bloc d’osier, le bois tressé des paniers, pour le village. |
+
+### La Cigale d’argile, Colonnade des cités
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | La Cigale d’argile chante tout bas : « Me voilà toute grise. Tu as visité la cité : dis-moi comment on y vivait. » | La Cigale d’argile dit doucement : « Les nervures de mes ailes sont éteintes. Tu as visité la cité : dis-moi comment on y vivait. » |
+| À la fin | Je me rallume, des pattes jusqu’aux antennes. La colonnade est à toi, et à Figue. | Mes ailes se rallument. La colonnade est à toi, et à Figue. |
+| Figue à l’arrivée | Bonjour, bâtisseur ! Je porte l’eau dans toute la cité. Chaque bonne réponse te donne une fresque. Une fresque, c’est une peinture sur un mur. | Bonjour, bâtisseur ! Je porte l’eau dans toute la cité. Chaque bonne réponse te donne une fresque. Une fresque, c’est une peinture sur un mur. |
 
 ## Les Îles du Ciel, 3e
 
@@ -261,7 +441,14 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Observatoire des textes](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-3e-close-reading.html) (Français) | Astra | luciole lectrice | luciole lectrice | Le Grand Lecteur |
 | [Studio des ondes](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-3e-comprehension.html) (Anglais) | Écho | chauve-souris animatrice radio | chauve-souris animatrice radio | La Grande Antenne |
 | [Château des hypothèses](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-3e-grammar.html) (Anglais) | Knight | petit chevalier | petit chevalier | Le Dragon gallois |
+| [Kiosque des témoins](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-3e-twentieth-century.html) (Histoire-géo) | Mémo | marmotte bibliothécaire | marmotte bibliothécaire | La Colombe d’albâtre |
+| [Plateau des territoires](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-3e-france.html) (Histoire-géo) | Jalon | fourmi arpenteuse | fourmi arpenteuse | Le Cerf de lauze |
+| [Verger de la santé](https://g7ed6e.github.io/dysapps/pedagogie/iles/life-earth-sciences-3e-human-body.html) (SVT) | Olive | koala soigneur | koala soigneur | Le Dauphin de turquoise |
+| [Tremplin des forces](https://g7ed6e.github.io/dysapps/pedagogie/iles/physics-chemistry-3e-motion-energy.html) (Physique-chimie) | Virage | tatou rouleur | tatou rouleur | Le Kangourou de rubis |
+| [Ruche des réseaux](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-3e-digital.html) (Technologie) | Navette | chenille tisseuse | chenille tisseuse | L’Abeille de topaze |
+| [Forum des débats](https://g7ed6e.github.io/dysapps/pedagogie/iles/civics-3e-democratic-life.html) (EMC) | Brio | macareux orateur | macareux orateur | L’Étourneau d’étain |
 | [Refuge des carnets](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-3e-travel.html) (LV2 (espagnol ou allemand)) | Timbre | loutre factrice | loutre factrice | Le Papillon de cuivre |
+| [Bosquet des sages](https://g7ed6e.github.io/dysapps/pedagogie/iles/lca-3e-ideas.html) (Latin ou grec (option)) | Stylet | huppe scribe | huppe scribe | Le Centaure d’argile |
 
 ### Le Sphinx de marbre, Belvédère de Thalès
 
@@ -311,6 +498,54 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | À la fin | Grrr ! Je me rallume, rouge et or, ailes violettes. Le château est à toi, et à Knight. | Mon bouclier se rallume. Le château est à toi, et à Knight. |
 | Knight à l’arrivée | Hello, bâtisseur ! Au château, les phrases sont longues : depuis quand (for, since), et si (if), et par qui (by). Pas de panique, la règle est affichée. Chaque bonne réponse, c’est une pierre de taille pour le village. | Hello, bâtisseur ! Au château, les phrases sont longues : depuis quand (for, since), et si (if), et par qui (by). Pas de panique, la règle est affichée. Chaque bonne réponse, c’est une pierre de taille pour le village. |
 
+### La Colombe d’albâtre, Kiosque des témoins
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | La Colombe d’albâtre attend, un rameau au bec : « Mes plumes sont toutes grises. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. » | La Colombe d’albâtre dit doucement : « Mes plumes sont éteintes. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. » |
+| À la fin | Je me rallume, jusqu’au rameau vert. Le Kiosque est à toi, et à Mémo. Merci de te souvenir avec moi. | Mes plumes se rallument, jusqu’au rameau vert. Le kiosque est à toi, et à Mémo. |
+| Mémo à l’arrivée | Bonjour, bâtisseur. Ici, on garde la parole des témoins. Chaque bonne réponse te donne un bloc de reliure. Une reliure, c’est la couverture solide d’un livre. | Bonjour, bâtisseur. Ici, on garde la parole des témoins. Chaque bonne réponse te donne un bloc de reliure. Une reliure, c’est la couverture solide d’un livre. |
+
+### Le Cerf de lauze, Plateau des territoires
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Cerf de lauze lève la tête : « Mon pelage est tout gris. Une lauze, c’est une pierre plate : mes bois en sont faits. Tu as parcouru tout le plateau. Dis-moi comment vit le territoire. » | Le Cerf de lauze dit doucement : « Les lauzes de ma poitrine sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru tout le plateau. Dis-moi comment vit le territoire. » |
+| À la fin | Je me rallume, du museau jusqu’aux oreilles, sous mes bois de lauze. Le plateau est à toi, et à Jalon. | Mes lauzes se rallument. Le plateau est à toi, et à Jalon. |
+| Jalon à l’arrivée | Bonjour, bâtisseur ! Sur le plateau, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. | Bonjour, bâtisseur ! Sur le plateau, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. |
+
+### Le Dauphin de turquoise, Verger de la santé
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Dauphin de turquoise souffle doucement : « Me voilà tout gris. Tu as fait le tour du verger : dis-moi comment ton corps fonctionne. » | Le Dauphin de turquoise dit doucement : « Les reflets de mon dos sont éteints. Tu as fait le tour du verger : dis-moi comment le corps reste en bonne santé. » |
+| À la fin | Je me rallume, de la queue jusqu’au museau. Le Verger est à toi, et à Olive. | Mon dos se rallume. Le verger est à toi, et à Olive. |
+| Olive à l’arrivée | Bonjour, bâtisseur ! Au verger, on prend soin du corps : bouger, dormir, bien manger. Chaque bonne réponse te donne du savon. | Bonjour, bâtisseur ! Au verger, on prend soin du corps : bouger, dormir, bien manger. Chaque bonne réponse te donne du savon. |
+
+### Le Kangourou de rubis, Tremplin des forces
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Kangourou de rubis fait un petit bond : « Me voilà tout gris. Tu as essayé tout mon tremplin : dis-moi ce qui fait bouger les choses. » | Le Kangourou de rubis dit doucement : « Les ressorts de mes pattes sont éteints. Tu as essayé tout le tremplin : dis-moi ce qui fait bouger chaque chose. » |
+| À la fin | Hop ! Je me rallume, de la queue jusqu’aux oreilles. Le Tremplin est à toi, et à Virage. | Mes ressorts se rallument. Le tremplin est à toi, et à Virage. |
+| Virage à l’arrivée | Salut, bâtisseur ! Au tremplin, on regarde ce qui fait bouger les choses : les forces et l’énergie. Chaque bonne réponse te donne un ressort. | Salut, bâtisseur ! Au tremplin, on regarde ce qui fait bouger les choses : les forces et l’énergie. Chaque bonne réponse te donne un ressort. |
+
+### L’Abeille de topaze, Ruche des réseaux
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Abeille de topaze bat doucement des ailes : « Me voilà toute grise. Tu as suivi tous les chemins de la ruche : dis-moi comment voyagent les données. » | L’Abeille de topaze dit doucement : « Les cases de mes ailes sont éteintes. Tu as suivi tous les chemins de la ruche : dis-moi comment voyagent les données. » |
+| À la fin | Bzzz ! Je me rallume, des antennes jusqu’aux rayures. La Ruche est à toi, et à Navette. | Les cases de mes ailes se rallument. La ruche est à toi, et à Navette. |
+| Navette à l’arrivée | Bonjour, bâtisseur ! À la ruche, les messages voyagent d’un point à l’autre, comme dans un réseau. Chaque bonne réponse te donne de la cire. Les abeilles font leurs cases en cire. | Bonjour, bâtisseur ! À la ruche, les messages voyagent d’un point à l’autre, comme dans un réseau. Chaque bonne réponse te donne de la cire. Les abeilles font leurs cases en cire. |
+
+### L’Étourneau d’étain, Forum des débats
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Étourneau d’étain penche la tête : « Me voilà tout gris. Tu as écouté tout le forum : dis-moi comment vit la démocratie. » | L’Étourneau d’étain dit doucement : « Les plumes de mon dos sont éteintes. Tu as écouté tout le forum : dis-moi comment vit la démocratie. » |
+| À la fin | Je me rallume, de la queue jusqu’au bec. Le forum est à toi, et à Brio. | Mes plumes se rallument. Le forum est à toi, et à Brio. |
+| Brio à l’arrivée | Bonjour, bâtisseur ! Au forum, chacun donne son avis et écoute celui des autres. Chaque bonne réponse te donne de l’acajou. L’acajou, c’est un bois rouge et solide. | Bonjour, bâtisseur ! Au forum, chacun donne son avis et écoute celui des autres. Chaque bonne réponse te donne de l’acajou. L’acajou, c’est un bois rouge et solide. |
+
 ### Le Papillon de cuivre, Refuge des carnets
 
 |  | Blocland | Archipéo |
@@ -318,4 +553,12 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Au défi | Le Papillon de cuivre attend devant le refuge : « Mes ailes sont toutes grises. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. » | Le Papillon de cuivre dit doucement : « Le bord de mes ailes est éteint. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. » |
 | À la fin | Je me rallume, jusqu’au bout des antennes. Le refuge est à toi, et à Timbre. | Le bord de mes ailes se rallume. Le refuge est à toi, et à Timbre. |
 | Timbre à l’arrivée | Bonjour, bâtisseur ! Au refuge, les voyageurs racontent leurs voyages dans ta deuxième langue. Appuie sur Écouter : la voix lit la question et l’histoire pour toi. Chaque bonne réponse te donne un bardeau. Les bardeaux, ce sont les petites planches de bois qui couvrent les murs du refuge. | Bonjour, bâtisseur ! Au refuge, les voyageurs racontent leurs voyages dans ta deuxième langue. Appuie sur Écouter : la voix lit la question et l’histoire pour toi. Chaque bonne réponse te donne un bardeau. Les bardeaux, ce sont les petites planches de bois qui couvrent les murs du refuge. |
+
+### Le Centaure d’argile, Bosquet des sages
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Centaure d’argile pose son livre : « Me voilà tout gris. Tu as parcouru le bosquet : dis-moi ce que les Anciens nous ont laissé. » | Le Centaure d’argile dit doucement : « Les motifs de mon flanc sont éteints. Tu as parcouru le bosquet : dis-moi ce que les Anciens nous ont laissé. » |
+| À la fin | Je me rallume, des sabots jusqu’à la tête. Le bosquet est à toi, et à Stylet. | Mon flanc se rallume. Le bosquet est à toi, et à Stylet. |
+| Stylet à l’arrivée | Bonjour, bâtisseur ! J’écris tout sur ma tablette de cire. Chaque bonne réponse te donne du laurier. Le laurier, c’est l’arbre des sages. | Bonjour, bâtisseur ! J’écris tout sur ma tablette de cire. Chaque bonne réponse te donne du laurier. Le laurier, c’est l’arbre des sages. |
 

@@ -125,7 +125,7 @@ it("un fichier de la version 1, aux anciennes clés, se restaure puis passe aux 
   expect(JSON.parse(localStorage.getItem("dysapps:game")!)).toEqual({
     stock: { 'french-6e-phonology': 3 },
     world: { parts: {}, log: [], links: [], place: "french-6e-phonology" },
-    version: 3,
+    version: 5,
   });
   expect(JSON.parse(localStorage.getItem("dysapps:progress")!)).toEqual({
     xp: 40,
@@ -137,7 +137,7 @@ it("un fichier de la version 1, aux anciennes clés, se restaure puis passe aux 
 });
 
 it("un fichier de la version 2 garde ses clés neuves", () => {
-  localStorage.setItem("dysapps:game", '{"stock":{"french-6e-phonology":3},"version":3}');
+  localStorage.setItem("dysapps:game", '{"stock":{"french-6e-phonology":3},"version":5}');
   const texte = JSON.stringify(creerSauvegarde("2.0.0", DATE));
   const lu = JSON.parse(texte) as Record<string, unknown>;
   expect(lu.format).toBe("dysapps-backup");
@@ -145,5 +145,5 @@ it("un fichier de la version 2 garde ses clés neuves", () => {
   expect(lu.app).toBe("2.0.0");
   localStorage.clear();
   expect(restaurerSauvegarde(lireSauvegarde(texte)!)).toBe(true);
-  expect(localStorage.getItem("dysapps:game")).toBe('{"stock":{"french-6e-phonology":3},"version":3}');
+  expect(localStorage.getItem("dysapps:game")).toBe('{"stock":{"french-6e-phonology":3},"version":5}');
 });

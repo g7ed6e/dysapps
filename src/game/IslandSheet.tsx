@@ -1,3 +1,4 @@
+import type { PetiteConstructionAPoser } from './world/placedFixtures';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
@@ -5,17 +6,16 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
+import { guardianTitle, missionsJouables, sansSonOption, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { Requests, YouAreHere } from './Requests';
-import type { Commande } from './world/requests';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
 import { ShipSection } from './ShipSection';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import type { ArchipelagoId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
-import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss } from './boss';
+import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss, quoted } from './boss';
 import { levelFor } from './engine';
 import { pickExercise, questProgress } from './exercises';
 import { Creature } from './Creatures';
@@ -30,6 +30,7 @@ import { useTextes } from '../universes';
 import type { Partie } from './world/parts';
 import { LaterSaid, ResidentReminder, useResidentReminder } from './ResidentReminder';
 import { Sheet } from './Sheet';
+import { JoinLine } from './Joins';
 
 /**
  * Comment ouvrir le défi d'un Gardien : les étoiles à gagner et les missions où les gagner (`missingForBoss`), ou qu'il
@@ -38,7 +39,8 @@ import { Sheet } from './Sheet';
  */
 export function explicationDuGardien(biome: BiomeDef, progress: Record<string, { stars: number }>, unlocked: boolean): string {
   if (!unlocked) return 'Il faut d’abord un chemin jusqu’à cette île.';
-  const missing = missingForBoss(biome, progress);
+  // Chaque titre entre guillemets : un titre qui a lui-même des virgules ou un « et » ne se confond pas avec la liste.
+  const missing = missingForBoss(biome, progress).map(quoted);
   // Ce qu'il y a à faire, jamais ce qui a raté (GD-8) ; les missions liées par « et », pas seulement par des virgules.
   const liste = missing.length > 1 ? `${missing.slice(0, -1).join(', ')} et ${missing[missing.length - 1]}` : (missing[0] ?? 'chaque mission');
   return `Pour ouvrir son défi, gagne ${STARS_TO_UNLOCK} étoiles dans ${liste}.`;
@@ -61,7 +63,7 @@ interface Props {
   /** Les parties que la vague est en train de poser (GD-6) : le compte du bâtiment les attend. */
   enCoursDePose?: Partie[] | null;
   /** Une commande livrée dans ce panneau (GD-7, PR 3) : la scène pose sa petite construction ; `true` si elle en prend le son. */
-  onLivree?: (c: Commande) => boolean;
+  onLivree?: (c: PetiteConstructionAPoser) => boolean;
   /** La commande dont la petite construction se pose (la vague) : la phrase « posée » attend la fin (GD-7, PR 3). */
   commandeEnCoursDePose?: string | null;
 }
@@ -76,12 +78,14 @@ interface Props {
 export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard, posees = null, enCoursDePose = null, onLivree, commandeEnCoursDePose = null }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
-  const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
+  // « Pas de LV2 » sur l'île de la LV2, « Pas d'option » sur celle du latin et du grec (GD-13).
+  const sansOption = sansSonOption(biome, settings);
+  const sansLv2 = sansOption !== null;
   const textes = useTextes();
   const unlocked = isBiomeUnlocked(biome.id, state.world.links);
   // « Pas de LV2 » : un seul message, lu à l'ouverture, à la place de l'accueil et du prochain objectif.
-  const greeting = accueilDeLIle(state, biome.id, sansLv2, textes);
-  const bossReady = unlocked && isBossOpen(biome, state.progress);
+  const greeting = accueilDeLIle(state, biome.id, sansOption, textes);
+  const bossReady = unlocked && isBossOpen(biome, state.progress, state.world.challengesKeptOpen);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
   const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.archipels, textes.libelles) : null;
   const port = unlocked && archipelagoOf(biome.id).port === biome.id;
@@ -144,11 +148,11 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       {rappel && <ResidentReminder biome={biome} rappel={rappel} onRemis={remettre} />}
       <LaterSaid dit={remis} />
 
-      {sansLv2 ? (
-        // « Pas de LV2 » : rien à construire, rien à jouer ; le chemin vers le réglage (décision du directeur artistique).
+      {sansOption ? (
+        // « Pas de LV2 », « Pas d'option » : rien à construire, rien à jouer ; le chemin vers le réglage (décision du directeur artistique).
         <p>
           <Link to="/reglages" className="button">
-            <Icon name="settings" /> Choisir une LV2
+            <Icon name="settings" /> {sansOption.bouton}
           </Link>
         </p>
       ) : (
@@ -162,7 +166,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       )}
       {!sansLv2 && <YouAreHere dit={ici} />}
       <ul className="island-quests" aria-label="Missions de l’île">
-        {missionsJouables(biome, settings.lv2).map((exercise) => {
+        {missionsJouables(biome, settings.lv2, settings.lca).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
           const progress = def ? questProgress(biome.id, exercise.id, state.progress) : undefined;
           const playable = Boolean(def && unlocked);
@@ -220,7 +224,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
                 <span className="island-quest-text">
                   <span className="island-quest-title">{guardianTitle(biome)}</span>
                   <span className="island-quest-desc">
-                    {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque mission'}
+                    {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).map(quoted).join(', ') || 'chaque mission'}
                   </span>
                 </span>
               </button>
@@ -251,6 +255,9 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'vehicle'} fold={fold} />}
 
       {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} fold={fold} objectif={goal?.ouvrage ?? null} />}
+
+      {/* Réuni à un autre lieu (GD-9) : la construction qui les réunit se pose d'ici, comme une grande construction. */}
+      {unlocked && <JoinLine island={biome.id} />}
 
       {/* La matière, la classe (cadrage-contenu) et l'archipel : une ligne au pied du panneau. */}
       <p className="island-sheet-module island-sheet-foot">

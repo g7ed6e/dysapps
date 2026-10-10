@@ -88,18 +88,27 @@ it('l’inventaire commenté : les lignes rangées par utilité, les ouvrages un
   expect(inv.rows[0].uses.map((u) => u.kind)).toEqual(['monument', 'monument']);
   expect(inv.rows[2].uses).toEqual([]);
   expect(inv.rows[3].uses).toEqual([]);
-  // Les ouvrages : payables par 5 blocs (ni le toit ni l'or ne comptent, GD-6), depuis une île ouverte, sans doublon.
+  // Les ouvrages : payables par 5 blocs (ni le toit ni l'or ne comptent, GD-6), une liaison proposée par lieu fermé
+  // qu'une liaison ouvre depuis un lieu relié (GD-9), sans doublon.
   expect(inv.payable).toBe(5);
   expect(inv.ouvrages.map((o) => o.bridge.id).sort()).toEqual(
     [
-      'french-6e-phonology-french-6e-grammar-spelling',
       'french-6e-phonology-english-6e-grammar',
       'french-6e-phonology-english-6e-vocabulary',
       'french-6e-phonology-french-6e-letter-confusion',
+      'french-6e-phonology-french-6e-word-spelling',
+      'french-6e-phonology-history-6e-antiquity',
+      'french-6e-phonology-life-earth-sciences-6e-living-world',
+      // Depuis les formes des îles (GD-12) : la Pointe et la Tour depuis la Forêt, la Ferme depuis la Plaine ; le
+      // Hangar, au coin de devant, ne se rejoint ni depuis la Plaine, ni depuis la Forêt depuis le Préau (EMC-2), qui
+      // coupe son bac.
+      'french-6e-phonology-geography-6e-living',
+      'french-6e-phonology-french-6e-reading',
+      // Le Préau (EMC-2), à l'ouest au rang du milieu, depuis la Forêt.
+      'french-6e-phonology-civics-6e-democratic-society',
+      'french-6e-grammar-spelling-maths-6e-calculation',
       'maths-6e-calculation-maths-6e-fractions',
       'maths-6e-calculation-maths-6e-decimals',
-      'maths-6e-calculation-french-6e-reading',
-      'maths-6e-calculation-french-6e-word-spelling',
     ].sort(),
   );
   expect(inv.ouvrages.every((o) => o.enough)).toBe(true);

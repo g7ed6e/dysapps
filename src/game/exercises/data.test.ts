@@ -1,7 +1,6 @@
 import { BIOMES, BLOCKS } from '../biomes';
 import { CATALOG, UNORDERED, exercisesOf, loadAllExercises, pickExercise, questProgress } from './index';
 import { SCREEN_TYPES } from './registry';
-import { piegesDe } from './shuffle';
 import { CalculationScreen } from './CalculationScreen';
 import { DictationItem } from './DictationItem';
 import { fillTemplate } from './types';
@@ -273,8 +272,8 @@ it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle a
       .filter((e) => e.type === 'pairs')
       .map((e) => e.id)
       .sort(),
-  ).toEqual(['ces', 'cest', 'la', 'leur', 'ou', 'peu', 'quand'].map((s) => `french-5e-homophones-pairs-${s}`).sort());
-  expect(defs.length).toBe(50);
+  ).toEqual(['ces', 'cest', 'la', 'leur', 'peu'].map((s) => `french-5e-homophones-pairs-${s}`).sort());
+  expect(defs.length).toBe(61);
   for (const def of defs)
     for (const it of def.items) {
       expect(it.choices).toContain(it.answer);
@@ -351,7 +350,7 @@ it('LV2 (allemand, espagnol) : la langue de la mission, la règle affichée, ¿ 
       expect(String(it.spoken), it.key).not.toMatch(/[…¿¡]/);
       const prompt = String(it.prompt);
       if (prompt.includes('…')) {
-        expect(def.programme?.some((id) => id.endsWith('.ecrire.dictee-fiche')), `${def.id} : un trou, seulement en dictée`).toBe(true);
+        expect(def.programme?.some((id) => /\.(ecrire\.dictee-fiche|exprimer\.dictee)$/.test(id)), `${def.id} : un trou, seulement en dictée`).toBe(true);
         expect(prompt.split('…').length, it.key).toBe(2);
         expect(it.question, it.key).toBeUndefined();
         expect(String(it.spoken), it.key).toBe(prompt.replace('…', String(it.answer)).replace(/[¿¡]/g, ''));
@@ -407,7 +406,7 @@ it('des choix qui sont tous des nombres de même unité sont rangés : sinon la 
 it('hors maths, placer les choix n’en invente aucun (pas de « 38 juin ») : seuls les calculs ont des pièges calculés', () => {
   const inventes: string[] = [];
   for (const def of EXERCISES) {
-    if (piegesDe(def) === 'calcules') continue;
+    if (def.generate) continue;
     for (const it of def.items) {
       const choices = it.choices;
       if (!Array.isArray(choices) || choices.length < 2) continue;
@@ -448,7 +447,7 @@ it('hors maths, la bonne réponse d’une liste rangée (nombres, heures) change
   // (« 2, 3, 4 syllabes ») se décalent en partie : hors du compte.
   const trop: string[] = [];
   for (const def of EXERCISES) {
-    if (piegesDe(def) !== 'du-fichier') continue;
+    if (def.generate) continue;
     const rangs = new Map<number, number[]>();
     for (const it of def.items) {
       const choices = it.choices;

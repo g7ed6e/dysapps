@@ -6,7 +6,7 @@ import type { BiomeId } from '../biomes';
 import type { Habillage } from '../skin';
 import type { ArchipelagoId } from '../world/archipelago';
 import type { CadreDeCases } from '../world/terrain';
-import type { EnCasesDuMonde, WorldViewProps } from '../world/view';
+import type { EnCasesDuMonde, GlisserLeChoix, WorldViewProps } from '../world/view';
 import type { Surface } from './surface';
 
 /** Le monde que dessine la scène : fixé pour sa vie (elle est refaite quand l'archipel ou « Réduire les animations » change). */
@@ -21,6 +21,8 @@ export interface Monde {
   centre: { x: number; y: number };
   /** Étendue la plus grande de l'archipel (largeur ou profondeur) : sert au cadrage, à la brume et au zoom maximal. */
   largeur: number;
+  /** Les liaisons posées de la partie, les dernières données à la vue (GD-9) : baleines, brume et traversées s'en écartent. */
+  liaisons(): readonly string[];
 }
 
 /** Les dernières props de la vue, lues à chaque image (la scène n'est pas refaite quand elles changent). */
@@ -33,7 +35,13 @@ export interface Derniers {
   sons: boolean;
   /** Une fiche, un panneau ou un mot est ouvert par-dessus le monde : on lit, rien ne bouge pour attirer l'œil. */
   calme: boolean;
+  /** Le cadre d'une liaison montrée depuis un autre départ (GD-9, `liaisonCadree`), ou `null`. */
+  cadreDeLaLiaison: CadreDeCases | null;
   onVoyageLegEnd?: () => void;
+  /** Le mode « Aménager » (GD-9) : pas ouvert, ouvert sans choix, ou avec un choix. */
+  amenager: 'non' | 'mode' | 'choix';
+  /** Avec un choix : le glisser au doigt, quand le glissé part de lui (choix 1b, 2a et 3a du mainteneur). */
+  glisserLeChoix?: GlisserLeChoix | null;
 }
 
 /** L'instant d'une image : ce que les déplacements (le bonhomme, le navire) ont décidé, que les autres parties lisent. */
@@ -50,6 +58,11 @@ export interface Instant {
   carte: boolean;
   /** Là où la caméra arrive : l'écart des étiquettes se calcule pour ce cadrage, pas image par image. */
   but: { target: THREE.Vector3; pos: THREE.Vector3 };
+  /**
+   * Ce que le zoom du monde ajoute à la distance de la caméra quand il recule, en cases (0 au cadrage ou plus près) : la
+   * brume recule d'autant (./mist.ts), pour que l'archipel vu de loin ne s'y noie pas. Écrit par ./camera.ts.
+   */
+  recul?: number;
 }
 
 /**

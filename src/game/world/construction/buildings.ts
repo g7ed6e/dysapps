@@ -5,7 +5,11 @@ import type { VoxelCube } from '../../Voxel';
 import { LAYOUT_PAD, origineDe, placeSpot, VILLAGE_PLACES } from '../terrain';
 import { type ArchipelagoId, islandDef, mapOf } from '../map';
 import { decalageDesPlans, planCells, plansFor } from '../plans';
-import { type CaseDuLieu, estUnLieuDuVillage } from '../architecture';
+// Les lieux et le type de leurs cases, pris à leur fichier (et non à ../architecture) : les kits d'architecture lisent
+// les étapes des plans d'ici (`etapesDe`), sans boucle d'imports.
+import { estUnLieuDuVillage } from '../architecture/places';
+import type { CaseDuLieu } from '../architecture/kits/types';
+import { layoutCache } from '../placement';
 
 /**
  * Les tours du décor du cœur que le rendu Archipéo ne dessine pas (décision du directeur artistique, lot R5) : un seul
@@ -36,7 +40,29 @@ export function sansToursDuCoeur(cubes: VoxelCube[]): VoxelCube[] {
 /** Les étapes d'un bâtiment qui prennent le kit d'architecture : les murs et le toit (world/architect.ts, `Stages`). */
 export const ETAPES_DU_BATIMENT = 2;
 
-const batiments = new Map<ArchipelagoId, ReadonlyMap<string, string>>();
+/** Les cases des étapes des plans d'un archipel, par archipel et par tranche d'étapes (`de`, `a`), vidées avec la disposition. */
+const etapes = layoutCache<string, ReadonlyMap<string, string>>();
+
+/**
+ * Les cases des étapes `de` à `jusqua` (exclue) des plans de chaque île d'un archipel, posées ou non (clé `x,y,z` du
+ * monde), et la texture de leur bloc dans Archipéo. Comme world/terrain.ts : la case (x, y, z) d'un plan est posée en
+ * (cœur + x, cœur + y, altitude + z + 1), décalée au fond de la zone au Marché et à l'Atelier (`decalageDesPlans`).
+ */
+export function etapesDe(a: ArchipelagoId, de: number, jusqua: number): ReadonlyMap<string, string> {
+  const k = `${a}|${de}|${jusqua}`;
+  const deja = etapes.get(k);
+  if (deja) return deja;
+  const out = new Map<string, string>();
+  for (const def of mapOf(a))
+    for (const plan of plansFor(def.id).slice(de, jusqua)) {
+      const d = decalageDesPlans(plan);
+      planCells(plan).forEach((c, i) => {
+        out.set(`${def.core.x + c.x + d.x},${def.core.y + c.y + d.y},${def.altitude + c.z + d.z + 1}`, BLOCKS[plan.cells[i].archipeo ?? c.block].texture);
+      });
+    }
+  etapes.set(k, out);
+  return out;
+}
 
 /**
  * Les bâtiments des îles d'un archipel (lot 7b), entiers, posés ou non : les cases des murs et du toit de chaque île
@@ -45,23 +71,64 @@ const batiments = new Map<ArchipelagoId, ReadonlyMap<string, string>>();
  * plus (l'école, la salle des trophées, le lieu où l'on assemble : ils prennent le kit par `caseDuLieu`).
  */
 export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
-  const deja = batiments.get(a);
+  return etapesDe(a, 0, ETAPES_DU_BATIMENT);
+}
+
+/**
+ * Les cours des îles d'un archipel (la table commune, 8 octobre 2026) : les cases de la troisième étape du plan de chaque
+ * île (barrières, jardinières, marches, lanternes, ou le troisième morceau d'un lieu en trois plans), posées ou non, et
+ * la texture de leur bloc. Elles prennent le kit sur leur propre plan : la cour n'allonge pas un mur.
+ */
+export function coursDe(a: ArchipelagoId): ReadonlyMap<string, string> {
+  return etapesDe(a, ETAPES_DU_BATIMENT, ETAPES_DU_BATIMENT + 1);
+}
+
+const blocsDArchipeo = layoutCache<ArchipelagoId, ReadonlyMap<string, string>>();
+
+/**
+ * Les cases des bâtiments dont le bloc change dans Archipéo (`PlanCell.archipeo`, world/plans.ts), et la texture qu'il y
+ * prend : le toit de terre cuite de la maison basse du quartier, de chaume dans Blocland (DA, retouches HG-2). C'est aussi
+ * une toiture à part (./architecture/neighborhood.ts, `toitures`) : le toit de la maison basse ne prolonge pas celui de la
+ * maison haute, qu'il touche.
+ */
+export function blocsDArchipeoDe(a: ArchipelagoId): ReadonlyMap<string, string> {
+  const deja = blocsDArchipeo.get(a);
   if (deja) return deja;
   const out = new Map<string, string>();
   for (const def of mapOf(a))
     for (const plan of plansFor(def.id).slice(0, ETAPES_DU_BATIMENT)) {
-      // Comme world/terrain.ts : la case (x, y, z) d'un plan est posée en (cœur + x, cœur + y, altitude + z + 1), décalée
-      // au fond de la zone au Marché et à l'Atelier (`decalageDesPlans`).
       const d = decalageDesPlans(plan);
-      for (const c of planCells(plan))
-        out.set(`${def.core.x + c.x + d.x},${def.core.y + c.y + d.y},${def.altitude + c.z + d.z + 1}`, BLOCKS[c.block].texture);
+      planCells(plan).forEach((c, i) => {
+        const autre = plan.cells[i].archipeo;
+        if (autre) out.set(`${def.core.x + c.x + d.x},${def.core.y + c.y + d.y},${def.altitude + c.z + d.z + 1}`, BLOCKS[autre].texture);
+      });
     }
-  batiments.set(a, out);
+  blocsDArchipeo.set(a, out);
   return out;
 }
 
+/**
+ * Les cubes posés du monde avec le bloc qu'ils prennent dans Archipéo (`blocsDArchipeoDe`) : un nouveau cube pour ceux-là
+ * seulement, les autres tels quels. Les fantômes restent des cubes Brume. Le rendu Archipéo seulement : Blocland garde son
+ * dessin.
+ */
+export function enBlocsDArchipeo(a: ArchipelagoId, cubes: VoxelCube[]): VoxelCube[] {
+  const autres = blocsDArchipeoDe(a);
+  if (!autres.size) return cubes;
+  let out: VoxelCube[] | null = null;
+  for (let i = 0; i < cubes.length; i++) {
+    const c = cubes[i];
+    if (c.ghost || c.place || c.decor || c.sol) continue;
+    const t = autres.get(`${c.x},${c.y},${c.z}`);
+    if (!t || t === c.texture) continue;
+    out ??= cubes.slice();
+    out[i] = { ...c, texture: t };
+  }
+  return out ?? cubes;
+}
+
 /** Le coin de chaque lieu du village posé (clé `<lieu>|<île>`) : x, y, et z du rang posé sur le sol (`null` ailleurs). */
-const coinsDesLieux = new Map<string, { x: number; y: number; z: number } | null>();
+const coinsDesLieux = layoutCache<string, { x: number; y: number; z: number } | null>();
 
 /**
  * La case d'un bloc d'un lieu du village dans le modèle de son lieu (world/terrain.ts : `schoolModel`, `trophyModel` et

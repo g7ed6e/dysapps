@@ -13,12 +13,31 @@ import {
   translatePlaceId,
   translateResourceId,
 } from './legacyIds';
+import { challengesOpenBeforeAdditions, challengesOpenBeforeMove } from './movedChallenges';
+import { RETIRED_ITEMS, STARS_KEPT_IN_MISSION, movedExerciseId, movedItemId } from './movedIds';
 
 /**
  * Le format de la partie (`dysapps:game`) : 2 depuis les champs neutres, 3 depuis les identifiants neutres (lieux,
- * ressources, parties, missions, exercices). Une partie sans numéro est d'avant.
+ * ressources, parties, missions, exercices), 4 depuis les exercices déplacés par les programmes de 2025-2026
+ * (movedIds.ts). Une partie sans numéro est d'avant.
+ *
+ * 5 depuis les missions ajoutées pour couvrir le programme (GD-14) : les défis ouverts avant l'ajout le restent.
+ *
+ * Limite connue du format 4 : un onglet resté ouvert sur le code d'avant relit une partie au format 4 sans la
+ * comprendre. Sa propre lecture (sanitize d'avant) ouvre les lieux où sont arrivés des exercices déplacés (ses étoiles
+ * comptent pour un lieu fermé) et perd `challengesKeptOpen`, qu'il ne connaît pas. S'il enregistre (au format 3),
+ * les lieux ouverts le restent, et la migration, qui repasse à la lecture suivante, ne retrouve plus les défis gardés
+ * ouverts sur une progression déjà déplacée. Les étoiles et la file de révision ne se perdent pas : `moveExercises`
+ * réunit les deux identifiants. La mise à jour est proposée, jamais imposée (docs/conception/deploiement.md).
+ *
+ * Au format 5, le même onglet perd aussi les lieux ajoutés de `challengesKeptOpen`, mais rien ne se perd : il
+ * enregistre au format 4, et la règle de l'ajout repasse au chargement suivant, sur une progression qui n'a pas bougé.
  */
-export const GAME_VERSION = 3;
+export const GAME_VERSION = 5;
+/** Le format des exercices déplacés par les programmes de 2025-2026. */
+const MOVED_EXERCISES_VERSION = 4;
+/** Le format des identifiants neutres : une partie à ce format, ou à un format plus récent, ne repasse pas par legacyIds. */
+const NEUTRAL_IDS_VERSION = 3;
 
 function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -124,9 +143,78 @@ function translateIds(game: Record<string, unknown>): void {
   }
 }
 
+/** Deux progressions d'un même exercice réunies : les meilleures étoiles, le meilleur score, les parties cumulées. */
+function mergeProgress(a: unknown, b: unknown): unknown {
+  if (!isRecord(a) || !isRecord(b)) return isRecord(a) ? a : b;
+  const n = (v: unknown) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+  return { ...a, stars: Math.max(n(a.stars), n(b.stars)), attempts: n(a.attempts) + n(b.attempts), best: Math.max(n(a.best), n(b.best)) };
+}
+
 /**
- * La partie aux mots neutres : ses champs, puis, si elle est d'avant le format 3, ses identifiants. Les données
- * inconnues (anciennes formes comme `build` ou `placed`) passent telles quelles.
+ * Les exercices déplacés par les programmes de 2025-2026 (format 4, movedIds.ts) : leurs étoiles et leur file de
+ * révision passent au nouvel identifiant, sans rien perdre ; une mission qui perd un niveau garde ses étoiles
+ * (STARS_KEPT_IN_MISSION) ; un item retiré (RETIRED_ITEMS) quitte la file. Si le nouvel identifiant a déjà une
+ * progression (un onglet resté ouvert sur la version d'avant), les deux se réunissent. Les niveaux adaptés (`types`) ne
+ * bougent pas : les missions déplacées gardent leur type (`subtracting`), les autres repartent du niveau 1, qui est leur
+ * premier niveau. Le stock, les parties posées et les liaisons ne dépendent pas des exercices : ils restent tels quels.
+ */
+function moveExercises(game: Record<string, unknown>): void {
+  if (isRecord(game.progress)) {
+    const out: Record<string, unknown> = {};
+    for (const [id, p] of Object.entries(game.progress)) {
+      const to = movedExerciseId(id);
+      if (to === '__proto__') continue;
+      out[to] = Object.hasOwn(out, to) ? mergeProgress(out[to], p) : p;
+    }
+    // Une mission qui perd un niveau garde ses étoiles dans un niveau qui reste (STARS_KEPT_IN_MISSION).
+    for (const [from, keep] of Object.entries(STARS_KEPT_IN_MISSION)) {
+      const p = game.progress[from];
+      const stars = isRecord(p) && Number.isFinite(Number(p.stars)) ? Number(p.stars) : 0;
+      if (stars <= 0) continue;
+      const kept = out[keep];
+      const best = Number((p as { best?: unknown }).best) || 0;
+      out[keep] = isRecord(kept)
+        ? { ...kept, stars: Math.max(Number(kept.stars) || 0, stars), best: Math.max(Number(kept.best) || 0, best) }
+        : { stars, attempts: 0, best };
+    }
+    game.progress = out;
+  }
+  if (Array.isArray(game.spaced)) {
+    const seen = new Set<string>();
+    game.spaced = game.spaced.flatMap((s: unknown) => {
+      if (!isRecord(s) || typeof s.itemId !== 'string') return [s];
+      // Un item retiré par le lot n'a plus d'écran : il quitte la file.
+      if (RETIRED_ITEMS.has(s.itemId)) return [];
+      const itemId = movedItemId(s.itemId);
+      // Un même item deux fois (déjà déplacé par un autre onglet) : la première entrée reste.
+      if (seen.has(itemId)) return [];
+      seen.add(itemId);
+      return [{ ...s, itemId }];
+    });
+  }
+}
+
+/**
+ * Les défis ouverts avant le déplacement (format 4, movedChallenges.ts) : lus sur la progression d'avant, ils restent
+ * ouverts jusqu'à ce qu'ils soient réussis. La liste des lieux va dans le monde (`challengesKeptOpen`), seulement s'il
+ * y en a ; une partie neuve n'en a jamais.
+ */
+function keepChallengesOpen(game: Record<string, unknown>, openBefore: (progress: Record<string, unknown>) => string[] = challengesOpenBeforeMove): void {
+  if (!isRecord(game.progress)) return;
+  const open = openBefore(game.progress);
+  if (!open.length) return;
+  const world = isRecord(game.world) ? game.world : {};
+  const before = Array.isArray(world.challengesKeptOpen) ? world.challengesKeptOpen.filter((id): id is string => typeof id === 'string') : [];
+  game.world = { ...world, challengesKeptOpen: [...new Set([...before, ...open])] };
+}
+
+/** Le numéro de format d'une partie, 0 si elle n'en a pas. */
+const versionOf = (game: Record<string, unknown>): number => (typeof game.version === 'number' ? game.version : 0);
+
+/**
+ * La partie aux mots neutres : ses champs, puis, si elle est d'avant le format 3, ses identifiants, puis, d'avant le
+ * format 4, ses défis ouverts (`keepChallengesOpen`) et ses exercices déplacés. Les données inconnues (anciennes
+ * formes comme `build` ou `placed`) passent telles quelles.
  */
 export function translateGame(input: unknown): unknown {
   if (!isRecord(input)) return input;
@@ -144,14 +232,24 @@ export function translateGame(input: unknown): unknown {
       });
     out.world = world;
   }
-  if (out.version !== GAME_VERSION) translateIds(out);
+  const version = versionOf(out);
+  if (version < NEUTRAL_IDS_VERSION) translateIds(out);
+  if (version < MOVED_EXERCISES_VERSION) {
+    keepChallengesOpen(out);
+    moveExercises(out);
+  }
+  // Format 5 (GD-14) : sur la progression aux identifiants du format 4, les défis ouverts avant l'ajout des missions.
+  if (version < GAME_VERSION) keepChallengesOpen(out, challengesOpenBeforeAdditions);
   return out;
 }
 
 /** Les Gardiens déjà vus rallumés, par lieu. */
 const translateGuardiansSeen = (v: unknown): unknown => mapKeys(v, translatePlaceId);
 
-/** « Ma dernière mission » : l'adresse de la dernière page ouverte. */
+/**
+ * « Ma dernière mission » : l'adresse de la dernière page ouverte, sous les mots neutres. Une mission déplacée
+ * (movedIds.ts) garde ici son adresse d'avant : `lastPlace` la suit à la lecture, avec le libellé de sa nouvelle place.
+ */
 function translateResume(v: unknown): unknown {
   return isRecord(v) && typeof v.path === 'string' ? { ...v, path: translatePath(v.path) } : v;
 }

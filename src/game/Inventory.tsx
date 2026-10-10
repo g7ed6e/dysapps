@@ -1,12 +1,14 @@
 import { useRef, useState } from 'react';
+import { thePlace } from './world/placeArticle';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { BLOCKS, blockName, getBiome } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { BlockIcon } from './Voxel';
-import { KIND_NAME } from './world/archipelago';
+import { KIND_NAME, linkKind } from './world/archipelago';
 import { blocTrophee, inventoryUses, whereToEarn, type Use } from './world/uses';
+import type { UniversNomme } from './world/assembly';
 import { VEHICLE_NAME } from './world/vehicle';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/universe';
@@ -29,8 +31,14 @@ function readyRank(kind: Use['kind'] | 'ouvrage', here: boolean): number {
   return (here ? 0 : 10) + (order < 0 ? 9 : order);
 }
 
-/** « Bloc-Navire : encore 6 à gagner », « Bloc-Navire : tu as tout, pose-les », « La tour : tu peux en poser 4 ». */
-function libelleDUsage(use: Use, count: number): string {
+/** « Bloc-Navire : encore 6 à gagner », « Bloc-Navire : tu as tout, pose-les », « La tour : tu peux en poser 4 »,
+ * « Le phare du large, la galerie : encore 4 à gagner ». */
+function libelleDUsage(use: Use, count: number, univers: UniversNomme): string {
+  // Un grand projet pose une pièce entière, nommée pour n'avoir rien à retenir : il faut tous ses blocs, comme le navire.
+  if (use.piece) {
+    const piece = use.piece[univers];
+    return use.enough ? `${use.name} : tu as tout pour ${piece}` : `${use.name}, ${piece} : encore ${use.need - count} à gagner`;
+  }
   // Un monument prend ce qu'on a : on peut en poser dès le premier bloc.
   if (use.kind === 'monument') return `${use.name} : ${use.enough ? 'tu as tout, pose-les' : `tu peux en poser ${Math.min(count, use.need)}`}`;
   return `${cap(VEHICLE_NAME)} : ${use.enough ? 'tu as tout, pose-les' : `encore ${use.need - count} à gagner`}`;
@@ -43,6 +51,7 @@ function libelleDUsage(use: Use, count: number): string {
  * les liens changent d'île (en 3D, la caméra y vole et son panneau s'ouvre).
  */
 function InventoryBody() {
+  const univers = useUnivers();
   const { state } = useBlocland();
   const at = state.world.place ?? 'french-6e-phonology';
   const { rows, payable, ouvrages, missing } = inventoryUses(state);
@@ -103,7 +112,7 @@ function InventoryBody() {
                     </Link>
                   ) : (
                     <Link to={`/adventure/${r.ouvrage.from}?worksite=${encodeURIComponent(r.ouvrage.bridge.id)}`} className="tag tag-ok">
-                      <Icon name="ouvrage" /> {KIND_NAME[r.ouvrage.bridge.kind]} vers {getBiome(r.ouvrage.to)?.name}
+                      <Icon name="ouvrage" /> {KIND_NAME[linkKind(r.ouvrage.bridge, state.world.links)]} vers {thePlace(getBiome(r.ouvrage.to)?.name ?? r.ouvrage.to)}
                     </Link>
                   )}
                 </li>
@@ -148,7 +157,7 @@ function InventoryBody() {
                   ) : (
                     uses.map((use) => (
                       <Link key={cleDUsage(use)} to={use.to ?? `/adventure/${use.island}`} className={`tag${use.enough || use.kind === 'monument' ? ' tag-ok' : ''}`}>
-                        <Icon name={iconeDUsage(use)} /> {libelleDUsage(use, row.count)}
+                        <Icon name={iconeDUsage(use)} /> {libelleDUsage(use, row.count, univers)}
                       </Link>
                     ))
                   )}
@@ -171,7 +180,7 @@ function InventoryBody() {
             {laterOuvrages.map((o) => (
               <li key={o.bridge.id}>
                 <Link to={`/adventure/${o.from}?worksite=${encodeURIComponent(o.bridge.id)}`} className={`tag${o.enough ? ' tag-ok' : ''}`}>
-                  <Icon name="hammer" /> {KIND_NAME[o.bridge.kind]} vers {getBiome(o.to)?.name} : {o.bridge.cost} blocs
+                  <Icon name="hammer" /> {KIND_NAME[linkKind(o.bridge, state.world.links)]} vers {thePlace(getBiome(o.to)?.name ?? o.to)} : {o.bridge.cost} blocs
                 </Link>
               </li>
             ))}

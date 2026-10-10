@@ -1,0 +1,241 @@
+{
+  "id": "life-earth-sciences-3e-human-body-effort-brain-1",
+  "biome": "life-earth-sciences-3e-human-body",
+  "type": "effort-brain",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-1-0",
+      "prompt": "Le pouls de Hugo\nAu repos : 70 battements par minute.\nAprès une course : 140 battements par minute.",
+      "question": "Que se passe-t-il pendant l’effort ?",
+      "spoken": "Le pouls de Hugo. Au repos, 70 battements par minute. Après une course, 140 battements par minute.",
+      "choices": [
+        "le cœur bat moins vite",
+        "le cœur bat plus vite",
+        "le cœur ne change pas"
+      ],
+      "answer": "le cœur bat plus vite",
+      "hint": "Compare les deux nombres.",
+      "explanation": "Le pouls passe de 70 à 140 : le cœur bat deux fois plus vite. Il envoie plus de sang aux muscles qui travaillent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effort",
+          "lines": [
+            "Pendant un effort, les muscles travaillent plus.",
+            "Ils ont besoin de plus d’oxygène et de plus de sucres.",
+            "Le cœur bat plus vite : le sang les leur apporte plus vite.",
+            "On respire plus vite : plus d’oxygène passe de l’air au sang, dans les poumons.",
+            "Les muscles rejettent plus de dioxyde de carbone.",
+            "Le pouls : le nombre de battements du cœur en une minute."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-1-1",
+      "prompt": "Pendant l’effort, le sang apporte aux muscles plus d’…",
+      "spoken": "Pendant l’effort, le sang apporte aux muscles plus d’ (mot manquant) ",
+      "choices": [
+        "oxygène",
+        "dioxyde de carbone",
+        "azote"
+      ],
+      "answer": "oxygène",
+      "hint": "Relis la ligne « Ils ont besoin » du rappel.",
+      "explanation": "Les muscles qui travaillent ont besoin de plus d’oxygène et de sucres : le sang les leur apporte. Le dioxyde de carbone, ils le rejettent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effort",
+          "lines": [
+            "Pendant un effort, les muscles travaillent plus.",
+            "Ils ont besoin de plus d’oxygène et de plus de sucres.",
+            "Le cœur bat plus vite : le sang les leur apporte plus vite.",
+            "On respire plus vite : plus d’oxygène passe de l’air au sang, dans les poumons.",
+            "Les muscles rejettent plus de dioxyde de carbone.",
+            "Le pouls : le nombre de battements du cœur en une minute."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-1-2",
+      "prompt": "L’organe qui envoie le sang dans tout le corps est le …",
+      "spoken": "L’organe qui envoie le sang dans tout le corps est le  (mot manquant) ",
+      "choices": [
+        "poumon",
+        "foie",
+        "cœur"
+      ],
+      "answer": "cœur",
+      "hint": "C’est lui qu’on sent battre.",
+      "explanation": "Le cœur est un muscle qui pompe le sang vers tout le corps. Les poumons, eux, font entrer l’oxygène dans le sang.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effort",
+          "lines": [
+            "Pendant un effort, les muscles travaillent plus.",
+            "Ils ont besoin de plus d’oxygène et de plus de sucres.",
+            "Le cœur bat plus vite : le sang les leur apporte plus vite.",
+            "On respire plus vite : plus d’oxygène passe de l’air au sang, dans les poumons.",
+            "Les muscles rejettent plus de dioxyde de carbone.",
+            "Le pouls : le nombre de battements du cœur en une minute."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-1-3",
+      "prompt": "Pendant l’effort, les muscles rejettent plus de …",
+      "spoken": "Pendant l’effort, les muscles rejettent plus de  (mot manquant) ",
+      "choices": [
+        "oxygène",
+        "dioxyde de carbone",
+        "sucre"
+      ],
+      "answer": "dioxyde de carbone",
+      "hint": "Relis la ligne « Les muscles » du rappel.",
+      "explanation": "Les muscles utilisent l’oxygène et les sucres, et rejettent du dioxyde de carbone. Le sang l’emporte jusqu’aux poumons, qui le rejettent dans l’air.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effort",
+          "lines": [
+            "Pendant un effort, les muscles travaillent plus.",
+            "Ils ont besoin de plus d’oxygène et de plus de sucres.",
+            "Le cœur bat plus vite : le sang les leur apporte plus vite.",
+            "On respire plus vite : plus d’oxygène passe de l’air au sang, dans les poumons.",
+            "Les muscles rejettent plus de dioxyde de carbone.",
+            "Le pouls : le nombre de battements du cœur en une minute."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-1-4",
+      "prompt": "La respiration de Sarah\nAu repos : 15 respirations par minute.\nPendant une course : 40 respirations par minute.",
+      "question": "Pourquoi Sarah respire-t-elle plus vite en courant ?",
+      "spoken": "La respiration de Sarah. Au repos, 15 respirations par minute. Pendant une course, 40 respirations par minute.",
+      "choices": [
+        "pour refroidir ses poumons",
+        "pour apporter plus d’oxygène à ses muscles",
+        "parce qu’elle parle en courant"
+      ],
+      "answer": "pour apporter plus d’oxygène à ses muscles",
+      "hint": "Relis la ligne « On respire plus vite » du rappel.",
+      "explanation": "En respirant plus vite, Sarah fait entrer plus d’oxygène dans son sang : ses muscles qui travaillent en ont besoin. Elle rejette aussi plus de dioxyde de carbone.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effort",
+          "lines": [
+            "Pendant un effort, les muscles travaillent plus.",
+            "Ils ont besoin de plus d’oxygène et de plus de sucres.",
+            "Le cœur bat plus vite : le sang les leur apporte plus vite.",
+            "On respire plus vite : plus d’oxygène passe de l’air au sang, dans les poumons.",
+            "Les muscles rejettent plus de dioxyde de carbone.",
+            "Le pouls : le nombre de battements du cœur en une minute."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-1-5",
+      "prompt": "Dans les poumons, l’oxygène passe de l’air dans le …",
+      "spoken": "Dans les poumons, l’oxygène passe de l’air dans le  (mot manquant) ",
+      "choices": [
+        "sang",
+        "estomac",
+        "cerveau"
+      ],
+      "answer": "sang",
+      "hint": "Relis la ligne « On respire plus vite » du rappel.",
+      "explanation": "Dans les poumons, l’oxygène passe de l’air au sang. Le sang le porte ensuite à tous les organes, et d’abord aux muscles pendant l’effort.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effort",
+          "lines": [
+            "Pendant un effort, les muscles travaillent plus.",
+            "Ils ont besoin de plus d’oxygène et de plus de sucres.",
+            "Le cœur bat plus vite : le sang les leur apporte plus vite.",
+            "On respire plus vite : plus d’oxygène passe de l’air au sang, dans les poumons.",
+            "Les muscles rejettent plus de dioxyde de carbone.",
+            "Le pouls : le nombre de battements du cœur en une minute."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-1-6",
+      "prompt": "Avant un effort, on prépare ses muscles et son cœur par un …",
+      "spoken": "Avant un effort, on prépare ses muscles et son cœur par un  (mot manquant) ",
+      "choices": [
+        "gros repas",
+        "long repos",
+        "échauffement"
+      ],
+      "answer": "échauffement",
+      "hint": "On fait des mouvements doux, de plus en plus vite.",
+      "explanation": "L’échauffement prépare peu à peu les muscles et le cœur à l’effort : il évite de se blesser. Un gros repas, juste avant, gêne plutôt l’effort.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effort",
+          "lines": [
+            "Pendant un effort, les muscles travaillent plus.",
+            "Ils ont besoin de plus d’oxygène et de plus de sucres.",
+            "Le cœur bat plus vite : le sang les leur apporte plus vite.",
+            "On respire plus vite : plus d’oxygène passe de l’air au sang, dans les poumons.",
+            "Les muscles rejettent plus de dioxyde de carbone.",
+            "Le pouls : le nombre de battements du cœur en une minute."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-1-7",
+      "prompt": "L’expérience de la classe\nGroupe A : 20 flexions. Pouls après : 110.\nGroupe B : 40 flexions. Pouls après : 140.",
+      "question": "Que montre cette expérience ?",
+      "spoken": "L’expérience de la classe. Groupe A, 20 flexions. Pouls après, 110. Groupe B, 40 flexions. Pouls après, 140.",
+      "choices": [
+        "plus l’effort est grand, plus le cœur bat vite",
+        "les flexions ralentissent le cœur",
+        "le pouls ne dépend pas de l’effort"
+      ],
+      "answer": "plus l’effort est grand, plus le cœur bat vite",
+      "hint": "Quel groupe a fait le plus de flexions ? Quel pouls est le plus haut ?",
+      "explanation": "Le groupe B a fait deux fois plus de flexions, et son pouls est plus haut : plus l’effort est grand, plus le cœur bat vite pour nourrir les muscles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’effort",
+          "lines": [
+            "Pendant un effort, les muscles travaillent plus.",
+            "Ils ont besoin de plus d’oxygène et de plus de sucres.",
+            "Le cœur bat plus vite : le sang les leur apporte plus vite.",
+            "On respire plus vite : plus d’oxygène passe de l’air au sang, dans les poumons.",
+            "Les muscles rejettent plus de dioxyde de carbone.",
+            "Le pouls : le nombre de battements du cœur en une minute."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-3e-human-body",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

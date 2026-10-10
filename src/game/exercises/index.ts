@@ -3,7 +3,8 @@
 // scripts/exerciseMeta.mjs) ; leur contenu est chargé à la demande, au lancement d'une partie ou d'un Gardien.
 // Le service worker met ces fichiers en cache à l'installation : ils restent disponibles hors ligne.
 import { SETS } from '../../apps/homophones/data';
-import type { BiomeId, BlockId } from '../biomes';
+import type { BiomeId } from '../biomes';
+import type { DrawKey } from '../engine/state';
 import type { AssemblageDef, ExerciseDef } from './types';
 import { MATHS_EXERCISES } from './maths';
 import { COLLEGE_EXERCISES } from './college';
@@ -43,7 +44,8 @@ const graines: ExerciseDef[] = SETS.filter((s) => GRAINES_SETS.includes(s.id)).m
 }));
 
 /** Panneaux (Carrefour des homophones) : les autres jeux de la mission Homophones, avec la règle affichée. */
-const PANNEAUX_SETS: Record<string, number> = { ces: 1, ou: 1, la: 1, leur: 1, quand: 2, peu: 2, cest: 2 };
+// ou / où et quand / quant / qu’en (des conjonctions, en 4e avec les programmes de 2026) restent au portail seulement.
+const PANNEAUX_SETS: Record<string, number> = { ces: 1, la: 1, leur: 1, peu: 2, cest: 2 };
 const panneaux: ExerciseDef[] = SETS.filter((s) => s.id in PANNEAUX_SETS).map((set) => ({
   id: `french-5e-homophones-pairs-${set.id}`,
   biome: 'french-5e-homophones',
@@ -78,43 +80,112 @@ const ORDER: (string | ExerciseDef[])[] = [
   'french-6e-phonology-syllables-warmup-001', 'french-6e-phonology-syllables-warmup-002', 'french-6e-phonology-syllables-warmup-003', 'french-6e-phonology-sound-hunt-an', 'french-6e-phonology-sound-hunt-on',
   'french-6e-phonology-sound-hunt-oi', 'french-6e-phonology-sound-hunt-in', 'french-6e-phonology-sound-hunt-ch', 'french-6e-phonology-sound-hunt-s', 'french-6e-phonology-sound-hunt-in-3', 'french-6e-letter-confusion-letter-pairs-b',
   'french-6e-letter-confusion-letter-pairs-d', 'french-6e-letter-confusion-letter-pairs-p', 'french-6e-letter-confusion-letter-pairs-q', 'french-6e-letter-confusion-letter-pairs-mix-1', 'french-6e-letter-confusion-letter-pairs-mix-2', 'french-6e-word-spelling-missing-letters-1',
-  'french-6e-word-spelling-missing-letters-2', graines, 'french-6e-reading-fluency-mousso', 'french-6e-reading-fluency-tunel', 'french-6e-reading-fluency-pont', 'french-6e-reading-comprehension-1', 'french-6e-reading-comprehension-2', 'french-6e-reading-sentence-order-1', 'french-6e-reading-sentence-order-2', 'french-6e-reading-sentence-order-3',
+  'french-6e-word-spelling-missing-letters-2', graines, 'french-6e-reading-fluency-mousso', 'french-6e-reading-fluency-tunel', 'french-6e-reading-fluency-pont', 'french-6e-reading-comprehension-1', 'french-6e-reading-comprehension-2', 'french-6e-reading-sentence-order-1', 'french-6e-reading-sentence-order-2', 'french-6e-reading-sentence-order-3', 'french-6e-reading-tense-values-1', 'french-6e-reading-tense-values-2',
   'french-6e-phonology-rhymes-eau', 'french-6e-phonology-rhymes-on', 'french-6e-phonology-rhymes-ette', 'french-6e-phonology-rhymes-oire', 'french-6e-letter-confusion-sound-discrimination-1', 'french-6e-letter-confusion-sound-discrimination-2', 'french-6e-word-spelling-sight-words-1',
   'french-6e-word-spelling-sight-words-2', 'french-6e-word-spelling-sight-words-3', 'french-6e-word-spelling-sight-words-4', 'french-6e-word-spelling-word-families-1', 'french-6e-word-spelling-word-families-2', 'french-6e-word-spelling-word-forms-1', 'french-6e-word-spelling-word-forms-2', 'french-6e-grammar-spelling-word-classes-1', 'french-6e-grammar-spelling-word-classes-2',
   'french-6e-grammar-spelling-e-er-ez-1', 'french-6e-grammar-spelling-e-er-ez-2', 'french-6e-grammar-spelling-plurals-1', 'french-6e-grammar-spelling-plurals-2', MATHS_EXERCISES, POSEES_EXERCISES, VOLCAN_EXERCISES, PROBLEMES_EXERCISES, COLLEGE_EXERCISES, PROBLEMES_COLLEGE_EXERCISES, panneaux, 'french-5e-homophones-choices-1',
-  'french-5e-homophones-choices-2', 'french-5e-homophones-choices-3', 'french-5e-homophones-homophone-sentences-1', 'french-5e-homophones-homophone-sentences-2', 'french-5e-conjugation-past-tenses-1', 'french-5e-conjugation-past-tenses-2',
-  'french-5e-conjugation-future-tense-1', 'french-5e-conjugation-future-tense-2', 'french-5e-conjugation-subjunctive-1', 'french-5e-conjugation-subjunctive-2', 'french-5e-conjugation-tense-choice-1', 'french-5e-conjugation-tense-choice-2', 'french-5e-conjugation-tense-choice-3', 'french-4e-agreement-past-participle-1', 'french-4e-agreement-past-participle-2',
-  'french-4e-agreement-adjectives-1', 'french-4e-agreement-adjectives-2', 'french-4e-agreement-subject-verb-1', 'french-4e-agreement-subject-verb-2', 'french-4e-agreement-reflexive-verbs-1', 'french-4e-agreement-reflexive-verbs-2', 'french-4e-agreement-reflexive-verbs-3', 'french-4e-vocabulary-word-roots-1',
+  'french-5e-homophones-choices-2', 'french-5e-homophones-choices-3', 'french-5e-homophones-homophone-sentences-1', 'french-5e-homophones-homophone-sentences-2', 'french-5e-homophones-participles-1', 'french-5e-homophones-participles-2', 'french-5e-homophones-word-meaning-1', 'french-5e-homophones-word-meaning-2', 'french-5e-conjugation-past-tenses-1', 'french-5e-conjugation-past-tenses-2',
+  'french-5e-conjugation-future-tense-1', 'french-5e-conjugation-future-tense-2', 'french-5e-conjugation-tense-recognition-1', 'french-5e-conjugation-tense-recognition-2', 'french-5e-conjugation-tense-choice-1', 'french-5e-conjugation-tense-choice-2', 'french-5e-conjugation-tense-choice-3', 'french-5e-conjugation-sentence-grammar-1', 'french-5e-conjugation-sentence-grammar-2', 'french-4e-agreement-past-participle-1', 'french-4e-agreement-past-participle-2',
+  'french-4e-agreement-adjectives-1', 'french-4e-agreement-adjectives-2', 'french-4e-agreement-subject-verb-1', 'french-4e-agreement-subject-verb-2', 'french-4e-agreement-reflexive-verbs-1', 'french-4e-agreement-reflexive-verbs-2', 'french-4e-agreement-reflexive-verbs-3', 'french-4e-agreement-tense-meaning-1', 'french-4e-agreement-tense-meaning-2', 'french-4e-vocabulary-word-roots-1',
   'french-4e-vocabulary-word-roots-2', 'french-4e-vocabulary-meaning-1', 'french-4e-vocabulary-meaning-2', 'french-4e-vocabulary-meaning-3', 'french-4e-vocabulary-nuances-1', 'french-4e-vocabulary-nuances-2', 'french-4e-vocabulary-nuances-3',
+  'french-4e-vocabulary-conjunctions-1', 'french-4e-vocabulary-conjunctions-2', 'french-4e-vocabulary-conjunctions-3',
   'french-3e-close-reading-inference-1', 'french-3e-close-reading-inference-2', 'french-3e-close-reading-inference-3',
-  'french-3e-close-reading-figures-of-speech-1', 'french-3e-close-reading-figures-of-speech-2', 'french-3e-close-reading-figures-of-speech-3', 'french-3e-close-reading-text-connectives-1', 'french-3e-close-reading-text-connectives-2', 'french-3e-close-reading-text-connectives-3', 'french-3e-close-reading-voices-1', 'french-3e-close-reading-voices-2', 'french-3e-close-reading-voices-3', 'english-6e-vocabulary-hello-1', 'english-6e-vocabulary-hello-2',
-  'english-6e-vocabulary-numbers-1', 'english-6e-vocabulary-numbers-2', 'english-6e-vocabulary-first-listening-1', 'english-6e-vocabulary-first-listening-2', 'english-6e-vocabulary-signs-1', 'english-6e-vocabulary-signs-2', 'english-6e-grammar-to-be-1', 'english-6e-grammar-to-be-2',
+  'french-3e-close-reading-figures-of-speech-1', 'french-3e-close-reading-figures-of-speech-2', 'french-3e-close-reading-figures-of-speech-3', 'french-3e-close-reading-text-connectives-1', 'french-3e-close-reading-text-connectives-2', 'french-3e-close-reading-text-connectives-3', 'french-3e-close-reading-voices-1', 'french-3e-close-reading-voices-2', 'french-3e-close-reading-voices-3', 'french-3e-close-reading-literary-eras-1', 'french-3e-close-reading-literary-eras-2', 'english-6e-vocabulary-hello-1', 'english-6e-vocabulary-hello-2',
+  'english-6e-vocabulary-numbers-1', 'english-6e-vocabulary-numbers-2', 'english-6e-vocabulary-first-listening-1', 'english-6e-vocabulary-first-listening-2', 'english-6e-vocabulary-signs-1', 'english-6e-vocabulary-signs-2', 'english-6e-vocabulary-famous-people-1', 'english-6e-vocabulary-famous-people-2', 'english-6e-grammar-to-be-1', 'english-6e-grammar-to-be-2',
   'english-6e-grammar-have-got-1', 'english-6e-grammar-have-got-2', 'english-6e-grammar-present-simple-1', 'english-6e-grammar-present-simple-2',
   'english-6e-grammar-story-1', 'english-6e-grammar-story-2',
   'english-5e-vocabulary-shopping-1', 'english-5e-vocabulary-shopping-2', 'english-5e-vocabulary-routine-1', 'english-5e-vocabulary-routine-2', 'english-5e-vocabulary-listening-1',
-  'english-5e-vocabulary-listening-2', 'english-5e-vocabulary-notices-1', 'english-5e-vocabulary-notices-2', 'english-5e-grammar-ing-1', 'english-5e-grammar-ing-2', 'english-5e-grammar-past-simple-1', 'english-5e-grammar-past-simple-2',
-  'english-5e-grammar-comparatives-1', 'english-5e-grammar-comparatives-2', 'english-4e-comprehension-dialogues-1', 'english-4e-comprehension-dialogues-2', 'english-4e-comprehension-quantities-1',
+  'english-5e-vocabulary-listening-2', 'english-5e-vocabulary-notices-1', 'english-5e-vocabulary-notices-2', 'english-5e-vocabulary-united-kingdom-1', 'english-5e-vocabulary-united-kingdom-2', 'english-5e-grammar-ing-1', 'english-5e-grammar-ing-2', 'english-5e-grammar-past-simple-1', 'english-5e-grammar-past-simple-2',
+  'english-5e-grammar-comparatives-1', 'english-5e-grammar-comparatives-2', 'english-5e-grammar-sentences-1', 'english-5e-grammar-sentences-2', 'english-5e-grammar-portraits-1', 'english-5e-grammar-portraits-2', 'english-4e-comprehension-dialogues-1', 'english-4e-comprehension-dialogues-2', 'english-4e-comprehension-quantities-1',
   'english-4e-comprehension-quantities-2', 'english-4e-comprehension-irregular-past-1', 'english-4e-comprehension-irregular-past-2',
   'english-4e-comprehension-stories-1', 'english-4e-comprehension-stories-2', 'english-4e-grammar-future-1',
-  'english-4e-grammar-future-2', 'english-4e-grammar-modals-1', 'english-4e-grammar-modals-2', 'english-4e-grammar-present-perfect-1', 'english-4e-grammar-present-perfect-2', 'english-4e-grammar-traditions-1', 'english-4e-grammar-traditions-2',
+  'english-4e-grammar-future-2', 'english-4e-grammar-modals-1', 'english-4e-grammar-modals-2', 'english-4e-grammar-present-perfect-1', 'english-4e-grammar-present-perfect-2', 'english-4e-grammar-traditions-1', 'english-4e-grammar-traditions-2', 'english-4e-grammar-forms-1', 'english-4e-grammar-forms-2',
   'english-3e-comprehension-understanding-1', 'english-3e-comprehension-understanding-2', 'english-3e-comprehension-linking-words-1', 'english-3e-comprehension-linking-words-2', 'english-3e-comprehension-false-friends-1',
   'english-3e-comprehension-false-friends-2', 'english-3e-comprehension-media-1', 'english-3e-comprehension-media-2', 'english-3e-grammar-for-since-1', 'english-3e-grammar-for-since-2', 'english-3e-grammar-if-1', 'english-3e-grammar-if-2',
-  'english-3e-grammar-passive-1', 'english-3e-grammar-passive-2',
+  'english-3e-grammar-passive-1', 'english-3e-grammar-passive-2', 'english-3e-grammar-messages-1', 'english-3e-grammar-messages-2',
+  // Maths écrites en Markdown (9 octobre 2026) : après les exercices produits par le code des mêmes îles.
+  'maths-6e-decimals-rounding-products-1', 'maths-6e-decimals-rounding-products-2', 'maths-6e-fractions-fraction-sums-1', 'maths-6e-fractions-fraction-sums-2', 'maths-6e-calculation-measures-1', 'maths-6e-calculation-measures-2',
+  'maths-5e-signed-numbers-order-of-operations-1', 'maths-5e-signed-numbers-order-of-operations-2', 'maths-5e-proportionality-formulas-1', 'maths-5e-proportionality-formulas-2', 'maths-5e-signed-numbers-conversions-angles-1', 'maths-5e-signed-numbers-conversions-angles-2', 'maths-5e-proportionality-statistics-1', 'maths-5e-proportionality-statistics-2',
+  'maths-4e-algebra-rationals-1', 'maths-4e-algebra-rationals-2', 'maths-4e-powers-volumes-1', 'maths-4e-powers-volumes-2', 'maths-3e-functions-proportions-1', 'maths-3e-functions-proportions-2', 'maths-3e-geometry-scaling-1', 'maths-3e-geometry-scaling-2', 'maths-3e-functions-coordinates-1', 'maths-3e-functions-coordinates-2', 'maths-3e-geometry-transformations-1', 'maths-3e-geometry-transformations-2',
+  // Histoire et géographie (Fouille des siècles, Pointe des paysages, 6e).
+  'history-6e-antiquity-early-humans-1', 'history-6e-antiquity-early-humans-2', 'history-6e-antiquity-ancient-peoples-1', 'history-6e-antiquity-ancient-peoples-2', 'history-6e-antiquity-roman-empire-1', 'history-6e-antiquity-roman-empire-2', 'history-6e-antiquity-viewpoints-1', 'history-6e-antiquity-viewpoints-2',
+  'geography-6e-living-metropolises-1', 'geography-6e-living-metropolises-2', 'geography-6e-living-low-density-1', 'geography-6e-living-low-density-2', 'geography-6e-living-inhabited-world-1', 'geography-6e-living-inhabited-world-2',
+  // Histoire et géographie (Bourg des chroniques, Delta des ressources, 5e ; Imprimerie des révolutions, Escale des
+  // échanges, 4e ; Kiosque des témoins, Plateau des territoires, 3e).
+  'history-5e-middle-ages-christendoms-islam-1', 'history-5e-middle-ages-christendoms-islam-2', 'history-5e-middle-ages-feudal-west-1', 'history-5e-middle-ages-feudal-west-2', 'history-5e-middle-ages-new-worlds-1', 'history-5e-middle-ages-new-worlds-2',
+  'geography-5e-resources-population-1', 'geography-5e-resources-population-2', 'geography-5e-resources-resources-1', 'geography-5e-resources-resources-2', 'geography-5e-resources-risks-1', 'geography-5e-resources-risks-2',
+  'history-4e-revolutions-enlightenment-1', 'history-4e-revolutions-enlightenment-2', 'history-4e-revolutions-industrial-europe-1', 'history-4e-revolutions-industrial-europe-2', 'history-4e-revolutions-french-society-1', 'history-4e-revolutions-french-society-2',
+  'geography-4e-globalization-urbanization-1', 'geography-4e-globalization-urbanization-2', 'geography-4e-globalization-mobilities-1', 'geography-4e-globalization-mobilities-2', 'geography-4e-globalization-globalization-1', 'geography-4e-globalization-globalization-2',
+  'history-3e-twentieth-century-total-wars-1', 'history-3e-twentieth-century-total-wars-2', 'history-3e-twentieth-century-world-since-1945-1', 'history-3e-twentieth-century-world-since-1945-2', 'history-3e-twentieth-century-republic-1', 'history-3e-twentieth-century-republic-2',
+  'geography-3e-france-territories-1', 'geography-3e-france-territories-2', 'geography-3e-france-planning-1', 'geography-3e-france-planning-2', 'geography-3e-france-france-eu-1', 'geography-3e-france-france-eu-2',
+  // Sciences et technologie (Vallée du vivant, Laboratoire des éléments, Hangar des inventions, 6e).
+  'life-earth-sciences-6e-living-world-living-groups-1', 'life-earth-sciences-6e-living-world-living-groups-2', 'life-earth-sciences-6e-living-world-food-growth-1', 'life-earth-sciences-6e-living-world-food-growth-2',
+  'life-earth-sciences-6e-living-world-planet-earth-1', 'life-earth-sciences-6e-living-world-planet-earth-2', 'life-earth-sciences-6e-living-world-life-enquiry-1', 'life-earth-sciences-6e-living-world-life-enquiry-2',
+  'physics-chemistry-6e-matter-energy-states-of-matter-1', 'physics-chemistry-6e-matter-energy-states-of-matter-2', 'physics-chemistry-6e-matter-energy-motion-signals-1', 'physics-chemistry-6e-matter-energy-motion-signals-2',
+  'physics-chemistry-6e-matter-energy-energy-circuits-1', 'physics-chemistry-6e-matter-energy-energy-circuits-2', 'physics-chemistry-6e-matter-energy-materials-light-1', 'physics-chemistry-6e-matter-energy-materials-light-2',
+  'technology-6e-objects-object-function-1', 'technology-6e-objects-object-function-2', 'technology-6e-objects-materials-1', 'technology-6e-objects-materials-2',
+  'technology-6e-objects-information-networks-1', 'technology-6e-objects-information-networks-2', 'technology-6e-objects-solve-program-1', 'technology-6e-objects-solve-program-2',
+  // Enseignement moral et civique (Préau des délégués, 6e).
+  'civics-6e-democratic-society-representatives-1', 'civics-6e-democratic-society-representatives-2', 'civics-6e-democratic-society-school-secularism-1',
+  'civics-6e-democratic-society-school-secularism-2', 'civics-6e-democratic-society-private-life-1', 'civics-6e-democratic-society-private-life-2',
+  // Sciences et technologie de la 5e à la 3e (SC-3).
+  // Prairie des climats, Saline des mélanges, Menuiserie des objets, 5e.
+  'life-earth-sciences-5e-active-planet-active-earth-1', 'life-earth-sciences-5e-active-planet-active-earth-2', 'life-earth-sciences-5e-active-planet-weather-climate-1',
+  'life-earth-sciences-5e-active-planet-weather-climate-2', 'life-earth-sciences-5e-active-planet-human-impact-1', 'life-earth-sciences-5e-active-planet-human-impact-2',
+  'physics-chemistry-5e-matter-universe-changes-of-state-1', 'physics-chemistry-5e-matter-universe-changes-of-state-2', 'physics-chemistry-5e-matter-universe-mixtures-density-1',
+  'physics-chemistry-5e-matter-universe-mixtures-density-2', 'physics-chemistry-5e-matter-universe-universe-atoms-1', 'physics-chemistry-5e-matter-universe-universe-atoms-2',
+  'technology-5e-design-specifications-1', 'technology-5e-design-specifications-2', 'technology-5e-design-technical-solutions-1',
+  'technology-5e-design-technical-solutions-2', 'technology-5e-design-life-cycle-1', 'technology-5e-design-life-cycle-2', 'technology-5e-design-project-management-1', 'technology-5e-design-project-management-2',
+  // Enseignement moral et civique (Fournil des partages, 5e).
+  'civics-5e-equality-solidarity-gender-equality-1', 'civics-5e-equality-solidarity-gender-equality-2', 'civics-5e-equality-solidarity-discrimination-1',
+  'civics-5e-equality-solidarity-discrimination-2', 'civics-5e-equality-solidarity-solidarity-1', 'civics-5e-equality-solidarity-solidarity-2',
+  // Source des espèces, Vigie des signaux, Bassin des maquettes, 4e.
+  'life-earth-sciences-4e-cells-evolution-cells-nutrition-1', 'life-earth-sciences-4e-cells-evolution-cells-nutrition-2', 'life-earth-sciences-4e-cells-evolution-heredity-1',
+  'life-earth-sciences-4e-cells-evolution-heredity-2', 'life-earth-sciences-4e-cells-evolution-species-evolution-1', 'life-earth-sciences-4e-cells-evolution-species-evolution-2',
+  'physics-chemistry-4e-signals-circuits-light-sound-1', 'physics-chemistry-4e-signals-circuits-light-sound-2', 'physics-chemistry-4e-signals-circuits-electric-circuits-1',
+  'physics-chemistry-4e-signals-circuits-electric-circuits-2', 'physics-chemistry-4e-signals-circuits-chemical-reactions-1', 'physics-chemistry-4e-signals-circuits-chemical-reactions-2',
+  'technology-4e-modeling-energy-chain-1', 'technology-4e-modeling-energy-chain-2', 'technology-4e-modeling-information-chain-1',
+  'technology-4e-modeling-information-chain-2', 'technology-4e-modeling-simulation-1', 'technology-4e-modeling-simulation-2', 'technology-4e-modeling-troubleshooting-1', 'technology-4e-modeling-troubleshooting-2',
+  // Enseignement moral et civique (Porte des libertés, 4e).
+  'civics-4e-rights-freedoms-freedoms-1', 'civics-4e-rights-freedoms-freedoms-2', 'civics-4e-rights-freedoms-justice-1',
+  'civics-4e-rights-freedoms-justice-2', 'civics-4e-rights-freedoms-security-defence-1', 'civics-4e-rights-freedoms-security-defence-2',
+  // Verger de la santé, Tremplin des forces, Ruche des réseaux, 3e.
+  'life-earth-sciences-3e-human-body-effort-brain-1', 'life-earth-sciences-3e-human-body-effort-brain-2', 'life-earth-sciences-3e-human-body-digestion-microbes-1',
+  'life-earth-sciences-3e-human-body-digestion-microbes-2', 'life-earth-sciences-3e-human-body-puberty-reproduction-1', 'life-earth-sciences-3e-human-body-puberty-reproduction-2',
+  'physics-chemistry-3e-motion-energy-motion-forces-1', 'physics-chemistry-3e-motion-energy-motion-forces-2', 'physics-chemistry-3e-motion-energy-energy-power-1',
+  'physics-chemistry-3e-motion-energy-energy-power-2', 'physics-chemistry-3e-motion-energy-acids-bases-1', 'physics-chemistry-3e-motion-energy-acids-bases-2',
+  'technology-3e-digital-computer-networks-1', 'technology-3e-digital-computer-networks-2', 'technology-3e-digital-connected-objects-1',
+  'technology-3e-digital-connected-objects-2', 'technology-3e-digital-algorithms-1', 'technology-3e-digital-algorithms-2', 'technology-3e-digital-data-tables-1', 'technology-3e-digital-data-tables-2',
+  // Enseignement moral et civique (Forum des débats, 3e).
+  'civics-3e-democratic-life-constitution-1', 'civics-3e-democratic-life-constitution-2', 'civics-3e-democratic-life-information-1',
+  'civics-3e-democratic-life-information-2', 'civics-3e-democratic-life-civic-engagement-1', 'civics-3e-democratic-life-civic-engagement-2',
   // LV2 (Relais des voyageurs, 5e) : une mission par langue et par thème, l’allemand puis l’espagnol.
   'lv2-5e-introductions-de-greetings-1', 'lv2-5e-introductions-de-greetings-2', 'lv2-5e-introductions-de-numbers-1', 'lv2-5e-introductions-de-numbers-2', 'lv2-5e-introductions-de-family-1',
-  'lv2-5e-introductions-de-family-2', 'lv2-5e-introductions-de-articles-1', 'lv2-5e-introductions-de-articles-2', 'lv2-5e-introductions-es-greetings-1', 'lv2-5e-introductions-es-greetings-2',
+  'lv2-5e-introductions-de-family-2', 'lv2-5e-introductions-de-articles-1', 'lv2-5e-introductions-de-articles-2', 'lv2-5e-introductions-de-sentences-1', 'lv2-5e-introductions-de-sentences-2', 'lv2-5e-introductions-es-greetings-1', 'lv2-5e-introductions-es-greetings-2',
   'lv2-5e-introductions-es-numbers-1', 'lv2-5e-introductions-es-numbers-2', 'lv2-5e-introductions-es-family-1', 'lv2-5e-introductions-es-family-2', 'lv2-5e-introductions-es-articles-1',
-  'lv2-5e-introductions-es-articles-2',
+  'lv2-5e-introductions-es-articles-2', 'lv2-5e-introductions-es-sentences-1', 'lv2-5e-introductions-es-sentences-2',
   // LV2 (Jardin des heures, 4e) : de même, l’allemand puis l’espagnol.
   'lv2-4e-daily-life-de-time-1', 'lv2-4e-daily-life-de-time-2', 'lv2-4e-daily-life-de-my-day-1', 'lv2-4e-daily-life-de-my-day-2', 'lv2-4e-daily-life-de-timetable-1',
-  'lv2-4e-daily-life-de-timetable-2', 'lv2-4e-daily-life-de-modals-1', 'lv2-4e-daily-life-de-modals-2', 'lv2-4e-daily-life-es-time-1', 'lv2-4e-daily-life-es-time-2',
+  'lv2-4e-daily-life-de-timetable-2', 'lv2-4e-daily-life-de-modals-1', 'lv2-4e-daily-life-de-modals-2', 'lv2-4e-daily-life-de-signs-1', 'lv2-4e-daily-life-de-signs-2', 'lv2-4e-daily-life-es-time-1', 'lv2-4e-daily-life-es-time-2',
   'lv2-4e-daily-life-es-my-day-1', 'lv2-4e-daily-life-es-my-day-2', 'lv2-4e-daily-life-es-timetable-1', 'lv2-4e-daily-life-es-timetable-2', 'lv2-4e-daily-life-es-ser-estar-1',
-  'lv2-4e-daily-life-es-ser-estar-2',
+  'lv2-4e-daily-life-es-ser-estar-2', 'lv2-4e-daily-life-es-signs-1', 'lv2-4e-daily-life-es-signs-2',
   // LV2 (Refuge des carnets, 3e) : de même, l’allemand puis l’espagnol.
   'lv2-3e-travel-de-past-1', 'lv2-3e-travel-de-past-2', 'lv2-3e-travel-de-stories-1', 'lv2-3e-travel-de-stories-2', 'lv2-3e-travel-de-on-the-road-1',
-  'lv2-3e-travel-de-on-the-road-2', 'lv2-3e-travel-de-connectives-1', 'lv2-3e-travel-de-connectives-2', 'lv2-3e-travel-es-past-1', 'lv2-3e-travel-es-past-2',
+  'lv2-3e-travel-de-on-the-road-2', 'lv2-3e-travel-de-connectives-1', 'lv2-3e-travel-de-connectives-2', 'lv2-3e-travel-de-media-1', 'lv2-3e-travel-de-media-2', 'lv2-3e-travel-es-past-1', 'lv2-3e-travel-es-past-2',
   'lv2-3e-travel-es-stories-1', 'lv2-3e-travel-es-stories-2', 'lv2-3e-travel-es-countries-1', 'lv2-3e-travel-es-countries-2', 'lv2-3e-travel-es-connectives-1',
-  'lv2-3e-travel-es-connectives-2',
+  'lv2-3e-travel-es-connectives-2', 'lv2-3e-travel-es-media-1', 'lv2-3e-travel-es-media-2',
+  // Latin et grec (Grotte des légendes, 5e) : le latin puis le grec ; l’alphabet grec attend sa police (en attente).
+  'lca-5e-legends-la-founding-1', 'lca-5e-legends-la-founding-2', 'lca-5e-legends-la-gods-1', 'lca-5e-legends-la-gods-2', 'lca-5e-legends-la-cases-1',
+  'lca-5e-legends-la-cases-2', 'lca-5e-legends-gr-founding-1', 'lca-5e-legends-gr-founding-2', 'lca-5e-legends-gr-gods-1', 'lca-5e-legends-gr-gods-2',
+  'lca-5e-legends-gr-alphabet-1', 'lca-5e-legends-gr-alphabet-2',
+  // Latin et grec (Colonnade des cités, 4e) : le latin puis le grec.
+  'lca-4e-cities-la-home-1', 'lca-4e-cities-la-home-2', 'lca-4e-cities-la-forum-1', 'lca-4e-cities-la-forum-2', 'lca-4e-cities-la-mediterranean-1',
+  'lca-4e-cities-la-mediterranean-2', 'lca-4e-cities-gr-home-1', 'lca-4e-cities-gr-home-2', 'lca-4e-cities-gr-agora-1', 'lca-4e-cities-gr-agora-2',
+  'lca-4e-cities-gr-mediterranean-1', 'lca-4e-cities-gr-mediterranean-2',
+  // Latin et grec (Bosquet des sages, 3e) : le latin puis le grec.
+  'lca-3e-ideas-la-empire-1', 'lca-3e-ideas-la-empire-2', 'lca-3e-ideas-la-provinces-1', 'lca-3e-ideas-la-provinces-2', 'lca-3e-ideas-la-heritage-1',
+  'lca-3e-ideas-la-heritage-2', 'lca-3e-ideas-gr-myth-history-1', 'lca-3e-ideas-gr-myth-history-2', 'lca-3e-ideas-gr-greek-world-1', 'lca-3e-ideas-gr-greek-world-2',
+  'lca-3e-ideas-gr-heritage-1', 'lca-3e-ideas-gr-heritage-2',
 ];
 
 const metaOf = ({ id, biome, type, level }: ExerciseMeta): ExerciseMeta => ({ id, biome, type, level });
@@ -131,18 +202,16 @@ export const CATALOG: ExerciseMeta[] = ORDER.flatMap((entry) =>
  */
 export const UNORDERED = [...JSON_BY_ID.values()].filter((m) => m.type !== 'assembly' && !ORDER.includes(m.id)).map((m) => m.id);
 
-/** L'identifiant des questions d'un bloc assemblé (GD-2) : data/assembly-<bloc>.json. */
-export function assemblageId(bloc: BlockId): string {
+/** L'identifiant des questions d'un bloc assemblé (GD-2) ou d'une banque de projet (GD-10) : data/assembly-<bloc>.json. */
+export function assemblageId(bloc: DrawKey): string {
   return `assembly-${bloc}`;
 }
 
-/** Les blocs assemblés qui ont leurs questions (docs/contenu/assemblage.md, « Les questions »). */
-export const BLOCS_A_QUESTIONS: BlockId[] = [...JSON_BY_ID.values()]
-  .filter((m) => m.type === 'assembly')
-  .map((m) => m.id.slice('assembly-'.length) as BlockId);
+/** Les blocs assemblés et les banques de projets qui ont leurs questions (assemblage.md et projets.md, « Les questions »). */
+export const BLOCS_A_QUESTIONS: string[] = [...JSON_BY_ID.values()].filter((m) => m.type === 'assembly').map((m) => m.id.slice('assembly-'.length));
 
-/** Les questions d'un bloc assemblé, chargées à la demande comme un exercice JSON. */
-export async function loadAssemblage(bloc: BlockId): Promise<AssemblageDef | undefined> {
+/** Les questions d'un bloc assemblé ou d'une banque de projet, chargées à la demande comme un exercice JSON. */
+export async function loadAssemblage(bloc: DrawKey): Promise<AssemblageDef | undefined> {
   return (await LOADERS.get(assemblageId(bloc))?.()) as AssemblageDef | undefined;
 }
 

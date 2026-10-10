@@ -1,0 +1,9 @@
+{
+  "id": "geography-6e-living-3",
+  "biome": "geography-6e-living",
+  "name": "Le quai du quartier",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Un quai au bord de l’eau ! Mon quartier est complet : la ville, les champs et la mer."
+}

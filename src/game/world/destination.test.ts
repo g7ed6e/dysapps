@@ -30,7 +30,7 @@ it('l’île où l’élève est allé passe devant tant qu’il y reste une mis
   expect(nextDestination(foret)).toMatchObject({ island: 'french-6e-phonology', text: 'Tu y es : d’autres missions t’attendent.' });
   // Assez de blocs pour un ouvrage qui part de la Forêt : on peut le construire tout de suite.
   const riche = sanitizeState({ progress: joue('french-6e-phonology', 1), stock: { [BLOC.bois]: 5 }, world: { place: 'french-6e-phonology', links: [] } });
-  expect(nextDestination(riche)).toMatchObject({ island: 'french-6e-phonology', text: expect.stringMatching(/^Tu peux construire .*\. Il ouvre une île (de français|de maths|d’anglais)\.$/) });
+  expect(nextDestination(riche)).toMatchObject({ island: 'french-6e-phonology', text: expect.stringMatching(/^Tu peux poser .*\. Il ouvre une île (de français|de maths|d’anglais)\.$/) });
   // L'objectif prêt est un ouvrage : la destination le désigne aussi.
   expect(nextDestination(riche).ouvrage).toBe(nextGoalInfo(riche, 'french-6e-phonology', NOMS_ARCHIPELS, mots)?.ouvrage);
   expect(nextDestination(riche).ouvrage).toBeTruthy();
@@ -42,20 +42,20 @@ it('l’île où l’élève est allé passe devant tant qu’il y reste une mis
 });
 
 it('ensuite, l’ouvrage qui ouvre une île de la matière la moins jouée, depuis l’île d’où il part, avec sa raison', () => {
-  // La Forêt, la Plaine, la Mine et la Rivière jouées en entier ; le bonhomme sur la Mine, d'où rien n'est prêt (le pont
-  // vers la Carrière coûte 5 blocs). Français : 5 missions sur 5 îles ; maths : 8 sur 3 ; anglais : aucune.
+  // La Forêt, la Plaine, la Mine et la Rivière jouées en entier ; le bonhomme sur la Forêt. Français : 5 missions sur
+  // 5 îles ; maths : 8 sur 3 ; anglais : aucune ; toutes les liaisons coûtent 4 blocs (GD-9).
   const iles: BiomeId[] = ['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion', 'maths-6e-fractions'];
   const progress = Object.assign({}, ...iles.map((id) => joue(id)));
-  const world = { place: 'french-6e-letter-confusion', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
+  const world = { place: 'french-6e-phonology', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
   const paye = sanitizeState({ progress, stock: { [BLOC.bois]: 4 }, world });
-  expect(nextDestination(paye)).toMatchObject({ island: 'french-6e-phonology', text: 'Tu peux construire le pont vers Horloge des verbes. Il ouvre une île d’anglais.', have: 4, need: 4 });
-  // La destination dit quel ouvrage : la flèche de la Carte se pose sur lui, pas sur l'île (quatre ouvrages en partent).
+  expect(nextDestination(paye)).toMatchObject({ island: 'french-6e-phonology', text: 'Tu peux poser le pont vers l’Horloge des verbes. Il ouvre une île d’anglais.', have: 4, need: 4 });
+  // La destination dit quelle liaison : la flèche de la Carte se pose sur elle, pas sur l'île.
   expect(nextDestination(paye).ouvrage).toBe('french-6e-phonology-english-6e-grammar');
-  // Le panneau de la Forêt met le même ouvrage en avant (son seul « Construire » principal).
+  // Le panneau de la Forêt met la même liaison en avant (son seul « Poser » principal).
   expect(nextGoalInfo(paye, 'french-6e-phonology', NOMS_ARCHIPELS, mots)?.ouvrage).toBe('french-6e-phonology-english-6e-grammar');
-  // Sans assez de blocs : ce qu'il manque, pour le même ouvrage.
   const pauvre = sanitizeState({ progress, stock: { [BLOC.bois]: 1 }, world });
-  expect(nextDestination(pauvre)).toMatchObject({ island: 'french-6e-phonology', text: 'Encore 3 blocs pour le pont vers Horloge des verbes. Il ouvre une île d’anglais.', have: 1, need: 4, ouvrage: 'french-6e-phonology-english-6e-grammar' });
+  // Sans blocs, aucune liaison ne se paie : la suggestion reprend l'ordre des matières (l'anglais, jamais joué).
+  expect(nextDestination(pauvre)).toMatchObject({ island: 'french-6e-phonology', text: 'Encore 3 blocs pour le pont vers l’Horloge des verbes. Il ouvre une île d’anglais.', have: 1, need: 4, ouvrage: 'french-6e-phonology-english-6e-grammar' });
   // La même sauvegarde, la même suggestion : rien ne change tant que l'élève n'a rien fait.
   expect(nextDestination(structuredClone(paye))).toEqual(nextDestination(paye));
 });

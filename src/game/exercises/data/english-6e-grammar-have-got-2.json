@@ -8,192 +8,192 @@
   "items": [
     {
       "key": "english-6e-grammar-have-got-2-0",
-      "prompt": "… you got a pet?",
-      "spoken": "blank you got a pet?",
+      "prompt": "… you have a pet?",
+      "spoken": "blank you have a pet?",
       "choices": [
-        "Have",
-        "Has",
-        "Do"
+        "Do",
+        "Does",
+        "Have"
       ],
-      "answer": "Have",
-      "hint": "Question avec have got : have ou has devant le sujet.",
-      "explanation": "Have you got a pet? : avec you, c’est have, placé devant.",
+      "answer": "Do",
+      "hint": "Question avec have : do ou does devant le sujet.",
+      "explanation": "Do you have a pet? : avec you, c’est do, placé devant.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got : négation et question",
+          "title": "Have : négation et question",
           "lines": [
-            "Négation : I haven’t got, she hasn’t got.",
-            "Question : on inverse ! Have you got…? Has he got…?",
-            "Réponse courte : Yes, I have. No, he hasn’t."
+            "Négation : I don’t have, she doesn’t have (have reste sans s).",
+            "Question : Do you have…? Does he have…?",
+            "Réponse courte : Yes, I do. No, he doesn’t."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-2-1",
-      "prompt": "… she got a phone?",
-      "spoken": "blank she got a phone?",
+      "prompt": "… she have a phone?",
+      "spoken": "blank she have a phone?",
       "choices": [
-        "Have",
-        "Has",
+        "Do",
+        "Does",
         "Is"
       ],
-      "answer": "Has",
-      "hint": "Question avec have got : have ou has devant le sujet.",
-      "explanation": "Has she got a phone? : avec she, c’est has, placé devant.",
+      "answer": "Does",
+      "hint": "Question avec have : do ou does devant le sujet.",
+      "explanation": "Does she have a phone? : avec she, c’est does, placé devant. Have reste sans s.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got : négation et question",
+          "title": "Have : négation et question",
           "lines": [
-            "Négation : I haven’t got, she hasn’t got.",
-            "Question : on inverse ! Have you got…? Has he got…?",
-            "Réponse courte : Yes, I have. No, he hasn’t."
+            "Négation : I don’t have, she doesn’t have (have reste sans s).",
+            "Question : Do you have…? Does he have…?",
+            "Réponse courte : Yes, I do. No, he doesn’t."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-2-2",
-      "prompt": "I … got any brothers.",
-      "spoken": "I blank got any brothers.",
+      "prompt": "I … have any brothers.",
+      "spoken": "I blank have any brothers.",
       "choices": [
-        "haven’t",
-        "hasn’t",
-        "don’t"
+        "don’t",
+        "doesn’t",
+        "haven’t"
       ],
-      "answer": "haven’t",
+      "answer": "don’t",
       "hint": "Négation avec I.",
-      "explanation": "I haven’t got : avec I, la négation est haven’t.",
+      "explanation": "I don’t have : avec I, la négation est don’t.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got : négation et question",
+          "title": "Have : négation et question",
           "lines": [
-            "Négation : I haven’t got, she hasn’t got.",
-            "Question : on inverse ! Have you got…? Has he got…?",
-            "Réponse courte : Yes, I have. No, he hasn’t."
+            "Négation : I don’t have, she doesn’t have (have reste sans s).",
+            "Question : Do you have…? Does he have…?",
+            "Réponse courte : Yes, I do. No, he doesn’t."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-2-3",
-      "prompt": "He … got a computer.",
-      "spoken": "He blank got a computer.",
+      "prompt": "He … have a computer.",
+      "spoken": "He blank have a computer.",
       "choices": [
-        "haven’t",
-        "hasn’t",
-        "isn’t"
+        "don’t",
+        "doesn’t",
+        "hasn’t"
       ],
-      "answer": "hasn’t",
+      "answer": "doesn’t",
       "hint": "Négation avec he.",
-      "explanation": "He hasn’t got : avec he, la négation est hasn’t.",
+      "explanation": "He doesn’t have : avec he, la négation est doesn’t, et have reste sans s.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got : négation et question",
+          "title": "Have : négation et question",
           "lines": [
-            "Négation : I haven’t got, she hasn’t got.",
-            "Question : on inverse ! Have you got…? Has he got…?",
-            "Réponse courte : Yes, I have. No, he hasn’t."
+            "Négation : I don’t have, she doesn’t have (have reste sans s).",
+            "Question : Do you have…? Does he have…?",
+            "Réponse courte : Yes, I do. No, he doesn’t."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-2-4",
-      "prompt": "… they got a car? — Yes, they have.",
-      "spoken": "blank they got a car? — Yes, they have.",
+      "prompt": "… they have a car? — Yes, they do.",
+      "spoken": "blank they have a car? — Yes, they do.",
       "choices": [
-        "Have",
-        "Has",
+        "Do",
+        "Does",
         "Are"
       ],
-      "answer": "Have",
-      "hint": "Question avec have got : have ou has devant le sujet.",
-      "explanation": "Have they got a car? : avec they, c’est have, placé devant.",
+      "answer": "Do",
+      "hint": "Question avec have : do ou does devant le sujet.",
+      "explanation": "Do they have a car? : avec they, c’est do, placé devant.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got : négation et question",
+          "title": "Have : négation et question",
           "lines": [
-            "Négation : I haven’t got, she hasn’t got.",
-            "Question : on inverse ! Have you got…? Has he got…?",
-            "Réponse courte : Yes, I have. No, he hasn’t."
+            "Négation : I don’t have, she doesn’t have (have reste sans s).",
+            "Question : Do you have…? Does he have…?",
+            "Réponse courte : Yes, I do. No, he doesn’t."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-2-5",
-      "prompt": "My sister … got a bike.",
-      "spoken": "My sister blank got a bike.",
+      "prompt": "My sister … have a bike.",
+      "spoken": "My sister blank have a bike.",
       "choices": [
-        "haven’t",
-        "hasn’t",
-        "don’t"
+        "don’t",
+        "doesn’t",
+        "hasn’t"
       ],
-      "answer": "hasn’t",
+      "answer": "doesn’t",
       "hint": "My sister = she.",
-      "explanation": "My sister = she : she hasn’t got.",
+      "explanation": "My sister = she : she doesn’t have.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got : négation et question",
+          "title": "Have : négation et question",
           "lines": [
-            "Négation : I haven’t got, she hasn’t got.",
-            "Question : on inverse ! Have you got…? Has he got…?",
-            "Réponse courte : Yes, I have. No, he hasn’t."
+            "Négation : I don’t have, she doesn’t have (have reste sans s).",
+            "Question : Do you have…? Does he have…?",
+            "Réponse courte : Yes, I do. No, he doesn’t."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-2-6",
-      "prompt": "Has he got a dog? — No, he … .",
-      "spoken": "Has he got a dog? — No, he blank .",
+      "prompt": "Does he have a dog? — No, he … .",
+      "spoken": "Does he have a dog? — No, he blank .",
       "choices": [
-        "hasn’t",
-        "haven’t",
-        "isn’t"
+        "doesn’t",
+        "don’t",
+        "hasn’t"
       ],
-      "answer": "hasn’t",
-      "hint": "La réponse courte reprend has.",
-      "explanation": "No, he hasn’t : on reprend has, à la négation.",
+      "answer": "doesn’t",
+      "hint": "La réponse courte reprend does.",
+      "explanation": "No, he doesn’t : on reprend does, à la négation.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got : négation et question",
+          "title": "Have : négation et question",
           "lines": [
-            "Négation : I haven’t got, she hasn’t got.",
-            "Question : on inverse ! Have you got…? Has he got…?",
-            "Réponse courte : Yes, I have. No, he hasn’t."
+            "Négation : I don’t have, she doesn’t have (have reste sans s).",
+            "Question : Do you have…? Does he have…?",
+            "Réponse courte : Yes, I do. No, he doesn’t."
           ]
         }
       }
     },
     {
       "key": "english-6e-grammar-have-got-2-7",
-      "prompt": "Have you got a pen? — Yes, I … .",
-      "spoken": "Have you got a pen? — Yes, I blank .",
+      "prompt": "Do you have a pen? — Yes, I … .",
+      "spoken": "Do you have a pen? — Yes, I blank .",
       "choices": [
-        "have",
-        "has",
-        "am"
+        "do",
+        "does",
+        "have"
       ],
-      "answer": "have",
-      "hint": "La réponse courte reprend have.",
-      "explanation": "Yes, I have : on reprend have.",
+      "answer": "do",
+      "hint": "La réponse courte reprend do.",
+      "explanation": "Yes, I do : on reprend do.",
       "aid": {
         "kind": "rule-card",
         "props": {
-          "title": "Have got : négation et question",
+          "title": "Have : négation et question",
           "lines": [
-            "Négation : I haven’t got, she hasn’t got.",
-            "Question : on inverse ! Have you got…? Has he got…?",
-            "Réponse courte : Yes, I have. No, he hasn’t."
+            "Négation : I don’t have, she doesn’t have (have reste sans s).",
+            "Question : Do you have…? Does he have…?",
+            "Réponse courte : Yes, I do. No, he doesn’t."
           ]
         }
       }

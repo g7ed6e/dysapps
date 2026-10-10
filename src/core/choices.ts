@@ -83,13 +83,26 @@ export interface Parsed {
   unit: string;
 }
 
-/** « −1 200,5 cm » → { value: -1200.5, decimals: 1, unit: ' cm' } ; undefined si ce n'est pas un nombre. */
+/** Une année avant notre ère (« 753 avant J.-C. ») : elle compte en négatif, pour que l'ordre croissant soit celui du temps. */
+const AVANT_J_C = /^\s*avant J\.-C\.$/;
+
+/**
+ * « −1 200,5 cm » → { value: -1200.5, decimals: 1, unit: ' cm' } ; « 753 avant J.-C. » → { value: -753, … } (rangées
+ * dans l'ordre croissant, 753, 509 et 44 avant J.-C. suivent la frise) ; undefined si ce n'est pas un nombre.
+ */
 export function parseNumber(c: Choice): Parsed | undefined {
   if (typeof c === 'number') return Number.isFinite(c) ? { value: c, decimals: (String(c).split('.')[1] ?? '').length, unit: '' } : undefined;
-  const m = /^\s*([-−]?)(\d{1,3}(?:[   ]\d{3})+|\d+)(?:[.,](\d+))?([^\d/]*)$/.exec(c);
+  const m = /^\s*([-−]?)(\d{1,3}(?:[   ]\d{3})+|\d+)(?:[.,](\d+))?((?:[^\d/][^\d]*)?)$/.exec(c);
   if (!m) return undefined;
   const value = Number(`${m[1] ? '-' : ''}${m[2].replace(/\D/g, '')}.${m[3] ?? '0'}`);
-  return { value, decimals: (m[3] ?? '').length, unit: m[4] };
+  return { value: AVANT_J_C.test(m[4]) ? -value : value, decimals: (m[3] ?? '').length, unit: m[4] };
+}
+
+/** « 3/5 » → 0,6, « −7/2 » → −3,5, « 2 » → 2 ; undefined si ce n'est ni une fraction ni un entier. */
+export function parseFraction(c: Choice): number | undefined {
+  const m = /^\s*([-−]?)(\d+)(?:\/(\d+))?\s*$/.exec(String(c));
+  if (!m || (m[3] !== undefined && !(Number(m[3]) > 0))) return undefined;
+  return (m[1] ? -1 : 1) * (Number(m[2]) / Number(m[3] ?? 1));
 }
 
 /** Écrit un nombre comme ses voisins : même signe moins, même séparateur de milliers, même virgule, même unité. */
@@ -115,7 +128,8 @@ function placeNumber(choices: Choice[], parsed: Parsed[], at: number, target: nu
   const answer = values[at];
   const unit = parsed[0].unit;
   // Des entiers qui se suivent : on décale la fenêtre, sans descendre sous 1 (pas de « 0 syllabe »).
-  if (parsed.every((p) => p.decimals === 0) && values.every((v, i) => i === 0 || v === values[i - 1] + 1)) {
+  // Jamais pour des années avant notre ère : la fenêtre écrirait « −753 avant J.-C. ».
+  if (!AVANT_J_C.test(unit) && parsed.every((p) => p.decimals === 0) && values.every((v, i) => i === 0 || v === values[i - 1] + 1)) {
     const start = Math.max(Math.min(1, values[0]), answer - target);
     return values.map((_, i) => formatLike(start + i, choices, unit, 0));
   }
@@ -174,6 +188,11 @@ export function placeAnswer(choices: Choice[], answer: unknown, target: number, 
   const hours = choices.map(parseHour);
   if (hours.every((h): h is number => h !== undefined)) {
     return choices.map((c, i) => [c, hours[i]] as const).sort((a, b) => a[1] - b[1]).map(([c]) => c);
+  }
+  // Des fractions (« 3/5 », « 3/10 », « 3 ») : rangées comme des nombres, sans fraction piège inventée.
+  const fractions = choices.map(parseFraction);
+  if (choices.some((c) => String(c).includes('/')) && fractions.every((f): f is number => f !== undefined)) {
+    return choices.map((c, i) => [c, fractions[i]] as const).sort((a, b) => a[1] - b[1]).map(([c]) => c);
   }
   const parsed = choices.map(parseNumber);
   if (parsed.every((p): p is Parsed => p !== undefined && p.unit === parsed[0]!.unit)) {

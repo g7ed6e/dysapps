@@ -1,0 +1,9 @@
+{
+  "id": "history-6e-antiquity-3",
+  "biome": "history-6e-antiquity",
+  "name": "La cour du musée",
+  "reward": {
+    "xp": 60
+  },
+  "done": "La cour est prête. Le passé a sa maison, et c’est toi qui l’as bâtie, bâtisseur !"
+}

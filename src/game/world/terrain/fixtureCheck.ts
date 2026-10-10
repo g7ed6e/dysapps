@@ -1,12 +1,13 @@
 // Le calcul de la place d'une petite construction (GD-7), que seul le test appelle pour vérifier la place écrite.
 import { type BiomeId, BIOMES, type BlockId, BLOCKS } from '../../biomes';
-import { casesDeLaPetiteConstruction } from '../fixtures';
+import { casesDeLaPetiteConstruction, placeEcrite, wantedPlace } from '../fixtures';
+import { fixturesOfPlace } from '../placedFixtures';
 import { islandDef } from '../map';
 import { ARCHIPELAGOS, BRIDGES } from '../archipelago';
 import { planCells, plansFor } from '../plans';
 import { DOCK_DX, shoreY } from '../harbor';
 import { type ProjectionDeLaVue, projectionDeLaVueDeLIle, versLaCamera, VUE_DE_L_ILE_PANNEAU_OUVERT } from './view';
-import { creatureDuMonde, creatureSpot, solLibre } from './creatures';
+import { creatureDuMonde, creatureSpot, solLibre, surLeCarreDuGardien } from './creatures';
 import { cacheUneBorne, questStations, rangeeDevantLesBornes } from './markers';
 import { AVATAR_HOME, groundHeight, origineDe } from './base';
 import { cacheUnLieu, lieuxVus } from './village';
@@ -76,7 +77,7 @@ function silhouette(projeter: ProjectionDeLaVue, cubes: readonly { x: number; y:
  * L'écart, en pixels, entre deux silhouettes convexes (le plus grand vide le long des normales de leurs côtés) ; négatif
  * quand elles se recouvrent.
  */
-function ecartEntre(a: readonly [number, number][], b: readonly [number, number][]): number {
+function gapBetween(a: readonly [number, number][], b: readonly [number, number][]): number {
   let ecart = -Infinity;
   for (const poly of [a, b])
     for (let i = 0; i < poly.length; i++) {
@@ -116,20 +117,26 @@ function ecartEntre(a: readonly [number, number][], b: readonly [number, number]
  * - elle se lit entière dans la vue de l'île panneau ouvert : à une case au moins (à l'écran) du bord du panneau et des
  *   autres bords, au-dessus des boutons du bas, hors de Pause et de l'archipel.
  * Puis, par ordre de préférence (une préférence ne tombe que si aucune place ne la tient) : jamais devant la rangée
- * des bornes (le passage du bonhomme) ; à l'écran, rien d'elle sur la silhouette d'une borne, puis une demi-case au
+ * des bornes (le passage du bonhomme) ; à l'écran, rien d'elle sur la silhouette de la créature à sa place (jamais
+ * cachée derrière elle), puis rien d'elle sur la silhouette d'une borne, puis une demi-case au
  * moins entre elles (une case nue entre elle et toute borne) ; les cubes posés au sol ne sont pas du bloc du sol de leur
  * case (sinon ils s'y fondent) ; le moins possible de ses cubes cachés en partie (milieu et coins de chacun) ; une case
  * nue autour d'elle (ni mur, ni tronc, ni borne au-dessus du sol), pour que sa silhouette se détache. Parmi les places
  * qui restent, la plus proche de la créature, en préférant le côté au devant : une forme posée entre la caméra et la
- * créature compte deux cases de plus par case d'avance. `null` si rien ne la tient.
+ * créature compte deux cases de plus par case d'avance. `null` si rien ne la tient. Une place voulue (`wantedPlace`)
+ * passe avant la recherche, si elle tient les règles.
  */
 export function calculerLaPlaceDeLaPetiteConstruction(id: BiomeId, fixture: string): { x: number; y: number } | null {
   const examen = examenDeLaPetiteConstruction(id, fixture);
   if (!examen) return null;
-  // Les préférences, de la plus forte à la plus faible : derrière la rangée des bornes, puis jamais sur une borne à
+  // Une place voulue (`wantedPlace`, fixtures.ts) se garde si elle tient les règles.
+  const voulue = wantedPlace(fixture);
+  if (voulue && examen.examiner(voulue.x, voulue.y)) return voulue;
+  // Les préférences, de la plus forte à la plus faible : derrière la rangée des bornes, puis rien d'elle sur la créature à
+  // l'écran (jamais cachée derrière elle, retouche du directeur artistique, HG-3), puis jamais sur une borne à
   // l'écran, puis une case (à l'écran) entre elle et toute borne, puis sur un autre sol, puis entière (le moins de points
   // cachés), puis dégagée ; à préférences égales, la plus proche (la première trouvée à score égal).
-  const rang = (p: ExamenDUnePlace) => [p.derriere ? 0 : 1, p.libre ? 0 : 1, p.ecartee ? 0 : 1, p.sol ? 0 : 1, p.caches, p.degagee ? 0 : 1, p.score];
+  const rang = (p: ExamenDUnePlace) => [p.derriere ? 0 : 1, p.horsDeLaCreature ? 0 : 1, p.libre ? 0 : 1, p.ecartee ? 0 : 1, p.sol ? 0 : 1, p.caches, p.degagee ? 0 : 1, p.score];
   const avant = (a: number[], b: number[]) => {
     for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] < b[i];
     return false;
@@ -150,6 +157,8 @@ export interface ExamenDUnePlace {
   score: number;
   /** Derrière la rangée des bornes. */
   derriere: boolean;
+  /** Rien d'elle sur la silhouette de la créature à sa place, à l'écran (elle ne se cache pas derrière). */
+  horsDeLaCreature: boolean;
   /** Rien d'elle sur la silhouette d'une borne (son socle, son ardoise, le repère au-dessus), à l'écran. */
   libre: boolean;
   /** Une demi-case au moins, à l'écran, entre elle et toute borne. */
@@ -206,6 +215,14 @@ export function examenDeLaPetiteConstruction(
               interdites.add(`${Math.round(p.x + ((q.x - p.x) * t) / n) - def.core.x + dx},${Math.round(p.y + ((q.y - p.y) * t) / n) - def.core.y + dy}`);
       }
     }
+  // Les petites constructions d'avant sur l'île (la commande, puis les quêtes dans leur ordre, GD-10), à leur place
+  // écrite : jamais dessus, ni sur la case qui les entoure ; celles d'après ne comptent pas (leur place se calcule
+  // après celle-ci, qui ne bouge donc jamais quand une quête s'ajoute).
+  const avant = fixturesOfPlace(id).map((f) => f.fixture);
+  for (const f of avant.slice(0, Math.max(0, avant.indexOf(fixture)))) {
+    const p = placeEcrite(f);
+    if (p) for (const c of casesDeLaPetiteConstruction(f) ?? []) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) interdites.add(`${p.x + c.x + dx},${p.y + c.y + dy}`);
+  }
   // Jamais devant la rangée des bornes : c'est par là que le bonhomme arrive et passe d'une borne à l'autre.
   const devant = Math.min(...questStations(id).map((st) => st.y), Infinity);
   const aCote = new Set<string>();
@@ -240,13 +257,18 @@ export function examenDeLaPetiteConstruction(
   // Les bornes à l'écran (le socle, l'ardoise et le haut doré) : de préférence, la forme ne touche la silhouette d'aucune,
   // et une demi-case au moins (à l'écran) l'en sépare.
   const bornesALEcran = bornes.map((b) => silhouette(projeter, [1, 2, 3].map((z) => ({ x: o.x + b.x, y: o.y + b.y, z: o.z + b.base + z }))));
+  // La créature à sa place, à l'écran : de préférence, la forme ne touche pas sa silhouette.
+  const creatureALEcran = silhouette(
+    projeter,
+    creature.map((c) => ({ x: o.x + spot.x + c.x, y: o.y + spot.y + c.y, z: o.z + c.z + 1 })),
+  );
   const cadreDeLaForme = (ox: number, oy: number) => cadreALEcran(projeter, cases.map((c) => ({ x: o.x + ox + c.x, y: o.y + oy + c.y, z: o.z + c.z + 1 })));
   // Le plus petit écart, en pixels, entre un cube de la forme et une borne (négatif s'ils se recouvrent à l'écran).
   const ecartAuxBornes = (ox: number, oy: number) => {
     let min = Infinity;
     for (const c of cases) {
       const s = silhouette(projeter, [{ x: o.x + ox + c.x, y: o.y + oy + c.y, z: o.z + c.z + 1 }]);
-      for (const b of bornesALEcran) min = Math.min(min, ecartEntre(s, b));
+      for (const b of bornesALEcran) min = Math.min(min, gapBetween(s, b));
     }
     return min;
   };
@@ -294,7 +316,8 @@ export function examenDeLaPetiteConstruction(
   const examiner = (ox: number, oy: number): ExamenDUnePlace | null => {
     const distance = Math.min(...pied.flatMap((p) => elle.map((e) => Math.abs(ox + p.x + 0.5 - e.x) + Math.abs(oy + p.y + 0.5 - e.y))));
     if (distance > R) return null;
-    if (!pied.every((p) => free(ox + p.x, oy + p.y) && !aCote.has(`${ox + p.x},${oy + p.y}`) && !interdites.has(`${ox + p.x},${oy + p.y}`))) return null;
+    // Ni sur le carré du Gardien (GD-11), qui évite, lui, la place écrite de la petite construction (`guardianSpot`).
+    if (!pied.every((p) => free(ox + p.x, oy + p.y) && !aCote.has(`${ox + p.x},${oy + p.y}`) && !interdites.has(`${ox + p.x},${oy + p.y}`) && !surLeCarreDuGardien(id, ox + p.x, oy + p.y))) return null;
     if (cases.some((c) => cacheUneBorne(bornes, vers, ox + c.x, oy + c.y, c.z + 1) || cacheUnLieu(lieux, vers, ox + c.x, oy + c.y, c.z + 1))) return null;
     const forme = new Set(cases.map((c) => `${ox + c.x},${oy + c.y},${c.z + 1}`));
     if (elle.some((e) => rayonArrete(forme, camera, e.x, e.y, e.z, 4))) return null;
@@ -317,6 +340,7 @@ export function examenDeLaPetiteConstruction(
       // Trop près d'une borne à l'écran : d'autant plus loin dans l'ordre qu'elle s'en approche.
       score: distance + 2 * Math.max(0, avance - 1) + (4 * Math.max(0, cube / 2 - ecart)) / cube,
       derriere: pied.every((p) => oy + p.y >= devant),
+      horsDeLaCreature: avance >= 0 || gapBetween(silhouette(projeter, cases.map((c) => ({ x: o.x + ox + c.x, y: o.y + oy + c.y, z: o.z + c.z + 1 }))), creatureALEcran) > 0,
       libre: ecart > 0,
       ecartee: ecart >= cube / 2,
       sol: cubes.every((c) => !c.commeLeSol),

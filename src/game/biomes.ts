@@ -2,12 +2,16 @@
 import type { Subject } from '../apps/registry';
 import type { ProgrammeId } from '../curriculum';
 import type { AnyIconName } from '../components/Icon';
-import { lv2Courante, universCourant, type Lv2Choice } from '../core/settings';
+import { lcaCourante, lv2Courante, universCourant, type LcaChoice, type Lv2Choice } from '../core/settings';
+import type { ForeignWord } from '../core/foreignWords';
 import { nomAssemble } from './world/assembly';
 import { ILES } from './islands';
 
 /** Une deuxième langue vivante (pas « Pas de LV2 »). */
 export type Lv2 = Exclude<Lv2Choice, 'none'>;
+
+/** Une option de l'île du latin et du grec (pas « Pas d'option »). */
+export type Lca = Exclude<LcaChoice, 'none'>;
 
 /** Les identifiants des îles (ceux de docs/contenu/archipel.md, dans le même ordre ; vérifié par biomes.test.ts). */
 export const BIOME_IDS = [
@@ -39,9 +43,36 @@ export const BIOME_IDS = [
   'english-4e-grammar',
   'english-3e-comprehension',
   'english-3e-grammar',
+  'history-6e-antiquity',
+  'geography-6e-living',
+  'life-earth-sciences-6e-living-world',
+  'physics-chemistry-6e-matter-energy',
+  'technology-6e-objects',
+  'civics-6e-democratic-society',
+  'history-5e-middle-ages',
+  'geography-5e-resources',
+  'life-earth-sciences-5e-active-planet',
+  'physics-chemistry-5e-matter-universe',
+  'technology-5e-design',
+  'civics-5e-equality-solidarity',
+  'history-4e-revolutions',
+  'geography-4e-globalization',
+  'life-earth-sciences-4e-cells-evolution',
+  'physics-chemistry-4e-signals-circuits',
+  'technology-4e-modeling',
+  'civics-4e-rights-freedoms',
+  'history-3e-twentieth-century',
+  'geography-3e-france',
+  'life-earth-sciences-3e-human-body',
+  'physics-chemistry-3e-motion-energy',
+  'technology-3e-digital',
+  'civics-3e-democratic-life',
   'lv2-5e-introductions',
   'lv2-4e-daily-life',
   'lv2-3e-travel',
+  'lca-5e-legends',
+  'lca-4e-cities',
+  'lca-3e-ideas',
 ] as const;
 export type BiomeId = (typeof BIOME_IDS)[number];
 
@@ -80,11 +111,38 @@ export type BlockId =
   | 'english-4e-grammar'
   | 'english-3e-comprehension'
   | 'english-3e-grammar'
+  | 'history-6e-antiquity'
+  | 'geography-6e-living'
+  | 'life-earth-sciences-6e-living-world'
+  | 'physics-chemistry-6e-matter-energy'
+  | 'technology-6e-objects'
+  | 'civics-6e-democratic-society'
+  | 'history-5e-middle-ages'
+  | 'geography-5e-resources'
+  | 'history-4e-revolutions'
+  | 'geography-4e-globalization'
+  | 'history-3e-twentieth-century'
+  | 'geography-3e-france'
+  | 'life-earth-sciences-5e-active-planet'
+  | 'physics-chemistry-5e-matter-universe'
+  | 'technology-5e-design'
+  | 'civics-5e-equality-solidarity'
+  | 'life-earth-sciences-4e-cells-evolution'
+  | 'physics-chemistry-4e-signals-circuits'
+  | 'technology-4e-modeling'
+  | 'civics-4e-rights-freedoms'
+  | 'life-earth-sciences-3e-human-body'
+  | 'physics-chemistry-3e-motion-energy'
+  | 'technology-3e-digital'
+  | 'civics-3e-democratic-life'
   | 'trophy-gold'
   | 'trophy-crystal'
   | 'lv2-5e-introductions'
   | 'lv2-4e-daily-life'
   | 'lv2-3e-travel'
+  | 'lca-5e-legends'
+  | 'lca-4e-cities'
+  | 'lca-3e-ideas'
   | 'compound-6e'
   | 'compound-5e'
   | 'compound-4e'
@@ -130,9 +188,36 @@ export const BLOC = {
   rail: 'english-4e-grammar',
   antenne: 'english-3e-comprehension',
   taille: 'english-3e-grammar',
+  mosaique: 'history-6e-antiquity',
+  chaume: 'geography-6e-living',
+  fossile: 'life-earth-sciences-6e-living-world',
+  aimant: 'physics-chemistry-6e-matter-energy',
+  carton: 'technology-6e-objects',
+  craie: 'civics-6e-democratic-society',
+  enluminure: 'history-5e-middle-ages',
+  riziere: 'geography-5e-resources',
+  fonte: 'history-4e-revolutions',
+  conteneur: 'geography-4e-globalization',
+  reliure: 'history-3e-twentieth-century',
+  gres: 'geography-3e-france',
+  strate: 'life-earth-sciences-5e-active-planet',
+  sel: 'physics-chemistry-5e-matter-universe',
+  bambou: 'technology-5e-design',
+  farine: 'civics-5e-equality-solidarity',
+  petale: 'life-earth-sciences-4e-cells-evolution',
+  bobine: 'physics-chemistry-4e-signals-circuits',
+  liege: 'technology-4e-modeling',
+  pave: 'civics-4e-rights-freedoms',
+  savon: 'life-earth-sciences-3e-human-body',
+  ressort: 'physics-chemistry-3e-motion-energy',
+  cire: 'technology-3e-digital',
+  acajou: 'civics-3e-democratic-life',
   dalle: 'lv2-5e-introductions',
   osier: 'lv2-4e-daily-life',
   bardeau: 'lv2-3e-travel',
+  tuf: 'lca-5e-legends',
+  fresque: 'lca-4e-cities',
+  laurier: 'lca-3e-ideas',
   poutre: 'compound-6e',
   vitrail: 'compound-5e',
   engrenage: 'compound-4e',
@@ -157,6 +242,11 @@ export interface BlockDef {
   rare?: boolean;
   /** Un bloc assemblé (GD-2) : il ne se gagne nulle part, il s'assemble dans le lieu du village prévu pour ça. */
   assemble?: boolean;
+  /**
+   * Un ou deux bâtons pâles, de ces couleurs, couchés sur le dessus de son icône (`BlockIcon`, Voxel.tsx, et le bloc des
+   * étiquettes, world/labelCanvas.ts) : un aplat sombre seul ne dit pas ce qu'est le bloc (la craie se lisait charbon).
+   */
+  batons?: readonly [string] | readonly [string, string];
 }
 
 export type BlockTexture =
@@ -189,11 +279,38 @@ export type BlockTexture =
   | 'rail'
   | 'antenne'
   | 'taille'
+  | 'mosaique'
+  | 'chaume'
+  | 'fossile'
+  | 'aimant'
+  | 'carton'
+  | 'craie'
+  | 'enluminure'
+  | 'riziere'
+  | 'fonte'
+  | 'conteneur'
+  | 'reliure'
+  | 'gres'
+  | 'strate'
+  | 'sel'
+  | 'bambou'
+  | 'farine'
+  | 'petale'
+  | 'bobine'
+  | 'liege'
+  | 'pave'
+  | 'savon'
+  | 'ressort'
+  | 'cire'
+  | 'acajou'
   | 'or'
   | 'cristal'
   | 'dalle'
   | 'osier'
   | 'bardeau'
+  | 'tuf'
+  | 'fresque'
+  | 'laurier'
   | 'poutre'
   | 'vitrail'
   | 'engrenage'
@@ -236,6 +353,83 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   'english-4e-grammar': { id: 'english-4e-grammar', name: 'Rail', top: '#85603a', side: '#4a4a50', texture: 'rail' },
   'english-3e-comprehension': { id: 'english-3e-comprehension', name: 'Antenne', top: '#b4bcc4', side: '#9aa4ae', texture: 'antenne' },
   'english-3e-grammar': { id: 'english-3e-grammar', name: 'Pierre de taille', top: '#e6dcc4', side: '#d8ccb0', texture: 'taille' },
+  // Le bloc de la Fouille des siècles (histoire, 6e) : des tesselles de 2 × 2 en tons ocre, terre cuite et crème, mats,
+  // l'ocre et le crème dominants (plus jaune que la brique, plus rouge que le chaume), distinctes du vitrail par
+  // l'absence de plomb et de couleurs vives.
+  'history-6e-antiquity': { id: 'history-6e-antiquity', name: 'Mosaïque', top: '#d6a258', side: '#b47c40', texture: 'mosaique' },
+  // Le bloc de la Pointe des paysages (géographie, 6e) : des bottes de paille en couches qui se chevauchent, distinctes
+  // du sable, de l'osier et du parchemin par le motif, pas par la teinte seule.
+  'geography-6e-living': { id: 'geography-6e-living', name: 'Chaume', top: '#d8b860', side: '#b0903e', texture: 'chaume' },
+  // Le bloc de la Vallée du vivant (SVT, 6e) : une pierre beige où dort une coquille en spirale, sombre ; distinct de la
+  // pierre de taille et du sable par la spirale, pas par la teinte seule (DA, SC-2).
+  'life-earth-sciences-6e-living-world': { id: 'life-earth-sciences-6e-living-world', name: 'Fossile', top: '#b3a68a', side: '#8f8370', texture: 'fossile' },
+  // Le bloc du Laboratoire des éléments (physique-chimie, 6e) : un aimant, le dessus en deux moitiés, rouge et bleue,
+  // les côtés gris métal marqués d'un U (DA, SC-2) ; jamais la couleur seule : les deux pôles se lisent à la forme.
+  'physics-chemistry-6e-matter-energy': { id: 'physics-chemistry-6e-matter-energy', name: 'Aimant', top: '#b84a40', side: '#8c9298', texture: 'aimant' },
+  // Le bloc du Hangar des inventions (technologie, 6e) : du carton ondulé brun clair, ses cannelures verticales,
+  // distinct des planches et de la terre par le motif (DA, SC-2).
+  'technology-6e-objects': { id: 'technology-6e-objects', name: 'Carton', top: '#b98d5a', side: '#9a7246', texture: 'carton' },
+  // Le bloc du Préau des délégués (EMC, 6e) : des bâtons de craie couchés, côte à côte, sur l'ardoise vert sombre d'un
+  // tableau ; blanc, jaune pâle, rose pâle et bleu pâle. Distinct du sel (blanc, quatre cristaux cernés) et du fossile
+  // (beige, une spirale) par les bâtons et le fond sombre, pas par la teinte seule (proposition de l'artiste technique 3D,
+  // à valider par le directeur artistique). Le dessus de l'icône, l'ardoise du tableau un ton plus clair : en blanc, elle se
+  // lisait comme du sel ou de la neige (DA, relecture des captures emc-2) ; deux bâtons de craie couchés dessus, blanc et
+  // rose pâle, pas tout à fait parallèles (ni un signe égal, ni la fente d'une urne) : unie, l'ardoise se lisait comme du
+  // charbon (passe 2).
+  'civics-6e-democratic-society': { id: 'civics-6e-democratic-society', name: 'Craie', top: '#4c6458', side: '#3e5248', texture: 'craie', batons: ['#f2efe6', '#eec4c4'] },
+  // Le bloc du Bourg des chroniques (histoire, 5e) : un violet profond parcouru de filets d'or, comme une page enluminée,
+  // distinct de l'obsidienne par les filets et par un violet plus clair.
+  'history-5e-middle-ages': { id: 'history-5e-middle-ages', name: 'Enluminure', top: '#6a4c9c', side: '#4e3878', texture: 'enluminure' },
+  // Le bloc du Delta des ressources (géographie, 5e) : des rangs de pousses vertes sur une eau bleu-vert, en terrasses,
+  // distincts de l'herbe et des feuilles par l'eau entre les rangs.
+  'geography-5e-resources': { id: 'geography-5e-resources', name: 'Rizière', top: '#a2bf42', side: '#4f8c86', texture: 'riziere' },
+  // Le bloc de l'Imprimerie des révolutions (histoire, 4e) : une fonte vert-noir à rivets, distincte de l'obsidienne, de
+  // l'acier et de l'ardoise par les rivets et par sa teinte verte.
+  'history-4e-revolutions': { id: 'history-4e-revolutions', name: 'Fonte', top: '#3e4a44', side: '#2c3631', texture: 'fonte' },
+  // Le bloc de l'Escale des échanges (géographie, 4e) : la tôle ondulée bleue d'un conteneur, distincte de l'eau par les
+  // ondes droites et serrées.
+  'geography-4e-globalization': { id: 'geography-4e-globalization', name: 'Conteneur', top: '#3d7fb0', side: '#2c6189', texture: 'conteneur' },
+  // Le bloc du Kiosque des témoins (histoire, 3e) : des dos de livres serrés, sans lettres, bleu-vert sombre, distincts
+  // du lambris et de la rizière par les dos verticaux.
+  'history-3e-twentieth-century': { id: 'history-3e-twentieth-century', name: 'Reliure', top: '#2f6f74', side: '#22545a', texture: 'reliure' },
+  // Le bloc du Plateau des territoires (géographie, 3e) : un grès rose à grain fin, en assises, distinct de la brique
+  // et de la tuile par sa teinte plus pâle et l'absence de joints marqués.
+  'geography-3e-france': { id: 'geography-3e-france', name: 'Grès rose', top: '#d49a94', side: '#b07872', texture: 'gres' },
+  // Les blocs des îles de sciences de 5e à 3e (décision du directeur artistique, SC-3) : le nom et les deux couleurs
+  // seulement ; la texture se peint dans world/pixels.ts.
+  // Le bloc de la Prairie des climats (SVT, 5e) : des couches de roche ; le dessus brun, les côtés en trois bandes, ocre #d4a656, brun-rouge #8a5a3a et gris #8e8a84.
+  'life-earth-sciences-5e-active-planet': { id: 'life-earth-sciences-5e-active-planet', name: 'Strate', top: '#9a6a44', side: '#8a5a3a', texture: 'strate' },
+  // Le bloc de la Saline des mélanges (physique-chimie, 5e) : du sel blanc, quatre petits cristaux carrés cernés de #8a98a6 sur chaque face (motif obligatoire).
+  'physics-chemistry-5e-matter-universe': { id: 'physics-chemistry-5e-matter-universe', name: 'Sel', top: '#ece8e2', side: '#c8ccd0', texture: 'sel' },
+  // Le bloc de la Menuiserie des objets (technologie, 5e) : des cannes de bambou, leurs bouts ronds dessus, verticales sur les côtés, nœuds #6f7a34.
+  'technology-5e-design': { id: 'technology-5e-design', name: 'Bambou', top: '#cdb46a', side: '#b49c4e', texture: 'bambou' },
+  // Le bloc du Fournil des partages (EMC, 5e) : un sac de farine, la toile de jute brun clair tissée en croix sur les
+  // côtés, la farine blanc chaud qui déborde en haut, le dessus de farine poudrée de son (couleurs du directeur
+  // artistique, 9 octobre 2026). Distinct du sel (des cristaux cernés), de la craie (des bâtons sur
+  // l'ardoise) et du sable (un grain seul) par la trame de la toile et la bande de farine.
+  'civics-5e-equality-solidarity': { id: 'civics-5e-equality-solidarity', name: 'Farine', top: '#f4e9cf', side: '#bfa274', texture: 'farine' },
+  // Le bloc de la Source des espèces (SVT, 4e) : des pétales roses en écailles, un cœur jaune.
+  'life-earth-sciences-4e-cells-evolution': { id: 'life-earth-sciences-4e-cells-evolution', name: 'Pétale', top: '#e88fb4', side: '#c8638e', texture: 'petale' },
+  // Le bloc de la Vigie des signaux (physique-chimie, 4e) : du fil de cuivre enroulé, l’axe gris dessus, les spires #8a4a22 sur les côtés.
+  'physics-chemistry-4e-signals-circuits': { id: 'physics-chemistry-4e-signals-circuits', name: 'Bobine', top: '#c47a3c', side: '#b5652e', texture: 'bobine' },
+  // Le bloc du Bassin des maquettes (technologie, 4e) : du liège cannelle moucheté de #4e3020 et de #d0a070.
+  'technology-4e-modeling': { id: 'technology-4e-modeling', name: 'Liège', top: '#b0785a', side: '#93603f', texture: 'liege' },
+  // Le bloc de la Porte des libertés (EMC, 4e) : des pavés de granit gris bleuté, bombés, en rangs décalés, leurs joints
+  // de sable sombre, un reflet clair en haut de chaque pavé (proposition de l'artiste technique 3D, à valider par le
+  // directeur artistique). Distinct de la pierre (mouchetée de gris neutre), de la dalle (grandes dalles beiges), de la
+  // pierre de taille (blocs crème) et du galet (bleu, rond) par ses petits pavés en rangs et sa teinte.
+  'civics-4e-rights-freedoms': { id: 'civics-4e-rights-freedoms', name: 'Pavé', top: '#8f99a3', side: '#717b86', texture: 'pave' },
+  // Le bloc du Verger de la santé (SVT, 3e) : un savon vert menthe, une rainure et un ovale en relief #d8f0e4.
+  'life-earth-sciences-3e-human-body': { id: 'life-earth-sciences-3e-human-body', name: 'Savon', top: '#a6d8c0', side: '#86bfa4', texture: 'savon' },
+  // Le bloc du Tremplin des forces (physique-chimie, 3e) : un métal gris, un ressort en zigzag laiton #d6b04a.
+  'physics-chemistry-3e-motion-energy': { id: 'physics-chemistry-3e-motion-energy', name: 'Ressort', top: '#5a606a', side: '#4a4f58', texture: 'ressort' },
+  // Le bloc de la Ruche des réseaux (technologie, 3e) : de la cire couleur miel, des alvéoles en traits fins #8f5f1e.
+  'technology-3e-digital': { id: 'technology-3e-digital', name: 'Cire', top: '#d9a03c', side: '#b98030', texture: 'cire' },
+  // Le bloc du Forum des débats (EMC, 3e) : de l'acajou, un bois rouge et solide, en planches debout, leur fil plus
+  // sombre, un reflet ciré sur chaque planche ; le dessus, le bout des planches et ses cernes (proposition de l'artiste
+  // technique 3D, à valider par le directeur artistique). Distinct du toit et de la brique (rouges, sans fil de bois),
+  // du lambris (brun, sans rouge) et des planches (claires) par sa teinte et ses planches debout.
+  'civics-3e-democratic-life': { id: 'civics-3e-democratic-life', name: 'Acajou', top: '#8a4632', side: '#6c3022', texture: 'acajou' },
   'trophy-gold': { id: 'trophy-gold', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   'trophy-crystal': { id: 'trophy-crystal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Le bloc du Relais des voyageurs (LV2, 5e) : des dalles de 8 × 8 décalées, distinctes de la pierre de taille par le motif.
@@ -246,6 +440,21 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // Le bloc du Refuge des carnets (LV2, 3e) : des bardeaux de bois en écailles décalées, au bas arrondi, distincts de la
   // tuile, de la brique et de la dalle par le motif ; un bois brun chaud, jamais gris comme la pierre.
   'lv2-3e-travel': { id: 'lv2-3e-travel', name: 'Bardeau', top: '#96724e', side: '#7c5c3e', texture: 'bardeau' },
+  // Le bloc de la Grotte des légendes (latin-grec, 5e) : du tuf, la pierre tendre des grottes, rosé, semé de pores
+  // sombres bordés d'un pixel clair (couleurs du directeur artistique, 9 octobre 2026). Distinct du fossile (une
+  // spirale), du grès rose (des assises roses), du bambou et de la pierre (mouchetée de gris) par les pores et sa teinte.
+  'lca-5e-legends': { id: 'lca-5e-legends', name: 'Tuf', top: '#d6b4a0', side: '#b08e7c', texture: 'tuf' },
+  // Le bloc de la Colonnade des cités (latin-grec, 4e) : une fresque de maison romaine, sur le côté une frise ocre jaune
+  // en haut, un panneau rouge pompéien cerné d'un filet crème, une guirlande verte au milieu, le bas sombre ; le dessus,
+  // l'enduit crème, bordé d'un filet rouge (proposition de l'artiste technique 3D, à valider par le directeur
+  // artistique). Distincte de la brique (des rangs et du mortier), de la tuile (des écailles) et du toit par ses bandes
+  // peintes et son filet.
+  'lca-4e-cities': { id: 'lca-4e-cities', name: 'Fresque', top: '#eadcc0', side: '#a94a3e', texture: 'fresque' },
+  // Le bloc du Bosquet des sages (latin-grec, 3e) : du laurier, des feuilles longues et pointues, vert sombre et lustré,
+  // deux à deux le long de tiges en biais, leur nervure plus claire (proposition de l'artiste technique 3D, à valider par
+  // le directeur artistique). Distinct du feuillage des arbres (des touffes rondes), de la rizière (vert tendre) et de la
+  // craie (vert de gris) par ses feuilles en épi et son vert sombre.
+  'lca-3e-ideas': { id: 'lca-3e-ideas', name: 'Laurier', top: '#5a7a40', side: '#46653a', texture: 'laurier' },
   // Blocs assemblés (GD-2) : aucune île ne les donne, on les assemble sur l'île de l'école (world/assembly.ts). Leur nom
   // ici est celui de Blocland ; chaque univers donne le sien, écrit dans docs/contenu/assemblage.md.
   'compound-6e': { id: 'compound-6e', name: 'Poutre', top: '#dcba86', side: '#c49a64', texture: 'poutre', assemble: true },
@@ -281,7 +490,7 @@ export function ofBlock(id: BlockId): string {
  * dys). Les autres blocs sont des objets qu’on compte : « 5 toits », « 2 lanternes ».
  */
 const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
-  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'trophy-gold'],
+  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'civics-6e-democratic-society', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'physics-chemistry-5e-matter-universe', 'technology-5e-design', 'civics-5e-equality-solidarity', 'lca-5e-legends', 'civics-3e-democratic-life', 'lca-3e-ideas', 'technology-4e-modeling', 'life-earth-sciences-3e-human-body', 'technology-3e-digital', 'trophy-gold'],
 );
 
 /** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */
@@ -312,6 +521,16 @@ export interface ExerciseTypeDef {
    * Réglages se jouent ; voir `missionsDe`.
    */
   lv2?: Lv2;
+  /**
+   * Une mission de l'île du latin et du grec (matière `lca`) : l'option qu'elle travaille, `la` ou `gr`. Seules les
+   * missions de l'option choisie dans les Réglages se jouent (GD-13) ; voir `missionsJouables`.
+   */
+  option?: Lca;
+  /**
+   * Une mission écrite et relue, gardée hors du jeu tant que ce qu'il lui faut manque (« L'alphabet grec » attend sa
+   * police) : la raison. Elle ne se joue pas (`missionsJouables`) ; le site la signale.
+   */
+  waiting?: string;
 }
 
 export interface CreatureDef {
@@ -338,6 +557,11 @@ export interface BiomeDef {
   guardian: string;
   creature: CreatureDef;
   exercises: ExerciseTypeDef[];
+  /**
+   * Les mots de l'île qui ne sont pas du français (« ## La voix » de son Markdown) : marqués dans leur langue, sans
+   * syllabes colorées, et lus comme le dit cette liste (src/core/foreignWords.ts). L'île du latin et du grec seulement.
+   */
+  foreignWords?: readonly ForeignWord[];
 }
 
 /**
@@ -346,6 +570,9 @@ export interface BiomeDef {
  * islands.ts, que le compilateur vérifie (`satisfies BiomeDef[]`), avec les tests (biomes.test.ts).
  */
 export const BIOMES: BiomeDef[] = ILES;
+
+/** Les matières des sciences (SVT, physique-chimie, technologie : SC-2 en 6e, SC-3 de la 5e à la 3e). */
+export const SCIENCE_SUBJECTS: readonly Subject[] = ['life-earth-sciences', 'physics-chemistry', 'technology'];
 
 /** Les îles d'une matière, dans l'ordre des classes. */
 export function biomesOf(subject: Subject): BiomeDef[] {
@@ -362,19 +589,55 @@ export function guardianTitle(biome: Pick<BiomeDef, 'guardian'>): string {
 }
 
 /**
- * Les missions qui se jouent sur une île : toutes, sauf celles d'une autre LV2 que celle des Réglages. Avec « Pas de
- * LV2 », l'île de la LV2 n'en a aucune. Les bornes, le Gardien et la progression passent par ici.
+ * Les missions qui se jouent sur une île : toutes, sauf celles d'une autre LV2 que celle des Réglages, celles d'une autre
+ * option que le latin ou le grec choisi, et celles qui attendent ce qu'il leur faut (`waiting`). Avec « Pas de LV2 »,
+ * l'île de la LV2 n'en a aucune ; avec « Pas d'option », l'île du latin et du grec non plus. Les bornes, le Gardien et
+ * la progression passent par ici.
  */
-export function missionsJouables(biome: Pick<BiomeDef, 'exercises'>, lv2: Lv2Choice = lv2Courante()): ExerciseTypeDef[] {
-  return biome.exercises.filter((x) => x.lv2 === undefined || x.lv2 === lv2);
+export function missionsJouables(biome: Pick<BiomeDef, 'exercises'>, lv2: Lv2Choice = lv2Courante(), lca: LcaChoice = lcaCourante()): ExerciseTypeDef[] {
+  return biome.exercises.filter((x) => x.waiting === undefined && (x.lv2 === undefined || x.lv2 === lv2) && (x.option === undefined || x.option === lca));
 }
 
 /** Ce que dit l'île de la LV2 avec « Pas de LV2 » (lu à l'ouverture de son panneau), qu'elle soit ouverte ou non. */
 export const SANS_LV2 = 'Tu n’as pas choisi de LV2 : les missions de ta deuxième langue ne sont pas proposées ici. Tu peux en choisir une dans les Réglages.';
 
+/** Ce que dit l'île du latin et du grec avec « Pas d'option » (lu à l'ouverture de son panneau). */
+export const SANS_LCA = 'Tu n’as pas choisi l’option latin ou grec : ses missions ne sont pas proposées ici. Si tu la suis au collège, choisis-la dans les Réglages.';
+
 /** Une île de LV2 : ses missions dépendent de la langue choisie. */
 export function estIleLv2(biome: Pick<BiomeDef, 'subject'>): boolean {
   return biome.subject === 'lv2';
+}
+
+/**
+ * Un lieu d'option (GD-13) : l'île de la LV2 ou celle du latin et du grec. Ses missions dépendent d'un réglage ; il reste
+ * en bout de chemin, n'a pas de commande, n'entre dans aucune quête ni aucun projet, et ne compte pas dans la matière la
+ * moins jouée.
+ */
+export function estLieuDOption(biome: Pick<BiomeDef, 'subject'>): boolean {
+  return biome.subject === 'lv2' || biome.subject === 'lca';
+}
+
+/** Un lieu d'option dont l'élève n'a pas choisi l'option : ce que lit son panneau, son bouton vers les Réglages, la phrase de ses liaisons. */
+export interface SansOption {
+  lu: string;
+  bouton: string;
+  liaison: string;
+}
+
+const SANS_OPTION: Record<'lv2' | 'lca', SansOption> = {
+  lv2: { lu: SANS_LV2, bouton: 'Choisir une LV2', liaison: 'Choisis d’abord une LV2 dans les Réglages.' },
+  lca: { lu: SANS_LCA, bouton: 'Choisir l’option', liaison: 'Choisis d’abord l’option latin ou grec dans les Réglages.' },
+};
+
+/**
+ * Un lieu d'option dont l'élève n'a pas choisi l'option (« Pas de LV2 », « Pas d'option »), ou `null` : son panneau le
+ * dit, sans cadenas, avec un bouton vers les Réglages ; il reste fermé, et aucune liaison n'y mène (GD-13).
+ */
+export function sansSonOption(biome: Pick<BiomeDef, 'subject'> | undefined, choix: { lv2: Lv2Choice; lca: LcaChoice }): SansOption | null {
+  if (biome?.subject === 'lv2' && choix.lv2 === 'none') return SANS_OPTION.lv2;
+  if (biome?.subject === 'lca' && choix.lca === 'none') return SANS_OPTION.lca;
+  return null;
 }
 
 export function getBiome(id: string | undefined): BiomeDef | undefined {

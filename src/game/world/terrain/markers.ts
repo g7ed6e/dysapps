@@ -1,14 +1,15 @@
 // Les bornes des missions : leur place sur l'île, et ce qui ne doit jamais les cacher dans la vue de l'île.
 import { type BiomeId, BIOMES, missionsJouables } from '../../biomes';
-import { coeurDe, islandDef } from '../map';
-import { isSchoolIsland } from './base';
-import { versLaCamera, VUE_DE_L_ILE } from './view';
+import { coeurDe, islandDef, toWorld } from '../map';
+import { groundHeight, isSchoolIsland } from './base';
+import { versLaCameraDuDessin, VUE_DE_L_ILE } from './view';
+import { chosenStation, layoutCache } from '../placement';
 
 /**
  * Les bornes de mission d'une île : une par mission, alignées sur la rangée de devant (côté caméra), en cases relatives
  * au cœur. On touche une borne pour lancer sa mission.
  */
-const QUEST_ROW = 1;
+export const QUEST_ROW = 1;
 
 /**
  * Les places des bornes d'une île-école, au pas de 4, centrées sur la visée de la caméra (le milieu du cœur, x = 8) :
@@ -22,7 +23,7 @@ export const PLACES_DES_BORNES_DES_ECOLES = [0, 4, 8, 12, 16] as const;
  * Les colonnes des bornes d'une île-école à `n` missions, prises dans `PLACES_DES_BORNES_DES_ECOLES` à partir du milieu :
  * 1 → 8 ; 3 → 4, 8, 12 ; 5 → toutes. Un nombre pair ne se centre pas au pas de 4 : il penche d'une place vers la gauche
  * (x bas), 2 → 4, 8 et 4 → 0, 4, 8, 12, plutôt que de quitter la grille des places. Au-delà de 5, `null` : l'île reprend
- * le pas de 3 des autres îles. Aujourd'hui, les quatre îles-écoles ont 3 missions (threeBands.test.ts).
+ * le pas de 3 des autres îles. Une île-école porte jusqu'à cinq missions (GD-14).
  */
 export function placesDesBornes(n: number): readonly number[] | null {
   const places = PLACES_DES_BORNES_DES_ECOLES;
@@ -31,7 +32,59 @@ export function placesDesBornes(n: number): readonly number[] | null {
   return places.slice(debut, debut + n);
 }
 
+/**
+ * Les bornes de mission d'un lieu, dans son repère, à leur place réelle : celle de la carte de départ
+ * (`startingStations`), ou celle où l'élève l'a déplacée dans la bande de devant (GD-9, `chosenStation`). Le dessin,
+ * le décor qui les évite, la créature et la marche lisent celle-ci.
+ */
 export function questStations(id: BiomeId): { typeId: string; x: number; y: number }[] {
+  return startingStations(id).map((st) => {
+    const p = chosenStation(`${id}:${st.typeId}`);
+    return p ? { typeId: st.typeId, x: p.x, y: p.y } : st;
+  });
+}
+
+/**
+ * L'empilement d'une borne de mission au-dessus du sol de sa case, en blocs : le socle (du bloc de l'île) sur le sol,
+ * l'ardoise étoilée dessus (world/terrain.ts les pose ; le dessus de l'ardoise est un bloc plus haut).
+ */
+export const ETAGES_DE_LA_BORNE = { socle: 1, ardoise: 2 } as const;
+
+/** Une borne de mission dans le monde : le milieu de sa case (x, y de la grille) et le dessus de son ardoise (z). */
+export interface BorneDuMonde {
+  x: number;
+  y: number;
+  sommet: number;
+}
+
+const bornesDuMonde = layoutCache<BiomeId, readonly BorneDuMonde[]>();
+
+/**
+ * Les bornes de mission d'un lieu dans le monde, le lieu posé et tourné (`toWorld`), à leur place réelle
+ * (`questStations`) : le milieu de leur case, et le dessus de leur ardoise (le socle et l'ardoise, deux cubes sur le sol,
+ * comme les pose world/terrain.ts ; la pointe de leur bulle se pose `SIGNE.auDessus` plus haut). La caméra les garde
+ * dans le cadre au téléphone (three/camera/framings.ts, `cadrerLesBornes`). Gardé jusqu'au prochain changement de
+ * disposition.
+ */
+export function bornesDansLeMonde(id: BiomeId): readonly BorneDuMonde[] {
+  const connues = bornesDuMonde.get(id);
+  if (connues) return connues;
+  // Un lieu sans bornes (le port, un lieu qui n'est pas une île de mission) : aucune, sans lire sa place.
+  const stations = questStations(id);
+  const def = stations.length ? islandDef(id) : null;
+  const index = BIOMES.findIndex((b) => b.id === id);
+  const out = def
+    ? stations.map((st): BorneDuMonde => {
+        const w = toWorld(def, st.x, st.y);
+        return { x: w.x + 0.5, y: w.y + 0.5, sommet: def.altitude + groundHeight(index, st.x, st.y) + ETAGES_DE_LA_BORNE.ardoise + 1 };
+      })
+    : [];
+  bornesDuMonde.set(id, out);
+  return out;
+}
+
+/** Les bornes de mission d'un lieu à leur place de la carte de départ, dans son repère. */
+export function startingStations(id: BiomeId): { typeId: string; x: number; y: number }[] {
   const biome = BIOMES.find((b) => b.id === id);
   if (!biome) return [];
   const missions = missionsJouables(biome);
@@ -134,7 +187,7 @@ export function cacheUneBorne(bornes: readonly BorneVue[], vers: readonly [numbe
   return false;
 }
 
-const rangeesDevant = new Map<BiomeId, ReadonlySet<string>>();
+const rangeesDevant = layoutCache<BiomeId, ReadonlySet<string>>();
 
 /**
  * La rangée de côte devant les bornes d'une île-école (l'île de l'école de son archipel, `school`) : la première rangée
@@ -151,7 +204,7 @@ export function rangeeDevantLesBornes(id: BiomeId): ReadonlySet<string> {
   if (isSchoolIsland(id)) {
     const def = islandDef(id);
     const y = coeurDe(def).y0 - 1;
-    const [vx, vy] = versLaCamera(id);
+    const [vx, vy] = versLaCameraDuDessin(id);
     for (const st of questStations(id)) {
       const bx = def.core.x + st.x + 0.5;
       const by = def.core.y + st.y + 0.5;

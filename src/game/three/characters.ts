@@ -6,13 +6,13 @@ import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { piedsSur, type ChampDuSol } from '../world/landMesh';
-import { buildMesh } from '../world/mesher';
-import { gardienDuMonde, statueDe } from '../world/terrain';
+import { gardienTourne, statueDe } from '../world/terrain';
 import { avatarWalk, startStrolls, strollAt, walkPose, type Stroll, type Walk } from '../world/scene';
 import { hauteurDuSigne } from '../world/sign';
+import { ileRegardee } from '../world/characters/merges';
 import type { EnCasesDuMonde, WorldViewProps } from '../world/view';
 import type { Lumiere } from './light';
-import { meshOf } from './meshes';
+import { addMeshes, modelMeshes } from './meshes';
 import type { Instant, Monde, PartieDeLaScene } from './scenePart';
 
 export interface Personnages extends PartieDeLaScene {
@@ -30,6 +30,17 @@ export interface Personnages extends PartieDeLaScene {
   /** Un nouvel itinéraire du bonhomme. */
   marcher(avatar: NonNullable<EnCasesDuMonde['avatar']>): void;
   poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>): void;
+  /**
+   * L'île de près, celle où l'on arrive (`null` : aucune, la Carte), puis celle que la caméra regarde (`viser`) : ses
+   * personnages d'Archipéo importés sont de près, ceux des autres îles de loin (./paintedCharacters.ts) ; les
+   * personnages en cubes n'en font rien.
+   */
+  approcher(id: BiomeId | null): void;
+  /**
+   * Le point que la caméra regarde (`x`, `z`, dans la scène) : l'île dont un personnage en est le plus près passe de près
+   * (`ileRegardee`), même si le bonhomme est ailleurs, au deuxième relevé de suite qui la désigne.
+   */
+  viser(x: number, z: number): void;
   /** Le moment du rallumage (lot 6) : la sentinelle de ce Gardien se rallume en fondu ; `null` : plus de moment. */
   rallumer(id: BiomeId | null, dureeMs: number): void;
   /** Le geste de la créature qui se souvient (GD-4, étape 1) : un saut lent, qui commence à `debut` (`performance.now`). */
@@ -45,7 +56,8 @@ export interface Personnages extends PartieDeLaScene {
 export interface Habits {
   /** Les bras et les jambes du bonhomme, et le sens de leur balancement quand il marche. */
   membres: { os: THREE.Object3D; sens: number }[];
-  poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>): void;
+  /** Pose les créatures et les Gardiens ; `pres` : l'île de près (ses personnages importés de près). */
+  poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>, pres?: BiomeId | null): void;
   /** Les créatures bougent (rien avec « Réduire les animations »). */
   animer(t: number, reduit: boolean): void;
   /**
@@ -64,6 +76,8 @@ interface Walker {
   stroll: Stroll;
   /** Le milieu de son emprise, par rapport à sa place (pour la poser sur le sol en pente). */
   centre: { x: number; y: number };
+  /** Le décalage de son groupe réduit (un Gardien de Blocland, GD-11) : réduit autour de son pied, il reste au milieu de sa place. */
+  decalage: { x: number; y: number };
 }
 
 /** Les personnages en cubes (le monde en blocs). */
@@ -83,7 +97,7 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
     pivot.position.set(part.pivot.x, part.pivot.z, part.pivot.y);
     const inner = new THREE.Group();
     inner.position.set(-part.pivot.x, -part.pivot.z, -part.pivot.y);
-    for (const g of buildMesh(part.cubes)) inner.add(meshOf(g, surface));
+    addMeshes(inner, modelMeshes(part.cubes, surface));
     pivot.add(inner);
     avatarBody.add(pivot);
     if (part.name.startsWith('bras')) arms.push(pivot);
@@ -112,11 +126,11 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
     // Rallumé : d'un seul maillage de nouveau, pour ne pas garder les appels des couches au-delà du moment.
     if (fondu.fini) habillerEnCouleurs(fondu.id);
   };
-  /** Le Gardien rebâti d'un seul maillage, dans ses couleurs (la fin du fondu). */
+  /** Le Gardien rebâti d'un seul maillage, dans ses couleurs (la fin du fondu), tourné avec son lieu comme le Gardien posé. */
   const habillerEnCouleurs = (id: BiomeId) => {
     couches = [];
     const group = viderLeGardien(id);
-    if (group) for (const g of buildMesh(gardienDuMonde(id))) group.add(meshOf(g, surface));
+    if (group) addMeshes(group, modelMeshes(gardienTourne(id), surface));
   };
   /** Les maillages du Gardien retirés et libérés ; son groupe, ou rien s'il n'est pas posé. */
   const viderLeGardien = (id: BiomeId) => {
@@ -138,16 +152,18 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
     const group = viderLeGardien(id);
     if (!group) return;
     if (fondu.fini) {
-      for (const g of buildMesh(gardienDuMonde(id))) group.add(meshOf(g, surface));
+      addMeshes(group, modelMeshes(gardienTourne(id), surface));
       return;
     }
-    const cubes = gardienDuMonde(id);
+    // Tourné avec son lieu, comme le Gardien posé (GD-9).
+    const cubes = gardienTourne(id);
+    // Des pieds vers la tête, pour tous les Gardiens (GD-8).
     for (const z of [...new Set(cubes.map((c) => c.z))].sort((a, b) => a - b)) {
       const couche = cubes.filter((c) => c.z === z);
       const pierre = new THREE.Group();
       const couleurs = new THREE.Group();
-      for (const g of buildMesh(statueDe(couche))) pierre.add(meshOf(g, surface));
-      for (const g of buildMesh(couche)) couleurs.add(meshOf(g, surface));
+      addMeshes(pierre, modelMeshes(statueDe(couche), surface));
+      addMeshes(couleurs, modelMeshes(couche, surface));
       group.add(pierre, couleurs);
       couches.push({ pierre, couleurs });
     }
@@ -172,15 +188,24 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
       walkers = creatures.map((c, i) => {
         const group = new THREE.Group();
         group.userData = { creature: c.id, kind: c.kind ?? 'creature' };
-        for (const g of buildMesh(c.cubes)) group.add(meshOf(g, surface));
+        addMeshes(group, modelMeshes(c.cubes, surface));
+        // Réduit (un Gardien de Blocland, GD-11) : même forme, mêmes cubes, à l'échelle de son dessin, autour du milieu
+        // de ses cubes au sol ; le groupe se décale d'autant, pour que ce milieu reste au milieu de sa place.
+        const k = c.echelle ?? 1;
+        group.scale.setScalar(k);
+        const milieu = c.cubes.length
+          ? { x: (Math.min(...c.cubes.map((q) => q.x)) + Math.max(...c.cubes.map((q) => q.x)) + 1) / 2, y: (Math.min(...c.cubes.map((q) => q.y)) + Math.max(...c.cubes.map((q) => q.y)) + 1) / 2 }
+          : { x: 0.5, y: 0.5 };
+        const decalage = { x: (1 - k) * milieu.x, y: (1 - k) * milieu.y };
         // Le milieu de son emprise au sol : c'est là qu'on lit la hauteur du sol à facettes.
-        const pieds = c.cubes.filter((q) => q.z === Math.min(...c.cubes.map((k) => k.z)));
-        const centre = pieds.length
+        const pieds = c.cubes.filter((q) => q.z === Math.min(...c.cubes.map((m) => m.z)));
+        const auSol = pieds.length
           ? { x: (Math.min(...pieds.map((q) => q.x)) + Math.max(...pieds.map((q) => q.x)) + 1) / 2, y: (Math.min(...pieds.map((q) => q.y)) + Math.max(...pieds.map((q) => q.y)) + 1) / 2 }
           : { x: 0.5, y: 0.5 };
-        group.position.set(c.origin.x, piedsSur(champ(), c.origin.x + centre.x, c.origin.y + centre.y, c.origin.z), c.origin.y);
+        const centre = { x: decalage.x + k * auSol.x, y: decalage.y + k * auSol.y };
+        group.position.set(c.origin.x + decalage.x, piedsSur(champ(), c.origin.x + centre.x, c.origin.y + centre.y, c.origin.z), c.origin.y + decalage.y);
         creaturesGroup.add(group);
-        return { group, stroll: strolls[i], centre };
+        return { group, stroll: strolls[i], centre, decalage };
       });
       // Reposés pendant un rallumage : le Gardien qui se rallume reprend son fondu là où il en est.
       if (fondu) habillerLeFondu();
@@ -190,14 +215,14 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
       if (fondu && !fondu.fini) teindre();
       if (reduit) return;
       // Créatures : petit balancement, et un pas de temps en temps.
-      for (const { group, stroll, centre } of walkers) {
+      for (const { group, stroll, centre, decalage } of walkers) {
         const { dx, dy, bob } = strollAt(stroll, instant.now, t);
         const x = stroll.origin.x + dx;
         const y = stroll.origin.y + dy;
         // Le signe : un saut lent, une fois, par-dessus le balancement.
         const debut = signes.get(group.userData.creature as BiomeId);
         const saut = debut === undefined || group.userData.kind !== 'creature' ? 0 : hauteurDuSigne(instant.now - debut);
-        group.position.set(x, piedsSur(champ(), x + centre.x, y + centre.y, stroll.origin.z) + bob + saut, y);
+        group.position.set(x + decalage.x, piedsSur(champ(), x + centre.x, y + centre.y, stroll.origin.z) + bob + saut, y + decalage.y);
       }
     },
     faireSigne: (id, debut) => {
@@ -241,17 +266,21 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
    */
   const tetes = new Map<BiomeId, { objet: THREE.Object3D; ecart: THREE.Vector3 }>();
   let places: NonNullable<WorldViewProps['creatures']> | null = null;
+  let pres: BiomeId | null = null;
+  /** L'île que le dernier relevé du regard a désignée, pas encore de près (`viser`). */
+  let candidate: BiomeId | null = null;
   // Le rallumage demandé avant que les personnages d'Archipéo soient chargés.
   let rallumage: { id: BiomeId | null; dureeMs: number } | null = null;
   let fini = false;
   const vetir = (h: Habits) => {
     habits = h;
     if (rallumage) h.rallumer?.(rallumage.id, rallumage.dureeMs);
-    if (places) h.poserLesCreatures(places);
+    if (places) h.poserLesCreatures(places, pres);
   };
   if (monde.habillage.personnages === 'modeles')
-    import('./paintedCharacters')
-      .then(({ habiller }) => {
+    // Les personnages importés de l'archipel arrivent avec eux (ceux qui manquent restent dessinés en code).
+    Promise.all([import('./paintedCharacters'), import('../importedCharacters').then(({ chargerLesModeles }) => chargerLesModeles(monde.archipel))])
+      .then(([{ habiller }]) => {
         if (!fini) vetir(habiller(monde, champ, instant, lumiere, avatarGroup, creaturesGroup));
       })
       // Le morceau ne se charge pas (réseau coupé, nouvelle version publiée) : les personnages en cubes, plutôt que rien.
@@ -272,11 +301,27 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     },
     marcher: (avatar) => {
       // Six cases par seconde, toujours (un toucher dans le vide fait arriver tout de suite).
-      p.marche = p.trajet = avatarWalk(avatar, performance.now(), monde.archipel);
+      p.marche = p.trajet = avatarWalk(avatar, performance.now(), { archipel: monde.archipel, links: monde.liaisons() });
     },
     poserLesCreatures: (creatures) => {
       places = creatures;
-      habits?.poserLesCreatures(creatures);
+      habits?.poserLesCreatures(creatures, pres);
+    },
+    approcher: (id) => {
+      if (id === pres) return;
+      pres = id;
+      if (places) habits?.poserLesCreatures(places, pres);
+    },
+    viser: (x, z) => {
+      if (!places) return;
+      // Deux relevés de suite sur la même île avant de refaire la fusion : un glissé qui traverse l'archipel ne la refait
+      // pas à chaque île survolée, seulement quand la vue s'arrête (expert frontend).
+      const id = ileRegardee(places, x, z, pres);
+      if (id === pres) candidate = null;
+      else if (id === candidate) {
+        candidate = null;
+        p.approcher(id);
+      } else candidate = id;
     },
     rallumer: (id, dureeMs) => {
       rallumage = { id, dureeMs };

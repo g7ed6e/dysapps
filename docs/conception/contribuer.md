@@ -18,7 +18,6 @@ npm run pilotage:personnages # refait docs/gameplay/personnages.md
 npm run www:captures # rejoue le jeu dans Chromium et fait les captures d’écran (www/_captures/, hors du dépôt)
 npm run rendu:mesures # appels de dessin, triangles et images par seconde (rendu logiciel) du monde 3D par archipel, poids de Three.js (--captures <dossier> : captures 3D, de jour et de nuit ; --comparer <références> : planches avant/après des seules vues changées ; --attente <s> : temps laissé au plus au monde pour se construire ; horloge de la page pilotée, deux prises du même état donnent la même image)
 npm run rendu:budget # triangles et appels de dessin de chaque poste du budget d’Archipéo, son enveloppe et sa marge, par archipel tout construit, sans navigateur (--archipel 6e,3e ; --json)
-npm run rendu:lion  # refait les données du Lion de pierre (src/game/world/characters/statues/lionData.ts) depuis ses modèles réduits (scripts/rendu/lion-de-pierre/ ; --check : vérifie sans écrire)
 npm run version:show # affiche la version calculée depuis git
 npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/splash/)
 ```
@@ -91,7 +90,7 @@ Une question qui touche aux deux (une mission qui doit produire une conséquence
 
 - Commits et pull requests en français, sans signature d’outil ni mention d’assistant ; auteur des commits : le mainteneur du dépôt.
 - Aucune ressource externe dans l’application ni dans la documentation (politique de sécurité stricte, hors ligne garanti).
-- Rien d’emprunté : textes originaux ou du domaine public, images, textures et sons générés par le code, noms et créatures originaux. Un modèle généré par nos soins à partir d’un concept à nous est permis s’il a sa fiche (outil, prompt, réglages, licence), tient le budget, est servi hors ligne par l’application et est validé par le directeur artistique et le référent dys (décision du mainteneur du 30 septembre 2026) : le Lion de pierre ([sa fiche](../univers/archipeo/modele-lion-de-pierre.md)).
+- Rien d’emprunté : textes originaux ou du domaine public, images, textures et sons générés par le code, noms et créatures originaux.
 - Les règles dys ne sont pas négociables : pas de chrono, un item par écran, consigne lue, aide toujours affichée en maths, indice jamais pénalisant, correction qui explique, texte à lire sur fond uni et en police dys, taille ≥ 18 px, interlignage ≥ 1,5.
 - Qui relit quoi avant l’ouverture d’une pull request : [CLAUDE.md](../../CLAUDE.md) et [Les agents](#les-agents).
 

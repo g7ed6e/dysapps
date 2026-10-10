@@ -5,20 +5,20 @@ import type { VoxelCube } from '../cube';
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, inCore, isLand, islandDef, landscape, margesDuCoeur } from '../map';
 import { DOCK_DX, dockCells, dockOrigin, dockPosts, shoreY, vehicleAfloat, vehicleRestZ } from '../harbor';
 import { planCells, zoneDesPlans } from '../plans';
-import { commandeDeLIle } from '../requests';
+import { fixturesOfPlace } from '../placedFixtures';
 import { casesDeLaPetiteConstruction } from '../fixtures';
-import { BRIDGES, getArchipelago } from '../archipelago';
+import { getArchipelago } from '../archipelago';
+import { placedLinksOfPlace } from '../linkGeometry';
 import type { World } from '../../engine';
 import { villageStage } from '../villageStage';
 import { kitReady, launchedStages, stageBuildingAt } from '../vehicle';
 import { cacheUneBorne, questStations, rangeeDevantLesBornes } from './markers';
 import { AVATAR_HOME, fade, groundHeight, isSchoolIsland } from './base';
-import { versLaCamera } from './view';
+import { versLaCameraDuDessin } from './view';
 import { casesDuVillage, PLACE_IDS, VILLAGE_PLACES } from './village';
 import { placeDeLaPetiteConstruction } from './fixture';
 import { creatureDuMonde, creatureSpot } from './creatures';
 import { boardingRoute, bridgePath } from './links';
-import { bossIsletCells, bossIsletSteps } from './guardians';
 
 /** Les cubes d'un objet haut du quai au-dessus de son sol (le mât et la toile d'un fanion, la fumée d'un foyer). */
 const HAUTEURS_D_UN_OBJET_HAUT = [0, 1, 2, 3] as const;
@@ -60,7 +60,7 @@ interface QuaySpot {
  * chemin du bonhomme vers le navire, ni sur la zone des plans, une borne, un lieu, la créature ou sa place à lui ;
  * les objets ne se touchent pas. Les places ne dépendent pas de l'état du village : un objet ne change pas de place.
  */
-function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; flags: (QuaySpot | null)[]; crates: QuaySpot | null; hearth: QuaySpot | null } {
+function quaySpots(port: BiomeId, links: readonly string[], cubes: VoxelCube[]): { boat: QuaySpot | null; flags: (QuaySpot | null)[]; crates: QuaySpot | null; hearth: QuaySpot | null } {
   const def = islandDef(port);
   const X = def.core.x + DOCK_DX;
   const S = shoreY(port);
@@ -79,7 +79,7 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   // Devant les bornes (voir `cacheUneBorne`) : ni mât de fanion ni fumée de foyer, qui cacheraient leur pied.
   const index = BIOMES.findIndex((b) => b.id === port);
   const bornes = questStations(port).map((st) => ({ x: def.core.x + st.x, y: def.core.y + st.y, base: def.altitude + groundHeight(index, st.x, st.y) }));
-  const vers = versLaCamera(port);
+  const vers = versLaCameraDuDessin(port);
   const zone = zoneDesPlans(port);
   for (let x = zone.x; x < zone.x + zone.w; x++) for (let y = zone.y; y < zone.y + zone.h; y++) core(x, y);
   for (const st of questStations(port)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(st.x + dx, st.y + dy);
@@ -92,14 +92,13 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
       for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(at.x + door + dx, at.y - 1 + dy);
     }
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(AVATAR_HOME.x + dx, AVATAR_HOME.y + dy);
-  // La petite construction de la commande de l'île (GD-7, PR 3), à sa place écrite, qu'elle soit posée ou non : les
+  // Les petites constructions de l'île (la commande, GD-7, PR 3 ; les quêtes, GD-10), à leur place écrite, qu'elle soit posée ou non : les
   // objets du quai ne bougent jamais quand elle se pose. Sans case de marge : avec elle, la barque de la grève de la
   // Plaine, dont la boutique de Coco prend la place, n'en trouvait plus.
-  const commande = commandeDeLIle(port);
-  const place = commande ? placeDeLaPetiteConstruction(port, commande.fixture) : null;
-  if (commande && place)
-    for (const c of casesDeLaPetiteConstruction(commande.fixture) ?? [])
-      core(place.x + c.x, place.y + c.y);
+  for (const commande of fixturesOfPlace(port)) {
+    const place = placeDeLaPetiteConstruction(port, commande.fixture);
+    if (place) for (const c of casesDeLaPetiteConstruction(commande.fixture) ?? []) core(place.x + c.x, place.y + c.y);
+  }
   // Les marges d'un cœur agrandi (le Marché, 01/10/2026) : le passage devant les bornes, où l'on marche et construit ; les
   // objets du quai restent sur la grève, devant elles, comme avant.
   for (const m of margesDuCoeur(def)) ban(m.x, m.y);
@@ -117,8 +116,8 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   // La cale, sur la côte devant la barque amarrée (à l'ouest de la jetée) : rien ne s'y pose, la barque reste lisible.
   for (let x = X - 4; x < X; x++) for (let y = S; y <= S + 1; y++) ban(x, y);
   // Les ouvrages qui partent de l'île-port, et une case autour.
-  for (const b of BRIDGES.filter((d) => d.from === port || d.to === port))
-    for (const c of bridgePath(b)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) ban(c.x + dx, c.y + dy);
+  for (const b of placedLinksOfPlace(port, links))
+    for (const c of bridgePath(b, links)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) ban(c.x + dx, c.y + dy);
   // Le niveau du sol de chaque case : le cœur (et son plateau), ou la terre autour.
   const land = new Map(landscape(def).map((c) => [`${c.x},${c.y}`, c]));
   const ground = (x: number, y: number): number | null => {
@@ -184,7 +183,7 @@ export function harbor(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>
   const rest = vehicleRestZ(a);
   const X = def.core.x + DOCK_DX;
   const S = shoreY(port);
-  const spots = quaySpots(port, cubes);
+  const spots = quaySpots(port, village.links, cubes);
   const lantern = (x: number, y: number, z: number) =>
     cubes.push({ x, y, z, color: BLOCKS[BLOC.lanterne].side, top: BLOCKS[BLOC.lanterne].top, texture: 'lanterne', tag: port });
   const cells = dockCells(port);
@@ -216,11 +215,10 @@ export function harbor(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>
   };
   // La barque de la grève : grise et retournée (1), redressée (2) ; elle part à l'eau (3) ; une seconde la remplace (4).
   if (spots.boat && rank !== 3) boatAt(spots.boat.x, spots.boat.y, spots.boat.z, 'x', prop('barque', spots.boat), rank === 1, rank === 1);
-  // Amarrée à l'ouest de la jetée, entre les poteaux et l'îlot du Gardien (une case d'eau autour), au plus près de la côte.
+  // Amarrée à l'ouest de la jetée, au plus près de la côte.
   if (a !== '3e' && rank >= 3) {
     const bx = X - 3;
-    const islet = new Set([...bossIsletCells(port), ...bossIsletSteps(port)].flatMap((c) => [-1, 0, 1].flatMap((ex) => [-1, 0, 1].map((ey) => `${c.x + ex},${c.y + ey}`))));
-    const clear = (by: number) => [0, 1].every((dx) => Array.from({ length: BOAT_LENGTH }, (_, dy) => [bx + dx, by + dy]).every(([x, y]) => !isLand(def, x, y) && !islet.has(`${x},${y}`)));
+    const clear = (by: number) => [0, 1].every((dx) => Array.from({ length: BOAT_LENGTH }, (_, dy) => [bx + dx, by + dy]).every(([x, y]) => !isLand(def, x, y)));
     for (let by = S - BOAT_LENGTH; by > cells[cells.length - 1].y; by--)
       if (clear(by)) {
         boatAt(bx, by, 0, 'y', `${port}/barque@${bx},${by}`);

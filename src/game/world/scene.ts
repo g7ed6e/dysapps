@@ -43,21 +43,21 @@ export function startWalk(route: Cell[], start: number, duration: number): Walk 
  * seconde, quelle que soit la longueur ; le premier placement (`seq` 0) est immédiat. Dans l'archipel `archipel`, un
  * trajet qui prend une longue traversée reçoit le cadre fixe de la caméra (`cadre`).
  */
-export function avatarWalk(avatar: Bonhomme<Cell>, now: number, archipel?: ArchipelagoId): Walk | null {
+export function avatarWalk(avatar: Bonhomme<Cell>, now: number, monde?: { archipel: ArchipelagoId; links: readonly string[] }): Walk | null {
   if (!avatar.route.length) return null;
   const route = avatar.route.length < 2 ? [avatar.route[0], avatar.route[0]] : avatar.route;
   const walk = startWalk(route, now, avatar.seq === 0 ? 0 : walkDuration(route));
   if (avatar.flanerie) walk.flanerie = true;
   if (avatar.vise) walk.vise = true;
-  const cadre = archipel ? cadreDuTrajet(avatar, archipel) : null;
+  const cadre = monde ? cadreDuTrajet(avatar, monde.archipel, monde.links) : null;
   if (cadre) walk.cadre = cadre;
   return walk;
 }
 
 /** Le cadre fixe d'un trajet qui prend une longue traversée (hors flânerie et premier placement), sinon `null`. */
-function cadreDuTrajet(avatar: Bonhomme<Cell>, archipel: ArchipelagoId): CadreDeCases | null {
+function cadreDuTrajet(avatar: Bonhomme<Cell>, archipel: ArchipelagoId, links: readonly string[]): CadreDeCases | null {
   const { route } = avatar;
-  return avatar.seq !== 0 && !avatar.flanerie && route.length > BAC_LONG ? cadreDeTraversee(archipel, route) : null;
+  return avatar.seq !== 0 && !avatar.flanerie && route.length > BAC_LONG ? cadreDeTraversee(archipel, links, route) : null;
 }
 
 /** Le bonhomme est encore en route. */
@@ -294,6 +294,19 @@ export function groundTap(
   if (bridge && can.bridge) return { kind: 'bridge', id: bridge };
   if (can.build) return { kind: 'face', cell: hit.cell, next: hit.next };
   return { kind: 'island', id: grilleDe(a).ileEn({ ...hit.ground, z: 0 }), cell: hit.cell };
+}
+
+/**
+ * Sur la Carte (piste A du mainteneur, 7 octobre 2026), l'île d'un toucher sur le terrain : une borne ou un lieu comptent
+ * pour l'île où ils sont ; un ouvrage ne mène nulle part (rien).
+ */
+export function ileSurLaCarte(
+  a: ArchipelagoId,
+  hit: { cell: Cell; next: Cell; ground: { x: number; y: number } },
+  tags: { bridges: Map<string, string>; quests: Map<string, string>; places?: Map<string, PlaceId> },
+): BiomeId | null {
+  const tap = groundTap(a, hit, tags, { quest: false, bridge: true, build: false });
+  return tap.kind === 'island' ? tap.id : null;
 }
 
 /**

@@ -1,121 +1,84 @@
 // Le kit des Premiers Rivages (6e, lot 7b d'Archipéo), la référence des autres archipels : l'intention du directeur
 // artistique du 30 septembre 2026 (avis « Aligné », docs/univers/archipeo/cadrage.md, « L'intention du 6e »).
-// - Le bois : le colombage (poteaux #795643 sur un remplissage crème #D8D9C9, peint, 0 triangle) ; bardé (#B1815E) aux
+// - Le bois : le colombage (poteaux #795643 sur un torchis crème chaud #D9C7A8, peint, 0 triangle : le crème froid
+//   #D8D9C9, tiré de 35 % vers le Sable #DAA66A, pour qu'il se lise chaud à l'ombre et non gris-bleu, loin du fantôme
+//   Brume #E5EBE3 ; retouches du directeur artistique, 8 octobre 2026) ; bardé (#B1815E) aux
 //   pignons (et, en attente, sur les bâtiments de bois du quai : `bardes`) ; des pilotis (#6E4C30) là où il touche
 //   l'eau et où le sol manque dessous.
-// - La pierre : un mur plein, de sa matière ; le soubassement et le chaperon en pierre #8A8F84.
+// - La pierre : un mur plein, de sa matière ; le soubassement en pierre #8A8F84, au pied d'un mur d'au moins trois
+//   rangées seulement ; le chaperon, mince, dans une teinte plus sombre de sa matière (retouches du 8 octobre 2026).
 // - Les toits : les pentes de ./roofs.ts, dans la couverture de leur île (world/roofs.ts : ardoise, ou terre cuite à la
 //   Ferme et à la Mine).
 // - L'école, la salle des trophées et la Halle aux matériaux (décision du directeur artistique, 30 septembre 2026 : des
-//   lieux du village, au milieu des maisons) : leurs murs en colombage, leurs toits en pentes (`LIEUX_6E`).
-// Le verre et les lanternes ne deviennent jamais des pièces ; les monuments gardent leurs blocs taillés.
-import { boiteDansLaCase, type DessinDePiece, type Facette } from '../rooms';
-import { MOTIF } from '../paint';
+//   lieux du village, au milieu des maisons) : leurs murs en colombage, leurs toits en pentes (`villagePlaces`, ./shared.ts).
+// - La table commune « matière → famille » (../families.ts, décision du mainteneur du 8 octobre 2026) : le colombage
+//   (planches, terre, poutre, chaume), le bardage (cabine, carton : des clins dans la teinte de la matière, chaperon de
+//   pierre ; le bois des monuments et des petites constructions aussi, dans le brun du kit), la pierre (un mur plein
+//   dans sa teinte ; seule et basse, un bac dans sa teinte, cerné d'un rebord gris), le toit (toit, tuile), la finition
+//   (la porte en vantail dans son encadrement, la marche basse dans la teinte de sa matière :
+//   ../lowPieces.ts ; la barrière en poteaux et lisses, depuis le 9 octobre 2026). Les monuments, la cour des îles et les petites constructions des
+//   commandes et des quêtes la prennent aussi (../index.ts).
+// - Le métal, le précieux et le végétal (intention du directeur artistique, 9 octobre 2026 ; mot du mainteneur,
+//   « on continue ») : l'aimant en tôle peinte (plaques zinc clair #A4AAB0, joints verticaux #7E848A tous les quarts de
+//   case, mats ; soubassement à partir de trois rangées, chaperon mince sans toit, aux pignons aussi ; seule et basse,
+//   une jardinière reste un cube peint : le bac coûte 18 triangles, le cube 10) ; le velours du fond de la salle des
+//   trophées en tenture peinte (plis, galon d'or #CCA22E) ; la cloche de l'école en tronc de pyramide d'or (../precious.ts),
+//   les trophées d'or et de cristal en lingot et en cristal (world/construction.ts) ; les poteaux de bois des liaisons
+//   et de la jetée en poteaux carrés (`poteaux`). Toile, feuilles, herbe, mousse, sapin et eau : aucun n'est posé par
+//   un plan au 6e.
+// - Le reste (intention du directeur artistique, 9 octobre 2026, `reste` : ../heart.ts) : le décor du cœur des îles (un
+//   volume par matière, peint ; les rochers, petits arbres et buissons des formes communes), le quai et les tabliers
+//   des liaisons, l'eau en nappe, les pavillons des petites constructions, les toits cachés et plats peints dans la
+//   couverture, le verre hors d'un mur en verrière, la cour de la Halle, la porte et le fût de l'école, les socles de
+//   la salle des trophées.
+// Le verre et les lanternes ne deviennent jamais des pièces.
+import { materialsOf } from '../families';
+import { bacDePierre, PIECE_SEULE_ET_BASSE } from '../lowPieces';
+import { restOf } from '../heart';
 import { piecesDeToit } from '../roofs';
-import type { IdDeMur, Forme, Tete } from '../choices';
-import type { VillagePlaceId } from '../../cube';
-import { estUnPilier } from '../../trophyHall';
-import { HALLE } from '../../terrain';
-import type { CaseDuLieu, Kit, LieuDuKit } from './types';
-
-/** La hauteur des pilotis sous le plancher : celle du soubassement, qu'ils remplacent. */
-const PILOTIS = { haut: 0.35, cote: 0.14 } as const;
-
-/**
- * Un mur de bois sur pilotis : le plancher et le colombage au-dessus des pilotis (sa sablière basse posée sur eux), et
- * quatre poteaux aux coins de la case, jusqu'au bas de la case (le reste du pieu est dans l'eau).
- */
-function surPilotis(tete: Tete): DessinDePiece {
-  const motif = MOTIF.colombage | MOTIF.sabliereBasse | (tete === 'toit' ? MOTIF.sabliereHaute : 0) | (tete === 'chaperon' ? MOTIF.chaperon : 0);
-  const corps = boiteDansLaCase(0, 1, 0, 1, PILOTIS.haut, 1, motif, 'remplissage');
-  const c = PILOTIS.cote;
-  const pieux: Facette[] = [];
-  for (const [x0, y0] of [
-    [0, 0],
-    [1 - c, 0],
-    [0, 1 - c],
-    [1 - c, 1 - c],
-  ])
-    // Les quatre côtés d'un pieu (le dessus est sous le plancher, le dessous dans l'eau).
-    pieux.push(...boiteDansLaCase(x0, x0 + c, y0, y0 + c, 0, PILOTIS.haut, 0, 'pilotis').facettes.filter((f) => f.normale[2] === 0));
-  // Le dessus du corps : du chaperon s'il n'y a rien au-dessus.
-  const facettes = corps.facettes.map((f) => (f.normale[2] > 0 && tete === 'chaperon' ? { ...f, motif: MOTIF.pierreEntiere } : f));
-  return { facettes: [...facettes, ...pieux], couvre: corps.couvre };
-}
-
-function piecesSurPilotis(): Partial<Record<IdDeMur, DessinDePiece>> {
-  const out: Partial<Record<IdDeMur, DessinDePiece>> = {};
-  const formes: Forme[] = ['seul', 'bout', 'droit', 'angle', 'te', 'croix'];
-  for (const tete of ['chaperon', 'toit', 'mur'] as const) {
-    const d = surPilotis(tete);
-    for (const forme of formes) out[`mur.${forme}.pilotis.${tete}`] = d;
-  }
-  return out;
-}
-
-/** Un pilier de la salle des trophées, lu par colonne (GD-3) : les bouts de la salle de départ et le bord de chaque travée. */
-const pilier = ({ x, y, d }: CaseDuLieu) => estUnPilier(x, y, d);
-/**
- * Les rangs de la halle du lieu où l'on assemble (world/terrain.ts, `atelierModel`, `HALLE`) : à partir de son premier
- * rang ; devant, la cour (la potence, le bloc suspendu, les blocs de la recette), qui reste en blocs.
- */
-const dansLaHalle = ({ y }: CaseDuLieu) => y >= HALLE.rang;
-/** La souche du clocheton de l'école : la case du toit sous lui, au milieu de la façade, au deuxième rang (schoolModel). */
-const souche = ({ x, y, z, w }: CaseDuLieu) => x === (w - 1) / 2 && y === 1 && z === 5;
-
-/**
- * Les lieux du village des Premiers Rivages (world/terrain.ts) :
- * - l'école : ses murs de brique aux coins de pierre de taille (les trois rangs posés sur le sol) en colombage, son toit
- *   à deux pans en pentes ; la porte, les deux fenêtres, le clocheton et sa cloche d'or restent des blocs, et la souche
- *   du clocheton prend sa pierre de taille : un seul fût de deux cases (décision du directeur artistique, 1er octobre) ;
- * - la salle des trophées : ses piliers de marbre en colombage, sans décharge (des piliers isolés : poteaux et
- *   sablières seulement), ceux de ses travées aussi (GD-3 : la halle s'allonge, une travée tous les six succès après
- *   les douze premiers) ; son toit de pierre de taille en pentes, dans la couverture de l'île, d'un seul tenant d'un
- *   bout à l'autre (le pignon au bout de la halle, aucun au milieu), et son faîte d'or en faîte, qui s'allonge avec
- *   elle ; le fond de velours (le fond des trophées), les socles de marbre et les trophées restent des blocs ;
- * - la Halle aux matériaux (le lieu où l'on assemble, dans son dessin d'Archipéo : `atelierModel('halle')`) : ses murs
- *   de bois sur leur rang de pierre en colombage (le rang de pierre devient le soubassement, comme aux maisons), son toit
- *   à deux pentes en pentes et son faîte ; la porte reste ouverte, et la cour (la potence, le bloc suspendu, les blocs de
- *   la recette) reste en blocs. Le dessin de Blocland (la Fabrique) n'est jamais repris : la construction taillée est
- *   celle d'Archipéo.
- */
-const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
-  school: (m) =>
-    m.z <= 3 && (m.texture === 'brique' || m.texture === 'taille')
-      ? { famille: 'bois' }
-      : m.texture === 'toit' && souche(m)
-        ? { matiere: 'taille' }
-        : m.texture === 'toit'
-          ? { famille: 'toit' }
-          : undefined,
-  trophies: (m) =>
-    m.texture === 'marbre' && m.z <= 3 && pilier(m)
-      ? { famille: 'bois', sansDecharge: true }
-      : m.z === 4 && m.texture === 'taille'
-        ? { famille: 'toit', couverture: true }
-        : // Le faîte d'or, au rang du milieu : la salle a une profondeur impaire (TROPHY_SIZE, 3 cases), sinon il n'y en a pas.
-          m.z === 5 && m.y === (m.d - 1) / 2 && m.texture === 'or'
-          ? { famille: 'toit' }
-          : undefined,
-  assembly: (m) =>
-    !dansLaHalle(m)
-      ? undefined
-      : m.z <= HALLE.haut && (m.texture === 'planches' || m.texture === 'pierre')
-        ? { famille: 'bois' }
-        : m.texture === 'toit'
-          ? { famille: 'toit' }
-          : undefined,
-};
+import { FINISHES, piecesSurPilotis, postsOf, villagePlaces } from './shared';
+import type { Kit } from './types';
 
 export const KIT_6E: Kit = {
-  // La Ferme (terre) : le torchis d'un colombage, dans la famille du bois (décision du directeur artistique, 30/09).
-  matieres: { planches: 'bois', terre: 'bois', pierre: 'pierre', galet: 'pierre', brique: 'pierre', obsidienne: 'pierre', toit: 'toit' },
-  couleurs: { poteau: 0x795643, remplissage: 0xd8d9c9, soubassement: 0x8a8f84, chaperon: 0x8a8f84, bardage: 0xb1815e, pilotis: 0x6e4c30 },
-  murs: { bois: 'colombage', pierre: 'plein' },
+  // La table commune, pour les familles que le kit dessine (la Ferme, en terre : le torchis d'un colombage, décision du
+  // directeur artistique du 30/09).
+  matieres: materialsOf(['colombage', 'bardage', 'pierre', 'toit', 'finition', 'metal']),
+  couleurs: {
+    poteau: 0x795643,
+    remplissage: 0xd9c7a8,
+    soubassement: 0x8a8f84,
+    chaperon: 0x8a8f84,
+    bardage: 0xb1815e,
+    pilotis: 0x6e4c30,
+    tole: 0xa4aab0,
+    joint: 0x7e848a,
+    galon: 0xcca22e,
+    // Le reste (../heart.ts, 9 octobre 2026) : la braise mate, l'eau en nappe (dessus, liseré Brume, flancs), le
+    // nénuphar, la paille du blé.
+    braise: 0xc0764a,
+    nappe: 0x178078,
+    lisere: 0xe5ebe3,
+    flanc: 0x142b38,
+    feuille: 0x4e8f36,
+    paille: 0xe8c66f,
+  },
+  murs: { colombage: 'colombage', bardage: 'bardage', pierre: 'plein', metal: 'tole' },
   // En attente (décision du directeur artistique, 30/09) : au 6e, le bardage reste aux pignons. Les îles au quai ou au
   // ponton (la Baie, la Rivière, la Tour) n'ont aucun mur de bois (la cabine de la Baie reste en blocs) : la règle attend
   // les bâtiments de bois qu'on y posera.
   bardes: ['english-6e-vocabulary', 'maths-6e-fractions', 'french-6e-reading'],
-  pieces: { toit: piecesDeToit(), bois: piecesSurPilotis() },
-  lieux: LIEUX_6E,
+  pieces: { toit: piecesDeToit(), colombage: piecesSurPilotis(), pierre: { [PIECE_SEULE_ET_BASSE]: bacDePierre() } },
+  // La barrière en poteaux et lisses (`barriereDe`), branchée le 9 octobre 2026 : elle tient dans l'enveloppe.
+  finitions: FINISHES,
+  // Les lieux du village (./shared.ts) : les murs de brique et de pierre de taille de l'école, et les piliers de marbre
+  // de la salle des trophées (sans décharge), en colombage.
+  lieux: villagePlaces({ school: { famille: 'colombage' }, pillars: { famille: 'colombage' } }),
+  // Le lissage (mot du mainteneur, 8 octobre 2026) : un volume par matière dans les monuments, les petites
+  // constructions, les cours et les piliers du cœur.
+  lissage: true,
+  // Les poteaux de bois des liaisons et de la jetée des Premiers Rivages (./shared.ts).
+  poteaux: postsOf('6e'),
+  // Le reste (intention du directeur artistique, 9 octobre 2026) : le décor du cœur, le quai, les tabliers, l'eau, les
+  // toits cachés, le verre hors d'un mur, la cour de la Halle, la porte et le fût de l'école, les socles de la salle.
+  reste: restOf,
 };

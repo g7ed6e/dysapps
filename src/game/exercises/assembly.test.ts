@@ -2,17 +2,35 @@
 // `npm run contenu` dans data/assemblage-<bloc>.json. Chaque bloc a ses questions ; chacune mobilise les deux matières
 // de sa recette, au niveau de son archipel ; trois choix, une aide, rien que la voix lirait mal.
 import { APPS } from '../../apps/registry';
-import { CYCLE_OF, byId } from '../../curriculum';
+import { byId, citable } from '../../curriculum';
 import { BIOMES } from '../biomes';
 import { RECETTES } from '../world/assembly';
+import { getMonument } from '../world/monuments';
+import { PROJECTS, type ProjectRecipe } from '../world/projects';
+import type { ArchipelagoId } from '../world/archipelagos';
+import type { DrawKey } from '../engine/state';
 import { ILES } from '../islands';
 import { BLOCS_A_QUESTIONS, CATALOG, UNORDERED, loadAllExercises, loadAssemblage } from './index';
 import { SCREEN_TYPES } from './registry';
-import { piegesDe, placerChoixAssemblage, valeursDesNombres } from './shuffle';
+import { placerChoixAssemblage, valeursDesNombres } from './shuffle';
 import type { AssemblageDef } from './types';
 
+// Les banques des grands projets (GD-10, docs/contenu/projets.md) se vérifient comme les blocs assemblés : chacune avec
+// les recettes qui la posent, son archipel celui du projet. En 3e, une recette prend trois îles, mais sa question n'en
+// mêle que deux (décision du 8 octobre 2026) : les deux matières de la banque sont dans chacune de ses recettes.
+const BANQUES_DE_PROJETS = [
+  ...PROJECTS.flatMap((p) => p.pieces.flatMap((x) => x.recipes.map((r) => ({ ...r, archipelago: getMonument(p.monument)!.archipelago }))))
+    .filter((r) => r.bank.startsWith('project-'))
+    .reduce((banques, r) => {
+      const b = banques.get(r.bank) ?? { bloc: r.bank, ingredients: r.ingredients, archipelago: r.archipelago, recettes: [] as (typeof r.ingredients)[] };
+      b.recettes.push(r.ingredients);
+      return banques.set(r.bank, b);
+    }, new Map<DrawKey, { bloc: DrawKey; ingredients: ProjectRecipe['ingredients']; archipelago: ArchipelagoId; recettes: ProjectRecipe['ingredients'][] }>())
+    .values(),
+];
+const BANQUES = [...RECETTES, ...BANQUES_DE_PROJETS];
 const QUESTIONS = new Map<string, AssemblageDef>();
-for (const r of RECETTES) {
+for (const r of BANQUES) {
   const def = await loadAssemblage(r.bloc);
   if (def) QUESTIONS.set(r.bloc, def);
 }
@@ -46,8 +64,8 @@ function textes(def: AssemblageDef): string[] {
   ].filter((t): t is string => typeof t === 'string');
 }
 
-it('chaque bloc assemblé a ses questions, au moins 8, et rien d’autre n’en a', () => {
-  for (const r of RECETTES) {
+it('chaque bloc assemblé et chaque banque de projet a ses questions, au moins 8, et rien d’autre n’en a', () => {
+  for (const r of BANQUES) {
     const def = QUESTIONS.get(r.bloc);
     expect(def, `${r.bloc} : aucune question dans docs/contenu/assemblage.md`).toBeDefined();
     expect(def!.bloc).toBe(r.bloc);
@@ -55,19 +73,18 @@ it('chaque bloc assemblé a ses questions, au moins 8, et rien d’autre n’en 
     expect(def!.items.length, r.bloc).toBeGreaterThanOrEqual(8);
     expect(new Set(def!.items.map((it) => it.key)).size, r.bloc).toBe(def!.items.length);
   }
-  expect([...BLOCS_A_QUESTIONS].sort()).toEqual(RECETTES.map((r) => r.bloc).sort());
+  expect([...BLOCS_A_QUESTIONS].sort()).toEqual(BANQUES.map((r) => r.bloc).sort());
 });
 
 it('les questions d’assemblage ne sont ni dans une île ni au catalogue des missions', () => {
   expect(CATALOG.some((e) => e.type === 'assembly')).toBe(false);
   expect(UNORDERED).toEqual([]);
   expect(BIOMES.some((b) => b.exercises.some((m) => m.id === 'assembly'))).toBe(false);
-  // Elles s'affichent sur l'écran à document, avec les pièges du fichier.
+  // Elles s'affichent sur l'écran à document (leurs pièges, ceux du fichier : placerChoixAssemblage).
   expect(SCREEN_TYPES.assembly.batch).toBe(1);
-  for (const def of QUESTIONS.values()) expect(piegesDe(def)).toBe('du-fichier');
 });
 
-describe.each(RECETTES.map((r) => [r.bloc, r] as const))('les questions du bloc %s', (bloc, recette) => {
+describe.each(BANQUES.map((r) => [r.bloc, r] as const))('les questions du bloc %s', (bloc, recette) => {
   const def = () => QUESTIONS.get(bloc)!;
 
   it('citent des compétences qui existent, des deux matières de la recette, du niveau de l’archipel', () => {
@@ -77,25 +94,31 @@ describe.each(RECETTES.map((r) => [r.bloc, r] as const))('les questions du bloc 
       return e!;
     });
     expect(new Set(def().programme).size).toBe(def().programme.length);
-    const matieres = [...new Set(recette.ingredients.map((i) => matiereDuBloc(i.bloc)))];
-    expect(matieres.length, `${bloc} : la recette prend les blocs de deux matières`).toBe(2);
+    const recettes = 'recettes' in recette ? recette.recettes : [recette.ingredients];
+    const matieres =
+      'recettes' in recette
+        ? [...new Set(entries.map((e) => e.discipline))]
+        : [...new Set(recette.ingredients.map((i) => matiereDuBloc(i.bloc)))];
+    expect(matieres.length, `${bloc} : la question mêle deux matières`).toBe(2);
+    for (const r of recettes)
+      for (const m of matieres)
+        expect(
+          r.some((i) => matiereDuBloc(i.bloc) === m),
+          `${bloc} : une recette qui pose cette question ne prend pas de bloc de ${m}`,
+        ).toBe(true);
     for (const m of matieres)
       expect(
         entries.some((e) => e.discipline === m),
         `${bloc} : aucune compétence de ${m}`,
       ).toBe(true);
     for (const e of entries) expect(matieres, `${bloc} cite ${e.id}, d’une autre matière`).toContain(e.discipline);
-    // 6e : le cycle 3 seul ; 5e à 3e : au moins une compétence du cycle 4.
-    if (CYCLE_OF[recette.archipelago] === 3)
-      expect(
-        entries.every((e) => e.cycle === 3),
-        `${bloc} cite le cycle 4`,
-      ).toBe(true);
-    else
-      expect(
-        entries.some((e) => e.cycle === 4),
-        `${bloc} ne cite aucune compétence du cycle 4`,
-      ).toBe(true);
+    // Au moins une compétence de la classe de l'archipel ; les autres d'une classe d'avant, jamais d'une classe d'après.
+    const classe = recette.archipelago;
+    for (const e of entries) expect(citable(e, classe), `${bloc} (${classe}) cite ${e.id}, au programme de ${e.classes.join(', ')}`).toBeTruthy();
+    expect(
+      entries.some((e) => citable(e, classe) === 'classe'),
+      `${bloc} ne cite aucune compétence de sa classe (${classe})`,
+    ).toBe(true);
   });
 
   it('citent des compétences déjà travaillées par une île ou le portail : la couverture du programme ne bouge pas', () => {

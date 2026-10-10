@@ -37,16 +37,6 @@ export interface Piece {
   lueur?: 'nuit' | 'allumage';
   /** La couleur que prend la nuit une pièce qui brille, si elle n'est pas celle dont elle est peinte (le verre de Fi). */
   nuit?: Couleur;
-  /**
-   * La part de son allumage qu'une pièce qui brille emprunte à la lueur (1 par défaut : pleinement émissive) ; en
-   * dessous, elle garde un peu de l'ombre de ses facettes (les veines du Lion de pierre, « légèrement émissives »).
-   */
-  glowWeight?: number;
-  /**
-   * Pour une pièce qui brille au rallumage : le degré qu'elle a déjà au premier pas des lueurs (`FIRST_STEP`, ./glow.ts),
-   * pour monter plus vite au début (les veines du Lion de pierre) ; sans lui, elle suit les lueurs.
-   */
-  firstStepGlow?: number;
   dessiner(T: Trace, pot: Pot): void;
 }
 
@@ -66,6 +56,16 @@ export interface FacettesDePersonnage {
   table: PieceDuModele[];
   /** Les couleurs de base du personnage, dans l'ordre où elles sont peintes, avec leur rôle. */
   palette: { couleur: Couleur; role: Role }[];
+  /**
+   * Pour chaque triangle d'une sentinelle importée (./imported/models.ts), sa hauteur dans la statue, de 0 (le bas) à
+   * 1 (le haut) : ses lueurs y montent des pieds vers la tête (`couleursAllumees`). Absent d'un modèle dessiné en code.
+   */
+  hauteurs?: Float32Array;
+  /**
+   * Le squelette d'une créature importée qui en a un, de près (./imported/models.ts) : ses os, la tête de chacun dans le
+   * repère du modèle, et quatre os et poids par sommet. Absent ailleurs : chaque triangle suit sa pièce.
+   */
+  skin?: { bones: { name: string; parent: number; head: V3 }[]; joints: Uint8Array; weights: Float32Array };
 }
 
 /** La nuance d'une facette selon qu'elle regarde le ciel ou le sol : de `NUANCE[0]` (dessous) à `NUANCE[1]` (dessus). */
@@ -124,14 +124,7 @@ export function peindrePersonnage(pieces: Piece[]): FacettesDePersonnage {
     colors: f.colors,
     pieces: f.elements.map((e) => e & 255),
     teintes: f.elements.map((e) => palette[e >> 8].couleur),
-    table: pieces.map(({ nom, pivot, lueur, nuit, glowWeight, firstStepGlow }) => ({
-      nom,
-      pivot,
-      ...(lueur ? { lueur } : {}),
-      ...(nuit !== undefined ? { nuit } : {}),
-      ...(glowWeight !== undefined ? { glowWeight } : {}),
-      ...(firstStepGlow !== undefined ? { firstStepGlow } : {}),
-    })),
+    table: pieces.map(({ nom, pivot, lueur, nuit }) => ({ nom, pivot, ...(lueur ? { lueur } : {}), ...(nuit !== undefined ? { nuit } : {}) })),
     palette,
   };
 }

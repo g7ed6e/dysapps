@@ -1,0 +1,234 @@
+{
+  "id": "technology-5e-design-technical-solutions-1",
+  "biome": "technology-5e-design",
+  "type": "technical-solutions",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-5e-design-technical-solutions-1-0",
+      "prompt": "Pour fermer la trousse, la fermeture éclair est une …",
+      "spoken": "Pour fermer la trousse, la fermeture éclair est une  (mot manquant) ",
+      "choices": [
+        "fonction",
+        "solution technique",
+        "contrainte"
+      ],
+      "answer": "solution technique",
+      "hint": "Fermer, c’est la fonction. Et la fermeture éclair ?",
+      "explanation": "Fermer la trousse est la fonction ; la fermeture éclair est la pièce qui le fait : une solution technique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fonction et solution technique",
+          "lines": [
+            "Une fonction : ce que l’objet doit faire.",
+            "Une solution technique : comment il le fait.",
+            "Une solution : une pièce, un matériau ou un mécanisme.",
+            "Une même fonction peut avoir plusieurs solutions.",
+            "Exemple : tenir le téléphone, avec une pince, un aimant ou un support."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-1-1",
+      "prompt": "La fonction du vélo\nÉclairer la route la nuit.",
+      "question": "Quelle solution technique répond à cette fonction ?",
+      "spoken": "La fonction du vélo. Éclairer la route la nuit.",
+      "choices": [
+        "une sonnette",
+        "une lampe à l’avant",
+        "une béquille"
+      ],
+      "answer": "une lampe à l’avant",
+      "hint": "Quelle pièce éclaire ?",
+      "explanation": "La lampe à l’avant éclaire la route : c’est la solution technique. La sonnette sert à prévenir, la béquille à garer le vélo.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fonction et solution technique",
+          "lines": [
+            "Une fonction : ce que l’objet doit faire.",
+            "Une solution technique : comment il le fait.",
+            "Une solution : une pièce, un matériau ou un mécanisme.",
+            "Une même fonction peut avoir plusieurs solutions.",
+            "Exemple : tenir le téléphone, avec une pince, un aimant ou un support."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-1-2",
+      "prompt": "Trois façons de fermer un sac\nUne fermeture éclair.\nUn bouton-pression.\nUn aimant.",
+      "question": "Que montre ce document ?",
+      "spoken": "Trois façons de fermer un sac. Une fermeture éclair. Un bouton-pression. Un aimant.",
+      "choices": [
+        "un sac a trois fonctions",
+        "une fonction peut avoir plusieurs solutions",
+        "un sac n’a besoin d’aucune solution"
+      ],
+      "answer": "une fonction peut avoir plusieurs solutions",
+      "hint": "Fermer le sac : est-ce une fonction, ou trois ?",
+      "explanation": "Fermer le sac est une seule fonction. La fermeture éclair, le bouton-pression et l’aimant sont trois solutions pour la remplir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fonction et solution technique",
+          "lines": [
+            "Une fonction : ce que l’objet doit faire.",
+            "Une solution technique : comment il le fait.",
+            "Une solution : une pièce, un matériau ou un mécanisme.",
+            "Une même fonction peut avoir plusieurs solutions.",
+            "Exemple : tenir le téléphone, avec une pince, un aimant ou un support."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-1-3",
+      "prompt": "Sur la poussette, les freins des roues servent à la garder …",
+      "spoken": "Sur la poussette, les freins des roues servent à la garder  (mot manquant) ",
+      "choices": [
+        "immobile",
+        "propre",
+        "pliée"
+      ],
+      "answer": "immobile",
+      "hint": "À quoi sert un frein ?",
+      "explanation": "Les freins répondent à la fonction « garder la poussette immobile » : elle ne roule pas toute seule.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fonction et solution technique",
+          "lines": [
+            "Une fonction : ce que l’objet doit faire.",
+            "Une solution technique : comment il le fait.",
+            "Une solution : une pièce, un matériau ou un mécanisme.",
+            "Une même fonction peut avoir plusieurs solutions.",
+            "Exemple : tenir le téléphone, avec une pince, un aimant ou un support."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-1-4",
+      "prompt": "Le ventilateur de bureau\nProduire du vent : des pales qui tournent.\nFaire tourner les pales : un moteur.\nRégler la vitesse : à trouver.",
+      "question": "Quelle solution technique règle la vitesse ?",
+      "spoken": "Le ventilateur de bureau. Produire du vent, des pales qui tournent. Faire tourner les pales, un moteur. Régler la vitesse, à trouver.",
+      "choices": [
+        "une grille",
+        "un bouton à trois positions",
+        "un câble"
+      ],
+      "answer": "un bouton à trois positions",
+      "hint": "Que touche-t-on pour choisir la vitesse ?",
+      "explanation": "Le bouton à trois positions règle la vitesse. La grille protège les doigts, le câble apporte l’électricité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fonction et solution technique",
+          "lines": [
+            "Une fonction : ce que l’objet doit faire.",
+            "Une solution technique : comment il le fait.",
+            "Une solution : une pièce, un matériau ou un mécanisme.",
+            "Une même fonction peut avoir plusieurs solutions.",
+            "Exemple : tenir le téléphone, avec une pince, un aimant ou un support."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-1-5",
+      "prompt": "Pour un cadre de sac à dos léger et solide, on choisit l’…",
+      "spoken": "Pour un cadre de sac à dos léger et solide, on choisit l’ (mot manquant) ",
+      "choices": [
+        "acier",
+        "verre",
+        "aluminium"
+      ],
+      "answer": "aluminium",
+      "hint": "Lequel est à la fois léger et solide ?",
+      "explanation": "L’aluminium est léger et solide : un bon matériau pour la fonction « porter sans peser ». L’acier est solide mais lourd, le verre est cassant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fonction et solution technique",
+          "lines": [
+            "Une fonction : ce que l’objet doit faire.",
+            "Une solution technique : comment il le fait.",
+            "Une solution : une pièce, un matériau ou un mécanisme.",
+            "Une même fonction peut avoir plusieurs solutions.",
+            "Exemple : tenir le téléphone, avec une pince, un aimant ou un support."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-1-6",
+      "prompt": "La gourde isotherme\nFonction : garder la boisson fraîche.\nSolution : une double paroi, avec du vide entre les deux.",
+      "question": "À quoi sert la double paroi ?",
+      "spoken": "La gourde isotherme. Fonction, garder la boisson fraîche. Solution, une double paroi, avec du vide entre les deux.",
+      "choices": [
+        "à garder la boisson fraîche",
+        "à rendre la gourde plus jolie",
+        "à fermer la gourde"
+      ],
+      "answer": "à garder la boisson fraîche",
+      "hint": "Relis la ligne « Fonction ».",
+      "explanation": "Le vide entre les deux parois laisse mal passer la chaleur : la boisson reste fraîche. La double paroi est la solution, garder frais est la fonction.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fonction et solution technique",
+          "lines": [
+            "Une fonction : ce que l’objet doit faire.",
+            "Une solution technique : comment il le fait.",
+            "Une solution : une pièce, un matériau ou un mécanisme.",
+            "Une même fonction peut avoir plusieurs solutions.",
+            "Exemple : tenir le téléphone, avec une pince, un aimant ou un support."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-technical-solutions-1-7",
+      "prompt": "Une pièce, un matériau ou un mécanisme qui remplit une fonction est une …",
+      "spoken": "Une pièce, un matériau ou un mécanisme qui remplit une fonction est une  (mot manquant) ",
+      "choices": [
+        "solution technique",
+        "contrainte",
+        "norme"
+      ],
+      "answer": "solution technique",
+      "hint": "Relis la ligne « Une solution » du rappel.",
+      "explanation": "La pièce, le matériau ou le mécanisme dit comment l’objet remplit sa fonction : c’est une solution technique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fonction et solution technique",
+          "lines": [
+            "Une fonction : ce que l’objet doit faire.",
+            "Une solution technique : comment il le fait.",
+            "Une solution : une pièce, un matériau ou un mécanisme.",
+            "Une même fonction peut avoir plusieurs solutions.",
+            "Exemple : tenir le téléphone, avec une pince, un aimant ou un support."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-5e-design",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

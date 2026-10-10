@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { BLOCKS, SANS_LV2, estIleLv2, getBiome, guardianTitle, missionsJouables, ofBlock } from './biomes';
+import { BLOCKS, getBiome, guardianTitle, missionsJouables, ofBlock, sansSonOption } from './biomes';
 import { useSettings } from '../core/SettingsContext';
 import { SchoolLink } from './School';
 import { AssemblyLink } from './Assembly';
@@ -19,9 +19,10 @@ import { CreatureBubble } from './CreatureBubble';
 import { InventoryLink } from './Inventory';
 import { pickExercise, questProgress } from './exercises';
 import { Stars } from './Stars';
-import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss } from './boss';
+import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss, quoted } from './boss';
 import { BlockIcon } from './Voxel';
 import { PlanSection } from './PlanSection';
+import { JoinLine } from './Joins';
 import { ShipSection } from './ShipSection';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { stageAt } from './world/vehicle';
@@ -60,7 +61,9 @@ export function BiomePage() {
   const owned = state.stock[biome.block] ?? 0;
   const unlocked = isBiomeUnlocked(biome.id, state.world.links);
   const port = archipelagoOf(biome.id).port === biome.id;
-  const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
+  // « Pas de LV2 » sur l'île de la LV2, « Pas d'option » sur celle du latin et du grec (GD-13).
+  const sansOption = sansSonOption(biome, settings);
+  const sansLv2 = sansOption !== null;
   const rappel = unlocked && !sansLv2 ? rappelDue : null;
   const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.archipels, textes.libelles) : null;
 
@@ -87,7 +90,7 @@ export function BiomePage() {
       {/* La proposition de la créature se lit après l'accueil, dans la même lecture (comme dans le panneau du monde). */}
       <CreatureBubble
         biome={biome}
-        text={sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id, textes.archipels, textes.libelles)}
+        text={sansOption ? sansOption.lu : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id, textes.archipels, textes.libelles)}
         ensuite={rappel?.lu}
       />
 
@@ -109,10 +112,10 @@ export function BiomePage() {
       {port && unlocked && <VillageStageLine village={state.world} archipelago={biome.classe} className="panel" />}
 
       {/* Un ouvrage construit ouvre l'île d'en face : on y va, sa créature accueille (comme en 3D). */}
-      {sansLv2 ? (
+      {sansOption ? (
         <p>
           <Link to="/reglages" className="button">
-            <Icon name="settings" /> Choisir une LV2
+            <Icon name="settings" /> {sansOption.bouton}
           </Link>
         </p>
       ) : (
@@ -124,7 +127,7 @@ export function BiomePage() {
         />
       )}
 
-      {/* « Pas de LV2 » : ni missions ni Gardien sur l'île de la LV2. */}
+      {/* « Pas de LV2 », « Pas d'option » : ni missions ni Gardien sur le lieu d'option. */}
       {!sansLv2 && (
         <>
       <h2 id={`missions-${biome.id}`} tabIndex={-1} className="section-title">
@@ -132,7 +135,7 @@ export function BiomePage() {
       </h2>
       <YouAreHere dit={ici === biome.id} />
       <ul className="grid apps">
-        {missionsJouables(biome, settings.lv2).map((exercise) => {
+        {missionsJouables(biome, settings.lv2, settings.lca).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
           const progress = def ? questProgress(biome.id, exercise.id, state.progress) : undefined;
           const content = (
@@ -206,7 +209,7 @@ export function BiomePage() {
         </h2>
       )}
       {!sansLv2 && (() => {
-        const ready = unlocked && isBossOpen(biome, state.progress);
+        const ready = unlocked && isBossOpen(biome, state.progress, state.world.challengesKeptOpen);
         const beaten = isBossBeaten(biome.id, state.progress);
         const boss = state.progress[`${biome.id}-challenge`];
         const content = (
@@ -222,7 +225,7 @@ export function BiomePage() {
               <span className="tag tag-new">{textes.libelles.defiPretCourt}</span>
             ) : (
               <span className="tag">
-                <Icon name="lock" /> {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque mission'}
+                <Icon name="lock" /> {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).map(quoted).join(', ') || 'chaque mission'}
               </span>
             )}
           </>
@@ -248,6 +251,9 @@ export function BiomePage() {
           </div>
         </>
       )}
+
+      {/* Réuni à un autre lieu (GD-9) : la construction qui les réunit se pose depuis sa page. */}
+      {unlocked && <JoinLine island={biome.id} />}
 
       {unlocked && stageAt(biome.id) && (
         <>

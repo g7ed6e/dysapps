@@ -1,0 +1,238 @@
+{
+  "id": "history-4e-revolutions-industrial-europe-1",
+  "biome": "history-4e-revolutions",
+  "type": "industrial-europe",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "items": [
+    {
+      "key": "history-4e-revolutions-industrial-europe-1-0",
+      "prompt": "La révolution industrielle commence d’abord en … .",
+      "spoken": "La révolution industrielle commence d’abord en (mot manquant) .",
+      "choices": [
+        "Grande-Bretagne",
+        "France",
+        "Allemagne"
+      ],
+      "answer": "Grande-Bretagne",
+      "hint": "C’est le pays des premières machines à vapeur.",
+      "explanation": "La révolution industrielle commence en Grande-Bretagne, à la fin du XVIIIe siècle, puis gagne la France et l’Allemagne au XIXe siècle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XIXe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XIX vaut 19.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1804 : Napoléon Ier, empereur.",
+            "XIXe siècle : usines, machines à vapeur, chemins de fer.",
+            "1830 : la France commence la conquête de l’Algérie.",
+            "Fin du XIXe siècle : les Européens se partagent l’Afrique."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-1-1",
+      "prompt": "Au XIXe siècle, la machine à vapeur marche surtout grâce au … .",
+      "spoken": "Au dix-neuvième siècle, la machine à vapeur marche surtout grâce au (mot manquant).",
+      "choices": [
+        "charbon",
+        "pétrole",
+        "vent"
+      ],
+      "answer": "charbon",
+      "hint": "On le sort des mines, il est noir.",
+      "explanation": "On brûle du charbon pour chauffer l’eau : la vapeur fait tourner la machine. Le pétrole servira surtout plus tard, pour les moteurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XIXe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XIX vaut 19.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1804 : Napoléon Ier, empereur.",
+            "XIXe siècle : usines, machines à vapeur, chemins de fer.",
+            "1830 : la France commence la conquête de l’Algérie.",
+            "Fin du XIXe siècle : les Européens se partagent l’Afrique."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-1-2",
+      "prompt": "Ceux qui travaillent dans les usines pour un salaire sont des … .",
+      "spoken": "Ceux qui travaillent dans les usines pour un salaire sont des (mot manquant) .",
+      "choices": [
+        "paysans",
+        "ouvriers",
+        "patrons"
+      ],
+      "answer": "ouvriers",
+      "hint": "Le patron possède l’usine, il ne reçoit pas de salaire.",
+      "explanation": "L’ouvrier travaille à l’usine contre un salaire. Le patron possède l’usine. Le paysan travaille la terre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XIXe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XIX vaut 19.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1804 : Napoléon Ier, empereur.",
+            "XIXe siècle : usines, machines à vapeur, chemins de fer.",
+            "1830 : la France commence la conquête de l’Algérie.",
+            "Fin du XIXe siècle : les Européens se partagent l’Afrique."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-1-3",
+      "prompt": "Quitter la campagne pour aller vivre en ville, c’est l’exode … .",
+      "spoken": "Quitter la campagne pour aller vivre en ville, c’est l’exode (mot manquant) .",
+      "choices": [
+        "urbain",
+        "rural",
+        "industriel"
+      ],
+      "answer": "rural",
+      "hint": "Rural veut dire « de la campagne ».",
+      "explanation": "L’exode rural : les paysans quittent la campagne pour travailler dans les usines des villes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XIXe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XIX vaut 19.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1804 : Napoléon Ier, empereur.",
+            "XIXe siècle : usines, machines à vapeur, chemins de fer.",
+            "1830 : la France commence la conquête de l’Algérie.",
+            "Fin du XIXe siècle : les Européens se partagent l’Afrique."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-1-4",
+      "prompt": "Les ouvriers se regroupent pour défendre leurs droits dans des … .",
+      "spoken": "Les ouvriers se regroupent pour défendre leurs droits dans des (mot manquant) .",
+      "choices": [
+        "syndicats",
+        "colonies",
+        "usines"
+      ],
+      "answer": "syndicats",
+      "hint": "Ensemble, ils sont plus forts face au patron.",
+      "explanation": "Un syndicat regroupe des travailleurs pour défendre leur salaire et leurs conditions de travail.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XIXe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XIX vaut 19.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1804 : Napoléon Ier, empereur.",
+            "XIXe siècle : usines, machines à vapeur, chemins de fer.",
+            "1830 : la France commence la conquête de l’Algérie.",
+            "Fin du XIXe siècle : les Européens se partagent l’Afrique."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-1-5",
+      "prompt": "Un territoire dominé et dirigé par un pays étranger est une … .",
+      "spoken": "Un territoire dominé et dirigé par un pays étranger est une (mot manquant) .",
+      "choices": [
+        "métropole",
+        "république",
+        "colonie"
+      ],
+      "answer": "colonie",
+      "hint": "Ce mot vient de « coloniser ».",
+      "explanation": "Une colonie est dominée par un pays étranger. La métropole, c’est le pays qui domine, comme la France.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XIXe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XIX vaut 19.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1804 : Napoléon Ier, empereur.",
+            "XIXe siècle : usines, machines à vapeur, chemins de fer.",
+            "1830 : la France commence la conquête de l’Algérie.",
+            "Fin du XIXe siècle : les Européens se partagent l’Afrique."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-1-6",
+      "prompt": "En 1830, la France commence la conquête de l’… .",
+      "spoken": "En mille huit cent trente, la France commence la conquête de l’(mot manquant).",
+      "choices": [
+        "Égypte",
+        "Algérie",
+        "Inde"
+      ],
+      "answer": "Algérie",
+      "hint": "Cherche 1830 dans la frise.",
+      "explanation": "En 1830, la France prend Alger : c’est le début de la conquête de l’Algérie, qui devient une colonie française.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XIXe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XIX vaut 19.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1804 : Napoléon Ier, empereur.",
+            "XIXe siècle : usines, machines à vapeur, chemins de fer.",
+            "1830 : la France commence la conquête de l’Algérie.",
+            "Fin du XIXe siècle : les Européens se partagent l’Afrique."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-1-7",
+      "prompt": "L’Empire de Napoléon Ier vient … le partage de l’Afrique par les Européens.",
+      "spoken": "L’Empire de Napoléon premier vient (mot manquant) le partage de l’Afrique par les Européens.",
+      "choices": [
+        "après",
+        "avant",
+        "en même temps que"
+      ],
+      "answer": "avant",
+      "hint": "Sur la frise, lequel est le plus haut ?",
+      "explanation": "L’Empire commence en 1804. Le partage de l’Afrique a lieu à la fin du XIXe siècle : l’Empire vient avant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XIXe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XIX vaut 19.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1804 : Napoléon Ier, empereur.",
+            "XIXe siècle : usines, machines à vapeur, chemins de fer.",
+            "1830 : la France commence la conquête de l’Algérie.",
+            "Fin du XIXe siècle : les Européens se partagent l’Afrique."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-4e-revolutions",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

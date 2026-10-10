@@ -2,10 +2,19 @@
 // se touchent dans un carré de 48 pixels autour d'eux, les autres objets directement ; rien sur la Carte ni pendant le
 // voyage. Les bulles sont dessinées par ./signs.ts (signs.test.ts).
 import * as THREE from 'three';
+import { onTestFinished } from 'vitest';
 import type { BiomeId } from '../biomes';
-import { cleDeLObjet, SIGNE, signesDesObjets, type EtatDuSigne, type ObjetTouche, type SigneDObjet } from '../world/affordance';
-import { guardianPlacements } from '../world/terrain';
+import { cleDeLObjet, SIGNE, signesDesObjets, zoneDuToucher, type EtatDuSigne, type ObjetTouche, type SigneDObjet, type ToucherDirect } from '../world/affordance';
+import { BIOMES } from '../biomes';
+import { guardianPlacements, guardianSpot, worldBounds, worldCubes } from '../world/terrain';
+import { QUEST_ROW } from '../world/terrain/markers';
+import { ARCHIPELAGO_IDS, archipelagoOfIsland } from '../world/archipelagos';
+import { linkWholeRegion, VOYAGES } from '../world/archipelago';
+
+import { HABILLAGES } from '../skin';
+import { DEFAULT_SETTINGS, retenirReglages } from '../../core/settings';
 import { creerAffordance } from './affordance';
+import { creerCamera } from './camera';
 import type { Derniers, Instant, Monde } from './scenePart';
 
 const FORET: BiomeId = 'french-6e-phonology';
@@ -77,4 +86,69 @@ it('le Golem de roche : un Gardien à faire, sa bulle au-dessus de sa tête', ()
   const [s] = signesDesObjets({ cubes: [], creatures: [golem] });
   expect(s).toMatchObject({ etat: 'aFaire', objet: { genre: 'gardien', id: ile } });
   expect(s.z).toBeCloseTo(golem.origin.z + Math.max(...golem.cubes.map((c) => c.z)) + 1 + SIGNE.auDessus, 6);
+});
+
+it('au téléphone (390 × 844), toucher à côté de la borne la plus proche du Gardien ouvre la borne, pas le Gardien', () => {
+  // Les îles où le Gardien se tient sur un côté de la bande de devant (GD-11), près des bornes : le Belvédère de Thalès
+  // (le Sphinx de marbre), et les autres (world/terrain.test.ts les nomme ; ni la Mine des lettres ni la Tour du lecteur
+  // depuis que le chemin du bonhomme depuis ses arrivées écarte les côtés ; le Hangar des inventions, l'Imprimerie des
+  // révolutions et le Verger de la santé depuis le seuil de 75 %, neuf îles). Mesuré le 8 octobre 2026 : aucun de ces
+  // Gardiens ne fait moins de 48 pixels au téléphone, il n'a pas de zone ; là où une zone de Gardien chevauche celle
+  // d'une borne, la borne gagne (`zoneRetenue`, world/affordance.test.ts).
+  const liens = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => linkWholeRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
+  const taille = { w: 390, h: 844 };
+  // Avec l'option latin : sans elle, la Grotte des légendes (GD-13) n'a aucune borne.
+  retenirReglages({ ...DEFAULT_SETTINGS, lca: 'la' });
+  onTestFinished(() => retenirReglages(null));
+  for (const ile of BIOMES.filter((b) => guardianSpot(b.id).y <= QUEST_ROW + 1).map((b) => b.id)) {
+    const a = archipelagoOfIsland(ile);
+    const cubes = worldCubes(a, {}, { parts: {}, log: [], links: liens }, false);
+    const quests = [...new Set(cubes.filter((c) => c.quest && c.tag === ile).map((c) => c.quest!))].map((id) => ({ id, state: 'new' as const }));
+    const creatures = guardianPlacements(a, {}, liens, true, [], HABILLAGES.blocland.echelleDesGardiens).filter((g) => g.id === ile);
+    const b = worldBounds(a);
+    const monde: Monde = {
+      scene: new THREE.Scene(),
+      archipel: a,
+      habillage: HABILLAGES.blocland,
+      surface: null,
+      etendue: b,
+      centre: { x: (b.minX + b.maxX) / 2, y: (b.minY + b.maxY) / 2 },
+      largeur: Math.max(b.maxX - b.minX, b.maxY - b.minY),
+      liaisons: () => [],
+    };
+    const camera = new THREE.PerspectiveCamera(40, taille.w / taille.h, 0.5, 2000);
+    const derniers = { current: { carte: false, focus: { island: ile, seq: 1 }, home: ile, forceDay: true, whalePass: undefined, sons: false } as unknown as Derniers };
+    const instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } } as Instant;
+    creerCamera(monde, camera, new THREE.Object3D(), derniers, instant).cadrer(derniers.current.focus, false, ile);
+    camera.updateMatrixWorld();
+    const affordance = creerAffordance(derniers, instant);
+    affordance.poser(signesDesObjets({ cubes, quests, creatures }));
+    affordance.animer!(0, 0.016, false);
+    const zones = affordance.zones(camera, taille.w, taille.h);
+    const bornes = zones.filter((z) => z.objet.genre === 'borne');
+    expect(bornes.length, ile).toBeGreaterThan(0);
+    // Le Gardien (sa zone s'il est petit à l'écran, sinon le milieu de la boîte de son signe).
+    const sienne = zones.find((z) => z.objet.genre === 'gardien');
+    const centre = sienne?.zone ?? (() => {
+      const g = creatures[0];
+      const xs = g.cubes.map((c) => g.origin.x + c.x);
+      const ys = g.cubes.map((c) => g.origin.y + c.y);
+      const v = new THREE.Vector3((Math.min(...xs) + Math.max(...xs) + 1) / 2, g.origin.z + 1, (Math.min(...ys) + Math.max(...ys) + 1) / 2).project(camera);
+      return { x: ((v.x + 1) / 2) * taille.w, y: ((1 - v.y) / 2) * taille.h };
+    })();
+    // La borne la plus proche du Gardien, à l'écran.
+    const proche = bornes.reduce((m, z) => (Math.hypot(z.zone.x - centre.x, z.zone.y - centre.y) < Math.hypot(m.zone.x - centre.x, m.zone.y - centre.y) ? z : m));
+    const z = proche.zone;
+    // Partout dans la zone de la borne, au doigt levé dans le vide ou sur le sol tout près d'elle, une borne gagne (elle,
+    // ou sa voisine dont la zone chevauche la sienne), jamais le Gardien : même au bord de sa zone tourné vers lui, là
+    // où les deux zones peuvent se chevaucher. En son milieu, c'est elle.
+    const lesZones = zones.map((q) => q.zone);
+    const sol: ToucherDirect = { genre: 'sol', case: { x: Math.floor((z.boite.min.x + z.boite.max.x) / 2), y: Math.floor((z.boite.min.y + z.boite.max.y) / 2) }, distance: z.distance + 1 };
+    for (const direct of [null, sol]) expect(zones[zoneDuToucher(direct, lesZones, z)]?.objet, ile).toBe(proche.objet);
+    for (let i = -4; i <= 4; i++)
+      for (let j = -4; j <= 4; j++) {
+        const doigt = { x: z.x + (i / 4) * (z.w / 2 - 0.5), y: z.y + (j / 4) * (z.h / 2 - 0.5) };
+        for (const direct of [null, sol]) expect(zones[zoneDuToucher(direct, lesZones, doigt)]?.objet.genre, `${ile} ${doigt.x}, ${doigt.y}`).toBe('borne');
+      }
+  }
 });

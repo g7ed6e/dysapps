@@ -8,13 +8,13 @@ import {
   buildBridge as buildBridgePure,
   completeExercise,
   completePortalQuest,
-  dueItems,
   fillPlanCell as fillPlanCellPure,
   launchVehicle as launchVehiclePure,
   moveAvatar,
   rattraperLesParties,
   recordFluence as recordFluencePure,
   repondreAssemblage as repondreAssemblagePure,
+  repondreProjet as repondreProjetPure,
   sanitizeState,
   todayISO,
   type AssembleResult,
@@ -25,15 +25,22 @@ import {
   type PortalCompletion,
   type ReponseAssemblage,
   type ReponseDonnee,
+  type ReponseProjet,
 } from './engine';
 import type { BiomeId, BlockId } from './biomes';
 import type { PlanDef } from './world/plans';
+import { buildPiece, nextPiece, pieceIsFree, projectOf, type BuildPieceResult } from './world/projects';
 import type { VehicleStage } from './world/vehicle';
 import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { useTextes } from '../universes';
+import { dueCountOnOpenPlaces } from './review';
 import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
+import { STORY_XP, startStory, storyAfterMission, tapStoryStep, type StepResult } from './world/stories';
+import { applyLayout } from './world/appliedLayout';
+import { settleNewPlaces } from './world/arrange';
+import type { World } from './engine/state';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
 const SESSION_MAX_EXERCISES = 3;
@@ -41,10 +48,15 @@ const SESSION_MAX_MINUTES = 10;
 
 interface BloclandContextValue {
   state: GameState;
+  /**
+   * Le numéro de la disposition du monde (GD-9, `layoutVersion`) : il change quand la place d'un lieu, une liaison à
+   * reposer ou une arrivée change. Les vues qui lisent la place des lieux s'en servent pour se refaire.
+   */
+  disposition: number;
   complete: (def: ExerciseDef, results: ItemResult[]) => Completion;
   /** Une mission du portail (l'école du village) terminée, score entre 0 et 1 : des blocs de l'île de l'école. */
   completePortal: (score: number, firstTime: boolean) => PortalCompletion;
-  /** Items à revoir aujourd'hui. */
+  /** Items à revoir aujourd'hui, sur les lieux ouverts. */
   dueCount: number;
   /** Exercices terminés dans cette session. */
   sessionCount: number;
@@ -61,6 +73,10 @@ interface BloclandContextValue {
    * l'inventaire ; manquée, rien n'est pris. La question est notée dans le tirage de l'élève.
    */
   repondreAssemblage: (bloc: BlockId, reponse: ReponseDonnee) => ReponseAssemblage;
+  /** La réponse finale à la question d'une pièce de projet (GD-10) : juste, la pièce se pose en entier. */
+  repondreProjet: (monument: string, piece: number, recipe: number, reponse: ReponseDonnee) => ReponseProjet;
+  /** Finit, sans question ni blocs, la pièce de projet commencée case par case avant les projets (GD-10). */
+  finishPiece: (monument: string) => BuildPieceResult | null;
   /** Défait un bloc assemblé en poche : ses blocs reviennent (GD-2). */
   disassemble: (bloc: BlockId) => AssembleResult;
   /** Construit un pont vers une île voisine, payé avec les blocs de l'inventaire. */
@@ -70,8 +86,18 @@ interface BloclandContextValue {
    * créature. Puis une autre commande peut arriver.
    */
   deliver: (id: string) => Livraison<GameState>;
+  /**
+   * Fait l'étape en cours d'une quête d'un toucher (GD-10) : « donner » (les blocs sortent du stock) ou « apporter ». À
+   * la dernière, l'objet se pose chez l'habitant, avec de l'XP ; puis la quête suivante peut arriver.
+   */
+  tapStory: (id: string) => StepResult<GameState>;
   /** Le bonhomme va sur une île ouverte. */
   moveTo: (id: BiomeId) => void;
+  /**
+   * Le mode « Aménager » (GD-9) : la disposition et les liaisons d'un monde aménagé (world/arrange.ts) remplacent celles
+   * de la partie ; rien d'autre ne change (ni l'inventaire, ni la progression).
+   */
+  arrange: (next: Pick<World, 'links' | 'layout'>) => void;
   /** Largue les amarres du Bloc-Navire : le voyage est fait, le bonhomme arrive au port d'en face. */
   launch: (stage: VehicleStage) => LaunchResult;
   reset: () => void;
@@ -79,17 +105,28 @@ interface BloclandContextValue {
   batisseur: boolean;
   /** Ouvre le mode bâtisseur : la sauvegarde est gelée, la partie devient un bac à sable. */
   ouvrirBatisseur: () => void;
+  /** La mesure automatique (`?mesures=auto`) : la sauvegarde gelée, le jeu sur cette partie en mémoire. */
+  chargerPourLesMesures: (etat: GameState) => void;
 }
 
 const BloclandContext = createContext<BloclandContextValue | null>(null);
 const STORAGE_KEY = 'game';
 
 export function BloclandProvider({ children }: { children: ReactNode }) {
-  const { completePlan } = useProgress();
+  const { completePlan, completeJoin } = useProgress();
   // Une sauvegarde d'avant GD-6 reçoit tout de suite les parties de ses missions déjà terminées ; l'XP des plans qu'elles
   // finissent est donnée une fois, juste après (plus bas).
-  const [ouverture] = useState(() => rattraperLesParties(sanitizeState(loadJSON<unknown>(STORAGE_KEY, {}))));
+  // Un lieu entré au jeu après l'aménagement de sa région se pose à la place libre la plus proche (`settleNewPlaces`) :
+  // la disposition de l'élève tient, au lieu de revenir toute à la carte de départ.
+  const [ouverture] = useState(() => {
+    const lue = sanitizeState(loadJSON<unknown>(STORAGE_KEY, {}));
+    return rattraperLesParties({ ...lue, world: settleNewPlaces(lue.world) });
+  });
   const [state, setState] = useState<GameState>(ouverture.state);
+  // La disposition de la partie (GD-9) posée sur le monde avant que les vues ne le lisent, à la lecture de la partie et
+  // à chaque changement de `world.layout` : un calcul sans effet visible hors du monde, qui ne refait rien si la
+  // disposition est la même (`applyLayout`).
+  const disposition = useMemo(() => applyLayout(state.world.layout), [state.world.layout]);
   const stateRef = useRef(state);
   const rattrapes = useRef(ouverture.plansFinis);
   useEffect(() => {
@@ -108,8 +145,20 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     avecCommandes.current = avecLesTextes;
   }, [avecLesTextes]);
-  /** À la fin d'une mission, d'un ouvrage construit ou d'une livraison dans l'archipel `a` : une commande au plus arrive. */
-  const commandeQuiArrive = useCallback((s: GameState, a: ArchipelagoId): GameState => (avecCommandes.current ? faireArriverUneCommande(s, a).state : s), []);
+  // Les quêtes (GD-10), de même, dans un univers qui en a les textes (`quetes`).
+  const avecLesQuetes = Boolean(useTextes().quetes);
+  const avecQuetes = useRef(avecLesQuetes);
+  useEffect(() => {
+    avecQuetes.current = avecLesQuetes;
+  }, [avecLesQuetes]);
+  /**
+   * À la fin d'une mission, d'un ouvrage construit, d'une livraison ou d'une étape de quête dans l'archipel `a` : une
+   * commande au plus arrive, et une quête si la région n'en a pas d'ouverte.
+   */
+  const commandeQuiArrive = useCallback((s: GameState, a: ArchipelagoId): GameState => {
+    const avecUneCommande = avecCommandes.current ? faireArriverUneCommande(s, a).state : s;
+    return avecQuetes.current ? startStory(avecUneCommande, a).state : avecUneCommande;
+  }, []);
 
   useEffect(() => {
     saveJSON(STORAGE_KEY, state);
@@ -117,8 +166,10 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
 
   const complete = useCallback((def: ExerciseDef, results: ItemResult[]) => {
     const terminee = completeExercise(stateRef.current, def, results, todayISO());
-    // La mission finie, jamais pendant sa consigne : une commande peut arriver dans l'archipel de son île.
-    const completion = { ...terminee, state: commandeQuiArrive(terminee.state, archipelagoOf(def.biome).classe) };
+    // La mission finie : l'étape « mission » d'une quête chez son habitant est faite (GD-10) ; puis, jamais pendant sa
+    // consigne, une commande ou une quête peut arriver dans l'archipel de son île.
+    const etape = avecQuetes.current ? storyAfterMission(terminee.state, def.biome) : terminee.state;
+    const completion = { ...terminee, state: commandeQuiArrive(etape, archipelagoOf(def.biome).classe) };
     stateRef.current = completion.state;
     setState(completion.state);
     setSessionCount((n) => n + 1);
@@ -168,6 +219,25 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     },
     [pousser],
   );
+  const repondreProjet = useCallback(
+    (monument: string, piece: number, recipe: number, reponse: ReponseDonnee): ReponseProjet => {
+      const r = repondreProjetPure(stateRef.current, monument, piece, recipe, reponse);
+      // Comme une question d'assemblage, elle compte dans l'horloge de séance.
+      setSessionCount((n) => n + 1);
+      return r.state === stateRef.current ? r : { ...r, state: pousser(r.state) };
+    },
+    [pousser],
+  );
+  const finishPiece = useCallback(
+    (monument: string): BuildPieceResult | null => {
+      const project = projectOf(monument);
+      const index = project ? nextPiece(stateRef.current, project) : null;
+      if (!project || index === null || !pieceIsFree(stateRef.current, project, index)) return null;
+      const r = buildPiece(stateRef.current, project, index, 0);
+      return r.ok ? { ...r, state: pousser(r.state) } : r;
+    },
+    [pousser],
+  );
   const disassemble = useCallback((bloc: BlockId) => appliquer(disassembleBlock(stateRef.current, bloc)), [appliquer]);
   const buildBridge = useCallback((id: string) => {
     const r = buildBridgePure(stateRef.current, id);
@@ -187,11 +257,29 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     },
     [pousser, commandeQuiArrive],
   );
+  const tapStory = useCallback(
+    (id: string): StepResult<GameState> => {
+      const r = tapStoryStep(stateRef.current, id);
+      if (!r.ok) return r;
+      // Une quête finie : son XP, sans succès (GD-10).
+      if (r.finished) completeJoin(STORY_XP);
+      const next = pousser(commandeQuiArrive(r.state, r.story.region));
+      return { ...r, state: next };
+    },
+    [pousser, commandeQuiArrive, completeJoin],
+  );
   const moveTo = useCallback((id: BiomeId) => {
     const next = moveAvatar(stateRef.current, id);
     if (next === stateRef.current) return;
     stateRef.current = next;
     setState(next);
+  }, []);
+  const arrange = useCallback((next: Pick<World, 'links' | 'layout'>) => {
+    const { layout: _avant, ...reste } = stateRef.current.world;
+    const world: World = { ...reste, links: next.links, ...(next.layout ? { layout: next.layout } : {}) };
+    const etat = { ...stateRef.current, world };
+    stateRef.current = etat;
+    setState(etat);
   }, []);
   const launch = useCallback((stage: VehicleStage) => {
     const r = launchVehiclePure(stateRef.current, stage);
@@ -215,6 +303,13 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     setState(stateRef.current);
   }, []);
 
+  const chargerPourLesMesures = useCallback((etat: GameState) => {
+    // Gelée d'abord : rien de cette partie ne s'écrit sur l'appareil, la vraie revient au rechargement.
+    gelerSauvegarde();
+    stateRef.current = etat;
+    setState(etat);
+  }, []);
+
   const reset = useCallback(() => {
     removeKey(STORAGE_KEY);
     stateRef.current = EMPTY_STATE;
@@ -222,11 +317,13 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const pauseAfterNext = sessionCount + 1 >= SESSION_MAX_EXERCISES || Date.now() - sessionStart.current > SESSION_MAX_MINUTES * 60_000;
-  const dueCount = useMemo(() => dueItems(state.spaced, todayISO()).length, [state.spaced]);
+  // Les items des lieux ouverts seulement, comme les révisions proposées (review.ts).
+  const dueCount = useMemo(() => dueCountOnOpenPlaces(state.spaced, state.world.links, todayISO()), [state.spaced, state.world.links]);
 
   const value = useMemo(
     () => ({
       state,
+      disposition,
       complete,
       completePortal,
       dueCount,
@@ -236,17 +333,23 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       recordFluence,
       fillPlan,
       repondreAssemblage,
+      repondreProjet,
+      finishPiece,
       disassemble,
       buildBridge,
       deliver,
+      tapStory,
       moveTo,
+      arrange,
       launch,
       reset,
       batisseur,
       ouvrirBatisseur,
+      chargerPourLesMesures,
     }),
     [
       state,
+      disposition,
       complete,
       completePortal,
       dueCount,
@@ -256,14 +359,19 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       recordFluence,
       fillPlan,
       repondreAssemblage,
+      repondreProjet,
+      finishPiece,
       disassemble,
       buildBridge,
       deliver,
+      tapStory,
       moveTo,
+      arrange,
       launch,
       reset,
       batisseur,
       ouvrirBatisseur,
+      chargerPourLesMesures,
     ],
   );
   return <BloclandContext.Provider value={value}>{children}</BloclandContext.Provider>;

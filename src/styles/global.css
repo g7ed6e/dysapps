@@ -49,7 +49,13 @@
   --pink: #d9772e; /* brique */
   --cyan: #8fd3e6; /* verre */
   --violet: #8f5ee0; /* cristal */
-  --lv2: #d98cb3; /* églantine : la deuxième langue, à 48° au moins des autres teintes */
+  --lv2: #d98cb3; /* églantine : la deuxième langue ; une matière ne se reconnaît jamais à sa couleur seule, mais à sa couleur, son icône et son nom ensemble */
+  --history-geography: #8fb339; /* vert mousse : l'histoire-géographie, loin du vert de la réussite */
+  --life-earth-sciences: #5fb8a0; /* vert d'eau : les sciences de la vie et de la Terre */
+  --physics-chemistry: #8a9be8; /* lavande : la physique-chimie */
+  --technology: #c98ad0; /* mauve : la technologie */
+  --civics: #e3b65a; /* blé doré : l'EMC (à valider par le directeur artistique) */
+  --lca: #b98a66; /* argile : le latin ou grec, la terre cuite de ses Gardiens (à valider par le directeur artistique) */
   --green: #6cb33f; /* herbe */
   /* Texte posé sur une couleur de remplissage (sable, matière). */
   --on-accent: #13283d;
@@ -63,6 +69,7 @@
   --radius: 12px; /* panneaux et cartes */
   --radius-control: 8px; /* boutons, champs, réponses */
   --radius-pill: 999px; /* étiquettes courtes */
+  --radius-piece: 50%; /* l'avancement d'un grand projet (GD-10) : des ronds dans Archipéo ; Blocland en fait des carrés plats */
   --radius-signe: 0; /* le signe de la créature qui se souvient (GD-4) : un hexagone dans Archipéo (masque, plus bas) ; Blocland en fait une plaque */
   /* Une seule ombre, douce, pour un panneau posé sur le monde. */
   --shadow-float: 0 2px 8px rgba(19, 40, 61, 0.18);
@@ -262,7 +269,7 @@ svg {
 }
 @media (max-width: 640px) {
   .celebration {
-    padding: 0.4rem 0.4rem 0.4rem 0.7rem;
+    padding: 0.4rem calc(48px + 0.6rem) 0.4rem 0.7rem;
   }
   .celebration-icon {
     width: 2.4rem;
@@ -299,6 +306,24 @@ svg {
 }
 .title-lv2 svg {
   color: var(--lv2);
+}
+.title-history-geography svg {
+  color: var(--history-geography);
+}
+.title-life-earth-sciences svg {
+  color: var(--life-earth-sciences);
+}
+.title-physics-chemistry svg {
+  color: var(--physics-chemistry);
+}
+.title-technology svg {
+  color: var(--technology);
+}
+.title-civics svg {
+  color: var(--civics);
+}
+.title-lca svg {
+  color: var(--lca);
 }
 .back-link {
   /* Le bouton retour : toujours en haut à gauche, même forme partout (comme dans un jeu). */
@@ -374,7 +399,11 @@ button.app-card:active {
 .app-card.subject-french,
 .app-card.subject-maths,
 .app-card.subject-english,
-.app-card.subject-lv2 {
+.app-card.subject-lv2,
+.app-card.subject-history-geography,
+.app-card.subject-life-earth-sciences,
+.app-card.subject-physics-chemistry,
+.app-card.subject-technology {
   border-top-width: 8px;
 }
 .subject-french {
@@ -388,6 +417,24 @@ button.app-card:active {
 }
 .subject-lv2 {
   border-top-color: var(--lv2);
+}
+.subject-history-geography {
+  border-top-color: var(--history-geography);
+}
+.subject-life-earth-sciences {
+  border-top-color: var(--life-earth-sciences);
+}
+.subject-physics-chemistry {
+  border-top-color: var(--physics-chemistry);
+}
+.subject-technology {
+  border-top-color: var(--technology);
+}
+.subject-civics {
+  border-top-color: var(--civics);
+}
+.subject-lca {
+  border-top-color: var(--lca);
 }
 .app-card.locked {
   border-top-width: var(--border-width);
@@ -413,6 +460,18 @@ button.app-card:active {
 .subject-english .app-icon,
 .subject-lv2 .subject-icon,
 .subject-lv2 .app-icon,
+.subject-history-geography .subject-icon,
+.subject-history-geography .app-icon,
+.subject-life-earth-sciences .subject-icon,
+.subject-life-earth-sciences .app-icon,
+.subject-physics-chemistry .subject-icon,
+.subject-physics-chemistry .app-icon,
+.subject-technology .subject-icon,
+.subject-technology .app-icon,
+.subject-civics .subject-icon,
+.subject-civics .app-icon,
+.subject-lca .subject-icon,
+.subject-lca .app-icon,
 .app-card[class*="biome-"] .app-icon {
   color: var(--on-accent);
 }
@@ -431,6 +490,30 @@ button.app-card:active {
 .subject-lv2 .subject-icon,
 .subject-lv2 .app-icon {
   background: var(--lv2);
+}
+.subject-history-geography .subject-icon,
+.subject-history-geography .app-icon {
+  background: var(--history-geography);
+}
+.subject-life-earth-sciences .subject-icon,
+.subject-life-earth-sciences .app-icon {
+  background: var(--life-earth-sciences);
+}
+.subject-physics-chemistry .subject-icon,
+.subject-physics-chemistry .app-icon {
+  background: var(--physics-chemistry);
+}
+.subject-technology .subject-icon,
+.subject-technology .app-icon {
+  background: var(--technology);
+}
+.subject-civics .subject-icon,
+.subject-civics .app-icon {
+  background: var(--civics);
+}
+.subject-lca .subject-icon,
+.subject-lca .app-icon {
+  background: var(--lca);
 }
 /* Cartes de mission d'une île : l'icône sur un aplat de sable, bleu nuit dessus. */
 .app-card[class*="biome-"] .app-icon {
@@ -887,8 +970,13 @@ button.app-card:active {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  width: min(30rem, calc(100% - 2rem));
-  padding: 0.7rem 0.6rem 0.7rem 0.9rem;
+  /* Dans la zone sûre de l'écran, et jamais plus haut que l'écran (il défile alors). */
+  width: min(30rem, calc(100% - 1rem - env(safe-area-inset-left) - env(safe-area-inset-right)));
+  max-height: calc(100dvh - 6.2rem - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  flex-wrap: wrap;
+  /* La place de Fermer, posé dans le coin haut droit du bandeau : il reste toujours dans la zone sûre. */
+  padding: 0.7rem calc(48px + 0.9rem) 0.7rem 0.9rem;
   background: var(--sand);
   color: var(--on-sand);
   border: var(--border-width) solid var(--ink);
@@ -900,8 +988,19 @@ button.app-card:active {
   background: var(--cyan);
 }
 .celebration-text {
-  flex: 1;
+  /* Une largeur minimale : quand la place manque, le texte passe sous l'icône plutôt que de se casser une lettre par
+     ligne ; il revient à la ligne entre les mots, sans les couper. */
+  flex: 1 1 9em;
+  min-width: 0;
   line-height: 1.35;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
+}
+.celebration > .icon-button {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
 }
 .celebration-kicker {
   font-weight: 700;
@@ -1032,6 +1131,23 @@ button.app-card:active {
 }
 .choice:disabled {
   cursor: default;
+}
+/* Une réponse en langue étrangère d'une question mêlée et son haut-parleur : la réponse prend toute la case, le
+   haut-parleur reste à droite, centré, à la même place pour les trois réponses, assez écarté pour ne pas toucher l'autre. */
+.choice-listen {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.choice-listen > .choice {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.choice-listen > .speak-button {
+  flex: none;
+  min-width: 48px;
+  min-height: 48px;
 }
 .choice.wrong {
   border-color: var(--error);
@@ -2206,6 +2322,11 @@ figure.class-table {
   height: 1.6em;
   margin-right: 0.3em;
 }
+/* En thème Nuit, un bloc sombre (la Reliure, #2f6f74) tombait à 2,3:1 sur le fond des panneaux : un liseré clair d'un
+   pixel autour de l'icône la détache du fond (3:1 au moins, WCAG 1.4.11 ; référent dys, HG-3). Fixe, sans animation. */
+:root[data-theme="night"] .block-icon {
+  filter: drop-shadow(1px 0 0 var(--muted)) drop-shadow(-1px 0 0 var(--muted)) drop-shadow(0 1px 0 var(--muted)) drop-shadow(0 -1px 0 var(--muted));
+}
 .adventure-card {
   display: flex;
   flex-wrap: wrap;
@@ -2778,6 +2899,14 @@ figure.class-table {
 .voxel-canvas canvas {
   display: block;
 }
+/* Un appui long pour glisser (une île, un Gardien, la vue) n'est pas une sélection : sans cela, iPadOS montre sa loupe
+   de sélection et le glissé ne part pas. */
+.voxel-canvas,
+.voxel-canvas canvas {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
 .view-toggle {
   display: flex;
   flex-wrap: wrap;
@@ -2852,6 +2981,18 @@ figure.class-table {
   align-items: flex-start;
   font-weight: 700;
   max-width: none;
+}
+/* « Terminé ! » d'un seul tenant avec l'étoile, la phrase dessous sur toute la largeur (en grand texte au téléphone,
+   elle ne se serre pas dans une colonne). */
+.plan-done {
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
+}
+.plan-done-word {
+  white-space: nowrap;
+}
+.plan-done-text {
+  flex-basis: 100%;
 }
 .plan-done svg {
   flex-shrink: 0;
@@ -3451,6 +3592,9 @@ figure.class-table {
   left: 0.6rem;
   right: 0.6rem;
   display: grid;
+  /* Une colonne de la largeur du haut, jamais plus : une ligne qui ne passe pas à la ligne (la phrase courte du mode
+     « Aménager ») se coupe dans le panneau au lieu de l'élargir hors de l'écran. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.5rem;
   pointer-events: none;
   max-height: 60%;
@@ -3731,6 +3875,471 @@ figure.class-table {
   top: -12px;
   right: -12px;
   font-size: max(18px, 1rem);
+}
+/* ===== Le mode « Aménager » (GD-9), sur la Carte : la barre du mode à place fixe, en bas, à la place de la barre du
+   monde : « Annuler » et « Valider », qui ferment le mode (mainteneur, 7 octobre 2026 : « il y a trop de boutons ») ;
+   « Réunir » à leur gauche quand il sert, « Poser » pour un ouvrage à reposer ; 48 px au moins (« Poser »,
+   « Annuler » et « Valider » : 56 px). Un seul bouton mis en avant (`primary`) : « Poser » pendant le choix d'un
+   ouvrage à reposer, ✓ Valider sinon ; « Garder » prend la place d'« Annuler » quand il demande confirmation,
+   l'« Annuler » qui confirme se pose juste avant. « Tourner » (et les flèches d'un ouvrage à reposer) sont dessinés
+   dans le monde, leurs boutons transparents par-dessus (`.arrange-handles`) ; en vue simple, la croix des flèches,
+   ↶ et « Poser » restent dans la barre. ===== */
+.arrange-bar {
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: calc(0.6rem + env(safe-area-inset-bottom));
+  display: grid;
+  /* Des places fixes : les outils finissent au milieu de la barre, « Annuler » et « Valider » commencent juste après ;
+     « Réunir » qui paraît, ou « Garder » à la place d'« Annuler », ne décalent jamais « Annuler » ni « Valider ». */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: 'outils fin';
+  align-items: center;
+  gap: 8px 16px;
+}
+.arrange-bar > .arrange-bar-outils {
+  justify-self: end;
+}
+.arrange-bar > .arrange-bar-fin {
+  justify-self: start;
+}
+/* En grand texte, les outils ne tiennent plus dans la moitié de la barre : « Annuler » et « Valider » se tiennent au
+   bord droit, en bas, les outils prennent le reste ; s'ils n'y tiennent pas (l'« Annuler » qui confirme), le dernier
+   passe au-dessus des autres, jamais hors de l'écran (la barre à 8 px des bords : ↶, « Poser » et « Réunir » tiennent
+   sur la rangée sur une tablette de 1024 px). */
+:root[data-texte="grand"] .arrange-bar:not(.arrange-bar-telephone):not(.arrange-bar-croix) {
+  left: 8px;
+  right: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  column-gap: 8px;
+}
+:root[data-texte="grand"] .arrange-bar:not(.arrange-bar-telephone):not(.arrange-bar-croix) > .arrange-bar-fin {
+  justify-self: end;
+}
+:root[data-texte="grand"] .arrange-bar:not(.arrange-bar-telephone):not(.arrange-bar-croix) > .arrange-bar-outils {
+  flex-wrap: wrap-reverse;
+  justify-content: flex-end;
+}
+.arrange-bar.arrange-bar-croix {
+  grid-template-columns: auto auto;
+  grid-template-areas:
+    'croix outils'
+    'croix fin';
+  justify-content: center;
+  gap: 8px;
+}
+.arrange-bar.arrange-bar-croix > .arrange-bar-outils,
+.arrange-bar.arrange-bar-croix > .arrange-bar-fin {
+  justify-self: center;
+}
+.arrange-bar .button {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 12px;
+  gap: 6px;
+}
+/* La croix des flèches (vue simple) : le nord en haut, l'ouest à gauche, l'est à droite, le sud en bas. */
+.arrange-cross {
+  grid-area: croix;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  grid-template-areas:
+    '. nord .'
+    'ouest . est'
+    '. sud .';
+  gap: 4px;
+  justify-content: center;
+}
+.arrange-cross .arrange-arrow-nord { grid-area: nord; }
+.arrange-cross .arrange-arrow-sud { grid-area: sud; }
+.arrange-cross .arrange-arrow-ouest { grid-area: ouest; }
+.arrange-cross .arrange-arrow-est { grid-area: est; }
+.arrange-bar .arrange-cross .button {
+  padding: 0 8px;
+}
+.arrange-bar-outils,
+.arrange-bar-fin {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.arrange-bar-outils {
+  grid-area: outils;
+}
+/* La rangée qui ferme le mode : « Annuler » et « Valider », jamais dans la partie qui défile. */
+.arrange-bar-fin {
+  grid-area: fin;
+}
+.arrange-bar .arrange-pose,
+.arrange-bar .bouton-cta {
+  min-height: 56px;
+  padding: 0 18px;
+}
+/* Éteint : sans relief, au bord en tirets (la forme, pas la couleur seule), sa place gardée. Des couleurs pleines, pas
+   d'opacité (la mer passait au travers) : le texte `--muted` sur `--secondary-bg` reste au-dessus de 4,5:1 partout
+   (mesuré : Blocland 6,1:1 le jour, 7,2:1 la nuit ; Archipéo 6,3:1 et 5,5:1). */
+.arrange-bar .button:disabled {
+  --button-bg: var(--secondary-bg);
+  background: var(--secondary-bg);
+  color: var(--muted);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: default;
+}
+/* En grand texte, le mot plafonné à 24 px, comme la barre du monde ; sous l'icône pour « Annuler » et « Valider ». */
+:root[data-texte="grand"] .arrange-bar .button {
+  font-size: min(1em, 24px);
+  padding: 4px 8px;
+}
+:root[data-texte="grand"] .arrange-bar .bouton-cta {
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 12px;
+  line-height: 1.2;
+}
+/* Au téléphone : les outils (« Réunir », « Poser » ; en vue simple ↶ et la croix à gauche) sur une rangée,
+   « Annuler » et « Valider » dessous, sur toute la largeur. La barre ne monte jamais plus haut que la moitié de l'écran. */
+.arrange-bar.arrange-bar-telephone {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'outils'
+    'fin';
+  gap: 6px;
+  max-height: 50vh;
+}
+.arrange-bar.arrange-bar-telephone.arrange-bar-croix {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'croix outils'
+    'fin fin';
+}
+:root[data-texte="grand"] .arrange-bar.arrange-bar-telephone.arrange-bar-croix {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'croix'
+    'outils'
+    'fin';
+}
+.arrange-bar-telephone .arrange-bar-outils,
+.arrange-bar-telephone .arrange-bar-fin {
+  flex-wrap: nowrap;
+}
+/* Sur la Carte, rien à gauche le plus souvent (ni « Réunir », ni « Poser ») : la rangée vide ne laisse pas d'écart. */
+.arrange-bar.arrange-bar-telephone:not(.arrange-bar-croix):has(> .arrange-bar-outils:empty) {
+  grid-template-areas: 'fin';
+}
+.arrange-bar.arrange-bar-telephone > .arrange-bar-outils:empty {
+  display: none;
+}
+/* Au téléphone, chaque rangée prend toute la largeur : « Annuler » et « Valider » s'y partagent leurs places fixes. */
+.arrange-bar.arrange-bar-telephone > .arrange-bar-outils,
+.arrange-bar.arrange-bar-telephone > .arrange-bar-fin {
+  justify-self: stretch;
+}
+/* « Poser », « Annuler » et « Valider » se partagent la largeur, sans jamais couper un mot. */
+.arrange-bar-telephone .arrange-pose,
+.arrange-bar-telephone .arrange-bar-fin .button {
+  flex: 1 1 0;
+  justify-content: center;
+  white-space: nowrap;
+}
+.arrange-bar-telephone .arrange-cross .button {
+  padding: 0;
+}
+/* En grand texte au téléphone, trois mots ne tiennent pas sur une rangée : les outils sur deux colonnes, dans l'ordre
+   de lecture (↶ et « Poser », puis la place de « Réunir » sous ↶), « Annuler » et « Valider » dessous, aux mêmes
+   colonnes ; le mot plafonné à 20 px (« Défaire », sept lettres espacées, tient dans une demi-largeur de 390 px), une marge de 6 px de chaque côté et 12 px entre deux boutons : jamais deux mots
+   collés. */
+:root[data-texte="grand"] .arrange-bar-telephone .arrange-bar-outils {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6px 12px;
+}
+:root[data-texte="grand"] .arrange-bar-telephone .arrange-bar-fin {
+  gap: 12px;
+}
+:root[data-texte="grand"] .arrange-bar.arrange-bar-telephone {
+  left: 8px;
+  right: 8px;
+}
+:root[data-texte="grand"] .arrange-bar-telephone .button,
+:root[data-texte="grand"] .arrange-bar-telephone .mot-sous-icone {
+  font-size: min(1em, 20px);
+  /* L'espacement réglé, recalculé à cette taille (le même en em, pas celui du texte de 32 px). */
+  letter-spacing: var(--letter-spacing);
+  word-spacing: var(--word-spacing);
+}
+/* Un mot ne se coupe jamais : il tient entier dans son bouton. */
+:root[data-texte="grand"] .arrange-bar .mot-sous-icone {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+:root[data-texte="grand"] .arrange-bar-telephone .arrange-pose,
+:root[data-texte="grand"] .arrange-bar-telephone .arrange-bar-outils .button,
+:root[data-texte="grand"] .arrange-bar-telephone .arrange-bar-fin .button {
+  min-width: 0;
+  padding-inline: 6px;
+  justify-content: center;
+  white-space: nowrap;
+}
+/* Les flèches autour du choix (ArrangeHandles.tsx) : des boutons posés sur la scène à la place projetée du choix, dans
+   la place libre ; cachés le temps que la scène dise où il est. Ronds, 48 px au moins, bordés (jamais la couleur
+   seule) ; en grand texte, leur mot dessous. */
+.arrange-handles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.arrange-handles[data-place='non'] {
+  visibility: hidden;
+}
+.arrange-handles-poses .arrange-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: auto;
+  min-width: 48px;
+  min-height: 48px;
+  will-change: transform;
+}
+/* L'icône de « Réunir » sur une place libre qui collerait le lieu choisi à un voisin (GD-9, choix 2a du mainteneur) :
+   la même icône que le bouton de la barre, sombre sur un petit radeau clair bordé de sombre (le style des poignées),
+   posée sur la jointure, sur l'eau où irait la construction entre les deux terres ; elle ne reçoit pas le toucher. */
+.arrange-reunir-place {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #3b2d20;
+  /* Des coins presque droits, comme les blocs (consultant Blocland) ; Archipéo garde ses coins arrondis. */
+  border-radius: 3px;
+  background: #f3e4c0;
+  color: #3b2d20;
+  pointer-events: none;
+}
+.arrange-reunir-place[hidden] {
+  display: none;
+}
+:root[data-univers="archipeo"] .arrange-reunir-place {
+  border-radius: 6px;
+  border-color: #142b38;
+  background: #e5ebe3;
+  color: #142b38;
+}
+.arrange-reunir-place svg {
+  width: 20px;
+  height: 20px;
+}
+/* Les poignées sont dessinées dans le monde (three/arrangeHandles.ts) : leur bouton, par-dessus, est transparent, sans
+   rien à lire ; seul son focus se voit (le contour du focus, bordé de blanc : lisible sur l'eau de jour comme de nuit). */
+.arrange-handle {
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.arrange-handle:hover,
+.arrange-handle:active {
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+.arrange-handles-poses .arrange-handle:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff, inset 0 0 0 2px #fff;
+}
+/* Un bouton d'icône (GD-9, piste A) : l'icône seule, son nom pour les lecteurs d'écran ; en grand texte, son mot
+   dessous, plafonné à 24 px, comme la barre du monde. */
+.bouton-icone .mot-sous-icone {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.bouton-icone {
+  position: relative;
+}
+:root[data-texte="grand"] .bouton-icone {
+  flex-direction: column;
+  gap: 2px;
+  height: auto;
+}
+:root[data-texte="grand"] .bouton-icone .mot-sous-icone {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  white-space: normal;
+  word-break: keep-all;
+  text-align: center;
+  line-height: 1.3;
+  font-size: min(1rem, 24px);
+}
+/* La ligne de signes (GD-9, piste A) : « Mine des lettres ↖ 4 ⬚ », dans l'ordre de la voix. Chaque signe reste entier
+   (la flèche et son mot, le nombre et sa case) ; la ligne passe à la ligne entre deux signes. */
+.arrange-signes {
+  margin: 0;
+  flex: 1 1 0;
+  min-width: 0;
+}
+/* Au téléphone en grand texte, les signes prennent toute la largeur de la ligne, sa marge intérieure réduite à 12 px, le
+   haut-parleur passe dessous : un mot comme « accords » ou « remettre » tient entier au lieu de se couper. */
+@media (max-width: 600px) {
+  :root[data-texte="grand"] .arrange-line {
+    padding-inline: 12px;
+  }
+  :root[data-texte="grand"] .arrange-line .arrange-signes {
+    flex-basis: 100%;
+  }
+}
+.signe {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.signe svg {
+  flex: none;
+}
+/* Le nom d'un lieu dans la ligne du haut ne se coupe pas en fin de ligne : il passe entier à la ligne suivante (il ne
+   se coupe que s'il ne tient pas seul sur une ligne). */
+.signe-voisin {
+  display: inline-block;
+}
+.signes-de-place strong,
+.signe-a-reposer strong {
+  font-size: 1.1em;
+}
+/* En grand texte seulement, le mot de la direction à côté de la flèche, et « cases » à côté du nombre. */
+.mot-signe {
+  display: none;
+}
+:root[data-texte="grand"] .mot-signe {
+  display: inline;
+}
+/* La question de « Réunir » (« Réunir », ou un bouton par voisin ; la croix en haut à droite pour ne pas réunir), dans
+   la zone de la ligne ou sous la ligne du lieu. */
+.arrange-question p {
+  margin: 0;
+}
+.arrange-question .arrange-question-fermer {
+  margin-left: auto;
+}
+.arrange-question .arrange-explication,
+.arrange-question .arrange-question-buttons {
+  flex: 1 1 100%;
+}
+.arrange-question-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0.4rem;
+}
+.arrange-question-buttons .button {
+  min-height: 48px;
+}
+.arrange-list-items .arrange-question {
+  flex: 1 1 100%;
+}
+/* La pastille des ouvrages à reposer : l'icône (un ouvrage séparé) et le nombre, jamais la couleur seule. Plus large
+   qu'un compte de blocs, elle se pose dans le coin haut droit, au-dessus du bord, hors de l'icône du bouton, devant le
+   bouton voisin. */
+.world-bar .arrange-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  top: -24px;
+  right: -6px;
+  z-index: 1;
+}
+:root[data-texte="grand"] .world-bar .arrange-count {
+  top: -28px;
+  right: -6px;
+}
+.arrange-line p,
+.arrange-relink p {
+  margin: 0;
+}
+.arrange-relink-list {
+  list-style: none;
+  margin: 0.4rem 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.arrange-relink-list .button {
+  min-height: 48px;
+}
+.arrange-explication {
+  margin-bottom: 0.4rem;
+}
+/* Le mode en vue simple (ArrangeList.tsx) : la barre dans la page, sous la liste ; la ligne choisie, bordée et en gras
+   (jamais la couleur seule). */
+.arrange-bar.arrange-bar-inline {
+  position: static;
+  margin-top: 0.6rem;
+}
+.arrange-list .arrange-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.arrange-list-items {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.arrange-list-items li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+}
+.arrange-list-items li p {
+  margin: 0;
+  flex: 1 1 16rem;
+}
+.arrange-list-items .button {
+  min-height: 48px;
+}
+.arrange-list-items .arrange-list-chosen {
+  border-color: currentColor;
+  font-weight: 700;
+}
+/* Le pli d'un lieu (ses bornes et ses arrivées) prend toute la largeur de sa ligne ; ses lignes sont en retrait. */
+.arrange-list-items .arrange-list-more {
+  flex: 1 1 100%;
+}
+.arrange-list-sub {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0 0 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 /* Les blocs gagnés qui volent jusqu'au compteur (Blocland, FlyingBlocks.tsx) : posés sur la pastille, ils partent de la
    borne (`--vol-dx`, `--vol-dy`) en arc simple, l'un après l'autre ; ni éclat ni traînée, rien qui se touche. Sans
@@ -4163,6 +4772,34 @@ button.island-quest:active {
   font-size: 1rem;
   color: var(--text);
 }
+/* Le signe d'une quête (GD-10) : l'image de l'objet, puis une pastille par étape (jamais « 2/3 », qui se lirait comme
+   une fraction : référent dys) : pleine pour une étape faite, un anneau épais pour l'étape en cours, un anneau fin pour
+   la suite, tous à pleine opacité (contraste de 3:1 au moins, référent dys) ; la forme dit l'état, pas la couleur. La ligne de la quête : un bord en pointillés. */
+.quete-signe {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  vertical-align: middle;
+}
+.quete-etapes {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+.quete-etape {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  border: 2px solid var(--text);
+}
+.quete-etape.faite {
+  background: var(--text);
+}
+.quete-etape.en-cours {
+  border-width: 4px;
+}
+.commandes-list .quete-item {
+  border-style: dashed;
+}
 /* « Tu y es : joue une mission ici. », sous le titre « Missions » ; vide, la zone reste là pour le lecteur d'écran. */
 .commande-ici-missions {
   display: flex;
@@ -4570,6 +5207,140 @@ button.island-quest:active {
   background: var(--yellow);
   border-style: dashed;
 }
+/* Figures de géométrie (GeometryAids/) : triangle et angles, angle, figure plane, solide, figure et son image, repère.
+   Traits épais de la couleur du texte, fond uni, cotes à la police de l'application (un halo de la couleur du panneau
+   les détache des traits) ; la valeur cherchée « ? » ressort en violet. Rien d'animé. */
+.geometry {
+  margin: 0;
+}
+.geometry svg {
+  width: 100%;
+  /* Bornée par la hauteur de l'écran, comme le graphique : sur une tablette à l'horizontale, aucune figure ne prend plus
+     de 45 % de la hauteur, et laisse place à la règle et aux réponses. Jamais sous 15rem pourtant : sur un téléphone à
+     l'horizontale, 45 % ferait tomber les lettres des figures hautes vers 10 px ; mieux vaut faire défiler. */
+  max-width: min(24rem, max(45vh, 15rem));
+  max-height: max(45vh, 15rem);
+  display: block;
+  margin: 0 auto;
+  color: var(--text);
+}
+.geometry .geo-shape {
+  fill: color-mix(in srgb, var(--cyan) 25%, var(--surface));
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.geometry .geo-image {
+  fill: color-mix(in srgb, var(--yellow) 40%, var(--surface));
+}
+.geometry .geo-outline {
+  fill: var(--surface);
+}
+.geometry .geo-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.geometry .geo-thin {
+  stroke-width: 2;
+}
+.geometry .geo-dash {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-dasharray: 7 6;
+}
+.geometry .geo-right {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.geometry .geo-tick {
+  stroke: currentColor;
+  stroke-width: 3;
+}
+.geometry .geo-arc {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+}
+.geometry .geo-arrowhead,
+.geometry .geo-point {
+  fill: currentColor;
+}
+.geometry .geo-grid {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.3;
+}
+/* L'axe d'une symétrie : un trait mixte, en couleur, qui ne se confond ni avec le quadrillage ni avec une figure. */
+.geometry .geo-axis {
+  stroke: var(--violet);
+  stroke-width: 3;
+  stroke-dasharray: 12 5 3 5;
+}
+.geometry .geo-plot-point {
+  fill: var(--violet);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.geometry .geo-face {
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.geometry .geo-front {
+  fill: color-mix(in srgb, var(--cyan) 30%, var(--surface));
+}
+.geometry .geo-top {
+  fill: color-mix(in srgb, var(--cyan) 12%, var(--surface));
+}
+.geometry .geo-side {
+  fill: color-mix(in srgb, var(--cyan) 55%, var(--surface));
+}
+.geometry .geo-cube-line {
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.geometry text {
+  fill: currentColor;
+  font-family: var(--font-family);
+  /* 21 dans le repère du dessin, comme le graphique : des dessins de 330 de large au plus gardent le texte à 18 px au
+     moins sur un téléphone. */
+  font-size: 21px;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+/* Les réglages d'espacement ne s'appliquent pas aux cotes : « −1 » et « 0 » espacés se liraient « −10 ». */
+.geometry .geo-text {
+  letter-spacing: 0;
+  word-spacing: 0;
+}
+.geometry .geo-name {
+  font-weight: 700;
+}
+/* Les signes « + » et « − » des demi-axes du repère vide : plus grands que les nombres. */
+.geometry .geo-sign {
+  font-size: 28px;
+}
+.geometry text.ask {
+  fill: var(--violet);
+  font-weight: 700;
+}
+.geometry .geo-arc.ask,
+.geometry .geo-line.ask {
+  stroke: var(--violet);
+}
+:root[data-theme="night"] .geometry text.ask,
+:root[data-theme="night"] .geometry .geo-plot-point {
+  fill: var(--yellow);
+}
+:root[data-theme="night"] .geometry :is(.geo-arc.ask, .geo-line.ask, .geo-axis) {
+  stroke: var(--yellow);
+}
 /* Graphique d'une fonction : quadrillage discret, axes fléchés, nombres à taille de l'interface (un halo de la couleur
    du panneau les détache du quadrillage et de la droite), une droite épaisse avec ses points aux intersections. Rien
    d'animé. */
@@ -4958,6 +5729,10 @@ details.island-fold-objectif {
 .settings-adresse {
   overflow-wrap: anywhere;
 }
+.settings-measure {
+  margin-top: 1rem;
+}
+
 .settings-links {
   display: flex;
   flex-wrap: wrap;
@@ -5268,6 +6043,81 @@ details.island-fold-objectif {
 }
 .monument-blocks {
   margin: 0 0 0.6rem;
+}
+/* Un grand projet (GD-10) : un rond par pièce, plein quand elle est posée, cerclé pour la prochaine. */
+.project-pieces {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.2rem 0 0;
+}
+.project-piece {
+  display: block;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-piece);
+  background: color-mix(in srgb, var(--ink) 15%, var(--surface));
+}
+.project-piece.built {
+  background: var(--accent);
+}
+.project-piece.next {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+/* Les deux recettes d'une pièce, côte à côte (l'une sous l'autre quand la place manque) : deux blocs et leur nombre ;
+   la carte choisie a son fond teinté et son cadre, une pastille cochée dans le coin quand le stock les a. */
+.project-recipes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.project-recipe {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 56px;
+  padding: 0.4rem 1.6rem;
+  border: var(--border-width) solid color-mix(in srgb, var(--ink) 35%, var(--surface));
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.project-recipe:has(:checked) {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+}
+.project-recipe:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.project-recipe-ok {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 0.8em;
+}
+.project-ingredient {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 .inventory-missing li {
   display: flex;
@@ -5588,7 +6438,7 @@ details.island-fold-objectif {
 .home-role {
   flex: none;
 }
-/* Les trois Expéditions : une icône de la couleur de la matière, son nom et celui de l'expédition. */
+/* Les Expéditions : une icône de la couleur de la matière, son nom et celui de l'expédition. */
 .home-menu {
   margin-top: 0.4rem;
   grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
@@ -5708,6 +6558,11 @@ button.app-card {
     /* Le chemin d'ouvrages de la Carte défile au-delà ; des traits pointillés disent qu'il continue, en bas comme en
        haut (useMapPanel.ts). */
     max-height: 60%;
+  }
+  /* Pendant « Aménager », la colonne de droite (Menu, puis le rond « Recentrer » dessous) reste réservée : le rond de
+     l'avatar ne se pose jamais sur le haut-parleur de la phrase. */
+  :root[data-texte="grand"] .world-page.en-amenagement .world-overlay-top {
+    right: calc(0.6rem + 52px + 0.5rem);
   }
   /* Le trait est posé sur une bande du fond du panneau, collée au bord : il ne passe jamais sur une ligne coupée,
      qu'il sépare du bord par un peu d'air. */
@@ -5966,6 +6821,14 @@ button.island-quest {
 }
 .world-fiche-phrase {
   margin: 0.2rem 0;
+}
+/* La fiche d'un Gardien nomme son lieu (choix 4a du mainteneur, 7 octobre 2026) : son icône et son nom, en gras. */
+.world-fiche-lieu {
+  margin: 0.2rem 0;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 .world-fiche-texte .stars {
   display: inline-flex;
@@ -6327,8 +7190,18 @@ fieldset {
     display: flex;
     flex-wrap: wrap;
   }
-  :root[data-texte="grand"] .choices.short > .choice {
+  :root[data-texte="grand"] .choices.short > :is(.choice, .choice-listen) {
     flex: 1 1 auto;
+  }
+  /* Une réponse et son haut-parleur : la réponse garde toute la largeur pour qu'un mot ne s'y coupe pas, le haut-parleur
+     passe juste dessous, à droite, à la même place pour les trois réponses. */
+  :root[data-texte="grand"] .choice-listen {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+  }
+  :root[data-texte="grand"] .choice-listen > .speak-button {
+    align-self: flex-end;
   }
   :root[data-texte="grand"] .enclos-pens {
     flex-wrap: wrap;
@@ -6576,4 +7449,20 @@ fieldset {
 }
 :root[data-univers="archipeo"] .world-recentrer-tete:active:not(:disabled) {
   box-shadow: 0 1px 0 #142b38;
+}
+/* « Carte de départ » au menu du village (GD-9) : la confirmation, sous la ligne, sur un fond uni. */
+.menu-confirmer {
+  margin: 0.4rem 0 0.6rem;
+  padding: 0.8rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius, 8px);
+  background: var(--surface, #fff);
+}
+.menu-confirmer p {
+  margin: 0 0 0.6rem;
+}
+.menu-confirmer-boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }

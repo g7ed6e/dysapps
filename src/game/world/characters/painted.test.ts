@@ -338,22 +338,25 @@ describe('Les créatures en facettes', () => {
     expect(new Set(Object.values(ESPECES).map((e) => e.nom)).size).toBe(BIOMES.length);
   });
 
-  it('ont les gabarits du directeur artistique : six trapus, six élancés, les autres standard', () => {
+  it('ont les gabarits du directeur artistique : sept trapus (Fougère, SC-2), six élancés, les autres standard', () => {
     const de = (g: Gabarit) =>
       Object.entries(ESPECES)
         .filter(([, e]) => (e.gabarit ?? 'standard') === g)
         .map(([, e]) => e.nom)
         .sort();
-    expect(de('trapu')).toEqual(['Bazar', 'Braise', 'Grimoire', 'Kroa', 'Pudding', 'Tunel']);
+    expect(de('trapu')).toEqual(['Bazar', 'Braise', 'Fougère', 'Grimoire', 'Kroa', 'Pudding', 'Tunel']);
     expect(de('elance')).toEqual(['Cléa', 'Fi', 'Frimas', 'Nénu', 'Stat', 'Théo']);
     expect(GABARITS).toEqual({ trapu: { taille: 2.3, largeur: 1.2 }, standard: { taille: 2.6, largeur: 1 }, elance: { taille: 2.9, largeur: 0.85 } });
     expect(GABARITS.standard.taille).toBeCloseTo(1.3 * TAILLE_DU_BONHOMME, 9);
   });
 
-  it('tiennent dans leur budget : 2 500 triangles au plus par archipel, toutes ensemble', () => {
+  // 2 950 depuis les deux habitants d'histoire-géographie du 6e (HG-2, mainteneur, 6 octobre 2026 : 2 917 mesurés), 3 650
+  // depuis les trois habitants de sciences (SC-2, même mot : 3 635 mesurés), 3 950 depuis Voix (EMC-2, mainteneur,
+  // 9 octobre 2026 : 3 912 mesurés ; 3 936 depuis sa patte levée, relecture des captures emc-2).
+  it('tiennent dans leur budget : 3 950 triangles au plus aux Premiers Rivages, 3 650 ailleurs, toutes ensemble', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const somme = BIOMES.filter((b) => b.classe === a).reduce((n, b) => n + nbTriangles(creaturePeinte(b.id)), 0);
-      expect(somme, a).toBeLessThanOrEqual(2_500);
+      expect(somme, a).toBeLessThanOrEqual(a === '6e' ? 3_950 : 3_650);
     }
   });
 

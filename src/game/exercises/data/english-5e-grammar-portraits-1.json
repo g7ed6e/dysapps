@@ -1,0 +1,238 @@
+{
+  "id": "english-5e-grammar-portraits-1",
+  "biome": "english-5e-grammar",
+  "type": "portraits",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Lis la question, puis le texte en anglais. Choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "english-5e-grammar-portraits-1-0",
+      "prompt": "Hi! My name is Maya and I’m twelve.\nI have long black hair and brown eyes.\nI love music. I play the guitar.",
+      "question": "De quelle couleur sont les cheveux de Maya ?",
+      "spoken": "Hi! My name is Maya and I’m twelve. I have long black hair and brown eyes. I love music. I play the guitar.",
+      "choices": [
+        "Noirs",
+        "Bruns",
+        "Blonds"
+      ],
+      "choicesLang": "fr",
+      "answer": "Noirs",
+      "hint": "Cherche le mot hair, puis le mot de couleur juste avant.",
+      "explanation": "long black hair = de longs cheveux noirs : en anglais, la couleur se place avant hair. Brown va avec eyes : ce sont ses yeux qui sont bruns.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire quelqu’un",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le texte la phrase qui répond.",
+            "hair = les cheveux ; eyes = les yeux ; tall = grand",
+            "kind = gentil ; funny = drôle ; good at = fort en",
+            "yearbook = l’album de fin d’année ; dream = le rêve ; job = le métier",
+            "Ce que fait la personne : is reading = lit, is running = court"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-1-1",
+      "prompt": "This is my best friend, Leo.\nHe is kind and very generous.\nHe always shares his snacks with me.",
+      "question": "Que fait Leo avec ses goûters ?",
+      "spoken": "This is my best friend, Leo. He is kind and very generous. He always shares his snacks with me.",
+      "choices": [
+        "Il les partage",
+        "Il les mange seul",
+        "Il les oublie"
+      ],
+      "choicesLang": "fr",
+      "answer": "Il les partage",
+      "hint": "Lis la dernière ligne : cherche le verbe juste avant his snacks.",
+      "explanation": "He shares his snacks with me = il partage ses goûters avec moi : c’est pour cela qu’il est generous, généreux. S’il les mangeait seul, il ne serait pas généreux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire quelqu’un",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le texte la phrase qui répond.",
+            "hair = les cheveux ; eyes = les yeux ; tall = grand",
+            "kind = gentil ; funny = drôle ; good at = fort en",
+            "yearbook = l’album de fin d’année ; dream = le rêve ; job = le métier",
+            "Ce que fait la personne : is reading = lit, is running = court"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-1-2",
+      "prompt": "My grandad is seventy-two.\nHe is short and a bit shy.\nHe wears glasses and a big red hat.",
+      "question": "Comment est le grand-père ?",
+      "spoken": "My grandad is seventy-two. He is short and a bit shy. He wears glasses and a big red hat.",
+      "choices": [
+        "Petit et un peu timide",
+        "En short et un peu timide",
+        "Grand et un peu timide"
+      ],
+      "choicesLang": "fr",
+      "answer": "Petit et un peu timide",
+      "hint": "Lis la deuxième ligne : He is dit comment il est, pas ce qu’il porte.",
+      "explanation": "He is short = il est petit, de taille ; a bit shy = un peu timide. Ici, short décrit la personne, pas un vêtement (un short se dit shorts). Grand se dit tall.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire quelqu’un",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le texte la phrase qui répond.",
+            "hair = les cheveux ; eyes = les yeux ; tall = grand",
+            "kind = gentil ; funny = drôle ; good at = fort en",
+            "yearbook = l’album de fin d’année ; dream = le rêve ; job = le métier",
+            "Ce que fait la personne : is reading = lit, is running = court"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-1-3",
+      "prompt": "Middle School Yearbook\nAmir Khan, Grade 7\nHe is good at science.\nHis dream job: vet",
+      "question": "Quel métier Amir veut-il faire plus tard ?",
+      "spoken": "Middle School Yearbook. Amir Khan, Grade seven. He is good at science. His dream job, vet.",
+      "choices": [
+        "Vétérinaire",
+        "Professeur de sciences",
+        "Médecin"
+      ],
+      "choicesLang": "fr",
+      "answer": "Vétérinaire",
+      "hint": "Cherche la ligne qui parle de son rêve : le métier est son dernier mot.",
+      "explanation": "His dream job: vet = le métier dont il rêve : vétérinaire, celui qui soigne les animaux. He is good at science dit qu’il est fort en sciences, pas qu’il veut les enseigner.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire quelqu’un",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le texte la phrase qui répond.",
+            "hair = les cheveux ; eyes = les yeux ; tall = grand",
+            "kind = gentil ; funny = drôle ; good at = fort en",
+            "yearbook = l’album de fin d’année ; dream = le rêve ; job = le métier",
+            "Ce que fait la personne : is reading = lit, is running = court"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-1-4",
+      "prompt": "Portrait of a girl with a cat\nPainted in 1890\nThe girl is smiling.\nShe is wearing a blue dress.",
+      "question": "Que fait la fille sur le tableau ?",
+      "spoken": "Portrait of a girl with a cat. Painted in eighteen ninety. The girl is smiling. She is wearing a blue dress.",
+      "choices": [
+        "Elle sourit",
+        "Elle pleure",
+        "Elle chante"
+      ],
+      "choicesLang": "fr",
+      "answer": "Elle sourit",
+      "hint": "Cherche le verbe en -ing qui va avec the girl : il dit ce qu’elle fait.",
+      "explanation": "The girl is smiling = la fille sourit (smile = sourire). Pleurer se dit cry, chanter se dit sing.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire quelqu’un",
+          "lines": [
+            "Lis d’abord la question, puis cherche dans le texte la phrase qui répond.",
+            "hair = les cheveux ; eyes = les yeux ; tall = grand",
+            "kind = gentil ; funny = drôle ; good at = fort en",
+            "yearbook = l’album de fin d’année ; dream = le rêve ; job = le métier",
+            "Ce que fait la personne : is reading = lit, is running = court"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-1-5",
+      "prompt": "At the end of the lesson, the bell rings.\nYour teacher gives the homework.\nYou don’t hear it.",
+      "question": "Que dis-tu au professeur ?",
+      "spoken": "At the end of the lesson, the bell rings. Your teacher gives the homework. You don’t hear it.",
+      "choices": [
+        "Can you repeat, please?",
+        "Can you spell it, please?",
+        "Can you translate, please?"
+      ],
+      "answer": "Can you repeat, please?",
+      "hint": "Tu n’as rien entendu : que doit faire le professeur ?",
+      "explanation": "Can you repeat, please? = Pouvez-vous répéter, s’il vous plaît ? Tu entendras les devoirs une deuxième fois. Spell sert à épeler un mot, translate à le traduire : cela n’aide pas si tu n’as rien entendu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Demander de l’aide",
+          "lines": [
+            "Pour demander : can you = peux-tu, pouvez-vous ; please = s’il te plaît",
+            "repeat = répéter ; spell = épeler ; translate = traduire",
+            "slowly = lentement ; louder = plus fort ; mean = vouloir dire"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-1-6",
+      "prompt": "In class, Mrs Green speaks very fast.\nYou don’t understand.",
+      "question": "Que demandes-tu à Mrs Green ?",
+      "spoken": "In class, Mrs Green speaks very fast. You don’t understand.",
+      "choices": [
+        "Can you speak slowly, please?",
+        "Can you speak louder, please?",
+        "Can you spell it, please?"
+      ],
+      "answer": "Can you speak slowly, please?",
+      "hint": "Le problème, c’est la vitesse : que doit-elle changer ?",
+      "explanation": "Can you speak slowly, please? = Pouvez-vous parler lentement ? Elle parle trop vite. Louder veut dire plus fort : cela aide quand on n’entend pas. Spell sert à épeler un mot.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Demander de l’aide",
+          "lines": [
+            "Pour demander : can you = peux-tu, pouvez-vous ; please = s’il te plaît",
+            "repeat = répéter ; spell = épeler ; translate = traduire",
+            "slowly = lentement ; louder = plus fort ; mean = vouloir dire"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-1-7",
+      "prompt": "Your friend Jack says: “Look, a wizard!”\nYou don’t know the word wizard.",
+      "question": "Que demandes-tu à Jack ?",
+      "spoken": "Your friend Jack says: Look, a wizard! You don’t know the word wizard.",
+      "choices": [
+        "What does wizard mean?",
+        "How do you spell wizard?",
+        "Can you repeat, please?"
+      ],
+      "answer": "What does wizard mean?",
+      "hint": "Tu connais le mot, mais pas son sens : quelle question parle du sens ?",
+      "explanation": "What does wizard mean? = Que veut dire wizard ? Jack t’expliquera : un sorcier. How do you spell demande comment le mot s’écrit ; Can you repeat fait seulement redire le mot.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Demander de l’aide",
+          "lines": [
+            "Pour demander : can you = peux-tu, pouvez-vous ; please = s’il te plaît",
+            "repeat = répéter ; spell = épeler ; translate = traduire",
+            "slowly = lentement ; louder = plus fort ; mean = vouloir dire"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-5e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

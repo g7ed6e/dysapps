@@ -1,0 +1,248 @@
+{
+  "id": "civics-5e-equality-solidarity-discrimination-1",
+  "biome": "civics-5e-equality-solidarity",
+  "type": "discrimination",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-1-0",
+      "prompt": "Penser qu’une personne est paresseuse avant même de la connaître, c’est avoir un …",
+      "spoken": "Penser qu’une personne est paresseuse avant même de la connaître, c’est avoir un  (mot manquant) ",
+      "choices": [
+        "souvenir",
+        "préjugé",
+        "savoir"
+      ],
+      "answer": "préjugé",
+      "hint": "On juge avant de connaître : relis la première ligne du rappel.",
+      "explanation": "Juger une personne avant de la connaître, c’est avoir un préjugé. Un savoir, lui, est vérifié.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des discriminations",
+          "lines": [
+            "Un préjugé : juger une personne avant de la connaître.",
+            "Discriminer : traiter quelqu’un moins bien pour son origine, son sexe, sa religion, son handicap.",
+            "La discrimination est punie par la loi : c’est un délit.",
+            "Le racisme : rejeter des personnes à cause de leur origine.",
+            "L’antisémitisme : la haine ou le rejet des Juifs.",
+            "La xénophobie : le rejet des étrangers.",
+            "Le harcèlement : des moqueries ou des violences répétées contre une même personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-1-1",
+      "prompt": "La haine ou le rejet des Juifs s’appelle l’…",
+      "spoken": "La haine ou le rejet des Juifs s’appelle l’ (mot manquant) ",
+      "choices": [
+        "antisémitisme",
+        "xénophobie",
+        "homophobie"
+      ],
+      "answer": "antisémitisme",
+      "hint": "Cherche dans le rappel la ligne qui parle des Juifs.",
+      "explanation": "L’antisémitisme est la haine ou le rejet des Juifs. La xénophobie vise les étrangers, l’homophobie les personnes homosexuelles. Tous sont punis par la loi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des discriminations",
+          "lines": [
+            "Un préjugé : juger une personne avant de la connaître.",
+            "Discriminer : traiter quelqu’un moins bien pour son origine, son sexe, sa religion, son handicap.",
+            "La discrimination est punie par la loi : c’est un délit.",
+            "Le racisme : rejeter des personnes à cause de leur origine.",
+            "L’antisémitisme : la haine ou le rejet des Juifs.",
+            "La xénophobie : le rejet des étrangers.",
+            "Le harcèlement : des moqueries ou des violences répétées contre une même personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-1-2",
+      "prompt": "Rejeter des personnes parce qu’elles sont étrangères, c’est la …",
+      "spoken": "Rejeter des personnes parce qu’elles sont étrangères, c’est la  (mot manquant) ",
+      "choices": [
+        "fraternité",
+        "neutralité",
+        "xénophobie"
+      ],
+      "answer": "xénophobie",
+      "hint": "Cherche dans le rappel la ligne qui parle des étrangers.",
+      "explanation": "La xénophobie est le rejet des étrangers. Comme le racisme et l’antisémitisme, elle repose sur des préjugés, et elle est punie par la loi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des discriminations",
+          "lines": [
+            "Un préjugé : juger une personne avant de la connaître.",
+            "Discriminer : traiter quelqu’un moins bien pour son origine, son sexe, sa religion, son handicap.",
+            "La discrimination est punie par la loi : c’est un délit.",
+            "Le racisme : rejeter des personnes à cause de leur origine.",
+            "L’antisémitisme : la haine ou le rejet des Juifs.",
+            "La xénophobie : le rejet des étrangers.",
+            "Le harcèlement : des moqueries ou des violences répétées contre une même personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-1-3",
+      "prompt": "Une offre d’emploi\nUn magasin refuse un candidat.\nLa raison donnée : son handicap.\nLe candidat a les compétences demandées.",
+      "question": "Comment s’appelle ce refus ?",
+      "spoken": "Une offre d’emploi. Un magasin refuse un candidat. La raison donnée : son handicap. Le candidat a les compétences demandées.",
+      "choices": [
+        "une inclusion",
+        "une discrimination",
+        "une sanction"
+      ],
+      "answer": "une discrimination",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Refuser quelqu’un à cause de son handicap, alors qu’il a les compétences, est une discrimination : un délit puni par la loi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des discriminations",
+          "lines": [
+            "Un préjugé : juger une personne avant de la connaître.",
+            "Discriminer : traiter quelqu’un moins bien pour son origine, son sexe, sa religion, son handicap.",
+            "La discrimination est punie par la loi : c’est un délit.",
+            "Le racisme : rejeter des personnes à cause de leur origine.",
+            "L’antisémitisme : la haine ou le rejet des Juifs.",
+            "La xénophobie : le rejet des étrangers.",
+            "Le harcèlement : des moqueries ou des violences répétées contre une même personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-1-4",
+      "prompt": "La discrimination n’est pas seulement mal vue : pour la loi, c’est un …",
+      "spoken": "La discrimination n’est pas seulement mal vue : pour la loi, c’est un  (mot manquant) ",
+      "choices": [
+        "conseil",
+        "droit",
+        "délit"
+      ],
+      "answer": "délit",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "La discrimination est un délit : la loi la punit. Elle va contre le principe d’égalité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des discriminations",
+          "lines": [
+            "Un préjugé : juger une personne avant de la connaître.",
+            "Discriminer : traiter quelqu’un moins bien pour son origine, son sexe, sa religion, son handicap.",
+            "La discrimination est punie par la loi : c’est un délit.",
+            "Le racisme : rejeter des personnes à cause de leur origine.",
+            "L’antisémitisme : la haine ou le rejet des Juifs.",
+            "La xénophobie : le rejet des étrangers.",
+            "Le harcèlement : des moqueries ou des violences répétées contre une même personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-1-5",
+      "prompt": "Ce qui fait le harcèlement\nDes moqueries, des insultes ou une mise à l’écart.\nElles visent toujours la même personne.\nElles se répètent.",
+      "question": "Qu’est-ce qui distingue le harcèlement d’une dispute ?",
+      "spoken": "Ce qui fait le harcèlement. Des moqueries, des insultes ou une mise à l’écart. Elles visent toujours la même personne. Elles se répètent.",
+      "choices": [
+        "les attaques se répètent contre la même personne",
+        "tout le monde est d’accord",
+        "cela n’arrive qu’une fois"
+      ],
+      "answer": "les attaques se répètent contre la même personne",
+      "hint": "Lis les deux dernières lignes du document.",
+      "explanation": "Le harcèlement, ce sont des attaques répétées contre une même personne. Une dispute arrive une fois, entre deux personnes qui se répondent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des discriminations",
+          "lines": [
+            "Un préjugé : juger une personne avant de la connaître.",
+            "Discriminer : traiter quelqu’un moins bien pour son origine, son sexe, sa religion, son handicap.",
+            "La discrimination est punie par la loi : c’est un délit.",
+            "Le racisme : rejeter des personnes à cause de leur origine.",
+            "L’antisémitisme : la haine ou le rejet des Juifs.",
+            "La xénophobie : le rejet des étrangers.",
+            "Le harcèlement : des moqueries ou des violences répétées contre une même personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-1-6",
+      "prompt": "Accueillir à l’école chaque enfant, avec ou sans handicap, s’appelle l’…",
+      "spoken": "Accueillir à l’école chaque enfant, avec ou sans handicap, s’appelle l’ (mot manquant) ",
+      "choices": [
+        "exclusion",
+        "inclusion",
+        "obligation"
+      ],
+      "answer": "inclusion",
+      "hint": "Donner sa place à chacun : est-ce inclure, ou exclure ?",
+      "explanation": "L’inclusion scolaire donne sa place à chaque enfant, avec l’aide dont il a besoin. L’exclusion, au contraire, met à l’écart.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des discriminations",
+          "lines": [
+            "Un préjugé : juger une personne avant de la connaître.",
+            "Discriminer : traiter quelqu’un moins bien pour son origine, son sexe, sa religion, son handicap.",
+            "La discrimination est punie par la loi : c’est un délit.",
+            "Le racisme : rejeter des personnes à cause de leur origine.",
+            "L’antisémitisme : la haine ou le rejet des Juifs.",
+            "La xénophobie : le rejet des étrangers.",
+            "Le harcèlement : des moqueries ou des violences répétées contre une même personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-discrimination-1-7",
+      "prompt": "Refuser un logement à quelqu’un parce que son nom sonne étranger est une discrimination liée à l’…",
+      "spoken": "Refuser un logement à quelqu’un parce que son nom sonne étranger est une discrimination liée à l’ (mot manquant) ",
+      "choices": [
+        "âge",
+        "origine",
+        "état de santé"
+      ],
+      "answer": "origine",
+      "hint": "Un nom qui sonne étranger fait penser à quoi ?",
+      "explanation": "C’est une discrimination liée à l’origine, punie par la loi. Le logement se donne selon des règles, pas selon le nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des discriminations",
+          "lines": [
+            "Un préjugé : juger une personne avant de la connaître.",
+            "Discriminer : traiter quelqu’un moins bien pour son origine, son sexe, sa religion, son handicap.",
+            "La discrimination est punie par la loi : c’est un délit.",
+            "Le racisme : rejeter des personnes à cause de leur origine.",
+            "L’antisémitisme : la haine ou le rejet des Juifs.",
+            "La xénophobie : le rejet des étrangers.",
+            "Le harcèlement : des moqueries ou des violences répétées contre une même personne."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-5e-equality-solidarity",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

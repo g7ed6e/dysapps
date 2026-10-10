@@ -1,6 +1,6 @@
 // Les anciennes adresses et les anciens identifiants mènent aux neufs ; ce qui n'est pas d'avant passe tel quel.
 import { GRAINES_DU_DESSIN } from '../game/world/map';
-import { LEGACY_PLACES, translateExerciseId, translateItemId, translateLinkId, translatePath } from './legacyIds';
+import { LEGACY_PLACES, translateExerciseId, translateItemId, translateLinkId, translatePartId, translatePath } from './legacyIds';
 
 it('une ancienne adresse de l’aventure mène à la même page sous les mots neutres', () => {
   expect(translatePath('/aventure')).toBe('/adventure');
@@ -51,3 +51,5 @@ it('les autres anciennes adresses : pages du village, monuments, bloc demandé, 
   expect(translatePath('/aventure/monument-observatoire')).toBe('/adventure/landmark-6e-1');
   expect(translatePath('/aventure/foret/constructor')).toBe('/adventure/french-6e-phonology/constructor');
 });
+
+test('une réunion (GD-9) garde sa clé telle quelle : `join.<a>.<b>` n’est pas une ancienne partie', () => expect(translatePartId('join.french-6e-reading.french-6e-grammar-spelling')).toBe('join.french-6e-reading.french-6e-grammar-spelling'));

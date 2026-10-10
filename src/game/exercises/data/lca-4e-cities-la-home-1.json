@@ -1,0 +1,240 @@
+{
+  "id": "lca-4e-cities-la-home-1",
+  "biome": "lca-4e-cities",
+  "type": "la-home",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-4e-cities-la-home-1-0",
+      "prompt": "Chez les Romains, le chef de la famille s’appelle le …",
+      "spoken": "Chez les Romains, le chef de la famille s’appelle le  (mot manquant) ",
+      "choices": [
+        "magister",
+        "pater familias",
+        "consul"
+      ],
+      "answer": "pater familias",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Le pater familias est le chef de toute la famille : sa femme, ses enfants, ses esclaves. Le magister est le maître d’école ; le consul, un magistrat de la cité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille romaine",
+          "lines": [
+            "Le pater familias : le père, chef de toute la famille, esclaves compris.",
+            "Un citoyen porte trois noms : le prénom, le nom de famille, le surnom.",
+            "Exemple : Marcus Tullius Cicero, que nous appelons Cicéron.",
+            "La bulla : une petite boule, une amulette, que porte le garçon né libre.",
+            "Vers seize ans, le garçon prend la toge virile : il devient un homme.",
+            "La matrona : la mère de famille, qui dirige la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-1-1",
+      "prompt": "Dans le nom Marcus Tullius Cicero, le prénom est …",
+      "spoken": "Dans le nom Markouss Toulliouss Kikéro, le prénom est (mot manquant)",
+      "choices": [
+        "Marcus",
+        "Tullius",
+        "Cicero"
+      ],
+      "answer": "Marcus",
+      "hint": "Relis la deuxième ligne du rappel : dans quel ordre viennent les trois noms ?",
+      "explanation": "Marcus est le prénom, Tullius le nom de famille, Cicero le surnom. Nous l’appelons Cicéron, par son surnom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille romaine",
+          "lines": [
+            "Le pater familias : le père, chef de toute la famille, esclaves compris.",
+            "Un citoyen porte trois noms : le prénom, le nom de famille, le surnom.",
+            "Exemple : Marcus Tullius Cicero, que nous appelons Cicéron.",
+            "La bulla : une petite boule, une amulette, que porte le garçon né libre.",
+            "Vers seize ans, le garçon prend la toge virile : il devient un homme.",
+            "La matrona : la mère de famille, qui dirige la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-1-2",
+      "prompt": "Une famille de citoyens\nLe père : Marcus Tullius Cicero.\nSon fils : Marcus Tullius Cicero.\nSa fille : Tullia.",
+      "question": "Pourquoi la fille s’appelle-t-elle Tullia ?",
+      "spoken": "Une famille de citoyens. Le père : Markouss Toulliouss Kikéro. Son fils : Markouss Toulliouss Kikéro. Sa fille : Toullia.",
+      "choices": [
+        "c’est un surnom inventé",
+        "elle porte le nom de famille, au féminin",
+        "elle porte le nom de sa mère"
+      ],
+      "answer": "elle porte le nom de famille, au féminin",
+      "hint": "Compare Tullia avec le deuxième nom du père.",
+      "explanation": "Une fille porte le nom de famille au féminin : Tullius devient Tullia. Les filles n’ont en général pas de prénom à elles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille romaine",
+          "lines": [
+            "Le pater familias : le père, chef de toute la famille, esclaves compris.",
+            "Un citoyen porte trois noms : le prénom, le nom de famille, le surnom.",
+            "Exemple : Marcus Tullius Cicero, que nous appelons Cicéron.",
+            "La bulla : une petite boule, une amulette, que porte le garçon né libre.",
+            "Vers seize ans, le garçon prend la toge virile : il devient un homme.",
+            "La matrona : la mère de famille, qui dirige la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-1-3",
+      "prompt": "La bulla, que porte le garçon né libre, est une …",
+      "spoken": "La boulla, que porte le garçon né libre, est une (mot manquant)",
+      "choices": [
+        "couronne",
+        "ceinture",
+        "amulette"
+      ],
+      "answer": "amulette",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "La bulla est une amulette : une petite boule qui doit protéger l’enfant du malheur. Le garçon la quitte quand il devient un homme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille romaine",
+          "lines": [
+            "Le pater familias : le père, chef de toute la famille, esclaves compris.",
+            "Un citoyen porte trois noms : le prénom, le nom de famille, le surnom.",
+            "Exemple : Marcus Tullius Cicero, que nous appelons Cicéron.",
+            "La bulla : une petite boule, une amulette, que porte le garçon né libre.",
+            "Vers seize ans, le garçon prend la toge virile : il devient un homme.",
+            "La matrona : la mère de famille, qui dirige la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-1-4",
+      "prompt": "Vers seize ans, le jeune Romain devient un homme : il prend la …",
+      "spoken": "Vers seize ans, le jeune Romain devient un homme : il prend la  (mot manquant) ",
+      "choices": [
+        "bulla",
+        "toge virile",
+        "couronne"
+      ],
+      "answer": "toge virile",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Le garçon quitte la bulla et la toge bordée de pourpre de l’enfance ; il prend la toge virile, toute blanche : il devient un citoyen adulte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille romaine",
+          "lines": [
+            "Le pater familias : le père, chef de toute la famille, esclaves compris.",
+            "Un citoyen porte trois noms : le prénom, le nom de famille, le surnom.",
+            "Exemple : Marcus Tullius Cicero, que nous appelons Cicéron.",
+            "La bulla : une petite boule, une amulette, que porte le garçon né libre.",
+            "Vers seize ans, le garçon prend la toge virile : il devient un homme.",
+            "La matrona : la mère de famille, qui dirige la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-1-5",
+      "prompt": "Le mot « famille » vient du latin familia, qui désigne …",
+      "spoken": "Le mot famille vient du latin familia, qui désigne (mot manquant)",
+      "choices": [
+        "toute la maisonnée, esclaves compris",
+        "les parents et les enfants seulement",
+        "les ancêtres morts"
+      ],
+      "answer": "toute la maisonnée, esclaves compris",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Familia désigne tous ceux qui vivent sous l’autorité du pater familias, esclaves compris. Famulus, en latin, veut dire le serviteur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille romaine",
+          "lines": [
+            "Le pater familias : le père, chef de toute la famille, esclaves compris.",
+            "Un citoyen porte trois noms : le prénom, le nom de famille, le surnom.",
+            "Exemple : Marcus Tullius Cicero, que nous appelons Cicéron.",
+            "La bulla : une petite boule, une amulette, que porte le garçon né libre.",
+            "Vers seize ans, le garçon prend la toge virile : il devient un homme.",
+            "La matrona : la mère de famille, qui dirige la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-1-6",
+      "prompt": "La mère de famille romaine s’appelle la …",
+      "spoken": "La mère de famille romaine s’appelle la  (mot manquant) ",
+      "choices": [
+        "magistra",
+        "puella",
+        "matrona"
+      ],
+      "answer": "matrona",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "La matrona dirige la maison et l’éducation des jeunes enfants. Le mot vient de mater, la mère, comme « maternel ». Puella veut dire la jeune fille.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille romaine",
+          "lines": [
+            "Le pater familias : le père, chef de toute la famille, esclaves compris.",
+            "Un citoyen porte trois noms : le prénom, le nom de famille, le surnom.",
+            "Exemple : Marcus Tullius Cicero, que nous appelons Cicéron.",
+            "La bulla : une petite boule, une amulette, que porte le garçon né libre.",
+            "Vers seize ans, le garçon prend la toge virile : il devient un homme.",
+            "La matrona : la mère de famille, qui dirige la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-1-7",
+      "prompt": "Trois mots latins\nmater : la mère\npater : le père\nfrater : le frère",
+      "question": "Quel mot français vient de pater ?",
+      "spoken": "Trois mots latins. Matèrr : la mère. Patèrr : le père. Fratèrr : le frère.",
+      "choices": [
+        "paternel",
+        "patience",
+        "patte"
+      ],
+      "answer": "paternel",
+      "hint": "Lequel de ces mots parle du père ?",
+      "explanation": "Paternel vient de pater, le père ; maternel de mater, fraternel de frater. Patience vient d’un autre verbe latin, pati, supporter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La famille romaine",
+          "lines": [
+            "Le pater familias : le père, chef de toute la famille, esclaves compris.",
+            "Un citoyen porte trois noms : le prénom, le nom de famille, le surnom.",
+            "Exemple : Marcus Tullius Cicero, que nous appelons Cicéron.",
+            "La bulla : une petite boule, une amulette, que porte le garçon né libre.",
+            "Vers seize ans, le garçon prend la toge virile : il devient un homme.",
+            "La matrona : la mère de famille, qui dirige la maison."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-4e-cities",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

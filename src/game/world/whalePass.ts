@@ -1,8 +1,10 @@
 // Le passage de la baleine (Archipéo, lot 5) : quand le mot de la baleine s'ouvre, une baleine quitte sa ronde et
 // passe au large de l'île concernée. Code pur (sans Three.js) : le trajet sur l'eau, loin de toute terre, et son
 // déroulé dans le temps (plonger, refaire surface, souffler, replonger, revenir). La 3D ne fait que le dessiner.
-import { BIOMES, type BiomeId } from "../biomes";
-import { BRIDGES, getArchipelago } from "./archipelago";
+import type { BiomeId } from "../biomes";
+import { getArchipelago } from "./archipelago";
+import { placedLinksOf } from "./linkGeometry";
+import { monumentIslet } from "./footprint";
 import { dockBox } from "./harbor";
 import {
   archipelagoOfIsland,
@@ -13,9 +15,6 @@ import {
 } from "./map";
 import { MONUMENT_ISLET, monumentsOf } from "./monuments";
 import {
-  ISLET_H,
-  ISLET_W,
-  bossIsletOrigin,
   bridgePath,
   islandCenter,
   seaDecor,
@@ -23,6 +22,7 @@ import {
   worldBounds,
 } from "./terrain";
 import { smoothstep } from "../../core/math";
+import { layoutCache } from './placement';
 
 /** Un passage : un segment droit sur l'eau, de `from` à `to` (coordonnées de grille, continues). */
 export interface WhaleRoute {
@@ -49,11 +49,12 @@ interface Grid {
   cells: Uint8Array;
 }
 
-const gridCache = new Map<ArchipelagoId, Grid>();
+const gridCache = layoutCache<string, Grid>();
 
-/** Ce que la baleine évite, case par case : terres, îlots des Gardiens et des monuments, ouvrages, port, rochers. */
-function obstacles(a: ArchipelagoId): Grid {
-  const known = gridCache.get(a);
+/** Ce que la baleine évite, case par case : terres, îlots des monuments, ouvrages, port, rochers. */
+function obstacles(a: ArchipelagoId, links: readonly string[]): Grid {
+  const cle = `${a}|${placedLinksOf(a, links).map((d) => d.id).join(',')}`;
+  const known = gridCache.get(cle);
   if (known) return known;
   const b = worldBounds(a);
   const M = 40;
@@ -67,24 +68,18 @@ function obstacles(a: ArchipelagoId): Grid {
     const j = y - y0;
     if (i >= 0 && j >= 0 && i < w && j < h) cells[j * w + i] = 1;
   };
-  for (const def of mapOf(a)) {
-    for (const c of landCells(def)) mark(c.x, c.y);
-    const o = bossIsletOrigin(BIOMES.findIndex((bi) => bi.id === def.id));
-    for (let x = 0; x < ISLET_W; x++)
-      for (let y = 0; y < ISLET_H; y++) mark(o.x + x, o.y + y);
-  }
-  for (const def of BRIDGES.filter((br) => archipelagoOfIsland(br.from) === a))
-    for (const c of bridgePath(def)) mark(c.x, c.y);
+  for (const def of mapOf(a)) for (const c of landCells(def)) mark(c.x, c.y);
+  for (const def of placedLinksOf(a, links)) for (const c of bridgePath(def, links)) mark(c.x, c.y);
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++)
     for (let y = dock.y0; y <= dock.y1; y++) mark(x, y);
-  for (const m of monumentsOf(a))
-    for (let x = 0; x < MONUMENT_ISLET; x++)
-      for (let y = 0; y < MONUMENT_ISLET; y++)
-        mark(m.islet.x + x, m.islet.y + y);
+  for (const m of monumentsOf(a)) {
+    const ilot = monumentIslet(m);
+    for (let x = 0; x < MONUMENT_ISLET; x++) for (let y = 0; y < MONUMENT_ISLET; y++) mark(ilot.x + x, ilot.y + y);
+  }
   for (const c of seaDecor(a)) mark(c.x, c.y);
   const grid = { x0, y0, w, h, cells };
-  gridCache.set(a, grid);
+  gridCache.set(cle, grid);
   return grid;
 }
 
@@ -110,11 +105,12 @@ function clearAt(g: Grid, px: number, py: number, clear: number): boolean {
 /** Le segment entier est-il sur l'eau libre ? (un point toutes les demi-cases) */
 export function routeIsClear(
   a: ArchipelagoId,
+  links: readonly string[],
   route: WhaleRoute,
   clear = PASS_CLEARANCE,
 ): boolean {
   if (DANS_LE_CIEL[a]) return false;
-  const g = obstacles(a);
+  const g = obstacles(a, links);
   const len = Math.hypot(route.to.x - route.from.x, route.to.y - route.from.y);
   const n = Math.max(1, Math.ceil(len * 2));
   for (let k = 0; k <= n; k++) {
@@ -157,6 +153,7 @@ const PASS_AIM = {
  */
 export function whalePassRoute(
   island: BiomeId,
+  links: readonly string[],
   toCamera: { x: number; y: number } = { x: 0, y: -1 },
   narrow = false,
 ): WhaleRoute | null {
@@ -180,7 +177,7 @@ export function whalePassRoute(
   // son y le long du z de la scène, la caméra regarde le long de `back`).
   const back = { x: -toCamera.x / n, y: -toCamera.y / n };
   const right = { x: -back.y, y: back.x };
-  const whales = whaleSpots(a);
+  const whales = whaleSpots(a, links);
   for (const tier of tiers) {
     let best: { route: WhaleRoute; score: number } | null = null;
     for (let depth = tier.depth[0]; depth <= tier.depth[1]; depth += 1)
@@ -208,7 +205,7 @@ export function whalePassRoute(
             )
           )
             continue;
-          if (!routeIsClear(a, route, tier.clear)) continue;
+          if (!routeIsClear(a, links, route, tier.clear)) continue;
           best = { route, score };
         }
     if (best) return best.route;

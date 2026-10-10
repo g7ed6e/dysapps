@@ -1,0 +1,311 @@
+{
+  "id": "assembly-project-5e-travellers",
+  "bloc": "project-5e-travellers",
+  "type": "assembly",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Lis l’énoncé en anglais, puis choisis la phrase juste et bien écrite. Le rappel est affiché.",
+  "programme": [
+    "c4.en.5e.langue.verbe",
+    "c4.en.5e.langue.groupe-nominal",
+    "c4.en.5e.comprendre.oral-ecrit",
+    "c4.hg.geographie.ressources",
+    "c4.hg.geographie.demographie-developpement",
+    "c4.hg.demarches.document",
+    "c4.hg.demarches.lexique"
+  ],
+  "items": [
+    {
+      "key": "project-5e-travellers-0",
+      "prompt": "Day 1, in the North Sea\nWe visited a wind farm.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Day one, in the North Sea. We visited a wind farm.",
+      "choices": [
+        "Yesterday, the turbines used the wind, a renewable energy.",
+        "Yesterday, the turbines use the wind, a renewable energy.",
+        "Yesterday, the turbines used the wind, a fossil fuel."
+      ],
+      "answer": "Yesterday, the turbines used the wind, a renewable energy.",
+      "hint": "D’abord : le vent s’épuise-t-il ? Puis : yesterday, c’est le passé.",
+      "explanation": "Le vent revient sans cesse : c’est une énergie renouvelable. Les énergies fossiles, ce sont le charbon, le pétrole et le gaz. Yesterday dit le passé : use + d, used.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le prétérit, et l’énergie",
+          "lines": [
+            "Passé terminé (yesterday, last week) : verbe + ed (play → played, like → liked).",
+            "wind = le vent, renouvelable ; coal = le charbon, fossile"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-travellers-1",
+      "prompt": "Day 2, in Egypt: desert everywhere.\nGreen fields only along the Nile.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Day two, in Egypt: desert everywhere. Green fields only along the Nile.",
+      "choices": [
+        "The fields along the Nile were green.",
+        "The fields along the Nile was green.",
+        "The fields in the desert were green."
+      ],
+      "answer": "The fields along the Nile were green.",
+      "hint": "D’abord : où sont les champs verts ? Puis : fields, un ou plusieurs ?",
+      "explanation": "Le document le dit : les champs verts sont seulement le long du Nil, qui leur apporte l’eau ; dans le désert, rien ne pousse. fields est au pluriel : were ; was va avec un seul (the field was).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Was, were, et l’eau du fleuve",
+          "lines": [
+            "be au prétérit : I, he, she, it was ; we, you, they were.",
+            "field = un champ ; along = le long de (là où arrive l’eau du fleuve)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-travellers-2",
+      "prompt": "Day 3, a village in Mali\nNo tap water: people get water from a well.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Day three, a village in Mali. No tap water: people get water from a well.",
+      "choices": [
+        "The village didn’t have tap water.",
+        "The village didn’t had tap water.",
+        "The village didn’t have a well."
+      ],
+      "answer": "The village didn’t have tap water.",
+      "hint": "D’abord : d’où vient l’eau du village ? Puis : après didn’t, le verbe change-t-il ?",
+      "explanation": "Le document dit qu’il n’y a pas d’eau au robinet : on prend l’eau au puits. Après didn’t, le verbe reste à la base : didn’t have.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Didn’t, et l’eau",
+          "lines": [
+            "Négation au passé : didn’t + verbe sans -ed (I didn’t play).",
+            "tap water = l’eau du robinet ; a well = un puits"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-travellers-3",
+      "prompt": "Day 4, on the beach\nSea water is salty.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Day four, on the beach. Sea water is salty.",
+      "choices": [
+        "We tried the sea water: too salty to drink.",
+        "We tryed the sea water: too salty to drink.",
+        "We tried the sea water: good to drink."
+      ],
+      "answer": "We tried the sea water: too salty to drink.",
+      "hint": "D’abord : peut-on boire une eau salée ? Puis : try finit par y après une consonne.",
+      "explanation": "L’eau de mer est salée : on ne peut pas la boire, elle n’est pas potable. try finit par y après une consonne : y devient ied, tried.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-ied, et l’eau potable",
+          "lines": [
+            "y après une consonne → ied (study → studied, carry → carried).",
+            "salty = salé ; drinking water = l’eau potable"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-travellers-4",
+      "prompt": "Water to grow food\nWheat: a little. Beef: a lot.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Water to grow food. Wheat, a little. Beef, a lot.",
+      "choices": [
+        "Beef needs more water than wheat.",
+        "Beef needs more water that wheat.",
+        "Wheat needs more water than beef."
+      ],
+      "answer": "Beef needs more water than wheat.",
+      "hint": "D’abord : lequel demande beaucoup d’eau ? Puis : quel petit mot après more ?",
+      "explanation": "Le document le dit : le bœuf demande beaucoup d’eau, le blé un peu. Pour comparer : more … than ; that ne compare pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "More … than, et l’eau",
+          "lines": [
+            "Comparer : more + nom + than (more friends than me).",
+            "a lot = beaucoup ; a little = un peu ; wheat = le blé ; beef = le bœuf"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-travellers-5",
+      "prompt": "Greenhill, an invented village: its electricity\nSun: 7 out of 10. Wind: 3 out of 10.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Greenhill, an invented village: its electricity. Sun, seven out of ten. Wind, three out of ten.",
+      "choices": [
+        "Solar power is the biggest part.",
+        "Solar power is the bigest part.",
+        "Wind power is the biggest part."
+      ],
+      "answer": "Solar power is the biggest part.",
+      "hint": "D’abord : quel nombre est le plus grand ? Puis : big, c’est consonne, voyelle, consonne.",
+      "explanation": "Greenhill est un village inventé pour l’exercice. 7 sur 10, c’est plus que 3 sur 10 : le soleil fait la plus grande part de son électricité. big est court et finit par consonne, voyelle, consonne : on double le g, the biggest.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "The biggest, et le document",
+          "lines": [
+            "Mot court en consonne + voyelle + consonne : on double (hot → the hottest).",
+            "out of = sur ; solar power = l’énergie solaire ; wind power = l’énergie du vent"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-travellers-6",
+      "prompt": "Rice needs a lot of water.\nFarmers bring water from the river.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Rice needs a lot of water. Farmers bring water from the river.",
+      "choices": [
+        "Look! The farmers are bringing river water.",
+        "Look! The farmers bringing river water.",
+        "Look! The farmers are bringing sea water."
+      ],
+      "answer": "Look! The farmers are bringing river water.",
+      "hint": "D’abord : d’où vient l’eau du riz ? Puis : maintenant, il faut be + -ing.",
+      "explanation": "Le document dit que l’eau vient du fleuve ; l’eau de mer est salée, elle ferait mourir le riz. Look! dit que ça se passe maintenant : be + -ing, are bringing.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Be + -ing, et l’irrigation",
+          "lines": [
+            "Maintenant (Look!, now) : be + verbe-ing (she is reading).",
+            "river = le fleuve, l’eau douce ; sea water = l’eau de mer, salée"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-travellers-7",
+      "prompt": "Day 6, in a city\nThe power station burns coal.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Day six, in a city. The power station burns coal.",
+      "choices": [
+        "The power station uses a fossil fuel.",
+        "The power station use a fossil fuel.",
+        "The power station uses a renewable energy."
+      ],
+      "answer": "The power station uses a fossil fuel.",
+      "hint": "D’abord : le charbon se reforme-t-il vite ? Puis : the power station, c’est it.",
+      "explanation": "Le charbon met des millions d’années à se former : c’est une énergie fossile, non renouvelable. Au présent simple, avec it, le verbe prend un s : uses.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le -s, et le charbon",
+          "lines": [
+            "Présent simple avec he, she, it : verbe + s (she plays, it works).",
+            "coal = le charbon, fossile ; power station = la centrale"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-travellers-8",
+      "prompt": "Day 7, in Morocco\nWe visited a solar power station.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Day seven, in Morocco. We visited a solar power station.",
+      "choices": [
+        "The station didn’t use coal.",
+        "The station didn’t used coal.",
+        "The station didn’t use the sun."
+      ],
+      "answer": "The station didn’t use coal.",
+      "hint": "D’abord : une centrale solaire marche avec quoi ? Puis : après didn’t, le verbe change-t-il ?",
+      "explanation": "solar veut dire solaire : la centrale marche au soleil, une énergie renouvelable, pas au charbon. Après didn’t, le verbe reste à la base : didn’t use.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Didn’t, et le soleil",
+          "lines": [
+            "Négation au passé : didn’t + verbe sans -ed (we didn’t watch TV).",
+            "solar = solaire (le soleil) ; coal = le charbon"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-travellers-9",
+      "prompt": "Day 8, in July\nNo rain since March: the river is dry.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Day eight, in July. No rain since March: the river is dry.",
+      "choices": [
+        "The river stopped: there was not enough rain.",
+        "The river stoped: there was not enough rain.",
+        "The river stopped: there was too much rain."
+      ],
+      "answer": "The river stopped: there was not enough rain.",
+      "hint": "D’abord : la rivière manque-t-elle d’eau, ou en a-t-elle trop ? Puis : stop, c’est consonne, voyelle, consonne.",
+      "explanation": "Pas de pluie depuis mars : c’est une sécheresse, la rivière manque d’eau. stop est court et finit par consonne, voyelle, consonne : on double le p, stopped.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Stopped, et la sécheresse",
+          "lines": [
+            "Mot court en consonne + voyelle + consonne : on double (plan → planned).",
+            "dry = sec ; not enough = pas assez ; too much = trop"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-travellers-10",
+      "prompt": "Water for one person, each day\nVillage A: 20 litres. Village B: 5 litres.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Water for one person, each day. Village A, twenty litres. Village B, five litres.",
+      "choices": [
+        "Village A has more water than village B.",
+        "Village A has more water then village B.",
+        "Village B has more water than village A."
+      ],
+      "answer": "Village A has more water than village B.",
+      "hint": "D’abord : quel village a le plus grand nombre ? Puis : quel petit mot après more ?",
+      "explanation": "20 litres, c’est plus que 5 : le village A a plus d’eau. Pour comparer : more … than ; then veut dire ensuite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "More … than, et le document",
+          "lines": [
+            "Comparer : more + nom + than (more books than you).",
+            "each day = chaque jour ; than = que (pour comparer) ; then = ensuite"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-travellers-11",
+      "prompt": "Population of the delta\n1990: 10 million. 2020: 17 million.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Population of the delta. Nineteen ninety, ten million. Twenty twenty, seventeen million.",
+      "choices": [
+        "In 2020, there were more people than in 1990.",
+        "In 2020, there was more people than in 1990.",
+        "In 1990, there were more people than in 2020."
+      ],
+      "answer": "In 2020, there were more people than in 1990.",
+      "hint": "D’abord : en quelle année y a-t-il le plus d’habitants ? Puis : people, un ou plusieurs ?",
+      "explanation": "17 millions en 2020, c’est plus que 10 millions en 1990 : la population a augmenté. people est un pluriel : there were ; there was va avec un seul (there was a river).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "There were, et la population",
+          "lines": [
+            "there was + un seul ; there were + plusieurs (there were two cats).",
+            "people = les gens (un pluriel) ; population = la population"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien construit !",
+    "wrong": "{explanation}"
+  }
+}

@@ -8,6 +8,7 @@ import { STATUES_4E } from './statues/4e';
 import { STATUES_3E } from './statues/3e';
 import { EPAISSEUR_DES_VEINES_DANS_LE_MONDE, sentinelleEnFacettes, type Statue } from './sentinel';
 import type { FacettesDePersonnage } from './painted';
+import { modeleImporte, type Niveau } from './imported/models';
 
 export const STATUES = { ...STATUES_6E, ...STATUES_5E, ...STATUES_4E, ...STATUES_3E } as Record<BiomeId, Statue>;
 
@@ -15,6 +16,8 @@ const cache = new Map<BiomeId, FacettesDePersonnage>();
 
 /** La sentinelle d'une île en facettes, éteinte (calculée une fois ; ne pas modifier les tableaux rendus). */
 export function sentinellePeinte(id: BiomeId): FacettesDePersonnage {
+  const importe = modeleImporte('gardien', id, 'pres');
+  if (importe) return importe;
   let f = cache.get(id);
   if (!f) {
     const s = STATUES[id];
@@ -29,12 +32,13 @@ const auDefi = new Map<BiomeId, FacettesDePersonnage>();
 
 /**
  * La sentinelle d'une île telle que le défi la montre : la même que dans le monde, sauf une statue longue (`tour`), qui
- * s'y tourne pour se montrer de profil à la caméra du défi, et le Lion de pierre, dont le gros plan a son propre modèle
- * (1 500 triangles au lieu de 700 : ./statues/lion.ts). Calculée une fois.
+ * s'y tourne pour se montrer de profil à la caméra du défi (calculée une fois).
  */
 export function sentinelleAuDefi(id: BiomeId): FacettesDePersonnage {
+  const importe = modeleImporte('gardien', id, 'pres');
+  if (importe) return importe;
   const s = STATUES[id];
-  if (!s?.tour && !s?.grosPlan) return sentinellePeinte(id);
+  if (!s?.tour) return sentinellePeinte(id);
   let f = auDefi.get(id);
   if (!f) {
     f = sentinelleEnFacettes(s, { ou: 'defi' });
@@ -47,9 +51,12 @@ const cacheDuMonde = new Map<BiomeId, FacettesDePersonnage>();
 
 /**
  * La sentinelle d'une île telle que le monde la pose (DA-5) : le même modèle, ses veines élargies pour qu'elles restent
- * aussi épaisses une fois la statue ramenée à `ECHELLE_DANS_LE_MONDE` (../merges.ts). Calculée une fois.
+ * aussi épaisses une fois la statue ramenée à `ECHELLE_DANS_LE_MONDE` (../merges.ts). Calculée une fois. Son modèle
+ * importé à ce niveau s'il est chargé (./imported/models.ts) : de loin, sauf sur l'île que la caméra regarde.
  */
-export function sentinelleDuMonde(id: BiomeId): FacettesDePersonnage {
+export function sentinelleDuMonde(id: BiomeId, niveau: Niveau = 'loin'): FacettesDePersonnage {
+  const importe = modeleImporte('gardien', id, niveau);
+  if (importe) return importe;
   let f = cacheDuMonde.get(id);
   if (!f) {
     const s = STATUES[id];

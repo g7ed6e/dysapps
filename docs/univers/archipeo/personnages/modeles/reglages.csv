@@ -1,0 +1,55 @@
+# nom;hauteur de coupe;quarts de tour (lu par scripts/rendu/modeles/lot.py);squelette : quarts de tour du jeu et réglages (scripts/rendu/modeles/squelette.py);aplats : chaque couleur du modèle de près, source>cible en sRVB, choisies par le directeur artistique (scripts/rendu/modeles/aplats.py);ce que fait chaque zone
+6e-baie-gardien-lion-de-pierre;0.12;0
+6e-ferme-gardien-taureau-de-terre;0.16;0
+6e-plaine-gardien-hanneton-de-bronze;0.12;0
+6e-carriere-gardien-dune-vivante;0.12;0
+6e-foret-gardien-grand-chene;0.12;0
+6e-fouille-gardien-amphore-peinte;0.07;0
+6e-hangar-gardien-automate-de-laiton;0.12;0
+6e-horloge-gardien-coucou-de-bronze;0.12;0
+6e-laboratoire-gardien-alambic-de-verre;0.12;0
+6e-mine-gardien-golem-de-roche;0.12;0
+6e-pointe-gardien-castor-de-glaise;0.12;0
+6e-riviere-gardien-brochet-d-argent;0.12;0
+6e-tour-gardien-chouette-de-verre;0.12;0
+6e-vallee-gardien-cerf-des-sous-bois;0.12;0
+6e-volcan-gardien-dragon-de-cendre;0.12;0
+6e-baie-creature-robin;-;0;0 queue=sol aire=oui bras=non;836041>b8743f d5c298>d8c49a 523925>7e5a3e b4a17e>ece4d4;Robin : le corps brun orangé, le ventre clair, la ceinture, la gorge orange du concept attend la géométrie.
+6e-carriere-creature-rouxel;-;0;1 bras=R leve=R teinte=L;d14a15>c8682e 331a0a>3e2a1e 785444>8a5a3c e6d9c3>e6d8c0;Rouxel : le pelage roux, le ventre clair, le tablier, les bottes et les gants restent sombres.
+6e-ferme-creature-bloquette;-;0;3 bras=R leve=R;dcd5c5>e2dccd 3a2d1f>3a3430 bab29d>e2dccd 725c42>9a6440;Bloquette : la laine blanche, le tablier, le museau et les pattes restent sombres.
+6e-foret-creature-mousso;-;0;1 cou=0.72 queue=non;4e6921>78a552 698315>78a552 4b400e>9a6a40 726c4b>b3ae9f;Mousso : la mousse en un vert, le tablier en cuir clair, le plastron de pierre.
+6e-fouille-creature-silex;-;0;3 bras=R leve=R;432f22>a07850 cdcac6>d6c8a4 6a543f>a07850 9b8f83>c8a878;Silex : le pelage, le tablier de lin, le museau.
+6e-hangar-creature-pince;-;0;1 aire=oui bras=R leve=R;643429>b85234 462923>8a4430 23120e>3a2420 656260>8a9098;Pince : la carapace rouge, le tablier, le fer, les pattes fines et les antennes restent sombres.
+6e-horloge-creature-tick;-;0;1 bras=non;372a1e>8a7458 b0a48f>e0d0b0 4a2a06>b06a38 604e3a>8a7458;Tick : le pelage, le museau clair, le gilet.
+6e-laboratoire-creature-bulle;-;0;1 jambes=non bras=non queue=non;1f464d>5f8db4 0d282d>5f8db4 3f747b>5f8db4 afb8b9>e6e2d6;Bulle : les trois bleus sont la même matière, le tablier.
+6e-mine-creature-tunel;-;0;0 bras=non;2e1b0e>a07050 8d897d>cdbf9e 47301f>a07050 615c53>8a9098;Tunel : le pelage brun clair, le gilet de lin, la pioche en fer.
+6e-plaine-creature-coco;-;0;3 aire=oui;470902>c04a3c 78553d>d2bc92 110402>2e2422 310802>c04a3c;Coco : la coccinelle rouge, la ceinture de lin et le bâton, les taches, la tête et les pattes restent sombres.
+6e-pointe-creature-boussole;-;0;1 bras=non;d0ccc8>e8e4da e2e3e2>e8e4da c29e81>e8b47c 654427>8a5a34;Boussole : les plumes blanches, le bec, la sacoche.
+6e-riviere-creature-nenu;-;0;3 aire=oui cou=0.7 bras=R leve=R;463112>cfb07c 043c08>78b060 2a7827>78b060 261003>a87a48;Nénu : la grenouille verte, la cire, la besace.
+6e-tour-creature-grimoire;-;0;0 cou=0.82 bras=non;262329>7a6e62 302a48>827ca8 adaa97>d8ccac 080912>8e6440;Grimoire : la carapace, la robe violette, les pages, le livre et le bord de la carapace.
+6e-vallee-creature-fougere;-;0;0 jambes=non bras=non queue=non;44371b>b06a3e 7f8971>8eac7a 5c674a>8eac7a bab19b>d8ccac;Fougère : le corps vert tendre, la ceinture, le ventre clair.
+6e-volcan-creature-lavi;-;0;0 queue=sol aire=oui bras=non;d26c28>e08a48 4a2c26>8a5636 e68137>e08a48 9c9e9e>a0a6ae;Lavi : la salamandre orange, le tablier, l'outil de fer.
+5e-bourg-gardien-griffon-d-email;0.12;0
+5e-carrefour-gardien-sphinx-des-routes;0.12;0
+5e-comptoir-gardien-reine-du-marche;0.12;0
+5e-delta-gardien-libellule-de-jade;0.12;0
+5e-glacier-gardien-mammouth-de-givre;0.12;0
+5e-manoir-gardien-spectre-du-manoir;0.12;0
+5e-marais-gardien-hydre-des-marais;0.12;0
+5e-marche-gardien-colporteur;0.12;0
+5e-menuiserie-gardien-cheval-a-bascule;0;0
+5e-prairie-gardien-tortue-d-ocre;0.12;0
+5e-relais-gardien-diligence-de-cuivre;0.12;0
+5e-saline-gardien-flamant-de-sel;0.12;0
+5e-bourg-creature-velin;-;0;;777573>b0aca6 c8bfb3>d8ccac e3e1e0>ece8de 763b28>b06a3e;Vélin : le pelage gris clair, la tunique de lin, la queue et les barbes de la plume blanches, le manche de la plume et le nez en bois.
+5e-carrefour-creature-sema;-;0;;bdc0be>d8ccac 58a87e>9ccbb0 8fb49e>9ccbb0 bf7e4c>c09060;Sema : le gilet de lin, la peau vert d'eau en un seul vert avec le tour des yeux, la pancarte et son manche en bois clair.
+5e-comptoir-creature-pudding;-;0;;e0cfa6>e6d8b8 816148>a8603c b3a483>e6d8b8 4a2d1b>a8603c;Pudding : le pelage beige en une seule zone, le cuir du tablier, des bretelles et du registre en une seule zone avec les oreilles.
+5e-delta-creature-sillon;-;0;;8a6f54>4e5258 f6f5f6>ece8de f4f4f4>ece8de eae8e7>ece8de;Sillon : les plumes blanches en une seule zone, la tête, le cou, le bec, les pattes, la faucille et le chapeau restent sombres.
+5e-glacier-creature-frimas;-;0;;191b1e>6e8098 afafaf>ece6d6 9a6133>c07a40 0a0c0e>6e8098;Frimas : le dos et la tête bleu ardoise clair, le ventre et l'écharpe crème, le bâton de mesure, le bec et les pattes en bois orangé.
+5e-manoir-creature-moustache;-;0;;9c9e9e>b4b6ba 7c7e7e>b4b6ba 605d58>7a8088 5d370f>a8603c;Moustache : le pelage gris clair en une seule zone, les clés de fer, le gilet de cuir.
+5e-marais-creature-kroa;-;0;;305b41>6fa888 947c4b>c8a868 c29658>b8783e b3b3ac>d8ccac;Kroa : la peau vert d'eau, la botte de roseaux, le panier d'osier, le gilet de lin.
+5e-marche-creature-bazar;-;0;;76705d>a8a49c 4f4839>a8a49c 1d1c1b>4a4644 b1ada1>d8ccac;Bazar : le pelage gris clair en une seule zone, le tablier de lin et la balance, le masque, les anneaux de la queue et les pattes restent sombres.
+5e-menuiserie-creature-rabot;-;0;;232e11>8cb85a 416025>8cb85a 808e4a>c0cc84 87301d>b85a3a;Rabot : les plumes vertes en un seul vert avec le bec et la queue, la poitrine et le rabot vert pâle, la huppe et le tablier en une seule zone rouille.
+5e-prairie-creature-humus;-;0;;53302b>c88c7c 724741>c88c7c 8e6a60>c88c7c b9a389>d8ccac;Humus : le corps rose brun en une seule zone avec le bâton, le bonnet de lin et le tube du pluviomètre.
+5e-relais-creature-lina;-;0;;f3f2f1>ece8de 312b29>4e5058 a42913>e0884c 8e7059>c8a050;Lina : les plumes blanches, le bout des ailes reste sombre, le bec et les pattes orange, le cor de laiton et sa sangle.
+5e-saline-creature-perle;-;0;;f4f1e4>f0ece0 d9d1bf>d8ccac c97c3a>d88a48 452e1f>a07850;Perle : les plumes blanches, le tablier de lin, le bec, les pattes et le manche du râteau orange, la tête du râteau en bois.

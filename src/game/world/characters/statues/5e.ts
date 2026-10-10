@@ -3,8 +3,73 @@
 // socles compris.
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../template';
-import { devant, fuseau, pave, type Anneau } from '../painted';
-import { orbites, plaque, tube, veineSur, type Statue } from '../sentinel';
+import { devant, fuseau, pave, pose, repere, type Anneau, type Trace, type V3 } from '../painted';
+import { dalle, orbites, plaque, tube, veine, veineSur, type Statue } from '../sentinel';
+
+/** L'Oie d'opale : le corps ovale, de la queue aux épaules ; la tête, petite, au bout du long cou (jusqu'à huit blocs). */
+const CORPS_DE_L_OIE: Anneau[] = [
+  [1, 0.6, 0.8],
+  [2.2, 0.95, 1.05],
+  [3.4, 0.85, 0.95],
+  [4.2, 0.4, 0.45],
+];
+const Z_DE_LA_TETE_DE_L_OIE = -0.55;
+const TETE_DE_L_OIE: Anneau[] = [
+  [6.3, 0.25, 0.25],
+  [6.8, 0.4, 0.45],
+  [7.6, 0.38, 0.42],
+  [8, 0.2, 0.2],
+];
+/** L'aile droite de l'Oie, repliée sur le flanc (x, y) ; la gauche en miroir. */
+const AILE_DE_L_OIE: [number, number][] = [
+  [0.85, 3.7],
+  [1.05, 3.4],
+  [1.0, 1.9],
+  [0.8, 2.2],
+];
+
+/**
+ * Le fil de lueur d'une aile repliée de l'Oie, sur son flanc (z, y) : de l'épaule, devant et en haut, à la pointe,
+ * derrière et en bas. Il suit le flanc extérieur de l'aile (`AILE_DE_L_OIE`, de x = 1,05 en y = 3,4 à x = 1,0 en y = 1,9).
+ */
+const FIL_DE_L_AILE_DE_L_OIE: [number, number][] = [
+  [-0.45, 3.25],
+  [0.45, 2.05],
+];
+
+/** Le Phénix d'argile : le corps, de la queue aux épaules ; la tête au bout du cou court (jusqu'à huit blocs). */
+const CORPS_DU_PHENIX: Anneau[] = [
+  [1, 0.55, 0.75],
+  [2.4, 0.85, 1.0],
+  [3.8, 0.75, 0.85],
+  [4.8, 0.4, 0.45],
+];
+const Z_DE_LA_TETE_DU_PHENIX = -0.35;
+const TETE_DU_PHENIX: Anneau[] = [
+  [6.0, 0.3, 0.3],
+  [6.6, 0.48, 0.52],
+  [7.5, 0.45, 0.48],
+  [8, 0.22, 0.22],
+];
+/** L'aile droite du Phénix, repliée sur le flanc (x, y) ; la gauche en miroir. */
+const AILE_DU_PHENIX: [number, number][] = [
+  [0.8, 4.4],
+  [1.0, 4.0],
+  [0.95, 2.1],
+  [0.75, 2.4],
+];
+
+/** Le fil de lueur d'une aile du Phénix, sur son flanc (z, y), le long de `AILE_DU_PHENIX` (x = 1,0 en y = 4 à 0,95 en y = 2,1). */
+const FIL_DE_L_AILE_DU_PHENIX: [number, number][] = [
+  [-0.4, 3.85],
+  [0.4, 2.3],
+];
+
+/**
+ * Le flanc extérieur d'une aile repliée, posée en dalle le long de Z (`s` : −1 à gauche, 1 à droite ; `x`, son écart au
+ * pied du flanc) : le −Z d'une veine y regarde vers l'extérieur, et son x court le long de Z (vers l'arrière à droite).
+ */
+const surLeFlanc = (T: Trace, s: -1 | 1, x: number) => pose(T, repere([s * x, 0, 0], 0, -s * (Math.PI / 2), 0));
 
 const TETE_DU_MAMMOUTH: Anneau[] = [
   [5.0, 0.8, 0.75, -1.2],
@@ -119,6 +184,172 @@ const VOILE: Anneau[] = [
   [7.6, 0.45, 0.42],
   [8, 0],
 ];
+
+/** Le Griffon d'émail, assis : le corps de lion, puis la tête d'aigle au bec avancé. */
+const CORPS_DU_GRIFFON: Anneau[] = [
+  [1, 1.0, 0.9],
+  [3.0, 1.15, 1.0],
+  [5.0, 0.8, 0.7],
+  [5.6, 0.5, 0.45],
+];
+const TETE_DU_GRIFFON: Anneau[] = [
+  [5.4, 0.55, 0.5, -0.2],
+  [7.2, 0.5, 0.45, -0.3],
+  [8, 0.3, 0.28, -0.3],
+];
+
+/** La Libellule de jade, debout sur sa queue : la queue fine, le thorax ; puis la tête aux gros yeux. */
+const CORPS_DE_LA_LIBELLULE: Anneau[] = [
+  [1, 0.18],
+  [3.5, 0.22],
+  [5.2, 0.35],
+  [6.2, 0.4],
+  [6.4, 0.3],
+];
+const TETE_DE_LA_LIBELLULE: Anneau[] = [
+  [6.3, 0.45, 0.4],
+  [7.3, 0.5, 0.45],
+  [8, 0.25, 0.25],
+];
+/**
+ * Ses deux paires d'ailes, de chaque côté, presque à plat (consultant Archipéo et DA, HG-3 : dressées, elles se
+ * lisaient comme les bras d'un poteau indicateur) : la hauteur de l'attache et le sens de la flèche (−1 : la paire du
+ * haut, tirée vers l'avant, côté visage ; 1 : celle du bas, tirée vers l'arrière). Vues d'en haut, les quatre ailes
+ * font un X. Larges d'une case à l'attache, la pointe émoussée, sans un triangle de plus : la marge des Gardiens du 5e
+ * est de quelques triangles.
+ */
+const AILES_DE_LA_LIBELLULE: [hauteur: number, fleche: -1 | 1][] = [
+  [5.3, 1],
+  [6.0, -1],
+];
+/** Le léger dièdre des ailes de la Libellule (radians) : la pointe relevée. */
+const DIEDRE_DE_LA_LIBELLULE = 0.16;
+/** Le contour d'une aile de la Libellule, à plat : (écart au corps, profondeur), la paire du haut (flèche −1). */
+const AILE_DE_LA_LIBELLULE: [number, number][] = [
+  [0, -0.35],
+  [1.95, -0.95],
+  [2.1, -0.4],
+  [0, 0.25],
+];
+/**
+ * Le repère d'une aile à plat de la Libellule (`s` : −1 à gauche, 1 à droite) : le contour (x, y) de la dalle devient
+ * l'écart et la profondeur, son épaisseur la hauteur, retournée (la face −Z de la dalle regarde le ciel : la nervure s'y
+ * pose) ; puis le dièdre relève la pointe.
+ */
+const repereDAileAPlat = (s: -1 | 1, hauteur: number) => {
+  const [c, n] = [Math.cos(s * DIEDRE_DE_LA_LIBELLULE), Math.sin(s * DIEDRE_DE_LA_LIBELLULE)];
+  return ([x, y, z]: [number, number, number]): [number, number, number] => [s * 0.3 + x * c + z * n, hauteur + x * n - z * c, y];
+};
+
+/**
+ * Les ailes du Griffon s'ouvrent en V, chacune reculée de cet angle depuis sa racine (radians) : vues par la tranche, de
+ * profil, elles se lisaient comme un obélisque (DA, relecture des planches, HG-3) ; ouvertes, elles ont de l'aire de
+ * face comme de profil, dans les cinq cases.
+ */
+const OUVERTURE_DES_AILES = 0.55;
+/** Le repère d'une aile (`s` : −1 à gauche, 1 à droite) : sa racine en `racine`, reculée de `OUVERTURE_DES_AILES`. */
+const repereDAile = (s: number, racine: [number, number]) => repere([s * racine[0], 0, racine[1]], 0, -s * OUVERTURE_DES_AILES, 0);
+const RACINE_DES_AILES_DU_GRIFFON: [number, number] = [0.7, 0.4];
+
+// Les Gardiens de sciences (SC-3) : Archipéo est en pause (2 octobre 2026), ces sentinelles n'ont que le strict
+// nécessaire (budget de l'archipel).
+
+/**
+ * La Tortue d'ocre, en tortue de mer couchée à plat sur son rocher (DA, relecture des captures : grimpée, elle se lisait
+ * debout ; puis, rocher et carapace de la même pierre, elle se lisait comme un tas) : le rocher bas dessous, d'une pierre
+ * grise qui ne se rallume pas (`SENTINELLE.roche`) ; la carapace en dôme bas, bien plus large que haute, à peine penchée
+ * vers l'élève (moins de 20°), ses écailles sur le plat du dôme ; les quatre nageoires longues, qui dépassent nettement
+ * de la carapace de part et d'autre ; la tête qui sort à l'avant. Une sentinelle basse, plus basse que les autres
+ * (`BASSES` des tests).
+ */
+const ROCHER_DE_LA_TORTUE: Anneau[] = [
+  [1, 1.8, 1.5, 0.45],
+  [1.7, 1.6, 1.35, 0.5],
+  [2.15, 1.1, 0.95, 0.55],
+];
+/** La carapace, dans son repère : de son ventre (y = 0) au plat du dôme, le long de son dos (Y local). */
+const CARAPACE_DE_LA_TORTUE: Anneau[] = [
+  [0, 1.6, 1.85],
+  [0.3, 1.7, 1.95],
+  [0.85, 1.3, 1.5],
+  [1.25, 0.7, 0.8],
+];
+/** Le milieu du ventre de la carapace, posé sur le rocher, et son penché vers l'élève : 9°. */
+const MILIEU_DE_LA_CARAPACE: V3 = [0, 2.0, 0.3];
+const PENCHE_DE_LA_CARAPACE = 0.15;
+const repereDeLaCarapace = () => repere(MILIEU_DE_LA_CARAPACE, -PENCHE_DE_LA_CARAPACE, 0, 0);
+/** Le plat du dôme, où sont les écailles : un repère dont −Z sort du dos, vers le ciel et un peu vers l'élève. */
+const repereDesEcailles = () => {
+  const h = CARAPACE_DE_LA_TORTUE[CARAPACE_DE_LA_TORTUE.length - 1][0];
+  const [s, c] = [Math.sin(PENCHE_DE_LA_CARAPACE), Math.cos(PENCHE_DE_LA_CARAPACE)];
+  return repere([MILIEU_DE_LA_CARAPACE[0], MILIEU_DE_LA_CARAPACE[1] + h * c, MILIEU_DE_LA_CARAPACE[2] - h * s], Math.PI / 2 - PENCHE_DE_LA_CARAPACE, 0, 0);
+};
+/**
+ * La tête, couchée vers l'avant (−Z) : de sa base, dans la carapace, à son museau ; le rayon vertical en second. Elle
+ * sort de 0,75 devant la carapace (0,45 avant la relecture de SC-3).
+ */
+const TETE_DE_LA_TORTUE: Anneau[] = [
+  [0, 0.38, 0.32],
+  [0.4, 0.4, 0.34],
+  [0.8, 0.28, 0.24],
+];
+const BASE_DE_LA_TETE: V3 = [0, 2.45, -1.6];
+const MUSEAU_DE_LA_TORTUE = BASE_DE_LA_TETE[2] - TETE_DE_LA_TORTUE[TETE_DE_LA_TORTUE.length - 1][0];
+/**
+ * Les nageoires, plates, de leur attache sous le bord de la carapace à leur pointe, posée sur le rocher (x à droite) :
+ * celles de devant dépassent de 0,7 la carapace, celles de derrière de 0,4.
+ */
+const NAGEOIRES_DE_LA_TORTUE: { points: V3[]; rayons: [number, number] }[] = [
+  {
+    points: [
+      [1.35, 2.15, -0.85],
+      [2.4, 1.75, -1.5],
+    ],
+    rayons: [0.2, 0.05],
+  },
+  {
+    points: [
+      [1.25, 2.1, 1.25],
+      [2.1, 1.75, 2.0],
+    ],
+    rayons: [0.14, 0.05],
+  },
+];
+
+/** Le Flamant de sel, sur une patte : le corps en œuf, le cou en S, la tête et le bec courbé vers le bas. */
+const CORPS_DU_FLAMANT: Anneau[] = [
+  [3.5, 0.3, 0.4, 0.2],
+  [3.9, 0.75, 1.1, 0.25],
+  [4.6, 0.8, 1.2, 0.3],
+  [5.1, 0.4, 0.7, 0.5],
+];
+const TETE_DU_FLAMANT: Anneau[] = [
+  [7.1, 0.3, 0.32],
+  [7.7, 0.32, 0.36],
+  [8, 0.15, 0.18],
+];
+const Z_DE_LA_TETE_DU_FLAMANT = -0.85;
+/** Les grains de sel de ses ailes : un petit cube de chaque côté du corps (x, y, z de son centre, à droite). */
+const GRAINS_DE_SEL: [number, number, number][] = [[0.8, 4.45, 0.35]];
+const DEMI_GRAIN = 0.12;
+
+/**
+ * Le Cheval à bascule, de face (sa tête vers l'élève) : deux patins courbes le long de Z, quatre jambes écartées, le
+ * corps couché le long de Z, le cou et la tête, deux oreilles.
+ */
+const CORPS_DU_CHEVAL: Anneau[] = [
+  [-1.5, 0.45],
+  [-1.1, 0.7],
+  [1.0, 0.7],
+  [1.5, 0.4],
+];
+const TETE_DU_CHEVAL: Anneau[] = [
+  [5.8, 0.36, 0.55, -0.25],
+  [6.8, 0.38, 0.5, -0.1],
+  [7.4, 0.3, 0.4, 0],
+];
+const Z_DE_LA_TETE_DU_CHEVAL = -1.55;
+const HAUT_DU_CORPS_DU_CHEVAL = 3.6;
 
 export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
   'maths-5e-signed-numbers': {
@@ -530,6 +761,291 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       // Le cadran de la boussole et son aiguille.
       plaque(T, BOUSSOLE.x, BOUSSOLE.y, 0.28, 0.28, 8, a.lueur, () => -0.18);
       plaque(T, BOUSSOLE.x, BOUSSOLE.y, 0.05, 0.26, 4, a.lueur, () => -0.2);
+    },
+  },
+  // Les Gardiens d'histoire-géographie (HG-3) : Archipéo est en pause (2 octobre 2026), ces sentinelles n'ont que le
+  // strict nécessaire (budget de l'archipel).
+  'history-5e-middle-ages': {
+    nom: 'le Griffon d’émail',
+    allume: 'ses émaux',
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DU_GRIFFON, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      fuseau(T, TETE_DU_GRIFFON, 5, a.pierre, { bas: false });
+      // Le bec d'aigle, vers l'élève ; les deux ailes levées de part et d'autre du dos.
+      pointe(T, [0, 6.5, devant(TETE_DU_GRIFFON, 5, 6.5).z + 0.1], 0.2, 0.5, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      for (const s of [-1, 1])
+        dalle(
+          pose(T, repereDAile(s, RACINE_DES_AILES_DU_GRIFFON)),
+          [
+            [0, 2.6],
+            [s * 1.4, 3.4],
+            [s * 1.7, 6.3],
+            [s * 0.2, 5.2],
+          ],
+          -0.075,
+          0.075,
+          a.pierre,
+        );
+      orbites(T, a, 0, 6.8, devant(TETE_DU_GRIFFON, 5, 6.8).z, 0.22, 0.12);
+    },
+    veines: (T, a) => plaque(T, 0, 3.6, 0.45, 0.6, 6, a.lueur, (y) => devant(CORPS_DU_GRIFFON, 6, y).z),
+  },
+  'geography-5e-resources': {
+    nom: 'la Libellule de jade',
+    allume: 'les nervures de ses ailes',
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DE_LA_LIBELLULE, 5, a.pierre, { bas: false });
+      fuseau(T, TETE_DE_LA_LIBELLULE, 5, a.moussue((k, j) => k === 1 && j % 2 === 0), { bas: false });
+      for (const s of [-1, 1] as const)
+        for (const [hauteur, fleche] of AILES_DE_LA_LIBELLULE)
+          dalle(
+            pose(T, repereDAileAPlat(s, hauteur)),
+            AILE_DE_LA_LIBELLULE.map(([x, y]): [number, number] => [s * x, -fleche * y]),
+            -0.05,
+            0.05,
+            a.pierre,
+          );
+      orbites(T, a, 0, 7.3, devant(TETE_DE_LA_LIBELLULE, 5, 7.3).z, 0.26, 0.14);
+    },
+    veines: (T, a) => {
+      // Une nervure sur chaque aile du haut, sur sa face tournée vers le ciel.
+      for (const s of [-1, 1] as const)
+        for (const [hauteur, fleche] of AILES_DE_LA_LIBELLULE.slice(1)) plaque(pose(T, repereDAileAPlat(s, hauteur)), s * 1.0, fleche * 0.3, 0.65, 0.07 * a.veines, 4, a.lueur, () => -0.05);
+    },
+  },
+  // Les Gardiens de sciences (SC-3), au strict nécessaire comme ceux d'histoire-géographie.
+  'life-earth-sciences-5e-active-planet': {
+    nom: 'la Tortue d’ocre',
+    allume: 'les écailles de sa carapace',
+    sculpture: (T, a) => {
+      fuseau(T, ROCHER_DE_LA_TORTUE, 4, a.roche, { bas: false });
+      fuseau(pose(T, repereDeLaCarapace()), CARAPACE_DE_LA_TORTUE, 5, a.moussue((k, j) => k === 0 && j % 3 === 0));
+      // La tête, couchée vers l'avant : son profil le long de −Z, sa base dans la carapace.
+      fuseau(pose(T, repere(BASE_DE_LA_TETE, -Math.PI / 2, 0, 0)), TETE_DE_LA_TORTUE, 4, a.pierre, { bas: false });
+      // Les nageoires, plates, posées sur le rocher de part et d'autre : les deux grandes devant, les deux petites derrière.
+      for (const s of [-1, 1])
+        for (const { points, rayons } of NAGEOIRES_DE_LA_TORTUE)
+          tube(
+            T,
+            points.map(([x, y, z]) => [s * x, y, z]),
+            rayons,
+            3,
+            a.pierre,
+            3,
+          );
+      orbites(T, a, 0, BASE_DE_LA_TETE[1] + 0.06, MUSEAU_DE_LA_TORTUE, 0.12, 0.1);
+    },
+    // Trois écailles sur le plat du dôme, serrées : une seule lueur.
+    veines: (T, a) => {
+      for (const [x, y] of [
+        [-0.22, -0.12],
+        [0.22, -0.12],
+        [0, 0.24],
+      ])
+        plaque(pose(T, repereDesEcailles()), x, y, 0.17 * a.veines, 0.17, 6, a.lueur, () => 0);
+    },
+  },
+  'physics-chemistry-5e-matter-universe': {
+    nom: 'le Flamant de sel',
+    allume: 'les grains de sel de ses ailes',
+    sculpture: (T, a) => {
+      // La patte dressée ; l'autre, repliée sous le ventre.
+      tube(
+        T,
+        [
+          [0, 1.1, 0],
+          [0, 2.4, 0.08],
+          [0, 3.7, 0.2],
+        ],
+        0.19,
+        3,
+        a.pierre,
+      );
+      tube(
+        T,
+        [
+          [0.2, 3.75, 0.35],
+          [0.3, 3.05, 0.75],
+        ],
+        0.12,
+        3,
+        a.pierre,
+      );
+      fuseau(T, CORPS_DU_FLAMANT, 5, a.moussue((k, j) => k === 1 && j % 2 === 0), { bas: false });
+      tube(
+        T,
+        [
+          [0, 4.9, -0.55],
+          [0, 5.8, -0.95],
+          [0, 6.5, -0.5],
+          [0, 7.2, Z_DE_LA_TETE_DU_FLAMANT],
+        ],
+        [0.24, 0.2, 0.2, 0.2],
+        4,
+        a.pierre,
+      );
+      fuseau(T, TETE_DU_FLAMANT, 4, a.pierre, { z: Z_DE_LA_TETE_DU_FLAMANT, bas: false });
+      // Le bec courbé vers le bas, vers l'élève.
+      pointe(T, [0, 7.5, devant(TETE_DU_FLAMANT, 4, 7.5, Z_DE_LA_TETE_DU_FLAMANT).z + 0.08], 0.13, 0.55, a.pierre, [-Math.PI / 2 - 0.6, 0, 0], 3);
+      orbites(T, a, 0, 7.72, devant(TETE_DU_FLAMANT, 4, 7.72, Z_DE_LA_TETE_DU_FLAMANT).z, 0.14, 0.1);
+    },
+    // Un grain de sel sur chaque aile : deux lueurs.
+    veines: (T, a) => {
+      for (const s of [-1, 1])
+        for (const [x, y, z] of GRAINS_DE_SEL) {
+          const d = DEMI_GRAIN * a.veines;
+          pave(T, s * x - d, y - d, z - d, s * x + d, y + d, z + d, a.lueur);
+        }
+    },
+  },
+  'technology-5e-design': {
+    nom: 'le Cheval à bascule',
+    allume: 'les taches de sa robe',
+    sculpture: (T, a) => {
+      for (const s of [-1, 1]) {
+        // Le patin courbe, le long de Z.
+        tube(
+          T,
+          [
+            [s * 0.75, 1.62, -2.0],
+            [s * 0.75, 1.13, 0],
+            [s * 0.75, 1.62, 2.0],
+          ],
+          0.12,
+          3,
+          a.pierre,
+        );
+        // Les jambes, de devant et de derrière, écartées vers les bouts du patin.
+        for (const [z0, z1] of [
+          [-1.35, -0.85],
+          [1.35, 0.95],
+        ])
+          tube(
+            T,
+            [
+              [s * 0.72, 1.3, z0],
+              [s * 0.42, HAUT_DU_CORPS_DU_CHEVAL - 0.2, z1],
+            ],
+            0.13,
+            3,
+            a.pierre,
+          );
+      }
+      fuseau(pose(T, repere([0, HAUT_DU_CORPS_DU_CHEVAL, 0.15], Math.PI / 2, 0, 0)), CORPS_DU_CHEVAL, 6, a.moussue((k, j) => k === 1 && j === 3), { rot: Math.PI / 6 });
+      tube(
+        T,
+        [
+          [0, 3.9, -1.05],
+          [0, 5.0, -1.4],
+          [0, 6.0, Z_DE_LA_TETE_DU_CHEVAL],
+        ],
+        [0.45, 0.38, 0.35],
+        4,
+        a.pierre,
+      );
+      fuseau(T, TETE_DU_CHEVAL, 4, a.pierre, { z: Z_DE_LA_TETE_DU_CHEVAL, bas: false });
+      // Deux oreilles, leur pointe exactement en haut ; la queue, tombante, derrière.
+      for (const s of [-1, 1]) pointe(T, [s * 0.17, 7.35, Z_DE_LA_TETE_DU_CHEVAL + 0.05], 0.1, 0.65, a.pierre, [0, 0, 0], 3);
+      pointe(T, [0, 3.8, 1.6], 0.16, 0.9, a.pierre, [Math.PI / 2 + 0.7, 0, 0], 3);
+      orbites(T, a, 0, 6.95, devant(TETE_DU_CHEVAL, 4, 6.95, Z_DE_LA_TETE_DU_CHEVAL).z, 0.2, 0.12);
+    },
+    // Une tache sur chaque flanc, tournée vers son côté.
+    veines: (T, a) => {
+      for (const s of [-1, 1]) plaque(pose(T, repere([s * 0.61, HAUT_DU_CORPS_DU_CHEVAL + 0.05, 0.35], 0, -s * (Math.PI / 2), 0)), 0, 0, 0.34, 0.24 * a.veines, 6, a.lueur, () => 0);
+    },
+  },
+  // EMC 5e (EMC-2) : le strict nécessaire, Archipéo étant en pause. L'Oie d'opale, sans flamme ni symbole : debout, le
+  // corps ovale, la queue relevée derrière, le long cou dressé, la tête petite et son bec court ; les ailes repliées sur
+  // les flancs, dont les plumes s'allument.
+  'civics-5e-equality-solidarity': {
+    nom: 'l’Oie d’opale',
+    allume: 'les plumes de ses ailes',
+    sansFlamme: true,
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DE_L_OIE, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      // La queue, relevée vers l'arrière.
+      pointe(T, [0, 2.8, 0.8], 0.25, 0.6, a.pierre, [Math.PI / 2 - 0.6, 0, 0], 3);
+      // Le long cou, des épaules à la tête.
+      tube(
+        T,
+        [
+          [0, 4.0, -0.25],
+          [0, 5.2, -0.45],
+          [0, 6.4, Z_DE_LA_TETE_DE_L_OIE],
+        ],
+        [0.3, 0.24, 0.24],
+        4,
+        a.pierre,
+      );
+      fuseau(T, TETE_DE_L_OIE, 5, a.pierre, { z: Z_DE_LA_TETE_DE_L_OIE, bas: false });
+      // Le bec, court, vers l'avant.
+      pointe(T, [0, 7.1, devant(TETE_DE_L_OIE, 5, 7.1, Z_DE_LA_TETE_DE_L_OIE).z + 0.05], 0.12, 0.35, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      for (const c of [-1, 1]) dalle(T, AILE_DE_L_OIE.map(([x, y]): [number, number] => [c * x, y]), -0.6, 0.6, a.pierre);
+      orbites(T, a, 0, 7.45, devant(TETE_DE_L_OIE, 5, 7.45, Z_DE_LA_TETE_DE_L_OIE).z, 0.2, 0.11);
+    },
+    // Un fil de lueur sur le flanc de chaque aile repliée, de l'épaule (devant, en haut) à la pointe (derrière, en bas).
+    // Posé sur la tranche de l'aile, de face, il se lisait comme une flamme dorée de part et d'autre de l'oiseau (DA,
+    // relecture des captures emc-5e-3) : sur le flanc, il ne se dresse plus.
+    veines: (T, a) => {
+      for (const s of [-1, 1] as const)
+        veine(
+          surLeFlanc(T, s, 1.0),
+          FIL_DE_L_AILE_DE_L_OIE.map(([z, y]): [number, number] => [s * z, y]),
+          0.09 * a.veines,
+          a.lueur,
+          (y) => -0.05 * ((y - 1.9) / 1.5),
+        );
+    },
+  },
+  // Latin-grec 5e (LCA-2) : le strict nécessaire, Archipéo étant en pause. Le Phénix d'argile, sans flamme : il renaît
+  // en se rallumant, sans feu ; un oiseau de terre cuite, les ailes repliées, la longue queue qui retombe derrière
+  // jusqu'au socle, une petite huppe couchée vers l'arrière, rien de dressé.
+  'lca-5e-legends': {
+    nom: 'le Phénix d’argile',
+    allume: 'les plumes de ses ailes',
+    sansFlamme: true,
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DU_PHENIX, 6, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
+      // La longue queue, qui retombe derrière jusqu'au socle.
+      tube(
+        T,
+        [
+          [0, 2.4, 0.8],
+          [0, 1.8, 1.5],
+          [0, 1.05, 2.0],
+        ],
+        [0.35, 0.28, 0.18],
+        4,
+        a.pierre,
+      );
+      // Le cou court, des épaules à la tête.
+      tube(
+        T,
+        [
+          [0, 4.6, -0.2],
+          [0, 6.1, Z_DE_LA_TETE_DU_PHENIX],
+        ],
+        [0.32, 0.28],
+        4,
+        a.pierre,
+      );
+      fuseau(T, TETE_DU_PHENIX, 5, a.pierre, { z: Z_DE_LA_TETE_DU_PHENIX, bas: false });
+      pointe(T, [0, 6.9, devant(TETE_DU_PHENIX, 5, 6.9, Z_DE_LA_TETE_DU_PHENIX).z + 0.05], 0.12, 0.35, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      // La huppe, couchée vers l'arrière de la tête.
+      pointe(T, [0, 7.6, Z_DE_LA_TETE_DU_PHENIX + 0.3], 0.1, 0.5, a.pierre, [Math.PI / 2 + 0.9, 0, 0], 3);
+      for (const c of [-1, 1]) dalle(T, AILE_DU_PHENIX.map(([x, y]): [number, number] => [c * x, y]), -0.55, 0.55, a.pierre);
+      orbites(T, a, 0, 7.25, devant(TETE_DU_PHENIX, 5, 7.25, Z_DE_LA_TETE_DU_PHENIX).z, 0.22, 0.12);
+    },
+    // Le même fil que l'Oie, sur le flanc de chaque aile (pas sur sa tranche, où il se lisait comme une flamme).
+    veines: (T, a) => {
+      for (const s of [-1, 1] as const)
+        veine(
+          surLeFlanc(T, s, 0.95),
+          FIL_DE_L_AILE_DU_PHENIX.map(([z, y]): [number, number] => [s * z, y]),
+          0.09 * a.veines,
+          a.lueur,
+          (y) => -0.05 * ((y - 2.1) / 1.9),
+        );
     },
   },
 };

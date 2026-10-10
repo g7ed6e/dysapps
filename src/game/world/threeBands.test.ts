@@ -36,11 +36,8 @@ it('devant : les bornes seules, au pas de 4, centrées sur la visée ; au milieu
   expect(PLACES_DES_BORNES_DES_ECOLES).toEqual([0, 4, 8, 12, 16]);
   for (const id of ECOLES) {
     const bornes = questStations(id);
-    expect(bornes.map((b) => [b.x, b.y]), id).toEqual([
-      [4, 1],
-      [8, 1],
-      [12, 1],
-    ]);
+    // Trois missions aux places du milieu ; quatre penchent d'une place à gauche ; cinq les prennent toutes (GD-14).
+    expect(bornes.map((b) => [b.x, b.y]), id).toEqual(placesDesBornes(bornes.length)?.map((x) => [x, 1]));
     // L'école quitte le devant : sa porte en (14, 2), une case libre entre elle et le bord droit du cœur (x = 17).
     const def = islandDef(id);
     const porte = (lieu: 'school' | 'assembly') => {
@@ -96,6 +93,22 @@ const premiereRangee = (id: (typeof ECOLES)[number]) =>
   Math.min(...plansFor(id).flatMap((p) => planCells(p).map((c) => c.y + decalageDesPlans(p).y)));
 
 /**
+ * Les cubes des lieux du village d'une île-école, la salle des trophées à sa plus grande, tout construit : calculés une
+ * fois par île et par lieu où l'on assemble (les îles agrandies par GD-11 ont plus de cubes à tirer).
+ */
+const lieuxCaches = new Map<string, ReturnType<typeof cubesDeLIle>>();
+function lieuxDe(id: (typeof ECOLES)[number], atelier: 'fabrique' | 'halle'): ReturnType<typeof cubesDeLIle> {
+  const cle = `${id} ${atelier}`;
+  let lieux = lieuxCaches.get(cle);
+  if (!lieux) {
+    const tout = toutConstruit();
+    lieux = cubesDeLIle(id, tout.progress, tout.world, false, SALLE_PLEINE, new Set(), false, atelier).filter((c) => c.place);
+    lieuxCaches.set(cle, lieux);
+  }
+  return lieux;
+}
+
+/**
  * Les points d'une case de la première rangée où se pose un plan cachés par un lieu, vus de la caméra de l'île : la case
  * porte comme une borne (deux cubes sur le sol, `cacheUneBorne`), ses points pris aux mêmes places, sans marge. Par lieu
  * et par colonne de la zone (« lieu@x » : nombre de points cachés, sur 45).
@@ -105,9 +118,7 @@ function pointsCaches(
   atelier: 'fabrique' | 'halle',
   sauf: (c: { place?: string; z: number; texture?: string }) => boolean = () => false,
 ): Record<string, number> {
-  // La salle des trophées à sa plus grande, tout construit.
-  const tout = toutConstruit();
-  const lieux = cubesDeLIle(id, tout.progress, tout.world, false, SALLE_PLEINE, new Set(), false, atelier).filter((c) => c.place && !sauf(c));
+  const lieux = lieuxDe(id, atelier).filter((c) => !sauf(c));
   expect(lieux.length).toBeGreaterThan(0);
   const vers = versLaCamera(id);
   const zone = zoneDesPlans(id);

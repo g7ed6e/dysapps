@@ -16,8 +16,9 @@ import { rgb } from '../decor/brush';
 import { LUEUR } from './colors';
 export { allumageDuGardien } from './glow';
 import { lueursDeNuit, type FacettesDePersonnage, type V3 } from './painted';
-import { couleursAllumees, ECHELLE_DANS_LE_MONDE } from './sentinel';
+import { couleursAllumees, ECHELLE_DANS_LE_MONDE, lueurDuTriangle } from './sentinel';
 import { sentinelleDuMonde } from './paintedSentinels';
+import type { Niveau } from './imported/models';
 
 /** Ce qu'une fusion lit d'un personnage placé sur la grille (une créature, un Gardien). */
 export interface PersonnagePlace {
@@ -50,11 +51,20 @@ export interface Fusion {
   plages: Plage[];
 }
 
-/** Les créatures d'un archipel : un os pour chacune (son corps), un pour son bras et son outil. */
+/**
+ * Les créatures d'un archipel : un os pour chacune (son corps), un pour son bras et son outil ; et, après ceux de toutes
+ * les créatures, les os d'une créature importée qui a un squelette (de près : hanches, dos, tête, jambes, queue), portés
+ * par son corps.
+ */
 export interface FusionDesCreatures extends Fusion {
-  /** Pour chaque sommet, son os dans `squelette`. */
+  /** Pour chaque sommet, son os dans `squelette` (le plus lourd, quand il en a plusieurs). */
   os: Uint16Array;
   squelette: Os[];
+  /**
+   * Quand une créature a un squelette : quatre os (dans `squelette`) et quatre poids par sommet, pour toute la fusion
+   * (un sommet des autres créatures suit son seul os, au poids 1). Absent sinon : chaque sommet suit `os`.
+   */
+  poids?: { joints: Uint16Array; weights: Float32Array };
   /** La boîte de chaque créature (le toucher), dans la scène : [x0, y0, z0, x1, y1, z1]. */
   boites: { id: BiomeId; boite: [number, number, number, number, number, number] }[];
   /**
@@ -68,6 +78,8 @@ export interface FusionDesCreatures extends Fusion {
 export interface FusionDesGardiens extends Fusion {
   /** Pour chaque sommet, 1 s'il est d'une pièce qui s'allume (flamme, veines), sinon 0. */
   lueur: Float32Array;
+  /** Le modèle de chaque Gardien, dans l'ordre des plages (de près ou de loin : `couleursDesGardiens` le repeint). */
+  modeles: FacettesDePersonnage[];
 }
 
 /** Le bonhomme : un os par pièce (tête, corps, bras, jambes), dans son repère (les pieds en 0). */
@@ -117,15 +129,50 @@ const ajoute = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 /** Les pièces d'une créature portées par son bras : le bras et son outil (le reste suit le corps). */
 const PIECES_DU_BRAS: ReadonlySet<string> = new Set(['bras', 'outil']);
 
-/** Les créatures placées, en un maillage : l'os `2i` porte le corps de la i-ième, l'os `2i + 1` son bras et son outil. */
-export function fusionDesCreatures(places: PersonnagePlace[]): FusionDesCreatures {
-  const modeles = places.map((p) => creaturePeinte(p.id));
+/**
+ * Le niveau d'un personnage dans le monde : de près sur l'île regardée (`pres`, `ileRegardee`), de loin ailleurs. Seul un modèle
+ * importé a deux niveaux (./imported/models.ts) ; un modèle dessiné en code est le même aux deux.
+ */
+const niveauDans = (id: BiomeId, pres: BiomeId | null): Niveau => (id === pres ? 'pres' : 'loin');
+
+/** Au-delà, en cases, le point regardé est en pleine mer : l'île de près ne change pas. */
+const PORTEE_DU_REGARD = 24;
+/** De combien de cases une autre île doit être plus près du point regardé pour prendre la place (pas de va-et-vient). */
+const ECART_POUR_CHANGER = 3;
+
+/**
+ * L'île dont les personnages sont de près : celle dont un personnage est le plus près du point que la caméra regarde
+ * (`x`, `z`, dans la scène), même si le bonhomme est ailleurs (mainteneur, 9 octobre 2026 : le glissé vers l'île
+ * voisine montre ses modèles riches). `actuelle` la garde tant qu'aucune autre n'est nettement plus près, ou que le
+ * regard est en pleine mer. Une seule île à la fois : le budget compte le pire cas d'une île de près.
+ */
+export function ileRegardee(places: PersonnagePlace[], x: number, z: number, actuelle: BiomeId | null): BiomeId | null {
+  let [meilleure, dMin, dActuelle] = [actuelle, Infinity, Infinity];
+  for (const p of places) {
+    const [px, , pz] = pointDePose(p);
+    const d = Math.hypot(px - x, pz - z);
+    if (d < dMin) [meilleure, dMin] = [p.id, d];
+    if (p.id === actuelle) dActuelle = Math.min(dActuelle, d);
+  }
+  if (dMin > PORTEE_DU_REGARD) return actuelle;
+  return dMin < dActuelle - ECART_POUR_CHANGER ? meilleure : actuelle;
+}
+
+/**
+ * Les créatures placées, en un maillage : l'os `2i` porte le corps de la i-ième, l'os `2i + 1` son bras et son outil.
+ * `pres` : l'île regardée, dont la créature est de près.
+ */
+export function fusionDesCreatures(places: PersonnagePlace[], pres: BiomeId | null = null): FusionDesCreatures {
+  const modeles = places.map((p) => creaturePeinte(p.id, niveauDans(p.id, pres)));
   const total = modeles.reduce((n, f) => n + f.pieces.length, 0);
   const base = vide(total);
   const os = new Uint16Array(total * 3);
   const squelette: Os[] = [];
   const boites: FusionDesCreatures['boites'] = [];
   const lueur = new Float32Array(total * 12);
+  const avecOs = modeles.some((f) => f.skin);
+  const joints = new Uint16Array(avecOs ? total * 12 : 0);
+  const weights = new Float32Array(avecOs ? total * 12 : 0);
   let t0 = 0;
   places.forEach((p, i) => {
     const f = modeles[i];
@@ -153,15 +200,40 @@ export function fusionDesCreatures(places: PersonnagePlace[]): FusionDesCreature
     base.plages.push({ id: p.id, debut: t0, fin: t0 + f.pieces.length });
     t0 += f.pieces.length;
   });
-  return { ...base, os, squelette, boites, lueur };
+  if (!avecOs) return { ...base, os, squelette, boites, lueur };
+  // Les os des squelettes, après ceux de toutes les créatures ; un sommet sans squelette suit son os seul.
+  for (let v = 0; v < os.length; v++) {
+    joints[v * 4] = os[v];
+    weights[v * 4] = 1;
+  }
+  places.forEach((p, i) => {
+    const skin = modeles[i].skin;
+    if (!skin) return;
+    const o = pointDePose(p);
+    const premier = squelette.length;
+    for (const b of skin.bones) squelette.push({ id: p.id, nom: b.name, parent: b.parent < 0 ? 2 * i : premier + b.parent, pivot: ajoute(o, b.head) });
+    const { debut, fin } = base.plages[i];
+    for (let v = debut * 3; v < fin * 3; v++) {
+      const k = (v - debut * 3) * 4;
+      let lourd = 0;
+      for (let j = 0; j < 4; j++) {
+        joints[v * 4 + j] = premier + skin.joints[k + j];
+        weights[v * 4 + j] = skin.weights[k + j];
+        if (skin.weights[k + j] > skin.weights[k + lourd]) lourd = j;
+      }
+      os[v] = premier + skin.joints[k + lourd];
+    }
+  });
+  return { ...base, os, squelette, boites, lueur, poids: { joints, weights } };
 }
 
 /**
  * Les Gardiens placés, en sentinelles, en un maillage fixe, éteints (`couleursDesGardiens` donne les autres degrés), à
- * l'échelle du monde (`ECHELLE_DANS_LE_MONDE`, DA-5), les pieds sur leur case.
+ * l'échelle du monde (`ECHELLE_DANS_LE_MONDE`, DA-5), les pieds sur leur case. `pres` : l'île regardée, dont le
+ * Gardien est de près.
  */
-export function fusionDesGardiens(places: PersonnagePlace[]): FusionDesGardiens {
-  const modeles = places.map((p) => sentinelleDuMonde(p.id));
+export function fusionDesGardiens(places: PersonnagePlace[], pres: BiomeId | null = null): FusionDesGardiens {
+  const modeles = places.map((p) => sentinelleDuMonde(p.id, niveauDans(p.id, pres)));
   const total = modeles.reduce((n, f) => n + f.pieces.length, 0);
   const base = vide(total);
   const lueur = new Float32Array(total * 3);
@@ -174,7 +246,7 @@ export function fusionDesGardiens(places: PersonnagePlace[]): FusionDesGardiens 
     base.plages.push({ id: p.id, debut: t0, fin: t0 + f.pieces.length });
     t0 += f.pieces.length;
   });
-  return { ...base, lueur };
+  return { ...base, lueur, modeles };
 }
 
 /**
@@ -188,17 +260,18 @@ export function couleursDesGardiens(
   dans = new Float32Array(f.colors.length),
   seul?: BiomeId,
 ): Float32Array {
-  for (const p of f.plages) {
-    if (seul && p.id !== seul) continue;
-    couleursAllumees(sentinelleDuMonde(p.id), degres[p.id] ?? 0, dans.subarray(p.debut * 9, p.fin * 9));
-  }
+  f.plages.forEach((p, i) => {
+    if (seul && p.id !== seul) return;
+    couleursAllumees(f.modeles[i], degres[p.id] ?? 0, dans.subarray(p.debut * 9, p.fin * 9));
+  });
   return dans;
 }
 
 /**
  * Ce qui brille chez les Gardiens d'une fusion (quatre nombres par sommet, comme `FusionDesCreatures.lueur`) : la
- * flamme et les veines, de la couleur de la lueur, au poids de leur degré d'allumage ; le reste suit la lumière. Avec
- * `seul`, comme pour `couleursDesGardiens`, seule la plage de ce Gardien est réécrite.
+ * flamme et les veines, de la couleur de la lueur, au poids de leur degré d'allumage ; un peu la pierre d'un modèle
+ * importé (`lueurDuTriangle`) ; le reste suit la lumière. Avec `seul`, comme pour `couleursDesGardiens`, seule la plage
+ * de ce Gardien est réécrite.
  */
 export function lueursDesGardiens(
   f: FusionDesGardiens,
@@ -207,19 +280,24 @@ export function lueursDesGardiens(
   seul?: BiomeId,
 ): Float32Array {
   const [r, g, b] = rgb(LUEUR).map((v) => lineaire(v / 255));
-  for (const p of f.plages) {
-    if (seul && p.id !== seul) continue;
+  f.plages.forEach((p, i) => {
+    if (seul && p.id !== seul) return;
     dans.fill(0, p.debut * 12, p.fin * 12);
     const d = Math.min(1, Math.max(0, degres[p.id] ?? 0));
-    if (!d) continue;
-    for (let v = p.debut * 3; v < p.fin * 3; v++) {
-      if (!f.lueur[v]) continue;
-      dans[v * 4] = r;
-      dans[v * 4 + 1] = g;
-      dans[v * 4 + 2] = b;
-      dans[v * 4 + 3] = d;
+    if (!d) return;
+    const m = f.modeles[i];
+    for (let t = 0; t < m.pieces.length; t++) {
+      const a = lueurDuTriangle(m, t, d, d);
+      if (!a) continue;
+      // Sans tableau intermédiaire : la fonction tourne à chaque image d'un fondu.
+      for (let o = (p.debut + t) * 12; o < (p.debut + t + 1) * 12; o += 4) {
+        dans[o] = r;
+        dans[o + 1] = g;
+        dans[o + 2] = b;
+        dans[o + 3] = a;
+      }
     }
-  }
+  });
   return dans;
 }
 

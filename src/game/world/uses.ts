@@ -5,8 +5,9 @@
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { canLaunch, currentStage, planStatus, type GameState } from '../engine';
 import { archipelagoOf, buildableBridges, conditionMet, islandsOf, otherEnd, payableBlocks, reachableIslands, type BridgeDef } from './archipelago';
-import { monumentsOf } from './monuments';
-import { lieuDAssemblage } from './assembly';
+import { monumentsOf, type MonumentDef } from './monuments';
+import { nextPiece, projectNeeds, projectOf } from './projects';
+import { lieuDAssemblage, type UniversNomme } from './assembly';
 import { universCourant } from '../../core/settings';
 import type { VehicleStage } from './vehicle';
 
@@ -45,6 +46,8 @@ export interface Use {
   enough: boolean;
   /** Où aller (un monument a sa propre adresse) ; sinon l'île. */
   to?: string;
+  /** Un grand projet (GD-10) : le nom, dans chaque univers, de la pièce à construire ; elle se pose en entier, il faut tous ses blocs. */
+  piece?: Record<UniversNomme, string>;
 }
 
 /** Les îles ouvertes de l'archipel où se tient le bonhomme, la sienne en premier. */
@@ -63,6 +66,15 @@ function shipyard(state: GameState): VehicleStage | null {
   if (!stage) return null;
   const launch = canLaunch(state, stage);
   return launch.ok || launch.reason !== 'loin' ? stage : null;
+}
+
+/**
+ * Les blocs qu'un monument demande encore : ceux de ses cases, ou, pour un grand projet (GD-10), ceux de la pièce à
+ * construire (`both` : des deux recettes).
+ */
+export function monumentMissing(state: GameState, m: MonumentDef, both = false): Partial<Record<BlockId, number>> {
+  const project = projectOf(m.id);
+  return project ? projectNeeds(state, project, both) : planStatus(state, m).missing;
 }
 
 /** Ce qu'un type de bloc peut construire maintenant ; vide s'il ne sert à rien pour l'instant. */
@@ -85,8 +97,11 @@ export function blockUses(state: GameState, block: BlockId): Use[] {
   // Rien à poser sur le navire : les monuments de l'archipel s'en servent peut-être (c'est leur rôle :
   // employer les blocs qui s'accumulent).
   for (const m of monumentsOf(archipelagoOf(state.world.place ?? 'french-6e-phonology').classe)) {
-    const need = planStatus(state, m).missing[block] ?? 0;
-    if (need > 0) uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/adventure/${m.id}` });
+    const need = monumentMissing(state, m, true)[block] ?? 0;
+    if (need === 0) continue;
+    const project = projectOf(m.id);
+    const piece = project ? nextPiece(state, project) : null;
+    uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/adventure/${m.id}`, ...(project && piece !== null && { piece: project.pieces[piece].names }) });
   }
   return uses;
 }

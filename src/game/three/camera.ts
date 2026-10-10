@@ -2,30 +2,37 @@
 // Elle rejoint en douceur sa place : le navire en route, le bonhomme qui marche, l'île ouverte, sinon le bonhomme.
 // L'élève peut faire glisser la vue à plat pour explorer (./drag.ts) : un décalage s'ajoute à ce cadrage, borné à
 // l'archipel, et s'efface dès que l'application reprend la main (une île touchée, la Carte, une marche, un voyage).
-// Sur la Carte seulement, l'élève peut aussi zoomer (pincer, molette, touches + et −) : de l'archipel entier, son
-// cadrage d'ouverture, jusqu'à une île en gros plan (`zoomer`).
+// L'élève peut aussi zoomer (pincer, molette, touches + et −, `zoomer`). Sur la Carte : de l'archipel entier, son
+// cadrage d'ouverture, jusqu'à deux îles environ ; effacé à sa fermeture. Dans le monde : un peu plus loin ou bien
+// plus près que le cadrage (`ZOOM_DU_MONDE`), gardé d'une île à l'autre jusqu'à « Recentrer ».
 // Les cadrages (les vues, la Carte, la traversée) sont dans ./camera/framings.ts ; ce fichier garde la caméra qui les
 // suit, et en réexporte les noms publics.
 import * as THREE from 'three';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './scenePart';
 import type { BiomeId } from '../biomes';
 import { type PlaceLue, RESERVE_DU_BAS } from '../freeSpace';
-import { type CadreDeCases, islandCenter, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, worldBounds } from '../world/terrain';
+import { bornesDansLeMonde, type CadreDeCases, islandCenter, viewYaw, viewZone, islandViewPullBack, VISEE_AU_DESSUS_DU_SOL, islandViewTarget, worldBounds } from '../world/terrain';
 import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/framing';
 import { mapOf } from '../world/map';
+import { layoutVersion } from '../world/placement';
 import { bornerLeDecalage, type Decalage, estDecale } from './drag';
-import { cadrageDeLaCarte, cadrageDeLaTraversee, cleDeLaDestination, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, FOLLOW_DISTANCE, FOLLOW_MAX, HAUTEUR_DE_TABLETTE, ISLAND_DISTANCE, ISLAND_VIEW, LARGEUR_D_UNE_ILE, type LectureDeLaCarte, PAS, VIEW, VISEE, VOYAGE_VIEW, ZOOM_DE_LA_CARTE } from './camera/framings';
-export { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, ISLAND_VIEW, type LectureDeLaCarte, PLANCHER_DE_LA_CARTE } from './camera/framings';
+import { cadrageDeLaCarte, cadrageDeLaTraversee, type CadrageDesBornes, cadrerLesBornes, type InterfaceDeLaVue, cleDeLaDestination, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, FOLLOW_DISTANCE, FOLLOW_MAX, HAUTEUR_DE_TABLETTE, ISLAND_DISTANCE, ISLAND_VIEW, LARGEUR_D_UNE_ILE, type LectureDeLaCarte, PAS, VIEW, VISEE, VOYAGE_VIEW, ZOOM_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera/framings';
+export { AUTOUR_DE_LA_DESTINATION, BORNES_AU_TELEPHONE, cadrageDeLaCarte, cadrageDeLaTraversee, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, ISLAND_VIEW, type LectureDeLaCarte, PLANCHER_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera/framings';
 
 declare global {
   interface Window {
     /** La caméra, pour les captures (en développement, ou avec `?mesures`) : voir `Camera.poser`. */
-    __dysappsCamera?: { poser(): number };
+    __dysappsCamera?: { poser(): number; ecran(p: { x: number; y: number; z: number }): { x: number; y: number } | null };
     /**
      * Pour les captures d'un lot (scripts/rendu/mesures.mjs, `poseA`, avec `?mesures`) : la pose d'une partie tenue à
      * cette part de sa durée dès son lancement (three/cubes.ts, `tenirLaVague`).
      */
     __dysappsPoseA?: number;
+    /**
+     * Pour les captures (en développement, ou avec `?mesures`) : le geste de la pose du mode « Aménager » tenu à ce
+     * moment de son démontage, en ms (Arranging.tsx ne passe pas au remontage ; ./arrange.ts lit l'heure tenue).
+     */
+    __dysappsGesteA?: number;
   }
 }
 
@@ -39,17 +46,21 @@ export interface Camera extends PartieDeLaScene {
    * (la vue suit le doigt), et sa place visée aussi. Le nord, la hauteur et la direction de vue ne changent pas.
    */
   glisser(dx: number, dz: number): void;
-  /** Remet le décalage à zéro : la caméra revient en douceur à son cadrage (d'un coup, avec moins d'animations). */
-  recentrer(): void;
-  /** La vue a été déplacée (un décalage non nul) ou zoomée. */
+  /**
+   * Remet le décalage à zéro : la caméra revient en douceur à son cadrage (d'un coup, avec moins d'animations). Le zoom
+   * du monde n'est effacé qu'avec `aussiLeZoom` (le bouton « Recentrer »), et hors de la Carte : toucher une cible le
+   * garde, et « Recentrer » sur la Carte ne remet que la Carte.
+   */
+  recentrer(aussiLeZoom?: boolean): void;
+  /** La vue a été déplacée (un décalage non nul) ou zoomée (sur la Carte, seul son zoom compte, pas celui du monde). */
   decale(): boolean;
   /** Le décalage de la vue glissée, en cases sur le plan horizontal (zéro : la vue à son cadrage). */
   decalage(): Readonly<{ x: number; z: number }>;
   /**
-   * Sur la Carte seulement : rapproche (`facteur` > 1) ou éloigne la vue, borné entre le cadrage d'ouverture et une île
-   * en gros plan (`ZOOM_DE_LA_CARTE`). Le point du sol vu en `vers` (coordonnées normalisées de l'écran, −1 à 1) reste
-   * sous le doigt ; la caméra y est tout de suite. Ni le nord, ni la direction de vue ne changent. Rend vrai si la vue a
-   * changé.
+   * Rapproche (`facteur` > 1) ou éloigne la vue. Sur la Carte, borné entre le cadrage d'ouverture et deux îles environ
+   * (`ZOOM_DE_LA_CARTE`) ; dans le monde, entre les bornes de `ZOOM_DU_MONDE` (pas pendant un voyage ni une traversée
+   * au cadre fixe). Le point du sol vu en `vers` (coordonnées normalisées de l'écran, −1 à 1) reste sous le doigt ; la
+   * caméra y est tout de suite. Ni le nord, ni la direction de vue ne changent. Rend vrai si la vue a changé.
    */
   zoomer(facteur: number, vers: { x: number; y: number }): boolean;
   /**
@@ -69,9 +80,15 @@ export interface Camera extends PartieDeLaScene {
    */
   auBut(point: THREE.Vector3, W: number, H: number): { x: number; y: number } | null;
   /**
+   * Une caméra de travail posée à la place visée (comme `auBut`), à lire tout de suite (le prochain appel la déplace) ;
+   * `null` avant la première image.
+   */
+  cameraAuBut(): THREE.PerspectiveCamera | null;
+  /**
    * La fiche d'un objet le cache (lot 2 de « Toucher le monde ») : le cadrage glisse à plat pour que ce point du monde se
    * pose en `vers` (coordonnées normalisées de l'écran, −1 à 1), sans changer de distance ni de direction. Effacé quand
-   * l'application reprend la main (une île, la Carte, une marche, un voyage).
+   * l'application reprend la main (une île, la Carte, une marche, un voyage). Sur la Carte (le mode « Aménager »), la
+   * Carte glisse une fois de ce qu'il faut, comme sous le doigt, zoom gardé.
    */
   recadrer(point: THREE.Vector3, vers: { x: number; y: number }): void;
 }
@@ -93,7 +110,7 @@ export function creerCamera(
   let ouvertures = 0;
   let surLaCarte = false;
   let contexte = { ouvertures: -1, destination: '', cle: '' };
-  let cadrageCarte: { lue: PlaceLue | null; destination: string; aspect: number; target: THREE.Vector3; pos: THREE.Vector3; echelle: number; zoomMax: number } | null = null;
+  let cadrageCarte: { lue: PlaceLue | null; destination: string; bonhomme: BiomeId | null; region: boolean; aspect: number; target: THREE.Vector3; pos: THREE.Vector3; echelle: number; zoomMax: number } | null = null;
   /**
    * Le cadrage de la Carte, recalculé seulement quand la place libre lue (le même objet tant qu'elle ne change pas) ou
    * la destination changent (pas image par image). `saut` : sans mouvement.
@@ -105,16 +122,20 @@ export function creerCamera(
     const cle = cleDeLaDestination(destination);
     if (contexte.ouvertures !== ouvertures || contexte.destination !== cle) contexte = { ouvertures, destination: cle, cle: `${ouvertures}|${cle}` };
     const lue = carte?.place(contexte.cle) ?? null;
-    if (!cadrageCarte || cadrageCarte.lue !== lue || cadrageCarte.destination !== cle || (!lue && cadrageCarte.aspect !== aspect)) {
+    // Le cadre de la région entière dans le mode « Aménager » (les places libres s'y voient) ; sinon, les lieux
+    // d'aujourd'hui, et au plancher l'île du bonhomme avec la destination (`cadrageDeLaCarte`).
+    const bonhomme = derniers.current.home;
+    const region = derniers.current.amenager !== 'non';
+    if (!cadrageCarte || cadrageCarte.lue !== lue || cadrageCarte.destination !== cle || cadrageCarte.bonhomme !== bonhomme || cadrageCarte.region !== region || (!lue && cadrageCarte.aspect !== aspect)) {
       // Sans lecture (un test) : une vue de tablette, moins la bande des boutons du bas.
       const w = lue ? Math.max(1, lue.w) : HAUTEUR_DE_TABLETTE * aspect;
       const h = lue ? Math.max(1, lue.h) : HAUTEUR_DE_TABLETTE;
       const libre = lue?.libre ?? { x0: 0, y0: 0, x1: w, y1: h - RESERVE_DU_BAS };
-      const c = cadrageDeLaCarte(monde.archipel, destination, w, h, libre);
-      // Au plus près, une île remplit les deux tiers du petit côté de la place libre (jamais moins près qu'à l'ouverture).
+      const c = cadrageDeLaCarte(monde.archipel, destination, w, h, libre, { bonhomme, region });
+      // Au plus près, une île remplit la moitié du petit côté de la place libre (`ZOOM_DE_LA_CARTE` ; jamais moins près qu’à l’ouverture).
       const cote = Math.max(1, Math.min(libre.x1 - libre.x0, libre.y1 - libre.y0));
       const zoomMax = Math.max(1, (ZOOM_DE_LA_CARTE.ile * cote) / (LARGEUR_D_UNE_ILE * c.echelle));
-      cadrageCarte = { lue, destination: cle, aspect, ...c, zoomMax };
+      cadrageCarte = { lue, destination: cle, bonhomme, region, aspect, ...c, zoomMax };
     }
     return { target: cadrageCarte.target, pos: cadrageCarte.pos, saut: lue?.saut ?? false };
   };
@@ -136,8 +157,8 @@ export function creerCamera(
     surLaCarte = false;
     const portrait = aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1;
     const avatar = { x: avatarAt.x, y: avatarAt.z, z: avatarAt.y };
-    let c = spot ?? (island ? islandCenter(island) : avatar);
-    let d = (island ? ISLAND_DISTANCE : FOLLOW_DISTANCE) * portrait;
+    let c = spot ?? (island ? islandViewTarget(island) : avatar);
+    let d = (island ? ISLAND_DISTANCE * (spot ? 1 : islandViewPullBack(island)) : FOLLOW_DISTANCE) * portrait;
     const v = island ? ISLAND_VIEW : VIEW;
     // Bonhomme posé sur son île : on cadre la zone (son île et ses voisines), le bonhomme restant au premier tiers.
     if (!island && zone) {
@@ -172,7 +193,34 @@ export function creerCamera(
     const dy = v.dx * Math.sin(yaw) + v.dy * Math.cos(yaw);
     const target = new THREE.Vector3(c.x, c.z + VISEE_AU_DESSUS_DU_SOL, c.y);
     const pos = new THREE.Vector3(c.x + d * dx, c.z + VISEE_AU_DESSUS_DU_SOL + d * v.up, c.y + d * dy);
+    // Au téléphone en portrait, les bornes de l'île (ou de celle du bonhomme) et leur bulle tiennent dans la vue : le
+    // cadrage glisse de côté, ou recule, juste ce qu'il faut (GD-14, `cadrerLesBornes`). Pas sur une place précise.
+    const ileDesBornes = spot ? null : (island ?? zone);
+    if (ileDesBornes) {
+      const r = bornesCadrees(ileDesBornes, island !== null, target, pos, aspect);
+      if (r.recul !== 1) pos.sub(target).multiplyScalar(r.recul).add(target);
+      target.add(r.glisse);
+      pos.add(r.glisse);
+    }
     return { target, pos };
+  };
+
+  /**
+   * Le cadrage des bornes au téléphone (`cadrerLesBornes`), gardé tant que ni l'île, ni la vue (île ou bonhomme), ni la
+   * taille de la vue, ni l'interface lue, ni la disposition ne changent : pas recalculé image par image.
+   */
+  let cadrageDesBornes: { id: BiomeId; ile: boolean; version: number; w: number; h: number; fov: number; ui: InterfaceDeLaVue | null; r: CadrageDesBornes } | null = null;
+  const bornesCadrees = (id: BiomeId, ile: boolean, target: THREE.Vector3, pos: THREE.Vector3, aspect: number): CadrageDesBornes => {
+    // Sans taille de la vue (un test), une vue de tablette de cet aspect.
+    const h = carte?.vue?.h || HAUTEUR_DE_TABLETTE;
+    const w = carte?.vue?.w || h * aspect;
+    const ui = carte?.vue?.ui ?? null;
+    const version = layoutVersion();
+    const c = cadrageDesBornes;
+    if (c && c.id === id && c.ile === ile && c.version === version && c.w === w && c.h === h && c.fov === camera.fov && c.ui === ui) return c.r;
+    const r = cadrerLesBornes(target, pos, bornesDansLeMonde(id), w, h, camera.fov, ui);
+    cadrageDesBornes = { id, ile, version, w, h, fov: camera.fov, ui, r };
+    return r;
   };
 
   /**
@@ -215,10 +263,14 @@ export function creerCamera(
   const voulu: Decalage = { x: 0, z: 0 };
   /**
    * Le zoom de la Carte : 1 au cadrage d'ouverture, plus grand en se rapprochant (la distance à la cible est divisée
-   * d'autant) ; et celui que voient les étiquettes (gelé pendant un geste, comme le décalage).
+   * d'autant). Celui du monde, de même autour du cadrage, gardé quand l'application reprend la main. Et celui que voient
+   * les étiquettes (gelé pendant un geste, comme le décalage).
    */
   let zoom = 1;
+  let zoomDuMonde = 1;
   let zoomDuBut = 1;
+  /** À la dernière image, la vue était celle du monde (ni la Carte, ni un voyage, ni une traversée au cadre fixe). */
+  let dansLeMonde = false;
   const zero = () => {
     decalage.x = 0;
     decalage.z = 0;
@@ -247,6 +299,8 @@ export function creerCamera(
   const rayon = new THREE.Raycaster();
   const glissement = new THREE.Vector3();
   const projete = new THREE.Vector3();
+  const essaiCible = new THREE.Vector3();
+  const essaiPlace = new THREE.Vector3();
   /** Place la caméra de travail en `pos`, regardant `target`, comme la vraie. */
   const placerLEssai = (target: THREE.Vector3, pos: THREE.Vector3) => {
     essai.fov = camera.fov;
@@ -286,18 +340,27 @@ export function creerCamera(
       camera.lookAt(camTarget);
       camera.updateMatrixWorld();
     },
-    recentrer: zero,
-    decale: () => estDecale(decalage) || zoom > 1 + 1e-6,
+    recentrer: (aussiLeZoom = false) => {
+      zero();
+      if (aussiLeZoom && !instant.carte) zoomDuMonde = 1;
+    },
+    decale: () => estDecale(decalage) || zoom > 1 + 1e-6 || (!instant.carte && Math.abs(zoomDuMonde - 1) > 1e-6),
     decalage: () => decalage,
     zoomer: (facteur, vers) => {
-      if (!instant.carte || !cadrageCarte || !(facteur > 0)) return false;
-      const voulu = Math.min(cadrageCarte.zoomMax, Math.max(1, zoom * facteur));
-      if (Math.abs(voulu - zoom) < 1e-9) return false;
+      if (!(facteur > 0)) return false;
+      const surLaCarte = instant.carte;
+      if (surLaCarte ? !cadrageCarte : !dansLeMonde) return false;
+      const actuel = surLaCarte ? zoom : zoomDuMonde;
+      const min = surLaCarte ? 1 : ZOOM_DU_MONDE.loin;
+      const max = surLaCarte && cadrageCarte ? cadrageCarte.zoomMax : ZOOM_DU_MONDE.pres;
+      const voulu = Math.min(max, Math.max(min, actuel * facteur));
+      if (Math.abs(voulu - actuel) < 1e-9) return false;
       const saisi = solVu(vers, avantLeZoom);
       // La caméra avance (ou recule) vers sa cible tout de suite, sans attendre son pas : la vue suit les doigts.
-      const k = zoom / voulu;
+      const k = actuel / voulu;
       camPos.sub(camTarget).multiplyScalar(k).add(camTarget);
-      zoom = voulu;
+      if (surLaCarte) zoom = voulu;
+      else zoomDuMonde = voulu;
       camera.position.copy(camPos);
       camera.lookAt(camTarget);
       // Le point saisi revient sous le doigt : la vue glisse à plat d'autant.
@@ -311,6 +374,11 @@ export function creerCamera(
       projete.copy(point).project(essai);
       if (projete.z > 1) return null;
       return { x: ((projete.x + 1) / 2) * W, y: ((1 - projete.y) / 2) * H };
+    },
+    cameraAuBut: () => {
+      if (!vu) return null;
+      placerLEssai(but.target, but.pos);
+      return essai;
     },
     recadrer: (point, vers) => {
       recadre = { point: point.clone(), vers: { ...vers } };
@@ -339,7 +407,10 @@ export function creerCamera(
       demande.ile = ile;
       demande.carte = carteDemandee;
       // Une longue traversée : le cadre fixe, s'il tient à une taille lisible ; sinon la caméra suit le bonhomme.
-      const fixe = !sailing && walking && instant.traversee ? traversee(instant.traversee, camera.aspect) : null;
+      // Une liaison montrée depuis un autre départ (GD-9, « Partir d'une autre île ») : le même cadre fixe, au-dessus de
+      // la fiche ; d'un coup quand l'appareil demande moins d'animations (`reduit`).
+      const choisie = !sailing && !walking && !instant.carte ? derniers.current.cadreDeLaLiaison : null;
+      const fixe = !sailing && walking && instant.traversee ? traversee(instant.traversee, camera.aspect) : choisie ? traversee(choisie, camera.aspect) : null;
       // En mer (ou dans les airs) : vue de côté sur le navire, la caméra s'écarte à mesure qu'il s'éloigne.
       const frame = sailing
         ? (() => {
@@ -368,16 +439,30 @@ export function creerCamera(
         target.add(glissement);
         pos.add(glissement);
       }
-      // Sur la Carte, le zoom rapproche la caméra de sa cible (la vue de l'élève, et celle que voient les étiquettes).
+      // Le zoom rapproche la caméra de sa cible (la vue de l'élève, et celle que voient les étiquettes) : celui de la
+      // Carte sur la Carte, celui du monde dans le monde ; ni l'un ni l'autre pendant un voyage ou une traversée fixe.
       const surLaCarteIci = instant.carte && !sailing && !fixe;
-      // Hors de la Carte, pas de zoom ; sur la Carte, la borne de près suit la place libre (la taille du texte a changé).
+      dansLeMonde = !instant.carte && !sailing && !fixe;
+      // Hors de la Carte, son zoom s'efface ; sur la Carte, la borne de près suit la place libre (la taille du texte a changé).
       if (!surLaCarteIci) zoom = 1;
       else if (cadrageCarte && zoom > cadrageCarte.zoomMax) zoom = cadrageCarte.zoomMax;
-      if (!self.glissant) zoomDuBut = zoom;
+      const zoomVu = surLaCarteIci ? zoom : dansLeMonde ? zoomDuMonde : 1;
+      if (!self.glissant) zoomDuBut = zoomVu;
       const kDuBut = 1 / zoomDuBut;
-      const kVu = 1 / zoom;
+      const kVu = 1 / zoomVu;
       base.x = target.x;
       base.z = target.z;
+      // Sur la Carte, le mode « Aménager » garde le fantôme dans la bande libre (`recadrer`) : la Carte glisse une fois,
+      // comme sous le doigt, d'après la vue visée (zoom et glissement compris), puis l'élève la reprend.
+      if (recadre && surLaCarteIci) {
+        essaiCible.set(target.x + decalage.x, target.y, target.z + decalage.z);
+        essaiPlace.set(target.x + (pos.x - target.x) * kVu + decalage.x, target.y + (pos.y - target.y) * kVu, target.z + (pos.z - target.z) * kVu + decalage.z);
+        placerLEssai(essaiCible, essaiPlace);
+        decalagePourViser(essai, recadre.point, recadre.vers, glissement, rayon);
+        decalage.x += glissement.x;
+        decalage.z += glissement.z;
+        recadre = null;
+      }
       // La place visée a pu bouger (la vue a changé de taille) : le décalage reste dans l'archipel.
       bornerLeDecalage(base, decalage, etendue, decalage);
       if (!self.glissant) {
@@ -404,6 +489,8 @@ export function creerCamera(
       }
       camera.position.copy(camPos);
       camera.lookAt(camTarget);
+      // Le monde vu de plus loin que son cadrage : la brume recule d'autant (./mist.ts).
+      instant.recul = zoomVu < 1 ? camPos.distanceTo(camTarget) * (1 - zoomVu) : 0;
     },
     dispose: () => {},
   };

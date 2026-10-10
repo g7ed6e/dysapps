@@ -40,10 +40,10 @@ Pour tous les items :                         ← champs communs à tous les ite
 ```
 
 - **Identifiants** : des mots neutres, en anglais, sans mot d’univers : le lieu `<matière>-<classe>-<thème>` (`french-6e-phonology`), la mission sa notion (`syllables`), l’exercice `<lieu>-<mission>-<suffixe>` (`english-6e-vocabulary-hello-1`). Ceux de la mission, du niveau et de l’item ne changent jamais (les sauvegardes des élèves et la répétition espacée s’y rattachent). La clé d’un item vaut par défaut `<exercice>-<rang depuis 0>`, ou ce que dit `clé des items` (plus bas) ; quand elle est autre, elle s’écrit en champ (`- clé : cabane`) ou dans la colonne `clé`. Avec la clé par défaut, un item s’ajoute donc **à la fin** du niveau ; pour en insérer ou en retirer un au milieu, écrire `- clé :` avec l’ancienne clé sur les items qui suivent, et une clé nouvelle sur l’item ajouté (deux items ne partagent jamais une clé). `npm run contenu` refuse d’écrire si un item existant changerait de clé ; corriger le texte d’un item à sa place reste permis.
-- **L’île** : l’en-tête donne `lieu` (l’identifiant, qui est aussi le nom du fichier), `module`, `matière` (`french`, `maths`, `english` ou `lv2`), `classe` (`6e` à `3e`, qui est aussi l’archipel), `description`, `gardien` (avec son article : « le Grand Chêne »), `icône` et `créature` (son nom) ; le titre `# …` est son nom. Le bloc de l’île ne s’écrit pas : il porte l’identifiant du lieu (`bloc gagné : english-6e-vocabulary`). Ce qu’ils disent et leur espèce sont des textes d’univers, dans `src/universes/`. Les tests (`src/game/biomes.test.ts`) vérifient la matière, la classe, l’icône et les compétences.
-- **Une mission** : son titre et son identifiant dans `## …`, puis `description`, `compétences` (au moins une, identifiants de `src/curriculum/` ; une île de 6e ne cite que le cycle 3, une île de 5e à 3e au moins une compétence du cycle 4) et, sur l’île de la LV2, `lv2` (qui va avec la `langue` de ses niveaux : `es` ou `de`). L’identifiant d’une mission est unique dans tout le jeu, et une île porte au plus quatre missions jouables (l’île de la LV2 en a quatre par langue) ; `biomes.test.ts` le vérifie. Une mission sans niveau a ses exercices produits par le code (les maths : `maths.ts`, `college.ts`, `problems.ts` ; le Tri des graines, les panneaux) : une note « > » le rappelle sous son titre.
+- **L’île** : l’en-tête donne `lieu` (l’identifiant, qui est aussi le nom du fichier), `module`, `matière` (`french`, `maths`, `english`, `history-geography`, `life-earth-sciences`, `physics-chemistry`, `technology`, `civics` (l’EMC), `lv2` ou `lca` (l’option latin ou grec)), `classe` (`6e` à `3e`, qui est aussi l’archipel), `description`, `gardien` (avec son article : « le Grand Chêne »), `icône` et `créature` (son nom) ; le titre `# …` est son nom. Le bloc de l’île ne s’écrit pas : il porte l’identifiant du lieu (`bloc gagné : english-6e-vocabulary`). Ce qu’ils disent et leur espèce sont des textes d’univers, dans `src/universes/`. Les tests (`src/game/biomes.test.ts`) vérifient la matière, la classe, l’icône et les compétences.
+- **Une mission** : son titre et son identifiant dans `## …`, puis `description`, `compétences` (au moins une, identifiants de `src/curriculum/` ; au moins une compétence de la classe de l’île, les autres de sa classe ou d’une classe d’avant, jamais d’une classe d’après) et, sur l’île de la LV2, `lv2` (qui va avec la `langue` de ses niveaux : `es` ou `de`) ; sur une île de latin-grec, `option` (`la` pour le latin, `gr` pour le grec : seules les missions de l’option choisie dans les Réglages se jouent, [GD-13](../gameplay/propositions/GD-13.md)). Une mission prête mais qui attend quelque chose hors du contenu porte `en attente` avec ce qu’elle attend (`- en attente : la police grecque`) : elle est lue et vérifiée, mais ne se joue pas, et la page du site le dit. L’identifiant d’une mission est unique dans tout le jeu, et une île porte au plus cinq missions jouables (l’île de la LV2 cinq par langue, celle de latin-grec cinq par option, [GD-14](../gameplay/propositions/GD-14.md)) ; `biomes.test.ts` le vérifie. Une mission sans niveau a ses exercices produits par le code (les maths : `maths.ts`, `college.ts`, `problems.ts` ; le Tri des graines, les panneaux) : une note « > » le rappelle sous son titre.
 - **Champs d’un niveau** (ou de la mission, s’ils valent pour tous ses niveaux, sans être répétés dans un niveau) : `titre`, `langue`, `cible`, `consigne`, `programme`, `par partie`, `bravo`, `erreur`, `bloc gagné`, `blocs`, `XP`, `monte à`, `descend à`. Le barème (`blocs`, `XP`, `monte à`, `descend à`) reste écrit ici, niveau par niveau.
-- **Champs d’un item** : `clé`, `texte`, `énoncé`, `question`, `phrase`, `mot`, `lettre`, `racine`, `racine lue`, `sujet`, `singulier`, `pluriel`, `avant`, `après`, `case`, `terminaison`, `cible`, `image`, `lu`, `entendu`, `choix`, `langue des choix`, `réponse`, `juste` (oui ou non), `sens`, `règle`, `indice`, `astuce`, `explication`, `pourquoi`, `mot troué`, et `aide « titre » :` suivie de ses lignes en sous-liste (en anglais, une ligne de lexique s’écrit `mot anglais = sens`, plusieurs paires séparées par « , » ou « ; » : le bouton Écouter de la ligne lit les mots de gauche en voix anglaise ; un mot français à gauche, accentué ou avec un petit mot comme « une », n’est pas lu. Jamais `mot (sens)`, `mot : sens` ni `sens = mot` : le bouton ne lirait rien, ou lirait du français. Une phrase de méthode peut précéder la première paire, suivie de « : » (« Lis d’abord la question : who = qui, when = quand »), et une précision entre parenthèses n’est pas lue. Le mot anglais commence par une minuscule, sauf un nom propre et « I » ; le sens ne recopie jamais la réponse d’un item de la mission, et l’exemple d’une ligne n’est jamais celui d’un item). Ce que chaque champ veut dire, selon le type d’écran : [Le format des exercices](../conception/exercices.md).
+- **Champs d’un item** : `clé`, `texte`, `énoncé`, `question`, `phrase`, `mot`, `lettre`, `racine`, `racine lue`, `sujet`, `singulier`, `pluriel`, `avant`, `après`, `case`, `terminaison`, `cible`, `image`, `lu`, `entendu`, `choix`, `langue des choix`, `réponse`, `juste` (oui ou non), `sens`, `règle`, `indice`, `astuce`, `explication`, `pourquoi`, `mot troué`, `figure` (une figure de maths sur une ligne : `tableau x · f(x) / 2 · 6 / 4 · ?`, un tableau de proportionnalité, l’en-tête puis une ligne par « / » ; `triangle 3 · 4 · ?`, un triangle rectangle, les deux côtés de l’angle droit puis l’hypoténuse ; `droite 0 · 20 / 5 · 10`, une droite graduée, ses bornes puis les points marqués, des nombres seulement, un nombre négatif s’écrivant avec le signe moins « − » (un trait d’union « - » laisse un texte) ; `graduée 5 · 6 / 10 / 5,3`, une droite d’un entier à un autre, chaque unité partagée en 10, et au besoin un « ? » sur une graduation (le nombre n’est ni écrit ni lu) ; `fraction 3/5`, une barre de fraction ; `fractions 3/5 · 3/10`, deux barres à comparer ; `diagramme lundi · mardi / 10 · 20`, un diagramme en barres, les noms puis les nombres (les nombres seuls, sans noms) ; `graphique 2 · 1`, la droite y = 2 × x + 1 dans un repère ; puis les figures de géométrie, tracées à l’échelle, « ? » pour la valeur cherchée : `angles 40 · 60 · ?`, un triangle et ses trois angles (un seul « ? », sauf avec `/ isocèle`, où les deux derniers angles sont égaux, ou `/ équilatéral` : `angles 80 · ? · ? / isocèle`), 90 tracé en petit carré ; aucun angle, donné ou calculé, sous 20° (il ne se lirait pas) ; `angle 120`, un angle seul à côté d’un angle droit en pointillé, `angle plat 130 · ?`, deux angles côte à côte sur une droite, `angle croisé 70 · ?`, un angle et l’angle opposé par le sommet ; `plane rectangle 5 · 3 / aire ?`, une figure plane cotée : `carré 6`, `parallélogramme 5 · 3 · 4` (base, hauteur, côté penché au besoin), `triangle 8 · 5` (base, hauteur), `disque 5` ou `cercle 4 / diamètre ?` (le rayon), `médiatrice 7 · ?` (MA, MB), `partagé 3 / x · 4 / ? · ?` (la hauteur, les largeurs, les aires des parts), `/ aire ?` au besoin ; `solide cubes 4 · 2 · 3`, un pavé de petits cubes (longueur, largeur, couches ; une deuxième boîte après « / », nommées A et B), `solide cube 1` (arêtes de 1 cm), `solide cylindre 3 · 2 / volume ?` (rayon, hauteur, ou rien), `solide cône r · h`, `solide prisme-pyramide h` ; `image rotation 90 / angle 50 · ?`, une figure et son image sur un quadrillage (`translation`, `axiale`, `centrale`, `rotation 90`, `homothétie 2`), avec au besoin `/ angle 50 · ?` ou `/ aire 12 · ?` (la figure, puis son image) et `/ arc ?` pour la symétrie centrale, l’angle de la rotation et le rapport jamais écrits ; `repère A 4 · −2`, un repère de −6 à 6 et ses points nommés, séparés par « / » (`repère` seul : vide, ses demi-axes marqués « + » et « − ») ; elle ne donne jamais la réponse), et `aide « titre » :` suivie de ses lignes en sous-liste (en anglais, une ligne de lexique s’écrit `mot anglais = sens`, plusieurs paires séparées par « , » ou « ; » : le bouton Écouter de la ligne lit les mots de gauche en voix anglaise ; un mot français à gauche, accentué ou avec un petit mot comme « une », n’est pas lu. Jamais `mot (sens)`, `mot : sens` ni `sens = mot` : le bouton ne lirait rien, ou lirait du français. Une phrase de méthode peut précéder la première paire, suivie de « : » (« Lis d’abord la question : who = qui, when = quand »), et une précision entre parenthèses n’est pas lue. Le mot anglais commence par une minuscule, sauf un nom propre et « I » ; le sens ne recopie jamais la réponse d’un item de la mission, et l’exemple d’une ligne n’est jamais celui d’un item). Ce que chaque champ veut dire, selon le type d’écran : [Le format des exercices](../conception/exercices.md).
 - **Pour tous les items** : n’importe quel champ d’item (sauf la clé) ; un item peut le redonner pour lui seul. S’y écrivent aussi les deux règles qui évitent de recopier :
   - `trou lu : blank` : la voix lit l’énoncé en remplaçant le « … » par ce texte (`blank` en anglais, `(mot manquant)` en français). Un item dont la lecture est autre garde son champ `lu`. Seul un énoncé à un seul « … » est concerné : un énoncé dont le « … » n’est pas un trou (des points de suspension dans un récit) donne son `lu` lui-même.
   - `clé des items : mot` (ou `lettre`) : la clé de chaque item est son mot, ce qui permet d’insérer un item n’importe où ; mais corriger une faute dans le mot change sa clé (l’item repart de zéro pour l’élève) : garder alors l’ancienne avec `- clé :` (`npm run contenu` signale une clé remplacée) ; `clé des items : paragraphe` : les clés sont p1, p2… (textes à lire).
@@ -83,6 +83,26 @@ Plusieurs exercices d’une mission peuvent porter le même numéro de niveau (l
 
 **Hors du Markdown** : un niveau nouveau se déclare aussi dans `ORDER` (`src/game/exercises/index.ts`). Une mission nouvelle (un nouveau `type`) a aussi besoin de son écran dans `SCREEN_TYPES` (`src/game/exercises/registry.ts`). Les tests le rappellent si l’un manque.
 
+## La voix des mots latins et grecs
+
+Une île qui cite des mots qui ne sont pas du français (le latin, le grec transcrit en lettres latines, un mot d’italien, d’espagnol ou d’anglais) les déclare, avant ses plans, dans un tableau sous le titre `## La voix`, une rangée par mot ou expression :
+
+```md
+## La voix
+
+| mot | langue | lu |
+| --- | --- | --- |
+| rosa | la | rossa |
+| Senatus Populusque Romanus | la | sénatusse popoulousskoué romanusse |
+| logos | grc-Latn | logoss |
+| piano | it | |
+```
+
+- **langue** : `la` (latin), `grc-Latn` (grec ancien en lettres latines), ou une langue vivante citée : `it`, `es`, `en`.
+- **lu** : comment la voix française dit le mot, jamais affiché ; obligatoire pour `la` et `grc-Latn`, absent pour une langue vivante, lue par sa propre voix.
+- Partout où le mot apparaît (énoncé, question, choix, indice, explication, aide), sans tenir compte des majuscules ni du trait qui montre une terminaison (« ros-am » se reconnaît comme « rosam »), il s’affiche marqué dans sa langue, sans syllabes colorées, et la voix le dit d’après son `lu` ([principes dys](../../www/pedagogie/principes.md), « Le latin et le grec »). `npm run contenu` l’écrit dans `foreignWords`, sur l’île, dans `src/game/islands.ts` ; le lecteur est `scripts/contenu/voix.mjs`.
+- L’ordre de la fin du fichier est fixe : `## La voix`, puis `## Les plans`, puis `## Les demandes`.
+
 ## Les plans des bâtiments
 
 Le fichier d’une île finit par ses plans, un tableau sous le titre `## Les plans`, une rangée par plan dans l’ordre du dessin (les murs, le toit, la cour) :
@@ -105,7 +125,10 @@ Le fichier d’une île finit par ses plans, un tableau sous le titre `## Les pl
 
 - **3 missions** : une partie par plan, du même nom ;
 - **2 missions** : le premier plan, puis les deux autres ensemble (« <plan 2> et <plan 3> », le complément commun dit une fois : « Le toit et la cour de la forge ») ;
-- **4 missions** (la plupart des îles, et le lieu de la LV2, qui en a quatre par langue) : le premier plan coupé en deux par la hauteur (« Le bas du four de Rouxel », puis « Le haut du four de Rouxel », l’article du nom du plan contracté), puis les deux autres.
+- **4 missions** : le premier plan coupé en deux par la hauteur (« Le bas du four de Rouxel », puis « Le haut du four de Rouxel », l’article du nom du plan contracté), puis les deux autres ;
+- **5 missions** ([GD-14](../gameplay/propositions/GD-14.md)) : le premier plan coupé en trois rangées entières (« Le bas… », « Le milieu… », « Le haut… »), puis les deux autres ; un premier plan de deux rangées seulement se coupe en deux, puis le deuxième aussi (« Le bas du toit de la hutte », « Le haut du toit de la hutte »), puis le troisième.
+
+Le lieu de la LV2 compte les missions d’une seule langue (les deux en ont autant).
 
 Un plan n’a pas de coffre : ses blocs de finition (toit, porte, lanterne, barrière, escalier) se posent avec sa partie. Le découpage est fait par le code (`src/game/world/parts.ts`) : rien à écrire ici de plus que les plans. Les parties de chaque île sont listées dans les pages générées du site (« Le bâtiment »).
 
@@ -113,7 +136,7 @@ Changer un nom, une XP ou une réplique se fait ici seulement. La forme du bâti
 
 ## Les demandes
 
-Après ses plans, le fichier d’une île de français, de maths ou d’anglais finit par la commande de son habitant ([GD-7](../gameplay/propositions/archives/GD-7.md), points 4 et 5), sous le titre `## Les demandes` (les îles de LV2 n’en ont pas). Livrée, la commande pose une petite construction chez la créature. `npm run contenu` les écrit toutes dans `src/game/world/requests.json`, dans l’ordre de `archipel.md` :
+Après ses plans, le fichier d’une île de français, de maths, d’anglais, d’histoire-géographie ou de sciences finit par la commande de son habitant ([GD-7](../gameplay/propositions/archives/GD-7.md), points 4 et 5), sous le titre `## Les demandes` (les lieux d’option, LV2 et latin-grec, n’en ont pas : [GD-13](../gameplay/propositions/GD-13.md)). Livrée, la commande pose une petite construction chez la créature. `npm run contenu` les écrit toutes dans `src/game/world/requests.json`, dans l’ordre de `archipel.md` :
 
 ```md
 ## Les demandes
@@ -133,7 +156,7 @@ Après ses plans, le fichier d’une île de français, de maths ou d’anglais 
 
 - **identifiant** : `<lieu>-request-<n>`, à partir de 1, qui ne change jamais ; la petite construction qu’elle pose s’appelle `<lieu>-fixture-<n>` (il ne s’écrit pas).
 - **habitant** : la créature de l’île (son nom dans l’en-tête), jamais un Gardien.
-- **bloc** : le bloc d’une autre île du même archipel, ou le bloc assemblé de l’archipel quand sa recette ne prend pas le bloc de l’île ; jamais l’or, le cristal, un bloc de finition ni le bloc d’une île de LV2. Dans un archipel, un bloc n’est demandé qu’une fois.
+- **bloc** : le bloc d’une autre île du même archipel, ou le bloc assemblé de l’archipel quand sa recette ne prend pas le bloc de l’île ; jamais l’or, le cristal, un bloc de finition ni le bloc d’un lieu d’option (LV2, latin-grec). Dans un archipel, un bloc n’est demandé qu’une fois.
 - **combien** : de 2 à 4. La forme pose un cube du bloc livré pour chaque bloc demandé.
 - **petite construction** : son nom avec l’article (« le puits », « l’abri »), le même dans la liste, la demande et la réplique (« le puits de Tunel »).
 - **demande** : deux phrases, le besoin puis le lieu et le geste : « Joue une mission de la (du, de l’) <île qui donne le bloc>. », ou « Assemble-les {à}. » pour un bloc assemblé ; jamais une notion ni une note.
@@ -144,6 +167,35 @@ Après ses plans, le fichier d’une île de français, de maths ou d’anglais 
 Le nombre et le nom du bloc ne s’écrivent pas : le jeu met à la place de `{objet}` le nombre de blocs avec les mots de Mes blocs (« 4 briques », « 3 blocs de terre »), à la place de `{blocs}` le même nom sans nombre (« briques »), et à la place de `{à}` le lieu où l’on assemble (« à la Fabrique », `assemblage.md`) : l’objet porte ainsi le même nom partout. La phrase de la première fois (« Une commande, c’est une créature qui te demande des blocs pour une petite construction. Rien ne presse. ») est commune à toutes les îles : elle va avec les textes de l’univers, pas ici.
 
 Les phrases sont celles de Blocland (une « commande », une « petite construction ») ; Archipéo, en pause, n’affiche pas les commandes et n’a pas de phrases ici (dans le JSON, elles sont rangées sous `blocland`, pour qu’un autre univers ait les siennes à côté). La forme de chaque petite construction est dessinée par le code (`src/game/world/fixtures.ts`, testée) ; la note « > Forme » la décrit pour l’artiste technique 3D, et le jeu ne la lit pas. `scripts/contenu/demandes.mjs` lit la section et vérifie ces règles (avec les apostrophes typographiques, sans « … », deux phrases courtes au plus) ; `demandes.test.mjs` les teste. Changer un bloc, un nombre ou une petite construction passe par le directeur artistique ; une phrase, par le consultant de Blocland et le référent dys.
+
+## Les quêtes
+
+Les quêtes des habitants ([GD-10](../gameplay/propositions/GD-10.md)), l’« Entraide » à l’écran, s’écrivent dans `quetes.md`, un titre `## <classe>` par région, puis une quête par titre `### \`story-<classe>-<n>\``, dans l’ordre où elles arrivent. `npm run contenu` les écrit dans `src/game/world/stories.json` :
+
+```md
+## 6e
+
+### `story-6e-1`
+
+- objet : la lanterne
+- icône : `lantern`
+- fin : Lanterne posée chez Mousso !
+
+1. mission chez `maths-6e-calculation` : Joue une mission chez Coco.
+2. donner 2 `french-6e-phonology` chez `maths-6e-calculation` : Donne {objet} à Coco.
+3. apporter chez `french-6e-phonology` : Apporte la lanterne à Mousso.
+
+> Forme : un banc de trois bois, une barrière au milieu, la lanterne dessus.
+```
+
+- **identifiant** : `story-<classe>-<n>`, à partir de 1, qui ne change jamais ; l’objet posé à la fin est la petite construction suivante de la créature de la dernière étape (`<lieu>-fixture-<n>`, après celle de sa commande ; il ne s’écrit pas). Les deux numéros suivent l’ordre du fichier et sont enregistrés dans les sauvegardes : une quête nouvelle s’ajoute à la fin de sa région, jamais au milieu, et une commande ne s’ajoute pas à un lieu qui reçoit déjà l’objet d’une quête.
+- **objet** : son nom avec l’article ; **icône** : le bloc dont l’image le montre (un bloc d’île, assemblé ou de finition).
+- **étapes** : trois ou quatre, chacune chez une créature de la région, jamais sur un lieu d’option (LV2, latin-grec) : `mission` (réussir une mission de son île, n’importe laquelle), `donner N \`<bloc>\`` (de 2 à 4 blocs d’une île de la région) ou `apporter`. La dernière se fait d’un toucher (`donner` ou `apporter`) : c’est elle qui pose l’objet.
+- **phrases** : une seule phrase de sept mots au plus, qui nomme la créature ; `{objet}`, seulement dans une étape `donner`, devient le nombre et le nom du bloc (« 2 blocs de bois »).
+- **fin** : cinq mots au plus, « <Objet> posé(e) chez <créature> ! ».
+- **projet** et **voir** (facultatifs, ensemble, à partir de la 5e) : la dernière quête de la région montre son grand projet, sans jamais l’exiger. `- projet : \`landmark-5e-1\`` nomme le grand ouvrage (un projet de `projets.md`, de la même classe) ; `- voir : Voir le phare`, trois mots au plus, est le bouton qui y mène à la fin de la pose de l’objet, sous la phrase de fin, si le projet n’est pas fini.
+
+La forme de l’objet et sa place restent dans le code (`src/game/world/fixtures.ts`, testées) ; la note « > Forme » la décrit, et le jeu ne la lit pas. `scripts/contenu/quetes.mjs` vérifie ces règles ; `quetes.test.mjs` les teste. Une étape, un bloc ou un objet passe par le directeur artistique ; une phrase, par les consultants d’univers et le référent dys.
 
 ## Les missions du portail
 
@@ -202,6 +254,13 @@ Les cases des monuments qui demandent ces blocs restent dans le code (`src/game/
 - **Les clés** : `<bloc>-<rang>` par défaut (`compound-6e-0`, `compound-6e-1`…), ou `- clé :` pour garder celle d’une question déplacée, comme dans une île. Elles servent au tirage de l’élève : une question s’ajoute à la fin.
 - **Les choix** : des nombres (même unité, milliers avec une espace insécable, ou « 8 × 10⁹ ») sont toujours affichés du plus petit au plus grand ; des phrases sont mélangées avec la graine de l’élève, la bonne réponse autant de fois à chaque place sur les questions du bloc. Un piège de chaque matière, écrit dans le fichier : aucun n’est calculé.
 - **Vérifié par `src/game/exercises/assembly.test.ts`** : chaque bloc a au moins 8 questions ; ses compétences existent dans `src/curriculum/`, couvrent les deux matières des îles de sa recette, sont déjà travaillées par une île ou le portail, et sont du cycle 3 seul en 6e, avec au moins une du cycle 4 de la 5e à la 3e ; trois choix différents dont la réponse ; une aide sur chaque question ; ni « … » ni la question dans `lu` ; des apostrophes typographiques.
+
+## Les grands projets
+
+`projets.md` n’est pas une île : il tient les grands projets ([GD-10](../gameplay/propositions/GD-10.md)), dès la 5e. `npm run contenu` en produit `src/game/world/projects.json`, et les questions de chaque banque dans `src/game/exercises/data/assembly-<banque>.json`. Un tableau, puis les questions :
+
+- **« ## Les pièces »** : une rangée par pièce, de bas en haut (l’ordre où elles se posent) : le grand ouvrage (`landmark-5e-1`, déclaré dans `src/game/world/monuments.ts`), l’identifiant de la pièce, puis deux recettes, chacune avec ses blocs (`maths-5e-signed-numbers × 6 · french-5e-homophones × 4`) et sa banque de questions, puis le nom de la pièce, avec son article, dans chaque univers. Les blocs d’une recette viennent de deux îles de la classe du projet, de deux matières (de trois îles de trois matières en 3e : on écrit d’abord les deux îles de la question, puis la troisième, qui n’a pas de question) ; les deux recettes d’une pièce n’ont aucune matière en commun ; jamais un lieu d’option (vérifié par `npm run contenu`). Les étages que couvre chaque pièce restent dans le code (`src/game/world/projects.ts`).
+- **« ## Les questions »** : un **« ### Nom · `project-…` »** par banque, écrit exactement comme les questions d’un bloc assemblé (ci-dessus). Une recette peut aussi poser les questions d’un bloc assemblé (`compound-5e`) : l’élève garde alors le même tirage qu’à la Fabrique. `src/game/exercises/assembly.test.ts` vérifie les banques comme les blocs : les compétences d’une banque sont de deux matières exactement, présentes dans chaque recette qui la pose. Les réponses en anglais ont chacune leur bouton Écouter ; une question de maths peut porter une `figure`.
 
 ## Ajouter une île
 

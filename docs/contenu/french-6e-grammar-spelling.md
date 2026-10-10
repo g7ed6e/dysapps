@@ -147,7 +147,7 @@ Pour tous les items :
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Phrases à trous : a/à, et/est, on/ont, son/sont, ce/se.
-- compétences : c3.fr.langue.homophonie
+- compétences : c3.fr.langue.orthographe-grammaticale
 
 ## Récolte -é / -er / -ez · `e-er-ez`
 

@@ -1,0 +1,243 @@
+{
+  "id": "civics-4e-rights-freedoms-freedoms-2",
+  "biome": "civics-4e-rights-freedoms",
+  "type": "freedoms",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-2-0",
+      "prompt": "Article 11 de la Déclaration des droits de l’homme et du citoyen\n« Tout citoyen peut donc parler, écrire,\nimprimer librement, sauf à répondre de l’abus\nde cette liberté dans les cas déterminés par la loi. »",
+      "question": "Quelle liberté cet article protège-t-il ?",
+      "spoken": "Article 11 de la Déclaration des droits de l’homme et du citoyen. Tout citoyen peut donc parler, écrire, imprimer librement, sauf à répondre de l’abus de cette liberté dans les cas déterminés par la loi.",
+      "choices": [
+        "la liberté de circulation",
+        "la liberté d’expression",
+        "la liberté d’association"
+      ],
+      "answer": "la liberté d’expression",
+      "hint": "Parler, écrire, imprimer : c’est s’exprimer, ou circuler ?",
+      "explanation": "Parler, écrire, imprimer librement : c’est la liberté d’expression. La loi punit ses abus, comme l’injure.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un texte de droit",
+          "lines": [
+            "La première ligne dit quel texte on lit.",
+            "Article 10 de la Déclaration : on peut avoir ses opinions, sans troubler l’ordre public.",
+            "Article 11 : chacun peut parler, écrire et imprimer librement, mais répond de ses abus.",
+            "Loi du 29 juillet 1881 : la liberté de la presse.",
+            "Loi de 1901 : la liberté d’association.",
+            "Les réseaux sociaux ne sont pas un espace sans droit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-2-1",
+      "prompt": "Un club de théâtre\nDes élèves et un adulte veulent créer une association.\nIls écrivent ses règles : les statuts.\nIls la déclarent à la préfecture.",
+      "question": "Quelle liberté exercent-ils ?",
+      "spoken": "Un club de théâtre. Des élèves et un adulte veulent créer une association. Ils écrivent ses règles : les statuts. Ils la déclarent à la préfecture.",
+      "choices": [
+        "la liberté de la presse",
+        "la liberté de circulation",
+        "la liberté d’association"
+      ],
+      "answer": "la liberté d’association",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "Créer une association, c’est la liberté d’association, fixée par la loi de 1901. On la déclare à la préfecture.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un texte de droit",
+          "lines": [
+            "La première ligne dit quel texte on lit.",
+            "Article 10 de la Déclaration : on peut avoir ses opinions, sans troubler l’ordre public.",
+            "Article 11 : chacun peut parler, écrire et imprimer librement, mais répond de ses abus.",
+            "Loi du 29 juillet 1881 : la liberté de la presse.",
+            "Loi de 1901 : la liberté d’association.",
+            "Les réseaux sociaux ne sont pas un espace sans droit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-2-2",
+      "prompt": "Article 10 de la Déclaration des droits de l’homme et du citoyen\n« Nul ne doit être inquiété pour ses opinions,\nmême religieuses, pourvu que leur manifestation\nne trouble pas l’ordre public établi par la loi. »",
+      "question": "Quelle limite pose cet article ?",
+      "spoken": "Article 10 de la Déclaration des droits de l’homme et du citoyen. Nul ne doit être inquiété pour ses opinions, même religieuses, pourvu que leur manifestation ne trouble pas l’ordre public établi par la loi.",
+      "choices": [
+        "ne pas troubler l’ordre public",
+        "ne pas avoir d’opinion",
+        "ne pas parler de religion"
+      ],
+      "answer": "ne pas troubler l’ordre public",
+      "hint": "Lis ce qui vient après « pourvu que ».",
+      "explanation": "Chacun peut avoir ses opinions, même religieuses, et les montrer, à condition de ne pas troubler l’ordre public. C’est la seule limite posée par l’article.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un texte de droit",
+          "lines": [
+            "La première ligne dit quel texte on lit.",
+            "Article 10 de la Déclaration : on peut avoir ses opinions, sans troubler l’ordre public.",
+            "Article 11 : chacun peut parler, écrire et imprimer librement, mais répond de ses abus.",
+            "Loi du 29 juillet 1881 : la liberté de la presse.",
+            "Loi de 1901 : la liberté d’association.",
+            "Les réseaux sociaux ne sont pas un espace sans droit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-2-3",
+      "prompt": "Une manifestation peut être interdite si elle menace gravement la … publique.",
+      "spoken": "Une manifestation peut être interdite si elle menace gravement la  (mot manquant)  publique.",
+      "choices": [
+        "opinion",
+        "sécurité",
+        "liberté"
+      ],
+      "answer": "sécurité",
+      "hint": "L’ordre public protège d’abord quoi ?",
+      "explanation": "Les autorités peuvent interdire une manifestation qui menace gravement la sécurité publique : l’ordre public limite les libertés. Une opinion, elle, ne suffit pas pour interdire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un texte de droit",
+          "lines": [
+            "La première ligne dit quel texte on lit.",
+            "Article 10 de la Déclaration : on peut avoir ses opinions, sans troubler l’ordre public.",
+            "Article 11 : chacun peut parler, écrire et imprimer librement, mais répond de ses abus.",
+            "Loi du 29 juillet 1881 : la liberté de la presse.",
+            "Loi de 1901 : la liberté d’association.",
+            "Les réseaux sociaux ne sont pas un espace sans droit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-2-4",
+      "prompt": "Sur un réseau social\nUn compte, sous un pseudo, accuse à tort un commerçant du quartier.\nLe commerçant porte plainte.",
+      "question": "Le pseudo protège-t-il l’auteur ?",
+      "spoken": "Sur un réseau social. Un compte, sous un pseudo, accuse à tort un commerçant du quartier. Le commerçant porte plainte.",
+      "choices": [
+        "oui, un pseudo rend tout permis",
+        "oui, si le compte est privé",
+        "non, la loi s’applique aussi en ligne"
+      ],
+      "answer": "non, la loi s’applique aussi en ligne",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "La loi s’applique en ligne : accuser quelqu’un à tort est puni, même sous un pseudo. La justice peut retrouver l’auteur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un texte de droit",
+          "lines": [
+            "La première ligne dit quel texte on lit.",
+            "Article 10 de la Déclaration : on peut avoir ses opinions, sans troubler l’ordre public.",
+            "Article 11 : chacun peut parler, écrire et imprimer librement, mais répond de ses abus.",
+            "Loi du 29 juillet 1881 : la liberté de la presse.",
+            "Loi de 1901 : la liberté d’association.",
+            "Les réseaux sociaux ne sont pas un espace sans droit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-2-5",
+      "prompt": "Liberté individuelle ou collective ?\nA : choisir sa religion.\nB : se réunir à plusieurs dans une salle.\nC : aller où l’on veut.",
+      "question": "Quelle ligne donne une liberté collective ?",
+      "spoken": "Liberté individuelle ou collective ? A, choisir sa religion. B, se réunir à plusieurs dans une salle. C, aller où l’on veut.",
+      "choices": [
+        "la ligne A",
+        "la ligne B",
+        "la ligne C"
+      ],
+      "answer": "la ligne B",
+      "hint": "Laquelle ne se fait pas seul ?",
+      "explanation": "Se réunir se fait à plusieurs : c’est une liberté collective. Choisir sa religion et aller où l’on veut sont des libertés individuelles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un texte de droit",
+          "lines": [
+            "La première ligne dit quel texte on lit.",
+            "Article 10 de la Déclaration : on peut avoir ses opinions, sans troubler l’ordre public.",
+            "Article 11 : chacun peut parler, écrire et imprimer librement, mais répond de ses abus.",
+            "Loi du 29 juillet 1881 : la liberté de la presse.",
+            "Loi de 1901 : la liberté d’association.",
+            "Les réseaux sociaux ne sont pas un espace sans droit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-2-6",
+      "prompt": "La Déclaration des droits de l’homme et du citoyen, qui proclame nos libertés, date de …",
+      "spoken": "La Déclaration des droits de l’homme et du citoyen, qui proclame nos libertés, date de  (mot manquant) ",
+      "choices": [
+        "1789",
+        "1848",
+        "1958"
+      ],
+      "answer": "1789",
+      "hint": "Elle date de la Révolution française.",
+      "explanation": "La Déclaration des droits de l’homme et du citoyen date de 1789. Elle fait toujours partie de nos règles fondamentales.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un texte de droit",
+          "lines": [
+            "La première ligne dit quel texte on lit.",
+            "Article 10 de la Déclaration : on peut avoir ses opinions, sans troubler l’ordre public.",
+            "Article 11 : chacun peut parler, écrire et imprimer librement, mais répond de ses abus.",
+            "Loi du 29 juillet 1881 : la liberté de la presse.",
+            "Loi de 1901 : la liberté d’association.",
+            "Les réseaux sociaux ne sont pas un espace sans droit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-freedoms-2-7",
+      "prompt": "La liberté d’expression ne permet pas d’appeler à la …",
+      "spoken": "La liberté d’expression ne permet pas d’appeler à la  (mot manquant) ",
+      "choices": [
+        "discussion",
+        "critique",
+        "haine"
+      ],
+      "answer": "haine",
+      "hint": "Relis l’article 11 dans le rappel : qu’est-ce qu’un abus ?",
+      "explanation": "On peut discuter et critiquer. Appeler à la haine contre des personnes est un abus de la liberté d’expression, puni par la loi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un texte de droit",
+          "lines": [
+            "La première ligne dit quel texte on lit.",
+            "Article 10 de la Déclaration : on peut avoir ses opinions, sans troubler l’ordre public.",
+            "Article 11 : chacun peut parler, écrire et imprimer librement, mais répond de ses abus.",
+            "Loi du 29 juillet 1881 : la liberté de la presse.",
+            "Loi de 1901 : la liberté d’association.",
+            "Les réseaux sociaux ne sont pas un espace sans droit."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-4e-rights-freedoms",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

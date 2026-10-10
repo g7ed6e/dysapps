@@ -1,11 +1,14 @@
 // Les cadrages de la caméra : les vues (île, suivi, Carte, voyage), le cadrage de la Carte selon la place libre et la
 // destination, celui de la traversée, et le décalage qui vise un point au-dessus du sol.
 import * as THREE from 'three';
-import { type CadreDeCases, DISTANCE_DE_LA_VUE_DE_L_ILE, islandCenter, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
-import type { PlaceLue, Rect } from '../../freeSpace';
+import { bornesDansLeMonde, bornesDesLieux, type CadreDeCases, ETAGES_DE_LA_BORNE, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, islandCenter, terresDe, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, VUE_DE_LA_CARTE, worldBounds } from '../../world/terrain';
+import { type PlaceLue, type Rect, RESERVE_DU_BAS } from '../../freeSpace';
+import { BULLE, SIGNE } from '../../world/affordance';
+import { PLAQUE } from '../signs';
+import type { LabelBox } from '../../world/labelLayout';
 import type { BiomeId } from '../../biomes';
 import type { ArchipelagoId } from '../../world/archipelago';
-import { mapOf } from '../../world/map';
+import { islandDef, landBox, mapOf } from '../../world/map';
 
 /** Direction de la caméra (x, y de la grille) et hauteur relative : vue de trois quarts, côté visage des créatures. */
 export const VIEW = { dx: 0.3, dy: -0.95, up: 0.42 };
@@ -24,7 +27,7 @@ export const FOLLOW_MAX = 64;
 const MARGE_DE_LA_TRAVERSEE = 8;
 
 /** La Carte : presque à la verticale, le même nord ; la distance se règle sur la place libre (`cadrageDeLaCarte`). */
-const MAP_VIEW = { dx: 0.03, dy: -0.4, up: 1 };
+const MAP_VIEW = VUE_DE_LA_CARTE;
 
 const MAP_FOV = 40;
 
@@ -43,16 +46,37 @@ export const PLANCHER_DE_LA_CARTE = 3.4;
 export const AUTOUR_DE_LA_DESTINATION = { haut: 124, bas: 64, cote: 110 };
 
 /**
- * Le zoom de la Carte, au plus près : une île (`LARGEUR_D_UNE_ILE` cases) y remplit les deux tiers du petit côté de la
- * place libre. Au plus loin, le cadrage d'ouverture (jamais sous le plancher).
+ * Le zoom de la Carte, au plus près : une île (`LARGEUR_D_UNE_ILE` cases) y remplit la moitié du petit côté de la place
+ * libre, deux îles environ en vue : la Carte reste une vue de l'archipel, le gros plan est au monde (piste A du
+ * mainteneur, 7 octobre 2026). Au plus loin, le cadrage d'ouverture (jamais sous le plancher).
  */
-export const ZOOM_DE_LA_CARTE = { ile: 2 / 3 };
+export const ZOOM_DE_LA_CARTE = { ile: 1 / 2 };
+
+/**
+ * Le zoom du monde (hors de la Carte), autour du cadrage géré (1) : au plus loin, la caméra recule un peu moins de
+ * deux fois plus, l'île et ses voisines en vue, jamais l'archipel entier, qui est à la Carte (piste A du mainteneur,
+ * 7 octobre 2026 : le monde pour jouer, la Carte pour s'orienter ; ×0,3 montrait presque tout l'archipel, comme la
+ * Carte) ; au plus près, elle est deux fois et demie plus proche (le bonhomme et les blocs en gros plan, sans passer
+ * sous la brume ni dans le sol).
+ */
+export const ZOOM_DU_MONDE = { loin: 0.6, pres: 2.5 };
 
 /** La largeur d'une île, en cases (environ, world/terrain.ts) : la mesure du zoom le plus proche. */
 export const LARGEUR_D_UNE_ILE = 22;
 
 /** Entre l'archipel entier et le bord de la place libre. */
 const MARGE_DE_LA_CARTE = 12;
+
+
+/** La moitié de la hauteur de l'étiquette d'une île sur la Carte (le nom et l'état, 18 px, labelCanvas.ts), en pixels CSS. */
+const DEMI_HAUTEUR_D_UN_NOM = 31;
+
+/**
+ * De combien le placement des noms monte d'ordinaire le plus haut d'entre eux au-dessus de sa place (une demi-étiquette :
+ * son haut, une étiquette entière au-dessus de son point), en pixels CSS : le cadrage de la Carte le compte pour laisser
+ * au nom le plus haut la marge de la terre la plus basse.
+ */
+const MONTEE_D_UN_NOM = DEMI_HAUTEUR_D_UN_NOM;
 
 /** Sans page autour (un aperçu, un test) : une vue de tablette, moins la bande des boutons du bas. */
 export const HAUTEUR_DE_TABLETTE = 688;
@@ -72,6 +96,12 @@ export interface LectureDeLaCarte {
   place(contexte: string): PlaceLue;
   /** L'île sous la flèche de la Carte, ou le point du monde où elle pose sa pointe (un ouvrage, GD-7), ou `null`. */
   destination(): DestinationDeLaCarte;
+  /**
+   * La taille de la vue, en pixels CSS, et ce que l'interface y pose (`ui`, un nouvel objet à chaque relecture), tenus à
+   * jour quand ils changent (pas relus dans la page image par image) : les bornes s'y cadrent au téléphone
+   * (`cadrerLesBornes`). Sans elle, une vue de tablette.
+   */
+  vue?: Readonly<{ w: number; h: number; ui?: InterfaceDeLaVue | null }>;
 }
 
 /** Ce que la flèche de la Carte désigne : une île, ou le point du monde (x, y au sol, z en hauteur) de sa pointe. */
@@ -83,8 +113,14 @@ export const cleDeLaDestination = (d: DestinationDeLaCarte): string => (d === nu
 /**
  * Le cadrage de la Carte dans la place libre `libre` d'une vue `w` × `h` (pixels CSS) : la caméra recule assez pour que
  * l'archipel entier y tienne, avec la destination, sa flèche et son nom, jusqu'au plancher (`PLANCHER_DE_LA_CARTE`).
- * Au-delà, elle reste au plancher et la destination se pose au centre de la place libre : le bord de l'archipel sort.
- * `echelle` : les pixels par case au centre visé ; `auPlancher` : l'archipel ne tient pas entier.
+ * L'archipel entier, ce sont les terres des lieux d'aujourd'hui, une à une, et le quai du port (`terresDe`), sans la mer
+ * autour (GD-11, consultant UX UI : avec les îles agrandies, des noms se taisaient ; vue de biais, les terres tiennent un
+ * peu plus près que le rectangle du cadre, de 2 à 7 % sur la tablette) ; avec `region`, le mode « Modifier le plan », le
+ * cadre entier de la région, où se voient ses places libres. Au-delà, elle reste au plancher et la destination se pose au centre de la place
+ * libre : le bord de l'archipel sort. L'île du `bonhomme`, si elle sort alors de la place, y entre avec la destination,
+ * la Carte glissée juste ce qu'il faut, si les deux y tiennent (chacune avec `AUTOUR_DE_LA_DESTINATION`) ; sinon, son nom
+ * glisse au bord de l'écran, sous le médaillon (world/labelLayout.ts). `echelle` : les pixels par case au centre visé ;
+ * `auPlancher` : l'archipel ne tient pas entier.
  */
 export function cadrageDeLaCarte(
   archipel: ArchipelagoId,
@@ -92,18 +128,38 @@ export function cadrageDeLaCarte(
   w: number,
   h: number,
   libre: Rect,
+  { bonhomme = null, region = false }: { bonhomme?: BiomeId | null; region?: boolean } = {},
 ): { target: THREE.Vector3; pos: THREE.Vector3; echelle: number; auPlancher: boolean } {
   const u = new THREE.Vector3(MAP_VIEW.dx, MAP_VIEW.up, MAP_VIEW.dy).normalize();
   const tan = Math.tan((MAP_FOV / 2) * (Math.PI / 180));
   const cam = new THREE.PerspectiveCamera(MAP_FOV, w / h, 0.5, 1e5);
-  // L'étendue de l'archipel (terres, îlots et port, world/terrain.ts), à l'altitude de ses îles.
+  // L'étendue de l'archipel (les terres et le port, ou le cadre de la région ; world/terrain.ts), à l'altitude de ses îles.
   const altitude = mapOf(archipel)[0]?.altitude ?? 0;
-  const e = worldBounds(archipel);
-  const terres = [e.minX, e.maxX].flatMap((x) => [e.minY, e.maxY].map((y) => new THREE.Vector3(x, altitude, y)));
+  const e = region ? worldBounds(archipel) : bornesDesLieux(archipel);
+  const coins = (b: { minX: number; maxX: number; minY: number; maxY: number }) => [b.minX, b.maxX].flatMap((x) => [b.minY, b.maxY].map((y) => new THREE.Vector3(x, altitude, y)));
+  const terres = region ? coins(e) : terresDe(archipel).flatMap(coins);
   // La pointe de la flèche se pose au centre de l'île (three/labels.ts), ou sur le point donné (un ouvrage).
   const c = typeof destination === 'string' ? islandCenter(destination) : null;
   const point = typeof destination === 'string' ? null : destination;
   const dest = c ? new THREE.Vector3(c.x + 0.5, c.z, c.y + 0.5) : point ? new THREE.Vector3(point.x, point.z, point.y) : null;
+  // L'île du bonhomme, au plancher, se cadre avec la destination quand elle sort de la place (`avecLeBonhomme`).
+  const b = bonhomme && bonhomme !== destination ? islandCenter(bonhomme) : null;
+  const ileDuBonhomme = b ? new THREE.Vector3(b.x + 0.5, b.z, b.y + 0.5) : null;
+  let avecLeBonhomme = false;
+  /**
+   * En portrait, les coins de la terre de l'île du bonhomme (`landBox`), au sol : elle entre dans la place par sa terre
+   * entière, plutôt que par son milieu et ce qui entoure une destination, trop large pour tenir avec elle sur l'écran
+   * debout (DA, captures emc-4e-3e-1 : la Porte des libertés, au flanc ouest du 4e, coupée par le bord gauche).
+   */
+  const terreDuBonhomme =
+    b && bonhomme && h > w
+      ? (() => {
+          const t = landBox(islandDef(bonhomme));
+          return [t.x0, t.x1].flatMap((x) => [t.y0, t.y1].map((y) => new THREE.Vector3(x, b.z, y)));
+        })()
+      : null;
+  /** La destination et ce qui l'entoure comptent dans ce qui doit tenir (voir « Modifier le plan », plus bas). */
+  let withDestination = true;
   const sol = dest?.y ?? altitude;
   const v = new THREE.Vector3();
   const target = new THREE.Vector3();
@@ -131,10 +187,50 @@ export function cadrageDeLaCarte(
         const q = ecran(p);
         ajouter(q.x, q.y);
       }
-    if (dest) {
-      const q = ecran(dest);
+    for (const p of [withDestination ? dest : null, avecLeBonhomme && !terreDuBonhomme ? ileDuBonhomme : null]) {
+      if (!p) continue;
+      const q = ecran(p);
       ajouter(q.x - A.cote, q.y - A.haut);
       ajouter(q.x + A.cote, q.y + A.bas);
+    }
+    // En portrait, l'île du bonhomme par sa terre (voir `terreDuBonhommeDehors`).
+    if (avecLeBonhomme && terreDuBonhomme)
+      for (const p of terreDuBonhomme) {
+        const q = ecran(p);
+        ajouter(q.x, q.y);
+      }
+    return r;
+  };
+  /** À l'écran, les lieux d'aujourd'hui (îlots et port compris) et leurs noms (`HAUTEUR_DES_NOMS` au-dessus de chaque île). */
+  const lieux = () => {
+    const b = bornesDesLieux(archipel);
+    const r = { y0: Infinity, y1: -Infinity };
+    for (const x of [b.minX, b.maxX])
+      for (const y of [b.minY, b.maxY]) {
+        v.set(x, altitude, y).project(cam);
+        const q = ((1 - v.y) / 2) * h;
+        r.y0 = Math.min(r.y0, q);
+        r.y1 = Math.max(r.y1, q);
+      }
+    for (const def of mapOf(archipel)) {
+      const p = islandCenter(def.id);
+      v.set(p.x + 0.5, p.z + HAUTEUR_DES_NOMS, p.y + 0.5).project(cam);
+      r.y0 = Math.min(r.y0, ((1 - v.y) / 2) * h - DEMI_HAUTEUR_D_UN_NOM);
+    }
+    return r;
+  };
+  /**
+   * À l'écran, le cadre des îles : en largeur, leurs cœurs (le milieu de chaque île, sous son nom) ; en hauteur, les lieux
+   * d'aujourd'hui et leurs noms (`lieux`).
+   */
+  const ilesALEcran = () => {
+    const r = { x0: Infinity, x1: -Infinity, ...lieux() };
+    for (const def of mapOf(archipel)) {
+      const p = islandCenter(def.id);
+      v.set(p.x + 0.5, p.z, p.y + 0.5).project(cam);
+      const q = ((v.x + 1) / 2) * w;
+      r.x0 = Math.min(r.x0, q);
+      r.x1 = Math.max(r.x1, q);
     }
     return r;
   };
@@ -148,7 +244,16 @@ export function cadrageDeLaCarte(
     return r.x1 - r.x0 <= lw && r.y1 - r.y0 <= lh;
   };
   const plancher = h / (2 * tan * PLANCHER_DE_LA_CARTE);
-  const auPlancher = !tient(plancher);
+  let auPlancher = !tient(plancher);
+  if (auPlancher && region) {
+    // « Modifier le plan » garde le cadre entier de la région (GD-9) : une destination au fond du cadre (au 4e, la Vigie
+    // des signaux ou le Bassin des maquettes, au rang du fond) y ajoutait sa flèche et son nom au-dessus d'elle, et la
+    // Carte passait au plancher, centrée sur elle : la Source des espèces sortait au coin bas droit (GD-12, relecture
+    // UX UI, 9 octobre 2026). Le cadre seul, s'il tient ; la bulle de la flèche se tient dans la place (`tenirLaBulle`, three/labels.ts).
+    withDestination = false;
+    auPlancher = !tient(plancher);
+    if (auPlancher) withDestination = true;
+  }
   let d = plancher;
   if (!auPlancher) {
     // Le plus près où tout tient : la taille à l'écran décroît avec la distance, une dichotomie suffit.
@@ -173,25 +278,110 @@ export function cadrageDeLaCarte(
   // Au plancher, un cadre plus haut que la place s'aligne sur son haut : le nom au-dessus de la flèche reste entier.
   const r0 = (placer(d), cadre(tout));
   if (r0.y1 - r0.y0 > lh) vise.y = libre.y0 + MARGE_DE_LA_CARTE + (r0.y1 - r0.y0) / 2;
-  for (let i = 0; i < 4; i++) {
-    const m0 = milieu();
-    target.x += 1;
-    const mx = milieu();
-    target.x -= 1;
-    target.z += 1;
-    const mz = milieu();
-    target.z -= 1;
-    // Le déplacement à l'écran d'une case vers l'est (x) et vers le nord (z), puis la case à viser.
-    const a = mx.x - m0.x;
-    const b = mz.x - m0.x;
-    const cc = mx.y - m0.y;
-    const dd = mz.y - m0.y;
-    const det = a * dd - b * cc;
-    if (Math.abs(det) < 1e-9) break;
-    const ex = vise.x - m0.x;
-    const ey = vise.y - m0.y;
-    target.x += (dd * ex - b * ey) / det;
-    target.z += (a * ey - cc * ex) / det;
+  const glisser = () => {
+    for (let i = 0; i < 4; i++) {
+      const m0 = milieu();
+      target.x += 1;
+      const mx = milieu();
+      target.x -= 1;
+      target.z += 1;
+      const mz = milieu();
+      target.z -= 1;
+      // Le déplacement à l'écran d'une case vers l'est (x) et vers le nord (z), puis la case à viser.
+      const a = mx.x - m0.x;
+      const b = mz.x - m0.x;
+      const cc = mx.y - m0.y;
+      const dd = mz.y - m0.y;
+      const det = a * dd - b * cc;
+      if (Math.abs(det) < 1e-9) break;
+      const ex = vise.x - m0.x;
+      const ey = vise.y - m0.y;
+      target.x += (dd * ex - b * ey) / det;
+      target.z += (a * ey - cc * ex) / det;
+    }
+  };
+  glisser();
+  if (!tout && ileDuBonhomme) {
+    // Au plancher, l'île du bonhomme hors de la place (avec ce qui l'entoure, comme la destination) y entre, la Carte
+    // glissée juste ce qu'il faut, si les deux tiennent ensemble : son nom ne sort plus de l'écran (référent dys,
+    // consultant UX UI, GD-11). Sinon, la destination reste seule au centre.
+    placer(d);
+    avecLeBonhomme = true;
+    const r = cadre(false);
+    const M = MARGE_DE_LA_CARTE;
+    const pousser = (a0: number, a1: number, b0: number, b1: number) => (a0 < b0 ? b0 - a0 : a1 > b1 ? b1 - a1 : 0);
+    const ex = pousser(r.x0, r.x1, libre.x0 + M, libre.x1 - M);
+    const ey = pousser(r.y0, r.y1, libre.y0 + M, libre.y1 - M);
+    v.copy(ileDuBonhomme).project(cam);
+    const q = { x: ((v.x + 1) / 2) * w, y: ((1 - v.y) / 2) * h };
+    // En portrait, l'île du bonhomme compte hors de la place dès que sa terre en déborde, même son milieu dedans : au 4e,
+    // en 800 × 1280, la Porte des libertés, au flanc ouest, était coupée par le bord gauche, et son nom se posait à
+    // mi-chemin d'elle et du Jardin des heures (DA, captures emc-4e-3e-1). En paysage, son milieu seul, comme avant.
+    const terreDuBonhommeDehors = () =>
+      terreDuBonhomme !== null &&
+      terreDuBonhomme.some((p) => {
+        v.copy(p).project(cam);
+        const px = ((v.x + 1) / 2) * w;
+        const py = ((1 - v.y) / 2) * h;
+        return px < libre.x0 + M || px > libre.x1 - M || py < libre.y0 + M || py > libre.y1 - M;
+      });
+    const horsDeLaPlace = q.x < libre.x0 || q.x > libre.x1 || q.y < libre.y0 || q.y > libre.y1 || terreDuBonhommeDehors();
+    avecLeBonhomme = horsDeLaPlace && (ex !== 0 || ey !== 0) && r.x1 - r.x0 <= lw && r.y1 - r.y0 <= lh;
+    if (avecLeBonhomme) {
+      vise.x = (r.x0 + r.x1) / 2 + ex;
+      vise.y = (r.y0 + r.y1) / 2 + ey;
+      glisser();
+    }
+  }
+  if (!auPlancher && r0.y1 - r0.y0 <= lh) {
+    // Les lieux occupent rarement tout le cadre de leur région : au 5e et au 4e, ils sont au nord, et le sud du cadre
+    // laissait 250 px de mer vide sous eux sur la tablette, leurs noms à 5 px du haut (UX UI, HG-3). Les lieux et leurs
+    // noms glissent au milieu de la place, haut et bas à égalité, tant que les terres (ou dans « Modifier le plan » le
+    // cadre entier, GD-9), la destination et ce qui l'entoure restent dedans.
+    placer(d);
+    const r = cadre(true);
+    const l = lieux();
+    // En paysage (la tablette), le haut : le placement des noms (world/labelLayout.ts) monte d'ordinaire le nom le plus
+    // haut d'une demi-étiquette ou d'une étiquette entière pour le dégager de ses voisins (mesuré sur la tablette,
+    // GD-11, consultant UX UI : de 34 à 67 px) ; le haut d'un nom se compte donc une étiquette entière au-dessus de son
+    // point (`MONTEE_D_UN_NOM`). Le bas : la terre la plus basse (`terres`), pas le coin du rectangle des lieux, qui
+    // tombe dans la mer. Le nom le plus haut a ainsi, à peu près, la marge de la terre la plus basse au-dessus des
+    // boutons (de 1 à 38 px d'écart sur la tablette, en taille normale et en OpenDyslexic 32 px, contre 29 à 80 avant).
+    // En portrait, l'estimation d'avant : la nouvelle y taisait des noms de plus au 5e et au 4e (three/mapLabels.test.ts).
+    if (w >= h) {
+      l.y0 -= MONTEE_D_UN_NOM;
+      l.y1 = -Infinity;
+      for (const p of terres) {
+        v.copy(p).project(cam);
+        l.y1 = Math.max(l.y1, ((1 - v.y) / 2) * h);
+      }
+    }
+    const voulu = (libre.y0 + libre.y1) / 2 - (l.y0 + l.y1) / 2;
+    const ecart = Math.min(libre.y1 - MARGE_DE_LA_CARTE - r.y1, Math.max(libre.y0 + MARGE_DE_LA_CARTE - r.y0, voulu));
+    if (Math.abs(ecart) > 0.5) {
+      vise.y += ecart;
+      glisser();
+    }
+  }
+  if (auPlancher && dest && h > w) {
+    // Au plancher, la destination au centre laissait sortir le bord de l'archipel alors qu'il tenait dans la place : en
+    // portrait 800 × 1280, au 3e, la Ruche des réseaux et le Refuge des carnets sortaient à gauche, 450 px vides en haut
+    // (référent dys, SC-3). En portrait, les îles et leurs noms glissent au milieu de la place, dans chaque sens où elles
+    // y tiennent (en largeur, le milieu de chacune), tant que la destination et ce qui l'entoure restent dedans. En
+    // paysage (la tablette, panneau ouvert), la destination reste au centre : les noms tus mesurés y restent ceux d'avant
+    // (three/mapLabels.test.ts).
+    placer(d);
+    const l = ilesALEcran();
+    const r = cadre(false);
+    const M = MARGE_DE_LA_CARTE;
+    const centrer = (tient: boolean, voulu: number, bas: number, haut: number) => (tient && bas <= haut ? Math.min(haut, Math.max(bas, voulu)) : 0);
+    const ex = centrer(l.x1 - l.x0 <= lw, (libre.x0 + libre.x1) / 2 - (l.x0 + l.x1) / 2, libre.x0 + M - r.x0, libre.x1 - M - r.x1);
+    const ey = centrer(l.y1 - l.y0 <= lh, (libre.y0 + libre.y1) / 2 - (l.y0 + l.y1) / 2, libre.y0 + M - r.y0, libre.y1 - M - r.y1);
+    if (Math.abs(ex) > 0.5 || Math.abs(ey) > 0.5) {
+      vise.x += ex;
+      vise.y += ey;
+      glisser();
+    }
   }
   placer(d);
   return { target: target.clone(), pos: cam.position.clone(), echelle: h / (2 * d * tan), auPlancher };
@@ -317,4 +507,157 @@ export function decalagePourViser(cam: THREE.PerspectiveCamera, point: THREE.Vec
   const t = (point.y - o.y) / d.y;
   if (t <= 0) return out.set(0, 0, 0);
   return out.set(point.x - (o.x + d.x * t), 0, point.z - (o.z + d.z * t));
+}
+
+/**
+ * Les bornes de mission au téléphone en portrait (GD-14, consultant UX UI) : les bornes de l'île et leur bulle tiennent
+ * entières dans la vue, à `marge` pixels CSS de ses bords, sous les boutons du haut et au-dessus de la barre du bas
+ * (`InterfaceDeLaVue`). Seulement
+ * dans une vue plus étroite que `largeurMax` (un téléphone en portrait ; la tablette, même panneau ouvert, garde son
+ * cadrage). La bulle la plus grande (`BULLE.prochainePx`, la prochaine chose à faire) : sa plaque, de `demiBulle` de part
+ * et d'autre de sa pointe, et `hautBulle` au-dessus d'elle (la pointe, puis la plaque, ../signs.ts, `PLAQUE`).
+ */
+export const BORNES_AU_TELEPHONE = {
+  largeurMax: 480,
+  marge: 24,
+  demiBulle: BULLE.prochainePx / 2,
+  hautBulle: Math.ceil(((PLAQUE.pointe.bas - PLAQUE.y) * BULLE.prochainePx) / PLAQUE.cote),
+} as const;
+
+/**
+ * Ce que l'interface pose sur la vue, lu dans la page (three/WorldCanvas.tsx) : les boutons du haut (Menu et la colonne,
+ * ou la rangée en grand texte au téléphone, des classes : `data-couvre="bouton"`), et la hauteur de la barre du bas
+ * (`--barre-h`, ../../useBubblePlacement.ts), en pixels CSS. Sans elle (un test), aucun bouton et `RESERVE_DU_BAS`.
+ */
+export interface InterfaceDeLaVue {
+  boutons: readonly LabelBox[];
+  barre: number;
+}
+
+/** Ce que `cadrerLesBornes` a fait : le glissement à plat de la cible et de la caméra, puis le recul (1 : aucun). */
+export interface CadrageDesBornes {
+  glisse: THREE.Vector3;
+  recul: number;
+}
+
+const HAUT = new THREE.Vector3(0, 1, 0);
+
+/**
+ * Le moins qu'il faut pour que les bornes `bornes` (et leur bulle) tiennent dans une vue `w` × `h` (pixels CSS) vue de
+ * `pos` vers `target` (champ vertical `fov`), au téléphone en portrait (`BORNES_AU_TELEPHONE`) : si elles débordent d'un
+ * côté, la cible et la caméra glissent à plat, de côté, juste assez ; si elles ne tiennent pas en largeur, la caméra
+ * recule d'abord vers l'arrière de sa direction. Ni le nord ni la direction de vue ne changent. Si elles tiennent déjà,
+ * ou hors du téléphone : rien (`glisse` nul, `recul` 1). Le bas : la borne la plus proche reste au-dessus de la barre du
+ * bas (`ui.barre`) ; le haut : chaque bulle sous la marge du haut et sous les boutons du haut qu'elle croise (`ui.boutons`,
+ * lus dans la page : la colonne des classes, ou leur rangée en grand texte) ; la caméra glisse alors vers l'avant ou
+ * l'arrière.
+ * Calculé sans caméra : la projection de `THREE.PerspectiveCamera.lookAt`, refaite.
+ */
+export function cadrerLesBornes(
+  target: THREE.Vector3,
+  pos: THREE.Vector3,
+  bornes: readonly { x: number; y: number; sommet: number }[],
+  w: number,
+  h: number,
+  fov: number,
+  ui: InterfaceDeLaVue | null = null,
+): CadrageDesBornes {
+  const out: CadrageDesBornes = { glisse: new THREE.Vector3(), recul: 1 };
+  const B = BORNES_AU_TELEPHONE;
+  if (w >= h || w > B.largeurMax || bornes.length === 0) return out;
+  const t = target.clone();
+  const p = pos.clone();
+  const tanV = Math.tan((fov * Math.PI) / 360);
+  const tanH = tanV * (w / h);
+  const f = new THREE.Vector3();
+  const r = new THREE.Vector3();
+  const u = new THREE.Vector3();
+  const v = new THREE.Vector3();
+  /** Où se pose à l'écran (pixels CSS) le point (x, hauteur z, y) du monde ; `profondeur` : sa distance le long de la vue. */
+  const ecran = (x: number, z: number, y: number) => {
+    v.set(x, z, y).sub(p);
+    const profondeur = v.dot(f);
+    return { x: ((v.dot(r) / (profondeur * tanH) + 1) / 2) * w, y: ((1 - v.dot(u) / (profondeur * tanV)) / 2) * h, profondeur };
+  };
+  const lo = B.marge;
+  const hi = w - B.marge;
+  const haut = B.marge;
+  const bas = h - Math.max(RESERVE_DU_BAS, ui?.barre ?? 0) - B.marge;
+  // Les boutons du haut de la vue (au-dessus de son milieu) : une bulle qui passe sous l'un d'eux se tient `marge` plus bas.
+  const boutons = (ui?.boutons ?? []).filter((b) => b.y < h / 2);
+  for (let i = 0; i < 8; i++) {
+    f.subVectors(t, p).normalize();
+    r.crossVectors(f, HAUT).normalize();
+    u.crossVectors(r, f);
+    let gauche = { x: Infinity, profondeur: 1 };
+    let droite = { x: -Infinity, profondeur: 1 };
+    /** Le plus petit écart entre le haut d'une bulle et le haut qui lui est permis (négatif : elle monte trop haut). */
+    let dessus = { y: Infinity, profondeur: 1 };
+    let dessous = { y: -Infinity, profondeur: 1 };
+    for (const b of bornes) {
+      const pointe = ecran(b.x, b.sommet + SIGNE.auDessus, b.y);
+      const pied = ecran(b.x, b.sommet - ETAGES_DE_LA_BORNE.ardoise, b.y);
+      if (pointe.x - B.demiBulle < gauche.x) gauche = { x: pointe.x - B.demiBulle, profondeur: pointe.profondeur };
+      if (pointe.x + B.demiBulle > droite.x) droite = { x: pointe.x + B.demiBulle, profondeur: pointe.profondeur };
+      // Le haut permis de la bulle : sous chaque bouton du haut au-dessus duquel elle passe (à `marge` près de côté), sinon
+      // la marge du haut.
+      let plafond: number = haut;
+      for (const o of boutons)
+        if (pointe.x + B.demiBulle + B.marge > o.x - o.w / 2 && pointe.x - B.demiBulle - B.marge < o.x + o.w / 2) plafond = Math.max(plafond, o.y + o.h / 2 + B.marge);
+      if (pointe.y - B.hautBulle - plafond < dessus.y) dessus = { y: pointe.y - B.hautBulle - plafond, profondeur: pointe.profondeur };
+      if (pied.y > dessous.y) dessous = { y: pied.y, profondeur: pied.profondeur };
+    }
+    const large = droite.x - gauche.x;
+    if (large > hi - lo) {
+      // Trop large : la caméra recule (la part des bulles, de taille fixe, ne rapetisse pas).
+      const k = (large - 2 * B.demiBulle) / (hi - lo - 2 * B.demiBulle);
+      p.sub(t).multiplyScalar(k * 1.01).add(t);
+      out.recul *= k * 1.01;
+      continue;
+    }
+    // Le glissement de côté (en cases) qui pose le bord qui déborde sur la marge : un point à la profondeur `z` bouge à
+    // l'écran de −s / (z tanH) × w / 2 quand la caméra glisse de `s` vers la droite de la vue.
+    const dx = gauche.x < lo ? lo - gauche.x : droite.x > hi ? hi - droite.x : 0;
+    const profondeurX = gauche.x < lo ? gauche.profondeur : droite.profondeur;
+    // De même, vers l'avant (le haut de l'écran) : à plat, la projection du haut de la vue sur le sol.
+    const dy = dessous.y > bas ? bas - dessous.y : dessus.y < 0 ? -dessus.y : 0;
+    if (dx === 0 && dy === 0) break;
+    const s = (-dx * profondeurX * tanH) / (w / 2);
+    v.copy(r).multiplyScalar(s);
+    if (dy !== 0) {
+      // Glisser vers l'avant à plat de `a` cases fait monter un point à l'écran (vers le haut) d'environ a·(u·avant) / (z tanV) × h / 2.
+      const avant = new THREE.Vector3(f.x, 0, f.z).normalize();
+      const z = dy < 0 ? dessous.profondeur : dessus.profondeur;
+      const a = (-dy * z * tanV) / (h / 2) / Math.max(0.2, avant.dot(u));
+      v.addScaledVector(avant, -a);
+    }
+    t.add(v);
+    p.add(v);
+    out.glisse.add(v);
+  }
+  return out;
+}
+
+/**
+ * Les boîtes à l'écran (pixels CSS d'une vue `W` × `H`, vue par `cam`) des bornes des lieux `ids` avec leur bulle la plus
+ * grande (de la plaque au pied de la borne) : aucune étiquette d'île ne s'y pose (three/labels.ts, GD-14 : au Phare des
+ * fonctions, au téléphone, le nom de l'île couvrait une borne). Seules celles devant la caméra et dans la vue.
+ */
+export function boitesDesBornes(cam: THREE.Camera, W: number, H: number, ids: readonly BiomeId[]): LabelBox[] {
+  const B = BORNES_AU_TELEPHONE;
+  const out: LabelBox[] = [];
+  const p = new THREE.Vector3();
+  const vu = (x: number, z: number, y: number) => {
+    p.set(x, z, y).project(cam);
+    return p.z > 1 ? null : { x: ((p.x + 1) / 2) * W, y: ((1 - p.y) / 2) * H };
+  };
+  for (const id of ids)
+    for (const b of bornesDansLeMonde(id)) {
+      const pointe = vu(b.x, b.sommet + SIGNE.auDessus, b.y);
+      const pied = pointe && vu(b.x, b.sommet - ETAGES_DE_LA_BORNE.ardoise, b.y);
+      if (!pointe || !pied || pointe.x < -B.demiBulle || pointe.x > W + B.demiBulle || pied.y < 0 || pointe.y - B.hautBulle > H) continue;
+      const haut = pointe.y - B.hautBulle;
+      out.push({ x: pointe.x, y: (haut + pied.y) / 2, w: 2 * B.demiBulle, h: pied.y - haut });
+    }
+  return out;
 }

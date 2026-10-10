@@ -1,6 +1,6 @@
 # Les missions du portail
 
-La page **Missions** (par le menu) mène aux pages **Français**, **Maths** et **Anglais**, qui listent les missions du portail, puis, sous « Dans Blocland » (ou « Dans l’aventure »), les îles de la même matière, de la 6e à la 3e. Les mêmes missions se trouvent derrière les trois portes de l’[école du village](blocland.md#lecole-du-village), dans l’aventure. Une mission du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
+La page **Missions** (par le menu) mène aux pages **Français**, **Maths** et **Anglais**, qui listent les missions du portail, puis, sous « Dans Blocland » (ou « Dans l’aventure »), les îles de la même matière, de la 6e à la 3e. Les mêmes missions se trouvent derrière les trois portes de l’[école du village](blocland.md#lecole-du-village), dans l’aventure. L’Histoire-géo, la SVT, la Physique-chimie, la Technologie, l’EMC, la deuxième langue et le latin ou le grec n’ont que leurs îles : leur page s’ouvre depuis le menu. Une mission du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
 
 ![La page Missions : trois cartes, Français, Maths et Anglais, avec le nombre de missions disponibles.](/captures/quetes.jpg)
 

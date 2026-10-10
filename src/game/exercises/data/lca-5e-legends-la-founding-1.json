@@ -1,0 +1,240 @@
+{
+  "id": "lca-5e-legends-la-founding-1",
+  "biome": "lca-5e-legends",
+  "type": "la-founding",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-5e-legends-la-founding-1-0",
+      "prompt": "Selon la légende, Romulus et Rémus sont nourris par une …",
+      "spoken": "Selon la légende, Romulus et Rémus sont nourris par une  (mot manquant) ",
+      "choices": [
+        "chèvre",
+        "louve",
+        "ourse"
+      ],
+      "answer": "louve",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Une louve trouve les jumeaux au bord du Tibre et les nourrit. La louve est devenue l’emblème de Rome.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fondation de Rome, selon la légende",
+          "lines": [
+            "Énée, prince troyen, fuit Troie et arrive dans le Latium : c’est l’ancêtre des Romains.",
+            "Romulus et Rémus sont des jumeaux, abandonnés sur le Tibre, le fleuve de Rome.",
+            "Une louve les trouve et les nourrit.",
+            "Romulus fonde Rome en 753 avant J.-C., sur la colline du Palatin.",
+            "Rome est bâtie sur sept collines.",
+            "Le Latium : la région de Rome. Le latin est la langue du Latium."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-1-1",
+      "prompt": "Selon la légende, Romulus fonde Rome en …",
+      "spoken": "Selon la légende, Romulus fonde Rome en  (mot manquant) ",
+      "choices": [
+        "753 avant J.-C.",
+        "509 avant J.-C.",
+        "44 avant J.-C."
+      ],
+      "answer": "753 avant J.-C.",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "La légende place la fondation de Rome en 753 avant J.-C. En 509 avant J.-C. commence la République ; en 44 avant J.-C., César meurt.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fondation de Rome, selon la légende",
+          "lines": [
+            "Énée, prince troyen, fuit Troie et arrive dans le Latium : c’est l’ancêtre des Romains.",
+            "Romulus et Rémus sont des jumeaux, abandonnés sur le Tibre, le fleuve de Rome.",
+            "Une louve les trouve et les nourrit.",
+            "Romulus fonde Rome en 753 avant J.-C., sur la colline du Palatin.",
+            "Rome est bâtie sur sept collines.",
+            "Le Latium : la région de Rome. Le latin est la langue du Latium."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-1-2",
+      "prompt": "Énée, de Troie au Latium\nLes Grecs prennent et brûlent la ville de Troie.\nÉnée, un prince troyen, s’enfuit avec son père et son fils.\nAprès un long voyage, il arrive dans le Latium.",
+      "question": "D’où vient Énée ?",
+      "spoken": "Énée, de Troie au Latium. Les Grecs prennent et brûlent la ville de Troie. Énée, un prince troyen, s’enfuit avec son père et son fils. Après un long voyage, il arrive dans le Latium.",
+      "choices": [
+        "de Rome",
+        "d’Athènes",
+        "de Troie"
+      ],
+      "answer": "de Troie",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "Énée est un prince troyen : il vient de Troie, la ville prise par les Grecs. Il arrive ensuite dans le Latium, la région où Rome sera fondée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fondation de Rome, selon la légende",
+          "lines": [
+            "Énée, prince troyen, fuit Troie et arrive dans le Latium : c’est l’ancêtre des Romains.",
+            "Romulus et Rémus sont des jumeaux, abandonnés sur le Tibre, le fleuve de Rome.",
+            "Une louve les trouve et les nourrit.",
+            "Romulus fonde Rome en 753 avant J.-C., sur la colline du Palatin.",
+            "Rome est bâtie sur sept collines.",
+            "Le Latium : la région de Rome. Le latin est la langue du Latium."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-1-3",
+      "prompt": "Le fleuve qui traverse Rome s’appelle le …",
+      "spoken": "Le fleuve qui traverse Rome s’appelle le  (mot manquant) ",
+      "choices": [
+        "Tibre",
+        "Rhône",
+        "Nil"
+      ],
+      "answer": "Tibre",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le Tibre traverse Rome. Selon la légende, les jumeaux y sont abandonnés, puis le fleuve les dépose sur la rive.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fondation de Rome, selon la légende",
+          "lines": [
+            "Énée, prince troyen, fuit Troie et arrive dans le Latium : c’est l’ancêtre des Romains.",
+            "Romulus et Rémus sont des jumeaux, abandonnés sur le Tibre, le fleuve de Rome.",
+            "Une louve les trouve et les nourrit.",
+            "Romulus fonde Rome en 753 avant J.-C., sur la colline du Palatin.",
+            "Rome est bâtie sur sept collines.",
+            "Le Latium : la région de Rome. Le latin est la langue du Latium."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-1-4",
+      "prompt": "Rome est bâtie sur … collines.",
+      "spoken": "Rome est bâtie sur  (mot manquant)  collines.",
+      "choices": [
+        "trois",
+        "sept",
+        "douze"
+      ],
+      "answer": "sept",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Rome est la ville aux sept collines. Romulus fonde la ville sur l’une d’elles, le Palatin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fondation de Rome, selon la légende",
+          "lines": [
+            "Énée, prince troyen, fuit Troie et arrive dans le Latium : c’est l’ancêtre des Romains.",
+            "Romulus et Rémus sont des jumeaux, abandonnés sur le Tibre, le fleuve de Rome.",
+            "Une louve les trouve et les nourrit.",
+            "Romulus fonde Rome en 753 avant J.-C., sur la colline du Palatin.",
+            "Rome est bâtie sur sept collines.",
+            "Le Latium : la région de Rome. Le latin est la langue du Latium."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-1-5",
+      "prompt": "Romulus et Rémus\nLes deux frères veulent fonder une ville.\nIls se disputent pour savoir qui sera le roi.\nRomulus tue Rémus, et la ville prend son nom : Rome.",
+      "question": "D’où vient le nom de Rome, selon la légende ?",
+      "spoken": "Romulus et Rémus. Les deux frères veulent fonder une ville. Ils se disputent pour savoir qui sera le roi. Romulus tue Rémus, et la ville prend son nom : Rome.",
+      "choices": [
+        "de son fleuve, le Tibre",
+        "de son premier roi, Romulus",
+        "de la louve qui nourrit les jumeaux"
+      ],
+      "answer": "de son premier roi, Romulus",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Selon la légende, Rome porte le nom de Romulus, son fondateur et son premier roi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fondation de Rome, selon la légende",
+          "lines": [
+            "Énée, prince troyen, fuit Troie et arrive dans le Latium : c’est l’ancêtre des Romains.",
+            "Romulus et Rémus sont des jumeaux, abandonnés sur le Tibre, le fleuve de Rome.",
+            "Une louve les trouve et les nourrit.",
+            "Romulus fonde Rome en 753 avant J.-C., sur la colline du Palatin.",
+            "Rome est bâtie sur sept collines.",
+            "Le Latium : la région de Rome. Le latin est la langue du Latium."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-1-6",
+      "prompt": "Le latin est d’abord la langue du …, la région de Rome.",
+      "spoken": "Le latin est d’abord la langue du (mot manquant), la région de Rome.",
+      "choices": [
+        "Latium",
+        "Palatin",
+        "Tibre"
+      ],
+      "answer": "Latium",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Le latin est la langue du Latium, la région de Rome ; il s’est répandu avec Rome dans tout l’Empire. Le Palatin est une colline, le Tibre un fleuve.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fondation de Rome, selon la légende",
+          "lines": [
+            "Énée, prince troyen, fuit Troie et arrive dans le Latium : c’est l’ancêtre des Romains.",
+            "Romulus et Rémus sont des jumeaux, abandonnés sur le Tibre, le fleuve de Rome.",
+            "Une louve les trouve et les nourrit.",
+            "Romulus fonde Rome en 753 avant J.-C., sur la colline du Palatin.",
+            "Rome est bâtie sur sept collines.",
+            "Le Latium : la région de Rome. Le latin est la langue du Latium."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-1-7",
+      "prompt": "Le héros troyen qui arrive en Italie, ancêtre des Romains selon la légende, s’appelle …",
+      "spoken": "Le héros troyen qui arrive en Italie, ancêtre des Romains selon la légende, s’appelle  (mot manquant) ",
+      "choices": [
+        "Ulysse",
+        "Achille",
+        "Énée"
+      ],
+      "answer": "Énée",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Énée, prince troyen, est l’ancêtre des Romains selon la légende. Ulysse et Achille sont des héros grecs, ennemis de Troie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fondation de Rome, selon la légende",
+          "lines": [
+            "Énée, prince troyen, fuit Troie et arrive dans le Latium : c’est l’ancêtre des Romains.",
+            "Romulus et Rémus sont des jumeaux, abandonnés sur le Tibre, le fleuve de Rome.",
+            "Une louve les trouve et les nourrit.",
+            "Romulus fonde Rome en 753 avant J.-C., sur la colline du Palatin.",
+            "Rome est bâtie sur sept collines.",
+            "Le Latium : la région de Rome. Le latin est la langue du Latium."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-5e-legends",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -14,10 +14,13 @@ import { Icon } from './Icon';
 import { frenchTypography } from './math/RichText';
 import { SpeakButton } from './SpeakButton';
 import { Syllabified } from './Syllabified';
+import { mesuresAutomatiques } from '../game/rendering';
 
 const SESSION_KEY = 'dysapps:title-seen';
 
 function seenThisSession(): boolean {
+  // La mesure automatique (`?mesures=auto`) va droit au monde.
+  if (mesuresAutomatiques()) return true;
   try {
     return sessionStorage.getItem(SESSION_KEY) === '1';
   } catch {
@@ -140,8 +143,9 @@ export function TitleScreen() {
       if (depart.current?.id === e.pointerId) depart.current = null;
     },
   };
-  // « Ma dernière mission » seulement quand l'appli s'ouvre sur l'accueil (un lien direct vers une page y mène déjà).
-  const resume = launchedAt === '/' ? lastPlace() : null;
+  // « Ma dernière mission » seulement quand l'appli s'ouvre sur l'accueil (un lien direct vers une page y mène déjà), et
+  // seulement vers un lieu ouvert.
+  const resume = launchedAt === '/' ? lastPlace(blocland?.state.world.links) : null;
 
   const close = (to?: string, section?: string) => {
     try {

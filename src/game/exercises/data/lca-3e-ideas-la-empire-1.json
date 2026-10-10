@@ -1,0 +1,241 @@
+{
+  "id": "lca-3e-ideas-la-empire-1",
+  "biome": "lca-3e-ideas",
+  "type": "la-empire",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-3e-ideas-la-empire-1-0",
+      "prompt": "César franchit le Rubicon avec son armée en …",
+      "spoken": "César franchit le Rubicon avec son armée en  (mot manquant) ",
+      "choices": [
+        "58 avant J.-C.",
+        "49 avant J.-C.",
+        "44 avant J.-C."
+      ],
+      "answer": "49 avant J.-C.",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "En 49 avant J.-C., César franchit le Rubicon, la limite de l’Italie, avec son armée : c’est interdit, c’est la guerre civile. « Franchir le Rubicon » : prendre une décision sans retour.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fin de la République",
+          "lines": [
+            "Premier siècle avant J.-C. : des généraux romains se font la guerre, les guerres civiles.",
+            "Jules César conquiert la Gaule, de 58 à 51 avant J.-C.",
+            "En 49 avant J.-C., César franchit le Rubicon : la guerre contre ses rivaux commence.",
+            "En 44 avant J.-C., aux ides de mars, César est assassiné par des sénateurs.",
+            "Son fils adoptif, Octave, devient seul maître de Rome. Son régime : le principat.",
+            "En 27 avant J.-C., le Sénat lui donne le nom d’Auguste : c’est le premier empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-1-1",
+      "prompt": "Les ides de mars\nLe 15 mars 44 avant J.-C., César entre au Sénat.\nDes sénateurs, dont Brutus, l’entourent et le frappent.\nIls disent vouloir sauver la République.",
+      "question": "Pourquoi ces sénateurs tuent-ils César ?",
+      "spoken": "Les ides de mars. Le quinze mars quarante-quatre avant Jésus-Christ, César entre au Sénat. Des sénateurs, dont Brutus, l’entourent et le frappent. Ils disent vouloir sauver la République.",
+      "choices": [
+        "il veut quitter Rome",
+        "ils craignent qu’il devienne roi",
+        "il a perdu la guerre des Gaules"
+      ],
+      "answer": "ils craignent qu’il devienne roi",
+      "hint": "Lis la dernière ligne du document : de quoi veulent-ils sauver la République ?",
+      "explanation": "César est devenu dictateur à vie : les sénateurs craignent qu’il devienne roi, et le tuent pour sauver la République. Mais les guerres civiles reprennent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fin de la République",
+          "lines": [
+            "Premier siècle avant J.-C. : des généraux romains se font la guerre, les guerres civiles.",
+            "Jules César conquiert la Gaule, de 58 à 51 avant J.-C.",
+            "En 49 avant J.-C., César franchit le Rubicon : la guerre contre ses rivaux commence.",
+            "En 44 avant J.-C., aux ides de mars, César est assassiné par des sénateurs.",
+            "Son fils adoptif, Octave, devient seul maître de Rome. Son régime : le principat.",
+            "En 27 avant J.-C., le Sénat lui donne le nom d’Auguste : c’est le premier empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-1-2",
+      "prompt": "En 27 avant J.-C., Octave reçoit du Sénat le nom d’…",
+      "spoken": "En vingt-sept avant Jésus-Christ, Octave reçoit du Sénat le nom d’ (mot manquant)",
+      "choices": [
+        "Auguste",
+        "César",
+        "Brutus"
+      ],
+      "answer": "Auguste",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "En 27 avant J.-C., Octave reçoit le nom d’Auguste, « le vénérable » : il devient le premier empereur. Le mois d’août porte son nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fin de la République",
+          "lines": [
+            "Premier siècle avant J.-C. : des généraux romains se font la guerre, les guerres civiles.",
+            "Jules César conquiert la Gaule, de 58 à 51 avant J.-C.",
+            "En 49 avant J.-C., César franchit le Rubicon : la guerre contre ses rivaux commence.",
+            "En 44 avant J.-C., aux ides de mars, César est assassiné par des sénateurs.",
+            "Son fils adoptif, Octave, devient seul maître de Rome. Son régime : le principat.",
+            "En 27 avant J.-C., le Sénat lui donne le nom d’Auguste : c’est le premier empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-1-3",
+      "prompt": "De 58 à 51 avant J.-C., César conquiert …",
+      "spoken": "De cinquante-huit à cinquante et un avant Jésus-Christ, César conquiert (mot manquant)",
+      "choices": [
+        "l’Égypte",
+        "la Grèce",
+        "la Gaule"
+      ],
+      "answer": "la Gaule",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "César conquiert la Gaule et raconte ses campagnes dans La Guerre des Gaules. Vercingétorix se rend à Alésia, en 52 avant J.-C.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fin de la République",
+          "lines": [
+            "Premier siècle avant J.-C. : des généraux romains se font la guerre, les guerres civiles.",
+            "Jules César conquiert la Gaule, de 58 à 51 avant J.-C.",
+            "En 49 avant J.-C., César franchit le Rubicon : la guerre contre ses rivaux commence.",
+            "En 44 avant J.-C., aux ides de mars, César est assassiné par des sénateurs.",
+            "Son fils adoptif, Octave, devient seul maître de Rome. Son régime : le principat.",
+            "En 27 avant J.-C., le Sénat lui donne le nom d’Auguste : c’est le premier empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-1-4",
+      "prompt": "Le mot « empereur » vient du latin imperator, qui désigne d’abord …",
+      "spoken": "Le mot empereur vient du latin immpératorr, qui désigne d’abord (mot manquant)",
+      "choices": [
+        "un général vainqueur",
+        "un roi étranger",
+        "un juge"
+      ],
+      "answer": "un général vainqueur",
+      "hint": "Imperare veut dire commander : qui commande les soldats ?",
+      "explanation": "L’imperator, c’est d’abord le général qui commande l’armée, acclamé par ses soldats après une victoire. Auguste fait de ce mot un titre : l’empereur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fin de la République",
+          "lines": [
+            "Premier siècle avant J.-C. : des généraux romains se font la guerre, les guerres civiles.",
+            "Jules César conquiert la Gaule, de 58 à 51 avant J.-C.",
+            "En 49 avant J.-C., César franchit le Rubicon : la guerre contre ses rivaux commence.",
+            "En 44 avant J.-C., aux ides de mars, César est assassiné par des sénateurs.",
+            "Son fils adoptif, Octave, devient seul maître de Rome. Son régime : le principat.",
+            "En 27 avant J.-C., le Sénat lui donne le nom d’Auguste : c’est le premier empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-1-5",
+      "prompt": "Auguste, le premier citoyen\nIl garde le Sénat et les magistrats.\nMais il commande l’armée et décide de tout.\nIl se fait appeler princeps : le premier des citoyens.",
+      "question": "Pourquoi son régime s’appelle-t-il le principat ?",
+      "spoken": "Auguste, le premier citoyen. Il garde le Sénat et les magistrats. Mais il commande l’armée et décide de tout. Il se fait appeler prinnkèps : le premier des citoyens.",
+      "choices": [
+        "Auguste est un prince étranger",
+        "Auguste se dit le premier des citoyens",
+        "Rome a deux empereurs"
+      ],
+      "answer": "Auguste se dit le premier des citoyens",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Auguste se fait appeler princeps, le premier des citoyens : son régime s’appelle le principat. En apparence, la République continue ; en fait, il décide de tout.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fin de la République",
+          "lines": [
+            "Premier siècle avant J.-C. : des généraux romains se font la guerre, les guerres civiles.",
+            "Jules César conquiert la Gaule, de 58 à 51 avant J.-C.",
+            "En 49 avant J.-C., César franchit le Rubicon : la guerre contre ses rivaux commence.",
+            "En 44 avant J.-C., aux ides de mars, César est assassiné par des sénateurs.",
+            "Son fils adoptif, Octave, devient seul maître de Rome. Son régime : le principat.",
+            "En 27 avant J.-C., le Sénat lui donne le nom d’Auguste : c’est le premier empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-1-6",
+      "prompt": "Les guerres entre Romains, à la fin de la République, s’appellent les guerres …",
+      "spoken": "Les guerres entre Romains, à la fin de la République, s’appellent les guerres  (mot manquant) ",
+      "choices": [
+        "civiles",
+        "puniques",
+        "médiques"
+      ],
+      "answer": "civiles",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Une guerre civile oppose les citoyens d’un même pays (civis, le citoyen) : César contre Pompée, puis Octave contre Antoine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fin de la République",
+          "lines": [
+            "Premier siècle avant J.-C. : des généraux romains se font la guerre, les guerres civiles.",
+            "Jules César conquiert la Gaule, de 58 à 51 avant J.-C.",
+            "En 49 avant J.-C., César franchit le Rubicon : la guerre contre ses rivaux commence.",
+            "En 44 avant J.-C., aux ides de mars, César est assassiné par des sénateurs.",
+            "Son fils adoptif, Octave, devient seul maître de Rome. Son régime : le principat.",
+            "En 27 avant J.-C., le Sénat lui donne le nom d’Auguste : c’est le premier empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-empire-1-7",
+      "prompt": "La fin de la République\n49 avant J.-C. : César franchit le Rubicon.\n44 avant J.-C. : César est assassiné.\n27 avant J.-C. : Octave devient Auguste.",
+      "question": "Quel événement marque le début de l’Empire ?",
+      "spoken": "La fin de la République. Quarante-neuf avant Jésus-Christ : César franchit le Rubicon. Quarante-quatre avant Jésus-Christ : César est assassiné. Vingt-sept avant Jésus-Christ : Octave devient Auguste.",
+      "choices": [
+        "le passage du Rubicon",
+        "la mort de César",
+        "Octave devenu Auguste"
+      ],
+      "answer": "Octave devenu Auguste",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "César n’a jamais été empereur : il est assassiné en 44 avant J.-C. L’Empire commence en 27 avant J.-C., quand Octave devient Auguste.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La fin de la République",
+          "lines": [
+            "Premier siècle avant J.-C. : des généraux romains se font la guerre, les guerres civiles.",
+            "Jules César conquiert la Gaule, de 58 à 51 avant J.-C.",
+            "En 49 avant J.-C., César franchit le Rubicon : la guerre contre ses rivaux commence.",
+            "En 44 avant J.-C., aux ides de mars, César est assassiné par des sénateurs.",
+            "Son fils adoptif, Octave, devient seul maître de Rome. Son régime : le principat.",
+            "En 27 avant J.-C., le Sénat lui donne le nom d’Auguste : c’est le premier empereur."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-3e-ideas",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

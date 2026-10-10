@@ -86,8 +86,12 @@ function voix(): string[] {
   return dit;
 }
 
-const sauver = (spaced: SpacedItem[]) =>
+const sauver = (spaced: SpacedItem[]) => {
   localStorage.setItem('dysapps:game', JSON.stringify({ spaced, progress: { [SYLLABES.id]: { stars: 1, attempts: 1, best: 0.3 } } }));
+  // Les mots déjà dits sur l'appareil (l'arrivée, le premier ouvrage de la sauvegarde d'avant, l'annonce du changement
+  // de forme de la carte, GD-9) : rien ne parle par-dessus la phrase de la créature.
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'map-reshaped': true, 'baleine-6e-arrivee': true, 'baleine-6e-ouvrage': true }));
+};
 
 describe('le panneau de l’île', () => {
   it('propose de reprendre, avec « Écouter », « Reprendre » vers les révisions de l’île et « Plus tard »', () => {

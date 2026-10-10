@@ -1,12 +1,14 @@
 // La pose d'une partie en vague (GD-6, Blocland, piste B) : l'ordre, le rythme borné à six secondes, le maillage partagé.
 import { BIOMES } from '../biomes';
-import { sceneCost, toutConstruit } from './budget';
+import { PLAFOND_DU_MONDE_EN_BLOCS, sceneCost, terrainChunks, toutConstruit } from './budget';
+import { blockRegions, buildRegionMesh, chunkFaceCount, type BlockRegion } from './blockMesh';
+import { hiddenBottomLevel } from './sea';
 import { ARCHIPELAGO_IDS } from './map';
-import { buildMesh, faceCount } from './mesher';
+import { buildMesh } from './mesher';
 import { partiesDe } from './parts';
 import { GESTE_DE_POSE } from './pose';
 import { casesDesPlansDansLeMonde, worldCubes } from './terrain';
-import { maillageAvecLaVague } from './waveMesh';
+import { maillageAvecLaVague, vagueEnBlocs } from './waveMesh';
 import { VAGUE, couchesPosees, cubesDeLaVague, cubesPartis, hauteurDansLaVague, planDeLaVague, sansLaPartie } from './wave';
 
 const mur = (w: number, h: number, d = 1) => {
@@ -113,22 +115,40 @@ it('trouve dans le monde les cases de chaque partie, et le monde sans elles les 
   }
 }, 30_000);
 
-it('reste dans le plafond du monde en blocs pendant la vague (80 000 triangles, 240 appels)', () => {
+it.each(ARCHIPELAGO_IDS)('reste dans le plafond du monde en blocs pendant la vague (PLAFOND_DU_MONDE_EN_BLOCS : 102 000 triangles, 120 appels), archipel %s', (a) => {
   const { progress, world } = toutConstruit();
-  for (const a of ARCHIPELAGO_IDS) {
-    // L'archipel tout construit, sauf la partie qui se pose en vague : la pire de ses parties.
-    const scene = sceneCost(a);
-    const cubes = worldCubes(a, progress, world, false);
-    const terrain = buildMesh(cubes);
-    for (const b of BIOMES.filter((x) => x.classe === a))
-      for (const partie of partiesDe(b.id)) {
-        const cases = casesDesPlansDansLeMonde(partie.cases);
-        const vague = cubesDeLaVague(cubes, cases);
-        const groupes = maillageAvecLaVague(sansLaPartie(cubes, cases), vague, planDeLaVague(vague));
-        const triangles = scene.triangles - faceCount(terrain) * 2 + faceCount(groupes.map((g) => g.groupe)) * 2;
-        const appels = scene.drawCalls - terrain.length + groupes.length;
-        expect(triangles, partie.nom).toBeLessThanOrEqual(80_000);
-        expect(appels, partie.nom).toBeLessThanOrEqual(240);
+  // L'archipel tout construit, sauf la partie qui se pose en vague : la pire de ses parties.
+  const scene = sceneCost(a);
+  const cubes = worldCubes(a, progress, world, false);
+  const terrain = terrainChunks(a);
+  const dessous = { hiddenBottomsUpTo: hiddenBottomLevel(a), fondre: true };
+  // Comme le jeu (three/cubes.ts, poserLesRegions) : le terrain se dessine région par région, et une partie ne refait
+  // que les régions dont les cubes changent ; les autres gardent leur maillage.
+  const cout = (r: BlockRegion) => {
+    const m = buildRegionMesh(r, dessous);
+    return { faces: chunkFaceCount(m), appels: m.length };
+  };
+  const base = new Map([...blockRegions(cubes)].map(([k, r]) => [k, { signature: r.signature, ...cout(r) }]));
+  // Région par région, l'archipel entier coûte ce que compte le budget.
+  expect([...base.values()].reduce((n, r) => n + r.faces, 0)).toBe(chunkFaceCount(terrain));
+  expect([...base.values()].reduce((n, r) => n + r.appels, 0)).toBe(terrain.length);
+  for (const b of BIOMES.filter((x) => x.classe === a))
+    for (const partie of partiesDe(b.id)) {
+      const cases = casesDesPlansDansLeMonde(partie.cases);
+      const vague = cubesDeLaVague(cubes, cases);
+      // Le terrain sans la partie, fondu, et la vague à part, un maillage par passe.
+      let faces = 0;
+      let appels = 0;
+      for (const [k, r] of blockRegions(sansLaPartie(cubes, cases))) {
+        const avant = base.get(k);
+        const c = avant?.signature === r.signature ? avant : cout(r);
+        faces += c.faces;
+        appels += c.appels;
       }
-  }
+      const enVague = vagueEnBlocs(vague, planDeLaVague(vague)).map((v) => v.morceau);
+      const triangles = scene.triangles - chunkFaceCount(terrain) * 2 + (faces + chunkFaceCount(enVague)) * 2;
+      const total = scene.drawCalls - terrain.length + appels + enVague.length;
+      expect(triangles, partie.nom).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+      expect(total, partie.nom).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
+    }
 }, 60_000);

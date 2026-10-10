@@ -44,7 +44,7 @@ Elle utilise la synthèse vocale du navigateur. Vérifier le volume et le mode s
 Tout se règle dans Réglages : police, taille (18 px minimum), interlignage, espacement des lettres et des mots, thème. Voir [Réglages et accessibilité](reglages.md).
 
 **Les animations gênent ou l’appareil est lent.**
-Demander à l’appareil de réduire les animations : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ». L’appli suit ce choix (voir [Réglages](reglages.md#animations-et-vue-du-monde)). Si la 3D est lourde, choisir dans « Vue du monde » la liste des îles : la vue simple offre exactement les mêmes actions. Sur un appareil sans WebGL, la liste des îles s’affiche d’elle-même. Le rendu se met en pause de lui-même quand l’onglet est caché et baisse sa finesse si l’appareil peine.
+Demander à l’appareil de réduire les animations : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ». L’appli suit ce choix (voir [Réglages](reglages.md#animations-et-vue-du-monde)) : les créatures, qui bougent peu (elles respirent, regardent autour d’elles et font quelques pas), restent alors immobiles. Si la 3D est lourde, choisir dans « Vue du monde » la liste des îles : la vue simple offre exactement les mêmes actions. Sur un appareil sans WebGL, la liste des îles s’affiche d’elle-même. Le rendu se met en pause de lui-même quand l’onglet est caché et baisse sa finesse si l’appareil peine.
 
 **Il fait nuit dans le village.**
 Le village suit l’heure réelle de l’appareil (crépuscule à 20 h, aube à 7 h) ; la nuit reste toujours claire. Dans Réglages, « Vue du monde », **La lumière du monde** : « Toujours le jour » garde le plein jour.
@@ -67,6 +67,9 @@ Aucune. Pas de statistiques, pas de cookies, pas de service externe : la politiq
 La cause habituelle est l’effacement des données du site (nettoyage du navigateur, désinstallation, navigation privée). Il n’y a pas de sauvegarde en ligne.
 
 ## Contenu
+
+**Quelles matières sont dans l’application ?**
+De la 6e à la 3e, le français, les maths, l’anglais, l’histoire-géographie, la SVT, la physique-chimie, la technologie et l’enseignement moral et civique (EMC) ; de la 5e à la 3e, la deuxième langue (espagnol ou allemand) et l’option latin ou grec. Une LV2 ou une option que l’élève ne suit pas se retire dans les [Réglages](reglages.md#deuxieme-langue-lv2) (« Pas de LV2 », « Pas d’option ») : ses îles restent fermées, et elle n’apparaît ni au menu ni dans la progression. Ce que chaque matière couvre du programme officiel est sur la page [Programmes officiels](../pedagogie/programmes.md).
 
 **Où voir exactement ce que travaille chaque exercice ?**
 Dans [L’archipel](../pedagogie/archipel.md) puis la page de chaque île : consignes, items, aides visuelles, récompenses. Ces pages sont produites à partir des données du jeu à chaque publication.

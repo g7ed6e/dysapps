@@ -60,12 +60,23 @@ describe('déblocage des biomes', () => {
   it('verrouille la Mine tant que le pont n’est pas construit', async () => {
     const user = userEvent.setup();
     renderAt('/adventure');
-    // Le port en étoile (GD-7) : de la Plaine ou de la Forêt, une liaison vers chaque île, 4 blocs chacune.
-    expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(4);
-    expect(screen.getAllByText(/Sentier à construire : 4 blocs/).length).toBe(1);
-    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(3);
-    expect(screen.queryAllByText(/Île lointaine/).length).toBe(0);
-    expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(21);
+    // GD-9 : de la Plaine ou de la Forêt, une liaison vers chaque île qu'on peut relier, 4 blocs chacune ; la carte d'une
+    // île fermée montre la plus courte (celle de « Relier »). Depuis que les îles ont grandi (GD-11, 8 octobre 2026), leurs
+    // côtes sont plus proches : sept ponts (vers la Mine, l'Horloge, la Fouille, la Vallée, la Ferme, la Rivière et le
+    // Volcan depuis GD-12). Depuis le trait à sept cases (GD-12), la Rivière est à 41 cases de la Forêt (un bac) mais à 18
+    // de la Plaine : sa carte montre ce pont.
+    expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(7);
+    // Les îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9) : le Laboratoire des éléments, au coin de
+    // devant, derrière la Rivière, et, depuis le Préau des délégués (EMC-2), qui coupe son bac depuis la Forêt, le Hangar
+    // des inventions, derrière le Volcan ; elles s'ouvriront de proche en proche.
+    expect(screen.queryAllByText(/Île lointaine/).length).toBe(2);
+    // Cinq bacs : vers la Carrière des mots, la Tour du lecteur, la Baie des mots, la Pointe des paysages et le Préau des
+    // délégués (EMC-2).
+    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(5);
+    // Les îles des archipels de 5e, 4e et 3e, dont les six d'histoire-géographie (HG-3), les neuf de sciences (SC-3), le
+    // Fournil des partages, la Porte des libertés et le Forum des débats (EMC-2), la Grotte des légendes, la Colonnade
+    // des cités et le Bosquet des sages (LCA-2).
+    expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(42);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
     // Le message est découpé en syllabes (plusieurs éléments) : on lit le texte complet.
     expect(document.body.textContent).toMatch(/Pas si vite/);
@@ -79,8 +90,10 @@ describe('déblocage des biomes', () => {
     const user = userEvent.setup();
     renderAt('/adventure/french-6e-letter-confusion');
     expect(screen.queryByRole('link', { name: /Filon/ })).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: /Construire/ }));
-    expect(document.body.textContent).toMatch(/Le sentier vers Forêt des sons est tracé/);
+    // Depuis GD-11, un bac depuis la Plaine s'offre aussi : on pose le pont depuis la Forêt.
+    const poser = screen.getAllByRole('button', { name: /Poser/ }).find((b) => b.closest('section,li,div')?.textContent?.startsWith('Pont depuis la Forêt des sons'));
+    await user.click(poser!);
+    expect(document.body.textContent).toMatch(/Le pont vers la Mine des lettres est posé/);
     expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).stock).toEqual({ 'french-6e-phonology': 1 });

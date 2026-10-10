@@ -1,0 +1,230 @@
+{
+  "id": "history-6e-antiquity-early-humans-2",
+  "biome": "history-6e-antiquity",
+  "type": "early-humans",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-6e-antiquity-early-humans-2-0",
+      "prompt": "Fiche d’un fossile\nNom : Lucy\nTrouvée en Éthiopie\nÂge : plus de 3 millions d’années",
+      "question": "Sur quel continent a-t-on trouvé Lucy ?",
+      "spoken": "Fiche d’un fossile. Nom : Lucy. Trouvée en Éthiopie. Âge : plus de trois millions d’années.",
+      "choices": [
+        "en Europe",
+        "en Afrique",
+        "en Asie"
+      ],
+      "answer": "en Afrique",
+      "hint": "L’Éthiopie est un pays. Sur quel continent ?",
+      "explanation": "L’Éthiopie est en Afrique. C’est en Afrique qu’on trouve les plus anciens fossiles de la famille humaine, comme Lucy.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "Un État : un chef, un territoire, des lois, des impôts."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-2-1",
+      "prompt": "Description d’une photo\nLa grotte Chauvet, en France\nSur les murs : des lions, des mammouths\nPeints il y a plus de 30 000 ans",
+      "question": "De quelle période date cette peinture ?",
+      "spoken": "Description d’une photo. La grotte Chauvet, en France. Sur les murs : des lions, des mammouths. Peints il y a plus de trente mille ans.",
+      "choices": [
+        "de l’Antiquité",
+        "de la Préhistoire",
+        "de l’Empire romain"
+      ],
+      "answer": "de la Préhistoire",
+      "hint": "L’écriture existait-elle déjà à cette époque ?",
+      "explanation": "Il y a plus de 30 000 ans, l’écriture n’existe pas encore : c’est la Préhistoire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "Un État : un chef, un territoire, des lois, des impôts."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-2-2",
+      "prompt": "Description d’un dessin\nDes maisons en bois et en terre\nUn champ de blé\nDes chèvres dans un enclos",
+      "question": "Quel mode de vie montre ce dessin ?",
+      "spoken": "Description d’un dessin. Des maisons en bois et en terre. Un champ de blé. Des chèvres dans un enclos.",
+      "choices": [
+        "des chasseurs nomades",
+        "des marchands nomades",
+        "des paysans sédentaires"
+      ],
+      "answer": "des paysans sédentaires",
+      "hint": "Un champ, des bêtes, des maisons : on part ou on reste ?",
+      "explanation": "Un champ, des bêtes gardées, des maisons : ce sont des agriculteurs et des éleveurs sédentaires, comme au Néolithique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "Un État : un chef, un territoire, des lois, des impôts."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-2-3",
+      "prompt": "Description d’un objet\nUne tablette d’argile\nDes signes en forme de clous\nTrouvée en Mésopotamie",
+      "question": "Quelle écriture porte cette tablette ?",
+      "spoken": "Description d’un objet. Une tablette d’argile. Des signes en forme de clous. Trouvée en Mésopotamie.",
+      "choices": [
+        "les hiéroglyphes",
+        "l’alphabet latin",
+        "l’écriture cunéiforme"
+      ],
+      "answer": "l’écriture cunéiforme",
+      "hint": "Cunéiforme veut dire « en forme de clou ».",
+      "explanation": "En Mésopotamie, on écrit en cunéiforme, avec des signes en forme de clous. Les hiéroglyphes sont l’écriture de l’Égypte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "Un État : un chef, un territoire, des lois, des impôts."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-2-4",
+      "prompt": "Une loi gravée sur une pierre\n« Si un homme crève l’œil d’un homme,\non lui crèvera l’œil. »\nHammurabi, roi de Babylone",
+      "question": "Qui a fait écrire cette loi ?",
+      "spoken": "Une loi gravée sur une pierre. « Si un homme crève l’œil d’un homme, on lui crèvera l’œil. » Hammurabi, roi de Babylone.",
+      "choices": [
+        "le roi Hammurabi",
+        "un pharaon",
+        "un scribe d’Égypte"
+      ],
+      "answer": "le roi Hammurabi",
+      "hint": "Lis la ligne qui commence par « Hammurabi ».",
+      "explanation": "La loi porte le nom d’Hammurabi, roi de Babylone, en Mésopotamie. Le roi fait les lois : c’est un État.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "Un État : un chef, un territoire, des lois, des impôts."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-2-5",
+      "prompt": "Description d’une photo\nTrois pyramides à Gizeh, en Égypte\nLes tombeaux de trois pharaons\nDes milliers d’ouvriers les ont bâties.",
+      "question": "Que montre ce document sur le pharaon ?",
+      "spoken": "Description d’une photo. Trois pyramides à Gizeh, en Égypte. Les tombeaux de trois pharaons. Des milliers d’ouvriers les ont bâties.",
+      "choices": [
+        "il obéit aux scribes",
+        "il a un très grand pouvoir",
+        "il vit seul dans le désert"
+      ],
+      "answer": "il a un très grand pouvoir",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Faire bâtir un tel tombeau par des milliers d’ouvriers : le pharaon a un très grand pouvoir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "Un État : un chef, un territoire, des lois, des impôts."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-2-6",
+      "prompt": "Texte d’Hérodote, un historien grec\n« L’Égypte est un don du Nil. »\nChaque année, le fleuve déborde.\nIl laisse une boue fertile.",
+      "question": "Pourquoi le Nil est-il un « don » pour l’Égypte ?",
+      "spoken": "Texte d’Hérodote, un historien grec. « L’Égypte est un don du Nil. » Chaque année, le fleuve déborde. Il laisse une boue fertile.",
+      "choices": [
+        "il protège le pays des ennemis",
+        "il apporte de l’or aux Égyptiens",
+        "sa boue rend la terre fertile"
+      ],
+      "answer": "sa boue rend la terre fertile",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "La crue du Nil laisse une boue fertile : les paysans peuvent cultiver au bord du désert.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "Un État : un chef, un territoire, des lois, des impôts."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-early-humans-2-7",
+      "prompt": "Ce que fait un roi de Mésopotamie\nIl fait les lois.\nIl lève des impôts.\nIl commande l’armée.",
+      "question": "Comment appelle-t-on cette organisation ?",
+      "spoken": "Ce que fait un roi de Mésopotamie. Il fait les lois. Il lève des impôts. Il commande l’armée.",
+      "choices": [
+        "un État",
+        "un village",
+        "une tribu"
+      ],
+      "answer": "un État",
+      "hint": "Regarde la dernière ligne du rappel.",
+      "explanation": "Un chef, des lois, des impôts, une armée : c’est un État. Les premiers naissent en Mésopotamie et en Égypte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Préhistoire : le temps avant l’écriture.",
+            "Antiquité : le temps après l’écriture.",
+            "Un État : un chef, un territoire, des lois, des impôts."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-6e-antiquity",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

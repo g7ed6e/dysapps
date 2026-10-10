@@ -53,7 +53,7 @@ Aucune permission par défaut, actions épinglées par SHA et mises à jour par 
 
 Réglage à faire une seule fois dans le dépôt : **Settings → Pages → Source : GitHub Actions**.
 
-Cloudflare Workers construit l’application de son côté à partir de `main`, avec `npm run build`, puis la publie avec `npx wrangler deploy`. `wrangler.jsonc` décrit la publication : le Worker `dysapps`, le dossier `dist/` servi tel quel, toute adresse inconnue renvoyée vers l’application (`single-page-application`), l’adresse `*.workers.dev` et les adresses d’aperçu. Sans ce fichier, wrangler se configurait lui-même à chaque publication et reconstruisait l’application une seconde fois. Son clone est superficiel : le calcul de la version récupère l’historique et les étiquettes (`git fetch --unshallow --tags`) avant de compter.
+Cloudflare Workers construit l’application de son côté à partir de `main`, avec `npm run build`, puis la publie avec `npx wrangler deploy`. `wrangler.jsonc` décrit la publication : le Worker `dysapps`, le dossier `dist/` servi tel quel, toute adresse inconnue renvoyée vers l’application (`single-page-application`), l’adresse `*.workers.dev` et les adresses d’aperçu, avec le bloc `previews` (vide) qu’exige `npx wrangler preview`. Hors de `main`, chaque branche poussée est construite en aperçu (case « Enable Preview Builds » dans Settings > Build > Branch control) et reçoit une adresse fixe `<branche>-dysapps.guillaume-delahaye.workers.dev`. La branche `preview` sert de pré-version : https://preview-dysapps.guillaume-delahaye.workers.dev/. Ces adresses `workers.dev` d’aperçu portent l’en-tête `X-Robots-Tag: noindex` (Cloudflare) ; chaque adresse est une origine à part, avec ses propres sauvegardes : la progression de la production n’y apparaît pas. Sans ce fichier, wrangler se configurait lui-même à chaque publication et reconstruisait l’application une seconde fois. Son clone est superficiel : le calcul de la version récupère l’historique et les étiquettes (`git fetch --unshallow --tags`) avant de compter.
 
 ## Version
 
@@ -72,7 +72,7 @@ La version est affichée dans les réglages de l’application et dans le pied d
 
 ## Revenir en arrière
 
-Une version qui change le format de la partie (`GAME_VERSION`, `src/core/migration.ts`) ne se défait pas une fois en ligne : la partie traduite par un appareil n'est plus lisible par la version d'avant, qui jetterait ce qu'elle ne connaît pas (identifiants neutres du format 3 : stock, constructions, liaisons). En cas d'incident après une telle version, on corrige en avant, sans revert de `main`.
+Une version qui change le format de la partie (`GAME_VERSION`, `src/core/migration.ts`) ne se défait pas une fois en ligne : la partie traduite par un appareil n'est plus lisible par la version d'avant, qui jetterait ce qu'elle ne connaît pas (identifiants neutres du format 3 : stock, constructions, liaisons). En cas d'incident après une telle version, on corrige en avant, sans revert de `main`. Limite connue du format 4 (programmes de 2025-2026) : un onglet resté ouvert sur le code d’avant relit la partie au format 4 sans la traduire ; il ouvre les lieux où des exercices déplacés sont arrivés (leurs étoiles y comptent) et perd `challengesKeptOpen` (les défis gardés ouverts), qu’il ne connaît pas. S’il enregistre (au format 3), les lieux ouverts le restent et la migration, qui repasse, ne retrouve plus ces défis ; les étoiles et la file de révision ne se perdent pas (commentaire de `GAME_VERSION`).
 
 ## Dépendances
 

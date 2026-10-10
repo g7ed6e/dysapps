@@ -46,12 +46,18 @@ export async function generatePages() {
         load('/src/curriculum/exclusions.ts'),
         load('/src/curriculum/functionWords.ts'),
       ]);
+    // La géométrie des liaisons (GD-9) : sans elle, les règles n'ont ni nature ni longueur (`provideLinkGeometry`).
+    await load('/src/game/world/linkGeometry.ts');
     const vehicleMod = await load('/src/game/world/vehicle.ts');
     const monumentsMod = await load('/src/game/world/monuments.ts');
     const recettesMod = await load('/src/game/world/recipes.ts');
     const partiesMod = await load('/src/game/world/parts.ts');
     // Les commandes des créatures (GD-7) : qui demande quoi, contre quoi.
     const commandesMod = await load('/src/game/world/requests.ts');
+    // Les quêtes des habitants (GD-10) : l'entraide, d'habitant en habitant.
+    const queteMod = await load('/src/game/world/stories.ts');
+    // Les grands projets (GD-10) : un monument posé pièce par pièce, deux recettes par pièce.
+    const projetsMod = await load('/src/game/world/projects.ts');
     // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
     const universMod = await load('/src/universes/index.ts');
     const universCore = await load('/src/core/universe.ts');
@@ -71,8 +77,13 @@ export async function generatePages() {
       commandeDeLIle: commandesMod.commandeDeLIle,
       texteDeLaCommande: commandesMod.texteDeLaCommande,
       SEUIL_DE_LA_PREMIERE_COMMANDE: commandesMod.SEUIL_DE_LA_PREMIERE_COMMANDE,
+      STORIES: queteMod.STORIES,
+      STORY_XP: queteMod.STORY_XP,
+      stepText: queteMod.stepText,
       BRIDGES: archMod.BRIDGES,
       KIND_NAME: archMod.KIND_NAME,
+      // La nature d'un ouvrage suit son tracé sur la carte de départ, sans liaison posée (GD-9, `linkKind`).
+      kindOf: (b) => archMod.linkKind(b, []),
       CONDITION_OF: archMod.CONDITION_OF,
       START_ISLANDS: archMod.START_ISLANDS,
       ARCHIPELAGOS: archMod.ARCHIPELAGOS,
@@ -82,6 +93,9 @@ export async function generatePages() {
       ASSEMBLAGE: recettesMod.ASSEMBLAGE,
       // Les questions des blocs assemblés (GD-2), une par bloc : hors du catalogue des îles.
       QUESTIONS_ASSEMBLAGE: (await Promise.all(recettesMod.ASSEMBLAGE.recettes.map((r) => exercisesMod.loadAssemblage(r.bloc)))).filter(Boolean),
+      PROJECTS: projetsMod.PROJECTS,
+      // Les banques de questions propres aux projets (`project-…`) ; les autres sont celles des blocs assemblés.
+      QUESTIONS_PROJETS: (await Promise.all(projetsMod.PROJECT_BANKS.filter((b) => b.startsWith('project-')).map((b) => exercisesMod.loadAssemblage(b)))).filter(Boolean),
       engine: engineMod,
       progress: progressMod,
       settings: settingsMod,
@@ -125,11 +139,33 @@ export async function generatePages() {
 
 // ---------- Outils ----------
 
-const SUBJECT_NAME = { french: 'Français', maths: 'Maths', english: 'Anglais', lv2: 'LV2 (espagnol ou allemand)' };
+const SUBJECT_NAME = {
+  french: 'Français',
+  maths: 'Maths',
+  english: 'Anglais',
+  'history-geography': 'Histoire-géo',
+  'life-earth-sciences': 'SVT',
+  'physics-chemistry': 'Physique-chimie',
+  technology: 'Technologie',
+  civics: 'EMC',
+  lv2: 'LV2 (espagnol ou allemand)',
+  lca: 'Latin ou grec (option)',
+};
 /** Les matières, dans l'ordre du portail. */
 const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
 /** « 3 d’anglais », « 1 de LV2 » : le complément de chaque matière dans le décompte des îles. */
-const SUBJECT_DE = { french: 'de français', maths: 'de maths', english: 'd’anglais', lv2: 'de LV2' };
+const SUBJECT_DE = {
+  french: 'de français',
+  maths: 'de maths',
+  english: 'd’anglais',
+  'history-geography': 'd’histoire-géo',
+  'life-earth-sciences': 'de SVT',
+  'physics-chemistry': 'de physique-chimie',
+  technology: 'de technologie',
+  civics: 'd’EMC',
+  lv2: 'de LV2',
+  lca: 'de latin ou grec',
+};
 // Quand arrive la première commande d'un archipel, selon `SEUIL_DE_LA_PREMIERE_COMMANDE` (src/game/world/requests.ts).
 const QUAND_LA_PREMIERE_COMMANDE = {
   'premier-ouvrage': 'après le premier ouvrage construit dans l’archipel',
@@ -149,6 +185,9 @@ const AID_NAME = {
   ten: 'boîte de dix',
   jumps: 'droite par bonds',
   'compare-bars': 'barres alignées',
+  'fraction-bar': 'barre de fraction',
+  'fraction-disc': 'disque partagé en parts égales',
+  'graduated-line': 'droite graduée en parts',
   'dot-groups': 'groupes de points',
   'decimal-table': 'tableau de numération',
   'number-line': 'droite graduée avec négatifs',
@@ -162,6 +201,12 @@ const AID_NAME = {
   'long-division': 'division posée en potence',
   'class-table': 'tableau de numération par classes (unités, mille, millions, milliards)',
   'value-table': 'tableau de valeurs',
+  'triangle-angles': 'triangle tracé avec ses vrais angles (angle droit en petit carré, côtés égaux marqués)',
+  angle: 'angle tracé (seul à côté d’un angle droit, côte à côte sur une droite, ou opposé par le sommet)',
+  'plane-figure': 'figure plane cotée (rectangle, carré, parallélogramme, triangle, disque, cercle, médiatrice, rectangle partagé)',
+  solid: 'solide en perspective (petits cubes, cube, cylindre, cône, prisme et pyramide)',
+  transformation: 'figure et son image sur un quadrillage',
+  'coordinate-plane': 'repère gradué de −6 à 6',
   scene: 'schéma de la situation',
 };
 /** Les schémas de problèmes situés (`scene`), par sorte, avec la grandeur que l'élève cherche. */
@@ -241,13 +286,13 @@ function programmeLine(ids, d, from) {
     const p = d.programme.byId(id);
     if (!p) return id;
     const dom = d.programme.domaineOf(p);
-    return `${p.competence} ([cycle ${p.cycle}, ${dom.title.replace(/^Langues vivantes : /, '')}, p. ${p.page}](${from}programmes.md#${p.domaine}))`;
+    return `${p.competence} ([${p.classes.join(', ')}, ${dom.title.replace(/^Langues vivantes : /, '').replace(/ \([3-6]e\)$/, '')}, p. ${p.page}](${from}programmes.md#${p.domaine}))`;
   });
   return `Programme officiel : ${parts.join(' ; ')}.`;
 }
 
 function programmesPage(d) {
-  const { PROGRAMME, DOMAINES, DISCIPLINES, SOURCES } = d.programme;
+  const { PROGRAMME, DOMAINES, DISCIPLINES, SOURCES, INFORMATIONS_PUBLIQUES } = d.programme;
   const { EXCLUSIONS, coverage } = d;
   const disciplines = Object.keys(DISCIPLINES);
   const status = (e) => (coverage.has(e.id) ? 'travaillee' : EXCLUSIONS[e.id]?.kind ?? 'sans');
@@ -255,11 +300,17 @@ function programmesPage(d) {
   const lines = [
     '# Programmes officiels',
     '',
-    'Chaque mission d’Archipéo et du portail cite les compétences du programme officiel qu’elle travaille. Cette page les met en face du programme, domaine par domaine : ce qui est travaillé (et par quelle mission), ce qui reste **à couvrir** (la feuille de route du contenu) et ce qui est **hors périmètre** d’une application d’entraînement (l’oral, l’écriture libre, la lecture d’œuvres complètes, la géométrie de construction). Le référentiel est dans `src/curriculum/` ; les libellés sont des résumés fidèles du texte officiel, dont la page est indiquée ; le texte fait foi.',
+    'Chaque mission d’Archipéo et du portail cite les compétences du programme officiel qu’elle travaille. Cette page les met en face du programme, domaine par domaine : ce qui est travaillé (et par quelle mission), ce qui reste **à couvrir** (la feuille de route du contenu) et ce qui est **hors périmètre** d’une application d’entraînement (l’oral, l’écriture libre, la lecture d’œuvres complètes, la géométrie de construction). Le référentiel est dans `src/curriculum/` ; les libellés sont des résumés fidèles du texte officiel, dont la page est indiquée (« à vérifier » quand elle n’a pas encore été relue dans le texte en vigueur) ; le texte fait foi.',
     '',
-    'Le cycle 3 se termine en 6e ; le cycle 4 couvre la 5e, la 4e et la 3e, sans répartition par année dans le texte officiel. Une île de 5e, 4e ou 3e peut consolider une compétence du cycle 3 ; une île de 6e ne travaille jamais le cycle 4.',
+    'Le cycle 3 se termine en 6e ; le cycle 4 couvre la 5e, la 4e et la 3e. Chaque compétence dit le texte qui la fixe et les classes où elle est au programme : en 6e, le français et les mathématiques suivent les programmes en vigueur depuis la rentrée 2025 ; en 5e, ceux en vigueur à la rentrée 2026, rangés par classe ; en 4e et en 3e, le programme du cycle 4 de 2020, qui ne répartit rien par année. Une île travaille les compétences de sa classe et peut consolider celles d’une classe d’avant, jamais celles d’une classe d’après.',
     '',
-    'Le programme de langues vivantes est commun à toutes les langues : l’anglais le suit du cycle 3 au cycle 4, et la deuxième langue vivante (LV2), l’allemand ou l’espagnol, commencée en 5e, le suit au cycle 4 seulement, avec les mêmes compétences et les mêmes pages.',
+    'Les langues vivantes suivent, en 6e et en 5e, les programmes des classes de collège publiés en 2025, un par langue : l’anglais dès la 6e, la deuxième langue vivante (LV2), l’allemand ou l’espagnol, à partir de la 5e. En 4e et en 3e, elles suivent le programme de 2020, commun à toutes les langues, avec les mêmes compétences et les mêmes pages.',
+    '',
+    'L’histoire-géographie suit, de la 6e à la 3e, les programmes des cycles 3 et 4 de 2020. Les sciences suivent en 6e le programme du cycle 3 dans sa version de 2023, où l’enseignement de sciences et technologie a été modifié ; de la 5e à la 3e, la SVT et la physique-chimie suivent le programme du cycle 4 de 2020, et la technologie son programme de 2024.',
+    '',
+    'L’enseignement moral et civique suit, de la 6e à la 3e, le programme du CP à la terminale, rangé par classe : chaque thème d’une classe est une compétence.',
+    '',
+    'Le latin et le grec ancien, enseignements de complément (option langues et cultures de l’Antiquité, LCA), suivent de la 5e à la 3e le programme de 2016 : des thèmes de culture et un tableau de langue communs à la 5e et à la 4e, puis une 3e de latin et une 3e de grec ; la lecture et la traduction valent pour tout le cycle. Le Bulletin officiel ne publie ce texte qu’en HTML : les pages indiquées sont celles de la copie PDF citée dans les sources.',
     '',
     table(
       ['Cycle', 'Discipline', 'Compétences', 'Travaillées', 'À couvrir', 'Hors périmètre'],
@@ -270,7 +321,7 @@ function programmesPage(d) {
           if (list.length === 0) return [];
           return [[`Cycle ${cycle}`, DISCIPLINES[disc].label, String(list.length), String(count(list, 'travaillee')), String(count(list, 'a-couvrir')), String(count(list, 'hors-perimetre'))]];
         }),
-      ),
+      ).concat([['**Total**', '', `**${PROGRAMME.length}**`, `**${count(PROGRAMME, 'travaillee')}**`, `**${count(PROGRAMME, 'a-couvrir')}**`, `**${count(PROGRAMME, 'hors-perimetre')}**`]]),
     ),
     '',
   ];
@@ -283,10 +334,13 @@ function programmesPage(d) {
         const entries = PROGRAMME.filter((e) => e.domaine === dom.id);
         lines.push(`### ${dom.title} {#${dom.id}}`, '');
         const attendus = [...new Set(entries.map((e) => e.attendu))];
-        lines.push(`*Attendus de fin de cycle (p. ${dom.page}) : ${attendus.map((a) => `${a.replace(/\.$/, '')}`).join(' ; ')}.*`, '');
+        const texte = dom.source ? ` de [${SOURCES[dom.source].title}](${SOURCES[dom.source].pdfUrl})` : '';
+        // Les textes rangés par classe (2025, 2026, `targets` de la source) n'ont pas d'attendus de fin de cycle : leurs titres en tiennent lieu.
+        const parClasse = dom.source && SOURCES[dom.source].targets === 'per-class';
+        lines.push(`*${parClasse ? 'Ce que le texte attend' : 'Attendus de fin de cycle'} (p. ${dom.page}${texte}${dom.unverified ? ', à vérifier' : ''}) : ${attendus.map((a) => `${a.replace(/\.$/, '')}`).join(' ; ')}.*`, '');
         lines.push(
           table(
-            ['Compétence', 'Page', 'Missions'],
+            ['Compétence', 'Classes', 'Page', 'Missions'],
             entries.map((e) => {
               const who = coverage.get(e.id);
               const x = EXCLUSIONS[e.id];
@@ -295,7 +349,7 @@ function programmesPage(d) {
                 : x
                   ? `*${x.kind === 'a-couvrir' ? 'À couvrir' : 'Hors périmètre'} — ${x.motif}*`
                   : '*aucune*';
-              return [e.competence, String(e.page), quests];
+              return [e.competence, e.classes.join(', '), e.unverified ? `${e.page} (à vérifier)` : String(e.page), quests];
             }),
           ),
           '',
@@ -320,9 +374,10 @@ function programmesPage(d) {
     '',
     '## Sources et licence {#sources}',
     '',
-    `Les programmes viennent du jeu de données [${SOURCES.c3.dataset}](${SOURCES.c3.datasetUrl}) publié sur data.gouv.fr par le ministère de l’Éducation nationale, sous ${SOURCES.c3.licence.name} ([texte de la licence](${SOURCES.c3.licence.url})) : réutilisation libre, avec mention de la source et de la date.`,
+    `Les programmes viennent du jeu de données [${SOURCES.c3.dataset}](${SOURCES.c3.datasetUrl}) publié sur data.gouv.fr par le ministère de l’Éducation nationale, sous ${SOURCES.c3.licence.name} ([texte de la licence](${SOURCES.c3.licence.url})) : réutilisation libre, avec mention de la source et de la date. Quand une discipline suit un programme plus récent, publié au Bulletin officiel ou sur éduscol, ses domaines citent ce texte ; ce sont des informations publiques, réutilisables librement avec la même mention ([code des relations entre le public et l’administration](${INFORMATIONS_PUBLIQUES.url})).`,
     '',
-    ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl}) : ${s.pages} pages, ${s.legal}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
+    // Un texte publié en HTML seulement (pdfCopyBy) : la copie PDF citée, son auteur, et le lien vers la page officielle.
+    ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl})${s.pdfCopyBy ? ` (copie PDF faite par ${s.pdfCopyBy} ; [texte officiel au Bulletin officiel](${s.datasetUrl}), en HTML)` : ''} : ${s.pages} pages, ${s.legal}, pour ${s.classes.join(', ')}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
     '',
     'Les libellés de cette page sont des résumés fidèles du texte officiel, écrits pour tenir sur une ligne ; le texte officiel fait foi.',
     '',
@@ -433,6 +488,28 @@ function archipelPage(d) {
       );
     }
   }
+  if (d.STORIES.length) {
+    const ETAPE = { mission: 'Réussir une mission', give: 'Donner', bring: 'Apporter' };
+    lines.push(
+      '## L’entraide',
+      '',
+      `Dans chaque archipel, des petites histoires de trois ou quatre étapes passent d’une créature à l’autre, une à la fois, après le premier ouvrage construit. La dernière étape pose l’objet chez la créature qui le reçoit, avec ${d.STORY_XP} XP : ni délai, ni échec.`,
+      '',
+    );
+    for (const s of d.STORIES) {
+      lines.push(
+        `### ${capFirst(s.name)} (${s.region})`,
+        '',
+        table(
+          ['Étape', 'Chez', 'Ce que dit la ligne'],
+          s.steps.map((e, k) => [`${k + 1}. ${ETAPE[e.kind]}`, `[${BIOMES.find((b) => b.id === e.place).creature.name}](iles/${e.place}.md)`, `« ${d.stepText(e)} »`]),
+        ),
+        '',
+        `À la fin : « ${s.done} »${s.see ? ` ; puis « ${s.see} » mène au grand projet de l’archipel, s’il n’est pas fini (il n’est jamais exigé).` : ''}`,
+        '',
+      );
+    }
+  }
   lines.push('## Types d’écrans', '', 'Chaque mission utilise un type d’écran (champ `type` de l’exercice). Les mêmes règles s’appliquent partout : consigne lue à voix haute, un seul geste par item, correction qui explique, indice jamais pénalisant, pas de chrono.', '');
   const types = new Map();
   for (const b of BIOMES) for (const e of b.exercises) types.set(e.id, { ...e, islands: [...(types.get(e.id)?.islands ?? []), b.name] });
@@ -494,6 +571,9 @@ function islandPage(b, d) {
   for (const q of b.exercises) {
     const exos = EXERCISES.filter((e) => e.biome === b.id && e.type === q.id).sort((a, c) => a.level - c.level);
     lines.push(`### ${q.title}`, '', `*${q.description}*`, '');
+    // L'île du latin et du grec (GD-13) : l'option de chaque mission ; une mission gardée hors du jeu le dit.
+    if (q.option) lines.push(`Option ${q.option === 'la' ? 'latin' : 'grec'} : cette mission se joue quand l’élève a choisi ${q.option === 'la' ? 'le latin' : 'le grec'} dans les Réglages.`, '');
+    if (q.waiting) lines.push(`Cette mission n’est pas encore proposée dans le jeu : elle attend ${q.waiting}.`, '');
     lines.push(programmeLine([...q.programme, ...exos.flatMap((e) => e.programme ?? [])], d, '../'), '');
     if (b.id === 'french-6e-word-spelling' && q.id === 'sight-words') lines.push('Les mots dictés viennent de la liste officielle des mots-outils (fin de CP, fin de CE1) : voir [Programmes officiels](../programmes.md#mots-outils).', '');
     if (exos.length === 0) {
@@ -588,10 +668,10 @@ function islandPage(b, d) {
     table(
       ['Ouvrage', 'Relie', 'Coût', 'Condition'],
       bridges.map((br) => [
-        KIND_NAME[br.kind],
+        KIND_NAME[d.kindOf(br)],
         `${name(br.from)} ↔ ${name(br.to)}`,
         br.cost === 0 ? 'déjà construit' : plural(br.cost, 'bloc'),
-        CONDITION_TEXT[CONDITION_OF[br.kind]],
+        CONDITION_TEXT[CONDITION_OF[d.kindOf(br)]],
       ]),
     ),
     '',
@@ -662,7 +742,7 @@ function personnagesPage(d) {
     '',
     'Cette page est produite à partir des données du jeu (`docs/contenu/` pour les noms, `src/universes/` pour les espèces et les répliques) par `npm run pilotage:personnages`. Elle se corrige dans le code, puis se régénère ; jamais à la main.',
     '',
-    `Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans les deux univers, le Gardien attend éteint sur son îlot et son défi le **rallume** : une statue de pierre qui reprend ses couleurs dans ${UNIVERS.blocland.nom}, une sentinelle de pierre éteinte dans ${UNIVERS.archipeo.nom}. Les noms des archipels changent d’un univers à l’autre (GD-1), leurs identifiants jamais.`,
+    `Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans les deux univers, le Gardien attend éteint sur son île et son défi le **rallume** : une statue de pierre qui reprend ses couleurs dans ${UNIVERS.blocland.nom}, une sentinelle de pierre éteinte dans ${UNIVERS.archipeo.nom}. Les noms des archipels changent d’un univers à l’autre (GD-1), leurs identifiants jamais.`,
     '',
     '## Le mot des grandes étapes',
     '',
@@ -889,7 +969,11 @@ function ouvragesPage(d) {
     '',
     table(
       ['Nature', 'Condition en plus des blocs', 'Nombre'],
-      Object.keys(KIND_NAME).map((k) => [KIND_NAME[k], CONDITION_TEXT[CONDITION_OF[k]], String(BRIDGES.filter((b) => b.kind === k).length)]),
+      // Seulement les natures qu'un ouvrage prend aujourd'hui (GD-9 : plus d'escalier taillé, de tunnel ni de col).
+      Object.keys(KIND_NAME)
+        .map((k) => [k, BRIDGES.filter((b) => d.kindOf(b) === k).length])
+        .filter(([, n]) => n > 0)
+        .map(([k, n]) => [KIND_NAME[k], CONDITION_TEXT[CONDITION_OF[k]], String(n)]),
     ),
     '',
     '## Tous les ouvrages',
@@ -901,7 +985,7 @@ function ouvragesPage(d) {
         '',
         table(
           ['De', 'Vers', 'Nature', 'Coût', 'Condition'],
-          own.map((b) => [name(b.from), name(b.to), KIND_NAME[b.kind], b.cost === 0 ? 'déjà construit' : plural(b.cost, 'bloc'), CONDITION_TEXT[CONDITION_OF[b.kind]]]),
+          own.map((b) => [name(b.from), name(b.to), KIND_NAME[d.kindOf(b)], b.cost === 0 ? 'déjà construit' : plural(b.cost, 'bloc'), CONDITION_TEXT[CONDITION_OF[d.kindOf(b)]]]),
         ),
         '',
       ];
@@ -943,13 +1027,51 @@ function ouvragesPage(d) {
           .sort((x, y) => y[1] - x[1])
           .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
           .join(', ');
-        return [`Les ${d.ARCHIPELAGOS.find((a) => a.classe === m.archipelago).name}`, `${m.name} — ${m.description}`, `[${name(m.biome)}](iles/${m.biome}.md)`, `${m.cells.length} : ${need}`, String(m.reward.xp)];
+        const projet = d.PROJECTS.find((p) => p.monument === m.id);
+        const blocs = projet ? `${projet.pieces.length} pièces, voir [Les grands projets](#les-grands-projets)` : `${m.cells.length} : ${need}`;
+        return [`Les ${d.ARCHIPELAGOS.find((a) => a.classe === m.archipelago).name}`, `${m.name} — ${m.description}`, `[${name(m.biome)}](iles/${m.biome}.md)`, blocs, String(m.reward.xp)];
       }),
     ),
     '',
+    ...grandsProjets(d),
     ...questionsAssemblage(d),
   ];
   return { path: 'pedagogie/ouvrages.md', title: 'Ouvrages et plans', body: lines.join('\n') };
+}
+
+/** Les grands projets (GD-10) : leurs pièces, de bas en haut, et les deux recettes de chacune, puis leurs questions. */
+function grandsProjets(d) {
+  if (d.PROJECTS.length === 0) return [];
+  const recette = (r) => {
+    const parts = r.ingredients.map((i) => d.blockCount(i.bloc, i.n));
+    return `${parts.slice(0, -1).join(', ')} et ${parts.at(-1)}`;
+  };
+  const lines = [
+    '## Les grands projets',
+    '',
+    'Dès la 5e, une grande construction devient un **projet** : elle se pose pièce par pièce, de bas en haut. Chaque pièce a deux recettes au choix, des blocs de deux îles de deux matières (de trois îles de trois matières en 3e) ; les deux recettes n’ont aucune matière en commun et ne demandent jamais la LV2, si bien qu’une matière difficile ne bloque jamais. La recette choisie pose une question qui mêle deux de ses matières, jamais plus, comme celle d’un bloc assemblé : juste, la pièce entière se pose et ses blocs sont pris ; manquée, rien n’est pris. Une pièce commencée bloc par bloc se finit sans rien payer. Voir [Les monuments](../manuel/blocland.md#les-monuments) dans le manuel.',
+    '',
+  ];
+  for (const p of d.PROJECTS) {
+    const m = d.MONUMENTS.find((x) => x.id === p.monument);
+    lines.push(`### ${m.name}`, '');
+    lines.push(table(['Pièce', 'Recette 1', 'Recette 2'], p.pieces.map((x) => [x.names.blocland, recette(x.recipes[0]), recette(x.recipes[1])])), '');
+  }
+  const name = (id) => d.BIOMES.find((x) => x.id === id)?.name ?? id;
+  for (const q of d.QUESTIONS_PROJETS) {
+    // Les îles de la question : celles de toutes les recettes qui la posent (en 3e, la troisième île d'une recette n'a pas
+    // de question).
+    const recettes = d.PROJECTS.flatMap((p) => p.pieces.flatMap((x) => x.recipes)).filter((x) => x.bank === q.bloc);
+    if (recettes.length === 0) throw new Error(`grands projets : la banque ${q.bloc} n'est posée par aucune recette`);
+    const iles = recettes[0].ingredients.map((i) => i.bloc).filter((b) => recettes.every((r) => r.ingredients.some((i) => i.bloc === b)));
+    if (iles.length === 0) throw new Error(`grands projets : les recettes de la banque ${q.bloc} n'ont aucune île commune`);
+    lines.push(`### Les questions : ${iles.map(name).join(' et ')}`, '');
+    lines.push(programmeLine(q.programme, d, ''), '');
+    lines.push(`Consigne : « ${q.instruction} »${q.lang === 'en' ? ' Le texte à lire est en anglais, lu en voix anglaise ; la question, l’indice et l’aide sont en français.' : ''}`, '');
+    lines.push('<details>', `<summary>Questions : ${q.items.length}</summary>`, '');
+    lines.push(...q.items.map((it) => `- ${describeItem(it)}`), '', '</details>', '');
+  }
+  return lines;
 }
 
 /** Les questions des blocs assemblés (GD-2) : ce qu'elles travaillent, leur consigne et leurs questions. */

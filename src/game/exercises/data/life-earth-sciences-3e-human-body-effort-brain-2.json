@@ -1,0 +1,242 @@
+{
+  "id": "life-earth-sciences-3e-human-body-effort-brain-2",
+  "biome": "life-earth-sciences-3e-human-body",
+  "type": "effort-brain",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-2-0",
+      "prompt": "Les cellules du cerveau, qui se passent les messages nerveux, sont les …",
+      "spoken": "Les cellules du cerveau, qui se passent les messages nerveux, sont les  (mot manquant) ",
+      "choices": [
+        "globules rouges",
+        "neurones",
+        "cellules-œufs"
+      ],
+      "answer": "neurones",
+      "hint": "Relis la ligne « Le cerveau est fait de neurones » du rappel.",
+      "explanation": "Le cerveau est fait de milliards de neurones, qui se passent des messages. Les globules rouges, eux, transportent l’oxygène dans le sang.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le système nerveux",
+          "lines": [
+            "Les organes des sens captent une information : voir, entendre, toucher.",
+            "Un nerf porte le message jusqu’au cerveau.",
+            "Le cerveau traite le message et commande une réponse.",
+            "Un autre nerf porte l’ordre jusqu’aux muscles.",
+            "Le cerveau est fait de neurones, des cellules qui se passent des messages.",
+            "Le manque de sommeil, l’alcool, le tabac et les drogues changent le travail du cerveau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-2-1",
+      "prompt": "Le trajet d’un message\nL’œil voit le ballon arriver.\nUn nerf porte le message au cerveau.\nLe cerveau commande : attraper le ballon.\nUn nerf porte l’ordre aux muscles du bras.",
+      "question": "Qui décide du mouvement ?",
+      "spoken": "Le trajet d’un message. L’œil voit le ballon arriver. Un nerf porte le message au cerveau. Le cerveau commande, attraper le ballon. Un nerf porte l’ordre aux muscles du bras.",
+      "choices": [
+        "l’œil",
+        "les muscles du bras",
+        "le cerveau"
+      ],
+      "answer": "le cerveau",
+      "hint": "Relis la ligne « Le cerveau commande » du document.",
+      "explanation": "L’œil capte l’information, les nerfs la transportent, mais c’est le cerveau qui décide et commande. Les muscles du bras exécutent l’ordre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le système nerveux",
+          "lines": [
+            "Les organes des sens captent une information : voir, entendre, toucher.",
+            "Un nerf porte le message jusqu’au cerveau.",
+            "Le cerveau traite le message et commande une réponse.",
+            "Un autre nerf porte l’ordre jusqu’aux muscles.",
+            "Le cerveau est fait de neurones, des cellules qui se passent des messages.",
+            "Le manque de sommeil, l’alcool, le tabac et les drogues changent le travail du cerveau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-2-2",
+      "prompt": "L’oreille capte les sons : c’est un organe des …",
+      "spoken": "L’oreille capte les sons : c’est un organe des  (mot manquant) ",
+      "choices": [
+        "sens",
+        "muscles",
+        "poumons"
+      ],
+      "answer": "sens",
+      "hint": "Relis la ligne « Les organes des sens » du rappel.",
+      "explanation": "L’oreille est un organe des sens, comme l’œil, la peau, le nez et la langue. Elle capte une information et l’envoie au cerveau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le système nerveux",
+          "lines": [
+            "Les organes des sens captent une information : voir, entendre, toucher.",
+            "Un nerf porte le message jusqu’au cerveau.",
+            "Le cerveau traite le message et commande une réponse.",
+            "Un autre nerf porte l’ordre jusqu’aux muscles.",
+            "Le cerveau est fait de neurones, des cellules qui se passent des messages.",
+            "Le manque de sommeil, l’alcool, le tabac et les drogues changent le travail du cerveau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-2-3",
+      "prompt": "Une enquête dans un collège\nÉlèves qui dorment 9 heures : 3 sur 10 ont du mal à se concentrer.\nÉlèves qui dorment 6 heures : 7 sur 10 ont du mal à se concentrer.",
+      "question": "Que montre cette enquête ?",
+      "spoken": "Une enquête dans un collège. Élèves qui dorment 9 heures, 3 sur 10 ont du mal à se concentrer. Élèves qui dorment 6 heures, 7 sur 10 ont du mal à se concentrer.",
+      "choices": [
+        "dormir peu gêne la concentration",
+        "dormir beaucoup gêne la concentration",
+        "le sommeil ne change rien"
+      ],
+      "answer": "dormir peu gêne la concentration",
+      "hint": "Dans quel groupe y a-t-il le plus d’élèves qui ont du mal à se concentrer ?",
+      "explanation": "Les élèves qui dorment peu sont plus nombreux à avoir du mal à se concentrer. Pendant le sommeil, le cerveau se repose et range ce qu’il a appris.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le système nerveux",
+          "lines": [
+            "Les organes des sens captent une information : voir, entendre, toucher.",
+            "Un nerf porte le message jusqu’au cerveau.",
+            "Le cerveau traite le message et commande une réponse.",
+            "Un autre nerf porte l’ordre jusqu’aux muscles.",
+            "Le cerveau est fait de neurones, des cellules qui se passent des messages.",
+            "Le manque de sommeil, l’alcool, le tabac et les drogues changent le travail du cerveau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-2-4",
+      "prompt": "La lumière des écrans, le soir, retarde l’…",
+      "spoken": "La lumière des écrans, le soir, retarde l’ (mot manquant) ",
+      "choices": [
+        "appétit",
+        "endormissement",
+        "réveil"
+      ],
+      "answer": "endormissement",
+      "hint": "Que fait-on juste après avoir éteint la lumière, le soir ?",
+      "explanation": "La lumière des écrans fait croire au cerveau qu’il fait encore jour : on s’endort plus tard. Poser l’écran un moment avant le coucher aide à s’endormir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le système nerveux",
+          "lines": [
+            "Les organes des sens captent une information : voir, entendre, toucher.",
+            "Un nerf porte le message jusqu’au cerveau.",
+            "Le cerveau traite le message et commande une réponse.",
+            "Un autre nerf porte l’ordre jusqu’aux muscles.",
+            "Le cerveau est fait de neurones, des cellules qui se passent des messages.",
+            "Le manque de sommeil, l’alcool, le tabac et les drogues changent le travail du cerveau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-2-5",
+      "prompt": "Un adulte teste un simulateur de conduite\nSans alcool : il freine dès que l’obstacle apparaît.\nAprès avoir bu de l’alcool : il freine plus tard.",
+      "question": "Sur quoi agit l’alcool ?",
+      "spoken": "Un adulte teste un simulateur de conduite. Sans alcool, il freine dès que l’obstacle apparaît. Après avoir bu de l’alcool, il freine plus tard.",
+      "choices": [
+        "sur les freins de la voiture",
+        "sur le cerveau, qui réagit moins vite",
+        "sur les muscles de la jambe"
+      ],
+      "answer": "sur le cerveau, qui réagit moins vite",
+      "hint": "Qui commande le mouvement du pied sur le frein ?",
+      "explanation": "L’alcool ralentit le travail des neurones : le cerveau réagit moins vite, et le pied freine plus tard. Les muscles obéissent : c’est l’ordre du cerveau qui arrive plus tard. C’est pour cela que l’alcool est dangereux au volant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le système nerveux",
+          "lines": [
+            "Les organes des sens captent une information : voir, entendre, toucher.",
+            "Un nerf porte le message jusqu’au cerveau.",
+            "Le cerveau traite le message et commande une réponse.",
+            "Un autre nerf porte l’ordre jusqu’aux muscles.",
+            "Le cerveau est fait de neurones, des cellules qui se passent des messages.",
+            "Le manque de sommeil, l’alcool, le tabac et les drogues changent le travail du cerveau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-2-6",
+      "prompt": "La nicotine du tabac agit sur le cerveau : elle rend …",
+      "spoken": "La nicotine du tabac agit sur le cerveau : elle rend  (mot manquant) ",
+      "choices": [
+        "dépendant",
+        "plus fort",
+        "plus grand"
+      ],
+      "answer": "dépendant",
+      "hint": "Il devient difficile de s’en passer.",
+      "explanation": "La nicotine agit sur le cerveau et rend dépendant : il devient difficile d’arrêter. Le tabac abîme aussi les poumons et le cœur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le système nerveux",
+          "lines": [
+            "Les organes des sens captent une information : voir, entendre, toucher.",
+            "Un nerf porte le message jusqu’au cerveau.",
+            "Le cerveau traite le message et commande une réponse.",
+            "Un autre nerf porte l’ordre jusqu’aux muscles.",
+            "Le cerveau est fait de neurones, des cellules qui se passent des messages.",
+            "Le manque de sommeil, l’alcool, le tabac et les drogues changent le travail du cerveau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-effort-brain-2-7",
+      "prompt": "La question de Yanis : réagit-on plus vite après une bonne nuit ?\nIl mesure son temps de réaction deux matins.\nUn matin après 9 heures de sommeil, un matin après 5 heures.",
+      "question": "Pour que la comparaison soit juste, que doit-il garder pareil ?",
+      "spoken": "La question de Yanis, réagit-on plus vite après une bonne nuit ? Il mesure son temps de réaction deux matins. Un matin après 9 heures de sommeil, un matin après 5 heures.",
+      "choices": [
+        "un test le matin, l’autre le soir",
+        "deux tests différents",
+        "le même test, à la même heure"
+      ],
+      "answer": "le même test, à la même heure",
+      "hint": "Une seule chose doit changer entre les deux matins. Laquelle ?",
+      "explanation": "Seule la durée du sommeil doit changer. Si l’heure ou le test changent aussi, on ne saura pas ce qui explique la différence.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le système nerveux",
+          "lines": [
+            "Les organes des sens captent une information : voir, entendre, toucher.",
+            "Un nerf porte le message jusqu’au cerveau.",
+            "Le cerveau traite le message et commande une réponse.",
+            "Un autre nerf porte l’ordre jusqu’aux muscles.",
+            "Le cerveau est fait de neurones, des cellules qui se passent des messages.",
+            "Le manque de sommeil, l’alcool, le tabac et les drogues changent le travail du cerveau."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-3e-human-body",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

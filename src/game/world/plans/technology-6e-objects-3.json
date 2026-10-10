@@ -1,0 +1,9 @@
+{
+  "id": "technology-6e-objects-3",
+  "biome": "technology-6e-objects",
+  "name": "La cour de l’atelier",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Une cour pour essayer mes inventions. L’atelier est complet, bâtisseur."
+}

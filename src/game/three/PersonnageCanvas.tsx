@@ -2,14 +2,16 @@
 // défi en sentinelle. Un maillage, un appel de dessin, sur fond transparent. La créature respire (et peut tourner
 // lentement) ; la sentinelle ne bouge jamais, seul son allumage change, en fondu (lot 6). Quand l'appareil demande moins
 // d'animations, rien ne bouge et l'allumage change d'un coup. VoxelCanvas.tsx reste celui du monde en blocs.
-import { useEffect, useRef } from 'react';
+import { use, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
+import { chargerLesModeles } from '../importedCharacters';
+import { archipelagoOfIsland } from '../world/archipelagos';
 import { lineaire } from '../world/landMesh';
 import { rgb } from '../world/decor/brush';
 import { LUEUR } from '../world/characters/colors';
-import { framingPoints, modeleDuPortrait } from '../world/characters/portrait';
-import { couleursAllumees, degresDAllumage, glowDegree, type Allumage } from '../world/characters/sentinel';
+import { modeleDuPortrait } from '../world/characters/portrait';
+import { couleursAllumees, degresDAllumage, lueurDuTriangle, type Allumage } from '../world/characters/sentinel';
 import { cadrageSerre } from './tightFraming';
 import { materiauALueur } from './paintedCharacters';
 
@@ -51,6 +53,8 @@ export default function PersonnageCanvas({
   className,
   label,
 }: PersonnageCanvasProps) {
+  // Les modèles importés de son archipel, chargés une fois (sinon, celui dessiné en code).
+  use(chargerLesModeles(archipelagoOfIsland(id)));
   const host = useRef<HTMLDivElement>(null);
   const { pierre, lueurs } = degresDAllumage(allumage);
   // L'allumage demandé et son fondu, lus par la scène sans la refaire ; `relancer` repart la boucle d'une scène immobile.
@@ -85,7 +89,7 @@ export default function PersonnageCanvas({
     g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(f.colors), 3));
     g.setAttribute('lueur', new THREE.BufferAttribute(new Float32Array((f.positions.length / 3) * 4), 4));
     const k = rgb(LUEUR).map((v) => lineaire(v / 255));
-    /** Peint la sentinelle à un degré : sa pierre, et ce qui brille (la flamme et les veines) au poids de leurs lueurs. */
+    /** Peint la sentinelle à un degré : sa pierre, et ce qui brille (flamme, veines, anneau, pierre importée) au poids de ses lueurs. */
     const peindre = (d: { pierre: number; lueurs: number }) => {
       if (kind !== 'guardian') return;
       const couleurs = g.getAttribute('color') as THREE.BufferAttribute;
@@ -93,18 +97,10 @@ export default function PersonnageCanvas({
       couleursAllumees(f, d, couleurs.array as Float32Array<ArrayBuffer>);
       const l = lueur.array as Float32Array;
       l.fill(0);
-      if (d.lueurs > 0)
-        for (let t = 0; t < f.pieces.length; t++) {
-          const piece = f.table[f.pieces[t]];
-          if (piece.lueur !== 'allumage') continue;
-          const poids = glowDegree(piece, d.lueurs) * (piece.glowWeight ?? 1);
-          for (let v = t * 3; v < t * 3 + 3; v++) {
-            l[v * 4] = k[0];
-            l[v * 4 + 1] = k[1];
-            l[v * 4 + 2] = k[2];
-            l[v * 4 + 3] = poids;
-          }
-        }
+      for (let t = 0; t < f.pieces.length; t++) {
+        const a = lueurDuTriangle(f, t, d.pierre, d.lueurs);
+        if (a) for (let v = t * 3; v < t * 3 + 3; v++) l.set([k[0], k[1], k[2], a], v * 4);
+      }
       couleurs.needsUpdate = true;
       lueur.needsUpdate = true;
     };
@@ -127,9 +123,8 @@ export default function PersonnageCanvas({
     const camera = new THREE.PerspectiveCamera(30, el.clientWidth / Math.max(1, el.clientHeight), 0.1, 200);
     const dir = new THREE.Vector3(cameraDirection[0], elevation, cameraDirection[1]).normalize();
     if (remplir) {
-      // Au plus près où chaque sommet cadré tient dans le cadre (la sentinelle ne respire pas ; la créature, à peine) ;
-      // le Lion de pierre seul, sans sa dalle.
-      const sommets = framingPoints(kind, id, f);
+      // Au plus près où chaque sommet tient dans le cadre (la sentinelle ne respire pas ; la créature, à peine).
+      const sommets = g.getAttribute('position').array;
       const points = new Float64Array(sommets.length);
       const respire = kind === 'creature' ? RESPIRATION.amplitude : 0;
       for (let i = 0; i < sommets.length; i += 3) {

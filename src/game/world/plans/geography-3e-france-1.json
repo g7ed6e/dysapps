@@ -1,0 +1,9 @@
+{
+  "id": "geography-3e-france-1",
+  "biome": "geography-3e-france",
+  "name": "La mairie de Jalon",
+  "reward": {
+    "xp": 40
+  },
+  "done": "Ma mairie ! Tous les habitants du plateau peuvent y venir. Merci, bâtisseur."
+}

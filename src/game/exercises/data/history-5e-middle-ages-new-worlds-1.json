@@ -1,0 +1,238 @@
+{
+  "id": "history-5e-middle-ages-new-worlds-1",
+  "biome": "history-5e-middle-ages",
+  "type": "new-worlds",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "items": [
+    {
+      "key": "history-5e-middle-ages-new-worlds-1-0",
+      "prompt": "En 1492, Christophe Colomb arrive en … .",
+      "spoken": "En mille quatre cent quatre-vingt-douze, Christophe Colomb arrive en (mot manquant).",
+      "choices": [
+        "Inde",
+        "Amérique",
+        "Afrique"
+      ],
+      "answer": "Amérique",
+      "hint": "Lis la ligne de 1492 dans la frise.",
+      "explanation": "Colomb arrive en Amérique en 1492. Il croit être arrivé en Asie, aux Indes : c’est pourquoi il appelle les habitants des « Indiens ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des Temps modernes",
+          "lines": [
+            "Toutes les dates sont après Jésus-Christ.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1492 : Christophe Colomb arrive en Amérique.",
+            "1515 : François Ier devient roi de France.",
+            "1517 : Luther critique l’Église, la Réforme commence.",
+            "1661 : Louis XIV gouverne seul."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-1-1",
+      "prompt": "Christophe Colomb arrive en Amérique … le début de la Réforme.",
+      "spoken": "Christophe Colomb arrive en Amérique (mot manquant) le début de la Réforme.",
+      "choices": [
+        "avant",
+        "après",
+        "en même temps que"
+      ],
+      "answer": "avant",
+      "hint": "Sur la frise, lequel est le plus haut ?",
+      "explanation": "1492 vient avant 1517 : Colomb arrive en Amérique avant que Luther ne critique l’Église.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des Temps modernes",
+          "lines": [
+            "Toutes les dates sont après Jésus-Christ.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1492 : Christophe Colomb arrive en Amérique.",
+            "1515 : François Ier devient roi de France.",
+            "1517 : Luther critique l’Église, la Réforme commence.",
+            "1661 : Louis XIV gouverne seul."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-1-2",
+      "prompt": "Au Mexique, les Espagnols conquièrent l’empire des … .",
+      "spoken": "Au Mexique, les Espagnols conquièrent l’empire des (mot manquant) .",
+      "choices": [
+        "Incas",
+        "Arabes",
+        "Aztèques"
+      ],
+      "answer": "Aztèques",
+      "hint": "Les Incas vivent plus au sud, dans les Andes.",
+      "explanation": "Au Mexique, Cortés et ses soldats détruisent l’empire des Aztèques. L’empire des Incas, au Pérou, est conquis lui aussi, par Pizarro.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des Temps modernes",
+          "lines": [
+            "Toutes les dates sont après Jésus-Christ.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1492 : Christophe Colomb arrive en Amérique.",
+            "1515 : François Ier devient roi de France.",
+            "1517 : Luther critique l’Église, la Réforme commence.",
+            "1661 : Louis XIV gouverne seul."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-1-3",
+      "prompt": "Vers 1450, Gutenberg met au point l’… .",
+      "spoken": "Vers mille quatre cent cinquante, Gutenberg met au point l’(mot manquant).",
+      "choices": [
+        "imprimerie",
+        "écriture",
+        "astrolabe"
+      ],
+      "answer": "imprimerie",
+      "hint": "Grâce à elle, on fabrique des livres sans les recopier à la main.",
+      "explanation": "Gutenberg invente une imprimerie avec des lettres en métal. Les livres deviennent plus nombreux, et les idées voyagent plus vite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des Temps modernes",
+          "lines": [
+            "Toutes les dates sont après Jésus-Christ.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1492 : Christophe Colomb arrive en Amérique.",
+            "1515 : François Ier devient roi de France.",
+            "1517 : Luther critique l’Église, la Réforme commence.",
+            "1661 : Louis XIV gouverne seul."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-1-4",
+      "prompt": "Les humanistes, comme Érasme, relisent les textes anciens des Grecs et des … .",
+      "spoken": "Les humanistes, comme Érasme, relisent les textes anciens des Grecs et des (mot manquant) .",
+      "choices": [
+        "Gaulois",
+        "Romains",
+        "Égyptiens"
+      ],
+      "answer": "Romains",
+      "hint": "Ils lisent le grec et le latin. Le latin est la langue de quel peuple ?",
+      "explanation": "Les humanistes relisent les auteurs grecs et romains de l’Antiquité. Ils pensent que l’instruction rend l’homme meilleur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des Temps modernes",
+          "lines": [
+            "Toutes les dates sont après Jésus-Christ.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1492 : Christophe Colomb arrive en Amérique.",
+            "1515 : François Ier devient roi de France.",
+            "1517 : Luther critique l’Église, la Réforme commence.",
+            "1661 : Louis XIV gouverne seul."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-1-5",
+      "prompt": "Le château de Chambord, bâti pour François Ier, est un chef-d’œuvre de la … .",
+      "spoken": "Le château de Chambord, bâti pour François premier, est un chef-d’œuvre de la (mot manquant).",
+      "choices": [
+        "Réforme",
+        "Renaissance",
+        "féodalité"
+      ],
+      "answer": "Renaissance",
+      "hint": "Un art nouveau venu d’Italie, qui fait « renaître » l’Antiquité.",
+      "explanation": "Chambord est un château de la Renaissance, l’art nouveau venu d’Italie. François Ier est un prince de la Renaissance.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des Temps modernes",
+          "lines": [
+            "Toutes les dates sont après Jésus-Christ.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1492 : Christophe Colomb arrive en Amérique.",
+            "1515 : François Ier devient roi de France.",
+            "1517 : Luther critique l’Église, la Réforme commence.",
+            "1661 : Louis XIV gouverne seul."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-1-6",
+      "prompt": "En 1517, le moine Luther critique l’Église : c’est le début de la … protestante.",
+      "spoken": "En mille cinq cent dix-sept, le moine Luther critique l’Église : c’est le début de la (mot manquant) protestante.",
+      "choices": [
+        "Renaissance",
+        "croisade",
+        "Réforme"
+      ],
+      "answer": "Réforme",
+      "hint": "Lis la ligne de 1517 dans la frise.",
+      "explanation": "Luther veut réformer l’Église : c’est la Réforme. Ceux qui le suivent sont les protestants.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des Temps modernes",
+          "lines": [
+            "Toutes les dates sont après Jésus-Christ.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1492 : Christophe Colomb arrive en Amérique.",
+            "1515 : François Ier devient roi de France.",
+            "1517 : Luther critique l’Église, la Réforme commence.",
+            "1661 : Louis XIV gouverne seul."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-1-7",
+      "prompt": "Louis XIV est un roi … : il a tous les pouvoirs.",
+      "spoken": "Louis quatorze est un roi (mot manquant) : il a tous les pouvoirs.",
+      "choices": [
+        "absolu",
+        "élu",
+        "vassal"
+      ],
+      "answer": "absolu",
+      "hint": "Il ne partage son pouvoir avec personne.",
+      "explanation": "Un roi absolu fait les lois, rend la justice et commande l’armée. Louis XIV gouverne seul à partir de 1661.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des Temps modernes",
+          "lines": [
+            "Toutes les dates sont après Jésus-Christ.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1492 : Christophe Colomb arrive en Amérique.",
+            "1515 : François Ier devient roi de France.",
+            "1517 : Luther critique l’Église, la Réforme commence.",
+            "1661 : Louis XIV gouverne seul."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-5e-middle-ages",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

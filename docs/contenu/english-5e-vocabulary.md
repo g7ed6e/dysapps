@@ -14,7 +14,7 @@ créature : Pudding
 ## Shopping · `shopping`
 
 - description : Au magasin : quantités, prix, repas.
-- compétences : c4.en.dialoguer.echanges-sociaux · c3.en.dialoguer.renseignements · c4.en.langue.lexique
+- compétences : c4.en.5e.interagir.echanges · c4.en.5e.langue.lexique · c3.en.dialoguer.renseignements
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -133,7 +133,7 @@ Pour tous les items :
 ## Routine · `routine`
 
 - description : La journée (get up, have breakfast…) et always, often, never.
-- compétences : c4.en.langue.temps-verbaux · c3.en.culture.vie-quotidienne
+- compétences : c4.en.5e.langue.verbe · c4.en.5e.culture.quotidien · c3.en.culture.vie-quotidienne
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -244,7 +244,7 @@ Pour tous les items :
 ## Listening · `listening`
 
 - description : Écouter une phrase et trouver son sens.
-- compétences : c4.en.ecouter.intervention-breve
+- compétences : c4.en.5e.comprendre.oral-ecrit
 - langue : en
 - consigne : Écoute la phrase en anglais, puis choisis ce qu’elle veut dire.
 - bravo : Bien entendu !
@@ -342,7 +342,7 @@ Pour tous les items :
 ## Notices · `notices`
 
 - description : Lire un panneau, une consigne, un menu ou un horaire, et y trouver ce qu’on cherche.
-- compétences : c4.en.lire.consignes-panneaux · c4.en.lire.informations · c4.en.langue.lexique
+- compétences : c4.en.5e.comprendre.informations-pratiques · c4.en.5e.comprendre.oral-ecrit · c4.en.5e.langue.lexique
 - langue : en
 - bravo : Bien lu !
 - erreur : {explanation}
@@ -529,6 +529,163 @@ Pour tous les items :
      - Monday = lundi, Tuesday = mardi, Wednesday = mercredi, Thursday = jeudi, Friday = vendredi, Saturday = samedi, Sunday = dimanche
      - weekdays = du lundi au vendredi ; weekends = samedi et dimanche ; every 10 minutes = toutes les 10 minutes
      - am = avant midi, pm = après midi : on ajoute 12 (6:30 pm = 18 h 30) ; last = dernier ; closed = fermé
+
+## The UK · `united-kingdom`
+
+- description : Le Royaume-Uni : ses nations, son histoire, ses lieux, ses façons de parler et la vie de ses élèves, dans un petit document à lire.
+- compétences : c4.en.5e.culture.royaume-uni · c4.en.5e.culture.langues-lieux · c4.en.5e.culture.ecole-loisirs
+- langue : en
+- bravo : Bien vu !
+- erreur : {explanation}
+- bloc gagné : english-5e-vocabulary
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `english-5e-vocabulary-united-kingdom-1`
+
+- consigne : Lis la question, puis le document en anglais, et choisis la bonne réponse. Le lexique est affiché.
+
+Pour tous les items :
+- langue des choix : fr
+- aide « Le Royaume-Uni » :
+  - Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.
+  - England = l’Angleterre ; Wales = le pays de Galles
+  - Scotland = l’Écosse ; Northern Ireland = l’Irlande du Nord
+  - the UK = le Royaume-Uni ; money = la monnaie ; king = le roi
+  - built = a construit (passé de build) ; the north = le nord
+
+1. énoncé : "Map of the UK\nEngland: London\nScotland: Edinburgh\nWales: Cardiff\nNorthern Ireland: Belfast"
+   - question : Quelle est la capitale du pays de Galles ?
+   - lu : Map of the UK. England, London. Scotland, Edinburgh. Wales, Cardiff. Northern Ireland, Belfast.
+   - choix : Cardiff · Édimbourg · Belfast
+   - réponse : Cardiff
+   - indice : Cherche dans le lexique comment on dit pays de Galles, puis trouve sa ligne.
+   - explication : Wales = le pays de Galles : sa capitale est Cardiff. Édimbourg (Edinburgh) est la capitale de l’Écosse, Belfast celle de l’Irlande du Nord. Avec l’Angleterre, ces quatre nations forment le Royaume-Uni.
+2. énoncé : "Stonehenge\nA circle of big stones in the south of England\nMore than 4,000 years old"
+   - question : Qu’est-ce que Stonehenge ?
+   - lu : Stonehenge. A circle of big stones in the south of England. More than four thousand years old.
+   - choix : Un cercle de grandes pierres · Un vieux château · Une tour en pierre
+   - réponse : Un cercle de grandes pierres
+   - indice : Lis la deuxième ligne : circle ressemble à un mot français.
+   - explication : a circle of big stones = un cercle de grandes pierres, dressé il y a plus de 4 000 ans dans le sud de l’Angleterre. Un château se dit castle, une tour tower.
+3. énoncé : "Shopping in the UK\nMoney: the pound\nOne pound = 100 pence"
+   - question : Quelle monnaie utilise-t-on au Royaume-Uni ?
+   - lu : Shopping in the UK. Money, the pound. One pound is one hundred pence.
+   - choix : La livre sterling · L’euro · Le dollar
+   - réponse : La livre sterling
+   - indice : Trouve la ligne qui commence par Money.
+   - explication : the pound = la livre sterling, la monnaie du Royaume-Uni : une livre vaut 100 pence. L’euro est la monnaie de la France, le dollar celle des États-Unis.
+4. énoncé : "Big Ben\nBig Ben is not the tower.\nIt is the big bell inside the tower."
+   - question : D’après ce document, qu’est-ce que Big Ben ?
+   - lu : Big Ben. Big Ben is not the tower. It is the big bell inside the tower.
+   - choix : Une grosse cloche · Une grande tour · Une grande horloge
+   - réponse : Une grosse cloche
+   - indice : La deuxième ligne dit ce que Big Ben n’est pas. Lis la dernière ligne jusqu’au bout.
+   - explication : the big bell = la grosse cloche : Big Ben est la cloche qui sonne les heures, dans la tour de l’horloge, à Londres. Cette tour s’appelle Elizabeth Tower.
+5. énoncé : "1066: the Battle of Hastings\nWilliam, Duke of Normandy, wins the battle.\nHe becomes King of England."
+   - question : D’où vient Guillaume, le nouveau roi d’Angleterre ?
+   - lu : Ten sixty-six, the Battle of Hastings. William, Duke of Normandy, wins the battle. He becomes King of England.
+   - choix : De Normandie · D’Écosse · De Londres
+   - réponse : De Normandie
+   - indice : Lis la deuxième ligne : Duke of veut dire duc de.
+   - explication : Duke of Normandy = duc de Normandie : Guillaume le Conquérant vient de Normandie, une région de la France d’aujourd’hui. En 1066, il gagne la bataille d’Hastings et devient roi d’Angleterre : une histoire commune aux deux pays.
+6. énoncé : "Hadrian’s Wall\nThe Romans built this wall\nin the north of England."
+   - question : Qui a construit ce mur ?
+   - lu : Hadrian’s Wall. The Romans built this wall in the north of England.
+   - choix : Les Romains · Les Vikings · Les Normands
+   - réponse : Les Romains
+   - indice : Trouve le mot built dans le lexique, puis lis qui est juste avant.
+   - explication : The Romans built = les Romains ont construit. Le mur d’Hadrien, dans le nord de l’Angleterre, a près de 1 900 ans. Les Vikings et les Normands sont arrivés bien plus tard.
+7. énoncé : "The Channel Tunnel\nUnder the sea, between England and France\nTrains since 1994"
+   - question : Où passe ce tunnel ?
+   - lu : The Channel Tunnel. Under the sea, between England and France. Trains since nineteen ninety-four.
+   - choix : Sous la mer · Sous une montagne · Sous Londres
+   - réponse : Sous la mer
+   - indice : under veut dire sous. Lis la deuxième ligne jusqu’au bout.
+   - explication : under the sea = sous la mer : le tunnel sous la Manche relie l’Angleterre et la France. Des trains y passent depuis 1994.
+8. énoncé : "National Trust\nWe look after old houses, gardens and beaches.\nOver 500 places to visit"
+   - question : Que fait le National Trust ?
+   - lu : National Trust. We look after old houses, gardens and beaches. Over five hundred places to visit.
+   - choix : Il prend soin de lieux à visiter · Il construit des maisons neuves · Il vend de vieilles maisons
+   - réponse : Il prend soin de lieux à visiter
+   - indice : look after veut dire s’occuper de. Lis la deuxième ligne jusqu’au bout.
+   - explication : look after = prendre soin de : le National Trust protège de vieilles maisons, des jardins et des plages, ouverts à la visite. Construire se dit build, vendre sell.
+
+### Niveau 2 · `english-5e-vocabulary-united-kingdom-2`
+
+- consigne : Lis la question, puis le document en anglais, et choisis la bonne réponse. Le lexique est affiché.
+
+Pour tous les items :
+- aide « Une langue, des lieux, l’école » :
+  - Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.
+  - lift = l’ascenseur (UK) ; elevator = l’ascenseur (US)
+  - Wales = le pays de Galles ; language = la langue
+  - jumper = le pull ; drama = le théâtre ; chess = les échecs
+  - pupils = les élèves ; aged 10 = âgé de 10 ans
+
+1. énoncé : "Road signs in Wales\nThey are in two languages:\nWelsh and English."
+   - question : En quelles langues sont écrits les panneaux au pays de Galles ?
+   - lu : Road signs in Wales. They are in two languages: Welsh and English.
+   - choix : En gallois et en anglais · En anglais seulement · En français et en anglais
+   - langue des choix : fr
+   - réponse : En gallois et en anglais
+   - indice : Lis la dernière ligne : elle donne les deux langues. Welsh ressemble à Wales.
+   - explication : Welsh and English = le gallois et l’anglais : au pays de Galles, les panneaux sont écrits dans les deux langues. Le gallois est une autre langue que l’anglais.
+2. énoncé : "British English / American English\nholiday / vacation\nautumn / fall\nbiscuit / cookie"
+   - question : Comment dit-on « automne » aux États-Unis ?
+   - lu : British English, American English. Holiday, vacation. Autumn, fall. Biscuit, cookie.
+   - choix : fall · autumn · vacation
+   - réponse : fall
+   - indice : Trouve la ligne de autumn, puis lis le mot de droite : c’est l’anglais américain.
+   - explication : autumn (au Royaume-Uni) = fall (aux États-Unis) : les deux veulent dire automne. vacation, ce sont les vacances, aux États-Unis.
+3. énoncé : "A postcard from Scotland\nWe took a boat on Loch Ness.\nIn Scotland, a loch is a lake!"
+   - question : Que veut dire le mot écossais loch ?
+   - lu : A postcard from Scotland. We took a boat on Loch Ness. In Scotland, a loch is a lake!
+   - choix : Un lac · Une rivière · Une île
+   - langue des choix : fr
+   - réponse : Un lac
+   - indice : Lis la dernière ligne : lake ressemble à un mot français.
+   - explication : a loch is a lake = un loch est un lac : en Écosse, loch veut dire lac. Une rivière se dit river, une île island.
+4. énoncé : "Radio show: Voices of the UK\nIn London, Glasgow or Cardiff,\npeople speak English with different accents."
+   - question : De quoi parle cette émission ?
+   - lu : Radio show: Voices of the UK. In London, Glasgow or Cardiff, people speak English with different accents.
+   - choix : Des accents de l’anglais · Des langues d’Europe · Des radios de Londres
+   - langue des choix : fr
+   - réponse : Des accents de l’anglais
+   - indice : Lis la dernière ligne jusqu’au bout : accents ressemble à un mot français.
+   - explication : different accents = des accents différents : on parle anglais dans tout le Royaume-Uni, mais pas avec le même accent à Londres, à Glasgow (en Écosse) ou à Cardiff (au pays de Galles).
+5. énoncé : "Oakfield School uniform\nGreen jumper, white shirt\nBlack trousers or skirt"
+   - question : De quelle couleur est le pull de l’uniforme ?
+   - lu : Oakfield School uniform. Green jumper, white shirt. Black trousers or skirt.
+   - choix : Vert · Blanc · Noir
+   - langue des choix : fr
+   - réponse : Vert
+   - indice : Trouve le mot jumper, puis lis la couleur juste avant.
+   - explication : green jumper = un pull vert (jumper = pull, en anglais britannique). La chemise est blanche (white shirt), le pantalon ou la jupe noirs. Au Royaume-Uni, la plupart des élèves portent un uniforme.
+6. énoncé : "Hill Park School, England\nYear 7: pupils aged 11 to 12\nYear 8: pupils aged 12 to 13\nYear 9: pupils aged 13 to 14"
+   - question : Dans quelle année sont les élèves de 12 à 13 ans ?
+   - lu : Hill Park School, England. Year seven, pupils aged eleven to twelve. Year eight, pupils aged twelve to thirteen. Year nine, pupils aged thirteen to fourteen.
+   - choix : Year 7 · Year 8 · Year 9
+   - réponse : Year 8
+   - indice : Trouve la ligne qui dit 12 to 13 : les deux nombres, dans cet ordre.
+   - explication : Year 8 = pupils aged 12 to 13, les élèves de 12 à 13 ans : c’est l’âge de la 5e en France. Year 7 a aussi des élèves de 12 ans, mais elle commence à 11 ans, comme la 6e.
+7. énoncé : "After-school clubs\nMonday: chess club\nWednesday: drama club\nFriday: coding club"
+   - question : Quel jour a lieu le club de théâtre ?
+   - lu : After-school clubs. Monday, chess club. Wednesday, drama club. Friday, coding club.
+   - choix : Le mercredi · Le lundi · Le vendredi
+   - langue des choix : fr
+   - réponse : Le mercredi
+   - indice : Trouve la ligne du drama club, puis lis le jour au début.
+   - explication : drama club = le club de théâtre : il a lieu le mercredi, Wednesday. Le lundi, c’est le club d’échecs (chess) ; le vendredi, le club de programmation (coding).
+8. énoncé : "Message from Jack, Manchester\nI play football with my club after school.\nMy cousin in Texas calls it soccer!"
+   - question : Comment dit-on football aux États-Unis ?
+   - lu : Message from Jack, Manchester. I play football with my club after school. My cousin in Texas calls it soccer!
+   - choix : soccer · football · basketball
+   - réponse : soccer
+   - indice : Le cousin de Jack vit au Texas, aux États-Unis. Lis la dernière ligne jusqu’au bout.
+   - explication : My cousin calls it soccer = mon cousin l’appelle soccer : aux États-Unis, notre football se dit soccer. Là-bas, football veut dire le football américain.
 
 ## Les plans
 

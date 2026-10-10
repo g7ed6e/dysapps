@@ -2,7 +2,8 @@
 // du terrain, un par matériau. Calcul pur, sans Three.js ; à part de ./wave.ts pour que le mailleur reste dans le
 // paquet de la 3D, chargé à la demande.
 import type { VoxelCube } from './cube';
-import { buildMesh, type MeshGroup } from './mesher';
+import { buildBlockMesh, type BlockChunk } from './blockMesh';
+import { buildMesh, type MeshGroup, type MeshOptions } from './mesher';
 import type { PlanDeLaVague } from './wave';
 
 /** La part de la vague dans un groupe de faces du terrain : ses sommets et ses indices, à la fin du groupe. */
@@ -32,11 +33,11 @@ export interface GroupeAvecLaVague {
  * terrain : pas un appel de dessin de plus pour un matériau que le terrain a déjà ; un matériau que seule la partie
  * porte (absent du terrain sans elle) ouvre un groupe de plus, donc un appel de dessin de plus pendant la vague. Chaque cube de la vague garde ses faces de côté et du
  * dessus, puisqu'il descend seul ; le dessous, que la caméra ne voit jamais (elle regarde d'en haut), n'est pas dessiné.
- * Les cubes partis sont les premiers de la vague dans chaque groupe : la 3D n'en dessine que le début (`indicesJusquA`).
+ * `options` : celles du terrain (les dessous sous l'eau, Blocland). Les cubes partis sont les premiers de la vague dans chaque groupe : la 3D n'en dessine que le début (`indicesJusquA`).
  */
-export function maillageAvecLaVague(terrain: readonly VoxelCube[], cubes: readonly VoxelCube[], plan: PlanDeLaVague): GroupeAvecLaVague[] {
+export function maillageAvecLaVague(terrain: readonly VoxelCube[], cubes: readonly VoxelCube[], plan: PlanDeLaVague, options: MeshOptions = {}): GroupeAvecLaVague[] {
   const groupes = new Map<string, GroupeAvecLaVague>();
-  for (const groupe of buildMesh([...terrain])) groupes.set(groupe.key, { groupe, vague: null });
+  for (const groupe of buildMesh([...terrain], [], options)) groupes.set(groupe.key, { groupe, vague: null });
   plan.ordre.forEach((c, rang) => {
     for (const g of buildMesh([cubes[c]])) {
       if (g.face === 'bottom') continue;
@@ -59,4 +60,48 @@ export function maillageAvecLaVague(terrain: readonly VoxelCube[], cubes: readon
   // Un matériau qui n'arrive qu'avec un cube plus haut : rien à dessiner avant lui.
   for (const v of groupes.values()) if (v.vague) for (let r = 0; r < plan.ordre.length; r++) v.vague.indicesJusquA[r] ??= 0;
   return [...groupes.values()];
+}
+
+/** Une passe de la vague en blocs (une seule texture) : son morceau, et la vague dans ce morceau. */
+export interface MorceauDeLaVague {
+  morceau: BlockChunk;
+  vague: QueueDeLaVague;
+}
+
+/**
+ * La vague dans le maillage en une seule texture (./blockMesh.ts) : ses cubes, dans l'ordre de la vague, un maillage par
+ * passe (opaque, verre, fantômes), à part du terrain (qui fond ses faces) : un appel de dessin de plus par passe le temps
+ * de la vague. Chaque cube garde ses faces de côté et du dessus, sans les fondre, puisqu'il descend seul ; pas de dessous.
+ */
+export function vagueEnBlocs(cubes: readonly VoxelCube[], plan: PlanDeLaVague): MorceauDeLaVague[] {
+  const passes = new Map<string, MorceauDeLaVague>();
+  plan.ordre.forEach((c, rang) => {
+    for (const g of buildBlockMesh([cubes[c]], { morceau: Infinity })) {
+      let v = passes.get(g.pass);
+      if (!v) {
+        v = { morceau: { ...g, key: `vague:${g.pass}`, positions: [], normals: [], uvs: [], layers: [], colors: [], glows: [], indices: [] }, vague: { premierSommet: 0, premierIndice: 0, rangDuSommet: [], indicesJusquA: [] } };
+        passes.set(g.pass, v);
+      }
+      const m = v.morceau;
+      for (let f = 0; f < g.indices.length / 6; f++) {
+        // Le dessous, que la caméra ne voit jamais (elle regarde d'en haut), n'est pas dessiné.
+        if (g.normals[g.indices[f * 6] * 3 + 1] < 0) continue;
+        const base = m.positions.length / 3;
+        for (let k = 0; k < 4; k++) {
+          const s = g.indices[f * 6] + k;
+          m.positions.push(...g.positions.slice(s * 3, s * 3 + 3));
+          m.normals.push(...g.normals.slice(s * 3, s * 3 + 3));
+          m.uvs.push(...g.uvs.slice(s * 2, s * 2 + 2));
+          m.layers.push(g.layers[s]);
+          m.colors.push(...g.colors.slice(s * 3, s * 3 + 3));
+          m.glows.push(...g.glows.slice(s * 3, s * 3 + 3));
+          v.vague.rangDuSommet.push(rang);
+        }
+        m.indices.push(base, base + 1, base + 2, base, base + 2, base + 3);
+      }
+    }
+    for (const v of passes.values()) v.vague.indicesJusquA[rang] = v.morceau.indices.length;
+  });
+  for (const v of passes.values()) for (let r = 0; r < plan.ordre.length; r++) v.vague.indicesJusquA[r] ??= 0;
+  return [...passes.values()];
 }

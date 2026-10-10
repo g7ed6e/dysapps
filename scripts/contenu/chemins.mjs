@@ -1,8 +1,9 @@
 // Les îles écrites en Markdown (docs/contenu/<île>.md) et les missions du portail (docs/contenu/portail/), avec les
 // JSON qu'ils produisent (src/game/islands.ts, src/game/exercises/data/, src/game/world/plans/,
-// src/game/world/requests.json, src/apps/<mission>/),
+// src/game/world/requests.json, src/apps/<mission>/), les quêtes (docs/contenu/quetes.md → src/game/world/stories.json),
 // et l'assemblage des blocs (docs/contenu/assemblage.md → src/game/world/recipes.ts, et ses questions →
-// src/game/exercises/data/assemblage-<bloc>.json).
+// src/game/exercises/data/assemblage-<bloc>.json), et les grands projets (docs/contenu/projets.md →
+// src/game/world/projects.json, et leurs banques de questions → src/game/exercises/data/assembly-<banque>.json).
 // Module sans effet : generer.mjs (npm run contenu) et importer.mjs s'en servent.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -10,6 +11,8 @@ import { lireIle, principal } from './format.mjs';
 import { MISSIONS_PORTAIL } from './portail.mjs';
 import { FICHIER_ASSEMBLAGE, ecrireRecettes, lireAssemblage, lireQuestions } from './assemblage.mjs';
 import { verifierDemandes } from './demandes.mjs';
+import { FICHIER_QUETES, lireQuetes, verifierQuetes } from './quetes.mjs';
+import { FICHIER_PROJETS, lireBanques, lireProjets, verifierProjets } from './projets.mjs';
 
 // Chemins depuis la racine du dépôt, d'où npm et vitest lancent les scripts.
 const racine = process.cwd();
@@ -19,17 +22,25 @@ export const ILES = join(racine, 'src/game/islands.ts');
 export const PLANS = join(racine, 'src/game/world/plans');
 export const RECETTES = join(racine, 'src/game/world/recipes.ts');
 export const DEMANDES = join(racine, 'src/game/world/requests.json');
+export const QUETES = join(racine, 'src/game/world/stories.json');
+export const PROJETS = join(racine, 'src/game/world/projects.json');
 
 /** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
 const CHAMPS_ILE = ['name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'];
 const CHAMPS_MISSION = ['description', 'programme'];
-const MATIERES = ['french', 'maths', 'english', 'lv2'];
+const MATIERES = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'civics', 'lv2', 'lca'];
 const CLASSES = ['6e', '5e', '4e', '3e'];
 
 /** L'ordre des îles : docs/contenu/archipel.md, une ligne « 1. `french-6e-phonology` » par lieu. */
 function ordreDesIles() {
   const texte = readFileSync(join(CONTENU, 'archipel.md'), 'utf8').replace(/\r\n/g, '\n');
   return [...texte.matchAll(/^\d+\. `([a-z0-9-]+)`$/gm)].map((m) => m[1]);
+}
+
+/** Les grands ouvrages (src/game/world/monuments.ts) et leur archipel : `id: 'landmark-5e-1'`, puis `archipelago: '5e'`. */
+function grandsOuvrages() {
+  const texte = readFileSync(join(racine, 'src/game/world/monuments.ts'), 'utf8');
+  return new Map([...texte.matchAll(/id: '(landmark-[a-z0-9-]+)',[^}]*?archipelago: '(6e|5e|4e|3e)'/gs)].map((m) => [m[1], m[2]]));
 }
 
 /**
@@ -42,7 +53,7 @@ export function produire() {
   const biomes = new Map();
   const demandesParIle = new Map();
   const plansParIle = new Map();
-  for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md' && n !== 'archipel.md' && n !== FICHIER_ASSEMBLAGE).sort()) {
+  for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md' && n !== 'archipel.md' && n !== FICHIER_ASSEMBLAGE && n !== FICHIER_QUETES && n !== FICHIER_PROJETS).sort()) {
     const fichier = join('docs/contenu', f);
     const { ile, biome, exercices, plans, demandes } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
     if (f !== `${ile}.md`) throw new Error(`${fichier} : le fichier d'une île s'appelle <île>.md (${ile}.md)`);
@@ -52,6 +63,10 @@ export function produire() {
     for (const m of biome.exercises) {
       for (const k of CHAMPS_MISSION) if (m[k] === undefined || m[k].length === 0) throw new Error(`${fichier}, mission ${m.id} : « ${k === 'programme' ? 'compétences' : k} » manque`);
       if (m.lv2 !== undefined && !['es', 'de'].includes(m.lv2)) throw new Error(`${fichier}, mission ${m.id} : « lv2 » vaut es ou de, lu « ${m.lv2} »`);
+      // L'île du latin et du grec (GD-13) : chaque mission dit son option, comme celles de la LV2 leur langue.
+      if (biome.subject === 'lca' && !['la', 'gr'].includes(m.option)) throw new Error(`${fichier}, mission ${m.id} : « option » vaut la ou gr, lu « ${m.option ?? ''} »`);
+      if (biome.subject !== 'lca' && m.option !== undefined) throw new Error(`${fichier}, mission ${m.id} : « option » ne se donne que sur l’île du latin et du grec`);
+      if (m.waiting !== undefined && !m.waiting.trim()) throw new Error(`${fichier}, mission ${m.id} : « en attente » dit ce qui manque`);
     }
     iles.add(ile);
     biomes.set(ile, biome);
@@ -85,6 +100,9 @@ export function produire() {
   // Les commandes des habitants (GD-7) : la section « ## Les demandes » de chaque île → src/game/world/requests.json.
   const demandes = verifierDemandes(ordre.map((id) => biomes.get(id)), demandesParIle, assemblage.recettes, plansParIle);
   sortie.set(DEMANDES, JSON.stringify(demandes, null, 2) + '\n');
+  // Les quêtes des habitants (GD-10) : docs/contenu/quetes.md → src/game/world/stories.json.
+  const blocs = [...ordre.map((id) => biomes.get(id).block), ...assemblage.recettes.map((r) => r.bloc), 'roof', 'door', 'lantern', 'fence', 'stairs'];
+  const quetes = lireQuetes(readFileSync(join(CONTENU, FICHIER_QUETES), 'utf8'), join('docs/contenu', FICHIER_QUETES));
   for (const q of lireQuestions(
     mdAssemblage,
     fichierAssemblage,
@@ -94,6 +112,28 @@ export function produire() {
     if (sortie.has(chemin)) throw new Error(`${fichierAssemblage} : « ${q.id} » est déjà l’identifiant d’un exercice d’île`);
     sortie.set(chemin, JSON.stringify(q, null, 2) + '\n');
   }
+  // Les grands projets (GD-10) : docs/contenu/projets.md → src/game/world/projects.json, et ses banques de questions →
+  // src/game/exercises/data/assembly-<banque>.json. Les grands ouvrages et leur archipel sont lus dans monuments.ts.
+  const fichierProjets = join('docs/contenu', FICHIER_PROJETS);
+  const mdProjets = readFileSync(join(CONTENU, FICHIER_PROJETS), 'utf8');
+  const banques = lireBanques(mdProjets, fichierProjets);
+  for (const q of banques) {
+    const chemin = join(DATA, `${q.id}.json`);
+    if (sortie.has(chemin)) throw new Error(`${fichierProjets} : « ${q.id} » est déjà l’identifiant d’un autre exercice`);
+    sortie.set(chemin, JSON.stringify(q, null, 2) + '\n');
+  }
+  const classes = grandsOuvrages();
+  const projets = verifierProjets(
+    lireProjets(mdProjets, fichierProjets),
+    ordre.map((id) => biomes.get(id)),
+    classes,
+    [...assemblage.recettes.map((r) => r.bloc), ...banques.map((q) => q.bloc)],
+    fichierProjets,
+  );
+  sortie.set(PROJETS, JSON.stringify(projets, null, 2) + '\n');
+  // Les quêtes après les projets : la dernière quête d'une région peut montrer son projet.
+  const projetsDesQuetes = projets.map((p) => ({ monument: p.monument, classe: classes.get(p.monument) }));
+  sortie.set(QUETES, JSON.stringify(verifierQuetes(quetes, ordre.map((id) => biomes.get(id)), demandes, blocs, projetsDesQuetes), null, 2) + '\n');
   // Les missions du portail : docs/contenu/portail/<mission>.md → src/apps/<mission>/….json.
   for (const m of MISSIONS_PORTAIL) {
     const fichier = join('docs/contenu/portail', `${m.id}.md`);

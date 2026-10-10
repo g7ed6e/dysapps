@@ -1,0 +1,243 @@
+{
+  "id": "lca-5e-legends-la-cases-2",
+  "biome": "lca-5e-legends",
+  "type": "la-cases",
+  "level": 2,
+  "instruction": "Lis la phrase latine et sa traduction, ou la question, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-5e-legends-la-cases-2-0",
+      "prompt": "Une phrase latine\nAgricola filiae rosam dat.\nLe paysan donne une rose à sa fille.",
+      "question": "À quel cas est filiae, « à sa fille » ?",
+      "spoken": "Une phrase latine. Agrikola filiaï rossamm datt. Le paysan donne une rose à sa fille.",
+      "choices": [
+        "génitif",
+        "datif",
+        "ablatif"
+      ],
+      "answer": "datif",
+      "hint": "Relis la ligne du rappel qui parle de « à ».",
+      "explanation": "filiae traduit « à sa fille » : c’est le datif, à qui l’on donne. Au génitif, filiae voudrait dire « de la fille » : la traduction aide à choisir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les six cas",
+          "lines": [
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Vocatif, pour appeler : ros-a · domin-e",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, « de » : ros-ae · domin-i",
+            "Datif, « à » : ros-ae · domin-o",
+            "Ablatif, avec quoi, où, quand : ros-a · domin-o"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-2-1",
+      "prompt": "« Domine ! » : on appelle le maître. Ce mot est au …",
+      "spoken": "Dominé ! On appelle le maître. Ce mot est au (mot manquant)",
+      "choices": [
+        "vocatif",
+        "nominatif",
+        "accusatif"
+      ],
+      "answer": "vocatif",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "On appelle quelqu’un au vocatif : « Domine ! », « Maître ! ». C’est le seul cas où dominus finit en -e.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les six cas",
+          "lines": [
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Vocatif, pour appeler : ros-a · domin-e",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, « de » : ros-ae · domin-i",
+            "Datif, « à » : ros-ae · domin-o",
+            "Ablatif, avec quoi, où, quand : ros-a · domin-o"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-2-2",
+      "prompt": "Une phrase latine\nPuella stilo scribit.\nLa jeune fille écrit avec un stylet.",
+      "question": "À quel cas est stilo, « avec un stylet » ?",
+      "spoken": "Une phrase latine. Pouélla stilo skribitt. La jeune fille écrit avec un stylet.",
+      "choices": [
+        "datif",
+        "accusatif",
+        "ablatif"
+      ],
+      "answer": "ablatif",
+      "hint": "Le stylet répond à « avec quoi ? » : cherche cette question dans le rappel.",
+      "explanation": "stilo répond à « avec quoi ? » : c’est l’ablatif, le cas du complément circonstanciel, ici le moyen. Le stylet, stilus, est une tige pour écrire sur la cire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les six cas",
+          "lines": [
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Vocatif, pour appeler : ros-a · domin-e",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, « de » : ros-ae · domin-i",
+            "Datif, « à » : ros-ae · domin-o",
+            "Ablatif, avec quoi, où, quand : ros-a · domin-o"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-2-3",
+      "prompt": "Quelle forme de dominus est au génitif, « du maître » ?",
+      "spoken": "Quelle forme de dominouss est au génitif : du maître ?",
+      "choices": [
+        "dominum",
+        "domino",
+        "domini"
+      ],
+      "answer": "domini",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "domini est au génitif : « du maître ». Par exemple, servus domini, l’esclave du maître.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les six cas",
+          "lines": [
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Vocatif, pour appeler : ros-a · domin-e",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, « de » : ros-ae · domin-i",
+            "Datif, « à » : ros-ae · domin-o",
+            "Ablatif, avec quoi, où, quand : ros-a · domin-o"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-2-4",
+      "prompt": "Une phrase latine\nRomulus Romam condit.\nRomulus fonde Rome.",
+      "question": "Pourquoi Roma devient-il Romam ?",
+      "spoken": "Une phrase latine. Romoulouss Romamm konnditt. Romulus fonde Rome.",
+      "choices": [
+        "Rome est complément d’objet direct",
+        "Rome est le sujet",
+        "Rome est au génitif"
+      ],
+      "answer": "Rome est complément d’objet direct",
+      "hint": "Qui fonde ? Et qu’est-ce qui est fondé ?",
+      "explanation": "Rome est ce que Romulus fonde : elle est complément d’objet direct, à l’accusatif. Roma devient Romam, comme rosa devient rosam.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les six cas",
+          "lines": [
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Vocatif, pour appeler : ros-a · domin-e",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, « de » : ros-ae · domin-i",
+            "Datif, « à » : ros-ae · domin-o",
+            "Ablatif, avec quoi, où, quand : ros-a · domin-o"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-2-5",
+      "prompt": "Dans une déclinaison, deux cas ont parfois la même forme : domino est au datif ou à l’…",
+      "spoken": "Dans une déclinaison, deux cas ont parfois la même forme : domino est au datif ou à l’ (mot manquant)",
+      "choices": [
+        "accusatif",
+        "génitif",
+        "ablatif"
+      ],
+      "answer": "ablatif",
+      "hint": "Relis les deux dernières lignes du rappel.",
+      "explanation": "domino peut être au datif (« au maître ») ou à l’ablatif (« par le maître », « avec le maître ») : c’est le sens de la phrase qui tranche.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les six cas",
+          "lines": [
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Vocatif, pour appeler : ros-a · domin-e",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, « de » : ros-ae · domin-i",
+            "Datif, « à » : ros-ae · domin-o",
+            "Ablatif, avec quoi, où, quand : ros-a · domin-o"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-2-6",
+      "prompt": "Une inscription\nS P Q R\nSenatus Populusque Romanus\nLe Sénat et le peuple romain",
+      "question": "Que veulent dire les quatre lettres S P Q R ?",
+      "spoken": "Une inscription. S, P, Q, R. Sénatouss Popoulouskwé Romanouss. Le Sénat et le peuple romain.",
+      "choices": [
+        "la ville de Rome et ses rois",
+        "le Sénat et le peuple romain",
+        "le roi et le peuple romain"
+      ],
+      "answer": "le Sénat et le peuple romain",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "S P Q R : Senatus Populusque Romanus, le Sénat et le peuple romain. Le petit mot -que, collé à populus, veut dire « et ». On lit ces lettres sur de nombreux monuments de Rome.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les six cas",
+          "lines": [
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Vocatif, pour appeler : ros-a · domin-e",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, « de » : ros-ae · domin-i",
+            "Datif, « à » : ros-ae · domin-o",
+            "Ablatif, avec quoi, où, quand : ros-a · domin-o"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-cases-2-7",
+      "prompt": "Une phrase latine\nAgricola in villa habitat.\nLe paysan habite dans la ferme.",
+      "question": "À quel cas est villa, « dans la ferme » ?",
+      "spoken": "Une phrase latine. Agrikola inn willa habitatt. Le paysan habite dans la ferme.",
+      "choices": [
+        "ablatif",
+        "nominatif",
+        "accusatif"
+      ],
+      "answer": "ablatif",
+      "hint": "« Dans la ferme » dit où : cherche « où » dans le rappel.",
+      "explanation": "villa répond à « où ? » : c’est l’ablatif, le cas du complément circonstanciel. Au nominatif, villa s’écrit de la même façon : seule la phrase permet de trancher.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les six cas",
+          "lines": [
+            "Nominatif, le sujet : ros-a · domin-us",
+            "Vocatif, pour appeler : ros-a · domin-e",
+            "Accusatif, le complément d’objet direct : ros-am · domin-um",
+            "Génitif, « de » : ros-ae · domin-i",
+            "Datif, « à » : ros-ae · domin-o",
+            "Ablatif, avec quoi, où, quand : ros-a · domin-o"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-5e-legends",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

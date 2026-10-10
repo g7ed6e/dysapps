@@ -5,7 +5,7 @@ import { questsToReview } from '../game/review';
 import { VillageStageLine } from '../game/VillageStageLine';
 import { archipelagoOf, reachedArchipelagos, ARCHIPELAGOS } from '../game/world/archipelago';
 import { lienDeLaDestination, nextDestination } from '../game/world/destination';
-import { sansCommandes } from '../game/world/requests';
+import { gameAsShown } from '../game/world/stories';
 import { Icon } from '../components/Icon';
 import { RoleBadge } from '../components/RoleBadge';
 import { SpeakButton } from '../components/SpeakButton';
@@ -17,12 +17,15 @@ import { useSettings, useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/universe';
 import { nomDuRole, useTextes } from '../universes';
 
-/** Les expéditions du menu ; la LV2 à côté de l'anglais, sauf avec « Pas de LV2 ». */
-const EXPEDITIONS: Subject[] = ['maths', 'french', 'english', 'lv2'];
+/**
+ * Les expéditions du menu : les deux langues côte à côte, puis l'histoire-géo et les trois sciences (SVT,
+ * physique-chimie, technologie), même sans LV2 (« Pas de LV2 »).
+ */
+const EXPEDITIONS: Subject[] = ['maths', 'french', 'english', 'lv2', 'lca', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'civics'];
 
 /**
  * Le menu d'Archipéo, dans l'ordre du dossier : l'identité, ton village, « Reprendre l'aventure » vers la prochaine
- * destination, la progression, puis les trois Expéditions. Une seule action principale ; sur téléphone, les trois
+ * destination, la progression, puis les Expéditions. Une seule action principale ; sur téléphone, les trois
  * premiers blocs tiennent sans défiler.
  */
 export function HomePage() {
@@ -32,11 +35,11 @@ export function HomePage() {
   const textes = useTextes();
   const rank = levelFromXp(progress.xp);
   const firstTime = progress.totalAnswers === 0;
-  const resume = lastPlace();
+  const resume = lastPlace(state.world.links);
   const reviews = questsToReview(state.spaced, state.world.links);
   const here = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
   // Les commandes (GD-7) ne se suggèrent que dans un univers qui les montre (`commandes` dans ses textes).
-  const destination = nextDestination(textes.commandes ? state : sansCommandes(state), textes.archipels, textes.libelles);
+  const destination = nextDestination(gameAsShown(state, textes), textes.archipels, textes.libelles);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   const reached = reachedArchipelagos(state.world.links).length;
   const univers = UNIVERS[useUnivers()];
@@ -129,13 +132,13 @@ export function HomePage() {
 
       {/* Les Expéditions : une matière chacune, ses missions en deux touchers. */}
       <nav className="grid home-menu" aria-label="Menu principal">
-        {EXPEDITIONS.filter((id) => visibleSubjects(settings.lv2).includes(id)).map((id) => (
+        {EXPEDITIONS.filter((id) => visibleSubjects(settings).includes(id)).map((id) => (
           <Link key={id} to={`/matiere/${id}`} className={`panel menu-tile subject-card subject-${id}`}>
             <span className="subject-icon">
               <Icon name={SUBJECTS[id].icon} size="2.2rem" />
             </span>
             <span className="menu-tile-text">
-              <span className="subject-title">{subjectInfo(id, settings.lv2).title}</span>
+              <span className="subject-title">{subjectInfo(id, settings).title}</span>
               <span className="subject-expedition">Expédition {SUBJECTS[id].expedition}</span>
             </span>
           </Link>

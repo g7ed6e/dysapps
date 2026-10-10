@@ -1,4 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { thePlace } from './world/placeArticle';
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -17,6 +18,7 @@ import { STARS_TO_BEAT, bossDef, bossId, isBossBeaten, isBossOpen } from './boss
 import { explicationDuGardien } from './IslandSheet';
 import { firstSentences } from './firstSentences';
 import { ExerciseRunner } from './ExerciseRunner';
+import { ForeignWordsProvider } from '../components/ForeignWords';
 import { Guardian3D, type GuardianMood } from './Guardians';
 import { FONDU, lueursDuDefi } from './world/characters/glow';
 import { playDrum, playGrowl, playVictory } from './sound';
@@ -32,7 +34,7 @@ export function BossPage() {
   const textes = useTextes();
   const [run, setRun] = useState(0);
   const biome = getBiome(biomeId);
-  const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.world.links) && isBossOpen(biome, state.progress));
+  const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.world.links) && isBossOpen(biome, state.progress, state.world.challengesKeptOpen));
   const alreadyBeaten = biome ? isBossBeaten(biome.id, state.progress) : false;
   // Jamais affronté : aucune partie de son défi n'est encore enregistrée. Lu à l'arrivée, pas à la fin de la partie.
   const [regleOuverte, setRegleOuverte] = useState(() => (biome ? !state.progress[bossId(biome.id)] : false));
@@ -277,30 +279,32 @@ export function BossPage() {
           {shipHint && (
             <p className="panel ship-hint" role="status" aria-live="polite">
               <Icon name="ship" />{' '}
-              <Syllabified text={`Le Bloc-Navire a ses Gardiens : ${shipHint.short} est là ! Va au port, sur ${getBiome(shipHint.biome)?.name ?? shipHint.biome}, finir de le construire.`} />{' '}
+              <Syllabified text={`Le Bloc-Navire a ses Gardiens : ${shipHint.short} est là ! Va au port, sur ${thePlace(getBiome(shipHint.biome)?.name ?? shipHint.biome)}, finir de le construire.`} />{' '}
               <Link to={`/adventure/${getArchipelago(shipHint.from).port}`} className="button">
                 <Icon name="ship" /> Aller au port
               </Link>
             </p>
           )}
-          <ExerciseRunner
-            key={`${def.id}-${run}`}
-            biome={biome}
-            def={def}
-            onReplay={() => setRun((r) => r + 1)}
-            onRound={onRound}
-            etapesNeutres={Boolean(sent)}
-            onComplete={(c) => {
-              if (c.stars >= STARS_TO_BEAT && !alreadyBeaten) {
-                beatBoss();
-                const here = archipelagoOf(biome.id).classe;
-                const next = nextArchipelago(here);
-                const stage = next ? stageTo(next.classe) : undefined;
-                // Le compte d'avant ce Gardien : s'il manquait juste lui, le kit arrive.
-                if (stage && beatenGuardians(here, state.progress) + 1 === stage.guardians) setShipHint(stage);
-              }
-            }}
-          />
+          <ForeignWordsProvider words={biome.foreignWords}>
+            <ExerciseRunner
+              key={`${def.id}-${run}`}
+              biome={biome}
+              def={def}
+              onReplay={() => setRun((r) => r + 1)}
+              onRound={onRound}
+              etapesNeutres={Boolean(sent)}
+              onComplete={(c) => {
+                if (c.stars >= STARS_TO_BEAT && !alreadyBeaten) {
+                  beatBoss();
+                  const here = archipelagoOf(biome.id).classe;
+                  const next = nextArchipelago(here);
+                  const stage = next ? stageTo(next.classe) : undefined;
+                  // Le compte d'avant ce Gardien : s'il manquait juste lui, le kit arrive.
+                  if (stage && beatenGuardians(here, state.progress) + 1 === stage.guardians) setShipHint(stage);
+                }
+              }}
+            />
+          </ForeignWordsProvider>
         </>
       )}
     </>

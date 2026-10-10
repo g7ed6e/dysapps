@@ -7,6 +7,7 @@ import { BLOCKS, getBiome, ofBlock } from './biomes';
 import {
   ARCHIPELAGOS,
   KIND_NAME,
+  linkKind,
   archipelagoOf,
   archipelagoTitle,
   buildableBridges,
@@ -32,7 +33,7 @@ import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../universes';
 import { ArchipelagoMap } from './ArchipelagoMap';
 import { lienDeLaDestination, nextDestination } from './world/destination';
-import { sansCommandes } from './world/requests';
+import { gameAsShown } from './world/stories';
 import { islandState } from './world/islandState';
 import { SpeakButton } from '../components/SpeakButton';
 import { useUnivers } from '../core/SettingsContext';
@@ -40,6 +41,7 @@ import { UNIVERS } from '../core/universe';
 import { signesDesCreatures, signesParmi, usePlusTard } from './reminders';
 import { questsToReview } from './review';
 import { Requests } from './Requests';
+import { ArrangeList } from './ArrangeList';
 
 /** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
 function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {
@@ -60,7 +62,7 @@ export function BloclandPage() {
   const here = archipelagoOf(at).classe;
   const textes = useTextes();
   // Les commandes (GD-7) ne se suggèrent que dans un univers qui les montre (`commandes` dans ses textes).
-  const destination = nextDestination(textes.commandes ? state : sansCommandes(state), textes.archipels, textes.libelles);
+  const destination = nextDestination(gameAsShown(state, textes), textes.archipels, textes.libelles);
   // La vue simple n'a pas de monde : pas de moment du rallumage, mais son mot et sa cloche, une fois (lot 6).
   const { settings } = useSettings();
   const rallumage = useRekindling(state.progress, here, textes.sentinelles !== null);
@@ -77,14 +79,13 @@ export function BloclandPage() {
   const { remises } = usePlusTard();
   // Les révisions dues, calculées une fois pour toute la Carte (pas une fois par île).
   // Un seul signe par créature : sa commande prête et suggérée (GD-7, PR 3 : l'icône du bloc), sinon ses révisions.
-  const avecCommandes = Boolean(textes.commandes);
   const fontSigne = useMemo(() => {
     const dues = questsToReview(state.spaced, state.world.links);
-    const vu = avecCommandes ? state : sansCommandes(state);
+    const vu = gameAsShown(state, textes);
     return new Map(
-      ARCHIPELAGOS.flatMap((a) => signesDesCreatures(vu, a.classe, signesParmi(dues, a.classe, remises, settings.lv2), destination.commande)).map((x) => [x.id, x]),
+      ARCHIPELAGOS.flatMap((a) => signesDesCreatures(vu, a.classe, signesParmi(dues, a.classe, remises, settings.lv2), destination.commande, destination.story)).map((x) => [x.id, x]),
     );
-  }, [state, remises, settings.lv2, avecCommandes, destination.commande]);
+  }, [state, remises, settings.lv2, textes, destination.commande, destination.story]);
   return (
     <>
       <Link to={MENU_PATH} className="back-link">
@@ -130,6 +131,8 @@ export function BloclandPage() {
       {/* Les commandes des créatures de l'archipel du bonhomme (GD-7), sous la prochaine destination. */}
       <Requests niveau="h2" className="panel" />
       <ArchipelagoMap bridges={state.world.links} here={here} />
+      {/* Aménager la région du bonhomme (GD-9) : en liste, la place de chaque lieu et de chaque Gardien dite en mots. */}
+      <ArrangeList a={here} />
 
       {ARCHIPELAGOS.map((a) => {
         const reached = isArchipelagoReached(a.classe, state.world.links);
@@ -193,7 +196,7 @@ export function BloclandPage() {
                       {!unlocked && (
                         <span className="tag">
                           <Icon name="lock" />{' '}
-                          {!reached ? 'Archipel à rejoindre' : bridge ? `${KIND_NAME[bridge.kind]} à construire : ${bridge.cost} blocs` : 'Île lointaine'}
+                          {!reached ? 'Archipel à rejoindre' : bridge ? `${KIND_NAME[linkKind(bridge, state.world.links)]} à construire : ${bridge.cost} blocs` : 'Île lointaine'}
                         </span>
                       )}
                     </Link>

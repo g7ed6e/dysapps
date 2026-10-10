@@ -8,15 +8,38 @@
 
 export type V3 = [number, number, number];
 
-/** Les faces d'une case, dans le masque `couvre` (les quatre côtés dans l'ordre de `COTES`, puis le haut et le bas). */
+/** Les faces d'une case, dans le masque `couvre` (les quatre côtés dans l'ordre de `SIDES`, puis le haut et le bas). */
 export const FACES = { est: 1, nord: 2, ouest: 4, sud: 8, haut: 16, bas: 32 } as const;
 export const TOUTES_LES_FACES = 0b111111;
 
 /**
  * Les rôles des couleurs d'un kit (./kits/types.ts) : une pièce peut en montrer plusieurs dans sa case (le colombage sur
- * son remplissage, les pilotis sous le plancher).
+ * son remplissage, les pilotis sous le plancher) ; la tôle et ses joints (le métal), le galon d'or (la tenture).
  */
-export type Role = 'poteau' | 'remplissage' | 'soubassement' | 'bardage' | 'pilotis' | 'chaperon';
+export type Role =
+  | 'poteau'
+  | 'remplissage'
+  | 'soubassement'
+  | 'bardage'
+  | 'pilotis'
+  | 'chaperon'
+  | 'tole'
+  | 'joint'
+  | 'galon'
+  /** La braise mate du sommet du cône des Décimaux, la couverture d'un pavillon à la Mine. */
+  | 'braise'
+  /** L'eau en nappe : son dessus, son liseré clair au bord, ses flancs sombres. */
+  | 'nappe'
+  | 'lisere'
+  | 'flanc'
+  /** Le vert du nénuphar posé sur la nappe. */
+  | 'feuille'
+  /** La paille du champ de blé. */
+  | 'paille'
+  /** La pierre des lieux du village au 5e (la pierre grise de l'école et de la salle des trophées). */
+  | 'masonry'
+  /** La neige des congères du Glacier (au 5e), tenue loin du fantôme. */
+  | 'snow';
 
 /** Une facette d'une pièce : un polygone convexe (3 ou 4 sommets) et sa normale. */
 export interface Facette {
@@ -26,8 +49,17 @@ export interface Facette {
   face: 'dessus' | 'cote';
   /** La couleur d'un rôle du kit, au lieu de la matière du bloc. */
   role?: Role;
+  /**
+   * Le motif du bloc lui-même (un bloc assemblé, GD-2 : la poutre suspendue de la Halle), que world/construction.ts lit
+   * sur sa matière, au lieu de `motif`.
+   */
+  ownMotif?: boolean;
   /** Le motif peint (0 ou absent : aucun). */
   motif?: number;
+  /** La couleur du bloc de dessous, au lieu de celle de son bloc (les flancs de pierre de la case de braise du cône). */
+  colourBelow?: boolean;
+  /** Sa couleur tenue à l'écart du fantôme Brume (le pain de craie, ./heartPieces.ts : `apartFromGhost`). */
+  ghostApart?: boolean;
 }
 
 /** Une pièce dessinée, dans l'orientation de référence de sa forme. */

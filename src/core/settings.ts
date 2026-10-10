@@ -16,6 +16,12 @@ export type { UniversChoice } from './universe';
  * 28/09/2026), la LV2 de la grande majorité des collégiens ; « aucune » pour un élève qui en est dispensé.
  */
 export type Lv2Choice = 'es' | 'de' | 'none';
+/**
+ * L'option latin ou grec (langues et cultures de l'Antiquité), de la 5e à la 3e, indépendante de la LV2. Par défaut
+ * « Pas d'option » (décision du mainteneur, 8 octobre 2026, l'inverse de la LV2) : la plupart des collégiens ne la
+ * suivent pas. Sans option, l'île du latin et du grec reste fermée et rien n'en dépend (GD-13).
+ */
+export type LcaChoice = 'la' | 'gr' | 'none';
 
 /** La clé des réglages dans le stockage de l'appareil. */
 export const SETTINGS_KEY = 'settings';
@@ -46,6 +52,8 @@ export interface Settings {
   appBadge: boolean;
   /** La LV2 de l'élève : ses missions, sa voix. La langue non choisie n'apparaît nulle part. */
   lv2: Lv2Choice;
+  /** L'option latin ou grec de l'élève : les missions de son île. L'option non choisie n'apparaît nulle part. */
+  lca: LcaChoice;
   /**
    * L'univers de l'appareil (lot 6, src/core/universe.ts). Absent sur un appareil qui ne l'a jamais ouvert depuis la
    * bascule : le premier choix se calcule alors au premier lancement, puis reste. Jamais dans les réglages par défaut.
@@ -74,6 +82,7 @@ export const DEFAULT_SETTINGS: Settings = {
   haptics: true,
   appBadge: true,
   lv2: 'es',
+  lca: 'none',
 };
 
 export const FONT_LABELS: Record<FontChoice, string> = {
@@ -97,6 +106,12 @@ export const LV2_LABELS: Record<Lv2Choice, string> = {
   es: 'Espagnol',
   de: 'Allemand',
   none: 'Pas de LV2',
+};
+
+export const LCA_LABELS: Record<LcaChoice, string> = {
+  la: 'Latin',
+  gr: 'Grec',
+  none: 'Pas d’option',
 };
 
 export const THEME_LABELS: Record<ThemeChoice, string> = {
@@ -147,6 +162,7 @@ export function sanitizeSettings(raw: Partial<Settings> & { view3d?: unknown }):
     haptics: s.haptics === undefined ? DEFAULT_SETTINGS.haptics : Boolean(s.haptics),
     appBadge: s.appBadge === undefined ? DEFAULT_SETTINGS.appBadge : Boolean(s.appBadge),
     lv2: Object.hasOwn(LV2_LABELS, s.lv2) ? s.lv2 : DEFAULT_SETTINGS.lv2,
+    lca: Object.hasOwn(LCA_LABELS, s.lca) ? s.lca : DEFAULT_SETTINGS.lca,
     // Absent reste absent (le premier choix dépend de la progression) ; un univers inconnu vaut l'univers par défaut.
     ...(s.univers === undefined ? {} : { univers: Object.hasOwn(UNIVERS, s.univers) ? s.univers : UNIVERS_PAR_DEFAUT }),
   };
@@ -170,6 +186,11 @@ export function reglagesCourants(): Settings | null {
 /** La LV2 des réglages en mémoire ; hors de l'application (un test, le générateur), celle par défaut. */
 export function lv2Courante(): Lv2Choice {
   return courants?.lv2 ?? DEFAULT_SETTINGS.lv2;
+}
+
+/** L'option latin ou grec des réglages en mémoire ; hors de l'application (un test, le générateur), « Pas d'option ». */
+export function lcaCourante(): LcaChoice {
+  return courants?.lca ?? DEFAULT_SETTINGS.lca;
 }
 
 /** L'univers des réglages en mémoire ; hors de l'application (un test, le générateur), l'univers par défaut. */

@@ -2,6 +2,7 @@
 import { GAME_VERSION } from '../../core/migration';
 import type { BiomeId, BlockId } from '../biomes';
 import type { TirageAssemblage } from '../world/assembly';
+import type { Layout } from '../world/savedLayout';
 
 export interface ExerciseProgress {
   stars: 0 | 1 | 2 | 3;
@@ -48,11 +49,16 @@ export interface GameState {
   /** Le monde : les parties posées, les liaisons construites, le lieu où se tient le personnage. */
   world: World;
   /**
-   * Le tirage des questions des blocs assemblés (GD-2), par bloc : l'ordre propre à l'élève, les dernières posées, les
-   * manquées. Absent tant qu'aucune question n'a reçu de réponse.
+   * Le tirage des questions des blocs assemblés (GD-2), par bloc ou banque de projets (GD-10) : l'ordre propre à
+   * l'élève, les dernières posées, les manquées. Absent tant qu'aucune question n'a reçu de réponse.
    */
-  assemblyDraw?: Partial<Record<BlockId, TirageAssemblage>>;
+  assemblyDraw?: Partial<Record<DrawKey, TirageAssemblage>>;
 }
+
+/** Une banque de questions propre aux grands projets (GD-10, docs/contenu/projets.md). */
+type ProjectBank = `project-${string}`;
+/** Ce qui a son tirage de questions : un bloc assemblé, ou une banque de projets. */
+export type DrawKey = BlockId | ProjectBank;
 
 export interface World {
   /** Cellules déjà posées de chaque plan (clés « x,y,z » relatives à l'île). */
@@ -69,6 +75,24 @@ export interface World {
    * commandes. Une commande livrée en sort : sa petite construction est alors dans `parts`.
    */
   requests?: string[];
+  /**
+   * Les quêtes ouvertes (GD-10 : world/stories.ts), une au plus par région, avec leur étape en cours. Absent tant
+   * qu'aucune n'est arrivée, et dans une sauvegarde d'avant les quêtes. Une quête finie en sort : son objet est alors
+   * dans `parts`.
+   */
+  stories?: { id: string; step: number }[];
+  /**
+   * La disposition des régions aménagées (GD-9, world/savedLayout.ts) : la place et l'orientation des lieux, des
+   * Gardiens, des bornes, les arrivées des liaisons, les lieux réunis, les raccourcis, les liaisons à reposer. Absent
+   * dans une sauvegarde d'avant GD-9 et tant qu'aucune région n'est aménagée : la carte de départ.
+   */
+  layout?: Layout;
+  /**
+   * Les lieux dont le défi était ouvert avant les programmes de 2025-2026 et l'est resté (core/movedChallenges.ts) :
+   * posé à la migration vers le format 4, seulement pour une sauvegarde plus ancienne. Un lieu en sort dès que son
+   * défi est réussi. Absent pour une partie neuve, où la règle est entière (boss.ts, `isBossUnlocked`).
+   */
+  challengesKeptOpen?: BiomeId[];
 }
 
 export interface LogEntry {

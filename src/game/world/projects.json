@@ -1,0 +1,1003 @@
+[
+  {
+    "monument": "landmark-5e-1",
+    "pieces": [
+      {
+        "id": "base",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-5e-signed-numbers",
+                "n": 6
+              },
+              {
+                "bloc": "french-5e-homophones",
+                "n": 4
+              }
+            ],
+            "bank": "compound-5e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-5e-grammar",
+                "n": 6
+              },
+              {
+                "bloc": "geography-5e-resources",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-travellers"
+          }
+        ],
+        "names": {
+          "blocland": "le socle",
+          "archipeo": "le socle"
+        }
+      },
+      {
+        "id": "tower",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-5e-proportionality",
+                "n": 6
+              },
+              {
+                "bloc": "english-5e-vocabulary",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-counter"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "french-5e-conjugation",
+                "n": 6
+              },
+              {
+                "bloc": "history-5e-middle-ages",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-chronicle"
+          }
+        ],
+        "names": {
+          "blocland": "la tour",
+          "archipeo": "la tour"
+        }
+      },
+      {
+        "id": "gallery",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-5e-signed-numbers",
+                "n": 6
+              },
+              {
+                "bloc": "french-5e-homophones",
+                "n": 4
+              }
+            ],
+            "bank": "compound-5e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-5e-grammar",
+                "n": 6
+              },
+              {
+                "bloc": "geography-5e-resources",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-travellers"
+          }
+        ],
+        "names": {
+          "blocland": "la galerie",
+          "archipeo": "la corniche"
+        }
+      },
+      {
+        "id": "lantern",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-5e-proportionality",
+                "n": 6
+              },
+              {
+                "bloc": "english-5e-vocabulary",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-counter"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "french-5e-conjugation",
+                "n": 6
+              },
+              {
+                "bloc": "history-5e-middle-ages",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-chronicle"
+          }
+        ],
+        "names": {
+          "blocland": "la lanterne",
+          "archipeo": "la terrasse"
+        }
+      },
+      {
+        "id": "roof",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-5e-signed-numbers",
+                "n": 6
+              },
+              {
+                "bloc": "french-5e-homophones",
+                "n": 4
+              }
+            ],
+            "bank": "compound-5e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-5e-grammar",
+                "n": 6
+              },
+              {
+                "bloc": "geography-5e-resources",
+                "n": 4
+              }
+            ],
+            "bank": "project-5e-travellers"
+          }
+        ],
+        "names": {
+          "blocland": "le toit",
+          "archipeo": "le feu"
+        }
+      }
+    ]
+  },
+  {
+    "monument": "landmark-4e-3",
+    "pieces": [
+      {
+        "id": "quay",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-4e-powers",
+                "n": 6
+              },
+              {
+                "bloc": "geography-4e-globalization",
+                "n": 4
+              }
+            ],
+            "bank": "project-4e-docks"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "french-4e-vocabulary",
+                "n": 6
+              },
+              {
+                "bloc": "physics-chemistry-4e-signals-circuits",
+                "n": 4
+              }
+            ],
+            "bank": "project-4e-telegraph"
+          }
+        ],
+        "names": {
+          "blocland": "le quai",
+          "archipeo": "le quai"
+        }
+      },
+      {
+        "id": "legs",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-4e-powers",
+                "n": 6
+              },
+              {
+                "bloc": "english-4e-grammar",
+                "n": 4
+              }
+            ],
+            "bank": "compound-4e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "french-4e-vocabulary",
+                "n": 6
+              },
+              {
+                "bloc": "physics-chemistry-4e-signals-circuits",
+                "n": 4
+              }
+            ],
+            "bank": "project-4e-telegraph"
+          }
+        ],
+        "names": {
+          "blocland": "les jambes",
+          "archipeo": "les piliers"
+        }
+      },
+      {
+        "id": "beam",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-4e-powers",
+                "n": 6
+              },
+              {
+                "bloc": "geography-4e-globalization",
+                "n": 4
+              }
+            ],
+            "bank": "project-4e-docks"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "french-4e-vocabulary",
+                "n": 6
+              },
+              {
+                "bloc": "physics-chemistry-4e-signals-circuits",
+                "n": 4
+              }
+            ],
+            "bank": "project-4e-telegraph"
+          }
+        ],
+        "names": {
+          "blocland": "la flèche",
+          "archipeo": "la flèche"
+        }
+      },
+      {
+        "id": "cab",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-4e-powers",
+                "n": 6
+              },
+              {
+                "bloc": "english-4e-grammar",
+                "n": 4
+              }
+            ],
+            "bank": "compound-4e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "french-4e-vocabulary",
+                "n": 6
+              },
+              {
+                "bloc": "physics-chemistry-4e-signals-circuits",
+                "n": 4
+              }
+            ],
+            "bank": "project-4e-telegraph"
+          }
+        ],
+        "names": {
+          "blocland": "la cabine",
+          "archipeo": "la cabine"
+        }
+      }
+    ]
+  },
+  {
+    "monument": "landmark-4e-4",
+    "pieces": [
+      {
+        "id": "foot",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-4e-powers",
+                "n": 6
+              },
+              {
+                "bloc": "english-4e-grammar",
+                "n": 4
+              }
+            ],
+            "bank": "compound-4e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "french-4e-vocabulary",
+                "n": 6
+              },
+              {
+                "bloc": "physics-chemistry-4e-signals-circuits",
+                "n": 4
+              }
+            ],
+            "bank": "project-4e-telegraph"
+          }
+        ],
+        "names": {
+          "blocland": "le pied",
+          "archipeo": "le socle"
+        }
+      },
+      {
+        "id": "lattice",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-4e-powers",
+                "n": 6
+              },
+              {
+                "bloc": "geography-4e-globalization",
+                "n": 4
+              }
+            ],
+            "bank": "project-4e-docks"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "french-4e-vocabulary",
+                "n": 6
+              },
+              {
+                "bloc": "physics-chemistry-4e-signals-circuits",
+                "n": 4
+              }
+            ],
+            "bank": "project-4e-telegraph"
+          }
+        ],
+        "names": {
+          "blocland": "le treillis",
+          "archipeo": "le treillis"
+        }
+      },
+      {
+        "id": "shaft",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-4e-powers",
+                "n": 6
+              },
+              {
+                "bloc": "english-4e-grammar",
+                "n": 4
+              }
+            ],
+            "bank": "compound-4e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "french-4e-vocabulary",
+                "n": 6
+              },
+              {
+                "bloc": "physics-chemistry-4e-signals-circuits",
+                "n": 4
+              }
+            ],
+            "bank": "project-4e-telegraph"
+          }
+        ],
+        "names": {
+          "blocland": "le fût",
+          "archipeo": "le mât"
+        }
+      },
+      {
+        "id": "head",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-4e-powers",
+                "n": 6
+              },
+              {
+                "bloc": "geography-4e-globalization",
+                "n": 4
+              }
+            ],
+            "bank": "project-4e-docks"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "french-4e-vocabulary",
+                "n": 6
+              },
+              {
+                "bloc": "physics-chemistry-4e-signals-circuits",
+                "n": 4
+              }
+            ],
+            "bank": "project-4e-telegraph"
+          }
+        ],
+        "names": {
+          "blocland": "la tête",
+          "archipeo": "la tête"
+        }
+      }
+    ]
+  },
+  {
+    "monument": "landmark-3e-3",
+    "pieces": [
+      {
+        "id": "pad",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-3e-statistics",
+                "n": 4
+              },
+              {
+                "bloc": "french-3e-close-reading",
+                "n": 4
+              },
+              {
+                "bloc": "life-earth-sciences-3e-human-body",
+                "n": 2
+              }
+            ],
+            "bank": "compound-3e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "history-3e-twentieth-century",
+                "n": 4
+              },
+              {
+                "bloc": "physics-chemistry-3e-motion-energy",
+                "n": 4
+              },
+              {
+                "bloc": "technology-3e-digital",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-space"
+          }
+        ],
+        "names": {
+          "blocland": "le pas de tir",
+          "archipeo": "le pas de tir"
+        }
+      },
+      {
+        "id": "stage1",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-3e-functions",
+                "n": 4
+              },
+              {
+                "bloc": "geography-3e-france",
+                "n": 4
+              },
+              {
+                "bloc": "technology-3e-digital",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-water"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-3e-comprehension",
+                "n": 4
+              },
+              {
+                "bloc": "physics-chemistry-3e-motion-energy",
+                "n": 4
+              },
+              {
+                "bloc": "life-earth-sciences-3e-human-body",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-rocket"
+          }
+        ],
+        "names": {
+          "blocland": "le premier étage",
+          "archipeo": "le premier étage"
+        }
+      },
+      {
+        "id": "stage2",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-3e-geometry",
+                "n": 4
+              },
+              {
+                "bloc": "french-3e-close-reading",
+                "n": 4
+              },
+              {
+                "bloc": "life-earth-sciences-3e-human-body",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-solids"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "history-3e-twentieth-century",
+                "n": 4
+              },
+              {
+                "bloc": "physics-chemistry-3e-motion-energy",
+                "n": 4
+              },
+              {
+                "bloc": "technology-3e-digital",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-space"
+          }
+        ],
+        "names": {
+          "blocland": "le second étage",
+          "archipeo": "le second étage"
+        }
+      },
+      {
+        "id": "nose",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-3e-statistics",
+                "n": 4
+              },
+              {
+                "bloc": "french-3e-close-reading",
+                "n": 4
+              },
+              {
+                "bloc": "technology-3e-digital",
+                "n": 2
+              }
+            ],
+            "bank": "compound-3e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-3e-comprehension",
+                "n": 4
+              },
+              {
+                "bloc": "physics-chemistry-3e-motion-energy",
+                "n": 4
+              },
+              {
+                "bloc": "life-earth-sciences-3e-human-body",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-rocket"
+          }
+        ],
+        "names": {
+          "blocland": "la coiffe",
+          "archipeo": "la coiffe"
+        }
+      }
+    ]
+  },
+  {
+    "monument": "landmark-3e-4",
+    "pieces": [
+      {
+        "id": "foot",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-3e-functions",
+                "n": 4
+              },
+              {
+                "bloc": "geography-3e-france",
+                "n": 4
+              },
+              {
+                "bloc": "technology-3e-digital",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-water"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-3e-comprehension",
+                "n": 4
+              },
+              {
+                "bloc": "physics-chemistry-3e-motion-energy",
+                "n": 4
+              },
+              {
+                "bloc": "life-earth-sciences-3e-human-body",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-rocket"
+          }
+        ],
+        "names": {
+          "blocland": "le pied",
+          "archipeo": "le pied"
+        }
+      },
+      {
+        "id": "shaft",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-3e-statistics",
+                "n": 4
+              },
+              {
+                "bloc": "french-3e-close-reading",
+                "n": 4
+              },
+              {
+                "bloc": "life-earth-sciences-3e-human-body",
+                "n": 2
+              }
+            ],
+            "bank": "compound-3e"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "history-3e-twentieth-century",
+                "n": 4
+              },
+              {
+                "bloc": "physics-chemistry-3e-motion-energy",
+                "n": 4
+              },
+              {
+                "bloc": "technology-3e-digital",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-space"
+          }
+        ],
+        "names": {
+          "blocland": "le fût",
+          "archipeo": "le fût"
+        }
+      },
+      {
+        "id": "tank",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-3e-functions",
+                "n": 4
+              },
+              {
+                "bloc": "geography-3e-france",
+                "n": 4
+              },
+              {
+                "bloc": "life-earth-sciences-3e-human-body",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-water"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-3e-comprehension",
+                "n": 4
+              },
+              {
+                "bloc": "physics-chemistry-3e-motion-energy",
+                "n": 4
+              },
+              {
+                "bloc": "technology-3e-digital",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-rocket"
+          }
+        ],
+        "names": {
+          "blocland": "la cuve",
+          "archipeo": "la cuve"
+        }
+      },
+      {
+        "id": "crown",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-3e-functions",
+                "n": 4
+              },
+              {
+                "bloc": "geography-3e-france",
+                "n": 4
+              },
+              {
+                "bloc": "technology-3e-digital",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-water"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-3e-comprehension",
+                "n": 4
+              },
+              {
+                "bloc": "physics-chemistry-3e-motion-energy",
+                "n": 4
+              },
+              {
+                "bloc": "life-earth-sciences-3e-human-body",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-rocket"
+          }
+        ],
+        "names": {
+          "blocland": "la couronne",
+          "archipeo": "la couronne"
+        }
+      }
+    ]
+  },
+  {
+    "monument": "landmark-3e-5",
+    "pieces": [
+      {
+        "id": "cube",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-3e-geometry",
+                "n": 4
+              },
+              {
+                "bloc": "french-3e-close-reading",
+                "n": 4
+              },
+              {
+                "bloc": "technology-3e-digital",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-solids"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "history-3e-twentieth-century",
+                "n": 4
+              },
+              {
+                "bloc": "physics-chemistry-3e-motion-energy",
+                "n": 4
+              },
+              {
+                "bloc": "life-earth-sciences-3e-human-body",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-space"
+          }
+        ],
+        "names": {
+          "blocland": "le cube",
+          "archipeo": "le cube"
+        }
+      },
+      {
+        "id": "cylinder",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-3e-geometry",
+                "n": 4
+              },
+              {
+                "bloc": "french-3e-close-reading",
+                "n": 4
+              },
+              {
+                "bloc": "life-earth-sciences-3e-human-body",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-solids"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-3e-comprehension",
+                "n": 4
+              },
+              {
+                "bloc": "physics-chemistry-3e-motion-energy",
+                "n": 4
+              },
+              {
+                "bloc": "technology-3e-digital",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-rocket"
+          }
+        ],
+        "names": {
+          "blocland": "le cylindre",
+          "archipeo": "le cylindre"
+        }
+      },
+      {
+        "id": "pyramid",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-3e-geometry",
+                "n": 4
+              },
+              {
+                "bloc": "french-3e-close-reading",
+                "n": 4
+              },
+              {
+                "bloc": "technology-3e-digital",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-solids"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "history-3e-twentieth-century",
+                "n": 4
+              },
+              {
+                "bloc": "physics-chemistry-3e-motion-energy",
+                "n": 4
+              },
+              {
+                "bloc": "life-earth-sciences-3e-human-body",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-space"
+          }
+        ],
+        "names": {
+          "blocland": "le tronc de pyramide",
+          "archipeo": "le tronc de pyramide"
+        }
+      },
+      {
+        "id": "sphere",
+        "recipes": [
+          {
+            "ingredients": [
+              {
+                "bloc": "maths-3e-geometry",
+                "n": 4
+              },
+              {
+                "bloc": "french-3e-close-reading",
+                "n": 4
+              },
+              {
+                "bloc": "life-earth-sciences-3e-human-body",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-solids"
+          },
+          {
+            "ingredients": [
+              {
+                "bloc": "english-3e-comprehension",
+                "n": 4
+              },
+              {
+                "bloc": "physics-chemistry-3e-motion-energy",
+                "n": 4
+              },
+              {
+                "bloc": "technology-3e-digital",
+                "n": 2
+              }
+            ],
+            "bank": "project-3e-rocket"
+          }
+        ],
+        "names": {
+          "blocland": "la sphère",
+          "archipeo": "la sphère"
+        }
+      }
+    ]
+  }
+]

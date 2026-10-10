@@ -47,10 +47,7 @@ export const BONHOMME = {
 
 /**
  * Les sentinelles (les Gardiens de pierre) : la pierre éteinte et son lichen, la pierre rallumée, les orbites (qui ne
- * s'allument jamais) et la cendre, ce que sont la flamme et les veines tant qu'elles sont éteintes (`LUEUR` rallumées) ;
- * le serti, le liseré sombre qui borde les veines du Lion de pierre : de la couleur de la pierre tant qu'elles sont
- * éteintes, il s'assombrit avec elles jusqu'à cette couleur (directeur artistique, 06/10/2026) ; l'or s'y lit à plus de
- * 3:1 (référent dys), sur la pierre grise du défi comme sur le Sable de la pierre rallumée.
+ * s'allument jamais) et la cendre, ce que sont la flamme et les veines tant qu'elles sont éteintes (`LUEUR` rallumées).
  * Rallumée, la pierre se réchauffe jusqu'au Sable (#DAA66A, DA lot 6) : « brille à nouveau » se lit à la distance de
  * la vue d'archipel, sans lueur au sol ni halo, et ne se confond plus avec la pierre grise aux veines dorées du défi.
  */
@@ -60,5 +57,28 @@ export const SENTINELLE = {
   rallumee: 0xdaa66a,
   orbite: 0x45423d,
   cendre: 0x6b6862,
-  serti: 0x403d38,
+  /**
+   * Le rameau de la Colombe d'albâtre (HG-3) : éteint, une pierre à peine verte ; rallumé, il reste vert (`feuillage`),
+   * quand tout le reste passe au Sable (DA, relecture des planches : « jusqu'au rameau vert »).
+   */
+  rameau: 0x868a7c,
+  feuillage: 0x5a9a3e,
+  /**
+   * Le rocher de la Tortue d'ocre (SC-3) : une pierre grise un peu plus froide et plus sombre que la statue, qui ne se
+   * rallume pas : rallumée, la tortue passe au Sable et se détache de son rocher (DA, relecture des captures SC-3).
+   */
+  roche: 0x7c7f80,
+  /**
+   * L'Hirondelle de nacre (EMC-2) : éteinte, trois pierres à peine teintées (le dos un peu bleu, le ventre un peu plus
+   * clair, la gorge un peu rose) ; rallumée, ses couleurs à elle, le dos et les ailes de nacre bleutée, le ventre blanc,
+   * la gorge rose nacré, au lieu du Sable, qui en faisait un totem de bois (DA, relecture des captures emc-2). Rallumée,
+   * des valeurs claires : à l'ombre, une nacre moyenne paraissait gris ardoise ; la nacre pâle, le ventre presque blanc,
+   * la gorge rose pâle (DA, relecture des captures emc-2, passe 2).
+   */
+  nacre: 0x8a8d92,
+  nacreRallumee: 0xcad5ee,
+  ventre: 0x9a9891,
+  ventreRallume: 0xfdfbf6,
+  gorge: 0x938a88,
+  gorgeRallumee: 0xf3c6cc,
 } as const satisfies Record<string, Couleur>;

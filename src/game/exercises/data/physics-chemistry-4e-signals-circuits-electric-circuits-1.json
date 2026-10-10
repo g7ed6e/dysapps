@@ -1,0 +1,241 @@
+{
+  "id": "physics-chemistry-4e-signals-circuits-electric-circuits-1",
+  "biome": "physics-chemistry-4e-signals-circuits",
+  "type": "electric-circuits",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-1-0",
+      "prompt": "Dans la guirlande, une lampe grille et tout s’éteint : les lampes sont en …",
+      "spoken": "Dans la guirlande, une lampe grille et tout s’éteint : les lampes sont en  (mot manquant) ",
+      "choices": [
+        "série",
+        "dérivation",
+        "court-circuit"
+      ],
+      "answer": "série",
+      "hint": "Relis la ligne « En série : une seule boucle » du rappel.",
+      "explanation": "Une seule boucle : si une lampe grille, la boucle est coupée et tout s’éteint. Les lampes sont en série.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Série et dérivation",
+          "lines": [
+            "En série : une seule boucle. Une lampe grille, tout s’éteint.",
+            "En dérivation : plusieurs boucles. Une lampe grille, les autres brillent.",
+            "L’intensité, en ampères (A) : l’ampèremètre, branché en série.",
+            "En série, l’intensité est la même partout dans la boucle.",
+            "La tension, en volts (V) : le voltmètre, branché aux deux bornes.",
+            "Trop d’intensité fait chauffer les fils : le fusible coupe le courant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-1-1",
+      "prompt": "À la maison, une lampe grille et les autres restent allumées : elles sont en …",
+      "spoken": "À la maison, une lampe grille et les autres restent allumées : elles sont en  (mot manquant) ",
+      "choices": [
+        "série",
+        "court-circuit",
+        "dérivation"
+      ],
+      "answer": "dérivation",
+      "hint": "Relis la ligne « En dérivation » du rappel.",
+      "explanation": "Chaque lampe a sa boucle : si l’une grille, les autres brillent encore. Les lampes de la maison sont en dérivation.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Série et dérivation",
+          "lines": [
+            "En série : une seule boucle. Une lampe grille, tout s’éteint.",
+            "En dérivation : plusieurs boucles. Une lampe grille, les autres brillent.",
+            "L’intensité, en ampères (A) : l’ampèremètre, branché en série.",
+            "En série, l’intensité est la même partout dans la boucle.",
+            "La tension, en volts (V) : le voltmètre, branché aux deux bornes.",
+            "Trop d’intensité fait chauffer les fils : le fusible coupe le courant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-1-2",
+      "prompt": "L’intensité du courant se mesure avec un …",
+      "spoken": "L’intensité du courant se mesure avec un  (mot manquant) ",
+      "choices": [
+        "voltmètre",
+        "ampèremètre",
+        "thermomètre"
+      ],
+      "answer": "ampèremètre",
+      "hint": "Relis la ligne « L’intensité » du rappel.",
+      "explanation": "L’intensité se mesure en ampères, avec un ampèremètre. Le voltmètre mesure la tension.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Série et dérivation",
+          "lines": [
+            "En série : une seule boucle. Une lampe grille, tout s’éteint.",
+            "En dérivation : plusieurs boucles. Une lampe grille, les autres brillent.",
+            "L’intensité, en ampères (A) : l’ampèremètre, branché en série.",
+            "En série, l’intensité est la même partout dans la boucle.",
+            "La tension, en volts (V) : le voltmètre, branché aux deux bornes.",
+            "Trop d’intensité fait chauffer les fils : le fusible coupe le courant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-1-3",
+      "prompt": "La tension d’une pile se mesure en …",
+      "spoken": "La tension d’une pile se mesure en  (mot manquant) ",
+      "choices": [
+        "volts",
+        "ampères",
+        "watts"
+      ],
+      "answer": "volts",
+      "hint": "Relis la ligne « La tension » du rappel.",
+      "explanation": "La tension se mesure en volts : une pile plate donne 4,5 volts. Les ampères sont pour l’intensité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Série et dérivation",
+          "lines": [
+            "En série : une seule boucle. Une lampe grille, tout s’éteint.",
+            "En dérivation : plusieurs boucles. Une lampe grille, les autres brillent.",
+            "L’intensité, en ampères (A) : l’ampèremètre, branché en série.",
+            "En série, l’intensité est la même partout dans la boucle.",
+            "La tension, en volts (V) : le voltmètre, branché aux deux bornes.",
+            "Trop d’intensité fait chauffer les fils : le fusible coupe le courant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-1-4",
+      "prompt": "Le circuit de Yanis, en série\nUne pile, deux lampes, des fils.\nAvant la première lampe : 200 mA (milliampères).\nEntre les deux lampes : on mesure à nouveau.",
+      "question": "Que va afficher l’ampèremètre entre les deux lampes ?",
+      "spoken": "Le circuit de Yanis, en série. Une pile, deux lampes, des fils. Avant la première lampe, 200 milliampères. Entre les deux lampes, on mesure à nouveau.",
+      "choices": [
+        "100 milliampères",
+        "200 milliampères",
+        "400 milliampères"
+      ],
+      "answer": "200 milliampères",
+      "hint": "Relis la ligne « En série, l’intensité » du rappel.",
+      "explanation": "En série, l’intensité est la même partout : 200 milliampères. Le courant ne s’use pas en traversant la première lampe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Série et dérivation",
+          "lines": [
+            "En série : une seule boucle. Une lampe grille, tout s’éteint.",
+            "En dérivation : plusieurs boucles. Une lampe grille, les autres brillent.",
+            "L’intensité, en ampères (A) : l’ampèremètre, branché en série.",
+            "En série, l’intensité est la même partout dans la boucle.",
+            "La tension, en volts (V) : le voltmètre, branché aux deux bornes.",
+            "Trop d’intensité fait chauffer les fils : le fusible coupe le courant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-1-5",
+      "prompt": "Le schéma du circuit\nUn rond avec la lettre V dedans.\nIl est branché aux deux bornes de la lampe.",
+      "question": "Quel appareil est-ce ?",
+      "spoken": "Le schéma du circuit. Un rond avec la lettre V dedans. Il est branché aux deux bornes de la lampe.",
+      "choices": [
+        "un ampèremètre",
+        "un voltmètre",
+        "une pile"
+      ],
+      "answer": "un voltmètre",
+      "hint": "V, comme volts.",
+      "explanation": "Le rond avec un V est un voltmètre : il mesure la tension, en volts, branché aux deux bornes. L’ampèremètre porte un A.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Série et dérivation",
+          "lines": [
+            "En série : une seule boucle. Une lampe grille, tout s’éteint.",
+            "En dérivation : plusieurs boucles. Une lampe grille, les autres brillent.",
+            "L’intensité, en ampères (A) : l’ampèremètre, branché en série.",
+            "En série, l’intensité est la même partout dans la boucle.",
+            "La tension, en volts (V) : le voltmètre, branché aux deux bornes.",
+            "Trop d’intensité fait chauffer les fils : le fusible coupe le courant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-1-6",
+      "prompt": "Le fusible coupe le courant quand l’intensité devient trop …",
+      "spoken": "Le fusible coupe le courant quand l’intensité devient trop  (mot manquant) ",
+      "choices": [
+        "petite",
+        "stable",
+        "grande"
+      ],
+      "answer": "grande",
+      "hint": "Relis la ligne « Trop d’intensité » du rappel.",
+      "explanation": "Une intensité trop grande fait chauffer les fils, ce qui peut provoquer un incendie : le fusible coupe le courant avant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Série et dérivation",
+          "lines": [
+            "En série : une seule boucle. Une lampe grille, tout s’éteint.",
+            "En dérivation : plusieurs boucles. Une lampe grille, les autres brillent.",
+            "L’intensité, en ampères (A) : l’ampèremètre, branché en série.",
+            "En série, l’intensité est la même partout dans la boucle.",
+            "La tension, en volts (V) : le voltmètre, branché aux deux bornes.",
+            "Trop d’intensité fait chauffer les fils : le fusible coupe le courant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-1-7",
+      "prompt": "La question de Sarah : une lampe brille-t-elle plus avec deux piles ?\nEssai 1 : une pile et une petite lampe.\nEssai 2 : deux piles et une grosse lampe.",
+      "question": "Son expérience permet-elle de répondre ?",
+      "spoken": "La question de Sarah, une lampe brille-t-elle plus avec deux piles ? Essai 1, une pile et une petite lampe. Essai 2, deux piles et une grosse lampe.",
+      "choices": [
+        "oui, la lampe brille plus",
+        "non, elle change deux choses",
+        "non, il faut trois piles"
+      ],
+      "answer": "non, elle change deux choses",
+      "hint": "Entre les deux essais, combien de choses changent ?",
+      "explanation": "Sarah change les piles et la lampe : elle ne saura pas laquelle compte. Il faut garder la même lampe et ne changer que le nombre de piles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Série et dérivation",
+          "lines": [
+            "En série : une seule boucle. Une lampe grille, tout s’éteint.",
+            "En dérivation : plusieurs boucles. Une lampe grille, les autres brillent.",
+            "L’intensité, en ampères (A) : l’ampèremètre, branché en série.",
+            "En série, l’intensité est la même partout dans la boucle.",
+            "La tension, en volts (V) : le voltmètre, branché aux deux bornes.",
+            "Trop d’intensité fait chauffer les fils : le fusible coupe le courant."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-4e-signals-circuits",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

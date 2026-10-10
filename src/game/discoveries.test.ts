@@ -1,5 +1,5 @@
 import { textesDe } from '../universes';
-import { SANS_LV2 } from './biomes';
+import { SANS_LV2, getBiome, sansSonOption } from './biomes';
 import { accueilDeLIle, decouverteDeLIle } from './discoveries';
 import { sanitizeState } from './engine';
 import { lockedHint } from './world/goals';
@@ -8,9 +8,9 @@ const fresh = sanitizeState({});
 
 it('l’accueil d’une île : « pas de LV2 », l’accueil de sa créature, ou ce qu’il faut pour y venir', () => {
   const textes = textesDe('blocland');
-  expect(accueilDeLIle(fresh, 'french-6e-phonology', false, textes)).toBe(textes.creatures['french-6e-phonology'].greeting);
-  expect(accueilDeLIle(fresh, 'french-6e-letter-confusion', false, textes)).toBe(lockedHint(fresh, 'french-6e-letter-confusion', textes.archipels, textes.libelles));
-  expect(accueilDeLIle(fresh, 'lv2-5e-introductions', true, textes)).toBe(SANS_LV2);
+  expect(accueilDeLIle(fresh, 'french-6e-phonology', null, textes)).toBe(textes.creatures['french-6e-phonology'].greeting);
+  expect(accueilDeLIle(fresh, 'french-6e-letter-confusion', null, textes)).toBe(lockedHint(fresh, 'french-6e-letter-confusion', textes.archipels, textes.libelles));
+  expect(accueilDeLIle(fresh, 'lv2-5e-introductions', sansSonOption(getBiome('lv2-5e-introductions'), { lv2: 'none', lca: 'la' }), textes)).toBe(SANS_LV2);
 });
 
 it('les découvertes : les ouvrages sur une île pâle, le Bloc-Navire au port, une fois par appareil, dans les mots de l’univers', () => {
@@ -26,9 +26,12 @@ it('les découvertes : les ouvrages sur une île pâle, le Bloc-Navire au port, 
     expect(decouverteDeLIle(fresh, 'maths-6e-calculation', ou)).toBe(textes.libelles.decouverteNavire);
     expect(decouverteDeLIle(fresh, 'maths-6e-calculation', ou)).toBeNull();
   }
-  // Aucun ouvrage ne demande un Gardien (GD-7) : seul l'escalier demande, en plus des blocs, une mission réussie.
-  for (const u of ['blocland', 'archipeo'] as const) {
-    expect(textesDe(u).libelles.decouverteOuvrages).toContain('Un escalier demande aussi une mission réussie.');
-    expect(textesDe(u).libelles.decouverteOuvrages).not.toContain('Gardien');
-  }
+  // Aucun ouvrage ne demande un Gardien (GD-7) ni une mission (GD-9) : des blocs, depuis l'île de son choix.
+  expect(textesDe('blocland').libelles.decouverteOuvrages).toBe(
+    'Les îles pâles sont fermées. Pour y venir, pose un ouvrage. Il part de l’île de ton choix. Chaque ouvrage coûte le même nombre de blocs.',
+  );
+  expect(textesDe('archipeo').libelles.decouverteOuvrages).toBe(
+    'Les îles pâles sont fermées. Pour y aller, pose un ouvrage. Il part de l’île de ton choix. Chaque ouvrage coûte le même nombre de blocs.',
+  );
+  for (const u of ['blocland', 'archipeo'] as const) expect(textesDe(u).libelles.decouverteOuvrages).not.toContain('Gardien');
 });

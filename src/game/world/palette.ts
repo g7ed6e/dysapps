@@ -337,6 +337,48 @@ export const MATIERES: Record<TextureKind, Faces> = {
   // Le bardeau du Refuge : un bois brun chaud, entre les planches et le lambris, moins orangé que le cuivre, plus
   // sombre et plus rouge que la dalle ; jamais le gris de la pierre, de l'ardoise ou de la roche du massif.
   bardeau: { dessus: 0x9e7a56, cote: 0x7e5e40 },
+  // La mosaïque de la Fouille : un ocre chaud, plus jaune que la brique, plus rouge et plus sombre que le chaume.
+  mosaique: { dessus: 0xd6a258, cote: 0xb47c40 },
+  // Le chaume de la Pointe : une paille dorée, plus jaune que l'osier, plus sombre que le sable.
+  chaume: { dessus: 0xd8b860, cote: 0xb0903e },
+  // Les blocs des îles d'histoire-géographie de 5e à 3e (HG-3) : la couleur de leur bloc (biomes.ts).
+  enluminure: { dessus: 0x6a4c9c, cote: 0x4e3878 },
+  riziere: { dessus: 0xa2bf42, cote: 0x4f8c86 },
+  fonte: { dessus: 0x3e4a44, cote: 0x2c3631 },
+  conteneur: { dessus: 0x3d7fb0, cote: 0x2c6189 },
+  reliure: { dessus: 0x2f6f74, cote: 0x22545a },
+  gres: { dessus: 0xd49a94, cote: 0xb07872 },
+  // Le fossile de la Vallée : une pierre beige, plus grise que le sable, plus chaude que la pierre de taille.
+  fossile: { dessus: 0xb3a68a, cote: 0x8f8370 },
+  // L'aimant du Laboratoire : gris métal dominant (DA, SC-2) ; le rouge et le bleu restent au motif de Blocland.
+  aimant: { dessus: 0xa4aab0, cote: 0x8c9298 },
+  // Le carton du Hangar : un brun clair, plus jaune que la terre, plus terne que les planches.
+  carton: { dessus: 0xb98d5a, cote: 0x9a7246 },
+  // La craie du Préau : un blanc de craie chaud, plus jaune que le sel, plus clair que le fossile (le tableau vert et les
+  // bâtons de couleur restent au motif de Blocland).
+  craie: { dessus: 0xe6e1d4, cote: 0xcfc8b6 },
+  // Les blocs des îles de sciences de 5e à 3e (SC-3) : la couleur de leur bloc (biomes.ts).
+  strate: { dessus: 0x9a6a44, cote: 0x8a5a3a },
+  sel: { dessus: 0xece8e2, cote: 0xc8ccd0 },
+  bambou: { dessus: 0xcdb46a, cote: 0xb49c4e },
+  // La farine du Fournil : le blanc de la farine dessus, la toile de jute du sac sur les côtés (le motif reste à Blocland).
+  farine: { dessus: 0xf4e9cf, cote: 0xbfa274 },
+  // Le tuf de la Grotte : une pierre tendre rosée, plus rose que le fossile, loin du bambou (directeur artistique).
+  tuf: { dessus: 0xd6b4a0, cote: 0xb08e7c },
+  // Le pavé de la Porte : un granit gris bleuté ; la fresque de la Colonnade : l'enduit crème dessus, le rouge pompéien
+  // du panneau sur les côtés (propositions de l'artiste technique 3D ; le motif reste à Blocland).
+  pave: { dessus: 0x8f99a3, cote: 0x717b86 },
+  fresque: { dessus: 0xeadcc0, cote: 0xa94a3e },
+  // L'acajou du Forum : un bois rouge sombre ; le laurier du Bosquet : un vert sombre (propositions de l'artiste
+  // technique 3D ; le motif reste à Blocland).
+  acajou: { dessus: 0x8a4632, cote: 0x6c3022 },
+  laurier: { dessus: 0x5a7a40, cote: 0x46653a },
+  petale: { dessus: 0xe88fb4, cote: 0xc8638e },
+  bobine: { dessus: 0xc47a3c, cote: 0xb5652e },
+  liege: { dessus: 0xb0785a, cote: 0x93603f },
+  savon: { dessus: 0xa6d8c0, cote: 0x86bfa4 },
+  ressort: { dessus: 0x5a606a, cote: 0x4a4f58 },
+  cire: { dessus: 0xd9a03c, cote: 0xb98030 },
   // Les blocs assemblés (GD-2) : la couleur de fond de chaque bloc ; son motif (world/construction.ts, `MOTIF_ASSEMBLE`)
   // le peint par-dessus, avec les couleurs de `DETAILS_ASSEMBLES`. Le madrier, un bois de charpente plus clair que les
   // planches ; le hublot, son cadre jaune ; la poulie, sa chape brune ; la loupe, sur une pierre mauve pâle.

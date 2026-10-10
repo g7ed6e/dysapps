@@ -1,6 +1,6 @@
 # DysApps
 
-**Archipéo**, le jeu d’entraînement de DysApps, pour les **élèves dys du collège** (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, en français, en mathématiques et en anglais. Tout tient dans le navigateur, sans compte ni serveur : la progression reste sur l’appareil.
+**Archipéo**, le jeu d’entraînement de DysApps, pour les **élèves dys du collège** (dyslexie, dysorthographie, dyscalculie), de la 6e à la 3e, dans les matières du collège. Il y a le français, les maths, l’anglais, l’histoire-géographie, les sciences (SVT, physique-chimie, technologie) et l’enseignement moral et civique (EMC) ; à partir de la 5e, la deuxième langue (espagnol ou allemand) et, en option, le latin ou le grec. Tout tient dans le navigateur, sans compte ni serveur : la progression reste sur l’appareil.
 
 - **Application** : https://dysapps.guillaume-delahaye.workers.dev/ (s’installe comme une application, fonctionne hors ligne)
 - **Documentation** : https://g7ed6e.github.io/dysapps/ (manuel utilisateur et contenu pédagogique)
@@ -8,8 +8,8 @@
 ## Ce que c’est
 
 - **Les missions du portail** : Homophones, Lecture (textes du domaine public), Tables et calcul mental, Fractions, Nombres décimaux, et en anglais Vocabulaire et Verbes irréguliers (voix anglaise pour les mots anglais). Séances courtes, questions générées, joker avec aide visuelle, correction qui explique.
-- **L’aventure**, dans Blocland (l’univers par défaut) ou Archipéo, au choix dans les Réglages : quatre archipels en 3D, un par classe de la 6e à la 3e, trente et une îles en tout, une par thème du programme (dont une de LV2 en 5e, en 4e et en 3e). Chaque île a sa créature, ses missions, son bloc, ses trois plans à reconstruire et son Gardien. Les exercices réussis donnent des blocs, les blocs ouvrent des ouvrages entre les îles, rebâtissent le village et construisent le Bloc-Navire qui mène à l’archipel suivant. L’école du village de chaque archipel ouvre les missions du portail, qui y rapportent des blocs.
-- **Le programme officiel comme colonne vertébrale** : chaque mission cite les compétences des programmes de français, de mathématiques et de langues vivantes qu’elle travaille ; la documentation montre ce qui est couvert et ce qui reste à faire.
+- **L’aventure**, dans Blocland (l’univers par défaut) ou Archipéo, au choix dans les Réglages : quatre archipels en 3D, un par classe de la 6e à la 3e, cinquante-huit îles en tout, une par thème du programme : en français, en maths et en anglais, et, à chaque classe, deux d’histoire-géographie, trois de sciences (SVT, physique-chimie, technologie) et une d’EMC ; de la 5e à la 3e, une de LV2 et une de l’option latin ou grec. Chaque île a sa créature, ses missions, son bloc, ses trois plans à reconstruire et son Gardien. Les exercices réussis donnent des blocs, les blocs ouvrent des ouvrages entre les îles, rebâtissent le village et construisent le Bloc-Navire qui mène à l’archipel suivant. L’école du village de chaque archipel ouvre les missions du portail, qui y rapportent des blocs.
+- **Le programme officiel comme colonne vertébrale** : chaque mission cite les compétences du programme officiel de sa matière qu’elle travaille ; la documentation montre ce qui est couvert et ce qui reste à faire.
 - **Des règles dys partout** : police adaptée (Luciole par défaut), texte jamais sous 18 px, consignes lues à voix haute, syllabes en couleurs, un item par écran, aide toujours affichée en maths, indice jamais pénalisant, pas de chronomètre, rien ne se perd.
 - **Une motivation façon jeu**, sans stress : XP, rôles, succès, étoiles, blocs, bâtiments, répétition espacée et niveau adapté.
 
@@ -31,7 +31,6 @@ npm run pilotage:personnages # refait docs/gameplay/personnages.md
 npm run www:captures # rejoue le jeu dans Chromium et fait les captures d’écran (www/_captures/, hors du dépôt, refaites par la CI sur main)
 npm run rendu:mesures # appels de dessin, triangles et images par seconde (rendu logiciel) du monde 3D par archipel, poids de Three.js (--captures <dossier> : captures 3D ; --comparer <références> : planches avant/après des vues changées)
 npm run rendu:budget # triangles et appels de dessin de chaque poste du budget d’Archipéo, son enveloppe et sa marge, par archipel tout construit, sans navigateur (--archipel 6e,3e ; --json)
-npm run rendu:lion  # refait les données du Lion de pierre (src/game/world/characters/statues/lionData.ts) depuis ses modèles réduits (scripts/rendu/lion-de-pierre/ ; --check : vérifie sans écrire)
 npm run version:show # affiche la version calculée depuis git
 npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/splash/)
 npm run programme:extract -- c3 # extrait le texte d'un programme officiel (c3, c4 ou une URL de PDF) dans .programme/

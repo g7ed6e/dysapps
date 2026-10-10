@@ -1,9 +1,8 @@
 import { BLOC, BIOMES } from '../biomes';
 import { sanitizeState } from '../engine';
 import { MAP } from './map';
-import { partiesDe } from './parts';
-import { planCells, plansFor } from './plans';
 import {
+  linkKind,
   ARCHIPELAGOS,
   BRIDGES,
   CONDITION_OF,
@@ -15,10 +14,10 @@ import {
   bridgeState,
   bridgesFromLegacyProgress,
   bridgesOf,
-  conditionMet,
   conditionText,
   buildBridge,
   buildableBridges,
+  getBridge,
   grantAccess,
   isArchipelagoReached,
   isBiomeUnlocked,
@@ -40,23 +39,25 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
     expect(MAP.find((i) => i.id === b.from)).toBeDefined();
     expect(MAP.find((i) => i.id === b.to)).toBeDefined();
   }
-  // Tous les ouvrages construits sans voyage : seules les Premiers Rivages ; avec les voyages : tout.
-  expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(10);
+  // Toutes les liaisons posées sans voyage : seules les Premiers Rivages ; avec les voyages : tout.
+  expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(16);
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
-  expect(BRIDGES).toHaveLength(39);
+  // GD-9 : une liaison possible entre chaque paire de lieux d'une même région (120 en 6e depuis l'île d'EMC d'EMC-2, 105
+  // depuis les îles de sciences de SC-2 ; 91 en 5e depuis le Fournil des partages et la Grotte des légendes, EMC-2 et
+  // LCA-2, 91 en 4e depuis la Porte des libertés et la Colonnade des cités, 91 en 3e depuis le Forum des débats et le
+  // Bosquet des sages ; 66 au 3e avant, depuis les îles de SC-3, 36 depuis les îles d'histoire-géographie de HG-3, 21 avant).
+  expect(BRIDGES).toHaveLength(120 + 3 * 91);
   expect(VOYAGES.map((v) => v.id)).toEqual(['passage-5e', 'passage-4e', 'passage-3e']);
-  expect(BIOMES.length).toBe(31);
-  // Le Relais des voyageurs (LV2) est en bout de chemin : un seul ouvrage y mène, depuis le Comptoir.
-  expect(BRIDGES.filter((b) => b.from === 'lv2-5e-introductions' || b.to === 'lv2-5e-introductions').map((b) => b.id)).toEqual(['english-5e-vocabulary-lv2-5e-introductions']);
+  expect(BIOMES.length).toBe(58);
+  // Le Relais des voyageurs (LV2) reste en bout de chemin : la liaison la plus proche vient du Comptoir.
+  expect(remainingPath('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary']).map((b) => b.id)).toEqual(['english-5e-vocabulary-lv2-5e-introductions']);
   expect(isBiomeUnlocked('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary', 'english-5e-vocabulary-lv2-5e-introductions'])).toBe(true);
   expect(isBiomeUnlocked('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary'])).toBe(false);
-  // Le Jardin des heures (LV2, 4e) aussi : un seul ouvrage, depuis le Théâtre.
-  expect(BRIDGES.filter((b) => b.from === 'lv2-4e-daily-life' || b.to === 'lv2-4e-daily-life').map((b) => b.id)).toEqual(['english-4e-comprehension-lv2-4e-daily-life']);
-  const versLeTheatre = ['passage-5e', 'passage-4e', 'maths-4e-algebra-french-4e-agreement', 'french-4e-agreement-french-4e-vocabulary', 'french-4e-vocabulary-english-4e-comprehension'];
+  // Le Jardin des heures (LV2, 4e) aussi : depuis le Théâtre.
+  const versLeTheatre = ['passage-5e', 'passage-4e', 'maths-4e-algebra-french-4e-agreement', 'maths-4e-algebra-english-4e-comprehension'];
   expect(isBiomeUnlocked('lv2-4e-daily-life', [...versLeTheatre, 'english-4e-comprehension-lv2-4e-daily-life'])).toBe(true);
   expect(isBiomeUnlocked('lv2-4e-daily-life', versLeTheatre)).toBe(false);
-  // Le Refuge des carnets (LV2, 3e) aussi : un seul ouvrage, depuis le Château.
-  expect(BRIDGES.filter((b) => b.from === 'lv2-3e-travel' || b.to === 'lv2-3e-travel').map((b) => b.id)).toEqual(['english-3e-grammar-lv2-3e-travel']);
+  // Le Refuge des carnets (LV2, 3e) aussi : depuis le Château.
   const versLeChateau = ['passage-5e', 'passage-4e', 'passage-3e', 'maths-3e-functions-maths-3e-statistics', 'maths-3e-statistics-english-3e-grammar'];
   expect(isBiomeUnlocked('lv2-3e-travel', [...versLeChateau, 'english-3e-grammar-lv2-3e-travel'])).toBe(true);
   expect(isBiomeUnlocked('lv2-3e-travel', versLeChateau)).toBe(false);
@@ -76,7 +77,7 @@ it('quatre archipels, un par classe, chacun avec son port, connexe depuis ses î
     const open = reachableIslands([...own.map((b) => b.id), ...voyages]);
     for (const id of islands) expect(open.has(id), `${id} depuis ${a.port}`).toBe(true);
     // Au moins deux ouvrages sans condition partent du port : l'arrivée n'est jamais bloquée.
-    expect(bridgesOf(a.port).filter((b) => CONDITION_OF[b.kind] === 'aucune').length, a.port).toBeGreaterThanOrEqual(2);
+    expect(bridgesOf(a.port).filter((b) => CONDITION_OF[linkKind(b, [])] === 'aucune').length, a.port).toBeGreaterThanOrEqual(2);
   }
   // Les voyages vont de port en port, dans l'ordre des archipels.
   VOYAGES.forEach((v, i) => {
@@ -94,12 +95,20 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
       .map((b) => b.id)
       .sort(),
   ).toEqual([
+    // Depuis les formes des îles (GD-12, 8 octobre 2026) : la Ferme s'atteint depuis la Plaine, la Tour depuis la Forêt ;
+    // le Hangar, au coin de devant derrière le Volcan, par le Volcan (comme le Laboratoire, par la Rivière, depuis SC-2),
+    // et, depuis la boîte du trait (8 octobre 2026), aussi depuis la Forêt : sa liaison (95 cases) tenait alors. Le Préau
+    // (EMC-2), à l'ouest au rang du milieu, s'atteint depuis la Forêt, et coupe la liaison de la Forêt au Hangar.
+    'french-6e-grammar-spelling-maths-6e-calculation',
+    'french-6e-phonology-civics-6e-democratic-society',
     'french-6e-phonology-english-6e-grammar',
     'french-6e-phonology-english-6e-vocabulary',
-    'french-6e-phonology-french-6e-grammar-spelling',
     'french-6e-phonology-french-6e-letter-confusion',
-    'maths-6e-calculation-french-6e-reading',
-    'maths-6e-calculation-french-6e-word-spelling',
+    'french-6e-phonology-french-6e-reading',
+    'french-6e-phonology-french-6e-word-spelling',
+    'french-6e-phonology-geography-6e-living',
+    'french-6e-phonology-history-6e-antiquity',
+    'french-6e-phonology-life-earth-sciences-6e-living-world',
     'maths-6e-calculation-maths-6e-decimals',
     'maths-6e-calculation-maths-6e-fractions',
   ]);
@@ -107,14 +116,22 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
   // La Rivière s'atteint par la Plaine ou par la Mine.
   expect(isBiomeUnlocked('maths-6e-fractions', ['maths-6e-calculation-maths-6e-fractions'])).toBe(true);
   expect(isBiomeUnlocked('maths-6e-fractions', ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-maths-6e-fractions'])).toBe(true);
-  expect(bridgeState(BRIDGES[2], [])).toBe('far');
+  // Une liaison entre deux lieux encore fermés : trop loin.
+  expect(bridgeState(getBridge('french-6e-word-spelling-maths-6e-fractions')!, [])).toBe('far');
   expect(isBiomeUnlocked('french-6e-grammar-spelling', ['french-6e-phonology-french-6e-grammar-spelling'])).toBe(true);
   expect(isBiomeUnlocked('french-6e-reading', ['french-6e-phonology-french-6e-grammar-spelling'])).toBe(false);
+  // Depuis la Ferme (GD-12) : ses voisines de devant (le Volcan, le Hangar), la Plaine, et le Préau à sa gauche (EMC-2),
+  // qui se met entre elle et la Tour : la liaison vers la Tour ne tient plus.
   expect(
     buildableBridges(['french-6e-phonology-french-6e-grammar-spelling'], 'french-6e-grammar-spelling')
       .map((b) => b.id)
       .sort(),
-  ).toEqual(['french-6e-grammar-spelling-english-6e-vocabulary', 'french-6e-grammar-spelling-french-6e-reading', 'french-6e-grammar-spelling-maths-6e-decimals']);
+  ).toEqual([
+    'french-6e-grammar-spelling-civics-6e-democratic-society',
+    'french-6e-grammar-spelling-maths-6e-calculation',
+    'french-6e-grammar-spelling-maths-6e-decimals',
+    'french-6e-grammar-spelling-technology-6e-objects',
+  ]);
   // Un pont construit sans chemin jusqu'à lui n'ouvre rien.
   expect(isBiomeUnlocked('french-6e-reading', ['french-6e-grammar-spelling-french-6e-reading'])).toBe(false);
 });
@@ -143,16 +160,27 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
       .map((b) => b.id)
       .sort(),
   ).toEqual([
+    'french-6e-grammar-spelling-maths-6e-calculation',
+    'french-6e-phonology-civics-6e-democratic-society',
     'french-6e-phonology-english-6e-grammar',
     'french-6e-phonology-english-6e-vocabulary',
-    'french-6e-phonology-french-6e-grammar-spelling',
     'french-6e-phonology-french-6e-letter-confusion',
+    'french-6e-phonology-french-6e-reading',
+    'french-6e-phonology-french-6e-word-spelling',
+    'french-6e-phonology-geography-6e-living',
+    'french-6e-phonology-history-6e-antiquity',
+    'french-6e-phonology-life-earth-sciences-6e-living-world',
+    // Le Hangar ne s'atteint plus depuis la Forêt : le Préau des délégués (EMC-2) coupe sa liaison.
+    // Depuis les formes des îles (GD-12, 9 octobre 2026), quatre depuis le Marché : le Comptoir, le Marais et le Glacier
+    // par un pont, le Carrefour par un bac de 46 cases. Le Manoir, monté au second rang derrière le fer du Comptoir, ne
+    // s'y trace plus, ni le Bourg, le Relais et la Menuiserie (des bacs de 86, 45 et 73 cases depuis GD-11). Le Fournil des
+    // partages (EMC-2), au rang du fond, s'atteint depuis le Marché ; la Grotte des légendes (LCA-2), lieu d'option, n'est
+    // proposée qu'avec l'option latin ou grec (« Pas d'option » par défaut).
+    'maths-5e-proportionality-civics-5e-equality-solidarity',
     'maths-5e-proportionality-english-5e-vocabulary',
     'maths-5e-proportionality-french-5e-conjugation',
     'maths-5e-proportionality-french-5e-homophones',
     'maths-5e-signed-numbers-maths-5e-proportionality',
-    'maths-6e-calculation-french-6e-reading',
-    'maths-6e-calculation-french-6e-word-spelling',
     'maths-6e-calculation-maths-6e-decimals',
     'maths-6e-calculation-maths-6e-fractions',
   ]);
@@ -178,19 +206,21 @@ it('un pont se paie avec les blocs des îles, les plus nombreux d’abord, jamai
 });
 
 it('le chemin vers une île part des départs de son archipel ; l’accès offert ajoute voyages puis ouvrages', () => {
-  // La Tour : la liaison du port depuis la Plaine (GD-7), un seul ouvrage.
-  expect(pathTo('french-6e-reading').map((b) => b.id)).toEqual(['maths-6e-calculation-french-6e-reading']);
+  // La Tour : la liaison depuis la Forêt (GD-9 : une liaison entre chaque paire de lieux).
+  expect(pathTo('french-6e-reading').map((b) => b.id)).toEqual(['french-6e-phonology-french-6e-reading']);
   expect(pathTo('french-6e-letter-confusion').map((b) => b.id)).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
   // La Plaine est une île de départ : aucun pont à offrir.
   expect(pathTo('maths-6e-calculation')).toEqual([]);
   expect(pathTo('french-5e-conjugation').map((b) => b.id)).toEqual(['maths-5e-proportionality-french-5e-conjugation']);
   expect(pathTo('french-4e-vocabulary').map((b) => b.id)).toEqual(['maths-4e-algebra-french-4e-vocabulary']);
-  expect(pathTo('english-4e-comprehension').map((b) => b.id)).toEqual(['maths-4e-algebra-french-4e-vocabulary', 'french-4e-vocabulary-english-4e-comprehension']);
-  // Le chemin qu'il reste à construire : les ouvrages construits en sont retirés.
+  expect(pathTo('english-4e-comprehension').map((b) => b.id)).toEqual(['maths-4e-algebra-english-4e-comprehension']);
+  // Ce qu'il reste à poser (GD-9) : le plus court chemin de liaisons qui tiennent, depuis les lieux déjà reliés.
   expect(remainingPath('maths-6e-fractions', []).map((b) => b.id)).toEqual(['maths-6e-calculation-maths-6e-fractions']);
+  expect(remainingPath('french-6e-reading', []).map((b) => b.id)).toEqual(['french-6e-phonology-french-6e-reading']);
+  // Le Carrefour, depuis les formes des îles (GD-12) : un bac direct depuis le Marché, et non plus par le Marais.
   expect(remainingPath('french-5e-homophones', ['passage-5e']).map((b) => b.id)).toEqual(['maths-5e-proportionality-french-5e-homophones']);
-  expect(remainingPath('english-4e-comprehension', ['passage-5e', 'passage-4e', 'maths-4e-algebra-french-4e-vocabulary']).map((b) => b.id)).toEqual(['french-4e-vocabulary-english-4e-comprehension']);
-  expect(remainingPath('french-6e-reading', ['maths-6e-calculation-french-6e-reading'])).toEqual([]);
+  expect(remainingPath('english-4e-comprehension', ['passage-5e', 'passage-4e']).map((b) => b.id)).toEqual(['maths-4e-algebra-english-4e-comprehension']);
+  expect(remainingPath('french-6e-reading', ['french-6e-phonology-french-6e-reading'])).toEqual([]);
   expect(grantAccess([], ['maths-5e-signed-numbers']).sort()).toEqual(['maths-5e-signed-numbers-maths-5e-proportionality', 'passage-5e']);
   expect(grantAccess(['french-6e-phonology-french-6e-letter-confusion'], ['french-6e-phonology', 'french-6e-letter-confusion'])).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
 });
@@ -198,13 +228,13 @@ it('le chemin vers une île part des départs de son archipel ; l’accès offer
 it('les anciennes sauvegardes gardent leurs îles ouvertes : voyages et chemin offerts', () => {
   expect(bridgesFromLegacyProgress({})).toEqual([]);
   expect(bridgesFromLegacyProgress({ 'french-6e-phonology-syllables-1': { stars: 1 } })).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
-  // Sous l'ancienne règle, la Ferme s'ouvrait après la Carrière : on offre le chemin nouveau vers elle (la Carrière, depuis
-  // GD-7, par la liaison du port).
+  // Sous l'ancienne règle, la Ferme s'ouvrait après la Carrière : on offre le chemin nouveau vers elle (GD-9 : la
+  // liaison depuis le lieu relié le plus proche ; depuis les formes des îles, GD-12, la Plaine).
   const old = { 'french-6e-phonology-a': { stars: 1 }, 'french-6e-letter-confusion-a': { stars: 2 }, 'french-6e-word-spelling-a': { stars: 1 } };
-  expect(bridgesFromLegacyProgress(old).sort()).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-french-6e-word-spelling']);
+  expect(bridgesFromLegacyProgress(old).sort()).toEqual(['french-6e-grammar-spelling-maths-6e-calculation', 'french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
   // Sanitize : sauvegarde sans `bridges` → migration ; avec → identifiants inconnus filtrés, îles jouées gardées ouvertes.
-  expect(sanitizeState({ progress: old }).world.links.sort()).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-french-6e-word-spelling']);
-  expect(sanitizeState({ progress: old, world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x', 'french-6e-phonology-french-6e-letter-confusion'] } }).world.links.sort()).toEqual(['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-french-6e-word-spelling']);
+  expect(sanitizeState({ progress: old }).world.links.sort()).toEqual(['french-6e-grammar-spelling-maths-6e-calculation', 'french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
+  expect(sanitizeState({ progress: old, world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x', 'french-6e-phonology-french-6e-letter-confusion'] } }).world.links.sort()).toEqual(['french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
   expect(sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x'] } }).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
   // Le continent d'avant : un escalier vers le Glacier valait l'accès aux Collines. Le voyage et le sentier sont offerts,
   // et l'étape du Bloc-Navire est complète.
@@ -225,31 +255,23 @@ it('les anciennes sauvegardes gardent leurs îles ouvertes : voyages et chemin o
   expect(sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-maths-6e-fractions'] } }).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-maths-6e-fractions']);
 });
 
-it('un escalier veut la première partie d’un bâtiment posée, le tunnel, le col, le pont, le bac et le sentier des blocs seulement, aucun Gardien (GD-7)', () => {
-  const kinds = new Set(BRIDGES.map((b) => b.kind));
-  expect([...kinds].sort()).toEqual(['bac', 'col', 'escalier', 'pont', 'sentier']);
+it('GD-9 : une seule sorte de liaison, des blocs seulement, ni plan ni Gardien à attendre', () => {
+  // Un pont, un bac : plus d'escalier taillé, de tunnel ni de col ; plus de lieux réunis sur la carte de départ (le
+  // sentier reviendra avec la réunion que l'élève construit).
+  const kinds = new Set(BRIDGES.map((b) => linkKind(b, [])));
+  expect([...kinds].sort()).toEqual(['bac', 'pont']);
   expect(CONDITION_OF.pont).toBe('aucune');
-  expect(CONDITION_OF.tunnel).toBe('aucune');
-  expect(CONDITION_OF.col).toBe('aucune');
+  expect(CONDITION_OF.bac).toBe('aucune');
+  expect(CONDITION_OF.sentier).toBe('aucune');
   const empty = { progress: {}, plans: {} };
   const reached = ['passage-5e', 'passage-4e', 'maths-4e-algebra-french-4e-agreement'];
-  const stairs = BRIDGES.find((b) => b.id === 'french-4e-agreement-french-4e-vocabulary')!;
-  expect(bridgeState(stairs, reached, empty)).toBe('blocked');
-  expect(bridgeState(stairs, reached)).toBe('buildable');
-  expect(conditionText(stairs, reached)).toBe('Réussis d’abord une mission de Falaise des accords.');
-  expect(buildBridge('french-4e-agreement-french-4e-vocabulary', reached, { [BLOC.bois]: 9 }, empty)).toEqual({ ok: false, reason: 'plan' });
-  // La première partie de la Falaise posée (le bas de la bergerie : quatre missions) : l'escalier se construit.
-  const bas = partiesDe('french-4e-agreement')[0];
-  expect(bas.cases[0].keys.length).toBeLessThan(planCells(bas.cases[0].plan).length);
-  expect(conditionMet(stairs, reached, { progress: {}, plans: { [bas.cases[0].plan.id]: bas.cases[0].keys } })).toBe(true);
-  // Un premier plan entier, bâti à la main avant GD-6, compte aussi.
-  const bergerie = plansFor('french-4e-agreement')[0];
-  const withPlan = { progress: {}, plans: { [bergerie.id]: planCells(bergerie).map((c) => c.key) } };
-  expect(conditionMet(stairs, reached, withPlan)).toBe(true);
-  expect(buildBridge('french-4e-agreement-french-4e-vocabulary', reached, { [BLOC.bois]: 9 }, withPlan).ok).toBe(true);
-  // Le col Phare → Textes : des blocs seulement, le Gardien du Phare n'est plus une condition (GD-7).
+  const ancienEscalier = getBridge('french-4e-agreement-french-4e-vocabulary')!;
+  expect(bridgeState(ancienEscalier, reached, empty)).toBe('buildable');
+  expect(conditionText(ancienEscalier, reached)).toBeNull();
+  expect(buildBridge('french-4e-agreement-french-4e-vocabulary', reached, { [BLOC.bois]: 9 }, empty).ok).toBe(true);
+  // L'ancien col Phare → Textes : des blocs seulement, lui aussi.
   const sky = ['passage-5e', 'passage-4e', 'passage-3e'];
-  const pass = BRIDGES.find((b) => b.id === 'maths-3e-functions-french-3e-close-reading')!;
+  const pass = getBridge('maths-3e-functions-french-3e-close-reading')!;
   expect(bridgeState(pass, sky, empty)).toBe('buildable');
   expect(conditionText(pass, sky)).toBeNull();
   expect(buildBridge('maths-3e-functions-french-3e-close-reading', sky, { [BLOC.bois]: 9 }, empty).ok).toBe(true);
@@ -258,4 +280,20 @@ it('un escalier veut la première partie d’un bâtiment posée, le tunnel, le 
   expect(buildableBridges(sky, 'maths-3e-functions', empty).map((b) => b.id)).toContain('maths-3e-functions-french-3e-close-reading');
   expect(buildableBridges(sky, 'french-3e-close-reading', empty).map((b) => b.id)).toEqual(['maths-3e-functions-french-3e-close-reading']);
   expect(buildableBridges([], 'french-3e-close-reading', empty)).toEqual([]);
+});
+
+it('sans la géométrie des liaisons (world/linkGeometry.ts pas chargé), les règles refusent de mesurer, hors des tests', async () => {
+  vi.resetModules();
+  const regles = await import('./archipelago');
+  const b = regles.BRIDGES[0];
+  // Dans les tests des règles seules : toute liaison en pont, de longueur nulle.
+  expect(regles.linkLength(b, [])).toBe(0);
+  vi.stubEnv('MODE', 'production');
+  try {
+    expect(() => regles.linkLength(b, [])).toThrow(/géométrie des liaisons/);
+    expect(() => regles.linkKind(b, [])).toThrow(/géométrie des liaisons/);
+  } finally {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  }
 });

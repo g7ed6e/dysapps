@@ -1,0 +1,242 @@
+{
+  "id": "technology-6e-objects-information-networks-1",
+  "biome": "technology-6e-objects",
+  "type": "information-networks",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-6e-objects-information-networks-1-0",
+      "prompt": "Le détecteur de présence repère qu’une personne arrive : c’est un …",
+      "spoken": "Le détecteur de présence repère qu’une personne arrive : c’est un  (mot manquant) ",
+      "choices": [
+        "capteur",
+        "actionneur",
+        "générateur"
+      ],
+      "answer": "capteur",
+      "hint": "Relis la ligne « Un capteur » du rappel.",
+      "explanation": "Le détecteur prend une information : quelqu’un arrive. C’est un capteur. Un actionneur, lui, agit, comme un moteur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’information et les objets",
+          "lines": [
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
+            "Le navigateur : le logiciel qui ouvre les sites.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
+            "Range tes fichiers dans des dossiers, avec un nom clair."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-1-1",
+      "prompt": "Le robot avance grâce à son moteur : le moteur est un …",
+      "spoken": "Le robot avance grâce à son moteur : le moteur est un  (mot manquant) ",
+      "choices": [
+        "capteur",
+        "actionneur",
+        "programme"
+      ],
+      "answer": "actionneur",
+      "hint": "Le moteur prend-il une information, ou fait-il bouger le robot ?",
+      "explanation": "Le moteur fait bouger le robot : il agit, c’est un actionneur. Le capteur, lui, prend une information.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’information et les objets",
+          "lines": [
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
+            "Le navigateur : le logiciel qui ouvre les sites.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
+            "Range tes fichiers dans des dossiers, avec un nom clair."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-1-2",
+      "prompt": "Le lampadaire de la rue\nLe détecteur repère qu’un passant arrive.\nLe programme du lampadaire décide d’allumer.\nLa lampe s’allume.",
+      "question": "Quel élément prend l’information ?",
+      "spoken": "Le lampadaire de la rue. Le détecteur repère qu’un passant arrive. Le programme du lampadaire décide d’allumer. La lampe s’allume.",
+      "choices": [
+        "le détecteur",
+        "le programme",
+        "la lampe"
+      ],
+      "answer": "le détecteur",
+      "hint": "Relis la ligne « Un capteur » du rappel.",
+      "explanation": "Le détecteur prend l’information : c’est le capteur. Le programme décide, puis la lampe s’allume. On part de l’information pour arriver à l’action.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’information et les objets",
+          "lines": [
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
+            "Le navigateur : le logiciel qui ouvre les sites.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
+            "Range tes fichiers dans des dossiers, avec un nom clair."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-1-3",
+      "prompt": "Pour trouver des pages sur les volcans, on tape des mots-clés dans un …",
+      "spoken": "Pour trouver des pages sur les volcans, on tape des mots-clés dans un  (mot manquant) ",
+      "choices": [
+        "tableur",
+        "traitement de texte",
+        "moteur de recherche"
+      ],
+      "answer": "moteur de recherche",
+      "hint": "Relis la ligne « Le moteur de recherche » du rappel.",
+      "explanation": "Le moteur de recherche trouve les pages qui parlent des mots-clés. Le tableur sert aux tableaux de nombres, le traitement de texte à écrire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’information et les objets",
+          "lines": [
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
+            "Le navigateur : le logiciel qui ouvre les sites.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
+            "Range tes fichiers dans des dossiers, avec un nom clair."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-1-4",
+      "prompt": "Le logiciel qui ouvre les pages des sites est le …",
+      "spoken": "Le logiciel qui ouvre les pages des sites est le  (mot manquant) ",
+      "choices": [
+        "navigateur",
+        "moteur de recherche",
+        "tableur"
+      ],
+      "answer": "navigateur",
+      "hint": "Relis la ligne « Le navigateur » du rappel.",
+      "explanation": "Le navigateur ouvre les sites. Le moteur de recherche est un site, que l’on ouvre avec le navigateur, pour trouver des pages.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’information et les objets",
+          "lines": [
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
+            "Le navigateur : le logiciel qui ouvre les sites.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
+            "Range tes fichiers dans des dossiers, avec un nom clair."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-1-5",
+      "prompt": "Recherche : « hauteur de l’Everest »\nRésultat 1 : une encyclopédie, qui cite ses sources.\nRésultat 2 : le blog d’un inconnu, sans source.\nRésultat 3 : une publicité pour des chaussures de marche.",
+      "question": "Quel résultat est le plus sûr ?",
+      "spoken": "Recherche, hauteur de l’Everest. Résultat 1, une encyclopédie, qui cite ses sources. Résultat 2, le blog d’un inconnu, sans source. Résultat 3, une publicité pour des chaussures de marche.",
+      "choices": [
+        "le résultat 1",
+        "le résultat 2",
+        "le résultat 3"
+      ],
+      "answer": "le résultat 1",
+      "hint": "Qui dit d’où vient son information ?",
+      "explanation": "L’encyclopédie cite ses sources : on peut vérifier. Le blog ne dit pas d’où il sait, et la publicité veut vendre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’information et les objets",
+          "lines": [
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
+            "Le navigateur : le logiciel qui ouvre les sites.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
+            "Range tes fichiers dans des dossiers, avec un nom clair."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-1-6",
+      "prompt": "Les fichiers d’Adam\nUn exposé sur les volcans, pour les sciences.\nIl est sur le bureau, et s’appelle « sans titre ».\nAdam le range dans le dossier Sciences.",
+      "question": "Quel nom lui donner ?",
+      "spoken": "Les fichiers d’Adam. Un exposé sur les volcans, pour les sciences. Il est sur le bureau, et s’appelle sans titre. Adam le range dans le dossier Sciences.",
+      "choices": [
+        "volcans",
+        "sans titre",
+        "document 1"
+      ],
+      "answer": "volcans",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "« Volcans » dit ce que contient le fichier : on le retrouve vite. « Sans titre » et « document 1 » ne disent rien.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’information et les objets",
+          "lines": [
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
+            "Le navigateur : le logiciel qui ouvre les sites.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
+            "Range tes fichiers dans des dossiers, avec un nom clair."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-1-7",
+      "prompt": "Le robot de la classe\nSon capteur repère un mur devant lui.\nSon programme dit : « si un mur est devant, alors tourner ».\nSes moteurs font tourner le robot.",
+      "question": "Quel élément décide de tourner ?",
+      "spoken": "Le robot de la classe. Son capteur repère un mur devant lui. Son programme dit, si un mur est devant, alors tourner. Ses moteurs font tourner le robot.",
+      "choices": [
+        "le capteur",
+        "le programme",
+        "les moteurs"
+      ],
+      "answer": "le programme",
+      "hint": "Relis la ligne « Le programme » du rappel.",
+      "explanation": "Le capteur repère le mur, puis le programme décide de tourner. Enfin, les moteurs font tourner le robot.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’information et les objets",
+          "lines": [
+            "Un capteur prend une information : une présence, la lumière, un obstacle.",
+            "Le programme de l’objet décide quoi faire avec cette information.",
+            "Un actionneur agit : un moteur, par exemple, fait bouger l’objet.",
+            "Le navigateur : le logiciel qui ouvre les sites.",
+            "Le moteur de recherche : il trouve les pages qui parlent de tes mots-clés.",
+            "Range tes fichiers dans des dossiers, avec un nom clair."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-6e-objects",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

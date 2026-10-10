@@ -2,12 +2,13 @@
 // et où mène « Voir le chantier » : un ouvrage, le Bloc-Navire ou un monument. Le bâtiment de l'île n'en fait pas
 // partie : il se pose tout seul, une partie par mission réussie (GD-6). Code pur, déduit de la sauvegarde, sans rien y
 // ajouter : les chiffres sont ceux du panneau d'île et de « Mes blocs ».
+import { thePlace } from './placeArticle';
 import { getBiome, ofBlock, type BiomeId, type BlockId } from '../biomes';
 import { planStatus, type GameState } from '../engine';
 import type { PlanDef } from './plans';
-import { BRIDGE_BLOCKS, KIND_NAME, archipelagoOf, buildableBridges, conditionMet, otherEnd, payableBlocks } from './archipelago';
+import { BRIDGE_BLOCKS, KIND_NAME, archipelagoOf, linkKind, buildableBridges, conditionMet, otherEnd, payableBlocks } from './archipelago';
 import { monumentsOf } from './monuments';
-import { blockUses, type Use } from './uses';
+import { blockUses, monumentMissing, type Use } from './uses';
 import { VEHICLE_NAME, stageAt } from './vehicle';
 
 export interface Worksite {
@@ -26,8 +27,8 @@ export interface Worksite {
 }
 
 /** Ce qu'il manque d'un plan posé case par case (navire, monument), en blocs, et combien l'élève en a déjà en poche. */
-function gauge(state: GameState, plan: PlanDef) {
-  const missing = Object.entries(planStatus(state, plan).missing).filter(([, n]) => (n ?? 0) > 0) as [BlockId, number][];
+function gauge(state: GameState, plan: PlanDef, needs = planStatus(state, plan).missing) {
+  const missing = Object.entries(needs).filter(([, n]) => (n ?? 0) > 0) as [BlockId, number][];
   const need = missing.reduce((sum, [, n]) => sum + n, 0);
   const have = missing.reduce((sum, [b, n]) => sum + Math.min(n, state.stock[b] ?? 0), 0);
   return { have, need, ready: need > 0 && have >= need };
@@ -54,8 +55,8 @@ function fromUse(state: GameState, use: Use): Worksite | null {
   if (use.kind === 'monument') {
     const monument = monumentsOf(archipelagoOf(use.island).classe).find((m) => m.name === use.name);
     if (!monument) return null;
-    const g = gauge(state, monument);
-    const text = g.ready ? `${monument.name} : tu as tous tes blocs. Va les poser !` : `${monument.name} : ${count(g.have, g.need)}.`;
+    const g = gauge(state, monument, monumentMissing(state, monument));
+    const text = g.ready ? `${monument.name} : tu as tous tes blocs. ${use.piece ? 'Va construire !' : 'Va les poser !'}` : `${monument.name} : ${count(g.have, g.need)}.`;
     return { kind: 'monument', text, ...g, island: use.island, to: `/adventure/${monument.id}` };
   }
   return null;
@@ -69,8 +70,8 @@ function ouvrage(state: GameState, island: BiomeId, block: BlockId): Worksite | 
   if (!bridges.length) return null;
   const cheapest = bridges.reduce((a, b) => (b.cost < a.cost ? b : a));
   const to = getBiome(otherEnd(cheapest, island))?.name ?? cheapest.to;
-  const kind = KIND_NAME[cheapest.kind].toLowerCase();
-  const name = `${/^[aeiouy]/.test(kind) ? 'L’' : 'Le '}${kind} vers ${to}`;
+  const kind = KIND_NAME[linkKind(cheapest, state.world.links)].toLowerCase();
+  const name = `${/^[aeiouy]/.test(kind) ? 'L’' : 'Le '}${kind} vers ${thePlace(to)}`;
   const have = Math.min(cheapest.cost, payableBlocks(state.stock));
   const ready = have >= cheapest.cost;
   const text = ready ? `${name} : tu peux le construire !` : `${name} : ${have} bloc${have > 1 ? 's' : ''} sur ${cheapest.cost}.`;

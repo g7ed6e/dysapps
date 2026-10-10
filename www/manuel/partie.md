@@ -42,7 +42,7 @@ Au bilan, une phrase le dit, écrite et lue à voix haute : « Partie posée : l
 
 Les autres îles s'ouvrent par des **ouvrages** : un sentier, un pont, un bac. Le pli **Ouvrages** du panneau dit combien de blocs l'élève a pour construire, et propose ceux qu'il peut payer.
 
-![Le pli Ouvrages de la Ferme des accords : 65 blocs pour construire, trois ouvrages avec leur bouton Construire (sentier vers la Tour du lecteur, bac vers le Volcan, pont vers la Baie des mots).](/captures/ouvrages.jpg)
+![Le pli Ouvrages de la Ferme des accords : les blocs en poche, et les ouvrages possibles avec leur bouton Poser.](/captures/ouvrages.jpg)
 
 Quelques séances plus tard, **Mes blocs** fait le point : ce qu'on peut construire tout de suite (un lien par chantier), puis chaque type de bloc et à quoi il sert.
 
@@ -54,7 +54,7 @@ La **Carte** montre tout l'archipel vu d'en haut : le médaillon à son visage m
 
 ## Le Gardien, le navire, l'école
 
-Chaque île a son **Gardien**, éteint sur son îlot, en pierre grise. Pour le rallumer, on réussit ses épreuves : chacune lui rend une partie de ses couleurs. Ici, le Golem de roche de la Mine demande de piocher seulement les blocs qui portent la lettre d.
+Chaque île a son **Gardien**, éteint sur son île, en pierre grise. Pour le rallumer, on réussit ses épreuves : chacune lui rend une partie de ses couleurs. Ici, le Golem de roche de la Mine demande de piocher seulement les blocs qui portent la lettre d.
 
 ![Le défi « Rallumer le Golem de roche » : le Golem en pierre grise, les pastilles des épreuves réussies (0 sur 4, il en faut 3), sa phrase, et l'épreuve Filon « Pioche seulement les blocs avec la lettre d ».](/captures/gardien.jpg)
 
@@ -74,7 +74,7 @@ Quand les bâtiments sont finis, les blocs restants servent aux **monuments**, s
 
 ## Les Basses Terres reconstruites
 
-À la fin de la 6e, toutes les îles sont ouvertes et bâties : maisons, tours, huttes, et les Gardiens rallumés, en couleurs sur leurs îlots. Le Bloc-Navire emmène alors l'élève dans les **Collines du Large**, l'archipel de 5e.
+À la fin de la 6e, toutes les îles sont ouvertes et bâties : maisons, tours, huttes, et les Gardiens rallumés, en couleurs sur leurs îles. Le Bloc-Navire emmène alors l'élève dans les **Collines du Large**, l'archipel de 5e.
 
 ![Les Basses Terres reconstruites : les îles reliées par des ponts, les maisons aux toits rouges, les Gardiens rallumés en couleurs.](/captures/village-reconstruit.jpg)
 

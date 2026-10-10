@@ -60,14 +60,19 @@ try {
         mesure: { triangles: somme('triangles', comptes.map((p) => p.mesure)), drawCalls: somme('drawCalls', comptes.map((p) => p.mesure)) },
         enveloppes: { triangles: somme('triangles', comptes.map((p) => p.enveloppe)), drawCalls: somme('drawCalls', comptes.map((p) => p.enveloppe)) },
       },
-      plafond: budget.RENDER_BUDGET,
+      plafond: budget.renderBudgetOf(a),
       // Le monde en blocs de Blocland (`sceneCost`), tout construit, puis avec les petites constructions des commandes
       // posées (GD-7, PR 3), sous son plafond.
       blocs: {
         mesure: budget.sceneCost(a),
         avecCommandes: budget.sceneCost(a, true),
         signes: budget.signesCost(),
+        // La lueur des lanternes allumées, la nuit (GD-10).
+        lueurs: budget.lueursCost(a),
         plafond: budget.PLAFOND_DU_MONDE_EN_BLOCS,
+        // Le pire cas d'une région aménagée (GD-9) : le lieu soulevé face par face, toutes les liaisons au plus long, les
+        // raccourcis, les réunions.
+        pire: budget.worstCaseOfRegion(a),
       },
     };
   });
@@ -92,10 +97,16 @@ try {
       console.log(`| **total compté** | **${n(t.mesure.triangles)}** | ${n(t.enveloppes.triangles)} | ${n(t.enveloppes.triangles - t.mesure.triangles)} | **${t.mesure.drawCalls}** | ${t.enveloppes.drawCalls} |`);
       console.log(`\nPlafond des tablettes : ${n(r.plafond.triangles)} triangles, ${r.plafond.drawCalls} appels (objectif du plan, jamais mesuré sur tablette), « Dans la scène » compris, que le total compté laisse de côté.`);
       const b = r.blocs;
-      console.log(`\nBlocland, le monde en blocs (\`sceneCost\`) : ${n(b.mesure.triangles)} triangles, ${b.mesure.drawCalls} appels ; avec les petites constructions des commandes posées : ${n(b.avecCommandes.triangles)} triangles (+${n(b.avecCommandes.triangles - b.mesure.triangles)}), ${b.avecCommandes.drawCalls} appels (${b.avecCommandes.drawCalls === b.mesure.drawCalls ? 'aucun de plus' : `+${b.avecCommandes.drawCalls - b.mesure.drawCalls} ⚠`}) ; plafond ${n(b.plafond.triangles)} triangles, ${b.plafond.drawCalls} appels.`);
+      console.log(`\nBlocland, le monde en blocs (\`sceneCost\`) : ${n(b.mesure.triangles)} triangles, ${b.mesure.drawCalls} appels ; avec les petites constructions des commandes posées : ${n(b.avecCommandes.triangles)} triangles (+${n(b.avecCommandes.triangles - b.mesure.triangles)}), ${b.avecCommandes.drawCalls} appels (${b.avecCommandes.drawCalls === b.mesure.drawCalls ? 'aucun de plus' : `+${b.avecCommandes.drawCalls - b.mesure.drawCalls}${b.avecCommandes.drawCalls - b.mesure.drawCalls > 1 ? ' ⚠' : ' : un morceau du monde de plus'}`}) ; plafond ${n(b.plafond.triangles)} triangles, ${b.plafond.drawCalls} appels.`);
       const total = { triangles: b.avecCommandes.triangles + b.signes.triangles, drawCalls: b.avecCommandes.drawCalls + b.signes.drawCalls };
       const depasse = total.triangles > b.plafond.triangles || total.drawCalls > b.plafond.drawCalls ? ' ⚠' : '';
       console.log(`Les bulles (\`signesCost\`) : ${n(b.signes.triangles)} triangles, ${b.signes.drawCalls} appel ; avec le monde en blocs et ses commandes : ${n(total.triangles)} triangles, ${total.drawCalls} appels${depasse}.`);
+      const nuit = { triangles: total.triangles + b.lueurs.triangles, drawCalls: total.drawCalls + b.lueurs.drawCalls };
+      const nuitDepasse = nuit.triangles > b.plafond.triangles || nuit.drawCalls > b.plafond.drawCalls ? ' ⚠' : '';
+      console.log(`La lueur des lanternes allumées, la nuit (\`lueursCost\`) : ${n(b.lueurs.triangles)} triangles, ${b.lueurs.drawCalls} appels ; avec tout ce qui précède : ${n(nuit.triangles)} triangles, ${nuit.drawCalls} appels${nuitDepasse}.`);
+      const p = b.pire;
+      const pireDepasse = p.triangles > b.plafond.triangles || p.drawCalls > b.plafond.drawCalls ? ' ⚠' : '';
+      console.log(`Au pire, la région aménagée (GD-9, \`worstCaseOfRegion\`) : ${n(p.triangles)} triangles (${n(p.base)} sans liaisons, dont ${n(p.choix)} pour le lieu soulevé face par face, ${n(p.liaisons)} de liaisons au plus long, ${n(p.reunions)} de réunions), ${p.drawCalls} appels${pireDepasse}.`);
     }
   }
 } finally {

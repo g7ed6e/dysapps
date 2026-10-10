@@ -3,7 +3,9 @@
 import * as THREE from 'three';
 import { HABILLAGES } from '../skin';
 import { toutConstruit } from '../world/budget';
-import { buildMesh } from '../world/mesher';
+import { buildMesh, drawCallsOf } from '../world/mesher';
+import { startingIsland } from '../world/map';
+import { placeIslands } from '../world/placement';
 import { gardienDuMonde, guardianPlacements } from '../world/terrain';
 import type { Instant, Monde } from './scenePart';
 import { creerPersonnages } from './characters';
@@ -17,7 +19,7 @@ const monde = (): Monde => ({
   surface: null,
   etendue: { minX: 0, maxX: 10, minY: 0, maxY: 10 },
   centre: { x: 5, y: 5 },
-  largeur: 10,
+  largeur: 10, liaisons: () => [],
 });
 const instant = (): Instant => ({
   now: 0,
@@ -28,14 +30,44 @@ const instant = (): Instant => ({
   but: { target: new THREE.Vector3(), pos: new THREE.Vector3() },
 });
 
-/** Les couleurs des maillages visibles d'un Gardien posé. */
-function couleursVisibles(p: ReturnType<typeof creerPersonnages>, id: string): string[] {
+/**
+ * Les couleurs des maillages visibles d'un Gardien posé, chacune avec le bas de ses sommets : celle du matériau, ou
+ * celles des sommets quand ses couleurs unies sont réunies en un maillage (three/meshes.ts `meshesOf`).
+ */
+function teintesVisibles(p: ReturnType<typeof creerPersonnages>, id: string): { hex: string; bas: number }[] {
   const group = p.creatures.children.find((c) => c.userData.creature === id && c.userData.kind === 'guardian');
-  const out: string[] = [];
+  const out: { hex: string; bas: number }[] = [];
   group?.traverseVisible((o) => {
-    if (o instanceof THREE.Mesh && o.material instanceof THREE.MeshLambertMaterial) out.push(`#${o.material.color.getHexString()}`);
+    if (!(o instanceof THREE.Mesh) || !(o.material instanceof THREE.MeshLambertMaterial)) return;
+    const position = o.geometry.getAttribute('position');
+    const couleurs = o.geometry.getAttribute('color');
+    if (!couleurs) {
+      o.geometry.computeBoundingBox();
+      out.push({ hex: `#${o.material.color.getHexString()}`, bas: o.geometry.boundingBox!.min.y });
+      return;
+    }
+    const bas = new Map<string, number>();
+    const c = new THREE.Color();
+    for (let i = 0; i < couleurs.count; i++) {
+      const hex = `#${c.setRGB(couleurs.getX(i), couleurs.getY(i), couleurs.getZ(i)).getHexString()}`;
+      bas.set(hex, Math.min(bas.get(hex) ?? Infinity, position.getY(i)));
+    }
+    for (const [hex, y] of bas) out.push({ hex, bas: y });
   });
   return out;
+}
+
+/** Les couleurs visibles d'un Gardien posé. */
+const couleursVisibles = (p: ReturnType<typeof creerPersonnages>, id: string): string[] => teintesVisibles(p, id).map((t) => t.hex);
+
+/** Les maillages visibles d'un Gardien posé (ses appels de dessin). */
+function maillagesVisibles(p: ReturnType<typeof creerPersonnages>, id: string): number {
+  const group = p.creatures.children.find((c) => c.userData.creature === id && c.userData.kind === 'guardian');
+  let n = 0;
+  group?.traverseVisible((o) => {
+    if (o instanceof THREE.Mesh) n++;
+  });
+  return n;
 }
 
 /** La pierre éteinte d'une statue (`stoneOf`) : un gris froid, bleu de 24 de plus que le rouge. */
@@ -69,7 +101,28 @@ describe('Le rallumage d’un Gardien en cubes', () => {
     p.animer?.(1, 0.016, false);
     expect(couleursVisibles(p, id).some(estPierre)).toBe(false);
     // Le fondu fini, plus de couches : un seul maillage, autant d'appels qu'un Gardien posé.
-    expect(couleursVisibles(p, id)).toHaveLength(buildMesh(gardienDuMonde(id)).length);
+    expect(maillagesVisibles(p, id)).toBe(drawCallsOf(buildMesh(gardienDuMonde(id))));
+    p.dispose();
+  });
+
+  it('l’Amphore peinte se rallume comme les autres, du pied vers le col (GD-8 ; DA, HG-2)', () => {
+    let maintenant = 1000;
+    vi.spyOn(performance, 'now').mockImplementation(() => maintenant);
+    const amphore = 'history-6e-antiquity';
+    const p = creerPersonnages(monde(), () => null, instant(), null);
+    p.poserLesCreatures(guardianPlacements('6e', progress, village.links));
+    p.rallumer(amphore, 1000);
+    maintenant = 1300;
+    p.animer?.(1, 0.016, false);
+    // Les hauteurs des maillages visibles, en pierre et en couleurs : le bas d'abord en couleurs, le haut encore en pierre.
+    const hauteurs = (pierre: boolean) =>
+      teintesVisibles(p, amphore)
+        .filter((t) => estPierre(t.hex) === pierre)
+        .map((t) => t.bas);
+    const [pierre, couleurs] = [hauteurs(true), hauteurs(false)];
+    expect(pierre.length).toBeGreaterThan(0);
+    expect(couleurs.length).toBeGreaterThan(0);
+    expect(Math.max(...couleurs)).toBeLessThan(Math.min(...pierre));
     p.dispose();
   });
 
@@ -80,6 +133,39 @@ describe('Le rallumage d’un Gardien en cubes', () => {
     p.animer?.(0, 0.016, true);
     expect(couleursVisibles(p, id).some(estPierre)).toBe(false);
     p.dispose();
+  });
+
+  it('sur une île tournée (GD-9), il se rallume tourné comme le Gardien posé, pendant le fondu et après', () => {
+    let maintenant = 1000;
+    vi.spyOn(performance, 'now').mockImplementation(() => maintenant);
+    // Un Gardien plus large que profond : un quart de tour change son emprise.
+    const tourne = gardiens.find((g) => {
+      const m = gardienDuMonde(g.id);
+      return Math.max(...m.map((c) => c.x)) - Math.min(...m.map((c) => c.x)) !== Math.max(...m.map((c) => c.y)) - Math.min(...m.map((c) => c.y));
+    })!.id;
+    const d = startingIsland(tourne);
+    placeIslands(new Map([[tourne, { x: d.core.x, y: d.core.y, quarts: 1 }]]));
+    try {
+      const p = creerPersonnages(monde(), () => null, instant(), null);
+      p.poserLesCreatures(guardianPlacements('6e', progress, village.links));
+      const group = () => p.creatures.children.find((c) => c.userData.creature === tourne && c.userData.kind === 'guardian')!;
+      // L'emprise de ses maillages dans son groupe (le groupe se balance pendant l'animation).
+      const boite = () => {
+        const g = group();
+        const b = new THREE.Box3().setFromObject(g).translate(g.position.clone().negate());
+        return [...b.min.toArray(), ...b.max.toArray()].map((v) => Math.round(v * 1000) / 1000);
+      };
+      const pose = boite();
+      p.rallumer(tourne, 1000);
+      expect(boite(), 'pendant le fondu').toEqual(pose);
+      maintenant = 2000;
+      p.animer?.(1, 0.016, false);
+      expect(couleursVisibles(p, tourne).some(estPierre)).toBe(false);
+      expect(boite(), 'rallumé').toEqual(pose);
+      p.dispose();
+    } finally {
+      placeIslands(null);
+    }
   });
 
   it('reposé pendant le fondu, il le reprend et libère les couches d’avant', () => {

@@ -46,12 +46,24 @@ const REGLES = [
   // L'assemblage des blocs (GD-2) et ses recettes, produites depuis docs/contenu/assemblage.md par `npm run contenu`.
   'world/assembly',
   'world/recipes',
-  // Les commandes des habitants (GD-7) et la forme de leurs petites constructions, en repère propre.
+  // Les grands projets (GD-10) : leurs pièces et leurs recettes, produites depuis docs/contenu/projets.md.
+  'world/projects',
+  // Le projet mis en avant parmi ceux d'un archipel (GD-10, 4e et 3e) : déduit de la sauvegarde.
+  'world/projectChoice',
+  // Les commandes des habitants (GD-7), les quêtes (GD-10) et la forme de leurs petites constructions, en repère propre.
   'world/requests',
   'world/fixtures',
+  'world/stories',
+  'world/placedFixtures',
   'world/model',
   // Le contrat entre le jeu et ses dispositions (types seulement) : le jeu dit ce dont il a besoin.
   'world/layout',
+  // La disposition des régions dans la sauvegarde (GD-9) : sa forme seulement ; qu'elle tienne se vérifie dans la grille.
+  'world/savedLayout',
+  // Le côté du cœur des îles, en cases : la sauvegarde le lit pour borner une borne déplacée ; la grille le réexporte.
+  'world/coreSide',
+  // L'article devant le nom d'un lieu (« la Forêt des sons », « du Volcan ») : des mots seulement, partagés par les phrases.
+  'world/placeArticle',
 ];
 
 /** La disposition en grille : la place des îles, des chemins, du quai, en cases du monde. */
@@ -68,13 +80,14 @@ const GRILLE = [
   'world/terrain/links',
   'world/terrain/village',
   'world/terrain/creatures',
-  'world/terrain/islets',
   'world/terrain/guardians',
   'world/terrain/fixture',
   'world/terrain/fixtureCheck',
   'world/terrain/sea',
   'world/terrain/port',
   'world/terrain/monuments',
+  // Le parvis des îles au cœur d'herbe (EMC et latin-grec du 4e et du 3e) : l'allée et sa bordure, en repère d'île.
+  'world/terrain/parvis',
   'world/decor',
   'world/whalePass',
   'world/grid',
@@ -91,10 +104,22 @@ const GRILLE = [
   'world/silhouettes/5e',
   'world/silhouettes/4e',
   'world/silhouettes/3e',
+  // La forme de chaque île (GD-12), en repère d'île : le catalogue des formes, et les carrés des Gardiens qu'elles gardent.
+  'world/formes',
+  'world/guardianSquares',
   // Les modèles des personnages en cubes, en repère propre : la grille les pose, les vues les dessinent (R6).
   'world/characters/ascii',
   'world/characters/creatures',
   'world/characters/guardians',
+  // La place des lieux dans leur région (GD-9) : la pose et le quart de tour, l'emprise et le cadre de chaque région,
+  // le tracé des liaisons, et leur géométrie que lisent les règles (`provideLinkGeometry`).
+  'world/placement',
+  'world/footprint',
+  'world/routing',
+  'world/linkGeometry',
+  // Réunir deux lieux (GD-9, point 10) : la forme de la construction entre leurs côtes, et ses cubes.
+  'world/join',
+  'world/terrain/joins',
 ];
 
 /**
