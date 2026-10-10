@@ -84,7 +84,7 @@ Les créatures (sans socle, rien à couper). Leurs fichiers sont peints en aplat
 
 ## Passer du concept au modèle brut
 
-Le Space [microsoft/TRELLIS.2](https://huggingface.co/spaces/microsoft/TRELLIS.2) (licence MIT) tourne sous le compte Hugging Face du mainteneur, avec les réglages du Lion (résolution 512, texture 1024). Il se lance à la main sur le Space, ou depuis un script avec `gradio_client` (`/start_session`, `/preprocess_image`, `/image_to_3d`, puis `/extract_glb`), le jeton du mainteneur étant posé par l’environnement. Un passage prend environ 40 secondes de calcul sur le quota du compte. Le `.glb` est rangé tel quel dans la Bibliothèque du projet, sous `archipeo/personnages-3d/bruts/<nom>.glb`.
+Le Space [microsoft/TRELLIS.2](https://huggingface.co/spaces/microsoft/TRELLIS.2) (licence MIT) tourne sous le compte Hugging Face du mainteneur, avec les réglages du Lion (résolution 512, texture 1024). Il se lance à la main sur le Space, ou par `scripts/rendu/modeles/trellis.py -- <dossier> <concept.webp>…` (avec `gradio_client` : `/start_session`, `/preprocess_image`, `/image_to_3d`, puis `/extract_glb`), le jeton du mainteneur étant posé par l’environnement. Un passage prend environ 40 secondes de calcul sur le quota du compte. Le `.glb` est rangé tel quel dans la Bibliothèque du projet, sous `archipeo/personnages-3d/bruts/<nom>.glb`.
 
 ## Passer du brut au modèle retravaillé
 

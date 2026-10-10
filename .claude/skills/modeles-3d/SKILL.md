@@ -13,19 +13,19 @@ Le concept est l'image WebP de `docs/univers/archipeo/personnages/<nom>.webp`, a
 
 ## 2. Le brut (TRELLIS.2)
 
-- Le Space `microsoft/TRELLIS.2` sous le compte Hugging Face du mainteneur, réglages du Lion (résolution 512, texture 1024), par `gradio_client` : `/start_session`, `/preprocess_image`, `/image_to_3d`, puis `/extract_glb`. Le jeton est posé par l'environnement (secret réseau) : ne jamais l'écrire.
+- `python3 scripts/rendu/modeles/trellis.py -- <dossier> <concept.webp>…` (`pip install gradio_client`) passe chaque concept par le Space `microsoft/TRELLIS.2` sous le compte Hugging Face du mainteneur, réglages du Lion (résolution 512, texture 1024), et écrit `<dossier>/<nom>.glb`. Le jeton est posé par l'environnement (secret réseau) : ne jamais l'écrire.
 - Quota partagé (environ 25 minutes de calcul par jour, 40 secondes par modèle) : prévenir les autres fils qui génèrent avant un gros lot.
 - Le `.glb` brut va tel quel dans la Bibliothèque du projet, `archipeo/personnages-3d/bruts/<nom>.glb`, jamais dans le dépôt ni dans son historique.
 
 ## 3. Réduire et peindre (`lot.py`, Blender ou `bpy`)
 
-Copier les bruts et `reglages.csv` dans un dossier de travail, puis `python3.11 scripts/rendu/modeles/lot.py -- <dossier>` (Python 3.11, `pip install bpy numpy` ; sous Linux, `apt-get install libegl1` pour le rendu de contrôle). Il aligne, réduit à 1 500 et 200 triangles, peint (pierre pour un Gardien, les quatre couleurs principales de la texture pour une créature), coupe le socle d'un Gardien (colonne 2, hauteur de coupe) et rend `controle.png`. Prendre `final-1500.glb`, `final-200.glb` et `controle.png` dans `<dossier>/prets/<nom>/`, les poser dans `docs/univers/archipeo/personnages/modeles/<nom>/`.
+Copier les bruts et `reglages.csv` dans un dossier de travail, puis `python3.11 scripts/rendu/modeles/lot.py -- <dossier>` (Python 3.11, `pip install bpy numpy` ; sous Linux, `apt-get install libegl1` pour le rendu de contrôle). Il enchaîne `aligner.py` (socle à plat, centré), `lion_lowpoly.py` (réduit à 1 500 et 200 triangles, peint (pierre pour un Gardien, les quatre couleurs principales de la texture pour une créature), `couper.py` (le socle d'un Gardien, à la hauteur de la colonne 2) et `rendre_controle.py` (`controle.png`). Prendre `final-1500.glb`, `final-200.glb` et `controle.png` dans `<dossier>/prets/<nom>/`, les poser dans `docs/univers/archipeo/personnages/modeles/<nom>/`.
 
 Regarder le contrôle : socle pas entièrement parti ou pattes coupées, changer la hauteur et relancer ; modèle de loin réduit à un bloc, le noter dans `modeles.md` (« À reprendre »).
 
 ## 4. Le squelette d'une créature (`squelette.py`)
 
-`python3 scripts/rendu/modeles/squelette.py -- <dossier du modèle> <quarts> [réglages]`, avec les quarts et réglages de la colonne 4 de sa ligne (`cou=`, `queue=non|sol`, `jambes=non`, `bras=…`, `leve=…`, `teinte=…`) ; relire la planche de `apercu_squelette.py`. Le jeu anime les os par le code (`src/game/three/paintedCharacters.ts`).
+`python3 scripts/rendu/modeles/squelette.py -- <dossier du modèle> <quarts> [réglages]`, avec les quarts et réglages de la colonne 4 de sa ligne (`cou=`, `queue=non|sol`, `jambes=non`, `bras=…`, `leve=…`, `teinte=…`) ; relire la planche de `apercu_squelette.py` (`-- <dossier> <quarts> <image.png>`), qui montre les poses de repos et de marche ; `marche.py` y recopie le cycle de marche de `paintedCharacters.ts` : le changer des deux côtés à la fois. Le jeu anime les os par le code (`src/game/three/paintedCharacters.ts`).
 
 ## 5. Les aplats d'une créature (`aplats.py`)
 
