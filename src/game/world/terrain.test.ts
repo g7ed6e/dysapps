@@ -498,11 +498,11 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
   });
 });
 
-it('les repères : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan ; plus aucune cascade', () => {
+it('les repères : un phare au Phare, de la fumée au Volcan, plus de chêne géant à la Forêt (son Gardien, le Grand Chêne, en tient lieu) ; plus aucune cascade', () => {
   const cubes = allCubes({}, village(everything), false);
   const of = (id: string) => cubes.filter((c) => c.tag === id && !c.bridge);
   const foret = of('french-6e-phonology');
-  expect(Math.max(...foret.filter((c) => c.texture === 'feuilles').map((c) => c.z))).toBeGreaterThanOrEqual(8);
+  expect(foret.some((c) => c.decor?.includes('grand-arbre'))).toBe(false);
   const phare = of('maths-3e-functions');
   expect(phare.filter((c) => c.texture === 'lanterne').length).toBeGreaterThanOrEqual(4);
   expect(Math.max(...phare.map((c) => c.z))).toBeGreaterThanOrEqual(9 + 10);

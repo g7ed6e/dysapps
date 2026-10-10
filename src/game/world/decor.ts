@@ -642,10 +642,9 @@ export function decorate(place: Put, kind: Decor, x: number, y: number, r: numbe
 export const SMOKE = '#a9a4a0';
 
 /** Les repères : un grand ouvrage par région, visible de loin, posé sur la terre autour du cœur. */
-export const REPERES = ['grand-arbre', 'champignon-geant', 'fumee', 'tour-de-guet', 'grand-phare', 'aiguille-de-glace', 'haut-fourneau'] as const;
+export const REPERES = ['champignon-geant', 'fumee', 'tour-de-guet', 'grand-phare', 'aiguille-de-glace', 'haut-fourneau'] as const;
 export type Repere = (typeof REPERES)[number];
 export const LANDMARK_OF: Partial<Record<BiomeId, Repere>> = {
-  'french-6e-phonology': 'grand-arbre',
   'french-5e-conjugation': 'champignon-geant',
   'maths-6e-decimals': 'fumee',
   'french-6e-letter-confusion': 'tour-de-guet',
@@ -728,21 +727,6 @@ interface OutilsDuRepereEnBlocs {
  * travaille en coordonnées du monde, z relatif au sol de l'île.
  */
 const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void> = {
-  'grand-arbre': ({ def, scenery, backY, named, put }) => {
-    // Un chêne géant : tronc 2 × 2 de six blocs, large couronne en trois étages. Juste derrière le cœur, six cases en
-    // dedans de son bord gauche : depuis que le cœur de la Forêt a 20 cases (01/10/2026), le replat d'avant, quatre cases
-    // à gauche, est au bord de la pente, et le chêne y montrait plus de la moitié de son tronc ; depuis les formes des
-    // îles (GD-12, 8 octobre 2026), le coin du fond de la Forêt s'arrondit, et le chêne s'avance de quatre cases vers le
-    // milieu, où la terre derrière le cœur est la plus profonde.
-    const s = findSpot(def, scenery, coeurDe(def).x0 + 6, backY, 2);
-    if (!s) return;
-    named(s.x, s.y);
-    for (let z = 1; z <= 6; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, TRUNK);
-    for (let dx = -2; dx <= 3; dx++)
-      for (let dy = -2; dy <= 3; dy++) if (Math.abs(dx - 0.5) + Math.abs(dy - 0.5) <= 4) put(s.x + dx, s.y + dy, s.h + 7, LEAF);
-    for (let dx = -1; dx <= 2; dx++) for (let dy = -1; dy <= 2; dy++) put(s.x + dx, s.y + dy, s.h + 8, LEAF);
-    for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + 9, LEAF);
-  },
   'champignon-geant': ({ def, scenery, backY, named, put }) => {
     // Un champignon géant : pied clair de trois blocs, chapeau rouge à points blancs.
     const s = findSpot(def, scenery, coeurDe(def).x1 + 2, backY, 1);

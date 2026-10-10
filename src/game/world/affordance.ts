@@ -22,6 +22,7 @@ export type { ObjetDeLaFiche };
 import type { Cell, CreaturePlacement } from './paths';
 import { islandCenter, type VehiclePlacement } from './terrain';
 import { SENTINELLE_DANS_LE_MONDE } from './terrain/creatures';
+import { GUARDIAN_WORLD_HEIGHTS } from './guardianSquares';
 
 /** L'état d'un objet touchable : à faire (il porte une bulle), pas encore, un lieu (ils n'en portent pas). */
 export type EtatDuSigne = 'aFaire' | 'pasEncore' | 'lieu';
@@ -134,11 +135,12 @@ function boiteDuPersonnage(p: Pick<CreaturePlacement, 'cubes' | 'origin' | 'eche
  * monde, ses pieds au milieu de la place de ses cubes (`pointDePose` de world/characters/merges.ts), pas la boîte de ses
  * cubes, qui sont ceux du Gardien de Blocland en grand : sa bulle et sa zone de toucher suivent la statue qu'on voit.
  */
-function boiteDeLaSentinelle(p: Pick<CreaturePlacement, 'cubes' | 'origin'>): Boite {
+function boiteDeLaSentinelle(p: Pick<CreaturePlacement, 'id' | 'cubes' | 'origin'>): Boite {
   const b = boiteDe(p.cubes, p.origin);
   const [cx, cy, z0] = [(b.min.x + b.max.x) / 2, (b.min.y + b.max.y) / 2, p.origin.z];
   const d = SENTINELLE_DANS_LE_MONDE.demiLargeur;
-  return { min: { x: cx - d, y: cy - d, z: z0 }, max: { x: cx + d, y: cy + d, z: z0 + SENTINELLE_DANS_LE_MONDE.hauteur } };
+  const h = GUARDIAN_WORLD_HEIGHTS[p.id] ?? SENTINELLE_DANS_LE_MONDE.hauteur;
+  return { min: { x: cx - d, y: cy - d, z: z0 }, max: { x: cx + d, y: cy + d, z: z0 + h } };
 }
 
 /** Un objet et sa bulle, au-dessus du milieu de sa boîte. */
