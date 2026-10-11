@@ -49,6 +49,8 @@ export interface Paint {
   block(b: BlockId): Faces;
   /** Une couleur propre à l'objet, sous le voile. */
   color(c: Couleur): Couleur;
+  /** Une couleur propre à l'objet, prise telle quelle comme celle d'une matière (sans le voile ; délavée sur une île fermée). */
+  plain(c: Couleur): Couleur;
   /** Un rôle du kit (le poteau et les lisses de la barrière, la pierre, la dalle, le fer et l'ardoise de la lanterne). */
   role(r: Role): Couleur;
   /** La couverture de l'île (ardoise, ou terre cuite à la Ferme et à la Mine). */
@@ -68,6 +70,7 @@ export function paintFor(a: ArchipelagoId, island: string | undefined, muted: bo
     material,
     block: (b) => material(BLOCKS[b].texture as TextureKind),
     color: (c) => faded(mixColor(c, tint, strength)),
+    plain: faded,
     role: (r) => faded(mixColor(KITS[a].couleurs[r] ?? OBJECT_COLORS.wood, tint, strength)),
     roof: () => couleursDuToit(a, island, muted),
   };

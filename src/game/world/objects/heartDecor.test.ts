@@ -9,9 +9,10 @@ import { type ArchipelagoId, islandDef } from '../map';
 import { turnCell } from '../placement';
 import { LAYOUT_PAD, origineDe } from '../terrain/base';
 import type { FacettesDuDecor } from '../decor/brush';
-import { couleurDeMatiere } from '../palette';
+import { BRUME, couleurDeMatiere } from '../palette';
 import { HEART_DECOR_6E, type HeartDecor } from './heartDecor';
-import { HEART_DECOR_5E, SCENE_LIGHT } from './heartDecor5e';
+import { HEART_DECOR_5E, SACK, SALT_CREAM, SCENE_LIGHT } from './heartDecor5e';
+import { apartFromGhost, HEART, rgbGap } from '../architecture/heartPieces';
 import { drawnHeartDecor } from './inTheWorld';
 
 afterEach(() => {
@@ -121,19 +122,42 @@ const lin = (v: number) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 
 const luminanceOf = (c: number) => luminance(lin(((c >> 16) & 255) / 255), lin(((c >> 8) & 255) / 255), lin((c & 255) / 255));
 
 /**
- * Les cœurs du 5e qui ne tiennent pas 3:1 à l'image (retouche du 11 octobre 2026, question laissée au directeur
- * artistique et au référent dys) : le thermomètre du Glacier, jugé conforme par le directeur artistique, garde son flanc
- * compté en couleurs ; les autres sont sur l'herbe sous la brume du 5e, rendue à 0,10 : même noir, un flanc n'y fait que
- * 2,9:1 à l'écran, et seule une teinte claire (0,57 de luminance au moins sur un dessus) le tiendrait.
+ * Les cœurs du 5e qui ne tiennent pas 3:1 à l'image (retouches du 11 octobre 2026, directeur artistique) : le
+ * thermomètre du Glacier, jugé conforme, garde son flanc compté en couleurs ; les autres gardent le côté naturel de leur
+ * matière et se lisent par leur silhouette, car aucun flanc n'y tient 3:1 sans passer sous 0,05 de luminance : sur
+ * l'herbe sous la brume du 5e (rendue à 0,10, seule une teinte claire, 0,57 au moins sur un dessus, le tiendrait), et sur
+ * la tuile du Comptoir (rendue à 0,14 : l'étal et la pile de tuiles).
  */
 const BELOW_ON_GRASS = new Set([
   'coeur:maths-5e-signed-numbers:thermometre',
   'coeur:maths-5e-proportionality:caisse',
   'coeur:geography-5e-resources:riziere',
   'coeur:life-earth-sciences-5e-active-planet:strates',
-  'coeur:physics-chemistry-5e-matter-universe:sel',
   'coeur:technology-5e-design:planches',
+  'coeur:english-5e-vocabulary:etal',
+  'coeur:english-5e-vocabulary:tuiles',
 ]);
+
+/** Les couleurs (en sRGB, arrondies) des facettes d'un cœur dessiné du 5e. */
+const coloursOf = (id: string) => {
+  const d = drawnHeartDecor('5e', worldOf('5e')).find((o) => o.id === id)!;
+  const k = d.opaque.colors;
+  const srgb = (v: number) => Math.round(255 * (v <= 0.0031308 ? v * 12.92 : 1.055 * v ** (1 / 2.4) - 0.055));
+  const out = new Set<number>();
+  for (let i = 0; i < k.length; i += 3) out.add((srgb(k[i]) << 16) | (srgb(k[i + 1]) << 8) | srgb(k[i + 2]));
+  return out;
+};
+
+it('au 5e, le tas de sel de la Saline est tout en sel crème, dessus et flancs, loin du fantôme Brume sans tirer vers le gris', () => {
+  expect([...coloursOf('coeur:physics-chemistry-5e-matter-universe:sel')]).toEqual([SALT_CREAM]);
+  expect(rgbGap(SALT_CREAM, BRUME)).toBeGreaterThanOrEqual(HEART.chalk.ghostGap + 1);
+  expect(apartFromGhost(SALT_CREAM)).toBe(SALT_CREAM);
+});
+
+it('au 5e, les sacs du Fournil sont en toile de jute, la farine au seul col ouvert, la ficelle sombre', () => {
+  const c = coloursOf('coeur:civics-5e-equality-solidarity:farine');
+  for (const k of [SACK.jute, SACK.string, couleurDeMatiere('5e', 'farine').dessus]) expect(c.has(k), k.toString(16)).toBe(true);
+});
 
 it('au 5e, tout cœur à retrouver se détache de son sol à l’image : au moins un vingtième de sa surface vue d’en haut à 3:1 de la luminance du sol, chacun sous la lumière du jour qu’il reçoit (`SCENE_LIGHT`), sans lueur', () => {
   const all = wholeWorld('5e');

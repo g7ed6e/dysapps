@@ -6,12 +6,13 @@
 // (une pierre sur presque chaque île) et l'arbre du Carrefour.
 //
 // Un objet à retrouver se détache de son sol (au moins 3:1 en luminance, sur une part de sa surface, mesuré sur l'image
-// rendue), par une teinte claire sur un sol sombre (la pierre claire du Manoir, le livre blanc du Bourg, le sel clair du
-// haut du tas), sinon par un flanc sombre (le pied du tas de sel, les planches et le pupitre sur l'herbe brumeuse, les
-// sacs et la caisse sur la farine, le tuf sur le tuf, la glace sur la glace), jamais par une lueur. Code pur, sans
-// Three.js.
+// rendue) quand une teinte de sa famille le permet : claire sur un sol sombre (la pierre claire du Manoir, le livre blanc
+// du Bourg, le sel crème de la Saline), sombre sur un sol clair (la toile de jute des sacs et les chants de la caisse sur
+// la farine, le tuf sur le tuf, la glace sur la glace), jamais par une lueur ni par une teinte assombrie sous 0,05 de
+// luminance. Là où rien ne l'atteint (l'herbe brumeuse du 5e), il garde le côté naturel de sa matière et se lit par sa
+// silhouette (les planches, les pieds du pupitre, les piquets). Code pur, sans Three.js.
 import type { BiomeId } from '../../biomes';
-import { apartFromGhost, LANTERNE_DE_COUR } from '../architecture';
+import { LANTERNE_DE_COUR } from '../architecture';
 import { type Couleur, type Faces, luminance } from '../palette';
 import type { TextureKind } from '../pixels';
 import { scaleColor, type Tint, type Workshop } from './workshop';
@@ -21,6 +22,9 @@ import { crystalShards, galleryEntrance, type HeartDecor, type HeartDrawing } fr
 
 /** Le contraste que tient un flanc sombre sur son sol (3:1, un dixième de marge pour l'arrondi). */
 const FLANK_CONTRAST = 3.1;
+
+/** La luminance sous laquelle un flanc ne s'assombrit jamais (avis du directeur artistique : pas de flanc presque noir). */
+const FLANK_FLOOR = 0.05;
 
 /**
  * La part de sa luminance qu'une couleur garde à l'image sous la lumière et le voile du 5e, mesurée sur les captures du
@@ -39,27 +43,28 @@ const contrastUnder = (g: number, f: number, kg: number, kf: number) => {
 };
 
 /**
- * Le flanc d'une teinte sur le sol `ground` : la teinte sous le voile de l'archipel, assombrie pas à pas jusqu'à tenir
- * 3:1 sur le dessus du sol à l'image, de jour, et la nuit aussi quand le sol est assez clair pour que ce soit possible
- * (la farine ; `SCENE_LIGHT`). Sur l'herbe sous la brume du 5e, seule une teinte presque noire s'en approche ; sur un sol
- * clair (la farine, le tuf, la dalle), un ton sombre de la matière. La nuit, sur un sol moyen (la dalle, la glace), même
- * le noir n'y arrive pas : c'est la lumière qui manque. `inColours` : compté en couleurs, comme au lot 2 (ce que garde
- * le thermomètre, jugé conforme).
+ * Le flanc d'une teinte `c` (déjà sous le voile de l'archipel : une matière, un rôle, `pe.color`) sur le sol `ground` :
+ * la teinte assombrie pas à pas jusqu'à tenir 3:1 sur le dessus du sol à l'image, de jour, et la nuit aussi quand le sol
+ * est assez clair pour que ce soit possible sans passer sous `FLANK_FLOOR` de luminance (`SCENE_LIGHT`). Sur un
+ * sol clair (la farine, le tuf, la dalle), c'est un ton sombre de la matière ; là où seule une teinte presque noire y
+ * arriverait (l'herbe sous la brume du 5e), le flanc garde la teinte telle quelle, le côté naturel de sa matière.
+ * `inColours` : compté en couleurs, comme au lot 2 (ce que garde le thermomètre, jugé conforme).
  */
 function flankOn(pe: Paint, c: Couleur, ground: TextureKind, inColours = false): Couleur {
   const g = luminance(pe.material(ground).dessus);
   const L = SCENE_LIGHT;
   const tests: [number, number][] = inColours ? [[1, 1]] : [[L.ground, L.side]];
-  if (!inColours && contrastUnder(g, 0, L.night, L.night) >= FLANK_CONTRAST + 0.2) tests.push([L.night, L.night]);
+  if (!inColours && contrastUnder(g, FLANK_FLOOR, L.night, L.night) >= FLANK_CONTRAST + 0.2) tests.push([L.night, L.night]);
   for (let k = 20; k > 0; k--) {
-    const f = pe.color(scaleColor(c, k / 20));
+    const f = scaleColor(c, k / 20);
     const l = luminance(f);
+    if (l < FLANK_FLOOR) break;
     if (tests.every(([kg, kf]) => contrastUnder(g, l, kg, kf) >= FLANK_CONTRAST)) return f;
   }
-  return pe.color(0);
+  return c;
 }
 
-/** Le gris d'ardoise du flanc des congères et du sel (intention du directeur artistique), avant de l'assombrir. */
+/** Le gris d'ardoise du flanc des congères (intention du directeur artistique), avant de l'assombrir. */
 const SLATE_FLANK = 0x4a5e6a;
 
 /** Une matière claire et unie : la dalle des cours, qui se lit sur les sols sombres (le lambris du Manoir). */
@@ -126,13 +131,13 @@ const panelPile: HeartDrawing = (at, pe) => {
 // ---------- Le Bourg des chroniques (histoire, 5e) ----------
 
 /**
- * Le pupitre du copiste (une case de planches, son plateau d'enluminure) : la table de planches sur quatre pieds sombres,
- * le pupitre d'enluminure en pente, le grand livre blanc ouvert dessus (la nuit, sur l'herbe sombre, c'est lui qui tient
- * le contraste : relevé du référent dys du 11 octobre 2026).
+ * Le pupitre du copiste (une case de planches, son plateau d'enluminure) : la table de planches sur quatre pieds de
+ * planches, le pupitre d'enluminure en pente, le grand livre blanc ouvert dessus : c'est lui qui tient le contraste sur
+ * l'herbe, de jour comme de nuit (relevé du référent dys du 11 octobre 2026).
  */
 const copyistDesk: HeartDrawing = (at, pe) => {
   const planks = pe.material('planches');
-  const dark = flankOn(pe, C.tar, 'herbe');
+  const dark = flankOn(pe, planks.cote, 'herbe');
   tableOnLegs(
     at,
     0.1,
@@ -161,22 +166,26 @@ const PAGE_WHITE = 0xfbf7ee;
 // ---------- La Saline des mélanges (physique-chimie, 5e) ----------
 
 /**
- * Le tas de sel (trois cases, deux de haut au coin) : un grand tas bas et deux petits ; le tronc bas de chacun au flanc
- * sombre (sur l'herbe, il tient 3:1), le cône du haut tout en sel clair, tenu à l'écart du fantôme Brume (intention du
- * directeur artistique du 11 octobre 2026 : un tas de sel reste blanc).
+ * Le sel crème de la Saline (directeur artistique, 11 octobre 2026), pris tel quel comme une matière (`plain`) : sur
+ * l'herbe de jour, 3,6:1 au dessus, 3,2:1 aux côtés à l'image ; à 71 au moins du fantôme Brume en RVB, sans mélange vers
+ * le gris.
+ */
+export const SALT_CREAM = 0xf4d79e;
+
+/**
+ * Le tas de sel (trois cases, deux de haut au coin) : un grand tas bas et deux petits, tout en sel crème, dessus et
+ * flancs (un tas de sel reste clair : il se détache de l'herbe par sa teinte, sans pied sombre).
  */
 const saltHeap: HeartDrawing = (at, pe) => {
-  const white = apartFromGhost(pe.material('sel').dessus);
-  const foot: Faces = { dessus: white, cote: flankOn(pe, SLATE_FLANK, 'herbe') };
-  const salt: Faces = { dessus: white, cote: white };
-  heap(at, 0.85, 0.85, 0, 0.82, 1.3, foot, 8, 0.2, salt);
-  heap(at, 1.58, 0.44, 0, 0.34, 0.5, foot, 6, 0.2, salt);
-  heap(at, 0.44, 1.56, 0, 0.32, 0.46, foot, 6, 0.7, salt);
+  const salt = pe.plain(SALT_CREAM);
+  heap(at, 0.85, 0.85, 0, 0.82, 1.3, salt, 8, 0.2);
+  heap(at, 1.58, 0.44, 0, 0.34, 0.5, salt, 6, 0.2);
+  heap(at, 0.44, 1.56, 0, 0.32, 0.46, salt, 6, 0.7);
 };
 
 // ---------- La Menuiserie des objets (technologie, 5e) ----------
 
-/** Le tas de planches (deux au sol, une dessus) : trois lits de planches en croix, leurs chants sombres. */
+/** Le tas de planches (deux au sol, une dessus) : trois lits de planches en croix, leurs chants dans le côté de la planche (`flankOn` : sur l'herbe, rien ne tient 3:1). */
 const plankStack: HeartDrawing = (at, pe) => {
   const planks = pe.material('planches');
   const board: Faces = { dessus: planks.dessus, cote: flankOn(pe, planks.cote, 'herbe') };
@@ -186,23 +195,26 @@ const plankStack: HeartDrawing = (at, pe) => {
 
 // ---------- Le Fournil des partages (EMC, 5e) ----------
 
-/** Un sac de farine : le sac rond et plat, son col serré, sa ficelle sombre. */
-function flourSack(at: Workshop, pe: Paint, cx: number, cy: number, sack: Faces): void {
-  pebble(at, cx, cy, 0, 0.36, 0.7, sack, 6, 0.2);
-  at.prism(cx, cy, 0.13, 0.1, 0.7, 0.84, 4, sack, Math.PI / 4);
-  at.prism(cx, cy, 0.15, 0.15, 0.7, 0.75, 4, pe.color(C.wood), Math.PI / 4, true);
+/** La toile de jute des sacs du Fournil et leur ficelle (directeur artistique, 11 octobre 2026), prises telles quelles. */
+export const SACK = { jute: 0x6b5434, string: 0x3a2a22 } as const;
+
+/** Un sac de farine : le sac rond et plat en toile, son col serré, ouvert sur la farine, sa ficelle sombre. */
+function flourSack(at: Workshop, pe: Paint, cx: number, cy: number, jute: Couleur, flour: Couleur): void {
+  pebble(at, cx, cy, 0, 0.36, 0.7, jute, 6, 0.2);
+  at.prism(cx, cy, 0.13, 0.1, 0.7, 0.84, 4, { dessus: flour, cote: jute }, Math.PI / 4);
+  at.prism(cx, cy, 0.15, 0.15, 0.7, 0.75, 4, pe.plain(SACK.string), Math.PI / 4, true);
 }
 
 /**
- * Les sacs de farine contre la caisse (deux sacs, une caisse de planches) : le dessus de farine, la toile de jute du
- * flanc assombrie, la caisse de planches et son couvercle aux chants sombres (tous tiennent 3:1 sur le sol de farine du
- * Fournil, à l'image).
+ * Les sacs de farine contre la caisse (deux sacs, une caisse de planches) : les sacs tout en toile de jute, dessus
+ * compris, la farine au seul col ouvert ; la caisse de planches et son couvercle aux chants sombres (sacs et chants
+ * tiennent 3:1 sur le sol de farine du Fournil, à l'image, de jour).
  */
 const flourSacks: HeartDrawing = (at, pe) => {
   const flour = pe.material('farine');
-  const sack: Faces = { dessus: flour.dessus, cote: flankOn(pe, flour.cote, 'farine') };
-  flourSack(at, pe, 0.5, 0.5, sack);
-  flourSack(at, pe, 1.5, 0.46, sack);
+  const jute = pe.plain(SACK.jute);
+  flourSack(at, pe, 0.5, 0.5, jute, flour.dessus);
+  flourSack(at, pe, 1.5, 0.46, jute, flour.dessus);
   const planks = pe.material('planches');
   const board: Faces = { dessus: planks.dessus, cote: flankOn(pe, planks.cote, 'farine') };
   crate(at, 0.12, 0.88, 1.12, 1.88, 0, 0.78, board, board);
@@ -234,7 +246,7 @@ function snowdrift(at: Workshop, cx: number, cy: number, z0: number, r: number, 
 }
 
 /** La neige des congères (intention du directeur artistique : dessus #B3C1C7, flanc #4A5E6A assombri sur la glace). */
-const driftSnow = (pe: Paint): Faces => ({ dessus: pe.role('snow'), cote: flankOn(pe, SLATE_FLANK, 'glace') });
+const driftSnow = (pe: Paint): Faces => ({ dessus: pe.role('snow'), cote: flankOn(pe, pe.color(SLATE_FLANK), 'glace') });
 
 /** Les trois congères (trois cases en équerre) : une grande dans l'angle, deux petites sur ses ailes. */
 const snowdrifts: HeartDrawing = (at, pe, e) => {
@@ -276,7 +288,7 @@ const THERMOMETER_RED = 0xb04a3a;
 const iceSpike: HeartDrawing = (at, pe, e) => {
   const rock: Faces = { dessus: pe.role('yardStone'), cote: flankOn(pe, pe.role('yardStone'), 'glace') };
   at.prism(0.5, 0.5, 0.46, 0.38, 0, 0.12, 6, rock, 0.3, true);
-  crystalShards(at, e, { dessus: pe.material('glace').dessus, cote: flankOn(pe, SLATE_FLANK, 'glace') }, rock);
+  crystalShards(at, e, { dessus: pe.material('glace').dessus, cote: flankOn(pe, pe.color(SLATE_FLANK), 'glace') }, rock);
 };
 
 // ---------- L'étal (le Marché, le Comptoir) ----------
@@ -302,8 +314,9 @@ interface StallShape {
 const STALL = { counter: 0.96, front: 2.2, back: 2.84, thick: 0.08, post: 0.2 } as const;
 
 /**
- * L'étal : quatre poteaux au flanc sombre, le comptoir de planches devant (ses chants sombres) et sa planche du dessus,
- * l'auvent rayé en appentis qui descend vers l'avant, son dessous et ses rives dans l'ombre, deux caisses dessous.
+ * L'étal : quatre poteaux, le comptoir de planches devant et sa planche du dessus, leurs côtés posés par `flankOn` sur
+ * le sol de l'étal ; l'auvent rayé en appentis qui descend vers l'avant, son dessous et ses rives dans l'ombre, deux
+ * caisses dessous.
  */
 function stall(at: Workshop, pe: Paint, s: StallShape): void {
   const dark = flankOn(pe, pe.role('yardPost'), s.ground);
@@ -374,7 +387,7 @@ const clothBolt: HeartDrawing = (at, pe) => {
 // ---------- Le Carrefour des homophones (français, 5e) ----------
 
 /**
- * Le poteau indicateur (quatre cases de bois, trois panneaux) : la pièce de Sema, son poteau au flanc sombre, trois
+ * Le poteau indicateur (quatre cases de bois, trois panneaux) : la pièce de Sema, son poteau au flanc tenu sur l'herbe (`flankOn`), trois
  * planches-flèches de panneau à trois hauteurs, vers la gauche, la droite et le fond.
  */
 const crossroadsSign: HeartDrawing = (at, pe) => {
@@ -396,7 +409,7 @@ const crossroadsSign: HeartDrawing = (at, pe) => {
   );
 };
 
-/** Le panneau seul (une case) : une planche de panneau épaisse sur deux piquets au flanc sombre ; rien d'écrit. */
+/** Le panneau seul (une case) : une planche de panneau épaisse sur deux piquets dans le côté de leur bois (`flankOn` : sur l'herbe, rien ne tient 3:1) ; rien d'écrit. */
 const lonePanel: HeartDrawing = (at, pe) => {
   const stake = flankOn(pe, pe.role('yardPost'), 'herbe');
   for (const x of [0.22, 0.78]) at.block(x, 0.5, 0.16, 0.16, 0, 0.92, stake, { bottom: true, top: true });
@@ -462,8 +475,8 @@ const SAWN_WOOD = 0xe2c999;
 
 /**
  * L'étal du Comptoir (trois cases de poteaux et d'auvent, une caisse au fond, sur une emprise en T : trois cases devant,
- * une au fond au milieu) : l'auvent à raies de tuile et de terre cuite, épais, ses rives au flanc sombre (la tuile se
- * perdait sur la terre rouge, relecture du consultant d'Archipéo du 11 octobre 2026) ; les deux poteaux du fond rentrés
+ * une au fond au milieu) : l'auvent à raies de tuile et de terre cuite, épais, ses rives dans la terre cuite (`flankOn` :
+ * sur la tuile, aucun flanc ne tient 3:1 au-dessus de 0,05 de luminance, directeur artistique du 11 octobre 2026) ; les deux poteaux du fond rentrés
  * dans la case du fond, à 0,1 case de ses bords (ils débordaient d'une case hors de l'emprise, directeur artistique).
  */
 const tileStall: HeartDrawing = (at, pe) => {
@@ -481,7 +494,7 @@ const tileStall: HeartDrawing = (at, pe) => {
   });
 };
 
-/** La pile de tuiles (une case) : trois lits épais un peu décalés, leurs chants sombres (sur le sol de tuile du Comptoir). */
+/** La pile de tuiles (une case) : trois lits épais un peu décalés, leurs chants dans la terre cuite (sur le sol de tuile du Comptoir, `flankOn`). */
 const tilePile: HeartDrawing = (at, pe) => {
   const tile = pe.material('tuile');
   const t: Faces = { dessus: tile.dessus, cote: flankOn(pe, tile.cote, 'tuile') };
@@ -496,7 +509,7 @@ const tilePile: HeartDrawing = (at, pe) => {
 // ---------- Le Delta des ressources (géographie, 5e) ----------
 
 /**
- * La rizière (deux cases) : le bord de terre au flanc sombre, son rebord, la nappe d'eau (#178078) dedans, deux rangs de
+ * La rizière (deux cases) : le bord de terre (`flankOn`), son rebord, la nappe d'eau (#178078) dedans, deux rangs de
  * touffes de pousses (#4E8F36), sans stries.
  */
 const paddy: HeartDrawing = (at, pe) => {
@@ -528,8 +541,8 @@ const deltaSheaf: HeartDrawing = (at, pe) => hayBundle(at, pe, 'herbe');
 // ---------- La Prairie des climats (SVT, 5e) ----------
 
 /**
- * Le rocher à strates (deux cases, deux de haut à droite) : quatre couches décalées, de bas en haut le brun au flanc
- * sombre, l'ocre, le gris au flanc sombre et le brun ; chacune d'un ton franc, aucune strie.
+ * Le rocher à strates (deux cases, deux de haut à droite) : quatre couches décalées, de bas en haut le brun, l'ocre,
+ * le gris et le brun, les côtés posés par `flankOn` ; chacune d'un ton franc, aucune strie.
  */
 const strataRock: HeartDrawing = (at, pe) => {
   const brown = pe.material('strate');
