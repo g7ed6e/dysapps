@@ -146,13 +146,13 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // (87 890) ; le lot 2 (même jour : le décor du cœur et les trois lieux de l'île-école dessinés) : la construction
   // 3 300 (91 190). La Nef en modèles peints (même jour, « Relever ») : le navire 1 410 aux Premiers Rivages (92 600), 1 480
   // ailleurs.
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, les essais et les lots 1 et 2 de la piste 3, la Nef importée) : 92 600 triangles et 25 appels aux Premiers Rivages, 96 135, 96 390 et 94 995 et 24 appels ailleurs', () => {
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, ceux de la 3e, les essais et les lots 1 et 2 de la piste 3, la Nef importée) : 92 600 triangles et 25 appels aux Premiers Rivages, 96 135, 96 390 et 95 145 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([92_600, 25]);
     expect([total('5e'), appels('5e')]).toEqual([96_135, 24]);
     expect([total('4e'), appels('4e')]).toEqual([96_390, 24]);
-    expect([total('3e'), appels('3e')]).toEqual([94_995, 24]);
+    expect([total('3e'), appels('3e')]).toEqual([95_145, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la

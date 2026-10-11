@@ -389,12 +389,20 @@ export const ENVELOPPES: Record<
   // la lisse voisine). Mesuré tout construit : 17 768 → 18 384 ; l'enveloppe 18 050 → 18 700 ; aucun appel de plus. Le
   // lot 2 (11 octobre 2026 : le décor du cœur, ./objects/heartDecor.ts, et les lieux de l'île-école de près,
   // ./objects/villagePlaces.ts) : 18 384 → 21 116 tout construit, 21 876 au pire de la salle ; l'enveloppe 18 700 → 22 000.
+  // Les douze bâtiments de la 3e chargés (11 octobre 2026, même décision : « tu peux relever les plafonds » pour les
+  // bâtiments) : 16 691 → 16 797 tout construit aux Îles du Ciel, 16 939 → 17 045 au pire de la salle des trophées ;
+  // l'enveloppe des Îles du Ciel prend la différence, arrondie (16 950 → 17 100), la somme de leurs enveloppes
+  // 93 515 → 93 665 (« Dans la scène » compris), sous `RENDER_BUDGET_AUTRES` (94 950), inchangé ; aucun appel de plus.
+  // Les quatorze bâtiments de la 4e, la tour de Knight et la tribune de Brio chargés, Théo et Stat refaits (11 octobre
+  // 2026) : 16 585 → 16 576 tout construit aux Anciens Ateliers, 16 833 → 16 824 au pire de la salle des trophées ; aux
+  // Îles du Ciel, 16 797 et 17 045, inchangés (la réserve d'une île sans modèle, 3 000 de près et 200 de loin, tient
+  // déjà le pire) : aucune enveloppe ne bouge.
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
     premiersRivages: { triangles: 22_000, drawCalls: 3 },
     autres: { triangles: 16_950, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 16_200, drawCalls: 3 } },
+    parArchipel: { '5e': { triangles: 16_200, drawCalls: 3 }, '3e': { triangles: 17_100, drawCalls: 3 } },
   },
   // Les quêtes des habitants (GD-10, PR 1) : les trois objets posés à la fin des quêtes du 6e (la lanterne, le portillon,
   // l'escalier) sont des petites constructions, comptées dans ce poste (`toutConstruitAvecLesCommandes`) : 758 triangles
