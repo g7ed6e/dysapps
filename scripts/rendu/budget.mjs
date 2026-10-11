@@ -38,17 +38,20 @@ const server = await createServer({
 });
 try {
   const load = (p) => server.ssrLoadModule(p);
-  const [budget, { ARCHIPELAGO_IDS }, { loadMonumentsFromDisk }, { loadBuildingsFromDisk }, { chargerLesModelesDuDisque, loadKeoFromDisk }] = await Promise.all([
+  const [budget, { ARCHIPELAGO_IDS }, { loadMonumentsFromDisk }, { loadBuildingsFromDisk }, { loadNefFromDisk }, { chargerLesModelesDuDisque, loadKeoFromDisk }] =
+    await Promise.all([
     load('/src/game/world/budget.ts'),
     load('/src/game/world/map.ts'),
     load('/src/game/world/monumentModels.fromDisk.testing.ts'),
     load('/src/game/world/buildingModels.fromDisk.testing.ts'),
+    load('/src/game/world/nefModels.fromDisk.testing.ts'),
     load('/src/game/world/characters/imported/fromDisk.testing.ts'),
   ]);
   // Les monuments et les bâtiments des plans importés d'Archipéo, comme la vue les charge : la construction se compte au
-  // pire de leurs chantiers, les bâtiments de près sur une île et de loin ailleurs.
+  // pire de leurs chantiers, les bâtiments de près sur une île et de loin ailleurs ; la Nef au pire de ses formes et de ses chantiers.
   loadMonumentsFromDisk();
   loadBuildingsFromDisk();
+  loadNefFromDisk();
   // Les personnages importés (de près sur l'île qui coûte le plus, de loin ailleurs) et Kéo dans la tenue de chaque
   // archipel, comme la vue les charge.
   chargerLesModelesDuDisque();

@@ -23,7 +23,7 @@ import { InventoryLink } from './Inventory';
 import { SCHOOL_PATH, SCHOOL_TITLE } from './School';
 import { MONUMENTS_PATH, MONUMENTS_TITLE } from './Monuments';
 import { BlockIcon } from './Voxel';
-import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
+import { VEHICLE_NAME, stageAt, stageTo, stageWords, type FormsWords } from './world/vehicle';
 import { VillageStageLine } from './VillageStageLine';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { RenamingPanel, useRenaming } from './Renaming';
@@ -43,14 +43,14 @@ import { questsToReview } from './review';
 import { Requests } from './Requests';
 import { ArrangeList } from './ArrangeList';
 
-/** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
-function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {
+/** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase (`forms` : les formes de la Nef nommées par l'univers). */
+function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe'], forms?: FormsWords): string {
   const port = ARCHIPELAGOS.find((a) => a.classe === classe)!.port;
   const left = remainingVoyages(port, state.world.links);
   const first = stageTo(left[0].toClasse)!;
   const shipyard = getBiome(first.biome)?.name ?? first.biome;
-  if (left.length === 1) return `Archipel fermé. Pour y aller, il faut ${VEHICLE_NAME} avec ${first.short} : construis-la au port, sur ${shipyard}.`;
-  const steps = left.map((v) => stageTo(v.toClasse)!.short).join(', puis ');
+  if (left.length === 1) return `Archipel fermé. Pour y aller, il faut ${VEHICLE_NAME} avec ${stageWords(first, forms).short} : construis-la au port, sur ${shipyard}.`;
+  const steps = left.map((v) => stageWords(stageTo(v.toClasse)!, forms).short).join(', puis ');
   return `Archipel fermé. Il faut d’abord ${VEHICLE_NAME} avec ${steps}. Commence au port, sur ${shipyard}.`;
 }
 
@@ -147,7 +147,7 @@ export function BloclandPage() {
             {reached && <VillageStageLine village={state.world} archipelago={a.classe} className="section-intro" />}
             {!reached && (
               <p className="section-intro">
-                <Syllabified text={lockedArchipelagoText(state, a.classe)} />
+                <Syllabified text={lockedArchipelagoText(state, a.classe, textes.libelles.formesDeLaNef)} />
               </p>
             )}
             <ol className="biome-map">

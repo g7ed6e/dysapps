@@ -1,10 +1,13 @@
 // La Nef dans la scène 3D (GD-15) : amarrée au quai, elle tangue (ou plane, dans le ciel) ; en voyage, elle s'éloigne ou
 // accoste, le bonhomme à bord, avec l'écume à la poupe du voilier. Quand elle change de forme sur son port (la dernière
 // pièce posée et les Gardiens rallumés), elle mue sous les yeux de l'élève : dans Blocland, chaque cube vole vers sa
-// nouvelle case, ceux qu'elle ne garde pas rapetissent, les neufs grandissent (`world/metamorphosis.ts`).
+// nouvelle case, ceux qu'elle ne garde pas rapetissent, les neufs grandissent (`world/metamorphosis.ts`) ; dans Archipéo,
+// la Nef est un modèle peint par forme (`world/nefModels.ts`, chargé à la demande), et chaque partie glisse vers sa sœur
+// de la forme suivante (la voile gonfle en ballon, le ballon se fait cabine).
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { maillageDeLaConstruction } from '../world/construction';
+import { moltPieces, moltPose, nefFacets, nefOf, type MoltPiece } from '../world/nefModels';
 import type { VoxelCube } from '../world/cube';
 import { VEHICLE_DECK } from '../world/harbor';
 import { METAMORPHOSIS_MS, apparence, metamorphosisFlights, metamorphosisPose, type Flight } from '../world/metamorphosis';
@@ -12,7 +15,7 @@ import { boardingWalk, startVoyage, voyageFrame, type VoyageRun } from '../world
 import type { WorldViewProps } from '../world/view';
 import { vehiclePath } from '../world/voyage';
 import type { Cubes } from './cubes';
-import { creerConstruction } from './construction';
+import { creerConstruction, type ConstructionEn3D } from './construction';
 import { addMeshes, modelMeshes } from './meshes';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './scenePart';
 import type { Personnages } from './characters';
@@ -38,11 +41,15 @@ export interface Navire extends PartieDeLaScene {
   finirLaMue(): boolean;
 }
 
-/** La mue en cours : une instance par cube, regroupés par apparence (un appel de dessin par apparence, 3 s au plus). */
+/**
+ * La mue en cours (3 s au plus) : dans Blocland, une instance par cube, regroupés par apparence (un appel de dessin par
+ * apparence) ; dans Archipéo, une construction par partie qui glisse (`morceaux`), faite au début et jetée à la fin.
+ */
 interface Mue {
   debut: number;
   vols: { flight: Flight; mesh: THREE.InstancedMesh; i: number }[];
   meshes: THREE.InstancedMesh[];
+  morceaux: { piece: MoltPiece; construction: ConstructionEn3D }[];
 }
 
 /**
@@ -72,6 +79,10 @@ export function creerNavire(
   const quaternion = new THREE.Quaternion();
   const position = new THREE.Vector3();
   const echelle = new THREE.Vector3();
+  const pose: number[] = [0, 0, 0, 0, 0, 0];
+  /** La Nef posée, pour la repeindre quand ses modèles arrivent (Archipéo). */
+  let posee: WorldViewProps['vehicle'] = null;
+  let disposed = false;
 
   const vider = () => {
     for (const child of [...hullGroup.children]) {
@@ -88,6 +99,10 @@ export function creerNavire(
       vehicleGroup.remove(m);
       m.geometry.dispose();
       m.dispose();
+    }
+    for (const { construction } of mue.morceaux) {
+      vehicleGroup.remove(construction.group);
+      construction.dispose();
     }
     mue = null;
     hullGroup.visible = true;
@@ -115,9 +130,26 @@ export function creerNavire(
         vehicleGroup.add(mesh);
       }
     }
-    mue = { debut: instant.now, vols, meshes };
+    mue = { debut: instant.now, vols, meshes, morceaux: [] };
     hullGroup.visible = false;
     poserLesVols(0);
+  };
+
+  /** Archipéo : la mue de la forme d'avant vers `form`, partie par partie ; faux si un des deux modèles manque. */
+  const muerEnPieces = (form: number): boolean => {
+    const pieces = taille && cubes.materiaux ? moltPieces(form) : null;
+    if (!pieces || !cubes.materiaux) return false;
+    const morceaux: Mue['morceaux'] = [];
+    for (const piece of pieces) {
+      const construction = creerConstruction(cubes.materiaux);
+      construction.peindre(maillageDeLaConstruction(archipel, [], [], { navire: true, nef: nefFacets([piece.part]) }));
+      vehicleGroup.add(construction.group);
+      morceaux.push({ piece, construction });
+    }
+    mue = { debut: instant.now, vols: [], meshes: [], morceaux };
+    hullGroup.visible = false;
+    poserLesVols(0);
+    return true;
   };
 
   const poserLesVols = (k: number) => {
@@ -131,37 +163,59 @@ export function creerNavire(
       mesh.setMatrixAt(i, matrice);
     }
     for (const m of mue.meshes) m.instanceMatrix.needsUpdate = true;
+    for (const { piece, construction } of mue.morceaux) {
+      moltPose(piece, k, pose);
+      const g = construction.group;
+      g.visible = pose[0] > 1e-4 && pose[1] > 1e-4 && pose[2] > 1e-4;
+      g.scale.set(Math.max(pose[0], 1e-4), Math.max(pose[1], 1e-4), Math.max(pose[2], 1e-4));
+      g.position.set(pose[3], pose[4], pose[5]);
+    }
   };
+
+  const poser = (vehicle: WorldViewProps['vehicle']) => {
+    posee = vehicle;
+    const avant = amarre.current;
+    finir();
+    vider();
+    if (!vehicle) {
+      amarre.current = null;
+      vehicleGroup.visible = false;
+      return;
+    }
+    const solid = vehicle.cubes.filter((c) => !c.ghost);
+    if (taille) taille.peindre(maillageDeLaConstruction(archipel, vehicle.cubes, [], { navire: true, nef: nefOf(vehicle.form, vehicle.cubes) }));
+    else addMeshes(hullGroup, modelMeshes(vehicle.cubes, surface));
+    vehicleGroup.position.set(vehicle.origin.x, vehicle.origin.z, vehicle.origin.y);
+    vehicleGroup.rotation.set(0, 0, 0);
+    vehicleGroup.visible = true;
+    amarre.current = {
+      origin: vehicle.origin,
+      port: vehicle.port,
+      afloat: vehicle.afloat,
+      ghosts: new Set(vehicle.cubes.filter((c) => c.ghost).map((c) => `${c.x},${c.y},${c.z}`)),
+      form: vehicle.form,
+      solid,
+    };
+    // La forme suivante, sur le même port, sous les yeux de l'élève : la mue, en cubes (Blocland), ou partie par partie
+    // (Archipéo ; d'un coup tant que ses modèles ne sont pas chargés).
+    if (avant && avant.port === vehicle.port && avant.form >= 1 && vehicle.form === avant.form + 1) {
+      if (!taille) muer(avant.solid, solid);
+      else muerEnPieces(vehicle.form);
+    }
+  };
+
+  // Archipéo : les modèles de la Nef, chargés à la demande ; arrivés, la Nef posée se repeint (sans muer : même forme).
+  if (taille)
+    import('../importedNef')
+      .then(({ loadNef }) => loadNef())
+      .then((nouveau) => {
+        if (nouveau && !disposed && posee && !mue && !voyage.current) poser(posee);
+      })
+      .catch(() => {});
 
   return {
     groupe: vehicleGroup,
-    poser: (vehicle) => {
-      const avant = amarre.current;
-      finir();
-      vider();
-      if (!vehicle) {
-        amarre.current = null;
-        vehicleGroup.visible = false;
-        return;
-      }
-      const solid = vehicle.cubes.filter((c) => !c.ghost);
-      if (taille) taille.peindre(maillageDeLaConstruction(archipel, vehicle.cubes, [], { navire: true }));
-      else addMeshes(hullGroup, modelMeshes(vehicle.cubes, surface));
-      vehicleGroup.position.set(vehicle.origin.x, vehicle.origin.z, vehicle.origin.y);
-      vehicleGroup.rotation.set(0, 0, 0);
-      vehicleGroup.visible = true;
-      amarre.current = {
-        origin: vehicle.origin,
-        port: vehicle.port,
-        afloat: vehicle.afloat,
-        ghosts: new Set(vehicle.cubes.filter((c) => c.ghost).map((c) => `${c.x},${c.y},${c.z}`)),
-        form: vehicle.form,
-        solid,
-      };
-      // La forme suivante, sur le même port, sous les yeux de l'élève : la mue (Blocland ; Archipéo change d'un coup
-      // jusqu'à son lot, GD-15 « Blocland d'abord »).
-      if (!taille && avant && avant.port === vehicle.port && avant.form >= 1 && vehicle.form === avant.form + 1) muer(avant.solid, solid);
-    },
+    poser,
     finirLaMue: finir,
     voyager: (v) => {
       finir();
@@ -222,6 +276,7 @@ export function creerNavire(
       vehicleGroup.rotation.z = v.afloat ? Math.sin(t * 1.3) * 0.015 : 0;
     },
     dispose: () => {
+      disposed = true;
       finir();
       vider();
     },

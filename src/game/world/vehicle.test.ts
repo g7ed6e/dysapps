@@ -7,7 +7,7 @@ import { VEHICLE_SIZE, dockOrigin } from './harbor';
 import { PLANS, planCells } from './plans';
 import { planV1 } from './plansV1';
 import { formerVehicleStage } from './formerVehicle';
-import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageAt, stageFor, stageTo, vehicleAt, vehicleForm, vehicleModel } from './vehicle';
+import { VEHICLE_STAGES, beatenGuardians, formWord, getStage, kitReady, savedCellAt, shownCellOf, shownPieces, stageAt, stageFor, stageTo, stageWords, vehicleAt, vehicleForm, vehicleModel } from './vehicle';
 
 const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-challenge`, { stars: 2 as const, attempts: 1, best: 1 }]));
 
@@ -73,6 +73,42 @@ it('la Nef mue à chaque passage (GD-15) : une forme neuve, faite en partie des 
     return `${Math.min(...f.map((c) => c.x))}-${Math.max(...f.map((c) => c.x))}/${Math.max(...f.map((c) => c.z))}`;
   };
   expect(new Set([boite(1), boite(2), boite(3)]).size).toBe(3);
+});
+
+it('l’aéronef d’Archipéo (GD-15) : ses pièces à d’autres places, les mêmes cases sauvegardées, rien sur la forme d’avant', () => {
+  const pos = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z}`;
+  const s = VEHICLE_STAGES[2];
+  const own = shownPieces(s, true);
+  // Une place par case, dans le même ordre et du même bloc : la sauvegarde ne change pas.
+  expect(own.cells.map((c) => c.block)).toEqual(s.cells.map((c) => c.block));
+  expect(new Set(own.cells.map(pos)).size).toBe(s.cells.length);
+  s.cells.forEach((c, i) => {
+    expect(pos(shownCellOf(s, c, true))).toBe(pos(own.cells[i]));
+    expect(savedCellAt(s, own.cells[i], true)).toBe(c);
+  });
+  // Le rotor au-dessus du dirigeable, le kit aux hélices : jamais sur une case du dirigeable, ni hors de la Nef.
+  const avant = new Set(vehicleForm(2, true).map(pos));
+  for (const c of [...own.cells, ...own.kit]) {
+    expect(avant.has(pos(c)), pos(c)).toBe(false);
+    expect(c.x >= 0 && c.x < VEHICLE_SIZE.w && c.y >= 0 && c.y < VEHICLE_SIZE.d && c.z < VEHICLE_SIZE.h, pos(c)).toBe(true);
+  }
+  const form = vehicleForm(3, true).map(pos);
+  expect(new Set(form).size).toBe(form.length);
+  // Blocland garde la fusée, et les deux premières étapes ne bougent pas.
+  expect(shownPieces(s)).toBe(s);
+  for (const st of VEHICLE_STAGES.slice(0, 2)) expect(shownPieces(st, true)).toBe(st);
+  expect(vehicleForm(1, true)).toEqual(vehicleForm(1));
+});
+
+it('une forme que l’univers nomme autrement : son nom, son kit et sa fin', () => {
+  const forms = { 3: { name: 'L’aéronef', word: 'aéronef', short: 'les hélices' } };
+  const s = VEHICLE_STAGES[2];
+  expect(stageWords(s)).toBe(s);
+  expect(stageWords(VEHICLE_STAGES[1], forms)).toBe(VEHICLE_STAGES[1]);
+  expect(stageWords(s, forms).name).toBe('L’aéronef');
+  expect(stageWords(s, forms).short).toBe('les hélices');
+  expect(stageWords(s, forms).fin('Îles du Ciel')).toBe('La Nef est devenue aéronef ! Embarque quand tu veux : les Îles du Ciel t’attendent.');
+  expect([formWord(3), formWord(3, forms), formWord(2, forms)]).toEqual(['fusée', 'aéronef', 'dirigeable']);
 });
 
 it('le Bloc-Navire d’avant la Nef : une étape finie le reste, des blocs posés à moitié reviennent dans l’inventaire', () => {

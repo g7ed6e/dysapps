@@ -183,6 +183,11 @@ export interface OptionsDeLaConstruction {
   bornes?: boolean;
   /** Les cubes de la Nef : sa toile prend le crème Brume (et rien n'y devient pièce d'architecture). */
   navire?: boolean;
+  /**
+   * Archipéo : la Nef importée (./nefModels.ts, `nefOf`), avec `navire` : la forme montrée en modèle à la place de ses
+   * cubes posés, sa lanterne dans les fenêtres ; les pièces de l'étape en chantier restent des cubes ou des fantômes.
+   */
+  nef?: ImportedMonument | null;
   /** Le kit d'architecture (lot 7, ./architecture/kits/) : par défaut, celui de l'archipel. */
   kit?: Kit;
   /**
@@ -357,7 +362,9 @@ export function maillageDeLaConstruction(
   // de près sur l'île `pres` (./objects/villagePlaces.ts) ; comme un modèle importé, ils remplacent leurs cubes.
   const objets = !options.navire && (options.kit ?? KITS[a]).objetsDessines;
   const imported = options.navire
-    ? []
+    ? options.nef
+      ? [options.nef]
+      : []
     : [
         ...modelesImportes(cubes, options.pres),
         ...(objets
