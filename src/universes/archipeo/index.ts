@@ -566,6 +566,9 @@ export const ARCHIPEO = {
       'Les îles pâles sont fermées. Pour y aller, pose un ouvrage. Il part de l’île de ton choix. Chaque ouvrage coûte le même nombre de blocs.',
     navireGardiensManquants: (n, archipel) => `rallume encore ${n} Gardien${s(n)} des ${archipel}`,
     decouverteNavire: BLOCLAND.libelles.decouverteNavire,
+    // La troisième forme de la Nef est un aéronef, rotor au-dessus et hélices sur les flancs (GD-15, lot « Archipéo
+    // peint » ; mainteneur, 11 octobre 2026) : on ne dit plus « fusée » dans Archipéo.
+    formesDeLaNef: { 3: { name: 'L’aéronef', word: 'aéronef', short: 'les hélices' } },
   },
   // La lumière ne dit que les réussites : « la rallumer » renvoie à « sa lumière », sans accord selon le Gardien.
   sentinelles: {
@@ -640,6 +643,7 @@ export const ARCHIPEO = {
   archipels: { '6e': 'Premiers Rivages', '5e': 'Îles Brumeuses', '4e': 'Anciens Ateliers', '3e': 'Îles du Ciel' },
   // Les rôles d'avant GD-1, ceux de core/progress.ts (ROLES), et leurs succès inchangés.
   roles: { explorateur: 'Explorateur', cartographe: 'Cartographe', batisseur: 'Bâtisseur', navigateur: 'Navigateur', architecte: 'Architecte de l’archipel' },
-  succes: {},
+  // La Nef y devient aéronef, pas fusée (GD-15) : le dernier succès du voyage le dit.
+  succes: { 'pilote-du-ciel': { title: 'Pilote du ciel', description: 'Faire de la Nef un aéronef et monter jusqu’aux Îles du Ciel.' } },
   renommage: null,
 } satisfies TextesUnivers;

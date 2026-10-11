@@ -11,7 +11,7 @@ import { NotFoundPage } from '../pages/NotFoundPage';
 import { useLoaded } from '../core/useLoaded';
 import { getBiome, guardianTitle } from './biomes';
 import { archipelagoOf, getArchipelago, isBiomeUnlocked } from './world/archipelago';
-import { beatenGuardians, stageTo, type VehicleStage } from './world/vehicle';
+import { beatenGuardians, stageTo, stageWords, type VehicleStage } from './world/vehicle';
 import { nextArchipelago } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import { STARS_TO_BEAT, bossDef, bossId, isBossBeaten, isBossOpen } from './boss';
@@ -279,7 +279,7 @@ export function BossPage() {
           {shipHint && (
             <p className="panel ship-hint" role="status" aria-live="polite">
               <Icon name="ship" />{' '}
-              <Syllabified text={`La Nef a ses Gardiens : ${shipHint.short} est là ! Va au port, sur ${thePlace(getBiome(shipHint.biome)?.name ?? shipHint.biome)}, finir de la construire.`} />{' '}
+              <Syllabified text={`La Nef a ses Gardiens : ${stageWords(shipHint, textes.libelles.formesDeLaNef).short} est là ! Va au port, sur ${thePlace(getBiome(shipHint.biome)?.name ?? shipHint.biome)}, finir de la construire.`} />{' '}
               <Link to={`/adventure/${getArchipelago(shipHint.from).port}`} className="button">
                 <Icon name="ship" /> Aller au port
               </Link>

@@ -6,7 +6,7 @@
 // pour le rendu Archipéo, le sol (R2), la mer et la faune (R3), le décor (R4), la construction taillée, les bornes et
 // le navire (R5), et les personnages fusionnés (R6). Vérifié par world/budget.test.ts.
 import { AVATAR_PARTS } from '../Avatar';
-import { BIOMES, type BiomeId, type BlockId } from '../biomes';
+import { BIOMES, BLOCKS, type BiomeId, type BlockId } from '../biomes';
 import { CATALOG } from '../exercises';
 import { ARCHIPELAGOS, grantAccess, linkWholeRegion, VOYAGES } from './archipelago';
 import { ALTITUDE, type ArchipelagoId, DANS_LE_CIEL, mapOf } from './map';
@@ -17,17 +17,18 @@ import { blockRegions, buildBlockMesh, buildRegionMesh, chunkFaceCount, type Blo
 import { hiddenBottomLevel } from './sea';
 import { MONUMENTS } from './monuments';
 import { isMonumentLoaded, MONUMENT_MODELS } from './monumentModels';
+import { nefOf } from './nefModels';
 import { BUILDING_FAR_TRIANGLES, BUILDING_NEAR_TRIANGLES, buildingCells, buildingTriangles, isBuildingLoaded } from './buildingModels';
 import { ETAPES_DU_BATIMENT } from './construction/buildings';
 import { LAYERS } from './projects';
-import { PLANS, planCells, plansFor } from './plans';
+import { PLANS, planCells, plansFor, type PlanCell } from './plans';
 import { creaturePlacements, guardianPlacements, vehiclePlacement, whaleSpots, worldBounds, worldCubes } from './terrain';
 import { grilleDeLaMer, trianglesDeLaGrille } from './sea';
 import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
 import { trianglesDeLaBrume } from './decor/mist';
 import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliersDe, sansToursDuCoeur } from './construction';
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, planeurDe, trianglesDe } from './fauna';
-import { VEHICLE_STAGES } from './vehicle';
+import { VEHICLE_STAGES, shownPieces, vehicleForm } from './vehicle';
 import { bridge, type CaseDOuvrage } from './terrain/links';
 import { DEPTH } from './terrain/base';
 import { GAP_BETWEEN_PLACES, landRectangle } from './footprint';
@@ -73,9 +74,10 @@ export const RENDER_BUDGET = {
  * (./objects/), le trophée des Gardiens rallumés et les objets du quai ; la construction passe de 18 050 à 18 700, les
  * commandes de 1 100 à 1 500, la somme des enveloppes de 86 840 à 87 890. Puis à 91 200 pour le lot 2 des objets du 6e
  * (11 octobre 2026, même autorisation : le décor du cœur et les lieux de l'île-école dessinés) : la construction passe de
- * 18 700 à 22 000.
+ * 18 700 à 22 000. Puis à 92 610 pour la Nef en modèles peints (GD-15, « Relever », mainteneur, 11 octobre 2026) : son
+ * enveloppe passe de 490 à 1 900, la somme des enveloppes de 91 190 à 92 600.
  */
-export const RENDER_BUDGET_6E = { triangles: 91_200, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_6E = { triangles: 92_610, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
  * Les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
@@ -104,9 +106,10 @@ export const RENDER_BUDGET_6E = { triangles: 91_200, drawCalls: RENDER_BUDGET.dr
  * Brumeuses, les 2 970 que leur construction prend (13 230 → 16 200), arrondis ; la somme des enveloppes passe à 94 655
  * aux Îles Brumeuses, 92 675 aux Anciens Ateliers et 91 805 aux Îles du Ciel (construction « autres » 13 000 → 16 950).
  * Puis à 94 950 avec les personnages importés de la 4e, fusionnés entre-temps (les deux hausses s'additionnent : 94 910
- * aux Anciens Ateliers).
+ * aux Anciens Ateliers). Puis à 96 430 pour la Nef en modèles peints (GD-15, « Relever », mainteneur, 11 octobre 2026) : son
+ * enveloppe passe de 420 à 1 900, la somme des enveloppes à 96 390 aux Anciens Ateliers.
  */
-export const RENDER_BUDGET_AUTRES = { triangles: 94_950, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_AUTRES = { triangles: 96_430, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
@@ -441,7 +444,10 @@ export const ENVELOPPES: Record<
     // triangles d'enveloppe sont pris au sol du 4e (43 750 → 43 740), la somme ne change pas.
     parArchipel: { '5e': { triangles: 1_520, drawCalls: 1 }, '4e': { triangles: 1_460, drawCalls: 1 } },
   },
-  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
+  // La Nef en modèles peints (GD-15, « Relever », mainteneur, 11 octobre 2026 ; ./nefModels.ts) : de 1 264 (voilier) à 1 704
+  // (dirigeable) triangles, au pire 1 896 avec les cubes du chantier de la forme suivante ; 490 → 1 900 aux Premiers
+  // Rivages, 420 → 1 900 ailleurs, sans appel de plus. Les plafonds montent d'autant.
+  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_900, drawCalls: 3 }, autres: { triangles: 1_900, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
   // Les personnages importés du 6e (modèles TRELLIS retravaillés, choix « Monde et fiches » du mainteneur, 9 octobre
   // 2026) : de loin partout (environ 200 triangles), de près sur l'île regardée (environ 1 500), au pire de l'île qui
@@ -919,11 +925,30 @@ export function bornesCost(a: ArchipelagoId): { triangles: number; drawCalls: nu
   return coutDesPiliers(piliersDe(archipelArchipeo(a).reste));
 }
 
-/** La Nef d'Archipéo (lot R5, GD-15) : sa forme en construction taillée, d'un seul groupe. */
+/**
+ * La Nef d'Archipéo (lot R5, GD-15) : au pire de ce que montre son port, la forme de l'archipel tout construit ; et, quand
+ * ses modèles sont chargés (./nefModels.ts), chaque forme en modèle et chaque chantier (la forme d'avant en modèle, les
+ * pièces neuves posées, le kit en fantôme) : le dirigeable, le plus lourd, peut se montrer sur n'importe quel port.
+ */
 export function navireCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
   const { progress, world: village } = toutConstruit();
-  const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
-  return coutDeLaConstruction(maillageDeLaConstruction(a, ship, [], { navire: true }));
+  const ship = vehiclePlacement(a, progress, village, true);
+  const cout = (cubes: VoxelCube[], form: number) => coutDeLaConstruction(maillageDeLaConstruction(a, cubes, [], { navire: true, nef: nefOf(form, cubes) }));
+  const cube = (c: PlanCell, ghost: boolean): VoxelCube => {
+    const bd = BLOCKS[c.block];
+    return { x: c.x, y: c.y, z: c.z, color: bd.side, top: bd.top, texture: bd.texture, ghost: ghost || undefined };
+  };
+  const pire = cout(ship.cubes, ship.form);
+  for (const s of VEHICLE_STAGES) {
+    if (!nefOf(s.stage, [])) continue;
+    const own = shownPieces(s, true);
+    const chantier = [...(s.stage > 1 ? vehicleForm(s.stage - 1, true).map((c) => cube(c, false)) : []), ...own.cells.map((c) => cube(c, false)), ...own.kit.map((c) => cube(c, true))];
+    for (const m of [cout(vehicleForm(s.stage, true).map((c) => cube(c, false)), s.stage), cout(chantier, s.stage - 1)]) {
+      pire.triangles = Math.max(pire.triangles, m.triangles);
+      pire.drawCalls = Math.max(pire.drawCalls, m.drawCalls);
+    }
+  }
+  return { triangles: pire.triangles, drawCalls: pire.drawCalls };
 }
 
 /**

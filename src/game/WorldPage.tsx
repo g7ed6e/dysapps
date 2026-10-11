@@ -28,7 +28,7 @@ import { RequestsSheet, SettingsButton, WorldPlaces, WorldShortcuts } from './Wo
 import { StartingMapButton } from './StartingMap';
 import { WorldButton } from './WorldButton';
 import { ArchipelagoSwitcher } from './ArchipelagoSwitcher';
-import { mesuresAutomatiques, mesuresDemandees } from './rendering';
+import { mesuresAutomatiques, mesuresDemandees, renduDuMonde } from './rendering';
 import { TrophySheet } from './TrophySheet';
 import { AssemblySheet } from './Assembly';
 import { ASSEMBLAGE_PATH } from './world/assembly';
@@ -287,8 +287,8 @@ export function WorldPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapOpen]);
-  // La Nef amarrée au port de l'archipel : un objet à part, qui tangue.
-  const vehicle = useMemo(() => vehiclePlacement(a, state.progress, state.world), [a, state.progress, state.world]);
+  // La Nef amarrée au port de l'archipel : un objet à part, qui tangue (dans Archipéo, l'aéronef a ses pièces à ses places).
+  const vehicle = useMemo(() => vehiclePlacement(a, state.progress, state.world, renduDuMonde() === 'archipeo'), [a, state.progress, state.world]);
   // Le panneau de l'île ouverte, en plein écran par-dessus le monde : il ne s'ouvre que par son bouton dans la barre,
   // jamais tout seul (ni à l'arrivée sur une île, ni au retour d'un exercice ou de la Carte).
   const [sheetOpen, setSheetOpen] = useState(false);

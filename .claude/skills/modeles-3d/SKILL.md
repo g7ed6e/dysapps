@@ -80,6 +80,10 @@ Relire chaque planche de contrôle (une rangée par bâtiment) : la dalle partie
 
 Le prompt des suivants (avis du directeur artistique, 10 octobre 2026) : le bâtiment seul sur un socle bas et serré, sans rien de posé devant (la cour vient du code), murs lisses et toit de deux grands pans sans motif, une ligne horizontale franche sous l'avant-toit (là où se coupe l'étape 1), une grande ouverture sombre sans lueur peinte, une signature épaisse (cheminée, four, lanterne, dôme).
 
+## Un modèle modelé à la main (la Nef)
+
+Quand la réduction d'un brut TRELLIS perd ce qui fait le concept (la lanterne, la cabine, les couleurs), modeler à la main en `bpy` (choix du mainteneur pour la Nef, 11 octobre 2026) : `python3.11 scripts/rendu/modeles/nef.py -- <voilier|dirigeable|aeronef> <sortie.glb>`, briques dans `nef_formes.py` (boîte, cylindre, loft, plaque, coque, lanterne ; une couleur par pièce, donnée telle qu'on la voit à l'écran). Le brut sert de **gabarit** : superposer sa silhouette au modèle et relever ses proportions par tranches ; TRELLIS écrase les hauteurs, les reprendre du concept. Chaque partie (`partie(...)`) est un os du .glb, pour que la mue l'anime ; le fichier est écrit dans le repère de la Nef, en cases (`PLACE`). Contrôle : `rendre_controle.py -- soleil <glb>… <png>`, qui montre les couleurs comme le jeu.
+
 ## Relire et livrer
 
 - Captures : skill `captures` (une famille dans `CAPTURES` de `scripts/rendu/mesures.mjs`, `--rendu archipeo`, la fiche de chaque créature ouverte, de près, de jour et de nuit, et l'archipel en recul), retirée une fois la pull request fusionnée.
