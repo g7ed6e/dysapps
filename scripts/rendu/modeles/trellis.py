@@ -13,7 +13,9 @@ import os, shutil, sys
 from gradio_client import Client, handle_file
 
 SPACE = "microsoft/TRELLIS.2"
-RESOLUTION, TEXTURE, SEED = "512", 1024, 0
+RESOLUTION, TEXTURE = "512", 1024
+# La graine de TRELLIS : 0 par défaut ; TRELLIS_SEED=1 (ou autre) pour retirer un brut raté depuis le même concept.
+SEED = int(os.environ.get("TRELLIS_SEED", "0"))
 
 
 def generate(client, concept, out):

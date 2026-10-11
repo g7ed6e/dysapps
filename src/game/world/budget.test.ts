@@ -144,13 +144,13 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // Premiers Rivages (86 840) ; le lot 1 des objets du 6e (même jour) : la construction 650 et les commandes 400
   // (87 890) ; le lot 2 (même jour : le décor du cœur et les trois lieux de l'île-école dessinés) : la construction
   // 3 300 (91 190).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, les essais et les lots 1 et 2 de la piste 3) : 91 190 triangles et 25 appels aux Premiers Rivages, 94 655, 94 910 et 93 515 et 24 appels ailleurs', () => {
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, ceux de la 3e, les essais et les lots 1 et 2 de la piste 3) : 91 190 triangles et 25 appels aux Premiers Rivages, 94 655, 94 910 et 93 665 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([91_190, 25]);
     expect([total('5e'), appels('5e')]).toEqual([94_655, 24]);
     expect([total('4e'), appels('4e')]).toEqual([94_910, 24]);
-    expect([total('3e'), appels('3e')]).toEqual([93_515, 24]);
+    expect([total('3e'), appels('3e')]).toEqual([93_665, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la

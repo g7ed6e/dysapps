@@ -189,7 +189,8 @@ def triangles(c):
 
 def total(cols=None):
     # + l'ouverture, et le disque d'une retouche loin-disque
-    return sum(triangles(c) for c in (colonnes if cols is None else cols)) + 2 + 6 * any(r.startswith("loin-disque=") for r in RETOUCHES)
+    return sum(triangles(c) for c in (colonnes if cols is None else cols)) + 2 + 6 * any(r.startswith("loin-disque=") for r in RETOUCHES) \
+        + 10 * any(r.startswith("loin-boite=") for r in RETOUCHES)
 
 
 def volume(c):
@@ -242,6 +243,14 @@ colonnes = [c for c in colonnes if volume(c) >= 0.005 * gros]
 #                    (une roue, un bardage) ;
 #   loin-disque=hex  un disque de cette couleur (un cadran) se pose sur la facade, a la place et a la taille de ses
 #                    facettes tournees vers le sud dans le modele de pres.
+#   loin-baie=f      la version entiere prend une baie large, f de la largeur de la facade, du sol aux 85 % des murs (une
+#                    scene ouverte : la loge de Puck) ; l'etape 1 garde sa porte (directeur artistique, 11 octobre 2026) ;
+#   loin-bloc        sous l'avant-toit, le batiment entier de loin est le prisme de son etape 1 (un U de murs ouvert devant,
+#                    la loge de Puck : ses murs, ses montants et ses rideaux, coupes en ilots, faisaient des eclats) ; ce
+#                    qui est au-dessus (le toit) reste ;
+#   loin-boite=hex   une caisse droite de cette couleur, la boite de ses facettes sous l'avant-toit dans le modele de
+#                    pres (10 triangles), a la place de la plaque penchee qu'en tirent les coupes (la caisse de l'entrepot
+#                    de Fret, avec loin-droit pour que le corps n'en garde rien) ;
 #   loin-plinthe=hex une plinthe de cette couleur au pied du corps, de la hauteur de celle du modele de pres (ses
 #                    facettes verticales de cette couleur ; 4 % de la hauteur sinon), sur loin.glb et loin-etape-1.glb :
 #                    l'etape 1 de loin se lit posee, sa porte sombre gardee devant (la forge de Tunel, la serre de
@@ -353,7 +362,13 @@ if etape:
 def construire(entier):
     """Le maillage de loin : une liste de (points, couleur). `entier` faux : l'etape 1, sous l'avant-toit."""
     polys = []
-    for c in (colonnes if entier else etape):
+    if not entier:
+        cols = etape
+    elif "loin-bloc" in RETOUCHES and etape:
+        cols = etape + [c for c in colonnes if c["Z"][0] > z0 + 0.3 * (eave - z0) and c["Z"][-1] > eave]
+    else:
+        cols = colonnes
+    for c in cols:
         garde = list(c["garde"])
         Z = [c["Z"][k] for k in garde]
         etages = [polygone(c["A"][k]) for k in garde]
@@ -393,18 +408,31 @@ def construire(entier):
         if Z[0] > z0 + 1e-6:   # une colonne qui ne touche pas le sol est fermee dessous
             polys.append(([(*p, Z[0]) for p in etages[0][::-1]], dessus))
     if ouverture is not None and (entier or ouverture[3] <= eave + 1e-9):
-        x0, x1, zb, zt = ouverture
+        x0, x1, zb, zt = baie if entier and baie is not None else ouverture
         polys.append(([(x0, devant(zb), zb), (x1, devant(zb), zb), (x1, devant(zt), zt), (x0, devant(zt), zt)], sombre))
     if disque is not None and (entier or disque[1] + disque[2] <= eave + 1e-9):
         x, z, r, i = disque
         y = devant_disque(z)
         polys.append(([(x + r * np.cos(t), y, z + r * np.sin(t)) for t in np.arange(8) * np.pi / 4], i))
+    if boite is not None and (entier or boite[1][2] <= eave + 1e-9):
+        (bx0, by0, bz0), (bx1, by1, bz1), i = boite
+        c = [(bx0, by0), (bx1, by0), (bx1, by1), (bx0, by1)]
+        for k in range(4):
+            (xa, ya), (xb, yb) = c[k], c[(k + 1) % 4]
+            polys.append(([(xa, ya, bz0), (xb, yb, bz0), (xb, yb, bz1), (xa, ya, bz1)], i))
+        polys.append(([(x, y, bz1) for x, y in c], i))
     return polys
 
 
 # l'ouverture : les facettes sombres tournees vers la facade (-Y), sous l'avant-toit, pres du mur de facade
 ouverture = None
-corps = max(colonnes, key=lambda c: len(c["garde"]) * c["A"].max()) if colonnes else None
+# le corps lu plus haut (les murs, du sol), tant qu'il est garde : compte en niveaux gardes, un toit simplifie en plus de
+# niveaux que les murs droits le prenait, et la porte se posait sur le toit (le bureau d'Ixe, 11 octobre 2026)
+if not any(c is corps for c in colonnes):
+    corps = max(colonnes, key=lambda c: len(c["garde"]) * c["A"].max()) if colonnes else None
+if "loin-bloc" in RETOUCHES and etape:
+    corps = etape[0]
+baie = None
 if sombre is not None and corps is not None:
     k_sud = int(np.argmax(DIRS @ np.array([0, -1])))
     k_bas = int(np.argmin(np.abs(corps["Z"] - (z0 + 0.3 * (eave - z0)))))
@@ -439,6 +467,11 @@ if sombre is not None and corps is not None:
             gz = corps["Z"][corps["garde"]]
             ga = corps["A"][corps["garde"], k_sud]
             devant = lambda z: -float(np.interp(z, gz, ga)) - 0.004 * H
+            for r in RETOUCHES:
+                if r.startswith("loin-baie="):
+                    wb = float(r.split("=")[1]) * W
+                    xc = min(max(ox, wx0 + wb / 2), wx1 - wb / 2)
+                    baie = (xc - wb / 2, xc + wb / 2, z0, z0 + 0.85 * Hw)
 
 
 # le disque (loin-disque=hex) : les facettes de cette couleur tournees vers le sud, leur centre et un rayon de meme aire
@@ -458,6 +491,44 @@ for r in RETOUCHES:
             devant_disque = lambda z: -float(np.interp(z, gz_d, ga_d)) - 0.008 * H
         else:
             print(f"loin-disque : pas de facette {r.split('=')[1]} tournee vers le sud")
+
+
+# la caisse (loin-boite=hex) : la boite des facettes de cette couleur sous l'avant-toit
+boite = None
+for r in RETOUCHES:
+    if r.startswith("loin-boite="):
+        cible = tuple(round(((int(r.split("=")[1], 16) >> s_ & 255) / 255), 4) for s_ in (16, 8, 0))
+        i = next((palette.index(p) for p in palette if max(abs(a - b) for a, b in zip(p, cible)) < 0.003), None)
+        sel = (cidx == i) & (centre_f[:, 2] < eave) if i is not None else np.zeros(len(F), bool)
+        # hors de l'aplomb des murs seulement : la caisse posee a cote, pas un reste de cette couleur dans la porte
+        if murs_z.sum() >= 3:
+            ref = np.median(corps["A"][murs_z], 0)
+            sel &= ((centre_f[:, :2] @ DIRS.T) > ref[None] + 0.01 * H).any(1)
+        if sel.any():
+            # le plus grand morceau d'un tenant (par les sommets partages) : la caisse, sans les eclats de meme couleur
+            ids = np.nonzero(sel)[0]
+            parent = {}
+
+            def racine(x):
+                while parent.setdefault(x, x) != x:
+                    parent[x] = parent[parent[x]]
+                    x = parent[x]
+                return x
+            for f_ in ids:
+                a_, b_, c_ = (int(v) for v in F[f_])
+                parent[racine(b_)] = racine(a_)
+                parent[racine(c_)] = racine(a_)
+            morceaux = {}
+            for f_ in ids:
+                morceaux.setdefault(racine(int(F[f_][0])), []).append(f_)
+            sel = np.zeros(len(F), bool)
+            sel[max(morceaux.values(), key=lambda m: aire_f[m].sum())] = True
+            pts = V[F[sel]].reshape(-1, 3)
+            lo, hi = np.percentile(pts, 3, 0), np.percentile(pts, 97, 0)
+            lo[2] = z0
+            boite = (tuple(lo), tuple(hi), i)
+        else:
+            print(f"loin-boite : pas de facette {r.split('=')[1]} sous l'avant-toit")
 
 
 def write(polys, path):
