@@ -67,6 +67,20 @@ export const BUILDING_MODELS: Readonly<Partial<Record<BiomeId, BuildingModel>>> 
   'civics-5e-equality-solidarity': { folder: '5e-batiment-fournil-de-mie', quarterTurns: 0 },
   'lv2-5e-introductions': { folder: '5e-batiment-auberge-de-lina', quarterTurns: 0 },
   'lca-5e-legends': { folder: '5e-batiment-abri-de-lyre', quarterTurns: 0 },
+  'maths-4e-powers': { folder: '4e-batiment-atelier-de-braise', quarterTurns: 0 },
+  'maths-4e-algebra': { folder: '4e-batiment-bureau-d-ixe', quarterTurns: 0 },
+  'french-4e-agreement': { folder: '4e-batiment-bergerie-de-clea', quarterTurns: 0 },
+  'french-4e-vocabulary': { folder: '4e-batiment-nid-de-plume', quarterTurns: 0 },
+  'english-4e-comprehension': { folder: '4e-batiment-loge-de-puck', quarterTurns: 0 },
+  'english-4e-grammar': { folder: '4e-batiment-abri-de-vapeur', quarterTurns: 0 },
+  'history-4e-revolutions': { folder: '4e-batiment-halle-de-typo', quarterTurns: 0 },
+  'geography-4e-globalization': { folder: '4e-batiment-entrepot-de-fret', quarterTurns: 0 },
+  'life-earth-sciences-4e-cells-evolution': { folder: '4e-batiment-pepiniere-de-nectar', quarterTurns: 0 },
+  'physics-chemistry-4e-signals-circuits': { folder: '4e-batiment-pavillon-de-radar', quarterTurns: 0 },
+  'technology-4e-modeling': { folder: '4e-batiment-usine-de-manivelle', quarterTurns: 0 },
+  'civics-4e-rights-freedoms': { folder: '4e-batiment-loge-de-loquet', quarterTurns: 0 },
+  'lv2-4e-daily-life': { folder: '4e-batiment-cuisine-de-muscade', quarterTurns: 0 },
+  'lca-4e-cities': { folder: '4e-batiment-maison-de-figue', quarterTurns: 0 },
   'maths-3e-geometry': { folder: '3e-batiment-kiosque-de-theo', quarterTurns: 0 },
   'maths-3e-statistics': { folder: '3e-batiment-dome-de-stat', quarterTurns: 0 },
   'maths-3e-functions': { folder: '3e-batiment-lanterne-de-fi', quarterTurns: 0 },
@@ -79,6 +93,8 @@ export const BUILDING_MODELS: Readonly<Partial<Record<BiomeId, BuildingModel>>> 
   'technology-3e-digital': { folder: '3e-batiment-poste-de-navette', quarterTurns: 0 },
   'lv2-3e-travel': { folder: '3e-batiment-poste-de-timbre', quarterTurns: 0 },
   'lca-3e-ideas': { folder: '3e-batiment-bibliotheque-de-stylet', quarterTurns: 0 },
+  'english-3e-grammar': { folder: '3e-batiment-tour-de-knight', quarterTurns: 0 },
+  'civics-3e-democratic-life': { folder: '3e-batiment-tribune-de-brio', quarterTurns: 0 },
 };
 
 /** Les fichiers d'un bâtiment : l'étape 1 et le modèle entier, de près et de loin. */
@@ -98,11 +114,11 @@ export const BUILDING_FAR_TRIANGLES = 200;
 
 /**
  * Le fond sombre des ouvertures (porte, arche, étal, le sol vu par la porte), en sRVB : celui des lignes du 6e, de la 5e,
- * le fond bleu nuit de l'igloo de Frimas, l'ardoise nuit du 3e et celle, plus sombre, du dôme de Stat (colonne `cibles`
- * de reglages.csv, scripts/rendu/modeles/monument_lowpoly.py).
+ * le fond bleu nuit de l'igloo de Frimas, le noir de fer de la 4e, l'ardoise nuit du 3e et celle, plus sombre, du dôme de
+ * Stat (colonne `cibles` de reglages.csv, scripts/rendu/modeles/monument_lowpoly.py).
  * La porte de la version de loin, de cette couleur, s'allume la nuit (`farDoor`).
  */
-export const OUVERTURES = [0x3a2a22, 0x33291f, 0x2e3a44, 0x2b3a48, 0x1e2630] as const;
+export const OUVERTURES = [0x3a2a22, 0x33291f, 0x2e3a44, 0x262628, 0x2b3a48, 0x1e2630] as const;
 const OUVERTURES_LINEAIRES = OUVERTURES.map((h) => [16, 8, 0].map((s) => lineaire(((h >> s) & 255) / 255)));
 
 /** Cette couleur (linéaire) est-elle le fond d'une ouverture ? */

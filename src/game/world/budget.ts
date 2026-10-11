@@ -368,6 +368,10 @@ export const ENVELOPPES: Record<
   // bâtiments) : 16 691 → 16 797 tout construit aux Îles du Ciel, 16 939 → 17 045 au pire de la salle des trophées ;
   // l'enveloppe des Îles du Ciel prend la différence, arrondie (16 950 → 17 100), la somme de leurs enveloppes
   // 93 515 → 93 665 (« Dans la scène » compris), sous `RENDER_BUDGET_AUTRES` (94 950), inchangé ; aucun appel de plus.
+  // Les quatorze bâtiments de la 4e, la tour de Knight et la tribune de Brio chargés, Théo et Stat refaits (11 octobre
+  // 2026) : 16 585 → 16 578 tout construit aux Anciens Ateliers, 16 833 → 16 826 au pire de la salle des trophées ; aux
+  // Îles du Ciel, 16 797 et 17 045, inchangés (la réserve d'une île sans modèle, 3 000 de près et 200 de loin, tient
+  // déjà le pire) : aucune enveloppe ne bouge.
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',

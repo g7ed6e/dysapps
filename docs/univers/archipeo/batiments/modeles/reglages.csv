@@ -45,15 +45,31 @@
 5e-batiment-fournil-de-mie;ead9bc 56685e 5e4430 33291f c98e5a a8a39a;;0.490;3
 5e-batiment-auberge-de-lina;e6dcc4 56685e 438b82 33291f 5e4430 a8a39a;;0.565;1
 5e-batiment-abri-de-lyre;c08a5a 56685e 8a938a 5e4430 33291f a8a39a;;0.640;3
-3e-batiment-kiosque-de-theo;ece8df 5f7fa8 cc9438 2b3a48 a8a39a;0.03;0.545;3;loin-droit
-3e-batiment-dome-de-stat;d8d2c4 34507a cc9438 1e2630 a8a39a;;0.510;3
+4e-batiment-atelier-de-braise;9a5a44 5c6a78 4a4f55 262628 b5703c a8a39a;;0.430;1
+4e-batiment-bureau-d-ixe;e3d3b0 5c6a78 4a4f55 262628 c9a24a a8a39a;;0.595;1
+4e-batiment-bergerie-de-clea;7a7c82 52575f 6b4a2e 262628 a88e86 a8a39a;;0.580;0
+4e-batiment-nid-de-plume;e3d3b0 3e4a5c 4a4f55 262628 c9a24a a8a39a;;0.560;0
+4e-batiment-loge-de-puck;8a2e2e 5c6a78 c9a24a 262628 e3d3b0 a8a39a;;0.755;0;loin-droit
+4e-batiment-abri-de-vapeur;9a5a44 5c6a78 4a4f55 262628 a8a39a;;0.620;3
+4e-batiment-halle-de-typo;e3d3b0 5c6a78 2f7f86 262628 4a4f55 a8a39a;;0.630;1;grappe=56674c>2f7f86
+4e-batiment-entrepot-de-fret;7a7c82 5c6a78 4a4f55 262628 c0503c a8a39a;0.015;0.705;3
+4e-batiment-pepiniere-de-nectar;9a5a44 d9a84e 4a4f55 262628 d97a8a a8a39a;;0.620;0
+4e-batiment-pavillon-de-radar;7a7c82 3a78c0 4a4f55 262628 c9a24a a8a39a;;0.620;0
+4e-batiment-usine-de-manivelle;e3d3b0 5c6a78 4a4f55 262628 b5703c a8a39a;;0.555;0
+4e-batiment-loge-de-loquet;dccdb0 5c6a78 4a4f55 262628 6b4a2e a8a39a;0.014;0.695;1
+4e-batiment-cuisine-de-muscade;d8906a 5c6a78 4a4f55 262628 c9a24a a8a39a;;0.515;1
+4e-batiment-maison-de-figue;e2c9a0 c86a50 d6c8ab 262628 a8a39a;;0.800;1
+3e-batiment-kiosque-de-theo;ece8df 5f7fa8 cc9438 2b3a48 a8a39a;;0.550;0
+3e-batiment-dome-de-stat;d8d2c4 34507a cc9438 1e2630 a8a39a;;0.500;0
 3e-batiment-lanterne-de-fi;f2d27a 5f7fa8 cc9438 2b3a48 ece8df a8a39a;;0.600;0;loin-droit
 3e-batiment-lanterne-d-astra;d8d2c4 5f7fa8 cc9438 2b3a48 b8d8a8 a8a39a;;0.550;2
 3e-batiment-regie-d-echo;ece8df 5f7fa8 178078 2b3a48 cc9438 a8a39a;;0.615;1;zone=0.2-0.5:5f7fa8>178078:v
 3e-batiment-bibliotheque-de-memo;e2cfa6 5f7fa8 cc9438 2b3a48 f2ecdc a8a39a;;0.630;1
-3e-batiment-mairie-de-jalon;d8d2c4 5f7fa8 cc9438 2b3a48 ece8df a8a39a;;0.595;2
+3e-batiment-mairie-de-jalon;d8d2c4 5f7fa8 cc9438 2b3a48 ece8df a8a39a;;0.595;2;zone=0.53-0.595:d8d2c4>cc9438:v
 3e-batiment-infirmerie-d-olive;f2f0ea 5f7fa8 178078 2b3a48 7a8a4e a8a39a;;0.650;0;loin-droit
 3e-batiment-gymnase-de-virage;ece8df 5f7fa8 a8243a 2b3a48 cc9438 a8a39a;;0.560;1
 3e-batiment-poste-de-navette;d8d2c4 d9a43a 178078 2b3a48 a8a39a;;0.645;3
-3e-batiment-poste-de-timbre;d8d2c4 b5703c e2b43c 2b3a48 a8a39a;;0.575;0
+3e-batiment-poste-de-timbre;d8d2c4 b5703c e2b43c 2b3a48 a8a39a;;0.575;0;zone=0.51-0.575:d8d2c4>e2b43c:v
 3e-batiment-bibliotheque-de-stylet;ece8df 5f7fa8 c08a5a 2b3a48 a8a39a;;0.810;1
+3e-batiment-tour-de-knight;d8d2c4 5f7fa8 b8262f 2b3a48 cc9438 a8a39a;0.012;0.450;0
+3e-batiment-tribune-de-brio;ece8df 8c949c e07a3a 2b3a48 a8a39a;;0.690;1
