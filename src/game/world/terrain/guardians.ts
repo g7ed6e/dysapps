@@ -5,17 +5,18 @@ import { type ArchipelagoId, islandDef } from '../map';
 import type { VoxelCube } from '../cube';
 import { turnCell, turnModel, turnPlacedModel, turnPoint } from '../placement';
 import { guardianStatus } from '../../boss';
-import { etendue, gardienDuMonde, gardienProfond, GUARDIAN_SQUARE, guardianSpot, SENTINELLE_DANS_LE_MONDE } from './creatures';
-import { GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
+import { etendue, gardienDuMonde, gardienProfond, gardienSurToutLeCarre, GUARDIAN_SQUARE, guardianSpot, SENTINELLE_DANS_LE_MONDE } from './creatures';
+import { GUARDIAN_GOLD_BESIDE, GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
 import { TEXTURES } from './base';
 
 /**
  * Le milieu du Gardien dans son carré (repère du cœur, le lieu pas tourné) : au milieu de ses quatre rangées du fond, la
- * rangée de devant (côté caméra) gardant la place de son bloc d'or ; au milieu du carré pour un Gardien long.
+ * rangée de devant (côté caméra) gardant la place de son bloc d'or ; au milieu du carré pour un Gardien qui le prend
+ * tout (`gardienSurToutLeCarre`).
  */
 function milieuDuGardien(id: BiomeId): { x: number; y: number } {
   const s = guardianSpot(id);
-  return { x: s.x + GUARDIAN_SQUARE / 2, y: s.y + (gardienProfond(id) ? GUARDIAN_SQUARE / 2 : (GUARDIAN_SQUARE + 1) / 2) };
+  return { x: s.x + GUARDIAN_SQUARE / 2, y: s.y + (gardienSurToutLeCarre(id) ? GUARDIAN_SQUARE / 2 : (GUARDIAN_SQUARE + 1) / 2) };
 }
 
 /**
@@ -62,6 +63,8 @@ export function guardianCells(id: BiomeId): { x: number; y: number }[] {
  */
 export function trophySpot(id: BiomeId): { x: number; y: number } {
   const s = guardianSpot(id);
+  const aCote = GUARDIAN_GOLD_BESIDE[id];
+  if (aCote) return { x: s.x + aCote.x, y: s.y + aCote.y };
   return { x: s.x + (gardienProfond(id) ? GUARDIAN_SQUARE - 1 : Math.floor(GUARDIAN_SQUARE / 2)), y: s.y };
 }
 
@@ -155,7 +158,14 @@ export function guardianPlacements(
     const pose = turnPlacedModel(def.core, origine, modele, def.quarts);
     const t = turnPoint(m.x, m.y, def.quarts);
     const centre = { x: def.core.x + t.x, y: def.core.y + t.y };
-    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes: pose.cubes, origin: pose.origine, echelle, cases: guardianCells(b.id), centre });
+    // Son bloc d'or à côté du carré (GD-16) : le bonhomme ne marche pas dessus non plus.
+    const cases = guardianCells(b.id);
+    if (GUARDIAN_GOLD_BESIDE[b.id]) {
+      const o = trophySpot(b.id);
+      const to = turnCell(o.x, o.y, def.quarts);
+      cases.push({ x: def.core.x + to.x, y: def.core.y + to.y });
+    }
+    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes: pose.cubes, origin: pose.origine, echelle, cases, centre });
   }
   return out;
 }

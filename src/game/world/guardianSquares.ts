@@ -7,7 +7,10 @@
 // du passé et le Belvédère de Thalès, dont une borne de plus touchait le carré. Le Manoir du passé a ensuite pris sa forme
 // (GD-12, 5e) : en (0, 14), l'étiquette de l'île se posait sur la tête du Gardien et le toit du manoir bâti lui couvrait le
 // pied (81 % vu, DA, 9 octobre 2026) ; la recherche refaite sur sa terre nouvelle lui donne (15, 15), où il se voit entier
-// dans les deux univers. Données pures ; seul import, l'archipel d'une île (`fillsGuardianSquare`).
+// dans les deux univers. Deux carrés du 6e ont bougé avec les proportions du 6e (GD-16, 11 octobre 2026) : la Forêt des
+// sons, dont le Grand Chêne sortait de la vue de l'île en (16, 19), passe en (-6, 4), où il tient entier dans le cadre
+// et se voit entier ; la Vallée du vivant, dont l'étiquette de l'île cachait le Cerf en (-1, 13) (86 % vu), passe en
+// (14, 3), où il se voit entier, au palier 1. Données pures ; seul import, l'archipel d'une île (`fillsGuardianSquare`).
 import type { BiomeId } from '../biomes';
 import { archipelagoOfIsland } from './archipelagos';
 
@@ -24,7 +27,7 @@ export interface GuardianSquare {
 
 /** Les 58 carrés des Gardiens de GD-11, la LV2 par défaut. */
 export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<GuardianSquare>>>> = {
-  'french-6e-phonology': { x: 16, y: 19, palier: 3 },
+  'french-6e-phonology': { x: -6, y: 4, palier: 3 },
   'french-6e-grammar-spelling': { x: 17, y: 11, palier: 3 },
   'french-6e-letter-confusion': { x: 14, y: 3, palier: 3 },
   'french-6e-reading': { x: 16, y: 13, palier: 3 },
@@ -36,7 +39,7 @@ export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<Gu
   'english-6e-grammar': { x: -3, y: 14, palier: 3 },
   'history-6e-antiquity': { x: 2, y: 15, palier: 3 },
   'geography-6e-living': { x: -2, y: 13, palier: 3 },
-  'life-earth-sciences-6e-living-world': { x: -1, y: 13, palier: 3 },
+  'life-earth-sciences-6e-living-world': { x: 14, y: 3, palier: 1 },
   'physics-chemistry-6e-matter-energy': { x: -2, y: 13, palier: 1 },
   'technology-6e-objects': { x: 15, y: 13, palier: 1 },
   'civics-6e-democratic-society': { x: 13, y: -1, palier: 1 },
@@ -103,6 +106,20 @@ export function onFixedGuardianSquare(id: BiomeId, hasShape: boolean, x: number,
  */
 export const GUARDIAN_WORLD_HEIGHTS: Readonly<Partial<Record<BiomeId, number>>> = { 'french-6e-phonology': 6 };
 
+/**
+ * Les Gardiens qui restent couchés, plus bas que les arbres de leur île : aucun arbre de plus de trois blocs ne pousse à
+ * deux cases ou moins de leur carré, il y devient un buisson (piste B2 du directeur artistique, retenue par le
+ * mainteneur le 11 octobre 2026, GD-16). Le Hanneton de bronze : un scarabée est plat ; le dresser changerait son
+ * caractère.
+ */
+export const LYING_GUARDIANS: ReadonlySet<BiomeId> = new Set<BiomeId>(['maths-6e-calculation']);
+
+/** La hauteur, en blocs, au-delà de laquelle un arbre ne pousse pas près d'un Gardien couché (`LYING_GUARDIANS`). */
+export const TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN = 3;
+
+/** La distance, en cases, du carré d'un Gardien couché où un arbre trop haut devient un buisson. */
+export const TREE_CLEARANCE_OF_A_LYING_GUARDIAN = 2;
+
 /** Le plus haut d'un arbre ordinaire du 6e dans Archipéo, au-dessus du sol : une case sous le Grand Chêne. */
 export const TALLEST_TREE_6E = (GUARDIAN_WORLD_HEIGHTS['french-6e-phonology'] ?? 0) - 1;
 
@@ -120,4 +137,25 @@ export const fillsGuardianSquare = (id: BiomeId): boolean => archipelagoOfIsland
  * pas avec son lieu (GD-9) : ainsi elle tient sur son carré et laisse libre son bloc d'or quelle que soit son
  * orientation, et garde la même taille.
  */
-export const GUARDIAN_SQUARE_ROOM = { half: (GUARDIAN_SQUARE_SIDE - 1) / 2 } as const;
+const GUARDIAN_SQUARE_ROOM = { half: (GUARDIAN_SQUARE_SIDE - 1) / 2 } as const;
+
+/**
+ * Les Gardiens longs et bas qui prennent tout leur carré, de l'avant au fond, leur bloc d'or posé à côté du carré, sur
+ * la case voisine de sa rangée de devant (piste D1 du directeur artistique, retenue par le mainteneur le 11 octobre 2026,
+ * GD-16) : le Taureau de terre, le Lion de pierre et le Castor de glaise, que les quatre rangées du fond laissaient sous
+ * les arbres de leur île dans Archipéo. La case, relative au coin du carré (le lieu pas tourné), du côté où le sol est
+ * libre (terrain.test.ts le vérifie). Le bloc d'or étant un cube du monde, les deux univers le posent là.
+ */
+export const GUARDIAN_GOLD_BESIDE: Readonly<Partial<Record<BiomeId, { x: number; y: number }>>> = {
+  'french-6e-grammar-spelling': { x: -1, y: 0 },
+  'english-6e-vocabulary': { x: GUARDIAN_SQUARE_SIDE, y: 0 },
+  'geography-6e-living': { x: -1, y: 0 },
+};
+
+/**
+ * La place d'un Gardien qui remplit son carré (`GUARDIAN_SQUARE_ROOM`) ; tout le carré, la même dans les deux sens,
+ * pour un Gardien dont le bloc d'or est à côté (`GUARDIAN_GOLD_BESIDE`).
+ */
+export function guardianSquareRoom(id: BiomeId): { half: number } {
+  return GUARDIAN_GOLD_BESIDE[id] ? { half: GUARDIAN_SQUARE_SIDE / 2 } : GUARDIAN_SQUARE_ROOM;
+}
