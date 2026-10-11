@@ -54,6 +54,8 @@ export interface Settings {
   lv2: Lv2Choice;
   /** L'option latin ou grec de l'élève : les missions de son île. L'option non choisie n'apparaît nulle part. */
   lca: LcaChoice;
+  /** Le compteur de mesures dans un coin du monde en 3D (appels, triangles, images par seconde), comme `?mesures`. */
+  renderMeter: boolean;
   /**
    * L'univers de l'appareil (lot 6, src/core/universe.ts). Absent sur un appareil qui ne l'a jamais ouvert depuis la
    * bascule : le premier choix se calcule alors au premier lancement, puis reste. Jamais dans les réglages par défaut.
@@ -83,6 +85,7 @@ export const DEFAULT_SETTINGS: Settings = {
   appBadge: true,
   lv2: 'es',
   lca: 'none',
+  renderMeter: false,
 };
 
 export const FONT_LABELS: Record<FontChoice, string> = {
@@ -163,6 +166,7 @@ export function sanitizeSettings(raw: Partial<Settings> & { view3d?: unknown }):
     appBadge: s.appBadge === undefined ? DEFAULT_SETTINGS.appBadge : Boolean(s.appBadge),
     lv2: Object.hasOwn(LV2_LABELS, s.lv2) ? s.lv2 : DEFAULT_SETTINGS.lv2,
     lca: Object.hasOwn(LCA_LABELS, s.lca) ? s.lca : DEFAULT_SETTINGS.lca,
+    renderMeter: s.renderMeter === true,
     // Absent reste absent (le premier choix dépend de la progression) ; un univers inconnu vaut l'univers par défaut.
     ...(s.univers === undefined ? {} : { univers: Object.hasOwn(UNIVERS, s.univers) ? s.univers : UNIVERS_PAR_DEFAUT }),
   };

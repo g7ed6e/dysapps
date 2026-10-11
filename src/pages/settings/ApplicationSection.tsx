@@ -1,6 +1,7 @@
 // La section Application des réglages : la version, la mise à jour, les liens (sortie de SettingsPage.tsx, qualité du
 // code, lot 8).
 import { Icon } from '../../components/Icon';
+import { useSettings } from '../../core/SettingsContext';
 import { APP_VERSION, applyUpdate, checkForUpdate, useAppUpdate } from '../../core/appUpdate';
 import { adresseDeLaMesure } from '../../game/rendering';
 
@@ -12,6 +13,7 @@ const lancerLaMesure = () => window.location.assign(adresseDeLaMesure(window.loc
 
 export function ApplicationSection() {
   const appUpdate = useAppUpdate();
+  const { settings, update } = useSettings();
   return (
     <fieldset className="panel">
       <legend>Application</legend>
@@ -49,6 +51,11 @@ export function ApplicationSection() {
         <Icon name="gauge" /> Mesurer l’appareil
       </button>
       <p className="settings-note">Ta partie ne change pas.</p>
+      {/* Le compteur de `?mesures` (game/three/meter.ts), sans adresse : il se voit à la prochaine ouverture du monde. */}
+      <label className="toggle">
+        <input type="checkbox" checked={settings.renderMeter} onChange={(e) => update({ renderMeter: e.target.checked })} />
+        Compteur de mesures dans le monde
+      </label>
     </fieldset>
   );
 }

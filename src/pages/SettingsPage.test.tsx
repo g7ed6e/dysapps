@@ -80,3 +80,21 @@ it('« Application » : le bouton qui lance la mesure automatique', () => {
   );
   expect(within(screen.getByRole('group', { name: 'Application' })).getByRole('button', { name: 'Mesurer l’appareil' })).toBeInTheDocument();
 });
+
+it('« Application » : le compteur de mesures, éteint par défaut, retenu sur l’appareil', () => {
+  localStorage.clear();
+  render(
+    <SettingsProvider>
+      <ProgressProvider>
+        <MemoryRouter>
+          <SettingsPage />
+        </MemoryRouter>
+      </ProgressProvider>
+    </SettingsProvider>,
+  );
+  const compteur = within(screen.getByRole('group', { name: 'Application' })).getByRole('checkbox', { name: 'Compteur de mesures dans le monde' });
+  expect(compteur).not.toBeChecked();
+  fireEvent.click(compteur);
+  expect(compteur).toBeChecked();
+  expect(JSON.parse(localStorage.getItem('dysapps:settings')!).renderMeter).toBe(true);
+});

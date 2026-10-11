@@ -7,7 +7,8 @@
 // ne fait passer un appareil d'élève à Archipéo (décisions 8 et 10 de docs/univers/univers.md).
 // `?mesures` affiche en plus, dans la vue 3D, les appels de dessin, les triangles et les images par seconde, pour mesurer
 // sur une tablette ; `?mesures=auto` fait seul le tour des vues sur une partie toute construite, en mémoire (la vraie
-// partie n'est pas touchée), et donne un tableau à copier (./AutoMeasure.tsx).
+// partie n'est pas touchée), et donne un tableau à copier (./AutoMeasure.tsx). Le compteur s'allume aussi depuis
+// Réglages › Application, sans adresse (l'appli installée n'en a pas), mémorisé sur l'appareil.
 import { DEFAULT_SETTINGS, reglagesCourants, sanitizeSettings, SETTINGS_KEY, type Settings } from '../core/settings';
 import { loadJSON, STORAGE_PREFIX } from '../core/storage';
 import { universAffiche } from '../core/universe';
@@ -98,6 +99,9 @@ export const styleDuMonde = (): StyleSurface | null => styleDepuis(here(), regla
 
 /** Le compteur de mesures est-il demandé sur cette page ? */
 export const mesuresDemandees = (): boolean => mesuresDepuis(here());
+
+/** Le compteur se montre-t-il dans le monde ? Avec `?mesures`, ou le réglage « Compteur de mesures » (Application). */
+export const meterShown = (): boolean => mesuresDemandees() || reglagesCourants()?.renderMeter === true;
 
 /** La mesure automatique est-elle demandée sur cette page ? */
 export const mesuresAutomatiques = (): boolean => mesuresAutoDepuis(here());

@@ -1,5 +1,6 @@
 // Le compteur de mesures du rendu 3D (lot R0 d'Archipéo) : appels de dessin, triangles, géométries, textures et images
-// par seconde de la dernière image. Affiché dans un coin de la vue avec `?mesures` (invisible sans lui), et lu par
+// par seconde de la dernière image. Affiché dans un coin de la vue avec `?mesures` ou le réglage « Compteur de mesures »
+// (invisible sans eux), et lu par
 // `npm run rendu:mesures` sur `window.__dysappsRendu` (en développement, ou avec `?mesures`).
 import type * as THREE from 'three';
 import type { Rendu } from '../rendering';
