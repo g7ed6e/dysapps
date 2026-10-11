@@ -136,6 +136,7 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'meaning': { component: CalculationScreen, batch: 1 },
   'nuances': { component: CalculationScreen, batch: 1 },
   'pythagoras': { component: CalculationScreen, batch: 1 },
+  'pythagorean-theorem': { component: CalculationScreen, batch: 1 },
   'thales': { component: CalculationScreen, batch: 1 },
   'trigonometry': { component: CalculationScreen, batch: 1 },
   'mean': { component: CalculationScreen, batch: 1 },
