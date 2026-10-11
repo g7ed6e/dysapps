@@ -7,7 +7,7 @@ import type { ArchipelagoId } from '../world/archipelago';
 import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, ileSurLaCarte, islandInDirection, recentrerApres, toucheRetenue, walkPose, type GroundTap, type Touche, type VoyageRun } from '../world/scene';
 import { lirePlaceLibre } from '../freeSpace';
 import type { RappelsDeLaVue } from '../world/view';
-import { borneDe, cleDeLaCreature, SIGNE, zoneDuToucher, type ObjetTouche, type ToucherDirect } from '../world/affordance';
+import { borneDe, cleDeLaCreature, SIGNE, zoneDuToucher, type CibleDeLaBulle, type ObjetTouche, type ToucherDirect } from '../world/affordance';
 import type { Derniers, Monde } from './scenePart';
 import type { Bornes } from './markers';
 import type { Affordance } from './affordance';
@@ -364,12 +364,12 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
   const centre = new THREE.Vector3();
   const versLeCentre = new THREE.Vector3();
   /**
-   * Le doigt hors de tout objet : l'objet dont la zone de toucher (48 pixels au moins autour d'une borne ou d'un
-   * Gardien petits à l'écran, three/affordance.ts) le prend,
+   * Le doigt hors de tout objet : l'objet dont la zone de toucher (48 pixels au moins autour d'une borne, d'un Gardien
+   * ou d'une créature petits à l'écran, three/affordance.ts) le prend,
    * selon ce qu'il a touché directement (`direct` ; world/affordance.ts, `zoneDuToucher` : jamais une face en chantier,
    * le sol seulement tout près de l'objet). Dans le ciel, un objet dont le centre est caché par le relief est écarté.
    */
-  const objetDansLaZone = (x: number, y: number, direct: ToucherDirect): ObjetTouche | null => {
+  const objetDansLaZone = (x: number, y: number, direct: ToucherDirect): CibleDeLaBulle | null => {
     if (direct?.genre === 'objet' || direct?.genre === 'face') return null;
     const rect = canvas.getBoundingClientRect();
     const zones = affordance.zones(camera, rect.width, rect.height);
@@ -400,6 +400,13 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     recentrer();
     ouvrirLObjet(objet, rappels.current);
   };
+  /** Une bulle ou une zone de toucher retenue : une créature s'ouvre (et sa bulle rebondit), un objet est touché. */
+  const toucherLaCible = (cible: CibleDeLaBulle) => {
+    if (cible.genre !== 'creature') return toucherLObjet(cible);
+    if (!reduceMotion) signesDesCreatures.rebondir(cleDeLaCreature(cible.id));
+    recentrer();
+    return rappels.current.onPickCreature?.(cible.id, 'creature');
+  };
   const onUp = (e: PointerEvent) => {
     if (pinceAvec(e.pointerId)) return finDuPincement(e);
     if (!down || e.pointerId !== down.id) return;
@@ -423,12 +430,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     // (Blocland, world/affordance.ts).
     const vue = canvas.getBoundingClientRect();
     const bulle = signesDesCreatures.sous(e.clientX - vue.left, e.clientY - vue.top, vue.width, vue.height);
-    if (bulle?.genre === 'creature') {
-      if (!reduceMotion) signesDesCreatures.rebondir(cleDeLaCreature(bulle.id));
-      recentrer();
-      return rappels.current.onPickCreature?.(bulle.id, 'creature');
-    }
-    if (bulle) return toucherLObjet(bulle);
+    if (bulle) return toucherLaCible(bulle);
     const { creature, hit } = aim(e);
     // Un toucher direct sur un objet passe d'abord, une face en chantier aussi (le bloc s'y pose) ; sinon, dans le vide
     // ou sur le sol tout près d'une borne ou d'un Gardien petits, leur zone les retient (world/affordance.ts,
@@ -443,7 +445,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
             ? { genre: 'sol', case: cubesDuMonde.casesTouchees(hit).cell, distance: hit.distance }
             : null;
     const objet = objetDansLaZone(e.clientX, e.clientY, direct);
-    if (objet) return toucherLObjet(objet);
+    if (objet) return toucherLaCible(objet);
     // Pendant un trajet, un tap dans le vide le fait arriver tout de suite ; sur le sol, il change son but (la page
     // décide, depuis là où il en est : `enRoute`) ; une cible garde sa priorité.
     const now = performance.now();

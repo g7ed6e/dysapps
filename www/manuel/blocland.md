@@ -27,7 +27,7 @@ Ce qu’il faut savoir des bulles :
 - **Toujours visible.** Quand la chose sort de l’écran, sa bulle reste au bord, entière, sans pointe, hors des boutons, de la barre du bas et d’une fiche ouverte.
 - **Sur la Carte.** Une seule bulle, bordée d’or : celle de la prochaine destination (voir « La Carte » plus bas). Aucune pendant un voyage.
 - **Toucher une bulle**, c’est toucher la chose : sa fiche s’ouvre. La bulle s’écrase un peu puis rebondit : l’appli a entendu. Une chose sans bulle se touche elle-même : sa fiche s’ouvre aussi (un lieu, son panneau). Toucher une mission réussie fait sauter sa pile d’étoiles.
-- **Toucher tout près.** Une borne ou un Gardien qui paraissent petits à l’écran se touchent aussi un peu à côté, à environ un doigt de large.
+- **Toucher tout près.** Une borne, un Gardien ou une créature qui paraissent petits à l’écran se touchent aussi un peu à côté, à environ un doigt de large.
 - **Sur un chantier en cours.** Toucher une case en fantôme d’un monument ou de la Nef y pose le bloc attendu. Pour ouvrir sa fiche, on touche sa bulle.
 - **Moins d’animations.** Quand le téléphone ou la tablette demande de [réduire les animations](reglages.md#animations-et-vue-du-monde), aucune bulle ne bouge ni ne rebondit. Elles restent là, immobiles, et se lisent encore.
 - **Dans Archipéo**, les bulles sont les mêmes, en hexagone : gris-vert clair au bord bleu nuit, pointe vers la chose ; la prochaine est plus grande et bordée d’or.

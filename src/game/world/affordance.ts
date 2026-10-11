@@ -144,6 +144,14 @@ function boiteDeLaSentinelle(p: Pick<CreaturePlacement, 'id' | 'cubes' | 'origin
   return { min: { x: cx - d, y: cy - d, z: z0 }, max: { x: cx + d, y: cy + d, z: z0 + h } };
 }
 
+/**
+ * La boîte de chaque créature telle qu'elle est dessinée, à l'échelle de son dessin (GD-16 : 0,5 dans Blocland, comme
+ * les Gardiens) : une créature plus petite que 48 pixels à l'écran se touche aussi tout autour (three/affordance.ts).
+ */
+export function boitesDesCreatures(creatures: readonly CreaturePlacement[]): { id: BiomeId; boite: Boite }[] {
+  return creatures.filter((c) => c.kind !== 'guardian' && c.cubes.length).map((c) => ({ id: c.id, boite: boiteDuPersonnage(c) }));
+}
+
 /** Un objet et sa bulle, au-dessus du milieu de sa boîte. */
 function signeAuDessus(objet: ObjetTouche, etat: EtatDuSigne, iles: BiomeId[], boite: Boite): SigneDObjet {
   return { cle: cleDeLObjet(objet), objet, etat, x: (boite.min.x + boite.max.x) / 2, y: (boite.min.y + boite.max.y) / 2, z: boite.max.z + SIGNE.auDessus, iles, boite };

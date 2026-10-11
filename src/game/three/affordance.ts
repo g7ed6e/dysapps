@@ -1,23 +1,27 @@
 // Les objets qu'on touche, dans la scène 3D (les règles : world/affordance.ts) : leurs zones de toucher.
-// Une borne ou un Gardien plus petits que 48 pixels à l'écran se touchent aussi tout autour, dans un carré de 48 pixels
-// (là où les deux se chevauchent, la borne gagne) ; les autres objets se touchent directement. Les bulles qui montrent
+// Une borne, un Gardien ou une créature plus petits que 48 pixels à l'écran se touchent aussi tout autour, dans un carré
+// de 48 pixels (là où ils se chevauchent, la borne gagne) ; les autres objets se touchent directement. Les bulles qui montrent
 // ce qu'on peut faire sont dessinées avec les plaques des créatures (./signs.ts). Rien sur la Carte ni pendant le voyage.
 import * as THREE from 'three';
-import { zoneDeToucher, SIGNE, type ObjetTouche, type SigneDObjet, type ZoneDObjet } from '../world/affordance';
+import type { BiomeId } from '../biomes';
+import { zoneDeToucher, SIGNE, type Boite, type CibleDeLaBulle, type SigneDObjet, type ZoneDObjet } from '../world/affordance';
 import type { Derniers, Instant, PartieDeLaScene } from './scenePart';
 
 export interface Affordance extends PartieDeLaScene {
   /** Les objets touchables (refaits quand le monde change). */
   poser(objets: readonly SigneDObjet[]): void;
+  /** Les créatures et la boîte de leur dessin (refaites quand elles changent ; aucune pour des personnages en modèles). */
+  poserLesCreatures(creatures: readonly { id: BiomeId; boite: Boite }[]): void;
   /**
-   * Les zones de toucher des bornes et des Gardiens plus petits que 48 pixels à l'écran vu par `cam` (W × H pixels CSS),
+   * Les zones de toucher des bornes, des Gardiens et des créatures plus petits que 48 pixels à l'écran vu par `cam` (W × H pixels CSS),
    * élargies à 48 pixels autour de leur centre. Calculées au doigt levé seulement ; aucune sur la Carte ni en voyage.
    */
-  zones(cam: THREE.PerspectiveCamera, W: number, H: number): { objet: ObjetTouche; zone: ZoneDObjet }[];
+  zones(cam: THREE.PerspectiveCamera, W: number, H: number): { objet: CibleDeLaBulle; zone: ZoneDObjet }[];
 }
 
 export function creerAffordance(derniers: { current: Derniers }, instant: Instant): Affordance {
   let objets: readonly SigneDObjet[] = [];
+  let creatures: readonly { id: BiomeId; boite: Boite }[] = [];
   /** Ni Carte ni voyage : sinon, aucune zone de toucher. */
   let montres = false;
   const boite = new THREE.Box3();
@@ -39,24 +43,28 @@ export function creerAffordance(derniers: { current: Derniers }, instant: Instan
     poser: (liste) => {
       objets = liste;
     },
+    poserLesCreatures: (liste) => {
+      creatures = liste;
+    },
     zones: (cam, W, H) => {
       if (!montres) return [];
-      const out: { objet: ObjetTouche; zone: ZoneDObjet }[] = [];
+      const out: { objet: CibleDeLaBulle; zone: ZoneDObjet }[] = [];
       cam.updateMatrixWorld();
-      for (const s of objets) {
-        if (s.objet.genre !== 'borne' && s.objet.genre !== 'gardien') continue;
-        boite.min.set(s.boite.min.x, s.boite.min.z, s.boite.min.y);
-        boite.max.set(s.boite.max.x, s.boite.max.z, s.boite.max.y);
+      const zone = (objet: CibleDeLaBulle, b: Boite) => {
+        boite.min.set(b.min.x, b.min.z, b.min.y);
+        boite.max.set(b.max.x, b.max.z, b.max.y);
         const o = projeter(boite, cam, W, H);
-        // La distance de l'objet à la caméra : le sol touché devant lui le cache. Une borne passe avant un Gardien là où
-        // leurs zones se chevauchent (`priorite`).
+        // La distance de l'objet à la caméra : le sol touché devant lui le cache. Une borne passe avant un Gardien ou
+        // une créature là où leurs zones se chevauchent (`priorite`).
         if (o && (o[2] - o[0] < SIGNE.zonePx || o[3] - o[1] < SIGNE.zonePx))
-          out.push({ objet: s.objet, zone: { ...zoneDeToucher(...o, boite.distanceToPoint(cam.position)), boite: s.boite, priorite: s.objet.genre === 'borne' ? 1 : 0 } });
-      }
+          out.push({ objet, zone: { ...zoneDeToucher(...o, boite.distanceToPoint(cam.position)), boite: b, priorite: objet.genre === 'borne' ? 1 : 0 } });
+      };
+      for (const s of objets) if (s.objet.genre === 'borne' || s.objet.genre === 'gardien') zone(s.objet, s.boite);
+      for (const c of creatures) zone({ genre: 'creature', id: c.id }, c.boite);
       return out;
     },
     animer: () => {
-      montres = objets.length > 0 && !derniers.current.carte && !instant.carte && !instant.navigue;
+      montres = (objets.length > 0 || creatures.length > 0) && !derniers.current.carte && !instant.carte && !instant.navigue;
     },
     dispose: () => {},
   };

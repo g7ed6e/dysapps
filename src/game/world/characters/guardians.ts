@@ -43,24 +43,27 @@ const GOLEM = fromLayers(
   { R: '#7d7d7d', r: '#9c9c9c', O: '#f2c944', K: '#3a3a3a' },
 );
 
-// La Dune vivante : une montagne de sable qui s'élève en pointe, deux yeux sombres et une bouche dans la pente. Douze
-// couches (six blocs dans Blocland, réduite de moitié) : plus haute que les arbres de son île, sur la même emprise (GD-16).
+// La Dune vivante : une montagne de sable qui s'élève en pointe, deux yeux sombres et une bouche dans la pente, tournés
+// vers la caméra de l'île. Douze couches (six blocs dans Blocland, réduite de moitié) : plus haute que les arbres de son
+// île, sur la même emprise (GD-16). Ocre, plus chaude et plus sombre que le sable de la Carrière, son pied en sable
+// mouillé et une bande sombre à mi-hauteur : elle se détache du sol et ses gradins se voient (directeur artistique,
+// 11 octobre 2026).
 const DUNE = fromLayers(
   [
-    ['SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS'],
-    ['.SSSSSSS.', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', '.SSSSSSS.'],
-    ['..SSSSS..', '.SSSSSSS.', 'SSSSSSSSS', 'SSSSSSSSS', '.SSSSSSS.', '..SSSSS..'],
-    ['..SMMMS..', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', '..SSSSS..', '.........'],
+    ['DDDDDDDDD', 'DDDDDDDDD', 'DDDDDDDDD', 'DDDDDDDDD', 'DDDDDDDDD', 'DDDDDDDDD'],
+    ['.DDDDDDD.', 'DDDDDDDDD', 'DDDDDDDDD', 'DDDDDDDDD', 'DDDDDDDDD', '.DDDDDDD.'],
+    ['..SMMMS..', '.SSSSSSS.', 'SSSSSSSSS', 'SSSSSSSSS', '.SSSSSSS.', '..SSSSS..'],
     ['..SSSSS..', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', '..SSSSS..', '.........'],
+    ['..SKSKS..', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', '..SSSSS..', '.........'],
     ['..SKSKS..', '..SSSSS..', '.SSSSSSS.', '..SSSSS..', '...SSS...', '.........'],
-    ['...SSS...', '..SSSSS..', '..SSSSS..', '..SSSSS..', '...SSS...', '.........'],
+    ['...DDD...', '..DDDDD..', '..DDDDD..', '..DDDDD..', '...DDD...', '.........'],
     ['...SSS...', '..SSSSS..', '..SSSSS..', '...SSS...', '.........', '.........'],
     ['.........', '...SSS...', '...SSS...', '...SSS...', '.........', '.........'],
     ['.........', '...SSS...', '...SSS...', '.........', '.........', '.........'],
     ['.........', '....s....', '...sSs...', '....s....', '.........', '.........'],
     ['.........', '.........', '....s....', '.........', '.........', '.........'],
   ],
-  { S: '#e8e0b4', s: '#cfc48f', K: '#4a3a22', M: '#8a7a52' },
+  { S: '#d39a4f', D: '#a8703a', s: '#ecc47e', K: '#2a2218', M: '#5a3e22' },
 );
 
 // Le Taureau de terre : massif, quatre pattes, muselière rose, yeux clairs, grandes cornes blanches.
