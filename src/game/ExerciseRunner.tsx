@@ -12,6 +12,7 @@ import { useFocusMode } from '../components/FocusMode';
 import { useHoldCelebrations } from '../components/Celebrations';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
+import { useTextes } from '../universes';
 import { useHaptics } from '../core/haptics';
 import { BLOCKS, getBiome, ofBlock, type BiomeDef } from './biomes';
 import { planStatus } from './engine';
@@ -98,6 +99,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   }, [repris]);
   const sectionRef = useRef<HTMLElement>(null);
   const { settings, speak } = useSettings();
+  const textes = useTextes();
   const haptics = useHaptics();
 
   const type = SCREEN_TYPES[def.type];
@@ -243,7 +245,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
           })()
         : null;
     // À quoi servent les blocs gagnés : le chantier qu'ils font avancer, et « Voir le chantier » qui y mène.
-    const site = worksiteFor(done.state, biome.id, done.block);
+    const site = worksiteFor(done.state, biome.id, done.block, textes.libelles.formesDeLaNef);
     const pose = done.pose;
     // « Reprendre » chez la créature : la révision suivante de l'île, ou le retour sur l'île.
     const revisionSuivante = revisionDeLIle ? revisionsDeLIle(done.state.spaced, done.state.world.links, biome.id, settings.lv2).find((q) => q.type !== def.type) : undefined;

@@ -19,6 +19,8 @@ import { lueursDeNuit, type FacettesDePersonnage, type V3 } from './painted';
 import { couleursAllumees, ECHELLE_DANS_LE_MONDE, HAUTEUR_DANS_LE_MONDE, lueurDuTriangle } from './sentinel';
 import { sentinelleDuMonde } from './paintedSentinels';
 import type { Niveau } from './imported/models';
+import { loadedKeo } from './imported/keo';
+import type { ArchipelagoId } from '../archipelago';
 import { guardianSquareRoom, GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
 
 /** Ce qu'une fusion lit d'un personnage placé sur la grille (une créature, un Gardien). */
@@ -85,10 +87,16 @@ export interface FusionDesGardiens extends Fusion {
   modeles: FacettesDePersonnage[];
 }
 
-/** Le bonhomme : un os par pièce (tête, corps, bras, jambes), dans son repère (les pieds en 0). */
+/**
+ * Le bonhomme, dans son repère (les pieds en 0) : dessiné en code, un os par pièce (tête, corps, bras, jambes) ; Kéo
+ * importé (./imported/keo.ts), les os de son squelette (hanches, dos, tête, cuisses, tibias, bras) et quatre os et
+ * poids par sommet (`poids`).
+ */
 export interface FusionDuBonhomme extends Fusion {
+  /** Pour chaque sommet, son os dans `squelette` (le plus lourd, quand il en a plusieurs). */
   os: Uint16Array;
   squelette: Os[];
+  poids?: { joints: Uint16Array; weights: Float32Array };
 }
 
 /** Le nombre de triangles d'une fusion. */
@@ -326,9 +334,41 @@ export function lueursDesGardiens(
 }
 
 let bonhomme: FusionDuBonhomme | null = null;
+/** Kéo prêt à fusionner, par modèle chargé (un modèle rechargé refait sa fusion). */
+const keos = new WeakMap<FacettesDePersonnage, FusionDuBonhomme>();
 
-/** Le bonhomme, prêt à fusionner : ses sommets dans son repère, et l'os de chaque sommet (celui de sa pièce). */
-export function fusionDuBonhomme(): FusionDuBonhomme {
+/**
+ * Le bonhomme, prêt à fusionner : ses sommets dans son repère, et l'os de chaque sommet. Dans un archipel où Kéo est
+ * chargé (./imported/keo.ts), Kéo dans la tenue de cet archipel ; sinon (pas d'archipel, pas encore chargé, hors ligne)
+ * le bonhomme dessiné en code (./avatar.ts), un os par pièce.
+ */
+export function fusionDuBonhomme(archipel?: ArchipelagoId): FusionDuBonhomme {
+  const keo = archipel ? loadedKeo(archipel) : null;
+  if (keo?.skin) {
+    let f = keos.get(keo);
+    if (!f) {
+      const { bones, joints, weights } = keo.skin;
+      const n = keo.positions.length / 3;
+      const os = new Uint16Array(n);
+      for (let v = 0; v < n; v++) {
+        // Le plus lourd des quatre (squelette.py les range du plus lourd au plus léger ; on ne s'y fie pas).
+        let lourd = 0;
+        for (let j = 1; j < 4; j++) if (weights[v * 4 + j] > weights[v * 4 + lourd]) lourd = j;
+        os[v] = joints[v * 4 + lourd];
+      }
+      f = {
+        positions: keo.positions,
+        normals: keo.normals,
+        colors: keo.colors,
+        plages: [],
+        os,
+        squelette: bones.map((b) => ({ id: 'bonhomme', nom: b.name, parent: b.parent, pivot: b.head })),
+        poids: { joints: Uint16Array.from(joints), weights },
+      };
+      keos.set(keo, f);
+    }
+    return f;
+  }
   if (bonhomme) return bonhomme;
   const f = bonhommePeint();
   const n = f.pieces.length;

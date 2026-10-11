@@ -11,7 +11,7 @@ import { getArchipelago } from '../archipelago';
 import { placedLinksOfPlace } from '../linkGeometry';
 import type { World } from '../../engine';
 import { villageStage } from '../villageStage';
-import { kitReady, launchedStages, stageBuildingAt, vehicleForm } from '../vehicle';
+import { kitReady, launchedStages, shownPieces, stageBuildingAt, vehicleForm } from '../vehicle';
 import { cacheUneBorne, questStations, rangeeDevantLesBornes } from './markers';
 import { AVATAR_HOME, fade, groundHeight, isSchoolIsland } from './base';
 import { versLaCameraDuDessin } from './view';
@@ -265,7 +265,7 @@ export interface VehiclePlacement {
   afloat: boolean;
   /** L'étape en chantier sur ce port, s'il y en a une. */
   building: string | null;
-  /** La forme montrée (0 : le voilier pas encore construit ; 1 à 3 : voilier, dirigeable, fusée) : quand elle change sur le même port, la Nef mue. */
+  /** La forme montrée (0 : le voilier pas encore construit ; 1 à 3 : voilier, dirigeable, fusée ou aéronef) : quand elle change sur le même port, la Nef mue. */
   form: number;
 }
 
@@ -273,9 +273,10 @@ export interface VehiclePlacement {
  * La Nef au quai du port de l'archipel (GD-15). Hors chantier, elle a la forme de la dernière étape partie. Sur le port
  * où une étape se construit, elle garde la forme d'avant, et les pièces neuves se montrent à leur place finale : posées
  * en dur, les autres en fantôme, le kit (voile, haut de l'enveloppe, ailerons) en fantôme tant que les Gardiens ne sont pas
- * rallumés. Tout posé et le kit arrivé, elle a mué : elle a sa nouvelle forme (`muee`), avant même de partir.
+ * rallumés. Tout posé et le kit arrivé, elle a mué : elle a sa nouvelle forme (`muee`), avant même de partir. `painted` :
+ * le monde d'Archipéo, où l'aéronef a ses pièces à d'autres places (../vehicle.ts, `shownPieces`).
  */
-export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { stars: number }>, village: World): VehiclePlacement {
+export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { stars: number }>, village: World, painted = false): VehiclePlacement {
   const port = getArchipelago(a).port;
   const origin = dockOrigin(port);
   const cubes: VoxelCube[] = [];
@@ -287,18 +288,20 @@ export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { st
   const building = stageBuildingAt(port, bridges);
   const launched = launchedStages(bridges).length;
   if (!building) {
-    for (const c of vehicleForm(Math.max(1, launched))) put(c, false);
+    for (const c of vehicleForm(Math.max(1, launched), painted)) put(c, false);
     return { port, origin, cubes, afloat: vehicleAfloat(a), building: null, form: Math.max(1, launched) };
   }
   const done = new Set(village.parts[building.id] ?? []);
   const placed = planCells(building);
   const kit = kitReady(building, progress);
   if (kit && placed.every((c) => done.has(c.key))) {
-    for (const c of vehicleForm(building.stage)) put(c, false);
+    for (const c of vehicleForm(building.stage, painted)) put(c, false);
     return { port, origin, cubes, afloat: vehicleAfloat(a), building: building.id, form: building.stage };
   }
-  if (building.stage > 1) for (const c of vehicleForm(building.stage - 1)) put(c, false);
-  building.cells.forEach((c, i) => put(c, !done.has(placed[i].key)));
-  for (const c of building.kit) put(c, !kit);
+  if (building.stage > 1) for (const c of vehicleForm(building.stage - 1, painted)) put(c, false);
+  // Les pièces à leur place dans l'univers montré (l'aéronef d'Archipéo, ../vehicle.ts) ; posées d'après leurs clés.
+  const shown = shownPieces(building, painted);
+  shown.cells.forEach((c, i) => put(c, !done.has(placed[i].key)));
+  for (const c of shown.kit) put(c, !kit);
   return { port, origin, cubes, afloat: vehicleAfloat(a), building: building.id, form: building.stage - 1 };
 }

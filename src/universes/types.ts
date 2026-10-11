@@ -7,6 +7,7 @@ import type { ArchipelagoId, NomsArchipels } from '../game/world/archipelago';
 import type { Tier } from '../core/progress';
 import type { IslandStateId } from '../game/world/islandState';
 import type { LieuDAssemblage, NomDeBloc } from '../game/world/assembly';
+import type { FormsWords } from '../game/world/vehicle';
 
 export type { UniversChoice as UniversId } from '../core/universe';
 
@@ -68,6 +69,11 @@ interface LibellesGardiens {
   navireGardiensManquants: (n: number, archipel: string) => string;
   /** Dite une fois par appareil, à la première arrivée au port, par sa créature, après son accueil : la Nef. */
   decouverteNavire: string;
+  /**
+   * Les formes de la Nef que l'univers nomme autrement (GD-15 : l'aéronef d'Archipéo) ; sans elles, les mots des étapes
+   * (world/vehicle.ts).
+   */
+  formesDeLaNef?: FormsWords;
 }
 
 /**

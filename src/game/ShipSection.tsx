@@ -8,7 +8,7 @@ import { EarnLink } from './PlanSection';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import { BlockIcon } from './Voxel';
 import { ARCHIPELAGOS, archipelagoOf, getArchipelago, reachedArchipelagos, type ArchipelagoId } from './world/archipelago';
-import { VEHICLE_NAME, VEHICLE_STAGES, beatenGuardians, stageAt } from './world/vehicle';
+import { VEHICLE_NAME, VEHICLE_STAGES, beatenGuardians, formWord, stageAt } from './world/vehicle';
 import { useTextes, type TextesUnivers } from '../universes';
 
 interface Props {
@@ -141,7 +141,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
             <Syllabified
               text={
                 complete
-                  ? 'La Nef a pris ses trois formes : voilier, dirigeable, fusée. Elle te porte où tu veux.'
+                  ? `La Nef a pris ses trois formes : voilier, dirigeable, ${formWord(3, textes.libelles.formesDeLaNef)}. Elle te porte où tu veux.`
                   : `La Nef a déjà fait ce voyage. ${here.stage < VEHICLE_STAGES.length ? `Sa prochaine étape se construit au port des ${textes.archipels[here.to]}.` : ''}`
               }
             />

@@ -129,6 +129,31 @@ function stage(
   return { id, biome: from.port, name, short, origin: { x: 0, y: 0 }, zone: 'port', stage: n, from: from.classe, to: to.classe, guardians, cells: parts.cells, kit: parts.kit, kept: parts.kept, reward, done: fin(to.name), fin };
 }
 
+/** Les mots d'une forme de la Nef qu'un univers nomme autrement (GD-15 : l'aéronef d'Archipéo, à la place de la fusée). */
+export interface FormWords {
+  /** Son nom, avec l'article et la majuscule (« L’aéronef »). */
+  name: string;
+  /** Le nom seul, comme après « devenue » (« aéronef »). */
+  word: string;
+  /** Ce qu'apporte le kit, pour les phrases (« les hélices »). */
+  short: string;
+}
+
+/** Les formes qu'un univers nomme autrement, par numéro (1 à 3) ; les autres gardent les mots des étapes. */
+export type FormsWords = Partial<Record<1 | 2 | 3, FormWords>>;
+
+const FORM_WORDS = ['voilier', 'dirigeable', 'fusée'];
+
+/** Le nom seul d'une forme (1 à 3), dans les mots de l'univers : « voilier », « fusée » ou « aéronef ». */
+export const formWord = (n: 1 | 2 | 3, forms?: FormsWords): string => forms?.[n]?.word ?? FORM_WORDS[n - 1];
+
+/** Une étape dans les mots de l'univers : son nom, ce qu'apporte son kit, son message de fin. */
+export function stageWords(stage: VehicleStage, forms?: FormsWords): Pick<VehicleStage, 'name' | 'short' | 'fin'> {
+  const w = forms?.[stage.stage];
+  if (!w) return stage;
+  return { name: w.name, short: w.short, fin: (archipel) => `La Nef est devenue ${w.word} ! Embarque quand tu veux : les ${archipel} t’attendent.` };
+}
+
 /** Les trois étapes, dans l'ordre. Chaque étape mène à l'archipel suivant. Les identifiants sont ceux des sauvegardes. */
 export const VEHICLE_STAGES: VehicleStage[] = [
   stage(1, 'navire-coque', 'Le voilier', 'la voile', voilier(), 3, { xp: 120, chest: { [BLOC.lanterne]: 2, [BLOC.barriere]: 4 } }, (archipel) => `La voile est hissée ! Embarque quand tu veux : les ${archipel} t’attendent.`),
@@ -136,10 +161,57 @@ export const VEHICLE_STAGES: VehicleStage[] = [
   stage(3, 'navire-reacteur', 'La fusée', 'les ailerons', fusee(), 2, { xp: 200, chest: { [BLOC.lanterne]: 3 } }, (archipel) => `La Nef est devenue fusée ! Embarque quand tu veux : les ${archipel} t’attendent.`),
 ];
 
-/** Toutes les cases d'une forme de la Nef (1 à 3) : ce qu'elle reprend, ce qu'on pose, son kit. */
-export function vehicleForm(n: number): PlanCell[] {
+/**
+ * L'aéronef d'Archipéo (GD-15, lot « Archipéo peint » ; choix du mainteneur, 11 octobre 2026) : les pièces neuves de la
+ * troisième forme se montrent où le modèle a son rotor (une croix couchée au-dessus de la cabine, ses pales de deux cases
+ * d'épaisseur autour du moyeu), le kit où il a ses hélices et son mât. Seules les places changent : les cases gardent
+ * leurs clés de sauvegarde (celles de la fusée de Blocland, dans le même ordre), leur bloc et leur nombre.
+ */
+function aeronefPieces(): { cells: PlanCell[]; kit: PlanCell[] } {
+  const rocket = fusee();
+  const places: [number, number][] = [];
+  for (let y = 2; y <= 9; y++) places.push([2, y]);
+  for (const y of [5, 6]) for (const x of [0, 1, 3, 4]) places.push([x, y]);
+  const cells = rocket.cells.map((c, i) => ({ x: places[i][0], y: places[i][1], z: 5, block: c.block }));
+  const kit: PlanCell[] = [];
+  for (const x of [0, 4]) fill(kit, x, 4, 1, 1, 2, 2, BLOC.bois);
+  kit.push({ x: 2, y: 6, z: 4, block: BLOC.reliure });
+  return { cells, kit };
+}
+const AERONEF = aeronefPieces();
+const placeKey = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z}`;
+const AERONEF_KEYS = new Set([...AERONEF.cells, ...AERONEF.kit].map(placeKey));
+
+/**
+ * Les pièces neuves et le kit d'une étape, à leur place dans l'univers montré : celles de l'étape, ou, dans Archipéo
+ * (`painted`), celles de l'aéronef pour la troisième forme.
+ */
+export function shownPieces(stage: VehicleStage, painted = false): { cells: PlanCell[]; kit: PlanCell[] } {
+  return painted && stage.stage === 3 ? AERONEF : stage;
+}
+
+/** La case d'une étape (dans son repère, sans l'origine du quai) qui se montre à cette place, ou `undefined`. */
+export function savedCellAt(stage: VehicleStage, at: { x: number; y: number; z: number }, painted = false): PlanCell | undefined {
+  const i = shownPieces(stage, painted).cells.findIndex((c) => c.x === at.x && c.y === at.y && c.z === at.z);
+  return i < 0 ? undefined : stage.cells[i];
+}
+
+/** La place montrée d'une case d'une étape (dans son repère), ou la case elle-même. */
+export function shownCellOf(stage: VehicleStage, cell: { x: number; y: number; z: number }, painted = false): { x: number; y: number; z: number } {
+  const i = stage.cells.findIndex((c) => c.x === cell.x && c.y === cell.y && c.z === cell.z);
+  return i < 0 ? cell : shownPieces(stage, painted).cells[i];
+}
+
+/**
+ * Toutes les cases d'une forme de la Nef (1 à 3) : ce qu'elle reprend, ce qu'on pose, son kit. Dans Archipéo (`painted`),
+ * les cubes repris qui tomberaient sur une place de l'aéronef n'y sont pas (le modèle les dessine, et la place reste à
+ * la pièce neuve) : le haut des deux cordes du dirigeable.
+ */
+export function vehicleForm(n: number, painted = false): PlanCell[] {
   const s = VEHICLE_STAGES[Math.min(3, Math.max(1, n)) - 1];
-  return [...s.kept, ...s.cells, ...s.kit];
+  if (!painted || s.stage === 1) return [...s.kept, ...s.cells, ...s.kit];
+  const own = shownPieces(s, true);
+  return [...s.kept.filter((c) => !AERONEF_KEYS.has(placeKey(c))), ...own.cells, ...own.kit];
 }
 
 export function getStage(id: string): VehicleStage | undefined {

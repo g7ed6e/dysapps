@@ -29,7 +29,7 @@ import {
   type NomsArchipels,
 } from './archipelago';
 import { missionsTerminees } from './parts';
-import { VEHICLE_NAME, beatenGuardians, stageAt, stageTo } from './vehicle';
+import { VEHICLE_NAME, beatenGuardians, stageAt, stageTo, stageWords } from './vehicle';
 
 type Matiere = BiomeDef['subject'];
 
@@ -276,7 +276,7 @@ export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchip
     if (launch.reason === 'gardiens') {
       const left = launch.missing;
       candidates.push({
-        text: `${cap(mots.navireGardiensManquants(left, noms[stage.from]))} pour ${stage.short}`,
+        text: `${cap(mots.navireGardiensManquants(left, noms[stage.from]))} pour ${stageWords(stage, mots.formesDeLaNef).short}`,
         have: Math.max(0, stage.guardians - left),
         need: stage.guardians,
         ready: false,

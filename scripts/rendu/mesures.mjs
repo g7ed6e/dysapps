@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, proportions-college, emc-cinquieme, emc-quatre-trois, monuments, batiments, objets-sixieme ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, proportions-college, emc-cinquieme, emc-quatre-trois, monuments, batiments, objets-sixieme, keo ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -674,6 +674,19 @@ const CAPTURES = [
     { nom: `personnages-importes-chene-eteint${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', sansIles: ['french-6e-phonology'], fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
     { nom: `personnages-importes-chene-rallume${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
     { nom: `personnages-importes-archipel-recul${suffixe}`, vue: 'archipel', famille: 'personnages-importes', ile: 'maths-6e-calculation', zoomer: -10, ...autres },
+  ]),
+  // Kéo, le bonhomme d'Archipéo dans la tenue de chaque archipel (famille `keo`, mainteneur, 11 octobre 2026), à retirer
+  // une fois le lot fusionné ; à prendre avec `--rendu archipeo` : de près (`surLeBonhomme`, la molette sur son buste),
+  // sur l'île du port de chaque archipel, de jour et de nuit, puis l'île entière de jour, pour juger sa taille.
+  ...[
+    ['6e', 'french-6e-phonology'],
+    ['5e', 'maths-5e-proportionality'],
+    ['4e', 'maths-4e-algebra'],
+    ['3e', 'maths-3e-functions'],
+  ].flatMap(([classe, ile]) => [
+    { nom: `keo-${classe}-pres`, vue: 'île', famille: 'keo', ile, surLeBonhomme: 8, finesse: 2 },
+    { nom: `keo-${classe}-pres-nuit`, vue: 'île', famille: 'keo', ile, surLeBonhomme: 8, finesse: 2, nuit: true },
+    { nom: `keo-${classe}-ile`, vue: 'île', famille: 'keo', ile },
   ]),
   // Les proportions du 5e, de la 4e et de la 3e (GD-18, famille `proportions-college`), à retirer une fois le lot fusionné ;
   // à prendre dans les deux univers. La vue de chaque île, tout construit (le Gardien rallumé, son bloc d'or posé) : les
@@ -1681,6 +1694,23 @@ async function zoomerLaVue(page, zoomer) {
 }
 
 /**
+ * Rapproche la vue du bonhomme (`surLeBonhomme` : autant de crans de molette), le pointeur sur son buste à chaque cran
+ * (`window.__dysappsCamera.bonhomme`) : la molette zoome autour du pointeur (three/gestures.ts).
+ */
+async function zoomerSurLeBonhomme(page, crans) {
+  for (let i = 0; i < crans; i++) {
+    const p = await page.evaluate(() => window.__dysappsCamera?.bonhomme?.() ?? null);
+    if (!p) return;
+    await page.mouse.move(p.x, p.y);
+    await page.mouse.wheel(0, -240);
+    await page.clock.runFor(125);
+    await page.waitForTimeout(30);
+  }
+  // Le pointeur quitte la scène : pas de case survolée sur la capture.
+  await page.evaluate(() => document.querySelector('.voxel-canvas canvas')?.dispatchEvent(new PointerEvent('pointerleave')));
+}
+
+/**
  * Cache les étiquettes des îles (`sansEtiquettes`) : une bulle passagère invisible sur toute la scène, sous laquelle
  * elles se cachent sans bouger (src/game/coveredZones.ts), comme sous le mot de la baleine. Le monde reste tel quel.
  */
@@ -1938,6 +1968,7 @@ async function scenes() {
               amenager: c.amenager,
               fiche: c.fiche,
               zoomer: c.zoomer,
+              surLeBonhomme: c.surLeBonhomme,
               sansPanneau: c.sansPanneau,
               sansEtiquettes: c.sansEtiquettes,
               reussir: c.reussir,
@@ -1946,7 +1977,7 @@ async function scenes() {
           )
         : []),
     ];
-    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, avancees, posees, cliquer, amenager, fiche, zoomer, reussir, sansPanneau, sansEtiquettes, defiGagne } of views) {
+    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, avancees, posees, cliquer, amenager, fiche, zoomer, surLeBonhomme, reussir, sansPanneau, sansEtiquettes, defiGagne } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -2034,11 +2065,13 @@ async function scenes() {
         if (sansEtiquettes) await cacherLesEtiquettes(page);
         // La Carte zoomée (`zoomer`) : la touche +, le monde ayant le focus, autour du centre de la place libre.
         if (zoomer) await zoomerLaVue(page, zoomer);
+        // Le bonhomme de près (`surLeBonhomme` : autant de crans de molette sur son buste, famille `keo`).
+        if (surLeBonhomme) await zoomerSurLeBonhomme(page, surLeBonhomme);
         // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.
         // Le panneau masqué (`sansPanneau`) agrandit la place libre : la caméra repart vers un autre cadrage, qu'on laisse
         // se poser comme après un zoom (sans ces pas, la vue de loin du grand moulin se prenait la caméra en route, à un
         // point qui changeait d'une prise à l'autre).
-        for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer || amenager || sansPanneau || sansEtiquettes ? 16 : 0)); i++) {
+        for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer || surLeBonhomme || amenager || sansPanneau || sansEtiquettes ? 16 : 0)); i++) {
           await page.clock.runFor(125);
           await page.waitForTimeout(30);
         }
