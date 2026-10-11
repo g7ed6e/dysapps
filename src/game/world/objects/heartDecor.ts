@@ -72,7 +72,8 @@ const SHADOW = 0x2a201a;
  */
 const HEART_COLORS = {
   wetSand: { dessus: 0xa06c38, cote: 0x855a2e },
-  warmPebble: 0xa39e92,
+  warmPebble: 0xe6e0d4,
+  warmPebbleSide: 0x4e4a42,
   boothGlass: 0xb9c9c6,
   boothBand: 0xfbf6ea,
 } as const;
@@ -441,11 +442,12 @@ const ferns: HeartDrawing = (at, pe) => {
 
 /**
  * Le tas de galets (deux au sol, un dessus) : trois galets plats et ronds à huit pans (hauts de 0,6 fois leur rayon),
- * d'un gris chaud qui ne se confond pas avec les rochers communs.
+ * le dessus d'un gris chaud clair, le flanc sombre : aucun gris clair n'atteint 3:1 sur l'herbe du Laboratoire, le flanc
+ * sombre le tient (≈ 3,3:1) et dessine le galet sans le noyer dans les ombres.
  */
 const pebbleHeap: HeartDrawing = (at, pe) => {
   const warm = pe.color(HEART_COLORS.warmPebble);
-  const g: Faces = { dessus: warm, cote: scaleColor(warm, 0.88) };
+  const g: Faces = { dessus: warm, cote: pe.color(HEART_COLORS.warmPebbleSide) };
   const flat = 0.6;
   pebble(at, 0.5, 0.5, 0, 0.42, 0.42 * flat, g, 8);
   pebble(at, 1.48, 0.52, 0, 0.36, 0.36 * flat, darker(g, 0.94), 8, 0.7);

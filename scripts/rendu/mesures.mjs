@@ -795,8 +795,8 @@ const CAPTURES = [
   { nom: 'objets-6e-quai', vue: 'île', famille: 'objets-sixieme', ile: 'maths-6e-calculation', posees: 'toutes', fiche: { genre: 'navire', port: 'maths-6e-calculation' }, sansEtiquettes: true, finesse: 2 },
   { nom: 'objets-6e-loin', vue: 'île', famille: 'objets-sixieme', ile: 'maths-6e-decimals', posees: 'toutes', zoomer: -6, finesse: 2 },
   // Le lot 2 : le décor du cœur de chaque île du 6e dessiné (./objects/heartDecor.ts), regroupé : une vue de plus près par île
-  // qui en a (sans les noms, pour le voir entier), de jour ; la nuit, la Baie des mots (le réverbère du cœur reste éteint)
-  // et la Lagune (la braise mate du volcan). L'île-école de près, ses trois lieux dessinés (./objects/villagePlaces.ts : l'école et
+  // qui en a (sans les noms, pour le voir entier), de jour ; la nuit, la Baie des mots (le réverbère du cœur reste éteint),
+  // la Lagune (la braise mate du volcan) et le Laboratoire (ses galets sur l'herbe). L'île-école de près, ses trois lieux dessinés (./objects/villagePlaces.ts : l'école et
   // son clocheton, la salle des trophées pleine, la Halle et sa potence), de jour et de nuit (les vitres de l'école), et la
   // salle sans trophée (ses socles vides).
   ...[
@@ -816,7 +816,7 @@ const CAPTURES = [
     ['preau', 'civics-6e-democratic-society'],
   ].flatMap(([court, ile]) => [
     { nom: `objets-6e-coeur-${court}`, vue: 'île', famille: 'objets-sixieme', ile, posees: 'toutes', zoomer: 4, sansEtiquettes: true, finesse: 2 },
-    ...(['baie', 'lagune'].includes(court) ? [{ nom: `objets-6e-coeur-${court}-nuit`, vue: 'île', famille: 'objets-sixieme', ile, posees: 'toutes', zoomer: 4, sansEtiquettes: true, nuit: true, finesse: 2 }] : []),
+    ...(['baie', 'lagune', 'labo'].includes(court) ? [{ nom: `objets-6e-coeur-${court}-nuit`, vue: 'île', famille: 'objets-sixieme', ile, posees: 'toutes', zoomer: 4, sansEtiquettes: true, nuit: true, finesse: 2 }] : []),
   ]),
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
     { nom: `objets-6e-ecole${suffixe}`, vue: 'île', famille: 'objets-sixieme', ile: 'french-6e-phonology', succes: 'tous', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
