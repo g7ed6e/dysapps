@@ -45,3 +45,15 @@
 5e-batiment-fournil-de-mie;ead9bc 56685e 5e4430 33291f c98e5a a8a39a;;0.490;3
 5e-batiment-auberge-de-lina;e6dcc4 56685e 438b82 33291f 5e4430 a8a39a;;0.565;1
 5e-batiment-abri-de-lyre;c08a5a 56685e 8a938a 5e4430 33291f a8a39a;;0.640;3
+3e-batiment-kiosque-de-theo;ece8df 5f7fa8 cc9438 2b3a48 a8a39a;0.03;0.545;3;loin-droit
+3e-batiment-dome-de-stat;d8d2c4 34507a cc9438 1e2630 a8a39a;;0.510;3
+3e-batiment-lanterne-de-fi;f2d27a 5f7fa8 cc9438 2b3a48 ece8df a8a39a;;0.600;0;loin-droit
+3e-batiment-lanterne-d-astra;d8d2c4 5f7fa8 cc9438 2b3a48 b8d8a8 a8a39a;;0.550;2
+3e-batiment-regie-d-echo;ece8df 5f7fa8 178078 2b3a48 cc9438 a8a39a;;0.615;1;zone=0.2-0.5:5f7fa8>178078:v
+3e-batiment-bibliotheque-de-memo;e2cfa6 5f7fa8 cc9438 2b3a48 f2ecdc a8a39a;;0.630;1
+3e-batiment-mairie-de-jalon;d8d2c4 5f7fa8 cc9438 2b3a48 ece8df a8a39a;;0.595;2
+3e-batiment-infirmerie-d-olive;f2f0ea 5f7fa8 178078 2b3a48 7a8a4e a8a39a;;0.650;0;loin-droit
+3e-batiment-gymnase-de-virage;ece8df 5f7fa8 a8243a 2b3a48 cc9438 a8a39a;;0.560;1
+3e-batiment-poste-de-navette;d8d2c4 d9a43a 178078 2b3a48 a8a39a;;0.645;3
+3e-batiment-poste-de-timbre;d8d2c4 b5703c e2b43c 2b3a48 a8a39a;;0.575;0
+3e-batiment-bibliotheque-de-stylet;ece8df 5f7fa8 c08a5a 2b3a48 a8a39a;;0.810;1

@@ -364,12 +364,16 @@ export const ENVELOPPES: Record<
   // de Tunel chargée), 12 003 → 15 899 aux Îles Brumeuses, 12 508 → 16 585 aux Anciens Ateliers, 12 735 → 16 691 aux Îles
   // du Ciel (quatorze îles chacun) ; au pire de la salle des trophées (24 succès), 16 454, 16 147, 16 833 et 16 939. Les
   // enveloppes : 12 750 → 16 500, 13 230 → 16 200 aux Îles Brumeuses, 13 000 → 16 950 ailleurs ; aucun appel de plus.
+  // Les douze bâtiments de la 3e chargés (11 octobre 2026, même décision : « tu peux relever les plafonds » pour les
+  // bâtiments) : 16 691 → 16 797 tout construit aux Îles du Ciel, 16 939 → 17 045 au pire de la salle des trophées ;
+  // l'enveloppe des Îles du Ciel prend la différence, arrondie (16 950 → 17 100), la somme de leurs enveloppes
+  // 93 515 → 93 665 (« Dans la scène » compris), sous `RENDER_BUDGET_AUTRES` (94 950), inchangé ; aucun appel de plus.
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
     premiersRivages: { triangles: 16_500, drawCalls: 3 },
     autres: { triangles: 16_950, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 16_200, drawCalls: 3 } },
+    parArchipel: { '5e': { triangles: 16_200, drawCalls: 3 }, '3e': { triangles: 17_100, drawCalls: 3 } },
   },
   // Les quêtes des habitants (GD-10, PR 1) : les trois objets posés à la fin des quêtes du 6e (la lanterne, le portillon,
   // l'escalier) sont des petites constructions, comptées dans ce poste (`toutConstruitAvecLesCommandes`) : 758 triangles
