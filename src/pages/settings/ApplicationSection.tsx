@@ -45,17 +45,17 @@ export function ApplicationSection() {
           <Icon name="globe" /> Le code sur GitHub
         </a>
       </div>
+      {/* Le compteur de `?mesures` (game/three/meter.ts), sans adresse : il se voit à la prochaine ouverture du monde. */}
+      <label className="toggle">
+        <input type="checkbox" checked={settings.renderMeter} onChange={(e) => update({ renderMeter: e.target.checked })} />
+        Compteur de mesures
+      </label>
       {/* La mesure automatique (game/AutoMeasure.tsx), pour le mainteneur sur la tablette : la page se recharge avec
           `?mesures=auto`, qui joue une partie toute construite en mémoire ; la vraie partie n'est pas touchée. */}
       <button type="button" className="button settings-measure" onClick={lancerLaMesure}>
         <Icon name="gauge" /> Mesurer l’appareil
       </button>
       <p className="settings-note">Ta partie ne change pas.</p>
-      {/* Le compteur de `?mesures` (game/three/meter.ts), sans adresse : il se voit à la prochaine ouverture du monde. */}
-      <label className="toggle">
-        <input type="checkbox" checked={settings.renderMeter} onChange={(e) => update({ renderMeter: e.target.checked })} />
-        Compteur de mesures dans le monde
-      </label>
     </fieldset>
   );
 }

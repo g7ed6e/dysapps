@@ -52,7 +52,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 
 ### À vérifier sur tablette
 
-- Images par seconde du monde 3D (`?mesures`, ou Réglages › Application › « Compteur de mesures dans le monde », demandé par le mainteneur le 11 octobre 2026, sans adresse à taper dans l’appli installée), sur la tablette de référence (R0), dont le 3e avec le Refuge des carnets (les mesures de LV2-5 venaient du rendu logiciel).
+- Images par seconde du monde 3D (`?mesures`, ou Réglages › Application › « Compteur de mesures », demandé par le mainteneur le 11 octobre 2026, sans adresse à taper dans l’appli installée), sur la tablette de référence (R0), dont le 3e avec le Refuge des carnets (les mesures de LV2-5 venaient du rendu logiciel).
 - Fumées et brume, avec et sans « Réduire les animations » de l’appareil ; brume du 5e et planeur du 3e en vidéo.
 - Scintillement des planches des ponts du 5e quand la caméra bouge ; mât de grue en 1024 × 768.
 - Galets en colonnes (Rivière) : les cases de la multiplication et la potence en 1024 × 768 ; la voix des nombres de 1 000 et plus (« 2 550 ») et des décimaux (« 5,69 »).

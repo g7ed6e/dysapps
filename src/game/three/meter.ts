@@ -1,7 +1,6 @@
 // Le compteur de mesures du rendu 3D (lot R0 d'Archipéo) : appels de dessin, triangles, géométries, textures et images
 // par seconde de la dernière image. Affiché dans un coin de la vue avec `?mesures` ou le réglage « Compteur de mesures »
-// (invisible sans eux), et lu par
-// `npm run rendu:mesures` sur `window.__dysappsRendu` (en développement, ou avec `?mesures`).
+// (invisible sans eux), et lu par `npm run rendu:mesures` sur `window.__dysappsRendu` (en développement, ou avec `?mesures`).
 import type * as THREE from 'three';
 import type { Rendu } from '../rendering';
 
@@ -37,8 +36,9 @@ export function createMeter(host: HTMLElement, rendu: Rendu, show: boolean, expo
     box.setAttribute('aria-hidden', 'true');
     Object.assign(box.style, {
       position: 'absolute',
-      left: '8px',
-      bottom: '8px',
+      // Hors de l'encoche et de la barre de geste.
+      left: 'calc(8px + env(safe-area-inset-left, 0px))',
+      bottom: 'calc(8px + env(safe-area-inset-bottom, 0px))',
       padding: '4px 8px',
       font: '12px/1.4 ui-monospace, monospace',
       background: '#000c',

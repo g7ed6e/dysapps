@@ -92,7 +92,7 @@ it('« Application » : le compteur de mesures, éteint par défaut, retenu sur 
       </ProgressProvider>
     </SettingsProvider>,
   );
-  const compteur = within(screen.getByRole('group', { name: 'Application' })).getByRole('checkbox', { name: 'Compteur de mesures dans le monde' });
+  const compteur = within(screen.getByRole('group', { name: 'Application' })).getByRole('checkbox', { name: 'Compteur de mesures' });
   expect(compteur).not.toBeChecked();
   fireEvent.click(compteur);
   expect(compteur).toBeChecked();
