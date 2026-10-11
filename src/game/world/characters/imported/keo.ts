@@ -1,5 +1,5 @@
 // Kéo, le bonhomme d'Archipéo (décision du mainteneur, 11 octobre 2026) : un modèle importé par archipel, dans la tenue
-// de cet archipel (explorateur au 6e, ciré à la 5e, mécanicienne à la 4e, cartographe à la 3e), fait par TRELLIS.2 et
+// de cet archipel (explorateur au 6e, ciré à la 5e, mécano à la 4e, cartographe à la 3e), fait par TRELLIS.2 et
 // retravaillé comme les créatures (docs/univers/archipeo/personnages/modeles.md). Code pur, sans DOM : le registre des
 // tenues et la mise au format du bonhomme (deux blocs de haut, les pieds en 0, le visage vers −Z, son squelette). Ce qui
 // charge le fichier est à part (../../../importedCharacters.ts, `loadKeo` ; le disque pour les tests :
@@ -15,7 +15,7 @@ import { importedFacets } from './models';
 export const KEO_OUTFITS: Record<ArchipelagoId, string> = {
   '6e': '6e-keo-creature-explorateur',
   '5e': '5e-keo-creature-cire',
-  '4e': '4e-keo-creature-mecanicienne',
+  '4e': '4e-keo-creature-mecano',
   '3e': '3e-keo-creature-cartographe',
 };
 
