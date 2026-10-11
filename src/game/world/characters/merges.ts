@@ -16,10 +16,10 @@ import { rgb } from '../decor/brush';
 import { LUEUR } from './colors';
 export { allumageDuGardien } from './glow';
 import { lueursDeNuit, type FacettesDePersonnage, type V3 } from './painted';
-import { couleursAllumees, ECHELLE_DANS_LE_MONDE, lueurDuTriangle } from './sentinel';
+import { couleursAllumees, ECHELLE_DANS_LE_MONDE, HAUTEUR_DANS_LE_MONDE, lueurDuTriangle } from './sentinel';
 import { sentinelleDuMonde } from './paintedSentinels';
 import type { Niveau } from './imported/models';
-import { GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
+import { fillsGuardianSquare, GUARDIAN_SQUARE_ROOM, GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
 
 /** Ce qu'une fusion lit d'un personnage placé sur la grille (une créature, un Gardien). */
 export interface PersonnagePlace {
@@ -229,15 +229,24 @@ export function fusionDesCreatures(places: PersonnagePlace[], pres: BiomeId | nu
 }
 
 /**
- * L'échelle d'un Gardien dans le monde : celle de toutes les sentinelles (`ECHELLE_DANS_LE_MONDE`, DA-5), ou celle qui
- * le porte à sa hauteur propre (`GUARDIAN_WORLD_HEIGHTS`, le Grand Chêne). L'écran du défi le montre à sa taille.
+ * L'échelle d'un Gardien dans le monde : celle de toutes les sentinelles (`ECHELLE_DANS_LE_MONDE`, DA-5) ; celle qui
+ * le porte à sa hauteur propre (`GUARDIAN_WORLD_HEIGHTS`, le Grand Chêne) ; ou, pour un Gardien qui remplit son carré
+ * (`fillsGuardianSquare`), la plus grande qui le garde dans ce carré (`GUARDIAN_SQUARE_ROOM`) et sous la hauteur de la
+ * sentinelle commune. L'écran du défi le montre à sa taille.
  */
 function echelleDuGardien(id: BiomeId, f: FacettesDePersonnage): number {
   const h = GUARDIAN_WORLD_HEIGHTS[id];
-  if (h === undefined) return ECHELLE_DANS_LE_MONDE;
-  let haut = 0;
-  for (let i = 1; i < f.positions.length; i += 3) haut = Math.max(haut, f.positions[i]);
-  return haut > 0 ? h / haut : ECHELLE_DANS_LE_MONDE;
+  if (h === undefined && !fillsGuardianSquare(id)) return ECHELLE_DANS_LE_MONDE;
+  let [haut, large, profond] = [0, 0, 0];
+  for (let i = 0; i < f.positions.length; i += 3) {
+    large = Math.max(large, Math.abs(f.positions[i]));
+    haut = Math.max(haut, f.positions[i + 1]);
+    profond = Math.max(profond, Math.abs(f.positions[i + 2]));
+  }
+  if (haut <= 0) return ECHELLE_DANS_LE_MONDE;
+  if (h !== undefined) return h / haut;
+  const { halfWidth, halfDepth } = GUARDIAN_SQUARE_ROOM;
+  return Math.min(HAUTEUR_DANS_LE_MONDE / haut, large > 0 ? halfWidth / large : Infinity, profond > 0 ? halfDepth / profond : Infinity);
 }
 
 /**

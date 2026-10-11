@@ -21,8 +21,7 @@ import type { ObjetDeLaFiche } from './layout';
 export type { ObjetDeLaFiche };
 import type { Cell, CreaturePlacement } from './paths';
 import { islandCenter, type VehiclePlacement } from './terrain';
-import { SENTINELLE_DANS_LE_MONDE } from './terrain/creatures';
-import { GUARDIAN_WORLD_HEIGHTS } from './guardianSquares';
+import { sentinelleDe } from './terrain/creatures';
 
 /** L'état d'un objet touchable : à faire (il porte une bulle), pas encore, un lieu (ils n'en portent pas). */
 export type EtatDuSigne = 'aFaire' | 'pasEncore' | 'lieu';
@@ -138,8 +137,9 @@ function boiteDuPersonnage(p: Pick<CreaturePlacement, 'cubes' | 'origin' | 'eche
 function boiteDeLaSentinelle(p: Pick<CreaturePlacement, 'id' | 'cubes' | 'origin'>): Boite {
   const b = boiteDe(p.cubes, p.origin);
   const [cx, cy, z0] = [(b.min.x + b.max.x) / 2, (b.min.y + b.max.y) / 2, p.origin.z];
-  const d = SENTINELLE_DANS_LE_MONDE.demiLargeur;
-  const h = GUARDIAN_WORLD_HEIGHTS[p.id] ?? SENTINELLE_DANS_LE_MONDE.hauteur;
+  // Carrée : le lieu peut être tourné (GD-9), la boîte reste celle de la statue.
+  const { dx, dy, h } = sentinelleDe(p.id);
+  const d = Math.max(dx, dy);
   return { min: { x: cx - d, y: cy - d, z: z0 }, max: { x: cx + d, y: cy + d, z: z0 + h } };
 }
 

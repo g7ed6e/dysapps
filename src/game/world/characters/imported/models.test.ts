@@ -4,9 +4,13 @@ import type { BiomeId } from '../../../biomes';
 import { compacterGlb } from '../../../../../scripts/rendu/compacterGlb.mjs';
 import { SENTINELLE } from '../colors';
 import { ESPECES } from '../paintedCreatures';
-import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, frontDeLueur, HAUTEUR_DE_SENTINELLE } from '../sentinel';
+import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, frontDeLueur, HAUTEUR_DANS_LE_MONDE, HAUTEUR_DE_SENTINELLE } from '../sentinel';
 import { tailleDe } from '../template';
-import { fusionDesCreatures } from '../merges';
+import { fusionDesCreatures, fusionDesGardiens, pointDePose } from '../merges';
+import { toutConstruit } from '../../budget';
+import { guardianPlacements } from '../../terrain';
+import { sentinelleDe, SENTINELLE_DANS_LE_MONDE } from '../../terrain/creatures';
+import { GUARDIAN_SQUARE_ROOM, GUARDIAN_WORLD_HEIGHTS } from '../../guardianSquares';
 import { lireGlb } from './glb';
 import { chargerLesModelesDuDisque, fichierDuModele } from './fromDisk.testing';
 import { ILES_IMPORTEES, modeleImporte, nomDuModele, type Genre, type Niveau } from './models';
@@ -59,6 +63,32 @@ it('un Gardien importé a la taille d’une sentinelle : 8 blocs, socle compris,
       // Il touche le haut ou les bords : à la plus grande taille qui tient.
       expect(Math.max(haut / HAUTEUR_DE_SENTINELLE, large / DEMI_LARGEUR_DE_SENTINELLE), id).toBeGreaterThan(0.99);
     }
+});
+
+it('au 6e, un Gardien grandit sur son carré : ses cinq cases de large, les quatre rangées du fond, la hauteur de la sentinelle', () => {
+  const { progress, world } = toutConstruit();
+  const places = guardianPlacements('6e', progress, world.links);
+  const f = fusionDesGardiens(places);
+  const auVingtieme = (v: number) => Math.ceil(v * 20 - 1e-6) / 20;
+  places.forEach((p, i) => {
+    if (GUARDIAN_WORLD_HEIGHTS[p.id] !== undefined) return;
+    const o = pointDePose(p);
+    let [dx, dy, h] = [0, 0, 0];
+    for (let t = f.plages[i].debut * 9; t < f.plages[i].fin * 9; t += 3) {
+      dx = Math.max(dx, Math.abs(f.positions[t] - o[0]));
+      h = Math.max(h, f.positions[t + 1] - o[1]);
+      dy = Math.max(dy, Math.abs(f.positions[t + 2] - o[2]));
+    }
+    expect(dx, p.id).toBeLessThanOrEqual(GUARDIAN_SQUARE_ROOM.halfWidth + 1e-4);
+    expect(dy, p.id).toBeLessThanOrEqual(GUARDIAN_SQUARE_ROOM.halfDepth + 1e-4);
+    expect(h, p.id).toBeLessThanOrEqual(HAUTEUR_DANS_LE_MONDE + 1e-4);
+    // À la plus grande taille qui tient.
+    expect(Math.max(dx / GUARDIAN_SQUARE_ROOM.halfWidth, dy / GUARDIAN_SQUARE_ROOM.halfDepth, h / HAUTEUR_DANS_LE_MONDE), p.id).toBeGreaterThan(0.99);
+    // La boîte que lit la grille le contient, au vingtième près (`GUARDIAN_WORLD_HALF_SIZES`).
+    const d = SENTINELLE_DANS_LE_MONDE.demiLargeur;
+    const b = sentinelleDe(p.id);
+    expect([b.dx, b.dy], p.id).toEqual([Math.max(d, auVingtieme(dx)), Math.max(d, auVingtieme(dy))]);
+  });
 });
 
 it('une créature importée a la taille de son gabarit, les pieds au sol', () => {

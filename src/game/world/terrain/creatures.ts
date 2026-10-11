@@ -285,13 +285,33 @@ function cubesQuiCachent(id: BiomeId): Set<string> {
 type VueDuGardien = (x: number, y: number, forme?: FormeDuGardien, seuil?: number) => number;
 
 /**
- * La boîte de la sentinelle d'une île : la commune, ou celle d'un Gardien plus haut (`GUARDIAN_WORLD_HEIGHTS`, le Grand
- * Chêne), sa large couronne sur les cinq cases de son carré.
+ * Les Gardiens d'Archipéo qui, remplissant leur carré (`fillsGuardianSquare` de ../guardianSquares.ts), y sont plus
+ * larges ou plus profonds que la sentinelle commune : leur demi-largeur et leur demi-profondeur dans le monde, en cases,
+ * arrondies au vingtième au-dessus (world/characters/merges.ts, `echelleDuGardien` ; un test les tient ensemble).
+ * Recopiées ici : la grille ne lit pas le dessin.
  */
-function sentinelleDe(id: BiomeId): { dx: number; dy: number; h: number } {
+const GUARDIAN_WORLD_HALF_SIZES: Readonly<Partial<Record<BiomeId, { dx: number; dy: number }>>> = {
+  'french-6e-letter-confusion': { dx: 1.95, dy: 1.4 },
+  'french-6e-grammar-spelling': { dx: 1.45, dy: 2 },
+  'maths-6e-calculation': { dx: 1.75, dy: 2 },
+  'maths-6e-decimals': { dx: 1.85, dy: 2 },
+  'english-6e-vocabulary': { dx: 1.45, dy: 2 },
+  'geography-6e-living': { dx: 1.45, dy: 2 },
+  'life-earth-sciences-6e-living-world': { dx: 1.4, dy: 1.9 },
+  'civics-6e-democratic-society': { dx: 1.3, dy: 1.8 },
+};
+
+/**
+ * La boîte de la sentinelle d'une île, autour de son milieu (demi-largeur, demi-profondeur, hauteur) : la commune ; celle
+ * d'un Gardien plus haut (`GUARDIAN_WORLD_HEIGHTS`, le Grand Chêne), sa large couronne sur les cinq cases de son carré ;
+ * ou la commune élargie à celle d'un Gardien qui a grandi sur son carré (`GUARDIAN_WORLD_HALF_SIZES`).
+ */
+export function sentinelleDe(id: BiomeId): { dx: number; dy: number; h: number } {
   const h = GUARDIAN_WORLD_HEIGHTS[id];
-  if (h === undefined) return { dx: SENTINELLE_DANS_LE_MONDE.demiLargeur, dy: SENTINELLE_DANS_LE_MONDE.demiLargeur, h: SENTINELLE_DANS_LE_MONDE.hauteur };
-  return { dx: GUARDIAN_SQUARE / 2, dy: GUARDIAN_SQUARE / 2, h };
+  if (h !== undefined) return { dx: GUARDIAN_SQUARE / 2, dy: GUARDIAN_SQUARE / 2, h };
+  const d = SENTINELLE_DANS_LE_MONDE.demiLargeur;
+  const g = GUARDIAN_WORLD_HALF_SIZES[id];
+  return { dx: Math.max(d, g?.dx ?? 0), dy: Math.max(d, g?.dy ?? 0), h: SENTINELLE_DANS_LE_MONDE.hauteur };
 }
 
 /**
