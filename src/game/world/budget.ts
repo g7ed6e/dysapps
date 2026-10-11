@@ -394,19 +394,22 @@ export const ENVELOPPES: Record<
   // 3 544 → 4 044 (enveloppe 3 550 → 4 100), Gardiens 3 047 → 4 659 (enveloppe 3 050 → 4 735). La somme des enveloppes
   // des Anciens Ateliers passe de 88 225 à 90 460 sans la scène, de 88 725 à 90 960 avec ses 500, sous
   // `RENDER_BUDGET_AUTRES` (91 700), inchangé ; rien n'est pris au sol (proposition, à valider par le mainteneur).
+  // Ceux de la 3e (10 octobre 2026) : créatures 4 100 au pire (enveloppe 3 650 → 4 100), Gardiens 4 503 (enveloppe
+  // 3 250 → 4 510). La somme des enveloppes des Îles du Ciel passe de 87 855 à 89 565 avec la scène, sous
+  // `RENDER_BUDGET_AUTRES` (91 700), inchangé ; rien n'est pris au sol (proposition, à valider par le mainteneur).
   creatures: {
     lot: 'R6',
     nom: 'Créatures',
     premiersRivages: { triangles: 4_600, drawCalls: 1 },
     autres: { triangles: 3_200, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 4_225, drawCalls: 1 }, '4e': { triangles: 4_100, drawCalls: 1 }, '3e': { triangles: 3_650, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 4_225, drawCalls: 1 }, '4e': { triangles: 4_100, drawCalls: 1 }, '3e': { triangles: 4_100, drawCalls: 1 } },
   },
   gardiens: {
     lot: 'R6',
     nom: 'Gardiens en sentinelles',
     premiersRivages: { triangles: 5_200, drawCalls: 1 },
     autres: { triangles: 2_780, drawCalls: 1 },
-    parArchipel: { '5e': { triangles: 4_700, drawCalls: 1 }, '4e': { triangles: 4_735, drawCalls: 1 }, '3e': { triangles: 3_250, drawCalls: 1 } },
+    parArchipel: { '5e': { triangles: 4_700, drawCalls: 1 }, '4e': { triangles: 4_735, drawCalls: 1 }, '3e': { triangles: 4_510, drawCalls: 1 } },
   },
   scene: {
     lot: 'socle',

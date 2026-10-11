@@ -139,14 +139,14 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // du mainteneur) : la mer à 7 150 aux Anciens Ateliers (83 725), toujours sous 86 000. Les Gardiens et les créatures
   // importés de la 5e : les Îles Brumeuses à 86 685 (mainteneur, 10 octobre 2026). Les monuments importés d'Archipéo : la
   // construction prend 5 000 partout (81 290, 91 685, 88 725, 87 855). Les personnages importés de la 4e : les Anciens
-  // Ateliers à 90 960.
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e) : 81 290 triangles et 25 appels aux Premiers Rivages, 91 685, 90 960 et 87 855 et 24 appels ailleurs', () => {
+  // Ateliers à 90 960 ; ceux de la 3e : les Îles du Ciel à 89 565.
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e) : 81 290 triangles et 25 appels aux Premiers Rivages, 91 685, 90 960 et 89 565 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([81_290, 25]);
     expect([total('5e'), appels('5e')]).toEqual([91_685, 24]);
     expect([total('4e'), appels('4e')]).toEqual([90_960, 24]);
-    expect([total('3e'), appels('3e')]).toEqual([87_855, 24]);
+    expect([total('3e'), appels('3e')]).toEqual([89_565, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la
@@ -233,12 +233,12 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
       }
     });
 
-  // Les personnages importés (6e, 5e et 4e), lus sur le disque comme la vue les charge : au pire, de
+  // Les personnages importés (6e, 5e, 4e et 3e), lus sur le disque comme la vue les charge : au pire, de
   // près sur l'île qui coûte le plus, de loin ailleurs. (En dernier : une fois chargés, ils remplacent les dessinés
   // en code dans ce fichier.)
-  it('R6 : avec les personnages importés (6e, 5e et 4e), créatures et Gardiens tiennent leur enveloppe aux Premiers Rivages, aux Îles Brumeuses et aux Anciens Ateliers', () => {
+  it('R6 : avec les personnages importés (6e, 5e, 4e et 3e), créatures et Gardiens tiennent leur enveloppe aux Premiers Rivages, aux Îles Brumeuses, aux Anciens Ateliers et aux Îles du Ciel', () => {
     chargerLesModelesDuDisque();
-    for (const a of ['6e', '5e', '4e'] as const)
+    for (const a of ['6e', '5e', '4e', '3e'] as const)
       for (const p of ['creatures', 'gardiens'] as const) {
         const cout = personnagesCost(a)[p];
         expect(cout.triangles, `${a} ${p}`).toBeLessThanOrEqual(enveloppeDe(p, a).triangles);
