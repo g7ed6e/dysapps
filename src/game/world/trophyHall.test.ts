@@ -178,7 +178,8 @@ describe('La salle des trophées (GD-3)', () => {
       'french-6e-phonology': { x: -1, y: 12, pas: 4 },
       'maths-5e-proportionality': { x: 1, y: 14, pas: 4 },
       'maths-4e-algebra': { x: 2, y: 14, pas: 4 },
-      'maths-3e-functions': { x: 2, y: 14, pas: 4 },
+      // Au Phare des fonctions, Fi s'écarte du Dragon de lumière d'une case (GD-18, `CIBLE_DE_L_HABITANT`).
+      'maths-3e-functions': { x: 3, y: 15, pas: 4 },
     });
   });
 

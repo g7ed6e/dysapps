@@ -10,11 +10,14 @@
 // dans les deux univers. Deux carrés du 6e ont bougé avec les proportions du 6e (GD-16, 11 octobre 2026) : la Forêt des
 // sons, dont le Grand Chêne sortait de la vue de l'île en (16, 19), passe en (-6, 4), où il tient entier dans le cadre
 // et se voit entier ; la Vallée du vivant, dont l'étiquette de l'île cachait le Cerf en (-1, 13) (86 % vu), passe en
-// (14, 3), où il se voit entier, au palier 1. Trois carrés ont bougé avec les proportions du 5e au 3e (GD-18,
-// 11 octobre 2026), vers le bord de leur île, où leur Gardien se voit entier dans le cadre, l'habitant de l'île ne
-// passant plus devant : le Glacier des relatifs, de (-3, 14) (84 % vu) en (-6, 17) ; le Belvédère de Thalès, de (-3, 3)
-// (83 % vu, le Sphinx de marbre derrière Théo) en (-5, 4) ; la Vigie des signaux, de (-4, 5) (hors du cadre, 76 % vu) en
-// (11, -2), au palier 1. Données pures.
+// (14, 3), où il se voit entier, au palier 1. Cinq carrés ont bougé avec les proportions du 5e au 3e (GD-18,
+// 11 octobre 2026), vers le bord de leur île, sur sa terre (la case autour comprise), où leur Gardien tient entier dans
+// le cadre sans que la vue glisse loin (glissée vers eux de plus d'un quart du chemin, elle sortait du cadre une
+// commande ou une borne) : le Marché des proportions, de (17, 18) en (-4, 15) (83 % vu, un peu derrière un bâtiment
+// du village) ; le Marais des temps, de (15, 15) en (11, 17) ; le Comptoir, de (16, 15) en (0, 14) ; le Belvédère de
+// Thalès, de (-3, 3) (83 % vu, le Sphinx de marbre derrière Théo) en (-4, 3) ; la Vigie des signaux, de (-4, 5) (hors
+// du cadre, 76 % vue) en (13, -2), au palier 1. Le carré quitté ne tient plus de terre autour de lui : la côte du
+// Marché et celle du Comptoir perdent une rangée (./map.ts). Données pures.
 import type { BiomeId } from '../biomes';
 
 /** Le côté du carré d'un Gardien, en cases (`GUARDIAN_SQUARE`, ./terrain/creatures.ts). */
@@ -46,11 +49,11 @@ export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<Gu
   'physics-chemistry-6e-matter-energy': { x: -2, y: 13, palier: 1 },
   'technology-6e-objects': { x: 15, y: 13, palier: 1 },
   'civics-6e-democratic-society': { x: 13, y: -1, palier: 1 },
-  'maths-5e-signed-numbers': { x: -6, y: 17, palier: 3 },
-  'maths-5e-proportionality': { x: 17, y: 18, palier: 3 },
+  'maths-5e-signed-numbers': { x: -3, y: 14, palier: 3 },
+  'maths-5e-proportionality': { x: -4, y: 15, palier: 3 },
   'french-5e-homophones': { x: -2, y: 14, palier: 1 },
-  'french-5e-conjugation': { x: 15, y: 15, palier: 3 },
-  'english-5e-vocabulary': { x: 16, y: 15, palier: 3 },
+  'french-5e-conjugation': { x: 11, y: 17, palier: 3 },
+  'english-5e-vocabulary': { x: 0, y: 14, palier: 3 },
   'english-5e-grammar': { x: 15, y: 15, palier: 3 },
   'lv2-5e-introductions': { x: 14, y: 3, palier: 1 },
   'history-5e-middle-ages': { x: -2, y: 13, palier: 3 },
@@ -72,9 +75,9 @@ export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<Gu
   'history-4e-revolutions': { x: 13, y: -2, palier: 1 },
   'geography-4e-globalization': { x: 13, y: 0, palier: 1 },
   'life-earth-sciences-4e-cells-evolution': { x: 13, y: -2, palier: 1 },
-  'physics-chemistry-4e-signals-circuits': { x: 11, y: -2, palier: 1 },
+  'physics-chemistry-4e-signals-circuits': { x: 13, y: -2, palier: 1 },
   'technology-4e-modeling': { x: -2, y: 13, palier: 3 },
-  'maths-3e-geometry': { x: -5, y: 4, palier: 3 },
+  'maths-3e-geometry': { x: -4, y: 3, palier: 3 },
   'maths-3e-functions': { x: -5, y: 14, palier: 3 },
   'maths-3e-statistics': { x: 14, y: 3, palier: 1 },
   'french-3e-close-reading': { x: 13, y: 16, palier: 1 },
@@ -174,7 +177,7 @@ export const GUARDIAN_GOLD_BESIDE: Readonly<Partial<Record<BiomeId, { x: number;
   'geography-6e-living': { x: -1, y: 0 },
   // Les proportions du 5e, de la 4e et de la 3e (piste 3a, mainteneur, 11 octobre 2026) : les Gardiens que leurs
   // quatre rangées laissent sous 4,5 cases dans Archipéo, bornés par leur long côté.
-  'maths-5e-signed-numbers': { x: GUARDIAN_SQUARE_SIDE, y: 0 },
+  'maths-5e-signed-numbers': { x: -1, y: 0 },
   'french-5e-homophones': { x: GUARDIAN_SQUARE_SIDE, y: 0 },
   'geography-5e-resources': { x: -1, y: 0 },
   'life-earth-sciences-5e-active-planet': { x: -1, y: 0 },

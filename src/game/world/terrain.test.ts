@@ -324,7 +324,7 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     // 1, sur un côté de devant, et le Bosquet des sages au palier 1, derrière la bande, aux places de leur recherche :
     // 27, 0 et 31, dont 11 sur un côté. Avec les proportions du 6e (GD-16, 11 octobre 2026), la Vallée du vivant passe
     // en (14, 3), au palier 1, et la Forêt des sons en (-6, 4), au palier 3 : 28, 0 et 30. Avec les proportions du 5e au
-    // 3e (GD-18, 11 octobre 2026), la Vigie des signaux passe en (11, -2), au palier 1 : 29, 0 et 29.
+    // 3e (GD-18, 11 octobre 2026), la Vigie des signaux passe en (13, -2), au palier 1 : 29, 0 et 29.
     expect(BIOMES.filter((b) => guardianSpot(b.id).repli).map((b) => b.id)).toEqual([]);
     const paliers = (n: number) => BIOMES.filter((b) => guardianSpot(b.id).palier === n).map((b) => b.id);
     expect(paliers(1)).toHaveLength(29);
@@ -404,8 +404,8 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     // côtés, ces îles gardent le carré où il se voit le plus : la part vue, au centième, dans la forme la plus cachée des
     // deux univers, les rayons visant les deux yeux de la caméra (en paysage et panneau ouvert). Sous 85 % : la Prairie
     // des climats (76 %), l'Horloge des verbes (79 %), le Bassin des maquettes (81 %), la Falaise des accords (82 %), le
-    // Tremplin des forces (83 %). Sous le seuil de 75 % (DA, 8 octobre 2026), plus aucune : le Phare des fonctions (68 %)
-    // y était seul, jusqu'à ce que son habitant s'écarte (GD-18, 89 %). Le Hangar des inventions et le Verger de la santé (54 %), l'Imprimerie des révolutions (66 %) se
+    // Marché des proportions et le Tremplin des forces (83 %). Sous le seuil de 75 % (DA, 8 octobre 2026), plus aucune : le Phare des fonctions (68 %)
+    // y était seul, jusqu'à ce que son habitant s'écarte (GD-18, 86 %). Le Hangar des inventions et le Verger de la santé (54 %), l'Imprimerie des révolutions (66 %) se
     // voient entiers sur un côté de devant depuis ce seuil. Depuis la cinquième mission (GD-14), le Belvédère de Thalès
     // (82 %) a quitté le sien, qu'une borne de plus touchait ; le Manoir du passé aussi (81 % en (0, 14)), puis, sa forme prise, la recherche refaite sur sa terre l'a posé en (15, 15), où il se voit entier. La Vallée du vivant (83 %, l'étiquette de l'île devant son Cerf) a pris un carré où il se voit entier (GD-16).
     const enPartie: Record<string, number> = {
@@ -416,13 +416,19 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
       'english-6e-vocabulary': 0.98,
       'maths-6e-calculation': 0.92,
       // Les proportions du 5e au 3e (GD-18) : le Bélier de granit, la Tortue d'ocre, le Cheval à bascule, le Grand-bi
-      // d'érable et le Kangourou de rubis en partie sous l'étiquette du nom de l'île seule (le chantier de l'étiquette) ; le
-      // Dragon de lumière, l'habitant écarté, derrière la salle des trophées et l'étiquette ; les statues d'Archipéo
-      // grandies sur leur carré, un peu derrière un cube (le Sphinx des routes, le Delta, la Colonnade, la France).
+      // d'érable et le Kangourou de rubis en partie sous l'étiquette du nom de l'île seule (le chantier de l'étiquette) ;
+      // le Colporteur, sur son carré du bord, entier dans le cadre, un peu derrière un bâtiment du village ; le Mammouth
+      // de givre et le Dragon de lumière, leur habitant écarté ; les statues d'Archipéo grandies sur leur carré, un peu
+      // derrière un cube (le Sphinx des routes, le Delta, la Colonnade, la France).
+      'maths-5e-signed-numbers': 0.98,
+      'maths-5e-proportionality': 0.83,
       'french-5e-homophones': 0.98,
+      'french-5e-conjugation': 0.99,
       'french-4e-agreement': 0.82,
-      'maths-3e-functions': 0.89,
+      'maths-3e-geometry': 0.95,
+      'maths-3e-functions': 0.86,
       'english-6e-grammar': 0.79,
+      'english-5e-vocabulary': 0.98,
       'history-6e-antiquity': 0.99,
       'geography-6e-living': 0.87,
       'history-5e-middle-ages': 0.93,

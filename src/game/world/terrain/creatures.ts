@@ -123,14 +123,17 @@ export interface CreatureSpot {
  * la vue de l'île fiche du Gardien ouverte, Voix disparaissait derrière l'étiquette (DA, relecture des captures emc-2) ;
  * trois cases vers −x, il passe à droite de l'étiquette, à côté des bornes, sans rien cacher. Depuis que son carnet est
  * posé à plat devant lui (passe 4), son modèle a deux rangées de plus devant le corps : il vise (−1, 3), son corps passe
- * une case en arrière, et le milieu de son emprise, où se pose la créature d'Archipéo, ne bouge pas. Au Phare des
- * fonctions, en (2, 14), l'habitant se tenait devant le Gardien (68 % vu) ; aucun autre carré de l'île ne le montrait
- * mieux dans le cadre : deux cases plus loin, en (4, 15), il passe à côté (89 % vu, le reste derrière la salle des
- * trophées et l'étiquette de l'île ; proportions du 5e au 3e, 11 octobre 2026).
+ * une case en arrière, et le milieu de son emprise, où se pose la créature d'Archipéo, ne bouge pas. Avec les
+ * proportions du 5e au 3e (GD-18, 11 octobre 2026), là où aucun carré de l'île, entier dans le cadre, ne montrait mieux
+ * le Gardien sans changer la terre de l'île : au Glacier des relatifs, en (2, 4), Frimas passait devant le Mammouth de
+ * givre (84 % vu) ; deux cases plus loin, en (4, 4), il passe à côté (98 % vu). Au Phare des fonctions, en (2, 14), Fi
+ * se tenait devant le Dragon de lumière (68 % vu) ; une case plus loin, en (3, 15), il passe à côté (86 % vu, le reste
+ * derrière la salle des trophées et l'étiquette de l'île), sans cacher la commande de l'île.
  */
 const CIBLE_DE_L_HABITANT: Partial<Record<BiomeId, { x: number; y: number }>> = {
   'civics-6e-democratic-society': { x: -1, y: 3 },
-  'maths-3e-functions': { x: 4, y: 15 },
+  'maths-5e-signed-numbers': { x: 4, y: 4 },
+  'maths-3e-functions': { x: 3, y: 15 },
 };
 
 /**

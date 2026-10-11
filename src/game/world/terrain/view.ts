@@ -318,15 +318,12 @@ const GUARDIAN_FRAMING: Readonly<Partial<Record<BiomeId, { towards: number }>>> 
   'french-6e-reading': { towards: 0.25 },
   'maths-6e-calculation': { towards: 0.1 },
   'technology-6e-objects': { towards: 0.1 },
-  'maths-5e-signed-numbers': { towards: 0.05 },
-  'maths-5e-proportionality': { towards: 0.55 },
-  'french-5e-conjugation': { towards: 0.4 },
-  'english-5e-vocabulary': { towards: 0.45 },
+  'french-5e-conjugation': { towards: 0.15 },
   'english-5e-grammar': { towards: 0.45 },
   'maths-4e-powers': { towards: 0.15 },
   'maths-4e-algebra': { towards: 0.5 },
   'technology-4e-modeling': { towards: 0.1 },
-  'maths-3e-geometry': { towards: 0.2 },
+  'maths-3e-geometry': { towards: 0.15 },
   'french-3e-close-reading': { towards: 0.4 },
 };
 
