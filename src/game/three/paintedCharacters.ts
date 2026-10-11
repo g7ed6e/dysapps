@@ -24,9 +24,9 @@ import { startStrolls, strollAt, type Stroll } from '../world/scene';
 import { LISERE_DE_NUIT } from '../world/characters/colors';
 import type { Lumiere } from './light';
 import type { Instant, Monde } from './scenePart';
-import type { Habits } from './characters';
+import { balancer, type Habits } from './characters';
 
-/** Le balancement du pas du bonhomme, os par os (le même que celui du bonhomme en blocs). */
+/** Le balancement du pas du bonhomme dessiné en code, os par os (le même que celui du bonhomme en blocs). */
 const PAS: Record<string, number> = {
   'bras-gauche': 1,
   'bras-droit': -1,
@@ -35,16 +35,11 @@ const PAS: Record<string, number> = {
 };
 
 /**
- * Le sens du balancement d'un os du bonhomme quand il marche : ceux du bonhomme dessiné en code (`PAS`) ; pour Kéo
- * (ses os de squelette.py), le même pas, ses bras (`arm.*`) comme ceux du bonhomme et ses cuisses (`thigh.*`) comme
- * ses jambes, du côté où pend l'os (x < 0 : le côté gauche du bonhomme, face à l'élève). Ni tibia, ni dos, ni tête.
+ * Le sens du balancement d'un os du bonhomme dessiné en code quand il marche (`balancer`, ./characters.ts) ; 0 pour les
+ * autres os. Kéo, lui, a sa marche (`poseDeKeo`).
  */
-export function swingOf(o: Pick<Os, 'nom' | 'pivot'>): number {
-  if (o.nom in PAS) return PAS[o.nom];
-  const gauche = o.pivot[0] < 0;
-  if (o.nom.startsWith('arm.')) return PAS[gauche ? 'bras-gauche' : 'bras-droit'];
-  if (o.nom.startsWith('thigh.')) return PAS[gauche ? 'jambe-gauche' : 'jambe-droite'];
-  return 0;
+export function swingOf(o: Pick<Os, 'nom'>): number {
+  return PAS[o.nom] ?? 0;
 }
 
 /** Le geste lent d'une créature : son bras et son outil se lèvent un peu, une fois toutes les cinq secondes. */
@@ -158,6 +153,44 @@ export const ALLURES: Partial<Record<BiomeId, Partial<Allure>>> = {
 
 /** L'allure d'une créature : la marche commune, et ce que la sienne change. */
 export const allureDe = (id: BiomeId): Allure => ({ ...GESTES.pas, ...ALLURES[id] });
+
+/**
+ * La marche de Kéo, le bonhomme d'Archipéo (demande du mainteneur, 11 octobre 2026 : « une marche naturelle ») : le
+ * cycle des créatures (`poseDeMarche`) à l'allure d'un enfant, genoux qui plient, bassin qui tourne, bascule et
+ * rebondit, bras opposés aux jambes, tête stable. Le bonhomme avance toujours à six cases par seconde : le pas ne suit
+ * pas le sol (il faudrait près de huit pas par seconde), il garde une cadence calme (`cadence`, en radians par seconde,
+ * un peu moins de trois pas par seconde), plus lente que le pas sautillant du bonhomme en cubes (./characters.ts).
+ * `depart` : le temps, en secondes, pour entrer dans la marche ou en sortir, sans à-coup. `souffle` : au repos comme
+ * en marche, le buste respire lentement (amplitude en radians, période en secondes), la tête compense.
+ */
+export const MARCHE_DE_KEO = {
+  allure: { ...GESTES.pas, angle: 0.4, cadence: 9, bras: 0.35, dandine: 0, penche: 0.04, monte: 0.05 } satisfies Allure,
+  depart: 0.3,
+  souffle: [0.03, 4.5] as const,
+} as const;
+
+/** Où en est le pas de Kéo : `phi`, l'angle dans le cycle ; `rampe`, de 0 (à l'arrêt) à 1 (en pleine marche). */
+export interface PasDeKeo {
+  phi: number;
+  rampe: number;
+}
+
+/**
+ * Fait avancer le pas de Kéo de `dt` secondes (au temps `t`, pour le souffle) et rend sa pose : les angles de ses os et
+ * la hauteur de son corps (de 0 à 1, à multiplier par `allure.monte`). L'élan monte et descend sur `depart` secondes, en
+ * douceur ; à l'arrêt, le cycle repart de zéro et seul le souffle reste.
+ */
+export function poseDeKeo(pas: PasDeKeo, t: number, dt: number, enMarche: boolean): ReturnType<typeof poseDeMarche> {
+  const { allure, depart, souffle } = MARCHE_DE_KEO;
+  pas.rampe = Math.min(1, Math.max(0, pas.rampe + (enMarche ? dt : -dt) / depart));
+  const elan = adoucir(pas.rampe);
+  pas.phi = elan > 0 ? (pas.phi + dt * allure.cadence) % (2 * Math.PI) : 0;
+  const pose = poseDeMarche(allure, pas.phi, elan);
+  // Le buste respire et penche un peu en avant quand il marche ; la tête compense, elle reste droite.
+  const buste = cycle(souffle, t) - allure.penche * elan;
+  pose.angles.push(['spine', 'x', buste], ['head', 'x', -buste]);
+  return pose;
+}
 
 /**
  * Les os d'un squelette, chacun à sa place de repos (relative à son parent), et le maillage qui les porte. Sans
@@ -326,6 +359,12 @@ export function habiller(
   const matBonhomme = materiauALueur();
   const corpsDuBonhomme = squelette(geometrieDe(bonhomme), bonhomme.os, bonhomme.squelette, matBonhomme.materiau, bonhomme.poids);
   avatar.add(corpsDuBonhomme.mesh);
+  // Kéo (ses os de squelette.py) marche et respire ; le bonhomme dessiné en code balance ses membres.
+  const osDeKeo = new Map(bonhomme.squelette.map((o, i) => [o.nom, corpsDuBonhomme.bones[i]] as const));
+  const hanchesDeKeo = osDeKeo.has('thigh.L') ? osDeKeo.get('hips') : undefined;
+  const hauteurDesHanches = hanchesDeKeo?.position.y ?? 0;
+  const pasDeKeo: PasDeKeo = { phi: 0, rampe: 0 };
+  const membresDuBonhomme = bonhomme.squelette.map((o, i) => ({ os: corpsDuBonhomme.bones[i] as THREE.Object3D, sens: swingOf(o) })).filter((m) => m.sens);
 
   // Les créatures et les Gardiens : leurs maillages dans la scène, leurs boîtes de toucher (invisibles) dans `creatures`.
   const boite = new THREE.BoxGeometry(1, 1, 1);
@@ -400,7 +439,19 @@ export function habiller(
   };
 
   return {
-    membres: bonhomme.squelette.map((o, i) => ({ os: corpsDuBonhomme.bones[i] as THREE.Object3D, sens: swingOf(o) })).filter((m) => m.sens),
+    bougerLeBonhomme: (t, dt, enMarche, reduit) => {
+      if (!hanchesDeKeo) return balancer(membresDuBonhomme, t, enMarche);
+      if (reduit) {
+        // « Réduire les animations » : une pose fixe, celle du repos (l'appareil a pu le demander en cours de partie).
+        pasDeKeo.phi = pasDeKeo.rampe = 0;
+        for (const b of osDeKeo.values()) b.rotation.set(0, 0, 0);
+        hanchesDeKeo.position.y = hauteurDesHanches;
+        return;
+      }
+      const { angles, haut } = poseDeKeo(pasDeKeo, t, dt, enMarche);
+      for (const [nom, axe, angle] of angles) tourner(osDeKeo, nom, axe, angle);
+      hanchesDeKeo.position.y = hauteurDesHanches + MARCHE_DE_KEO.allure.monte * haut;
+    },
     poserLesCreatures: (placements, pres = null) => {
       vider();
       const lesCreatures = placements.filter((c) => (c.kind ?? 'creature') === 'creature');

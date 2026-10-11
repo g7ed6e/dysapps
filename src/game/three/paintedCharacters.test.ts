@@ -8,7 +8,8 @@ import { creaturePlacements, guardianPlacements } from '../world/terrain';
 import { fusionDesCreatures, fusionDesGardiens } from '../world/characters/merges';
 import type { Instant, Monde } from './scenePart';
 import { creerPersonnages } from './characters';
-import { GESTES, materiauALueur, swingOf, poseDeMarche } from './paintedCharacters';
+import { GESTES, MARCHE_DE_KEO, materiauALueur, swingOf, poseDeKeo, poseDeMarche, type PasDeKeo } from './paintedCharacters';
+import { loadKeoFromDisk } from '../world/characters/imported/fromDisk.testing';
 
 const { progress, world: village } = toutConstruit();
 
@@ -192,15 +193,108 @@ describe('Le cycle de marche des créatures à squelette (poseDeMarche)', () => 
   });
 });
 
-describe('La marche du bonhomme (`swingOf`)', () => {
-  it('Kéo balance ses bras et ses cuisses comme le bonhomme dessiné en code, chacun de son côté ; ni tibias, ni dos, ni tête', () => {
-    expect(swingOf({ nom: 'bras-gauche', pivot: [-0.255, 1.56, 0] })).toBe(1);
-    expect(swingOf({ nom: 'arm.L', pivot: [-0.3, 1.44, 0] })).toBe(swingOf({ nom: 'bras-gauche', pivot: [-0.255, 1.56, 0] }));
-    expect(swingOf({ nom: 'arm.R', pivot: [0.3, 1.44, 0] })).toBe(swingOf({ nom: 'bras-droit', pivot: [0.255, 1.56, 0] }));
-    expect(swingOf({ nom: 'thigh.L', pivot: [-0.2, 0.84, 0] })).toBe(swingOf({ nom: 'jambe-gauche', pivot: [-0.1, 0.874, 0] }));
-    expect(swingOf({ nom: 'thigh.R', pivot: [0.2, 0.84, 0] })).toBe(swingOf({ nom: 'jambe-droite', pivot: [0.1, 0.874, 0] }));
-    // Le bras gauche et la jambe gauche vont à l'inverse l'un de l'autre.
-    expect(swingOf({ nom: 'arm.L', pivot: [-0.3, 1.44, 0] })).toBe(-swingOf({ nom: 'thigh.L', pivot: [-0.2, 0.84, 0] }));
-    for (const nom of ['shin.L', 'shin.R', 'hips', 'spine', 'head']) expect(swingOf({ nom, pivot: [-0.1, 1, 0] }), nom).toBe(0);
+describe('Le bonhomme dessiné en code (`swingOf`)', () => {
+  it('balance ses bras et ses jambes, chacun de son côté, le bras gauche à l’inverse de la jambe gauche ; aucun os de Kéo', () => {
+    expect(swingOf({ nom: 'bras-gauche' })).toBe(1);
+    expect(swingOf({ nom: 'bras-droit' })).toBe(-1);
+    expect(swingOf({ nom: 'jambe-gauche' })).toBe(-1);
+    expect(swingOf({ nom: 'jambe-droite' })).toBe(1);
+    for (const nom of ['arm.L', 'thigh.R', 'shin.L', 'hips', 'spine', 'head']) expect(swingOf({ nom }), nom).toBe(0);
+  });
+});
+
+describe('La marche de Kéo (`poseDeKeo`)', () => {
+  /** Kéo marche (ou s'arrête) pendant `duree` secondes, à 60 images par seconde ; rend chaque pose. */
+  const jouer = (pas: PasDeKeo, debut: number, duree: number, enMarche: boolean) => {
+    const poses: ReturnType<typeof poseDeKeo>[] = [];
+    for (let k = 1; k <= Math.round(duree * 60); k++) poses.push(poseDeKeo(pas, debut + k / 60, 1 / 60, enMarche));
+    return poses;
+  };
+  const angleDe = (pose: ReturnType<typeof poseDeKeo>, nom: string, axe = 'x') => pose.angles.find(([n, a]) => n === nom && a === axe)?.[2] ?? 0;
+
+  it('l’aperçu hors du jeu (scripts/rendu/modeles/marche.py) marche comme Kéo dans le jeu', () => {
+    const py = readFileSync('scripts/rendu/modeles/marche.py', 'utf8');
+    const allure = JSON.parse(/^ALLURE_DE_KEO = (\{[^}]*\})/m.exec(py)![1]) as Record<string, number>;
+    expect(allure).toEqual(MARCHE_DE_KEO.allure);
+  });
+
+  it('une marche calme : moins de trois pas par seconde, des genoux qui plient, sans dandinement', () => {
+    expect(MARCHE_DE_KEO.allure.cadence / Math.PI).toBeLessThan(3);
+    expect(MARCHE_DE_KEO.allure.dandine).toBe(0);
+    const poses = jouer({ phi: 0, rampe: 0 }, 0, 3, true).slice(60);
+    const genou = Math.min(...poses.map((p) => angleDe(p, 'shin.L')));
+    expect(genou).toBeLessThan(-0.6);
+    // Le bras gauche part en arrière quand la cuisse gauche part en avant (à un rien de retard près).
+    const correlation = poses.reduce((s, p) => s + angleDe(p, 'arm.L') * angleDe(p, 'thigh.L'), 0);
+    expect(correlation).toBeLessThan(0);
+    // Le bassin rebondit : deux fois par cycle, entre 0 et 1.
+    expect(Math.max(...poses.map((p) => p.haut))).toBeGreaterThan(0.95);
+    expect(Math.min(...poses.map((p) => p.haut))).toBeLessThan(0.05);
+  });
+
+  it('la tête reste stable : elle compense le bassin, le buste et le souffle', () => {
+    for (const p of jouer({ phi: 0, rampe: 0 }, 0, 2, true)) {
+      expect(angleDe(p, 'hips', 'y') + angleDe(p, 'spine', 'y') + angleDe(p, 'head', 'y')).toBeCloseTo(0, 6);
+      expect(angleDe(p, 'spine') + angleDe(p, 'head')).toBeCloseTo(0, 6);
+    }
+  });
+
+  it('il part et s’arrête sans à-coup : d’une image à l’autre, aucun os ne va plus vite qu’en pleine marche', () => {
+    const pas = { phi: 0, rampe: 0 };
+    const poses = [...jouer(pas, 0, 1, false), ...jouer(pas, 1, 3, true), ...jouer(pas, 4, 1, false)];
+    const ecart = (k: number) => Math.max(...poses[k].angles.map(([nom, axe, a]) => Math.abs(a - angleDe(poses[k - 1], nom, axe))));
+    // En pleine marche (de la deuxième à la troisième seconde), le genou va au plus vite : un peu moins de 0,16 radian par image.
+    let enMarche = 0;
+    for (let k = 120; k < 180; k++) enMarche = Math.max(enMarche, ecart(k));
+    expect(enMarche).toBeLessThan(0.17);
+    for (let k = 1; k < poses.length; k++) expect(ecart(k), `image ${k}`).toBeLessThan(1.05 * enMarche);
+    // Arrêté, le cycle repart de zéro.
+    expect(pas).toEqual({ phi: 0, rampe: 0 });
+  });
+
+  it('au repos, il respire seulement : le buste, lentement, et rien d’autre', () => {
+    const poses = jouer({ phi: 0, rampe: 0 }, 0, MARCHE_DE_KEO.souffle[1], false);
+    for (const p of poses) {
+      expect(p.haut).toBe(0);
+      for (const [nom, axe, a] of p.angles) if (!(axe === 'x' && (nom === 'spine' || nom === 'head'))) expect(Math.abs(a), nom).toBe(0);
+    }
+    expect(Math.max(...poses.map((p) => angleDe(p, 'spine')))).toBeCloseTo(MARCHE_DE_KEO.souffle[0], 3);
+  });
+
+  describe('dans la scène', () => {
+    beforeAll(() => loadKeoFromDisk());
+
+    it('il respire au repos, marche le long d’un trajet, et « Réduire les animations » le fige dans sa pose de repos', async () => {
+      const m = monde(HABILLAGES.archipeo);
+      const ici = instant();
+      const p = creerPersonnages(m, () => null, ici, null);
+      await vi.dynamicImportSettled();
+      const keo = p.avatar.children.find((o) => o instanceof THREE.SkinnedMesh) as THREE.SkinnedMesh;
+      const os = (nom: string) => keo.skeleton.bones[['hips', 'spine', 'head', 'thigh.L', 'shin.L', 'thigh.R', 'shin.R', 'arm.L', 'arm.R'].indexOf(nom)];
+      expect(keo.skeleton.bones).toHaveLength(9);
+      const repos = os('hips').position.y;
+      // Sans trajet, il respire : le dos bouge, les jambes non.
+      ici.now = performance.now();
+      p.deplacer!(1.2, 1 / 60, false);
+      expect(os('spine').rotation.x).not.toBe(0);
+      expect(os('thigh.L').rotation.x).toBe(0);
+      // Un trajet de vingt cases (un peu plus de trois secondes) : au bout d'une seconde, ses genoux ont plié.
+      p.marcher({ route: Array.from({ length: 21 }, (_, x) => ({ x, y: 0, z: 0 })), seq: 1 });
+      let genou = 0;
+      for (let k = 1; k <= 60; k++) {
+        ici.now += 1000 / 60;
+        p.deplacer!(1.2 + k / 60, 1 / 60, false);
+        genou = Math.min(genou, os('shin.L').rotation.x, os('shin.R').rotation.x);
+      }
+      expect(genou).toBeLessThan(-0.3);
+      expect(p.marche).not.toBeNull();
+      // « Réduire les animations » : il arrive, et reste dans sa pose de repos.
+      p.deplacer!(2.3, 1 / 60, true);
+      for (const b of keo.skeleton.bones) expect([b.rotation.x, b.rotation.y, b.rotation.z]).toEqual([0, 0, 0]);
+      expect(os('hips').position.y).toBe(repos);
+      p.deplacer!(2.4, 1 / 60, true);
+      expect(os('spine').rotation.x).toBe(0);
+      p.dispose();
+    });
   });
 });
