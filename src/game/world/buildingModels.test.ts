@@ -175,7 +175,7 @@ describe('Les bâtiments importés, lus sur le disque', () => {
     for (let t = de; t < a; t++) expect(m.fenetres.decalages[m.fenetres.indices[3 * t]]).toBe(0);
   });
 
-  it.each(TOUS)('%s, posé sur ses deux plans : au pied du premier rang, dans leur emprise à une demi-case près, pas plus haut qu’eux', (id) => {
+  it.each(TOUS)('%s, posé sur ses deux plans : au pied du premier rang, dans leur emprise à une demi-case près, qu’il prend en largeur ou en profondeur', (id) => {
     const [premier, second] = buildingCells(id);
     const cases = [...premier, ...second].map((k) => k.split(',').map(Number));
     const lo = [0, 1, 2].map((k) => Math.min(...cases.map((c) => c[k])));
@@ -185,12 +185,14 @@ describe('Les bâtiments importés, lus sur le disque', () => {
     // Repère Three : x, la hauteur, puis y de la grille.
     const axe = (k: number) => p.filter((_, i) => i % 3 === k);
     expect(Math.min(...axe(1))).toBeCloseTo(lo[2], 3);
-    expect(Math.max(...axe(1))).toBeLessThanOrEqual(hi[2] + 1e-6);
     expect(Math.min(...axe(0))).toBeGreaterThanOrEqual(lo[0] - 0.5 - 1e-6);
     expect(Math.max(...axe(0))).toBeLessThanOrEqual(hi[0] + 0.5 + 1e-6);
     // Sa façade au bord de devant du plan, côté caméra ; derrière, une demi-case de débord au plus.
     expect(Math.min(...axe(2))).toBeCloseTo(lo[1], 3);
     expect(Math.max(...axe(2))).toBeLessThanOrEqual(hi[1] + 1 + 1e-6);
+    // Largeur pleine (mainteneur, 11 octobre 2026) : sa hauteur suit, il remplit l’emprise d’un côté au moins.
+    const plein = (k: number, n: number) => Math.max(...axe(k)) - Math.min(...axe(k)) > n + 1 - 1e-3;
+    expect(plein(0, hi[0] - lo[0]) || plein(2, hi[1] - lo[1])).toBe(true);
   });
 
   it('suit l’île tournée (« Modifier le plan ») : le modèle tourne avec ses cases', () => {
