@@ -31,7 +31,7 @@ it.each(ARCHIPELAGO_IDS)('le monde en blocs ne recule pas : triangles et appels 
 
 it('les plafonds des archipels', () => {
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
-  expect(RENDER_BUDGET_6E).toEqual({ triangles: 87_900, drawCalls: 40 });
+  expect(RENDER_BUDGET_6E).toEqual({ triangles: 91_200, drawCalls: 40 });
   // GD-12 : 78 700 ailleurs (mainteneur, 9 octobre 2026, carte « Relever ») ; relevé à 86 000 par le mainteneur le
   // 9 octobre 2026 pour le Fournil des partages et la Grotte des légendes (5e) ; à 86 700 pour les personnages importés
   // de la 5e (mainteneur, 10 octobre 2026). Les monuments importés d'Archipéo : 81 500 et 91 700 (86 700 + 5 000, relevés
@@ -142,11 +142,12 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // 10 octobre 2026) : la construction prend 3 750 aux Premiers Rivages, 2 970 aux Îles Brumeuses, 3 950 ailleurs. Les
   // trois essais de la piste 3 « hybride » (11 octobre 2026) : la construction prend 1 550 et les commandes 250 aux
   // Premiers Rivages (86 840) ; le lot 1 des objets du 6e (même jour) : la construction 650 et les commandes 400
-  // (87 890).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, les essais et le lot 1 de la piste 3) : 87 890 triangles et 25 appels aux Premiers Rivages, 94 655, 94 910 et 93 515 et 24 appels ailleurs', () => {
+  // (87 890) ; le lot 2 (même jour : le décor du cœur et les trois lieux de l'île-école dessinés) : la construction
+  // 3 300 (91 190).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, les essais et les lots 1 et 2 de la piste 3) : 91 190 triangles et 25 appels aux Premiers Rivages, 94 655, 94 910 et 93 515 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([87_890, 25]);
+    expect([total('6e'), appels('6e')]).toEqual([91_190, 25]);
     expect([total('5e'), appels('5e')]).toEqual([94_655, 24]);
     expect([total('4e'), appels('4e')]).toEqual([94_910, 24]);
     expect([total('3e'), appels('3e')]).toEqual([93_515, 24]);

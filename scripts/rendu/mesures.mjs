@@ -791,6 +791,35 @@ const CAPTURES = [
   { nom: 'objets-6e-archipel', vue: 'archipel', famille: 'objets-sixieme', ile: 'french-6e-letter-confusion', posees: 'toutes', finesse: 2 },
   { nom: 'objets-6e-trophee', vue: 'île', famille: 'objets-sixieme', ile: 'history-6e-antiquity', posees: 'toutes', zoomer: 5, sansEtiquettes: true, finesse: 2 },
   { nom: 'objets-6e-quai', vue: 'île', famille: 'objets-sixieme', ile: 'maths-6e-calculation', posees: 'toutes', zoomer: 2, finesse: 2 },
+  // Le lot 2 : le décor du cœur de chaque île du 6e dessiné (./objects/coeurs.ts), regroupé : une vue de plus près par île
+  // qui en a (sans les noms, pour le voir entier), de jour ; la nuit, la Baie des mots (le réverbère du cœur reste éteint)
+  // et la Lagune (la braise mate du volcan). L'île-école de près, ses trois lieux dessinés (./objects/lieux.ts : l'école et
+  // son clocheton, la salle des trophées pleine, la Halle et sa potence), de jour et de nuit (les vitres de l'école), et la
+  // salle sans trophée (ses socles vides).
+  ...[
+    ['mine', 'french-6e-letter-confusion'],
+    ['carriere', 'french-6e-word-spelling'],
+    ['ferme', 'french-6e-grammar-spelling'],
+    ['plaine', 'maths-6e-calculation'],
+    ['riviere', 'maths-6e-fractions'],
+    ['lagune', 'maths-6e-decimals'],
+    ['baie', 'english-6e-vocabulary'],
+    ['horloge', 'english-6e-grammar'],
+    ['fouille', 'history-6e-antiquity'],
+    ['pointe', 'geography-6e-living'],
+    ['vallee', 'life-earth-sciences-6e-living-world'],
+    ['labo', 'physics-chemistry-6e-matter-energy'],
+    ['hangar', 'technology-6e-objects'],
+    ['preau', 'civics-6e-democratic-society'],
+  ].flatMap(([court, ile]) => [
+    { nom: `objets-6e-coeur-${court}`, vue: 'île', famille: 'objets-sixieme', ile, posees: 'toutes', zoomer: 4, sansEtiquettes: true, finesse: 2 },
+    ...(['baie', 'lagune'].includes(court) ? [{ nom: `objets-6e-coeur-${court}-nuit`, vue: 'île', famille: 'objets-sixieme', ile, posees: 'toutes', zoomer: 4, sansEtiquettes: true, nuit: true, finesse: 2 }] : []),
+  ]),
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    { nom: `objets-6e-ecole${suffixe}`, vue: 'île', famille: 'objets-sixieme', ile: 'french-6e-phonology', succes: 'tous', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
+    { nom: `objets-6e-ecole-lieux${suffixe}`, vue: 'île', famille: 'objets-sixieme', ile: 'french-6e-phonology', succes: 'tous', posees: 'toutes', zoomer: 2, sansEtiquettes: true, finesse: 2, ...autres },
+  ]),
+  { nom: 'objets-6e-ecole-salle-vide', vue: 'île', famille: 'objets-sixieme', ile: 'french-6e-phonology', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
   // Les trois essais d'avant (pièces communes de la cour, modèle propre d'une commande à silhouette) : la Mine des lettres
   // tout construite, la cour de la forge (barrières, lanternes sur poteau, marche de pierre) et le puits de Tunel posés,
   // de près et de plus près, de jour et de nuit ; la cour à moitié posée (ses pièces à côté des fantômes) ; le puits

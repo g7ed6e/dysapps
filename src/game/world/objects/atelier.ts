@@ -52,6 +52,17 @@ const surLAnneau = (cx: number, cy: number, r: number, z: number, i: number, n: 
   return [cx + r * Math.cos(a), cy + r * Math.sin(a), z];
 };
 
+/** Deux directions unitaires perpendiculaires à `d` et entre elles (horizontale d'abord, si `d` ne monte pas tout droit). */
+function perpendiculaires(d: V3): [V3, V3] {
+  const l = Math.hypot(...d);
+  const u: V3 = [d[0] / l, d[1] / l, d[2] / l];
+  const h = Math.hypot(u[0], u[1]) > 1e-3 ? ([-u[1], u[0], 0] as V3) : ([1, 0, 0] as V3);
+  const hl = Math.hypot(...h);
+  const p: V3 = [h[0] / hl, h[1] / hl, h[2] / hl];
+  const q: V3 = [u[1] * p[2] - u[2] * p[1], u[2] * p[0] - u[0] * p[2], u[0] * p[1] - u[1] * p[0]];
+  return [p, q];
+}
+
 export class Atelier {
   /** Le tracé dans le repère de Three de l'objet (X, Y : la hauteur, Z), pour les primitives du décor (../decor/brush.ts). */
   readonly trace: Trace;
@@ -184,6 +195,37 @@ export class Atelier {
         const pts = tour.map(([s, r]) => coin(o, s, r));
         this.quad(pts[0], pts[1], pts[2], pts[3], m, t);
       }
+  }
+
+  /**
+   * Une pointe à `n` pans sur un axe quelconque (un éclat d'obsidienne penché, une fronde de fougère) : l'anneau de
+   * rayon `r` autour de `base`, perpendiculaire à l'axe, jusqu'à la pointe `tip`. `n` triangles, sans fond (posée ou
+   * enfoncée dans le sol).
+   */
+  pointe(base: V3, tip: V3, r: number, n: number, t: Teinte, rot = 0): void {
+    const [p, q] = perpendiculaires([tip[0] - base[0], tip[1] - base[1], tip[2] - base[2]]);
+    const anneau = (i: number): V3 => {
+      const a = rot + (i / n) * Math.PI * 2;
+      const [c, s] = [Math.cos(a) * r, Math.sin(a) * r];
+      return [base[0] + p[0] * c + q[0] * s, base[1] + p[1] * c + q[1] * s, base[2] + p[2] * c + q[2] * s];
+    };
+    for (let i = 0; i < n; i++) this.tri(anneau(i), anneau(i + 1), tip, base, t);
+  }
+
+  /**
+   * Un disque debout, tourné vers `vers` (un des quatre côtés : +x, −x, +y, −y), centré en `c`, à `n` pans (le cadran
+   * d'une horloge, la vitre ronde d'un pignon) : `n − 2` triangles.
+   */
+  disqueDebout(c: V3, vers: 'px' | 'nx' | 'py' | 'ny', r: number, n: number, t: Teinte, rot = 0): void {
+    const sur = vers === 'px' || vers === 'nx' ? 'x' : 'y';
+    const s = vers[0] === 'p' ? 1 : -1;
+    const pt = (i: number): V3 => {
+      const a = rot + (i / n) * Math.PI * 2;
+      const [u, w] = [Math.cos(a) * r, Math.sin(a) * r];
+      return sur === 'x' ? [c[0], c[1] + u, c[2] + w] : [c[0] + u, c[1], c[2] + w];
+    };
+    const derriere: V3 = sur === 'x' ? [c[0] - s, c[1], c[2]] : [c[0], c[1] - s, c[2]];
+    for (let i = 1; i + 1 < n; i++) this.tri(pt(0), pt(i), pt(i + 1), derriere, t);
   }
 
   /** Un rouleau couché à `n` pans, d'axe x ou y, de `de` à `a` le long de cet axe, centré en (u, z) sur l'autre : sans bouts. */

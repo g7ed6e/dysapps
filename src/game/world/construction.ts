@@ -61,6 +61,8 @@ import { getImportedMonuments, type ImportedMonument, monumentsVersion } from '.
 import { buildingsVersion, getImportedBuildings } from './buildingModels';
 import { petitesConstructionsDessinees } from './fixtureModels';
 import { objetsDuQuaiDessines, tropheesDessines } from './objects/inTheWorld';
+import { coeursDessines } from './objects/coeurs';
+import { lieuxDessines } from './objects/lieux';
 import type { BiomeId } from '../biomes';
 import { estUnePlaceDeTrophee } from './trophyHall';
 import { mixColor } from './daylight';
@@ -351,11 +353,23 @@ export function maillageDeLaConstruction(
   // remplace les cubes posés.
   // Les objets que le kit d'Archipéo dessine (`Kit.objetsDessines`, lot 1 du 6e de la piste 3) : les petites
   // constructions posées (./fixtureModels.ts), le bloc d'or des Gardiens rallumés et les objets du quai
-  // (./objects/inTheWorld.ts) ; comme un modèle importé, ils remplacent leurs cubes.
+  // (./objects/inTheWorld.ts) ; puis (lot 2) le décor du cœur des îles (./objects/coeurs.ts) et les trois lieux du village,
+  // de près sur l'île `pres` (./objects/lieux.ts) ; comme un modèle importé, ils remplacent leurs cubes.
   const objets = !options.navire && (options.kit ?? KITS[a]).objetsDessines;
   const imported = options.navire
     ? []
-    : [...modelesImportes(cubes, options.pres), ...(objets ? [...petitesConstructionsDessinees(a, cubes, options.pres), ...tropheesDessines(a, cubes), ...objetsDuQuaiDessines(a, cubes)] : [])];
+    : [
+        ...modelesImportes(cubes, options.pres),
+        ...(objets
+          ? [
+              ...petitesConstructionsDessinees(a, cubes, options.pres),
+              ...tropheesDessines(a, cubes),
+              ...objetsDuQuaiDessines(a, cubes),
+              ...coeursDessines(a, cubes),
+              ...lieuxDessines(a, cubes, options.pres),
+            ]
+          : []),
+      ];
   const importedCells = new Set(imported.flatMap((m) => [...m.replaced]));
   // Le phare du large du 5e : ses pièces finies laissent la place à son modèle (./offshoreLighthouse.ts), sauf s'il est importé.
   const large = options.navire || imported.some((m) => m.id === PHARE_DU_LARGE) ? null : phareDuLarge(cubes);

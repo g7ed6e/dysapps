@@ -228,8 +228,9 @@ describe('Les bâtiments importés, lus sur le disque', () => {
     const cubes = premiersRivages([Infinity, Infinity, Infinity]).filter((c) => c.tag === FORGE && !c.sol);
     const m = maillageDeLaConstruction('6e', cubes, [], { pres: FORGE });
     const [premier] = buildingCells(FORGE);
-    // Le bâtiment, et le trophée du Gardien rallumé de l'île (world/objects/inTheWorld.ts), dessiné lui aussi comme un modèle.
-    expect(m.monuments?.length).toBe(2);
+    // Le bâtiment, le trophée du Gardien rallumé de l'île (world/objects/inTheWorld.ts) et l'entrée de la galerie de son
+    // cœur (world/objects/coeurs.ts), dessinés eux aussi comme des modèles.
+    expect(m.monuments?.length).toBe(3);
     const tranches = m.monuments!.filter((q) => q.cellules.some((c) => premier.has(`${c.x},${c.y},${c.z}`)));
     expect(tranches).toHaveLength(1);
     const [tranche] = tranches;

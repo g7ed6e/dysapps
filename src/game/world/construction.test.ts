@@ -608,7 +608,9 @@ describe('Les toits de terre cuite (lot R5)', () => {
       // à allumer.
       const pleins = new Set(cubes.filter((c) => !c.ghost).map((c) => cle(c.x, c.y, c.z)));
       const enferme = (c: VoxelCube) => [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0]].every(([dx, dy, dz]) => pleins.has(cle(c.x + dx, c.y + dy, c.z + dz)));
-      const allumesOracle = new Set([...f].filter(([c, v]) => v.decalage >= 0 && !(v.genre === 'lueur' && enferme(c))).map(([c]) => cle(c.x, c.y, c.z)));
+      // Les vitres d'un bloc qu'un modèle remplace (au 6e, l'école dessinée, world/objects/lieux.ts) sont dans son feu.
+      const parUnModele = new Set((m.monuments ?? []).flatMap((q) => q.cellules.map((c) => cle(c.x, c.y, c.z))));
+      const allumesOracle = new Set([...f].filter(([c, v]) => v.decalage >= 0 && !(v.genre === 'lueur' && enferme(c)) && !parUnModele.has(cle(c.x, c.y, c.z))).map(([c]) => cle(c.x, c.y, c.z)));
       expect(allumes3D, a).toEqual(allumesOracle);
       expect(m.opaque.aretes.length, a).toBe(m.opaque.positions.length / 3);
     }

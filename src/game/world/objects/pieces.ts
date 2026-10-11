@@ -323,3 +323,52 @@ export function foyer(at: Atelier, pe: Peinture, x: number, y: number, z: number
   at.pyramide(cx, cy, 0.09, 0.09, z + 0.17, z + 0.34, pe.couleur(COULEURS_DES_OBJETS.braise));
 }
 
+
+// ---------- Les pièces du décor du cœur (lot 2 du 6e) ----------
+
+/**
+ * Un galet posé dans la case, au centre (cx, cy), en z0 : un caillou rond et plat à `n` pans (le flanc évasé, l'épaule,
+ * le dessus), de rayon `r` et haut de `h`, tourné de `rot`. `5n − 2` triangles (23 à cinq pans).
+ */
+export function galet(at: Atelier, cx: number, cy: number, z0: number, r: number, h: number, t: Teinte, n = 5, rot = 0.3): void {
+  at.prisme(cx, cy, r * 0.82, r, z0, z0 + h * 0.45, n, t, rot, true);
+  at.prisme(cx, cy, r, r * 0.62, z0 + h * 0.45, z0 + h, n, t, rot);
+}
+
+/**
+ * Un tas (de sable, de terre, de mousse) au centre (cx, cy), posé en z0 : un tronc de cône bas à `n` pans, de rayon `r`,
+ * puis son sommet en pointe émoussée, haut de `h`. `3n` triangles.
+ */
+export function tas(at: Atelier, cx: number, cy: number, z0: number, r: number, h: number, t: Teinte, n = 8, rot = 0.2): void {
+  const zEpaule = z0 + h * 0.55;
+  at.prisme(cx, cy, r, r * 0.55, z0, zEpaule, n, t, rot, true);
+  at.prisme(cx, cy, r * 0.55, 0, zEpaule, z0 + h, n, t, rot);
+}
+
+/**
+ * Une gerbe de blé debout au centre (cx, cy), posée en z0, haute de `h` : le pied de paille qui se serre, la tête d'épis
+ * qui s'ouvre et sa pointe, quatre pans tournés d'un huitième de tour ; le lien (`lien`), une bande sur le pan de devant,
+ * vers la caméra (−y). 22 triangles.
+ */
+export function gerbe(at: Atelier, cx: number, cy: number, z0: number, h: number, paille: Teinte, lien: Teinte): void {
+  const q = Math.PI / 4;
+  const zl = z0 + h * 0.45;
+  at.prisme(cx, cy, 0.24, 0.13, z0, zl, 4, paille, q, true);
+  at.prisme(cx, cy, 0.13, 0.27, zl, z0 + h * 0.82, 4, paille, q, true);
+  at.prisme(cx, cy, 0.27, 0, z0 + h * 0.82, z0 + h, 4, paille, q);
+  // Le lien : sur le pan de devant, à la taille de la gerbe (son demi-côté y vaut 0,13 · cos 45°).
+  const [e, y] = [0.13 * Math.SQRT1_2 + 0.012, cy - (0.13 * Math.SQRT1_2 + 0.012)];
+  at.quad([cx - e, y, zl - 0.05], [cx + e, y, zl - 0.05], [cx + e, y, zl + 0.05], [cx - e, y, zl + 0.05], [cx, cy, zl], lien);
+}
+
+/**
+ * Une borne au bord du chemin, dans la case (x, y) posée en z0 : la plinthe, le fût carré jusqu'à `haut`, la tête en
+ * pointe de diamant basse (`tete` : sa couleur, la matière sinon). 30 triangles.
+ */
+export function borne(at: Atelier, pe: Peinture, x: number, y: number, z0: number, haut: number, corps: Teinte, tete?: Teinte): void {
+  const [cx, cy] = [x + 0.5, y + 0.5];
+  at.bloc(cx, cy, 0.78, 0.78, z0, z0 + 0.18, { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') });
+  at.bloc(cx, cy, 0.56, 0.56, z0 + 0.18, z0 + haut - 0.22, corps, { dessous: true, dessus: true });
+  at.prisme(cx, cy, 0.28 * Math.SQRT2, 0.2 * Math.SQRT2, z0 + haut - 0.22, z0 + haut - 0.08, 4, tete ?? corps, Math.PI / 4, true);
+  at.prisme(cx, cy, 0.2 * Math.SQRT2, 0, z0 + haut - 0.08, z0 + haut, 4, tete ?? corps, Math.PI / 4);
+}
