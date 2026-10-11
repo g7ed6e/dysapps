@@ -28,7 +28,10 @@ if os.path.exists(f):
     for ligne in csv.reader(open(f, encoding="utf-8"), delimiter=";"):
         if len(ligne) >= 2 and not ligne[0].startswith("#"):
             quarts, *options = (ligne[2].split() if len(ligne) > 2 else []) or ["0"]
-            voxel = next((o.split("=", 1)[1] for o in options if o.startswith("voxel=")), None)
+            voxel = next((str(float(o.split("=", 1)[1])) for o in options if o.startswith("voxel=")), None)
+            for o in options:
+                if not o.startswith("voxel="):
+                    print(f"{ligne[0].strip()} : option inconnue ignoree : {o}", flush=True)
             reglages[ligne[0].strip()] = (ligne[1].strip(), quarts, voxel)
 
 
@@ -48,7 +51,7 @@ for nom_fichier in sorted(os.listdir(dossier)):
     hauteur, quarts, voxel = reglages.get(nom, ("0.12", "0", None))
     d = os.path.join(sortie, nom)
     os.makedirs(d, exist_ok=True)
-    print(f"== {nom} (coupe {hauteur}, quarts {quarts})", flush=True)
+    print(f"== {nom} (coupe {hauteur}, quarts {quarts}, voxel {voxel or 'par defaut'})", flush=True)
     try:
         blender("aligner.py", os.path.join(dossier, nom_fichier), os.path.join(d, "1-aligne.glb"), quarts)
         # on reduit avant de couper : la reduction cale sur un modele deja coupe (vu sur le lion, 12 000 triangles au
