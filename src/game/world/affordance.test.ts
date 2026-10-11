@@ -33,7 +33,7 @@ import { creaturePlacements, gardienDuMonde, guardianPlacements, islandCenter, v
 import { textesDe } from '../../universes';
 import { GESTE_DU_SIGNE, hauteurDuSigne } from './sign';
 import type { ArchipelagoId } from './map';
-import { SENTINELLE_DANS_LE_MONDE } from './terrain/creatures';
+import { SENTINELLE_DANS_LE_MONDE, sentinelleDe } from './terrain/creatures';
 
 const textes = textesDe('blocland');
 
@@ -429,5 +429,8 @@ it('un Gardien d’Archipéo : sa bulle au-dessus de la sentinelle qu’on voit,
   // Au-dessus du milieu de sa place, comme la statue (world/characters/merges.ts, `pointDePose`).
   expect(enSentinelle.x).toBeCloseTo(enCubes.x, 9);
   expect(enSentinelle.y).toBeCloseTo(enCubes.y, 9);
-  expect(enSentinelle.boite.max.x - enSentinelle.boite.min.x).toBeCloseTo(2 * SENTINELLE_DANS_LE_MONDE.demiLargeur, 9);
+  // La statue, grandie sur son carré (GD-18), est plus large que la sentinelle commune : la boîte la suit.
+  const { dx, dy } = sentinelleDe(g.id);
+  expect(enSentinelle.boite.max.x - enSentinelle.boite.min.x).toBeCloseTo(2 * Math.max(dx, dy), 9);
+  expect(Math.max(dx, dy)).toBeGreaterThan(SENTINELLE_DANS_LE_MONDE.demiLargeur);
 });
