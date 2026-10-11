@@ -40,7 +40,7 @@ it('les plafonds des archipels', () => {
   // Kéo, le bonhomme importé (mainteneur, 11 octobre 2026) : 92 610 → 93 610 et 96 430 → 97 455.
   expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 97_455, drawCalls: 40 });
   // Les Îles Brumeuses à part depuis leurs objets dessinés (11 octobre 2026).
-  expect(RENDER_BUDGET_5E).toEqual({ triangles: 102_130, drawCalls: 40 });
+  expect(RENDER_BUDGET_5E).toEqual({ triangles: 102_860, drawCalls: 40 });
   expect(renderBudgetOf('5e')).toBe(RENDER_BUDGET_5E);
   expect(renderBudgetOf('4e')).toBe(RENDER_BUDGET_AUTRES);
 });
@@ -151,13 +151,13 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // (87 890) ; le lot 2 (même jour : le décor du cœur et les trois lieux de l'île-école dessinés) : la construction
   // 3 300 (91 190). La Nef en modèles peints (même jour, « Relever ») : le navire 1 410 aux Premiers Rivages (92 600), 1 480
   // ailleurs. Kéo (mainteneur, 11 octobre 2026) : le bonhomme prend 1 000 aux Premiers Rivages, 1 025 ailleurs. Le lot 1
-  // des objets du 5e (même jour) : la construction 4 300 et les commandes 375 aux Îles Brumeuses (101 835, sous
-  // `RENDER_BUDGET_5E`).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, ceux de la 3e, les essais et les lots 1 et 2 de la piste 3, la Nef importée, Kéo, le lot 1 des objets du 5e) : 93 600 triangles et 25 appels aux Premiers Rivages, 101 835, 97 415 et 96 170 et 24 appels ailleurs', () => {
+  // des objets du 5e (même jour) : la construction 4 300 et les commandes 375 aux Îles Brumeuses (101 835) ; le lot 2 : la
+  // construction 600 et les commandes 130 (102 565, sous `RENDER_BUDGET_5E`).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, ceux de la 3e, les essais et les lots 1 et 2 de la piste 3, la Nef importée, Kéo, les lots 1 et 2 des objets du 5e) : 93 600 triangles et 25 appels aux Premiers Rivages, 102 565, 97 415 et 96 170 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([93_600, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([101_835, 24]);
+    expect([total('5e'), appels('5e')]).toEqual([102_565, 24]);
     expect([total('4e'), appels('4e')]).toEqual([97_415, 24]);
     expect([total('3e'), appels('3e')]).toEqual([96_170, 24]);
   });

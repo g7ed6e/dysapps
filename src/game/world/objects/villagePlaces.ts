@@ -33,8 +33,6 @@ type PlaceCell = Pick<CaseDuLieu, 'x' | 'y' | 'z' | 'w' | 'd' | 'texture'>;
 /** Le dessin d'un lieu : dans l'atelier (z = 0 au sol du lieu), avec ses couleurs, ses cubes remplacés, de près ou de loin. */
 type PlaceDrawing = (at: Workshop, pe: Paint, cells: readonly PlaceCell[], far: boolean) => void;
 
-/** L'ouverture sombre (la porte, la bouche de la Halle). */
-const SHADOW = 0x2a201a;
 /** La vitre éteinte d'une fenêtre de côté. */
 const UNLIT_GLASS = 0x3e4a52;
 
@@ -164,7 +162,7 @@ const school: PlaceDrawing = (at, pe, _cells, far) => {
   at.box(r, w - r, r, d - r, plinth, walls.upper, brick, { bottom: true, top: true });
   // La porte : l'ouverture sombre.
   const yd = r - 0.008;
-  at.quad([2.18, yd, plinth], [2.82, yd, plinth], [2.82, yd, 1.9], [2.18, yd, 1.9], [2.5, 1, 1], SHADOW);
+  at.quad([2.18, yd, plinth], [2.82, yd, plinth], [2.82, yd, 1.9], [2.18, yd, 1.9], [2.5, 1, 1], C.shadow);
   if (far) {
     for (const x of [1.5, 3.5]) at.quad([x - 0.3, yd, 1.2], [x + 0.3, yd, 1.2], [x + 0.3, yd, 1.95], [x - 0.3, yd, 1.95], [x, 1, 1.5], pane, true);
     at.roof(0, w, 0, d, roof.lower, roof.ridge, 'x', roof.thickness, pe.roof(), { tint: brick, zFoot: walls.upper });
@@ -228,7 +226,7 @@ const school: PlaceDrawing = (at, pe, _cells, far) => {
     [w - 0.06, 1],
   ] as const) {
     at.standingDisc([x + s * 0.004, d / 2, 3.72], s < 0 ? 'nx' : 'px', 0.24, 8, dressedStone.cote, Math.PI / 8);
-    at.standingDisc([x + s * 0.012, d / 2, 3.72], s < 0 ? 'nx' : 'px', 0.16, 8, SHADOW, Math.PI / 8);
+    at.standingDisc([x + s * 0.012, d / 2, 3.72], s < 0 ? 'nx' : 'px', 0.16, 8, C.shadow, Math.PI / 8);
   }
   at.block(4.1, 2.9, 0.42, 0.42, 3.6, 4.82, brick, { bottom: true });
   at.block(4.1, 2.9, 0.52, 0.52, 4.82, 4.94, dressedStone, {});
@@ -345,7 +343,7 @@ const hall: PlaceDrawing = (at, pe, cells, far) => {
   at.box(0.04, w - 0.04, y0 + 0.04, d - 0.04, 0, 0.95, stone);
   at.box(0.08, w - 0.08, y0 + 0.08, d - 0.08, 0.95, zWall, planks, { bottom: true, top: true });
   const yp = y0 + 0.032;
-  at.quad([0.98, yp, 0], [2.02, yp, 0], [2.02, yp, 1.86], [0.98, yp, 1.86], [1.5, d, 1], SHADOW);
+  at.quad([0.98, yp, 0], [2.02, yp, 0], [2.02, yp, 1.86], [0.98, yp, 1.86], [1.5, d, 1], C.shadow);
   if (far) {
     at.roof(0, w, y0 - 0.15, d, zWall, zRidge, 'y', 0.12, pe.roof(), { tint: planks, zFoot: zWall });
     at.block(0.5, 1.5, 0.26, 0.26, 0, zArm + 0.26, wood, { bottom: true });
@@ -404,7 +402,7 @@ const hall: PlaceDrawing = (at, pe, cells, far) => {
     ])
       at.block(x, y, 0.34, 0.34, z0, z1, stone, { bottom: true, top: z0 === 0 });
   // Le dedans de la porte : le fond et les joues, sombres, un tas de sacs devant le fond.
-  at.box(1.02, 1.98, y0 + 0.03, y0 + 0.9, 0, 1.82, darker({ dessus: SHADOW, cote: SHADOW }, 1.3), { bottom: true, top: true, ny: true });
+  at.box(1.02, 1.98, y0 + 0.03, y0 + 0.9, 0, 1.82, darker({ dessus: C.shadow, cote: C.shadow }, 1.3), { bottom: true, top: true, ny: true });
   at.prism(1.5, y0 + 0.62, 0.3, 0.1, 0, 0.42, 6, darker(planks, 0.6), 0.3);
   // La grande porte : piédroits, linteau, deux vantaux rabattus contre la façade.
   for (const x of [0.9, 2.1]) at.block(x, y0 + 0.02, 0.18, 0.16, 0, 1.94, wood, { bottom: true, top: true });
@@ -440,7 +438,7 @@ const hall: PlaceDrawing = (at, pe, cells, far) => {
       at.quad([x, y0 - 0.13, z], [x, d - 0.02, z], [x2, d - 0.02, z2], [x2, y0 - 0.13, z2], [w / 2, (y0 + d) / 2, 0], row);
     }
   at.beam([w / 2, y0 - 0.2, zRidge + 0.02], [w / 2, d - 0.02, zRidge + 0.02], 0.16, wood, true);
-  at.standingDisc([w / 2, y0 - 0.16, zWall + 0.7], 'ny', 0.18, 6, SHADOW, Math.PI / 6);
+  at.standingDisc([w / 2, y0 - 0.16, zWall + 0.7], 'ny', 0.18, 6, C.shadow, Math.PI / 6);
   // La potence : le pied de pierre, le mât, le bras vers la cour, la jambe de force, la poulie, la corde, le crochet.
   at.block(0.5, 1.5, 0.52, 0.52, 0, 0.32, stone);
   at.block(0.5, 1.5, 0.26, 0.26, 0.32, zArm + 0.26, wood, { bottom: true });

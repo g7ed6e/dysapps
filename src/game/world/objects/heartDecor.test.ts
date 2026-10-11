@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { type BiomeId, BIOMES } from '../../biomes';
+import { type BiomeId, BIOMES, BLOC, BLOCKS } from '../../biomes';
+import { DECOR } from '../decor';
 import { toutConstruitAvecLesCommandes } from '../budget';
 import { worldCubes } from '../terrain';
 import { applyLayout } from '../appliedLayout';
@@ -91,13 +92,27 @@ describe.each(TABLES)('le décor du cœur dessiné (%s)', (a, table) => {
   });
 });
 
-it('les îles qui ont un décor du cœur fait de main d’homme : toutes au 6e (la Forêt n’a que des arbres, la Tour sa pierre) ; au 5e, un cœur entier ou en cubes', () => {
+it('les îles qui ont un décor du cœur fait de main d’homme : toutes au 6e (la Forêt n’a que des arbres, la Tour sa pierre) et toutes au 5e', () => {
   expect(Object.keys(HEART_DECOR_6E)).toHaveLength(14);
   expect(BIOMES.filter((b) => b.classe === '6e' && !HEART_DECOR_6E[b.id]).map((b) => b.id).sort()).toEqual(['french-6e-phonology', 'french-6e-reading']);
-  // Le lot 1 du 5e : les six cœurs que les pièces du 6e couvrent.
-  expect(Object.keys(HEART_DECOR_5E).sort()).toEqual(['civics-5e-equality-solidarity', 'english-5e-grammar', 'history-5e-middle-ages', 'lca-5e-legends', 'physics-chemistry-5e-matter-universe', 'technology-5e-design']);
+  expect(Object.keys(HEART_DECOR_5E).sort()).toEqual(BIOMES.filter((b) => b.classe === '5e').map((b) => b.id).sort());
   expect(drawnHeartDecor('4e', worldOf('5e'))).toEqual([]);
   expect(drawnHeartDecor('5e', [])).toEqual([]);
+});
+
+it('au 5e, un cœur se dessine en entier ou reste en cubes : chaque cube du décor de l’île est dans un ensemble, sauf ses rochers de pierre', () => {
+  const stone = BLOCKS[BLOC.pierre].side;
+  for (const [id, l] of Object.entries(HEART_DECOR_5E) as [BiomeId, readonly HeartDecor[]][]) {
+    const covered = new Set(l.flatMap((e) => e.columns.map(([x, y]) => `${x},${y}`)));
+    const loose: string[] = [];
+    DECOR[id](
+      (x, y, _z, color, decor) => {
+        if (!decor && color !== stone && !covered.has(`${x},${y}`)) loose.push(`${x},${y}`);
+      },
+      () => 0,
+    );
+    expect(loose, id).toEqual([]);
+  }
 });
 
 /** La luminance relative d'une couleur linéaire (r, g, b). */

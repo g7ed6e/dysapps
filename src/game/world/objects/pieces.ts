@@ -2,8 +2,8 @@
 // qui revient d'un objet à l'autre. La barrière et la lanterne sur poteau sont celles des cours
 // (../architecture/yardPieces.ts : mêmes facettes, mêmes couleurs du kit) ; s'y ajoutent la caisse, la dalle, le plateau
 // sur pieds, le petit toit (`Workshop.roof`), le bassin, la marche de pierre, le flacon, et pour le reste de l'archipel le
-// trophée du Gardien rallumé, la barque, la caisse, le fanion et le foyer du quai. Trapues, rien de fin ni d'ajouré (au
-// moins 0,15 case), deux ou trois couleurs chacune. Code pur, sans Three.js.
+// trophée du Gardien rallumé, la barque, la caisse, le fanion et le foyer du quai ; au 5e, le pupitre en pente et le poteau
+// indicateur. Trapues, rien de fin ni d'ajouré (au moins 0,15 case), deux ou trois couleurs chacune. Code pur, sans Three.js.
 import { BLOCKS, type BlockId } from '../../biomes';
 import { mixColor } from '../daylight';
 import { DELAVE } from '../decor/brush';
@@ -35,6 +35,8 @@ export const OBJECT_COLORS = {
   ember: 0xc0764a,
   tar: 0x3b2d20,
   cream: 0xf1e6cc,
+  /** L'ouverture sombre (une porte, une bouche de four, l'entrée d'une tente, la galerie) : le brun le plus sombre. */
+  shadow: 0x2a201a,
 } as const;
 
 /** Les couleurs d'un objet posé dans un archipel : sous son voile, délavées sur une île fermée. */
@@ -155,9 +157,12 @@ export function basin(at: Workshop, pe: Paint, x0: number, x1: number, y0: numbe
   at.box(i0 + l, i1 - l, j0 + l, j1 - l, zWater, zWater + 0.005, water, { bottom: true, px: true, nx: true, py: true, ny: true });
 }
 
-/** Une marche de pierre (l'escalier de Grimoire) : un bloc de pierre grise de z0 à z1, sa dalle claire dessus. 10 triangles. */
-export function stoneStep(at: Workshop, pe: Paint, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number): void {
-  at.box(x0, x1, y0, y1, z0, z1, { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') });
+/**
+ * Une marche de pierre (l'escalier de Grimoire, le montoir du Relais) : un bloc de pierre grise de z0 à z1 (`side` : la
+ * teinte de ses côtés, s'il faut un flanc plus sombre), sa dalle claire dessus. 10 triangles.
+ */
+export function stoneStep(at: Workshop, pe: Paint, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, side: Couleur = pe.role('yardStone')): void {
+  at.box(x0, x1, y0, y1, z0, z1, { dessus: pe.role('yardSlab'), cote: side });
 }
 
 /** Un flacon de verre teinté (l'étagère de Bulle) : un corps à six pans, son col de bois (le bouchon). 26 triangles. */
@@ -391,4 +396,53 @@ export function lectern(at: Workshop, pe: Paint, x0: number, x1: number, y0: num
   const z = (y: number) => zf + ((y - y0) / (y1 - y0)) * (zb - zf) + 0.02;
   const [bx0, bx1, by0, by1] = [x0 + (x1 - x0) * 0.2, x1 - (x1 - x0) * 0.2, y0 + (y1 - y0) * 0.2, y1 - (y1 - y0) * 0.2];
   at.quad([bx0, by0, z(by0)], [bx1, by0, z(by0)], [bx1, by1, z(by1)], [bx0, by1, z(by1)], [(x0 + x1) / 2, (y0 + y1) / 2, z0], pe.color(OBJECT_COLORS.cream));
+}
+
+/** Une planche-flèche d'un poteau indicateur : vers `toward` (−1 ou 1) le long de `axis`, à la hauteur de son milieu `z`, longue de `length` depuis l'axe du poteau. */
+export interface SignArrow {
+  axis: 'x' | 'y';
+  toward: -1 | 1;
+  z: number;
+  length: number;
+}
+
+/** Les mesures du poteau indicateur, en part de case : le poteau carré, son pied, ses planches-flèches épaisses et leur pointe. */
+const SIGNPOST = { post: 0.2, foot: { side: 0.42, upper: 0.14 }, board: { height: 0.34, thick: 0.16, point: 0.22 } } as const;
+
+/**
+ * Un poteau indicateur au centre (cx, cy) (Sema, le Carrefour, le Relais) : le pied de pierre, le poteau carré de 0,2 case
+ * jusqu'à `upper` (`post` : sa matière), sa tête en pointe basse, et ses planches-flèches épaisses (`board`), chacune à
+ * pointe en chevron, sans rien d'écrit. 22 triangles, et 14 par flèche.
+ */
+export function signpost(at: Workshop, pe: Paint, cx: number, cy: number, upper: number, post: Tint, arrows: readonly SignArrow[], board: Tint): void {
+  const { foot, board: b } = SIGNPOST;
+  const half = SIGNPOST.post / 2;
+  at.block(cx, cy, foot.side, foot.side, 0, foot.upper, { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') });
+  at.block(cx, cy, SIGNPOST.post, SIGNPOST.post, foot.upper, upper, post, { bottom: true, top: true });
+  at.pyramid(cx, cy, half, half, upper, upper + 0.12, post);
+  for (const r of arrows) {
+    // Dans le repère de la flèche : `u` le long de son axe depuis le poteau, `v` en travers, `z` la hauteur.
+    const pt = (u: number, v: number, z: number): V3 => (r.axis === 'x' ? [cx + r.toward * u, cy + v, z] : [cx + v, cy + r.toward * u, z]);
+    const [u0, u1, uTip] = [half, r.length - b.point, r.length];
+    const [z0, z1] = [r.z - b.height / 2, r.z + b.height / 2];
+    const outline: [number, number][] = [
+      [u0, z0],
+      [u1, z0],
+      [uTip, r.z],
+      [u1, z1],
+      [u0, z1],
+    ];
+    const t = b.thick / 2;
+    const inside = pt((u0 + uTip) / 2, 0, r.z);
+    for (const v of [-t, t]) {
+      const p = outline.map(([u, z]) => pt(u, v, z));
+      for (let i = 1; i + 1 < p.length; i++) at.tri(p[0], p[i], p[i + 1], inside, board);
+    }
+    // Les chants (sauf celui contre le poteau).
+    for (let i = 0; i + 1 < outline.length; i++) {
+      const [ua, za] = outline[i];
+      const [ub, zb] = outline[i + 1];
+      at.quad(pt(ua, -t, za), pt(ub, -t, zb), pt(ub, t, zb), pt(ua, t, za), inside, board);
+    }
+  }
 }

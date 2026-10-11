@@ -51,10 +51,6 @@ export interface HeartDecor {
   drawing: HeartDrawing;
 }
 
-
-/** L'ouverture sombre (la galerie, la fente) : le brun le plus sombre du décor. */
-const SHADOW = 0x2a201a;
-
 /**
  * Les couleurs propres au décor du cœur, pour qu'un objet se détache de son sol (au moins 3:1 en luminance, sans lueur) :
  * le sable mouillé, ocre, du tas de la Carrière posé sur le sable ; le gris chaud des galets du Laboratoire (ni la pierre
@@ -83,7 +79,7 @@ export function galleryEntrance(at: Workshop, pe: Paint, stone: Faces, rock: Fac
   at.prism(0.2, 0.62, 0.28, 0.08, 0, 0.9, 5, stone, 0.4);
   at.prism(1.82, 0.66, 0.26, 0.06, 0, 0.75, 5, stone, 1.1);
   // La bouche, et le cadre de boisage.
-  at.quad([0.56, 0.41, 0], [1.44, 0.41, 0], [1.44, 0.41, 1.36], [0.56, 0.41, 1.36], [1, 1, 0.7], SHADOW);
+  at.quad([0.56, 0.41, 0], [1.44, 0.41, 0], [1.44, 0.41, 1.36], [0.56, 0.41, 1.36], [1, 1, 0.7], C.shadow);
   if (!timbered) return;
   const wood = pe.material('tronc');
   for (const x of [0.45, 1.55]) at.block(x, 0.36, 0.22, 0.22, 0, 1.42, wood, { bottom: true, top: true });
@@ -236,19 +232,24 @@ const volcano: HeartDrawing = (at, pe) => {
   for (const [a, b] of flows) at.beam(a, b, 0.2, obsidian);
 };
 
-/** Des éclats d'obsidienne (une ou deux cases de haut) : trois ou quatre pointes penchées sur un pied de roche. */
-const shards: HeartDrawing = (at, pe, e) => {
+/**
+ * Des éclats (une ou deux cases de haut) : trois ou quatre pointes penchées (`crystal`) sur un pied de roche (`foot`) ;
+ * l'obsidienne de la Lagune, la stalagmite de glace du Glacier (./heartDecor5e.ts).
+ */
+export function crystalShards(at: Workshop, e: HeartGroup, crystal: Tint, foot: Tint): void {
   const upper = Math.max(...e.cells.map((c) => c.z)) + 1;
-  const o = pe.material('obsidienne');
-  at.prism(0.5, 0.5, 0.36, 0.24, 0, 0.18, 5, darker(pe.material('pierre'), 0.8), 0.5);
+  at.prism(0.5, 0.5, 0.36, 0.24, 0, 0.18, 5, foot, 0.5);
   const spikes: [number, number, number, number][] = [
     [0.5, 0.52, 0, 0.92],
     [0.26, 0.4, -0.18, 0.55],
     [0.72, 0.36, 0.2, 0.62],
     [0.5, 0.74, 0.05, 0.45],
   ];
-  for (const [x, y, lean, h] of spikes.slice(0, upper > 1 ? 4 : 3)) at.spike([x, y, 0.1], [x + lean, y - 0.08, 0.1 + h * upper * 0.9], 0.15, 4, o, 0.4);
-};
+  for (const [x, y, lean, h] of spikes.slice(0, upper > 1 ? 4 : 3)) at.spike([x, y, 0.1], [x + lean, y - 0.08, 0.1 + h * upper * 0.9], 0.15, 4, crystal, 0.4);
+}
+
+/** Des éclats d'obsidienne sur un pied de roche (la Lagune). */
+const shards: HeartDrawing = (at, pe, e) => crystalShards(at, e, pe.material('obsidienne'), darker(pe.material('pierre'), 0.8));
 
 // ---------- La Baie des mots ----------
 
@@ -459,7 +460,7 @@ const boxes: HeartDrawing = (at, pe) => {
   at.quad([0.44, 0.065, 0.2], [0.56, 0.065, 0.2], [0.56, 0.065, 0.94], [0.44, 0.065, 0.94], [0.5, 0.5, 0.5], pe.color(C.cream));
   const [x0, x1, y0, y1, z0, z1] = [0.18, 0.8, 0.2, 0.78, 0.94, 1.62];
   at.box(x0, x1, y0, y1, z0, z1, cardboard, { bottom: true, top: true });
-  at.quad([x0 + 0.02, y0 + 0.02, z1 - 0.01], [x1 - 0.02, y0 + 0.02, z1 - 0.01], [x1 - 0.02, y1 - 0.02, z1 - 0.01], [x0 + 0.02, y1 - 0.02, z1 - 0.01], [0.5, 0.5, 0], pe.color(SHADOW));
+  at.quad([x0 + 0.02, y0 + 0.02, z1 - 0.01], [x1 - 0.02, y0 + 0.02, z1 - 0.01], [x1 - 0.02, y1 - 0.02, z1 - 0.01], [x0 + 0.02, y1 - 0.02, z1 - 0.01], [0.5, 0.5, 0], pe.color(C.shadow));
   const flap = darker(cardboard, 0.95);
   const r = 0.22;
   at.quad([x0, y0, z1], [x1, y0, z1], [x1, y0 - r * 0.7, z1 + r * 0.7], [x0, y0 - r * 0.7, z1 + r * 0.7], [0.5, 0.5, z1 - 1], flap);

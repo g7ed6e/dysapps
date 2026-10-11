@@ -4,16 +4,16 @@
 // l'établi de Pince, l'urne de Voix) et les objets des quêtes d'entraide (la lanterne de Mousso, le portillon de
 // Bloquette, l'escalier de Grimoire) ; puis au 5e (11 octobre 2026, intention du directeur artistique) l'étagère de
 // Bazar, l'abri de Kroa, la glacière de Pudding, la serre de Moustache (la vitrine de Tick), l'écritoire de Vélin, le
-// coffre à graines de Sillon, le composteur d'Humus, le filtre de Perle (l'établi de Pince), la table ronde de Mie et la
-// balise de Frimas (le poteau-lanterne de Grimoire). Chacune pose, sur les cases de sa forme (world/fixtures.ts), la pièce qui leur
-// va : la caisse, la dalle, le plateau sur pieds, le petit toit, le bassin, la marche, et la barrière et la lanterne sur
+// coffre à graines de Sillon, le composteur d'Humus, le filtre de Perle (l'établi de Pince), la table ronde de Mie, la
+// balise de Frimas (le poteau-lanterne de Grimoire) et le poteau indicateur de Sema. Chacune pose, sur les cases de sa
+// forme (world/fixtures.ts), la pièce qui leur va : la caisse, la dalle, le plateau sur pieds, le petit toit, le bassin, la marche, et la barrière et la lanterne sur
 // poteau des cours (./pieces.ts). La matière du bloc livré est sur la plus grande face de l'objet, dans les couleurs
 // mêmes du bloc (règle GD-7). La même dessinée de près et de loin (une pièce coûte moins de 120 triangles). Code pur,
 // sans Three.js.
 import { BLOC, type BlockId } from '../../biomes';
 import type { Faces } from '../palette';
 import { darker, type Tint, type Workshop } from './workshop';
-import { basin, crate, OBJECT_COLORS as C, slab, flask, postLantern, stoneStep, tableOnLegs, fencePost, heap, lectern, pebble, type Paint } from './pieces';
+import { basin, crate, OBJECT_COLORS as C, slab, flask, postLantern, stoneStep, tableOnLegs, fencePost, heap, lectern, pebble, type Paint, signpost } from './pieces';
 import type { ObjectDrawing } from './silhouettes';
 
 /**
@@ -365,6 +365,25 @@ const roundTable: ObjectDrawing = (at, pe) => {
   for (const y of [0.62, 2.38]) pebble(at, 1.5, y, 1.06, 0.26, 0.4, flour, 6);
 };
 
+/**
+ * Le poteau indicateur de Sema : le poteau de lambris livré (ses quatre grandes faces), sa tête en pointe, et deux
+ * planches-flèches épaisses de panneau, opposées, à deux hauteurs, leurs pointes en chevron ; rien d'écrit.
+ */
+const signpostSema: ObjectDrawing = (at, pe) =>
+  signpost(
+    at,
+    pe,
+    1.5,
+    0.5,
+    2.86,
+    pe.block(BLOC.lambris),
+    [
+      { axis: 'x', toward: -1, z: 2.5, length: 1.4 },
+      { axis: 'x', toward: 1, z: 2.08, length: 1.4 },
+    ],
+    pe.block(BLOC.panneau),
+  );
+
 /** Les petites constructions faites de pièces communes, par identifiant (world/fixtures.ts), et leur dessin (au 6e et au 5e). */
 export const ASSEMBLIES: Readonly<Record<string, ObjectDrawing>> = {
   'french-6e-phonology-fixture-1': vegetablePatch,
@@ -389,4 +408,5 @@ export const ASSEMBLIES: Readonly<Record<string, ObjectDrawing>> = {
   'physics-chemistry-5e-matter-universe-fixture-1': filterBench,
   'civics-5e-equality-solidarity-fixture-1': roundTable,
   'maths-5e-signed-numbers-fixture-2': beacon,
+  'french-5e-homophones-fixture-1': signpostSema,
 };

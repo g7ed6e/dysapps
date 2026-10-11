@@ -43,25 +43,14 @@ const mondeDe = (a: ArchipelagoId) => {
 };
 const archipelDe = (id: string) => BIOMES.find((b) => b.id === ileDe(id))!.classe;
 
-/** Les petites constructions du 5e dessinées au lot 1 (celles que les pièces et les modèles du 6e couvrent). */
-const DU_5E_LOT_1 = [
-  'maths-5e-proportionality-fixture-1',
-  'french-5e-conjugation-fixture-1',
-  'english-5e-vocabulary-fixture-1',
-  'english-5e-grammar-fixture-1',
-  'history-5e-middle-ages-fixture-1',
-  'geography-5e-resources-fixture-1',
-  'life-earth-sciences-5e-active-planet-fixture-1',
-  'physics-chemistry-5e-matter-universe-fixture-1',
-  'civics-5e-equality-solidarity-fixture-1',
-  'maths-5e-signed-numbers-fixture-2',
-];
-
-it('toutes les petites constructions du 6e sont dessinées (seize commandes, trois objets d’entraide), celles du 5e que le 6e couvre, et seulement elles', () => {
+it('toutes les petites constructions du 6e (seize commandes, trois objets d’entraide) et du 5e (douze et trois) sont dessinées, et seulement elles', () => {
   const du6e = PETITES_CONSTRUCTIONS.filter((id) => archipelDe(id) === '6e');
-  expect([...PETITES_CONSTRUCTIONS_DESSINEES].sort()).toEqual([...du6e, ...DU_5E_LOT_1].sort());
+  const du5e = PETITES_CONSTRUCTIONS.filter((id) => archipelDe(id) === '5e');
+  expect([...PETITES_CONSTRUCTIONS_DESSINEES].sort()).toEqual([...du6e, ...du5e].sort());
   expect(du6e).toHaveLength(19);
-  expect(PETITES_CONSTRUCTIONS_DESSINEES.filter(aUnDessinDeLoin)).toHaveLength(8);
+  expect(du5e).toHaveLength(15);
+  // Huit à silhouette au 6e, quatre au 5e (la cabane, la salière, la tente, le four à pain).
+  expect(PETITES_CONSTRUCTIONS_DESSINEES.filter(aUnDessinDeLoin)).toHaveLength(12);
   expect(PETITES_CONSTRUCTIONS_DESSINEES.some((id) => ['4e', '3e'].includes(archipelDe(id)))).toBe(false);
 });
 
