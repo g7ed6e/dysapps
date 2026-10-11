@@ -887,11 +887,12 @@ const CAPTURES = [
   })),
   // Les objets du 5e de la piste 3 « hybride » (famille `objets-cinquieme`, à retirer une fois le lot fusionné ; à prendre
   // avec `--rendu archipeo`), sur le modèle du 6e : le cœur de chaque île de près, toutes ses petites constructions
-  // posées, sans les noms, de jour ; la nuit, le Glacier (ses congères au flanc sombre, la balise de Frimas allumée) et le
-  // Bourg (l'écritoire de Vélin et les lanternes de sa cour) ; l'île-école (le Marché) de près, ses trois lieux en pierre,
-  // de jour et de nuit (les vitres de l'école) ; le quai de trois quarts (la fiche du Bloc-Navire, amarré au Marché) ; le
-  // trophée du Gardien rallumé du Glacier à côté de sa statue (sa fiche) ; l'archipel entier et une île en recul ; une
-  // cour à moitié posée (ses pièces à côté des fantômes).
+  // posées, sans les noms, de jour ; la nuit, le Glacier (ses congères au flanc sombre, la balise de Frimas allumée), le
+  // Bourg (l'écritoire de Vélin et les lanternes de sa cour), le Relais et le Fournil (leurs flancs sombres, mesurés par le
+  // référent dys) ; l'île-école (le Marché) de près, ses trois lieux en pierre, de jour et de nuit (les vitres de l'école),
+  // et la façade de l'école recadrée, de jour et de nuit ; le quai de trois quarts (la fiche du Bloc-Navire, amarré au
+  // Marché) ; le trophée du Gardien rallumé du Bourg à côté de sa statue (sa fiche), recadré ; l'archipel entier et une île
+  // en recul ; la cour du Glacier à moitié posée, de près (ses pièces à côté des fantômes).
   ...[
     ['glacier', 'maths-5e-signed-numbers'],
     ['marche', 'maths-5e-proportionality'],
@@ -909,17 +910,35 @@ const CAPTURES = [
     ['grotte', 'lca-5e-legends'],
   ].flatMap(([court, ile]) => [
     { nom: `objets-5e-coeur-${court}`, vue: 'île', famille: 'objets-cinquieme', ile, posees: 'toutes', zoomer: 4, sansEtiquettes: true, finesse: 2 },
-    ...(['glacier', 'bourg'].includes(court) ? [{ nom: `objets-5e-coeur-${court}-nuit`, vue: 'île', famille: 'objets-cinquieme', ile, posees: 'toutes', zoomer: 3, sansEtiquettes: true, nuit: true, finesse: 2 }] : []),
+    ...(['glacier', 'bourg', 'relais', 'fournil'].includes(court) ? [{ nom: `objets-5e-coeur-${court}-nuit`, vue: 'île', famille: 'objets-cinquieme', ile, posees: 'toutes', zoomer: 3, sansEtiquettes: true, nuit: true, finesse: 2 }] : []),
   ]),
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
     { nom: `objets-5e-ecole${suffixe}`, vue: 'île', famille: 'objets-cinquieme', ile: 'maths-5e-proportionality', succes: 'tous', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
     { nom: `objets-5e-ecole-lieux${suffixe}`, vue: 'île', famille: 'objets-cinquieme', ile: 'maths-5e-proportionality', succes: 'tous', posees: 'toutes', zoomer: 2, sansEtiquettes: true, finesse: 2, ...autres },
   ]),
+  // La façade de l'école (ses murs de pierre), de jour et de nuit : depuis la fiche du Bloc-Navire, l'école est en haut de
+  // la vue, sa façade vers la caméra ; recadrée sur elle.
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `objets-5e-ecole-facade${suffixe}`,
+    vue: 'île',
+    famille: 'objets-cinquieme',
+    ile: 'maths-5e-proportionality',
+    succes: 'tous',
+    posees: 'toutes',
+    fiche: { genre: 'navire', port: 'maths-5e-proportionality' },
+    sansEtiquettes: true,
+    recadre: { x: 300, y: 0, width: 260, height: 150 },
+    finesse: 3,
+    ...autres,
+  })),
   { nom: 'objets-5e-quai', vue: 'île', famille: 'objets-cinquieme', ile: 'maths-5e-proportionality', posees: 'toutes', fiche: { genre: 'navire', port: 'maths-5e-proportionality' }, sansEtiquettes: true, finesse: 2 },
-  { nom: 'objets-5e-trophee', vue: 'île', famille: 'objets-cinquieme', ile: 'maths-5e-signed-numbers', posees: 'toutes', fiche: { genre: 'gardien', id: 'maths-5e-signed-numbers' }, zoomer: 2, sansEtiquettes: true, finesse: 2 },
+  // Le trophée du Bourg (au Glacier, le socle de la statue le cachait), à côté de sa statue, recadré sur les deux.
+  { nom: 'objets-5e-trophee', vue: 'île', famille: 'objets-cinquieme', ile: 'history-5e-middle-ages', posees: 'toutes', fiche: { genre: 'gardien', id: 'history-5e-middle-ages' }, zoomer: 2, sansEtiquettes: true, recadre: { x: 180, y: 130, width: 220, height: 200 }, finesse: 3 },
   { nom: 'objets-5e-archipel', vue: 'archipel', famille: 'objets-cinquieme', ile: 'maths-5e-signed-numbers', posees: 'toutes', finesse: 2 },
   { nom: 'objets-5e-loin', vue: 'île', famille: 'objets-cinquieme', ile: 'physics-chemistry-5e-matter-universe', posees: 'toutes', zoomer: -6, finesse: 2 },
-  { nom: 'objets-5e-cour-mi', vue: 'île', famille: 'objets-cinquieme', ile: 'history-5e-middle-ages', partie: 'cour-mi', zoomer: 3, finesse: 2 },
+  // La cour du Bourg à moitié posée, de près : ses pièces à côté des fantômes, sur l'herbe. Sans mission jouée (le jeu
+  // reposerait sinon au chargement les pièces dues aux missions, et les fantômes disparaîtraient), le défi gagné.
+  { nom: 'objets-5e-cour-mi', vue: 'île', famille: 'objets-cinquieme', ile: 'history-5e-middle-ages', partie: 'cour-mi', missions: 0, defiGagne: true, zoomer: 4, sansEtiquettes: true, finesse: 2 },
   // Les familles du 6e dans Archipéo (lot 7, la table « matière → famille », famille `familles-sixieme`), à retirer une fois
   // le lot fusionné ; à prendre avec `--rendu archipeo`. De près (`zoomer`), toutes les petites constructions posées :
   // le cadran de l'Horloge des verbes de près, de jour et de nuit, et de loin (l'île reculée, l'archipel) ; la cabine de

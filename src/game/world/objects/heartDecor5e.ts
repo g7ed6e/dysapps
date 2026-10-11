@@ -5,10 +5,11 @@
 // tourné avec l'île (GD-9) ; rien ne s'allume, rien ne bouge. Restent les formes communes : les rochers de pierre
 // (une pierre sur presque chaque île) et l'arbre du Carrefour.
 //
-// Un objet à retrouver se détache de son sol (au moins 3:1 en luminance, sur une part de sa surface), par une teinte
-// claire sur un sol sombre (la pierre claire du Manoir, le livre crème du Bourg), sinon par un flanc sombre (le sel, les
-// planches et le pupitre sur l'herbe brumeuse, les sacs sur la farine, le tuf sur le tuf), jamais par une lueur.
-// Code pur, sans Three.js.
+// Un objet à retrouver se détache de son sol (au moins 3:1 en luminance, sur une part de sa surface, mesuré sur l'image
+// rendue), par une teinte claire sur un sol sombre (la pierre claire du Manoir, le livre blanc du Bourg, le sel clair du
+// haut du tas), sinon par un flanc sombre (le pied du tas de sel, les planches et le pupitre sur l'herbe brumeuse, les
+// sacs et la caisse sur la farine, le tuf sur le tuf, la glace sur la glace), jamais par une lueur. Code pur, sans
+// Three.js.
 import type { BiomeId } from '../../biomes';
 import { apartFromGhost, LANTERNE_DE_COUR } from '../architecture';
 import { type Couleur, type Faces, luminance } from '../palette';
@@ -22,16 +23,38 @@ import { crystalShards, galleryEntrance, type HeartDecor, type HeartDrawing } fr
 const FLANK_CONTRAST = 3.1;
 
 /**
- * Le flanc d'une teinte sur le sol `ground` : la teinte sous le voile de l'archipel, assombrie pas à pas jusqu'à tenir
- * 3:1 sur le dessus du sol. Sur l'herbe sous la brume du 5e (luminance 0,20), seule une teinte presque noire le tient ;
- * sur un sol clair (la farine, le tuf), un ton sombre de la matière.
+ * La part de sa luminance qu'une couleur garde à l'image sous la lumière et le voile du 5e, mesurée sur les captures du
+ * 11 octobre 2026 : de jour, le dessus du sol (la farine, 0,78, rendue à 0,38 ; l'herbe, 0,20, à 0,10), le dessus d'un
+ * objet (le livre crème, 0,79, à 0,59 ; la caisse de planches, 0,36, à 0,26), un côté d'objet (le flanc des sacs, 0,16, à
+ * 0,09 ; 0,6 par prudence) ; la nuit, le sol comme les côtés (la farine à 0,13, le flanc des sacs à 0,03). Le contraste
+ * se compte sur l'image : deux teintes assombries d'autant se rapprochent (le 0,05 de la formule ne baisse pas), et un
+ * flanc qui tenait 3:1 en couleurs n'en tenait que 2,6 à l'écran (relevé du référent dys).
  */
-function flankOn(pe: Paint, c: Couleur, ground: TextureKind): Couleur {
+export const SCENE_LIGHT = { ground: 0.49, top: 0.7, side: 0.6, night: 0.17 } as const;
+
+/** Le contraste d'un flanc de luminance `f` sur un sol de luminance `g`, sous les parts de lumière `kg` et `kf`. */
+const contrastUnder = (g: number, f: number, kg: number, kf: number) => {
+  const [a, b] = [kg * g, kf * f];
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+};
+
+/**
+ * Le flanc d'une teinte sur le sol `ground` : la teinte sous le voile de l'archipel, assombrie pas à pas jusqu'à tenir
+ * 3:1 sur le dessus du sol à l'image, de jour, et la nuit aussi quand le sol est assez clair pour que ce soit possible
+ * (la farine ; `SCENE_LIGHT`). Sur l'herbe sous la brume du 5e, seule une teinte presque noire s'en approche ; sur un sol
+ * clair (la farine, le tuf, la dalle), un ton sombre de la matière. La nuit, sur un sol moyen (la dalle, la glace), même
+ * le noir n'y arrive pas : c'est la lumière qui manque. `inColours` : compté en couleurs, comme au lot 2 (ce que garde
+ * le thermomètre, jugé conforme).
+ */
+function flankOn(pe: Paint, c: Couleur, ground: TextureKind, inColours = false): Couleur {
   const g = luminance(pe.material(ground).dessus);
+  const L = SCENE_LIGHT;
+  const tests: [number, number][] = inColours ? [[1, 1]] : [[L.ground, L.side]];
+  if (!inColours && contrastUnder(g, 0, L.night, L.night) >= FLANK_CONTRAST + 0.2) tests.push([L.night, L.night]);
   for (let k = 20; k > 0; k--) {
     const f = pe.color(scaleColor(c, k / 20));
     const l = luminance(f);
-    if ((Math.max(l, g) + 0.05) / (Math.min(l, g) + 0.05) >= FLANK_CONTRAST) return f;
+    if (tests.every(([kg, kf]) => contrastUnder(g, l, kg, kf) >= FLANK_CONTRAST)) return f;
   }
   return pe.color(0);
 }
@@ -42,22 +65,30 @@ const SLATE_FLANK = 0x4a5e6a;
 /** Une matière claire et unie : la dalle des cours, qui se lit sur les sols sombres (le lambris du Manoir). */
 const lightStone = (pe: Paint): Faces => ({ dessus: pe.role('yardSlab'), cote: scaleColor(pe.role('yardSlab'), 0.92) });
 
+/** La pierre claire de la tour du Manoir : la dalle des cours, sans ton plus sombre sur ses côtés (ils sont déjà dans l'ombre). */
+const paleStone = (pe: Paint): Faces => ({ dessus: pe.role('yardSlab'), cote: pe.role('yardSlab') });
+
 // ---------- Le Manoir du passé (grammaire anglaise) ----------
 
+/** Les hauteurs de la tour du Manoir : le haut du socle, la moulure, le bas et le haut de la corniche, le faîte du toit. */
+const CANDLE_TOWER = { base: 0.8, moulding: [1.9, 2.1], cornice: [3.74, 4.06], roof: 4.8 } as const;
+
 /**
- * La tour de lambris (six cases : quatre de lambris, le chapeau noir, la bougie) : un socle de pierre claire, le fût de
- * lambris, une moulure et la corniche claires (elles se lisent sur le sol de lambris), le toit noir en pyramide, son dé,
- * et la lanterne des cours en guise de bougie, éteinte (un objet du cœur ne s'allume jamais).
+ * La tour de lambris (six cases : quatre de lambris, le chapeau noir, la bougie) : un haut socle de pierre claire, le fût
+ * de lambris, une moulure et une corniche épaisse claires (elles se lisent sur le sol de lambris, retouche du consultant
+ * d'Archipéo du 11 octobre 2026), le toit noir en pyramide, son dé, et la lanterne des cours en guise de bougie, éteinte
+ * (un objet du cœur ne s'allume jamais).
  */
 const candleTower: HeartDrawing = (at, pe) => {
-  const light = lightStone(pe);
+  const light = paleStone(pe);
   const panel = pe.material('lambris');
   const dark = pe.color(C.tar);
-  at.block(0.5, 0.5, 0.9, 0.9, 0, 0.5, light);
-  at.block(0.5, 0.5, 0.68, 0.68, 0.5, 3.9, panel, { bottom: true, top: true });
-  at.block(0.5, 0.5, 0.76, 0.76, 1.9, 2.06, light, { bottom: false });
-  at.block(0.5, 0.5, 0.86, 0.86, 3.9, 4.06, light, {});
-  at.pyramid(0.5, 0.5, 0.43, 0.43, 4.06, 4.8, dark);
+  const T = CANDLE_TOWER;
+  at.block(0.5, 0.5, 0.9, 0.9, 0, T.base, light);
+  at.block(0.5, 0.5, 0.68, 0.68, T.base, T.cornice[0], panel, { bottom: true, top: true });
+  at.block(0.5, 0.5, 0.76, 0.76, T.moulding[0], T.moulding[1], light, { bottom: false });
+  at.block(0.5, 0.5, 0.86, 0.86, T.cornice[0], T.cornice[1], light, {});
+  at.pyramid(0.5, 0.5, 0.43, 0.43, T.cornice[1], T.roof, dark);
   at.block(0.5, 0.5, 0.3, 0.3, 4.7, 5, dark, { bottom: true });
   at.facets(LANTERNE_DE_COUR, 0, 0, 5, (f) => pe.role(f.role ?? 'lanternFrame'), pe.role('lanternGlass'));
 };
@@ -96,7 +127,8 @@ const panelPile: HeartDrawing = (at, pe) => {
 
 /**
  * Le pupitre du copiste (une case de planches, son plateau d'enluminure) : la table de planches sur quatre pieds sombres,
- * le pupitre d'enluminure en pente, le livre crème ouvert dessus.
+ * le pupitre d'enluminure en pente, le grand livre blanc ouvert dessus (la nuit, sur l'herbe sombre, c'est lui qui tient
+ * le contraste : relevé du référent dys du 11 octobre 2026).
  */
 const copyistDesk: HeartDrawing = (at, pe) => {
   const planks = pe.material('planches');
@@ -120,20 +152,26 @@ const copyistDesk: HeartDrawing = (at, pe) => {
     dark,
   );
   const vellum = pe.material('enluminure');
-  lectern(at, pe, 0.16, 0.84, 0.2, 0.8, 0.98, { dessus: vellum.dessus, cote: flankOn(pe, vellum.cote, 'herbe') });
+  lectern(at, pe, 0.16, 0.84, 0.2, 0.8, 0.98, { dessus: vellum.dessus, cote: flankOn(pe, vellum.cote, 'herbe') }, { colour: PAGE_WHITE, margin: 0.1 });
 };
+
+/** Le blanc des pages du livre du copiste, plus clair que le crème des objets. */
+const PAGE_WHITE = 0xfbf7ee;
 
 // ---------- La Saline des mélanges (physique-chimie, 5e) ----------
 
 /**
- * Le tas de sel (trois cases, deux de haut au coin) : un grand tas bas et deux petits, le dessus de sel tenu à l'écart du
- * fantôme Brume, le flanc sombre (sur l'herbe, aucun blanc permis ne tient 3:1 : le flanc le tient).
+ * Le tas de sel (trois cases, deux de haut au coin) : un grand tas bas et deux petits ; le tronc bas de chacun au flanc
+ * sombre (sur l'herbe, il tient 3:1), le cône du haut tout en sel clair, tenu à l'écart du fantôme Brume (intention du
+ * directeur artistique du 11 octobre 2026 : un tas de sel reste blanc).
  */
 const saltHeap: HeartDrawing = (at, pe) => {
-  const salt: Faces = { dessus: apartFromGhost(pe.material('sel').dessus), cote: flankOn(pe, SLATE_FLANK, 'herbe') };
-  heap(at, 0.85, 0.85, 0, 0.82, 1.3, salt);
-  heap(at, 1.58, 0.44, 0, 0.34, 0.5, salt, 6);
-  heap(at, 0.44, 1.56, 0, 0.32, 0.46, salt, 6, 0.7);
+  const white = apartFromGhost(pe.material('sel').dessus);
+  const foot: Faces = { dessus: white, cote: flankOn(pe, SLATE_FLANK, 'herbe') };
+  const salt: Faces = { dessus: white, cote: white };
+  heap(at, 0.85, 0.85, 0, 0.82, 1.3, foot, 8, 0.2, salt);
+  heap(at, 1.58, 0.44, 0, 0.34, 0.5, foot, 6, 0.2, salt);
+  heap(at, 0.44, 1.56, 0, 0.32, 0.46, foot, 6, 0.7, salt);
 };
 
 // ---------- La Menuiserie des objets (technologie, 5e) ----------
@@ -157,7 +195,8 @@ function flourSack(at: Workshop, pe: Paint, cx: number, cy: number, sack: Faces)
 
 /**
  * Les sacs de farine contre la caisse (deux sacs, une caisse de planches) : le dessus de farine, la toile de jute du
- * flanc assombrie (elle tient 3:1 sur le sol de farine du Fournil), la caisse de planches et son couvercle.
+ * flanc assombrie, la caisse de planches et son couvercle aux chants sombres (tous tiennent 3:1 sur le sol de farine du
+ * Fournil, à l'image).
  */
 const flourSacks: HeartDrawing = (at, pe) => {
   const flour = pe.material('farine');
@@ -165,7 +204,8 @@ const flourSacks: HeartDrawing = (at, pe) => {
   flourSack(at, pe, 0.5, 0.5, sack);
   flourSack(at, pe, 1.5, 0.46, sack);
   const planks = pe.material('planches');
-  crate(at, 0.12, 0.88, 1.12, 1.88, 0, 0.78, planks, { dessus: planks.dessus, cote: pe.color(C.lightWood) });
+  const board: Faces = { dessus: planks.dessus, cote: flankOn(pe, planks.cote, 'farine') };
+  crate(at, 0.12, 0.88, 1.12, 1.88, 0, 0.78, board, board);
 };
 
 // ---------- La Grotte des légendes (latin-grec, 5e) ----------
@@ -178,8 +218,11 @@ const tuffCave: HeartDrawing = (at, pe) => {
 
 // ---------- Le Glacier des relatifs (maths, 5e) ----------
 
-/** La hauteur du pied sombre d'une congère, sous la neige. */
-const DRIFT_FOOT = 0.14;
+/**
+ * La hauteur du pied sombre d'une congère, sous la neige : assez haut pour se voir d'en haut (à 0,14 case, le pied
+ * disparaissait, et la neige se confondait avec la glace du sol : relevé du référent dys du 11 octobre 2026).
+ */
+const DRIFT_FOOT = 0.26;
 
 /**
  * Une congère au centre (cx, cy), posée en z0, de rayon `r` et haute de `h` : un pied bas au flanc sombre (le gris
@@ -213,7 +256,8 @@ const THERMOMETER = { base: { side: 0.72, upper: 0.56 }, collar: { radius: 0.26,
  */
 const thermometer: HeartDrawing = (at, pe) => {
   const T = THERMOMETER;
-  const stone: Faces = { dessus: pe.role('yardSlab'), cote: flankOn(pe, pe.role('yardStone'), 'glace') };
+  // Le flanc compté en couleurs, comme au lot 2 : le directeur artistique a jugé le thermomètre conforme.
+  const stone: Faces = { dessus: pe.role('yardSlab'), cote: flankOn(pe, pe.role('yardStone'), 'glace', true) };
   at.block(0.5, 0.5, T.base.side, T.base.side, 0, T.base.upper, stone);
   at.prism(0.5, 0.5, T.collar.radius, T.collar.radius, T.base.upper, T.collar.upper, 8, stone);
   const red = T.collar.upper + (T.tube.upper - T.collar.upper) / 3;
@@ -225,22 +269,33 @@ const thermometer: HeartDrawing = (at, pe) => {
 /** Le rouge mat de la colonne du thermomètre (intention du directeur artistique). */
 const THERMOMETER_RED = 0xb04a3a;
 
-/** La stalagmite de glace (deux cases) : les éclats de la Lagune, en glace, sur un pied de roche au flanc sombre. */
+/**
+ * La stalagmite de glace (deux cases) : les éclats de la Lagune, en glace, sur un pied de roche au flanc sombre ; leurs
+ * pans dans le gris d'ardoise des congères assombri (la glace sur la glace ne se lirait pas), le dessus en glace.
+ */
 const iceSpike: HeartDrawing = (at, pe, e) => {
   const rock: Faces = { dessus: pe.role('yardStone'), cote: flankOn(pe, pe.role('yardStone'), 'glace') };
   at.prism(0.5, 0.5, 0.46, 0.38, 0, 0.12, 6, rock, 0.3, true);
-  crystalShards(at, e, pe.material('glace'), rock);
+  crystalShards(at, e, { dessus: pe.material('glace').dessus, cote: flankOn(pe, SLATE_FLANK, 'glace') }, rock);
 };
 
 // ---------- L'étal (le Marché, le Comptoir) ----------
 
-/** Un étal : sa largeur et sa profondeur, les deux teintes des raies de son auvent, le sol où il se pose, les caisses dessous. */
+/**
+ * Un étal : sa largeur et sa profondeur, les deux teintes des raies de son auvent, le sol où il se pose, les caisses
+ * dessous ; `backPosts` : où se posent, le long de x, les deux poteaux du fond (aux coins, sauf si l'emprise n'y va pas) ;
+ * `edge` : la teinte des rives de l'auvent (devant, celle de ses raies, et sur les côtés, l'ombre, sauf si elles se
+ * perdent sur le sol) ; `thick` : l'épaisseur de l'auvent (`STALL.thick`, sauf si sa rive doit se voir d'en haut).
+ */
 interface StallShape {
   width: number;
   depth: number;
   stripes: readonly [Tint, Tint];
   ground: TextureKind;
   crates: readonly (readonly [number, number])[];
+  backPosts?: readonly [number, number];
+  edge?: Tint;
+  thick?: number;
 }
 
 /** Les hauteurs de l'étal : le comptoir, l'auvent devant (bas) et au fond (haut), son épaisseur. */
@@ -257,21 +312,27 @@ function stall(at: Workshop, pe: Paint, s: StallShape): void {
   const [w, d] = [s.width, s.depth];
   const zAt = (y: number) => STALL.front + (y / d) * (STALL.back - STALL.front);
   const p = STALL.post / 2 + 0.08;
-  for (const y of [p, d - p]) for (const x of [p, w - p]) at.block(x, y, STALL.post, STALL.post, 0, zAt(y) - STALL.thick, dark, { bottom: true, top: true });
+  const posts: [number, number][] = [
+    [p, p],
+    [w - p, p],
+    ...(s.backPosts ?? [p, w - p]).map((x): [number, number] => [x, d - p]),
+  ];
+  const thick = s.thick ?? STALL.thick;
+  for (const [x, y] of posts) at.block(x, y, STALL.post, STALL.post, 0, zAt(y) - thick, dark, { bottom: true, top: true });
   at.box(0.24, w - 0.24, 0.16, 0.62, 0, STALL.counter - 0.12, board, { bottom: true, top: true });
   at.box(0.14, w - 0.14, 0.1, 0.7, STALL.counter - 0.12, STALL.counter, board, {});
   for (const [x, y] of s.crates) crate(at, x - 0.3, x + 0.3, y - 0.3, y + 0.3, 0, 0.6, board, { dessus: planks.dessus, cote: dark });
   // L'auvent : une raie par demi-case, son dessus, son dessous ; la rive de devant et les deux flancs.
   const n = Math.round(w * 2);
   const top = (x: number, y: number): V3 => [x, y, zAt(y)];
-  const under = (x: number, y: number): V3 => [x, y, zAt(y) - STALL.thick];
+  const under = (x: number, y: number): V3 => [x, y, zAt(y) - thick];
   for (let k = 0; k < n; k++) {
     const [x0, x1] = [(k * w) / n, ((k + 1) * w) / n];
     at.quad(top(x0, 0), top(x1, 0), top(x1, d), top(x0, d), [w / 2, d / 2, 0], s.stripes[k % 2]);
     at.quad(under(x0, 0), under(x1, 0), under(x1, d), under(x0, d), [w / 2, d / 2, 9], dark);
-    at.quad(top(x0, 0), top(x1, 0), under(x1, 0), under(x0, 0), [w / 2, d / 2, STALL.front], s.stripes[k % 2]);
+    at.quad(top(x0, 0), top(x1, 0), under(x1, 0), under(x0, 0), [w / 2, d / 2, STALL.front], s.edge ?? s.stripes[k % 2]);
   }
-  for (const x of [0, w]) at.quad(top(x, 0), top(x, d), under(x, d), under(x, 0), [w / 2, d / 2, STALL.front], dark);
+  for (const x of [0, w]) at.quad(top(x, 0), top(x, d), under(x, d), under(x, 0), [w / 2, d / 2, STALL.front], s.edge ?? dark);
 }
 
 // ---------- Le Marché des proportions (maths, 5e) ----------
@@ -399,18 +460,24 @@ const SAWN_WOOD = 0xe2c999;
 
 // ---------- Le Comptoir (vocabulaire anglais, 5e) ----------
 
-/** L'étal du Comptoir (trois cases de poteaux et d'auvent, une caisse devant) : l'auvent à raies de tuile et de terre cuite. */
+/**
+ * L'étal du Comptoir (trois cases de poteaux et d'auvent, une caisse au fond, sur une emprise en T : trois cases devant,
+ * une au fond au milieu) : l'auvent à raies de tuile et de terre cuite, épais, ses rives au flanc sombre (la tuile se
+ * perdait sur la terre rouge, relecture du consultant d'Archipéo du 11 octobre 2026) ; les deux poteaux du fond rentrés
+ * dans la case du fond, à 0,1 case de ses bords (ils débordaient d'une case hors de l'emprise, directeur artistique).
+ */
 const tileStall: HeartDrawing = (at, pe) => {
   const tile = pe.material('tuile');
+  const inset = 0.1 + STALL.post / 2;
   stall(at, pe, {
     width: 3,
     depth: 2,
     stripes: [tile.dessus, scaleColor(tile.cote, 0.82)],
     ground: 'tuile',
-    crates: [
-      [1.5, 1.4],
-      [2.4, 1.46],
-    ],
+    crates: [[1.5, 1.36]],
+    backPosts: [1 + inset, 2 - inset],
+    edge: flankOn(pe, tile.cote, 'tuile'),
+    thick: 0.2,
   });
 };
 

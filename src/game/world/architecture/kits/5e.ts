@@ -35,6 +35,7 @@ import { piecesDeToit } from '../roofs';
 import { etapesDe } from '../../construction/buildings';
 import type { VoxelCube } from '../../cube';
 import type { IdDePiece } from '../choices';
+import { boiteDansLaCase, type DessinDePiece, type Facette, FACES } from '../rooms';
 import { bedWhenAlone, FINISHES, piecesSurPilotis, postsOf, villagePlaces } from './shared';
 import { yardPiecesOf } from '../yardPieces';
 import type { Kit } from './types';
@@ -100,6 +101,26 @@ function enluminure(piece: IdDePiece, c: VoxelCube) {
   return forme === 'seul' && pied === 'haut' ? slab(HEART.slab.desk) : 'bardage';
 }
 
+/** Le dessin d'une dalle de cour, sous le ciel ou sous une autre dalle : on le fait une fois. */
+const yardSlabs = new Map<boolean, DessinDePiece>();
+
+/**
+ * Une dalle de la cour (la fontaine du Relais, son bassin et sa colonne, sur le sol de dalle de l'île) : un cube plein,
+ * sans motif, ses côtés dans le flanc sombre du kit, son dessus dans sa matière, seulement sous le ciel (la dalle sur la
+ * dalle ne se lirait pas : 3:1 à l'image, relevé du référent dys du 11 octobre 2026).
+ */
+function yardSlab(piece: IdDePiece, c: VoxelCube): DessinDePiece | undefined {
+  if (c.petiteConstruction || c.place || !etapesDe('5e', 2, 3).has(cle(c.x, c.y, c.z))) return undefined;
+  const open = parts(piece)[3] === 'chaperon';
+  const deja = yardSlabs.get(open);
+  if (deja) return deja;
+  const box = boiteDansLaCase(0, 1, 0, 1, 0, 1).facettes;
+  const facettes: Facette[] = [...box.filter((f) => f.normale[2] === 0).map((f): Facette => ({ ...f, role: 'flanc' })), ...(open ? box.filter((f) => f.normale[2] > 0) : [])];
+  const dessin: DessinDePiece = { facettes, couvre: FACES.est | FACES.nord | FACES.ouest | FACES.sud | (open ? FACES.haut : 0) };
+  yardSlabs.set(open, dessin);
+  return dessin;
+}
+
 /** Les poteaux de tourbe du kiosque (huit colonnes de trois cases) : des poteaux carrés de 0,3 case, dans leur teinte. */
 function tourbe(piece: IdDePiece, c: VoxelCube) {
   const [, forme, , tete] = parts(piece);
@@ -149,7 +170,8 @@ export const KIT_5E: Kit = {
   // lieux de l'île-école, comme au 6e.
   objetsDessines: true,
   // La rizière seule au sol (rien dessus, au pied : la cour du moulin du Delta) : une plate-bande (./shared.ts).
-  byMaterial: { bambou: () => 'verticalBoards', riziere: bedWhenAlone, enluminure, tourbe },
+  // La dalle d'une cour (la fontaine du Relais) : un cube plein aux côtés sombres (`yardSlab`).
+  byMaterial: { bambou: () => 'verticalBoards', riziere: bedWhenAlone, enluminure, tourbe, dalle: yardSlab },
   tilesInWalls: tileInWall,
   flat: isFlat,
   monumentPieces: kioskPieces,

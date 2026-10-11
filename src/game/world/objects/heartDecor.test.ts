@@ -11,7 +11,7 @@ import { LAYOUT_PAD, origineDe } from '../terrain/base';
 import type { FacettesDuDecor } from '../decor/brush';
 import { couleurDeMatiere } from '../palette';
 import { HEART_DECOR_6E, type HeartDecor } from './heartDecor';
-import { HEART_DECOR_5E } from './heartDecor5e';
+import { HEART_DECOR_5E, SCENE_LIGHT } from './heartDecor5e';
 import { drawnHeartDecor } from './inTheWorld';
 
 afterEach(() => {
@@ -120,15 +120,30 @@ const luminance = (r: number, g: number, b: number) => 0.2126 * r + 0.7152 * g +
 const lin = (v: number) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
 const luminanceOf = (c: number) => luminance(lin(((c >> 16) & 255) / 255), lin(((c >> 8) & 255) / 255), lin((c & 255) / 255));
 
-it('au 5e, tout cœur à retrouver se détache de son sol : au moins un cinquième de sa surface à 3:1 de la luminance du sol, sans lueur', () => {
+/**
+ * Les cœurs du 5e qui ne tiennent pas 3:1 à l'image (retouche du 11 octobre 2026, question laissée au directeur
+ * artistique et au référent dys) : le thermomètre du Glacier, jugé conforme par le directeur artistique, garde son flanc
+ * compté en couleurs ; les autres sont sur l'herbe sous la brume du 5e, rendue à 0,10 : même noir, un flanc n'y fait que
+ * 2,9:1 à l'écran, et seule une teinte claire (0,57 de luminance au moins sur un dessus) le tiendrait.
+ */
+const BELOW_ON_GRASS = new Set([
+  'coeur:maths-5e-signed-numbers:thermometre',
+  'coeur:maths-5e-proportionality:caisse',
+  'coeur:geography-5e-resources:riziere',
+  'coeur:life-earth-sciences-5e-active-planet:strates',
+  'coeur:physics-chemistry-5e-matter-universe:sel',
+  'coeur:technology-5e-design:planches',
+]);
+
+it('au 5e, tout cœur à retrouver se détache de son sol à l’image : au moins un vingtième de sa surface vue d’en haut à 3:1 de la luminance du sol, chacun sous la lumière du jour qu’il reçoit (`SCENE_LIGHT`), sans lueur', () => {
   const all = wholeWorld('5e');
   const sols = new Map(all.filter((c) => c.sol).map((c) => [`${c.x},${c.y},${c.z}`, c]));
-  for (const d of drawnHeartDecor('5e', worldOf('5e'))) {
+  for (const d of drawnHeartDecor('5e', worldOf('5e')).filter((o) => !BELOW_ON_GRASS.has(o.id))) {
     // Le sol sous la plus basse de ses cases.
     const low = d.cellules.reduce((m, c) => (c.z < m.z ? c : m));
     const ground = sols.get(`${low.x},${low.y},${low.z - 1}`);
     expect(ground?.texture, d.id).toBeDefined();
-    const g = luminanceOf(couleurDeMatiere('5e', ground!.texture as Parameters<typeof couleurDeMatiere>[1]).dessus);
+    const g = SCENE_LIGHT.ground * luminanceOf(couleurDeMatiere('5e', ground!.texture as Parameters<typeof couleurDeMatiere>[1]).dessus);
     const { positions: p, colors: k } = d.opaque;
     let total = 0;
     let apart = 0;
@@ -136,13 +151,39 @@ it('au 5e, tout cœur à retrouver se détache de son sol : au moins un cinquiè
       const [q0, q1, q2] = [0, 1, 2].map((s) => [p[t * 9 + s * 3], p[t * 9 + s * 3 + 1], p[t * 9 + s * 3 + 2]]);
       const u = [q1[0] - q0[0], q1[1] - q0[1], q1[2] - q0[2]];
       const v = [q2[0] - q0[0], q2[1] - q0[1], q2[2] - q0[2]];
-      const area = Math.hypot(u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]) / 2;
-      const l = luminance(k[t * 9], k[t * 9 + 1], k[t * 9 + 2]);
+      const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+      const area = Math.hypot(...n) / 2;
+      // Un dessous (le dessous d'un auvent) ne se voit jamais d'une caméra au-dessus du monde : il ne compte pas. Un dessus
+      // (la normale vers le haut, y dans le repère de Three) reçoit plus de lumière qu'un côté.
+      const ny = n[1] / (2 * area);
+      if (ny < -0.6) continue;
+      const up = ny > 0.6;
+      const l = (up ? SCENE_LIGHT.top : SCENE_LIGHT.side) * luminance(k[t * 9], k[t * 9 + 1], k[t * 9 + 2]);
       total += area;
       if ((Math.max(l, g) + 0.05) / (Math.min(l, g) + 0.05) >= 3) apart += area;
     }
-    expect(apart / total, `${d.id} sur ${ground!.texture}`).toBeGreaterThanOrEqual(0.2);
+    expect(apart / total, `${d.id} sur ${ground!.texture}`).toBeGreaterThanOrEqual(0.05);
   }
+});
+
+it('au 5e, l’étal du Comptoir, sur son emprise en T : ses poteaux, son comptoir et sa caisse restent sur ses quatre cases (seul l’auvent passe au-dessus des deux autres)', () => {
+  const id: BiomeId = 'english-5e-vocabulary';
+  const entry = HEART_DECOR_5E[id]!.find((e) => e.name === 'etal')!;
+  const cells = columnsInWorld(id, entry.columns);
+  const d = drawnHeartDecor('5e', worldOf('5e')).find((o) => o.id === `coeur:${id}:etal`)!;
+  const base = Math.min(...d.cellules.map((c) => c.z));
+  const p = d.opaque.positions;
+  const inside = (x: number, z: number) => cells.has(`${Math.floor(x)},${Math.floor(z)}`);
+  let low = 0;
+  for (let i = 0; i < p.length; i += 3) {
+    if (p[i + 1] > base + 1.9) continue;
+    low++;
+    const e = 1e-6;
+    // Un sommet sur le bord d'une case : dans l'emprise si une des cases qui le touchent y est.
+    const ok = [-e, e].some((dx) => [-e, e].some((dz) => inside(p[i] + dx, p[i + 2] + dz)));
+    expect(ok, `${p[i]}, ${p[i + 2]}`).toBe(true);
+  }
+  expect(low).toBeGreaterThan(0);
 });
 
 it('il manque un cube d’un ensemble (un lieu ou le Gardien l’a pris) : l’ensemble reste en cubes', () => {

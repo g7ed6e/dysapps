@@ -342,12 +342,13 @@ export function pebble(at: Workshop, cx: number, cy: number, z0: number, r: numb
 
 /**
  * Un tas (de sable, de terre, de mousse) au centre (cx, cy), posé en z0 : un tronc de cône bas à `n` pans, de rayon `r`,
- * puis son sommet en pointe émoussée, haut de `h`. `3n` triangles.
+ * puis son sommet en pointe émoussée, haut de `h`, dans sa teinte (`top` : une autre, le sel clair au-dessus d'un tronc
+ * au flanc sombre). `3n` triangles.
  */
-export function heap(at: Workshop, cx: number, cy: number, z0: number, r: number, h: number, t: Tint, n = 8, rot = 0.2): void {
+export function heap(at: Workshop, cx: number, cy: number, z0: number, r: number, h: number, t: Tint, n = 8, rot = 0.2, top: Tint = t): void {
   const zShoulder = z0 + h * 0.55;
   at.prism(cx, cy, r, r * 0.55, z0, zShoulder, n, t, rot, true);
-  at.prism(cx, cy, r * 0.55, 0, zShoulder, z0 + h, n, t, rot);
+  at.prism(cx, cy, r * 0.55, 0, zShoulder, z0 + h, n, top, rot);
 }
 
 /** Les mesures d'une gerbe, en part de case et de sa hauteur : le pied, la taille liée au tiers bas, la tête d'épis. */
@@ -386,16 +387,23 @@ export function milestone(at: Workshop, pe: Paint, x: number, y: number, z0: num
 
 // ---------- Les pièces du 5e ----------
 
+/** Le livre ouvert d'un pupitre : sa teinte, et sa marge sur le pupitre, en part de sa largeur et de sa profondeur. */
+export interface LecternBook {
+  colour: Couleur;
+  margin: number;
+}
+
 /**
  * Un pupitre en pente (le copiste du Bourg, l'écritoire de Vélin) : le coin dans sa matière, de (x0, y0) à (x1, y1), posé
- * en z0, plus haut au fond, et le livre crème ouvert dessus. 12 triangles.
+ * en z0, plus haut au fond, et le livre ouvert dessus (crème, à un cinquième du bord, sauf `book`). 12 triangles.
  */
-export function lectern(at: Workshop, pe: Paint, x0: number, x1: number, y0: number, y1: number, z0: number, t: Tint): void {
+export function lectern(at: Workshop, pe: Paint, x0: number, x1: number, y0: number, y1: number, z0: number, t: Tint, book: LecternBook = { colour: OBJECT_COLORS.cream, margin: 0.2 }): void {
   const [zf, zb] = [z0 + 0.14, z0 + 0.44];
   at.wedge(x0, x1, y0, y1, z0, zf, zb, t);
   const z = (y: number) => zf + ((y - y0) / (y1 - y0)) * (zb - zf) + 0.02;
-  const [bx0, bx1, by0, by1] = [x0 + (x1 - x0) * 0.2, x1 - (x1 - x0) * 0.2, y0 + (y1 - y0) * 0.2, y1 - (y1 - y0) * 0.2];
-  at.quad([bx0, by0, z(by0)], [bx1, by0, z(by0)], [bx1, by1, z(by1)], [bx0, by1, z(by1)], [(x0 + x1) / 2, (y0 + y1) / 2, z0], pe.color(OBJECT_COLORS.cream));
+  const [mx, my] = [(x1 - x0) * book.margin, (y1 - y0) * book.margin];
+  const [bx0, bx1, by0, by1] = [x0 + mx, x1 - mx, y0 + my, y1 - my];
+  at.quad([bx0, by0, z(by0)], [bx1, by0, z(by0)], [bx1, by1, z(by1)], [bx0, by1, z(by1)], [(x0 + x1) / 2, (y0 + y1) / 2, z0], pe.color(book.colour));
 }
 
 /** Une planche-flèche d'un poteau indicateur : vers `toward` (−1 ou 1) le long de `axis`, à la hauteur de son milieu `z`, longue de `length` depuis l'axe du poteau. */
