@@ -15,7 +15,7 @@ import { boitesDesCreatures, centreDeLObjet, cleDeLaCreature, cleDeLObjet, signe
 import { useEnCasesDuMonde } from '../useInWorldCells';
 import { createMeter } from './meter';
 import { habillageDe } from '../skin';
-import { mesuresDemandees, renduDuMonde, styleDuMonde } from '../rendering';
+import { mesuresDemandees, meterShown, renduDuMonde, styleDuMonde } from '../rendering';
 import { useSettings } from '../../core/SettingsContext';
 import { surfaceDe } from './surface';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './scenePart';
@@ -188,8 +188,8 @@ export default function WorldCanvas({
     renderer.domElement.style.width = '100%';
     renderer.domElement.style.height = '100%';
     renderer.domElement.style.touchAction = 'none';
-    // Le compteur de mesures (lot R0) : visible avec `?mesures`, lisible par les scripts en développement.
-    const meter = createMeter(el, rendu, mesuresDemandees(), import.meta.env.DEV || mesuresDemandees());
+    // Le compteur de mesures (lot R0) : visible avec `?mesures` ou son réglage, lisible par les scripts en développement.
+    const meter = createMeter(el, rendu, meterShown(), import.meta.env.DEV || mesuresDemandees());
 
     const scene = new THREE.Scene();
     const bounds = worldBounds(archipelago);

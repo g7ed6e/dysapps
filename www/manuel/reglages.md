@@ -104,6 +104,8 @@ Deux liens s’ouvrent dans un nouvel onglet : **La documentation** (ce site, ht
 
 **Mesurer l’appareil** dit si l’appareil dessine le monde sans à-coups. L’appli se recharge, prend une partie déjà toute construite, fait seule le tour du monde du 6e (une île, l’archipel, la Carte, « Modifier le plan », la pose d’une partie) et affiche à la fin un tableau de chiffres, avec **Copier**. **Réglages**, à tout moment, recharge l’appli sur les Réglages. La vraie partie n’est pas touchée : rien de ce qui se passe pendant la mesure n’est enregistré.
 
+**Compteur de mesures**, une fois coché, affiche en bas à gauche du monde en 3D, pendant le jeu, ce que l’appareil dessine à chaque image : le nombre d’appels de dessin, de triangles, et d’images par seconde (i/s). Il apparaît à la prochaine ouverture du monde et reste coché sur l’appareil. **Affichage par défaut** le décoche. C’est un outil technique, pour vérifier l’appareil : l’élève n’en a pas besoin.
+
 ## Ma sauvegarde
 
 **Enregistrer ma progression** range dans un fichier (`dysapps-progression-<date>.json`) tout ce que l’appli garde sur l’appareil : XP, succès, étoiles, blocs, bâtiments, répétition espacée et réglages. Sur iPhone et iPad, la feuille de partage s’ouvre pour le ranger (Fichiers, e-mail) ; ailleurs, et quand l’appareil ne sait pas partager ce fichier, il se télécharge.
