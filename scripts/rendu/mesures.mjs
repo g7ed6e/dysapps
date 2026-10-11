@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, proportions-sixieme, emc-cinquieme, emc-quatre-trois, monuments, batiments ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, proportions-sixieme, emc-cinquieme, emc-quatre-trois, monuments, batiments, objets-sixieme ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -761,6 +761,91 @@ const CAPTURES = [
   { nom: 'batiments-forge-loin-ile', vue: 'île', famille: 'batiments', ile: 'french-6e-reading', finesse: 2 },
   { nom: 'batiments-forge-loin-archipel', vue: 'archipel', famille: 'batiments', ile: 'french-6e-reading' },
   { nom: 'batiments-forge-carte', vue: 'carte', famille: 'batiments', ile: 'french-6e-letter-confusion' },
+  // Les objets du 6e de la piste 3 « hybride » (famille `objets-sixieme`, à retirer une fois le lot fusionné ; à prendre
+  // avec `--rendu archipeo`). Le lot 1 : chaque île du 6e de près, toutes ses petites constructions posées (les seize
+  // commandes et les trois objets d'entraide : la Forêt, la Ferme et la Tour en ont deux), de jour ; la nuit, les
+  // lanternes de la Tour (le poteau-lanterne de Grimoire), de la Forêt (celle de Mousso) et du Laboratoire (l'étagère de
+  // Bulle) ; l'archipel entier (les objets à silhouette de loin) ; le trophée d'un Gardien rallumé, de près à côté de sa
+  // statue (la fiche du Gardien de la Mine cadre les deux : le bloc d'or est une case devant lui) ; le quai de l'île-port
+  // de trois quarts au premier plan (la fiche du Bloc-Navire, amarré au quai, le cadre : la barque, les caisses, les
+  // fanions, le foyer) ; une île en recul (la Lagune : le volcan du cœur et le parasol, dessinés, vus de loin).
+  ...[
+    ['foret', 'french-6e-phonology'],
+    ['mine', 'french-6e-letter-confusion'],
+    ['carriere', 'french-6e-word-spelling'],
+    ['ferme', 'french-6e-grammar-spelling'],
+    ['tour', 'french-6e-reading'],
+    ['plaine', 'maths-6e-calculation'],
+    ['riviere', 'maths-6e-fractions'],
+    ['lagune', 'maths-6e-decimals'],
+    ['baie', 'english-6e-vocabulary'],
+    ['horloge', 'english-6e-grammar'],
+    ['fouille', 'history-6e-antiquity'],
+    ['pointe', 'geography-6e-living'],
+    ['vallee', 'life-earth-sciences-6e-living-world'],
+    ['labo', 'physics-chemistry-6e-matter-energy'],
+    ['hangar', 'technology-6e-objects'],
+    ['preau', 'civics-6e-democratic-society'],
+  ].flatMap(([court, ile]) => [
+    { nom: `objets-6e-${court}`, vue: 'île', famille: 'objets-sixieme', ile, posees: 'toutes', zoomer: 3, finesse: 2 },
+    ...(['tour', 'foret', 'labo'].includes(court) ? [{ nom: `objets-6e-${court}-nuit`, vue: 'île', famille: 'objets-sixieme', ile, posees: 'toutes', zoomer: 3, nuit: true, finesse: 2 }] : []),
+  ]),
+  { nom: 'objets-6e-archipel', vue: 'archipel', famille: 'objets-sixieme', ile: 'french-6e-letter-confusion', posees: 'toutes', finesse: 2 },
+  { nom: 'objets-6e-trophee', vue: 'île', famille: 'objets-sixieme', ile: 'french-6e-letter-confusion', posees: 'toutes', fiche: { genre: 'gardien', id: 'french-6e-letter-confusion' }, zoomer: 2, sansEtiquettes: true, finesse: 2 },
+  { nom: 'objets-6e-quai', vue: 'île', famille: 'objets-sixieme', ile: 'maths-6e-calculation', posees: 'toutes', fiche: { genre: 'navire', port: 'maths-6e-calculation' }, sansEtiquettes: true, finesse: 2 },
+  { nom: 'objets-6e-loin', vue: 'île', famille: 'objets-sixieme', ile: 'maths-6e-decimals', posees: 'toutes', zoomer: -6, finesse: 2 },
+  // Le lot 2 : le décor du cœur de chaque île du 6e dessiné (./objects/heartDecor.ts), regroupé : une vue de plus près par île
+  // qui en a (sans les noms, pour le voir entier), de jour ; la nuit, la Baie des mots (le réverbère du cœur reste éteint),
+  // la Lagune (la braise mate du volcan) et le Laboratoire (ses galets sur l'herbe). L'île-école de près, ses trois lieux dessinés (./objects/villagePlaces.ts : l'école et
+  // son clocheton, la salle des trophées pleine, la Halle et sa potence), de jour et de nuit (les vitres de l'école), et la
+  // salle sans trophée (ses socles vides).
+  ...[
+    ['mine', 'french-6e-letter-confusion'],
+    ['carriere', 'french-6e-word-spelling'],
+    ['ferme', 'french-6e-grammar-spelling'],
+    ['plaine', 'maths-6e-calculation'],
+    ['riviere', 'maths-6e-fractions'],
+    ['lagune', 'maths-6e-decimals'],
+    ['baie', 'english-6e-vocabulary'],
+    ['horloge', 'english-6e-grammar'],
+    ['fouille', 'history-6e-antiquity'],
+    ['pointe', 'geography-6e-living'],
+    ['vallee', 'life-earth-sciences-6e-living-world'],
+    ['labo', 'physics-chemistry-6e-matter-energy'],
+    ['hangar', 'technology-6e-objects'],
+    ['preau', 'civics-6e-democratic-society'],
+  ].flatMap(([court, ile]) => [
+    { nom: `objets-6e-coeur-${court}`, vue: 'île', famille: 'objets-sixieme', ile, posees: 'toutes', zoomer: 4, sansEtiquettes: true, finesse: 2 },
+    ...(['baie', 'lagune', 'labo'].includes(court) ? [{ nom: `objets-6e-coeur-${court}-nuit`, vue: 'île', famille: 'objets-sixieme', ile, posees: 'toutes', zoomer: 4, sansEtiquettes: true, nuit: true, finesse: 2 }] : []),
+  ]),
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    { nom: `objets-6e-ecole${suffixe}`, vue: 'île', famille: 'objets-sixieme', ile: 'french-6e-phonology', succes: 'tous', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
+    { nom: `objets-6e-ecole-lieux${suffixe}`, vue: 'île', famille: 'objets-sixieme', ile: 'french-6e-phonology', succes: 'tous', posees: 'toutes', zoomer: 2, sansEtiquettes: true, finesse: 2, ...autres },
+  ]),
+  { nom: 'objets-6e-ecole-salle-vide', vue: 'île', famille: 'objets-sixieme', ile: 'french-6e-phonology', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  // Les trois essais d'avant (pièces communes de la cour, modèle propre d'une commande à silhouette) : la Mine des lettres
+  // tout construite, la cour de la forge (barrières, lanternes sur poteau, marche de pierre) et le puits de Tunel posés,
+  // de près et de plus près, de jour et de nuit ; la cour à moitié posée (ses pièces à côté des fantômes) ; le puits
+  // pendant sa pose (« Livrer » touché, la vague à mi-chemin : ses couches en cubes, avant le modèle), puis posé.
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    { nom: `objets-mine${suffixe}`, vue: 'île', ile: 'french-6e-letter-confusion', posees: ['french-6e-letter-confusion-fixture-1'], ...autres },
+    { nom: `objets-mine-pres${suffixe}`, vue: 'île', ile: 'french-6e-letter-confusion', posees: ['french-6e-letter-confusion-fixture-1'], zoomer: 3, ...autres },
+  ]).map((c) => ({ famille: 'objets-sixieme', finesse: 2, ...c })),
+  { nom: 'objets-mine-cour-mi', vue: 'île', famille: 'objets-sixieme', ile: 'french-6e-letter-confusion', partie: 'cour-mi', zoomer: 3, finesse: 2 },
+  ...[
+    { suffixe: '-pose', pasEnPlus: 13 },
+    { suffixe: '-posee', pasEnPlus: 60 },
+  ].map(({ suffixe, pasEnPlus }) => ({
+    nom: `objets-puits${suffixe}`,
+    vue: 'île',
+    famille: 'objets-sixieme',
+    ile: 'french-6e-letter-confusion',
+    commandes: ['french-6e-letter-confusion-request-1'],
+    inventaire: { 'maths-6e-calculation': 4 },
+    cliquer: '.commandes-list .button.primary',
+    pasEnPlus,
+    finesse: 2,
+  })),
   // Les familles du 6e dans Archipéo (lot 7, la table « matière → famille », famille `familles-sixieme`), à retirer une fois
   // le lot fusionné ; à prendre avec `--rendu archipeo`. De près (`zoomer`), toutes les petites constructions posées :
   // le cadran de l'Horloge des verbes de près, de jour et de nuit, et de loin (l'île reculée, l'archipel) ; la cabine de

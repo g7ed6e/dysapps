@@ -37,7 +37,12 @@ import { bacDePierre, PIECE_SEULE_ET_BASSE } from '../lowPieces';
 import { restOf } from '../heart';
 import { piecesDeToit } from '../roofs';
 import { FINISHES, piecesSurPilotis, postsOf, villagePlaces } from './shared';
+import { yardPiecesOf } from '../yardPieces';
 import type { Kit } from './types';
+
+// Les pièces communes de la cour (premier essai de la piste 3 « hybride », 11 octobre 2026, ../yardPieces.ts) : la
+// barrière, la marche et la lanterne sur poteau de toutes les cours des Premiers Rivages ; ailleurs, la finition commune.
+const YARD = yardPiecesOf('6e', FINISHES);
 
 export const KIT_6E: Kit = {
   // La table commune, pour les familles que le kit dessine (la Ferme, en terre : le torchis d'un colombage, décision du
@@ -61,6 +66,15 @@ export const KIT_6E: Kit = {
     flanc: 0x142b38,
     feuille: 0x4e8f36,
     paille: 0xe8c66f,
+    // Les pièces de la cour (../yardPieces.ts, 11 octobre 2026), aux couleurs des concepts : le poteau et les lisses de
+    // la barrière, la pierre du pied et des côtés de la marche, sa dalle, le fer et l'ardoise de la lanterne, ses vitres.
+    yardPost: 0x6e4a2c,
+    yardRail: 0x7a5434,
+    yardStone: 0x8e8c84,
+    yardSlab: 0xcfc6b4,
+    lanternFrame: 0x3a2a22,
+    lanternRoof: 0x4e6378,
+    lanternGlass: 0xe8c877,
   },
   murs: { colombage: 'colombage', bardage: 'bardage', pierre: 'plein', metal: 'tole' },
   // En attente (décision du directeur artistique, 30/09) : au 6e, le bardage reste aux pignons. Les îles au quai ou au
@@ -68,8 +82,13 @@ export const KIT_6E: Kit = {
   // les bâtiments de bois qu'on y posera.
   bardes: ['english-6e-vocabulary', 'maths-6e-fractions', 'french-6e-reading'],
   pieces: { toit: piecesDeToit(), colombage: piecesSurPilotis(), pierre: { [PIECE_SEULE_ET_BASSE]: bacDePierre() } },
-  // La barrière en poteaux et lisses (`barriereDe`), branchée le 9 octobre 2026 : elle tient dans l'enveloppe.
-  finitions: FINISHES,
+  // La barrière en poteaux et lisses (`barriereDe`), branchée le 9 octobre 2026 : elle tient dans l'enveloppe. Dans les
+  // cours, les pièces communes (`YARD`).
+  finitions: YARD.finitions,
+  yardLantern: YARD.lanterne,
+  // Les objets dessinés (lot 1 de la piste 3, 11 octobre 2026 : world/fixtureModels.ts, world/objects/) : les dix-neuf
+  // petites constructions, le bloc d'or des Gardiens rallumés, les objets du quai.
+  objetsDessines: true,
   // Les lieux du village (./shared.ts) : les murs de brique et de pierre de taille de l'école, et les piliers de marbre
   // de la salle des trophées (sans décharge), en colombage.
   lieux: villagePlaces({ school: { famille: 'colombage' }, pillars: { famille: 'colombage' } }),

@@ -71,6 +71,9 @@ describe('Les pièces basses', () => {
   });
 
   it('la barrière est dans le kit des Premiers Rivages (9 octobre 2026) : elle tient dans l’enveloppe de la construction', () => {
-    expect(KIT_6E.finitions?.barriere).toBe(barriereDe);
+    // Hors des cours (une petite construction), la barrière commune ; dans les cours, la pièce de cour (../yardPieces.ts,
+    // 11 octobre 2026).
+    const c = { x: 0, y: 0, z: 1, color: '#000', texture: 'barriere', petiteConstruction: true as const };
+    expect(KIT_6E.finitions?.barriere?.('mur.bout.pied.chaperon', c)).toBe(barriereDe('mur.bout.pied.chaperon', c));
   });
 });

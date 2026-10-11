@@ -124,6 +124,14 @@ describe('Le kit des Premiers Rivages (lot 7b)', () => {
       flanc: 0x142b38,
       feuille: 0x4e8f36,
       paille: 0xe8c66f,
+      // Les pièces communes de la cour (11 octobre 2026, ../yardPieces.ts) : les couleurs des concepts.
+      yardPost: 0x6e4a2c,
+      yardRail: 0x7a5434,
+      yardStone: 0x8e8c84,
+      yardSlab: 0xcfc6b4,
+      lanternFrame: 0x3a2a22,
+      lanternRoof: 0x4e6378,
+      lanternGlass: 0xe8c877,
     });
     expect(KIT_6E.murs).toEqual({ colombage: 'colombage', bardage: 'bardage', pierre: 'plein', metal: 'tole' });
     // La finition, matière par matière : la porte peinte, la marche et la barrière dessinées (la barrière depuis le 9 octobre 2026).
