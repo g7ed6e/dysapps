@@ -33,12 +33,12 @@ const clarte = (c: number) => (Math.max(c >> 16, (c >> 8) & 255, c & 255) + Math
 
 beforeAll(() => chargerLesModelesDuDisque());
 
-/** Les îles dont la créature est importée (6e, 5e et 4e). */
+/** Les îles dont la créature est importée (6e, 5e, 4e et 3e). */
 const AVEC_CREATURE = ILES_IMPORTEES.filter((id) => nomDuModele('creature', id));
 
-it('les seize îles du 6e, les quatorze de la 5e et les quatorze de la 4e ont leur Gardien et leur créature, de près et de loin', () => {
-  expect(ILES_IMPORTEES).toHaveLength(44);
-  expect(AVEC_CREATURE).toHaveLength(44);
+it('les seize îles du 6e, les quatorze de la 5e, de la 4e et de la 3e ont leur Gardien et leur créature, de près et de loin', () => {
+  expect(ILES_IMPORTEES).toHaveLength(58);
+  expect(AVEC_CREATURE).toHaveLength(58);
   for (const id of ILES_IMPORTEES)
     for (const genre of GENRES)
       for (const niveau of NIVEAUX) {
