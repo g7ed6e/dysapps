@@ -26,9 +26,8 @@ export interface PersonnagePlace {
   id: BiomeId;
   cubes: Pick<VoxelCube, 'x' | 'y' | 'z'>[];
   origin: { x: number; y: number; z: number };
-  /** Pour un Gardien : les cases de son carré et celle de son bloc d'or, dans le monde (le lieu tourné). */
-  cases?: readonly { x: number; y: number }[];
-  trophy?: { x: number; y: number };
+  /** Pour un Gardien : le milieu de sa place sur son carré, dans le monde (le lieu tourné), où se pose sa sentinelle. */
+  centre?: { x: number; y: number };
 }
 
 /** Un os : ce qu'il porte, son personnage, son parent (−1 : aucun) et sa position de repos dans la scène. */
@@ -96,10 +95,11 @@ export interface FusionDuBonhomme extends Fusion {
 export const trianglesDeLaFusion = (f: Fusion): number => f.positions.length / 9;
 
 /**
- * Le point de la scène où se pose un personnage : le milieu de l'emprise de ses cubes (x et y du monde), sur le haut
- * de sa case (z du monde), dans le repère de Three.js.
+ * Le point de la scène où se pose un personnage : le milieu de l'emprise de ses cubes (x et y du monde), ou celui de
+ * sa place pour un Gardien (`centre`), sur le haut de sa case (z du monde), dans le repère de Three.js.
  */
 export function pointDePose(p: PersonnagePlace): V3 {
+  if (p.centre) return [p.centre.x, p.origin.z, p.centre.y];
   let [x0, x1, y0, y1] = [Infinity, -Infinity, Infinity, -Infinity];
   for (const c of p.cubes) {
     x0 = Math.min(x0, c.x);
@@ -232,37 +232,14 @@ export function fusionDesCreatures(places: PersonnagePlace[], pres: BiomeId | nu
 }
 
 /**
- * La place d'un Gardien qui remplit son carré, autour de son point de pose `o` (`pointDePose`), en cases : demi-largeur
- * (en x) et demi-profondeur (en z, le y de la grille). Jusqu'aux bords de son carré, sans couvrir la case de son bloc
- * d'or (la plus grande des deux places qui la laissent libre) ; le lieu tourné (GD-9) déplace un peu le point de pose
- * dans son carré, pas la statue, qui garde son visage vers −Z. Sans carré connu : `GUARDIAN_SQUARE_ROOM`, celle du lieu
- * pas tourné.
- */
-export function placeSurLeCarre(o: V3, cases?: readonly { x: number; y: number }[], or?: { x: number; y: number }): { dx: number; dy: number }[] {
-  const { halfWidth, halfDepth } = GUARDIAN_SQUARE_ROOM;
-  if (!cases?.length) return [{ dx: halfWidth, dy: halfDepth }];
-  const [x0, x1] = [Math.min(...cases.map((c) => c.x)), Math.max(...cases.map((c) => c.x)) + 1];
-  const [y0, y1] = [Math.min(...cases.map((c) => c.y)), Math.max(...cases.map((c) => c.y)) + 1];
-  const [px, py] = [o[0], o[2]];
-  const carre = { dx: Math.max(0, Math.min(px - x0, x1 - px)), dy: Math.max(0, Math.min(py - y0, y1 - py)) };
-  if (!or) return [carre];
-  // Le bloc d'or reste libre : la statue s'arrête avant lui en x, ou bien en z.
-  const [ex, ey] = [Math.abs(or.x + 0.5 - px) - 0.5, Math.abs(or.y + 0.5 - py) - 0.5];
-  return [
-    { dx: Math.min(carre.dx, ex), dy: carre.dy },
-    { dx: carre.dx, dy: Math.min(carre.dy, ey) },
-  ].filter((p) => p.dx > 0 && p.dy > 0);
-}
-
-/**
  * L'échelle d'un Gardien dans le monde : celle de toutes les sentinelles (`ECHELLE_DANS_LE_MONDE`, DA-5) ; celle qui
  * le porte à sa hauteur propre (`GUARDIAN_WORLD_HEIGHTS`, le Grand Chêne) ; ou, pour un Gardien qui remplit son carré
- * (`fillsGuardianSquare`), la plus grande qui le garde dans sa place (`placeSurLeCarre`) et sous la hauteur de la
- * sentinelle commune. L'écran du défi le montre à sa taille.
+ * (`fillsGuardianSquare`), la plus grande qui le garde dans sa place (`GUARDIAN_SQUARE_ROOM`, la même quelle que soit
+ * l'orientation du lieu) et sous la hauteur de la sentinelle commune. L'écran du défi le montre à sa taille.
  */
-function echelleDuGardien(p: PersonnagePlace, f: FacettesDePersonnage): number {
-  const h = GUARDIAN_WORLD_HEIGHTS[p.id];
-  if (h === undefined && !fillsGuardianSquare(p.id)) return ECHELLE_DANS_LE_MONDE;
+function echelleDuGardien(id: BiomeId, f: FacettesDePersonnage): number {
+  const h = GUARDIAN_WORLD_HEIGHTS[id];
+  if (h === undefined && !fillsGuardianSquare(id)) return ECHELLE_DANS_LE_MONDE;
   let [haut, large, profond] = [0, 0, 0];
   for (let i = 0; i < f.positions.length; i += 3) {
     large = Math.max(large, Math.abs(f.positions[i]));
@@ -271,9 +248,8 @@ function echelleDuGardien(p: PersonnagePlace, f: FacettesDePersonnage): number {
   }
   if (haut <= 0) return ECHELLE_DANS_LE_MONDE;
   if (h !== undefined) return h / haut;
-  const places = placeSurLeCarre(pointDePose(p), p.cases, p.trophy);
-  const k = places.map(({ dx, dy }) => Math.min(large > 0 ? dx / large : Infinity, profond > 0 ? dy / profond : Infinity));
-  return Math.min(HAUTEUR_DANS_LE_MONDE / haut, Math.max(ECHELLE_DANS_LE_MONDE, ...k));
+  const d = GUARDIAN_SQUARE_ROOM.half;
+  return Math.min(HAUTEUR_DANS_LE_MONDE / haut, large > 0 ? d / large : Infinity, profond > 0 ? d / profond : Infinity);
 }
 
 /**
@@ -289,7 +265,7 @@ export function fusionDesGardiens(places: PersonnagePlace[], pres: BiomeId | nul
   let t0 = 0;
   places.forEach((p, i) => {
     const f = modeles[i];
-    copier(base, f, pointDePose(p), t0, echelleDuGardien(p, f));
+    copier(base, f, pointDePose(p), t0, echelleDuGardien(p.id, f));
     const brille = f.table.map((q) => q.lueur === 'allumage');
     for (let t = 0; t < f.pieces.length; t++) if (brille[f.pieces[t]]) lueur.fill(1, (t0 + t) * 3, (t0 + t + 1) * 3);
     base.plages.push({ id: p.id, debut: t0, fin: t0 + f.pieces.length });

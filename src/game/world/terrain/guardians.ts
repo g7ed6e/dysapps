@@ -119,8 +119,11 @@ export interface GuardianPlacement {
   echelle: number;
   /** Les cases de son carré : le bonhomme n'y marche pas. */
   cases: { x: number; y: number }[];
-  /** La case de son bloc d'or, dans le monde (le lieu tourné) : un Gardien qui grandit sur son carré la laisse libre. */
-  trophy: { x: number; y: number };
+  /**
+   * Le milieu de sa place sur son carré, dans le monde (`milieuDuGardien`, le lieu tourné) : la sentinelle d'Archipéo s'y
+   * pose. Le milieu de ses cubes tournés peut glisser d'une case (des cases qui tournent, pas un point).
+   */
+  centre: { x: number; y: number };
 }
 
 /**
@@ -150,10 +153,9 @@ export function guardianPlacements(
     // Le milieu de ses cubes au milieu de sa place ; sur le lieu tourné (GD-9), il tourne avec lui.
     const origine = { x: def.core.x + m.x - (e.x0 + e.x1) / 2, y: def.core.y + m.y - (e.y0 + e.y1) / 2, z: def.altitude + 1 };
     const pose = turnPlacedModel(def.core, origine, modele, def.quarts);
-    const t = trophySpot(b.id);
-    const tt = turnCell(t.x, t.y, def.quarts);
-    const trophy = { x: def.core.x + tt.x, y: def.core.y + tt.y };
-    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes: pose.cubes, origin: pose.origine, echelle, cases: guardianCells(b.id), trophy });
+    const t = turnPoint(m.x, m.y, def.quarts);
+    const centre = { x: def.core.x + t.x, y: def.core.y + t.y };
+    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes: pose.cubes, origin: pose.origine, echelle, cases: guardianCells(b.id), centre });
   }
   return out;
 }

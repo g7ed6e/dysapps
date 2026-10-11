@@ -131,12 +131,13 @@ function boiteDuPersonnage(p: Pick<CreaturePlacement, 'cubes' | 'origin' | 'eche
 
 /**
  * La boîte d'un Gardien dessiné en sentinelle (Archipéo, `habillage.personnages` « modeles ») : la statue à l'échelle du
- * monde, ses pieds au milieu de la place de ses cubes (`pointDePose` de world/characters/merges.ts), pas la boîte de ses
+ * monde, ses pieds au milieu de sa place (`pointDePose` de world/characters/merges.ts), pas la boîte de ses
  * cubes, qui sont ceux du Gardien de Blocland en grand : sa bulle et sa zone de toucher suivent la statue qu'on voit.
  */
-function boiteDeLaSentinelle(p: Pick<CreaturePlacement, 'id' | 'cubes' | 'origin'>): Boite {
+function boiteDeLaSentinelle(p: Pick<CreaturePlacement, 'id' | 'cubes' | 'origin'> & { centre?: { x: number; y: number } }): Boite {
   const b = boiteDe(p.cubes, p.origin);
-  const [cx, cy, z0] = [(b.min.x + b.max.x) / 2, (b.min.y + b.max.y) / 2, p.origin.z];
+  // Le milieu de sa place sur son carré, où se pose la statue (`pointDePose`), ou celui de ses cubes.
+  const [cx, cy, z0] = p.centre ? [p.centre.x, p.centre.y, p.origin.z] : [(b.min.x + b.max.x) / 2, (b.min.y + b.max.y) / 2, p.origin.z];
   // Carrée : le lieu peut être tourné (GD-9), la boîte reste celle de la statue.
   const { dx, dy, h } = sentinelleDe(p.id);
   const d = Math.max(dx, dy);

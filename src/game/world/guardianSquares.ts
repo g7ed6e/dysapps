@@ -108,11 +108,16 @@ export const TALLEST_TREE_6E = (GUARDIAN_WORLD_HEIGHTS['french-6e-phonology'] ??
 
 /**
  * Le Gardien d'Archipéo de cette île prend-il toute la place de son carré (proposition 4 du rapport sur les proportions
- * du 6e, retenue par le mainteneur le 11 octobre 2026) ? Ses cinq cases de large et les quatre rangées du fond, son bloc
- * d'or sur la rangée de devant, jusqu'à la hauteur de la sentinelle commune : un Gardien large et bas (couché, à quatre
+ * du 6e, retenue par le mainteneur le 11 octobre 2026) ? Les quatre rangées du fond, son bloc d'or sur la rangée de
+ * devant, jusqu'à la hauteur de la sentinelle commune : un Gardien large et bas (couché, à quatre
  * pattes, à large couronne) n'y perd plus de hauteur. Le 6e seulement, pour l'instant.
  */
 export const fillsGuardianSquare = (id: BiomeId): boolean => archipelagoOfIsland(id) === '6e';
 
-/** Ce que prend, au plus, un Gardien qui remplit son carré (`fillsGuardianSquare`), en cases : demi-largeur, demi-profondeur. */
-export const GUARDIAN_SQUARE_ROOM = { halfWidth: GUARDIAN_SQUARE_SIDE / 2, halfDepth: (GUARDIAN_SQUARE_SIDE - 1) / 2 } as const;
+/**
+ * Ce que prend, au plus, un Gardien qui remplit son carré (`fillsGuardianSquare`), en cases, autour du milieu de sa
+ * place : sa demi-largeur et sa demi-profondeur, les quatre rangées du fond dans les deux sens. La statue ne tourne
+ * pas avec son lieu (GD-9) : ainsi elle tient sur son carré et laisse libre son bloc d'or quelle que soit son
+ * orientation, et garde la même taille.
+ */
+export const GUARDIAN_SQUARE_ROOM = { half: (GUARDIAN_SQUARE_SIDE - 1) / 2 } as const;

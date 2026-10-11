@@ -3,7 +3,7 @@ import { ARCHIPELAGO_IDS } from '../map';
 import { creaturePlacements, guardianPlacements } from '../terrain';
 import { bonhommePeint } from './avatar';
 import { creaturePeinte } from './paintedCreatures';
-import { allumageDuGardien, couleursDesGardiens, fusionDesCreatures, ileRegardee, lueursDesGardiens, fusionDesGardiens, fusionDuBonhomme, placeSurLeCarre, pointDePose, trianglesDeLaFusion } from './merges';
+import { allumageDuGardien, couleursDesGardiens, fusionDesCreatures, ileRegardee, lueursDesGardiens, fusionDesGardiens, fusionDuBonhomme, pointDePose, trianglesDeLaFusion } from './merges';
 import { couleursAllumees } from './sentinel';
 import { sentinellePeinte } from './paintedSentinels';
 
@@ -13,20 +13,6 @@ describe('Les personnages fusionnés, archipel par archipel', () => {
   it('pose un personnage au milieu de l’emprise de ses cubes, sur le haut de sa case (repère de Three.js)', () => {
     const p = { id: 'french-6e-phonology' as const, origin: { x: 10, y: 20, z: 3 }, cubes: [0, 1, 2].flatMap((x) => [0, 1].map((y) => ({ x, y, z: 0 }))) };
     expect(pointDePose(p)).toEqual([11.5, 3, 21]);
-  });
-
-  it('un Gardien qui grandit sur son carré s’arrête à ses bords et laisse libre son bloc d’or, même le lieu tourné', () => {
-    const cases = [0, 1, 2, 3, 4].flatMap((i) => [0, 1, 2, 3, 4].map((j) => ({ x: 10 + i, y: 20 + j })));
-    // Le lieu pas tourné : le bloc d'or au milieu de la rangée de devant, la statue sur les quatre du fond.
-    expect(placeSurLeCarre([12.5, 0, 23], cases, { x: 12, y: 20 })).toEqual([{ dx: 2.5, dy: 2 }]);
-    // Le point de pose glissé d'une case vers l'or (un lieu tourné) : la statue recule devant lui.
-    expect(placeSurLeCarre([12.5, 0, 22], cases, { x: 12, y: 20 })).toEqual([{ dx: 2.5, dy: 1 }]);
-    // Le bloc d'or sur un coin : arrêtée avant lui en x, ou bien en z.
-    expect(placeSurLeCarre([12.5, 0, 22.5], cases, { x: 14, y: 20 })).toEqual([
-      { dx: 1.5, dy: 2.5 },
-      { dx: 2.5, dy: 1.5 },
-    ]);
-    expect(placeSurLeCarre([12.5, 0, 23])).toEqual([{ dx: 2.5, dy: 2 }]);
   });
 
   for (const a of ARCHIPELAGO_IDS) {
