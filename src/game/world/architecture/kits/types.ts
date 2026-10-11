@@ -118,6 +118,11 @@ export interface Kit {
    * faces de leurs voisins ; finis, ils gardent la lueur de fin sur leurs côtés.
    */
   insetBlocks?: (c: VoxelCube) => boolean;
+  /**
+   * Les lanternes des cours que le kit dessine en lanterne sur poteau (../yardPieces.ts, au 6e : la tête de fer et
+   * d'ardoise, ses vitres dans les fenêtres), au lieu du corps sombre et du cœur des autres lanternes.
+   */
+  yardLantern?: (c: VoxelCube) => boolean;
   /** Les matières tenues loin du fantôme Brume (../heartPieces.ts, `apartFromGhost` ; au 5e : la glace, le sel, la toile). */
   ghostApart?: readonly TextureKind[];
   /**

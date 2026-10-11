@@ -38,6 +38,7 @@ import type { BridgeKind } from './archipelago';
 import type { VoxelCube } from './cube';
 import { PLACED_FIXTURES } from './placedFixtures';
 import { casesDeLaPetiteConstruction } from './fixtures';
+import { ecartDePres } from './fixtureModels';
 import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './characters/merges';
 import { COUT_DES_BULLES } from './affordance';
 import { coutDesLueurs, lueursDesLanternes } from './lanternGlow';
@@ -62,9 +63,13 @@ export const RENDER_BUDGET = {
  * pour les bâtiments des plans importés d'Archipéo (./buildingModels.ts ; décision du mainteneur, 10 octobre 2026 : de
  * près 3 000 triangles sur l'île où est l'élève, de loin environ 200 ailleurs, « tu peux relever les plafonds ») : relevé
  * de la différence, les 3 750 que l'enveloppe de la construction prend (12 750 → 16 500 ; mesurée au pire, prévue pour
- * les seize bâtiments de l'archipel, `constructionAuPire`) ; la somme des enveloppes passe de 81 290 à 85 040.
+ * les seize bâtiments de l'archipel, `constructionAuPire`) ; la somme des enveloppes passe de 81 290 à 85 040. Puis à
+ * 86 850 pour les trois essais de la piste 3 « hybride » (choisie par le mainteneur le 11 octobre 2026, qui autorise à
+ * relever « quand c'est nécessaire ») : les pièces communes de toutes les cours (./architecture/yardPieces.ts) et le
+ * puits de Tunel dessiné (./fixtureModels.ts) ; la construction passe de 16 500 à 18 050, les commandes de 850 à 1 100,
+ * la somme des enveloppes de 85 040 à 86 840.
  */
-export const RENDER_BUDGET_6E = { triangles: 85_250, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_6E = { triangles: 86_850, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
  * Les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
@@ -364,10 +369,15 @@ export const ENVELOPPES: Record<
   // de Tunel chargée), 12 003 → 15 899 aux Îles Brumeuses, 12 508 → 16 585 aux Anciens Ateliers, 12 735 → 16 691 aux Îles
   // du Ciel (quatorze îles chacun) ; au pire de la salle des trophées (24 succès), 16 454, 16 147, 16 833 et 16 939. Les
   // enveloppes : 12 750 → 16 500, 13 230 → 16 200 aux Îles Brumeuses, 13 000 → 16 950 ailleurs ; aucun appel de plus.
+  // Les pièces communes des cours du 6e (./architecture/yardPieces.ts, premier essai de la piste 3 « hybride », 11 octobre
+  // 2026 ; le mainteneur autorise à relever « quand c'est nécessaire ») : la barrière à deux lisses et poteaux trapus, la
+  // lanterne sur poteau (sa tête de fer et d'ardoise, ses vitres) et la marche de pierre à deux degrés, dans les seize
+  // cours. Mesuré tout construit (`npm run rendu:budget`, 11 octobre 2026) : 16 220 → 17 768 aux Premiers Rivages ;
+  // l'enveloppe 16 500 → 18 050 ; aucun appel de plus.
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
-    premiersRivages: { triangles: 16_500, drawCalls: 3 },
+    premiersRivages: { triangles: 18_050, drawCalls: 3 },
     autres: { triangles: 16_950, drawCalls: 3 },
     parArchipel: { '5e': { triangles: 16_200, drawCalls: 3 } },
   },
@@ -378,10 +388,14 @@ export const ENVELOPPES: Record<
   // appel de plus. Hors des Premiers Rivages, 380 → 392 (choix du mainteneur, 8 octobre 2026 : « Relever à 392 ») : au
   // 4e, le pied de la machine d'Ixe (+4) et le perchoir de Cléa (+8) portent les commandes à 392 mesurés.
   // La somme des « autres » passe de 74 865 à 74 877, sous `RENDER_BUDGET_AUTRES` (74 900), inchangé.
+  // Le puits de Tunel dessiné (./fixtureModels.ts, premier essai de la piste 3 « hybride », 11 octobre 2026) : de loin
+  // 48 triangles, de près (l'île où se trouve l'élève) un peu plus de 300, à la place de ses dix cubes et de son eau.
+  // Mesuré toutes commandes livrées, de près (`commandesCost`) : 838 → 1 066 aux Premiers Rivages ; l'enveloppe 850 →
+  // 1 100 ; aucun appel de plus.
   commandes: {
     lot: 'GD-7',
     nom: 'Commandes et quêtes (les petites constructions posées, dans le sol et la construction, sans appel de plus)',
-    premiersRivages: { triangles: 850, drawCalls: 0 },
+    premiersRivages: { triangles: 1_100, drawCalls: 0 },
     autres: { triangles: 500, drawCalls: 0 },
     parArchipel: { '5e': { triangles: 545, drawCalls: 0 } },
   },
@@ -870,7 +884,9 @@ export function commandesCost(a: ArchipelagoId): { triangles: number; drawCalls:
     const construction = constructionCost(a, [], commandes);
     return { triangles: sol.triangles + construction.triangles, drawCalls: sol.drawCalls + construction.drawCalls };
   });
-  return { triangles: avec.triangles - sans.triangles, drawCalls: avec.drawCalls - sans.drawCalls };
+  // Les petites constructions dessinées (./fixtureModels.ts, le puits de Tunel) : comptées de loin, plus l'écart de la
+  // plus chère vue de près (l'île où se trouve l'élève).
+  return { triangles: avec.triangles - sans.triangles + ecartDePres(a), drawCalls: avec.drawCalls - sans.drawCalls };
 }
 
 /** Les bornes de mission d'Archipéo (lot R5) : un pilier taillé, instancié une fois par borne, en un appel. */

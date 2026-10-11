@@ -55,7 +55,7 @@ import { ARCHIPELAGOS } from './archipelago';
 import { pontsDePierreEtDeBois } from './bridges';
 import { phareDuLarge } from './offshoreLighthouse';
 import { kitVide } from './architecture';
-import { batimentsDe, ETAPES_DU_BATIMENT } from './construction';
+import { batimentsDe, coursDe, ETAPES_DU_BATIMENT } from './construction';
 
 type Etat = 'tout' | 'chantier' | 'dernier';
 
@@ -157,6 +157,29 @@ const auxPonts = (m: MaillageDeLaConstruction) => (m.ponts ?? []).reduce((n, p) 
 /** Les triangles des pièces d'architecture dessinées (lot 7) : comptées à part, au plus un cube pour ce qui est fait de main d'homme. */
 const auxPieces = (m: MaillageDeLaConstruction) => (m.pieces ?? []).reduce((n, p) => n + p.opaque[1] - p.opaque[0], 0);
 
+/**
+ * Les triangles des pièces communes de la cour (./architecture/yardPieces.ts, au 6e depuis le 11 octobre 2026 : la
+ * barrière, la marche, la lanterne sur poteau et ses vitres), et leurs cases : comptés à part.
+ */
+function auxCours(m: MaillageDeLaConstruction, a: ArchipelagoId): { triangles: number; cases: number } {
+  const cours = coursDe(a);
+  const dansLaCour = (k: string) => ['barriere', 'escalier', 'lanterne'].includes(cours.get(k) ?? '');
+  const vues = new Set<string>();
+  let n = 0;
+  for (const p of m.pieces ?? [])
+    for (let i = 0; i < p.cases.length; i += 6) {
+      const k = cle(p.cases[i], p.cases[i + 1], p.cases[i + 2]);
+      if (!dansLaCour(k)) continue;
+      vues.add(k);
+      n++;
+    }
+  triangles(m.fenetres).forEach((t) => {
+    const { cell } = caseDeLaConstruction(t.centre, t.n);
+    if (dansLaCour(cle(cell.x, cell.y, cell.z)) && cours.get(cle(cell.x, cell.y, cell.z)) === 'lanterne') n++;
+  });
+  return { triangles: n, cases: vues.size };
+}
+
 /** Les cases des pièces d'architecture dessinées (lot 7) : celles de chaque pièce, ou de chaque rangée d'un tenant. */
 function casesEnPiece(m: MaillageDeLaConstruction): number {
   const vues = new Set<string>();
@@ -204,8 +227,11 @@ describe('La construction taillée (lot R5)', () => {
       const m = maillageDeLaConstruction(a, cubes, sol);
       const total = coutDeLaConstruction(m).triangles;
       const pieces = a === '5e' ? auxPieces(m) : 0;
-      expect(total - auxPonts(m) - pieces, a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.7);
+      // Au 6e, les pièces communes de la cour (11 octobre 2026) : bornées à part, au plus 50 triangles par case en moyenne.
+      const cour = a === '6e' ? auxCours(m, a) : { triangles: 0, cases: 0 };
+      expect(total - auxPonts(m) - pieces - cour.triangles, a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.7);
       if (a === '5e') expect(pieces, a).toBeLessThanOrEqual(10 * casesEnPiece(m));
+      if (a === '6e') expect(cour.triangles, a).toBeLessThanOrEqual(50 * cour.cases);
     }
   }, 60_000);
 
