@@ -308,7 +308,8 @@ const LAGOON_FRAMING = { towards: 0.55, pullBack: 1.3 } as const;
 
 /**
  * Les îles dont la vue glisse vers le Gardien (piste C2 du directeur artistique, retenue par le mainteneur le
- * 11 octobre 2026, GD-16) : sur son carré au bord du cœur, il sortait en partie de la vue de l'île la plus étroite. La
+ * 11 octobre 2026, GD-16 pour le 6e, GD-18 du 5e au 3e) : sur son carré au bord du cœur, il sortait en partie de la vue
+ * de l'île la plus étroite. La
  * vue vise alors un point entre le milieu du cœur et le milieu de son carré, à `towards` du chemin : assez pour qu'il
  * tienne entier dans le cadre, dans les deux univers (terrain.test.ts) ; le cœur, ses bornes et ses lieux restent vus.
  */
@@ -317,23 +318,37 @@ const GUARDIAN_FRAMING: Readonly<Partial<Record<BiomeId, { towards: number }>>> 
   'french-6e-reading': { towards: 0.25 },
   'maths-6e-calculation': { towards: 0.1 },
   'technology-6e-objects': { towards: 0.1 },
+  'maths-5e-signed-numbers': { towards: 0.05 },
+  'maths-5e-proportionality': { towards: 0.55 },
+  'french-5e-conjugation': { towards: 0.4 },
+  'english-5e-vocabulary': { towards: 0.45 },
+  'english-5e-grammar': { towards: 0.45 },
+  'maths-4e-powers': { towards: 0.15 },
+  'maths-4e-algebra': { towards: 0.5 },
+  'technology-4e-modeling': { towards: 0.1 },
+  'maths-3e-geometry': { towards: 0.2 },
+  'french-3e-close-reading': { towards: 0.4 },
 };
 
 /**
  * Le point que vise la vue d'une île (x, y de la grille, z en hauteur) : le milieu de son cœur (`islandCenter`) ; pour
  * une île qui a un lagon, glissé vers lui (`LAGOON_FRAMING`), son quart de tour compris ; pour une île de
- * `GUARDIAN_FRAMING`, glissé vers le carré de son Gardien.
+ * `GUARDIAN_FRAMING`, de là, glissé vers le carré de son Gardien (le Bassin des maquettes garde son lagon dans la vue).
  */
 export function islandViewTarget(id: BiomeId): { x: number; y: number; z: number } {
-  const c = islandCenter(id);
+  const c = visee(id);
   const vers = GUARDIAN_FRAMING[id];
   const carre = GD11_GUARDIAN_SQUARES[id];
-  if (vers && carre) {
-    const def = islandDef(id);
-    const m = turnPoint(carre.x + GUARDIAN_SQUARE_SIDE / 2, carre.y + GUARDIAN_SQUARE_SIDE / 2, def.quarts);
-    const [gx, gy] = [def.core.x + m.x - 0.5, def.core.y + m.y - 0.5];
-    return { x: c.x + (gx - c.x) * vers.towards, y: c.y + (gy - c.y) * vers.towards, z: c.z };
-  }
+  if (!vers || !carre) return c;
+  const def = islandDef(id);
+  const m = turnPoint(carre.x + GUARDIAN_SQUARE_SIDE / 2, carre.y + GUARDIAN_SQUARE_SIDE / 2, def.quarts);
+  const [gx, gy] = [def.core.x + m.x - 0.5, def.core.y + m.y - 0.5];
+  return { x: c.x + (gx - c.x) * vers.towards, y: c.y + (gy - c.y) * vers.towards, z: c.z };
+}
+
+/** Le point que vise la vue d'une île sans `GUARDIAN_FRAMING` : le milieu de son cœur, glissé vers son lagon. */
+function visee(id: BiomeId): { x: number; y: number; z: number } {
+  const c = islandCenter(id);
   const f = silhouetteDe(id).forme;
   if (!hasLagoon(f)) return c;
   const def = islandDef(id);

@@ -354,11 +354,12 @@ describe('Les sentinelles dans le monde (revue d’ensemble du directeur artisti
         const pied = pointDePose(p)[1];
         let haut = -Infinity;
         for (let t = f.plages[i].debut; t < f.plages[i].fin; t++) for (let k = 0; k < 3; k++) haut = Math.max(haut, f.positions[t * 9 + k * 3 + 1]);
-        // Une sentinelle basse (la Diligence) rapetisse de même, à partir de son propre haut.
+        // Une sentinelle basse (la Diligence) rapetisse de même, à partir de son propre haut ; sur son carré (GD-16 au
+        // 6e, GD-18 aux autres classes), elle peut grandir, jusqu'à la hauteur commune.
         const basse = BASSES[p.id];
         if (!basse) return expect(haut - pied, p.id).toBeCloseTo(GUARDIAN_WORLD_HEIGHTS[p.id] ?? HAUTEUR_DANS_LE_MONDE, 2);
         expect(haut - pied, p.id).toBeGreaterThanOrEqual(basse[0] * ECHELLE_DANS_LE_MONDE - 0.005);
-        expect(haut - pied, p.id).toBeLessThanOrEqual(basse[1] * ECHELLE_DANS_LE_MONDE + 0.005);
+        expect(haut - pied, p.id).toBeLessThanOrEqual(HAUTEUR_DANS_LE_MONDE + 0.005);
       });
     }
   });

@@ -9,11 +9,11 @@ import { tailleDe } from '../template';
 import { fusionDesCreatures, fusionDesGardiens, pointDePose } from '../merges';
 import { toutConstruit } from '../../budget';
 import { guardianCells, guardianPlacements, trophySpot } from '../../terrain';
-import { archipelagoOfIsland } from '../../archipelagos';
+import { archipelagoOfIsland, ARCHIPELAGO_IDS } from '../../archipelagos';
 import { islandDef, startingIsland } from '../../map';
 import { placeIslands, turnCell, type Quarts } from '../../placement';
 import { sentinelleDe, SENTINELLE_DANS_LE_MONDE } from '../../terrain/creatures';
-import { guardianSquareRoom, GUARDIAN_WORLD_HEIGHTS } from '../../guardianSquares';
+import { guardianSquareRoom, GUARDIAN_WORLD_HEIGHTS, SHORT_STATUE_HEIGHTS } from '../../guardianSquares';
 import { lireGlb } from './glb';
 import { chargerLesModelesDuDisque, fichierDuModele } from './fromDisk.testing';
 import { ILES_IMPORTEES, modeleImporte, nomDuModele, type Genre, type Niveau } from './models';
@@ -68,15 +68,15 @@ it('un Gardien importé a la taille d’une sentinelle : 8 blocs, socle compris,
     }
 });
 
-it('au 6e, un Gardien grandit sur son carré : les quatre rangées du fond, la hauteur de la sentinelle, quelle que soit l’orientation de son lieu', () => {
+it('un Gardien grandit sur son carré : les quatre rangées du fond, la hauteur de la sentinelle, quelle que soit l’orientation de son lieu', () => {
   const { progress, world } = toutConstruit();
   const auVingtieme = (v: number) => Math.ceil(v * 20 - 1e-6) / 20;
-  const ids = ILES_IMPORTEES.filter((id) => archipelagoOfIsland(id) === '6e');
   const hauteurs = new Map<BiomeId, number>();
   try {
-    for (const q of [0, 1, 2, 3] as Quarts[]) {
+    for (const a of ARCHIPELAGO_IDS) for (const q of [0, 1, 2, 3] as Quarts[]) {
+      const ids = ILES_IMPORTEES.filter((id) => archipelagoOfIsland(id) === a);
       placeIslands(new Map(ids.map((id) => [id, { x: startingIsland(id).core.x, y: startingIsland(id).core.y, quarts: q }])));
-      const places = guardianPlacements('6e', progress, world.links);
+      const places = guardianPlacements(a, progress, world.links);
       const f = fusionDesGardiens(places);
       places.forEach((p, i) => {
         if (GUARDIAN_WORLD_HEIGHTS[p.id] !== undefined) return;
@@ -102,6 +102,8 @@ it('au 6e, un Gardien grandit sur son carré : les quatre rangées du fond, la h
         expect(h, cle).toBeLessThanOrEqual(HAUTEUR_DANS_LE_MONDE + 1e-4);
         // La même taille dans les quatre orientations.
         if (q === 0) hauteurs.set(p.id, h);
+        // Une statue restée sous 5 cases, hors du 6e : sa hauteur, au vingtième au-dessous, que lit le décor (`SHORT_STATUE_HEIGHTS`).
+        if (q === 0 && a !== '6e') expect(SHORT_STATUE_HEIGHTS[p.id], `${p.id} : ${Math.floor(h * 20 + 1e-6) / 20} dans SHORT_STATUE_HEIGHTS`).toBe(h < 5 ? Math.floor(h * 20 + 1e-6) / 20 : undefined);
         else expect(h, cle).toBeCloseTo(hauteurs.get(p.id)!, 4);
         if (q !== 0) return;
         const [dx, dy] = [Math.max(o[0] - x0, x1 - o[0]), Math.max(o[2] - y0, y1 - o[2])];

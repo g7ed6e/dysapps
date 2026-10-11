@@ -192,7 +192,11 @@ const COLPORTEUR = fromLayers(
   { P: '#5a3a8a', T: '#c9463f', S: '#e8b98a', s: '#c98a6a', K: '#1f1a16', H: '#6b4a2e' },
 );
 
-/** Un sphinx couché : pattes devant, corps allongé, tête coiffée d'une coiffe rayée, regard d'or. */
+/**
+ * Un sphinx couché : pattes devant, corps allongé, tête coiffée d'une coiffe rayée, regard d'or. Il reste couché ; sa
+ * coiffe monte de deux couches (un bloc dans Blocland, réduit de moitié), un bandeau d'or et un sommet arrondi : dix
+ * couches, plus haut que la créature de son île, sur la même emprise (GD-16).
+ */
 function sphinx(palette: Record<string, string>): CubeDeModele[] {
   return fromLayers(
     [
@@ -203,7 +207,9 @@ function sphinx(palette: Record<string, string>): CubeDeModele[] {
       ['.........', '.GSESESG.', '.GSSSSSG.', '.GSSSSSG.', '.........', '.........', '.........', '.........'],
       ['.........', '.DSSSSSD.', '.DSSSSSD.', '.DSSSSSD.', '.........', '.........', '.........', '.........'],
       ['.........', '.GDDDDDG.', '.DDDDDDD.', '.DDDDDDD.', '.........', '.........', '.........', '.........'],
-      ['.........', '..DDDDD..', '..DDDDD..', '.........', '.........', '.........', '.........', '.........'],
+      ['.........', '..DGGGD..', '..DDDDD..', '..DDDDD..', '.........', '.........', '.........', '.........'],
+      ['.........', '..DDDDD..', '..DDDDD..', '..DDDDD..', '.........', '.........', '.........', '.........'],
+      ['.........', '...DDD...', '...DDD...', '.........', '.........', '.........', '.........', '.........'],
     ],
     palette,
   );
@@ -266,9 +272,14 @@ const GOLEM_EQ = fromLayers(
   { C: '#f4f1e4', X: '#3b82f6', K: '#1f1a16', G: '#e0a33a', B: '#8a6a3c' },
 );
 
-// Le Bélier de granit : massif, gris rose, museau clair, grandes cornes enroulées de chaque côté de la tête.
+// Le Bélier de granit : massif, gris rose, museau clair, grandes cornes enroulées de chaque côté de la tête ; debout sur
+// un rocher de falaise, d'un granit plus sombre, irrégulier, plus large au pied qu'au sommet. Douze couches (six blocs
+// dans Blocland, réduit de moitié) : plus haut que les arbres de son île, sur la même emprise (GD-16).
 const BELIER = fromLayers(
   [
+    ['.RRRRRRR.', 'RRRRRRRRR', 'RRRRRRRRR', 'RRRRRRRRR', '.RRRRRRR.', '.........'],
+    ['..RRRRR..', '.RRRRRRRR', 'RRRRRRRRR', '.RRRRRRRR', '..RRRR...', '.........'],
+    ['.........', '.RRRRRRR.', '.RRRRRRR.', '.RRRRRRR.', '...RR....', '.........'],
     ['.........', '.GG...GG.', '.........', '.GG...GG.', '.........', '.........'],
     ['.........', '.GG...GG.', '.........', '.GG...GG.', '.........', '.........'],
     ['.ggggggg.', 'GGGGGGGGG', 'GGGGGGGGG', 'GGGGGGGGG', '.GGGGGGG.', '.........'],
@@ -279,7 +290,7 @@ const BELIER = fromLayers(
     ['HHGGGGGHH', 'HHGGGGGHH', '.........', '.........', '.........', '.........'],
     ['HH.....HH', 'HH.....HH', '.........', '.........', '.........', '.........'],
   ],
-  { G: '#a89a94', g: '#c4b6b0', H: '#6b5a52', K: '#1f1a16' },
+  { G: '#a89a94', g: '#c4b6b0', H: '#6b5a52', K: '#1f1a16', R: '#5e5856' },
 );
 
 // Le Hibou lexicographe : un grand hibou brun au ventre clair, lunettes rondes dorées, un livre rouge sous l'aile.
@@ -645,8 +656,9 @@ const GRIFFON = fromLayers(
 
 // La Libellule de jade (DA, HG-3) : une libellule posée à l'horizontale sur un roseau, la tête aux deux gros yeux sombres
 // devant, le thorax, la longue queue derrière ; ses deux paires d'ailes claires étendues à plat sur neuf cubes de large
-// (DA, relecture des planches : plus debout sur la pointe de sa queue) ; le roseau a une feuille en biais. Quatre
-// couleurs, le roseau compris.
+// (DA, relecture des planches : plus debout sur la pointe de sa queue) ; le roseau, plus sombre qu'elle, a deux feuilles
+// en biais, une de chaque côté. Douze couches (six blocs dans Blocland, réduite de moitié) : le roseau plus long, elle
+// est plus haute que les arbres de son île, sur la même emprise (GD-16). Quatre couleurs, le roseau compris.
 const LIBELLULE = fromLayers(
   [
     ['.........', '....R....', '.........', '.........', '.........', '.........', '.........'],
@@ -655,14 +667,20 @@ const LIBELLULE = fromLayers(
     ['.........', '....R.R..', '.........', '.........', '.........', '.........', '.........'],
     ['.........', '....R....', '.........', '.........', '.........', '.........', '.........'],
     ['.........', '....R....', '.........', '.........', '.........', '.........', '.........'],
+    ['.........', '...RR....', '.........', '.........', '.........', '.........', '.........'],
+    ['.........', '..R.R....', '.........', '.........', '.........', '.........', '.........'],
+    ['.........', '....R....', '.........', '.........', '.........', '.........', '.........'],
+    ['.........', '....R....', '.........', '.........', '.........', '.........', '.........'],
     ['...JJJ...', '...JJJ...', '....J....', '....J....', '....J....', '....J....', '....J....'],
     ['...K.K...', 'AAAAJAAAA', '.AAAJAAA.', '.........', '.........', '.........', '.........'],
   ],
-  { J: '#4fa07a', A: '#cfe8dc', K: '#1f1a16', R: '#7a8a4a' },
+  { J: '#4fa07a', A: '#cfe8dc', K: '#1f1a16', R: '#5e6e38' },
 );
 
 // Le Paon de faïence (DA, HG-3 ; aucun symbole national) : un paon debout, de faïence bleue et blanche, sa roue
-// déployée derrière lui, semée d'yeux d'or ; le bec et la petite crête d'or. Trois couleurs.
+// déployée derrière lui, semée d'yeux d'or ; le bec et la petite crête d'or. La roue s'élève haut au-dessus de sa tête :
+// douze couches (six blocs dans Blocland, réduit de moitié), plus haut que les arbres de son île, sur la même emprise
+// (GD-16). Trois couleurs.
 const PAON = fromLayers(
   [
     ['.......', '..F.F..', '.......', '...F...'],
@@ -672,7 +690,10 @@ const PAON = fromLayers(
     ['.......', '...F...', '.......', 'WFWOWFW'],
     ['...O...', '..FFF..', '.......', 'FOFWFOF'],
     ['.......', '..WFW..', '.......', 'WFWOWFW'],
-    ['.......', '...O...', '.......', '.FOFOF.'],
+    ['.......', '...O...', '.......', 'FOFWFOF'],
+    ['.......', '.......', '.......', 'WFWOWFW'],
+    ['.......', '.......', '.......', 'FOFWFOF'],
+    ['.......', '.......', '.......', '.FOFOF.'],
     ['.......', '.......', '.......', '..WFW..'],
   ],
   { F: '#2f5f9e', W: '#f2efe6', O: '#d9a441' },
@@ -699,9 +720,15 @@ const POULPE = fromLayers(
 // tête, les yeux sur ses côtés, dans sa moitié avant (de face, plus de masque, DA). Le rameau, court, d'un seul côté du
 // bec et à sa hauteur : une tige d'un cube, deux feuilles, rien sous la poitrine (DA, relecture des planches, HG-3).
 // Rallumée, le rameau est vert. Dans le monde, elle se tourne de trois quarts de tour (`QUARTS_DE_TOUR_DU_GARDIEN`) :
-// la caméra du Kiosque la voit de flanc, l'œil et le rameau de son côté.
+// la caméra du Kiosque la voit de flanc, l'œil et le rameau de son côté. Elle se pose en haut d'un pilier du kiosque,
+// de pierre grise plus sombre qu'elle, sa base et son chapiteau plus larges que le fût. Douze couches (six blocs dans
+// Blocland, réduite de moitié) : plus haute que les arbres de son île, sur la même emprise (GD-16).
 const COLOMBE = fromLayers(
   [
+    ['........', '........', '.QQQQQ..', '.QQQQQ..', '.QQQQQ..', '.QQQQQ..', '........'],
+    ['........', '........', '..PPP...', '..PPP...', '..PPP...', '........', '........'],
+    ['........', '........', '..PPP...', '..PPP...', '..PPP...', '........', '........'],
+    ['........', '........', '.QQQQQ..', '.QQQQQ..', '.QQQQQ..', '.QQQQQ..', '........'],
     ['........', '........', '........', '...B.B..', '........', '........', '........'],
     ['........', '........', '..AAA...', '.AAAAA..', '.AAAAA..', '..AAA...', '........'],
     ['........', '........', '.AAAAA..', '.AAAAA..', '.AAAAA..', '.AAAAA..', '..AAA...'],
@@ -711,7 +738,7 @@ const COLOMBE = fromLayers(
     ['....BTV.', '..KAK...', '..AAA...', '........', '........', '........', '........'],
     ['........', '..AAA...', '..AAA...', '........', '........', '........', '........'],
   ],
-  { A: '#ece8de', B: '#c9a69a', K: '#1f1a16', V: '#5a9a3e', T: '#4f7a34' },
+  { A: '#ece8de', B: '#c9a69a', K: '#1f1a16', V: '#5a9a3e', T: '#4f7a34', P: '#7a7468', Q: '#5e584e' },
 );
 
 // Le Cerf de lauze (DA, HG-3) : un cerf debout sur quatre pattes fines aux sabots sombres, rallumé au pelage fauve, la
@@ -924,12 +951,17 @@ const GRAND_BI = fromLayers(
 );
 
 // Le Dauphin de turquoise (DA, SC-3) : en bond, le corps arqué au-dessus d'un socle de rocher, la queue qui en part ; le
-// dos turquoise, le ventre clair, l'aileron au sommet de l'arc. Quatre couleurs, l'œil compris.
+// dos turquoise, le ventre clair, l'aileron au sommet de l'arc. Le rocher, plus sombre que lui, monte en pointe
+// irrégulière sous la queue, et le bond s'élève : douze couches (six blocs dans Blocland, réduit de moitié), plus haut
+// que les arbres de son île, sur la même emprise (GD-16). Quatre couleurs, l'œil compris.
 const DAUPHIN = fromLayers(
   [
     ['..GGGGGG.', '..GGGGGG.', '..GGGGGG.'],
     ['..GGGGGG.', '..GGGGGG.', '..GGGGGG.'],
-    ['...GGGGVT', '...GGGGVT', '...GGGG..'],
+    ['...GGGGG.', '..GGGGGG.', '...GGGG..'],
+    ['....GGGG.', '...GGGG..', '....GG...'],
+    ['.....GGVT', '......GVT', '.........'],
+    ['.......V.', '.......V.', '.........'],
     ['.......V.', '.......V.', '.........'],
     ['......VTT', '......VTT', '.........'],
     ['VVV...V..', 'VVV...V..', '.........'],
@@ -937,7 +969,7 @@ const DAUPHIN = fromLayers(
     ['...TTT...', '...TTT...', '.........'],
     ['....T....', '....TT...', '.........'],
   ],
-  { T: '#2fa5a0', V: '#cfeee8', G: '#8a8a80', K: '#1f1a16' },
+  { T: '#2fa5a0', V: '#cfeee8', G: '#6a6a62', K: '#1f1a16' },
 );
 
 // Le Kangourou de rubis (DA, SC-3) : assis sur sa queue, les grands pieds devant, les petites pattes de devant le long
@@ -962,10 +994,16 @@ const KANGOUROU = fromLayers(
 
 // L'Abeille de topaze (DA, SC-3) : posée, de profil, sur six pattes ; les rayures topaze et brunes, deux paires d'ailes
 // levées, leurs cases très claires, le gris seulement pour leur cerne (relecture des captures), deux antennes. Sans
-// dard. Cinq couleurs, l'œil compris. Dans le monde, tournée de flanc vers la caméra de la Ruche
-// (`QUARTS_DE_TOUR_DU_GARDIEN`).
+// dard. Elle se pose sur sa ruche de paille tressée, plus sombre qu'elle : des anneaux en deux tons, l'entrée sombre au
+// pied, le dessus arrondi. Douze couches (six blocs dans Blocland, réduite de moitié) : plus haute que les arbres de son
+// île, sur la même emprise (GD-16). Cinq couleurs, l'œil compris, et trois pour la ruche. Dans le monde, tournée de
+// flanc vers la caméra de la Ruche (`QUARTS_DE_TOUR_DU_GARDIEN`).
 const ABEILLE = fromLayers(
   [
+    ['........', '.HHNNHH.', '.HHHHHH.', '.HHNNHH.'],
+    ['........', '.hhhhhh.', '.hhhhhh.', '.hhhhhh.'],
+    ['........', '.HHHHHH.', '.HHHHHH.', '.HHHHHH.'],
+    ['........', '..hhhhh.', '.hhhhhh.', '..hhhhh.'],
     ['........', '..B.B.B.', '........', '..B.B.B.'],
     ['........', '.BTBTBTB', '.BTBTBTB', '.BTBTBTB'],
     ['........', 'BBTBTBTB', 'BBTBTBTB', 'BBTBTBTB'],
@@ -975,7 +1013,7 @@ const ABEILLE = fromLayers(
     ['........', '.GAG.GAG', '........', '.GAG.GAG'],
     ['........', '..G...G.', '........', '..G...G.'],
   ],
-  { T: '#e0a83a', B: '#5a3c1e', A: '#eef4f2', G: '#8e989c', K: '#1f1a16' },
+  { T: '#e0a83a', B: '#5a3c1e', A: '#eef4f2', G: '#8e989c', K: '#1f1a16', H: '#8a6a3a', h: '#6e5230', N: '#2a1c10' },
 );
 
 // L'Hirondelle de nacre (EMC, 6e ; sans flamme, aucun symbole) : posée de profil sur une petite poutre, en haut d'un
@@ -1019,8 +1057,10 @@ const HIRONDELLE = fromLayers(
 // L'Oie d'opale (EMC, 5e ; sans flamme, aucun symbole) : de profil, le long des x, la tête vers les x croissants ;
 // debout sur ses deux pattes, le corps ovale, la queue relevée derrière, le long cou dressé, la tête petite, le bec d'un
 // bloc qui dépasse devant. L'opale : un blanc laiteux, et sur les ailes, le long des flancs, des plumes aux reflets rose
-// et vert pâles, en alternance (ce sont elles qui se rallument). Neuf de long, cinq de large, neuf de haut. Six couleurs,
-// les yeux compris (proposition de l'artiste technique 3D).
+// et vert pâles, en alternance (ce sont elles qui se rallument). Le cou, plus long, s'élève en douceur depuis le
+// poitrail : douze couches (six blocs dans Blocland, réduite de moitié), plus haute que les arbres de son île, sur la
+// même emprise (GD-16). Neuf de long, cinq de large, douze de haut. Six couleurs, les yeux compris (proposition de
+// l'artiste technique 3D).
 const OIE = fromLayers(
   [
     ['.........', '...FF....', '.........', '...FF....', '.........'],
@@ -1028,6 +1068,9 @@ const OIE = fromLayers(
     ['.........', '.OOOOOO..', '.OOOOOO..', '.OOOOOO..', '.........'],
     ['..OOOO...', 'OOOOOOO..', 'OOOOOOO..', 'OOOOOOO..', '..OOOO...'],
     ['.VPVPV...', '.OOOOOO..', 'OOOOOOO..', '.OOOOOO..', '.VPVPV...'],
+    ['.........', '.........', '.....OO..', '.........', '.........'],
+    ['.........', '.........', '......O..', '.........', '.........'],
+    ['.........', '.........', '......O..', '.........', '.........'],
     ['.........', '.........', '......O..', '.........', '.........'],
     ['.........', '.........', '......O..', '.........', '.........'],
     ['.........', '......E..', '......OOB', '......E..', '.........'],
@@ -1047,10 +1090,15 @@ const OIE = fromLayers(
 // x, la tête vers les x croissants ; un oiseau de terre cuite, comme sur un vase, posé dans son nid d'argile sombre ; les
 // ailes repliées le long du corps, peintes de plumes noires et ocre en alternance (ce sont elles qui se rallument), la
 // longue queue qui descend jusqu'au nid derrière, le cou court, la tête, son bec ocre et une petite huppe sombre couchée
-// vers l'arrière. Aucune flamme, aucune pointe dressée. Dix de long, cinq de large, neuf de haut. Six couleurs, les yeux
-// compris (proposition de l'artiste technique 3D).
+// vers l'arrière. Aucune flamme, aucune pointe dressée. Le nid se pose sur un rocher d'argile brune, irrégulier, plus
+// sombre que l'oiseau : douze couches (six blocs dans Blocland, réduit de moitié), plus haut que les arbres de son île,
+// sur la même emprise (GD-16). Dix de long, cinq de large, douze de haut. Sept couleurs, les yeux et le rocher compris
+// (proposition de l'artiste technique 3D).
 const PHENIX = fromLayers(
   [
+    ['.RRRRRRR..', 'RRRRRRRRR.', 'RRRRRRRRR.', 'RRRRRRRRR.', '.RRRRRRR..'],
+    ['.RRRRRR...', '.RRRRRRR..', 'RRRRRRRR..', '.RRRRRRR..', '..RRRRR...'],
+    ['..RRRR....', '.RRRRRR...', '.RRRRRRR..', '.RRRRRR...', '..RRRR....'],
     ['..DDDD....', 'ODDDDDD...', '.DDDDDD...', 'ODDDDDD...', '..DDDD....'],
     ['..........', '.OAAAA....', '..AAAA....', '.OAAAA....', '..........'],
     ['..ONONO...', '..AAAAAA..', '..AAAAAA..', '..AAAAAA..', '..ONONO...'],
@@ -1066,6 +1114,7 @@ const PHENIX = fromLayers(
     D: '#7e3e22',
     O: '#e2a466',
     N: '#2a1c16',
+    R: '#8a5a42',
     E: { color: '#1f1a16', top: '#c4703e' },
   },
 );
@@ -1102,19 +1151,24 @@ const LYNX = fromLayers(
 );
 
 // La Cigale d'argile (latin-grec, 4e ; sans flamme, aucun dieu ni symbole) : de profil, le long des x, la tête vers les
-// x croissants, posée sur un socle sombre de quatre blocs ; une cigale de terre cuite, comme celles qu'on accroche aux
+// x croissants, posée sur un fût de colonne sombre ; une cigale de terre cuite, comme celles qu'on accroche aux
 // murs : le corps trapu, ocre rouge ; la tête et ses deux gros yeux qui saillent de chaque côté ; les ailes repliées en
 // toit sur le dos, d'une terre plus claire, plus longues que le corps (elles le dépassent d'un bloc derrière),
 // leurs nervures plus sombres en alternance (ce sont elles qui se rallument). Dans le monde, tournée de trois quarts de tour
 // (`QUARTS_DE_TOUR_DU_GARDIEN`) : la caméra de la Colonnade, à l'est, la voit de profil, la tête vers le devant (DA, captures
-// emc-4e-3e-1). Huit de long, cinq de large, huit de haut (le socle la hausse : son habitant, Figue, en a neuf, GD-11). Cinq couleurs, les yeux compris (proposition de l'artiste
-// technique 3D).
+// emc-4e-3e-1). Le fût, cannelé (ses cannelures plus sombres), sur une base et sous un chapiteau plus larges, la hausse :
+// onze couches (cinq blocs et demi dans Blocland, réduite de moitié), plus haute que les arbres de son île et que son
+// habitant, Figue, sur la même emprise (GD-16). Huit de long, cinq de large, onze de haut. Six couleurs, les yeux et le
+// fût compris (proposition de l'artiste technique 3D).
 const CIGALE = fromLayers(
   [
-    ['........', '..DDD...', '..DDD...', '..DDD...', '........'],
-    ['........', '..DDD...', '..DDD...', '..DDD...', '........'],
-    ['........', '..DDD...', '..DDD...', '..DDD...', '........'],
-    ['........', '..DDD...', '..DDD...', '..DDD...', '........'],
+    ['........', '.DDDDD..', '.DDDDD..', '.DDDDD..', '........'],
+    ['........', '..DdD...', '..dDd...', '..DdD...', '........'],
+    ['........', '..DdD...', '..dDd...', '..DdD...', '........'],
+    ['........', '..DdD...', '..dDd...', '..DdD...', '........'],
+    ['........', '..DdD...', '..dDd...', '..DdD...', '........'],
+    ['........', '..DdD...', '..dDd...', '..DdD...', '........'],
+    ['........', '.DDDDD..', '.DDDDD..', '.DDDDD..', '........'],
     ['........', '.AAAAAAA', '.AAAAAAA', '.AAAAAAA', '........'],
     ['WVWVWV.E', '.AAAAAAA', '.AAAAAAA', '.AAAAAAA', 'WVWVWV.E'],
     ['........', 'VWVWVW..', 'WWWWWW..', 'VWVWVW..', '........'],
@@ -1125,18 +1179,23 @@ const CIGALE = fromLayers(
     W: '#efc896',
     V: '#a8603a',
     D: '#5a3a24',
+    d: '#46301e',
     E: { color: '#2a1c16', top: '#2a1c16' },
   },
 );
 
-// L'Étourneau d'étain (EMC, 3e ; sans flamme, aucun symbole) : perché sur une souche sombre de trois blocs, de profil, le
-// bec jaune vers les x croissants ; le corps gris d'étain, les ailes plus sombres, la queue courte. Sur le dos, les plumes
-// en damier, sombres et claires (ce sont elles qui se rallument). Neuf de long, cinq de large, neuf de haut. Neuf
-// couleurs, les yeux compris (proposition de l'artiste technique 3D).
+// L'Étourneau d'étain (EMC, 3e ; sans flamme, aucun symbole) : perché sur une haute souche sombre, ses racines au pied,
+// son écorce striée, de profil, le bec jaune vers les x croissants ; le corps gris d'étain, les ailes plus sombres, la
+// queue courte. Sur le dos, les plumes en damier, sombres et claires (ce sont elles qui se rallument). Douze couches (six
+// blocs dans Blocland, réduit de moitié) : plus haut que les arbres de son île, sur la même emprise (GD-16). Neuf de
+// long, cinq de large, douze de haut. Dix couleurs, les yeux compris (proposition de l'artiste technique 3D).
 const ETOURNEAU = fromLayers(
   [
-    ['.........', '...DDD...', '...DDD...', '...DDD...', '.........'],
-    ['.........', '...DDD...', '...DDD...', '...DDD...', '.........'],
+    ['.........', '...DDD...', '..DDDDD..', '...DDD...', '.........'],
+    ['.........', '...DdD...', '...dDd...', '...DdD...', '.........'],
+    ['.........', '...DdD...', '...dDd...', '...DdD...', '.........'],
+    ['.........', '...DdD...', '...dDd...', '...DdD...', '.........'],
+    ['.........', '...DdD...', '...dDd...', '...DdD...', '.........'],
     ['.........', '...DDD...', '...DDD...', '...DDD...', '.........'],
     ['.........', '....L....', '.........', '....L....', '.........'],
     ['.........', '..SSSSS..', '.TSSSSS..', '..SSSSS..', '.........'],
@@ -1154,6 +1213,7 @@ const ETOURNEAU = fromLayers(
     B: '#e0b030',
     L: '#c07060',
     D: '#5a3a24',
+    d: '#46301e',
     E: { color: '#1f1a16', top: '#9aa2aa' },
   },
 );

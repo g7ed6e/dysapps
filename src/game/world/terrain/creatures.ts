@@ -123,10 +123,14 @@ export interface CreatureSpot {
  * la vue de l'île fiche du Gardien ouverte, Voix disparaissait derrière l'étiquette (DA, relecture des captures emc-2) ;
  * trois cases vers −x, il passe à droite de l'étiquette, à côté des bornes, sans rien cacher. Depuis que son carnet est
  * posé à plat devant lui (passe 4), son modèle a deux rangées de plus devant le corps : il vise (−1, 3), son corps passe
- * une case en arrière, et le milieu de son emprise, où se pose la créature d'Archipéo, ne bouge pas.
+ * une case en arrière, et le milieu de son emprise, où se pose la créature d'Archipéo, ne bouge pas. Au Phare des
+ * fonctions, en (2, 14), l'habitant se tenait devant le Gardien (68 % vu) ; aucun autre carré de l'île ne le montrait
+ * mieux dans le cadre : deux cases plus loin, en (4, 15), il passe à côté (89 % vu, le reste derrière la salle des
+ * trophées et l'étiquette de l'île ; proportions du 5e au 3e, 11 octobre 2026).
  */
 const CIBLE_DE_L_HABITANT: Partial<Record<BiomeId, { x: number; y: number }>> = {
   'civics-6e-democratic-society': { x: -1, y: 3 },
+  'maths-3e-functions': { x: 4, y: 15 },
 };
 
 /**
@@ -297,7 +301,7 @@ function cubesQuiCachent(id: BiomeId): Set<string> {
 type VueDuGardien = (x: number, y: number, forme?: FormeDuGardien, seuil?: number) => number;
 
 /**
- * Les Gardiens d'Archipéo qui, remplissant leur carré (`fillsGuardianSquare` de ../guardianSquares.ts), y sont plus
+ * Les Gardiens d'Archipéo qui, grandis sur leur carré (`guardianSquareRoom` de ../guardianSquares.ts), y sont plus
  * larges ou plus profonds que la sentinelle commune : leur demi-largeur et leur demi-profondeur dans le monde, en cases,
  * arrondies au vingtième au-dessus (world/characters/merges.ts, `echelleDuGardien` ; un test les tient ensemble).
  * Recopiées ici : la grille ne lit pas le dessin.
@@ -311,6 +315,39 @@ const GUARDIAN_WORLD_HALF_SIZES: Readonly<Partial<Record<BiomeId, { dx: number; 
   'geography-6e-living': { dx: 1.85, dy: 2.5 },
   'life-earth-sciences-6e-living-world': { dx: 1.4, dy: 1.9 },
   'civics-6e-democratic-society': { dx: 1.3, dy: 1.8 },
+  'civics-3e-democratic-life': { dx: 1.35, dy: 1.85 },
+  'civics-5e-equality-solidarity': { dx: 2.35, dy: 1.85 },
+  'english-3e-grammar': { dx: 2, dy: 1.75 },
+  'english-4e-comprehension': { dx: 1.75, dy: 2 },
+  'english-4e-grammar': { dx: 2.5, dy: 1.85 },
+  'french-4e-agreement': { dx: 1.75, dy: 2.4 },
+  'french-4e-vocabulary': { dx: 1.45, dy: 2 },
+  'french-5e-conjugation': { dx: 1.7, dy: 1.8 },
+  'french-5e-homophones': { dx: 1.85, dy: 2.5 },
+  'geography-3e-france': { dx: 1.45, dy: 2 },
+  'geography-4e-globalization': { dx: 2.5, dy: 2.5 },
+  'geography-5e-resources': { dx: 2.5, dy: 2.2 },
+  'history-3e-twentieth-century': { dx: 1.45, dy: 2 },
+  'history-4e-revolutions': { dx: 2, dy: 1.45 },
+  'history-5e-middle-ages': { dx: 2, dy: 1.5 },
+  'lca-3e-ideas': { dx: 1.45, dy: 2 },
+  'lca-4e-cities': { dx: 2.45, dy: 2.5 },
+  'lca-5e-legends': { dx: 2, dy: 1.75 },
+  'life-earth-sciences-3e-human-body': { dx: 1.75, dy: 1.35 },
+  'life-earth-sciences-5e-active-planet': { dx: 1.85, dy: 2.5 },
+  'lv2-3e-travel': { dx: 2, dy: 1.45 },
+  'lv2-4e-daily-life': { dx: 2, dy: 1.45 },
+  'lv2-5e-introductions': { dx: 2.5, dy: 1.85 },
+  'maths-3e-functions': { dx: 2, dy: 1.45 },
+  'maths-3e-geometry': { dx: 1.4, dy: 1.95 },
+  'maths-4e-algebra': { dx: 2, dy: 1.45 },
+  'maths-4e-powers': { dx: 1.65, dy: 1.2 },
+  'maths-5e-signed-numbers': { dx: 1.85, dy: 2.5 },
+  'physics-chemistry-3e-motion-energy': { dx: 1.3, dy: 1.8 },
+  'physics-chemistry-4e-signals-circuits': { dx: 2.4, dy: 1.7 },
+  'technology-3e-digital': { dx: 1.7, dy: 1.25 },
+  'technology-4e-modeling': { dx: 2.4, dy: 1.7 },
+  'technology-5e-design': { dx: 1.85, dy: 2.5 },
 };
 
 /**

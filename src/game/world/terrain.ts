@@ -26,7 +26,7 @@ import { caseDuParvis, ILES_A_PARVIS } from './terrain/parvis';
 import { abordsDansLesMarges, bridge, bridgePath, nearSentier, piedsDesOuvrages } from './terrain/links';
 import { guardianTrophy } from './terrain/guardians';
 import { creatureDuMonde, creatureSpot, decorSousLeGardien, guardianSpot, presDuCarreDuGardien, surLeCarreDuGardien } from './terrain/creatures';
-import { LYING_GUARDIANS, TREE_CLEARANCE_OF_A_LYING_GUARDIAN, TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN } from './guardianSquares';
+import { LYING_GUARDIANS, SHORT_STATUE_HEIGHTS, TREE_CLEARANCE_OF_A_LYING_GUARDIAN, TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN } from './guardianSquares';
 import { placeDeLaPetiteConstruction } from './terrain/fixture';
 import { harbor } from './terrain/port';
 import { monumentIslets } from './terrain/monuments';
@@ -104,11 +104,12 @@ function nomTourne(def: IslandDef, nom: string): string {
 }
 
 /**
- * Un arbre plus haut que `TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN` blocs, à `TREE_CLEARANCE_OF_A_LYING_GUARDIAN` cases ou
- * moins du carré d'un Gardien couché (`LYING_GUARDIANS`), devient un buisson : le Gardien reste plus haut que ce qui
- * pousse autour de lui (GD-16). Les autres éléments du décor restent ce qu'ils sont.
+ * Un arbre plus haut que `plafond` blocs, à `TREE_CLEARANCE_OF_A_LYING_GUARDIAN` cases ou moins du carré d'un Gardien
+ * couché (`LYING_GUARDIANS`, `TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN`) ou d'une statue d'Archipéo restée basse
+ * (`SHORT_STATUE_HEIGHTS`), devient un buisson : le Gardien reste plus haut que ce qui pousse autour de lui (GD-16). Le
+ * décor étant commun, les deux univers le dessinent. Les autres éléments du décor restent ce qu'ils sont.
  */
-function decorPresDuGardienCouche(id: BiomeId, def: IslandDef, genre: Decor, x: number, y: number, r: number): Decor {
+function decorPresDuGardien(id: BiomeId, def: IslandDef, genre: Decor, x: number, y: number, r: number, plafond: number): Decor {
   if (LOW.has(genre)) return genre;
   const cases: { x: number; y: number }[] = [];
   let haut = 0;
@@ -122,7 +123,7 @@ function decorPresDuGardienCouche(id: BiomeId, def: IslandDef, genre: Decor, x: 
     y,
     r,
   );
-  return haut > TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN && presDuCarreDuGardien(id, cases, TREE_CLEARANCE_OF_A_LYING_GUARDIAN) ? 'buisson' : genre;
+  return haut > plafond && presDuCarreDuGardien(id, cases, TREE_CLEARANCE_OF_A_LYING_GUARDIAN) ? 'buisson' : genre;
 }
 
 /**
@@ -332,6 +333,7 @@ function poserLIle(
     return false;
   };
   const effaceSousLeGardien = guardianSpot(biome.id).palier === 3;
+  const plafondDesArbres = LYING_GUARDIANS.has(biome.id) ? TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN : SHORT_STATUE_HEIGHTS[biome.id];
   // Sur une île à parvis, un élément de la côte ou des marges qui toucherait l'allée ou sa bordure n'est pas posé.
   const aParvis = ILES_A_PARVIS.has(biome.id);
   const surLeParvis = (cases: readonly { x: number; y: number }[]) => cases.some((p) => caseDuParvis(biome.id, p.x - ox, p.y - oy) !== null);
@@ -341,8 +343,8 @@ function poserLIle(
     if (k >= scenery.length && abords.has(`${c.x},${c.y}`)) continue;
     const t = tirage(def, c.x, c.y);
     const r = noise(def.seed + 5, t.x, t.y);
-    // Près du carré d'un Gardien couché, un arbre plus haut que lui devient un buisson (GD-16, `LYING_GUARDIANS`).
-    const genre = LYING_GUARDIANS.has(biome.id) ? decorPresDuGardienCouche(biome.id, def, c.decor, c.x, c.y, r) : c.decor;
+    // Près du carré d'un Gardien couché ou d'une statue restée basse, un arbre plus haut que lui devient un buisson (GD-16).
+    const genre = plafondDesArbres === undefined ? c.decor : decorPresDuGardien(biome.id, def, c.decor, c.x, c.y, r, plafondDesArbres);
     // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
     // … ni ne déborde au-dessus du cœur d'origine (la zone des plans, les lieux et les bornes doivent rester libres).
     const poser: Put = (x, y, z, color, decor) => !inCoeurDOrigine(def, x, y) && !taken.has(cleDeCube(x, y, c.h + z)) && putWorld(x, y, c.h + z, color, decor);
