@@ -23,7 +23,7 @@ import { AVATAR_HOME, groundHeight, islandOrigin, isSchoolIsland, LAYOUT_PAD } f
 import { type BorneVue, cacheUneBorne, QUEST_ROW, questStations, rangeeDevantLesBornes } from './markers';
 import { amorcesDuDessin } from './links';
 import { layoutCache } from '../placement';
-import { GD11_GUARDIAN_SQUARES, GUARDIAN_SQUARE_SIDE } from '../guardianSquares';
+import { GD11_GUARDIAN_SQUARES, GUARDIAN_SQUARE_SIDE, GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
 import { silhouetteDe } from '../silhouettes';
 
 /** Les pas d'une créature qui se promène : une case à gauche ou en arrière (jamais vers les plans). */
@@ -285,6 +285,16 @@ function cubesQuiCachent(id: BiomeId): Set<string> {
 type VueDuGardien = (x: number, y: number, forme?: FormeDuGardien, seuil?: number) => number;
 
 /**
+ * La boîte de la sentinelle d'une île : la commune, ou celle d'un Gardien plus haut (`GUARDIAN_WORLD_HEIGHTS`, le Grand
+ * Chêne), sa large couronne sur les cinq cases de son carré.
+ */
+function sentinelleDe(id: BiomeId): { dx: number; dy: number; h: number } {
+  const h = GUARDIAN_WORLD_HEIGHTS[id];
+  if (h === undefined) return { dx: SENTINELLE_DANS_LE_MONDE.demiLargeur, dy: SENTINELLE_DANS_LE_MONDE.demiLargeur, h: SENTINELLE_DANS_LE_MONDE.hauteur };
+  return { dx: GUARDIAN_SQUARE / 2, dy: GUARDIAN_SQUARE / 2, h };
+}
+
+/**
  * Les deux Gardiens autour de leur milieu dans le carré (relatif à son coin, le lieu pas tourné) : demi-largeur,
  * demi-profondeur et hauteur de la boîte du Gardien de Blocland, réduit de moitié (`echelleDesGardiens`), et de celle
  * de la sentinelle d'Archipéo ; le milieu, au fond du carré (son bloc d'or devant lui), ou au milieu pour un Gardien long.
@@ -295,7 +305,7 @@ function boitesDuGardien(id: BiomeId): { boites: [FormeDuGardien, { dx: number; 
   return {
     boites: [
       ['gardien', { dx: (e.x1 - e.x0) / 4, dy: (e.y1 - e.y0) / 4, h: hauteurDuModele / 2 }],
-      ['sentinelle', { dx: SENTINELLE_DANS_LE_MONDE.demiLargeur, dy: SENTINELLE_DANS_LE_MONDE.demiLargeur, h: SENTINELLE_DANS_LE_MONDE.hauteur }],
+      ['sentinelle', sentinelleDe(id)],
     ],
     milieu: { x: GUARDIAN_SQUARE / 2, y: gardienProfond(id) ? GUARDIAN_SQUARE / 2 : (GUARDIAN_SQUARE + 1) / 2 },
   };

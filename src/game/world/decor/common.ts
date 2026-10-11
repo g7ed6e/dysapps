@@ -8,6 +8,7 @@ import { couleurDeMatiere, MATIERES, type Couleur, type Faces } from '../palette
 import type { TextureKind } from '../pixels';
 import { enBoites, type Forme, type OutilsDeForme } from './tools';
 import { clamp } from '../../../core/math';
+import { TALLEST_TREE_6E } from '../guardianSquares';
 import { DELAVE, eclaircir, feuillage, icosaedre, octaedre, peintre, TAILLES, tronconique, type Pinceau, type V3 } from './brush';
 
 /** Combien s'enfonce le pied d'un élément sous le sol (il ne flotte jamais au-dessus d'une facette). */
@@ -36,7 +37,7 @@ const arbre: Forme = ({ P, e, cx, cz, base, hasard, rot, vari, du, vertDe }) => 
   }
 };
 
-const sapin: Forme = ({ P, e, cx, cz, base, hasard, rot, vari, du, premier }) => {
+const sapin: Forme = ({ P, e, a, cx, cz, base, hasard, rot, vari, du, premier }) => {
   const tronc = e.cubes.filter((c) => c.texture === 'tronc');
   const tall = Math.max(1, tronc.length);
   const fT = du(tronc[0] ?? e.cubes[0]);
@@ -46,9 +47,12 @@ const sapin: Forme = ({ P, e, cx, cz, base, hasard, rot, vari, du, premier }) =>
   const y0 = base + tall + 0.2;
   const pS = peintre(fS, y0, 3, vari());
   const etages = tall >= 2 ? 3 : 2;
+  // Au 6e, les étages se tassent (la largeur gardée) pour que la pointe reste une case sous le Grand Chêne.
+  const haut = (etages - 1) * 0.8 * s + 1.35 * s;
+  const v = a === '6e' ? clamp((TALLEST_TREE_6E - (y0 - base)) / haut, 0, 1) : 1;
   for (let k = 0; k < etages; k++) {
     const r = (1.25 - (k * 0.95) / etages) * s;
-    tronconique(P, cx, cz, y0 + k * 0.8 * s, y0 + k * 0.8 * s + 1.35 * s, r, 0, 6, rot + k * 0.5, pS);
+    tronconique(P, cx, cz, y0 + k * 0.8 * s * v, y0 + (k * 0.8 * s + 1.35 * s) * v, r, 0, 6, rot + k * 0.5, pS);
   }
 };
 
