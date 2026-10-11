@@ -5,16 +5,18 @@ import { type ArchipelagoId, islandDef } from '../map';
 import type { VoxelCube } from '../cube';
 import { turnCell, turnModel, turnPlacedModel, turnPoint } from '../placement';
 import { guardianStatus } from '../../boss';
-import { etendue, gardienDuMonde, gardienProfond, GUARDIAN_SQUARE, guardianSpot } from './creatures';
+import { etendue, gardienDuMonde, gardienProfond, gardienSurToutLeCarre, GUARDIAN_SQUARE, guardianSpot, SENTINELLE_DANS_LE_MONDE } from './creatures';
+import { GUARDIAN_GOLD_BESIDE, GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
 import { TEXTURES } from './base';
 
 /**
  * Le milieu du Gardien dans son carré (repère du cœur, le lieu pas tourné) : au milieu de ses quatre rangées du fond, la
- * rangée de devant (côté caméra) gardant la place de son bloc d'or ; au milieu du carré pour un Gardien long.
+ * rangée de devant (côté caméra) gardant la place de son bloc d'or ; au milieu du carré pour un Gardien qui le prend
+ * tout (`gardienSurToutLeCarre`).
  */
 function milieuDuGardien(id: BiomeId): { x: number; y: number } {
   const s = guardianSpot(id);
-  return { x: s.x + GUARDIAN_SQUARE / 2, y: s.y + (gardienProfond(id) ? GUARDIAN_SQUARE / 2 : (GUARDIAN_SQUARE + 1) / 2) };
+  return { x: s.x + GUARDIAN_SQUARE / 2, y: s.y + (gardienSurToutLeCarre(id) ? GUARDIAN_SQUARE / 2 : (GUARDIAN_SQUARE + 1) / 2) };
 }
 
 /**
@@ -22,13 +24,16 @@ function milieuDuGardien(id: BiomeId): { x: number; y: number } {
  * lui), en cases du monde (une case : son coin bas), le lieu tourné, et la hauteur que vise la caméra du rallumage
  * (lot 6) : le pied du Gardien plus 1,6 bloc à son échelle (`echelle`, l'habillage) ; à l'échelle 1, le milieu d'une
  * sentinelle de 5,2 blocs (DA-5 : world/characters/sentinel.ts, `HAUTEUR_DANS_LE_MONDE` ; un test y tient les deux
- * ensemble). La grille y ancre le Gardien (world/grid.ts).
+ * ensemble), et d'autant plus haut que le Gardien est plus haut que la sentinelle (`GUARDIAN_WORLD_HEIGHTS`, le Grand
+ * Chêne), à l'échelle de l'habillage elle aussi : dans Blocland, le Grand Chêne (6,5 blocs, le plus haut des Gardiens
+ * du 6e) se vise 0,2 bloc plus haut. La grille y ancre le Gardien (world/grid.ts).
  */
 export function guardianCenter(id: BiomeId, echelle = 1): { x: number; y: number; z: number } {
   const def = islandDef(id);
   const milieu = milieuDuGardien(id);
   const m = turnPoint(milieu.x, milieu.y, def.quarts);
-  return { x: def.core.x + m.x - 0.5, y: def.core.y + m.y - 0.5, z: def.altitude + 1 + 1.6 * echelle };
+  const plus = ((GUARDIAN_WORLD_HEIGHTS[id] ?? SENTINELLE_DANS_LE_MONDE.hauteur) - SENTINELLE_DANS_LE_MONDE.hauteur) / 2;
+  return { x: def.core.x + m.x - 0.5, y: def.core.y + m.y - 0.5, z: def.altitude + 1 + (1.6 + plus) * echelle };
 }
 
 /**
@@ -58,6 +63,8 @@ export function guardianCells(id: BiomeId): { x: number; y: number }[] {
  */
 export function trophySpot(id: BiomeId): { x: number; y: number } {
   const s = guardianSpot(id);
+  const aCote = GUARDIAN_GOLD_BESIDE[id];
+  if (aCote) return { x: s.x + aCote.x, y: s.y + aCote.y };
   return { x: s.x + (gardienProfond(id) ? GUARDIAN_SQUARE - 1 : Math.floor(GUARDIAN_SQUARE / 2)), y: s.y };
 }
 
@@ -115,6 +122,11 @@ export interface GuardianPlacement {
   echelle: number;
   /** Les cases de son carré : le bonhomme n'y marche pas. */
   cases: { x: number; y: number }[];
+  /**
+   * Le milieu de sa place sur son carré, dans le monde (`milieuDuGardien`, le lieu tourné) : la sentinelle d'Archipéo s'y
+   * pose. Le milieu de ses cubes tournés peut glisser d'une case (des cases qui tournent, pas un point).
+   */
+  centre: { x: number; y: number };
 }
 
 /**
@@ -144,7 +156,16 @@ export function guardianPlacements(
     // Le milieu de ses cubes au milieu de sa place ; sur le lieu tourné (GD-9), il tourne avec lui.
     const origine = { x: def.core.x + m.x - (e.x0 + e.x1) / 2, y: def.core.y + m.y - (e.y0 + e.y1) / 2, z: def.altitude + 1 };
     const pose = turnPlacedModel(def.core, origine, modele, def.quarts);
-    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes: pose.cubes, origin: pose.origine, echelle, cases: guardianCells(b.id) });
+    const t = turnPoint(m.x, m.y, def.quarts);
+    const centre = { x: def.core.x + t.x, y: def.core.y + t.y };
+    // Son bloc d'or à côté du carré (GD-16) : le bonhomme ne marche pas dessus non plus.
+    const cases = guardianCells(b.id);
+    if (GUARDIAN_GOLD_BESIDE[b.id]) {
+      const o = trophySpot(b.id);
+      const to = turnCell(o.x, o.y, def.quarts);
+      cases.push({ x: def.core.x + to.x, y: def.core.y + to.y });
+    }
+    out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes: pose.cubes, origin: pose.origine, echelle, cases, centre });
   }
   return out;
 }

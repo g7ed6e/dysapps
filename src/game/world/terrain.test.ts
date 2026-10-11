@@ -322,12 +322,13 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     // rangs plus haut et une case plus près que sa recherche, (15, −2), pour tenir entière dans la vue panneau ouvert ; la
     // Colonnade des cités au palier 1, derrière la bande : 25, 0 et 31, dont 10 sur un côté. Le Forum des débats au palier
     // 1, sur un côté de devant, et le Bosquet des sages au palier 1, derrière la bande, aux places de leur recherche :
-    // 27, 0 et 31, dont 11 sur un côté.
+    // 27, 0 et 31, dont 11 sur un côté. Avec les proportions du 6e (GD-16, 11 octobre 2026), la Vallée du vivant passe
+    // en (14, 3), au palier 1, et la Forêt des sons en (-6, 4), au palier 3 : 28, 0 et 30.
     expect(BIOMES.filter((b) => guardianSpot(b.id).repli).map((b) => b.id)).toEqual([]);
     const paliers = (n: number) => BIOMES.filter((b) => guardianSpot(b.id).palier === n).map((b) => b.id);
-    expect(paliers(1)).toHaveLength(27);
+    expect(paliers(1)).toHaveLength(28);
     expect(paliers(2)).toEqual([]);
-    expect(paliers(3)).toHaveLength(31);
+    expect(paliers(3)).toHaveLength(30);
     expect(BIOMES.filter((b) => guardianSpot(b.id).y <= QUEST_ROW + 1).map((b) => b.id)).toEqual([
       'english-4e-comprehension',
       'civics-6e-democratic-society',
@@ -401,12 +402,17 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     // côtés, ces îles gardent le carré où il se voit le plus : la part vue, au centième, dans la forme la plus cachée des
     // deux univers, les rayons visant les deux yeux de la caméra (en paysage et panneau ouvert). Sous 85 % : le Phare
     // des fonctions (68 %), la Prairie des climats (76 %), la Vigie des signaux (78 %), l'Horloge des verbes (79 %), la
-    // Falaise des accords, le Bassin des maquettes et le Tremplin des forces (83 %). Sous le seuil de 75 % (DA,
+    // Vallée du vivant (83 %, son Cerf grandi sur son carré), la Falaise des accords, le Bassin des maquettes et le Tremplin des forces (83 %). Sous le seuil de 75 % (DA,
     // 8 octobre 2026), seul le Phare des fonctions : aucun carré, même la bande du chemin des arrivées cédée, ne le
     // montre plus. Le Hangar des inventions et le Verger de la santé (54 %), l'Imprimerie des révolutions (66 %) se
     // voient entiers sur un côté de devant depuis ce seuil. Depuis la cinquième mission (GD-14), le Belvédère de Thalès
-    // (82 %) a quitté le sien, qu'une borne de plus touchait ; le Manoir du passé aussi (81 % en (0, 14)), puis, sa forme prise, la recherche refaite sur sa terre l'a posé en (15, 15), où il se voit entier.
+    // (82 %) a quitté le sien, qu'une borne de plus touchait ; le Manoir du passé aussi (81 % en (0, 14)), puis, sa forme prise, la recherche refaite sur sa terre l'a posé en (15, 15), où il se voit entier. La Vallée du vivant (83 %, l'étiquette de l'île devant son Cerf) a pris un carré où il se voit entier (GD-16).
     const enPartie: Record<string, number> = {
+      // Sur son nouveau carré, entier dans le cadre (GD-16), un coin de la couronne du Grand Chêne d'Archipéo derrière un cube.
+      'french-6e-phonology': 0.97,
+      // Le Lion et le Castor d'Archipéo, sur tout leur carré (GD-16), plus grands : un peu du Lion derrière un cube, le
+      // haut du Castor sous l'étiquette du nom de l'île (87 %).
+      'english-6e-vocabulary': 0.98,
       'maths-6e-calculation': 0.92,
       'maths-5e-signed-numbers': 0.88,
       'maths-4e-algebra': 0.87,
@@ -414,8 +420,7 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
       'maths-3e-functions': 0.68,
       'english-6e-grammar': 0.79,
       'history-6e-antiquity': 0.99,
-      'geography-6e-living': 0.99,
-      'life-earth-sciences-6e-living-world': 0.85,
+      'geography-6e-living': 0.87,
       'history-5e-middle-ages': 0.93,
       'geography-5e-resources': 0.99,
       'life-earth-sciences-5e-active-planet': 0.76,
@@ -498,11 +503,11 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
   });
 });
 
-it('les repères : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan ; plus aucune cascade', () => {
+it('les repères : un phare au Phare, de la fumée au Volcan, plus de chêne géant à la Forêt (son Gardien, le Grand Chêne, en tient lieu) ; plus aucune cascade', () => {
   const cubes = allCubes({}, village(everything), false);
   const of = (id: string) => cubes.filter((c) => c.tag === id && !c.bridge);
   const foret = of('french-6e-phonology');
-  expect(Math.max(...foret.filter((c) => c.texture === 'feuilles').map((c) => c.z))).toBeGreaterThanOrEqual(8);
+  expect(foret.some((c) => c.decor?.includes('grand-arbre'))).toBe(false);
   const phare = of('maths-3e-functions');
   expect(phare.filter((c) => c.texture === 'lanterne').length).toBeGreaterThanOrEqual(4);
   expect(Math.max(...phare.map((c) => c.z))).toBeGreaterThanOrEqual(9 + 10);

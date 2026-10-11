@@ -21,7 +21,7 @@ import type { ObjetDeLaFiche } from './layout';
 export type { ObjetDeLaFiche };
 import type { Cell, CreaturePlacement } from './paths';
 import { islandCenter, type VehiclePlacement } from './terrain';
-import { SENTINELLE_DANS_LE_MONDE } from './terrain/creatures';
+import { sentinelleDe } from './terrain/creatures';
 
 /** L'état d'un objet touchable : à faire (il porte une bulle), pas encore, un lieu (ils n'en portent pas). */
 export type EtatDuSigne = 'aFaire' | 'pasEncore' | 'lieu';
@@ -131,14 +131,25 @@ function boiteDuPersonnage(p: Pick<CreaturePlacement, 'cubes' | 'origin' | 'eche
 
 /**
  * La boîte d'un Gardien dessiné en sentinelle (Archipéo, `habillage.personnages` « modeles ») : la statue à l'échelle du
- * monde, ses pieds au milieu de la place de ses cubes (`pointDePose` de world/characters/merges.ts), pas la boîte de ses
+ * monde, ses pieds au milieu de sa place (`pointDePose` de world/characters/merges.ts), pas la boîte de ses
  * cubes, qui sont ceux du Gardien de Blocland en grand : sa bulle et sa zone de toucher suivent la statue qu'on voit.
  */
-function boiteDeLaSentinelle(p: Pick<CreaturePlacement, 'cubes' | 'origin'>): Boite {
+function boiteDeLaSentinelle(p: Pick<CreaturePlacement, 'id' | 'cubes' | 'origin'> & { centre?: { x: number; y: number } }): Boite {
   const b = boiteDe(p.cubes, p.origin);
-  const [cx, cy, z0] = [(b.min.x + b.max.x) / 2, (b.min.y + b.max.y) / 2, p.origin.z];
-  const d = SENTINELLE_DANS_LE_MONDE.demiLargeur;
-  return { min: { x: cx - d, y: cy - d, z: z0 }, max: { x: cx + d, y: cy + d, z: z0 + SENTINELLE_DANS_LE_MONDE.hauteur } };
+  // Le milieu de sa place sur son carré, où se pose la statue (`pointDePose`), ou celui de ses cubes.
+  const [cx, cy, z0] = p.centre ? [p.centre.x, p.centre.y, p.origin.z] : [(b.min.x + b.max.x) / 2, (b.min.y + b.max.y) / 2, p.origin.z];
+  // Carrée : le lieu peut être tourné (GD-9), la boîte reste celle de la statue.
+  const { dx, dy, h } = sentinelleDe(p.id);
+  const d = Math.max(dx, dy);
+  return { min: { x: cx - d, y: cy - d, z: z0 }, max: { x: cx + d, y: cy + d, z: z0 + h } };
+}
+
+/**
+ * La boîte de chaque créature telle qu'elle est dessinée, à l'échelle de son dessin (GD-16 : 0,5 dans Blocland, comme
+ * les Gardiens) : une créature plus petite que 48 pixels à l'écran se touche aussi tout autour (three/affordance.ts).
+ */
+export function boitesDesCreatures(creatures: readonly CreaturePlacement[]): { id: BiomeId; boite: Boite }[] {
+  return creatures.filter((c) => c.kind !== 'guardian' && c.cubes.length).map((c) => ({ id: c.id, boite: boiteDuPersonnage(c) }));
 }
 
 /** Un objet et sa bulle, au-dessus du milieu de sa boîte. */

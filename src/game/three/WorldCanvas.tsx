@@ -11,7 +11,7 @@ import { cadreDeLaLiaison, ileDeLaVueGlissee, islandCenter, worldBounds } from '
 import { getBridge } from '../world/archipelago';
 import { cubeTags, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
-import { centreDeLObjet, cleDeLaCreature, cleDeLObjet, signesDesObjets, sommetsDesBornes, type ObjetDeLaFiche, type ObjetTouche } from '../world/affordance';
+import { boitesDesCreatures, centreDeLObjet, cleDeLaCreature, cleDeLObjet, signesDesObjets, sommetsDesBornes, type ObjetDeLaFiche, type ObjetTouche } from '../world/affordance';
 import { useEnCasesDuMonde } from '../useInWorldCells';
 import { createMeter } from './meter';
 import { habillageDe } from '../skin';
@@ -372,7 +372,8 @@ export default function WorldCanvas({
       signaler();
     };
     // Les personnages d'Archipéo importés de près sur l'île que la caméra regarde (le centre de la vue, au niveau de la
-    // mer), relu quatre fois par seconde : une île changée refait la fusion des personnages. Rien sur la Carte.
+    // mer), relu quatre fois par seconde : une île changée refait la fusion des personnages, et la construction de l'île
+    // quittée et de l'île approchée (leur bâtiment importé de près ou de loin). Rien sur la Carte.
     const auNiveauDeLaMer = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
     const regard = new THREE.Raycaster();
     const centreDeLaVue = new THREE.Vector2(0, 0);
@@ -384,6 +385,7 @@ export default function WorldCanvas({
         prochainRegard = t + 0.25;
         regard.setFromCamera(centreDeLaVue, camera);
         if (regard.ray.intersectPlane(auNiveauDeLaMer, pointRegarde)) personnages.viser(pointRegarde.x, pointRegarde.z);
+        cubesDuMonde.approcher(personnages.ileDePres());
       },
       dispose: () => {},
     };
@@ -637,6 +639,8 @@ export default function WorldCanvas({
   const pres = map ? null : (home ?? null);
   useEffect(() => {
     world.current?.personnages.approcher(pres);
+    // Le bâtiment importé de la même île, de près (world/buildingModels.ts).
+    world.current?.cubes.approcher(world.current.personnages.ileDePres());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pres, reduceMotion, archipelago]);
 
@@ -732,6 +736,11 @@ export default function WorldCanvas({
     () => signesDesObjets({ cubes, quests, creatures, vehicle, etats: etatsDesObjets, gardiens: habillageDe(rendu).personnages === 'modeles' ? 'sentinelles' : 'cubes' }),
     [cubes, quests, creatures, vehicle, etatsDesObjets, rendu],
   );
+  // Les créatures de Blocland, petites (GD-16), se touchent aussi tout autour ; celles en modèles d'Archipéo, à leur taille.
+  useEffect(() => {
+    world.current?.affordance.poserLesCreatures(habillageDe(rendu).personnages === 'modeles' ? [] : boitesDesCreatures(creatures));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [creatures, rendu, reduceMotion, archipelago]);
   useEffect(() => {
     world.current?.affordance.poser(signesDuMonde);
     world.current?.signes.poserLesObjets(signesDuMonde, prochaine);

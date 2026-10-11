@@ -27,6 +27,8 @@
 // Les monuments importés (./monumentModels.ts, chargés à la demande) : l'étape de chantier que suit l'avancée du plan
 // remplace les cubes posés, dans l'opaque (le feu du phare du large fini dans les fenêtres) ; les fantômes restent.
 // Chargé, le phare du large importé prend la place de son modèle taillé.
+// Les bâtiments des plans importés (./buildingModels.ts, chargés à la demande) : de même, l'étape que suit l'avancée des
+// deux premiers plans d'une île remplace leurs cubes posés, de près sur l'île `pres`, de loin ailleurs.
 //
 // L'architecture modulaire (lot 7, ./architecture/) : un bloc posé d'un plan d'île dont le kit de l'archipel peint le
 // mur garde sa géométrie et sa fusion, avec un motif par face (le colombage, le bardage, le soubassement, le chaperon,
@@ -56,6 +58,8 @@ import type { ArchipelagoId } from './map';
 import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './bridges';
 import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, PHARE_DU_LARGE, phareDuLarge } from './offshoreLighthouse';
 import { getImportedMonuments, type ImportedMonument, monumentsVersion } from './monumentModels';
+import { buildingsVersion, getImportedBuildings } from './buildingModels';
+import type { BiomeId } from '../biomes';
 import { estUnePlaceDeTrophee } from './trophyHall';
 import { mixColor } from './daylight';
 import { couleursDuToit, toitDe } from './roofs';
@@ -182,6 +186,15 @@ export interface OptionsDeLaConstruction {
    * sol sous ses blocs) : les pilotis cherchent le sol jusqu'à `PROFONDEUR` cases plus bas, pas seulement juste dessous.
    */
   solEntier?: (x: number, y: number, z: number) => VoxelCube | undefined;
+  /** L'île de près (./buildingModels.ts) : son bâtiment importé de près, ceux des autres îles de loin ; `null` : tous de loin. */
+  pres?: BiomeId | null;
+}
+
+/** Les modèles importés qui remplacent des cubes posés : les monuments, puis les bâtiments des plans (de près sur `pres`). */
+function modelesImportes(cubes: readonly VoxelCube[], pres: BiomeId | null = null): ImportedMonument[] {
+  const batiments = getImportedBuildings(cubes, pres);
+  const monuments = getImportedMonuments(cubes);
+  return batiments.length ? [...monuments, ...batiments] : monuments;
 }
 
 type V3 = [number, number, number];
@@ -217,10 +230,11 @@ export type FenetresDuMonde = Map<VoxelCube, { genre: 'vitre' | 'lanterne' | 'lu
  * `eclatDeFenetre` que la 3D : les tests de l'allumage le comparent au maillage. Les bornes n'en ont pas, ni les cases que le phare de
  * Grimoire remplace en 3D.
  */
-export function fenetresDe(cubes: VoxelCube[], imported: readonly ImportedMonument[] = getImportedMonuments(cubes)): FenetresDuMonde {
+export function fenetresDe(cubes: VoxelCube[], imported: readonly ImportedMonument[] = modelesImportes(cubes)): FenetresDuMonde {
   // Les cases que le phare de Grimoire remplace en 3D ne s'allument pas (sa lanterne est à lui).
   const phare = phareDeGrimoire(cubes);
-  // Ni celles qu'un monument importé remplace (./monumentModels.ts) ; `imported` : déjà calculés, pour ne pas les refaire.
+  // Ni celles qu'un monument ou un bâtiment importé remplace (./monumentModels.ts, ./buildingModels.ts) ; `imported` : déjà
+  // calculés, pour ne pas les refaire.
   const importedCells = new Set(imported.flatMap((m) => [...m.replaced]));
   const genres = genresDesBlocs(cubes.filter((c) => !c.quest && !c.sol && !phare?.remplacees.has(cle(c.x, c.y, c.z)) && !importedCells.has(cle(c.x, c.y, c.z))));
   const decalages = decalagesDe(genres);
@@ -331,8 +345,9 @@ export function maillageDeLaConstruction(
   const phare = options.navire ? null : phareDeGrimoire(cubes, a);
   // Les ponts de pierre et de bois du 5e : un pont construit laisse la place à son modèle (./bridges.ts).
   const ponts = options.navire ? null : pontsDePierreEtDeBois(cubes);
-  // Les monuments importés (./monumentModels.ts), chargés : l'étape du chantier remplace les cubes posés.
-  const imported = options.navire ? [] : getImportedMonuments(cubes);
+  // Les monuments et les bâtiments importés (./monumentModels.ts, ./buildingModels.ts), chargés : l'étape du chantier
+  // remplace les cubes posés.
+  const imported = options.navire ? [] : modelesImportes(cubes, options.pres);
   const importedCells = new Set(imported.flatMap((m) => [...m.replaced]));
   // Le phare du large du 5e : ses pièces finies laissent la place à son modèle (./offshoreLighthouse.ts), sauf s'il est importé.
   const large = options.navire || imported.some((m) => m.id === PHARE_DU_LARGE) ? null : phareDuLarge(cubes);
@@ -1144,27 +1159,30 @@ export interface CacheDeLaConstruction {
   iles: Map<string, { signature: string; maillage: MaillageDeLaConstruction }>;
   /** Le nombre de cubes du sol : s'il change, tout est refait. */
   sol: number;
-  /** La version des monuments importés (./monumentModels.ts) : un modèle arrivé, tout est refait. */
-  monuments: number;
+  /** La version des monuments et des bâtiments importés (./monumentModels.ts, ./buildingModels.ts) : un modèle arrivé, tout est refait. */
+  monuments: string;
 }
 
-export const cacheDeLaConstruction = (): CacheDeLaConstruction => ({ iles: new Map(), sol: -1, monuments: -1 });
+export const cacheDeLaConstruction = (): CacheDeLaConstruction => ({ iles: new Map(), sol: -1, monuments: '' });
 
 /**
  * La construction d'un archipel, île par île : chaque île (les cubes d'une même étiquette) a son maillage, gardé tant
  * que ses cubes ne changent pas ; ils sont mis bout à bout dans les trois groupes (toujours trois appels). Poser un bloc
- * ne refait que son île. `refaites` : le nombre d'îles refaites ; `change` : faux si rien n'a changé.
+ * ne refait que son île. `refaites` : le nombre d'îles refaites ; `change` : faux si rien n'a changé. `pres` : l'île de près
+ * (son bâtiment importé de près) ; en changer ne refait que l'île quittée et l'île approchée.
  */
 export function construireParIle(
   a: ArchipelagoId,
   cubes: VoxelCube[],
   sol: VoxelCube[],
   cache: CacheDeLaConstruction,
+  pres: BiomeId | null = null,
 ): { maillage: MaillageDeLaConstruction; refaites: number; change: boolean } {
-  if (cache.sol !== sol.length || cache.monuments !== monumentsVersion()) {
+  const versions = `${monumentsVersion()}|${buildingsVersion()}`;
+  if (cache.sol !== sol.length || cache.monuments !== versions) {
     cache.iles.clear();
     cache.sol = sol.length;
-    cache.monuments = monumentsVersion();
+    cache.monuments = versions;
   }
   const parIle = new Map<string, VoxelCube[]>();
   for (const c of cubes) {
@@ -1183,7 +1201,8 @@ export function construireParIle(
     refaites++;
   }
   for (const [k, l] of parIle) {
-    const signature = signatureDeLaConstruction(l, []);
+    // L'île de près se dessine à part (son bâtiment importé de près).
+    const signature = signatureDeLaConstruction(l, []) + (k === pres ? '|pres' : '');
     if (cache.iles.get(k)?.signature === signature) continue;
     // Le sol sous l'île : seulement les cubes du sol sous un de ses blocs (le sol cache le dessous d'un bloc posé).
     if (!solParIle || !index) {
@@ -1198,7 +1217,7 @@ export function construireParIle(
         solParIle.set(ki, s);
       }
     }
-    cache.iles.set(k, { signature, maillage: maillageDeLaConstruction(a, l, solParIle.get(k), { solEntier }) });
+    cache.iles.set(k, { signature, maillage: maillageDeLaConstruction(a, l, solParIle.get(k), { solEntier, pres }) });
     refaites++;
   }
   return { maillage: miseBoutABout([...cache.iles.values()].map((i) => i.maillage)), refaites, change: refaites > 0 };

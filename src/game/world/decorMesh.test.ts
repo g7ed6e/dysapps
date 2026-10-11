@@ -12,6 +12,9 @@ import { empriseDuSocle, SOCLE_3E } from './decor/3e';
 import { eclaircir, hex } from './decor/brush';
 import { kindOf, PROP_KINDS } from './props';
 import { worldCubes } from './terrain';
+import { GUARDIAN_CUBES } from './characters/guardians';
+import { GUARDIAN_WORLD_HEIGHTS } from './guardianSquares';
+import { HABILLAGE_BLOCLAND } from './skin/blocland';
 
 /** Un archipel tout construit, rangé comme le rend la vue 3D d'Archipéo. */
 const ranges = new Map<ArchipelagoId, ReturnType<typeof ranger>>();
@@ -282,25 +285,45 @@ it('les arbres : deux familles de verts (six sur dix clairs), trois tailles, cha
   expect(Math.max(...largeurs)).toBeGreaterThan(2.8);
 });
 
-it('le chêne géant montre moins de la moitié de son tronc ; les repères n’ont pas de dalle à leur pied', () => {
+it('le Grand Chêne est le plus grand arbre du 6e, une case au moins au-dessus des autres, dans les deux univers', () => {
+  // Demande du mainteneur (10 octobre 2026) ; la marge d'une case, du directeur artistique.
+  const { cubes, elements, maillage, champ } = monde('6e');
+  const arbre = (genre: string) => genre === 'arbre' || genre === 'sapin';
+  // Blocland : les cubes de chaque arbre, du pied à la cime ; le Gardien, ses couches à l'échelle de l'habillage.
+  const bornes = new Map<string, [number, number]>();
+  for (const c of cubes)
+    if (c.decor && arbre(kindOf(c.decor))) {
+      const [z0, z1] = bornes.get(c.decor) ?? [Infinity, -Infinity];
+      bornes.set(c.decor, [Math.min(z0, c.z), Math.max(z1, c.z)]);
+    }
+  const grandsEnBlocs = Math.max(...[...bornes.values()].map(([z0, z1]) => z1 - z0 + 1));
+  const chene = (Math.max(...GUARDIAN_CUBES['french-6e-phonology'].map((c) => c.z)) + 1) * HABILLAGE_BLOCLAND.echelleDesGardiens;
+  expect(chene - grandsEnBlocs).toBeGreaterThanOrEqual(1);
+  // Archipéo : la cime de chaque arbre au-dessus du sol à son pied ; le Gardien, à sa hauteur propre.
+  const haut = new Map<number, number>();
+  const f = maillage.decor;
+  for (let t = 0; t < f.elements.length; t++) for (let k = 0; k < 3; k++) haut.set(f.elements[t], Math.max(haut.get(f.elements[t]) ?? -Infinity, f.positions[t * 9 + k * 3 + 1]));
+  let grandsPeints = 0;
+  elements.forEach((e, i) => {
+    if (!arbre(e.genre) || !haut.has(i)) return;
+    grandsPeints = Math.max(grandsPeints, haut.get(i)! - (hauteurDuSol(champ, e.x + 0.5, e.y + 0.5) ?? e.z));
+  });
+  expect(grandsPeints).toBeGreaterThan(4);
+  expect((GUARDIAN_WORLD_HEIGHTS['french-6e-phonology'] ?? 0) - grandsPeints).toBeGreaterThanOrEqual(1);
+  // Plus aucun repère ne lui dispute la Forêt.
+  expect(elements.some((e) => e.genre === 'grand-arbre')).toBe(false);
+});
+
+it('les repères n’ont pas de dalle à leur pied', () => {
   for (const a of ARCHIPELAGO_IDS) {
     const { elements, maillage, champ } = monde(a);
     elements.forEach((e, i) => {
-      if (!['grand-arbre', 'champignon-geant', 'aiguille-de-glace', 'haut-fourneau', 'tour-de-guet', 'grand-phare'].includes(e.genre)) return;
+      if (!['champignon-geant', 'aiguille-de-glace', 'haut-fourneau', 'tour-de-guet', 'grand-phare'].includes(e.genre)) return;
       const ts = triangles(maillage, i);
       let sol = Infinity;
       for (const u of [0.1, 0.5, 0.9]) for (const v of [0.1, 0.5, 0.9]) sol = Math.min(sol, hauteurDuSol(champ, e.x + u * e.emprise, e.y + v * e.emprise) ?? Infinity);
       // Rien de plat au ras de la pente : pas de dalle, le pied plonge dans le sol, jamais plus de 0,3 case au-dessus.
       for (const t of ts) if (t.n > 0.95 && Math.max(...t.p.map((q) => q[1])) < sol + 0.3) throw new Error(`${e.id} : une dalle au pied`);
-      if (e.genre === 'grand-arbre') {
-        const y0 = sol;
-        const top = Math.max(...ts.flatMap((t) => t.p.map((q) => q[1])));
-        // Le bas de la couronne : le plus bas des sommets verts.
-        const verts = ts.filter((t) => t.c.every((c) => c[1] > c[0] * 1.15));
-        const bas = Math.min(...verts.flatMap((t) => t.p.map((q) => q[1])));
-        // (0,45 jusqu'à GD-11 ; 0,46 depuis que le cœur de la Forêt a 26 cases, sur sa côte amincie.)
-        expect((bas - y0) / (top - y0), e.id).toBeLessThanOrEqual(0.47);
-      }
     });
   }
 });

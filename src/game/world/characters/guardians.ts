@@ -43,19 +43,27 @@ const GOLEM = fromLayers(
   { R: '#7d7d7d', r: '#9c9c9c', O: '#f2c944', K: '#3a3a3a' },
 );
 
-// La Dune vivante : une montagne de sable qui s'élève en pointe, deux yeux sombres et une bouche dans la pente.
+// La Dune vivante : une montagne de sable qui s'élève en pointe, deux yeux sombres et une bouche dans la pente, tournés
+// vers la caméra de l'île. Douze couches (six blocs dans Blocland, réduite de moitié) : plus haute que les arbres de son
+// île, sur la même emprise (GD-16). Ocre, plus chaude et plus sombre que le sable de la Carrière, son pied en sable
+// mouillé et une bande sombre à mi-hauteur : elle se détache du sol et ses gradins se voient (directeur artistique,
+// 11 octobre 2026).
 const DUNE = fromLayers(
   [
-    ['SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS'],
-    ['.SSSSSSS.', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', '.SSSSSSS.'],
+    ['DDDDDDDDD', 'DDDDDDDDD', 'DDDDDDDDD', 'DDDDDDDDD', 'DDDDDDDDD', 'DDDDDDDDD'],
+    ['.DDDDDDD.', 'DDDDDDDDD', 'DDDDDDDDD', 'DDDDDDDDD', 'DDDDDDDDD', '.DDDDDDD.'],
     ['..SMMMS..', '.SSSSSSS.', 'SSSSSSSSS', 'SSSSSSSSS', '.SSSSSSS.', '..SSSSS..'],
+    ['..SSSSS..', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', '..SSSSS..', '.........'],
     ['..SKSKS..', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', '..SSSSS..', '.........'],
-    ['..SSSSS..', '.SSSSSSS.', '.SSSSSSS.', '..SSSSS..', '.........', '.........'],
+    ['..SKSKS..', '..SSSSS..', '.SSSSSSS.', '..SSSSS..', '...SSS...', '.........'],
+    ['...DDD...', '..DDDDD..', '..DDDDD..', '..DDDDD..', '...DDD...', '.........'],
     ['...SSS...', '..SSSSS..', '..SSSSS..', '...SSS...', '.........', '.........'],
-    ['....s....', '...SSS...', '...SSS...', '....S....', '.........', '.........'],
-    ['.........', '....s....', '....s....', '.........', '.........', '.........'],
+    ['.........', '...SSS...', '...SSS...', '...SSS...', '.........', '.........'],
+    ['.........', '...SSS...', '...SSS...', '.........', '.........', '.........'],
+    ['.........', '....s....', '...sSs...', '....s....', '.........', '.........'],
+    ['.........', '.........', '....s....', '.........', '.........', '.........'],
   ],
-  { S: '#e8e0b4', s: '#cfc48f', K: '#4a3a22', M: '#8a7a52' },
+  { S: '#d39a4f', D: '#a8703a', s: '#ecc47e', K: '#2a2218', M: '#5a3e22' },
 );
 
 // Le Taureau de terre : massif, quatre pattes, muselière rose, yeux clairs, grandes cornes blanches.
@@ -339,8 +347,26 @@ const LECTEUR = fromLayers(
   { B: '#3a4a7a', L: '#f4f1e4', S: '#e8b98a', s: '#c98a6a', K: '#1f1a16', G: '#e0a33a', H: '#2a2622' },
 );
 
-// Le Lion de pierre : le lion couché des places anglaises, pierre grise, crinière plus sombre, regard d'or.
-const LION = sphinx({ S: '#b3aea4', s: '#8f8a80', D: '#7d776c', G: '#9c968a', E: '#f5d63d' });
+// Le Lion de pierre : le lion des places anglaises, assis, dressé sur ses pattes de devant, la crinière haute autour
+// de la tête ; pierre grise, crinière plus sombre, regard d'or. Douze couches (six blocs dans Blocland, réduit de moitié) :
+// plus haut que les arbres de son île, sur l'emprise du lion couché d'avant (GD-16).
+const LION = fromLayers(
+  [
+    ['.SS...SS.', '.SS...SS.', '.SSSSSSS.', '.SSSSSSS.', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', '.SSSSSSS.'],
+    ['.........', '.SS...SS.', '.SSSSSSS.', '.SSSSSSS.', 'SSSSSSSSS', 'SSSSSSSSS', 'SSSSSSSSS', '.SSSSSSS.'],
+    ['.........', '.SS...SS.', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', 'SSSSSSSSS', 'SSSSSSSSS', '..SSSSS..'],
+    ['.........', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', '..SSSSS..', '.........'],
+    ['.........', '..SSSSS..', '.SSSSSSS.', '.SSSSSSS.', '.SSSSSSS.', '..SSSSS..', '.........', '.........'],
+    ['.........', '..SSSSS..', '.SSSSSSS.', '.SSSSSSS.', '..SSSSS..', '.........', '.........', '.........'],
+    ['.........', '.DDDDDDD.', 'DDDDDDDDD', 'DDDDDDDDD', '.DDDDDDD.', '.........', '.........', '.........'],
+    ['...SsS...', 'DDSSSSSDD', 'DDSSSSSDD', 'DDDDDDDDD', '.DDDDDDD.', '.........', '.........', '.........'],
+    ['.........', 'DDSESESDD', 'DDSSSSSDD', 'DDDDDDDDD', '.DDDDDDD.', '.........', '.........', '.........'],
+    ['.........', 'DDSSSSSDD', 'DDSSSSSDD', 'DDDDDDDDD', '.DDDDDDD.', '.........', '.........', '.........'],
+    ['.........', '.DDDDDDD.', 'DDDDDDDDD', 'DDDDDDDDD', '.DDDDDDD.', '.........', '.........', '.........'],
+    ['.........', '..DGDGD..', '.DDDDDDD.', '.DDDDDDD.', '..DDDDD..', '.........', '.........', '.........'],
+  ],
+  { S: '#b3aea4', s: '#8f8a80', D: '#7d776c', G: '#9c968a', E: '#f5d63d' },
+);
 
 // Le Coucou de bronze : une grande horloge à coucou en bois, cadran crème, toit pointu ; l'oiseau de bronze jaillit de sa porte.
 const COUCOU = fromLayers(
@@ -952,16 +978,21 @@ const ABEILLE = fromLayers(
   { T: '#e0a83a', B: '#5a3c1e', A: '#eef4f2', G: '#8e989c', K: '#1f1a16' },
 );
 
-// L'Hirondelle de nacre (EMC, 6e ; sans flamme, aucun symbole) : posée de profil sur une petite poutre, le long des x,
+// L'Hirondelle de nacre (EMC, 6e ; sans flamme, aucun symbole) : posée de profil sur une petite poutre, en haut d'un
+// poteau (quatre couches de plus : six blocs dans Blocland, réduite de moitié, plus haute que les arbres de son île, GD-16), le long des x,
 // la tête vers les x croissants (à gauche de l'écran, loin du nom de l'île, fiche du Gardien ouverte) ; le corps penché,
 // la tête petite et ronde, sans rien sur ses côtés, l'œil sur le flanc de la tête, un bec d'un bloc qui dépasse devant ;
 // les ailes repliées le long du dos, leur bord d'attaque plus clair, jusqu'au-dessus de la queue ; derrière, la queue
 // en V, longue, ses deux brins qui s'écartent à plat : la caméra de l'île, haute, la voit de trois quarts. La nacre
 // pâle du dos et des ailes, le ventre blanc, la gorge rose pâle, la pointe des ailes et des brins d'une nacre plus
 // soutenue (DA, relecture des captures emc-2, passe 2 : de face, tête large et ailes ouvertes, elle se lisait comme un
-// koala). Dix de long, cinq de large, huit de haut. Neuf couleurs, la poutre, les yeux et le bec compris.
+// koala). Dix de long, cinq de large, douze de haut. Neuf couleurs, la poutre, les yeux et le bec compris.
 const HIRONDELLE = fromLayers(
   [
+    ['..........', '..........', '....SS....', '..........', '..........'],
+    ['..........', '..........', '....SS....', '..........', '..........'],
+    ['..........', '..........', '....SS....', '..........', '..........'],
+    ['..........', '..........', '....SS....', '..........', '..........'],
     ['..........', '..........', '....SS....', '..........', '..........'],
     ['....SS....', '....SS....', '....SS....', '....SS....', '....SS....'],
     ['..........', '.....G....', '..........', '.....G....', '..........'],

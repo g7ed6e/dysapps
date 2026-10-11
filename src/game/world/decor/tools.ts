@@ -54,7 +54,7 @@ export interface OutilsDuRepere extends OutilsDeForme {
   w: number;
   pied: number;
   Z: number;
-  /** Le vert du feuillage (le chêne géant). */
+  /** Le vert du feuillage, tiré pour chaque repère (aucun ne s'en sert depuis que le Grand Chêne a remplacé le chêne géant). */
   vert: RGB;
   /** Les couleurs d'une matière de l'élément (celles de son cube s'il en a un). */
   deMatiere: (texture: TextureKind) => Faces;

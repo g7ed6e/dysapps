@@ -23,7 +23,7 @@ import { AVATAR_HOME, groundHeight, islandOrigin, isSchoolIsland, LAYOUT_PAD } f
 import { type BorneVue, cacheUneBorne, QUEST_ROW, questStations, rangeeDevantLesBornes } from './markers';
 import { amorcesDuDessin } from './links';
 import { layoutCache } from '../placement';
-import { GD11_GUARDIAN_SQUARES, GUARDIAN_SQUARE_SIDE } from '../guardianSquares';
+import { GD11_GUARDIAN_SQUARES, GUARDIAN_GOLD_BESIDE, GUARDIAN_SQUARE_SIDE, GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
 import { silhouetteDe } from '../silhouettes';
 
 /** Les pas d'une créature qui se promène : une case à gauche ou en arrière (jamais vers les plans). */
@@ -86,6 +86,10 @@ const QUARTS_DE_TOUR_DU_GARDIEN: Partial<Record<BiomeId, number>> = {
   // montre son flanc, ses ailes en toit et ses yeux, la tête vers le devant de l'île, de trois quarts (DA, captures
   // emc-4e-3e-1).
   'lca-4e-cities': 3,
+  // La Dune vivante (GD-16) : la caméra de la Carrière des mots regarde de l'est ; tournée d'un quart de tour, elle lui
+  // montre ses yeux et sa bouche (directeur artistique, captures proportions-6e-c). Plus profonde que haute de face, elle
+  // prend alors tout son carré, son bloc d'or dans le coin (`gardienProfond`).
+  'french-6e-word-spelling': 1,
 };
 
 const personnagesTournes = new Map<string, CubeDeModele[]>();
@@ -195,10 +199,18 @@ export function etendue(cubes: readonly { x: number; y: number }[]): { x0: numbe
   return { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs) + 1, y1: Math.max(...ys) + 1 };
 }
 
-/** Le Gardien prend-il tout son carré, de l'avant au fond (un Gardien vu de profil, long) ? */
+/** Le Gardien prend-il tout son carré, de l'avant au fond (un Gardien vu de profil, long) ? Son bloc d'or est dans le coin. */
 export function gardienProfond(id: BiomeId): boolean {
   const e = etendue(gardienDuMonde(id));
   return e.y1 - e.y0 > PROFONDEUR_DU_GARDIEN_DEVANT_SON_OR;
+}
+
+/**
+ * Le Gardien prend-il tout son carré : un Gardien long (`gardienProfond`), ou un Gardien dont le bloc d'or est à côté du
+ * carré (`GUARDIAN_GOLD_BESIDE`, GD-16) ? Son milieu est alors celui du carré.
+ */
+export function gardienSurToutLeCarre(id: BiomeId): boolean {
+  return GUARDIAN_GOLD_BESIDE[id] !== undefined || gardienProfond(id);
 }
 
 /**
@@ -285,6 +297,36 @@ function cubesQuiCachent(id: BiomeId): Set<string> {
 type VueDuGardien = (x: number, y: number, forme?: FormeDuGardien, seuil?: number) => number;
 
 /**
+ * Les Gardiens d'Archipéo qui, remplissant leur carré (`fillsGuardianSquare` de ../guardianSquares.ts), y sont plus
+ * larges ou plus profonds que la sentinelle commune : leur demi-largeur et leur demi-profondeur dans le monde, en cases,
+ * arrondies au vingtième au-dessus (world/characters/merges.ts, `echelleDuGardien` ; un test les tient ensemble).
+ * Recopiées ici : la grille ne lit pas le dessin.
+ */
+const GUARDIAN_WORLD_HALF_SIZES: Readonly<Partial<Record<BiomeId, { dx: number; dy: number }>>> = {
+  'french-6e-letter-confusion': { dx: 1.95, dy: 1.4 },
+  'french-6e-grammar-spelling': { dx: 1.85, dy: 2.5 },
+  'maths-6e-calculation': { dx: 1.75, dy: 2 },
+  'maths-6e-decimals': { dx: 1.85, dy: 2 },
+  'english-6e-vocabulary': { dx: 1.85, dy: 2.5 },
+  'geography-6e-living': { dx: 1.85, dy: 2.5 },
+  'life-earth-sciences-6e-living-world': { dx: 1.4, dy: 1.9 },
+  'civics-6e-democratic-society': { dx: 1.3, dy: 1.8 },
+};
+
+/**
+ * La boîte de la sentinelle d'une île, autour de son milieu (demi-largeur, demi-profondeur, hauteur) : la commune ; celle
+ * d'un Gardien plus haut (`GUARDIAN_WORLD_HEIGHTS`, le Grand Chêne), sa large couronne sur les cinq cases de son carré ;
+ * ou la commune élargie à celle d'un Gardien qui a grandi sur son carré (`GUARDIAN_WORLD_HALF_SIZES`).
+ */
+export function sentinelleDe(id: BiomeId): { dx: number; dy: number; h: number } {
+  const h = GUARDIAN_WORLD_HEIGHTS[id];
+  if (h !== undefined) return { dx: GUARDIAN_SQUARE / 2, dy: GUARDIAN_SQUARE / 2, h };
+  const d = SENTINELLE_DANS_LE_MONDE.demiLargeur;
+  const g = GUARDIAN_WORLD_HALF_SIZES[id];
+  return { dx: Math.max(d, g?.dx ?? 0), dy: Math.max(d, g?.dy ?? 0), h: SENTINELLE_DANS_LE_MONDE.hauteur };
+}
+
+/**
  * Les deux Gardiens autour de leur milieu dans le carré (relatif à son coin, le lieu pas tourné) : demi-largeur,
  * demi-profondeur et hauteur de la boîte du Gardien de Blocland, réduit de moitié (`echelleDesGardiens`), et de celle
  * de la sentinelle d'Archipéo ; le milieu, au fond du carré (son bloc d'or devant lui), ou au milieu pour un Gardien long.
@@ -295,9 +337,9 @@ function boitesDuGardien(id: BiomeId): { boites: [FormeDuGardien, { dx: number; 
   return {
     boites: [
       ['gardien', { dx: (e.x1 - e.x0) / 4, dy: (e.y1 - e.y0) / 4, h: hauteurDuModele / 2 }],
-      ['sentinelle', { dx: SENTINELLE_DANS_LE_MONDE.demiLargeur, dy: SENTINELLE_DANS_LE_MONDE.demiLargeur, h: SENTINELLE_DANS_LE_MONDE.hauteur }],
+      ['sentinelle', sentinelleDe(id)],
     ],
-    milieu: { x: GUARDIAN_SQUARE / 2, y: gardienProfond(id) ? GUARDIAN_SQUARE / 2 : (GUARDIAN_SQUARE + 1) / 2 },
+    milieu: { x: GUARDIAN_SQUARE / 2, y: gardienSurToutLeCarre(id) ? GUARDIAN_SQUARE / 2 : (GUARDIAN_SQUARE + 1) / 2 },
   };
 }
 
@@ -321,6 +363,12 @@ function gardienDansLeCadre(id: BiomeId): (x: number, y: number) => boolean {
       const [u, v] = projeter(def.core.x + t.x, def.core.y + t.y, z);
       return u >= 0 && u <= V.largeur && v >= 0 && v <= V.hauteur - V.bas;
     });
+}
+
+/** Le Gardien d'une île, à sa place, tient-il entier dans la vue de l'île panneau ouvert (`gardienDansLeCadre`) ? */
+export function gardienEntierDansLeCadre(id: BiomeId): boolean {
+  const s = guardianSpot(id);
+  return gardienDansLeCadre(id)(s.x, s.y);
 }
 
 /** Le Gardien de Blocland, réduit de moitié, ou la sentinelle d'Archipéo (l'habillage). */
@@ -771,6 +819,16 @@ export function surLeCarreDuGardien(id: BiomeId, x: number, y: number): boolean 
 }
 
 /**
+ * Un élément du décor qui toucherait ces cases (relatives au cœur, le lieu pas tourné) est-il à `marge` cases ou moins
+ * du carré du Gardien de l'île ?
+ */
+export function presDuCarreDuGardien(id: BiomeId, cases: Iterable<{ x: number; y: number }>, marge: number): boolean {
+  const s = guardianSpot(id);
+  for (const c of cases) if (c.x >= s.x - marge && c.y >= s.y - marge && c.x < s.x + GUARDIAN_SQUARE + marge && c.y < s.y + GUARDIAN_SQUARE + marge) return true;
+  return false;
+}
+
+/**
  * Le décor de la côte et des marges s'efface-t-il sous le Gardien (palier 3 de `guardianSpot`) ? `cases` : les cases
  * (relatives au cœur) que touche un élément du décor.
  */
@@ -866,11 +924,16 @@ function solDeLIle(id: BiomeId): SolDeLIle {
   return out;
 }
 
-/** Les créatures des îles ouvertes : cubes relatifs et position de leur coin dans le monde (elles sont animées à part). */
+/**
+ * Les créatures des îles ouvertes : cubes relatifs et position de leur coin dans le monde (elles sont animées à part).
+ * `echelle` : celle de leur dessin autour de leur pied, la même que celle des Gardiens (l'habillage,
+ * `echelleDesGardiens` : un seul grain de cube pour toutes les figures de Blocland, GD-16).
+ */
 export function creaturePlacements(
   a: ArchipelagoId,
   bridges: string[],
-): { id: BiomeId; cubes: VoxelCube[]; origin: { x: number; y: number; z: number }; steps: [number, number][] }[] {
+  echelle = 1,
+): { id: BiomeId; cubes: VoxelCube[]; origin: { x: number; y: number; z: number }; steps: [number, number][]; echelle?: number }[] {
   return islandsOf(a)
     .filter((b) => isBiomeUnlocked(b.id, bridges))
     .map((b) => {
@@ -886,6 +949,6 @@ export function creaturePlacements(
         const t = turnDirection(dx, dy, def.quarts);
         return [t.dx, t.dy];
       });
-      return { id: b.id, cubes: pose.cubes as VoxelCube[], origin: pose.origine, steps };
+      return { id: b.id, cubes: pose.cubes as VoxelCube[], origin: pose.origine, steps, ...(echelle === 1 ? {} : { echelle }) };
     });
 }

@@ -65,7 +65,8 @@ export interface Habillage {
   /**
    * L'échelle du dessin des Gardiens dans le monde, autour de leur pied, sur leur île (GD-11) : 0,5 dans Blocland (la
    * moitié de leur taille d'avant, même forme, même nombre de cubes : décision du mainteneur, 8 octobre 2026), 1 dans
-   * Archipéo (les sentinelles gardent leur taille).
+   * Archipéo (les sentinelles gardent leur taille). Les créatures de Blocland la prennent aussi : un seul grain de cube
+   * pour toutes les figures (GD-16, décision du mainteneur, 11 octobre 2026).
    */
   echelleDesGardiens: number;
 }
