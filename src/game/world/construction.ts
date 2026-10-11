@@ -60,8 +60,7 @@ import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, PHARE_DU_LARGE, phareDuLar
 import { getImportedMonuments, type ImportedMonument, monumentsVersion } from './monumentModels';
 import { buildingsVersion, getImportedBuildings } from './buildingModels';
 import { petitesConstructionsDessinees } from './fixtureModels';
-import { drawnQuayObjects, drawnTrophies } from './objects/inTheWorld';
-import { drawnHeartDecor } from './objects/heartDecor';
+import { drawnHeartDecor, drawnQuayObjects, drawnTrophies } from './objects/inTheWorld';
 import { drawnVillagePlaces } from './objects/villagePlaces';
 import type { BiomeId } from '../biomes';
 import { estUnePlaceDeTrophee } from './trophyHall';
@@ -356,10 +355,10 @@ export function maillageDeLaConstruction(
   const ponts = options.navire ? null : pontsDePierreEtDeBois(cubes);
   // Les monuments et les bâtiments importés (./monumentModels.ts, ./buildingModels.ts), chargés : l'étape du chantier
   // remplace les cubes posés.
-  // Les objets que le kit d'Archipéo dessine (`Kit.objetsDessines`, lot 1 du 6e de la piste 3) : les petites
-  // constructions posées (./fixtureModels.ts), le bloc d'or des Gardiens rallumés et les objets du quai
-  // (./objects/inTheWorld.ts) ; puis (lot 2) le décor du cœur des îles (./objects/heartDecor.ts) et les trois lieux du village,
-  // de près sur l'île `pres` (./objects/villagePlaces.ts) ; comme un modèle importé, ils remplacent leurs cubes.
+  // Les objets que le kit d'Archipéo dessine (`Kit.objetsDessines`, piste 3, au 6e et au 5e) : les petites
+  // constructions posées (./fixtureModels.ts), le bloc d'or des Gardiens rallumés, les objets du quai et le décor du cœur
+  // des îles (./objects/inTheWorld.ts), et les trois lieux du village, de près sur l'île `pres`
+  // (./objects/villagePlaces.ts) ; comme un modèle importé, ils remplacent leurs cubes.
   const objets = !options.navire && (options.kit ?? KITS[a]).objetsDessines;
   const imported = options.navire
     ? options.nef

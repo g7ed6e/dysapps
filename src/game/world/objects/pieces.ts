@@ -378,3 +378,17 @@ export function milestone(at: Workshop, pe: Paint, x: number, y: number, z0: num
   at.prism(cx, cy, 0.28 * Math.SQRT2, 0.2 * Math.SQRT2, z0 + upper - 0.22, z0 + upper - 0.08, 4, head ?? body, Math.PI / 4, true);
   at.prism(cx, cy, 0.2 * Math.SQRT2, 0, z0 + upper - 0.08, z0 + upper, 4, head ?? body, Math.PI / 4);
 }
+
+// ---------- Les pièces du 5e ----------
+
+/**
+ * Un pupitre en pente (le copiste du Bourg, l'écritoire de Vélin) : le coin dans sa matière, de (x0, y0) à (x1, y1), posé
+ * en z0, plus haut au fond, et le livre crème ouvert dessus. 12 triangles.
+ */
+export function lectern(at: Workshop, pe: Paint, x0: number, x1: number, y0: number, y1: number, z0: number, t: Tint): void {
+  const [zf, zb] = [z0 + 0.14, z0 + 0.44];
+  at.wedge(x0, x1, y0, y1, z0, zf, zb, t);
+  const z = (y: number) => zf + ((y - y0) / (y1 - y0)) * (zb - zf) + 0.02;
+  const [bx0, bx1, by0, by1] = [x0 + (x1 - x0) * 0.2, x1 - (x1 - x0) * 0.2, y0 + (y1 - y0) * 0.2, y1 - (y1 - y0) * 0.2];
+  at.quad([bx0, by0, z(by0)], [bx1, by0, z(by0)], [bx1, by1, z(by1)], [bx0, by1, z(by1)], [(x0 + x1) / 2, (y0 + y1) / 2, z0], pe.color(OBJECT_COLORS.cream));
+}

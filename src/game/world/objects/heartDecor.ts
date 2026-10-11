@@ -15,22 +15,16 @@
 // nombre de cubes que le décor y pose. Il n'est dessiné que si tous ses cubes sont là (un cube que le décor n'a pas pu
 // poser, sous un lieu ou le Gardien, laisse l'ensemble en cubes). Il se dessine dans son repère (x vers la droite, y
 // vers le fond, z vers le haut, z = 0 sous son cube le plus bas), tourné avec l'île (GD-9), chaque colonne posée sur
-// son sol (`ground`). Rien ne s'allume (le réverbère du cœur reste éteint, docs/rendu/style.md), rien ne bouge. Code pur,
-// sans Three.js.
-import type { VoxelCube } from '../cube';
-import { type BiomeId, BIOMES } from '../../biomes';
-import { DECOR } from '../decor';
-import { type ArchipelagoId, islandDef } from '../map';
-import type { ImportedMonument } from '../monumentModels';
-import { turnCell, turnPoint } from '../placement';
-import { LAYOUT_PAD, origineDe } from '../terrain/base';
+// son sol (`ground`). Rien ne s'allume (le réverbère du cœur reste éteint, docs/rendu/style.md), rien ne bouge. La pose
+// dans le monde (les ensembles complets, leurs cases) est dans ./inTheWorld.ts ; le cœur des îles du 5e, dans
+// ./heartDecor5e.ts. Code pur, sans Three.js.
+import type { BiomeId } from '../../biomes';
 import { apartFromGhost, LANTERNE_DE_COUR } from '../architecture';
-import { batimentsDe, coursDe } from '../construction/buildings';
-import { Pinceau, type V3 } from '../decor/brush';
+import type { V3 } from '../decor/brush';
 import type { Faces } from '../palette';
-import { TEXTURE_KINDS, type TextureKind } from '../pixels';
-import { darker, scaleColor, Workshop, type Tint } from './workshop';
-import { milestone, crate, OBJECT_COLORS as C, pebble, sheaf, type Paint, paintFor, tableOnLegs, fencePost, heap } from './pieces';
+import type { TextureKind } from '../pixels';
+import { darker, scaleColor, type Workshop, type Tint } from './workshop';
+import { milestone, crate, OBJECT_COLORS as C, pebble, sheaf, type Paint, tableOnLegs, fencePost, heap } from './pieces';
 
 /** Un cube d'un ensemble, dans son repère : sa case, et sa matière. */
 interface HeartCell {
@@ -41,17 +35,14 @@ interface HeartCell {
   texture: TextureKind | null;
 }
 
-const TEXTURES = new Set<string>(TEXTURE_KINDS);
-const isTextureKind = (t: string | undefined): t is TextureKind => t !== undefined && TEXTURES.has(t);
-
 /** Ce qu'un dessin du cœur lit : ses cubes, et le sol de chaque colonne (0 sous la plus basse). */
-interface HeartGroup {
+export interface HeartGroup {
   cells: readonly HeartCell[];
   ground: (x: number, y: number) => number;
 }
 
 /** Le dessin d'un ensemble du cœur. */
-type HeartDrawing = (at: Workshop, pe: Paint, e: HeartGroup) => void;
+export type HeartDrawing = (at: Workshop, pe: Paint, e: HeartGroup) => void;
 
 /** Un ensemble du décor d'un cœur : son nom, ses colonnes dans la grille du décor (`DECOR`), son dessin. */
 export interface HeartDecor {
@@ -81,13 +72,11 @@ const HEART_COLORS = {
 // ---------- La Mine des lettres ----------
 
 /**
- * L'entrée de la galerie (deux cases de large, deux de haut : le grand bloc sombre des captures) : la butte de roche, son
- * sommet en croupe, le cadre de boisage (deux montants, le chapeau), la bouche noire, deux blocs tombés au pied, le
- * wagonnet à la sortie. Tournée vers la caméra (−y).
+ * L'entrée d'une galerie (deux cases de large, deux de haut : le grand bloc sombre des captures de la Mine) : la butte de
+ * roche (`rock` : la pierre assombrie, ou sa teinte), son sommet en croupe, ses épaules (`stone`), la bouche noire ; à la
+ * Mine (`timbered`), le cadre de boisage (deux montants, le chapeau) et le wagonnet à la sortie. Tournée vers la caméra (−y).
  */
-const mineEntrance: HeartDrawing = (at, pe) => {
-  const stone = pe.material('pierre');
-  const rock = darker(stone, 0.8);
+export function galleryEntrance(at: Workshop, pe: Paint, stone: Faces, rock: Faces, timbered: boolean): void {
   at.box(0.04, 1.96, 0.42, 0.98, 0, 0.95, rock);
   at.pyramid(1, 0.7, 0.96, 0.28, 0.95, 1.98, rock);
   // Les épaules de la butte, de chaque côté du cadre.
@@ -95,6 +84,7 @@ const mineEntrance: HeartDrawing = (at, pe) => {
   at.prism(1.82, 0.66, 0.26, 0.06, 0, 0.75, 5, stone, 1.1);
   // La bouche, et le cadre de boisage.
   at.quad([0.56, 0.41, 0], [1.44, 0.41, 0], [1.44, 0.41, 1.36], [0.56, 0.41, 1.36], [1, 1, 0.7], SHADOW);
+  if (!timbered) return;
   const wood = pe.material('tronc');
   for (const x of [0.45, 1.55]) at.block(x, 0.36, 0.22, 0.22, 0, 1.42, wood, { bottom: true, top: true });
   at.box(0.26, 1.74, 0.24, 0.48, 1.42, 1.66, { dessus: wood.dessus, cote: pe.color(C.lightWood) }, {});
@@ -102,6 +92,12 @@ const mineEntrance: HeartDrawing = (at, pe) => {
   const iron = pe.color(C.iron);
   at.box(0.72, 1.28, 0.04, 0.36, 0.08, 0.42, iron, {});
   at.pyramid(1, 0.2, 0.22, 0.12, 0.42, 0.56, rock);
+}
+
+/** L'entrée de galerie de la Mine des lettres : sa pierre, assombrie en butte, boisée. */
+const mineEntrance: HeartDrawing = (at, pe) => {
+  const stone = pe.material('pierre');
+  galleryEntrance(at, pe, stone, darker(stone, 0.8), true);
 };
 
 // ---------- La Carrière des mots ----------
@@ -632,92 +628,3 @@ export const HEART_DECOR_6E: Readonly<Partial<Record<BiomeId, readonly HeartDeco
   'technology-6e-objects': [{ name: 'cartons', columns: [[9, 3]], drawing: boxes }],
   'civics-6e-democratic-society': [{ name: 'craie', columns: [[9, 3]], drawing: chalk }],
 };
-
-/** Le nombre de cubes que le décor d'une île pose dans chaque colonne de sa grille (sans les arbres, nommés). */
-const decorCountsCache = new Map<BiomeId, Map<string, number>>();
-function decorCountsFor(id: BiomeId): Map<string, number> {
-  let out = decorCountsCache.get(id);
-  if (out) return out;
-  out = new Map();
-  const m = out;
-  DECOR[id](
-    (x, y, _z, _color, decor) => {
-      if (decor) return;
-      const k = `${x},${y}`;
-      m.set(k, (m.get(k) ?? 0) + 1);
-    },
-    () => 0,
-  );
-  decorCountsCache.set(id, out);
-  return out;
-}
-
-const cellKey = (x: number, y: number, z: number) => `${x},${y},${z}`;
-
-/** Le cube compte-t-il parmi le décor du cœur de son île (ni sol, ni décor du paysage, ni borne, lieu, liaison, petite construction) ? */
-const isHeartCube = (c: VoxelCube) => !c.ghost && !c.sol && !c.decor && !c.quest && !c.place && !c.bridge && !c.petiteConstruction;
-
-/**
- * Les ensembles du décor du cœur de ce monde que le kit d'Archipéo dessine (`Kit.objetsDessines`, au 6e) : chacun comme
- * un modèle importé qui remplace ses cubes (le toucher retrouve ses cases). `null` dans les autres archipels.
- */
-export function drawnHeartDecor(a: ArchipelagoId, cubes: readonly VoxelCube[]): ImportedMonument[] {
-  const out: ImportedMonument[] = [];
-  const islands = BIOMES.filter((b) => b.classe === a && HEART_DECOR_6E[b.id]);
-  if (!islands.length) return out;
-  const ids = new Set<string>(islands.map((b) => b.id));
-  const byColumn = new Map<string, VoxelCube[]>();
-  const buildings = batimentsDe(a);
-  const yards = coursDe(a);
-  for (const c of cubes) {
-    if (!c.tag || !ids.has(c.tag) || !isHeartCube(c)) continue;
-    const k = cellKey(c.x, c.y, c.z);
-    if (buildings.has(k) || yards.has(k)) continue;
-    const kc = `${c.tag}|${c.x},${c.y}`;
-    const l = byColumn.get(kc);
-    if (l) l.push(c);
-    else byColumn.set(kc, [c]);
-  }
-  for (const b of islands) {
-    const o = origineDe(b.id);
-    const q = islandDef(b.id).quarts;
-    const counts = decorCountsFor(b.id);
-    for (const entry of HEART_DECOR_6E[b.id] ?? []) {
-      const ax = Math.min(...entry.columns.map(([x]) => x));
-      const ay = Math.min(...entry.columns.map(([, y]) => y));
-      const members: { x: number; y: number; cubes: VoxelCube[] }[] = [];
-      let complete = true;
-      for (const [x, y] of entry.columns) {
-        const t = turnCell(LAYOUT_PAD.x + x, LAYOUT_PAD.y + y, q);
-        const l = byColumn.get(`${b.id}|${o.x + t.x},${o.y + t.y}`) ?? [];
-        if (l.length !== (counts.get(`${x},${y}`) ?? 0) || !l.length) complete = false;
-        members.push({ x: x - ax, y: y - ay, cubes: l });
-      }
-      if (!complete) continue;
-      const all = members.flatMap((s) => s.cubes);
-      const base = Math.min(...all.map((c) => c.z));
-      const grounds = new Map(members.map((s) => [`${s.x},${s.y}`, Math.min(...s.cubes.map((c) => c.z)) - base]));
-      const group: HeartGroup = {
-        cells: members.flatMap((s) => s.cubes.map((c) => ({ x: s.x, y: s.y, z: c.z - base, texture: isTextureKind(c.texture) ? c.texture : null }))),
-        ground: (x, y) => grounds.get(`${x},${y}`) ?? 0,
-      };
-      const toWorld = (x: number, y: number, z: number): V3 => {
-        const p = turnPoint(LAYOUT_PAD.x + ax + x, LAYOUT_PAD.y + ay + y, q);
-        return [o.x + p.x, base + z, o.y + p.y];
-      };
-      // Rien ne s'allume au cœur : le feu est dans l'opaque.
-      const at = new Workshop(new Pinceau(), null, toWorld);
-      entry.drawing(at, paintFor(a, b.id, all.some((c) => c.muted)), group);
-      out.push({
-        id: `coeur:${b.id}:${entry.name}`,
-        stage: 1,
-        opaque: at.opaque.fin(),
-        fire: new Pinceau().fin(),
-        halo: null,
-        cellules: all.map((c) => ({ x: c.x, y: c.y, z: c.z })),
-        replaced: new Set(all.map((c) => cellKey(c.x, c.y, c.z))),
-      });
-    }
-  }
-  return out;
-}

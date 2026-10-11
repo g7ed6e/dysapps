@@ -12,7 +12,7 @@ import { lineaire } from './landMesh';
 import type { TextureKind } from './pixels';
 import { applyLayout } from './appliedLayout';
 import { freeSpots, moveIsland } from './arrange';
-import { islandDef } from './map';
+import { type ArchipelagoId, islandDef } from './map';
 import { cubesDeLaVague, sansLaPartie } from './wave';
 import { drawnQuayObjects, drawnTrophies } from './objects/inTheWorld';
 import { countingWorkshop } from './objects/workshop';
@@ -30,21 +30,39 @@ const triangles = (d: { facettes: readonly { points: unknown[] }[] }) => d.facet
 const ileDe = (id: string) => id.replace(/-fixture-\d+$/, '') as BiomeId;
 const nTri = (f: FacettesDuDecor) => f.positions.length / 9;
 
-/** Les cubes du 6e tout construit, toutes commandes livrées et toutes quêtes finies (sans le sol). */
-let mondeDu6e: ReturnType<typeof worldCubes> | null = null;
-const monde = () => {
-  if (!mondeDu6e) {
+/** Un archipel tout construit, toutes commandes livrées et toutes quêtes finies (sans le sol). */
+const mondes = new Map<ArchipelagoId, ReturnType<typeof worldCubes>>();
+const mondeDe = (a: ArchipelagoId) => {
+  let m = mondes.get(a);
+  if (!m) {
     const { progress, world } = toutConstruitAvecLesCommandes();
-    mondeDu6e = worldCubes('6e', progress, world, false).filter((c) => !c.sol);
+    m = worldCubes(a, progress, world, false).filter((c) => !c.sol);
+    mondes.set(a, m);
   }
-  return mondeDu6e;
+  return m;
 };
+const archipelDe = (id: string) => BIOMES.find((b) => b.id === ileDe(id))!.classe;
 
-it('toutes les petites constructions du 6e sont dessinées (seize commandes, trois objets d’entraide), et seulement elles', () => {
-  const du6e = PETITES_CONSTRUCTIONS.filter((id) => BIOMES.find((b) => b.id === ileDe(id))?.classe === '6e');
-  expect([...PETITES_CONSTRUCTIONS_DESSINEES].sort()).toEqual([...du6e].sort());
-  expect(PETITES_CONSTRUCTIONS_DESSINEES).toHaveLength(19);
+/** Les petites constructions du 5e dessinées au lot 1 (celles que les pièces et les modèles du 6e couvrent). */
+const DU_5E_LOT_1 = [
+  'maths-5e-proportionality-fixture-1',
+  'french-5e-conjugation-fixture-1',
+  'english-5e-vocabulary-fixture-1',
+  'english-5e-grammar-fixture-1',
+  'history-5e-middle-ages-fixture-1',
+  'geography-5e-resources-fixture-1',
+  'life-earth-sciences-5e-active-planet-fixture-1',
+  'physics-chemistry-5e-matter-universe-fixture-1',
+  'civics-5e-equality-solidarity-fixture-1',
+  'maths-5e-signed-numbers-fixture-2',
+];
+
+it('toutes les petites constructions du 6e sont dessinées (seize commandes, trois objets d’entraide), celles du 5e que le 6e couvre, et seulement elles', () => {
+  const du6e = PETITES_CONSTRUCTIONS.filter((id) => archipelDe(id) === '6e');
+  expect([...PETITES_CONSTRUCTIONS_DESSINEES].sort()).toEqual([...du6e, ...DU_5E_LOT_1].sort());
+  expect(du6e).toHaveLength(19);
   expect(PETITES_CONSTRUCTIONS_DESSINEES.filter(aUnDessinDeLoin)).toHaveLength(8);
+  expect(PETITES_CONSTRUCTIONS_DESSINEES.some((id) => ['4e', '3e'].includes(archipelDe(id)))).toBe(false);
 });
 
 it('le puits de Tunel : de 300 à 500 triangles de près, de 30 à 50 de loin', () => {
@@ -72,15 +90,19 @@ it('les triangles : un objet à silhouette de 90 à 500 de près, moins de 55 de
     }
     ecarts.push(pres - loin);
   }
-  expect(ecartDePres('6e')).toBe(Math.max(...ecarts));
-  expect(ecartDePres('5e')).toBe(0);
+  const ecartsDu = (a: ArchipelagoId) => PETITES_CONSTRUCTIONS_DESSINEES.filter((id) => archipelDe(id) === a).map((id) => trianglesDuModele(id, false) - trianglesDuModele(id, true));
+  expect(ecartDePres('6e')).toBe(Math.max(...ecartsDu('6e')));
+  expect(ecartDePres('5e')).toBe(Math.max(0, ...ecartsDu('5e')));
+  expect(ecarts.length).toBe(PETITES_CONSTRUCTIONS_DESSINEES.length);
+  expect(ecartDePres('4e')).toBe(0);
 });
 
 it('posée, chaque petite construction remplace toutes ses cases, eau comprise, et reste dans son emprise ; sans elle, rien', () => {
-  const cubes = monde();
   for (const id of PETITES_CONSTRUCTIONS_DESSINEES) {
+    const a = archipelDe(id);
+    const cubes = mondeDe(a);
     const ile = ileDe(id);
-    const m = petitesConstructionsDessinees('6e', cubes, ile).find((d) => d.id === id);
+    const m = petitesConstructionsDessinees(a, cubes, ile).find((d) => d.id === id);
     expect(m, id).toBeDefined();
     const cases = casesDeLaPetiteConstructionDansLeMonde(ile, id);
     expect(m!.replaced, id).toEqual(cases);
@@ -98,14 +120,14 @@ it('posée, chaque petite construction remplace toutes ses cases, eau comprise, 
       }
     }
     // De loin sur une autre île.
-    const loin = petitesConstructionsDessinees('6e', cubes, null).find((d) => d.id === id)!;
+    const loin = petitesConstructionsDessinees(a, cubes, null).find((d) => d.id === id)!;
     expect(nTri(loin.opaque) + nTri(loin.fire), id).toBe(trianglesDuModele(id, true));
     // Une case manquante (la vague en cours) : pas de dessin, les cubes restent.
     const k = [...cases][0];
-    expect(petitesConstructionsDessinees('6e', cubes.filter((c) => `${c.x},${c.y},${c.z}` !== k)).some((d) => d.id === id), id).toBe(false);
+    expect(petitesConstructionsDessinees(a, cubes.filter((c) => `${c.x},${c.y},${c.z}` !== k)).some((d) => d.id === id), id).toBe(false);
   }
-  // Ailleurs qu'au 6e, aucune.
-  expect(petitesConstructionsDessinees('5e', cubes)).toEqual([]);
+  // Ailleurs qu'au 6e et au 5e, aucune.
+  expect(petitesConstructionsDessinees('4e', mondeDe('6e'))).toEqual([]);
 });
 
 /** Le bloc livré de chaque petite construction : celui de la commande, ou celui donné pendant la quête. */
@@ -116,17 +138,18 @@ function blocLivre(id: string): BlockId {
   return s.steps.find((e) => e.kind === 'give')!.block as BlockId;
 }
 
-it('règle GD-7 : la matière du bloc livré reste sur une grande face, dans les couleurs mêmes du bloc', () => {
-  const cubes = monde();
-  const pres = (id: string) => petitesConstructionsDessinees('6e', cubes, ileDe(id)).find((d) => d.id === id)!;
+it('règle GD-7 : la matière du bloc livré reste sur une grande face, dans les couleurs mêmes du bloc (au moins 0,6 case d’aire, de près et de loin)', () => {
   for (const id of PETITES_CONSTRUCTIONS_DESSINEES) {
+    const a = archipelDe(id);
+    const cubes = mondeDe(a);
+    const pres = (id: string) => petitesConstructionsDessinees(a, cubes, ileDe(id)).find((d) => d.id === id)!;
     const bloc = blocLivre(id);
     // Le bloc livré est bien dans la forme.
     expect(casesDeLaPetiteConstruction(id)!.some((c) => c.block === bloc), id).toBe(true);
-    const f = couleurDeMatiere('6e', BLOCKS[bloc].texture as TextureKind);
+    const f = couleurDeMatiere(a, BLOCKS[bloc].texture as TextureKind);
     const cibles = [f.dessus, f.cote].map((c) => rgb(c).map((v) => lineaire(v / 255)));
     for (const loin of [false, true]) {
-      const m = loin ? petitesConstructionsDessinees('6e', cubes, null).find((d) => d.id === id)! : pres(id);
+      const m = loin ? petitesConstructionsDessinees(a, cubes, null).find((d) => d.id === id)! : pres(id);
       const { positions: p, colors: k } = m.opaque;
       let aire = 0;
       for (let t = 0; t < p.length / 9; t++) {
@@ -189,10 +212,10 @@ it('la pose en vague sur une île tournée (GD-9) : ses cases tournent avec l’
   expect(drawn?.replaced).toEqual(cells);
 });
 
-it('le bloc d’or de chaque Gardien rallumé du 6e : un trophée de 40 à 60 triangles, dans ses deux cases de pierre et d’or', () => {
-  const cubes = monde();
-  const trophees = drawnTrophies('6e', cubes);
-  expect(trophees).toHaveLength(BIOMES.filter((b) => b.classe === '6e').length);
+it.each(['6e', '5e'] as const)('le bloc d’or de chaque Gardien rallumé (%s) : un trophée de 40 à 60 triangles, dans ses deux cases de pierre et d’or', (a) => {
+  const cubes = mondeDe(a);
+  const trophees = drawnTrophies(a, cubes);
+  expect(trophees).toHaveLength(BIOMES.filter((b) => b.classe === a).length);
   for (const t of trophees) {
     const n = nTri(t.opaque);
     expect(n, t.id).toBeGreaterThanOrEqual(40);
@@ -211,12 +234,12 @@ it('le bloc d’or de chaque Gardien rallumé du 6e : un trophée de 40 à 60 tr
   }
   // Ailleurs, les cubes du kit.
   const { progress, world } = toutConstruitAvecLesCommandes();
-  expect(drawnTrophies('5e', worldCubes('5e', progress, world, false))).toEqual([]);
+  expect(drawnTrophies('4e', worldCubes('4e', progress, world, false))).toEqual([]);
 });
 
-it('les objets du quai du 6e : la barque, les caisses, les fanions et le foyer en pièces communes ; la fumée du foyer reste', () => {
-  const cubes = monde();
-  const objets = drawnQuayObjects('6e', cubes);
+it.each(['6e', '5e'] as const)('les objets du quai (%s) : la barque, les caisses, les fanions et le foyer en pièces communes ; la fumée du foyer reste', (a) => {
+  const cubes = mondeDe(a);
+  const objets = drawnQuayObjects(a, cubes);
   const genre = (id: string) => id.slice(id.lastIndexOf('/') + 1, id.indexOf('@'));
   const parGenre = new Map<string, number[]>();
   for (const o of objets) parGenre.set(genre(o.id), [...(parGenre.get(genre(o.id)) ?? []), nTri(o.opaque)]);
@@ -240,7 +263,7 @@ it('les objets du quai du 6e : la barque, les caisses, les fanions et le foyer e
   const at = countingWorkshop();
   rowboat(at, paintFor('6e', 'maths-6e-calculation', true), 'x', 4, true);
   expect(at.triangles).toBeLessThan(60);
-  expect(drawnQuayObjects('5e', cubes)).toEqual([]);
+  expect(drawnQuayObjects('4e', cubes)).toEqual([]);
 });
 
 it('les pièces de la cour : dans leur case, sans dessous, de 10 à 50 triangles ; les lisses fermées au bord de la case', () => {
@@ -283,13 +306,16 @@ it('les pièces de la cour : dans leur case, sans dessous, de 10 à 50 triangles
 });
 
 it('les lanternes des petites constructions s’allument la nuit (leurs vitres dans le feu), pas celles d’une île fermée', () => {
-  const cubes = monde();
   const avecLanterne = PETITES_CONSTRUCTIONS_DESSINEES.filter((id) => casesDeLaPetiteConstruction(id)!.some((c) => c.block === BLOC.lanterne));
-  expect(avecLanterne).toHaveLength(4);
+  // Quatre au 6e ; au 5e, l'écritoire de Vélin, le coffre de Sillon et la balise de Frimas.
+  expect(avecLanterne).toHaveLength(7);
   for (const id of PETITES_CONSTRUCTIONS_DESSINEES) {
-    const m = petitesConstructionsDessinees('6e', cubes, ileDe(id)).find((d) => d.id === id)!;
+    const a = archipelDe(id);
+    const m = petitesConstructionsDessinees(a, mondeDe(a), ileDe(id)).find((d) => d.id === id)!;
     expect(nTri(m.fire), id).toBe(avecLanterne.includes(id) ? 8 : 0);
   }
-  const fermee = cubes.map((c) => (c.petiteConstruction ? { ...c, muted: true } : c));
-  for (const m of petitesConstructionsDessinees('6e', fermee, null)) expect(nTri(m.fire), m.id).toBe(0);
+  for (const a of ['6e', '5e'] as const) {
+    const fermee = mondeDe(a).map((c) => (c.petiteConstruction ? { ...c, muted: true } : c));
+    for (const m of petitesConstructionsDessinees(a, fermee, null)) expect(nTri(m.fire), m.id).toBe(0);
+  }
 });

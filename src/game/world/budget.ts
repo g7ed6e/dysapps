@@ -116,9 +116,18 @@ export const RENDER_BUDGET_6E = { triangles: 93_610, drawCalls: RENDER_BUDGET.dr
  */
 export const RENDER_BUDGET_AUTRES = { triangles: 97_455, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
+/**
+ * Les Îles Brumeuses (5e) quittent `RENDER_BUDGET_AUTRES` le 11 octobre 2026 avec leurs objets dessinés (la piste 3
+ * « hybride » au 5e, le mainteneur autorisant les hausses nécessaires) : `RENDER_BUDGET_AUTRES` (97 455, la Nef et Kéo
+ * compris) plus la hausse mesurée de leurs enveloppes. Le lot 1 (les pièces de cour, les trophées, le quai, les lieux en
+ * pierre, dix petites constructions et six cœurs) : la somme des enveloppes 97 160 → 101 835 (+4 675), le plafond
+ * 102 130. Le 4e et le 3e gardent `RENDER_BUDGET_AUTRES`.
+ */
+export const RENDER_BUDGET_5E = { triangles: 102_130, drawCalls: RENDER_BUDGET.drawCalls } as const;
+
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
-  return a === '6e' ? RENDER_BUDGET_6E : RENDER_BUDGET_AUTRES;
+  return a === '6e' ? RENDER_BUDGET_6E : a === '5e' ? RENDER_BUDGET_5E : RENDER_BUDGET_AUTRES;
 }
 
 /**
@@ -402,12 +411,16 @@ export const ENVELOPPES: Record<
   // 2026) : 16 585 → 16 576 tout construit aux Anciens Ateliers, 16 833 → 16 824 au pire de la salle des trophées ; aux
   // Îles du Ciel, 16 797 et 17 045, inchangés (la réserve d'une île sans modèle, 3 000 de près et 200 de loin, tient
   // déjà le pire) : aucune enveloppe ne bouge.
+  // Le lot 1 des objets du 5e (11 octobre 2026, même autorisation que le 6e) : les pièces communes de ses quatorze
+  // cours, les trophées et le quai, les trois lieux de l'île-école en pierre (de près), le cœur de six îles
+  // (./objects/heartDecor5e.ts). Mesuré tout construit (`npm run rendu:budget`) : 15 879 → 19 697, 20 457 au pire de la
+  // salle ; l'enveloppe des Îles Brumeuses 16 200 → 20 500 ; aucun appel de plus.
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
     premiersRivages: { triangles: 22_000, drawCalls: 3 },
     autres: { triangles: 16_950, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 16_200, drawCalls: 3 }, '3e': { triangles: 17_100, drawCalls: 3 } },
+    parArchipel: { '5e': { triangles: 20_500, drawCalls: 3 }, '3e': { triangles: 17_100, drawCalls: 3 } },
   },
   // Les quêtes des habitants (GD-10, PR 1) : les trois objets posés à la fin des quêtes du 6e (la lanterne, le portillon,
   // l'escalier) sont des petites constructions, comptées dans ce poste (`toutConstruitAvecLesCommandes`) : 758 triangles
@@ -422,13 +435,15 @@ export const ENVELOPPES: Record<
   // 1 100 ; aucun appel de plus. Le lot 1 des objets du 6e (./objects/, 11 octobre 2026) : les dix-neuf petites
   // constructions dessinées, les huit objets à silhouette de loin (20 à 52 triangles) et le plus cher de près (le puits,
   // 264 de plus), les onze autres en pièces communes (42 à 180) ; mesuré : 1 066 → 1 468 ; l'enveloppe 1 100 → 1 500 ;
-  // aucun appel de plus.
+  // aucun appel de plus. Le lot 1 des objets du 5e (11 octobre 2026) : dix petites constructions en pièces communes
+  // (de 48 à 116 triangles, les mêmes de près et de loin) ; mesuré : 540 → 910 ; l'enveloppe des Îles Brumeuses 545 →
+  // 920 ; aucun appel de plus.
   commandes: {
     lot: 'GD-7',
     nom: 'Commandes et quêtes (les petites constructions posées, dans le sol et la construction, sans appel de plus)',
     premiersRivages: { triangles: 1_500, drawCalls: 0 },
     autres: { triangles: 500, drawCalls: 0 },
-    parArchipel: { '5e': { triangles: 545, drawCalls: 0 } },
+    parArchipel: { '5e': { triangles: 920, drawCalls: 0 } },
   },
   // Le lot de contenu des programmes 2025-2026 (une mission de plus à la Forge et au Cabinet de 4e, et à l'Observatoire
   // de 3e, une de moins au Glacier de 5e) : relevé aux mesures tout construit, comme pour SC-3, confirmé par le

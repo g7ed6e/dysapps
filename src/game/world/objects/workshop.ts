@@ -173,6 +173,18 @@ export class Workshop {
   }
 
   /**
+   * Un coin (le pupitre d'un copiste, l'écritoire) : une boîte de (x0, y0) à (x1, y1), sans dessous, dont le dessus monte
+   * de `zFront` devant (y0) à `zBack` au fond (y1). 10 triangles.
+   */
+  wedge(x0: number, x1: number, y0: number, y1: number, z0: number, zFront: number, zBack: number, t: Tint): void {
+    const c: V3 = [(x0 + x1) / 2, (y0 + y1) / 2, z0 + (Math.min(zFront, zBack) - z0) / 2];
+    this.quad([x0, y0, zFront], [x1, y0, zFront], [x1, y1, zBack], [x0, y1, zBack], c, t);
+    this.quad([x0, y0, z0], [x1, y0, z0], [x1, y0, zFront], [x0, y0, zFront], c, t);
+    this.quad([x0, y1, z0], [x1, y1, z0], [x1, y1, zBack], [x0, y1, zBack], c, t);
+    for (const x of [x0, x1]) this.quad([x, y0, z0], [x, y1, z0], [x, y1, zBack], [x, y0, zFront], c, t);
+  }
+
+  /**
    * Une poutre de section carrée `side` de `a` à `b` (penchée, couchée ou debout) : ses quatre flancs, ses bouts si
    * `ends`. 8 triangles (12 avec les bouts).
    */

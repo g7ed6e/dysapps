@@ -608,9 +608,12 @@ describe('Les toits de terre cuite (lot R5)', () => {
       // à allumer.
       const pleins = new Set(cubes.filter((c) => !c.ghost).map((c) => cle(c.x, c.y, c.z)));
       const enferme = (c: VoxelCube) => [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0]].every(([dx, dy, dz]) => pleins.has(cle(c.x + dx, c.y + dy, c.z + dz)));
-      // Les vitres d'un bloc qu'un modèle remplace (au 6e, l'école dessinée, world/objects/villagePlaces.ts) sont dans son feu.
+      // Les vitres d'un bloc qu'un modèle remplace (au 6e et au 5e, l'école dessinée, world/objects/villagePlaces.ts) sont
+      // dans son feu ; une lanterne qu'un modèle remplace (au 5e, la bougie éteinte de la tour du Manoir, un objet du cœur)
+      // ne compte plus parmi celles de sa cour : l'oracle se lit sans les cases des modèles, comme la 3D.
       const parUnModele = new Set((m.monuments ?? []).flatMap((q) => q.cellules.map((c) => cle(c.x, c.y, c.z))));
-      const allumesOracle = new Set([...f].filter(([c, v]) => v.decalage >= 0 && !(v.genre === 'lueur' && enferme(c)) && !parUnModele.has(cle(c.x, c.y, c.z))).map(([c]) => cle(c.x, c.y, c.z)));
+      const sansModeles = parUnModele.size ? fenetresDe(cubes.filter((c) => !parUnModele.has(cle(c.x, c.y, c.z)))) : f;
+      const allumesOracle = new Set([...sansModeles].filter(([c, v]) => v.decalage >= 0 && !(v.genre === 'lueur' && enferme(c))).map(([c]) => cle(c.x, c.y, c.z)));
       expect(allumes3D, a).toEqual(allumesOracle);
       expect(m.opaque.aretes.length, a).toBe(m.opaque.positions.length / 3);
     }

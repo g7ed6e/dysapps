@@ -36,7 +36,12 @@ import { etapesDe } from '../../construction/buildings';
 import type { VoxelCube } from '../../cube';
 import type { IdDePiece } from '../choices';
 import { bedWhenAlone, FINISHES, piecesSurPilotis, postsOf, villagePlaces } from './shared';
+import { yardPiecesOf } from '../yardPieces';
 import type { Kit } from './types';
+
+// Les pièces communes de la cour (../yardPieces.ts), comme au 6e depuis le lot 1 des objets du 5e (11 octobre 2026) :
+// la barrière, la marche et la lanterne sur poteau de toutes les cours des Îles Brumeuses.
+const YARD = yardPiecesOf('5e', FINISHES);
 
 /** Le kiosque à musique (world/monuments.ts) : son toit en damier de toile et de tuile, peint à plat. */
 const KIOSQUE = 'monument:landmark-5e-2';
@@ -122,11 +127,27 @@ export const KIT_5E: Kit = {
     paille: 0xe8c66f,
     masonry: 0x7d8a86,
     snow: 0xb3c1c7,
+    // Les pièces de la cour et des objets dessinés (intention du directeur artistique du 11 octobre 2026) : le poteau et
+    // les lisses de la barrière, la pierre sombre du phare (le pied de la lanterne, les côtés de la marche), la dalle, le
+    // fer et l'ardoise de l'île (le toit de la lanterne), ses vitres (allumées la nuit, sans clignoter).
+    yardPost: 0x6e4c30,
+    yardRail: 0x795643,
+    yardStone: 0x66726f,
+    yardSlab: 0xcfc6b4,
+    lanternFrame: 0x3a2a22,
+    lanternRoof: 0x224c5f,
+    lanternGlass: 0xe8c877,
   },
   murs: { colombage: 'colombage', bardage: 'bardage', pierre: 'plein', metal: 'tole', toile: 'cloth', verre: 'glazing' },
   bardes: [],
   pieces: { toit: piecesDeToit(), colombage: piecesSurPilotis(), pierre: { [PIECE_SEULE_ET_BASSE]: bacDePierre() } },
-  finitions: FINISHES,
+  // La barrière en poteaux et lisses, la marche et la lanterne : dans les cours, les pièces communes (`YARD`).
+  finitions: YARD.finitions,
+  yardLantern: YARD.lanterne,
+  // Les objets dessinés (la piste 3 « hybride » au 5e, 11 octobre 2026 : world/fixtureModels.ts, world/objects/) : les
+  // petites constructions posées, le bloc d'or des Gardiens rallumés, les objets du quai, le décor du cœur et les trois
+  // lieux de l'île-école, comme au 6e.
+  objetsDessines: true,
   // La rizière seule au sol (rien dessus, au pied : la cour du moulin du Delta) : une plate-bande (./shared.ts).
   byMaterial: { bambou: () => 'verticalBoards', riziere: bedWhenAlone, enluminure, tourbe },
   tilesInWalls: tileInWall,

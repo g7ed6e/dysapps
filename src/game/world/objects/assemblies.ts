@@ -1,14 +1,19 @@
-// Les petites constructions du 6e d'Archipéo faites des pièces communes (piste 3 « hybride » du directeur artistique,
-// choisie par le mainteneur le 11 octobre 2026) : les commandes simples (le potager de Mousso, le bac à eau de
+// Les petites constructions d'Archipéo faites des pièces communes (piste 3 « hybride » du directeur artistique,
+// choisie par le mainteneur le 11 octobre 2026) : au 6e, les commandes simples (le potager de Mousso, le bac à eau de
 // Bloquette, le poteau-lanterne de Grimoire, la vitrine de Tick, la placette de Boussole, l'étagère à flacons de Bulle,
 // l'établi de Pince, l'urne de Voix) et les objets des quêtes d'entraide (la lanterne de Mousso, le portillon de
-// Bloquette, l'escalier de Grimoire). Chacune pose, sur les cases de sa forme (world/fixtures.ts), la pièce qui leur
+// Bloquette, l'escalier de Grimoire) ; puis au 5e (11 octobre 2026, intention du directeur artistique) l'étagère de
+// Bazar, l'abri de Kroa, la glacière de Pudding, la serre de Moustache (la vitrine de Tick), l'écritoire de Vélin, le
+// coffre à graines de Sillon, le composteur d'Humus, le filtre de Perle (l'établi de Pince), la table ronde de Mie et la
+// balise de Frimas (le poteau-lanterne de Grimoire). Chacune pose, sur les cases de sa forme (world/fixtures.ts), la pièce qui leur
 // va : la caisse, la dalle, le plateau sur pieds, le petit toit, le bassin, la marche, et la barrière et la lanterne sur
 // poteau des cours (./pieces.ts). La matière du bloc livré est sur la plus grande face de l'objet, dans les couleurs
 // mêmes du bloc (règle GD-7). La même dessinée de près et de loin (une pièce coûte moins de 120 triangles). Code pur,
 // sans Three.js.
-import { BLOC } from '../../biomes';
-import { basin, crate, OBJECT_COLORS as C, slab, flask, postLantern, stoneStep, tableOnLegs, fencePost } from './pieces';
+import { BLOC, type BlockId } from '../../biomes';
+import type { Faces } from '../palette';
+import { darker, type Tint, type Workshop } from './workshop';
+import { basin, crate, OBJECT_COLORS as C, slab, flask, postLantern, stoneStep, tableOnLegs, fencePost, heap, lectern, pebble, type Paint } from './pieces';
 import type { ObjectDrawing } from './silhouettes';
 
 /**
@@ -68,32 +73,73 @@ const waterTrough: ObjectDrawing = (at, pe) => {
   at.block(2, 0.5, 0.12, 0.12, 1.02, 1.48, pe.color(C.iron), {});
 };
 
+/** Un poteau-lanterne : son socle, une marche ou un pied, son pilier, et la tête de lanterne des cours sur sa case. */
+interface LanternPostShape {
+  /** Le socle, de (x0, y0) à (x1, y1), haut de `h`, dans la matière livrée (son grand dessus). */
+  socle: { x0: number; x1: number; y0: number; y1: number; h: number; block: BlockId };
+  /** Ce qui est posé sur le socle à côté du pilier (une marche), ou à son pied : centre, côtés, haut, teinte. */
+  step: { cx: number; cy: number; lx: number; ly: number; z1: number; tint: (pe: Paint) => Tint };
+  /** Le pilier : son centre, son côté, son pied et sa matière, jusqu'à la tête de lanterne (dans la case `head`, en z = 2). */
+  pillar: { cx: number; cy: number; side: number; z0: number; block: BlockId };
+  head: readonly [number, number];
+}
+
+/** Un poteau-lanterne, d'après sa forme (ses vitres allumées la nuit). */
+const lanternPostOf =
+  (o: LanternPostShape): ObjectDrawing =>
+  (at, pe) => {
+    const { socle: s, step, pillar: p } = o;
+    slab(at, s.x0, s.x1, s.y0, s.y1, 0, s.h, pe.block(s.block));
+    at.block(step.cx, step.cy, step.lx, step.ly, s.h, step.z1, step.tint(pe));
+    at.block(p.cx, p.cy, p.side, p.side, p.z0, 2, pe.block(p.block), { bottom: true });
+    postLantern(at, pe, o.head[0], o.head[1], null, 2);
+  };
+
 /**
  * Le poteau-lanterne de Grimoire : un socle d'obsidienne livrée (son grand dessus), une marche d'obsidienne sur la case
  * d'à côté, le pilier d'obsidienne, la tête de lanterne des cours (ses vitres allumées la nuit).
  */
-const lanternPost: ObjectDrawing = (at, pe) => {
-  const obsidian = pe.block(BLOC.obsidienne);
-  slab(at, 0.06, 1.94, 0.1, 0.9, 0, 0.3, obsidian);
-  at.block(1.5, 0.5, 0.7, 0.62, 0.3, 0.6, obsidian);
-  at.block(0.5, 0.5, 0.4, 0.4, 0.3, 2, obsidian, { bottom: true });
-  postLantern(at, pe, 0, 0, null, 2);
-};
+const lanternPost = lanternPostOf({
+  socle: { x0: 0.06, x1: 1.94, y0: 0.1, y1: 0.9, h: 0.3, block: BLOC.obsidienne },
+  step: { cx: 1.5, cy: 0.5, lx: 0.7, ly: 0.62, z1: 0.6, tint: (pe) => pe.block(BLOC.obsidienne) },
+  pillar: { cx: 0.5, cy: 0.5, side: 0.4, z0: 0.3, block: BLOC.obsidienne },
+  head: [0, 0],
+});
 
 /**
- * La vitrine de Tick : le soubassement de bois (les portes de sa forme) et sa tablette, la vitrine de verre livré (ses
- * trois grandes faces) entre quatre montants, le petit toit dans la couverture de l'île, ses pignons crème.
+ * La balise de Frimas (le poteau-lanterne de Grimoire, intention du directeur artistique du 11 octobre 2026) : le socle
+ * carré de panneau livré (son grand dessus), le pied de pierre sombre au coin du fond, le pilier de glace, la tête de
+ * lanterne des cours, son toit d'ardoise de l'île (ses vitres allumées la nuit).
  */
-const displayCase: ObjectDrawing = (at, pe) => {
-  const door = pe.material('porte');
-  const glass = pe.block(BLOC.verre);
-  at.box(0.05, 2.95, 0.1, 0.9, 0, 0.84, door, { bottom: true, top: true });
-  at.box(0, 3, 0.05, 0.95, 0.84, 0.95, { dessus: door.dessus, cote: door.dessus }, {});
-  at.box(0.12, 2.88, 0.2, 0.8, 0.95, 1.9, glass, { bottom: true, top: true });
-  const upright = pe.color(C.wood);
-  for (const x of [0.12, 1.04, 1.96, 2.88]) at.block(x, 0.5, 0.1, 0.64, 0.95, 1.9, upright, { bottom: true, top: true });
-  at.roof(0, 3, 0.05, 0.95, 1.9, 2.42, 'x', 0.08, pe.roof(), { tint: pe.color(C.cream), zFoot: 1.9 });
-};
+const beacon = lanternPostOf({
+  socle: { x0: 0.06, x1: 1.94, y0: 0.06, y1: 1.94, h: 0.42, block: BLOC.panneau },
+  step: { cx: 1.5, cy: 1.5, lx: 0.52, ly: 0.52, z1: 0.64, tint: (pe) => pe.role('yardStone') },
+  pillar: { cx: 1.5, cy: 1.5, side: 0.36, z0: 0.64, block: BLOC.glace },
+  head: [1, 1],
+});
+
+/**
+ * Une vitrine de `n` cases : le soubassement de bois (les portes de sa forme) et sa tablette, la vitrine du verre livré
+ * (`glass` : ses grandes faces) entre ses montants, le petit toit dans la couverture de l'île, ses pignons crème.
+ */
+const displayCaseOf =
+  (n: number, glass: BlockId, uprights: readonly number[]): ObjectDrawing =>
+  (at, pe) => {
+    const door = pe.material('porte');
+    const pane = pe.block(glass);
+    at.box(0.05, n - 0.05, 0.1, 0.9, 0, 0.84, door, { bottom: true, top: true });
+    at.box(0, n, 0.05, 0.95, 0.84, 0.95, { dessus: door.dessus, cote: door.dessus }, {});
+    at.box(0.12, n - 0.12, 0.2, 0.8, 0.95, 1.9, pane, { bottom: true, top: true });
+    const upright = pe.color(C.wood);
+    for (const x of uprights) at.block(x, 0.5, 0.1, 0.64, 0.95, 1.9, upright, { bottom: true, top: true });
+    at.roof(0, n, 0.05, 0.95, 1.9, 2.42, 'x', 0.08, pe.roof(), { tint: pe.color(C.cream), zFoot: 1.9 });
+  };
+
+/** La vitrine de Tick : trois cases de verre, quatre montants. */
+const displayCase = displayCaseOf(3, BLOC.verre, [0.12, 1.04, 1.96, 2.88]);
+
+/** La serre de Moustache : la vitrine de Tick sur deux cases, ses vitres du vitrail livré, trois montants. */
+const greenhouse = displayCaseOf(2, BLOC.vitrail, [0.12, 1, 1.88]);
 
 /**
  * La placette de Boussole : une dalle basse de quatre cases, pavée de seize carreaux de mosaïque livrée en damier de ses
@@ -130,6 +176,16 @@ const shelf: ObjectDrawing = (at, pe) => {
   postLantern(at, pe, 1, 0, null, 0.86);
 };
 
+/** Un plateau de trois cases sur deux pieds de barrière et leur entretoise (l'établi de Pince, le filtre de Perle). */
+function benchOnPosts(at: Workshop, pe: Paint, top: Tint, zHigh: number, thick: number): void {
+  const foot = pe.role('yardPost');
+  tableOnLegs(at, 0.03, 2.97, 0.1, 0.9, zHigh, thick, top, [
+    [0.5, 0.5],
+    [2.5, 0.5],
+  ], 0.24, foot);
+  at.box(0.62, 2.38, 0.44, 0.56, 0.3, 0.42, foot, { bottom: false, px: true, nx: true });
+}
+
 /**
  * L'établi de Pince : le plateau de carton sur ses deux pieds de barrière et leur entretoise, la barre d'aimant livré
  * posée dessus (sa grande face devant, ses joints de tôle).
@@ -137,12 +193,7 @@ const shelf: ObjectDrawing = (at, pe) => {
 const workbench: ObjectDrawing = (at, pe) => {
   const cardboard = pe.block(BLOC.carton);
   const magnet = pe.block(BLOC.aimant);
-  const foot = pe.role('yardPost');
-  tableOnLegs(at, 0.03, 2.97, 0.1, 0.9, 1, 0.22, cardboard, [
-    [0.5, 0.5],
-    [2.5, 0.5],
-  ], 0.24, foot);
-  at.box(0.62, 2.38, 0.44, 0.56, 0.3, 0.42, foot, { bottom: false, px: true, nx: true });
+  benchOnPosts(at, pe, cardboard, 1, 0.22);
   at.box(0.12, 2.88, 0.22, 0.78, 1, 1.5, magnet);
   const joint = pe.role('joint');
   for (const x of [0.8, 1.5, 2.2]) at.quad([x - 0.02, 0.215, 1.03], [x + 0.02, 0.215, 1.03], [x + 0.02, 0.215, 1.47], [x - 0.02, 0.215, 1.47], [x, 0.5, 1.25], joint);
@@ -206,7 +257,115 @@ const stairs: ObjectDrawing = (at, pe) => {
   }
 };
 
-/** Les petites constructions du 6e faites de pièces communes, par identifiant (world/fixtures.ts), et leur dessin. */
+// ---------- Le 5e (piste 3 « hybride », 11 octobre 2026) ----------
+
+/**
+ * L'étagère de Bazar : la marche de panneau livré devant (son grand dessus et sa face), l'étagère de bois au fond, ses
+ * deux joues, sa tablette et son dessus, trois rouleaux de toile couchés (deux en bas, un sur la tablette).
+ */
+const clothShelf: ObjectDrawing = (at, pe) => {
+  const sign = pe.block(BLOC.panneau);
+  const cloth = pe.block(BLOC.toile);
+  const wood = pe.role('yardPost');
+  crate(at, 0.04, 2.96, 0.08, 0.94, 0, 0.62, sign, { dessus: sign.dessus, cote: darker(sign).cote });
+  for (const x of [0.13, 2.87]) at.block(x, 1.5, 0.18, 0.86, 0, 1.9, wood);
+  at.box(0.22, 2.78, 1.1, 1.9, 0.9, 1.06, wood, {});
+  at.box(0.04, 2.96, 1.06, 1.94, 1.9, 2.06, wood, {});
+  for (const y of [1.3, 1.7]) at.roller('x', 0.22, 2.78, y, 0.24, 0.2, 6, cloth);
+  at.roller('x', 0.22, 2.78, 1.5, 1.32, 0.24, 6, cloth);
+};
+
+/**
+ * L'abri de Kroa : deux poteaux au fond, leur pied de barrière sur une dalle, leur haut de tourbe ; le toit de toile
+ * livrée à deux pans (ses grands pans), son faîte de tourbe.
+ */
+const shelter: ObjectDrawing = (at, pe) => {
+  const cloth = pe.block(BLOC.toile);
+  const peat = pe.block(BLOC.tourbe);
+  for (const x of [0.5, 2.5]) {
+    at.block(x, 1.5, 0.4, 0.4, 0, 0.16, { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') });
+    at.block(x, 1.5, 0.24, 0.24, 0.16, 1, pe.role('yardPost'), { bottom: true, top: true });
+    at.block(x, 1.5, 0.34, 0.34, 1, 2.1, peat, { bottom: true, top: true });
+  }
+  at.roof(0, 3, 0.02, 1.98, 1.9, 2.5, 'x', 0.1, cloth);
+  at.box(0, 3, 0.86, 1.14, 2.44, 2.6, peat, {});
+};
+
+/**
+ * La glacière de Pudding : le coffre de glace livrée (ses grandes faces), deux cerclages de fer, le couvercle de tuile
+ * posé dessus en nappe épaisse, sa poignée de fer.
+ */
+const icebox: ObjectDrawing = (at, pe) => {
+  const ice = pe.block(BLOC.glace);
+  const iron = pe.color(C.iron);
+  at.box(0.06, 2.94, 0.1, 0.9, 0, 0.86, ice, { bottom: true, top: true });
+  for (const x of [0.7, 2.3]) at.box(x - 0.08, x + 0.08, 0.085, 0.915, 0.06, 0.86, iron, { bottom: true, top: true });
+  at.box(0.02, 2.98, 0.06, 0.94, 0.86, 1.02, pe.block(BLOC.tuile), {});
+  at.box(1.3, 1.7, 0.42, 0.58, 1.02, 1.17, iron, {});
+};
+
+/**
+ * L'écritoire de Vélin : le pied de tourbe livrée (sa grande face devant) et sa tablette, le pupitre d'enluminure en
+ * pente et son livre, la tête de lanterne des cours sur le bout (ses vitres allumées la nuit).
+ */
+const writingDesk: ObjectDrawing = (at, pe) => {
+  const peat = pe.block(BLOC.tourbe);
+  at.box(0.05, 2.95, 0.12, 0.88, 0, 0.9, peat, { bottom: true, top: true });
+  at.box(0.02, 2.98, 0.08, 0.92, 0.9, 1, { dessus: peat.dessus, cote: darker(peat).cote }, {});
+  lectern(at, pe, 1.1, 1.9, 0.2, 0.8, 1, pe.block(BLOC.enluminure));
+  postLantern(at, pe, 2, 0, null, 1);
+};
+
+/**
+ * Le coffre à graines de Sillon : le coffre d'enluminure livrée (ses grandes faces), son couvercle débordant, deux
+ * pentures de fer devant, la tête de lanterne des cours posée sur le coin du fond (ses vitres allumées la nuit).
+ */
+const seedChest: ObjectDrawing = (at, pe) => {
+  const vellum = pe.block(BLOC.enluminure);
+  crate(at, 0.06, 1.94, 0.06, 1.94, 0, 0.82, vellum, { dessus: vellum.dessus, cote: darker(vellum, 0.8).cote });
+  const iron = pe.color(C.iron);
+  for (const x of [0.5, 1.5]) at.quad([x - 0.08, 0.054, 0.05], [x + 0.08, 0.054, 0.05], [x + 0.08, 0.054, 0.68], [x - 0.08, 0.054, 0.68], [x, 1, 0.4], iron);
+  postLantern(at, pe, 1, 1, null, 0.82);
+};
+
+/**
+ * Le composteur d'Humus : trois parois de bambou livré (leurs grandes faces), en U ouvert vers l'avant, le tas de
+ * terre dedans, le poteau de barrière des cours derrière.
+ */
+const compostBin: ObjectDrawing = (at, pe) => {
+  const bamboo = pe.block(BLOC.bambou);
+  const h = 0.92;
+  at.box(0.3, 0.56, 0.1, 1.7, 0, h, bamboo);
+  at.box(2.44, 2.7, 0.1, 1.7, 0, h, bamboo);
+  at.box(0.56, 2.44, 1.44, 1.7, 0, h, bamboo, { bottom: true, px: true, nx: true });
+  heap(at, 1.5, 0.8, 0, 0.62, 0.6, pe.material('terre'), 6);
+  fencePost(at, pe, 1, 2, 0);
+};
+
+/**
+ * Le filtre de Perle (l'établi de Pince) : le plateau épais de strates livrées (ses grandes faces) sur ses deux pieds de
+ * barrière, sa strate du milieu plus sombre, l'eau qui filtre en nappe dessus.
+ */
+const filterBench: ObjectDrawing = (at, pe) => {
+  const strata = pe.block(BLOC.strate);
+  benchOnPosts(at, pe, strata, 1.8, 0.8);
+  at.box(0.025, 2.975, 0.095, 0.905, 1.26, 1.52, darker(strata, 0.78), { bottom: true, top: true });
+  at.box(0.3, 2.7, 0.25, 0.75, 1.8, 1.83, pe.color(C.water), { bottom: true });
+};
+
+/**
+ * La table ronde de Mie : le pied de pierre, le fût de bois, le plateau à huit pans de rizière livrée (son grand dessus),
+ * deux sacs de farine posés dessus. Aucun symbole.
+ */
+const roundTable: ObjectDrawing = (at, pe) => {
+  at.prism(1.5, 1.5, 0.42, 0.36, 0, 0.16, 8, { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') });
+  at.prism(1.5, 1.5, 0.17, 0.17, 0.16, 0.86, 8, pe.role('yardPost'), Math.PI / 8, true);
+  at.prism(1.5, 1.5, 1.42, 1.42, 0.86, 1.06, 8, pe.block(BLOC.riziere), Math.PI / 8);
+  const flour: Faces = pe.block(BLOC.farine);
+  for (const y of [0.62, 2.38]) pebble(at, 1.5, y, 1.06, 0.26, 0.4, flour, 6);
+};
+
+/** Les petites constructions faites de pièces communes, par identifiant (world/fixtures.ts), et leur dessin (au 6e et au 5e). */
 export const ASSEMBLIES: Readonly<Record<string, ObjectDrawing>> = {
   'french-6e-phonology-fixture-1': vegetablePatch,
   'french-6e-grammar-spelling-fixture-1': waterTrough,
@@ -219,4 +378,15 @@ export const ASSEMBLIES: Readonly<Record<string, ObjectDrawing>> = {
   'french-6e-phonology-fixture-2': moussoLantern,
   'french-6e-grammar-spelling-fixture-2': wicket,
   'french-6e-reading-fixture-2': stairs,
+  // Le 5e.
+  'maths-5e-proportionality-fixture-1': clothShelf,
+  'french-5e-conjugation-fixture-1': shelter,
+  'english-5e-vocabulary-fixture-1': icebox,
+  'english-5e-grammar-fixture-1': greenhouse,
+  'history-5e-middle-ages-fixture-1': writingDesk,
+  'geography-5e-resources-fixture-1': seedChest,
+  'life-earth-sciences-5e-active-planet-fixture-1': compostBin,
+  'physics-chemistry-5e-matter-universe-fixture-1': filterBench,
+  'civics-5e-equality-solidarity-fixture-1': roundTable,
+  'maths-5e-signed-numbers-fixture-2': beacon,
 };
