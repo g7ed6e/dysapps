@@ -60,6 +60,7 @@ import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, PHARE_DU_LARGE, phareDuLar
 import { getImportedMonuments, type ImportedMonument, monumentsVersion } from './monumentModels';
 import { buildingsVersion, getImportedBuildings } from './buildingModels';
 import { petitesConstructionsDessinees } from './fixtureModels';
+import { objetsDuQuaiDessines, tropheesDessines } from './objects/inTheWorld';
 import type { BiomeId } from '../biomes';
 import { estUnePlaceDeTrophee } from './trophyHall';
 import { mixColor } from './daylight';
@@ -348,9 +349,13 @@ export function maillageDeLaConstruction(
   const ponts = options.navire ? null : pontsDePierreEtDeBois(cubes);
   // Les monuments et les bâtiments importés (./monumentModels.ts, ./buildingModels.ts), chargés : l'étape du chantier
   // remplace les cubes posés.
-  // Les petites constructions qu'Archipéo dessine en modèle propre (./fixtureModels.ts : le puits de Tunel), posées :
-  // comme un modèle importé, elles remplacent leurs cubes.
-  const imported = options.navire ? [] : [...modelesImportes(cubes, options.pres), ...petitesConstructionsDessinees(a, cubes, options.pres)];
+  // Les objets que le kit d'Archipéo dessine (`Kit.objetsDessines`, lot 1 du 6e de la piste 3) : les petites
+  // constructions posées (./fixtureModels.ts), le bloc d'or des Gardiens rallumés et les objets du quai
+  // (./objects/inTheWorld.ts) ; comme un modèle importé, ils remplacent leurs cubes.
+  const objets = !options.navire && (options.kit ?? KITS[a]).objetsDessines;
+  const imported = options.navire
+    ? []
+    : [...modelesImportes(cubes, options.pres), ...(objets ? [...petitesConstructionsDessinees(a, cubes, options.pres), ...tropheesDessines(a, cubes), ...objetsDuQuaiDessines(a, cubes)] : [])];
   const importedCells = new Set(imported.flatMap((m) => [...m.replaced]));
   // Le phare du large du 5e : ses pièces finies laissent la place à son modèle (./offshoreLighthouse.ts), sauf s'il est importé.
   const large = options.navire || imported.some((m) => m.id === PHARE_DU_LARGE) ? null : phareDuLarge(cubes);

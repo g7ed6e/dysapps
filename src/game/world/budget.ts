@@ -67,9 +67,12 @@ export const RENDER_BUDGET = {
  * 86 850 pour les trois essais de la piste 3 « hybride » (choisie par le mainteneur le 11 octobre 2026, qui autorise à
  * relever « quand c'est nécessaire ») : les pièces communes de toutes les cours (./architecture/yardPieces.ts) et le
  * puits de Tunel dessiné (./fixtureModels.ts) ; la construction passe de 16 500 à 18 050, les commandes de 850 à 1 100,
- * la somme des enveloppes de 85 040 à 86 840.
+ * la somme des enveloppes de 85 040 à 86 840. Puis à 87 900 pour le lot 1 des objets du 6e (11 octobre 2026, même
+ * autorisation : le style des essais validé, « Top le style ») : les dix-neuf petites constructions dessinées
+ * (./objects/), le trophée des Gardiens rallumés et les objets du quai ; la construction passe de 18 050 à 18 700, les
+ * commandes de 1 100 à 1 500, la somme des enveloppes de 86 840 à 87 890.
  */
-export const RENDER_BUDGET_6E = { triangles: 86_850, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_6E = { triangles: 87_900, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
  * Les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
@@ -373,11 +376,15 @@ export const ENVELOPPES: Record<
   // 2026 ; le mainteneur autorise à relever « quand c'est nécessaire ») : la barrière à deux lisses et poteaux trapus, la
   // lanterne sur poteau (sa tête de fer et d'ardoise, ses vitres) et la marche de pierre à deux degrés, dans les seize
   // cours. Mesuré tout construit (`npm run rendu:budget`, 11 octobre 2026) : 16 220 → 17 768 aux Premiers Rivages ;
-  // l'enveloppe 16 500 → 18 050 ; aucun appel de plus.
+  // l'enveloppe 16 500 → 18 050 ; aucun appel de plus. Le lot 1 des objets du 6e (./objects/inTheWorld.ts, 11 octobre
+  // 2026) : le bloc d'or des seize Gardiens rallumés en trophée (socle de pierre taillé, lingot d'or facetté, 46
+  // triangles chacun, à la place de deux cubes peints) et les objets du quai en pièces communes (deux barques de 85, trois
+  // caisses, deux fanions, le foyer) ; les lisses des cours fermées au bord de leur case (ôtées par l'assemblage contre
+  // la lisse voisine). Mesuré tout construit : 17 768 → 18 384 ; l'enveloppe 18 050 → 18 700 ; aucun appel de plus.
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
-    premiersRivages: { triangles: 18_050, drawCalls: 3 },
+    premiersRivages: { triangles: 18_700, drawCalls: 3 },
     autres: { triangles: 16_950, drawCalls: 3 },
     parArchipel: { '5e': { triangles: 16_200, drawCalls: 3 } },
   },
@@ -391,11 +398,14 @@ export const ENVELOPPES: Record<
   // Le puits de Tunel dessiné (./fixtureModels.ts, premier essai de la piste 3 « hybride », 11 octobre 2026) : de loin
   // 48 triangles, de près (l'île où se trouve l'élève) un peu plus de 300, à la place de ses dix cubes et de son eau.
   // Mesuré toutes commandes livrées, de près (`commandesCost`) : 838 → 1 066 aux Premiers Rivages ; l'enveloppe 850 →
-  // 1 100 ; aucun appel de plus.
+  // 1 100 ; aucun appel de plus. Le lot 1 des objets du 6e (./objects/, 11 octobre 2026) : les dix-neuf petites
+  // constructions dessinées, les huit objets à silhouette de loin (20 à 52 triangles) et le plus cher de près (le puits,
+  // 264 de plus), les onze autres en pièces communes (42 à 180) ; mesuré : 1 066 → 1 468 ; l'enveloppe 1 100 → 1 500 ;
+  // aucun appel de plus.
   commandes: {
     lot: 'GD-7',
     nom: 'Commandes et quêtes (les petites constructions posées, dans le sol et la construction, sans appel de plus)',
-    premiersRivages: { triangles: 1_100, drawCalls: 0 },
+    premiersRivages: { triangles: 1_500, drawCalls: 0 },
     autres: { triangles: 500, drawCalls: 0 },
     parArchipel: { '5e': { triangles: 545, drawCalls: 0 } },
   },
@@ -884,8 +894,8 @@ export function commandesCost(a: ArchipelagoId): { triangles: number; drawCalls:
     const construction = constructionCost(a, [], commandes);
     return { triangles: sol.triangles + construction.triangles, drawCalls: sol.drawCalls + construction.drawCalls };
   });
-  // Les petites constructions dessinées (./fixtureModels.ts, le puits de Tunel) : comptées de loin, plus l'écart de la
-  // plus chère vue de près (l'île où se trouve l'élève).
+  // Les petites constructions dessinées (./fixtureModels.ts : toutes celles du 6e) : comptées de loin, plus l'écart de
+  // la plus chère vue de près (l'île où se trouve l'élève).
   return { triangles: avec.triangles - sans.triangles + ecartDePres(a), drawCalls: avec.drawCalls - sans.drawCalls };
 }
 

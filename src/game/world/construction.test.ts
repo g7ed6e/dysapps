@@ -143,14 +143,16 @@ function rangerLesLanternes(cubes: VoxelCube[], a: ArchipelagoId = '6e') {
 }
 
 /**
- * Le triangle `i` d'un groupe est-il au phare de Grimoire, au phare du large (DA-4) ou à un pont de pierre et de bois
- * du 5e (des modèles, pas des blocs) ?
+ * Le triangle `i` d'un groupe est-il au phare de Grimoire, au phare du large (DA-4), à un pont de pierre et de bois
+ * du 5e, ou à un objet dessiné comme un modèle (le trophée d'un Gardien rallumé, un objet du quai, une petite
+ * construction : world/objects/) : des modèles, pas des blocs ?
  */
 const auPhare = (m: MaillageDeLaConstruction, groupe: 'opaque' | 'fenetres', i: number) =>
   Boolean(
     (m.phare && i >= m.phare[groupe][0] && i < m.phare[groupe][1]) ||
       (m.phareDuLarge && i >= m.phareDuLarge[groupe][0] && i < m.phareDuLarge[groupe][1]) ||
-      (groupe === 'opaque' && (m.ponts ?? []).some((p) => i >= p.opaque[0] && i < p.opaque[1])),
+      (groupe === 'opaque' && (m.ponts ?? []).some((p) => i >= p.opaque[0] && i < p.opaque[1])) ||
+      (m.monuments ?? []).some((p) => i >= p[groupe][0] && i < p[groupe][1]),
   );
 /** Les triangles des ponts de pierre et de bois du 5e (des modèles, comptés à part). */
 const auxPonts = (m: MaillageDeLaConstruction) => (m.ponts ?? []).reduce((n, p) => n + p.opaque[1] - p.opaque[0], 0);

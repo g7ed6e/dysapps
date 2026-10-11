@@ -227,9 +227,12 @@ describe('Les bâtiments importés, lus sur le disque', () => {
   it('dans la construction : il remplace les cases des deux plans, sans appel de plus ; le toucher retrouve une case du plan', () => {
     const cubes = premiersRivages([Infinity, Infinity, Infinity]).filter((c) => c.tag === FORGE && !c.sol);
     const m = maillageDeLaConstruction('6e', cubes, [], { pres: FORGE });
-    expect(m.monuments?.length).toBe(1);
     const [premier] = buildingCells(FORGE);
-    const tranche = m.monuments![0];
+    // Le bâtiment, et le trophée du Gardien rallumé de l'île (world/objects/inTheWorld.ts), dessiné lui aussi comme un modèle.
+    expect(m.monuments?.length).toBe(2);
+    const tranches = m.monuments!.filter((q) => q.cellules.some((c) => premier.has(`${c.x},${c.y},${c.z}`)));
+    expect(tranches).toHaveLength(1);
+    const [tranche] = tranches;
     expect(tranche.opaque[1] - tranche.opaque[0] + tranche.fenetres[1] - tranche.fenetres[0]).toBe(buildingTriangles(FORGE, 'final-3000.glb'));
     // Les fenêtres du bâtiment (ses lanternes en blocs) ne s'allument plus : le modèle les remplace.
     for (const [c] of fenetresDe(cubes)) expect(premier.has(`${c.x},${c.y},${c.z}`)).toBe(false);

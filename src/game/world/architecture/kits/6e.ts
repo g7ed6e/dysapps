@@ -86,6 +86,9 @@ export const KIT_6E: Kit = {
   // cours, les pièces communes (`YARD`).
   finitions: YARD.finitions,
   yardLantern: YARD.lanterne,
+  // Les objets dessinés (lot 1 de la piste 3, 11 octobre 2026 : world/fixtureModels.ts, world/objects/) : les dix-neuf
+  // petites constructions, le bloc d'or des Gardiens rallumés, les objets du quai.
+  objetsDessines: true,
   // Les lieux du village (./shared.ts) : les murs de brique et de pierre de taille de l'école, et les piliers de marbre
   // de la salle des trophées (sans décharge), en colombage.
   lieux: villagePlaces({ school: { famille: 'colombage' }, pillars: { famille: 'colombage' } }),

@@ -5,8 +5,9 @@
 // pièce (des rôles du kit : ./rooms.ts). La même pièce dans toutes les cours d'un archipel (au 6e) : elle prend la place
 // du cube de kit quand sa case est posée ; fantôme et fondu gardent leurs cubes (GD-6).
 //
-// Chaque pièce reste dans sa case (le toucher prend toute la case), sans dessous (posée), sans les bouts de lisse au bord
-// de la case (la lisse voisine les continue, l'assemblage les ôte de toute façon : ./assembly.ts). La barrière suit sa
+// Chaque pièce reste dans sa case (le toucher prend toute la case), sans dessous (posée), avec le bout de ses lisses au
+// bord de la case (la lisse voisine les continue, l'assemblage ôte les deux bouts qui se touchent : ./assembly.ts ; vers
+// une barrière en fantôme, il la ferme, retouche des essais du 11 octobre 2026). La barrière suit sa
 // forme (./choices.ts) dans l'orientation de référence, que la pose tourne ; la marche se tourne elle-même vers la porte
 // du bâtiment (`dansLeMonde`). La tête de la lanterne est dessinée par la construction (world/construction.ts), ses
 // vitres dans les fenêtres : elles s'allument la nuit comme les autres lanternes. Code pur, sans Three.js.
@@ -97,11 +98,17 @@ function poteauDeLanterne(): Facette[] {
   return [...boite(p, q, p, q, 0, pied.haut, 'yardStone', DESSOUS), ...boite(a, b, a, b, pied.haut, 1, 'yardPost', DESSOUS, DESSUS)];
 }
 
-/** Les deux lisses, de `x0` à 1 le long de x, au milieu de la case en y : dessus et deux côtés (ni dessous ni bouts). */
+/**
+ * Les deux lisses, de `x0` à 1 le long de x, au milieu de la case en y : dessus, deux côtés, et leur bout au bord de la
+ * case (un bouchon : la lisse voisine le continue et l'assemblage ôte les deux bouts qui se touchent, ./assembly.ts ;
+ * vers une barrière encore en fantôme, il ferme la lisse, qui ne s'ouvre plus dans le vide). Leur bout dans le poteau
+ * (`x0` au milieu de la case) n'est pas dessiné.
+ */
 function lisses(x0: number): Facette[] {
   const { hauteur, epaisseur, milieux } = PIECES_DE_COUR.lisse;
   const [y0, y1] = [0.5 - epaisseur / 2, 0.5 + epaisseur / 2];
-  return milieux.flatMap((m) => boite(x0, 1, y0, y1, m - hauteur / 2, m + hauteur / 2, 'yardRail', DESSOUS, [1, 0, 0], [-1, 0, 0]));
+  const sans: V3[] = x0 > 0 ? [DESSOUS, [-1, 0, 0]] : [DESSOUS];
+  return milieux.flatMap((m) => boite(x0, 1, y0, y1, m - hauteur / 2, m + hauteur / 2, 'yardRail', ...sans));
 }
 
 /** Une facette tournée d'un quart de tour (+x vers +y) autour du milieu de la case, `r` fois. */
@@ -118,7 +125,8 @@ function tourner(f: Facette, r: number): Facette {
  * La barrière d'une cour, d'après sa forme : deux lisses épaisses vers chacune de ses voisines (des barrières), et un
  * poteau trapu au milieu de sa case. Au milieu d'une rangée (`droit`), les lisses d'un bout à l'autre et le poteau une
  * case sur deux (`avecPoteau`), comme la barrière d'avant. Sous une lanterne, le poteau de la lanterne ; sous un autre
- * bloc, un poteau de toute la case. De 12 (seule) à 36 triangles (un angle) ; une rangée, 12 ou 24 par case.
+ * bloc, un poteau de toute la case. De 12 (seule) à 50 triangles (un angle sous une lanterne, bouts compris) ; une rangée, 16 ou 28 par
+ * case avant l'assemblage, qui ôte les bouts qui se touchent.
  */
 export function barriereDeCour(forme: Forme, dessus: 'lanterne' | 'bloc' | null, avecPoteau: boolean): DessinDePiece {
   const cotes = FORMES.find((f) => f.forme === forme)!.cotes;

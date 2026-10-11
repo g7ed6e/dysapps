@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, proportions-sixieme, emc-cinquieme, emc-quatre-trois, monuments, batiments, objets-essais ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, proportions-sixieme, emc-cinquieme, emc-quatre-trois, monuments, batiments, objets-sixieme ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -761,23 +761,52 @@ const CAPTURES = [
   { nom: 'batiments-forge-loin-ile', vue: 'île', famille: 'batiments', ile: 'french-6e-reading', finesse: 2 },
   { nom: 'batiments-forge-loin-archipel', vue: 'archipel', famille: 'batiments', ile: 'french-6e-reading' },
   { nom: 'batiments-forge-carte', vue: 'carte', famille: 'batiments', ile: 'french-6e-letter-confusion' },
-  // Les trois essais de la piste 3 « hybride » (pièces communes de la cour, modèle propre d'une commande à silhouette ;
-  // famille `objets-essais`, à retirer une fois le lot fusionné ; à prendre avec `--rendu archipeo`) : la Mine des lettres
+  // Les objets du 6e de la piste 3 « hybride » (famille `objets-sixieme`, à retirer une fois le lot fusionné ; à prendre
+  // avec `--rendu archipeo`). Le lot 1 : chaque île du 6e de près, toutes ses petites constructions posées (les seize
+  // commandes et les trois objets d'entraide : la Forêt, la Ferme et la Tour en ont deux), de jour ; la nuit, les
+  // lanternes de la Tour (le poteau-lanterne de Grimoire), de la Forêt (celle de Mousso) et du Laboratoire (l'étagère de
+  // Bulle) ; l'archipel entier (les objets à silhouette de loin) ; le trophée d'un Gardien rallumé (la Fouille, devant
+  // le Gardien) ; le quai de l'île-port (la barque, les caisses, les fanions, le foyer).
+  ...[
+    ['foret', 'french-6e-phonology'],
+    ['mine', 'french-6e-letter-confusion'],
+    ['carriere', 'french-6e-word-spelling'],
+    ['ferme', 'french-6e-grammar-spelling'],
+    ['tour', 'french-6e-reading'],
+    ['plaine', 'maths-6e-calculation'],
+    ['riviere', 'maths-6e-fractions'],
+    ['lagune', 'maths-6e-decimals'],
+    ['baie', 'english-6e-vocabulary'],
+    ['horloge', 'english-6e-grammar'],
+    ['fouille', 'history-6e-antiquity'],
+    ['pointe', 'geography-6e-living'],
+    ['vallee', 'life-earth-sciences-6e-living-world'],
+    ['labo', 'physics-chemistry-6e-matter-energy'],
+    ['hangar', 'technology-6e-objects'],
+    ['preau', 'civics-6e-democratic-society'],
+  ].flatMap(([court, ile]) => [
+    { nom: `objets-6e-${court}`, vue: 'île', famille: 'objets-sixieme', ile, posees: 'toutes', zoomer: 3, finesse: 2 },
+    ...(['tour', 'foret', 'labo'].includes(court) ? [{ nom: `objets-6e-${court}-nuit`, vue: 'île', famille: 'objets-sixieme', ile, posees: 'toutes', zoomer: 3, nuit: true, finesse: 2 }] : []),
+  ]),
+  { nom: 'objets-6e-archipel', vue: 'archipel', famille: 'objets-sixieme', ile: 'french-6e-letter-confusion', posees: 'toutes', finesse: 2 },
+  { nom: 'objets-6e-trophee', vue: 'île', famille: 'objets-sixieme', ile: 'history-6e-antiquity', posees: 'toutes', zoomer: 5, sansEtiquettes: true, finesse: 2 },
+  { nom: 'objets-6e-quai', vue: 'île', famille: 'objets-sixieme', ile: 'maths-6e-calculation', posees: 'toutes', zoomer: 2, finesse: 2 },
+  // Les trois essais d'avant (pièces communes de la cour, modèle propre d'une commande à silhouette) : la Mine des lettres
   // tout construite, la cour de la forge (barrières, lanternes sur poteau, marche de pierre) et le puits de Tunel posés,
   // de près et de plus près, de jour et de nuit ; la cour à moitié posée (ses pièces à côté des fantômes) ; le puits
   // pendant sa pose (« Livrer » touché, la vague à mi-chemin : ses couches en cubes, avant le modèle), puis posé.
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
     { nom: `objets-mine${suffixe}`, vue: 'île', ile: 'french-6e-letter-confusion', posees: ['french-6e-letter-confusion-fixture-1'], ...autres },
     { nom: `objets-mine-pres${suffixe}`, vue: 'île', ile: 'french-6e-letter-confusion', posees: ['french-6e-letter-confusion-fixture-1'], zoomer: 3, ...autres },
-  ]).map((c) => ({ famille: 'objets-essais', finesse: 2, ...c })),
-  { nom: 'objets-mine-cour-mi', vue: 'île', famille: 'objets-essais', ile: 'french-6e-letter-confusion', partie: 'cour-mi', zoomer: 3, finesse: 2 },
+  ]).map((c) => ({ famille: 'objets-sixieme', finesse: 2, ...c })),
+  { nom: 'objets-mine-cour-mi', vue: 'île', famille: 'objets-sixieme', ile: 'french-6e-letter-confusion', partie: 'cour-mi', zoomer: 3, finesse: 2 },
   ...[
     { suffixe: '-pose', pasEnPlus: 13 },
     { suffixe: '-posee', pasEnPlus: 60 },
   ].map(({ suffixe, pasEnPlus }) => ({
     nom: `objets-puits${suffixe}`,
     vue: 'île',
-    famille: 'objets-essais',
+    famille: 'objets-sixieme',
     ile: 'french-6e-letter-confusion',
     commandes: ['french-6e-letter-confusion-request-1'],
     inventaire: { 'maths-6e-calculation': 4 },
