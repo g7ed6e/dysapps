@@ -105,7 +105,7 @@ export function isOpening(r: number, g: number, b: number): boolean {
  * TRELLIS, le fond sombre tombe aussi sur un pignon, un coin de mur, le pied d'un billot (la forge de Tunel, directeur
  * artistique, 11 octobre 2026), et la porte n'y est pas marquée.
  */
-export function farDoor(read: ModeleLu): Set<number> {
+function farDoor(read: ModeleLu): Set<number> {
   const p = read.positions;
   const c = read.colors;
   let y0 = Infinity;
