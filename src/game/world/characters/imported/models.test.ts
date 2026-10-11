@@ -4,9 +4,16 @@ import type { BiomeId } from '../../../biomes';
 import { compacterGlb } from '../../../../../scripts/rendu/compacterGlb.mjs';
 import { SENTINELLE } from '../colors';
 import { ESPECES } from '../paintedCreatures';
-import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, frontDeLueur, HAUTEUR_DE_SENTINELLE } from '../sentinel';
+import { couleursAllumees, DEMI_LARGEUR_DE_SENTINELLE, frontDeLueur, HAUTEUR_DANS_LE_MONDE, HAUTEUR_DE_SENTINELLE } from '../sentinel';
 import { tailleDe } from '../template';
-import { fusionDesCreatures } from '../merges';
+import { fusionDesCreatures, fusionDesGardiens, pointDePose } from '../merges';
+import { toutConstruit } from '../../budget';
+import { guardianCells, guardianPlacements, trophySpot } from '../../terrain';
+import { archipelagoOfIsland } from '../../archipelagos';
+import { islandDef, startingIsland } from '../../map';
+import { placeIslands, turnCell, type Quarts } from '../../placement';
+import { sentinelleDe, SENTINELLE_DANS_LE_MONDE } from '../../terrain/creatures';
+import { GUARDIAN_SQUARE_ROOM, GUARDIAN_WORLD_HEIGHTS } from '../../guardianSquares';
 import { lireGlb } from './glb';
 import { chargerLesModelesDuDisque, fichierDuModele } from './fromDisk.testing';
 import { ILES_IMPORTEES, modeleImporte, nomDuModele, type Genre, type Niveau } from './models';
@@ -59,6 +66,57 @@ it('un Gardien importé a la taille d’une sentinelle : 8 blocs, socle compris,
       // Il touche le haut ou les bords : à la plus grande taille qui tient.
       expect(Math.max(haut / HAUTEUR_DE_SENTINELLE, large / DEMI_LARGEUR_DE_SENTINELLE), id).toBeGreaterThan(0.99);
     }
+});
+
+it('au 6e, un Gardien grandit sur son carré : les quatre rangées du fond, la hauteur de la sentinelle, quelle que soit l’orientation de son lieu', () => {
+  const { progress, world } = toutConstruit();
+  const auVingtieme = (v: number) => Math.ceil(v * 20 - 1e-6) / 20;
+  const ids = ILES_IMPORTEES.filter((id) => archipelagoOfIsland(id) === '6e');
+  const hauteurs = new Map<BiomeId, number>();
+  try {
+    for (const q of [0, 1, 2, 3] as Quarts[]) {
+      placeIslands(new Map(ids.map((id) => [id, { x: startingIsland(id).core.x, y: startingIsland(id).core.y, quarts: q }])));
+      const places = guardianPlacements('6e', progress, world.links);
+      const f = fusionDesGardiens(places);
+      places.forEach((p, i) => {
+        if (GUARDIAN_WORLD_HEIGHTS[p.id] !== undefined) return;
+        const o = pointDePose(p);
+        let [x0, x1, y0, y1, h] = [Infinity, -Infinity, Infinity, -Infinity, 0];
+        for (let t = f.plages[i].debut * 9; t < f.plages[i].fin * 9; t += 3) {
+          [x0, x1] = [Math.min(x0, f.positions[t]), Math.max(x1, f.positions[t])];
+          [y0, y1] = [Math.min(y0, f.positions[t + 2]), Math.max(y1, f.positions[t + 2])];
+          h = Math.max(h, f.positions[t + 1] - o[1]);
+        }
+        const cle = `${p.id} au quart ${q}`;
+        // Sur les cases de son carré, sans toucher celle de son bloc d'or.
+        const cases = guardianCells(p.id);
+        expect(x0, cle).toBeGreaterThanOrEqual(Math.min(...cases.map((c) => c.x)) - 1e-4);
+        expect(x1, cle).toBeLessThanOrEqual(Math.max(...cases.map((c) => c.x)) + 1 + 1e-4);
+        expect(y0, cle).toBeGreaterThanOrEqual(Math.min(...cases.map((c) => c.y)) - 1e-4);
+        expect(y1, cle).toBeLessThanOrEqual(Math.max(...cases.map((c) => c.y)) + 1 + 1e-4);
+        const def = islandDef(p.id);
+        const t0 = trophySpot(p.id);
+        const tt = turnCell(t0.x, t0.y, def.quarts);
+        const [gx, gy] = [def.core.x + tt.x, def.core.y + tt.y];
+        expect(x1 <= gx + 1e-4 || x0 >= gx + 1 - 1e-4 || y1 <= gy + 1e-4 || y0 >= gy + 1 - 1e-4, cle).toBe(true);
+        expect(h, cle).toBeLessThanOrEqual(HAUTEUR_DANS_LE_MONDE + 1e-4);
+        // La même taille dans les quatre orientations.
+        if (q === 0) hauteurs.set(p.id, h);
+        else expect(h, cle).toBeCloseTo(hauteurs.get(p.id)!, 4);
+        if (q !== 0) return;
+        const [dx, dy] = [Math.max(o[0] - x0, x1 - o[0]), Math.max(o[2] - y0, y1 - o[2])];
+        // À la plus grande taille qui tient.
+        expect(Math.max(dx, dy) / GUARDIAN_SQUARE_ROOM.half, cle).toBeLessThanOrEqual(1 + 1e-4);
+        expect(Math.max(dx / GUARDIAN_SQUARE_ROOM.half, dy / GUARDIAN_SQUARE_ROOM.half, h / HAUTEUR_DANS_LE_MONDE), cle).toBeGreaterThan(0.99);
+        // La boîte que lit la grille le contient, au vingtième près (`GUARDIAN_WORLD_HALF_SIZES`).
+        const d = SENTINELLE_DANS_LE_MONDE.demiLargeur;
+        const b = sentinelleDe(p.id);
+        expect([b.dx, b.dy], `${p.id} : recopier { dx: ${auVingtieme(dx)}, dy: ${auVingtieme(dy)} } dans GUARDIAN_WORLD_HALF_SIZES`).toEqual([Math.max(d, auVingtieme(dx)), Math.max(d, auVingtieme(dy))]);
+      });
+    }
+  } finally {
+    placeIslands(null);
+  }
 });
 
 it('une créature importée a la taille de son gabarit, les pieds au sol', () => {

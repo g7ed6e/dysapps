@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, personnages-troisieme, emc-cinquieme, emc-quatre-trois, monuments, batiments ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, gardiens-carre, emc-cinquieme, emc-quatre-trois, monuments, batiments ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -675,30 +675,19 @@ const CAPTURES = [
     { nom: `personnages-importes-chene-rallume${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
     { nom: `personnages-importes-archipel-recul${suffixe}`, vue: 'archipel', famille: 'personnages-importes', ile: 'maths-6e-calculation', zoomer: -10, ...autres },
   ]),
-  // Les Gardiens et les créatures de la 3e importés dans Archipéo (famille `personnages-troisieme`), à retirer une fois le
-  // lot fusionné ; à prendre avec `--rendu archipeo`. Sur chaque île, la créature sur l'herbe, sa fiche ouverte, et le
-  // Gardien éteint, sa fiche ouverte ; l'archipel en recul, tous éteints puis rallumés (leur version de loin).
+  // Les Gardiens du 6e grandis sur leur carré dans Archipéo (famille `gardiens-carre`, rapport sur les proportions du
+  // 6e), à retirer une fois le lot fusionné ; à prendre avec `--rendu archipeo`. Sur chaque île dont le Gardien grandit,
+  // la vue de l'île, Gardien éteint.
   ...[
-    ['maths-3e-geometry', 'belvedere'],
-    ['maths-3e-statistics', 'donnees'],
-    ['maths-3e-functions', 'phare'],
-    ['french-3e-close-reading', 'textes'],
-    ['english-3e-comprehension', 'studio'],
-    ['english-3e-grammar', 'chateau'],
-    ['lv2-3e-travel', 'refuge'],
-    ['history-3e-twentieth-century', 'kiosque'],
-    ['geography-3e-france', 'plateau'],
-    ['life-earth-sciences-3e-human-body', 'verger'],
-    ['physics-chemistry-3e-motion-energy', 'tremplin'],
-    ['technology-3e-digital', 'ruche'],
-    ['civics-3e-democratic-life', 'forum'],
-    ['lca-3e-ideas', 'bosquet'],
-  ].flatMap(([ile, lieu]) => [
-    { nom: `troisieme-${lieu}-gardien-eteint`, vue: 'île', famille: 'personnages-troisieme', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile } },
-    { nom: `troisieme-${lieu}-creature`, vue: 'île', famille: 'personnages-troisieme', ile, fiche: { genre: 'creature', id: ile } },
-  ]),
-  { nom: 'troisieme-archipel-recul-eteints', vue: 'archipel', famille: 'personnages-troisieme', ile: 'maths-3e-geometry', zoomer: -10, sansIles: { classe: '3e' } },
-  { nom: 'troisieme-archipel-recul', vue: 'archipel', famille: 'personnages-troisieme', ile: 'maths-3e-geometry', zoomer: -10 },
+    ['french-6e-letter-confusion', 'mine'],
+    ['french-6e-grammar-spelling', 'ferme'],
+    ['maths-6e-calculation', 'plaine'],
+    ['maths-6e-decimals', 'volcan'],
+    ['english-6e-vocabulary', 'baie'],
+    ['geography-6e-living', 'pointe'],
+    ['life-earth-sciences-6e-living-world', 'vallee'],
+    ['civics-6e-democratic-society', 'preau'],
+  ].map(([ile, lieu]) => ({ nom: `gardiens-carre-${lieu}`, vue: 'île', famille: 'gardiens-carre', ile, sansIles: [ile] })),
   { nom: 'histoire-geo-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
   { nom: 'histoire-geo-mes-blocs', vue: 'île', famille: 'histoire-geo', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [

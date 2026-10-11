@@ -401,7 +401,7 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     // côtés, ces îles gardent le carré où il se voit le plus : la part vue, au centième, dans la forme la plus cachée des
     // deux univers, les rayons visant les deux yeux de la caméra (en paysage et panneau ouvert). Sous 85 % : le Phare
     // des fonctions (68 %), la Prairie des climats (76 %), la Vigie des signaux (78 %), l'Horloge des verbes (79 %), la
-    // Falaise des accords, le Bassin des maquettes et le Tremplin des forces (83 %). Sous le seuil de 75 % (DA,
+    // Vallée du vivant (83 %, son Cerf grandi sur son carré), la Falaise des accords, le Bassin des maquettes et le Tremplin des forces (83 %). Sous le seuil de 75 % (DA,
     // 8 octobre 2026), seul le Phare des fonctions : aucun carré, même la bande du chemin des arrivées cédée, ne le
     // montre plus. Le Hangar des inventions et le Verger de la santé (54 %), l'Imprimerie des révolutions (66 %) se
     // voient entiers sur un côté de devant depuis ce seuil. Depuis la cinquième mission (GD-14), le Belvédère de Thalès
@@ -415,7 +415,7 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
       'english-6e-grammar': 0.79,
       'history-6e-antiquity': 0.99,
       'geography-6e-living': 0.99,
-      'life-earth-sciences-6e-living-world': 0.85,
+      'life-earth-sciences-6e-living-world': 0.83,
       'history-5e-middle-ages': 0.93,
       'geography-5e-resources': 0.99,
       'life-earth-sciences-5e-active-planet': 0.76,

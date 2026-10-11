@@ -7,8 +7,9 @@
 // du passé et le Belvédère de Thalès, dont une borne de plus touchait le carré. Le Manoir du passé a ensuite pris sa forme
 // (GD-12, 5e) : en (0, 14), l'étiquette de l'île se posait sur la tête du Gardien et le toit du manoir bâti lui couvrait le
 // pied (81 % vu, DA, 9 octobre 2026) ; la recherche refaite sur sa terre nouvelle lui donne (15, 15), où il se voit entier
-// dans les deux univers. Données pures, sans import.
+// dans les deux univers. Données pures ; seul import, l'archipel d'une île (`fillsGuardianSquare`).
 import type { BiomeId } from '../biomes';
+import { archipelagoOfIsland } from './archipelagos';
 
 /** Le côté du carré d'un Gardien, en cases (`GUARDIAN_SQUARE`, ./terrain/creatures.ts). */
 export const GUARDIAN_SQUARE_SIDE = 5;
@@ -104,3 +105,19 @@ export const GUARDIAN_WORLD_HEIGHTS: Readonly<Partial<Record<BiomeId, number>>> 
 
 /** Le plus haut d'un arbre ordinaire du 6e dans Archipéo, au-dessus du sol : une case sous le Grand Chêne. */
 export const TALLEST_TREE_6E = (GUARDIAN_WORLD_HEIGHTS['french-6e-phonology'] ?? 0) - 1;
+
+/**
+ * Le Gardien d'Archipéo de cette île prend-il toute la place de son carré (proposition 4 du rapport sur les proportions
+ * du 6e, retenue par le mainteneur le 11 octobre 2026) ? Les quatre rangées du fond, son bloc d'or sur la rangée de
+ * devant, jusqu'à la hauteur de la sentinelle commune : un Gardien large et bas (couché, à quatre
+ * pattes, à large couronne) n'y perd plus de hauteur. Le 6e seulement, pour l'instant.
+ */
+export const fillsGuardianSquare = (id: BiomeId): boolean => archipelagoOfIsland(id) === '6e';
+
+/**
+ * Ce que prend, au plus, un Gardien qui remplit son carré (`fillsGuardianSquare`), en cases, autour du milieu de sa
+ * place : sa demi-largeur et sa demi-profondeur, les quatre rangées du fond dans les deux sens. La statue ne tourne
+ * pas avec son lieu (GD-9) : ainsi elle tient sur son carré et laisse libre son bloc d'or quelle que soit son
+ * orientation, et garde la même taille.
+ */
+export const GUARDIAN_SQUARE_ROOM = { half: (GUARDIAN_SQUARE_SIDE - 1) / 2 } as const;
