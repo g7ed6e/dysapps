@@ -86,6 +86,10 @@ const QUARTS_DE_TOUR_DU_GARDIEN: Partial<Record<BiomeId, number>> = {
   // montre son flanc, ses ailes en toit et ses yeux, la tête vers le devant de l'île, de trois quarts (DA, captures
   // emc-4e-3e-1).
   'lca-4e-cities': 3,
+  // La Dune vivante (GD-16) : la caméra de la Carrière des mots regarde de l'est ; tournée d'un quart de tour, elle lui
+  // montre ses yeux et sa bouche (directeur artistique, captures proportions-6e-c). Plus profonde que haute de face, elle
+  // prend alors tout son carré, son bloc d'or dans le coin (`gardienProfond`).
+  'french-6e-word-spelling': 1,
 };
 
 const personnagesTournes = new Map<string, CubeDeModele[]>();
