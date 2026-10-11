@@ -33,7 +33,7 @@
 //   d'ardoise d'un poteau en épi ; la tuile posée seule sur un bloc (le toit de la maquette) en pavillon ; la pierre qui
 //   porte un mât d'antenne en pilier.
 // Au 6e, depuis le lot 2 des objets (11 octobre 2026), le décor du cœur et les trois lieux du village sont dessinés en
-// objets (../objects/coeurs.ts, ../objects/lieux.ts) qui remplacent leurs cubes : ce qui suit ne prend plus que les
+// objets (../objects/heartDecor.ts, ../objects/villagePlaces.ts) qui remplacent leurs cubes : ce qui suit ne prend plus que les
 // rochers et le petit arbre du cœur, et ce qu'un ensemble incomplet laisse en cubes.
 // Code pur, sans Three.js.
 import type { VoxelCube } from '../cube';

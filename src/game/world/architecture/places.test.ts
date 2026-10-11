@@ -248,7 +248,7 @@ describe('Les lieux du village au kit du 6e', () => {
       const piece = caseDeLaPiece(m, 'opaque', t, c, nor);
       const r = piece ?? caseDeLaConstruction(c, nor);
       // Le lieu de la facette, lu sous elle (un peu en dedans) : repère Three (x, hauteur, y).
-      // Un lieu dessiné en modèle (au 6e, world/objects/lieux.ts : son toit déborde sur la cour, où rien n'est posé) : le
+      // Un lieu dessiné en modèle (au 6e, world/objects/villagePlaces.ts : son toit déborde sur la cour, où rien n'est posé) : le
       // lieu de ses cases.
       const modele = (m.monuments ?? []).find((q) => t >= q.opaque[0] && t < q.opaque[1]);
       const attendu = modele ? parCase.get(cle(modele.cellules[0]))?.place : emprise.get(`${Math.floor(c.x - nor.x * 0.01)},${Math.floor(c.z - nor.z * 0.01)}`);

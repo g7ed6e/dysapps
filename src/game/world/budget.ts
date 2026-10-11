@@ -39,7 +39,7 @@ import type { VoxelCube } from './cube';
 import { PLACED_FIXTURES } from './placedFixtures';
 import { casesDeLaPetiteConstruction } from './fixtures';
 import { ecartDePres } from './fixtureModels';
-import { ecartDesLieux } from './objects/lieux';
+import { villagePlacesNearGap } from './objects/villagePlaces';
 import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './characters/merges';
 import { COUT_DES_BULLES } from './affordance';
 import { coutDesLueurs, lueursDesLanternes } from './lanternGlow';
@@ -72,9 +72,8 @@ export const RENDER_BUDGET = {
  * autorisation : le style des essais validé, « Top le style ») : les dix-neuf petites constructions dessinées
  * (./objects/), le trophée des Gardiens rallumés et les objets du quai ; la construction passe de 18 050 à 18 700, les
  * commandes de 1 100 à 1 500, la somme des enveloppes de 86 840 à 87 890. Puis à 91 200 pour le lot 2 des objets du 6e
- * (11 octobre 2026, même autorisation) : le décor du cœur des îles (./objects/coeurs.ts) et les trois lieux de
- * l'île-école (./objects/lieux.ts), de près sur l'île où est l'élève ; la construction passe de 18 700 à 22 000, la
- * somme des enveloppes de 87 890 à 91 190.
+ * (11 octobre 2026, même autorisation : le décor du cœur et les lieux de l'île-école dessinés) : la construction passe de
+ * 18 700 à 22 000.
  */
 export const RENDER_BUDGET_6E = { triangles: 91_200, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
@@ -385,12 +384,8 @@ export const ENVELOPPES: Record<
   // triangles chacun, à la place de deux cubes peints) et les objets du quai en pièces communes (deux barques de 85, trois
   // caisses, deux fanions, le foyer) ; les lisses des cours fermées au bord de leur case (ôtées par l'assemblage contre
   // la lisse voisine). Mesuré tout construit : 17 768 → 18 384 ; l'enveloppe 18 050 → 18 700 ; aucun appel de plus. Le
-  // lot 2 des objets du 6e (11 octobre 2026) : trente ensembles du décor du cœur dessinés (./objects/coeurs.ts, 12 à 140
-  // triangles chacun, 1 852 en tout, à la place de leurs pièces au coût d'un cube) et les trois lieux de l'île-école
-  // (./objects/lieux.ts) : de loin 252 (l'école 72, la salle vide 110, la Halle 70), plus leur écart de près sur
-  // l'île-école (`ecartDesLieux` : 1 672 la salle vide, davantage à ses deux travées). Mesuré tout construit :
-  // 18 384 → 21 116 ; au pire de la salle des trophées (24 succès), 21 876 ; l'enveloppe 18 700 → 22 000 ; aucun appel
-  // de plus.
+  // lot 2 (11 octobre 2026 : le décor du cœur, ./objects/heartDecor.ts, et les lieux de l'île-école de près,
+  // ./objects/villagePlaces.ts) : 18 384 → 21 116 tout construit, 21 876 au pire de la salle ; l'enveloppe 18 700 → 22 000.
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
@@ -857,9 +852,9 @@ export function constructionAuPire(a: ArchipelagoId, trophees: readonly BlockId[
     const thresholds = Array.from({ length: stages }, (_, i) => (layers ? own.filter((c) => c.z - foot <= layers[i][1]).length : Math.ceil(((i + 1) * own.length) / (stages + 1))));
     extra += Math.max(0, ...thresholds.map((n) => cost(n) - whole));
   }
-  // Les lieux du village dessinés (./objects/lieux.ts, lot 2 du 6e) : comptés de loin dans `base`, plus leur écart de près
+  // Les lieux du village dessinés (./objects/villagePlaces.ts, lot 2 du 6e) : comptés de loin dans `base`, plus leur écart de près
   // (les trois sur l'île-école, où l'élève peut se trouver) ; ajouté à l'écart du bâtiment le plus cher de près, au pire.
-  return { triangles: base.triangles + extra + batiments.triangles + ecartDesLieux(a, tous), drawCalls: base.drawCalls };
+  return { triangles: base.triangles + extra + batiments.triangles + villagePlacesNearGap(a, tous), drawCalls: base.drawCalls };
 }
 
 /**

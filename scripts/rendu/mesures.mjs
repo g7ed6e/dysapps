@@ -765,8 +765,10 @@ const CAPTURES = [
   // avec `--rendu archipeo`). Le lot 1 : chaque île du 6e de près, toutes ses petites constructions posées (les seize
   // commandes et les trois objets d'entraide : la Forêt, la Ferme et la Tour en ont deux), de jour ; la nuit, les
   // lanternes de la Tour (le poteau-lanterne de Grimoire), de la Forêt (celle de Mousso) et du Laboratoire (l'étagère de
-  // Bulle) ; l'archipel entier (les objets à silhouette de loin) ; le trophée d'un Gardien rallumé (la Fouille, devant
-  // le Gardien) ; le quai de l'île-port (la barque, les caisses, les fanions, le foyer).
+  // Bulle) ; l'archipel entier (les objets à silhouette de loin) ; le trophée d'un Gardien rallumé, de près à côté de sa
+  // statue (la fiche du Gardien de la Mine cadre les deux : le bloc d'or est une case devant lui) ; le quai de l'île-port
+  // de trois quarts au premier plan (la fiche du Bloc-Navire, amarré au quai, le cadre : la barque, les caisses, les
+  // fanions, le foyer) ; une île en recul (la Lagune : le volcan du cœur et le parasol, dessinés, vus de loin).
   ...[
     ['foret', 'french-6e-phonology'],
     ['mine', 'french-6e-letter-confusion'],
@@ -789,11 +791,12 @@ const CAPTURES = [
     ...(['tour', 'foret', 'labo'].includes(court) ? [{ nom: `objets-6e-${court}-nuit`, vue: 'île', famille: 'objets-sixieme', ile, posees: 'toutes', zoomer: 3, nuit: true, finesse: 2 }] : []),
   ]),
   { nom: 'objets-6e-archipel', vue: 'archipel', famille: 'objets-sixieme', ile: 'french-6e-letter-confusion', posees: 'toutes', finesse: 2 },
-  { nom: 'objets-6e-trophee', vue: 'île', famille: 'objets-sixieme', ile: 'history-6e-antiquity', posees: 'toutes', zoomer: 5, sansEtiquettes: true, finesse: 2 },
-  { nom: 'objets-6e-quai', vue: 'île', famille: 'objets-sixieme', ile: 'maths-6e-calculation', posees: 'toutes', zoomer: 2, finesse: 2 },
-  // Le lot 2 : le décor du cœur de chaque île du 6e dessiné (./objects/coeurs.ts), regroupé : une vue de plus près par île
+  { nom: 'objets-6e-trophee', vue: 'île', famille: 'objets-sixieme', ile: 'french-6e-letter-confusion', posees: 'toutes', fiche: { genre: 'gardien', id: 'french-6e-letter-confusion' }, zoomer: 2, sansEtiquettes: true, finesse: 2 },
+  { nom: 'objets-6e-quai', vue: 'île', famille: 'objets-sixieme', ile: 'maths-6e-calculation', posees: 'toutes', fiche: { genre: 'navire', port: 'maths-6e-calculation' }, sansEtiquettes: true, finesse: 2 },
+  { nom: 'objets-6e-loin', vue: 'île', famille: 'objets-sixieme', ile: 'maths-6e-decimals', posees: 'toutes', zoomer: -6, finesse: 2 },
+  // Le lot 2 : le décor du cœur de chaque île du 6e dessiné (./objects/heartDecor.ts), regroupé : une vue de plus près par île
   // qui en a (sans les noms, pour le voir entier), de jour ; la nuit, la Baie des mots (le réverbère du cœur reste éteint)
-  // et la Lagune (la braise mate du volcan). L'île-école de près, ses trois lieux dessinés (./objects/lieux.ts : l'école et
+  // et la Lagune (la braise mate du volcan). L'île-école de près, ses trois lieux dessinés (./objects/villagePlaces.ts : l'école et
   // son clocheton, la salle des trophées pleine, la Halle et sa potence), de jour et de nuit (les vitres de l'école), et la
   // salle sans trophée (ses socles vides).
   ...[

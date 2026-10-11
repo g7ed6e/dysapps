@@ -3,7 +3,7 @@
 // chaque objet d'entraide des Premiers Rivages a un dessin du code (aucun fichier importé), low poly en aplats francs,
 // qui remplace les cubes de sa forme une fois posée. Les objets à silhouette ont un modèle propre, de près et de loin
 // (./objects/silhouettes.ts : le puits, la grue, la boutique, le lavoir, le parasol, la pendule, le tamis, le nichoir) ;
-// les autres sont faits des pièces communes (./objects/assemblages.ts : le potager, le bac à eau, le poteau-lanterne,
+// les autres sont faits des pièces communes (./objects/assemblies.ts : le potager, le bac à eau, le poteau-lanterne,
 // la vitrine, la placette, l'étagère à flacons, l'établi, l'urne ; la lanterne de Mousso, le portillon, l'escalier).
 // La matière du bloc livré y reste sur une grande face, dans les couleurs mêmes du bloc (règle GD-7).
 //
@@ -18,24 +18,32 @@ import type { Cell } from './view';
 import type { ImportedMonument } from './monumentModels';
 import { casesDeLaPetiteConstructionDansLeMonde, poseDeLaPetiteConstruction } from './terrain/fixture';
 import { type FacettesDuDecor, Pinceau } from './decor/brush';
-import { Atelier, atelierDeCompte } from './objects/atelier';
-import { peintureDe } from './objects/pieces';
-import { type DessinDObjet, SILHOUETTES } from './objects/silhouettes';
-import { ASSEMBLAGES } from './objects/assemblages';
+import { Workshop, countingWorkshop } from './objects/workshop';
+import { paintFor } from './objects/pieces';
+import { type ObjectDrawing, SILHOUETTES } from './objects/silhouettes';
+import { ASSEMBLIES } from './objects/assemblies';
 
 /** Un objet dessiné : son île, son dessin, et s'il a un dessin de loin (les objets à silhouette). */
 interface Modele {
   ile: BiomeId;
-  dessiner: DessinDObjet;
+  /** L'archipel de son île. */
+  archipelago: ArchipelagoId;
+  dessiner: ObjectDrawing;
   deLoin: boolean;
 }
 
-const ileDe = (id: string) => id.replace(/-fixture-\d+$/, '') as BiomeId;
+/** L'île et l'archipel d'une petite construction dessinée, d'après son identifiant ; une île inconnue est une erreur. */
+function placeOf(id: string): { ile: BiomeId; archipelago: ArchipelagoId } {
+  const ile = id.replace(/-fixture-\d+$/, '');
+  const biome = BIOMES.find((b) => b.id === ile);
+  if (!biome) throw new Error(`Petite construction dessinée sans île : ${id}`);
+  return { ile: biome.id, archipelago: biome.classe };
+}
 
 /** Les petites constructions qu'Archipéo dessine, par identifiant (au 6e). */
 const MODELES: Readonly<Record<string, Modele>> = Object.fromEntries([
-  ...Object.entries(SILHOUETTES).map(([id, dessiner]) => [id, { ile: ileDe(id), dessiner, deLoin: true }] as const),
-  ...Object.entries(ASSEMBLAGES).map(([id, dessiner]) => [id, { ile: ileDe(id), dessiner, deLoin: false }] as const),
+  ...Object.entries(SILHOUETTES).map(([id, dessiner]) => [id, { ...placeOf(id), dessiner, deLoin: true }] as const),
+  ...Object.entries(ASSEMBLIES).map(([id, dessiner]) => [id, { ...placeOf(id), dessiner, deLoin: false }] as const),
 ]);
 
 /** Les identifiants des petites constructions dessinées (les tests et le budget les parcourent). */
@@ -49,8 +57,8 @@ export function aUnDessinDeLoin(id: string): boolean {
 /** Le nombre de triangles d'un dessin, de près ou de loin, vitres comprises (le budget : world/budget.ts). */
 export function trianglesDuModele(id: string, loin: boolean): number {
   const m = MODELES[id];
-  const at = atelierDeCompte();
-  m.dessiner(at, peintureDe(BIOMES.find((b) => b.id === m.ile)!.classe, m.ile, false), loin && m.deLoin);
+  const at = countingWorkshop();
+  m.dessiner(at, paintFor(m.archipelago, m.ile, false), loin && m.deLoin);
   return at.triangles;
 }
 
@@ -60,7 +68,7 @@ export function trianglesDuModele(id: string, loin: boolean): number {
  */
 export function ecartDePres(a: ArchipelagoId): number {
   const ecarts = Object.entries(MODELES)
-    .filter(([, m]) => BIOMES.find((b) => b.id === m.ile)?.classe === a)
+    .filter(([, m]) => m.archipelago === a)
     .map(([id]) => trianglesDuModele(id, false) - trianglesDuModele(id, true));
   return Math.max(0, ...ecarts);
 }
@@ -78,7 +86,7 @@ export function petitesConstructionsDessinees(a: ArchipelagoId, cubes: readonly 
   let poses: Map<string, VoxelCube> | null = null;
   const out: ImportedMonument[] = [];
   for (const [id, m] of Object.entries(MODELES)) {
-    if (BIOMES.find((b) => b.id === m.ile)?.classe !== a) continue;
+    if (m.archipelago !== a) continue;
     if (!poses) {
       poses = new Map();
       for (const c of cubes) if (c.petiteConstruction && !c.ghost) poses.set(`${c.x},${c.y},${c.z}`, c);
@@ -90,10 +98,10 @@ export function petitesConstructionsDessinees(a: ArchipelagoId, cubes: readonly 
     if (!pose || !cases.size || siens.some((c) => !c || c.tag !== m.ile)) continue;
     const posees = siens as VoxelCube[];
     const muted = posees.some((c) => c.muted);
-    const at = new Atelier(new Pinceau(), muted ? null : new Pinceau(), pose.point);
-    m.dessiner(at, peintureDe(a, m.ile, muted), m.deLoin && pres !== m.ile);
+    const at = new Workshop(new Pinceau(), muted ? null : new Pinceau(), pose.point);
+    m.dessiner(at, paintFor(a, m.ile, muted), m.deLoin && pres !== m.ile);
     const cellules: Cell[] = posees.map((c) => ({ x: c.x, y: c.y, z: c.z }));
-    out.push({ id, stage: 1, opaque: at.opaque.fin(), fire: at.feu?.fin() ?? vide(), halo: null, cellules, replaced: new Set(cases) });
+    out.push({ id, stage: 1, opaque: at.opaque.fin(), fire: at.fire?.fin() ?? vide(), halo: null, cellules, replaced: new Set(cases) });
   }
   return out;
 }

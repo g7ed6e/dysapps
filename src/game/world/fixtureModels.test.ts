@@ -12,9 +12,11 @@ import { lineaire } from './landMesh';
 import type { TextureKind } from './pixels';
 import { applyLayout } from './appliedLayout';
 import { freeSpots, moveIsland } from './arrange';
-import { objetsDuQuaiDessines, tropheesDessines } from './objects/inTheWorld';
-import { atelierDeCompte } from './objects/atelier';
-import { barque, peintureDe } from './objects/pieces';
+import { islandDef } from './map';
+import { cubesDeLaVague, sansLaPartie } from './wave';
+import { drawnQuayObjects, drawnTrophies } from './objects/inTheWorld';
+import { countingWorkshop } from './objects/workshop';
+import { rowboat, paintFor } from './objects/pieces';
 import type { FacettesDuDecor } from './decor/brush';
 import REQUESTS from './requests.json';
 import STORIES from './stories.json';
@@ -157,9 +159,39 @@ it('sur une île tournée (GD-9), ses petites constructions sont dessinées à l
   expect(dessinees).toHaveLength(2);
 });
 
+it('la pose en vague sur une île tournée (GD-9) : ses cases tournent avec l’île, la vague les pose toutes, puis le dessin les prend', () => {
+  const FERME: BiomeId = 'french-6e-grammar-spelling';
+  const BAC = 'french-6e-grammar-spelling-fixture-1';
+  const extent = (cells: Iterable<string>) => {
+    const pts = [...cells].map((k) => k.split(',').map(Number));
+    const span = (i: number) => Math.max(...pts.map((p) => p[i])) - Math.min(...pts.map((p) => p[i])) + 1;
+    return { x: span(0), y: span(1) };
+  };
+  const before = casesDeLaPetiteConstructionDansLeMonde(FERME, BAC);
+  const game = toutConstruitAvecLesCommandes();
+  const spot = freeSpots(game.world, FERME, 1)[0];
+  const r = moveIsland(game.world, FERME, spot);
+  if (!r.ok) throw new Error(r.reason);
+  applyLayout(r.world.layout);
+  expect(islandDef(FERME).quarts % 2).toBe(1);
+  const cells = casesDeLaPetiteConstructionDansLeMonde(FERME, BAC);
+  expect(cells.size).toBe(before.size);
+  // Un quart de tour : la forme couchée le long de x se pose le long de y.
+  expect(extent(cells)).toEqual({ x: extent(before).y, y: extent(before).x });
+  // La vague (useWavePose.ts) pose exactement les cubes de ces cases, et le monde sans elle les laisse vides.
+  const cubes = worldCubes('6e', game.progress, r.world, false).filter((c) => !c.sol);
+  const wave = cubesDeLaVague(cubes, cells);
+  expect(new Set(wave.map((c) => `${c.x},${c.y},${c.z}`))).toEqual(cells);
+  expect(wave.every((c) => c.petiteConstruction && c.tag === FERME)).toBe(true);
+  expect(sansLaPartie(cubes, cells).some((c) => cells.has(`${c.x},${c.y},${c.z}`))).toBe(false);
+  // La vague finie, le dessin prend ces mêmes cases.
+  const drawn = petitesConstructionsDessinees('6e', cubes, FERME).find((d) => d.id === BAC);
+  expect(drawn?.replaced).toEqual(cells);
+});
+
 it('le bloc d’or de chaque Gardien rallumé du 6e : un trophée de 40 à 60 triangles, dans ses deux cases de pierre et d’or', () => {
   const cubes = monde();
-  const trophees = tropheesDessines('6e', cubes);
+  const trophees = drawnTrophies('6e', cubes);
   expect(trophees).toHaveLength(BIOMES.filter((b) => b.classe === '6e').length);
   for (const t of trophees) {
     const n = nTri(t.opaque);
@@ -179,12 +211,12 @@ it('le bloc d’or de chaque Gardien rallumé du 6e : un trophée de 40 à 60 tr
   }
   // Ailleurs, les cubes du kit.
   const { progress, world } = toutConstruitAvecLesCommandes();
-  expect(tropheesDessines('5e', worldCubes('5e', progress, world, false))).toEqual([]);
+  expect(drawnTrophies('5e', worldCubes('5e', progress, world, false))).toEqual([]);
 });
 
 it('les objets du quai du 6e : la barque, les caisses, les fanions et le foyer en pièces communes ; la fumée du foyer reste', () => {
   const cubes = monde();
-  const objets = objetsDuQuaiDessines('6e', cubes);
+  const objets = drawnQuayObjects('6e', cubes);
   const genre = (id: string) => id.slice(id.lastIndexOf('/') + 1, id.indexOf('@'));
   const parGenre = new Map<string, number[]>();
   for (const o of objets) parGenre.set(genre(o.id), [...(parGenre.get(genre(o.id)) ?? []), nTri(o.opaque)]);
@@ -205,10 +237,10 @@ it('les objets du quai du 6e : la barque, les caisses, les fanions et le foyer e
     expect(o.replaced, o.id).toEqual(new Set(siens.map((c) => `${c.x},${c.y},${c.z}`)));
   }
   // La barque retournée (le village qui commence) : la coque seule, moins chère.
-  const at = atelierDeCompte();
-  barque(at, peintureDe('6e', 'maths-6e-calculation', true), 'x', 4, true);
+  const at = countingWorkshop();
+  rowboat(at, paintFor('6e', 'maths-6e-calculation', true), 'x', 4, true);
   expect(at.triangles).toBeLessThan(60);
-  expect(objetsDuQuaiDessines('5e', cubes)).toEqual([]);
+  expect(drawnQuayObjects('5e', cubes)).toEqual([]);
 });
 
 it('les pièces de la cour : dans leur case, sans dessous, de 10 à 50 triangles ; les lisses fermées au bord de la case', () => {
