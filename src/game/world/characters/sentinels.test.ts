@@ -8,7 +8,7 @@ import { GRUE } from '../decor/4e';
 import { PHARES } from '../decor/lighthouse';
 import { guardianCenter, guardianPlacements, versLaCamera } from '../terrain';
 import { fusionDesGardiens, pointDePose } from './merges';
-import { GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
+import { guardianSquareRoom, GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
 import {
   allumage,
   couleursAllumees,
@@ -355,11 +355,20 @@ describe('Les sentinelles dans le monde (revue d’ensemble du directeur artisti
         let haut = -Infinity;
         for (let t = f.plages[i].debut; t < f.plages[i].fin; t++) for (let k = 0; k < 3; k++) haut = Math.max(haut, f.positions[t * 9 + k * 3 + 1]);
         // Une sentinelle basse (la Diligence) rapetisse de même, à partir de son propre haut ; sur son carré (GD-16 au
-        // 6e, GD-18 aux autres classes), elle peut grandir, jusqu'à la hauteur commune.
+        // 6e, GD-18 aux autres classes), elle grandit jusqu'à ce que sa largeur ou sa profondeur touche sa place
+        // (`guardianSquareRoom`), sans dépasser la hauteur commune.
         const basse = BASSES[p.id];
         if (!basse) return expect(haut - pied, p.id).toBeCloseTo(GUARDIAN_WORLD_HEIGHTS[p.id] ?? HAUTEUR_DANS_LE_MONDE, 2);
         expect(haut - pied, p.id).toBeGreaterThanOrEqual(basse[0] * ECHELLE_DANS_LE_MONDE - 0.005);
         expect(haut - pied, p.id).toBeLessThanOrEqual(HAUTEUR_DANS_LE_MONDE + 0.005);
+        const [cx, , cz] = pointDePose(p);
+        let [large, profond] = [0, 0];
+        for (let t = f.plages[i].debut; t < f.plages[i].fin; t++)
+          for (let k = 0; k < 3; k++) {
+            large = Math.max(large, Math.abs(f.positions[t * 9 + k * 3] - cx));
+            profond = Math.max(profond, Math.abs(f.positions[t * 9 + k * 3 + 2] - cz));
+          }
+        if (haut - pied < HAUTEUR_DANS_LE_MONDE - 0.005) expect(Math.max(large, profond), p.id).toBeCloseTo(guardianSquareRoom(p.id).half, 2);
       });
     }
   });
