@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, proportions-6e, emc-cinquieme, emc-quatre-trois, monuments, batiments ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, proportions-sixieme, emc-cinquieme, emc-quatre-trois, monuments, batiments ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -675,7 +675,7 @@ const CAPTURES = [
     { nom: `personnages-importes-chene-rallume${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
     { nom: `personnages-importes-archipel-recul${suffixe}`, vue: 'archipel', famille: 'personnages-importes', ile: 'maths-6e-calculation', zoomer: -10, ...autres },
   ]),
-  // Les proportions du 6e (GD-16, famille `proportions-6e`), à retirer une fois le lot fusionné ; à prendre dans les deux
+  // Les proportions du 6e (GD-16, famille `proportions-sixieme`), à retirer une fois le lot fusionné ; à prendre dans les deux
   // univers. La vue de chaque île du 6e, tout construit (le Gardien rallumé, son bloc d'or posé) : la créature de
   // Blocland réduite de moitié, les Gardiens redessinés, les carrés déplacés, la vue qui glisse vers le Gardien, le bloc
   // d'or à côté du carré ; puis la vue de l'archipel.
@@ -696,8 +696,8 @@ const CAPTURES = [
     ['physics-chemistry-6e-matter-energy', 'laboratoire'],
     ['technology-6e-objects', 'hangar'],
     ['civics-6e-democratic-society', 'preau'],
-  ].map(([ile, lieu]) => ({ nom: `proportions-6e-${lieu}`, vue: 'île', famille: 'proportions-6e', ile })),
-  { nom: 'proportions-6e-archipel', vue: 'archipel', famille: 'proportions-6e', ile: 'french-6e-phonology' },
+  ].map(([ile, lieu]) => ({ nom: `proportions-6e-${lieu}`, vue: 'île', famille: 'proportions-sixieme', ile })),
+  { nom: 'proportions-6e-archipel', vue: 'archipel', famille: 'proportions-sixieme', ile: 'french-6e-phonology' },
   { nom: 'histoire-geo-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
   { nom: 'histoire-geo-mes-blocs', vue: 'île', famille: 'histoire-geo', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
