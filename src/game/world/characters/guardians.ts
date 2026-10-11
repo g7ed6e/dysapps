@@ -273,13 +273,14 @@ const GOLEM_EQ = fromLayers(
 );
 
 // Le Bélier de granit : massif, gris rose, museau clair, grandes cornes enroulées de chaque côté de la tête ; debout sur
-// un rocher de falaise, d'un granit plus sombre, irrégulier, plus large au pied qu'au sommet. Douze couches (six blocs
+// un rocher de falaise, d'un granit plus sombre, irrégulier, plus large au pied qu'au sommet, son sommet d'un granit plus
+// clair pour qu'il se détache du sol d'ardoise de son île. Douze couches (six blocs
 // dans Blocland, réduit de moitié) : plus haut que les arbres de son île, sur la même emprise (GD-16).
 const BELIER = fromLayers(
   [
     ['.RRRRRRR.', 'RRRRRRRRR', 'RRRRRRRRR', 'RRRRRRRRR', '.RRRRRRR.', '.........'],
     ['..RRRRR..', '.RRRRRRRR', 'RRRRRRRRR', '.RRRRRRRR', '..RRRR...', '.........'],
-    ['.........', '.RRRRRRR.', '.RRRRRRR.', '.RRRRRRR.', '...RR....', '.........'],
+    ['.........', '.rrrrrrr.', '.rrrrrrr.', '.rrrrrrr.', '...rr....', '.........'],
     ['.........', '.GG...GG.', '.........', '.GG...GG.', '.........', '.........'],
     ['.........', '.GG...GG.', '.........', '.GG...GG.', '.........', '.........'],
     ['.ggggggg.', 'GGGGGGGGG', 'GGGGGGGGG', 'GGGGGGGGG', '.GGGGGGG.', '.........'],
@@ -290,7 +291,7 @@ const BELIER = fromLayers(
     ['HHGGGGGHH', 'HHGGGGGHH', '.........', '.........', '.........', '.........'],
     ['HH.....HH', 'HH.....HH', '.........', '.........', '.........', '.........'],
   ],
-  { G: '#a89a94', g: '#c4b6b0', H: '#6b5a52', K: '#1f1a16', R: '#5e5856' },
+  { G: '#a89a94', g: '#c4b6b0', H: '#6b5a52', K: '#1f1a16', R: '#5e5856', r: '#8a807c' },
 );
 
 // Le Hibou lexicographe : un grand hibou brun au ventre clair, lunettes rondes dorées, un livre rouge sous l'aile.
@@ -657,12 +658,12 @@ const GRIFFON = fromLayers(
 // La Libellule de jade (DA, HG-3) : une libellule posée à l'horizontale sur un roseau, la tête aux deux gros yeux sombres
 // devant, le thorax, la longue queue derrière ; ses deux paires d'ailes claires étendues à plat sur neuf cubes de large
 // (DA, relecture des planches : plus debout sur la pointe de sa queue) ; le roseau, plus sombre qu'elle, a deux feuilles
-// en biais, une de chaque côté. Douze couches (six blocs dans Blocland, réduite de moitié) : le roseau plus long, elle
+// en biais, une de chaque côté, et une touffe au pied. Douze couches (six blocs dans Blocland, réduite de moitié) : le roseau plus long, elle
 // est plus haute que les arbres de son île, sur la même emprise (GD-16). Quatre couleurs, le roseau compris.
 const LIBELLULE = fromLayers(
   [
-    ['.........', '....R....', '.........', '.........', '.........', '.........', '.........'],
-    ['.........', '....R....', '.........', '.........', '.........', '.........', '.........'],
+    ['....R....', '...RRR...', '....R....', '.........', '.........', '.........', '.........'],
+    ['.........', '...RRR...', '.........', '.........', '.........', '.........', '.........'],
     ['.........', '....RR...', '.........', '.........', '.........', '.........', '.........'],
     ['.........', '....R.R..', '.........', '.........', '.........', '.........', '.........'],
     ['.........', '....R....', '.........', '.........', '.........', '.........', '.........'],
@@ -1090,8 +1091,8 @@ const OIE = fromLayers(
 // x, la tête vers les x croissants ; un oiseau de terre cuite, comme sur un vase, posé dans son nid d'argile sombre ; les
 // ailes repliées le long du corps, peintes de plumes noires et ocre en alternance (ce sont elles qui se rallument), la
 // longue queue qui descend jusqu'au nid derrière, le cou court, la tête, son bec ocre et une petite huppe sombre couchée
-// vers l'arrière. Aucune flamme, aucune pointe dressée. Le nid se pose sur un rocher d'argile brune, irrégulier, plus
-// sombre que l'oiseau : douze couches (six blocs dans Blocland, réduit de moitié), plus haut que les arbres de son île,
+// vers l'arrière. Aucune flamme, aucune pointe dressée. Le nid se pose sur un rocher gris-brun, froid, irrégulier, plus
+// sombre que l'oiseau et que le nid : douze couches (six blocs dans Blocland, réduit de moitié), plus haut que les arbres de son île,
 // sur la même emprise (GD-16). Dix de long, cinq de large, douze de haut. Sept couleurs, les yeux et le rocher compris
 // (proposition de l'artiste technique 3D).
 const PHENIX = fromLayers(
@@ -1114,7 +1115,7 @@ const PHENIX = fromLayers(
     D: '#7e3e22',
     O: '#e2a466',
     N: '#2a1c16',
-    R: '#8a5a42',
+    R: '#6b5f58',
     E: { color: '#1f1a16', top: '#c4703e' },
   },
 );
@@ -1156,7 +1157,7 @@ const LYNX = fromLayers(
 // toit sur le dos, d'une terre plus claire, plus longues que le corps (elles le dépassent d'un bloc derrière),
 // leurs nervures plus sombres en alternance (ce sont elles qui se rallument). Dans le monde, tournée de trois quarts de tour
 // (`QUARTS_DE_TOUR_DU_GARDIEN`) : la caméra de la Colonnade, à l'est, la voit de profil, la tête vers le devant (DA, captures
-// emc-4e-3e-1). Le fût, cannelé (ses cannelures plus sombres), sur une base et sous un chapiteau plus larges, la hausse :
+// emc-4e-3e-1). Le fût de pierre grise, cannelé (ses cannelures plus sombres), plus sombre que la terre cuite de la cigale, sur une base et sous un chapiteau plus larges, la hausse :
 // onze couches (cinq blocs et demi dans Blocland, réduite de moitié), plus haute que les arbres de son île et que son
 // habitant, Figue, sur la même emprise (GD-16). Huit de long, cinq de large, onze de haut. Six couleurs, les yeux et le
 // fût compris (proposition de l'artiste technique 3D).
@@ -1178,8 +1179,8 @@ const CIGALE = fromLayers(
     A: '#c4703e',
     W: '#efc896',
     V: '#a8603a',
-    D: '#5a3a24',
-    d: '#46301e',
+    D: '#7a7468',
+    d: '#5e584e',
     E: { color: '#2a1c16', top: '#2a1c16' },
   },
 );
