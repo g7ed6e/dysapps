@@ -238,10 +238,14 @@ colonnes = [c for c in colonnes if volume(c) >= 0.005 * gros]
 #                    volume decale, parasite, un rebord) ;
 #   loin-droit       le corps, du sol a l'avant-toit, reste dans l'aplomb median de ses murs (une marquise, un etal en
 #                    saillie, une annexe basse ne le deforment plus) ;
-#   loin-murs        les faces verticales du corps (murs, pignons) prennent toutes la couleur des murs (une roue, un
-#                    bardage) ;
+#   loin-murs        les faces verticales du corps (murs, pignons) et de l'etape 1 prennent toutes la couleur des murs
+#                    (une roue, un bardage) ;
 #   loin-disque=hex  un disque de cette couleur (un cadran) se pose sur la facade, a la place et a la taille de ses
 #                    facettes tournees vers le sud dans le modele de pres.
+#   loin-plinthe=hex une plinthe de cette couleur au pied du corps, de la hauteur de celle du modele de pres (ses
+#                    facettes verticales de cette couleur ; 4 % de la hauteur sinon), sur loin.glb et loin-etape-1.glb :
+#                    l'etape 1 de loin se lit posee, sa porte sombre gardee devant (la forge de Tunel, la serre de
+#                    Fougere, directeur artistique, 11 octobre 2026).
 if "loin-sans" in RETOUCHES:
     # sous l'avant-toit, ou trop courte pour etre une cheminee (moins de 10 % de la hauteur : un rebord, un anneau)
     colonnes = [c for c in colonnes if c is corps or (c["Z"][0] > eave and c["Z"][-1] - c["Z"][0] > 0.1 * H)]
@@ -272,6 +276,24 @@ if "loin-droit" in RETOUCHES and murs_z.sum() >= 3:
     ref = np.median(corps["A"][murs_z], 0)
     bas = corps["Z"] < eave - 0.006 * H
     corps["A"][bas] = ref
+plinthe = None   # (hauteur du haut de la plinthe, indice de sa couleur dans la palette)
+for r in RETOUCHES:
+    if r.startswith("loin-plinthe="):
+        cible = tuple(round(((int(r.split("=")[1], 16) >> s_ & 255) / 255), 4) for s_ in (16, 8, 0))
+        i = next((palette.index(p) for p in palette if max(abs(a - b) for a, b in zip(p, cible)) < 0.003), None)
+        sel = (cidx == i) & verticales if i is not None else np.zeros(len(F), bool)
+        if i is None:
+            palette.append(cible)
+            i = len(palette) - 1
+        zp = float(np.percentile(zmax_f[sel], 90)) if sel.any() else z0 + 0.04 * H
+        zp = min(max(zp, z0 + 0.02 * H), z0 + 0.5 * (eave - z0))
+        plinthe = (zp, i)
+        print(f"plinthe : {(zp - z0) / H:.3f} de la hauteur, {int(sel.sum())} facettes")
+        # le corps garde un niveau a la hauteur de la plinthe
+        k = int(np.argmin(np.abs(corps["Z"] - zp)))
+        if 0 < k < len(corps["Z"]) - 1:
+            corps["Z"][k] = zp
+            corps["force"].add(k)
 simplifier()
 while total() > BUDGET and len(colonnes) > 1:
     # toujours trop : la plus petite colonne part (un tonneau avant le toit), et on reprend
@@ -321,7 +343,11 @@ for c in colonnes:
         etape.append((c["Z"][0], np.median(c["A"][:n], 0)))
 if etape:
     app = np.max([a for _, a in etape], 0)
-    etape = [{"debut": 0, "Z": np.array([min(z for z, _ in etape), eave]), "A": np.array([app, app]), "garde": [0, 1]}]
+    zb_ = min(z for z, _ in etape)
+    if plinthe is not None and zb_ < plinthe[0] < eave:
+        etape = [{"debut": 0, "Z": np.array([zb_, plinthe[0], eave]), "A": np.array([app, app, app]), "garde": [0, 1, 2]}]
+    else:
+        etape = [{"debut": 0, "Z": np.array([zb_, eave]), "A": np.array([app, app]), "garde": [0, 1]}]
 
 
 def construire(entier):
@@ -344,8 +370,11 @@ def construire(entier):
                     continue   # cote nul (le chanfrein d'un rectangle)
                 largeur = max(np.linalg.norm(P[b] - P[a]), np.linalg.norm(Q[b] - Q[a]))
                 col = couleur_face(n / np.linalg.norm(n), za, zb, app)
-                if "loin-murs" in RETOUCHES and c is corps and abs(n[2]) < 0.2 * np.linalg.norm(n):
+                if "loin-murs" in RETOUCHES and (c is corps or not entier) and abs(n[2]) < 0.2 * np.linalg.norm(n):
                     col = couleur_murs
+                if plinthe is not None and (c is corps or not entier) and zb <= plinthe[0] + 1e-6 and za < zb \
+                        and abs(n[2]) < 0.5 * np.linalg.norm(n):
+                    col = plinthe[1]
                 bande[k] = (quad, col, largeur)
             # un chanfrein etroit (le coin d'un rectangle) prend la couleur du plus large de ses deux voisins : sa
             # propre lecture tombe sur une arete, un cadre de porte, un coin d'ombre

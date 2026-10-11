@@ -232,11 +232,11 @@ if BATIMENT:
     #   grappe=src>dst     la grappe dont la couleur moyenne lue (journal « grappe #… ») est la plus proche de src prend dst :
     #                      une signature fondue dans une cible voisine (le pot de la serre, la roue dentee de l'atelier) ;
     #   toit=tout          toute face du toit (au-dessus de l'avant-toit, tournee vers le haut) prend la cible du toit ;
-    #   zone=a-b:src>dst   entre a et b (part de la hauteur depuis le socle), les faces de couleur src prennent dst
-    #                      (src * : toutes) ; zone=a-b:src>dst:v pour les faces verticales seulement. Le maillage est
+    #   zone=a-b:src>dst   entre a et b (part de la hauteur depuis le socle), les faces de couleur src prennent dst, une
+    #                      cible ou une autre couleur (src * : toutes) ; zone=a-b:src>dst:v pour les faces verticales seulement. Le maillage est
     #                      d'abord recoupe aux hauteurs a et b : la bande suit une ligne droite, pas les grands triangles
     #                      d'un mur (le bandeau de la cabane de Sema sortait en coins) ;
-    #   loin-...           lues par batiment_loin.py (la version de loin).
+    #   loin-...           lues par batiment_loin.py (la version de loin) ; pied=h, par batiments.py (le pied recoupe).
     rang = {c: i for i, c in enumerate(cibles)}
     hauteur = (ctr[:, 2] - pied) / (z1 - pied)
     nzf = np.array([p.normal.z for p in me.polygons])
@@ -254,7 +254,7 @@ if BATIMENT:
             lab_f[zone_toit] = 1
         elif r.startswith("zone="):
             pass   # apres la peinture, sur le maillage recoupe (plus bas)
-        elif not r.startswith("loin-"):
+        elif not r.startswith(("loin-", "pied=")):
             raise SystemExit(f"{NOM} : retouche inconnue {r}")
     # la facade : le cote ou le sombre (porte, ouverture) couvre le plus de murs ; « facade q » donne le nombre de
     # quarts de tour a passer a aligner.py pour la mettre au sud (-Y), ou le jeu l'attend
@@ -298,8 +298,10 @@ if BATIMENT and any(r.startswith("zone=") for r in RETOUCHES):
                                    plane_no=Vector((0, 0, 1)))
         # la couche de bmesh rend les octets tels qu'ils sont ranges (sRVB) : l'attribut, lui, les rend lineaires
         code = lambda v: np.where(v <= 0.0031308, v * 12.92, 1.055 * np.power(v, 1 / 2.4) - 0.055)
-        a_src = None if src == "*" else code(T[cibles.index(int(src, 16))])
-        a_dst = (*code(T[cibles.index(int(dst, 16))]), 1.0)
+        # dst peut etre hors des cibles (la plinthe de la forge : hors des cibles, aucune grappe ne la prend)
+        hexa = lambda h: np.array([(int(h, 16) >> s_ & 255) / 255 for s_ in (16, 8, 0)])
+        a_src = None if src == "*" else code(hexa(src))
+        a_dst = (*code(hexa(dst)), 1.0)
         for f in bm.faces:
             f.normal_update()
             c = f.calc_center_median()

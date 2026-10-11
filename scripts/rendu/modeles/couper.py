@@ -8,6 +8,9 @@
 # socle (a la place de la hauteur) : le batiment d'un plan, pose sur une dalle serree autour des murs, dont l'emprise ne
 # retrecit presque pas ; la coupe passe un pour cent au-dessus du dessus de la dalle, son plus grand palier horizontal
 # (batiment_mesures.py ; la planche du 10 octobre 2026 gardait la dalle de la cabine, de la hutte, du four et du musee).
+# pied (apres la hauteur) : le pied irregulier d'un batiment deja pose sur z = 0 (la hutte de Kroa, directeur artistique,
+# 11 octobre 2026 : des eclats et des bouts de sol autour de sa base) ; la coupe a cette hauteur laisse un bord droit,
+# pose au sol, et le sol interieur se repose comme pour « socle ».
 # haut|bas : la partie gardee (haut par defaut, donc le socle part).
 # Le modele est d'abord redresse sur Z et pose a z = 0 (comme aligner.py ne le fait pas : lancer aligner.py avant
 # si le socle doit aussi etre aligne nord-sud).
@@ -19,6 +22,7 @@ a = sys.argv[sys.argv.index("--") + 1:]
 entree, sortie = a[0], a[1]
 hauteur = float(a[2]) if len(a) > 2 and a[2] not in ("haut", "bas", "socle") else None
 socle = len(a) > 2 and a[2] == "socle"
+pied = "pied" in a
 garder = a[-1] if a[-1] in ("haut", "bas") else "haut"
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -117,7 +121,7 @@ print(f"coupe a {hauteur:.0%} de la hauteur, partie gardee : {garder}")
 
 for o in objets:
     bm = bmesh.new(); bm.from_mesh(o.data)
-    if socle:
+    if socle or pied:
         # le .glb a facettes plates arrive desoude : soude, la coupe forme des boucles fermees que l'on sait remplir
         bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-6)
     geom = bm.verts[:] + bm.edges[:] + bm.faces[:]
@@ -127,7 +131,7 @@ for o in objets:
     if bord:
         avant = set(bm.faces)
         bmesh.ops.holes_fill(bm, edges=bord)  # referme la coupe
-        if socle:
+        if socle or pied:
             sol_interieur(bm, avant, zc)
     bm.to_mesh(o.data); bm.free()
     if garder == "haut":

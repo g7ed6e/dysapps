@@ -18,8 +18,13 @@ col = bm.loops.layers.color.active or bm.loops.layers.float_color.active
 zs = [v.co.z for v in bm.verts]; Z0, H = min(zs), max(zs) - min(zs)
 
 def couleur(f): return tuple(f.loops[0][col][:3])
+def code(x): return x * 12.92 if x <= 0.0031308 else 1.055 * x ** (1 / 2.4) - 0.055
 def peindre(f, c):
-    for l in f.loops: l[col] = (*c, 1.0)
+    # c : la couleur du fichier (sRVB, comme reglages.csv, que le jeu ramene en lineaire au rangement) ; le calque de
+    # couleur la tient encodee en sRVB (couleur() la rend ainsi) : sans cet encodage, le fichier recevait sa valeur
+    # lineaire, et le jeu, qui la ramene encore en lineaire, la montrait trop sombre (le bois du kiosque presque noir)
+    for l in f.loops: l[col] = (*map(code, c), 1.0)
+def hexa(h): return ((h >> 16 & 255) / 255, (h >> 8 & 255) / 255, (h & 255) / 255)
 def z(f): return (f.calc_center_median().z - Z0) / H      # hauteur relative 0..1
 def r(f): c = f.calc_center_median(); return math.hypot(c.x, c.y)
 def faces(): bm.faces.ensure_lookup_table(); return list(bm.faces)
@@ -84,6 +89,8 @@ def simplifier(fs_, n):
     return neuves
 
 BOIS_SOMBRE, BOIS_CLAIR, LAITON = (0.42, 0.27, 0.17), (0.80, 0.66, 0.46), (0.80, 0.58, 0.22)
+# le kiosque (directeur artistique, 11 octobre 2026) : la toile rouge et le bois clair, comme ses cibles de reglages.csv
+ROUGE_KIOSQUE, BOIS_KIOSQUE = hexa(0xB8362E), hexa(0xC9A273)
 FEU = (0.929, 0.584, 0.278)   # #ed9547 : la couleur que le jeu allume la nuit (isFire)
 
 if nom == "kiosque":
@@ -94,10 +101,10 @@ if nom == "kiosque":
         if h > 0.93: peindre(f, (0.90, 0.68, 0.22))
         elif h > 0.62 and n.z > 0.15:
             k = int(((math.atan2(n.y, n.x) + math.pi) / (math.pi / 4)) + 0.5) % 8
-            peindre(f, (0.74, 0.20, 0.20) if k % 2 else (0.95, 0.90, 0.80))
+            peindre(f, ROUGE_KIOSQUE if k % 2 else (0.95, 0.90, 0.80))
         elif h > 0.60 and n.z <= 0.15: peindre(f, BOIS_SOMBRE)
         elif h > 0.07 and abs(n.z) < 0.6: peindre(f, BOIS_SOMBRE)
-        elif h > 0.04 and n.z >= 0.6: peindre(f, BOIS_CLAIR)
+        elif h > 0.04 and n.z >= 0.6: peindre(f, BOIS_KIOSQUE)
 
 elif nom == "observatoire-etoiles":
     # coupole bleu soutenu, tambour creme nettement plus clair, lunette et anneau en laiton, socle de pierre chaude
@@ -187,9 +194,8 @@ elif nom == "moulin":
     # fenetres nettes (directeur artistique, 10 octobre 2026) : les creux des fenetres, de la couleur du mur, se lisaient
     # comme des chiffres (un « 8 », un « 6 ») ; chacun devient un rectangle simple, cadre de bois et fond d'ardoise,
     # pose sur le mur. Places relevees sur le modele en aplats (angle autour de l'axe en degres, hauteur du centre).
-    # couleurs du fichier (celles de reglages.csv) : le calque de couleur les lit encodees en sRVB
-    def fichier(h): return tuple(x * 12.92 if x <= 0.0031308 else 1.055 * x ** (1 / 2.4) - 0.055 for x in ((h >> 16 & 255) / 255, (h >> 8 & 255) / 255, (h & 255) / 255))
-    MUR, BOIS, FOND = fichier(0xd6c8ab), fichier(0x8c5a3c), fichier(0x46628a)
+    # couleurs du fichier (celles de reglages.csv)
+    MUR, BOIS, FOND = hexa(0xd6c8ab), hexa(0x8c5a3c), hexa(0x46628a)
     for angle, zc in ((-105.0, 0.224), (-104.0, 0.415), (107.0, 0.225)):
         t = math.radians(angle); u = Vector((math.cos(t), math.sin(t), 0)); v = Vector((-math.sin(t), math.cos(t), 0))
         zz = Z0 + zc * H

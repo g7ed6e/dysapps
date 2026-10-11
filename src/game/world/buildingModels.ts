@@ -19,6 +19,7 @@ import type { VoxelCube } from '../Voxel';
 import type { ModeleLu } from './characters/imported/glb';
 import { ETAPES_DU_BATIMENT } from './construction/buildings';
 import { islandDef } from './map';
+import { lineaire } from './landMesh';
 import { couleursLineaires, facetNormals, finish, type ImportedMonument, LINEAR_WASH, shell, turn } from './monumentModels';
 import { turnCell } from './placement';
 import { decalageDesPlans, planCells, plansFor } from './plans';
@@ -82,6 +83,20 @@ export function buildingFile(stage: 1 | 2, near: boolean): BuildingFile {
 export const BUILDING_NEAR_TRIANGLES = 3_000;
 /** Au plus tant de triangles pour un bâtiment de loin (décision du mainteneur, 10 octobre 2026 : environ 200). */
 export const BUILDING_FAR_TRIANGLES = 200;
+
+/**
+ * Le fond sombre des ouvertures (porte, arche, étal, le sol vu par la porte), en sRVB : celui des lignes du 6e, de la 5e,
+ * et le fond bleu nuit de l'igloo de Frimas (colonne `cibles` de reglages.csv, scripts/rendu/modeles/monument_lowpoly.py).
+ * Un bâtiment fini allume la nuit celles qui regardent sa façade, comme les vitres des bâtiments en blocs : elles vont
+ * dans les fenêtres de la construction (sombres le jour, la lueur la nuit), sans triangle de plus.
+ */
+export const OUVERTURES = [0x3a2a22, 0x33291f, 0x2e3a44] as const;
+const OUVERTURES_LINEAIRES = OUVERTURES.map((h) => [16, 8, 0].map((s) => lineaire(((h >> s) & 255) / 255)));
+
+/** Cette couleur (linéaire) est-elle le fond d'une ouverture ? */
+export function isOpening(r: number, g: number, b: number): boolean {
+  return OUVERTURES_LINEAIRES.some(([R, G, B]) => Math.abs(r - R) < 0.002 && Math.abs(g - G) < 0.002 && Math.abs(b - B) < 0.002);
+}
 
 // ---------- Le registre ----------
 
@@ -200,7 +215,8 @@ function localFile(id: BiomeId, file: BuildingFile): Float32Array | null {
 /**
  * Les bâtiments importés de ce monde, chargés et assez avancés : pour chacun, l'étape que suit l'avancée de ses deux
  * premiers plans, le fichier de près (sur l'île `near`) ou de loin, posé sur l'île telle qu'elle est posée et tournée, et
- * les cases posées qu'il remplace. Même forme que les monuments importés (./monumentModels.ts), sans feu ni halo.
+ * les cases posées qu'il remplace. Même forme que les monuments importés (./monumentModels.ts), sans halo : son « feu »,
+ * ce sont ses ouvertures, allumées la nuit une fois fini (`isOpening`).
  */
 export function getImportedBuildings(cubes: readonly VoxelCube[], near: BiomeId | null = null): ImportedMonument[] {
   // Les cubes des plans de chaque île qui a son modèle chargé (ni le sol, ni un lieu, ni une borne, ni le décor).
@@ -235,19 +251,31 @@ export function getImportedBuildings(cubes: readonly VoxelCube[], near: BiomeId 
       positions[i + 2] = def.core.y + t.y + 0.5;
     }
     const opaque = shell();
+    // Fini, sur une île ouverte : ses ouvertures s'allument la nuit (dans les fenêtres, comme le feu d'un monument).
+    const lights = shell();
+    // Seules les facettes tournées vers la façade (la porte, le fond vu par elle) : le fond sombre sert aussi au dessous
+    // d'un avant-toit, à une bande de côté de la version de loin, qui ne s'allument pas.
+    const lit = stage === 2 && !muted;
+    const o = turnCell(0, 0, def.quarts);
+    const d = turnCell(0, -1, def.quarts);
+    const [fx, fz] = [d.x - o.x, d.y - o.y];
     const normals = facetNormals(positions);
     const col = read.colors;
-    for (let i = 0; i < positions.length; i += 3) {
-      opaque.pos.push(positions[i], positions[i + 1], positions[i + 2]);
-      opaque.nor.push(normals[i], normals[i + 1], normals[i + 2]);
-      if (muted) for (let j = 0; j < 3; j++) opaque.col.push(col[i + j] + (LINEAR_WASH.color[j] - col[i + j]) * LINEAR_WASH.strength);
-      else opaque.col.push(col[i], col[i + 1], col[i + 2]);
+    for (let t = 0; t < positions.length; t += 9) {
+      const front = normals[t] * fx + normals[t + 2] * fz > 0.7;
+      const target = lit && front && isOpening(col[t], col[t + 1], col[t + 2]) ? lights : opaque;
+      for (let i = t; i < t + 9; i += 3) {
+        target.pos.push(positions[i], positions[i + 1], positions[i + 2]);
+        target.nor.push(normals[i], normals[i + 1], normals[i + 2]);
+        if (muted) for (let j = 0; j < 3; j++) target.col.push(col[i + j] + (LINEAR_WASH.color[j] - col[i + j]) * LINEAR_WASH.strength);
+        else target.col.push(col[i], col[i + 1], col[i + 2]);
+      }
     }
     out.push({
       id: `building:${id}`,
       stage,
       opaque: finish(opaque),
-      fire: finish(shell()),
+      fire: finish(lights),
       halo: null,
       cellules: covered.map((c) => ({ x: c.x, y: c.y, z: c.z })),
       replaced: new Set(covered.map((c) => `${c.x},${c.y},${c.z}`)),

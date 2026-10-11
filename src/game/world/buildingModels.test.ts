@@ -6,7 +6,7 @@ import type { VoxelCube } from '../Voxel';
 import { applyLayout } from './appliedLayout';
 import type { ArchipelagoId } from './archipelagos';
 import { toutConstruit } from './budget';
-import { BUILDING_FAR_TRIANGLES, BUILDING_FILES, BUILDING_MODELS, BUILDING_NEAR_TRIANGLES, buildingCells, buildingFile, buildingTriangles, getImportedBuildings, isBuildingLoaded } from './buildingModels';
+import { BUILDING_FAR_TRIANGLES, BUILDING_FILES, BUILDING_MODELS, BUILDING_NEAR_TRIANGLES, buildingCells, buildingFile, buildingTriangles, getImportedBuildings, isBuildingLoaded, isOpening, OUVERTURES } from './buildingModels';
 import { buildingPath, loadBuildingsFromDisk } from './buildingModels.fromDisk.testing';
 import { cacheDeLaConstruction, caseDeLaPiece, construireParIle, fenetresDe, maillageDeLaConstruction } from './construction';
 import { lineaire } from './landMesh';
@@ -31,6 +31,9 @@ const tout = (i: number) => plansFor(FORGE)[i].cells.length;
 
 /** Le bâtiment importé d'une île parmi tous ceux du monde. */
 const deLIle = (l: ReturnType<typeof getImportedBuildings>, id: BiomeId = FORGE) => l.filter((m) => m.id === `building:${id}`);
+
+/** Les triangles d'un bâtiment importé posé : l'opaque et ses ouvertures allumées la nuit (`fire`). */
+const triangles = (m: ReturnType<typeof getImportedBuildings>[number]) => (m.opaque.positions.length + m.fire.positions.length) / 9;
 
 /** L'archipel tout construit d'une île (le 6e, le 5e…, la classe du dossier de son modèle). */
 const archipelConstruit = (id: BiomeId): VoxelCube[] => {
@@ -113,8 +116,8 @@ describe('Les bâtiments importés, lus sur le disque', () => {
     const forge = (l: ReturnType<typeof getImportedBuildings>) => l.find((m) => m.id === `building:${FORGE}`)!;
     const pres = forge(getImportedBuildings(cubes, FORGE));
     const loin = forge(getImportedBuildings(cubes, 'french-6e-reading'));
-    expect(pres.opaque.positions.length / 9).toBe(buildingTriangles(FORGE, 'final-3000.glb'));
-    expect(loin.opaque.positions.length / 9).toBe(buildingTriangles(FORGE, 'loin.glb'));
+    expect(triangles(pres)).toBe(buildingTriangles(FORGE, 'final-3000.glb'));
+    expect(triangles(loin)).toBe(buildingTriangles(FORGE, 'loin.glb'));
     const boite = (p: Float32Array) => [0, 1, 2].map((k) => [Math.min(...p.filter((_, i) => i % 3 === k)), Math.max(...p.filter((_, i) => i % 3 === k))]);
     const [bp, bl] = [boite(pres.opaque.positions), boite(loin.opaque.positions)];
     // Posés au même pied, à moins d'une case près.
@@ -123,19 +126,52 @@ describe('Les bâtiments importés, lus sur le disque', () => {
   });
 
   it('aux couleurs de ses cibles : les sRVB du fichier ramenées en linéaire (un fond 3a2a22 reste sombre)', () => {
-    const [pres] = deLIle(getImportedBuildings(premiersRivages([Infinity, Infinity, Infinity]), FORGE));
-    const b = readFileSync(buildingPath(FORGE, 'final-3000.glb'));
+    // L'étape 1 : rien d'allumé, toutes les facettes dans l'opaque, dans l'ordre du fichier.
+    const [e1] = deLIle(getImportedBuildings(premiersRivages([tout(0), 0, 0]), FORGE));
+    const b = readFileSync(buildingPath(FORGE, 'etape-1.glb'));
     const fichier = lireGlb(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)).colors;
-    expect(pres.opaque.colors.length).toBe(fichier.length);
+    expect(e1.fire.positions.length).toBe(0);
+    expect(e1.opaque.colors.length).toBe(fichier.length);
     let ecart = 0;
-    for (let i = 0; i < fichier.length; i++) ecart = Math.max(ecart, Math.abs(pres.opaque.colors[i] - lineaire(fichier[i])));
+    for (let i = 0; i < fichier.length; i++) ecart = Math.max(ecart, Math.abs(e1.opaque.colors[i] - lineaire(fichier[i])));
     expect(ecart).toBeLessThan(1e-6);
     // le fond des ouvertures de la forge, 3a2a22 : 0,042 en rouge linéaire (et non 0,227, qui s'affichait 838 en sRVB)
     const fond = [0x3a, 0x2a, 0x22].map((c) => lineaire(c / 255));
     expect(fond[0]).toBeCloseTo(0.0423, 3);
+    expect(isOpening(fond[0], fond[1], fond[2])).toBe(true);
     let vu = false;
-    for (let i = 0; i < pres.opaque.colors.length && !vu; i += 3) vu = [0, 1, 2].every((k) => Math.abs(pres.opaque.colors[i + k] - fond[k]) < 1e-3);
+    for (let i = 0; i < e1.opaque.colors.length && !vu; i += 3) vu = [0, 1, 2].every((k) => Math.abs(e1.opaque.colors[i + k] - fond[k]) < 1e-3);
     expect(vu).toBe(true);
+  });
+
+  it('fini, ses ouvertures tournées vers la façade s’allument la nuit (les fenêtres de la construction), de près comme de loin ; pas sur une île fermée', () => {
+    const cubes = premiersRivages([Infinity, Infinity, Infinity]);
+    for (const near of [FORGE, null]) {
+      const [m] = deLIle(getImportedBuildings(cubes, near));
+      expect(m.fire.positions.length, `de près : ${near}`).toBeGreaterThan(0);
+      for (let i = 0; i < m.fire.colors.length; i += 3) expect(isOpening(m.fire.colors[i], m.fire.colors[i + 1], m.fire.colors[i + 2])).toBe(true);
+      // tournées vers la façade (−y de la grille, côté caméra : l'île de la forge n'est pas tournée)
+      for (let i = 0; i < m.fire.normals.length; i += 3) expect(m.fire.normals[i + 2]).toBeLessThan(-0.7);
+    }
+    // Chaque bâtiment fini a une ouverture allumée de loin : sa porte, posée en couleur de fond par batiment_loin.py ;
+    // sauf ceux dont le modèle n'a pas de porte sombre (leur porte a pris le bois, le toit ou une signature).
+    const sansPorteSombre = new Set<BiomeId>(['maths-6e-calculation', 'english-5e-vocabulary', 'history-5e-middle-ages', 'lv2-5e-introductions']);
+    const parArchipel = new Map<string, ReturnType<typeof getImportedBuildings>>();
+    for (const id of TOUS) {
+      const classe = BUILDING_MODELS[id]!.folder.slice(0, 2);
+      if (!parArchipel.has(classe)) parArchipel.set(classe, getImportedBuildings(archipelConstruit(id), null));
+      const [m] = deLIle(parArchipel.get(classe)!, id);
+      expect(m.fire.positions.length > 0, id).toBe(!sansPorteSombre.has(id));
+    }
+    expect(OUVERTURES).toContain(0x3a2a22);
+    // Sur une île fermée (délavée), rien ne s'allume.
+    const fermee = cubes.map((c) => (c.tag === FORGE ? { ...c, muted: true } : c));
+    expect(deLIle(getImportedBuildings(fermee, FORGE))[0].fire.positions.length).toBe(0);
+    // Dans la construction : dans les fenêtres, allumées les premières (décalage 0), sans appel de plus que les vitres.
+    const m = maillageDeLaConstruction('6e', cubes.filter((c) => c.tag === FORGE && !c.sol), [], { pres: FORGE });
+    const [de, a] = m.monuments![0].fenetres;
+    expect(a).toBeGreaterThan(de);
+    for (let t = de; t < a; t++) expect(m.fenetres.decalages[m.fenetres.indices[3 * t]]).toBe(0);
   });
 
   it.each(TOUS)('%s, posé sur ses deux plans : au pied du premier rang, dans leur emprise à une demi-case près, pas plus haut qu’eux', (id) => {
@@ -188,7 +224,7 @@ describe('Les bâtiments importés, lus sur le disque', () => {
     expect(m.monuments?.length).toBe(1);
     const [premier] = buildingCells(FORGE);
     const tranche = m.monuments![0];
-    expect(tranche.opaque[1] - tranche.opaque[0]).toBe(buildingTriangles(FORGE, 'final-3000.glb'));
+    expect(tranche.opaque[1] - tranche.opaque[0] + tranche.fenetres[1] - tranche.fenetres[0]).toBe(buildingTriangles(FORGE, 'final-3000.glb'));
     // Les fenêtres du bâtiment (ses lanternes en blocs) ne s'allument plus : le modèle les remplace.
     for (const [c] of fenetresDe(cubes)) expect(premier.has(`${c.x},${c.y},${c.z}`)).toBe(false);
     // Le toucher sur le modèle : une case du plan.
@@ -205,7 +241,7 @@ describe('Les bâtiments importés, lus sur le disque', () => {
     const loin = construireParIle('6e', cubes, [], cache, null);
     const pres = construireParIle('6e', cubes, [], cache, FORGE);
     expect(pres.refaites).toBe(1);
-    const t = (x: typeof loin) => x.maillage.opaque.indices.length / 3;
+    const t = (x: typeof loin) => (x.maillage.opaque.indices.length + x.maillage.fenetres.indices.length) / 3;
     expect(t(pres) - t(loin)).toBe(buildingTriangles(FORGE, 'final-3000.glb') - buildingTriangles(FORGE, 'loin.glb'));
     expect(construireParIle('6e', cubes, [], cache, FORGE).change).toBe(false);
   });
