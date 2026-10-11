@@ -7,7 +7,7 @@
 // du passé et le Belvédère de Thalès, dont une borne de plus touchait le carré. Le Manoir du passé a ensuite pris sa forme
 // (GD-12, 5e) : en (0, 14), l'étiquette de l'île se posait sur la tête du Gardien et le toit du manoir bâti lui couvrait le
 // pied (81 % vu, DA, 9 octobre 2026) ; la recherche refaite sur sa terre nouvelle lui donne (15, 15), où il se voit entier
-// dans les deux univers. Données pures, sans import.
+// dans les deux univers. Données pures ; seul import, l'archipel d'une île (`fillsGuardianSquare`).
 import type { BiomeId } from '../biomes';
 import { archipelagoOfIsland } from './archipelagos';
 

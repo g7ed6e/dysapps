@@ -87,7 +87,7 @@ it('au 6e, un Gardien grandit sur son carré : ses cinq cases de large, les quat
     // La boîte que lit la grille le contient, au vingtième près (`GUARDIAN_WORLD_HALF_SIZES`).
     const d = SENTINELLE_DANS_LE_MONDE.demiLargeur;
     const b = sentinelleDe(p.id);
-    expect([b.dx, b.dy], p.id).toEqual([Math.max(d, auVingtieme(dx)), Math.max(d, auVingtieme(dy))]);
+    expect([b.dx, b.dy], `${p.id} : recopier { dx: ${auVingtieme(dx)}, dy: ${auVingtieme(dy)} } dans GUARDIAN_WORLD_HALF_SIZES`).toEqual([Math.max(d, auVingtieme(dx)), Math.max(d, auVingtieme(dy))]);
   });
 });
 
