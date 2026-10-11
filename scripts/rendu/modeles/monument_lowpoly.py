@@ -277,7 +277,7 @@ if BATIMENT:
 attr = me.color_attributes.new("Couleur", "BYTE_COLOR", "CORNER")
 me.color_attributes.active_color = attr
 # valeurs sRVB ecrites telles quelles dans COLOR_0 (que glTF tient pour lineaire) : le jeu les lit ainsi pour les
-# monuments, et les ramene en lineaire pour les batiments (couleursLineaires, src/game/world/buildingModels.ts)
+# monuments comme pour les batiments, et les ramene en lineaire (couleursLineaires, src/game/world/monumentModels.ts)
 for p in me.polygons:
     c = (*T[lab_f[p.index]], 1.0)
     for li in p.loop_indices: attr.data[li].color = c

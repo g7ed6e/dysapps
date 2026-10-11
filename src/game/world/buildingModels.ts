@@ -18,9 +18,8 @@ import type { BiomeId } from '../biomes';
 import type { VoxelCube } from '../Voxel';
 import type { ModeleLu } from './characters/imported/glb';
 import { ETAPES_DU_BATIMENT } from './construction/buildings';
-import { lineaire } from './landMesh';
 import { islandDef } from './map';
-import { facetNormals, finish, type ImportedMonument, LINEAR_WASH, shell, turn } from './monumentModels';
+import { couleursLineaires, facetNormals, finish, type ImportedMonument, LINEAR_WASH, shell, turn } from './monumentModels';
 import { turnCell } from './placement';
 import { decalageDesPlans, planCells, plansFor } from './plans';
 
@@ -91,18 +90,6 @@ const loaded = new Map<string, ModeleLu>();
 const placed = new Map<string, Float32Array>();
 let version = 0;
 const keyOf = (id: BiomeId, file: BuildingFile) => `${id}:${file}`;
-
-/**
- * Les couleurs d'un bâtiment, en linéaire. La chaîne (scripts/rendu/modeles/monument_lowpoly.py) écrit dans COLOR_0 les
- * cibles sRVB du directeur artistique telles quelles, alors que glTF et Three.js tiennent COLOR_0 pour linéaire : lues
- * sans conversion, elles s'affichaient délavées (un fond 3a2a22 en brun moyen). Les monuments, lus par le même `lireGlb`
- * et validés ainsi, ne passent pas ici ; les personnages ont des fichiers déjà linéaires (aplats.py).
- */
-function couleursLineaires(srvb: Float32Array): Float32Array {
-  const out = new Float32Array(srvb.length);
-  for (let i = 0; i < srvb.length; i++) out[i] = lineaire(srvb[i]);
-  return out;
-}
 
 /** Range un fichier lu (par la vue ou par un test), ses couleurs ramenées en linéaire. */
 export function registerBuilding(id: BiomeId, file: BuildingFile, read: ModeleLu): void {

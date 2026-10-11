@@ -95,9 +95,22 @@ const fits = new Map<string, Fit>();
 let version = 0;
 const keyOf = (id: string, stage: number) => `${id}:${stage}`;
 
-/** Range une étape lue (par la vue ou par un test). */
+/**
+ * Les couleurs d'un monument ou d'un bâtiment importé, en linéaire. La chaîne (scripts/rendu/modeles/monument_lowpoly.py)
+ * écrit dans COLOR_0 les cibles sRVB du directeur artistique telles quelles, alors que glTF et Three.js tiennent COLOR_0
+ * pour linéaire : lues sans conversion, elles s'affichaient délavées (un fond 3a2a22 en brun moyen). Ramenées en linéaire
+ * pour les bâtiments, puis pour les monuments (choix du mainteneur, 11 octobre 2026) ; les personnages ont des fichiers
+ * déjà linéaires (aplats.py) et ne passent pas ici.
+ */
+export function couleursLineaires(srvb: Float32Array): Float32Array {
+  const out = new Float32Array(srvb.length);
+  for (let i = 0; i < srvb.length; i++) out[i] = lineaire(srvb[i]);
+  return out;
+}
+
+/** Range une étape lue (par la vue ou par un test), ses couleurs ramenées en linéaire. */
 export function registerMonument(id: string, stage: number, read: ModeleLu): void {
-  loaded.set(keyOf(id, stage), read);
+  loaded.set(keyOf(id, stage), { ...read, colors: couleursLineaires(read.colors) });
   // L'échelle de toutes les étapes vient du modèle entier : on les refait.
   for (const k of placed.keys()) if (k.startsWith(`${id}:`)) placed.delete(k);
   fits.delete(id);
