@@ -814,80 +814,80 @@ it('le port : une jetée dans l’eau devant l’île-port, et la Nef à côté,
   }
 });
 
-it('le port montre l’état du village : lanternes, barques, foyer, caisses, fanions et feu de port, jamais sur la jetée ni à la place du navire', () => {
-  for (const a of ARCHIPELAGOS) {
-    const port = a.port;
-    const portPlans = builtPlans(plansFor(port));
-    const all = { ...portPlans, ...builtPlans(monumentsOf(a.classe)) };
-    const paid = BRIDGES.map((b) => b.id);
-    // Un village à chaque état, du 1 au 5 (le 3e s'arrête à 4 : pas de voyage suivant).
-    const states = [
-      village([]),
-      { ...village([]), parts: portPlans },
-      { ...village(paid), parts: portPlans },
-      { ...village(paid), parts: all },
-      { ...village(everything), parts: all },
-    ].slice(0, a.classe === '3e' ? 4 : 5);
-    const cells = dockCells(port);
-    const jetty = new Set(cells.map((c) => `${c.x},${c.y}`));
-    const posts = dockPosts(port);
-    const o = dockOrigin(port);
-    const inShip = (c: { x: number; y: number }) => c.x >= o.x && c.x < o.x + VEHICLE_SIZE.w && c.y >= o.y && c.y < o.y + VEHICLE_SIZE.d;
-    const end = cells[cells.length - 1];
-    const beacon = { x: end.x, y: end.y - 1 };
-    states.forEach((v, i) => {
-      expect(villageStage(v, a.classe).rank, `${port} état ${i + 1}`).toBe(i + 1);
-      const world = worldCubes(a.classe, {}, v, true);
-      const mine = world.filter((c) => c.tag === port);
-      const onPost = (texture: string) => posts.filter((p) => mine.some((c) => c.x === p.x && c.y === p.y && c.z === p.z + 1 && c.texture === texture));
-      // Les objets ajoutés : ceux du quai (barques, foyer, caisses, fanions), les chapeaux des poteaux et le feu de port.
-      const props = mine.filter((c) => /\/(barque|foyer|caisse|fanion)@/.test(c.decor ?? ''));
-      const added = [...props, ...mine.filter((c) => posts.some((p) => p.x === c.x && p.y === c.y && c.z > p.z) || (c.x === beacon.x && c.y === beacon.y))];
-      for (const c of added) {
-        expect(jetty.has(`${c.x},${c.y}`), `${port} ${c.decor ?? c.texture} sur la jetée`).toBe(false);
-        expect(inShip(c), `${port} ${c.decor ?? c.texture} à la place du navire`).toBe(false);
-      }
-      // Chaque cube ajouté a sa place à lui.
-      const at = new Map<string, number>();
-      for (const c of world) at.set(`${c.x},${c.y},${c.z}`, (at.get(`${c.x},${c.y},${c.z}`) ?? 0) + 1);
-      for (const c of added) expect(at.get(`${c.x},${c.y},${c.z}`), `${port} cube en double en ${c.x},${c.y},${c.z}`).toBe(1);
-      const rank = i + 1;
-      const lit = onPost('lanterne');
-      if (rank === 1) {
-        // Abandonné : aucune lanterne sur la jetée, un bouchon de bois sur les deux derniers poteaux.
-        expect(lit).toEqual([]);
-        expect(onPost('planches')).toHaveLength(2);
-      } else expect(lit).toHaveLength(rank >= 5 ? posts.length : 2);
-      // Au port : une lanterne par poteau, et le feu au bout de la jetée (un pilier de pierre depuis l'eau, ou depuis le
-      // quai dans le ciel, et une lanterne trois cases au-dessus du quai).
-      const fire = mine.filter((c) => c.x === beacon.x && c.y === beacon.y);
-      const rest = vehicleRestZ(a.classe);
-      const pied = a.classe === '3e' ? rest : 0;
-      if (rank >= 5) expect(fire.map((c) => c.texture)).toEqual([...Array(rest + 3 - pied).fill('pierre'), 'lanterne']);
-      else expect(fire).toEqual([]);
-      // Les barques : aucune dans le ciel ; grise sur la grève (1), en bois (2), à l'eau contre la jetée (3), une de chaque (4, 5).
-      const boats = props.filter((c) => c.decor!.includes('/barque@'));
-      const afloat = boats.filter((c) => c.z <= vehicleRestZ(a.classe) + 1 && c.x < end.x && c.y < shoreY(port));
-      const ashore = boats.filter((c) => !afloat.includes(c));
-      if (a.classe === '3e') expect(boats).toEqual([]);
-      else {
-        expect(ashore.length > 0, `${port} barque sur la grève, état ${rank}`).toBe(rank !== 3);
-        expect(afloat.length > 0, `${port} barque amarrée, état ${rank}`).toBe(rank >= 3);
-        expect(ashore.every((c) => Boolean(c.muted) === (rank === 1))).toBe(true);
-      }
-      // Le foyer fume dès la reconstruction ; caisses et fanions au développement.
-      const has = (kind: string) => props.some((c) => c.decor!.includes(`/${kind}@`));
-      expect(has('foyer'), `${port} foyer`).toBe(rank >= 3);
-      expect(has('caisse'), `${port} caisses`).toBe(rank >= 4);
-      expect(new Set(props.filter((c) => c.decor!.includes('/fanion@')).map((c) => c.decor)).size, `${port} fanions`).toBe(rank >= 4 ? 2 : 0);
-      // Le bonhomme marche toujours de sa place au pied de la jetée, et les objets du quai ne sont pas un sol.
-      const ground = walkGround(world, creaturePlacements(a.classe, v.links));
-      const route = boardingRoute(port);
-      const foot = route[2];
-      expect(walkPath(ground, route[0], foot), `${port} état ${rank}`).not.toBeNull();
-      for (const c of props) expect(ground.feet.has(`${c.x},${c.y}`) && ground.feet.get(`${c.x},${c.y}`)! > c.z, `${port} on marche sur ${c.decor}`).toBe(false);
-    });
-  }
+// Un test par archipel : les quatre, à cinq états chacun, dépassaient à froid le délai par défaut (6,6 s lancé seul, 11
+// octobre 2026) ; chacun tient en une ou deux secondes.
+it.each(ARCHIPELAGOS.map((a) => [a.classe, a] as const))('le port montre l’état du village : lanternes, barques, foyer, caisses, fanions et feu de port, jamais sur la jetée ni à la place du navire (%s)', (_, a) => {
+  const port = a.port;
+  const portPlans = builtPlans(plansFor(port));
+  const all = { ...portPlans, ...builtPlans(monumentsOf(a.classe)) };
+  const paid = BRIDGES.map((b) => b.id);
+  // Un village à chaque état, du 1 au 5 (le 3e s'arrête à 4 : pas de voyage suivant).
+  const states = [
+    village([]),
+    { ...village([]), parts: portPlans },
+    { ...village(paid), parts: portPlans },
+    { ...village(paid), parts: all },
+    { ...village(everything), parts: all },
+  ].slice(0, a.classe === '3e' ? 4 : 5);
+  const cells = dockCells(port);
+  const jetty = new Set(cells.map((c) => `${c.x},${c.y}`));
+  const posts = dockPosts(port);
+  const o = dockOrigin(port);
+  const inShip = (c: { x: number; y: number }) => c.x >= o.x && c.x < o.x + VEHICLE_SIZE.w && c.y >= o.y && c.y < o.y + VEHICLE_SIZE.d;
+  const end = cells[cells.length - 1];
+  const beacon = { x: end.x, y: end.y - 1 };
+  states.forEach((v, i) => {
+    expect(villageStage(v, a.classe).rank, `${port} état ${i + 1}`).toBe(i + 1);
+    const world = worldCubes(a.classe, {}, v, true);
+    const mine = world.filter((c) => c.tag === port);
+    const onPost = (texture: string) => posts.filter((p) => mine.some((c) => c.x === p.x && c.y === p.y && c.z === p.z + 1 && c.texture === texture));
+    // Les objets ajoutés : ceux du quai (barques, foyer, caisses, fanions), les chapeaux des poteaux et le feu de port.
+    const props = mine.filter((c) => /\/(barque|foyer|caisse|fanion)@/.test(c.decor ?? ''));
+    const added = [...props, ...mine.filter((c) => posts.some((p) => p.x === c.x && p.y === c.y && c.z > p.z) || (c.x === beacon.x && c.y === beacon.y))];
+    for (const c of added) {
+      expect(jetty.has(`${c.x},${c.y}`), `${port} ${c.decor ?? c.texture} sur la jetée`).toBe(false);
+      expect(inShip(c), `${port} ${c.decor ?? c.texture} à la place du navire`).toBe(false);
+    }
+    // Chaque cube ajouté a sa place à lui.
+    const at = new Map<string, number>();
+    for (const c of world) at.set(`${c.x},${c.y},${c.z}`, (at.get(`${c.x},${c.y},${c.z}`) ?? 0) + 1);
+    for (const c of added) expect(at.get(`${c.x},${c.y},${c.z}`), `${port} cube en double en ${c.x},${c.y},${c.z}`).toBe(1);
+    const rank = i + 1;
+    const lit = onPost('lanterne');
+    if (rank === 1) {
+      // Abandonné : aucune lanterne sur la jetée, un bouchon de bois sur les deux derniers poteaux.
+      expect(lit).toEqual([]);
+      expect(onPost('planches')).toHaveLength(2);
+    } else expect(lit).toHaveLength(rank >= 5 ? posts.length : 2);
+    // Au port : une lanterne par poteau, et le feu au bout de la jetée (un pilier de pierre depuis l'eau, ou depuis le
+    // quai dans le ciel, et une lanterne trois cases au-dessus du quai).
+    const fire = mine.filter((c) => c.x === beacon.x && c.y === beacon.y);
+    const rest = vehicleRestZ(a.classe);
+    const pied = a.classe === '3e' ? rest : 0;
+    if (rank >= 5) expect(fire.map((c) => c.texture)).toEqual([...Array(rest + 3 - pied).fill('pierre'), 'lanterne']);
+    else expect(fire).toEqual([]);
+    // Les barques : aucune dans le ciel ; grise sur la grève (1), en bois (2), à l'eau contre la jetée (3), une de chaque (4, 5).
+    const boats = props.filter((c) => c.decor!.includes('/barque@'));
+    const afloat = boats.filter((c) => c.z <= vehicleRestZ(a.classe) + 1 && c.x < end.x && c.y < shoreY(port));
+    const ashore = boats.filter((c) => !afloat.includes(c));
+    if (a.classe === '3e') expect(boats).toEqual([]);
+    else {
+      expect(ashore.length > 0, `${port} barque sur la grève, état ${rank}`).toBe(rank !== 3);
+      expect(afloat.length > 0, `${port} barque amarrée, état ${rank}`).toBe(rank >= 3);
+      expect(ashore.every((c) => Boolean(c.muted) === (rank === 1))).toBe(true);
+    }
+    // Le foyer fume dès la reconstruction ; caisses et fanions au développement.
+    const has = (kind: string) => props.some((c) => c.decor!.includes(`/${kind}@`));
+    expect(has('foyer'), `${port} foyer`).toBe(rank >= 3);
+    expect(has('caisse'), `${port} caisses`).toBe(rank >= 4);
+    expect(new Set(props.filter((c) => c.decor!.includes('/fanion@')).map((c) => c.decor)).size, `${port} fanions`).toBe(rank >= 4 ? 2 : 0);
+    // Le bonhomme marche toujours de sa place au pied de la jetée, et les objets du quai ne sont pas un sol.
+    const ground = walkGround(world, creaturePlacements(a.classe, v.links));
+    const route = boardingRoute(port);
+    const foot = route[2];
+    expect(walkPath(ground, route[0], foot), `${port} état ${rank}`).not.toBeNull();
+    for (const c of props) expect(ground.feet.has(`${c.x},${c.y}`) && ground.feet.get(`${c.x},${c.y}`)! > c.z, `${port} on marche sur ${c.decor}`).toBe(false);
+  });
 });
 
 it('le bonhomme embarque : de son île à la jetée, planche par planche, jusqu’au pont du navire', () => {

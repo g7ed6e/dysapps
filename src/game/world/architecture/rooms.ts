@@ -39,7 +39,19 @@ export type Role =
   /** La pierre des lieux du village au 5e (la pierre grise de l'école et de la salle des trophées). */
   | 'masonry'
   /** La neige des congères du Glacier (au 5e), tenue loin du fantôme. */
-  | 'snow';
+  | 'snow'
+  /**
+   * Les pièces communes de la cour (./yardPieces.ts, au 6e) : le poteau et les lisses de la barrière, le pied de pierre
+   * du poteau de la lanterne et les côtés de la marche, la dalle du dessus de la marche, la cage de fer et le toit
+   * d'ardoise de la lanterne, ses vitres (dans les fenêtres).
+   */
+  | 'yardPost'
+  | 'yardRail'
+  | 'yardStone'
+  | 'yardSlab'
+  | 'lanternFrame'
+  | 'lanternRoof'
+  | 'lanternGlass';
 
 /** Une facette d'une pièce : un polygone convexe (3 ou 4 sommets) et sa normale. */
 export interface Facette {
@@ -72,6 +84,11 @@ export interface DessinDePiece {
    * tenant (./assembly.ts).
    */
   filant?: boolean;
+  /**
+   * La pièce est déjà tournée dans le monde (la marche de cour, tournée vers la porte : ./yardPieces.ts) : la pose ne la
+   * tourne pas d'après son voisinage.
+   */
+  dansLeMonde?: boolean;
 }
 
 /** Un point de la case tourné de `r` quarts de tour, dans le sens direct, autour de l'axe vertical du centre de la case. */

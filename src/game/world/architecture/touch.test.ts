@@ -28,15 +28,20 @@ function points(pts: P[]): P[] {
 /** Le point (repère Three) est-il dans la case (grille), bords compris ? */
 const dans = (p: P, c: P) => p.x >= c.x - 1e-6 && p.x <= c.x + 1 + 1e-6 && p.z >= c.y - 1e-6 && p.z <= c.y + 1 + 1e-6 && p.y >= c.z - 1e-6 && p.y <= c.z + 1 + 1e-6;
 
-/** Touche chaque triangle de l'opaque en plusieurs points : la case rendue contient le point, et c'est une case du plan. */
+/**
+ * Touche chaque triangle de l'opaque en plusieurs points : la case rendue contient le point, et c'est une case du plan.
+ * Un objet dessiné comme un modèle (le trophée d'un Gardien rallumé, world/objects/) rend la plus proche de ses cases,
+ * qui peut ne pas contenir le point (le lingot posé à cheval sur la pierre et l'or) : seulement une de ses cases.
+ */
 function toucherPartout(m: MaillageDeLaConstruction, cases: Set<string>): { pieces: number; blocs: number } {
   let pieces = 0;
   let blocs = 0;
   for (let t = 0; t < m.opaque.indices.length / 3; t++) {
     const { pts, n } = triangle(m.opaque, t);
+    const modele = (m.monuments ?? []).some((q) => t >= q.opaque[0] && t < q.opaque[1]);
     for (const p of points(pts)) {
       const r = caseDeLaPiece(m, 'opaque', t, p, n) ?? caseDeLaConstruction(p, n);
-      expect(dans(p, r.cell), `${t} ${JSON.stringify(p)} → ${JSON.stringify(r.cell)}`).toBe(true);
+      if (!modele) expect(dans(p, r.cell), `${t} ${JSON.stringify(p)} → ${JSON.stringify(r.cell)}`).toBe(true);
       expect(cases.has(`${r.cell.x},${r.cell.y},${r.cell.z}`), `${t} → ${JSON.stringify(r.cell)}`).toBe(true);
       expect(Math.abs(r.next.x - r.cell.x) + Math.abs(r.next.y - r.cell.y) + Math.abs(r.next.z - r.cell.z)).toBe(1);
     }
