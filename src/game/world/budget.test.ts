@@ -3,6 +3,7 @@ import { trophyBlock } from '../trophies';
 import { chargerLesModelesDuDisque } from './characters/imported/fromDisk.testing';
 import { loadMonumentsFromDisk } from './monumentModels.fromDisk.testing';
 import { loadBuildingsFromDisk } from './buildingModels.fromDisk.testing';
+import { loadNefFromDisk } from './nefModels.fromDisk.testing';
 import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionAuPire, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseIsland, choiceMiddle, dragChoice } from './arrangeMode';
@@ -30,12 +31,12 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
     expect(drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
   }
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
-  expect(RENDER_BUDGET_6E).toEqual({ triangles: 85_250, drawCalls: 40 });
+  expect(RENDER_BUDGET_6E).toEqual({ triangles: 86_660, drawCalls: 40 });
   // GD-12 : 78 700 ailleurs (mainteneur, 9 octobre 2026, carte « Relever ») ; relevé à 86 000 par le mainteneur le
   // 9 octobre 2026 pour le Fournil des partages et la Grotte des légendes (5e) ; à 86 700 pour les personnages importés
   // de la 5e (mainteneur, 10 octobre 2026). Les monuments importés d'Archipéo : 81 500 et 91 700 (86 700 + 5 000, relevés
-  // par le mainteneur le 10 octobre 2026).
-  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 94_950, drawCalls: 40 });
+  // par le mainteneur le 10 octobre 2026). La Nef en modèles peints : 86 660 et 96 430 (« Relever », 11 octobre 2026).
+  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 96_430, drawCalls: 40 });
 });
 
 it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : un appel de plus au plus, sous le plafond', () => {
@@ -142,13 +143,13 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // construction prend 5 000 partout (81 290, 91 685, 88 725, 87 855). Les personnages importés de la 4e : les Anciens
   // Ateliers à 90 960 ; ceux de la 3e : les Îles du Ciel à 89 565. Les bâtiments des plans importés (mainteneur,
   // 10 octobre 2026) : la construction prend 3 750 aux Premiers Rivages, 2 970 aux Îles Brumeuses, 3 950 ailleurs.
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés) : 85 040 triangles et 25 appels aux Premiers Rivages, 94 655, 94 910 et 93 515 et 24 appels ailleurs', () => {
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, la Nef importée) : 86 450 triangles et 25 appels aux Premiers Rivages, 96 135, 96 390 et 94 995 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([85_040, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([94_655, 24]);
-    expect([total('4e'), appels('4e')]).toEqual([94_910, 24]);
-    expect([total('3e'), appels('3e')]).toEqual([93_515, 24]);
+    expect([total('6e'), appels('6e')]).toEqual([86_450, 25]);
+    expect([total('5e'), appels('5e')]).toEqual([96_135, 24]);
+    expect([total('4e'), appels('4e')]).toEqual([96_390, 24]);
+    expect([total('3e'), appels('3e')]).toEqual([94_995, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la
@@ -277,6 +278,18 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
       expect(m.drawCalls, a).toBeLessThanOrEqual(enveloppeDe('construction', a).drawCalls);
     }
   }, 120_000);
+
+  // La Nef en modèles peints (GD-15, 11 octobre 2026), lus sur le disque : chaque forme et chaque chantier tiennent le
+  // poste du navire, sans appel de plus.
+  it('R5 : avec la Nef importée, le navire tient son enveloppe au pire de ses formes et de ses chantiers, dans chaque archipel', () => {
+    loadNefFromDisk();
+    for (const a of ARCHIPELAGO_IDS) {
+      const m = navireCost(a);
+      expect(m.triangles, a).toBeGreaterThan(1_700);
+      expect(m.triangles, a).toBeLessThanOrEqual(enveloppeDe('navire', a).triangles);
+      expect(m.drawCalls, a).toBeLessThanOrEqual(enveloppeDe('navire', a).drawCalls);
+    }
+  }, 60_000);
 });
 
 it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026), puis 120 avec une seule texture pour les blocs (piste 2, 7 octobre 2026), puis 102 000 triangles pour les grands projets du 4e (GD-10, 8 octobre 2026)', () => {

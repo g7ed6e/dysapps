@@ -179,6 +179,11 @@ export interface OptionsDeLaConstruction {
   bornes?: boolean;
   /** Les cubes de la Nef : sa toile prend le crème Brume (et rien n'y devient pièce d'architecture). */
   navire?: boolean;
+  /**
+   * Archipéo : la Nef importée (./nefModels.ts, `nefOf`), avec `navire` : la forme montrée en modèle à la place de ses
+   * cubes posés, sa lanterne dans les fenêtres ; les pièces de l'étape en chantier restent des cubes ou des fantômes.
+   */
+  nef?: ImportedMonument | null;
   /** Le kit d'architecture (lot 7, ./architecture/kits/) : par défaut, celui de l'archipel. */
   kit?: Kit;
   /**
@@ -347,7 +352,7 @@ export function maillageDeLaConstruction(
   const ponts = options.navire ? null : pontsDePierreEtDeBois(cubes);
   // Les monuments et les bâtiments importés (./monumentModels.ts, ./buildingModels.ts), chargés : l'étape du chantier
   // remplace les cubes posés.
-  const imported = options.navire ? [] : modelesImportes(cubes, options.pres);
+  const imported = options.navire ? (options.nef ? [options.nef] : []) : modelesImportes(cubes, options.pres);
   const importedCells = new Set(imported.flatMap((m) => [...m.replaced]));
   // Le phare du large du 5e : ses pièces finies laissent la place à son modèle (./offshoreLighthouse.ts), sauf s'il est importé.
   const large = options.navire || imported.some((m) => m.id === PHARE_DU_LARGE) ? null : phareDuLarge(cubes);
