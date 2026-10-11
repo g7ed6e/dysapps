@@ -20,15 +20,16 @@ it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvr
   expect(village.links).toContain('passage-5e');
 });
 
-it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque archipel tout construit', () => {
+it.each(ARCHIPELAGO_IDS)('le monde en blocs ne recule pas : triangles et appels de dessin de chaque archipel tout construit (%s)', (a) => {
   // Mesuré au lot R0 (terrain, créatures, Gardiens, navire, bonhomme) : 77 216 triangles et 234 appels dans les
   // Premiers Rivages, 46 500 à 52 300 triangles et 184 à 193 appels ailleurs. C'est au-dessus du budget d'Archipéo :
   // le monde en blocs ne le tiendra pas ; ces plafonds l'empêchent seulement de grossir jusqu'à son remplacement (lot 6).
-  for (const a of ARCHIPELAGO_IDS) {
-    const { triangles, drawCalls } = sceneCost(a);
-    expect(triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
-    expect(drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
-  }
+  const { triangles, drawCalls } = sceneCost(a);
+  expect(triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+  expect(drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
+});
+
+it('les plafonds des archipels', () => {
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
   expect(RENDER_BUDGET_6E).toEqual({ triangles: 86_850, drawCalls: 40 });
   // GD-12 : 78 700 ailleurs (mainteneur, 9 octobre 2026, carte « Relever ») ; relevé à 86 000 par le mainteneur le
@@ -38,28 +39,25 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
   expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 94_950, drawCalls: 40 });
 });
 
-it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : un appel de plus au plus, sous le plafond', () => {
-  const [tout, avecLesCommandes] = [toutConstruit(), toutConstruitAvecLesCommandes()];
-  for (const a of ARCHIPELAGO_IDS) {
-    const sans = sceneCost(a, false, true, tout);
-    const avec = sceneCost(a, true, true, avecLesCommandes);
-    // Dans les morceaux du terrain (world/blockMesh.ts) : une petite construction n'en ouvre un que s'il n'y avait rien.
-    expect(avec.drawCalls, a).toBeLessThanOrEqual(sans.drawCalls + 1);
-    expect(avec.triangles, a).toBeGreaterThan(sans.triangles);
-    expect(avec.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
-  }
+// Un test par archipel : les quatre mondes en blocs, avec et sans les commandes, dépassaient à froid le délai par défaut
+// (5,7 s lancé seul, 11 octobre 2026), sans que rien n'y soit lent ; chacun tient en une ou deux secondes.
+it.each(ARCHIPELAGO_IDS)('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : un appel de plus au plus, sous le plafond (%s)', (a) => {
+  const sans = sceneCost(a, false, true, toutConstruit());
+  const avec = sceneCost(a, true, true, toutConstruitAvecLesCommandes());
+  // Dans les morceaux du terrain (world/blockMesh.ts) : une petite construction n'en ouvre un que s'il n'y avait rien.
+  expect(avec.drawCalls, a).toBeLessThanOrEqual(sans.drawCalls + 1);
+  expect(avec.triangles, a).toBeGreaterThan(sans.triangles);
+  expect(avec.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
 });
 
-it('les bulles des objets touchables (proposition P2) : trois quadrilatères en un appel, et le monde en blocs reste sous son plafond', () => {
-  for (const a of ARCHIPELAGO_IDS) {
-    const signes = signesCost();
-    // Trois bulles au plus à la fois, dans le maillage des plaques des créatures, quel que soit l'état du jeu.
-    expect(signes, a).toEqual({ triangles: 6, drawCalls: 1 });
-    // Avec les petites constructions des commandes, sous le plafond.
-    const blocs = sceneCost(a, true);
-    expect(blocs.triangles + signes.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
-    expect(blocs.drawCalls + signes.drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
-  }
+it.each(ARCHIPELAGO_IDS)('les bulles des objets touchables (proposition P2) : trois quadrilatères en un appel, et le monde en blocs reste sous son plafond (%s)', (a) => {
+  const signes = signesCost();
+  // Trois bulles au plus à la fois, dans le maillage des plaques des créatures, quel que soit l'état du jeu.
+  expect(signes, a).toEqual({ triangles: 6, drawCalls: 1 });
+  // Avec les petites constructions des commandes, sous le plafond.
+  const blocs = sceneCost(a, true);
+  expect(blocs.triangles + signes.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+  expect(blocs.drawCalls + signes.drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
 });
 
 it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la moitié du budget des triangles', () => {
