@@ -22,7 +22,12 @@ export { AUTOUR_DE_LA_DESTINATION, BORNES_AU_TELEPHONE, cadrageDeLaCarte, cadrag
 declare global {
   interface Window {
     /** La caméra, pour les captures (en développement, ou avec `?mesures`) : voir `Camera.poser`. */
-    __dysappsCamera?: { poser(): number; ecran(p: { x: number; y: number; z: number }): { x: number; y: number } | null };
+    __dysappsCamera?: {
+      poser(): number;
+      ecran(p: { x: number; y: number; z: number }): { x: number; y: number } | null;
+      /** Où se pose dans la page le buste du bonhomme (la caméra à son but), pour zoomer sur lui à la molette. */
+      bonhomme(): { x: number; y: number } | null;
+    };
     /**
      * Pour les captures d'un lot (scripts/rendu/mesures.mjs, `poseA`, avec `?mesures`) : la pose d'une partie tenue à
      * cette part de sa durée dès son lancement (three/cubes.ts, `tenirLaVague`).

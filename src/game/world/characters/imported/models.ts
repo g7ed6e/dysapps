@@ -269,7 +269,15 @@ const ESPECES_IMPORTEES: Partial<Record<BiomeId, Espece>> = { ...ESPECES_6E, ...
 function creatureImportee(id: BiomeId, lu: ModeleLu, quarts: number, niveau: Niveau): FacettesDePersonnage {
   const espece = ESPECES_IMPORTEES[id];
   if (!espece) throw new Error(`Pas d’espèce pour ${id}`);
-  const taille = tailleDe(espece);
+  return importedFacets(lu, quarts, tailleDe(espece), niveau);
+}
+
+/**
+ * Un personnage vivant importé (une créature, Kéo : ./keo.ts), à `taille` blocs de haut, les pieds en 0, le visage vers
+ * −Z ; ses couleurs (celles du modèle, peint en aplats) nuancées selon la facette, éclaircies de loin. Une seule pièce,
+ * le corps ; de près, son squelette s'il en a un, placé comme ses sommets : la vue l'anime.
+ */
+export function importedFacets(lu: ModeleLu, quarts: number, taille: number, niveau: Niveau): FacettesDePersonnage {
   const place = repere(lu.positions, (h) => taille / h, 0, quarts);
   const positions = placer(lu.positions, place);
   const normals = normalesPlates(positions);

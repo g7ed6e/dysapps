@@ -1,4 +1,4 @@
-// Les personnages de la scène 3D : le bonhomme (qui marche le long de son itinéraire, d'un petit pas sautillant, et se
+// Les personnages de la scène 3D : le bonhomme (qui marche le long de son itinéraire, d'un petit pas sautillant en cubes, d'une marche d'enfant quand c'est Kéo, et se
 // tourne vers là où il va) et les créatures et Gardiens (un petit balancement, un pas de temps en temps). Leur dessin,
 // leurs « habits », est en cubes ; dans l’univers Archipéo (voir rendering.ts), ce sont les personnages d'Archipéo en facettes
 // (./paintedCharacters.ts), chargés à la demande : sans le drapeau, leurs modèles ne pèsent pas sur la 3D.
@@ -56,8 +56,12 @@ export interface Personnages extends PartieDeLaScene {
 
 /** Le dessin des personnages, dans les groupes du bonhomme et des créatures : en cubes, ou ceux d'Archipéo. */
 export interface Habits {
-  /** Les bras et les jambes du bonhomme, et le sens de leur balancement quand il marche. */
-  membres: { os: THREE.Object3D; sens: number }[];
+  /**
+   * Le corps du bonhomme, image par image (`dt` en secondes) : `enMarche` tant qu'il avance. Le bonhomme en cubes
+   * balance ses bras et ses jambes (`balancer`) ; Kéo marche et respire (./paintedCharacters.ts). Avec `reduit`, il
+   * reste dans sa pose de repos.
+   */
+  bougerLeBonhomme(t: number, dt: number, enMarche: boolean, reduit: boolean): void;
   /** Pose les créatures et les Gardiens ; `pres` : l'île de près (ses personnages importés de près). */
   poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>, pres?: BiomeId | null): void;
   /** Les créatures bougent (rien avec « Réduire les animations »). */
@@ -70,6 +74,15 @@ export interface Habits {
   /** Le geste du signe (GD-4, étape 1) ; les personnages d'Archipéo n'en font rien (ils ont déjà leur geste du bras). */
   faireSigne?(id: BiomeId, debut: number): void;
   dispose(): void;
+}
+
+/** Le pas sautillant du bonhomme en cubes : ses membres balancent de ±`angle` radians, à `vitesse` radians par seconde. */
+const PAS_SAUTILLE = { vitesse: 11, angle: 0.8 } as const;
+
+/** Balance les bras et les jambes du bonhomme dessiné en code, chacun dans son `sens` ; à l'arrêt, droits. */
+export function balancer(membres: readonly { os: THREE.Object3D; sens: number }[], t: number, enMarche: boolean): void {
+  const swing = enMarche ? Math.sin(t * PAS_SAUTILLE.vitesse) * PAS_SAUTILLE.angle : 0;
+  for (const m of membres) m.os.rotation.x = m.sens * swing;
 }
 
 /** Une créature en cubes : son groupe dans la scène et sa promenade (world/scene.ts). */
@@ -91,7 +104,7 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
   avatarBody.scale.setScalar(AVATAR_SCALE);
   avatarBody.position.set(-8 * AVATAR_SCALE, 0, -4 * AVATAR_SCALE);
   avatarGroup.add(avatarBody);
-  const membres: Habits['membres'] = [];
+  const membres: { os: THREE.Object3D; sens: number }[] = [];
   const arms: THREE.Group[] = [];
   const legs: THREE.Group[] = [];
   for (const part of AVATAR_PARTS) {
@@ -183,7 +196,7 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
   };
 
   return {
-    membres,
+    bougerLeBonhomme: (t, _dt, enMarche) => balancer(membres, t, enMarche),
     poserLesCreatures: (creatures) => {
       viderLesCreatures();
       const strolls = startStrolls(creatures, performance.now());
@@ -280,8 +293,12 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     if (places) h.poserLesCreatures(places, pres);
   };
   if (monde.habillage.personnages === 'modeles')
-    // Les personnages importés de l'archipel arrivent avec eux (ceux qui manquent restent dessinés en code).
-    Promise.all([import('./paintedCharacters'), import('../importedCharacters').then(({ chargerLesModeles }) => chargerLesModeles(monde.archipel))])
+    // Les personnages importés de l'archipel arrivent avec eux, et Kéo dans la tenue de l'archipel (ceux qui manquent
+    // restent dessinés en code).
+    Promise.all([
+      import('./paintedCharacters'),
+      import('../importedCharacters').then(({ chargerLesModeles, loadKeo }) => Promise.all([chargerLesModeles(monde.archipel), loadKeo(monde.archipel)])),
+    ])
       .then(([{ habiller }]) => {
         if (!fini) vetir(habiller(monde, champ, instant, lumiere, avatarGroup, creaturesGroup));
       })
@@ -348,14 +365,13 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
       tete.objet.getWorldPosition(out).add(tete.ecart);
       return true;
     },
-    // Le bonhomme marche le long de son itinéraire (à vitesse constante, un petit pas sautillant), puis attend.
-    deplacer: (t, _dt, reduit) => {
+    // Le bonhomme marche le long de son itinéraire (à vitesse constante), puis attend ; son corps suit (`bougerLeBonhomme`).
+    deplacer: (t, dt, reduit) => {
       instant.marche = false;
       instant.traversee = null;
-      if (!p.marche) return;
-      const pose = walkPose(p.marche, instant.now, reduit);
-      const swing = pose.moving ? Math.sin(t * 11) * 0.8 : 0;
-      for (const m of habits?.membres ?? []) m.os.rotation.x = m.sens * swing;
+      const pose = p.marche ? walkPose(p.marche, instant.now, reduit) : null;
+      habits?.bougerLeBonhomme(t, dt, pose?.moving ?? false, reduit);
+      if (!p.marche || !pose) return;
       // Sur le sol à facettes, posé sur la pente (jamais dedans) ; sur un pont ou dans le monde en blocs, à sa hauteur.
       avatarGroup.position.set(pose.x + 0.5, piedsSur(champ(), pose.x + 0.5, pose.y + 0.5, pose.z), pose.y + 0.5);
       // Il regarde là où il va. Le visage est vers -Z : pour regarder vers (dx, dy) (Y du plan = Z de la scène), on

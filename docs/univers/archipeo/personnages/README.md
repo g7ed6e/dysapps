@@ -53,3 +53,7 @@ mflux-generate-z-image-turbo --base-model z-image-turbo --model deepsweet/Z-Imag
 ```
 
 Environ 6 minutes par image et 11 Go de mémoire sur le Mac de référence.
+
+## Kéo, le bonhomme
+
+Quatre images de plus, une par tenue de Kéo, le bonhomme d’Archipéo (décision du mainteneur, 11 octobre 2026) : `6e-keo-creature-explorateur.webp`, `5e-keo-creature-cire.webp`, `4e-keo-creature-mecano.webp`, `3e-keo-creature-cartographe.webp`. Faites par le fil du mainteneur (graine 42, l’image du milieu de chaque essai, gardées dans la Bibliothèque sous `generation/keo/`) ; le bloc C2PA ajouté par la Bibliothèque est retiré. Le nom garde `-creature-`, comme l’exige la chaîne des modèles 3D ([Kéo, le bonhomme](modeles.md#kéo-le-bonhomme)).
