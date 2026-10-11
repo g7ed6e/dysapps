@@ -144,33 +144,34 @@ describe('Les bâtiments importés, lus sur le disque', () => {
     expect(vu).toBe(true);
   });
 
-  it('fini, ses ouvertures tournées vers la façade s’allument la nuit (les fenêtres de la construction), de près comme de loin ; pas sur une île fermée', () => {
+  it('fini, de loin, sa porte s’allume la nuit (les fenêtres de la construction) ; rien de près, ni sur une île fermée', () => {
     const cubes = premiersRivages([Infinity, Infinity, Infinity]);
-    for (const near of [FORGE, null]) {
-      const [m] = deLIle(getImportedBuildings(cubes, near));
-      expect(m.fire.positions.length, `de près : ${near}`).toBeGreaterThan(0);
-      for (let i = 0; i < m.fire.colors.length; i += 3) expect(isOpening(m.fire.colors[i], m.fire.colors[i + 1], m.fire.colors[i + 2])).toBe(true);
-      // tournées vers la façade (−y de la grille, côté caméra : l'île de la forge n'est pas tournée)
-      for (let i = 0; i < m.fire.normals.length; i += 3) expect(m.fire.normals[i + 2]).toBeLessThan(-0.7);
-    }
-    // Chaque bâtiment fini a une ouverture allumée de loin : sa porte, posée en couleur de fond par batiment_loin.py ;
-    // sauf ceux dont le modèle n'a pas de porte sombre (leur porte a pris le bois, le toit ou une signature).
+    // De près, rien : le fond sombre d'un modèle TRELLIS tombe aussi sur un pignon ou un coin de mur.
+    expect(deLIle(getImportedBuildings(cubes, FORGE))[0].fire.positions.length).toBe(0);
+    // De loin : la porte, deux triangles du fond sombre, tournés vers la façade (−y de la grille, côté caméra), au sol.
+    const [loin] = deLIle(getImportedBuildings(cubes, null));
+    expect(loin.fire.positions.length / 9).toBe(2);
+    for (let i = 0; i < loin.fire.colors.length; i += 3) expect(isOpening(loin.fire.colors[i], loin.fire.colors[i + 1], loin.fire.colors[i + 2])).toBe(true);
+    for (let i = 0; i < loin.fire.normals.length; i += 3) expect(loin.fire.normals[i + 2]).toBeLessThan(-0.7);
+    const pied = Math.min(...loin.opaque.positions.filter((_, i) => i % 3 === 1));
+    expect(Math.min(...loin.fire.positions.filter((_, i) => i % 3 === 1))).toBeCloseTo(pied, 3);
+    // Chaque bâtiment fini a sa porte allumée de loin (deux triangles), sauf ceux dont la porte n'est pas sombre.
     const sansPorteSombre = new Set<BiomeId>(['maths-6e-calculation', 'english-5e-vocabulary', 'history-5e-middle-ages', 'lv2-5e-introductions']);
     const parArchipel = new Map<string, ReturnType<typeof getImportedBuildings>>();
     for (const id of TOUS) {
       const classe = BUILDING_MODELS[id]!.folder.slice(0, 2);
       if (!parArchipel.has(classe)) parArchipel.set(classe, getImportedBuildings(archipelConstruit(id), null));
       const [m] = deLIle(parArchipel.get(classe)!, id);
-      expect(m.fire.positions.length > 0, id).toBe(!sansPorteSombre.has(id));
+      expect(m.fire.positions.length / 9, id).toBe(sansPorteSombre.has(id) ? 0 : 2);
     }
     expect(OUVERTURES).toContain(0x3a2a22);
     // Sur une île fermée (délavée), rien ne s'allume.
     const fermee = cubes.map((c) => (c.tag === FORGE ? { ...c, muted: true } : c));
-    expect(deLIle(getImportedBuildings(fermee, FORGE))[0].fire.positions.length).toBe(0);
-    // Dans la construction : dans les fenêtres, allumées les premières (décalage 0), sans appel de plus que les vitres.
-    const m = maillageDeLaConstruction('6e', cubes.filter((c) => c.tag === FORGE && !c.sol), [], { pres: FORGE });
+    expect(deLIle(getImportedBuildings(fermee, null))[0].fire.positions.length).toBe(0);
+    // Dans la construction : dans les fenêtres, allumée la première (décalage 0).
+    const m = maillageDeLaConstruction('6e', cubes.filter((c) => c.tag === FORGE && !c.sol), [], { pres: null });
     const [de, a] = m.monuments![0].fenetres;
-    expect(a).toBeGreaterThan(de);
+    expect(a - de).toBe(2);
     for (let t = de; t < a; t++) expect(m.fenetres.decalages[m.fenetres.indices[3 * t]]).toBe(0);
   });
 

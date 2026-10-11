@@ -87,8 +87,7 @@ export const BUILDING_FAR_TRIANGLES = 200;
 /**
  * Le fond sombre des ouvertures (porte, arche, étal, le sol vu par la porte), en sRVB : celui des lignes du 6e, de la 5e,
  * et le fond bleu nuit de l'igloo de Frimas (colonne `cibles` de reglages.csv, scripts/rendu/modeles/monument_lowpoly.py).
- * Un bâtiment fini allume la nuit celles qui regardent sa façade, comme les vitres des bâtiments en blocs : elles vont
- * dans les fenêtres de la construction (sombres le jour, la lueur la nuit), sans triangle de plus.
+ * La porte de la version de loin, de cette couleur, s'allume la nuit (`farDoor`).
  */
 export const OUVERTURES = [0x3a2a22, 0x33291f, 0x2e3a44] as const;
 const OUVERTURES_LINEAIRES = OUVERTURES.map((h) => [16, 8, 0].map((s) => lineaire(((h >> s) & 255) / 255)));
@@ -96,6 +95,39 @@ const OUVERTURES_LINEAIRES = OUVERTURES.map((h) => [16, 8, 0].map((s) => lineair
 /** Cette couleur (linéaire) est-elle le fond d'une ouverture ? */
 export function isOpening(r: number, g: number, b: number): boolean {
   return OUVERTURES_LINEAIRES.some(([R, G, B]) => Math.abs(r - R) < 0.002 && Math.abs(g - G) < 0.002 && Math.abs(b - B) < 0.002);
+}
+
+/**
+ * La porte d'un fichier de loin (scripts/rendu/modeles/batiment_loin.py la pose sur la façade, du sol au plus haut) : les
+ * triangles du fond sombre tournés vers la façade (+Z du fichier) qui partent du sol, les plus hauts (pas une bande de
+ * pied). Un bâtiment fini l'allume la nuit, comme les vitres des bâtiments en blocs : elle va dans les fenêtres de la
+ * construction (sombre le jour, la lueur la nuit), sans triangle de plus. De près, rien ne s'allume : dans un modèle
+ * TRELLIS, le fond sombre tombe aussi sur un pignon, un coin de mur, le pied d'un billot (la forge de Tunel, directeur
+ * artistique, 11 octobre 2026), et la porte n'y est pas marquée.
+ */
+export function farDoor(read: ModeleLu): Set<number> {
+  const p = read.positions;
+  const c = read.colors;
+  let y0 = Infinity;
+  let y1 = -Infinity;
+  for (let i = 1; i < p.length; i += 3) {
+    y0 = Math.min(y0, p[i]);
+    y1 = Math.max(y1, p[i]);
+  }
+  const marge = 0.01 * (y1 - y0);
+  const auSol: { t: number; haut: number }[] = [];
+  for (let t = 0; t < p.length; t += 9) {
+    if (!isOpening(c[t], c[t + 1], c[t + 2])) continue;
+    // la normale (sans la normer) : vers +Z, la façade
+    const [ax, ay, az] = [p[t + 3] - p[t], p[t + 4] - p[t + 1], p[t + 5] - p[t + 2]];
+    const [bx, by, bz] = [p[t + 6] - p[t], p[t + 7] - p[t + 1], p[t + 8] - p[t + 2]];
+    const [nx, ny, nz] = [ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx];
+    if (nz <= 0.7 * Math.hypot(nx, ny, nz)) continue;
+    if (Math.min(p[t + 1], p[t + 4], p[t + 7]) > y0 + marge) continue;
+    auSol.push({ t: t / 9, haut: Math.max(p[t + 1], p[t + 4], p[t + 7]) });
+  }
+  const plusHaut = Math.max(...auSol.map((q) => q.haut));
+  return new Set(auSol.filter((q) => q.haut > plusHaut - marge).map((q) => q.t));
 }
 
 // ---------- Le registre ----------
@@ -216,7 +248,7 @@ function localFile(id: BiomeId, file: BuildingFile): Float32Array | null {
  * Les bâtiments importés de ce monde, chargés et assez avancés : pour chacun, l'étape que suit l'avancée de ses deux
  * premiers plans, le fichier de près (sur l'île `near`) ou de loin, posé sur l'île telle qu'elle est posée et tournée, et
  * les cases posées qu'il remplace. Même forme que les monuments importés (./monumentModels.ts), sans halo : son « feu »,
- * ce sont ses ouvertures, allumées la nuit une fois fini (`isOpening`).
+ * c'est sa porte de loin, allumée la nuit une fois fini (`farDoor`).
  */
 export function getImportedBuildings(cubes: readonly VoxelCube[], near: BiomeId | null = null): ImportedMonument[] {
   // Les cubes des plans de chaque île qui a son modèle chargé (ni le sol, ni un lieu, ni une borne, ni le décor).
@@ -251,19 +283,13 @@ export function getImportedBuildings(cubes: readonly VoxelCube[], near: BiomeId 
       positions[i + 2] = def.core.y + t.y + 0.5;
     }
     const opaque = shell();
-    // Fini, sur une île ouverte : ses ouvertures s'allument la nuit (dans les fenêtres, comme le feu d'un monument).
+    // Fini, de loin, sur une île ouverte : sa porte s'allume la nuit (dans les fenêtres, comme le feu d'un monument).
     const lights = shell();
-    // Seules les facettes tournées vers la façade (la porte, le fond vu par elle) : le fond sombre sert aussi au dessous
-    // d'un avant-toit, à une bande de côté de la version de loin, qui ne s'allument pas.
-    const lit = stage === 2 && !muted;
-    const o = turnCell(0, 0, def.quarts);
-    const d = turnCell(0, -1, def.quarts);
-    const [fx, fz] = [d.x - o.x, d.y - o.y];
+    const door = stage === 2 && !muted && id !== near ? farDoor(read) : null;
     const normals = facetNormals(positions);
     const col = read.colors;
     for (let t = 0; t < positions.length; t += 9) {
-      const front = normals[t] * fx + normals[t + 2] * fz > 0.7;
-      const target = lit && front && isOpening(col[t], col[t + 1], col[t + 2]) ? lights : opaque;
+      const target = door?.has(t / 9) ? lights : opaque;
       for (let i = t; i < t + 9; i += 3) {
         target.pos.push(positions[i], positions[i + 1], positions[i + 2]);
         target.nor.push(normals[i], normals[i + 1], normals[i + 2]);
