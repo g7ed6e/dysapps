@@ -23,7 +23,7 @@
 6e-horloge-creature-tick;-;0;1 bras=non;372a1e>8a7458 b0a48f>e0d0b0 4a2a06>b06a38 604e3a>8a7458;Tick : le pelage, le museau clair, le gilet.
 6e-laboratoire-creature-bulle;-;0;1 jambes=non bras=non queue=non;1f464d>5f8db4 0d282d>5f8db4 3f747b>5f8db4 afb8b9>e6e2d6;Bulle : les trois bleus sont la même matière, le tablier.
 6e-mine-creature-tunel;-;0;0 bras=non;2e1b0e>a07050 8d897d>cdbf9e 47301f>a07050 615c53>8a9098;Tunel : le pelage brun clair, le gilet de lin, la pioche en fer.
-6e-plaine-creature-coco;-;0;3 aire=oui;470902>c04a3c 78553d>d2bc92 110402>2e2422 310802>c04a3c;Coco : la coccinelle rouge, la ceinture de lin et le bâton, les taches, la tête et les pattes restent sombres.
+6e-plaine-creature-coco;-;0 voxel=0.01;3 aire=oui;480b03>c04a3c 896d54>d2bc92 060201>2e2422 6d462c>d2bc92;Coco : la coccinelle rouge, la ceinture de lin et le bâton, les taches, la tête et les pattes restent sombres.
 6e-pointe-creature-boussole;-;0;1 bras=non;d0ccc8>e8e4da e2e3e2>e8e4da c29e81>e8b47c 654427>8a5a34;Boussole : les plumes blanches, le bec, la sacoche.
 6e-riviere-creature-nenu;-;0;3 aire=oui cou=0.7 bras=R leve=R;463112>cfb07c 043c08>78b060 2a7827>78b060 261003>a87a48;Nénu : la grenouille verte, la cire, la besace.
 6e-tour-creature-grimoire;-;0;0 cou=0.82 bras=non;262329>7a6e62 302a48>827ca8 adaa97>d8ccac 080912>8e6440;Grimoire : la carapace, la robe violette, les pages, le livre et le bord de la carapace.
