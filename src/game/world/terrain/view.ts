@@ -6,7 +6,8 @@ import { type BridgeDef, getArchipelago, islandsOf } from '../archipelago';
 import { type BiomeId, BIOMES, estLieuDOption } from '../../biomes';
 import { BAC_LONG, bridgePath } from './links';
 import { islandCenter } from './base';
-import { layoutCache, turnDirection } from '../placement';
+import { layoutCache, turnDirection, turnPoint } from '../placement';
+import { GD11_GUARDIAN_SQUARES, GUARDIAN_SQUARE_SIDE } from '../guardianSquares';
 import { featureSide, hasLagoon, LAGOON_MIDDLE } from '../formes';
 import { silhouetteDe } from '../silhouettes';
 import { frameOf } from '../footprint';
@@ -306,11 +307,33 @@ const LAGOON_FRAMING = { towards: 0.55, pullBack: 1.3 } as const;
 
 
 /**
+ * Les îles dont la vue glisse vers le Gardien (piste C2 du directeur artistique, retenue par le mainteneur le
+ * 11 octobre 2026, GD-16) : sur son carré au bord du cœur, il sortait en partie de la vue de l'île la plus étroite. La
+ * vue vise alors un point entre le milieu du cœur et le milieu de son carré, à `towards` du chemin : assez pour qu'il
+ * tienne entier dans le cadre, dans les deux univers (terrain.test.ts) ; le cœur, ses bornes et ses lieux restent vus.
+ */
+const GUARDIAN_FRAMING: Readonly<Partial<Record<BiomeId, { towards: number }>>> = {
+  'french-6e-grammar-spelling': { towards: 0.4 },
+  'french-6e-reading': { towards: 0.25 },
+  'maths-6e-calculation': { towards: 0.1 },
+  'technology-6e-objects': { towards: 0.1 },
+};
+
+/**
  * Le point que vise la vue d'une île (x, y de la grille, z en hauteur) : le milieu de son cœur (`islandCenter`) ; pour
- * une île qui a un lagon, glissé vers lui (`LAGOON_FRAMING`), son quart de tour compris.
+ * une île qui a un lagon, glissé vers lui (`LAGOON_FRAMING`), son quart de tour compris ; pour une île de
+ * `GUARDIAN_FRAMING`, glissé vers le carré de son Gardien.
  */
 export function islandViewTarget(id: BiomeId): { x: number; y: number; z: number } {
   const c = islandCenter(id);
+  const vers = GUARDIAN_FRAMING[id];
+  const carre = GD11_GUARDIAN_SQUARES[id];
+  if (vers && carre) {
+    const def = islandDef(id);
+    const m = turnPoint(carre.x + GUARDIAN_SQUARE_SIDE / 2, carre.y + GUARDIAN_SQUARE_SIDE / 2, def.quarts);
+    const [gx, gy] = [def.core.x + m.x - 0.5, def.core.y + m.y - 0.5];
+    return { x: c.x + (gx - c.x) * vers.towards, y: c.y + (gy - c.y) * vers.towards, z: c.z };
+  }
   const f = silhouetteDe(id).forme;
   if (!hasLagoon(f)) return c;
   const def = islandDef(id);

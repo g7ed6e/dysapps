@@ -1,10 +1,10 @@
-// Les zones de toucher des objets dans la scène 3D de Blocland, sans WebGL : une borne ou un Gardien petits à l'écran
-// se touchent dans un carré de 48 pixels autour d'eux, les autres objets directement ; rien sur la Carte ni pendant le
+// Les zones de toucher des objets dans la scène 3D de Blocland, sans WebGL : une borne, un Gardien ou une créature
+// petits à l'écran se touchent dans un carré de 48 pixels autour d'eux, les autres objets directement ; rien sur la Carte ni pendant le
 // voyage. Les bulles sont dessinées par ./signs.ts (signs.test.ts).
 import * as THREE from 'three';
 import { onTestFinished } from 'vitest';
 import type { BiomeId } from '../biomes';
-import { cleDeLObjet, SIGNE, signesDesObjets, zoneDuToucher, type EtatDuSigne, type ObjetTouche, type SigneDObjet, type ToucherDirect } from '../world/affordance';
+import { cleDeLaCreature, cleDeLObjet, SIGNE, signesDesObjets, zoneDuToucher, type CibleDeLaBulle, type EtatDuSigne, type ObjetTouche, type SigneDObjet, type ToucherDirect } from '../world/affordance';
 import { BIOMES } from '../biomes';
 import { guardianPlacements, guardianSpot, worldBounds, worldCubes } from '../world/terrain';
 import { QUEST_ROW } from '../world/terrain/markers';
@@ -42,6 +42,9 @@ const objet = (o: ObjetTouche, etat: EtatDuSigne, x: number): SigneDObjet => ({
   boite: { min: { x: x - 0.5, y: -0.5, z: 1 }, max: { x: x + 0.5, y: 0.5, z: 2.8 } },
 });
 
+/** La clé d'une cible : un objet, ou une créature. */
+const cle = (c: CibleDeLaBulle) => (c.genre === 'creature' ? cleDeLaCreature(c.id) : cleDeLObjet(c));
+
 const OBJETS = [
   objet({ genre: 'borne', id: `${FORET}:a` }, 'aFaire', -4),
   objet({ genre: 'borne', id: `${FORET}:b` }, 'pasEncore', -2),
@@ -54,7 +57,7 @@ it('une borne ou un Gardien petits à l’écran ont leur zone de 48 pixels, à 
   affordance.poser(OBJETS);
   affordance.animer!(0, 0.016, false);
   const zones = affordance.zones(camera, 1024, 768);
-  expect(zones.map((z) => cleDeLObjet(z.objet))).toEqual([`borne:${FORET}:a`, `borne:${FORET}:b`, `gardien:${FORET}`]);
+  expect(zones.map((z) => cle(z.objet))).toEqual([`borne:${FORET}:a`, `borne:${FORET}:b`, `gardien:${FORET}`]);
   for (const { zone } of zones) {
     expect(zone.w).toBeGreaterThanOrEqual(SIGNE.zonePx);
     expect(zone.h).toBeGreaterThanOrEqual(SIGNE.zonePx);
@@ -63,9 +66,22 @@ it('une borne ou un Gardien petits à l’écran ont leur zone de 48 pixels, à 
   // De tout près, une borne fait plus de 48 pixels : elle se touche directement, sans zone.
   camera.position.set(-4, 3, -3);
   camera.lookAt(-4, 2, 0);
-  expect(affordance.zones(camera, 1024, 768).some((z) => cleDeLObjet(z.objet) === `borne:${FORET}:a`)).toBe(false);
+  expect(affordance.zones(camera, 1024, 768).some((z) => cle(z.objet) === `borne:${FORET}:a`)).toBe(false);
   // Rien n'est dessiné ici : les bulles sont dans ./signs.ts.
   expect(scene().monde.scene.children).toHaveLength(0);
+});
+
+it('une créature petite à l’écran (Blocland, GD-16) a sa zone de 48 pixels, comme un Gardien ; grande, elle se touche directement', () => {
+  const { affordance, camera } = scene();
+  affordance.poserLesCreatures([{ id: FORET, boite: { min: { x: 1.5, y: -0.5, z: 1 }, max: { x: 2.5, y: 0.5, z: 2 } } }]);
+  affordance.animer!(0, 0.016, false);
+  const zone = affordance.zones(camera, 1024, 768).find((z) => z.objet.genre === 'creature');
+  expect(zone?.objet).toEqual({ genre: 'creature', id: FORET });
+  expect(zone!.zone.w).toBeGreaterThanOrEqual(SIGNE.zonePx);
+  expect(zone!.zone.priorite).toBe(0);
+  camera.position.set(2, 2.5, -2);
+  camera.lookAt(2, 1.5, 0);
+  expect(affordance.zones(camera, 1024, 768).some((z) => z.objet.genre === 'creature')).toBe(false);
 });
 
 it('aucune zone sur la Carte ni pendant le voyage', () => {

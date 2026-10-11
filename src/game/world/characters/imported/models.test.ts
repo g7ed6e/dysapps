@@ -13,7 +13,7 @@ import { archipelagoOfIsland } from '../../archipelagos';
 import { islandDef, startingIsland } from '../../map';
 import { placeIslands, turnCell, type Quarts } from '../../placement';
 import { sentinelleDe, SENTINELLE_DANS_LE_MONDE } from '../../terrain/creatures';
-import { GUARDIAN_SQUARE_ROOM, GUARDIAN_WORLD_HEIGHTS } from '../../guardianSquares';
+import { guardianSquareRoom, GUARDIAN_WORLD_HEIGHTS } from '../../guardianSquares';
 import { lireGlb } from './glb';
 import { chargerLesModelesDuDisque, fichierDuModele } from './fromDisk.testing';
 import { ILES_IMPORTEES, modeleImporte, nomDuModele, type Genre, type Niveau } from './models';
@@ -106,8 +106,8 @@ it('au 6e, un Gardien grandit sur son carré : les quatre rangées du fond, la h
         if (q !== 0) return;
         const [dx, dy] = [Math.max(o[0] - x0, x1 - o[0]), Math.max(o[2] - y0, y1 - o[2])];
         // À la plus grande taille qui tient.
-        expect(Math.max(dx, dy) / GUARDIAN_SQUARE_ROOM.half, cle).toBeLessThanOrEqual(1 + 1e-4);
-        expect(Math.max(dx / GUARDIAN_SQUARE_ROOM.half, dy / GUARDIAN_SQUARE_ROOM.half, h / HAUTEUR_DANS_LE_MONDE), cle).toBeGreaterThan(0.99);
+        expect(Math.max(dx, dy) / guardianSquareRoom(p.id).half, cle).toBeLessThanOrEqual(1 + 1e-4);
+        expect(Math.max(dx / guardianSquareRoom(p.id).half, dy / guardianSquareRoom(p.id).half, h / HAUTEUR_DANS_LE_MONDE), cle).toBeGreaterThan(0.99);
         // La boîte que lit la grille le contient, au vingtième près (`GUARDIAN_WORLD_HALF_SIZES`).
         const d = SENTINELLE_DANS_LE_MONDE.demiLargeur;
         const b = sentinelleDe(p.id);

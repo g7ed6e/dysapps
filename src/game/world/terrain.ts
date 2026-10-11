@@ -7,7 +7,7 @@
 import { type BiomeId, BIOMES, BLOC, BLOCKS, SCIENCE_SUBJECTS } from '../biomes';
 import type { World } from '../engine';
 import type { VoxelCube } from './cube';
-import { type ArchipelagoId, archipelagoOfIsland, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, coreCornerGround, tirage, turnInWorld } from './map';
+import { type ArchipelagoId, archipelagoOfIsland, type Decor, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, coreCornerGround, tirage, turnInWorld } from './map';
 import { turnCell } from './placement';
 import { type BridgeDef, buildableBridges, bridgeState, getBridge, isBiomeUnlocked, linkKind, opensAnIsland, reachableIslands } from './archipelago';
 import { placedLinksOf } from './linkGeometry';
@@ -25,7 +25,8 @@ import { versLaCameraDuDessin } from './terrain/view';
 import { caseDuParvis, ILES_A_PARVIS } from './terrain/parvis';
 import { abordsDansLesMarges, bridge, bridgePath, nearSentier, piedsDesOuvrages } from './terrain/links';
 import { guardianTrophy } from './terrain/guardians';
-import { creatureDuMonde, creatureSpot, decorSousLeGardien, guardianSpot, surLeCarreDuGardien } from './terrain/creatures';
+import { creatureDuMonde, creatureSpot, decorSousLeGardien, guardianSpot, presDuCarreDuGardien, surLeCarreDuGardien } from './terrain/creatures';
+import { LYING_GUARDIANS, TREE_CLEARANCE_OF_A_LYING_GUARDIAN, TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN } from './guardianSquares';
 import { placeDeLaPetiteConstruction } from './terrain/fixture';
 import { harbor } from './terrain/port';
 import { monumentIslets } from './terrain/monuments';
@@ -100,6 +101,28 @@ function nomTourne(def: IslandDef, nom: string): string {
   if (!Number.isInteger(x) || !Number.isInteger(y)) return nom;
   const p = turnInWorld(def, x, y);
   return `${nom.slice(0, at + 1)}${p.x},${p.y}`;
+}
+
+/**
+ * Un arbre plus haut que `TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN` blocs, à `TREE_CLEARANCE_OF_A_LYING_GUARDIAN` cases ou
+ * moins du carré d'un Gardien couché (`LYING_GUARDIANS`), devient un buisson : le Gardien reste plus haut que ce qui
+ * pousse autour de lui (GD-16). Les autres éléments du décor restent ce qu'ils sont.
+ */
+function decorPresDuGardienCouche(id: BiomeId, def: IslandDef, genre: Decor, x: number, y: number, r: number): Decor {
+  if (LOW.has(genre)) return genre;
+  const cases: { x: number; y: number }[] = [];
+  let haut = 0;
+  decorate(
+    (px, py, pz) => {
+      cases.push({ x: px - def.core.x, y: py - def.core.y });
+      haut = Math.max(haut, pz);
+    },
+    genre,
+    x,
+    y,
+    r,
+  );
+  return haut > TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN && presDuCarreDuGardien(id, cases, TREE_CLEARANCE_OF_A_LYING_GUARDIAN) ? 'buisson' : genre;
 }
 
 /**
@@ -318,30 +341,32 @@ function poserLIle(
     if (k >= scenery.length && abords.has(`${c.x},${c.y}`)) continue;
     const t = tirage(def, c.x, c.y);
     const r = noise(def.seed + 5, t.x, t.y);
+    // Près du carré d'un Gardien couché, un arbre plus haut que lui devient un buisson (GD-16, `LYING_GUARDIANS`).
+    const genre = LYING_GUARDIANS.has(biome.id) ? decorPresDuGardienCouche(biome.id, def, c.decor, c.x, c.y, r) : c.decor;
     // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
     // … ni ne déborde au-dessus du cœur d'origine (la zone des plans, les lieux et les bornes doivent rester libres).
     const poser: Put = (x, y, z, color, decor) => !inCoeurDOrigine(def, x, y) && !taken.has(cleDeCube(x, y, c.h + z)) && putWorld(x, y, c.h + z, color, decor);
     // Loin des bornes, rien ne peut en cacher une : posé directement. Près d'elles (une case de plus pour le feuillage),
     // un élément qui cacherait le pied d'une borne n'est pas posé (voir `cacheUneBorne`), ni un élément qui toucherait
     // la rangée de côte devant les bornes d'une île-école.
-    const piedProche = pieds.size > 0 && !LOW.has(c.decor) && presDUnPied(c.x, c.y);
+    const piedProche = pieds.size > 0 && !LOW.has(genre) && presDUnPied(c.x, c.y);
     // Un élément qui toucherait le carré du Gardien, quand le décor s'y efface (palier 3 de `guardianSpot`), n'est pas posé.
     if (effaceSousLeGardien) {
       const cases: { x: number; y: number }[] = [];
-      decorate((x, y) => cases.push({ x: x - def.core.x, y: y - def.core.y }), c.decor, c.x, c.y, r);
+      decorate((x, y) => cases.push({ x: x - def.core.x, y: y - def.core.y }), genre, c.x, c.y, r);
       if (decorSousLeGardien(biome.id, cases)) continue;
     }
     if (aParvis) {
       const cases: { x: number; y: number }[] = [];
-      decorate((x, y) => cases.push({ x, y }), c.decor, c.x, c.y, r);
+      decorate((x, y) => cases.push({ x, y }), genre, c.x, c.y, r);
       if (surLeParvis(cases)) continue;
     }
     if (!presDUneBorne(bornes, c.x, c.y, 1) && !presDUnLieu(c.x, c.y) && !piedProche) {
-      decorate(poser, c.decor, c.x, c.y, r);
+      decorate(poser, genre, c.x, c.y, r);
       continue;
     }
     const poses: [number, number, number, string, string | undefined][] = [];
-    decorate((x, y, z, color, decor) => poses.push([x, y, z, color, decor]), c.decor, c.x, c.y, r);
+    decorate((x, y, z, color, nom) => poses.push([x, y, z, color, nom]), genre, c.x, c.y, r);
     if (poses.some(([x, y, z]) => devant.has(`${x},${y}`) || lieuxDuMonde.has(cleDeCube(x, y)) || (piedProche && pieds.has(cleDeCube(x, y))) || cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
     for (const [x, y, z, color, decor] of poses) poser(x, y, z, color, decor);
   }

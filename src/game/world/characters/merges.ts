@@ -19,7 +19,7 @@ import { lueursDeNuit, type FacettesDePersonnage, type V3 } from './painted';
 import { couleursAllumees, ECHELLE_DANS_LE_MONDE, HAUTEUR_DANS_LE_MONDE, lueurDuTriangle } from './sentinel';
 import { sentinelleDuMonde } from './paintedSentinels';
 import type { Niveau } from './imported/models';
-import { fillsGuardianSquare, GUARDIAN_SQUARE_ROOM, GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
+import { fillsGuardianSquare, guardianSquareRoom, GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
 
 /** Ce qu'une fusion lit d'un personnage placé sur la grille (une créature, un Gardien). */
 export interface PersonnagePlace {
@@ -234,7 +234,7 @@ export function fusionDesCreatures(places: PersonnagePlace[], pres: BiomeId | nu
 /**
  * L'échelle d'un Gardien dans le monde : celle de toutes les sentinelles (`ECHELLE_DANS_LE_MONDE`, DA-5) ; celle qui
  * le porte à sa hauteur propre (`GUARDIAN_WORLD_HEIGHTS`, le Grand Chêne) ; ou, pour un Gardien qui remplit son carré
- * (`fillsGuardianSquare`), la plus grande qui le garde dans sa place (`GUARDIAN_SQUARE_ROOM`, la même quelle que soit
+ * (`fillsGuardianSquare`), la plus grande qui le garde dans sa place (`guardianSquareRoom`, la même quelle que soit
  * l'orientation du lieu) et sous la hauteur de la sentinelle commune. L'écran du défi le montre à sa taille.
  */
 function echelleDuGardien(id: BiomeId, f: FacettesDePersonnage): number {
@@ -248,7 +248,7 @@ function echelleDuGardien(id: BiomeId, f: FacettesDePersonnage): number {
   }
   if (haut <= 0) return ECHELLE_DANS_LE_MONDE;
   if (h !== undefined) return h / haut;
-  const d = GUARDIAN_SQUARE_ROOM.half;
+  const d = guardianSquareRoom(id).half;
   return Math.min(HAUTEUR_DANS_LE_MONDE / haut, large > 0 ? d / large : Infinity, profond > 0 ? d / profond : Infinity);
 }
 

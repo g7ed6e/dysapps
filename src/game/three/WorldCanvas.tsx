@@ -11,7 +11,7 @@ import { cadreDeLaLiaison, ileDeLaVueGlissee, islandCenter, worldBounds } from '
 import { getBridge } from '../world/archipelago';
 import { cubeTags, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
-import { centreDeLObjet, cleDeLaCreature, cleDeLObjet, signesDesObjets, sommetsDesBornes, type ObjetDeLaFiche, type ObjetTouche } from '../world/affordance';
+import { boitesDesCreatures, centreDeLObjet, cleDeLaCreature, cleDeLObjet, signesDesObjets, sommetsDesBornes, type ObjetDeLaFiche, type ObjetTouche } from '../world/affordance';
 import { useEnCasesDuMonde } from '../useInWorldCells';
 import { createMeter } from './meter';
 import { habillageDe } from '../skin';
@@ -736,6 +736,11 @@ export default function WorldCanvas({
     () => signesDesObjets({ cubes, quests, creatures, vehicle, etats: etatsDesObjets, gardiens: habillageDe(rendu).personnages === 'modeles' ? 'sentinelles' : 'cubes' }),
     [cubes, quests, creatures, vehicle, etatsDesObjets, rendu],
   );
+  // Les créatures de Blocland, petites (GD-16), se touchent aussi tout autour ; celles en modèles d'Archipéo, à leur taille.
+  useEffect(() => {
+    world.current?.affordance.poserLesCreatures(habillageDe(rendu).personnages === 'modeles' ? [] : boitesDesCreatures(creatures));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [creatures, rendu, reduceMotion, archipelago]);
   useEffect(() => {
     world.current?.affordance.poser(signesDuMonde);
     world.current?.signes.poserLesObjets(signesDuMonde, prochaine);
