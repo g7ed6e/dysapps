@@ -193,11 +193,15 @@ function planBox(id: BiomeId): { x0: number; x1: number; y0: number; y1: number;
 
 // ---------- La pose ----------
 
+/** La hauteur d'un bâtiment posé, au plus, en hauteurs de ses deux plans. */
+const HAUTEUR_MAX = 1.5;
+
 /**
  * L'échelle du modèle entier de près, que tous les fichiers du bâtiment partagent. Règle : il prend toute l'emprise au
  * sol des deux plans en cubes, à une demi-case près de chaque côté (le bâtiment ne mord ni sur la cour, devant, ni sur le
  * décor), et sa hauteur suit ; une tour (phare, horloge) s'élève donc au-dessus de son plan plutôt que de maigrir
- * (choix du mainteneur, 11 octobre 2026 : « Largeur pleine »).
+ * (choix du mainteneur, 11 octobre 2026 : « Largeur pleine »), jusqu'à `HAUTEUR_MAX` fois la hauteur des plans ; au-delà,
+ * il maigrit (avis du directeur artistique).
  */
 function fitOf(whole: ModeleLu, quarterTurns: number, box: NonNullable<ReturnType<typeof planBox>>) {
   let [x0, x1, z0, z1, y0, y1] = [Infinity, -Infinity, Infinity, -Infinity, Infinity, -Infinity];
@@ -211,8 +215,8 @@ function fitOf(whole: ModeleLu, quarterTurns: number, box: NonNullable<ReturnTyp
     y0 = Math.min(y0, p[i + 1]);
     y1 = Math.max(y1, p[i + 1]);
   }
-  const [w, d] = [Math.max(x1 - x0, 1e-6), Math.max(z1 - z0, 1e-6)];
-  const k = Math.min((box.x1 - box.x0 + 1) / w, (box.y1 - box.y0 + 1) / d);
+  const [w, d, h] = [Math.max(x1 - x0, 1e-6), Math.max(z1 - z0, 1e-6), Math.max(y1 - y0, 1e-6)];
+  const k = Math.min((box.x1 - box.x0 + 1) / w, (box.y1 - box.y0 + 1) / d, (HAUTEUR_MAX * box.h) / h);
   // Centré en largeur ; en profondeur, sa façade au bord de devant du plan (le devant du plan est en −y, côté caméra).
   return { k, cx: (x0 + x1) / 2, front: z0, y0, ox: (box.x0 + box.x1) / 2, oy: box.y0, oz: box.z0 };
 }
