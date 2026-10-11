@@ -36,6 +36,8 @@ export interface Personnages extends PartieDeLaScene {
    * personnages en cubes n'en font rien.
    */
   approcher(id: BiomeId | null): void;
+  /** L'île de près (`approcher`, puis `viser`) : la scène y montre aussi le bâtiment importé de près (./cubes.ts). */
+  ileDePres(): BiomeId | null;
   /**
    * Le point que la caméra regarde (`x`, `z`, dans la scène) : l'île dont un personnage en est le plus près passe de près
    * (`ileRegardee`), même si le bonhomme est ailleurs, au deuxième relevé de suite qui la désigne.
@@ -312,6 +314,7 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
       pres = id;
       if (places) habits?.poserLesCreatures(places, pres);
     },
+    ileDePres: () => pres,
     viser: (x, z) => {
       if (!places) return;
       // Deux relevés de suite sur la même île avant de refaire la fusion : un glissé qui traverse l'archipel ne la refait

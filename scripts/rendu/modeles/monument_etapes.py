@@ -1,13 +1,21 @@
 # Etapes de chantier d'un monument : coupe le modele reduit (monument_lowpoly.py) par des plans horizontaux et
 # garde le bas, coupe refermee et peinte de la couleur voisine ; les morceaux qui ne tiennent plus au corps du
 # monument (une pale coupee de son moyeu) sont retires.
-#   python monument_etapes.py -- entree.glb dossier_sortie 0.33 0.66
+#   python monument_etapes.py -- entree.glb dossier_sortie 0.33 0.66 [couleur=8f8c86]
 # Sortie : etape-1.glb, etape-2.glb... (la derniere etape, le monument entier, est entree.glb lui-meme)
+# couleur= : la coupe prend la couleur du modele la plus proche de celle-ci, au lieu de la couleur claire voisine (le
+# batiment d'un plan, coupe au ras de l'avant-toit, se ferme en pierre des murs : avis du directeur artistique,
+# 10 octobre 2026).
+# plein : la coupe d'un modele creux (TRELLIS rend souvent l'interieur d'un batiment a porte ouverte) ne ferme que le
+# haut des murs ; plein la couvre d'un seul couvercle, l'enveloppe convexe de la coupe.
 import bpy, bmesh, sys, os
 from mathutils import Vector
 
 a = sys.argv[sys.argv.index("--") + 1:]
-entree, dossier, parts = a[0], a[1], [float(x) for x in a[2:]]
+entree, dossier = a[0], a[1]
+parts = [float(x) for x in a[2:] if not x.startswith("couleur=") and x != "plein"]
+plein = "plein" in a[2:]
+voulue = next((int(x[8:], 16) for x in a[2:] if x.startswith("couleur=")), None)
 os.makedirs(dossier, exist_ok=True)
 for i, part in enumerate(parts, 1):
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -26,6 +34,22 @@ for i, part in enumerate(parts, 1):
     reste = [e for e in bm.edges if e.is_boundary and abs(e.verts[0].co.z - zc) < 1e-4 and abs(e.verts[1].co.z - zc) < 1e-4]
     if reste:
         neuves += [f for f in bmesh.ops.triangle_fill(bm, edges=reste, use_beauty=True, normal=Vector((0, 0, 1)))["geom"] if isinstance(f, bmesh.types.BMFace)]
+    garde = set()
+    if plein and neuves:
+        # enveloppe convexe (chaine monotone) des sommets de la coupe, posee a la place de ses faces
+        pts = sorted({(round(v.co.x, 6), round(v.co.y, 6)) for f in neuves for v in f.verts})
+        croix = lambda o, p, q: (p[0] - o[0]) * (q[1] - o[1]) - (p[1] - o[1]) * (q[0] - o[0])
+        bas, haut = [], []
+        for p in pts:
+            while len(bas) >= 2 and croix(bas[-2], bas[-1], p) <= 0: bas.pop()
+            bas.append(p)
+        for p in reversed(pts):
+            while len(haut) >= 2 and croix(haut[-2], haut[-1], p) <= 0: haut.pop()
+            haut.append(p)
+        bmesh.ops.delete(bm, geom=neuves, context="FACES_ONLY")
+        couvercle = bm.faces.new([bm.verts.new((x, y, zc)) for x, y in bas[:-1] + haut[:-1]])
+        garde = set(couvercle.verts)
+        neuves = bmesh.ops.triangulate(bm, faces=[couvercle])["faces"]
     # la coupe regarde vers le haut (sinon on la voit de dos, noire)
     for f in neuves:
         f.normal_update()
@@ -39,6 +63,13 @@ for i, part in enumerate(parts, 1):
             k = tuple(round(x, 3) for x in g.loops[0][col])
             if sum(k[:3]) > 0.45: tout[k] = tout.get(k, 0) + g.calc_area()
         defaut = max(tout, key=tout.get) if tout else None
+        if voulue is not None:
+            # la couleur du modele la plus proche de la couleur voulue ; bmesh rend les octets du fichier encodes une
+            # seconde fois en sRVB (0x8f lu 0,77) : la couleur voulue est encodee de meme avant la comparaison
+            enc = lambda x: 12.92 * x if x <= 0.0031308 else 1.055 * x ** (1 / 2.4) - 0.055
+            v = [enc((voulue >> s & 255) / 255) for s in (16, 8, 0)]
+            couleurs = {tuple(round(x, 3) for x in g.loops[0][col]) for g in bm.faces}
+            defaut = min(couleurs, key=lambda k: sum((k[j] - v[j]) ** 2 for j in range(3)))
         for f in neuves:
             aires = {}
             for e in f.edges:
@@ -47,7 +78,7 @@ for i, part in enumerate(parts, 1):
                         k = tuple(round(x, 3) for x in g.loops[0][col])
                         if sum(k[:3]) > 0.45:  # jamais une couleur d'ombre (quasi noire) sur la coupe
                             aires[k] = aires.get(k, 0) + g.calc_area()
-            c = max(aires, key=aires.get) if aires else defaut
+            c = defaut if voulue is not None else (max(aires, key=aires.get) if aires else defaut)
             if c:
                 for l in f.loops: l[col] = c
     # une paroi interieure sombre du modele, mise a nu juste sous la coupe, prend la meme couleur que la coupe
@@ -71,7 +102,7 @@ for i, part in enumerate(parts, 1):
     # les petits morceaux en l'air (une pale coupee de son moyeu) partent
     sol = min(zs) + (max(zs) - min(zs)) * 0.02
     # (un prisme de huit sommets pose par monument_retouches.py, un cadre de fenetre, reste)
-    retires = [ile for ile in iles[1:] if min(v.co.z for v in ile) > sol and len(ile) < len(iles[0]) * 0.25 and len(ile) != 8]
+    retires = [ile for ile in iles[1:] if min(v.co.z for v in ile) > sol and len(ile) < len(iles[0]) * 0.25 and len(ile) != 8 and not garde.intersection(ile)]
     for ile in retires:
         bmesh.ops.delete(bm, geom=ile, context="VERTS")
     bm.to_mesh(o.data); bm.free(); o.data.update()
