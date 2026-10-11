@@ -18,7 +18,7 @@ Pas pour l’instant : il n’y a pas d’export. Chaque appareil a sa propre pr
 Par la Forêt des sons (français) ou la Plaine des nombres (maths), les deux îles ouvertes au départ. Une bulle bordée d’or montre la prochaine chose à faire. Le tutoriel en trois étapes se rejoue avec le bouton « ? » de la barre du bas.
 
 **Un élève de 4e ou de 3e doit-il refaire la 6e ?**
-Un peu : la Nef qui mène en 5e se construit dans les Basses Terres (un voilier d’une trentaine de blocs et trois Gardiens rallumés) ; elle devient dirigeable en 5e, puis fusée en 4e. À l’intérieur d’un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans la direction que l’on veut. Les premières missions servent à gagner les blocs du navire et des premiers ouvrages.
+Un peu : la Nef qui mène en 5e se construit dans les Basses Terres (un voilier d’une trentaine de blocs et trois Gardiens rallumés) ; elle devient dirigeable en 5e, puis fusée en 4e (un aéronef à rotor dans Archipéo). À l’intérieur d’un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans la direction que l’on veut. Les premières missions servent à gagner les blocs du navire et des premiers ouvrages.
 
 **Comment passer en 5e (puis en 4e, en 3e) ?**
 Sur l’île-port de l’archipel (la Plaine des nombres en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e), le panneau a une section « La Nef » : poser ses blocs, rallumer les Gardiens demandés (la voile, le haut de l’enveloppe ou les ailerons apparaissent alors) ; la Nef change de forme sous tes yeux, puis toucher « Embarquer ». Le voyage se joue, un toucher le termine tout de suite, et la créature du port d’en face accueille.

@@ -209,7 +209,7 @@ export function creerNavire(
     import('../importedNef')
       .then(({ loadNef }) => loadNef())
       .then((nouveau) => {
-        if (nouveau && !disposed && posee && !mue) poser(posee);
+        if (nouveau && !disposed && posee && !mue && !voyage.current) poser(posee);
       })
       .catch(() => {});
 
