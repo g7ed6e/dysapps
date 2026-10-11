@@ -34,6 +34,19 @@ const PAS: Record<string, number> = {
   'jambe-droite': 1,
 };
 
+/**
+ * Le sens du balancement d'un os du bonhomme quand il marche : ceux du bonhomme dessiné en code (`PAS`) ; pour Kéo
+ * (ses os de squelette.py), le même pas, ses bras (`arm.*`) comme ceux du bonhomme et ses cuisses (`thigh.*`) comme
+ * ses jambes, du côté où pend l'os (x < 0 : le côté gauche du bonhomme, face à l'élève). Ni tibia, ni dos, ni tête.
+ */
+export function pasDe(o: Pick<Os, 'nom' | 'pivot'>): number {
+  if (o.nom in PAS) return PAS[o.nom];
+  const gauche = o.pivot[0] < 0;
+  if (o.nom.startsWith('arm.')) return PAS[gauche ? 'bras-gauche' : 'bras-droit'];
+  if (o.nom.startsWith('thigh.')) return PAS[gauche ? 'jambe-gauche' : 'jambe-droite'];
+  return 0;
+}
+
 /** Le geste lent d'une créature : son bras et son outil se lèvent un peu, une fois toutes les cinq secondes. */
 export const GESTE = { periode: 5, angle: 0.12 } as const;
 
@@ -307,10 +320,11 @@ export function habiller(
 ): Habits {
   const { scene } = monde;
 
-  // Le bonhomme : posé par le groupe extérieur, sous ses pieds ; le modèle regarde vers −Z.
-  const bonhomme = fusionDuBonhomme();
+  // Le bonhomme : posé par le groupe extérieur, sous ses pieds ; le modèle regarde vers −Z. Kéo dans la tenue de
+  // l'archipel s'il est chargé (../importedCharacters.ts, `chargerKeo`), sinon le bonhomme dessiné en code.
+  const bonhomme = fusionDuBonhomme(monde.archipel);
   const matBonhomme = materiauALueur();
-  const corpsDuBonhomme = squelette(geometrieDe(bonhomme), bonhomme.os, bonhomme.squelette, matBonhomme.materiau);
+  const corpsDuBonhomme = squelette(geometrieDe(bonhomme), bonhomme.os, bonhomme.squelette, matBonhomme.materiau, bonhomme.poids);
   avatar.add(corpsDuBonhomme.mesh);
 
   // Les créatures et les Gardiens : leurs maillages dans la scène, leurs boîtes de toucher (invisibles) dans `creatures`.
@@ -386,7 +400,7 @@ export function habiller(
   };
 
   return {
-    membres: bonhomme.squelette.map((o, i) => ({ os: corpsDuBonhomme.bones[i] as THREE.Object3D, sens: PAS[o.nom] ?? 0 })).filter((m) => m.sens),
+    membres: bonhomme.squelette.map((o, i) => ({ os: corpsDuBonhomme.bones[i] as THREE.Object3D, sens: pasDe(o) })).filter((m) => m.sens),
     poserLesCreatures: (placements, pres = null) => {
       vider();
       const lesCreatures = placements.filter((c) => (c.kind ?? 'creature') === 'creature');

@@ -25,7 +25,7 @@ Regarder le contrôle : socle pas entièrement parti ou pattes coupées, changer
 
 ## 4. Le squelette d'une créature (`squelette.py`)
 
-`python3 scripts/rendu/modeles/squelette.py -- <dossier du modèle> <quarts> [réglages]`, avec les quarts et réglages de la colonne 4 de sa ligne (`cou=`, `queue=non|sol`, `jambes=non`, `bras=…`, `leve=…`, `teinte=…`) ; relire la planche de `apercu_squelette.py` (`-- <dossier> <quarts> <image.png>`), qui montre les poses de repos et de marche ; `marche.py` y recopie le cycle de marche de `paintedCharacters.ts` : le changer des deux côtés à la fois. Le jeu anime les os par le code (`src/game/three/paintedCharacters.ts`).
+`python3 scripts/rendu/modeles/squelette.py -- <dossier du modèle> <quarts> [réglages]`, avec les quarts et réglages de la colonne 4 de sa ligne (`cou=`, `queue=non|sol`, `jambes=non`, `bras=…` (`bras=0.115` : des bras collés au tronc, Kéo), `leve=…`, `teinte=…`, `entrejambe=0.42` : un jean serré, Kéo) ; relire la planche de `apercu_squelette.py` (`-- <dossier> <quarts> <image.png>`), qui montre les poses de repos et de marche ; `marche.py` y recopie le cycle de marche de `paintedCharacters.ts` : le changer des deux côtés à la fois. Le jeu anime les os par le code (`src/game/three/paintedCharacters.ts`).
 
 ## 5. Les aplats d'une créature (`aplats.py`)
 
@@ -33,7 +33,7 @@ Les quatre couleurs tirées de la texture sont sombres et bigarrées (l'ombre es
 
 1. `python3 scripts/rendu/modeles/aplats.py -- <dossier du modèle>` sur un modèle sans ligne donne ses quatre couleurs, de la plus étendue à la moins étendue, et s'arrête.
 2. Le `directeur-artistique` choisit une cible par couleur, d'après le concept et la palette d'Archipéo : deux couleurs de la même matière prennent la même cible (elles ne font plus qu'une zone) ; le corps (la couleur la plus étendue) doit se détacher de l'herbe. L'aider d'une planche où chaque zone est montrée seule.
-3. Écrire la colonne 5 (`source>cible …`, hexadécimal sRVB sans `#`) et la colonne 6 (ce que fait chaque zone, sans point-virgule) de la ligne du modèle.
+3. Écrire la colonne 5 (`source>cible …`, hexadécimal sRVB sans `#` ; `source@bas-haut>cible` pour une bande de hauteur, en part de la taille depuis les pieds, qui l'emporte : une couleur source qui couvre deux matières, la veste et le jean de Kéo) et la colonne 6 (ce que fait chaque zone, sans point-virgule) de la ligne du modèle.
 4. Relancer `aplats.py` : il peint `final-1500.glb` et `final-200.glb` (le modèle de loin prend la cible de la source la plus proche, un triangle isolé prend la couleur de ses voisins). Seules les couleurs changent ; relancé, il ne change rien. Un modèle refait par `lot.py` a d'autres couleurs sources : refaire sa ligne.
 5. Refaire le contrôle : `python3.11 scripts/rendu/modeles/rendre_controle.py -- <brut> <dossier>/final-1500.glb <dossier>/final-200.glb <chemin absolu>/controle.png`.
 
@@ -42,6 +42,7 @@ Toujours dans cet ordre : `lot.py`, puis `squelette.py`, puis `aplats.py` en der
 ## 6. Dans le jeu
 
 - `src/game/world/characters/imported/models.ts` : la ligne de l'île (lieu, Gardien, créature, quarts de chacun, relevés en regardant le modèle des quatre côtés ; un demi-quart, comme 3.5, quand le modèle regarde en biais, celui du Spectre du manoir). Le jeu prend les couleurs du fichier telles quelles (de loin, il éclaircit seulement) : aucune couleur ne s'écrit dans le code.
+- Kéo, le bonhomme (une tenue par archipel, `src/game/world/characters/imported/keo.ts`, `chargerKeo`) : sa version de près seulement, rangée comme une créature (`<classe>-keo-creature-<tenue>`).
 - `src/game/importedCharacters.ts` : l'adresse des fichiers (`import.meta.glob`) couvre la classe.
 - Les tests de `src/game/world/characters/imported/` vérifient que chaque créature de `reglages.csv` est peinte avec ses cibles et que son corps se détache de l'herbe : `npx vitest run src/game/world/characters/imported`.
 - Budget : compter le pire cas en triangles de l'archipel (plafonds dans `src/game/world/budget.ts`, `npm run rendu:budget`) ; un dépassement est une décision du mainteneur.

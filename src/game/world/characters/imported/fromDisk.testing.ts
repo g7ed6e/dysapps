@@ -1,11 +1,15 @@
 // Pour les tests et le budget mesuré en Node : les personnages importés lus sur le disque, comme la vue les charge
 // (../../../../importedCharacters.ts).
 import { readFileSync, existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import type { ArchipelagoId } from '../../archipelago';
 import { lireGlb } from './glb';
+import { enregistrerKeo, FICHIER_DE_KEO, TENUES_DE_KEO } from './keo';
 import { enregistrer, FICHIER, ILES_IMPORTEES, nomDuModele, type Genre, type Niveau } from './models';
 
-const DOSSIER_DES_MODELES = resolve(__dirname, '../../../../../docs/univers/archipeo/personnages/modeles');
+// Par l'adresse du module (et non `__dirname`) : `npm run rendu:budget` le charge aussi, en module ES.
+const DOSSIER_DES_MODELES = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../../docs/univers/archipeo/personnages/modeles');
 
 /** Le chemin du fichier d'un modèle. */
 export const fichierDuModele = (nom: string, niveau: Niveau): string => resolve(DOSSIER_DES_MODELES, nom, FICHIER[niveau]);
@@ -22,4 +26,17 @@ export function chargerLesModelesDuDisque(): void {
         const b = readFileSync(f);
         enregistrer(genre, id, niveau, lireGlb(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)));
       }
+}
+
+/** Le chemin du fichier de Kéo dans la tenue d'un archipel. */
+const fichierDeKeo = (archipel: ArchipelagoId): string => resolve(DOSSIER_DES_MODELES, TENUES_DE_KEO[archipel], FICHIER_DE_KEO);
+
+/** Charge depuis le disque Kéo dans les tenues qui existent, une par archipel. */
+export function chargerKeoDuDisque(): void {
+  for (const archipel of Object.keys(TENUES_DE_KEO) as ArchipelagoId[]) {
+    const f = fichierDeKeo(archipel);
+    if (!existsSync(f)) continue;
+    const b = readFileSync(f);
+    enregistrerKeo(archipel, lireGlb(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)));
+  }
 }

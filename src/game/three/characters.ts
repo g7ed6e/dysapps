@@ -280,8 +280,12 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     if (places) h.poserLesCreatures(places, pres);
   };
   if (monde.habillage.personnages === 'modeles')
-    // Les personnages importés de l'archipel arrivent avec eux (ceux qui manquent restent dessinés en code).
-    Promise.all([import('./paintedCharacters'), import('../importedCharacters').then(({ chargerLesModeles }) => chargerLesModeles(monde.archipel))])
+    // Les personnages importés de l'archipel arrivent avec eux, et Kéo dans la tenue de l'archipel (ceux qui manquent
+    // restent dessinés en code).
+    Promise.all([
+      import('./paintedCharacters'),
+      import('../importedCharacters').then(({ chargerLesModeles, chargerKeo }) => Promise.all([chargerLesModeles(monde.archipel), chargerKeo(monde.archipel)])),
+    ])
       .then(([{ habiller }]) => {
         if (!fini) vetir(habiller(monde, champ, instant, lumiere, avatarGroup, creaturesGroup));
       })

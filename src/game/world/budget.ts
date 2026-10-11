@@ -73,9 +73,11 @@ export const RENDER_BUDGET = {
  * (./objects/), le trophée des Gardiens rallumés et les objets du quai ; la construction passe de 18 050 à 18 700, les
  * commandes de 1 100 à 1 500, la somme des enveloppes de 86 840 à 87 890. Puis à 91 200 pour le lot 2 des objets du 6e
  * (11 octobre 2026, même autorisation : le décor du cœur et les lieux de l'île-école dessinés) : la construction passe de
- * 18 700 à 22 000.
+ * 18 700 à 22 000. Puis à 92 200 pour Kéo, le bonhomme importé dans la tenue de l'archipel (décision du mainteneur,
+ * 11 octobre 2026 : 1 500 triangles par tenue, « relève les plafonds du strict nécessaire ») : l'enveloppe du bonhomme
+ * passe de 500 à 1 500, la somme des enveloppes de 91 190 à 92 190.
  */
-export const RENDER_BUDGET_6E = { triangles: 91_200, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_6E = { triangles: 92_200, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
  * Les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
@@ -104,9 +106,11 @@ export const RENDER_BUDGET_6E = { triangles: 91_200, drawCalls: RENDER_BUDGET.dr
  * Brumeuses, les 2 970 que leur construction prend (13 230 → 16 200), arrondis ; la somme des enveloppes passe à 94 655
  * aux Îles Brumeuses, 92 675 aux Anciens Ateliers et 91 805 aux Îles du Ciel (construction « autres » 13 000 → 16 950).
  * Puis à 94 950 avec les personnages importés de la 4e, fusionnés entre-temps (les deux hausses s'additionnent : 94 910
- * aux Anciens Ateliers).
+ * aux Anciens Ateliers). Puis à 95 975 pour Kéo, le bonhomme importé dans la tenue de l'archipel (décision du mainteneur,
+ * 11 octobre 2026 : 1 500 triangles par tenue) : l'enveloppe du bonhomme passe de 475 à 1 500, la somme des enveloppes
+ * à 95 680 aux Îles Brumeuses, 95 935 aux Anciens Ateliers et 94 690 aux Îles du Ciel.
  */
-export const RENDER_BUDGET_AUTRES = { triangles: 94_950, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_AUTRES = { triangles: 95_975, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
@@ -442,7 +446,10 @@ export const ENVELOPPES: Record<
     parArchipel: { '5e': { triangles: 1_520, drawCalls: 1 }, '4e': { triangles: 1_460, drawCalls: 1 } },
   },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
-  bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
+  // Kéo, le bonhomme importé (décision du mainteneur, 11 octobre 2026 : « 1 500 triangles par tenue », une seule
+  // visible) : 1 500 triangles mesurés dans chaque tenue (`budget.test.ts`), contre 472 au bonhomme dessiné en code ;
+  // l'enveloppe passe de 500 à 1 500 aux Premiers Rivages et de 475 à 1 500 ailleurs, les plafonds d'autant.
+  bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 1_500, drawCalls: 2 }, autres: { triangles: 1_500, drawCalls: 2 } },
   // Les personnages importés du 6e (modèles TRELLIS retravaillés, choix « Monde et fiches » du mainteneur, 9 octobre
   // 2026) : de loin partout (environ 200 triangles), de près sur l'île regardée (environ 1 500), au pire de l'île qui
   // coûte le plus. Mesurés : créatures 4 254 (Bulle de près), Gardiens 5 054, socle commun et son anneau compris. Créatures
@@ -817,7 +824,8 @@ export function personnagesCost(a: ArchipelagoId): Record<'bonhomme' | 'creature
   const gardiens = pire((pres) => trianglesDeLaFusion(fusionDesGardiens(lesGardiens, pres)));
   const appel = (n: number) => (n > 0 ? 1 : 0);
   return {
-    bonhomme: { triangles: trianglesDeLaFusion(fusionDuBonhomme()), drawCalls: 1 },
+    // Kéo dans la tenue de l'archipel s'il est chargé (./characters/imported/keo.ts), sinon le bonhomme dessiné en code.
+    bonhomme: { triangles: trianglesDeLaFusion(fusionDuBonhomme(a)), drawCalls: 1 },
     creatures: { triangles: creatures, drawCalls: appel(creatures) },
     gardiens: { triangles: gardiens, drawCalls: appel(gardiens) },
   };

@@ -152,6 +152,23 @@ Les Gardiens et les créatures de la 3e suivent la même chaîne (10 octobre 202
 
 Les versions de loin de la Tortue d’ocre, de l’Hydre des marais, du Colporteur et de la Diligence de cuivre sont tirées de leur version de près (réduite à 200 triangles environ ; pour l’Hydre et la Diligence, remaillée en voxels d’abord), pour garder ce qui les fait reconnaître : la carapace sans éclats, les têtes, le chapeau et la hotte, la caisse et les roues. Le Spectre du manoir se tourne de trois quarts et demi de tour, pour montrer sa lanterne de face. Le Cheval à bascule garde ses patins : ils font partie du personnage, on ne coupe rien.
 
+## Kéo, le bonhomme
+
+Le bonhomme d’Archipéo, l’avatar de l’élève, s’appelle Kéo et porte une tenue par archipel (décision du mainteneur, 11 octobre 2026) : explorateur aux Premiers Rivages (6e), ciré aux Îles Brumeuses (5e), mécanicienne aux Anciens Ateliers (4e), cartographe aux Îles du Ciel (3e). Chaque tenue suit la chaîne des créatures (concept `<classe>-keo-creature-<tenue>.webp`, graine 42, brut TRELLIS.2, `lot.py`, `squelette.py`, `aplats.py`) ; le nom garde `-creature-` pour que `lion_lowpoly.py` garde ses couleurs. La réduction les peint en six couleurs au lieu de quatre (`lion_lowpoly.py -- 1-aligne.glb final-1500.glb 1500 6`) : une tenue a plus de zones qu’une créature (peau, cheveux, veste, pantalon, bottines, sac).
+
+Une seule version, `final-1500.glb` : Kéo est le même de près et de loin, et un seul est à l’écran (budget : 1 500 triangles par tenue, décision du mainteneur). Le jeu ne charge que la tenue de l’archipel affiché ; tant qu’elle n’est pas chargée, ou hors ligne, le bonhomme dessiné en code reste.
+
+| Tenue | 1 500 | Cibles des aplats |
+| --- | --- | --- |
+| Explorateur (6e) | 1 500 | veste `3D6994`, jean `8CADCE`, sac `8A5A32`, rabat `DAA66A`, tee-shirt `D8E2E6`, peau `D6A27C`, cheveux `3A2618`, bottines `5A3A26` |
+| Ciré (5e) | 1 500 | ciré `D9A23A`, pantalon `2B3D5A`, sac `8A8E8C`, tee-shirt `E8E2D0`, peau, cheveux, bottines |
+| Mécanicienne (4e) | 1 500 | combinaison `83924A`, ceinture `6B4A2E`, lunettes et longue-vue de laiton `B08D3C`, peau, cheveux, bottines |
+| Cartographe (3e) | 1 500 | gilet `DAA66A`, sweat `1F5A66`, pantalon `2B3D5A`, porte-cartes et bandoulière `7A4A2A`, bonnet `B85A3A`, peau, bottines |
+
+- **Squelette** : `squelette.py … 1 cou=0.78 queue=non entrejambe=0.42 bras=0.115`. Un jean serré ne laisse voir le creux entre les jambes qu’au bas des cuisses : `entrejambe=0.42` pose les hanches à la hauteur de celles du bonhomme (0,437 de sa taille). Les bras collés à la veste n’ont pas de creux qui les sépare du tronc : `bras=0.115` pose la limite à cette distance du milieu ; la main qui pend le long de la cuisse va au bras, le sac à dos reste au corps. Le jeu ne fait marcher Kéo que comme le bonhomme : bras et cuisses balancés (`pasDe`, `src/game/three/paintedCharacters.ts`), ni dos, ni tête, ni tibias.
+- **Aplats** : une même couleur de la texture couvre parfois deux matières (la veste et le jean de l’explorateur, du même bleu dans la texture ; le sac gris et le pantalon du ciré). `aplats.py` accepte une bande de hauteur, `source@bas-haut>cible` (en part de la hauteur depuis les pieds), qui l’emporte sur `source>cible` : le jean sous 0,43, le tee-shirt entre 0,5 et 0,77 (0,74 sous le ciré). Choisies d’après les concepts et les couleurs du bonhomme dessiné en code (peau, cheveux, sac, rabat, jean) ; la veste de l’explorateur et la combinaison de la mécanicienne sont éclaircies (`142B38` → `3D6994`, `6B7A3A` → `83924A`) pour que le corps se détache de l’herbe (clarté au-dessus de 0,4). À relire par le directeur artistique.
+- **Écarts connus** : chez le cartographe, les sourcils et le bas des cheveux, de la même couleur source que le porte-cartes, prennent son cuir ; le visage garde le dessin de sa texture (pas d’yeux peints) ; le médaillon « toi » et le bouton Recentrer montrent encore le visage du bonhomme dessiné en code.
+
 ## Passer du concept au modèle brut
 
 Le Space [microsoft/TRELLIS.2](https://huggingface.co/spaces/microsoft/TRELLIS.2) (licence MIT) tourne sous le compte Hugging Face du mainteneur, avec les réglages du Lion (résolution 512, texture 1024). Il se lance à la main sur le Space, ou par `scripts/rendu/modeles/trellis.py -- <dossier> <concept.webp>…` (avec `gradio_client` : `/start_session`, `/preprocess_image`, `/image_to_3d`, puis `/extract_glb`), le jeton du mainteneur étant posé par l’environnement. Un passage prend environ 40 secondes de calcul sur le quota du compte. Le `.glb` est rangé tel quel dans la Bibliothèque du projet, sous `archipeo/personnages-3d/bruts/<nom>.glb`.
@@ -181,8 +198,8 @@ Si le socle n’est pas entièrement parti, ou si les pattes sont coupées, chan
 
 Une créature passe ensuite par deux étapes, sur son dossier de `modeles/` (numpy seulement, sans Blender) :
 
-5. `squelette.py` pose son squelette dans le modèle de près (réglages dans la colonne « squelette » de `reglages.csv`), relu sur la planche de `apercu_squelette.py` ;
-6. `aplats.py` peint ses deux modèles en aplats : chacune de ses quatre couleurs (sombres et bigarrées, puisque l’ombre est peinte dans la texture de TRELLIS) prend la couleur cible de la colonne « aplats » de `reglages.csv` (`source>cible` en hexadécimal), deux couleurs de la même matière se fondent en une zone, le modèle de loin prend la cible de la source la plus proche, et un triangle isolé prend la couleur de ses voisins. Seules les couleurs du fichier changent. Relancé sur un modèle déjà en aplats, il ne change rien ; un modèle refait par `lot.py` a d’autres couleurs sources : refaire sa ligne.
+5. `squelette.py` pose son squelette dans le modèle de près (réglages dans la colonne « squelette » de `reglages.csv`), relu sur la planche de `apercu_squelette.py` (qui dessine bien la face depuis le 11 octobre 2026 : ses facettes se peignaient de la plus proche à la plus lointaine, et la planche montrait le dos) ;
+6. `aplats.py` peint ses deux modèles en aplats : chacune de ses quatre couleurs (sombres et bigarrées, puisque l’ombre est peinte dans la texture de TRELLIS) prend la couleur cible de la colonne « aplats » de `reglages.csv` (`source>cible` en hexadécimal ; `source@bas-haut>cible` pour une bande de hauteur, voir Kéo), deux couleurs de la même matière se fondent en une zone, le modèle de loin prend la cible de la source la plus proche, et un triangle isolé prend la couleur de ses voisins. Seules les couleurs du fichier changent. Relancé sur un modèle déjà en aplats, il ne change rien ; un modèle refait par `lot.py` a d’autres couleurs sources : refaire sa ligne.
 
 ```sh
 python3 scripts/rendu/modeles/squelette.py -- docs/univers/archipeo/personnages/modeles/<nom>

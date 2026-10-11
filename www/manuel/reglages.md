@@ -88,7 +88,7 @@ Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’î
 L’univers change le dessin du monde et l’histoire ; la progression reste la même. Deux univers se choisissent :
 
 - **Blocland** (par défaut) : un monde en cubes, où l’élève reconstruit le village bloc par bloc.
-- **Archipéo** : une aventure en mer, où son savoir reconstruit l’archipel.
+- **Archipéo** : une aventure en mer, où son savoir reconstruit l’archipel. Le personnage de l’élève y change de tenue d’un archipel à l’autre : explorateur aux Premiers Rivages, ciré aux Îles Brumeuses, combinaison de mécanicienne aux Anciens Ateliers, gilet de cartographe aux Îles du Ciel.
 
 Chaque univers a une icône, son nom et une phrase, avec un bouton pour l’écouter. Changer d’univers demande une confirmation, qui dit ce qui change (le dessin du monde, le titre et l’histoire ; les îles gardent leur nom) et ce qui reste (les étoiles, les blocs, les plans et les missions). **Changer d’univers** confirme, **Annuler** garde l’univers d’avant. Le changement se voit au retour au village. L’univers choisit aussi le titre de l’écran titre et l’habillage de l’interface (ses couleurs, ses polices de titre, la forme de ses boutons) ; la place des boutons et des écrans est la même dans les deux.
 

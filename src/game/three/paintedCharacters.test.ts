@@ -8,7 +8,7 @@ import { creaturePlacements, guardianPlacements } from '../world/terrain';
 import { fusionDesCreatures, fusionDesGardiens } from '../world/characters/merges';
 import type { Instant, Monde } from './scenePart';
 import { creerPersonnages } from './characters';
-import { GESTES, materiauALueur, poseDeMarche } from './paintedCharacters';
+import { GESTES, materiauALueur, pasDe, poseDeMarche } from './paintedCharacters';
 
 const { progress, world: village } = toutConstruit();
 
@@ -189,5 +189,18 @@ describe('Le cycle de marche des créatures à squelette (poseDeMarche)', () => 
 
   it('la tête reste droite : le bassin et les épaules tournent à l’inverse, et la tête compense', () => {
     for (const phi of [0.4, 1.2, 2.5, 4]) expect(angle(phi, 'hips', 'y') + angle(phi, 'spine', 'y') + angle(phi, 'head', 'y')).toBeCloseTo(0, 6);
+  });
+});
+
+describe('La marche du bonhomme (`pasDe`)', () => {
+  it('Kéo balance ses bras et ses cuisses comme le bonhomme dessiné en code, chacun de son côté ; ni tibias, ni dos, ni tête', () => {
+    expect(pasDe({ nom: 'bras-gauche', pivot: [-0.255, 1.56, 0] })).toBe(1);
+    expect(pasDe({ nom: 'arm.L', pivot: [-0.3, 1.44, 0] })).toBe(pasDe({ nom: 'bras-gauche', pivot: [-0.255, 1.56, 0] }));
+    expect(pasDe({ nom: 'arm.R', pivot: [0.3, 1.44, 0] })).toBe(pasDe({ nom: 'bras-droit', pivot: [0.255, 1.56, 0] }));
+    expect(pasDe({ nom: 'thigh.L', pivot: [-0.2, 0.84, 0] })).toBe(pasDe({ nom: 'jambe-gauche', pivot: [-0.1, 0.874, 0] }));
+    expect(pasDe({ nom: 'thigh.R', pivot: [0.2, 0.84, 0] })).toBe(pasDe({ nom: 'jambe-droite', pivot: [0.1, 0.874, 0] }));
+    // Le bras gauche et la jambe gauche vont à l'inverse l'un de l'autre.
+    expect(pasDe({ nom: 'arm.L', pivot: [-0.3, 1.44, 0] })).toBe(-pasDe({ nom: 'thigh.L', pivot: [-0.2, 0.84, 0] }));
+    for (const nom of ['shin.L', 'shin.R', 'hips', 'spine', 'head']) expect(pasDe({ nom, pivot: [-0.1, 1, 0] }), nom).toBe(0);
   });
 });
