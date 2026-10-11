@@ -246,12 +246,16 @@ describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
       'Le Marché des proportions est bâti. Tu avances bien : chaque île bâtie rend l’archipel plus beau.',
       'Un chemin s’ouvre vers la Mine des lettres. L’archipel s’agrandit.',
     ]);
-    // Les noms des archipels et des rôles sont ceux des données ; aucun succès renommé, aucun écran de renommage.
+    // Les noms des archipels et des rôles sont ceux des données ; un seul succès redit (la Nef y devient aéronef, GD-15),
+    // aucun écran de renommage.
     expect(t.archipels).toEqual(NOMS_ARCHIPELS);
     expect(t.archipels).toEqual({ '6e': 'Premiers Rivages', '5e': 'Îles Brumeuses', '4e': 'Anciens Ateliers', '3e': 'Îles du Ciel' });
     expect(ROLES.map((r) => nomDuRole(t, r.id))).toEqual(['Explorateur', 'Cartographe', 'Bâtisseur', 'Navigateur', 'Architecte de l’archipel']);
     expect(ROLES.map((r) => nomDuRole(t, r.id))).toEqual(ROLES.map((r) => r.name));
-    for (const b of BADGES) expect(texteDuSucces(t, b)).toEqual({ title: b.title, description: b.description });
+    for (const b of BADGES.filter((x) => x.id !== 'pilote-du-ciel')) expect(texteDuSucces(t, b)).toEqual({ title: b.title, description: b.description });
+    expect(texteDuSucces(t, BADGES.find((b) => b.id === 'pilote-du-ciel')!).description).toBe('Faire de la Nef un aéronef et monter jusqu’aux Îles du Ciel.');
+    expect(t.libelles.formesDeLaNef?.[3]?.name).toBe('L’aéronef');
+    expect(pagesBaleine(arrivee(ARCHIPELAGOS[2]), t)[1]).toContain('Elle devient aéronef ici');
     expect(t.renommage).toBeNull();
     for (const a of ARCHIPELAGOS) {
       expect(quiParle(arrivee(a), t)).toBeNull();

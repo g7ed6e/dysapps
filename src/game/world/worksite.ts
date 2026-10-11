@@ -9,7 +9,7 @@ import type { PlanDef } from './plans';
 import { BRIDGE_BLOCKS, KIND_NAME, archipelagoOf, linkKind, buildableBridges, conditionMet, otherEnd, payableBlocks } from './archipelago';
 import { monumentsOf } from './monuments';
 import { blockUses, monumentMissing, type Use } from './uses';
-import { VEHICLE_NAME, stageAt } from './vehicle';
+import { VEHICLE_NAME, stageAt, stageWords, type FormsWords } from './vehicle';
 
 export interface Worksite {
   kind: 'navire' | 'monument' | 'ouvrage' | 'aucun';
@@ -43,12 +43,13 @@ function count(have: number, need: number): string {
 }
 
 /** Le chantier d'un usage (navire ou monument) : sa phrase et sa jauge. */
-function fromUse(state: GameState, use: Use): Worksite | null {
+function fromUse(state: GameState, use: Use, forms?: FormsWords): Worksite | null {
   if (use.kind === 'navire') {
     const stage = stageAt(use.island);
     if (!stage) return null;
     const g = gauge(state, stage);
-    const name = `${cap(VEHICLE_NAME)}, ${stage.name.charAt(0).toLowerCase()}${stage.name.slice(1)}`;
+    const shown = stageWords(stage, forms).name;
+    const name = `${cap(VEHICLE_NAME)}, ${shown.charAt(0).toLowerCase()}${shown.slice(1)}`;
     const text = g.ready ? `${name} : tu as tous tes blocs. Va les poser au port !` : `${name} : ${count(g.have, g.need)}.`;
     return { kind: 'navire', text, ...g, island: use.island, to: `/adventure/${use.island}?worksite=vehicle` };
   }
@@ -80,19 +81,20 @@ function ouvrage(state: GameState, island: BiomeId, block: BlockId): Worksite | 
 
 /**
  * Le chantier que servent les blocs gagnés sur une île : d'abord la Nef de cette île, puis l'ouvrage le moins
- * cher qui en part, puis un autre chantier de l'archipel (navire, monument) ; sinon rien, dit tel quel.
+ * cher qui en part, puis un autre chantier de l'archipel (navire, monument) ; sinon rien, dit tel quel. `forms` : les
+ * formes de la Nef que l'univers nomme autrement.
  */
-export function worksiteFor(state: GameState, island: BiomeId, block: BlockId): Worksite {
+export function worksiteFor(state: GameState, island: BiomeId, block: BlockId, forms?: FormsWords): Worksite {
   const uses = blockUses(state, block);
   const here = uses.filter((u) => u.island === island && u.kind === 'navire');
   for (const use of here) {
-    const site = fromUse(state, use);
+    const site = fromUse(state, use, forms);
     if (site) return site;
   }
   const bridge = ouvrage(state, island, block);
   if (bridge) return bridge;
   for (const use of uses.filter((u) => !here.includes(u))) {
-    const site = fromUse(state, use);
+    const site = fromUse(state, use, forms);
     if (site) return site;
   }
   return {

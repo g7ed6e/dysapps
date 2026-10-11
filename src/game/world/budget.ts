@@ -28,7 +28,7 @@ import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
 import { trianglesDeLaBrume } from './decor/mist';
 import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliersDe, sansToursDuCoeur } from './construction';
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, planeurDe, trianglesDe } from './fauna';
-import { VEHICLE_STAGES, vehicleForm } from './vehicle';
+import { VEHICLE_STAGES, shownPieces, vehicleForm } from './vehicle';
 import { bridge, type CaseDOuvrage } from './terrain/links';
 import { DEPTH } from './terrain/base';
 import { GAP_BETWEEN_PLACES, landRectangle } from './footprint';
@@ -924,7 +924,7 @@ export function bornesCost(a: ArchipelagoId): { triangles: number; drawCalls: nu
  */
 export function navireCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
   const { progress, world: village } = toutConstruit();
-  const ship = vehiclePlacement(a, progress, village);
+  const ship = vehiclePlacement(a, progress, village, true);
   const cout = (cubes: VoxelCube[], form: number) => coutDeLaConstruction(maillageDeLaConstruction(a, cubes, [], { navire: true, nef: nefOf(form, cubes) }));
   const cube = (c: PlanCell, ghost: boolean): VoxelCube => {
     const bd = BLOCKS[c.block];
@@ -933,8 +933,9 @@ export function navireCost(a: ArchipelagoId): { triangles: number; drawCalls: nu
   const pire = cout(ship.cubes, ship.form);
   for (const s of VEHICLE_STAGES) {
     if (!nefOf(s.stage, [])) continue;
-    const chantier = [...(s.stage > 1 ? vehicleForm(s.stage - 1).map((c) => cube(c, false)) : []), ...s.cells.map((c) => cube(c, false)), ...s.kit.map((c) => cube(c, true))];
-    for (const m of [cout(vehicleForm(s.stage).map((c) => cube(c, false)), s.stage), cout(chantier, s.stage - 1)]) {
+    const own = shownPieces(s, true);
+    const chantier = [...(s.stage > 1 ? vehicleForm(s.stage - 1, true).map((c) => cube(c, false)) : []), ...own.cells.map((c) => cube(c, false)), ...own.kit.map((c) => cube(c, true))];
+    for (const m of [cout(vehicleForm(s.stage, true).map((c) => cube(c, false)), s.stage), cout(chantier, s.stage - 1)]) {
       pire.triangles = Math.max(pire.triangles, m.triangles);
       pire.drawCalls = Math.max(pire.drawCalls, m.drawCalls);
     }

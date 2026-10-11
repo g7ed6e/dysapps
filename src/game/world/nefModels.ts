@@ -6,8 +6,8 @@
 // pour les tests et le budget : ./nefModels.fromDisk.testing.ts).
 //
 // Le jeu ne change pas : les cases de chaque forme, ce qu'on pose et la sauvegarde restent ceux de ./vehicle.ts, communs
-// à Blocland. Le modèle remplace les cubes posés de la forme montrée ; les pièces de l'étape en chantier restent des
-// cubes (posées) ou des fantômes. Tant que le fichier d'une forme n'est pas chargé (ou hors ligne sans lui), la Nef garde
+// à Blocland (seules les pièces de l'aéronef se montrent à d'autres places, `shownPieces`). Le modèle remplace les cubes
+// posés de la forme montrée ; les pièces de l'étape en chantier restent des cubes (posées) ou des fantômes. Tant que le fichier d'une forme n'est pas chargé (ou hors ligne sans lui), la Nef garde
 // ses cubes.
 import type { VoxelCube } from './cube';
 import type { ModeleLu } from './characters/imported/glb';
@@ -96,7 +96,7 @@ export function nefFacets(parts: readonly NefPart[], replaced: Set<string> = new
 export function nefOf(form: number, cubes: readonly VoxelCube[]): ImportedMonument | null {
   const parts = form >= 1 ? nefParts(form) : null;
   if (!parts) return null;
-  const own = new Set(vehicleForm(form).map((c) => `${c.x},${c.y},${c.z}`));
+  const own = new Set(vehicleForm(form, true).map((c) => `${c.x},${c.y},${c.z}`));
   const replaced = new Set(cubes.filter((c) => !c.ghost && own.has(`${c.x},${c.y},${c.z}`)).map((c) => `${c.x},${c.y},${c.z}`));
   return nefFacets(parts, replaced);
 }

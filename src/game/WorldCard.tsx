@@ -47,7 +47,7 @@ import { StepButton, StoryBadge, stepSentence, storyBadgeReading, tapTheStep } f
 import { ileDeLOuvrage } from './world/model';
 import { ofPlace, thePlace, toPlace } from './world/placeArticle';
 import { earnIsland, whereToEarn } from './world/uses';
-import { VEHICLE_NAME, VEHICLE_STAGES } from './world/vehicle';
+import { VEHICLE_NAME, VEHICLE_STAGES, stageWords } from './world/vehicle';
 
 /** Une fiche ouverte : son objet, et, pour une créature, la phrase tirée à l'ouverture. `seq` change à chaque ouverture. */
 export interface FicheOuverte {
@@ -351,7 +351,8 @@ function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId
   const manque = !ready && !attend ? ((Object.entries(status.missing) as [BlockId, number][]).find(([b, n]) => n > (state.stock[b] ?? 0)) ?? null) : null;
   const ou = manque ? (earnIsland(manque[0])?.name ?? whereToEarn(manque[0])) : '';
   const manquants = manque ? manque[1] - (state.stock[manque[0]] ?? 0) : 0;
-  const etape = `Forme ${stage.stage} sur ${VEHICLE_STAGES.length}, ${stage.name.charAt(0).toLowerCase()}${stage.name.slice(1)}`;
+  const nom = stageWords(stage, textes.libelles.formesDeLaNef).name;
+  const etape = `Forme ${stage.stage} sur ${VEHICLE_STAGES.length}, ${nom.charAt(0).toLowerCase()}${nom.slice(1)}`;
   const phrase = ready
     ? `${titre} est prête : pars vers les ${textes.archipels[stage.to]} quand tu veux.`
     : attend && status.complete
