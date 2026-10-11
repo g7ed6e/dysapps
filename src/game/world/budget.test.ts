@@ -1,6 +1,6 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
-import { chargerKeoDuDisque, chargerLesModelesDuDisque } from './characters/imported/fromDisk.testing';
+import { loadKeoFromDisk, chargerLesModelesDuDisque } from './characters/imported/fromDisk.testing';
 import { loadMonumentsFromDisk } from './monumentModels.fromDisk.testing';
 import { loadBuildingsFromDisk } from './buildingModels.fromDisk.testing';
 import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionAuPire, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
@@ -243,7 +243,7 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // en code dans ce fichier.)
   it('R6 : avec les personnages importés (6e, 5e, 4e et 3e) et Kéo, le bonhomme, les créatures et les Gardiens tiennent leur enveloppe aux Premiers Rivages, aux Îles Brumeuses, aux Anciens Ateliers et aux Îles du Ciel', () => {
     chargerLesModelesDuDisque();
-    chargerKeoDuDisque();
+    loadKeoFromDisk();
     for (const a of ['6e', '5e', '4e', '3e'] as const) {
       // Kéo, dans la tenue de l'archipel : 1 500 triangles au plus, un appel.
       const keo = personnagesCost(a).bonhomme;

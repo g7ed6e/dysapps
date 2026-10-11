@@ -38,7 +38,7 @@ const server = await createServer({
 });
 try {
   const load = (p) => server.ssrLoadModule(p);
-  const [budget, { ARCHIPELAGO_IDS }, { loadMonumentsFromDisk }, { loadBuildingsFromDisk }, { chargerLesModelesDuDisque, chargerKeoDuDisque }] = await Promise.all([
+  const [budget, { ARCHIPELAGO_IDS }, { loadMonumentsFromDisk }, { loadBuildingsFromDisk }, { chargerLesModelesDuDisque, loadKeoFromDisk }] = await Promise.all([
     load('/src/game/world/budget.ts'),
     load('/src/game/world/map.ts'),
     load('/src/game/world/monumentModels.fromDisk.testing.ts'),
@@ -52,7 +52,7 @@ try {
   // Les personnages importés (de près sur l'île qui coûte le plus, de loin ailleurs) et Kéo dans la tenue de chaque
   // archipel, comme la vue les charge.
   chargerLesModelesDuDisque();
-  chargerKeoDuDisque();
+  loadKeoFromDisk();
   const demandes = option('--archipel')?.split(',');
   const inconnus = demandes?.filter((a) => !ARCHIPELAGO_IDS.includes(a)) ?? [];
   if (inconnus.length) throw new Error(`Archipel inconnu : ${inconnus.join(', ')} (${ARCHIPELAGO_IDS.join(', ')})`);

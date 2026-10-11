@@ -284,7 +284,7 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     // restent dessinés en code).
     Promise.all([
       import('./paintedCharacters'),
-      import('../importedCharacters').then(({ chargerLesModeles, chargerKeo }) => Promise.all([chargerLesModeles(monde.archipel), chargerKeo(monde.archipel)])),
+      import('../importedCharacters').then(({ chargerLesModeles, loadKeo }) => Promise.all([chargerLesModeles(monde.archipel), loadKeo(monde.archipel)])),
     ])
       .then(([{ habiller }]) => {
         if (!fini) vetir(habiller(monde, champ, instant, lumiere, avatarGroup, creaturesGroup));

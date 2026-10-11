@@ -39,7 +39,7 @@ const PAS: Record<string, number> = {
  * (ses os de squelette.py), le même pas, ses bras (`arm.*`) comme ceux du bonhomme et ses cuisses (`thigh.*`) comme
  * ses jambes, du côté où pend l'os (x < 0 : le côté gauche du bonhomme, face à l'élève). Ni tibia, ni dos, ni tête.
  */
-export function pasDe(o: Pick<Os, 'nom' | 'pivot'>): number {
+export function swingOf(o: Pick<Os, 'nom' | 'pivot'>): number {
   if (o.nom in PAS) return PAS[o.nom];
   const gauche = o.pivot[0] < 0;
   if (o.nom.startsWith('arm.')) return PAS[gauche ? 'bras-gauche' : 'bras-droit'];
@@ -321,7 +321,7 @@ export function habiller(
   const { scene } = monde;
 
   // Le bonhomme : posé par le groupe extérieur, sous ses pieds ; le modèle regarde vers −Z. Kéo dans la tenue de
-  // l'archipel s'il est chargé (../importedCharacters.ts, `chargerKeo`), sinon le bonhomme dessiné en code.
+  // l'archipel s'il est chargé (../importedCharacters.ts, `loadKeo`), sinon le bonhomme dessiné en code.
   const bonhomme = fusionDuBonhomme(monde.archipel);
   const matBonhomme = materiauALueur();
   const corpsDuBonhomme = squelette(geometrieDe(bonhomme), bonhomme.os, bonhomme.squelette, matBonhomme.materiau, bonhomme.poids);
@@ -400,7 +400,7 @@ export function habiller(
   };
 
   return {
-    membres: bonhomme.squelette.map((o, i) => ({ os: corpsDuBonhomme.bones[i] as THREE.Object3D, sens: pasDe(o) })).filter((m) => m.sens),
+    membres: bonhomme.squelette.map((o, i) => ({ os: corpsDuBonhomme.bones[i] as THREE.Object3D, sens: swingOf(o) })).filter((m) => m.sens),
     poserLesCreatures: (placements, pres = null) => {
       vider();
       const lesCreatures = placements.filter((c) => (c.kind ?? 'creature') === 'creature');

@@ -19,7 +19,7 @@ import { lueursDeNuit, type FacettesDePersonnage, type V3 } from './painted';
 import { couleursAllumees, ECHELLE_DANS_LE_MONDE, HAUTEUR_DANS_LE_MONDE, lueurDuTriangle } from './sentinel';
 import { sentinelleDuMonde } from './paintedSentinels';
 import type { Niveau } from './imported/models';
-import { keoImporte } from './imported/keo';
+import { loadedKeo } from './imported/keo';
 import type { ArchipelagoId } from '../archipelago';
 import { fillsGuardianSquare, guardianSquareRoom, GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
 
@@ -344,7 +344,7 @@ const keos = new WeakMap<FacettesDePersonnage, FusionDuBonhomme>();
  * le bonhomme dessiné en code (./avatar.ts), un os par pièce.
  */
 export function fusionDuBonhomme(archipel?: ArchipelagoId): FusionDuBonhomme {
-  const keo = archipel ? keoImporte(archipel) : null;
+  const keo = archipel ? loadedKeo(archipel) : null;
   if (keo?.skin) {
     let f = keos.get(keo);
     if (!f) {

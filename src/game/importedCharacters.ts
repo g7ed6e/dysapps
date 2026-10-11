@@ -1,10 +1,11 @@
-// Charge les personnages importés d'Archipéo (./world/characters/imported/models.ts, et Kéo : ./world/characters/imported/keo.ts) : les fichiers .glb des modèles
-// retravaillés, servis avec le reste de l'application (Vite leur donne une adresse, le service worker les garde pour
-// jouer hors ligne). Chargé à la demande avec les personnages d'Archipéo : Blocland ne les télécharge jamais.
+// Charge les personnages importés d'Archipéo (./world/characters/imported/models.ts, et Kéo :
+// ./world/characters/imported/keo.ts) : les fichiers .glb des modèles retravaillés, servis avec le reste de
+// l'application (Vite leur donne une adresse, le service worker les garde pour jouer hors ligne). Chargé à la demande
+// avec les personnages d'Archipéo : Blocland ne les télécharge jamais.
 import type { ArchipelagoId } from './world/archipelago';
 import { archipelagoOfIsland } from './world/archipelagos';
 import { lireGlb } from './world/characters/imported/glb';
-import { enregistrerKeo, FICHIER_DE_KEO, keoImporte, TENUES_DE_KEO } from './world/characters/imported/keo';
+import { registerKeo, KEO_FILE, loadedKeo, KEO_OUTFITS } from './world/characters/imported/keo';
 import { enregistrer, FICHIER, ILES_IMPORTEES, modeleImporte, nomDuModele, type Genre, type Niveau } from './world/characters/imported/models';
 
 /** L'adresse de chaque fichier, par son chemin dans le dépôt (« …/modeles/<nom>/final-200.glb »). */
@@ -59,29 +60,29 @@ export function chargerLesModeles(archipel: ArchipelagoId): Promise<void> {
 }
 
 /** Le chargement de Kéo dans la tenue de chaque archipel, et s'il a manqué, quand. */
-const keoEnCours = new Map<ArchipelagoId, { p: Promise<void>; manque?: number }>();
+const keoLoads = new Map<ArchipelagoId, { p: Promise<void>; manque?: number }>();
 
 /**
  * Charge Kéo dans la tenue d'un archipel, et elle seule : le monde de cet archipel l'habille ainsi (le bonhomme débarque
  * habillé). Ne rejette jamais : un fichier qui manque ou ne se lit pas laisse le bonhomme dessiné en code, et se
  * redemande au plus tôt `RELANCE_MS` plus tard.
  */
-export function chargerKeo(archipel: ArchipelagoId): Promise<void> {
-  const deja = keoEnCours.get(archipel);
+export function loadKeo(archipel: ArchipelagoId): Promise<void> {
+  const deja = keoLoads.get(archipel);
   if (deja && (deja.manque === undefined || performance.now() - deja.manque < RELANCE_MS)) return deja.p;
   const chargement: { p: Promise<void>; manque?: number } = { p: Promise.resolve() };
-  const url = ADRESSES[`../../docs/univers/archipeo/personnages/modeles/${TENUES_DE_KEO[archipel]}/${FICHIER_DE_KEO}`];
+  const url = ADRESSES[`../../docs/univers/archipeo/personnages/modeles/${KEO_OUTFITS[archipel]}/${KEO_FILE}`];
   chargement.p = (async () => {
-    if (keoImporte(archipel) || !url) return;
+    if (loadedKeo(archipel) || !url) return;
     try {
       const r = await fetch(url);
       if (!r.ok) throw new Error(String(r.status));
-      enregistrerKeo(archipel, lireGlb(await r.arrayBuffer()));
+      registerKeo(archipel, lireGlb(await r.arrayBuffer()));
     } catch {
       // Hors ligne sans le fichier, ou un fichier abîmé : le bonhomme dessiné en code reste.
       chargement.manque = performance.now();
     }
   })();
-  keoEnCours.set(archipel, chargement);
+  keoLoads.set(archipel, chargement);
   return chargement.p;
 }
