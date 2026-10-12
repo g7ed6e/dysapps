@@ -30,26 +30,27 @@ const TRACK = { sleeper: 0.16, sleeperY: [0.1, 0.9], rails: [0.3, 0.7], rail: 0.
 /**
  * La voie ferrée droite, le long de x, de 0 à `length` cases : deux traverses jointives par case (pas de jour entre
  * elles), sombres (`sleeper`, et un ton plus sombre une sur deux) ; deux rails de 0,16 case au dessus d'acier poli ; un
- * butoir trapu à chaque bout si `buffers`. 6 triangles par traverse, 20 de rails, 20 de butoirs.
+ * butoir trapu à chaque bout si `buffers`. Posée en `z` (0 : sur le sol de sa première case). 6 triangles par traverse,
+ * 20 de rails, 20 de butoirs.
  */
-export function railTrack(at: Workshop, pe: Paint, length: number, buffers: boolean, sleeper: Couleur): void {
+export function railTrack(at: Workshop, pe: Paint, length: number, buffers: boolean, sleeper: Couleur, z = 0): void {
   const { sleeper: h, sleeperY: [y0, y1], rails, rail, buffer } = TRACK;
   const n = length * 2;
   for (let k = 0; k < n; k++) {
     const [x0, x1] = [k / 2, (k + 1) / 2];
-    at.box(x0, x1, y0, y1, 0, h, k % 2 ? scaleColor(sleeper, 0.84) : sleeper, { bottom: true, nx: k > 0, px: k < n - 1 });
+    at.box(x0, x1, y0, y1, z, z + h, k % 2 ? scaleColor(sleeper, 0.84) : sleeper, { bottom: true, nx: k > 0, px: k < n - 1 });
   }
   const steel = pe.color(FORMS_43.polishedSteel);
   const railFaces: Faces = { dessus: steel, cote: scaleColor(steel, 0.62) };
   const [xa, xb] = buffers ? [buffer.length, length - buffer.length] : [0.02, length - 0.02];
-  for (const y of rails) at.box(xa, xb, y - rail / 2, y + rail / 2, h, h + rail, railFaces);
+  for (const y of rails) at.box(xa, xb, y - rail / 2, y + rail / 2, z + h, z + h + rail, railFaces);
   if (!buffers) return;
   const wood = pe.role('yardRail');
   for (const [x0, x1] of [
     [0.02, buffer.length],
     [length - buffer.length, length - 0.02],
   ])
-    at.box(x0, x1, y0 + 0.04, y1 - 0.04, 0, buffer.height, { dessus: scaleColor(wood, 1.12), cote: wood });
+    at.box(x0, x1, y0 + 0.04, y1 - 0.04, z, z + buffer.height, { dessus: scaleColor(wood, 1.12), cote: wood });
 }
 
 // ---------- Le wagonnet ----------

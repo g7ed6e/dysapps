@@ -847,6 +847,20 @@ const CAPTURES = [
       : []),
     ...(['gare', 'belvedere', 'ruche'].includes(court) ? [{ nom: `objets-${classe}-${court}-loin`, vue: 'île', famille: 'objets-college', ile, posees: 'toutes', zoomer: -6, finesse: 2 }] : []),
   ]),
+  // La voie de la Gare de près, de jour et de nuit (le référent dys : l'acier des rails en silhouette sur son lit de
+  // ballast, d'un bout à l'autre) : la molette sur le milieu de la voie (`surLaCase`, ses cases du monde au 4e tout
+  // construit, de x 10 à 15 en y 679, son lit en z 8 ; heartDecor.test.ts les relit).
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `objets-4e-gare-voie${suffixe}`,
+    vue: 'île',
+    famille: 'objets-college',
+    ile: 'english-4e-grammar',
+    posees: 'toutes',
+    sansEtiquettes: true,
+    surLaCase: { x: 13, y: 679.5, z: 8.2, crans: 8 },
+    finesse: 3,
+    ...autres,
+  })),
   ...[
     ['4e', 'maths-4e-algebra', 'maths-4e-powers', 'french-4e-vocabulary'],
     ['3e', 'maths-3e-functions', 'maths-3e-statistics', 'history-3e-twentieth-century'],
@@ -1669,6 +1683,22 @@ async function zoomerLaVue(page, zoomer) {
 }
 
 /**
+ * Rapproche la vue d'un point du monde (`surLaCase` : x, y au sol, z en hauteur, et autant de crans de molette), le
+ * pointeur sur lui à chaque cran (`window.__dysappsCamera.ecran`) : la molette zoome autour du pointeur (three/gestures.ts).
+ */
+async function zoomerSurLaCase(page, { x, y, z, crans }) {
+  for (let i = 0; i < crans; i++) {
+    const p = await page.evaluate((c) => window.__dysappsCamera?.ecran(c) ?? null, { x, y, z });
+    if (!p) return;
+    await page.mouse.move(p.x, p.y);
+    await page.mouse.wheel(0, -240);
+    await page.clock.runFor(125);
+    await page.waitForTimeout(30);
+  }
+  await page.evaluate(() => document.querySelector('.voxel-canvas canvas')?.dispatchEvent(new PointerEvent('pointerleave')));
+}
+
+/**
  * Rapproche la vue du bonhomme (`surLeBonhomme` : autant de crans de molette), le pointeur sur son buste à chaque cran
  * (`window.__dysappsCamera.bonhomme`) : la molette zoome autour du pointeur (three/gestures.ts).
  */
@@ -1944,6 +1974,7 @@ async function scenes() {
               fiche: c.fiche,
               zoomer: c.zoomer,
               surLeBonhomme: c.surLeBonhomme,
+              surLaCase: c.surLaCase,
               sansPanneau: c.sansPanneau,
               sansEtiquettes: c.sansEtiquettes,
               reussir: c.reussir,
@@ -1952,7 +1983,7 @@ async function scenes() {
           )
         : []),
     ];
-    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, avancees, posees, cliquer, amenager, fiche, zoomer, surLeBonhomme, reussir, sansPanneau, sansEtiquettes, defiGagne } of views) {
+    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, avancees, posees, cliquer, amenager, fiche, zoomer, surLeBonhomme, surLaCase, reussir, sansPanneau, sansEtiquettes, defiGagne } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -2042,11 +2073,13 @@ async function scenes() {
         if (zoomer) await zoomerLaVue(page, zoomer);
         // Le bonhomme de près (`surLeBonhomme` : autant de crans de molette sur son buste, famille `keo`).
         if (surLeBonhomme) await zoomerSurLeBonhomme(page, surLeBonhomme);
+        // Un point du monde de près (`surLaCase` : la molette sur lui, la voie de la Gare).
+        if (surLaCase) await zoomerSurLaCase(page, surLaCase);
         // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.
         // Le panneau masqué (`sansPanneau`) agrandit la place libre : la caméra repart vers un autre cadrage, qu'on laisse
         // se poser comme après un zoom (sans ces pas, la vue de loin du grand moulin se prenait la caméra en route, à un
         // point qui changeait d'une prise à l'autre).
-        for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer || surLeBonhomme || amenager || sansPanneau || sansEtiquettes ? 16 : 0)); i++) {
+        for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer || surLeBonhomme || surLaCase || amenager || sansPanneau || sansEtiquettes ? 16 : 0)); i++) {
           await page.clock.runFor(125);
           await page.waitForTimeout(30);
         }

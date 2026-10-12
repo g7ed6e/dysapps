@@ -388,8 +388,36 @@ const velvetBolt: HeartDrawing = (at, pe) => {
 
 // ---------- La Gare (grammaire anglaise, 4e) ----------
 
-/** La voie ferrée (six cases) : ses traverses sombres dans le côté du rail, le dessus des rails d'acier poli, ses deux butoirs. */
-const station: HeartDrawing = (at, pe) => railTrack(at, pe, 6, true, pe.material('rail').cote);
+/** Le lit de ballast de la voie : son épaisseur au-dessus du plus haut sol, sa largeur (un peu plus que les traverses). */
+const BALLAST = { bed: 0.08, y: [0.04, 0.96] } as const;
+
+/**
+ * La voie ferrée (six cases) : ses traverses sombres dans le côté du rail, le dessus des rails d'acier poli, ses deux
+ * butoirs, posée à plat sur un lit de ballast bas de pierre, au niveau du plus haut sol de ses cases ; sous une case plus
+ * basse, le ballast descend jusqu'à son sol (un remblai), pour que la voie se lise d'un bout à l'autre, jamais enfouie
+ * dans le relief. 116 triangles de voie, 10 de lit, 6 par remblai au bout, 4 au milieu.
+ */
+const station: HeartDrawing = (at, pe, e) => {
+  const n = 6;
+  const grounds = Array.from({ length: n }, (_, x) => e.ground(x, 0));
+  const top = Math.max(...grounds);
+  const [y0, y1] = BALLAST.y;
+  const ballast = flankedOn(pe, pe.material('pierre'), 'rail');
+  at.box(0, n, y0, y1, top, top + BALLAST.bed, ballast);
+  // Les remblais : chaque suite de cases plus basses, du plus bas de ses sols jusque sous le lit.
+  for (let x = 0; x < n; ) {
+    if (grounds[x] >= top) {
+      x++;
+      continue;
+    }
+    let end = x;
+    while (end < n && grounds[end] < top) end++;
+    const low = Math.min(...grounds.slice(x, end));
+    at.box(x, end, y0, y1, low, top, ballast, { top: true, bottom: true, nx: x > 0, px: end < n });
+    x = end;
+  }
+  railTrack(at, pe, n, true, pe.material('rail').cote, top + BALLAST.bed);
+};
 
 /** Le bout de rail posé au sol (une case) : deux traverses et deux rails, sans butoir. */
 const railPiece: HeartDrawing = (at, pe) => railTrack(at, pe, 1, false, pe.material('rail').cote);

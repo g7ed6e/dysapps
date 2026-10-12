@@ -97,6 +97,26 @@ describe.each(TABLES)('le décor du cœur dessiné (%s)', (a, table) => {
   });
 });
 
+it('au 4e, la voie de la Gare est à plat sur son lit de ballast, au-dessus du plus haut sol de ses cases : rien n’en descend que le remblai des cases plus basses', () => {
+  const d = drawnHeartDecor('4e', worldOf('4e')).find((o) => o.id === 'coeur:english-4e-grammar:voie')!;
+  // Ses cases du monde, que vise la capture de près (`objets-4e-gare-voie`, scripts/rendu/mesures.mjs, `surLaCase`).
+  expect(d.cellules.map((c) => [c.x, c.y])).toEqual([10, 11, 12, 13, 14, 15].map((x) => [x, 679]));
+  const top = Math.max(...d.cellules.map((c) => c.z));
+  const low = d.cellules.filter((c) => c.z < top);
+  // Le relief sous la voie : une case au moins plus basse (sinon le test ne dit plus rien).
+  expect(low.length).toBeGreaterThan(0);
+  const p = d.opaque.positions;
+  const heights = new Set<number>();
+  for (let i = 0; i < p.length; i += 3) {
+    heights.add(Math.round(p[i + 1] * 100) / 100);
+    if (p[i + 1] >= top - 1e-6) continue;
+    const under = low.some((c) => p[i] >= c.x - 1e-6 && p[i] <= c.x + 1 + 1e-6 && p[i + 2] >= c.y - 1e-6 && p[i + 2] <= c.y + 1 + 1e-6);
+    expect(under, `${p[i]},${p[i + 1]},${p[i + 2]}`).toBe(true);
+  }
+  // Le dessus des rails, d'un bout à l'autre à la même hauteur : lit (0,08), traverses (0,16), rails (0,16).
+  expect(heights.has(Math.round((top + 0.4) * 100) / 100)).toBe(true);
+});
+
 /**
  * Les îles du 4e et du 3e sans décor du cœur à dessiner (étape 3, 12 octobre 2026) : le Verger, dont l'arbre fruitier est
  * dans les formes communes du décor (un élément nommé, déjà en primitives).
@@ -171,10 +191,11 @@ const BELOW_ON_GRASS = new Set([
  * l'herbe sous le voile (rendue à 0,11 au 4e, 0,16 au 3e, seule une teinte claire, 0,6 au moins sur un dessus, la
  * tiendrait), sur le pavé de la Porte et l'acajou du Forum (aucun flanc au-dessus de 0,05 de luminance, aucun dessus de
  * leur famille assez clair) ; et la Falaise, dont l'ardoise fendue claire #AEB5BE du directeur artistique (3,2:1 en
- * couleurs) donne 2,97:1 sous la lumière de `SCENE_LIGHT` : à juger sur capture. À l'étape 3 : la longue-vue de la Vigie
+ * couleurs) donne 2,97:1 sous la lumière de `SCENE_LIGHT`, acceptée par le directeur artistique. À l'étape 3 : la longue-vue de la Vigie
  * et la ruche (sur l'herbe), le laurier du Bosquet (sur son sol de laurier) ; la voie, le bout de rail et le signal de
  * la Gare, dont le dessus des rails en acier poli #B4BAC0 du directeur artistique donne 2,93:1 sous la même lumière sur
- * le sol de rails (aucun flanc n'y tient 3:1 au-dessus de 0,05) : à juger sur capture.
+ * le sol de rails (aucun flanc n'y tient 3:1 au-dessus de 0,05), acceptée en silhouette par le directeur artistique et
+ * le référent dys.
  */
 const BELOW_4E = new Set([
   'coeur:french-4e-agreement:paroi',
