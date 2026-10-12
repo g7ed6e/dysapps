@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, proportions-college, emc-cinquieme, emc-quatre-trois, monuments, batiments, objets-college, keo, coco ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, grand-chene, emc-cinquieme, emc-quatre-trois, monuments, batiments, objets-college, keo, coco ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
 // à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
@@ -694,55 +694,10 @@ const CAPTURES = [
     { nom: `keo-${classe}-pres-nuit`, vue: 'île', famille: 'keo', ile, surLeBonhomme: 8, finesse: 2, nuit: true },
     { nom: `keo-${classe}-ile`, vue: 'île', famille: 'keo', ile },
   ]),
-  // Les proportions du 5e, de la 4e et de la 3e (GD-18, famille `proportions-college`), à retirer une fois le lot fusionné ;
-  // à prendre dans les deux univers. La vue de chaque île, tout construit (le Gardien rallumé, son bloc d'or posé) : les
-  // Gardiens de Blocland redessinés, les statues d'Archipéo sur leur carré, les carrés déplacés, la vue qui glisse vers le
-  // Gardien, le bloc d'or à côté du carré ; puis la vue de chaque archipel.
-  ...[
-    'maths-5e-signed-numbers',
-    'maths-5e-proportionality',
-    'french-5e-homophones',
-    'french-5e-conjugation',
-    'english-5e-vocabulary',
-    'english-5e-grammar',
-    'history-5e-middle-ages',
-    'geography-5e-resources',
-    'life-earth-sciences-5e-active-planet',
-    'physics-chemistry-5e-matter-universe',
-    'technology-5e-design',
-    'civics-5e-equality-solidarity',
-    'lv2-5e-introductions',
-    'lca-5e-legends',
-    'maths-4e-powers',
-    'maths-4e-algebra',
-    'french-4e-agreement',
-    'french-4e-vocabulary',
-    'english-4e-comprehension',
-    'english-4e-grammar',
-    'history-4e-revolutions',
-    'geography-4e-globalization',
-    'life-earth-sciences-4e-cells-evolution',
-    'physics-chemistry-4e-signals-circuits',
-    'technology-4e-modeling',
-    'civics-4e-rights-freedoms',
-    'lv2-4e-daily-life',
-    'lca-4e-cities',
-    'maths-3e-geometry',
-    'maths-3e-statistics',
-    'maths-3e-functions',
-    'french-3e-close-reading',
-    'english-3e-comprehension',
-    'english-3e-grammar',
-    'history-3e-twentieth-century',
-    'geography-3e-france',
-    'life-earth-sciences-3e-human-body',
-    'physics-chemistry-3e-motion-energy',
-    'technology-3e-digital',
-    'civics-3e-democratic-life',
-    'lv2-3e-travel',
-    'lca-3e-ideas',
-  ].map((ile) => ({ nom: `proportions-${ile}`, vue: 'île', famille: 'proportions-college', ile })),
-  ...['maths-5e-proportionality', 'maths-4e-algebra', 'maths-3e-functions'].map((ile) => ({ nom: `proportions-archipel-${ile.slice(6, 8)}`, vue: 'archipel', famille: 'proportions-college', ile })),
+  // Le Grand Chêne d'un bloc plus haut (famille `grand-chene`, mainteneur, 12 octobre 2026), à retirer une fois le lot
+  // fusionné ; à prendre dans les deux univers : la vue de la Forêt des sons, tout construit, puis celle du 6e.
+  { nom: 'grand-chene-ile', vue: 'île', famille: 'grand-chene', ile: 'french-6e-phonology' },
+  { nom: 'grand-chene-archipel', vue: 'archipel', famille: 'grand-chene', ile: 'french-6e-phonology' },
   { nom: 'histoire-geo-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
   { nom: 'histoire-geo-mes-blocs', vue: 'île', famille: 'histoire-geo', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [

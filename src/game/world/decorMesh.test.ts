@@ -285,8 +285,8 @@ it('les arbres : deux familles de verts (six sur dix clairs), trois tailles, cha
   expect(Math.max(...largeurs)).toBeGreaterThan(2.8);
 });
 
-it('le Grand Chêne est le plus grand arbre du 6e, une case au moins au-dessus des autres, dans les deux univers', () => {
-  // Demande du mainteneur (10 octobre 2026) ; la marge d'une case, du directeur artistique.
+it('le Grand Chêne est le plus grand arbre du 6e, deux cases au moins au-dessus des autres, dans les deux univers', () => {
+  // Demande du mainteneur (10 octobre 2026) ; un bloc de plus, deux cases de marge (mainteneur, 12 octobre 2026).
   const { cubes, elements, maillage, champ } = monde('6e');
   const arbre = (genre: string) => genre === 'arbre' || genre === 'sapin';
   // Blocland : les cubes de chaque arbre, du pied à la cime ; le Gardien, ses couches à l'échelle de l'habillage.
@@ -298,7 +298,7 @@ it('le Grand Chêne est le plus grand arbre du 6e, une case au moins au-dessus d
     }
   const grandsEnBlocs = Math.max(...[...bornes.values()].map(([z0, z1]) => z1 - z0 + 1));
   const chene = (Math.max(...GUARDIAN_CUBES['french-6e-phonology'].map((c) => c.z)) + 1) * HABILLAGE_BLOCLAND.echelleDesGardiens;
-  expect(chene - grandsEnBlocs).toBeGreaterThanOrEqual(1);
+  expect(chene - grandsEnBlocs).toBeGreaterThanOrEqual(2);
   // Archipéo : la cime de chaque arbre au-dessus du sol à son pied ; le Gardien, à sa hauteur propre.
   const haut = new Map<number, number>();
   const f = maillage.decor;
@@ -309,7 +309,7 @@ it('le Grand Chêne est le plus grand arbre du 6e, une case au moins au-dessus d
     grandsPeints = Math.max(grandsPeints, haut.get(i)! - (hauteurDuSol(champ, e.x + 0.5, e.y + 0.5) ?? e.z));
   });
   expect(grandsPeints).toBeGreaterThan(4);
-  expect((GUARDIAN_WORLD_HEIGHTS['french-6e-phonology'] ?? 0) - grandsPeints).toBeGreaterThanOrEqual(1);
+  expect((GUARDIAN_WORLD_HEIGHTS['french-6e-phonology'] ?? 0) - grandsPeints).toBeGreaterThanOrEqual(2);
   // Plus aucun repère ne lui dispute la Forêt.
   expect(elements.some((e) => e.genre === 'grand-arbre')).toBe(false);
 });
