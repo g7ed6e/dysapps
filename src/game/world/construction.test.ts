@@ -229,11 +229,12 @@ describe('La construction taillée (lot R5)', () => {
       const m = maillageDeLaConstruction(a, cubes, sol);
       const total = coutDeLaConstruction(m).triangles;
       const pieces = a === '5e' ? auxPieces(m) : 0;
-      // Au 6e, les pièces communes de la cour (11 octobre 2026) : bornées à part, au plus 50 triangles par case en moyenne.
-      const cour = a === '6e' ? auxCours(m, a) : { triangles: 0, cases: 0 };
+      // Au 6e, au 4e et au 3e, les pièces communes de la cour (11 et 12 octobre 2026) : bornées à part, au plus 50
+      // triangles par case en moyenne (au 5e, comptées avec les pièces).
+      const cour = a !== '5e' ? auxCours(m, a) : { triangles: 0, cases: 0 };
       expect(total - auxPonts(m) - pieces - cour.triangles, a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.7);
       if (a === '5e') expect(pieces, a).toBeLessThanOrEqual(10 * casesEnPiece(m));
-      if (a === '6e') expect(cour.triangles, a).toBeLessThanOrEqual(50 * cour.cases);
+      if (a !== '5e') expect(cour.triangles, a).toBeLessThanOrEqual(50 * cour.cases);
     }
   }, 60_000);
 

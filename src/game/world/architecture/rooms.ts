@@ -38,10 +38,16 @@ export type Role =
   | 'paille'
   /** La pierre des lieux du village au 5e (la pierre grise de l'école et de la salle des trophées). */
   | 'masonry'
+  /**
+   * Le grès clair des lieux du village dessinés (au 4e : les chaînes d'angle, la corniche, les appuis et le clocheton de
+   * l'école, les bases et les chapiteaux de la salle des trophées), là où la pierre sombre du soubassement ne se lirait
+   * pas sur la brique ; absent, le soubassement.
+   */
+  | 'placeTrim'
   /** La neige des congères du Glacier (au 5e), tenue loin du fantôme. */
   | 'snow'
   /**
-   * Les pièces communes de la cour (./yardPieces.ts, au 6e) : le poteau et les lisses de la barrière, le pied de pierre
+   * Les pièces communes de la cour (./yardPieces.ts, au 6e, au 5e, au 4e et au 3e) : le poteau et les lisses de la barrière, le pied de pierre
    * du poteau de la lanterne et les côtés de la marche, la dalle du dessus de la marche, la cage de fer et le toit
    * d'ardoise de la lanterne, ses vitres (dans les fenêtres).
    */

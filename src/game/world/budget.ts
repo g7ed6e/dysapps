@@ -82,7 +82,8 @@ export const RENDER_BUDGET = {
 export const RENDER_BUDGET_6E = { triangles: 93_610, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
- * Les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
+ * Le plafond que les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel ont partagé (`RENDER_BUDGET_AUTRES`, retiré
+ * le 12 octobre 2026 : chaque archipel a depuis le sien). Son histoire : les trois (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
  * depuis leurs six îles d'histoire-géographie (HG-3), du même mot du mainteneur (« Budget on augmente pour l'instant ») :
  * relevé à la somme des enveloppes « autres » (62 875). Mesurés tout construit, « Dans la scène » compris : 57 336 aux
  * Îles Brumeuses, 55 292 aux Anciens Ateliers, 52 531 aux Îles du Ciel. Puis, avec leurs neuf îles de sciences (SC-3),
@@ -114,21 +115,39 @@ export const RENDER_BUDGET_6E = { triangles: 93_610, drawCalls: RENDER_BUDGET.dr
  * passe de 475 à 1 500, la somme des enveloppes à 97 160 aux Îles Brumeuses, 97 415 aux Anciens Ateliers et 96 170 aux
  * Îles du Ciel.
  */
-export const RENDER_BUDGET_AUTRES = { triangles: 97_455, drawCalls: RENDER_BUDGET.drawCalls } as const;
+const PLAFOND_PARTAGE = { triangles: 97_455, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
- * Les Îles Brumeuses (5e) quittent `RENDER_BUDGET_AUTRES` le 11 octobre 2026 avec leurs objets dessinés (la piste 3
- * « hybride » au 5e, le mainteneur autorisant les hausses nécessaires) : `RENDER_BUDGET_AUTRES` (97 455, la Nef et Kéo
+ * Les Îles Brumeuses (5e) quittent le plafond partagé le 11 octobre 2026 avec leurs objets dessinés (la piste 3
+ * « hybride » au 5e, le mainteneur autorisant les hausses nécessaires) : le plafond partagé (97 455, la Nef et Kéo
  * compris) plus la hausse mesurée de leurs enveloppes. Le lot 1 (les pièces de cour, les trophées, le quai, les lieux en
  * pierre, dix petites constructions et six cœurs) : la somme des enveloppes 97 160 → 101 835 (+4 675), le plafond
  * 102 130 ; le lot 2 (les dix formes nouvelles, les huit autres cœurs, cinq petites constructions) : 101 835 → 102 565
- * (+730), le plafond 102 860. Le 4e et le 3e gardent `RENDER_BUDGET_AUTRES`.
+ * (+730), le plafond 102 860.
  */
-export const RENDER_BUDGET_5E = { triangles: 102_860, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_5E = { triangles: 102_860, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
+
+/**
+ * Les Anciens Ateliers (4e) quittent le plafond partagé le 12 octobre 2026 avec leurs objets dessinés (la piste 3
+ * « hybride » au 4e, même autorisation qu'au 5e) : le plafond partagé (97 455) plus la hausse mesurée de leurs
+ * enveloppes. L'étape 1 (les pièces de cour, les trophées, le quai, les lieux du village) : la somme des enveloppes
+ * 97 415 → 101 365 (+3 950), le plafond 101 405.
+ */
+export const RENDER_BUDGET_4E = { triangles: 101_405, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
+
+/**
+ * Les Îles du Ciel (3e) quittent le plafond partagé le même jour, de même : l'étape 1 (les pièces de cour, les trophées,
+ * le quai, les lieux du village, la Halle bardée et les toits enneigés) : la somme des enveloppes 96 170 → 99 870
+ * (+3 700), le plafond 101 155.
+ */
+export const RENDER_BUDGET_3E = { triangles: 101_155, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
+
+/** Le budget de la scène 3D de chaque archipel, tout construit. */
+const RENDER_BUDGETS: Readonly<Record<ArchipelagoId, { triangles: number; drawCalls: number }>> = { '6e': RENDER_BUDGET_6E, '5e': RENDER_BUDGET_5E, '4e': RENDER_BUDGET_4E, '3e': RENDER_BUDGET_3E };
 
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
-  return a === '6e' ? RENDER_BUDGET_6E : a === '5e' ? RENDER_BUDGET_5E : RENDER_BUDGET_AUTRES;
+  return RENDER_BUDGETS[a];
 }
 
 /**
@@ -417,12 +436,16 @@ export const ENVELOPPES: Record<
   // (./objects/heartDecor5e.ts). Mesuré tout construit (`npm run rendu:budget`) : 15 879 → 19 697, 20 457 au pire de la
   // salle ; l'enveloppe des Îles Brumeuses 16 200 → 20 500 ; aucun appel de plus. Le lot 2 (les huit autres cœurs, faits
   // des formes nouvelles) : 19 697 → 20 316, 21 076 au pire de la salle ; l'enveloppe 20 500 → 21 100.
+  // L'étape 1 des objets du 4e et du 3e (12 octobre 2026, même autorisation) : les pièces communes de leurs cours, les
+  // trophées, le quai, les trois lieux de l'île-école (au 3e, la Halle bardée et les toits enneigés). Mesuré tout
+  // construit (`npm run rendu:budget`) : 16 576 → 20 062 aux Anciens Ateliers, 20 822 au pire de la salle ; 16 797 →
+  // 20 037 aux Îles du Ciel, 20 797 au pire ; leurs enveloppes 16 950 → 20 900 et 17 100 → 20 800 ; aucun appel de plus.
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
     premiersRivages: { triangles: 22_000, drawCalls: 3 },
     autres: { triangles: 16_950, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 21_100, drawCalls: 3 }, '3e': { triangles: 17_100, drawCalls: 3 } },
+    parArchipel: { '5e': { triangles: 21_100, drawCalls: 3 }, '4e': { triangles: 20_900, drawCalls: 3 }, '3e': { triangles: 20_800, drawCalls: 3 } },
   },
   // Les quêtes des habitants (GD-10, PR 1) : les trois objets posés à la fin des quêtes du 6e (la lanterne, le portillon,
   // l'escalier) sont des petites constructions, comptées dans ce poste (`toutConstruitAvecLesCommandes`) : 758 triangles

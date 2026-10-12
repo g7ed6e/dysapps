@@ -43,15 +43,21 @@ const mondeDe = (a: ArchipelagoId) => {
 };
 const archipelDe = (id: string) => BIOMES.find((b) => b.id === ileDe(id))!.classe;
 
-it('toutes les petites constructions du 6e (seize commandes, trois objets d’entraide) et du 5e (douze et trois) sont dessinées, et seulement elles', () => {
+/**
+ * Les petites constructions du 4e et du 3e déjà dessinées (12 octobre 2026) : à l'étape 1, la veilleuse d'Olive ; les
+ * autres gardent leurs cubes jusqu'à leur étape.
+ */
+const DU_COLLEGE = ['life-earth-sciences-3e-human-body-fixture-1'];
+
+it('toutes les petites constructions du 6e (seize commandes, trois objets d’entraide) et du 5e (douze et trois) sont dessinées, et celles du 4e et du 3e de leur étape, et seulement elles', () => {
   const du6e = PETITES_CONSTRUCTIONS.filter((id) => archipelDe(id) === '6e');
   const du5e = PETITES_CONSTRUCTIONS.filter((id) => archipelDe(id) === '5e');
-  expect([...PETITES_CONSTRUCTIONS_DESSINEES].sort()).toEqual([...du6e, ...du5e].sort());
+  expect([...PETITES_CONSTRUCTIONS_DESSINEES].sort()).toEqual([...du6e, ...du5e, ...DU_COLLEGE].sort());
   expect(du6e).toHaveLength(19);
   expect(du5e).toHaveLength(15);
-  // Huit à silhouette au 6e, quatre au 5e (la cabane, la salière, la tente, le four à pain).
+  for (const id of DU_COLLEGE) expect(PETITES_CONSTRUCTIONS, id).toContain(id);
+  // Huit à silhouette au 6e, quatre au 5e (la cabane, la salière, la tente, le four à pain) ; aucune encore au 4e et au 3e.
   expect(PETITES_CONSTRUCTIONS_DESSINEES.filter(aUnDessinDeLoin)).toHaveLength(12);
-  expect(PETITES_CONSTRUCTIONS_DESSINEES.some((id) => ['4e', '3e'].includes(archipelDe(id)))).toBe(false);
 });
 
 it('le puits de Tunel : de 300 à 500 triangles de près, de 30 à 50 de loin', () => {
@@ -115,7 +121,7 @@ it('posée, chaque petite construction remplace toutes ses cases, eau comprise, 
     const k = [...cases][0];
     expect(petitesConstructionsDessinees(a, cubes.filter((c) => `${c.x},${c.y},${c.z}` !== k)).some((d) => d.id === id), id).toBe(false);
   }
-  // Ailleurs qu'au 6e et au 5e, aucune.
+  // Ailleurs que dans leur archipel, aucune.
   expect(petitesConstructionsDessinees('4e', mondeDe('6e'))).toEqual([]);
 });
 
@@ -201,7 +207,7 @@ it('la pose en vague sur une île tournée (GD-9) : ses cases tournent avec l’
   expect(drawn?.replaced).toEqual(cells);
 });
 
-it.each(['6e', '5e'] as const)('le bloc d’or de chaque Gardien rallumé (%s) : un trophée de 40 à 60 triangles, dans ses deux cases de pierre et d’or', (a) => {
+it.each(['6e', '5e', '4e', '3e'] as const)('le bloc d’or de chaque Gardien rallumé (%s) : un trophée de 40 à 60 triangles, dans ses deux cases de pierre et d’or', (a) => {
   const cubes = mondeDe(a);
   const trophees = drawnTrophies(a, cubes);
   expect(trophees).toHaveLength(BIOMES.filter((b) => b.classe === a).length);
@@ -221,19 +227,16 @@ it.each(['6e', '5e'] as const)('le bloc d’or de chaque Gardien rallumé (%s) :
       expect(p[i + 2]).toBeLessThanOrEqual(y + 1 + 1e-6);
     }
   }
-  // Ailleurs, les cubes du kit.
-  const { progress, world } = toutConstruitAvecLesCommandes();
-  expect(drawnTrophies('4e', worldCubes('4e', progress, world, false))).toEqual([]);
 });
 
-it.each(['6e', '5e'] as const)('les objets du quai (%s) : la barque, les caisses, les fanions et le foyer en pièces communes ; la fumée du foyer reste', (a) => {
+it.each(['6e', '5e', '4e', '3e'] as const)('les objets du quai (%s) : la barque (sauf aux Îles du Ciel), les caisses, les fanions et le foyer en pièces communes ; la fumée du foyer reste', (a) => {
   const cubes = mondeDe(a);
   const objets = drawnQuayObjects(a, cubes);
   const genre = (id: string) => id.slice(id.lastIndexOf('/') + 1, id.indexOf('@'));
   const parGenre = new Map<string, number[]>();
   for (const o of objets) parGenre.set(genre(o.id), [...(parGenre.get(genre(o.id)) ?? []), nTri(o.opaque)]);
-  expect([...parGenre.keys()].sort()).toEqual(['barque', 'caisse', 'fanion', 'foyer']);
-  for (const n of parGenre.get('barque')!) {
+  expect([...parGenre.keys()].sort()).toEqual(a === '3e' ? ['caisse', 'fanion', 'foyer'] : ['barque', 'caisse', 'fanion', 'foyer']);
+  for (const n of parGenre.get('barque') ?? []) {
     expect(n).toBeGreaterThanOrEqual(80);
     expect(n).toBeLessThanOrEqual(120);
   }
@@ -252,7 +255,6 @@ it.each(['6e', '5e'] as const)('les objets du quai (%s) : la barque, les caisses
   const at = countingWorkshop();
   rowboat(at, paintFor('6e', 'maths-6e-calculation', true), 'x', 4, true);
   expect(at.triangles).toBeLessThan(60);
-  expect(drawnQuayObjects('4e', cubes)).toEqual([]);
 });
 
 it('les pièces de la cour : dans leur case, sans dessous, de 10 à 50 triangles ; les lisses fermées au bord de la case', () => {
@@ -296,15 +298,39 @@ it('les pièces de la cour : dans leur case, sans dessous, de 10 à 50 triangles
 
 it('les lanternes des petites constructions s’allument la nuit (leurs vitres dans le feu), pas celles d’une île fermée', () => {
   const avecLanterne = PETITES_CONSTRUCTIONS_DESSINEES.filter((id) => casesDeLaPetiteConstruction(id)!.some((c) => c.block === BLOC.lanterne));
-  // Quatre au 6e ; au 5e, l'écritoire de Vélin, le coffre de Sillon et la balise de Frimas.
-  expect(avecLanterne).toHaveLength(7);
+  // Quatre au 6e ; au 5e, l'écritoire de Vélin, le coffre de Sillon et la balise de Frimas ; au 3e, la veilleuse d'Olive.
+  expect(avecLanterne).toHaveLength(8);
   for (const id of PETITES_CONSTRUCTIONS_DESSINEES) {
     const a = archipelDe(id);
     const m = petitesConstructionsDessinees(a, mondeDe(a), ileDe(id)).find((d) => d.id === id)!;
     expect(nTri(m.fire), id).toBe(avecLanterne.includes(id) ? 8 : 0);
   }
-  for (const a of ['6e', '5e'] as const) {
+  for (const a of ['6e', '5e', '4e', '3e'] as const) {
     const fermee = mondeDe(a).map((c) => (c.petiteConstruction ? { ...c, muted: true } : c));
     for (const m of petitesConstructionsDessinees(a, fermee, null)) expect(nTri(m.fire), m.id).toBe(0);
   }
+});
+
+it('la veilleuse d’Olive : le pied de cire livrée sur 60 % au moins de l’aire vue, sa vitre pleine dans le feu (allumée la nuit), sans flamme ni halo', () => {
+  const OLIVE = 'life-earth-sciences-3e-human-body-fixture-1';
+  const ile = ileDe(OLIVE);
+  const m = petitesConstructionsDessinees('3e', mondeDe('3e'), ile).find((d) => d.id === OLIVE)!;
+  // Les quatre vitres de la lanterne des cours, et rien d'autre : ni flamme, ni halo.
+  expect(nTri(m.fire)).toBe(8);
+  expect(m.halo).toBeNull();
+  const wax = couleurDeMatiere('3e', 'cire');
+  const cibles = [wax.dessus, wax.cote].map((c) => rgb(c).map((v) => lineaire(v / 255)));
+  const { positions: p, colors: k } = m.opaque;
+  let cire = 0;
+  let total = 0;
+  for (let t = 0; t < p.length / 9; t++) {
+    const [a, b, d] = [0, 1, 2].map((s) => [p[t * 9 + s * 3], p[t * 9 + s * 3 + 1], p[t * 9 + s * 3 + 2]]);
+    const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+    const v = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
+    const aire = Math.hypot(u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]) / 2;
+    total += aire;
+    const c = [k[t * 9], k[t * 9 + 1], k[t * 9 + 2]];
+    if (cibles.some((q) => q.every((x, i) => Math.abs(x - c[i]) < 1e-4))) cire += aire;
+  }
+  expect(cire / total).toBeGreaterThanOrEqual(0.6);
 });

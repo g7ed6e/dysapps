@@ -328,3 +328,17 @@ describe('Le 3e : un toit sous la neige en chantier', () => {
     }
   }, 60_000);
 });
+
+describe('Les kits du 4e et du 3e : les objets dessinés (piste 3, 12 octobre 2026)', () => {
+  it('les objets dessinés, les pièces communes de la cour et leurs couleurs (intention du directeur artistique)', () => {
+    for (const a of ['4e', '3e'] as const) {
+      expect(KITS[a].objetsDessines, a).toBe(true);
+      expect(KITS[a].yardLantern, a).toBeDefined();
+      expect(KITS[a].finitions?.barriere, a).toBeDefined();
+    }
+    expect(KITS['4e'].couleurs).toMatchObject({ yardPost: 0x6e4c30, yardRail: 0x884d40, yardStone: 0x534e51, yardSlab: 0xc9b79a, lanternFrame: 0x3a2a22, lanternRoof: 0x3e3636, lanternGlass: 0xe8c877, placeTrim: 0xc9b79a });
+    expect(KITS['3e'].couleurs).toMatchObject({ yardPost: 0x6e4c30, yardRail: 0x795643, yardStone: 0x8c8f99, yardSlab: 0xc2bbad, lanternFrame: 0x3a2a22, lanternRoof: 0x1c3440, lanternGlass: 0xe8c877 });
+    // La dalle de la cour, claire, reste loin du fantôme sous le voile de l'archipel.
+    for (const a of ['4e', '3e'] as const) expect(rgbGap(couleurDuRole(a, KITS[a], 'yardSlab'), BRUME), a).toBeGreaterThanOrEqual(ECART);
+  });
+});

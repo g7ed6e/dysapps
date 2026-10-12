@@ -1,4 +1,4 @@
-// Les trois lieux du village de l'île-école du 6e d'Archipéo, dessinés (lot 2 du 6e de la piste 3 « hybride », même style
+// Les trois lieux du village de l'île-école d'Archipéo, dessinés (lot 2 du 6e de la piste 3 « hybride », même style
 // que le lot 1 : low poly en aplats francs, sans texture, par le code ; dans l'esprit des bâtiments importés : un toit
 // franc, une ouverture sombre, une signature) : l'école et son clocheton à cloche d'or, la salle des trophées (ses
 // piliers, son fond de velours, ses socles, son faîte d'or) et la Halle aux matériaux (sa grande porte, son toit à deux
@@ -11,7 +11,8 @@
 // construction les dessine, plus petits que leur case), le bloc suspendu de la Halle et les blocs de sa recette (GD-2),
 // et le soubassement de pierre de taille sous un lieu posé sur une marche du sol. Le modèle tient dans l'emprise de ses
 // cubes (la règle « trois bandes » se lit sur eux, threeBands.test.ts). Seules les vitres de l'école s'allument la nuit,
-// sans clignoter (pas sur une île fermée). Code pur, sans Three.js.
+// sans clignoter (pas sur une île fermée). Au 6e d'abord, puis au 5e, au 4e et au 3e, dans les matières de leur kit
+// (`placeMaterials`). Code pur, sans Three.js.
 import type { VillagePlaceId, VoxelCube } from '../cube';
 import type { BiomeId } from '../../biomes';
 import type { ImportedMonument } from '../monumentModels';
@@ -30,8 +31,11 @@ import { OBJECT_COLORS as C, type Paint, paintFor } from './pieces';
 /** Un cube d'un lieu dans son repère (`caseDuLieu` : x le long de la façade, y vers le fond, z = 1 au-dessus du sol). */
 type PlaceCell = Pick<CaseDuLieu, 'x' | 'y' | 'z' | 'w' | 'd' | 'texture'>;
 
-/** Le dessin d'un lieu : dans l'atelier (z = 0 au sol du lieu), avec ses couleurs, ses cubes remplacés, de près ou de loin. */
-type PlaceDrawing = (at: Workshop, pe: Paint, cells: readonly PlaceCell[], far: boolean) => void;
+/**
+ * Le dessin d'un lieu : dans l'atelier (z = 0 au sol du lieu), avec ses couleurs, ses cubes remplacés, de près ou de loin ;
+ * `boarded` : l'île-école est bardée (`Kit.bardes`, au 3e : sans colombage), la Halle en bardage seul.
+ */
+type PlaceDrawing = (at: Workshop, pe: Paint, cells: readonly PlaceCell[], far: boolean, boarded: boolean) => void;
 
 /** La vitre éteinte d'une fenêtre de côté. */
 const UNLIT_GLASS = 0x3e4a52;
@@ -42,7 +46,10 @@ const UNLIT_GLASS = 0x3e4a52;
  * a une pierre des lieux (le rôle `masonry`, au 5e : intention du directeur artistique du 11 octobre 2026), la pierre
  * grise du kit pour les murs de l'école et les fûts de la salle, la pierre sombre du soubassement pour les chaînes
  * d'angle, la corniche, les bases et les chapiteaux, les poteaux du kit pour les volets et l'ossature de la Halle, son
- * bardage pour ses planches. La cloche, l'épi, le velours, le galon et le faîte d'or ne changent pas.
+ * bardage pour ses planches. Au 4e (intention du directeur artistique du 12 octobre 2026), le grès clair des lieux
+ * (`placeTrim`) prend les chaînes, la corniche, les bases et les chapiteaux : la pierre sombre ne se lit pas sur la
+ * brique. Une Halle bardée (au 3e) : ses poteaux d'angle, ses chéneaux et sa potence dans les poteaux du kit, sur son
+ * rang de pierre des lieux (`masonry`). La cloche, l'épi, le velours, le galon et le faîte d'or ne changent pas.
  */
 interface PlaceMaterials {
   /** Les murs de l'école, ses pignons, sa cheminée. */
@@ -62,7 +69,7 @@ interface PlaceMaterials {
 
 const uni = (c: Couleur): Faces => ({ dessus: c, cote: c });
 
-function placeMaterials(pe: Paint): PlaceMaterials {
+function placeMaterials(pe: Paint, boarded = false): PlaceMaterials {
   if (KITS[pe.a].couleurs.masonry === undefined) {
     const marble = pe.material('marbre');
     return {
@@ -77,17 +84,19 @@ function placeMaterials(pe: Paint): PlaceMaterials {
       footing: pe.material('pierre'),
     };
   }
+  const kit = KITS[pe.a].couleurs;
   const footing = uni(pe.role('soubassement'));
+  const trim = kit.placeTrim === undefined ? footing : uni(pe.role('placeTrim'));
   return {
     walls: uni(pe.role('masonry')),
-    dressed: footing,
+    dressed: trim,
     shutters: pe.role('poteau'),
     shaft: uni(pe.role('masonry')),
-    capital: footing,
+    capital: trim,
     frame: pe.role('poteau'),
-    brace: pe.role('pilotis'),
+    brace: boarded ? pe.role('poteau') : pe.role('pilotis'),
     planks: uni(pe.role('bardage')),
-    footing,
+    footing: boarded ? uni(pe.role('masonry')) : footing,
   };
 }
 
@@ -128,6 +137,15 @@ function sideWindow(at: Workshop, xf: number, s: -1 | 1, y: number, l: number, z
   at.quad([xb, y - 0.03, z0], [xb, y + 0.03, z0], [xb, y + 0.03, z1], [xb, y - 0.03, z1], [xf - s, y, z0], C.wood);
 }
 
+/**
+ * La teinte d'un chapeau en pyramide raide (le clocheton) : la couverture de l'île ; dans un kit aux toits enneigés (au
+ * 3e), ses pans tournés vers le ciel tout en neige (raides, ils prendraient sinon le côté de la couverture, ses rives).
+ */
+function capOf(pe: Paint): Tint {
+  const t = pe.roof();
+  return KITS[pe.a].snowyRoofs ? t.dessus : t;
+}
+
 // ---------- L'école ----------
 
 /** Les mesures de l'école (5 × 4 cases, la porte au milieu de la façade, le clocheton au-dessus d'elle). */
@@ -152,6 +170,8 @@ const SCHOOL = {
 const school: PlaceDrawing = (at, pe, _cells, far) => {
   const { w, d, plinth, walls, cornice, roof, belfry: k } = SCHOOL;
   const m = placeMaterials(pe);
+  // Le chapeau du clocheton, raide : ses pans tournés vers le ciel, dans la neige d'un toit enneigé (au 3e).
+  const cap = capOf(pe);
   const brick = m.walls;
   const dressedStone = m.dressed;
   const stone = { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') };
@@ -168,7 +188,7 @@ const school: PlaceDrawing = (at, pe, _cells, far) => {
     at.roof(0, w, 0, d, roof.lower, roof.ridge, 'x', roof.thickness, pe.roof(), { tint: brick, zFoot: walls.upper });
     at.block(k.x, k.y, 0.76, 0.76, k.foot, k.cap, dressedStone, { bottom: true });
     at.prism(k.x, k.y, 0.24, 0.12, k.deck + 0.1, k.cap - 0.12, 6, gold, 0, true);
-    at.prism(k.x, k.y, 0.48 * Math.SQRT2, 0, k.cap, k.spike, 4, pe.roof(), Math.PI / 4);
+    at.prism(k.x, k.y, 0.48 * Math.SQRT2, 0, k.cap, k.spike, 4, cap, Math.PI / 4);
     return;
   }
   // Les chaînes d'angle : le pilastre, et trois pierres en saillie, une sur deux.
@@ -244,7 +264,7 @@ const school: PlaceDrawing = (at, pe, _cells, far) => {
   at.prism(k.x, k.y, 0.2, 0.12, k.deck + 0.3, k.cap - 0.24, 8, gold, Math.PI / 8);
   at.prism(k.x, k.y, 0.04, 0.04, k.cap - 0.24, k.cap - 0.1, 4, pe.color(C.iron), 0, true);
   at.block(k.x, k.y, 0.9, 0.9, k.cap - 0.1, k.cap, dressedStone, {});
-  at.prism(k.x, k.y, 0.5 * Math.SQRT2, 0, k.cap, k.spike, 4, pe.roof(), Math.PI / 4);
+  at.prism(k.x, k.y, 0.5 * Math.SQRT2, 0, k.cap, k.spike, 4, cap, Math.PI / 4);
   at.prism(k.x, k.y, 0.05, 0, k.spike - 0.04, k.finial, 4, gold, Math.PI / 4);
 };
 
@@ -261,9 +281,10 @@ const trophyRoom: PlaceDrawing = (at, pe, cells, far) => {
   const d = cells[0]?.d ?? 3;
   const x0 = Math.min(...cells.map((c) => c.x));
   const x1 = Math.max(...cells.map((c) => c.x)) + 1;
-  const marble = pe.material('marbre');
+  // Le marbre des socles et la pierre de taille de l'entablement, tenus loin du fantôme là où le kit le demande (au 4e et au 3e).
+  const marble = pe.apart('marbre');
   const { shaft, capital } = placeMaterials(pe);
-  const dressedStone = pe.material('taille');
+  const dressedStone = pe.apart('taille');
   const velvet = pe.material('velours');
   const gold = pe.material('or');
   const cellsWhere = (f: (c: PlaceCell) => boolean) => cells.filter(f);
@@ -329,7 +350,7 @@ const trophyRoom: PlaceDrawing = (at, pe, cells, far) => {
  * en façade ; la haute potence (son pied de pierre, son mât, son bras, sa jambe de force, la poulie et la corde jusqu'au
  * bloc suspendu, qui reste un bloc, comme ceux de la recette). De loin : la halle, sa porte, son toit, la potence.
  */
-const hall: PlaceDrawing = (at, pe, cells, far) => {
+const hall: PlaceDrawing = (at, pe, cells, far, boarded) => {
   const w = cells[0]?.w ?? 3;
   const d = cells[0]?.d ?? 5;
   const y0 = HALLE.rang;
@@ -339,7 +360,7 @@ const hall: PlaceDrawing = (at, pe, cells, far) => {
   const zArm = arm - 0.5;
   // Le dessus du bloc suspendu (son rang, `bras − 2`, va de z = bras − 3 à bras − 2 dans ce repère).
   const zBlock = arm - 2;
-  const { footing: stone, planks, frame: wood, brace: lightWood } = placeMaterials(pe);
+  const { footing: stone, planks, frame: wood, brace: lightWood } = placeMaterials(pe, boarded);
   at.box(0.04, w - 0.04, y0 + 0.04, d - 0.04, 0, 0.95, stone);
   at.box(0.08, w - 0.08, y0 + 0.08, d - 0.08, 0.95, zWall, planks, { bottom: true, top: true });
   const yp = y0 + 0.032;
@@ -362,33 +383,21 @@ const hall: PlaceDrawing = (at, pe, cells, far) => {
     ] as const)
       at.quad([x, y0 + 0.04, z], [x, d - 0.04, z], [x, d - 0.04, z + 0.04], [x, y0 + 0.04, z + 0.04], [x - s, (y0 + d) / 2, z], course);
   }
-  // L'ossature : les poteaux d'angle et de porte, les sablières, les croix des pans pleins.
-  for (const [x, y] of [
+  // L'ossature : les poteaux d'angle et de porte, les sablières, les croix des pans pleins. Bardée (au 3e) : ni croix ni
+  // ossature apparente, les quatre poteaux d'angle seuls, et les clins couchés sur toute la hauteur des murs.
+  const corners: [number, number][] = [
     [0.1, y0 + 0.1],
     [w - 0.1, y0 + 0.1],
     [w - 0.1, d - 0.1],
     [0.1, d - 0.1],
+  ];
+  const middles: [number, number][] = [
     [0.1, (y0 + d) / 2],
     [w - 0.1, (y0 + d) / 2],
-  ])
-    at.block(x, y, 0.2, 0.2, 0.9, zWall, wood, { bottom: true, top: true });
-  at.box(0.02, w - 0.02, y0 + 0.02, d - 0.02, 0.9, 1.0, wood, { top: false, bottom: false });
-  at.box(0.02, w - 0.02, y0 + 0.02, d - 0.02, zWall - 0.1, zWall, wood, { top: true, bottom: false });
-  const cross = (a: V3, b: V3) => at.beam(a, b, 0.09, lightWood);
-  for (const [x, s] of [
-    [0.07, -1],
-    [w - 0.07, 1],
-  ] as const) {
-    for (const [ya, yb] of [
-      [y0 + 0.2, (y0 + d) / 2 - 0.1],
-      [(y0 + d) / 2 + 0.1, d - 0.2],
-    ]) {
-      cross([x + s * 0.01, ya, 1.02], [x + s * 0.01, yb, zWall - 0.12]);
-      cross([x + s * 0.01, yb, 1.02], [x + s * 0.01, ya, zWall - 0.12]);
-    }
-  }
-  cross([0.2, d - 0.06, 1.02], [w - 0.2, d - 0.06, zWall - 0.12]);
-  cross([w - 0.2, d - 0.06, 1.02], [0.2, d - 0.06, zWall - 0.12]);
+  ];
+  for (const [x, y] of boarded ? corners : [...corners, ...middles]) at.block(x, y, 0.2, 0.2, 0.9, zWall, wood, { bottom: true, top: true });
+  if (boarded) clapboards(at, darker(planks, 0.8).cote, w, y0, d, zWall);
+  else hallFrame(at, wood, lightWood, w, y0, d, zWall);
   // Les chaînes d'angle du soubassement : deux pierres en saillie à chaque coin, une sur deux.
   for (const [x, y] of [
     [0.17, y0 + 0.17],
@@ -458,6 +467,53 @@ const hall: PlaceDrawing = (at, pe, cells, far) => {
   for (const x of [0.06, w - 0.06]) at.beam([x, y0 - 0.15, zWall - 0.06], [x, d, zWall - 0.06], 0.1, lightWood);
 };
 
+/** L'ossature apparente de la Halle en colombage : les sablières basse et haute, les croix de Saint-André des pans pleins. */
+function hallFrame(at: Workshop, wood: Tint, lightWood: Tint, w: number, y0: number, d: number, zWall: number): void {
+  at.box(0.02, w - 0.02, y0 + 0.02, d - 0.02, 0.9, 1.0, wood, { top: false, bottom: false });
+  at.box(0.02, w - 0.02, y0 + 0.02, d - 0.02, zWall - 0.1, zWall, wood, { top: true, bottom: false });
+  const cross = (a: V3, b: V3) => at.beam(a, b, 0.09, lightWood);
+  for (const [x, s] of [
+    [0.07, -1],
+    [w - 0.07, 1],
+  ] as const) {
+    for (const [ya, yb] of [
+      [y0 + 0.2, (y0 + d) / 2 - 0.1],
+      [(y0 + d) / 2 + 0.1, d - 0.2],
+    ]) {
+      cross([x + s * 0.01, ya, 1.02], [x + s * 0.01, yb, zWall - 0.12]);
+      cross([x + s * 0.01, yb, 1.02], [x + s * 0.01, ya, zWall - 0.12]);
+    }
+  }
+  cross([0.2, d - 0.06, 1.02], [w - 0.2, d - 0.06, zWall - 0.12]);
+  cross([w - 0.2, d - 0.06, 1.02], [0.2, d - 0.06, zWall - 0.12]);
+}
+
+/** Le pas des clins de la Halle bardée, et la hauteur de leur ombre (le bas de chaque planche, un ton plus sombre). */
+const CLAPBOARD = { pitch: 0.24, shadow: 0.05 } as const;
+
+/**
+ * Les clins couchés de la Halle bardée (au 3e) : sur ses quatre murs, de son rang de pierre à l'avant-toit, une bande
+ * sombre au bas de chaque planche (`edge`), la grande porte laissée ouverte sur la façade. Deux triangles par bande.
+ */
+function clapboards(at: Workshop, edge: Couleur, w: number, y0: number, d: number, zWall: number): void {
+  // Les murs de planches (le dessin de la Halle) : de 0,08 du bord de son emprise.
+  const [xa, xb, ya, yb] = [0.08, w - 0.08, y0 + 0.08, d - 0.08];
+  for (let z = 0.95 + CLAPBOARD.pitch; z < zWall - 0.05; z += CLAPBOARD.pitch) {
+    const [z0, z1] = [z - CLAPBOARD.shadow, z];
+    const band = (p: V3, q: V3, inside: V3) => at.quad([p[0], p[1], z0], [q[0], q[1], z0], [q[0], q[1], z1], [p[0], p[1], z1], inside, edge);
+    const mid: V3 = [w / 2, (y0 + d) / 2, z];
+    // La façade, de part et d'autre de la grande porte (jusqu'à son linteau).
+    const yf = ya - 0.004;
+    if (z1 > 2.02) band([xa, yf, 0], [xb, yf, 0], mid);
+    else {
+      band([xa, yf, 0], [0.78, yf, 0], mid);
+      band([2.22, yf, 0], [xb, yf, 0], mid);
+    }
+    band([xa, yb + 0.004, 0], [xb, yb + 0.004, 0], mid);
+    for (const x of [xa - 0.004, xb + 0.004]) band([x, ya, 0], [x, yb, 0], mid);
+  }
+}
+
 /** Les lieux dessinés, par lieu. */
 const VILLAGE_PLACES: Record<VillagePlaceId, PlaceDrawing> = { school: school, trophies: trophyRoom, assembly: hall };
 
@@ -471,7 +527,7 @@ export function replacedByPlace(c: VoxelCube, m: CaseDuLieu): boolean {
 
 
 /**
- * Les lieux du village dessinés de ce monde (sur l'île de l'école, `Kit.objetsDessines` : au 6e) : chacun comme un modèle
+ * Les lieux du village dessinés de ce monde (sur l'île de l'école, `Kit.objetsDessines` : au 6e, au 5e, au 4e et au 3e) : chacun comme un modèle
  * importé qui remplace ses cubes (on y entre toujours en les touchant), de près sur l'île `near`, de loin ailleurs.
  */
 export function drawnVillagePlaces(a: ArchipelagoId, cubes: readonly VoxelCube[], near: BiomeId | null = null): ImportedMonument[] {
@@ -494,7 +550,7 @@ export function drawnVillagePlaces(a: ArchipelagoId, cubes: readonly VoxelCube[]
     const corner = { x: c.x - m.x, y: c.y - m.y, z: c.z - m.z };
     const muted = l.some((e) => e.c.muted);
     const at = new Workshop(new Pinceau(), muted ? null : new Pinceau(), (x, y, z) => [corner.x + x, corner.z + 1 + z, corner.y + y]);
-    VILLAGE_PLACES[place](at, paintFor(a, island, muted), l.map((e) => e.m), near !== island);
+    VILLAGE_PLACES[place](at, paintFor(a, island, muted), l.map((e) => e.m), near !== island, KITS[a].bardes.includes(island));
     out.push({
       id: `lieu:${island}:${place}`,
       stage: 1,
@@ -510,7 +566,7 @@ export function drawnVillagePlaces(a: ArchipelagoId, cubes: readonly VoxelCube[]
 
 /**
  * Ce que coûtent de plus les lieux dessinés d'un monde vus de près plutôt que de loin (les trois, sur l'île-école) : le
- * budget compte le monde de loin, puis ajoute cet écart (world/budget.ts). 0 sans lieu dessiné (hors du 6e).
+ * budget compte le monde de loin, puis ajoute cet écart (world/budget.ts). 0 sans lieu dessiné (un kit sans objets dessinés).
  */
 export function villagePlacesNearGap(a: ArchipelagoId, cubes: readonly VoxelCube[]): number {
   if (!KITS[a].objetsDessines) return 0;
