@@ -176,8 +176,8 @@ const shelf: ObjectDrawing = (at, pe) => {
   postLantern(at, pe, 1, 0, null, 0.86);
 };
 
-/** Un plateau de trois cases sur deux pieds de barrière et leur entretoise (l'établi de Pince, le filtre de Perle). */
-function benchOnPosts(at: Workshop, pe: Paint, top: Tint, zHigh: number, thick: number): void {
+/** Un plateau de trois cases sur deux pieds de barrière et leur entretoise (l'établi de Pince, le filtre de Perle, le banc d'Astra). */
+export function benchOnPosts(at: Workshop, pe: Paint, top: Tint, zHigh: number, thick: number): void {
   const foot = pe.role('yardPost');
   tableOnLegs(at, 0.03, 2.97, 0.1, 0.9, zHigh, thick, top, [
     [0.5, 0.5],

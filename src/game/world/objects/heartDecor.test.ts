@@ -10,8 +10,10 @@ import { turnCell } from '../placement';
 import { LAYOUT_PAD, origineDe } from '../terrain/base';
 import type { FacettesDuDecor } from '../decor/brush';
 import { BRUME, couleurDeMatiere } from '../palette';
-import { HEART_DECOR_6E, type HeartDecor } from './heartDecor';
-import { HEART_DECOR_5E, SACK, SALT_CREAM, SCENE_LIGHT } from './heartDecor5e';
+import { HEART_DECOR_6E, type HeartDecor, SCENE_LIGHT } from './heartDecor';
+import { HEART_DECOR_5E, SACK, SALT_CREAM } from './heartDecor5e';
+import { HEART_DECOR_4E } from './heartDecor4e';
+import { HEART_DECOR_3E } from './heartDecor3e';
 import { apartFromGhost, HEART, rgbGap } from '../architecture/heartPieces';
 import { drawnHeartDecor } from './inTheWorld';
 
@@ -38,6 +40,8 @@ const sixthWorld = () => worldOf('6e');
 const TABLES: [ArchipelagoId, Readonly<Partial<Record<BiomeId, readonly HeartDecor[]>>>][] = [
   ['6e', HEART_DECOR_6E],
   ['5e', HEART_DECOR_5E],
+  ['4e', HEART_DECOR_4E],
+  ['3e', HEART_DECOR_3E],
 ];
 
 /** Les cases du monde (x, y) des colonnes d'un ensemble, tournées avec son île. */
@@ -93,18 +97,61 @@ describe.each(TABLES)('le décor du cœur dessiné (%s)', (a, table) => {
   });
 });
 
-it('les îles qui ont un décor du cœur fait de main d’homme : toutes au 6e (la Forêt n’a que des arbres, la Tour sa pierre) et toutes au 5e', () => {
+it('au 4e, la voie de la Gare est à plat sur son lit de ballast, au-dessus du plus haut sol de ses cases : rien n’en descend que le remblai des cases plus basses', () => {
+  const d = drawnHeartDecor('4e', worldOf('4e')).find((o) => o.id === 'coeur:english-4e-grammar:voie')!;
+  // Ses cases du monde, que vise la capture de près (`objets-4e-gare-voie`, scripts/rendu/mesures.mjs, `surLaCase`).
+  expect(d.cellules.map((c) => [c.x, c.y])).toEqual([10, 11, 12, 13, 14, 15].map((x) => [x, 679]));
+  const top = Math.max(...d.cellules.map((c) => c.z));
+  const low = d.cellules.filter((c) => c.z < top);
+  // Le relief sous la voie : une case au moins plus basse (sinon le test ne dit plus rien).
+  expect(low.length).toBeGreaterThan(0);
+  const p = d.opaque.positions;
+  const heights = new Set<number>();
+  for (let i = 0; i < p.length; i += 3) {
+    heights.add(Math.round(p[i + 1] * 100) / 100);
+    if (p[i + 1] >= top - 1e-6) continue;
+    const under = low.some((c) => p[i] >= c.x - 1e-6 && p[i] <= c.x + 1 + 1e-6 && p[i + 2] >= c.y - 1e-6 && p[i + 2] <= c.y + 1 + 1e-6);
+    expect(under, `${p[i]},${p[i + 1]},${p[i + 2]}`).toBe(true);
+  }
+  // Le dessus des rails, d'un bout à l'autre à la même hauteur : lit (0,08), traverses (0,16), rails (0,16).
+  expect(heights.has(Math.round((top + 0.4) * 100) / 100)).toBe(true);
+});
+
+/**
+ * Les îles du 4e et du 3e sans décor du cœur à dessiner (étape 3, 12 octobre 2026) : le Verger, dont l'arbre fruitier est
+ * dans les formes communes du décor (un élément nommé, déjà en primitives).
+ */
+const EN_CUBES_43 = {
+  '4e': [],
+  '3e': ['life-earth-sciences-3e-human-body'],
+} as const;
+
+it('les îles qui ont un décor du cœur fait de main d’homme : toutes au 6e (la Forêt n’a que des arbres, la Tour sa pierre), toutes au 5e, au 4e et au 3e toutes sauf le Verger et son arbre fruitier', () => {
   expect(Object.keys(HEART_DECOR_6E)).toHaveLength(14);
   expect(BIOMES.filter((b) => b.classe === '6e' && !HEART_DECOR_6E[b.id]).map((b) => b.id).sort()).toEqual(['french-6e-phonology', 'french-6e-reading']);
   expect(Object.keys(HEART_DECOR_5E).sort()).toEqual(BIOMES.filter((b) => b.classe === '5e').map((b) => b.id).sort());
+  for (const [a, table] of [
+    ['4e', HEART_DECOR_4E],
+    ['3e', HEART_DECOR_3E],
+  ] as const)
+    expect(BIOMES.filter((b) => b.classe === a && !table[b.id]).map((b) => b.id).sort(), a).toEqual([...EN_CUBES_43[a]].sort());
+  expect(Object.keys(HEART_DECOR_4E)).toHaveLength(14);
+  expect(Object.keys(HEART_DECOR_3E)).toHaveLength(13);
   expect(drawnHeartDecor('4e', worldOf('5e'))).toEqual([]);
   expect(drawnHeartDecor('5e', [])).toEqual([]);
 });
 
-it('au 5e, un cœur se dessine en entier ou reste en cubes : chaque cube du décor de l’île est dans un ensemble, sauf ses rochers de pierre', () => {
+/** Les colonnes qu'un cœur dessiné laisse à ses cubes : la tour du grand phare du Phare, un repère (world/decor). */
+const KEPT_COLUMNS: Partial<Record<BiomeId, readonly string[]>> = { 'maths-3e-functions': ['9,3'] };
+
+it.each([
+  ['5e', HEART_DECOR_5E],
+  ['4e', HEART_DECOR_4E],
+  ['3e', HEART_DECOR_3E],
+] as const)('au %s, un cœur se dessine en entier ou reste en cubes : chaque cube du décor de l’île est dans un ensemble, sauf ses rochers de pierre', (_a, table) => {
   const stone = BLOCKS[BLOC.pierre].side;
-  for (const [id, l] of Object.entries(HEART_DECOR_5E) as [BiomeId, readonly HeartDecor[]][]) {
-    const covered = new Set(l.flatMap((e) => e.columns.map(([x, y]) => `${x},${y}`)));
+  for (const [id, l] of Object.entries(table) as [BiomeId, readonly HeartDecor[]][]) {
+    const covered = new Set([...l.flatMap((e) => e.columns.map(([x, y]) => `${x},${y}`)), ...(KEPT_COLUMNS[id] ?? [])]);
     const loose: string[] = [];
     DECOR[id](
       (x, y, _z, color, decor) => {
@@ -138,6 +185,49 @@ const BELOW_ON_GRASS = new Set([
   'coeur:english-5e-vocabulary:tuiles',
 ]);
 
+/**
+ * Les cœurs du 4e et du 3e qui ne tiennent pas 3:1 à l'image, acceptés en silhouette (intention du directeur artistique
+ * du 12 octobre 2026, §4 : « tout ensemble qui reste sous 3:1 », à lui remonter, pas à forcer par une lueur) : sur
+ * l'herbe sous le voile (rendue à 0,11 au 4e, 0,16 au 3e, seule une teinte claire, 0,6 au moins sur un dessus, la
+ * tiendrait), sur le pavé de la Porte et l'acajou du Forum (aucun flanc au-dessus de 0,05 de luminance, aucun dessus de
+ * leur famille assez clair) ; et la Falaise, dont l'ardoise fendue claire #AEB5BE du directeur artistique (3,2:1 en
+ * couleurs) donne 2,97:1 sous la lumière de `SCENE_LIGHT`, acceptée par le directeur artistique. À l'étape 3 : la longue-vue de la Vigie
+ * et la ruche (sur l'herbe), le laurier du Bosquet (sur son sol de laurier) ; la voie, le bout de rail et le signal de
+ * la Gare, dont le dessus des rails en acier poli #B4BAC0 du directeur artistique donne 2,93:1 sous la même lumière sur
+ * le sol de rails (aucun flanc n'y tient 3:1 au-dessus de 0,05), acceptée en silhouette par le directeur artistique et
+ * le référent dys.
+ */
+const BELOW_4E = new Set([
+  'coeur:french-4e-agreement:paroi',
+  'coeur:french-4e-agreement:ardoise',
+  'coeur:history-4e-revolutions:presse',
+  'coeur:history-4e-revolutions:caisse',
+  'coeur:geography-4e-globalization:conteneurs',
+  'coeur:geography-4e-globalization:caisse',
+  'coeur:life-earth-sciences-4e-cells-evolution:vasque',
+  'coeur:technology-4e-modeling:maquette',
+  'coeur:civics-4e-rights-freedoms:paves',
+  'coeur:lv2-4e-daily-life:potager',
+  'coeur:lv2-4e-daily-life:lanterne',
+  'coeur:lv2-4e-daily-life:panier',
+  'coeur:english-4e-grammar:voie',
+  'coeur:english-4e-grammar:signal',
+  'coeur:english-4e-grammar:rail',
+  'coeur:physics-chemistry-4e-signals-circuits:longue-vue',
+]);
+const BELOW_3E = new Set([
+  'coeur:history-3e-twentieth-century:reliures',
+  'coeur:history-3e-twentieth-century:banc',
+  'coeur:geography-3e-france:borne',
+  'coeur:geography-3e-france:gres',
+  'coeur:physics-chemistry-3e-motion-energy:plan',
+  'coeur:civics-3e-democratic-life:banc',
+  'coeur:lv2-3e-travel:buches',
+  'coeur:lv2-3e-travel:banc',
+  'coeur:technology-3e-digital:ruche',
+  'coeur:lca-3e-ideas:laurier',
+]);
+
 /** Les couleurs (en sRGB, arrondies) des facettes d'un cœur dessiné du 5e. */
 const coloursOf = (id: string) => {
   const d = drawnHeartDecor('5e', worldOf('5e')).find((o) => o.id === id)!;
@@ -159,34 +249,53 @@ it('au 5e, les sacs du Fournil sont en toile de jute, la farine au seul col ouve
   for (const k of [SACK.jute, SACK.string, couleurDeMatiere('5e', 'farine').dessus]) expect(c.has(k), k.toString(16)).toBe(true);
 });
 
-it('au 5e, tout cœur à retrouver se détache de son sol à l’image : au moins un vingtième de sa surface vue d’en haut à 3:1 de la luminance du sol, chacun sous la lumière du jour qu’il reçoit (`SCENE_LIGHT`), sans lueur', () => {
-  const all = wholeWorld('5e');
-  const sols = new Map(all.filter((c) => c.sol).map((c) => [`${c.x},${c.y},${c.z}`, c]));
-  for (const d of drawnHeartDecor('5e', worldOf('5e')).filter((o) => !BELOW_ON_GRASS.has(o.id))) {
-    // Le sol sous la plus basse de ses cases.
-    const low = d.cellules.reduce((m, c) => (c.z < m.z ? c : m));
-    const ground = sols.get(`${low.x},${low.y},${low.z - 1}`);
-    expect(ground?.texture, d.id).toBeDefined();
-    const g = SCENE_LIGHT.ground * luminanceOf(couleurDeMatiere('5e', ground!.texture as Parameters<typeof couleurDeMatiere>[1]).dessus);
-    const { positions: p, colors: k } = d.opaque;
-    let total = 0;
-    let apart = 0;
-    for (let t = 0; t < p.length / 9; t++) {
-      const [q0, q1, q2] = [0, 1, 2].map((s) => [p[t * 9 + s * 3], p[t * 9 + s * 3 + 1], p[t * 9 + s * 3 + 2]]);
-      const u = [q1[0] - q0[0], q1[1] - q0[1], q1[2] - q0[2]];
-      const v = [q2[0] - q0[0], q2[1] - q0[1], q2[2] - q0[2]];
-      const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
-      const area = Math.hypot(...n) / 2;
-      // Un dessous (le dessous d'un auvent) ne se voit jamais d'une caméra au-dessus du monde : il ne compte pas. Un dessus
-      // (la normale vers le haut, y dans le repère de Three) reçoit plus de lumière qu'un côté.
-      const ny = n[1] / (2 * area);
-      if (ny < -0.6) continue;
-      const up = ny > 0.6;
-      const l = (up ? SCENE_LIGHT.top : SCENE_LIGHT.side) * luminance(k[t * 9], k[t * 9 + 1], k[t * 9 + 2]);
-      total += area;
-      if ((Math.max(l, g) + 0.05) / (Math.min(l, g) + 0.05) >= 3) apart += area;
-    }
-    expect(apart / total, `${d.id} sur ${ground!.texture}`).toBeGreaterThanOrEqual(0.05);
+/**
+ * La part de la surface vue d'un cœur dessiné qui tient 3:1 sur la luminance du dessus de son sol à l'image, chacun sous
+ * la lumière du jour qu'il reçoit (`SCENE_LIGHT`), et la matière de ce sol.
+ */
+function shareApart(a: ArchipelagoId, d: ReturnType<typeof drawnHeartDecor>[number]): { share: number; ground: string | undefined } {
+  const sols = new Map(wholeWorld(a).filter((c) => c.sol).map((c) => [`${c.x},${c.y},${c.z}`, c]));
+  // Le sol sous la plus basse de ses cases (la première qui en a un : une case du bord peut être en surplomb, la ruche).
+  const zLow = Math.min(...d.cellules.map((c) => c.z));
+  const ground = d.cellules
+    .filter((c) => c.z === zLow)
+    .map((c) => sols.get(`${c.x},${c.y},${c.z - 1}`)?.texture)
+    .find((t) => t !== undefined);
+  if (!ground) return { share: 0, ground };
+  const g = SCENE_LIGHT.ground * luminanceOf(couleurDeMatiere(a, ground as Parameters<typeof couleurDeMatiere>[1]).dessus);
+  const { positions: p, colors: k } = d.opaque;
+  let total = 0;
+  let apart = 0;
+  for (let t = 0; t < p.length / 9; t++) {
+    const [q0, q1, q2] = [0, 1, 2].map((s) => [p[t * 9 + s * 3], p[t * 9 + s * 3 + 1], p[t * 9 + s * 3 + 2]]);
+    const u = [q1[0] - q0[0], q1[1] - q0[1], q1[2] - q0[2]];
+    const v = [q2[0] - q0[0], q2[1] - q0[1], q2[2] - q0[2]];
+    const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+    const area = Math.hypot(...n) / 2;
+    // Un dessous (le dessous d'un auvent) ne se voit jamais d'une caméra au-dessus du monde : il ne compte pas. Un dessus
+    // (la normale vers le haut, y dans le repère de Three) reçoit plus de lumière qu'un côté.
+    const ny = n[1] / (2 * area);
+    if (ny < -0.6) continue;
+    const up = ny > 0.6;
+    const l = (up ? SCENE_LIGHT.top : SCENE_LIGHT.side) * luminance(k[t * 9], k[t * 9 + 1], k[t * 9 + 2]);
+    total += area;
+    if ((Math.max(l, g) + 0.05) / (Math.min(l, g) + 0.05) >= 3) apart += area;
+  }
+  return { share: apart / total, ground };
+}
+
+it.each([
+  ['5e', BELOW_ON_GRASS],
+  ['4e', BELOW_4E],
+  ['3e', BELOW_3E],
+] as const)('au %s, tout cœur à retrouver se détache de son sol à l’image : au moins un vingtième de sa surface vue d’en haut à 3:1 de la luminance du sol, chacun sous la lumière du jour qu’il reçoit (`SCENE_LIGHT`), sans lueur', (a, below) => {
+  for (const d of drawnHeartDecor(a, worldOf(a))) {
+    const { share, ground } = shareApart(a, d);
+    expect(ground, d.id).toBeDefined();
+    if (below.has(d.id)) {
+      // Une exception nommée reste vraie (au 4e et au 3e) : un cœur qui passe 3:1 sort de la liste.
+      if (a !== '5e') expect(share, `${d.id} sur ${ground}`).toBeLessThan(0.05);
+    } else expect(share, `${d.id} sur ${ground}`).toBeGreaterThanOrEqual(0.05);
   }
 });
 

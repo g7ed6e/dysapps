@@ -10,8 +10,8 @@ import { DELAVE } from '../decor/brush';
 import type { ArchipelagoId } from '../map';
 import { ambianceDe, type Couleur, couleurDeMatiere, type Faces } from '../palette';
 import type { TextureKind } from '../pixels';
-import { couleursDuToit } from '../roofs';
-import { barriereDeCour, KITS, LANTERNE_DE_COUR, type Role } from '../architecture';
+import { couleursDuToit, toitDe } from '../roofs';
+import { apartFromGhost, barriereDeCour, KITS, LANTERNE_DE_COUR, type Role } from '../architecture';
 import type { Facette } from '../architecture/rooms';
 import type { Workshop, Tint } from './workshop';
 import type { V3 } from '../decor/brush';
@@ -45,6 +45,11 @@ export interface Paint {
   readonly muted: boolean;
   /** Une matière (les couleurs mêmes du bloc, `couleurDeMatiere`). */
   material(t: TextureKind): Faces;
+  /**
+   * Une matière tenue à 70 au moins du fantôme Brume quand le kit l'en tient à l'écart (`Kit.ghostApart` : au 4e et au 3e,
+   * le marbre, la pierre de taille, le calque…), comme le bâti ; ailleurs, la matière.
+   */
+  apart(t: TextureKind): Faces;
   /** La matière d'un bloc. */
   block(b: BlockId): Faces;
   /** Une couleur propre à l'objet, sous le voile. */
@@ -53,7 +58,10 @@ export interface Paint {
   plain(c: Couleur): Couleur;
   /** Un rôle du kit (le poteau et les lisses de la barrière, la pierre, la dalle, le fer et l'ardoise de la lanterne). */
   role(r: Role): Couleur;
-  /** La couverture de l'île (ardoise, ou terre cuite à la Ferme et à la Mine). */
+  /**
+   * La couverture de l'île (ardoise, ou terre cuite à la Ferme et à la Mine) ; dans un kit aux toits enneigés (au 3e,
+   * `Kit.snowyRoofs`), le dessus de l'ardoise dans la neige du kit, tenue loin du fantôme, comme le bâti.
+   */
   roof(): Faces;
 }
 
@@ -64,15 +72,23 @@ export function paintFor(a: ArchipelagoId, island: string | undefined, muted: bo
     const f = couleurDeMatiere(a, t);
     return { dessus: faded(f.dessus), cote: faded(f.cote) };
   };
+  const role = (r: Role): Couleur => faded(mixColor(KITS[a].couleurs[r] ?? OBJECT_COLORS.wood, tint, strength));
   return {
     a,
     muted,
     material,
+    apart: (t) => {
+      const f = material(t);
+      return KITS[a].ghostApart?.includes(t) ? { dessus: apartFromGhost(f.dessus), cote: apartFromGhost(f.cote) } : f;
+    },
     block: (b) => material(BLOCKS[b].texture as TextureKind),
     color: (c) => faded(mixColor(c, tint, strength)),
     plain: faded,
-    role: (r) => faded(mixColor(KITS[a].couleurs[r] ?? OBJECT_COLORS.wood, tint, strength)),
-    roof: () => couleursDuToit(a, island, muted),
+    role,
+    roof: () => {
+      const t = couleursDuToit(a, island, muted);
+      return KITS[a].snowyRoofs && toitDe(island) === 'ardoise' ? { dessus: apartFromGhost(role('snow')), cote: t.cote } : t;
+    },
   };
 }
 

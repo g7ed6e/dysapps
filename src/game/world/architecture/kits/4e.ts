@@ -21,13 +21,23 @@
 //   lissage, fantômes compris (le soubassement par colonne ne change pas pendant le chantier).
 // - L'écart au fantôme (le référent dys) : le marbre, le calque, le verre, le quartz, la lentille, la pierre de taille, la
 //   fresque, la toile, l'acier et le parchemin sont tenus à 70 au moins de Brume (`ghostApart`).
+// - Les objets dessinés (la piste 3 « hybride » au 4e, intention du directeur artistique du 12 octobre 2026) : les pièces
+//   communes des cours dans les couleurs du kit (le poteau #6E4C30, les lisses #884D40, la pierre #534E51, la dalle de grès
+//   clair #C9B79A, le fer, l'ardoise #3E3636 et les vitres de la lanterne), les trophées, le quai, les lieux du village
+//   (leurs chaînes, leur corniche, leurs chapiteaux dans le grès clair #C9B79A, `placeTrim` : la pierre sombre du
+//   soubassement ne se lisait pas sur la brique), les petites constructions et le décor du cœur (world/objects/).
 // Le verre et les lanternes ne deviennent jamais des pièces.
 import { materialsOf } from '../families';
 import { bacDePierre, PIECE_SEULE_ET_BASSE } from '../lowPieces';
 import { restOf } from '../heart';
 import { piecesDeToit } from '../roofs';
 import { bedWhenAlone, FINISHES, piecesSurPilotis, postsOf, veloursOf, villagePlaces } from './shared';
+import { yardPiecesOf } from '../yardPieces';
 import type { Kit } from './types';
+
+// Les pièces communes de la cour (../yardPieces.ts), comme au 6e et au 5e : la barrière, la marche et la lanterne sur
+// poteau de toutes les cours des Anciens Ateliers.
+const YARD = yardPiecesOf('4e', FINISHES);
 
 export const KIT_4E: Kit = {
   // La table commune, pour les familles que le kit dessine, et le velours (le précieux des murs et des gradins).
@@ -49,12 +59,30 @@ export const KIT_4E: Kit = {
     feuille: 0x4e8f36,
     paille: 0xe8c66f,
     masonry: 0x6f473d,
+    // Le grès clair des lieux du village dessinés (chaînes, corniche, appuis, clocheton, bases et chapiteaux : 3,8:1 sur
+    // la brique, là où la pierre sombre #534E51 n'en tenait que 1,1).
+    placeTrim: 0xc9b79a,
+    // Les pièces de la cour et des objets dessinés (intention du directeur artistique du 12 octobre 2026) : le poteau et
+    // les lisses de la barrière, la pierre sombre (le pied de la lanterne, les côtés de la marche), la dalle de grès clair,
+    // le fer et l'ardoise du 4e (le toit de la lanterne), ses vitres (allumées la nuit, sans clignoter).
+    yardPost: 0x6e4c30,
+    yardRail: 0x884d40,
+    yardStone: 0x534e51,
+    yardSlab: 0xc9b79a,
+    lanternFrame: 0x3a2a22,
+    lanternRoof: 0x3e3636,
+    lanternGlass: 0xe8c877,
   },
   murs: { colombage: 'colombage', bardage: 'bardage', pierre: 'plein', metal: 'tintedSheet', toile: 'cloth', verre: 'glazing' },
   // Le Jardin des heures : pas de colombage.
   bardes: ['lv2-4e-daily-life'],
   pieces: { toit: piecesDeToit(), colombage: piecesSurPilotis(), pierre: { [PIECE_SEULE_ET_BASSE]: bacDePierre() } },
-  finitions: FINISHES,
+  // La barrière en poteaux et lisses, la marche et la lanterne : dans les cours, les pièces communes (`YARD`).
+  finitions: YARD.finitions,
+  yardLantern: YARD.lanterne,
+  // Les objets dessinés (world/fixtureModels.ts, world/objects/) : les petites constructions posées, le bloc d'or des
+  // Gardiens rallumés, les objets du quai, le décor du cœur et les trois lieux de l'île-école, comme au 6e et au 5e.
+  objetsDessines: true,
   // L'aimant garde le zinc ; le velours selon sa place ; le pétale seul au sol en plate-bande.
   byMaterial: { aimant: () => 'tole', velours: veloursOf('4e'), petale: bedWhenAlone },
   ghostApart: ['marbre', 'calque', 'verre', 'quartz', 'lentille', 'taille', 'fresque', 'toile', 'acier', 'parchemin'],

@@ -28,6 +28,12 @@
 //   le lissage, fantômes compris.
 // - L'écart au fantôme (le référent dys) : le marbre, le quartz, le verre, la lentille, le miroir, la pierre de taille, le
 //   prisme, la toile, le parchemin, le savon et l'antenne sont tenus à 70 au moins de Brume (`ghostApart`).
+// - Les objets dessinés (la piste 3 « hybride » au 3e, intention du directeur artistique du 12 octobre 2026) : les pièces
+//   communes des cours dans les couleurs du kit (le poteau #6E4C30, les lisses #795643, la pierre #8C8F99, la dalle de
+//   pierre de taille #C2BBAD, le fer, les rives #1C3440 au toit de la lanterne, sans neige, et ses vitres), les trophées,
+//   le quai, les lieux du village (la Halle en bardage seul, sans croix, sur son rang de pierre de taille ; leurs toits
+//   enneigés, tournés vers le ciel dans la neige du kit, leurs rives #1C3440), les petites constructions et le décor du
+//   cœur (world/objects/).
 // Le verre et les lanternes ne deviennent jamais des pièces.
 import { materialsOf } from '../families';
 import { lowGlazing } from '../heartPieces';
@@ -38,7 +44,12 @@ import { piecesDeToit } from '../roofs';
 import { islandsOf } from '../../archipelago';
 import type { VoxelCube } from '../../cube';
 import { bedWhenAlone, FINISHES, postsOf, veloursOf, villagePlaces } from './shared';
+import { yardPiecesOf } from '../yardPieces';
 import type { Kit } from './types';
+
+// Les pièces communes de la cour (../yardPieces.ts), comme au 6e et au 5e : la barrière, la marche et la lanterne sur
+// poteau de toutes les cours des Îles du Ciel.
+const YARD = yardPiecesOf('3e', FINISHES);
 
 /** Le temple de marbre (world/monuments.ts) : son toit de prismes et son faîte de miroirs. */
 const TEMPLE = 'monument:landmark-3e-2';
@@ -88,6 +99,17 @@ export const KIT_3E: Kit = {
     paille: 0xe8c66f,
     masonry: 0xc2bbad,
     snow: 0xb3c1c7,
+    // Les pièces de la cour et des objets dessinés (intention du directeur artistique du 12 octobre 2026) : le poteau et
+    // les lisses de la barrière, la pierre grise (le pied de la lanterne, les côtés de la marche), la dalle de pierre de
+    // taille du bâti, le fer, les rives du 3e au toit de la lanterne (sans neige : la pièce est trop petite), ses vitres
+    // (allumées la nuit, sans clignoter).
+    yardPost: 0x6e4c30,
+    yardRail: 0x795643,
+    yardStone: 0x8c8f99,
+    yardSlab: 0xc2bbad,
+    lanternFrame: 0x3a2a22,
+    lanternRoof: 0x1c3440,
+    lanternGlass: 0xe8c877,
   },
   murs: { colombage: 'colombage', bardage: 'bardage', pierre: 'plein', metal: 'tintedSheet', toile: 'cloth', verre: 'glazing' },
   // Ni colombage : le bois de toutes les îles est bardé (la Halle comprise, sur l'île-école). Lues au premier appel (la
@@ -97,7 +119,12 @@ export const KIT_3E: Kit = {
   },
   // Ni pilotis : aucune pièce de colombage.
   pieces: { toit: piecesDeToit(), pierre: { [PIECE_SEULE_ET_BASSE]: bacDePierre() } },
-  finitions: FINISHES,
+  // La barrière en poteaux et lisses, la marche et la lanterne : dans les cours, les pièces communes (`YARD`).
+  finitions: YARD.finitions,
+  yardLantern: YARD.lanterne,
+  // Les objets dessinés (world/fixtureModels.ts, world/objects/) : les petites constructions posées, le bloc d'or des
+  // Gardiens rallumés, les objets du quai, le décor du cœur et les trois lieux de l'île-école, comme au 6e et au 5e.
+  objetsDessines: true,
   byMaterial: { aimant: () => 'tole', velours: veloursOf('3e'), petale: bedWhenAlone },
   flat: isFlat,
   monumentPieces,

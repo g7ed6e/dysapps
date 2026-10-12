@@ -6,7 +6,10 @@
 // les autres sont faits des pièces communes (./objects/assemblies.ts : le potager, le bac à eau, le poteau-lanterne,
 // la vitrine, la placette, l'étagère à flacons, l'établi, l'urne ; la lanterne de Mousso, le portillon, l'escalier).
 // Au 5e (11 octobre 2026), toutes aussi : la cabane, la salière, la tente et le four à pain à silhouette
-// (./objects/silhouettes5e.ts), les autres en pièces, le poteau indicateur de Sema compris.
+// (./objects/silhouettes5e.ts), les autres en pièces, le poteau indicateur de Sema compris. Au 4e et au 3e
+// (12 octobre 2026), toutes aussi, les mêmes de près et de loin : en pièces communes et modèles du 6e et du 5e
+// (./objects/assemblies43.ts), ou faites des formes nouvelles (./objects/silhouettes43.ts : le wagonnet, le mât de
+// relevés, le haut-parleur, le carillon).
 // La matière du bloc livré y reste sur une grande face, dans les couleurs mêmes du bloc (règle GD-7).
 //
 // La forme, ses cases, sa place et la sauvegarde ne changent pas (./fixtures.ts). La pose non plus : pendant « Livrer »,
@@ -25,6 +28,8 @@ import { paintFor } from './objects/pieces';
 import { type ObjectDrawing, SILHOUETTES } from './objects/silhouettes';
 import { SILHOUETTES_5E } from './objects/silhouettes5e';
 import { ASSEMBLIES } from './objects/assemblies';
+import { ASSEMBLIES_43 } from './objects/assemblies43';
+import { SILHOUETTES_43 } from './objects/silhouettes43';
 
 /** Un objet dessiné : son île, son dessin, et s'il a un dessin de loin (les objets à silhouette). */
 interface Modele {
@@ -43,10 +48,10 @@ function placeOf(id: string): { ile: BiomeId; archipelago: ArchipelagoId } {
   return { ile: biome.id, archipelago: biome.classe };
 }
 
-/** Les petites constructions qu'Archipéo dessine, par identifiant (au 6e et au 5e). */
+/** Les petites constructions qu'Archipéo dessine, par identifiant (au 6e, au 5e, puis au 4e et au 3e). */
 const MODELES: Readonly<Record<string, Modele>> = Object.fromEntries([
   ...Object.entries({ ...SILHOUETTES, ...SILHOUETTES_5E }).map(([id, dessiner]) => [id, { ...placeOf(id), dessiner, deLoin: true }] as const),
-  ...Object.entries(ASSEMBLIES).map(([id, dessiner]) => [id, { ...placeOf(id), dessiner, deLoin: false }] as const),
+  ...Object.entries({ ...ASSEMBLIES, ...ASSEMBLIES_43, ...SILHOUETTES_43 }).map(([id, dessiner]) => [id, { ...placeOf(id), dessiner, deLoin: false }] as const),
 ]);
 
 /** Les identifiants des petites constructions dessinées (les tests et le budget les parcourent). */

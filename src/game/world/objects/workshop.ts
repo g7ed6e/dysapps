@@ -185,6 +185,18 @@ export class Workshop {
   }
 
   /**
+   * Un coin qui monte le long de x (le plan incliné du Tremplin, la tablette du souffleur) : une boîte de (x0, y0) à
+   * (x1, y1), sans dessous, dont le dessus monte de `zLeft` (en x0) à `zRight` (en x1). 10 triangles.
+   */
+  ramp(x0: number, x1: number, y0: number, y1: number, z0: number, zLeft: number, zRight: number, t: Tint): void {
+    const c: V3 = [(x0 + x1) / 2, (y0 + y1) / 2, z0 + (Math.min(zLeft, zRight) - z0) / 2];
+    this.quad([x0, y0, zLeft], [x1, y0, zRight], [x1, y1, zRight], [x0, y1, zLeft], c, t);
+    this.quad([x0, y0, z0], [x0, y1, z0], [x0, y1, zLeft], [x0, y0, zLeft], c, t);
+    this.quad([x1, y0, z0], [x1, y1, z0], [x1, y1, zRight], [x1, y0, zRight], c, t);
+    for (const y of [y0, y1]) this.quad([x0, y, z0], [x1, y, z0], [x1, y, zRight], [x0, y, zLeft], c, t);
+  }
+
+  /**
    * Une poutre de section carrée `side` de `a` à `b` (penchée, couchée ou debout) : ses quatre flancs, ses bouts si
    * `ends`. 8 triangles (12 avec les bouts).
    */
@@ -231,6 +243,36 @@ export class Workshop {
       return [base[0] + p[0] * c + q[0] * s, base[1] + p[1] * c + q[1] * s, base[2] + p[2] * c + q[2] * s];
     };
     for (let i = 0; i < n; i++) this.tri(ring(i), ring(i + 1), tip, base, t);
+  }
+
+  /**
+   * Un tube à `n` pans sur un axe quelconque (la longue-vue, le pavillon d'un haut-parleur) : du rayon `ra` autour de `a`
+   * au rayon `rb` autour de `b`, ses bouts fermés dans la teinte de `caps` (`a`, `b`) ; `inward` : ses pans tournés vers
+   * l'axe et ses bouts vers l'autre bout (le dedans d'un pavillon et son fond). `2n` triangles, `n − 2` de plus par bout fermé.
+   */
+  tube(a: V3, b: V3, ra: number, rb: number, n: number, t: Tint, caps: { a?: Tint; b?: Tint } = {}, inward = false): void {
+    const [p, q] = perpendiculars([b[0] - a[0], b[1] - a[1], b[2] - a[2]]);
+    const at = (o: V3, r: number, i: number): V3 => {
+      const ang = ((i + 0.5) / n) * Math.PI * 2;
+      const [c, s] = [Math.cos(ang) * r, Math.sin(ang) * r];
+      return [o[0] + p[0] * c + q[0] * s, o[1] + p[1] * c + q[1] * s, o[2] + p[2] * c + q[2] * s];
+    };
+    const m: V3 = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
+    const far = 4 * Math.max(ra, rb);
+    for (let i = 0; i < n; i++) {
+      // Dedans, le point de référence est hors du tube, en face du pan : le pan regarde l'axe.
+      const inside = inward ? at(m, far, i + 0.5) : m;
+      this.quad(at(a, ra, i), at(a, ra, i + 1), at(b, rb, i + 1), at(b, rb, i), inside, t);
+    }
+    for (const [o, r, other, tint] of [
+      [a, ra, b, caps.a],
+      [b, rb, a, caps.b],
+    ] as const) {
+      if (tint === undefined) continue;
+      // Dedans, un bout fermé regarde l'autre bout (le fond d'un pavillon) ; dehors, il s'en détourne.
+      const ref: V3 = inward ? [2 * o[0] - other[0], 2 * o[1] - other[1], 2 * o[2] - other[2]] : other;
+      for (let i = 1; i + 1 < n; i++) this.tri(at(o, r, 0), at(o, r, i), at(o, r, i + 1), ref, tint);
+    }
   }
 
   /**

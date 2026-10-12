@@ -11,7 +11,8 @@ import type { VoxelCube } from '../cube';
 import type { ArchipelagoId } from '../map';
 import { lineaire } from '../landMesh';
 import { rgb } from '../decor/brush';
-import { KITS } from '../architecture';
+import { apartFromGhost, KITS } from '../architecture';
+import { couleursDuToit } from '../roofs';
 import { drawnVillagePlaces, replacedByPlace } from './villagePlaces';
 import { paintFor } from './pieces';
 
@@ -34,10 +35,12 @@ function builtWorld(a: ArchipelagoId, n: number): VoxelCube[] {
 describe.each([
   ['6e', 'french-6e-phonology'],
   ['5e', 'maths-5e-proportionality'],
+  ['4e', 'maths-4e-algebra'],
+  ['3e', 'maths-3e-functions'],
 ] as const)('les lieux dessinés de l’île-école (%s)', (a: ArchipelagoId, SCHOOL: BiomeId) => {
   const withTrophies = (n: number) => builtWorld(a, n);
 
-  it('les trois lieux de l’île-école : de près de 600 à 2 000 triangles, de loin 200 au plus, la salle vide comme pleine', () => {
+  it('les trois lieux de l’île-école : de près de 500 à 2 000 triangles (la Halle bardée du 3e, sans croix, est la plus légère), de loin 200 au plus, la salle vide comme pleine', () => {
     for (const n of [0, 6, TROPHY_SLOTS.length]) {
       const cubes = withTrophies(n);
       const near = drawnVillagePlaces(a, cubes, SCHOOL);
@@ -45,7 +48,7 @@ describe.each([
       expect(near.map((m) => m.id).sort()).toEqual([`lieu:${SCHOOL}:assembly`, `lieu:${SCHOOL}:school`, `lieu:${SCHOOL}:trophies`]);
       for (const m of near) {
         const t = triCount(m.opaque) + triCount(m.fire);
-        expect(t, `${m.id} ${n}`).toBeGreaterThanOrEqual(600);
+        expect(t, `${m.id} ${n}`).toBeGreaterThanOrEqual(500);
         expect(t, `${m.id} ${n}`).toBeLessThanOrEqual(2000);
       }
       for (const m of far) expect(triCount(m.opaque) + triCount(m.fire), `${m.id} ${n}`).toBeLessThanOrEqual(200);
@@ -140,4 +143,49 @@ it('au 5e, les lieux en pierre (intention du directeur artistique) : les murs de
   // Au 6e, la brique de l'école ne change pas.
   const sixth = colours(drawnVillagePlaces('6e', builtWorld('6e', 0), SCHOOL).find((m) => m.id.endsWith(':school'))!.opaque);
   expect(sixth.has(key(paintFor('6e', SCHOOL, false).material('brique').cote))).toBe(true);
+});
+
+/** Les couleurs (linéaires, arrondies) d'un modèle. */
+const coloursOf = (f: FacettesDuDecor) => new Set(Array.from({ length: f.colors.length / 3 }, (_, i) => [0, 1, 2].map((k) => f.colors[i * 3 + k].toFixed(4)).join(',')));
+const keyOf = (c: number) => rgb(c).map((v) => lineaire(v / 255).toFixed(4)).join(',');
+
+it('au 4e (intention du directeur artistique du 12 octobre 2026) : les chaînes, la corniche et le clocheton de l’école, les bases et les chapiteaux de la salle dans le grès clair des lieux ; la Halle en colombage, ses croix dans le bois des pilotis', () => {
+  const ATELIER: BiomeId = 'maths-4e-algebra';
+  const near = new Map(drawnVillagePlaces('4e', builtWorld('4e', 0), ATELIER).map((m) => [m.id.split(':')[2], m]));
+  const pe = paintFor('4e', ATELIER, false);
+  expect(KITS['4e'].couleurs).toMatchObject({ placeTrim: 0xc9b79a, masonry: 0x6f473d, soubassement: 0x534e51, poteau: 0x884d40, pilotis: 0x6e4c30, bardage: 0x9c7c4b });
+  const trim = keyOf(pe.role('placeTrim'));
+  const school = coloursOf(near.get('school')!.opaque);
+  expect(school.has(trim)).toBe(true);
+  expect(school.has(keyOf(pe.role('masonry')))).toBe(true);
+  const room = coloursOf(near.get('trophies')!.opaque);
+  expect(room.has(trim)).toBe(true);
+  const hall = coloursOf(near.get('assembly')!.opaque);
+  for (const r of ['soubassement', 'poteau', 'pilotis', 'bardage'] as const) expect(hall.has(keyOf(pe.role(r))), r).toBe(true);
+  // Le grès des lieux est propre au 4e : le 5e garde la pierre sombre aux chaînes.
+  expect(KITS['5e'].couleurs.placeTrim).toBeUndefined();
+});
+
+it('au 3e : la Halle en bardage seul, sans croix ni ossature apparente, sur son rang de pierre de taille ; les toits des trois lieux enneigés, jamais Brume', () => {
+  const PHARE: BiomeId = 'maths-3e-functions';
+  const cubes = builtWorld('3e', 0);
+  const near = new Map(drawnVillagePlaces('3e', cubes, PHARE).map((m) => [m.id.split(':')[2], m]));
+  const far = new Map(drawnVillagePlaces('3e', cubes, null).map((m) => [m.id.split(':')[2], m]));
+  const pe = paintFor('3e', PHARE, false);
+  expect(KITS['3e'].bardes).toContain(PHARE);
+  const hall = coloursOf(near.get('assembly')!.opaque);
+  for (const r of ['masonry', 'poteau', 'bardage'] as const) expect(hall.has(keyOf(pe.role(r))), r).toBe(true);
+  // Ni le bois des croix (les pilotis), ni la pierre grise du soubassement.
+  for (const r of ['pilotis', 'soubassement'] as const) expect(hall.has(keyOf(pe.role(r))), r).toBe(false);
+  // Moins de triangles que la Halle en colombage du 4e (ni croix, ni sablières, ni poteaux de milieu).
+  const hall4 = drawnVillagePlaces('4e', builtWorld('4e', 0), 'maths-4e-algebra').find((m) => m.id.endsWith(':assembly'))!;
+  expect(triCount(near.get('assembly')!.opaque)).toBeLessThan(triCount(hall4.opaque));
+  // La neige du kit sur les pans tournés vers le ciel, de près et de loin ; jamais le dessus d'ardoise enneigée (Brume).
+  const snow = keyOf(apartFromGhost(pe.role('snow')));
+  const brume = keyOf(couleursDuToit('3e', PHARE).dessus);
+  for (const m of [...near.values(), ...far.values()]) {
+    const c = coloursOf(m.opaque);
+    expect(c.has(snow), m.id).toBe(true);
+    expect(c.has(brume), m.id).toBe(false);
+  }
 });
