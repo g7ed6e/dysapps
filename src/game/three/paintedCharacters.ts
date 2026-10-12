@@ -381,12 +381,13 @@ export function habiller(
   const ombreDe = new THREE.Object3D();
   const piedsDuBonhomme = new THREE.Vector3();
   const poserLesOmbres = () => {
-    if (!ombres) return;
+    const disques = ombres;
+    if (!disques) return;
     avatar.getWorldPosition(piedsDuBonhomme);
     ombreDe.position.set(piedsDuBonhomme.x, piedsDuBonhomme.y + OMBRE_AU_SOL.dessus, piedsDuBonhomme.z);
     ombreDe.scale.setScalar(avatar.visible ? OMBRE_AU_SOL.bonhomme : 0);
     ombreDe.updateMatrix();
-    ombres.setMatrixAt(0, ombreDe.matrix);
+    disques.setMatrixAt(0, ombreDe.matrix);
     promeneurs.forEach((q, i) => {
       const o = q.stroll.origin;
       const x = q.corps.position.x;
@@ -394,9 +395,9 @@ export function habiller(
       ombreDe.position.set(x, piedsSur(champ(), x, z, o.z) + OMBRE_AU_SOL.dessus, z);
       ombreDe.scale.setScalar(q.ombre);
       ombreDe.updateMatrix();
-      ombres!.setMatrixAt(i + 1, ombreDe.matrix);
+      disques.setMatrixAt(i + 1, ombreDe.matrix);
     });
-    ombres.instanceMatrix.needsUpdate = true;
+    disques.instanceMatrix.needsUpdate = true;
   };
   // Un Gardien vaincu brille pleinement, de jour comme de nuit.
   matGardiens.force.value = 1;
