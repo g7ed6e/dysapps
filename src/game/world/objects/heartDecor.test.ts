@@ -10,8 +10,8 @@ import { turnCell } from '../placement';
 import { LAYOUT_PAD, origineDe } from '../terrain/base';
 import type { FacettesDuDecor } from '../decor/brush';
 import { BRUME, couleurDeMatiere } from '../palette';
-import { HEART_DECOR_6E, type HeartDecor } from './heartDecor';
-import { HEART_DECOR_5E, SACK, SALT_CREAM, SCENE_LIGHT } from './heartDecor5e';
+import { HEART_DECOR_6E, type HeartDecor, SCENE_LIGHT } from './heartDecor';
+import { HEART_DECOR_5E, SACK, SALT_CREAM } from './heartDecor5e';
 import { HEART_DECOR_4E } from './heartDecor4e';
 import { HEART_DECOR_3E } from './heartDecor3e';
 import { apartFromGhost, HEART, rgbGap } from '../architecture/heartPieces';
@@ -98,16 +98,15 @@ describe.each(TABLES)('le décor du cœur dessiné (%s)', (a, table) => {
 });
 
 /**
- * Les îles du 4e et du 3e dont le cœur attend l'étape 3 (une forme nouvelle : l'enclume, la scène à rideaux, la voie
- * ferrée, la longue-vue, le triangle de marbre, le mât d'antenne, la ruche), ou qui n'ont que des formes communes (le
- * Verger et son arbre fruitier, le Bosquet et son laurier).
+ * Les îles du 4e et du 3e sans décor du cœur à dessiner (étape 3, 12 octobre 2026) : le Verger, dont l'arbre fruitier est
+ * dans les formes communes du décor (un élément nommé, déjà en primitives).
  */
 const EN_CUBES_43 = {
-  '4e': ['maths-4e-powers', 'english-4e-comprehension', 'english-4e-grammar', 'physics-chemistry-4e-signals-circuits'],
-  '3e': ['maths-3e-geometry', 'maths-3e-statistics', 'french-3e-close-reading', 'english-3e-comprehension', 'technology-3e-digital', 'life-earth-sciences-3e-human-body', 'lca-3e-ideas'],
+  '4e': [],
+  '3e': ['life-earth-sciences-3e-human-body'],
 } as const;
 
-it('les îles qui ont un décor du cœur fait de main d’homme : toutes au 6e (la Forêt n’a que des arbres, la Tour sa pierre), toutes au 5e, au 4e et au 3e celles de l’étape 2', () => {
+it('les îles qui ont un décor du cœur fait de main d’homme : toutes au 6e (la Forêt n’a que des arbres, la Tour sa pierre), toutes au 5e, au 4e et au 3e toutes sauf le Verger et son arbre fruitier', () => {
   expect(Object.keys(HEART_DECOR_6E)).toHaveLength(14);
   expect(BIOMES.filter((b) => b.classe === '6e' && !HEART_DECOR_6E[b.id]).map((b) => b.id).sort()).toEqual(['french-6e-phonology', 'french-6e-reading']);
   expect(Object.keys(HEART_DECOR_5E).sort()).toEqual(BIOMES.filter((b) => b.classe === '5e').map((b) => b.id).sort());
@@ -116,8 +115,8 @@ it('les îles qui ont un décor du cœur fait de main d’homme : toutes au 6e (
     ['3e', HEART_DECOR_3E],
   ] as const)
     expect(BIOMES.filter((b) => b.classe === a && !table[b.id]).map((b) => b.id).sort(), a).toEqual([...EN_CUBES_43[a]].sort());
-  expect(Object.keys(HEART_DECOR_4E)).toHaveLength(10);
-  expect(Object.keys(HEART_DECOR_3E)).toHaveLength(7);
+  expect(Object.keys(HEART_DECOR_4E)).toHaveLength(14);
+  expect(Object.keys(HEART_DECOR_3E)).toHaveLength(13);
   expect(drawnHeartDecor('4e', worldOf('5e'))).toEqual([]);
   expect(drawnHeartDecor('5e', [])).toEqual([]);
 });
@@ -172,7 +171,10 @@ const BELOW_ON_GRASS = new Set([
  * l'herbe sous le voile (rendue à 0,11 au 4e, 0,16 au 3e, seule une teinte claire, 0,6 au moins sur un dessus, la
  * tiendrait), sur le pavé de la Porte et l'acajou du Forum (aucun flanc au-dessus de 0,05 de luminance, aucun dessus de
  * leur famille assez clair) ; et la Falaise, dont l'ardoise fendue claire #AEB5BE du directeur artistique (3,2:1 en
- * couleurs) donne 2,97:1 sous la lumière de `SCENE_LIGHT` : à juger sur capture.
+ * couleurs) donne 2,97:1 sous la lumière de `SCENE_LIGHT` : à juger sur capture. À l'étape 3 : la longue-vue de la Vigie
+ * et la ruche (sur l'herbe), le laurier du Bosquet (sur son sol de laurier) ; la voie, le bout de rail et le signal de
+ * la Gare, dont le dessus des rails en acier poli #B4BAC0 du directeur artistique donne 2,93:1 sous la même lumière sur
+ * le sol de rails (aucun flanc n'y tient 3:1 au-dessus de 0,05) : à juger sur capture.
  */
 const BELOW_4E = new Set([
   'coeur:french-4e-agreement:paroi',
@@ -187,6 +189,10 @@ const BELOW_4E = new Set([
   'coeur:lv2-4e-daily-life:potager',
   'coeur:lv2-4e-daily-life:lanterne',
   'coeur:lv2-4e-daily-life:panier',
+  'coeur:english-4e-grammar:voie',
+  'coeur:english-4e-grammar:signal',
+  'coeur:english-4e-grammar:rail',
+  'coeur:physics-chemistry-4e-signals-circuits:longue-vue',
 ]);
 const BELOW_3E = new Set([
   'coeur:history-3e-twentieth-century:reliures',
@@ -197,6 +203,8 @@ const BELOW_3E = new Set([
   'coeur:civics-3e-democratic-life:banc',
   'coeur:lv2-3e-travel:buches',
   'coeur:lv2-3e-travel:banc',
+  'coeur:technology-3e-digital:ruche',
+  'coeur:lca-3e-ideas:laurier',
 ]);
 
 /** Les couleurs (en sRGB, arrondies) des facettes d'un cœur dessiné du 5e. */
@@ -226,9 +234,12 @@ it('au 5e, les sacs du Fournil sont en toile de jute, la farine au seul col ouve
  */
 function shareApart(a: ArchipelagoId, d: ReturnType<typeof drawnHeartDecor>[number]): { share: number; ground: string | undefined } {
   const sols = new Map(wholeWorld(a).filter((c) => c.sol).map((c) => [`${c.x},${c.y},${c.z}`, c]));
-  // Le sol sous la plus basse de ses cases.
-  const low = d.cellules.reduce((m, c) => (c.z < m.z ? c : m));
-  const ground = sols.get(`${low.x},${low.y},${low.z - 1}`)?.texture;
+  // Le sol sous la plus basse de ses cases (la première qui en a un : une case du bord peut être en surplomb, la ruche).
+  const zLow = Math.min(...d.cellules.map((c) => c.z));
+  const ground = d.cellules
+    .filter((c) => c.z === zLow)
+    .map((c) => sols.get(`${c.x},${c.y},${c.z - 1}`)?.texture)
+    .find((t) => t !== undefined);
   if (!ground) return { share: 0, ground };
   const g = SCENE_LIGHT.ground * luminanceOf(couleurDeMatiere(a, ground as Parameters<typeof couleurDeMatiere>[1]).dessus);
   const { positions: p, colors: k } = d.opaque;

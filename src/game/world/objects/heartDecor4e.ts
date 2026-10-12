@@ -5,46 +5,28 @@
 // triangles, le même de près et de loin, tourné avec l'île (GD-9) ; rien ne s'allume, rien ne bouge.
 //
 // Étape 2 : les cœurs que les pièces communes et les modèles du 6e et du 5e couvrent (l'Atelier, la Falaise, le Cabinet,
-// l'Imprimerie, l'Escale, la Source, le Bassin, la Porte, le Jardin, la Colonnade). La Forge, le Théâtre, la Gare et
-// la Vigie gardent leurs cubes jusqu'à l'étape 3 (l'enclume, la scène à rideaux, la voie ferrée, la longue-vue).
-// Restent les formes communes : les rochers de pierre.
+// l'Imprimerie, l'Escale, la Source, le Bassin, la Porte, le Jardin, la Colonnade). Étape 3 : la Forge, le Théâtre, la
+// Gare et la Vigie, faits des formes nouvelles (./silhouettes43.ts : l'enclume, la scène à rideaux, la voie ferrée, la
+// longue-vue). Restent les formes communes : les rochers de pierre.
 //
 // Contraste (docs/rendu/style.md) : une matière claire sur son propre sol (le calque de l'Atelier, le parchemin du
-// Cabinet, la fresque de la Colonnade) garde son dessus et prend un flanc sombre de sa teinte (`flankOn`) ; l'ardoise de
-// la Falaise, sombre sur l'ardoise, se lit par le dessus de ses gradins en ardoise fendue claire. Code pur, sans
+// Cabinet, la fresque de la Colonnade, l'acier de la Forge) garde son dessus et prend un flanc sombre de sa teinte
+// (`flankOn`) ; l'ardoise de la Falaise, sombre sur l'ardoise, se lit par le dessus de ses gradins en ardoise fendue
+// claire, le velours du Théâtre par sa frise et ses embrasses d'or, le sol de rails de la Gare par le dessus d'acier poli
+// de ses rails. Code pur, sans
 // Three.js.
 import type { BiomeId } from '../../biomes';
 import { LANTERNE_DE_COUR } from '../architecture';
 import type { Faces } from '../palette';
 import type { TextureKind } from '../pixels';
+import type { V3 } from '../decor/brush';
 import { darker, scaleColor, type Workshop } from './workshop';
 import { crate, heap, lectern, OBJECT_COLORS as C, type Paint, pebble, tableOnLegs } from './pieces';
-import type { HeartDecor, HeartDrawing } from './heartDecor';
-import { boardPile, flankOn } from './heartDecor5e';
+import { boardPile, flankedOn, flankOn, type HeartDecor, type HeartDrawing, layerPile, SAWN_WOOD, stoneBench, streetLamp } from './heartDecor';
+import { anvil, curtainStage, FORMS_43, railTrack, spyglass } from './silhouettes43';
 
 /** Les teintes propres au cœur du 4e (intention du directeur artistique) : l'ardoise fendue claire du dessus des gradins de la Falaise. */
 const HEART_4E = { splitSlate: 0xaeb5be } as const;
-
-/** Une matière posée sur le sol `ground` : son dessus, son flanc assombri jusqu'à tenir 3:1 sur lui (`flankOn`). */
-export const flankedOn = (pe: Paint, f: Faces, ground: TextureKind): Faces => ({ dessus: f.dessus, cote: flankOn(pe, f.cote, ground) });
-
-/**
- * Une pile de `layers` feuilles ou dalles carrées d'une case, épaisses de `h`, un peu décalées d'un lit à l'autre (les
- * calques de l'Atelier, l'ardoise de la Falaise, les livres du Kiosque) ; ses chants dans le côté de `t`. 10 par lit.
- */
-function layerPile(at: Workshop, layers: number, h: number, t: Faces, inset = 0.14): void {
-  const shifts: readonly (readonly [number, number])[] = [
-    [0, 0],
-    [0.05, -0.04],
-    [-0.03, 0.05],
-    [0.04, 0.03],
-    [-0.04, -0.03],
-  ];
-  for (let k = 0; k < layers; k++) {
-    const [dx, dy] = shifts[k % shifts.length];
-    at.box(inset + dx, 1 - inset + dx, inset + 0.04 + dy, 1 - inset - 0.04 + dy, k * h, (k + 1) * h, t, k + 1 < layers ? { bottom: true, top: true } : undefined);
-  }
-}
 
 /** Une caisse de planches seule (une case) sur le sol `ground`, ses flancs tenus sur lui (`flankOn`). 20 triangles. */
 const plankCrateOn =
@@ -55,28 +37,6 @@ const plankCrateOn =
     crate(at, 0.14, 0.86, 0.14, 0.86, 0, 0.72, { dessus: planks.dessus, cote: side }, { dessus: planks.dessus, cote: side });
   };
 
-/**
- * Un banc de pierre (une case) : l'assise dans `seat` sur deux pieds de la même pierre, en travers de la case. 28
- * triangles.
- */
-export function stoneBench(at: Workshop, seat: Faces): void {
-  tableOnLegs(
-    at,
-    0.06,
-    0.94,
-    0.24,
-    0.76,
-    0.5,
-    0.14,
-    seat,
-    [
-      [0.2, 0.5],
-      [0.8, 0.5],
-    ],
-    0.2,
-    seat,
-  );
-}
 
 // ---------- L'Atelier (algèbre, 4e) ----------
 
@@ -335,8 +295,149 @@ const frescoWall: HeartDrawing = (at, pe) => {
 /** Le banc de pierre devant le mur (une case) : la dalle claire sur ses deux pieds de pierre. */
 const colonnadeBench: HeartDrawing = (at, pe) => stoneBench(at, { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') });
 
+// ---------- La Forge (puissances, 4e) ----------
+
+/**
+ * Un lingot couché (le lingot facetté du trophée, en long) au centre (cx, cy), posé en z0 : un tronc de pyramide de
+ * `lx` × `ly`, haut de `h`, son dessus en retrait, le long de x ou de y (`along`). 10 triangles.
+ */
+function ingotBar(at: Workshop, cx: number, cy: number, z0: number, lx: number, ly: number, h: number, t: Faces, along: 'x' | 'y' = 'x'): void {
+  const [ax, ay] = along === 'x' ? [lx / 2, ly / 2] : [ly / 2, lx / 2];
+  const [bx, by] = along === 'x' ? [ax - 0.06, ay - 0.05] : [ax - 0.05, ay - 0.06];
+  const z1 = z0 + h;
+  const lower: V3[] = [
+    [cx - ax, cy - ay, z0],
+    [cx + ax, cy - ay, z0],
+    [cx + ax, cy + ay, z0],
+    [cx - ax, cy + ay, z0],
+  ];
+  const upper: V3[] = [
+    [cx - bx, cy - by, z1],
+    [cx + bx, cy - by, z1],
+    [cx + bx, cy + by, z1],
+    [cx - bx, cy + by, z1],
+  ];
+  const inside: V3 = [cx, cy, z0 + h * 0.3];
+  for (let i = 0; i < 4; i++) at.quad(lower[i], lower[(i + 1) % 4], upper[(i + 1) % 4], upper[i], inside, t);
+  at.quad(upper[0], upper[1], upper[2], upper[3], inside, t);
+}
+
+/** Les mesures de la cheminée de la Forge : le fût, la corniche, la couronne de braise. */
+const CHIMNEY = { shaft: 0.66, upper: 3.08, cornice: [0.8, 3.24], crown: [0.7, 3.78] } as const;
+
+/**
+ * La cheminée de la Forge (quatre cases : trois de pierre, le sommet) : le fût de pierre, sa corniche de dalle claire,
+ * la couronne de braise mate, le conduit sombre au dessus. Sans fumée ni lueur (comme la tour à bougie du Manoir).
+ */
+const chimney: HeartDrawing = (at, pe) => {
+  const K = CHIMNEY;
+  at.block(0.5, 0.5, K.shaft, K.shaft, 0, K.upper, flankedOn(pe, pe.material('pierre'), 'acier'), { bottom: true, top: true });
+  at.block(0.5, 0.5, K.cornice[0], K.cornice[0], K.upper, K.cornice[1], { dessus: pe.role('yardSlab'), cote: flankOn(pe, pe.role('yardStone'), 'acier') });
+  at.block(0.5, 0.5, K.crown[0], K.crown[0], K.cornice[1], K.crown[1], { dessus: pe.color(C.shadow), cote: pe.color(C.ember) });
+};
+
+/** L'enclume d'acier sur son billot (une case). */
+const forgeAnvil: HeartDrawing = (at, pe) => anvil(at, flankedOn(pe, pe.apart('acier'), 'acier'), { dessus: pe.color(SAWN_WOOD), cote: flankOn(pe, pe.material('tronc').cote, 'acier') });
+
+/** Le lingot d'or (une case) : deux lingots couchés côte à côte, un troisième en travers dessus. */
+const goldIngots: HeartDrawing = (at, pe) => {
+  const gold = flankedOn(pe, pe.material('or'), 'acier');
+  for (const y of [0.32, 0.68]) ingotBar(at, 0.5, y, 0, 0.7, 0.3, 0.2, gold);
+  ingotBar(at, 0.5, 0.5, 0.2, 0.62, 0.28, 0.2, gold, 'y');
+};
+
+/** Les lingots d'acier (deux cubes) : trois lingots au sol, deux en travers dessus, un en long au sommet. */
+const steelIngots: HeartDrawing = (at, pe) => {
+  const steel = flankedOn(pe, pe.apart('acier'), 'acier');
+  for (const y of [0.22, 0.5, 0.78]) ingotBar(at, 0.5, y, 0, 0.78, 0.26, 0.22, steel);
+  for (const x of [0.34, 0.66]) ingotBar(at, x, 0.5, 0.22, 0.74, 0.28, 0.22, steel, 'y');
+  ingotBar(at, 0.5, 0.5, 0.44, 0.66, 0.28, 0.22, steel);
+};
+
+// ---------- Le Théâtre (compréhension anglaise, 4e) ----------
+
+/** La scène à rideaux (trois cases, quatre de haut aux colonnes) : ses rideaux de velours, sa frise et ses embrasses d'or, son estrade de planches. */
+const theatreStage: HeartDrawing = (at, pe) => {
+  const planks = pe.material('planches');
+  curtainStage(at, pe, pe.material('velours'), { dessus: planks.dessus, cote: flankOn(pe, planks.cote, 'velours') });
+};
+
+/**
+ * Une lanterne de rampe (une case), éteinte : la tête de lanterne des cours posée sur un socle de planches, ses vitres
+ * d'ardoise (rien ne s'allume au cœur).
+ */
+const footlight: HeartDrawing = (at, pe) => {
+  const planks = pe.material('planches');
+  at.block(0.5, 0.5, 0.56, 0.56, 0, 0.3, { dessus: planks.dessus, cote: flankOn(pe, planks.cote, 'velours') });
+  at.facets(LANTERNE_DE_COUR, 0, 0, 0.3, (f) => pe.role(f.role ?? 'lanternFrame'), pe.material('ardoise').cote);
+};
+
+/** Le ballot de velours (une case) : le rouleau couché de velours, ses deux bouts, deux embrasses d'or. */
+const velvetBolt: HeartDrawing = (at, pe) => {
+  const velvet = pe.material('velours');
+  const gold = pe.color(FORMS_43.stageGold);
+  const [r, z] = [0.27, 0.28];
+  at.roller('x', 0.12, 0.88, 0.5, z, r, 8, velvet);
+  for (const [x, toward] of [
+    [0.12, 'nx'],
+    [0.88, 'px'],
+  ] as const)
+    at.standingDisc([x, 0.5, z], toward, r * 1.06, 8, velvet.cote, Math.PI / 8);
+  for (const x of [0.28, 0.6]) at.roller('x', x, x + 0.14, 0.5, z, r + 0.03, 8, gold);
+};
+
+// ---------- La Gare (grammaire anglaise, 4e) ----------
+
+/** La voie ferrée (six cases) : ses traverses sombres dans le côté du rail, le dessus des rails d'acier poli, ses deux butoirs. */
+const station: HeartDrawing = (at, pe) => railTrack(at, pe, 6, true, pe.material('rail').cote);
+
+/** Le bout de rail posé au sol (une case) : deux traverses et deux rails, sans butoir. */
+const railPiece: HeartDrawing = (at, pe) => railTrack(at, pe, 1, false, pe.material('rail').cote);
+
+// ---------- La Vigie (signaux, 4e) ----------
+
+/** La longue-vue de la Vigie (deux cases, trois de haut) : le tube de bobine, le pied de bois. */
+const lookout: HeartDrawing = (at, pe) =>
+  spyglass(at, 0.5, 0.5, [0.08, 0.5, 1.94], [1.94, 0.5, 2.7], pe.material('bobine'), { dessus: pe.role('yardPost'), cote: scaleColor(pe.role('yardPost'), 0.86) });
+
 /** Le décor du cœur des îles du 4e, ensemble par ensemble (colonnes dans la grille de `DECOR`). */
 export const HEART_DECOR_4E: Readonly<Partial<Record<BiomeId, readonly HeartDecor[]>>> = {
+  'maths-4e-powers': [
+    { name: 'cheminee', columns: [[9, 3]], drawing: chimney },
+    { name: 'enclume-1', columns: [[8, 5]], drawing: forgeAnvil },
+    { name: 'enclume-2', columns: [[10, 5]], drawing: forgeAnvil },
+    { name: 'lingot', columns: [[3, 9]], drawing: goldIngots },
+    { name: 'lingots', columns: [[1, 10]], drawing: steelIngots },
+  ],
+  'english-4e-comprehension': [
+    {
+      name: 'scene',
+      columns: [
+        [8, 3],
+        [9, 3],
+        [10, 3],
+      ],
+      drawing: theatreStage,
+    },
+    { name: 'rampe-1', columns: [[8, 2]], drawing: footlight },
+    { name: 'rampe-2', columns: [[10, 2]], drawing: footlight },
+    { name: 'velours', columns: [[3, 9]], drawing: velvetBolt },
+  ],
+  'english-4e-grammar': [
+    { name: 'voie', columns: [6, 7, 8, 9, 10, 11].map((x) => [x, 4] as const), drawing: station },
+    { name: 'signal', columns: [[12, 3]], drawing: streetLamp },
+    { name: 'rail', columns: [[3, 9]], drawing: railPiece },
+  ],
+  'physics-chemistry-4e-signals-circuits': [
+    {
+      name: 'longue-vue',
+      columns: [
+        [9, 3],
+        [10, 3],
+      ],
+      drawing: lookout,
+    },
+  ],
   'maths-4e-algebra': [
     {
       name: 'table',

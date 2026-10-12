@@ -4,17 +4,19 @@
 // ne s'allume, rien ne bouge.
 //
 // Étape 2 : les cœurs que les pièces communes et les modèles du 6e et du 5e couvrent (le Phare, le Château, le Kiosque,
-// le Plateau, le Tremplin, le Forum, le Refuge). Le Belvédère, les deux Observatoires, le Studio et la Ruche gardent
-// leurs cubes jusqu'à l'étape 3 (le triangle de marbre, la longue-vue, le mât d'antenne, la ruche) ; le Verger et le
-// Bosquet n'ont que des formes communes (l'arbre fruitier, le laurier), la tour du Phare reste la sienne (le grand
-// phare, world/decor). Restent aussi les rochers de pierre. Code pur, sans Three.js.
+// le Plateau, le Tremplin, le Forum, le Refuge). Étape 3 : le Belvédère, les deux Observatoires, le Studio et la Ruche,
+// faits des formes nouvelles (./silhouettes43.ts : le triangle de marbre, la longue-vue, le mât d'antenne, la ruche), et
+// le laurier du Bosquet, en anneaux à huit pans. Le Verger n'a que son arbre fruitier, déjà dans les formes communes du
+// décor ; la tour du Phare n'est pas posée dans Archipéo (le grand phare la remplace, `sansToursDuCoeur`). Restent les
+// rochers de pierre. Les matières claires sur leur propre sol (le marbre, le quartz, la lentille, l'antenne, la taille)
+// prennent un flanc sombre (`flankedOn`). Code pur, sans Three.js.
 import type { BiomeId } from '../../biomes';
 import type { Faces } from '../palette';
-import { darker } from './workshop';
-import { milestone, OBJECT_COLORS as C, pebble, tableOnLegs } from './pieces';
-import { crystalShards, type HeartDecor, type HeartDrawing } from './heartDecor';
-import { flankOn, SAWN_WOOD } from './heartDecor5e';
-import { flankedOn, stoneBench } from './heartDecor4e';
+import { TRIANGLE_DU_BELVEDERE } from '../decor';
+import { darker, scaleColor } from './workshop';
+import { milestone, OBJECT_COLORS as C, type Paint, pebble, stoneStep, tableOnLegs } from './pieces';
+import { crystalShards, flankedOn, flankOn, type HeartDecor, type HeartDrawing, SAWN_WOOD, stoneBench } from './heartDecor';
+import { antennaMast, marbleTriangle, skep, spyglass } from './silhouettes43';
 
 /** Le rose de la balle au pied du plan incliné du Tremplin (la fleur du décor qu'elle remplace). */
 const BALL_PINK = 0xe8557a;
@@ -149,8 +151,131 @@ const refugeBench: HeartDrawing = (at, pe) => {
   stoneBench(at, stone);
 };
 
+// ---------- Le Belvédère (géométrie, 3e) ----------
+
+/** Le triangle 3-4-5 de marbre (huit cases) : le dessus de marbre, les côtés au flanc sombre sur le sol de marbre. */
+const belvedereTriangle: HeartDrawing = (at, pe) => marbleTriangle(at, flankedOn(pe, pe.apart('marbre'), 'marbre'));
+
+/** La borne de marbre (une case), au flanc sombre sur le sol de marbre. */
+const marbleMilestone: HeartDrawing = (at, pe) => milestone(at, pe, 0, 0, 0, 0.92, flankedOn(pe, pe.apart('marbre'), 'marbre'));
+
+// ---------- Les longues-vues des deux Observatoires (3e) ----------
+
+/** Le pied de bois des longues-vues (le même qu'à la Vigie). */
+const standOf = (pe: Paint): Faces => ({ dessus: pe.role('yardPost'), cote: scaleColor(pe.role('yardPost'), 0.86) });
+
+/** Le télescope de l'Observatoire des données (quatre cases en escalier) : la longue-vue, son tube de quartz au flanc sombre. */
+const dataTelescope: HeartDrawing = (at, pe) => spyglass(at, 1.2, 0.5, [0.4, 0.5, 1.4], [3.1, 0.5, 3.1], flankedOn(pe, pe.apart('quartz'), 'quartz'), standOf(pe));
+
+/** Le dôme de quartz (deux cubes) : le pilier, sa corniche de dalle claire, la coupole à huit pans. */
+const quartzDome: HeartDrawing = (at, pe) => {
+  const quartz = flankedOn(pe, pe.apart('quartz'), 'quartz');
+  at.block(0.5, 0.5, 0.62, 0.62, 0, 1.1, quartz, { bottom: true, top: true });
+  at.block(0.5, 0.5, 0.78, 0.78, 1.1, 1.24, { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') });
+  at.prism(0.5, 0.5, 0.42, 0.3, 1.24, 1.6, 8, quartz, Math.PI / 8, true);
+  at.prism(0.5, 0.5, 0.3, 0, 1.6, 1.9, 8, quartz, Math.PI / 8);
+};
+
+/** Les éclats de quartz (une case) : au flanc sombre, sur un pied de roche. */
+const quartzShards: HeartDrawing = (at, pe, e) => crystalShards(at, e, flankedOn(pe, pe.apart('quartz'), 'quartz'), darker(pe.material('pierre'), 0.8));
+
+/** La lunette de l'Observatoire des textes (son pied de pierre, trois cases de tube au fond) : la longue-vue, son tube de lentille. */
+const textTelescope: HeartDrawing = (at, pe) => spyglass(at, 1.5, 0.9, [0.12, 0.9, 1.9], [2.9, 0.9, 2.74], flankedOn(pe, pe.apart('lentille'), 'lentille'), standOf(pe));
+
+/** La pile de livres (deux cubes) : un gros livre de planches, un livre de parchemin dessus, leurs chants sombres sur la lentille. */
+const lensBooks: HeartDrawing = (at, pe) => {
+  at.box(0.12, 0.88, 0.18, 0.82, 0, 0.34, flankedOn(pe, pe.material('planches'), 'lentille'));
+  at.box(0.2, 0.84, 0.24, 0.78, 0.34, 0.6, flankedOn(pe, pe.apart('parchemin'), 'lentille'));
+  at.box(0.16, 0.76, 0.3, 0.74, 0.6, 0.8, flankedOn(pe, pe.material('planches'), 'lentille'));
+};
+
+/** La lentille debout (une case) sur son pied de bois : ses deux faces claires, sa tranche au flanc sombre. */
+const standingLens: HeartDrawing = (at, pe) => {
+  const lens = pe.apart('lentille');
+  const wood = standOf(pe);
+  at.block(0.5, 0.5, 0.56, 0.32, 0, 0.16, wood);
+  at.block(0.5, 0.5, 0.18, 0.18, 0.16, 0.34, wood, { bottom: true, top: true });
+  const [r, z] = [0.32, 0.66];
+  at.roller('y', 0.42, 0.58, 0.5, z, r, 8, flankOn(pe, lens.cote, 'lentille'));
+  at.standingDisc([0.5, 0.42, z], 'ny', r, 8, lens.dessus, Math.PI / 8);
+  at.standingDisc([0.5, 0.58, z], 'py', r, 8, lens.dessus, Math.PI / 8);
+};
+
+// ---------- Le Studio (compréhension anglaise, 3e) ----------
+
+/** Le mât d'antenne du Studio (six cases) : sa marche de pierre, le mât d'antenne au flanc sombre sur le sol d'antennes, le voyant mat. */
+const studioMast: HeartDrawing = (at, pe) => {
+  stoneStep(at, pe, 0.1, 0.9, 0.1, 0.9, 0, 0.46);
+  antennaMast(at, pe, 0.5, 0.5, 0.46, 5.5, flankedOn(pe, pe.apart('antenne'), 'antenne'));
+};
+
+/** L'antenne tombée (une case) : un bout de mât couché et sa barre, au flanc sombre. */
+const fallenAntenna: HeartDrawing = (at, pe) => {
+  const t = flankedOn(pe, pe.apart('antenne'), 'antenne');
+  at.box(0.62, 0.8, 0.12, 0.88, 0, 0.16, t);
+  at.box(0.06, 0.94, 0.38, 0.6, 0.16, 0.38, t, { bottom: false });
+};
+
+// ---------- La Ruche (numérique, 3e) ----------
+
+/** La ruche en dôme (trois sur trois), sur sa pierre plate. */
+const hive: HeartDrawing = (at, pe) => skep(at, pe, { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') });
+
+// ---------- Le Bosquet (latin et grec, 3e) ----------
+
+/**
+ * Le laurier taillé en boule sur son tronc (deux cases : le tronc et la boule, la boule qui déborde sur la seconde) :
+ * le tronc de bois, la boule de laurier en trois anneaux à huit pans.
+ */
+const laurel: HeartDrawing = (at, pe) => {
+  const leaf = pe.material('laurier');
+  const [cx, cy] = [0.8, 0.5];
+  at.block(0.5, 0.5, 0.22, 0.22, 0, 1.0, pe.material('tronc'), { bottom: true, top: true });
+  at.prism(cx, cy, 0.26, 0.62, 0.82, 1.24, 8, leaf, Math.PI / 8, true);
+  at.prism(cx, cy, 0.62, 0.66, 1.24, 1.7, 8, leaf, Math.PI / 8, true);
+  at.prism(cx, cy, 0.66, 0.28, 1.7, 2.22, 8, leaf, Math.PI / 8);
+};
+
 /** Le décor du cœur des îles du 3e, ensemble par ensemble (colonnes dans la grille de `DECOR`). */
 export const HEART_DECOR_3E: Readonly<Partial<Record<BiomeId, readonly HeartDecor[]>>> = {
+  'maths-3e-geometry': [
+    { name: 'triangle', columns: TRIANGLE_DU_BELVEDERE, drawing: belvedereTriangle },
+    { name: 'marbre', columns: [[3, 9]], drawing: marbleMilestone },
+  ],
+  'maths-3e-statistics': [
+    { name: 'telescope', columns: [7, 8, 9, 10].map((x) => [x, 3] as const), drawing: dataTelescope },
+    { name: 'dome', columns: [[9, 5]], drawing: quartzDome },
+    { name: 'quartz', columns: [[3, 9]], drawing: quartzShards },
+  ],
+  'french-3e-close-reading': [
+    {
+      name: 'lunette',
+      columns: [
+        [9, 3],
+        [8, 4],
+        [9, 4],
+        [10, 4],
+      ],
+      drawing: textTelescope,
+    },
+    { name: 'livres', columns: [[7, 2]], drawing: lensBooks },
+    { name: 'lentille', columns: [[3, 9]], drawing: standingLens },
+  ],
+  'english-3e-comprehension': [
+    { name: 'mat', columns: [[9, 3]], drawing: studioMast },
+    { name: 'antenne', columns: [[3, 9]], drawing: fallenAntenna },
+  ],
+  'technology-3e-digital': [{ name: 'ruche', columns: [8, 9, 10].flatMap((x) => [2, 3, 4].map((y) => [x, y] as const)), drawing: hive }],
+  'lca-3e-ideas': [
+    {
+      name: 'laurier',
+      columns: [
+        [9, 3],
+        [10, 3],
+      ],
+      drawing: laurel,
+    },
+  ],
   'maths-3e-functions': [{ name: 'prisme', columns: [[3, 9]], drawing: prismShards }],
   'english-3e-grammar': [
     {

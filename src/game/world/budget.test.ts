@@ -41,8 +41,8 @@ it('les plafonds des archipels', () => {
   // par le 5e, le 4e et le 3e. Chacun le quitte avec ses objets dessinés, ce plafond plus la hausse de ses enveloppes :
   // les Îles Brumeuses le 11 octobre 2026, les Anciens Ateliers et les Îles du Ciel le 12.
   expect(RENDER_BUDGET_5E).toEqual({ triangles: 102_860, drawCalls: 40 });
-  expect(RENDER_BUDGET_4E).toEqual({ triangles: 102_305, drawCalls: 40 });
-  expect(RENDER_BUDGET_3E).toEqual({ triangles: 101_755, drawCalls: 40 });
+  expect(RENDER_BUDGET_4E).toEqual({ triangles: 103_165, drawCalls: 40 });
+  expect(RENDER_BUDGET_3E).toEqual({ triangles: 102_155, drawCalls: 40 });
   expect(renderBudgetOf('6e')).toBe(RENDER_BUDGET_6E);
   expect(renderBudgetOf('5e')).toBe(RENDER_BUDGET_5E);
   expect(renderBudgetOf('4e')).toBe(RENDER_BUDGET_4E);
@@ -141,9 +141,9 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // aux Îles du Ciel (76 035). EMC-2 (mainteneur, 9 octobre 2026) : le Préau des délégués, avec les personnages
   // importés, porte les Premiers Rivages à 76 290, sous `RENDER_BUDGET_6E` relevé à 76 500. Le Fournil des partages et
   // la Grotte des légendes (5e), avec la cinquième mission (GD-14) : les Îles Brumeuses à 85 945, aux mesures
-  // (world/budget.ts), sous `RENDER_BUDGET_AUTRES` relevé à 86 000 (mainteneur, 9 octobre 2026).
+  // (world/budget.ts), sous le plafond partagé (`PLAFOND_PARTAGE`) relevé à 86 000 (mainteneur, 9 octobre 2026).
   // La Porte des libertés et la Colonnade des cités (4e) : les Anciens Ateliers à 82 975 ; le Forum des débats et le
-  // Bosquet des sages (3e) : les Îles du Ciel à 82 855 ; aux mesures (world/budget.ts), sous `RENDER_BUDGET_AUTRES`
+  // Bosquet des sages (3e) : les Îles du Ciel à 82 855 ; aux mesures (world/budget.ts), sous le plafond partagé (`PLAFOND_PARTAGE`)
   // (86 000), inchangé. Révision de GD-12 (la Porte et la Colonnade au flanc ouest, le cadre élargi ; en attente du mot
   // du mainteneur) : la mer à 7 150 aux Anciens Ateliers (83 725), toujours sous 86 000. Les Gardiens et les créatures
   // importés de la 5e : les Îles Brumeuses à 86 685 (mainteneur, 10 octobre 2026). Les monuments importés d'Archipéo : la
@@ -159,14 +159,15 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // construction 600 et les commandes 130 (102 565, sous `RENDER_BUDGET_5E`). L'étape 1 des objets du 4e et du 3e
   // (12 octobre 2026) : la construction 3 950 aux Anciens Ateliers (101 365, sous `RENDER_BUDGET_4E`), 3 700 aux Îles du
   // Ciel (99 870, sous `RENDER_BUDGET_3E`). L'étape 2 : la construction 500 et les commandes 400 aux Anciens Ateliers
-  // (102 265), 400 et 200 aux Îles du Ciel (100 470).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, ceux de la 3e, les essais et les lots 1 et 2 de la piste 3, la Nef importée, Kéo, les lots 1 et 2 des objets du 5e, les étapes 1 et 2 des objets du 4e et du 3e) : 93 600 triangles et 25 appels aux Premiers Rivages, 102 565, 102 265 et 100 470 et 24 appels ailleurs', () => {
+  // (102 265), 400 et 200 aux Îles du Ciel (100 470). L'étape 3 : la construction 500 et les commandes 100 aux Anciens
+  // Ateliers (102 865, sous `RENDER_BUDGET_4E` relevé avec une marge de 300), 200 et 200 aux Îles du Ciel (100 870).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, ceux de la 3e, les essais et les lots 1 et 2 de la piste 3, la Nef importée, Kéo, les lots 1 et 2 des objets du 5e, les étapes 1 à 3 des objets du 4e et du 3e) : 93 600 triangles et 25 appels aux Premiers Rivages, 102 565, 102 865 et 100 870 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([93_600, 25]);
     expect([total('5e'), appels('5e')]).toEqual([102_565, 24]);
-    expect([total('4e'), appels('4e')]).toEqual([102_265, 24]);
-    expect([total('3e'), appels('3e')]).toEqual([100_470, 24]);
+    expect([total('4e'), appels('4e')]).toEqual([102_865, 24]);
+    expect([total('3e'), appels('3e')]).toEqual([100_870, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la

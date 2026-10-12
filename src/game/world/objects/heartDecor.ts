@@ -21,7 +21,7 @@
 import type { BiomeId } from '../../biomes';
 import { apartFromGhost, LANTERNE_DE_COUR } from '../architecture';
 import type { V3 } from '../decor/brush';
-import type { Faces } from '../palette';
+import { type Couleur, type Faces, luminance } from '../palette';
 import type { TextureKind } from '../pixels';
 import { darker, scaleColor, type Workshop, type Tint } from './workshop';
 import { milestone, crate, OBJECT_COLORS as C, pebble, sheaf, type Paint, tableOnLegs, fencePost, heap } from './pieces';
@@ -64,6 +64,124 @@ const HEART_COLORS = {
   boothGlass: 0xb9c9c6,
   boothBand: 0xfbf6ea,
 } as const;
+
+// ---------- Les aides communes aux cœurs des quatre archipels ----------
+//
+// Le flanc tenu sur son sol (règle de contraste de docs/rendu/style.md, posée au 5e), la pile de planches, la pile de
+// feuilles, le banc de pierre et le bois scié : chaque archipel les prend ici, aucun ne dépend d'un autre.
+
+/** Le contraste que tient un flanc sombre sur son sol (3:1, un dixième de marge pour l'arrondi). */
+const FLANK_CONTRAST = 3.1;
+
+/** La luminance sous laquelle un flanc ne s'assombrit jamais (avis du directeur artistique : pas de flanc presque noir). */
+const FLANK_FLOOR = 0.05;
+
+/**
+ * La part de sa luminance qu'une couleur garde à l'image sous la lumière et le voile du 5e, mesurée sur les captures du
+ * 11 octobre 2026 : de jour, le dessus du sol (la farine, 0,78, rendue à 0,38 ; l'herbe, 0,20, à 0,10), le dessus d'un
+ * objet (le livre crème, 0,79, à 0,59 ; la caisse de planches, 0,36, à 0,26), un côté d'objet (le flanc des sacs, 0,16, à
+ * 0,09 ; 0,6 par prudence) ; la nuit, le sol comme les côtés (la farine à 0,13, le flanc des sacs à 0,03). Le contraste
+ * se compte sur l'image : deux teintes assombries d'autant se rapprochent (le 0,05 de la formule ne baisse pas), et un
+ * flanc qui tenait 3:1 en couleurs n'en tenait que 2,6 à l'écran (relevé du référent dys).
+ */
+export const SCENE_LIGHT = { ground: 0.49, top: 0.7, side: 0.6, night: 0.17 } as const;
+
+/** Le contraste d'un flanc de luminance `f` sur un sol de luminance `g`, sous les parts de lumière `kg` et `kf`. */
+const contrastUnder = (g: number, f: number, kg: number, kf: number) => {
+  const [a, b] = [kg * g, kf * f];
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+};
+
+/**
+ * Le flanc d'une teinte `c` (déjà sous le voile de l'archipel : une matière, un rôle, `pe.color`) sur le sol `ground` :
+ * la teinte assombrie pas à pas jusqu'à tenir 3:1 sur le dessus du sol à l'image, de jour, et la nuit aussi quand le sol
+ * est assez clair pour que ce soit possible sans passer sous `FLANK_FLOOR` de luminance (`SCENE_LIGHT`). Sur un
+ * sol clair (la farine, le tuf, la dalle), c'est un ton sombre de la matière ; là où seule une teinte presque noire y
+ * arriverait (l'herbe sous la brume du 5e), le flanc garde la teinte telle quelle, le côté naturel de sa matière.
+ * `inColours` : compté en couleurs, comme au lot 2 (ce que garde le thermomètre, jugé conforme).
+ */
+export function flankOn(pe: Paint, c: Couleur, ground: TextureKind, inColours = false): Couleur {
+  const g = luminance(pe.material(ground).dessus);
+  const L = SCENE_LIGHT;
+  const tests: [number, number][] = inColours ? [[1, 1]] : [[L.ground, L.side]];
+  if (!inColours && contrastUnder(g, FLANK_FLOOR, L.night, L.night) >= FLANK_CONTRAST + 0.2) tests.push([L.night, L.night]);
+  for (let k = 20; k > 0; k--) {
+    const f = scaleColor(c, k / 20);
+    const l = luminance(f);
+    if (l < FLANK_FLOOR) break;
+    if (tests.every(([kg, kf]) => contrastUnder(g, l, kg, kf) >= FLANK_CONTRAST)) return f;
+  }
+  return c;
+}
+
+
+/**
+ * Une pile de planches de (x0, y0) à (x1, y1), posée en z0 : `layers` lits de trois planches épaisses de 0,16, en croix
+ * d'un lit à l'autre (le premier le long de x, ou de y si `crossFirst`).
+ */
+export function boardPile(at: Workshop, x0: number, x1: number, y0: number, y1: number, z0: number, layers: number, board: Faces, crossFirst = false): void {
+  const h = 0.16;
+  for (let k = 0; k < layers; k++) {
+    const z = z0 + k * h;
+    for (let i = 0; i < 3; i++) {
+      if ((k + (crossFirst ? 1 : 0)) % 2) {
+        const w = (x1 - x0) / 3;
+        at.box(x0 + i * w + 0.02, x0 + (i + 1) * w - 0.02, y0, y1, z, z + h, board, k + 1 < layers ? { bottom: true, top: true } : undefined);
+      } else {
+        const w = (y1 - y0) / 3;
+        at.box(x0, x1, y0 + i * w + 0.02, y0 + (i + 1) * w - 0.02, z, z + h, board, k + 1 < layers ? { bottom: true, top: true } : undefined);
+      }
+    }
+  }
+}
+
+
+/** Le bois scié du dessus de la souche. */
+export const SAWN_WOOD = 0xe2c999;
+
+/** Une matière posée sur le sol `ground` : son dessus, son flanc assombri jusqu'à tenir 3:1 sur lui (`flankOn`). */
+export const flankedOn = (pe: Paint, f: Faces, ground: TextureKind): Faces => ({ dessus: f.dessus, cote: flankOn(pe, f.cote, ground) });
+
+/**
+ * Une pile de `layers` feuilles ou dalles carrées d'une case, épaisses de `h`, un peu décalées d'un lit à l'autre (les
+ * calques de l'Atelier, l'ardoise de la Falaise, les livres du Kiosque) ; ses chants dans le côté de `t`. 10 par lit.
+ */
+export function layerPile(at: Workshop, layers: number, h: number, t: Faces, inset = 0.14): void {
+  const shifts: readonly (readonly [number, number])[] = [
+    [0, 0],
+    [0.05, -0.04],
+    [-0.03, 0.05],
+    [0.04, 0.03],
+    [-0.04, -0.03],
+  ];
+  for (let k = 0; k < layers; k++) {
+    const [dx, dy] = shifts[k % shifts.length];
+    at.box(inset + dx, 1 - inset + dx, inset + 0.04 + dy, 1 - inset - 0.04 + dy, k * h, (k + 1) * h, t, k + 1 < layers ? { bottom: true, top: true } : undefined);
+  }
+}
+
+/**
+ * Un banc de pierre (une case) : l'assise dans `seat` sur deux pieds de la même pierre, en travers de la case. 28
+ * triangles.
+ */
+export function stoneBench(at: Workshop, seat: Faces): void {
+  tableOnLegs(
+    at,
+    0.06,
+    0.94,
+    0.24,
+    0.76,
+    0.5,
+    0.14,
+    seat,
+    [
+      [0.2, 0.5],
+      [0.8, 0.5],
+    ],
+    0.2,
+    seat,
+  );
+}
 
 // ---------- La Mine des lettres ----------
 
@@ -285,7 +403,7 @@ const booth: HeartDrawing = (at, pe) => {
  * Le réverbère éteint de la Baie (trois cases de poteau sombre, la lanterne au-dessus) : le pied et le fût de fer, la tête
  * de lanterne des cours, ses vitres dans l'opaque (une lanterne du cœur ne s'allume jamais).
  */
-const streetLamp: HeartDrawing = (at, pe) => {
+export const streetLamp: HeartDrawing = (at, pe) => {
   const iron = pe.color(C.iron);
   at.block(0.5, 0.5, 0.42, 0.42, 0, 0.26, iron);
   at.block(0.5, 0.5, 0.18, 0.18, 0.26, 3, iron, { bottom: true, top: true });

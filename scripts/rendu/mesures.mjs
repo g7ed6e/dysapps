@@ -805,7 +805,9 @@ const CAPTURES = [
   // sans les noms, de jour (sa cour, son cœur, ses petites constructions : les cours à regarder, la Porte, le Jardin, le
   // Refuge et le Bosquet, y sont) ; la nuit, les vitres allumées des lanternes : le réverbère de Typo (l'Imprimerie), la
   // veilleuse d'Olive (le Verger : une vitre pleine, sans flamme ni halo), le pupitre de Mémo (le Kiosque) et la boîte à
-  // livres de Jalon (le Plateau), et les îles aux sols sombres (la Falaise, le Jardin) ; l'île-école de chaque archipel de
+  // livres de Jalon (le Plateau), les îles aux sols sombres (la Falaise, le Jardin, le Théâtre, la Gare) et le voyant mat du
+  // mât d'antenne du Studio (jamais allumé) ; de loin (l'île reculée), les formes nouvelles les plus grandes (la voie ferrée
+  // de la Gare, le triangle du Belvédère, la ruche) ; l'île-école de chaque archipel de
   // près, ses trois lieux (au 4e le grès clair des chaînes et des chapiteaux, au 3e la Halle bardée et les toits
   // enneigés), de jour et de nuit, et la Halle du 3e de loin (l'île reculée) ; le quai de trois quarts (la fiche du
   // Bloc-Navire) ; le trophée d'un Gardien rallumé à côté de sa statue (sa fiche) ; l'archipel entier et une île en recul.
@@ -840,9 +842,10 @@ const CAPTURES = [
     ['3e', 'bosquet', 'lca-3e-ideas'],
   ].flatMap(([classe, court, ile]) => [
     { nom: `objets-${classe}-${court}`, vue: 'île', famille: 'objets-college', ile, posees: 'toutes', zoomer: 4, sansEtiquettes: true, finesse: 2 },
-    ...(['imprimerie', 'falaise', 'jardin', 'verger', 'kiosque', 'plateau'].includes(court)
+    ...(['imprimerie', 'falaise', 'jardin', 'verger', 'kiosque', 'plateau', 'theatre', 'gare', 'studio'].includes(court)
       ? [{ nom: `objets-${classe}-${court}-nuit`, vue: 'île', famille: 'objets-college', ile, posees: 'toutes', zoomer: 3, sansEtiquettes: true, nuit: true, finesse: 2 }]
       : []),
+    ...(['gare', 'belvedere', 'ruche'].includes(court) ? [{ nom: `objets-${classe}-${court}-loin`, vue: 'île', famille: 'objets-college', ile, posees: 'toutes', zoomer: -6, finesse: 2 }] : []),
   ]),
   ...[
     ['4e', 'maths-4e-algebra', 'maths-4e-powers', 'french-4e-vocabulary'],

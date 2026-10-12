@@ -44,9 +44,9 @@ const mondeDe = (a: ArchipelagoId) => {
 const archipelDe = (id: string) => BIOMES.find((b) => b.id === ileDe(id))!.classe;
 
 /**
- * Les petites constructions du 4e et du 3e déjà dessinées (12 octobre 2026) : à l'étape 1, la veilleuse d'Olive ; à
- * l'étape 2, celles que les pièces communes couvrent. Le wagonnet de Braise, le mât de Stat, le haut-parleur d'Écho et
- * le carillon de Navette gardent leurs cubes jusqu'à l'étape 3.
+ * Les petites constructions du 4e et du 3e, toutes dessinées (12 octobre 2026) : à l'étape 1, la veilleuse d'Olive ; à
+ * l'étape 2, celles que les pièces communes couvrent ; à l'étape 3, le wagonnet de Braise, le mât de Stat, le
+ * haut-parleur d'Écho et le carillon de Navette, faits des formes nouvelles.
  */
 const DU_COLLEGE = [
   'maths-4e-algebra-fixture-1',
@@ -69,16 +69,22 @@ const DU_COLLEGE = [
   'civics-3e-democratic-life-fixture-1',
   'life-earth-sciences-3e-human-body-fixture-1',
   'physics-chemistry-3e-motion-energy-fixture-1',
+  'maths-4e-powers-fixture-1',
+  'maths-3e-statistics-fixture-1',
+  'english-3e-comprehension-fixture-1',
+  'technology-3e-digital-fixture-1',
 ];
 
-it('toutes les petites constructions du 6e (seize commandes, trois objets d’entraide) et du 5e (douze et trois) sont dessinées, et celles du 4e et du 3e de leur étape, et seulement elles', () => {
+it('toutes les petites constructions du 6e (seize commandes, trois objets d’entraide) et du 5e (douze et trois) sont dessinées, et toutes celles du 4e et du 3e (douze commandes chacun), et seulement elles', () => {
   const du6e = PETITES_CONSTRUCTIONS.filter((id) => archipelDe(id) === '6e');
   const du5e = PETITES_CONSTRUCTIONS.filter((id) => archipelDe(id) === '5e');
   expect([...PETITES_CONSTRUCTIONS_DESSINEES].sort()).toEqual([...du6e, ...du5e, ...DU_COLLEGE].sort());
   expect(du6e).toHaveLength(19);
   expect(du5e).toHaveLength(15);
-  for (const id of DU_COLLEGE) expect(PETITES_CONSTRUCTIONS, id).toContain(id);
-  // Huit à silhouette au 6e, quatre au 5e (la cabane, la salière, la tente, le four à pain) ; aucune encore au 4e et au 3e.
+  expect([...DU_COLLEGE].sort()).toEqual(PETITES_CONSTRUCTIONS.filter((id) => archipelDe(id) === '4e' || archipelDe(id) === '3e').sort());
+  expect(DU_COLLEGE).toHaveLength(24);
+  // Huit à silhouette au 6e, quatre au 5e (la cabane, la salière, la tente, le four à pain) ; aucune au 4e et au 3e (les
+  // formes nouvelles y sont les mêmes de près et de loin).
   expect(PETITES_CONSTRUCTIONS_DESSINEES.filter(aUnDessinDeLoin)).toHaveLength(12);
 });
 

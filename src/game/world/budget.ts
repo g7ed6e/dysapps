@@ -82,7 +82,7 @@ export const RENDER_BUDGET = {
 export const RENDER_BUDGET_6E = { triangles: 93_610, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
- * Le plafond que les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel ont partagé (`RENDER_BUDGET_AUTRES`, retiré
+ * Le plafond que les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel ont partagé (retiré
  * le 12 octobre 2026 : chaque archipel a depuis le sien). Son histoire : les trois (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
  * depuis leurs six îles d'histoire-géographie (HG-3), du même mot du mainteneur (« Budget on augmente pour l'instant ») :
  * relevé à la somme des enveloppes « autres » (62 875). Mesurés tout construit, « Dans la scène » compris : 57 336 aux
@@ -132,17 +132,20 @@ export const RENDER_BUDGET_5E = { triangles: 102_860, drawCalls: PLAFOND_PARTAGE
  * « hybride » au 4e, même autorisation qu'au 5e) : le plafond partagé (97 455) plus la hausse mesurée de leurs
  * enveloppes. L'étape 1 (les pièces de cour, les trophées, le quai, les lieux du village) : la somme des enveloppes
  * 97 415 → 101 365 (+3 950), le plafond 101 405 ; l'étape 2 (onze petites constructions en pièces communes, dix cœurs) :
- * 101 365 → 102 265 (+900), le plafond 102 305.
+ * 101 365 → 102 265 (+900), le plafond 102 305 ; l'étape 3 (les formes nouvelles : quatre cœurs et le wagonnet de
+ * Braise) : 102 265 → 102 865 (+600), le plafond 103 165, relevé de la hausse et d'une marge de 300 (il n'en gardait
+ * que 40 ; la même qu'au 5e).
  */
-export const RENDER_BUDGET_4E = { triangles: 102_305, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
+export const RENDER_BUDGET_4E = { triangles: 103_165, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
 
 /**
  * Les Îles du Ciel (3e) quittent le plafond partagé le même jour, de même : l'étape 1 (les pièces de cour, les trophées,
  * le quai, les lieux du village, la Halle bardée et les toits enneigés) : la somme des enveloppes 96 170 → 99 870
  * (+3 700), le plafond 101 155 ; l'étape 2 (huit petites constructions en pièces communes, sept cœurs) : 99 870 →
- * 100 470 (+600), le plafond 101 755.
+ * 100 470 (+600), le plafond 101 755 ; l'étape 3 (les formes nouvelles : six cœurs et trois petites constructions) :
+ * 100 470 → 100 870 (+400), le plafond 102 155.
  */
-export const RENDER_BUDGET_3E = { triangles: 101_755, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
+export const RENDER_BUDGET_3E = { triangles: 102_155, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
 
 /** Le budget de la scène 3D de chaque archipel, tout construit. */
 const RENDER_BUDGETS: Readonly<Record<ArchipelagoId, { triangles: number; drawCalls: number }>> = { '6e': RENDER_BUDGET_6E, '5e': RENDER_BUDGET_5E, '4e': RENDER_BUDGET_4E, '3e': RENDER_BUDGET_3E };
@@ -264,7 +267,7 @@ export const ENVELOPPES: Record<
   // (29 800 aux Anciens Ateliers), le décor de 10 500 à 11 500 (11 466 aux Îles Brumeuses), les commandes de 200 à 280
   // (278 aux Anciens Ateliers), les bornes de 715 à 870 (868), les créatures de 1 950 à 2 450 (2 405 aux Îles du Ciel),
   // les Gardiens de 1 800 à 2 150 (2 144 aux Îles Brumeuses). La somme des « autres » passe de 55 790 à 62 875 :
-  // `RENDER_BUDGET_AUTRES`. Le monde en blocs tient sous son plafond, depuis la fonte des couleurs des personnages (#372) :
+  // le plafond partagé (`PLAFOND_PARTAGE`). Le monde en blocs tient sous son plafond, depuis la fonte des couleurs des personnages (#372) :
   // au pire de la région aménagée, 79 280 triangles et 156 appels aux Anciens Ateliers, 151 appels aux Îles Brumeuses.
   // Les neuf îles de sciences des 5e, 4e et 3e (SC-3) : enveloppes « autres » relevées du même mot (consigne du lot), aux
   // valeurs mesurées tout construit (`npm run rendu:budget`, le plus gourmand des trois archipels) avec une petite marge,
@@ -273,9 +276,9 @@ export const ENVELOPPES: Record<
   // Brumeuses), la construction de 7 340 à 8 000 (7 971, 7 987 au pire de la salle des trophées, aux Îles Brumeuses), les
   // commandes de 280 à 370 (368), les bornes de 870 à 1 130 (1 120), les créatures de 2 450 à 3 200 (3 181 aux Îles du
   // Ciel), les Gardiens de 2 150 à 2 780 (2 775 aux Îles Brumeuses, le budget des statues). La somme des « autres » passe
-  // de 62 875 à 74 805 : `RENDER_BUDGET_AUTRES`.
+  // de 62 875 à 74 805 : le plafond partagé (`PLAFOND_PARTAGE`).
   // GD-12, une forme par île (9 octobre 2026) : aux Îles Brumeuses, le sol mesure 34 692 triangles tout construit ; leur
-  // enveloppe descend à 36 500 pour que la somme tienne sous `RENDER_BUDGET_AUTRES` (78 700, commandes des quêtes de la 5e comprises) avec le décor et la mer
+  // enveloppe descend à 36 500 pour que la somme tienne sous le plafond partagé (`PLAFOND_PARTAGE`) (78 700, commandes des quêtes de la 5e comprises) avec le décor et la mer
   // relevés.
   // Cinq missions par lieu (GD-14, 9 octobre 2026) : une borne de plus par mission ajoutée, mesurées tout construit
   // (`npm run rendu:budget`) à 1 680 aux Premiers Rivages et 1 428 aux Îles Brumeuses (1 344 aux Anciens Ateliers et
@@ -293,7 +296,7 @@ export const ENVELOPPES: Record<
   // créatures 2 963 → 3 480 (3 500 : Mie et Lyre), les Gardiens 2 761 → 3 147 (3 150 : l'Oie d'opale et le Phénix
   // d'argile) ; aucun appel de plus. Pour tenir, la mer (6 264 mesurés) et la faune (1 132) des Îles Brumeuses cèdent
   // chacune 100 de leur marge : 6 300 et 1 180. La somme des Îles Brumeuses passe de 78 635 à 85 945, sous
-  // `RENDER_BUDGET_AUTRES`, relevé à 86 000 par le mainteneur le 9 octobre 2026 pour le Fournil des partages et la Grotte
+  // le plafond partagé (`PLAFOND_PARTAGE`), relevé à 86 000 par le mainteneur le 9 octobre 2026 pour le Fournil des partages et la Grotte
   // des légendes (5e).
   // Le 5e d'Archipéo sans blocs taillés (#411), avec le Fournil des partages et la Grotte des légendes : leur farine et
   // leur tuf, au cœur des îles, en tas bas et en rocher (./architecture/heart.ts). La construction des Îles Brumeuses
@@ -302,7 +305,7 @@ export const ENVELOPPES: Record<
   // Brumeuses (mesures tout construit, `npm run rendu:budget`, 9 octobre 2026) : le décor 19 100 → 19 000 (18 993), le
   // sol 41 250 → 41 210 (41 203), la faune 1 180 → 1 140 (1 132), la mer 6 300 → 6 270 (6 264), les créatures
   // 3 500 → 3 485 (3 480), les commandes 550 → 545 (540). La somme des Îles Brumeuses reste 85 945, sous
-  // `RENDER_BUDGET_AUTRES` (86 000), inchangé ; aucun appel de plus.
+  // le plafond partagé (`PLAFOND_PARTAGE`) (86 000), inchangé ; aucun appel de plus.
   // Le 4e et le 3e au niveau du 6e et du 5e (10 octobre 2026, `npm run rendu:budget`) : construction des Anciens Ateliers
   // 6 432 → 6 991 triangles tout construit, 7 239 au pire de la salle (24 succès), commandes 440 → 456 ; des Îles du Ciel
   // 6 878 → 7 306, 7 554 au pire de la salle, commandes 368 → 430 ; 2 appels. Tout tient dans les enveloppes « autres »
@@ -314,13 +317,13 @@ export const ENVELOPPES: Record<
   // 2 652 → 3 029 (3 050 : le Lynx d'agate et la Cigale d'argile) ; le décor (11 473 → 12 418), la construction
   // (5 746 → 6 432), les commandes (392 → 440 : le panneau d'affichage) et les bornes (1 344 → 1 428 : six de plus)
   // tiennent dans les leurs ; aucun appel de plus. La somme des Anciens Ateliers passe de 75 535 à 82 975, sous
-  // `RENDER_BUDGET_AUTRES` (86 000), inchangé (proposition de l'artiste technique 3D, à valider par le mainteneur).
+  // le plafond partagé (`PLAFOND_PARTAGE`) (86 000), inchangé (proposition de l'artiste technique 3D, à valider par le mainteneur).
   // Le Forum des débats et le Bosquet des sages (EMC et latin-grec de 3e) : de même aux Îles du Ciel, le sol
   // 38 994 → 44 895 (enveloppe 44 900 : deux îles du ciel, leurs dessous et leurs parois ; leur forme n'y change presque
   // rien, deux galets en coûtaient 44 825), les créatures 3 184 → 3 645 (3 650 : Brio et Stylet), les Gardiens
   // 2 771 → 3 222 (3 250 : l'Étourneau d'étain et le Centaure d'argile) ; le décor (8 910 → 10 573), la construction
   // (6 878), les commandes (370 : le pupitre) et les bornes (1 428) tiennent dans les leurs ; aucun appel de plus. La
-  // somme des Îles du Ciel passe de 75 535 à 82 355, sous `RENDER_BUDGET_AUTRES` (86 000), inchangé (proposition de
+  // somme des Îles du Ciel passe de 75 535 à 82 355, sous le plafond partagé (`PLAFOND_PARTAGE`) (86 000), inchangé (proposition de
   // l'artiste technique 3D, à valider par le mainteneur).
   // GD-12, une forme par île, aux Îles du Ciel : le sol mesure 38 994 triangles (36 930 avant). Il prend 2 070 au décor
   // du même archipel (8 910 mesurés pour 13 600) : sol 39 000, décor 11 530, la somme ne change pas (mainteneur,
@@ -331,7 +334,7 @@ export const ENVELOPPES: Record<
   // 1 550 : 41 210 → 39 660 (mainteneur, 10 octobre 2026, carte « Échanger »). Puis les créatures importées de la 5e,
   // avec leur squelette : 4 217 au pire pour 3 480 dessinées en code ; leur enveloppe passe de 3 485 à 4 225 sans rien
   // prendre ailleurs (Gardiens après reprise de leurs versions de loin : 4 673). La somme des Îles Brumeuses passe de
-  // 85 945 à 86 685 : `RENDER_BUDGET_AUTRES` relevé de 86 000 à 86 700 (mainteneur, 10 octobre 2026, carte « Monter le
+  // 85 945 à 86 685 : le plafond partagé (`PLAFOND_PARTAGE`) relevé de 86 000 à 86 700 (mainteneur, 10 octobre 2026, carte « Monter le
   // plafond »).
   sol: {
     lot: 'R4b',
@@ -428,7 +431,7 @@ export const ENVELOPPES: Record<
   // Les douze bâtiments de la 3e chargés (11 octobre 2026, même décision : « tu peux relever les plafonds » pour les
   // bâtiments) : 16 691 → 16 797 tout construit aux Îles du Ciel, 16 939 → 17 045 au pire de la salle des trophées ;
   // l'enveloppe des Îles du Ciel prend la différence, arrondie (16 950 → 17 100), la somme de leurs enveloppes
-  // 93 515 → 93 665 (« Dans la scène » compris), sous `RENDER_BUDGET_AUTRES` (94 950), inchangé ; aucun appel de plus.
+  // 93 515 → 93 665 (« Dans la scène » compris), sous le plafond partagé (`PLAFOND_PARTAGE`) (94 950), inchangé ; aucun appel de plus.
   // Les quatorze bâtiments de la 4e, la tour de Knight et la tribune de Brio chargés, Théo et Stat refaits (11 octobre
   // 2026) : 16 585 → 16 576 tout construit aux Anciens Ateliers, 16 833 → 16 824 au pire de la salle des trophées ; aux
   // Îles du Ciel, 16 797 et 17 045, inchangés (la réserve d'une île sans modèle, 3 000 de près et 200 de loin, tient
@@ -444,13 +447,17 @@ export const ENVELOPPES: Record<
   // 20 037 aux Îles du Ciel, 20 797 au pire ; leurs enveloppes 16 950 → 20 900 et 17 100 → 20 800 ; aucun appel de plus.
   // L'étape 2 (les cœurs de dix îles du 4e et de sept du 3e, ./objects/heartDecor4e.ts et heartDecor3e.ts) : 20 062 →
   // 20 556 aux Anciens Ateliers, 21 316 au pire de la salle ; 20 037 → 20 355 aux Îles du Ciel, 21 115 au pire ; leurs
-  // enveloppes 20 900 → 21 400 et 20 800 → 21 200 ; aucun appel de plus.
+  // enveloppes 20 900 → 21 400 et 20 800 → 21 200 ; aucun appel de plus. L'étape 3 (les formes nouvelles de
+  // ./objects/silhouettes43.ts : les cœurs de la Forge, du Théâtre, de la Gare et de la Vigie, du Belvédère, des deux
+  // Observatoires, du Studio, de la Ruche et du Bosquet) : 20 556 → 21 082 aux Anciens Ateliers, 21 851 au pire de la
+  // salle ; 20 355 → 20 605 aux Îles du Ciel, 21 365 au pire ; leurs enveloppes 21 400 → 21 900 et 21 200 → 21 400 ;
+  // aucun appel de plus.
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
     premiersRivages: { triangles: 22_000, drawCalls: 3 },
     autres: { triangles: 16_950, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 21_100, drawCalls: 3 }, '4e': { triangles: 21_400, drawCalls: 3 }, '3e': { triangles: 21_200, drawCalls: 3 } },
+    parArchipel: { '5e': { triangles: 21_100, drawCalls: 3 }, '4e': { triangles: 21_900, drawCalls: 3 }, '3e': { triangles: 21_400, drawCalls: 3 } },
   },
   // Les quêtes des habitants (GD-10, PR 1) : les trois objets posés à la fin des quêtes du 6e (la lanterne, le portillon,
   // l'escalier) sont des petites constructions, comptées dans ce poste (`toutConstruitAvecLesCommandes`) : 758 triangles
@@ -458,7 +465,7 @@ export const ENVELOPPES: Record<
   // passent de 640 à 800, pris sur la marge du navire (650 → 490 ; 408 mesurés), la somme inchangée (72 770) ; aucun
   // appel de plus. Hors des Premiers Rivages, 380 → 392 (choix du mainteneur, 8 octobre 2026 : « Relever à 392 ») : au
   // 4e, le pied de la machine d'Ixe (+4) et le perchoir de Cléa (+8) portent les commandes à 392 mesurés.
-  // La somme des « autres » passe de 74 865 à 74 877, sous `RENDER_BUDGET_AUTRES` (74 900), inchangé.
+  // La somme des « autres » passe de 74 865 à 74 877, sous le plafond partagé (`PLAFOND_PARTAGE`) (74 900), inchangé.
   // Le puits de Tunel dessiné (./fixtureModels.ts, premier essai de la piste 3 « hybride », 11 octobre 2026) : de loin
   // 48 triangles, de près (l'île où se trouve l'élève) un peu plus de 300, à la place de ses dix cubes et de son eau.
   // Mesuré toutes commandes livrées, de près (`commandesCost`) : 838 → 1 066 aux Premiers Rivages ; l'enveloppe 850 →
@@ -471,24 +478,27 @@ export const ENVELOPPES: Record<
   // (de près 97 à 162, de loin 15 à 46) et le poteau indicateur de Sema en pièces (50) ; mesuré : 910 → 1 047 ;
   // l'enveloppe 920 → 1 050. L'étape 2 des objets du 4e et du 3e (12 octobre 2026) : onze petites constructions du 4e et
   // huit du 3e en pièces communes (de 20 à 162 triangles, les mêmes de près et de loin) ; mesuré : 456 → 888 aux Anciens
-  // Ateliers, 458 → 646 aux Îles du Ciel ; leurs enveloppes 500 → 900 et 500 → 700 ; aucun appel de plus.
+  // Ateliers, 458 → 646 aux Îles du Ciel ; leurs enveloppes 500 → 900 et 500 → 700 ; aucun appel de plus. L'étape 3 :
+  // le wagonnet de Braise au 4e, le mât de Stat, le haut-parleur d'Écho et le carillon de Navette au 3e, faits des formes
+  // nouvelles (de 60 à 154 triangles, les mêmes de près et de loin) ; mesuré : 888 → 996 et 646 → 880 ; leurs
+  // enveloppes 900 → 1 000 et 700 → 900 ; aucun appel de plus.
   commandes: {
     lot: 'GD-7',
     nom: 'Commandes et quêtes (les petites constructions posées, dans le sol et la construction, sans appel de plus)',
     premiersRivages: { triangles: 1_500, drawCalls: 0 },
     autres: { triangles: 500, drawCalls: 0 },
-    parArchipel: { '5e': { triangles: 1_050, drawCalls: 0 }, '4e': { triangles: 900, drawCalls: 0 }, '3e': { triangles: 700, drawCalls: 0 } },
+    parArchipel: { '5e': { triangles: 1_050, drawCalls: 0 }, '4e': { triangles: 1_000, drawCalls: 0 }, '3e': { triangles: 900, drawCalls: 0 } },
   },
   // Le lot de contenu des programmes 2025-2026 (une mission de plus à la Forge et au Cabinet de 4e, et à l'Observatoire
   // de 3e, une de moins au Glacier de 5e) : relevé aux mesures tout construit, comme pour SC-3, confirmé par le
   // mainteneur (8 octobre 2026). Les bornes du 4e passent de 40 à 42 (1 176 triangles, 28 par borne, une par mission, aucune en double) :
   // 1 130 → 1 180 ; la petite construction de la Forge, replacée de (10, 3) à (9, 4) avec la mission ajoutée (`calculerLaPlaceDeLaPetiteConstruction`), fige au sol
   // d'autres cases (368 → 374 au 4e) : commandes 370 → 380. La somme des « autres » passe de 74 805 à 74 865, sous
-  // `RENDER_BUDGET_AUTRES` (74 900), inchangé.
+  // le plafond partagé (`PLAFOND_PARTAGE`) (74 900), inchangé.
   // Les quêtes de la 5e (GD-10) : la tente, le four et la balise portent le poste des Îles Brumeuses à 496 triangles
   // sur les îles agrandies de GD-11 (`commandesCost`), aucun appel de plus ; aucun autre poste des « autres » n'a cette
   // marge dans les trois archipels. Commandes 392 → 500, la somme des « autres » de 74 877 à 74 985, sous
-  // `RENDER_BUDGET_AUTRES` relevé à 75 000 (validé par le mainteneur le 8 octobre 2026). Le monde en blocs de Blocland n'en change pas de plafond (30 896 au 5e, sur 100 000).
+  // le plafond partagé (`PLAFOND_PARTAGE`) relevé à 75 000 (validé par le mainteneur le 8 octobre 2026). Le monde en blocs de Blocland n'en change pas de plafond (30 896 au 5e, sur 100 000).
   bornes: {
     lot: 'R5',
     nom: 'Bornes (instanciées)',
@@ -515,10 +525,10 @@ export const ENVELOPPES: Record<
   // Les personnages de la 4e en modèles TRELLIS (10 octobre 2026, mesurés au pire par `budget.test.ts`, R6) : créatures
   // 3 544 → 4 044 (enveloppe 3 550 → 4 100), Gardiens 3 047 → 4 659 (enveloppe 3 050 → 4 735). La somme des enveloppes
   // des Anciens Ateliers passe de 88 225 à 90 460 sans la scène, de 88 725 à 90 960 avec ses 500, sous
-  // `RENDER_BUDGET_AUTRES` (91 700), inchangé ; rien n'est pris au sol (proposition, à valider par le mainteneur).
+  // le plafond partagé (`PLAFOND_PARTAGE`) (91 700), inchangé ; rien n'est pris au sol (proposition, à valider par le mainteneur).
   // Ceux de la 3e (10 octobre 2026) : créatures 4 100 au pire (enveloppe 3 650 → 4 100), Gardiens 4 503 (enveloppe
   // 3 250 → 4 510). La somme des enveloppes des Îles du Ciel passe de 87 855 à 89 565 avec la scène, sous
-  // `RENDER_BUDGET_AUTRES` (91 700), inchangé ; rien n'est pris au sol (proposition, à valider par le mainteneur).
+  // le plafond partagé (`PLAFOND_PARTAGE`) (91 700), inchangé ; rien n'est pris au sol (proposition, à valider par le mainteneur).
   creatures: {
     lot: 'R6',
     nom: 'Créatures',

@@ -246,6 +246,36 @@ export class Workshop {
   }
 
   /**
+   * Un tube à `n` pans sur un axe quelconque (la longue-vue, le pavillon d'un haut-parleur) : du rayon `ra` autour de `a`
+   * au rayon `rb` autour de `b`, ses bouts fermés dans la teinte de `caps` (`a`, `b`) ; `inward` : ses pans tournés vers
+   * l'axe et ses bouts vers l'autre bout (le dedans d'un pavillon et son fond). `2n` triangles, `n − 2` de plus par bout fermé.
+   */
+  tube(a: V3, b: V3, ra: number, rb: number, n: number, t: Tint, caps: { a?: Tint; b?: Tint } = {}, inward = false): void {
+    const [p, q] = perpendiculars([b[0] - a[0], b[1] - a[1], b[2] - a[2]]);
+    const at = (o: V3, r: number, i: number): V3 => {
+      const ang = ((i + 0.5) / n) * Math.PI * 2;
+      const [c, s] = [Math.cos(ang) * r, Math.sin(ang) * r];
+      return [o[0] + p[0] * c + q[0] * s, o[1] + p[1] * c + q[1] * s, o[2] + p[2] * c + q[2] * s];
+    };
+    const m: V3 = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
+    const far = 4 * Math.max(ra, rb);
+    for (let i = 0; i < n; i++) {
+      // Dedans, le point de référence est hors du tube, en face du pan : le pan regarde l'axe.
+      const inside = inward ? at(m, far, i + 0.5) : m;
+      this.quad(at(a, ra, i), at(a, ra, i + 1), at(b, rb, i + 1), at(b, rb, i), inside, t);
+    }
+    for (const [o, r, other, tint] of [
+      [a, ra, b, caps.a],
+      [b, rb, a, caps.b],
+    ] as const) {
+      if (tint === undefined) continue;
+      // Dedans, un bout fermé regarde l'autre bout (le fond d'un pavillon) ; dehors, il s'en détourne.
+      const ref: V3 = inward ? [2 * o[0] - other[0], 2 * o[1] - other[1], 2 * o[2] - other[2]] : other;
+      for (let i = 1; i + 1 < n; i++) this.tri(at(o, r, 0), at(o, r, i), at(o, r, i + 1), ref, tint);
+    }
+  }
+
+  /**
    * Un disque debout, tourné vers `toward` (un des quatre côtés : +x, −x, +y, −y), centré en `c`, à `n` pans (le cadran
    * d'une horloge, la vitre ronde d'un pignon) : `n − 2` triangles.
    */

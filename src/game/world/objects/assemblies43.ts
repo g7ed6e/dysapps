@@ -9,8 +9,8 @@
 // Plume, le pupitre du souffleur de Puck, l'auvent de Vapeur, le réverbère de Typo, le treuil de Fret, la jardinière de
 // Nectar, l'estrade de Radar, le moteur de Manivelle, le panneau de Loquet ; l'équerre de Théo, le réflecteur de Fi, le
 // banc d'Astra, la fontaine de Knight, le pupitre de Mémo, la boîte à livres de Jalon, le pupitre de Brio, le portique
-// de Virage). Restent en cubes jusqu'à l'étape 3, faute de forme : le wagonnet de Braise, le mât de Stat, le haut-parleur
-// d'Écho, le carillon de Navette.
+// de Virage). Étape 3 : le wagonnet de Braise, le mât de Stat, le haut-parleur d'Écho et le carillon de Navette, faits des
+// formes nouvelles (./silhouettes43.ts).
 import { BLOC, type BlockId } from '../../biomes';
 import type { Faces } from '../palette';
 import { darker, type Workshop } from './workshop';
