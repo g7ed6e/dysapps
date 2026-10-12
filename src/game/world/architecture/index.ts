@@ -54,6 +54,7 @@ export { KITS, kitVide, type Kit } from './kits';
 export { CUBE_EXCEPTIONS, FAMILIES_TO_CONFIRM, familyOf, MATERIAL_FAMILIES, materialsOf } from './families';
 export { bacDePierre, barriere, marche, PIECES_BASSES, woodenPost } from './lowPieces';
 export { bell, crystal, ingot, PRECIOUS, RESTING_HEIGHT } from './precious';
+export { barriereDeCour, LANTERNE_DE_COUR, marcheDeCour } from './yardPieces';
 export { apartFromGhost } from './heartPieces';
 export { estUnLieuDuVillage } from './places';
 
@@ -386,7 +387,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     if (famille === 'finition' && !finition) continue;
     const dessin = typeof finition === 'object' ? finition : finition ? undefined : kit.pieces[famille]?.[piece];
     if (dessin) {
-      poser(c, famille, piece, rotation, dessin);
+      poser(c, famille, piece, dessin.dansLeMonde ? 0 : rotation, dessin);
       continue;
     }
     const maniere = typeof finition === 'string' ? finition : kit.murs[famille];

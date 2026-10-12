@@ -18,19 +18,50 @@
 import json, os, struct, sys
 import numpy as np
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 JSON_CHUNK, BIN_CHUNK = 0x4E4F534A, 0x004E4942
 TABLE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../docs/univers/archipeo/personnages/modeles/reglages.csv")
 
 
 def read_table(path=TABLE):
-    """La colonne « aplats » : pour chaque modèle qui en a, ses couleurs sources et leurs cibles (0xRRGGBB, sRVB)."""
+    """La colonne « aplats » : pour chaque modèle qui en a, ses règles (source, bas, haut, cible, devant ; couleurs
+    0xRRGGBB en sRVB). `source>cible` vaut sur toute la hauteur ; `source@0.1-0.4>cible`, entre 10 et 40 % de la hauteur
+    du modèle depuis ses pieds (le centre du triangle), l'emporte : une même couleur source qui couvre deux matières (la
+    veste et le jean de Kéo, du même bleu dans la texture) en fait deux zones. `source@0.74-0.84:devant>cible` ne prend
+    que les faces tournées vers l'élève (le jeu les tourne des quarts de la colonne « squelette ») : l'ombre de barbe
+    sur le bas du visage, sans toucher aux cheveux de la nuque à la même hauteur. `yeux=…>couleur` (les yeux posés par
+    yeux.py) : la couleur des yeux est une cible, que ce script garde."""
     table = {}
     for line in open(path, encoding="utf-8"):
         cols = line.rstrip("\n").split(";")
         if line.startswith("#") or len(cols) < 5 or not cols[4].strip():
             continue
-        table[cols[0].strip()] = {int(s, 16): int(t, 16) for s, t in (p.split(">") for p in cols[4].split())}
+        rules = []
+        for p in cols[4].split():
+            src, dst = p.split(">")
+            if src.startswith("yeux="):
+                rules.append((int(dst, 16), 0.0, 1.0, int(dst, 16), False))
+                continue
+            band, front = (0.0, 1.0), False
+            if "@" in src:
+                src, h = src.split("@")
+                if h.endswith(":devant"):
+                    h, front = h[: -len(":devant")], True
+                band = tuple(float(v) for v in h.split("-"))
+            rules.append((int(src, 16), band[0], band[1], int(dst, 16), front))
+        table[cols[0].strip()] = rules
     return table
+
+
+def read_quarts(path=TABLE):
+    """Les quarts de tour qui tournent chaque modèle vers l'élève : le premier mot de la colonne « squelette »."""
+    quarts = {}
+    for line in open(path, encoding="utf-8"):
+        cols = line.rstrip("\n").split(";")
+        if not line.startswith("#") and len(cols) > 3 and cols[3].strip():
+            quarts[cols[0].strip()] = float(cols[3].split()[0])
+    return quarts
 
 
 def to_srgb(v):
@@ -100,7 +131,7 @@ def smooth_isolated(pos, colors):
     return out
 
 
-def paint(path, table):
+def paint(path, table, quarts=0.0):
     """Peint un fichier en aplats ; rend ce qu'il en est (« peint », « déjà en aplats »)."""
     data = open(path, "rb").read()
     doc, binary, bin_at = split(data)
@@ -113,12 +144,26 @@ def paint(path, table):
         raise ValueError(f"{path} : des sommets partagés entre triangles, une couleur par triangle est impossible")
     # La couleur de chaque triangle (ses trois sommets ont la même), en sRVB sur 0-255.
     srgb = np.round(to_srgb(col[order, :3]) * 255).reshape(-1, 3, 3).mean(1)
-    targets = np.array([channels(c) for c in table.values()])
+    targets = np.array([channels(r[3]) for r in table])
     if np.abs(srgb[:, None, :] - targets[None, :, :]).max(2).min(1).max() <= 1:
         return "déjà en aplats"
-    sources = np.array([channels(c) for c in table])
-    nearest = ((srgb[:, None, :] - sources[None, :, :]) ** 2).sum(2).argmin(1)
-    painted = np.array(list(table.values()))[nearest]
+    keys = list(dict.fromkeys(r[0] for r in table))
+    sources = np.array([channels(c) for c in keys])
+    nearest = np.array(keys)[((srgb[:, None, :] - sources[None, :, :]) ** 2).sum(2).argmin(1)]
+    # La hauteur de chaque triangle, de 0 (les pieds) à 1 (le haut du modèle) : les règles d'une bande l'emportent.
+    y = pos[order, 1].reshape(-1, 3).mean(1)
+    y = (y - pos[:, 1].min()) / max(np.ptp(pos[:, 1]), 1e-9)
+    # Les faces tournées vers l'élève (`:devant`) : la normale, dans le repère du jeu, regarde vers −Z.
+    from squelette import Frame
+    tri = Frame(pos[order], quarts).to_game(pos[order]).reshape(-1, 3, 3)
+    normal = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
+    front = normal[:, 2] / np.maximum(np.linalg.norm(normal, axis=1), 1e-12) < -0.2
+    painted = np.full(len(y), -1)
+    # Les plus larges d'abord, les bandes ensuite (les plus étroites en dernier), celles « devant » après les autres.
+    for src, lo, hi, dst, only_front in sorted(table, key=lambda r: (r[4], -(r[2] - r[1]))):
+        painted[(nearest == src) & (y >= lo) & (y < hi + (hi >= 1)) & (front | (not only_front))] = dst
+    if (painted < 0).any():
+        raise ValueError(f"{path} : des triangles sans règle (une source n'a que des bandes qui ne couvrent pas tout)")
     painted = smooth_isolated(pos[order].reshape(-1, 3, 3).reshape(-1, 3), painted)
     rgb = to_linear(np.array([channels(c) for c in painted]) / 255)
     new = col.copy()
@@ -141,14 +186,16 @@ def sources(path):
 
 
 def main():
-    table = read_table()
+    table, quarts = read_table(), read_quarts()
     for folder in sys.argv[sys.argv.index("--") + 1:]:
         name = os.path.basename(os.path.normpath(folder))
         if name not in table:
             found = " ".join(f"{c:06x}>??????" for c in sources(os.path.join(folder, "final-1500.glb")))
             raise SystemExit(f"{name} : pas de ligne dans {os.path.normpath(TABLE)} ; ses couleurs : {found}")
         for f in ("final-1500.glb", "final-200.glb"):
-            print(name, f, paint(os.path.join(folder, f), table[name]))
+            # Kéo n'a pas de version de loin.
+            if os.path.exists(os.path.join(folder, f)):
+                print(name, f, paint(os.path.join(folder, f), table[name], quarts.get(name, 0.0)))
 
 
 if __name__ == "__main__":

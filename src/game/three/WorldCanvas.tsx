@@ -15,7 +15,7 @@ import { boitesDesCreatures, centreDeLObjet, cleDeLaCreature, cleDeLObjet, signe
 import { useEnCasesDuMonde } from '../useInWorldCells';
 import { createMeter } from './meter';
 import { habillageDe } from '../skin';
-import { mesuresDemandees, renduDuMonde, styleDuMonde } from '../rendering';
+import { mesuresDemandees, meterShown, renduDuMonde, styleDuMonde } from '../rendering';
 import { useSettings } from '../../core/SettingsContext';
 import { surfaceDe } from './surface';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './scenePart';
@@ -188,8 +188,8 @@ export default function WorldCanvas({
     renderer.domElement.style.width = '100%';
     renderer.domElement.style.height = '100%';
     renderer.domElement.style.touchAction = 'none';
-    // Le compteur de mesures (lot R0) : visible avec `?mesures`, lisible par les scripts en développement.
-    const meter = createMeter(el, rendu, mesuresDemandees(), import.meta.env.DEV || mesuresDemandees());
+    // Le compteur de mesures (lot R0) : visible avec `?mesures` ou son réglage, lisible par les scripts en développement.
+    const meter = createMeter(el, rendu, meterShown(), import.meta.env.DEV || mesuresDemandees());
 
     const scene = new THREE.Scene();
     const bounds = worldBounds(archipelago);
@@ -349,14 +349,17 @@ export default function WorldCanvas({
     if (ici?.route.length) personnages.marcher({ route: [ici.route[ici.route.length - 1]], seq: 0 });
     // Les captures (scripts/prise-de-vue.mjs) posent la caméra à son cadrage sans attendre son pas : lisible par les
     // scripts, comme le compteur de mesures.
-    // `ecran` : où un point du monde (en cases) se pose dans la page, pour viser une construction à la molette.
+    // `ecran` : où un point du monde (en cases) se pose dans la page, pour viser une construction à la molette ;
+    // `bonhomme` : où se pose son buste (un bloc au-dessus de ses pieds), pour le voir de près (famille `keo`).
+    const dansLaPage = (v: THREE.Vector3) => {
+      const e = cadrage.auBut(v, el.clientWidth, el.clientHeight);
+      const r = el.getBoundingClientRect();
+      return e ? { x: e.x + r.left, y: e.y + r.top } : null;
+    };
     const pourLesCaptures = {
       poser: () => cadrage.poser(),
-      ecran: (p: { x: number; y: number; z: number }) => {
-        const e = cadrage.auBut(new THREE.Vector3(p.x, p.z, p.y), el.clientWidth, el.clientHeight);
-        const r = el.getBoundingClientRect();
-        return e ? { x: e.x + r.left, y: e.y + r.top } : null;
-      },
+      ecran: (p: { x: number; y: number; z: number }) => dansLaPage(new THREE.Vector3(p.x, p.z, p.y)),
+      bonhomme: () => dansLaPage(personnages.avatar.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 1, 0))),
     };
     if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsCamera = pourLesCaptures;
     /** La vue déplacée, telle que la page la connaît : on ne la prévient que quand cela change. */

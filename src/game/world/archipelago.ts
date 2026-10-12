@@ -10,6 +10,7 @@ import { BLOC, BIOMES, getBiome, sansSonOption, type BiomeDef, type BiomeId, typ
 import { lcaCourante, lv2Courante, type Lv2Choice } from '../../core/settings';
 import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
 import { premierePartiePosee } from './parts';
+import type { FormsWords } from './vehicle';
 
 /** La place de chaque île est dans `map.ts` (MAP). */
 
@@ -521,6 +522,8 @@ export function conditionMet(bridge: BridgeDef, bridges: string[], world: WorldP
  */
 export interface MotsDesGardiens {
   navireGardiensManquants: (n: number, archipel: string) => string;
+  /** Les formes de la Nef que l'univers nomme autrement (world/vehicle.ts, `stageWords`). */
+  formesDeLaNef?: FormsWords;
 }
 
 /** Ce qu'il reste à faire pour la condition d'un ouvrage, depuis une île ouverte (pour l'expliquer à l'élève). */

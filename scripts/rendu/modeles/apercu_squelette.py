@@ -99,7 +99,7 @@ def draw(q, col, view, size=400):
     s = size * 0.85 / h
     img = Image.new("RGB", (size, size), (205, 208, 212))
     d = ImageDraw.Draw(img)
-    for i in np.argsort(-depth):
+    for i in np.argsort(depth):
         pts = [(size / 2 + x * s, size * 0.95 - y * s) for x, y in xy[i]]
         d.polygon(pts, fill=tuple(int(v) for v in np.clip(c[i] * light[i] * 255, 0, 255)))
     return img

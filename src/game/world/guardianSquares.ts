@@ -10,9 +10,15 @@
 // dans les deux univers. Deux carrés du 6e ont bougé avec les proportions du 6e (GD-16, 11 octobre 2026) : la Forêt des
 // sons, dont le Grand Chêne sortait de la vue de l'île en (16, 19), passe en (-6, 4), où il tient entier dans le cadre
 // et se voit entier ; la Vallée du vivant, dont l'étiquette de l'île cachait le Cerf en (-1, 13) (86 % vu), passe en
-// (14, 3), où il se voit entier, au palier 1. Données pures ; seul import, l'archipel d'une île (`fillsGuardianSquare`).
+// (14, 3), où il se voit entier, au palier 1. Cinq carrés ont bougé avec les proportions du 5e au 3e (GD-18,
+// 11 octobre 2026), vers le bord de leur île, sur sa terre (la case autour comprise), où leur Gardien tient entier dans
+// le cadre sans que la vue glisse loin (glissée vers eux de plus d'un quart du chemin, elle sortait du cadre une
+// commande ou une borne) : le Marché des proportions, de (17, 18) en (-4, 15) (83 % vu, un peu derrière un bâtiment
+// du village) ; le Marais des temps, de (15, 15) en (11, 17) ; le Comptoir, de (16, 15) en (0, 14) ; le Belvédère de
+// Thalès, de (-3, 3) (83 % vu, le Sphinx de marbre derrière Théo) en (-4, 3) ; la Vigie des signaux, de (-4, 5) (hors
+// du cadre, 76 % vue) en (13, -2), au palier 1. Le carré quitté ne tient plus de terre autour de lui : la côte du
+// Marché et celle du Comptoir perdent une rangée (./map.ts). Données pures.
 import type { BiomeId } from '../biomes';
-import { archipelagoOfIsland } from './archipelagos';
 
 /** Le côté du carré d'un Gardien, en cases (`GUARDIAN_SQUARE`, ./terrain/creatures.ts). */
 export const GUARDIAN_SQUARE_SIDE = 5;
@@ -44,10 +50,10 @@ export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<Gu
   'technology-6e-objects': { x: 15, y: 13, palier: 1 },
   'civics-6e-democratic-society': { x: 13, y: -1, palier: 1 },
   'maths-5e-signed-numbers': { x: -3, y: 14, palier: 3 },
-  'maths-5e-proportionality': { x: 17, y: 18, palier: 3 },
+  'maths-5e-proportionality': { x: -4, y: 15, palier: 3 },
   'french-5e-homophones': { x: -2, y: 14, palier: 1 },
-  'french-5e-conjugation': { x: 15, y: 15, palier: 3 },
-  'english-5e-vocabulary': { x: 16, y: 15, palier: 3 },
+  'french-5e-conjugation': { x: 11, y: 17, palier: 3 },
+  'english-5e-vocabulary': { x: 0, y: 14, palier: 3 },
   'english-5e-grammar': { x: 15, y: 15, palier: 3 },
   'lv2-5e-introductions': { x: 14, y: 3, palier: 1 },
   'history-5e-middle-ages': { x: -2, y: 13, palier: 3 },
@@ -69,9 +75,9 @@ export const GD11_GUARDIAN_SQUARES: Readonly<Partial<Record<BiomeId, Readonly<Gu
   'history-4e-revolutions': { x: 13, y: -2, palier: 1 },
   'geography-4e-globalization': { x: 13, y: 0, palier: 1 },
   'life-earth-sciences-4e-cells-evolution': { x: 13, y: -2, palier: 1 },
-  'physics-chemistry-4e-signals-circuits': { x: -4, y: 5, palier: 3 },
+  'physics-chemistry-4e-signals-circuits': { x: 13, y: -2, palier: 1 },
   'technology-4e-modeling': { x: -2, y: 13, palier: 3 },
-  'maths-3e-geometry': { x: -3, y: 3, palier: 3 },
+  'maths-3e-geometry': { x: -4, y: 3, palier: 3 },
   'maths-3e-functions': { x: -5, y: 14, palier: 3 },
   'maths-3e-statistics': { x: 14, y: 3, palier: 1 },
   'french-3e-close-reading': { x: 13, y: 16, palier: 1 },
@@ -110,9 +116,35 @@ export const GUARDIAN_WORLD_HEIGHTS: Readonly<Partial<Record<BiomeId, number>>> 
  * Les Gardiens qui restent couchés, plus bas que les arbres de leur île : aucun arbre de plus de trois blocs ne pousse à
  * deux cases ou moins de leur carré, il y devient un buisson (piste B2 du directeur artistique, retenue par le
  * mainteneur le 11 octobre 2026, GD-16). Le Hanneton de bronze : un scarabée est plat ; le dresser changerait son
- * caractère.
+ * caractère. De même, aux autres classes (piste 1b, même jour), les deux Sphinx, un lion couché, et le Poulpe de corail,
+ * bras étalés au sol.
  */
-export const LYING_GUARDIANS: ReadonlySet<BiomeId> = new Set<BiomeId>(['maths-6e-calculation']);
+export const LYING_GUARDIANS: ReadonlySet<BiomeId> = new Set<BiomeId>(['maths-6e-calculation', 'french-5e-homophones', 'geography-4e-globalization', 'maths-3e-geometry']);
+
+/**
+ * Les statues d'Archipéo du 5e, de la 4e et de la 3e qui restent sous 5 cases, même sur leur carré : leur hauteur dans le
+ * monde, en cases, socle compris, arrondie au vingtième au-dessous (world/characters/merges.ts, `echelleDuGardien` ; un
+ * test les tient ensemble). Un arbre plus haut qu'elles, à `TREE_CLEARANCE_OF_A_LYING_GUARDIAN` cases ou moins de leur
+ * carré, devient un buisson (piste 3a du directeur artistique, retenue par le mainteneur le 11 octobre 2026). Recopiées
+ * ici : la grille ne lit pas les modèles.
+ */
+export const SHORT_STATUE_HEIGHTS: Readonly<Partial<Record<BiomeId, number>>> = {
+  'french-5e-homophones': 3.9,
+  'history-5e-middle-ages': 4.5,
+  'geography-5e-resources': 3.95,
+  'life-earth-sciences-5e-active-planet': 3.9,
+  'lv2-5e-introductions': 3.95,
+  'maths-5e-signed-numbers': 4.85,
+  'french-4e-vocabulary': 4.85,
+  'english-4e-grammar': 3.45,
+  'history-4e-revolutions': 4.55,
+  'lca-4e-cities': 4.8,
+  'lv2-4e-daily-life': 4.55,
+  'history-3e-twentieth-century': 4.8,
+  'lca-3e-ideas': 4.65,
+  'lv2-3e-travel': 4.95,
+  'maths-3e-functions': 4.6,
+};
 
 /** La hauteur, en blocs, au-delà de laquelle un arbre ne pousse pas près d'un Gardien couché (`LYING_GUARDIANS`). */
 export const TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN = 3;
@@ -124,15 +156,7 @@ export const TREE_CLEARANCE_OF_A_LYING_GUARDIAN = 2;
 export const TALLEST_TREE_6E = (GUARDIAN_WORLD_HEIGHTS['french-6e-phonology'] ?? 0) - 1;
 
 /**
- * Le Gardien d'Archipéo de cette île prend-il toute la place de son carré (proposition 4 du rapport sur les proportions
- * du 6e, retenue par le mainteneur le 11 octobre 2026) ? Les quatre rangées du fond, son bloc d'or sur la rangée de
- * devant, jusqu'à la hauteur de la sentinelle commune : un Gardien large et bas (couché, à quatre
- * pattes, à large couronne) n'y perd plus de hauteur. Le 6e seulement, pour l'instant.
- */
-export const fillsGuardianSquare = (id: BiomeId): boolean => archipelagoOfIsland(id) === '6e';
-
-/**
- * Ce que prend, au plus, un Gardien qui remplit son carré (`fillsGuardianSquare`), en cases, autour du milieu de sa
+ * Ce que prend, au plus, un Gardien d'Archipéo sur son carré, en cases, autour du milieu de sa
  * place : sa demi-largeur et sa demi-profondeur, les quatre rangées du fond dans les deux sens. La statue ne tourne
  * pas avec son lieu (GD-9) : ainsi elle tient sur son carré et laisse libre son bloc d'or quelle que soit son
  * orientation, et garde la même taille.
@@ -144,12 +168,28 @@ const GUARDIAN_SQUARE_ROOM = { half: (GUARDIAN_SQUARE_SIDE - 1) / 2 } as const;
  * la case voisine de sa rangée de devant (piste D1 du directeur artistique, retenue par le mainteneur le 11 octobre 2026,
  * GD-16) : le Taureau de terre, le Lion de pierre et le Castor de glaise, que les quatre rangées du fond laissaient sous
  * les arbres de leur île dans Archipéo. La case, relative au coin du carré (le lieu pas tourné), du côté où le sol est
- * libre (terrain.test.ts le vérifie). Le bloc d'or étant un cube du monde, les deux univers le posent là.
+ * libre (terrain.test.ts le vérifie). Le bloc d'or étant un cube du monde, les deux univers le posent là. Puis, aux
+ * autres classes, ceux qui restaient sous 4,5 cases (piste 3a, 11 octobre 2026).
  */
 export const GUARDIAN_GOLD_BESIDE: Readonly<Partial<Record<BiomeId, { x: number; y: number }>>> = {
   'french-6e-grammar-spelling': { x: -1, y: 0 },
   'english-6e-vocabulary': { x: GUARDIAN_SQUARE_SIDE, y: 0 },
   'geography-6e-living': { x: -1, y: 0 },
+  // Les proportions du 5e, de la 4e et de la 3e (piste 3a, mainteneur, 11 octobre 2026) : les Gardiens que leurs
+  // quatre rangées laissent sous 4,5 cases dans Archipéo, bornés par leur long côté.
+  'maths-5e-signed-numbers': { x: -1, y: 0 },
+  'french-5e-homophones': { x: GUARDIAN_SQUARE_SIDE, y: 0 },
+  'geography-5e-resources': { x: -1, y: 0 },
+  'life-earth-sciences-5e-active-planet': { x: -1, y: 0 },
+  'technology-5e-design': { x: GUARDIAN_SQUARE_SIDE, y: 0 },
+  'civics-5e-equality-solidarity': { x: -1, y: 0 },
+  'lv2-5e-introductions': { x: -1, y: 0 },
+  'english-4e-grammar': { x: -1, y: 0 },
+  'french-4e-agreement': { x: -1, y: 0 },
+  'geography-4e-globalization': { x: -1, y: 0 },
+  'physics-chemistry-4e-signals-circuits': { x: -1, y: 0 },
+  'technology-4e-modeling': { x: -1, y: 0 },
+  'lca-4e-cities': { x: -1, y: 0 },
 };
 
 /**

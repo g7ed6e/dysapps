@@ -323,12 +323,13 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
     // Colonnade des cités au palier 1, derrière la bande : 25, 0 et 31, dont 10 sur un côté. Le Forum des débats au palier
     // 1, sur un côté de devant, et le Bosquet des sages au palier 1, derrière la bande, aux places de leur recherche :
     // 27, 0 et 31, dont 11 sur un côté. Avec les proportions du 6e (GD-16, 11 octobre 2026), la Vallée du vivant passe
-    // en (14, 3), au palier 1, et la Forêt des sons en (-6, 4), au palier 3 : 28, 0 et 30.
+    // en (14, 3), au palier 1, et la Forêt des sons en (-6, 4), au palier 3 : 28, 0 et 30. Avec les proportions du 5e au
+    // 3e (GD-18, 11 octobre 2026), la Vigie des signaux passe en (13, -2), au palier 1 : 29, 0 et 29.
     expect(BIOMES.filter((b) => guardianSpot(b.id).repli).map((b) => b.id)).toEqual([]);
     const paliers = (n: number) => BIOMES.filter((b) => guardianSpot(b.id).palier === n).map((b) => b.id);
-    expect(paliers(1)).toHaveLength(28);
+    expect(paliers(1)).toHaveLength(29);
     expect(paliers(2)).toEqual([]);
-    expect(paliers(3)).toHaveLength(30);
+    expect(paliers(3)).toHaveLength(29);
     expect(BIOMES.filter((b) => guardianSpot(b.id).y <= QUEST_ROW + 1).map((b) => b.id)).toEqual([
       'english-4e-comprehension',
       'civics-6e-democratic-society',
@@ -336,6 +337,7 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
       'history-4e-revolutions',
       'geography-4e-globalization',
       'life-earth-sciences-4e-cells-evolution',
+      'physics-chemistry-4e-signals-circuits',
       'civics-4e-rights-freedoms',
       'history-3e-twentieth-century',
       'life-earth-sciences-3e-human-body',
@@ -400,11 +402,10 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
   it('rien ne le cache dans la vue de l’île : ni l’habitant, ni un lieu ou un bâtiment, ni l’étiquette du nom, dans les deux univers', () => {
     // Faute de carré où il se voit entier, même le décor effacé (palier 3), derrière la bande de devant ou sur un de ses
     // côtés, ces îles gardent le carré où il se voit le plus : la part vue, au centième, dans la forme la plus cachée des
-    // deux univers, les rayons visant les deux yeux de la caméra (en paysage et panneau ouvert). Sous 85 % : le Phare
-    // des fonctions (68 %), la Prairie des climats (76 %), la Vigie des signaux (78 %), l'Horloge des verbes (79 %), la
-    // Vallée du vivant (83 %, son Cerf grandi sur son carré), la Falaise des accords, le Bassin des maquettes et le Tremplin des forces (83 %). Sous le seuil de 75 % (DA,
-    // 8 octobre 2026), seul le Phare des fonctions : aucun carré, même la bande du chemin des arrivées cédée, ne le
-    // montre plus. Le Hangar des inventions et le Verger de la santé (54 %), l'Imprimerie des révolutions (66 %) se
+    // deux univers, les rayons visant les deux yeux de la caméra (en paysage et panneau ouvert). Sous 85 % : la Prairie
+    // des climats (76 %), l'Horloge des verbes (79 %), le Bassin des maquettes (81 %), la Falaise des accords (82 %), le
+    // Marché des proportions et le Tremplin des forces (83 %). Sous le seuil de 75 % (DA, 8 octobre 2026), plus aucune : le Phare des fonctions (68 %)
+    // y était seul, jusqu'à ce que son habitant s'écarte (GD-18, 86 %). Le Hangar des inventions et le Verger de la santé (54 %), l'Imprimerie des révolutions (66 %) se
     // voient entiers sur un côté de devant depuis ce seuil. Depuis la cinquième mission (GD-14), le Belvédère de Thalès
     // (82 %) a quitté le sien, qu'une borne de plus touchait ; le Manoir du passé aussi (81 % en (0, 14)), puis, sa forme prise, la recherche refaite sur sa terre l'a posé en (15, 15), où il se voit entier. La Vallée du vivant (83 %, l'étiquette de l'île devant son Cerf) a pris un carré où il se voit entier (GD-16).
     const enPartie: Record<string, number> = {
@@ -414,28 +415,37 @@ describe('chaque Gardien sur son île (GD-11, décision du mainteneur du 8 octob
       // haut du Castor sous l'étiquette du nom de l'île (87 %).
       'english-6e-vocabulary': 0.98,
       'maths-6e-calculation': 0.92,
-      'maths-5e-signed-numbers': 0.88,
-      'maths-4e-algebra': 0.87,
-      'french-4e-agreement': 0.83,
-      'maths-3e-functions': 0.68,
+      // Les proportions du 5e au 3e (GD-18) : le Bélier de granit, la Tortue d'ocre, le Cheval à bascule, le Grand-bi
+      // d'érable et le Kangourou de rubis en partie sous l'étiquette du nom de l'île seule (le chantier de l'étiquette) ;
+      // le Colporteur, sur son carré du bord, entier dans le cadre, un peu derrière un bâtiment du village ; le Mammouth
+      // de givre et le Dragon de lumière, leur habitant écarté ; les statues d'Archipéo grandies sur leur carré, un peu
+      // derrière un cube (le Sphinx des routes, le Delta, la Colonnade, la France).
+      'maths-5e-signed-numbers': 0.98,
+      'maths-5e-proportionality': 0.83,
+      'french-5e-homophones': 0.98,
+      'french-5e-conjugation': 0.99,
+      'french-4e-agreement': 0.82,
+      'maths-3e-geometry': 0.95,
+      'maths-3e-functions': 0.86,
       'english-6e-grammar': 0.79,
+      'english-5e-vocabulary': 0.98,
       'history-6e-antiquity': 0.99,
       'geography-6e-living': 0.87,
       'history-5e-middle-ages': 0.93,
-      'geography-5e-resources': 0.99,
+      'geography-5e-resources': 0.97,
       'life-earth-sciences-5e-active-planet': 0.76,
-      'technology-5e-design': 0.89,
-      'physics-chemistry-4e-signals-circuits': 0.78,
-      'technology-4e-modeling': 0.83,
+      'technology-5e-design': 0.87,
+      'technology-4e-modeling': 0.81,
+      'lca-4e-cities': 0.93,
+      'geography-3e-france': 0.96,
       'physics-chemistry-3e-motion-energy': 0.83,
-      'maths-3e-geometry': 0.82,
     };
     for (const b of BIOMES) {
       const vue = Math.min(...(['gardien', 'sentinelle'] as const).map((forme) => partDuGardienVue(b.id, forme)));
       if (b.id in enPartie) expect(vue, b.id).toBeCloseTo(enPartie[b.id], 2);
       else expect(vue, b.id).toBe(1);
     }
-    expect(BIOMES.filter((b) => Math.min(...(['gardien', 'sentinelle'] as const).map((forme) => partDuGardienVue(b.id, forme))) < SEUIL_DU_GARDIEN_VU).map((b) => b.id)).toEqual(['maths-3e-functions']);
+    expect(BIOMES.filter((b) => Math.min(...(['gardien', 'sentinelle'] as const).map((forme) => partDuGardienVue(b.id, forme))) < SEUIL_DU_GARDIEN_VU).map((b) => b.id)).toEqual([]);
   });
 
   it('jamais sur une colline, ni sur la case d’entrée derrière une arrivée de liaison', () => {
@@ -814,80 +824,80 @@ it('le port : une jetée dans l’eau devant l’île-port, et la Nef à côté,
   }
 });
 
-it('le port montre l’état du village : lanternes, barques, foyer, caisses, fanions et feu de port, jamais sur la jetée ni à la place du navire', () => {
-  for (const a of ARCHIPELAGOS) {
-    const port = a.port;
-    const portPlans = builtPlans(plansFor(port));
-    const all = { ...portPlans, ...builtPlans(monumentsOf(a.classe)) };
-    const paid = BRIDGES.map((b) => b.id);
-    // Un village à chaque état, du 1 au 5 (le 3e s'arrête à 4 : pas de voyage suivant).
-    const states = [
-      village([]),
-      { ...village([]), parts: portPlans },
-      { ...village(paid), parts: portPlans },
-      { ...village(paid), parts: all },
-      { ...village(everything), parts: all },
-    ].slice(0, a.classe === '3e' ? 4 : 5);
-    const cells = dockCells(port);
-    const jetty = new Set(cells.map((c) => `${c.x},${c.y}`));
-    const posts = dockPosts(port);
-    const o = dockOrigin(port);
-    const inShip = (c: { x: number; y: number }) => c.x >= o.x && c.x < o.x + VEHICLE_SIZE.w && c.y >= o.y && c.y < o.y + VEHICLE_SIZE.d;
-    const end = cells[cells.length - 1];
-    const beacon = { x: end.x, y: end.y - 1 };
-    states.forEach((v, i) => {
-      expect(villageStage(v, a.classe).rank, `${port} état ${i + 1}`).toBe(i + 1);
-      const world = worldCubes(a.classe, {}, v, true);
-      const mine = world.filter((c) => c.tag === port);
-      const onPost = (texture: string) => posts.filter((p) => mine.some((c) => c.x === p.x && c.y === p.y && c.z === p.z + 1 && c.texture === texture));
-      // Les objets ajoutés : ceux du quai (barques, foyer, caisses, fanions), les chapeaux des poteaux et le feu de port.
-      const props = mine.filter((c) => /\/(barque|foyer|caisse|fanion)@/.test(c.decor ?? ''));
-      const added = [...props, ...mine.filter((c) => posts.some((p) => p.x === c.x && p.y === c.y && c.z > p.z) || (c.x === beacon.x && c.y === beacon.y))];
-      for (const c of added) {
-        expect(jetty.has(`${c.x},${c.y}`), `${port} ${c.decor ?? c.texture} sur la jetée`).toBe(false);
-        expect(inShip(c), `${port} ${c.decor ?? c.texture} à la place du navire`).toBe(false);
-      }
-      // Chaque cube ajouté a sa place à lui.
-      const at = new Map<string, number>();
-      for (const c of world) at.set(`${c.x},${c.y},${c.z}`, (at.get(`${c.x},${c.y},${c.z}`) ?? 0) + 1);
-      for (const c of added) expect(at.get(`${c.x},${c.y},${c.z}`), `${port} cube en double en ${c.x},${c.y},${c.z}`).toBe(1);
-      const rank = i + 1;
-      const lit = onPost('lanterne');
-      if (rank === 1) {
-        // Abandonné : aucune lanterne sur la jetée, un bouchon de bois sur les deux derniers poteaux.
-        expect(lit).toEqual([]);
-        expect(onPost('planches')).toHaveLength(2);
-      } else expect(lit).toHaveLength(rank >= 5 ? posts.length : 2);
-      // Au port : une lanterne par poteau, et le feu au bout de la jetée (un pilier de pierre depuis l'eau, ou depuis le
-      // quai dans le ciel, et une lanterne trois cases au-dessus du quai).
-      const fire = mine.filter((c) => c.x === beacon.x && c.y === beacon.y);
-      const rest = vehicleRestZ(a.classe);
-      const pied = a.classe === '3e' ? rest : 0;
-      if (rank >= 5) expect(fire.map((c) => c.texture)).toEqual([...Array(rest + 3 - pied).fill('pierre'), 'lanterne']);
-      else expect(fire).toEqual([]);
-      // Les barques : aucune dans le ciel ; grise sur la grève (1), en bois (2), à l'eau contre la jetée (3), une de chaque (4, 5).
-      const boats = props.filter((c) => c.decor!.includes('/barque@'));
-      const afloat = boats.filter((c) => c.z <= vehicleRestZ(a.classe) + 1 && c.x < end.x && c.y < shoreY(port));
-      const ashore = boats.filter((c) => !afloat.includes(c));
-      if (a.classe === '3e') expect(boats).toEqual([]);
-      else {
-        expect(ashore.length > 0, `${port} barque sur la grève, état ${rank}`).toBe(rank !== 3);
-        expect(afloat.length > 0, `${port} barque amarrée, état ${rank}`).toBe(rank >= 3);
-        expect(ashore.every((c) => Boolean(c.muted) === (rank === 1))).toBe(true);
-      }
-      // Le foyer fume dès la reconstruction ; caisses et fanions au développement.
-      const has = (kind: string) => props.some((c) => c.decor!.includes(`/${kind}@`));
-      expect(has('foyer'), `${port} foyer`).toBe(rank >= 3);
-      expect(has('caisse'), `${port} caisses`).toBe(rank >= 4);
-      expect(new Set(props.filter((c) => c.decor!.includes('/fanion@')).map((c) => c.decor)).size, `${port} fanions`).toBe(rank >= 4 ? 2 : 0);
-      // Le bonhomme marche toujours de sa place au pied de la jetée, et les objets du quai ne sont pas un sol.
-      const ground = walkGround(world, creaturePlacements(a.classe, v.links));
-      const route = boardingRoute(port);
-      const foot = route[2];
-      expect(walkPath(ground, route[0], foot), `${port} état ${rank}`).not.toBeNull();
-      for (const c of props) expect(ground.feet.has(`${c.x},${c.y}`) && ground.feet.get(`${c.x},${c.y}`)! > c.z, `${port} on marche sur ${c.decor}`).toBe(false);
-    });
-  }
+// Un test par archipel : les quatre, à cinq états chacun, dépassaient à froid le délai par défaut (6,6 s lancé seul, 11
+// octobre 2026) ; chacun tient en une ou deux secondes.
+it.each(ARCHIPELAGOS.map((a) => [a.classe, a] as const))('le port montre l’état du village : lanternes, barques, foyer, caisses, fanions et feu de port, jamais sur la jetée ni à la place du navire (%s)', (_, a) => {
+  const port = a.port;
+  const portPlans = builtPlans(plansFor(port));
+  const all = { ...portPlans, ...builtPlans(monumentsOf(a.classe)) };
+  const paid = BRIDGES.map((b) => b.id);
+  // Un village à chaque état, du 1 au 5 (le 3e s'arrête à 4 : pas de voyage suivant).
+  const states = [
+    village([]),
+    { ...village([]), parts: portPlans },
+    { ...village(paid), parts: portPlans },
+    { ...village(paid), parts: all },
+    { ...village(everything), parts: all },
+  ].slice(0, a.classe === '3e' ? 4 : 5);
+  const cells = dockCells(port);
+  const jetty = new Set(cells.map((c) => `${c.x},${c.y}`));
+  const posts = dockPosts(port);
+  const o = dockOrigin(port);
+  const inShip = (c: { x: number; y: number }) => c.x >= o.x && c.x < o.x + VEHICLE_SIZE.w && c.y >= o.y && c.y < o.y + VEHICLE_SIZE.d;
+  const end = cells[cells.length - 1];
+  const beacon = { x: end.x, y: end.y - 1 };
+  states.forEach((v, i) => {
+    expect(villageStage(v, a.classe).rank, `${port} état ${i + 1}`).toBe(i + 1);
+    const world = worldCubes(a.classe, {}, v, true);
+    const mine = world.filter((c) => c.tag === port);
+    const onPost = (texture: string) => posts.filter((p) => mine.some((c) => c.x === p.x && c.y === p.y && c.z === p.z + 1 && c.texture === texture));
+    // Les objets ajoutés : ceux du quai (barques, foyer, caisses, fanions), les chapeaux des poteaux et le feu de port.
+    const props = mine.filter((c) => /\/(barque|foyer|caisse|fanion)@/.test(c.decor ?? ''));
+    const added = [...props, ...mine.filter((c) => posts.some((p) => p.x === c.x && p.y === c.y && c.z > p.z) || (c.x === beacon.x && c.y === beacon.y))];
+    for (const c of added) {
+      expect(jetty.has(`${c.x},${c.y}`), `${port} ${c.decor ?? c.texture} sur la jetée`).toBe(false);
+      expect(inShip(c), `${port} ${c.decor ?? c.texture} à la place du navire`).toBe(false);
+    }
+    // Chaque cube ajouté a sa place à lui.
+    const at = new Map<string, number>();
+    for (const c of world) at.set(`${c.x},${c.y},${c.z}`, (at.get(`${c.x},${c.y},${c.z}`) ?? 0) + 1);
+    for (const c of added) expect(at.get(`${c.x},${c.y},${c.z}`), `${port} cube en double en ${c.x},${c.y},${c.z}`).toBe(1);
+    const rank = i + 1;
+    const lit = onPost('lanterne');
+    if (rank === 1) {
+      // Abandonné : aucune lanterne sur la jetée, un bouchon de bois sur les deux derniers poteaux.
+      expect(lit).toEqual([]);
+      expect(onPost('planches')).toHaveLength(2);
+    } else expect(lit).toHaveLength(rank >= 5 ? posts.length : 2);
+    // Au port : une lanterne par poteau, et le feu au bout de la jetée (un pilier de pierre depuis l'eau, ou depuis le
+    // quai dans le ciel, et une lanterne trois cases au-dessus du quai).
+    const fire = mine.filter((c) => c.x === beacon.x && c.y === beacon.y);
+    const rest = vehicleRestZ(a.classe);
+    const pied = a.classe === '3e' ? rest : 0;
+    if (rank >= 5) expect(fire.map((c) => c.texture)).toEqual([...Array(rest + 3 - pied).fill('pierre'), 'lanterne']);
+    else expect(fire).toEqual([]);
+    // Les barques : aucune dans le ciel ; grise sur la grève (1), en bois (2), à l'eau contre la jetée (3), une de chaque (4, 5).
+    const boats = props.filter((c) => c.decor!.includes('/barque@'));
+    const afloat = boats.filter((c) => c.z <= vehicleRestZ(a.classe) + 1 && c.x < end.x && c.y < shoreY(port));
+    const ashore = boats.filter((c) => !afloat.includes(c));
+    if (a.classe === '3e') expect(boats).toEqual([]);
+    else {
+      expect(ashore.length > 0, `${port} barque sur la grève, état ${rank}`).toBe(rank !== 3);
+      expect(afloat.length > 0, `${port} barque amarrée, état ${rank}`).toBe(rank >= 3);
+      expect(ashore.every((c) => Boolean(c.muted) === (rank === 1))).toBe(true);
+    }
+    // Le foyer fume dès la reconstruction ; caisses et fanions au développement.
+    const has = (kind: string) => props.some((c) => c.decor!.includes(`/${kind}@`));
+    expect(has('foyer'), `${port} foyer`).toBe(rank >= 3);
+    expect(has('caisse'), `${port} caisses`).toBe(rank >= 4);
+    expect(new Set(props.filter((c) => c.decor!.includes('/fanion@')).map((c) => c.decor)).size, `${port} fanions`).toBe(rank >= 4 ? 2 : 0);
+    // Le bonhomme marche toujours de sa place au pied de la jetée, et les objets du quai ne sont pas un sol.
+    const ground = walkGround(world, creaturePlacements(a.classe, v.links));
+    const route = boardingRoute(port);
+    const foot = route[2];
+    expect(walkPath(ground, route[0], foot), `${port} état ${rank}`).not.toBeNull();
+    for (const c of props) expect(ground.feet.has(`${c.x},${c.y}`) && ground.feet.get(`${c.x},${c.y}`)! > c.z, `${port} on marche sur ${c.decor}`).toBe(false);
+  });
 });
 
 it('le bonhomme embarque : de son île à la jetée, planche par planche, jusqu’au pont du navire', () => {

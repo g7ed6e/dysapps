@@ -6,7 +6,7 @@
 // pour le rendu Archipéo, le sol (R2), la mer et la faune (R3), le décor (R4), la construction taillée, les bornes et
 // le navire (R5), et les personnages fusionnés (R6). Vérifié par world/budget.test.ts.
 import { AVATAR_PARTS } from '../Avatar';
-import { BIOMES, type BiomeId, type BlockId } from '../biomes';
+import { BIOMES, BLOCKS, type BiomeId, type BlockId } from '../biomes';
 import { CATALOG } from '../exercises';
 import { ARCHIPELAGOS, grantAccess, linkWholeRegion, VOYAGES } from './archipelago';
 import { ALTITUDE, type ArchipelagoId, DANS_LE_CIEL, mapOf } from './map';
@@ -17,17 +17,18 @@ import { blockRegions, buildBlockMesh, buildRegionMesh, chunkFaceCount, type Blo
 import { hiddenBottomLevel } from './sea';
 import { MONUMENTS } from './monuments';
 import { isMonumentLoaded, MONUMENT_MODELS } from './monumentModels';
+import { nefOf } from './nefModels';
 import { BUILDING_FAR_TRIANGLES, BUILDING_NEAR_TRIANGLES, buildingCells, buildingTriangles, isBuildingLoaded } from './buildingModels';
 import { ETAPES_DU_BATIMENT } from './construction/buildings';
 import { LAYERS } from './projects';
-import { PLANS, planCells, plansFor } from './plans';
+import { PLANS, planCells, plansFor, type PlanCell } from './plans';
 import { creaturePlacements, guardianPlacements, vehiclePlacement, whaleSpots, worldBounds, worldCubes } from './terrain';
 import { grilleDeLaMer, trianglesDeLaGrille } from './sea';
 import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
 import { trianglesDeLaBrume } from './decor/mist';
 import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliersDe, sansToursDuCoeur } from './construction';
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, planeurDe, trianglesDe } from './fauna';
-import { VEHICLE_STAGES } from './vehicle';
+import { VEHICLE_STAGES, shownPieces, vehicleForm } from './vehicle';
 import { bridge, type CaseDOuvrage } from './terrain/links';
 import { DEPTH } from './terrain/base';
 import { GAP_BETWEEN_PLACES, landRectangle } from './footprint';
@@ -38,6 +39,8 @@ import type { BridgeKind } from './archipelago';
 import type { VoxelCube } from './cube';
 import { PLACED_FIXTURES } from './placedFixtures';
 import { casesDeLaPetiteConstruction } from './fixtures';
+import { ecartDePres } from './fixtureModels';
+import { villagePlacesNearGap } from './objects/villagePlaces';
 import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './characters/merges';
 import { COUT_DES_BULLES } from './affordance';
 import { coutDesLueurs, lueursDesLanternes } from './lanternGlow';
@@ -62,9 +65,21 @@ export const RENDER_BUDGET = {
  * pour les bâtiments des plans importés d'Archipéo (./buildingModels.ts ; décision du mainteneur, 10 octobre 2026 : de
  * près 3 000 triangles sur l'île où est l'élève, de loin environ 200 ailleurs, « tu peux relever les plafonds ») : relevé
  * de la différence, les 3 750 que l'enveloppe de la construction prend (12 750 → 16 500 ; mesurée au pire, prévue pour
- * les seize bâtiments de l'archipel, `constructionAuPire`) ; la somme des enveloppes passe de 81 290 à 85 040.
+ * les seize bâtiments de l'archipel, `constructionAuPire`) ; la somme des enveloppes passe de 81 290 à 85 040. Puis à
+ * 86 850 pour les trois essais de la piste 3 « hybride » (choisie par le mainteneur le 11 octobre 2026, qui autorise à
+ * relever « quand c'est nécessaire ») : les pièces communes de toutes les cours (./architecture/yardPieces.ts) et le
+ * puits de Tunel dessiné (./fixtureModels.ts) ; la construction passe de 16 500 à 18 050, les commandes de 850 à 1 100,
+ * la somme des enveloppes de 85 040 à 86 840. Puis à 87 900 pour le lot 1 des objets du 6e (11 octobre 2026, même
+ * autorisation : le style des essais validé, « Top le style ») : les dix-neuf petites constructions dessinées
+ * (./objects/), le trophée des Gardiens rallumés et les objets du quai ; la construction passe de 18 050 à 18 700, les
+ * commandes de 1 100 à 1 500, la somme des enveloppes de 86 840 à 87 890. Puis à 91 200 pour le lot 2 des objets du 6e
+ * (11 octobre 2026, même autorisation : le décor du cœur et les lieux de l'île-école dessinés) : la construction passe de
+ * 18 700 à 22 000. Puis à 92 610 pour la Nef en modèles peints (GD-15, « Relever », mainteneur, 11 octobre 2026) : son
+ * enveloppe passe de 490 à 1 900, la somme des enveloppes de 91 190 à 92 600. Puis à 93 610 pour Kéo, le bonhomme importé dans la tenue de
+ * l'archipel (décision du mainteneur, 11 octobre 2026 : 1 500 triangles par tenue, « relève les plafonds du strict
+ * nécessaire ») : l'enveloppe du bonhomme passe de 500 à 1 500, la somme des enveloppes de 92 600 à 93 600.
  */
-export const RENDER_BUDGET_6E = { triangles: 85_250, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_6E = { triangles: 93_610, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
  * Les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
@@ -93,13 +108,27 @@ export const RENDER_BUDGET_6E = { triangles: 85_250, drawCalls: RENDER_BUDGET.dr
  * Brumeuses, les 2 970 que leur construction prend (13 230 → 16 200), arrondis ; la somme des enveloppes passe à 94 655
  * aux Îles Brumeuses, 92 675 aux Anciens Ateliers et 91 805 aux Îles du Ciel (construction « autres » 13 000 → 16 950).
  * Puis à 94 950 avec les personnages importés de la 4e, fusionnés entre-temps (les deux hausses s'additionnent : 94 910
- * aux Anciens Ateliers).
+ * aux Anciens Ateliers). Puis à 96 430 pour la Nef en modèles peints (GD-15, « Relever », mainteneur, 11 octobre 2026) : son
+ * enveloppe passe de 420 à 1 900, la somme des enveloppes à 96 390 aux Anciens Ateliers. Puis à 97 455 pour Kéo, le bonhomme importé dans
+ * la tenue de l'archipel (décision du mainteneur, 11 octobre 2026 : 1 500 triangles par tenue) : l'enveloppe du bonhomme
+ * passe de 475 à 1 500, la somme des enveloppes à 97 160 aux Îles Brumeuses, 97 415 aux Anciens Ateliers et 96 170 aux
+ * Îles du Ciel.
  */
-export const RENDER_BUDGET_AUTRES = { triangles: 94_950, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_AUTRES = { triangles: 97_455, drawCalls: RENDER_BUDGET.drawCalls } as const;
+
+/**
+ * Les Îles Brumeuses (5e) quittent `RENDER_BUDGET_AUTRES` le 11 octobre 2026 avec leurs objets dessinés (la piste 3
+ * « hybride » au 5e, le mainteneur autorisant les hausses nécessaires) : `RENDER_BUDGET_AUTRES` (97 455, la Nef et Kéo
+ * compris) plus la hausse mesurée de leurs enveloppes. Le lot 1 (les pièces de cour, les trophées, le quai, les lieux en
+ * pierre, dix petites constructions et six cœurs) : la somme des enveloppes 97 160 → 101 835 (+4 675), le plafond
+ * 102 130 ; le lot 2 (les dix formes nouvelles, les huit autres cœurs, cinq petites constructions) : 101 835 → 102 565
+ * (+730), le plafond 102 860. Le 4e et le 3e gardent `RENDER_BUDGET_AUTRES`.
+ */
+export const RENDER_BUDGET_5E = { triangles: 102_860, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
-  return a === '6e' ? RENDER_BUDGET_6E : RENDER_BUDGET_AUTRES;
+  return a === '6e' ? RENDER_BUDGET_6E : a === '5e' ? RENDER_BUDGET_5E : RENDER_BUDGET_AUTRES;
 }
 
 /**
@@ -364,12 +393,36 @@ export const ENVELOPPES: Record<
   // de Tunel chargée), 12 003 → 15 899 aux Îles Brumeuses, 12 508 → 16 585 aux Anciens Ateliers, 12 735 → 16 691 aux Îles
   // du Ciel (quatorze îles chacun) ; au pire de la salle des trophées (24 succès), 16 454, 16 147, 16 833 et 16 939. Les
   // enveloppes : 12 750 → 16 500, 13 230 → 16 200 aux Îles Brumeuses, 13 000 → 16 950 ailleurs ; aucun appel de plus.
+  // Les pièces communes des cours du 6e (./architecture/yardPieces.ts, premier essai de la piste 3 « hybride », 11 octobre
+  // 2026 ; le mainteneur autorise à relever « quand c'est nécessaire ») : la barrière à deux lisses et poteaux trapus, la
+  // lanterne sur poteau (sa tête de fer et d'ardoise, ses vitres) et la marche de pierre à deux degrés, dans les seize
+  // cours. Mesuré tout construit (`npm run rendu:budget`, 11 octobre 2026) : 16 220 → 17 768 aux Premiers Rivages ;
+  // l'enveloppe 16 500 → 18 050 ; aucun appel de plus. Le lot 1 des objets du 6e (./objects/inTheWorld.ts, 11 octobre
+  // 2026) : le bloc d'or des seize Gardiens rallumés en trophée (socle de pierre taillé, lingot d'or facetté, 46
+  // triangles chacun, à la place de deux cubes peints) et les objets du quai en pièces communes (deux barques de 85, trois
+  // caisses, deux fanions, le foyer) ; les lisses des cours fermées au bord de leur case (ôtées par l'assemblage contre
+  // la lisse voisine). Mesuré tout construit : 17 768 → 18 384 ; l'enveloppe 18 050 → 18 700 ; aucun appel de plus. Le
+  // lot 2 (11 octobre 2026 : le décor du cœur, ./objects/heartDecor.ts, et les lieux de l'île-école de près,
+  // ./objects/villagePlaces.ts) : 18 384 → 21 116 tout construit, 21 876 au pire de la salle ; l'enveloppe 18 700 → 22 000.
+  // Les douze bâtiments de la 3e chargés (11 octobre 2026, même décision : « tu peux relever les plafonds » pour les
+  // bâtiments) : 16 691 → 16 797 tout construit aux Îles du Ciel, 16 939 → 17 045 au pire de la salle des trophées ;
+  // l'enveloppe des Îles du Ciel prend la différence, arrondie (16 950 → 17 100), la somme de leurs enveloppes
+  // 93 515 → 93 665 (« Dans la scène » compris), sous `RENDER_BUDGET_AUTRES` (94 950), inchangé ; aucun appel de plus.
+  // Les quatorze bâtiments de la 4e, la tour de Knight et la tribune de Brio chargés, Théo et Stat refaits (11 octobre
+  // 2026) : 16 585 → 16 576 tout construit aux Anciens Ateliers, 16 833 → 16 824 au pire de la salle des trophées ; aux
+  // Îles du Ciel, 16 797 et 17 045, inchangés (la réserve d'une île sans modèle, 3 000 de près et 200 de loin, tient
+  // déjà le pire) : aucune enveloppe ne bouge.
+  // Le lot 1 des objets du 5e (11 octobre 2026, même autorisation que le 6e) : les pièces communes de ses quatorze
+  // cours, les trophées et le quai, les trois lieux de l'île-école en pierre (de près), le cœur de six îles
+  // (./objects/heartDecor5e.ts). Mesuré tout construit (`npm run rendu:budget`) : 15 879 → 19 697, 20 457 au pire de la
+  // salle ; l'enveloppe des Îles Brumeuses 16 200 → 20 500 ; aucun appel de plus. Le lot 2 (les huit autres cœurs, faits
+  // des formes nouvelles) : 19 697 → 20 316, 21 076 au pire de la salle ; l'enveloppe 20 500 → 21 100.
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
-    premiersRivages: { triangles: 16_500, drawCalls: 3 },
+    premiersRivages: { triangles: 22_000, drawCalls: 3 },
     autres: { triangles: 16_950, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 16_200, drawCalls: 3 } },
+    parArchipel: { '5e': { triangles: 21_100, drawCalls: 3 }, '3e': { triangles: 17_100, drawCalls: 3 } },
   },
   // Les quêtes des habitants (GD-10, PR 1) : les trois objets posés à la fin des quêtes du 6e (la lanterne, le portillon,
   // l'escalier) sont des petites constructions, comptées dans ce poste (`toutConstruitAvecLesCommandes`) : 758 triangles
@@ -378,12 +431,23 @@ export const ENVELOPPES: Record<
   // appel de plus. Hors des Premiers Rivages, 380 → 392 (choix du mainteneur, 8 octobre 2026 : « Relever à 392 ») : au
   // 4e, le pied de la machine d'Ixe (+4) et le perchoir de Cléa (+8) portent les commandes à 392 mesurés.
   // La somme des « autres » passe de 74 865 à 74 877, sous `RENDER_BUDGET_AUTRES` (74 900), inchangé.
+  // Le puits de Tunel dessiné (./fixtureModels.ts, premier essai de la piste 3 « hybride », 11 octobre 2026) : de loin
+  // 48 triangles, de près (l'île où se trouve l'élève) un peu plus de 300, à la place de ses dix cubes et de son eau.
+  // Mesuré toutes commandes livrées, de près (`commandesCost`) : 838 → 1 066 aux Premiers Rivages ; l'enveloppe 850 →
+  // 1 100 ; aucun appel de plus. Le lot 1 des objets du 6e (./objects/, 11 octobre 2026) : les dix-neuf petites
+  // constructions dessinées, les huit objets à silhouette de loin (20 à 52 triangles) et le plus cher de près (le puits,
+  // 264 de plus), les onze autres en pièces communes (42 à 180) ; mesuré : 1 066 → 1 468 ; l'enveloppe 1 100 → 1 500 ;
+  // aucun appel de plus. Le lot 1 des objets du 5e (11 octobre 2026) : dix petites constructions en pièces communes
+  // (de 48 à 116 triangles, les mêmes de près et de loin) ; mesuré : 540 → 910 ; l'enveloppe des Îles Brumeuses 545 →
+  // 920 ; aucun appel de plus. Le lot 2 : les cinq autres, la cabane, la salière, la tente et le four à pain à silhouette
+  // (de près 97 à 162, de loin 15 à 46) et le poteau indicateur de Sema en pièces (50) ; mesuré : 910 → 1 047 ;
+  // l'enveloppe 920 → 1 050.
   commandes: {
     lot: 'GD-7',
     nom: 'Commandes et quêtes (les petites constructions posées, dans le sol et la construction, sans appel de plus)',
-    premiersRivages: { triangles: 850, drawCalls: 0 },
+    premiersRivages: { triangles: 1_500, drawCalls: 0 },
     autres: { triangles: 500, drawCalls: 0 },
-    parArchipel: { '5e': { triangles: 545, drawCalls: 0 } },
+    parArchipel: { '5e': { triangles: 1_050, drawCalls: 0 } },
   },
   // Le lot de contenu des programmes 2025-2026 (une mission de plus à la Forge et au Cabinet de 4e, et à l'Observatoire
   // de 3e, une de moins au Glacier de 5e) : relevé aux mesures tout construit, comme pour SC-3, confirmé par le
@@ -404,8 +468,14 @@ export const ENVELOPPES: Record<
     // triangles d'enveloppe sont pris au sol du 4e (43 750 → 43 740), la somme ne change pas.
     parArchipel: { '5e': { triangles: 1_520, drawCalls: 1 }, '4e': { triangles: 1_460, drawCalls: 1 } },
   },
-  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 490, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
-  bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
+  // La Nef en modèles peints (GD-15, « Relever », mainteneur, 11 octobre 2026 ; ./nefModels.ts) : de 1 264 (voilier) à 1 704
+  // (dirigeable) triangles, au pire 1 896 avec les cubes du chantier de la forme suivante ; 490 → 1 900 aux Premiers
+  // Rivages, 420 → 1 900 ailleurs, sans appel de plus. Les plafonds montent d'autant.
+  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_900, drawCalls: 3 }, autres: { triangles: 1_900, drawCalls: 3 } },
+  // Kéo, le bonhomme importé (décision du mainteneur, 11 octobre 2026 : « 1 500 triangles par tenue », une seule
+  // visible) : 1 500 triangles mesurés dans chaque tenue (`budget.test.ts`), contre 472 au bonhomme dessiné en code ;
+  // l'enveloppe passe de 500 à 1 500 aux Premiers Rivages et de 475 à 1 500 ailleurs, les plafonds d'autant.
+  bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 1_500, drawCalls: 2 }, autres: { triangles: 1_500, drawCalls: 2 } },
   // Les personnages importés du 6e (modèles TRELLIS retravaillés, choix « Monde et fiches » du mainteneur, 9 octobre
   // 2026) : de loin partout (environ 200 triangles), de près sur l'île regardée (environ 1 500), au pire de l'île qui
   // coûte le plus. Mesurés : créatures 4 254 (Bulle de près), Gardiens 5 054, socle commun et son anneau compris. Créatures
@@ -780,7 +850,8 @@ export function personnagesCost(a: ArchipelagoId): Record<'bonhomme' | 'creature
   const gardiens = pire((pres) => trianglesDeLaFusion(fusionDesGardiens(lesGardiens, pres)));
   const appel = (n: number) => (n > 0 ? 1 : 0);
   return {
-    bonhomme: { triangles: trianglesDeLaFusion(fusionDuBonhomme()), drawCalls: 1 },
+    // Kéo dans la tenue de l'archipel s'il est chargé (./characters/imported/keo.ts), sinon le bonhomme dessiné en code.
+    bonhomme: { triangles: trianglesDeLaFusion(fusionDuBonhomme(a)), drawCalls: 1 },
     creatures: { triangles: creatures, drawCalls: appel(creatures) },
     gardiens: { triangles: gardiens, drawCalls: appel(gardiens) },
   };
@@ -823,7 +894,9 @@ export function constructionAuPire(a: ArchipelagoId, trophees: readonly BlockId[
     const thresholds = Array.from({ length: stages }, (_, i) => (layers ? own.filter((c) => c.z - foot <= layers[i][1]).length : Math.ceil(((i + 1) * own.length) / (stages + 1))));
     extra += Math.max(0, ...thresholds.map((n) => cost(n) - whole));
   }
-  return { triangles: base.triangles + extra + batiments.triangles, drawCalls: base.drawCalls };
+  // Les lieux du village dessinés (./objects/villagePlaces.ts, lot 2 du 6e) : comptés de loin dans `base`, plus leur écart de près
+  // (les trois sur l'île-école, où l'élève peut se trouver) ; ajouté à l'écart du bâtiment le plus cher de près, au pire.
+  return { triangles: base.triangles + extra + batiments.triangles + villagePlacesNearGap(a, tous), drawCalls: base.drawCalls };
 }
 
 /**
@@ -870,7 +943,9 @@ export function commandesCost(a: ArchipelagoId): { triangles: number; drawCalls:
     const construction = constructionCost(a, [], commandes);
     return { triangles: sol.triangles + construction.triangles, drawCalls: sol.drawCalls + construction.drawCalls };
   });
-  return { triangles: avec.triangles - sans.triangles, drawCalls: avec.drawCalls - sans.drawCalls };
+  // Les petites constructions dessinées (./fixtureModels.ts : toutes celles du 6e) : comptées de loin, plus l'écart de
+  // la plus chère vue de près (l'île où se trouve l'élève).
+  return { triangles: avec.triangles - sans.triangles + ecartDePres(a), drawCalls: avec.drawCalls - sans.drawCalls };
 }
 
 /** Les bornes de mission d'Archipéo (lot R5) : un pilier taillé, instancié une fois par borne, en un appel. */
@@ -878,11 +953,30 @@ export function bornesCost(a: ArchipelagoId): { triangles: number; drawCalls: nu
   return coutDesPiliers(piliersDe(archipelArchipeo(a).reste));
 }
 
-/** La Nef d'Archipéo (lot R5, GD-15) : sa forme en construction taillée, d'un seul groupe. */
+/**
+ * La Nef d'Archipéo (lot R5, GD-15) : au pire de ce que montre son port, la forme de l'archipel tout construit ; et, quand
+ * ses modèles sont chargés (./nefModels.ts), chaque forme en modèle et chaque chantier (la forme d'avant en modèle, les
+ * pièces neuves posées, le kit en fantôme) : le dirigeable, le plus lourd, peut se montrer sur n'importe quel port.
+ */
 export function navireCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
   const { progress, world: village } = toutConstruit();
-  const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
-  return coutDeLaConstruction(maillageDeLaConstruction(a, ship, [], { navire: true }));
+  const ship = vehiclePlacement(a, progress, village, true);
+  const cout = (cubes: VoxelCube[], form: number) => coutDeLaConstruction(maillageDeLaConstruction(a, cubes, [], { navire: true, nef: nefOf(form, cubes) }));
+  const cube = (c: PlanCell, ghost: boolean): VoxelCube => {
+    const bd = BLOCKS[c.block];
+    return { x: c.x, y: c.y, z: c.z, color: bd.side, top: bd.top, texture: bd.texture, ghost: ghost || undefined };
+  };
+  const pire = cout(ship.cubes, ship.form);
+  for (const s of VEHICLE_STAGES) {
+    if (!nefOf(s.stage, [])) continue;
+    const own = shownPieces(s, true);
+    const chantier = [...(s.stage > 1 ? vehicleForm(s.stage - 1, true).map((c) => cube(c, false)) : []), ...own.cells.map((c) => cube(c, false)), ...own.kit.map((c) => cube(c, true))];
+    for (const m of [cout(vehicleForm(s.stage, true).map((c) => cube(c, false)), s.stage), cout(chantier, s.stage - 1)]) {
+      pire.triangles = Math.max(pire.triangles, m.triangles);
+      pire.drawCalls = Math.max(pire.drawCalls, m.drawCalls);
+    }
+  }
+  return { triangles: pire.triangles, drawCalls: pire.drawCalls };
 }
 
 /**

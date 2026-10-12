@@ -8,8 +8,10 @@
 #
 # <quarts de tour> : ceux de src/game/world/characters/imported/models.ts (le modèle tourné vers l'élève ; un demi-quart, 0.5, tourne de 45 degrés). Réglages,
 # facultatifs : cou=0.6 (le haut du dos, en fraction de la hauteur), queue=non (pas de queue), queue=sol (une queue posée au sol), jambes=non (pas de
-# jambes : ni marche ni os de jambe), bras=non (pas de bras qui balancent), bras=L ou bras=R (un seul bras), leve=L ou leve=R (la main levée au-dessus de l'épaule),
-# teinte=L ou teinte=R (un bras collé au corps, pris à sa couleur, la plus sombre du modèle). Quarts et réglages de chaque créature : la colonne « squelette » de
+# jambes : ni marche ni os de jambe), bras=non (pas de bras qui balancent), bras=L ou bras=R (un seul bras), bras=0.12 (des bras collés au tronc :
+# la limite entre tronc et bras à cette distance du milieu, en part de la hauteur), leve=L ou leve=R (la main levée au-dessus de l'épaule),
+# teinte=L ou teinte=R (un bras collé au corps, pris à sa couleur, la plus sombre du modèle), entrejambe=0.42 (l'entrejambe à
+# cette part de la hauteur, quand le creux entre les jambes s'arrête plus bas : un jean serré). Quarts et réglages de chaque créature : la colonne « squelette » de
 # docs/univers/archipeo/personnages/modeles/reglages.csv. Relire ensuite la planche d'apercu_squelette.py.
 #
 # Écrit final-1500.glb sans normales ni indices (le jeu calcule les siennes), avec JOINTS_0 et WEIGHTS_0 (quatre os par
@@ -140,7 +142,7 @@ def surface(q, per_triangle=40, seed=1, by_area=False):
     return a + r[:, :1] * (b - a) + r[:, 1:] * (c - a)
 
 
-def find_legs(q, h, ground_tail=False):
+def find_legs(q, h, ground_tail=False, crotch=None):
     """Les deux jambes : sous l'entrejambe, les sommets se séparent en deux paquets de part et d'autre du milieu."""
     split = []
     if ground_tail:
@@ -168,7 +170,7 @@ def find_legs(q, h, ground_tail=False):
     # Deux tranches suffisent : des pattes courtes (une taupe en manteau) n'en ont pas plus.
     if len(split) < 2:
         return None
-    crotch = split[-1][0] + 0.02 * h
+    crotch = split[-1][0] + 0.02 * h if crotch is None else crotch
     cut = np.median([m for _, m in split])
     below = q[(q[:, 1] < crotch) & (q[:, 1] > 0.03 * h)]
     legs = []
@@ -191,7 +193,7 @@ def find_legs(q, h, ground_tail=False):
     return crotch, legs
 
 
-def find_arms(q, h, crotch, neck, centre):
+def find_arms(q, h, crotch, neck, centre, forced=None):
     """Les deux bras : de chaque côté, un creux entre le tronc et le bras qui pend, entre l'entrejambe et le cou. Pour
     chacun : la limite entre le tronc et le bras (en x), l'épaule et le bas de la main (en y)."""
     limits = {-1: [], 1: []}
@@ -205,6 +207,10 @@ def find_arms(q, h, crotch, neck, centre):
             if ok.any():
                 k = np.flatnonzero(ok)[np.argmax(gaps[ok])]
                 limits[side].append(mid[k])
+    if forced is not None:
+        # bras=0.12 : des bras collés au tronc, qu'aucun creux ne sépare (Kéo en veste) : la limite à cette distance du
+        # milieu, en part de la hauteur, des deux côtés.
+        limits = {side: [centre + side * forced * h] * 2 for side in (-1, 1)}
     arms = {}
     for side, found in limits.items():
         if len(found) < 2:
@@ -274,6 +280,11 @@ def rig(q, h, settings, col=None):
     dense = surface(q, by_area=settings.get("aire") == "oui")
     legs = None if settings.get("jambes") == "non" else find_legs(dense, h, settings.get("queue") == "sol")
     crotch = legs[0] if legs else 0.3 * h
+    if legs and "entrejambe" in settings:
+        # entrejambe=0.42 : l'entrejambe à cette part de la hauteur (Kéo : un jean serré, dont les jambes ne se séparent
+        # qu'au bas des cuisses) ; les jambes gardent la place trouvée, mesurée sous la nouvelle hauteur.
+        crotch = float(settings["entrejambe"]) * h
+        legs = find_legs(dense, h, settings.get("queue") == "sol", crotch)
     neck = float(settings.get("cou", 0.6)) * h
     torso = dense[(dense[:, 1] > crotch) & (dense[:, 1] < neck)]
     cx, cz = np.median(torso[:, 0]), np.median(torso[:, 2])
@@ -304,7 +315,8 @@ def rig(q, h, settings, col=None):
                 w[n] = w[n] * (1 - k)
     # Les bras se cherchent sans ce qui dépasse franchement derrière le dos (une queue portée sur le côté).
     back = np.percentile(torso[np.abs(torso[:, 0] - cx) < 0.1 * h][:, 2], 95)
-    arms = {} if settings.get("bras") == "non" else find_arms(dense[dense[:, 2] < back + 0.05 * h], h, crotch, neck, cx)
+    forced = float(settings["bras"]) if settings.get("bras", "").replace(".", "", 1).isdigit() else None
+    arms = {} if settings.get("bras") == "non" else find_arms(dense[dense[:, 2] < back + 0.05 * h], h, crotch, neck, cx, forced)
     # bras=L ou bras=R : un seul bras se détache du corps (l'autre est pris dans le manteau, ou tient le ventre).
     arms = {k: v for k, v in arms.items() if settings.get("bras") not in ("L", "R") or (k < 0) == (settings["bras"] == "L")}
     painted = {}
@@ -330,8 +342,12 @@ def rig(q, h, settings, col=None):
             if len(middle):
                 front, back = np.percentile(middle[:, 2], [1, 99])
                 outside[band] = np.maximum(front - q[band, 2], q[band, 2] - back)
+    # La profondeur du milieu des jambes : des bras collés au tronc (bras=0.12) pendent au milieu du corps, le sac derrière.
+    mid = float(np.mean([leg[0][1] for leg in legs[1]])) if legs else cz
     for side, (limit, shoulder, hand, ax, az) in arms.items():
         name = "arm." + ("L" if side < 0 else "R")
+        if forced is not None:
+            az = mid
         bones.append((name, 1, [ax, shoulder, az]))
         # Le bras prend ce qui dépasse du tronc sur le côté, au-dessus de l'entrejambe (pas les pieds), et, de son côté,
         # ce qui dépasse devant ou derrière le corps (l'outil tenu) ; à l'épaule, il se fond au dos.
@@ -348,6 +364,13 @@ def rig(q, h, settings, col=None):
         # L'outil tenu touche la main : ce qui dépasse sans toucher le bras (une queue, un pied) reste au corps.
         held = held * touching(q, (held > 0.05) | (beside > 0.5), beside > 0.5)
         k = np.maximum(beside, held) * smooth((shoulder + 0.02 * h - y) / (0.08 * h))
+        if forced is not None:
+            # Des bras collés au tronc (bras=0.12) : la main qui pend le long de la cuisse, sous l'entrejambe, est au bras
+            # (et non à la jambe) quand elle tient au bras sans passer par la jambe.
+            # Ni le sac à dos ni ce qu'il porte : le bras ne prend que ce qui est à sa hauteur dans la profondeur.
+            lane = np.abs(q[:, 2] - mid) < 0.085 * h
+            side_only = ((q[:, 0] - limit) * side > 0) & (y > 0.2 * h) & lane
+            k = np.maximum(k * lane, touching(q, side_only, side_only & (y > crotch + 0.02 * h)) * smooth((shoulder + 0.02 * h - y) / (0.08 * h)))
         if settings.get("leve") == name[-1]:
             # La main levée (un marteau brandi, un râteau tenu debout) : ce qui dépasse sur le côté et touche la main,
             # à toute hauteur, jusqu'au sol.

@@ -7,7 +7,8 @@ import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, typ
 import { playDone, playNope, sonDePose } from './sound';
 import { habillageDuMonde } from './skin';
 import { voyageId } from './world/archipelago';
-import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
+import { VEHICLE_STAGES, kitReady, savedCellAt, shownCellOf, stageAt, stageWords, type VehicleStage } from './world/vehicle';
+import { planOrigin } from './world/plans';
 import { METAMORPHOSIS_MS } from './world/metamorphosis';
 import { moinsDAnimations } from '../core/motion';
 import { renduDuMonde } from './rendering';
@@ -39,6 +40,20 @@ export interface VehicleBuilder {
  * sons et les éclats. Même mécanique que les plans des îles ; le coffre de l'étape arrive avec sa dernière case, l'XP
  * avec le voyage.
  */
+/** Une case du chantier (en cases du plan, avec l'origine du quai) et sa place montrée : dans Archipéo, sur l'aéronef. */
+function shown(stage: VehicleStage, cell: { x: number; y: number; z: number }) {
+  const o = planOrigin(stage);
+  const at = shownCellOf(stage, { x: cell.x - o.x, y: cell.y - o.y, z: cell.z - o.z }, renduDuMonde() === 'archipeo');
+  return { x: at.x + o.x, y: at.y + o.y, z: at.z + o.z };
+}
+
+/** La case du chantier montrée à cette place (en cases du plan), ou `null`. */
+function saved(stage: VehicleStage, at: { x: number; y: number; z: number }) {
+  const o = planOrigin(stage);
+  const c = savedCellAt(stage, { x: at.x - o.x, y: at.y - o.y, z: at.z - o.z }, renduDuMonde() === 'archipeo');
+  return c ? { x: c.x + o.x, y: c.y + o.y, z: c.z + o.z } : null;
+}
+
 export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const { state, fillPlan } = useBlocland();
   const { settings, speak } = useSettings();
@@ -78,13 +93,15 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const burstAt = (x: number, y: number, z: number, block: BlockId) => {
     // La clé (x, y, z) d'une case du navire est dessinée au quai : dans le repère de l'île, le cube (x, y, z + 1) décalé
     // de `decalageDuQuai` (nul tant que le quai n'a pas bougé).
+    // Dans Archipéo, la case se montre à sa place sur l'aéronef (world/vehicle.ts, `shownCellOf`).
     const d = stage ? decalageDuQuai(stage) : { x: 0, y: 0, z: 0 };
-    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x: x + d.x, y: y + d.y, z: z + d.z + 1 } }, color: BLOCKS[block].top }));
+    const at = stage ? shown(stage, { x, y, z }) : { x, y, z };
+    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x: at.x + d.x, y: at.y + d.y, z: at.z + d.z + 1 } }, color: BLOCKS[block].top }));
   };
   const finished = (done: VehicleStage) => {
     const msg = kit
-      ? done.fin(textes.archipels[done.to])
-      : textes.libelles.navireAttend(done.guardians, done.short);
+      ? stageWords(done, textes.libelles.formesDeLaNef).fin(textes.archipels[done.to])
+      : textes.libelles.navireAttend(done.guardians, stageWords(done, textes.libelles.formesDeLaNef).short);
     setNotice(msg);
     sound(playDone);
     // La voix attend la fin de la mue de la Nef (GD-15, référent dys) : dans Blocland, quand l'appareil ne demande pas
@@ -111,8 +128,8 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     if (!stage || ile !== island) return false;
     // La case touchée est dans le repère de l'île ; la clé de la case du navire s'en déduit (`decalageDuQuai`).
     const d = decalageDuQuai(stage);
-    const k = { x: c.x - d.x, y: c.y - d.y, z: c.z - d.z };
-    if (!planCellAt(stage, k.x, k.y, k.z)) return false;
+    const k = saved(stage, { x: c.x - d.x, y: c.y - d.y, z: c.z - d.z });
+    if (!k || !planCellAt(stage, k.x, k.y, k.z)) return false;
     fillAt(k.x, k.y, k.z);
     return true;
   };

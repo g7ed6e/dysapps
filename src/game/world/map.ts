@@ -573,7 +573,7 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'maths-5e-signed-numbers', region: 'montagne', core: { x: 33, y: 321 }, repere: { x: 38, y: 320 }, deplacee: { x: -2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 21 },
   // Le Marché garde deux rangées de côte devant (GD-11 amincit les autres côtes d'une case) : sinon l'escalier de sa jetée
   // monterait sur la rangée nue devant ses bornes.
-  { id: 'maths-5e-proportionality', region: 'marais', core: { x: 69, y: 317 }, altitude: 3, ext: e(5, 2, 7, 3), relief: 'plat', seed: 22 },
+  { id: 'maths-5e-proportionality', region: 'marais', core: { x: 69, y: 317 }, altitude: 3, ext: e(5, 2, 7, 2), relief: 'plat', seed: 22 },
   { id: 'french-5e-homophones', region: 'basses-terres', core: { x: 33, y: 365 }, vueDepuis: { x: 33, y: 373 }, repere: { x: 40, y: 362 }, altitude: 3, ext: e(7, 7, 7, 7), relief: 'collines', seed: 23 },
   { id: 'french-5e-conjugation', region: 'marais', core: { x: 69, y: 357 }, vueDepuis: { x: 65, y: 373 }, repere: { x: 69, y: 367 }, altitude: 3, ext: e(3, 2, 4, 7), relief: 'plat', seed: 24 },
   // Anciens Ateliers (4e), sur les monts : redessinés en deux rangs dans leur cadre de 160 × 112 (GD-9, 05/10/2026 ;
@@ -651,7 +651,7 @@ const STARTING_MAP: MapPlace[] = [
   // premières.
   { id: 'civics-6e-democratic-society', region: 'basses-terres', core: { x: -8, y: 35 }, altitude: 0, ext: e(2, 2, 7, 3), relief: 'plat', seed: 58 },
   // Anglais 5e : une colonne à droite du Marché et du Marais.
-  { id: 'english-5e-vocabulary', region: 'basses-terres', core: { x: 101, y: 321 }, vueDepuis: { x: 105, y: 321 }, repere: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 10, 2), relief: 'plat', seed: 61 },
+  { id: 'english-5e-vocabulary', region: 'basses-terres', core: { x: 101, y: 321 }, vueDepuis: { x: 105, y: 321 }, repere: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 2, 10, 2), relief: 'plat', seed: 61 },
   { id: 'english-5e-grammar', region: 'hauteurs', core: { x: 101, y: 357 }, vueDepuis: { x: 101, y: 365 }, repere: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(2, 3, 7, 3), relief: 'collines', seed: 62 },
   // LV2 5e : à l'est du Comptoir, dans son alignement (le pont reste droit), en bout de chemin : rien n'en dépend.
   { id: 'lv2-5e-introductions', region: 'basses-terres', core: { x: 133, y: 321 }, vueDepuis: { x: 137, y: 321 }, repere: { x: 133, y: 320 }, altitude: 3, ext: e(2, 2, 7, 5), relief: 'plat', seed: 94 },

@@ -441,9 +441,9 @@ const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>
   // Forge (régression, au pilotage). Les deux îles d'histoire-géographie ne se taisent plus l'une vers l'autre. Aux Îles du
   // Ciel, aucun depuis une forme par île (l'ouvrage entre le Plateau et la Ruche taisait la Ruche).
   // Au 5e, depuis le Fournil des partages et la Grotte des légendes (EMC et latin-grec, 9 octobre 2026, mesurés) : cinq
-  // flèches taisent un ou deux noms.
+  // flèches taisent un ou deux noms ; quatre depuis les proportions du 5e (GD-18, la côte du Marché d'une rangée plus
+  // courte) : depuis le Marais des temps, celle de l'ouvrage vers le Marché ne tait plus la Grotte des légendes.
   '5e': {
-    'maths-5e-proportionality-french-5e-conjugation depuis french-5e-conjugation': ['lca-5e-legends'],
     'maths-5e-signed-numbers-maths-5e-proportionality depuis maths-5e-proportionality': ['physics-chemistry-5e-matter-universe', 'lca-5e-legends'],
     'maths-5e-signed-numbers-maths-5e-proportionality depuis maths-5e-signed-numbers': ['physics-chemistry-5e-matter-universe', 'lca-5e-legends'],
     'technology-5e-design-lv2-5e-introductions depuis lv2-5e-introductions': ['civics-5e-equality-solidarity'],

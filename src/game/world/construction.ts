@@ -49,7 +49,7 @@
 // des rôles (`settings.ts`), ce que le shader reprend (`shader.ts`), le genre des blocs (`kinds.ts`), le phare de
 // Grimoire (`lighthouse.ts`), les bâtiments et les lieux que le kit reprend (`buildings.ts`). Il en réexporte les noms publics.
 import type { Cell } from './view';
-import { apartFromGhost, architectureDe, assemblerLesPieces, crystal, ingot, type Kit, KITS, MOTIF, motifDesRangees, RANGEES, rangeesReunies, RESTING_HEIGHT } from './architecture';
+import { apartFromGhost, architectureDe, assemblerLesPieces, crystal, ingot, type Kit, KITS, LANTERNE_DE_COUR, MOTIF, motifDesRangees, RANGEES, rangeesReunies, RESTING_HEIGHT } from './architecture';
 import type { VoxelCube } from '../Voxel';
 import { ambianceDe, type Couleur, couleurDeMatiere, type Faces, MATIERES } from './palette';
 import { DELAVE, eclaircir, type FacettesDuDecor, hex, Pinceau, rgb } from './decor/brush';
@@ -59,6 +59,9 @@ import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './bridges'
 import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, PHARE_DU_LARGE, phareDuLarge } from './offshoreLighthouse';
 import { getImportedMonuments, type ImportedMonument, monumentsVersion } from './monumentModels';
 import { buildingsVersion, getImportedBuildings } from './buildingModels';
+import { petitesConstructionsDessinees } from './fixtureModels';
+import { drawnHeartDecor, drawnQuayObjects, drawnTrophies } from './objects/inTheWorld';
+import { drawnVillagePlaces } from './objects/villagePlaces';
 import type { BiomeId } from '../biomes';
 import { estUnePlaceDeTrophee } from './trophyHall';
 import { mixColor } from './daylight';
@@ -179,6 +182,11 @@ export interface OptionsDeLaConstruction {
   bornes?: boolean;
   /** Les cubes de la Nef : sa toile prend le crème Brume (et rien n'y devient pièce d'architecture). */
   navire?: boolean;
+  /**
+   * Archipéo : la Nef importée (./nefModels.ts, `nefOf`), avec `navire` : la forme montrée en modèle à la place de ses
+   * cubes posés, sa lanterne dans les fenêtres ; les pièces de l'étape en chantier restent des cubes ou des fantômes.
+   */
+  nef?: ImportedMonument | null;
   /** Le kit d'architecture (lot 7, ./architecture/kits/) : par défaut, celui de l'archipel. */
   kit?: Kit;
   /**
@@ -347,7 +355,27 @@ export function maillageDeLaConstruction(
   const ponts = options.navire ? null : pontsDePierreEtDeBois(cubes);
   // Les monuments et les bâtiments importés (./monumentModels.ts, ./buildingModels.ts), chargés : l'étape du chantier
   // remplace les cubes posés.
-  const imported = options.navire ? [] : modelesImportes(cubes, options.pres);
+  // Les objets que le kit d'Archipéo dessine (`Kit.objetsDessines`, piste 3, au 6e et au 5e) : les petites
+  // constructions posées (./fixtureModels.ts), le bloc d'or des Gardiens rallumés, les objets du quai et le décor du cœur
+  // des îles (./objects/inTheWorld.ts), et les trois lieux du village, de près sur l'île `pres`
+  // (./objects/villagePlaces.ts) ; comme un modèle importé, ils remplacent leurs cubes.
+  const objets = !options.navire && (options.kit ?? KITS[a]).objetsDessines;
+  const imported = options.navire
+    ? options.nef
+      ? [options.nef]
+      : []
+    : [
+        ...modelesImportes(cubes, options.pres),
+        ...(objets
+          ? [
+              ...petitesConstructionsDessinees(a, cubes, options.pres),
+              ...drawnTrophies(a, cubes),
+              ...drawnQuayObjects(a, cubes),
+              ...drawnHeartDecor(a, cubes),
+              ...drawnVillagePlaces(a, cubes, options.pres),
+            ]
+          : []),
+      ];
   const importedCells = new Set(imported.flatMap((m) => [...m.replaced]));
   // Le phare du large du 5e : ses pièces finies laissent la place à son modèle (./offshoreLighthouse.ts), sauf s'il est importé.
   const large = options.navire || imported.some((m) => m.id === PHARE_DU_LARGE) ? null : phareDuLarge(cubes);
@@ -641,8 +669,17 @@ export function maillageDeLaConstruction(
     q([[x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1]], [-1, 0, 0], f.cote);
     q([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0], f.cote);
   };
+  /**
+   * Les lanternes de cour que le kit dessine sur poteau (./architecture/yardPieces.ts, au 6e) : dessinées avec les pièces
+   * d'architecture, à la fin (le toucher retrouve leur case par la table des pièces).
+   */
+  const lanternesDeCour: VoxelCube[] = [];
   /** Une lanterne : son corps sombre (opaque), son cœur (les fenêtres : éteint le jour, allumé la nuit), dans sa case. */
   const lanterne = (c: VoxelCube) => {
+    if (kit.yardLantern?.(c)) {
+      lanternesDeCour.push(c);
+      return;
+    }
     const m = (w: number) => [0.5 - w / 2, 0.5 + w / 2];
     const [a0, a1] = m(LANTERNE.corps);
     const [b0, b1] = m(LANTERNE.coeur);
@@ -1027,13 +1064,13 @@ export function maillageDeLaConstruction(
   // deux pièces partagent ; une rangée d'un tenant), dans l'opaque, à la fin, aux couleurs de la matière du bloc qu'elles
   // remplacent (ou d'un rôle du kit), avec sa teinte ; les cases de chaque triangle, pour le toucher (toute la case).
   let dessinDesPieces: MaillageDeLaConstruction['pieces'];
-  if (archi?.pieces.length) {
+  if (archi?.pieces.length || lanternesDeCour.length) {
     const t0 = O.idx.length / 3;
     const cases: number[] = [];
     const sansBiseau = mode === 'peint' ? [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU] : null;
     const estPlein = (x: number, y: number, z: number) => plein.has(cle(x, y, z)) || sous.has(cle(x, y, z));
     const cleDeCouleur = (c: VoxelCube) => `${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${c.tag ?? ''}`;
-    for (const { facette: f, cube: c, min, max } of assemblerLesPieces(archi.pieces, estPlein, cleDeCouleur)) {
+    for (const { facette: f, cube: c, min, max } of assemblerLesPieces(archi?.pieces ?? [], estPlein, cleDeCouleur)) {
       // La couleur du bloc de dessous (les flancs de pierre de la braise du cône), sinon celle du bloc ; tenue à l'écart du
       // fantôme pour le pain de craie.
       const couleurs = couleursDe((f.colourBelow && solides.get(cle(c.x, c.y, c.z - 1))) || c);
@@ -1049,6 +1086,24 @@ export function maillageDeLaConstruction(
           : (f.motif ?? 0);
       O.poly(f.points, f.normale, f.points.map(() => col), { biseaux: sansBiseau ? f.points.map(() => sansBiseau) : undefined, teinte: teinteDeCase(c.x, c.y, c.z), motif });
       for (let i = 2; i < f.points.length; i++) cases.push(...min, ...max);
+    }
+    // Les lanternes de cour (./architecture/yardPieces.ts) : leur tête de bois, de fer et d'ardoise dans l'opaque, ses
+    // quatre vitres dans les fenêtres (pâles le jour, allumées la nuit avec les autres lanternes de la cour, sans
+    // clignoter), dans leur case.
+    for (const c of lanternesDeCour) {
+      const teinte = teinteDe(c);
+      const vitre = couleurDuRole(a, kit, 'lanternGlass', c.muted);
+      const extra = decalages.get(c) ?? -1;
+      for (const f of LANTERNE_DE_COUR) {
+        const pts = f.points.map(([x, y, z]) => [c.x + x, c.y + y, c.z + z] as V3);
+        if (f.vitre) {
+          F.poly(pts, f.normale, pts.map(() => vitre), { extra });
+          continue;
+        }
+        const col = couleurDuRole(a, kit, f.role ?? 'lanternFrame', c.muted);
+        O.poly(pts, f.normale, pts.map(() => col), { teinte, biseaux: sansBiseau ? pts.map(() => sansBiseau) : undefined });
+        for (let i = 2; i < pts.length; i++) cases.push(c.x, c.y, c.z, c.x, c.y, c.z);
+      }
     }
     dessinDesPieces = [{ opaque: [t0, O.idx.length / 3], cases: Int32Array.from(cases) }];
   }

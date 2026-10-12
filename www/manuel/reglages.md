@@ -88,7 +88,7 @@ Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’î
 L’univers change le dessin du monde et l’histoire ; la progression reste la même. Deux univers se choisissent :
 
 - **Blocland** (par défaut) : un monde en cubes, où l’élève reconstruit le village bloc par bloc.
-- **Archipéo** : une aventure en mer, où son savoir reconstruit l’archipel.
+- **Archipéo** : une aventure en mer, où son savoir reconstruit l’archipel. Le personnage de l’élève y change de tenue d’un archipel à l’autre : explorateur aux Premiers Rivages, ciré aux Îles Brumeuses, combinaison de mécano aux Anciens Ateliers, gilet de cartographe aux Îles du Ciel.
 
 Chaque univers a une icône, son nom et une phrase, avec un bouton pour l’écouter. Changer d’univers demande une confirmation, qui dit ce qui change (le dessin du monde, le titre et l’histoire ; les îles gardent leur nom) et ce qui reste (les étoiles, les blocs, les plans et les missions). **Changer d’univers** confirme, **Annuler** garde l’univers d’avant. Le changement se voit au retour au village. L’univers choisit aussi le titre de l’écran titre et l’habillage de l’interface (ses couleurs, ses polices de titre, la forme de ses boutons) ; la place des boutons et des écrans est la même dans les deux.
 
@@ -103,6 +103,8 @@ La version installée est affichée, avec le bouton **Vérifier les mises à jou
 Deux liens s’ouvrent dans un nouvel onglet : **La documentation** (ce site, https://g7ed6e.github.io/dysapps/) et **Le code sur GitHub** (https://github.com/g7ed6e/dysapps).
 
 **Mesurer l’appareil** dit si l’appareil dessine le monde sans à-coups. L’appli se recharge, prend une partie déjà toute construite, fait seule le tour du monde du 6e (une île, l’archipel, la Carte, « Modifier le plan », la pose d’une partie) et affiche à la fin un tableau de chiffres, avec **Copier**. **Réglages**, à tout moment, recharge l’appli sur les Réglages. La vraie partie n’est pas touchée : rien de ce qui se passe pendant la mesure n’est enregistré.
+
+**Compteur de mesures**, une fois coché, affiche en bas à gauche du monde en 3D, pendant le jeu, ce que l’appareil dessine à chaque image : le nombre d’appels de dessin, de triangles, et d’images par seconde (i/s). Il apparaît à la prochaine ouverture du monde et reste coché sur l’appareil. **Affichage par défaut** le décoche. C’est un outil technique, pour vérifier l’appareil : l’élève n’en a pas besoin.
 
 ## Ma sauvegarde
 

@@ -1,9 +1,10 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
-import { chargerLesModelesDuDisque } from './characters/imported/fromDisk.testing';
+import { loadKeoFromDisk, chargerLesModelesDuDisque } from './characters/imported/fromDisk.testing';
 import { loadMonumentsFromDisk } from './monumentModels.fromDisk.testing';
 import { loadBuildingsFromDisk } from './buildingModels.fromDisk.testing';
-import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionAuPire, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
+import { loadNefFromDisk } from './nefModels.fromDisk.testing';
+import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionAuPire, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_5E, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseIsland, choiceMiddle, dragChoice } from './arrangeMode';
 import { placeTurns } from './arrange';
@@ -20,46 +21,49 @@ it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvr
   expect(village.links).toContain('passage-5e');
 });
 
-it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque archipel tout construit', () => {
+it.each(ARCHIPELAGO_IDS)('le monde en blocs ne recule pas : triangles et appels de dessin de chaque archipel tout construit (%s)', (a) => {
   // Mesuré au lot R0 (terrain, créatures, Gardiens, navire, bonhomme) : 77 216 triangles et 234 appels dans les
   // Premiers Rivages, 46 500 à 52 300 triangles et 184 à 193 appels ailleurs. C'est au-dessus du budget d'Archipéo :
   // le monde en blocs ne le tiendra pas ; ces plafonds l'empêchent seulement de grossir jusqu'à son remplacement (lot 6).
-  for (const a of ARCHIPELAGO_IDS) {
-    const { triangles, drawCalls } = sceneCost(a);
-    expect(triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
-    expect(drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
-  }
+  const { triangles, drawCalls } = sceneCost(a);
+  expect(triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+  expect(drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
+});
+
+it('les plafonds des archipels', () => {
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
-  expect(RENDER_BUDGET_6E).toEqual({ triangles: 85_250, drawCalls: 40 });
+  expect(RENDER_BUDGET_6E).toEqual({ triangles: 93_610, drawCalls: 40 });
   // GD-12 : 78 700 ailleurs (mainteneur, 9 octobre 2026, carte « Relever ») ; relevé à 86 000 par le mainteneur le
   // 9 octobre 2026 pour le Fournil des partages et la Grotte des légendes (5e) ; à 86 700 pour les personnages importés
   // de la 5e (mainteneur, 10 octobre 2026). Les monuments importés d'Archipéo : 81 500 et 91 700 (86 700 + 5 000, relevés
-  // par le mainteneur le 10 octobre 2026).
-  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 94_950, drawCalls: 40 });
+  // par le mainteneur le 10 octobre 2026). La Nef en modèles peints : 92 610 et 96 430 (« Relever », 11 octobre 2026).
+  // Kéo, le bonhomme importé (mainteneur, 11 octobre 2026) : 92 610 → 93 610 et 96 430 → 97 455.
+  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 97_455, drawCalls: 40 });
+  // Les Îles Brumeuses à part depuis leurs objets dessinés (11 octobre 2026).
+  expect(RENDER_BUDGET_5E).toEqual({ triangles: 102_860, drawCalls: 40 });
+  expect(renderBudgetOf('5e')).toBe(RENDER_BUDGET_5E);
+  expect(renderBudgetOf('4e')).toBe(RENDER_BUDGET_AUTRES);
 });
 
-it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : un appel de plus au plus, sous le plafond', () => {
-  const [tout, avecLesCommandes] = [toutConstruit(), toutConstruitAvecLesCommandes()];
-  for (const a of ARCHIPELAGO_IDS) {
-    const sans = sceneCost(a, false, true, tout);
-    const avec = sceneCost(a, true, true, avecLesCommandes);
-    // Dans les morceaux du terrain (world/blockMesh.ts) : une petite construction n'en ouvre un que s'il n'y avait rien.
-    expect(avec.drawCalls, a).toBeLessThanOrEqual(sans.drawCalls + 1);
-    expect(avec.triangles, a).toBeGreaterThan(sans.triangles);
-    expect(avec.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
-  }
+// Un test par archipel : les quatre mondes en blocs, avec et sans les commandes, dépassaient à froid le délai par défaut
+// (5,7 s lancé seul, 11 octobre 2026), sans que rien n'y soit lent ; chacun tient en une ou deux secondes.
+it.each(ARCHIPELAGO_IDS)('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : un appel de plus au plus, sous le plafond (%s)', (a) => {
+  const sans = sceneCost(a, false, true, toutConstruit());
+  const avec = sceneCost(a, true, true, toutConstruitAvecLesCommandes());
+  // Dans les morceaux du terrain (world/blockMesh.ts) : une petite construction n'en ouvre un que s'il n'y avait rien.
+  expect(avec.drawCalls, a).toBeLessThanOrEqual(sans.drawCalls + 1);
+  expect(avec.triangles, a).toBeGreaterThan(sans.triangles);
+  expect(avec.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
 });
 
-it('les bulles des objets touchables (proposition P2) : trois quadrilatères en un appel, et le monde en blocs reste sous son plafond', () => {
-  for (const a of ARCHIPELAGO_IDS) {
-    const signes = signesCost();
-    // Trois bulles au plus à la fois, dans le maillage des plaques des créatures, quel que soit l'état du jeu.
-    expect(signes, a).toEqual({ triangles: 6, drawCalls: 1 });
-    // Avec les petites constructions des commandes, sous le plafond.
-    const blocs = sceneCost(a, true);
-    expect(blocs.triangles + signes.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
-    expect(blocs.drawCalls + signes.drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
-  }
+it.each(ARCHIPELAGO_IDS)('les bulles des objets touchables (proposition P2) : trois quadrilatères en un appel, et le monde en blocs reste sous son plafond (%s)', (a) => {
+  const signes = signesCost();
+  // Trois bulles au plus à la fois, dans le maillage des plaques des créatures, quel que soit l'état du jeu.
+  expect(signes, a).toEqual({ triangles: 6, drawCalls: 1 });
+  // Avec les petites constructions des commandes, sous le plafond.
+  const blocs = sceneCost(a, true);
+  expect(blocs.triangles + signes.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+  expect(blocs.drawCalls + signes.drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
 });
 
 it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la moitié du budget des triangles', () => {
@@ -141,14 +145,21 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // importés de la 5e : les Îles Brumeuses à 86 685 (mainteneur, 10 octobre 2026). Les monuments importés d'Archipéo : la
   // construction prend 5 000 partout (81 290, 91 685, 88 725, 87 855). Les personnages importés de la 4e : les Anciens
   // Ateliers à 90 960 ; ceux de la 3e : les Îles du Ciel à 89 565. Les bâtiments des plans importés (mainteneur,
-  // 10 octobre 2026) : la construction prend 3 750 aux Premiers Rivages, 2 970 aux Îles Brumeuses, 3 950 ailleurs.
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés) : 85 040 triangles et 25 appels aux Premiers Rivages, 94 655, 94 910 et 93 515 et 24 appels ailleurs', () => {
+  // 10 octobre 2026) : la construction prend 3 750 aux Premiers Rivages, 2 970 aux Îles Brumeuses, 3 950 ailleurs. Les
+  // trois essais de la piste 3 « hybride » (11 octobre 2026) : la construction prend 1 550 et les commandes 250 aux
+  // Premiers Rivages (86 840) ; le lot 1 des objets du 6e (même jour) : la construction 650 et les commandes 400
+  // (87 890) ; le lot 2 (même jour : le décor du cœur et les trois lieux de l'île-école dessinés) : la construction
+  // 3 300 (91 190). La Nef en modèles peints (même jour, « Relever ») : le navire 1 410 aux Premiers Rivages (92 600), 1 480
+  // ailleurs. Kéo (mainteneur, 11 octobre 2026) : le bonhomme prend 1 000 aux Premiers Rivages, 1 025 ailleurs. Le lot 1
+  // des objets du 5e (même jour) : la construction 4 300 et les commandes 375 aux Îles Brumeuses (101 835) ; le lot 2 : la
+  // construction 600 et les commandes 130 (102 565, sous `RENDER_BUDGET_5E`).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, ceux de la 3e, les essais et les lots 1 et 2 de la piste 3, la Nef importée, Kéo, les lots 1 et 2 des objets du 5e) : 93 600 triangles et 25 appels aux Premiers Rivages, 102 565, 97 415 et 96 170 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([85_040, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([94_655, 24]);
-    expect([total('4e'), appels('4e')]).toEqual([94_910, 24]);
-    expect([total('3e'), appels('3e')]).toEqual([93_515, 24]);
+    expect([total('6e'), appels('6e')]).toEqual([93_600, 25]);
+    expect([total('5e'), appels('5e')]).toEqual([102_565, 24]);
+    expect([total('4e'), appels('4e')]).toEqual([97_415, 24]);
+    expect([total('3e'), appels('3e')]).toEqual([96_170, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la
@@ -238,8 +249,16 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // Les personnages importés (6e, 5e, 4e et 3e), lus sur le disque comme la vue les charge : au pire, de
   // près sur l'île qui coûte le plus, de loin ailleurs. (En dernier : une fois chargés, ils remplacent les dessinés
   // en code dans ce fichier.)
-  it('R6 : avec les personnages importés (6e, 5e, 4e et 3e), créatures et Gardiens tiennent leur enveloppe aux Premiers Rivages, aux Îles Brumeuses, aux Anciens Ateliers et aux Îles du Ciel', () => {
+  it('R6 : avec les personnages importés (6e, 5e, 4e et 3e) et Kéo, le bonhomme, les créatures et les Gardiens tiennent leur enveloppe aux Premiers Rivages, aux Îles Brumeuses, aux Anciens Ateliers et aux Îles du Ciel', () => {
     chargerLesModelesDuDisque();
+    loadKeoFromDisk();
+    for (const a of ['6e', '5e', '4e', '3e'] as const) {
+      // Kéo, dans la tenue de l'archipel : 1 500 triangles au plus, un appel.
+      const keo = personnagesCost(a).bonhomme;
+      expect(keo.triangles, `${a} Kéo`).toBeGreaterThan(1_000);
+      expect(keo.triangles, `${a} Kéo`).toBeLessThanOrEqual(enveloppeDe('bonhomme', a).triangles);
+      expect(keo.drawCalls, `${a} Kéo`).toBe(1);
+    }
     for (const a of ['6e', '5e', '4e', '3e'] as const)
       for (const p of ['creatures', 'gardiens'] as const) {
         const cout = personnagesCost(a)[p];
@@ -277,6 +296,18 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
       expect(m.drawCalls, a).toBeLessThanOrEqual(enveloppeDe('construction', a).drawCalls);
     }
   }, 120_000);
+
+  // La Nef en modèles peints (GD-15, 11 octobre 2026), lus sur le disque : chaque forme et chaque chantier tiennent le
+  // poste du navire, sans appel de plus.
+  it('R5 : avec la Nef importée, le navire tient son enveloppe au pire de ses formes et de ses chantiers, dans chaque archipel', () => {
+    loadNefFromDisk();
+    for (const a of ARCHIPELAGO_IDS) {
+      const m = navireCost(a);
+      expect(m.triangles, a).toBeGreaterThan(1_700);
+      expect(m.triangles, a).toBeLessThanOrEqual(enveloppeDe('navire', a).triangles);
+      expect(m.drawCalls, a).toBeLessThanOrEqual(enveloppeDe('navire', a).drawCalls);
+    }
+  }, 60_000);
 });
 
 it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026), puis 120 avec une seule texture pour les blocs (piste 2, 7 octobre 2026), puis 102 000 triangles pour les grands projets du 4e (GD-10, 8 octobre 2026)', () => {

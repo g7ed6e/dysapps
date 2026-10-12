@@ -35,8 +35,14 @@ import { piecesDeToit } from '../roofs';
 import { etapesDe } from '../../construction/buildings';
 import type { VoxelCube } from '../../cube';
 import type { IdDePiece } from '../choices';
+import { boiteDansLaCase, type DessinDePiece, type Facette, FACES } from '../rooms';
 import { bedWhenAlone, FINISHES, piecesSurPilotis, postsOf, villagePlaces } from './shared';
+import { yardPiecesOf } from '../yardPieces';
 import type { Kit } from './types';
+
+// Les pièces communes de la cour (../yardPieces.ts), comme au 6e depuis le lot 1 des objets du 5e (11 octobre 2026) :
+// la barrière, la marche et la lanterne sur poteau de toutes les cours des Îles Brumeuses.
+const YARD = yardPiecesOf('5e', FINISHES);
 
 /** Le kiosque à musique (world/monuments.ts) : son toit en damier de toile et de tuile, peint à plat. */
 const KIOSQUE = 'monument:landmark-5e-2';
@@ -95,6 +101,26 @@ function enluminure(piece: IdDePiece, c: VoxelCube) {
   return forme === 'seul' && pied === 'haut' ? slab(HEART.slab.desk) : 'bardage';
 }
 
+/** Le dessin d'une dalle de cour, sous le ciel ou sous une autre dalle : on le fait une fois. */
+const yardSlabs = new Map<boolean, DessinDePiece>();
+
+/**
+ * Une dalle de la cour (la fontaine du Relais, son bassin et sa colonne, sur le sol de dalle de l'île) : un cube plein,
+ * sans motif, ses côtés dans le flanc sombre du kit, son dessus dans sa matière, seulement sous le ciel (la dalle sur la
+ * dalle ne se lirait pas : 3:1 à l'image, relevé du référent dys du 11 octobre 2026).
+ */
+function yardSlab(piece: IdDePiece, c: VoxelCube): DessinDePiece | undefined {
+  if (c.petiteConstruction || c.place || !etapesDe('5e', 2, 3).has(cle(c.x, c.y, c.z))) return undefined;
+  const open = parts(piece)[3] === 'chaperon';
+  const deja = yardSlabs.get(open);
+  if (deja) return deja;
+  const box = boiteDansLaCase(0, 1, 0, 1, 0, 1).facettes;
+  const facettes: Facette[] = [...box.filter((f) => f.normale[2] === 0).map((f): Facette => ({ ...f, role: 'flanc' })), ...(open ? box.filter((f) => f.normale[2] > 0) : [])];
+  const dessin: DessinDePiece = { facettes, couvre: FACES.est | FACES.nord | FACES.ouest | FACES.sud | (open ? FACES.haut : 0) };
+  yardSlabs.set(open, dessin);
+  return dessin;
+}
+
 /** Les poteaux de tourbe du kiosque (huit colonnes de trois cases) : des poteaux carrés de 0,3 case, dans leur teinte. */
 function tourbe(piece: IdDePiece, c: VoxelCube) {
   const [, forme, , tete] = parts(piece);
@@ -122,13 +148,30 @@ export const KIT_5E: Kit = {
     paille: 0xe8c66f,
     masonry: 0x7d8a86,
     snow: 0xb3c1c7,
+    // Les pièces de la cour et des objets dessinés (intention du directeur artistique du 11 octobre 2026) : le poteau et
+    // les lisses de la barrière, la pierre sombre du phare (le pied de la lanterne, les côtés de la marche), la dalle, le
+    // fer et l'ardoise de l'île (le toit de la lanterne), ses vitres (allumées la nuit, sans clignoter).
+    yardPost: 0x6e4c30,
+    yardRail: 0x795643,
+    yardStone: 0x66726f,
+    yardSlab: 0xcfc6b4,
+    lanternFrame: 0x3a2a22,
+    lanternRoof: 0x224c5f,
+    lanternGlass: 0xe8c877,
   },
   murs: { colombage: 'colombage', bardage: 'bardage', pierre: 'plein', metal: 'tole', toile: 'cloth', verre: 'glazing' },
   bardes: [],
   pieces: { toit: piecesDeToit(), colombage: piecesSurPilotis(), pierre: { [PIECE_SEULE_ET_BASSE]: bacDePierre() } },
-  finitions: FINISHES,
+  // La barrière en poteaux et lisses, la marche et la lanterne : dans les cours, les pièces communes (`YARD`).
+  finitions: YARD.finitions,
+  yardLantern: YARD.lanterne,
+  // Les objets dessinés (la piste 3 « hybride » au 5e, 11 octobre 2026 : world/fixtureModels.ts, world/objects/) : les
+  // petites constructions posées, le bloc d'or des Gardiens rallumés, les objets du quai, le décor du cœur et les trois
+  // lieux de l'île-école, comme au 6e.
+  objetsDessines: true,
   // La rizière seule au sol (rien dessus, au pied : la cour du moulin du Delta) : une plate-bande (./shared.ts).
-  byMaterial: { bambou: () => 'verticalBoards', riziere: bedWhenAlone, enluminure, tourbe },
+  // La dalle d'une cour (la fontaine du Relais) : un cube plein aux côtés sombres (`yardSlab`).
+  byMaterial: { bambou: () => 'verticalBoards', riziere: bedWhenAlone, enluminure, tourbe, dalle: yardSlab },
   tilesInWalls: tileInWall,
   flat: isFlat,
   monumentPieces: kioskPieces,
