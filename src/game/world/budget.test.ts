@@ -41,8 +41,8 @@ it('les plafonds des archipels', () => {
   // par le 5e, le 4e et le 3e. Chacun le quitte avec ses objets dessinés, ce plafond plus la hausse de ses enveloppes :
   // les Îles Brumeuses le 11 octobre 2026, les Anciens Ateliers et les Îles du Ciel le 12.
   expect(RENDER_BUDGET_5E).toEqual({ triangles: 102_860, drawCalls: 40 });
-  expect(RENDER_BUDGET_4E).toEqual({ triangles: 101_405, drawCalls: 40 });
-  expect(RENDER_BUDGET_3E).toEqual({ triangles: 101_155, drawCalls: 40 });
+  expect(RENDER_BUDGET_4E).toEqual({ triangles: 102_305, drawCalls: 40 });
+  expect(RENDER_BUDGET_3E).toEqual({ triangles: 101_755, drawCalls: 40 });
   expect(renderBudgetOf('6e')).toBe(RENDER_BUDGET_6E);
   expect(renderBudgetOf('5e')).toBe(RENDER_BUDGET_5E);
   expect(renderBudgetOf('4e')).toBe(RENDER_BUDGET_4E);
@@ -158,14 +158,15 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // des objets du 5e (même jour) : la construction 4 300 et les commandes 375 aux Îles Brumeuses (101 835) ; le lot 2 : la
   // construction 600 et les commandes 130 (102 565, sous `RENDER_BUDGET_5E`). L'étape 1 des objets du 4e et du 3e
   // (12 octobre 2026) : la construction 3 950 aux Anciens Ateliers (101 365, sous `RENDER_BUDGET_4E`), 3 700 aux Îles du
-  // Ciel (99 870, sous `RENDER_BUDGET_3E`).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, ceux de la 3e, les essais et les lots 1 et 2 de la piste 3, la Nef importée, Kéo, les lots 1 et 2 des objets du 5e, l’étape 1 des objets du 4e et du 3e) : 93 600 triangles et 25 appels aux Premiers Rivages, 102 565, 101 365 et 99 870 et 24 appels ailleurs', () => {
+  // Ciel (99 870, sous `RENDER_BUDGET_3E`). L'étape 2 : la construction 500 et les commandes 400 aux Anciens Ateliers
+  // (102 265), 400 et 200 aux Îles du Ciel (100 470).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, ceux de la 3e, les essais et les lots 1 et 2 de la piste 3, la Nef importée, Kéo, les lots 1 et 2 des objets du 5e, les étapes 1 et 2 des objets du 4e et du 3e) : 93 600 triangles et 25 appels aux Premiers Rivages, 102 565, 102 265 et 100 470 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([93_600, 25]);
     expect([total('5e'), appels('5e')]).toEqual([102_565, 24]);
-    expect([total('4e'), appels('4e')]).toEqual([101_365, 24]);
-    expect([total('3e'), appels('3e')]).toEqual([99_870, 24]);
+    expect([total('4e'), appels('4e')]).toEqual([102_265, 24]);
+    expect([total('3e'), appels('3e')]).toEqual([100_470, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la

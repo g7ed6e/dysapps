@@ -131,16 +131,18 @@ export const RENDER_BUDGET_5E = { triangles: 102_860, drawCalls: PLAFOND_PARTAGE
  * Les Anciens Ateliers (4e) quittent le plafond partagé le 12 octobre 2026 avec leurs objets dessinés (la piste 3
  * « hybride » au 4e, même autorisation qu'au 5e) : le plafond partagé (97 455) plus la hausse mesurée de leurs
  * enveloppes. L'étape 1 (les pièces de cour, les trophées, le quai, les lieux du village) : la somme des enveloppes
- * 97 415 → 101 365 (+3 950), le plafond 101 405.
+ * 97 415 → 101 365 (+3 950), le plafond 101 405 ; l'étape 2 (onze petites constructions en pièces communes, dix cœurs) :
+ * 101 365 → 102 265 (+900), le plafond 102 305.
  */
-export const RENDER_BUDGET_4E = { triangles: 101_405, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
+export const RENDER_BUDGET_4E = { triangles: 102_305, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
 
 /**
  * Les Îles du Ciel (3e) quittent le plafond partagé le même jour, de même : l'étape 1 (les pièces de cour, les trophées,
  * le quai, les lieux du village, la Halle bardée et les toits enneigés) : la somme des enveloppes 96 170 → 99 870
- * (+3 700), le plafond 101 155.
+ * (+3 700), le plafond 101 155 ; l'étape 2 (huit petites constructions en pièces communes, sept cœurs) : 99 870 →
+ * 100 470 (+600), le plafond 101 755.
  */
-export const RENDER_BUDGET_3E = { triangles: 101_155, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
+export const RENDER_BUDGET_3E = { triangles: 101_755, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
 
 /** Le budget de la scène 3D de chaque archipel, tout construit. */
 const RENDER_BUDGETS: Readonly<Record<ArchipelagoId, { triangles: number; drawCalls: number }>> = { '6e': RENDER_BUDGET_6E, '5e': RENDER_BUDGET_5E, '4e': RENDER_BUDGET_4E, '3e': RENDER_BUDGET_3E };
@@ -440,12 +442,15 @@ export const ENVELOPPES: Record<
   // trophées, le quai, les trois lieux de l'île-école (au 3e, la Halle bardée et les toits enneigés). Mesuré tout
   // construit (`npm run rendu:budget`) : 16 576 → 20 062 aux Anciens Ateliers, 20 822 au pire de la salle ; 16 797 →
   // 20 037 aux Îles du Ciel, 20 797 au pire ; leurs enveloppes 16 950 → 20 900 et 17 100 → 20 800 ; aucun appel de plus.
+  // L'étape 2 (les cœurs de dix îles du 4e et de sept du 3e, ./objects/heartDecor4e.ts et heartDecor3e.ts) : 20 062 →
+  // 20 556 aux Anciens Ateliers, 21 316 au pire de la salle ; 20 037 → 20 355 aux Îles du Ciel, 21 115 au pire ; leurs
+  // enveloppes 20 900 → 21 400 et 20 800 → 21 200 ; aucun appel de plus.
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
     premiersRivages: { triangles: 22_000, drawCalls: 3 },
     autres: { triangles: 16_950, drawCalls: 3 },
-    parArchipel: { '5e': { triangles: 21_100, drawCalls: 3 }, '4e': { triangles: 20_900, drawCalls: 3 }, '3e': { triangles: 20_800, drawCalls: 3 } },
+    parArchipel: { '5e': { triangles: 21_100, drawCalls: 3 }, '4e': { triangles: 21_400, drawCalls: 3 }, '3e': { triangles: 21_200, drawCalls: 3 } },
   },
   // Les quêtes des habitants (GD-10, PR 1) : les trois objets posés à la fin des quêtes du 6e (la lanterne, le portillon,
   // l'escalier) sont des petites constructions, comptées dans ce poste (`toutConstruitAvecLesCommandes`) : 758 triangles
@@ -464,13 +469,15 @@ export const ENVELOPPES: Record<
   // (de 48 à 116 triangles, les mêmes de près et de loin) ; mesuré : 540 → 910 ; l'enveloppe des Îles Brumeuses 545 →
   // 920 ; aucun appel de plus. Le lot 2 : les cinq autres, la cabane, la salière, la tente et le four à pain à silhouette
   // (de près 97 à 162, de loin 15 à 46) et le poteau indicateur de Sema en pièces (50) ; mesuré : 910 → 1 047 ;
-  // l'enveloppe 920 → 1 050.
+  // l'enveloppe 920 → 1 050. L'étape 2 des objets du 4e et du 3e (12 octobre 2026) : onze petites constructions du 4e et
+  // huit du 3e en pièces communes (de 20 à 162 triangles, les mêmes de près et de loin) ; mesuré : 456 → 888 aux Anciens
+  // Ateliers, 458 → 646 aux Îles du Ciel ; leurs enveloppes 500 → 900 et 500 → 700 ; aucun appel de plus.
   commandes: {
     lot: 'GD-7',
     nom: 'Commandes et quêtes (les petites constructions posées, dans le sol et la construction, sans appel de plus)',
     premiersRivages: { triangles: 1_500, drawCalls: 0 },
     autres: { triangles: 500, drawCalls: 0 },
-    parArchipel: { '5e': { triangles: 1_050, drawCalls: 0 } },
+    parArchipel: { '5e': { triangles: 1_050, drawCalls: 0 }, '4e': { triangles: 900, drawCalls: 0 }, '3e': { triangles: 700, drawCalls: 0 } },
   },
   // Le lot de contenu des programmes 2025-2026 (une mission de plus à la Forge et au Cabinet de 4e, et à l'Observatoire
   // de 3e, une de moins au Glacier de 5e) : relevé aux mesures tout construit, comme pour SC-3, confirmé par le

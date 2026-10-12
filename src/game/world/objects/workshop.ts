@@ -185,6 +185,18 @@ export class Workshop {
   }
 
   /**
+   * Un coin qui monte le long de x (le plan incliné du Tremplin, la tablette du souffleur) : une boîte de (x0, y0) à
+   * (x1, y1), sans dessous, dont le dessus monte de `zLeft` (en x0) à `zRight` (en x1). 10 triangles.
+   */
+  ramp(x0: number, x1: number, y0: number, y1: number, z0: number, zLeft: number, zRight: number, t: Tint): void {
+    const c: V3 = [(x0 + x1) / 2, (y0 + y1) / 2, z0 + (Math.min(zLeft, zRight) - z0) / 2];
+    this.quad([x0, y0, zLeft], [x1, y0, zRight], [x1, y1, zRight], [x0, y1, zLeft], c, t);
+    this.quad([x0, y0, z0], [x0, y1, z0], [x0, y1, zLeft], [x0, y0, zLeft], c, t);
+    this.quad([x1, y0, z0], [x1, y1, z0], [x1, y1, zRight], [x1, y0, zRight], c, t);
+    for (const y of [y0, y1]) this.quad([x0, y, z0], [x1, y, z0], [x1, y, zRight], [x0, y, zLeft], c, t);
+  }
+
+  /**
    * Une poutre de section carrée `side` de `a` à `b` (penchée, couchée ou debout) : ses quatre flancs, ses bouts si
    * `ends`. 8 triangles (12 avec les bouts).
    */

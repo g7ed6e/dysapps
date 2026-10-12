@@ -1,10 +1,11 @@
-// Les objets dessinés d'Archipéo hors des petites constructions (piste 3 « hybride », au 6e puis au 5e) : le bloc d'or
-// devant chaque Gardien rallumé (world/terrain/guardians.ts, `guardianTrophy` : une case de pierre, une case d'or), les
-// objets du quai de l'île-port (world/terrain/port.ts : la barque, les caisses, les fanions, le foyer) et le décor du
-// cœur des îles (./heartDecor.ts au 6e, ./heartDecor5e.ts au 5e). Leurs cubes restent ceux du monde (Blocland les
-// dessine, la vue simple ne les voit pas) ; la construction d'Archipéo les remplace par leur dessin, comme un modèle
-// importé (le toucher retrouve leurs cases). La fumée du foyer reste la sienne. Seulement dans les archipels dont le kit
-// les demande (`Kit.objetsDessines` : le 6e et le 5e). Code pur, sans Three.js.
+// Les objets dessinés d'Archipéo hors des petites constructions (piste 3 « hybride », au 6e, au 5e, puis au 4e et au
+// 3e) : le bloc d'or devant chaque Gardien rallumé (world/terrain/guardians.ts, `guardianTrophy` : une case de pierre,
+// une case d'or), les objets du quai de l'île-port (world/terrain/port.ts : la barque, les caisses, les fanions, le
+// foyer) et le décor du cœur des îles (./heartDecor.ts au 6e, ./heartDecor5e.ts au 5e, ./heartDecor4e.ts et
+// ./heartDecor3e.ts au 4e et au 3e). Leurs cubes restent ceux du monde (Blocland les dessine, la vue simple ne les voit
+// pas) ; la construction d'Archipéo les remplace par leur dessin, comme un modèle importé (le toucher retrouve leurs
+// cases). La fumée du foyer reste la sienne. Seulement dans les archipels dont le kit les demande (`Kit.objetsDessines` :
+// les quatre archipels d'Archipéo). Code pur, sans Three.js.
 import type { VoxelCube } from '../cube';
 import { type BiomeId, BIOMES } from '../../biomes';
 import { type ArchipelagoId, islandDef } from '../map';
@@ -21,12 +22,19 @@ import { Workshop } from './workshop';
 import { rowboat, quayCrate, pennant, campfire, paintFor, trophy } from './pieces';
 import { HEART_DECOR_6E, type HeartDecor, type HeartGroup } from './heartDecor';
 import { HEART_DECOR_5E } from './heartDecor5e';
+import { HEART_DECOR_4E } from './heartDecor4e';
+import { HEART_DECOR_3E } from './heartDecor3e';
 
 /** Le kit de l'archipel dessine-t-il ses objets (`Kit.objetsDessines`) ? Ailleurs, les cubes du kit. */
 const drawsObjects = (a: ArchipelagoId): boolean => KITS[a].objetsDessines === true;
 
 /** Le décor du cœur dessiné, île par île, dans chaque archipel qui le dessine. */
-const HEART_DECORS: Partial<Record<ArchipelagoId, Readonly<Partial<Record<BiomeId, readonly HeartDecor[]>>>>> = { '6e': HEART_DECOR_6E, '5e': HEART_DECOR_5E };
+const HEART_DECORS: Partial<Record<ArchipelagoId, Readonly<Partial<Record<BiomeId, readonly HeartDecor[]>>>>> = {
+  '6e': HEART_DECOR_6E,
+  '5e': HEART_DECOR_5E,
+  '4e': HEART_DECOR_4E,
+  '3e': HEART_DECOR_3E,
+};
 
 /** Les objets du quai que la construction dessine, par genre de décor (world/terrain/port.ts). */
 const QUAY_KINDS = new Set(['barque', 'caisse', 'fanion', 'foyer']);
@@ -141,8 +149,8 @@ const isTextureKind = (t: string | undefined): t is TextureKind => t !== undefin
 const isHeartCube = (c: VoxelCube) => !c.ghost && !c.sol && !c.decor && !c.quest && !c.place && !c.bridge && !c.petiteConstruction;
 
 /**
- * Les ensembles du décor du cœur de ce monde que le kit d'Archipéo dessine (`Kit.objetsDessines`, au 6e et au 5e) :
- * chacun comme un modèle importé qui remplace ses cubes (le toucher retrouve ses cases). Aucun dans les autres archipels.
+ * Les ensembles du décor du cœur de ce monde que le kit d'Archipéo dessine (`Kit.objetsDessines`, du 6e au 3e) :
+ * chacun comme un modèle importé qui remplace ses cubes (le toucher retrouve ses cases). Aucun sans table ou sans le kit.
  */
 export function drawnHeartDecor(a: ArchipelagoId, cubes: readonly VoxelCube[]): ImportedMonument[] {
   const out: ImportedMonument[] = [];

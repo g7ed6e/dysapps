@@ -50,7 +50,7 @@ const contrastUnder = (g: number, f: number, kg: number, kf: number) => {
  * arriverait (l'herbe sous la brume du 5e), le flanc garde la teinte telle quelle, le côté naturel de sa matière.
  * `inColours` : compté en couleurs, comme au lot 2 (ce que garde le thermomètre, jugé conforme).
  */
-function flankOn(pe: Paint, c: Couleur, ground: TextureKind, inColours = false): Couleur {
+export function flankOn(pe: Paint, c: Couleur, ground: TextureKind, inColours = false): Couleur {
   const g = luminance(pe.material(ground).dessus);
   const L = SCENE_LIGHT;
   const tests: [number, number][] = inColours ? [[1, 1]] : [[L.ground, L.side]];
@@ -105,7 +105,7 @@ const gatePillar: HeartDrawing = (at, pe) => milestone(at, pe, 0, 0, 0, 1.9, pe.
  * Une pile de planches de (x0, y0) à (x1, y1), posée en z0 : `layers` lits de trois planches épaisses de 0,16, en croix
  * d'un lit à l'autre (le premier le long de x, ou de y si `crossFirst`).
  */
-function boardPile(at: Workshop, x0: number, x1: number, y0: number, y1: number, z0: number, layers: number, board: Faces, crossFirst = false): void {
+export function boardPile(at: Workshop, x0: number, x1: number, y0: number, y1: number, z0: number, layers: number, board: Faces, crossFirst = false): void {
   const h = 0.16;
   for (let k = 0; k < layers; k++) {
     const z = z0 + k * h;
@@ -469,7 +469,7 @@ const REED_GREEN = 0x8fae4f;
 const stump: HeartDrawing = (at, pe) => at.prism(0.5, 0.5, 0.4, 0.33, 0, 0.36, 7, { dessus: pe.color(SAWN_WOOD), cote: pe.material('tronc').cote }, 0.3);
 
 /** Le bois scié du dessus de la souche. */
-const SAWN_WOOD = 0xe2c999;
+export const SAWN_WOOD = 0xe2c999;
 
 // ---------- Le Comptoir (vocabulaire anglais, 5e) ----------
 

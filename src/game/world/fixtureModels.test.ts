@@ -44,10 +44,32 @@ const mondeDe = (a: ArchipelagoId) => {
 const archipelDe = (id: string) => BIOMES.find((b) => b.id === ileDe(id))!.classe;
 
 /**
- * Les petites constructions du 4e et du 3e déjà dessinées (12 octobre 2026) : à l'étape 1, la veilleuse d'Olive ; les
- * autres gardent leurs cubes jusqu'à leur étape.
+ * Les petites constructions du 4e et du 3e déjà dessinées (12 octobre 2026) : à l'étape 1, la veilleuse d'Olive ; à
+ * l'étape 2, celles que les pièces communes couvrent. Le wagonnet de Braise, le mât de Stat, le haut-parleur d'Écho et
+ * le carillon de Navette gardent leurs cubes jusqu'à l'étape 3.
  */
-const DU_COLLEGE = ['life-earth-sciences-3e-human-body-fixture-1'];
+const DU_COLLEGE = [
+  'maths-4e-algebra-fixture-1',
+  'french-4e-agreement-fixture-1',
+  'french-4e-vocabulary-fixture-1',
+  'english-4e-comprehension-fixture-1',
+  'english-4e-grammar-fixture-1',
+  'history-4e-revolutions-fixture-1',
+  'geography-4e-globalization-fixture-1',
+  'life-earth-sciences-4e-cells-evolution-fixture-1',
+  'physics-chemistry-4e-signals-circuits-fixture-1',
+  'technology-4e-modeling-fixture-1',
+  'civics-4e-rights-freedoms-fixture-1',
+  'maths-3e-geometry-fixture-1',
+  'maths-3e-functions-fixture-1',
+  'french-3e-close-reading-fixture-1',
+  'english-3e-grammar-fixture-1',
+  'history-3e-twentieth-century-fixture-1',
+  'geography-3e-france-fixture-1',
+  'civics-3e-democratic-life-fixture-1',
+  'life-earth-sciences-3e-human-body-fixture-1',
+  'physics-chemistry-3e-motion-energy-fixture-1',
+];
 
 it('toutes les petites constructions du 6e (seize commandes, trois objets d’entraide) et du 5e (douze et trois) sont dessinées, et celles du 4e et du 3e de leur étape, et seulement elles', () => {
   const du6e = PETITES_CONSTRUCTIONS.filter((id) => archipelDe(id) === '6e');
@@ -298,8 +320,9 @@ it('les pièces de la cour : dans leur case, sans dessous, de 10 à 50 triangles
 
 it('les lanternes des petites constructions s’allument la nuit (leurs vitres dans le feu), pas celles d’une île fermée', () => {
   const avecLanterne = PETITES_CONSTRUCTIONS_DESSINEES.filter((id) => casesDeLaPetiteConstruction(id)!.some((c) => c.block === BLOC.lanterne));
-  // Quatre au 6e ; au 5e, l'écritoire de Vélin, le coffre de Sillon et la balise de Frimas ; au 3e, la veilleuse d'Olive.
-  expect(avecLanterne).toHaveLength(8);
+  // Quatre au 6e ; au 5e, l'écritoire de Vélin, le coffre de Sillon et la balise de Frimas ; au 4e, le réverbère de
+  // Typo ; au 3e, la veilleuse d'Olive, le pupitre de Mémo et la boîte à livres de Jalon.
+  expect(avecLanterne).toHaveLength(11);
   for (const id of PETITES_CONSTRUCTIONS_DESSINEES) {
     const a = archipelDe(id);
     const m = petitesConstructionsDessinees(a, mondeDe(a), ileDe(id)).find((d) => d.id === id)!;

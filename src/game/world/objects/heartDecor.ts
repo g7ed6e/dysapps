@@ -17,7 +17,7 @@
 // vers le fond, z vers le haut, z = 0 sous son cube le plus bas), tourné avec l'île (GD-9), chaque colonne posée sur
 // son sol (`ground`). Rien ne s'allume (le réverbère du cœur reste éteint, docs/rendu/style.md), rien ne bouge. La pose
 // dans le monde (les ensembles complets, leurs cases) est dans ./inTheWorld.ts ; le cœur des îles du 5e, dans
-// ./heartDecor5e.ts. Code pur, sans Three.js.
+// ./heartDecor5e.ts, du 4e et du 3e, dans ./heartDecor4e.ts et ./heartDecor3e.ts. Code pur, sans Three.js.
 import type { BiomeId } from '../../biomes';
 import { apartFromGhost, LANTERNE_DE_COUR } from '../architecture';
 import type { V3 } from '../decor/brush';
@@ -350,22 +350,26 @@ const gearTrain: HeartDrawing = (at, pe) => {
   at.prism(1.44, 0.5, 0.1, 0.08, 0.25, 0.33, 6, dial.dessus);
 };
 
-/** Une roue dentée couchée : `n` dents (une étoile à 2n pointes, son flanc et son dessus), de rayon `r`, haute de `h`. */
-function gear(at: Workshop, cx: number, cy: number, r: number, h: number, n: number, t: Tint, rot: number): void {
+/**
+ * Une roue dentée couchée : `n` dents (une étoile à 2n pointes, son flanc et son dessus), de rayon `r`, haute de `h`,
+ * posée en `z0` (le rouage de l'Horloge, la machine d'Ixe au 4e).
+ */
+export function gear(at: Workshop, cx: number, cy: number, r: number, h: number, n: number, t: Tint, rot: number, z0 = 0): void {
   const pts: V3[] = [];
   for (let i = 0; i < 2 * n; i++) {
     const a = rot + (i / (2 * n)) * Math.PI * 2;
     const ri = i % 2 ? r * 0.78 : r;
-    pts.push([cx + ri * Math.cos(a), cy + ri * Math.sin(a), 0]);
+    pts.push([cx + ri * Math.cos(a), cy + ri * Math.sin(a), z0]);
   }
-  const inside: V3 = [cx, cy, h / 2];
+  const z1 = z0 + h;
+  const inside: V3 = [cx, cy, z0 + h / 2];
   for (let i = 0; i < pts.length; i++) {
     const [p, q] = [pts[i], pts[(i + 1) % pts.length]];
-    at.quad(p, q, [q[0], q[1], h], [p[0], p[1], h], inside, t);
+    at.quad(p, q, [q[0], q[1], z1], [p[0], p[1], z1], inside, t);
   }
   for (let i = 0; i < pts.length; i++) {
     const [p, q] = [pts[i], pts[(i + 1) % pts.length]];
-    at.tri([cx, cy, h], [p[0], p[1], h], [q[0], q[1], h], [cx, cy, 0], t);
+    at.tri([cx, cy, z1], [p[0], p[1], z1], [q[0], q[1], z1], [cx, cy, z0], t);
   }
 }
 
