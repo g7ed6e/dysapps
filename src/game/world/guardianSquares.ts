@@ -106,11 +106,11 @@ export function onFixedGuardianSquare(id: BiomeId, hasShape: boolean, x: number,
 /**
  * Les Gardiens d'Archipéo plus hauts dans le monde que la sentinelle commune (5,2 cases, socle compris), en cases, socle
  * compris : le Grand Chêne est le plus grand arbre de son île et de son archipel (demande du mainteneur, 10 octobre 2026),
- * une case au moins au-dessus des arbres ordinaires du 6e (directeur artistique). Sa large couronne tient alors sur les
- * cinq cases de son carré. Dans Blocland, il fait déjà 6,5 blocs (13 couches à l'échelle 0,5), contre 5 au plus pour un
- * arbre. Données pures, lues par la grille, le dessin des Gardiens et le décor.
+ * puis d'un bloc plus haut dans les deux univers (mainteneur, 12 octobre 2026) : 7 cases, deux au-dessus des arbres
+ * ordinaires du 6e (`TALLEST_TREE_6E`). Sa large couronne tient sur les cinq cases de son carré. Dans Blocland, il fait
+ * 7,5 blocs (15 couches à l'échelle 0,5), contre 5 au plus pour un arbre. Données pures, lues par la grille, le dessin des Gardiens et le décor.
  */
-export const GUARDIAN_WORLD_HEIGHTS: Readonly<Partial<Record<BiomeId, number>>> = { 'french-6e-phonology': 6 };
+export const GUARDIAN_WORLD_HEIGHTS: Readonly<Partial<Record<BiomeId, number>>> = { 'french-6e-phonology': 7 };
 
 /**
  * Les Gardiens qui restent couchés, plus bas que les arbres de leur île : aucun arbre de plus de trois blocs ne pousse à
@@ -152,8 +152,8 @@ export const TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN = 3;
 /** La distance, en cases, du carré d'un Gardien couché où un arbre trop haut devient un buisson. */
 export const TREE_CLEARANCE_OF_A_LYING_GUARDIAN = 2;
 
-/** Le plus haut d'un arbre ordinaire du 6e dans Archipéo, au-dessus du sol : une case sous le Grand Chêne. */
-export const TALLEST_TREE_6E = (GUARDIAN_WORLD_HEIGHTS['french-6e-phonology'] ?? 0) - 1;
+/** Le plus haut d'un arbre ordinaire du 6e dans Archipéo, au-dessus du sol : deux cases sous le Grand Chêne. */
+export const TALLEST_TREE_6E = 5;
 
 /**
  * Ce que prend, au plus, un Gardien d'Archipéo sur son carré, en cases, autour du milieu de sa

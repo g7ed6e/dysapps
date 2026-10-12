@@ -6,10 +6,13 @@ import { fromLayers, type CubeDeModele } from './ascii';
 // Chaque Gardien fait 7 à 9 blocs de large et 9 à 13 de haut : quatre à six fois le bonhomme, un visage lisible de loin,
 // deux ou trois couleurs et un attribut (cornes, livre, marteau, chapeau, balance).
 
-// Le Grand Chêne : un tronc à visage (yeux d'or, bouche sombre), des racines, une large couronne en étages.
+// Le Grand Chêne : un tronc à visage (yeux d'or, bouche sombre), des racines, une large couronne en étages. Quinze
+// couches (7,5 blocs dans Blocland), une de tronc et une de couronne de plus qu'au 10 octobre : le plus haut des
+// Gardiens, deux blocs et demi au-dessus des arbres (mainteneur, 12 octobre 2026).
 const GRAND_CHENE = fromLayers(
   [
     ['.TTTTTTT.', '..TTTTT..', '..TTTTT..', '....T....'],
+    ['...TTT...', '...TTT...', '...TTT...', '.........'],
     ['...TTT...', '...TTT...', '...TTT...', '.........'],
     ['...TTT...', '...TTT...', '...TTT...', '.........'],
     ['...TTT...', '...TTT...', '...TTT...', '.........'],
@@ -17,6 +20,7 @@ const GRAND_CHENE = fromLayers(
     ['...ETE...', '...TTT...', '...TTT...', '.........'],
     ['...TTT...', '...TTT...', '...TTT...', '.........'],
     ['..LLLLL..', '.LLLLLLL.', '.LLLLLLL.', '..LLLLL..'],
+    ['.LLLLLLL.', 'LLLLLLLLL', 'LLLLLLLLL', '.LLLLLLL.'],
     ['.LLLLLLL.', 'LLLLLLLLL', 'LLLLLLLLL', '.LLLLLLL.'],
     ['.LLLLLLL.', 'LLLLLLLLL', 'LLLLLLLLL', '.LLLLLLL.'],
     ['..LLLLL..', '.LLLLLLL.', '.LLLLLLL.', '..LLLLL..'],
