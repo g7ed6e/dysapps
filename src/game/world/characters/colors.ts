@@ -16,10 +16,17 @@ export const OUTIL = { bois: 0x8a6236, fer: 0x5c6470, laiton: 0xc9a24a } as cons
 export const LUEUR: Couleur = 0xffd866;
 
 /**
- * La nuit, le liseré des vivants (le bonhomme et les créatures, jamais les sentinelles) du côté éclairé : clair et froid
- * (DA, 28/09) : les facettes du bord de la silhouette, vers le haut.
+ * L'ombre au sol des vivants d'Archipéo (le bonhomme et les créatures) : un disque Nuit océan, plus marqué la nuit
+ * (« lune en aplat », choix du mainteneur, 12 octobre 2026, sur la proposition du directeur artistique).
  */
-export const LISERE_DE_NUIT: Couleur = 0xb8cce0;
+export const OMBRE_DES_VIVANTS: Couleur = 0x142b38;
+
+/**
+ * L'ombre au sol des vivants (le bonhomme et les créatures) : un disque Nuit océan à bord net, sous les pieds, de
+ * `rayon` cases (la moitié de l'emprise de la créature, entre `min` et `max`), d'opacité `jour` le jour, `nuit` au cœur
+ * de la nuit, sans à-coup. Un seul appel de dessin pour tous (three/paintedCharacters.ts), de `cotes` triangles chacun.
+ */
+export const OMBRE_AU_SOL = { cotes: 8, min: 0.3, max: 0.6, bonhomme: 0.35, jour: 0.25, nuit: 0.5, dessus: 0.02 } as const;
 
 /**
  * Le verre de la lanterne de Fi : ambre pâle et mat le jour, la lueur la nuit (proposition du directeur artistique,
