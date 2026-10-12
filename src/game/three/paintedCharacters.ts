@@ -21,7 +21,7 @@ import {
 } from '../world/characters/merges';
 import type { BiomeId } from '../biomes';
 import { startStrolls, strollAt, type Stroll } from '../world/scene';
-import { LISERE_DE_NUIT } from '../world/characters/colors';
+import { OMBRE_AU_SOL, OMBRE_DES_VIVANTS } from '../world/characters/colors';
 import type { Lumiere } from './light';
 import type { Instant, Monde } from './scenePart';
 import { balancer, type Habits } from './characters';
@@ -46,63 +46,56 @@ export function swingOf(o: Pick<Os, 'nom'>): number {
 export const GESTE = { periode: 5, angle: 0.12 } as const;
 
 /**
- * Un matériau de personnage : ses couleurs de sommet, éclairées ; ce qui brille, selon `force` (0 à 1) ; et la nuit, le
- * voile éclairci et le liseré froid des vivants, selon `lisere` (0 à 1 ; toujours 0 pour les sentinelles).
+ * Un matériau de personnage : ses couleurs de sommet, éclairées ; ce qui brille, selon `force` (0 à 1) ; et la nuit des
+ * vivants, selon `nuit` (0 à 1 ; toujours 0 pour les sentinelles).
  */
 export interface MateriauALueur {
   materiau: THREE.MeshLambertMaterial;
   force: { value: number };
-  lisere: { value: number };
+  nuit: { value: number };
 }
 
 /**
- * Le liseré de nuit en 3D (référent dys, 28/09 : de nuit, une créature doit se lire au moins aussi bien que de jour).
- * Le liseré seul n'y suffit pas (quelques pixels) : il s'ajoute à un voile de nuit plus léger (`ECLAIRCIE`).
- * Comme dans l’ancienne 2D peinte, la silhouette prend du côté éclairé une teinte claire et froide : ici, les facettes
- * du bord (vues de biais : leur normale s'écarte de la direction de la caméra au-delà de `bord`), d'autant plus qu'elles
- * regardent vers le haut, mêlées à `LISERE_DE_NUIT` jusqu'à `poids` au cœur de la nuit. Fixe : rien ne clignote.
+ * La nuit des vivants d'Archipéo, la « lune en aplat » (choix du mainteneur, 12 octobre 2026, sur la proposition du
+ * directeur artistique) : de nuit, une créature doit se lire au moins aussi bien que de jour (référent dys, 28/09), sans
+ * couleur qui ne vienne pas d'elle. Au cœur de la nuit, sa lumière est multipliée par `1 + eclaircie` (la nuit de la
+ * scène divise à peu près par deux celle du jour : elle reste bleutée, mais plus claire que le sol) ; ses facettes
+ * tournées vers le ciel (tête, épaules, haut de l'outil) en prennent jusqu'à `lune` de plus, dans leur propre couleur.
+ * L'éclairci suit la verticale du monde, pas la caméra : rien ne s'allume ni ne s'éteint quand la créature tourne.
+ * Le liseré bleu pâle des facettes de biais (jusqu'au 12 octobre 2026) couvrait presque tout le corps des modèles low
+ * poly et les rendait luisants. L'ombre au sol (`OMBRE_AU_SOL`) les détache en plus de l'herbe.
  */
-export const LISERE_3D = { bord: [0.4, 0.75], poids: 0.9 } as const;
-
-/**
- * Et un voile de nuit plus léger sur les vivants : au cœur de la nuit, leur lumière est multipliée par `1 + ECLAIRCIE`
- * (la nuit de la scène divise à peu près par deux celle du jour) ; ils restent bleutés, mais plus clairs que le sol.
- */
-export const ECLAIRCIE = 0.4;
+export const NUIT_DES_VIVANTS = { eclaircie: 0.45, lune: 0.3 } as const;
 
 /**
  * Le matériau des personnages : un Lambert à couleurs de sommet, qui mêle à la lumière de la scène la couleur de
  * l'attribut `lueur` (rgb, et son poids en a), à `force` : ce qui brille ne s'assombrit pas la nuit ; et la nuit, à
- * `lisere`, un voile plus léger que celui de la scène et le liseré froid du bord de la silhouette.
+ * `nuit`, la lumière plus claire des vivants et la lune sur leurs facettes tournées vers le ciel.
  */
 export function materiauALueur(): MateriauALueur {
   const force = { value: 0 };
-  const lisere = { value: 0 };
-  const couleurDuLisere = { value: new THREE.Color(LISERE_DE_NUIT) };
+  const nuit = { value: 0 };
   const materiau = new THREE.MeshLambertMaterial({ vertexColors: true });
   materiau.onBeforeCompile = (shader) => {
     shader.uniforms.forceDeLueur = force;
-    shader.uniforms.forceDeNuit = lisere;
-    shader.uniforms.couleurDuLisere = couleurDuLisere;
+    shader.uniforms.forceDeNuit = nuit;
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', '#include <common>\nattribute vec4 lueur;\nvarying vec4 vLueur;')
       .replace('#include <color_vertex>', '#include <color_vertex>\nvLueur = lueur;');
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform float forceDeLueur;\nuniform float forceDeNuit;\nuniform vec3 couleurDuLisere;\nvarying vec4 vLueur;')
+      .replace('#include <common>', '#include <common>\nuniform float forceDeLueur;\nuniform float forceDeNuit;\nvarying vec4 vLueur;')
       .replace(
         '#include <opaque_fragment>',
         [
-          'outgoingLight *= 1.0 + forceDeNuit * ' + ECLAIRCIE.toFixed(2) + ';',
+          'float versLeCiel = saturate(dot(geometryNormal, normalize((viewMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xyz)));',
+          'outgoingLight *= 1.0 + forceDeNuit * (' + NUIT_DES_VIVANTS.eclaircie.toFixed(2) + ' + ' + NUIT_DES_VIVANTS.lune.toFixed(2) + ' * versLeCiel);',
           'outgoingLight = mix(outgoingLight, vLueur.rgb, forceDeLueur * vLueur.a);',
-          'float bordDuLisere = smoothstep(' + LISERE_3D.bord[0].toFixed(2) + ', ' + LISERE_3D.bord[1].toFixed(2) + ', 1.0 - saturate(dot(geometryNormal, geometryViewDir)));',
-          'float hautDuLisere = 0.5 + 0.5 * dot(geometryNormal, normalize((viewMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xyz));',
-          'outgoingLight = mix(outgoingLight, couleurDuLisere, forceDeNuit * ' + LISERE_3D.poids.toFixed(2) + ' * bordDuLisere * hautDuLisere * (1.0 - vLueur.a));',
           '#include <opaque_fragment>',
         ].join('\n'),
       );
   };
   materiau.customProgramCacheKey = () => 'personnage-lueur';
-  return { materiau, force, lisere };
+  return { materiau, force, nuit };
 }
 
 /** La géométrie d'une fusion : ses positions, normales, couleurs, et ce qui brille (sans lueur : rien). */
@@ -242,6 +235,8 @@ interface Promeneur {
   /** Les os de son squelette, par nom (hanches, dos, tête, jambes, bras, queue), s'il en a un. */
   membres: Map<string, THREE.Bone>;
   allure: Allure;
+  /** Le rayon de son ombre au sol (`OMBRE_AU_SOL`). */
+  ombre: number;
 }
 
 /** Tourne un os de squelette par son nom, s'il existe. */
@@ -371,6 +366,38 @@ export function habiller(
   const invisible = new THREE.MeshBasicMaterial({ visible: false });
   const matCreatures = materiauALueur();
   const matGardiens = materiauALueur();
+  // Les ombres au sol : un disque par vivant (le premier pour le bonhomme), refaites à chaque pose des créatures.
+  const disque = new THREE.CircleGeometry(1, OMBRE_AU_SOL.cotes).rotateX(-Math.PI / 2);
+  const matOmbres = new THREE.MeshBasicMaterial({
+    color: OMBRE_DES_VIVANTS,
+    transparent: true,
+    opacity: OMBRE_AU_SOL.jour,
+    depthWrite: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1,
+  });
+  let ombres: THREE.InstancedMesh | null = null;
+  const ombreDe = new THREE.Object3D();
+  const piedsDuBonhomme = new THREE.Vector3();
+  const poserLesOmbres = () => {
+    if (!ombres) return;
+    avatar.getWorldPosition(piedsDuBonhomme);
+    ombreDe.position.set(piedsDuBonhomme.x, piedsDuBonhomme.y + OMBRE_AU_SOL.dessus, piedsDuBonhomme.z);
+    ombreDe.scale.setScalar(avatar.visible ? OMBRE_AU_SOL.bonhomme : 0);
+    ombreDe.updateMatrix();
+    ombres.setMatrixAt(0, ombreDe.matrix);
+    promeneurs.forEach((q, i) => {
+      const o = q.stroll.origin;
+      const x = q.corps.position.x;
+      const z = q.corps.position.z;
+      ombreDe.position.set(x, piedsSur(champ(), x, z, o.z) + OMBRE_AU_SOL.dessus, z);
+      ombreDe.scale.setScalar(q.ombre);
+      ombreDe.updateMatrix();
+      ombres!.setMatrixAt(i + 1, ombreDe.matrix);
+    });
+    ombres.instanceMatrix.needsUpdate = true;
+  };
   // Un Gardien vaincu brille pleinement, de jour comme de nuit.
   matGardiens.force.value = 1;
   let maillages: THREE.Mesh[] = [];
@@ -416,6 +443,11 @@ export function habiller(
     }
     maillages = [];
     promeneurs = [];
+    if (ombres) {
+      scene.remove(ombres);
+      ombres.dispose();
+      ombres = null;
+    }
     sentinelles = null;
     for (const c of [...creatures.children]) creatures.remove(c);
   };
@@ -478,11 +510,16 @@ export function habiller(
             membres,
             // Le dandinement selon ses pattes, mesuré une fois sur la pose de repos.
             allure: { ...allure, dandine: allure.dandine * pattesCourtes(membres) },
+            ombre: Math.min(OMBRE_AU_SOL.max, Math.max(OMBRE_AU_SOL.min, Math.max(b[3] - b[0], b[5] - b[2]) / 2)),
           };
           poser(promeneur, 0, 0, 0);
           return promeneur;
         });
       }
+      ombres = new THREE.InstancedMesh(disque, matOmbres, 1 + promeneurs.length);
+      ombres.frustumCulled = false;
+      scene.add(ombres);
+      poserLesOmbres();
       if (gardiens.length) {
         const f = fusionDesGardiens(gardiens, pres);
         // Chaque sentinelle se pose sur le sol à facettes, comme ses cubes (jamais dedans) : on descend ses sommets.
@@ -517,9 +554,10 @@ export function habiller(
       // Ce qui brille la nuit suit le degré de nuit (figé avec « Réduire les animations », comme la lumière).
       const nuit = lumiere?.nuit() ?? 0;
       matCreatures.force.value = nuit;
-      // Le liseré froid des vivants, la nuit (les sentinelles n'en ont pas : leur pierre se lit sans).
-      matCreatures.lisere.value = nuit;
-      matBonhomme.lisere.value = nuit;
+      // La nuit des vivants et leur ombre au sol (les sentinelles n'en ont pas : leur pierre se lit sans).
+      matCreatures.nuit.value = nuit;
+      matBonhomme.nuit.value = nuit;
+      matOmbres.opacity = OMBRE_AU_SOL.jour + (OMBRE_AU_SOL.nuit - OMBRE_AU_SOL.jour) * nuit;
       // Le fondu du rallumage, jusqu'à son terme (d'un coup quand l'appareil demande moins d'animations : durée nulle).
       if (fondu && !fondu.fini) {
         repeindre(fondu.id);
@@ -528,6 +566,7 @@ export function habiller(
       if (reduit) {
         // Les squelettes à leur pose de repos (l'appareil a pu demander moins d'animations en cours de partie).
         for (const q of promeneurs) for (const b of q.membres.values()) b.rotation.set(0, 0, 0);
+        poserLesOmbres();
         return;
       }
       for (const q of promeneurs) {
@@ -539,6 +578,7 @@ export function habiller(
         // Le geste lent : le bras se lève et redescend, en cinq secondes (coupé avec « Réduire les animations »).
         q.bras.rotation.x = -GESTE.angle * Math.max(0, Math.sin(((t + q.phase) / GESTE.periode) * Math.PI * 2));
       }
+      poserLesOmbres();
     },
     rallumer: (id, dureeMs) => {
       if (id === (fondu?.id ?? null)) return;
@@ -552,6 +592,8 @@ export function habiller(
       corpsDuBonhomme.mesh.skeleton.dispose();
       boite.dispose();
       invisible.dispose();
+      disque.dispose();
+      matOmbres.dispose();
       for (const m of [matBonhomme, matCreatures, matGardiens]) m.materiau.dispose();
     },
   };
