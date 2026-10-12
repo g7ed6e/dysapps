@@ -32,17 +32,18 @@ it.each(ARCHIPELAGO_IDS)('le monde en blocs ne recule pas : triangles et appels 
 
 it('les plafonds des archipels', () => {
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
-  expect(RENDER_BUDGET_6E).toEqual({ triangles: 93_610, drawCalls: 40 });
+  expect(RENDER_BUDGET_6E).toEqual({ triangles: 93_750, drawCalls: 40 });
   // GD-12 : 78 700 ailleurs (mainteneur, 9 octobre 2026, carte « Relever ») ; relevé à 86 000 par le mainteneur le
   // 9 octobre 2026 pour le Fournil des partages et la Grotte des légendes (5e) ; à 86 700 pour les personnages importés
   // de la 5e (mainteneur, 10 octobre 2026). Les monuments importés d'Archipéo : 81 500 et 91 700 (86 700 + 5 000, relevés
   // par le mainteneur le 10 octobre 2026). La Nef en modèles peints : 92 610 et 96 430 (« Relever », 11 octobre 2026).
   // Kéo, le bonhomme importé (mainteneur, 11 octobre 2026) : 92 610 → 93 610 et 96 430 → 97 455, le plafond partagé
-  // par le 5e, le 4e et le 3e. Chacun le quitte avec ses objets dessinés, ce plafond plus la hausse de ses enveloppes :
-  // les Îles Brumeuses le 11 octobre 2026, les Anciens Ateliers et les Îles du Ciel le 12.
+  // par le 5e, le 4e et le 3e. Les ombres au sol des vivants (la « lune en aplat », mainteneur, 12 octobre 2026) :
+  // 93 610 → 93 750 et 97 455 → 97 545. Chaque archipel quitte ce plafond avec ses objets dessinés, ce plafond plus la
+  // hausse de ses enveloppes : les Îles Brumeuses le 11 octobre 2026, les Anciens Ateliers et les Îles du Ciel le 12.
   expect(RENDER_BUDGET_5E).toEqual({ triangles: 102_860, drawCalls: 40 });
-  expect(RENDER_BUDGET_4E).toEqual({ triangles: 103_165, drawCalls: 40 });
-  expect(RENDER_BUDGET_3E).toEqual({ triangles: 102_155, drawCalls: 40 });
+  expect(RENDER_BUDGET_4E).toEqual({ triangles: 103_255, drawCalls: 40 });
+  expect(RENDER_BUDGET_3E).toEqual({ triangles: 102_245, drawCalls: 40 });
   expect(renderBudgetOf('6e')).toBe(RENDER_BUDGET_6E);
   expect(renderBudgetOf('5e')).toBe(RENDER_BUDGET_5E);
   expect(renderBudgetOf('4e')).toBe(RENDER_BUDGET_4E);
@@ -161,13 +162,15 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // Ciel (99 870, sous `RENDER_BUDGET_3E`). L'étape 2 : la construction 500 et les commandes 400 aux Anciens Ateliers
   // (102 265), 400 et 200 aux Îles du Ciel (100 470). L'étape 3 : la construction 500 et les commandes 100 aux Anciens
   // Ateliers (102 865, sous `RENDER_BUDGET_4E` relevé avec une marge de 300), 200 et 200 aux Îles du Ciel (100 870).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, ceux de la 3e, les essais et les lots 1 et 2 de la piste 3, la Nef importée, Kéo, les lots 1 et 2 des objets du 5e, les étapes 1 à 3 des objets du 4e et du 3e) : 93 600 triangles et 25 appels aux Premiers Rivages, 102 565, 102 865 et 100 870 et 24 appels ailleurs', () => {
+  // Les ombres au sol des vivants (mainteneur, 12 octobre 2026) : le bonhomme prend 140 aux Premiers Rivages, 125
+  // ailleurs (102 690, 102 990 et 100 995).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3, SC-3, GD-10, GD-12, les personnages importés du 6e, EMC-2, EMC et LCA de 5e, de 4e et de 3e, les personnages importés de la 5e, les monuments importés, les personnages importés de la 4e et de la 3e, les bâtiments importés, ceux de la 3e, les essais et les lots 1 et 2 de la piste 3, la Nef importée, Kéo, les lots 1 et 2 des objets du 5e, les étapes 1 à 3 des objets du 4e et du 3e, les ombres au sol) : 93 740 triangles et 25 appels aux Premiers Rivages, 102 690, 102 990 et 100 995 et 24 appels ailleurs', () => {
     const total = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: ArchipelagoId) => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([93_600, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([102_565, 24]);
-    expect([total('4e'), appels('4e')]).toEqual([102_865, 24]);
-    expect([total('3e'), appels('3e')]).toEqual([100_870, 24]);
+    expect([total('6e'), appels('6e')]).toEqual([93_740, 25]);
+    expect([total('5e'), appels('5e')]).toEqual([102_690, 24]);
+    expect([total('4e'), appels('4e')]).toEqual([102_990, 24]);
+    expect([total('3e'), appels('3e')]).toEqual([100_995, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la
@@ -261,11 +264,11 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
     chargerLesModelesDuDisque();
     loadKeoFromDisk();
     for (const a of ['6e', '5e', '4e', '3e'] as const) {
-      // Kéo, dans la tenue de l'archipel : 1 500 triangles au plus, un appel.
+      // Kéo, dans la tenue de l'archipel (1 500 triangles au plus, un appel), et les ombres au sol des vivants (un appel).
       const keo = personnagesCost(a).bonhomme;
       expect(keo.triangles, `${a} Kéo`).toBeGreaterThan(1_000);
       expect(keo.triangles, `${a} Kéo`).toBeLessThanOrEqual(enveloppeDe('bonhomme', a).triangles);
-      expect(keo.drawCalls, `${a} Kéo`).toBe(1);
+      expect(keo.drawCalls, `${a} Kéo`).toBe(2);
     }
     for (const a of ['6e', '5e', '4e', '3e'] as const)
       for (const p of ['creatures', 'gardiens'] as const) {

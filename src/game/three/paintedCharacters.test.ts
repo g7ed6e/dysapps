@@ -8,6 +8,7 @@ import { creaturePlacements, guardianPlacements } from '../world/terrain';
 import { fusionDesCreatures, fusionDesGardiens } from '../world/characters/merges';
 import type { Instant, Monde } from './scenePart';
 import { creerPersonnages } from './characters';
+import { OMBRE_AU_SOL } from '../world/characters/colors';
 import { GESTES, MARCHE_DE_KEO, materiauALueur, swingOf, poseDeKeo, poseDeMarche, type PasDeKeo } from './paintedCharacters';
 import { loadKeoFromDisk } from '../world/characters/imported/fromDisk.testing';
 
@@ -46,15 +47,18 @@ describe('Les personnages d’Archipéo dans la scène 3D', () => {
   const creatures = creaturePlacements('6e', village.links);
   const gardiens = guardianPlacements('6e', progress, village.links);
 
-  it('un appel pour le bonhomme, un pour les créatures, un pour les Gardiens', async () => {
+  it('un appel pour le bonhomme, un pour les créatures, un pour les Gardiens, un pour les ombres au sol', async () => {
     const m = monde(HABILLAGES.archipeo);
     const p = creerPersonnages(m, () => null, instant(), { nuit: () => 0 });
     // Posés avant que leurs modèles soient chargés : ils arrivent avec eux.
     p.poserLesCreatures([...creatures, ...gardiens]);
     expect(dessines(m.scene)).toHaveLength(0);
     await vi.dynamicImportSettled();
-    const d = dessines(m.scene);
-    expect(d).toHaveLength(3);
+    const tout = dessines(m.scene);
+    expect(tout).toHaveLength(4);
+    // Les ombres au sol : un disque de `cotes` triangles par vivant, en un seul appel (instancié).
+    expect(tout.filter((x) => x instanceof THREE.InstancedMesh).map((x) => x.geometry.index!.count / 3)).toEqual([OMBRE_AU_SOL.cotes]);
+    const d = tout.filter((x) => !(x instanceof THREE.InstancedMesh));
     expect(d.filter((x) => x instanceof THREE.SkinnedMesh)).toHaveLength(2);
     const tri = (x: THREE.Mesh) => x.geometry.getAttribute('position').count / 3;
     expect(d.map(tri).sort((a, b) => a - b)).toEqual(
@@ -117,7 +121,7 @@ describe('Les personnages d’Archipéo dans la scène 3D', () => {
   });
 
   it('le matériau à lueur mêle la couleur de l’attribut `lueur` à la lumière, au poids donné', () => {
-    const { materiau, force, lisere } = materiauALueur();
+    const { materiau, force, nuit } = materiauALueur();
     const shader = {
       uniforms: {} as Record<string, unknown>,
       vertexShader: THREE.ShaderLib.lambert.vertexShader,
@@ -127,31 +131,38 @@ describe('Les personnages d’Archipéo dans la scène 3D', () => {
     expect(shader.uniforms.forceDeLueur).toBe(force);
     expect(shader.vertexShader).toContain('vLueur = lueur;');
     expect(shader.fragmentShader).toContain('outgoingLight = mix(outgoingLight, vLueur.rgb, forceDeLueur * vLueur.a);');
-    // La nuit, le liseré froid du bord de la silhouette, à `lisere`, après la lueur (et jamais sur ce qui brille).
-    expect(shader.uniforms.forceDeNuit).toBe(lisere);
-    expect(shader.fragmentShader).toMatch(/mix\(outgoingLight, couleurDuLisere, forceDeNuit \* [\d.]+ \* bordDuLisere \* hautDuLisere \* \(1\.0 - vLueur\.a\)\);\n#include <opaque_fragment>/);
+    // La nuit, la lune en aplat, à `nuit` : la lumière des vivants éclaircie, plus sur les facettes tournées vers le
+    // ciel, avant la lueur ; ni liseré ni couleur étrangère.
+    expect(shader.uniforms.forceDeNuit).toBe(nuit);
+    expect(shader.fragmentShader).toMatch(/outgoingLight \*= 1\.0 \+ forceDeNuit \* \(0\.45 \+ 0\.30 \* versLeCiel\);\noutgoingLight = mix\(outgoingLight, vLueur/);
+    expect(shader.fragmentShader).not.toContain('Lisere');
     materiau.dispose();
   });
 
-  it('la nuit, le liseré suit le degré de nuit sur les vivants, jamais sur les sentinelles', async () => {
+  it('la nuit des vivants suit le degré de nuit, jamais sur les sentinelles ; leur ombre au sol se marque', async () => {
     const m = monde(HABILLAGES.archipeo);
     let nuit = 0;
     const p = creerPersonnages(m, () => null, instant(), { nuit: () => nuit });
     await vi.dynamicImportSettled();
     p.poserLesCreatures([...creatures, ...gardiens]);
     const lisere = () =>
-      dessines(m.scene).map((x) => {
+      dessines(m.scene).filter((x) => !(x instanceof THREE.InstancedMesh)).map((x) => {
         const mat = x.material as THREE.MeshLambertMaterial;
         const shader = { uniforms: {} as Record<string, { value: number }>, vertexShader: THREE.ShaderLib.lambert.vertexShader, fragmentShader: THREE.ShaderLib.lambert.fragmentShader };
         mat.onBeforeCompile(shader as unknown as THREE.WebGLProgramParametersWithUniforms, undefined as unknown as THREE.WebGLRenderer);
         return [x instanceof THREE.SkinnedMesh, shader.uniforms.forceDeNuit.value] as const;
       });
     p.animer!(0, 0.1, false);
+    const ombres = dessines(m.scene).find((x) => x instanceof THREE.InstancedMesh) as THREE.InstancedMesh;
+    // Une ombre pour le bonhomme et une par créature, en un seul appel de dessin.
+    expect(ombres.count).toBe(1 + creatures.length);
     expect(lisere().every(([, v]) => v === 0)).toBe(true);
+    expect((ombres.material as THREE.MeshBasicMaterial).opacity).toBe(OMBRE_AU_SOL.jour);
     nuit = 1;
-    // Avec « Réduire les animations » aussi : le liseré n'est pas une animation.
+    // Avec « Réduire les animations » aussi : la nuit n'est pas une animation.
     p.animer!(0, 0.1, true);
     for (const [vivant, v] of lisere()) expect(v).toBe(vivant ? 1 : 0);
+    expect((ombres.material as THREE.MeshBasicMaterial).opacity).toBe(OMBRE_AU_SOL.nuit);
     p.dispose();
   });
 });

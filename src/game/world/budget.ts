@@ -42,6 +42,7 @@ import { casesDeLaPetiteConstruction } from './fixtures';
 import { ecartDePres } from './fixtureModels';
 import { villagePlacesNearGap } from './objects/villagePlaces';
 import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './characters/merges';
+import { OMBRE_AU_SOL } from './characters/colors';
 import { COUT_DES_BULLES } from './affordance';
 import { coutDesLueurs, lueursDesLanternes } from './lanternGlow';
 
@@ -77,9 +78,12 @@ export const RENDER_BUDGET = {
  * 18 700 à 22 000. Puis à 92 610 pour la Nef en modèles peints (GD-15, « Relever », mainteneur, 11 octobre 2026) : son
  * enveloppe passe de 490 à 1 900, la somme des enveloppes de 91 190 à 92 600. Puis à 93 610 pour Kéo, le bonhomme importé dans la tenue de
  * l'archipel (décision du mainteneur, 11 octobre 2026 : 1 500 triangles par tenue, « relève les plafonds du strict
- * nécessaire ») : l'enveloppe du bonhomme passe de 500 à 1 500, la somme des enveloppes de 92 600 à 93 600.
+ * nécessaire ») : l'enveloppe du bonhomme passe de 500 à 1 500, la somme des enveloppes de 92 600 à 93 600. Puis à 93 750 pour les
+ * ombres au sol des vivants d'Archipéo (la « lune en aplat », choix du mainteneur, 12 octobre 2026) : un disque de huit
+ * triangles sous le bonhomme et sous chaque créature, en un appel (compté dans le poste du bonhomme) ; son enveloppe
+ * passe de 1 500 à 1 640, la somme des enveloppes de 93 600 à 93 740.
  */
-export const RENDER_BUDGET_6E = { triangles: 93_610, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_6E = { triangles: 93_750, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
  * Le plafond que les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel ont partagé (retiré
@@ -113,9 +117,11 @@ export const RENDER_BUDGET_6E = { triangles: 93_610, drawCalls: RENDER_BUDGET.dr
  * enveloppe passe de 420 à 1 900, la somme des enveloppes à 96 390 aux Anciens Ateliers. Puis à 97 455 pour Kéo, le bonhomme importé dans
  * la tenue de l'archipel (décision du mainteneur, 11 octobre 2026 : 1 500 triangles par tenue) : l'enveloppe du bonhomme
  * passe de 475 à 1 500, la somme des enveloppes à 97 160 aux Îles Brumeuses, 97 415 aux Anciens Ateliers et 96 170 aux
- * Îles du Ciel.
+ * Îles du Ciel. Puis à 97 545 pour les ombres au sol des vivants (choix du mainteneur, 12 octobre 2026, voir
+ * `RENDER_BUDGET_6E`) : l'enveloppe du bonhomme passe de 1 500 à 1 625, la somme des enveloppes à 97 540 aux Anciens
+ * Ateliers et 96 295 aux Îles du Ciel ; les Îles Brumeuses (102 690) tiennent sous `RENDER_BUDGET_5E`.
  */
-const PLAFOND_PARTAGE = { triangles: 97_455, drawCalls: RENDER_BUDGET.drawCalls } as const;
+const PLAFOND_PARTAGE = { triangles: 97_545, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /**
  * Les Îles Brumeuses (5e) quittent le plafond partagé le 11 octobre 2026 avec leurs objets dessinés (la piste 3
@@ -134,18 +140,20 @@ export const RENDER_BUDGET_5E = { triangles: 102_860, drawCalls: PLAFOND_PARTAGE
  * 97 415 → 101 365 (+3 950), le plafond 101 405 ; l'étape 2 (onze petites constructions en pièces communes, dix cœurs) :
  * 101 365 → 102 265 (+900), le plafond 102 305 ; l'étape 3 (les formes nouvelles : quatre cœurs et le wagonnet de
  * Braise) : 102 265 → 102 865 (+600), le plafond 103 165, relevé de la hausse et d'une marge de 300 (il n'en gardait
- * que 40 ; la même qu'au 5e).
+ * que 40 ; la même qu'au 5e). Puis à 103 255 avec les ombres au sol des vivants (+90, comme le plafond partagé, le
+ * 12 octobre 2026) : la somme des enveloppes 102 990.
  */
-export const RENDER_BUDGET_4E = { triangles: 103_165, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
+export const RENDER_BUDGET_4E = { triangles: 103_255, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
 
 /**
  * Les Îles du Ciel (3e) quittent le plafond partagé le même jour, de même : l'étape 1 (les pièces de cour, les trophées,
  * le quai, les lieux du village, la Halle bardée et les toits enneigés) : la somme des enveloppes 96 170 → 99 870
  * (+3 700), le plafond 101 155 ; l'étape 2 (huit petites constructions en pièces communes, sept cœurs) : 99 870 →
  * 100 470 (+600), le plafond 101 755 ; l'étape 3 (les formes nouvelles : six cœurs et trois petites constructions) :
- * 100 470 → 100 870 (+400), le plafond 102 155.
+ * 100 470 → 100 870 (+400), le plafond 102 155. Puis à 102 245 avec les ombres au sol des vivants (+90, le 12 octobre
+ * 2026) : la somme des enveloppes 100 995.
  */
-export const RENDER_BUDGET_3E = { triangles: 102_155, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
+export const RENDER_BUDGET_3E = { triangles: 102_245, drawCalls: PLAFOND_PARTAGE.drawCalls } as const;
 
 /** Le budget de la scène 3D de chaque archipel, tout construit. */
 const RENDER_BUDGETS: Readonly<Record<ArchipelagoId, { triangles: number; drawCalls: number }>> = { '6e': RENDER_BUDGET_6E, '5e': RENDER_BUDGET_5E, '4e': RENDER_BUDGET_4E, '3e': RENDER_BUDGET_3E };
@@ -515,7 +523,9 @@ export const ENVELOPPES: Record<
   // Kéo, le bonhomme importé (décision du mainteneur, 11 octobre 2026 : « 1 500 triangles par tenue », une seule
   // visible) : 1 500 triangles mesurés dans chaque tenue (`budget.test.ts`), contre 472 au bonhomme dessiné en code ;
   // l'enveloppe passe de 500 à 1 500 aux Premiers Rivages et de 475 à 1 500 ailleurs, les plafonds d'autant.
-  bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 1_500, drawCalls: 2 }, autres: { triangles: 1_500, drawCalls: 2 } },
+  // Avec les ombres au sol des vivants (choix du mainteneur, 12 octobre 2026) : huit triangles sous le bonhomme et sous
+  // chaque créature, dans le deuxième appel du poste ; 1 636 mesurés aux Premiers Rivages, 1 620 ailleurs.
+  bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 1_640, drawCalls: 2 }, autres: { triangles: 1_625, drawCalls: 2 } },
   // Les personnages importés du 6e (modèles TRELLIS retravaillés, choix « Monde et fiches » du mainteneur, 9 octobre
   // 2026) : de loin partout (environ 200 triangles), de près sur l'île regardée (environ 1 500), au pire de l'île qui
   // coûte le plus. Mesurés : créatures 4 254 (Bulle de près), Gardiens 5 054, socle commun et son anneau compris. Créatures
@@ -891,7 +901,8 @@ export function personnagesCost(a: ArchipelagoId): Record<'bonhomme' | 'creature
   const appel = (n: number) => (n > 0 ? 1 : 0);
   return {
     // Kéo dans la tenue de l'archipel s'il est chargé (./characters/imported/keo.ts), sinon le bonhomme dessiné en code.
-    bonhomme: { triangles: trianglesDeLaFusion(fusionDuBonhomme(a)), drawCalls: 1 },
+    // Avec les ombres au sol des vivants (le bonhomme et chaque créature, un disque chacun), en un appel de plus.
+    bonhomme: { triangles: trianglesDeLaFusion(fusionDuBonhomme(a)) + (1 + lesCreatures.length) * OMBRE_AU_SOL.cotes, drawCalls: 2 },
     creatures: { triangles: creatures, drawCalls: appel(creatures) },
     gardiens: { triangles: gardiens, drawCalls: appel(gardiens) },
   };

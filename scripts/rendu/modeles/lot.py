@@ -9,7 +9,9 @@
 # controle.png) et <dossier>/prets/recapitulatif.csv.
 # Reglages par statue, facultatifs : un fichier reglages.csv dans le dossier, une ligne par modele :
 #   nom;hauteur;quarts      (ex. lion;0.12;0  ou  sphinx;0.10;2)
-# Sans ligne pour un modele : coupe a 0.12, pas de quart de tour.
+# Sans ligne pour un modele : coupe a 0.12, pas de quart de tour. Apres les quarts, « voxel=0.01 » remaille plus gros
+# avant la reduction (0.006 sinon) : a 0.006, les elytres de Coco, fines et ondulees, prenaient presque tous les
+# triangles et la reduction fondait sa tete, ses antennes et ses taches dans le corps (11 octobre 2026).
 
 import bpy, csv, os, shutil, subprocess, sys
 
@@ -25,7 +27,12 @@ f = os.path.join(dossier, "reglages.csv")
 if os.path.exists(f):
     for ligne in csv.reader(open(f, encoding="utf-8"), delimiter=";"):
         if len(ligne) >= 2 and not ligne[0].startswith("#"):
-            reglages[ligne[0].strip()] = (ligne[1].strip(), (ligne[2].strip() if len(ligne) > 2 else "0"))
+            quarts, *options = (ligne[2].split() if len(ligne) > 2 else []) or ["0"]
+            voxel = next((str(float(o.split("=", 1)[1])) for o in options if o.startswith("voxel=")), None)
+            for o in options:
+                if not o.startswith("voxel="):
+                    print(f"{ligne[0].strip()} : option inconnue ignoree : {o}", flush=True)
+            reglages[ligne[0].strip()] = (ligne[1].strip(), quarts, voxel)
 
 
 def blender(script, *args):
@@ -41,10 +48,10 @@ for nom_fichier in sorted(os.listdir(dossier)):
     if not nom_fichier.lower().endswith(".glb"):
         continue
     nom = os.path.splitext(nom_fichier)[0]
-    hauteur, quarts = reglages.get(nom, ("0.12", "0"))
+    hauteur, quarts, voxel = reglages.get(nom, ("0.12", "0", None))
     d = os.path.join(sortie, nom)
     os.makedirs(d, exist_ok=True)
-    print(f"== {nom} (coupe {hauteur}, quarts {quarts})", flush=True)
+    print(f"== {nom} (coupe {hauteur}, quarts {quarts}, voxel {voxel or 'par defaut'})", flush=True)
     try:
         blender("aligner.py", os.path.join(dossier, nom_fichier), os.path.join(d, "1-aligne.glb"), quarts)
         # on reduit avant de couper : la reduction cale sur un modele deja coupe (vu sur le lion, 12 000 triangles au
@@ -54,7 +61,7 @@ for nom_fichier in sorted(os.listdir(dossier)):
         creature = "-creature-" in nom
         for n in (200, 1500):
             out = blender("lion_lowpoly.py", os.path.join(d, "1-aligne.glb"), os.path.join(d, f"2-reduit-{n}.glb"), n,
-                          4 if creature else 0)
+                          4 if creature else 0, *([voxel] if voxel else []))
             if creature:
                 shutil.copy(os.path.join(d, f"2-reduit-{n}.glb"), os.path.join(d, f"final-{n}.glb"))
                 t.append(next((l.split(" : ")[1].split()[0] for l in out.splitlines() if "facettes de lichen" in l), "?"))

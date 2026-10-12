@@ -3,9 +3,10 @@
 # Tout se fait dans Blender (4.2 ou plus recent), sans autre logiciel.
 #
 # En ligne de commande (Windows, macOS, Linux) :
-#   blender -b -P lion_lowpoly.py -- entree.glb sortie.glb 1500 [couleurs]
+#   blender -b -P lion_lowpoly.py -- entree.glb sortie.glb 1500 [couleurs] [voxel]
 # couleurs (facultatif) : 0 = chaque facette en pierre (Gardiens) ; 4 = chaque facette prend la plus proche des
 # 4 couleurs principales de la texture d'origine (creatures).
+# voxel (facultatif, 0.006 sinon) : la taille du remaillage, pour un modele dont la reduction ecrase un detail (Coco).
 #
 # Dans Blender, pour voir le resultat : onglet Scripting > Open > ce fichier, regler ENTREE, SORTIE et
 # TRIANGLES ci-dessous, puis Run Script (Alt+P). L'original et la version reduite restent dans la scene.
@@ -31,6 +32,7 @@ if "--" in sys.argv:
     a = sys.argv[sys.argv.index("--") + 1:]
     ENTREE, SORTIE, TRIANGLES = a[0], a[1], int(a[2])
     COULEURS = int(a[3]) if len(a) > 3 else 0
+    VOXEL = float(a[4]) if len(a) > 4 else VOXEL
     bpy.ops.wm.read_factory_settings(use_empty=True)
 interface = not bpy.app.background
 
