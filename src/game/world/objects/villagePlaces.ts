@@ -23,6 +23,7 @@ import { Pinceau, type V3 } from '../decor/brush';
 import type { ArchipelagoId } from '../map';
 import { getArchipelago } from '../archipelago';
 import { KITS } from '../architecture';
+import type { Couleur, Faces } from '../palette';
 import { darker, scaleColor, Workshop, type Tint } from './workshop';
 import { OBJECT_COLORS as C, type Paint, paintFor } from './pieces';
 
@@ -32,10 +33,63 @@ type PlaceCell = Pick<CaseDuLieu, 'x' | 'y' | 'z' | 'w' | 'd' | 'texture'>;
 /** Le dessin d'un lieu : dans l'atelier (z = 0 au sol du lieu), avec ses couleurs, ses cubes remplacés, de près ou de loin. */
 type PlaceDrawing = (at: Workshop, pe: Paint, cells: readonly PlaceCell[], far: boolean) => void;
 
-/** L'ouverture sombre (la porte, la bouche de la Halle). */
-const SHADOW = 0x2a201a;
 /** La vitre éteinte d'une fenêtre de côté. */
 const UNLIT_GLASS = 0x3e4a52;
+
+/**
+ * Les matières des lieux, que le kit choisit (formes inchangées) : au 6e, la brique et la pierre de taille de l'école,
+ * le marbre des piliers de la salle, le bois et les planches de la Halle, son soubassement de pierre ; dans un kit qui
+ * a une pierre des lieux (le rôle `masonry`, au 5e : intention du directeur artistique du 11 octobre 2026), la pierre
+ * grise du kit pour les murs de l'école et les fûts de la salle, la pierre sombre du soubassement pour les chaînes
+ * d'angle, la corniche, les bases et les chapiteaux, les poteaux du kit pour les volets et l'ossature de la Halle, son
+ * bardage pour ses planches. La cloche, l'épi, le velours, le galon et le faîte d'or ne changent pas.
+ */
+interface PlaceMaterials {
+  /** Les murs de l'école, ses pignons, sa cheminée. */
+  walls: Faces;
+  /** Les chaînes d'angle, le bandeau, la corniche, les appuis et le clocheton de l'école. */
+  dressed: Faces;
+  shutters: Couleur;
+  /** Le fût des piliers de la salle ; leur base, leur échine et leur abaque. */
+  shaft: Faces;
+  capital: Faces;
+  /** L'ossature de la Halle, ses croix et ses chéneaux, ses planches, son soubassement. */
+  frame: Couleur;
+  brace: Couleur;
+  planks: Faces;
+  footing: Faces;
+}
+
+const uni = (c: Couleur): Faces => ({ dessus: c, cote: c });
+
+function placeMaterials(pe: Paint): PlaceMaterials {
+  if (KITS[pe.a].couleurs.masonry === undefined) {
+    const marble = pe.material('marbre');
+    return {
+      walls: pe.material('brique'),
+      dressed: pe.material('taille'),
+      shutters: pe.color(0x4f7a6a),
+      shaft: marble,
+      capital: marble,
+      frame: pe.color(C.wood),
+      brace: pe.color(C.lightWood),
+      planks: pe.material('planches'),
+      footing: pe.material('pierre'),
+    };
+  }
+  const footing = uni(pe.role('soubassement'));
+  return {
+    walls: uni(pe.role('masonry')),
+    dressed: footing,
+    shutters: pe.role('poteau'),
+    shaft: uni(pe.role('masonry')),
+    capital: footing,
+    frame: pe.role('poteau'),
+    brace: pe.role('pilotis'),
+    planks: uni(pe.role('bardage')),
+    footing,
+  };
+}
 
 /** Le rang du bras de la potence de la Halle (world/terrain/village.ts, `atelierModel`) : le bloc suspendu pend deux rangs plus bas. */
 const JIB_ARM_ROW = 6;
@@ -97,8 +151,9 @@ const SCHOOL = {
  */
 const school: PlaceDrawing = (at, pe, _cells, far) => {
   const { w, d, plinth, walls, cornice, roof, belfry: k } = SCHOOL;
-  const brick = pe.material('brique');
-  const dressedStone = pe.material('taille');
+  const m = placeMaterials(pe);
+  const brick = m.walls;
+  const dressedStone = m.dressed;
   const stone = { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') };
   const gold = pe.material('or');
   const pane = pe.role('lanternGlass');
@@ -107,7 +162,7 @@ const school: PlaceDrawing = (at, pe, _cells, far) => {
   at.box(r, w - r, r, d - r, plinth, walls.upper, brick, { bottom: true, top: true });
   // La porte : l'ouverture sombre.
   const yd = r - 0.008;
-  at.quad([2.18, yd, plinth], [2.82, yd, plinth], [2.82, yd, 1.9], [2.18, yd, 1.9], [2.5, 1, 1], SHADOW);
+  at.quad([2.18, yd, plinth], [2.82, yd, plinth], [2.82, yd, 1.9], [2.18, yd, 1.9], [2.5, 1, 1], C.shadow);
   if (far) {
     for (const x of [1.5, 3.5]) at.quad([x - 0.3, yd, 1.2], [x + 0.3, yd, 1.2], [x + 0.3, yd, 1.95], [x - 0.3, yd, 1.95], [x, 1, 1.5], pane, true);
     at.roof(0, w, 0, d, roof.lower, roof.ridge, 'x', roof.thickness, pe.roof(), { tint: brick, zFoot: walls.upper });
@@ -136,7 +191,7 @@ const school: PlaceDrawing = (at, pe, _cells, far) => {
   at.box(2.06, 2.94, 0.04, r, 0.12, plinth, stone, { bottom: true, py: true });
   at.box(2.12, 2.88, 0.02, 0.09, 0, 0.14, stone, { bottom: true, py: true });
   // Les fenêtres de devant (allumées la nuit), leurs jardinières fleuries.
-  const shutters = pe.color(0x4f7a6a);
+  const shutters = m.shutters;
   for (const x of [1.15, 3.85]) {
     frontWindow(at, x, r, 0.62, 1.25, 2.05, dressedStone, pane, true, shutters);
     at.box(x - 0.36, x + 0.36, 0.01, 0.1, 1.0, 1.15, pe.color(C.lightWood), {});
@@ -171,7 +226,7 @@ const school: PlaceDrawing = (at, pe, _cells, far) => {
     [w - 0.06, 1],
   ] as const) {
     at.standingDisc([x + s * 0.004, d / 2, 3.72], s < 0 ? 'nx' : 'px', 0.24, 8, dressedStone.cote, Math.PI / 8);
-    at.standingDisc([x + s * 0.012, d / 2, 3.72], s < 0 ? 'nx' : 'px', 0.16, 8, SHADOW, Math.PI / 8);
+    at.standingDisc([x + s * 0.012, d / 2, 3.72], s < 0 ? 'nx' : 'px', 0.16, 8, C.shadow, Math.PI / 8);
   }
   at.block(4.1, 2.9, 0.42, 0.42, 3.6, 4.82, brick, { bottom: true });
   at.block(4.1, 2.9, 0.52, 0.52, 4.82, 4.94, dressedStone, {});
@@ -207,6 +262,7 @@ const trophyRoom: PlaceDrawing = (at, pe, cells, far) => {
   const x0 = Math.min(...cells.map((c) => c.x));
   const x1 = Math.max(...cells.map((c) => c.x)) + 1;
   const marble = pe.material('marbre');
+  const { shaft, capital } = placeMaterials(pe);
   const dressedStone = pe.material('taille');
   const velvet = pe.material('velours');
   const gold = pe.material('or');
@@ -219,7 +275,7 @@ const trophyRoom: PlaceDrawing = (at, pe, cells, far) => {
   // Le fond de velours, entre les piliers du fond.
   at.box(x0 + 0.2, x1 - 0.2, d - 0.5, d - 0.16, zSlab, zEntablature, velvet, { bottom: true, top: true });
   if (far) {
-    for (const [x, y] of pillars.values()) at.block(x + 0.5, y + 0.5, 0.46, 0.46, zSlab, zEntablature, marble, { bottom: true, top: true });
+    for (const [x, y] of pillars.values()) at.block(x + 0.5, y + 0.5, 0.46, 0.46, zSlab, zEntablature, shaft, { bottom: true, top: true });
     // Les socles, d'un tenant par suite de cases voisines d'une même rangée.
     for (const y of [0, 1]) {
       const xs = pedestals.filter((c) => c.y === y).map((c) => c.x).sort((a, b) => a - b);
@@ -243,11 +299,11 @@ const trophyRoom: PlaceDrawing = (at, pe, cells, far) => {
   // Les piliers.
   for (const [x, y] of pillars.values()) {
     const [cx, cy] = [x + 0.5, y + 0.5];
-    at.block(cx, cy, 0.6, 0.6, zSlab, zSlab + 0.14, marble);
-    at.prism(cx, cy, 0.27, 0.23, zSlab + 0.14, zSlab + 0.26, 12, marble, 0, true);
-    at.prism(cx, cy, 0.2, 0.18, zSlab + 0.26, zEntablature - 0.3, 12, marble, 0, true);
-    at.prism(cx, cy, 0.18, 0.28, zEntablature - 0.3, zEntablature - 0.14, 12, marble, 0, true);
-    at.block(cx, cy, 0.64, 0.64, zEntablature - 0.14, zEntablature, marble, { top: true });
+    at.block(cx, cy, 0.6, 0.6, zSlab, zSlab + 0.14, capital);
+    at.prism(cx, cy, 0.27, 0.23, zSlab + 0.14, zSlab + 0.26, 12, capital, 0, true);
+    at.prism(cx, cy, 0.2, 0.18, zSlab + 0.26, zEntablature - 0.3, 12, shaft, 0, true);
+    at.prism(cx, cy, 0.18, 0.28, zEntablature - 0.3, zEntablature - 0.14, 12, capital, 0, true);
+    at.block(cx, cy, 0.64, 0.64, zEntablature - 0.14, zEntablature, capital, { top: true });
   }
   // Les socles : plinthe, dé, corniche ; le dessus à la hauteur de la case du trophée.
   for (const c of pedestals) {
@@ -283,14 +339,11 @@ const hall: PlaceDrawing = (at, pe, cells, far) => {
   const zArm = arm - 0.5;
   // Le dessus du bloc suspendu (son rang, `bras − 2`, va de z = bras − 3 à bras − 2 dans ce repère).
   const zBlock = arm - 2;
-  const stone = pe.material('pierre');
-  const planks = pe.material('planches');
-  const wood = pe.color(C.wood);
-  const lightWood = pe.color(C.lightWood);
+  const { footing: stone, planks, frame: wood, brace: lightWood } = placeMaterials(pe);
   at.box(0.04, w - 0.04, y0 + 0.04, d - 0.04, 0, 0.95, stone);
   at.box(0.08, w - 0.08, y0 + 0.08, d - 0.08, 0.95, zWall, planks, { bottom: true, top: true });
   const yp = y0 + 0.032;
-  at.quad([0.98, yp, 0], [2.02, yp, 0], [2.02, yp, 1.86], [0.98, yp, 1.86], [1.5, d, 1], SHADOW);
+  at.quad([0.98, yp, 0], [2.02, yp, 0], [2.02, yp, 1.86], [0.98, yp, 1.86], [1.5, d, 1], C.shadow);
   if (far) {
     at.roof(0, w, y0 - 0.15, d, zWall, zRidge, 'y', 0.12, pe.roof(), { tint: planks, zFoot: zWall });
     at.block(0.5, 1.5, 0.26, 0.26, 0, zArm + 0.26, wood, { bottom: true });
@@ -349,7 +402,7 @@ const hall: PlaceDrawing = (at, pe, cells, far) => {
     ])
       at.block(x, y, 0.34, 0.34, z0, z1, stone, { bottom: true, top: z0 === 0 });
   // Le dedans de la porte : le fond et les joues, sombres, un tas de sacs devant le fond.
-  at.box(1.02, 1.98, y0 + 0.03, y0 + 0.9, 0, 1.82, darker({ dessus: SHADOW, cote: SHADOW }, 1.3), { bottom: true, top: true, ny: true });
+  at.box(1.02, 1.98, y0 + 0.03, y0 + 0.9, 0, 1.82, darker({ dessus: C.shadow, cote: C.shadow }, 1.3), { bottom: true, top: true, ny: true });
   at.prism(1.5, y0 + 0.62, 0.3, 0.1, 0, 0.42, 6, darker(planks, 0.6), 0.3);
   // La grande porte : piédroits, linteau, deux vantaux rabattus contre la façade.
   for (const x of [0.9, 2.1]) at.block(x, y0 + 0.02, 0.18, 0.16, 0, 1.94, wood, { bottom: true, top: true });
@@ -385,7 +438,7 @@ const hall: PlaceDrawing = (at, pe, cells, far) => {
       at.quad([x, y0 - 0.13, z], [x, d - 0.02, z], [x2, d - 0.02, z2], [x2, y0 - 0.13, z2], [w / 2, (y0 + d) / 2, 0], row);
     }
   at.beam([w / 2, y0 - 0.2, zRidge + 0.02], [w / 2, d - 0.02, zRidge + 0.02], 0.16, wood, true);
-  at.standingDisc([w / 2, y0 - 0.16, zWall + 0.7], 'ny', 0.18, 6, SHADOW, Math.PI / 6);
+  at.standingDisc([w / 2, y0 - 0.16, zWall + 0.7], 'ny', 0.18, 6, C.shadow, Math.PI / 6);
   // La potence : le pied de pierre, le mât, le bras vers la cour, la jambe de force, la poulie, la corde, le crochet.
   at.block(0.5, 1.5, 0.52, 0.52, 0, 0.32, stone);
   at.block(0.5, 1.5, 0.26, 0.26, 0.32, zArm + 0.26, wood, { bottom: true });

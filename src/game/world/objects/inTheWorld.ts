@@ -1,24 +1,32 @@
-// Les objets dessinés d'Archipéo hors des petites constructions (lot 1 du 6e de la piste 3 « hybride ») : le bloc d'or
-// devant chaque Gardien rallumé (world/terrain/guardians.ts, `guardianTrophy` : une case de pierre, une case d'or) et les
-// objets du quai de l'île-port (world/terrain/port.ts : la barque, les caisses, les fanions, le foyer). Leurs cubes
-// restent ceux du monde (Blocland les dessine, la vue simple ne les voit pas) ; la construction d'Archipéo les remplace
-// par le dessin des pièces communes (./pieces.ts), comme un modèle importé (le toucher retrouve leurs cases). La fumée du
-// foyer reste la sienne. Seulement aux Premiers Rivages pour l'instant (`ARCHIPELAGOS`, et le kit qui les demande :
-// `Kit.objetsDessines`). Code pur, sans Three.js.
+// Les objets dessinés d'Archipéo hors des petites constructions (piste 3 « hybride », au 6e puis au 5e) : le bloc d'or
+// devant chaque Gardien rallumé (world/terrain/guardians.ts, `guardianTrophy` : une case de pierre, une case d'or), les
+// objets du quai de l'île-port (world/terrain/port.ts : la barque, les caisses, les fanions, le foyer) et le décor du
+// cœur des îles (./heartDecor.ts au 6e, ./heartDecor5e.ts au 5e). Leurs cubes restent ceux du monde (Blocland les
+// dessine, la vue simple ne les voit pas) ; la construction d'Archipéo les remplace par leur dessin, comme un modèle
+// importé (le toucher retrouve leurs cases). La fumée du foyer reste la sienne. Seulement dans les archipels dont le kit
+// les demande (`Kit.objetsDessines` : le 6e et le 5e). Code pur, sans Three.js.
 import type { VoxelCube } from '../cube';
-import { BIOMES } from '../../biomes';
+import { type BiomeId, BIOMES } from '../../biomes';
 import { type ArchipelagoId, islandDef } from '../map';
 import type { ImportedMonument } from '../monumentModels';
-import { turnCell } from '../placement';
+import { turnCell, turnPoint } from '../placement';
 import { trophySpot } from '../terrain/guardians';
-import { islandOrigin } from '../terrain/base';
-import { kindOf, SMOKE } from '../decor';
-import { Pinceau } from '../decor/brush';
+import { islandOrigin, LAYOUT_PAD, origineDe } from '../terrain/base';
+import { DECOR, kindOf, SMOKE } from '../decor';
+import { Pinceau, type V3 } from '../decor/brush';
+import { KITS } from '../architecture';
+import { batimentsDe, coursDe } from '../construction/buildings';
+import { TEXTURE_KINDS, type TextureKind } from '../pixels';
 import { Workshop } from './workshop';
 import { rowboat, quayCrate, pennant, campfire, paintFor, trophy } from './pieces';
+import { HEART_DECOR_6E, type HeartDecor, type HeartGroup } from './heartDecor';
+import { HEART_DECOR_5E } from './heartDecor5e';
 
-/** Les archipels dont ces objets sont dessinés (le lot 1 : les Premiers Rivages ; ailleurs, les cubes du kit). */
-const ARCHIPELAGOS: ReadonlySet<ArchipelagoId> = new Set(['6e']);
+/** Le kit de l'archipel dessine-t-il ses objets (`Kit.objetsDessines`) ? Ailleurs, les cubes du kit. */
+const drawsObjects = (a: ArchipelagoId): boolean => KITS[a].objetsDessines === true;
+
+/** Le décor du cœur dessiné, île par île, dans chaque archipel qui le dessine. */
+const HEART_DECORS: Partial<Record<ArchipelagoId, Readonly<Partial<Record<BiomeId, readonly HeartDecor[]>>>>> = { '6e': HEART_DECOR_6E, '5e': HEART_DECOR_5E };
 
 /** Les objets du quai que la construction dessine, par genre de décor (world/terrain/port.ts). */
 const QUAY_KINDS = new Set(['barque', 'caisse', 'fanion', 'foyer']);
@@ -45,7 +53,7 @@ function drawnObject(id: string, cubes: readonly VoxelCube[], x0: number, y0: nu
  * l'or posés l'un sur l'autre ; dessinés en trophée (le socle de pierre taillé, le lingot d'or facetté).
  */
 export function drawnTrophies(a: ArchipelagoId, cubes: readonly VoxelCube[]): ImportedMonument[] {
-  if (!ARCHIPELAGOS.has(a)) return [];
+  if (!drawsObjects(a)) return [];
   const byCell = new Map<string, VoxelCube>();
   for (const c of cubes) if (!c.ghost && (c.texture === 'or' || c.texture === 'pierre')) byCell.set(cellKey(c.x, c.y, c.z), c);
   const out: ImportedMonument[] = [];
@@ -69,7 +77,7 @@ export function drawnTrophies(a: ArchipelagoId, cubes: readonly VoxelCube[]): Im
  * commence, ou amarrée), les caisses, les fanions et le foyer, chacun par son nom de décor ; dessinés en pièces communes.
  */
 export function drawnQuayObjects(a: ArchipelagoId, cubes: readonly VoxelCube[]): ImportedMonument[] {
-  if (!ARCHIPELAGOS.has(a)) return [];
+  if (!drawsObjects(a)) return [];
   const groups = new Map<string, VoxelCube[]>();
   for (const c of cubes) {
     if (!c.decor || c.ghost || !QUAY_KINDS.has(kindOf(c.decor)) || c.color === SMOKE) continue;
@@ -101,6 +109,100 @@ export function drawnQuayObjects(a: ArchipelagoId, cubes: readonly VoxelCube[]):
       const toward = canvas.x > mast[0].x ? 1 : -1;
       out.push(drawnObject(id, l, x0, y0, z0, (at) => pennant(at, pe, mast[0].x - x0, mast[0].y - y0, 0, toward)));
     } else out.push(drawnObject(id, l, x0, y0, z0, (at) => l.forEach((c) => campfire(at, pe, c.x - x0, c.y - y0, c.z - z0))));
+  }
+  return out;
+}
+
+// ---------- Le décor du cœur ----------
+
+/** Le nombre de cubes que le décor d'une île pose dans chaque colonne de sa grille (sans les arbres, nommés). */
+const decorCountsCache = new Map<BiomeId, Map<string, number>>();
+function decorCountsFor(id: BiomeId): Map<string, number> {
+  let out = decorCountsCache.get(id);
+  if (out) return out;
+  out = new Map();
+  const m = out;
+  DECOR[id](
+    (x, y, _z, _color, decor) => {
+      if (decor) return;
+      const k = `${x},${y}`;
+      m.set(k, (m.get(k) ?? 0) + 1);
+    },
+    () => 0,
+  );
+  decorCountsCache.set(id, out);
+  return out;
+}
+
+const TEXTURES = new Set<string>(TEXTURE_KINDS);
+const isTextureKind = (t: string | undefined): t is TextureKind => t !== undefined && TEXTURES.has(t);
+
+/** Le cube compte-t-il parmi le décor du cœur de son île (ni sol, ni décor du paysage, ni borne, lieu, liaison, petite construction) ? */
+const isHeartCube = (c: VoxelCube) => !c.ghost && !c.sol && !c.decor && !c.quest && !c.place && !c.bridge && !c.petiteConstruction;
+
+/**
+ * Les ensembles du décor du cœur de ce monde que le kit d'Archipéo dessine (`Kit.objetsDessines`, au 6e et au 5e) :
+ * chacun comme un modèle importé qui remplace ses cubes (le toucher retrouve ses cases). Aucun dans les autres archipels.
+ */
+export function drawnHeartDecor(a: ArchipelagoId, cubes: readonly VoxelCube[]): ImportedMonument[] {
+  const out: ImportedMonument[] = [];
+  const table = drawsObjects(a) ? HEART_DECORS[a] : undefined;
+  if (!table) return out;
+  const islands = BIOMES.filter((b) => b.classe === a && table[b.id]);
+  if (!islands.length) return out;
+  const ids = new Set<string>(islands.map((b) => b.id));
+  const byColumn = new Map<string, VoxelCube[]>();
+  const buildings = batimentsDe(a);
+  const yards = coursDe(a);
+  for (const c of cubes) {
+    if (!c.tag || !ids.has(c.tag) || !isHeartCube(c)) continue;
+    const k = cellKey(c.x, c.y, c.z);
+    if (buildings.has(k) || yards.has(k)) continue;
+    const kc = `${c.tag}|${c.x},${c.y}`;
+    const l = byColumn.get(kc);
+    if (l) l.push(c);
+    else byColumn.set(kc, [c]);
+  }
+  for (const b of islands) {
+    const o = origineDe(b.id);
+    const q = islandDef(b.id).quarts;
+    const counts = decorCountsFor(b.id);
+    for (const entry of table[b.id] ?? []) {
+      const ax = Math.min(...entry.columns.map(([x]) => x));
+      const ay = Math.min(...entry.columns.map(([, y]) => y));
+      const members: { x: number; y: number; cubes: VoxelCube[] }[] = [];
+      let complete = true;
+      for (const [x, y] of entry.columns) {
+        const t = turnCell(LAYOUT_PAD.x + x, LAYOUT_PAD.y + y, q);
+        const l = byColumn.get(`${b.id}|${o.x + t.x},${o.y + t.y}`) ?? [];
+        if (l.length !== (counts.get(`${x},${y}`) ?? 0) || !l.length) complete = false;
+        members.push({ x: x - ax, y: y - ay, cubes: l });
+      }
+      if (!complete) continue;
+      const all = members.flatMap((s) => s.cubes);
+      const base = Math.min(...all.map((c) => c.z));
+      const grounds = new Map(members.map((s) => [`${s.x},${s.y}`, Math.min(...s.cubes.map((c) => c.z)) - base]));
+      const group: HeartGroup = {
+        cells: members.flatMap((s) => s.cubes.map((c) => ({ x: s.x, y: s.y, z: c.z - base, texture: isTextureKind(c.texture) ? c.texture : null }))),
+        ground: (x, y) => grounds.get(`${x},${y}`) ?? 0,
+      };
+      const toWorld = (x: number, y: number, z: number): V3 => {
+        const p = turnPoint(LAYOUT_PAD.x + ax + x, LAYOUT_PAD.y + ay + y, q);
+        return [o.x + p.x, base + z, o.y + p.y];
+      };
+      // Rien ne s'allume au cœur : le feu est dans l'opaque.
+      const at = new Workshop(new Pinceau(), null, toWorld);
+      entry.drawing(at, paintFor(a, b.id, all.some((c) => c.muted)), group);
+      out.push({
+        id: `coeur:${b.id}:${entry.name}`,
+        stage: 1,
+        opaque: at.opaque.fin(),
+        fire: new Pinceau().fin(),
+        halo: null,
+        cellules: all.map((c) => ({ x: c.x, y: c.y, z: c.z })),
+        replaced: new Set(all.map((c) => cellKey(c.x, c.y, c.z))),
+      });
+    }
   }
   return out;
 }

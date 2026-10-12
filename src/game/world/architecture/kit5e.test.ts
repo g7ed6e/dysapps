@@ -187,6 +187,19 @@ describe('Le kit du 5e : les murs, les lieux, le kiosque', () => {
   const tous = worldCubes('5e', progress, village, false, [], false, 'halle').filter((c) => !c.sol && !c.decor);
   const archi = architectureDe('5e', tous, { batiments: batimentsDe('5e'), cours: coursDe('5e'), caseDuLieu });
 
+  it('la fontaine de la cour du Relais : ses dalles en cubes pleins, leurs côtés dans le flanc sombre (3:1 sur le sol de dalle)', () => {
+    const cour = coursDe('5e');
+    const dalles = tous.filter((c) => c.tag === 'lv2-5e-introductions' && c.texture === 'dalle' && !c.ghost && !c.place && cour.has(cle(c)));
+    expect(dalles.length).toBeGreaterThan(0);
+    for (const c of dalles) {
+      const p = archi.pieces.find((q) => q.cube === c);
+      expect(p, cle(c)).toBeDefined();
+      const cotes = p!.dessin.facettes.filter((f) => f.normale[2] === 0);
+      expect(cotes.length, cle(c)).toBe(4);
+      expect(cotes.every((f) => f.role === 'flanc'), cle(c)).toBe(true);
+    }
+  });
+
   it('l’échoppe du Comptoir : ses tuiles des murs en mur plein (de la famille de la pierre), son auvent rayé peint à plat ; celle du Marché en toile tendue, sans galon', () => {
     const murs = etapesDe('5e', 0, 1);
     const toits = etapesDe('5e', 1, 2);

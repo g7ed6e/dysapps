@@ -2,8 +2,8 @@
 // qui revient d'un objet à l'autre. La barrière et la lanterne sur poteau sont celles des cours
 // (../architecture/yardPieces.ts : mêmes facettes, mêmes couleurs du kit) ; s'y ajoutent la caisse, la dalle, le plateau
 // sur pieds, le petit toit (`Workshop.roof`), le bassin, la marche de pierre, le flacon, et pour le reste de l'archipel le
-// trophée du Gardien rallumé, la barque, la caisse, le fanion et le foyer du quai. Trapues, rien de fin ni d'ajouré (au
-// moins 0,15 case), deux ou trois couleurs chacune. Code pur, sans Three.js.
+// trophée du Gardien rallumé, la barque, la caisse, le fanion et le foyer du quai ; au 5e, le pupitre en pente et le poteau
+// indicateur. Trapues, rien de fin ni d'ajouré (au moins 0,15 case), deux ou trois couleurs chacune. Code pur, sans Three.js.
 import { BLOCKS, type BlockId } from '../../biomes';
 import { mixColor } from '../daylight';
 import { DELAVE } from '../decor/brush';
@@ -35,6 +35,8 @@ export const OBJECT_COLORS = {
   ember: 0xc0764a,
   tar: 0x3b2d20,
   cream: 0xf1e6cc,
+  /** L'ouverture sombre (une porte, une bouche de four, l'entrée d'une tente, la galerie) : le brun le plus sombre. */
+  shadow: 0x2a201a,
 } as const;
 
 /** Les couleurs d'un objet posé dans un archipel : sous son voile, délavées sur une île fermée. */
@@ -47,6 +49,8 @@ export interface Paint {
   block(b: BlockId): Faces;
   /** Une couleur propre à l'objet, sous le voile. */
   color(c: Couleur): Couleur;
+  /** Une couleur propre à l'objet, prise telle quelle comme celle d'une matière (sans le voile ; délavée sur une île fermée). */
+  plain(c: Couleur): Couleur;
   /** Un rôle du kit (le poteau et les lisses de la barrière, la pierre, la dalle, le fer et l'ardoise de la lanterne). */
   role(r: Role): Couleur;
   /** La couverture de l'île (ardoise, ou terre cuite à la Ferme et à la Mine). */
@@ -66,6 +70,7 @@ export function paintFor(a: ArchipelagoId, island: string | undefined, muted: bo
     material,
     block: (b) => material(BLOCKS[b].texture as TextureKind),
     color: (c) => faded(mixColor(c, tint, strength)),
+    plain: faded,
     role: (r) => faded(mixColor(KITS[a].couleurs[r] ?? OBJECT_COLORS.wood, tint, strength)),
     roof: () => couleursDuToit(a, island, muted),
   };
@@ -155,9 +160,12 @@ export function basin(at: Workshop, pe: Paint, x0: number, x1: number, y0: numbe
   at.box(i0 + l, i1 - l, j0 + l, j1 - l, zWater, zWater + 0.005, water, { bottom: true, px: true, nx: true, py: true, ny: true });
 }
 
-/** Une marche de pierre (l'escalier de Grimoire) : un bloc de pierre grise de z0 à z1, sa dalle claire dessus. 10 triangles. */
-export function stoneStep(at: Workshop, pe: Paint, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number): void {
-  at.box(x0, x1, y0, y1, z0, z1, { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') });
+/**
+ * Une marche de pierre (l'escalier de Grimoire, le montoir du Relais) : un bloc de pierre grise de z0 à z1 (`side` : la
+ * teinte de ses côtés, s'il faut un flanc plus sombre), sa dalle claire dessus. 10 triangles.
+ */
+export function stoneStep(at: Workshop, pe: Paint, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, side: Couleur = pe.role('yardStone')): void {
+  at.box(x0, x1, y0, y1, z0, z1, { dessus: pe.role('yardSlab'), cote: side });
 }
 
 /** Un flacon de verre teinté (l'étagère de Bulle) : un corps à six pans, son col de bois (le bouchon). 26 triangles. */
@@ -337,12 +345,13 @@ export function pebble(at: Workshop, cx: number, cy: number, z0: number, r: numb
 
 /**
  * Un tas (de sable, de terre, de mousse) au centre (cx, cy), posé en z0 : un tronc de cône bas à `n` pans, de rayon `r`,
- * puis son sommet en pointe émoussée, haut de `h`. `3n` triangles.
+ * puis son sommet en pointe émoussée, haut de `h`, dans sa teinte (`top` : une autre, le sel clair au-dessus d'un tronc
+ * au flanc sombre). `3n` triangles.
  */
-export function heap(at: Workshop, cx: number, cy: number, z0: number, r: number, h: number, t: Tint, n = 8, rot = 0.2): void {
+export function heap(at: Workshop, cx: number, cy: number, z0: number, r: number, h: number, t: Tint, n = 8, rot = 0.2, top: Tint = t): void {
   const zShoulder = z0 + h * 0.55;
   at.prism(cx, cy, r, r * 0.55, z0, zShoulder, n, t, rot, true);
-  at.prism(cx, cy, r * 0.55, 0, zShoulder, z0 + h, n, t, rot);
+  at.prism(cx, cy, r * 0.55, 0, zShoulder, z0 + h, n, top, rot);
 }
 
 /** Les mesures d'une gerbe, en part de case et de sa hauteur : le pied, la taille liée au tiers bas, la tête d'épis. */
@@ -377,4 +386,74 @@ export function milestone(at: Workshop, pe: Paint, x: number, y: number, z0: num
   at.block(cx, cy, 0.56, 0.56, z0 + 0.18, z0 + upper - 0.22, body, { bottom: true, top: true });
   at.prism(cx, cy, 0.28 * Math.SQRT2, 0.2 * Math.SQRT2, z0 + upper - 0.22, z0 + upper - 0.08, 4, head ?? body, Math.PI / 4, true);
   at.prism(cx, cy, 0.2 * Math.SQRT2, 0, z0 + upper - 0.08, z0 + upper, 4, head ?? body, Math.PI / 4);
+}
+
+// ---------- Les pièces du 5e ----------
+
+/** Le livre ouvert d'un pupitre : sa teinte, et sa marge sur le pupitre, en part de sa largeur et de sa profondeur. */
+export interface LecternBook {
+  colour: Couleur;
+  margin: number;
+}
+
+/**
+ * Un pupitre en pente (le copiste du Bourg, l'écritoire de Vélin) : le coin dans sa matière, de (x0, y0) à (x1, y1), posé
+ * en z0, plus haut au fond, et le livre ouvert dessus (crème, à un cinquième du bord, sauf `book`). 12 triangles.
+ */
+export function lectern(at: Workshop, pe: Paint, x0: number, x1: number, y0: number, y1: number, z0: number, t: Tint, book: LecternBook = { colour: OBJECT_COLORS.cream, margin: 0.2 }): void {
+  const [zf, zb] = [z0 + 0.14, z0 + 0.44];
+  at.wedge(x0, x1, y0, y1, z0, zf, zb, t);
+  const z = (y: number) => zf + ((y - y0) / (y1 - y0)) * (zb - zf) + 0.02;
+  const [mx, my] = [(x1 - x0) * book.margin, (y1 - y0) * book.margin];
+  const [bx0, bx1, by0, by1] = [x0 + mx, x1 - mx, y0 + my, y1 - my];
+  at.quad([bx0, by0, z(by0)], [bx1, by0, z(by0)], [bx1, by1, z(by1)], [bx0, by1, z(by1)], [(x0 + x1) / 2, (y0 + y1) / 2, z0], pe.color(book.colour));
+}
+
+/** Une planche-flèche d'un poteau indicateur : vers `toward` (−1 ou 1) le long de `axis`, à la hauteur de son milieu `z`, longue de `length` depuis l'axe du poteau. */
+export interface SignArrow {
+  axis: 'x' | 'y';
+  toward: -1 | 1;
+  z: number;
+  length: number;
+}
+
+/** Les mesures du poteau indicateur, en part de case : le poteau carré, son pied, ses planches-flèches épaisses et leur pointe. */
+const SIGNPOST = { post: 0.2, foot: { side: 0.42, upper: 0.14 }, board: { height: 0.34, thick: 0.16, point: 0.22 } } as const;
+
+/**
+ * Un poteau indicateur au centre (cx, cy) (Sema, le Carrefour, le Relais) : le pied de pierre, le poteau carré de 0,2 case
+ * jusqu'à `upper` (`post` : sa matière), sa tête en pointe basse, et ses planches-flèches épaisses (`board`), chacune à
+ * pointe en chevron, sans rien d'écrit. 22 triangles, et 14 par flèche.
+ */
+export function signpost(at: Workshop, pe: Paint, cx: number, cy: number, upper: number, post: Tint, arrows: readonly SignArrow[], board: Tint): void {
+  const { foot, board: b } = SIGNPOST;
+  const half = SIGNPOST.post / 2;
+  at.block(cx, cy, foot.side, foot.side, 0, foot.upper, { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') });
+  at.block(cx, cy, SIGNPOST.post, SIGNPOST.post, foot.upper, upper, post, { bottom: true, top: true });
+  at.pyramid(cx, cy, half, half, upper, upper + 0.12, post);
+  for (const r of arrows) {
+    // Dans le repère de la flèche : `u` le long de son axe depuis le poteau, `v` en travers, `z` la hauteur.
+    const pt = (u: number, v: number, z: number): V3 => (r.axis === 'x' ? [cx + r.toward * u, cy + v, z] : [cx + v, cy + r.toward * u, z]);
+    const [u0, u1, uTip] = [half, r.length - b.point, r.length];
+    const [z0, z1] = [r.z - b.height / 2, r.z + b.height / 2];
+    const outline: [number, number][] = [
+      [u0, z0],
+      [u1, z0],
+      [uTip, r.z],
+      [u1, z1],
+      [u0, z1],
+    ];
+    const t = b.thick / 2;
+    const inside = pt((u0 + uTip) / 2, 0, r.z);
+    for (const v of [-t, t]) {
+      const p = outline.map(([u, z]) => pt(u, v, z));
+      for (let i = 1; i + 1 < p.length; i++) at.tri(p[0], p[i], p[i + 1], inside, board);
+    }
+    // Les chants (sauf celui contre le poteau).
+    for (let i = 0; i + 1 < outline.length; i++) {
+      const [ua, za] = outline[i];
+      const [ub, zb] = outline[i + 1];
+      at.quad(pt(ua, -t, za), pt(ub, -t, zb), pt(ub, t, zb), pt(ua, t, za), inside, board);
+    }
+  }
 }

@@ -5,6 +5,8 @@
 // (./objects/silhouettes.ts : le puits, la grue, la boutique, le lavoir, le parasol, la pendule, le tamis, le nichoir) ;
 // les autres sont faits des pièces communes (./objects/assemblies.ts : le potager, le bac à eau, le poteau-lanterne,
 // la vitrine, la placette, l'étagère à flacons, l'établi, l'urne ; la lanterne de Mousso, le portillon, l'escalier).
+// Au 5e (11 octobre 2026), toutes aussi : la cabane, la salière, la tente et le four à pain à silhouette
+// (./objects/silhouettes5e.ts), les autres en pièces, le poteau indicateur de Sema compris.
 // La matière du bloc livré y reste sur une grande face, dans les couleurs mêmes du bloc (règle GD-7).
 //
 // La forme, ses cases, sa place et la sauvegarde ne changent pas (./fixtures.ts). La pose non plus : pendant « Livrer »,
@@ -21,6 +23,7 @@ import { type FacettesDuDecor, Pinceau } from './decor/brush';
 import { Workshop, countingWorkshop } from './objects/workshop';
 import { paintFor } from './objects/pieces';
 import { type ObjectDrawing, SILHOUETTES } from './objects/silhouettes';
+import { SILHOUETTES_5E } from './objects/silhouettes5e';
 import { ASSEMBLIES } from './objects/assemblies';
 
 /** Un objet dessiné : son île, son dessin, et s'il a un dessin de loin (les objets à silhouette). */
@@ -40,9 +43,9 @@ function placeOf(id: string): { ile: BiomeId; archipelago: ArchipelagoId } {
   return { ile: biome.id, archipelago: biome.classe };
 }
 
-/** Les petites constructions qu'Archipéo dessine, par identifiant (au 6e). */
+/** Les petites constructions qu'Archipéo dessine, par identifiant (au 6e et au 5e). */
 const MODELES: Readonly<Record<string, Modele>> = Object.fromEntries([
-  ...Object.entries(SILHOUETTES).map(([id, dessiner]) => [id, { ...placeOf(id), dessiner, deLoin: true }] as const),
+  ...Object.entries({ ...SILHOUETTES, ...SILHOUETTES_5E }).map(([id, dessiner]) => [id, { ...placeOf(id), dessiner, deLoin: true }] as const),
   ...Object.entries(ASSEMBLIES).map(([id, dessiner]) => [id, { ...placeOf(id), dessiner, deLoin: false }] as const),
 ]);
 
