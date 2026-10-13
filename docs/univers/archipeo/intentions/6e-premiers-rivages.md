@@ -2,7 +2,7 @@
 
 Proposition écrite le 12 octobre 2026 dans le fil « Challenger l'univers d'Archipéo » par le directeur artistique, d'après les choix du mainteneur consignés dans [GD-19](../../../gameplay/propositions/GD-19.md) : l'équipage, les Veilleurs et les Ferrailleurs, des lieux qui ont une raison d'être et trois états, une carte sans grille. Idéation : rien n'est construit, et les noms des lieux et des Veilleurs attendent la validation du mainteneur.
 
-Les concepts (planches d'ambiance, plan des lieux confirmé par le mainteneur le 13 octobre 2026, vue globale aux 16 lieux) sont hors du dépôt, dans la Bibliothèque du projet, sous `archipeo/univers-challenge/niveaux/` : `plan-6e.png` et `zimage-6e/montage/montage-2.png`. La méthode qui les produit est dans le skill `.claude/skills/concepts-niveau/`.
+Le plan des lieux, confirmé par le mainteneur le 13 octobre 2026, et la vue globale aux 16 lieux sont dans [`concepts/`](concepts/) : `6e-plan-des-lieux.webp` et `6e-vue-globale.webp`. Les autres essais (planches d'ambiance, lieux un par un) restent hors du dépôt, dans la Bibliothèque du projet, sous `archipeo/univers-challenge/niveaux/`. La méthode qui les produit est dans le skill `.claude/skills/concepts-niveau/`.
 
 ## 1. L'idée
 
