@@ -87,7 +87,7 @@ Demandé par le mainteneur le 12 octobre 2026 : challenger l'univers d'Archipéo
 | --- | --- | --- |
 | Le 6e, les Premiers Rivages ([fiche](../univers/archipeo/intentions/6e-premiers-rivages.md)) | Fiche relue ; plan des lieux confirmé par le mainteneur le 13 octobre 2026 ; vue globale à 16 lieux (concepts hors du dépôt, méthode dans le skill `concepts-niveau`) | Concepts détaillés de chaque lieu, plusieurs vues globales, images prêtes pour TRELLIS (fil « Niveau de 6e en concepts détaillés ») ; noms des lieux et des Veilleurs, et trois questions de la fiche, à valider par le mainteneur |
 | Le 5e, la 4e et la 3e | À faire, même méthode | Après le 6e |
-| Inscrire l'équipage, les Veilleurs et les Ferrailleurs au cadrage d'Archipéo, puis construire | Attend le mainteneur | Pas de code, de TRELLIS ni de Blender sans son mot |
+| Inscrire l'équipage, les Veilleurs et les Ferrailleurs au cadrage d'Archipéo, puis construire (les Gardiens d'Archipéo, leurs modèles 3D et le mot « Gardien » y deviendraient des Veilleurs) | Attend le mainteneur | Pas de code, de TRELLIS ni de Blender sans son mot |
 
 ### Les nuages qui ne cachent rien
 

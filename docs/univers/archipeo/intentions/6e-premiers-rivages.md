@@ -24,7 +24,7 @@ Elles s'accordent avec la palette du pack (Bleu lagon `#178078` pour l'eau profo
 
 ## 3. Le grand lieu : le Phare et la Conque
 
-- **Le Phare** (Français · les sons) remplace la Forêt des sons. C'est la première île, celle où s'amarre la Nef. Les Passeurs y envoyaient des signaux de lumière et de son pour que les îles se répondent. On y réapprend ces signaux : couper en syllabes, trouver un son, entendre une rime.
+- **Le Phare** (Français · les sons) prend la place de la Forêt des sons ; ses repères stables (identifiant, matière, icône) ne changent pas. C'est la première île (proposé, question 1), celle où s'amarre la Nef. Les Passeurs y envoyaient des signaux de lumière et de son pour que les îles se répondent. On y réapprend ces signaux : couper en syllabes, trouver un son, entendre une rime.
 - **Son Veilleur, la Conque**, est le plus grand du niveau : dix fois la taille de Kéo. Une figure de pierre qui tient un coquillage contre son oreille, la tête faite du signe d'une oreille.
 - Rallumée, elle fait tourner le Phare. Ensuite, chaque Veilleur rallumé ajoute une route de lumière qui part du Phare.
 - On le voit de partout, même depuis la Carte.
@@ -64,7 +64,9 @@ Les noms rares (Saline, Écluses, Vigie, Mangrove, Balises) restent, chacun avec
 
 ## 5. Comment les lieux s'organisent (sans grille)
 
-Des lieux posés sur un fond de mer, avec quelques étages légers. On part d'un atoll en anneau, dont le lagon central sert de port d'arrivée (niveau-6e-lieu).
+Écrit le 12 octobre 2026. Le 13, le mainteneur a décidé d'une grande île continue, à arpenter : le plan des lieux confirmé ce jour-là fait foi.
+
+Des lieux posés sur un fond de mer, avec quelques étages légers (proposé, question 2). On part d'un atoll en anneau, dont le lagon central sert de port d'arrivée.
 
 - **Au centre, le Phare et les Quais** : la Nef y entre par une passe.
 - **Le rivage nord, celui des archives** : la Vigie en haut de la falaise, les Archives creusées sous elle (deux étages d'une même falaise), puis l'Imprimerie et les Filets au pied.
@@ -81,14 +83,14 @@ Des lieux posés sur un fond de mer, avec quelques étages légers. On part d'un
 - **Kéo**, le cartographe : la carte, l'histoire, la géographie, l'EMC, et la SVT par le relevé de terrain (Mangrove).
 - **Zia**, la mécanicienne : objet fixe, une clé ; les maths, la technologie et la physique-chimie (cinq lieux).
 - **Malo**, l'archiviste : objet fixe, un livre ; le français, et l'anglais jusqu'à l'arrivée de la radio (sept lieux).
-- **La radio** n'embarque qu'en 5e, mais on l'entend dès le 6e par les Balises : une voix qui parle anglais depuis un autre rivage (voix britannique, consigne en français, l'écrit après l'écoute). Elle monte à bord à la Gare maritime, à la fin du 6e, et reprend l'anglais.
+- **La radio** : on l'entend dès le 6e par les Balises, une voix qui parle anglais depuis un autre rivage (voix britannique, consigne en français, l'écrit après l'écoute). Elle monte à bord à la Gare maritime, à la fin du 6e, et reprend l'anglais en 5e.
 - Zia et Malo : noms validés par le consultant (initiales distinctes de Kéo). Le partage exact reste au directeur du contenu.
 
 **La baleine et les oiseaux.** La baleine reste rare : au 6e, elle répond une seule fois, par un chant depuis la passe, quand la Conque se rallume. Une sterne porte le courrier de la radio, qu'on voit aux Balises avant l'embarquement. Les habitants restent des silhouettes, sans réplique.
 
 **Les Ferrailleurs au 6e** : on ne les voit jamais de près. On ne voit que leurs traces (les lieux démontés, une fumée au large, un bateau qui s'éloigne la nuit). Ils ne prennent jamais rien à l'élève. Quand la Conque se rallume, leur bateau passe au loin puis file vers les brumes du 5e : c'est l'accroche du niveau suivant. Des rivaux, pas des méchants ; on ne se bat jamais contre eux. La fumée et le bateau sont des mouvements lents et lointains, coupés par « Réduire les animations », jamais près d'un exercice.
 
-L'équipage et les Ferrailleurs n'existent pas dans le dossier source d'Archipéo : le mainteneur les a gardés ([GD-19](../../../gameplay/propositions/GD-19.md)) ; ils restent à inscrire au cadrage.
+L'équipage et les Ferrailleurs n'existent pas dans le dossier source d'Archipéo, qui a ses 58 créatures et ses Gardiens : le mainteneur les a gardés ([GD-19](../../../gameplay/propositions/GD-19.md)) ; ils restent à inscrire au cadrage.
 
 ## 6 bis. Rien à lire dans la 3D
 
