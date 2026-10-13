@@ -11,7 +11,7 @@ On conçoit un niveau à la fois, et chaque étape se valide avant la suivante. 
 
 ## 1. La fiche du niveau
 
-Une page, comme [Les Premiers Rivages](../../../docs/univers/archipeo/intentions/6e-premiers-rivages.md), qui donne :
+Une page, rangée dans `docs/univers/archipeo/intentions/` (celle du 6e, Les Premiers Rivages, sert de modèle), qui donne :
 - l'idée en une phrase et trois couleurs ;
 - le grand lieu, qu'on voit dès l'arrivée ;
 - chaque lieu, avec sa raison d'être chez les Passeurs, ce qu'on y fait, son Veilleur (nom, taille par rapport à Kéo) et son état de départ (éteint ou démonté) ;
