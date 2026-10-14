@@ -19,7 +19,7 @@ import { VoyagePage } from './game/VoyagePage';
 import { BossPage } from './game/BossPage';
 import { ExercisePage } from './game/ExercisePage';
 import { BloclandProvider } from './game/BloclandContext';
-import { WorldPage } from './game/WorldPage';
+import { WorldEntry } from './game/worldLayoutFactory';
 import { SchoolPage } from './game/School';
 import { AssemblyPage } from './game/Assembly';
 import { AssemblyQuestionPage } from './game/AssemblyQuestion';
@@ -114,14 +114,14 @@ function MenuEntry() {
 
 // En 3D, la carte et les îles sont le monde en plein écran ; sinon, les pages simples (listes accessibles).
 function AventureEntry() {
-  return useImmersive() ? <WorldPage /> : <BloclandPage />;
+  return useImmersive() ? <WorldEntry /> : <BloclandPage />;
 }
 function IslandEntry() {
   const { biomeId } = useParams();
   const immersive = useImmersive();
   // L'ancienne adresse du menu du village (retiré le 10 octobre 2026) : le monde en 3D, le menu en page en vue simple.
   if (biomeId === 'menu') return <Navigate to={immersive ? '/adventure' : MENU_PATH} replace />;
-  if (immersive) return <WorldPage />;
+  if (immersive) return <WorldEntry />;
   // La Carte et la page des quatre archipels n'existent qu'en 3D : en vue simple, c'est la liste des îles (déjà par archipel).
   if (biomeId === 'map' || biomeId === 'world') return <Navigate to="/adventure" replace />;
   // La salle des trophées : en vue simple, c'est la page Succès.

@@ -1,0 +1,6 @@
+/* Le monde ouvert d'Archipéo (prototype du 6e, derrière `?monde=ouvert`) : chargé avec sa page, jamais dans le paquet
+   principal. */
+.open-world-canvas {
+  position: absolute;
+  inset: 0;
+}

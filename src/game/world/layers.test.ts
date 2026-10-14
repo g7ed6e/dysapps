@@ -198,6 +198,8 @@ function fichier(n: string): string {
 const PURES = [
   // L'architecture modulaire d'Archipéo (lot 7) : voisinage, choix des pièces, pièces, kits.
   'world/architecture',
+  // Le monde continu du prototype du monde ouvert d'Archipéo (6e) : plan, terrain, chemins, cadrages, maquettes.
+  'world/continu',
 ];
 
 /** Les fichiers (hors tests) d'un dossier, sous-dossiers compris. */
