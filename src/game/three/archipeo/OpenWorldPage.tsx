@@ -16,6 +16,7 @@ import { useBlocland } from '../../BloclandContext';
 import { getBiome } from '../../biomes';
 import { mesuresDemandees, meterShown } from '../../rendering';
 import { SettingsButton } from '../../WorldShortcuts';
+import { CLOSE_UP_INSETS } from '../../world/continu/camera';
 import { keepClear, missionOfPlace, nextMission, placeIsOpen, type MarkOnScreen, type ScreenRect } from '../../world/continu/mission';
 import { placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
 import { modeleDuMonde } from '../../world/model';
@@ -126,7 +127,7 @@ export default function OpenWorldPage() {
         const mission = n?.place.id === placeId ? n.mission : missionOfPlace(placeById(placeId), bornes);
         if (mission) open.open(placeId, mission);
       },
-      onMark: (m) => placeMark(markRef.current, arrowRef.current, m, layout),
+      onMark: (m, beside) => placeMark(markRef.current, arrowRef.current, m, beside, layout),
     });
     world.current = w;
     setReady(true);
@@ -199,16 +200,21 @@ const MARK_EDGE = 8;
 
 /**
  * Pose la marque à l'écran, image par image, sans passer par React et sans lire la mise en page (les dimensions sont
- * relues par le `ResizeObserver`) : sur son lieu, au-dessus du point, ou au bord, sa flèche tournée vers lui ; le
- * panneau reste entier à l'écran et hors des boutons Réglages et « Y aller ».
+ * relues par le `ResizeObserver`) : sur son lieu, au-dessus du point, ou à sa droite (`beside`, à côté du sommet d'un
+ * lieu haut sur un écran bas), ou au bord, sa flèche tournée vers lui ; le panneau reste entier à l'écran et hors des
+ * boutons Réglages et « Y aller ».
  */
-function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkOnScreen | null, size: { width: number; height: number; markW: number; markH: number; obstacles: ScreenRect[] }): void {
+function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkOnScreen | null, beside: boolean, size: { width: number; height: number; markW: number; markH: number; obstacles: ScreenRect[] }): void {
   if (!mark) return;
   mark.hidden = !m;
   if (!m) return;
   mark.classList.toggle('hors-champ', !m.inside);
   const { markW: w, markH: h } = size;
-  const box = { left: m.x - w / 2, top: m.inside ? m.y - h : m.y - h / 2, width: w, height: h };
+  const box = !m.inside
+    ? { left: m.x - w / 2, top: m.y - h / 2, width: w, height: h }
+    : beside
+      ? { left: m.x + CLOSE_UP_INSETS.markGap, top: m.y - h / 2, width: w, height: h }
+      : { left: m.x - w / 2, top: m.y - h, width: w, height: h };
   const r = keepClear(box, size.obstacles, size.width, size.height, MARK_EDGE, MARK_EDGE);
   mark.style.transform = `translate(${Math.round(r.left)}px, ${Math.round(r.top)}px)`;
   if (arrow) arrow.style.transform = m.inside ? '' : `rotate(${m.angle}rad)`;

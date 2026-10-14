@@ -7,12 +7,12 @@ import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
-import { CAMERA_BLEND_SECONDS, CAMERA_FOV, MARK_LIFT, cameraKey, cameraPose, poseAt, type CameraKey, type CameraMove, type CameraPose } from '../../world/continu/camera';
+import { CAMERA_BLEND_SECONDS, CAMERA_FOV, cameraKey, cameraPose, closeUpScale, markBeside, markOffset, poseAt, type CameraKey, type CameraMove, type CameraPose } from '../../world/continu/camera';
 import type { Facets } from '../../world/continu/facets';
 import { distance, type Vec2 } from '../../world/continu/geometry';
 import { markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork } from '../../world/continu/paths';
-import { COLORS_6E, PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
+import { COLORS_6E, PATH_NODES, PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { modelOfPlace } from '../../world/continu/places';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
 import { buildHeightField, heightOnMesh, standingHeight, terrainTiles } from '../../world/continu/terrain';
@@ -33,8 +33,11 @@ export interface OpenWorldOptions {
   /** Le lieu est-il ouvert ? Un lieu fermé qu'on touche ne lance pas de trajet : la scène le dit à la page (`onClosed`). */
   isOpen(place: PlaceId): boolean;
   onClosed(place: PlaceId): void;
-  /** La place de la marque de la prochaine mission à l'écran, à chaque image (`null` : pas de marque). */
-  onMark(mark: MarkOnScreen | null): void;
+  /**
+   * La place de la marque de la prochaine mission à l'écran, à chaque image (`null` : pas de marque) ; `beside` : le
+   * nom se pose à droite du point (à côté du sommet d'un lieu haut, sur un écran bas), sinon au-dessus.
+   */
+  onMark(mark: MarkOnScreen | null, beside: boolean): void;
   /** Montrer le compteur de mesures (`?mesures`) ; `expose` : le laisser lire aux scripts. */
   meter: { show: boolean; expose: boolean };
 }
@@ -152,7 +155,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   touchables.push(paths);
 
   // Les lieux : un maillage chacun (un modèle TRELLIS le remplacera, lieu par lieu), posés sur le sol à leur centre.
-  const marks = new Map<PlaceId, THREE.Vector3>();
+  const feet = new Map<PlaceId, THREE.Vector3>();
   for (const place of PLACES) {
     const model = modelOfPlace(place.id);
     const y = standingHeight(ground(place.center.x, place.center.z));
@@ -162,7 +165,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     mesh.userData.place = place.id;
     scene.add(still(mesh));
     touchables.push(mesh);
-    marks.set(place.id, new THREE.Vector3(place.center.x, y + model.top + MARK_LIFT, place.center.z));
+    feet.set(place.id, new THREE.Vector3(place.center.x, y, place.center.z));
   }
 
   // Kéo : le corps du bonhomme d'Archipéo (sa marche existante), son anneau clair au sol ; habillé dès que sa tenue est chargée.
@@ -218,23 +221,63 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let key: CameraKey = cameraKey(here, viewH);
   let pose: CameraPose = cameraPose(key, viewW, viewH);
   let move: CameraMove | null = null;
+  // Le décentrement de l'objectif posé sur la caméra (refait seulement quand il change).
+  let appliedLens = 0;
   const applyPose = (p: CameraPose) => {
     camera.position.set(p.position.x, p.position.y, p.position.z);
     camera.up.set(0, 1, 0);
     camera.lookAt(p.target.x, p.target.y, p.target.z);
+    if (p.fov !== camera.fov) {
+      // Le champ change (un écran bas) : la projection est refaite, avec le décentrement.
+      camera.fov = p.fov;
+      appliedLens = Number.NaN;
+    }
+    if (p.lens === appliedLens) return;
+    appliedLens = p.lens;
+    // L'image glisse de `lens` demi-largeurs vers la droite ; la caméra ne tourne pas.
+    // Les deux refont la projection.
+    if (p.lens === 0) camera.clearViewOffset();
+    else camera.setViewOffset(viewW, viewH, (-p.lens * viewW) / 2, 0, viewW, viewH);
   };
   applyPose(pose);
 
-  // La marque de la prochaine mission.
+  // Les poses rapprochées d'un écran bas se calculent d'avance, un nœud à chaque moment libre, jamais pendant la marche.
+  const idle = (cb: () => void): number => (typeof requestIdleCallback === 'function' ? requestIdleCallback(cb) : window.setTimeout(cb, 0));
+  const cancelIdle = (id: number) => (typeof cancelIdleCallback === 'function' ? cancelIdleCallback(id) : window.clearTimeout(id));
+  let idleTask = 0;
+  const precompute = () => {
+    cancelIdle(idleTask);
+    if (closeUpScale(viewH) >= 1) return;
+    let next = 0;
+    const step = () => {
+      const n = PATH_NODES[next++];
+      if (!n) return;
+      cameraPose(cameraKey(n.at, viewH), viewW, viewH);
+      idleTask = idle(step);
+    };
+    idleTask = idle(step);
+  };
+  precompute();
+
+  // La marque de la prochaine mission : au-dessus du lieu, ou à côté du sommet d'un lieu haut sur un écran bas.
+  const marks = new Map<PlaceId, { at: THREE.Vector3; beside: boolean }>();
+  const placeMarks = () => {
+    for (const [id, foot] of feet) {
+      const o = markOffset(id, viewH);
+      marks.set(id, { at: new THREE.Vector3(foot.x + o.x, foot.y + o.y, foot.z + o.z), beside: markBeside(id, viewH) });
+    }
+  };
+  placeMarks();
   let markPlace: PlaceId | null = null;
   const projected = new THREE.Vector3();
   const reportMark = () => {
-    const anchor = markPlace ? marks.get(markPlace) : undefined;
-    if (!anchor) return options.onMark(null);
-    projected.copy(anchor).project(camera);
-    const w = host.clientWidth;
-    const h = host.clientHeight;
-    options.onMark(markOnScreen({ x: ((projected.x + 1) / 2) * w, y: ((1 - projected.y) / 2) * h, behind: projected.z > 1 }, w, h, MARK_MARGIN));
+    const mark = markPlace ? marks.get(markPlace) : undefined;
+    if (!mark) return options.onMark(null, false);
+    projected.copy(mark.at).project(camera);
+    options.onMark(
+      markOnScreen({ x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH, behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN),
+      mark.beside,
+    );
   };
 
   // Le toucher : un lieu touché y envoie Kéo ; ailleurs (sol, eau), au point du chemin le plus proche.
@@ -279,7 +322,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     key = cameraKey(here, h);
     pose = cameraPose(key, w, h);
     move = null;
+    // La taille a changé : le décentrement se repose sur la nouvelle taille.
+    appliedLens = Number.NaN;
     applyPose(pose);
+    placeMarks();
+    precompute();
   };
   const observer = new ResizeObserver(resize);
   observer.observe(host);
@@ -351,6 +398,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     dispose: () => {
       disposed = true;
       cancelAnimationFrame(frame);
+      cancelIdle(idleTask);
       observer.disconnect();
       renderer.domElement.removeEventListener('pointerdown', onDown);
       renderer.domElement.removeEventListener('pointerup', onUp);

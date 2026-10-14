@@ -2,7 +2,7 @@
 // marche, les cadrages, les maquettes et le budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { openWorldCost, OPEN_WORLD_BUDGET } from './budget';
-import { CAMERA_PITCH, CLOSE_UP_INSETS, KEO_HEIGHT, MARK_LIFT, REFERENCE_HEIGHT, cameraKey, cameraPose, closeUpScale, poseAt, poseOf, screenOf } from './camera';
+import { CAMERA_PITCH, CLOSE_UP_INSETS, KEO_HEIGHT, MARK_LIFT, REFERENCE_HEIGHT, cameraKey, cameraPose, closeUpScale, markBeside, markOffset, poseAt, poseOf, screenOf } from './camera';
 import { distance, insidePolygon } from './geometry';
 import { atNode, findRoute, pathNode, pathRibbons, routeLength, snapToNetwork } from './paths';
 import { COAST, DECK_HEIGHT, FRAMINGS, ISLET, LAGOON, PATH_EDGES, PATH_NODES, PLACES, fromPlan, framingOf, placeById, placeOfIsland } from './plan6e';
@@ -234,15 +234,21 @@ describe('Sur un écran bas, la caméra se rapproche', () => {
     }
   });
 
-  it('Kéo, le lieu le plus proche entier et sa marque restent dans le cadre, hors des panneaux', () => {
+  it('Kéo, le lieu le plus proche entier et sa marque restent dans le cadre ; Kéo garde son air autour de « Y aller »', () => {
     const { w, h } = PHONE;
+    const { edge, markAbove, markHalf, markGap, markWidth, goHalfWidth, goHeight, keoAir } = CLOSE_UP_INSETS;
+    const clearOfGo = (q: { x: number; y: number }, air: number) => Math.abs(q.x - w / 2) >= goHalfWidth + air || q.y <= h - goHeight - air;
     for (const n of PATH_NODES) {
       const pose = cameraPose(cameraKey(n.at, h), w, h);
       // Le lieu le plus proche de ce nœud : celui dont la porte est la plus proche.
       const p = [...PLACES].sort((a, b) => distance(n.at, pathNode(a.door).at) - distance(n.at, pathNode(b.door).at))[0];
       const y0 = standingHeight(heightAt(p.center));
-      const mark = screenOf(pose, { x: p.center.x, y: y0 + modelOfPlace(p.id).top + MARK_LIFT, z: p.center.z }, w, h);
-      expect(mark.y).toBeGreaterThanOrEqual(CLOSE_UP_INSETS.mark - 0.5);
+      const o = markOffset(p.id, h);
+      const mark = screenOf(pose, { x: p.center.x + o.x, y: y0 + o.y, z: p.center.z + o.z }, w, h);
+      if (markBeside(p.id, h)) {
+        expect(mark.y).toBeGreaterThanOrEqual(markHalf + edge - 0.5);
+        expect(mark.x + markGap + markWidth).toBeLessThanOrEqual(w);
+      } else expect(mark.y).toBeGreaterThanOrEqual(markAbove - 0.5);
       const pos = modelOfPlace(p.id).facets.positions;
       const c = Math.cos(p.yaw), s = Math.sin(p.yaw);
       for (let k = 0; k < pos.length; k += 3) {
@@ -252,19 +258,38 @@ describe('Sur un écran bas, la caméra se rapproche', () => {
         expect(q.x).toBeLessThan(w);
         expect(q.y).toBeGreaterThan(0);
         expect(q.y).toBeLessThan(h);
+        expect(clearOfGo(q, 0)).toBe(true);
       }
-      const f = screenOf(pose, feet(n), w, h);
-      const head = screenOf(pose, { ...feet(n), y: feet(n).y + KEO_HEIGHT }, w, h);
-      expect(head.y).toBeGreaterThan(0);
-      expect(f.x).toBeGreaterThan(0);
-      expect(f.x).toBeLessThan(w);
-      // Ses pieds ne passent pas sous « Y aller », en bas au milieu.
-      const underGo = Math.abs(f.x - w / 2) < CLOSE_UP_INSETS.goHalfWidth;
-      expect(f.y).toBeLessThan(h - (underGo ? CLOSE_UP_INSETS.bottom : CLOSE_UP_INSETS.foot));
+      // Kéo, de la tête à l'anneau : dans l'écran, à 24 px au moins de « Y aller ».
+      for (const dx of [-1.3, 1.3])
+        for (const [dy, dz] of [[0, 1.3], [KEO_HEIGHT, -1.3]]) {
+          const q = screenOf(pose, { x: n.at.x + dx, y: feet(n).y + dy, z: n.at.z + dz }, w, h);
+          expect(q.y).toBeGreaterThan(0);
+          expect(q.y).toBeLessThan(h);
+          expect(clearOfGo(q, keoAir - 0.5)).toBe(true);
+        }
     }
   });
 
-  it('Kéo y garde à peu près sa taille de la tablette (près du Phare, haut, un peu moins)', () => {
+  it('au Phare, la marque se pose à côté de son sommet, et le Phare reste droit', () => {
+    const { w, h } = PHONE;
+    expect(markBeside('phare', h)).toBe(true);
+    expect(markBeside('phare', TABLET.h)).toBe(false);
+    for (const id of ['quais', 'filets', 'ecluses'] as const) expect(markBeside(id, h)).toBe(false);
+    expect(markOffset('phare', TABLET.h)).toEqual({ x: 0, y: modelOfPlace('phare').top + MARK_LIFT, z: 0 });
+    const beside = markOffset('phare', h);
+    expect(beside.x).toBeGreaterThan(0);
+    expect(beside.y).toBeLessThan(modelOfPlace('phare').top);
+    const pose = cameraPose(cameraKey(pathNode('phare').at, h), w, h);
+    const p = placeById('phare');
+    const y0 = standingHeight(heightAt(p.center));
+    const base = screenOf(pose, { x: p.center.x, y: y0, z: p.center.z }, w, h);
+    const top = screenOf(pose, { x: p.center.x, y: y0 + modelOfPlace('phare').top, z: p.center.z }, w, h);
+    // Droit : son axe ne penche pas de plus d'un pixel sur toute sa hauteur.
+    expect(Math.abs(top.x - base.x)).toBeLessThan(1);
+  });
+
+  it('Kéo y garde à peu près sa taille de la tablette (au Phare, haut, un peu moins)', () => {
     for (const n of PATH_NODES) {
       const phone = keoPixels(n, PHONE.w, PHONE.h);
       const tablet = keoPixels(n, TABLET.w, TABLET.h);
@@ -273,7 +298,10 @@ describe('Sur un écran bas, la caméra se rapproche', () => {
       const a = screenOf(pose, feet(n), PHONE.w, PHONE.h);
       const b = screenOf(pose, { ...feet(n), y: feet(n).y + KEO_HEIGHT }, PHONE.w, PHONE.h);
       const unchanged = Math.hypot(a.x - b.x, a.y - b.y);
-      if (n.id === 'phare' || n.id === 'digue') expect(phone).toBeGreaterThan(unchanged * 1.25);
+      // Au Phare, le lieu haut, Kéo n'a pas toute sa taille de la tablette, mais 28 px au moins (le directeur
+      // artistique vise environ 29).
+      if (n.id === 'phare') expect(phone).toBeGreaterThan(28);
+      if (n.id === 'phare' || n.id === 'digue') expect(phone).toBeGreaterThan(unchanged * 1.5);
       else {
         expect(phone).toBeGreaterThan(unchanged * 1.6);
         expect(phone).toBeGreaterThan(tablet * 0.85);
