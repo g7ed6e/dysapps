@@ -4,7 +4,7 @@
 import { pathRibbons } from './paths';
 import { PLACES, TERRAIN, type PlaceId } from './plan6e';
 import { modelOfPlace } from './places';
-import { answerObjects, itemScene, placePieces, sceneSpot } from './questionScene';
+import { answerObjects, itemScene, placePieces, sceneSpot, veilleurPiece } from './questionScene';
 import type { ItemScene } from './questions';
 import { buildHeightField, heightOnMesh, terrainTiles } from './terrain';
 
@@ -45,10 +45,11 @@ function questionCost(): { triangles: number; calls: number } {
   return { triangles, calls: 2 };
 }
 
-/** Les pièces durables, toutes remises : un maillage pour les quatre lieux, et la Roue des Écluses. */
+/** Les pièces durables, toutes remises, et le Veilleur rallumé : un maillage pour les quatre lieux, et la Roue des Écluses. */
 function piecesCost(): { triangles: number; calls: number } {
   const all = PLACES.map((p) => placePieces(p.id, 2));
-  return { triangles: all.reduce((t, p) => t + p.still.triangles + (p.wheel?.facets.triangles ?? 0), 0), calls: 2 };
+  const triangles = all.reduce((t, p) => t + p.still.triangles + (p.wheel?.facets.triangles ?? 0), 0) + veilleurPiece().triangles;
+  return { triangles, calls: 2 };
 }
 
 /** Ce que coûte le monde continu tout entier (toutes les tuiles visibles : le pire cas). */

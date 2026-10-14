@@ -14,8 +14,8 @@ import { markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork } from '../../world/continu/paths';
 import { COLORS_6E, PATH_NODES, PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { modelOfPlace } from '../../world/continu/places';
-import { answerObjects, answerScale, itemScene, placePieces, questionPose, sceneSpot, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
-import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
+import { answerObjects, answerScale, itemScene, placePieces, questionPose, sceneSpot, veilleurPiece, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
+import { REACTION_SECONDS, veilleurAwake, type ItemScene } from '../../world/continu/questions';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
 import { buildHeightField, heightOnMesh, standingHeight, terrainTiles } from '../../world/continu/terrain';
 import { skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
@@ -369,7 +369,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     top3.set(p.x, p.y + h, p.z).project(camera);
     return ((top3.y - projected.y) / 2) * viewH;
   };
-  /** La réaction à l'instant `t` (en secondes) : sa place sur son arc ; finie, elle reste ou s'efface. */
+  /** La réaction à l'instant `t` (en secondes) : sa place sur son arc ; finie, elle reste ou s'efface (elle reste toujours avec « Réduire les animations »). */
   const placeReaction = (t: number) => {
     if (!reaction) return;
     const { r, start } = reaction;
@@ -377,7 +377,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
     reactionMesh.position.set(r.from.x + (r.to.x - r.from.x) * e, r.from.y + (r.to.y - r.from.y) * e + r.arc * Math.sin(Math.PI * e), r.from.z + (r.to.z - r.from.z) * e);
     if (u >= 1) {
-      reactionMesh.visible = r.stay;
+      // Avec « Réduire les animations », la réaction est un état fixe : elle reste à sa fin.
+      reactionMesh.visible = r.stay || reduceMotion;
       reaction = null;
     }
   };
@@ -409,12 +410,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     move = null;
     applyPose(qp.pose);
     camera.updateMatrixWorld();
-    const objectsKey = `${place}|${viewW}x${viewH}|${layout.objects.map((o) => `${o.x},${o.y}`).join(';')}`;
+    const slotFeet = layout.slots.map((o) => o.foot);
+    const objectsKey = `${place}|${viewW}x${viewH}|${slotFeet.map((o) => `${o.x},${o.y}`).join(';')}`;
     const itemKey = `${JSON.stringify(item.scene)}|${item.right.join(',')}`;
     const spot = sceneSpot(place);
-    const points = layout.objects.map((o) => groundUnder(o.x, o.y, spot.y) ?? spot);
+    const points = slotFeet.map((o) => groundUnder(o.x, o.y, spot.y) ?? spot);
     // La hauteur d'un objet dans le monde : sa hauteur à l'écran, à l'échelle de l'écart entre deux objets.
-    const pxStep = layout.objects.length > 1 ? Math.abs(layout.objects[1].x - layout.objects[0].x) : layout.width;
+    const pxStep = slotFeet.length > 1 ? Math.abs(slotFeet[1].x - slotFeet[0].x) : 120;
     const worldStep = points.length > 1 ? Math.hypot(points[1].x - points[0].x, points[1].z - points[0].z) : 2;
     // La caméra regarde en plongée : une hauteur se voit plus courte qu'une largeur. On mesure la hauteur à l'écran
     // d'un premier essai au pied du premier objet, puis on corrige.
@@ -469,6 +471,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       all.append(pieces.still);
       wheel = pieces.wheel ?? wheel;
     }
+    if (veilleurAwake(counts, PLACES.map((p) => p.id))) all.append(veilleurPiece());
     setGeometry(piecesMesh, all.build());
     if (wheel) {
       setGeometry(wheelMesh, wheel.facets);

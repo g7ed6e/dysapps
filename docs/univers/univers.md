@@ -108,8 +108,8 @@ Le mainteneur veut que l’habillage aille jusqu’aux phrases de français (dé
 
 - Même `exerciceId:key`, même compétence, mêmes pièges, même barème ; les étoiles et les blocs se comptent avec le code commun.
 - Un son, un mot-outil reste le mot de référence : il est seulement porté par un objet du lieu (les cloches du Phare, en deux manches de six).
-- Un calcul nu garde sa réponse, ses choix et leur ordre ; la phrase du lieu (« 34 caisses sont sur le quai. La grue prend la moitié. Combien de caisses restent ? ») a toujours la ligne de calcul de référence écrite dessous (« Moitié de 34 = … »).
-- Une figure (fraction coloriée, droite graduée) est dessinée par le lieu avec les mêmes nombres (le sas, l’échelle des Écluses : un trait de niveau et des bandes, jamais une couleur seule) ; la consigne le dit.
+- Un calcul nu garde sa réponse, ses choix et leur ordre ; la phrase du lieu, une idée par phrase (« 34 caisses sont sur le quai. La grue prend la moitié. Combien de caisses restent sur le quai ? ») a toujours la ligne de calcul de référence écrite dessous (« Moitié de 34 = … »).
+- Une figure (fraction coloriée, droite graduée) est dessinée par le lieu avec les mêmes nombres (le sas, l’échelle des Écluses : un trait de niveau et des bandes, jamais une couleur seule) ; la consigne le dit. Au sas, l’indice et la correction parlent du sas (« En bas : le nombre de parts égales du sas. En haut : le nombre de parts pleines d’eau. » ; « 3 parts pleines d’eau sur 4 parts égales : 3/4. »), sans changer la clé ni les choix (contenu, 14 octobre 2026).
 - Une phrase de français est réécrite pour le lieu (les Filets), avec le même point d’accord, les mêmes sortes de pièges et autant de choix ; elle s’écrit dans le Markdown de l’île, sous « ## Au lieu · Archipéo », relue par le directeur contenu pédagogique et le référent dys, et un test vérifie qu’elle a un jumeau.
 - « Vue simple » rouvre toujours l’écran classique de la même mission.
 

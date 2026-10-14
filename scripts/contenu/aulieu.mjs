@@ -30,7 +30,7 @@ export const DEBUT_AU_LIEU = '## Au lieu · ';
 const UNIVERS = { Archipéo: 'archipeo' };
 
 /** Ce que le monde ouvert sait poser dans la scène des Filets : ce qui est dans le filet ou à côté. */
-export const SCENES = ['sardines', 'filets', 'mouette', 'journaux', 'crabes', 'pêche', 'seaux', 'crabe'];
+export const SCENES = ['sardines', 'filets', 'mouette', 'bocaux', 'crabes', 'pêche', 'seaux', 'crabe'];
 
 /** Les champs d'un item du lieu : [étiquette, clé dans le JSON, type]. */
 const CHAMPS = [

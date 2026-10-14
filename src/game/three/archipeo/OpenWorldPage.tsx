@@ -14,13 +14,13 @@ import { useSettings } from '../../../core/SettingsContext';
 import { useMoinsDAnimations } from '../../../core/motion';
 import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
-import { getBiome, type BiomeId } from '../../biomes';
+import { getBiome } from '../../biomes';
 import { exercisesOf } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
 import { SettingsButton } from '../../WorldShortcuts';
 import { CLOSE_UP_INSETS, type GoPanel } from '../../world/continu/camera';
 import { keepClear, missionOfPlace, nextMission, type MarkOnScreen, type ScreenRect } from '../../world/continu/mission';
-import { PLACES, placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
+import { placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
 import { piecesOf } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
@@ -143,8 +143,12 @@ export default function OpenWorldPage() {
 
   // Les pièces durables de chaque lieu : une à la première mission réussie, une deuxième à trois étoiles.
   const pieces = useMemo(() => {
-    const out = {} as Record<PlaceId, number>;
-    for (const p of PLACES) out[p.id] = piecesOf(exercisesOf(p.island as BiomeId, p.mission).map((e) => state.progress[e.id]?.stars ?? 0));
+    const of = (id: PlaceId): number => {
+      const p = placeById(id);
+      const biome = getBiome(p.island);
+      return biome ? piecesOf(exercisesOf(biome.id, p.mission).map((e) => state.progress[e.id]?.stars ?? 0)) : 0;
+    };
+    const out: Record<PlaceId, number> = { phare: of('phare'), quais: of('quais'), filets: of('filets'), ecluses: of('ecluses') };
     return out;
   }, [state.progress]);
   useEffect(() => {

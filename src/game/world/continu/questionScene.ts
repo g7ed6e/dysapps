@@ -12,6 +12,10 @@ import { heightAt, standingHeight } from './terrain';
 
 const C = {
   deck: 0xa9784a,
+  /** Le dessus du quai, plus clair : les caisses s'y détachent. */
+  quay: 0xd2ab78,
+  crane: 0xd9a441,
+  rope: 0x5a4632,
   deckSide: 0x8a6440,
   net: 0x8e7b5a,
   netLine: 0x6f5e42,
@@ -31,12 +35,13 @@ const C = {
   waterTop: 0x5fb3e0,
   empty: 0xe4ddcf,
   level: 0xfff6dc,
-  bronze: 0xb08a3e,
-  bronzeDark: 0x8a6a2c,
+  // Le bronze des cloches, éclairci vers la paille, et son reflet chaud (directeur artistique) : rien de presque noir.
+  bronze: 0xc8963c,
+  bronzeLight: 0xe8c27a,
   post: 0x7a5538,
   straw: 0xd9a441,
   strawDark: 0xb8862e,
-  lever: 0x5a3e28,
+  lever: 0x8a6440,
   knob: 0xc0503a,
   crate: 0xb5793f,
   crateTop: 0xc98d50,
@@ -100,28 +105,37 @@ const CATCH_SCALE = 1.6;
 
 // ---------- La place de la question à l'écran ----------
 
-/** Ce que la page garde autour de la question, en pixels : les marges, la rangée des réponses, la colonne de la consigne. */
+/** Ce que la page garde autour de la question, en pixels. */
 export const ANSWER_LAYOUT = {
-  button: 56,
+  /** La hauteur d'une étiquette de réponse (48 px au moins), sur tablette et sur un écran bas. */
+  label: 56,
+  labelLow: 48,
   edge: 12,
+  edgeLow: 8,
   gap: 12,
   maxWidth: 200,
-  minWidth: 48,
-  lift: 8,
+  /** La largeur d'une étiquette en dessous de laquelle la rangée prend toute la largeur (les mots des cloches). */
+  minLabel: 72,
+  minLabelBells: 116,
+  /** L'écart entre l'objet et son étiquette. */
+  lift: 4,
+  /** La hauteur d'un objet : au moins celle de son étiquette, au plus une part de l'écran. */
   objectShare: 0.6,
-  objectMax: 0.13,
-  /**
-   * Sur un écran bas (un téléphone couché) : des boutons de 48 px (le minimum), des objets plus petits, des marges plus
-   * fines et une colonne plus large, pour que la consigne, la phrase et ses boutons y tiennent.
-   */
-  low: 500,
-  buttonLow: 48,
-  edgeLow: 8,
-  objectMaxLow: 0.08,
-  panelShareLow: 0.52,
+  objectMax: 0.15,
+  /** Les cloches, plus petites : un carillon au pied de la tour, qui la laisse se dresser au-dessus. */
+  bellMax: 0.09,
+  /** Au Phare, sur tablette, la fenêtre de la scène commence plus bas, pour que la tour se pose juste au-dessus du carillon. */
+  towerDrop: 0.3,
+  /** La colonne, à gauche : sa part de la largeur. */
   panelMax: 400,
-  panelShare: 0.42,
-  wide: 600,
+  panelShare: 0.38,
+  /** Sur tablette, une colonne plus large quand l'item a sa règle (la carte de l'accord tient en moins de lignes). */
+  panelAidMax: 480,
+  panelAidShare: 0.46,
+  /** La barre du haut : « Vue simple » et la pause (56 px de haut). */
+  bar: 56,
+  /** En dessous de cette hauteur d'écran, un téléphone couché : la rangée des réponses en bas. */
+  low: 500,
 } as const;
 
 /** Un rectangle de l'écran, en pixels depuis le coin haut gauche. */
@@ -132,85 +146,106 @@ export interface ScreenBox {
   bottom: number;
 }
 
-/** La place de la question à l'écran : la rangée des réponses en bas, la colonne de la consigne, et la fenêtre de la scène. */
+/** La place d'une réponse : son étiquette, le pied de son objet, et la cible de toucher qui couvre les deux. */
+export interface AnswerSlot {
+  label: ScreenBox;
+  foot: { x: number; y: number };
+  hit: ScreenBox;
+}
+
+/** La place de la question à l'écran. */
 export interface QuestionLayout {
-  /** Le centre du bouton de chaque réponse. */
-  buttons: { x: number; y: number }[];
-  /** Le pied de l'objet de chaque réponse, juste au-dessus de son bouton. */
-  objects: { x: number; y: number }[];
-  /** La largeur et la hauteur d'un bouton, et la hauteur d'un objet à l'écran. */
-  width: number;
-  height: number;
+  /** Un écran bas (un téléphone couché) : la consigne en icône, les réponses en bas, la règle à droite. */
+  low: boolean;
+  slots: AnswerSlot[];
+  /** La hauteur d'un objet à l'écran (au moins celle de son étiquette). */
   objectHeight: number;
-  /** La colonne de la consigne, de la phrase et du résultat (fond uni) : à gauche sur un écran large, en haut sinon. */
+  /** La colonne de la phrase, de la ligne de calcul, d'une action et du résultat (fond uni), à gauche. */
   panel: { left: number; top: number; width: number; maxHeight: number };
-  /** Là où la scène de l'item se montre : entre la colonne et les objets des réponses. */
+  /** La règle affichée, hors de la colonne sur un écran bas ; `null` : dans la colonne. */
+  aid: ScreenBox | null;
+  /** Là où la scène de l'item se montre. */
   view: ScreenBox;
 }
 
+/** Ce que demande une question : combien de réponses, des mots longs (les cloches), une règle, la scène au milieu. */
+export interface QuestionNeeds {
+  count: number;
+  bells?: boolean;
+  aid?: boolean;
+  /**
+   * La scène se cadre au milieu de l'écran, objets compris (le Phare : les cloches en carillon au pied de la tour, dans
+   * son axe, leur mot dessous, jamais en travers de la tour).
+   */
+  centered?: boolean;
+  /** Sur un écran bas, la colonne élargie d'un cran ou deux quand la phrase n'y tient pas (`PANEL_LOW_SHARES`). */
+  widen?: number;
+}
+
+/** La part de la largeur que prend la colonne sur un écran bas : 38 %, puis plus large si la phrase n'y tient pas. */
+export const PANEL_LOW_SHARES = [0.38, 0.46, 0.54] as const;
+
 /**
- * La place de `count` réponses sur un écran de `width` × `height` pixels : une rangée régulière tout en bas, chaque
- * bouton de 48 px de large au moins et de 56 px de haut, avec un écart de 12 px ; l'objet de la réponse
- * juste au-dessus ; la colonne de la consigne à gauche (écran large) ou en haut (écran étroit) ; la scène dans le reste.
+ * La place d'une question sur un écran de `width` × `height` pixels.
+ * Sur tablette, la colonne à gauche, et les réponses dans le tiers du milieu, chaque étiquette posée au-dessus de son
+ * objet, à droite de la colonne si elles y tiennent, sinon sur toute la largeur sous la colonne.
+ * Sur un écran bas, la colonne étroite à gauche (38 %), les réponses en rangée en bas, les objets juste au-dessus
+ * (jamais derrière les étiquettes), la règle à droite. Rien ne défile.
  */
-export function questionLayout(count: number, width: number, height: number): QuestionLayout {
-  const { gap, maxWidth, minWidth, lift, objectShare, panelMax, wide } = ANSWER_LAYOUT;
-  const low = height < ANSWER_LAYOUT.low;
-  const button = low ? ANSWER_LAYOUT.buttonLow : ANSWER_LAYOUT.button;
-  const edge = low ? ANSWER_LAYOUT.edgeLow : ANSWER_LAYOUT.edge;
-  const objectMax = low ? ANSWER_LAYOUT.objectMaxLow : ANSWER_LAYOUT.objectMax;
-  const panelShare = low ? ANSWER_LAYOUT.panelShareLow : ANSWER_LAYOUT.panelShare;
-  const n = Math.max(1, count);
-  const room = (width - 2 * edge - (n - 1) * gap) / n;
-  const w = Math.max(minWidth, Math.min(maxWidth, room));
-  const total = n * w + (n - 1) * gap;
-  const left = (width - total) / 2 + w / 2;
-  const y = height - edge - button / 2;
-  const buttons = Array.from({ length: n }, (_, i) => ({
-    x: left + i * (w + gap),
-    y,
-  }));
-  const foot = y - button / 2 - lift;
-  const objectHeight = Math.min(objectShare * (w + gap), objectMax * height);
-  const objectsTop = foot - objectHeight;
-  const panel =
-    width >= wide
-      ? {
-          left: edge,
-          top: edge,
-          width: low ? panelShare * width : Math.min(panelMax, panelShare * width),
-          // Sur un écran bas, la colonne descend jusqu'aux boutons : elle passe devant les objets de gauche.
-          maxHeight: Math.max(0, (low ? y - button / 2 - edge : objectsTop - edge) - edge),
-        }
-      : {
-          left: edge,
-          top: edge,
-          width: width - 2 * edge,
-          maxHeight: Math.max(0, 0.55 * objectsTop),
-        };
-  const view =
-    width >= wide
-      ? {
-          left: panel.left + panel.width + edge,
-          top: edge,
-          right: width - edge,
-          bottom: objectsTop,
-        }
-      : {
-          left: edge,
-          top: panel.top + panel.maxHeight + edge,
-          right: width - edge,
-          bottom: objectsTop,
-        };
-  return {
-    buttons,
-    objects: buttons.map((b) => ({ x: b.x, y: foot })),
-    width: w,
-    height: button,
-    objectHeight,
-    panel,
-    view,
+export function questionLayout(needs: QuestionNeeds, width: number, height: number): QuestionLayout {
+  const L = ANSWER_LAYOUT;
+  const low = height < L.low;
+  const n = Math.max(1, needs.count);
+  const edge = low ? L.edgeLow : L.edge;
+  const lh = low ? L.labelLow : L.label;
+  const top = edge + L.bar + edge;
+  const lowShare = PANEL_LOW_SHARES[Math.max(0, Math.min(PANEL_LOW_SHARES.length - 1, needs.widen ?? 0))];
+  const panelW = low ? lowShare * width : needs.aid ? Math.min(L.panelAidMax, L.panelAidShare * width) : Math.min(L.panelMax, L.panelShare * width);
+  const panelRight = edge + panelW;
+  const minLabel = needs.bells ? L.minLabelBells : L.minLabel;
+  const slotWidth = (left: number, right: number) => Math.min(L.maxWidth, (right - left - (n - 1) * L.gap) / n);
+  // Sur tablette, la rangée tient-elle à droite de la colonne ? Sur un écran bas, elle prend toujours toute la largeur.
+  const beside = !low && slotWidth(panelRight + edge, width - edge) >= minLabel;
+  const rowLeft = beside ? panelRight + edge : edge;
+  const rowRight = width - edge;
+  const w = Math.max(48, slotWidth(rowLeft, rowRight));
+  const objectHeight = Math.max(lh, Math.min(L.objectShare * (w + L.gap), (needs.bells ? L.bellMax : L.objectMax) * height));
+  const total = n * w + (n - 1) * L.gap;
+  const first = (rowLeft + rowRight - total) / 2;
+  const slots: AnswerSlot[] = [];
+  for (let i = 0; i < n; i++) {
+    const left = first + i * (w + L.gap);
+    const x = left + w / 2;
+    if (low) {
+      const label = { left, right: left + w, top: height - edge - lh, bottom: height - edge };
+      const foot = { x, y: label.top - L.lift };
+      slots.push({ label, foot, hit: { left, right: left + w, top: foot.y - objectHeight, bottom: label.bottom } });
+    } else if (needs.centered) {
+      // Le carillon : la cloche dans le tiers du milieu, son mot dessous.
+      const foot = { x, y: Math.round((2 * height) / 3) };
+      const label = { left, right: left + w, top: foot.y + L.lift, bottom: foot.y + L.lift + lh };
+      slots.push({ label, foot, hit: { left, right: left + w, top: foot.y - objectHeight, bottom: label.bottom } });
+    } else {
+      // L'objet dans le tiers du milieu, son étiquette au-dessus.
+      const foot = { x, y: Math.round((2 * height) / 3) };
+      const label = { left, right: left + w, bottom: foot.y - objectHeight - L.lift, top: foot.y - objectHeight - L.lift - lh };
+      slots.push({ label, foot, hit: { left, right: left + w, top: label.top, bottom: foot.y } });
+    }
+  }
+  const highest = Math.min(...slots.map((s) => s.hit.top));
+  const panel = {
+    left: edge,
+    top: edge,
+    width: panelW,
+    maxHeight: Math.max(0, (low || !beside ? highest - edge : height - edge) - edge),
   };
+  const viewBottom = highest - edge;
+  const viewLeft = needs.centered ? edge : panelRight + edge;
+  // Le Phare : la fenêtre descend jusqu'au pied des cloches, pour que la tour se dresse au-dessus du carillon.
+  const sceneBottom = needs.centered ? Math.max(...slots.map((s) => s.foot.y)) : viewBottom;
+  const sceneTop = needs.centered && !low ? top + L.towerDrop * (sceneBottom - top) : top;
+  const aid = low && needs.aid ? { left: panelRight + edge, top, right: width - edge, bottom: viewBottom } : null;
+  return { low, slots, objectHeight, panel, aid, view: { left: viewLeft, top: sceneTop, right: width - edge, bottom: Math.max(sceneTop + 48, sceneBottom) } };
 }
 
 /**
@@ -271,7 +306,7 @@ const stepOf = (points: readonly Vec3[]): number => (points.length > 1 ? Math.hy
  */
 export function answerScale(place: PlaceId, points: readonly Vec3[], height: number): number {
   const size = OBJECT_SIZE[ANSWER_OBJECT[place]];
-  return Math.max(0.05, Math.min(height / size.height, (0.3 * stepOf(points)) / size.half));
+  return Math.max(0.05, Math.min(height / size.height, (0.45 * stepOf(points)) / size.half));
 }
 
 /** Une cloche sur son portique, à l'échelle `s`, sa couleur donnée (le bronze, ou la lumière de la réaction). */
@@ -301,7 +336,7 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     if (kind === 'cloche') {
       for (const dx of [-0.45, 0.45]) b.box({ x: p.x + dx * s, y, z: p.z }, [0.1 * s, 1.5 * s, 0.1 * s], C.post);
       b.box({ x: p.x, y: y + 1.45 * s, z: p.z }, [1.05 * s, 0.12 * s, 0.14 * s], C.post);
-      bell(b, p, s, C.bronze, C.bronzeDark);
+      bell(b, p, s, C.bronze, C.bronzeLight);
     } else if (kind === 'panier') {
       const w = 0.9 * s,
         d = 0.7 * s,
@@ -360,11 +395,14 @@ function fish(b: FacetBuilder, x: number, y: number, z: number, yaw = 0): void {
 }
 
 /** Les objets de la pêche, au point (x, y, z), en rangée : la phrase dit ce qu'on voit, et combien. */
-function catchObjects(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'filets' }>, x: number, y: number, z: number): void {
+function catchObjects(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'filets' }>, x: number, y: number, z0: number, pile = false): void {
   const n = Math.max(1, scene.count);
   const pitch = scene.catch === 'pêche' ? 0 : 0.85;
   for (let i = 0; i < (scene.catch === 'pêche' ? 1 : n); i++) {
-    const cx = x + (i - (n - 1) / 2) * pitch;
+    // En rangée sur le filet ; en tas de deux de front dans le panier, pour rester lisible.
+    const cx = pile ? x + (n > 1 ? ((i % 2) - 0.5) * pitch : 0) : x + (i - (n - 1) / 2) * pitch;
+    const rows = Math.ceil(n / 2);
+    const z = pile ? z0 + (Math.floor(i / 2) - (rows - 1) / 2) * 0.5 : z0;
     switch (scene.catch) {
       case 'sardines':
         fish(b, cx, y, z, 0.2 * (i % 2 ? 1 : -1));
@@ -378,8 +416,10 @@ function catchObjects(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'filets
         b.box({ x: cx + 0.38, y: y + 0.35, z }, [0.18, 0.08, 0.1], C.beak);
         b.box({ x: cx, y, z }, [0.06, 0.25, 0.06], C.beak);
         break;
-      case 'journaux':
-        b.box({ x: cx, y, z, yaw: 0.15 * (i ? 1 : -1) }, [0.75, 0.05, 0.55], C.paper);
+      case 'bocaux':
+        // Un bocal gris, sans étiquette, et son couvercle.
+        b.prism({ x: cx, y, z }, 0.24, 0.24, 0.5, 8, C.grey, C.silverTop);
+        b.prism({ x: cx, y: y + 0.5, z }, 0.18, 0.18, 0.08, 8, C.stoneDark);
         break;
       case 'crabes':
       case 'crabe':
@@ -407,6 +447,17 @@ export function crateLayout(count: number): {
 
 const CRATE = 0.4;
 const CRATE_PITCH = 0.48;
+
+/** La place que prennent les caisses de `count` : largeur (x) et profondeur (z). */
+function crateBlock(count: number): { w: number; d: number } {
+  const { palettes, singles } = crateLayout(count);
+  const pw = 5 * CRATE_PITCH + 0.3,
+    pd = 2 * CRATE_PITCH + 0.3;
+  const cols = Math.min(3, palettes);
+  const w = cols * pw + (singles ? (palettes ? 0.2 : 0) + Math.min(5, singles) * CRATE_PITCH : 0);
+  const d = Math.max(Math.ceil(palettes / 3) * pd, Math.ceil(singles / 5) * CRATE_PITCH);
+  return { w: Math.max(w, CRATE_PITCH), d: Math.max(d, CRATE_PITCH) };
+}
 
 /** Les caisses de `count`, rangées depuis (x0, z0) : les palettes en grille de trois de front, les caisses seules à droite. */
 function crates(b: FacetBuilder, count: number, x0: number, y: number, z0: number): void {
@@ -491,14 +542,19 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     const pecheFacets = placed(r.build(), CATCH_SCALE);
     const from = { x: o.x, y: o.y + 0.05, z: o.z };
     if (!answered) b.append(placed(pecheFacets, 1, from));
-    else if (answerAt)
+    else if (answerAt) {
+      // La prise va au panier de la bonne réponse, en tas, assez grande pour se lire.
+      const p = new FacetBuilder();
+      catchObjects(p, scene, 0, 0, 0, true);
+      const pile = p.build();
       reaction = {
-        facets: placed(r.build(), basketFit(r.build(), scale)),
+        facets: placed(pile, basketFit(pile, scale)),
         from,
-        to: { x: answerAt.x, y: answerAt.y + 0.1 * scale, z: answerAt.z },
+        to: { x: answerAt.x, y: answerAt.y + 0.25 * scale, z: answerAt.z },
         arc: 1.2,
         stay: true,
       };
+    }
   } else if (scene.kind === 'sas') {
     platform(4.6, 1.6);
     const d = Math.max(1, scene.d),
@@ -565,26 +621,46 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
       };
     }
   } else if (scene.kind === 'quai') {
-    platform(11.6, 6.6);
-    // Les caisses au fond du quai, de gauche à droite ; la barque derrière, au nord : la grue y charge, ou elle apporte.
-    const x0 = o.x - 5.2,
-      z0 = o.z - 2.8;
-    // La moitié : les caisses qui restent ; le double : celles d'avant, les nouvelles arrivent devant elles.
-    crates(b, answered && scene.op === 'moitie' ? scene.after : scene.before, x0, o.y, z0);
-    const boatAt = { x: o.x, y: o.y, z: o.z - 4.3 };
-    boat(b, boatAt.x, boatAt.y, boatAt.z, 4);
-    if (answered) {
-      const r = new FacetBuilder();
-      crates(r, Math.abs(scene.after - scene.before), 0, 0, 0);
-      const quay = { x: x0, y: o.y, z: o.z + 0.3 };
-      const deck = { x: boatAt.x - 1.5, y: boatAt.y + 0.2, z: boatAt.z - 0.3 };
-      reaction = {
-        facets: r.build(),
-        from: scene.op === 'moitie' ? { x: x0, y: o.y, z: z0 } : deck,
-        to: scene.op === 'moitie' ? deck : quay,
-        arc: 1.5,
-        stay: scene.op === 'double',
-      };
+    // Le quai à la taille des caisses, au premier plan ; derrière lui, la barque amarrée, et la grue au coin. Avant le
+    // geste : la moitié, toutes les caisses sur le quai, la grue au-dessus, la barque vide ; le double, les caisses du
+    // quai au fond, la barque chargée des nouvelles. Après : les caisses ont changé de place, et y restent.
+    const moved = Math.abs(scene.after - scene.before);
+    const kept = scene.op === 'moitie' ? scene.after : scene.before;
+    const front = crateBlock(scene.op === 'moitie' ? scene.before : moved);
+    const back = scene.op === 'moitie' ? { w: 0, d: 0 } : crateBlock(scene.before);
+    const qw = Math.max(front.w, back.w, 3) + 1,
+      qd = front.d + back.d + (back.d ? 0.4 : 0) + 1;
+    b.box({ x: o.x, y: o.y - PLATFORM_DEPTH, z: o.z }, [qw, PLATFORM_DEPTH, qd], C.deckSide, C.quay);
+    const x0 = o.x - qw / 2 + 0.5;
+    const zBack = o.z - qd / 2 + 0.5;
+    const zFront = zBack + back.d + (back.d ? 0.4 : 0);
+    const boatLen = Math.max(3, crateBlock(moved).w + 1),
+      boatW = Math.max(1.2, crateBlock(moved).d + 0.6);
+    const boatAt = { x: o.x - 0.2, y: o.y, z: o.z - qd / 2 - boatW / 2 - 0.2 };
+    b.box({ x: boatAt.x, y: boatAt.y - 0.35, z: boatAt.z }, [boatLen, 0.45, boatW], C.hull, C.hullTop);
+    b.box({ x: boatAt.x + boatLen / 2 + 0.2, y: boatAt.y - 0.35, z: boatAt.z }, [0.4, 0.35, boatW * 0.6], C.hull);
+    const onBoat = { x: boatAt.x - boatLen / 2 + 0.5, y: boatAt.y + 0.1, z: boatAt.z - boatW / 2 + 0.3 };
+    // La grue : son mât au coin du quai, sa flèche au-dessus des caisses, le crochet et sa corde.
+    const mast = { x: o.x + qw / 2 - 0.3, z: o.z - qd / 2 + 0.3 };
+    b.box({ x: mast.x, y: o.y, z: mast.z }, [0.3, 3.4, 0.3], C.crane);
+    b.box({ x: mast.x - 1.6, y: o.y + 3.2, z: mast.z }, [3.6, 0.22, 0.22], C.crane);
+    b.box({ x: mast.x - 3.2, y: o.y + 1.7, z: mast.z }, [0.05, 1.5, 0.05], C.rope);
+    b.box({ x: mast.x - 3.2, y: o.y + 1.55, z: mast.z }, [0.3, 0.15, 0.3], C.stoneDark);
+    if (scene.op === 'moitie') {
+      crates(b, answered ? kept : scene.before, x0, o.y, zFront);
+      if (answered) {
+        const r = new FacetBuilder();
+        crates(r, moved, 0, 0, 0);
+        reaction = { facets: r.build(), from: { x: x0, y: o.y, z: zFront }, to: onBoat, arc: 1.5, stay: true };
+      }
+    } else {
+      crates(b, kept, x0, o.y, zBack);
+      if (!answered) crates(b, moved, onBoat.x, onBoat.y, onBoat.z);
+      else {
+        const r = new FacetBuilder();
+        crates(r, moved, 0, 0, 0);
+        reaction = { facets: r.build(), from: onBoat, to: { x: x0, y: o.y, z: zFront }, arc: 1.5, stay: true };
+      }
     }
   }
   return { still: b.build(), labels, reaction };
@@ -670,4 +746,24 @@ export function placePieces(place: PlaceId, count: number): PlacePieces {
     }
   }
   return { still: b.build(), wheel };
+}
+
+/**
+ * Le dernier palier (questions-du-monde.md, directeur artistique) : quand les quatre lieux ont toutes leurs pièces, le
+ * Veilleur se rallume au pied du Phare. Sans modèle encore : une silhouette en volumes simples, sa lanterne allumée, et
+ * la lanterne du Phare qui brille. Un modèle viendra à sa place.
+ */
+export function veilleurPiece(): Facets {
+  const b = new FacetBuilder();
+  const p = placeById('phare');
+  const y0 = groundAt(p.center);
+  const at = { x: p.center.x + 2.8, z: p.center.z + 2.2 };
+  const y = groundAt(at);
+  b.box({ x: at.x, y, z: at.z }, [0.9, 0.3, 0.9], C.stoneDark, C.stone);
+  b.prism({ x: at.x, y: y + 0.3, z: at.z }, 0.42, 0.28, 1.3, 6, C.hull, C.hullTop);
+  b.box({ x: at.x, y: y + 1.6, z: at.z }, [0.42, 0.42, 0.42], C.silverTop);
+  b.box({ x: at.x + 0.45, y: y + 0.9, z: at.z + 0.2 }, [0.26, 0.34, 0.26], C.lamp);
+  // La lanterne du Phare rallumée.
+  b.prism({ x: p.center.x, y: y0 + 11.9, z: p.center.z }, 1.25, 1.25, 0.9, 8, C.lamp);
+  return b.build();
 }

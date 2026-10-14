@@ -6,8 +6,20 @@ import { describe, expect, it } from 'vitest';
 import { seeded } from '../../../core/random';
 import { screenOf } from './camera';
 import PLACE_ITEMS from './placeItems.json';
-import { ANSWER_LAYOUT, answerObjects, answerScale, crateLayout, itemScene, placePieces, questionLayout, questionPose, sceneSpot } from './questionScene';
-import { BELLS_PER_ROUND, EXERCISES_WITH_TWINS, bellRounds, piecesOf, placeInstruction, placeItems, quaiScene, type QuestionItem } from './questions';
+import { ANSWER_LAYOUT, answerObjects, answerScale, crateLayout, itemScene, placePieces, questionLayout, questionPose, sceneSpot, veilleurPiece, type ScreenBox } from './questionScene';
+import {
+  BELLS_PER_ROUND,
+  EXERCISES_WITH_TWINS,
+  SAS_HINT,
+  bellRounds,
+  piecesOf,
+  placeInstruction,
+  placeItems,
+  quaiScene,
+  sasExplanation,
+  veilleurAwake,
+  type QuestionItem,
+} from './questions';
 
 const reference = (
   id: string,
@@ -61,13 +73,35 @@ describe('Les jumeaux des Filets (règle « à l’essai »)', () => {
     expect(placed[0]).not.toHaveProperty('traps');
     expect(placed[0]).not.toHaveProperty('point');
   });
+
+  it('chaque jumeau garde exactement la règle de son item de référence (la carte de l’accord)', () => {
+    for (const id of Object.keys(all)) {
+      const items = reference(id).items;
+      const placed = placeItems('filets', id, items);
+      for (const [i, p] of placed.entries()) expect(p.aid, p.key).toEqual(items[i].aid);
+    }
+    expect(placeItems('filets', 'french-6e-grammar-spelling-plurals-1', reference('french-6e-grammar-spelling-plurals-1').items)[0].aid).toMatchObject({
+      kind: 'rule-card',
+    });
+  });
+
+  it('le jumeau des bocaux : un bocal, deux bocaux', () => {
+    const twin = Object.values(all)
+      .flat()
+      .find((t) => t.answer === 'bocaux');
+    expect(twin).toMatchObject({
+      prompt: 'Le pêcheur remplit deux … de crevettes.',
+      choices: ['bocal', 'bocaux', 'bocals'],
+      scene: { catch: 'bocaux', count: 2 },
+    });
+  });
 });
 
 describe('Les Quais et les Écluses gardent l’item de référence', () => {
   it('la moitié et le double : une idée par phrase, la ligne de calcul de référence dessous', () => {
     expect(quaiScene('half-34')).toEqual({
       scene: { kind: 'quai', op: 'moitie', before: 34, after: 17 },
-      prompt: '34 caisses sont sur le quai. La grue prend la moitié. Combien de caisses restent ?',
+      prompt: '34 caisses sont sur le quai. La grue prend la moitié. Combien de caisses restent sur le quai ?',
     });
     expect(quaiScene('dbl-23')?.scene).toEqual({
       kind: 'quai',
@@ -116,6 +150,21 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     expect(placeInstruction('ecluses', 2, 'réf.')).toContain('échelle');
     expect(placeInstruction('filets', 1, 'réf.')).toBe('réf.');
   });
+
+  it('au sas, l’indice et la correction parlent du sas ; la clé et les choix restent ceux de la référence', () => {
+    const ref = { key: '3/4', choices: ['3/4', '4/3', '1/4'], answer: '3/4', hint: 'réf.', explanation: 'réf.', figure: { kind: 'fraction-bar', props: { n: 3, d: 4 } } };
+    const [sas] = placeItems('ecluses', 'x', [ref]);
+    expect(sas).toMatchObject({ key: '3/4', choices: ref.choices, answer: '3/4', hint: SAS_HINT });
+    expect(SAS_HINT).toBe('En bas : le nombre de parts égales du sas. En haut : le nombre de parts pleines d’eau.');
+    expect(sas.explanation).toBe('3 parts pleines d’eau sur 4 parts égales : 3/4.');
+    expect(sasExplanation(1, 2)).toBe('1 part pleine d’eau sur 2 parts égales : 1/2.');
+    const [line] = placeItems('ecluses', 'x', [{ key: '5/3', hint: 'réf.', figure: { kind: 'graduated-line', props: { start: 0, units: 2, perUnit: 3, point: 5 } } }]);
+    expect(line.hint).toBe('réf.');
+  });
+
+  it('le double : une idée par phrase', () => {
+    expect(quaiScene('dbl-23')?.prompt).toMatch(/Combien y en a-t-il sur le quai maintenant \?$/);
+  });
 });
 
 describe('Les cloches du Phare', () => {
@@ -150,6 +199,13 @@ describe('Les pièces durables', () => {
     expect(piecesOf([2, 3])).toBe(2);
   });
 
+  it('le Veilleur s’éveille quand chaque lieu a ses deux pièces', () => {
+    const places = ['phare', 'filets', 'ecluses', 'quais'] as const;
+    expect(veilleurAwake({ phare: 2, filets: 2, ecluses: 2, quais: 2 }, places)).toBe(true);
+    expect(veilleurAwake({ phare: 2, filets: 2, ecluses: 1, quais: 2 }, places)).toBe(false);
+    expect(veilleurPiece().triangles).toBeGreaterThan(0);
+  });
+
   it('chaque lieu a ses pièces ; la Roue des Écluses tourne à part', () => {
     for (const id of ['phare', 'filets', 'ecluses', 'quais'] as const) {
       expect(placePieces(id, 0).still.triangles).toBe(0);
@@ -169,27 +225,87 @@ describe('La place de la question à l’écran', () => {
     [390, 844],
   ] as const;
 
-  it('des réponses de 48 px au moins, écartées, dans l’écran ; la colonne au-dessus des objets ; une fenêtre pour la scène', () => {
+  const overlap = (a: ScreenBox, b: ScreenBox) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+
+  it('chaque réponse : une étiquette de 48 px au moins, sur l’objet qui la porte, touchables ensemble, dans l’écran', () => {
     for (const [w, h] of screens)
-      for (const count of [2, 3, 4, 6]) {
-        const l = questionLayout(count, w, h);
-        expect(l.width).toBeGreaterThanOrEqual(48);
-        expect(ANSWER_LAYOUT.button).toBeGreaterThanOrEqual(48);
-        for (let i = 1; i < count; i++) expect(l.buttons[i].x - l.buttons[i - 1].x - l.width).toBeGreaterThanOrEqual(12 - 1e-9);
-        expect(l.buttons[0].x - l.width / 2).toBeGreaterThanOrEqual(0);
-        expect(l.buttons[count - 1].x + l.width / 2).toBeLessThanOrEqual(w);
-        expect(l.buttons[0].y + ANSWER_LAYOUT.button / 2).toBeLessThanOrEqual(h);
-        // La colonne ne passe jamais sur les boutons (sur un écran bas, elle passe devant les objets de gauche).
-        const objectsTop = l.objects[0].y - l.objectHeight;
-        expect(l.panel.top + l.panel.maxHeight).toBeLessThanOrEqual(h < ANSWER_LAYOUT.low ? l.buttons[0].y - l.height / 2 : objectsTop);
-        expect(l.view.bottom - l.view.top, `${w}×${h}`).toBeGreaterThan(80);
-        expect(l.view.right - l.view.left).toBeGreaterThan(200);
+      for (const count of [2, 3, 4, 6])
+        for (const bells of [false, true]) {
+          const l = questionLayout({ count, bells }, w, h);
+          const at = `${w}×${h}, ${count}`;
+          expect(l.slots).toHaveLength(count);
+          // L'objet est au moins aussi haut que son étiquette.
+          expect(l.objectHeight, at).toBeGreaterThanOrEqual(l.slots[0].label.bottom - l.slots[0].label.top - 1e-9);
+          for (const [i, s] of l.slots.entries()) {
+            expect(s.label.bottom - s.label.top).toBeGreaterThanOrEqual(48);
+            expect(s.label.right - s.label.left).toBeGreaterThanOrEqual(48);
+            // La cible couvre l'étiquette et l'objet (du pied à sa hauteur).
+            expect(s.hit.left).toBeLessThanOrEqual(s.label.left);
+            expect(s.hit.right).toBeGreaterThanOrEqual(s.label.right);
+            expect(s.hit.top).toBeLessThanOrEqual(Math.min(s.label.top, s.foot.y - l.objectHeight) + 1e-9);
+            expect(s.hit.bottom).toBeGreaterThanOrEqual(Math.max(s.label.bottom, s.foot.y) - 1e-9);
+            expect(s.hit.left, at).toBeGreaterThanOrEqual(0);
+            expect(s.hit.right, at).toBeLessThanOrEqual(w);
+            expect(s.hit.bottom, at).toBeLessThanOrEqual(h);
+            // Deux réponses voisines ne se touchent pas.
+            if (i > 0) expect(s.hit.left - l.slots[i - 1].hit.right).toBeGreaterThanOrEqual(12 - 1e-9);
+            // Rien derrière une réponse : ni la colonne, ni la règle.
+            const panel = { left: l.panel.left, right: l.panel.left + l.panel.width, top: l.panel.top, bottom: l.panel.top + l.panel.maxHeight };
+            expect(overlap(panel, s.hit), at).toBe(false);
+            if (l.aid) expect(overlap(l.aid, s.hit), at).toBe(false);
+          }
+          expect(l.view.bottom - l.view.top, at).toBeGreaterThan(80);
+          expect(l.view.right - l.view.left).toBeGreaterThan(200);
+        }
+  });
+
+  it('sur tablette, les objets sont dans le tiers du milieu, leur étiquette au-dessus', () => {
+    for (const [w, h] of screens.filter(([, h]) => h >= ANSWER_LAYOUT.low)) {
+      const l = questionLayout({ count: 3 }, w, h);
+      for (const s of l.slots) {
+        expect(s.foot.y).toBeGreaterThan(h / 3);
+        expect(s.foot.y).toBeLessThanOrEqual((2 * h) / 3 + 1);
+        expect(s.label.bottom).toBeLessThanOrEqual(s.foot.y - l.objectHeight);
       }
+    }
+  });
+
+  it('sur un téléphone couché, les étiquettes en rangée en bas, les objets juste au-dessus, la règle à droite de la colonne', () => {
+    const l = questionLayout({ count: 3, aid: true }, 844, 390);
+    expect(l.low).toBe(true);
+    expect(l.panel.width).toBeCloseTo(0.38 * 844, 3);
+    for (const s of l.slots) {
+      expect(s.label.bottom).toBeLessThanOrEqual(390);
+      expect(s.label.bottom).toBeGreaterThan(390 - 20);
+      expect(s.foot.y).toBeLessThanOrEqual(s.label.top);
+    }
+    expect(l.aid).not.toBeNull();
+    expect(l.aid!.left).toBeGreaterThanOrEqual(l.panel.left + l.panel.width);
+    expect(questionLayout({ count: 3 }, 844, 390).aid).toBeNull();
+    expect(questionLayout({ count: 3, aid: true }, 1024, 768).aid).toBeNull();
+    // Une phrase qui ne tient pas : la colonne prend un cran, puis deux, jamais plus ; les réponses ne bougent pas.
+    const wider = [0, 1, 2, 3].map((widen) => questionLayout({ count: 4, widen }, 844, 390));
+    expect(wider.map((l) => Math.round(l.panel.width))).toEqual([321, 388, 456, 456]);
+    for (const l of wider) expect(l.slots).toEqual(wider[0].slots);
+  });
+
+  it('au Phare, le carillon : la cloche dans le tiers du milieu, son mot dessous, la tour cadrée jusqu’au pied des cloches', () => {
+    const l = questionLayout({ count: 6, bells: true, centered: true }, 1024, 768);
+    for (const s of l.slots) {
+      expect(s.label.top).toBeGreaterThanOrEqual(s.foot.y);
+      expect(s.foot.y).toBeLessThanOrEqual((2 * 768) / 3 + 1);
+    }
+    expect(l.view.bottom).toBe(l.slots[0].foot.y);
+    expect(l.view.left + l.view.right).toBeCloseTo(1024, 0);
+  });
+
+  it('la scène commence sous la barre du haut (« Vue simple » et la pause)', () => {
+    for (const [w, h] of screens) expect(questionLayout({ count: 3 }, w, h).view.top).toBeGreaterThanOrEqual(ANSWER_LAYOUT.bar);
   });
 
   it('la caméra de la question met la scène de l’item au milieu de sa fenêtre', () => {
     for (const [w, h] of screens) {
-      const l = questionLayout(4, w, h);
+      const l = questionLayout({ count: 4 }, w, h);
       const { pose, shift } = questionPose('quais', l.view, w, h);
       const p = screenOf(pose, sceneSpot('quais'), w, h);
       expect(p.x - shift.x).toBeCloseTo((l.view.left + l.view.right) / 2, 3);
@@ -233,15 +349,17 @@ describe('La scène d’un item', () => {
     expect(itemScene('ecluses', { kind: 'sas', n: 3, d: 4 }, false).labels).toEqual([]);
   });
 
-  it('la moitié : les caisses qui restent sur le quai, celles qui partent s’effacent sur la barque', () => {
+  it('la moitié : les caisses qui partent volent à la barque et y restent ; le double : les nouvelles arrivent sur le quai et y restent', () => {
+    const before = itemScene('quais', { kind: 'quai', op: 'moitie', before: 34, after: 17 }, false);
     const r = itemScene('quais', { kind: 'quai', op: 'moitie', before: 34, after: 17 }, true).reaction;
-    expect(r?.stay).toBe(false);
+    expect(before.reaction).toBeNull();
+    expect(r?.stay).toBe(true);
     expect(itemScene('quais', { kind: 'quai', op: 'double', before: 23, after: 46 }, true).reaction?.stay).toBe(true);
   });
 
   it('les objets des réponses tiennent au-dessus de leur bouton, sans déborder sur le voisin', () => {
     const s = answerScale('phare', points, 10);
-    expect(s * 0.55).toBeLessThanOrEqual(0.3 * 2 + 1e-9);
+    expect(s * 0.55).toBeLessThanOrEqual(0.45 * 2 + 1e-9);
     expect(answerObjects('phare', points, s).triangles).toBeGreaterThan(0);
     expect(answerObjects('quais', [], 1).triangles).toBe(0);
   });

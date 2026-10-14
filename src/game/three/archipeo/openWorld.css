@@ -92,9 +92,12 @@
   cursor: not-allowed;
 }
 
-/* Une question posée dans un lieu (lot 4) : la consigne, la phrase et le résultat dans une colonne sur fond uni (sa
-   place vient de questionLayout, en variables), les réponses en bas de l'écran, chacune sous l'objet du lieu qui la
-   porte. Rien ne bouge près de la consigne ; texte de 18 px au moins, cibles de 48 px au moins (56 ici). */
+/* Une question posée dans un lieu (lot 4) : la consigne, la phrase, la règle, une action et le résultat dans une
+   colonne sur fond uni, à gauche (sa place vient de questionLayout, en variables) ; chaque réponse est une étiquette
+   opaque et l'objet du lieu qui la porte, touchables ensemble. Sur tablette, les objets sont dans le tiers du milieu,
+   leur étiquette au-dessus ; sur un téléphone couché (.low), les étiquettes en rangée en bas, les objets juste
+   au-dessus, la consigne en icône, la règle à droite : rien ne défile. Texte de 18 px au moins, cibles de 48 px au
+   moins. */
 .world-question {
   position: absolute;
   inset: 0;
@@ -104,9 +107,7 @@
 .world-question > * {
   pointer-events: auto;
 }
-/* La colonne : quand la place manque (un téléphone couché, un grand texte), c'est d'abord la consigne qui défile dans
-   son cadre (elle est aussi lue), puis la colonne entière ; la phrase, « Valider » et le résultat restent en vue autant
-   que possible. Les réponses, placées par rapport à la page, n'en dépendent pas. */
+/* La colonne. Le défilement n'y reste qu'en dernier recours (un très grand texte sur un petit téléphone). */
 .world-question .quiz.in-world {
   position: static;
   box-sizing: border-box;
@@ -127,11 +128,13 @@
   flex: 0 0 auto;
   min-height: 0;
 }
+/* La consigne, en haut de la colonne, à la même place d'un item à l'autre ; elle s'efface dès que l'élève a répondu
+   (la correction prend sa place, à toutes les hauteurs d'écran) et revient à l'item suivant. */
 .world-question .in-world > .consigne {
-  flex: 0 1 auto;
-  min-height: 4rem;
   margin: 0 0 0.4rem;
-  overflow-y: auto;
+}
+.world-question .in-world.has-sheet > .consigne {
+  display: none;
 }
 .world-question .in-world .consigne-text,
 .world-question .in-world .question-prompt {
@@ -140,13 +143,18 @@
 .world-question .in-world .quiz-steps {
   margin: 0 0 0.4rem;
 }
-/* « Vue simple » : en haut à droite de l'écran, à côté de la pause, toujours à la même place. */
+/* « Vue simple » : en haut à droite de l'écran, à gauche de la pause (56 px), toujours à la même place. */
 .world-question .quiz.in-world > .world-question-simple {
   position: absolute;
-  top: var(--question-top);
-  right: calc(var(--question-top) + 56px);
-  min-height: 48px;
+  top: calc(0.6rem + env(safe-area-inset-top));
+  right: calc(0.6rem + 56px + 12px + env(safe-area-inset-right));
+  min-height: 56px;
   margin: 0;
+}
+/* « Commencer » : sous la consigne lue en entier, au premier item d'un écran bas. */
+.world-question .quiz.in-world > .world-question-start {
+  min-height: 56px;
+  margin: 0.4rem 0 0;
 }
 .world-question .world-place .question-head {
   display: flex;
@@ -158,54 +166,181 @@
   margin: 0;
 }
 .world-question-reference {
-  margin: 0 0.4rem 0 0;
+  margin: 0.3rem 0 0;
   color: var(--muted);
   font-size: max(18px, 1.05rem);
 }
 .world-question-actions {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
-.world-question .world-place .calcul-help {
-  margin-top: 0.5rem;
+.world-question-actions:empty {
+  display: none;
+}
+/* L'indice : l'ampoule, le texte et son haut-parleur sur une ligne, le texte au milieu. */
+.world-question .world-place .calcul-hint {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  margin: 0.5rem 0 0;
+  padding: 0.3rem 0.5rem;
 }
 .world-question .world-place .validate-button {
   min-height: 48px;
 }
-/* Le Phare : le son, « Écouter les cloches » et « Valider » sur une ligne quand elle est assez large. */
+/* Le Phare : le son, la consigne, « Écouter les cloches » et « Valider » sur une ligne quand elle est assez large. */
 .world-question .world-place .sound-target {
+  align-self: center;
   margin: 0 0.6rem 0 0;
 }
-/* Les réponses : placées en pixels depuis le haut de la page (leur centre vertical), sur fond uni. */
+/* Une action en icône (la consigne, l'indice) : 48 px, son mot dessous en grand texte sur un écran bas. */
+.world-icon {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+.world-icon .speak-button,
+.world-icon .world-hint {
+  min-width: 48px;
+  min-height: 48px;
+}
+.world-icon-label {
+  display: none;
+  font-size: max(18px, 0.9rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+:root[data-texte="grand"] .world-question .in-world.low .world-icon-label {
+  display: block;
+}
+/* La règle de l'item (la carte de l'accord, une aide de calcul) : sous la question, dans la colonne, sans second
+   cadre autour de la carte ; elle s'efface quand le résultat arrive (la correction redit la règle appliquée), pour que
+   le résultat tienne entier. */
+.world-question .aid.world-question-aid {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  border: none;
+  overflow: visible;
+  font-size: max(18px, 1rem);
+}
+.world-question .in-world.has-sheet .aid.world-question-aid {
+  display: none;
+}
+/* Sur tablette, si la carte manque de place, c'est elle seule qui défile dans son cadre, jamais la colonne. */
+.world-question .in-world:not(.low) .world-place,
+.world-question .in-world:not(.low) .world-question-prompt {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+  min-height: 0;
+}
+.world-question .in-world:not(.low) .world-question-prompt > * {
+  flex: 0 0 auto;
+}
+.world-question .in-world:not(.low) .world-question-prompt > .aid.world-question-aid {
+  flex: 0 1 auto;
+  min-height: 8rem;
+  overflow-y: auto;
+}
+/* Sur un écran bas, à droite de la colonne, au-dessus de la scène (sa place vient de questionLayout). */
+.world-question .aid.world-question-aid.beside {
+  position: absolute;
+  box-sizing: border-box;
+  margin: 0;
+  overflow-y: auto;
+}
+/* « Presque ! » et l'indice redit, au deuxième essai : serrés en haut de la colonne, sans bulle ni saut. */
+.world-question .in-world > .feedback {
+  margin: 0 0 0.3rem;
+}
+.world-question .in-world > .feedback .feedback-shout {
+  margin: 0;
+  animation: none;
+}
+.world-question .in-world > .feedback .feedback-body {
+  padding: 0.3rem 0.5rem;
+  gap: 0.4rem;
+}
+.world-question .in-world > .feedback .feedback-body::after {
+  display: none;
+}
+/* Les réponses : la cible de toucher couvre l'objet et son étiquette ; seule l'étiquette est peinte, sur fond uni,
+   l'objet se voit à travers. Sa place vient de questionLayout. */
 .world-answers {
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.world-answers .choice,
-.world-answers .word-card {
+.world-question .world-answers .world-answer {
   position: absolute;
   box-sizing: border-box;
+  display: block;
+  width: auto;
+  min-width: 0;
+  min-height: 0;
   margin: 0;
-  padding: 0.2rem 0.4rem;
-  transform: translateY(-50%);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-control, 12px);
+  background: transparent;
+  color: var(--text);
+  transition: none;
   pointer-events: auto;
-  font-size: max(18px, 1.15rem);
-  flex-direction: row;
+}
+.world-question .world-answers .world-answer:focus-visible {
+  outline: 3px solid var(--primary-bg);
+  outline-offset: 2px;
+}
+.world-answer-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
   justify-content: center;
   gap: 0.3rem;
+  padding: 0 0.4rem;
+  border: var(--border-width, 2px) solid var(--ink);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  color: var(--text);
+  font-size: max(18px, 1.15rem);
+  font-weight: 700;
   white-space: nowrap;
 }
-.world-answers .word-card .word-picto {
+.world-answer:hover:not(:disabled) .world-answer-label {
+  border-color: var(--primary-bg);
+}
+.world-answer.picked .world-answer-label {
+  border-color: var(--on-sand);
+  background: var(--sand);
+  color: var(--on-sand);
+}
+.world-answer.right .world-answer-label {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+}
+.world-answer.wrong .world-answer-label {
+  border-color: var(--error);
+  background: var(--error-bg);
+  color: var(--error);
+}
+.world-answer.ignored .world-answer-label {
+  opacity: 0.75;
+}
+.world-answers .word-picto {
   font-size: 1.2rem;
 }
-.world-answers .word-card .word-note,
-.world-answers .word-card .word-mark {
+.world-answers .word-note,
+.world-answers .word-mark {
   position: absolute;
-  top: -1.6rem;
+  bottom: calc(100% + 4px);
   left: 50%;
   transform: translateX(-50%);
   padding: 0 0.3rem;
@@ -217,7 +352,7 @@
 .world-question .in-world .result-sheet,
 .world-question .in-world[data-bandeau="page"] .result-sheet {
   position: static;
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   display: flex;
   margin: 0.4rem 0 0;
   padding: 0.5rem 0.6rem;
@@ -237,40 +372,104 @@
   min-width: 0;
   min-height: 56px;
 }
-/* Sur un écran bas, la phrase s'efface quand le résultat arrive : la correction la redit, la colonne reste lisible ;
-   les marges se resserrent. */
-@media (max-height: 500px) {
-  .world-question .quiz.in-world {
-    padding: 0.4rem 0.6rem;
-  }
-  .world-question .in-world .quiz-steps,
-  .world-question .in-world > .consigne {
-    margin-bottom: 0.25rem;
-  }
-  .world-question .in-world > .consigne {
-    min-height: 3.4rem;
-  }
-  .world-question .in-world .quiz-steps li {
-    height: 0.45rem;
-  }
-  .world-answers .word-card {
-    padding: 0.1rem 0.2rem;
-    gap: 0.15rem;
-  }
-  .world-answers .word-card .word-picto {
-    font-size: 1rem;
-  }
-  .world-question-actions {
-    margin-top: 0.25rem;
-  }
-  .world-question .in-world.has-sheet .world-question-prompt {
-    display: none;
-  }
+/* Un téléphone couché : la consigne devient une icône (sauf au premier item, lue en entier avant « Commencer »), les
+   étapes une ligne fine, la phrase s'efface quand le résultat arrive (la correction la redit). */
+.world-question .quiz.in-world.low {
+  padding: 0.3rem 0.6rem;
 }
-/* Le bilan d'une mission : la colonne défile s'il est long. */
+.world-question .in-world.low > .consigne {
+  display: none;
+}
+.world-question .in-world.low .quiz-steps {
+  margin: 0 0 0.15rem;
+}
+.world-question .in-world.low .quiz-steps li {
+  height: 4px;
+}
+.world-question .in-world.low .world-question-actions {
+  margin-top: 0.15rem;
+}
+.world-question .in-world.low .world-hint {
+  padding: 0.2rem;
+}
+.world-question .in-world.low .world-hint-word,
+.world-question .in-world.low .world-answers .word-picto {
+  display: none;
+}
+.world-question .in-world.low.has-sheet .world-question-prompt {
+  display: none;
+}
+/* Le résultat d'un écran bas : la colonne s'élargit vers la droite (la règle s'est effacée), pour que l'explication
+   tienne sans défiler ; les étiquettes et leurs objets restent en vue dessous. */
+.world-question .quiz.in-world.low.has-sheet {
+  width: max(var(--question-width), calc(62% - var(--question-left)));
+}
+.world-question .quiz.in-world.low.has-sheet.sheet-wide {
+  width: calc(100% - 2 * var(--question-left));
+}
+/* « Presque ! » sur un écran bas : une étiquette à droite de la colonne, sous la barre du haut ; l'indice reste
+   derrière l'ampoule. */
+.world-question .in-world.low > .feedback {
+  position: absolute;
+  top: calc(var(--question-top) * 2 + 56px);
+  left: calc(var(--question-left) + var(--question-width) + 12px);
+  margin: 0;
+}
+.world-question .in-world.low > .feedback .feedback-body {
+  display: none;
+}
+.world-question .in-world.low .world-question-actions .world-question-reference {
+  align-self: center;
+  margin: 0 0.3rem 0 0;
+}
+.world-question .in-world.low .result-sheet,
+.world-question .in-world.low[data-bandeau="page"] .result-sheet {
+  margin-top: 0.2rem;
+  padding: 0.3rem 0.5rem;
+}
+.world-question .in-world.low .result-sheet .explanation {
+  margin-bottom: 0.4rem;
+}
+.world-question .in-world.low .result-sheet .next-button,
+.world-question .in-world.low[data-bandeau="page"] .result-sheet .next-button {
+  min-height: 48px;
+}
+.world-question .in-world.low .world-answer-label {
+  padding: 0 0.2rem;
+  gap: 0.15rem;
+}
+/* Le premier item d'un écran bas : la consigne en entier, puis « Commencer », sur toute la largeur sous la barre du
+   haut ; la question et ses réponses attendent derrière. */
+.world-question .quiz.in-world.low.intro {
+  width: calc(100% - 2 * var(--question-left));
+  max-height: calc(100% - var(--question-top) * 3 - 56px);
+  margin-top: calc(var(--question-top) * 2 + 56px);
+}
+.world-question .in-world.low.intro > .consigne {
+  display: flex;
+}
+.world-question .in-world.intro .world-question-prompt,
+.world-question .in-world.intro .world-answers,
+.world-question .in-world.intro .quiz-steps {
+  display: none;
+}
+/* « Vue simple » sur un écran bas : jamais sur la colonne ni sur la pause ; en grand texte, sur deux lignes. */
+.world-question .quiz.in-world.low > .world-question-simple {
+  max-width: calc(100% - var(--question-left) - var(--question-width) - 56px - 3 * 12px);
+  white-space: normal;
+  line-height: 1.1;
+}
+/* Le bilan d'une mission : la colonne prend la hauteur de l'écran (les réponses sont parties). */
+.world-question .quiz.in-world.finished {
+  width: max(var(--question-width), min(30rem, calc(100% - 2 * var(--question-left))));
+  max-height: calc(100% - 2 * var(--question-top));
+}
+/* Sur un écran bas, le bilan prend toute la largeur, à gauche de la pause. */
+.world-question .quiz.in-world.low.finished {
+  width: calc(100% - 2 * var(--question-left) - 56px - 12px);
+}
 .world-question .quiz.in-world > .reward-panel {
   flex: 0 1 auto;
-  overflow-y: auto;
   border: none;
   padding: 0;
 }

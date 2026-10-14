@@ -14,7 +14,7 @@ export interface QuestionItem {
 }
 
 /** Ce que les Filets montrent dans le filet ou à côté (la phrase parle de ce qu'on voit). */
-type Catch = 'sardines' | 'filets' | 'mouette' | 'journaux' | 'crabes' | 'pêche' | 'seaux' | 'crabe';
+type Catch = 'sardines' | 'filets' | 'mouette' | 'bocaux' | 'crabes' | 'pêche' | 'seaux' | 'crabe';
 
 /** La scène d'un item, calculée à partir de l'item seul. */
 export type ItemScene =
@@ -70,6 +70,15 @@ function fractionOf(item: QuestionItem): { n: number; d: number; line: boolean }
   return null;
 }
 
+/** L'indice du sas des Écluses (niveau 1). */
+export const SAS_HINT = 'En bas : le nombre de parts égales du sas. En haut : le nombre de parts pleines d’eau.';
+
+/** La correction du sas des Écluses : « 3 parts pleines d’eau sur 4 parts égales : 3/4. » (accordée). */
+export function sasExplanation(n: number, d: number): string {
+  const pleines = n > 1 ? `${n} parts pleines d’eau` : `${n} part pleine d’eau`;
+  return `${pleines} sur ${d} parts égales : ${n}/${d}.`;
+}
+
 /** La phrase des Quais pour un item de Doubles et moitiés (clé `half-34` ou `dbl-23`) : une idée par phrase, un verbe. */
 export function quaiScene(key: string): { scene: Extract<ItemScene, { kind: 'quai' }>; prompt: string } | null {
   let m = /^half-(\d+)$/.exec(key);
@@ -77,7 +86,7 @@ export function quaiScene(key: string): { scene: Extract<ItemScene, { kind: 'qua
     const before = Number(m[1]);
     return {
       scene: { kind: 'quai', op: 'moitie', before, after: before / 2 },
-      prompt: `${before} caisses sont sur le quai. La grue prend la moitié. Combien de caisses restent ?`,
+      prompt: `${before} caisses sont sur le quai. La grue prend la moitié. Combien de caisses restent sur le quai ?`,
     };
   }
   m = /^dbl-(\d+)$/.exec(key);
@@ -85,7 +94,7 @@ export function quaiScene(key: string): { scene: Extract<ItemScene, { kind: 'qua
     const before = Number(m[1]);
     return {
       scene: { kind: 'quai', op: 'double', before, after: 2 * before },
-      prompt: `${before} caisses sont sur le quai. Le bateau en apporte ${before} de plus. Combien y en a-t-il ?`,
+      prompt: `${before} caisses sont sur le quai. Le bateau en apporte ${before} de plus. Combien y en a-t-il sur le quai maintenant ?`,
     };
   }
   return null;
@@ -123,11 +132,15 @@ export function placeItems(place: PlaceId, exerciseId: string, items: readonly Q
       if (!f) return { ...it, placeScene: { kind: 'sas', n: 1, d: 2 } };
       const prompt = f.line ? 'L’eau arrive à quelle hauteur sur l’échelle ?' : 'Quelle part du sas est pleine d’eau ?';
       // La figure de référence reste dans l'item : « Vue simple » la montre ; la scène la remplace ici.
+      if (f.line) return { ...it, prompt, spoken: prompt, placeScene: { kind: 'echelle', n: f.n, d: f.d } };
+      // Le sas (niveau 1) : l'indice et la correction parlent du sas (contenu, 14 octobre 2026), la clé et les choix restent.
       return {
         ...it,
         prompt,
         spoken: prompt,
-        placeScene: f.line ? { kind: 'echelle', n: f.n, d: f.d } : { kind: 'sas', n: f.n, d: f.d },
+        hint: SAS_HINT,
+        explanation: sasExplanation(f.n, f.d),
+        placeScene: { kind: 'sas', n: f.n, d: f.d },
       };
     });
   }
@@ -180,6 +193,11 @@ export function bellRounds<T extends QuestionItem>(items: readonly T[], rng: () 
 export function piecesOf(stars: readonly number[]): 0 | 1 | 2 {
   if (!stars.some((s) => s >= 1)) return 0;
   return stars.some((s) => s >= 3) ? 2 : 1;
+}
+
+/** Le dernier palier : le Veilleur se rallume quand les quatre lieux ont leurs deux pièces. */
+export function veilleurAwake(pieces: Readonly<Record<string, number>>, places: readonly string[]): boolean {
+  return places.length > 0 && places.every((id) => (pieces[id] ?? 0) >= 2);
 }
 
 /** La durée d'une réaction à un item, en secondes : entre une et deux (elle ne reste pas). */

@@ -1,16 +1,17 @@
 // La mission jouée dans un lieu du monde ouvert (lot 4, questions-du-monde.md, choix du mainteneur du 14 octobre 2026) :
 // le lanceur d'exercice commun (ExerciseRunner), avec les mêmes items, la même correction, les mêmes étoiles et le même
-// barème, posé sur la scène. La consigne, la phrase et le résultat sont dans une colonne sur fond uni (à gauche, ou en
-// haut sur un écran étroit) ; les réponses sont des boutons en bas de l'écran, chacun sous l'objet du lieu qui la porte
-// (cloche, panier, levier, caisse) ; la scène de l'item se montre dans le reste, la caméra fixe. Rien à lire n'est peint
-// dans la 3D. « Vue simple » rouvre l'écran classique de la même mission.
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+// barème, posé sur la scène. La phrase, la ligne de calcul, la règle, une action et le résultat sont dans une colonne
+// sur fond uni, à gauche ; chaque réponse est une étiquette et l'objet du lieu qui la porte (cloche, panier, levier,
+// caisse), touchables ensemble. Sur tablette, les objets sont dans le tiers du milieu, leur étiquette au-dessus ; sur un
+// téléphone couché, les étiquettes en rangée en bas, les objets juste au-dessus, la consigne en icône (lue en entier au
+// premier item), la règle à droite : rien ne défile. Rien à lire n'est peint dans la 3D. « Vue simple » rouvre l'écran
+// classique de la même mission.
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
 import { ForeignWordsProvider, Marked } from '../../../components/ForeignWords';
 import { RichText, frenchTypography } from '../../../components/math/RichText';
 import { SpeakButton } from '../../../components/SpeakButton';
-import { Syllabified } from '../../../components/Syllabified';
 import { seeded } from '../../../core/random';
 import { useSettings } from '../../../core/SettingsContext';
 import { useLoaded } from '../../../core/useLoaded';
@@ -19,25 +20,30 @@ import { getBiome } from '../../biomes';
 import { levelFor } from '../../engine';
 import { ExerciseRunner, type RunnerStage } from '../../ExerciseRunner';
 import { loadExercise, pickExercise } from '../../exercises';
+import { Aid } from '../../exercises/Aid';
+import type { AidData } from '../../exercises/maths';
 import type { ScreenProps } from '../../exercises/registry';
 import { CARD_CLASS, cardState, sortSummary } from '../../exercises/sortCards';
 import type { ExerciseItem } from '../../exercises/types';
 import { exercisesToReview } from '../../review';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
-import { questionLayout, type QuestionLayout } from '../../world/continu/questionScene';
-import { bellRounds, placeInstruction, placeItems, type ItemScene, type PlacedItem } from '../../world/continu/questions';
+import { PANEL_LOW_SHARES, questionLayout, type AnswerSlot, type QuestionLayout } from '../../world/continu/questionScene';
+import { bellRounds, placeInstruction, placeItems, type ItemScene } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 
-/** Ce que l'écran d'un lieu demande à la scène : l'item à montrer, et combien de réponses il a. */
+/** Ce que l'écran d'un lieu demande à la scène : l'item à montrer, combien de réponses il a, s'il a une règle. */
 interface ItemShown {
   scene: ItemScene;
   answered: boolean;
   right: number[];
   count: number;
+  aid: boolean;
 }
 
 interface QuestionContextValue {
   layout: QuestionLayout;
+  /** La consigne du lieu : l'icône qui la lit, sur un écran bas. */
+  instruction: string;
   show(item: ItemShown | null): void;
 }
 
@@ -69,23 +75,54 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   );
   const loaded = useLoaded(async () => (picked ? ((await loadExercise(picked.id)) ?? null) : null), [picked]);
 
-  // La taille de la page, relue au redimensionnement : la place des réponses, de la colonne et de la scène en dépend.
+  // La taille de la page, relue au redimensionnement, une fois par image au plus (une rotation en envoie une rafale) :
+  // la place des réponses, de la colonne et de la scène en dépend.
   const box = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 0, h: 0 });
   useEffect(() => {
     const el = box.current;
     if (!el) return;
-    const measure = () => setSize((s) => (s.w === el.clientWidth && s.h === el.clientHeight ? s : { w: el.clientWidth, h: el.clientHeight }));
-    const observer = new ResizeObserver(measure);
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      setSize((s) => (s.w === el.clientWidth && s.h === el.clientHeight ? s : { w: el.clientWidth, h: el.clientHeight }));
+    };
+    const observer = new ResizeObserver(() => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    });
     observer.observe(el);
     measure();
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
 
   const [item, setItem] = useState<ItemShown | null>(null);
   const [labels, setLabels] = useState<LabelOnScreen[]>([]);
-  const layout = useMemo(() => questionLayout(item?.count ?? DEFAULT_COUNT, size.w || 1, size.h || 1), [item?.count, size]);
+  const count = item?.count ?? DEFAULT_COUNT;
+  const hasAid = item?.aid ?? false;
+  // Sur un écran bas, la colonne s'élargit d'un cran quand la phrase n'y tient pas (un grand texte, une phrase longue
+  // des Quais), et le reste pour la mission : la colonne ne bouge plus d'un item à l'autre.
+  const [widen, setWiden] = useState(0);
+  // Le résultat d'un écran bas qui ne tient pas dans la colonne élargie : il prend toute la largeur au-dessus des objets.
+  const [sheetWide, setSheetWide] = useState(false);
+  const layout = useMemo(
+    () => questionLayout({ count, bells: place === 'phare', aid: hasAid, centered: place === 'phare', widen }, size.w || 1, size.h || 1),
+    [count, hasAid, place, size, widen],
+  );
   const [finished, setFinished] = useState(false);
+  // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
+  const [introDone, setIntroDone] = useState(false);
+  const intro = layout.low && !introDone && !finished;
+  // Mesuré avant l'affichage : une colonne qui déborde (en hauteur ou en largeur) prend le cran suivant.
+  useLayoutEffect(() => {
+    if (!layout.low || intro || finished) return;
+    const column = box.current?.querySelector<HTMLElement>('.quiz.in-world');
+    if (!column || !(column.scrollHeight > column.clientHeight + 1 || column.scrollWidth > column.clientWidth + 1)) return;
+    if (column.classList.contains('has-sheet')) setSheetWide(true);
+    else if (widen < PANEL_LOW_SHARES.length - 1) setWiden((n) => n + 1);
+  });
   useEffect(() => {
     if (!size.w || !size.h || !item || finished) return;
     setLabels(world.question({ place, layout, item }));
@@ -102,27 +139,38 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   const show = useCallback((next: ItemShown | null) => {
     setItem((prev) => (next && prev && sameItem(prev, next) ? prev : next));
   }, []);
-  const context = useMemo(() => ({ layout, show }), [layout, show]);
 
+  const ready = loaded && picked ? { def: loaded, level: picked.level } : null;
+  const instruction = ready ? placeInstruction(place, ready.level, ready.def.instruction) : '';
+  const context = useMemo(() => ({ layout, show, instruction }), [layout, show, instruction]);
+
+  const exerciseId = ready?.def.id;
   const stage = useMemo<RunnerStage | null>(() => {
-    if (!loaded || !picked) return null;
-    const simple = (
-      <button type="button" className="button world-question-simple" onClick={onSimpleView}>
-        <Icon name="liste" /> Vue simple
-      </button>
+    if (!exerciseId) return null;
+    const extra: ReactNode = (
+      <>
+        <button type="button" className="button world-question-simple" onClick={onSimpleView}>
+          <Icon name="liste" /> Vue simple
+        </button>
+        {intro && (
+          <button type="button" className="button primary world-question-start" onClick={() => setIntroDone(true)}>
+            <Icon name="play" /> Commencer
+          </button>
+        )}
+      </>
     );
     return {
       screens:
         place === 'phare'
-          ? (items, seed) => bellRounds(placeItems(place, loaded.id, items), seeded(`${seed}:cloches`))
-          : (items) => placeItems(place, loaded.id, items).map((it) => [it]),
+          ? (items, seed) => bellRounds(placeItems(place, exerciseId, items), seeded(`${seed}:cloches`))
+          : (items) => placeItems(place, exerciseId, items).map((it) => [it]),
       Screen: place === 'phare' ? BellScreen : PlaceChoiceScreen,
-      instruction: placeInstruction(place, picked.level, loaded.instruction),
+      instruction,
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
-      extra: simple,
-      className: 'in-world',
+      extra,
+      className: `in-world${layout.low ? ' low' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}`,
     };
-  }, [loaded, picked, place, lieu.at, onClose, onSimpleView]);
+  }, [exerciseId, instruction, place, lieu.at, onClose, onSimpleView, intro, layout.low, finished, sheetWide]);
 
   const style = {
     '--question-left': `${layout.panel.left}px`,
@@ -133,19 +181,22 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
 
   return (
     <div className="world-question" ref={box} style={style}>
-      {!biome || loaded === null ? null : !stage ? (
+      {!biome || loaded === null ? null : !ready || !stage ? (
         <Loading className="world-loading" />
       ) : (
         <QuestionContext.Provider value={context}>
           <ForeignWordsProvider words={biome.foreignWords}>
             <ExerciseRunner
-              key={`${loaded!.id}-${run}`}
+              key={`${ready.def.id}-${run}`}
               biome={biome}
-              def={loaded!}
+              def={ready.def}
               stage={stage}
               onComplete={() => setFinished(true)}
               onReplay={() => {
                 setFinished(false);
+                setIntroDone(false);
+                setWiden(0);
+                setSheetWide(false);
                 setItem(null);
                 setRun((r) => r + 1);
               }}
@@ -155,14 +206,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       )}
       {!finished &&
         labels.map((l) => (
-          <span
-            key={l.text}
-            className="world-question-label"
-            aria-hidden="true"
-            style={{
-              transform: `translate(${Math.round(l.x)}px, ${Math.round(l.y)}px)`,
-            }}
-          >
+          <span key={l.text} className="world-question-label" aria-hidden="true" style={{ transform: `translate(${Math.round(l.x)}px, ${Math.round(l.y)}px)` }}>
             {l.text}
           </span>
         ))}
@@ -175,6 +219,7 @@ const sameItem = (a: ItemShown, b: ItemShown) =>
   JSON.stringify(a.scene) === JSON.stringify(b.scene) &&
   a.answered === b.answered &&
   a.count === b.count &&
+  a.aid === b.aid &&
   a.right.length === b.right.length &&
   a.right.every((r, i) => r === b.right[i]);
 
@@ -184,41 +229,95 @@ function useQuestion(): QuestionContextValue {
   return ctx;
 }
 
-/** La place d'un bouton de réponse à l'écran. */
-const answerStyle = (layout: QuestionLayout, i: number): CSSProperties => {
-  const b = layout.buttons[i] ?? layout.buttons[0];
+const SCENE_KINDS = new Set(['cloches', 'filets', 'sas', 'echelle', 'quai']);
+
+/** La scène d'un item posé dans un lieu (`placeItems`), ou `null` si l'item n'en a pas. */
+function placeSceneOf(item: ExerciseItem | undefined): ItemScene | null {
+  const scene = item?.placeScene;
+  if (typeof scene !== 'object' || scene === null || !('kind' in scene) || typeof scene.kind !== 'string' || !SCENE_KINDS.has(scene.kind)) return null;
+  return scene as ItemScene;
+}
+
+/** La règle d'un item (la carte de règle, une aide de calcul), comme sur l'écran classique. */
+function aidOf(item: ExerciseItem | undefined): AidData | null {
+  const aid = item?.aid;
+  return typeof aid === 'object' && aid !== null && 'kind' in aid && typeof aid.kind === 'string' ? (aid as AidData) : null;
+}
+
+/** La cible de toucher d'une réponse (l'étiquette et l'objet), et la place de l'étiquette dedans. */
+function slotStyles(slot: AnswerSlot): { hit: CSSProperties; label: CSSProperties } {
+  const { hit, label } = slot;
   return {
-    left: `${Math.round(b.x - layout.width / 2)}px`,
-    top: `${Math.round(b.y)}px`,
-    width: `${Math.round(layout.width)}px`,
-    height: `${layout.height}px`,
-    minHeight: `${layout.height}px`,
+    hit: { left: `${Math.round(hit.left)}px`, top: `${Math.round(hit.top)}px`, width: `${Math.round(hit.right - hit.left)}px`, height: `${Math.round(hit.bottom - hit.top)}px` },
+    label: { top: `${Math.round(label.top - hit.top)}px`, height: `${Math.round(label.bottom - label.top)}px` },
   };
-};
+}
+
+/** La règle : sous la question dans la colonne, ou à droite sur un écran bas. */
+function PlaceAid({ aid, layout }: { aid: AidData; layout: QuestionLayout }) {
+  const box = layout.aid;
+  const style: CSSProperties | undefined = box
+    ? { left: `${Math.round(box.left)}px`, top: `${Math.round(box.top)}px`, width: `${Math.round(box.right - box.left)}px`, maxHeight: `${Math.round(box.bottom - box.top)}px` }
+    : undefined;
+  return (
+    <div className={`aid world-question-aid${box ? ' beside' : ''}`} style={style}>
+      <Aid aid={aid} />
+    </div>
+  );
+}
+
+/** Une icône d'action de 48 px, son mot dessous en grand texte (et toujours dit aux lecteurs d'écran). */
+function IconLabel({ children }: { children: string }) {
+  return (
+    <span className="world-icon-label" aria-hidden="true">
+      {children}
+    </span>
+  );
+}
+
+/** L'icône qui lit la consigne, à côté de la phrase, sur un écran bas. */
+function ConsigneIcon() {
+  const { instruction, layout } = useQuestion();
+  if (!layout.low) return null;
+  return (
+    <span className="world-icon">
+      <SpeakButton text={frenchTypography(instruction)} label="Consigne" compact />
+      <IconLabel>Consigne</IconLabel>
+    </span>
+  );
+}
+
+/** La voix se coupe quand l'écran change (la coupe entre deux items). */
+function useStopOnLeave(): void {
+  const { stop } = useSettings();
+  useEffect(() => () => stop(), [stop]);
+}
 
 /**
- * Les Filets, les Écluses, les Quais : la phrase du lieu (et la ligne de calcul de référence aux Quais), l'indice sur
- * demande, une réponse par objet du lieu. La correction est celle de l'écran classique (CalculationScreen).
+ * Les Filets, les Écluses, les Quais : la phrase du lieu (et la ligne de calcul de référence aux Quais), la règle de
+ * l'item, l'indice sur demande, une réponse par objet du lieu. La correction est celle de l'écran classique
+ * (CalculationScreen).
  */
 function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: ScreenProps) {
   const { layout, show } = useQuestion();
-  const item = items[0] as PlacedItem;
-  const prompt = String(item.prompt ?? '');
-  const spoken = String(item.spoken ?? prompt);
-  const choices = Array.isArray(item.choices) ? item.choices.map(String) : [];
-  const answer = String(item.answer ?? '');
-  const hint = String(item.hint ?? '');
+  useStopOnLeave();
+  const item = items[0];
+  const scene = placeSceneOf(item);
+  const prompt = String(item?.prompt ?? '');
+  const spoken = String(item?.spoken ?? prompt);
+  const choices = Array.isArray(item?.choices) ? item.choices.map(String) : [];
+  const answer = String(item?.answer ?? '');
+  const hint = String(item?.hint ?? '');
+  const referenceLine = typeof item?.referenceLine === 'string' ? item.referenceLine : '';
+  const aid = aidOf(item);
   const chosen = answered?.detail?.chosen;
   const [hintShown, setHintShown] = useState(false);
   const rightIndex = choices.indexOf(answer);
   useEffect(() => {
-    show({
-      scene: item.placeScene,
-      answered: Boolean(answered),
-      right: answered && rightIndex >= 0 ? [rightIndex] : [],
-      count: choices.length,
-    });
-  }, [show, item.placeScene, answered, rightIndex, choices.length]);
+    if (!scene) return;
+    show({ scene, answered: Boolean(answered), right: answered && rightIndex >= 0 ? [rightIndex] : [], count: choices.length, aid: Boolean(aid) });
+  }, [show, scene, answered, rightIndex, choices.length, aid]);
+  if (!item || !scene) return null;
 
   return (
     <div className="question world-place">
@@ -229,33 +328,53 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
           </p>
           <SpeakButton text={spoken} label="Écouter" shown={prompt} compact />
         </div>
-        <div className="world-question-actions">
-          {item.referenceLine && (
-            <p className="world-question-reference">
-              <RichText text={item.referenceLine} />
-            </p>
-          )}
-          {hint && !answered && !hintShown && (
-            <button
-              type="button"
-              className="button"
-              onClick={() => {
-                setHintShown(true);
-                onHelp();
-              }}
-            >
-              <Icon name="lightbulb" /> Un indice
-            </button>
-          )}
-        </div>
-        {hint && !answered && hintShown && (
-          <p className="calcul-hint" role="status">
-            <Icon name="lightbulb" /> <Marked text={hint} /> <SpeakButton text={hint} compact />
+        {referenceLine && !layout.low && (
+          <p className="world-question-reference">
+            <RichText text={referenceLine} />
           </p>
         )}
+        <div className="world-question-actions">
+          {/* Sur un écran bas, la ligne de calcul et les icônes sur une seule ligne. */}
+          {referenceLine && layout.low && (
+            <p className="world-question-reference">
+              <RichText text={referenceLine} />
+            </p>
+          )}
+          <ConsigneIcon />
+          {/* Au deuxième essai, « Presque ! » redit déjà l'indice (sur tablette ; sur un écran bas, il ne dit que « Presque ! »). */}
+          {hint && !answered && !hintShown && (!ruledOut || layout.low) && (
+            <span className="world-icon">
+              <button
+                type="button"
+                className="button world-hint"
+                aria-label="Un indice"
+                onClick={() => {
+                  setHintShown(true);
+                  onHelp();
+                }}
+              >
+                <Icon name="lightbulb" />
+                <span className="world-hint-word">Un indice</span>
+              </button>
+              <IconLabel>Indice</IconLabel>
+            </span>
+          )}
+        </div>
+        {hint && !answered && hintShown && (!ruledOut || layout.low) && (
+          <p className="calcul-hint" role="status">
+            <Icon name="lightbulb" />
+            <span>
+              <Marked text={hint} />
+            </span>
+            <SpeakButton text={hint} compact />
+          </p>
+        )}
+        {aid && <PlaceAid aid={aid} layout={layout} />}
       </div>
       <div className="world-answers" role="group" aria-label="Réponses possibles">
         {choices.map((choice, i) => {
+          const slot = layout.slots[i] ?? layout.slots[0];
+          const styles = slotStyles(slot);
           const isAnswer = answered && choice === answer;
           // Au deuxième essai, la réponse déjà tentée reste barrée.
           const isWrong = Boolean(answered && chosen === choice && choice !== answer) || Boolean(ruledOut?.includes(choice));
@@ -263,17 +382,14 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
             <button
               key={choice}
               type="button"
-              style={answerStyle(layout, i)}
-              className={`choice${isAnswer ? ' right' : ''}${isWrong ? ' wrong' : ''}`}
+              style={styles.hit}
+              className={`choice world-answer${isAnswer ? ' right' : ''}${isWrong ? ' wrong' : ''}`}
               disabled={Boolean(answered) || Boolean(ruledOut?.includes(choice))}
-              onClick={() =>
-                onAnswer({
-                  results: [{ key: item.key, correct: choice === answer }],
-                  detail: { chosen: choice },
-                })
-              }
+              onClick={() => onAnswer({ results: [{ key: item.key, correct: choice === answer }], detail: { chosen: choice } })}
             >
-              <RichText text={choice} />
+              <span className="world-answer-label" style={styles.label}>
+                <RichText text={choice} />
+              </span>
             </button>
           );
         })}
@@ -283,18 +399,22 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
 }
 
 /**
- * Le Phare : les mots d'une manche portés par des cloches (six au plus). Toucher une cloche dit son mot et la marque
- * (ou la démarque) ; « Valider » corrige la manche, comme la Chasse au son.
+ * Le Phare : les mots d'une manche portés par des cloches (six au plus), en carillon au pied de la tour. Toucher une
+ * cloche dit son mot et la marque (ou la démarque) ; « Valider » corrige la manche, comme la Chasse au son. Les mots
+ * sont écrits sans couleur de syllabes : une couleur pourrait désigner le son demandé.
  */
 function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
   const { layout, show } = useQuestion();
   const { speak } = useSettings();
+  useStopOnLeave();
   const [picked, setPicked] = useState<Set<string>>(new Set());
-  const scene = (items[0] as PlacedItem).placeScene;
+  const scene = placeSceneOf(items[0]);
   const right = useMemo(() => (answered ? items.flatMap((it, i) => (it.correct ? [i] : [])) : []), [items, answered]);
   useEffect(() => {
-    show({ scene, answered: Boolean(answered), right, count: items.length });
+    if (!scene) return;
+    show({ scene, answered: Boolean(answered), right, count: items.length, aid: false });
   }, [show, scene, answered, right, items.length]);
+  if (!scene) return null;
 
   const toggle = (it: ExerciseItem) => {
     if (answered) return;
@@ -307,10 +427,7 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
     });
   };
   const validate = () => {
-    const results = items.map((it) => ({
-      key: it.key,
-      correct: picked.has(it.key) === Boolean(it.correct),
-    }));
+    const results = items.map((it) => ({ key: it.key, correct: picked.has(it.key) === Boolean(it.correct) }));
     const firstWrong = items.find((_, i) => !results[i].correct);
     const summary = sortSummary(
       items,
@@ -321,17 +438,7 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
       },
       (it) => String(it.heard),
     );
-    onAnswer({
-      results,
-      detail: firstWrong
-        ? {
-            word: firstWrong.word,
-            heard: firstWrong.heard,
-            missed: !picked.has(firstWrong.key),
-            summary,
-          }
-        : {},
-    });
+    onAnswer({ results, detail: firstWrong ? { word: firstWrong.word, heard: firstWrong.heard, missed: !picked.has(firstWrong.key), summary } : {} });
   };
   const words = items.map((it) => String(it.word));
 
@@ -342,6 +449,7 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
           <p className="question-prompt sound-target">
             Le son <strong>[{target}]</strong>
           </p>
+          <ConsigneIcon />
           <SpeakButton text={frenchTypography(words.join(', '))} label="Écouter les cloches" />
           {!answered && (
             <button type="button" className="button primary validate-button" onClick={validate}>
@@ -352,29 +460,31 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
       </div>
       <ul className="world-answers" aria-label="Cloches à trier">
         {items.map((it, i) => {
+          const slot = layout.slots[i] ?? layout.slots[0];
+          const styles = slotStyles(slot);
           const on = picked.has(it.key);
           const st = answered ? cardState(it, on) : null;
           return (
             <li key={it.key}>
               <button
                 type="button"
-                style={answerStyle(layout, i)}
-                className={`word-card${on ? ' picked' : ''}${st ? CARD_CLASS[st] : ''}`}
+                style={styles.hit}
+                className={`word-card world-answer${on ? ' picked' : ''}${st ? CARD_CLASS[st] : ''}`}
                 aria-pressed={on}
                 disabled={Boolean(answered)}
                 onClick={() => toggle(it)}
               >
-                {typeof it.image === 'string' && it.image && (
-                  <span className="word-picto" aria-hidden="true">
-                    {it.image}
-                  </span>
-                )}
-                <span className="word-text">
-                  <Syllabified text={String(it.word)} />
+                <span className="world-answer-label" style={styles.label}>
+                  {typeof it.image === 'string' && it.image && (
+                    <span className="word-picto" aria-hidden="true">
+                      {it.image}
+                    </span>
+                  )}
+                  <span className="word-text">{String(it.word)}</span>
+                  {st === 'found' && <Icon name="check" className="word-mark" />}
+                  {st === 'missed' && <span className="word-note">oublié</span>}
+                  {st === 'intruder' && <span className="word-note">pas [{target}]</span>}
                 </span>
-                {st === 'found' && <Icon name="check" className="word-mark" />}
-                {st === 'missed' && <span className="word-note">oublié</span>}
-                {st === 'intruder' && <span className="word-note">pas [{target}]</span>}
               </button>
             </li>
           );

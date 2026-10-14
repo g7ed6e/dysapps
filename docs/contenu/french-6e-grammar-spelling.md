@@ -405,14 +405,14 @@ Pour tous les items :
    - indice : « Une mouette » : féminin ou masculin ? Une seule ou plusieurs ?
    - explication : « Une mouette » est au féminin singulier : l’adjectif prend un -e, « petite ».
 4. jumeau : 4
-   - scène : journaux · 2
-   - énoncé : Le pêcheur emballe le poisson dans deux … .
-   - choix : journal · journaux · journals
-   - réponse : journaux
+   - scène : bocaux · 2
+   - énoncé : Le pêcheur remplit deux … de crevettes.
+   - choix : bocal · bocaux · bocals
+   - réponse : bocaux
    - point : pluriel d’un nom en -al
    - pièges : pluriel régulier en -s
    - indice : Deux, c’est plusieurs. Relis la règle des noms en -al.
-   - explication : Au pluriel, les noms en -al deviennent -aux : un journal, deux journaux.
+   - explication : Au pluriel, les noms en -al deviennent -aux : un bocal, deux bocaux.
 5. jumeau : 5
    - scène : crabes · 4
    - énoncé : Les crabes … grimpent sur le filet.

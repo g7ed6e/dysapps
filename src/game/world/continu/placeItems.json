@@ -69,23 +69,23 @@
       {
         "key": "french-6e-grammar-spelling-plurals-1-3",
         "scene": {
-          "catch": "journaux",
+          "catch": "bocaux",
           "count": 2
         },
-        "prompt": "Le pêcheur emballe le poisson dans deux … .",
+        "prompt": "Le pêcheur remplit deux … de crevettes.",
         "choices": [
-          "journal",
-          "journaux",
-          "journals"
+          "bocal",
+          "bocaux",
+          "bocals"
         ],
-        "answer": "journaux",
+        "answer": "bocaux",
         "point": "pluriel d’un nom en -al",
         "traps": [
           "pluriel régulier en -s"
         ],
         "hint": "Deux, c’est plusieurs. Relis la règle des noms en -al.",
-        "explanation": "Au pluriel, les noms en -al deviennent -aux : un journal, deux journaux.",
-        "spoken": "Le pêcheur emballe le poisson dans deux (mot manquant) ."
+        "explanation": "Au pluriel, les noms en -al deviennent -aux : un bocal, deux bocaux.",
+        "spoken": "Le pêcheur remplit deux (mot manquant) de crevettes."
       },
       {
         "key": "french-6e-grammar-spelling-plurals-1-4",

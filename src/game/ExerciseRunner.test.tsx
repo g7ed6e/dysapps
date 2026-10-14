@@ -10,6 +10,8 @@ import { runItems, runSeed } from './exercises/run';
 import { frenchTypography } from '../components/math/RichText';
 import { plansFor } from './world/plans';
 import { todayISO } from './engine';
+import { ExerciseRunner } from './ExerciseRunner';
+import { getBiome } from './biomes';
 
 const ALL = await loadAllExercises();
 const getExercise = (id: string) => ALL.find((e) => e.id === id);
@@ -109,6 +111,53 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   await user.click(screen.getAllByRole('link', { name: /Forêt des sons/ })[0]);
   expect(screen.getByRole('img', { name: /2 étoiles sur 3, meilleur score 83 %/ })).toBeInTheDocument();
   expect(screen.getByText(/Tu en as 6/)).toBeInTheDocument();
+});
+
+describe('Le lanceur posé dans le monde ouvert (`stage`, lot 4)', () => {
+  it('sans `stage`, l’écran classique ne change pas : consigne écrite, étapes, ni « Vue simple » ni colonne du monde', async () => {
+    const user = userEvent.setup();
+    renderAt('/adventure/french-6e-phonology');
+    await user.click(screen.getByRole('link', { name: /Abattage syllabique/ }));
+    expect(await screen.findByRole('heading', { name: DEF.instruction })).toBeInTheDocument();
+    const quiz = document.querySelector('section.quiz')!;
+    expect(quiz.className).not.toMatch(/in-world|low|intro|finished/);
+    expect(screen.queryByRole('button', { name: /Vue simple/ })).not.toBeInTheDocument();
+    expect(quiz.querySelector('.quiz-steps')).not.toBeNull();
+    await play(user);
+    // La fin garde ses liens (le bâtiment, Rejouer), pas le retour à un lieu du monde.
+    expect(screen.getByRole('link', { name: /Voir le bâtiment/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Rejouer/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Revenir / })).not.toBeInTheDocument();
+  });
+
+  it('avec un `stage`, sa consigne, son ajout et sa classe ; la fin rend la main au lieu', async () => {
+    const user = userEvent.setup();
+    const back = vi.fn();
+    const biome = getBiome('french-6e-phonology')!;
+    render(
+      <SettingsProvider>
+        <ProgressProvider>
+          <BloclandProvider>
+            <MemoryRouter>
+              <ExerciseRunner
+                biome={biome}
+                def={DEF}
+                onReplay={() => {}}
+                stage={{ instruction: 'La consigne du lieu.', back: { label: 'Revenir au Phare', onClick: back }, extra: <p>Ajout du lieu</p>, className: 'in-world' }}
+              />
+            </MemoryRouter>
+          </BloclandProvider>
+        </ProgressProvider>
+      </SettingsProvider>,
+    );
+    expect(screen.getByRole('heading', { name: 'La consigne du lieu.' })).toBeInTheDocument();
+    expect(screen.getByText('Ajout du lieu')).toBeInTheDocument();
+    expect(document.querySelector('section.quiz.in-world')).not.toBeNull();
+    await play(user);
+    await user.click(screen.getByRole('button', { name: /Revenir au Phare/ }));
+    expect(back).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('link', { name: /Voir le bâtiment/ })).not.toBeInTheDocument();
+  });
 });
 
 describe('« Reprendre » chez la créature (GD-4, étape 1)', () => {
