@@ -1,6 +1,74 @@
 /* Le monde ouvert d'Archipéo (prototype du 6e, derrière `?monde=ouvert`) : chargé avec sa page, jamais dans le paquet
-   principal. */
+   principal. La marque de la prochaine mission et « Y aller » sont des panneaux sur fond uni, en police de
+   l'application : rien à lire n'est peint dans la 3D. */
 .open-world-canvas {
   position: absolute;
   inset: 0;
+}
+/* La marque : l'icône de la matière et le nom du lieu, posée au-dessus du lieu ; hors champ, au bord de l'écran, avec
+   sa flèche tournée vers lui. Elle ne bouge qu'avec la caméra. */
+.open-world-mark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 48px;
+  padding: 0.3rem 0.8rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  will-change: transform;
+}
+.open-world-mark svg {
+  width: 1.4em;
+  height: 1.4em;
+  flex: none;
+}
+.open-world-arrow {
+  display: none;
+  line-height: 0;
+}
+.open-world-mark.hors-champ .open-world-arrow {
+  display: inline-block;
+}
+.open-world-mark:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+/* « Y aller » : toujours au même endroit, en bas au milieu ; « Passer le trajet » prend sa place pendant la marche. */
+.open-world-go {
+  position: absolute;
+  left: 50%;
+  bottom: calc(0.8rem + env(safe-area-inset-bottom, 0px));
+  z-index: 3;
+  transform: translateX(-50%);
+}
+.open-world-go .button {
+  min-height: 56px;
+  min-width: 12rem;
+  justify-content: center;
+}
+/* Ce que dit l'arrivée devant un lieu fermé : un panneau sur fond uni, juste au-dessus de « Y aller ». */
+.open-world-status {
+  position: absolute;
+  left: 50%;
+  bottom: calc(5.2rem + env(safe-area-inset-bottom, 0px));
+  z-index: 3;
+  max-width: min(90%, 28rem);
+  margin: 0;
+  padding: 0.4rem 0.9rem;
+  transform: translateX(-50%);
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
 }

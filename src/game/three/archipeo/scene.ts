@@ -1,6 +1,6 @@
 // La scène du monde continu (prototype du monde ouvert d'Archipéo, 6e, piste B « chemins aimantés ») : le terrain en
 // tuiles, la mer et le lagon, les chemins, les quatre lieux, Kéo ; le toucher qui l'envoie au point du chemin le plus
-// proche, sa marche, les cadrages prévus par rivage.
+// proche, sa marche, les cadrages prévus par rivage ; la marque de la prochaine mission, donnée à la page à chaque image.
 // Chargée à la demande avec la page (./OpenWorldPage.tsx), seulement derrière le drapeau `?monde=ouvert`
 // (../../worldLayoutFactory.tsx). Tout ce qui se calcule sans Three.js est dans world/continu/.
 import * as THREE from 'three';
@@ -10,6 +10,7 @@ import { cielDe } from '../../world/palette';
 import { CAMERA_BLEND_SECONDS, CAMERA_FOV, poseAt, poseOf, shoreAt, type CameraMove, type CameraPose } from '../../world/continu/camera';
 import type { Facets } from '../../world/continu/facets';
 import { distance, type Vec2 } from '../../world/continu/geometry';
+import { markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork } from '../../world/continu/paths';
 import { COLORS_6E, PLACES, framingOf, placeById, type PlaceId, type ShoreId } from '../../world/continu/plan6e';
 import { modelOfPlace } from '../../world/continu/places';
@@ -27,22 +28,30 @@ export interface OpenWorldOptions {
   reduceMotion: boolean;
   /** Kéo est arrivé : devant un lieu qu'on lui a demandé (`place`), ou sur un point du chemin (`null`). */
   onArrive(place: PlaceId | null): void;
-  /** Kéo part. */
+  /** Kéo part (la page change « Y aller » en « Passer le trajet »). */
   onDepart(): void;
+  /** La place de la marque de la prochaine mission à l'écran, à chaque image (`null` : pas de marque). */
+  onMark(mark: MarkOnScreen | null): void;
   /** Montrer le compteur de mesures (`?mesures`) ; `expose` : le laisser lire aux scripts. */
   meter: { show: boolean; expose: boolean };
 }
 
 export interface OpenWorld {
-  /** Envoie Kéo devant un lieu (le toucher d'un lieu). */
+  /** Envoie Kéo devant un lieu (« Y aller », le toucher d'un lieu). */
   goTo(place: PlaceId): void;
   /** Saute le trajet en cours : Kéo est arrivé. */
   skip(): void;
+  /** Le lieu marqué (la prochaine mission), ou aucun. */
+  setMark(place: PlaceId | null): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number };
   dispose(): void;
 }
 
+/** La marge de la flèche au bord de l'écran, en pixels : hors des boutons des coins. */
+const MARK_MARGIN = 56;
+/** Au-dessus du sommet d'un lieu, en unités : là où se pose la marque. */
+const MARK_LIFT = 1.2;
 /** Un toucher : moins de tant de pixels de glissé, moins de tant de millisecondes. */
 const TAP = { pixels: 10, ms: 700 };
 /** Le cap de Kéo au départ : face à la caméra (le sud). */
@@ -129,6 +138,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   touchables.push(paths);
 
   // Les lieux : un maillage chacun (un modèle TRELLIS le remplacera, lieu par lieu), posés sur le sol à leur centre.
+  const marks = new Map<PlaceId, THREE.Vector3>();
   for (const place of PLACES) {
     const model = modelOfPlace(place.id);
     const y = standingHeight(ground(place.center.x, place.center.z));
@@ -138,6 +148,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     mesh.userData.place = place.id;
     scene.add(still(mesh));
     touchables.push(mesh);
+    marks.set(place.id, new THREE.Vector3(place.center.x, y + model.top + MARK_LIFT, place.center.z));
   }
 
   // Kéo : le corps du bonhomme d'Archipéo (sa marche existante), son ombre au sol ; habillé dès que sa tenue est chargée.
@@ -197,6 +208,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   applyPose(pose);
 
+  // La marque de la prochaine mission.
+  let markPlace: PlaceId | null = null;
+  const projected = new THREE.Vector3();
+  const reportMark = () => {
+    const anchor = markPlace ? marks.get(markPlace) : undefined;
+    if (!anchor) return options.onMark(null);
+    projected.copy(anchor).project(camera);
+    const w = host.clientWidth;
+    const h = host.clientHeight;
+    options.onMark(markOnScreen({ x: ((projected.x + 1) / 2) * w, y: ((1 - projected.y) / 2) * h, behind: projected.z > 1 }, w, h, MARK_MARGIN));
+  };
+
   // Le toucher : un lieu touché y envoie Kéo ; ailleurs (sol, eau), au point du chemin le plus proche.
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -236,7 +259,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const observer = new ResizeObserver(resize);
   observer.observe(host);
 
-  // La boucle d'image : la marche, le cadrage (quelques petits objets par image : la place de Kéo).
+  // La boucle d'image : la marche, le cadrage, la marque (quelques petits objets par image : la place de Kéo, la marque).
   let frame = 0;
   let last = performance.now();
   const clock = new THREE.Clock();
@@ -278,6 +301,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       }
     }
     applyPose(pose);
+    reportMark();
     renderer.render(scene, camera);
     meter?.tick(renderer.info, now);
   };
@@ -288,6 +312,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     skip: () => {
       if (!walk) return;
       walk = skipWalk(walk, performance.now());
+    },
+    setMark: (place) => {
+      markPlace = place;
     },
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }),
     dispose: () => {
