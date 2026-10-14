@@ -171,13 +171,14 @@ export interface PasDeKeo {
 /**
  * Fait avancer le pas de Kéo de `dt` secondes (au temps `t`, pour le souffle) et rend sa pose : les angles de ses os et
  * la hauteur de son corps (de 0 à 1, à multiplier par `allure.monte`). L'élan monte et descend sur `depart` secondes, en
- * douceur ; à l'arrêt, le cycle repart de zéro et seul le souffle reste.
+ * douceur ; à l'arrêt, le cycle repart de zéro et seul le souffle reste. `cadence` : celle du monde continu, qui suit sa
+ * vitesse de marche (world/continu/walk.ts) ; sans elle, la cadence calme du monde en grille.
  */
-export function poseDeKeo(pas: PasDeKeo, t: number, dt: number, enMarche: boolean): ReturnType<typeof poseDeMarche> {
+export function poseDeKeo(pas: PasDeKeo, t: number, dt: number, enMarche: boolean, cadence: number = MARCHE_DE_KEO.allure.cadence): ReturnType<typeof poseDeMarche> {
   const { allure, depart, souffle } = MARCHE_DE_KEO;
   pas.rampe = Math.min(1, Math.max(0, pas.rampe + (enMarche ? dt : -dt) / depart));
   const elan = adoucir(pas.rampe);
-  pas.phi = elan > 0 ? (pas.phi + dt * allure.cadence) % (2 * Math.PI) : 0;
+  pas.phi = elan > 0 ? (pas.phi + dt * cadence) % (2 * Math.PI) : 0;
   const pose = poseDeMarche(allure, pas.phi, elan);
   // Le buste respire et penche un peu en avant quand il marche ; la tête compense, elle reste droite.
   const buste = cycle(souffle, t) - allure.penche * elan;
@@ -337,8 +338,11 @@ function adoucir(x: number): number {
 export interface CorpsDuBonhomme {
   mesh: THREE.SkinnedMesh;
   materiau: MateriauALueur;
-  /** Kéo marche et respire ; le bonhomme dessiné en code balance ses membres ; avec `reduit`, la pose de repos. */
-  bouger(t: number, dt: number, enMarche: boolean, reduit: boolean): void;
+  /**
+   * Kéo marche et respire ; le bonhomme dessiné en code balance ses membres ; avec `reduit`, la pose de repos.
+   * `cadence` : celle des jambes de Kéo, si elle suit une vitesse de marche (le monde continu).
+   */
+  bouger(t: number, dt: number, enMarche: boolean, reduit: boolean, cadence?: number): void;
   dispose(): void;
 }
 
@@ -360,7 +364,7 @@ export function corpsDuBonhomme(archipel: Monde['archipel']): CorpsDuBonhomme {
   return {
     mesh: corps.mesh,
     materiau,
-    bouger: (t, dt, enMarche, reduit) => {
+    bouger: (t, dt, enMarche, reduit, cadence) => {
       if (!hanchesDeKeo) return balancer(membresDuBonhomme, t, enMarche);
       if (reduit) {
         // « Réduire les animations » : une pose fixe, celle du repos (l'appareil a pu le demander en cours de partie).
@@ -369,7 +373,7 @@ export function corpsDuBonhomme(archipel: Monde['archipel']): CorpsDuBonhomme {
         hanchesDeKeo.position.y = hauteurDesHanches;
         return;
       }
-      const { angles, haut } = poseDeKeo(pasDeKeo, t, dt, enMarche);
+      const { angles, haut } = poseDeKeo(pasDeKeo, t, dt, enMarche, cadence);
       for (const [nom, axe, angle] of angles) tourner(osDeKeo, nom, axe, angle);
       hanchesDeKeo.position.y = hauteurDesHanches + MARCHE_DE_KEO.allure.monte * haut;
     },

@@ -59,8 +59,9 @@ function piecesCost(): { triangles: number; calls: number } {
 const SAMPLE_STEP = 4;
 
 /**
- * Le sol, au pire : les deux anneaux de tuiles (un maillage chacun) autour de chaque point du réseau, le plus chargé de
- * près et le plus chargé de loin (ils peuvent venir de deux points différents : on compte large).
+ * Le sol, environ : les deux anneaux de tuiles (un maillage chacun) autour des points du réseau pris tous les quatre
+ * unités, le plus chargé de près et le plus chargé de loin (ils peuvent venir de deux points différents : on compte
+ * large).
  */
 export function groundCost(): { triangles: number; calls: number; near: number; far: number } {
   const field = buildHeightField();
@@ -76,7 +77,10 @@ export function groundCost(): { triangles: number; calls: number; near: number; 
   return { triangles: worstNear + worstFar, calls: 2, near: worstNear, far: worstFar };
 }
 
-/** Ce que coûte le monde continu, au pire : le sol autour de Kéo, tout le reste visible à la fois. */
+/**
+ * Ce que coûte le monde continu, environ : le sol autour de Kéo, tout le reste visible à la fois ; la brume des quatre
+ * lieux, et le second maillage du banc qui se lève (moins d'une seconde).
+ */
 export function openWorldCost(): OpenWorldCost[] {
   const field = buildHeightField();
   const paths = pathRibbons((x, z) => heightOnMesh(field, x, z));
@@ -86,7 +90,7 @@ export function openWorldCost(): OpenWorldCost[] {
     { poste: 'mer', triangles: 2, calls: 1 },
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
     { poste: 'lieux', triangles: PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles, 0), calls: PLACES.length },
-    { poste: 'brume', triangles: veilFacets(PLACES.map((p) => p.id)).triangles, calls: 1 },
+    { poste: 'brume', triangles: veilFacets(PLACES.map((p) => p.id)).triangles, calls: 2 },
     { poste: 'kéo', ...KEO },
     { poste: 'question', ...questionCost() },
     { poste: 'pièces', ...piecesCost() },

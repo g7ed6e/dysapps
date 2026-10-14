@@ -2,9 +2,19 @@
 // « Réduire les animations », il est tout de suite arrivé (comme le bonhomme du monde en grille). Code pur.
 import { distance, type Vec2 } from './geometry';
 import { routeLength } from './paths';
+import { KEO_STEP } from './plan6e';
 
-/** La vitesse de Kéo, en unités par seconde (Kéo mesure 2 unités). */
-const WALK_SPEED = 6;
+/**
+ * La vitesse de Kéo, en unités par seconde (directeur artistique, piste 1 : 4, il était à 6) : la seule constante de
+ * la marche ; la cadence de ses jambes en découle.
+ */
+export const WALK_SPEED = 4;
+
+/**
+ * La cadence des jambes de Kéo, en radians par seconde du cycle de marche (un cycle : deux pas) : un pas de `KEO_STEP`
+ * par demi-cycle, pour que ses pieds ne glissent pas sur le sol.
+ */
+export const WALK_CADENCE = (Math.PI * WALK_SPEED) / KEO_STEP;
 
 /** Un trajet en cours : ses points, sa longueur et le moment du départ (en millisecondes). */
 export interface Walk {

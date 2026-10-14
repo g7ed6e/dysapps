@@ -10,18 +10,19 @@ import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
 import { WORLD_FOG, followPose, followStep, liftStep, markOffset, occlusionLift, type CameraPose } from '../../world/continu/camera';
-import { FacetBuilder, boundsOf, type Facets } from '../../world/continu/facets';
+import { FacetBuilder, type Facets } from '../../world/continu/facets';
 import { distance, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
-import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork } from '../../world/continu/paths';
-import { PLACES, TERRAIN, placeById, type PlaceId } from '../../world/continu/plan6e';
+import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from '../../world/continu/paths';
+import { PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { modelOfPlace } from '../../world/continu/places';
 import { answerObjects, answerScale, itemScene, placePieces, questionPose, sceneSpot, veilleurPiece, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, veilleurAwake, type ItemScene } from '../../world/continu/questions';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
-import { buildHeightField, heightOnMesh, standingHeight, tileFacets, tileRect, tileRings, type HeightField, type TileDetail } from '../../world/continu/terrain';
-import { MIST_COLOR, veilFacets } from '../../world/continu/veil';
-import { skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
+import { buildHeightField, heightOnMesh, standingHeight, tileRings } from '../../world/continu/terrain';
+import { createTileStore, type Tile } from '../../world/continu/tiles';
+import { MIST_COLOR, veilFacets, type VeilMesh } from '../../world/continu/veil';
+import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
 
@@ -102,12 +103,10 @@ const SLOW_FRAME_MS = 45;
 const SLOW_FRAMES = 30;
 /** Les anneaux du terrain se refont quand le point suivi s'est éloigné de tant d'unités de leur centre. */
 const RING_MOVE = 3;
-/** Les tuiles de près gardées en mémoire (les plus récentes) : de quoi revenir sur ses pas sans rien refaire. */
-const NEAR_TILES_KEPT = 24;
 /** Au-delà du bout de la brume, de tant d'unités, un lieu n'est plus dessiné (sauf le lieu suivant). */
 const PLACE_BEYOND_FOG = 10;
-/** La brume posée sur les lieux : presque opaque, un voile plutôt qu'un mur. */
-const VEIL_OPACITY = 0.88;
+/** Le lever de la brume d'un lieu : un fondu court, en secondes (d'un bloc avec « Réduire les animations »). */
+const VEIL_FADE_SECONDS = 0.8;
 
 /** Une géométrie à facettes (positions, normales, couleurs de sommet), sa boîte englobante juste. */
 function geometryOf(f: Facets): THREE.BufferGeometry {
@@ -127,13 +126,6 @@ function still<M extends THREE.Object3D>(mesh: M): M {
   return mesh;
 }
 
-/** Une tuile prête à copier : ses facettes et sa boîte. */
-interface Tile {
-  facets: Facets;
-  min: [number, number, number];
-  max: [number, number, number];
-}
-
 /**
  * Un anneau du terrain : un seul maillage, dont les tableaux sont faits une fois (et agrandis s'il le faut) ; on y
  * recopie les tuiles de l'anneau quand il change, et on ne dessine que ce qui est rempli (`drawRange`). Sa boîte
@@ -142,6 +134,12 @@ interface Tile {
 class RingMesh {
   readonly mesh: THREE.Mesh;
   private capacity = 0;
+  private positions = new THREE.BufferAttribute(new Float32Array(0), 3);
+  private normals = new THREE.BufferAttribute(new Float32Array(0), 3);
+  private colors = new THREE.BufferAttribute(new Float32Array(0), 3);
+  private readonly box = new THREE.Box3();
+  private readonly sphere = new THREE.Sphere();
+  private readonly corner = new THREE.Vector3();
 
   constructor(material: THREE.Material, initialTriangles: number) {
     this.mesh = still(new THREE.Mesh(new THREE.BufferGeometry(), material));
@@ -151,41 +149,43 @@ class RingMesh {
   private allocate(triangles: number): void {
     this.mesh.geometry.dispose();
     const g = new THREE.BufferGeometry();
-    for (const name of ['position', 'normal', 'color']) {
-      const a = new THREE.BufferAttribute(new Float32Array(triangles * 9), 3);
-      a.setUsage(THREE.DynamicDrawUsage);
-      g.setAttribute(name, a);
-    }
-    g.boundingBox = new THREE.Box3();
-    g.boundingSphere = new THREE.Sphere();
+    const attribute = () => new THREE.BufferAttribute(new Float32Array(triangles * 9), 3).setUsage(THREE.DynamicDrawUsage);
+    this.positions = attribute();
+    this.normals = attribute();
+    this.colors = attribute();
+    g.setAttribute('position', this.positions);
+    g.setAttribute('normal', this.normals);
+    g.setAttribute('color', this.colors);
+    // La boîte et la sphère de l'anneau sont celles de ses tuiles (tenues ici) : Three.js ne les recalcule pas.
+    g.boundingBox = this.box;
+    g.boundingSphere = this.sphere;
     this.mesh.geometry = g;
     this.capacity = triangles;
   }
 
   set(tiles: readonly Tile[]): void {
-    const total = tiles.reduce((s, t) => s + t.facets.triangles, 0);
+    let total = 0;
+    for (const t of tiles) total += t.facets.triangles;
     if (total > this.capacity) this.allocate(Math.ceil(total * 1.25));
-    const g = this.mesh.geometry;
-    const box = g.boundingBox!;
+    const { positions, normals, colors, box, corner } = this;
     box.makeEmpty();
     let offset = 0;
     for (const t of tiles) {
       if (!t.facets.triangles) continue;
-      (g.getAttribute('position') as THREE.BufferAttribute).array.set(t.facets.positions, offset);
-      (g.getAttribute('normal') as THREE.BufferAttribute).array.set(t.facets.normals, offset);
-      (g.getAttribute('color') as THREE.BufferAttribute).array.set(t.facets.colors, offset);
+      positions.array.set(t.facets.positions, offset);
+      normals.array.set(t.facets.normals, offset);
+      colors.array.set(t.facets.colors, offset);
       offset += t.facets.positions.length;
-      box.expandByPoint(new THREE.Vector3(...t.min));
-      box.expandByPoint(new THREE.Vector3(...t.max));
+      box.expandByPoint(corner.fromArray(t.min));
+      box.expandByPoint(corner.fromArray(t.max));
     }
-    for (const name of ['position', 'normal', 'color']) {
-      const a = g.getAttribute(name) as THREE.BufferAttribute;
+    for (const a of [positions, normals, colors]) {
       a.clearUpdateRanges();
       a.addUpdateRange(0, offset);
       a.needsUpdate = true;
     }
-    g.setDrawRange(0, offset / 3);
-    if (offset) box.getBoundingSphere(g.boundingSphere!);
+    this.mesh.geometry.setDrawRange(0, offset / 3);
+    if (offset) box.getBoundingSphere(this.sphere);
     this.mesh.visible = offset > 0;
   }
 
@@ -194,28 +194,33 @@ class RingMesh {
   }
 }
 
-/** Les tuiles du terrain, faites à la demande : de loin, toutes gardées (elles sont légères) ; de près, les plus récentes. */
-function tileStore(field: HeightField) {
-  const kept: Record<TileDetail, Map<number, Tile>> = { near: new Map(), far: new Map() };
-  return (index: number, detail: TileDetail): Tile => {
-    const map = kept[detail];
-    let t = map.get(index);
-    if (t) {
-      // La plus récente passe à la fin : on oublie d'abord celles qu'on n'a pas revues.
-      map.delete(index);
-      map.set(index, t);
-      return t;
-    }
-    const tx = index % TERRAIN.tilesX;
-    const tz = Math.floor(index / TERRAIN.tilesX);
-    const facets = tileFacets(field, tx, tz, detail);
-    const r = tileRect(tx, tz);
-    const b = facets.triangles ? boundsOf(facets) : { min: [r.minX, 0, r.minZ] as [number, number, number], max: [r.maxX, 0, r.maxZ] as [number, number, number] };
-    t = { facets, min: b.min, max: b.max };
-    map.set(index, t);
-    if (detail === 'near' && map.size > NEAR_TILES_KEPT) map.delete(map.keys().next().value!);
-    return t;
+/**
+ * Le matériau de la brume : sans lumière, sa couleur et sa transparence par sommet, et ce qu'on en voit de biais
+ * s'efface (la silhouette du banc reste douce, jamais un bord net). Une ligne de plus dans le shader de base de
+ * Three.js, aucun appel de plus.
+ */
+function veilMaterialOf(): THREE.MeshBasicMaterial {
+  const m = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false });
+  m.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vVeilNormal;\nvarying vec3 vVeilView;')
+      .replace('#include <fog_vertex>', '#include <fog_vertex>\nvVeilNormal = normalize( normalMatrix * normal );\nvVeilView = normalize( -mvPosition.xyz );');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vVeilNormal;\nvarying vec3 vVeilView;')
+      .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.a *= mix( 0.3, 1.0, smoothstep( 0.0, 0.15, abs( dot( normalize( vVeilNormal ), normalize( vVeilView ) ) ) ) );');
   };
+  return m;
+}
+
+/** Une brume en géométrie : positions et couleurs avec leur transparence, sa boîte englobante juste. */
+function veilGeometry(v: VeilMesh): THREE.BufferGeometry {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(v.positions, 3));
+  g.setAttribute('normal', new THREE.BufferAttribute(v.normals, 3));
+  g.setAttribute('color', new THREE.BufferAttribute(v.colors, 4));
+  g.computeBoundingBox();
+  g.computeBoundingSphere();
+  return g;
 }
 
 export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): OpenWorld {
@@ -253,7 +258,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const landMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
   // Le lieu suivant n'est pas pris dans la brume : de loin, c'est lui qu'on voit.
   const landmarkMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: false });
-  const tileOf = tileStore(field);
+  const tiles = createTileStore(field);
   const nearRing = new RingMesh(landMaterial, 9000);
   const farRing = new RingMesh(landMaterial, 6000);
   scene.add(nearRing.mesh, farRing.mesh);
@@ -299,13 +304,24 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   }
 
   // La brume sur les lieux pas encore ouverts : un seul maillage, refait quand la liste change (jamais par image) ; sans
-  // lumière, de la couleur du lointain, elle se lit comme un banc de brume et non comme des rochers.
-  const veilMaterial = new THREE.MeshBasicMaterial({ color: MIST_COLOR, transparent: true, opacity: VEIL_OPACITY, depthWrite: false });
+  // lumière, de la couleur du lointain, transparente par sommet (dense en bas, effacée en haut et sur ses bords). Le banc
+  // d'un lieu qui se lève passe le temps de son fondu dans un second maillage (un appel de plus, moins d'une seconde).
+  const veilMaterial = veilMaterialOf();
+  const fadeMaterial = veilMaterialOf();
   const veilMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), veilMaterial));
+  const fadeMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), fadeMaterial));
   veilMesh.visible = false;
+  fadeMesh.visible = false;
   // Après le reste : elle se pose par-dessus ce qu'elle voile.
   veilMesh.renderOrder = 1;
-  scene.add(veilMesh);
+  fadeMesh.renderOrder = 1;
+  scene.add(veilMesh, fadeMesh);
+  let fadeStart = 0;
+  const setVeilGeometry = (mesh: THREE.Mesh, v: VeilMesh) => {
+    mesh.geometry.dispose();
+    mesh.geometry = veilGeometry(v);
+    mesh.visible = v.triangles > 0;
+  };
   let veiled: readonly PlaceId[] = [];
   const approached = new Set<PlaceId>();
   let veilKey = '';
@@ -330,7 +346,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   scene.add(ring);
 
   // Où est Kéo, où il va.
-  let here: Vec2 = pathNode(placeById(options.start).door).at;
+  // Au départ, sur le chemin, à quelques pas du lieu (on voit le Phare de plus loin que sa porte).
+  let here: Vec2 = startOf(placeById(options.start).door, placeById(options.start).center).at;
   let walk: Walk | null = null;
   let walkTarget: PlaceId | null = null;
   let heading = FACING_CAMERA;
@@ -387,7 +404,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       mesh.visible = landmark || distance(ringCenter, placeById(id).center) < WORLD_FOG.far + PLACE_BEYOND_FOG;
     }
   };
-  const updateRings = (force = false) => {
+  let nearIndices: number[] = [];
+  /** L'anneau de près : ses tuiles prêtes, ou leur version de loin en attendant (une seule faite par image, `pump`). */
+  const setNear = (now: boolean) => nearRing.set(nearIndices.map((i) => (now ? tiles.build(i, 'near') : (tiles.near(i) ?? tiles.build(i, 'far')))));
+  /** Les anneaux autour du point suivi ; `now` (le départ, un saut) : les tuiles de près faites tout de suite. */
+  const updateRings = (force = false, now = false) => {
     if (!force && Math.hypot(focus.x - ringCenter.x, focus.z - ringCenter.z) < RING_MOVE) return;
     ringCenter.x = focus.x;
     ringCenter.z = focus.z;
@@ -395,20 +416,38 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const k = `${rings.near.join(',')}|${rings.far.join(',')}`;
     if (k !== ringKey) {
       ringKey = k;
-      nearRing.set(rings.near.map((i) => tileOf(i, 'near')));
-      farRing.set(rings.far.map((i) => tileOf(i, 'far')));
+      nearIndices = rings.near;
+      tiles.clearQueue();
+      setNear(now);
+      farRing.set(rings.far.map((i) => tiles.build(i, 'far')));
     }
     placeVisibility();
   };
-  updateRings(true);
+  updateRings(true, true);
 
   // La brume des lieux : ceux que la page donne, moins ceux que Kéo a approchés ; refaite si la liste change.
+  let shown: readonly PlaceId[] = [];
   const updateVeil = () => {
     const ids = veiled.filter((id) => !approached.has(id));
     const k = ids.join(',');
     if (k === veilKey) return;
     veilKey = k;
-    setGeometry(veilMesh, veilFacets(ids));
+    // Les bancs qui se lèvent (Kéo approche, la mission devient la prochaine) s'effacent en un fondu court.
+    const lifted = shown.filter((id) => !ids.includes(id));
+    shown = ids;
+    setVeilGeometry(veilMesh, veilFacets(ids));
+    if (lifted.length && !reduceMotion) {
+      setVeilGeometry(fadeMesh, veilFacets(lifted));
+      fadeMaterial.opacity = 1;
+      fadeStart = performance.now() / 1000;
+    }
+  };
+  /** Le fondu du banc qui se lève, à l'instant `t` (en secondes) ; fini, son maillage s'éteint. */
+  const fadeVeil = (t: number) => {
+    if (!fadeMesh.visible) return;
+    const u = Math.min(1, (t - fadeStart) / VEIL_FADE_SECONDS);
+    fadeMaterial.opacity = 1 - u;
+    if (u >= 1) fadeMesh.visible = false;
   };
   const approach = () => {
     let changed = false;
@@ -456,7 +495,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     placeKeo(here);
     followStep(focus, keoFeet, 0, true);
     lift = occlusionLift(focus, ground);
-    updateRings(true);
+    updateRings(true, true);
     approach();
     follow();
     arrive(place);
@@ -676,6 +715,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (!state.moving) arrive(walkTarget);
     }
     if (wheelMesh.visible && !reduceMotion) wheelMesh.rotation.x += dt * 0.6;
+    // Le banc qui se lève finit son fondu, même si une question s'ouvre à l'arrivée.
+    fadeVeil(t);
     if (asked) {
       // Pendant une question, la caméra ne bouge pas ; seule la réaction joue, puis la Roue tourne.
       placeReaction(t);
@@ -688,12 +729,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Il se tourne vers son cap en douceur, par le plus court (d'un coup avec « Réduire les animations »).
     const turn = Math.atan2(Math.sin(heading - keo.rotation.y), Math.cos(heading - keo.rotation.y));
     keo.rotation.y += reduceMotion ? turn : turn * Math.min(1, dt * 12);
-    body.bouger(t, dt, moving, reduceMotion);
+    body.bouger(t, dt, moving, reduceMotion, WALK_CADENCE);
     // La caméra rattrape Kéo hors de sa zone morte, et monte si le relief le cache.
     followStep(focus, keoFeet, dt, reduceMotion);
     lift = liftStep(lift, occlusionLift(focus, ground), dt, reduceMotion);
     follow();
     updateRings();
+    // Une tuile de près au plus par image : la suivante de la file, puis l'anneau de près refait avec elle.
+    if (tiles.pump() !== null) setNear(false);
     if (moving) approach();
     reportMark();
     renderer.render(scene, camera);
@@ -732,12 +775,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       renderer.domElement.removeEventListener('pointercancel', onCancel);
       body.dispose();
       for (const g of geometries) g.dispose();
-      for (const m of [itemMesh, reactionMesh, piecesMesh, wheelMesh, veilMesh]) m.geometry.dispose();
+      for (const m of [itemMesh, reactionMesh, piecesMesh, wheelMesh, veilMesh, fadeMesh]) m.geometry.dispose();
       nearRing.dispose();
       farRing.dispose();
       landMaterial.dispose();
       landmarkMaterial.dispose();
       veilMaterial.dispose();
+      fadeMaterial.dispose();
       seaMaterial.dispose();
       seaTexture.dispose();
       ringMaterial.dispose();

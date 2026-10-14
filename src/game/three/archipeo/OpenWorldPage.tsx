@@ -67,6 +67,10 @@ export default function OpenWorldPage() {
   const [walking, setWalking] = useState(false);
   // La mission posée dans un lieu, à l'arrivée de Kéo : la question se joue sur la scène.
   const [asking, setAsking] = useState<{ place: PlaceId; mission: string } | null>(null);
+  // La distance au prochain lieu, pour la voix (avis du référent dys) : relue à chaque image, mais l'état ne change
+  // qu'avec le palier (un, deux ou trois points) : le libellé de la marque n'est refait que là.
+  const [far, setFar] = useState<1 | 2 | 3>(1);
+  const farRef = useRef(far);
 
   // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
   // taille (jamais une mise en page forcée par image).
@@ -113,7 +117,13 @@ export default function OpenWorldPage() {
         const mission = n?.place.id === placeId ? n.mission : missionOfPlace(placeById(placeId), bornes);
         if (mission) setAsking({ place: placeId, mission });
       },
-      onMark: (m) => placeMark(markRef.current, arrowRef.current, m, layout),
+      onMark: (m) => {
+        placeMark(markRef.current, arrowRef.current, m, layout);
+        if (m && m.far !== farRef.current) {
+          farRef.current = m.far;
+          setFar(m.far);
+        }
+      },
     });
     world.current = w;
     setReady(true);
@@ -163,6 +173,8 @@ export default function OpenWorldPage() {
   };
   // Court : le nom du lieu, puis la mission (consultant UX UI et référent dys).
   const label = next ? `${next.place.name}, ${missionTitle(next.place.island, next.mission)}` : '';
+  // La marque dit aussi la distance, en mots, lue à la demande (jamais à chaque image).
+  const markLabel = next ? `${label}, ${DISTANCE_WORDS[far]}` : '';
 
   return (
     <div className="world-page open-world">
@@ -170,7 +182,7 @@ export default function OpenWorldPage() {
         <div ref={host} className="open-world-canvas" />
         {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
         {next && !asking && (
-          <button type="button" ref={markRef} className="open-world-mark" aria-label={label} onClick={goNext}>
+          <button type="button" ref={markRef} className="open-world-mark" aria-label={markLabel} onClick={goNext}>
             <span className="open-world-arrow-box" aria-hidden="true">
               <span ref={arrowRef} className="open-world-arrow">
                 <Icon name="nord" />
@@ -208,6 +220,9 @@ export default function OpenWorldPage() {
     </div>
   );
 }
+
+/** La distance de la marque en mots, pour la voix : un, deux ou trois points. */
+const DISTANCE_WORDS = { 1: 'tout près', 2: 'pas loin', 3: 'loin' } as const;
 
 /** L'écart minimal entre la marque et le bord de l'écran ou un bouton, en pixels. */
 const MARK_EDGE = 8;

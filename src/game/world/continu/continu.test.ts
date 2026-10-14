@@ -4,14 +4,15 @@ import { describe, expect, it } from 'vitest';
 import { groundCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget';
 import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, markOffset, occlusionLift, screenOf } from './camera';
 import { distance, insidePolygon, type Vec3 } from './geometry';
-import { atNode, findRoute, networkSamples, pathNode, pathRibbons, routeLength, snapToNetwork } from './paths';
+import { START_DISTANCE, atNode, findRoute, networkSamples, pathNode, pathRibbons, routeLength, snapToNetwork, startOf } from './paths';
 import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, placeById, placeOfIsland } from './plan6e';
 import { modelOfPlace } from './places';
 import { sceneSpot } from './questionScene';
 import { SEA_TEXTURE, seaPixels, shallowness } from './sea';
 import { RING, TILE_SIZE, buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
-import { veilFacets } from './veil';
-import { skipWalk, startWalk, walkAt } from './walk';
+import { createTileStore } from './tiles';
+import { VEIL_HEIGHT, VEIL_PROFILE, veilFacets } from './veil';
+import { WALK_CADENCE, WALK_SPEED, skipWalk, startWalk, walkAt } from './walk';
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => heightOnMesh(field, x, z);
@@ -204,16 +205,32 @@ describe('Les chemins aimantés', () => {
 describe('La marche de Kéo', () => {
   const route = [{ x: 0, z: 0 }, { x: 0, z: -6 }, { x: 6, z: -6 }];
 
-  it('à vitesse constante, le visage vers où il va', () => {
+  it('à vitesse constante, 4 unités par seconde, le visage vers où il va', () => {
+    expect(WALK_SPEED).toBe(4);
     const w = startWalk(route, 1000);
-    const s = walkAt(w, 1500, false);
+    const s = walkAt(w, 1000 + (3 / WALK_SPEED) * 1000, false);
     expect(s.at.z).toBeCloseTo(-3, 5);
     expect(s.moving).toBe(true);
     expect(s.heading).toBeCloseTo(0, 5); // vers −z, le nord
-    const t = walkAt(w, 2500, false);
-    expect(t.at).toEqual({ x: 3, z: -6 });
+    const t = walkAt(w, 1000 + (9 / WALK_SPEED) * 1000, false);
+    expect(t.at.x).toBeCloseTo(3, 5);
+    expect(t.at.z).toBeCloseTo(-6, 5);
     expect(t.heading).toBeCloseTo(-Math.PI / 2, 5); // vers +x, l'est
-    expect(walkAt(w, 3100, false).moving).toBe(false);
+    expect(walkAt(w, 1000 + (12.1 / WALK_SPEED) * 1000, false).moving).toBe(false);
+  });
+
+  it('ses jambes suivent la vitesse : un pas de Kéo par demi-cycle, sans glisser', () => {
+    // Un cycle (2π) fait deux pas : en une seconde, WALK_SPEED / KEO_STEP pas.
+    expect((WALK_CADENCE / Math.PI) * KEO_STEP).toBeCloseTo(WALK_SPEED, 9);
+  });
+
+  it('« Passer le trajet » dépose Kéo au point touché (sur le chemin), même loin du prochain lieu', () => {
+    const from = snapToNetwork(pathNode('phare').at);
+    const touched = snapToNetwork(fromPlan([1200, 560]));
+    const w = startWalk(findRoute(from, touched), 1000);
+    const end = walkAt(skipWalk(w, 1200), 1200, false);
+    expect(end.moving).toBe(false);
+    expect(distance(end.at, touched.at)).toBeLessThan(1e-9);
   });
 
   it('« Réduire les animations », ou « Passer le trajet » : il est arrivé', () => {
@@ -306,19 +323,67 @@ describe('La caméra qui suit Kéo', () => {
     for (const p of networkSamples(4)) expect(occlusionLift({ x: p.x, y: standingHeight(ground(p.x, p.z)), z: p.z }, ground)).toBeLessThan(6);
   });
 
+  it('au départ, Kéo est sur le chemin, à 9 unités du pied du lieu, au sud du Phare', () => {
+    for (const p of PLACES) {
+      const s = startOf(p.door, p.center);
+      expect(distance(s.at, p.center)).toBeLessThanOrEqual(START_DISTANCE + 1e-6);
+      expect(snapToNetwork(s.at).at.x).toBeCloseTo(s.at.x, 6);
+    }
+    const phare = startOf('phare', placeById('phare').center);
+    expect(distance(phare.at, placeById('phare').center)).toBeCloseTo(START_DISTANCE, 6);
+    expect(phare.at.z).toBeGreaterThan(placeById('phare').center.z + 6);
+  });
+
   it('la marque se pose au-dessus du sommet du lieu', () => {
     for (const p of PLACES) expect(markOffset(p.id)).toEqual({ x: 0, y: modelOfPlace(p.id).top + MARK_LIFT, z: 0 });
   });
 });
 
 describe('La brume sur les lieux', () => {
-  it('un banc qui couvre le lieu entier, jusqu’au-dessus de son sommet, en un seul maillage léger', () => {
+  it('un banc bas et large : le repère du lieu le dépasse (la flèche de la grue, la tour du Phare)', () => {
     expect(veilFacets([]).triangles).toBe(0);
-    const one = veilFacets(['quais']);
-    let top = -Infinity;
-    for (let k = 1; k < one.positions.length; k += 3) top = Math.max(top, one.positions[k]);
-    expect(top).toBeGreaterThan(standingHeight(heightAt(placeById('quais').center)) + modelOfPlace('quais').top);
+    for (const id of ['quais', 'phare'] as const) {
+      const v = veilFacets([id]);
+      const ground = standingHeight(heightAt(placeById(id).center));
+      let top = -Infinity;
+      let reach = 0;
+      for (let k = 0; k < v.positions.length; k += 3) {
+        top = Math.max(top, v.positions[k + 1]);
+        reach = Math.max(reach, Math.hypot(v.positions[k] - placeById(id).center.x, v.positions[k + 2] - placeById(id).center.z));
+      }
+      expect(top - ground).toBeLessThan(VEIL_HEIGHT + 2);
+      expect(top - ground).toBeLessThan(modelOfPlace(id).top - 2);
+      // Bien plus large que haut.
+      expect(reach).toBeGreaterThan(2.5 * VEIL_HEIGHT);
+    }
     expect(veilFacets(['quais', 'filets', 'ecluses']).triangles).toBeLessThan(1200);
+  });
+
+  it('dense en bas, effacée vers le haut et sur ses bords, jamais opaque : on devine le lieu dessous', () => {
+    expect(VEIL_PROFILE[0].a).toBe(0);
+    const densest = Math.max(...VEIL_PROFILE.map((p) => p.a));
+    expect(densest).toBeLessThanOrEqual(0.75);
+    expect(VEIL_PROFILE[VEIL_PROFILE.length - 1].a).toBeLessThan(densest);
+    const v = veilFacets(['filets']);
+    expect(v.colors.length).toBe((v.positions.length / 3) * 4);
+    for (let k = 3; k < v.colors.length; k += 4) expect(v.colors[k]).toBeLessThanOrEqual(densest + 1e-6);
+  });
+});
+
+describe('La réserve des tuiles', () => {
+  it('une tuile de près au plus par image : celles qui manquent attendent dans une file', () => {
+    const store = createTileStore(field, 4);
+    const wanted = tileRings(pathNode('quais').at, WORLD_FOG.far).near;
+    expect(wanted.length).toBeGreaterThan(1);
+    for (const i of wanted) expect(store.near(i)).toBeNull();
+    expect(store.pending()).toBe(wanted.length);
+    expect(store.pump()).toBe(wanted[0]);
+    expect(store.pending()).toBe(wanted.length - 1);
+    expect(store.near(wanted[0])).not.toBeNull();
+    store.clearQueue();
+    expect(store.pump()).toBeNull();
+    // Faite tout de suite quand on la demande (le départ, un saut) ; la même ensuite.
+    expect(store.build(wanted[1], 'near')).toBe(store.near(wanted[1]));
   });
 });
 

@@ -48,6 +48,31 @@ export function atNode(id: string): NetworkPoint {
 }
 
 /**
+ * Où Kéo se tient en ouvrant le monde devant un lieu : sur le chemin qui part de sa porte, à `START_DISTANCE` unités du
+ * centre du lieu (directeur artistique, piste 1 : assez loin du Phare pour qu'on le voie), ou au bout de ce chemin s'il
+ * est plus court.
+ */
+export const START_DISTANCE = 9;
+
+export function startOf(door: string, center: Vec2): NetworkPoint {
+  const from = atNode(door);
+  const [a, b] = ends(from.edge);
+  const [near, far] = from.t === 0 ? [a.at, b.at] : [b.at, a.at];
+  // Le long de la liaison, de la porte vers l'autre bout : la première part `u` à la bonne distance (par dichotomie,
+  // la distance au centre croissant le long du chemin qui s'en éloigne).
+  const at = (u: number): Vec2 => ({ x: near.x + (far.x - near.x) * u, z: near.z + (far.z - near.z) * u });
+  if (distance(at(1), center) <= START_DISTANCE) return { edge: from.edge, t: from.t === 0 ? 1 : 0, at: far };
+  let lo = 0;
+  let hi = 1;
+  for (let k = 0; k < 30; k++) {
+    const mid = (lo + hi) / 2;
+    if (distance(at(mid), center) < START_DISTANCE) lo = mid;
+    else hi = mid;
+  }
+  return { edge: from.edge, t: from.t === 0 ? hi : 1 - hi, at: at(hi) };
+}
+
+/**
  * Le plus court trajet sur le réseau, de `from` à `to` (A*, la distance à vol d'oiseau pour estimer le reste) : la
  * suite des points où Kéo tourne, départ et arrivée compris.
  */
