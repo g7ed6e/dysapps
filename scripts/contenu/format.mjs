@@ -44,13 +44,15 @@
 // est remplacé ; « clé des items : mot » (ou lettre, ou paragraphe) donne la clé ; « mot troué : en[f]ant » donne
 // le mot, avant, après et la réponse.
 //
-// En fin de fichier, « ## La voix » donne les mots qui ne sont pas du français et comment la voix les dit
+// En fin de fichier, « ## Au lieu · Archipéo » donne les items du lieu du monde ouvert (scripts/contenu/aulieu.mjs),
+// « ## La voix » donne les mots qui ne sont pas du français et comment la voix les dit
 // (scripts/contenu/voix.mjs), « ## Les plans » les plans des bâtiments de l'île en tableau (scripts/contenu/plans.mjs),
 // puis « ## Les demandes », les commandes de son habitant (scripts/contenu/demandes.mjs).
 //
 // Une valeur qui a un saut de ligne, des espaces au bord, qui est vide ou qui commence par « " »
 // s'écrit comme une chaîne JSON entre guillemets. Une liste s'écrit « a · b · c », ou en sous-liste si un élément
 // contient « · ».
+import { DEBUT_AU_LIEU, lireAuLieu } from './aulieu.mjs';
 import { ecrireDemandes, lireDemandes, TITRE_DEMANDES } from './demandes.mjs';
 import { ecrirePlans, lirePlans, TITRE_PLANS } from './plans.mjs';
 import { ecrireVoix, lireVoix, TITRE_VOIX } from './voix.mjs';
@@ -679,12 +681,14 @@ export function ecrireIle(ile, exercices, plans = [], demandes = []) {
 /** Lit le Markdown d'une île : { ile, missions: [{ id, titre }], biome, exercices, plans, demandes }. */
 export function lireIle(md, fichier = 'md') {
   const toutes = md.replace(/^\uFEFF/, '').split(/\r?\n/);
-  // « ## La voix », « ## Les plans », puis « ## Les demandes », s'ils y sont, closent le fichier, dans cet ordre :
-  // scripts/contenu/voix.mjs, plans.mjs et demandes.mjs les lisent.
+  // « ## Au lieu · <univers> », « ## La voix », « ## Les plans », puis « ## Les demandes », s'ils y sont, closent le
+  // fichier, dans cet ordre : scripts/contenu/aulieu.mjs, voix.mjs, plans.mjs et demandes.mjs les lisent.
+  const debutAuLieu = toutes.findIndex((l) => l.startsWith(DEBUT_AU_LIEU));
   const debutVoix = toutes.indexOf(TITRE_VOIX);
   const debutPlans = toutes.indexOf(TITRE_PLANS);
   const debutDemandes = toutes.indexOf(TITRE_DEMANDES);
   const sections = [
+    [DEBUT_AU_LIEU.trim(), debutAuLieu],
     [TITRE_VOIX, debutVoix],
     [TITRE_PLANS, debutPlans],
     [TITRE_DEMANDES, debutDemandes],
@@ -924,6 +928,7 @@ export function lireIle(md, fichier = 'md') {
     missions: missions.map((d) => ({ id: d.id, titre: d.title })),
     biome: { id: ile, ...(nom === undefined ? {} : { name: nom }), ...champsIle, exercises, ...(foreignWords ? { foreignWords } : {}) },
     exercices: exercices.map(ordonner),
+    auLieu: debutAuLieu === -1 ? null : lireAuLieu(toutes.slice(debutAuLieu, finDe(debutAuLieu)), debutAuLieu, fichier),
     plans: debutPlans === -1 ? [] : lirePlans(toutes.slice(debutPlans, finDe(debutPlans)), debutPlans, fichier, ile),
     demandes: debutDemandes === -1 ? [] : lireDemandes(toutes.slice(debutDemandes), debutDemandes, fichier, ile),
   };

@@ -101,8 +101,17 @@ Le mainteneur veut que l’habillage aille jusqu’aux phrases de français (dé
 
 - Les sons, les homophones, les dictées, les familles de mots, les mots-outils.
 - Les verbes irréguliers et les faux amis en anglais.
-- Le calcul nu et les aides de maths (boîte de dix, droite graduée, fractions en colonne).
-- Pour chaque item : la consigne, la réponse, les choix et leur ordre, la règle (`rule-card`), le joker, la correction (`explanation`, `rule`, `why`, `tip`) et le barème.
+- Le calcul nu et les aides de maths (boîte de dix, droite graduée, fractions en colonne), sauf dans un univers à monde ouvert, qui peut poser le même calcul dans une phrase du lieu et dessiner la même figure avec les objets du lieu (ci-dessous, à l’essai).
+- Pour chaque item : la consigne, la réponse, les choix et leur ordre, la règle (`rule-card`), le joker, la correction (`explanation`, `rule`, `why`, `tip`) et le barème ; dans un univers à monde ouvert, seule la consigne peut parler du lieu (ci-dessous, à l’essai).
+
+**Dans un univers à monde ouvert** (Archipéo derrière `?monde=ouvert`, lot 4 du prototype du 6e, décision du mainteneur du 14 octobre 2026) : la question se pose dans un lieu, sur sa scène, et chaque question est le **jumeau** d’un item de référence. Règle **« à l’essai »** tant que dure le prototype :
+
+- Même `exerciceId:key`, même compétence, mêmes pièges, même barème ; les étoiles et les blocs se comptent avec le code commun.
+- Un son, un mot-outil reste le mot de référence : il est seulement porté par un objet du lieu (les cloches du Phare, en deux manches de six).
+- Un calcul nu garde sa réponse, ses choix et leur ordre ; la phrase du lieu (« 34 caisses sont sur le quai. La grue prend la moitié. Combien de caisses restent ? ») a toujours la ligne de calcul de référence écrite dessous (« Moitié de 34 = … »).
+- Une figure (fraction coloriée, droite graduée) est dessinée par le lieu avec les mêmes nombres (le sas, l’échelle des Écluses : un trait de niveau et des bandes, jamais une couleur seule) ; la consigne le dit.
+- Une phrase de français est réécrite pour le lieu (les Filets), avec le même point d’accord, les mêmes sortes de pièges et autant de choix ; elle s’écrit dans le Markdown de l’île, sous « ## Au lieu · Archipéo », relue par le directeur contenu pédagogique et le référent dys, et un test vérifie qu’elle a un jumeau.
+- « Vue simple » rouvre toujours l’écran classique de la même mission.
 
 Aucun univers ne rend un exercice plus facile. Aucun ne donne plus de blocs ou d’étoiles.
 

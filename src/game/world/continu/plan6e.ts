@@ -80,6 +80,11 @@ export interface OpenPlace {
   at: string;
   /** L'île d'aujourd'hui dont il reprend la mission (ses repères stables : identifiant, matière, icône). */
   island: string;
+  /**
+   * La mission de cette île qui se joue dans le lieu (lot 4, questions-du-monde.md) : la Chasse au son au Phare, le
+   * Troupeau aux Filets, les Nénuphars aux Écluses, Doubles et moitiés aux Quais.
+   */
+  mission: string;
   /** Le centre du modèle au sol, et son quart de tour (en radians autour de la verticale). */
   center: Vec2;
   yaw: number;
@@ -90,10 +95,10 @@ export interface OpenPlace {
 }
 
 export const PLACES: readonly OpenPlace[] = [
-  { id: 'phare', name: 'Le Phare', at: 'au Phare', island: 'french-6e-phonology', center: fromPlan([880, 590]), yaw: 0, door: 'phare', touchRadius: 5.5 },
-  { id: 'quais', name: 'Les Quais', at: 'aux Quais', island: 'maths-6e-calculation', center: fromPlan([1112, 806]), yaw: 0, door: 'quais', touchRadius: 5.5 },
-  { id: 'filets', name: 'Les Filets', at: 'aux Filets', island: 'french-6e-grammar-spelling', center: fromPlan([1052, 232]), yaw: 0.35, door: 'filets', touchRadius: 5.5 },
-  { id: 'ecluses', name: 'Les Écluses', at: 'aux Écluses', island: 'maths-6e-fractions', center: fromPlan([1240, 382]), yaw: 0, door: 'ecluses', touchRadius: 5.5 },
+  { id: 'phare', name: 'Le Phare', at: 'au Phare', island: 'french-6e-phonology', mission: 'sound-hunt', center: fromPlan([880, 590]), yaw: 0, door: 'phare', touchRadius: 5.5 },
+  { id: 'quais', name: 'Les Quais', at: 'aux Quais', island: 'maths-6e-calculation', mission: 'doubles-halves', center: fromPlan([1112, 806]), yaw: 0, door: 'quais', touchRadius: 5.5 },
+  { id: 'filets', name: 'Les Filets', at: 'aux Filets', island: 'french-6e-grammar-spelling', mission: 'plurals', center: fromPlan([1052, 232]), yaw: 0.35, door: 'filets', touchRadius: 5.5 },
+  { id: 'ecluses', name: 'Les Écluses', at: 'aux Écluses', island: 'maths-6e-fractions', mission: 'number-line', center: fromPlan([1240, 382]), yaw: 0, door: 'ecluses', touchRadius: 5.5 },
 ];
 
 /** Un lieu par son identifiant. */

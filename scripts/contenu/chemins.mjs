@@ -3,10 +3,12 @@
 // src/game/world/requests.json, src/apps/<mission>/), les quêtes (docs/contenu/quetes.md → src/game/world/stories.json),
 // et l'assemblage des blocs (docs/contenu/assemblage.md → src/game/world/recipes.ts, et ses questions →
 // src/game/exercises/data/assemblage-<bloc>.json), et les grands projets (docs/contenu/projets.md →
-// src/game/world/projects.json, et leurs banques de questions → src/game/exercises/data/assembly-<banque>.json).
+// src/game/world/projects.json, et leurs banques de questions → src/game/exercises/data/assembly-<banque>.json), et les
+// items du lieu du monde ouvert (« ## Au lieu · <univers> » des îles → src/game/world/continu/placeItems.json).
 // Module sans effet : generer.mjs (npm run contenu) et importer.mjs s'en servent.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { resoudreAuLieu } from './aulieu.mjs';
 import { lireIle, principal } from './format.mjs';
 import { MISSIONS_PORTAIL } from './portail.mjs';
 import { FICHIER_ASSEMBLAGE, ecrireRecettes, lireAssemblage, lireQuestions } from './assemblage.mjs';
@@ -24,6 +26,8 @@ export const RECETTES = join(racine, 'src/game/world/recipes.ts');
 export const DEMANDES = join(racine, 'src/game/world/requests.json');
 export const QUETES = join(racine, 'src/game/world/stories.json');
 export const PROJETS = join(racine, 'src/game/world/projects.json');
+/** Les items du lieu des univers à monde ouvert (scripts/contenu/aulieu.mjs), lus par le seul monde ouvert. */
+export const AU_LIEU = join(racine, 'src/game/world/continu/placeItems.json');
 
 /** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
 const CHAMPS_ILE = ['name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'];
@@ -53,9 +57,10 @@ export function produire() {
   const biomes = new Map();
   const demandesParIle = new Map();
   const plansParIle = new Map();
+  const auLieuParUnivers = {};
   for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md' && n !== 'archipel.md' && n !== FICHIER_ASSEMBLAGE && n !== FICHIER_QUETES && n !== FICHIER_PROJETS).sort()) {
     const fichier = join('docs/contenu', f);
-    const { ile, biome, exercices, plans, demandes } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
+    const { ile, biome, exercices, plans, demandes, auLieu } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
     if (f !== `${ile}.md`) throw new Error(`${fichier} : le fichier d'une île s'appelle <île>.md (${ile}.md)`);
     for (const k of CHAMPS_ILE) if (biome[k] === undefined) throw new Error(`${fichier} : l'île n'a pas de « ${k} » (voir docs/contenu/README.md)`);
     if (!MATIERES.includes(biome.subject)) throw new Error(`${fichier} : matière « ${biome.subject} » inconnue (${MATIERES.join(', ')})`);
@@ -77,12 +82,17 @@ export function produire() {
       if (sortie.has(chemin)) throw new Error(`${fichier} : exercice « ${ex.id} » écrit deux fois`);
       sortie.set(chemin, JSON.stringify(ex, null, 2) + '\n');
     }
+    if (auLieu) {
+      auLieuParUnivers[auLieu.univers] ??= {};
+      Object.assign(auLieuParUnivers[auLieu.univers], resoudreAuLieu(auLieu, exercices, fichier));
+    }
     for (const plan of plans) {
       const chemin = join(PLANS, `${plan.id}.json`);
       if (sortie.has(chemin)) throw new Error(`${fichier} : le plan « ${plan.id} » est déjà écrit sur une autre île`);
       sortie.set(chemin, JSON.stringify(plan, null, 2) + '\n');
     }
   }
+  sortie.set(AU_LIEU, JSON.stringify(auLieuParUnivers, null, 2) + '\n');
   const ordre = ordreDesIles();
   for (const id of ordre) if (!biomes.has(id)) throw new Error(`docs/contenu/archipel.md : l'île « ${id} » n'a pas de fichier docs/contenu/${id}.md`);
   for (const id of biomes.keys()) if (!ordre.includes(id)) throw new Error(`docs/contenu/${id}.md : l'île manque dans docs/contenu/archipel.md`);

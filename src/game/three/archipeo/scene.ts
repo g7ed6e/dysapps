@@ -8,12 +8,14 @@ import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
 import { CAMERA_BLEND_SECONDS, CAMERA_FOV, cameraKey, cameraPose, closeUpScale, markBeside, markOffset, poseAt, type CameraKey, type CameraMove, type CameraPose, type GoPanel } from '../../world/continu/camera';
-import type { Facets } from '../../world/continu/facets';
+import { FacetBuilder, type Facets } from '../../world/continu/facets';
 import { distance, type Vec2 } from '../../world/continu/geometry';
 import { markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork } from '../../world/continu/paths';
 import { COLORS_6E, PATH_NODES, PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { modelOfPlace } from '../../world/continu/places';
+import { answerObjects, answerScale, itemScene, placePieces, questionPose, sceneSpot, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
+import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
 import { buildHeightField, heightOnMesh, standingHeight, terrainTiles } from '../../world/continu/terrain';
 import { skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
@@ -30,9 +32,6 @@ export interface OpenWorldOptions {
   onArrive(place: PlaceId | null): void;
   /** Kéo part (la page change « Y aller » en « Passer le trajet »). */
   onDepart(): void;
-  /** Le lieu est-il ouvert ? Un lieu fermé qu'on touche ne lance pas de trajet : la scène le dit à la page (`onClosed`). */
-  isOpen(place: PlaceId): boolean;
-  onClosed(place: PlaceId): void;
   /**
    * La place de la marque de la prochaine mission à l'écran, à chaque image (`null` : pas de marque) ; `beside` : le
    * nom se pose à droite du point (à côté du sommet d'un lieu haut, sur un écran bas), sinon au-dessus.
@@ -51,9 +50,32 @@ export interface OpenWorld {
   setMark(place: PlaceId | null): void;
   /** La taille de « Y aller » à l'écran (plus grand en grand texte) : les cadrages rapprochés en tiennent compte. */
   setGoPanel(go: GoPanel): void;
+  /**
+   * Pose une question dans un lieu (lot 4), ou la retire (`null`) : la caméra coupe sur un cadrage fixe, la scène de
+   * l'item se montre dans la fenêtre de la question, les objets des réponses au-dessus de leurs boutons. Rend la place à
+   * l'écran des repères de la scène (les nombres de l'échelle), que la page écrit. Refaite à chaque item, à chaque
+   * réponse et à chaque changement de taille ; la réaction ne joue qu'au moment où l'item reçoit sa réponse.
+   */
+  question(q: QuestionRequest | null): LabelOnScreen[];
+  /** Les pièces durables de chaque lieu remises en marche (0, 1 ou 2), tirées des étoiles gardées. */
+  setPieces(counts: Readonly<Record<PlaceId, number>>): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number };
   dispose(): void;
+}
+
+/** Une question à montrer : le lieu, la place à l'écran, l'item (sa scène, s'il a sa réponse, les rangs des bonnes réponses). */
+interface QuestionRequest {
+  place: PlaceId;
+  layout: QuestionLayout;
+  item: { scene: ItemScene; answered: boolean; right: readonly number[] };
+}
+
+/** Un repère de la scène à l'écran, en pixels. */
+export interface LabelOnScreen {
+  text: string;
+  x: number;
+  y: number;
 }
 
 /** La marge de la flèche au bord de l'écran, en pixels : hors des boutons des coins. */
@@ -225,8 +247,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let go: GoPanel | undefined;
   let pose: CameraPose = cameraPose(key, viewW, viewH, go);
   let move: CameraMove | null = null;
-  // Le décentrement de l'objectif posé sur la caméra (refait seulement quand il change).
-  let appliedLens = 0;
+  // Le décalage de l'image posé sur la caméra, en pixels (refait seulement quand il change) : celui de l'objectif d'un
+  // cadrage rapproché, ou celui d'une question.
+  let appliedShift = { x: 0, y: 0 };
+  let shift = { x: 0, y: 0 };
   const applyPose = (p: CameraPose) => {
     camera.position.set(p.position.x, p.position.y, p.position.z);
     camera.up.set(0, 1, 0);
@@ -234,14 +258,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (p.fov !== camera.fov) {
       // Le champ change (un écran bas) : la projection est refaite, avec le décentrement.
       camera.fov = p.fov;
-      appliedLens = Number.NaN;
+      appliedShift = { x: Number.NaN, y: Number.NaN };
     }
-    if (p.lens === appliedLens) return;
-    appliedLens = p.lens;
-    // L'image glisse de `lens` demi-largeurs vers la droite ; la caméra ne tourne pas.
+    // L'image glisse de `lens` demi-largeurs vers la droite (et du décalage d'une question) ; la caméra ne tourne pas.
+    const x = (-p.lens * viewW) / 2 + shift.x;
+    const y = shift.y;
+    if (x === appliedShift.x && y === appliedShift.y) return;
+    appliedShift = { x, y };
     // Les deux refont la projection.
-    if (p.lens === 0) camera.clearViewOffset();
-    else camera.setViewOffset(viewW, viewH, (-p.lens * viewW) / 2, 0, viewW, viewH);
+    if (x === 0 && y === 0) camera.clearViewOffset();
+    else camera.setViewOffset(viewW, viewH, x, y, viewW, viewH);
   };
   applyPose(pose);
 
@@ -297,7 +323,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const onUp = (e: PointerEvent) => {
     const d = down;
     down = null;
-    if (!d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > TAP.pixels || performance.now() - d.t > TAP.ms) return;
+    if (asked || !d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > TAP.pixels || performance.now() - d.t > TAP.ms) return;
     const r = renderer.domElement.getBoundingClientRect();
     pointer.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     raycaster.setFromCamera(pointer, camera);
@@ -305,13 +331,150 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!hit) return;
     const p = { x: hit.point.x, z: hit.point.z };
     const touched = (hit.object.userData.place as PlaceId | undefined) ?? PLACES.find((pl) => distance(p, pl.center) <= pl.touchRadius)?.id;
-    if (touched && !options.isOpen(touched)) options.onClosed(touched);
-    else if (touched) startWalkTo(atNode(placeById(touched).door), touched);
+    if (touched) startWalkTo(atNode(placeById(touched).door), touched);
     else startWalkTo(snapToNetwork(p), null);
   };
   renderer.domElement.addEventListener('pointerdown', onDown);
   renderer.domElement.addEventListener('pointerup', onUp);
   renderer.domElement.addEventListener('pointercancel', onCancel);
+
+  // La question posée dans un lieu (lot 4) : sa pose fixe, la scène de l'item et les objets des réponses (un maillage),
+  // la réaction (un maillage qui bouge une à deux secondes). Refaits par item, jamais par image.
+  let asked: { place: PlaceId; pose: CameraPose; objectsKey: string; itemKey: string; answered: boolean } | null = null;
+  const itemMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
+  const reactionMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
+  itemMesh.visible = false;
+  reactionMesh.visible = false;
+  scene.add(still(itemMesh), reactionMesh);
+  let reaction: { r: Reaction; start: number } | null = null;
+  const setGeometry = (mesh: THREE.Mesh, f: Facets) => {
+    mesh.geometry.dispose();
+    mesh.geometry = geometryOf(f);
+    mesh.visible = f.triangles > 0;
+  };
+  const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  const ground3 = new THREE.Vector3();
+  /** Le point du sol (à la hauteur `y`) sous un point de l'écran, avec la pose de la caméra déjà posée. */
+  const groundUnder = (sx: number, sy: number, y: number) => {
+    pointer.set((sx / viewW) * 2 - 1, -(sy / viewH) * 2 + 1);
+    raycaster.setFromCamera(pointer, camera);
+    plane.constant = -y;
+    const hit = raycaster.ray.intersectPlane(plane, ground3);
+    return hit ? { x: hit.x, y, z: hit.z } : null;
+  };
+  const top3 = new THREE.Vector3();
+  /** La hauteur à l'écran, en pixels, d'un trait vertical de `h` posé en `p`, avec la pose de la caméra déjà posée. */
+  const screenHeight = (p: { x: number; y: number; z: number }, h: number) => {
+    projected.set(p.x, p.y, p.z).project(camera);
+    top3.set(p.x, p.y + h, p.z).project(camera);
+    return ((top3.y - projected.y) / 2) * viewH;
+  };
+  /** La réaction à l'instant `t` (en secondes) : sa place sur son arc ; finie, elle reste ou s'efface. */
+  const placeReaction = (t: number) => {
+    if (!reaction) return;
+    const { r, start } = reaction;
+    const u = reduceMotion ? 1 : Math.min(1, (t - start) / REACTION_SECONDS);
+    const e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+    reactionMesh.position.set(r.from.x + (r.to.x - r.from.x) * e, r.from.y + (r.to.y - r.from.y) * e + r.arc * Math.sin(Math.PI * e), r.from.z + (r.to.z - r.from.z) * e);
+    if (u >= 1) {
+      reactionMesh.visible = r.stay;
+      reaction = null;
+    }
+  };
+  const askQuestion = (q: QuestionRequest | null): LabelOnScreen[] => {
+    if (!q) {
+      if (!asked) return [];
+      asked = null;
+      reaction = null;
+      itemMesh.visible = false;
+      reactionMesh.visible = false;
+      keo.visible = true;
+      ring.visible = true;
+      shift = { x: 0, y: 0 };
+      // Retour au cadrage de Kéo, sans passage.
+      key = cameraKey(here, viewH);
+      pose = cameraPose(key, viewW, viewH, go);
+      move = null;
+      applyPose(pose);
+      return [];
+    }
+    if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
+    const { place, layout, item } = q;
+    // Kéo s'efface le temps de la question : la scène de l'item est devant le lieu, là où il se tient.
+    keo.visible = false;
+    ring.visible = false;
+    walk = null;
+    const qp = questionPose(place, layout.view, viewW, viewH);
+    shift = qp.shift;
+    move = null;
+    applyPose(qp.pose);
+    camera.updateMatrixWorld();
+    const objectsKey = `${place}|${viewW}x${viewH}|${layout.objects.map((o) => `${o.x},${o.y}`).join(';')}`;
+    const itemKey = `${JSON.stringify(item.scene)}|${item.right.join(',')}`;
+    const spot = sceneSpot(place);
+    const points = layout.objects.map((o) => groundUnder(o.x, o.y, spot.y) ?? spot);
+    // La hauteur d'un objet dans le monde : sa hauteur à l'écran, à l'échelle de l'écart entre deux objets.
+    const pxStep = layout.objects.length > 1 ? Math.abs(layout.objects[1].x - layout.objects[0].x) : layout.width;
+    const worldStep = points.length > 1 ? Math.hypot(points[1].x - points[0].x, points[1].z - points[0].z) : 2;
+    // La caméra regarde en plongée : une hauteur se voit plus courte qu'une largeur. On mesure la hauteur à l'écran
+    // d'un premier essai au pied du premier objet, puis on corrige.
+    let height = (layout.objectHeight * worldStep) / Math.max(1, pxStep);
+    const seen = screenHeight(points[0] ?? spot, height);
+    if (seen > 1) height *= layout.objectHeight / seen;
+    const scale = answerScale(place, points, height);
+    const facets = itemScene(
+      place,
+      item.scene,
+      item.answered,
+      item.right.map((k) => points[k]).filter(Boolean),
+      scale,
+    );
+    // La scène de l'item et les objets des réponses : un seul maillage.
+    const merged = new FacetBuilder();
+    merged.append(facets.still);
+    merged.append(answerObjects(place, points, scale));
+    setGeometry(itemMesh, merged.build());
+    const before = asked && asked.place === place && asked.itemKey === itemKey ? asked : null;
+    if (!item.answered || !facets.reaction) {
+      reaction = null;
+      reactionMesh.visible = false;
+    } else if (!before?.answered || before.objectsKey !== objectsKey) {
+      setGeometry(reactionMesh, facets.reaction.facets);
+      // La réaction joue au moment de la réponse ; un changement de taille la pose tout de suite à sa fin.
+      reaction = { r: facets.reaction, start: before?.answered ? -Infinity : performance.now() / 1000 };
+      placeReaction(performance.now() / 1000);
+    }
+    asked = { place, pose: qp.pose, objectsKey, itemKey, answered: item.answered };
+    return facets.labels.map((l) => {
+      projected.set(l.at.x, l.at.y, l.at.z).project(camera);
+      return { text: l.text, x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH };
+    });
+  };
+
+  // Les pièces durables des lieux (un maillage pour tous), et la Roue des Écluses qui tourne (à part).
+  const piecesMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
+  const wheelMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
+  piecesMesh.visible = false;
+  wheelMesh.visible = false;
+  scene.add(piecesMesh, wheelMesh);
+  let piecesKey = '';
+  const setPieces = (counts: Readonly<Record<PlaceId, number>>) => {
+    const k = PLACES.map((p) => counts[p.id] ?? 0).join(',');
+    if (k === piecesKey) return;
+    piecesKey = k;
+    const all = new FacetBuilder();
+    let wheel: ReturnType<typeof placePieces>['wheel'] = null;
+    for (const p of PLACES) {
+      const pieces = placePieces(p.id, counts[p.id] ?? 0);
+      all.append(pieces.still);
+      wheel = pieces.wheel ?? wheel;
+    }
+    setGeometry(piecesMesh, all.build());
+    if (wheel) {
+      setGeometry(wheelMesh, wheel.facets);
+      wheelMesh.position.set(wheel.at.x, wheel.at.y, wheel.at.z);
+    } else wheelMesh.visible = false;
+  };
 
   const resize = () => {
     const w = host.clientWidth;
@@ -326,9 +489,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     key = cameraKey(here, h);
     pose = cameraPose(key, w, h, go);
     move = null;
-    // La taille a changé : le décentrement se repose sur la nouvelle taille.
-    appliedLens = Number.NaN;
-    applyPose(pose);
+    // La taille a changé : le décentrement se repose sur la nouvelle taille (la page redonne la place d'une question).
+    appliedShift = { x: Number.NaN, y: Number.NaN };
+    applyPose(asked ? asked.pose : pose);
     placeMarks();
     precompute();
   };
@@ -364,6 +527,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
         options.onArrive(walkTarget);
       }
     }
+    if (asked) {
+      // Pendant une question, la caméra ne bouge pas ; seule la réaction joue, puis la Roue tourne.
+      placeReaction(t);
+      if (wheelMesh.visible && !reduceMotion) wheelMesh.rotation.x += dt * 0.6;
+      options.onMark(null, false);
+      renderer.render(scene, camera);
+      meter?.tick(renderer.info, now);
+      return;
+    }
+    if (wheelMesh.visible && !reduceMotion) wheelMesh.rotation.x += dt * 0.6;
     placeKeo(here);
     // Il se tourne vers son cap en douceur, par le plus court (d'un coup avec « Réduire les animations »).
     const turn = Math.atan2(Math.sin(heading - keo.rotation.y), Math.cos(heading - keo.rotation.y));
@@ -411,6 +584,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       }
       precompute();
     },
+    question: askQuestion,
+    setPieces,
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }),
     dispose: () => {
       disposed = true;
@@ -422,6 +597,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       renderer.domElement.removeEventListener('pointercancel', onCancel);
       body.dispose();
       for (const g of geometries) g.dispose();
+      for (const m of [itemMesh, reactionMesh, piecesMesh, wheelMesh]) m.geometry.dispose();
       landMaterial.dispose();
       seaMaterial.dispose();
       seaTexture.dispose();

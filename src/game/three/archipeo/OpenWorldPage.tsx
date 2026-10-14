@@ -2,9 +2,10 @@
 // derrière le drapeau `?monde=ouvert`, dans l'univers Archipéo seulement (../../worldLayoutFactory.tsx). On touche
 // n'importe où, Kéo rejoint le chemin le plus proche et y va ; une seule marque montre la prochaine mission (le nom de
 // son lieu), une flèche au bord de l'écran quand elle est hors champ ; « Y aller », toujours à la même place, y
-// mène (le trajet se passe). À l'arrivée, la mission s'ouvre (`MissionInteraction`, l'écran de mission actuel pour
-// l'instant). Rien de neuf dans la sauvegarde : la progression des missions reste commune. Chargé à la demande.
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+// mène (le trajet se passe). À l'arrivée, la mission se joue dans le lieu (lot 4, ./WorldQuestion.tsx), avec le lanceur
+// d'exercice commun ; « Vue simple » rouvre l'écran classique de la même mission (./missionScreen.ts). Les pièces
+// durables des lieux se tirent des étoiles gardées : rien de neuf dans la sauvegarde. Chargé à la demande.
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
@@ -13,16 +14,19 @@ import { useSettings } from '../../../core/SettingsContext';
 import { useMoinsDAnimations } from '../../../core/motion';
 import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
-import { getBiome } from '../../biomes';
+import { getBiome, type BiomeId } from '../../biomes';
+import { exercisesOf } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
 import { SettingsButton } from '../../WorldShortcuts';
 import { CLOSE_UP_INSETS, type GoPanel } from '../../world/continu/camera';
-import { keepClear, missionOfPlace, nextMission, placeIsOpen, type MarkOnScreen, type ScreenRect } from '../../world/continu/mission';
-import { placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
+import { keepClear, missionOfPlace, nextMission, type MarkOnScreen, type ScreenRect } from '../../world/continu/mission';
+import { PLACES, placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
+import { piecesOf } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { missionScreenInteraction } from './missionScreen';
 import { createOpenWorld, type OpenWorld } from './scene';
+import { WorldQuestion } from './WorldQuestion';
 import './openWorld.css';
 
 declare global {
@@ -34,9 +38,6 @@ declare global {
 
 /** Le titre d'une mission d'une île, pour la dire. */
 const missionTitle = (island: string, mission: string) => getBiome(island)?.exercises.find((x) => x.id === mission)?.title ?? '';
-
-/** Le temps où reste affichée la phrase d'un lieu fermé, en millisecondes : le temps de la lire (et de l'entendre). */
-const STATUS_MS = 6000;
 
 export default function OpenWorldPage() {
   const { biomeId } = useParams();
@@ -65,13 +66,8 @@ export default function OpenWorldPage() {
   const arrowRef = useRef<HTMLSpanElement>(null);
   const [ready, setReady] = useState(false);
   const [walking, setWalking] = useState(false);
-  // Le lieu fermé qu'on vient de toucher : sa phrase s'affiche, puis s'efface d'elle-même.
-  const [closed, setClosed] = useState<{ place: PlaceId; seq: number } | null>(null);
-  useEffect(() => {
-    if (!closed) return;
-    const timer = window.setTimeout(() => setClosed(null), STATUS_MS);
-    return () => window.clearTimeout(timer);
-  }, [closed]);
+  // La mission posée dans un lieu, à l'arrivée de Kéo : la question se joue sur la scène.
+  const [asking, setAsking] = useState<{ place: PlaceId; mission: string } | null>(null);
 
   // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
   // taille (jamais une mise en page forcée par image).
@@ -105,12 +101,12 @@ export default function OpenWorldPage() {
     measure();
     return () => observer.disconnect();
     // La marque et « Y aller » changent d'élément avec la prochaine mission et la marche : on les observe de nouveau.
-  }, [layout, next, walking, closed]);
+  }, [layout, next, walking, asking]);
 
   // Ce que les rappels de la scène lisent au moment où ils sont appelés (la scène n'est pas refaite pour eux).
   const interaction = useMemo(() => missionScreenInteraction(navigate), [navigate]);
-  const latest = useRef({ next, bornes: modele.bornes, interaction, autoRead: settings.autoRead, speak });
-  latest.current = { next, bornes: modele.bornes, interaction, autoRead: settings.autoRead, speak };
+  const latest = useRef({ next, bornes: modele.bornes });
+  latest.current = { next, bornes: modele.bornes };
 
   useEffect(() => {
     const el = host.current;
@@ -119,22 +115,13 @@ export default function OpenWorldPage() {
       start,
       reduceMotion,
       meter: { show: meterShown(), expose: import.meta.env.DEV || mesuresDemandees() },
-      onDepart: () => {
-        setWalking(true);
-        setClosed(null);
-      },
-      isOpen: (placeId) => placeIsOpen(placeById(placeId), latest.current.bornes),
-      onClosed: (placeId) => {
-        // Pas de trajet vers un lieu fermé : on le dit tout de suite (et à voix haute avec la lecture automatique).
-        setClosed((c) => ({ place: placeId, seq: (c?.seq ?? 0) + 1 }));
-        if (latest.current.autoRead) latest.current.speak(frenchTypography(closedSentence(placeId)));
-      },
+      onDepart: () => setWalking(true),
       onArrive: (placeId) => {
         setWalking(false);
         if (!placeId) return;
-        const { next: n, bornes, interaction: open } = latest.current;
+        const { next: n, bornes } = latest.current;
         const mission = n?.place.id === placeId ? n.mission : missionOfPlace(placeById(placeId), bornes);
-        if (mission) open.open(placeId, mission);
+        if (mission) setAsking({ place: placeId, mission });
       },
       onMark: (m, beside) => placeMark(markRef.current, arrowRef.current, m, beside, layout),
     });
@@ -154,6 +141,21 @@ export default function OpenWorldPage() {
     world.current?.setMark(nextPlace?.id ?? null);
   }, [nextPlace, ready]);
 
+  // Les pièces durables de chaque lieu : une à la première mission réussie, une deuxième à trois étoiles.
+  const pieces = useMemo(() => {
+    const out = {} as Record<PlaceId, number>;
+    for (const p of PLACES) out[p.id] = piecesOf(exercisesOf(p.island as BiomeId, p.mission).map((e) => state.progress[e.id]?.stars ?? 0));
+    return out;
+  }, [state.progress]);
+  useEffect(() => {
+    world.current?.setPieces(pieces);
+  }, [pieces, ready]);
+
+  const closeQuestion = useCallback(() => setAsking(null), []);
+  const simpleView = useCallback(() => {
+    if (asking) interaction.open(asking.place, asking.mission);
+  }, [asking, interaction]);
+
   const goNext = () => {
     if (!next) return;
     const title = missionTitle(next.place.island, next.mission);
@@ -168,7 +170,7 @@ export default function OpenWorldPage() {
       <div className="world-stage" data-scene ref={stageRef}>
         <div ref={host} className="open-world-canvas" />
         {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
-        {next && (
+        {next && !asking && (
           <button type="button" ref={markRef} className="open-world-mark" style={MARK_STYLE} aria-label={label} onClick={goNext}>
             <span ref={arrowRef} className="open-world-arrow" aria-hidden="true">
               <Icon name="nord" />
@@ -177,33 +179,28 @@ export default function OpenWorldPage() {
             <span className="open-world-mark-word">{next.place.name}</span>
           </button>
         )}
-        <SettingsButton />
-        <p className={closed ? 'open-world-status' : 'visually-hidden'} role="status">
-          {closed && (
-            <>
-              <Icon name="lock" /> {closedSentence(closed.place)}
-            </>
-          )}
-        </p>
-        <div className="open-world-go">
-          {!next && !walking && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
-          {walking ? (
-            <button type="button" className="button" onClick={() => world.current?.skip()}>
-              <Icon name="play" /> Passer le trajet
-            </button>
-          ) : (
-            <button type="button" className="button primary" disabled={!next} aria-label={next ? `Y aller : ${label}` : undefined} onClick={goNext}>
-              <Icon name="footprints" /> Y aller
-            </button>
-          )}
-        </div>
+        {!asking && <SettingsButton />}
+        {asking && world.current && (
+          <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} world={world.current} onClose={closeQuestion} onSimpleView={simpleView} />
+        )}
+        {!asking && (
+          <div className="open-world-go">
+            {!next && !walking && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
+            {walking ? (
+              <button type="button" className="button" onClick={() => world.current?.skip()}>
+                <Icon name="play" /> Passer le trajet
+              </button>
+            ) : (
+              <button type="button" className="button primary" disabled={!next} aria-label={next ? `Y aller : ${label}` : undefined} onClick={goNext}>
+                <Icon name="footprints" /> Y aller
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-/** La phrase d'un lieu fermé, avec son nom. */
-const closedSentence = (placeId: PlaceId) => `${placeById(placeId).name} : ce lieu est fermé pour l’instant.`;
 
 /**
  * La largeur que le cadrage réserve à droite d'une marque posée à côté du sommet d'un lieu (`CLOSE_UP_INSETS`) : la

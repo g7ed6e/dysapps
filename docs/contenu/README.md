@@ -101,7 +101,35 @@ Une île qui cite des mots qui ne sont pas du français (le latin, le grec trans
 - **langue** : `la` (latin), `grc-Latn` (grec ancien en lettres latines), ou une langue vivante citée : `it`, `es`, `en`.
 - **lu** : comment la voix française dit le mot, jamais affiché ; obligatoire pour `la` et `grc-Latn`, absent pour une langue vivante, lue par sa propre voix.
 - Partout où le mot apparaît (énoncé, question, choix, indice, explication, aide), sans tenir compte des majuscules ni du trait qui montre une terminaison (« ros-am » se reconnaît comme « rosam »), il s’affiche marqué dans sa langue, sans syllabes colorées, et la voix le dit d’après son `lu` ([principes dys](../../www/pedagogie/principes.md), « Le latin et le grec »). `npm run contenu` l’écrit dans `foreignWords`, sur l’île, dans `src/game/islands.ts` ; le lecteur est `scripts/contenu/voix.mjs`.
-- L’ordre de la fin du fichier est fixe : `## La voix`, puis `## Les plans`, puis `## Les demandes`.
+- L’ordre de la fin du fichier est fixe : `## Au lieu · <univers>`, puis `## La voix`, puis `## Les plans`, puis `## Les demandes`.
+
+## Les items d’un lieu du monde ouvert
+
+Le monde ouvert d’Archipéo (prototype du 6e, derrière `?monde=ouvert`) pose certaines questions dans un lieu, avec une phrase qui parle de ce que la scène montre. Chaque item du lieu est le **jumeau** d’un item d’un niveau de l’île : il en porte la clé, le point travaillé, les sortes de pièges et la règle, avec autant de choix (règle « à l’essai », [Plusieurs univers](../univers/univers.md), § 4.2). Ils s’écrivent à la fin du fichier, avant `## La voix`, sous `## Au lieu · Archipéo`, niveau par niveau :
+
+```md
+## Au lieu · Archipéo
+
+### Niveau 1 · `french-6e-grammar-spelling-plurals-1`
+
+Pour tous les items :
+- trou lu : (mot manquant)
+
+1. jumeau : 1
+   - scène : sardines · 3
+   - énoncé : Les sardines … brillent dans le filet.
+   - choix : gris · grise · grises
+   - réponse : grises
+   - point : adjectif au féminin pluriel
+   - pièges : accord oublié · pluriel oublié
+   - indice : Regarde le nom : « sardines », c’est féminin et pluriel.
+   - explication : « Les sardines » est au féminin pluriel : l’adjectif prend -e puis -s, « grises ».
+```
+
+- **jumeau** : le rang de l’item de référence dans le niveau ; chaque item de référence a au plus un jumeau.
+- **scène** : ce que le lieu pose (pour les Filets : `sardines`, `filets`, `mouette`, `journaux`, `crabes`, `pêche`, `seaux`, `crabe`) et combien ; la phrase dit ce qu’on voit.
+- **point** et **pièges** : ce que le jumeau garde de la référence, relu par le directeur contenu pédagogique ; ils ne s’affichent pas.
+- `npm run contenu` les range dans `src/game/world/continu/placeItems.json`, que seul le monde ouvert lit ; le lecteur est `scripts/contenu/aulieu.mjs`, qui refuse un jumeau absent ou pris deux fois, un nombre de choix différent, une réponse hors des choix et un « … » resté dans le texte lu. Les Quais et les Écluses n’ont pas d’items du lieu : leur phrase et leur scène se tirent des nombres de l’item du générateur (`src/game/world/continu/questions.ts`).
 
 ## Les plans des bâtiments
 

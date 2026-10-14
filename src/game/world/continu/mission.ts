@@ -16,36 +16,38 @@ export interface NextMission {
   mission: string;
 }
 
-/** Le lieu est-il ouvert (au moins une de ses missions se joue) ? Un lieu fermé ne lance pas de trajet. */
-export function placeIsOpen(place: OpenPlace, bornes: readonly MissionMark[]): boolean {
-  return bornes.some((b) => b.ile === place.island && b.etat !== 'locked');
-}
+/** La borne de la mission jouée dans un lieu, s'il y en a une. */
+const borneOf = (place: OpenPlace, bornes: readonly MissionMark[]): MissionMark | undefined =>
+  bornes.find((b) => b.ile === place.island && b.mission === place.mission);
 
 /**
- * La mission qu'ouvre un lieu : la première jamais jouée, sinon la première qui n'a pas ses trois étoiles, sinon la
- * première (on rejoue) ; `null` si le lieu est fermé.
+ * La mission qu'ouvre un lieu : la sienne (`OpenPlace.mission`), dès qu'elle existe, même encore fermée dans la grille
+ * (lot 4, décision du mainteneur du 14 octobre 2026 : les quatre lieux sont ouverts) ; `null` si elle manque (une autre
+ * LV2, une donnée absente) : le lieu n'ouvre alors rien.
  */
 export function missionOfPlace(place: OpenPlace, bornes: readonly MissionMark[]): string | null {
-  const own = bornes.filter((b) => b.ile === place.island && b.etat !== 'locked');
-  return (own.find((b) => b.etat === 'new') ?? own.find((b) => typeof b.etat === 'number' && b.etat < 3) ?? own[0])?.mission ?? null;
+  return borneOf(place, bornes)?.mission ?? null;
 }
 
+/** Une mission encore à jouer : jamais jouée, ou encore fermée dans la grille (elle s'ouvre ici). */
+const toPlay = (b: MissionMark) => b.etat === 'new' || b.etat === 'locked';
+
 /**
- * La prochaine mission du prototype : celle de la prochaine destination du jeu si elle est dans un des quatre lieux,
- * sinon la première mission jamais jouée, lieu par lieu dans l'ordre du plan (le Phare, puis les Quais : « au retour du
- * Phare, le prochain pas est évident »), sinon la première à reprendre. `null` quand tout est fait ou fermé.
+ * La prochaine mission du prototype : celle de la prochaine destination du jeu si c'est la mission d'un des quatre
+ * lieux, sinon la première encore à jouer, lieu par lieu dans l'ordre du plan (le Phare, puis les Quais : « au retour du
+ * Phare, le prochain pas est évident »), sinon la première à reprendre (moins de trois étoiles). `null` quand tout est
+ * fait.
  */
 export function nextMission(bornes: readonly MissionMark[], destination?: { island: string; mission?: string }): NextMission | null {
-  const fromGame = destination && PLACES.find((p) => p.island === destination.island);
-  if (fromGame && destination?.mission && bornes.some((b) => b.ile === fromGame.island && b.mission === destination.mission && b.etat !== 'locked'))
-    return { place: fromGame, mission: destination.mission };
+  const fromGame = destination && PLACES.find((p) => p.island === destination.island && p.mission === destination.mission);
+  if (fromGame && borneOf(fromGame, bornes)) return { place: fromGame, mission: fromGame.mission };
   for (const place of PLACES) {
-    const mission = bornes.find((b) => b.ile === place.island && b.etat === 'new')?.mission;
-    if (mission) return { place, mission };
+    const b = borneOf(place, bornes);
+    if (b && toPlay(b)) return { place, mission: place.mission };
   }
   for (const place of PLACES) {
-    const mission = bornes.find((b) => b.ile === place.island && typeof b.etat === 'number' && b.etat < 3)?.mission;
-    if (mission) return { place, mission };
+    const b = borneOf(place, bornes);
+    if (b && typeof b.etat === 'number' && b.etat < 3) return { place, mission: place.mission };
   }
   return null;
 }

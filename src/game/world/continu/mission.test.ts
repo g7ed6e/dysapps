@@ -1,42 +1,40 @@
 // La prochaine mission du monde continu et sa marque à l'écran.
 import { describe, expect, it } from 'vitest';
-import { keepClear, markOnScreen, missionOfPlace, nextMission, placeIsOpen, type MissionMark } from './mission';
+import { keepClear, markOnScreen, missionOfPlace, nextMission, type MissionMark } from './mission';
 import { placeById } from './plan6e';
 
 const bornes: MissionMark[] = [
-  { ile: 'french-6e-phonology', mission: 'syllables', etat: 3 },
-  { ile: 'french-6e-phonology', mission: 'rimes', etat: 'new' },
-  { ile: 'maths-6e-calculation', mission: 'mental', etat: 'locked' },
-  { ile: 'french-6e-grammar-spelling', mission: 'accords', etat: 'new' },
-  { ile: 'maths-6e-fractions', mission: 'parts', etat: 2 },
+  { ile: 'french-6e-phonology', mission: 'syllables', etat: 'new' },
+  { ile: 'french-6e-phonology', mission: 'sound-hunt', etat: 3 },
+  { ile: 'maths-6e-calculation', mission: 'doubles-halves', etat: 'locked' },
+  { ile: 'french-6e-grammar-spelling', mission: 'plurals', etat: 'new' },
+  { ile: 'maths-6e-fractions', mission: 'number-line', etat: 2 },
   { ile: 'history-6e-antiquity', mission: 'dates', etat: 'new' },
 ];
 
 describe('La prochaine mission', () => {
-  it('celle de la prochaine destination du jeu, quand elle est dans un des lieux et ouverte', () => {
-    expect(nextMission(bornes, { island: 'french-6e-grammar-spelling', mission: 'accords' })).toMatchObject({ place: { id: 'filets' }, mission: 'accords' });
-    // Fermée : on n'y envoie pas.
-    expect(nextMission(bornes, { island: 'maths-6e-calculation', mission: 'mental' })).toMatchObject({ place: { id: 'phare' }, mission: 'rimes' });
+  it('celle de la prochaine destination du jeu, quand c’est la mission d’un des lieux', () => {
+    expect(nextMission(bornes, { island: 'french-6e-grammar-spelling', mission: 'plurals' })).toMatchObject({ place: { id: 'filets' }, mission: 'plurals' });
+    // Une autre mission de l'île ne se joue pas dans le lieu : on prend la suivante du plan.
+    expect(nextMission(bornes, { island: 'french-6e-phonology', mission: 'syllables' })).toMatchObject({ place: { id: 'quais' }, mission: 'doubles-halves' });
   });
 
-  it('sinon la première jamais jouée, lieu par lieu dans l’ordre du plan ; hors des quatre lieux, rien', () => {
-    expect(nextMission(bornes)).toMatchObject({ place: { id: 'phare' }, mission: 'rimes' });
-    const sansNouvelle = bornes.map((b) => (b.etat === 'new' ? { ...b, etat: 3 } : b));
-    expect(nextMission(sansNouvelle)).toMatchObject({ place: { id: 'ecluses' }, mission: 'parts' });
+  it('sinon la première encore à jouer (fermée dans la grille comprise), lieu par lieu dans l’ordre du plan ; hors des quatre lieux, rien', () => {
+    expect(nextMission(bornes)).toMatchObject({ place: { id: 'quais' }, mission: 'doubles-halves' });
+    const sansNouvelle = bornes.map((b) => (b.etat === 'new' || b.etat === 'locked' ? { ...b, etat: 3 } : b));
+    expect(nextMission(sansNouvelle)).toMatchObject({ place: { id: 'ecluses' }, mission: 'number-line' });
     expect(nextMission(bornes.filter((b) => b.ile === 'history-6e-antiquity'))).toBeNull();
   });
 
-  it('la mission d’un lieu : à faire, sinon à reprendre ; rien quand il est fermé', () => {
-    expect(missionOfPlace(placeById('phare'), bornes)).toBe('rimes');
-    expect(missionOfPlace(placeById('ecluses'), bornes)).toBe('parts');
-    expect(missionOfPlace(placeById('quais'), bornes)).toBeNull();
-    // Tout est fait : on rejoue la première.
-    expect(missionOfPlace(placeById('phare'), bornes.map((b) => ({ ...b, etat: b.etat === 'locked' ? b.etat : 3 })))).toBe('syllables');
+  it('la mission d’un lieu est la sienne, quel que soit son état', () => {
+    expect(missionOfPlace(placeById('phare'), bornes)).toBe('sound-hunt');
+    expect(missionOfPlace(placeById('quais'), bornes)).toBe('doubles-halves');
+    expect(missionOfPlace(placeById('filets'), bornes.filter((b) => b.mission !== 'plurals'))).toBeNull();
   });
 
-  it('un lieu est fermé quand aucune de ses missions ne se joue', () => {
-    expect(placeIsOpen(placeById('phare'), bornes)).toBe(true);
-    expect(placeIsOpen(placeById('quais'), bornes)).toBe(false);
+  it('les quatre lieux sont ouverts, même quand leur mission est encore fermée dans la grille', () => {
+    const fermees = bornes.map((b) => ({ ...b, etat: 'locked' as const }));
+    for (const id of ['phare', 'quais', 'filets', 'ecluses'] as const) expect(missionOfPlace(placeById(id), fermees)).toBe(placeById(id).mission);
   });
 });
 
