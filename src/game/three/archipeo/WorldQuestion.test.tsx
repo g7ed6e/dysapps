@@ -73,4 +73,15 @@ describe('La scénette du Phare', () => {
     expect(bells()[0].textContent).toBe(word);
     expect(bells()[0]).toHaveAttribute('aria-pressed', 'true');
   });
+
+  it('au plus grand texte, la consigne s’ouvre dépliée au premier item', async () => {
+    localStorage.setItem('dysapps:settings', JSON.stringify({ fontSize: 32, univers: 'archipeo' }));
+    const user = userEvent.setup();
+    renderPhare();
+    await screen.findByRole('list', { name: 'Cloches à trier' });
+    const start = screen.queryByRole('button', { name: /Commencer/ });
+    if (start) await user.click(start);
+    await user.click(screen.getByRole('button', { name: /Vue simple/ }));
+    expect(screen.getByRole('button', { name: 'Replier' })).toHaveAttribute('aria-expanded', 'true');
+  });
 });

@@ -833,9 +833,12 @@
 .world-question .quiz.in-world.simple[data-suite="deux"] .world-simple-validate {
   box-shadow: 0 -14px 12px -10px rgb(0 0 0 / 0.4);
 }
+/* L'ombre du haut, nette (référent dys) : un trait sombre sous le bord, puis une ombre courte. */
 .world-question .quiz.in-world.simple[data-suite="haut"],
 .world-question .quiz.in-world.simple[data-suite="deux"] {
-  box-shadow: inset 0 16px 12px -12px rgb(0 0 0 / 0.4);
+  box-shadow:
+    inset 0 3px 0 rgb(0 0 0 / 0.45),
+    inset 0 16px 10px -8px rgb(0 0 0 / 0.55);
 }
 /* La question entière dans le panneau de « Vue simple » : c'est le panneau qui défile, rien ne s'y tasse. Le cadre de
    l'écran s'efface (display: contents) : la bande de « Valider » se tient au bas du panneau entier, jamais par-dessus
@@ -892,9 +895,10 @@
   flex: 1 1 auto;
   min-width: 0;
   margin: 0;
+  /* Repliée : une ligne ; les mots qui n'y tiennent pas sont cachés par WorldQuestion, « … » après le dernier mot
+     entier. */
+  max-height: 1.3em;
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   /* La taille du texte choisie (1rem), sans le cran de plus d'un titre : le rôle tient sur la ligne au plus grand texte. */
   font-size: max(18px, 1rem);
   font-weight: 700;
@@ -924,7 +928,10 @@
 }
 /* Dépliée : la consigne entière, sous le rôle, à la ligne. */
 .world-question .in-world.simple-bas.consigne-ouverte .world-consigne-fold {
-  white-space: normal;
+  max-height: none;
+}
+.world-question .in-world.simple-bas .world-consigne-fold .world-scenette-role {
+  white-space: nowrap;
 }
 .world-question .in-world.simple-bas .quiz-steps li {
   height: 4px;

@@ -10,7 +10,7 @@
 // droite sur tablette ; à la réussite, la lampe du Phare s'allume. Dans une scénette, « Vue simple » montre la même
 // question en liste sur fond uni, sans quitter la manche (les cloches choisies le restent), « Valider » sous la liste ;
 // « Scène », à la même place, y ramène.
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Fragment, createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
@@ -20,6 +20,7 @@ import { SpeakButton } from '../../../components/SpeakButton';
 import { Syllabified } from '../../../components/Syllabified';
 import { seeded } from '../../../core/random';
 import { useSettings } from '../../../core/SettingsContext';
+import { texteGrand } from '../../../core/settings';
 import { useLoaded } from '../../../core/useLoaded';
 import { useBlocland } from '../../BloclandContext';
 import { getBiome } from '../../biomes';
@@ -77,6 +78,8 @@ interface Props {
 
 export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: Props) {
   const { state } = useBlocland();
+  const { settings } = useSettings();
+  const grandTexte = texteGrand(settings);
   // Les célébrations (« Succès débloqué », niveau) attendent la fin de la question et de son bilan : rien ne surgit
   // pendant qu'on lit (monde ouvert seulement).
   useHoldCelebrations(true);
@@ -144,16 +147,27 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   const [simple, setSimple] = useState(false);
   // Sur un écran bas, en « Vue simple », la consigne se replie en une ligne (le rôle, son début, sa voix) pour que les
   // cloches se voient dès l'ouverture ; un toucher sur la ligne ou « Lire la suite » la déplie.
+  // Au plus grand texte, elle s'ouvre dépliée au premier item (comme la consigne lue avant « Commencer » sur un écran
+  // bas), puis se replie dès l'item suivant (référent dys).
   const [consigneOpen, setConsigneOpen] = useState(false);
+  const sceneKey = item ? JSON.stringify(item.scene) : '';
+  const firstScene = useRef('');
+  const lastScene = useRef('');
+  useEffect(() => {
+    if (!sceneKey) return;
+    if (!firstScene.current) firstScene.current = sceneKey;
+    if (lastScene.current && lastScene.current !== sceneKey) setConsigneOpen(false);
+    lastScene.current = sceneKey;
+  }, [sceneKey]);
   const openSimple = useMemo(
     () =>
       scenette
         ? () => {
-            setConsigneOpen(false);
+            setConsigneOpen(grandTexte && layout.low && sceneKey === firstScene.current);
             setSimple(true);
           }
         : onSimpleView,
-    [scenette, onSimpleView],
+    [scenette, onSimpleView, grandTexte, layout.low, sceneKey],
   );
   const offer = !simple && ((layout.low && widen >= WIDEN_OFFER) || (!layout.low && answersOut));
   // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
@@ -279,7 +293,19 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
           <p className="world-consigne-fold" id="consigne-ligne">
             <strong className="world-scenette-role">{scenette.role}</strong>{' '}
             <span aria-hidden="true">
-              <Syllabified text={frenchTypography(instruction)} />
+              {frenchTypography(instruction)
+                .split(' ')
+                .map((word, i) => (
+                  <Fragment key={i}>
+                    {i > 0 && ' '}
+                    <span className="world-consigne-word">
+                      <Syllabified text={word} />
+                    </span>
+                  </Fragment>
+                ))}
+              <span className="world-consigne-ellipsis" hidden>
+                {' …'}
+              </span>
             </span>
           </p>
           <SpeakButton text={frenchTypography(instruction)} label="Consigne" compact />
@@ -328,6 +354,35 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
     consigneOpen,
   ]);
 
+  // La ligne repliée se coupe après un mot entier, jamais au milieu : les mots qui passeraient à la ligne sont cachés,
+  // « … » après le dernier qui tient (refait au changement de taille, de texte ou de police).
+  useLayoutEffect(() => {
+    const line = box.current?.querySelector<HTMLElement>('.world-consigne-fold');
+    if (!line) return;
+    const fit = () => {
+      const words = [...line.querySelectorAll<HTMLElement>('.world-consigne-word')];
+      const ellipsis = line.querySelector<HTMLElement>('.world-consigne-ellipsis');
+      for (const w of words) w.hidden = false;
+      if (!ellipsis) return;
+      ellipsis.hidden = true;
+      if (consigneOpen) return;
+      const role = line.querySelector<HTMLElement>('.world-scenette-role') ?? line;
+      const first = role.getBoundingClientRect();
+      const onFirstLine = (el: HTMLElement) => el.getBoundingClientRect().top < first.top + first.height / 2;
+      let cut = words.findIndex((w) => !onFirstLine(w));
+      if (cut < 0) return;
+      for (let i = cut; i < words.length; i++) words[i].hidden = true;
+      ellipsis.hidden = false;
+      while (cut > 0 && !onFirstLine(ellipsis)) words[--cut].hidden = true;
+    };
+    fit();
+    let alive = true;
+    void document.fonts?.ready.then(() => alive && fit());
+    return () => {
+      alive = false;
+    };
+  }, [stage, consigneOpen, size.w, settings]);
+
   const style = {
     '--question-left': `${layout.panel.left}px`,
     '--question-top': `${layout.panel.top}px`,
@@ -367,6 +422,8 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
                 setSheetWide(false);
                 setAnswersOut(false);
                 setBare(false);
+                firstScene.current = '';
+                lastScene.current = '';
                 setItem(null);
                 setRun((r) => r + 1);
               }}
