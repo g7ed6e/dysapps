@@ -49,10 +49,10 @@ export function atNode(id: string): NetworkPoint {
 
 /**
  * Où Kéo se tient en ouvrant le monde devant un lieu : sur le chemin qui part de sa porte, à `START_DISTANCE` unités du
- * centre du lieu (directeur artistique, piste 1 : assez loin du Phare pour qu'on le voie), ou au bout de ce chemin s'il
- * est plus court.
+ * centre du lieu (directeur artistique, piste 1, puis 12 à 14 unités au lot 2 : assez loin du Phare pour qu'on voie sa
+ * lanterne, Kéo et « Y aller » ensemble), ou au bout de ce chemin s'il est plus court.
  */
-export const START_DISTANCE = 9;
+export const START_DISTANCE = 14;
 
 export function startOf(door: string, center: Vec2): NetworkPoint {
   const from = atNode(door);

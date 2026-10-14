@@ -138,36 +138,55 @@ export function liftStep(current: number, target: number, dt: number, reduceMoti
 /**
  * Le regard levé (lot 2, choix du directeur artistique) : Kéo arrêté à moins de `within` unités du Phare, la caméra
  * lève le regard pour faire entrer la lanterne avec un peu d'air au-dessus (`air`, en part de la hauteur de l'écran),
- * sans changer de place ; Kéo reste entier au-dessus de « Y aller » (`footRoom` pixels au moins sous ses pieds : le
- * bouton, sa marge et un peu d'air), et ce garde-fou passe avant la lanterne. Jamais pendant la marche ; le passage
- * dure `seconds` à la montée, `down` au retour (d'un bloc avec « Réduire les animations »).
+ * sans reculer ; Kéo reste entier au-dessus de « Y aller » (`footRoom` pixels au moins sous ses pieds : le bouton, sa
+ * marge et un peu d'air). Si les deux ne tiennent pas, la caméra descend un peu, jusqu'à `lowest` unités au-dessus des
+ * pieds de Kéo (le regard moins plongeant : retour du directeur artistique), puis l'air de la lanterne se réduit
+ * jusqu'à `minAir` ; Kéo passe toujours avant la lanterne. Jamais pendant la marche ; le passage dure `seconds` à la
+ * montée, `down` au retour (d'un bloc avec « Réduire les animations »).
  */
-export const LOOK_UP = { within: 24, air: 0.08, footRoom: 84, seconds: 0.8, down: 0.4 } as const;
+export const LOOK_UP = { within: 24, air: 0.08, minAir: 0.02, footRoom: 78, lowest: 2.4, seconds: 0.8, down: 0.4 } as const;
 
 /**
  * Lève le regard de `pose` (remplie sur place) de la part `amount` (0 : la caméra qui suit, 1 : le regard levé) pour
  * que `top` (le haut de la lanterne) entre à l'écran ; les pieds de Kéo (`feet`) restent au-dessus du bas de l'écran
- * de `footRoom` pixels, sur un écran de `height` pixels. La caméra regarde toujours vers le nord : seul l'angle sous
- * l'horizon change.
+ * de `footRoom` pixels, sur un écran de `height` pixels. La caméra regarde toujours vers le nord et ne recule pas :
+ * seuls sa hauteur et son angle sous l'horizon changent.
  */
 export function lookUp(pose: CameraPose, top: Vec3, feet: Vec3, amount: number, height: number): void {
   if (amount <= 0) return;
   const p = pose.position;
-  const fx = pose.target.y - p.y, fz = p.z - pose.target.z;
-  const pitch0 = Math.atan2(-fx, fz);
+  const y0 = p.y;
+  const pitch0 = Math.atan2(y0 - pose.target.y, p.z - pose.target.z);
   const t = tanHalf(pose.fov);
-  // L'angle de la lanterne au-dessus de l'horizon ; le regard qui la met à `air` du haut de l'écran.
-  const above = Math.atan2(top.y - p.y, Math.max(0.1, p.z - top.z));
-  let pitch = Math.atan((1 - 2 * LOOK_UP.air) * t) - above;
-  // Les pieds de Kéo, sous l'horizon : le regard ne monte pas au point de les mettre sous « Y aller ».
-  const below = Math.atan2(p.y - feet.y, Math.max(0.1, p.z - feet.z));
-  const bottom = Math.min(0.45, LOOK_UP.footRoom / Math.max(1, height));
-  pitch = Math.max(pitch, below - Math.atan((1 - 2 * bottom) * t));
-  if (pitch >= pitch0) return;
+  const dTop = Math.max(0.1, p.z - top.z);
+  const dFeet = Math.max(0.1, p.z - feet.z);
+  // L'angle le plus bas, sous l'axe, où les pieds restent au-dessus de « Y aller ».
+  const feetMax = Math.atan((1 - 2 * Math.min(0.45, LOOK_UP.footRoom / Math.max(1, height))) * t);
+  // Le regard qui met la lanterne à `air` du haut de l'écran, d'une caméra à la hauteur `y`, et l'angle des pieds.
+  const solve = (y: number, air: number) => ({ pitch: Math.atan((1 - 2 * air) * t) - Math.atan2(top.y - y, dTop), feet: Math.atan2(y - feet.y, dFeet) });
+  const low = Math.min(y0, feet.y + LOOK_UP.lowest);
+  const STEPS = 16;
+  let found: { y: number; pitch: number } | null = null;
+  for (let k = 0; k <= STEPS && !found; k++) {
+    const y = y0 + ((low - y0) * k) / STEPS;
+    const s = solve(y, LOOK_UP.air);
+    if (s.feet - s.pitch <= feetMax) found = { y, pitch: s.pitch };
+  }
+  for (let k = 1; k <= STEPS && !found; k++) {
+    const s = solve(low, LOOK_UP.air + ((LOOK_UP.minAir - LOOK_UP.air) * k) / STEPS);
+    if (s.feet - s.pitch <= feetMax) found = { y: low, pitch: s.pitch };
+  }
+  if (!found) {
+    const s = solve(low, LOOK_UP.minAir);
+    found = { y: low, pitch: s.feet - feetMax };
+  }
+  // La lanterne est déjà à l'écran : rien ne change (le regard ne baisse jamais).
+  if (found.y === y0 && found.pitch >= pitch0) return;
   // Un départ et une arrivée en douceur.
   const u = Math.min(1, amount);
   const k = u * u * (3 - 2 * u);
-  const a = pitch0 + (pitch - pitch0) * k;
+  const a = pitch0 + (found.pitch - pitch0) * k;
+  p.y = y0 + (found.y - y0) * k;
   pose.target.y = p.y - LOOK_DISTANCE * Math.sin(a);
   pose.target.z = p.z - LOOK_DISTANCE * Math.cos(a);
 }
@@ -186,8 +205,19 @@ export function lookUpStep(current: number, wanted: 0 | 1, dt: number, reduceMot
  */
 export const WORLD_FOG = { near: 40, far: 115, question: { near: 160, far: 420 } } as const;
 
-/** Le point de la marque d'un lieu, depuis son pied (son centre au sol) : au-dessus de son sommet. */
+/**
+ * Les lieux dont la marque se pose à côté de leur sommet, à droite, plutôt qu'au-dessus : le Phare, dont la lanterne
+ * reste ainsi à découvert (retour du directeur artistique, lot 2). Le point est au bord de la lanterne, sous son toit.
+ */
+const MARK_BESIDE: Partial<Record<PlaceId, { x: number; drop: number }>> = { phare: { x: 1.5, drop: 1.4 } };
+
+/** La marque d'un lieu se pose-t-elle à côté de son sommet (à droite du point) ? */
+export const markBeside = (id: PlaceId): boolean => id in MARK_BESIDE;
+
+/** Le point de la marque d'un lieu, depuis son pied (son centre au sol) : au-dessus de son sommet, ou à côté. */
 export function markOffset(id: PlaceId): Vec3 {
+  const beside = MARK_BESIDE[id];
+  if (beside) return { x: beside.x, y: modelOfPlace(id).top - beside.drop, z: 0 };
   return { x: 0, y: modelOfPlace(id).top + MARK_LIFT, z: 0 };
 }
 

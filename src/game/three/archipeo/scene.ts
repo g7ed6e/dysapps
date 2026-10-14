@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
-import { LOOK_UP, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markOffset, occlusionLift, type CameraPose } from '../../world/continu/camera';
+import { LOOK_UP, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, type CameraPose } from '../../world/continu/camera';
 import { FacetBuilder, type Facets } from '../../world/continu/facets';
 import { distance, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
@@ -18,7 +18,7 @@ import { PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { modelOfPlace } from '../../world/continu/places';
 import { answerObjects, answerScale, itemScene, placePieces, questionPose, sceneSpot, veilleurPiece, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, veilleurAwake, type ItemScene } from '../../world/continu/questions';
-import { SCENETTE_CAMERA, bellPlane, habitantHand, litLantern, scenetteDecor, scenetteKeo, scenetteOf, scenettePose } from '../../world/continu/scenette';
+import { LANTERN, SCENETTE_CAMERA, bellPlane, habitantHand, lanternGlass, scenetteDecor, scenetteKeo, scenetteOf, scenettePose } from '../../world/continu/scenette';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
 import { buildHeightField, heightOnMesh, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
@@ -128,7 +128,7 @@ const PLACE_BEYOND_FOG = 10;
 /** Le lever de la brume d'un lieu : un fondu court, en secondes (d'un bloc avec « Réduire les animations »). */
 const VEIL_FADE_SECONDS = 0.8;
 /** La lampe du Phare qui s'allume à la réussite : de la vitre éteinte à la lumière, en un fondu (fixe avec « Réduire les animations »). */
-const LAMP = { off: 0xbfd0d3, on: 0xffd36b, seconds: 1.2 } as const;
+const LAMP_SECONDS = 1.2;
 /** Le cadenas d'un lieu se tient au bord de l'écran de tant de pixels au moins, sinon il ne se montre pas. */
 const LOCK_MARGIN = 24;
 /** Le cadenas se pose de tant d'unités au-dessus du banc de brume. */
@@ -522,7 +522,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!mark || !markPlace) return options.onMark(null);
     projected.copy(mark).project(camera);
     const far = distanceSign(here, placeById(markPlace).center);
-    options.onMark(markOnScreen({ x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH, behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far));
+    options.onMark(
+      markOnScreen({ x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH, behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far, markBeside(markPlace)),
+    );
   };
 
   // Les cadenas des lieux sous la brume : leur point (au-dessus du lieu), refaits quand la brume change ; leur place à
@@ -622,7 +624,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // la réaction (un maillage qui bouge une à deux secondes). Refaits par item, jamais par image.
   let asked: { place: PlaceId; pose: CameraPose; objectsKey: string; itemKey: string; answered: boolean } | null = null;
   const itemMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
-  const reactionMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
+  const reactionMesh = new THREE.Mesh<THREE.BufferGeometry, THREE.Material>(new THREE.BufferGeometry(), landMaterial);
   itemMesh.visible = false;
   reactionMesh.visible = false;
   scene.add(still(itemMesh), reactionMesh);
@@ -663,16 +665,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
   };
   // La scénette d'un lieu (lot 2) : le décor de près (la galerie, sa rambarde, l'habitant), fait à l'arrivée et libéré
-  // au départ ; la lampe de la réussite ; la descente de la caméra, courte (coupe franche avec « Réduire les animations »).
+  // au départ, un seul maillage ; la lampe de la réussite, dessinée par le maillage de la réaction (les cloches sont
+  // effacées à ce moment-là) avec un matériau sans lumière : aucun appel de plus ; la descente de la caméra, courte
+  // (coupe franche avec « Réduire les animations »).
   let scenette: PlaceId | null = null;
   const decorMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
-  const lampMaterial = new THREE.MeshBasicMaterial({ color: LAMP.off });
-  const lampMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), lampMaterial));
   decorMesh.visible = false;
-  lampMesh.visible = false;
-  scene.add(decorMesh, lampMesh);
-  const lampOff = new THREE.Color(LAMP.off);
-  const lampOn = new THREE.Color(LAMP.on);
+  scene.add(decorMesh);
+  const lampMaterial = new THREE.MeshBasicMaterial({ color: LANTERN.off });
+  const lampOff = new THREE.Color(LANTERN.off);
+  const lampOn = new THREE.Color(LANTERN.on);
+  let lampLit = false;
   let lampStart: number | null = null;
   // La scène de l'item est-elle à montrer (cachée le temps de la descente) ?
   let itemShown = false;
@@ -708,9 +711,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   /** La lampe qui s'allume, à l'instant `t`. */
   const stepLamp = (t: number) => {
     if (lampStart === null) return;
-    const u = reduceMotion ? 1 : Math.min(1, (t - lampStart) / LAMP.seconds);
+    const u = reduceMotion ? 1 : Math.min(1, (t - lampStart) / LAMP_SECONDS);
     lampMaterial.color.lerpColors(lampOff, lampOn, u);
     if (u >= 1) lampStart = null;
+  };
+  /** Le maillage de la réaction reprend son matériau (la lampe éteinte, une autre question, le départ). */
+  const unlitReaction = () => {
+    if (!lampLit) return;
+    lampLit = false;
+    lampStart = null;
+    reactionMesh.material = landMaterial;
+    reactionMesh.visible = false;
   };
   /** Entre dans la scénette d'un lieu : le décor de près, Kéo à sa place dans la galerie, sans son anneau. */
   const enterScenette = (place: PlaceId) => {
@@ -729,12 +740,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!scenette) return;
     scenette = null;
     descent.active = false;
-    lampStart = null;
-    for (const m of [decorMesh, lampMesh]) {
-      m.geometry.dispose();
-      m.geometry = new THREE.BufferGeometry();
-      m.visible = false;
-    }
+    unlitReaction();
+    decorMesh.geometry.dispose();
+    decorMesh.geometry = new THREE.BufferGeometry();
+    decorMesh.visible = false;
     keo.scale.setScalar(KEO_SCALE);
     keo.rotation.y = heading;
     placeKeo(here);
@@ -770,6 +779,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
     const { place, layout, item } = q;
     walk = null;
+    // Une nouvelle question (« Rejouer ») : la lampe rend le maillage de la réaction.
+    unlitReaction();
     const stage = layout.scenette && scenetteOf(place) ? layout.scenette.stage : null;
     let qp: { pose: CameraPose; shift: { x: number; y: number } };
     if (stage) {
@@ -861,8 +872,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     itemMesh.visible = false;
     reactionMesh.visible = false;
     reaction = null;
-    if (!lit || lampMesh.visible) return;
-    setGeometry(lampMesh, litLantern(scenette));
+    if (!lit || lampLit) return;
+    lampLit = true;
+    setGeometry(reactionMesh, lanternGlass(scenette));
+    reactionMesh.material = lampMaterial;
+    reactionMesh.position.set(0, 0, 0);
+    lampMaterial.color.copy(lampOff);
     lampStart = performance.now() / 1000;
     stepLamp(lampStart);
   };
@@ -1005,7 +1020,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       renderer.domElement.removeEventListener('pointercancel', onCancel);
       body.dispose();
       for (const g of geometries) g.dispose();
-      for (const m of [itemMesh, reactionMesh, piecesMesh, wheelMesh, veilMesh, fadeMesh, decorMesh, lampMesh]) m.geometry.dispose();
+      for (const m of [itemMesh, reactionMesh, piecesMesh, wheelMesh, veilMesh, fadeMesh, decorMesh]) m.geometry.dispose();
       lampMaterial.dispose();
       nearRing.dispose();
       farRing.dispose();

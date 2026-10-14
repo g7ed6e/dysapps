@@ -4,15 +4,18 @@
 import { describe, expect, it } from 'vitest';
 import { FOLLOW, LOOK_UP, followPose, lookUp, lookUpStep, screenOf } from './camera';
 import { boundsOf } from './facets';
+import { distance } from './geometry';
+import { startOf } from './paths';
 import { placeById } from './plan6e';
 import { modelOfPlace } from './places';
 import { ANSWER_LAYOUT, answerObjects, itemScene, questionLayout, type ScreenBox } from './questionScene';
 import {
   GALLERY,
+  LANTERN,
   SCENETTE_LAYOUT,
   bellPlane,
   habitantHand,
-  litLantern,
+  lanternGlass,
   scenetteDecor,
   scenetteKeo,
   scenetteLayout,
@@ -34,7 +37,7 @@ const screens = [
 
 describe('La place de la scénette à l’écran', () => {
   it('seul le Phare a sa scénette, la gardienne nommée par son rôle seul, sans phrase d’accueil', () => {
-    expect(scenetteOf('phare')).toEqual({ role: 'La gardienne', greeting: null, placement: 'rangee' });
+    expect(scenetteOf('phare')).toEqual({ role: 'La gardienne du phare', greeting: null, placement: 'rangee' });
     expect(scenetteOf('quais')).toBeNull();
   });
 
@@ -49,8 +52,9 @@ describe('La place de la scénette à l’écran', () => {
       expect(l.panel.left + l.panel.width, at).toBeLessThanOrEqual(0.74 * w + 1e-6);
       // « Vue simple » et la pause gardent leur place, en haut à droite.
       expect(l.panel.left + l.panel.width, at).toBeLessThanOrEqual(w - SCENETTE_LAYOUT.topRight + 1e-6);
-      expect(stage.top).toBeCloseTo(0.28 * h, 6);
-      expect(stage.bottom, at).toBeLessThanOrEqual(0.64 * h + 1e-6);
+      // La scène un peu plus bas que H 28-64 : le toit de la lanterne passe sous le panneau.
+      expect(stage.top).toBeCloseTo(0.37 * h, 6);
+      expect(stage.bottom, at).toBeLessThanOrEqual(0.66 * h + 1e-6);
       const v = l.scenette!.validate!;
       expect(v.right).toBeCloseTo(0.97 * w, 6);
       expect(v.bottom).toBeLessThanOrEqual(h);
@@ -64,6 +68,8 @@ describe('La place de la scénette à l’écran', () => {
         expect(s.hit.top).toBeLessThanOrEqual(s.foot.y - l.objectHeight + 1e-6);
         if (i > 0) expect(s.hit.left - l.slots[i - 1].hit.right).toBeGreaterThanOrEqual(12 - 1e-9);
         expect(overlap(s.hit, v), at).toBe(false);
+        // De l'air entre la rangée et « Valider ».
+        if (s.label.right > v.left) expect(v.top - s.label.bottom, at).toBeGreaterThanOrEqual(20 - 1e-6);
         expect(overlap(s.hit, stage), at).toBe(false);
         const panel = { left: l.panel.left, right: l.panel.left + l.panel.width, top: l.panel.top, bottom: l.panel.top + l.panel.maxHeight };
         expect(overlap(panel, s.hit), at).toBe(false);
@@ -162,9 +168,10 @@ describe('La galerie du Phare', () => {
   });
 
   it('la lampe de la réussite habille la vitre de la lanterne', () => {
-    const lamp = boundsOf(litLantern('phare'));
+    const lamp = boundsOf(lanternGlass('phare'));
     expect(lamp.min[1]).toBeLessThan(floor);
     expect(lamp.max[1]).toBeGreaterThan(floor + 0.9);
+    expect(LANTERN).toEqual({ off: 0xbfd0d3, on: 0xffd36b });
   });
 });
 
@@ -173,31 +180,41 @@ describe('Le regard levé près du Phare', () => {
   const y0 = standingHeight(heightAt(c));
   const top = { x: c.x, y: y0 + modelOfPlace('phare').top, z: c.z };
 
-  it('arrêté près du Phare, le regard monte vers la lanterne sans bouger la caméra ; Kéo reste au-dessus de « Y aller »', () => {
-    for (const [w, h, d] of [
-      [1024, 768, 15],
-      [844, 390, 15],
-      [1024, 768, 30],
+  it('au départ, à 12 à 14 unités du Phare : la lanterne, Kéo entier et « Y aller » tiennent ensemble', () => {
+    const start = startOf(placeById('phare').door, c).at;
+    expect(distance(start, c)).toBeGreaterThanOrEqual(12);
+    expect(distance(start, c)).toBeLessThanOrEqual(14 + 1e-6);
+    const feet = { x: start.x, y: standingHeight(heightAt(start)), z: start.z };
+    for (const [w, h] of [
+      [1024, 768],
+      [1180, 820],
+      [844, 390],
+      [667, 375],
     ] as const) {
-      const feet = { x: c.x, y: y0, z: c.z + d };
       const pose = followPose(feet);
       const before = structuredClone(pose);
       lookUp(pose, top, feet, 1, h);
-      expect(pose.position).toEqual(before.position);
-      // La lanterne descend à l'écran (elle y entre), au plus jusqu'à son air ; Kéo ne passe jamais sous « Y aller ».
-      expect(screenOf(pose, top, w, h).y).toBeGreaterThan(screenOf(before, top, w, h).y);
-      expect(screenOf(pose, top, w, h).y).toBeLessThanOrEqual(h * LOOK_UP.air + 1e-6);
-      expect(screenOf(pose, feet, w, h).y).toBeLessThanOrEqual(Math.max(h - LOOK_UP.footRoom, screenOf(before, feet, w, h).y) + 1e-6);
+      const at = `${w}×${h}`;
+      // La caméra ne recule pas et ne tourne pas ; elle peut descendre un peu, jamais sous `lowest`.
+      expect(pose.position.x).toBe(before.position.x);
+      expect(pose.position.z).toBe(before.position.z);
+      expect(pose.position.y).toBeLessThanOrEqual(before.position.y);
+      expect(pose.position.y).toBeGreaterThanOrEqual(feet.y + LOOK_UP.lowest - 1e-9);
+      const lantern = screenOf(pose, top, w, h).y;
+      expect(lantern, at).toBeGreaterThanOrEqual(h * LOOK_UP.minAir - 1e-6);
+      expect(lantern, at).toBeLessThanOrEqual(h * LOOK_UP.air + 1e-6);
+      expect(screenOf(pose, feet, w, h).y, at).toBeLessThanOrEqual(h - LOOK_UP.footRoom + 1e-6);
     }
-    // De plus loin, la lanterne entre tout entière, avec son air.
-    const far = { x: c.x, y: y0, z: c.z + 30 };
-    const pose = followPose(far);
-    lookUp(pose, top, far, 1, 768);
-    expect(screenOf(pose, top, 1024, 768).y).toBeCloseTo(768 * LOOK_UP.air, 3);
-    // À mi-chemin, le regard est entre les deux.
+  });
+
+  it('de plus loin, seul le regard monte, la lanterne avec son air ; à mi-chemin, entre les deux', () => {
     const feet = { x: c.x, y: y0, z: c.z + 30 };
     const before = followPose(feet);
+    const pose = followPose(feet);
+    lookUp(pose, top, feet, 1, 768);
+    expect(pose.position).toEqual(before.position);
     const lantern = screenOf(pose, top, 1024, 768).y;
+    expect(lantern).toBeCloseTo(768 * LOOK_UP.air, 3);
     const half = followPose(feet);
     lookUp(half, top, feet, 0.5, 768);
     expect(screenOf(half, top, 1024, 768).y).toBeLessThan(lantern);

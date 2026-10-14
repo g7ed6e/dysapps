@@ -25,7 +25,8 @@ export interface Scenette {
 }
 
 const SCENETTES: Partial<Record<PlaceId, Scenette>> = {
-  phare: { role: 'La gardienne', greeting: null, placement: 'rangee' },
+  // « du phare » : on ne la confond pas avec le Gardien de l'île (consultant Archipéo).
+  phare: { role: 'La gardienne du phare', greeting: null, placement: 'rangee' },
 };
 
 /** La scénette d'un lieu, ou `null` s'il n'en a pas encore (la question s'y pose comme au lot 4). */
@@ -44,11 +45,20 @@ export const SCENETTE_LAYOUT = {
   panelRight: 0.74,
   /** « Vue simple » et la pause, en haut à droite : la place gardée, en pixels. */
   topRight: 250,
-  stage: { top: 0.28, bottom: 0.64 },
+  /**
+   * La scène, un peu plus bas que la zone de l'UX UI (H 28-64) : le toit de la lanterne passe sous le panneau, qui
+   * descend à 37 % environ avec le rôle, la consigne et le son (retour du directeur artistique).
+   */
+  stage: { top: 0.37, bottom: 0.66 },
   row: { top: 0.66, bottom: 0.9 },
   low: { left: 0.4, top: 0.16, bottom: 0.62, rowTop: 0.64, rowBottom: 0.88 },
-  /** « Valider » en bas à droite : la place gardée, en pixels (le bouton peut être plus large en grand texte). */
-  validate: { width: 176, height: 56 },
+  /**
+   * « Valider » en bas à droite : la place gardée, en pixels (le bouton peut être plus large en grand texte), et
+   * l'écart au-dessus de lui, plus large que celui des réponses (retour UX UI).
+   */
+  validate: { width: 176, height: 60, gap: 20 },
+  /** Les cloches, d'un tiers plus petites que la place au-dessus de leur mot : la poutre descend sous Kéo et l'habitant. */
+  objectShare: 2 / 3,
 } as const;
 
 /** Ce que demande une scénette : combien de réponses, et sur un écran bas, le cran de la colonne (`questionLayout`). */
@@ -61,7 +71,7 @@ export interface ScenetteNeeds {
 function rowSlots(n: number, left: number, right: number, top: number, bottom: number, lh: number): { slots: AnswerSlot[]; objectHeight: number } {
   const L = ANSWER_LAYOUT;
   const w = Math.max(48, Math.min(L.maxWidth, (right - left - (n - 1) * L.gap) / n));
-  const objectHeight = Math.max(lh, Math.min(L.objectShare * (w + L.gap), bottom - lh - L.lift - top));
+  const objectHeight = Math.max(lh, SCENETTE_LAYOUT.objectShare * Math.min(L.objectShare * (w + L.gap), bottom - lh - L.lift - top));
   const total = n * w + (n - 1) * L.gap;
   const first = (left + right - total) / 2;
   const slots: AnswerSlot[] = [];
@@ -112,11 +122,11 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   const lh = L.label;
   const validate = { left: width - edge - S.validate.width, right: width - edge, top: height - L.edgeLow - S.validate.height, bottom: height - L.edgeLow };
   // La rangée s'arrête au-dessus de « Valider » ; sur un écran trop court pour cela, elle s'arrête à sa gauche.
-  const above = Math.min(S.row.bottom * height, validate.top - L.gap);
+  const above = Math.min(S.row.bottom * height, validate.top - S.validate.gap);
   const roomy = above - S.row.top * height >= 2 * lh + L.lift;
   const rowBottom = roomy ? above : S.row.bottom * height;
   // La rangée prend toute la largeur, à 12 px des bords : les mots des cloches, leur image devant, y tiennent.
-  const rowRight = roomy ? width - L.edge : validate.left - L.gap;
+  const rowRight = roomy ? width - L.edge : validate.left - S.validate.gap;
   const { slots, objectHeight } = rowSlots(n, L.edge, rowRight, S.row.top * height, rowBottom, lh);
   const top = S.edge * height;
   const panelWidth = Math.max(0, Math.min(S.panelRight * width, width - S.topRight) - edge);
@@ -205,8 +215,10 @@ const C = {
   head: 0xe3c08a,
   cap: 0x142b38,
   rope: 0xe5ebe3,
-  lamp: 0xffd36b,
 } as const;
+
+/** La vitre de la lanterne : éteinte (gris-bleu, comme le modèle du Phare), puis allumée à la réussite. */
+export const LANTERN = { off: 0xbfd0d3, on: 0xffd36b } as const;
 
 /** Une sphère en facettes (la tête), `rings` bandes de `sides` côtés. */
 function sphere(b: FacetBuilder, c: Vec3, r: number, sides: number, rings: number, color: number): void {
@@ -236,7 +248,8 @@ export function habitantHand(place: PlaceId): Vec3 {
 
 /**
  * La gardienne, immobile, en quatre volumes (consultant Archipéo) : le ciré (un cylindre évasé), la tête (une sphère),
- * le bonnet, le bras tendu vers la rambarde. La corde qu'elle tient part de sa main (`answerObjects`, avec les cloches).
+ * le bonnet, le bras tendu vers la rambarde. La corde qu'elle tient part de sa main (`answerObjects`, avec les cloches) ;
+ * sa poignée, de la couleur du bonnet, la détache du jaune du ciré (retour du directeur artistique).
  */
 function gardienne(b: FacetBuilder, place: PlaceId): void {
   const f = floorOf(place);
@@ -245,7 +258,9 @@ function gardienne(b: FacetBuilder, place: PlaceId): void {
   b.prism(at, 0.4, 0.27, 0.92, 12, C.coat, C.coatShade);
   sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 12, 8, C.head);
   b.prism({ x: at.x, y: at.y + 1.2, z: at.z }, 0.25, 0.12, 0.2, 12, C.cap);
-  b.beam({ x: at.x - 0.12, y: at.y + 0.82, z: at.z + 0.12 }, habitantHand(place), 0.15, C.coat);
+  const hand = habitantHand(place);
+  b.beam({ x: at.x - 0.12, y: at.y + 0.82, z: at.z + 0.12 }, hand, 0.15, C.coat);
+  b.box({ x: hand.x, y: hand.y - 0.1, z: hand.z }, [0.16, 0.2, 0.16], C.cap);
 }
 
 /**
@@ -274,10 +289,14 @@ export function scenetteDecor(place: PlaceId): Facets {
   return b.build();
 }
 
-/** La lanterne allumée de la réussite : la vitre de la lanterne, un peu plus large, à la couleur de la lampe. */
-export function litLantern(place: PlaceId): Facets {
+/**
+ * La vitre de la lanterne, un peu plus large que celle du modèle : la lampe qui s'allume à la réussite. La vue la
+ * dessine avec le maillage de la réaction des cloches (caché à ce moment-là) et un matériau sans lumière : aucun
+ * appel de plus.
+ */
+export function lanternGlass(place: PlaceId): Facets {
   const b = new FacetBuilder();
   const f = floorOf(place);
-  b.prism({ x: f.x, y: f.y - 0.45, z: f.z }, 1.09, 1.09, 1.52, 8, C.lamp);
+  b.prism({ x: f.x, y: f.y - 0.45, z: f.z }, 1.09, 1.09, 1.52, 8, 0xffffff);
   return b.build();
 }

@@ -243,9 +243,17 @@ function placeLocks(root: HTMLElement | null, locks: readonly LockOnScreen[]): v
     const lock = locks.find((l) => l.place === el.dataset.lieu);
     const shown = Boolean(lock?.shown);
     if (el.hidden === shown) el.hidden = !shown;
-    if (lock && shown) el.style.transform = `translate(${Math.round(lock.x)}px, ${Math.round(lock.y)}px)`;
+    if (!lock || !shown) continue;
+    // Le style n'est écrit que quand la place change (la caméra arrêtée : rien à refaire).
+    const transform = `translate(${Math.round(lock.x)}px, ${Math.round(lock.y)}px)`;
+    if (lockTransforms.get(el) === transform) continue;
+    lockTransforms.set(el, transform);
+    el.style.transform = transform;
   }
 }
+
+/** La dernière place posée de chaque cadenas. */
+const lockTransforms = new WeakMap<HTMLElement, string>();
 
 /** La distance de la marque en mots, pour la voix : un, deux ou trois points. */
 const DISTANCE_WORDS = { 1: 'tout près', 2: 'pas loin', 3: 'loin' } as const;
@@ -266,7 +274,12 @@ function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkO
   const far = String(m.far);
   if (mark.dataset.loin !== far) mark.dataset.loin = far;
   const { markW: w, markH: h } = size;
-  const box = !m.inside ? { left: m.x - w / 2, top: m.y - h / 2, width: w, height: h } : { left: m.x - w / 2, top: m.y - h, width: w, height: h };
+  // Hors champ, centrée sur son point ; dans l'écran, au-dessus de lui, ou à sa droite (à côté de la lanterne du Phare).
+  const box = !m.inside
+    ? { left: m.x - w / 2, top: m.y - h / 2, width: w, height: h }
+    : m.beside
+      ? { left: m.x + MARK_EDGE, top: m.y - h / 2, width: w, height: h }
+      : { left: m.x - w / 2, top: m.y - h, width: w, height: h };
   const r = keepClear(box, size.obstacles, size.width, size.height, MARK_EDGE, MARK_EDGE);
   mark.style.transform = `translate(${Math.round(r.left)}px, ${Math.round(r.top)}px)`;
   if (arrow) arrow.style.transform = m.inside ? '' : `rotate(${m.angle}rad)`;

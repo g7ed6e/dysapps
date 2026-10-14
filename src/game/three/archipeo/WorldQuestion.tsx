@@ -7,7 +7,8 @@
 // premier item), la règle à droite : rien ne défile. Rien à lire n'est peint dans la 3D. « Vue simple » rouvre l'écran
 // classique de la même mission. Au Phare, une scénette (piste 1, lot 2, ../../world/continu/scenette.ts) : le rôle de
 // l'habitant en tête du panneau, Kéo et la gardienne au milieu, les cloches en rangée en bas, « Valider » en bas à
-// droite sur tablette ; à la réussite, la lampe du Phare s'allume.
+// droite sur tablette ; à la réussite, la lampe du Phare s'allume. Dans une scénette, « Vue simple » montre la même
+// question en liste sur fond uni, sans quitter la manche (les cloches choisies le restent).
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
@@ -50,6 +51,8 @@ interface ItemShown {
 
 interface QuestionContextValue {
   layout: QuestionLayout;
+  /** « Vue simple » dans une scénette : la question en liste, sur fond uni, sans quitter la manche en cours. */
+  simple: boolean;
   /** La consigne du lieu : l'icône qui la lit, sur un écran bas. */
   instruction: string;
   show(item: ItemShown | null): void;
@@ -131,19 +134,30 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   // Un mot de réponse coupé dans son étiquette (les cloches en grand texte) : on ne répond que dans « Vue simple »,
   // proposé d'emblée, la voix gardée ; les étiquettes ne passent jamais sur deux rangées.
   const [answersOut, setAnswersOut] = useState(false);
-  const offer = (layout.low && widen >= WIDEN_OFFER) || (!layout.low && answersOut);
+  // Sur tablette, un mot coupé fait d'abord tomber l'image devant les mots (comme sur un écran bas), puis seulement
+  // propose « Vue simple » (référent dys : « pantalon » en OpenDyslexic).
+  const [bare, setBare] = useState(false);
+  // « Vue simple » dans une scénette : la même question, en liste sur fond uni, à la même place de la mission (les
+  // cloches déjà choisies restent choisies) ; ailleurs, l'écran classique de la mission (`onSimpleView`).
+  const [simple, setSimple] = useState(false);
+  const openSimple = useMemo(() => (scenette ? () => setSimple(true) : onSimpleView), [scenette, onSimpleView]);
+  const offer = !simple && ((layout.low && widen >= WIDEN_OFFER) || (!layout.low && answersOut));
   // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
   const [introDone, setIntroDone] = useState(false);
-  const intro = layout.low && !introDone && !finished && !offer;
+  const intro = layout.low && !introDone && !finished && !offer && !simple;
   // Mesuré avant l'affichage, à chaque item, réponse ou cran : une colonne qui déborde (en hauteur ou en largeur) prend
   // le cran suivant ; une consigne qui ne tient pas en pleine largeur mène droit à « Vue simple » ; un mot coupé aussi.
   // Sur tablette, seule une scénette se mesure : ses mots de réponse (le panneau prend la hauteur de son texte).
   useLayoutEffect(() => {
     // Rien ne se mesure avant que la page ait sa taille (la place des réponses en dépend).
-    if (!size.w || (!layout.low && !layout.scenette) || finished || answersOut) return;
+    if (!size.w || simple || (!layout.low && !layout.scenette) || finished || answersOut) return;
     const root = box.current;
     if (!root) return;
     if (wordsCut(root.querySelectorAll<HTMLElement>('.world-answer-label'))) {
+      if (!layout.low && !bare) {
+        setBare(true);
+        return;
+      }
       setAnswersOut(true);
       setWiden(WIDEN_OFFER);
       return;
@@ -154,7 +168,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
     if (intro) setWiden(WIDEN_OFFER);
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
-  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w]);
+  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, simple, bare]);
   useEffect(() => {
     if (!size.w || !size.h || !item || finished) return;
     setLabels(world.question({ place, layout, item }));
@@ -176,7 +190,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
 
   const ready = loaded && picked ? { def: loaded, level: picked.level } : null;
   const instruction = ready ? placeInstruction(place, ready.level, ready.def.instruction) : '';
-  const context = useMemo(() => ({ layout, show, instruction }), [layout, show, instruction]);
+  const context = useMemo(() => ({ layout, show, instruction, simple }), [layout, show, instruction, simple]);
 
   const exerciseId = ready?.def.id;
   const stage = useMemo<RunnerStage | null>(() => {
@@ -190,7 +204,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
         )}
         {offer && (
           // Le texte choisi ne tient pas ici : le repli franc, sans réduire le texte ; la voix reste (« Lire la phrase »).
-          <button type="button" className="button primary world-question-offer" onClick={onSimpleView}>
+          <button type="button" className="button primary world-question-offer" onClick={openSimple}>
             <Icon name="liste" /> Vue simple
           </button>
         )}
@@ -215,9 +229,12 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
       extra,
       Done: WorldDone,
-      className: `in-world${scenette ? ' scenette' : ''}${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut ? ' answers-out' : ''}`,
+      className:
+        simple && !finished
+          ? 'in-world scenette simple'
+          : `in-world${scenette ? ' scenette' : ''}${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut ? ' answers-out' : ''}${bare ? ' sans-image' : ''}`,
     };
-  }, [exerciseId, instruction, place, lieu.at, onClose, onSimpleView, intro, offer, widen, layout.low, finished, sheetWide, answersOut, scenette]);
+  }, [exerciseId, instruction, place, lieu.at, onClose, openSimple, intro, offer, widen, layout.low, finished, sheetWide, answersOut, scenette, simple, bare]);
 
   const style = {
     '--question-left': `${layout.panel.left}px`,
@@ -249,6 +266,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
                 setWiden(0);
                 setSheetWide(false);
                 setAnswersOut(false);
+                setBare(false);
                 setItem(null);
                 setRun((r) => r + 1);
               }}
@@ -258,12 +276,13 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       )}
       {/* « Vue simple » : hors de la colonne, au-dessus de tout, à côté de la pause ; rien ne le recouvre. */}
       {/* Un seul « Vue simple » : celui du panneau quand le repli est proposé. */}
-      {ready && stage && !finished && !offer && (
-        <button type="button" className="button world-question-simple" onClick={onSimpleView}>
+      {ready && stage && !finished && !offer && !simple && (
+        <button type="button" className="button world-question-simple" onClick={openSimple}>
           <Icon name="liste" /> Vue simple
         </button>
       )}
       {!finished &&
+        !simple &&
         labels.map((l) => (
           <span key={l.text} className="world-question-label" aria-hidden="true" style={{ transform: `translate(${Math.round(l.x)}px, ${Math.round(l.y)}px)` }}>
             {l.text}
@@ -477,7 +496,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
  * sont écrits sans couleur de syllabes : une couleur pourrait désigner le son demandé.
  */
 function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
-  const { layout, show } = useQuestion();
+  const { layout, show, simple } = useQuestion();
   const { speak } = useSettings();
   useStopOnLeave();
   const [picked, setPicked] = useState<Set<string>>(new Set());
@@ -516,7 +535,7 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
   };
   const words = items.map((it) => String(it.word));
   // Sa place vient de scenetteLayout (en bas à droite, 3 % du bord) ; la feuille de style la reprend.
-  const validateBox = layout.scenette?.validate ?? null;
+  const validateBox = simple ? null : (layout.scenette?.validate ?? null);
 
   return (
     <div className="question world-place">
@@ -550,7 +569,8 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
       <ul className="world-answers" aria-label="Cloches à trier">
         {items.map((it, i) => {
           const slot = layout.slots[i] ?? layout.slots[0];
-          const styles = slotStyles(slot);
+          // En « Vue simple », les cloches sont une liste qui passe à la ligne : rien n'est posé sur la scène.
+          const styles = simple ? { hit: undefined, label: undefined } : slotStyles(slot);
           const on = picked.has(it.key);
           const st = answered ? cardState(it, on) : null;
           return (

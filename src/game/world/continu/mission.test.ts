@@ -60,7 +60,10 @@ describe('La prochaine mission', () => {
 
 describe('La marque à l’écran', () => {
   it('sur son lieu quand il est dans l’écran', () => {
-    expect(markOnScreen({ x: 300, y: 200, behind: false }, 1000, 800, 50)).toEqual({ x: 300, y: 200, inside: true, angle: 0, far: 1 });
+    expect(markOnScreen({ x: 300, y: 200, behind: false }, 1000, 800, 50)).toEqual({ x: 300, y: 200, inside: true, angle: 0, far: 1, beside: false });
+    // À côté de la lanterne du Phare : seulement dans l'écran.
+    expect(markOnScreen({ x: 300, y: 200, behind: false }, 1000, 800, 50, 1, true).beside).toBe(true);
+    expect(markOnScreen({ x: 1600, y: 200, behind: false }, 1000, 800, 50, 1, true).beside).toBe(false);
   });
 
   it('hors champ, au bord, sa flèche tournée vers le lieu', () => {

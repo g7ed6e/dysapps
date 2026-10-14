@@ -1,8 +1,9 @@
 // Le monde continu du prototype (6e d'Archipéo) : le plan en données, le terrain et ses tuiles, la mer, les chemins et
 // leur A*, la marche, la caméra qui suit Kéo, les maquettes, la brume et le budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
+import { FacetBuilder, boundsOf } from './facets';
 import { groundCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget';
-import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, markOffset, occlusionLift, screenOf } from './camera';
+import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, markBeside, markOffset, occlusionLift, screenOf } from './camera';
 import { distance, insidePolygon, type Vec3 } from './geometry';
 import { START_DISTANCE, atNode, findRoute, networkSamples, pathNode, pathRibbons, routeLength, snapToNetwork, startOf } from './paths';
 import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, placeById, placeOfIsland } from './plan6e';
@@ -334,8 +335,15 @@ describe('La caméra qui suit Kéo', () => {
     expect(phare.at.z).toBeGreaterThan(placeById('phare').center.z + 6);
   });
 
-  it('la marque se pose au-dessus du sommet du lieu', () => {
-    for (const p of PLACES) expect(markOffset(p.id)).toEqual({ x: 0, y: modelOfPlace(p.id).top + MARK_LIFT, z: 0 });
+  it('la marque se pose au-dessus du sommet du lieu ; au Phare, à côté de la lanterne, sous son toit', () => {
+    for (const p of PLACES.filter((pl) => pl.id !== 'phare')) {
+      expect(markOffset(p.id)).toEqual({ x: 0, y: modelOfPlace(p.id).top + MARK_LIFT, z: 0 });
+      expect(markBeside(p.id)).toBe(false);
+    }
+    const phare = markOffset('phare');
+    expect(markBeside('phare')).toBe(true);
+    expect(phare.x).toBeGreaterThan(1.35);
+    expect(phare.y).toBeLessThan(modelOfPlace('phare').top);
   });
 });
 
@@ -416,5 +424,26 @@ describe('Le budget du monde continu', () => {
     const calls = cost.reduce((s, c) => s + c.calls, 0);
     expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
+  });
+});
+
+describe('Les facettes', () => {
+  it('un pavé tendu entre deux points, aligné sur un axe : ses 12 triangles, ses normales vers le dehors', () => {
+    const b = new FacetBuilder();
+    b.beam({ x: 0, y: 0, z: 0 }, { x: 2, y: 0, z: 0 }, 0.5, 0xffffff);
+    const f = b.build();
+    expect(f.triangles).toBe(12);
+    const { min, max } = boundsOf(f);
+    expect(min.map((v) => +v.toFixed(6))).toEqual([0, -0.25, -0.25]);
+    expect(max.map((v) => +v.toFixed(6))).toEqual([2, 0.25, 0.25]);
+    // Chaque face regarde dehors : sa normale va du centre du pavé vers le centre de la face, et sa longueur vaut 1.
+    for (let t = 0; t < 12; t++) {
+      const c = [0, 1, 2].map((a) => (f.positions[t * 9 + a] + f.positions[t * 9 + 3 + a] + f.positions[t * 9 + 6 + a]) / 3);
+      const n = [0, 1, 2].map((a) => f.normals[t * 9 + a]);
+      expect(Math.hypot(...n)).toBeCloseTo(1, 6);
+      expect(n[0] * (c[0] - 1) + n[1] * c[1] + n[2] * c[2]).toBeGreaterThan(0);
+      // Alignée sur un axe.
+      expect(n.filter((v) => Math.abs(v) > 1e-6)).toHaveLength(1);
+    }
   });
 });

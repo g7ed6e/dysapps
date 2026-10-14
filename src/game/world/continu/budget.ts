@@ -8,7 +8,7 @@ import { PLACES, type PlaceId } from './plan6e';
 import { modelOfPlace } from './places';
 import { answerObjects, itemScene, placePieces, sceneSpot, veilleurPiece } from './questionScene';
 import type { ItemScene } from './questions';
-import { bellPlane, habitantHand, litLantern, scenetteDecor } from './scenette';
+import { bellPlane, habitantHand, lanternGlass, scenetteDecor } from './scenette';
 import { buildHeightField, heightOnMesh, tileRings, tileTriangleCounts } from './terrain';
 import { veilFacets } from './veil';
 
@@ -54,11 +54,12 @@ function questionCost(): { triangles: number; calls: number } {
 
 /**
  * Une scénette (lot 2, le Phare) : le décor de près (la galerie, sa rambarde, la gardienne), un maillage fait à
- * l'arrivée et libéré au départ, et la lampe de la réussite (un maillage, son propre matériau, qui ne paraît qu'au
- * bilan, quand les objets des réponses sont effacés : compté quand même, le pire cas). Kéo y reste, sans son anneau.
+ * l'arrivée et libéré au départ, du matériau du terrain. La lampe de la réussite passe par le maillage de la réaction,
+ * quand les objets des réponses sont effacés : ses triangles comptent ici, pas son appel. Kéo y reste, sans son anneau
+ * (son appel est compté quand même : le pire cas).
  */
 function scenetteCost(): { triangles: number; calls: number } {
-  return { triangles: scenetteDecor('phare').triangles + litLantern('phare').triangles, calls: 2 };
+  return { triangles: scenetteDecor('phare').triangles + lanternGlass('phare').triangles, calls: 1 };
 }
 
 /** Les pièces durables, toutes remises, et le Veilleur rallumé : un maillage pour les quatre lieux, et la Roue des Écluses. */

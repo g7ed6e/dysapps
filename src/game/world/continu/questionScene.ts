@@ -430,7 +430,7 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
 function hangBells(b: FacetBuilder, points: readonly Vec3[], s: number, picked: readonly number[], hanging?: BellHanging): void {
   const xs = points.map((p) => p.x);
   const z = points.reduce((t, p) => t + p.z, 0) / points.length;
-  const beamY = Math.max(...points.map((p) => p.y)) + 1.25 * s;
+  const beamY = Math.max(...points.map((p) => p.y)) + 1.12 * s;
   const left = Math.min(...xs) - 0.6 * s;
   const right = Math.max(...xs) + 0.6 * s;
   b.box({ x: (left + right) / 2, y: beamY, z }, [right - left, 0.14 * s, 0.16 * s], C.post);
@@ -446,7 +446,7 @@ function hangBells(b: FacetBuilder, points: readonly Vec3[], s: number, picked: 
     b.beam({ x, y: beamY, z: hanging.rail.z }, { x, y: hanging.rail.y, z: hanging.rail.z }, 0.1, C.post);
   }
   // La corde de sonnerie, de la main de l'habitant au bout de la poutre.
-  b.beam(hanging.hand, { x: right, y: beamY, z }, 0.05, C.ringRope);
+  b.beam(hanging.hand, { x: right, y: beamY, z }, 0.09, C.ringRope);
 }
 
 // ---------- La scène d'un item ----------

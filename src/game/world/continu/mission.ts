@@ -89,6 +89,8 @@ export interface MarkOnScreen {
   angle: number;
   /** La distance au lieu, en signe (`distanceSign`) : la page la montre sous la flèche du bord. */
   far: 1 | 2 | 3;
+  /** Dans l'écran, la marque se pose à droite du point (à côté de la lanterne du Phare), pas au-dessus. */
+  beside: boolean;
 }
 
 /**
@@ -96,9 +98,16 @@ export interface MarkOnScreen {
  * `width` × `height`. Dans l'écran, sur son lieu ; hors champ, sur le bord, à `margin` pixels, vers le lieu. (La page
  * garde ensuite le panneau entier à l'écran.)
  */
-export function markOnScreen(p: { x: number; y: number; behind: boolean }, width: number, height: number, margin: number, far: 1 | 2 | 3 = 1): MarkOnScreen {
+export function markOnScreen(
+  p: { x: number; y: number; behind: boolean },
+  width: number,
+  height: number,
+  margin: number,
+  far: 1 | 2 | 3 = 1,
+  beside = false,
+): MarkOnScreen {
   const inside = !p.behind && p.x >= 0 && p.x <= width && p.y >= 0 && p.y <= height;
-  if (inside) return { x: p.x, y: p.y, inside, angle: 0, far };
+  if (inside) return { x: p.x, y: p.y, inside, angle: 0, far, beside };
   const cx = width / 2;
   const cy = height / 2;
   // Derrière la caméra, la projection est retournée : la direction l'est aussi.
@@ -112,7 +121,7 @@ export function markOnScreen(p: { x: number; y: number; behind: boolean }, width
   const sx = (cx - margin) / Math.abs(dx || 1e-9);
   const sy = (cy - margin) / Math.abs(dy || 1e-9);
   const s = Math.min(sx, sy);
-  return { x: cx + dx * s, y: cy + dy * s, inside: false, angle: Math.atan2(dx, -dy), far };
+  return { x: cx + dx * s, y: cy + dy * s, inside: false, angle: Math.atan2(dx, -dy), far, beside: false };
 }
 
 /** Un rectangle à l'écran, en pixels. */
