@@ -803,10 +803,48 @@
 .world-question .in-world.simple .validate-button {
   width: auto;
   min-width: 176px;
+  min-height: 56px;
 }
-/* La question entière dans le panneau de « Vue simple » : c'est le panneau qui défile, rien ne s'y tasse. */
-.world-question .in-world.simple .world-place,
-.world-question .in-world.simple .world-question-prompt {
+/* « Valider » sous la liste, dans une bande unie qui reste au bas du panneau quand il défile : toujours atteignable ;
+   rien ne passe dessus, la liste glisse dessous comme sous le bord du panneau. Le panneau garde la place de la bande
+   quand le clavier y amène une cloche. */
+.world-question .quiz.in-world.scenette.simple {
+  scroll-padding-bottom: calc(56px + 3rem);
+}
+.world-question .in-world.simple .world-simple-validate {
+  position: sticky;
+  /* Jusqu'au bord du panneau, par-dessus sa marge du bas : rien de la liste ne se voit sous la bande. */
+  bottom: -0.6rem;
+  z-index: 1;
+  display: flex;
+  margin: 0 0 -0.6rem;
+  padding: 16px 0 0.6rem;
+  background: var(--surface);
+}
+/* Sur un écran bas, la bande se fait plus mince : plus de place pour la liste. */
+@media (max-height: 500px) {
+  .world-question .in-world.simple .world-simple-validate {
+    padding-top: 8px;
+  }
+}
+/* Le repère qui dit que le panneau défile : une ombre au-dessus de la bande de « Valider » tant qu'il reste de quoi lire
+   plus bas, une ombre sous le bord du haut quand on est descendu (data-suite, posé par WorldQuestion). */
+.world-question .quiz.in-world.simple[data-suite="bas"] .world-simple-validate,
+.world-question .quiz.in-world.simple[data-suite="deux"] .world-simple-validate {
+  box-shadow: 0 -14px 12px -10px rgb(0 0 0 / 0.4);
+}
+.world-question .quiz.in-world.simple[data-suite="haut"],
+.world-question .quiz.in-world.simple[data-suite="deux"] {
+  box-shadow: inset 0 16px 12px -12px rgb(0 0 0 / 0.4);
+}
+/* La question entière dans le panneau de « Vue simple » : c'est le panneau qui défile, rien ne s'y tasse. Le cadre de
+   l'écran s'efface (display: contents) : la bande de « Valider » se tient au bas du panneau entier, jamais par-dessus
+   le son et ses voix. */
+.world-question .in-world.simple .world-place {
+  display: contents;
+}
+.world-question .in-world.simple .world-question-prompt,
+.world-question .in-world.simple .world-answers {
   flex: 0 0 auto;
 }
 /* Un mot coupé sur tablette : l'image devant le mot tombe d'abord (comme sur un écran bas), avant « Vue simple ». */

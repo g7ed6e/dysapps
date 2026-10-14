@@ -8,7 +8,8 @@
 // classique de la même mission. Au Phare, une scénette (piste 1, lot 2, ../../world/continu/scenette.ts) : le rôle de
 // l'habitant en tête du panneau, Kéo et la gardienne au milieu, les cloches en rangée en bas, « Valider » en bas à
 // droite sur tablette ; à la réussite, la lampe du Phare s'allume. Dans une scénette, « Vue simple » montre la même
-// question en liste sur fond uni, sans quitter la manche (les cloches choisies le restent).
+// question en liste sur fond uni, sans quitter la manche (les cloches choisies le restent), « Valider » sous la liste ;
+// « Scène », à la même place, y ramène.
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
@@ -169,6 +170,38 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
   }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, simple, bare]);
+  // Le panneau de « Vue simple » défile : il s'ouvre en haut (le rôle, la consigne), et `data-suite` dit qu'il reste
+  // de quoi lire plus bas (une ombre au-dessus de « Valider ») ou plus haut.
+  useEffect(() => {
+    if (!simple || finished) return;
+    const panel = box.current?.querySelector<HTMLElement>('.quiz.in-world');
+    if (!panel) return;
+    panel.scrollTop = 0;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const below = panel.scrollTop + panel.clientHeight < panel.scrollHeight - 1;
+      const above = panel.scrollTop > 1;
+      const next = below && above ? 'deux' : below ? 'bas' : above ? 'haut' : '';
+      if (panel.dataset.suite !== next) panel.dataset.suite = next;
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    const resize = new ResizeObserver(schedule);
+    resize.observe(panel);
+    const mutation = new MutationObserver(schedule);
+    mutation.observe(panel, { childList: true, subtree: true });
+    panel.addEventListener('scroll', schedule, { passive: true });
+    update();
+    return () => {
+      resize.disconnect();
+      mutation.disconnect();
+      panel.removeEventListener('scroll', schedule);
+      if (frame) cancelAnimationFrame(frame);
+      delete panel.dataset.suite;
+    };
+  }, [simple, finished, loaded]);
   useEffect(() => {
     if (!size.w || !size.h || !item || finished) return;
     setLabels(world.question({ place, layout, item }));
@@ -279,6 +312,12 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       {ready && stage && !finished && !offer && !simple && (
         <button type="button" className="button world-question-simple" onClick={openSimple}>
           <Icon name="liste" /> Vue simple
+        </button>
+      )}
+      {/* En « Vue simple » d'une scénette, à la même place : le retour à la scène, les cloches choisies gardées. */}
+      {ready && stage && !finished && simple && (
+        <button type="button" className="button world-question-simple" onClick={() => setSimple(false)}>
+          <Icon name="mountain" /> Scène
         </button>
       )}
       {!finished &&
@@ -553,7 +592,7 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
           ) : (
             <SpeakButton text={frenchTypography(words.join(', '))} label="Écouter les cloches" />
           )}
-          {!answered && !validateBox && (
+          {!answered && !validateBox && !simple && (
             <button type="button" className="button primary validate-button" onClick={validate}>
               <Icon name="check" /> Valider
             </button>
@@ -599,6 +638,15 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
           );
         })}
       </ul>
+      {/* En « Vue simple » : « Valider » sous la liste, comme sous la rangée dans la scène ; sa bande reste au bas du
+          panneau qui défile, toujours atteignable. */}
+      {!answered && simple && (
+        <div className="world-simple-validate">
+          <button type="button" className="button primary validate-button" onClick={validate}>
+            <Icon name="check" /> Valider
+          </button>
+        </div>
+      )}
     </div>
   );
 }
