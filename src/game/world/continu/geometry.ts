@@ -17,7 +17,7 @@ export interface Vec3 {
 export const distance = (a: Vec2, b: Vec2): number => Math.hypot(a.x - b.x, a.z - b.z);
 
 /** Le point le plus proche de `p` sur le segment [a, b], et sa part `t` (0 en a, 1 en b). */
-function closestOnSegment(p: Vec2, a: Vec2, b: Vec2): { point: Vec2; t: number } {
+export function closestOnSegment(p: Vec2, a: Vec2, b: Vec2): { point: Vec2; t: number } {
   const dx = b.x - a.x;
   const dz = b.z - a.z;
   const l2 = dx * dx + dz * dz;

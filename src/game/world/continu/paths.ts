@@ -1,0 +1,175 @@
+// Les chemins aimantés (piste B) : le réseau des sentiers, de la digue et des pontons du 6e, le point du réseau le plus
+// proche d'un toucher, et le plus court trajet de l'un à l'autre (A*). Le dessin des chemins (un ruban posé sur le sol,
+// en bois sur l'eau) est tiré d'ici aussi. Code pur.
+import { FacetBuilder, type Facets } from './facets';
+import { closestOnSegment, distance, type Vec2 } from './geometry';
+import { COLORS_6E, PATH_EDGES, PATH_NODES, type PathNode } from './plan6e';
+import { standingHeight } from './terrain';
+
+/** Un point du réseau : sur la liaison `edge` (son rang dans `PATH_EDGES`), à la part `t` de son premier nœud au second. */
+export interface NetworkPoint {
+  edge: number;
+  t: number;
+  at: Vec2;
+}
+
+const nodeById = new Map<string, PathNode>(PATH_NODES.map((n) => [n.id, n]));
+
+/** Un nœud par son identifiant. */
+export const pathNode = (id: string): PathNode => {
+  const n = nodeById.get(id);
+  if (!n) throw new Error(`Nœud inconnu : ${id}`);
+  return n;
+};
+
+const ends = (edge: number): [PathNode, PathNode] => [pathNode(PATH_EDGES[edge][0]), pathNode(PATH_EDGES[edge][1])];
+
+/** Le point du réseau le plus proche de `p` : là où va Kéo quand on touche ailleurs que sur un chemin. */
+export function snapToNetwork(p: Vec2): NetworkPoint {
+  let best: NetworkPoint | null = null;
+  let bestD = Infinity;
+  PATH_EDGES.forEach((_, edge) => {
+    const [a, b] = ends(edge);
+    const c = closestOnSegment(p, a.at, b.at);
+    const d = distance(p, c.point);
+    if (d < bestD) {
+      bestD = d;
+      best = { edge, t: c.t, at: c.point };
+    }
+  });
+  return best!;
+}
+
+/** Le point du réseau sur un nœud (la porte d'un lieu). */
+export function atNode(id: string): NetworkPoint {
+  const edge = PATH_EDGES.findIndex(([a, b]) => a === id || b === id);
+  if (edge < 0) throw new Error(`Nœud isolé : ${id}`);
+  return { edge, t: PATH_EDGES[edge][0] === id ? 0 : 1, at: pathNode(id).at };
+}
+
+/**
+ * Le plus court trajet sur le réseau, de `from` à `to` (A*, la distance à vol d'oiseau pour estimer le reste) : la
+ * suite des points où Kéo tourne, départ et arrivée compris.
+ */
+export function findRoute(from: NetworkPoint, to: NetworkPoint): Vec2[] {
+  if (from.edge === to.edge) return dedupe([from.at, to.at]);
+  // Le graphe des nœuds, plus le départ et l'arrivée posés sur leurs liaisons.
+  const START = '$depart';
+  const GOAL = '$arrivee';
+  const pos = new Map<string, Vec2>(PATH_NODES.map((n) => [n.id, n.at]));
+  pos.set(START, from.at);
+  pos.set(GOAL, to.at);
+  const links = new Map<string, string[]>();
+  const link = (a: string, b: string) => {
+    links.set(a, [...(links.get(a) ?? []), b]);
+    links.set(b, [...(links.get(b) ?? []), a]);
+  };
+  PATH_EDGES.forEach(([a, b], edge) => {
+    if (edge !== from.edge && edge !== to.edge) link(a, b);
+  });
+  for (const [id, p] of [[START, from], [GOAL, to]] as const) {
+    const [a, b] = PATH_EDGES[p.edge];
+    link(id, a);
+    link(id, b);
+  }
+  const h = (id: string) => distance(pos.get(id)!, to.at);
+  const g = new Map<string, number>([[START, 0]]);
+  const came = new Map<string, string>();
+  const open = new Set([START]);
+  while (open.size) {
+    let current = '';
+    let f = Infinity;
+    for (const id of open) {
+      const v = g.get(id)! + h(id);
+      if (v < f) {
+        f = v;
+        current = id;
+      }
+    }
+    if (current === GOAL) {
+      const route: Vec2[] = [pos.get(GOAL)!];
+      for (let id = GOAL; came.has(id); ) {
+        id = came.get(id)!;
+        route.unshift(pos.get(id)!);
+      }
+      return dedupe(route);
+    }
+    open.delete(current);
+    for (const next of links.get(current) ?? []) {
+      const tentative = g.get(current)! + distance(pos.get(current)!, pos.get(next)!);
+      if (tentative < (g.get(next) ?? Infinity)) {
+        g.set(next, tentative);
+        came.set(next, current);
+        open.add(next);
+      }
+    }
+  }
+  // Le réseau est d'un seul tenant (un test le vérifie) : on n'arrive jamais ici.
+  return [from.at];
+}
+
+/** Sans les points répétés (un départ sur un nœud). */
+function dedupe(route: Vec2[]): Vec2[] {
+  return route.filter((p, i) => i === 0 || distance(p, route[i - 1]) > 1e-6);
+}
+
+/** La longueur d'un trajet. */
+export function routeLength(route: readonly Vec2[]): number {
+  let l = 0;
+  for (let i = 1; i < route.length; i++) l += distance(route[i - 1], route[i]);
+  return l;
+}
+
+/** Les demi-largeurs du ruban : un sentier sur la terre, une digue ou un ponton sur l'eau, plus larges. */
+const HALF_WIDTH = { path: 0.8, deck: 1.1 };
+/** Le pas des points du ruban, le long d'une liaison. */
+const RIBBON_STEP = 1;
+/** Le dessus du ruban au-dessus du sol, et la profondeur de ses flancs. */
+const RIBBON_LIFT = 0.06;
+const RIBBON_SIDE = 0.7;
+
+/**
+ * Le dessin des chemins : un ruban par liaison, posé sur le sol (`ground`, la hauteur du sol dessiné), avec ses flancs ;
+ * en bois là où le sol est sous l'eau (digue, pontons), couleur de sentier ailleurs. Un octogone couvre chaque nœud.
+ */
+export function pathRibbons(ground: (x: number, z: number) => number): Facets {
+  const b = new FacetBuilder();
+  // Le bois là où le sol est sous l'eau (la digue, les pontons) ; sur la plage, c'est encore un sentier.
+  const deckAt = (p: Vec2) => ground(p.x, p.z) < 0.05;
+  for (const [ia, ib] of PATH_EDGES) {
+    const a = pathNode(ia).at;
+    const c = pathNode(ib).at;
+    const len = distance(a, c);
+    const n = Math.max(1, Math.ceil(len / RIBBON_STEP));
+    const dx = (c.x - a.x) / len;
+    const dz = (c.z - a.z) / len;
+    for (let k = 0; k < n; k++) {
+      const p = { x: a.x + (dx * len * k) / n, z: a.z + (dz * len * k) / n };
+      const q = { x: a.x + (dx * len * (k + 1)) / n, z: a.z + (dz * len * (k + 1)) / n };
+      const mid = { x: (p.x + q.x) / 2, z: (p.z + q.z) / 2 };
+      const deck = deckAt(mid);
+      const w = deck ? HALF_WIDTH.deck : HALF_WIDTH.path;
+      const color = deck ? COLORS_6E.wood : COLORS_6E.path;
+      const yp = standingHeight(ground(p.x, p.z)) + RIBBON_LIFT;
+      const yq = standingHeight(ground(q.x, q.z)) + RIBBON_LIFT;
+      // À gauche du sens de marche : (dz, −dx) ; à droite : (−dz, dx).
+      const pl = [p.x + dz * w, yp, p.z - dx * w] as const;
+      const pr = [p.x - dz * w, yp, p.z + dx * w] as const;
+      const ql = [q.x + dz * w, yq, q.z - dx * w] as const;
+      const qr = [q.x - dz * w, yq, q.z + dx * w] as const;
+      b.quad(pl, pr, qr, ql, color);
+      // Les flancs, jusque sous le sol ou dans l'eau.
+      const down = (v: readonly [number, number, number]) => [v[0], v[1] - RIBBON_SIDE, v[2]] as const;
+      b.quad(down(pr), down(qr), qr, pr, color);
+      b.quad(down(ql), down(pl), pl, ql, color);
+    }
+  }
+  // Un octogone sur chaque nœud : les coudes n'ont pas de trou.
+  for (const node of PATH_NODES) {
+    const y = standingHeight(ground(node.at.x, node.at.z)) + RIBBON_LIFT + 0.005;
+    const deck = deckAt(node.at);
+    const w = (deck ? HALF_WIDTH.deck : HALF_WIDTH.path) * 1.08;
+    b.prism({ x: node.at.x, y: y - RIBBON_SIDE, z: node.at.z }, w, w, RIBBON_SIDE, 8, deck ? COLORS_6E.wood : COLORS_6E.path);
+  }
+  return b.build();
+}

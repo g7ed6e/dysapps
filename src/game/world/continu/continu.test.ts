@@ -1,17 +1,18 @@
-// Le monde continu du prototype (6e d'Archipéo) : le plan en données, le terrain, la mer, les cadrages, les maquettes et
-// le budget. Sans Three.js.
+// Le monde continu du prototype (6e d'Archipéo) : le plan en données, le terrain, la mer, les chemins et leur A*, la
+// marche, les cadrages, les maquettes et le budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { openWorldCost, OPEN_WORLD_BUDGET } from './budget';
-import { CAMERA_PITCH, poseOf, shoreAt } from './camera';
+import { CAMERA_PITCH, poseAt, poseOf, shoreAt } from './camera';
 import { distance, insidePolygon } from './geometry';
+import { atNode, findRoute, pathNode, pathRibbons, routeLength, snapToNetwork } from './paths';
 import { COAST, DECK_HEIGHT, FRAMINGS, ISLET, LAGOON, PATH_EDGES, PATH_NODES, PLACES, fromPlan, framingOf, placeById, placeOfIsland } from './plan6e';
 import { modelOfPlace } from './places';
 import { SEA_TEXTURE, seaPixels, shallowness } from './sea';
 import { buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight, terrainTiles } from './terrain';
+import { skipWalk, startWalk, walkAt, WALK_SPEED } from './walk';
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => heightOnMesh(field, x, z);
-const pathNode = (id: string) => PATH_NODES.find((n) => n.id === id)!;
 
 describe('Le plan du 6e', () => {
   it('le lagon est dans l’anneau, l’îlot du Phare dans le lagon', () => {
@@ -87,8 +88,8 @@ describe('La mer et le lagon', () => {
   });
 });
 
-describe('Le réseau des chemins', () => {
-  it('est d’un seul tenant', () => {
+describe('Les chemins aimantés', () => {
+  it('le réseau est d’un seul tenant', () => {
     const seen = new Set([PATH_NODES[0].id]);
     for (let changed = true; changed; ) {
       changed = false;
@@ -102,8 +103,66 @@ describe('Le réseau des chemins', () => {
     expect(seen.size).toBe(PATH_NODES.length);
   });
 
-  it('on se tient au sec : sur la terre, ou sur la digue et les pontons au-dessus de l’eau', () => {
+  it('on marche au sec : sur la terre, ou sur la digue et les pontons au-dessus de l’eau', () => {
     for (const n of PATH_NODES) expect(standingHeight(ground(n.at.x, n.at.z))).toBeGreaterThanOrEqual(DECK_HEIGHT);
+  });
+
+  it('un toucher dans le lagon aimante Kéo sur la digue la plus proche', () => {
+    const p = snapToNetwork(fromPlan([930, 700]));
+    expect(PATH_EDGES[p.edge]).toEqual(['phare', 'digue']);
+    // Aucun autre point du réseau n'est plus près.
+    for (let k = 0; k <= 50; k++) {
+      const q = snapToNetwork(fromPlan([600 + k * 16, 300 + k * 12]));
+      const [a, b] = PATH_EDGES[q.edge];
+      expect(distance(q.at, { x: pathNode(a).at.x + q.t * (pathNode(b).at.x - pathNode(a).at.x), z: pathNode(a).at.z + q.t * (pathNode(b).at.z - pathNode(a).at.z) })).toBeLessThan(1e-9);
+    }
+  });
+
+  it('A* rend le plus court trajet, d’un lieu à l’autre, par les nœuds voisins', () => {
+    const route = findRoute(atNode('phare'), atNode('ecluses'));
+    expect(route[0]).toEqual(pathNode('phare').at);
+    expect(route[route.length - 1]).toEqual(pathNode('ecluses').at);
+    expect(route.map((p) => PATH_NODES.find((n) => n.at === p)?.id)).toEqual(['phare', 'digue', 'ponton', 'quais', 'est-1', 'est-2', 'est-3', 'est-4', 'ecluses']);
+    // Des Filets aux Écluses : par la crête, plus court que par le lagon.
+    const parLaCrete = findRoute(atNode('filets'), atNode('ecluses'));
+    expect(parLaCrete).toHaveLength(3);
+    // Un trajet court (avis du référent dys) : le plus long tient en moins de quinze secondes de marche.
+    expect(routeLength(findRoute(atNode('phare'), atNode('filets'))) / WALK_SPEED).toBeLessThan(15);
+  });
+
+  it('d’un point au milieu d’une liaison à un autre sur la même liaison : tout droit', () => {
+    const a = snapToNetwork(fromPlan([1194, 600]));
+    const b = snapToNetwork(fromPlan([1194, 540]));
+    expect(a.edge).toBe(b.edge);
+    expect(findRoute(a, b)).toEqual([a.at, b.at]);
+  });
+
+  it('les rubans des chemins ont leur dessus vers le ciel', () => {
+    const f = pathRibbons(ground);
+    expect(f.triangles).toBeGreaterThan(100);
+    expect(f.triangles).toBeLessThan(3000);
+  });
+});
+
+describe('La marche de Kéo', () => {
+  const route = [{ x: 0, z: 0 }, { x: 0, z: -6 }, { x: 6, z: -6 }];
+
+  it('à vitesse constante, le visage vers où il va', () => {
+    const w = startWalk(route, 1000);
+    const s = walkAt(w, 1500, false);
+    expect(s.at.z).toBeCloseTo(-3, 5);
+    expect(s.moving).toBe(true);
+    expect(s.heading).toBeCloseTo(0, 5); // vers −z, le nord
+    const t = walkAt(w, 2500, false);
+    expect(t.at).toEqual({ x: 3, z: -6 });
+    expect(t.heading).toBeCloseTo(-Math.PI / 2, 5); // vers +x, l'est
+    expect(walkAt(w, 3100, false).moving).toBe(false);
+  });
+
+  it('« Réduire les animations », ou « Passer le trajet » : il est arrivé', () => {
+    const w = startWalk(route, 1000);
+    expect(walkAt(w, 1000, true)).toMatchObject({ at: { x: 6, z: -6 }, moving: false });
+    expect(walkAt(skipWalk(w, 1100), 1100, false)).toMatchObject({ at: { x: 6, z: -6 }, moving: false });
   });
 });
 
@@ -126,6 +185,18 @@ describe('Les cadrages prévus', () => {
       const portrait = poseOf(f, 3 / 4);
       expect(portrait.position.y).toBeGreaterThan(p.position.y);
     }
+  });
+
+  it('un passage doux, sans roulis ni détour ; une coupe franche avec « Réduire les animations »', () => {
+    const from = poseOf(framingOf('lagon'), 4 / 3);
+    const to = poseOf(framingOf('nord'), 4 / 3);
+    const move = { from, to, start: 10 };
+    expect(poseAt(move, 10, true)).toBe(to);
+    expect(poseAt(move, 10, false).position).toEqual(from.position);
+    const mid = poseAt(move, 10.7, false);
+    // À mi-chemin, l'axe de visée garde le même angle : la caméra glisse, elle ne tourne pas.
+    expect(Math.atan2(mid.position.y - mid.target.y, mid.position.z - mid.target.z)).toBeCloseTo(CAMERA_PITCH, 6);
+    expect(poseAt(move, 20, false).position.x).toBeCloseTo(to.position.x, 9);
   });
 });
 

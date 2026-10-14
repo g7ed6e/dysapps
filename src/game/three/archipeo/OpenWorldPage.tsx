@@ -1,7 +1,7 @@
 // Le monde ouvert d'Archipéo, au 6e (prototype, piste B « chemins aimantés », choix du mainteneur du 14 octobre 2026) :
-// derrière le drapeau `?monde=ouvert`, dans l'univers Archipéo seulement (../../worldLayoutFactory.tsx). Le socle : le
-// terrain du 6e, le lagon et la mer, les quatre lieux du prototype, Kéo posé devant son lieu. Rien de neuf dans la
-// sauvegarde. Chargé à la demande.
+// derrière le drapeau `?monde=ouvert`, dans l'univers Archipéo seulement (../../worldLayoutFactory.tsx). On touche
+// n'importe où, Kéo rejoint le chemin le plus proche et y va ; un lieu touché l'y envoie ; la caméra passe d'un cadrage
+// prévu à l'autre. Rien de neuf dans la sauvegarde. Chargé à la demande.
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Loading } from '../../../components/Loading';
@@ -16,7 +16,7 @@ import './openWorld.css';
 declare global {
   interface Window {
     /** Le monde ouvert, pour les captures et les mesures (en développement, ou avec `?mesures`). */
-    __dysappsMondeOuvert?: Pick<OpenWorld, 'info'>;
+    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'skip' | 'info'>;
   }
 }
 
@@ -34,9 +34,16 @@ export default function OpenWorldPage() {
   useEffect(() => {
     const el = host.current;
     if (!el) return;
-    const w = createOpenWorld(el, { start, reduceMotion, meter: { show: meterShown(), expose: import.meta.env.DEV || mesuresDemandees() } });
+    const w = createOpenWorld(el, {
+      start,
+      reduceMotion,
+      meter: { show: meterShown(), expose: import.meta.env.DEV || mesuresDemandees() },
+      // La marche seule : ce qui se passe au départ et à l'arrivée (la mission) vient au lot suivant.
+      onDepart: () => {},
+      onArrive: () => {},
+    });
     setReady(true);
-    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { info: w.info };
+    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, skip: w.skip, info: w.info };
     return () => {
       w.dispose();
       if (window.__dysappsMondeOuvert?.info === w.info) delete window.__dysappsMondeOuvert;
