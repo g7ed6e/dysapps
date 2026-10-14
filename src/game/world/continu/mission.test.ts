@@ -1,6 +1,6 @@
 // La prochaine mission du monde continu et sa marque à l'écran.
 import { describe, expect, it } from 'vitest';
-import { markOnScreen, missionOfPlace, nextMission, type MissionMark } from './mission';
+import { keepClear, markOnScreen, missionOfPlace, nextMission, placeIsOpen, type MissionMark } from './mission';
 import { placeById } from './plan6e';
 
 const bornes: MissionMark[] = [
@@ -30,6 +30,13 @@ describe('La prochaine mission', () => {
     expect(missionOfPlace(placeById('phare'), bornes)).toBe('rimes');
     expect(missionOfPlace(placeById('ecluses'), bornes)).toBe('parts');
     expect(missionOfPlace(placeById('quais'), bornes)).toBeNull();
+    // Tout est fait : on rejoue la première.
+    expect(missionOfPlace(placeById('phare'), bornes.map((b) => ({ ...b, etat: b.etat === 'locked' ? b.etat : 3 })))).toBe('syllables');
+  });
+
+  it('un lieu est fermé quand aucune de ses missions ne se joue', () => {
+    expect(placeIsOpen(placeById('phare'), bornes)).toBe(true);
+    expect(placeIsOpen(placeById('quais'), bornes)).toBe(false);
   });
 });
 
@@ -52,5 +59,24 @@ describe('La marque à l’écran', () => {
     expect(m.inside).toBe(false);
     expect(m.y).toBe(750);
     expect(Math.abs(m.angle)).toBeCloseTo(Math.PI, 9);
+  });
+});
+
+describe('La marque évite les boutons', () => {
+  const reglages = { left: 940, top: 10, width: 60, height: 60 };
+  const yAller = { left: 400, top: 700, width: 220, height: 60 };
+
+  it('hors des boutons, elle ne bouge pas', () => {
+    const box = { left: 300, top: 300, width: 150, height: 50 };
+    expect(keepClear(box, [reglages, yAller], 1024, 768, 8, 8)).toEqual(box);
+  });
+
+  it('sur Réglages ou sur « Y aller », elle s’en écarte du plus petit pas, sans sortir de l’écran', () => {
+    const enHautADroite = keepClear({ left: 900, top: 8, width: 150, height: 50 }, [reglages, yAller], 1024, 768, 8, 8);
+    expect(enHautADroite.left + enHautADroite.width <= reglages.left - 8 || enHautADroite.top >= reglages.top + reglages.height + 8).toBe(true);
+    expect(enHautADroite.left + enHautADroite.width).toBeLessThanOrEqual(1016);
+    const enBas = keepClear({ left: 440, top: 710, width: 150, height: 50 }, [reglages, yAller], 1024, 768, 8, 8);
+    expect(enBas.top + enBas.height <= yAller.top - 8 || enBas.left >= yAller.left + yAller.width + 8 || enBas.left + enBas.width <= yAller.left - 8).toBe(true);
+    expect(enBas.top + enBas.height).toBeLessThanOrEqual(760);
   });
 });

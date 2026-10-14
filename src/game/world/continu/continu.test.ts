@@ -126,8 +126,11 @@ describe('Les chemins aimantés', () => {
     // Des Filets aux Écluses : par la crête, plus court que par le lagon.
     const parLaCrete = findRoute(atNode('filets'), atNode('ecluses'));
     expect(parLaCrete).toHaveLength(3);
-    // Un trajet court (avis du référent dys) : le plus long tient en moins de quinze secondes de marche.
-    expect(routeLength(findRoute(atNode('phare'), atNode('filets'))) / WALK_SPEED).toBeLessThan(15);
+    // Des trajets courts (avis du référent dys) : le plus long, entre deux nœuds du réseau, tient en moins de douze
+    // secondes de marche (il dure 10,0 s, du Phare aux Filets).
+    let plusLong = 0;
+    for (const a of PATH_NODES) for (const b of PATH_NODES) plusLong = Math.max(plusLong, routeLength(findRoute(atNode(a.id), atNode(b.id))) / WALK_SPEED);
+    expect(plusLong).toBeLessThan(12);
   });
 
   it('d’un point au milieu d’une liaison à un autre sur la même liaison : tout droit', () => {

@@ -6,7 +6,7 @@ import { PLACES, TERRAIN } from './plan6e';
 import { modelOfPlace } from './places';
 import { buildHeightField, heightOnMesh, terrainTiles } from './terrain';
 
-/** Kéo : le modèle importé de près (1 500 triangles environ) et son ombre au sol, comme le poste « bonhomme » du monde en grille. */
+/** Kéo : le modèle importé de près (1 500 triangles environ) et son anneau clair au sol, comme le poste « bonhomme » du monde en grille. */
 const KEO = { triangles: 1620, calls: 2 };
 
 /** L'enveloppe du prototype : ce que le cadrage a estimé. */

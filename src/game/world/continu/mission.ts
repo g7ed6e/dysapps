@@ -16,10 +16,18 @@ export interface NextMission {
   mission: string;
 }
 
-/** La première mission à faire d'un lieu (jamais jouée), sinon la première qui n'a pas ses trois étoiles ; `null` si le lieu est fermé. */
+/** Le lieu est-il ouvert (au moins une de ses missions se joue) ? Un lieu fermé ne lance pas de trajet. */
+export function placeIsOpen(place: OpenPlace, bornes: readonly MissionMark[]): boolean {
+  return bornes.some((b) => b.ile === place.island && b.etat !== 'locked');
+}
+
+/**
+ * La mission qu'ouvre un lieu : la première jamais jouée, sinon la première qui n'a pas ses trois étoiles, sinon la
+ * première (on rejoue) ; `null` si le lieu est fermé.
+ */
 export function missionOfPlace(place: OpenPlace, bornes: readonly MissionMark[]): string | null {
   const own = bornes.filter((b) => b.ile === place.island && b.etat !== 'locked');
-  return (own.find((b) => b.etat === 'new') ?? own.find((b) => typeof b.etat === 'number' && b.etat < 3))?.mission ?? null;
+  return (own.find((b) => b.etat === 'new') ?? own.find((b) => typeof b.etat === 'number' && b.etat < 3) ?? own[0])?.mission ?? null;
 }
 
 /**
@@ -36,7 +44,7 @@ export function nextMission(bornes: readonly MissionMark[], destination?: { isla
     if (mission) return { place, mission };
   }
   for (const place of PLACES) {
-    const mission = missionOfPlace(place, bornes);
+    const mission = bornes.find((b) => b.ile === place.island && typeof b.etat === 'number' && b.etat < 3)?.mission;
     if (mission) return { place, mission };
   }
   return null;
@@ -73,6 +81,44 @@ export function markOnScreen(p: { x: number; y: number; behind: boolean }, width
   const sy = (cy - margin) / Math.abs(dy || 1e-9);
   const s = Math.min(sx, sy);
   return { x: cx + dx * s, y: cy + dy * s, inside: false, angle: Math.atan2(dx, -dy) };
+}
+
+/** Un rectangle à l'écran, en pixels. */
+export interface ScreenRect {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+const overlaps = (a: ScreenRect, b: ScreenRect) => a.left < b.left + b.width && b.left < a.left + a.width && a.top < b.top + b.height && b.top < a.top + a.height;
+
+/**
+ * Garde la marque (`box`) hors des boutons posés sur la scène (`obstacles` : Réglages, « Y aller ») et dans l'écran
+ * (`width` × `height`, à `edge` pixels du bord) : pour chaque bouton qu'elle couvre, le plus petit pas qui l'en sort
+ * sans sortir de l'écran (à gauche, à droite, au-dessus ou au-dessous, à `gap` pixels du bouton).
+ */
+export function keepClear(box: ScreenRect, obstacles: readonly ScreenRect[], width: number, height: number, edge: number, gap: number): ScreenRect {
+  const fit = (r: ScreenRect): ScreenRect => ({
+    ...r,
+    left: Math.min(Math.max(r.left, edge), Math.max(edge, width - edge - r.width)),
+    top: Math.min(Math.max(r.top, edge), Math.max(edge, height - edge - r.height)),
+  });
+  let r = fit(box);
+  for (const o of obstacles) {
+    if (!overlaps(r, o)) continue;
+    const moves = [
+      { ...r, left: o.left - gap - r.width },
+      { ...r, left: o.left + o.width + gap },
+      { ...r, top: o.top - gap - r.height },
+      { ...r, top: o.top + o.height + gap },
+    ]
+      .map(fit)
+      .filter((m) => !overlaps(m, o))
+      .sort((a, b) => Math.hypot(a.left - r.left, a.top - r.top) - Math.hypot(b.left - r.left, b.top - r.top));
+    if (moves[0]) r = moves[0];
+  }
+  return r;
 }
 
 /**

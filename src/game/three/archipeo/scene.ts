@@ -30,6 +30,9 @@ export interface OpenWorldOptions {
   onArrive(place: PlaceId | null): void;
   /** Kéo part (la page change « Y aller » en « Passer le trajet »). */
   onDepart(): void;
+  /** Le lieu est-il ouvert ? Un lieu fermé qu'on touche ne lance pas de trajet : la scène le dit à la page (`onClosed`). */
+  isOpen(place: PlaceId): boolean;
+  onClosed(place: PlaceId): void;
   /** La place de la marque de la prochaine mission à l'écran, à chaque image (`null` : pas de marque). */
   onMark(mark: MarkOnScreen | null): void;
   /** Montrer le compteur de mesures (`?mesures`) ; `expose` : le laisser lire aux scripts. */
@@ -56,6 +59,19 @@ const MARK_LIFT = 1.2;
 const TAP = { pixels: 10, ms: 700 };
 /** Le cap de Kéo au départ : face à la caméra (le sud). */
 const FACING_CAMERA = Math.PI;
+/**
+ * Kéo un peu plus grand que dans le monde en grille, et un anneau clair au sol autour de ses pieds : on le trouve sans
+ * chercher dans les cadrages larges (directeur artistique, 14 octobre 2026).
+ */
+const KEO_SCALE = 1.25;
+const KEO_RING = { inner: 0.85, outer: 1.3, color: 0xfff6dc };
+/**
+ * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
+ * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
+ * le monde en grille (../loop.ts).
+ */
+const SLOW_FRAME_MS = 45;
+const SLOW_FRAMES = 30;
 
 /** Une géométrie à facettes (positions, normales, couleurs de sommet), sa boîte englobante juste. */
 function geometryOf(f: Facets): THREE.BufferGeometry {
@@ -151,7 +167,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     marks.set(place.id, new THREE.Vector3(place.center.x, y + model.top + MARK_LIFT, place.center.z));
   }
 
-  // Kéo : le corps du bonhomme d'Archipéo (sa marche existante), son ombre au sol ; habillé dès que sa tenue est chargée.
+  // Kéo : le corps du bonhomme d'Archipéo (sa marche existante), son anneau clair au sol ; habillé dès que sa tenue est chargée.
   const keo = new THREE.Group();
   scene.add(keo);
   let body: CorpsDuBonhomme = corpsDuBonhomme('6e');
@@ -164,10 +180,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       body = corpsDuBonhomme('6e');
       keo.add(body.mesh);
     });
-  const shadowGeometry = keep(new THREE.CircleGeometry(0.75, 12).rotateX(-Math.PI / 2));
-  const shadowMaterial = new THREE.MeshBasicMaterial({ color: 0x1d3a3a, transparent: true, opacity: 0.25, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
-  const shadow = new THREE.Mesh(shadowGeometry, shadowMaterial);
-  scene.add(shadow);
+  keo.scale.setScalar(KEO_SCALE);
+  const ringGeometry = keep(new THREE.RingGeometry(KEO_RING.inner, KEO_RING.outer, 24).rotateX(-Math.PI / 2));
+  const ringMaterial = new THREE.MeshBasicMaterial({ color: KEO_RING.color, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
+  const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+  scene.add(ring);
 
   // Où est Kéo, où il va.
   const startNode = pathNode(placeById(options.start).door);
@@ -179,7 +196,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const placeKeo = (p: Vec2) => {
     const y = standingHeight(ground(p.x, p.z));
     keo.position.set(p.x, y, p.z);
-    shadow.position.set(p.x, y + 0.02, p.z);
+    ring.position.set(p.x, y + 0.02, p.z);
   };
   placeKeo(here);
 
@@ -227,6 +244,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const onDown = (e: PointerEvent) => {
     down = { x: e.clientX, y: e.clientY, t: performance.now() };
   };
+  const onCancel = () => {
+    down = null;
+  };
   const onUp = (e: PointerEvent) => {
     const d = down;
     down = null;
@@ -238,11 +258,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!hit) return;
     const p = { x: hit.point.x, z: hit.point.z };
     const touched = (hit.object.userData.place as PlaceId | undefined) ?? PLACES.find((pl) => distance(p, pl.center) <= pl.touchRadius)?.id;
-    if (touched) startWalkTo(atNode(placeById(touched).door), touched);
+    if (touched && !options.isOpen(touched)) options.onClosed(touched);
+    else if (touched) startWalkTo(atNode(placeById(touched).door), touched);
     else startWalkTo(snapToNetwork(p), null);
   };
   renderer.domElement.addEventListener('pointerdown', onDown);
   renderer.domElement.addEventListener('pointerup', onUp);
+  renderer.domElement.addEventListener('pointercancel', onCancel);
 
   const resize = () => {
     const w = host.clientWidth;
@@ -262,14 +284,21 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // La boucle d'image : la marche, le cadrage, la marque (quelques petits objets par image : la place de Kéo, la marque).
   let frame = 0;
   let last = performance.now();
-  const clock = new THREE.Clock();
+  let slowFrames = 0;
   const loop = () => {
     frame = requestAnimationFrame(loop);
-    if (document.hidden) return;
     const now = performance.now();
+    if (document.hidden) {
+      // Au retour sur la page, la première image ne rattrape pas le temps passé ailleurs.
+      last = now;
+      return;
+    }
+    if (now - last > SLOW_FRAME_MS && renderer.getPixelRatio() > 1) {
+      if (++slowFrames > SLOW_FRAMES) renderer.setPixelRatio(1);
+    } else slowFrames = 0;
     const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
     last = now;
-    const t = clock.getElapsedTime();
+    const t = now / 1000;
     let moving = false;
     if (walk) {
       const state = walkAt(walk, now, reduceMotion);
@@ -323,12 +352,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       observer.disconnect();
       renderer.domElement.removeEventListener('pointerdown', onDown);
       renderer.domElement.removeEventListener('pointerup', onUp);
+      renderer.domElement.removeEventListener('pointercancel', onCancel);
       body.dispose();
       for (const g of geometries) g.dispose();
       landMaterial.dispose();
       seaMaterial.dispose();
       seaTexture.dispose();
-      shadowMaterial.dispose();
+      ringMaterial.dispose();
       meter?.dispose();
       renderer.dispose();
       renderer.domElement.remove();

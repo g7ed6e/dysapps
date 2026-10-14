@@ -5,7 +5,7 @@
   position: absolute;
   inset: 0;
 }
-/* La marque : l'icône de la matière et le nom du lieu, posée au-dessus du lieu ; hors champ, au bord de l'écran, avec
+/* La marque : le nom du lieu, posée au-dessus du lieu ; hors champ, au bord de l'écran, avec
    sa flèche tournée vers lui. Elle ne bouge qu'avec la caméra. */
 .open-world-mark {
   position: absolute;
@@ -21,9 +21,13 @@
   border-radius: var(--radius-control, 12px);
   background: var(--surface);
   color: var(--text);
+  /* Un nom long passe à la ligne plutôt que de déborder (grand texte, OpenDyslexic) ; la taille reste celle de
+     l'application, 18 px au moins. */
+  max-width: min(16rem, 45vw);
   font: inherit;
   font-weight: 700;
-  white-space: nowrap;
+  text-align: left;
+  overflow-wrap: anywhere;
   cursor: pointer;
   will-change: transform;
 }
@@ -71,4 +75,30 @@
   background: var(--surface);
   color: var(--text);
   text-align: center;
+}
+/* La raison d'un « Y aller » grisé, écrite au-dessus de lui (pas seulement dite aux lecteurs d'écran). */
+.open-world-go-reason {
+  max-width: min(90vw, 24rem);
+  margin: 0 auto 0.4rem;
+  padding: 0.3rem 0.8rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
+}
+.open-world-go {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.open-world-status svg {
+  vertical-align: -0.15em;
+}
+/* « Y aller » sans mission : délavé, comme un bouton vide du monde (WorldButton), sa raison écrite au-dessus. */
+.open-world-go .button:disabled {
+  border-style: dashed;
+  background: var(--secondary-bg);
+  color: var(--muted);
+  cursor: not-allowed;
 }

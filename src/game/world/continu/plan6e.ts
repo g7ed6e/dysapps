@@ -156,7 +156,7 @@ export interface Framing {
 }
 
 export const FRAMINGS: readonly Framing[] = [
-  { shore: 'lagon', target: fromPlan([996, 650]), radius: 15 },
+  { shore: 'lagon', target: fromPlan([984, 618]), radius: 16.5 },
   { shore: 'est', target: fromPlan([1196, 452]), radius: 14 },
   { shore: 'nord', target: fromPlan([1086, 294]), radius: 11.5 },
 ];

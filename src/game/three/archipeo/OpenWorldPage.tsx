@@ -1,7 +1,7 @@
 // Le monde ouvert d'Archipéo, au 6e (prototype, piste B « chemins aimantés », choix du mainteneur du 14 octobre 2026) :
 // derrière le drapeau `?monde=ouvert`, dans l'univers Archipéo seulement (../../worldLayoutFactory.tsx). On touche
-// n'importe où, Kéo rejoint le chemin le plus proche et y va ; une seule marque montre la prochaine mission (son icône et
-// le nom du lieu), une flèche au bord de l'écran quand elle est hors champ ; « Y aller », toujours à la même place, y
+// n'importe où, Kéo rejoint le chemin le plus proche et y va ; une seule marque montre la prochaine mission (le nom de
+// son lieu), une flèche au bord de l'écran quand elle est hors champ ; « Y aller », toujours à la même place, y
 // mène (le trajet se passe). À l'arrivée, la mission s'ouvre (`MissionInteraction`, l'écran de mission actuel pour
 // l'instant). Rien de neuf dans la sauvegarde : la progression des missions reste commune. Chargé à la demande.
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -16,7 +16,7 @@ import { useBlocland } from '../../BloclandContext';
 import { getBiome } from '../../biomes';
 import { mesuresDemandees, meterShown } from '../../rendering';
 import { SettingsButton } from '../../WorldShortcuts';
-import { missionOfPlace, nextMission, type MarkOnScreen } from '../../world/continu/mission';
+import { keepClear, missionOfPlace, nextMission, placeIsOpen, type MarkOnScreen, type ScreenRect } from '../../world/continu/mission';
 import { placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
@@ -34,6 +34,9 @@ declare global {
 /** Le titre d'une mission d'une île, pour la dire. */
 const missionTitle = (island: string, mission: string) => getBiome(island)?.exercises.find((x) => x.id === mission)?.title ?? '';
 
+/** Le temps où reste affichée la phrase d'un lieu fermé, en millisecondes : le temps de la lire (et de l'entendre). */
+const STATUS_MS = 6000;
+
 export default function OpenWorldPage() {
   const { biomeId } = useParams();
   const navigate = useNavigate();
@@ -42,24 +45,57 @@ export default function OpenWorldPage() {
   const { settings, speak } = useSettings();
   const reduceMotion = useMoinsDAnimations();
 
-  // Les missions des quatre lieux et leur état : le modèle du monde, commun aux deux univers.
+  // Les missions des quatre lieux et leur état : le modèle du monde, commun aux deux univers. `modeleDuMonde` lit la
+  // LV2 par `lv2Courante()`, pas par un argument : `settings.lv2` refait le modèle quand l'élève la change.
   const vu = useMemo(() => gameAsShown(state, textes), [state, textes]);
+  // `settings.lv2` n'est pas lu dans le calcul, il le refait (voir plus haut) : la règle le croit inutile.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const modele = useMemo(() => modeleDuMonde(vu, '6e', textes.archipels, textes.libelles), [vu, textes, settings.lv2]);
   const next = useMemo(() => nextMission(modele.bornes, modele.destination), [modele]);
   const nextPlace = next?.place ?? null;
-  const nextIcon = nextPlace ? (getBiome(nextPlace.island)?.icon ?? 'flag') : 'flag';
 
   // Kéo part devant le lieu de l'adresse (le retour d'une mission), sinon celui de la partie, sinon le Phare.
   const [start] = useState<PlaceId>(() => placeOfIsland(biomeId ?? '')?.id ?? placeOfIsland(state.world.place ?? '')?.id ?? 'phare');
 
   const host = useRef<HTMLDivElement>(null);
   const world = useRef<OpenWorld | null>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const markRef = useRef<HTMLButtonElement>(null);
   const arrowRef = useRef<HTMLSpanElement>(null);
   const [ready, setReady] = useState(false);
   const [walking, setWalking] = useState(false);
-  const [status, setStatus] = useState('');
+  // Le lieu fermé qu'on vient de toucher : sa phrase s'affiche, puis s'efface d'elle-même.
+  const [closed, setClosed] = useState<{ place: PlaceId; seq: number } | null>(null);
+  useEffect(() => {
+    if (!closed) return;
+    const timer = window.setTimeout(() => setClosed(null), STATUS_MS);
+    return () => window.clearTimeout(timer);
+  }, [closed]);
+
+  // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
+  // taille (jamais une mise en page forcée par image).
+  const [layout] = useState(() => ({ width: 0, height: 0, markW: 0, markH: 0, obstacles: [] as ScreenRect[] }));
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const measure = () => {
+      const s = stage.getBoundingClientRect();
+      layout.width = s.width;
+      layout.height = s.height;
+      layout.markW = markRef.current?.offsetWidth ?? 0;
+      layout.markH = markRef.current?.offsetHeight ?? 0;
+      layout.obstacles = [...stage.querySelectorAll<HTMLElement>('.world-settings, .open-world-go')].map((el) => {
+        const r = el.getBoundingClientRect();
+        return { left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height };
+      });
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(stage);
+    for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .open-world-go')) observer.observe(el);
+    measure();
+    return () => observer.disconnect();
+    // La marque et « Y aller » changent d'élément avec la prochaine mission et la marche : on les observe de nouveau.
+  }, [layout, next, walking, closed]);
 
   // Ce que les rappels de la scène lisent au moment où ils sont appelés (la scène n'est pas refaite pour eux).
   const interaction = useMemo(() => missionScreenInteraction(navigate), [navigate]);
@@ -69,28 +105,28 @@ export default function OpenWorldPage() {
   useEffect(() => {
     const el = host.current;
     if (!el) return;
-    const say = (text: string) => {
-      setStatus(text);
-      if (latest.current.autoRead) latest.current.speak(frenchTypography(text));
-    };
     const w = createOpenWorld(el, {
       start,
       reduceMotion,
       meter: { show: meterShown(), expose: import.meta.env.DEV || mesuresDemandees() },
       onDepart: () => {
         setWalking(true);
-        setStatus('');
+        setClosed(null);
+      },
+      isOpen: (placeId) => placeIsOpen(placeById(placeId), latest.current.bornes),
+      onClosed: (placeId) => {
+        // Pas de trajet vers un lieu fermé : on le dit tout de suite (et à voix haute avec la lecture automatique).
+        setClosed((c) => ({ place: placeId, seq: (c?.seq ?? 0) + 1 }));
+        if (latest.current.autoRead) latest.current.speak(frenchTypography(closedSentence(placeId)));
       },
       onArrive: (placeId) => {
         setWalking(false);
         if (!placeId) return;
         const { next: n, bornes, interaction: open } = latest.current;
-        const place = placeById(placeId);
-        const mission = n?.place.id === placeId ? n.mission : missionOfPlace(place, bornes);
+        const mission = n?.place.id === placeId ? n.mission : missionOfPlace(placeById(placeId), bornes);
         if (mission) open.open(placeId, mission);
-        else say(`${place.name} : ce lieu ouvrira plus tard.`);
       },
-      onMark: (m) => placeMark(markRef.current, arrowRef.current, m),
+      onMark: (m) => placeMark(markRef.current, arrowRef.current, m, layout),
     });
     world.current = w;
     setReady(true);
@@ -101,7 +137,7 @@ export default function OpenWorldPage() {
       if (window.__dysappsMondeOuvert?.info === w.info) delete window.__dysappsMondeOuvert;
     };
     // La scène est faite une fois (et refaite si l'appareil change « Réduire les animations ») ; `start` ne change pas.
-  }, [start, reduceMotion]);
+  }, [start, reduceMotion, layout]);
 
   useEffect(() => {
     world.current?.setMark(nextPlace?.id ?? null);
@@ -113,33 +149,39 @@ export default function OpenWorldPage() {
     if (settings.autoRead) speak(frenchTypography(`${next.place.name}. ${title}`));
     world.current?.goTo(next.place.id);
   };
-  const label = next ? `Prochaine mission : ${missionTitle(next.place.island, next.mission)}, ${next.place.at}` : '';
+  // Court : le nom du lieu, puis la mission (consultant UX UI et référent dys).
+  const label = next ? `${next.place.name}, ${missionTitle(next.place.island, next.mission)}` : '';
 
   return (
     <div className="world-page open-world">
-      <p className={status ? 'open-world-status' : 'visually-hidden'} role="status">
-        {status}
-      </p>
-      <div className="world-stage" data-scene>
+      <div className="world-stage" data-scene ref={stageRef}>
         <div ref={host} className="open-world-canvas" />
         {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
         {next && (
-          <button type="button" ref={markRef} className="open-world-mark" aria-label={`${label}. Y aller`} onClick={goNext}>
+          <button type="button" ref={markRef} className="open-world-mark" aria-label={label} onClick={goNext}>
             <span ref={arrowRef} className="open-world-arrow" aria-hidden="true">
               <Icon name="nord" />
             </span>
-            <Icon name={nextIcon} />
+            {/* Le nom du lieu seul : aucune icône de lieu n'existe encore (le sapin de l'île d'aujourd'hui ne dit pas le Phare). */}
             <span className="open-world-mark-word">{next.place.name}</span>
           </button>
         )}
         <SettingsButton />
+        <p className={closed ? 'open-world-status' : 'visually-hidden'} role="status">
+          {closed && (
+            <>
+              <Icon name="lock" /> {closedSentence(closed.place)}
+            </>
+          )}
+        </p>
         <div className="open-world-go">
+          {!next && !walking && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
           {walking ? (
             <button type="button" className="button" onClick={() => world.current?.skip()}>
               <Icon name="play" /> Passer le trajet
             </button>
           ) : (
-            <button type="button" className="button primary" disabled={!next} aria-label={next ? `Y aller : ${label}` : 'Y aller : aucune mission à faire ici'} onClick={goNext}>
+            <button type="button" className="button primary" disabled={!next} aria-label={next ? `Y aller : ${label}` : undefined} onClick={goNext}>
               <Icon name="footprints" /> Y aller
             </button>
           )}
@@ -149,24 +191,25 @@ export default function OpenWorldPage() {
   );
 }
 
-/** L'écart minimal entre la marque et le bord de l'écran, en pixels. */
+/** La phrase d'un lieu fermé, avec son nom. */
+const closedSentence = (placeId: PlaceId) => `${placeById(placeId).name} : ce lieu est fermé pour l’instant.`;
+
+/** L'écart minimal entre la marque et le bord de l'écran ou un bouton, en pixels. */
 const MARK_EDGE = 8;
 
 /**
- * Pose la marque à l'écran, image par image, sans passer par React : sur son lieu, ou au bord, sa flèche tournée vers
- * lui ; le panneau reste toujours entier à l'écran.
+ * Pose la marque à l'écran, image par image, sans passer par React et sans lire la mise en page (les dimensions sont
+ * relues par le `ResizeObserver`) : sur son lieu, au-dessus du point, ou au bord, sa flèche tournée vers lui ; le
+ * panneau reste entier à l'écran et hors des boutons Réglages et « Y aller ».
  */
-function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkOnScreen | null): void {
+function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkOnScreen | null, size: { width: number; height: number; markW: number; markH: number; obstacles: ScreenRect[] }): void {
   if (!mark) return;
   mark.hidden = !m;
-  const parent = mark.parentElement;
-  if (!m || !parent) return;
+  if (!m) return;
   mark.classList.toggle('hors-champ', !m.inside);
-  const hw = mark.offsetWidth / 2 + MARK_EDGE;
-  const hh = mark.offsetHeight / 2 + MARK_EDGE;
-  const x = Math.min(Math.max(m.x, hw), parent.clientWidth - hw);
-  // Sur son lieu, la marque se pose au-dessus du point, comme une étiquette ; au bord, elle s'y centre.
-  const y = Math.min(Math.max(m.inside ? m.y - mark.offsetHeight / 2 : m.y, hh), parent.clientHeight - hh);
-  mark.style.transform = `translate(${Math.round(x - hw + MARK_EDGE)}px, ${Math.round(y - hh + MARK_EDGE)}px)`;
+  const { markW: w, markH: h } = size;
+  const box = { left: m.x - w / 2, top: m.inside ? m.y - h : m.y - h / 2, width: w, height: h };
+  const r = keepClear(box, size.obstacles, size.width, size.height, MARK_EDGE, MARK_EDGE);
+  mark.style.transform = `translate(${Math.round(r.left)}px, ${Math.round(r.top)}px)`;
   if (arrow) arrow.style.transform = m.inside ? '' : `rotate(${m.angle}rad)`;
 }

@@ -21,11 +21,15 @@ const C = {
   white: 0xf2eee4,
   stone: 0xb9b2a3,
   darkStone: 0x9a9488,
-  slate: 0x3d4a52,
-  glass: 0x6d8590,
-  door: 0x5a3d2b,
+  // Rien de presque noir (directeur artistique, 14 octobre 2026) : l'ardoise est un gris-bleu franc.
+  slate: 0x6f8089,
+  // La vitre de la lanterne éteinte : claire, gris-bleu, proche de la Brume du pack (#E5EBE3) : elle peut se rallumer.
+  glass: 0xbfd0d3,
+  // La galerie du Phare : une pierre claire, plus sombre que la tour, pour qu'elle se détache.
+  gallery: 0x9aa6a8,
+  door: 0x7a5538,
   wood: 0xa9784a,
-  darkWood: 0x6b4a2e,
+  darkWood: 0x8a6440,
   straw: 0xd9a441,
   wall: 0xe9dcc0,
   net: 0x8e7b5a,
@@ -35,13 +39,17 @@ const C = {
   water: 0x2fb5a6,
 } as const;
 
-/** Le Phare, éteint : la tour blanche sur son socle de rochers, la galerie, la lanterne sans feu, le toit. */
+/**
+ * Le Phare, éteint mais prêt à se rallumer : la tour blanche sur son socle de rochers, une galerie large et bien
+ * marquée (sa dalle et son garde-corps), la lanterne à la vitre claire, sans feu, et l'ardoise sur le toit seulement.
+ */
 function phare(b: FacetBuilder): void {
   b.prism({ x: 0, y: SINK, z: 0 }, 3.6, 2.9, 1.5, 7, C.darkStone);
   b.prism({ x: 0, y: 0.7, z: 0 }, 1.7, 1.2, 10, 8, C.white);
-  b.prism({ x: 0, y: 10.7, z: 0 }, 1.75, 1.75, 0.3, 8, C.slate);
-  b.prism({ x: 0, y: 11, z: 0 }, 0.95, 0.95, 1.3, 8, C.glass);
-  b.prism({ x: 0, y: 12.3, z: 0 }, 1.25, 0, 1.1, 8, C.slate);
+  b.prism({ x: 0, y: 10.7, z: 0 }, 2.1, 2.1, 0.4, 8, C.gallery);
+  b.prism({ x: 0, y: 11.1, z: 0 }, 2.0, 2.0, 0.45, 8, C.gallery);
+  b.prism({ x: 0, y: 11.1, z: 0 }, 1.05, 1.05, 1.5, 8, C.glass);
+  b.prism({ x: 0, y: 12.6, z: 0 }, 1.35, 0, 1.1, 8, C.slate);
   b.box({ x: 0, y: 0.7, z: 1.55 }, [0.9, 1.6, 0.3], C.door);
 }
 
