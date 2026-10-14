@@ -26,6 +26,7 @@ describe('les items du lieu en Markdown (monde ouvert d’Archipéo)', () => {
       prompt: 'Les sardines … brillent dans le filet.',
       spoken: 'Les sardines (mot manquant) brillent dans le filet.',
       answer: 'grises',
+      rule: 'Le nom commande : déterminant et adjectif prennent son genre et son nombre.',
     });
   });
 
@@ -36,6 +37,7 @@ describe('les items du lieu en Markdown (monde ouvert d’Archipéo)', () => {
     expect(relire((s) => s.replace('- réponse : grises', '- réponse : gros'))).toThrow(/pas dans les choix/);
     expect(relire((s) => s.replace('sardines · 3', 'baleine · 1'))).toThrow(/scène attendue/);
     expect(relire((s) => s.replace('## Au lieu · Archipéo', '## Au lieu · Blocland'))).toThrow(/monde ouvert inconnu/);
-    expect(relire((s) => s.replace('- trou lu : (mot manquant)', ''))).toThrow(/« … » resterait/);
+    expect(relire((s) => s.replace('- trou lu : (mot manquant)\n', ''))).toThrow(/« … » resterait/);
+    expect(relire((s) => s.replace('- règle : Le nom commande', '- règle : Le verbe commande'))).toThrow(/pas une ligne de la carte/);
   });
 });

@@ -1,3 +1,6 @@
+// « règle » : la seule ligne de la carte de règle de la référence que le lieu montre (la carte garde son titre ; elle
+// reste entière dans « Vue simple ») ; elle doit être une ligne de la carte du jumeau.
+//
 // Les items du lieu d'un univers à monde ouvert (docs/univers/univers.md, § 4.2, règle « à l'essai »), écrits à la fin
 // du Markdown d'une île (docs/contenu/<île>.md), sous « ## Au lieu · <univers> », avant « ## La voix », « ## Les plans »
 // et « ## Les demandes ». Chaque item est le jumeau d'un item de référence du même niveau (« jumeau : 3 », le rang de
@@ -11,6 +14,7 @@
 //
 //   Pour tous les items :
 //   - trou lu : (mot manquant)
+//   - règle : Le nom commande : déterminant et adjectif prennent son genre et son nombre.
 //
 //   1. jumeau : 1
 //      - scène : sardines · 3
@@ -93,6 +97,7 @@ export function lireAuLieu(lignes, debut, fichier) {
       if (new Set(it.choices).size !== it.choices.length) throw new Error(`${fichier}, ${niveau.id}, item du lieu ${n + 1} : un choix est écrit deux fois`);
       // Le trou se lit, comme dans la référence : jamais « … » dans le texte lu.
       it.spoken = niveau.trou === undefined ? it.prompt : it.prompt.replace('…', niveau.trou);
+      if (niveau.regle !== undefined) it.rule = niveau.regle;
       if (it.spoken.includes('…')) throw new Error(`${fichier}, ${niveau.id}, item du lieu ${n + 1} : « … » resterait dans le texte lu ; écrire « trou lu » pour tous les items`);
     }
     niveaux.push({ id: niveau.id, items: niveau.items });
@@ -109,7 +114,7 @@ export function lireAuLieu(lignes, debut, fichier) {
     if ((m = /^### Niveau \d+ · `([a-z0-9-]+)`$/.exec(l))) {
       finirNiveau();
       if (niveaux.some((n) => n.id === m[1])) throw erreur(`niveau « ${m[1]} » écrit deux fois`);
-      niveau = { id: m[1], items: [], trou: undefined };
+      niveau = { id: m[1], items: [], trou: undefined, regle: undefined };
       item = null;
       continue;
     }
@@ -121,6 +126,10 @@ export function lireAuLieu(lignes, debut, fichier) {
     }
     if (pourTous && (m = /^- trou lu : (.+)$/.exec(l))) {
       niveau.trou = texte(m[1]);
+      continue;
+    }
+    if (pourTous && (m = /^- règle : (.+)$/.exec(l))) {
+      niveau.regle = texte(m[1]);
       continue;
     }
     if ((m = /^(\d+)\. jumeau : (\d+)$/.exec(l))) {
@@ -157,6 +166,8 @@ export function resoudreAuLieu(auLieu, exercices, fichier) {
       if (vus.has(ref.key)) throw new Error(`${ou} : le jumeau ${it.jumeau} a déjà un item du lieu`);
       vus.add(ref.key);
       if (!Array.isArray(ref.choices) || ref.choices.length !== it.choices.length) throw new Error(`${ou} : autant de choix que le jumeau (${ref.choices?.length ?? 0})`);
+      if (it.rule !== undefined && !(ref.aid?.kind === 'rule-card' && ref.aid.props?.lines?.includes(it.rule)))
+        throw new Error(`${ou} : la règle « ${it.rule} » n’est pas une ligne de la carte de règle du jumeau`);
       const { jumeau: _rang, ...champs } = it;
       return { key: ref.key, ...champs };
     });

@@ -70,6 +70,18 @@ export interface RunnerStage {
   back: { label: string; onClick: () => void };
   extra?: ReactNode;
   className?: string;
+  /** Le bilan du lieu, à la place de celui de l'écran classique. */
+  Done?: ComponentType<StageDoneProps>;
+}
+
+/** Ce que le lanceur donne au bilan d'un lieu. */
+export interface StageDoneProps {
+  completion: Completion;
+  /** Le détail des récompenses, tel que l'écran classique l'écrit. */
+  detail: ReactNode;
+  /** La pause de session quand elle tombe à la fin de cette mission, sinon `null`. */
+  pause: ReactNode;
+  back: RunnerStage['back'];
 }
 
 /** Le carillon de fin (`playDone`) : deux notes, la seconde à 160 ms, de 450 ms ; la voix vient après. */
@@ -271,88 +283,104 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
     const pose = done.pose;
     // « Reprendre » chez la créature : la révision suivante de l'île, ou le retour sur l'île.
     const revisionSuivante = revisionDeLIle ? revisionsDeLIle(done.state.spaced, done.state.world.links, biome.id, settings.lv2).find((q) => q.type !== def.type) : undefined;
+    const detail = (
+      <>
+        <ul className="reward-list">
+          <li>
+            <BlockIcon top={block.top} side={block.side} size={44} />
+            <strong>+{done.blocks}</strong> bloc{done.blocks > 1 ? 's' : ''} {ofBlock(done.block)}
+            {(done.bonus.first > 0 || done.bonus.stars > 0) && (
+              <span className="reward-bonus">
+                {[done.bonus.first > 0 && `+${done.bonus.first} première fois`, done.bonus.stars > 0 && `+${done.bonus.stars} pour ${done.stars} étoiles`]
+                  .filter(Boolean)
+                  .join(', ')}
+              </span>
+            )}
+          </li>
+          <li>
+            <Icon name="zap" size="1.6rem" />
+            <strong>+{done.xp}</strong> XP{done.perfect ? ' (bonus sans aide)' : ''}
+          </li>
+          {pose?.posees.map((partie, i, posees) => (
+            <li key={`pose-${partie.rang}`} className="reward-pose">
+              <Icon name="home" size="1.6rem" />
+              <span>
+                <strong>Partie posée : {minuscule(partie.nom)}.</strong>
+                {i === posees.length - 1 &&
+                  pose.plansFinis.map((plan) => (
+                    <span key={plan.id} className="reward-pose-fin">
+                      {' '}
+                      <Syllabified text={plan.done} /> <strong>+{plan.reward.xp}</strong> XP
+                    </span>
+                  ))}
+              </span>
+              {i === posees.length - 1 && <SpeakButton text={frenchTypography(phraseDeLaPose(pose))} label="Écouter" compact />}
+            </li>
+          ))}
+          {done.chestBlock && (
+            <li className="reward-chest">
+              <BlockIcon top={BLOCKS[done.chestBlock].top} side={BLOCKS[done.chestBlock].side} size={44} />
+              Coffre de régularité : <strong>+6</strong> blocs {ofBlock(done.chestBlock)} !
+            </li>
+          )}
+          <li className="reward-site">
+            <Icon name="hammer" size="1.6rem" />
+            <span>
+              <strong>À quoi servent tes blocs.</strong> <Syllabified text={site.text} />
+              {site.need > 1 && !site.ready && (
+                <span className="goal-gauge" role="img" aria-label={`${site.have} sur ${site.need}`}>
+                  <span className="goal-gauge-fill" style={{ width: `${(100 * site.have) / site.need}%` }} />
+                  <span className="goal-gauge-count" aria-hidden="true">
+                    {site.have} / {site.need}
+                  </span>
+                </span>
+              )}
+            </span>
+          </li>
+          {shipReady && site.kind !== 'navire' && (
+            <li className="reward-ship">
+              <Icon name="ship" size="1.6rem" />
+              <span>
+                <strong>La Nef a tous ses blocs !</strong> Va les poser au port, sur {getBiome(shipReady.biome)?.name}.
+              </span>
+            </li>
+          )}
+        </ul>
+        {done.streak.extended && (
+          <p className="reward-streak">
+            <Icon name="flame" /> {done.streak.streak.current} jour{done.streak.streak.current > 1 ? 's' : ''} d’affilée
+            {done.streak.streak.cracked ? ' (un jour manqué : joue demain pour réparer)' : ''}
+          </p>
+        )}
+      </>
+    );
+    const pause = paused ? (
+      <SessionPause
+        onContinuer={() => {
+          continueSession();
+          setPaused(false);
+          setRepris((n) => n + 1);
+        }}
+      />
+    ) : null;
+    // Dans le monde ouvert, le bilan est celui du lieu (`stage.Done`) : les étoiles, une rangée de pastilles, le détail
+    // sur demande et un seul bouton.
+    if (inWorld?.Done)
+      return (
+        <section className={`quiz${sectionClass}`} ref={sectionRef} aria-labelledby="fin-titre">
+          <inWorld.Done completion={done} detail={detail} pause={pause} back={inWorld.back} />
+        </section>
+      );
     return (
       <section className={`quiz${sectionClass}`} ref={sectionRef} aria-labelledby="fin-titre">
         <div className="panel summary reward-panel">
           <h2 id="fin-titre">{done.perfect ? 'Sans faute !' : done.stars === 3 ? 'Superbe !' : done.stars === 2 ? 'Bien joué !' : 'Terminé !'}</h2>
           <Stars count={done.stars} size="2.4rem" />
           {done.newBest && done.state.progress[def.id].attempts > 1 && <p className="reward-best">Ton meilleur résultat !</p>}
-          <ul className="reward-list">
-            <li>
-              <BlockIcon top={block.top} side={block.side} size={44} />
-              <strong>+{done.blocks}</strong> bloc{done.blocks > 1 ? 's' : ''} {ofBlock(done.block)}
-              {(done.bonus.first > 0 || done.bonus.stars > 0) && (
-                <span className="reward-bonus">
-                  {[done.bonus.first > 0 && `+${done.bonus.first} première fois`, done.bonus.stars > 0 && `+${done.bonus.stars} pour ${done.stars} étoiles`]
-                    .filter(Boolean)
-                    .join(', ')}
-                </span>
-              )}
-            </li>
-            <li>
-              <Icon name="zap" size="1.6rem" />
-              <strong>+{done.xp}</strong> XP{done.perfect ? ' (bonus sans aide)' : ''}
-            </li>
-            {pose?.posees.map((partie, i, posees) => (
-              <li key={`pose-${partie.rang}`} className="reward-pose">
-                <Icon name="home" size="1.6rem" />
-                <span>
-                  <strong>Partie posée : {minuscule(partie.nom)}.</strong>
-                  {i === posees.length - 1 &&
-                    pose.plansFinis.map((plan) => (
-                      <span key={plan.id} className="reward-pose-fin">
-                        {' '}
-                        <Syllabified text={plan.done} /> <strong>+{plan.reward.xp}</strong> XP
-                      </span>
-                    ))}
-                </span>
-                {i === posees.length - 1 && <SpeakButton text={frenchTypography(phraseDeLaPose(pose))} label="Écouter" compact />}
-              </li>
-            ))}
-            {done.chestBlock && (
-              <li className="reward-chest">
-                <BlockIcon top={BLOCKS[done.chestBlock].top} side={BLOCKS[done.chestBlock].side} size={44} />
-                Coffre de régularité : <strong>+6</strong> blocs {ofBlock(done.chestBlock)} !
-              </li>
-            )}
-            <li className="reward-site">
-              <Icon name="hammer" size="1.6rem" />
-              <span>
-                <strong>À quoi servent tes blocs.</strong> <Syllabified text={site.text} />
-                {site.need > 1 && !site.ready && (
-                  <span className="goal-gauge" role="img" aria-label={`${site.have} sur ${site.need}`}>
-                    <span className="goal-gauge-fill" style={{ width: `${(100 * site.have) / site.need}%` }} />
-                    <span className="goal-gauge-count" aria-hidden="true">
-                      {site.have} / {site.need}
-                    </span>
-                  </span>
-                )}
-              </span>
-            </li>
-            {shipReady && site.kind !== 'navire' && (
-              <li className="reward-ship">
-                <Icon name="ship" size="1.6rem" />
-                <span>
-                  <strong>La Nef a tous ses blocs !</strong> Va les poser au port, sur {getBiome(shipReady.biome)?.name}.
-                </span>
-              </li>
-            )}
-          </ul>
-          {done.streak.extended && (
-            <p className="reward-streak">
-              <Icon name="flame" /> {done.streak.streak.current} jour{done.streak.streak.current > 1 ? 's' : ''} d’affilée
-              {done.streak.streak.cracked ? ' (un jour manqué : joue demain pour réparer)' : ''}
-            </p>
-          )}
+          {detail}
 
-          {paused ? (
-            <SessionPause
-              onContinuer={() => {
-                continueSession();
-                setPaused(false);
-                setRepris((n) => n + 1);
-              }}
-            />
+          {pause ? (
+            pause
           ) : (
             <div className="actions">
               {inWorld ? (

@@ -20,6 +20,10 @@ const C = {
   net: 0x8e7b5a,
   netLine: 0x6f5e42,
   silver: 0xb9c4c8,
+  fish: 0x5b8db0,
+  fishTop: 0x9cc3da,
+  fishTail: 0x46769a,
+  fishEye: 0x2f3e46,
   silverTop: 0xd9e0e2,
   white: 0xf2eee4,
   grey: 0x9aa0a3,
@@ -63,7 +67,7 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; radius: number; half
   phare: { dx: 0, dz: 0.5, radius: 12, half: [0, 0] },
   filets: { dx: 0, dz: 5, radius: 4.2, half: [2.7, 1.6] },
   ecluses: { dx: -0.5, dz: 5, radius: 3.6, half: [2.3, 0.9] },
-  quais: { dx: 0.5, dz: 8.5, radius: 6.6, half: [5.8, 3.3] },
+  quais: { dx: 0.5, dz: 8.5, radius: 7.6, half: [5.8, 3.3] },
 };
 
 /**
@@ -97,7 +101,7 @@ function placed(f: Facets, k: number, at: Vec3 = { x: 0, y: 0, z: 0 }): Facets {
 function basketFit(f: Facets, scale: number): number {
   const { min, max } = boundsOf(f);
   const width = Math.max(max[0] - min[0], max[2] - min[2], 1e-3);
-  return Math.min(CATCH_SCALE, (0.9 * scale) / width);
+  return Math.min(CATCH_SCALE, (1.1 * scale) / width);
 }
 
 /** La taille de la pêche : à la mesure du filet, lisible de loin. */
@@ -183,7 +187,14 @@ export interface QuestionNeeds {
 }
 
 /** La part de la largeur que prend la colonne sur un écran bas : 38 %, puis plus large si la phrase n'y tient pas. */
-export const PANEL_LOW_SHARES = [0.38, 0.46, 0.54] as const;
+const PANEL_LOW_SHARES = [0.38, 0.46, 0.54] as const;
+/**
+ * Au-delà de 54 % (un très grand texte), la phrase passe seule en pleine largeur, sur un panneau sous la barre du haut
+ * et au-dessus des objets (`WIDEN_FULL`) ; si elle n'y tient toujours pas, l'écran propose « Vue simple » d'emblée
+ * (`WIDEN_OFFER`, même place).
+ */
+export const WIDEN_FULL = PANEL_LOW_SHARES.length;
+export const WIDEN_OFFER = WIDEN_FULL + 1;
 
 /**
  * La place d'une question sur un écran de `width` × `height` pixels.
@@ -199,6 +210,7 @@ export function questionLayout(needs: QuestionNeeds, width: number, height: numb
   const edge = low ? L.edgeLow : L.edge;
   const lh = low ? L.labelLow : L.label;
   const top = edge + L.bar + edge;
+  const full = low && (needs.widen ?? 0) >= WIDEN_FULL;
   const lowShare = PANEL_LOW_SHARES[Math.max(0, Math.min(PANEL_LOW_SHARES.length - 1, needs.widen ?? 0))];
   const panelW = low ? lowShare * width : needs.aid ? Math.min(L.panelAidMax, L.panelAidShare * width) : Math.min(L.panelMax, L.panelShare * width);
   const panelRight = edge + panelW;
@@ -233,18 +245,20 @@ export function questionLayout(needs: QuestionNeeds, width: number, height: numb
     }
   }
   const highest = Math.min(...slots.map((s) => s.hit.top));
-  const panel = {
-    left: edge,
-    top: edge,
-    width: panelW,
-    maxHeight: Math.max(0, (low || !beside ? highest - edge : height - edge) - edge),
-  };
+  const panel = full
+    ? { left: edge, top, width: width - 2 * edge, maxHeight: Math.max(0, highest - edge - top) }
+    : {
+        left: edge,
+        top: edge,
+        width: panelW,
+        maxHeight: Math.max(0, (low || !beside ? highest - edge : height - edge) - edge),
+      };
   const viewBottom = highest - edge;
   const viewLeft = needs.centered ? edge : panelRight + edge;
   // Le Phare : la fenêtre descend jusqu'au pied des cloches, pour que la tour se dresse au-dessus du carillon.
   const sceneBottom = needs.centered ? Math.max(...slots.map((s) => s.foot.y)) : viewBottom;
   const sceneTop = needs.centered && !low ? top + L.towerDrop * (sceneBottom - top) : top;
-  const aid = low && needs.aid ? { left: panelRight + edge, top, right: width - edge, bottom: viewBottom } : null;
+  const aid = low && needs.aid && !full ? { left: panelRight + edge, top, right: width - edge, bottom: viewBottom } : null;
   return { low, slots, objectHeight, panel, aid, view: { left: viewLeft, top: sceneTop, right: width - edge, bottom: Math.max(sceneTop + 48, sceneBottom) } };
 }
 
@@ -294,7 +308,7 @@ const OBJECT_SIZE: Record<(typeof ANSWER_OBJECT)[PlaceId], { height: number; hal
   cloche: { height: 1.55, half: 0.55 },
   panier: { height: 0.9, half: 0.5 },
   levier: { height: 1.8, half: 0.32 },
-  caisse: { height: 1.1, half: 0.42 },
+  caisse: { height: 1.4, half: 0.42 },
 };
 
 /** L'écart entre deux objets voisins, au sol (deux unités s'il n'y en a qu'un). */
@@ -390,8 +404,15 @@ export interface ItemSceneFacets {
 
 /** Un petit poisson (une sardine), couché, sa tête vers l'est. */
 function fish(b: FacetBuilder, x: number, y: number, z: number, yaw = 0): void {
-  b.box({ x, y, z, yaw }, [0.62, 0.14, 0.2], C.silver, C.silverTop);
-  b.box({ x: x - 0.36 * Math.cos(yaw), y, z: z + 0.36 * Math.sin(yaw), yaw }, [0.14, 0.12, 0.26], C.silver);
+  // Un poisson qui se lit : un corps fuselé bleu argent (deux pavés), la queue en V, un œil et une nageoire.
+  const c = Math.cos(yaw),
+    sn = Math.sin(yaw);
+  const along = (d: number) => ({ x: x + d * c, z: z - d * sn });
+  b.box({ ...along(0), y, yaw }, [0.62, 0.22, 0.24], C.fish, C.fishTop);
+  b.box({ ...along(0.36), y: y + 0.03, yaw }, [0.14, 0.16, 0.18], C.fish, C.fishTop);
+  for (const side of [-1, 1]) b.box({ ...along(-0.4), y: y + 0.02 + side * 0.06, yaw: yaw + side * 0.6 }, [0.24, 0.07, 0.08], C.fishTail);
+  b.box({ ...along(0.02), y: y + 0.22, yaw }, [0.22, 0.06, 0.04], C.fishTail);
+  b.box({ ...along(0.3), y: y + 0.08, yaw }, [0.06, 0.06, 0.26], C.fishEye);
 }
 
 /** Les objets de la pêche, au point (x, y, z), en rangée : la phrase dit ce qu'on voit, et combien. */
@@ -400,9 +421,9 @@ function catchObjects(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'filets
   const pitch = scene.catch === 'pêche' ? 0 : 0.85;
   for (let i = 0; i < (scene.catch === 'pêche' ? 1 : n); i++) {
     // En rangée sur le filet ; en tas de deux de front dans le panier, pour rester lisible.
-    const cx = pile ? x + (n > 1 ? ((i % 2) - 0.5) * pitch : 0) : x + (i - (n - 1) / 2) * pitch;
+    const cx = pile ? x + (n > 1 ? ((i % 2) - 0.5) * 0.7 : 0) : x + (i - (n - 1) / 2) * pitch;
     const rows = Math.ceil(n / 2);
-    const z = pile ? z0 + (Math.floor(i / 2) - (rows - 1) / 2) * 0.5 : z0;
+    const z = pile ? z0 + (Math.floor(i / 2) - (rows - 1) / 2) * 0.42 : z0;
     switch (scene.catch) {
       case 'sardines':
         fish(b, cx, y, z, 0.2 * (i % 2 ? 1 : -1));
@@ -411,10 +432,13 @@ function catchObjects(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'filets
         b.box({ x: cx, y, z }, [0.8, 0.3, 0.6], C.net, C.netLine);
         break;
       case 'mouette':
-        b.box({ x: cx, y: y + 0.25, z }, [0.6, 0.3, 0.3], C.white);
-        b.box({ x: cx, y: y + 0.45, z }, [0.25, 0.08, 1.1], C.grey);
-        b.box({ x: cx + 0.38, y: y + 0.35, z }, [0.18, 0.08, 0.1], C.beak);
-        b.box({ x: cx, y, z }, [0.06, 0.25, 0.06], C.beak);
+        // Une mouette posée : le corps blanc, la tête, le bec orangé, les ailes grises repliées en V, les pattes.
+        b.box({ x: cx, y: y + 0.22, z }, [0.62, 0.3, 0.32], C.white);
+        b.box({ x: cx + 0.34, y: y + 0.42, z }, [0.22, 0.22, 0.22], C.white);
+        b.box({ x: cx + 0.52, y: y + 0.42, z }, [0.16, 0.07, 0.08], C.beak);
+        for (const side of [-1, 1]) b.box({ x: cx - 0.05, y: y + 0.4, z: z + side * 0.16, yaw: side * 0.25 }, [0.5, 0.08, 0.14], C.grey);
+        b.box({ x: cx - 0.36, y: y + 0.3, z }, [0.16, 0.1, 0.2], C.grey);
+        for (const dz of [-0.08, 0.08]) b.box({ x: cx, y, z: z + dz }, [0.05, 0.22, 0.05], C.beak);
         break;
       case 'bocaux':
         // Un bocal gris, sans étiquette, et son couvercle.
@@ -423,8 +447,12 @@ function catchObjects(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'filets
         break;
       case 'crabes':
       case 'crabe':
-        b.box({ x: cx, y: y + 0.12, z }, [0.5, 0.16, 0.36], C.crab, C.crabTop);
-        for (const dx of [-0.3, 0.3]) for (const dz of [-0.14, 0.14]) b.box({ x: cx + dx, y, z: z + dz }, [0.16, 0.08, 0.06], C.crab);
+        // Un crabe : la carapace, deux pinces levées devant, trois pattes de chaque côté.
+        b.box({ x: cx, y: y + 0.12, z }, [0.5, 0.18, 0.38], C.crab, C.crabTop);
+        for (const side of [-1, 1]) {
+          b.box({ x: cx + side * 0.22, y: y + 0.24, z: z + 0.3 }, [0.16, 0.14, 0.18], C.crab, C.crabTop);
+          for (const dz of [-0.12, 0, 0.12]) b.box({ x: cx + side * 0.32, y: y + 0.04, z: z + dz }, [0.18, 0.06, 0.05], C.crab);
+        }
         break;
       case 'seaux':
         b.prism({ x: cx, y, z }, 0.28, 0.34, 0.55, 8, C.bucket, C.shrimp);
@@ -621,7 +649,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
       };
     }
   } else if (scene.kind === 'quai') {
-    // Le quai à la taille des caisses, au premier plan ; derrière lui, la barque amarrée, et la grue au coin. Avant le
+    // Le quai à la taille des caisses ; devant lui, la barque amarrée, et la grue au coin du fond. Avant le
     // geste : la moitié, toutes les caisses sur le quai, la grue au-dessus, la barque vide ; le double, les caisses du
     // quai au fond, la barque chargée des nouvelles. Après : les caisses ont changé de place, et y restent.
     const moved = Math.abs(scene.after - scene.before);
@@ -636,7 +664,9 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     const zFront = zBack + back.d + (back.d ? 0.4 : 0);
     const boatLen = Math.max(3, crateBlock(moved).w + 1),
       boatW = Math.max(1.2, crateBlock(moved).d + 0.6);
-    const boatAt = { x: o.x - 0.2, y: o.y, z: o.z - qd / 2 - boatW / 2 - 0.2 };
+    // La barque amarrée devant le quai, du côté du spectateur : basse, elle ne cache pas les caisses, et rien ne la
+    // cache.
+    const boatAt = { x: o.x - 0.2, y: o.y, z: o.z + qd / 2 + boatW / 2 + 0.2 };
     b.box({ x: boatAt.x, y: boatAt.y - 0.35, z: boatAt.z }, [boatLen, 0.45, boatW], C.hull, C.hullTop);
     b.box({ x: boatAt.x + boatLen / 2 + 0.2, y: boatAt.y - 0.35, z: boatAt.z }, [0.4, 0.35, boatW * 0.6], C.hull);
     const onBoat = { x: boatAt.x - boatLen / 2 + 0.5, y: boatAt.y + 0.1, z: boatAt.z - boatW / 2 + 0.3 };

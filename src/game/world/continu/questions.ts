@@ -27,6 +27,27 @@ export type ItemScene =
   /** Le quai : `before` caisses, puis `after` (la grue en prend la moitié, ou le bateau en apporte autant). */
   | { kind: 'quai'; op: 'moitie' | 'double'; before: number; after: number };
 
+const CATCHES: readonly Catch[] = ['sardines', 'filets', 'mouette', 'bocaux', 'crabes', 'pêche', 'seaux', 'crabe'];
+const isCount = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0;
+
+/** Une scène d'item bien formée (ce que `placeItems` pose dans `placeScene`), vérifiée champ par champ. */
+export function isItemScene(v: unknown): v is ItemScene {
+  if (typeof v !== 'object' || v === null || !('kind' in v)) return false;
+  switch (v.kind) {
+    case 'cloches':
+      return true;
+    case 'filets':
+      return 'catch' in v && CATCHES.some((c) => c === v.catch) && 'count' in v && isCount(v.count);
+    case 'sas':
+    case 'echelle':
+      return 'n' in v && isCount(v.n) && 'd' in v && isCount(v.d) && v.d > 0;
+    case 'quai':
+      return 'op' in v && (v.op === 'moitie' || v.op === 'double') && 'before' in v && isCount(v.before) && 'after' in v && isCount(v.after);
+    default:
+      return false;
+  }
+}
+
 /** Un item posé dans le lieu : l'item, sa scène, et la ligne de calcul de référence quand la phrase change (maths). */
 export interface PlacedItem extends QuestionItem {
   placeScene: ItemScene;
@@ -46,6 +67,17 @@ export function placeInstruction(place: PlaceId, level: number, reference: strin
 function twinsOf(exerciseId: string): Map<string, QuestionItem> {
   const all = (PLACE_ITEMS as Record<string, Record<string, QuestionItem[]>>).archipeo ?? {};
   return new Map((all[exerciseId] ?? []).map((it) => [it.key, it]));
+}
+
+/**
+ * La carte de règle de la référence réduite à sa ligne `rule` (son titre gardé) : le lieu n'en montre qu'une ligne, la
+ * carte entière reste dans « Vue simple ». Une aide d'une autre sorte, ou une ligne absente de la carte, ne change pas.
+ */
+function ruleOnly(aid: unknown, rule: string): unknown {
+  if (typeof aid !== 'object' || aid === null || !('kind' in aid) || aid.kind !== 'rule-card' || !('props' in aid)) return aid;
+  const props = aid.props;
+  if (typeof props !== 'object' || props === null || !('lines' in props) || !Array.isArray(props.lines) || !props.lines.includes(rule)) return aid;
+  return { ...aid, props: { ...props, lines: [rule] } };
 }
 
 /** Les exercices qui ont des items du lieu (pour les tests et la documentation). */
@@ -117,11 +149,12 @@ export function placeItems(place: PlaceId, exerciseId: string, items: readonly Q
           placeScene: { kind: 'filets', catch: 'pêche', count: 1 },
         };
       const scene = twin.scene as { catch: Catch; count: number };
-      const { scene: _scene, point: _point, traps: _traps, ...fields } = twin;
+      const { scene: _scene, point: _point, traps: _traps, rule, ...fields } = twin;
       return {
         ...it,
         ...fields,
         key: it.key,
+        ...(typeof rule === 'string' ? { aid: ruleOnly(it.aid, rule) } : {}),
         placeScene: { kind: 'filets', catch: scene.catch, count: scene.count },
       };
     });

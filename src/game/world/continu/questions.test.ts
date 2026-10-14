@@ -6,12 +6,13 @@ import { describe, expect, it } from 'vitest';
 import { seeded } from '../../../core/random';
 import { screenOf } from './camera';
 import PLACE_ITEMS from './placeItems.json';
-import { ANSWER_LAYOUT, answerObjects, answerScale, crateLayout, itemScene, placePieces, questionLayout, questionPose, sceneSpot, veilleurPiece, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, answerObjects, answerScale, crateLayout, itemScene, placePieces, questionLayout, questionPose, sceneSpot, veilleurPiece, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
 import {
   BELLS_PER_ROUND,
   EXERCISES_WITH_TWINS,
   SAS_HINT,
   bellRounds,
+  isItemScene,
   piecesOf,
   placeInstruction,
   placeItems,
@@ -74,15 +75,21 @@ describe('Les jumeaux des Filets (règle « à l’essai »)', () => {
     expect(placed[0]).not.toHaveProperty('point');
   });
 
-  it('chaque jumeau garde exactement la règle de son item de référence (la carte de l’accord)', () => {
+  it('chaque jumeau montre la carte de sa référence réduite à une ligne, la même pour tous ; la référence reste entière', () => {
+    const rule = 'Le nom commande : déterminant et adjectif prennent son genre et son nombre.';
     for (const id of Object.keys(all)) {
       const items = reference(id).items;
       const placed = placeItems('filets', id, items);
-      for (const [i, p] of placed.entries()) expect(p.aid, p.key).toEqual(items[i].aid);
+      for (const [i, p] of placed.entries()) {
+        const ref = items[i].aid as { kind: string; props: { title: string; lines: string[] } };
+        expect(p.aid, p.key).toEqual({ ...ref, props: { ...ref.props, lines: [rule] } });
+        expect(ref.props.lines.length).toBeGreaterThan(1);
+      }
     }
-    expect(placeItems('filets', 'french-6e-grammar-spelling-plurals-1', reference('french-6e-grammar-spelling-plurals-1').items)[0].aid).toMatchObject({
-      kind: 'rule-card',
-    });
+    // Ce qui manque passe dans les indices.
+    const hints = all['french-6e-grammar-spelling-plurals-1'].map((t) => t.hint);
+    expect(hints[3]).toBe('Deux, c’est plusieurs. Pense à : un journal, des journaux.');
+    expect(hints[6]).toBe('« Les », c’est plusieurs. Pense à : un bateau, des bateaux.');
   });
 
   it('le jumeau des bocaux : un bocal, deux bocaux', () => {
@@ -199,6 +206,17 @@ describe('Les pièces durables', () => {
     expect(piecesOf([2, 3])).toBe(2);
   });
 
+  it('une scène d’item se vérifie champ par champ', () => {
+    expect(isItemScene({ kind: 'filets', catch: 'bocaux', count: 2 })).toBe(true);
+    expect(isItemScene({ kind: 'quai', op: 'double', before: 23, after: 46 })).toBe(true);
+    expect(isItemScene({ kind: 'sas', n: 3, d: 4 })).toBe(true);
+    expect(isItemScene({ kind: 'filets', catch: 'baleine', count: 1 })).toBe(false);
+    expect(isItemScene({ kind: 'sas', n: 3, d: 0 })).toBe(false);
+    expect(isItemScene({ kind: 'quai', op: 'triple', before: 1, after: 3 })).toBe(false);
+    expect(isItemScene(null)).toBe(false);
+    expect(isItemScene('cloches')).toBe(false);
+  });
+
   it('le Veilleur s’éveille quand chaque lieu a ses deux pièces', () => {
     const places = ['phare', 'filets', 'ecluses', 'quais'] as const;
     expect(veilleurAwake({ phare: 2, filets: 2, ecluses: 2, quais: 2 }, places)).toBe(true);
@@ -285,8 +303,16 @@ describe('La place de la question à l’écran', () => {
     expect(questionLayout({ count: 3, aid: true }, 1024, 768).aid).toBeNull();
     // Une phrase qui ne tient pas : la colonne prend un cran, puis deux, jamais plus ; les réponses ne bougent pas.
     const wider = [0, 1, 2, 3].map((widen) => questionLayout({ count: 4, widen }, 844, 390));
-    expect(wider.map((l) => Math.round(l.panel.width))).toEqual([321, 388, 456, 456]);
+    expect(wider.map((l) => Math.round(l.panel.width))).toEqual([321, 388, 456, 828]);
     for (const l of wider) expect(l.slots).toEqual(wider[0].slots);
+    // Au-delà de 54 % : la phrase en pleine largeur, sous la barre de « Vue simple », au-dessus des objets ; la règle y
+    // entre ; même place quand « Vue simple » est proposé d'emblée.
+    for (const widen of [WIDEN_FULL, WIDEN_OFFER]) {
+      const full = questionLayout({ count: 3, aid: true, widen }, 844, 390);
+      expect(full.panel.top).toBeGreaterThanOrEqual(ANSWER_LAYOUT.bar);
+      expect(full.panel.top + full.panel.maxHeight).toBeLessThanOrEqual(Math.min(...full.slots.map((sl) => sl.hit.top)));
+      expect(full.aid).toBeNull();
+    }
   });
 
   it('au Phare, le carillon : la cloche dans le tiers du milieu, son mot dessous, la tour cadrée jusqu’au pied des cloches', () => {

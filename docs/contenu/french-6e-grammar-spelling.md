@@ -370,12 +370,13 @@ Pour tous les items :
 
 ## Au lieu · Archipéo
 
-> Les items du lieu des Filets, dans le monde ouvert d’Archipéo (`?monde=ouvert`) : chaque item est le jumeau d’un item du niveau 1 du Troupeau (« jumeau » : son rang), il en porte la clé, le point d’accord, les sortes de pièges et la règle ; la phrase parle de ce que la scène montre (« scène » : ce qui est posé, et combien). Règle « à l’essai » : docs/univers/univers.md, § 4.2. Proposés par le directeur du contenu pédagogique (questions-du-monde.md, 14 octobre 2026).
+> Les items du lieu des Filets, dans le monde ouvert d’Archipéo (`?monde=ouvert`) : chaque item est le jumeau d’un item du niveau 1 du Troupeau (« jumeau » : son rang), il en porte la clé, le point d’accord, les sortes de pièges et la règle (la carte de la référence, réduite à la ligne « règle » ; entière dans « Vue simple ») ; la phrase parle de ce que la scène montre (« scène » : ce qui est posé, et combien). Règle « à l’essai » : docs/univers/univers.md, § 4.2. Proposés par le directeur du contenu pédagogique (questions-du-monde.md, 14 octobre 2026).
 
 ### Niveau 1 · `french-6e-grammar-spelling-plurals-1`
 
 Pour tous les items :
 - trou lu : (mot manquant)
+- règle : Le nom commande : déterminant et adjectif prennent son genre et son nombre.
 
 1. jumeau : 1
    - scène : sardines · 3
@@ -411,7 +412,7 @@ Pour tous les items :
    - réponse : bocaux
    - point : pluriel d’un nom en -al
    - pièges : pluriel régulier en -s
-   - indice : Deux, c’est plusieurs. Relis la règle des noms en -al.
+   - indice : Deux, c’est plusieurs. Pense à : un journal, des journaux.
    - explication : Au pluriel, les noms en -al deviennent -aux : un bocal, deux bocaux.
 5. jumeau : 5
    - scène : crabes · 4
@@ -438,7 +439,7 @@ Pour tous les items :
    - réponse : seaux
    - point : pluriel d’un nom en -eau
    - pièges : -s au lieu de -x
-   - indice : « Les », c’est plusieurs. Relis la règle des noms en -eau.
+   - indice : « Les », c’est plusieurs. Pense à : un bateau, des bateaux.
    - explication : Les noms en -eau prennent un -x au pluriel : un seau, les seaux.
 8. jumeau : 8
    - scène : crabe · 1

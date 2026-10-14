@@ -7,6 +7,7 @@
 // premier item), la règle à droite : rien ne défile. Rien à lire n'est peint dans la 3D. « Vue simple » rouvre l'écran
 // classique de la même mission.
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
 import { ForeignWordsProvider, Marked } from '../../../components/ForeignWords';
@@ -27,9 +28,10 @@ import { CARD_CLASS, cardState, sortSummary } from '../../exercises/sortCards';
 import type { ExerciseItem } from '../../exercises/types';
 import { exercisesToReview } from '../../review';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
-import { PANEL_LOW_SHARES, questionLayout, type AnswerSlot, type QuestionLayout } from '../../world/continu/questionScene';
-import { bellRounds, placeInstruction, placeItems, type ItemScene } from '../../world/continu/questions';
+import { WIDEN_FULL, WIDEN_OFFER, questionLayout, type AnswerSlot, type QuestionLayout } from '../../world/continu/questionScene';
+import { bellRounds, isItemScene, placeInstruction, placeItems, type ItemScene } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
+import { WorldDone } from './WorldDone';
 
 /** Ce que l'écran d'un lieu demande à la scène : l'item à montrer, combien de réponses il a, s'il a une règle. */
 interface ItemShown {
@@ -64,6 +66,9 @@ interface Props {
 
 export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: Props) {
   const { state } = useBlocland();
+  // Les célébrations (« Succès débloqué », niveau) attendent la fin de la question et de son bilan : rien ne surgit
+  // pendant qu'on lit (monde ouvert seulement).
+  useHoldCelebrations(true);
   const lieu = placeById(place);
   const biome = getBiome(lieu.island);
   const [run, setRun] = useState(0);
@@ -103,7 +108,9 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   const count = item?.count ?? DEFAULT_COUNT;
   const hasAid = item?.aid ?? false;
   // Sur un écran bas, la colonne s'élargit d'un cran quand la phrase n'y tient pas (un grand texte, une phrase longue
-  // des Quais), et le reste pour la mission : la colonne ne bouge plus d'un item à l'autre.
+  // des Quais) : 38, 46, puis 54 % ; au-delà, la phrase passe en pleine largeur au-dessus des objets ; si elle n'y tient
+  // toujours pas, « Vue simple » est proposé d'emblée (`WIDEN_OFFER`). Le cran reste pour la mission : la colonne ne
+  // bouge plus d'un item à l'autre.
   const [widen, setWiden] = useState(0);
   // Le résultat d'un écran bas qui ne tient pas dans la colonne élargie : il prend toute la largeur au-dessus des objets.
   const [sheetWide, setSheetWide] = useState(false);
@@ -112,17 +119,20 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
     [count, hasAid, place, size, widen],
   );
   const [finished, setFinished] = useState(false);
+  const offer = layout.low && widen >= WIDEN_OFFER;
   // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
   const [introDone, setIntroDone] = useState(false);
-  const intro = layout.low && !introDone && !finished;
-  // Mesuré avant l'affichage : une colonne qui déborde (en hauteur ou en largeur) prend le cran suivant.
+  const intro = layout.low && !introDone && !finished && !offer;
+  // Mesuré avant l'affichage, à chaque item, réponse ou cran : une colonne qui déborde (en hauteur ou en largeur) prend
+  // le cran suivant ; une consigne qui ne tient pas en pleine largeur mène droit à « Vue simple ».
   useLayoutEffect(() => {
-    if (!layout.low || intro || finished) return;
+    if (!layout.low || finished || offer) return;
     const column = box.current?.querySelector<HTMLElement>('.quiz.in-world');
     if (!column || !(column.scrollHeight > column.clientHeight + 1 || column.scrollWidth > column.clientWidth + 1)) return;
-    if (column.classList.contains('has-sheet')) setSheetWide(true);
-    else if (widen < PANEL_LOW_SHARES.length - 1) setWiden((n) => n + 1);
-  });
+    if (intro) setWiden(WIDEN_OFFER);
+    else if (column.classList.contains('has-sheet')) setSheetWide(true);
+    else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
+  }, [layout, intro, finished, offer, widen, item, sheetWide]);
   useEffect(() => {
     if (!size.w || !size.h || !item || finished) return;
     setLabels(world.question({ place, layout, item }));
@@ -149,12 +159,15 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
     if (!exerciseId) return null;
     const extra: ReactNode = (
       <>
-        <button type="button" className="button world-question-simple" onClick={onSimpleView}>
-          <Icon name="liste" /> Vue simple
-        </button>
         {intro && (
           <button type="button" className="button primary world-question-start" onClick={() => setIntroDone(true)}>
             <Icon name="play" /> Commencer
+          </button>
+        )}
+        {offer && (
+          // Le texte choisi ne tient pas ici : le repli franc, sans réduire le texte ; la voix reste (« Lire la phrase »).
+          <button type="button" className="button primary world-question-offer" onClick={onSimpleView}>
+            <Icon name="liste" /> Vue simple
           </button>
         )}
       </>
@@ -168,9 +181,10 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       instruction,
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
       extra,
-      className: `in-world${layout.low ? ' low' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}`,
+      Done: WorldDone,
+      className: `in-world${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}`,
     };
-  }, [exerciseId, instruction, place, lieu.at, onClose, onSimpleView, intro, layout.low, finished, sheetWide]);
+  }, [exerciseId, instruction, place, lieu.at, onClose, onSimpleView, intro, offer, widen, layout.low, finished, sheetWide]);
 
   const style = {
     '--question-left': `${layout.panel.left}px`,
@@ -204,6 +218,12 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
           </ForeignWordsProvider>
         </QuestionContext.Provider>
       )}
+      {/* « Vue simple » : hors de la colonne, au-dessus de tout, à côté de la pause ; rien ne le recouvre. */}
+      {ready && stage && !finished && (
+        <button type="button" className="button world-question-simple" onClick={onSimpleView}>
+          <Icon name="liste" /> Vue simple
+        </button>
+      )}
       {!finished &&
         labels.map((l) => (
           <span key={l.text} className="world-question-label" aria-hidden="true" style={{ transform: `translate(${Math.round(l.x)}px, ${Math.round(l.y)}px)` }}>
@@ -229,19 +249,19 @@ function useQuestion(): QuestionContextValue {
   return ctx;
 }
 
-const SCENE_KINDS = new Set(['cloches', 'filets', 'sas', 'echelle', 'quai']);
-
 /** La scène d'un item posé dans un lieu (`placeItems`), ou `null` si l'item n'en a pas. */
 function placeSceneOf(item: ExerciseItem | undefined): ItemScene | null {
   const scene = item?.placeScene;
-  if (typeof scene !== 'object' || scene === null || !('kind' in scene) || typeof scene.kind !== 'string' || !SCENE_KINDS.has(scene.kind)) return null;
-  return scene as ItemScene;
+  return isItemScene(scene) ? scene : null;
 }
+
+const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 
 /** La règle d'un item (la carte de règle, une aide de calcul), comme sur l'écran classique. */
 function aidOf(item: ExerciseItem | undefined): AidData | null {
   const aid = item?.aid;
-  return typeof aid === 'object' && aid !== null && 'kind' in aid && typeof aid.kind === 'string' ? (aid as AidData) : null;
+  if (!isRecord(aid) || typeof aid.kind !== 'string' || !isRecord(aid.props)) return null;
+  return { kind: aid.kind, props: aid.props };
 }
 
 /** La cible de toucher d'une réponse (l'étiquette et l'objet), et la place de l'étiquette dedans. */
@@ -280,8 +300,8 @@ function ConsigneIcon() {
   const { instruction, layout } = useQuestion();
   if (!layout.low) return null;
   return (
-    <span className="world-icon">
-      <SpeakButton text={frenchTypography(instruction)} label="Consigne" compact />
+    <span className="world-icon world-consigne">
+      <SpeakButton text={frenchTypography(instruction)} label="Lire la consigne" compact />
       <IconLabel>Consigne</IconLabel>
     </span>
   );
@@ -318,15 +338,27 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
     show({ scene, answered: Boolean(answered), right: answered && rightIndex >= 0 ? [rightIndex] : [], count: choices.length, aid: Boolean(aid) });
   }, [show, scene, answered, rightIndex, choices.length, aid]);
   if (!item || !scene) return null;
+  // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière.
+  const gap = prompt.indexOf('…');
+  const filled = Boolean(answered?.results.every((r) => r.correct)) && gap >= 0 && rightIndex >= 0;
+  const whole = filled ? `${prompt.slice(0, gap)}${answer}${prompt.slice(gap + 1)}` : prompt;
 
   return (
     <div className="question world-place">
-      <div className="world-question-prompt">
+      <div className={`world-question-prompt${filled ? ' filled' : ''}`}>
         <div className="question-head">
           <p className="question-prompt">
-            <RichText text={prompt} />
+            {filled ? (
+              <>
+                <RichText text={prompt.slice(0, gap)} />
+                <strong className="world-filled">{answer}</strong>
+                <RichText text={prompt.slice(gap + 1)} />
+              </>
+            ) : (
+              <RichText text={prompt} />
+            )}
           </p>
-          <SpeakButton text={spoken} label="Écouter" shown={prompt} compact />
+          <SpeakButton text={filled ? whole : spoken} label="Lire la phrase" shown={whole} compact />
         </div>
         {referenceLine && !layout.low && (
           <p className="world-question-reference">
@@ -343,7 +375,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
           <ConsigneIcon />
           {/* Au deuxième essai, « Presque ! » redit déjà l'indice (sur tablette ; sur un écran bas, il ne dit que « Presque ! »). */}
           {hint && !answered && !hintShown && (!ruledOut || layout.low) && (
-            <span className="world-icon">
+            <span className="world-icon world-hint-icon">
               <button
                 type="button"
                 className="button world-hint"
@@ -450,7 +482,14 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
             Le son <strong>[{target}]</strong>
           </p>
           <ConsigneIcon />
-          <SpeakButton text={frenchTypography(words.join(', '))} label="Écouter les cloches" />
+          {layout.low ? (
+            <span className="world-icon">
+              <SpeakButton text={frenchTypography(words.join(', '))} label="Écouter les cloches" compact />
+              <IconLabel>Cloches</IconLabel>
+            </span>
+          ) : (
+            <SpeakButton text={frenchTypography(words.join(', '))} label="Écouter les cloches" />
+          )}
           {!answered && (
             <button type="button" className="button primary validate-button" onClick={validate}>
               <Icon name="check" /> Valider
