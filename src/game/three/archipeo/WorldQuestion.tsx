@@ -17,6 +17,7 @@ import { Loading } from '../../../components/Loading';
 import { ForeignWordsProvider, Marked } from '../../../components/ForeignWords';
 import { RichText, frenchTypography } from '../../../components/math/RichText';
 import { SpeakButton } from '../../../components/SpeakButton';
+import { Syllabified } from '../../../components/Syllabified';
 import { seeded } from '../../../core/random';
 import { useSettings } from '../../../core/SettingsContext';
 import { useLoaded } from '../../../core/useLoaded';
@@ -141,11 +142,24 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   // « Vue simple » dans une scénette : la même question, en liste sur fond uni, à la même place de la mission (les
   // cloches déjà choisies restent choisies) ; ailleurs, l'écran classique de la mission (`onSimpleView`).
   const [simple, setSimple] = useState(false);
-  const openSimple = useMemo(() => (scenette ? () => setSimple(true) : onSimpleView), [scenette, onSimpleView]);
+  // Sur un écran bas, en « Vue simple », la consigne se replie en une ligne (le rôle, son début, sa voix) pour que les
+  // cloches se voient dès l'ouverture ; un toucher sur la ligne ou « Lire la suite » la déplie.
+  const [consigneOpen, setConsigneOpen] = useState(false);
+  const openSimple = useMemo(
+    () =>
+      scenette
+        ? () => {
+            setConsigneOpen(false);
+            setSimple(true);
+          }
+        : onSimpleView,
+    [scenette, onSimpleView],
+  );
   const offer = !simple && ((layout.low && widen >= WIDEN_OFFER) || (!layout.low && answersOut));
   // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
   const [introDone, setIntroDone] = useState(false);
   const intro = layout.low && !introDone && !finished && !offer && !simple;
+  const simpleLow = simple && layout.low && !finished;
   // Mesuré avant l'affichage, à chaque item, réponse ou cran : une colonne qui déborde (en hauteur ou en largeur) prend
   // le cran suivant ; une consigne qui ne tient pas en pleine largeur mène droit à « Vue simple » ; un mot coupé aussi.
   // Sur tablette, seule une scénette se mesure : ses mots de réponse (le panneau prend la hauteur de son texte).
@@ -235,6 +249,18 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
             <Icon name="play" /> Commencer
           </button>
         )}
+        {simpleLow && (
+          <button
+            type="button"
+            className="button world-consigne-more"
+            aria-expanded={consigneOpen}
+            aria-controls="consigne-ligne"
+            onClick={() => setConsigneOpen((open) => !open)}
+          >
+            <Icon name="book" />
+            <span className="world-consigne-more-word">{consigneOpen ? 'Replier' : 'Lire la suite'}</span>
+          </button>
+        )}
         {offer && (
           // Le texte choisi ne tient pas ici : le repli franc, sans réduire le texte ; la voix reste (« Lire la phrase »).
           <button type="button" className="button primary world-question-offer" onClick={openSimple}>
@@ -245,11 +271,25 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
     );
     // Le rôle de l'habitant en tête du panneau, et la place de sa phrase d'accueil (vide tant que le mainteneur n'a pas
     // tranché : la consigne reste la seule phrase, lue).
+    // En « Vue simple » sur un écran bas : une seule ligne, le rôle puis le début de la consigne (la consigne entière
+    // reste le titre du panneau pour les lecteurs d'écran), sa voix toujours visible.
     const head: ReactNode = scenette ? (
-      <div className="world-scenette-head">
-        <p className="world-scenette-role">{scenette.role}</p>
-        {scenette.greeting && <p className="world-scenette-greeting">{scenette.greeting}</p>}
-      </div>
+      simpleLow ? (
+        <div className="world-scenette-head world-consigne-line">
+          <p className="world-consigne-fold" id="consigne-ligne">
+            <strong className="world-scenette-role">{scenette.role}</strong>{' '}
+            <span aria-hidden="true">
+              <Syllabified text={frenchTypography(instruction)} />
+            </span>
+          </p>
+          <SpeakButton text={frenchTypography(instruction)} label="Consigne" compact />
+        </div>
+      ) : (
+        <div className="world-scenette-head">
+          <p className="world-scenette-role">{scenette.role}</p>
+          {scenette.greeting && <p className="world-scenette-greeting">{scenette.greeting}</p>}
+        </div>
+      )
     ) : null;
     return {
       head,
@@ -264,10 +304,29 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       Done: WorldDone,
       className:
         simple && !finished
-          ? 'in-world scenette simple'
+          ? `in-world scenette simple${layout.low ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}`
           : `in-world${scenette ? ' scenette' : ''}${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut ? ' answers-out' : ''}${bare ? ' sans-image' : ''}`,
     };
-  }, [exerciseId, instruction, place, lieu.at, onClose, openSimple, intro, offer, widen, layout.low, finished, sheetWide, answersOut, scenette, simple, bare]);
+  }, [
+    exerciseId,
+    instruction,
+    place,
+    lieu.at,
+    onClose,
+    openSimple,
+    intro,
+    offer,
+    widen,
+    layout.low,
+    finished,
+    sheetWide,
+    answersOut,
+    scenette,
+    simple,
+    bare,
+    simpleLow,
+    consigneOpen,
+  ]);
 
   const style = {
     '--question-left': `${layout.panel.left}px`,
@@ -277,7 +336,15 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   } as CSSProperties;
 
   return (
-    <div className={`world-question${scenette ? ' scenette' : ''}`} ref={box} style={style}>
+    <div
+      className={`world-question${scenette ? ' scenette' : ''}`}
+      ref={box}
+      style={style}
+      onClick={(e) => {
+        // La ligne repliée de la consigne se déplie aussi au toucher (le clavier passe par « Lire la suite »).
+        if (simpleLow && e.target instanceof Element && e.target.closest('.world-consigne-fold')) setConsigneOpen((open) => !open);
+      }}
+    >
       {!biome || loaded === null ? null : !ready || !stage ? (
         <Loading className="world-loading" />
       ) : (
@@ -376,7 +443,12 @@ function slotStyles(slot: AnswerSlot): { hit: CSSProperties; label: CSSPropertie
 function PlaceAid({ aid, layout }: { aid: AidData; layout: QuestionLayout }) {
   const box = layout.aid;
   const style: CSSProperties | undefined = box
-    ? { left: `${Math.round(box.left)}px`, top: `${Math.round(box.top)}px`, width: `${Math.round(box.right - box.left)}px`, maxHeight: `${Math.round(box.bottom - box.top)}px` }
+    ? {
+        left: `${Math.round(box.left)}px`,
+        top: `${Math.round(box.top)}px`,
+        width: `${Math.round(box.right - box.left)}px`,
+        maxHeight: `${Math.round(box.bottom - box.top)}px`,
+      }
     : undefined;
   return (
     <div className={`aid world-question-aid${box ? ' beside' : ''}`} style={style}>
@@ -396,8 +468,9 @@ function IconLabel({ children }: { children: string }) {
 
 /** L'icône qui lit la consigne, à côté de la phrase, sur un écran bas. */
 function ConsigneIcon() {
-  const { instruction, layout } = useQuestion();
-  if (!layout.low) return null;
+  const { instruction, layout, simple } = useQuestion();
+  // En « Vue simple », la consigne garde sa ligne et sa voix en tête du panneau.
+  if (!layout.low || simple) return null;
   return (
     <span className="world-icon world-consigne">
       <SpeakButton text={frenchTypography(instruction)} label="Lire la consigne" compact />

@@ -851,3 +851,99 @@
 .world-question .in-world.sans-image .world-answers .word-picto {
   display: none;
 }
+/* « Vue simple » sur un écran bas : le panneau prend toute la hauteur sous « Scène » et la pause ; la consigne repliée
+   en une ligne (le rôle, son début, sa voix, « Lire la suite »), la ligne du son serrée, les étapes en trait fin, les
+   cloches visibles dès l'ouverture, en texte normal comme au plus grand texte ; la bande de « Valider » mince (un
+   bouton de 48 px, moins d'un cinquième du panneau). La tablette ne change pas. */
+.world-question .quiz.in-world.scenette.simple.simple-bas {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: flex-start;
+  column-gap: 0.5rem;
+  row-gap: 6px;
+  padding: 4px 0.6rem;
+  scroll-padding-bottom: 62px;
+}
+.world-question .quiz.in-world.simple-bas > *,
+.world-question .in-world.simple-bas .world-question-prompt,
+.world-question .in-world.simple-bas .world-answers,
+.world-question .in-world.simple-bas .world-simple-validate {
+  flex: 0 0 100%;
+  margin: 0;
+}
+/* La consigne du lanceur reste le titre du panneau, pour les lecteurs d'écran seulement : la ligne la remplace. */
+.world-question .quiz.in-world.simple-bas > .consigne {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.world-question .quiz.in-world.simple-bas > .world-consigne-line {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  min-width: 0;
+  gap: 0.4rem;
+}
+.world-question .in-world.simple-bas .world-consigne-fold {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  /* La taille du texte choisie (1rem), sans le cran de plus d'un titre : le rôle tient sur la ligne au plus grand texte. */
+  font-size: max(18px, 1rem);
+  font-weight: 700;
+  line-height: 1.3;
+  cursor: pointer;
+}
+.world-question .in-world.simple-bas .world-consigne-fold .world-scenette-role {
+  font-size: inherit;
+}
+.world-question .quiz.in-world.simple-bas > .world-consigne-more {
+  flex: 0 0 auto;
+  min-width: 48px;
+  min-height: 48px;
+  padding-block: 0;
+  white-space: nowrap;
+}
+/* Au plus grand texte, « Lire la suite » se réduit à son icône (son nom reste dit) : la ligne garde le rôle. */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-more {
+  padding-inline: 10px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-more-word {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+/* Dépliée : la consigne entière, sous le rôle, à la ligne. */
+.world-question .in-world.simple-bas.consigne-ouverte .world-consigne-fold {
+  white-space: normal;
+}
+.world-question .in-world.simple-bas .quiz-steps li {
+  height: 4px;
+}
+.world-question .in-world.simple-bas .world-question-actions {
+  margin: 0;
+  align-items: center;
+}
+.world-question .in-world.simple-bas .world-answers {
+  gap: 8px;
+}
+.world-question .in-world.simple-bas .world-simple-validate {
+  bottom: -4px;
+  margin-bottom: -4px;
+  padding: 3px 0;
+}
+.world-question .in-world.simple-bas .world-simple-validate .validate-button {
+  min-height: 48px;
+  height: 48px;
+  padding-block: 0;
+  line-height: 1.1;
+}

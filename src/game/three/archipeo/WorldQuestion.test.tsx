@@ -56,6 +56,12 @@ describe('La scénette du Phare', () => {
         .slice(1)
         .every((b) => b.getAttribute('aria-pressed') === 'false'),
     ).toBe(true);
+    // Sur un écran bas (jsdom n'a pas de taille), la consigne repliée en une ligne se déplie avec « Lire la suite ».
+    const more = screen.getByRole('button', { name: 'Lire la suite' });
+    expect(more).toHaveAttribute('aria-expanded', 'false');
+    await user.click(more);
+    expect(screen.getByRole('button', { name: 'Replier' })).toHaveAttribute('aria-expanded', 'true');
+    expect(document.querySelector('.quiz.in-world.simple-bas.consigne-ouverte')).not.toBeNull();
     const list = screen.getByRole('list', { name: 'Cloches à trier' });
     const validate = screen.getByRole('button', { name: /Valider/ });
     expect(list.compareDocumentPosition(validate) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
