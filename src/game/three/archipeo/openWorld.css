@@ -31,6 +31,14 @@
   cursor: pointer;
   will-change: transform;
 }
+/* Posée à côté du sommet d'un lieu haut (le Phare, sur un écran bas) : pas plus large que la place que le cadrage lui
+   garde, pour ne pas revenir sur le lieu ; en grand texte, elle passe à la ligne entre les mots, jamais dans un mot
+   (sa largeur minimale est celle du mot le plus long). */
+.open-world-mark.a-cote {
+  max-width: var(--marque-a-cote, 150px);
+  min-width: min-content;
+  overflow-wrap: normal;
+}
 .open-world-mark svg {
   width: 1.4em;
   height: 1.4em;

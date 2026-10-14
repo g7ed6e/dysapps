@@ -4,7 +4,7 @@
 // son lieu), une flèche au bord de l'écran quand elle est hors champ ; « Y aller », toujours à la même place, y
 // mène (le trajet se passe). À l'arrivée, la mission s'ouvre (`MissionInteraction`, l'écran de mission actuel pour
 // l'instant). Rien de neuf dans la sauvegarde : la progression des missions reste commune. Chargé à la demande.
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
@@ -16,7 +16,7 @@ import { useBlocland } from '../../BloclandContext';
 import { getBiome } from '../../biomes';
 import { mesuresDemandees, meterShown } from '../../rendering';
 import { SettingsButton } from '../../WorldShortcuts';
-import { CLOSE_UP_INSETS } from '../../world/continu/camera';
+import { CLOSE_UP_INSETS, type GoPanel } from '../../world/continu/camera';
 import { keepClear, missionOfPlace, nextMission, placeIsOpen, type MarkOnScreen, type ScreenRect } from '../../world/continu/mission';
 import { placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
 import { modeleDuMonde } from '../../world/model';
@@ -75,7 +75,7 @@ export default function OpenWorldPage() {
 
   // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
   // taille (jamais une mise en page forcée par image).
-  const [layout] = useState(() => ({ width: 0, height: 0, markW: 0, markH: 0, obstacles: [] as ScreenRect[] }));
+  const [layout] = useState(() => ({ width: 0, height: 0, markW: 0, markH: 0, obstacles: [] as ScreenRect[], go: null as GoPanel | null }));
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
@@ -89,6 +89,15 @@ export default function OpenWorldPage() {
         const r = el.getBoundingClientRect();
         return { left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height };
       });
+      // « Y aller » pour les cadrages rapprochés : sa demi-largeur depuis le milieu, sa hauteur depuis le bas.
+      const goRect = stage.querySelector('.open-world-go')?.getBoundingClientRect();
+      if (goRect && goRect.width > 0) {
+        layout.go = {
+          halfWidth: Math.max(s.left + s.width / 2 - goRect.left, goRect.right - s.left - s.width / 2),
+          height: s.bottom - goRect.top,
+        };
+        world.current?.setGoPanel(layout.go);
+      }
     };
     const observer = new ResizeObserver(measure);
     observer.observe(stage);
@@ -130,6 +139,7 @@ export default function OpenWorldPage() {
       onMark: (m, beside) => placeMark(markRef.current, arrowRef.current, m, beside, layout),
     });
     world.current = w;
+    if (layout.go) w.setGoPanel(layout.go);
     setReady(true);
     if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, skip: w.skip, info: w.info };
     return () => {
@@ -159,7 +169,7 @@ export default function OpenWorldPage() {
         <div ref={host} className="open-world-canvas" />
         {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
         {next && (
-          <button type="button" ref={markRef} className="open-world-mark" aria-label={label} onClick={goNext}>
+          <button type="button" ref={markRef} className="open-world-mark" style={MARK_STYLE} aria-label={label} onClick={goNext}>
             <span ref={arrowRef} className="open-world-arrow" aria-hidden="true">
               <Icon name="nord" />
             </span>
@@ -195,6 +205,12 @@ export default function OpenWorldPage() {
 /** La phrase d'un lieu fermé, avec son nom. */
 const closedSentence = (placeId: PlaceId) => `${placeById(placeId).name} : ce lieu est fermé pour l’instant.`;
 
+/**
+ * La largeur que le cadrage réserve à droite d'une marque posée à côté du sommet d'un lieu (`CLOSE_UP_INSETS`) : la
+ * marque n'en prend pas plus et passe à la ligne entre les mots (openWorld.css, `.a-cote`).
+ */
+const MARK_STYLE = { '--marque-a-cote': `${CLOSE_UP_INSETS.markWidth}px` } as CSSProperties;
+
 /** L'écart minimal entre la marque et le bord de l'écran ou un bouton, en pixels. */
 const MARK_EDGE = 8;
 
@@ -209,6 +225,7 @@ function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkO
   mark.hidden = !m;
   if (!m) return;
   mark.classList.toggle('hors-champ', !m.inside);
+  mark.classList.toggle('a-cote', m.inside && beside);
   const { markW: w, markH: h } = size;
   const box = !m.inside
     ? { left: m.x - w / 2, top: m.y - h / 2, width: w, height: h }

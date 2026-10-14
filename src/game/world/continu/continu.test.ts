@@ -234,12 +234,16 @@ describe('Sur un écran bas, la caméra se rapproche', () => {
     }
   });
 
-  it('Kéo, le lieu le plus proche entier et sa marque restent dans le cadre ; Kéo garde son air autour de « Y aller »', () => {
+  // « Y aller » en texte normal, puis en grand texte (plus large et plus haut, mesuré par la page).
+  it.each([
+    { halfWidth: CLOSE_UP_INSETS.goHalfWidth, height: CLOSE_UP_INSETS.goHeight },
+    { halfWidth: 192, height: 110 },
+  ])('Kéo, le lieu le plus proche entier et sa marque restent dans le cadre ; Kéo garde son air autour de « Y aller » ($halfWidth px)', (go) => {
     const { w, h } = PHONE;
-    const { edge, markAbove, markHalf, markGap, markWidth, goHalfWidth, goHeight, keoAir } = CLOSE_UP_INSETS;
-    const clearOfGo = (q: { x: number; y: number }, air: number) => Math.abs(q.x - w / 2) >= goHalfWidth + air || q.y <= h - goHeight - air;
+    const { edge, markAbove, markHalf, markGap, markWidth, keoAir } = CLOSE_UP_INSETS;
+    const clearOfGo = (q: { x: number; y: number }, air: number) => Math.abs(q.x - w / 2) >= go.halfWidth + air || q.y <= h - go.height - air;
     for (const n of PATH_NODES) {
-      const pose = cameraPose(cameraKey(n.at, h), w, h);
+      const pose = cameraPose(cameraKey(n.at, h), w, h, go);
       // Le lieu le plus proche de ce nœud : celui dont la porte est la plus proche.
       const p = [...PLACES].sort((a, b) => distance(n.at, pathNode(a.door).at) - distance(n.at, pathNode(b.door).at))[0];
       const y0 = standingHeight(heightAt(p.center));

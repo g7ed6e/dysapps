@@ -107,7 +107,7 @@ const SUMMIT = 3;
  *   demi-hauteur (`markHalf`), et sa largeur à droite de son point (`markGap` puis `markWidth` ; plus large en grand
  *   texte, elle reste à l'écran et recouvre alors le haut du lieu) ;
  * - « Y aller » et « Passer le trajet », en bas au milieu : `goHalfWidth` de chaque côté du milieu, `goHeight` de haut
- *   avec sa marge au bord ; Kéo et son anneau en restent à `keoAir`, le lieu à `edge` ;
+ *   avec sa marge au bord, en texte normal (la vue donne sa vraie taille, `GoPanel`, plus grande en grand texte) ; Kéo et son anneau en restent à `keoAir`, le lieu à `edge` ;
  * - les bords de l'écran : `edge` en haut et en bas, `side` à gauche et à droite.
  */
 export const CLOSE_UP_INSETS = {
@@ -121,6 +121,13 @@ export const CLOSE_UP_INSETS = {
   goHeight: 72,
   keoAir: 24,
 } as const;
+
+/** « Y aller » à l'écran, en pixels : sa demi-largeur depuis le milieu, et sa hauteur depuis le bas avec sa marge. */
+export interface GoPanel {
+  halfWidth: number;
+  height: number;
+}
+const DEFAULT_GO: GoPanel = { halfWidth: CLOSE_UP_INSETS.goHalfWidth, height: CLOSE_UP_INSETS.goHeight };
 
 /** La part de la distance de la tablette pour un écran haut de `viewportHeight` pixels : 1 sur la tablette et au-delà. */
 export function closeUpScale(viewportHeight: number): number {
@@ -246,14 +253,14 @@ const poseFrom = (x: number, z: number, dist: number, lens: number, groundY: num
  * Ce qui reste de marge au point le plus serré d'une pose, en pixels (négatif : un point sort du cadre ou passe sous
  * un panneau), et le décalage vers le bas qui équilibrerait le haut et le bas.
  */
-function slackOf(pose: CameraPose, subjects: readonly Subject[], width: number, height: number): { slack: number; down: number } {
-  const { edge, side, goHalfWidth, goHeight } = CLOSE_UP_INSETS;
+function slackOf(pose: CameraPose, subjects: readonly Subject[], width: number, height: number, go: GoPanel): { slack: number; down: number } {
+  const { edge, side } = CLOSE_UP_INSETS;
   let above = Infinity, below = Infinity, sides = Infinity;
   for (const s of subjects) {
     const q = screenOf(pose, s.at, width, height);
     // Dans la colonne de « Y aller » (élargie de l'air du point), le bas s'arrête au-dessus du bouton.
-    const overGo = Math.abs(q.x - width / 2) < goHalfWidth + s.air;
-    const floor = overGo ? height - goHeight - s.air : height - edge;
+    const overGo = Math.abs(q.x - width / 2) < go.halfWidth + s.air;
+    const floor = overGo ? height - go.height - s.air : height - edge;
     above = Math.min(above, q.y - s.top);
     below = Math.min(below, floor - q.y);
     sides = Math.min(sides, q.x - side, width - s.right - q.x);
@@ -275,7 +282,7 @@ const BISECTION_STEPS = 10;
 const CENTERING_PASSES = 3;
 
 const subjectCache = new Map<string, Subject[]>();
-/** Les poses rapprochées de la taille d'écran courante seulement : vidées quand elle change. */
+/** Les poses rapprochées de la taille d'écran (et de « Y aller ») courante seulement : vidées quand elle change. */
 const poseCache = new Map<string, CameraPose>();
 let poseCacheSize = '';
 
@@ -283,10 +290,10 @@ let poseCacheSize = '';
  * Le cadrage rapproché d'un nœud : la caméra aussi près que sur la tablette rapportée à la hauteur de l'écran (Kéo y
  * garde à peu près sa taille en pixels), reculée juste ce qu'il faut pour que Kéo, le lieu le plus proche et sa marque
  * tiennent hors des panneaux (`CLOSE_UP_INSETS`) ; l'image glisse de côté si cela les laisse nettement plus grands.
- * Calculé une fois par nœud pour la taille d'écran courante.
+ * Calculé une fois par nœud pour la taille d'écran et de « Y aller » courantes.
  */
-function closeUpPose(n: PathNode, width: number, height: number, groundY: number): CameraPose {
-  const size = `${width}x${height}:${groundY}`;
+function closeUpPose(n: PathNode, width: number, height: number, go: GoPanel, groundY: number): CameraPose {
+  const size = `${width}x${height}:${go.halfWidth}x${go.height}:${groundY}`;
   if (size !== poseCacheSize) {
     poseCache.clear();
     poseCacheSize = size;
@@ -312,10 +319,10 @@ function closeUpPose(n: PathNode, width: number, height: number, groundY: number
     let z = (minZ + maxZ) / 2;
     // Un pixel vaut, au sol près de la cible, à peu près tant d'unités vers le nord.
     const unitsPerPixel = (2 * dist * tanHalf(CLOSE_UP_FOV)) / height / Math.sin(CAMERA_PITCH);
-    let fit = slackOf(poseFrom(x, z, dist, lens, groundY), subjects, width, height);
+    let fit = slackOf(poseFrom(x, z, dist, lens, groundY), subjects, width, height, go);
     for (let k = 0; k < CENTERING_PASSES; k++) {
       z -= fit.down * unitsPerPixel;
-      fit = slackOf(poseFrom(x, z, dist, lens, groundY), subjects, width, height);
+      fit = slackOf(poseFrom(x, z, dist, lens, groundY), subjects, width, height, go);
     }
     return { pose: poseFrom(x, z, dist, lens, groundY), slack: fit.slack };
   };
@@ -346,8 +353,8 @@ function closeUpPose(n: PathNode, width: number, height: number, groundY: number
 }
 
 /** La pose d'un cadrage pour un écran de `width` × `height` pixels : celle du rivage, ou le cadrage rapproché d'un nœud. */
-export function cameraPose(key: CameraKey, width: number, height: number, groundY = 1): CameraPose {
+export function cameraPose(key: CameraKey, width: number, height: number, go: GoPanel = DEFAULT_GO, groundY = 1): CameraPose {
   if (!isCloseUp(key)) return poseOf(framingOf(key), width / Math.max(1, height), groundY);
   const n = PATH_NODES.find((m) => m.id === key.slice('noeud:'.length));
-  return n ? closeUpPose(n, width, height, groundY) : poseOf(framingOf(PATH_NODES[0].shore), width / Math.max(1, height), groundY);
+  return n ? closeUpPose(n, width, height, go, groundY) : poseOf(framingOf(PATH_NODES[0].shore), width / Math.max(1, height), groundY);
 }

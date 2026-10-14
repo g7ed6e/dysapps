@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
-import { CAMERA_BLEND_SECONDS, CAMERA_FOV, cameraKey, cameraPose, closeUpScale, markBeside, markOffset, poseAt, type CameraKey, type CameraMove, type CameraPose } from '../../world/continu/camera';
+import { CAMERA_BLEND_SECONDS, CAMERA_FOV, cameraKey, cameraPose, closeUpScale, markBeside, markOffset, poseAt, type CameraKey, type CameraMove, type CameraPose, type GoPanel } from '../../world/continu/camera';
 import type { Facets } from '../../world/continu/facets';
 import { distance, type Vec2 } from '../../world/continu/geometry';
 import { markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
@@ -49,6 +49,8 @@ export interface OpenWorld {
   skip(): void;
   /** Le lieu marqué (la prochaine mission), ou aucun. */
   setMark(place: PlaceId | null): void;
+  /** La taille de « Y aller » à l'écran (plus grand en grand texte) : les cadrages rapprochés en tiennent compte. */
+  setGoPanel(go: GoPanel): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number };
   dispose(): void;
@@ -219,7 +221,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let viewW = Math.max(1, host.clientWidth);
   let viewH = Math.max(1, host.clientHeight);
   let key: CameraKey = cameraKey(here, viewH);
-  let pose: CameraPose = cameraPose(key, viewW, viewH);
+  // « Y aller » à l'écran : sa taille en texte normal tant que la page ne l'a pas mesurée.
+  let go: GoPanel | undefined;
+  let pose: CameraPose = cameraPose(key, viewW, viewH, go);
   let move: CameraMove | null = null;
   // Le décentrement de l'objectif posé sur la caméra (refait seulement quand il change).
   let appliedLens = 0;
@@ -252,7 +256,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const step = () => {
       const n = PATH_NODES[next++];
       if (!n) return;
-      cameraPose(cameraKey(n.at, viewH), viewW, viewH);
+      cameraPose(cameraKey(n.at, viewH), viewW, viewH, go);
       idleTask = idle(step);
     };
     idleTask = idle(step);
@@ -320,7 +324,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     viewW = w;
     viewH = h;
     key = cameraKey(here, h);
-    pose = cameraPose(key, w, h);
+    pose = cameraPose(key, w, h, go);
     move = null;
     // La taille a changé : le décentrement se repose sur la nouvelle taille.
     appliedLens = Number.NaN;
@@ -369,7 +373,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const nextKey = cameraKey(here, viewH);
     if (nextKey !== key) {
       key = nextKey;
-      move = { from: pose, to: cameraPose(key, viewW, viewH), start: t };
+      move = { from: pose, to: cameraPose(key, viewW, viewH, go), start: t };
     }
     if (move) {
       pose = poseAt(move, t, reduceMotion);
@@ -393,6 +397,19 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     setMark: (place) => {
       markPlace = place;
+    },
+    setGoPanel: (panel) => {
+      if (go && go.halfWidth === panel.halfWidth && go.height === panel.height) return;
+      go = panel;
+      if (closeUpScale(viewH) >= 1) return;
+      // Le cadrage d'arrivée est refait pour la nouvelle taille, sans passage.
+      const to = cameraPose(key, viewW, viewH, go);
+      if (move) move.to = to;
+      else {
+        pose = to;
+        applyPose(pose);
+      }
+      precompute();
     },
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }),
     dispose: () => {
