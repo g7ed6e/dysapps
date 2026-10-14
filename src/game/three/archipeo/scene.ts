@@ -7,12 +7,12 @@ import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
-import { CAMERA_BLEND_SECONDS, CAMERA_FOV, poseAt, poseOf, shoreAt, type CameraMove, type CameraPose } from '../../world/continu/camera';
+import { CAMERA_BLEND_SECONDS, CAMERA_FOV, MARK_LIFT, cameraKey, cameraPose, poseAt, type CameraKey, type CameraMove, type CameraPose } from '../../world/continu/camera';
 import type { Facets } from '../../world/continu/facets';
 import { distance, type Vec2 } from '../../world/continu/geometry';
 import { markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork } from '../../world/continu/paths';
-import { COLORS_6E, PLACES, framingOf, placeById, type PlaceId, type ShoreId } from '../../world/continu/plan6e';
+import { COLORS_6E, PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { modelOfPlace } from '../../world/continu/places';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
 import { buildHeightField, heightOnMesh, standingHeight, terrainTiles } from '../../world/continu/terrain';
@@ -53,8 +53,6 @@ export interface OpenWorld {
 
 /** La marge de la flèche au bord de l'écran, en pixels : hors des boutons des coins. */
 const MARK_MARGIN = 56;
-/** Au-dessus du sommet d'un lieu, en unités : là où se pose la marque. */
-const MARK_LIFT = 1.2;
 /** Un toucher : moins de tant de pixels de glissé, moins de tant de millisecondes. */
 const TAP = { pixels: 10, ms: 700 };
 /** Le cap de Kéo au départ : face à la caméra (le sud). */
@@ -213,10 +211,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     options.onDepart();
   };
 
-  // La caméra : le cadrage du rivage de Kéo, et le passage en cours.
-  let shore: ShoreId = shoreAt(here);
-  const aspect = () => host.clientWidth / Math.max(1, host.clientHeight);
-  let pose: CameraPose = poseOf(framingOf(shore), aspect());
+  // La caméra : le cadrage de Kéo (son rivage ; sur un écran bas, son lieu, de plus près), et le passage en cours.
+  // La taille de l'écran est relue au redimensionnement seulement (rien n'est lu ni créé à chaque image).
+  let viewW = Math.max(1, host.clientWidth);
+  let viewH = Math.max(1, host.clientHeight);
+  let key: CameraKey = cameraKey(here, viewH);
+  let pose: CameraPose = cameraPose(key, viewW, viewH);
   let move: CameraMove | null = null;
   const applyPose = (p: CameraPose) => {
     camera.position.set(p.position.x, p.position.y, p.position.z);
@@ -273,8 +273,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    // Le cadrage dépend du rapport de l'écran : la pose d'arrivée est refaite, sans passage.
-    pose = poseOf(framingOf(shore), w / h);
+    // Le cadrage dépend de la taille de l'écran : la pose d'arrivée est refaite, sans passage.
+    viewW = w;
+    viewH = h;
+    key = cameraKey(here, h);
+    pose = cameraPose(key, w, h);
     move = null;
     applyPose(pose);
   };
@@ -315,12 +318,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const turn = Math.atan2(Math.sin(heading - keo.rotation.y), Math.cos(heading - keo.rotation.y));
     keo.rotation.y += reduceMotion ? turn : turn * Math.min(1, dt * 12);
     body.bouger(t, dt, moving, reduceMotion);
-    // Le rivage a changé : passage doux vers son cadrage (coupe franche avec « Réduire les animations »).
-    const nextShore = shoreAt(here);
-    if (nextShore !== shore) {
-      shore = nextShore;
-      const to = poseOf(framingOf(shore), aspect());
-      move = { from: pose, to, start: t };
+    // Le cadrage a changé : passage doux vers lui (coupe franche avec « Réduire les animations »).
+    const nextKey = cameraKey(here, viewH);
+    if (nextKey !== key) {
+      key = nextKey;
+      move = { from: pose, to: cameraPose(key, viewW, viewH), start: t };
     }
     if (move) {
       pose = poseAt(move, t, reduceMotion);

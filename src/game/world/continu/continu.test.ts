@@ -2,7 +2,7 @@
 // marche, les cadrages, les maquettes et le budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { openWorldCost, OPEN_WORLD_BUDGET } from './budget';
-import { CAMERA_PITCH, poseAt, poseOf, shoreAt } from './camera';
+import { CAMERA_PITCH, CLOSE_UP_INSETS, KEO_HEIGHT, MARK_LIFT, REFERENCE_HEIGHT, cameraKey, cameraPose, closeUpScale, poseAt, poseOf, screenOf } from './camera';
 import { distance, insidePolygon } from './geometry';
 import { atNode, findRoute, pathNode, pathRibbons, routeLength, snapToNetwork } from './paths';
 import { COAST, DECK_HEIGHT, FRAMINGS, ISLET, LAGOON, PATH_EDGES, PATH_NODES, PLACES, fromPlan, framingOf, placeById, placeOfIsland } from './plan6e';
@@ -172,7 +172,7 @@ describe('La marche de Kéo', () => {
 describe('Les cadrages prévus', () => {
   it('chaque nœud a son rivage, et son cadrage le montre', () => {
     for (const n of PATH_NODES) {
-      expect(shoreAt(n.at)).toBe(n.shore);
+      expect(cameraKey(n.at, REFERENCE_HEIGHT)).toBe(n.shore);
       expect(distance(n.at, framingOf(n.shore).target)).toBeLessThan(framingOf(n.shore).radius * 0.9);
     }
     // Chaque lieu tient dans le cadrage du rivage de sa porte.
@@ -200,6 +200,85 @@ describe('Les cadrages prévus', () => {
     // À mi-chemin, l'axe de visée garde le même angle : la caméra glisse, elle ne tourne pas.
     expect(Math.atan2(mid.position.y - mid.target.y, mid.position.z - mid.target.z)).toBeCloseTo(CAMERA_PITCH, 6);
     expect(poseAt(move, 20, false).position.x).toBeCloseTo(to.position.x, 9);
+  });
+});
+
+describe('Sur un écran bas, la caméra se rapproche', () => {
+  const PHONE = { w: 844, h: 390 };
+  const TABLET = { w: 1024, h: 768 };
+  const feet = (n: (typeof PATH_NODES)[number]) => ({ x: n.at.x, y: standingHeight(heightAt(n.at)), z: n.at.z });
+  /** La hauteur de Kéo à l'écran, en pixels, sur le nœud `n`. */
+  const keoPixels = (n: (typeof PATH_NODES)[number], w: number, h: number) => {
+    const pose = cameraPose(cameraKey(n.at, h), w, h);
+    const a = screenOf(pose, feet(n), w, h);
+    const b = screenOf(pose, { ...feet(n), y: feet(n).y + KEO_HEIGHT }, w, h);
+    return Math.hypot(a.x - b.x, a.y - b.y);
+  };
+
+  it('la tablette (768 px de haut et plus) garde les cadrages par rivage, à l’identique', () => {
+    expect(closeUpScale(768)).toBe(1);
+    expect(closeUpScale(1024)).toBe(1);
+    for (const n of PATH_NODES) {
+      expect(cameraKey(n.at, TABLET.h)).toBe(n.shore);
+      expect(cameraPose(cameraKey(n.at, TABLET.h), TABLET.w, TABLET.h)).toEqual(poseOf(framingOf(n.shore), TABLET.w / TABLET.h));
+    }
+  });
+
+  it('sur un téléphone couché, un cadrage par nœud, au même angle', () => {
+    expect(closeUpScale(PHONE.h)).toBeCloseTo(390 / 768, 6);
+    for (const n of PATH_NODES) {
+      expect(cameraKey(n.at, PHONE.h)).toBe(`noeud:${n.id}`);
+      const pose = cameraPose(cameraKey(n.at, PHONE.h), PHONE.w, PHONE.h);
+      expect(Math.atan2(pose.position.y - pose.target.y, pose.position.z - pose.target.z)).toBeCloseTo(CAMERA_PITCH, 6);
+      expect(pose.position.x).toBe(pose.target.x);
+    }
+  });
+
+  it('Kéo, le lieu le plus proche entier et sa marque restent dans le cadre, hors des panneaux', () => {
+    const { w, h } = PHONE;
+    for (const n of PATH_NODES) {
+      const pose = cameraPose(cameraKey(n.at, h), w, h);
+      // Le lieu le plus proche de ce nœud : celui dont la porte est la plus proche.
+      const p = [...PLACES].sort((a, b) => distance(n.at, pathNode(a.door).at) - distance(n.at, pathNode(b.door).at))[0];
+      const y0 = standingHeight(heightAt(p.center));
+      const mark = screenOf(pose, { x: p.center.x, y: y0 + modelOfPlace(p.id).top + MARK_LIFT, z: p.center.z }, w, h);
+      expect(mark.y).toBeGreaterThanOrEqual(CLOSE_UP_INSETS.mark - 0.5);
+      const pos = modelOfPlace(p.id).facets.positions;
+      const c = Math.cos(p.yaw), s = Math.sin(p.yaw);
+      for (let k = 0; k < pos.length; k += 3) {
+        const at = { x: p.center.x + pos[k] * c + pos[k + 2] * s, y: y0 + Math.max(0, pos[k + 1]), z: p.center.z - pos[k] * s + pos[k + 2] * c };
+        const q = screenOf(pose, at, w, h);
+        expect(q.x).toBeGreaterThan(0);
+        expect(q.x).toBeLessThan(w);
+        expect(q.y).toBeGreaterThan(0);
+        expect(q.y).toBeLessThan(h);
+      }
+      const f = screenOf(pose, feet(n), w, h);
+      const head = screenOf(pose, { ...feet(n), y: feet(n).y + KEO_HEIGHT }, w, h);
+      expect(head.y).toBeGreaterThan(0);
+      expect(f.x).toBeGreaterThan(0);
+      expect(f.x).toBeLessThan(w);
+      // Ses pieds ne passent pas sous « Y aller », en bas au milieu.
+      const underGo = Math.abs(f.x - w / 2) < CLOSE_UP_INSETS.goHalfWidth;
+      expect(f.y).toBeLessThan(h - (underGo ? CLOSE_UP_INSETS.bottom : CLOSE_UP_INSETS.foot));
+    }
+  });
+
+  it('Kéo y garde à peu près sa taille de la tablette (près du Phare, haut, un peu moins)', () => {
+    for (const n of PATH_NODES) {
+      const phone = keoPixels(n, PHONE.w, PHONE.h);
+      const tablet = keoPixels(n, TABLET.w, TABLET.h);
+      // Avant, la caméra restait à la distance de la tablette : la moitié de sa taille.
+      const pose = poseOf(framingOf(n.shore), PHONE.w / PHONE.h);
+      const a = screenOf(pose, feet(n), PHONE.w, PHONE.h);
+      const b = screenOf(pose, { ...feet(n), y: feet(n).y + KEO_HEIGHT }, PHONE.w, PHONE.h);
+      const unchanged = Math.hypot(a.x - b.x, a.y - b.y);
+      if (n.id === 'phare' || n.id === 'digue') expect(phone).toBeGreaterThan(unchanged * 1.25);
+      else {
+        expect(phone).toBeGreaterThan(unchanged * 1.6);
+        expect(phone).toBeGreaterThan(tablet * 0.85);
+      }
+    }
   });
 });
 
