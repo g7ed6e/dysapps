@@ -24,7 +24,7 @@ import { piecesOf } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { missionScreenInteraction } from './missionScreen';
-import { createOpenWorld, type OpenWorld } from './scene';
+import { createOpenWorld, type LockOnScreen, type OpenWorld } from './scene';
 import { WorldQuestion } from './WorldQuestion';
 import './openWorld.css';
 
@@ -63,6 +63,8 @@ export default function OpenWorldPage() {
   const stageRef = useRef<HTMLDivElement>(null);
   const markRef = useRef<HTMLButtonElement>(null);
   const arrowRef = useRef<HTMLSpanElement>(null);
+  // Les cadenas des lieux sous la brume, posés à chaque image par la scène (sans passer par React).
+  const locksRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
   const [walking, setWalking] = useState(false);
   // La mission posée dans un lieu, à l'arrivée de Kéo : la question se joue sur la scène.
@@ -117,6 +119,7 @@ export default function OpenWorldPage() {
         const mission = n?.place.id === placeId ? n.mission : missionOfPlace(placeById(placeId), bornes);
         if (mission) setAsking({ place: placeId, mission });
       },
+      onLocks: (locks) => placeLocks(locksRef.current, locks),
       onMark: (m) => {
         placeMark(markRef.current, arrowRef.current, m, layout);
         if (m && m.far !== farRef.current) {
@@ -198,6 +201,14 @@ export default function OpenWorldPage() {
             <span className="open-world-mark-word">{next.place.name}</span>
           </button>
         )}
+        {/* Un cadenas sur chaque lieu encore sous la brume : une icône sans texte, dite aux lecteurs d'écran (référent dys). */}
+        <div ref={locksRef} className="open-world-locks" hidden={Boolean(asking)}>
+          {veiled.map((id) => (
+            <span key={id} className="open-world-lock" data-lieu={id} role="img" aria-label={`${placeById(id).name} : sous la brume, pas encore ouvert`} hidden>
+              <Icon name="lock" />
+            </span>
+          ))}
+        </div>
         {!asking && <SettingsButton />}
         {asking && world.current && (
           <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} world={world.current} onClose={closeQuestion} onSimpleView={simpleView} />
@@ -219,6 +230,21 @@ export default function OpenWorldPage() {
       </div>
     </div>
   );
+}
+
+/**
+ * Pose les cadenas des lieux sous la brume, image par image, sans passer par React : chacun au-dessus de son lieu
+ * quand il se voit, caché sinon (jamais au bord de l'écran : seul le lieu suivant a sa flèche).
+ */
+function placeLocks(root: HTMLElement | null, locks: readonly LockOnScreen[]): void {
+  if (!root) return;
+  for (const el of root.children) {
+    if (!(el instanceof HTMLElement)) continue;
+    const lock = locks.find((l) => l.place === el.dataset.lieu);
+    const shown = Boolean(lock?.shown);
+    if (el.hidden === shown) el.hidden = !shown;
+    if (lock && shown) el.style.transform = `translate(${Math.round(lock.x)}px, ${Math.round(lock.y)}px)`;
+  }
 }
 
 /** La distance de la marque en mots, pour la voix : un, deux ou trois points. */

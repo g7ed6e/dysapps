@@ -90,6 +90,33 @@ export class FacetBuilder {
     }
   }
 
+  /** Un pavé tendu entre deux points (un bras, une corde, une potence), de section carrée `t`. */
+  beam(a: { x: number; y: number; z: number }, c: { x: number; y: number; z: number }, t: number, color: number): void {
+    const dx = c.x - a.x, dy = c.y - a.y, dz = c.z - a.z;
+    const len = Math.hypot(dx, dy, dz) || 1e-6;
+    const d = [dx / len, dy / len, dz / len];
+    // Deux axes perpendiculaires au pavé, de la demi-section.
+    const ref = Math.abs(d[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0];
+    const u0 = [d[1] * ref[2] - d[2] * ref[1], d[2] * ref[0] - d[0] * ref[2], d[0] * ref[1] - d[1] * ref[0]];
+    const ul = Math.hypot(u0[0], u0[1], u0[2]);
+    const u = u0.map((v) => (v / ul) * (t / 2));
+    const v = [d[1] * u[2] - d[2] * u[1], d[2] * u[0] - d[0] * u[2], d[0] * u[1] - d[1] * u[0]];
+    const signs = [
+      [1, 1],
+      [-1, 1],
+      [-1, -1],
+      [1, -1],
+    ];
+    const ends = [a, c].map((p) => signs.map(([su, sv]) => [p.x + su * u[0] + sv * v[0], p.y + su * u[1] + sv * v[1], p.z + su * u[2] + sv * v[2]] as const));
+    const [A, B] = ends;
+    for (let k = 0; k < 4; k++) {
+      const n = (k + 1) % 4;
+      this.quad(A[k], A[n], B[n], B[k], color);
+    }
+    this.quad(B[0], B[1], B[2], B[3], color);
+    this.quad(A[3], A[2], A[1], A[0], color);
+  }
+
   /** Un toit à deux pans : `sx` le long du faîtage, `sz` en travers, `h` la hauteur du faîtage au-dessus de la base. */
   gableRoof(at: Placement, sx: number, sz: number, h: number, color: number, gable = color): void {
     const t = transform(at);

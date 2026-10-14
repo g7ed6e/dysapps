@@ -315,16 +315,6 @@ describe('La place de la question à l’écran', () => {
     }
   });
 
-  it('au Phare, le carillon : la cloche dans le tiers du milieu, son mot dessous, la tour cadrée jusqu’au pied des cloches', () => {
-    const l = questionLayout({ count: 6, bells: true, centered: true }, 1024, 768);
-    for (const s of l.slots) {
-      expect(s.label.top).toBeGreaterThanOrEqual(s.foot.y);
-      expect(s.foot.y).toBeLessThanOrEqual((2 * 768) / 3 + 1);
-    }
-    expect(l.view.bottom).toBe(l.slots[0].foot.y);
-    expect(l.view.left + l.view.right).toBeCloseTo(1024, 0);
-  });
-
   it('la scène commence sous la barre du haut (« Vue simple » et la pause)', () => {
     for (const [w, h] of screens) expect(questionLayout({ count: 3 }, w, h).view.top).toBeGreaterThanOrEqual(ANSWER_LAYOUT.bar);
   });
@@ -385,7 +375,7 @@ describe('La scène d’un item', () => {
 
   it('les objets des réponses tiennent au-dessus de leur bouton, sans déborder sur le voisin', () => {
     const s = answerScale('phare', points, 10);
-    expect(s * 0.55).toBeLessThanOrEqual(0.45 * 2 + 1e-9);
+    expect(s * 0.45).toBeLessThanOrEqual(0.45 * 2 + 1e-9);
     expect(answerObjects('phare', points, s).triangles).toBeGreaterThan(0);
     expect(answerObjects('quais', [], 1).triangles).toBe(0);
   });

@@ -42,6 +42,10 @@ const C = {
   // Le bronze des cloches, éclairci vers la paille, et son reflet chaud (directeur artistique) : rien de presque noir.
   bronze: 0xc8963c,
   bronzeLight: 0xe8c27a,
+  // La patine du bronze, vert-de-gris : la couronne des cloches.
+  patina: 0x7fae9a,
+  // La corde de sonnerie de la gardienne : la brume du pack.
+  ringRope: 0xe5ebe3,
   post: 0x7a5538,
   straw: 0xd9a441,
   strawDark: 0xb8862e,
@@ -126,10 +130,8 @@ export const ANSWER_LAYOUT = {
   /** La hauteur d'un objet : au moins celle de son étiquette, au plus une part de l'écran. */
   objectShare: 0.6,
   objectMax: 0.15,
-  /** Les cloches, plus petites : un carillon au pied de la tour, qui la laisse se dresser au-dessus. */
+  /** Les cloches, plus petites que les autres objets. */
   bellMax: 0.09,
-  /** Au Phare, sur tablette, la fenêtre de la scène commence plus bas, pour que la tour se pose juste au-dessus du carillon. */
-  towerDrop: 0.3,
   /** La colonne, à gauche : sa part de la largeur. */
   panelMax: 400,
   panelShare: 0.38,
@@ -170,6 +172,11 @@ export interface QuestionLayout {
   aid: ScreenBox | null;
   /** Là où la scène de l'item se montre. */
   view: ScreenBox;
+  /**
+   * Une scénette (./scenette.ts) : là où Kéo et l'habitant se tiennent, et la place de « Valider » en bas à droite
+   * (`null` : dans la colonne). Absent : une question du lot 4.
+   */
+  scenette?: { stage: ScreenBox; validate: ScreenBox | null };
 }
 
 /** Ce que demande une question : combien de réponses, des mots longs (les cloches), une règle, la scène au milieu. */
@@ -177,11 +184,6 @@ export interface QuestionNeeds {
   count: number;
   bells?: boolean;
   aid?: boolean;
-  /**
-   * La scène se cadre au milieu de l'écran, objets compris (le Phare : les cloches en carillon au pied de la tour, dans
-   * son axe, leur mot dessous, jamais en travers de la tour).
-   */
-  centered?: boolean;
   /** Sur un écran bas, la colonne élargie d'un cran ou deux quand la phrase n'y tient pas (`PANEL_LOW_SHARES`). */
   widen?: number;
 }
@@ -232,11 +234,6 @@ export function questionLayout(needs: QuestionNeeds, width: number, height: numb
       const label = { left, right: left + w, top: height - edge - lh, bottom: height - edge };
       const foot = { x, y: label.top - L.lift };
       slots.push({ label, foot, hit: { left, right: left + w, top: foot.y - objectHeight, bottom: label.bottom } });
-    } else if (needs.centered) {
-      // Le carillon : la cloche dans le tiers du milieu, son mot dessous.
-      const foot = { x, y: Math.round((2 * height) / 3) };
-      const label = { left, right: left + w, top: foot.y + L.lift, bottom: foot.y + L.lift + lh };
-      slots.push({ label, foot, hit: { left, right: left + w, top: foot.y - objectHeight, bottom: label.bottom } });
     } else {
       // L'objet dans le tiers du milieu, son étiquette au-dessus.
       const foot = { x, y: Math.round((2 * height) / 3) };
@@ -254,12 +251,8 @@ export function questionLayout(needs: QuestionNeeds, width: number, height: numb
         maxHeight: Math.max(0, (low || !beside ? highest - edge : height - edge) - edge),
       };
   const viewBottom = highest - edge;
-  const viewLeft = needs.centered ? edge : panelRight + edge;
-  // Le Phare : la fenêtre descend jusqu'au pied des cloches, pour que la tour se dresse au-dessus du carillon.
-  const sceneBottom = needs.centered ? Math.max(...slots.map((s) => s.foot.y)) : viewBottom;
-  const sceneTop = needs.centered && !low ? top + L.towerDrop * (sceneBottom - top) : top;
   const aid = low && needs.aid && !full ? { left: panelRight + edge, top, right: width - edge, bottom: viewBottom } : null;
-  return { low, slots, objectHeight, panel, aid, view: { left: viewLeft, top: sceneTop, right: width - edge, bottom: Math.max(sceneTop + 48, sceneBottom) } };
+  return { low, slots, objectHeight, panel, aid, view: { left: panelRight + edge, top, right: width - edge, bottom: Math.max(top + 48, viewBottom) } };
 }
 
 /**
@@ -305,7 +298,7 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse'> 
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
 const OBJECT_SIZE: Record<(typeof ANSWER_OBJECT)[PlaceId], { height: number; half: number }> = {
-  cloche: { height: 1.55, half: 0.55 },
+  cloche: { height: 1, half: 0.45 },
   panier: { height: 0.9, half: 0.5 },
   levier: { height: 1.8, half: 0.32 },
   caisse: { height: 1.4, half: 0.42 },
@@ -323,21 +316,80 @@ export function answerScale(place: PlaceId, points: readonly Vec3[], height: num
   return Math.max(0.05, Math.min(height / size.height, (0.45 * stepOf(points)) / size.half));
 }
 
-/** Une cloche sur son portique, à l'échelle `s`, sa couleur donnée (le bronze, ou la lumière de la réaction). */
-function bell(b: FacetBuilder, p: Vec3, s: number, color: number, side: number, grow = 1): void {
-  b.prism({ x: p.x, y: p.y + 0.65 * s - 0.04 * s * (grow - 1), z: p.z }, 0.36 * s * grow, 0.14 * s * grow, 0.68 * s * grow, 8, color, side);
+/** Les couleurs d'une cloche : le bronze, son reflet (les vagues) et la patine de sa couronne. */
+interface BellColors {
+  body: number;
+  light: number;
+  patina: number;
+}
+
+const BRONZE: BellColors = { body: C.bronze, light: C.bronzeLight, patina: C.patina };
+const LIT: BellColors = { body: C.lamp, light: C.lamp, patina: C.lamp };
+
+/** Le rayon du corps d'une cloche (à l'échelle 1) à la hauteur `y` : de la lèvre à l'épaule. */
+const bellRadius = (y: number) => 0.4 - (0.18 * (y - 0.1)) / 0.62;
+
+/**
+ * Une cloche pendue, sans lettre (lot 2) : la lèvre évasée, le corps de bronze, une frise de vagues en relief à mi-hauteur,
+ * la couronne patinée et son anneau ; de `p` (sa lèvre) à `p.y + s` (son anneau). `grow` : plus grande, son anneau à la
+ * même place (la lumière de la réaction) ; `swing` : penchée de côté autour de son anneau, comme une cloche qu'on vient
+ * de tirer (une cloche choisie : sa forme le dit, pas seulement la couleur de son étiquette).
+ */
+function bell(b: FacetBuilder, p: Vec3, s: number, colors: BellColors, grow = 1, swing = 0): void {
+  const f = new FacetBuilder();
+  f.prism({ x: 0, y: 0, z: 0 }, 0.45, 0.4, 0.1, 10, colors.body, colors.light);
+  f.prism({ x: 0, y: 0.1, z: 0 }, 0.4, 0.22, 0.62, 10, colors.body, colors.patina);
+  f.prism({ x: 0, y: 0.72, z: 0 }, 0.2, 0.12, 0.16, 8, colors.patina);
+  f.box({ x: 0, y: 0.88, z: 0 }, [0.1, 0.12, 0.1], colors.patina);
+  // La frise : une bande de vagues (cinq crêtes) posée sur le corps, un peu en saillie.
+  const N = 20;
+  const ring = (k: number, dy: number) => {
+    const a = (2 * Math.PI * k) / N;
+    const y = 0.36 + 0.06 * Math.sin(5 * a) + dy;
+    const r = bellRadius(y) + 0.02;
+    return [r * Math.cos(a), y, r * Math.sin(a)] as const;
+  };
+  for (let k = 0; k < N; k++) f.quad(ring(k + 1, -0.035), ring(k, -0.035), ring(k, 0.035), ring(k + 1, 0.035), colors.light);
+  const built = f.build();
+  const k = s * grow;
+  const pos = built.positions;
+  const nor = built.normals;
+  const cs = Math.cos(swing), sn = Math.sin(swing);
+  for (let i = 0; i < pos.length; i += 3) {
+    // Autour de l'anneau (en haut), dans le plan de l'écran, puis à l'échelle, puis à sa place : l'anneau reste en
+    // `p.y + s`.
+    const x = pos[i], y = pos[i + 1] - 1;
+    pos[i] = (x * cs - y * sn) * k + p.x;
+    pos[i + 1] = (x * sn + y * cs) * k + p.y + s;
+    pos[i + 2] = pos[i + 2] * k + p.z;
+    const nx = nor[i], ny = nor[i + 1];
+    nor[i] = nx * cs - ny * sn;
+    nor[i + 1] = nx * sn + ny * cs;
+  }
+  b.append(built);
+}
+
+/** Où pendent les cloches d'une scénette : la main qui tient la corde de sonnerie, et le haut de la rambarde. */
+export interface BellHanging {
+  hand: Vec3;
+  rail: Vec3;
 }
 
 /**
  * Les objets des réponses, posés sur un ponton aux points donnés (au sol, dans l'ordre des choix ; la vue les tire de
- * l'écran), à l'échelle `answerScale`, pour que chacun tienne au-dessus de son bouton.
+ * l'écran), à l'échelle `answerScale`, pour que chacun tienne au-dessus de son bouton. Au Phare, les cloches pendent à
+ * une poutre devant la rambarde de la galerie (`hanging`), les choisies (`picked`) balancées vers l'élève.
  */
-export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number): Facets {
+export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number, picked: readonly number[] = [], hanging?: BellHanging): Facets {
   const b = new FacetBuilder();
   if (points.length === 0) return b.build();
   const xs = points.map((p) => p.x);
   const y = points[0].y;
   const z = points.reduce((t, p) => t + p.z, 0) / points.length;
+  if (ANSWER_OBJECT[place] === 'cloche') {
+    hangBells(b, points, s, picked, hanging);
+    return b.build();
+  }
   // Le ponton sous la rangée : jamais un objet posé sur l'eau.
   b.box(
     { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: y - 0.12 * s, z },
@@ -347,11 +399,7 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
   );
   const kind = ANSWER_OBJECT[place];
   for (const p of points) {
-    if (kind === 'cloche') {
-      for (const dx of [-0.45, 0.45]) b.box({ x: p.x + dx * s, y, z: p.z }, [0.1 * s, 1.5 * s, 0.1 * s], C.post);
-      b.box({ x: p.x, y: y + 1.45 * s, z: p.z }, [1.05 * s, 0.12 * s, 0.14 * s], C.post);
-      bell(b, p, s, C.bronze, C.bronzeLight);
-    } else if (kind === 'panier') {
+    if (kind === 'panier') {
       const w = 0.9 * s,
         d = 0.7 * s,
         h = 0.5 * s,
@@ -373,6 +421,32 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     }
   }
   return b.build();
+}
+
+/**
+ * Les cloches pendues à leur poutre, chacune à sa corde, la poutre tenue à la rambarde par deux potences ; la corde de
+ * sonnerie va de la main de l'habitant au bout de la poutre. Sans `hanging`, la poutre seule les tient.
+ */
+function hangBells(b: FacetBuilder, points: readonly Vec3[], s: number, picked: readonly number[], hanging?: BellHanging): void {
+  const xs = points.map((p) => p.x);
+  const z = points.reduce((t, p) => t + p.z, 0) / points.length;
+  const beamY = Math.max(...points.map((p) => p.y)) + 1.25 * s;
+  const left = Math.min(...xs) - 0.6 * s;
+  const right = Math.max(...xs) + 0.6 * s;
+  b.box({ x: (left + right) / 2, y: beamY, z }, [right - left, 0.14 * s, 0.16 * s], C.post);
+  points.forEach((p, i) => {
+    b.box({ x: p.x, y: p.y + s, z: p.z }, [0.05 * s, beamY - p.y - s, 0.05 * s], C.rope);
+    bell(b, p, s, BRONZE, 1, picked.includes(i) ? 0.3 : 0);
+  });
+  if (!hanging) return;
+  // Deux potences : de la poutre à la rambarde, puis au haut de la rambarde.
+  const mid = hanging.rail.x;
+  for (const x of [Math.max(left, mid - 1.1), Math.min(right, mid + 1.1)]) {
+    b.beam({ x, y: beamY, z }, { x, y: beamY, z: hanging.rail.z }, 0.1, C.post);
+    b.beam({ x, y: beamY, z: hanging.rail.z }, { x, y: hanging.rail.y, z: hanging.rail.z }, 0.1, C.post);
+  }
+  // La corde de sonnerie, de la main de l'habitant au bout de la poutre.
+  b.beam(hanging.hand, { x: right, y: beamY, z }, 0.05, C.ringRope);
 }
 
 // ---------- La scène d'un item ----------
@@ -546,7 +620,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     // Les bonnes cloches s'allument le temps de la réaction, puis redeviennent de bronze : rien ne reste.
     if (answered && right.length) {
       const r = new FacetBuilder();
-      for (const p of right) bell(r, p, scale, C.lamp, C.lamp, 1.12);
+      for (const p of right) bell(r, p, scale, LIT, 1.12);
       reaction = {
         facets: r.build(),
         from: ORIGIN,

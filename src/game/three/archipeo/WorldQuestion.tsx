@@ -5,7 +5,9 @@
 // caisse), touchables ensemble. Sur tablette, les objets sont dans le tiers du milieu, leur étiquette au-dessus ; sur un
 // téléphone couché, les étiquettes en rangée en bas, les objets juste au-dessus, la consigne en icône (lue en entier au
 // premier item), la règle à droite : rien ne défile. Rien à lire n'est peint dans la 3D. « Vue simple » rouvre l'écran
-// classique de la même mission.
+// classique de la même mission. Au Phare, une scénette (piste 1, lot 2, ../../world/continu/scenette.ts) : le rôle de
+// l'habitant en tête du panneau, Kéo et la gardienne au milieu, les cloches en rangée en bas, « Valider » en bas à
+// droite sur tablette ; à la réussite, la lampe du Phare s'allume.
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
@@ -29,6 +31,7 @@ import type { ExerciseItem } from '../../exercises/types';
 import { exercisesToReview } from '../../review';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
 import { WIDEN_FULL, WIDEN_OFFER, questionLayout, type AnswerSlot, type QuestionLayout } from '../../world/continu/questionScene';
+import { scenetteLayout, scenetteOf } from '../../world/continu/scenette';
 import { bellRounds, isItemScene, placeInstruction, placeItems, type ItemScene } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { WorldDone } from './WorldDone';
@@ -39,6 +42,8 @@ interface ItemShown {
   scene: ItemScene;
   answered: boolean;
   right: number[];
+  /** Les réponses choisies, pas encore validées (les cloches du Phare). */
+  picked: number[];
   count: number;
   aid: boolean;
 }
@@ -115,22 +120,27 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   const [widen, setWiden] = useState(0);
   // Le résultat d'un écran bas qui ne tient pas dans la colonne élargie : il prend toute la largeur au-dessus des objets.
   const [sheetWide, setSheetWide] = useState(false);
-  const layout = useMemo(
-    () => questionLayout({ count, bells: place === 'phare', aid: hasAid, centered: place === 'phare', widen }, size.w || 1, size.h || 1),
-    [count, hasAid, place, size, widen],
-  );
+  const scenette = scenetteOf(place);
+  const layout = useMemo(() => {
+    const base = questionLayout({ count, bells: place === 'phare', aid: hasAid, widen }, size.w || 1, size.h || 1);
+    return scenette ? scenetteLayout({ count, widen }, size.w || 1, size.h || 1, base) : base;
+  }, [count, hasAid, place, size, widen, scenette]);
   const [finished, setFinished] = useState(false);
-  const offer = layout.low && widen >= WIDEN_OFFER;
-  // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
-  const [introDone, setIntroDone] = useState(false);
-  const intro = layout.low && !introDone && !finished && !offer;
+  // La réussite de la mission (une étoile au moins) : dans une scénette, la lampe du lieu s'allume.
+  const [success, setSuccess] = useState(false);
   // Un mot de réponse coupé dans son étiquette (les cloches en grand texte) : on ne répond que dans « Vue simple »,
   // proposé d'emblée, la voix gardée ; les étiquettes ne passent jamais sur deux rangées.
   const [answersOut, setAnswersOut] = useState(false);
+  const offer = (layout.low && widen >= WIDEN_OFFER) || (!layout.low && answersOut);
+  // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
+  const [introDone, setIntroDone] = useState(false);
+  const intro = layout.low && !introDone && !finished && !offer;
   // Mesuré avant l'affichage, à chaque item, réponse ou cran : une colonne qui déborde (en hauteur ou en largeur) prend
   // le cran suivant ; une consigne qui ne tient pas en pleine largeur mène droit à « Vue simple » ; un mot coupé aussi.
+  // Sur tablette, seule une scénette se mesure : ses mots de réponse (le panneau prend la hauteur de son texte).
   useLayoutEffect(() => {
-    if (!layout.low || finished || answersOut) return;
+    // Rien ne se mesure avant que la page ait sa taille (la place des réponses en dépend).
+    if (!size.w || (!layout.low && !layout.scenette) || finished || answersOut) return;
     const root = box.current;
     if (!root) return;
     if (wordsCut(root.querySelectorAll<HTMLElement>('.world-answer-label'))) {
@@ -138,23 +148,25 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       setWiden(WIDEN_OFFER);
       return;
     }
-    if (offer) return;
+    if (offer || !layout.low) return;
     const column = root.querySelector<HTMLElement>('.quiz.in-world');
     if (!column || !overflows(column)) return;
     if (intro) setWiden(WIDEN_OFFER);
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
-  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut]);
+  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w]);
   useEffect(() => {
     if (!size.w || !size.h || !item || finished) return;
     setLabels(world.question({ place, layout, item }));
   }, [world, place, layout, item, size, finished]);
-  // La fin de la mission : la caméra revient au lieu, où la pièce remise en marche se voit derrière le bilan.
+  // La fin de la mission : la caméra revient au lieu, où la pièce remise en marche se voit derrière le bilan ; dans une
+  // scénette, elle reste, et la lampe s'allume à la réussite.
   useEffect(() => {
     if (!finished) return;
-    world.question(null);
+    if (scenette) world.scenetteEnd(success);
+    else world.question(null);
     setLabels([]);
-  }, [world, finished]);
+  }, [world, finished, scenette, success]);
   // En partant (« Revenir », Quitter, « Vue simple »), la scène reprend son cadrage.
   useEffect(() => () => void world.question(null), [world]);
 
@@ -184,7 +196,16 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
         )}
       </>
     );
+    // Le rôle de l'habitant en tête du panneau, et la place de sa phrase d'accueil (vide tant que le mainteneur n'a pas
+    // tranché : la consigne reste la seule phrase, lue).
+    const head: ReactNode = scenette ? (
+      <div className="world-scenette-head">
+        <p className="world-scenette-role">{scenette.role}</p>
+        {scenette.greeting && <p className="world-scenette-greeting">{scenette.greeting}</p>}
+      </div>
+    ) : null;
     return {
+      head,
       screens:
         place === 'phare'
           ? (items, seed) => bellRounds(placeItems(place, exerciseId, items), seeded(`${seed}:cloches`))
@@ -194,9 +215,9 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
       extra,
       Done: WorldDone,
-      className: `in-world${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut ? ' answers-out' : ''}`,
+      className: `in-world${scenette ? ' scenette' : ''}${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut ? ' answers-out' : ''}`,
     };
-  }, [exerciseId, instruction, place, lieu.at, onClose, onSimpleView, intro, offer, widen, layout.low, finished, sheetWide, answersOut]);
+  }, [exerciseId, instruction, place, lieu.at, onClose, onSimpleView, intro, offer, widen, layout.low, finished, sheetWide, answersOut, scenette]);
 
   const style = {
     '--question-left': `${layout.panel.left}px`,
@@ -206,7 +227,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   } as CSSProperties;
 
   return (
-    <div className="world-question" ref={box} style={style}>
+    <div className={`world-question${scenette ? ' scenette' : ''}`} ref={box} style={style}>
       {!biome || loaded === null ? null : !ready || !stage ? (
         <Loading className="world-loading" />
       ) : (
@@ -217,9 +238,13 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
               biome={biome}
               def={ready.def}
               stage={stage}
-              onComplete={() => setFinished(true)}
+              onComplete={(completion) => {
+                setSuccess(completion.stars >= 1);
+                setFinished(true);
+              }}
               onReplay={() => {
                 setFinished(false);
+                setSuccess(false);
                 setIntroDone(false);
                 setWiden(0);
                 setSheetWide(false);
@@ -255,7 +280,9 @@ const sameItem = (a: ItemShown, b: ItemShown) =>
   a.count === b.count &&
   a.aid === b.aid &&
   a.right.length === b.right.length &&
-  a.right.every((r, i) => r === b.right[i]);
+  a.right.every((r, i) => r === b.right[i]) &&
+  a.picked.length === b.picked.length &&
+  a.picked.every((r, i) => r === b.picked[i]);
 
 function useQuestion(): QuestionContextValue {
   const ctx = useContext(QuestionContext);
@@ -349,7 +376,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   const rightIndex = choices.indexOf(answer);
   useEffect(() => {
     if (!scene) return;
-    show({ scene, answered: Boolean(answered), right: answered && rightIndex >= 0 ? [rightIndex] : [], count: choices.length, aid: Boolean(aid) });
+    show({ scene, answered: Boolean(answered), right: answered && rightIndex >= 0 ? [rightIndex] : [], picked: [], count: choices.length, aid: Boolean(aid) });
   }, [show, scene, answered, rightIndex, choices.length, aid]);
   if (!item || !scene) return null;
   // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière.
@@ -456,10 +483,11 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const scene = placeSceneOf(items[0]);
   const right = useMemo(() => (answered ? items.flatMap((it, i) => (it.correct ? [i] : [])) : []), [items, answered]);
+  const chosen = useMemo(() => items.flatMap((it, i) => (picked.has(it.key) ? [i] : [])), [items, picked]);
   useEffect(() => {
     if (!scene) return;
-    show({ scene, answered: Boolean(answered), right, count: items.length, aid: false });
-  }, [show, scene, answered, right, items.length]);
+    show({ scene, answered: Boolean(answered), right, picked: chosen, count: items.length, aid: false });
+  }, [show, scene, answered, right, chosen, items.length]);
   if (!scene) return null;
 
   const toggle = (it: ExerciseItem) => {
@@ -487,6 +515,8 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
     onAnswer({ results, detail: firstWrong ? { word: firstWrong.word, heard: firstWrong.heard, missed: !picked.has(firstWrong.key), summary } : {} });
   };
   const words = items.map((it) => String(it.word));
+  // Sa place vient de scenetteLayout (en bas à droite, 3 % du bord) ; la feuille de style la reprend.
+  const validateBox = layout.scenette?.validate ?? null;
 
   return (
     <div className="question world-place">
@@ -504,13 +534,19 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
           ) : (
             <SpeakButton text={frenchTypography(words.join(', '))} label="Écouter les cloches" />
           )}
-          {!answered && (
+          {!answered && !validateBox && (
             <button type="button" className="button primary validate-button" onClick={validate}>
               <Icon name="check" /> Valider
             </button>
           )}
         </div>
       </div>
+      {/* Dans une scénette, sur tablette : « Valider » en bas à droite, sous la rangée des cloches. */}
+      {!answered && validateBox && (
+        <button type="button" className="button primary validate-button world-validate" onClick={validate}>
+          <Icon name="check" /> Valider
+        </button>
+      )}
       <ul className="world-answers" aria-label="Cloches à trier">
         {items.map((it, i) => {
           const slot = layout.slots[i] ?? layout.slots[0];

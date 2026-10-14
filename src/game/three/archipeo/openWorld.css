@@ -676,3 +676,83 @@
 .world-question .in-world.answers-out .validate-button {
   display: none;
 }
+/* Le cadenas d'un lieu encore sous la brume : une icône sur un rond uni, sans texte (dite aux lecteurs d'écran), posée
+   au-dessus du lieu ; rien à toucher. */
+.open-world-locks {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.open-world-lock {
+  position: absolute;
+  left: -20px;
+  top: -40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  will-change: transform;
+}
+.open-world-lock[hidden] {
+  display: none;
+}
+.open-world-lock svg {
+  width: 22px;
+  height: 22px;
+}
+/* La scénette (lot 2) : le rôle de l'habitant en tête du panneau, en gras ; la place de sa phrase d'accueil dessous. */
+.world-scenette-head {
+  margin: 0 0 0.3rem;
+}
+.world-scenette-role {
+  margin: 0;
+  font-weight: 700;
+  font-size: max(18px, 1.15rem);
+}
+.world-scenette-greeting {
+  margin: 0.2rem 0 0;
+}
+/* Sur tablette, le panneau prend la hauteur de son texte, en haut ; « Valider » en bas à droite, à 3 % du bord, sous
+   la rangée des cloches (sa place est gardée par scenetteLayout). */
+.world-question .quiz.in-world.scenette:not(.low) {
+  max-height: var(--question-max-height);
+}
+.world-question .world-place .validate-button.world-validate {
+  position: absolute;
+  right: 3%;
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  z-index: 2;
+  width: auto;
+  min-width: 176px;
+  min-height: 56px;
+  justify-content: center;
+}
+/* Une cloche choisie : sa forme le dit dans la scène (elle se balance) ; son étiquette, un trait plus épais, pas
+   seulement une couleur. */
+.world-question .in-world.scenette .world-answer.picked .world-answer-label {
+  border-width: 4px;
+}
+/* Le bilan d'une scénette sur tablette : en bas, sur la rangée des cloches effacées ; la lampe du Phare, en haut de la
+   scène, reste visible. */
+.world-question .quiz.in-world.scenette.finished:not(.low) {
+  margin-top: 0;
+  position: absolute;
+  left: var(--question-left);
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  max-height: calc(100% - 28% - 12px);
+}
+/* « Vue simple » proposé d'emblée dans une scénette sur tablette (un mot des cloches coupé en grand texte) : le panneau
+   reste une colonne, la consigne passe à la ligne ; les étiquettes effacées, il descend jusqu'au bas de l'écran. */
+.world-question .quiz.in-world.scenette.offer:not(.low) {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  max-height: calc(100% - var(--question-top) - 12px);
+}

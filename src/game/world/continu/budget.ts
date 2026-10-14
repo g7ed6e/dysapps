@@ -8,6 +8,7 @@ import { PLACES, type PlaceId } from './plan6e';
 import { modelOfPlace } from './places';
 import { answerObjects, itemScene, placePieces, sceneSpot, veilleurPiece } from './questionScene';
 import type { ItemScene } from './questions';
+import { bellPlane, habitantHand, litLantern, scenetteDecor } from './scenette';
 import { buildHeightField, heightOnMesh, tileRings, tileTriangleCounts } from './terrain';
 import { veilFacets } from './veil';
 
@@ -18,7 +19,7 @@ const KEO = { triangles: 1620, calls: 2 };
 export const OPEN_WORLD_BUDGET = { triangles: 45_000, calls: 18 } as const;
 
 export interface OpenWorldCost {
-  poste: 'sol' | 'mer' | 'chemins' | 'lieux' | 'brume' | 'kéo' | 'question' | 'pièces';
+  poste: 'sol' | 'mer' | 'chemins' | 'lieux' | 'brume' | 'kéo' | 'question' | 'scénette' | 'pièces';
   triangles: number;
   calls: number;
 }
@@ -43,9 +44,21 @@ function questionCost(): { triangles: number; calls: number } {
     const s = sceneSpot(place);
     const points = Array.from({ length: 6 }, (_, i) => ({ x: s.x - 5 + 2 * i, y: s.y, z: s.z + 6 }));
     const item = itemScene(place, scene, true, points, 1);
-    triangles = Math.max(triangles, item.still.triangles + answerObjects(place, points, 1).triangles + (item.reaction?.facets.triangles ?? 0));
+    // Au Phare, les cloches pendues à leur poutre, toutes balancées, et la corde de sonnerie.
+    const hang = place === 'phare' ? { hand: habitantHand(place), rail: bellPlane(place).rail } : undefined;
+    const objects = answerObjects(place, points, 1, hang ? [0, 1, 2, 3, 4, 5] : [], hang);
+    triangles = Math.max(triangles, item.still.triangles + objects.triangles + (item.reaction?.facets.triangles ?? 0));
   }
   return { triangles, calls: 2 };
+}
+
+/**
+ * Une scénette (lot 2, le Phare) : le décor de près (la galerie, sa rambarde, la gardienne), un maillage fait à
+ * l'arrivée et libéré au départ, et la lampe de la réussite (un maillage, son propre matériau, qui ne paraît qu'au
+ * bilan, quand les objets des réponses sont effacés : compté quand même, le pire cas). Kéo y reste, sans son anneau.
+ */
+function scenetteCost(): { triangles: number; calls: number } {
+  return { triangles: scenetteDecor('phare').triangles + litLantern('phare').triangles, calls: 2 };
 }
 
 /** Les pièces durables, toutes remises, et le Veilleur rallumé : un maillage pour les quatre lieux, et la Roue des Écluses. */
@@ -93,6 +106,7 @@ export function openWorldCost(): OpenWorldCost[] {
     { poste: 'brume', triangles: veilFacets(PLACES.map((p) => p.id)).triangles, calls: 2 },
     { poste: 'kéo', ...KEO },
     { poste: 'question', ...questionCost() },
+    { poste: 'scénette', ...scenetteCost() },
     { poste: 'pièces', ...piecesCost() },
   ];
 }

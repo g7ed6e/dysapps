@@ -68,6 +68,8 @@ export interface RunnerStage {
   Screen?: ComponentType<ScreenProps>;
   instruction?: string;
   back: { label: string; onClick: () => void };
+  /** Ce que le lieu met en tête, avant la consigne (le rôle de l'habitant d'une scénette). */
+  head?: ReactNode;
   extra?: ReactNode;
   className?: string;
   /** Le bilan du lieu, à la place de celui de l'écran classique. */
@@ -436,6 +438,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
 
   return (
     <section className={`quiz${answered ? ' has-sheet' : ''}${sectionClass}`} ref={sectionRef} aria-labelledby="consigne">
+      {inWorld?.head}
       {ownConsigne ? (
         <div className="consigne">
           <h2 id="consigne" className="consigne-text">

@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
-import { WORLD_FOG, followPose, followStep, liftStep, markOffset, occlusionLift, type CameraPose } from '../../world/continu/camera';
+import { LOOK_UP, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markOffset, occlusionLift, type CameraPose } from '../../world/continu/camera';
 import { FacetBuilder, type Facets } from '../../world/continu/facets';
 import { distance, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
@@ -18,10 +18,11 @@ import { PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { modelOfPlace } from '../../world/continu/places';
 import { answerObjects, answerScale, itemScene, placePieces, questionPose, sceneSpot, veilleurPiece, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, veilleurAwake, type ItemScene } from '../../world/continu/questions';
+import { SCENETTE_CAMERA, bellPlane, habitantHand, litLantern, scenetteDecor, scenetteKeo, scenetteOf, scenettePose } from '../../world/continu/scenette';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
 import { buildHeightField, heightOnMesh, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
-import { MIST_COLOR, veilFacets, type VeilMesh } from '../../world/continu/veil';
+import { MIST_COLOR, VEIL_HEIGHT, veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
@@ -38,6 +39,11 @@ export interface OpenWorldOptions {
   onDepart(): void;
   /** La place de la marque de la prochaine mission à l'écran, à chaque image (`null` : pas de marque). */
   onMark(mark: MarkOnScreen | null): void;
+  /**
+   * La place à l'écran du cadenas de chaque lieu sous la brume, à chaque image (la même liste, remplie sur place ;
+   * refaite quand la brume change). Aucun pendant une question.
+   */
+  onLocks(locks: readonly LockOnScreen[]): void;
   /** Montrer le compteur de mesures (`?mesures`) ; `expose` : le laisser lire aux scripts. */
   meter: { show: boolean; expose: boolean };
 }
@@ -61,6 +67,12 @@ export interface OpenWorld {
    * réponse et à chaque changement de taille ; la réaction ne joue qu'au moment où l'item reçoit sa réponse.
    */
   question(q: QuestionRequest | null): LabelOnScreen[];
+  /**
+   * La fin de la mission dans une scénette (le Phare) : la caméra reste dans la galerie, les objets des réponses
+   * s'effacent, et à la réussite (`lit`) la lampe du Phare s'allume (tout de suite avec « Réduire les animations »).
+   * `question(null)` la quitte.
+   */
+  scenetteEnd(lit: boolean): void;
   /** Les pièces durables de chaque lieu remises en marche (0, 1 ou 2), tirées des étoiles gardées. */
   setPieces(counts: Readonly<Record<PlaceId, number>>): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
@@ -72,7 +84,15 @@ export interface OpenWorld {
 interface QuestionRequest {
   place: PlaceId;
   layout: QuestionLayout;
-  item: { scene: ItemScene; answered: boolean; right: readonly number[] };
+  item: { scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[] };
+}
+
+/** Le cadenas d'un lieu sous la brume, à l'écran : en pixels, et s'il se voit. */
+export interface LockOnScreen {
+  place: PlaceId;
+  x: number;
+  y: number;
+  shown: boolean;
 }
 
 /** Un repère de la scène à l'écran, en pixels. */
@@ -107,6 +127,12 @@ const RING_MOVE = 3;
 const PLACE_BEYOND_FOG = 10;
 /** Le lever de la brume d'un lieu : un fondu court, en secondes (d'un bloc avec « Réduire les animations »). */
 const VEIL_FADE_SECONDS = 0.8;
+/** La lampe du Phare qui s'allume à la réussite : de la vitre éteinte à la lumière, en un fondu (fixe avec « Réduire les animations »). */
+const LAMP = { off: 0xbfd0d3, on: 0xffd36b, seconds: 1.2 } as const;
+/** Le cadenas d'un lieu se tient au bord de l'écran de tant de pixels au moins, sinon il ne se montre pas. */
+const LOCK_MARGIN = 24;
+/** Le cadenas se pose de tant d'unités au-dessus du banc de brume. */
+const LOCK_LIFT = 1;
 
 /** Une géométrie à facettes (positions, normales, couleurs de sommet), sa boîte englobante juste. */
 function geometryOf(f: Facets): THREE.BufferGeometry {
@@ -371,26 +397,50 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let viewW = Math.max(1, host.clientWidth);
   let viewH = Math.max(1, host.clientHeight);
   // Le décalage de l'image d'une question, en pixels (refait seulement quand il change).
-  let appliedShift = { x: 0, y: 0 };
-  let shift = { x: 0, y: 0 };
+  const appliedShift = { x: 0, y: 0 };
+  const shift = { x: 0, y: 0 };
+  const setShift = (s: { x: number; y: number }) => {
+    shift.x = s.x;
+    shift.y = s.y;
+  };
+  // La dernière pose posée : le départ de la descente dans une scénette.
+  const current: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
+  const copyPose = (from: CameraPose, to: CameraPose) => {
+    Object.assign(to.position, from.position);
+    Object.assign(to.target, from.target);
+    to.fov = from.fov;
+    to.lens = from.lens;
+    return to;
+  };
   const applyPose = (p: CameraPose) => {
+    copyPose(p, current);
     camera.position.set(p.position.x, p.position.y, p.position.z);
     camera.up.set(0, 1, 0);
     camera.lookAt(p.target.x, p.target.y, p.target.z);
     if (p.fov !== camera.fov) {
       // Le champ change (une question, son retour) : la projection est refaite, avec le décalage.
       camera.fov = p.fov;
-      appliedShift = { x: Number.NaN, y: Number.NaN };
+      appliedShift.x = Number.NaN;
     }
     const x = shift.x;
     const y = shift.y;
     if (x === appliedShift.x && y === appliedShift.y) return;
-    appliedShift = { x, y };
+    appliedShift.x = x;
+    appliedShift.y = y;
     // Les deux refont la projection.
     if (x === 0 && y === 0) camera.clearViewOffset();
     else camera.setViewOffset(viewW, viewH, x, y, viewW, viewH);
   };
-  const follow = () => applyPose(followPose(focus, lift, pose));
+  // Le regard levé près du Phare (`lookUp`) : sa part, de 0 à 1 ; le haut de la lanterne.
+  const phare = placeById('phare');
+  const lanternTop: Vec3 = { x: phare.center.x, y: standingHeight(ground(phare.center.x, phare.center.z)) + modelOfPlace('phare').top, z: phare.center.z };
+  const nearLantern = () => !walk && distance(here, phare.center) < LOOK_UP.within;
+  let look = nearLantern() ? 1 : 0;
+  const follow = () => {
+    followPose(focus, lift, pose);
+    lookUp(pose, lanternTop, keoFeet, look, viewH);
+    applyPose(pose);
+  };
   follow();
 
   // Les anneaux du terrain, et les lieux qu'on dessine : refaits quand le point suivi s'éloigne de leur centre.
@@ -435,6 +485,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Les bancs qui se lèvent (Kéo approche, la mission devient la prochaine) s'effacent en un fondu court.
     const lifted = shown.filter((id) => !ids.includes(id));
     shown = ids;
+    setLocks(ids);
     setVeilGeometry(veilMesh, veilFacets(ids));
     if (lifted.length && !reduceMotion) {
       setVeilGeometry(fadeMesh, veilFacets(lifted));
@@ -472,6 +523,44 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     projected.copy(mark).project(camera);
     const far = distanceSign(here, placeById(markPlace).center);
     options.onMark(markOnScreen({ x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH, behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far));
+  };
+
+  // Les cadenas des lieux sous la brume : leur point (au-dessus du lieu), refaits quand la brume change ; leur place à
+  // l'écran remplie sur place à chaque image.
+  let locks: LockOnScreen[] = [];
+  const lockPoints: THREE.Vector3[] = [];
+  const setLocks = (ids: readonly PlaceId[]) => {
+    locks = ids.map((place) => ({ place, x: 0, y: 0, shown: false }));
+    lockPoints.length = 0;
+    // Au-dessus du banc de brume (ou du haut du lieu, s'il est plus bas).
+    for (const id of ids) {
+      const foot = feet.get(id) ?? new THREE.Vector3();
+      lockPoints.push(new THREE.Vector3(foot.x, foot.y + Math.min(modelOfPlace(id).top, VEIL_HEIGHT) + LOCK_LIFT, foot.z));
+    }
+  };
+  const reportLocks = () => {
+    for (let i = 0; i < locks.length; i++) {
+      const l = locks[i];
+      projected.copy(lockPoints[i]).project(camera);
+      l.x = ((projected.x + 1) / 2) * viewW;
+      l.y = ((1 - projected.y) / 2) * viewH;
+      l.shown =
+        projected.z < 1 &&
+        distance(here, placeById(l.place).center) < WORLD_FOG.far &&
+        l.x > LOCK_MARGIN &&
+        l.x < viewW - LOCK_MARGIN &&
+        l.y > LOCK_MARGIN &&
+        l.y < viewH - LOCK_MARGIN;
+    }
+    options.onLocks(locks);
+  };
+  const hideLocks = () => {
+    let any = false;
+    for (const l of locks) {
+      any ||= l.shown;
+      l.shown = false;
+    }
+    if (any) options.onLocks(locks);
   };
 
   const arrive = (place: PlaceId | null) => {
@@ -573,16 +662,104 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       reaction = null;
     }
   };
+  // La scénette d'un lieu (lot 2) : le décor de près (la galerie, sa rambarde, l'habitant), fait à l'arrivée et libéré
+  // au départ ; la lampe de la réussite ; la descente de la caméra, courte (coupe franche avec « Réduire les animations »).
+  let scenette: PlaceId | null = null;
+  const decorMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
+  const lampMaterial = new THREE.MeshBasicMaterial({ color: LAMP.off });
+  const lampMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), lampMaterial));
+  decorMesh.visible = false;
+  lampMesh.visible = false;
+  scene.add(decorMesh, lampMesh);
+  const lampOff = new THREE.Color(LAMP.off);
+  const lampOn = new THREE.Color(LAMP.on);
+  let lampStart: number | null = null;
+  // La scène de l'item est-elle à montrer (cachée le temps de la descente) ?
+  let itemShown = false;
+  const descent = {
+    active: false,
+    start: 0,
+    from: { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 } as CameraPose,
+    to: { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 } as CameraPose,
+    fromShift: { x: 0, y: 0 },
+    toShift: { x: 0, y: 0 },
+  };
+  const between: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
+  const mix = (a: number, b: number, u: number) => a + (b - a) * u;
+  /** La descente à l'instant `t` (en secondes) : la pose entre le départ et la galerie ; finie, la pose de la galerie. */
+  const stepDescent = (t: number) => {
+    if (!descent.active) return;
+    const u = Math.min(1, (t - descent.start) / SCENETTE_CAMERA.seconds);
+    const e = u * u * (3 - 2 * u);
+    const { from, to } = descent;
+    for (const k of ['x', 'y', 'z'] as const) {
+      between.position[k] = mix(from.position[k], to.position[k], e);
+      between.target[k] = mix(from.target[k], to.target[k], e);
+    }
+    between.fov = mix(from.fov, to.fov, e);
+    shift.x = mix(descent.fromShift.x, descent.toShift.x, e);
+    shift.y = mix(descent.fromShift.y, descent.toShift.y, e);
+    applyPose(between);
+    if (u < 1) return;
+    descent.active = false;
+    // Les cloches paraissent quand la caméra est arrivée (elles sont posées pour la galerie, pas pour le chemin).
+    itemMesh.visible = itemShown;
+  };
+  /** La lampe qui s'allume, à l'instant `t`. */
+  const stepLamp = (t: number) => {
+    if (lampStart === null) return;
+    const u = reduceMotion ? 1 : Math.min(1, (t - lampStart) / LAMP.seconds);
+    lampMaterial.color.lerpColors(lampOff, lampOn, u);
+    if (u >= 1) lampStart = null;
+  };
+  /** Entre dans la scénette d'un lieu : le décor de près, Kéo à sa place dans la galerie, sans son anneau. */
+  const enterScenette = (place: PlaceId) => {
+    if (scenette === place) return;
+    scenette = place;
+    setGeometry(decorMesh, scenetteDecor(place));
+    const k = scenetteKeo(place);
+    keo.position.set(k.at.x, k.at.y, k.at.z);
+    keo.scale.setScalar(k.scale);
+    keo.rotation.y = k.yaw;
+    keo.visible = true;
+    ring.visible = false;
+  };
+  /** Quitte la scénette : son décor et sa lampe libérés, Kéo de retour sur le chemin, à sa taille. */
+  const leaveScenette = () => {
+    if (!scenette) return;
+    scenette = null;
+    descent.active = false;
+    lampStart = null;
+    for (const m of [decorMesh, lampMesh]) {
+      m.geometry.dispose();
+      m.geometry = new THREE.BufferGeometry();
+      m.visible = false;
+    }
+    keo.scale.setScalar(KEO_SCALE);
+    keo.rotation.y = heading;
+    placeKeo(here);
+  };
+  const vertical = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+  /** Le point du plan vertical `z` (face à la caméra) sous un point de l'écran, avec la pose de la caméra déjà posée. */
+  const planeUnder = (sx: number, sy: number, z: number) => {
+    pointer.set((sx / viewW) * 2 - 1, -(sy / viewH) * 2 + 1);
+    raycaster.setFromCamera(pointer, camera);
+    vertical.constant = -z;
+    const hit = raycaster.ray.intersectPlane(vertical, ground3);
+    return hit ? { x: hit.x, y: hit.y, z } : null;
+  };
   const askQuestion = (q: QuestionRequest | null): LabelOnScreen[] => {
     if (!q) {
       if (!asked) return [];
       asked = null;
       reaction = null;
+      itemShown = false;
       itemMesh.visible = false;
       reactionMesh.visible = false;
+      leaveScenette();
       keo.visible = true;
       ring.visible = true;
-      shift = { x: 0, y: 0 };
+      setShift({ x: 0, y: 0 });
       // La brume revient près de Kéo, la caméra derrière lui, sans passage.
       fog.near = WORLD_FOG.near;
       fog.far = WORLD_FOG.far;
@@ -592,22 +769,47 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
     const { place, layout, item } = q;
-    // Kéo s'efface le temps de la question : la scène de l'item est devant le lieu, là où il se tient.
-    keo.visible = false;
-    ring.visible = false;
     walk = null;
-    // La caméra de la question est plus loin du lieu que celle qui suit Kéo : la brume s'écarte.
-    fog.near = WORLD_FOG.question.near;
-    fog.far = WORLD_FOG.question.far;
-    const qp = questionPose(place, layout.view, viewW, viewH);
-    shift = qp.shift;
+    const stage = layout.scenette && scenetteOf(place) ? layout.scenette.stage : null;
+    let qp: { pose: CameraPose; shift: { x: number; y: number } };
+    if (stage) {
+      // La scénette : Kéo dans la galerie, à côté de l'habitant ; la brume reste celle du monde (la caméra est près).
+      const entering = scenette !== place;
+      if (entering) copyPose(current, descent.from);
+      const fromShift = { ...shift };
+      enterScenette(place);
+      fog.near = WORLD_FOG.near;
+      fog.far = WORLD_FOG.far;
+      qp = scenettePose(place, stage, viewW, viewH);
+      if (entering && !reduceMotion) {
+        copyPose(qp.pose, descent.to);
+        descent.fromShift = fromShift;
+        descent.toShift = { ...qp.shift };
+        descent.start = performance.now() / 1000;
+        descent.active = true;
+      } else if (descent.active) {
+        copyPose(qp.pose, descent.to);
+        descent.toShift = { ...qp.shift };
+      }
+    } else {
+      // Kéo s'efface le temps de la question : la scène de l'item est devant le lieu, là où il se tient.
+      keo.visible = false;
+      ring.visible = false;
+      // La caméra de la question est plus loin du lieu que celle qui suit Kéo : la brume s'écarte.
+      fog.near = WORLD_FOG.question.near;
+      fog.far = WORLD_FOG.question.far;
+      qp = questionPose(place, layout.view, viewW, viewH);
+    }
+    // Les objets se posent sous leurs réponses avec la pose finale ; la descente reprend ensuite sa place.
+    setShift(qp.shift);
     applyPose(qp.pose);
     camera.updateMatrixWorld();
     const slotFeet = layout.slots.map((o) => o.foot);
     const objectsKey = `${place}|${viewW}x${viewH}|${slotFeet.map((o) => `${o.x},${o.y}`).join(';')}`;
     const itemKey = `${JSON.stringify(item.scene)}|${item.right.join(',')}`;
     const spot = sceneSpot(place);
-    const points = slotFeet.map((o) => groundUnder(o.x, o.y, spot.y) ?? spot);
+    const hang = stage ? bellPlane(place) : null;
+    const points = slotFeet.map((o) => (hang ? planeUnder(o.x, o.y, hang.z) : groundUnder(o.x, o.y, spot.y)) ?? spot);
     // La hauteur d'un objet dans le monde : sa hauteur à l'écran, à l'échelle de l'écart entre deux objets.
     const pxStep = slotFeet.length > 1 ? Math.abs(slotFeet[1].x - slotFeet[0].x) : 120;
     const worldStep = points.length > 1 ? Math.hypot(points[1].x - points[0].x, points[1].z - points[0].z) : 2;
@@ -627,8 +829,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // La scène de l'item et les objets des réponses : un seul maillage.
     const merged = new FacetBuilder();
     merged.append(facets.still);
-    merged.append(answerObjects(place, points, scale));
+    merged.append(answerObjects(place, points, scale, item.answered ? [] : item.picked, hang ? { hand: habitantHand(place), rail: hang.rail } : undefined));
     setGeometry(itemMesh, merged.build());
+    itemShown = itemMesh.visible;
+    if (descent.active) itemMesh.visible = false;
     const before = asked && asked.place === place && asked.itemKey === itemKey ? asked : null;
     if (!item.answered || !facets.reaction) {
       reaction = null;
@@ -640,10 +844,27 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       placeReaction(performance.now() / 1000);
     }
     asked = { place, pose: qp.pose, objectsKey, itemKey, answered: item.answered };
-    return facets.labels.map((l) => {
+    const labels = facets.labels.map((l) => {
       projected.set(l.at.x, l.at.y, l.at.z).project(camera);
       return { text: l.text, x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH };
     });
+    if (descent.active) {
+      // La descente en cours garde sa place : elle reprend du point où elle était.
+      appliedShift.x = Number.NaN;
+      stepDescent(performance.now() / 1000);
+    }
+    return labels;
+  };
+  const scenetteEnd = (lit: boolean) => {
+    if (!asked || !scenette) return;
+    itemShown = false;
+    itemMesh.visible = false;
+    reactionMesh.visible = false;
+    reaction = null;
+    if (!lit || lampMesh.visible) return;
+    setGeometry(lampMesh, litLantern(scenette));
+    lampStart = performance.now() / 1000;
+    stepLamp(lampStart);
   };
 
   // Les pièces durables des lieux (un maillage pour tous), et la Roue des Écluses qui tourne (à part).
@@ -682,7 +903,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     viewW = w;
     viewH = h;
     // La taille a changé : le décalage se repose sur la nouvelle taille (la page redonne la place d'une question).
-    appliedShift = { x: Number.NaN, y: Number.NaN };
+    appliedShift.x = Number.NaN;
     applyPose(asked ? asked.pose : pose);
   };
   const observer = new ResizeObserver(resize);
@@ -718,9 +939,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Le banc qui se lève finit son fondu, même si une question s'ouvre à l'arrivée.
     fadeVeil(t);
     if (asked) {
-      // Pendant une question, la caméra ne bouge pas ; seule la réaction joue, puis la Roue tourne.
+      // Pendant une question, la caméra ne bouge pas (sauf la descente dans une scénette, moins d'une seconde) ; seule
+      // la réaction joue, puis la Roue tourne ; dans une scénette, Kéo se tient là, au repos, et la lampe s'allume.
+      stepDescent(t);
       placeReaction(t);
+      stepLamp(t);
+      if (scenette) body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
       options.onMark(null);
+      hideLocks();
       renderer.render(scene, camera);
       meter?.tick(renderer.info, now);
       return;
@@ -730,15 +956,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const turn = Math.atan2(Math.sin(heading - keo.rotation.y), Math.cos(heading - keo.rotation.y));
     keo.rotation.y += reduceMotion ? turn : turn * Math.min(1, dt * 12);
     body.bouger(t, dt, moving, reduceMotion, WALK_CADENCE);
-    // La caméra rattrape Kéo hors de sa zone morte, et monte si le relief le cache.
+    // La caméra rattrape Kéo hors de sa zone morte, et monte si le relief le cache ; arrêté près du Phare, elle lève
+    // le regard vers la lanterne (jamais pendant la marche).
     followStep(focus, keoFeet, dt, reduceMotion);
     lift = liftStep(lift, occlusionLift(focus, ground), dt, reduceMotion);
+    look = lookUpStep(look, nearLantern() ? 1 : 0, dt, reduceMotion);
     follow();
     updateRings();
     // Une tuile de près au plus par image : la suivante de la file, puis l'anneau de près refait avec elle.
     if (tiles.pump() !== null) setNear(false);
     if (moving) approach();
     reportMark();
+    reportLocks();
     renderer.render(scene, camera);
     meter?.tick(renderer.info, now);
   };
@@ -764,6 +993,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       updateVeil();
     },
     question: askQuestion,
+    scenetteEnd,
     setPieces,
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }),
     dispose: () => {
@@ -775,7 +1005,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       renderer.domElement.removeEventListener('pointercancel', onCancel);
       body.dispose();
       for (const g of geometries) g.dispose();
-      for (const m of [itemMesh, reactionMesh, piecesMesh, wheelMesh, veilMesh, fadeMesh]) m.geometry.dispose();
+      for (const m of [itemMesh, reactionMesh, piecesMesh, wheelMesh, veilMesh, fadeMesh, decorMesh, lampMesh]) m.geometry.dispose();
+      lampMaterial.dispose();
       nearRing.dispose();
       farRing.dispose();
       landMaterial.dispose();

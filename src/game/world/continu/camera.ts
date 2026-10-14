@@ -136,6 +136,50 @@ export function liftStep(current: number, target: number, dt: number, reduceMoti
 }
 
 /**
+ * Le regard levé (lot 2, choix du directeur artistique) : Kéo arrêté à moins de `within` unités du Phare, la caméra
+ * lève le regard pour faire entrer la lanterne avec un peu d'air au-dessus (`air`, en part de la hauteur de l'écran),
+ * sans changer de place ; Kéo reste entier au-dessus de « Y aller » (`footRoom` pixels au moins sous ses pieds : le
+ * bouton, sa marge et un peu d'air), et ce garde-fou passe avant la lanterne. Jamais pendant la marche ; le passage
+ * dure `seconds` à la montée, `down` au retour (d'un bloc avec « Réduire les animations »).
+ */
+export const LOOK_UP = { within: 24, air: 0.08, footRoom: 84, seconds: 0.8, down: 0.4 } as const;
+
+/**
+ * Lève le regard de `pose` (remplie sur place) de la part `amount` (0 : la caméra qui suit, 1 : le regard levé) pour
+ * que `top` (le haut de la lanterne) entre à l'écran ; les pieds de Kéo (`feet`) restent au-dessus du bas de l'écran
+ * de `footRoom` pixels, sur un écran de `height` pixels. La caméra regarde toujours vers le nord : seul l'angle sous
+ * l'horizon change.
+ */
+export function lookUp(pose: CameraPose, top: Vec3, feet: Vec3, amount: number, height: number): void {
+  if (amount <= 0) return;
+  const p = pose.position;
+  const fx = pose.target.y - p.y, fz = p.z - pose.target.z;
+  const pitch0 = Math.atan2(-fx, fz);
+  const t = tanHalf(pose.fov);
+  // L'angle de la lanterne au-dessus de l'horizon ; le regard qui la met à `air` du haut de l'écran.
+  const above = Math.atan2(top.y - p.y, Math.max(0.1, p.z - top.z));
+  let pitch = Math.atan((1 - 2 * LOOK_UP.air) * t) - above;
+  // Les pieds de Kéo, sous l'horizon : le regard ne monte pas au point de les mettre sous « Y aller ».
+  const below = Math.atan2(p.y - feet.y, Math.max(0.1, p.z - feet.z));
+  const bottom = Math.min(0.45, LOOK_UP.footRoom / Math.max(1, height));
+  pitch = Math.max(pitch, below - Math.atan((1 - 2 * bottom) * t));
+  if (pitch >= pitch0) return;
+  // Un départ et une arrivée en douceur.
+  const u = Math.min(1, amount);
+  const k = u * u * (3 - 2 * u);
+  const a = pitch0 + (pitch - pitch0) * k;
+  pose.target.y = p.y - LOOK_DISTANCE * Math.sin(a);
+  pose.target.z = p.z - LOOK_DISTANCE * Math.cos(a);
+}
+
+/** La part du regard levé à l'image suivante, vers `wanted` (0 ou 1) ; d'un bloc avec « Réduire les animations ». */
+export function lookUpStep(current: number, wanted: 0 | 1, dt: number, reduceMotion: boolean): number {
+  if (reduceMotion) return wanted;
+  const step = Math.max(0, dt) / (wanted > current ? LOOK_UP.seconds : LOOK_UP.down);
+  return wanted > current ? Math.min(1, current + step) : Math.max(0, current - step);
+}
+
+/**
  * La brume, en unités depuis la caméra : elle commence à `near` et couvre tout à `far` (le large et les lieux loin de
  * Kéo s'y fondent ; seul le repère du lieu suivant la dépasse). Pendant une question, la caméra est plus loin du lieu :
  * la brume s'écarte (`question`).
