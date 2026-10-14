@@ -4,7 +4,7 @@ import { distance, type Vec2 } from './geometry';
 import { routeLength } from './paths';
 
 /** La vitesse de Kéo, en unités par seconde (Kéo mesure 2 unités). */
-export const WALK_SPEED = 6;
+const WALK_SPEED = 6;
 
 /** Un trajet en cours : ses points, sa longueur et le moment du départ (en millisecondes). */
 export interface Walk {

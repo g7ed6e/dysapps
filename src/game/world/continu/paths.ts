@@ -113,6 +113,18 @@ function dedupe(route: Vec2[]): Vec2[] {
   return route.filter((p, i) => i === 0 || distance(p, route[i - 1]) > 1e-6);
 }
 
+/** Des points sur tout le réseau, tous les `step` unités au plus (les nœuds compris) : là où Kéo peut se tenir. */
+export function networkSamples(step: number): Vec2[] {
+  const out: Vec2[] = PATH_NODES.map((n) => n.at);
+  for (const [ia, ib] of PATH_EDGES) {
+    const a = pathNode(ia).at;
+    const b = pathNode(ib).at;
+    const n = Math.max(1, Math.ceil(distance(a, b) / step));
+    for (let k = 1; k < n; k++) out.push({ x: a.x + ((b.x - a.x) * k) / n, z: a.z + ((b.z - a.z) * k) / n });
+  }
+  return out;
+}
+
 /** La longueur d'un trajet. */
 export function routeLength(route: readonly Vec2[]): number {
   let l = 0;
@@ -122,8 +134,8 @@ export function routeLength(route: readonly Vec2[]): number {
 
 /** Les demi-largeurs du ruban : un sentier sur la terre, une digue ou un ponton sur l'eau, plus larges. */
 const HALF_WIDTH = { path: 0.8, deck: 1.1 };
-/** Le pas des points du ruban, le long d'une liaison. */
-const RIBBON_STEP = 1;
+/** Le pas des points du ruban, le long d'une liaison : celui de la grille du terrain, pour qu'il en suive les creux. */
+const RIBBON_STEP = 1.25;
 /** Le dessus du ruban au-dessus du sol, et la profondeur de ses flancs. */
 const RIBBON_LIFT = 0.06;
 const RIBBON_SIDE = 0.7;

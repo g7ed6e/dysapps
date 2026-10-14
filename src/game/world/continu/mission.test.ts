@@ -1,7 +1,7 @@
 // La prochaine mission du monde continu et sa marque à l'écran.
 import { describe, expect, it } from 'vitest';
-import { keepClear, markOnScreen, missionOfPlace, nextMission, type MissionMark } from './mission';
-import { placeById } from './plan6e';
+import { DISTANCE_SIGN_STEPS, distanceSign, keepClear, markOnScreen, missionOfPlace, nextMission, veiledPlaces, type MissionMark } from './mission';
+import { KEO_STEP, placeById } from './plan6e';
 
 const bornes: MissionMark[] = [
   { ile: 'french-6e-phonology', mission: 'syllables', etat: 'new' },
@@ -11,6 +11,26 @@ const bornes: MissionMark[] = [
   { ile: 'maths-6e-fractions', mission: 'number-line', etat: 2 },
   { ile: 'history-6e-antiquity', mission: 'dates', etat: 'new' },
 ];
+
+describe('La brume et la distance', () => {
+  it('la brume couvre les lieux dont la mission n’a pas été jouée, sauf le prochain', () => {
+    const next = nextMission(bornes);
+    expect(next?.place.id).toBe('quais');
+    // Le Phare (trois étoiles) et les Écluses (deux) ont été joués ; les Quais sont le prochain lieu.
+    expect(veiledPlaces(bornes, next)).toEqual(['filets']);
+    expect(veiledPlaces(bornes, null)).toEqual(['quais', 'filets']);
+    // Sans mission (une autre LV2), pas de brume.
+    expect(veiledPlaces(bornes.filter((b) => b.mission !== 'plurals'), next)).toEqual([]);
+  });
+
+  it('la distance en un, deux ou trois points, jamais en texte', () => {
+    const o = { x: 0, z: 0 };
+    expect(distanceSign(o, { x: 0, z: (DISTANCE_SIGN_STEPS[0] - 1) * KEO_STEP })).toBe(1);
+    expect(distanceSign(o, { x: DISTANCE_SIGN_STEPS[0] * KEO_STEP, z: 0 })).toBe(2);
+    expect(distanceSign(o, { x: 0, z: -DISTANCE_SIGN_STEPS[1] * KEO_STEP })).toBe(3);
+    expect(markOnScreen({ x: 2000, y: 100, behind: false }, 1000, 800, 50, 3).far).toBe(3);
+  });
+});
 
 describe('La prochaine mission', () => {
   it('celle de la prochaine destination du jeu, quand c’est la mission d’un des lieux', () => {
@@ -40,7 +60,7 @@ describe('La prochaine mission', () => {
 
 describe('La marque à l’écran', () => {
   it('sur son lieu quand il est dans l’écran', () => {
-    expect(markOnScreen({ x: 300, y: 200, behind: false }, 1000, 800, 50)).toEqual({ x: 300, y: 200, inside: true, angle: 0 });
+    expect(markOnScreen({ x: 300, y: 200, behind: false }, 1000, 800, 50)).toEqual({ x: 300, y: 200, inside: true, angle: 0, far: 1 });
   });
 
   it('hors champ, au bord, sa flèche tournée vers le lieu', () => {

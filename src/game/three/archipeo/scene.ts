@@ -1,23 +1,26 @@
 // La scène du monde continu (prototype du monde ouvert d'Archipéo, 6e, piste B « chemins aimantés ») : le terrain en
 // tuiles, la mer et le lagon, les chemins, les quatre lieux, Kéo ; le toucher qui l'envoie au point du chemin le plus
-// proche, sa marche, les cadrages prévus par rivage ; la marque de la prochaine mission, donnée à la page à chaque image.
+// proche, sa marche ; la marque de la prochaine mission, donnée à la page à chaque image. Piste 1, lot 1 : l'île
+// agrandie, la caméra qui suit Kéo (world/continu/camera.ts), le terrain rassemblé en deux anneaux autour de lui (de
+// près, de loin), la brume au loin et sur les lieux pas encore ouverts, d'où ne dépasse que le lieu suivant.
 // Chargée à la demande avec la page (./OpenWorldPage.tsx), seulement derrière le drapeau `?monde=ouvert`
 // (../../worldLayoutFactory.tsx). Tout ce qui se calcule sans Three.js est dans world/continu/.
 import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
-import { CAMERA_BLEND_SECONDS, CAMERA_FOV, cameraKey, cameraPose, closeUpScale, markBeside, markOffset, poseAt, type CameraKey, type CameraMove, type CameraPose, type GoPanel } from '../../world/continu/camera';
-import { FacetBuilder, type Facets } from '../../world/continu/facets';
-import { distance, type Vec2 } from '../../world/continu/geometry';
-import { markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
+import { WORLD_FOG, followPose, followStep, liftStep, markOffset, occlusionLift, type CameraPose } from '../../world/continu/camera';
+import { FacetBuilder, boundsOf, type Facets } from '../../world/continu/facets';
+import { distance, type Vec2, type Vec3 } from '../../world/continu/geometry';
+import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork } from '../../world/continu/paths';
-import { COLORS_6E, PATH_NODES, PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
+import { PLACES, TERRAIN, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { modelOfPlace } from '../../world/continu/places';
 import { answerObjects, answerScale, itemScene, placePieces, questionPose, sceneSpot, veilleurPiece, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, veilleurAwake, type ItemScene } from '../../world/continu/questions';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
-import { buildHeightField, heightOnMesh, standingHeight, terrainTiles } from '../../world/continu/terrain';
+import { buildHeightField, heightOnMesh, standingHeight, tileFacets, tileRect, tileRings, type HeightField, type TileDetail } from '../../world/continu/terrain';
+import { MIST_COLOR, veilFacets } from '../../world/continu/veil';
 import { skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
@@ -26,30 +29,30 @@ import { createMeter } from '../meter';
 export interface OpenWorldOptions {
   /** Le lieu où Kéo se tient au départ. */
   start: PlaceId;
-  /** « Réduire les animations » : Kéo arrive tout de suite, la caméra coupe franc. */
+  /** « Réduire les animations » : Kéo arrive tout de suite, la caméra le suit d'un bloc. */
   reduceMotion: boolean;
   /** Kéo est arrivé : devant un lieu qu'on lui a demandé (`place`), ou sur un point du chemin (`null`). */
   onArrive(place: PlaceId | null): void;
   /** Kéo part (la page change « Y aller » en « Passer le trajet »). */
   onDepart(): void;
-  /**
-   * La place de la marque de la prochaine mission à l'écran, à chaque image (`null` : pas de marque) ; `beside` : le
-   * nom se pose à droite du point (à côté du sommet d'un lieu haut, sur un écran bas), sinon au-dessus.
-   */
-  onMark(mark: MarkOnScreen | null, beside: boolean): void;
+  /** La place de la marque de la prochaine mission à l'écran, à chaque image (`null` : pas de marque). */
+  onMark(mark: MarkOnScreen | null): void;
   /** Montrer le compteur de mesures (`?mesures`) ; `expose` : le laisser lire aux scripts. */
   meter: { show: boolean; expose: boolean };
 }
 
 export interface OpenWorld {
-  /** Envoie Kéo devant un lieu (« Y aller », le toucher d'un lieu). */
-  goTo(place: PlaceId): void;
+  /**
+   * Envoie Kéo devant un lieu : en marchant (le toucher d'un lieu), ou d'un coup (`jump`, « Y aller » : le trajet est
+   * toujours sauté, il dure trente secondes dans l'île agrandie).
+   */
+  goTo(place: PlaceId, jump?: boolean): void;
   /** Saute le trajet en cours : Kéo est arrivé. */
   skip(): void;
-  /** Le lieu marqué (la prochaine mission), ou aucun. */
+  /** Le lieu marqué (la prochaine mission), ou aucun : le seul lieu qui dépasse la brume. */
   setMark(place: PlaceId | null): void;
-  /** La taille de « Y aller » à l'écran (plus grand en grand texte) : les cadrages rapprochés en tiennent compte. */
-  setGoPanel(go: GoPanel): void;
+  /** Les lieux sous la brume (world/continu/mission.ts, `veiledPlaces`) ; la scène lève celle des lieux que Kéo approche. */
+  setVeiled(places: readonly PlaceId[]): void;
   /**
    * Pose une question dans un lieu (lot 4), ou la retire (`null`) : la caméra coupe sur un cadrage fixe, la scène de
    * l'item se montre dans la fenêtre de la question, les objets des réponses au-dessus de leurs boutons. Rend la place à
@@ -86,7 +89,7 @@ const TAP = { pixels: 10, ms: 700 };
 const FACING_CAMERA = Math.PI;
 /**
  * Kéo un peu plus grand que dans le monde en grille, et un anneau clair au sol autour de ses pieds : on le trouve sans
- * chercher dans les cadrages larges (directeur artistique, 14 octobre 2026).
+ * chercher (directeur artistique, 14 octobre 2026).
  */
 const KEO_SCALE = 1.25;
 const KEO_RING = { inner: 0.85, outer: 1.3, color: 0xfff6dc };
@@ -97,6 +100,14 @@ const KEO_RING = { inner: 0.85, outer: 1.3, color: 0xfff6dc };
  */
 const SLOW_FRAME_MS = 45;
 const SLOW_FRAMES = 30;
+/** Les anneaux du terrain se refont quand le point suivi s'est éloigné de tant d'unités de leur centre. */
+const RING_MOVE = 3;
+/** Les tuiles de près gardées en mémoire (les plus récentes) : de quoi revenir sur ses pas sans rien refaire. */
+const NEAR_TILES_KEPT = 24;
+/** Au-delà du bout de la brume, de tant d'unités, un lieu n'est plus dessiné (sauf le lieu suivant). */
+const PLACE_BEYOND_FOG = 10;
+/** La brume posée sur les lieux : presque opaque, un voile plutôt qu'un mur. */
+const VEIL_OPACITY = 0.88;
 
 /** Une géométrie à facettes (positions, normales, couleurs de sommet), sa boîte englobante juste. */
 function geometryOf(f: Facets): THREE.BufferGeometry {
@@ -110,10 +121,101 @@ function geometryOf(f: Facets): THREE.BufferGeometry {
 }
 
 /** Un maillage immobile : sa matrice calculée une fois. */
-function still(mesh: THREE.Mesh): THREE.Mesh {
+function still<M extends THREE.Object3D>(mesh: M): M {
   mesh.matrixAutoUpdate = false;
   mesh.updateMatrix();
   return mesh;
+}
+
+/** Une tuile prête à copier : ses facettes et sa boîte. */
+interface Tile {
+  facets: Facets;
+  min: [number, number, number];
+  max: [number, number, number];
+}
+
+/**
+ * Un anneau du terrain : un seul maillage, dont les tableaux sont faits une fois (et agrandis s'il le faut) ; on y
+ * recopie les tuiles de l'anneau quand il change, et on ne dessine que ce qui est rempli (`drawRange`). Sa boîte
+ * englobante est celle de ses tuiles : l'élimination hors champ reste juste.
+ */
+class RingMesh {
+  readonly mesh: THREE.Mesh;
+  private capacity = 0;
+
+  constructor(material: THREE.Material, initialTriangles: number) {
+    this.mesh = still(new THREE.Mesh(new THREE.BufferGeometry(), material));
+    this.allocate(initialTriangles);
+  }
+
+  private allocate(triangles: number): void {
+    this.mesh.geometry.dispose();
+    const g = new THREE.BufferGeometry();
+    for (const name of ['position', 'normal', 'color']) {
+      const a = new THREE.BufferAttribute(new Float32Array(triangles * 9), 3);
+      a.setUsage(THREE.DynamicDrawUsage);
+      g.setAttribute(name, a);
+    }
+    g.boundingBox = new THREE.Box3();
+    g.boundingSphere = new THREE.Sphere();
+    this.mesh.geometry = g;
+    this.capacity = triangles;
+  }
+
+  set(tiles: readonly Tile[]): void {
+    const total = tiles.reduce((s, t) => s + t.facets.triangles, 0);
+    if (total > this.capacity) this.allocate(Math.ceil(total * 1.25));
+    const g = this.mesh.geometry;
+    const box = g.boundingBox!;
+    box.makeEmpty();
+    let offset = 0;
+    for (const t of tiles) {
+      if (!t.facets.triangles) continue;
+      (g.getAttribute('position') as THREE.BufferAttribute).array.set(t.facets.positions, offset);
+      (g.getAttribute('normal') as THREE.BufferAttribute).array.set(t.facets.normals, offset);
+      (g.getAttribute('color') as THREE.BufferAttribute).array.set(t.facets.colors, offset);
+      offset += t.facets.positions.length;
+      box.expandByPoint(new THREE.Vector3(...t.min));
+      box.expandByPoint(new THREE.Vector3(...t.max));
+    }
+    for (const name of ['position', 'normal', 'color']) {
+      const a = g.getAttribute(name) as THREE.BufferAttribute;
+      a.clearUpdateRanges();
+      a.addUpdateRange(0, offset);
+      a.needsUpdate = true;
+    }
+    g.setDrawRange(0, offset / 3);
+    if (offset) box.getBoundingSphere(g.boundingSphere!);
+    this.mesh.visible = offset > 0;
+  }
+
+  dispose(): void {
+    this.mesh.geometry.dispose();
+  }
+}
+
+/** Les tuiles du terrain, faites à la demande : de loin, toutes gardées (elles sont légères) ; de près, les plus récentes. */
+function tileStore(field: HeightField) {
+  const kept: Record<TileDetail, Map<number, Tile>> = { near: new Map(), far: new Map() };
+  return (index: number, detail: TileDetail): Tile => {
+    const map = kept[detail];
+    let t = map.get(index);
+    if (t) {
+      // La plus récente passe à la fin : on oublie d'abord celles qu'on n'a pas revues.
+      map.delete(index);
+      map.set(index, t);
+      return t;
+    }
+    const tx = index % TERRAIN.tilesX;
+    const tz = Math.floor(index / TERRAIN.tilesX);
+    const facets = tileFacets(field, tx, tz, detail);
+    const r = tileRect(tx, tz);
+    const b = facets.triangles ? boundsOf(facets) : { min: [r.minX, 0, r.minZ] as [number, number, number], max: [r.maxX, 0, r.maxZ] as [number, number, number] };
+    t = { facets, min: b.min, max: b.max };
+    map.set(index, t);
+    if (detail === 'near' && map.size > NEAR_TILES_KEPT) map.delete(map.keys().next().value!);
+    return t;
+  };
 }
 
 export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): OpenWorld {
@@ -126,11 +228,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const meter = createMeter(host, 'archipeo', options.meter.show, options.meter.expose);
 
   const scene = new THREE.Scene();
-  const deep = new THREE.Color(COLORS_6E.deepSea);
-  scene.background = deep;
-  // La brume de profondeur : la mer se fond dans le large, l'horizon reste loin.
-  scene.fog = new THREE.Fog(deep, 110, 260);
-  const camera = new THREE.PerspectiveCamera(CAMERA_FOV, host.clientWidth / Math.max(1, host.clientHeight), 0.5, 600);
+  // La brume légère d'Archipéo : le lointain, le large et l'horizon s'y fondent ; le ciel est de sa couleur.
+  const mist = new THREE.Color(MIST_COLOR);
+  scene.background = mist;
+  const fog = new THREE.Fog(mist, WORLD_FOG.near, WORLD_FOG.far);
+  scene.fog = fog;
+  const camera = new THREE.PerspectiveCamera(40, host.clientWidth / Math.max(1, host.clientHeight), 0.5, 500);
 
   // La lumière d'un matin clair (fiche du 6e, § 2) : le soleil du 6e, bas à l'est, et une ambiance chaude, renvoyée par
   // le sable : les aplats gardent leur couleur sur les faces tournées vers la caméra (au sud).
@@ -143,17 +246,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const geometries: THREE.BufferGeometry[] = [];
   const keep = <G extends THREE.BufferGeometry>(g: G) => (geometries.push(g), g);
 
-  // Le terrain : la carte de hauteurs, en tuiles (chacune écartée quand elle sort de la vue), un seul matériau.
+  // Le terrain : la carte de hauteurs, et deux anneaux de tuiles autour de Kéo (de près, chaque case ; de loin, une
+  // sur trois), chacun un seul maillage, d'un seul matériau.
   const field = buildHeightField();
   const ground = (x: number, z: number) => heightOnMesh(field, x, z);
   const landMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
-  const touchables: THREE.Object3D[] = [];
-  for (const tile of terrainTiles(field)) {
-    if (!tile.triangles) continue;
-    const mesh = still(new THREE.Mesh(keep(geometryOf(tile)), landMaterial));
-    scene.add(mesh);
-    touchables.push(mesh);
-  }
+  // Le lieu suivant n'est pas pris dans la brume : de loin, c'est lui qu'on voit.
+  const landmarkMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: false });
+  const tileOf = tileStore(field);
+  const nearRing = new RingMesh(landMaterial, 9000);
+  const farRing = new RingMesh(landMaterial, 6000);
+  scene.add(nearRing.mesh, farRing.mesh);
+  const touchables: THREE.Object3D[] = [nearRing.mesh, farRing.mesh];
 
   // La mer et le lagon : un plan d'eau à 0, peint par l'image de l'eau ; au-delà, le bord de l'image (le large).
   const seaTexture = new THREE.DataTexture(seaPixels(), SEA_TEXTURE.size, SEA_TEXTURE.size);
@@ -161,7 +265,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   seaTexture.magFilter = THREE.LinearFilter;
   seaTexture.minFilter = THREE.LinearFilter;
   seaTexture.needsUpdate = true;
-  const seaSize = 900;
+  const seaSize = 2000;
   const seaGeometry = keep(new THREE.PlaneGeometry(seaSize, seaSize).rotateX(-Math.PI / 2));
   // Les coordonnées de l'image suivent x et z du monde : le carré de l'image au milieu, son bord étiré au-delà.
   const uv = seaGeometry.getAttribute('uv') as THREE.BufferAttribute;
@@ -180,6 +284,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   // Les lieux : un maillage chacun (un modèle TRELLIS le remplacera, lieu par lieu), posés sur le sol à leur centre.
   const feet = new Map<PlaceId, THREE.Vector3>();
+  const placeMeshes = new Map<PlaceId, THREE.Mesh>();
   for (const place of PLACES) {
     const model = modelOfPlace(place.id);
     const y = standingHeight(ground(place.center.x, place.center.z));
@@ -189,8 +294,21 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     mesh.userData.place = place.id;
     scene.add(still(mesh));
     touchables.push(mesh);
+    placeMeshes.set(place.id, mesh);
     feet.set(place.id, new THREE.Vector3(place.center.x, y, place.center.z));
   }
+
+  // La brume sur les lieux pas encore ouverts : un seul maillage, refait quand la liste change (jamais par image) ; sans
+  // lumière, de la couleur du lointain, elle se lit comme un banc de brume et non comme des rochers.
+  const veilMaterial = new THREE.MeshBasicMaterial({ color: MIST_COLOR, transparent: true, opacity: VEIL_OPACITY, depthWrite: false });
+  const veilMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), veilMaterial));
+  veilMesh.visible = false;
+  // Après le reste : elle se pose par-dessus ce qu'elle voile.
+  veilMesh.renderOrder = 1;
+  scene.add(veilMesh);
+  let veiled: readonly PlaceId[] = [];
+  const approached = new Set<PlaceId>();
+  let veilKey = '';
 
   // Kéo : le corps du bonhomme d'Archipéo (sa marche existante), son anneau clair au sol ; habillé dès que sa tenue est chargée.
   const keo = new THREE.Group();
@@ -212,43 +330,30 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   scene.add(ring);
 
   // Où est Kéo, où il va.
-  const startNode = pathNode(placeById(options.start).door);
-  let here: Vec2 = startNode.at;
+  let here: Vec2 = pathNode(placeById(options.start).door).at;
   let walk: Walk | null = null;
   let walkTarget: PlaceId | null = null;
   let heading = FACING_CAMERA;
   keo.rotation.y = FACING_CAMERA;
+  const keoFeet: Vec3 = { x: here.x, y: 0, z: here.z };
   const placeKeo = (p: Vec2) => {
     const y = standingHeight(ground(p.x, p.z));
     keo.position.set(p.x, y, p.z);
     ring.position.set(p.x, y + 0.02, p.z);
+    keoFeet.x = p.x;
+    keoFeet.y = y;
+    keoFeet.z = p.z;
   };
   placeKeo(here);
 
-  const startWalkTo = (to: ReturnType<typeof snapToNetwork>, place: PlaceId | null) => {
-    const from = snapToNetwork(here);
-    const route = findRoute(from, to);
-    walkTarget = place;
-    if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) {
-      walk = null;
-      options.onArrive(place);
-      return;
-    }
-    walk = startWalk(route, performance.now());
-    options.onDepart();
-  };
-
-  // La caméra : le cadrage de Kéo (son rivage ; sur un écran bas, son lieu, de plus près), et le passage en cours.
+  // La caméra suit un point lissé (`focus`), monté de `lift` quand le relief cache Kéo ; une seule pose, remplie sur place.
+  const focus: Vec3 = { ...keoFeet };
+  let lift = occlusionLift(focus, ground);
+  const pose: CameraPose = followPose(focus, lift);
   // La taille de l'écran est relue au redimensionnement seulement (rien n'est lu ni créé à chaque image).
   let viewW = Math.max(1, host.clientWidth);
   let viewH = Math.max(1, host.clientHeight);
-  let key: CameraKey = cameraKey(here, viewH);
-  // « Y aller » à l'écran : sa taille en texte normal tant que la page ne l'a pas mesurée.
-  let go: GoPanel | undefined;
-  let pose: CameraPose = cameraPose(key, viewW, viewH, go);
-  let move: CameraMove | null = null;
-  // Le décalage de l'image posé sur la caméra, en pixels (refait seulement quand il change) : celui de l'objectif d'un
-  // cadrage rapproché, ou celui d'une question.
+  // Le décalage de l'image d'une question, en pixels (refait seulement quand il change).
   let appliedShift = { x: 0, y: 0 };
   let shift = { x: 0, y: 0 };
   const applyPose = (p: CameraPose) => {
@@ -256,12 +361,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     camera.up.set(0, 1, 0);
     camera.lookAt(p.target.x, p.target.y, p.target.z);
     if (p.fov !== camera.fov) {
-      // Le champ change (un écran bas) : la projection est refaite, avec le décentrement.
+      // Le champ change (une question, son retour) : la projection est refaite, avec le décalage.
       camera.fov = p.fov;
       appliedShift = { x: Number.NaN, y: Number.NaN };
     }
-    // L'image glisse de `lens` demi-largeurs vers la droite (et du décalage d'une question) ; la caméra ne tourne pas.
-    const x = (-p.lens * viewW) / 2 + shift.x;
+    const x = shift.x;
     const y = shift.y;
     if (x === appliedShift.x && y === appliedShift.y) return;
     appliedShift = { x, y };
@@ -269,45 +373,93 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (x === 0 && y === 0) camera.clearViewOffset();
     else camera.setViewOffset(viewW, viewH, x, y, viewW, viewH);
   };
-  applyPose(pose);
+  const follow = () => applyPose(followPose(focus, lift, pose));
+  follow();
 
-  // Les poses rapprochées d'un écran bas se calculent d'avance, un nœud à chaque moment libre, jamais pendant la marche.
-  const idle = (cb: () => void): number => (typeof requestIdleCallback === 'function' ? requestIdleCallback(cb) : window.setTimeout(cb, 0));
-  const cancelIdle = (id: number) => (typeof cancelIdleCallback === 'function' ? cancelIdleCallback(id) : window.clearTimeout(id));
-  let idleTask = 0;
-  const precompute = () => {
-    cancelIdle(idleTask);
-    if (closeUpScale(viewH) >= 1) return;
-    let next = 0;
-    const step = () => {
-      const n = PATH_NODES[next++];
-      if (!n) return;
-      cameraPose(cameraKey(n.at, viewH), viewW, viewH, go);
-      idleTask = idle(step);
-    };
-    idleTask = idle(step);
-  };
-  precompute();
-
-  // La marque de la prochaine mission : au-dessus du lieu, ou à côté du sommet d'un lieu haut sur un écran bas.
-  const marks = new Map<PlaceId, { at: THREE.Vector3; beside: boolean }>();
-  const placeMarks = () => {
-    for (const [id, foot] of feet) {
-      const o = markOffset(id, viewH);
-      marks.set(id, { at: new THREE.Vector3(foot.x + o.x, foot.y + o.y, foot.z + o.z), beside: markBeside(id, viewH) });
+  // Les anneaux du terrain, et les lieux qu'on dessine : refaits quand le point suivi s'éloigne de leur centre.
+  let markPlace: PlaceId | null = null;
+  const ringCenter = { x: Number.NaN, z: Number.NaN };
+  let ringKey = '';
+  const placeVisibility = () => {
+    for (const [id, mesh] of placeMeshes) {
+      const landmark = id === markPlace;
+      mesh.material = landmark ? landmarkMaterial : landMaterial;
+      mesh.visible = landmark || distance(ringCenter, placeById(id).center) < WORLD_FOG.far + PLACE_BEYOND_FOG;
     }
   };
-  placeMarks();
-  let markPlace: PlaceId | null = null;
+  const updateRings = (force = false) => {
+    if (!force && Math.hypot(focus.x - ringCenter.x, focus.z - ringCenter.z) < RING_MOVE) return;
+    ringCenter.x = focus.x;
+    ringCenter.z = focus.z;
+    const rings = tileRings(ringCenter, WORLD_FOG.far);
+    const k = `${rings.near.join(',')}|${rings.far.join(',')}`;
+    if (k !== ringKey) {
+      ringKey = k;
+      nearRing.set(rings.near.map((i) => tileOf(i, 'near')));
+      farRing.set(rings.far.map((i) => tileOf(i, 'far')));
+    }
+    placeVisibility();
+  };
+  updateRings(true);
+
+  // La brume des lieux : ceux que la page donne, moins ceux que Kéo a approchés ; refaite si la liste change.
+  const updateVeil = () => {
+    const ids = veiled.filter((id) => !approached.has(id));
+    const k = ids.join(',');
+    if (k === veilKey) return;
+    veilKey = k;
+    setGeometry(veilMesh, veilFacets(ids));
+  };
+  const approach = () => {
+    let changed = false;
+    for (const id of veiled)
+      if (!approached.has(id) && distance(here, placeById(id).center) < UNVEIL_DISTANCE) {
+        approached.add(id);
+        changed = true;
+      }
+    if (changed) updateVeil();
+  };
+
+  // La marque de la prochaine mission : au-dessus du lieu, ou au bord, avec la distance en signe.
+  const marks = new Map<PlaceId, THREE.Vector3>();
+  for (const [id, foot] of feet) {
+    const o = markOffset(id);
+    marks.set(id, new THREE.Vector3(foot.x + o.x, foot.y + o.y, foot.z + o.z));
+  }
   const projected = new THREE.Vector3();
   const reportMark = () => {
     const mark = markPlace ? marks.get(markPlace) : undefined;
-    if (!mark) return options.onMark(null, false);
-    projected.copy(mark.at).project(camera);
-    options.onMark(
-      markOnScreen({ x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH, behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN),
-      mark.beside,
-    );
+    if (!mark || !markPlace) return options.onMark(null);
+    projected.copy(mark).project(camera);
+    const far = distanceSign(here, placeById(markPlace).center);
+    options.onMark(markOnScreen({ x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH, behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far));
+  };
+
+  const arrive = (place: PlaceId | null) => {
+    walk = null;
+    approach();
+    options.onArrive(place);
+  };
+  const startWalkTo = (to: ReturnType<typeof snapToNetwork>, place: PlaceId | null) => {
+    const from = snapToNetwork(here);
+    const route = findRoute(from, to);
+    walkTarget = place;
+    if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) return arrive(place);
+    walk = startWalk(route, performance.now());
+    options.onDepart();
+  };
+  /** Kéo d'un coup devant un lieu : la caméra le suit d'un bloc (une coupe, jamais un long travelling). */
+  const jumpTo = (place: PlaceId) => {
+    here = pathNode(placeById(place).door).at;
+    heading = FACING_CAMERA;
+    keo.rotation.y = FACING_CAMERA;
+    placeKeo(here);
+    followStep(focus, keoFeet, 0, true);
+    lift = occlusionLift(focus, ground);
+    updateRings(true);
+    approach();
+    follow();
+    arrive(place);
   };
 
   // Le toucher : un lieu touché y envoie Kéo ; ailleurs (sol, eau), au point du chemin le plus proche.
@@ -347,11 +499,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   reactionMesh.visible = false;
   scene.add(still(itemMesh), reactionMesh);
   let reaction: { r: Reaction; start: number } | null = null;
-  const setGeometry = (mesh: THREE.Mesh, f: Facets) => {
+  function setGeometry(mesh: THREE.Mesh, f: Facets) {
     mesh.geometry.dispose();
     mesh.geometry = geometryOf(f);
     mesh.visible = f.triangles > 0;
-  };
+  }
   const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   const ground3 = new THREE.Vector3();
   /** Le point du sol (à la hauteur `y`) sous un point de l'écran, avec la pose de la caméra déjà posée. */
@@ -392,11 +544,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       keo.visible = true;
       ring.visible = true;
       shift = { x: 0, y: 0 };
-      // Retour au cadrage de Kéo, sans passage.
-      key = cameraKey(here, viewH);
-      pose = cameraPose(key, viewW, viewH, go);
-      move = null;
-      applyPose(pose);
+      // La brume revient près de Kéo, la caméra derrière lui, sans passage.
+      fog.near = WORLD_FOG.near;
+      fog.far = WORLD_FOG.far;
+      followStep(focus, keoFeet, 0, true);
+      follow();
       return [];
     }
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
@@ -405,9 +557,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     keo.visible = false;
     ring.visible = false;
     walk = null;
+    // La caméra de la question est plus loin du lieu que celle qui suit Kéo : la brume s'écarte.
+    fog.near = WORLD_FOG.question.near;
+    fog.far = WORLD_FOG.question.far;
     const qp = questionPose(place, layout.view, viewW, viewH);
     shift = qp.shift;
-    move = null;
     applyPose(qp.pose);
     camera.updateMatrixWorld();
     const slotFeet = layout.slots.map((o) => o.foot);
@@ -486,22 +640,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    // Le cadrage dépend de la taille de l'écran : la pose d'arrivée est refaite, sans passage.
     viewW = w;
     viewH = h;
-    key = cameraKey(here, h);
-    pose = cameraPose(key, w, h, go);
-    move = null;
-    // La taille a changé : le décentrement se repose sur la nouvelle taille (la page redonne la place d'une question).
+    // La taille a changé : le décalage se repose sur la nouvelle taille (la page redonne la place d'une question).
     appliedShift = { x: Number.NaN, y: Number.NaN };
     applyPose(asked ? asked.pose : pose);
-    placeMarks();
-    precompute();
   };
   const observer = new ResizeObserver(resize);
   observer.observe(host);
 
-  // La boucle d'image : la marche, le cadrage, la marque (quelques petits objets par image : la place de Kéo, la marque).
+  // La boucle d'image : la marche, la caméra qui suit, la marque (quelques petits objets par image : la place de Kéo, la marque).
   let frame = 0;
   let last = performance.now();
   let slowFrames = 0;
@@ -525,40 +673,28 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       here = state.at;
       moving = state.moving;
       if (state.heading !== null) heading = state.heading;
-      if (!state.moving) {
-        walk = null;
-        options.onArrive(walkTarget);
-      }
+      if (!state.moving) arrive(walkTarget);
     }
+    if (wheelMesh.visible && !reduceMotion) wheelMesh.rotation.x += dt * 0.6;
     if (asked) {
       // Pendant une question, la caméra ne bouge pas ; seule la réaction joue, puis la Roue tourne.
       placeReaction(t);
-      if (wheelMesh.visible && !reduceMotion) wheelMesh.rotation.x += dt * 0.6;
-      options.onMark(null, false);
+      options.onMark(null);
       renderer.render(scene, camera);
       meter?.tick(renderer.info, now);
       return;
     }
-    if (wheelMesh.visible && !reduceMotion) wheelMesh.rotation.x += dt * 0.6;
     placeKeo(here);
     // Il se tourne vers son cap en douceur, par le plus court (d'un coup avec « Réduire les animations »).
     const turn = Math.atan2(Math.sin(heading - keo.rotation.y), Math.cos(heading - keo.rotation.y));
     keo.rotation.y += reduceMotion ? turn : turn * Math.min(1, dt * 12);
     body.bouger(t, dt, moving, reduceMotion);
-    // Le cadrage a changé : passage doux vers lui (coupe franche avec « Réduire les animations »).
-    const nextKey = cameraKey(here, viewH);
-    if (nextKey !== key) {
-      key = nextKey;
-      move = { from: pose, to: cameraPose(key, viewW, viewH, go), start: t };
-    }
-    if (move) {
-      pose = poseAt(move, t, reduceMotion);
-      if (reduceMotion || t - move.start >= CAMERA_BLEND_SECONDS) {
-        pose = move.to;
-        move = null;
-      }
-    }
-    applyPose(pose);
+    // La caméra rattrape Kéo hors de sa zone morte, et monte si le relief le cache.
+    followStep(focus, keoFeet, dt, reduceMotion);
+    lift = liftStep(lift, occlusionLift(focus, ground), dt, reduceMotion);
+    follow();
+    updateRings();
+    if (moving) approach();
     reportMark();
     renderer.render(scene, camera);
     meter?.tick(renderer.info, now);
@@ -566,26 +702,23 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   loop();
 
   return {
-    goTo: (place) => startWalkTo(atNode(placeById(place).door), place),
+    goTo: (place, jump = false) => {
+      if (jump) jumpTo(place);
+      else startWalkTo(atNode(placeById(place).door), place);
+    },
     skip: () => {
       if (!walk) return;
       walk = skipWalk(walk, performance.now());
     },
     setMark: (place) => {
+      if (place === markPlace) return;
       markPlace = place;
+      placeVisibility();
     },
-    setGoPanel: (panel) => {
-      if (go && go.halfWidth === panel.halfWidth && go.height === panel.height) return;
-      go = panel;
-      if (closeUpScale(viewH) >= 1) return;
-      // Le cadrage d'arrivée est refait pour la nouvelle taille, sans passage.
-      const to = cameraPose(key, viewW, viewH, go);
-      if (move) move.to = to;
-      else {
-        pose = to;
-        applyPose(pose);
-      }
-      precompute();
+    setVeiled: (places) => {
+      veiled = places;
+      approach();
+      updateVeil();
     },
     question: askQuestion,
     setPieces,
@@ -593,15 +726,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     dispose: () => {
       disposed = true;
       cancelAnimationFrame(frame);
-      cancelIdle(idleTask);
       observer.disconnect();
       renderer.domElement.removeEventListener('pointerdown', onDown);
       renderer.domElement.removeEventListener('pointerup', onUp);
       renderer.domElement.removeEventListener('pointercancel', onCancel);
       body.dispose();
       for (const g of geometries) g.dispose();
-      for (const m of [itemMesh, reactionMesh, piecesMesh, wheelMesh]) m.geometry.dispose();
+      for (const m of [itemMesh, reactionMesh, piecesMesh, wheelMesh, veilMesh]) m.geometry.dispose();
+      nearRing.dispose();
+      farRing.dispose();
       landMaterial.dispose();
+      landmarkMaterial.dispose();
+      veilMaterial.dispose();
       seaMaterial.dispose();
       seaTexture.dispose();
       ringMaterial.dispose();

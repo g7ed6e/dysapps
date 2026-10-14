@@ -31,25 +31,42 @@
   cursor: pointer;
   will-change: transform;
 }
-/* Posée à côté du sommet d'un lieu haut (le Phare, sur un écran bas) : pas plus large que la place que le cadrage lui
-   garde, pour ne pas revenir sur le lieu ; en grand texte, elle passe à la ligne entre les mots, jamais dans un mot
-   (sa largeur minimale est celle du mot le plus long). */
-.open-world-mark.a-cote {
-  max-width: var(--marque-a-cote, 150px);
-  min-width: min-content;
-  overflow-wrap: normal;
-}
 .open-world-mark svg {
   width: 1.4em;
   height: 1.4em;
   flex: none;
 }
-.open-world-arrow {
+/* Au bord de l'écran : la flèche vers le lieu, et dessous la distance en points pleins (un : tout près ; trois : loin). */
+.open-world-arrow-box {
   display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+.open-world-mark.hors-champ .open-world-arrow-box {
+  display: inline-flex;
+}
+.open-world-arrow {
+  display: inline-block;
   line-height: 0;
 }
-.open-world-mark.hors-champ .open-world-arrow {
-  display: inline-block;
+.open-world-distance {
+  display: inline-flex;
+  gap: 3px;
+  line-height: 0;
+}
+.open-world-distance i {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text);
+}
+/* Les points pleins disent la distance ; les autres restent vides, à la même place (rien ne saute). */
+.open-world-mark[data-loin='1'] .open-world-distance i:nth-child(-n + 1),
+.open-world-mark[data-loin='2'] .open-world-distance i:nth-child(-n + 2),
+.open-world-mark[data-loin='3'] .open-world-distance i {
+  background: var(--text);
 }
 .open-world-mark:focus-visible {
   outline: 3px solid var(--focus);

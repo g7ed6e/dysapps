@@ -1,11 +1,11 @@
 // Le monde ouvert d'Archipéo, au 6e (prototype, piste B « chemins aimantés », choix du mainteneur du 14 octobre 2026) :
 // derrière le drapeau `?monde=ouvert`, dans l'univers Archipéo seulement (../../worldLayoutFactory.tsx). On touche
 // n'importe où, Kéo rejoint le chemin le plus proche et y va ; une seule marque montre la prochaine mission (le nom de
-// son lieu), une flèche au bord de l'écran quand elle est hors champ ; « Y aller », toujours à la même place, y
-// mène (le trajet se passe). À l'arrivée, la mission se joue dans le lieu (lot 4, ./WorldQuestion.tsx), avec le lanceur
+// son lieu), une flèche au bord de l'écran quand elle est hors champ, la distance en points dessous ; « Y aller »,
+// toujours à la même place, y mène d'un coup (piste 1 : le trajet est toujours sauté ; on marche en touchant le monde). À l'arrivée, la mission se joue dans le lieu (lot 4, ./WorldQuestion.tsx), avec le lanceur
 // d'exercice commun ; « Vue simple » rouvre l'écran classique de la même mission (./missionScreen.ts). Les pièces
 // durables des lieux se tirent des étoiles gardées : rien de neuf dans la sauvegarde. Chargé à la demande.
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
@@ -18,8 +18,7 @@ import { getBiome } from '../../biomes';
 import { exercisesOf } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
 import { SettingsButton } from '../../WorldShortcuts';
-import { CLOSE_UP_INSETS, type GoPanel } from '../../world/continu/camera';
-import { keepClear, missionOfPlace, nextMission, type MarkOnScreen, type ScreenRect } from '../../world/continu/mission';
+import { keepClear, missionOfPlace, nextMission, veiledPlaces, type MarkOnScreen, type ScreenRect } from '../../world/continu/mission';
 import { placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
 import { piecesOf } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
@@ -71,7 +70,7 @@ export default function OpenWorldPage() {
 
   // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
   // taille (jamais une mise en page forcée par image).
-  const [layout] = useState(() => ({ width: 0, height: 0, markW: 0, markH: 0, obstacles: [] as ScreenRect[], go: null as GoPanel | null }));
+  const [layout] = useState(() => ({ width: 0, height: 0, markW: 0, markH: 0, obstacles: [] as ScreenRect[] }));
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
@@ -85,15 +84,6 @@ export default function OpenWorldPage() {
         const r = el.getBoundingClientRect();
         return { left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height };
       });
-      // « Y aller » pour les cadrages rapprochés : sa demi-largeur depuis le milieu, sa hauteur depuis le bas.
-      const goRect = stage.querySelector('.open-world-go')?.getBoundingClientRect();
-      if (goRect && goRect.width > 0) {
-        layout.go = {
-          halfWidth: Math.max(s.left + s.width / 2 - goRect.left, goRect.right - s.left - s.width / 2),
-          height: s.bottom - goRect.top,
-        };
-        world.current?.setGoPanel(layout.go);
-      }
     };
     const observer = new ResizeObserver(measure);
     observer.observe(stage);
@@ -123,10 +113,9 @@ export default function OpenWorldPage() {
         const mission = n?.place.id === placeId ? n.mission : missionOfPlace(placeById(placeId), bornes);
         if (mission) setAsking({ place: placeId, mission });
       },
-      onMark: (m, beside) => placeMark(markRef.current, arrowRef.current, m, beside, layout),
+      onMark: (m) => placeMark(markRef.current, arrowRef.current, m, layout),
     });
     world.current = w;
-    if (layout.go) w.setGoPanel(layout.go);
     setReady(true);
     if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, skip: w.skip, info: w.info };
     return () => {
@@ -140,6 +129,12 @@ export default function OpenWorldPage() {
   useEffect(() => {
     world.current?.setMark(nextPlace?.id ?? null);
   }, [nextPlace, ready]);
+
+  // La brume sur les lieux dont la mission n'a pas encore été jouée, sauf le prochain (la scène la lève à l'approche).
+  const veiled = useMemo(() => veiledPlaces(modele.bornes, next), [modele, next]);
+  useEffect(() => {
+    world.current?.setVeiled(veiled);
+  }, [veiled, ready]);
 
   // Les pièces durables de chaque lieu : une à la première mission réussie, une deuxième à trois étoiles.
   const pieces = useMemo(() => {
@@ -164,7 +159,7 @@ export default function OpenWorldPage() {
     if (!next) return;
     const title = missionTitle(next.place.island, next.mission);
     if (settings.autoRead) speak(frenchTypography(`${next.place.name}. ${title}`));
-    world.current?.goTo(next.place.id);
+    world.current?.goTo(next.place.id, true);
   };
   // Court : le nom du lieu, puis la mission (consultant UX UI et référent dys).
   const label = next ? `${next.place.name}, ${missionTitle(next.place.island, next.mission)}` : '';
@@ -175,9 +170,17 @@ export default function OpenWorldPage() {
         <div ref={host} className="open-world-canvas" />
         {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
         {next && !asking && (
-          <button type="button" ref={markRef} className="open-world-mark" style={MARK_STYLE} aria-label={label} onClick={goNext}>
-            <span ref={arrowRef} className="open-world-arrow" aria-hidden="true">
-              <Icon name="nord" />
+          <button type="button" ref={markRef} className="open-world-mark" aria-label={label} onClick={goNext}>
+            <span className="open-world-arrow-box" aria-hidden="true">
+              <span ref={arrowRef} className="open-world-arrow">
+                <Icon name="nord" />
+              </span>
+              {/* La distance en signe, jamais en texte (consultant UX UI) : un, deux ou trois points pleins, de près à loin. */}
+              <span className="open-world-distance">
+                <i />
+                <i />
+                <i />
+              </span>
             </span>
             {/* Le nom du lieu seul : aucune icône de lieu n'existe encore (le sapin de l'île d'aujourd'hui ne dit pas le Phare). */}
             <span className="open-world-mark-word">{next.place.name}</span>
@@ -206,33 +209,23 @@ export default function OpenWorldPage() {
   );
 }
 
-/**
- * La largeur que le cadrage réserve à droite d'une marque posée à côté du sommet d'un lieu (`CLOSE_UP_INSETS`) : la
- * marque n'en prend pas plus et passe à la ligne entre les mots (openWorld.css, `.a-cote`).
- */
-const MARK_STYLE = { '--marque-a-cote': `${CLOSE_UP_INSETS.markWidth}px` } as CSSProperties;
-
 /** L'écart minimal entre la marque et le bord de l'écran ou un bouton, en pixels. */
 const MARK_EDGE = 8;
 
 /**
  * Pose la marque à l'écran, image par image, sans passer par React et sans lire la mise en page (les dimensions sont
- * relues par le `ResizeObserver`) : sur son lieu, au-dessus du point, ou à sa droite (`beside`, à côté du sommet d'un
- * lieu haut sur un écran bas), ou au bord, sa flèche tournée vers lui ; le panneau reste entier à l'écran et hors des
- * boutons Réglages et « Y aller ».
+ * relues par le `ResizeObserver`) : sur son lieu, au-dessus du point, ou au bord, sa flèche tournée vers lui et la
+ * distance en points dessous ; le panneau reste entier à l'écran et hors des boutons Réglages et « Y aller ».
  */
-function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkOnScreen | null, beside: boolean, size: { width: number; height: number; markW: number; markH: number; obstacles: ScreenRect[] }): void {
+function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkOnScreen | null, size: { width: number; height: number; markW: number; markH: number; obstacles: ScreenRect[] }): void {
   if (!mark) return;
   mark.hidden = !m;
   if (!m) return;
   mark.classList.toggle('hors-champ', !m.inside);
-  mark.classList.toggle('a-cote', m.inside && beside);
+  const far = String(m.far);
+  if (mark.dataset.loin !== far) mark.dataset.loin = far;
   const { markW: w, markH: h } = size;
-  const box = !m.inside
-    ? { left: m.x - w / 2, top: m.y - h / 2, width: w, height: h }
-    : beside
-      ? { left: m.x + CLOSE_UP_INSETS.markGap, top: m.y - h / 2, width: w, height: h }
-      : { left: m.x - w / 2, top: m.y - h, width: w, height: h };
+  const box = !m.inside ? { left: m.x - w / 2, top: m.y - h / 2, width: w, height: h } : { left: m.x - w / 2, top: m.y - h, width: w, height: h };
   const r = keepClear(box, size.obstacles, size.width, size.height, MARK_EDGE, MARK_EDGE);
   mark.style.transform = `translate(${Math.round(r.left)}px, ${Math.round(r.top)}px)`;
   if (arrow) arrow.style.transform = m.inside ? '' : `rotate(${m.angle}rad)`;

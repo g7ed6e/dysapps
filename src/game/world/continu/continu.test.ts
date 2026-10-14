@@ -1,15 +1,17 @@
-// Le monde continu du prototype (6e d'Archipéo) : le plan en données, le terrain, la mer, les chemins et leur A*, la
-// marche, les cadrages, les maquettes et le budget. Sans Three.js.
+// Le monde continu du prototype (6e d'Archipéo) : le plan en données, le terrain et ses tuiles, la mer, les chemins et
+// leur A*, la marche, la caméra qui suit Kéo, les maquettes, la brume et le budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { openWorldCost, OPEN_WORLD_BUDGET } from './budget';
-import { CAMERA_PITCH, CLOSE_UP_INSETS, KEO_HEIGHT, MARK_LIFT, REFERENCE_HEIGHT, cameraKey, cameraPose, closeUpScale, markBeside, markOffset, poseAt, poseOf, screenOf } from './camera';
-import { distance, insidePolygon } from './geometry';
-import { atNode, findRoute, pathNode, pathRibbons, routeLength, snapToNetwork } from './paths';
-import { COAST, DECK_HEIGHT, FRAMINGS, ISLET, LAGOON, PATH_EDGES, PATH_NODES, PLACES, fromPlan, framingOf, placeById, placeOfIsland } from './plan6e';
+import { groundCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget';
+import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, markOffset, occlusionLift, screenOf } from './camera';
+import { distance, insidePolygon, type Vec3 } from './geometry';
+import { atNode, findRoute, networkSamples, pathNode, pathRibbons, routeLength, snapToNetwork } from './paths';
+import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, placeById, placeOfIsland } from './plan6e';
 import { modelOfPlace } from './places';
+import { sceneSpot } from './questionScene';
 import { SEA_TEXTURE, seaPixels, shallowness } from './sea';
-import { buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight, terrainTiles } from './terrain';
-import { skipWalk, startWalk, walkAt, WALK_SPEED } from './walk';
+import { RING, TILE_SIZE, buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
+import { veilFacets } from './veil';
+import { skipWalk, startWalk, walkAt } from './walk';
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => heightOnMesh(field, x, z);
@@ -32,7 +34,27 @@ describe('Le plan du 6e', () => {
 
   it('le Phare est au milieu du lagon, les Écluses au nord-est', () => {
     expect(placeById('phare').center).toEqual({ x: 0, z: 0 });
-    expect(fromPlan([1240, 382]).x).toBeGreaterThan(25);
+    expect(placeById('ecluses').center.x).toBeGreaterThan(100);
+    expect(placeById('ecluses').center.z).toBeLessThan(-50);
+  });
+
+  it('l’île agrandie : environ 120 pas de Kéo du Phare aux Quais (premier essai, piste 1)', () => {
+    const steps = (a: string, b: string) => routeLength(findRoute(atNode(a), atNode(b))) / KEO_STEP;
+    expect(steps('phare', 'quais')).toBeGreaterThan(110);
+    expect(steps('phare', 'quais')).toBeLessThan(130);
+    // Les autres voisins, tels que le plan les donne : des Écluses aux Filets un peu moins, des Quais aux Écluses
+    // presque deux fois plus (le sentier de l'est longe tout le rivage).
+    expect(steps('ecluses', 'filets')).toBeGreaterThan(90);
+    expect(steps('quais', 'ecluses')).toBeLessThan(230);
+  });
+
+  it('chaque lieu reste au bord de son rivage : les Quais devant leur bassin, les Filets sur la plage, les Écluses sur la rivière', () => {
+    expect(landDistance(placeById('quais').center)).toBeLessThan(5);
+    expect(landDistance(placeById('filets').center)).toBeLessThan(2);
+    // La scène d'une question des Écluses est sur l'eau de la rivière ; celle des Quais, à quelques pas du bassin.
+    expect(landDistance(sceneSpot('ecluses'))).toBeLessThan(0);
+    expect(landDistance(sceneSpot('quais'))).toBeLessThan(5);
+    for (const p of DOCK) expect(insidePolygon(p, COAST)).toBe(true);
   });
 });
 
@@ -40,7 +62,7 @@ describe('Le terrain', () => {
   it('la terre est au-dessus de l’eau, le lagon et le large dessous', () => {
     expect(heightAt({ x: 0, z: 0 })).toBeGreaterThan(0.2); // l'îlot du Phare
     expect(heightAt(fromPlan([700, 600]))).toBeLessThan(0); // le lagon
-    expect(heightAt({ x: 0, z: -60 })).toBeLessThan(0); // le large
+    expect(heightAt(fromPlan([880, 40]))).toBeLessThan(0); // le large
     expect(heightAt(fromPlan([1300, 600]))).toBeGreaterThan(0.4); // le rivage est
     expect(landDistance(fromPlan([1250, 600]))).toBeLessThan(0); // la rivière
   });
@@ -64,22 +86,59 @@ describe('Le terrain', () => {
     expect(h).toBeLessThanOrEqual(Math.max(...coins) + 1e-6);
   });
 
-  it('quatre tuiles, toutes tournées vers le ciel, sans ce qui est sous l’eau', () => {
-    const tiles = terrainTiles(field);
-    expect(tiles).toHaveLength(4);
-    let total = 0;
-    for (const t of tiles) {
-      total += t.triangles;
-      for (let k = 1; k < t.normals.length; k += 3) expect(t.normals[k]).toBeGreaterThan(-1e-6);
+  it('des tuiles carrées sur toute l’étendue, à deux niveaux de détail, comptées sans être construites', () => {
+    expect(field.nx).toBe(TERRAIN.tilesX * TERRAIN.tileCells + 1);
+    expect(TERRAIN.tileCells % TERRAIN.coarse).toBe(0);
+    const near = tileTriangleCounts(field, 'near');
+    const far = tileTriangleCounts(field, 'far');
+    // La tuile du Phare : sur la terre, du sable à l'herbe.
+    const tx = Math.floor((0 - TERRAIN.minX) / TILE_SIZE);
+    const tz = Math.floor((0 - TERRAIN.minZ) / TILE_SIZE);
+    const i = tz * TERRAIN.tilesX + tx;
+    const fine = tileFacets(field, tx, tz, 'near');
+    const coarse = tileFacets(field, tx, tz, 'far');
+    expect(fine.triangles).toBe(near[i]);
+    expect(coarse.triangles).toBe(far[i]);
+    expect(coarse.triangles).toBeLessThan(fine.triangles / 4);
+    // Rien ne regarde vers le bas : le dessus vers le ciel, la jupe du bord à la verticale.
+    for (const t of [fine, coarse]) for (let k = 1; k < t.normals.length; k += 3) expect(t.normals[k]).toBeGreaterThan(-1e-6);
+    // Le large n'a rien à dessiner.
+    expect(near[0]).toBe(0);
+  });
+
+  it('la jupe du bord : chaque tuile descend sous son pourtour, et la fente avec une voisine de loin est bouchée', () => {
+    const tx = Math.floor((0 - TERRAIN.minX) / TILE_SIZE);
+    const tz = Math.floor((0 - TERRAIN.minZ) / TILE_SIZE);
+    const r = tileRect(tx, tz);
+    const t = tileFacets(field, tx, tz, 'far');
+    let below = 0;
+    for (let k = 0; k < t.positions.length; k += 3) {
+      const onEdge = Math.abs(t.positions[k] - r.minX) < 1e-4 || Math.abs(t.positions[k] - r.maxX) < 1e-4 || Math.abs(t.positions[k + 2] - r.minZ) < 1e-4 || Math.abs(t.positions[k + 2] - r.maxZ) < 1e-4;
+      if (onEdge && t.positions[k + 1] < heightOnMesh(field, t.positions[k], t.positions[k + 2]) - 1) below++;
     }
-    expect(total).toBeLessThan(((field.nx - 1) * (field.nz - 1) * 2) / 1.5);
+    expect(below).toBeGreaterThan(0);
+  });
+
+  it('deux anneaux autour de Kéo : de près au plus neuf tuiles, de loin jusqu’au bout de la brume, rien derrière la caméra', () => {
+    for (const p of networkSamples(10)) {
+      const rings = tileRings(p, WORLD_FOG.far);
+      expect(rings.near.length).toBeGreaterThan(0);
+      expect(rings.near.length).toBeLessThanOrEqual(9);
+      for (const i of [...rings.near, ...rings.far]) {
+        const r = tileRect(i % TERRAIN.tilesX, Math.floor(i / TERRAIN.tilesX));
+        expect(r.minZ).toBeLessThanOrEqual(p.z + RING.behind);
+      }
+      // La tuile sous Kéo est toujours de près.
+      const under = Math.floor((p.z - TERRAIN.minZ) / TILE_SIZE) * TERRAIN.tilesX + Math.floor((p.x - TERRAIN.minX) / TILE_SIZE);
+      expect(rings.near).toContain(under);
+    }
   });
 });
 
 describe('La mer et le lagon', () => {
   it('l’eau claire dans le lagon, le bleu du large au loin et au bord de l’image', () => {
     expect(shallowness(fromPlan([700, 600]))).toBe(1);
-    expect(shallowness({ x: 0, z: -62 })).toBe(0);
+    expect(shallowness(fromPlan([880, 20]))).toBe(0);
     const px = seaPixels();
     expect(px).toHaveLength(SEA_TEXTURE.size * SEA_TEXTURE.size * 4);
     const at = (i: number, j: number) => Array.from(px.slice((j * SEA_TEXTURE.size + i) * 4, (j * SEA_TEXTURE.size + i) * 4 + 3));
@@ -108,7 +167,7 @@ describe('Les chemins aimantés', () => {
   });
 
   it('un toucher dans le lagon aimante Kéo sur la digue la plus proche', () => {
-    const p = snapToNetwork(fromPlan([930, 700]));
+    const p = snapToNetwork(fromPlan([900, 660]));
     expect(PATH_EDGES[p.edge]).toEqual(['phare', 'digue']);
     // Aucun autre point du réseau n'est plus près.
     for (let k = 0; k <= 50; k++) {
@@ -126,11 +185,6 @@ describe('Les chemins aimantés', () => {
     // Des Filets aux Écluses : par la crête, plus court que par le lagon.
     const parLaCrete = findRoute(atNode('filets'), atNode('ecluses'));
     expect(parLaCrete).toHaveLength(3);
-    // Des trajets courts (avis du référent dys) : le plus long, entre deux nœuds du réseau, tient en moins de douze
-    // secondes de marche (il dure 10,0 s, du Phare aux Filets).
-    let plusLong = 0;
-    for (const a of PATH_NODES) for (const b of PATH_NODES) plusLong = Math.max(plusLong, routeLength(findRoute(atNode(a.id), atNode(b.id))) / WALK_SPEED);
-    expect(plusLong).toBeLessThan(12);
   });
 
   it('d’un point au milieu d’une liaison à un autre sur la même liaison : tout droit', () => {
@@ -143,7 +197,7 @@ describe('Les chemins aimantés', () => {
   it('les rubans des chemins ont leur dessus vers le ciel', () => {
     const f = pathRibbons(ground);
     expect(f.triangles).toBeGreaterThan(100);
-    expect(f.triangles).toBeLessThan(3000);
+    expect(f.triangles).toBeLessThan(4000);
   });
 });
 
@@ -169,148 +223,102 @@ describe('La marche de Kéo', () => {
   });
 });
 
-describe('Les cadrages prévus', () => {
-  it('chaque nœud a son rivage, et son cadrage le montre', () => {
-    for (const n of PATH_NODES) {
-      expect(cameraKey(n.at, REFERENCE_HEIGHT)).toBe(n.shore);
-      expect(distance(n.at, framingOf(n.shore).target)).toBeLessThan(framingOf(n.shore).radius * 0.9);
-    }
-    // Chaque lieu tient dans le cadrage du rivage de sa porte.
-    for (const p of PLACES) expect(distance(p.center, framingOf(pathNode(p.door).shore).target)).toBeLessThan(framingOf(pathNode(p.door).shore).radius);
-  });
+describe('La caméra qui suit Kéo', () => {
+  const at = (n: (typeof PATH_NODES)[number]): Vec3 => ({ x: n.at.x, y: standingHeight(heightAt(n.at)), z: n.at.z });
+  const SCREENS = [
+    { name: 'tablette', w: 1024, h: 768 },
+    { name: 'téléphone couché', w: 844, h: 390 },
+    { name: 'tablette debout', w: 768, h: 1024 },
+  ];
 
-  it('la caméra regarde vers le nord, de biais, et recule sur un écran en hauteur', () => {
-    for (const f of FRAMINGS) {
-      const p = poseOf(f, 4 / 3);
+  it('de trois quarts, 4 à 5 m de haut et 6 m derrière Kéo (une unité fait 0,62 m), toujours tournée vers le nord', () => {
+    const metres = 1.5 / 2.4;
+    expect(FOLLOW.height * metres).toBeGreaterThanOrEqual(4);
+    expect(FOLLOW.height * metres).toBeLessThanOrEqual(5);
+    expect(FOLLOW.back * metres).toBeCloseTo(6, 0);
+    for (const n of PATH_NODES) {
+      const p = followPose(at(n));
       expect(p.position.x).toBe(p.target.x);
       expect(p.position.z).toBeGreaterThan(p.target.z);
-      expect(Math.atan2(p.position.y - p.target.y, p.position.z - p.target.z)).toBeCloseTo(CAMERA_PITCH, 6);
-      const portrait = poseOf(f, 3 / 4);
-      expect(portrait.position.y).toBeGreaterThan(p.position.y);
+      expect(p.position.y).toBeCloseTo(at(n).y + FOLLOW.height, 9);
+      expect(p.lens).toBe(0);
     }
   });
 
-  it('un passage doux, sans roulis ni détour ; une coupe franche avec « Réduire les animations »', () => {
-    const from = poseOf(framingOf('lagon'), 4 / 3);
-    const to = poseOf(framingOf('nord'), 4 / 3);
-    const move = { from, to, start: 10 };
-    expect(poseAt(move, 10, true)).toBe(to);
-    expect(poseAt(move, 10, false).position).toEqual(from.position);
-    const mid = poseAt(move, 10.7, false);
-    // À mi-chemin, l'axe de visée garde le même angle : la caméra glisse, elle ne tourne pas.
-    expect(Math.atan2(mid.position.y - mid.target.y, mid.position.z - mid.target.z)).toBeCloseTo(CAMERA_PITCH, 6);
-    expect(poseAt(move, 20, false).position.x).toBeCloseTo(to.position.x, 9);
+  it.each(SCREENS)('Kéo y tient environ un sixième de la hauteur de l’écran, sous le milieu, au-dessus de « Y aller » ($name)', ({ w, h }) => {
+    for (const n of PATH_NODES) {
+      const feet = at(n);
+      const pose = followPose(feet);
+      const a = screenOf(pose, feet, w, h);
+      const b = screenOf(pose, { ...feet, y: feet.y + 2.4 }, w, h);
+      expect((a.y - b.y) / h).toBeGreaterThan(0.15);
+      expect((a.y - b.y) / h).toBeLessThan(0.19);
+      expect(Math.abs(a.x - w / 2)).toBeLessThan(0.5);
+      // Ses pieds et son anneau au-dessus de « Y aller » (72 px de haut avec sa marge, en texte normal) et de son air.
+      expect(screenOf(pose, { ...feet, z: feet.z + 1.3 }, w, h).y).toBeLessThan(h - 72 - 8);
+    }
+  });
+
+  it('le haut de l’image garde l’horizon : le Phare se voit du bout de l’île', () => {
+    const { w, h } = SCREENS[0];
+    const feet = at(pathNode('ecluses'));
+    const pose = followPose(feet);
+    const horizon = screenOf(pose, { x: feet.x, y: pose.position.y, z: feet.z - 10_000 }, w, h);
+    expect(horizon.y).toBeGreaterThan(0);
+    expect(horizon.y).toBeLessThan(h * 0.25);
+    // Le sommet d'un lieu haut à 100 unités devant Kéo est dans l'image.
+    const top = screenOf(pose, { x: feet.x, y: feet.y + modelOfPlace('phare').top, z: feet.z - 100 }, w, h);
+    expect(top.y).toBeGreaterThan(0);
+  });
+
+  it('une zone morte, puis un rattrapage doux ; d’un bloc avec « Réduire les animations » ou après un saut', () => {
+    const focus = { x: 0, y: 1, z: 0 };
+    followStep(focus, { x: FOLLOW_SMOOTHING.deadZone * 0.9, y: 1, z: 0 }, 0.016, false);
+    expect(focus.x).toBe(0);
+    followStep(focus, { x: 4, y: 1, z: 0 }, 0.016, false);
+    expect(focus.x).toBeGreaterThan(0);
+    expect(focus.x).toBeLessThan(0.5);
+    // Une seconde plus tard, il est revenu au bord de la zone morte.
+    for (let k = 0; k < 60; k++) followStep(focus, { x: 4, y: 1, z: 0 }, 1 / 60, false);
+    expect(focus.x).toBeGreaterThan(4 - FOLLOW_SMOOTHING.deadZone - 0.05);
+    followStep(focus, { x: 6, y: 2, z: 3 }, 0.016, true);
+    expect(focus).toEqual({ x: 6, y: 2, z: 3 });
+    followStep(focus, { x: 6 + FOLLOW_SMOOTHING.jump + 1, y: 2, z: 3 }, 0.016, false);
+    expect(focus.x).toBe(6 + FOLLOW_SMOOTHING.jump + 1);
+  });
+
+  it('si le relief cache Kéo, la caméra monte juste assez ; sur le plat, elle ne bouge pas', () => {
+    const feet = { x: 0, y: 1, z: 0 };
+    expect(occlusionLift(feet, () => 1)).toBe(0);
+    // Une crête entre Kéo et la caméra.
+    const ridge = (_x: number, z: number) => (z > 4 && z < 6 ? 7 : 1);
+    const lift = occlusionLift(feet, ridge);
+    expect(lift).toBeGreaterThan(0);
+    // La ligne de sa tête à la caméra montée passe au-dessus de la crête.
+    const head = feet.y + KEO_HEIGHT * 0.8;
+    const cam = followPose(feet, lift).position;
+    for (const z of [4.5, 5, 5.5]) expect(head + ((cam.y - head) * z) / FOLLOW.back).toBeGreaterThanOrEqual(7.5);
+    expect(liftStep(0, lift, 0.016, true)).toBe(lift);
+    expect(liftStep(0, lift, 0.016, false)).toBeGreaterThan(0);
+    expect(liftStep(0, lift, 0.016, false)).toBeLessThan(lift);
+    // Sur le réseau du 6e, la montée reste mesurée.
+    const ground = (x: number, z: number) => heightOnMesh(field, x, z);
+    for (const p of networkSamples(4)) expect(occlusionLift({ x: p.x, y: standingHeight(ground(p.x, p.z)), z: p.z }, ground)).toBeLessThan(6);
+  });
+
+  it('la marque se pose au-dessus du sommet du lieu', () => {
+    for (const p of PLACES) expect(markOffset(p.id)).toEqual({ x: 0, y: modelOfPlace(p.id).top + MARK_LIFT, z: 0 });
   });
 });
 
-describe('Sur un écran bas, la caméra se rapproche', () => {
-  const PHONE = { w: 844, h: 390 };
-  const TABLET = { w: 1024, h: 768 };
-  const feet = (n: (typeof PATH_NODES)[number]) => ({ x: n.at.x, y: standingHeight(heightAt(n.at)), z: n.at.z });
-  /** La hauteur de Kéo à l'écran, en pixels, sur le nœud `n`. */
-  const keoPixels = (n: (typeof PATH_NODES)[number], w: number, h: number) => {
-    const pose = cameraPose(cameraKey(n.at, h), w, h);
-    const a = screenOf(pose, feet(n), w, h);
-    const b = screenOf(pose, { ...feet(n), y: feet(n).y + KEO_HEIGHT }, w, h);
-    return Math.hypot(a.x - b.x, a.y - b.y);
-  };
-
-  it('la tablette (768 px de haut et plus) garde les cadrages par rivage, à l’identique', () => {
-    expect(closeUpScale(768)).toBe(1);
-    expect(closeUpScale(1024)).toBe(1);
-    for (const n of PATH_NODES) {
-      expect(cameraKey(n.at, TABLET.h)).toBe(n.shore);
-      expect(cameraPose(cameraKey(n.at, TABLET.h), TABLET.w, TABLET.h)).toEqual(poseOf(framingOf(n.shore), TABLET.w / TABLET.h));
-    }
-  });
-
-  it('sur un téléphone couché, un cadrage par nœud, au même angle', () => {
-    expect(closeUpScale(PHONE.h)).toBeCloseTo(390 / 768, 6);
-    for (const n of PATH_NODES) {
-      expect(cameraKey(n.at, PHONE.h)).toBe(`noeud:${n.id}`);
-      const pose = cameraPose(cameraKey(n.at, PHONE.h), PHONE.w, PHONE.h);
-      expect(Math.atan2(pose.position.y - pose.target.y, pose.position.z - pose.target.z)).toBeCloseTo(CAMERA_PITCH, 6);
-      expect(pose.position.x).toBe(pose.target.x);
-    }
-  });
-
-  // « Y aller » en texte normal, puis en grand texte (plus large et plus haut, mesuré par la page).
-  it.each([
-    { halfWidth: CLOSE_UP_INSETS.goHalfWidth, height: CLOSE_UP_INSETS.goHeight },
-    { halfWidth: 192, height: 110 },
-  ])('Kéo, le lieu le plus proche entier et sa marque restent dans le cadre ; Kéo garde son air autour de « Y aller » ($halfWidth px)', (go) => {
-    const { w, h } = PHONE;
-    const { edge, markAbove, markHalf, markGap, markWidth, keoAir } = CLOSE_UP_INSETS;
-    const clearOfGo = (q: { x: number; y: number }, air: number) => Math.abs(q.x - w / 2) >= go.halfWidth + air || q.y <= h - go.height - air;
-    for (const n of PATH_NODES) {
-      const pose = cameraPose(cameraKey(n.at, h), w, h, go);
-      // Le lieu le plus proche de ce nœud : celui dont la porte est la plus proche.
-      const p = [...PLACES].sort((a, b) => distance(n.at, pathNode(a.door).at) - distance(n.at, pathNode(b.door).at))[0];
-      const y0 = standingHeight(heightAt(p.center));
-      const o = markOffset(p.id, h);
-      const mark = screenOf(pose, { x: p.center.x + o.x, y: y0 + o.y, z: p.center.z + o.z }, w, h);
-      if (markBeside(p.id, h)) {
-        expect(mark.y).toBeGreaterThanOrEqual(markHalf + edge - 0.5);
-        expect(mark.x + markGap + markWidth).toBeLessThanOrEqual(w);
-      } else expect(mark.y).toBeGreaterThanOrEqual(markAbove - 0.5);
-      const pos = modelOfPlace(p.id).facets.positions;
-      const c = Math.cos(p.yaw), s = Math.sin(p.yaw);
-      for (let k = 0; k < pos.length; k += 3) {
-        const at = { x: p.center.x + pos[k] * c + pos[k + 2] * s, y: y0 + Math.max(0, pos[k + 1]), z: p.center.z - pos[k] * s + pos[k + 2] * c };
-        const q = screenOf(pose, at, w, h);
-        expect(q.x).toBeGreaterThan(0);
-        expect(q.x).toBeLessThan(w);
-        expect(q.y).toBeGreaterThan(0);
-        expect(q.y).toBeLessThan(h);
-        expect(clearOfGo(q, 0)).toBe(true);
-      }
-      // Kéo, de la tête à l'anneau : dans l'écran, à 24 px au moins de « Y aller ».
-      for (const dx of [-1.3, 1.3])
-        for (const [dy, dz] of [[0, 1.3], [KEO_HEIGHT, -1.3]]) {
-          const q = screenOf(pose, { x: n.at.x + dx, y: feet(n).y + dy, z: n.at.z + dz }, w, h);
-          expect(q.y).toBeGreaterThan(0);
-          expect(q.y).toBeLessThan(h);
-          expect(clearOfGo(q, keoAir - 0.5)).toBe(true);
-        }
-    }
-  });
-
-  it('au Phare, la marque se pose à côté de son sommet, et le Phare reste droit', () => {
-    const { w, h } = PHONE;
-    expect(markBeside('phare', h)).toBe(true);
-    expect(markBeside('phare', TABLET.h)).toBe(false);
-    for (const id of ['quais', 'filets', 'ecluses'] as const) expect(markBeside(id, h)).toBe(false);
-    expect(markOffset('phare', TABLET.h)).toEqual({ x: 0, y: modelOfPlace('phare').top + MARK_LIFT, z: 0 });
-    const beside = markOffset('phare', h);
-    expect(beside.x).toBeGreaterThan(0);
-    expect(beside.y).toBeLessThan(modelOfPlace('phare').top);
-    const pose = cameraPose(cameraKey(pathNode('phare').at, h), w, h);
-    const p = placeById('phare');
-    const y0 = standingHeight(heightAt(p.center));
-    const base = screenOf(pose, { x: p.center.x, y: y0, z: p.center.z }, w, h);
-    const top = screenOf(pose, { x: p.center.x, y: y0 + modelOfPlace('phare').top, z: p.center.z }, w, h);
-    // Droit : son axe ne penche pas de plus d'un pixel sur toute sa hauteur.
-    expect(Math.abs(top.x - base.x)).toBeLessThan(1);
-  });
-
-  it('Kéo y garde à peu près sa taille de la tablette (au Phare, haut, un peu moins)', () => {
-    for (const n of PATH_NODES) {
-      const phone = keoPixels(n, PHONE.w, PHONE.h);
-      const tablet = keoPixels(n, TABLET.w, TABLET.h);
-      // Avant, la caméra restait à la distance de la tablette : la moitié de sa taille.
-      const pose = poseOf(framingOf(n.shore), PHONE.w / PHONE.h);
-      const a = screenOf(pose, feet(n), PHONE.w, PHONE.h);
-      const b = screenOf(pose, { ...feet(n), y: feet(n).y + KEO_HEIGHT }, PHONE.w, PHONE.h);
-      const unchanged = Math.hypot(a.x - b.x, a.y - b.y);
-      // Au Phare, le lieu haut, Kéo n'a pas toute sa taille de la tablette, mais 28 px au moins (le directeur
-      // artistique vise environ 29).
-      if (n.id === 'phare') expect(phone).toBeGreaterThan(28);
-      if (n.id === 'phare' || n.id === 'digue') expect(phone).toBeGreaterThan(unchanged * 1.5);
-      else {
-        expect(phone).toBeGreaterThan(unchanged * 1.6);
-        expect(phone).toBeGreaterThan(tablet * 0.85);
-      }
-    }
+describe('La brume sur les lieux', () => {
+  it('un banc qui couvre le lieu entier, jusqu’au-dessus de son sommet, en un seul maillage léger', () => {
+    expect(veilFacets([]).triangles).toBe(0);
+    const one = veilFacets(['quais']);
+    let top = -Infinity;
+    for (let k = 1; k < one.positions.length; k += 3) top = Math.max(top, one.positions[k]);
+    expect(top).toBeGreaterThan(standingHeight(heightAt(placeById('quais').center)) + modelOfPlace('quais').top);
+    expect(veilFacets(['quais', 'filets', 'ecluses']).triangles).toBeLessThan(1200);
   });
 });
 
@@ -329,7 +337,15 @@ describe('Les maquettes des lieux', () => {
 });
 
 describe('Le budget du monde continu', () => {
-  it('tient dans l’enveloppe estimée au cadrage', () => {
+  it('le sol en deux appels (de près, de loin), quel que soit le point du réseau où se tient Kéo', () => {
+    const g = groundCost();
+    expect(g.calls).toBe(2);
+    expect(g.near).toBeGreaterThan(g.far / 3);
+    expect(g.triangles).toBe(g.near + g.far);
+  });
+
+  it('tient dans l’enveloppe estimée au cadrage, sans la relever', () => {
+    expect(OPEN_WORLD_BUDGET).toEqual({ triangles: 45_000, calls: 18 });
     const cost = openWorldCost();
     const triangles = cost.reduce((s, c) => s + c.triangles, 0);
     const calls = cost.reduce((s, c) => s + c.calls, 0);

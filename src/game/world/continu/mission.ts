@@ -1,7 +1,8 @@
 // La prochaine mission dans le monde continu, et sa marque : une seule à la fois (avis du référent dys et du consultant
 // UX UI, 13 octobre 2026), posée au-dessus de son lieu, ou une flèche au bord de l'écran quand le lieu est hors champ.
 // Code pur : les bornes viennent du modèle du monde (world/model.ts), commun aux deux univers.
-import { PLACES, type OpenPlace, type PlaceId } from './plan6e';
+import { distance, type Vec2 } from './geometry';
+import { KEO_STEP, PLACES, type OpenPlace, type PlaceId } from './plan6e';
 
 /** Une borne de mission, comme la rend le modèle du monde : à faire, ses étoiles, ou fermée. */
 export interface MissionMark {
@@ -52,6 +53,33 @@ export function nextMission(bornes: readonly MissionMark[], destination?: { isla
   return null;
 }
 
+/**
+ * Les lieux sous la brume (piste 1, lot 1) : ceux dont la mission n'a pas encore été jouée (elle reste ouverte : on peut y
+ * aller, la brume se lève à l'approche de Kéo, ../../three/archipeo/scene.ts), sauf le lieu de la prochaine mission. Un
+ * lieu sans mission (une autre LV2) n'a pas de brume : rien n'y attend.
+ */
+export function veiledPlaces(bornes: readonly MissionMark[], next: NextMission | null): PlaceId[] {
+  return PLACES.filter((p) => {
+    const b = borneOf(p, bornes);
+    return b !== undefined && toPlay(b) && p.id !== next?.place.id;
+  }).map((p) => p.id);
+}
+
+/** La brume d'un lieu se lève quand Kéo arrive à tant d'unités de son centre. */
+export const UNVEIL_DISTANCE = 26;
+
+/**
+ * La distance au lieu de la prochaine mission, en signe (avis du consultant UX UI : jamais en texte) : un, deux ou
+ * trois points pleins sous la flèche du bord. Un point : moins de 60 pas ; deux : moins de 160 ; trois au-delà.
+ */
+export const DISTANCE_SIGN_STEPS = [60, 160] as const;
+
+/** Le signe de la distance de Kéo (`from`) au lieu `to` : 1, 2 ou 3 points, à vol d'oiseau. */
+export function distanceSign(from: Vec2, to: Vec2): 1 | 2 | 3 {
+  const steps = distance(from, to) / KEO_STEP;
+  return steps < DISTANCE_SIGN_STEPS[0] ? 1 : steps < DISTANCE_SIGN_STEPS[1] ? 2 : 3;
+}
+
 /** Où se pose la marque à l'écran : sur son lieu, ou, hors champ, au bord, avec l'angle de sa flèche (0 vers le haut). */
 export interface MarkOnScreen {
   x: number;
@@ -59,6 +87,8 @@ export interface MarkOnScreen {
   inside: boolean;
   /** En radians, dans le sens des aiguilles d'une montre depuis le haut de l'écran. */
   angle: number;
+  /** La distance au lieu, en signe (`distanceSign`) : la page la montre sous la flèche du bord. */
+  far: 1 | 2 | 3;
 }
 
 /**
@@ -66,9 +96,9 @@ export interface MarkOnScreen {
  * `width` × `height`. Dans l'écran, sur son lieu ; hors champ, sur le bord, à `margin` pixels, vers le lieu. (La page
  * garde ensuite le panneau entier à l'écran.)
  */
-export function markOnScreen(p: { x: number; y: number; behind: boolean }, width: number, height: number, margin: number): MarkOnScreen {
+export function markOnScreen(p: { x: number; y: number; behind: boolean }, width: number, height: number, margin: number, far: 1 | 2 | 3 = 1): MarkOnScreen {
   const inside = !p.behind && p.x >= 0 && p.x <= width && p.y >= 0 && p.y <= height;
-  if (inside) return { x: p.x, y: p.y, inside, angle: 0 };
+  if (inside) return { x: p.x, y: p.y, inside, angle: 0, far };
   const cx = width / 2;
   const cy = height / 2;
   // Derrière la caméra, la projection est retournée : la direction l'est aussi.
@@ -82,7 +112,7 @@ export function markOnScreen(p: { x: number; y: number; behind: boolean }, width
   const sx = (cx - margin) / Math.abs(dx || 1e-9);
   const sy = (cy - margin) / Math.abs(dy || 1e-9);
   const s = Math.min(sx, sy);
-  return { x: cx + dx * s, y: cy + dy * s, inside: false, angle: Math.atan2(dx, -dy) };
+  return { x: cx + dx * s, y: cy + dy * s, inside: false, angle: Math.atan2(dx, -dy), far };
 }
 
 /** Un rectangle à l'écran, en pixels. */
