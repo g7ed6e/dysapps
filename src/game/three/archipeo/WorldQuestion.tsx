@@ -32,6 +32,7 @@ import { WIDEN_FULL, WIDEN_OFFER, questionLayout, type AnswerSlot, type Question
 import { bellRounds, isItemScene, placeInstruction, placeItems, type ItemScene } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { WorldDone } from './WorldDone';
+import { overflows, wordsCut } from './fit';
 
 /** Ce que l'écran d'un lieu demande à la scène : l'item à montrer, combien de réponses il a, s'il a une règle. */
 interface ItemShown {
@@ -123,16 +124,27 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
   const [introDone, setIntroDone] = useState(false);
   const intro = layout.low && !introDone && !finished && !offer;
+  // Un mot de réponse coupé dans son étiquette (les cloches en grand texte) : on ne répond que dans « Vue simple »,
+  // proposé d'emblée, la voix gardée ; les étiquettes ne passent jamais sur deux rangées.
+  const [answersOut, setAnswersOut] = useState(false);
   // Mesuré avant l'affichage, à chaque item, réponse ou cran : une colonne qui déborde (en hauteur ou en largeur) prend
-  // le cran suivant ; une consigne qui ne tient pas en pleine largeur mène droit à « Vue simple ».
+  // le cran suivant ; une consigne qui ne tient pas en pleine largeur mène droit à « Vue simple » ; un mot coupé aussi.
   useLayoutEffect(() => {
-    if (!layout.low || finished || offer) return;
-    const column = box.current?.querySelector<HTMLElement>('.quiz.in-world');
-    if (!column || !(column.scrollHeight > column.clientHeight + 1 || column.scrollWidth > column.clientWidth + 1)) return;
+    if (!layout.low || finished || answersOut) return;
+    const root = box.current;
+    if (!root) return;
+    if (wordsCut(root.querySelectorAll<HTMLElement>('.world-answer-label'))) {
+      setAnswersOut(true);
+      setWiden(WIDEN_OFFER);
+      return;
+    }
+    if (offer) return;
+    const column = root.querySelector<HTMLElement>('.quiz.in-world');
+    if (!column || !overflows(column)) return;
     if (intro) setWiden(WIDEN_OFFER);
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
-  }, [layout, intro, finished, offer, widen, item, sheetWide]);
+  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut]);
   useEffect(() => {
     if (!size.w || !size.h || !item || finished) return;
     setLabels(world.question({ place, layout, item }));
@@ -182,9 +194,9 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
       extra,
       Done: WorldDone,
-      className: `in-world${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}`,
+      className: `in-world${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut ? ' answers-out' : ''}`,
     };
-  }, [exerciseId, instruction, place, lieu.at, onClose, onSimpleView, intro, offer, widen, layout.low, finished, sheetWide]);
+  }, [exerciseId, instruction, place, lieu.at, onClose, onSimpleView, intro, offer, widen, layout.low, finished, sheetWide, answersOut]);
 
   const style = {
     '--question-left': `${layout.panel.left}px`,
@@ -211,6 +223,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
                 setIntroDone(false);
                 setWiden(0);
                 setSheetWide(false);
+                setAnswersOut(false);
                 setItem(null);
                 setRun((r) => r + 1);
               }}

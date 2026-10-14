@@ -645,3 +645,9 @@
   flex: 1 1 14rem;
   margin: 0 0 0.3rem;
 }
+/* Un mot de réponse qui ne tient pas entier dans son étiquette : on répond seulement dans « Vue simple », proposé
+   d'emblée ; les voix restent. Jamais de mot coupé, jamais d'étiquettes sur deux rangées. */
+.world-question .in-world.answers-out .world-answers,
+.world-question .in-world.answers-out .validate-button {
+  display: none;
+}
