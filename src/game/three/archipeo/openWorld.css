@@ -426,6 +426,10 @@
   width: 100%;
   min-width: 0;
   min-height: 56px;
+  /* Le bandeau « page » (grand texte) colle ce bouton au bas de l'écran, coins du bas carrés : ici il reste dans la
+     colonne, avec ses quatre coins arrondis. */
+  padding: 0.4rem 12px;
+  border-radius: var(--radius-control, 12px);
 }
 /* Un téléphone couché : la consigne devient une icône (sauf au premier item, lue en entier avant « Commencer »), les
    étapes une ligne fine, la phrase s'efface quand le résultat arrive (la correction la redit). */

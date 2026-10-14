@@ -1,4 +1,4 @@
-import { overflows, wordsCut } from './fit';
+import { filledGap, overflows, wordsCut } from './fit';
 
 const box = (clientWidth: number, scrollWidth: number, clientHeight = 50, scrollHeight = 50) => ({ clientWidth, scrollWidth, clientHeight, scrollHeight });
 
@@ -17,5 +17,16 @@ describe('Ce qui tient à l’écran', () => {
     // Une étiquette cachée (la consigne au premier item) ne compte pas.
     expect(wordsCut([box(0, 190)])).toBe(false);
     expect(wordsCut([])).toBe(false);
+  });
+});
+
+describe('Le mot juste dans le trou', () => {
+  it('après une réussite, au premier ou au deuxième essai ; jamais après une erreur ni avant de répondre', () => {
+    expect(filledGap('Une … mouette.', 'petite', [{ correct: true }])).toEqual({ before: 'Une ', after: ' mouette.' });
+    // Le deuxième essai : la réponse que le lanceur retient est la dernière, juste.
+    expect(filledGap('Une … mouette.', 'petite', [{ correct: true }])).not.toBeNull();
+    expect(filledGap('Une … mouette.', 'petite', [{ correct: false }])).toBeNull();
+    expect(filledGap('Une … mouette.', 'petite', undefined)).toBeNull();
+    expect(filledGap('Combien de caisses ?', '17', [{ correct: true }])).toBeNull();
   });
 });

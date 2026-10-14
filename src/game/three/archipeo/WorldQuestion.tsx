@@ -32,7 +32,7 @@ import { WIDEN_FULL, WIDEN_OFFER, questionLayout, type AnswerSlot, type Question
 import { bellRounds, isItemScene, placeInstruction, placeItems, type ItemScene } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { WorldDone } from './WorldDone';
-import { overflows, wordsCut } from './fit';
+import { filledGap, overflows, wordsCut } from './fit';
 
 /** Ce que l'écran d'un lieu demande à la scène : l'item à montrer, combien de réponses il a, s'il a une règle. */
 interface ItemShown {
@@ -232,7 +232,8 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
         </QuestionContext.Provider>
       )}
       {/* « Vue simple » : hors de la colonne, au-dessus de tout, à côté de la pause ; rien ne le recouvre. */}
-      {ready && stage && !finished && (
+      {/* Un seul « Vue simple » : celui du panneau quand le repli est proposé. */}
+      {ready && stage && !finished && !offer && (
         <button type="button" className="button world-question-simple" onClick={onSimpleView}>
           <Icon name="liste" /> Vue simple
         </button>
@@ -352,9 +353,9 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   }, [show, scene, answered, rightIndex, choices.length, aid]);
   if (!item || !scene) return null;
   // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière.
-  const gap = prompt.indexOf('…');
-  const filled = Boolean(answered?.results.every((r) => r.correct)) && gap >= 0 && rightIndex >= 0;
-  const whole = filled ? `${prompt.slice(0, gap)}${answer}${prompt.slice(gap + 1)}` : prompt;
+  const gap = filledGap(prompt, answer, answered?.results);
+  const filled = gap !== null && rightIndex >= 0;
+  const whole = gap ? `${gap.before}${answer}${gap.after}` : prompt;
 
   return (
     <div className="question world-place">
@@ -363,9 +364,9 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
           <p className="question-prompt">
             {filled ? (
               <>
-                <RichText text={prompt.slice(0, gap)} />
+                <RichText text={gap?.before ?? ''} />
                 <strong className="world-filled">{answer}</strong>
-                <RichText text={prompt.slice(gap + 1)} />
+                <RichText text={gap?.after ?? ''} />
               </>
             ) : (
               <RichText text={prompt} />

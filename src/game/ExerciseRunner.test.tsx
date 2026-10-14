@@ -12,6 +12,8 @@ import { plansFor } from './world/plans';
 import { todayISO } from './engine';
 import { ExerciseRunner } from './ExerciseRunner';
 import { getBiome } from './biomes';
+import type { ScreenProps } from './exercises/registry';
+import { filledGap } from './three/archipeo/fit';
 
 const ALL = await loadAllExercises();
 const getExercise = (id: string) => ALL.find((e) => e.id === id);
@@ -157,6 +159,46 @@ describe('Le lanceur posé dans le monde ouvert (`stage`, lot 4)', () => {
     await user.click(screen.getByRole('button', { name: /Revenir au Phare/ }));
     expect(back).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole('link', { name: /Voir le bâtiment/ })).not.toBeInTheDocument();
+  });
+});
+
+describe('Le mot juste dans le trou, dans le monde ouvert', () => {
+  /** Un écran de lieu réduit : les choix, et la phrase complétée quand le lanceur donne une réponse juste. */
+  function GapScreen({ items, answered, onAnswer, ruledOut }: ScreenProps) {
+    const item = items[0];
+    const gap = filledGap('Le mot … ici.', String(item.answer), answered?.results);
+    return (
+      <div>
+        <p data-testid="phrase">{gap ? `${gap.before}${String(item.answer)}${gap.after}` : 'Le mot … ici.'}</p>
+        {(item.choices as string[]).map((c) => (
+          <button key={c} type="button" disabled={Boolean(answered) || Boolean(ruledOut?.includes(c))} onClick={() => onAnswer({ results: [{ key: item.key, correct: c === item.answer }], detail: { chosen: c } })}>
+            {c}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  it('après une réussite au deuxième essai, la phrase est complète ; jamais après une erreur', async () => {
+    const user = userEvent.setup();
+    render(
+      <SettingsProvider>
+        <ProgressProvider>
+          <BloclandProvider>
+            <MemoryRouter>
+              <ExerciseRunner biome={getBiome('french-6e-phonology')!} def={DEF} onReplay={() => {}} stage={{ Screen: GapScreen, back: { label: 'Revenir', onClick: () => {} }, className: 'in-world' }} />
+            </MemoryRouter>
+          </BloclandProvider>
+        </ProgressProvider>
+      </SettingsProvider>,
+    );
+    const [first] = runItems(DEF, runSeed(DEF), []);
+    const wrong = (first.choices as string[]).filter((c) => c !== first.answer);
+    await user.click(screen.getByRole('button', { name: wrong[0] }));
+    expect(screen.getByText('Presque !')).toBeInTheDocument();
+    expect(screen.getByTestId('phrase')).toHaveTextContent('Le mot … ici.');
+    await user.click(screen.getByRole('button', { name: String(first.answer) }));
+    expect(screen.getByTestId('phrase')).toHaveTextContent(`Le mot ${String(first.answer)} ici.`);
   });
 });
 
