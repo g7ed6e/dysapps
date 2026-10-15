@@ -1664,3 +1664,26 @@
 :root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers:has(.frac) .world-answer-label {
   min-height: calc(2.2em + 10px);
 }
+/* Deux rives (GD-20, point 8, lot L3) : ses trois réponses sur une seule rangée, à la hauteur des fractions en colonne ;
+   « Elles sont égales » passe à la ligne entre deux mots dans son étiquette (jamais au milieu d'un mot) plutôt que
+   sous les fractions : une rangée de moins sous le pli au plus grand texte sur téléphone. */
+.world-question .in-world.simple .world-answers.une-rangee {
+  flex-wrap: nowrap;
+}
+.world-question .in-world.simple .world-answers.une-rangee .world-answer {
+  flex: 0 1 auto;
+  min-width: 48px;
+}
+.world-question .in-world.simple .world-answers.une-rangee .world-answer-label {
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
+/* L'Abattage syllabique au Phare (GD-20, point 8, lot L3) : le mot, l'objet appris, à la taille du mot d'un item de la
+   grille, sans syllabes en couleurs ; au plus grand texte, jamais plus grand qu'il ne faut pour tenir sur la ligne. */
+.world-question .in-world .question-prompt.item-word {
+  font-size: 1.6rem;
+}
+:root[data-texte="grand"] .world-question .in-world .question-prompt.item-word {
+  font-size: max(1rem, min(1.6rem, 8.5vw));
+}

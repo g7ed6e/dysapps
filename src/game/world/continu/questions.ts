@@ -1,10 +1,11 @@
 // Les questions nées du monde (lot 4 du prototype, questions-du-monde.md, choix du mainteneur du 14 octobre 2026) : ce
-// que chaque lieu fait des items de sa mission. Le Phare garde les mots de référence, portés par des cloches, en deux
-// manches de six ; les Filets posent les items du lieu écrits pour la scène (docs/contenu/<île>.md, « ## Au lieu ·
-// Archipéo », jumeaux à clé partagée, règle « à l'essai ») ; les Écluses et les Quais gardent l'item du générateur de
-// référence (même clé, mêmes choix, même explication) et n'en changent que la phrase, et la scène se calcule à partir
-// de ses nombres ; aux Écluses, Deux rives a son gabarit (les deux sas), les autres missions gardent leurs items de
-// référence (GD-20, point 8, lot L2). Code pur : la vue dessine, le jeu commun compte les étoiles et le barème.
+// que chaque lieu fait des items de sa mission. Le Phare garde les mots de référence, portés par des cloches (en manches
+// de six à marquer, ou trois cloches et leurs nombres pour l'Abattage syllabique, GD-20, point 8, lot L3) ; les Filets posent les
+// items du lieu écrits pour la scène (docs/contenu/<île>.md, « ## Au lieu · Archipéo », jumeaux à clé partagée, règle
+// « à l'essai ») ; les Écluses et les Quais gardent l'item du générateur de référence (même clé, mêmes choix, même
+// explication) et n'en changent que la phrase, et la scène se calcule à partir de ses nombres ; aux Écluses, Deux rives
+// a son gabarit (les deux sas), les autres missions gardent leurs items de référence (GD-20, point 8, lot L2). Code
+// pur : la vue dessine, le jeu commun compte les étoiles et le barème.
 import PLACE_ITEMS from './placeItems.json';
 import type { PlaceId } from './plan6e';
 
@@ -236,7 +237,8 @@ export const QUAI_NU: ItemScene = { kind: 'quai', op: 'calcul', before: 0, after
 
 /**
  * Les items d'une partie, posés dans un lieu. `items` : ceux que le jeu commun a tirés (même graine, mêmes clés). Le
- * Phare les garde ; les Filets prennent l'item du lieu de même clé quand il existe (sinon l'item de référence, le filet
+ * Phare garde les items de référence de ses trois missions, portés par ses cloches (le mot est l'objet appris : il ne
+ * varie jamais, GD-20, point 8, lot L3) ; les Filets prennent l'item du lieu de même clé quand il existe (sinon l'item de référence, le filet
  * vide) ; aux Écluses, les Nénuphars gardent l'item et ne changent que sa phrase, Deux rives a son gabarit (les deux
  * sas), les autres missions gardent leur item de référence, le sas au repos ; aux Quais, Doubles et moitiés change sa phrase, les
  * autres missions gardent l'item de référence tel quel, sur le quai vide. `say` : les fractions dites en mots (la phrase
@@ -319,6 +321,14 @@ export function placeItems(place: PlaceId, exerciseId: string, items: readonly Q
     };
   });
 }
+
+/**
+ * Le geste d'une mission du Phare (GD-20, point 8, lot L3 : toutes ses missions aux mêmes cloches) : la Chasse au son et
+ * les Rimes-échelle se jouent en marquant des cloches, puis « Valider » (`marquer`, en manches de six au plus) ;
+ * l'Abattage syllabique, en touchant la cloche de sa réponse (`toucher`, un mot par item, trois cloches qui portent les
+ * trois nombres de l'item de référence : 1, 2, 3 au premier niveau, jusqu'à 5, 6, 7 au troisième).
+ */
+export const phareGesture = (exerciseId: string): 'marquer' | 'toucher' => (missionIs(exerciseId, 'syllables') ? 'toucher' : 'marquer');
 
 /** Le nombre de cloches d'une manche au Phare : six au plus (quatre à six cibles, avis du référent dys). */
 export const BELLS_PER_ROUND = 6;

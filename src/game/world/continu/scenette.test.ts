@@ -17,7 +17,6 @@ import {
   bellPlane,
   habitantHand,
   answersHang,
-  lanternGlass,
   scenetteDecor,
   scenetteHabitant,
   scenetteHidesPlace,
@@ -27,12 +26,12 @@ import {
   EXIT_VIEW,
   exitView,
   scenetteExit,
+  GALLERY_VIEW,
   placeKeep,
   TRACE_VIEW,
   scenetteFinale,
   scenetteHidesPieces,
   scenettePose,
-  scenetteSuccess,
   answerLeaves,
   scenetteDeck,
   LAND_DECK,
@@ -268,11 +267,10 @@ describe('La galerie du Phare', () => {
     expect(itemScene('phare', { kind: 'cloches' }, true, points.slice(0, 1), 0.6).reaction?.facets.triangles).toBeGreaterThan(0);
   });
 
-  it('la lampe de la réussite habille la vitre de la lanterne', () => {
-    const lamp = boundsOf(lanternGlass('phare'));
-    expect(lamp.min[1]).toBeLessThan(floor);
-    expect(lamp.max[1]).toBeGreaterThan(floor + 0.9);
+  it('la lumière d’une réussite part de la vitre éteinte du modèle ; au Phare, aucune réussite ne l’allume', () => {
     expect(LANTERN).toEqual({ off: 0xbfd0d3, on: 0xffd36b });
+    // La lanterne s'allume quand son haut est posé (construction.ts, `lanternLit`), jamais à la réussite d'une scénette.
+    expect(scenetteFinale('phare', { kind: 'cloches' }, 1)).toBeNull();
   });
 });
 
@@ -354,8 +352,6 @@ describe('Le quai du docker', () => {
     expect(b.min[0]).toBeGreaterThan(quay.x);
     expect(scenetteHabitant('quais').x).toBeGreaterThan(quay.x);
     // Ni lampe à allumer, ni cloches pendues : la caisse monte au crochet de la grue.
-    expect(scenetteSuccess('quais')).toBeNull();
-    expect(scenetteSuccess('phare')?.triangles).toBeGreaterThan(0);
     expect(answersHang('quais')).toBe(false);
     expect(scenetteHidesPlace('quais')).toBe(true);
     expect(scenetteHidesPlace('phare')).toBe(false);
@@ -631,8 +627,8 @@ describe('Une scénette se joue sur le lieu tel qu’il est bâti (GD-20, lot 1)
     const bells = boundsOf(answerObjects('phare', points, 0.6, { ground: foot - 0.2 }));
     expect(bells.min[1]).toBeLessThanOrEqual(foot - 0.2 + 1e-6);
     expect(bells.max[1]).toBeLessThan(deck.y + 0.7);
-    // Rien ne s'allume tant que la lanterne n'est pas là ; sans galerie, Kéo revient sur le chemin.
-    expect(scenetteSuccess('phare', false)).toBeNull();
+    // Sans galerie, Kéo revient sur le chemin, la caméra garde le lieu.
+    expect(scenetteExit('phare', false, 'sound-hunt')).toBeNull();
     expect(scenetteExit('quais', false)).toBeNull();
     expect(scenetteExit('filets', false)).toBeNull();
   });
@@ -697,3 +693,38 @@ describe('le retour d’une mission des Quais et des Écluses (GD-20, point 8)',
     }
   });
 });
+
+describe('le retour d’une mission du Phare (GD-20, point 8, lot L3)', () => {
+  const c = placeById('phare').center;
+  const y0 = standingHeight(heightAt(c));
+
+  it('Kéo sur l’îlot, au sud de la trace de la mission jouée ; la caméra la garde dans le champ, au-dessus de la liste', () => {
+    for (const mission of ['syllables', 'sound-hunt', 'rhymes']) {
+      const exit = scenetteExit('phare', true, mission)!;
+      expect(exit, mission).not.toBeNull();
+      // Sur le plat de l'îlot, hors de la tour et de son socle, au-dessus de l'eau.
+      expect(Math.hypot(exit.at.x - c.x, exit.at.z - c.z), mission).toBeGreaterThan(3.6);
+      expect(Math.hypot(exit.at.x - c.x, exit.at.z - c.z), mission).toBeLessThan(10);
+      expect(heightAt(exit.at), mission).toBeGreaterThan(0.5);
+      expect(exit.at.z, mission).toBeGreaterThan(exit.keep.z);
+      const feet = { x: exit.at.x, y: standingHeight(heightAt(exit.at)), z: exit.at.z };
+      const view = exit.view ?? TRACE_VIEW;
+      for (const [w, h] of screens) {
+        const pose = followPose(feet);
+        exitView(pose, exit.keep, feet, 1, view);
+        expect(pose.position.z).toBeGreaterThan(pose.target.z);
+        const s = screenOf(pose, exit.keep, w, h);
+        expect(s.x, `${mission} ${w}×${h}`).toBeGreaterThanOrEqual(0);
+        expect(s.x, `${mission} ${w}×${h}`).toBeLessThanOrEqual(w);
+        expect(s.y, `${mission} ${w}×${h}`).toBeGreaterThanOrEqual(0);
+        expect(s.y, `${mission} ${w}×${h}`).toBeLessThanOrEqual(h);
+      }
+    }
+    // Les lampes de la Chasse au son sont sur la galerie : la caméra lève les yeux vers elle.
+    const lamps = scenetteExit('phare', true, 'sound-hunt')!;
+    expect(lamps.view).toBe(GALLERY_VIEW);
+    expect(lamps.keep.y).toBeGreaterThan(y0 + 10);
+    expect(scenetteExit('phare', true, 'mission-inconnue')).toBeNull();
+  });
+});
+

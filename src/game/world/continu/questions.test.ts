@@ -11,10 +11,10 @@ import { PROBLEMES_EXERCISES } from '../../exercises/problems';
 import { POSEES_EXERCISES } from '../../exercises/writtenOperations';
 import { boundsOf } from './facets';
 import { modelOfPlace } from './places';
-import { heightAt } from './terrain';
+import { heightAt, standingHeight } from './terrain';
 import PLACE_ITEMS from './placeItems.json';
 import { PLACES, placeById } from './plan6e';
-import { ANSWER_LAYOUT, ECLUSES_TRACE_SPOTS, QUAIS_TRACE_SPOTS, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placeTrace, questionLayout, sceneSpot, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, ECLUSES_TRACE_SPOTS, PHARE_GALLERY, PHARE_TRACE_SPOTS, QUAIS_TRACE_SPOTS, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placeTrace, questionLayout, sceneSpot, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
 import {
   BELLS_PER_ROUND,
   EXERCISES_WITH_TWINS,
@@ -25,6 +25,7 @@ import {
   answersInColumn,
   pairScene,
   bellRounds,
+  phareGesture,
   isItemScene,
   missionIs,
   placeInstruction,
@@ -301,6 +302,35 @@ describe('Les cloches du Phare', () => {
     expect(bellRounds(items, seeded('graine'))).toEqual(rounds);
   });
 
+  it('ses trois missions aux mêmes cloches, avec leurs items de référence : marquer puis valider, ou toucher un nombre (lot L3)', () => {
+    expect(placeById('phare').scenes).toEqual(['syllables', 'sound-hunt', 'rhymes']);
+    for (const def of CATALOG.filter((d) => d.biome === 'french-6e-phonology')) {
+      const { items } = reference(def.id);
+      const placed = placeItems('phare', def.id, items);
+      // Le mot est l'objet appris : rien ne change dans l'item, la scène ne fait que le porter.
+      expect(placed.map(({ placeScene, ...rest }) => [placeScene, rest])).toEqual(items.map((it) => [{ kind: 'cloches' }, it]));
+      const gesture = phareGesture(def.id);
+      if (missionIs(def.id, 'syllables')) {
+        expect(gesture).toBe('toucher');
+        // Trois cloches, les trois nombres de la référence, dans son ordre (1, 2, 3 au premier niveau ; jusqu'à 5, 6, 7).
+        for (const it of items) {
+          expect(it.choices).toHaveLength(3);
+          const [a, b, c] = it.choices.map(Number);
+          expect([b - a, c - b]).toEqual([1, 1]);
+          expect(it.choices).toContain(it.answer);
+        }
+      } else {
+        expect(gesture).toBe('marquer');
+        expect(items.every((it) => typeof it.correct === 'boolean')).toBe(true);
+        // Des manches de quatre à six cloches.
+        for (const r of bellRounds(items, seeded(def.id))) {
+          expect(r.length).toBeGreaterThanOrEqual(4);
+          expect(r.length).toBeLessThanOrEqual(BELLS_PER_ROUND);
+        }
+      }
+    }
+  });
+
   it('un niveau de sept bons mots garde ses deux manches équilibrées', () => {
     const seven = items.map((it, i) => ({ ...it, correct: i < 7 }));
     const counts = bellRounds(seven, seeded('x')).map((r) => r.filter((it) => it.correct).length);
@@ -341,6 +371,35 @@ describe('Les traces des scénettes', () => {
       }
       expect(placeTrace(p.id, ['abattage-imaginaire']).triangles).toBe(placeTrace(p.id, []).triangles);
     }
+  });
+
+  it('au Phare, chaque trace est la sienne, sur le plat de l’îlot, hors des chemins et du jardin ; les lampes sur la galerie (lot L3)', () => {
+    const c = placeById('phare').center;
+    const y0 = standingHeight(heightAt(c));
+    const lamps = placeTrace('phare', ['sound-hunt']);
+    expect(boundsOf(lamps).min[1]).toBeCloseTo(y0 + PHARE_GALLERY, 6);
+    const sizes = new Set<number>();
+    for (const m of Object.keys(PHARE_TRACE_SPOTS) as (keyof typeof PHARE_TRACE_SPOTS)[]) {
+      const t = placeTrace('phare', [m]);
+      sizes.add(t.triangles);
+      const b = boundsOf(t);
+      const o = PHARE_TRACE_SPOTS[m];
+      // Autour de son point, au sol : rien sous l'eau, rien au-dessus de la galerie.
+      expect(Math.max(Math.abs(b.min[0] - c.x - o.x), Math.abs(b.max[0] - c.x - o.x)), m).toBeLessThan(2);
+      expect(Math.max(Math.abs(b.min[2] - c.z - o.z), Math.abs(b.max[2] - c.z - o.z)), m).toBeLessThan(1.2);
+      expect(b.max[1], m).toBeLessThan(y0 + PHARE_GALLERY);
+      expect(heightAt({ x: c.x + o.x, z: c.z + o.z }), m).toBeGreaterThan(0.5);
+      // Hors du socle de la tour (3,6 de rayon) et du jardin clos de la gardienne (à l'ouest, places.ts).
+      expect(Math.hypot(o.x, o.z), m).toBeGreaterThan(4.5);
+      expect(Math.abs(o.x + 6) > 3 || Math.abs(o.z - 0.5) > 3, m).toBe(true);
+      // Loin des chemins : la digue (de la porte vers le sud-est) et le chemin de l'Escale (droit au sud).
+      const door = { x: 0, z: 6.14 };
+      const digue = { x: 23.2, z: 26.4 };
+      const t2 = Math.max(0, Math.min(1, ((o.x - door.x) * (digue.x - door.x) + (o.z - door.z) * (digue.z - door.z)) / ((digue.x - door.x) ** 2 + (digue.z - door.z) ** 2)));
+      expect(Math.hypot(o.x - door.x - t2 * (digue.x - door.x), o.z - door.z - t2 * (digue.z - door.z)), m).toBeGreaterThan(3);
+      expect(Math.abs(o.x) > 3 || o.z < door.z - 2, m).toBe(true);
+    }
+    expect(sizes.size).toBe(2);
   });
 
   it('aux Écluses, chaque trace est la sienne, autour de son point, sans rien laisser au-delà du lieu (lot L2)', () => {

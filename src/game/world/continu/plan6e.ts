@@ -118,8 +118,8 @@ export interface OpenPlace {
   island: string;
   /**
    * Les missions de l'île qui se jouent déjà en scénette dans le lieu (les autres se jouent sur l'écran habituel, depuis
-   * le panneau du lieu, le temps de la transition) : la Chasse au son au Phare, le Troupeau aux Filets ; aux Quais,
-   * toutes (GD-20, point 8, lot L1) ; aux Écluses, toutes (lot L2).
+   * le panneau du lieu, le temps de la transition) : le Troupeau aux Filets ; aux Quais, toutes (GD-20, point 8, lot
+   * L1) ; aux Écluses, toutes (lot L2) ; au Phare, toutes (lot L3).
    */
   scenes: readonly string[];
   /** Le centre du modèle au sol, et son quart de tour (en radians autour de la verticale). */
@@ -143,7 +143,7 @@ interface PlaceSpec extends Omit<OpenPlace, 'center' | 'door'> {
 }
 
 const PLACE_SPECS: readonly PlaceSpec[] = [
-  { id: 'phare', name: 'Le Phare', at: 'au Phare', agree: 'ms', island: 'french-6e-phonology', scenes: ['sound-hunt'], plan: [880, 590], door: { x: 0, z: 6.14 }, yaw: 0, touchRadius: 5.5 },
+  { id: 'phare', name: 'Le Phare', at: 'au Phare', agree: 'ms', island: 'french-6e-phonology', scenes: ['syllables', 'sound-hunt', 'rhymes'], plan: [880, 590], door: { x: 0, z: 6.14 }, yaw: 0, touchRadius: 5.5 },
   {
     id: 'quais',
     name: 'Les Quais',

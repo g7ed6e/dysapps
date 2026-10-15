@@ -42,7 +42,6 @@ import {
   scenetteHidesPlace,
   scenetteKeo,
   scenettePose,
-  scenetteSuccess,
   type ScenetteFinale,
   type ScenetteLayout,
 } from '../../world/continu/scenette';
@@ -222,8 +221,6 @@ const VEIL_FADE_SECONDS = 0.8;
  */
 const FINALE_MOVE_SECONDS = 0.8;
 const FINALE_LAMP_SECONDS = 0.7;
-/** La lampe du Phare qui s'allume à la réussite : de la vitre éteinte à la lumière, en un fondu (fixe avec « Réduire les animations »). */
-const LAMP_SECONDS = 1.2;
 /**
  * La partie qui descend, éclaircie (une lueur ajoutée à son matériau) : on la distingue d'un coup d'œil de ce qui est
  * déjà posé ; posée, elle reprend les couleurs du lieu.
@@ -1214,9 +1211,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
   };
   // La scénette d'un lieu (lot 2) : le décor de près (la galerie, sa rambarde, l'habitant), fait à l'arrivée et libéré
-  // au départ, un seul maillage ; la lampe de la réussite, dessinée par le maillage de la réaction (les cloches sont
-  // effacées à ce moment-là) avec un matériau sans lumière : aucun appel de plus ; la descente de la caméra, courte
-  // (coupe franche avec « Réduire les animations »).
+  // au départ, un seul maillage ; la lumière de la réussite d'une scénette posée (la lanterne de proue des Quais),
+  // dessinée par le maillage de la réaction avec un matériau sans lumière : aucun appel de plus ; la descente de la
+  // caméra, courte (coupe franche avec « Réduire les animations »).
   const decorMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
   decorMesh.visible = false;
   scene.add(decorMesh);
@@ -1225,8 +1222,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const lampOn = new THREE.Color(LANTERN.on);
   let lampLit = false;
   let lampStart: number | null = null;
-  // Le fondu de la lampe : celle du Phare, ou la lanterne de proue des Quais, plus courte (elle suit la descente).
-  let lampSeconds: number = LAMP_SECONDS;
   // La réussite d'une scénette posée (world/continu/scenette.ts, `scenetteFinale`) : l'objet qui va à sa place (d'où,
   // quand), puis la lumière ; `finaleShown` : elle est montrée (le décor de près a changé).
   let finale: { from: THREE.Vector3; start: number; f: ScenetteFinale } | null = null;
@@ -1265,7 +1260,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   /** La lampe qui s'allume, à l'instant `t`. */
   const stepLamp = (t: number) => {
     if (lampStart === null) return;
-    const u = reduceMotion ? 1 : Math.min(1, (t - lampStart) / lampSeconds);
+    const u = reduceMotion ? 1 : Math.min(1, (t - lampStart) / FINALE_LAMP_SECONDS);
     lampMaterial.color.lerpColors(lampOff, lampOn, u);
     if (u >= 1) lampStart = null;
   };
@@ -1322,7 +1317,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       here = { ...ex.at };
       heading = FACING_CAMERA;
     }
-    exit = ex ? { ...ex, view: TRACE_VIEW } : { at: { ...here }, keep: placeKeep(left), view: PLACE_VIEW };
+    exit = ex ? { ...ex, view: ex.view ?? TRACE_VIEW } : { at: { ...here }, keep: placeKeep(left), view: PLACE_VIEW };
     back = 1;
     keo.rotation.y = heading;
     placeKeo(here);
@@ -1490,22 +1485,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       stepFinale(finale.start);
       return;
     }
+    // Au Phare, les cloches s'effacent : la lanterne s'allume quand son haut est posé, jamais à une réussite (directeur
+    // artistique, 15 octobre 2026) ; la trace de la mission se voit au retour.
     itemShown = false;
     itemMesh.visible = false;
     reactionMesh.visible = false;
     reaction = null;
-    // La lampe s'allume si la lanterne est posée et encore éteinte (allumée, la lumière du monde la montre déjà).
-    const lantern = lanternLit(posedOf('phare')) && !lampShown;
-    const light = lit && !lampLit ? scenetteSuccess(scenette, lantern) : null;
-    if (!light) return;
-    lampLit = true;
-    setGeometry(reactionMesh, light);
-    reactionMesh.material = lampMaterial;
-    reactionMesh.position.set(0, 0, 0);
-    lampMaterial.color.copy(lampOff);
-    lampSeconds = LAMP_SECONDS;
-    lampStart = performance.now() / 1000;
-    stepLamp(lampStart);
   };
 
   /** L'objet de la réussite qui va à sa place à l'instant `t`, puis, posé, la lumière qui s'allume. */
@@ -1531,7 +1516,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     reactionMesh.material = lampMaterial;
     reactionMesh.position.set(0, 0, 0);
     lampLit = true;
-    lampSeconds = FINALE_LAMP_SECONDS;
     lampMaterial.color.copy(lampOff);
     lampStart = t;
     stepLamp(t);

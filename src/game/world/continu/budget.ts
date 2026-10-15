@@ -10,7 +10,7 @@ import { constructionFacets, WHOLE } from './construction';
 import { PORT_WORST, assemblyScene, portFacets } from './port';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
 import type { ItemScene } from './questions';
-import { bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSuccess } from './scenette';
+import { bellPlane, habitantHand, scenetteDecor, scenetteFinale } from './scenette';
 import { buildHeightField, heightOnMesh, tileRings, tileTriangleCounts } from './terrain';
 import { veilFacets } from './veil';
 
@@ -61,9 +61,9 @@ function questionCost(): { triangles: number; calls: number } {
  * Une scénette (lot 2, le Phare ; lot 3, les Quais ; lot 4, les Filets et les Écluses), la plus chargée : le décor de
  * près (la galerie, sa rambarde, la gardienne ; le docker ; le plancher de séchage et la pêcheuse ; le quai du sas, son
  * canal, sa porte et l'éclusier), un maillage fait à l'arrivée et libéré au départ, du matériau du terrain, au plus fort
- * de la réussite. La lampe et l'objet de la réussite passent par le maillage de la réaction (au Phare, quand les objets
- * des réponses sont effacés ; ailleurs, la réaction de l'item cède sa place à l'objet qui va se poser, puis à la
- * lumière) : leurs triangles comptent ici, pas leur appel. Kéo y reste, sans son anneau (son appel est compté quand
+ * de la réussite. L'objet de la réussite et sa lumière passent par le maillage de la réaction (la réaction de l'item cède
+ * sa place à l'objet qui va se poser, puis à la lumière ; au Phare, rien : les cloches s'effacent) : leurs triangles
+ * comptent ici, pas leur appel. Kéo y reste, sans son anneau (son appel est compté quand
  * même : le pire cas).
  */
 function scenetteCost(): { triangles: number; calls: number } {
@@ -81,14 +81,14 @@ const FINALE_SCENES: Partial<Record<PlaceId, ItemScene>> = {
 };
 
 /**
- * La scénette à sa réussite : au Phare, le décor et la lampe ; ailleurs, le décor changé, l'objet posé et la lumière
+ * La scénette à sa réussite : au Phare, le décor seul (la lanterne s'allume avec son haut, jamais à une réussite) ; ailleurs, le décor changé, l'objet posé et la lumière
  * (la caisse dans la barque et la lanterne de proue des Quais ; le panier plein et le filet tendu des Filets ; le sas
  * rempli, la porte ouverte et la barque passée des Écluses).
  */
 function successTriangles(place: PlaceId): number {
   const scene = FINALE_SCENES[place];
   const f = scene ? scenetteFinale(place, scene, 1) : null;
-  if (!f) return scenetteDecor(place).triangles + (scenetteSuccess(place)?.triangles ?? 0);
+  if (!f) return scenetteDecor(place).triangles;
   return f.decor.triangles + f.landed.triangles + Math.max(f.moving.triangles, f.glow?.triangles ?? 0);
 }
 

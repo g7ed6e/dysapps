@@ -91,6 +91,42 @@ describe('La scénette du Phare', () => {
   });
 });
 
+describe('Les trois missions du Phare aux mêmes cloches (GD-20, point 8, lot L3)', () => {
+  it('l’Abattage syllabique : le mot sans syllabes en couleurs, trois cloches à toucher, sans « Valider »', async () => {
+    const user = userEvent.setup();
+    renderPlace('phare', 'syllables');
+    expect(await screen.findByText('La gardienne du phare')).toBeInTheDocument();
+    const start = screen.queryByRole('button', { name: /Commencer/ });
+    if (start) await user.click(start);
+    const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+    await vi.waitFor(() => expect(answers()).toHaveLength(3));
+    expect(answers().every((b) => /^\d$/.test(b.textContent ?? ''))).toBe(true);
+    const word = document.querySelector('.question-prompt.item-word');
+    expect(word).not.toBeNull();
+    // Aucune couleur de syllabes : elles donneraient la réponse.
+    expect(word!.querySelector('.syllables')).toBeNull();
+    expect(screen.queryByRole('button', { name: /Valider/ })).toBeNull();
+  });
+
+  it('les Rimes-échelle : le même geste que la Chasse au son, le mot repère en tête, « Valider »', async () => {
+    const user = userEvent.setup();
+    renderPlace('phare', 'rhymes');
+    await screen.findByRole('list', { name: 'Cloches à trier' });
+    const start = screen.queryByRole('button', { name: /Commencer/ });
+    if (start) await user.click(start);
+    expect(document.querySelector('.sound-target')?.textContent).toMatch(/^Rime avec \S+/);
+    const bells = within(screen.getByRole('list', { name: 'Cloches à trier' })).getAllByRole('button');
+    expect(bells.length).toBeGreaterThanOrEqual(4);
+    expect(bells.length).toBeLessThanOrEqual(6);
+    await user.click(bells[0]);
+    expect(bells[0]).toHaveAttribute('aria-pressed', 'true');
+    await user.click(screen.getByRole('button', { name: /Valider/ }));
+    // La correction de l'écran de la grille : un mot oublié ou qui ne rime pas se dit, chacun à sa place.
+    // La manche est corrigée comme sur l'écran de la grille (un tri : un deuxième essai après une erreur).
+    await vi.waitFor(() => expect(document.querySelector('.feedback')).not.toBeNull());
+  });
+});
+
 describe('La scénette des Quais', () => {
   it('le docker en tête ; « Vue simple » puis « Scène » gardent la caisse tentée, barrée', async () => {
     const user = userEvent.setup();
@@ -199,8 +235,14 @@ describe('Toutes les missions des Écluses en scénette (GD-20, point 8, lot L2)
     expect(request).toMatchObject({ place: 'ecluses', mission: 'equivalence', item: { scene: { kind: 'lockPair' }, count: 3 } });
     expect(document.querySelector('.quiz.in-world')!.textContent).toContain('Compare les deux sas');
     expect(document.querySelector('.quiz.in-world .world-question-aid')).toBeNull();
+    // Les deux fractions comparées et leur « ? » sur une seule ligne ; « sont-elles » jamais coupé à son trait d'union.
+    const together = [...document.querySelectorAll('.question-prompt .world-nobreak')];
+    expect(together.some((n) => n.querySelectorAll('.frac').length === 2 && /\?$/.test(n.textContent ?? ''))).toBe(true);
+    expect(together.some((n) => n.textContent === 'sont-elles')).toBe(true);
     await user.click(screen.getByRole('button', { name: /Vue simple/ }));
     expect(document.querySelector('.quiz.in-world.simple .world-question-aid')).not.toBeNull();
+    // En « Vue simple », ses trois réponses sur une rangée.
+    expect(document.querySelector('.quiz.in-world.simple .world-answers.une-rangee')).not.toBeNull();
   });
 
   it.each(['sharing', 'place-value'])('%s : le sas au repos, l’item de référence, une réponse par levier', async (mission) => {

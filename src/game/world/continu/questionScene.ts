@@ -1197,7 +1197,8 @@ function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolea
  * La trace que la réussite d'une scénette laisse dans son lieu (GD-20, lot 1 : les pièces durables du prototype sont
  * devenues les parties de la construction du lieu, ./construction.ts ; les traces restent). Une trace par mission jouée en
  * scénette (GD-20, point 8 : d'une mission à l'autre, seule la trace de la réussite change), tirée de `done`, les missions
- * du lieu déjà réussies : au Phare (la Chasse au son), les lampes de la galerie, face au sud ; aux Filets (le Troupeau),
+ * du lieu déjà réussies : au Phare, pour la Chasse au son, les lampes de la galerie, face au sud, et une chose par autre
+ * mission (`PHARE_TRACES`, lot L3) ; aux Filets (le Troupeau),
  * le pan de filet raccommodé tendu sur le séchoir et le panier plein à côté ; aux Écluses, pour les Nénuphars, la porte
  * d'amont ouverte et le sas rempli (fermée avant : elle est de la trace, pas du modèle, pour s'ouvrir), et une chose par
  * autre mission (`ECLUSES_TRACES`, lot L2) ; aux Quais, une chose remise en ordre sur le quai par mission
@@ -1213,12 +1214,14 @@ export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
     lockGate(b, x, y0, z, done.includes('number-line'));
     for (const mission of done) ECLUSES_TRACES[mission]?.(b, x, y0, z);
   }
-  if (place === 'phare' && done.includes('sound-hunt')) {
-    for (let k = 0; k < 4; k++) {
-      // Face au sud (vers la caméra).
-      const a = Math.PI / 2 + ((k - 1.5) * Math.PI) / 4;
-      b.box({ x: x + 2.05 * Math.cos(a), y: y0 + 11.55, z: z + 2.05 * Math.sin(a) }, [0.3, 0.3, 0.3], C.lamp);
-    }
+  if (place === 'phare') {
+    if (done.includes('sound-hunt'))
+      for (let k = 0; k < 4; k++) {
+        // Face au sud (vers la caméra).
+        const a = Math.PI / 2 + ((k - 1.5) * Math.PI) / 4;
+        b.box({ x: x + 2.05 * Math.cos(a), y: y0 + PHARE_GALLERY, z: z + 2.05 * Math.sin(a) }, [0.3, 0.3, 0.3], C.lamp);
+      }
+    for (const mission of done) PHARE_TRACES[mission]?.(b, x, z);
   } else if (place === 'filets' && done.includes('plurals')) {
     mendedNet(b);
     fullBasket(b, filetsBasketAt());
@@ -1227,6 +1230,68 @@ export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
   }
   return b.build();
 }
+
+/** Le dessus de la galerie du Phare (places.ts, ses abords), au-dessus du pied du lieu : ses lampes s'y posent. */
+export const PHARE_GALLERY = 11.55;
+
+/**
+ * Où se pose la trace de chaque mission du Phare (hors de la Chasse au son, les lampes de la galerie), depuis le centre
+ * du lieu, sur le plat de l'îlot, hors des chemins (la digue part au sud-est, le chemin de l'Escale au sud) et du jardin
+ * de la gardienne (à l'ouest) : la corne de brume à l'est de la tour, le mât de signaux au sud-ouest ; tous deux dans le
+ * champ du retour d'une scénette, au sud.
+ */
+export const PHARE_TRACE_SPOTS = {
+  syllables: { x: 5.2, z: 2.6 },
+  rhymes: { x: -4.6, z: 5 },
+} as const;
+
+/**
+ * Les traces du Phare (GD-20, point 8, lot L3 : une par mission, au même lieu, dans les mêmes volumes, chacune lisible par
+ * sa silhouette, sans figure ni texte, rien qui se compte ou se lise comme une réponse ; posées avec les abords, comme
+ * les lampes de la galerie) :
+ * - Abattage syllabique : la corne de brume, sur son socle de pierre, son pavillon rouge tourné vers le large, à l'est ;
+ *   ce qui sonne au Phare quand la lanterne ne suffit pas (aucun battant, aucune cloche : les cloches portent les
+ *   réponses) ;
+ * - Rimes-échelle : le mât de signaux, sa vergue et une flamme rouge au vent, tenu par deux haubans à l'est et à
+ *   l'ouest ; une seule flamme (rien ne se compte).
+ * La Chasse au son garde la sienne : les quatre lampes de la galerie, face au sud.
+ */
+const PHARE_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => void> = {
+  syllables: (b, x, z) => {
+    const o = PHARE_TRACE_SPOTS.syllables;
+    const g = quaiGround(x + o.x, z + o.z);
+    // Le socle de pierre, qui descend dans le sol ; le caisson de la corne dessus, et son pied.
+    b.box({ x: g.x, y: g.y - 0.4, z: g.z }, [1.1, 0.9, 1.0], C.stoneDark, C.stone);
+    b.box({ x: g.x - 0.2, y: g.y + 0.5, z: g.z }, [0.6, 0.5, 0.6], C.post, C.lever);
+    b.box({ x: g.x + 0.05, y: g.y + 0.5, z: g.z }, [0.14, 0.75, 0.14], C.iron);
+    // Le pavillon, couché, sa bouche vers l'est (vers le large), vu de profil depuis le sud : un cône évasé ; le dedans
+    // de sa bouche, plus sombre.
+    b.prism({ x: g.x - 0.15, y: g.y + 1.25, z: g.z, pitch: Math.PI / 2, yaw: Math.PI / 2 }, 0.13, 0.48, 1.25, 10, C.knob, C.iron);
+  },
+  rhymes: (b, x, z) => {
+    const o = PHARE_TRACE_SPOTS.rhymes;
+    const g = quaiGround(x + o.x, z + o.z);
+    const top = g.y + 4.6;
+    b.box({ x: g.x, y: g.y - 0.4, z: g.z }, [0.8, 0.65, 0.8], C.stoneDark, C.stone);
+    b.box({ x: g.x, y: g.y + 0.2, z: g.z }, [0.16, top - g.y - 0.2, 0.16], C.post);
+    // La vergue, en travers, aux trois quarts du mât.
+    b.box({ x: g.x, y: top - 1.3, z: g.z }, [1.9, 0.1, 0.1], C.post);
+    // La flamme : un long triangle au vent, vers l'est, sous la pomme du mât ; ses deux faces se voient.
+    const at = (dx: number, dy: number, dz: number) => [g.x + dx, top + dy, g.z + dz] as const;
+    for (const dz of [-0.02, 0.02]) {
+      const [a, c, d] = [at(0.08, -0.15, dz), at(0.08, -0.85, dz), at(1.7, -0.45, dz)];
+      if (dz > 0) b.triangle(a, c, d, C.knob);
+      else b.triangle(a, d, c, C.knob);
+    }
+    b.box({ x: g.x, y: top, z: g.z }, [0.24, 0.16, 0.24], C.paint);
+    // Deux haubans, de la tête du mât à deux piquets plantés à l'est et à l'ouest.
+    for (const dx of [-1, 1]) {
+      const foot = quaiGround(g.x + 1.4 * dx, g.z);
+      b.beam({ x: g.x, y: top - 0.2, z: g.z }, { x: foot.x, y: foot.y + 0.2, z: foot.z }, 0.04, C.rope);
+      b.box({ x: foot.x, y: foot.y - 0.2, z: foot.z }, [0.12, 0.45, 0.12], C.post);
+    }
+  },
+};
 
 /** Un point du quai, depuis le centre des Quais (`x`, `z`), au sol. */
 const quaiGround = (x: number, z: number): Vec3 => ({ x, y: groundAt({ x, z }), z });

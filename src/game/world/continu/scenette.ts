@@ -2,7 +2,8 @@
 // le lieu, Kéo se tient à gauche, l'habitant à droite, immobile, et les objets-réponses sont en rangée en bas, sous la
 // consigne écrite et lue dans un panneau sur fond uni. Le Phare d'abord : la galerie et sa rambarde, la gardienne en
 // quatre volumes (son ciré, sa tête, son bonnet, son bras tendu vers la rambarde) et la corde de sonnerie, les cloches
-// pendues devant la rambarde ; à la réussite, la lampe s'allume. Les Quais ensuite (lot 3) : le docker au pied de la
+// pendues devant la rambarde ; à la réussite, elles s'effacent (la lanterne s'allume quand son haut est posé, jamais à
+// une réussite). Les Quais ensuite (lot 3) : le docker au pied de la
 // grue, un bras posé sur une caisse, son crochet de levage à la main, les caisses-réponses sur un ponton du bassin ; la
 // bonne caisse monte au crochet de la grue. Les Filets et les Écluses enfin (lot 4) : la pêcheuse au bord du plancher
 // de séchage, la pêche sur le filet, les paniers-réponses en rangée, la prise qui va au bon panier ; à la réussite, le
@@ -20,6 +21,8 @@ import {
   ANSWER_LAYOUT,
   ECLUSES_TRACE_SPOTS,
   LOCK,
+  PHARE_GALLERY,
+  PHARE_TRACE_SPOTS,
   QUAIS_TRACE_SPOTS,
   QUAY,
   filetsBasketAt,
@@ -405,13 +408,25 @@ export function scenetteHabitant(place: PlaceId, posed = true): Vec3 {
  * Où Kéo reste en quittant la scénette d'un lieu, et ce que la caméra garde alors dans le champ (retour du directeur
  * artistique, lot 3) : la trace de la réussite. Aux Quais, sur le bord du quai, juste à l'est de la proue de la barque
  * chargée, qu'on voit au premier plan avec la grue et le hangar derrière lui ; la caméra garde la trace de la mission
- * jouée (`mission`, GD-20, point 8). Aux Filets (lot 4), devant le séchoir,
- * le panier plein et le filet tendu à sa gauche. Aux Écluses, sur la rive ouest, la caméra gardant la trace de la mission
- * jouée (la porte d'amont ouverte et le sas rempli des Nénuphars, ou une autre, `ECLUSES_TRACE_SPOTS`, lot L2). Au Phare, rien : Kéo revient sur le chemin. Rien non plus quand l'étape qui porte la trace n'est pas posée
- * (`posed`) : la trace attend. Dans ces deux cas, la caméra garde le lieu (`placeKeep`).
+ * jouée (`mission`, GD-20, point 8). Aux Filets (lot 4), devant le séchoir, le panier plein et le filet tendu à sa
+ * gauche. Aux Écluses, sur la rive ouest, la caméra gardant la trace de la mission jouée (la porte d'amont ouverte et le
+ * sas rempli des Nénuphars, ou une autre, `ECLUSES_TRACE_SPOTS`, lot L2). Au Phare (lot L3), au sud de la trace de la
+ * mission jouée, sur l'îlot : les lampes de la galerie (la caméra lève alors les yeux vers elle, `view`), la corne de
+ * brume, le mât de signaux. Rien quand l'étape qui porte la trace n'est pas posée (`posed`) : la trace attend ; la
+ * caméra garde alors le lieu (`placeKeep`).
  */
-export function scenetteExit(place: PlaceId, posed = true, mission?: string): { at: Vec2; keep: Vec3 } | null {
+export function scenetteExit(place: PlaceId, posed = true, mission?: string): { at: Vec2; keep: Vec3; view?: ExitView } | null {
   if (!posed) return null;
+  if (place === 'phare') {
+    const exit = mission && mission in PHARE_EXITS ? PHARE_EXITS[mission as keyof typeof PHARE_EXITS] : null;
+    if (!exit) return null;
+    const c = placeById(place).center;
+    const at = { x: c.x + exit.at.x, z: c.z + exit.at.z };
+    if (exit.trace === 'galerie') return { at, keep: { x: c.x, y: standingHeight(heightAt(c)) + PHARE_GALLERY, z: c.z + 2 }, view: GALLERY_VIEW };
+    const o = PHARE_TRACE_SPOTS[exit.trace];
+    const g = { x: c.x + o.x, z: c.z + o.z };
+    return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + PHARE_TRACE_LIFT[exit.trace], z: g.z } };
+  }
   if (place === 'quais') {
     const boat = loadedBoat();
     const f = quayFloor();
@@ -454,6 +469,20 @@ const TRACE_LIFT = 1;
 const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 } } as const;
 
 /**
+ * Au Phare (GD-20, point 8, lot L3), où Kéo se tient au retour de chaque mission, depuis le centre du lieu, et la trace
+ * que la caméra garde : les lampes de la galerie (la Chasse au son), devant la porte ; la corne de brume (l'Abattage
+ * syllabique) et le mât de signaux (les Rimes-échelle), à quelques pas au sud de chacun.
+ */
+const PHARE_EXITS = {
+  'sound-hunt': { at: { x: 1.4, z: 6.6 }, trace: 'galerie' },
+  syllables: { at: { x: 3.4, z: 5.6 }, trace: 'syllables' },
+  rhymes: { at: { x: -2.6, z: 7.4 }, trace: 'rhymes' },
+} as const;
+
+/** La hauteur du point gardé au-dessus du pied d'une trace du Phare : la mi-hauteur de la corne, du mât. */
+const PHARE_TRACE_LIFT = { syllables: 1.2, rhymes: 2.3 } as const;
+
+/**
  * La caméra du retour d'une scénette : toujours tournée vers le nord, reculée au-dessus du bassin (`back` unités au sud
  * de ce qu'elle garde, `height` au-dessus des pieds de Kéo), entre Kéo et la barque en largeur, elle regarde un point
  * `aim` unités au-dessus des pieds de Kéo : la barque au premier plan, au-dessus de « Y aller », la grue derrière lui.
@@ -472,6 +501,12 @@ export const PLACE_VIEW: ExitView = { back: 20, height: 15, aim: 1.6 };
  * et ne laisse qu'une bande au-dessus d'elle ; la caméra recule assez pour que la trace y tienne entière avec ses abords.
  */
 export const TRACE_VIEW: ExitView = { back: 15, height: 11, aim: 1.6 };
+/**
+ * Le recul quand la caméra garde les lampes de la galerie du Phare : à la hauteur de la galerie (11,5 unités au-dessus
+ * du sol), le regard presque à l'horizontale, assez près pour que les lampes se voient dans la bande au-dessus de la
+ * liste, la lanterne et son toit avec elles.
+ */
+export const GALLERY_VIEW: ExitView = { back: 10, height: 12.5, aim: 10.5 };
 
 /**
  * Pose `pose` (la caméra qui suit, remplie sur place) vers la caméra du retour d'une scénette, de la part `amount` (0 :
@@ -838,26 +873,6 @@ export function scenetteDecor(place: PlaceId, open = false, posed = true): Facet
   }
   gardienne(b, place, true);
   return b.build();
-}
-
-/**
- * La vitre de la lanterne, un peu plus large que celle du modèle : la lampe qui s'allume à la réussite. La vue la
- * dessine avec le maillage de la réaction des cloches (caché à ce moment-là) et un matériau sans lumière : aucun
- * appel de plus.
- */
-export function lanternGlass(place: PlaceId): Facets {
-  const b = new FacetBuilder();
-  const f = floorOf(place);
-  b.prism({ x: f.x, y: f.y - 0.45, z: f.z }, 1.09, 1.09, 1.52, 8, 0xffffff);
-  return b.build();
-}
-
-/**
- * Ce qui s'allume à la réussite d'une scénette : la lampe du Phare (sa vitre), quand sa lanterne est posée et encore
- * éteinte (`lantern`), ou rien (ailleurs, la réussite passe par `scenetteFinale`).
- */
-export function scenetteSuccess(place: PlaceId, lantern = true): Facets | null {
-  return place === 'phare' && lantern ? lanternGlass(place) : null;
 }
 
 /**
