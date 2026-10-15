@@ -39,6 +39,7 @@ import {
   type ExitView,
   scenetteFinale,
   scenetteHidesPieces,
+  scenetteTraces,
   scenetteHidesPlace,
   scenetteKeo,
   scenettePose,
@@ -735,7 +736,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -754,7 +755,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (scenette !== p.id) setBuiltTop(p.id, Math.max(ruinTop, topOf(build)) - foot.y);
       // La trace attend que l'étape qui la porte soit posée, pendant la scénette comme dehors : avant, rien, pas même
       // la porte d'amont fermée des Écluses (elle est de leur haut).
-      if (p.id !== hiddenTrace && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, placesState?.traces[p.id] ?? []));
+      // Pendant une scénette, une trace d'une autre mission dans le cadre se cache (les lanternes de la galerie du Phare).
+      const done = placesState?.traces[p.id] ?? [];
+      if (p.id !== hiddenTrace && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, scenette === p.id ? scenetteTraces(p.id, done, scenetteMission, posed) : done));
       if (p.id === 'phare' && lampShown) list.push(lampFacets);
     }
     setGeometry(placesMesh, mergeFacets(rest));

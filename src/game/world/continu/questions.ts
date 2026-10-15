@@ -89,7 +89,7 @@ export const missionIs = (exerciseId: string, mission: string): boolean => exerc
  * La consigne de Deux rives aux Écluses (gabarit `compareFractions`, accord du directeur du contenu, 15 octobre 2026) ;
  * elle dit l'égalité, que la phrase courte de l'item ne dit plus (relecture de L3).
  */
-export const PAIR_INSTRUCTION = 'Compare les deux sas. Le plus rempli d’eau montre la plus grande fraction. Remplis pareil : elles sont égales.';
+export const PAIR_INSTRUCTION = 'Touche la plus grande fraction : c’est le sas le plus rempli d’eau. Remplis pareil : elles sont égales.';
 
 /** La première phrase de la consigne de l'Abattage syllabique au Phare (relecture de L3, contenu). */
 export const PHARE_SYLLABLES = 'Écoute le mot, puis touche la cloche du nombre de syllabes que tu entends.';

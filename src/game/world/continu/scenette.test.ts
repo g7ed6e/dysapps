@@ -31,6 +31,7 @@ import {
   TRACE_VIEW,
   scenetteFinale,
   scenetteHidesPieces,
+  scenetteTraces,
   scenettePose,
   answerLeaves,
   scenetteDeck,
@@ -479,6 +480,14 @@ describe('Les Filets et les Écluses (lot 4)', () => {
   it('les pièces du lieu s’effacent le temps de la scénette partout sauf au Phare (ses lampes sont sur la galerie)', () => {
     expect(scenetteHidesPieces('phare')).toBe(false);
     for (const place of ['quais', 'filets', 'ecluses'] as const) expect(scenetteHidesPieces(place), place).toBe(true);
+    // Une trace d'une autre mission dans le cadre se cache le temps de la scénette : les lanternes de la galerie
+    // pendant l'Abattage syllabique et les Rimes-échelle ; elles restent pendant la Chasse au son, et au pied de la tour.
+    const done = ['sound-hunt', 'syllables', 'rhymes'];
+    expect(scenetteTraces('phare', done, 'syllables', true)).toEqual(['syllables', 'rhymes']);
+    expect(scenetteTraces('phare', done, 'rhymes', true)).toEqual(['syllables', 'rhymes']);
+    expect(scenetteTraces('phare', done, 'sound-hunt', true)).toEqual(done);
+    expect(scenetteTraces('phare', done, 'syllables', false)).toEqual(done);
+    expect(scenetteTraces('quais', ['doubles-halves'], 'tables', true)).toEqual(['doubles-halves']);
   });
 
   it('aux Filets, la réussite tend le filet raccommodé et pose un panier plein aux pieds de la pêcheuse, où il reste', () => {

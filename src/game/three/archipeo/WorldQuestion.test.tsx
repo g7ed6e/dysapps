@@ -245,7 +245,7 @@ describe('Toutes les missions des Écluses en scénette (GD-20, point 8, lot L2)
     renderPlace('ecluses', 'equivalence');
     const request = await start();
     expect(request).toMatchObject({ place: 'ecluses', mission: 'equivalence', item: { scene: { kind: 'lockPair' }, count: 3 } });
-    expect(document.querySelector('.quiz.in-world')!.textContent).toContain('Compare les deux sas');
+    expect(document.querySelector('.quiz.in-world')!.textContent).toContain('Touche la plus grande fraction');
     expect(document.querySelector('.quiz.in-world .world-question-aid')).toBeNull();
     // La phrase courte du contenu ; les deux fractions comparées et leur point sur une seule ligne.
     expect(document.querySelector('.question-prompt')!.textContent).toMatch(/^Compare /);

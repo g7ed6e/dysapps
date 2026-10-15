@@ -570,6 +570,17 @@ export const scenetteHidesPlace = (place: PlaceId): boolean => place === 'quais'
 export const scenetteHidesPieces = (place: PlaceId): boolean => place !== 'phare';
 
 /**
+ * Les traces d'un lieu que montre sa scénette (décision du directeur artistique, relecture de L3) : une trace d'une autre
+ * mission se cache le temps d'une scénette quand elle est dans le cadre ; elle reste dans le monde et au retour. Au
+ * Phare, les lanternes de la galerie (la Chasse au son) se cachent pendant l'Abattage syllabique et les Rimes-échelle
+ * joués sur la galerie ; la corne et le mât, au sol, restent hors du cadre. `done` : les missions réussies du lieu.
+ */
+export function scenetteTraces(place: PlaceId, done: readonly string[], mission: string | null, posed: boolean): readonly string[] {
+  if (place !== 'phare' || !posed || mission === 'sound-hunt') return done;
+  return done.filter((m) => m !== 'sound-hunt');
+}
+
+/**
  * Les objets des réponses pendent-ils (les cloches du Phare, devant la rambarde de sa galerie), ou sont-ils posés (les
  * caisses des Quais sur un ponton ; les cloches tombées au pied du Phare, sur une avancée du socle) ?
  */
