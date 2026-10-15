@@ -1225,11 +1225,12 @@
    8, lot L2 : une ligne de moins, pour que la rangée se voie dès l'ouverture quand la phrase fait trois lignes). */
 :root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold .world-scenette-role {
   display: inline-block;
-  margin-right: 0.35em;
-  padding: 0 0.3em;
+  margin-right: 0.25em;
+  padding: 0 0.2em;
   border: var(--border-width, 2px) solid currentColor;
   border-radius: 6px;
-  font-size: 0.62em;
+  /* 18 px au plus grand texte, la plus petite taille de texte de l'application. */
+  font-size: max(18px, 0.57em);
   line-height: 1.25;
   vertical-align: 0.15em;
 }
@@ -1270,6 +1271,9 @@
   font-size: 1em;
   line-height: 1.05;
 }
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers {
+  gap: 6px;
+}
 /* Au plus grand texte, « Lire la suite » se réduit à son icône (son nom reste dit) : la ligne garde le rôle. */
 :root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-more {
   padding-inline: 10px;
@@ -1304,6 +1308,11 @@
 :root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head {
   order: 1;
   line-height: 1.3;
+}
+/* La phrase à la taille du texte choisie, sans le cran de plus d'un titre, comme les réponses : une ligne de moins
+   pour un problème des Quais (relecture de L2 : Carnet du passeur et Mesures et figures sans chevron). */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .question-prompt {
+  font-size: max(18px, 1rem);
 }
 /* La phrase prend toute la largeur : son haut-parleur (48 px, l'icône seule comme sur un écran étroit, son nom reste dit)
    se pose en haut à droite, la première ligne seule lui laisse sa place (GD-20, point 8, lot L2 : une phrase de trois
@@ -1640,4 +1649,18 @@
 /* Une fraction et le signe qui la suit restent ensemble en fin de ligne (la phrase de Deux rives, lot L2). */
 .world-question .world-nobreak {
   white-space: nowrap;
+}
+
+/* Une rangée ou une colonne de réponses dont l'une est une fraction en colonne : toutes à la hauteur de la fraction, un
+   « 3 » seul pas plus petit qu'un « 3/5 » (référent dys, relecture de L2). Sur une même ligne, toutes à la même hauteur. */
+.world-question .in-world.simple .world-answers,
+.world-question .in-world.reponses-colonne .world-answers {
+  align-items: stretch;
+}
+.world-question .in-world.simple .world-answers:has(.frac) .world-answer-label,
+.world-question .in-world.reponses-colonne .world-answers:has(.frac) .world-answer-label {
+  min-height: calc(2.6em + 10px);
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers:has(.frac) .world-answer-label {
+  min-height: calc(2.2em + 10px);
 }

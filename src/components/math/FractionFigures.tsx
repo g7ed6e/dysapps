@@ -1,4 +1,5 @@
 // Représentations d'une fraction : barre, disque, droite graduée.
+import { RichText } from './RichText';
 
 /** Barre partagée en `d` parts égales, dont `n` coloriées. */
 export function FractionBar({ n, d, label = true }: { n: number; d: number; label?: boolean }) {
@@ -38,14 +39,23 @@ export function FractionDisc({ n, d }: { n: number; d: number }) {
   );
 }
 
-/** Deux barres de même longueur, l'une sous l'autre, pour comparer. */
-export function CompareBars({ a, b }: { a: [number, number]; b: [number, number] }) {
+/**
+ * Deux barres de même longueur, l'une sous l'autre, pour comparer. `stacked` : les fractions en colonne, comme dans la
+ * phrase (Deux rives aux Écluses, monde continu : une seule forme de fraction, référent dys) ; sinon « n/d ».
+ */
+export function CompareBars({ a, b, stacked = false }: { a: [number, number]; b: [number, number]; stacked?: boolean }) {
   return (
     <div className="compare-bars">
       {[a, b].map(([n, d], i) => (
         <div key={i} className="compare-row">
           <span className="compare-label">
-            {n}/{d}
+            {stacked ? (
+              <RichText text={`${n}/${d}`} />
+            ) : (
+              <>
+                {n}/{d}
+              </>
+            )}
           </span>
           <FractionBar n={n} d={d} />
         </div>

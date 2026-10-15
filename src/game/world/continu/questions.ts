@@ -78,8 +78,11 @@ export interface PlacedItem extends QuestionItem {
   referenceLine?: string;
 }
 
-/** La mission d'un exercice (`maths-6e-fractions-equivalence-1` : `equivalence`), si son identifiant la porte. */
-const missionIs = (exerciseId: string, mission: string): boolean => exerciseId.includes(`-${mission}-`);
+/**
+ * La mission d'un exercice (`maths-6e-fractions-equivalence-1` : `equivalence`), si son identifiant la porte. Un test
+ * vérifie, pour chaque mission des `scenes` de plan6e.ts, qu'elle ne reconnaît que les exercices de cette mission.
+ */
+export const missionIs = (exerciseId: string, mission: string): boolean => exerciseId.includes(`-${mission}-`);
 
 /** La consigne de Deux rives aux Écluses (gabarit `compareFractions`, accord du directeur du contenu, 15 octobre 2026). */
 export const PAIR_INSTRUCTION = 'Compare les deux sas. Le plus rempli d’eau montre la plus grande fraction.';
@@ -87,11 +90,12 @@ export const PAIR_INSTRUCTION = 'Compare les deux sas. Le plus rempli d’eau mo
 /**
  * La consigne d'un lieu, quand elle change, mission par mission : aux Écluses, celle des Nénuphars parle du sas (niveau
  * 1) ou de l'échelle (niveau 2), celle de Deux rives des deux sas ; les autres missions gardent leur consigne de
- * référence.
+ * référence. `scene` : la scène de l'item montré, quand il y en a un ; un item de Deux rives sans ses deux sas
+ * (`pairScene` rend `null`, il se joue sur le sas au repos) garde la consigne de référence (contenu, relecture de L2).
  */
-export function placeInstruction(place: PlaceId, exerciseId: string, level: number, reference: string): string {
+export function placeInstruction(place: PlaceId, exerciseId: string, level: number, reference: string, scene?: ItemScene): string {
   if (place !== 'ecluses') return reference;
-  if (missionIs(exerciseId, 'equivalence')) return PAIR_INSTRUCTION;
+  if (missionIs(exerciseId, 'equivalence')) return !scene || scene.kind === 'lockPair' ? PAIR_INSTRUCTION : reference;
   if (!missionIs(exerciseId, 'number-line')) return reference;
   return level >= 2
     ? 'Sur l’échelle, compte en combien de parts est coupée l’unité, puis compte les parts jusqu’à l’eau.'
@@ -156,10 +160,6 @@ const fullParts = (n: number): string => (n > 1 ? `${n} parts pleines` : `${n} p
 export type SayFraction = (n: number, d: number) => string;
 const written: SayFraction = (n, d) => `${n}/${d}`;
 
-/** « aux 3/5 », « à 1/3 » : le niveau d'un sas, écrit ; et lu (« aux 3 cinquièmes », « à un tiers »). */
-const filledTo = ([n, d]: [number, number], say: SayFraction): { shown: string; said: string } =>
-  n > 1 ? { shown: `aux ${n}/${d}`, said: `aux ${say(n, d)}` } : { shown: `à ${n}/${d}`, said: `à ${say(n, d)}` };
-
 /** Ce que Deux rives change dans un item : sa scène, sa phrase écrite et lue, son indice, sa correction. */
 interface PairItem {
   scene: Extract<ItemScene, { kind: 'lockPair' }>;
@@ -182,10 +182,9 @@ export function pairScene(item: QuestionItem, say: SayFraction = written): PairI
   const b = aid?.props?.b;
   if (aid?.kind !== 'compare-bars' || !isPart(a) || !isPart(b)) return null;
   const [fa, fb] = [`${a[0]}/${a[1]}`, `${b[0]}/${b[1]}`];
-  const question = 'Quelle fraction est la plus grande, ou sont-elles égales ?';
-  const [ta, tb] = [filledTo(a, say), filledTo(b, say)];
-  const prompt = `Un sas est rempli ${ta.shown}, l’autre ${tb.shown}. ${question}`;
-  const spoken = `Un sas est rempli ${ta.said}, l’autre ${tb.said}. ${question}`;
+  // La phrase courte (contenu, relecture de L2 : 73 signes, deux lignes de moins au plus grand texte sur téléphone).
+  const prompt = `Quelle fraction est la plus grande : ${fa} ou ${fb} ? Ou sont-elles égales ?`;
+  const spoken = `Quelle fraction est la plus grande : ${say(a[0], a[1])} ou ${say(b[0], b[1])} ? Ou sont-elles égales ?`;
   const [va, vb] = [a[0] / a[1], b[0] / b[1]];
   const [big, small, fBig, fSmall] = va > vb ? [a, b, fa, fb] : [b, a, fb, fa];
   let hint: string;
@@ -275,8 +274,18 @@ export function placeItems(place: PlaceId, exerciseId: string, items: readonly Q
       return items.map((it) => {
         const pair = pairScene(it, say);
         if (!pair) return { ...it, placeScene: LOCK_IDLE };
-        // Les barres de référence restent dans l'item : « Vue simple » les montre ; la scène les dessine ici.
-        return { ...it, prompt: pair.prompt, spoken: pair.spoken, hint: pair.hint, explanation: pair.explanation, placeScene: pair.scene };
+        // Les barres de référence restent dans l'item : « Vue simple » les montre, leurs fractions en colonne comme dans
+        // la phrase (une seule forme, référent dys) ; la scène les dessine ici.
+        const aid = it.aid as { kind: string; props: Record<string, unknown> };
+        return {
+          ...it,
+          prompt: pair.prompt,
+          spoken: pair.spoken,
+          hint: pair.hint,
+          explanation: pair.explanation,
+          aid: { ...aid, props: { ...aid.props, stacked: true } },
+          placeScene: pair.scene,
+        };
       });
     return items.map((it) => {
       const f = fractionOf(it);

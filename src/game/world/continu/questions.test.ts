@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { fractionWords } from '../../../core/fractions';
 import { seeded } from '../../../core/random';
+import { CATALOG } from '../../exercises';
 import { MATHS_EXERCISES } from '../../exercises/maths';
 import { PROBLEMES_EXERCISES } from '../../exercises/problems';
 import { POSEES_EXERCISES } from '../../exercises/writtenOperations';
@@ -25,6 +26,7 @@ import {
   pairScene,
   bellRounds,
   isItemScene,
+  missionIs,
   placeInstruction,
   placeItems,
   QUAI_NU,
@@ -183,6 +185,11 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
 
   it('une consigne par mission aux Écluses : Deux rives a la sienne, les autres gardent celle de référence (lot L2)', () => {
     expect(placeInstruction('ecluses', 'maths-6e-fractions-equivalence-1', 1, 'réf.')).toBe(PAIR_INSTRUCTION);
+    expect(placeInstruction('ecluses', 'maths-6e-fractions-equivalence-1', 1, 'réf.', { kind: 'lockPair', a: [1, 2], b: [2, 4] })).toBe(PAIR_INSTRUCTION);
+    // Un item de Deux rives sans ses deux sas (`pairScene` rend `null`) se joue sur le sas au repos, avec la consigne de référence.
+    const [alone] = placeItems('ecluses', 'maths-6e-fractions-equivalence-1', [{ key: 'k', prompt: 'réf.' }]);
+    expect(alone.placeScene).toEqual(LOCK_IDLE);
+    expect(placeInstruction('ecluses', 'maths-6e-fractions-equivalence-1', 1, 'réf.', alone.placeScene)).toBe('réf.');
     for (const id of ['maths-6e-fractions-sharing-1', 'maths-6e-fractions-place-value-2', 'maths-6e-fractions-fraction-sums-1']) expect(placeInstruction('ecluses', id, 1, 'réf.')).toBe('réf.');
   });
 
@@ -196,18 +203,20 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     });
     const same = pairScene(item([3, 5], [2, 5], '3/5'), fractionWords)!;
     expect(same.scene).toEqual({ kind: 'lockPair', a: [3, 5], b: [2, 5] });
-    expect(same.prompt).toBe('Un sas est rempli aux 3/5, l’autre aux 2/5. Quelle fraction est la plus grande, ou sont-elles égales ?');
-    expect(same.spoken).toBe('Un sas est rempli aux 3 cinquièmes, l’autre aux 2 cinquièmes. Quelle fraction est la plus grande, ou sont-elles égales ?');
+    expect(same.prompt).toBe('Quelle fraction est la plus grande : 3/5 ou 2/5 ? Ou sont-elles égales ?');
+    expect(same.spoken).toBe('Quelle fraction est la plus grande : 3 cinquièmes ou 2 cinquièmes ? Ou sont-elles égales ?');
     expect(same.hint).toMatch(/même nombre de parts égales/);
     expect(same.explanation).toBe('3 parts pleines sur 5, c’est plus que 2 parts pleines sur 5 : 3/5 est plus grande que 2/5.');
     const num = pairScene(item([1, 5], [1, 3], '1/3'))!;
-    expect(num.prompt.startsWith('Un sas est rempli à 1/5, l’autre à 1/3.')).toBe(true);
+    expect(num.prompt).toBe('Quelle fraction est la plus grande : 1/5 ou 1/3 ? Ou sont-elles égales ?');
+    // Un numérateur 1 se lit « un cinquième », jamais « rempli à un demi » (contenu, relecture de L2).
+    expect(pairScene(item([1, 5], [1, 3], '1/3'), fractionWords)!.spoken).not.toMatch(/rempli/);
     expect(num.explanation).toBe('Le même nombre de parts pleines, mais des parts plus grandes dans le sas coupé en 3 : 1/3 est plus grande que 1/5.');
     const equal = pairScene(item([2, 3], [4, 6], 'Elles sont égales'))!;
     expect(equal.explanation).toBe('L’eau arrive à la même hauteur dans les deux sas : 2/3 et 4/6 sont égales.');
     expect(pairScene({ key: 'k' })).toBeNull();
     // Sans les mots de la vue, la phrase lue garde les fractions écrites.
-    expect(pairScene(item([3, 5], [2, 5], '3/5'))!.spoken.startsWith('Un sas est rempli aux 3/5')).toBe(true);
+    expect(pairScene(item([3, 5], [2, 5], '3/5'))!.spoken).toBe('Quelle fraction est la plus grande : 3/5 ou 2/5 ? Ou sont-elles égales ?');
     // Les items du générateur : chacun a ses deux sas, jamais « gauche » ni « droite », et garde sa clé, ses choix, sa réponse.
     const def = MATHS_EXERCISES.find((e) => e.id === 'maths-6e-fractions-equivalence-1')!;
     const items = def.generate!('graine') as QuestionItem[];
@@ -215,7 +224,10 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     placed.forEach((p, i) => {
       expect(p.placeScene.kind).toBe('lockPair');
       expect(`${p.prompt} ${p.hint} ${p.explanation}`).not.toMatch(/gauche|droite/);
-      expect([p.key, p.choices, p.answer, p.aid]).toEqual([items[i].key, items[i].choices, items[i].answer, items[i].aid]);
+      expect([p.key, p.choices, p.answer]).toEqual([items[i].key, items[i].choices, items[i].answer]);
+      // Les barres de « Vue simple » gardées, leurs fractions en colonne (une seule forme, référent dys).
+      const aid = items[i].aid as { kind: string; props: object };
+      expect(p.aid).toEqual({ ...aid, props: { ...aid.props, stacked: true } });
       const sc = p.placeScene as { a: [number, number]; b: [number, number] };
       expect(Math.max(sc.a[1], sc.b[1])).toBeLessThanOrEqual(10);
     });
@@ -237,6 +249,17 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     expect(answersInColumn(LOCK_IDLE)).toBe(false);
     expect(isItemScene(LOCK_COLUMN) && isItemScene({ kind: 'lockPair', a: [1, 2], b: [2, 4] })).toBe(true);
     expect(isItemScene({ kind: 'lockPair', a: [3, 2], b: [2, 4] })).toBe(false);
+  });
+
+  it('missionIs ne reconnaît, pour chaque mission jouée en scénette (plan6e.ts), que les exercices de cette mission', () => {
+    for (const place of PLACES)
+      for (const mission of place.scenes) {
+        const own = CATALOG.filter((d) => d.biome === place.island && missionIs(d.id, mission));
+        expect(own.length, `${place.id} ${mission}`).toBeGreaterThan(0);
+        for (const d of own) expect(d.id, `${place.id} ${mission}`).toMatch(new RegExp(`^${place.island}-${mission}-[a-z0-9-]+$`));
+        // Aucune autre mission du lieu ne prend ces exercices.
+        for (const other of place.scenes.filter((m) => m !== mission)) expect(own.some((d) => missionIs(d.id, other)), `${mission} / ${other}`).toBe(false);
+      }
   });
 
   it('les cinq missions des Écluses se jouent en scénette (lot L2)', () => {

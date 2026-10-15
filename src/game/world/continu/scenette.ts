@@ -427,7 +427,7 @@ export function scenetteExit(place: PlaceId, posed = true, mission?: string): { 
   if (place === 'filets') return { at: { x: c.x + EXIT_SPOTS.filets.x, z: c.z + EXIT_SPOTS.filets.z }, keep: filetsBasketAt() };
   if (place === 'ecluses') {
     // La trace de la mission jouée (GD-20, point 8, lot L2) : la porte d'amont ouverte des Nénuphars (le milieu du lieu),
-    // ou ce qu'une autre mission a laissé (la barque, la table, l'escalier, le fanal), à un pas au-dessus du pied du lieu.
+    // ou ce qu'une autre mission a laissé (la barque, la table, l'escalier, la lanterne du sas), à un pas au-dessus du pied du lieu.
     const y = standingHeight(heightAt(c));
     const spot = mission && mission in ECLUSES_TRACE_SPOTS ? ECLUSES_TRACE_SPOTS[mission as keyof typeof ECLUSES_TRACE_SPOTS] : { x: 0, z: 0 };
     return { at: { x: c.x + EXIT_SPOTS.ecluses.x, z: c.z + EXIT_SPOTS.ecluses.z }, keep: { x: c.x + spot.x, y: y + 1, z: c.z + spot.z } };

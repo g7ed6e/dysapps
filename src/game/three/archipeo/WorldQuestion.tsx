@@ -233,6 +233,13 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
   }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, plain, simple, bare, grandTexte, openSimple, wideRow]);
+  // Chaque item de « Vue simple » s'ouvre en haut du panneau, sa phrase d'abord, même si l'élève avait descendu jusqu'aux
+  // réponses de l'item d'avant (relecture de L2, au plus grand texte sur téléphone).
+  useEffect(() => {
+    if (!simple || !itemKey) return;
+    const panel = box.current?.querySelector<HTMLElement>('.quiz.in-world');
+    if (panel) panel.scrollTop = 0;
+  }, [simple, itemKey]);
   // Le panneau de « Vue simple » défile : il s'ouvre en haut (le rôle, la consigne), et `data-suite` dit qu'il reste
   // de quoi lire plus bas (une ombre au-dessus de « Valider ») ou plus haut. Sans « Valider » (les paniers, les leviers,
   // les caisses), `data-repere` montre au bas du panneau un chevron sur un trait pointillé (« Suite plus bas ») tant que
@@ -251,10 +258,13 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       const next = below && above ? 'deux' : below ? 'bas' : above ? 'haut' : '';
       if (panel.dataset.suite !== next) panel.dataset.suite = next;
       // Le repère ne dit que des réponses : une fois la rangée entière visible, l'indice ou la figure plus bas ne le
-      // rallument pas (GD-20, point 8, lot L2 : au plus grand texte sur téléphone, il ne couvre plus la rangée).
-      const end = panel.getBoundingClientRect().top + panel.clientTop + panel.clientHeight;
-      const answerBelow = [...panel.querySelectorAll('.world-answer')].some((a) => a.getBoundingClientRect().bottom > end + 1);
-      const cue = below && answerBelow && !panel.querySelector('.world-simple-validate');
+      // rallument pas (GD-20, point 8, lot L2 : au plus grand texte sur téléphone, il ne couvre plus la rangée). La
+      // mesure des réponses ne se fait qu'ici, une fois par image au plus (`schedule`), et seulement s'il reste à défiler.
+      const answerBelow = () => {
+        const end = panel.getBoundingClientRect().top + panel.clientTop + panel.clientHeight;
+        return [...panel.querySelectorAll('.world-answer')].some((a) => a.getBoundingClientRect().bottom > end + 1);
+      };
+      const cue = below && !panel.querySelector('.world-simple-validate') && answerBelow();
       if (cue !== 'repere' in panel.dataset) {
         if (cue) panel.dataset.repere = '';
         else delete panel.dataset.repere;
@@ -297,7 +307,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   }, []);
 
   const ready = loaded && picked ? { def: loaded, level: picked.level } : null;
-  const instruction = ready ? placeInstruction(place, ready.def.id, ready.level, ready.def.instruction) : '';
+  const instruction = ready ? placeInstruction(place, ready.def.id, ready.level, ready.def.instruction, item?.scene) : '';
   const context = useMemo(() => ({ layout, show, instruction, simple }), [layout, show, instruction, simple]);
 
   const exerciseId = ready?.def.id;
@@ -577,11 +587,14 @@ const aidOf = (item: ExerciseItem | undefined): AidData | null => aidData(item?.
 /** La figure d'un item (la figure exacte, le schéma coté), comme sur l'écran classique. */
 const figureOf = (item: ExerciseItem | undefined): AidData | null => aidData(item?.figure);
 
-/** Une fraction suivie d'un signe de ponctuation (« 2/8. ») : ils ne se séparent pas en fin de ligne. */
-const FRACTION_STUCK = /(\d+\/\d+[.,;:!?])/;
+/**
+ * Une fraction suivie d'un signe de ponctuation (« 2/8. », « 3/4 ? », l'espace avant « ? » devenue insécable) : ils ne
+ * se séparent pas en fin de ligne.
+ */
+const FRACTION_STUCK = /(\d+\/\d+[ \u00a0\u202f]?[.,;:!?])/;
 
 /**
- * La phrase d'un lieu (Deux rives : « …, l'autre aux 2/8. ») : le texte enrichi, sans que le point passe seul à la ligne
+ * La phrase d'un lieu (Deux rives : « … : 3/5 ou 3/10 ? ») : le texte enrichi, sans que le point passe seul à la ligne
  * après une fraction en colonne. Propre au monde ouvert : RichText, commun aux deux univers, ne change pas.
  */
 function PlaceText({ text }: { text: string }) {

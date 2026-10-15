@@ -1344,7 +1344,7 @@ const QUAIS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => 
 /**
  * Où se pose la trace de chaque mission des Écluses (hors des Nénuphars, la porte d'amont ouverte), depuis le centre du
  * lieu : la barque dans le bassin d'aval, la table devant la maison de l'éclusier, l'escalier contre le mur est du
- * bassin d'aval, le fanal sur le coin sud-ouest de ce bassin ; tous dans le champ du retour d'une scénette, au sud.
+ * bassin d'aval, la lanterne du sas sur le coin sud-ouest de ce bassin ; tous dans le champ du retour d'une scénette, au sud.
  */
 export const ECLUSES_TRACE_SPOTS = {
   equivalence: { x: 0, z: 3 },
@@ -1363,7 +1363,7 @@ const ECLUSES_TOPS = { middle: 0.9, low: 0.2 } as const;
  * - Partage du gâteau : la table de l'éclusier et ses deux bancs, devant sa maison, rien dessus ;
  * - Galets en colonnes : l'escalier de pierre contre le mur est du bassin d'aval, du quai du sas au bord de l'eau, sa
  *   main courante de bois ;
- * - Calculer avec des fractions : le fanal du sas, un poteau de bois sur le coin du bassin d'aval, sa lanterne allumée.
+ * - Calculer avec des fractions : la lanterne du sas, un poteau de bois sur le coin du bassin d'aval, sa lanterne allumée.
  * Les Nénuphars gardent la leur : la porte d'amont ouverte et le sas rempli (`lockGate`).
  */
 const ECLUSES_TRACES: Record<string, (b: FacetBuilder, cx: number, y0: number, cz: number) => void> = {
@@ -1406,7 +1406,7 @@ const ECLUSES_TRACES: Record<string, (b: FacetBuilder, cx: number, y0: number, c
   'fraction-sums': (b, x, y0, z) => {
     const o = ECLUSES_TRACE_SPOTS['fraction-sums'];
     const at = { x: x + o.x, y: y0 + ECLUSES_TOPS.low, z: z + o.z };
-    // Le fanal : un socle de pierre sur le coin du mur, un poteau, un bras, et la lanterne pendue, sa vitre allumée.
+    // La lanterne du sas : un socle de pierre sur le coin du mur, un poteau, un bras, et la lanterne pendue, sa vitre allumée.
     b.box(at, [0.45, 0.25, 0.45], C.stoneDark, C.stone);
     b.box({ x: at.x, y: at.y + 0.25, z: at.z }, [0.16, 2.7, 0.16], C.post);
     b.box({ x: at.x + 0.35, y: at.y + 2.85, z: at.z }, [0.85, 0.12, 0.12], C.post);
