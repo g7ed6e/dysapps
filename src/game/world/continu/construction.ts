@@ -84,7 +84,7 @@ export const WHOLE: PartShape = [
  * galerie du Phare, le filet raccommodé sur le séchoir des Filets (les abords) ; la grue remontée des Quais, la porte
  * d'amont des Écluses (le haut). Tant que cette étape n'est pas posée, la trace attend : rien ne flotte dans le vide.
  */
-export const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = { phare: 2, quais: 1, filets: 2, ecluses: 1 };
+const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = { phare: 2, quais: 1, filets: 2, ecluses: 1 };
 
 /**
  * L'étape qui porte la trace d'un lieu est-elle posée ? Sa scénette se joue alors sur elle (la galerie du Phare, le
@@ -206,7 +206,7 @@ export const POSE_SECONDS = { rise: 0.9, drop: 0.7, look: 1.1, back: 0.9, still:
 export const POSE_DROP = 3.5;
 
 /** Les temps d'une pose : la caméra va vers le lieu, la partie descend, on la regarde, la caméra revient ; ou, avec « Réduire les animations », d'un bloc. */
-export type PosePhase = 'rise' | 'drop' | 'look' | 'back' | 'still';
+type PosePhase = 'rise' | 'drop' | 'look' | 'back' | 'still';
 
 /**
  * Ce que la vue fait à chaque temps d'une pose : `rise` et `back`, la caméra à la part `e` (adoucie) de son trajet ;
