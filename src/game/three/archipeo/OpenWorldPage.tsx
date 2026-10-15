@@ -9,6 +9,7 @@
 // Kéo. Chargé à la demande.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
 import { frenchTypography } from '../../../components/math/RichText';
@@ -88,6 +89,10 @@ export default function OpenWorldPage() {
   // qu'avec le palier (un, deux ou trois points) : le libellé de la marque n'est refait que là.
   const [far, setFar] = useState<1 | 2 | 3>(1);
   const farRef = useRef(far);
+  // Les célébrations (« Succès débloqué ») attendent la fin de la pose de la partie gagnée, pas seulement celle du bilan :
+  // retenues dès qu'une question s'ouvre, rendues quand la pose est finie (ou quand rien ne se pose).
+  const [posePending, setPosePending] = useState(false);
+  useHoldCelebrations(posePending);
 
   // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
   // taille (jamais une mise en page forcée par image).
@@ -97,6 +102,10 @@ export default function OpenWorldPage() {
     if (!stage) return;
     const measure = () => {
       const s = stage.getBoundingClientRect();
+      // Le bord droit de « Carte » : sur un écran bas, « Y aller » se tient à sa droite, jamais dessus (openWorld.css).
+      const carte = stage.querySelector<HTMLElement>('.open-world-map-button')?.getBoundingClientRect();
+      const carteRight = carte ? `${Math.round(carte.right - s.left)}px` : '';
+      if (stage.style.getPropertyValue('--open-world-carte') !== carteRight) stage.style.setProperty('--open-world-carte', carteRight);
       layout.width = s.width;
       layout.height = s.height;
       layout.markW = markRef.current?.offsetWidth ?? 0;
@@ -143,6 +152,7 @@ export default function OpenWorldPage() {
       onLocks: (locks) => placeLocks(locksRef.current, locks),
       onMapPlaces: (spots) => mapPlacer.current?.(spots),
       onMapPick: (placeId) => mapPick.current(placeId),
+      onPosed: () => setPosePending(false),
       onMark: (m) => {
         placeMark(markRef.current, arrowRef.current, m, layout);
         if (m && m.far !== farRef.current) {
@@ -233,7 +243,9 @@ export default function OpenWorldPage() {
   const shownBuilt = useRef<Record<PlaceId, readonly PartShape[]> | null>(null);
   const askedPlace = useRef<PlaceId | null>(null);
   useEffect(() => {
-    if (asking) askedPlace.current = asking.place;
+    if (!asking) return;
+    askedPlace.current = asking.place;
+    setPosePending(true);
   }, [asking]);
   useEffect(() => {
     const w = world.current;
@@ -249,7 +261,7 @@ export default function OpenWorldPage() {
     shownBuilt.current = built;
     askedPlace.current = null;
     const fresh = before && place ? built[place].filter((s) => !before[place].includes(s)) : [];
-    w.setPlaces({ built, traces }, place && fresh.length ? { place, parts: fresh } : undefined);
+    if (!w.setPlaces({ built, traces }, place && fresh.length ? { place, parts: fresh } : undefined)) setPosePending(false);
   }, [constructions, traces, asking, ready]);
   // L'état de chaque lieu sur la Carte, en icône et en mot (les mots d'état de l'univers).
   const states = useMemo(

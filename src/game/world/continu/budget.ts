@@ -90,19 +90,20 @@ function successTriangles(place: PlaceId): number {
 const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
 
 /**
- * Les lieux (GD-20, lot 1) : les quatre maquettes, leurs constructions entières et les traces de leurs scénettes,
- * réunies en un maillage, refait à chaque pose (jamais par image) ; le lieu suivi, seul hors de la brume, dans un
- * second (son matériau sans brouillard). Deux appels, quel que soit le nombre de lieux.
+ * Les lieux (GD-20, lot 1) : les quatre lieux entiers (leur ruine et leurs trois étapes : chaque lieu se rebâtit
+ * lui-même) et les traces de leurs scénettes, réunis en un maillage, refait à chaque pose (jamais par image) ; le lieu
+ * suivi, seul hors de la brume, dans un second (son matériau sans brouillard). Deux appels, quel que soit le nombre de
+ * lieux.
  */
-function placesCost(ground: (x: number, z: number) => number): { triangles: number; calls: number } {
-  const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + constructionFacets(p.id, [WHOLE], ground).triangles + placeTrace(p.id, true).triangles, 0);
+function placesCost(): { triangles: number; calls: number } {
+  const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + placeTrace(p.id, true).triangles, 0);
   return { triangles, calls: 2 };
 }
 
 /**
  * Le passage d'une pose : la partie qui arrive, un maillage à part le temps qu'elle descende à sa place (moins d'une
- * seconde), puis réunie aux lieux. Compté large : la plus grande construction entière (une partie en pose au plus une
- * étape et demie), et ses triangles en plus de ceux des lieux.
+ * seconde), puis réunie aux lieux. Compté large : la plus grande construction entière, sans sa ruine (une partie en
+ * pose au plus une étape et demie), et ses triangles en plus de ceux des lieux.
  */
 function poseCost(ground: (x: number, z: number) => number): { triangles: number; calls: number } {
   return { triangles: Math.max(...PLACES.map((p) => constructionFacets(p.id, [WHOLE], ground).triangles)), calls: 1 };
@@ -143,7 +144,7 @@ export function openWorldCost(): OpenWorldCost[] {
     { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
     { poste: 'mer', triangles: 2, calls: 1 },
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
-    { poste: 'lieux', ...placesCost(height) },
+    { poste: 'lieux', ...placesCost() },
     { poste: 'pose', ...poseCost(height) },
     { poste: 'brume', triangles: veilFacets(PLACES.map((p) => p.id)).triangles, calls: 2 },
     { poste: 'kéo', ...KEO },
@@ -163,7 +164,7 @@ export function mapCost(): { triangles: number; calls: number } {
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
   const far = tileTriangleCounts(field, 'far').reduce((s, n) => s + n, 0);
   const paths = pathRibbons(height).triangles;
-  const places = placesCost(height);
+  const places = placesCost();
   const veil = veilFacets(PLACES.map((p) => p.id)).triangles;
   return { triangles: far + 2 + paths + places.triangles + veil + KEO.triangles, calls: 1 + 1 + 1 + places.calls + 2 + KEO.calls };
 }

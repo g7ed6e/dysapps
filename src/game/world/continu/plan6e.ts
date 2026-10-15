@@ -105,6 +105,11 @@ export interface OpenPlace {
   name: string;
   /** « au Phare », « aux Quais » : pour les phrases. */
   at: string;
+  /**
+   * Le genre et le nombre de son nom (le Phare : masculin singulier ; les Écluses : féminin pluriel), pour accorder le
+   * mot d'état de la Carte (« restauré », « restaurées »).
+   */
+  agree: 'ms' | 'mp' | 'fs' | 'fp';
   /** L'île d'aujourd'hui dont il reprend la mission (ses repères stables : identifiant, matière, icône). */
   island: string;
   /**
@@ -133,16 +138,17 @@ interface PlaceSpec extends Omit<OpenPlace, 'center' | 'door'> {
 }
 
 const PLACE_SPECS: readonly PlaceSpec[] = [
-  { id: 'phare', name: 'Le Phare', at: 'au Phare', island: 'french-6e-phonology', mission: 'sound-hunt', plan: [880, 590], door: { x: 0, z: 6.14 }, yaw: 0, touchRadius: 5.5 },
-  { id: 'quais', name: 'Les Quais', at: 'aux Quais', island: 'maths-6e-calculation', mission: 'doubles-halves', plan: [1085, 783], door: { x: -1.71, z: -2 }, yaw: 0, touchRadius: 5.5 },
-  { id: 'filets', name: 'Les Filets', at: 'aux Filets', island: 'french-6e-grammar-spelling', mission: 'plurals', plan: [1061, 222], door: { x: -0.86, z: 3.29 }, yaw: 0.35, touchRadius: 5.5 },
-  { id: 'ecluses', name: 'Les Écluses', at: 'aux Écluses', island: 'maths-6e-fractions', mission: 'number-line', plan: [1226, 404], door: { x: -3.14, z: -0.71 }, yaw: 0, touchRadius: 5.5 },
+  { id: 'phare', name: 'Le Phare', at: 'au Phare', agree: 'ms', island: 'french-6e-phonology', mission: 'sound-hunt', plan: [880, 590], door: { x: 0, z: 6.14 }, yaw: 0, touchRadius: 5.5 },
+  { id: 'quais', name: 'Les Quais', at: 'aux Quais', agree: 'mp', island: 'maths-6e-calculation', mission: 'doubles-halves', plan: [1085, 783], door: { x: -1.71, z: -2 }, yaw: 0, touchRadius: 5.5 },
+  { id: 'filets', name: 'Les Filets', at: 'aux Filets', agree: 'mp', island: 'french-6e-grammar-spelling', mission: 'plurals', plan: [1061, 222], door: { x: -0.86, z: 3.29 }, yaw: 0.35, touchRadius: 5.5 },
+  { id: 'ecluses', name: 'Les Écluses', at: 'aux Écluses', agree: 'fp', island: 'maths-6e-fractions', mission: 'number-line', plan: [1226, 404], door: { x: -3.14, z: -0.71 }, yaw: 0, touchRadius: 5.5 },
 ];
 
 export const PLACES: readonly OpenPlace[] = PLACE_SPECS.map((s) => ({
   id: s.id,
   name: s.name,
   at: s.at,
+  agree: s.agree,
   island: s.island,
   mission: s.mission,
   center: fromPlan(s.plan),

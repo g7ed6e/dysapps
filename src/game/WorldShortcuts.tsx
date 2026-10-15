@@ -32,7 +32,8 @@ function requestCount(world: World, a: ArchipelagoId, quetes: boolean): number {
 /**
  * En haut à gauche, en colonne : Reprendre, Révisions, Commandes. Toujours à leur place, délavés quand ils sont vides.
  * `requestsLater` : les commandes ne se livrent pas encore là où l'on est (le monde continu, avant le lot 4 de GD-20) :
- * le bouton reste à sa place, délavé, sans compteur, et son toucher dit « aucune commande ».
+ * le bouton reste à sa place, délavé, sans compteur, et son toucher dit « indisponible pour l’instant » (comme son nom,
+ * pour les lecteurs d'écran).
  */
 export function WorldShortcuts({ a, requestsOpen, requestsLater = false }: { a: ArchipelagoId; requestsOpen: boolean; requestsLater?: boolean }) {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ export function WorldShortcuts({ a, requestsOpen, requestsLater = false }: { a: 
           icon="scroll-text"
           className="world-commandes"
           name={commandes ? `${textes.commandes.titre} : ${commandes}` : textes.commandes.titre}
-          empty={commandes ? undefined : 'aucune commande'}
+          empty={requestsLater ? 'indisponible pour l’instant' : commandes ? undefined : 'aucune commande'}
           count={commandes || undefined}
           pressed={requestsOpen}
           controls={requestsOpen ? 'panneau-commandes' : undefined}

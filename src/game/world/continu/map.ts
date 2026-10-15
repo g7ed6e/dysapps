@@ -140,6 +140,10 @@ export const MAP_LOCK = 40;
 export const MAP_LABEL_GAP = 8;
 /** La pastille de Kéo seule, en pixels (sans « Toi »). */
 export const MAP_KEO_DISC = 44;
+/** Un lieu ouvert sans son nom (trop serré) : sa pastille réduite à son icône, une cible carrée de 48 px. */
+export const MAP_COMPACT = 48;
+/** Les décalages verticaux essayés pour un nom qui en touche un autre, en demi-hauteurs d'étiquette. */
+const SHIFTS = 3;
 
 /** Le pas et la portée de la recherche d'une place libre pour un nom, en pixels. */
 const SPIRAL = { step: 16, reach: 240, directions: 16 } as const;
@@ -168,11 +172,12 @@ const clash = (a: Rect, b: Rect) =>
   a.left < b.right + MAP_LABEL_GAP && b.left < a.right + MAP_LABEL_GAP && a.top < b.bottom + MAP_LABEL_GAP && b.top < a.bottom + MAP_LABEL_GAP;
 
 /**
- * Pose les étiquettes de la Carte sans qu'aucune en recouvre une autre (au moins `MAP_LABEL_GAP` entre elles) : d'abord
- * Kéo et les cadenas, à leur place ; puis le nom de chaque lieu ouvert, au-dessus de son point, sinon dessous, sinon à
- * droite ou à gauche, sinon à la place libre la plus proche (il se montre toujours : on doit pouvoir le toucher),
- * dans l'écran ; enfin le nom de chaque lieu fermé, sous
- * son cadenas, tu s'il gêne (le toucher du lieu dit alors « Fermé pour l'instant »).
+ * Pose les étiquettes de la Carte sans qu'aucune en recouvre une autre (au moins `MAP_LABEL_GAP` entre elles), ni les
+ * boutons de la page (`obstacles`) : d'abord Kéo et les cadenas, à leur place ; puis le nom de chaque lieu ouvert,
+ * au-dessus de son point, sinon dessous, sinon décalé vers le haut ou vers le bas (une demi-hauteur, puis une autre),
+ * sinon à droite ou à gauche, sinon à la place libre la plus proche, dans l'écran ; s'il ne trouve toujours pas de
+ * place, sa pastille se réduit à son icône (`name: false`, le nom et l'état restent dits par le bouton) ; enfin le nom
+ * de chaque lieu fermé, sous son cadenas, tu s'il gêne (le toucher du lieu dit alors « Fermé pour l'instant »).
  */
 export function layoutMapLabels(labels: readonly MapLabel[], obstacles: readonly Rect[] = [], screen = { width: Infinity, height: Infinity }): MapLabelSpot[] {
   const first = attemptLayout(labels, obstacles, screen, false);
@@ -190,9 +195,11 @@ function attemptLayout(
   let crowded = false;
   const onScreen = (r: Rect) => r.left >= 0 && r.top >= 0 && r.right <= screen.width && r.bottom <= screen.height;
   // Les boutons de la page (« Retour », les réglages) d'abord : aucune étiquette ne passe dessous.
-  const placed: { id: string; r: Rect }[] = obstacles.map((r) => ({ id: '', r }));
+  // Les boutons n'ont pas d'identifiant (`null`) : une étiquette ne s'en exclut jamais (avant, l'identifiant vide des
+  // boutons était aussi celui de « personne », et les étiquettes passaient sous la colonne).
+  const placed: { id: string | null; r: Rect }[] = obstacles.map((r) => ({ id: null, r }));
   const out = new Map<string, MapLabelSpot>();
-  const free = (r: Rect, self = '') => !placed.some((p) => p.id !== self && clash(p.r, r));
+  const free = (r: Rect, self?: string) => !placed.some((p) => (p.id === null || p.id !== self) && clash(p.r, r));
   for (const l of labels) {
     if (l.kind === 'keo') {
       const r = compactKeo ? rect(l.x - MAP_KEO_DISC / 2, l.y - l.h, MAP_KEO_DISC, l.h) : rect(l.x - l.w / 2, l.y - l.h, l.w, l.h);
@@ -204,21 +211,39 @@ function attemptLayout(
       out.set(l.id, { id: l.id, left: l.x - Math.max(MAP_LOCK, l.w) / 2, top: l.y - MAP_LOCK, name: false });
     }
   }
+  const clear = (c: Rect) => onScreen(c) && free(c);
   for (const l of labels) {
     if (l.kind !== 'open') continue;
-    const above = rect(l.x - l.w / 2, l.y - l.h, l.w, l.h);
-    const candidates = [
-      above,
-      rect(l.x - l.w / 2, l.y + MAP_LABEL_GAP, l.w, l.h),
-      rect(l.x + MAP_LABEL_GAP, l.y - l.h / 2, l.w, l.h),
-      rect(l.x - MAP_LABEL_GAP - l.w, l.y - l.h / 2, l.w, l.h),
-    ];
+    const places = (w: number, h: number) => {
+      const above = rect(l.x - w / 2, l.y - h, w, h);
+      const below = rect(l.x - w / 2, l.y + MAP_LABEL_GAP, w, h);
+      const list = [above, below];
+      // Décalé vers un côté libre, en haut puis en bas, d'une demi-hauteur à la fois.
+      for (let k = 1; k <= SHIFTS; k++) {
+        const dy = (k * (h + MAP_LABEL_GAP)) / 2;
+        list.push(rect(above.left, above.top - dy, w, h), rect(below.left, below.top + dy, w, h));
+      }
+      list.push(rect(l.x + MAP_LABEL_GAP, l.y - h / 2, w, h), rect(l.x - MAP_LABEL_GAP - w, l.y - h / 2, w, h));
+      return list;
+    };
+    const full = places(l.w, l.h);
     // Sinon, la place libre la plus proche autour du lieu, de plus en plus loin (une spirale de pas de 16 px).
-    const fits = candidates.find((c) => onScreen(c) && free(c)) ?? spiral(above, (c) => onScreen(c) && free(c));
-    if (!fits) crowded = true;
-    const r = fits ?? candidates.find(onScreen) ?? above;
+    let r = full.find(clear) ?? spiral(full[0], clear);
+    let name = true;
+    if (!r) {
+      // Toujours trop serré : l'icône seule, à la première place libre.
+      const small = places(MAP_COMPACT, MAP_COMPACT);
+      r = small.find(clear) ?? spiral(small[0], clear);
+      name = false;
+      if (!r) {
+        crowded = true;
+        // Au pire, il peut toucher une autre étiquette, jamais un bouton de la page.
+        const off = (c: Rect) => onScreen(c) && !obstacles.some((o) => clash(o, c));
+        r = small.find(off) ?? spiral(small[0], off) ?? small[0];
+      }
+    }
     placed.push({ id: l.id, r });
-    out.set(l.id, { id: l.id, left: r.left, top: r.top, name: true });
+    out.set(l.id, { id: l.id, left: r.left, top: r.top, name });
   }
   for (const l of labels) {
     if (l.kind !== 'closed') continue;

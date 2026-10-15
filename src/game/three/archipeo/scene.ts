@@ -9,9 +9,9 @@ import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
-import { LOOK_UP, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, type CameraPose } from '../../world/continu/camera';
-import { constructionFacets, houseAt, POSE_DROP, POSE_SECONDS, poseView, type PartShape } from '../../world/continu/construction';
-import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
+import { LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, type CameraPose } from '../../world/continu/camera';
+import { constructionFacets, POSE_DROP, POSE_SECONDS, poseView, ruinFacets, stageComplete, TRACE_STAGE, WHOLE, type PartShape } from '../../world/continu/construction';
+import { FacetBuilder, mergeFacets, type Facets } from '../../world/continu/facets';
 import { distance, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, zoomMap, type MapView } from '../../world/continu/map';
 import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
@@ -72,6 +72,8 @@ export interface OpenWorldOptions {
   onMapPick(place: PlaceId): void;
   /** Montrer le compteur de mesures (`?mesures`) ; `expose` : le laisser lire aux scripts. */
   meter: { show: boolean; expose: boolean };
+  /** La pose d'une partie est finie (posée, la caméra revenue à Kéo, ou passée) : les célébrations peuvent venir. */
+  onPosed(): void;
 }
 
 export interface OpenWorld {
@@ -100,13 +102,13 @@ export interface OpenWorld {
    */
   scenetteEnd(lit: boolean): void;
   /**
-   * Les lieux (GD-20, lot 1) : la construction de chacun, ses parties posées en tranches d'étapes, et la trace de sa
-   * scénette ; tout réuni en un maillage, refait ici seulement (jamais par image). `pose` : les parties qui viennent
-   * d'arriver dans un lieu, posées sous les yeux de l'élève (la caméra monte vers sa maison, la partie descend à sa
-   * place, puis la caméra revient) ; un toucher passe la pose, et avec « Réduire les animations » elle est posée d'un
-   * coup.
+   * Les lieux (GD-20, lot 1) : chacun se rebâtit lui-même, sa ruine et ses parties posées en tranches d'étapes, et la
+   * trace de sa scénette ; tout réuni en un maillage, refait ici seulement (jamais par image). `pose` : les parties qui
+   * viennent d'arriver dans un lieu, posées sous les yeux de l'élève (la caméra va vers le lieu, du côté de sa porte, la
+   * partie descend à sa place, puis la caméra revient) ; un toucher passe la pose, et avec « Réduire les animations »
+   * elle est posée d'un coup. Rend `true` si une pose commence (`onPosed` dira sa fin).
    */
-  setPlaces(places: PlacesState, pose?: { place: PlaceId; parts: readonly PartShape[] }): void;
+  setPlaces(places: PlacesState, pose?: { place: PlaceId; parts: readonly PartShape[] }): boolean;
   /**
    * Ouvre la Carte des lieux ouverts (`open`, les lieux qu'on peut toucher), ou la ferme (`null`) : l'île entière vue
    * de haut, sans brume au loin ; on la fait glisser et on la pince. Kéo s'arrête où il est. Jamais pendant une question.
@@ -185,8 +187,17 @@ const FINALE_MOVE_SECONDS = 0.8;
 const FINALE_LAMP_SECONDS = 0.7;
 /** La lampe du Phare qui s'allume à la réussite : de la vitre éteinte à la lumière, en un fondu (fixe avec « Réduire les animations »). */
 const LAMP_SECONDS = 1.2;
+/**
+ * La partie qui descend, éclaircie (une lueur ajoutée à son matériau) : on la distingue d'un coup d'œil de ce qui est
+ * déjà posé ; posée, elle reprend les couleurs du lieu.
+ */
+const POSE_GLOW = 0x4a4232;
+/** Toutes les parties d'un lieu : le lieu entier, pendant sa scénette. */
+const WHOLE_PARTS: readonly PartShape[] = [WHOLE];
 /** Le cadenas d'un lieu se tient au bord de l'écran de tant de pixels au moins, sinon il ne se montre pas. */
 const LOCK_MARGIN = 24;
+/** À gauche, le cadenas se tient hors de la bande de la colonne des accès directs (72 px), sa moitié comprise. */
+const LOCK_LEFT = 72 + LOCK_MARGIN;
 /** Le cadenas se pose de tant d'unités au-dessus du banc de brume. */
 const LOCK_LIFT = 1;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
@@ -204,6 +215,13 @@ const MAP_LABEL_SIDE = 100;
 const MAP_LABEL_TOP = 64;
 
 /** Une géométrie à facettes (positions, normales, couleurs de sommet), sa boîte englobante juste. */
+/** Le plus haut point d'un maillage (−∞ s'il est vide). */
+function topOf(f: Facets): number {
+  let top = -Infinity;
+  for (let k = 1; k < f.positions.length; k += 3) top = Math.max(top, f.positions[k]);
+  return top;
+}
+
 function geometryOf(f: Facets): THREE.BufferGeometry {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(f.positions, 3));
@@ -382,20 +400,47 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   scene.add(paths);
   touchables.push(paths);
 
-  // Les lieux (GD-20, lot 1) : les maquettes, les constructions et les traces des scénettes des quatre lieux, réunies en
-  // un maillage (posées dans le monde) ; le lieu suivi, seul hors de la brume, dans un second, de son matériau sans
-  // brouillard ; la partie qui se pose, dans un troisième, le temps de sa descente. Refaits quand un lieu change, jamais
+  // Les lieux (GD-20, lot 1) : chacun se rebâtit lui-même ; leurs ruines, leurs parties posées et les traces des
+  // scénettes des quatre lieux, réunies en un maillage (posées dans le monde) ; le lieu suivi, seul hors de la brume,
+  // dans un second, de son matériau sans brouillard ; la partie qui se pose, dans un troisième, le temps de sa descente,
+  // plus claire que ce qui est déjà posé (son matériau éclairci, sans brouillard). Refaits quand un lieu change, jamais
   // par image.
   const feet = new Map<PlaceId, THREE.Vector3>();
-  const placedModels = new Map<PlaceId, Facets>();
+  const ruins = new Map<PlaceId, Facets>();
+  const ruinTops = new Map<PlaceId, number>();
   for (const place of PLACES) {
     const y = standingHeight(ground(place.center.x, place.center.z));
-    placedModels.set(place.id, placeFacets(modelOfPlace(place.id).facets, { x: place.center.x, y, z: place.center.z, yaw: place.yaw }));
+    ruins.set(place.id, ruinFacets(place.id, ground));
+    ruinTops.set(place.id, topOf(ruins.get(place.id)!));
     feet.set(place.id, new THREE.Vector3(place.center.x, y, place.center.z));
   }
+  // La marque de la prochaine mission, au-dessus du lieu tel qu'il est bâti (sa ruine, puis plus haut à chaque étape) ;
+  // au Phare entier, à côté de la lanterne. Le haut de la lanterne, que le regard levé cadre près du Phare, suit aussi.
+  const marks = new Map<PlaceId, THREE.Vector3>();
+  for (const [id, foot] of feet) {
+    const o = markOffset(id);
+    marks.set(id, new THREE.Vector3(foot.x + o.x, foot.y + o.y, foot.z + o.z));
+  }
+  const phare = placeById('phare');
+  const lanternTop: Vec3 = { x: phare.center.x, y: feet.get('phare')!.y + modelOfPlace('phare').top, z: phare.center.z };
+  /** La hauteur bâtie de chaque lieu, au-dessus de son pied (le lieu entier tant que la page n'a rien dit). */
+  const builtTop = new Map<PlaceId, number>();
+  const whole = (id: PlaceId) => (builtTop.get(id) ?? modelOfPlace(id).top) >= modelOfPlace(id).top - 0.5;
+  /** Reporte la hauteur bâtie d'un lieu sur sa marque (et, au Phare, sur le haut que le regard levé cadre). */
+  const setBuiltTop = (id: PlaceId, top: number) => {
+    if (builtTop.get(id) === top) return;
+    builtTop.set(id, top);
+    const foot = feet.get(id)!;
+    const o = markOffset(id);
+    const mark = marks.get(id)!;
+    if (whole(id)) mark.set(foot.x + o.x, foot.y + o.y, foot.z + o.z);
+    else mark.set(foot.x, foot.y + top + MARK_LIFT, foot.z);
+    if (id === 'phare') lanternTop.y = foot.y + top;
+  };
   const placesMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
   const landmarkMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landmarkMaterial));
-  const poseMesh = new THREE.Mesh<THREE.BufferGeometry, THREE.Material>(new THREE.BufferGeometry(), landMaterial);
+  const poseMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: false, emissive: POSE_GLOW });
+  const poseMesh = new THREE.Mesh(new THREE.BufferGeometry(), poseMaterial);
   placesMesh.visible = false;
   landmarkMesh.visible = false;
   poseMesh.visible = false;
@@ -506,8 +551,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     else camera.setViewOffset(viewW, viewH, x, y, viewW, viewH);
   };
   // Le regard levé près du Phare (`lookUp`) : sa part, de 0 à 1 ; le haut de la lanterne.
-  const phare = placeById('phare');
-  const lanternTop: Vec3 = { x: phare.center.x, y: standingHeight(ground(phare.center.x, phare.center.z)) + modelOfPlace('phare').top, z: phare.center.z };
   const nearLantern = () => !walk && distance(here, phare.center) < LOOK_UP.within;
   let look = nearLantern() ? 1 : 0;
   // Le retour d'une scénette (aux Quais) : Kéo reste sur le bord du quai, la caméra garde la barque chargée dans le
@@ -536,16 +579,26 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Ce que montrent les lieux (la page le donne), et les parties retenues le temps d'une pose (elles descendent à part).
   let placesState: PlacesState | null = null;
   let holding: { place: PlaceId; parts: readonly PartShape[] } | null = null;
-  const houses = new Map<PlaceId, { parts: readonly PartShape[]; facets: Facets }>();
+  const builds = new Map<PlaceId, { parts: readonly PartShape[]; lit: boolean; facets: Facets }>();
   const traceFacets = new Map<string, Facets>();
-  /** La construction posée d'un lieu, sans les parties retenues : refaite seulement si ses parties changent. */
-  const houseOf = (id: PlaceId): Facets => {
+  /** Les parties posées d'un lieu, sans celles qu'une pose retient (elles descendent à part). */
+  const posedOf = (id: PlaceId): readonly PartShape[] => {
     const all = placesState?.built[id] ?? [];
-    const parts = holding?.place === id ? all.filter((s) => !holding!.parts.includes(s)) : all;
-    const known = houses.get(id);
-    if (known && known.parts.length === parts.length && known.parts.every((s, i) => s === parts[i])) return known.facets;
-    const facets = constructionFacets(id, parts, ground);
-    houses.set(id, { parts, facets });
+    // `includes` compare par référence : les tranches viennent du cache de `partShapes` (constructionParts.ts), les
+    // mêmes objets d'une lecture de la sauvegarde à l'autre.
+    return holding?.place === id ? all.filter((s) => !holding!.parts.includes(s)) : all;
+  };
+  /**
+   * La construction posée d'un lieu : refaite seulement si ses parties ou sa lanterne changent. Pendant sa scénette, le
+   * lieu se montre entier (la galerie du Phare, les murs du sas : la scénette s'y tient), sa lanterne comme dehors.
+   */
+  const buildOf = (id: PlaceId, parts: readonly PartShape[]): Facets => {
+    const lit = stageComplete(parts, 1);
+    const shown = scenette === id ? WHOLE_PARTS : parts;
+    const known = builds.get(id);
+    if (known && known.lit === lit && known.parts.length === shown.length && known.parts.every((s, i) => s === shown[i])) return known.facets;
+    const facets = constructionFacets(id, shown, ground, lit);
+    builds.set(id, { parts: shown, lit, facets });
     return facets;
   };
   const traceOf = (id: PlaceId, done: boolean): Facets => {
@@ -563,16 +616,21 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const landmark = mapView ? null : markPlace;
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
-    const k = `${landmark}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id] ? 't' : ''}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}`;
+    const k = `${landmark}|${scenette}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id] ? 't' : ''}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}`;
     if (k === placesKey) return;
     placesKey = k;
     const rest: Facets[] = [];
     const mark: Facets[] = [];
     for (const p of PLACES) {
       const list = p.id === landmark ? mark : rest;
-      if (p.id !== hiddenModel) list.push(placedModels.get(p.id)!);
-      if (p.id !== hiddenTrace) list.push(traceOf(p.id, placesState?.traces[p.id] ?? false));
-      list.push(houseOf(p.id));
+      const parts = posedOf(p.id);
+      const build = buildOf(p.id, parts);
+      if (p.id !== hiddenModel) list.push(ruins.get(p.id)!, build);
+      if (scenette !== p.id) setBuiltTop(p.id, Math.max(ruinTops.get(p.id)!, topOf(build)) - feet.get(p.id)!.y);
+      // La trace attend que l'étape qui la porte soit posée (le lieu est entier pendant sa scénette) : avant, rien, pas
+      // même la porte d'amont fermée des Écluses (elle est de leur haut).
+      const carried = scenette === p.id || stageComplete(parts, TRACE_STAGE[p.id]);
+      if (p.id !== hiddenTrace && carried) list.push(traceOf(p.id, placesState?.traces[p.id] ?? false));
     }
     setGeometry(placesMesh, mergeFacets(rest));
     setGeometry(landmarkMesh, mergeFacets(mark));
@@ -635,11 +693,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
 
   // La marque de la prochaine mission : au-dessus du lieu, ou au bord, avec la distance en signe.
-  const marks = new Map<PlaceId, THREE.Vector3>();
-  for (const [id, foot] of feet) {
-    const o = markOffset(id);
-    marks.set(id, new THREE.Vector3(foot.x + o.x, foot.y + o.y, foot.z + o.z));
-  }
   const projected = new THREE.Vector3();
   const reportMark = () => {
     const mark = markPlace ? marks.get(markPlace) : undefined;
@@ -647,7 +700,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     projected.copy(mark).project(camera);
     const far = distanceSign(here, placeById(markPlace).center);
     options.onMark(
-      markOnScreen({ x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH, behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far, markBeside(markPlace)),
+      markOnScreen({ x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH, behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far, markBeside(markPlace) && whole(markPlace)),
     );
   };
 
@@ -673,7 +726,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       l.shown =
         projected.z < 1 &&
         distance(here, placeById(l.place).center) < WORLD_FOG.far &&
-        l.x > LOCK_MARGIN &&
+        l.x > LOCK_LEFT &&
         l.x < viewW - LOCK_MARGIN &&
         l.y > LOCK_MARGIN &&
         l.y < viewH - LOCK_MARGIN;
@@ -746,8 +799,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hit = raycaster.intersectObjects(touchables, false)[0];
     if (!hit) return;
     const p = { x: hit.point.x, z: hit.point.z };
-    // Un lieu, ou la maison de sa construction : Kéo va à sa porte.
-    const touched = PLACES.find((pl) => distance(p, pl.center) <= pl.touchRadius)?.id ?? houseAt(p);
+    // Un lieu : Kéo va à sa porte.
+    const touched = PLACES.find((pl) => distance(p, pl.center) <= pl.touchRadius)?.id;
     if (touched) startWalkTo(atNode(placeById(touched).door), touched);
     else startWalkTo(snapToNetwork(p), null);
   };
@@ -1281,9 +1334,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     stepLamp(t);
   };
 
-  // La pose d'une partie (GD-20, lot 1), après le bilan : la caméra monte vers la maison du lieu (`rise`), la partie
-  // descend à sa place (`drop`, dans son maillage à part), on la regarde (`look`), puis la caméra rejoint Kéo (`back`).
-  // Avec « Réduire les animations », la partie est posée d'un coup, la caméra coupe sur la maison puis revient (`still`).
+  // La pose d'une partie (GD-20, lot 1), après le bilan : la caméra va vers le lieu, du côté de sa porte (`rise`), la
+  // partie descend à sa place (`drop`, dans son maillage à part, plus claire), on la regarde (`look`), puis la caméra
+  // rejoint Kéo (`back`). Avec « Réduire les animations », la partie est posée d'un coup, la caméra coupe sur le lieu
+  // puis revient (`still`).
   // Un toucher, « Y aller », la Carte ou une question la finissent.
   type PosePhase = 'rise' | 'drop' | 'look' | 'back' | 'still';
   const poseFrom: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
@@ -1314,7 +1368,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     holding = { place, parts };
     placeVisibility();
     setGeometry(poseMesh, constructionFacets(place, parts, ground));
-    poseMesh.material = place === markPlace ? landmarkMaterial : landMaterial;
     poseMesh.visible = false;
     copyPose(current, poseFrom);
     poseView(place, ground, poseTo);
@@ -1331,6 +1384,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     posing = null;
     landPose();
     follow();
+    options.onPosed();
   };
   /** La pose à l'instant `t` (en secondes). */
   const stepPose = (t: number) => {
@@ -1347,8 +1401,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
         }
         return;
       case 'drop':
-        // Elle descend et ralentit en arrivant (rien ne rebondit).
-        poseMesh.position.y = POSE_DROP * Math.pow(1 - u, 3);
+        // Elle descend, de haut (on la voit au-dessus de sa place), et ralentit en arrivant (rien ne rebondit).
+        poseMesh.position.y = POSE_DROP * (1 - smooth);
         if (u >= 1) {
           landPose();
           posing = { ...posing, phase: 'look', start: t };
@@ -1372,10 +1426,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
         return;
     }
   };
-  const setPlaces = (state: PlacesState, pose?: { place: PlaceId; parts: readonly PartShape[] }) => {
+  const setPlaces = (state: PlacesState, pose?: { place: PlaceId; parts: readonly PartShape[] }): boolean => {
     placesState = state;
-    if (pose?.parts.length && !asked && !mapView) startPose(pose.place, pose.parts);
-    else placeVisibility();
+    if (pose?.parts.length && !asked && !mapView) {
+      startPose(pose.place, pose.parts);
+      return true;
+    }
+    placeVisibility();
+    return false;
   };
 
   const resize = () => {
@@ -1530,6 +1588,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       for (const g of geometries) g.dispose();
       for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, veilMesh, fadeMesh, decorMesh]) m.geometry.dispose();
       lampMaterial.dispose();
+      poseMaterial.dispose();
       nearRing.dispose();
       farRing.dispose();
       landMaterial.dispose();

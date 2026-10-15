@@ -1,5 +1,6 @@
 // Les accès directs du monde (décision « Sans Menu ») dans le monde continu (GD-20, lot 1) : les commandes ne s'y livrent
-// pas encore ; le bouton reste à sa place, délavé, sans compteur, et son toucher ne fait que dire « aucune commande ».
+// pas encore ; le bouton reste à sa place, délavé, sans compteur, et son toucher ne fait que dire « indisponible pour
+// l’instant », son nom aussi.
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router-dom';
@@ -41,15 +42,15 @@ it('une commande arrivée : le bouton la compte et ouvre la liste', async () => 
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/requests');
 });
 
-it('les commandes plus tard (le monde continu) : à sa place, délavé, sans compteur ; le toucher dit « aucune commande », rien ne s’ouvre', async () => {
+it('les commandes plus tard (le monde continu) : à sa place, délavé, sans compteur ; le bouton dit « indisponible », rien ne s’ouvre', async () => {
   renderShortcuts(true);
   const colonne = screen.getByRole('navigation', { name: 'Reprendre' });
   // Reprendre, Révisions, Commandes : les mêmes, dans le même ordre.
   expect(within(colonne).getAllByRole('button')).toHaveLength(3);
-  const bouton = within(colonne).getByRole('button', { name: 'Commandes : aucune commande' });
+  const bouton = within(colonne).getByRole('button', { name: 'Commandes : indisponible pour l’instant' });
   expect(bouton).toHaveAttribute('aria-disabled', 'true');
   expect(bouton.querySelector('.world-bar-count')).toBeNull();
   await userEvent.setup().click(bouton);
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
-  expect(colonne).toHaveTextContent('aucune commande');
+  expect(colonne).toHaveTextContent('indisponible pour l’instant');
 });

@@ -110,6 +110,23 @@
   align-items: center;
 }
 /* « Y aller » sans mission : délavé, comme un bouton vide du monde (WorldButton), sa raison écrite au-dessus. */
+/* Sur un écran bas (un téléphone couché, au plus grand texte surtout), « Y aller » se tient dans l'espace à droite de
+   « Carte », jamais dessus : « Carte » passe au-dessus, « Y aller » se centre dans ce qui reste et s'y rétrécit
+   (consultant UX UI). `--open-world-carte` : le bord droit de « Carte », posé par la page. */
+@media (max-height: 500px) {
+  .open-world-bar {
+    z-index: 4;
+  }
+  .open-world-go {
+    left: calc(var(--open-world-carte, 5.5rem) + 8px);
+    right: calc(0.6rem + env(safe-area-inset-right, 0px));
+    transform: none;
+  }
+  .open-world-go .button {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
 .open-world-go .button:disabled {
   border-style: dashed;
   background: var(--secondary-bg);
@@ -766,10 +783,6 @@
   top: 0;
   will-change: transform;
 }
-/* Au plus grand texte, un nom de deux mots se replie plus tôt : il trouve sa place près de son lieu. */
-:root[data-texte="grand"] .open-world-map-place-name {
-  max-width: 6em;
-}
 .open-world-map-place[hidden],
 .open-world-map-closed[hidden],
 .open-world-map-keo[hidden] {
@@ -1205,35 +1218,57 @@
    pastille : jamais la couleur seule. */
 .open-world-map-place {
   display: inline-flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 2px;
+  gap: 0.4em;
 }
-/* Un nom long se replie entre ses mots (jamais au milieu d'un mot) plutôt que de couvrir un repère voisin ; l'état,
-   dessous, reste sur une ligne (la pastille prend sa largeur). */
+/* Une pastille : le nom, puis l'icône de l'état (le mot est dit par le bouton). Un nom long se replie entre ses mots
+   (jamais au milieu d'un mot) au-delà de 12 caractères : « Le Phare » tient toujours sur une ligne. */
 .open-world-map-place-name {
   display: block;
-  max-width: 9em;
+  max-width: 12ch;
 }
 .open-world-map-state {
   display: inline-flex;
   align-items: center;
-  gap: 0.3em;
-  font-size: max(1rem, 16px);
-  font-weight: 400;
-  white-space: nowrap;
 }
-/* Sur un écran bas au plus grand texte, les quatre pastilles ne tiennent pas avec leur mot : l'icône seule reste, le mot
-   est dit par le nom du bouton. */
-@media (max-height: 500px) {
-  :root[data-texte="grand"] .open-world-map-state-word {
-    display: none;
-  }
+/* Sans état (aucune partie posée), l'icône « à explorer » ne se montre que dans la pastille réduite. */
+.open-world-map-state[data-etat='a-explorer'] {
+  display: none;
 }
 .open-world-map-state svg {
   width: 1.15em;
   height: 1.15em;
   flex: none;
+}
+/* Trop serrée près d'une autre : la pastille réduite à son icône, une cible de 48 px ; le nom et l'état restent dits
+   par le bouton (MapLabels.tsx, `layoutMapLabels`). */
+.open-world-map-place[data-nom='non'] {
+  justify-content: center;
+  box-sizing: border-box;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  padding: 0;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-place-name {
+  display: none;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-state {
+  display: inline-flex;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-state svg {
+  width: 26px;
+  height: 26px;
+}
+/* Un accès direct sans rien à faire (les commandes, qui ne se livrent pas encore dans le monde continu) : délavé comme
+   « Y aller » sans mission (fond secondaire, trait en tirets, icône adoucie), mais opaque sur le monde : son icône
+   garde un contraste d'au moins 3:1 (référent dys) ; le bouton dit « indisponible ». */
+.open-world .world-button .button.vide {
+  opacity: 1;
+  border-style: dashed;
+  background: var(--secondary-bg);
+  color: var(--muted);
 }
 /* Les accès directs et Réglages (GD-20, lot 1) : la colonne et le bouton du monde en grille, tels quels, décalés de la
    zone sûre de l'appareil (encoche, coins arrondis), comme « Y aller » et « Carte ». */

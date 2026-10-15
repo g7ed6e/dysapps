@@ -1,11 +1,13 @@
 // Les parties de la construction d'un lieu du monde continu (GD-20, lot 1) : celles de la grille, lues telles quelles
 // (world/parts.ts), mêmes identifiants, même ordre, même sauvegarde (`world.parts`, les cases posées plan par plan) ;
 // une partie posée dans la grille l'est ici, et inversement, sans rien de neuf dans la sauvegarde. Chaque partie
-// devient les tranches d'étapes qu'elle pose dans la maison du lieu (world/continu/construction.ts) : le plan `<lieu>-1`
+// devient les tranches d'étapes qu'elle pose dans le lieu, qui se rebâtit lui-même (world/continu/construction.ts) : le plan `<lieu>-1`
 // est le corps, `-2` le haut, `-3` les abords ; un plan coupé en deux ou en trois rangées (GD-14) en tranches qui se
 // suivent, de bas en haut. Sans Three.js : testé sous jsdom.
 import type { BiomeId } from '../../biomes';
 import type { PartShape, Stage } from '../../world/continu/construction';
+import type { OpenPlace } from '../../world/continu/plan6e';
+import type { IslandStateId } from '../../world/islandState';
 import { partiePosee, partiesDe } from '../../world/parts';
 import { plansFor } from '../../world/plans';
 
@@ -54,4 +56,16 @@ export function constructionState(c: PlaceConstruction): 'en-chantier' | 'restau
   const n = c.posed.filter(Boolean).length;
   if (!n || !c.shapes.length) return null;
   return n === c.shapes.length ? 'restauree' : 'en-chantier';
+}
+
+/**
+ * Le mot d'état d'un lieu sur la Carte, accordé à son nom : le mot de l'univers est écrit pour une île, au féminin
+ * singulier (« Restaurée ») ; le Phare est « Restauré », les Quais et les Filets « Restaurés », les Écluses
+ * « Restaurées ». « En chantier » ne s'accorde pas. (« Achevé » est le mot neutre du jeu commun, GD-20.)
+ */
+export function stateWord(state: 'en-chantier' | 'restauree', words: Readonly<Record<IslandStateId, string>>, agree: OpenPlace['agree']): string {
+  const word = words[state];
+  if (state !== 'restauree' || !word.endsWith('e')) return word;
+  const masculine = word.slice(0, -1);
+  return { ms: masculine, mp: `${masculine}s`, fs: word, fp: `${word}s` }[agree];
 }

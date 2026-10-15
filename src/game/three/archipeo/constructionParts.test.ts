@@ -6,7 +6,7 @@ import { constructionFacets, WHOLE } from '../../world/continu/construction';
 import { PLACES } from '../../world/continu/plan6e';
 import { buildHeightField, heightOnMesh } from '../../world/continu/terrain';
 import { partiesDe, poserLesParties } from '../../world/parts';
-import { constructionState, partShapes, placeConstruction, posedShapes } from './constructionParts';
+import { constructionState, partShapes, placeConstruction, posedShapes, stateWord } from './constructionParts';
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => heightOnMesh(field, x, z);
@@ -46,5 +46,18 @@ describe('Les parties d’un lieu du monde continu', () => {
     expect(constructionState(c)).toBe('restauree');
     // Les mêmes objets d'une lecture à l'autre : la scène reconnaît une partie déjà posée.
     expect(posedShapes(placeConstruction(island, all))[0]).toBe(posedShapes(c)[0]);
+  });
+});
+
+describe('Le mot d’état d’un lieu sur la Carte', () => {
+  const archipeo = { fermee: 'Fermée', 'a-explorer': 'À explorer', 'en-chantier': 'En chantier', restauree: 'Restaurée' };
+  it('s’accorde au nom du lieu : le Phare restauré, les Quais et les Filets restaurés, les Écluses restaurées', () => {
+    const word = (id: string) => stateWord('restauree', archipeo, PLACES.find((p) => p.id === id)!.agree);
+    expect(word('phare')).toBe('Restauré');
+    expect(word('quais')).toBe('Restaurés');
+    expect(word('filets')).toBe('Restaurés');
+    expect(word('ecluses')).toBe('Restaurées');
+    // « En chantier » ne s'accorde pas.
+    expect(stateWord('en-chantier', archipeo, 'fp')).toBe('En chantier');
   });
 });

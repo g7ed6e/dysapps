@@ -2,7 +2,7 @@
 // leurs limites, la pose de la caméra (nord en haut). Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { screenOf } from './camera';
-import { ISLAND_BOX, MAP_CAMERA, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, panMap, zoomMap, type MapLabel, type MapLabelSpot } from './map';
+import { ISLAND_BOX, MAP_CAMERA, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, panMap, zoomMap, type MapLabel, type MapLabelSpot } from './map';
 import { PLACES } from './plan6e';
 
 const screens = [
@@ -70,6 +70,7 @@ describe('Les étiquettes de la Carte', () => {
   const boxOf = (l: MapLabel, s: MapLabelSpot) => {
     if (l.kind === 'closed' && !s.name) return { left: l.x - MAP_LOCK / 2, top: s.top, right: l.x + MAP_LOCK / 2, bottom: s.top + MAP_LOCK };
     if (l.kind === 'keo' && !s.name) return { left: s.left, top: s.top, right: s.left + MAP_KEO_DISC, bottom: s.top + l.h };
+    if (l.kind === 'open' && !s.name) return { left: s.left, top: s.top, right: s.left + MAP_COMPACT, bottom: s.top + MAP_COMPACT };
     return { left: s.left, top: s.top, right: s.left + Math.max(l.kind === 'closed' ? MAP_LOCK : 0, l.w), bottom: s.top + l.h };
   };
   const apart = (a: ReturnType<typeof boxOf>, b: ReturnType<typeof boxOf>) =>
@@ -97,6 +98,31 @@ describe('Les étiquettes de la Carte', () => {
     expect(phare.top).toBeGreaterThanOrEqual(0);
     // Le cadenas d'un lieu fermé reste toujours ; son nom se tait s'il gêne.
     expect(spots[2].top).toBe(278 - MAP_LOCK);
+  });
+
+  it('téléphone couché au plus grand texte : quatre lieux serrés, décalés ou réduits à leur icône, jamais sur la colonne ni l’un sur l’autre', () => {
+    const screen = { width: 667, height: 375 };
+    // La bande de gauche réservée (72 px), « Retour » en bas à gauche, Réglages en haut à droite.
+    const zones = [
+      { left: 0, top: 0, right: 72, bottom: 375 },
+      { left: 10, top: 280, right: 130, bottom: 365 },
+      { left: 600, top: 10, right: 657, bottom: 66 },
+    ];
+    const labels: MapLabel[] = [
+      { id: 'keo', kind: 'keo', x: 300, y: 240, w: 120, h: 50 },
+      { id: 'phare', kind: 'open', x: 120, y: 150, w: 210, h: 56 },
+      { id: 'quais', kind: 'open', x: 330, y: 230, w: 210, h: 56 },
+      { id: 'filets', kind: 'open', x: 300, y: 120, w: 220, h: 56 },
+      { id: 'ecluses', kind: 'open', x: 420, y: 110, w: 250, h: 56 },
+    ];
+    const spots = layoutMapLabels(labels, zones, screen);
+    const boxes = labels.map((l, i) => boxOf(l, spots[i]));
+    for (let i = 1; i < boxes.length; i++) {
+      for (const z of zones) expect(apart(boxes[i], z), `${labels[i].id} ${JSON.stringify(boxes[i])} ${JSON.stringify(spots[i])}`).toBe(true);
+      for (let j = i + 1; j < boxes.length; j++) expect(apart(boxes[i], boxes[j]), `${labels[i].id} ${labels[j].id}`).toBe(true);
+      expect(boxes[i].right).toBeLessThanOrEqual(667);
+      expect(boxes[i].bottom).toBeLessThanOrEqual(375);
+    }
   });
 
   it('au large, chaque nom se pose au-dessus de son lieu, Kéo et « Toi » à sa place, les noms des lieux fermés sous leur cadenas', () => {

@@ -1,12 +1,16 @@
 // Les étiquettes de la Carte des lieux ouverts (piste 1, lot 3) : Kéo (une pastille unie à sa silhouette et « Toi »), le
-// nom de chaque lieu ouvert (un bouton qui y mène, l'état de sa construction dessous, GD-20, lot 1), le cadenas de chaque lieu fermé et son nom atténué dessous (un
-// toucher : la page dit « Fermé pour l'instant », au-dessus de « Retour »). Rien n'est écrit dans la 3D : la scène donne les points à l'écran, posés ici
-// sans passer par React ; aucune étiquette n'en recouvre une autre (`layoutMapLabels`, world/continu/map.ts). Les
-// tailles sont relues seulement quand une étiquette change de taille (police, grand texte), jamais à chaque image.
+// nom de chaque lieu ouvert et l'icône de l'état de sa construction (un bouton qui y mène, GD-20, lot 1 ; le mot de
+// l'état, accordé au nom, est dit par le bouton), le cadenas de chaque lieu fermé et son nom atténué dessous (un
+// toucher : la page dit « Fermé pour l'instant », au-dessus de « Retour »). Rien n'est écrit dans la 3D : la scène
+// donne les points à l'écran, posés ici sans passer par React ; aucune étiquette n'en recouvre une autre ni ne passe
+// sur la colonne des accès directs ou un bouton (`layoutMapLabels`, world/continu/map.ts) ; trop serrée, une pastille
+// se réduit à son icône. Les tailles sont relues seulement quand une étiquette change de taille (police, grand texte),
+// jamais à chaque image.
 import { useCallback, useEffect, useRef, type MutableRefObject } from 'react';
 import { Icon } from '../../../components/Icon';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
 import { layoutMapLabels, type MapLabel, type Rect } from '../../world/continu/map';
+import { stateWord } from './constructionParts';
 import { PLACES, type PlaceId } from '../../world/continu/plan6e';
 import type { MapSpotOnScreen } from './scene';
 
@@ -23,6 +27,9 @@ interface Props {
   /** Les mots des états, ceux de l'univers (« En chantier »). */
   words: Readonly<Record<IslandStateId, string>>;
 }
+
+/** La bande de gauche réservée à la colonne des accès directs, en pixels : aucune étiquette n'y entre. */
+const COLUMN_ZONE = 72;
 
 export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words }: Props) {
   const root = useRef<HTMLDivElement>(null);
@@ -73,15 +80,19 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words 
       if (!stage) return;
       const s = el.getBoundingClientRect();
       screen.current = { width: s.width, height: s.height };
-      obstacles.current = [...stage.querySelectorAll<HTMLElement>('.open-world-bar, .world-settings, .world-shortcuts')].map((o) => {
+      const buttons = [...stage.querySelectorAll<HTMLElement>('.open-world-bar, .world-settings, .world-shortcuts')].map((o) => {
         const r = o.getBoundingClientRect();
         return { left: r.left - s.left, top: r.top - s.top, right: r.right - s.left, bottom: r.bottom - s.top };
       });
+      // La bande de gauche, de haut en bas, réservée à la colonne des accès directs et à « Retour » (consultant UX UI).
+      const column = buttons.reduce((m, b) => (b.left < COLUMN_ZONE ? Math.max(m, b.right) : m), 0);
+      obstacles.current = [{ left: 0, top: 0, right: Math.max(COLUMN_ZONE, column), bottom: s.height }, ...buttons];
     };
     const observer = new ResizeObserver((entries) => {
       for (const e of entries) {
         const node = e.target as HTMLElement;
-        if (node.dataset.lieu) sizes.current.set(node.dataset.lieu, { w: node.offsetWidth, h: node.offsetHeight });
+        // Une pastille réduite à son icône garde la taille de sa pastille entière : c'est elle qu'on cherche à placer.
+        if (node.dataset.lieu && !(node.classList.contains('open-world-map-place') && node.dataset.nom === 'non')) sizes.current.set(node.dataset.lieu, { w: node.offsetWidth, h: node.offsetHeight });
       }
       measureObstacles();
       place(last.current);
@@ -110,17 +121,15 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words 
             className="open-world-map-place"
             data-lieu={p.id}
             hidden
-            aria-label={`Y aller : ${p.name}${states[p.id] ? `, ${words[states[p.id]!]}` : ''}`}
+            aria-label={`Y aller : ${p.name}${states[p.id] ? `, ${stateWord(states[p.id]!, words, p.agree).toLowerCase()}` : ''}`}
             onClick={() => onPick(p.id)}
           >
             <span className="open-world-map-place-name">{p.name}</span>
-            {/* L'état de sa construction, sous son nom : une icône et un mot, jamais la couleur seule (consultant UX UI). */}
-            {states[p.id] && (
-              <span className="open-world-map-state" data-etat={states[p.id]} aria-hidden="true">
-                <Icon name={islandStateIcon(states[p.id]!)} />
-                <span className="open-world-map-state-word">{words[states[p.id]!]}</span>
-              </span>
-            )}
+            {/* L'état de sa construction, à côté de son nom : une icône, jamais la couleur seule ; son mot, accordé, est
+                dit par le bouton. Sans état, l'icône « à explorer » ne se montre que dans la pastille réduite. */}
+            <span className="open-world-map-state" data-etat={states[p.id] ?? 'a-explorer'} aria-hidden="true">
+              <Icon name={islandStateIcon(states[p.id] ?? 'a-explorer')} />
+            </span>
           </button>
         ) : (
           <button
