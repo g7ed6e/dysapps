@@ -3,13 +3,13 @@
 // attend l'étape qui la porte ; la caméra de la pose, du côté de la porte. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { CAMERA_FOV, FOLLOW, screenOf } from './camera';
-import { constructionFacets, poseFocus, poseSide, poseView, POSE_DROP, POSE_SECONDS, ruinFacets, stageComplete, traceShown, WHOLE, type PartShape, type Stage } from './construction';
-import { boundsOf, type Facets } from './facets';
-import { distance } from './geometry';
+import { constructionFacets, createPoseRun, fallenFacets, keoSpots, lanternLit, poseFocus, poseSide, poseView, POSE_DROP, POSE_SECONDS, ruinFacets, stageComplete, traceShown, traceStagePosed, WHOLE, type PartShape, type Stage } from './construction';
+import { boundsOf, placeFacets, type Facets } from './facets';
+import { distance, linearRgb } from './geometry';
 import { networkSamples, pathNode } from './paths';
 import { PLACES, placeById } from './plan6e';
-import { modelOfPlace, placePieces, ruinOf } from './places';
-import { buildHeightField, heightOnMesh } from './terrain';
+import { filetsRack, FILETS_RACK, LAMP_COLOR, lanternLight, modelOfPlace, placePieces, ruinOf } from './places';
+import { buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight } from './terrain';
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => heightOnMesh(field, x, z);
@@ -47,20 +47,48 @@ describe('Le lieu se rebâtit lui-même', () => {
       }
   });
 
-  it('le Phare monte rang par rang ; sa lanterne coiffe le fût, allumée une fois son haut posé', () => {
+  it('le Phare monte rang par rang ; sa lanterne coiffe le fût, allumée une fois son haut posé et sa scénette réussie', () => {
     const low = boundsOf(constructionFacets('phare', [slice(0, 0, 1 / 3)], ground));
     const high = boundsOf(constructionFacets('phare', [slice(0, 2 / 3, 1)], ground));
     expect(high.max[1]).toBeGreaterThan(low.max[1] + 2);
     const top = boundsOf(constructionFacets('phare', [slice(1, 0, 1)], ground));
     expect(top.max[1]).toBeGreaterThan(high.max[1]);
-    // Allumée : la seule note chaude, le jaune de la lampe ; éteinte, la vitre claire.
+    // La vitre posée est claire ; la lumière, de la seule couleur de la lampe, la recouvre.
     const yellow = (f: Facets) => {
       let n = 0;
       for (let k = 0; k < f.colors.length; k += 3) if (f.colors[k] > 0.9 && f.colors[k + 2] < 0.2) n++;
       return n;
     };
-    expect(yellow(constructionFacets('phare', [slice(1, 0, 1)], ground, true))).toBeGreaterThan(0);
-    expect(yellow(constructionFacets('phare', [slice(1, 0, 1)], ground, false))).toBe(0);
+    expect(yellow(constructionFacets('phare', [WHOLE], ground))).toBe(0);
+    const light = lanternLight();
+    expect(yellow(light)).toBe(light.positions.length / 3);
+    const lamp = linearRgb(LAMP_COLOR);
+    // À la précision des sommets près : la vue la reconnaît à moins de 0,004 (scene.ts, `unshadedLamp`).
+    for (const [i, c] of Array.from(light.colors.slice(0, 3)).entries()) expect(Math.abs(c - lamp[i])).toBeLessThan(1e-6);
+    // Plus large que la vitre, qu'elle recouvre.
+    const glass = boundsOf(constructionFacets('phare', [slice(1, 1 / 3, 2 / 3)], ground));
+    const lit = boundsOf(placeFacets(light, { x: placeById('phare').center.x, y: 0, z: placeById('phare').center.z }));
+    expect(lit.max[0] - lit.min[0]).toBeGreaterThan(glass.max[0] - glass.min[0]);
+    // Allumée : le haut posé et la scénette réussie, l'un sans l'autre jamais.
+    expect(lanternLit([slice(0, 0, 1), slice(1, 0, 1)], true)).toBe(true);
+    expect(lanternLit([slice(0, 0, 1), slice(1, 0, 1)], false)).toBe(false);
+    expect(lanternLit([slice(0, 0, 1), slice(1, 0, 0.5)], true)).toBe(false);
+  });
+
+  it('la cloche du Phare, tombée au pied de la tour, y reste jusqu’à ce que la galerie la raccroche ; les perches des Filets jusqu’au séchoir', () => {
+    const fallen = fallenFacets('phare', [], ground);
+    expect(fallen.triangles).toBeGreaterThan(0);
+    // Au sol, sur le socle : plus bas que le moignon.
+    expect(boundsOf(fallen).max[1] - standingHeight(ground(placeById('phare').center.x, placeById('phare').center.z))).toBeLessThan(1.5);
+    expect(fallenFacets('phare', [slice(0, 0, 1), slice(1, 0, 1)], ground).triangles).toBe(fallen.triangles);
+    // La galerie posée (la première rangée des abords) la raccroche.
+    expect(fallenFacets('phare', [slice(2, 0, 1 / 3)], ground).triangles).toBe(0);
+    expect(fallenFacets('phare', [WHOLE], ground).triangles).toBe(0);
+    // Les perches du séchoir des Filets, couchées sur le sable, s'en vont quand il se relève ; aux Quais et aux Écluses,
+    // rien n'est tombé.
+    expect(fallenFacets('filets', [WHOLE.slice(0, 2)], ground).triangles).toBeGreaterThan(0);
+    expect(fallenFacets('filets', [slice(2, 0, 0.5)], ground).triangles).toBe(0);
+    for (const id of ['quais', 'ecluses'] as const) expect(fallenFacets(id, [], ground).triangles).toBe(0);
   });
 
   it('ses volumes restent hors des chemins (Kéo n’y passe jamais au travers), sauf le lieu lui-même autour de sa porte', () => {
@@ -78,6 +106,30 @@ describe('Le lieu se rebâtit lui-même', () => {
     }
   });
 
+  it('le séchoir des Filets est sur le sable, à côté des cabanes, loin de la porte et du chemin ; sa barque aussi, sur le sable', () => {
+    const p = placeById('filets');
+    const c = Math.cos(p.yaw),
+      s = Math.sin(p.yaw);
+    const world = (q: { x: number; z: number }) => ({ x: p.center.x + q.x * c + q.z * s, z: p.center.z - q.x * s + q.z * c });
+    const sand = (q: { x: number; z: number }) => heightAt(q) > -0.12 && (heightAt(q) < 0.12 || landDistance(q) < 1.3);
+    const paths = networkSamples(0.5);
+    const door = pathNode(p.door).at;
+    for (const post of filetsRack().posts) {
+      const q = world(post);
+      expect(sand(q), `${post.x},${post.z}`).toBe(true);
+      expect(distance(q, door)).toBeGreaterThan(2);
+      expect(Math.min(...paths.map((x) => distance(x, q)))).toBeGreaterThan(1);
+      // À côté des cabanes : à moins de cinq unités du centre du lieu.
+      expect(Math.hypot(post.x, post.z)).toBeLessThan(5);
+    }
+    expect(FILETS_RACK.bar).toBeGreaterThan(FILETS_RACK.pan.bottom + FILETS_RACK.pan.height);
+    // La barque : les points de sa coque, au sol, sur le sable.
+    const abords = constructionFacets('filets', [slice(2, 0.5, 1)], ground);
+    const hull = footprint(abords).filter((q) => distance(q, world({ x: 3.95, z: 9.3 })) < 2);
+    expect(hull.length).toBeGreaterThan(20);
+    for (const q of hull) expect(heightAt(q), `${q.x},${q.z}`).toBeGreaterThan(-0.3);
+  });
+
   it('chaque volume du lieu est à une étape (ruine, corps, haut, abords) et à une rangée de 0 à 1', () => {
     for (const p of PLACES) {
       const pieces = placePieces(p.id);
@@ -92,7 +144,11 @@ describe('Le lieu se rebâtit lui-même', () => {
 });
 
 describe('La trace d’une scénette', () => {
-  it('attend que l’étape qui la porte soit entièrement posée', () => {
+  it('attend que l’étape qui la porte soit entièrement posée ; la scénette se joue sur ce qui est bâti', () => {
+    expect(traceStagePosed('phare', [slice(0, 0, 1), slice(1, 0, 1)])).toBe(false);
+    expect(traceStagePosed('phare', [WHOLE])).toBe(true);
+    expect(traceStagePosed('quais', [slice(1, 0, 0.5)])).toBe(false);
+    expect(traceStagePosed('quais', [slice(1, 0, 1)])).toBe(true);
     expect(stageComplete([], 1)).toBe(false);
     expect(stageComplete([slice(1, 0, 0.5)], 1)).toBe(false);
     expect(stageComplete([slice(1, 0, 0.5), slice(1, 0.5, 1)], 1)).toBe(true);
@@ -150,6 +206,68 @@ describe('La pose d’une partie', () => {
           expect(s.x, `${p.id} ${w}`).toBeLessThan(w * 1.05);
         }
     }
+  });
+
+  it('Kéo, là où il se tient pendant une pose (la porte, ou le retour de sa scénette), entier dans l’image', () => {
+    for (const p of PLACES) {
+      const pose = poseView(p.id, ground, { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: CAMERA_FOV, lens: 1 });
+      const pts = keoSpots(p.id, ground);
+      expect(pts.length).toBeGreaterThanOrEqual(24);
+      for (const { w, h } of SCREENS)
+        for (let k = 0; k < pts.length; k += 3) {
+          const q = screenOf(pose, { x: pts[k], y: pts[k + 1], z: pts[k + 2] }, w, h);
+          expect(q.x, `${p.id} ${w}`).toBeGreaterThan(0);
+          expect(q.x, `${p.id} ${w}`).toBeLessThan(w);
+          expect(q.y, `${p.id} ${w}`).toBeGreaterThan(0);
+          expect(q.y, `${p.id} ${w}`).toBeLessThan(h);
+        }
+    }
+  });
+
+  it('une pose finit toujours, une fois : à son terme, passée, interrompue par la Carte ou une question, ou par une autre pose', () => {
+    const log: string[] = [];
+    const run = createPoseRun({
+      rise: () => log.push('rise'),
+      drop: () => log.push('drop'),
+      land: () => log.push('land'),
+      turn: () => log.push('turn'),
+      back: () => log.push('back'),
+      done: () => log.push('done'),
+    });
+    const count = () => log.filter((x) => x === 'done').length;
+    // À son terme.
+    run.start(0, false);
+    let t = 0;
+    while (run.active && t < 20) run.step((t += 0.05));
+    expect(count()).toBe(1);
+    expect(log).toContain('drop');
+    expect(log).toContain('turn');
+    expect(t).toBeLessThan(5);
+    // Interrompue pendant la descente (la Carte, une question ouverte : la vue appelle `finish`), puis encore : une fois.
+    log.length = 0;
+    run.start(0, false);
+    run.step(POSE_SECONDS.rise + 0.1);
+    run.step(POSE_SECONDS.rise + 0.3);
+    expect(run.active).toBe(true);
+    run.finish();
+    run.finish();
+    run.step(10);
+    expect(count()).toBe(1);
+    expect(log.at(-2)).toBe('land');
+    expect(run.active).toBe(false);
+    // Une autre pose pendant la première : la première finit d'abord.
+    log.length = 0;
+    run.start(0, false);
+    run.start(0.2, false);
+    expect(count()).toBe(1);
+    run.finish();
+    expect(count()).toBe(2);
+    // Avec « Réduire les animations » : posée tout de suite, finie après un temps.
+    log.length = 0;
+    run.start(0, true);
+    expect(log).toEqual(['land']);
+    run.step(POSE_SECONDS.still + 0.01);
+    expect(count()).toBe(1);
   });
 
   it('courte : quelques secondes en tout, une descente de moins d’une seconde', () => {

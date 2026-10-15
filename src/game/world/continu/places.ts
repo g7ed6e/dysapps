@@ -2,12 +2,13 @@
 // aplats francs (le low poly d'Archipéo), dans le repère du lieu (le centre au sol en 0, le nord vers −z). Chaque lieu
 // est sa propre construction (GD-20, lot 1, « le lieu se rebâtit lui-même ») : une ruine, toujours là, puis ses
 // volumes rangés par étape (le corps, le haut, les abords) et par rangée, que les parties de la grille posent
-// (./construction.ts). `modelOfPlace` rend le lieu entier, ruine comprise : sa hauteur porte la marque, la brume et la
-// scénette. La ruine est délavée (pierre usée, bois gris), jamais sombre ; ce qui se pose est neuf, de couleurs
-// franches. Aucun texte (rien à lire dans la 3D) ; la seule lumière est la lanterne du Phare, allumée quand son haut est
-// posé. Code pur.
+// (./construction.ts). `modelOfPlace` rend le lieu entier, ruine comprise : sa hauteur porte la marque, la brume et le
+// cadenas. La ruine est délavée (pierre usée, bois gris), jamais sombre ; ce qui se pose est neuf, de couleurs
+// franches. Quelques volumes de la ruine sont tombés là d'où une rangée les relèvera (la cloche du Phare, au pied de la
+// tour, que la galerie raccroche) : ils s'en vont quand elle se pose. Aucun texte (rien à lire dans la 3D) ; la seule
+// lumière est la lanterne du Phare (`lanternLight`, que la vue dessine sans ombre). Code pur.
 import type { Stage } from './construction';
-import { FacetBuilder, boundsOf, type Facets } from './facets';
+import { FacetBuilder, boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
 import { placeById, type PlaceId } from './plan6e';
 import { heightAt, standingHeight } from './terrain';
@@ -20,19 +21,16 @@ export interface PlaceModel {
   top: number;
 }
 
-/** Ce qui change le dessin d'un volume : la lanterne du Phare allumée (son haut posé). */
-export interface PieceLook {
-  lit: boolean;
-}
-
 /**
  * Un volume d'un lieu : la ruine (`ruine`, là avant toute partie), ou l'étape et la rangée où il se pose (de 0 à 1, le
- * bas de la tranche qui le prend : 0, 0,34 et 0,67 pour trois rangées, 0 et 0,5 pour deux) ; son dessin.
+ * bas de la tranche qui le prend : 0, 0,34 et 0,67 pour trois rangées, 0 et 0,5 pour deux) ; son dessin. Un volume de
+ * la ruine tombé là d'où une rangée le relèvera (`until`) s'en va quand elle se pose.
  */
 export interface PlacePiece {
   stage: Stage | 'ruine';
   row: number;
-  draw(b: FacetBuilder, look: PieceLook): void;
+  until?: { stage: Stage; row: number };
+  draw(b: FacetBuilder): void;
 }
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter sur une pente. */
@@ -73,8 +71,8 @@ const C = {
   mud: 0xa39a85,
 } as const;
 
-/** Les volumes d'un lieu en construction : `add(stage, row, draw)`. */
-type Add = (stage: Stage | 'ruine', row: number, draw: (b: FacetBuilder, look: PieceLook) => void) => void;
+/** Les volumes d'un lieu en construction : `add(stage, row, draw)`, et `until` pour un volume tombé de la ruine. */
+type Add = (stage: Stage | 'ruine', row: number, draw: (b: FacetBuilder) => void, until?: PlacePiece['until']) => void;
 
 /** Le sol sous un point du lieu (dans son repère), depuis le sol du centre ; sur l'eau, le niveau de l'eau. */
 function siteGround(id: PlaceId): { at(lx: number, lz: number): number; foot(lx: number, lz: number, r: number): { top: number; low: number }; water: number } {
@@ -102,25 +100,56 @@ function siteGround(id: PlaceId): { at(lx: number, lz: number): number; foot(lx:
   };
 }
 
+/** La vitre de la lanterne du Phare, dans son repère : son bas, son rayon, sa hauteur. */
+const LANTERN = { y: 11.1, r: 1.05, h: 1.5 } as const;
+
+/** La cloche tombée du Phare, sur le socle à l'est de la tour, dans son repère. */
+const FALLEN_BELL = { x: 2.05, z: 0.1 } as const;
+
+/**
+ * La lumière de la lanterne du Phare, dans son repère : un peu plus large que sa vitre, qu'elle recouvre, de la couleur
+ * de la lampe (#FFD36B, `LAMP_COLOR`). La vue dessine cette couleur sans ombre (sa face au soleil comme sa face à
+ * l'ombre) : elle se lit comme une lumière, de près comme depuis la Carte (directeur artistique).
+ */
+export function lanternLight(): Facets {
+  const b = new FacetBuilder();
+  b.prism({ x: 0, y: LANTERN.y - 0.02, z: 0 }, LANTERN.r + 0.04, LANTERN.r + 0.04, LANTERN.h + 0.04, 8, C.lamp);
+  return b.build();
+}
+
+/** La couleur de la lampe allumée, la seule note chaude du monde : la vue la dessine sans ombre. */
+export const LAMP_COLOR = C.lamp;
+
 /** Le rayon de la tour du Phare à la hauteur `y` : 1,7 à son pied (0,7), 1,2 sous la galerie (10,7). */
 const towerRadius = (y: number) => 1.7 - (0.5 * (y - 0.7)) / 10;
 
 /**
- * Le Phare. Avant : le socle de rochers et le moignon de la tour, au tiers, ses pierres tombées. Le corps : le fût
- * blanc qui monte en trois rangs (la porte au premier). Le haut : le collier, la lanterne (allumée une fois posée) et
- * son toit d'ardoise. Les abords : la galerie et sa cloche, puis le muret et le jardin clos de la gardienne, bas, à
- * l'ouest de la tour.
+ * Le Phare. Avant : le socle de rochers et le moignon de la tour, au tiers, ses pierres tombées, et sa cloche tombée
+ * avec elles, couchée sur le socle à l'est de la tour. Le corps : le fût blanc qui monte en trois rangs (la porte au
+ * premier). Le haut : le collier, la lanterne et son toit d'ardoise. Les abords : la galerie et sa cloche raccrochée
+ * (la cloche tombée s'en va), puis le muret et le jardin clos de la gardienne, bas, à l'ouest de la tour.
  */
 function phare(add: Add): void {
   const g = siteGround('phare');
   add('ruine', 0, (b) => {
     b.prism({ x: 0, y: SINK, z: 0 }, 3.6, 2.9, 1.5, 7, C.darkStone);
     b.prism({ x: 0, y: 0.7, z: 0 }, 1.7, towerRadius(3.4), 2.7, 8, C.worn, C.wornTop);
-    // Le haut ébréché du moignon, et deux pierres tombées sur le socle.
+    // Le haut ébréché du moignon, et des pierres tombées sur le socle (hors de la place de la scénette, devant la porte).
     b.box({ x: 0.75, y: 3.4, z: 0.7, yaw: 0.4 }, [0.8, 0.5, 0.6], C.worn, C.wornTop);
-    b.box({ x: -2.1, y: 0.7, z: 1.5, yaw: 0.5 }, [0.8, 0.5, 0.6], C.worn, C.wornTop);
+    b.box({ x: -2.35, y: 0.7, z: 0.6, yaw: 0.5 }, [0.8, 0.5, 0.6], C.worn, C.wornTop);
     b.box({ x: 2.1, y: 0.7, z: -1.3, yaw: -0.3 }, [0.6, 0.45, 0.7], C.worn, C.wornTop);
+    b.box({ x: 2.45, y: 0.7, z: 0.75, yaw: 0.9 }, [0.5, 0.35, 0.45], C.worn, C.wornTop);
   });
+  // La cloche tombée et sa potence brisée, couchées sur le socle parmi les pierres : la galerie les raccroche.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      b.prism({ x: FALLEN_BELL.x, y: 0.7 + 0.27, z: FALLEN_BELL.z, yaw: 0.9, pitch: Math.PI / 2 - 0.12 }, 0.28, 0.13, 0.55, 8, C.bell);
+      b.beam({ x: 1.75, y: 0.76, z: -0.75 }, { x: 2.55, y: 0.76, z: 0.05 }, 0.1, C.slate);
+    },
+    { stage: 2, row: 0 },
+  );
   // Le fût, en trois rangs : le premier habille le moignon (sa porte), les deux autres montent jusqu'à la galerie.
   const rings = [0.7, 4.0, 7.3, 10.7];
   for (let k = 0; k < 3; k++) {
@@ -132,7 +161,8 @@ function phare(add: Add): void {
     });
   }
   add(1, 0, (b) => b.prism({ x: 0, y: 10.7, z: 0 }, 1.4, 1.4, 0.4, 8, C.gallery));
-  add(1, 0.34, (b, look) => b.prism({ x: 0, y: 11.1, z: 0 }, 1.05, 1.05, 1.5, 8, look.lit ? C.lamp : C.glass));
+  // La vitre, éteinte ; allumée, la lumière la recouvre (`lanternLight`).
+  add(1, 0.34, (b) => b.prism({ x: 0, y: LANTERN.y, z: 0 }, LANTERN.r, LANTERN.r, LANTERN.h, 8, C.glass));
   add(1, 0.67, (b) => b.prism({ x: 0, y: 12.6, z: 0 }, 1.35, 0, 1.1, 8, C.slate));
   // La galerie, large et bien marquée (sa dalle et son garde-corps), et sa cloche à l'est, sur sa potence.
   add(2, 0, (b) => {
@@ -191,7 +221,8 @@ function quais(add: Add): void {
   // La grue en bois : son mât, puis sa flèche vers le ponton (au nord-ouest), sa corde et son crochet.
   add(1, 0.34, (b) => b.box({ x: -2.6, y: 0.6, z: -1.6 }, [0.45, 6, 0.45], C.wood));
   add(1, 0.67, (b) => {
-    b.box({ x: -4.2, y: 6.3, z: -2.6, yaw: Math.atan2(1, 1.6) }, [4.6, 0.4, 0.4], C.wood);
+    // La flèche part du haut du mât (−2,6 ; −1,6) vers le crochet (−5,6 ; −3,5), sur cet axe.
+    b.box({ x: -4.2, y: 6.3, z: -2.6, yaw: -Math.atan2(1, 1.6) }, [4.6, 0.4, 0.4], C.wood);
     b.box({ x: -5.6, y: 3.4, z: -3.5 }, [0.12, 2.9, 0.12], C.slate);
     b.box({ x: -5.6, y: 3, z: -3.5 }, [0.6, 0.4, 0.6], C.slate);
   });
@@ -218,9 +249,46 @@ function quais(add: Add): void {
 }
 
 /**
- * Les Filets. Avant : les murets de deux cabanes et des perches couchées dans le sable. Le corps : les murs des cabanes,
- * en trois rangs (la porte au deuxième). Le haut : les toits de chaume. Les abords : le séchoir et ses filets, une
- * barque tirée sur le sable.
+ * Le séchoir des Filets, dans le repère du lieu : sur le sable, à côté des cabanes, le long du rivage (à l'est), hors de
+ * la porte et du chemin, au nord du plancher de la scénette. Ses deux bouts (`from`, au nord, et `to`), la hauteur de
+ * sa perche et de ses pans de filet au-dessus du centre du lieu.
+ */
+export const FILETS_RACK = { from: { x: 0.75, z: 0.45 }, to: { x: 1.95, z: 3.85 }, bar: 2.5, pan: { bottom: 0.45, height: 1.85 } } as const;
+
+/** Le séchoir des Filets : sa longueur, son quart de tour (le long de la perche), le milieu de chacun de ses deux pans. */
+export function filetsRack(): { length: number; yaw: number; pans: [Vec2, Vec2]; posts: [Vec2, Vec2, Vec2] } {
+  const { from, to } = FILETS_RACK;
+  const dx = to.x - from.x,
+    dz = to.z - from.z;
+  const at = (k: number): Vec2 => ({ x: from.x + dx * k, z: from.z + dz * k });
+  return { length: Math.hypot(dx, dz), yaw: Math.atan2(-dz, dx), pans: [at(0.25), at(0.75)], posts: [at(0), at(0.5), at(1)] };
+}
+
+/** Une barque à fond plat tirée sur le sable, dans son repère (la proue vers +x) : sa coque creuse, sa proue en pointe, son étrave, un banc. */
+function beachedBoat(b: FacetBuilder, length: number, width: number): void {
+  const wall = 0.16,
+    h = 0.6,
+    bow = 0.55 * width;
+  b.box({ x: 0, y: 0, z: 0 }, [length, 0.16, width], C.darkWood, C.wood);
+  for (const side of [-1, 1]) b.box({ x: 0, y: 0, z: (side * (width - wall)) / 2 }, [length, h, wall], C.darkWood, C.newWood);
+  b.box({ x: -length / 2 + wall / 2, y: 0, z: 0 }, [wall, h, width], C.darkWood, C.newWood);
+  // La proue : un fond en losange, deux bordés qui se rejoignent en pointe, l'étrave qui monte, penchée vers l'avant.
+  const end = length / 2;
+  b.prism({ x: end, y: 0, z: 0 }, width / 2, width / 2, 0.16, 4, C.darkWood, C.wood);
+  const side = Math.hypot(bow, width / 2);
+  const angle = Math.atan2(width / 2, bow);
+  for (const k of [-1, 1]) b.box({ x: end + bow / 2, y: 0, z: (k * width) / 4, yaw: k * angle }, [side + wall / 2, h, wall], C.darkWood, C.newWood);
+  b.beam({ x: end + bow - 0.05, y: 0, z: 0 }, { x: end + bow + 0.2, y: h + 0.35, z: 0 }, 0.16, C.darkWood);
+  b.box({ x: 0.2, y: h - 0.2, z: 0 }, [0.3, 0.08, width - 2 * wall], C.newWood);
+}
+
+/** La barque des Filets, sur le sable au sud du séchoir, le long du rivage, la proue vers les cabanes. */
+const FILETS_BOAT = { x: 3.95, z: 9.3, length: 2.3, width: 1.1 } as const;
+
+/**
+ * Les Filets. Avant : les murets de deux cabanes et les perches du séchoir couchées sur le sable. Le corps : les murs
+ * des cabanes, en trois rangs (la porte au deuxième). Le haut : les toits de chaume. Les abords : le séchoir, relevé
+ * sur le sable à côté des cabanes (ses perches couchées s'en vont), puis ses filets et la barque tirée sur le sable.
  */
 function filets(add: Add): void {
   const g = siteGround('filets');
@@ -230,6 +298,7 @@ function filets(add: Add): void {
   ] as const;
   const MURET = 0.5;
   const wallTop = (s: number) => 2.2 * s;
+  const rack = filetsRack();
   add('ruine', 0, (b) => {
     for (const { x, z, s } of huts) {
       const w = 3 * s,
@@ -240,8 +309,25 @@ function filets(add: Add): void {
       b.box({ x: x + w / 2 - 0.12, y: SINK, z }, [0.24, MURET + 0.1 - SINK, d], C.wornWall, C.wornTop);
       for (const side of [-1, 1]) b.box({ x: x + side * (w / 4 + 0.2), y: SINK, z: z + d / 2 - 0.12 }, [w / 2 - 0.4, MURET - 0.1 - SINK, 0.24], C.wornWall, C.wornTop);
     }
-    for (const dz of [0, 0.35, 0.7]) b.beam({ x: -2.6, y: 0.08, z: 1.9 + dz }, { x: 2.3, y: 0.08, z: 2.2 + dz }, 0.16, C.wornWood);
   });
+  // Les perches du séchoir, couchées sur le sable là où il se relèvera : elles s'en vont quand il se relève.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      const { from, to } = FILETS_RACK;
+      for (const [k, off] of [
+        [0, -0.35],
+        [1, 0.05],
+        [2, 0.4],
+      ] as const) {
+        const a = { x: from.x + off - 0.1 * k, z: from.z + 0.2 * k };
+        const c = { x: to.x + off - 0.25 * k, z: to.z - 0.3 * k };
+        b.beam({ x: a.x, y: g.at(a.x, a.z) + 0.08, z: a.z }, { x: c.x, y: g.at(c.x, c.z) + 0.08, z: c.z }, 0.16, C.wornWood);
+      }
+    },
+    { stage: 2, row: 0 },
+  );
   for (let k = 0; k < 3; k++)
     add(0, [0, 0.34, 0.67][k], (b) => {
       for (const { x, z, s } of huts) {
@@ -254,16 +340,20 @@ function filets(add: Add): void {
   huts.forEach(({ x, z, s }, i) =>
     add(1, i * 0.5, (b) => b.gableRoof({ x, y: wallTop(s) - 0.05, z }, 3.5 * s, 2.9 * s, 1.5 * s, C.straw, C.wall)),
   );
-  // Le séchoir : trois poteaux et sa perche ; puis ses deux pans de filet et la barque tirée sur le sable, à l'ouest.
+  // Le séchoir : trois poteaux plantés dans le sable et sa perche ; puis ses deux pans de filet et la barque.
   add(2, 0, (b) => {
-    for (const x of [-2.6, 0, 2.6]) b.box({ x, y: SINK, z: 2.4 }, [0.22, 3 - SINK, 0.22], C.darkWood);
-    b.box({ x: 0, y: 2.8, z: 2.4 }, [5.6, 0.18, 0.18], C.darkWood);
+    for (const p of rack.posts) b.box({ x: p.x, y: SINK, z: p.z }, [0.22, FILETS_RACK.bar + 0.2 - SINK, 0.22], C.darkWood);
+    const mid = rack.posts[1];
+    b.box({ x: mid.x, y: FILETS_RACK.bar, z: mid.z, yaw: rack.yaw }, [rack.length + 0.4, 0.18, 0.18], C.darkWood);
   });
   add(2, 0.5, (b) => {
-    b.box({ x: -1.3, y: 0.6, z: 2.4 }, [2.4, 2.1, 0.06], C.net);
-    b.box({ x: 1.3, y: 0.6, z: 2.4 }, [2.4, 2.1, 0.06], C.net);
-    const f = g.foot(-5.5, 0.5, 1.2);
-    b.box({ x: -5.5, y: f.low - 0.3, z: 0.5, yaw: 0.5 }, [1.2, f.top - f.low + 1.1, 3], C.wood, C.darkWood);
+    for (const p of rack.pans) b.box({ x: p.x, y: FILETS_RACK.pan.bottom, z: p.z, yaw: rack.yaw }, [rack.length / 2 - 0.25, FILETS_RACK.pan.height, 0.06], C.net);
+    const f = g.foot(FILETS_BOAT.x, FILETS_BOAT.z, 1.2);
+    const boat = new FacetBuilder();
+    beachedBoat(boat, FILETS_BOAT.length, FILETS_BOAT.width);
+    // Posée sur le sable (sa quille un peu enfoncée au plus bas), le long du rivage, la proue vers le sud.
+    const yaw = Math.atan2(FILETS_RACK.to.z - FILETS_RACK.from.z, -(FILETS_RACK.to.x - FILETS_RACK.from.x)) + Math.PI;
+    b.append(placeFacets(boat.build(), { x: FILETS_BOAT.x, y: f.low - 0.05, z: FILETS_BOAT.z, yaw }));
   });
 }
 
@@ -365,7 +455,7 @@ export function placePieces(id: PlaceId): readonly PlacePiece[] {
   let list = pieces.get(id);
   if (!list) {
     const made: PlacePiece[] = [];
-    DRAWN[id]((stage, row, draw) => made.push({ stage, row, draw }));
+    DRAWN[id]((stage, row, draw, until) => made.push(until ? { stage, row, until, draw } : { stage, row, draw }));
     list = made;
     pieces.set(id, list);
   }
@@ -373,31 +463,31 @@ export function placePieces(id: PlaceId): readonly PlacePiece[] {
 }
 
 /** Les facettes de certains volumes d'un lieu, dans son repère. */
-export function drawPieces(id: PlaceId, keep: (p: PlacePiece) => boolean, look: PieceLook): Facets {
+export function drawPieces(id: PlaceId, keep: (p: PlacePiece) => boolean): Facets {
   const b = new FacetBuilder();
-  for (const p of placePieces(id)) if (keep(p)) p.draw(b, look);
+  for (const p of placePieces(id)) if (keep(p)) p.draw(b);
   return b.build();
 }
 
 const ruins = new Map<PlaceId, Facets>();
 
-/** La ruine d'un lieu, dans son repère : ce qui reste avant toute partie (faite une fois). */
+/** La ruine d'un lieu, dans son repère : ce qui reste avant toute partie, sans ce qui est tombé (fait une fois). */
 export function ruinOf(id: PlaceId): Facets {
   let f = ruins.get(id);
-  if (!f) ruins.set(id, (f = drawPieces(id, (p) => p.stage === 'ruine', { lit: false })));
+  if (!f) ruins.set(id, (f = drawPieces(id, (p) => p.stage === 'ruine' && !p.until)));
   return f;
 }
 
 const cache = new Map<PlaceId, PlaceModel>();
 
 /**
- * Le lieu entier, dans son repère : sa ruine et toutes ses étapes, la lanterne éteinte (la scénette l'allume). Sa
- * hauteur porte la marque, la brume et le cadenas ; la scénette d'un lieu le montre entier.
+ * Le lieu entier, dans son repère : sa ruine et toutes ses étapes (ce qui était tombé, relevé), la lanterne éteinte.
+ * Sa hauteur porte la marque, la brume et le cadenas.
  */
 export function modelOfPlace(id: PlaceId): PlaceModel {
   let m = cache.get(id);
   if (!m) {
-    const facets = drawPieces(id, () => true, { lit: false });
+    const facets = drawPieces(id, (p) => !p.until);
     m = { facets, source: 'dessine', top: boundsOf(facets).max[1] };
     cache.set(id, m);
   }

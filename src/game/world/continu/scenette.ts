@@ -8,7 +8,9 @@
 // de séchage, la pêche sur le filet, les paniers-réponses en rangée, la prise qui va au bon panier ; à la réussite, le
 // filet raccommodé se tend sur le séchoir et un panier plein vient à ses pieds. L'éclusier sur le quai du sas, les
 // leviers de vanne en rangée, la barque qui avance dans le canal jusqu'à la porte ; à la réussite, le sas se remplit,
-// la porte s'ouvre et la barque passe. Rien à lire n'est peint dans la 3D. Le décor de près est fait à l'arrivée et
+// la porte s'ouvre et la barque passe. Une scénette se joue sur le lieu tel qu'il est bâti (GD-20, lot 1) : tant que
+// l'étape qui porte sa trace n'est pas posée (`posed`), avec ce qui est là (au Phare, au pied de la tour, la cloche
+// tombée sur le socle). Rien à lire n'est peint dans la 3D. Le décor de près est fait à l'arrivée et
 // libéré au départ par la vue. Code pur : la vue dessine.
 import { CAMERA_FOV, type CameraPose } from './camera';
 import { FacetBuilder, type Facets } from './facets';
@@ -268,6 +270,15 @@ function galleryFloor(): Vec3 {
   return { x: p.center.x, y: standingHeight(heightAt(p.center)) + GALLERY.floor, z: p.center.z };
 }
 
+/** Le haut du socle de rochers du Phare, au-dessus du sol de son centre (places.ts, sa ruine). */
+export const PHARE_SOCLE = 0.7;
+
+/** Le pied du Phare : le dessus de son socle de rochers, où la cloche est tombée. */
+function socleFloor(): Vec3 {
+  const p = placeById('phare');
+  return { x: p.center.x, y: standingHeight(heightAt(p.center)) + PHARE_SOCLE, z: p.center.z };
+}
+
 /** Le sol des Quais : le milieu de la bande de devant du quai, contre le bord du bassin. */
 function quayFloor(): Vec3 {
   const o = sceneSpot('quais');
@@ -311,25 +322,42 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   },
 };
 
-const siteOf = (place: PlaceId): ScenetteSite => SITES[place];
+/**
+ * La scénette du Phare tant que sa galerie n'est pas posée (directeur artistique, GD-20 lot 1) : au pied de la tour,
+ * sur le socle de rochers, parmi les pierres tombées, où la cloche est tombée ; Kéo et la gardienne de part et d'autre de
+ * la porte, la caméra basse.
+ */
+const PHARE_FOOT: ScenetteSite = {
+  floor: socleFloor,
+  keo: { dx: -1.45, dz: 2.05, scale: 0.6, yaw: Math.PI - 0.35 },
+  habitant: { dx: 1.45, dz: 2.05 },
+  subject: { halfWidth: 2.2, bottom: -0.1, top: 2.3, depth: 2 },
+  pitch: (9 * Math.PI) / 180,
+};
+
+/**
+ * Le lieu d'une scénette, selon ce qui est bâti (`posed` : l'étape qui porte sa trace est posée, construction.ts,
+ * `traceStagePosed`). Seul le Phare change de place : sur sa galerie, ou à son pied.
+ */
+const siteOf = (place: PlaceId, posed = true): ScenetteSite => (place === 'phare' && !posed ? PHARE_FOOT : SITES[place]);
 
 /** L'angle de la caméra de la scénette du Phare sous l'horizon, et le temps de la descente (coupe franche avec « Réduire les animations »). */
 export const SCENETTE_CAMERA = { pitch: (20 * Math.PI) / 180, seconds: 0.9 } as const;
 
 /** Le sol d'une scénette, dans le monde. */
-const floorOf = (place: PlaceId): Vec3 => siteOf(place).floor();
+const floorOf = (place: PlaceId, posed = true): Vec3 => siteOf(place, posed).floor();
 
 /** La place de Kéo dans la scénette : ses pieds, son échelle et son cap. */
-export function scenetteKeo(place: PlaceId): { at: Vec3; scale: number; yaw: number } {
-  const f = floorOf(place);
-  const k = siteOf(place).keo;
+export function scenetteKeo(place: PlaceId, posed = true): { at: Vec3; scale: number; yaw: number } {
+  const f = floorOf(place, posed);
+  const k = siteOf(place, posed).keo;
   return { at: { x: f.x + k.dx, y: f.y, z: f.z + k.dz }, scale: k.scale, yaw: k.yaw };
 }
 
 /** Où se tient l'habitant de la scénette (ses pieds). */
-export function scenetteHabitant(place: PlaceId): Vec3 {
-  const f = floorOf(place);
-  const h = siteOf(place).habitant;
+export function scenetteHabitant(place: PlaceId, posed = true): Vec3 {
+  const f = floorOf(place, posed);
+  const h = siteOf(place, posed).habitant;
   return { x: f.x + h.dx, y: f.y, z: f.z + h.dz };
 }
 
@@ -338,9 +366,11 @@ export function scenetteHabitant(place: PlaceId): Vec3 {
  * artistique, lot 3) : la trace de la réussite. Aux Quais, sur le bord du quai, juste à l'est de la proue de la barque
  * chargée, qu'on voit au premier plan avec la grue et le hangar derrière lui. Aux Filets (lot 4), devant le séchoir,
  * le panier plein et le filet tendu à sa gauche. Aux Écluses, sur la rive ouest, à côté du sas rempli et de sa porte
- * ouverte. Au Phare, rien : Kéo revient sur le chemin, la caméra le suit (la lanterne est déjà dans le champ).
+ * ouverte. Au Phare, rien : Kéo revient sur le chemin, la caméra le suit (la lanterne est déjà dans le champ). Rien non
+ * plus quand l'étape qui porte la trace n'est pas posée (`posed`) : la trace attend, il n'y a rien à garder.
  */
-export function scenetteExit(place: PlaceId): { at: Vec2; keep: Vec3 } | null {
+export function scenetteExit(place: PlaceId, posed = true): { at: Vec2; keep: Vec3 } | null {
+  if (!posed) return null;
   if (place === 'quais') {
     const boat = loadedBoat();
     const f = quayFloor();
@@ -390,10 +420,10 @@ export function exitView(pose: CameraPose, keep: Vec3, feet: Vec3, amount: numbe
  * un peu d'en haut ; le décalage de l'image (en pixels) qui les y amène sans tourner la caméra. Fixe tant que la
  * scénette dure.
  */
-export function scenettePose(place: PlaceId, stage: ScreenBox, width: number, height: number): { pose: CameraPose; shift: { x: number; y: number } } {
-  const site = siteOf(place);
+export function scenettePose(place: PlaceId, stage: ScreenBox, width: number, height: number, posed = true): { pose: CameraPose; shift: { x: number; y: number } } {
+  const site = siteOf(place, posed);
   const S = site.subject;
-  const f = floorOf(place);
+  const f = site.floor();
   const focal = height / 2 / Math.tan(((CAMERA_FOV / 2) * Math.PI) / 180);
   const halfW = Math.max(24, (stage.right - stage.left) / 2);
   const halfH = Math.max(24, (stage.bottom - stage.top) / 2);
@@ -425,8 +455,11 @@ export const scenetteHidesPlace = (place: PlaceId): boolean => place === 'quais'
  */
 export const scenetteHidesPieces = (place: PlaceId): boolean => place !== 'phare';
 
-/** Les objets des réponses pendent-ils (les cloches du Phare), ou sont-ils posés sur un ponton (les caisses des Quais) ? */
-export const answersHang = (place: PlaceId): boolean => place === 'phare';
+/**
+ * Les objets des réponses pendent-ils (les cloches du Phare, devant la rambarde de sa galerie), ou sont-ils posés (les
+ * caisses des Quais sur un ponton ; les cloches tombées au pied du Phare, sur une avancée du socle) ?
+ */
+export const answersHang = (place: PlaceId, posed = true): boolean => place === 'phare' && posed;
 
 /** La bonne réponse quitte-t-elle la rangée (la caisse des Quais monte au crochet) ? Ailleurs, elle reste. */
 export const answerLeaves = (place: PlaceId): boolean => place === 'quais';
@@ -436,8 +469,8 @@ export const answerLeaves = (place: PlaceId): boolean => place === 'quais';
  * bassin des Quais ; aux Filets et aux Écluses, un peu au-dessus du plancher de la scène (`LAND_DECK`, sans se confondre
  * avec la berge du canal ; le ponton descend jusqu'au sol, `ground`).
  */
-export const scenetteDeck = (place: PlaceId): { y: number; onLand: boolean } =>
-  place === 'quais' ? { y: DECK_HEIGHT, onLand: false } : { y: floorOf(place).y + LAND_DECK, onLand: true };
+export const scenetteDeck = (place: PlaceId, posed = true): { y: number; onLand: boolean } =>
+  place === 'quais' ? { y: DECK_HEIGHT, onLand: false } : { y: floorOf(place, posed).y + LAND_DECK, onLand: true };
 
 /** La margelle des réponses à terre, au-dessus du plancher de la scène. */
 export const LAND_DECK = 0.08;
@@ -490,6 +523,9 @@ const C = {
   steel: 0x6f8089,
   crate: 0xb5793f,
   crateTop: 0xc98d50,
+  // Le filet raccommodé (le même que sur le séchoir, questionScene.ts, `mendedNet`) et ses mailles.
+  newRope: 0xc9a36a,
+  netLine: 0x6f5e42,
 } as const;
 
 /** La vitre de la lanterne : éteinte (gris-bleu, comme le modèle du Phare), puis allumée à la réussite. */
@@ -515,24 +551,32 @@ function sphere(b: FacetBuilder, c: Vec3, r: number, sides: number, rings: numbe
 }
 
 /** La main de l'habitant, au bout de son bras tendu vers la rambarde : la corde de sonnerie y part. */
-export function habitantHand(place: PlaceId): Vec3 {
-  const at = scenetteHabitant(place);
+export function habitantHand(place: PlaceId, posed = true): Vec3 {
+  const at = scenetteHabitant(place, posed);
   return { x: at.x - 0.15, y: at.y + 0.78, z: at.z + 0.75 };
 }
 
 /**
  * La gardienne, immobile, en quatre volumes (consultant Archipéo) : le ciré (un cylindre évasé), la tête (une sphère),
  * le bonnet, le bras tendu vers la rambarde. La corde qu'elle tient part de sa main (`answerObjects`, avec les cloches) ;
- * sa poignée, de la couleur du bonnet, la détache du jaune du ciré (retour du directeur artistique).
+ * sa poignée, de la couleur du bonnet, la détache du jaune du ciré (retour du directeur artistique). Au pied de la tour
+ * (`posed` faux), elle tient un maillet de bois, pour frapper la cloche tombée.
  */
-function gardienne(b: FacetBuilder, place: PlaceId): void {
-  const at = scenetteHabitant(place);
+function gardienne(b: FacetBuilder, place: PlaceId, posed: boolean): void {
+  const at = scenetteHabitant(place, posed);
   b.prism(at, 0.4, 0.27, 0.92, 12, C.coat, C.coatShade);
   sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 12, 8, C.head);
   b.prism({ x: at.x, y: at.y + 1.2, z: at.z }, 0.25, 0.12, 0.2, 12, C.cap);
-  const hand = habitantHand(place);
+  const hand = habitantHand(place, posed);
   b.beam({ x: at.x - 0.12, y: at.y + 0.82, z: at.z + 0.12 }, hand, 0.15, C.coat);
-  b.box({ x: hand.x, y: hand.y - 0.1, z: hand.z }, [0.16, 0.2, 0.16], C.cap);
+  if (posed) {
+    b.box({ x: hand.x, y: hand.y - 0.1, z: hand.z }, [0.16, 0.2, 0.16], C.cap);
+    return;
+  }
+  // Le maillet : son manche tenu dans la main, sa tête en travers, de la couleur du bonnet.
+  const head = { x: hand.x - 0.05, y: hand.y - 0.42, z: hand.z + 0.18 };
+  b.beam(hand, head, 0.06, C.cap);
+  b.box({ x: head.x, y: head.y - 0.09, z: head.z, yaw: 0.3 }, [0.32, 0.18, 0.18], C.cap);
 }
 
 /**
@@ -620,7 +664,7 @@ const FILET_DECK = { inner: 2.7, outer: 5.8, depth: 3.2 } as const;
  * gonds, deux vantaux qui montent à son épaule, et leurs balanciers, qui prolongent les vantaux au-dessus des quais ;
  * fermés (de bois sombre, en pointe vers l'amont) ou ouverts (neufs, rabattus vers l'aval, contre les bords).
  */
-function lockQuay(b: FacetBuilder, open: boolean): void {
+function lockQuay(b: FacetBuilder, open: boolean, posed: boolean): void {
   const o = floorOf('ecluses');
   const depth = sceneDepth('ecluses');
   for (const side of [-1, 1]) b.box({ x: o.x + side * 4.05, y: o.y - depth, z: o.z }, [3.5, depth, 1.6], C.stoneSide, C.stone);
@@ -634,6 +678,8 @@ function lockQuay(b: FacetBuilder, open: boolean): void {
   const grass = LOCK.forecourt - LOCK.kerb;
   b.box({ x: o.x, y: o.y - depth, z: bank + LOCK.kerb + grass / 2 }, [long + 2 * LOCK.bank, depth, grass], C.rock, C.grass);
   b.box({ x: o.x, y: o.y, z: bank + LOCK.kerb + LOCK.towpath / 2 }, [long, 0.02, LOCK.towpath], C.path);
+  // La porte du canal est de la trace (le haut des Écluses) : tant qu'il n'est pas posé, le canal reste ouvert.
+  if (!posed) return;
   const gx = o.x + LOCK.gate;
   const bottom = o.y - LOCK.water - 0.35;
   const top = o.y + LOCK.gateTop;
@@ -672,9 +718,11 @@ function beamRest(b: FacetBuilder, x: number, z: number, from: number, top: numb
  * Le décor de près d'une scénette, fait à l'arrivée : au Phare, la galerie élargie (son plancher sur un encorbellement)
  * et sa rambarde (poteaux, main courante, lisse), et la gardienne ; aux Quais, le docker (le quai, la grue et la barque
  * sont la scène de l'item) ; aux Filets, le plancher de séchage et la pêcheuse ; aux Écluses, le quai du sas, le canal
- * et sa porte (`open` : ouverte, à la réussite), et l'éclusier. Un seul maillage, du matériau du terrain.
+ * et sa porte (`open` : ouverte, à la réussite), et l'éclusier. Un seul maillage, du matériau du terrain. Tant que
+ * l'étape qui porte la trace n'est pas posée (`posed` faux), rien d'elle : au Phare, ni galerie ni rambarde, la gardienne
+ * au pied de la tour, son maillet à la main ; aux Écluses, le canal sans sa porte.
  */
-export function scenetteDecor(place: PlaceId, open = false): Facets {
+export function scenetteDecor(place: PlaceId, open = false, posed = true): Facets {
   const b = new FacetBuilder();
   if (place === 'quais') {
     docker(b, place);
@@ -686,8 +734,12 @@ export function scenetteDecor(place: PlaceId, open = false): Facets {
     return b.build();
   }
   if (place === 'ecluses') {
-    lockQuay(b, open);
+    lockQuay(b, open, posed);
     eclusier(b, place);
+    return b.build();
+  }
+  if (!posed) {
+    gardienne(b, place, false);
     return b.build();
   }
   const f = floorOf(place);
@@ -705,7 +757,7 @@ export function scenetteDecor(place: PlaceId, open = false): Facets {
     for (const y of [GALLERY.rail, GALLERY.rail * 0.45])
       b.beam({ x: p.x, y: f.y + y, z: p.z }, { x: q.x, y: f.y + y, z: q.z }, y === GALLERY.rail ? 0.09 : 0.06, C.rail);
   }
-  gardienne(b, place);
+  gardienne(b, place, true);
   return b.build();
 }
 
@@ -722,11 +774,22 @@ export function lanternGlass(place: PlaceId): Facets {
 }
 
 /**
- * Ce qui s'allume à la réussite d'une scénette : la lampe du Phare (sa vitre), ou rien (ailleurs, la réussite passe par
- * `scenetteFinale`).
+ * Ce qui s'allume à la réussite d'une scénette : la lampe du Phare (sa vitre), quand sa lanterne est posée et encore
+ * éteinte (`lantern`), ou rien (ailleurs, la réussite passe par `scenetteFinale`).
  */
-export function scenetteSuccess(place: PlaceId): Facets | null {
-  return place === 'phare' ? lanternGlass(place) : null;
+export function scenetteSuccess(place: PlaceId, lantern = true): Facets | null {
+  return place === 'phare' && lantern ? lanternGlass(place) : null;
+}
+
+/**
+ * Le pan de filet raccommodé, étendu sur le plancher de séchage (la plate-forme du filet de l'item) quand le séchoir
+ * n'est pas encore posé : la réussite se montre avec ce qui est là, au sol.
+ */
+function laidNet(b: FacetBuilder): void {
+  const o = floorOf('filets');
+  b.box({ x: o.x, y: o.y, z: o.z }, [3.6, 0.04, 2.2], C.newRope);
+  for (const dx of [-1.2, 0, 1.2]) b.box({ x: o.x + dx, y: o.y + 0.04, z: o.z }, [0.05, 0.015, 2.2], C.netLine);
+  for (const dz of [-0.55, 0.55]) b.box({ x: o.x, y: o.y + 0.04, z: o.z + dz }, [3.6, 0.015, 0.05], C.netLine);
 }
 
 /**
@@ -760,8 +823,12 @@ function moved(f: Facets, at: Vec3): Facets {
   return { ...f, positions };
 }
 
-/** La réussite d'une scénette posée, pour la scène du dernier item et l'échelle de ses objets ; `null` au Phare. */
-export function scenetteFinale(place: PlaceId, scene: ItemScene, scale: number): ScenetteFinale | null {
+/**
+ * La réussite d'une scénette posée, pour la scène du dernier item et l'échelle de ses objets ; `null` au Phare. `posed` :
+ * l'étape qui porte la trace est posée (sinon le filet raccommodé reste étendu sur le plancher, la porte du canal
+ * attend son haut).
+ */
+export function scenetteFinale(place: PlaceId, scene: ItemScene, scale: number, posed = true): ScenetteFinale | null {
   if (place === 'quais') {
     if (scene.kind !== 'quai') return null;
     const s = quaySuccess(scene, scale);
@@ -773,7 +840,8 @@ export function scenetteFinale(place: PlaceId, scene: ItemScene, scale: number):
     const decor = new FacetBuilder();
     decor.append(scenetteDecor(place));
     dryingDeck(decor, true);
-    mendedNet(decor);
+    if (posed) mendedNet(decor);
+    else laidNet(decor);
     const basket = new FacetBuilder();
     fullBasket(basket, { x: 0, y: 0, z: 0 });
     const moving = basket.build();
@@ -785,7 +853,7 @@ export function scenetteFinale(place: PlaceId, scene: ItemScene, scale: number):
   }
   if (place === 'ecluses') {
     const decor = new FacetBuilder();
-    decor.append(scenetteDecor(place, true));
+    decor.append(scenetteDecor(place, true, posed));
     decor.append(lockFull(scene));
     const o = floorOf(place);
     const y = o.y - LOCK.water;

@@ -4,12 +4,13 @@
 // du lieu »). Les parties sont celles de la grille, mêmes identifiants et même sauvegarde (`parts`) : la page les lit
 // (../../three/archipeo/constructionParts.ts) et donne ici, pour chacune, les tranches d'étapes qu'elle pose ; les
 // volumes sont ceux du lieu (./places.ts), rangés par étape et par rangée. Code pur.
-import { FOLLOW, screenOf, type CameraPose } from './camera';
+import { FOLLOW, KEO_HEIGHT, screenOf, type CameraPose } from './camera';
 import { boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec3 } from './geometry';
 import { pathNode } from './paths';
 import { placeById, type PlaceId } from './plan6e';
 import { drawPieces, modelOfPlace, ruinOf, type PlacePiece } from './places';
+import { scenetteExit } from './scenette';
 import { standingHeight } from './terrain';
 
 /** Les trois étapes de la construction d'un lieu : le corps, le haut, les abords. */
@@ -51,13 +52,24 @@ export function ruinFacets(place: PlaceId, ground: (x: number, z: number) => num
 
 /**
  * Les volumes que posent ces parties, dans le monde (`ground` : la hauteur du sol dessiné) : toute la construction
- * posée, ou, pour le passage d'une pose, la seule partie qui arrive. `lit` : la lanterne du Phare allumée (son haut
- * entièrement posé).
+ * posée, ou, pour le passage d'une pose, la seule partie qui arrive.
  */
-export function constructionFacets(place: PlaceId, parts: readonly PartShape[], ground: (x: number, z: number) => number, lit = false): Facets {
-  if (!parts.length) return drawPieces(place, () => false, { lit });
-  const facets = drawPieces(place, (p) => p.stage !== 'ruine' && parts.some((part) => part.some((s) => takes(s, p))), { lit });
+export function constructionFacets(place: PlaceId, parts: readonly PartShape[], ground: (x: number, z: number) => number): Facets {
+  if (!parts.length) return drawPieces(place, () => false);
+  const facets = drawPieces(place, (p) => p.stage !== 'ruine' && parts.some((part) => part.some((s) => takes(s, p))));
   return placeFacets(facets, siteOf(place, ground));
+}
+
+/**
+ * Ce qui est tombé dans la ruine et attend encore la rangée qui le relèvera (la cloche du Phare, au pied de la tour,
+ * jusqu'à ce que la galerie la raccroche), dans le monde.
+ */
+export function fallenFacets(place: PlaceId, parts: readonly PartShape[], ground: (x: number, z: number) => number): Facets {
+  const lying = (p: PlacePiece) => {
+    const u = p.until;
+    return u !== undefined && !parts.some((part) => part.some((s) => s.stage === u.stage && u.row >= s.from - 1e-9 && u.row < s.to - 1e-9));
+  };
+  return placeFacets(drawPieces(place, lying), siteOf(place, ground));
 }
 
 /** La construction entière, ses trois étapes posées : le pire, pour le budget. */
@@ -74,8 +86,21 @@ export const WHOLE: PartShape = [
  */
 export const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = { phare: 2, quais: 1, filets: 2, ecluses: 1 };
 
+/**
+ * L'étape qui porte la trace d'un lieu est-elle posée ? Sa scénette se joue alors sur elle (la galerie du Phare, le
+ * séchoir des Filets, la grue des Quais, la porte d'amont des Écluses) ; sinon, avec ce qui est là, au sol ou sur l'eau :
+ * une scénette se joue sur le lieu tel qu'il est bâti, rien d'achevé ne se montre avant d'être posé.
+ */
+export const traceStagePosed = (place: PlaceId, parts: readonly PartShape[]): boolean => stageComplete(parts, TRACE_STAGE[place]);
+
 /** La trace d'un lieu se montre-t-elle ? Sa scénette réussie (`done`), et l'étape qui la porte posée. */
-export const traceShown = (place: PlaceId, parts: readonly PartShape[], done: boolean): boolean => done && stageComplete(parts, TRACE_STAGE[place]);
+export const traceShown = (place: PlaceId, parts: readonly PartShape[], done: boolean): boolean => done && traceStagePosed(place, parts);
+
+/**
+ * La lanterne du Phare est-elle allumée ? Son haut posé (elle existe) et sa scénette réussie (la lampe s'allume à la
+ * réussite de la scénette, lot 2 de la piste 1).
+ */
+export const lanternLit = (parts: readonly PartShape[], done: boolean): boolean => done && stageComplete(parts, 1);
 
 /** La hauteur du point regardé par la pose, en part de la hauteur du lieu : un peu sous le milieu (son pied, plus près de la caméra, descend plus bas à l'écran que son haut ne monte). */
 const FOCUS_HEIGHT = 0.45;
@@ -129,11 +154,11 @@ export function poseView(place: PlaceId, ground: (x: number, z: number) => numbe
     out.fov = FOLLOW.fov;
     out.lens = 0;
   };
-  // La distance : la plus courte où tout le lieu hors de l'eau tient dans un écran 4:3, avec sa marge (calculée une
-  // fois par lieu : le sol ne change pas).
+  // La distance : la plus courte où tout le lieu hors de l'eau, et Kéo entier là où il se tient pendant une pose, tiennent
+  // dans un écran 4:3, avec sa marge (calculée une fois par lieu : le cadrage est fixe, le sol ne change pas).
   let d = poseDistance.get(place);
   if (d === undefined) {
-    const pts = placeFacets(modelOfPlace(place).facets, siteOf(place, ground)).positions;
+    const pts = [...placeFacets(modelOfPlace(place).facets, siteOf(place, ground)).positions, ...keoSpots(place, ground)];
     const W = 400 * POSE_VIEW.aspect,
       H = 400;
     const m = POSE_VIEW.margin;
@@ -155,6 +180,25 @@ export function poseView(place: PlaceId, ground: (x: number, z: number) => numbe
 
 const poseDistance = new Map<PlaceId, number>();
 
+/** Le demi-côté de la boîte de Kéo, en unités : ses bras et son sac. */
+const KEO_HALF = 0.55;
+
+/**
+ * Les coins de Kéo debout là où il se tient quand une pose commence (directeur artistique : jamais coupé au bord de
+ * l'image) : à la porte du lieu (on y arrive), ou là où sa scénette le laisse (scenette.ts, `scenetteExit`).
+ */
+export function keoSpots(place: PlaceId, ground: (x: number, z: number) => number): number[] {
+  const spots = [pathNode(placeById(place).door).at];
+  const exit = scenetteExit(place);
+  if (exit) spots.push(exit.at);
+  const out: number[] = [];
+  for (const s of spots) {
+    const y = standingHeight(ground(s.x, s.z));
+    for (const dx of [-KEO_HALF, KEO_HALF]) for (const dz of [-KEO_HALF, KEO_HALF]) for (const h of [0, KEO_HEIGHT]) out.push(s.x + dx, y + h, s.z + dz);
+  }
+  return out;
+}
+
 /**
  * Le passage d'une pose, en secondes : la caméra va vers le lieu, la partie descend à sa place, on la regarde, puis la
  * caméra rejoint Kéo. Avec « Réduire les animations », la partie est posée d'un coup, la caméra coupe sur le lieu puis
@@ -163,3 +207,80 @@ const poseDistance = new Map<PlaceId, number>();
 export const POSE_SECONDS = { rise: 0.9, drop: 0.7, look: 1.1, back: 0.9, still: 1.6 } as const;
 /** D'où descend la partie qui se pose, en unités au-dessus de sa place. */
 export const POSE_DROP = 3.5;
+
+/** Les temps d'une pose : la caméra va vers le lieu, la partie descend, on la regarde, la caméra revient ; ou, avec « Réduire les animations », d'un bloc. */
+export type PosePhase = 'rise' | 'drop' | 'look' | 'back' | 'still';
+
+/**
+ * Ce que la vue fait à chaque temps d'une pose : `rise` et `back`, la caméra à la part `e` (adoucie) de son trajet ;
+ * `drop`, la partie à la part `e` de sa descente ; `land`, la partie à sa place (il peut venir deux fois) ; `turn`, la caméra prépare son retour
+ * vers Kéo ; `done`, la pose est finie (les célébrations peuvent venir).
+ */
+export interface PoseHooks {
+  rise(e: number): void;
+  drop(e: number): void;
+  land(): void;
+  turn(): void;
+  back(e: number): void;
+  done(): void;
+}
+
+/**
+ * Le déroulé d'une pose, sans Three.js (la vue en fait le rendu) : `start` la commence (une pose en cours finit
+ * d'abord), `step` la fait avancer à l'instant `t` (en secondes), `finish` la finit tout de suite (un toucher, « Y aller
+ * », la Carte, une question) : la partie est posée et `done` est appelé, une fois, quel que soit le chemin.
+ */
+export function createPoseRun(hooks: PoseHooks) {
+  let run: { phase: PosePhase; start: number } | null = null;
+  const finish = () => {
+    if (!run) return;
+    run = null;
+    hooks.land();
+    hooks.done();
+  };
+  return {
+    get active(): boolean {
+      return run !== null;
+    },
+    start(t: number, still: boolean): void {
+      finish();
+      if (still) hooks.land();
+      run = { phase: still ? 'still' : 'rise', start: t };
+    },
+    step(t: number): void {
+      if (!run) return;
+      const u = Math.min(1, (t - run.start) / POSE_SECONDS[run.phase]);
+      const e = u * u * (3 - 2 * u);
+      switch (run.phase) {
+        case 'rise':
+          hooks.rise(e);
+          if (u >= 1) {
+            run = { phase: 'drop', start: t };
+            hooks.drop(0);
+          }
+          return;
+        case 'drop':
+          hooks.drop(e);
+          if (u >= 1) {
+            hooks.land();
+            run = { phase: 'look', start: t };
+          }
+          return;
+        case 'look':
+          if (u >= 1) {
+            hooks.turn();
+            run = { phase: 'back', start: t };
+          }
+          return;
+        case 'back':
+          hooks.back(e);
+          if (u >= 1) finish();
+          return;
+        case 'still':
+          if (u >= 1) finish();
+          return;
+      }
+    },
+    finish,
+  };
+}

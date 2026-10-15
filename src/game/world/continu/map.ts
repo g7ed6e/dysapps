@@ -177,7 +177,7 @@ const clash = (a: Rect, b: Rect) =>
  * au-dessus de son point, sinon dessous, sinon décalé vers le haut ou vers le bas (une demi-hauteur, puis une autre),
  * sinon à droite ou à gauche, sinon à la place libre la plus proche, dans l'écran ; s'il ne trouve toujours pas de
  * place, sa pastille se réduit à son icône (`name: false`, le nom et l'état restent dits par le bouton) ; enfin le nom
- * de chaque lieu fermé, sous son cadenas, tu s'il gêne (le toucher du lieu dit alors « Fermé pour l'instant »).
+ * de chaque lieu fermé, sous son cadenas, s'efface s'il gêne (le toucher du lieu dit alors « Fermé pour l'instant »).
  */
 export function layoutMapLabels(labels: readonly MapLabel[], obstacles: readonly Rect[] = [], screen = { width: Infinity, height: Infinity }): MapLabelSpot[] {
   const first = attemptLayout(labels, obstacles, screen, false);

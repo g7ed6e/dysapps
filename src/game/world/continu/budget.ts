@@ -5,7 +5,7 @@
 import { WORLD_FOG } from './camera';
 import { networkSamples, pathRibbons } from './paths';
 import { PLACES, type PlaceId } from './plan6e';
-import { modelOfPlace } from './places';
+import { lanternLight, modelOfPlace } from './places';
 import { constructionFacets, WHOLE } from './construction';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
 import type { ItemScene } from './questions';
@@ -91,13 +91,14 @@ const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
 
 /**
  * Les lieux (GD-20, lot 1) : les quatre lieux entiers (leur ruine et leurs trois étapes : chaque lieu se rebâtit
- * lui-même) et les traces de leurs scénettes, réunis en un maillage, refait à chaque pose (jamais par image) ; le lieu
- * suivi, seul hors de la brume, dans un second (son matériau sans brouillard). Deux appels, quel que soit le nombre de
- * lieux.
+ * lui-même ; ce qui était tombé, relevé) et les traces de leurs scénettes, réunis en un maillage, refait à chaque pose
+ * (jamais par image), avec la lumière de la lanterne du Phare allumée (sa couleur dessinée sans ombre, dans le même
+ * matériau) ; le lieu suivi, seul hors de la brume, dans un second (son matériau sans brouillard). Deux appels, quel que
+ * soit le nombre de lieux.
  */
 function placesCost(): { triangles: number; calls: number } {
   const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + placeTrace(p.id, true).triangles, 0);
-  return { triangles, calls: 2 };
+  return { triangles: triangles + lanternLight().triangles, calls: 2 };
 }
 
 /**

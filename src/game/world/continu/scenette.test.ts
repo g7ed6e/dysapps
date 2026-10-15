@@ -34,6 +34,7 @@ import {
   answerLeaves,
   scenetteDeck,
   LAND_DECK,
+  PHARE_SOCLE,
 } from './scenette';
 import { heightAt, standingHeight } from './terrain';
 
@@ -561,5 +562,74 @@ describe('Les Filets et les Écluses (lot 4)', () => {
         }
       }
     }
+  });
+});
+
+describe('Une scénette se joue sur le lieu tel qu’il est bâti (GD-20, lot 1)', () => {
+  const c = placeById('phare').center;
+  const foot = standingHeight(heightAt(c));
+
+  it('au Phare sans sa galerie : au pied de la tour, sur le socle, la caméra basse, Kéo à gauche et la gardienne à droite', () => {
+    const keo = scenetteKeo('phare', false);
+    const gardienne = scenetteHabitant('phare', false);
+    expect(keo.at.y).toBeCloseTo(foot + PHARE_SOCLE, 6);
+    expect(gardienne.y).toBeCloseTo(foot + PHARE_SOCLE, 6);
+    // Sur le socle (son dessus, un heptagone de 2,9 de rayon), hors de la tour (1,7 à son pied).
+    for (const p of [keo.at, gardienne]) {
+      expect(Math.hypot(p.x - c.x, p.z - c.z)).toBeLessThan(2.9 * Math.cos(Math.PI / 7));
+      expect(Math.hypot(p.x - c.x, p.z - c.z)).toBeGreaterThan(1.7 + 0.4);
+    }
+    for (const [w, h] of screens) {
+      const stage = layoutOf(6, w, h).scenette!.stage;
+      const low = scenettePose('phare', stage, w, h, false).pose;
+      const high = scenettePose('phare', stage, w, h, true).pose;
+      const pitch = (p: typeof low) => Math.atan2(p.position.y - p.target.y, Math.hypot(p.position.x - p.target.x, p.position.z - p.target.z));
+      expect(pitch(low)).toBeLessThan(pitch(high) - 0.15);
+      expect(low.position.y).toBeLessThan(foot + 6);
+      const s = (p: { x: number; y: number; z: number }) => screenOf(low, p, w, h);
+      expect(s(keo.at).x).toBeLessThan(s(gardienne).x);
+    }
+  });
+
+  it('au Phare sans sa galerie : ni galerie ni rambarde, la gardienne et son maillet ; les cloches posées, pas pendues', () => {
+    const decor = boundsOf(scenetteDecor('phare', false, false));
+    expect(decor.max[1]).toBeLessThan(foot + PHARE_SOCLE + 1.6);
+    expect(scenetteDecor('phare', false, false).triangles).toBeLessThan(scenetteDecor('phare').triangles);
+    expect(answersHang('phare', false)).toBe(false);
+    expect(answersHang('phare', true)).toBe(true);
+    const deck = scenetteDeck('phare', false);
+    expect(deck.onLand).toBe(true);
+    expect(deck.y).toBeCloseTo(foot + PHARE_SOCLE + LAND_DECK, 6);
+    // Les cloches debout sur une avancée du socle, qui descend jusqu'au sol ; leur lèvre posée sur elle.
+    const points = [-1.5, 0, 1.5].map((dx) => ({ x: c.x + dx, y: deck.y, z: c.z + 4.5 }));
+    const bells = boundsOf(answerObjects('phare', points, 0.6, { ground: foot - 0.2 }));
+    expect(bells.min[1]).toBeLessThanOrEqual(foot - 0.2 + 1e-6);
+    expect(bells.max[1]).toBeLessThan(deck.y + 0.7);
+    // Rien ne s'allume tant que la lanterne n'est pas là ; sans galerie, Kéo revient sur le chemin.
+    expect(scenetteSuccess('phare', false)).toBeNull();
+    expect(scenetteExit('quais', false)).toBeNull();
+    expect(scenetteExit('filets', false)).toBeNull();
+  });
+
+  it('aux Quais sans leur grue : son pied seul, la bonne caisse va droit dans la barque', () => {
+    const scene = { kind: 'quai', op: 'moitie', before: 10, after: 5 } as const;
+    const o = sceneSpot('quais');
+    const right = [{ x: o.x - 2, y: o.y, z: o.z + 4 }];
+    const built = itemScene('quais', scene, true, right, 0.8, true);
+    const bare = itemScene('quais', scene, true, right, 0.8, false);
+    expect(bare.still.triangles).toBeLessThan(built.still.triangles);
+    expect(boundsOf(bare.still).max[1]).toBeLessThan(boundsOf(built.still).max[1]);
+    expect(bare.reaction!.to.y).toBeLessThan(built.reaction!.to.y);
+    expect(bare.reaction!.to).toEqual(scenetteFinale('quais', scene, 0.8, false)!.to);
+  });
+
+  it('aux Filets sans séchoir, le filet raccommodé reste étendu sur le plancher ; aux Écluses sans leur haut, pas de porte', () => {
+    const scene = { kind: 'filets', catch: 'sardines', count: 3 } as const;
+    const built = scenetteFinale('filets', scene, 0.8, true)!;
+    const bare = scenetteFinale('filets', scene, 0.8, false)!;
+    expect(boundsOf(bare.decor).max[1]).toBeLessThan(boundsOf(built.decor).max[1]);
+    expect(boundsOf(bare.decor).max[1]).toBeLessThan(sceneSpot('filets').y + 1.5);
+    expect(scenetteDecor('ecluses', false, false).triangles).toBeLessThan(scenetteDecor('ecluses', false, true).triangles);
+    expect(scenetteDecor('ecluses', true, false).triangles).toBeLessThan(scenetteDecor('ecluses', true, true).triangles);
   });
 });

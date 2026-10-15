@@ -10,14 +10,14 @@ import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
 import { LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, type CameraPose } from '../../world/continu/camera';
-import { constructionFacets, POSE_DROP, POSE_SECONDS, poseView, ruinFacets, stageComplete, TRACE_STAGE, WHOLE, type PartShape } from '../../world/continu/construction';
-import { FacetBuilder, mergeFacets, type Facets } from '../../world/continu/facets';
-import { distance, type Vec2, type Vec3 } from '../../world/continu/geometry';
+import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
+import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
+import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, zoomMap, type MapView } from '../../world/continu/map';
 import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from '../../world/continu/paths';
 import { PLACES, TERRAIN, placeById, type PlaceId } from '../../world/continu/plan6e';
-import { modelOfPlace } from '../../world/continu/places';
+import { LAMP_COLOR, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { answerObjects, answerScale, itemScene, placeTrace, sceneSpot, type Reaction } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
 import {
@@ -192,8 +192,6 @@ const LAMP_SECONDS = 1.2;
  * déjà posé ; posée, elle reprend les couleurs du lieu.
  */
 const POSE_GLOW = 0x4a4232;
-/** Toutes les parties d'un lieu : le lieu entier, pendant sa scénette. */
-const WHOLE_PARTS: readonly PartShape[] = [WHOLE];
 /** Le cadenas d'un lieu se tient au bord de l'écran de tant de pixels au moins, sinon il ne se montre pas. */
 const LOCK_MARGIN = 24;
 /** À gauche, le cadenas se tient hors de la bande de la colonne des accès directs (72 px), sa moitié comprise. */
@@ -214,7 +212,6 @@ const IDLE_DELAY_MS = 40;
 const MAP_LABEL_SIDE = 100;
 const MAP_LABEL_TOP = 64;
 
-/** Une géométrie à facettes (positions, normales, couleurs de sommet), sa boîte englobante juste. */
 /** Le plus haut point d'un maillage (−∞ s'il est vide). */
 function topOf(f: Facets): number {
   let top = -Infinity;
@@ -222,6 +219,7 @@ function topOf(f: Facets): number {
   return top;
 }
 
+/** Une géométrie à facettes (positions, normales, couleurs de sommet), sa boîte englobante juste. */
 function geometryOf(f: Facets): THREE.BufferGeometry {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(f.positions, 3));
@@ -325,6 +323,26 @@ function veilMaterialOf(): THREE.MeshBasicMaterial {
   return m;
 }
 
+/**
+ * Les faces de la couleur de la lampe (`LAMP_COLOR`, #FFD36B : la lanterne du Phare, les lampes de sa galerie, la
+ * lanterne de proue de la barque des Quais) se dessinent sans ombre, de leur couleur même, au soleil comme à l'ombre :
+ * elles se lisent comme des lumières (directeur artistique), sans maillage ni appel de plus. Les autres faces gardent
+ * leur lumière ; la couleur de la lampe n'est prise par rien d'autre dans le monde.
+ */
+function unshadedLamp(m: THREE.MeshLambertMaterial): THREE.MeshLambertMaterial {
+  const [r, g, b] = linearRgb(LAMP_COLOR);
+  m.onBeforeCompile = (shader) => {
+    shader.uniforms.lampColor = { value: new THREE.Vector3(r, g, b) };
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform vec3 lampColor;')
+      .replace(
+        '#include <opaque_fragment>',
+        'if ( all( lessThan( abs( vColor.rgb - lampColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#include <opaque_fragment>',
+      );
+  };
+  return m;
+}
+
 /** Une brume en géométrie : positions et couleurs avec leur transparence, sa boîte englobante juste. */
 function veilGeometry(v: VeilMesh): THREE.BufferGeometry {
   const g = new THREE.BufferGeometry();
@@ -368,9 +386,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // sur trois), chacun un seul maillage, d'un seul matériau.
   const field = buildHeightField();
   const ground = (x: number, z: number) => heightOnMesh(field, x, z);
-  const landMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
+  const landMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }));
   // Le lieu suivant n'est pas pris dans la brume : de loin, c'est lui qu'on voit.
-  const landmarkMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: false });
+  const landmarkMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: false }));
   const tiles = createTileStore(field);
   const nearRing = new RingMesh(landMaterial, 9000);
   const farRing = new RingMesh(landMaterial, 6000);
@@ -410,8 +428,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const ruinTops = new Map<PlaceId, number>();
   for (const place of PLACES) {
     const y = standingHeight(ground(place.center.x, place.center.z));
-    ruins.set(place.id, ruinFacets(place.id, ground));
-    ruinTops.set(place.id, topOf(ruins.get(place.id)!));
+    const ruin = ruinFacets(place.id, ground);
+    ruins.set(place.id, ruin);
+    ruinTops.set(place.id, topOf(ruin));
     feet.set(place.id, new THREE.Vector3(place.center.x, y, place.center.z));
   }
   // La marque de la prochaine mission, au-dessus du lieu tel qu'il est bâti (sa ruine, puis plus haut à chaque étape) ;
@@ -441,6 +460,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const landmarkMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landmarkMaterial));
   const poseMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: false, emissive: POSE_GLOW });
   const poseMesh = new THREE.Mesh(new THREE.BufferGeometry(), poseMaterial);
+  // La lumière de la lanterne du Phare, allumée (son haut posé, sa scénette réussie) : réunie aux lieux, de la couleur
+  // de la lampe, que leurs matériaux dessinent sans ombre (`unshadedLamp`) ; aucun appel de plus.
+  const lampFacets = placeFacets(lanternLight(), feet.get('phare') ?? new THREE.Vector3());
+  let lampShown = false;
   placesMesh.visible = false;
   landmarkMesh.visible = false;
   poseMesh.visible = false;
@@ -572,14 +595,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let mapView: MapView | null = null;
   const ringCenter = { x: Number.NaN, z: Number.NaN };
   let ringKey = '';
-  // La scénette où se tient Kéo (plus bas, « La scénette d'un lieu »).
+  // La scénette où se tient Kéo (plus bas, « La scénette d'un lieu »), et si l'étape qui porte sa trace est posée.
   let scenette: PlaceId | null = null;
+  let posed = true;
   // La Carte ne se redessine que si sa vue, la taille, la brume ou ce qu'elle montre change (expert frontend).
   let mapDirty = false;
   // Ce que montrent les lieux (la page le donne), et les parties retenues le temps d'une pose (elles descendent à part).
   let placesState: PlacesState | null = null;
   let holding: { place: PlaceId; parts: readonly PartShape[] } | null = null;
-  const builds = new Map<PlaceId, { parts: readonly PartShape[]; lit: boolean; facets: Facets }>();
+  const builds = new Map<PlaceId, { parts: readonly PartShape[]; facets: Facets }>();
   const traceFacets = new Map<string, Facets>();
   /** Les parties posées d'un lieu, sans celles qu'une pose retient (elles descendent à part). */
   const posedOf = (id: PlaceId): readonly PartShape[] => {
@@ -589,16 +613,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     return holding?.place === id ? all.filter((s) => !holding!.parts.includes(s)) : all;
   };
   /**
-   * La construction posée d'un lieu : refaite seulement si ses parties ou sa lanterne changent. Pendant sa scénette, le
-   * lieu se montre entier (la galerie du Phare, les murs du sas : la scénette s'y tient), sa lanterne comme dehors.
+   * La construction posée d'un lieu et ce qui gît encore dans sa ruine (la cloche tombée du Phare) : refaites seulement
+   * si ses parties changent. Pendant sa scénette aussi, le lieu se montre tel qu'il est bâti (rien d'achevé avant d'être
+   * posé : la scénette se joue sur ce qui est là).
    */
   const buildOf = (id: PlaceId, parts: readonly PartShape[]): Facets => {
-    const lit = stageComplete(parts, 1);
-    const shown = scenette === id ? WHOLE_PARTS : parts;
     const known = builds.get(id);
-    if (known && known.lit === lit && known.parts.length === shown.length && known.parts.every((s, i) => s === shown[i])) return known.facets;
-    const facets = constructionFacets(id, shown, ground, lit);
-    builds.set(id, { parts: shown, lit, facets });
+    if (known && known.parts.length === parts.length && known.parts.every((s, i) => s === parts[i])) return known.facets;
+    const facets = mergeFacets([constructionFacets(id, parts, ground), fallenFacets(id, parts, ground)]);
+    builds.set(id, { parts, facets });
     return facets;
   };
   const traceOf = (id: PlaceId, done: boolean): Facets => {
@@ -610,7 +633,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let placesKey = '';
   /**
    * Refait le maillage des lieux si ce qu'il montre a changé : le lieu suivi à part (sauf sur la Carte), la maquette des
-   * Quais et les traces cachées pendant leur scénette (la scénette a les siennes), les parties retenues par une pose.
+   * Quais et les traces cachées pendant leur scénette (la scénette a les siennes), les parties retenues par une pose ;
+   * et la lumière de la lanterne du Phare.
    */
   const placeVisibility = () => {
     const landmark = mapView ? null : markPlace;
@@ -621,16 +645,21 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     placesKey = k;
     const rest: Facets[] = [];
     const mark: Facets[] = [];
+    lampShown = lanternLit(posedOf('phare'), placesState?.traces.phare ?? false);
     for (const p of PLACES) {
+      const ruin = ruins.get(p.id);
+      const ruinTop = ruinTops.get(p.id);
+      const foot = feet.get(p.id);
+      if (!ruin || ruinTop === undefined || !foot) continue;
       const list = p.id === landmark ? mark : rest;
       const parts = posedOf(p.id);
       const build = buildOf(p.id, parts);
-      if (p.id !== hiddenModel) list.push(ruins.get(p.id)!, build);
-      if (scenette !== p.id) setBuiltTop(p.id, Math.max(ruinTops.get(p.id)!, topOf(build)) - feet.get(p.id)!.y);
-      // La trace attend que l'étape qui la porte soit posée (le lieu est entier pendant sa scénette) : avant, rien, pas
-      // même la porte d'amont fermée des Écluses (elle est de leur haut).
-      const carried = scenette === p.id || stageComplete(parts, TRACE_STAGE[p.id]);
-      if (p.id !== hiddenTrace && carried) list.push(traceOf(p.id, placesState?.traces[p.id] ?? false));
+      if (p.id !== hiddenModel) list.push(ruin, build);
+      if (scenette !== p.id) setBuiltTop(p.id, Math.max(ruinTop, topOf(build)) - foot.y);
+      // La trace attend que l'étape qui la porte soit posée, pendant la scénette comme dehors : avant, rien, pas même
+      // la porte d'amont fermée des Écluses (elle est de leur haut).
+      if (p.id !== hiddenTrace && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, placesState?.traces[p.id] ?? false));
+      if (p.id === 'phare' && lampShown) list.push(lampFacets);
     }
     setGeometry(placesMesh, mergeFacets(rest));
     setGeometry(landmarkMesh, mergeFacets(mark));
@@ -791,7 +820,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     down = null;
     if (mapView) return mapUp(e, d);
     // Un toucher pendant une pose la passe : la partie est à sa place, la caméra revient à Kéo.
-    if (posing) return finishPose();
+    if (poseRun.active) return finishPose();
     if (asked || !d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > TAP.pixels || performance.now() - d.t > TAP.ms) return;
     const r = renderer.domElement.getBoundingClientRect();
     pointer.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
@@ -1087,16 +1116,20 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     reactionMesh.material = landMaterial;
     reactionMesh.visible = false;
   };
-  /** Entre dans la scénette d'un lieu : le décor de près, Kéo à sa place dans la galerie, sans son anneau. */
+  /**
+   * Entre dans la scénette d'un lieu : le décor de près, Kéo à sa place, sans son anneau. La scénette se joue sur le lieu
+   * tel qu'il est bâti (`posed` : l'étape qui porte sa trace est posée ; sinon, au Phare, au pied de la tour).
+   */
   const enterScenette = (place: PlaceId) => {
     if (scenette === place) return;
     scenette = place;
-    setGeometry(decorMesh, scenetteDecor(place));
+    posed = traceStagePosed(place, posedOf(place));
+    setGeometry(decorMesh, scenetteDecor(place, false, posed));
     // Aux Quais, la maquette du lieu (sa grue, son hangar) s'efface : le quai de la scénette a les siens. La trace de
     // la scénette aussi, sauf au Phare : la trace de la réussite (la barque chargée, le panier plein, la porte ouverte)
     // n'est pas dessinée deux fois.
     placeVisibility();
-    const k = scenetteKeo(place);
+    const k = scenetteKeo(place, posed);
     keo.position.set(k.at.x, k.at.y, k.at.z);
     keo.scale.setScalar(k.scale);
     keo.rotation.y = k.yaw;
@@ -1119,7 +1152,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     keo.scale.setScalar(KEO_SCALE);
     // Aux Quais, Kéo reste sur le bord du quai, face à la caméra, qui garde la barque chargée (d'un coup, comme tout
     // retour de question).
-    const ex = scenetteExit(left);
+    const ex = scenetteExit(left, posed);
     if (ex) {
       here = { ...ex.at };
       heading = FACING_CAMERA;
@@ -1167,7 +1200,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (finaleShown && scenette === place && !item.answered) {
       finale = null;
       finaleShown = false;
-      setGeometry(decorMesh, scenetteDecor(place));
+      setGeometry(decorMesh, scenetteDecor(place, false, posed));
     }
     // La scénette : Kéo à côté de l'habitant ; la brume reste celle du monde (la caméra est près).
     const entering = scenette !== place;
@@ -1176,7 +1209,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     enterScenette(place);
     fog.near = WORLD_FOG.near;
     fog.far = WORLD_FOG.far;
-    const qp = scenettePose(place, layout.scenette.stage, viewW, viewH);
+    const qp = scenettePose(place, layout.scenette.stage, viewW, viewH, posed);
     if (entering && !reduceMotion) {
       copyPose(qp.pose, descent.to);
       descent.fromShift = fromShift;
@@ -1198,8 +1231,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Dans une scénette, les cloches pendent devant la rambarde ; les caisses sont posées sur un ponton du bassin ; les
     // paniers et les leviers sur une margelle à terre, à la hauteur du plancher de la scène, relevée si le sol monte
     // devant elle (elle ne s'y enfonce jamais), sa jupe jusqu'au sol.
-    const hang = answersHang(place) ? bellPlane(place) : null;
-    const deck = scenetteDeck(place);
+    const hang = answersHang(place, posed) ? bellPlane(place) : null;
+    const deck = scenetteDeck(place, posed);
     let deckY = deck.y;
     const pointsAt = (y: number) => slotFeet.map((o) => (hang ? planeUnder(o.x, o.y, hang.z) : groundUnder(o.x, o.y, y)) ?? spot);
     let points = pointsAt(deckY);
@@ -1228,6 +1261,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       item.answered,
       item.right.map((k) => points[k]).filter(Boolean),
       scale,
+      posed,
     );
     // La scène de l'item et les objets des réponses : un seul maillage.
     const merged = new FacetBuilder();
@@ -1238,7 +1272,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
         picked: hang && item.answered ? [] : item.picked,
         // La bonne caisse est partie au crochet avec la réaction.
         gone: answerLeaves(place) && item.answered ? item.right : [],
-        hanging: hang ? { hand: habitantHand(place), rail: hang.rail } : undefined,
+        hanging: hang ? { hand: habitantHand(place, posed), rail: hang.rail } : undefined,
         ground: landBelow,
       }),
     );
@@ -1272,9 +1306,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Une scénette posée (les Quais, les Filets, les Écluses) : la scène reste ; à la réussite, le décor change, un
     // objet va à sa place, puis une lumière s'allume (environ 1,5 s ; l'état final tout de suite avec « Réduire les
     // animations »).
-    if (!answersHang(scenette)) {
+    if (!answersHang(scenette, posed)) {
       if (!lit || finaleShown) return;
-      const f = scenetteFinale(scenette, asked.scene, asked.scale);
+      const f = scenetteFinale(scenette, asked.scene, asked.scale, posed);
       if (!f) return;
       finaleShown = true;
       setGeometry(decorMesh, f.decor);
@@ -1293,7 +1327,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     itemMesh.visible = false;
     reactionMesh.visible = false;
     reaction = null;
-    const light = lit && !lampLit ? scenetteSuccess(scenette) : null;
+    // La lampe s'allume si la lanterne est posée et encore éteinte (allumée, la lumière du monde la montre déjà).
+    const lantern = lanternLit(posedOf('phare'), true) && !lampShown;
+    const light = lit && !lampLit ? scenetteSuccess(scenette, lantern) : null;
     if (!light) return;
     lampLit = true;
     setGeometry(reactionMesh, light);
@@ -1339,10 +1375,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // rejoint Kéo (`back`). Avec « Réduire les animations », la partie est posée d'un coup, la caméra coupe sur le lieu
   // puis revient (`still`).
   // Un toucher, « Y aller », la Carte ou une question la finissent.
-  type PosePhase = 'rise' | 'drop' | 'look' | 'back' | 'still';
   const poseFrom: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
   const poseTo: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
-  let posing: { place: PlaceId; phase: PosePhase; start: number } | null = null;
   /** La caméra entre deux poses, à la part `e` (déjà adoucie). */
   const tween = (from: CameraPose, to: CameraPose, e: number) => {
     for (const k of ['x', 'y', 'z'] as const) {
@@ -1362,6 +1396,28 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     poseMesh.geometry = new THREE.BufferGeometry();
     placeVisibility();
   };
+  // Le déroulé (world/continu/construction.ts, `createPoseRun`) : sa fin, par n'importe quel chemin, rend la caméra à
+  // Kéo et dit à la page que les célébrations peuvent venir.
+  const poseRun = createPoseRun({
+    rise: (e) => tween(poseFrom, poseTo, e),
+    // Elle descend, de haut (on la voit au-dessus de sa place), et ralentit en arrivant (rien ne rebondit).
+    drop: (e) => {
+      poseMesh.position.y = POSE_DROP * (1 - e);
+      poseMesh.visible = true;
+    },
+    land: landPose,
+    turn: () => {
+      copyPose(current, poseFrom);
+      followPose(focus, lift, poseTo);
+      lookUp(poseTo, lanternTop, keoFeet, look, viewH);
+      if (exit) exitView(poseTo, exit.keep, keoFeet, back);
+    },
+    back: (e) => tween(poseFrom, poseTo, e),
+    done: () => {
+      follow();
+      options.onPosed();
+    },
+  });
   /** Les parties qui arrivent dans un lieu : la pose commence. */
   const startPose = (place: PlaceId, parts: readonly PartShape[]) => {
     finishPose();
@@ -1371,61 +1427,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     poseMesh.visible = false;
     copyPose(current, poseFrom);
     poseView(place, ground, poseTo);
-    const t = performance.now() / 1000;
-    if (reduceMotion) {
-      landPose();
-      applyPose(poseTo);
-      posing = { place, phase: 'still', start: t };
-    } else posing = { place, phase: 'rise', start: t };
+    poseRun.start(performance.now() / 1000, reduceMotion);
+    if (reduceMotion) applyPose(poseTo);
   };
   /** Finit la pose tout de suite : la partie posée, la caméra derrière Kéo (une coupe). */
-  const finishPose = () => {
-    if (!posing) return;
-    posing = null;
-    landPose();
-    follow();
-    options.onPosed();
-  };
+  const finishPose = () => poseRun.finish();
   /** La pose à l'instant `t` (en secondes). */
-  const stepPose = (t: number) => {
-    if (!posing) return;
-    const u = Math.min(1, (t - posing.start) / POSE_SECONDS[posing.phase]);
-    const smooth = u * u * (3 - 2 * u);
-    switch (posing.phase) {
-      case 'rise':
-        tween(poseFrom, poseTo, smooth);
-        if (u >= 1) {
-          posing = { ...posing, phase: 'drop', start: t };
-          poseMesh.position.y = POSE_DROP;
-          poseMesh.visible = true;
-        }
-        return;
-      case 'drop':
-        // Elle descend, de haut (on la voit au-dessus de sa place), et ralentit en arrivant (rien ne rebondit).
-        poseMesh.position.y = POSE_DROP * (1 - smooth);
-        if (u >= 1) {
-          landPose();
-          posing = { ...posing, phase: 'look', start: t };
-        }
-        return;
-      case 'look':
-        if (u >= 1) {
-          copyPose(current, poseFrom);
-          followPose(focus, lift, poseTo);
-          lookUp(poseTo, lanternTop, keoFeet, look, viewH);
-          if (exit) exitView(poseTo, exit.keep, keoFeet, back);
-          posing = { ...posing, phase: 'back', start: t };
-        }
-        return;
-      case 'back':
-        tween(poseFrom, poseTo, smooth);
-        if (u >= 1) finishPose();
-        return;
-      case 'still':
-        if (u >= 1) finishPose();
-        return;
-    }
-  };
+  const stepPose = (t: number) => poseRun.step(t);
   const setPlaces = (state: PlacesState, pose?: { place: PlaceId; parts: readonly PartShape[] }): boolean => {
     placesState = state;
     if (pose?.parts.length && !asked && !mapView) {
@@ -1510,7 +1518,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       meter?.tick(renderer.info, now);
       return;
     }
-    if (posing) {
+    if (poseRun.active) {
       // Une pose : la caméra va vers la maison et en revient, Kéo attend où il est ; ni marque ni cadenas.
       stepPose(t);
       body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);

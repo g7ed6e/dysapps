@@ -6,6 +6,7 @@ import { constructionFacets, WHOLE } from '../../world/continu/construction';
 import { PLACES } from '../../world/continu/plan6e';
 import { buildHeightField, heightOnMesh } from '../../world/continu/terrain';
 import { partiesDe, poserLesParties } from '../../world/parts';
+import { textesDe } from '../../../universes';
 import { constructionState, partShapes, placeConstruction, posedShapes, stateWord } from './constructionParts';
 
 const field = buildHeightField();
@@ -59,5 +60,17 @@ describe('Le mot d’état d’un lieu sur la Carte', () => {
     expect(word('ecluses')).toBe('Restaurées');
     // « En chantier » ne s'accorde pas.
     expect(stateWord('en-chantier', archipeo, 'fp')).toBe('En chantier');
+  });
+
+  it('les mots d’état des deux univers s’accordent : l’accord repose sur leur « e » final (Restaurée, Bâtie)', () => {
+    const agreed = { ms: '', mp: 's', fs: 'e', fp: 'es' } as const;
+    for (const univers of ['archipeo', 'blocland'] as const) {
+      const words = textesDe(univers).etatsDIle;
+      // Un mot d'univers qui ne finirait pas par « e » ne s'accorderait pas en silence : ce test le dirait.
+      expect(words.restauree.endsWith('e'), univers).toBe(true);
+      const stem = words.restauree.slice(0, -1);
+      for (const [agree, end] of Object.entries(agreed)) expect(stateWord('restauree', words, agree as keyof typeof agreed), `${univers} ${agree}`).toBe(stem + end);
+    }
+    expect(stateWord('restauree', textesDe('blocland').etatsDIle, 'fp')).toBe('Bâties');
   });
 });
