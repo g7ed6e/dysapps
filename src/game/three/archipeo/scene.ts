@@ -188,6 +188,8 @@ export interface LabelOnScreen {
   text: string;
   x: number;
   y: number;
+  /** Centré sous son point (les fractions sous les deux sas de Deux rives). */
+  center?: boolean;
 }
 
 /** La marge de la flèche au bord de l'écran, en pixels : hors des boutons des coins. */
@@ -1457,7 +1459,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     asked = { place, pose: qp.pose, objectsKey, itemKey, answered: item.answered, scene: item.scene, scale };
     const labels = facets.labels.map((l) => {
       projected.set(l.at.x, l.at.y, l.at.z).project(camera);
-      return { text: l.text, x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH };
+      return { text: l.text, x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH, ...(l.center ? { center: true } : {}) };
     });
     if (descent.active) {
       // La descente en cours garde sa place : elle reprend du point où elle était.

@@ -21,6 +21,7 @@ import { ForeignWordsProvider, Marked } from '../../../components/ForeignWords';
 import { RichText, frenchTypography } from '../../../components/math/RichText';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { Syllabified } from '../../../components/Syllabified';
+import { fractionWords } from '../../../core/fractions';
 import { seeded } from '../../../core/random';
 import { useSettings } from '../../../core/SettingsContext';
 import { texteGrand } from '../../../core/settings';
@@ -41,7 +42,7 @@ import { exercisesToReview } from '../../review';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
 import { WIDEN_FULL, WIDEN_OFFER, questionLayout, type AnswerSlot, type QuestionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type ScenetteLayout } from '../../world/continu/scenette';
-import { bellRounds, isItemScene, placeInstruction, placeItems, type ItemScene } from '../../world/continu/questions';
+import { answersInColumn, bellRounds, isItemScene, placeInstruction, placeItems, type ItemScene } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { WorldDone } from './WorldDone';
 import { filledGap, overflows, wordsCut } from './fit';
@@ -130,6 +131,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   const [item, setItem] = useState<ItemShown | null>(null);
   const [labels, setLabels] = useState<LabelOnScreen[]>([]);
   const count = item?.count ?? DEFAULT_COUNT;
+  // Les réponses dans la colonne (Calculer avec des fractions, GD-20, point 8, lot L2) : la scène fait le décor.
+  const inColumn = item ? answersInColumn(item.scene) : false;
   const hasAid = item?.aid ?? false;
   // Sur un écran bas, la colonne s'élargit d'un cran quand la phrase n'y tient pas (un grand texte, une phrase longue
   // des Quais) : 38, 46, puis 54 % ; au-delà, la phrase passe en pleine largeur au-dessus des objets ; si elle n'y tient
@@ -138,11 +141,15 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   const [widen, setWiden] = useState(0);
   // Le résultat d'un écran bas qui ne tient pas dans la colonne élargie : il prend toute la largeur au-dessus des objets.
   const [sheetWide, setSheetWide] = useState(false);
+  // Dans une scénette en colonne, un mot de réponse coupé fait d'abord passer la rangée sous la colonne, sur toute la
+  // largeur (« Elles sont égales », Deux rives, GD-20, point 8, lot L2), avant de faire tomber l'image ou de proposer
+  // « Vue simple ».
+  const [wideRow, setWideRow] = useState(false);
   const scenette = scenetteOf(place);
   const layout = useMemo(() => {
     const base = questionLayout({ count, bells: place === 'phare', aid: hasAid, widen }, size.w || 1, size.h || 1);
-    return scenetteLayout({ count, widen, small: place === 'phare', words: place === 'phare', column: place !== 'phare' && !grandTexte, grand: grandTexte, aid: hasAid }, size.w || 1, size.h || 1, base);
-  }, [count, hasAid, place, size, widen, grandTexte]);
+    return scenetteLayout({ count, widen, small: place === 'phare', words: place === 'phare', column: place !== 'phare' && !grandTexte, grand: grandTexte, aid: hasAid, wideRow }, size.w || 1, size.h || 1, base);
+  }, [count, hasAid, place, size, widen, grandTexte, wideRow]);
   // La rangée des réponses à droite de la colonne (les Quais sur un écran bas) : le résultat reste dans la colonne.
   const rowBeside = layout.low && layout.slots.length > 0 && Math.min(...layout.slots.map((sl) => sl.hit.left)) >= layout.panel.left + layout.panel.width;
   const [finished, setFinished] = useState(false);
@@ -195,6 +202,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     const root = box.current;
     if (!root) return;
     if (wordsCut(root.querySelectorAll<HTMLElement>('.world-answer-label'))) {
+      if (!wideRow && layout.panel.left + layout.panel.width < Math.min(...layout.slots.map((sl) => sl.hit.left))) {
+        setWideRow(true);
+        return;
+      }
       if (!layout.low && !bare) {
         setBare(true);
         return;
@@ -221,11 +232,11 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     if (intro) setWiden(widen < WIDEN_FULL ? WIDEN_FULL : WIDEN_OFFER);
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
-  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, plain, simple, bare, grandTexte, openSimple]);
+  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, plain, simple, bare, grandTexte, openSimple, wideRow]);
   // Le panneau de « Vue simple » défile : il s'ouvre en haut (le rôle, la consigne), et `data-suite` dit qu'il reste
   // de quoi lire plus bas (une ombre au-dessus de « Valider ») ou plus haut. Sans « Valider » (les paniers, les leviers,
   // les caisses), `data-repere` montre au bas du panneau un chevron sur un trait pointillé (« Suite plus bas ») tant que
-  // des réponses restent plus bas (au plus grand texte sur un téléphone couché, la consigne dépliée les pousse sous le
+  // des réponses restent plus bas, sous le bord du panneau (au plus grand texte sur un téléphone couché, la consigne dépliée les pousse sous le
   // pli) ; il part une fois en bas du panneau.
   useEffect(() => {
     if (!simple || finished) return;
@@ -239,7 +250,11 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       const above = panel.scrollTop > 1;
       const next = below && above ? 'deux' : below ? 'bas' : above ? 'haut' : '';
       if (panel.dataset.suite !== next) panel.dataset.suite = next;
-      const cue = below && !panel.querySelector('.world-simple-validate');
+      // Le repère ne dit que des réponses : une fois la rangée entière visible, l'indice ou la figure plus bas ne le
+      // rallument pas (GD-20, point 8, lot L2 : au plus grand texte sur téléphone, il ne couvre plus la rangée).
+      const end = panel.getBoundingClientRect().top + panel.clientTop + panel.clientHeight;
+      const answerBelow = [...panel.querySelectorAll('.world-answer')].some((a) => a.getBoundingClientRect().bottom > end + 1);
+      const cue = below && answerBelow && !panel.querySelector('.world-simple-validate');
       if (cue !== 'repere' in panel.dataset) {
         if (cue) panel.dataset.repere = '';
         else delete panel.dataset.repere;
@@ -282,7 +297,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   }, []);
 
   const ready = loaded && picked ? { def: loaded, level: picked.level } : null;
-  const instruction = ready ? placeInstruction(place, ready.level, ready.def.instruction) : '';
+  const instruction = ready ? placeInstruction(place, ready.def.id, ready.level, ready.def.instruction) : '';
   const context = useMemo(() => ({ layout, show, instruction, simple }), [layout, show, instruction, simple]);
 
   const exerciseId = ready?.def.id;
@@ -366,7 +381,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       screens:
         place === 'phare'
           ? (items, seed) => bellRounds(placeItems(place, exerciseId, items), seeded(`${seed}:cloches`))
-          : (items) => placeItems(place, exerciseId, items).map((it) => [it]),
+          : (items) => placeItems(place, exerciseId, items, fractionWords).map((it) => [it]),
       Screen: place === 'phare' ? BellScreen : PlaceChoiceScreen,
       instruction,
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
@@ -375,7 +390,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       className:
         simple && !finished
           ? `in-world scenette simple${layout.low ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}`
-          : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut || (layout.low && offer) ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}`,
+          : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut || (layout.low && offer) ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}${inColumn ? ' reponses-colonne' : ''}`,
     };
   }, [
     exerciseId,
@@ -399,6 +414,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     simpleLow,
     consigneOpen,
     rowBeside,
+    inColumn,
   ]);
 
   // La ligne repliée se coupe après un mot entier, jamais au milieu : les mots qui passeraient à la ligne sont cachés,
@@ -410,19 +426,32 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       const words = [...line.querySelectorAll<HTMLElement>('.world-consigne-word')];
       const ellipsis = line.querySelector<HTMLElement>('.world-consigne-ellipsis');
       for (const w of words) w.hidden = false;
+      line.classList.remove('role-seul');
       if (!ellipsis) return;
       ellipsis.hidden = true;
       if (consigneOpen) return;
-      // La première ligne de la consigne : celle du rôle, ou la suivante quand le rôle a sa ligne (au plus grand texte).
       const role = line.querySelector<HTMLElement>('.world-scenette-role');
-      const ownLine = role && getComputedStyle(role).display === 'block';
-      const first = (ownLine ? (words[0] ?? line) : (role ?? line)).getBoundingClientRect();
-      const onFirstLine = (el: HTMLElement) => el.getBoundingClientRect().top < first.top + first.height / 2;
-      let cut = words.findIndex((w) => !onFirstLine(w));
-      if (cut < 0) return;
-      for (let i = cut; i < words.length; i++) words[i].hidden = true;
-      ellipsis.hidden = false;
-      while (cut > 0 && !onFirstLine(ellipsis)) words[--cut].hidden = true;
+      const ownLine = () => role !== null && getComputedStyle(role).display === 'block';
+      // Coupe la consigne sur sa première ligne : celle du rôle, ou la suivante quand le rôle a sa ligne (au plus grand
+      // texte) ; rend le nombre de mots gardés.
+      const cutLine = () => {
+        for (const w of words) w.hidden = false;
+        ellipsis.hidden = true;
+        const first = (ownLine() ? (words[0] ?? line) : (role ?? line)).getBoundingClientRect();
+        const onFirstLine = (el: HTMLElement) => el.getBoundingClientRect().top < first.top + first.height / 2;
+        let cut = words.findIndex((w) => !onFirstLine(w));
+        if (cut < 0) return words.length;
+        for (let i = cut; i < words.length; i++) words[i].hidden = true;
+        ellipsis.hidden = false;
+        while (cut > 0 && !onFirstLine(ellipsis)) words[--cut].hidden = true;
+        return cut;
+      };
+      // Le rôle en cadre à côté de la consigne (au plus grand texte, lot L2) : si pas un mot n'y tient à côté de lui, il
+      // reprend sa ligne, jamais une consigne réduite à « … ».
+      if (cutLine() === 0 && words.length > 0 && role && !ownLine()) {
+        line.classList.add('role-seul');
+        cutLine();
+      }
     };
     fit();
     let alive = true;
@@ -472,6 +501,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
                 setSheetWide(false);
                 setAnswersOut(false);
                 setBare(false);
+                setWideRow(false);
                 lastItem.current = '';
                 setItem(null);
                 setRun((r) => r + 1);
@@ -495,9 +525,14 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       )}
       {!finished &&
         !simple &&
-        labels.map((l) => (
-          <span key={l.text} className="world-question-label" aria-hidden="true" style={{ transform: `translate(${Math.round(l.x)}px, ${Math.round(l.y)}px)` }}>
-            {l.text}
+        labels.map((l, i) => (
+          <span
+            key={`${i}-${l.text}`}
+            className={`world-question-label${l.center ? ' centre' : ''}`}
+            aria-hidden="true"
+            style={{ transform: `translate(${Math.round(l.x)}px, ${Math.round(l.y)}px)${l.center ? ' translateX(-50%)' : ''}` }}
+          >
+            <RichText text={l.text} />
           </span>
         ))}
     </div>
@@ -541,6 +576,29 @@ const aidOf = (item: ExerciseItem | undefined): AidData | null => aidData(item?.
 
 /** La figure d'un item (la figure exacte, le schéma coté), comme sur l'écran classique. */
 const figureOf = (item: ExerciseItem | undefined): AidData | null => aidData(item?.figure);
+
+/** Une fraction suivie d'un signe de ponctuation (« 2/8. ») : ils ne se séparent pas en fin de ligne. */
+const FRACTION_STUCK = /(\d+\/\d+[.,;:!?])/;
+
+/**
+ * La phrase d'un lieu (Deux rives : « …, l'autre aux 2/8. ») : le texte enrichi, sans que le point passe seul à la ligne
+ * après une fraction en colonne. Propre au monde ouvert : RichText, commun aux deux univers, ne change pas.
+ */
+function PlaceText({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(FRACTION_STUCK).map((part, i) =>
+        i % 2 ? (
+          <span key={i} className="world-nobreak">
+            <RichText text={part} />
+          </span>
+        ) : (
+          part && <RichText key={i} text={part} />
+        ),
+      )}
+    </>
+  );
+}
 
 /** La cible de toucher d'une réponse (l'étiquette et l'objet), et la place de l'étiquette dedans. */
 function slotStyles(slot: AnswerSlot): { hit: CSSProperties; label: CSSProperties } {
@@ -618,9 +676,13 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   const hint = String(item?.hint ?? '');
   const referenceLine = typeof item?.referenceLine === 'string' ? item.referenceLine : '';
   const question = typeof item?.question === 'string' ? item.question : '';
-  // Aux Écluses, la scène dessine la figure (le sas, l'échelle) : elle reste pour « Vue simple » de la grille.
-  const figure = scene && scene.kind !== 'sas' && scene.kind !== 'echelle' ? figureOf(item) : null;
-  const aid = aidOf(item);
+  // Aux Écluses, la scène dessine la figure (le sas, l'échelle) et les barres de Deux rives (les deux sas) : elles
+  // reviennent dans « Vue simple », qui couvre la scène.
+  const drawn = scene !== null && (scene.kind === 'sas' || scene.kind === 'echelle' || scene.kind === 'lockPair');
+  const figure = scene && (simple || (scene.kind !== 'sas' && scene.kind !== 'echelle')) ? figureOf(item) : null;
+  const aid = scene?.kind === 'lockPair' && !simple ? null : aidOf(item);
+  // Calculer avec des fractions : les réponses dans la colonne, en liste, aucun objet ne les porte dans la scène.
+  const inColumn = scene !== null && answersInColumn(scene);
   const chosen = answered?.detail?.chosen;
   const [hintShown, setHintShown] = useState(false);
   const rightIndex = choices.indexOf(answer);
@@ -631,13 +693,52 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   useEffect(() => {
     if (!scene) return;
     const picked = triedKey ? triedKey.split(',').map(Number) : [];
-    show({ key: itemKeyOf, scene, answered: Boolean(answered), right: answered && rightIndex >= 0 ? [rightIndex] : [], picked, count: choices.length, aid: Boolean(aid) });
-  }, [show, itemKeyOf, scene, answered, rightIndex, choices.length, aid, triedKey]);
+    show({
+      key: itemKeyOf,
+      scene,
+      answered: Boolean(answered),
+      right: answered && rightIndex >= 0 && !inColumn ? [rightIndex] : [],
+      picked: inColumn ? [] : picked,
+      count: inColumn ? 0 : choices.length,
+      aid: Boolean(aid) && !drawn,
+    });
+  }, [show, itemKeyOf, scene, answered, rightIndex, choices.length, aid, triedKey, inColumn, drawn]);
   if (!item || !scene) return null;
   // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière.
   const gap = question ? null : filledGap(prompt, answer, answered?.results);
   const filled = gap !== null && rightIndex >= 0;
   const whole = gap ? `${gap.before}${answer}${gap.after}` : prompt;
+
+  // Les réponses : posées sur la scène, sous la colonne ; dans la colonne (Calculer avec des fractions), juste après la
+  // phrase et la ligne de calcul, avant l'indice, la figure et le rappel : elles se voient sans défiler. En « Vue
+  // simple », à leur place de toujours, après la question.
+  const answersBlock = (
+    <div className="world-answers" role="group" aria-label="Réponses possibles">
+      {choices.map((choice, i) => {
+        const slot = layout.slots[i] ?? layout.slots[0];
+        // En « Vue simple », ou quand elles restent dans la colonne, les réponses sont une liste qui passe à la ligne :
+        // rien n'est posé sur la scène.
+        const styles = simple || inColumn || !slot ? { hit: undefined, label: undefined } : slotStyles(slot);
+        const isAnswer = answered && choice === answer;
+        // Au deuxième essai, la réponse déjà tentée reste barrée.
+        const isWrong = Boolean(answered && chosen === choice && choice !== answer) || Boolean(ruledOut?.includes(choice));
+        return (
+          <button
+            key={choice}
+            type="button"
+            style={styles.hit}
+            className={`choice world-answer${isAnswer ? ' right' : ''}${isWrong ? ' wrong' : ''}`}
+            disabled={Boolean(answered) || Boolean(ruledOut?.includes(choice))}
+            onClick={() => onAnswer({ results: [{ key: item.key, correct: choice === answer }], detail: { chosen: choice } })}
+          >
+            <span className="world-answer-label" style={styles.label}>
+              <RichText text={choice} />
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
 
   return (
     <div className="question world-place">
@@ -654,7 +755,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
                   <RichText text={gap?.after ?? ''} />
                 </>
               ) : (
-                <RichText text={prompt} />
+                <PlaceText text={prompt} />
               )}
             </p>
             <SpeakButton text={filled ? whole : spoken} label="Lire la phrase" shown={whole} compact />
@@ -665,6 +766,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
             <RichText text={referenceLine} />
           </p>
         )}
+        {inColumn && !simple && answersBlock}
         <div className="world-question-actions">
           {/* Sur un écran bas, la ligne de calcul et les icônes sur une seule ligne. */}
           {referenceLine && layout.low && (
@@ -709,30 +811,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
         )}
         {aid && <PlaceAid aid={aid} layout={layout} simple={simple} />}
       </div>
-      <div className="world-answers" role="group" aria-label="Réponses possibles">
-        {choices.map((choice, i) => {
-          const slot = layout.slots[i] ?? layout.slots[0];
-          // En « Vue simple », les réponses sont une liste qui passe à la ligne : rien n'est posé sur la scène.
-          const styles = simple ? { hit: undefined, label: undefined } : slotStyles(slot);
-          const isAnswer = answered && choice === answer;
-          // Au deuxième essai, la réponse déjà tentée reste barrée.
-          const isWrong = Boolean(answered && chosen === choice && choice !== answer) || Boolean(ruledOut?.includes(choice));
-          return (
-            <button
-              key={choice}
-              type="button"
-              style={styles.hit}
-              className={`choice world-answer${isAnswer ? ' right' : ''}${isWrong ? ' wrong' : ''}`}
-              disabled={Boolean(answered) || Boolean(ruledOut?.includes(choice))}
-              onClick={() => onAnswer({ results: [{ key: item.key, correct: choice === answer }], detail: { chosen: choice } })}
-            >
-              <span className="world-answer-label" style={styles.label}>
-                <RichText text={choice} />
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      {(!inColumn || simple) && answersBlock}
     </div>
   );
 }

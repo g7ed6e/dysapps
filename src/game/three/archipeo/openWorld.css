@@ -700,6 +700,11 @@
   font-size: max(18px, 1.1rem);
   pointer-events: none;
 }
+/* Les fractions sous les deux sas de Deux rives : centrées sous leur sas, de même taille (GD-20, point 8, lot L2). */
+.world-question-label.centre {
+  margin: 0.15em 0 0;
+  text-align: center;
+}
 /* Le détail du bilan, ouvert d'un toucher : tout de suite là, sans arrivée l'une après l'autre. */
 .world-question .world-done-more .reward-list > li {
   animation: none;
@@ -1215,13 +1220,55 @@
   padding-block: 0;
   white-space: nowrap;
 }
-/* Au plus grand texte, le rôle a sa ligne et la consigne repliée passe dessous (relecture dys et UX UI : « Le docker »
-   collé à « Trouve le double… » se lisait d'un trait). */
+/* Au plus grand texte, le rôle tient sur la ligne de la consigne repliée, plus petit, dans un cadre qui le sépare de
+   la consigne (relecture dys et UX UI : « Le docker » collé à « Trouve le double… » se lisait d'un trait ; GD-20, point
+   8, lot L2 : une ligne de moins, pour que la rangée se voie dès l'ouverture quand la phrase fait trois lignes). */
 :root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold .world-scenette-role {
-  display: block;
+  display: inline-block;
+  margin-right: 0.35em;
+  padding: 0 0.3em;
+  border: var(--border-width, 2px) solid currentColor;
+  border-radius: 6px;
+  font-size: 0.62em;
+  line-height: 1.25;
+  vertical-align: 0.15em;
 }
-:root[data-texte="grand"] .world-question .in-world.simple-bas:not(.consigne-ouverte) .world-consigne-fold {
-  max-height: 2.6em;
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold.role-seul {
+  max-height: calc(1.3em + 1.4em);
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold.role-seul .world-scenette-role {
+  display: block;
+  width: fit-content;
+}
+/* Au plus grand texte sur un écran bas, la ligne de la consigne repliée et la rangée ne prennent que la place d'une
+   cible : les boutons de la ligne à 48 px, les réponses à la taille du texte choisie (sans le cran de plus d'un titre),
+   48 px de haut au moins (GD-20, point 8, lot L2 : la rangée visible dès l'ouverture). */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-line .speak-button,
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-more {
+  min-height: 48px;
+  padding-block: 0;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-line .speak-button svg,
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-more svg {
+  width: 32px;
+  height: 32px;
+}
+/* Les étapes, un trait de 4 px, collées sous la ligne de la consigne et sur la phrase : elles ne prennent pas de ligne. */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .quiz-steps {
+  margin: -3px 0 -6px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers .world-answer,
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answer-label {
+  min-height: 48px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answer-label {
+  padding-block: 0;
+  font-size: max(18px, 1rem);
+  line-height: 1.2;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answer-label .frac {
+  font-size: 1em;
+  line-height: 1.05;
 }
 /* Au plus grand texte, « Lire la suite » se réduit à son icône (son nom reste dit) : la ligne garde le rôle. */
 :root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-more {
@@ -1257,6 +1304,33 @@
 :root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head {
   order: 1;
   line-height: 1.3;
+}
+/* La phrase prend toute la largeur : son haut-parleur (48 px, l'icône seule comme sur un écran étroit, son nom reste dit)
+   se pose en haut à droite, la première ligne seule lui laisse sa place (GD-20, point 8, lot L2 : une phrase de trois
+   lignes en tient souvent deux). La question d'un document des Quais aussi. */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head {
+  position: relative;
+  display: block;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head > .question-prompt::before {
+  content: "";
+  float: right;
+  width: 56px;
+  height: 48px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head > .speak-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-height: 48px;
+  padding: 0;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head > .speak-button svg {
+  width: 32px;
+  height: 32px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head > .speak-button span {
+  display: none;
 }
 :root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers {
   order: 2;
@@ -1539,4 +1613,31 @@
 .port-row-go {
   flex: none;
   min-height: 48px;
+}
+
+/* Calculer avec des fractions (GD-20, point 8, lot L2) : les réponses restent dans la colonne, juste après la phrase, en
+   liste qui passe à la ligne, comme dans « Vue simple » ; la scène fait le décor, aucun objet ne les porte. La colonne
+   défile si l'indice, la figure et le rappel n'y tiennent pas dessous. */
+.world-question .quiz.in-world.reponses-colonne {
+  overflow-y: auto;
+}
+.world-question .in-world.reponses-colonne .world-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0.4rem 0;
+}
+.world-question .in-world.reponses-colonne .world-answers .world-answer {
+  position: static;
+  min-width: 72px;
+  min-height: 56px;
+}
+.world-question .in-world.reponses-colonne .world-answer-label {
+  position: static;
+  min-height: 56px;
+  white-space: normal;
+}
+/* Une fraction et le signe qui la suit restent ensemble en fin de ligne (la phrase de Deux rives, lot L2). */
+.world-question .world-nobreak {
+  white-space: nowrap;
 }

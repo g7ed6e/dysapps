@@ -88,6 +88,30 @@ describe('La place de la scénette à l’écran', () => {
     expect(scenetteLayout({ count: 3, column: true, aid: true }, 1024, 768, questionLayout({ count: 3, aid: true }, 1024, 768)).aid).toBeNull();
   });
 
+  it('les réponses dans la colonne (lot L2) : ni rangée ni « Valider », la colonne jusqu’en bas, la scène à côté', () => {
+    for (const [w, h] of screens)
+      for (const column of [true, false]) {
+        const base = questionLayout({ count: 0 }, w, h);
+        const l = scenetteLayout({ count: 0, column, grand: !column }, w, h, base);
+        const at = `${w}×${h}${column ? '' : ', A'}`;
+        expect(l.slots, at).toEqual([]);
+        expect(l.scenette.validate).toBeNull();
+        expect(l.panel.top + l.panel.maxHeight, at).toBeGreaterThan(h - 20);
+        expect(l.scenette.stage.bottom - l.scenette.stage.top, at).toBeGreaterThan(0);
+        if (column || base.low) expect(l.scenette.stage.left, at).toBeGreaterThanOrEqual(l.panel.left + l.panel.width);
+      }
+  });
+
+  it('un mot de réponse coupé à côté de la colonne : la rangée passe dessous, sur toute la largeur, ses étiquettes plus larges', () => {
+    const base = questionLayout({ count: 3 }, 1024, 768);
+    const beside = scenetteLayout({ count: 3, column: true }, 1024, 768, base);
+    const wide = scenetteLayout({ count: 3, column: true, wideRow: true }, 1024, 768, base);
+    expect(Math.min(...beside.slots.map((s) => s.hit.left))).toBeGreaterThanOrEqual(beside.panel.left + beside.panel.width);
+    expect(Math.min(...wide.slots.map((s) => s.hit.left))).toBeLessThan(wide.panel.left + wide.panel.width);
+    expect(wide.slots[0].label.right - wide.slots[0].label.left).toBeGreaterThan(ANSWER_LAYOUT.maxWidth);
+    for (const s of wide.slots) expect(s.hit.top).toBeGreaterThanOrEqual(wide.panel.top + wide.panel.maxHeight);
+  });
+
   it('aux Quais, la colonne à gauche sur tous les écrans (B), les nombres en rangée à droite de la colonne', () => {
     for (const [w, h] of screens)
       for (const widen of [0, 1, 2]) {
@@ -649,10 +673,14 @@ describe('le retour sans trace à garder', () => {
   });
 });
 
-describe('le retour d’une mission des Quais (GD-20, point 8)', () => {
+describe('le retour d’une mission des Quais et des Écluses (GD-20, point 8)', () => {
   it('Kéo et la trace de la mission jouée dans le champ, la caméra au sud des deux, jamais d’aplomb', () => {
-    for (const mission of ['times-tables', 'make-ten', 'doubles-halves', 'word-problems', 'measures']) {
-      const exit = scenetteExit('quais', true, mission)!;
+    const played = [
+      ...['times-tables', 'make-ten', 'doubles-halves', 'word-problems', 'measures'].map((m) => ['quais', m] as const),
+      ...['number-line', 'equivalence', 'sharing', 'place-value', 'fraction-sums'].map((m) => ['ecluses', m] as const),
+    ];
+    for (const [place, mission] of played) {
+      const exit = scenetteExit(place, true, mission)!;
       const feet = { x: exit.at.x, y: standingHeight(heightAt(exit.at)), z: exit.at.z };
       for (const [w, h] of screens) {
         const pose = followPose(feet);

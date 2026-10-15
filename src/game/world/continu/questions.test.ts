@@ -3,19 +3,26 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { fractionWords } from '../../../core/fractions';
 import { seeded } from '../../../core/random';
 import { MATHS_EXERCISES } from '../../exercises/maths';
 import { PROBLEMES_EXERCISES } from '../../exercises/problems';
+import { POSEES_EXERCISES } from '../../exercises/writtenOperations';
 import { boundsOf } from './facets';
 import { modelOfPlace } from './places';
 import { heightAt } from './terrain';
 import PLACE_ITEMS from './placeItems.json';
 import { PLACES, placeById } from './plan6e';
-import { ANSWER_LAYOUT, QUAIS_TRACE_SPOTS, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placeTrace, questionLayout, sceneSpot, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, ECLUSES_TRACE_SPOTS, QUAIS_TRACE_SPOTS, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placeTrace, questionLayout, sceneSpot, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
 import {
   BELLS_PER_ROUND,
   EXERCISES_WITH_TWINS,
+  LOCK_COLUMN,
+  LOCK_IDLE,
+  PAIR_INSTRUCTION,
   SAS_HINT,
+  answersInColumn,
+  pairScene,
   bellRounds,
   isItemScene,
   placeInstruction,
@@ -158,9 +165,9 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     expect(bar.placeScene).toEqual({ kind: 'sas', n: 3, d: 4 });
     expect(line.placeScene).toEqual({ kind: 'echelle', n: 5, d: 3 });
     expect(bar.figure).toBeDefined();
-    expect(placeInstruction('ecluses', 1, 'réf.')).toContain('sas');
-    expect(placeInstruction('ecluses', 2, 'réf.')).toContain('échelle');
-    expect(placeInstruction('filets', 1, 'réf.')).toBe('réf.');
+    expect(placeInstruction('ecluses', 'maths-6e-fractions-number-line-1', 1, 'réf.')).toContain('sas');
+    expect(placeInstruction('ecluses', 'maths-6e-fractions-number-line-2', 2, 'réf.')).toContain('échelle');
+    expect(placeInstruction('filets', 'french-6e-grammar-spelling-plurals-1', 1, 'réf.')).toBe('réf.');
   });
 
   it('au sas, l’indice et la correction parlent du sas ; la clé et les choix restent ceux de la référence', () => {
@@ -172,6 +179,68 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     expect(sasExplanation(1, 2)).toBe('1 part pleine d’eau sur 2 parts égales : 1/2.');
     const [line] = placeItems('ecluses', 'x', [{ key: '5/3', hint: 'réf.', figure: { kind: 'graduated-line', props: { start: 0, units: 2, perUnit: 3, point: 5 } } }]);
     expect(line.hint).toBe('réf.');
+  });
+
+  it('une consigne par mission aux Écluses : Deux rives a la sienne, les autres gardent celle de référence (lot L2)', () => {
+    expect(placeInstruction('ecluses', 'maths-6e-fractions-equivalence-1', 1, 'réf.')).toBe(PAIR_INSTRUCTION);
+    for (const id of ['maths-6e-fractions-sharing-1', 'maths-6e-fractions-place-value-2', 'maths-6e-fractions-fraction-sums-1']) expect(placeInstruction('ecluses', id, 1, 'réf.')).toBe('réf.');
+  });
+
+  it('Deux rives : deux sas de même unité, la phrase, l’indice et la correction selon le cas ; clé, choix et réponse gardés', () => {
+    const item = (a: [number, number], b: [number, number], answer: string) => ({
+      key: 'k',
+      prompt: 'réf.',
+      choices: [`${a[0]}/${a[1]}`, `${b[0]}/${b[1]}`, 'Elles sont égales'],
+      answer,
+      aid: { kind: 'compare-bars', props: { a, b } },
+    });
+    const same = pairScene(item([3, 5], [2, 5], '3/5'), fractionWords)!;
+    expect(same.scene).toEqual({ kind: 'lockPair', a: [3, 5], b: [2, 5] });
+    expect(same.prompt).toBe('Un sas est rempli aux 3/5, l’autre aux 2/5. Quelle fraction est la plus grande, ou sont-elles égales ?');
+    expect(same.spoken).toBe('Un sas est rempli aux 3 cinquièmes, l’autre aux 2 cinquièmes. Quelle fraction est la plus grande, ou sont-elles égales ?');
+    expect(same.hint).toMatch(/même nombre de parts égales/);
+    expect(same.explanation).toBe('3 parts pleines sur 5, c’est plus que 2 parts pleines sur 5 : 3/5 est plus grande que 2/5.');
+    const num = pairScene(item([1, 5], [1, 3], '1/3'))!;
+    expect(num.prompt.startsWith('Un sas est rempli à 1/5, l’autre à 1/3.')).toBe(true);
+    expect(num.explanation).toBe('Le même nombre de parts pleines, mais des parts plus grandes dans le sas coupé en 3 : 1/3 est plus grande que 1/5.');
+    const equal = pairScene(item([2, 3], [4, 6], 'Elles sont égales'))!;
+    expect(equal.explanation).toBe('L’eau arrive à la même hauteur dans les deux sas : 2/3 et 4/6 sont égales.');
+    expect(pairScene({ key: 'k' })).toBeNull();
+    // Sans les mots de la vue, la phrase lue garde les fractions écrites.
+    expect(pairScene(item([3, 5], [2, 5], '3/5'))!.spoken.startsWith('Un sas est rempli aux 3/5')).toBe(true);
+    // Les items du générateur : chacun a ses deux sas, jamais « gauche » ni « droite », et garde sa clé, ses choix, sa réponse.
+    const def = MATHS_EXERCISES.find((e) => e.id === 'maths-6e-fractions-equivalence-1')!;
+    const items = def.generate!('graine') as QuestionItem[];
+    const placed = placeItems('ecluses', def.id, items);
+    placed.forEach((p, i) => {
+      expect(p.placeScene.kind).toBe('lockPair');
+      expect(`${p.prompt} ${p.hint} ${p.explanation}`).not.toMatch(/gauche|droite/);
+      expect([p.key, p.choices, p.answer, p.aid]).toEqual([items[i].key, items[i].choices, items[i].answer, items[i].aid]);
+      const sc = p.placeScene as { a: [number, number]; b: [number, number] };
+      expect(Math.max(sc.a[1], sc.b[1])).toBeLessThanOrEqual(10);
+    });
+  });
+
+  it('Partage du gâteau et Galets en colonnes : leurs items de référence tels quels, le sas au repos ; Calculer avec des fractions : les réponses dans la colonne', () => {
+    const defs = [...MATHS_EXERCISES, ...POSEES_EXERCISES].filter((e) => e.biome === 'maths-6e-fractions' && (e.type === 'sharing' || e.type === 'place-value'));
+    expect(defs.length).toBe(5);
+    for (const def of defs) {
+      const items = def.generate!('graine') as QuestionItem[];
+      expect(placeItems('ecluses', def.id, items)).toEqual(items.map((it) => ({ ...it, placeScene: LOCK_IDLE })));
+    }
+    for (const id of ['maths-6e-fractions-fraction-sums-1', 'maths-6e-fractions-fraction-sums-2']) {
+      const { items } = reference(id);
+      const placed = placeItems('ecluses', id, items);
+      expect(placed).toEqual(items.map((it) => ({ ...it, placeScene: LOCK_COLUMN })));
+      expect(placed.every((p) => answersInColumn(p.placeScene))).toBe(true);
+    }
+    expect(answersInColumn(LOCK_IDLE)).toBe(false);
+    expect(isItemScene(LOCK_COLUMN) && isItemScene({ kind: 'lockPair', a: [1, 2], b: [2, 4] })).toBe(true);
+    expect(isItemScene({ kind: 'lockPair', a: [3, 2], b: [2, 4] })).toBe(false);
+  });
+
+  it('les cinq missions des Écluses se jouent en scénette (lot L2)', () => {
+    expect(placeById('ecluses').scenes).toEqual(['number-line', 'equivalence', 'sharing', 'place-value', 'fraction-sums']);
   });
 
   it('le double : une idée par phrase', () => {
@@ -249,6 +318,20 @@ describe('Les traces des scénettes', () => {
       }
       expect(placeTrace(p.id, ['abattage-imaginaire']).triangles).toBe(placeTrace(p.id, []).triangles);
     }
+  });
+
+  it('aux Écluses, chaque trace est la sienne, autour de son point, sans rien laisser au-delà du lieu (lot L2)', () => {
+    const c = placeById('ecluses').center;
+    const gate = placeTrace('ecluses', []).triangles;
+    const sizes = new Set<number>();
+    for (const m of Object.keys(ECLUSES_TRACE_SPOTS) as (keyof typeof ECLUSES_TRACE_SPOTS)[]) {
+      const t = placeTrace('ecluses', [m]);
+      sizes.add(t.triangles - gate);
+      const b = boundsOf(t);
+      // La porte d'amont et la trace : rien à plus de huit unités du centre du lieu.
+      expect(Math.max(Math.abs(b.min[0] - c.x), Math.abs(b.max[0] - c.x), Math.abs(b.min[2] - c.z), Math.abs(b.max[2] - c.z))).toBeLessThan(8);
+    }
+    expect(sizes.size).toBe(4);
   });
 
   it('aux Quais, les cinq traces sont posées au sol, sur le terre-plein, sans se toucher ; la barque du passeur sur l’eau, la palette de dix sur le ponton', () => {

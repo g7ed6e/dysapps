@@ -18,6 +18,7 @@ import type { Vec2, Vec3 } from './geometry';
 import { COLORS_6E, DECK_HEIGHT, placeById, type PlaceId } from './plan6e';
 import {
   ANSWER_LAYOUT,
+  ECLUSES_TRACE_SPOTS,
   LOCK,
   QUAIS_TRACE_SPOTS,
   QUAY,
@@ -104,6 +105,8 @@ export const SCENETTE_LAYOUT = {
   validate: { width: 176, height: 60, gap: 20 },
   /** Les cloches, d'un tiers plus petites que la place au-dessus de leur mot : la poutre descend sous Kéo et l'habitant. */
   objectShare: 2 / 3,
+  /** La largeur d'une étiquette au plus quand la rangée passe sous la colonne pour un mot coupé (`wideRow`), en pixels. */
+  wideLabel: 320,
 } as const;
 
 /**
@@ -131,12 +134,17 @@ export interface ScenetteNeeds {
    * droite, au-dessus de la scène.
    */
   aid?: boolean;
+  /**
+   * La rangée sous la colonne, sur toute la largeur, même si les étiquettes tiendraient à côté d'elle, et ses étiquettes
+   * plus larges (`SCENETTE_LAYOUT.wideLabel`) : un mot de réponse y était coupé (« Elles sont égales », lot L2).
+   */
+  wideRow?: boolean;
 }
 
 /** Une rangée de `n` réponses entre `left` et `right`, l'étiquette en bas (`bottom`), l'objet au-dessus jusqu'à `top`. */
-function rowSlots(n: number, left: number, right: number, top: number, bottom: number, lh: number, share: number): { slots: AnswerSlot[]; objectHeight: number } {
+function rowSlots(n: number, left: number, right: number, top: number, bottom: number, lh: number, share: number, max: number = ANSWER_LAYOUT.maxWidth): { slots: AnswerSlot[]; objectHeight: number } {
   const L = ANSWER_LAYOUT;
-  const w = Math.max(48, Math.min(L.maxWidth, (right - left - (n - 1) * L.gap) / n));
+  const w = Math.max(48, Math.min(max, (right - left - (n - 1) * L.gap) / n));
   const objectHeight = Math.max(lh, share * Math.min(L.objectShare * (w + L.gap), bottom - lh - L.lift - top));
   const total = n * w + (n - 1) * L.gap;
   const first = (left + right - total) / 2;
@@ -183,6 +191,34 @@ function lowWithAid(n: number, width: number, height: number, base: QuestionLayo
 }
 
 /**
+ * Une scénette sans rangée (les réponses dans la colonne) : en B, la colonne à gauche jusqu'en bas, la scène à droite,
+ * de sa hauteur d'ordinaire jusqu'au bas de la rangée ; en A (le plus grand texte sur tablette), le panneau en haut sur
+ * toute la largeur, jusqu'en bas, la scène dessous.
+ */
+function withoutRow(width: number, height: number, base: QuestionLayout, needs: ScenetteNeeds): ScenetteLayout {
+  const S = SCENETTE_LAYOUT;
+  const L = ANSWER_LAYOUT;
+  if (base.low || needs.column) {
+    const edge = base.low ? L.edgeLow : L.edge;
+    const sideLeft = Math.max(S.low.left * width, base.panel.left + base.panel.width + edge);
+    const stage = { left: sideLeft, top: S.low.top * height, right: width - edge, bottom: S.low.rowBottom * height };
+    return { ...base, slots: [], objectHeight: 0, panel: { ...base.panel, maxHeight: Math.max(0, height - edge - base.panel.top) }, aid: null, view: stage, scenette: { stage, validate: null } };
+  }
+  const edge = S.edge * width;
+  const top = S.edge * height + (needs.grand ? S.grandTop : 0);
+  const stage = { left: edge, top: S.stage.top * height, right: width - edge, bottom: S.row.bottom * height };
+  return {
+    low: false,
+    slots: [],
+    objectHeight: 0,
+    panel: { left: edge, top, width: needs.grand ? width - 2 * edge : Math.max(0, Math.min(S.panelRight * width, width - S.topRight) - edge), maxHeight: Math.max(0, height - L.edgeLow - top) },
+    aid: null,
+    view: stage,
+    scenette: { stage, validate: null },
+  };
+}
+
+/**
  * La place d'une scénette sur un écran de `width` × `height` pixels : `questionLayout` pour la colonne d'un écran bas
  * (ses crans), puis la scène et la rangée de la disposition A ou B. `scenette.stage` : là où Kéo et l'habitant se
  * tiennent ; `scenette.validate` : la place de « Valider » en bas à droite (A), `null` sur un écran bas (il reste dans
@@ -193,6 +229,9 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   const L = ANSWER_LAYOUT;
   const n = Math.max(1, needs.count);
   const share = needs.small ? S.objectShare : 1;
+  // Aucune réponse dans la scène (`count` 0 : elles restent dans la colonne, Calculer avec des fractions, GD-20, point 8,
+  // lot L2) : ni rangée ni « Valider » ; la colonne descend jusqu'en bas, la scène prend la place de la rangée.
+  if (needs.count === 0) return withoutRow(width, height, base, needs);
   if (base.low || needs.column) {
     // B : la scène à droite de la colonne ; la rangée à droite aussi si les mots y tiennent, sinon sur toute la largeur
     // (comme au lot 4), la colonne s'arrêtant alors au-dessus d'elle.
@@ -201,9 +240,9 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
     const right = width - edge;
     const sideLeft = Math.max(S.low.left * width, base.panel.left + base.panel.width + edge);
     if (base.low && needs.aid && sideLeft < width / 2 + edge) return lowWithAid(n, width, height, base, sideLeft, share);
-    const beside = (right - sideLeft - (n - 1) * L.gap) / n >= (needs.words ? L.minLabelBells : L.minLabel);
+    const beside = !needs.wideRow && (right - sideLeft - (n - 1) * L.gap) / n >= (needs.words ? L.minLabelBells : L.minLabel);
     const rowLeft = beside ? sideLeft : edge;
-    const { slots, objectHeight } = rowSlots(n, rowLeft, right, S.low.rowTop * height, S.low.rowBottom * height, lh, share);
+    const { slots, objectHeight } = rowSlots(n, rowLeft, right, S.low.rowTop * height, S.low.rowBottom * height, lh, share, needs.wideRow ? S.wideLabel : L.maxWidth);
     const highest = Math.min(...slots.map((s) => s.hit.top));
     const panelBottom = beside ? height - edge : highest - edge;
     const stage = { left: sideLeft, top: S.low.top * height, right, bottom: Math.min(S.low.bottom * height, highest - edge) };
@@ -367,8 +406,8 @@ export function scenetteHabitant(place: PlaceId, posed = true): Vec3 {
  * artistique, lot 3) : la trace de la réussite. Aux Quais, sur le bord du quai, juste à l'est de la proue de la barque
  * chargée, qu'on voit au premier plan avec la grue et le hangar derrière lui ; la caméra garde la trace de la mission
  * jouée (`mission`, GD-20, point 8). Aux Filets (lot 4), devant le séchoir,
- * le panier plein et le filet tendu à sa gauche. Aux Écluses, sur la rive ouest, à côté du sas rempli et de sa porte
- * ouverte. Au Phare, rien : Kéo revient sur le chemin. Rien non plus quand l'étape qui porte la trace n'est pas posée
+ * le panier plein et le filet tendu à sa gauche. Aux Écluses, sur la rive ouest, la caméra gardant la trace de la mission
+ * jouée (la porte d'amont ouverte et le sas rempli des Nénuphars, ou une autre, `ECLUSES_TRACE_SPOTS`, lot L2). Au Phare, rien : Kéo revient sur le chemin. Rien non plus quand l'étape qui porte la trace n'est pas posée
  * (`posed`) : la trace attend. Dans ces deux cas, la caméra garde le lieu (`placeKeep`).
  */
 export function scenetteExit(place: PlaceId, posed = true, mission?: string): { at: Vec2; keep: Vec3 } | null {
@@ -387,8 +426,11 @@ export function scenetteExit(place: PlaceId, posed = true, mission?: string): { 
   const c = placeById(place).center;
   if (place === 'filets') return { at: { x: c.x + EXIT_SPOTS.filets.x, z: c.z + EXIT_SPOTS.filets.z }, keep: filetsBasketAt() };
   if (place === 'ecluses') {
+    // La trace de la mission jouée (GD-20, point 8, lot L2) : la porte d'amont ouverte des Nénuphars (le milieu du lieu),
+    // ou ce qu'une autre mission a laissé (la barque, la table, l'escalier, le fanal), à un pas au-dessus du pied du lieu.
     const y = standingHeight(heightAt(c));
-    return { at: { x: c.x + EXIT_SPOTS.ecluses.x, z: c.z + EXIT_SPOTS.ecluses.z }, keep: { x: c.x, y: y + 1, z: c.z } };
+    const spot = mission && mission in ECLUSES_TRACE_SPOTS ? ECLUSES_TRACE_SPOTS[mission as keyof typeof ECLUSES_TRACE_SPOTS] : { x: 0, z: 0 };
+    return { at: { x: c.x + EXIT_SPOTS.ecluses.x, z: c.z + EXIT_SPOTS.ecluses.z }, keep: { x: c.x + spot.x, y: y + 1, z: c.z + spot.z } };
   }
   return null;
 }

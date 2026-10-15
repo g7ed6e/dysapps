@@ -32,6 +32,9 @@ const HEAVIEST: readonly { place: PlaceId; scene: ItemScene }[] = [
   { place: 'filets', scene: { kind: 'filets', catch: 'crabes', count: 4 } },
   { place: 'ecluses', scene: { kind: 'echelle', n: 24, d: 12 } },
   { place: 'ecluses', scene: { kind: 'sas', n: 12, d: 12 } },
+  // Deux rives : deux sas de dix parts (le générateur s'arrête à dix) ; le sas au repos des autres missions (lot L2).
+  { place: 'ecluses', scene: { kind: 'lockPair', a: [10, 10], b: [10, 10] } },
+  { place: 'ecluses', scene: { kind: 'lockIdle', column: false } },
   { place: 'quais', scene: { kind: 'quai', op: 'moitie', before: 98, after: 49 } },
   { place: 'quais', scene: { kind: 'quai', op: 'double', before: 49, after: 98 } },
 ];

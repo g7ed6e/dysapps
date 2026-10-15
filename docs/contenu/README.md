@@ -132,7 +132,7 @@ Pour tous les items :
 - **règle** (pour tous les items) : la seule ligne de la carte de règle de la référence que le lieu montre, sous le titre de la carte (une ligne de cette carte, vérifié) ; ce qui manque passe dans les indices. La carte entière reste dans « Vue simple ».
 - **point** et **pièges** : ce que le jumeau garde de la référence, relu par le directeur contenu pédagogique ; ils ne s’affichent pas.
 - `ecrireIle` (`scripts/contenu/format.mjs`, qui réécrit un fichier d’île depuis les JSON, pour une migration) ne garde pas cette section : après une réécriture, la remettre à la main.
-- `npm run contenu` les range dans `src/game/world/continu/placeItems.json`, que seul le monde ouvert lit ; le lecteur est `scripts/contenu/aulieu.mjs`, qui refuse un jumeau absent ou pris deux fois, un nombre de choix différent, une réponse hors des choix et un « … » resté dans le texte lu. Les Quais et les Écluses n’ont pas d’items du lieu : leur phrase et leur scène se tirent des nombres de l’item du générateur (`src/game/world/continu/questions.ts`).
+- `npm run contenu` les range dans `src/game/world/continu/placeItems.json`, que seul le monde ouvert lit ; le lecteur est `scripts/contenu/aulieu.mjs`, qui refuse un jumeau absent ou pris deux fois, un nombre de choix différent, une réponse hors des choix et un « … » resté dans le texte lu. Les Quais et les Écluses n’ont pas d’items du lieu : leur phrase et leur scène se tirent des nombres de l’item du générateur (`src/game/world/continu/questions.ts`), y compris le gabarit de Deux rives (deux sas, sa phrase, son indice et sa correction selon le cas), écrit là parce que ce format décrit un jumeau par item fixe.
 
 ## Les plans des bâtiments
 

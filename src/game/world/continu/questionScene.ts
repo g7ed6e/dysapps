@@ -548,6 +548,8 @@ function groundBells(b: FacetBuilder, points: readonly Vec3[], s: number, ground
 interface SceneLabel {
   text: string;
   at: Vec3;
+  /** Centré sous son point (les fractions sous les deux sas), sinon posé à sa droite (les repères de l'échelle). */
+  center?: boolean;
 }
 
 /**
@@ -732,6 +734,15 @@ export function lockBoat(): Facets {
   return b.build();
 }
 
+/** Les deux sas de Deux rives : la largeur et la hauteur de chacun (la même), et l'écart entre leurs milieux. */
+const PAIR = { w: 1.35, h: 3.2, step: 2.05 } as const;
+
+/** Le milieu de chacun des deux sas de Deux rives (`a` à l'ouest, `b` à l'est, l'ordre du tirage), et sa part. */
+const pairSas = (x: number, scene: Extract<ItemScene, { kind: 'lockPair' }>): [number, [number, number]][] => [
+  [x - PAIR.step / 2, scene.a],
+  [x + PAIR.step / 2, scene.b],
+];
+
 /**
  * Le sas rempli, à la réussite de la mission aux Écluses : l'eau dans toutes les bandes de la paroi, chacune la sienne,
  * séparées par des traits clairs (le sas se lit « 6 parts sur 6 », pas en aplat ; niveau 1), ou jusqu'en haut du bassin
@@ -749,6 +760,14 @@ export function lockFull(scene: ItemScene): Facets {
     for (let k = 0; k < d; k++) b.box({ x: o.x, y: o.y + 0.15 + k * band + 0.05, z: zf + 0.06 }, [w, band - 0.1, 0.04], C.water);
     for (let k = 1; k < d; k++) b.box({ x: o.x, y: o.y + 0.15 + k * band - 0.05, z: zf + 0.06 }, [w, 0.1, 0.04], C.lockLine);
     b.box({ x: o.x, y: o.y + 0.15 + h - 0.06, z: zf + 0.1 }, [w + 0.8, 0.12, 0.06], C.level);
+  } else if (scene.kind === 'lockPair') {
+    for (const [cx, [, d]] of pairSas(o.x, scene)) {
+      const k = Math.max(1, d),
+        band = PAIR.h / k;
+      for (let i = 0; i < k; i++) b.box({ x: cx, y: o.y + 0.15 + i * band + 0.05, z: zf + 0.06 }, [PAIR.w, band - 0.1, 0.04], C.water);
+      for (let i = 1; i < k; i++) b.box({ x: cx, y: o.y + 0.15 + i * band - 0.05, z: zf + 0.06 }, [PAIR.w, 0.1, 0.04], C.lockLine);
+      b.box({ x: cx, y: o.y + 0.15 + PAIR.h - 0.06, z: zf + 0.1 }, [PAIR.w + 0.2, 0.12, 0.06], C.level);
+    }
   } else if (scene.kind === 'echelle') {
     const top = 2 * 1.7;
     b.box({ x: o.x - 0.6, y: o.y + 0.1, z: zf + 0.12 }, [2, top, 0.04], C.water);
@@ -908,6 +927,41 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     for (let k = 0; k < d; k++) b.box({ x: o.x, y: o.y + 0.15 + k * band + 0.03, z: zf }, [w, band - 0.06, 0.05], k < n ? C.water : C.empty);
     // Le trait du niveau de l'eau, large et clair : le niveau se lit sans la couleur.
     b.box({ x: o.x, y: o.y + 0.15 + n * band - 0.06, z: zf + 0.04 }, [w + 0.8, 0.12, 0.06], C.level);
+    if (answered) reaction = lockReaction();
+  } else if (scene.kind === 'lockPair') {
+    // Deux rives (lot L2) : deux sas côte à côte, de même hauteur, de même largeur, à la même distance de la caméra (la
+    // même unité) ; dans chacun, ses parts égales en traits, l'eau pile sur un trait, la surface de son eau en trait
+    // clair, et rien de commun aux deux (aucun trait d'un sas à l'autre). Sous chacun, sa fraction, un panneau de la
+    // page. Rien ne change à la réponse, sauf la barque qui avance jusqu'à la porte.
+    platform(4.6, 1.6, true);
+    const zf = o.z + 0.35;
+    for (const [cx, [n0, d0]] of pairSas(o.x, scene)) {
+      const d = Math.max(1, d0),
+        n = Math.max(0, Math.min(d, n0)),
+        band = PAIR.h / d;
+      b.box({ x: cx, y: o.y, z: o.z }, [PAIR.w + 0.3, PAIR.h + 0.3, 0.6], C.stoneDark, C.stone);
+      for (let k = 0; k < d; k++) b.box({ x: cx, y: o.y + 0.15 + k * band + 0.03, z: zf }, [PAIR.w, band - 0.06, 0.05], k < n ? C.water : C.empty);
+      b.box({ x: cx, y: o.y + 0.15 + n * band - 0.05, z: zf + 0.04 }, [PAIR.w + 0.1, 0.1, 0.06], C.level);
+      labels.push({ text: `${n0}/${d0}`, at: { x: cx, y: o.y - 0.25, z: zf }, center: true });
+    }
+    if (answered) reaction = lockReaction();
+  } else if (scene.kind === 'lockIdle') {
+    // Le sas au repos (lot L2) : sa paroi de pierre, sa vanne de bois fermée, sa tige et son volant ; rien de l'item.
+    platform(4.6, 1.6, true);
+    const zf = o.z + 0.35;
+    b.box({ x: o.x, y: o.y, z: o.z }, [3.5, 3.5, 0.6], C.stoneDark, C.stone);
+    b.box({ x: o.x, y: o.y + 0.15, z: zf }, [1.5, 1.7, 0.08], C.lever, C.deck);
+    for (const dx of [-0.5, 0, 0.5]) b.box({ x: o.x + dx, y: o.y + 0.15, z: zf + 0.05 }, [0.06, 1.7, 0.03], C.deckSide);
+    // La tige de la vanne, et son volant de manœuvre : une roue de fer à huit pans, face à la caméra, sur son moyeu.
+    const wheel = { x: o.x, y: o.y + 2.55, z: zf + 0.12 };
+    b.box({ x: o.x, y: o.y + 1.85, z: zf + 0.05 }, [0.1, wheel.y - o.y - 1.85, 0.1], C.iron);
+    const r = 0.42;
+    for (let k = 0; k < 8; k++) {
+      const a0 = (k * Math.PI) / 4,
+        a1 = ((k + 1) * Math.PI) / 4;
+      b.beam({ x: wheel.x + r * Math.cos(a0), y: wheel.y + r * Math.sin(a0), z: wheel.z }, { x: wheel.x + r * Math.cos(a1), y: wheel.y + r * Math.sin(a1), z: wheel.z }, 0.07, C.iron);
+    }
+    b.box({ x: wheel.x, y: wheel.y - 0.09, z: wheel.z }, [0.18, 0.18, 0.12], C.iron);
     if (answered) reaction = lockReaction();
   } else if (scene.kind === 'echelle') {
     platform(4.6, 1.6, true);
@@ -1144,9 +1198,10 @@ function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolea
  * devenues les parties de la construction du lieu, ./construction.ts ; les traces restent). Une trace par mission jouée en
  * scénette (GD-20, point 8 : d'une mission à l'autre, seule la trace de la réussite change), tirée de `done`, les missions
  * du lieu déjà réussies : au Phare (la Chasse au son), les lampes de la galerie, face au sud ; aux Filets (le Troupeau),
- * le pan de filet raccommodé tendu sur le séchoir et le panier plein à côté ; aux Écluses (les Nénuphars), la porte
- * d'amont ouverte et le sas rempli (fermée avant : elle est de la trace, pas du modèle, pour s'ouvrir) ; aux Quais, une
- * chose remise en ordre sur le quai par mission (`QUAIS_TRACES`). Rien avant la première réussite, sauf la porte fermée
+ * le pan de filet raccommodé tendu sur le séchoir et le panier plein à côté ; aux Écluses, pour les Nénuphars, la porte
+ * d'amont ouverte et le sas rempli (fermée avant : elle est de la trace, pas du modèle, pour s'ouvrir), et une chose par
+ * autre mission (`ECLUSES_TRACES`, lot L2) ; aux Quais, une chose remise en ordre sur le quai par mission
+ * (`QUAIS_TRACES`). Rien avant la première réussite, sauf la porte fermée
  * des Écluses.
  */
 export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
@@ -1154,7 +1209,10 @@ export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
   const p = placeById(place);
   const y0 = groundAt(p.center);
   const { x, z } = p.center;
-  if (place === 'ecluses') lockGate(b, x, y0, z, done.includes('number-line'));
+  if (place === 'ecluses') {
+    lockGate(b, x, y0, z, done.includes('number-line'));
+    for (const mission of done) ECLUSES_TRACES[mission]?.(b, x, y0, z);
+  }
   if (place === 'phare' && done.includes('sound-hunt')) {
     for (let k = 0; k < 4; k++) {
       // Face au sud (vers la caméra).
@@ -1280,5 +1338,82 @@ const QUAIS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => 
       b.prism({ x: g.x + side * 0.7, y: g.y + 1.06, z: g.z - 0.35 }, 0.26, 0.2, 0.06, 8, C.bucket);
     }
     answerCrate(b, { x: g.x + 0.25, y: g.y + 0.2, z: g.z + 0.15 }, 0.6);
+  },
+};
+
+/**
+ * Où se pose la trace de chaque mission des Écluses (hors des Nénuphars, la porte d'amont ouverte), depuis le centre du
+ * lieu : la barque dans le bassin d'aval, la table devant la maison de l'éclusier, l'escalier contre le mur est du
+ * bassin d'aval, le fanal sur le coin sud-ouest de ce bassin ; tous dans le champ du retour d'une scénette, au sud.
+ */
+export const ECLUSES_TRACE_SPOTS = {
+  equivalence: { x: 0, z: 3 },
+  sharing: { x: 4.1, z: 5.2 },
+  'place-value': { x: 2.75, z: 2.6 },
+  'fraction-sums': { x: -2.05, z: 4.35 },
+} as const;
+
+/** Le haut des murs des bassins des Écluses (places.ts), au-dessus du pied du lieu : le bassin du milieu, celui d'aval. */
+const ECLUSES_TOPS = { middle: 0.9, low: 0.2 } as const;
+
+/**
+ * Les traces des Écluses (GD-20, point 8, lot L2 : une par mission, au même lieu, dans les mêmes volumes, chacune lisible
+ * par sa silhouette, sans figure ni texte, rien qui se compte ou se lise comme une réponse) :
+ * - Deux rives : une barque amarrée dans le bassin d'aval, à flot, son amarre à une bitte du mur ;
+ * - Partage du gâteau : la table de l'éclusier et ses deux bancs, devant sa maison, rien dessus ;
+ * - Galets en colonnes : l'escalier de pierre contre le mur est du bassin d'aval, du quai du sas au bord de l'eau, sa
+ *   main courante de bois ;
+ * - Calculer avec des fractions : le fanal du sas, un poteau de bois sur le coin du bassin d'aval, sa lanterne allumée.
+ * Les Nénuphars gardent la leur : la porte d'amont ouverte et le sas rempli (`lockGate`).
+ */
+const ECLUSES_TRACES: Record<string, (b: FacetBuilder, cx: number, y0: number, cz: number) => void> = {
+  equivalence: (b, x, y0, z) => {
+    const o = ECLUSES_TRACE_SPOTS.equivalence;
+    const at = { x: x + o.x - 0.2, y: y0 + ECLUSES_TOPS.low + 0.12, z: z + o.z };
+    barque(b, at, 1.7, 0.95);
+    // La bitte sur le mur ouest, et l'amarre jusqu'à la poupe.
+    const bollard = { x: x - 2.0, y: y0 + ECLUSES_TOPS.low, z: at.z - 0.3 };
+    b.prism(bollard, 0.13, 0.11, 0.3, 8, C.iron);
+    b.beam({ x: bollard.x, y: bollard.y + 0.22, z: bollard.z }, { x: at.x - 0.85, y: at.y + 0.05, z: at.z - 0.1 }, 0.05, C.rope);
+  },
+  sharing: (b, x, _y0, z) => {
+    const o = ECLUSES_TRACE_SPOTS.sharing;
+    const g = { x: x + o.x, y: groundAt({ x: x + o.x, z: z + o.z }), z: z + o.z };
+    const low = g.y - 0.3;
+    // La table : son plateau clair sur quatre pieds sombres, assez hauts pour descendre dans la pente ; deux bancs.
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.box({ x: g.x + sx * 0.6, y: low, z: g.z + sz * 0.3 }, [0.1, 1.05, 0.1], C.post);
+    b.box({ x: g.x, y: g.y + 0.75, z: g.z }, [1.5, 0.1, 0.85], C.post, C.newWood);
+    for (const sz of [-1, 1]) {
+      for (const sx of [-1, 1]) b.box({ x: g.x + sx * 0.55, y: low, z: g.z + sz * 0.75 }, [0.08, 0.72, 0.08], C.post);
+      b.box({ x: g.x, y: g.y + 0.42, z: g.z + sz * 0.75 }, [1.4, 0.08, 0.3], C.post, C.newWood);
+    }
+  },
+  'place-value': (b, x, y0, z) => {
+    const o = ECLUSES_TRACE_SPOTS['place-value'];
+    // Quatre marches, du haut du mur du sas (au nord) au haut du mur d'aval (au sud), contre le mur est ; leur pierre
+    // descend jusqu'au sol ; la main courante de bois, sur deux poteaux.
+    const steps = 4;
+    const run = 0.55;
+    const from = y0 + ECLUSES_TOPS.middle;
+    const to = y0 + ECLUSES_TOPS.low;
+    const base = Math.min(groundAt({ x: x + o.x, z: z + o.z + 1 }), to) - 0.6;
+    const step = (k: number) => ({ top: from - ((from - to) * (k + 1)) / (steps + 1), z: z + o.z - 0.8 + k * run });
+    for (let k = 0; k < steps; k++) b.box({ x: x + o.x, y: base, z: step(k).z }, [0.9, step(k).top - base, run], C.stoneDark, C.stone);
+    const rail = (k: number) => ({ x: x + o.x + 0.5, y: step(k).top + 0.75, z: step(k).z });
+    for (const k of [0, steps - 1]) b.box({ x: rail(k).x, y: rail(k).y - 0.75, z: rail(k).z }, [0.08, 0.78, 0.08], C.post);
+    b.beam(rail(0), rail(steps - 1), 0.08, C.newWood);
+  },
+  'fraction-sums': (b, x, y0, z) => {
+    const o = ECLUSES_TRACE_SPOTS['fraction-sums'];
+    const at = { x: x + o.x, y: y0 + ECLUSES_TOPS.low, z: z + o.z };
+    // Le fanal : un socle de pierre sur le coin du mur, un poteau, un bras, et la lanterne pendue, sa vitre allumée.
+    b.box(at, [0.45, 0.25, 0.45], C.stoneDark, C.stone);
+    b.box({ x: at.x, y: at.y + 0.25, z: at.z }, [0.16, 2.7, 0.16], C.post);
+    b.box({ x: at.x + 0.35, y: at.y + 2.85, z: at.z }, [0.85, 0.12, 0.12], C.post);
+    const lamp = { x: at.x + 0.65, y: at.y + 2.15, z: at.z };
+    b.box({ x: lamp.x, y: lamp.y + 0.52, z: lamp.z }, [0.05, 0.18, 0.05], C.iron);
+    b.box({ x: lamp.x, y: lamp.y - 0.06, z: lamp.z }, [0.4, 0.07, 0.4], C.stoneDark);
+    b.box({ x: lamp.x, y: lamp.y, z: lamp.z }, [0.32, 0.4, 0.32], C.lamp);
+    b.box({ x: lamp.x, y: lamp.y + 0.4, z: lamp.z }, [0.46, 0.1, 0.46], C.stoneDark);
   },
 };

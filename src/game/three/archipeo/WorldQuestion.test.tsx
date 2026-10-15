@@ -20,7 +20,7 @@ beforeEach(() => {
   );
 });
 
-function renderPlace(place: 'phare' | 'quais' | 'filets', mission: string, plain = false) {
+function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses', mission: string, plain = false) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
@@ -108,11 +108,17 @@ describe('La scénette des Quais', () => {
     expect(document.querySelector('.quiz.in-world.simple')).not.toBeNull();
     expect(answers().map((b) => b.textContent)).toEqual(labels);
     if (wrong) expect(answers()[0].disabled).toBe(true);
-    // Sans « Valider », le repère « Suite plus bas » se montre tant que des caisses restent plus bas, puis part en bas.
+    // Sans « Valider », le repère « Suite plus bas » se montre tant que des caisses restent sous le bord, puis part en bas.
     const panel = document.querySelector<HTMLElement>('.quiz.in-world.simple')!;
     expect(within(panel).getByRole('img', { name: 'Suite plus bas' })).toBeInTheDocument();
     Object.defineProperty(panel, 'scrollHeight', { configurable: true, value: 600 });
     Object.defineProperty(panel, 'clientHeight', { configurable: true, value: 300 });
+    // Toutes les caisses au-dessus du bord : l'indice plus bas ne rallume pas le repère.
+    panel.dispatchEvent(new Event('scroll'));
+    await new Promise((r) => requestAnimationFrame(r));
+    expect('repere' in panel.dataset).toBe(false);
+    // Une caisse sous le bord du panneau : le repère se montre.
+    vi.spyOn(answers().at(-1)!, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 0, y: 450, width: 80, height: 50 }));
     panel.dispatchEvent(new Event('scroll'));
     await vi.waitFor(() => expect('repere' in panel.dataset).toBe(true));
     panel.scrollTop = 300;
@@ -164,5 +170,54 @@ describe('Toutes les missions des Quais en scénette (GD-20, point 8)', () => {
     expect(document.querySelector('.quiz.in-world.ecran-habituel > .consigne')).not.toBeNull();
     expect(document.querySelector('.world-place')).toBeNull();
     expect(world.question).not.toHaveBeenCalled();
+  });
+});
+
+describe('Toutes les missions des Écluses en scénette (GD-20, point 8, lot L2)', () => {
+  const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+  });
+  afterEach(() => vi.restoreAllMocks());
+
+  const start = async () => {
+    const user = userEvent.setup();
+    expect(await screen.findByText('L’éclusier')).toBeInTheDocument();
+    const go = screen.queryByRole('button', { name: /Commencer/ });
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(3));
+    await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
+    return vi.mocked(world.question).mock.calls.at(-1)![0]!;
+  };
+
+  it('Deux rives : sa consigne, les deux sas dans la scène, les barres dans « Vue simple » seulement', async () => {
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    renderPlace('ecluses', 'equivalence');
+    const request = await start();
+    expect(request).toMatchObject({ place: 'ecluses', mission: 'equivalence', item: { scene: { kind: 'lockPair' }, count: 3 } });
+    expect(document.querySelector('.quiz.in-world')!.textContent).toContain('Compare les deux sas');
+    expect(document.querySelector('.quiz.in-world .world-question-aid')).toBeNull();
+    await user.click(screen.getByRole('button', { name: /Vue simple/ }));
+    expect(document.querySelector('.quiz.in-world.simple .world-question-aid')).not.toBeNull();
+  });
+
+  it.each(['sharing', 'place-value'])('%s : le sas au repos, l’item de référence, une réponse par levier', async (mission) => {
+    vi.mocked(world.question).mockClear();
+    renderPlace('ecluses', mission);
+    const request = await start();
+    expect(request).toMatchObject({ place: 'ecluses', mission, item: { scene: { kind: 'lockIdle', column: false } } });
+    expect(request.layout.slots).toHaveLength(answers().length);
+  });
+
+  it('Calculer avec des fractions : les réponses dans la colonne, juste après la phrase ; aucune dans la scène', async () => {
+    vi.mocked(world.question).mockClear();
+    renderPlace('ecluses', 'fraction-sums');
+    const request = await start();
+    expect(request).toMatchObject({ item: { scene: { kind: 'lockIdle', column: true } } });
+    expect(request.layout.slots).toEqual([]);
+    expect(document.querySelector('.quiz.in-world.reponses-colonne .world-question-prompt .world-answers')).not.toBeNull();
+    for (const a of answers()) expect(a.style.left).toBe('');
   });
 });

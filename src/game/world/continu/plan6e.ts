@@ -118,8 +118,8 @@ export interface OpenPlace {
   island: string;
   /**
    * Les missions de l'île qui se jouent déjà en scénette dans le lieu (les autres se jouent sur l'écran habituel, depuis
-   * le panneau du lieu, le temps de la transition) : la Chasse au son au Phare, le Troupeau aux Filets, les Nénuphars
-   * aux Écluses ; aux Quais, toutes (GD-20, point 8, lot L1).
+   * le panneau du lieu, le temps de la transition) : la Chasse au son au Phare, le Troupeau aux Filets ; aux Quais,
+   * toutes (GD-20, point 8, lot L1) ; aux Écluses, toutes (lot L2).
    */
   scenes: readonly string[];
   /** Le centre du modèle au sol, et son quart de tour (en radians autour de la verticale). */
@@ -157,7 +157,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
     touchRadius: 5.5,
   },
   { id: 'filets', name: 'Les Filets', at: 'aux Filets', agree: 'mp', island: 'french-6e-grammar-spelling', scenes: ['plurals'], plan: [1061, 222], door: { x: -0.86, z: 3.29 }, yaw: 0.35, touchRadius: 5.5 },
-  { id: 'ecluses', name: 'Les Écluses', at: 'aux Écluses', agree: 'fp', island: 'maths-6e-fractions', scenes: ['number-line'], plan: [1226, 404], door: { x: -3.14, z: -0.71 }, yaw: 0, touchRadius: 5.5 },
+  { id: 'ecluses', name: 'Les Écluses', at: 'aux Écluses', agree: 'fp', island: 'maths-6e-fractions', scenes: ['number-line', 'equivalence', 'sharing', 'place-value', 'fraction-sums'], plan: [1226, 404], door: { x: -3.14, z: -0.71 }, yaw: 0, touchRadius: 5.5 },
 ];
 
 export const PLACES: readonly OpenPlace[] = PLACE_SPECS.map((s) => ({

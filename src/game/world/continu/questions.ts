@@ -3,7 +3,8 @@
 // manches de six ; les Filets posent les items du lieu écrits pour la scène (docs/contenu/<île>.md, « ## Au lieu ·
 // Archipéo », jumeaux à clé partagée, règle « à l'essai ») ; les Écluses et les Quais gardent l'item du générateur de
 // référence (même clé, mêmes choix, même explication) et n'en changent que la phrase, et la scène se calcule à partir
-// de ses nombres. Code pur : la vue dessine, le jeu commun compte les étoiles et le barème.
+// de ses nombres ; aux Écluses, Deux rives a son gabarit (les deux sas), les autres missions gardent leurs items de
+// référence (GD-20, point 8, lot L2). Code pur : la vue dessine, le jeu commun compte les étoiles et le barème.
 import PLACE_ITEMS from './placeItems.json';
 import type { PlaceId } from './plan6e';
 
@@ -30,10 +31,23 @@ export type ItemScene =
    * que leur gabarit n'est pas écrit, et celles où des caisses feraient compter des objets : la grille, les figures
    * restent dans le panneau).
    */
-  | { kind: 'quai'; op: 'moitie' | 'double' | 'calcul'; before: number; after: number };
+  | { kind: 'quai'; op: 'moitie' | 'double' | 'calcul'; before: number; after: number }
+  /**
+   * Deux sas côte à côte (Deux rives, GD-20, point 8, lot L2) : les deux barres de l'item, de même unité, `a` puis `b`
+   * dans l'ordre du tirage, chacune `[parts pleines, parts égales]`.
+   */
+  | { kind: 'lockPair'; a: [number, number]; b: [number, number] }
+  /**
+   * Le sas au repos : la scène ne montre rien de l'item (les missions des Écluses jouées avec leurs items de référence,
+   * où l'opération posée, l'aide et le schéma restent exacts dans le panneau). `column` : les réponses restent dans la
+   * colonne, la scène fait le décor (Calculer avec des fractions, toute la mission, GD-20, point 8, lot L2).
+   */
+  | { kind: 'lockIdle'; column: boolean };
 
 const CATCHES: readonly Catch[] = ['sardines', 'filets', 'mouette', 'bocaux', 'crabes', 'pêche', 'seaux', 'crabe'];
 const isCount = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0;
+/** Une part de sas : `[parts pleines, parts égales]`, au plus toutes pleines. */
+const isPart = (v: unknown): v is [number, number] => Array.isArray(v) && v.length === 2 && isCount(v[0]) && isCount(v[1]) && v[1] > 0 && v[0] <= v[1];
 
 /** Une scène d'item bien formée (ce que `placeItems` pose dans `placeScene`), vérifiée champ par champ. */
 export function isItemScene(v: unknown): v is ItemScene {
@@ -46,6 +60,10 @@ export function isItemScene(v: unknown): v is ItemScene {
     case 'sas':
     case 'echelle':
       return 'n' in v && isCount(v.n) && 'd' in v && isCount(v.d) && v.d > 0;
+    case 'lockPair':
+      return 'a' in v && isPart(v.a) && 'b' in v && isPart(v.b);
+    case 'lockIdle':
+      return 'column' in v && typeof v.column === 'boolean';
     case 'quai':
       return 'op' in v && (v.op === 'moitie' || v.op === 'double' || v.op === 'calcul') && 'before' in v && isCount(v.before) && 'after' in v && isCount(v.after);
     default:
@@ -60,9 +78,21 @@ export interface PlacedItem extends QuestionItem {
   referenceLine?: string;
 }
 
-/** La consigne d'un lieu, quand elle change : celle des Écluses parle du sas et de l'échelle. */
-export function placeInstruction(place: PlaceId, level: number, reference: string): string {
+/** La mission d'un exercice (`maths-6e-fractions-equivalence-1` : `equivalence`), si son identifiant la porte. */
+const missionIs = (exerciseId: string, mission: string): boolean => exerciseId.includes(`-${mission}-`);
+
+/** La consigne de Deux rives aux Écluses (gabarit `compareFractions`, accord du directeur du contenu, 15 octobre 2026). */
+export const PAIR_INSTRUCTION = 'Compare les deux sas. Le plus rempli d’eau montre la plus grande fraction.';
+
+/**
+ * La consigne d'un lieu, quand elle change, mission par mission : aux Écluses, celle des Nénuphars parle du sas (niveau
+ * 1) ou de l'échelle (niveau 2), celle de Deux rives des deux sas ; les autres missions gardent leur consigne de
+ * référence.
+ */
+export function placeInstruction(place: PlaceId, exerciseId: string, level: number, reference: string): string {
   if (place !== 'ecluses') return reference;
+  if (missionIs(exerciseId, 'equivalence')) return PAIR_INSTRUCTION;
+  if (!missionIs(exerciseId, 'number-line')) return reference;
   return level >= 2
     ? 'Sur l’échelle, compte en combien de parts est coupée l’unité, puis compte les parts jusqu’à l’eau.'
     : 'Regarde le sas : en bas, le nombre de parts égales ; en haut, le nombre de parts pleines d’eau.';
@@ -116,6 +146,71 @@ export function sasExplanation(n: number, d: number): string {
   return `${pleines} sur ${d} parts égales : ${n}/${d}.`;
 }
 
+/** « 3 parts pleines », « 1 part pleine ». */
+const fullParts = (n: number): string => (n > 1 ? `${n} parts pleines` : `${n} part pleine`);
+
+/**
+ * Une fraction dite en mots (« 3 cinquièmes ») : la vue la donne (core/fractions.ts, `fractionWords`), ce dossier ne lit
+ * que lui-même ; sans elle, la fraction écrite.
+ */
+export type SayFraction = (n: number, d: number) => string;
+const written: SayFraction = (n, d) => `${n}/${d}`;
+
+/** « aux 3/5 », « à 1/3 » : le niveau d'un sas, écrit ; et lu (« aux 3 cinquièmes », « à un tiers »). */
+const filledTo = ([n, d]: [number, number], say: SayFraction): { shown: string; said: string } =>
+  n > 1 ? { shown: `aux ${n}/${d}`, said: `aux ${say(n, d)}` } : { shown: `à ${n}/${d}`, said: `à ${say(n, d)}` };
+
+/** Ce que Deux rives change dans un item : sa scène, sa phrase écrite et lue, son indice, sa correction. */
+interface PairItem {
+  scene: Extract<ItemScene, { kind: 'lockPair' }>;
+  prompt: string;
+  spoken: string;
+  hint: string;
+  explanation: string;
+}
+
+/**
+ * Deux rives aux Écluses (le gabarit `compareFractions` né du monde, accord du directeur du contenu pédagogique, 15
+ * octobre 2026) : les deux barres de l'item deviennent deux sas de même unité ; la phrase les dit dans l'ordre du tirage,
+ * jamais « à gauche » ni « à droite » ; l'indice et la correction suivent le cas (même dénominateur, même numérateur,
+ * fractions égales). La clé, les trois choix et la réponse restent ceux de la référence. `null` : l'item n'a pas ses
+ * deux barres, ou elles ne tombent dans aucun des trois cas.
+ */
+export function pairScene(item: QuestionItem, say: SayFraction = written): PairItem | null {
+  const aid = item.aid as { kind?: string; props?: Record<string, unknown> } | undefined;
+  const a = aid?.props?.a;
+  const b = aid?.props?.b;
+  if (aid?.kind !== 'compare-bars' || !isPart(a) || !isPart(b)) return null;
+  const [fa, fb] = [`${a[0]}/${a[1]}`, `${b[0]}/${b[1]}`];
+  const question = 'Quelle fraction est la plus grande, ou sont-elles égales ?';
+  const [ta, tb] = [filledTo(a, say), filledTo(b, say)];
+  const prompt = `Un sas est rempli ${ta.shown}, l’autre ${tb.shown}. ${question}`;
+  const spoken = `Un sas est rempli ${ta.said}, l’autre ${tb.said}. ${question}`;
+  const [va, vb] = [a[0] / a[1], b[0] / b[1]];
+  const [big, small, fBig, fSmall] = va > vb ? [a, b, fa, fb] : [b, a, fb, fa];
+  let hint: string;
+  let explanation: string;
+  if (va === vb) {
+    hint = 'Regarde l’eau des deux sas : arrive-t-elle à la même hauteur ?';
+    explanation = `L’eau arrive à la même hauteur dans les deux sas : ${fa} et ${fb} sont égales.`;
+  } else if (a[1] === b[1]) {
+    hint = 'Les deux sas ont le même nombre de parts égales : compare le nombre de parts pleines d’eau.';
+    explanation = `${fullParts(big[0])} sur ${big[1]}, c’est plus que ${fullParts(small[0])} sur ${small[1]} : ${fBig} est plus grande que ${fSmall}.`;
+  } else if (a[0] === b[0]) {
+    hint = 'Plus un sas est coupé en parts, plus chaque part est petite.';
+    explanation = `Le même nombre de parts pleines, mais des parts plus grandes dans le sas coupé en ${big[1]} : ${fBig} est plus grande que ${fSmall}.`;
+  } else return null;
+  return { scene: { kind: 'lockPair', a, b }, prompt, spoken, hint, explanation };
+}
+
+/** Le sas au repos : la scène des missions des Écluses qui gardent leur item de référence. */
+export const LOCK_IDLE: ItemScene = { kind: 'lockIdle', column: false };
+/** Le sas au repos, les réponses dans la colonne (Calculer avec des fractions). */
+export const LOCK_COLUMN: ItemScene = { kind: 'lockIdle', column: true };
+
+/** Les réponses d'une scène restent-elles dans la colonne (aucun objet ne les porte dans la scène) ? */
+export const answersInColumn = (scene: ItemScene): boolean => scene.kind === 'lockIdle' && scene.column;
+
 /** La phrase des Quais pour un item de Doubles et moitiés (clé `half-34` ou `dbl-23`) : une idée par phrase, un verbe. */
 export function quaiScene(key: string): { scene: Extract<ItemScene, { kind: 'quai' }>; prompt: string } | null {
   let m = /^half-(\d+)$/.exec(key);
@@ -143,10 +238,12 @@ export const QUAI_NU: ItemScene = { kind: 'quai', op: 'calcul', before: 0, after
 /**
  * Les items d'une partie, posés dans un lieu. `items` : ceux que le jeu commun a tirés (même graine, mêmes clés). Le
  * Phare les garde ; les Filets prennent l'item du lieu de même clé quand il existe (sinon l'item de référence, le filet
- * vide) ; les Écluses gardent l'item et ne changent que sa phrase ; aux Quais, Doubles et moitiés change sa phrase, les
- * autres missions gardent l'item de référence tel quel, sur le quai vide.
+ * vide) ; aux Écluses, les Nénuphars gardent l'item et ne changent que sa phrase, Deux rives a son gabarit (les deux
+ * sas), les autres missions gardent leur item de référence, le sas au repos ; aux Quais, Doubles et moitiés change sa phrase, les
+ * autres missions gardent l'item de référence tel quel, sur le quai vide. `say` : les fractions dites en mots (la phrase
+ * lue de Deux rives).
  */
-export function placeItems(place: PlaceId, exerciseId: string, items: readonly QuestionItem[]): PlacedItem[] {
+export function placeItems(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction = written): PlacedItem[] {
   if (place === 'phare') return items.map((it) => ({ ...it, placeScene: { kind: 'cloches' } }));
   if (place === 'filets') {
     const twins = twinsOf(exerciseId);
@@ -169,9 +266,21 @@ export function placeItems(place: PlaceId, exerciseId: string, items: readonly Q
     });
   }
   if (place === 'ecluses') {
+    // Les Écluses (GD-20, point 8, lot L2) : toutes leurs missions au même sas, avec les mêmes leviers. Les Nénuphars et
+    // Deux rives ont leur gabarit ; Partage du gâteau et Galets en colonnes gardent leur item de référence, le sas au
+    // repos ; Calculer avec des fractions aussi, ses réponses dans la colonne (toute la mission).
+    if (missionIs(exerciseId, 'fraction-sums')) return items.map((it) => ({ ...it, placeScene: LOCK_COLUMN }));
+    if (missionIs(exerciseId, 'sharing') || missionIs(exerciseId, 'place-value')) return items.map((it) => ({ ...it, placeScene: LOCK_IDLE }));
+    if (missionIs(exerciseId, 'equivalence'))
+      return items.map((it) => {
+        const pair = pairScene(it, say);
+        if (!pair) return { ...it, placeScene: LOCK_IDLE };
+        // Les barres de référence restent dans l'item : « Vue simple » les montre ; la scène les dessine ici.
+        return { ...it, prompt: pair.prompt, spoken: pair.spoken, hint: pair.hint, explanation: pair.explanation, placeScene: pair.scene };
+      });
     return items.map((it) => {
       const f = fractionOf(it);
-      if (!f) return { ...it, placeScene: { kind: 'sas', n: 1, d: 2 } };
+      if (!f) return { ...it, placeScene: LOCK_IDLE };
       const prompt = f.line ? 'L’eau arrive à quelle hauteur sur l’échelle ?' : 'Quelle part du sas est pleine d’eau ?';
       // La figure de référence reste dans l'item : « Vue simple » la montre ; la scène la remplace ici.
       if (f.line) return { ...it, prompt, spoken: prompt, placeScene: { kind: 'echelle', n: f.n, d: f.d } };

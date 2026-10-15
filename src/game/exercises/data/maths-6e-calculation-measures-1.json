@@ -12,11 +12,12 @@
       "choices": [
         "8 cm²",
         "15 cm²",
-        "16 cm²"
+        "16 cm²",
+        "30 cm²"
       ],
       "answer": "15 cm²",
       "hint": "L’aire d’un rectangle : longueur × largeur.",
-      "explanation": "5 × 3 = 15 : l’aire est 15 cm². 16 cm², c’est le tour, le périmètre : 5 + 3 + 5 + 3. 8 cm², c’est 5 + 3.",
+      "explanation": "5 × 3 = 15 : l’aire est 15 cm². 16 cm², c’est le tour, le périmètre : 5 + 3 + 5 + 3. 8 cm², c’est 5 + 3. 30 cm², c’est 15 doublé, comme on double pour le périmètre.",
       "figure": {
         "kind": "plane-figure",
         "props": {
@@ -36,8 +37,8 @@
             "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
             "L’aire, c’est la surface ; le périmètre, c’est le tour.",
             "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
-            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
-            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe. Prisme droit : 2 bases et seulement des faces plates."
           ]
         }
       }
@@ -49,11 +50,12 @@
       "choices": [
         "12 cm²",
         "24 cm²",
-        "36 cm²"
+        "36 cm²",
+        "42 cm²"
       ],
       "answer": "36 cm²",
       "hint": "L’aire d’un carré : côté × côté.",
-      "explanation": "6 × 6 = 36 : l’aire est 36 cm². 24 cm², c’est le périmètre, 4 × 6 ; 12 cm², c’est 6 × 2.",
+      "explanation": "6 × 6 = 36 : l’aire est 36 cm². 24 cm², c’est le périmètre, 4 × 6 ; 12 cm², c’est 6 × 2 ; 42 cm², c’est 6 × 7, la table d’à côté.",
       "figure": {
         "kind": "plane-figure",
         "props": {
@@ -72,8 +74,8 @@
             "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
             "L’aire, c’est la surface ; le périmètre, c’est le tour.",
             "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
-            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
-            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe. Prisme droit : 2 bases et seulement des faces plates."
           ]
         }
       }
@@ -86,11 +88,12 @@
       "choices": [
         "8 cm³",
         "9 cm³",
+        "12 cm³",
         "24 cm³"
       ],
       "answer": "24 cm³",
       "hint": "Combien de cubes dans une couche ? Puis : combien de couches ?",
-      "explanation": "Une couche a 4 × 2 = 8 cubes. 3 couches : 3 × 8 = 24 cubes, donc 24 cm³. 8 cm³, c’est une seule couche ; 9 cm³, c’est 4 + 2 + 3.",
+      "explanation": "Une couche a 4 × 2 = 8 cubes. 3 couches : 3 × 8 = 24 cubes, donc 24 cm³. 8 cm³, c’est une seule couche ; 9 cm³, c’est 4 + 2 + 3 ; 12 cm³, ce sont les cubes de devant seulement, 4 × 3.",
       "figure": {
         "kind": "solid",
         "props": {
@@ -112,8 +115,8 @@
             "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
             "L’aire, c’est la surface ; le périmètre, c’est le tour.",
             "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
-            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
-            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe. Prisme droit : 2 bases et seulement des faces plates."
           ]
         }
       }
@@ -126,11 +129,12 @@
       "choices": [
         "la boîte A",
         "la boîte B",
-        "elles ont le même volume"
+        "elles ont le même volume",
+        "on ne peut pas savoir"
       ],
       "answer": "elles ont le même volume",
       "hint": "Compte les cubes de chaque boîte.",
-      "explanation": "Boîte A : 2 × 6 = 12 cubes. Boîte B : 3 × 4 = 12 cubes. 12 cm³ chacune : elles ont le même volume, même si B a plus de couches.",
+      "explanation": "Boîte A : 2 × 6 = 12 cubes. Boîte B : 3 × 4 = 12 cubes. 12 cm³ chacune : elles ont le même volume, même si B a plus de couches. On peut savoir : il suffit de compter les cubes.",
       "figure": {
         "kind": "solid",
         "props": {
@@ -157,8 +161,8 @@
             "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
             "L’aire, c’est la surface ; le périmètre, c’est le tour.",
             "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
-            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
-            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe. Prisme droit : 2 bases et seulement des faces plates."
           ]
         }
       }
@@ -170,11 +174,12 @@
       "choices": [
         "aigu",
         "droit",
-        "obtus"
+        "obtus",
+        "plat"
       ],
       "answer": "obtus",
       "hint": "120°, c’est plus ou moins que 90° ?",
-      "explanation": "120° est plus grand que 90° et plus petit que 180° : l’angle est obtus. Un angle aigu mesure moins de 90°.",
+      "explanation": "120° est plus grand que 90° et plus petit que 180° : l’angle est obtus. Un angle aigu mesure moins de 90° ; un angle plat mesure 180°, ses deux côtés font une ligne droite.",
       "figure": {
         "kind": "angle",
         "props": {
@@ -192,8 +197,8 @@
             "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
             "L’aire, c’est la surface ; le périmètre, c’est le tour.",
             "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
-            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
-            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe. Prisme droit : 2 bases et seulement des faces plates."
           ]
         }
       }
@@ -205,11 +210,12 @@
       "choices": [
         "aigu",
         "droit",
-        "obtus"
+        "obtus",
+        "plat"
       ],
       "answer": "aigu",
       "hint": "45°, c’est plus ou moins que 90° ?",
-      "explanation": "45° est plus petit que 90° : l’angle est aigu. C’est la moitié d’un angle droit.",
+      "explanation": "45° est plus petit que 90° : l’angle est aigu. C’est la moitié d’un angle droit. « Plat » ne veut pas dire petit : un angle plat mesure 180°.",
       "figure": {
         "kind": "angle",
         "props": {
@@ -227,8 +233,8 @@
             "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
             "L’aire, c’est la surface ; le périmètre, c’est le tour.",
             "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
-            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
-            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe. Prisme droit : 2 bases et seulement des faces plates."
           ]
         }
       }
@@ -240,11 +246,12 @@
       "choices": [
         "cône",
         "cylindre",
+        "prisme droit",
         "pyramide"
       ],
       "answer": "cylindre",
       "hint": "Combien de disques ? Relis la dernière ligne du rappel.",
-      "explanation": "Deux disques et une face courbe : c’est un cylindre. Le cône n’a qu’un disque et une pointe ; la pyramide n’a que des faces plates.",
+      "explanation": "Deux disques et une face courbe : c’est un cylindre. Le prisme droit a aussi deux bases, mais ce ne sont pas des disques, et toutes ses faces sont plates. Le cône n’a qu’un disque et une pointe ; la pyramide n’a que des faces plates.",
       "figure": {
         "kind": "solid",
         "props": {
@@ -259,8 +266,8 @@
             "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
             "L’aire, c’est la surface ; le périmètre, c’est le tour.",
             "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
-            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
-            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe. Prisme droit : 2 bases et seulement des faces plates."
           ]
         }
       }
@@ -273,11 +280,12 @@
       "choices": [
         "4",
         "5",
+        "9",
         "13"
       ],
       "answer": "5",
       "hint": "Trouve la ligne du foot et celle de la natation. Combien de plus ?",
-      "explanation": "Foot : 9, natation : 4. 9 − 4 = 5 élèves de plus. 13, c’est 9 + 4 : on a ajouté au lieu de chercher l’écart ; 4, c’est la natation seule.",
+      "explanation": "Foot : 9, natation : 4. 9 − 4 = 5 élèves de plus. 13, c’est 9 + 4 : on a ajouté au lieu de chercher l’écart ; 9, c’est le foot seul ; 4, c’est la natation seule.",
       "figure": {
         "kind": "bar-list",
         "props": {
@@ -303,8 +311,8 @@
             "Aire d’un rectangle = longueur × largeur. Aire d’un carré = côté × côté.",
             "L’aire, c’est la surface ; le périmètre, c’est le tour.",
             "1 cm³ : le volume d’un petit cube de 1 cm de côté.",
-            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°.",
-            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe."
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Cylindre : 2 disques et une face courbe. Cône : 1 disque et une pointe. Prisme droit : 2 bases et seulement des faces plates."
           ]
         }
       }
