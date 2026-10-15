@@ -105,7 +105,7 @@ function ecluses(b: FacetBuilder): void {
   }
   // La porte d'aval, entre le sas et le bassin du bas : des vantaux de bois sombre, leurs bornes de pierre aux gonds et
   // leurs balanciers couchés sur les murs du sas (une porte d'écluse, pas une planche). Celle d'amont est des pièces du
-  // lieu (questionScene.ts, `placePieces`) : fermée, puis ouverte par la réussite de la scénette.
+  // lieu (questionScene.ts, `placeTrace`) : fermée, puis ouverte par la réussite de la scénette.
   b.box({ x: 0, y: 0, z: 1.5 }, [3.6, 1.2, 0.3], C.darkWood);
   for (const side of [-1, 1]) {
     b.box({ x: side * 1.95, y: 0.9, z: 1.5 }, [0.4, 0.45, 0.4], C.darkStone, C.stone);
@@ -114,7 +114,7 @@ function ecluses(b: FacetBuilder): void {
   }
   // La Roue, arrêtée, à l'est du sas : un tambour fermé (ses deux faces, leurs rayons), au-dessus de son socle de
   // pierre (où passeront ses pales), son axe porté par deux piles. Elle se lit comme une roue posée, jamais comme un arc
-  // en l'air ; la Roue qui tourne (questionScene.ts, `placePieces`) l'enveloppe au même axe.
+  // en l'air.
   const wheel = { x: WHEEL.x, y: WHEEL.y, z: WHEEL.z };
   b.box({ x: wheel.x, y: SINK, z: wheel.z }, [1.5, wheel.y - WHEEL.r - 0.2 - SINK, 1.8], C.darkStone, C.stone);
   for (const dx of [-0.55, 0.55]) b.box({ x: wheel.x + dx, y: SINK, z: wheel.z }, [0.3, wheel.y + 0.3 - SINK, 0.45], C.darkStone, C.stone);
@@ -130,11 +130,8 @@ function ecluses(b: FacetBuilder): void {
     }
 }
 
-/**
- * La Roue des Écluses, dans le repère du lieu : son axe (est-ouest), son rayon et sa largeur, arrêtée. La Roue qui
- * tourne, plus grande d'un rien, l'enveloppe au même axe (aucune face confondue, rien de l'arrêtée ne dépasse).
- */
-export const WHEEL = { x: 3.05, y: 1.5, z: -0.4, r: 1.5, width: 0.44 } as const;
+/** La Roue des Écluses, dans le repère du lieu : son axe (est-ouest), son rayon et sa largeur, arrêtée. */
+const WHEEL = { x: 3.05, y: 1.5, z: -0.4, r: 1.5, width: 0.44 } as const;
 
 const DRAWN: Record<PlaceId, (b: FacetBuilder) => void> = { phare, quais, filets, ecluses };
 

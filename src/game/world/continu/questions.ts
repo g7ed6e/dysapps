@@ -219,19 +219,10 @@ export function bellRounds<T extends QuestionItem>(items: readonly T[], rng: () 
 }
 
 /**
- * Les pièces durables d'un lieu remises en marche (deux niveaux de réaction, directeur artistique) : une à la première
- * mission réussie (une étoile au moins), une deuxième quand une mission du lieu a ses trois étoiles. Tiré des étoiles
- * déjà gardées par le jeu commun : rien de neuf dans la sauvegarde.
+ * La trace de la scénette d'un lieu se voit dès la première réussite de sa mission (une étoile au moins). Tiré des
+ * étoiles déjà gardées par le jeu commun : rien de neuf dans la sauvegarde.
  */
-export function piecesOf(stars: readonly number[]): 0 | 1 | 2 {
-  if (!stars.some((s) => s >= 1)) return 0;
-  return stars.some((s) => s >= 3) ? 2 : 1;
-}
-
-/** Le dernier palier : le Veilleur se rallume quand les quatre lieux ont leurs deux pièces. */
-export function veilleurAwake(pieces: Readonly<Record<string, number>>, places: readonly string[]): boolean {
-  return places.length > 0 && places.every((id) => (pieces[id] ?? 0) >= 2);
-}
+export const traceDone = (stars: readonly number[]): boolean => stars.some((s) => s >= 1);
 
 /** La durée d'une réaction à un item, en secondes : entre une et deux (elle ne reste pas). */
 export const REACTION_SECONDS = 1.4;

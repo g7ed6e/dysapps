@@ -6,7 +6,8 @@ import { WORLD_FOG } from './camera';
 import { networkSamples, pathRibbons } from './paths';
 import { PLACES, type PlaceId } from './plan6e';
 import { modelOfPlace } from './places';
-import { answerObjects, itemScene, placePieces, sceneSpot, veilleurPiece } from './questionScene';
+import { constructionFacets, WHOLE } from './construction';
+import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
 import type { ItemScene } from './questions';
 import { bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSuccess } from './scenette';
 import { buildHeightField, heightOnMesh, tileRings, tileTriangleCounts } from './terrain';
@@ -19,7 +20,7 @@ const KEO = { triangles: 1620, calls: 2 };
 export const OPEN_WORLD_BUDGET = { triangles: 45_000, calls: 18 } as const;
 
 export interface OpenWorldCost {
-  poste: 'sol' | 'mer' | 'chemins' | 'lieux' | 'brume' | 'kéo' | 'question' | 'scénette' | 'pièces';
+  poste: 'sol' | 'mer' | 'chemins' | 'lieux' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
   triangles: number;
   calls: number;
 }
@@ -88,11 +89,23 @@ function successTriangles(place: PlaceId): number {
 /** Les lieux qui ont leur scénette : tous, le Phare (lot 2), les Quais (lot 3), les Filets et les Écluses (lot 4). */
 const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
 
-/** Les pièces durables, toutes remises, et le Veilleur rallumé : un maillage pour les quatre lieux, et la Roue des Écluses. */
-function piecesCost(): { triangles: number; calls: number } {
-  const all = PLACES.map((p) => placePieces(p.id, 2));
-  const triangles = all.reduce((t, p) => t + p.still.triangles + (p.wheel?.facets.triangles ?? 0), 0) + veilleurPiece().triangles;
+/**
+ * Les lieux (GD-20, lot 1) : les quatre maquettes, leurs constructions entières et les traces de leurs scénettes,
+ * réunies en un maillage, refait à chaque pose (jamais par image) ; le lieu suivi, seul hors de la brume, dans un
+ * second (son matériau sans brouillard). Deux appels, quel que soit le nombre de lieux.
+ */
+function placesCost(ground: (x: number, z: number) => number): { triangles: number; calls: number } {
+  const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + constructionFacets(p.id, [WHOLE], ground).triangles + placeTrace(p.id, true).triangles, 0);
   return { triangles, calls: 2 };
+}
+
+/**
+ * Le passage d'une pose : la partie qui arrive, un maillage à part le temps qu'elle descende à sa place (moins d'une
+ * seconde), puis réunie aux lieux. Compté large : la plus grande construction entière (une partie en pose au plus une
+ * étape et demie), et ses triangles en plus de ceux des lieux.
+ */
+function poseCost(ground: (x: number, z: number) => number): { triangles: number; calls: number } {
+  return { triangles: Math.max(...PLACES.map((p) => constructionFacets(p.id, [WHOLE], ground).triangles)), calls: 1 };
 }
 
 /** L'écart entre deux points où l'on cherche le pire sol : Kéo se tient toujours sur le réseau des chemins. */
@@ -125,31 +138,32 @@ export function openWorldCost(): OpenWorldCost[] {
   const field = buildHeightField();
   const paths = pathRibbons((x, z) => heightOnMesh(field, x, z));
   const ground = groundCost();
+  const height = (x: number, z: number) => heightOnMesh(field, x, z);
   return [
     { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
     { poste: 'mer', triangles: 2, calls: 1 },
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
-    { poste: 'lieux', triangles: PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles, 0), calls: PLACES.length },
+    { poste: 'lieux', ...placesCost(height) },
+    { poste: 'pose', ...poseCost(height) },
     { poste: 'brume', triangles: veilFacets(PLACES.map((p) => p.id)).triangles, calls: 2 },
     { poste: 'kéo', ...KEO },
     { poste: 'question', ...questionCost() },
     { poste: 'scénette', ...scenetteCost() },
-    { poste: 'pièces', ...piecesCost() },
   ];
 }
 
 /**
  * La Carte des lieux ouverts (lot 3), le pire : toute l'île de loin dans l'anneau de loin (celui de près vidé), la mer,
- * les chemins, les quatre lieux, la brume des lieux fermés (les quatre, et le banc qui se lève), Kéo, les pièces. Ni question ni
- * scénette n'y sont ouvertes : elle ne s'ouvre pas pendant une question. Mesuré dans le navigateur : 10 appels,
- * 19 310 triangles (la mer en deux).
+ * les chemins, les lieux (sur la Carte, aucun n'est hors de la brume : un seul maillage, mais compté à deux appels, le
+ * pire), la brume des lieux fermés (les quatre, et le banc qui se lève), Kéo. Ni question, ni scénette, ni pose n'y
+ * sont ouvertes : elle ne s'ouvre pas pendant une question, et l'ouvrir finit la pose.
  */
 export function mapCost(): { triangles: number; calls: number } {
   const field = buildHeightField();
+  const height = (x: number, z: number) => heightOnMesh(field, x, z);
   const far = tileTriangleCounts(field, 'far').reduce((s, n) => s + n, 0);
-  const paths = pathRibbons((x, z) => heightOnMesh(field, x, z)).triangles;
-  const places = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles, 0);
+  const paths = pathRibbons(height).triangles;
+  const places = placesCost(height);
   const veil = veilFacets(PLACES.map((p) => p.id)).triangles;
-  const pieces = piecesCost();
-  return { triangles: far + 2 + paths + places + veil + KEO.triangles + pieces.triangles, calls: 1 + 1 + 1 + PLACES.length + 2 + KEO.calls + pieces.calls };
+  return { triangles: far + 2 + paths + places.triangles + veil + KEO.triangles, calls: 1 + 1 + 1 + places.calls + 2 + KEO.calls };
 }

@@ -100,4 +100,23 @@ describe('La marque évite les boutons', () => {
     expect(enBas.top + enBas.height <= yAller.top - 8 || enBas.left >= yAller.left + yAller.width + 8 || enBas.left + enBas.width <= yAller.left - 8).toBe(true);
     expect(enBas.top + enBas.height).toBeLessThanOrEqual(760);
   });
+
+  it('la flèche du bord gauche passe sous la colonne des accès directs, au bord, jamais à côté (GD-20, lot 1)', () => {
+    // La colonne : 72 px depuis le bord, jusqu'à 184 + 16 px depuis le haut (consultant UX UI).
+    const colonne = { left: 0, top: 0, width: 72, height: 200, below: true };
+    for (const [w, h] of [[844, 390], [667, 375], [1024, 768]]) {
+      const fleche = keepClear({ left: 8, top: 60, width: 64, height: 70 }, [colonne, reglages, { left: 8, top: h - 80, width: 80, height: 70 }], w, h, 8, 8);
+      expect(fleche.left).toBe(8);
+      expect(fleche.top).toBeGreaterThanOrEqual(208);
+    }
+    // Un écran bas au plus grand texte : sous la colonne, la marque couvrirait « Carte » ; elle passe à droite de la
+    // colonne, sans couvrir ni l'une ni l'autre.
+    const carte = { left: 19, top: 285, width: 157, height: 80 };
+    const haute = keepClear({ left: 8, top: 150, width: 338, height: 85 }, [colonne, carte], 844, 390, 8, 8);
+    expect(haute.left).toBeGreaterThanOrEqual(80);
+    expect(haute.top + haute.height <= carte.top || haute.left >= carte.left + carte.width).toBe(true);
+    // Hors de la colonne, rien ne change.
+    const box = { left: 8, top: 260, width: 64, height: 70 };
+    expect(keepClear(box, [colonne], 1024, 768, 8, 8)).toEqual(box);
+  });
 });

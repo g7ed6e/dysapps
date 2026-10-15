@@ -19,12 +19,14 @@ import { useBlocland } from '../../BloclandContext';
 import { getBiome } from '../../biomes';
 import { exercisesOf } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
-import { SettingsButton } from '../../WorldShortcuts';
-import { keepClear, missionOfPlace, nextMission, veiledPlaces, type MarkOnScreen, type ScreenRect } from '../../world/continu/mission';
+import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
+import type { PartShape } from '../../world/continu/construction';
+import { keepClear, missionOfPlace, nextMission, veiledPlaces, type MarkOnScreen, type Obstacle } from '../../world/continu/mission';
 import { PLACES, placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
-import { piecesOf } from '../../world/continu/questions';
+import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
+import { constructionState, placeConstruction, posedShapes } from './constructionParts';
 import { MapLabels } from './MapLabels';
 import { createOpenWorld, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { WorldQuestion } from './WorldQuestion';
@@ -66,7 +68,9 @@ export default function OpenWorldPage() {
   const arrowRef = useRef<HTMLSpanElement>(null);
   // Les cadenas des lieux sous la brume, posés à chaque image par la scène (sans passer par React).
   const locksRef = useRef<HTMLDivElement>(null);
-  const [ready, setReady] = useState(false);
+  // Le nombre de scènes faites : 0 avant la première ; refaite (« Réduire les animations » changé), elle reçoit de nouveau
+  // la marque, la brume, la Carte et les lieux.
+  const [ready, setReady] = useState(0);
   const [walking, setWalking] = useState(false);
   // La mission posée dans un lieu, à l'arrivée de Kéo : la question se joue sur la scène.
   const [asking, setAsking] = useState<{ place: PlaceId; mission: string } | null>(null);
@@ -87,7 +91,7 @@ export default function OpenWorldPage() {
 
   // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
   // taille (jamais une mise en page forcée par image).
-  const [layout] = useState(() => ({ width: 0, height: 0, markW: 0, markH: 0, obstacles: [] as ScreenRect[] }));
+  const [layout] = useState(() => ({ width: 0, height: 0, markW: 0, markH: 0, obstacles: [] as Obstacle[] }));
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
@@ -97,14 +101,21 @@ export default function OpenWorldPage() {
       layout.height = s.height;
       layout.markW = markRef.current?.offsetWidth ?? 0;
       layout.markH = markRef.current?.offsetHeight ?? 0;
-      layout.obstacles = [...stage.querySelectorAll<HTMLElement>('.world-settings, .open-world-go, .open-world-bar')].map((el) => {
-        const r = el.getBoundingClientRect();
-        return { left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height };
-      });
+      // La colonne des accès directs d'abord : une zone réservée du bord gauche jusqu'à elle et un peu dessous, d'où la
+      // marque ne sort que par le bas (consultant UX UI : 72 px depuis le bord, jusqu'à 184 + 16 px depuis le haut).
+      const column = stage.querySelector<HTMLElement>('.world-shortcuts')?.getBoundingClientRect();
+      const reserve: Obstacle[] = column ? [{ left: 0, top: 0, width: Math.max(COLUMN_ZONE.width, column.right - s.left + MARK_EDGE), height: column.bottom - s.top + COLUMN_ZONE.below, below: true }] : [];
+      layout.obstacles = [
+        ...reserve,
+        ...[...stage.querySelectorAll<HTMLElement>('.world-settings, .open-world-go, .open-world-bar')].map((el) => {
+          const r = el.getBoundingClientRect();
+          return { left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height };
+        }),
+      ];
     };
     const observer = new ResizeObserver(measure);
     observer.observe(stage);
-    for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .open-world-go, .open-world-bar')) observer.observe(el);
+    for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .world-shortcuts, .open-world-go, .open-world-bar')) observer.observe(el);
     measure();
     return () => observer.disconnect();
     // La marque et « Y aller » changent d'élément avec la prochaine mission et la marche : on les observe de nouveau.
@@ -141,7 +152,7 @@ export default function OpenWorldPage() {
       },
     });
     world.current = w;
-    setReady(true);
+    setReady((n) => n + 1);
     if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, skip: w.skip, info: w.info };
     return () => {
       w.dispose();
@@ -199,19 +210,52 @@ export default function OpenWorldPage() {
     return () => window.removeEventListener('keydown', onKey);
   }, [mapOpen]);
 
-  // Les pièces durables de chaque lieu : une à la première mission réussie, une deuxième à trois étoiles.
-  const pieces = useMemo(() => {
-    const of = (id: PlaceId): number => {
+  // La construction de chaque lieu (GD-20, lot 1) : les parties de la grille, mêmes identifiants, même sauvegarde.
+  const constructions = useMemo(() => {
+    const of = (id: PlaceId) => {
+      const biome = getBiome(placeById(id).island);
+      return biome ? placeConstruction(biome.id, state.world.parts) : { shapes: [], posed: [] };
+    };
+    return { phare: of('phare'), quais: of('quais'), filets: of('filets'), ecluses: of('ecluses') } satisfies Record<PlaceId, ReturnType<typeof of>>;
+  }, [state.world.parts]);
+  // La trace de la scénette de chaque lieu, dès la première réussite de sa mission (les étoiles gardées).
+  const traces = useMemo(() => {
+    const of = (id: PlaceId): boolean => {
       const p = placeById(id);
       const biome = getBiome(p.island);
-      return biome ? piecesOf(exercisesOf(biome.id, p.mission).map((e) => state.progress[e.id]?.stars ?? 0)) : 0;
+      return biome ? traceDone(exercisesOf(biome.id, p.mission).map((e) => state.progress[e.id]?.stars ?? 0)) : false;
     };
-    const out: Record<PlaceId, number> = { phare: of('phare'), quais: of('quais'), filets: of('filets'), ecluses: of('ecluses') };
-    return out;
+    return { phare: of('phare'), quais: of('quais'), filets: of('filets'), ecluses: of('ecluses') } satisfies Record<PlaceId, boolean>;
   }, [state.progress]);
+  // Ce que la scène montre déjà, et le lieu de la dernière question : une partie arrivée pendant une question s'y pose
+  // après le bilan, sous les yeux de l'élève ; les autres changements (une partie posée dans la grille) sont là, sans
+  // pose. Rien ne change pendant une question : la partie attend la fin du bilan.
+  const shownBuilt = useRef<Record<PlaceId, readonly PartShape[]> | null>(null);
+  const askedPlace = useRef<PlaceId | null>(null);
   useEffect(() => {
-    world.current?.setPieces(pieces);
-  }, [pieces, ready]);
+    if (asking) askedPlace.current = asking.place;
+  }, [asking]);
+  useEffect(() => {
+    const w = world.current;
+    if (!w || asking) return;
+    const built: Record<PlaceId, readonly PartShape[]> = {
+      phare: posedShapes(constructions.phare),
+      quais: posedShapes(constructions.quais),
+      filets: posedShapes(constructions.filets),
+      ecluses: posedShapes(constructions.ecluses),
+    };
+    const before = shownBuilt.current;
+    const place = askedPlace.current;
+    shownBuilt.current = built;
+    askedPlace.current = null;
+    const fresh = before && place ? built[place].filter((s) => !before[place].includes(s)) : [];
+    w.setPlaces({ built, traces }, place && fresh.length ? { place, parts: fresh } : undefined);
+  }, [constructions, traces, asking, ready]);
+  // L'état de chaque lieu sur la Carte, en icône et en mot (les mots d'état de l'univers).
+  const states = useMemo(
+    () => ({ phare: constructionState(constructions.phare), quais: constructionState(constructions.quais), filets: constructionState(constructions.filets), ecluses: constructionState(constructions.ecluses) }),
+    [constructions],
+  );
 
   const closeQuestion = useCallback(() => setAsking(null), []);
   const goNext = () => {
@@ -256,7 +300,10 @@ export default function OpenWorldPage() {
           ))}
         </div>
         {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
-        {mapOpen && !asking && <MapLabels openPlaces={openPlaces} onPick={pickPlace} placer={mapPlacer} onClosed={showClosed} />}
+        {mapOpen && !asking && <MapLabels openPlaces={openPlaces} states={states} words={textes.etatsDIle} onPick={pickPlace} placer={mapPlacer} onClosed={showClosed} />}
+        {/* Les accès directs (décision « Sans Menu », GD-20, lot 1) : la colonne du monde en grille, telle quelle ; les
+            commandes délavées tant qu'elles ne se livrent pas dans le monde continu. Masquée pendant une question. */}
+        {!asking && <WorldShortcuts a="6e" requestsOpen={false} requestsLater />}
         {!asking && <SettingsButton />}
         {asking && world.current && (
           <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} world={world.current} onClose={closeQuestion} />
@@ -338,12 +385,15 @@ const DISTANCE_WORDS = { 1: 'tout près', 2: 'pas loin', 3: 'loin' } as const;
 /** L'écart minimal entre la marque et le bord de l'écran ou un bouton, en pixels. */
 const MARK_EDGE = 8;
 
+/** La zone de la colonne des accès directs que la marque évite : sa largeur au moins, et sa marge sous la colonne. */
+const COLUMN_ZONE = { width: 72, below: 16 } as const;
+
 /**
  * Pose la marque à l'écran, image par image, sans passer par React et sans lire la mise en page (les dimensions sont
  * relues par le `ResizeObserver`) : sur son lieu, au-dessus du point, ou au bord, sa flèche tournée vers lui et la
  * distance en points dessous ; le panneau reste entier à l'écran et hors des boutons Réglages et « Y aller ».
  */
-function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkOnScreen | null, size: { width: number; height: number; markW: number; markH: number; obstacles: ScreenRect[] }): void {
+function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkOnScreen | null, size: { width: number; height: number; markW: number; markH: number; obstacles: Obstacle[] }): void {
   if (!mark) return;
   mark.hidden = !m;
   if (!m) return;

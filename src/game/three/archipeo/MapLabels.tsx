@@ -1,10 +1,11 @@
 // Les étiquettes de la Carte des lieux ouverts (piste 1, lot 3) : Kéo (une pastille unie à sa silhouette et « Toi »), le
-// nom de chaque lieu ouvert (un bouton qui y mène), le cadenas de chaque lieu fermé et son nom atténué dessous (un
+// nom de chaque lieu ouvert (un bouton qui y mène, l'état de sa construction dessous, GD-20, lot 1), le cadenas de chaque lieu fermé et son nom atténué dessous (un
 // toucher : la page dit « Fermé pour l'instant », au-dessus de « Retour »). Rien n'est écrit dans la 3D : la scène donne les points à l'écran, posés ici
 // sans passer par React ; aucune étiquette n'en recouvre une autre (`layoutMapLabels`, world/continu/map.ts). Les
 // tailles sont relues seulement quand une étiquette change de taille (police, grand texte), jamais à chaque image.
 import { useCallback, useEffect, useRef, type MutableRefObject } from 'react';
 import { Icon } from '../../../components/Icon';
+import { islandStateIcon, type IslandStateId } from '../../world/islandState';
 import { layoutMapLabels, type MapLabel, type Rect } from '../../world/continu/map';
 import { PLACES, type PlaceId } from '../../world/continu/plan6e';
 import type { MapSpotOnScreen } from './scene';
@@ -17,9 +18,13 @@ interface Props {
   placer: MutableRefObject<((spots: readonly MapSpotOnScreen[]) => void) | null>;
   /** Un lieu fermé touché : la page dit « Fermé pour l'instant ». */
   onClosed(place: PlaceId): void;
+  /** L'état de chaque lieu ouvert (GD-20, lot 1) : en chantier, achevé, ou rien encore (aucune partie posée). */
+  states: Readonly<Record<PlaceId, 'en-chantier' | 'restauree' | null>>;
+  /** Les mots des états, ceux de l'univers (« En chantier »). */
+  words: Readonly<Record<IslandStateId, string>>;
 }
 
-export function MapLabels({ openPlaces, onPick, placer, onClosed }: Props) {
+export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
@@ -68,7 +73,7 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed }: Props) {
       if (!stage) return;
       const s = el.getBoundingClientRect();
       screen.current = { width: s.width, height: s.height };
-      obstacles.current = [...stage.querySelectorAll<HTMLElement>('.open-world-bar, .world-settings')].map((o) => {
+      obstacles.current = [...stage.querySelectorAll<HTMLElement>('.open-world-bar, .world-settings, .world-shortcuts')].map((o) => {
         const r = o.getBoundingClientRect();
         return { left: r.left - s.left, top: r.top - s.top, right: r.right - s.left, bottom: r.bottom - s.top };
       });
@@ -99,8 +104,23 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed }: Props) {
       </span>
       {PLACES.map((p) =>
         openPlaces.includes(p.id) ? (
-          <button key={p.id} type="button" className="open-world-map-place" data-lieu={p.id} hidden aria-label={`Aller au lieu : ${p.name}`} onClick={() => onPick(p.id)}>
-            {p.name}
+          <button
+            key={p.id}
+            type="button"
+            className="open-world-map-place"
+            data-lieu={p.id}
+            hidden
+            aria-label={`Y aller : ${p.name}${states[p.id] ? `, ${words[states[p.id]!]}` : ''}`}
+            onClick={() => onPick(p.id)}
+          >
+            <span className="open-world-map-place-name">{p.name}</span>
+            {/* L'état de sa construction, sous son nom : une icône et un mot, jamais la couleur seule (consultant UX UI). */}
+            {states[p.id] && (
+              <span className="open-world-map-state" data-etat={states[p.id]} aria-hidden="true">
+                <Icon name={islandStateIcon(states[p.id]!)} />
+                <span className="open-world-map-state-word">{words[states[p.id]!]}</span>
+              </span>
+            )}
           </button>
         ) : (
           <button

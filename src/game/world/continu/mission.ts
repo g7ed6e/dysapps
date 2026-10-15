@@ -135,11 +135,21 @@ export interface ScreenRect {
 const overlaps = (a: ScreenRect, b: ScreenRect) => a.left < b.left + b.width && b.left < a.left + a.width && a.top < b.top + b.height && b.top < a.top + a.height;
 
 /**
- * Garde la marque (`box`) hors des boutons posés sur la scène (`obstacles` : Réglages, « Y aller ») et dans l'écran
- * (`width` × `height`, à `edge` pixels du bord) : pour chaque bouton qu'elle couvre, le plus petit pas qui l'en sort
- * sans sortir de l'écran (à gauche, à droite, au-dessus ou au-dessous, à `gap` pixels du bouton).
+ * Un bouton ou une zone que la marque évite. `below` : la marque n'en sort que par le bas (la colonne des accès directs,
+ * en haut à gauche : la flèche du bord gauche reste au bord, sous la colonne, consultant UX UI, GD-20, lot 1), ou, si
+ * elle n'y tient pas sans couvrir un autre bouton, à sa droite.
  */
-export function keepClear(box: ScreenRect, obstacles: readonly ScreenRect[], width: number, height: number, edge: number, gap: number): ScreenRect {
+export interface Obstacle extends ScreenRect {
+  below?: boolean;
+}
+
+/**
+ * Garde la marque (`box`) hors des boutons posés sur la scène (`obstacles` : Réglages, « Y aller », la colonne des accès
+ * directs) et dans l'écran (`width` × `height`, à `edge` pixels du bord) : pour chaque bouton qu'elle couvre, le plus
+ * petit pas qui l'en sort sans sortir de l'écran (à gauche, à droite, au-dessus ou au-dessous, à `gap` pixels du
+ * bouton ; seulement au-dessous pour une zone `below`).
+ */
+export function keepClear(box: ScreenRect, obstacles: readonly Obstacle[], width: number, height: number, edge: number, gap: number): ScreenRect {
   const fit = (r: ScreenRect): ScreenRect => ({
     ...r,
     left: Math.min(Math.max(r.left, edge), Math.max(edge, width - edge - r.width)),
@@ -148,16 +158,25 @@ export function keepClear(box: ScreenRect, obstacles: readonly ScreenRect[], wid
   let r = fit(box);
   for (const o of obstacles) {
     if (!overlaps(r, o)) continue;
-    const moves = [
-      { ...r, left: o.left - gap - r.width },
-      { ...r, left: o.left + o.width + gap },
-      { ...r, top: o.top - gap - r.height },
-      { ...r, top: o.top + o.height + gap },
-    ]
+    const under = { ...r, top: o.top + o.height + gap };
+    const moves = (o.below
+      ? [under]
+      : [{ ...r, left: o.left - gap - r.width }, { ...r, left: o.left + o.width + gap }, { ...r, top: o.top - gap - r.height }, under]
+    )
       .map(fit)
       .filter((m) => !overlaps(m, o))
       .sort((a, b) => Math.hypot(a.left - r.left, a.top - r.top) - Math.hypot(b.left - r.left, b.top - r.top));
     if (moves[0]) r = moves[0];
+  }
+  // La colonne d'abord : poussée vers le haut par un autre bouton, la marque repasse sous elle ; si elle n'y tient pas
+  // (un écran bas au plus grand texte, « Carte » juste dessous), elle se pose à droite de la colonne, jamais sur elle.
+  for (const o of obstacles) {
+    if (!o.below || !overlaps(r, o)) continue;
+    const others = obstacles.filter((x) => x !== o);
+    const clear = (m: ScreenRect) => !overlaps(m, o) && !others.some((x) => overlaps(m, x));
+    const under = fit({ ...r, top: o.top + o.height + gap });
+    const beside = fit({ ...r, left: o.left + o.width + gap });
+    r = clear(under) ? under : clear(beside) ? beside : under;
   }
   return r;
 }

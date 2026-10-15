@@ -426,6 +426,14 @@ describe('Le budget du monde continu', () => {
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
   });
 
+  it('les quatre lieux, leurs constructions et leurs traces en deux appels, la pose d’une partie en un (GD-20, lot 1)', () => {
+    const cost = openWorldCost();
+    expect(cost.find((c) => c.poste === 'lieux')?.calls).toBe(2);
+    expect(cost.find((c) => c.poste === 'pose')?.calls).toBe(1);
+    // Il reste de la place pour les lots suivants (lieu de départ, obstacles, Nef, repère) : 4 appels au moins.
+    expect(OPEN_WORLD_BUDGET.calls - cost.reduce((s, c) => s + c.calls, 0)).toBeGreaterThanOrEqual(4);
+  });
+
   it('la Carte des lieux ouverts, toute l’île de loin, tient aussi dans l’enveloppe', () => {
     const map = mapCost();
     expect(map.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);

@@ -29,14 +29,18 @@ function requestCount(world: World, a: ArchipelagoId, quetes: boolean): number {
   return commandesOuvertes(world, a).length + (quetes && openStoryOf(world, a) ? 1 : 0);
 }
 
-/** En haut à gauche, en colonne : Reprendre, Révisions, Commandes. Toujours à leur place, délavés quand ils sont vides. */
-export function WorldShortcuts({ a, requestsOpen }: { a: ArchipelagoId; requestsOpen: boolean }) {
+/**
+ * En haut à gauche, en colonne : Reprendre, Révisions, Commandes. Toujours à leur place, délavés quand ils sont vides.
+ * `requestsLater` : les commandes ne se livrent pas encore là où l'on est (le monde continu, avant le lot 4 de GD-20) :
+ * le bouton reste à sa place, délavé, sans compteur, et son toucher dit « aucune commande ».
+ */
+export function WorldShortcuts({ a, requestsOpen, requestsLater = false }: { a: ArchipelagoId; requestsOpen: boolean; requestsLater?: boolean }) {
   const navigate = useNavigate();
   const { state } = useBlocland();
   const textes = useTextes();
   const resume = lastPlace(state.world.links);
   const reviews = questsToReview(state.spaced, state.world.links);
-  const commandes = textes.commandes ? requestCount(state.world, a, Boolean(textes.quetes)) : 0;
+  const commandes = textes.commandes && !requestsLater ? requestCount(state.world, a, Boolean(textes.quetes)) : 0;
   return (
     <nav className="world-shortcuts" data-couvre="bouton" data-tuto="raccourcis" aria-label="Reprendre">
       <WorldButton icon="play" name={resume ? `Ma dernière mission : ${resume.label}` : 'Ma dernière mission'} empty={resume ? undefined : 'pas encore de mission'} onClick={() => resume && navigate(resume.path)} />

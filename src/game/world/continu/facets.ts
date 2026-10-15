@@ -174,3 +174,42 @@ export function boundsOf(f: Facets): { min: [number, number, number]; max: [numb
   }
   return { min, max };
 }
+
+/**
+ * Des facettes posées dans le monde : tournées autour de la verticale (`yaw`) puis déplacées, normales comprises. Pour
+ * réunir plusieurs maquettes dans un seul maillage (un appel de dessin).
+ */
+export function placeFacets(f: Facets, at: { x: number; y: number; z: number; yaw?: number }): Facets {
+  const c = Math.cos(at.yaw ?? 0),
+    s = Math.sin(at.yaw ?? 0);
+  const positions = new Float32Array(f.positions.length);
+  const normals = new Float32Array(f.normals.length);
+  for (let k = 0; k < f.positions.length; k += 3) {
+    const px = f.positions[k], py = f.positions[k + 1], pz = f.positions[k + 2];
+    positions[k] = at.x + px * c + pz * s;
+    positions[k + 1] = at.y + py;
+    positions[k + 2] = at.z - px * s + pz * c;
+    const nx = f.normals[k], nz = f.normals[k + 2];
+    normals[k] = nx * c + nz * s;
+    normals[k + 1] = f.normals[k + 1];
+    normals[k + 2] = -nx * s + nz * c;
+  }
+  return { positions, normals, colors: f.colors, triangles: f.triangles };
+}
+
+/** Plusieurs maillages réunis en un seul, leurs tableaux faits une fois. */
+export function mergeFacets(list: readonly Facets[]): Facets {
+  let length = 0;
+  for (const f of list) length += f.positions.length;
+  const positions = new Float32Array(length);
+  const normals = new Float32Array(length);
+  const colors = new Float32Array(length);
+  let offset = 0;
+  for (const f of list) {
+    positions.set(f.positions, offset);
+    normals.set(f.normals, offset);
+    colors.set(f.colors, offset);
+    offset += f.positions.length;
+  }
+  return { positions, normals, colors, triangles: length / 9 };
+}

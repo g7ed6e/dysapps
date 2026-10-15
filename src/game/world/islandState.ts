@@ -23,6 +23,9 @@ const ISLAND_STATES: Record<IslandStateId, IslandStateDef> = {
   restauree: { id: 'restauree', icon: 'check' },
 };
 
+/** L'icône d'un état d'île (la même partout où l'état se dit, dans la grille comme dans le monde continu). */
+export const islandStateIcon = (id: IslandStateId): AnyIconName => ISLAND_STATES[id].icon;
+
 /** Aucune mission de l'île n'a encore été jouée. */
 export function isUnexplored(state: Pick<GameState, 'progress'>, island: BiomeId): boolean {
   return !CATALOG.some((e) => e.biome === island && state.progress[e.id] !== undefined);

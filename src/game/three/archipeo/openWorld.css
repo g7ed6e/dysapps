@@ -31,6 +31,10 @@
   cursor: pointer;
   will-change: transform;
 }
+/* Cachée (une pose, la marque hors de l'écran) : l'attribut `hidden` l'emporte sur son `display`. */
+.open-world-mark[hidden] {
+  display: none;
+}
 .open-world-mark svg {
   width: 1.4em;
   height: 1.4em;
@@ -763,7 +767,7 @@
   will-change: transform;
 }
 /* Au plus grand texte, un nom de deux mots se replie plus tôt : il trouve sa place près de son lieu. */
-:root[data-texte="grand"] .open-world-map-place {
+:root[data-texte="grand"] .open-world-map-place-name {
   max-width: 6em;
 }
 .open-world-map-place[hidden],
@@ -780,8 +784,6 @@
   color: var(--text);
   font: inherit;
   font-weight: 700;
-  /* Un nom long se replie entre ses mots (jamais au milieu d'un mot) plutôt que de couvrir un repère voisin. */
-  max-width: 9em;
   text-align: center;
   overflow-wrap: normal;
   cursor: pointer;
@@ -1197,4 +1199,49 @@
   height: 48px;
   padding-block: 0;
   line-height: 1.1;
+}
+/* L'état de la construction d'un lieu sur la Carte (GD-20, lot 1, consultant UX UI) : sous son nom, dans sa pastille,
+   une icône et un mot (marteau et « En chantier », coche et l'état achevé), 1 rem au moins, sur le fond uni de la
+   pastille : jamais la couleur seule. */
+.open-world-map-place {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+/* Un nom long se replie entre ses mots (jamais au milieu d'un mot) plutôt que de couvrir un repère voisin ; l'état,
+   dessous, reste sur une ligne (la pastille prend sa largeur). */
+.open-world-map-place-name {
+  display: block;
+  max-width: 9em;
+}
+.open-world-map-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-size: max(1rem, 16px);
+  font-weight: 400;
+  white-space: nowrap;
+}
+/* Sur un écran bas au plus grand texte, les quatre pastilles ne tiennent pas avec leur mot : l'icône seule reste, le mot
+   est dit par le nom du bouton. */
+@media (max-height: 500px) {
+  :root[data-texte="grand"] .open-world-map-state-word {
+    display: none;
+  }
+}
+.open-world-map-state svg {
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+}
+/* Les accès directs et Réglages (GD-20, lot 1) : la colonne et le bouton du monde en grille, tels quels, décalés de la
+   zone sûre de l'appareil (encoche, coins arrondis), comme « Y aller » et « Carte ». */
+.open-world .world-shortcuts {
+  top: calc(0.6rem + env(safe-area-inset-top, 0px));
+  left: calc(0.6rem + env(safe-area-inset-left, 0px));
+}
+.open-world .world-settings {
+  top: calc(0.6rem + env(safe-area-inset-top, 0px));
+  right: calc(0.6rem + env(safe-area-inset-right, 0px));
 }

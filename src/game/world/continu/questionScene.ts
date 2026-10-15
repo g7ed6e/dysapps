@@ -1,11 +1,10 @@
 // La scène d'une question dans un lieu (lot 4) : ce que le lieu montre de l'item (la pêche sur le filet, l'eau dans le
 // sas ou sur l'échelle, les caisses en palettes de dix sur le quai), les objets qui portent les réponses (cloches,
-// paniers, leviers, caisses à plaque) sur un ponton, le geste de la réaction, et les pièces durables du lieu remises en
-// marche. Tout en volumes simples, en aplats ; rien à lire n'est peint : les mots, les nombres et les repères de
+// paniers, leviers, caisses à plaque) sur un ponton, le geste de la réaction, et la trace que la réussite laisse dans le
+// lieu. Tout en volumes simples, en aplats ; rien à lire n'est peint : les mots, les nombres et les repères de
 // l'échelle sont des panneaux de la page, accrochés aux points que donne ce fichier. Code pur : la vue dessine.
 import { boundsOf, FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { WHEEL } from './places';
 import { placeById, type PlaceId } from './plan6e';
 import type { ItemScene } from './questions';
 import { heightAt, standingHeight } from './terrain';
@@ -1033,19 +1032,7 @@ export function craneHook(o: Vec3 = sceneSpot('quais'), qw: number = QUAY.width)
   return { x: o.x + qw / 2 - 0.9 - CRANE.reach, y: o.y + CRANE.height - CRANE.hookDrop, z: edge - QUAY.strip - 0.2 };
 }
 
-// ---------- Les pièces durables ----------
-
-/** Les pièces durables d'un lieu remises en marche : ce qui reste, et la roue des Écluses qui tourne (à part). */
-export interface PlacePieces {
-  still: Facets;
-  /** La Roue des Écluses, quand elle tourne : son maillage centré sur son axe, et la place de l'axe (est-ouest). */
-  wheel: { facets: Facets; at: Vec3 } | null;
-}
-
-/** Le premier point d'eau parmi des points proposés autour d'un lieu (pour la barque remise à l'eau). */
-function firstWater(candidates: readonly Vec2[]): Vec2 {
-  return candidates.find((p) => heightAt(p) < -0.2) ?? candidates[0];
-}
+// ---------- Les traces des scénettes ----------
 
 /**
  * Le panier plein laissé aux Filets par la réussite de la scénette, depuis le centre du lieu : là où il s'est posé, au
@@ -1111,56 +1098,30 @@ function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolea
 }
 
 /**
- * Les pièces d'un lieu, de 0 à 2 (deux niveaux de réaction, directeur artistique ; à valider par le consultant
- * Archipéo) : au Phare, les lampes de la galerie (une moitié, puis tout le tour ; la lanterne reste éteinte jusqu'à la
- * Conque) ; aux Filets, un pan de filet raccommodé et tendu sur le séchoir et le panier plein à côté (la trace de la
- * scénette), puis une barque à l'eau ; aux Écluses, la porte d'amont ouverte et le sas rempli (fermée avant : elle est
- * des pièces, pas du modèle, pour s'ouvrir), puis la Roue qui tourne ; aux Quais, la grue remontée et la barque chargée,
- * puis le quai rouvert.
+ * La trace que la réussite d'une scénette laisse dans son lieu (GD-20, lot 1 : les pièces durables du prototype sont
+ * devenues les parties de la construction du lieu, ./construction.ts ; les traces restent) : au Phare, les lampes de la
+ * galerie, face au sud ; aux Filets, le pan de filet raccommodé tendu sur le séchoir et le panier plein à côté ; aux
+ * Écluses, la porte d'amont ouverte et le sas rempli (fermée avant : elle est de la trace, pas du modèle, pour
+ * s'ouvrir) ; aux Quais, la grue remontée et la barque chargée, sa lanterne de proue allumée. Rien avant la première
+ * réussite de la mission du lieu (`done`), sauf la porte fermée des Écluses.
  */
-export function placePieces(place: PlaceId, count: number): PlacePieces {
+export function placeTrace(place: PlaceId, done: boolean): Facets {
   const b = new FacetBuilder();
   const p = placeById(place);
   const y0 = groundAt(p.center);
   const { x, z } = p.center;
-  let wheel: PlacePieces['wheel'] = null;
-  if (place === 'ecluses') lockGate(b, x, y0, z, count >= 1);
-  if (count <= 0) return { still: b.build(), wheel };
+  if (place === 'ecluses') lockGate(b, x, y0, z, done);
+  if (!done) return b.build();
   if (place === 'phare') {
-    const lamps = count >= 2 ? 8 : 4;
-    for (let k = 0; k < lamps; k++) {
-      // La première moitié face au sud (vers la caméra).
-      const a = Math.PI / 2 + ((k - (lamps === 4 ? 1.5 : 3.5)) * Math.PI) / 4;
+    for (let k = 0; k < 4; k++) {
+      // Face au sud (vers la caméra).
+      const a = Math.PI / 2 + ((k - 1.5) * Math.PI) / 4;
       b.box({ x: x + 2.05 * Math.cos(a), y: y0 + 11.55, z: z + 2.05 * Math.sin(a) }, [0.3, 0.3, 0.3], C.lamp);
     }
   } else if (place === 'filets') {
-    const c = Math.cos(p.yaw),
-      s = Math.sin(p.yaw);
-    const at = (lx: number, lz: number) => ({
-      x: x + lx * c + lz * s,
-      z: z - lx * s + lz * c,
-    });
     mendedNet(b);
     fullBasket(b, filetsBasketAt());
-    if (count >= 2) {
-      const w = firstWater([at(5, -3), at(-5, -3.5), at(0, -5.5), at(6.5, 1), at(-6.5, 1)]);
-      boat(b, w.x, 0.15, w.z, 2.6);
-    }
-  } else if (place === 'ecluses') {
-    if (count >= 2) {
-      // Centrée sur son axe (elle tourne autour) : le tambour fermé, et cinq pales qui le traversent.
-      const w = new FacetBuilder();
-      w.drum({ x: -0.25, y: 0, z: 0, yaw: Math.PI / 2, pitch: Math.PI / 2 }, WHEEL.r + 0.05, 0.5, 10, C.newWood, C.paint);
-      for (let k = 0; k < 5; k++) {
-        const a = (k * Math.PI) / 5;
-        w.box({ x: 0, y: -1.65 * Math.cos(a), z: -1.65 * Math.sin(a), pitch: a }, [0.6, 3.3, 0.16], C.paint);
-      }
-      wheel = {
-        facets: w.build(),
-        at: { x: x + WHEEL.x, y: y0 + WHEEL.y, z: z + WHEEL.z },
-      };
-    }
-  } else {
+  } else if (place === 'quais') {
     // La grue remontée : son contrepoids et sa cabine, repeints.
     b.box({ x: x - 1.4, y: y0 + 5.7, z: z - 0.9 }, [1, 0.9, 0.9], C.paint);
     b.box({ x: x - 2.6, y: y0 + 4.6, z: z - 1.6 }, [1, 1, 1], C.paint, C.newWood);
@@ -1170,43 +1131,8 @@ export function placePieces(place: PlaceId, count: number): PlacePieces {
     barque(b, boat.at, boat.length, boat.width);
     crates(b, 10, boat.cargo.x, boat.cargo.y, boat.cargo.z);
     answerCrate(b, boat.hold, LOADED_BOAT_CRATE);
-    const g = quaySuccess(LOADED_BOAT, LOADED_BOAT_CRATE).glass;
-    b.append(g);
-    if (count >= 2) {
-      // Le quai rouvert : des bittes neuves et des caisses neuves au bord.
-      for (const dx of [-3.5, -1.5, 0.5]) b.prism({ x: x + dx, y: y0, z: z - 3.4 }, 0.25, 0.25, 1, 6, C.paint);
-      for (let k = 0; k < 4; k++)
-        b.box(
-          {
-            x: x + 1.6 + (k % 2) * 0.8,
-            y: y0 + Math.floor(k / 2) * 0.7,
-            z: z - 3.2,
-          },
-          [0.7, 0.7, 0.7],
-          C.newWood,
-          C.crateTop,
-        );
-    }
+    b.append(quaySuccess(LOADED_BOAT, LOADED_BOAT_CRATE).glass);
   }
-  return { still: b.build(), wheel };
-}
-
-/**
- * Le dernier palier (questions-du-monde.md, directeur artistique) : quand les quatre lieux ont toutes leurs pièces, le
- * Veilleur se rallume au pied du Phare. Sans modèle encore : une silhouette en volumes simples, sa lanterne allumée, et
- * la lanterne du Phare qui brille. Un modèle viendra à sa place.
- */
-export function veilleurPiece(): Facets {
-  const b = new FacetBuilder();
-  const p = placeById('phare');
-  const y0 = groundAt(p.center);
-  const at = { x: p.center.x + 2.8, z: p.center.z + 2.2 };
-  const y = groundAt(at);
-  b.box({ x: at.x, y, z: at.z }, [0.9, 0.3, 0.9], C.stoneDark, C.stone);
-  b.prism({ x: at.x, y: y + 0.3, z: at.z }, 0.42, 0.28, 1.3, 6, C.hull, C.hullTop);
-  b.box({ x: at.x, y: y + 1.6, z: at.z }, [0.42, 0.42, 0.42], C.silverTop);
-  b.box({ x: at.x + 0.45, y: y + 0.9, z: at.z + 0.2 }, [0.26, 0.34, 0.26], C.lamp);
-  // La lanterne du Phare rallumée.
-  b.prism({ x: p.center.x, y: y0 + 11.9, z: p.center.z }, 1.25, 1.25, 0.9, 8, C.lamp);
   return b.build();
 }
+
