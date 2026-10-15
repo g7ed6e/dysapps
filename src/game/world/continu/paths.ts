@@ -3,7 +3,7 @@
 // en bois sur l'eau) est tiré d'ici aussi. Code pur.
 import { FacetBuilder, type Facets } from './facets';
 import { closestOnSegment, distance, type Vec2 } from './geometry';
-import { COLORS_6E, PATH_EDGES, PATH_NODES, type PathNode } from './plan6e';
+import { COLORS_6E, DOCK_EDGE, PATH_EDGES, PATH_NODES, type PathNode } from './plan6e';
 import { standingHeight } from './terrain';
 
 /** Un point du réseau : sur la liaison `edge` (son rang dans `PATH_EDGES`), à la part `t` de son premier nœud au second. */
@@ -201,6 +201,7 @@ export function pathRibbons(ground: (x: number, z: number) => number): Facets {
       b.quad(down(ql), down(pl), pl, ql, color);
     }
   }
+  dockEdge(b);
   // Un octogone sur chaque nœud : les coudes n'ont pas de trou.
   for (const node of PATH_NODES) {
     const y = standingHeight(ground(node.at.x, node.at.z)) + RIBBON_LIFT + 0.005;
@@ -209,4 +210,22 @@ export function pathRibbons(ground: (x: number, z: number) => number): Facets {
     b.prism({ x: node.at.x, y: y - RIBBON_SIDE, z: node.at.z }, w, w, RIBBON_SIDE, 8, deck ? COLORS_6E.wood : COLORS_6E.path);
   }
   return b.build();
+}
+
+/** Le bord de quai : un mur de pierre, son chaperon plus clair, et trois bittes d'amarrage. */
+const DOCK_WALL = { inland: 0.45, out: 0.25, top: 0.55, bottom: -0.9, coping: 0.1, stone: 0xb9b2a3, cap: 0xd8d1c2, bollard: 0x6f8089 } as const;
+
+/**
+ * Le bord de quai du bassin des Quais (lot 3, directeur artistique) : un mur de pierre le long de sa rive nord, là où
+ * accoste la barque, son chaperon clair et trois bittes d'amarrage ; dans le maillage des chemins, aucun appel de plus.
+ */
+function dockEdge(b: FacetBuilder): void {
+  const W = DOCK_WALL;
+  const { from, to } = DOCK_EDGE;
+  const len = to.x - from.x;
+  const at = { x: (from.x + to.x) / 2, z: from.z + (W.out - W.inland) / 2 };
+  const depth = W.inland + W.out;
+  b.box({ x: at.x, y: W.bottom, z: at.z }, [len, W.top - W.bottom, depth], W.stone);
+  b.box({ x: at.x, y: W.top, z: at.z }, [len + 0.1, W.coping, depth + 0.1], W.cap);
+  for (const k of [0.2, 0.5, 0.8]) b.prism({ x: from.x + k * len, y: W.top + W.coping, z: from.z }, 0.18, 0.15, 0.4, 8, W.bollard);
 }

@@ -66,12 +66,20 @@ const C = {
 /** La hauteur où l'on se tient en un point (le sol, ou le dessus de la digue sur l'eau). */
 const groundAt = (p: Vec2): number => standingHeight(heightAt(p));
 
+/**
+ * Le quai de la scénette des Quais (piste 1, lot 3) : son bord sur le bassin (`front`, en unités au sud du centre du
+ * lieu, contre le bord de quai de pierre), sa largeur et sa profondeur au moins, et la bande de devant où se tiennent
+ * Kéo et le docker (`strip`) ; les caisses de l'item sont derrière elle. Le bord ne bouge pas d'un item à l'autre : le
+ * quai s'allonge vers le nord quand les caisses sont nombreuses.
+ */
+export const QUAY = { dx: 0.5, front: 12, width: 12, depth: 5.6, strip: 1.6 } as const;
+
 /** Le centre de la scène d'un item, devant son lieu (au sud : vers la caméra), le rayon du cadrage de la question, et la demi-taille de sa plate-forme. */
 const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; radius: number; half: [number, number] }> = {
   phare: { dx: 0, dz: 0.5, radius: 12, half: [0, 0] },
   filets: { dx: 0, dz: 5, radius: 4.2, half: [2.7, 1.6] },
   ecluses: { dx: -0.5, dz: 5, radius: 3.6, half: [2.3, 0.9] },
-  quais: { dx: 0.5, dz: 8.5, radius: 7.6, half: [5.8, 3.3] },
+  quais: { dx: QUAY.dx, dz: QUAY.front - QUAY.depth / 2, radius: 7.6, half: [QUAY.width / 2, QUAY.depth / 2] },
 };
 
 /**
@@ -370,24 +378,37 @@ function bell(b: FacetBuilder, p: Vec3, s: number, colors: BellColors, grow = 1,
 }
 
 /** Où pendent les cloches d'une scénette : la main qui tient la corde de sonnerie, et le haut de la rambarde. */
-export interface BellHanging {
+interface BellHanging {
   hand: Vec3;
   rail: Vec3;
 }
 
 /**
+ * Ce qui change l'allure des objets : les choisis (`picked` : une cloche balancée, une caisse penchée en arrière, un
+ * signe de forme, pas seulement de couleur), ceux qui sont partis avec la réaction (`gone` : la bonne caisse, montée
+ * au crochet), et où pendent les cloches d'une scénette (`hanging`).
+ */
+export interface AnswerLook {
+  picked?: readonly number[];
+  gone?: readonly number[];
+  hanging?: BellHanging;
+}
+
+/**
  * Les objets des réponses, posés sur un ponton aux points donnés (au sol, dans l'ordre des choix ; la vue les tire de
  * l'écran), à l'échelle `answerScale`, pour que chacun tienne au-dessus de son bouton. Au Phare, les cloches pendent à
- * une poutre devant la rambarde de la galerie (`hanging`), les choisies (`picked`) balancées vers l'élève.
+ * une poutre devant la rambarde de la galerie (`hanging`), les choisies balancées de côté.
  */
-export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number, picked: readonly number[] = [], hanging?: BellHanging): Facets {
+export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number, look: AnswerLook = {}): Facets {
   const b = new FacetBuilder();
   if (points.length === 0) return b.build();
+  const picked = look.picked ?? [];
+  const gone = look.gone ?? [];
   const xs = points.map((p) => p.x);
   const y = points[0].y;
   const z = points.reduce((t, p) => t + p.z, 0) / points.length;
   if (ANSWER_OBJECT[place] === 'cloche') {
-    hangBells(b, points, s, picked, hanging);
+    hangBells(b, points, s, picked, look.hanging);
     return b.build();
   }
   // Le ponton sous la rangée : jamais un objet posé sur l'eau.
@@ -398,7 +419,8 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     C.deck,
   );
   const kind = ANSWER_OBJECT[place];
-  for (const p of points) {
+  for (const [i, p] of points.entries()) {
+    if (gone.includes(i)) continue;
     if (kind === 'panier') {
       const w = 0.9 * s,
         d = 0.7 * s,
@@ -415,12 +437,42 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
       b.box({ x: p.x, y: y + 0.3 * s, z: p.z, pitch: -0.35 }, [0.12 * s, 1.5 * s, 0.12 * s], C.lever);
       b.box({ x: p.x, y: y + 0.3 * s + 1.41 * s, z: p.z - 0.51 * s }, [0.3 * s, 0.22 * s, 0.22 * s], C.knob);
     } else {
-      b.box({ x: p.x, y, z: p.z }, [0.8 * s, 0.7 * s, 0.7 * s], C.crate, C.crateTop);
-      // La plaque, à l'avant, sans rien d'écrit : le nombre est dans le panneau de la page.
-      b.box({ x: p.x, y: y + 0.2 * s, z: p.z + 0.36 * s }, [0.56 * s, 0.32 * s, 0.03 * s], C.plate);
+      // Une caisse choisie (une réponse tentée) bascule en arrière sur son arête : sa forme le dit.
+      answerCrate(b, { x: p.x, y, z: p.z }, s, picked.includes(i) ? CRATE_TIPPED : 0);
     }
   }
   return b.build();
+}
+
+/** La bascule d'une caisse choisie, en radians (en arrière, vers le quai). */
+const CRATE_TIPPED = -0.6;
+
+/**
+ * Une caisse de réponse, à l'échelle `s`, posée en `at` : le corps, ses lattes, et la plaque à l'avant, sans rien
+ * d'écrit (le nombre est dans le panneau de la page). `tilt` : basculée en arrière autour de son arête du fond.
+ */
+function answerCrate(b: FacetBuilder, at: Vec3, s: number, tilt = 0): void {
+  const f = new FacetBuilder();
+  const w = 0.8, h = 0.7, d = 0.7;
+  f.box({ x: 0, y: 0, z: 0 }, [w, h, d], C.crate, C.crateTop);
+  // Deux lattes en travers, plus sombres, et la plaque claire.
+  for (const y of [0.12, 0.5]) f.box({ x: 0, y, z: d / 2 + 0.01 }, [w + 0.02, 0.08, 0.03], C.pallet);
+  f.box({ x: 0, y: 0.22, z: d / 2 + 0.03 }, [0.5, 0.24, 0.03], C.plate);
+  const built = f.build();
+  const pos = built.positions;
+  const nor = built.normals;
+  const c = Math.cos(tilt), sn = Math.sin(tilt);
+  for (let i = 0; i < pos.length; i += 3) {
+    // Autour de l'arête du bas, au fond (z = −d/2) : la caisse se couche en arrière, son devant vers le ciel.
+    const y0 = pos[i + 1], z0 = pos[i + 2] + d / 2;
+    pos[i] = pos[i] * s + at.x;
+    pos[i + 1] = (y0 * c - z0 * sn) * s + at.y;
+    pos[i + 2] = (y0 * sn + z0 * c - d / 2) * s + at.z;
+    const ny = nor[i + 1], nz = nor[i + 2];
+    nor[i + 1] = ny * c - nz * sn;
+    nor[i + 2] = ny * sn + nz * c;
+  }
+  b.append(built);
 }
 
 /**
@@ -603,6 +655,35 @@ function boat(b: FacetBuilder, x: number, y: number, z: number, length = 2.4): v
   b.box({ x: x + length / 2 + 0.15, y: y - 0.1, z }, [0.3, 0.35, 0.5], C.hull);
 }
 
+/**
+ * La barque amarrée des Quais (lot 3, réserve du directeur artistique : reconnaissable) : une coque ouverte, son fond
+ * de bois, ses bordés bleus au plat-bord clair, la proue en pointe à l'est, et deux bancs en travers. `at` : le milieu de
+ * son fond, à la surface de l'eau.
+ */
+function barque(b: FacetBuilder, at: Vec3, length: number, width: number): void {
+  const wall = 0.22, h = 0.75, y = at.y - 0.3;
+  b.box({ x: at.x, y, z: at.z }, [length, 0.2, width], C.hull, C.hullTop);
+  for (const side of [-1, 1]) b.box({ x: at.x, y, z: at.z + side * (width / 2 - wall / 2) }, [length, h, wall], C.hull, C.newWood);
+  b.box({ x: at.x - length / 2 + wall / 2, y, z: at.z }, [wall, h, width], C.hull, C.newWood);
+  // La proue : un triangle dont la pointe sort loin de la coque (base contre le bout est, pointe à +x), plus haut que
+  // les bordés, et son étrave dressée au bout : la silhouette d'une barque, même de biais.
+  const r = width / Math.sqrt(3);
+  b.prism({ x: at.x + length / 2 + r / 2, y, z: at.z }, r, r, h + 0.2, 3, C.hull, C.newWood);
+  b.box({ x: at.x + length / 2 + 1.4 * r, y, z: at.z }, [0.2, h + 0.65, 0.2], C.hull, C.newWood);
+  // Deux bancs en travers, à la poupe et à la proue, hors de la place des caisses.
+  for (const dx of [-length / 2 + 0.6, length / 2 - 0.6]) b.box({ x: at.x + dx, y: y + 0.42, z: at.z }, [0.34, 0.1, width - 2 * wall], C.newWood);
+}
+
+/** Le crochet de levage, au bout de la corde : une tige et un anneau ouvert (huit pavés). */
+export function liftingHook(b: FacetBuilder, top: Vec3, color: number, r = 0.16): void {
+  b.box({ x: top.x, y: top.y - 0.3, z: top.z }, [0.07, 0.3, 0.07], color);
+  const cy = top.y - 0.3 - r;
+  for (let k = 0; k < 7; k++) {
+    const a0 = Math.PI / 2 + (k * 2 * Math.PI) / 8, a1 = a0 + (2 * Math.PI) / 8;
+    b.beam({ x: top.x + r * Math.cos(a0), y: cy + r * Math.sin(a0), z: top.z }, { x: top.x + r * Math.cos(a1), y: cy + r * Math.sin(a1), z: top.z }, 0.06, color);
+  }
+}
+
 const ORIGIN: Vec3 = { x: 0, y: 0, z: 0 };
 
 /**
@@ -723,53 +804,76 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
       };
     }
   } else if (scene.kind === 'quai') {
-    // Le quai à la taille des caisses ; devant lui, la barque amarrée, et la grue au coin du fond. Avant le
-    // geste : la moitié, toutes les caisses sur le quai, la grue au-dessus, la barque vide ; le double, les caisses du
-    // quai au fond, la barque chargée des nouvelles. Après : les caisses ont changé de place, et y restent.
-    const moved = Math.abs(scene.after - scene.before);
-    const kept = scene.op === 'moitie' ? scene.after : scene.before;
-    const front = crateBlock(scene.op === 'moitie' ? scene.before : moved);
-    const back = scene.op === 'moitie' ? { w: 0, d: 0 } : crateBlock(scene.before);
-    const qw = Math.max(front.w, back.w, 3) + 1,
-      qd = front.d + back.d + (back.d ? 0.4 : 0) + 1;
-    b.box({ x: o.x, y: o.y - PLATFORM_DEPTH, z: o.z }, [qw, PLATFORM_DEPTH, qd], C.deckSide, C.quay);
-    const x0 = o.x - qw / 2 + 0.5;
-    const zBack = o.z - qd / 2 + 0.5;
-    const zFront = zBack + back.d + (back.d ? 0.4 : 0);
-    const boatLen = Math.max(3, crateBlock(moved).w + 1),
-      boatW = Math.max(1.2, crateBlock(moved).d + 0.6);
-    // La barque amarrée devant le quai, du côté du spectateur : basse, elle ne cache pas les caisses, et rien ne la
-    // cache.
-    const boatAt = { x: o.x - 0.2, y: o.y, z: o.z + qd / 2 + boatW / 2 + 0.2 };
-    b.box({ x: boatAt.x, y: boatAt.y - 0.35, z: boatAt.z }, [boatLen, 0.45, boatW], C.hull, C.hullTop);
-    b.box({ x: boatAt.x + boatLen / 2 + 0.2, y: boatAt.y - 0.35, z: boatAt.z }, [0.4, 0.35, boatW * 0.6], C.hull);
-    const onBoat = { x: boatAt.x - boatLen / 2 + 0.5, y: boatAt.y + 0.1, z: boatAt.z - boatW / 2 + 0.3 };
-    // La grue : son mât au coin du quai, sa flèche au-dessus des caisses, le crochet et sa corde.
-    const mast = { x: o.x + qw / 2 - 0.3, z: o.z - qd / 2 + 0.3 };
-    b.box({ x: mast.x, y: o.y, z: mast.z }, [0.3, 3.4, 0.3], C.crane);
-    b.box({ x: mast.x - 1.6, y: o.y + 3.2, z: mast.z }, [3.6, 0.22, 0.22], C.crane);
-    b.box({ x: mast.x - 3.2, y: o.y + 1.7, z: mast.z }, [0.05, 1.5, 0.05], C.rope);
-    b.box({ x: mast.x - 3.2, y: o.y + 1.55, z: mast.z }, [0.3, 0.15, 0.3], C.stoneDark);
-    if (scene.op === 'moitie') {
-      crates(b, answered ? kept : scene.before, x0, o.y, zFront);
-      if (answered) {
-        const r = new FacetBuilder();
-        crates(r, moved, 0, 0, 0);
-        reaction = { facets: r.build(), from: { x: x0, y: o.y, z: zFront }, to: onBoat, arc: 1.5, stay: true };
-      }
-    } else {
-      crates(b, kept, x0, o.y, zBack);
-      if (!answered) crates(b, moved, onBoat.x, onBoat.y, onBoat.z);
-      else {
-        const r = new FacetBuilder();
-        crates(r, moved, 0, 0, 0);
-        reaction = { facets: r.build(), from: onBoat, to: { x: x0, y: o.y, z: zFront }, arc: 1.5, stay: true };
-      }
-    }
+    reaction = quai(b, scene, answered, o, answerAt, scale);
   }
   return { still: b.build(), labels, reaction };
 }
 
+
+/**
+ * Le quai de la scénette des Quais (lot 3) : le quai de bois contre le bord de pierre du bassin, la bande de devant
+ * libre pour Kéo et le docker, les caisses de l'item en palettes derrière elle ; la barque amarrée dans le bassin ; la
+ * grue au bout est, sa flèche au-dessus du quai, son crochet. Avant la réponse, la moitié : toutes les caisses sur le
+ * quai, la barque vide ; le double : les caisses du quai au fond, les nouvelles dans la barque. Après : les caisses ont
+ * changé de place (la moitié dans la barque, les nouvelles sur le quai), et la bonne caisse de réponse monte au crochet
+ * (la réaction, `answerAt` : sa place dans la rangée) et y reste.
+ */
+function quai(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'quai' }>, answered: boolean, o: Vec3, answerAt: Vec3 | undefined, scale: number): Reaction | null {
+  const moved = Math.abs(scene.after - scene.before);
+  const kept = scene.op === 'moitie' ? scene.after : scene.before;
+  // Les caisses du devant du bloc (toutes, pour la moitié ; les nouvelles, pour le double) et celles du fond.
+  const front = crateBlock(scene.op === 'moitie' ? scene.before : moved);
+  const back = scene.op === 'moitie' ? { w: 0, d: 0 } : crateBlock(scene.before);
+  const gap = back.d ? 0.4 : 0;
+  const edge = o.z + QUAY.depth / 2;
+  const qd = Math.max(QUAY.depth, front.d + gap + back.d + 0.5 + QUAY.strip);
+  const qw = Math.max(QUAY.width, Math.max(front.w, back.w) + 4);
+  b.box({ x: o.x, y: o.y - PLATFORM_DEPTH, z: edge - qd / 2 }, [qw, PLATFORM_DEPTH, qd], C.deckSide, C.quay);
+  // Les blocs de caisses, au milieu du quai, un peu à gauche (le docker et la grue sont à droite).
+  const x0 = o.x - 0.4 - Math.max(front.w, back.w) / 2 + CRATE_PITCH / 2;
+  const zFront = edge - QUAY.strip - front.d + CRATE_PITCH / 2;
+  const zBack = zFront - gap - back.d;
+  // La barque dans le bassin, contre le bord de pierre : assez grande pour les caisses qui partent ou arrivent.
+  const cargo = crateBlock(moved);
+  // Les caisses au milieu, les bancs libres aux deux bouts.
+  const boatLen = Math.max(4.2, cargo.w + 2.4);
+  const boatW = Math.max(1.8, cargo.d + 1);
+  // La proue toujours dans le cadre de la scénette (à droite, sous la grue) : une longue barque file vers l'ouest.
+  const boatAt = { x: Math.min(o.x - 0.8, o.x + 3.4 - boatW * 0.87 - boatLen / 2), y: 0, z: edge + 0.75 + boatW / 2 };
+  barque(b, boatAt, boatLen, boatW);
+  const onBoat = { x: boatAt.x - cargo.w / 2 + CRATE_PITCH / 2, y: boatAt.y - 0.11, z: boatAt.z - cargo.d / 2 + CRATE_PITCH / 2 };
+  // La grue au bout est du quai : son pied, son mât, sa flèche vers l'ouest au-dessus du quai, la corde et le crochet.
+  const mast = { x: o.x + qw / 2 - 0.9, z: edge - QUAY.strip - 0.2 };
+  const hook = craneHook(o, qw);
+  b.box({ x: mast.x, y: o.y, z: mast.z }, [0.8, 0.5, 0.8], C.stoneDark);
+  b.box({ x: mast.x, y: o.y + 0.5, z: mast.z }, [0.32, CRANE.height - 0.5, 0.32], C.crane);
+  b.box({ x: (mast.x + hook.x) / 2 - 0.3, y: o.y + CRANE.height, z: mast.z }, [mast.x - hook.x + 1, 0.24, 0.24], C.crane);
+  b.box({ x: hook.x, y: hook.y + 0.3, z: hook.z }, [0.05, o.y + CRANE.height - hook.y - 0.3, 0.05], C.rope);
+  liftingHook(b, { x: hook.x, y: hook.y + 0.3, z: hook.z }, C.stoneDark);
+  if (scene.op === 'moitie') {
+    crates(b, answered ? kept : scene.before, x0, o.y, zFront);
+    if (answered) crates(b, moved, onBoat.x, onBoat.y, onBoat.z);
+  } else {
+    crates(b, kept, x0, o.y, zBack);
+    if (answered) crates(b, moved, x0, o.y, zFront);
+    else crates(b, moved, onBoat.x, onBoat.y, onBoat.z);
+  }
+  if (!answered || !answerAt) return null;
+  // La bonne caisse de réponse monte au crochet, et y reste pendue.
+  const r = new FacetBuilder();
+  answerCrate(r, ORIGIN, scale);
+  // Le haut de la caisse juste sous l'anneau du crochet.
+  return { facets: r.build(), from: answerAt, to: { x: hook.x, y: hook.y - 0.4 - 0.7 * scale, z: hook.z }, arc: 1.2, stay: true };
+}
+
+/** La grue du quai : la hauteur de sa flèche au-dessus du quai, et l'écart du crochet au bout est du quai. */
+const CRANE = { height: 4.2, reach: 5.2, hookDrop: 2 } as const;
+
+/** Le haut du crochet de la grue du quai (la corde s'y arrête), au-dessus de la bande de devant. */
+export function craneHook(o: Vec3 = sceneSpot('quais'), qw: number = QUAY.width): Vec3 {
+  const edge = o.z + QUAY.depth / 2;
+  return { x: o.x + qw / 2 - 0.9 - CRANE.reach, y: o.y + CRANE.height - CRANE.hookDrop, z: edge - QUAY.strip - 0.2 };
+}
 
 // ---------- Les pièces durables ----------
 

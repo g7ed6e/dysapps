@@ -2,7 +2,7 @@
 // leur A*, la marche, la caméra qui suit Kéo, les maquettes, la brume et le budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { FacetBuilder, boundsOf } from './facets';
-import { groundCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget';
+import { groundCost, mapCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget';
 import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, markBeside, markOffset, occlusionLift, screenOf } from './camera';
 import { distance, insidePolygon, type Vec3 } from './geometry';
 import { START_DISTANCE, atNode, findRoute, networkSamples, pathNode, pathRibbons, routeLength, snapToNetwork, startOf } from './paths';
@@ -424,6 +424,13 @@ describe('Le budget du monde continu', () => {
     const calls = cost.reduce((s, c) => s + c.calls, 0);
     expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
+  });
+
+  it('la Carte des lieux ouverts, toute l’île de loin, tient aussi dans l’enveloppe', () => {
+    const map = mapCost();
+    expect(map.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
+    expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
+    expect(map.triangles).toBeGreaterThan(groundCost().far);
   });
 });
 

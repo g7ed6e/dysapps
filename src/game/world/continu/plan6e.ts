@@ -72,9 +72,23 @@ export const CLIFF = poly([[640, 240], [760, 190], [830, 196], [866, 262], [846,
 
 /**
  * Le bassin des Quais, au sud du quai : l'eau devant laquelle la barque s'amarre pendant une question (le quai regardait
- * la mer du sud quand l'île était petite ; agrandie, la mer est trop loin).
+ * la mer du sud quand l'île était petite ; agrandie, la mer est trop loin). Son bord nord est droit, tenu par le bord de
+ * quai de pierre (`DOCK_EDGE`) ; ses autres rives sont irrégulières (lot 3, directeur artistique : pas une piscine).
  */
-export const DOCK = poly([[1056, 818], [1112, 818], [1116, 848], [1052, 848]]);
+export const DOCK = poly([
+  [1056, 818],
+  [1112, 818],
+  [1121, 827],
+  [1117, 841],
+  [1104, 853],
+  [1079, 849],
+  [1061, 855],
+  [1049, 843],
+  [1051, 828],
+]);
+
+/** Le bord de quai de pierre, le long de la rive nord du bassin, d'ouest en est : là où la barque accoste. */
+export const DOCK_EDGE = { from: fromPlan([1057, 818]), to: fromPlan([1111, 818]) };
 
 /** Le haut pays de l'est, d'où descend la rivière (les Écluses « en haut »). */
 export const UPLAND = { center: fromPlan([1215, 330]), radius: 130 / PLAN_SCALE, height: 6 };

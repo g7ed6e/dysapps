@@ -15,12 +15,16 @@ import {
   SCENETTE_LAYOUT,
   bellPlane,
   habitantHand,
+  answersHang,
   lanternGlass,
   scenetteDecor,
+  scenetteHabitant,
+  scenetteHidesPlace,
   scenetteKeo,
   scenetteLayout,
   scenetteOf,
   scenettePose,
+  scenetteSuccess,
 } from './scenette';
 import { heightAt, standingHeight } from './terrain';
 
@@ -36,9 +40,32 @@ const screens = [
 ] as const;
 
 describe('La place de la scénette à l’écran', () => {
-  it('seul le Phare a sa scénette, la gardienne nommée par son rôle seul, sans phrase d’accueil', () => {
+  it('le Phare et les Quais ont leur scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
     expect(scenetteOf('phare')).toEqual({ role: 'La gardienne du phare', greeting: null, placement: 'rangee' });
-    expect(scenetteOf('quais')).toBeNull();
+    expect(scenetteOf('quais')).toEqual({ role: 'Le docker', greeting: null, placement: 'rangee' });
+    expect(scenetteOf('filets')).toBeNull();
+    expect(scenetteOf('ecluses')).toBeNull();
+  });
+
+  it('aux Quais, la colonne à gauche sur tous les écrans (B), les nombres en rangée à droite de la colonne', () => {
+    for (const [w, h] of screens)
+      for (const widen of [0, 1, 2]) {
+        const base = questionLayout({ count: 4, widen }, w, h);
+        const l = scenetteLayout({ count: 4, widen, column: true }, w, h, base);
+        const at = `${w}×${h}, cran ${widen}`;
+        const stage = l.scenette!.stage;
+        expect(l.scenette!.validate).toBeNull();
+        expect(stage.left, at).toBeGreaterThanOrEqual(l.panel.left + l.panel.width);
+        const panel = { left: l.panel.left, right: l.panel.left + l.panel.width, top: l.panel.top, bottom: l.panel.top + l.panel.maxHeight };
+        const xs = l.slots.map((s) => s.foot.x);
+        expect([...xs].sort((a, b) => a - b)).toEqual(xs);
+        for (const s of l.slots) {
+          expect(s.label.bottom - s.label.top).toBeGreaterThanOrEqual(48);
+          expect(s.label.right - s.label.left, at).toBeGreaterThanOrEqual(ANSWER_LAYOUT.minLabel);
+          expect(overlap(panel, s.hit), at).toBe(false);
+          expect(overlap(stage, s.hit), at).toBe(false);
+        }
+      }
   });
 
   it('A, sur tablette : la consigne en haut, la scène au milieu, la rangée en bas, « Valider » en bas à droite', () => {
@@ -147,7 +174,7 @@ describe('La galerie du Phare', () => {
     expect(b.max[1]).toBeGreaterThan(floor + GALLERY.rail);
     // La galerie du modèle est au même niveau : le plancher de la scénette la recouvre.
     expect(modelOfPlace('phare').top).toBeGreaterThan(GALLERY.floor);
-    expect(scenetteDecor('quais').triangles).toBe(0);
+    expect(scenetteDecor('filets').triangles).toBe(0);
   });
 
   it('les cloches pendent à leur poutre devant la rambarde ; une cloche choisie se balance, sans changer de place', () => {
@@ -155,8 +182,8 @@ describe('La galerie du Phare', () => {
     const c = placeById('phare').center;
     const points = [-1.5, 0, 1.5].map((dx) => ({ x: c.x + dx, y: floor - 0.4, z: plane.z }));
     const hang = { hand: habitantHand('phare'), rail: plane.rail };
-    const still = answerObjects('phare', points, 0.6, [], hang);
-    const swung = answerObjects('phare', points, 0.6, [1], hang);
+    const still = answerObjects('phare', points, 0.6, { hanging: hang });
+    const swung = answerObjects('phare', points, 0.6, { picked: [1], hanging: hang });
     expect(swung.triangles).toBe(still.triangles);
     expect(Array.from(swung.positions)).not.toEqual(Array.from(still.positions));
     // Sans lettre : la cloche n'a que des volumes ; la frise de vagues est en saillie sur son corps.
@@ -236,5 +263,49 @@ describe('Le regard levé près du Phare', () => {
     expect(lookUpStep(0, 1, 0, true)).toBe(1);
     expect(lookUpStep(1, 0, 0, true)).toBe(0);
     expect(FOLLOW.fov).toBeGreaterThan(0);
+  });
+});
+
+describe('Le quai du docker', () => {
+  const quay = scenetteKeo('quais').at;
+
+  it('le docker, en quelques volumes, se tient sur le quai, à droite de Kéo, sa caisse et son crochet en main', () => {
+    const docker = scenetteDecor('quais');
+    expect(docker.triangles).toBeGreaterThan(0);
+    expect(docker.triangles).toBeLessThan(1500);
+    const b = boundsOf(docker);
+    // Debout sur la bande de devant du quai, à hauteur d'homme (Kéo est à l'échelle 0,6 de la scénette).
+    expect(b.min[1]).toBeGreaterThanOrEqual(quay.y - 0.1);
+    expect(b.max[1]).toBeLessThan(quay.y + 2.5);
+    expect(b.min[0]).toBeGreaterThan(quay.x);
+    expect(scenetteHabitant('quais').x).toBeGreaterThan(quay.x);
+    // Ni lampe à allumer, ni cloches pendues : la caisse monte au crochet de la grue.
+    expect(scenetteSuccess('quais')).toBeNull();
+    expect(scenetteSuccess('phare')?.triangles).toBeGreaterThan(0);
+    expect(answersHang('quais')).toBe(false);
+    expect(scenetteHidesPlace('quais')).toBe(true);
+    expect(scenetteHidesPlace('phare')).toBe(false);
+  });
+
+  it('la caméra cadre Kéo à gauche et le docker à droite, dans la scène, sur tous les écrans', () => {
+    for (const [w, h] of screens) {
+      const base = questionLayout({ count: 4 }, w, h);
+      const stage = scenetteLayout({ count: 4, column: true }, w, h, base).scenette!.stage;
+      const { pose, shift } = scenettePose('quais', stage, w, h);
+      const on = (p: { x: number; y: number; z: number }) => {
+        const s = screenOf(pose, p, w, h);
+        return { x: s.x - shift.x, y: s.y - shift.y };
+      };
+      const keo = on(quay);
+      const docker = on(scenetteHabitant('quais'));
+      const at = `${w}×${h}`;
+      expect(keo.x, at).toBeLessThan(docker.x);
+      for (const p of [keo, docker]) {
+        expect(p.x, at).toBeGreaterThanOrEqual(stage.left);
+        expect(p.x, at).toBeLessThanOrEqual(stage.right);
+        expect(p.y, at).toBeGreaterThanOrEqual(stage.top - 0.03 * h);
+        expect(p.y, at).toBeLessThanOrEqual(stage.bottom + 1);
+      }
+    }
   });
 });

@@ -4,7 +4,9 @@
 // son lieu), une flèche au bord de l'écran quand elle est hors champ, la distance en points dessous ; « Y aller »,
 // toujours à la même place, y mène d'un coup (piste 1 : le trajet est toujours sauté ; on marche en touchant le monde). À l'arrivée, la mission se joue dans le lieu (lot 4, ./WorldQuestion.tsx), avec le lanceur
 // d'exercice commun ; « Vue simple » rouvre l'écran classique de la même mission (./missionScreen.ts). Les pièces
-// durables des lieux se tirent des étoiles gardées : rien de neuf dans la sauvegarde. Chargé à la demande.
+// durables des lieux se tirent des étoiles gardées : rien de neuf dans la sauvegarde. La Carte des lieux ouverts (piste 1,
+// lot 3) s'ouvre du bouton « Carte », comme ailleurs dans le jeu : l'île vue de haut, un lieu ouvert touché y dépose
+// Kéo. Chargé à la demande.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Icon } from '../../../components/Icon';
@@ -17,9 +19,10 @@ import { useBlocland } from '../../BloclandContext';
 import { getBiome } from '../../biomes';
 import { exercisesOf } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
+import { WorldButton } from '../../WorldButton';
 import { SettingsButton } from '../../WorldShortcuts';
 import { keepClear, missionOfPlace, nextMission, veiledPlaces, type MarkOnScreen, type ScreenRect } from '../../world/continu/mission';
-import { placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
+import { PLACES, placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
 import { piecesOf } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
@@ -69,6 +72,10 @@ export default function OpenWorldPage() {
   const [walking, setWalking] = useState(false);
   // La mission posée dans un lieu, à l'arrivée de Kéo : la question se joue sur la scène.
   const [asking, setAsking] = useState<{ place: PlaceId; mission: string } | null>(null);
+  // La Carte des lieux ouverts (lot 3) : un état de la page, pas une adresse (`/adventure/map` mène à la Carte du
+  // monde en grille) ; ses lieux posés à chaque image par la scène, comme les cadenas.
+  const [mapOpen, setMapOpen] = useState(false);
+  const mapPlacesRef = useRef<HTMLDivElement>(null);
   // La distance au prochain lieu, pour la voix (avis du référent dys) : relue à chaque image, mais l'état ne change
   // qu'avec le palier (un, deux ou trois points) : le libellé de la marque n'est refait que là.
   const [far, setFar] = useState<1 | 2 | 3>(1);
@@ -86,14 +93,14 @@ export default function OpenWorldPage() {
       layout.height = s.height;
       layout.markW = markRef.current?.offsetWidth ?? 0;
       layout.markH = markRef.current?.offsetHeight ?? 0;
-      layout.obstacles = [...stage.querySelectorAll<HTMLElement>('.world-settings, .open-world-go')].map((el) => {
+      layout.obstacles = [...stage.querySelectorAll<HTMLElement>('.world-settings, .open-world-go, .open-world-bar')].map((el) => {
         const r = el.getBoundingClientRect();
         return { left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height };
       });
     };
     const observer = new ResizeObserver(measure);
     observer.observe(stage);
-    for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .open-world-go')) observer.observe(el);
+    for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .open-world-go, .open-world-bar')) observer.observe(el);
     measure();
     return () => observer.disconnect();
     // La marque et « Y aller » changent d'élément avec la prochaine mission et la marche : on les observe de nouveau.
@@ -120,6 +127,8 @@ export default function OpenWorldPage() {
         if (mission) setAsking({ place: placeId, mission });
       },
       onLocks: (locks) => placeLocks(locksRef.current, locks),
+      onMapPlaces: (places) => placeLocks(mapPlacesRef.current, places),
+      onMapPick: (placeId) => pickRef.current(placeId),
       onMark: (m) => {
         placeMark(markRef.current, arrowRef.current, m, layout);
         if (m && m.far !== farRef.current) {
@@ -148,6 +157,29 @@ export default function OpenWorldPage() {
   useEffect(() => {
     world.current?.setVeiled(veiled);
   }, [veiled, ready]);
+
+  // La Carte : les lieux ouverts sont ceux qui ne sont pas sous la brume (déjà joués, ou la prochaine mission).
+  const openPlaces = useMemo(() => PLACES.map((p) => p.id).filter((id) => !veiled.includes(id)), [veiled]);
+  useEffect(() => {
+    world.current?.map(mapOpen && !asking ? openPlaces : null);
+  }, [mapOpen, asking, openPlaces, ready]);
+  /** Un lieu ouvert choisi sur la Carte : elle se ferme, Kéo y est déposé d'un coup (une coupe franche). */
+  const pickPlace = useCallback((placeId: PlaceId) => {
+    setMapOpen(false);
+    world.current?.map(null);
+    world.current?.goTo(placeId, true);
+  }, []);
+  const pickRef = useRef(pickPlace);
+  pickRef.current = pickPlace;
+  // Échap ferme la Carte, comme un panneau.
+  useEffect(() => {
+    if (!mapOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMapOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [mapOpen]);
 
   // Les pièces durables de chaque lieu : une à la première mission réussie, une deuxième à trois étoiles.
   const pieces = useMemo(() => {
@@ -184,7 +216,7 @@ export default function OpenWorldPage() {
       <div className="world-stage" data-scene ref={stageRef}>
         <div ref={host} className="open-world-canvas" />
         {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
-        {next && !asking && (
+        {next && !asking && !mapOpen && (
           <button type="button" ref={markRef} className="open-world-mark" aria-label={markLabel} onClick={goNext}>
             <span className="open-world-arrow-box" aria-hidden="true">
               <span ref={arrowRef} className="open-world-arrow">
@@ -202,18 +234,41 @@ export default function OpenWorldPage() {
           </button>
         )}
         {/* Un cadenas sur chaque lieu encore sous la brume : une icône sans texte, dite aux lecteurs d'écran (référent dys). */}
-        <div ref={locksRef} className="open-world-locks" hidden={Boolean(asking)}>
+        <div ref={locksRef} className="open-world-locks" hidden={Boolean(asking) || mapOpen}>
           {veiled.map((id) => (
             <span key={id} className="open-world-lock" data-lieu={id} role="img" aria-label={`${placeById(id).name} : sous la brume, pas encore ouvert`} hidden>
               <Icon name="lock" />
             </span>
           ))}
         </div>
+        {/* La Carte : chaque lieu à sa place sur l'île ; un lieu ouvert est un bouton à son nom, un lieu sous la brume
+            garde son cadenas, sans texte (référent dys). Rien n'est écrit dans la 3D. */}
+        {mapOpen && !asking && (
+          <div ref={mapPlacesRef} className="open-world-map-places">
+            {PLACES.map((p) =>
+              openPlaces.includes(p.id) ? (
+                <button key={p.id} type="button" className="open-world-map-place" data-lieu={p.id} hidden aria-label={`Aller au lieu : ${p.name}`} onClick={() => pickPlace(p.id)}>
+                  {p.name}
+                </button>
+              ) : (
+                <span key={p.id} className="open-world-lock" data-lieu={p.id} role="img" aria-label={`${p.name} : sous la brume, pas encore ouvert`} hidden>
+                  <Icon name="lock" />
+                </span>
+              ),
+            )}
+          </div>
+        )}
         {!asking && <SettingsButton />}
         {asking && world.current && (
           <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} world={world.current} onClose={closeQuestion} onSimpleView={simpleView} />
         )}
+        {/* La Carte : le même bouton que dans le reste du jeu, dans la barre du bas, à gauche (« Y aller » tient le milieu). */}
         {!asking && (
+          <nav className="world-bar open-world-bar" aria-label="Monde">
+            <WorldButton icon="map" name="Carte" word="Carte" tuto="carte" pressed={mapOpen} onClick={() => setMapOpen(!mapOpen)} />
+          </nav>
+        )}
+        {!asking && !mapOpen && (
           <div className="open-world-go">
             {!next && !walking && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
             {walking ? (

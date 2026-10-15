@@ -20,19 +20,21 @@ beforeEach(() => {
   );
 });
 
-function renderPhare() {
+function renderPlace(place: 'phare' | 'quais', mission: string) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <WorldQuestion place="phare" mission="sound-hunt" world={world} onClose={() => {}} onSimpleView={() => {}} />
+            <WorldQuestion place={place} mission={mission} world={world} onClose={() => {}} onSimpleView={() => {}} />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
     </SettingsProvider>,
   );
 }
+
+const renderPhare = () => renderPlace('phare', 'sound-hunt');
 
 describe('La scénette du Phare', () => {
   it('« Vue simple » puis « Scène » gardent la cloche choisie', async () => {
@@ -83,5 +85,29 @@ describe('La scénette du Phare', () => {
     if (start) await user.click(start);
     await user.click(screen.getByRole('button', { name: /Vue simple/ }));
     expect(screen.getByRole('button', { name: 'Replier' })).toHaveAttribute('aria-expanded', 'true');
+  });
+});
+
+describe('La scénette des Quais', () => {
+  it('le docker en tête ; « Vue simple » puis « Scène » gardent la caisse tentée, barrée', async () => {
+    const user = userEvent.setup();
+    renderPlace('quais', 'doubles-halves');
+    expect(await screen.findByText('Le docker')).toBeInTheDocument();
+    const start = screen.queryByRole('button', { name: /Commencer/ });
+    if (start) await user.click(start);
+    const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThan(1));
+    const labels = answers().map((b) => b.textContent);
+    // Une réponse tentée : juste, l'item est fini ; fausse, elle reste barrée et les autres se touchent encore.
+    await user.click(answers()[0]);
+    const wrong = answers()[0].disabled;
+    await user.click(screen.getByRole('button', { name: /Vue simple/ }));
+    expect(document.querySelector('.quiz.in-world.simple')).not.toBeNull();
+    expect(answers().map((b) => b.textContent)).toEqual(labels);
+    if (wrong) expect(answers()[0].disabled).toBe(true);
+    await user.click(screen.getByRole('button', { name: /Scène/ }));
+    expect(document.querySelector('.quiz.in-world.simple')).toBeNull();
+    expect(answers().map((b) => b.textContent)).toEqual(labels);
+    if (wrong) expect(answers()[0].disabled).toBe(true);
   });
 });

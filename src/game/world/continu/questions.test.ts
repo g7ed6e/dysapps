@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { seeded } from '../../../core/random';
 import { screenOf } from './camera';
 import PLACE_ITEMS from './placeItems.json';
-import { ANSWER_LAYOUT, answerObjects, answerScale, crateLayout, itemScene, placePieces, questionLayout, questionPose, sceneSpot, veilleurPiece, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, answerObjects, answerScale, craneHook, crateLayout, itemScene, placePieces, questionLayout, questionPose, sceneSpot, veilleurPiece, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
 import {
   BELLS_PER_ROUND,
   EXERCISES_WITH_TWINS,
@@ -365,12 +365,38 @@ describe('La scène d’un item', () => {
     expect(itemScene('ecluses', { kind: 'sas', n: 3, d: 4 }, false).labels).toEqual([]);
   });
 
-  it('la moitié : les caisses qui partent volent à la barque et y restent ; le double : les nouvelles arrivent sur le quai et y restent', () => {
-    const before = itemScene('quais', { kind: 'quai', op: 'moitie', before: 34, after: 17 }, false);
-    const r = itemScene('quais', { kind: 'quai', op: 'moitie', before: 34, after: 17 }, true).reaction;
-    expect(before.reaction).toBeNull();
-    expect(r?.stay).toBe(true);
-    expect(itemScene('quais', { kind: 'quai', op: 'double', before: 23, after: 46 }, true).reaction?.stay).toBe(true);
+  it('aux Quais, la bonne caisse de réponse monte au crochet de la grue et y reste ; les caisses du quai sont déjà à leur place', () => {
+    const moitie = { kind: 'quai', op: 'moitie', before: 34, after: 17 } as const;
+    const at = { x: 70, y: 0.5, z: 75 };
+    expect(itemScene('quais', moitie, false, [at]).reaction).toBeNull();
+    // Sans bonne réponse montrée, rien ne monte.
+    expect(itemScene('quais', moitie, true).reaction).toBeNull();
+    const r = itemScene('quais', moitie, true, [at], 0.8).reaction!;
+    expect(r.stay).toBe(true);
+    expect(r.from).toEqual(at);
+    // Le quai s'allonge avec les caisses : le crochet reste au-dessus de sa bande de devant, à la même hauteur.
+    const hook = craneHook();
+    const o = sceneSpot('quais');
+    expect(r.to.z).toBeCloseTo(hook.z, 6);
+    expect(Math.abs(r.to.x - o.x)).toBeLessThan(10);
+    // Pendue sous le crochet, au-dessus du quai.
+    expect(r.to.y).toBeLessThan(hook.y);
+    expect(r.to.y).toBeGreaterThan(sceneSpot('quais').y);
+    // Répondu : les caisses qui partent sont dans la barque (plus de triangles qu'avant, aucune ne vole).
+    const still = itemScene('quais', moitie, true, [at]).still.triangles;
+    expect(still).toBeGreaterThan(0);
+    expect(itemScene('quais', { kind: 'quai', op: 'double', before: 23, after: 46 }, true, [at]).reaction?.stay).toBe(true);
+  });
+
+  it('aux Quais, une caisse tentée penche, la caisse partie au crochet s’efface de la rangée', () => {
+    const pts = [0, 1, 2, 3].map((i) => ({ x: 66 + 2 * i, y: 0.5, z: 75 }));
+    const still = answerObjects('quais', pts, 0.8);
+    const tried = answerObjects('quais', pts, 0.8, { picked: [1] });
+    expect(tried.triangles).toBe(still.triangles);
+    expect(Array.from(tried.positions)).not.toEqual(Array.from(still.positions));
+    const gone = answerObjects('quais', pts, 0.8, { gone: [2] });
+    expect(gone.triangles).toBeGreaterThan(0);
+    expect(gone.triangles).toBeLessThan(still.triangles);
   });
 
   it('les objets des réponses tiennent au-dessus de leur bouton, sans déborder sur le voisin', () => {

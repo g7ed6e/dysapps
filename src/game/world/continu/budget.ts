@@ -8,7 +8,7 @@ import { PLACES, type PlaceId } from './plan6e';
 import { modelOfPlace } from './places';
 import { answerObjects, itemScene, placePieces, sceneSpot, veilleurPiece } from './questionScene';
 import type { ItemScene } from './questions';
-import { bellPlane, habitantHand, lanternGlass, scenetteDecor } from './scenette';
+import { bellPlane, habitantHand, scenetteDecor, scenetteOf, scenetteSuccess } from './scenette';
 import { buildHeightField, heightOnMesh, tileRings, tileTriangleCounts } from './terrain';
 import { veilFacets } from './veil';
 
@@ -46,21 +46,25 @@ function questionCost(): { triangles: number; calls: number } {
     const item = itemScene(place, scene, true, points, 1);
     // Au Phare, les cloches pendues à leur poutre, toutes balancées, et la corde de sonnerie.
     const hang = place === 'phare' ? { hand: habitantHand(place), rail: bellPlane(place).rail } : undefined;
-    const objects = answerObjects(place, points, 1, hang ? [0, 1, 2, 3, 4, 5] : [], hang);
+    const objects = answerObjects(place, points, 1, { picked: [0, 1, 2, 3, 4, 5], hanging: hang });
     triangles = Math.max(triangles, item.still.triangles + objects.triangles + (item.reaction?.facets.triangles ?? 0));
   }
   return { triangles, calls: 2 };
 }
 
 /**
- * Une scénette (lot 2, le Phare) : le décor de près (la galerie, sa rambarde, la gardienne), un maillage fait à
- * l'arrivée et libéré au départ, du matériau du terrain. La lampe de la réussite passe par le maillage de la réaction,
- * quand les objets des réponses sont effacés : ses triangles comptent ici, pas son appel. Kéo y reste, sans son anneau
- * (son appel est compté quand même : le pire cas).
+ * Une scénette (lot 2, le Phare ; lot 3, les Quais), la plus chargée : le décor de près (la galerie, sa rambarde, la
+ * gardienne ; le docker), un maillage fait à l'arrivée et libéré au départ, du matériau du terrain. La lampe de la
+ * réussite passe par le maillage de la réaction, quand les objets des réponses sont effacés : ses triangles comptent
+ * ici, pas son appel. Kéo y reste, sans son anneau (son appel est compté quand même : le pire cas).
  */
 function scenetteCost(): { triangles: number; calls: number } {
-  return { triangles: scenetteDecor('phare').triangles + lanternGlass('phare').triangles, calls: 1 };
+  const triangles = Math.max(...SCENETTE_PLACES.map((p) => scenetteDecor(p).triangles + (scenetteSuccess(p)?.triangles ?? 0)));
+  return { triangles, calls: 1 };
 }
+
+/** Les lieux qui ont leur scénette : le Phare (lot 2), les Quais (lot 3). */
+const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id).filter((id) => scenetteOf(id));
 
 /** Les pièces durables, toutes remises, et le Veilleur rallumé : un maillage pour les quatre lieux, et la Roue des Écluses. */
 function piecesCost(): { triangles: number; calls: number } {
@@ -110,4 +114,19 @@ export function openWorldCost(): OpenWorldCost[] {
     { poste: 'scénette', ...scenetteCost() },
     { poste: 'pièces', ...piecesCost() },
   ];
+}
+
+/**
+ * La Carte des lieux ouverts (lot 3), le pire : toute l'île de loin dans l'anneau de loin (celui de près vidé), la mer,
+ * les chemins, les quatre lieux, la brume des lieux fermés (les quatre, et le banc qui se lève), Kéo. Ni question ni
+ * scénette n'y sont ouvertes : elle ne s'ouvre pas pendant une question. Mesuré dans le navigateur : 10 appels,
+ * 19 310 triangles (la mer en deux).
+ */
+export function mapCost(): { triangles: number; calls: number } {
+  const field = buildHeightField();
+  const far = tileTriangleCounts(field, 'far').reduce((s, n) => s + n, 0);
+  const paths = pathRibbons((x, z) => heightOnMesh(field, x, z)).triangles;
+  const places = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles, 0);
+  const veil = veilFacets(PLACES.map((p) => p.id)).triangles;
+  return { triangles: far + 2 + paths + places + veil + KEO.triangles, calls: 1 + 1 + 1 + PLACES.length + 2 + KEO.calls };
 }

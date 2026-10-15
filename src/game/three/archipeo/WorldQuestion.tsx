@@ -131,8 +131,8 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   const scenette = scenetteOf(place);
   const layout = useMemo(() => {
     const base = questionLayout({ count, bells: place === 'phare', aid: hasAid, widen }, size.w || 1, size.h || 1);
-    return scenette ? scenetteLayout({ count, widen }, size.w || 1, size.h || 1, base) : base;
-  }, [count, hasAid, place, size, widen, scenette]);
+    return scenette ? scenetteLayout({ count, widen, small: place === 'phare', words: place === 'phare', column: place !== 'phare' && !grandTexte }, size.w || 1, size.h || 1, base) : base;
+  }, [count, hasAid, place, size, widen, scenette, grandTexte]);
   const [finished, setFinished] = useState(false);
   // La réussite de la mission (une étoile au moins) : dans une scénette, la lampe du lieu s'allume.
   const [success, setSuccess] = useState(false);
@@ -174,6 +174,11 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   const [introDone, setIntroDone] = useState(false);
   const intro = layout.low && !introDone && !finished && !offer && !simple;
   const simpleLow = simple && layout.low && !finished;
+  const startItems = useCallback(() => {
+    setIntroDone(true);
+    // La consigne élargie pour être lue en entier : la colonne reprend sa largeur pour la scène.
+    if (scenette) setWiden((n) => (n === WIDEN_FULL ? 0 : n));
+  }, [scenette]);
   // Mesuré avant l'affichage, à chaque item, réponse ou cran : une colonne qui déborde (en hauteur ou en largeur) prend
   // le cran suivant ; une consigne qui ne tient pas en pleine largeur mène droit à « Vue simple » ; un mot coupé aussi.
   // Sur tablette, seule une scénette se mesure : ses mots de réponse (le panneau prend la hauteur de son texte).
@@ -194,10 +199,12 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
     if (offer || !layout.low) return;
     const column = root.querySelector<HTMLElement>('.quiz.in-world');
     if (!column || !overflows(column)) return;
-    if (intro) setWiden(WIDEN_OFFER);
+    // Dans une scénette, la consigne lue en entier au premier item prend d'abord toute la largeur (aux Quais, elle est
+    // longue) ; « Commencer » rend la colonne à la scène. Ailleurs, ou si elle ne tient toujours pas : « Vue simple ».
+    if (intro) setWiden(scenette && widen < WIDEN_FULL ? WIDEN_FULL : WIDEN_OFFER);
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
-  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, simple, bare]);
+  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, simple, bare, scenette]);
   // Le panneau de « Vue simple » défile : il s'ouvre en haut (le rôle, la consigne), et `data-suite` dit qu'il reste
   // de quoi lire plus bas (une ombre au-dessus de « Valider ») ou plus haut.
   useEffect(() => {
@@ -259,7 +266,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
     const extra: ReactNode = (
       <>
         {intro && (
-          <button type="button" className="button primary world-question-start" onClick={() => setIntroDone(true)}>
+          <button type="button" className="button primary world-question-start" onClick={startItems}>
             <Icon name="play" /> Commencer
           </button>
         )}
@@ -331,7 +338,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       className:
         simple && !finished
           ? `in-world scenette simple${layout.low ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}`
-          : `in-world${scenette ? ' scenette' : ''}${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut ? ' answers-out' : ''}${bare ? ' sans-image' : ''}`,
+          : `in-world${scenette ? ' scenette' : ''}${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut || (scenette && layout.low && offer) ? ' answers-out' : ''}${bare ? ' sans-image' : ''}`,
     };
   }, [
     exerciseId,
@@ -341,6 +348,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
     onClose,
     openSimple,
     intro,
+    startItems,
     offer,
     widen,
     layout.low,
@@ -548,7 +556,7 @@ function useStopOnLeave(): void {
  * (CalculationScreen).
  */
 function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: ScreenProps) {
-  const { layout, show } = useQuestion();
+  const { layout, show, simple } = useQuestion();
   useStopOnLeave();
   const item = items[0];
   const scene = placeSceneOf(item);
@@ -562,10 +570,14 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   const chosen = answered?.detail?.chosen;
   const [hintShown, setHintShown] = useState(false);
   const rightIndex = choices.indexOf(answer);
+  // Les réponses tentées et fausses (barrées) : leur objet le montre aussi dans la scène (une caisse penchée).
+  const tried = choices.flatMap((c, i) => (c !== answer && (ruledOut?.includes(c) || (answered && chosen === c)) ? [i] : []));
+  const triedKey = tried.join(',');
   useEffect(() => {
     if (!scene) return;
-    show({ scene, answered: Boolean(answered), right: answered && rightIndex >= 0 ? [rightIndex] : [], picked: [], count: choices.length, aid: Boolean(aid) });
-  }, [show, scene, answered, rightIndex, choices.length, aid]);
+    const picked = triedKey ? triedKey.split(',').map(Number) : [];
+    show({ scene, answered: Boolean(answered), right: answered && rightIndex >= 0 ? [rightIndex] : [], picked, count: choices.length, aid: Boolean(aid) });
+  }, [show, scene, answered, rightIndex, choices.length, aid, triedKey]);
   if (!item || !scene) return null;
   // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière.
   const gap = filledGap(prompt, answer, answered?.results);
@@ -635,7 +647,8 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
       <div className="world-answers" role="group" aria-label="Réponses possibles">
         {choices.map((choice, i) => {
           const slot = layout.slots[i] ?? layout.slots[0];
-          const styles = slotStyles(slot);
+          // En « Vue simple », les réponses sont une liste qui passe à la ligne : rien n'est posé sur la scène.
+          const styles = simple ? { hit: undefined, label: undefined } : slotStyles(slot);
           const isAnswer = answered && choice === answer;
           // Au deuxième essai, la réponse déjà tentée reste barrée.
           const isWrong = Boolean(answered && chosen === choice && choice !== answer) || Boolean(ruledOut?.includes(choice));

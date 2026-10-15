@@ -2,13 +2,15 @@
 // le lieu, Kéo se tient à gauche, l'habitant à droite, immobile, et les objets-réponses sont en rangée en bas, sous la
 // consigne écrite et lue dans un panneau sur fond uni. Le Phare d'abord : la galerie et sa rambarde, la gardienne en
 // quatre volumes (son ciré, sa tête, son bonnet, son bras tendu vers la rambarde) et la corde de sonnerie, les cloches
-// pendues devant la rambarde ; à la réussite, la lampe s'allume. Rien à lire n'est peint dans la 3D. Le décor de près
-// est fait à l'arrivée et libéré au départ par la vue. Code pur : la vue dessine.
+// pendues devant la rambarde ; à la réussite, la lampe s'allume. Les Quais ensuite (lot 3) : le docker au pied de la
+// grue, un bras posé sur une caisse, son crochet de levage à la main, les caisses-réponses sur un ponton du bassin ; la
+// bonne caisse monte au crochet de la grue. Rien à lire n'est peint dans la 3D. Le décor de près est fait à l'arrivée et
+// libéré au départ par la vue. Code pur : la vue dessine.
 import { CAMERA_FOV, type CameraPose } from './camera';
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec3 } from './geometry';
-import { placeById, type PlaceId } from './plan6e';
-import { ANSWER_LAYOUT, type AnswerSlot, type QuestionLayout, type ScreenBox } from './questionScene';
+import { DECK_HEIGHT, placeById, type PlaceId } from './plan6e';
+import { ANSWER_LAYOUT, QUAY, liftingHook, sceneSpot, type AnswerSlot, type QuestionLayout, type ScreenBox } from './questionScene';
 import { heightAt, standingHeight } from './terrain';
 
 /**
@@ -27,6 +29,8 @@ export interface Scenette {
 const SCENETTES: Partial<Record<PlaceId, Scenette>> = {
   // « du phare » : on ne la confond pas avec le Gardien de l'île (consultant Archipéo).
   phare: { role: 'La gardienne du phare', greeting: null, placement: 'rangee' },
+  // Le rôle seul, sans prénom ni réplique (choix du mainteneur du 15 octobre 2026).
+  quais: { role: 'Le docker', greeting: null, placement: 'rangee' },
 };
 
 /** La scénette d'un lieu, ou `null` s'il n'en a pas encore (la question s'y pose comme au lot 4). */
@@ -61,17 +65,28 @@ export const SCENETTE_LAYOUT = {
   objectShare: 2 / 3,
 } as const;
 
-/** Ce que demande une scénette : combien de réponses, et sur un écran bas, le cran de la colonne (`questionLayout`). */
+/**
+ * Ce que demande une scénette : combien de réponses, sur un écran bas le cran de la colonne (`questionLayout`), et des
+ * objets plus petits (`small` : les cloches, d'un tiers plus petites que la place au-dessus de leur mot).
+ */
 export interface ScenetteNeeds {
   count: number;
   widen?: number;
+  small?: boolean;
+  /** Des mots à lire sous les objets (les cloches) : leurs étiquettes sont plus larges que celles des nombres. */
+  words?: boolean;
+  /**
+   * La colonne à gauche sur tous les écrans (la disposition B, même sur tablette) : la consigne, la phrase de l'item, sa
+   * ligne de calcul et l'indice n'y tiennent pas en haut sans couvrir la scène (les Quais).
+   */
+  column?: boolean;
 }
 
 /** Une rangée de `n` réponses entre `left` et `right`, l'étiquette en bas (`bottom`), l'objet au-dessus jusqu'à `top`. */
-function rowSlots(n: number, left: number, right: number, top: number, bottom: number, lh: number): { slots: AnswerSlot[]; objectHeight: number } {
+function rowSlots(n: number, left: number, right: number, top: number, bottom: number, lh: number, share: number): { slots: AnswerSlot[]; objectHeight: number } {
   const L = ANSWER_LAYOUT;
   const w = Math.max(48, Math.min(L.maxWidth, (right - left - (n - 1) * L.gap) / n));
-  const objectHeight = Math.max(lh, SCENETTE_LAYOUT.objectShare * Math.min(L.objectShare * (w + L.gap), bottom - lh - L.lift - top));
+  const objectHeight = Math.max(lh, share * Math.min(L.objectShare * (w + L.gap), bottom - lh - L.lift - top));
   const total = n * w + (n - 1) * L.gap;
   const first = (left + right - total) / 2;
   const slots: AnswerSlot[] = [];
@@ -94,18 +109,20 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   const S = SCENETTE_LAYOUT;
   const L = ANSWER_LAYOUT;
   const n = Math.max(1, needs.count);
-  if (base.low) {
+  const share = needs.small ? S.objectShare : 1;
+  if (base.low || needs.column) {
     // B : la scène à droite de la colonne ; la rangée à droite aussi si les mots y tiennent, sinon sur toute la largeur
     // (comme au lot 4), la colonne s'arrêtant alors au-dessus d'elle.
-    const lh = L.labelLow;
-    const right = width - L.edgeLow;
-    const sideLeft = Math.max(S.low.left * width, base.panel.left + base.panel.width + L.edgeLow);
-    const beside = (right - sideLeft - (n - 1) * L.gap) / n >= L.minLabelBells;
-    const rowLeft = beside ? sideLeft : L.edgeLow;
-    const { slots, objectHeight } = rowSlots(n, rowLeft, right, S.low.rowTop * height, S.low.rowBottom * height, lh);
+    const lh = base.low ? L.labelLow : L.label;
+    const edge = base.low ? L.edgeLow : L.edge;
+    const right = width - edge;
+    const sideLeft = Math.max(S.low.left * width, base.panel.left + base.panel.width + edge);
+    const beside = (right - sideLeft - (n - 1) * L.gap) / n >= (needs.words ? L.minLabelBells : L.minLabel);
+    const rowLeft = beside ? sideLeft : edge;
+    const { slots, objectHeight } = rowSlots(n, rowLeft, right, S.low.rowTop * height, S.low.rowBottom * height, lh, share);
     const highest = Math.min(...slots.map((s) => s.hit.top));
-    const panelBottom = beside ? height - L.edgeLow : highest - L.edgeLow;
-    const stage = { left: sideLeft, top: S.low.top * height, right, bottom: Math.min(S.low.bottom * height, highest - L.edgeLow) };
+    const panelBottom = beside ? height - edge : highest - edge;
+    const stage = { left: sideLeft, top: S.low.top * height, right, bottom: Math.min(S.low.bottom * height, highest - edge) };
     return {
       ...base,
       slots,
@@ -127,7 +144,7 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   const rowBottom = roomy ? above : S.row.bottom * height;
   // La rangée prend toute la largeur, à 12 px des bords : les mots des cloches, leur image devant, y tiennent.
   const rowRight = roomy ? width - L.edge : validate.left - S.validate.gap;
-  const { slots, objectHeight } = rowSlots(n, L.edge, rowRight, S.row.top * height, rowBottom, lh);
+  const { slots, objectHeight } = rowSlots(n, L.edge, rowRight, S.row.top * height, rowBottom, lh, share);
   const top = S.edge * height;
   const panelWidth = Math.max(0, Math.min(S.panelRight * width, width - S.topRight) - edge);
   const highest = Math.min(...slots.map((s) => s.hit.top));
@@ -150,30 +167,72 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
 /** La galerie de la scénette, au-dessus du pied du Phare : son plancher, son rayon, la hauteur de sa rambarde. */
 export const GALLERY = { floor: 11.55, radius: 3.4, rail: 0.75, posts: 16 } as const;
 
-/** Où se tiennent Kéo et l'habitant, depuis le centre du lieu (au sud, vers la caméra), et la taille de Kéo. */
-const SCENETTE_SPOTS = {
-  keo: { dx: -1.45, dz: 2.3, scale: 0.6, yaw: Math.PI - 0.35 },
-  habitant: { dx: 1.45, dz: 2.3 },
-} as const;
+/**
+ * Le lieu d'une scénette : le sol où se tiennent Kéo et l'habitant (`floor`), leurs places depuis lui (Kéo à gauche,
+ * son échelle et son cap ; l'habitant à droite), ce que la caméra cadre (de Kéo à l'habitant, en largeur ; du plus bas au
+ * plus haut à montrer, en unités au-dessus du sol ; le point visé, `depth` vers la caméra) et l'angle de la caméra sous
+ * l'horizon. Au Phare, la galerie ; aux Quais, la bande de devant du quai, au pied de la grue (lot 3).
+ */
+interface ScenetteSite {
+  floor(): Vec3;
+  keo: { dx: number; dz: number; scale: number; yaw: number };
+  habitant: { dx: number; dz: number };
+  subject: { halfWidth: number; bottom: number; top: number; depth: number };
+  pitch: number;
+}
 
-/** L'angle de la caméra de la scénette sous l'horizon, et le temps de sa descente (coupe franche avec « Réduire les animations »). */
-export const SCENETTE_CAMERA = { pitch: (20 * Math.PI) / 180, seconds: 0.9 } as const;
-
-/** Le plancher de la galerie d'un lieu, dans le monde. */
-function floorOf(place: PlaceId): Vec3 {
-  const p = placeById(place);
+/** Le sol de la galerie du Phare. */
+function galleryFloor(): Vec3 {
+  const p = placeById('phare');
   return { x: p.center.x, y: standingHeight(heightAt(p.center)) + GALLERY.floor, z: p.center.z };
 }
+
+/** Le sol des Quais : le milieu de la bande de devant du quai, contre le bord du bassin. */
+function quayFloor(): Vec3 {
+  const o = sceneSpot('quais');
+  return { x: o.x, y: o.y, z: o.z + QUAY.depth / 2 - QUAY.strip / 2 };
+}
+
+const SITES: Partial<Record<PlaceId, ScenetteSite>> = {
+  phare: {
+    floor: galleryFloor,
+    keo: { dx: -1.45, dz: 2.3, scale: 0.6, yaw: Math.PI - 0.35 },
+    habitant: { dx: 1.45, dz: 2.3 },
+    subject: { halfWidth: 2.2, bottom: -0.1, top: 2.3, depth: 2 },
+    pitch: (20 * Math.PI) / 180,
+  },
+  // La scène reste proche (réserve du directeur artistique) : Kéo, les caisses et le docker, la barque dessous ; la
+  // flèche de la grue peut passer sous le panneau.
+  quais: {
+    floor: quayFloor,
+    keo: { dx: -4.3, dz: 0, scale: 0.6, yaw: Math.PI - 0.45 },
+    habitant: { dx: 3.5, dz: 0 },
+    subject: { halfWidth: 4.9, bottom: -1.1, top: 2.5, depth: 0.2 },
+    pitch: (24 * Math.PI) / 180,
+  },
+};
+
+const siteOf = (place: PlaceId): ScenetteSite => SITES[place] ?? SITES.phare!;
+
+/** L'angle de la caméra de la scénette du Phare sous l'horizon, et le temps de la descente (coupe franche avec « Réduire les animations »). */
+export const SCENETTE_CAMERA = { pitch: (20 * Math.PI) / 180, seconds: 0.9 } as const;
+
+/** Le sol d'une scénette, dans le monde. */
+const floorOf = (place: PlaceId): Vec3 => siteOf(place).floor();
 
 /** La place de Kéo dans la scénette : ses pieds, son échelle et son cap. */
 export function scenetteKeo(place: PlaceId): { at: Vec3; scale: number; yaw: number } {
   const f = floorOf(place);
-  const k = SCENETTE_SPOTS.keo;
+  const k = siteOf(place).keo;
   return { at: { x: f.x + k.dx, y: f.y, z: f.z + k.dz }, scale: k.scale, yaw: k.yaw };
 }
 
-/** Ce que la caméra cadre dans la scène : de Kéo à l'habitant, du plancher au toit de la lanterne, en unités. */
-const SUBJECT = { halfWidth: 2.2, bottom: -0.1, top: 2.3, depth: 2 } as const;
+/** Où se tient l'habitant de la scénette (ses pieds). */
+export function scenetteHabitant(place: PlaceId): Vec3 {
+  const f = floorOf(place);
+  const h = siteOf(place).habitant;
+  return { x: f.x + h.dx, y: f.y, z: f.z + h.dz };
+}
 
 /**
  * La pose de la caméra de la scénette : Kéo et l'habitant au milieu de la scène (`layout.scenette.stage`), vus du sud,
@@ -181,13 +240,15 @@ const SUBJECT = { halfWidth: 2.2, bottom: -0.1, top: 2.3, depth: 2 } as const;
  * scénette dure.
  */
 export function scenettePose(place: PlaceId, stage: ScreenBox, width: number, height: number): { pose: CameraPose; shift: { x: number; y: number } } {
+  const site = siteOf(place);
+  const S = site.subject;
   const f = floorOf(place);
   const focal = height / 2 / Math.tan(((CAMERA_FOV / 2) * Math.PI) / 180);
   const halfW = Math.max(24, (stage.right - stage.left) / 2);
   const halfH = Math.max(24, (stage.bottom - stage.top) / 2);
-  const dist = Math.max((SUBJECT.halfWidth * focal) / halfW, ((SUBJECT.top - SUBJECT.bottom) / 2) * (focal / halfH)) * 1.05;
-  const target = { x: f.x, y: f.y + (SUBJECT.top + SUBJECT.bottom) / 2, z: f.z + SUBJECT.depth };
-  const p = SCENETTE_CAMERA.pitch;
+  const dist = Math.max((S.halfWidth * focal) / halfW, ((S.top - S.bottom) / 2) * (focal / halfH)) * 1.05;
+  const target = { x: f.x + (site.keo.dx + site.habitant.dx) / 2, y: f.y + (S.top + S.bottom) / 2, z: f.z + S.depth };
+  const p = site.pitch;
   return {
     pose: {
       target,
@@ -198,6 +259,18 @@ export function scenettePose(place: PlaceId, stage: ScreenBox, width: number, he
     shift: { x: width / 2 - (stage.left + stage.right) / 2, y: height / 2 - (stage.top + stage.bottom) / 2 },
   };
 }
+
+/**
+ * La maquette du lieu s'efface-t-elle le temps de la scénette ? Aux Quais, oui : le quai de la scénette a sa grue, on n'en
+ * voit pas deux. Au Phare, non : la tour porte la galerie.
+ */
+export const scenetteHidesPlace = (place: PlaceId): boolean => place === 'quais';
+
+/** Les objets des réponses pendent-ils (les cloches du Phare), ou sont-ils posés sur un ponton (les caisses des Quais) ? */
+export const answersHang = (place: PlaceId): boolean => place === 'phare';
+
+/** La hauteur du ponton des réponses d'une scénette, quand elles sont posées : celle des pontons du monde. */
+export const SCENETTE_DECK = DECK_HEIGHT;
 
 /** Le plan où pendent les cloches : devant la rambarde, au sud (la vue y pose les objets sous chaque réponse). */
 export function bellPlane(place: PlaceId): { z: number; rail: Vec3 } {
@@ -215,6 +288,13 @@ const C = {
   head: 0xe3c08a,
   cap: 0x142b38,
   rope: 0xe5ebe3,
+  // Le docker (consultant Archipéo, fiche du lot 2) : gilet bleu lagon, tête sable, casquette jaune lanterne.
+  vest: 0x178078,
+  vestShade: 0x12695f,
+  dockCap: 0xffd866,
+  steel: 0x6f8089,
+  crate: 0xb5793f,
+  crateTop: 0xc98d50,
 } as const;
 
 /** La vitre de la lanterne : éteinte (gris-bleu, comme le modèle du Phare), puis allumée à la réussite. */
@@ -241,9 +321,8 @@ function sphere(b: FacetBuilder, c: Vec3, r: number, sides: number, rings: numbe
 
 /** La main de l'habitant, au bout de son bras tendu vers la rambarde : la corde de sonnerie y part. */
 export function habitantHand(place: PlaceId): Vec3 {
-  const f = floorOf(place);
-  const h = SCENETTE_SPOTS.habitant;
-  return { x: f.x + h.dx - 0.15, y: f.y + 0.78, z: f.z + h.dz + 0.75 };
+  const at = scenetteHabitant(place);
+  return { x: at.x - 0.15, y: at.y + 0.78, z: at.z + 0.75 };
 }
 
 /**
@@ -252,9 +331,7 @@ export function habitantHand(place: PlaceId): Vec3 {
  * sa poignée, de la couleur du bonnet, la détache du jaune du ciré (retour du directeur artistique).
  */
 function gardienne(b: FacetBuilder, place: PlaceId): void {
-  const f = floorOf(place);
-  const h = SCENETTE_SPOTS.habitant;
-  const at = { x: f.x + h.dx, y: f.y, z: f.z + h.dz };
+  const at = scenetteHabitant(place);
   b.prism(at, 0.4, 0.27, 0.92, 12, C.coat, C.coatShade);
   sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 12, 8, C.head);
   b.prism({ x: at.x, y: at.y + 1.2, z: at.z }, 0.25, 0.12, 0.2, 12, C.cap);
@@ -264,11 +341,38 @@ function gardienne(b: FacetBuilder, place: PlaceId): void {
 }
 
 /**
+ * Le docker, immobile, en quatre volumes (consultant Archipéo) : le corps en cube arrondi (son gilet bleu lagon), la tête
+ * (une sphère sable), la casquette (un disque jaune lanterne et sa visière), un bras posé sur une caisse à sa gauche ;
+ * de l'autre main, il tient son crochet de levage (un manche et un anneau).
+ */
+function docker(b: FacetBuilder, place: PlaceId): void {
+  const at = scenetteHabitant(place);
+  // Le cube arrondi : un prisme à huit pans, presque droit.
+  b.prism({ ...at, yaw: Math.PI / 8 }, 0.38, 0.33, 0.92, 8, C.vest, C.vestShade);
+  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 12, 8, C.head);
+  b.prism({ x: at.x, y: at.y + 1.25, z: at.z }, 0.26, 0.26, 0.08, 12, C.dockCap);
+  b.box({ x: at.x, y: at.y + 1.25, z: at.z + 0.27 }, [0.3, 0.05, 0.2], C.dockCap);
+  // Le bras gauche posé sur une caisse, à côté de lui.
+  const crate = { x: at.x - 0.72, y: at.y, z: at.z + 0.05 };
+  b.box(crate, [0.6, 0.6, 0.6], C.crate, C.crateTop);
+  b.beam({ x: at.x - 0.28, y: at.y + 0.84, z: at.z }, { x: crate.x + 0.12, y: crate.y + 0.66, z: crate.z }, 0.15, C.vest);
+  // Le bras droit tombe le long du corps ; sa main tient le crochet de levage.
+  const hand = { x: at.x + 0.42, y: at.y + 0.5, z: at.z + 0.08 };
+  b.beam({ x: at.x + 0.3, y: at.y + 0.86, z: at.z }, hand, 0.15, C.vest);
+  liftingHook(b, { x: hand.x, y: hand.y, z: hand.z }, C.steel, 0.11);
+}
+
+/**
  * Le décor de près d'une scénette, fait à l'arrivée : au Phare, la galerie élargie (son plancher sur un encorbellement)
- * et sa rambarde (poteaux, main courante, lisse), et la gardienne. Un seul maillage, du matériau du terrain.
+ * et sa rambarde (poteaux, main courante, lisse), et la gardienne ; aux Quais, le docker (le quai, la grue et la barque
+ * sont la scène de l'item). Un seul maillage, du matériau du terrain.
  */
 export function scenetteDecor(place: PlaceId): Facets {
   const b = new FacetBuilder();
+  if (place === 'quais') {
+    docker(b, place);
+    return b.build();
+  }
   if (place !== 'phare') return b.build();
   const f = floorOf(place);
   const R = GALLERY.radius;
@@ -299,4 +403,12 @@ export function lanternGlass(place: PlaceId): Facets {
   const f = floorOf(place);
   b.prism({ x: f.x, y: f.y - 0.45, z: f.z }, 1.09, 1.09, 1.52, 8, 0xffffff);
   return b.build();
+}
+
+/**
+ * Ce qui s'allume à la réussite d'une scénette : la lampe du Phare (sa vitre), ou rien (aux Quais, la bonne caisse est
+ * déjà montée au crochet à chaque item).
+ */
+export function scenetteSuccess(place: PlaceId): Facets | null {
+  return place === 'phare' ? lanternGlass(place) : null;
 }

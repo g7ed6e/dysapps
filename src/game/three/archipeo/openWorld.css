@@ -707,6 +707,47 @@
   width: 22px;
   height: 22px;
 }
+/* La Carte des lieux ouverts (lot 3) : le bouton de la Carte, le même que dans le reste du jeu, dans la barre du bas,
+   à gauche (« Y aller » tient le milieu) ; sur la Carte, le nom de chaque lieu ouvert est un bouton posé au-dessus du
+   lieu (48 px de haut au moins, fond uni), un lieu fermé garde son cadenas. Les places viennent de la scène. */
+.world-bar.open-world-bar {
+  right: auto;
+  bottom: calc(0.8rem + env(safe-area-inset-bottom, 0px));
+  z-index: 3;
+  justify-content: flex-start;
+}
+.open-world-map-places {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.open-world-map-place {
+  position: absolute;
+  left: 0;
+  top: 0;
+  /* Centré au-dessus de son lieu ; la scène pose la place par `transform`. */
+  translate: -50% -100%;
+  min-height: 48px;
+  padding: 0.3rem 0.9rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  pointer-events: auto;
+  will-change: transform;
+}
+.open-world-map-place[hidden] {
+  display: none;
+}
+.open-world-map-place:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
 /* La scénette (lot 2) : le rôle de l'habitant en tête du panneau, en gras ; la place de sa phrase d'accueil dessous. */
 .world-scenette-head {
   margin: 0 0 0.3rem;
@@ -767,6 +808,13 @@
 }
 .world-question .in-world.scenette.low.offer > .consigne {
   display: flex;
+}
+/* Le rôle, puis « Vue simple » tout de suite dessous, avant la consigne : on le voit sans faire défiler. */
+.world-question .in-world.scenette.low.offer > .world-scenette-head {
+  order: -2;
+}
+.world-question .in-world.scenette.low.offer > .world-question-offer {
+  order: -1;
 }
 /* « Vue simple » dans une scénette : la même question, sur un panneau uni qui couvre la scène (sous la pause), les
    cloches en liste qui passe à la ligne, dans le même ordre, « Valider » dessous ; les cloches déjà choisies le restent. */
