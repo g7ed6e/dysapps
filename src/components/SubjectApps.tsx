@@ -6,12 +6,14 @@ import { RecordTag } from './RecordTag';
 
 /**
  * Les missions du portail d'une matière, en cartes : la page matière et les portes de l'école du village montrent les
- * mêmes. `from` : d'où l'on vient (la mission y ramène par son lien de retour).
+ * mêmes. `from` : d'où l'on vient (la mission y ramène par son lien de retour). `compact` (la porte de l'école du monde
+ * continu, GD-20, lot 2) : une ligne par mission, l'icône, le titre et l'étiquette, sans la description ; toute la
+ * ligne est la cible.
  */
-export function SubjectApps({ subject, from }: { subject: Subject; from?: string }) {
+export function SubjectApps({ subject, from, compact = false }: { subject: Subject; from?: string; compact?: boolean }) {
   const { progress } = useProgress();
   return (
-    <ul className="grid apps">
+    <ul className={compact ? 'apps apps-compact' : 'grid apps'}>
       {appsBySubject(subject).map((app) => {
         const record = bestScore(progress.apps, app.id);
         const content = (
@@ -20,7 +22,7 @@ export function SubjectApps({ subject, from }: { subject: Subject; from?: string
               <Icon name={app.status === 'bientot' ? 'lock' : app.icon} size="1.8rem" />
             </span>
             <span className="app-title">{app.title}</span>
-            <span className="app-desc">{app.description}</span>
+            {!compact && <span className="app-desc">{app.description}</span>}
             {app.status === 'bientot' ? (
               <span className="tag">Bientôt</span>
             ) : record !== undefined ? (

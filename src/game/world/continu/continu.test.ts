@@ -169,7 +169,7 @@ describe('Les chemins aimantés', () => {
   });
 
   it('un toucher dans le lagon aimante Kéo sur la digue la plus proche', () => {
-    const p = snapToNetwork(fromPlan([900, 660]));
+    const p = snapToNetwork(fromPlan([930, 655]));
     expect(PATH_EDGES[p.edge]).toEqual(['phare', 'digue']);
     // Aucun autre point du réseau n'est plus près.
     for (let k = 0; k <= 50; k++) {

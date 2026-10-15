@@ -17,7 +17,13 @@ import type { MapSpotOnScreen } from './scene';
 interface Props {
   /** Les lieux qu'on peut toucher ; les autres portent leur cadenas. */
   openPlaces: readonly PlaceId[];
-  onPick(place: PlaceId): void;
+  /** Un lieu ouvert ou l'Escale (`port`) touché : la page y dépose Kéo. */
+  onPick(place: PlaceId | 'port'): void;
+  /**
+   * Le nom de l'Escale, le lieu de départ (GD-20, lot 2) : toujours ouverte, sans état (rien ne s'y rebâtit) ; rien :
+   * pas d'Escale.
+   */
+  portName?: string;
   /** La page y range la fonction qui pose les étiquettes (le rappel `onMapPlaces` de la scène l'appelle). */
   placer: MutableRefObject<((spots: readonly MapSpotOnScreen[]) => void) | null>;
   /** Un lieu fermé touché : la page dit « Fermé pour l'instant ». */
@@ -31,7 +37,7 @@ interface Props {
 /** La bande de gauche réservée à la colonne des accès directs, en pixels : aucune étiquette n'y entre. */
 const COLUMN_ZONE = 72;
 
-export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words }: Props) {
+export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words, portName }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
@@ -50,7 +56,7 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words 
       if (node.hidden === s.shown) node.hidden = !s.shown;
       const size = sizes.current.get(s.id);
       if (!s.shown || !size) continue;
-      const kind = s.id === 'keo' ? 'keo' : openPlaces.includes(s.id) ? 'open' : 'closed';
+      const kind = s.id === 'keo' ? 'keo' : s.id === 'port' || openPlaces.includes(s.id) ? 'open' : 'closed';
       items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h });
     }
     // Kéo d'abord, puis les lieux ouverts, puis les fermés : l'ordre de `layoutMapLabels`.
@@ -113,6 +119,15 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words 
           Toi
         </span>
       </span>
+      {/* L'Escale : une pastille comme les lieux, toujours ouverte, sans état ni cadenas (consultant UX UI). */}
+      {portName && (
+        <button type="button" className="open-world-map-place open-world-map-port" data-lieu="port" hidden aria-label={`Y aller : ${portName}`} onClick={() => onPick('port')}>
+          <span className="open-world-map-place-name">{portName}</span>
+          <span className="open-world-map-state" aria-hidden="true">
+            <Icon name="ancre" />
+          </span>
+        </button>
+      )}
       {PLACES.map((p) =>
         openPlaces.includes(p.id) ? (
           <button

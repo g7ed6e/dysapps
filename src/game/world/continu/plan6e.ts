@@ -177,7 +177,97 @@ const doorNode = (s: PlaceSpec): PathNode => {
   return { id: s.id, at: { x: c.x + s.door.x, z: c.z + s.door.z } };
 };
 
-/** Les nœuds : les portes des lieux, les coudes des sentiers, la digue et le ponton. */
+/**
+ * L'Escale, le lieu de départ du monde continu (GD-20, lot 2) : le Port, sur la rive sud du lagon, là où la digue
+ * venue du Phare touche terre, à l'ouest des Quais ; « le Port et le Phare » sont le lieu de départ, reliés par la
+ * digue. Son repère : l'origine au pied du quai, sur le rivage, `x` le long du rivage vers l'est, `z` vers l'intérieur
+ * des terres (au sud) ; `yaw` le tourne pour suivre le rivage. Le quai avance dans l'eau ; derrière lui, une place de
+ * pierre qui monte doucement du quai, et le long du rivage, façades au sud (vers la caméra qui suit Kéo, toujours
+ * tournée vers le nord), la galerie des succès, puis l'école, et au fond le lieu d'assemblage. Rien ne se pose devant
+ * une porte ; le côté ouest du quai reste libre pour la Nef (lot 5).
+ */
+export const PORT = (() => {
+  const origin = { x: 0, z: 91.1 };
+  const yaw = 0.2;
+  const c = Math.cos(yaw),
+    s = Math.sin(yaw);
+  return {
+    origin,
+    yaw,
+    /** Un point du repère du Port dans le monde. */
+    toWorld: (lx: number, lz: number): Vec2 => ({ x: origin.x + lx * c + lz * s, z: origin.z - lx * s + lz * c }),
+    /** Un point du monde dans le repère du Port. */
+    toLocal: (p: Vec2): Vec2 => {
+      const dx = p.x - origin.x,
+        dz = p.z - origin.z;
+      return { x: dx * c - dz * s, z: dx * s + dz * c };
+    },
+  } as const;
+})();
+
+/**
+ * Le pavage du Port, dans son repère : le quai, de la pointe dans l'eau jusqu'à la place, et la place, le long des
+ * façades. Kéo y marche sur la pierre (`portFloor`), les chemins n'y sont pas dessinés.
+ */
+export const PORT_PAVING = {
+  quay: { x0: -3, x1: 3, z0: -9, z1: 6.5 },
+  square: { x0: -3.5, x1: 36.5, z0: 6.5, z1: 12.5 },
+} as const;
+
+/** La hauteur du quai, au-dessus de l'eau, et la pente de la place qui en monte (par unité vers l'intérieur). */
+const PORT_LEVEL = { quay: 0.75, rise: 0.115, from: 1 } as const;
+
+/** La hauteur de la pierre du Port en un point de son repère (le quai à plat, puis la place qui monte). */
+export const portLevel = (lz: number): number => PORT_LEVEL.quay + PORT_LEVEL.rise * Math.max(0, lz - PORT_LEVEL.from);
+
+const PORT_COS = Math.cos(PORT.yaw);
+const PORT_SIN = Math.sin(PORT.yaw);
+
+/**
+ * La pierre du Port sous un point du monde (`x`, `z`), ou rien hors du pavage : Kéo s'y tient, au-dessus du sol. Lue à
+ * chaque image (les pieds de Kéo, la caméra) : rien n'y est créé.
+ */
+export function portFloor(x: number, z: number): number | null {
+  const dx = x - PORT.origin.x,
+    dz = z - PORT.origin.z;
+  const lx = dx * PORT_COS - dz * PORT_SIN,
+    lz = dx * PORT_SIN + dz * PORT_COS;
+  const { quay: q, square: s } = PORT_PAVING;
+  const inside = (lx >= q.x0 && lx <= q.x1 && lz >= q.z0 && lz <= q.z1) || (lx >= s.x0 && lx <= s.x1 && lz >= s.z0 && lz <= s.z1);
+  return inside ? portLevel(lz) : null;
+}
+
+/** Les matières de l'école, une porte chacune, dans l'ordre de la barre (Français, Maths, Anglais). */
+export type PortSubject = 'french' | 'maths' | 'english';
+export const PORT_SUBJECTS: readonly PortSubject[] = ['french', 'maths', 'english'];
+
+/**
+ * Les endroits du Port où Kéo se tient : le quai (le départ), chaque porte de l'école, la galerie des succès, le lieu
+ * d'assemblage. Chacun a son nœud de chemin, `port-<endroit>`.
+ */
+export type PortSpot = 'quai' | PortSubject | 'succes' | 'chantier';
+
+/** Le nœud du chemin d'un endroit du Port. */
+export const portNode = (spot: PortSpot): string => `port-${spot}`;
+
+/**
+ * Où Kéo se tient au quai, dans le repère du Port : au pied de la place, côté est, pour que la galerie entre dans le
+ * champ du départ, le Phare au fond, au bout de la digue.
+ */
+export const PORT_QUAY_SPOT: readonly [number, number] = [1.5, 4];
+
+/** Les nœuds du Port, dans son repère : le quai, le pied de la place, puis devant chaque façade, à trois unités d'elle. */
+const PORT_NODES: readonly { id: string; at: readonly [number, number] }[] = [
+  { id: portNode('quai'), at: PORT_QUAY_SPOT },
+  { id: 'port-place', at: [0, 9.5] },
+  { id: portNode('succes'), at: [13, 9.5] },
+  { id: portNode('french'), at: [19.3, 9.5] },
+  { id: portNode('maths'), at: [22.5, 9.5] },
+  { id: portNode('english'), at: [25.7, 9.5] },
+  { id: portNode('chantier'), at: [34, 9.5] },
+];
+
+/** Les nœuds : les portes des lieux, les coudes des sentiers, la digue et le ponton, puis l'Escale. */
 export const PATH_NODES: readonly PathNode[] = [
   ...PLACE_SPECS.map(doorNode),
   node('digue', [945, 664]),
@@ -189,6 +279,7 @@ export const PATH_NODES: readonly PathNode[] = [
   node('nord-1', [1092, 402]),
   node('nord-2', [1062, 330]),
   node('crete', [1128, 300]),
+  ...PORT_NODES.map(({ id, at }) => ({ id, at: PORT.toWorld(at[0], at[1]) })),
 ];
 
 /** Les liaisons entre nœuds : sentiers, digue (Phare – Quais) et ponton (les Quais). */
@@ -206,6 +297,14 @@ export const PATH_EDGES: readonly (readonly [string, string])[] = [
   ['nord-2', 'filets'],
   ['filets', 'crete'],
   ['crete', 'ecluses'],
+  // L'Escale : la digue du Phare jusqu'au quai, puis la place, le long des façades.
+  ['phare', portNode('quai')],
+  [portNode('quai'), 'port-place'],
+  ['port-place', portNode('succes')],
+  [portNode('succes'), portNode('french')],
+  [portNode('french'), portNode('maths')],
+  [portNode('maths'), portNode('english')],
+  [portNode('english'), portNode('chantier')],
 ];
 
 /**

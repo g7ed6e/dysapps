@@ -4,7 +4,7 @@
 // indice. Juste du premier coup ou au second essai : le bloc est assemblé. Deux erreurs : rien n'est perdu,
 // l'explication s'affiche, la question reviendra, et une autre question est proposée. Ni XP, ni étoiles, ni niveau.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Feedback } from '../components/Feedback';
 import { Icon } from '../components/Icon';
 import { Loading } from '../components/Loading';
@@ -53,9 +53,11 @@ export function AssemblyQuestionPage() {
   const recette = bloc ? recetteDe(bloc as BlockId) : undefined;
   const { assemblage } = useTextes();
   const [autre, setAutre] = useState(0);
+  // Venu du monde continu (GD-20, lot 2) : le retour ramène à son lieu d'assemblage, dans le monde.
+  const from = (useLocation().state as { from?: string } | null)?.from;
   const loaded = useLoaded(async () => (recette ? ((await loadAssemblage(recette.bloc)) ?? null) : null), [recette?.bloc]);
   if (!recette || loaded === null) return <NotFoundPage />;
-  const retour = `${ASSEMBLAGE_PATH}?bloc=${recette.bloc}`;
+  const retour = typeof from === 'string' && from.startsWith('/adventure?') ? from : `${ASSEMBLAGE_PATH}?bloc=${recette.bloc}`;
   return (
     <>
       <Link to={retour} className="back-link">

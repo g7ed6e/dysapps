@@ -9,15 +9,16 @@ import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
-import { LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, type CameraPose } from '../../world/continu/camera';
+import { LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, type CameraPose } from '../../world/continu/camera';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, zoomMap, type MapView } from '../../world/continu/map';
 import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from '../../world/continu/paths';
-import { PLACES, TERRAIN, placeById, type PlaceId } from '../../world/continu/plan6e';
+import { PLACES, TERRAIN, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { LAMP_COLOR, lanternLight, modelOfPlace } from '../../world/continu/places';
+import { PORT_MAP_POINT, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
 import { answerObjects, answerScale, itemScene, placeTrace, sceneSpot, type Reaction } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
 import {
@@ -51,8 +52,8 @@ import { createMeter } from '../meter';
 
 /** Ce que la page donne à la scène. */
 export interface OpenWorldOptions {
-  /** Le lieu où Kéo se tient au départ. */
-  start: PlaceId;
+  /** Le lieu où Kéo se tient au départ, ou l'endroit de l'Escale (son quai, une porte de l'école…). */
+  start: PlaceId | PortSpot;
   /** « Réduire les animations » : Kéo arrive tout de suite, la caméra le suit d'un bloc. */
   reduceMotion: boolean;
   /** Kéo est arrivé : devant un lieu qu'on lui a demandé (`place`), ou sur un point du chemin (`null`). */
@@ -69,7 +70,14 @@ export interface OpenWorldOptions {
   /** La Carte ouverte : la place à l'écran de chaque lieu, à chaque image (la même liste, remplie sur place). */
   onMapPlaces(spots: readonly MapSpotOnScreen[]): void;
   /** Sur la Carte, un lieu touché dans la 3D (ouvert, la page ferme la Carte et y dépose Kéo ; fermé, elle le dit). */
-  onMapPick(place: PlaceId): void;
+  onMapPick(place: PlaceId | 'port'): void;
+  /**
+   * À l'Escale (GD-20, lot 2) : Kéo est devant une porte de l'école, la galerie ou le lieu d'assemblage (la page en ouvre
+   * le panneau), ou l'on a touché le reste du Port (`fiche`, la page ouvre sa fiche).
+   */
+  onPort(spot: PortSpot | 'fiche'): void;
+  /** La scénette d'assemblage est finie (posée, passée, ou sans rien à montrer) : la page ouvre le panneau du lieu. */
+  onAssembled(): void;
   /** Montrer le compteur de mesures (`?mesures`) ; `expose` : le laisser lire aux scripts. */
   meter: { show: boolean; expose: boolean };
   /** La pose d'une partie est finie (posée, la caméra revenue à Kéo, ou passée) : les célébrations peuvent venir. */
@@ -84,6 +92,20 @@ export interface OpenWorld {
   goTo(place: PlaceId, jump?: boolean): void;
   /** Saute le trajet en cours : Kéo est arrivé. */
   skip(): void;
+  /** Kéo d'un coup à un endroit de l'Escale, tourné vers sa façade : la page en ouvre le panneau (`onPort`). */
+  goToPort(spot: PortSpot): void;
+  /** Ce que montre l'Escale (ses portes, ses trophées, l'état de la région, la pile) : refait seulement s'il change. */
+  setPort(state: PortState): void;
+  /**
+   * La part de l'écran que laisse un panneau ouvert (en pixels, `null` : tout l'écran) : la caméra y garde ce que le
+   * panneau concerne (la porte, la galerie, l'établi), sans bouger (un décalage de l'image).
+   */
+  frame(free: { left: number; top: number; width: number; height: number } | null): void;
+  /**
+   * La scénette d'assemblage, au retour d'une question réussie : les pièces de l'établi se joignent en un bloc, que la
+   * grue pose sur le râtelier ; un toucher la passe, d'un coup avec « Réduire les animations ». `onAssembled` dit sa fin.
+   */
+  assemble(): void;
   /** Le lieu marqué (la prochaine mission), ou aucun : le seul lieu qui dépasse la brume. */
   setMark(place: PlaceId | null): void;
   /** Les lieux sous la brume (world/continu/mission.ts, `veiledPlaces`) ; la scène lève celle des lieux que Kéo approche. */
@@ -140,9 +162,9 @@ export interface LockOnScreen {
   shown: boolean;
 }
 
-/** Sur la Carte, un lieu ou Kéo (`keo`) à l'écran : son point (le bas de son étiquette), en pixels, et s'il se voit. */
+/** Sur la Carte, un lieu, l'Escale (`port`) ou Kéo (`keo`) à l'écran : son point (le bas de son étiquette), en pixels, et s'il se voit. */
 export interface MapSpotOnScreen {
-  id: PlaceId | 'keo';
+  id: PlaceId | 'port' | 'keo';
   x: number;
   y: number;
   shown: boolean;
@@ -208,6 +230,11 @@ const MAP_TOUCH = 56;
 /** Les tuiles de la Carte faites au repos : sans `requestIdleCallback`, une tranche de tant de ms tous les tant de ms. */
 const IDLE_SLICE_MS = 6;
 const IDLE_DELAY_MS = 40;
+/**
+ * La scénette d'assemblage (GD-20, lot 2), en secondes : les pièces se joignent sur l'établi, puis le bloc assemblé
+ * monte et va se coucher sur le râtelier, en arc bas (sous le toit de la halle, que la caméra voit de haut) ; d'un coup avec « Réduire les animations ».
+ */
+const ASSEMBLY = { join: 0.6, carry: 1.3, arc: 0.7 } as const;
 /** Sur la Carte, un lieu ne se montre qu'à tant de pixels des bords gauche et droit, et du haut (son nom au-dessus). */
 const MAP_LABEL_SIDE = 100;
 const MAP_LABEL_TOP = 64;
@@ -387,7 +414,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Le terrain : la carte de hauteurs, et deux anneaux de tuiles autour de Kéo (de près, chaque case ; de loin, une
   // sur trois), chacun un seul maillage, d'un seul matériau.
   const field = buildHeightField();
-  const ground = (x: number, z: number) => heightOnMesh(field, x, z);
+  // Le sol dessiné, ou la pierre de l'Escale (son quai, sa place) là où Kéo y marche.
+  const ground = (x: number, z: number) => portFloor(x, z) ?? heightOnMesh(field, x, z);
   const landMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }));
   // Le lieu suivant n'est pas pris dans la brume : de loin, c'est lui qu'on voit.
   const landmarkMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: false }));
@@ -516,12 +544,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   scene.add(ring);
 
   // Où est Kéo, où il va.
-  // Au départ, sur le chemin, à quelques pas du lieu (on voit le Phare de plus loin que sa porte).
-  let here: Vec2 = startOf(placeById(options.start).door, placeById(options.start).center).at;
+  // Au départ, sur le chemin, à quelques pas du lieu (on voit le Phare de plus loin que sa porte) ; à l'Escale, à son
+  // endroit (le quai, face à la caméra ; devant une porte, tourné vers elle).
+  const startPlace = PLACES.find((p) => p.id === options.start);
+  const startSpot = startPlace ? null : (options.start as PortSpot);
+  let here: Vec2 = startPlace ? startOf(startPlace.door, startPlace.center).at : pathNode(portNode(startSpot!)).at;
   let walk: Walk | null = null;
   let walkTarget: PlaceId | null = null;
-  let heading = FACING_CAMERA;
-  keo.rotation.y = FACING_CAMERA;
+  let heading = startSpot ? portHeading(startSpot) : FACING_CAMERA;
+  keo.rotation.y = heading;
   const keoFeet: Vec3 = { x: here.x, y: 0, z: here.z };
   const placeKeo = (p: Vec2) => {
     const y = standingHeight(ground(p.x, p.z));
@@ -590,6 +621,25 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     applyPose(pose);
   };
   follow();
+  // Un panneau de l'Escale ouvert (GD-20, lot 2) : la part de l'écran qu'il laisse, et l'endroit dont la caméra y garde
+  // le sujet (la porte, la galerie, l'établi), par un décalage de l'image, calculé à l'ouverture (Kéo ne bouge pas tant
+  // que le panneau est ouvert), jamais à chaque image.
+  let framed: PortSpot | null = startSpot;
+  let frameRect: { left: number; top: number; width: number; height: number } | null = null;
+  const reframe = () => {
+    if (!frameRect || !framed || asked || mapView) return;
+    followPose(focus, lift, pose);
+    const p = screenOf(pose, portSubject(framed, port?.trophies.length ?? 0), viewW, viewH);
+    setShift({ x: Math.round(p.x - (frameRect.left + frameRect.width / 2)), y: Math.round(p.y - (frameRect.top + frameRect.height / 2)) });
+    follow();
+  };
+  const setFrame = (free: typeof frameRect) => {
+    frameRect = free;
+    if (free) return reframe();
+    if (asked || mapView) return;
+    setShift({ x: 0, y: 0 });
+    follow();
+  };
 
   // Les anneaux du terrain, et les lieux qu'on dessine : refaits quand le point suivi s'éloigne de leur centre.
   let markPlace: PlaceId | null = null;
@@ -605,6 +655,22 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Ce que montrent les lieux (la page le donne), et les parties retenues le temps d'une pose (elles descendent à part).
   let placesState: PlacesState | null = null;
   let holding: { place: PlaceId; parts: readonly PartShape[] } | null = null;
+  // L'Escale (GD-20, lot 2) : ce qu'elle montre (la page le donne), ses facettes, refaites seulement si cela change, et
+  // la scénette d'assemblage en cours (la pile d'avant, l'établi vide : les pièces sont dans le maillage de la réaction).
+  let port: PortState | null = null;
+  let portKey = '';
+  let portMesh: Facets | null = null;
+  let assembly: { start: number; scene: ReturnType<typeof assemblyScene>; joined: boolean } | null = null;
+  /** Les facettes de l'Escale, refaites quand ce qu'elle montre change. */
+  const portOf = (): Facets | null => {
+    if (!port) return null;
+    const k = `${JSON.stringify(port)}|${assembly ? 'a' : ''}`;
+    if (k !== portKey || !portMesh) {
+      portKey = k;
+      portMesh = portFacets(port, { assembling: Boolean(assembly) });
+    }
+    return portMesh;
+  };
   const builds = new Map<PlaceId, { parts: readonly PartShape[]; facets: Facets }>();
   const traceFacets = new Map<string, Facets>();
   /** Les parties posées d'un lieu, sans celles qu'une pose retient (elles descendent à part). */
@@ -642,10 +708,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const landmark = mapView ? null : markPlace;
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
-    const k = `${landmark}|${scenette}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id] ? 't' : ''}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}`;
+    const portFacetsNow = portOf();
+    const k = `${landmark}|${scenette}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id] ? 't' : ''}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}`;
     if (k === placesKey) return;
     placesKey = k;
-    const rest: Facets[] = [];
+    // L'Escale entre dans le maillage des lieux : aucun appel de plus.
+    const rest: Facets[] = portFacetsNow ? [portFacetsNow] : [];
     const mark: Facets[] = [];
     lampShown = lanternLit(posedOf('phare'));
     for (const p of PLACES) {
@@ -804,6 +872,24 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     follow();
     arrive(place);
   };
+  /** Kéo d'un coup à un endroit de l'Escale, tourné vers sa façade ; la page en ouvre le panneau. */
+  const jumpToPort = (spot: PortSpot) => {
+    here = pathNode(portNode(spot)).at;
+    heading = portHeading(spot);
+    exit = null;
+    back = 0;
+    keo.rotation.y = heading;
+    placeKeo(here);
+    followStep(focus, keoFeet, 0, true);
+    lift = occlusionLift(focus, ground);
+    framed = spot;
+    updateRings(true, true);
+    approach();
+    follow();
+    reframe();
+    arrive(null);
+    options.onPort(spot);
+  };
 
   // Le toucher : un lieu touché y envoie Kéo ; ailleurs (sol, eau), au point du chemin le plus proche.
   const raycaster = new THREE.Raycaster();
@@ -821,8 +907,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const d = down;
     down = null;
     if (mapView) return mapUp(e, d);
-    // Un toucher pendant une pose la passe : la partie est à sa place, la caméra revient à Kéo.
+    // Un toucher pendant une pose la passe : la partie est à sa place, la caméra revient à Kéo ; de même la scénette
+    // d'assemblage.
     if (poseRun.active) return finishPose();
+    if (assembly) return finishAssembly();
     if (asked || !d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > TAP.pixels || performance.now() - d.t > TAP.ms) return;
     const r = renderer.domElement.getBoundingClientRect();
     pointer.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
@@ -830,6 +918,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hit = raycaster.intersectObjects(touchables, false)[0];
     if (!hit) return;
     const p = { x: hit.point.x, z: hit.point.z };
+    // L'Escale : une porte, la galerie ou le lieu d'assemblage y mène Kéo d'un coup et en ouvre le panneau ; le reste du
+    // Port ouvre sa fiche (Kéo reste où il est).
+    const atPort = portTouch(p);
+    if (atPort === 'fiche') return options.onPort('fiche');
+    if (atPort) return jumpToPort(atPort);
     // Un lieu : Kéo va à sa porte.
     const touched = PLACES.find((pl) => distance(p, pl.center) <= pl.touchRadius)?.id;
     if (touched) startWalkTo(atNode(placeById(touched).door), touched);
@@ -845,7 +938,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // grille) ; un toucher près d'un lieu le choisit. Fermée, les anneaux autour de Kéo reviennent.
   const mapCamera: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
   const allTiles = Array.from({ length: TERRAIN.tilesX * TERRAIN.tilesZ }, (_, i) => i);
-  const mapSpots: MapSpotOnScreen[] = [...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false })), { id: 'keo' as const, x: 0, y: 0, shown: false }];
+  const mapSpots: MapSpotOnScreen[] = [
+    ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false })),
+    { id: 'port' as const, x: 0, y: 0, shown: false },
+    { id: 'keo' as const, x: 0, y: 0, shown: false },
+  ];
+  const portPoint = new THREE.Vector3(PORT_MAP_POINT.x, PORT_MAP_POINT.y, PORT_MAP_POINT.z);
   let mapMs = 0;
   const keoPoint = new THREE.Vector3();
   const fingers = new Map<number, { x: number; y: number }>();
@@ -863,7 +961,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const reportMapPlaces = () => {
     for (const l of mapSpots) {
-      const mark = l.id === 'keo' ? keoPoint.set(keoFeet.x, keoFeet.y, keoFeet.z) : marks.get(l.id);
+      const mark = l.id === 'keo' ? keoPoint.set(keoFeet.x, keoFeet.y, keoFeet.z) : l.id === 'port' ? portPoint : marks.get(l.id);
       if (!mark) continue;
       projected.copy(mark).project(camera);
       l.x = ((projected.x + 1) / 2) * viewW;
@@ -878,6 +976,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (open) {
       const t0 = performance.now();
       finishPose();
+      finishAssembly();
       // Kéo s'arrête où il est : la Carte n'est pas un trajet.
       if (walk) arrive(null);
       if (!mapView) mapView = mapStart(aspect());
@@ -984,7 +1083,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const r = renderer.domElement.getBoundingClientRect();
     const x = e.clientX - r.left;
     const y = e.clientY - r.top;
-    let best: PlaceId | null = null;
+    let best: PlaceId | 'port' | null = null;
     let bestD: number = MAP_TOUCH;
     for (const l of mapSpots) {
       if (l.id === 'keo') continue;
@@ -1193,6 +1292,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       return [];
     }
     finishPose();
+    finishAssembly();
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
     const { place, layout, item } = q;
     walk = null;
@@ -1447,6 +1547,59 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     return false;
   };
 
+  // La scénette d'assemblage (GD-20, lot 2), au retour d'une question réussie : la pile d'avant et l'établi vide dans le
+  // maillage des lieux ; les pièces, puis le bloc assemblé, dans le maillage de la réaction (aucun appel de plus, aucune
+  // question n'est ouverte en même temps). Les pièces se joignent sur l'établi, le bloc monte et va se coucher sur le
+  // râtelier, en travers ; posé, il rejoint la pile. Un toucher, une question, la Carte ou « Y aller » la finissent.
+  const settle = () => {
+    reactionMesh.visible = false;
+    reactionMesh.position.set(0, 0, 0);
+    reactionMesh.rotation.set(0, 0, 0);
+    reactionMesh.scale.set(1, 1, 1);
+  };
+  const finishAssembly = () => {
+    if (!assembly) return;
+    assembly = null;
+    settle();
+    placeVisibility();
+    options.onAssembled();
+  };
+  const startAssembly = () => {
+    finishPose();
+    finishAssembly();
+    if (!port || !port.recipe.pieces.length || port.pile < 1 || asked || mapView) return options.onAssembled();
+    unlitReaction();
+    const scene = assemblyScene(port);
+    assembly = { start: performance.now() / 1000, scene, joined: false };
+    placeVisibility();
+    settle();
+    setGeometry(reactionMesh, scene.pieces);
+    reactionMesh.position.set(scene.from.x, scene.from.y, scene.from.z);
+    if (reduceMotion) finishAssembly();
+  };
+  /** La scénette d'assemblage à l'instant `t` (en secondes). */
+  const stepAssembly = (t: number) => {
+    if (!assembly) return;
+    const u = t - assembly.start;
+    if (u < ASSEMBLY.join) {
+      // Les pièces se serrent l'une contre l'autre, sur l'établi.
+      const e = u / ASSEMBLY.join;
+      reactionMesh.scale.x = 1 - 0.6 * e * e * (3 - 2 * e);
+      return;
+    }
+    if (!assembly.joined) {
+      assembly.joined = true;
+      setGeometry(reactionMesh, assembly.scene.made);
+      reactionMesh.scale.set(1, 1, 1);
+    }
+    const v = Math.min(1, (u - ASSEMBLY.join) / ASSEMBLY.carry);
+    const e = v * v * (3 - 2 * v);
+    const { from, to } = assembly.scene;
+    reactionMesh.position.set(mix(from.x, to.x, e), mix(from.y, to.y, e) + ASSEMBLY.arc * Math.sin(Math.PI * e), mix(from.z, to.z, e));
+    reactionMesh.rotation.y = (-Math.PI / 2) * e;
+    if (v >= 1) finishAssembly();
+  };
+
   const resize = () => {
     const w = host.clientWidth;
     const h = host.clientHeight;
@@ -1521,6 +1674,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       meter?.tick(renderer.info, now);
       return;
     }
+    if (assembly) {
+      // La scénette d'assemblage : la caméra reste derrière Kéo, le bloc va de l'établi au râtelier.
+      stepAssembly(t);
+      body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
+      options.onMark(null);
+      hideLocks();
+      renderer.render(scene, camera);
+      meter?.tick(renderer.info, now);
+      return;
+    }
     if (poseRun.active) {
       // Une pose : la caméra va vers la maison et en revient, Kéo attend où il est ; ni marque ni cadenas.
       stepPose(t);
@@ -1560,6 +1723,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   return {
     goTo: (place, jump = false) => {
       finishPose();
+      finishAssembly();
       setMap(null);
       if (jump) jumpTo(place);
       else startWalkTo(atNode(placeById(place).door), place);
@@ -1568,6 +1732,19 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (!walk) return;
       walk = skipWalk(walk, performance.now());
     },
+    goToPort: (spot) => {
+      finishPose();
+      finishAssembly();
+      setMap(null);
+      jumpToPort(spot);
+    },
+    setPort: (state) => {
+      port = state;
+      placeVisibility();
+      mapDirty = true;
+    },
+    frame: setFrame,
+    assemble: startAssembly,
     setMark: (place) => {
       if (place === markPlace) return;
       markPlace = place;

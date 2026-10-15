@@ -7,6 +7,7 @@ import { networkSamples, pathRibbons } from './paths';
 import { PLACES, type PlaceId } from './plan6e';
 import { lanternLight, modelOfPlace } from './places';
 import { constructionFacets, WHOLE } from './construction';
+import { PORT_WORST, assemblyScene, portFacets } from './port';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
 import type { ItemScene } from './questions';
 import { bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSuccess } from './scenette';
@@ -63,7 +64,9 @@ function questionCost(): { triangles: number; calls: number } {
  * même : le pire cas).
  */
 function scenetteCost(): { triangles: number; calls: number } {
-  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p))));
+  // La scénette d'assemblage de l'Escale (GD-20, lot 2) passe par le maillage de la réaction : les pièces, puis le bloc.
+  const assembly = assemblyScene(PORT_WORST);
+  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p))), assembly.pieces.triangles, assembly.made.triangles);
   return { triangles, calls: 1 };
 }
 
@@ -94,12 +97,16 @@ const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
  * lui-même ; ce qui était tombé, relevé) et les traces de leurs scénettes, réunis en un maillage, refait à chaque pose
  * (jamais par image), avec la lumière de la lanterne du Phare allumée (sa couleur dessinée sans ombre, dans le même
  * matériau) ; le lieu suivi, seul hors de la brume, dans un second (son matériau sans brouillard). Deux appels, quel que
- * soit le nombre de lieux.
+ * soit le nombre de lieux. L'Escale y entre (GD-20, lot 2), au plus chargé : toutes les places de sa galerie prises,
+ * ses portes pavoisées, ses barques, sa pile pleine (`PORT_WORST`) ; aucun appel de plus.
  */
 function placesCost(): { triangles: number; calls: number } {
   const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + placeTrace(p.id, true).triangles, 0);
-  return { triangles: triangles + lanternLight().triangles, calls: 2 };
+  return { triangles: triangles + lanternLight().triangles + portFacets(PORT_WORST).triangles, calls: 2 };
 }
+
+/** L'Escale seule, au plus chargé : son plafond (4 500 triangles, directeur artistique, GD-20, lot 2). */
+export const PORT_BUDGET = 4500;
 
 /**
  * Le passage d'une pose : la partie qui arrive, un maillage à part le temps qu'elle descende à sa place (moins d'une

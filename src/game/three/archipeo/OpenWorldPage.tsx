@@ -8,11 +8,13 @@
 // lot 3) s'ouvre du bouton « Carte », comme ailleurs dans le jeu : l'île vue de haut, un lieu ouvert touché y dépose
 // Kéo. Chargé à la demande.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { getApp } from '../../../apps/registry';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
 import { frenchTypography } from '../../../components/math/RichText';
+import { useProgress } from '../../../core/ProgressContext';
 import { useSettings } from '../../../core/SettingsContext';
 import { useMoinsDAnimations } from '../../../core/motion';
 import { useTextes } from '../../../universes';
@@ -23,12 +25,14 @@ import { mesuresDemandees, meterShown } from '../../rendering';
 import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import type { PartShape } from '../../world/continu/construction';
 import { keepClear, missionOfPlace, nextMission, veiledPlaces, type MarkOnScreen, type Obstacle } from '../../world/continu/mission';
-import { PLACES, placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
+import { PLACES, PORT_SUBJECTS, placeById, placeOfIsland, type PlaceId, type PortSpot, type PortSubject } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { constructionState, placeConstruction, posedShapes } from './constructionParts';
 import { MapLabels } from './MapLabels';
+import { PortPanels, portFromParam, portReturn, type PortPanel } from './PortPanels';
+import { portState } from './portState';
 import { createOpenWorld, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { WorldQuestion } from './WorldQuestion';
 import './openWorld.css';
@@ -36,7 +40,7 @@ import './openWorld.css';
 declare global {
   interface Window {
     /** Le monde ouvert, pour les captures et les mesures (en développement, ou avec `?mesures`). */
-    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'skip' | 'info'>;
+    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info'>;
   }
 }
 
@@ -59,8 +63,21 @@ export default function OpenWorldPage() {
   const next = useMemo(() => nextMission(modele.bornes, modele.destination), [modele]);
   const nextPlace = next?.place ?? null;
 
-  // Kéo part devant le lieu de l'adresse (le retour d'une mission), sinon celui de la partie, sinon le Phare.
-  const [start] = useState<PlaceId>(() => placeOfIsland(biomeId ?? '')?.id ?? placeOfIsland(state.world.place ?? '')?.id ?? 'phare');
+  // Kéo part de l'endroit de l'Escale de l'adresse (le retour d'une mission de l'école, `?porte=maths`, ou d'une question
+  // d'assemblage), sinon devant le lieu de l'adresse (le retour d'une mission), sinon au quai de l'Escale, le lieu de
+  // départ (GD-20, lot 2).
+  const [params] = useSearchParams();
+  const location = useLocation();
+  const [arrival] = useState(() => ({
+    spot: portFromParam(params.get('porte')),
+    assembled: Boolean((location.state as { assemble?: string } | null)?.assemble),
+  }));
+  const [start] = useState<PlaceId | PortSpot>(() => arrival.spot ?? placeOfIsland(biomeId ?? '')?.id ?? 'quai');
+  // Le panneau ouvert de l'Escale : sa fiche, une porte, la galerie, le lieu d'assemblage ; un à la fois.
+  const [panel, setPanel] = useState<PortPanel | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const { progress } = useProgress();
+  const port = useMemo(() => portState(state, progress), [state, progress]);
 
   const host = useRef<HTMLDivElement>(null);
   const world = useRef<OpenWorld | null>(null);
@@ -83,7 +100,7 @@ export default function OpenWorldPage() {
   // « Fermé pour l'instant », au toucher d'un lieu fermé sur la Carte : quelques secondes, au-dessus de « Retour ».
   const [closedNote, setClosedNote] = useState(0);
   const showClosed = useCallback(() => setClosedNote((n) => n + 1), []);
-  const mapPick = useRef<(place: PlaceId) => void>(() => {});
+  const mapPick = useRef<(place: PlaceId | 'port') => void>(() => {});
   const mapButton = useRef<HTMLButtonElement>(null);
   // La distance au prochain lieu, pour la voix (avis du référent dys) : relue à chaque image, mais l'état ne change
   // qu'avec le palier (un, deux ou trois points) : le libellé de la marque n'est refait que là.
@@ -141,7 +158,12 @@ export default function OpenWorldPage() {
       start,
       reduceMotion,
       meter: { show: meterShown(), expose: import.meta.env.DEV || mesuresDemandees() },
-      onDepart: () => setWalking(true),
+      onDepart: () => {
+        setWalking(true);
+        setPanel(null);
+      },
+      onPort: (spot) => setPanel(spot === 'quai' ? 'fiche' : spot),
+      onAssembled: () => setPanel('chantier'),
       onArrive: (placeId) => {
         setWalking(false);
         if (!placeId) return;
@@ -163,7 +185,7 @@ export default function OpenWorldPage() {
     });
     world.current = w;
     setReady((n) => n + 1);
-    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, skip: w.skip, info: w.info };
+    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, goToPort: w.goToPort, assemble: w.assemble, skip: w.skip, info: w.info };
     return () => {
       w.dispose();
       world.current = null;
@@ -175,6 +197,59 @@ export default function OpenWorldPage() {
   useEffect(() => {
     world.current?.setMark(nextPlace?.id ?? null);
   }, [nextPlace, ready]);
+
+  // L'Escale (GD-20, lot 2) : ses portes, ses trophées, l'état de la région, la pile, tirés de la sauvegarde.
+  useEffect(() => {
+    world.current?.setPort(port);
+  }, [port, ready]);
+  // Au retour d'une mission de l'école, le panneau de sa porte se rouvre ; au retour d'une question d'assemblage
+  // réussie, la scénette se joue d'abord (le bloc posé sur le râtelier), puis le panneau du lieu s'ouvre.
+  const arrived = useRef(false);
+  useEffect(() => {
+    const w = world.current;
+    if (!w || arrived.current || !arrival.spot) return;
+    arrived.current = true;
+    if (arrival.spot === 'chantier' && arrival.assembled) w.assemble();
+    else setPanel(arrival.spot);
+  }, [arrival, ready]);
+  // Le panneau ouvert : la caméra garde ce qu'il concerne dans la part de l'écran qu'il laisse (au-dessus de lui sur
+  // tablette, à sa droite sur un écran bas), relue quand il change de taille.
+  useEffect(() => {
+    const w = world.current;
+    const stage = stageRef.current;
+    const el = panelRef.current;
+    if (!w || !stage) return;
+    if (!panel || !el) {
+      w.frame(null);
+      return;
+    }
+    const measure = () => {
+      const s = stage.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      // En colonne à gauche (un écran bas) : la part à sa droite ; en bas : la part au-dessus.
+      const column = r.top - s.top < 8 && r.width < s.width * 0.8;
+      w.frame(column ? { left: r.right - s.left, top: 0, width: s.right - r.right, height: s.height } : { left: 0, top: 0, width: s.width, height: Math.max(1, r.top - s.top) });
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(stage);
+    observer.observe(el);
+    measure();
+    return () => observer.disconnect();
+  }, [panel, ready]);
+  // Un panneau fermé rend la main au bouton « Carte », comme la Carte (consultant UX UI).
+  const hadPanel = useRef(false);
+  useEffect(() => {
+    if (panel) hadPanel.current = true;
+    else if (hadPanel.current) {
+      hadPanel.current = false;
+      mapButton.current?.focus();
+    }
+  }, [panel]);
+  const closePanel = useCallback(() => setPanel(null), []);
+  const goPort = useCallback((spot: Exclude<PortSpot, 'quai'>) => {
+    setPanel(null);
+    world.current?.goToPort(spot);
+  }, []);
 
   // La brume sur les lieux dont la mission n'a pas encore été jouée, sauf le prochain (la scène la lève à l'approche).
   const veiled = useMemo(() => veiledPlaces(modele.bornes, next), [modele, next]);
@@ -198,10 +273,18 @@ export default function OpenWorldPage() {
     world.current?.goTo(placeId, true);
     mapButton.current?.focus();
   }, []);
-  // Un lieu touché dans la 3D : ouvert, on y va ; fermé, la Carte le dit.
+  /** L'Escale choisie sur la Carte : la Carte se ferme, Kéo est déposé au quai, la fiche du Port s'ouvre. */
+  const pickPort = useCallback(() => {
+    setMapOpen(false);
+    setClosedNote(0);
+    world.current?.map(null);
+    world.current?.goToPort('quai');
+  }, []);
+  const pickOnMap = useCallback((id: PlaceId | 'port') => (id === 'port' ? pickPort() : pickPlace(id)), [pickPlace, pickPort]);
+  // Un lieu touché dans la 3D : ouvert (l'Escale l'est toujours), on y va ; fermé, la Carte le dit.
   useEffect(() => {
-    mapPick.current = (placeId) => (openPlaces.includes(placeId) ? pickPlace(placeId) : showClosed());
-  }, [openPlaces, pickPlace, showClosed]);
+    mapPick.current = (placeId) => (placeId === 'port' || openPlaces.includes(placeId) ? pickOnMap(placeId) : showClosed());
+  }, [openPlaces, pickOnMap, showClosed]);
   // Le mot s'efface après quelques secondes (un nouveau toucher le garde), ou avec la Carte.
   useEffect(() => {
     if (!closedNote) return;
@@ -286,7 +369,7 @@ export default function OpenWorldPage() {
       <div className="world-stage" data-scene ref={stageRef}>
         <div ref={host} className="open-world-canvas" />
         {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
-        {next && !asking && !mapOpen && (
+        {next && !asking && !mapOpen && !panel && (
           <button type="button" ref={markRef} className="open-world-mark" aria-label={markLabel} onClick={goNext}>
             <span className="open-world-arrow-box" aria-hidden="true">
               <span ref={arrowRef} className="open-world-arrow">
@@ -304,7 +387,7 @@ export default function OpenWorldPage() {
           </button>
         )}
         {/* Un cadenas sur chaque lieu encore sous la brume : une icône sans texte, dite aux lecteurs d'écran (référent dys). */}
-        <div ref={locksRef} className="open-world-locks" hidden={Boolean(asking) || mapOpen}>
+        <div ref={locksRef} className="open-world-locks" hidden={Boolean(asking) || mapOpen || Boolean(panel)}>
           {veiled.map((id) => (
             <span key={id} className="open-world-lock" data-lieu={id} role="img" aria-label={`${placeById(id).name} : sous la brume, pas encore ouvert`} hidden>
               <Icon name="lock" />
@@ -312,16 +395,25 @@ export default function OpenWorldPage() {
           ))}
         </div>
         {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
-        {mapOpen && !asking && <MapLabels openPlaces={openPlaces} states={states} words={textes.etatsDIle} onPick={pickPlace} placer={mapPlacer} onClosed={showClosed} />}
+        {mapOpen && !asking && (
+          <MapLabels openPlaces={openPlaces} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={showClosed} portName={textes.depart?.nom} />
+        )}
         {/* Les accès directs (décision « Sans Menu », GD-20, lot 1) : la colonne du monde en grille, telle quelle ; les
             commandes délavées tant qu'elles ne se livrent pas dans le monde continu. Masquée pendant une question. */}
-        {!asking && <WorldShortcuts a="6e" requestsOpen={false} requestsLater />}
-        {!asking && <SettingsButton />}
+        {!asking && !panel && <WorldShortcuts a="6e" requestsOpen={false} requestsLater resumeFrom={schoolReturn} />}
+        {!asking && !panel && <SettingsButton />}
+        {/* Le panneau ouvert de l'Escale (GD-20, lot 2) : comme une question, il masque les accès directs, Réglages, la
+            Carte et « Y aller » ; un seul panneau à la fois. */}
+        {panel && !asking && textes.depart && (
+          <div ref={panelRef} className="open-world-panel">
+            <PortPanels panel={panel} names={textes.depart} onGo={goPort} onClose={closePanel} />
+          </div>
+        )}
         {asking && world.current && (
           <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} world={world.current} onClose={closeQuestion} />
         )}
         {/* La Carte : le même bouton que dans le reste du jeu, dans la barre du bas, à gauche (« Y aller » tient le milieu). */}
-        {!asking && (
+        {!asking && !panel && (
           <nav className="open-world-bar" aria-label="Monde">
             {/* Au toucher d'un lieu fermé, à une place fixe et libre, juste au-dessus de « Retour », sur fond uni : jamais
                 sur la Carte, où il cachait un cadenas ou un nom (relectures dys et UX UI). */}
@@ -346,7 +438,7 @@ export default function OpenWorldPage() {
             </button>
           </nav>
         )}
-        {!asking && !mapOpen && (
+        {!asking && !mapOpen && !panel && (
           <div className="open-world-go">
             {!next && !walking && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
             {walking ? (
@@ -383,6 +475,15 @@ function placeLocks(root: HTMLElement | null, locks: readonly LockOnScreen[]): v
     lockTransforms.set(el, transform);
     el.style.transform = transform;
   }
+}
+
+/**
+ * D'où ramène la dernière mission, quand c'est une mission de l'école (le portail d'une matière de l'école) : sa porte,
+ * à l'Escale ; sinon son retour habituel.
+ */
+function schoolReturn(path: string): string | undefined {
+  const subject = path.startsWith('/app/') ? getApp(path.slice('/app/'.length))?.subject : undefined;
+  return subject && PORT_SUBJECTS.includes(subject as PortSubject) ? portReturn(subject as PortSubject) : undefined;
 }
 
 /** Le temps où « Fermé pour l'instant » reste écrit, en millisecondes. */

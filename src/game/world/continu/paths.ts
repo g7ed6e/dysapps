@@ -3,7 +3,7 @@
 // en bois sur l'eau) est tiré d'ici aussi. Code pur.
 import { FacetBuilder, type Facets } from './facets';
 import { closestOnSegment, distance, type Vec2 } from './geometry';
-import { COLORS_6E, DOCK_EDGE, PATH_EDGES, PATH_NODES, type PathNode } from './plan6e';
+import { COLORS_6E, DOCK_EDGE, PATH_EDGES, PATH_NODES, portFloor, type PathNode } from './plan6e';
 import { standingHeight } from './terrain';
 
 /** Un point du réseau : sur la liaison `edge` (son rang dans `PATH_EDGES`), à la part `t` de son premier nœud au second. */
@@ -168,6 +168,7 @@ const RIBBON_SIDE = 0.7;
 /**
  * Le dessin des chemins : un ruban par liaison, posé sur le sol (`ground`, la hauteur du sol dessiné), avec ses flancs ;
  * en bois là où le sol est sous l'eau (digue, pontons), couleur de sentier ailleurs. Un octogone couvre chaque nœud.
+ * Rien sur la pierre du Port (GD-20, lot 2) : son pavage tient lieu de chemin.
  */
 export function pathRibbons(ground: (x: number, z: number) => number): Facets {
   const b = new FacetBuilder();
@@ -184,6 +185,8 @@ export function pathRibbons(ground: (x: number, z: number) => number): Facets {
       const p = { x: a.x + (dx * len * k) / n, z: a.z + (dz * len * k) / n };
       const q = { x: a.x + (dx * len * (k + 1)) / n, z: a.z + (dz * len * (k + 1)) / n };
       const mid = { x: (p.x + q.x) / 2, z: (p.z + q.z) / 2 };
+      // Sur la pierre du Port (son quai, sa place), pas de ruban : on y marche sur le pavage.
+      if (portFloor(mid.x, mid.z) !== null) continue;
       const deck = deckAt(mid);
       const w = deck ? HALF_WIDTH.deck : HALF_WIDTH.path;
       const color = deck ? COLORS_6E.wood : COLORS_6E.path;
@@ -204,6 +207,7 @@ export function pathRibbons(ground: (x: number, z: number) => number): Facets {
   dockEdge(b);
   // Un octogone sur chaque nœud : les coudes n'ont pas de trou.
   for (const node of PATH_NODES) {
+    if (portFloor(node.at.x, node.at.z) !== null) continue;
     const y = standingHeight(ground(node.at.x, node.at.z)) + RIBBON_LIFT + 0.005;
     const deck = deckAt(node.at);
     const w = (deck ? HALF_WIDTH.deck : HALF_WIDTH.path) * 1.08;

@@ -440,6 +440,38 @@ button.app-card:active {
   border-top-width: var(--border-width);
   border-top-color: var(--ink);
 }
+/* Les missions d'une matière en lignes (une porte de l'école du monde continu, GD-20, lot 2) : l'icône, le titre et
+   l'étiquette sur une ligne de 64 px au moins, toute la ligne est la cible ; dans une colonne étroite (au plus grand
+   texte), l'étiquette passe sous le titre plutôt que de sortir du panneau. */
+.apps-compact {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+}
+.apps-compact .app-card {
+  flex-direction: row;
+  flex-wrap: wrap;
+  min-width: 0;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 64px;
+  height: auto;
+  padding-block: 0.4rem;
+}
+.apps-compact .app-icon {
+  flex: none;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin: 0;
+}
+.apps-compact .app-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 700;
+}
 .subject-icon,
 .app-icon {
   display: grid;
