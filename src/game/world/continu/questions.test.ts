@@ -227,7 +227,9 @@ describe('Les pièces durables', () => {
 
   it('chaque lieu a ses pièces ; la Roue des Écluses tourne à part', () => {
     for (const id of ['phare', 'filets', 'ecluses', 'quais'] as const) {
-      expect(placePieces(id, 0).still.triangles).toBe(0);
+      // Aux Écluses, la porte d'amont, fermée, est des pièces dès le départ : elle s'ouvre à la réussite.
+      if (id === 'ecluses') expect(placePieces(id, 0).still.triangles).toBeGreaterThan(0);
+      else expect(placePieces(id, 0).still.triangles).toBe(0);
       const two = placePieces(id, 2);
       expect(two.still.triangles + (two.wheel?.facets.triangles ?? 0)).toBeGreaterThan(placePieces(id, 1).still.triangles);
     }

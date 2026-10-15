@@ -4,13 +4,35 @@
 // quatre volumes (son ciré, sa tête, son bonnet, son bras tendu vers la rambarde) et la corde de sonnerie, les cloches
 // pendues devant la rambarde ; à la réussite, la lampe s'allume. Les Quais ensuite (lot 3) : le docker au pied de la
 // grue, un bras posé sur une caisse, son crochet de levage à la main, les caisses-réponses sur un ponton du bassin ; la
-// bonne caisse monte au crochet de la grue. Rien à lire n'est peint dans la 3D. Le décor de près est fait à l'arrivée et
+// bonne caisse monte au crochet de la grue. Les Filets et les Écluses enfin (lot 4) : la pêcheuse au bord du plancher
+// de séchage, la pêche sur le filet, les paniers-réponses en rangée, la prise qui va au bon panier ; à la réussite, le
+// filet raccommodé se tend sur le séchoir et un panier plein vient à ses pieds. L'éclusier sur le quai du sas, les
+// leviers de vanne en rangée, la barque qui avance dans le canal jusqu'à la porte ; à la réussite, le sas se remplit,
+// la porte s'ouvre et la barque passe. Rien à lire n'est peint dans la 3D. Le décor de près est fait à l'arrivée et
 // libéré au départ par la vue. Code pur : la vue dessine.
 import { CAMERA_FOV, type CameraPose } from './camera';
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { DECK_HEIGHT, placeById, type PlaceId } from './plan6e';
-import { ANSWER_LAYOUT, QUAY, liftingHook, loadedBoat, sceneSpot, type AnswerSlot, type QuestionLayout, type ScreenBox } from './questionScene';
+import {
+  ANSWER_LAYOUT,
+  LOCK,
+  QUAY,
+  filetsBasketAt,
+  fullBasket,
+  liftingHook,
+  loadedBoat,
+  lockBoat,
+  lockFull,
+  mendedNet,
+  quaySuccess,
+  sceneDepth,
+  sceneSpot,
+  type AnswerSlot,
+  type QuestionLayout,
+  type ScreenBox,
+} from './questionScene';
+import type { ItemScene } from './questions';
 import { heightAt, standingHeight } from './terrain';
 
 /**
@@ -31,6 +53,9 @@ const SCENETTES: Partial<Record<PlaceId, Scenette>> = {
   phare: { role: 'La gardienne du phare', greeting: null, placement: 'rangee' },
   // Le rôle seul, sans prénom ni réplique (choix du mainteneur du 15 octobre 2026).
   quais: { role: 'Le docker', greeting: null, placement: 'rangee' },
+  // Lot 4 : « la pêcheuse » (le mot du consultant Archipéo, plus court à lire que « la ramendeuse »), « l'éclusier ».
+  filets: { role: 'La pêcheuse', greeting: null, placement: 'rangee' },
+  ecluses: { role: 'L’éclusier', greeting: null, placement: 'rangee' },
 };
 
 /** La scénette d'un lieu, ou `null` s'il n'en a pas encore (la question s'y pose comme au lot 4). */
@@ -58,6 +83,12 @@ export const SCENETTE_LAYOUT = {
   stage: { top: 0.37, bottom: 0.66 },
   row: { top: 0.66, bottom: 0.9 },
   low: { left: 0.4, top: 0.16, bottom: 0.62, rowTop: 0.64, rowBottom: 0.88 },
+  /**
+   * Sur un écran bas, quand l'item a sa règle (la carte de l'accord des Filets) : la rangée passe sous la colonne, à
+   * gauche ; à droite, la règle en haut, sous la barre, jusqu'à cette part de la hauteur, et la scène dessous, jusqu'en
+   * bas.
+   */
+  lowAid: 0.66,
   /**
    * « Valider » en bas à droite : la place gardée, en pixels (le bouton peut être plus large en grand texte), et
    * l'écart au-dessus de lui, plus large que celui des réponses (retour UX UI).
@@ -87,6 +118,11 @@ export interface ScenetteNeeds {
    * ligne de calcul et l'indice n'y tiennent pas en haut sans couvrir la scène (les Quais).
    */
   column?: boolean;
+  /**
+   * L'item a sa règle (les Filets) : sur un écran bas, elle ne tient pas dans la colonne avec la phrase ; elle se pose à
+   * droite, au-dessus de la scène.
+   */
+  aid?: boolean;
 }
 
 /** Une rangée de `n` réponses entre `left` et `right`, l'étiquette en bas (`bottom`), l'objet au-dessus jusqu'à `top`. */
@@ -107,6 +143,31 @@ function rowSlots(n: number, left: number, right: number, top: number, bottom: n
 }
 
 /**
+ * B, sur un écran bas, quand l'item a sa règle (les Filets) : la colonne en haut à gauche, la rangée sous elle ; à
+ * droite, la règle sous la barre du haut, et la scène dessous, jusqu'en bas. La règle ne tient pas dans la colonne avec la
+ * phrase, et la scène ne tient pas sous elle avec la rangée.
+ */
+function lowWithAid(n: number, width: number, height: number, base: QuestionLayout, sideLeft: number, share: number): QuestionLayout {
+  const S = SCENETTE_LAYOUT;
+  const L = ANSWER_LAYOUT;
+  const edge = L.edgeLow;
+  const right = width - edge;
+  const { slots, objectHeight } = rowSlots(n, edge, sideLeft - edge, S.low.rowTop * height, height - edge, L.labelLow, share);
+  const highest = Math.min(...slots.map((s) => s.hit.top));
+  const split = S.lowAid * height;
+  const stage = { left: sideLeft, top: split, right, bottom: height - edge };
+  return {
+    ...base,
+    slots,
+    objectHeight,
+    panel: { ...base.panel, maxHeight: Math.max(0, highest - edge - base.panel.top) },
+    aid: { left: sideLeft, top: edge + L.bar + edge, right, bottom: split - edge },
+    view: stage,
+    scenette: { stage, validate: null },
+  };
+}
+
+/**
  * La place d'une scénette sur un écran de `width` × `height` pixels : `questionLayout` pour la colonne d'un écran bas
  * (ses crans), puis la scène et la rangée de la disposition A ou B. `scenette.stage` : là où Kéo et l'habitant se
  * tiennent ; `scenette.validate` : la place de « Valider » en bas à droite (A), `null` sur un écran bas (il reste dans
@@ -124,6 +185,7 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
     const edge = base.low ? L.edgeLow : L.edge;
     const right = width - edge;
     const sideLeft = Math.max(S.low.left * width, base.panel.left + base.panel.width + edge);
+    if (base.low && needs.aid && sideLeft < width / 2 + edge) return lowWithAid(n, width, height, base, sideLeft, share);
     const beside = (right - sideLeft - (n - 1) * L.gap) / n >= (needs.words ? L.minLabelBells : L.minLabel);
     const rowLeft = beside ? sideLeft : edge;
     const { slots, objectHeight } = rowSlots(n, rowLeft, right, S.low.rowTop * height, S.low.rowBottom * height, lh, share);
@@ -200,7 +262,7 @@ function quayFloor(): Vec3 {
   return { x: o.x, y: o.y, z: o.z + QUAY.depth / 2 - QUAY.strip / 2 };
 }
 
-const SITES: Partial<Record<PlaceId, ScenetteSite>> = {
+const SITES: Record<PlaceId, ScenetteSite> = {
   phare: {
     floor: galleryFloor,
     keo: { dx: -1.45, dz: 2.3, scale: 0.6, yaw: Math.PI - 0.35 },
@@ -217,9 +279,27 @@ const SITES: Partial<Record<PlaceId, ScenetteSite>> = {
     subject: { halfWidth: 4.9, bottom: -1.1, top: 2.5, depth: 0.2 },
     pitch: (24 * Math.PI) / 180,
   },
+  // Les Filets (lot 4) : Kéo et la pêcheuse sur le plancher de séchage, de part et d'autre du filet étendu ; le séchoir
+  // du lieu derrière eux (son pan raccommodé à la réussite).
+  filets: {
+    floor: () => sceneSpot('filets'),
+    keo: { dx: -3.9, dz: 0.7, scale: 0.6, yaw: Math.PI - 0.4 },
+    habitant: { dx: 3.9, dz: 0.7 },
+    subject: { halfWidth: 5.2, bottom: -0.4, top: 2.4, depth: 0.2 },
+    pitch: (26 * Math.PI) / 180,
+  },
+  // Les Écluses (lot 4) : Kéo et l'éclusier sur le quai du sas, de part et d'autre de sa paroi ; le canal devant eux,
+  // sa porte à l'est.
+  ecluses: {
+    floor: () => sceneSpot('ecluses'),
+    keo: { dx: -3.5, dz: 0.1, scale: 0.6, yaw: Math.PI - 0.4 },
+    habitant: { dx: 3.4, dz: 0.1 },
+    subject: { halfWidth: 5, bottom: -0.6, top: 3.5, depth: 0.6 },
+    pitch: (22 * Math.PI) / 180,
+  },
 };
 
-const siteOf = (place: PlaceId): ScenetteSite => SITES[place] ?? SITES.phare!;
+const siteOf = (place: PlaceId): ScenetteSite => SITES[place];
 
 /** L'angle de la caméra de la scénette du Phare sous l'horizon, et le temps de la descente (coupe franche avec « Réduire les animations »). */
 export const SCENETTE_CAMERA = { pitch: (20 * Math.PI) / 180, seconds: 0.9 } as const;
@@ -243,15 +323,28 @@ export function scenetteHabitant(place: PlaceId): Vec3 {
 
 /**
  * Où Kéo reste en quittant la scénette d'un lieu, et ce que la caméra garde alors dans le champ (retour du directeur
- * artistique, lot 3) : aux Quais, sur le bord du quai, juste à l'est de la proue de la barque chargée, qu'on voit au
- * premier plan avec la grue et le hangar derrière lui. Ailleurs, rien : Kéo revient sur le chemin, la caméra le suit.
+ * artistique, lot 3) : la trace de la réussite. Aux Quais, sur le bord du quai, juste à l'est de la proue de la barque
+ * chargée, qu'on voit au premier plan avec la grue et le hangar derrière lui. Aux Filets (lot 4), devant le séchoir,
+ * le panier plein et le filet tendu à sa gauche. Aux Écluses, sur la rive ouest, à côté du sas rempli et de sa porte
+ * ouverte. Au Phare, rien : Kéo revient sur le chemin, la caméra le suit (la lanterne est déjà dans le champ).
  */
 export function scenetteExit(place: PlaceId): { at: Vec2; keep: Vec3 } | null {
-  if (place !== 'quais') return null;
-  const boat = loadedBoat();
-  const f = quayFloor();
-  return { at: { x: boat.at.x + boat.length / 2 + 0.9, z: f.z }, keep: { x: boat.at.x, y: boat.at.y, z: boat.at.z } };
+  if (place === 'quais') {
+    const boat = loadedBoat();
+    const f = quayFloor();
+    return { at: { x: boat.at.x + boat.length / 2 + 0.9, z: f.z }, keep: { x: boat.at.x, y: boat.at.y, z: boat.at.z } };
+  }
+  const c = placeById(place).center;
+  if (place === 'filets') return { at: { x: c.x + EXIT_SPOTS.filets.x, z: c.z + EXIT_SPOTS.filets.z }, keep: filetsBasketAt() };
+  if (place === 'ecluses') {
+    const y = standingHeight(heightAt(c));
+    return { at: { x: c.x + EXIT_SPOTS.ecluses.x, z: c.z + EXIT_SPOTS.ecluses.z }, keep: { x: c.x, y: y + 1, z: c.z } };
+  }
+  return null;
 }
+
+/** Où Kéo se tient au retour des Filets et des Écluses, depuis le centre du lieu. */
+const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 } } as const;
 
 /**
  * La caméra du retour d'une scénette : toujours tournée vers le nord, reculée au-dessus du bassin (`back` unités au sud
@@ -308,15 +401,30 @@ export function scenettePose(place: PlaceId, stage: ScreenBox, width: number, he
 
 /**
  * La maquette du lieu s'efface-t-elle le temps de la scénette ? Aux Quais, oui : le quai de la scénette a sa grue, on n'en
- * voit pas deux. Au Phare, non : la tour porte la galerie.
+ * voit pas deux. Au Phare, non : la tour porte la galerie ; aux Filets et aux Écluses non plus : leurs cabanes, leur
+ * séchoir et leurs bassins font le fond de la scène.
  */
 export const scenetteHidesPlace = (place: PlaceId): boolean => place === 'quais';
+
+/**
+ * Les pièces du lieu s'effacent-elles le temps de la scénette ? Partout sauf au Phare (ses lampes sont sur la galerie) :
+ * la trace de la réussite que la scénette montre (la barque chargée, le panier plein, la porte ouverte) n'est pas
+ * dessinée deux fois ; elle reste dans le monde au retour.
+ */
+export const scenetteHidesPieces = (place: PlaceId): boolean => place !== 'phare';
 
 /** Les objets des réponses pendent-ils (les cloches du Phare), ou sont-ils posés sur un ponton (les caisses des Quais) ? */
 export const answersHang = (place: PlaceId): boolean => place === 'phare';
 
-/** La hauteur du ponton des réponses d'une scénette, quand elles sont posées : celle des pontons du monde. */
-export const SCENETTE_DECK = DECK_HEIGHT;
+/** La bonne réponse quitte-t-elle la rangée (la caisse des Quais monte au crochet) ? Ailleurs, elle reste. */
+export const answerLeaves = (place: PlaceId): boolean => place === 'quais';
+
+/**
+ * La hauteur du ponton des réponses d'une scénette, quand elles sont posées : celle des pontons du monde, sur l'eau du
+ * bassin des Quais ; aux Filets et aux Écluses, celle du plancher de la scène (le ponton descend jusqu'au sol, `ground`).
+ */
+export const scenetteDeck = (place: PlaceId): { y: number; onLand: boolean } =>
+  place === 'quais' ? { y: DECK_HEIGHT, onLand: false } : { y: floorOf(place).y, onLand: true };
 
 /** Le plan où pendent les cloches : devant la rambarde, au sud (la vue y pose les objets sous chaque réponse). */
 export function bellPlane(place: PlaceId): { z: number; rail: Vec3 } {
@@ -334,6 +442,27 @@ const C = {
   head: 0xe3c08a,
   cap: 0x142b38,
   rope: 0xe5ebe3,
+  // La pêcheuse (consultant Archipéo, lot 2) : tablier herbe sur une robe sable chaud, chapeau de paille, navette de bois.
+  dress: 0x4f7fa3,
+  dressShade: 0x426d8c,
+  apron: 0x6cbf4e,
+  straw: 0xd9a441,
+  strawShade: 0xb8862e,
+  shuttle: 0xa9784a,
+  // L'éclusier (consultant Archipéo, lot 2) : ciré lagon, béret bleu, levier de vanne à poignée rouge.
+  lockCoat: 0x2fb5a6,
+  lockCoatShade: 0x27998c,
+  beret: 0x4f7fa3,
+  lever: 0x8a6440,
+  knob: 0xc0503a,
+  // Les planchers : le bois des pontons (les Filets), la pierre du sas (les Écluses), l'eau du canal.
+  wood: 0xa9784a,
+  woodSide: 0x8a6440,
+  newWood: 0xc28a52,
+  lightWood: 0xd9a441,
+  stone: 0xb9b2a3,
+  stoneSide: 0x8f897d,
+  water: 0x2f8fc8,
   // Le docker (consultant Archipéo, fiche du lot 2) : gilet vert lagon, tête sable, casquette jaune lanterne.
   vest: 0x178078,
   vestShade: 0x12695f,
@@ -409,17 +538,107 @@ function docker(b: FacetBuilder, place: PlaceId): void {
 }
 
 /**
+ * La pêcheuse, immobile, en quatre volumes (consultant Archipéo) : sa robe et son tablier herbe par-devant, la tête, le
+ * chapeau de paille à large bord, le bras tendu vers le filet, la navette de bois à la main.
+ */
+function pecheuse(b: FacetBuilder, place: PlaceId): void {
+  const at = scenetteHabitant(place);
+  b.prism(at, 0.4, 0.27, 0.92, 12, C.dress, C.dressShade);
+  // Le tablier, devant la robe (vers la caméra), plus clair : il la détache du plancher.
+  b.box({ x: at.x, y: at.y + 0.08, z: at.z + 0.3, pitch: 0.12 }, [0.42, 0.72, 0.06], C.apron);
+  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 12, 8, C.head);
+  b.prism({ x: at.x, y: at.y + 1.22, z: at.z }, 0.46, 0.46, 0.04, 12, C.straw, C.strawShade);
+  b.prism({ x: at.x, y: at.y + 1.26, z: at.z }, 0.22, 0.17, 0.16, 12, C.straw);
+  const hand = { x: at.x - 0.5, y: at.y + 0.7, z: at.z + 0.35 };
+  b.beam({ x: at.x - 0.24, y: at.y + 0.84, z: at.z + 0.08 }, hand, 0.15, C.dress);
+  // La navette : un fuseau de bois plat, tenu en travers.
+  b.box({ x: hand.x - 0.1, y: hand.y - 0.06, z: hand.z, yaw: 0.5 }, [0.38, 0.06, 0.1], C.shuttle);
+}
+
+/**
+ * L'éclusier, immobile, en quatre volumes (consultant Archipéo) : le ciré lagon, la tête, le béret, le bras posé sur le
+ * levier de vanne planté à côté de lui (son socle de pierre, sa poignée rouge, comme les leviers des réponses).
+ */
+function eclusier(b: FacetBuilder, place: PlaceId): void {
+  const at = scenetteHabitant(place);
+  b.prism(at, 0.42, 0.28, 0.92, 12, C.lockCoat, C.lockCoatShade);
+  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 12, 8, C.head);
+  // Le béret : un disque plat, un peu penché, et sa queue.
+  b.prism({ x: at.x + 0.03, y: at.y + 1.26, z: at.z, pitch: 0.15 }, 0.27, 0.24, 0.08, 12, C.beret);
+  b.box({ x: at.x + 0.03, y: at.y + 1.36, z: at.z }, [0.04, 0.06, 0.04], C.beret);
+  const lever = { x: at.x - 0.62, y: at.y, z: at.z + 0.25 };
+  b.box(lever, [0.36, 0.22, 0.32], C.stoneSide, C.stone);
+  const top = { x: lever.x + 0.05, y: lever.y + 1.05, z: lever.z - 0.18 };
+  b.beam({ x: lever.x, y: lever.y + 0.2, z: lever.z }, top, 0.08, C.lever);
+  b.box({ x: top.x, y: top.y - 0.06, z: top.z }, [0.18, 0.14, 0.14], C.knob);
+  b.beam({ x: at.x - 0.26, y: at.y + 0.84, z: at.z + 0.06 }, { x: top.x + 0.06, y: top.y - 0.04, z: top.z + 0.02 }, 0.15, C.lockCoat);
+}
+
+/**
+ * Le plancher de séchage des Filets, de part et d'autre de la plate-forme du filet (la scène de l'item), à sa hauteur :
+ * Kéo à l'ouest, la pêcheuse à l'est. `center` : la plate-forme aussi (la réussite, quand le filet a quitté le
+ * plancher).
+ */
+function dryingDeck(b: FacetBuilder, center: boolean): void {
+  const o = floorOf('filets');
+  const depth = sceneDepth('filets');
+  for (const side of center ? [-1, 0, 1] : [-1, 1]) {
+    const w = side === 0 ? FILET_DECK.inner * 2 : FILET_DECK.outer - FILET_DECK.inner;
+    const x = o.x + side * (FILET_DECK.inner + FILET_DECK.outer) / 2;
+    b.box({ x, y: o.y - depth, z: o.z }, [w, depth, FILET_DECK.depth], C.woodSide, C.wood);
+  }
+}
+
+/** Le plancher des Filets : la plate-forme du filet en son milieu (`inner` de chaque côté), jusqu'à `outer`. */
+const FILET_DECK = { inner: 2.7, outer: 5.8, depth: 3.2 } as const;
+
+/**
+ * Le quai du sas des Écluses, de part et d'autre de la plate-forme du sas (la scène de l'item), à sa hauteur ; le canal
+ * devant, sous le plancher, le parvis au sud (la rangée des leviers s'y pose) ; la porte qui le ferme à l'est, ses deux vantaux fermés (de bois
+ * sombre) ou ouverts (neufs, rabattus vers l'aval) et leurs deux bornes de pierre.
+ */
+function lockQuay(b: FacetBuilder, open: boolean): void {
+  const o = floorOf('ecluses');
+  const depth = sceneDepth('ecluses');
+  for (const side of [-1, 1]) b.box({ x: o.x + side * 4.05, y: o.y - depth, z: o.z }, [3.5, depth, 1.6], C.stoneSide, C.stone);
+  const width = LOCK.back - LOCK.front;
+  const mid = o.z + (LOCK.front + LOCK.back) / 2;
+  b.box({ x: o.x, y: o.y - depth, z: mid }, [2 * LOCK.half, depth - LOCK.water, width], C.stoneSide, C.water);
+  b.box({ x: o.x, y: o.y - depth, z: o.z + LOCK.back + LOCK.forecourt / 2 }, [2 * LOCK.half, depth, LOCK.forecourt], C.stoneSide, C.stone);
+  const gx = o.x + LOCK.gate;
+  const bottom = o.y - LOCK.water - 0.35;
+  // Deux bornes de pierre aux gonds, et les vantaux, plus hauts que le quai : la porte se lit de loin.
+  for (const z of [o.z + LOCK.front, o.z + LOCK.back]) b.box({ x: gx, y: o.y, z }, [0.34, 0.7, 0.34], C.stoneSide, C.stone);
+  for (const k of [0, 1]) {
+    const hinge = k ? o.z + LOCK.back - 0.1 : o.z + LOCK.front + 0.1;
+    const sign = k ? -1 : 1;
+    if (open) b.box({ x: gx + LOCK.leaf / 2 + 0.1, y: bottom, z: hinge }, [LOCK.leaf, 1.05, 0.14], C.newWood, C.lightWood);
+    else b.box({ x: gx, y: bottom, z: hinge + (sign * LOCK.leaf) / 2 }, [0.14, 1.05, LOCK.leaf], C.lever);
+  }
+}
+
+/**
  * Le décor de près d'une scénette, fait à l'arrivée : au Phare, la galerie élargie (son plancher sur un encorbellement)
  * et sa rambarde (poteaux, main courante, lisse), et la gardienne ; aux Quais, le docker (le quai, la grue et la barque
- * sont la scène de l'item). Un seul maillage, du matériau du terrain.
+ * sont la scène de l'item) ; aux Filets, le plancher de séchage et la pêcheuse ; aux Écluses, le quai du sas, le canal
+ * et sa porte (`open` : ouverte, à la réussite), et l'éclusier. Un seul maillage, du matériau du terrain.
  */
-export function scenetteDecor(place: PlaceId): Facets {
+export function scenetteDecor(place: PlaceId, open = false): Facets {
   const b = new FacetBuilder();
   if (place === 'quais') {
     docker(b, place);
     return b.build();
   }
-  if (place !== 'phare') return b.build();
+  if (place === 'filets') {
+    dryingDeck(b, false);
+    pecheuse(b, place);
+    return b.build();
+  }
+  if (place === 'ecluses') {
+    lockQuay(b, open);
+    eclusier(b, place);
+    return b.build();
+  }
   const f = floorOf(place);
   const R = GALLERY.radius;
   const n = GALLERY.posts;
@@ -452,9 +671,77 @@ export function lanternGlass(place: PlaceId): Facets {
 }
 
 /**
- * Ce qui s'allume à la réussite d'une scénette : la lampe du Phare (sa vitre), ou rien (aux Quais, la bonne caisse est
- * déjà montée au crochet à chaque item).
+ * Ce qui s'allume à la réussite d'une scénette : la lampe du Phare (sa vitre), ou rien (ailleurs, la réussite passe par
+ * `scenetteFinale`).
  */
 export function scenetteSuccess(place: PlaceId): Facets | null {
   return place === 'phare' ? lanternGlass(place) : null;
+}
+
+/**
+ * La réussite d'une scénette posée (les Quais, les Filets, les Écluses), en deux temps (directeur artistique) : ce qui
+ * change tout de suite (`decor`, qui remplace le décor de près ; `clearsItem` : la scène de l'item et ses objets
+ * s'effacent), puis un objet qui va de la réaction de l'item (ou de `from`) à `to`, en passant `arc` unités plus haut,
+ * et y reste (`landed`, ajouté au décor) ; enfin une lumière (`glow`), ou rien. D'un bloc avec « Réduire les
+ * animations ». Aux Quais, la caisse du crochet descend dans la barque, puis sa lanterne de proue s'allume ; aux Filets,
+ * le filet raccommodé se tend sur le séchoir, et un panier plein vient aux pieds de la pêcheuse ; aux Écluses, le sas se
+ * remplit et la porte s'ouvre, puis la barque passe.
+ */
+export interface ScenetteFinale {
+  decor: Facets;
+  clearsItem: boolean;
+  moving: Facets;
+  from: Vec3;
+  to: Vec3;
+  arc: number;
+  landed: Facets;
+  glow: Facets | null;
+}
+
+/** Des facettes posées en `at` (elles sont faites à l'origine). */
+function moved(f: Facets, at: Vec3): Facets {
+  const positions = new Float32Array(f.positions.length);
+  for (let i = 0; i < positions.length; i += 3) {
+    positions[i] = f.positions[i] + at.x;
+    positions[i + 1] = f.positions[i + 1] + at.y;
+    positions[i + 2] = f.positions[i + 2] + at.z;
+  }
+  return { ...f, positions };
+}
+
+/** La réussite d'une scénette posée, pour la scène du dernier item et l'échelle de ses objets ; `null` au Phare. */
+export function scenetteFinale(place: PlaceId, scene: ItemScene, scale: number): ScenetteFinale | null {
+  if (place === 'quais') {
+    if (scene.kind !== 'quai') return null;
+    const s = quaySuccess(scene, scale);
+    const moving = new FacetBuilder();
+    moving.append(moved(s.crate, { x: -s.hold.x, y: -s.hold.y, z: -s.hold.z }));
+    return { decor: scenetteDecor(place), clearsItem: false, moving: moving.build(), from: s.hold, to: s.hold, arc: 0, landed: s.crate, glow: s.glass };
+  }
+  if (place === 'filets') {
+    const decor = new FacetBuilder();
+    decor.append(scenetteDecor(place));
+    dryingDeck(decor, true);
+    mendedNet(decor);
+    const basket = new FacetBuilder();
+    fullBasket(basket, { x: 0, y: 0, z: 0 });
+    const moving = basket.build();
+    const o = floorOf(place);
+    // Aux pieds de la pêcheuse, là où le panier reste ensuite dans le monde (les pièces du lieu).
+    const ground = filetsBasketAt();
+    const to = { x: ground.x, y: o.y, z: ground.z };
+    return { decor: decor.build(), clearsItem: true, moving, from: { x: o.x, y: o.y, z: o.z }, to, arc: 1, landed: moved(moving, to), glow: null };
+  }
+  if (place === 'ecluses') {
+    const decor = new FacetBuilder();
+    decor.append(scenetteDecor(place, true));
+    decor.append(lockFull(scene));
+    const o = floorOf(place);
+    const y = o.y - LOCK.water;
+    const z = o.z + (LOCK.front + LOCK.back) / 2;
+    const moving = lockBoat();
+    const to = { x: o.x + LOCK.beyond, y, z };
+    return { decor: decor.build(), clearsItem: false, moving, from: { x: o.x + LOCK.stop, y, z }, to, arc: 0, landed: moved(moving, to), glow: null };
+  }
+  return null;
 }

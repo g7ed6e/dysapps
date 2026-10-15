@@ -76,29 +76,59 @@ const groundAt = (p: Vec2): number => standingHeight(heightAt(p));
  */
 export const QUAY = { dx: 0.5, front: 12, width: 12, depth: 5.6, strip: 1.6 } as const;
 
-/** Le centre de la scène d'un item, devant son lieu (au sud : vers la caméra), le rayon du cadrage de la question, et la demi-taille de sa plate-forme. */
-const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; radius: number; half: [number, number] }> = {
+/**
+ * Le centre de la scène d'un item, devant son lieu (au sud : vers la caméra), le rayon du cadrage de la question, et la
+ * demi-taille de sa plate-forme. Aux Filets et aux Écluses (lot 4 de la piste 1), la demi-taille est celle de toute la
+ * scénette (la plate-forme de l'item, les planchers de Kéo et de l'habitant, le canal), relevée finement (`fine`) : son
+ * sol ne s'enfonce nulle part. Les Filets se décalent vers la grève, à l'est, où le sol est plat.
+ */
+const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; radius: number; half: [number, number]; fine?: true }> = {
   phare: { dx: 0, dz: 0.5, radius: 12, half: [0, 0] },
-  filets: { dx: 0, dz: 5, radius: 4.2, half: [2.7, 1.6] },
-  ecluses: { dx: -0.5, dz: 5, radius: 3.6, half: [2.3, 0.9] },
+  filets: { dx: 2.5, dz: 5, radius: 4.2, half: [5.8, 1.6], fine: true },
+  ecluses: { dx: -0.5, dz: 5, radius: 3.6, half: [5.5, 1.2], fine: true },
   quais: { dx: QUAY.dx, dz: QUAY.front - QUAY.depth / 2, radius: 7.6, half: [QUAY.width / 2, QUAY.depth / 2] },
 };
 
+/** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
+function spotSamples(place: PlaceId): Vec2[] {
+  const p = placeById(place);
+  const s = SCENE_SPOT[place];
+  const at = { x: p.center.x + s.dx, z: p.center.z + s.dz };
+  const nx = s.fine ? Math.ceil(s.half[0]) : 1;
+  const nz = s.fine ? Math.ceil(s.half[1]) : 1;
+  const out: Vec2[] = [];
+  for (let i = -nx; i <= nx; i++) for (let k = -nz; k <= nz; k++) out.push({ x: at.x + (i / nx) * s.half[0], z: at.z + (k / nz) * s.half[1] });
+  return out;
+}
+
 /**
  * Le point de la scène d'un item dans un lieu : au sol, au plus haut de sa plate-forme (elle ne s'enfonce jamais dans
- * une pente ; elle descend jusqu'au sol sous elle, `PLATFORM_DEPTH`).
+ * une pente ; elle descend jusqu'au sol sous elle, `sceneDepth`).
  */
 export function sceneSpot(place: PlaceId): Vec3 {
   const p = placeById(place);
   const s = SCENE_SPOT[place];
   const at = { x: p.center.x + s.dx, z: p.center.z + s.dz };
   let y = groundAt(at);
-  for (const fx of [-1, 0, 1]) for (const fz of [-1, 0, 1]) y = Math.max(y, groundAt({ x: at.x + fx * s.half[0], z: at.z + fz * s.half[1] }));
+  for (const q of spotSamples(place)) y = Math.max(y, groundAt(q));
   return { x: at.x, y, z: at.z };
 }
 
 /** La profondeur de la plate-forme d'une scène, sous le point de la scène : assez pour toucher le sol d'une pente. */
 const PLATFORM_DEPTH = 1.5;
+
+/** Le fond de l'eau, pour les jupes des planchers : un peu sous la surface (0). */
+const UNDER_WATER = -0.3;
+
+/**
+ * La profondeur des planchers d'une scène sous son point : jusqu'au plus bas du sol sous elle (ou un peu sous l'eau),
+ * jamais moins que `PLATFORM_DEPTH`.
+ */
+export function sceneDepth(place: PlaceId): number {
+  const y = sceneSpot(place).y;
+  const low = Math.min(...spotSamples(place).map((q) => Math.max(UNDER_WATER, heightAt(q))));
+  return Math.max(PLATFORM_DEPTH, y - low + 0.2);
+}
 
 /** Des facettes agrandies de `k` depuis leur origine, puis posées en `at`. */
 function placed(f: Facets, k: number, at: Vec3 = { x: 0, y: 0, z: 0 }): Facets {
@@ -394,6 +424,11 @@ export interface AnswerLook {
   picked?: readonly number[];
   gone?: readonly number[];
   hanging?: BellHanging;
+  /**
+   * La hauteur du sol sous le ponton des réponses, quand il est posé à terre (les Filets, les Écluses) : sa jupe y
+   * descend. Sans elle, le ponton flotte sur l'eau (les Quais).
+   */
+  ground?: number;
 }
 
 /**
@@ -413,14 +448,16 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     hangBells(b, points, s, picked, look.hanging);
     return b.build();
   }
-  // Le ponton sous la rangée : jamais un objet posé sur l'eau.
-  b.box(
-    { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: y - 0.12 * s, z },
-    [Math.max(...xs) - Math.min(...xs) + 1.4 * s, 0.12 * s, 0.8 * s],
-    C.deckSide,
-    C.deck,
-  );
   const kind = ANSWER_OBJECT[place];
+  // Le ponton sous la rangée : jamais un objet posé sur l'eau ; à terre, il descend jusqu'au sol (une margelle de
+  // pierre sous les leviers des Écluses).
+  const skirt = look.ground === undefined ? 0.12 * s : Math.max(0.12 * s, y - look.ground + 0.1);
+  b.box(
+    { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: y - skirt, z },
+    [Math.max(...xs) - Math.min(...xs) + 1.4 * s, skirt, 0.8 * s],
+    kind === 'levier' ? C.stoneDark : C.deckSide,
+    kind === 'levier' ? C.stone : C.deck,
+  );
   for (const [i, p] of points.entries()) {
     if (gone.includes(i)) continue;
     if (kind === 'panier') {
@@ -435,9 +472,11 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
       b.box({ x: p.x + w / 2, y, z: p.z }, [t, h, d], C.straw, C.strawDark);
     } else if (kind === 'levier') {
       b.box({ x: p.x, y, z: p.z }, [0.6 * s, 0.35 * s, 0.5 * s], C.stoneDark, C.stone);
-      // Un grand levier, penché vers le nord, et sa poignée.
-      b.box({ x: p.x, y: y + 0.3 * s, z: p.z, pitch: -0.35 }, [0.12 * s, 1.5 * s, 0.12 * s], C.lever);
-      b.box({ x: p.x, y: y + 0.3 * s + 1.41 * s, z: p.z - 0.51 * s }, [0.3 * s, 0.22 * s, 0.22 * s], C.knob);
+      // Un grand levier de vanne, penché vers le nord, et sa poignée ; un levier choisi (une réponse tentée) est tiré
+      // vers l'élève : sa forme le dit.
+      const k = picked.includes(i) ? -1 : 1;
+      b.box({ x: p.x, y: y + 0.3 * s, z: p.z, pitch: -0.35 * k }, [0.12 * s, 1.5 * s, 0.12 * s], C.lever);
+      b.box({ x: p.x, y: y + 0.3 * s + 1.41 * s, z: p.z - 0.51 * s * k }, [0.3 * s, 0.22 * s, 0.22 * s], C.knob);
     } else {
       // Une caisse choisie (une réponse tentée) bascule en arrière sur son arête : sa forme le dit.
       answerCrate(b, { x: p.x, y, z: p.z }, s, picked.includes(i) ? CRATE_TIPPED : 0);
@@ -658,6 +697,64 @@ function boat(b: FacetBuilder, x: number, y: number, z: number, length = 2.4): v
 }
 
 /**
+ * Le canal des Écluses (piste 1, lot 4), dans le repère de la scène : devant le sas, de `front` à `back` unités au sud
+ * de son milieu, son eau `water` sous le plancher, sur `half` unités de chaque côté ; la porte qui le ferme à l'est,
+ * devant l'éclusier (`gate`, depuis le milieu du sas, ses deux vantaux de `leaf`), le milieu de la barque arrêtée
+ * devant elle (`stop`, devant le sas), puis passée (`beyond`) ; le parvis de pierre au sud du canal, sous la rangée des
+ * leviers (`forecourt`, sa profondeur).
+ */
+export const LOCK = { front: 0.8, back: 2.2, water: 0.3, half: 8, gate: 2.6, leaf: 0.7, stop: 0.9, beyond: 5.4, forecourt: 6 } as const;
+
+/** La barque des Écluses, sa coque vers l'est, au repère de la réaction (la vue la déplace). */
+export function lockBoat(): Facets {
+  const b = new FacetBuilder();
+  boat(b, 0, 0, 0);
+  return b.build();
+}
+
+/**
+ * Le sas rempli, à la réussite de la mission aux Écluses : l'eau dans toutes les bandes de la paroi (niveau 1), ou
+ * jusqu'en haut du bassin de l'échelle (niveau 2), et le trait clair du niveau en haut. Un voile posé juste devant la
+ * scène de l'item, qui reste.
+ */
+export function lockFull(scene: ItemScene): Facets {
+  const b = new FacetBuilder();
+  const o = sceneSpot('ecluses');
+  const zf = o.z + 0.35;
+  if (scene.kind === 'sas') {
+    const h = 3.2;
+    b.box({ x: o.x, y: o.y + 0.15, z: zf + 0.06 }, [3, h, 0.04], C.water);
+    b.box({ x: o.x, y: o.y + 0.15 + h - 0.06, z: zf + 0.1 }, [3.8, 0.12, 0.06], C.level);
+  } else if (scene.kind === 'echelle') {
+    const top = 2 * 1.7;
+    b.box({ x: o.x - 0.6, y: o.y + 0.1, z: zf + 0.12 }, [2, top, 0.04], C.water);
+    b.box({ x: o.x - 0.2, y: o.y + 0.1 + top - 0.06, z: zf + 0.15 }, [2.9, 0.12, 0.05], C.level);
+  }
+  return b.build();
+}
+
+/**
+ * Le panier plein des Filets : un grand panier de paille, la pêche en tas qui dépasse (des sardines), posé en `at`, à
+ * l'échelle `s` (1 : à la taille de la pêcheuse).
+ */
+export function fullBasket(b: FacetBuilder, at: Vec3, s = 1): void {
+  const w = 0.9 * s,
+    d = 0.7 * s,
+    h = 0.5 * s,
+    t = 0.08 * s;
+  b.box({ x: at.x, y: at.y, z: at.z }, [w, 0.06 * s, d], C.strawDark);
+  b.box({ x: at.x, y: at.y, z: at.z + d / 2 }, [w, h, t], C.straw, C.strawDark);
+  b.box({ x: at.x, y: at.y, z: at.z - d / 2 }, [w, h, t], C.straw, C.strawDark);
+  b.box({ x: at.x - w / 2, y: at.y, z: at.z }, [t, h, d], C.straw, C.strawDark);
+  b.box({ x: at.x + w / 2, y: at.y, z: at.z }, [t, h, d], C.straw, C.strawDark);
+  // Le tas : deux couches de sardines, la seconde plus étroite, qui dépasse du bord.
+  const f = new FacetBuilder();
+  for (let k = 0; k < 4; k++) fish(f, ((k % 2) - 0.5) * 0.36, 0, (Math.floor(k / 2) - 0.5) * 0.28, 0.25 * (k % 2 ? 1 : -1));
+  for (let k = 0; k < 2; k++) fish(f, (k - 0.5) * 0.3, 0.2, 0, 0.3 * (k ? -1 : 1));
+  b.append(placed(f.build(), 0.75 * s, { x: at.x, y: at.y + h - 0.12 * s, z: at.z }));
+}
+
+/**
  * La barque amarrée des Quais (lot 3, réserve du directeur artistique : reconnaissable) : une coque ouverte, son fond
  * de bois, ses bordés bleus au plat-bord clair, la proue en pointe à l'est, et deux bancs en travers. `at` : le milieu de
  * son fond, à la surface de l'eau.
@@ -738,8 +835,18 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     }
     return { still: b.build(), labels, reaction };
   }
-  // Une plate-forme sous la scène : elle ne flotte jamais.
-  const platform = (w: number, d: number) => b.box({ x: o.x, y: o.y - PLATFORM_DEPTH, z: o.z }, [w, PLATFORM_DEPTH, d], C.deckSide, C.deck);
+  // Une plate-forme sous la scène : elle ne flotte jamais ; de bois aux Filets, de pierre aux Écluses (le sas).
+  const depth = sceneDepth(place);
+  const platform = (w: number, d: number, stone = false) =>
+    b.box({ x: o.x, y: o.y - depth, z: o.z }, [w, depth, d], stone ? C.stoneDark : C.deckSide, stone ? C.stone : C.deck);
+  // La barque des Écluses passe dans le canal, devant le sas, et s'arrête devant la porte fermée.
+  const lockReaction = (): Reaction => {
+    const r = new FacetBuilder();
+    boat(r, 0, 0, 0);
+    const y = o.y - LOCK.water;
+    const z = o.z + (LOCK.front + LOCK.back) / 2;
+    return { facets: r.build(), from: { x: o.x - LOCK.half + 1.5, y, z }, to: { x: o.x + LOCK.stop, y, z }, arc: 0, stay: true };
+  };
   if (scene.kind === 'filets') {
     platform(5.4, 3.2);
     // Le grand filet étendu, ses mailles en traits.
@@ -765,7 +872,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
       };
     }
   } else if (scene.kind === 'sas') {
-    platform(4.6, 1.6);
+    platform(4.6, 1.6, true);
     const d = Math.max(1, scene.d),
       n = Math.max(0, Math.min(d, scene.n));
     const w = 3,
@@ -777,19 +884,9 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     for (let k = 0; k < d; k++) b.box({ x: o.x, y: o.y + 0.15 + k * band + 0.03, z: zf }, [w, band - 0.06, 0.05], k < n ? C.water : C.empty);
     // Le trait du niveau de l'eau, large et clair : le niveau se lit sans la couleur.
     b.box({ x: o.x, y: o.y + 0.15 + n * band - 0.06, z: zf + 0.04 }, [w + 0.8, 0.12, 0.06], C.level);
-    if (answered) {
-      const r = new FacetBuilder();
-      boat(r, 0, 0, 0);
-      reaction = {
-        facets: r.build(),
-        from: { x: o.x - 4.5, y: o.y, z: o.z + 1.6 },
-        to: { x: o.x + 4.5, y: o.y, z: o.z + 1.6 },
-        arc: 0,
-        stay: true,
-      };
-    }
+    if (answered) reaction = lockReaction();
   } else if (scene.kind === 'echelle') {
-    platform(4.6, 1.8);
+    platform(4.6, 1.6, true);
     const d = Math.max(1, scene.d),
       n = Math.max(0, Math.min(2 * d, scene.n));
     const unit = 1.7,
@@ -818,17 +915,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
         });
     }
     b.box({ x: o.x - 0.2, y: o.y + 0.1 + (n / d) * unit - 0.06, z: zf + 0.09 }, [2.9, 0.12, 0.05], C.level);
-    if (answered) {
-      const r = new FacetBuilder();
-      boat(r, 0, 0, 0);
-      reaction = {
-        facets: r.build(),
-        from: { x: o.x - 4.5, y: o.y, z: o.z + 1.7 },
-        to: { x: o.x + 4.5, y: o.y, z: o.z + 1.7 },
-        arc: 0,
-        stay: true,
-      };
-    }
+    if (answered) reaction = lockReaction();
   } else if (scene.kind === 'quai') {
     reaction = quai(b, scene, answered, o, answerAt, scale);
   }
@@ -958,10 +1045,62 @@ function firstWater(candidates: readonly Vec2[]): Vec2 {
 }
 
 /**
+ * Le panier plein laissé aux Filets par la réussite de la scénette, depuis le centre du lieu : là où il s'est posé, aux
+ * pieds de la pêcheuse, sur la grève.
+ */
+const FILETS_BASKET: Vec2 = { x: 5.45, z: 6.25 };
+
+/** Le panier plein des Filets, posé au sol dans le monde. */
+export function filetsBasketAt(): Vec3 {
+  const c = placeById('filets').center;
+  const at = { x: c.x + FILETS_BASKET.x, z: c.z + FILETS_BASKET.z };
+  return { ...at, y: groundAt(at) };
+}
+
+/**
+ * Le pan de filet raccommodé et tendu sur le séchoir des Filets (le pan de l'ouest), ses mailles en cordes en travers
+ * et de haut en bas sur sa face sud : la trace de la réussite, dans la scénette puis dans le monde.
+ */
+export function mendedNet(b: FacetBuilder): void {
+  const p = placeById('filets');
+  const y0 = groundAt(p.center);
+  const c = Math.cos(p.yaw),
+    s = Math.sin(p.yaw);
+  const at = (lx: number, lz: number) => ({ x: p.center.x + lx * c + lz * s, z: p.center.z - lx * s + lz * c });
+  // Devant le pan usé du modèle (sur la perche à 2,4 du centre, vers le sud), qu'il recouvre.
+  const pan = at(-1.3, 2.48);
+  b.box({ x: pan.x, y: y0 + 0.6, z: pan.z, yaw: p.yaw }, [2.4, 2.1, 0.08], C.newRope);
+  const front = at(-1.3, 2.54);
+  for (const dy of [0.95, 1.65, 2.35]) b.box({ x: front.x, y: y0 + dy, z: front.z, yaw: p.yaw }, [2.4, 0.05, 0.03], C.netLine);
+  for (const dx of [-0.8, 0, 0.8]) {
+    const q = at(-1.3 + dx, 2.54);
+    b.box({ x: q.x, y: y0 + 0.6, z: q.z, yaw: p.yaw }, [0.05, 2.1, 0.03], C.netLine);
+  }
+}
+
+/**
+ * La porte d'amont des Écluses (entre le bassin du haut et le sas du milieu), dans le monde : fermée tant que la
+ * mission n'est pas réussie (le bois sombre du modèle), puis ouverte, ses deux vantaux neufs rabattus contre les murs du
+ * sas, l'eau du sas montée au niveau du bassin du haut (ses murs rehaussés).
+ */
+function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolean): void {
+  if (!open) {
+    b.box({ x, y: y + 0.7, z: z - 1.5 }, [3.6, 1.2, 0.3], C.lever);
+    return;
+  }
+  for (const side of [-1, 1]) b.box({ x: x + side * 1.6, y: y + 0.7, z: z - 0.6 }, [0.22, 1.2, 1.8], C.newWood, C.paint);
+  for (const side of [-1, 1]) b.box({ x: x + side * 1.95, y: y + 0.9, z }, [0.5, 0.7, 3], C.stoneDark, C.stone);
+  b.box({ x, y: y + 0.9, z: z + 1.3 }, [4.4, 0.7, 0.4], C.stoneDark, C.stone);
+  b.box({ x, y: y + 0.95, z: z - 0.1 }, [3.4, 0.55, 2.4], C.water, C.waterTop);
+}
+
+/**
  * Les pièces d'un lieu, de 0 à 2 (deux niveaux de réaction, directeur artistique ; à valider par le consultant
  * Archipéo) : au Phare, les lampes de la galerie (une moitié, puis tout le tour ; la lanterne reste éteinte jusqu'à la
- * Conque) ; aux Filets, un pan de filet raccommodé, puis une barque à l'eau ; aux Écluses, une porte de sas neuve, puis la
- * Roue qui tourne ; aux Quais, la grue remontée, puis le quai rouvert.
+ * Conque) ; aux Filets, un pan de filet raccommodé et tendu sur le séchoir et le panier plein à côté (la trace de la
+ * scénette), puis une barque à l'eau ; aux Écluses, la porte d'amont ouverte et le sas rempli (fermée avant : elle est
+ * des pièces, pas du modèle, pour s'ouvrir), puis la Roue qui tourne ; aux Quais, la grue remontée et la barque chargée,
+ * puis le quai rouvert.
  */
 export function placePieces(place: PlaceId, count: number): PlacePieces {
   const b = new FacetBuilder();
@@ -969,6 +1108,7 @@ export function placePieces(place: PlaceId, count: number): PlacePieces {
   const y0 = groundAt(p.center);
   const { x, z } = p.center;
   let wheel: PlacePieces['wheel'] = null;
+  if (place === 'ecluses') lockGate(b, x, y0, z, count >= 1);
   if (count <= 0) return { still: b.build(), wheel };
   if (place === 'phare') {
     const lamps = count >= 2 ? 8 : 4;
@@ -984,14 +1124,13 @@ export function placePieces(place: PlaceId, count: number): PlacePieces {
       x: x + lx * c + lz * s,
       z: z - lx * s + lz * c,
     });
-    const pan = at(-1.3, 2.3);
-    b.box({ x: pan.x, y: y0 + 0.6, z: pan.z, yaw: p.yaw }, [2.4, 2.1, 0.08], C.newRope);
+    mendedNet(b);
+    fullBasket(b, filetsBasketAt());
     if (count >= 2) {
       const w = firstWater([at(5, -3), at(-5, -3.5), at(0, -5.5), at(6.5, 1), at(-6.5, 1)]);
       boat(b, w.x, 0.15, w.z, 2.6);
     }
   } else if (place === 'ecluses') {
-    b.box({ x, y: y0 + 0.75, z: z - 1.32 }, [3.6, 1.2, 0.08], C.newWood);
     if (count >= 2) {
       const w = new FacetBuilder();
       w.prism({ x: 0, y: -0.25, z: 0, yaw: Math.PI / 2, pitch: Math.PI / 2 }, 1.55, 1.55, 0.5, 10, C.newWood, C.paint);

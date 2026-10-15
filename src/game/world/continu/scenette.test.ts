@@ -1,6 +1,7 @@
 // La scénette du Phare (piste 1, lot 2) : la place de la consigne, de la scène et de la rangée à l'écran (dispositions
-// A et B), la caméra de la galerie, le décor de près, les cloches pendues, la lampe de la réussite, le regard levé.
-// Sans Three.js.
+// A et B), la caméra de la galerie, le décor de près, les cloches pendues, la lampe de la réussite, le regard levé. Les
+// Quais (lot 3), les Filets et les Écluses (lot 4) : leur habitant, leur cadrage, leur réussite et leur retour. Sans
+// Three.js.
 import { describe, expect, it } from 'vitest';
 import { FOLLOW, KEO_HEIGHT, LOOK_UP, followPose, lookUp, lookUpStep, screenOf } from './camera';
 import { boundsOf } from './facets';
@@ -8,7 +9,7 @@ import { distance } from './geometry';
 import { startOf } from './paths';
 import { placeById } from './plan6e';
 import { modelOfPlace } from './places';
-import { ANSWER_LAYOUT, answerObjects, itemScene, loadedBoat, questionLayout, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, LOCK, answerObjects, filetsBasketAt, itemScene, loadedBoat, placePieces, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
 import {
   GALLERY,
   LANTERN,
@@ -26,8 +27,12 @@ import {
   EXIT_VIEW,
   exitView,
   scenetteExit,
+  scenetteFinale,
+  scenetteHidesPieces,
   scenettePose,
   scenetteSuccess,
+  answerLeaves,
+  scenetteDeck,
 } from './scenette';
 import { heightAt, standingHeight } from './terrain';
 
@@ -43,11 +48,38 @@ const screens = [
 ] as const;
 
 describe('La place de la scénette à l’écran', () => {
-  it('le Phare et les Quais ont leur scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
+  it('les quatre lieux ont leur scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
     expect(scenetteOf('phare')).toEqual({ role: 'La gardienne du phare', greeting: null, placement: 'rangee' });
     expect(scenetteOf('quais')).toEqual({ role: 'Le docker', greeting: null, placement: 'rangee' });
-    expect(scenetteOf('filets')).toBeNull();
-    expect(scenetteOf('ecluses')).toBeNull();
+    expect(scenetteOf('filets')).toEqual({ role: 'La pêcheuse', greeting: null, placement: 'rangee' });
+    expect(scenetteOf('ecluses')).toEqual({ role: 'L’éclusier', greeting: null, placement: 'rangee' });
+  });
+
+  it('sur un écran bas, la règle des Filets à droite au-dessus de la scène, la rangée sous la colonne', () => {
+    for (const [w, h] of screens.filter(([, h]) => h < ANSWER_LAYOUT.low))
+      for (const widen of [0, 1]) {
+        const base = questionLayout({ count: 3, aid: true, widen }, w, h);
+        const l = scenetteLayout({ count: 3, widen, column: true, aid: true }, w, h, base);
+        const at = `${w}×${h}, cran ${widen}`;
+        const stage = l.scenette!.stage;
+        const aid = l.aid!;
+        const panel = { left: l.panel.left, right: l.panel.left + l.panel.width, top: l.panel.top, bottom: l.panel.top + l.panel.maxHeight };
+        // La règle sous la barre du haut, la scène dessous, jusqu'en bas, toutes deux à droite de la colonne.
+        expect(aid.top, at).toBeGreaterThanOrEqual(ANSWER_LAYOUT.bar);
+        expect(aid.bottom, at).toBeLessThanOrEqual(stage.top);
+        expect(aid.left, at).toBeGreaterThanOrEqual(panel.right);
+        expect(stage.left, at).toBe(aid.left);
+        expect(stage.bottom, at).toBeLessThanOrEqual(h);
+        expect(stage.bottom - stage.top, at).toBeGreaterThanOrEqual(100);
+        for (const s of l.slots) {
+          expect(s.hit.right, at).toBeLessThanOrEqual(stage.left);
+          expect(s.hit.top, at).toBeGreaterThanOrEqual(panel.bottom);
+          expect(s.label.bottom - s.label.top).toBeGreaterThanOrEqual(48);
+          expect(s.label.right - s.label.left, at).toBeGreaterThanOrEqual(ANSWER_LAYOUT.minLabel);
+        }
+      }
+    // Sur tablette, la règle reste dans la colonne.
+    expect(scenetteLayout({ count: 3, column: true, aid: true }, 1024, 768, questionLayout({ count: 3, aid: true }, 1024, 768)).aid).toBeNull();
   });
 
   it('aux Quais, la colonne à gauche sur tous les écrans (B), les nombres en rangée à droite de la colonne', () => {
@@ -187,7 +219,6 @@ describe('La galerie du Phare', () => {
     expect(b.max[1]).toBeGreaterThan(floor + GALLERY.rail);
     // La galerie du modèle est au même niveau : le plancher de la scénette la recouvre.
     expect(modelOfPlace('phare').top).toBeGreaterThan(GALLERY.floor);
-    expect(scenetteDecor('filets').triangles).toBe(0);
   });
 
   it('les cloches pendent à leur poutre devant la rambarde ; une cloche choisie se balance, sans changer de place', () => {
@@ -372,5 +403,125 @@ describe('Le retour de la scénette des Quais', () => {
     exitView(c, exit.keep, feet, 0.5);
     expect(c.position.z).toBeGreaterThan(a.position.z);
     expect(c.position.z).toBeLessThan(exit.keep.z + EXIT_VIEW.back);
+  });
+});
+
+describe('Les Filets et les Écluses (lot 4)', () => {
+  const places = ['filets', 'ecluses'] as const;
+
+  it('la caméra cadre Kéo à gauche et l’habitant à droite, dans la scène, sur tous les écrans', () => {
+    for (const place of places)
+      for (const [w, h] of screens) {
+        const base = questionLayout({ count: 4, aid: place === 'filets' }, w, h);
+        const stage = scenetteLayout({ count: 4, column: true, aid: place === 'filets' }, w, h, base).scenette!.stage;
+        const { pose, shift } = scenettePose(place, stage, w, h);
+        const on = (p: { x: number; y: number; z: number }) => {
+          const s = screenOf(pose, p, w, h);
+          return { x: s.x - shift.x, y: s.y - shift.y };
+        };
+        const keo = on(scenetteKeo(place).at);
+        const habitant = on(scenetteHabitant(place));
+        const at = `${place} ${w}×${h}`;
+        expect(keo.x, at).toBeLessThan(habitant.x);
+        for (const p of [keo, habitant]) {
+          expect(p.x, at).toBeGreaterThanOrEqual(stage.left);
+          expect(p.x, at).toBeLessThanOrEqual(stage.right);
+          expect(p.y, at).toBeGreaterThanOrEqual(stage.top - 0.03 * h);
+          expect(p.y, at).toBeLessThanOrEqual(stage.bottom + 1);
+        }
+      }
+  });
+
+  it('le plancher de la scène ne s’enfonce jamais : Kéo et l’habitant au-dessus du sol, l’habitant en peu de triangles', () => {
+    for (const place of places) {
+      const floor = sceneSpot(place).y;
+      for (const p of [scenetteKeo(place).at, scenetteHabitant(place)]) {
+        expect(p.y).toBe(floor);
+        expect(standingHeight(heightAt(p))).toBeLessThanOrEqual(floor + 1e-9);
+      }
+      const decor = scenetteDecor(place);
+      expect(decor.triangles).toBeGreaterThan(0);
+      expect(decor.triangles).toBeLessThan(1500);
+      // Les paniers et les leviers sur une margelle à terre, à la hauteur du plancher ; la caisse des Quais seule part.
+      expect(scenetteDeck(place)).toEqual({ y: floor, onLand: true });
+      expect(answerLeaves(place)).toBe(false);
+      expect(scenetteHidesPieces(place)).toBe(true);
+    }
+    expect(scenetteDeck('quais').onLand).toBe(false);
+    expect(answerLeaves('quais')).toBe(true);
+    expect(scenetteHidesPieces('phare')).toBe(false);
+  });
+
+  it('aux Filets, la réussite tend le filet raccommodé et pose un panier plein aux pieds de la pêcheuse, où il reste', () => {
+    const f = scenetteFinale('filets', { kind: 'filets', catch: 'sardines', count: 3 }, 0.8)!;
+    expect(f.clearsItem).toBe(true);
+    expect(f.glow).toBeNull();
+    expect(f.arc).toBeGreaterThan(0);
+    // Le décor gagne le milieu du plancher (le filet l'a quitté) et le pan tendu sur le séchoir.
+    expect(f.decor.triangles).toBeGreaterThan(scenetteDecor('filets').triangles);
+    const basket = filetsBasketAt();
+    expect(f.to).toEqual({ x: basket.x, y: sceneSpot('filets').y, z: basket.z });
+    const landed = boundsOf(f.landed);
+    expect(landed.min[1]).toBeCloseTo(f.to.y, 6);
+    expect(Math.abs(scenetteHabitant('filets').x - f.to.x)).toBeLessThan(1.5);
+    // Le panier plein reste dans le monde, posé au sol, sur la terre.
+    expect(heightAt(basket)).toBeGreaterThan(0);
+    expect(placePieces('filets', 1).still.triangles).toBeGreaterThan(f.moving.triangles);
+  });
+
+  it('aux Écluses, la barque attend devant la porte fermée ; à la réussite, le sas se remplit, la porte s’ouvre et la barque passe', () => {
+    const o = sceneSpot('ecluses');
+    for (const scene of [
+      { kind: 'sas', n: 3, d: 4 },
+      { kind: 'echelle', n: 5, d: 3 },
+    ] as const) {
+      const r = itemScene('ecluses', scene, true, [], 1).reaction!;
+      expect(r.stay).toBe(true);
+      // Dans le canal, sous le plancher, arrêtée avant la porte.
+      expect(r.to.y).toBeLessThan(o.y);
+      expect(r.to.z).toBeGreaterThan(o.z + LOCK.front);
+      expect(r.to.z).toBeLessThan(o.z + LOCK.back);
+      expect(r.to.x + 1.5).toBeLessThan(o.x + LOCK.gate);
+      const f = scenetteFinale('ecluses', scene, 1)!;
+      expect(f.clearsItem).toBe(false);
+      expect(f.from).toEqual(r.to);
+      expect(boundsOf(f.landed).min[0]).toBeGreaterThan(o.x + LOCK.gate + LOCK.leaf);
+      // La porte ouverte n'est pas la porte fermée ; le sas rempli s'ajoute devant la scène de l'item.
+      expect(Array.from(scenetteDecor('ecluses', true).positions)).not.toEqual(Array.from(scenetteDecor('ecluses').positions));
+      expect(f.decor.triangles).toBeGreaterThan(scenetteDecor('ecluses', true).triangles);
+    }
+    // Dans le monde, la porte d'amont fermée tant que la mission n'est pas réussie, puis ouverte, le sas rempli.
+    expect(placePieces('ecluses', 1).still.triangles).toBeGreaterThan(placePieces('ecluses', 0).still.triangles);
+  });
+
+  it('un levier tenté est tiré vers l’élève ; à terre, la margelle descend jusqu’au sol', () => {
+    const o = sceneSpot('ecluses');
+    const pts = [0, 1, 2].map((i) => ({ x: o.x - 2 + 2 * i, y: o.y, z: o.z + 5 }));
+    const still = answerObjects('ecluses', pts, 0.8);
+    const tried = answerObjects('ecluses', pts, 0.8, { picked: [1] });
+    expect(tried.triangles).toBe(still.triangles);
+    expect(boundsOf(tried).max[2]).toBeGreaterThan(boundsOf(still).max[2]);
+    const grounded = answerObjects('ecluses', pts, 0.8, { ground: o.y - 2 });
+    expect(boundsOf(grounded).min[1]).toBeLessThan(o.y - 1.9);
+  });
+
+  it('au retour, Kéo reste à côté de la trace de la réussite, que la caméra garde dans le champ avec lui', () => {
+    for (const place of places) {
+      const exit = scenetteExit(place)!;
+      const feet = { x: exit.at.x, y: standingHeight(heightAt(exit.at)), z: exit.at.z };
+      expect(distance(exit.at, exit.keep)).toBeLessThan(7);
+      for (const [w, h] of screens) {
+        const pose = followPose(feet);
+        exitView(pose, exit.keep, feet, 1);
+        const at = `${place} ${w}×${h}`;
+        for (const p of [feet, { ...feet, y: feet.y + KEO_HEIGHT * 0.8 }, exit.keep]) {
+          const s = screenOf(pose, p, w, h);
+          expect(s.x, at).toBeGreaterThanOrEqual(0);
+          expect(s.x, at).toBeLessThanOrEqual(w);
+          expect(s.y, at).toBeGreaterThanOrEqual(0.08 * h);
+          expect(s.y, at).toBeLessThanOrEqual(h - LOOK_UP.footRoom);
+        }
+      }
+    }
   });
 });

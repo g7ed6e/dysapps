@@ -91,7 +91,7 @@ function filets(b: FacetBuilder): void {
   b.box({ x: 4.3, y: SINK, z: 1, yaw: 0.5 }, [1.2, 1.3, 3], C.wood, C.darkWood);
 }
 
-/** Les Écluses, démontées : trois bassins de pierre en escalier, leurs portes, et la roue arrêtée. */
+/** Les Écluses, démontées : trois bassins de pierre en escalier, la porte d'aval, et la roue arrêtée. */
 function ecluses(b: FacetBuilder): void {
   const steps = [
     { z: -3, top: 1.6 },
@@ -103,8 +103,9 @@ function ecluses(b: FacetBuilder): void {
     // L'eau du bassin, juste sous le bord.
     b.box({ x: 0, y: top - 0.25, z }, [3.4, 0.3, 2.2], C.stone, C.water);
   }
-  // Les portes entre les bassins : des vantaux de bois sombre.
-  for (const [z, top] of [[-1.5, 1.6], [1.5, 0.9]] as const) b.box({ x: 0, y: top - 0.9, z }, [3.6, 1.2, 0.3], C.darkWood);
+  // La porte d'aval, entre le sas et le bassin du bas : des vantaux de bois sombre. Celle d'amont est des pièces du lieu
+  // (questionScene.ts, `placePieces`) : fermée, puis ouverte par la réussite de la scénette.
+  b.box({ x: 0, y: 0, z: 1.5 }, [3.6, 1.2, 0.3], C.darkWood);
   // La roue, debout sur le côté est, et son axe.
   b.prism({ x: 2.7, y: 1.5, z: -0.4, yaw: Math.PI / 2, pitch: Math.PI / 2 }, 1.4, 1.4, 0.4, 10, C.wood, C.darkWood);
   b.box({ x: 2.5, y: SINK, z: -0.4 }, [0.3, 2.3 - SINK, 0.3], C.darkWood);

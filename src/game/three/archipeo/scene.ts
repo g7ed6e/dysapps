@@ -17,9 +17,29 @@ import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from '../../world/continu/paths';
 import { PLACES, TERRAIN, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { modelOfPlace } from '../../world/continu/places';
-import { answerObjects, answerScale, itemScene, placePieces, questionPose, quaySuccess, sceneSpot, veilleurPiece, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
+import { answerObjects, answerScale, itemScene, placePieces, questionPose, sceneSpot, veilleurPiece, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, veilleurAwake, type ItemScene } from '../../world/continu/questions';
-import { EXIT_VIEW, LANTERN, SCENETTE_CAMERA, SCENETTE_DECK, answersHang, exitView, scenetteExit, bellPlane, scenetteHidesPlace, habitantHand, scenetteDecor, scenetteKeo, scenetteOf, scenettePose, scenetteSuccess } from '../../world/continu/scenette';
+import {
+  EXIT_VIEW,
+  LANTERN,
+  SCENETTE_CAMERA,
+  answerLeaves,
+  answersHang,
+  bellPlane,
+  exitView,
+  habitantHand,
+  scenetteDeck,
+  scenetteDecor,
+  scenetteExit,
+  scenetteFinale,
+  scenetteHidesPieces,
+  scenetteHidesPlace,
+  scenetteKeo,
+  scenetteOf,
+  scenettePose,
+  scenetteSuccess,
+  type ScenetteFinale,
+} from '../../world/continu/scenette';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
 import { buildHeightField, heightOnMesh, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
@@ -145,9 +165,13 @@ const RING_MOVE = 3;
 const PLACE_BEYOND_FOG = 10;
 /** Le lever de la brume d'un lieu : un fondu court, en secondes (d'un bloc avec « Réduire les animations »). */
 const VEIL_FADE_SECONDS = 0.8;
-/** La réussite aux Quais : la caisse descend dans la barque, puis la lanterne de proue s'allume (1,5 s en tout). */
-const DOCK_DROP_SECONDS = 0.8;
-const DOCK_LAMP_SECONDS = 0.7;
+/**
+ * La réussite d'une scénette posée (les Quais, les Filets, les Écluses) : l'objet qui va à sa place (la caisse dans la
+ * barque, le panier plein, la barque qui passe la porte), puis la lumière (la lanterne de proue des Quais) ; 1,5 s en
+ * tout.
+ */
+const FINALE_MOVE_SECONDS = 0.8;
+const FINALE_LAMP_SECONDS = 0.7;
 /** La lampe du Phare qui s'allume à la réussite : de la vitre éteinte à la lumière, en un fondu (fixe avec « Réduire les animations »). */
 const LAMP_SECONDS = 1.2;
 /** Le cadenas d'un lieu se tient au bord de l'écran de tant de pixels au moins, sinon il ne se montre pas. */
@@ -903,9 +927,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let lampStart: number | null = null;
   // Le fondu de la lampe : celle du Phare, ou la lanterne de proue des Quais, plus courte (elle suit la descente).
   let lampSeconds: number = LAMP_SECONDS;
-  // La réussite aux Quais : la caisse du crochet qui descend dans la barque (d'où, quand), puis la lanterne de proue.
-  let dock: { from: THREE.Vector3; start: number; success: ReturnType<typeof quaySuccess> } | null = null;
-  let dockDone = false;
+  // La réussite d'une scénette posée (world/continu/scenette.ts, `scenetteFinale`) : l'objet qui va à sa place (d'où,
+  // quand), puis la lumière ; `finaleShown` : elle est montrée (le décor de près a changé).
+  let finale: { from: THREE.Vector3; start: number; f: ScenetteFinale } | null = null;
+  let finaleShown = false;
   // La scène de l'item est-elle à montrer (cachée le temps de la descente) ?
   let itemShown = false;
   const descent = {
@@ -958,11 +983,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     scenette = place;
     setGeometry(decorMesh, scenetteDecor(place));
     // Aux Quais, la maquette du lieu (sa grue, son hangar) s'efface : le quai de la scénette a les siens.
-    // Ses pièces durables aussi (la barque chargée y est amarrée à la place de celle de la scénette).
-    if (scenetteHidesPlace(place)) {
-      placeMeshes.get(place)!.visible = false;
-      piecesMesh.visible = false;
-    }
+    // Les pièces durables du lieu aussi, sauf au Phare : la trace de la réussite (la barque chargée, le panier plein, la
+    // porte ouverte) n'est pas dessinée deux fois.
+    if (scenetteHidesPlace(place)) placeMeshes.get(place)!.visible = false;
+    if (scenetteHidesPieces(place)) piecesMesh.visible = false;
     const k = scenetteKeo(place);
     keo.position.set(k.at.x, k.at.y, k.at.z);
     keo.scale.setScalar(k.scale);
@@ -978,8 +1002,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     descent.active = false;
     placeVisibility();
     unlitReaction();
-    dock = null;
-    dockDone = false;
+    finale = null;
+    finaleShown = false;
     piecesMesh.visible = (piecesMesh.geometry.getAttribute('position')?.count ?? 0) > 0;
     decorMesh.geometry.dispose();
     decorMesh.geometry = new THREE.BufferGeometry();
@@ -1028,8 +1052,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
     const { place, layout, item } = q;
     walk = null;
-    // Une nouvelle question (« Rejouer ») : la lampe rend le maillage de la réaction.
+    // Une nouvelle question (« Rejouer ») : la lampe rend le maillage de la réaction, le décor de près reprend son état
+    // d'avant la réussite.
     unlitReaction();
+    if (finaleShown && scenette === place && !item.answered) {
+      finale = null;
+      finaleShown = false;
+      setGeometry(decorMesh, scenetteDecor(place));
+    }
     const stage = layout.scenette && scenetteOf(place) ? layout.scenette.stage : null;
     let qp: { pose: CameraPose; shift: { x: number; y: number } };
     if (stage) {
@@ -1068,10 +1098,24 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const objectsKey = `${place}|${viewW}x${viewH}|${slotFeet.map((o) => `${o.x},${o.y}`).join(';')}`;
     const itemKey = `${JSON.stringify(item.scene)}|${item.right.join(',')}`;
     const spot = sceneSpot(place);
-    // Dans une scénette, les cloches pendent devant la rambarde ; les caisses sont posées sur un ponton du bassin.
+    // Dans une scénette, les cloches pendent devant la rambarde ; les caisses sont posées sur un ponton du bassin ; les
+    // paniers et les leviers sur une margelle à terre, à la hauteur du plancher de la scène, relevée si le sol monte
+    // devant elle (elle ne s'y enfonce jamais), sa jupe jusqu'au sol.
     const hang = stage && answersHang(place) ? bellPlane(place) : null;
-    const deckY = stage ? SCENETTE_DECK : spot.y;
-    const points = slotFeet.map((o) => (hang ? planeUnder(o.x, o.y, hang.z) : groundUnder(o.x, o.y, deckY)) ?? spot);
+    const deck = stage ? scenetteDeck(place) : { y: spot.y, onLand: false };
+    let deckY = deck.y;
+    const pointsAt = (y: number) => slotFeet.map((o) => (hang ? planeUnder(o.x, o.y, hang.z) : groundUnder(o.x, o.y, y)) ?? spot);
+    let points = pointsAt(deckY);
+    let landBelow: number | undefined;
+    if (deck.onLand && !hang) {
+      const heights = points.flatMap((p) => [-1, 0, 1].flatMap((dx) => [-0.5, 0.5].map((dz) => standingHeight(ground(p.x + dx, p.z + dz)))));
+      const top = Math.max(...heights) + 0.05;
+      if (top > deckY) {
+        deckY = top;
+        points = pointsAt(deckY);
+      }
+      landBelow = Math.max(-0.3, Math.min(...points.flatMap((p) => [-1, 0, 1].map((dx) => ground(p.x + dx, p.z)))));
+    }
     // La hauteur d'un objet dans le monde : sa hauteur à l'écran, à l'échelle de l'écart entre deux objets.
     const pxStep = slotFeet.length > 1 ? Math.abs(slotFeet[1].x - slotFeet[0].x) : 120;
     const worldStep = points.length > 1 ? Math.hypot(points[1].x - points[0].x, points[1].z - points[0].z) : 2;
@@ -1096,8 +1140,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
         // Une cloche choisie se balance jusqu'à la réponse ; une caisse tentée reste penchée.
         picked: hang && item.answered ? [] : item.picked,
         // La bonne caisse est partie au crochet avec la réaction.
-        gone: !hang && stage && item.answered ? item.right : [],
+        gone: stage && answerLeaves(place) && item.answered ? item.right : [],
         hanging: hang ? { hand: habitantHand(place), rail: hang.rail } : undefined,
+        ground: landBelow,
       }),
     );
     setGeometry(itemMesh, merged.build());
@@ -1127,16 +1172,24 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const scenetteEnd = (lit: boolean) => {
     if (!asked || !scenette) return;
-    // Aux Quais, la scène reste ; à la réussite, la grue descend la caisse du crochet dans la barque, puis la lanterne
-    // de proue s'allume (environ 1,5 s ; l'état final tout de suite avec « Réduire les animations »).
+    // Une scénette posée (les Quais, les Filets, les Écluses) : la scène reste ; à la réussite, le décor change, un
+    // objet va à sa place, puis une lumière s'allume (environ 1,5 s ; l'état final tout de suite avec « Réduire les
+    // animations »).
     if (!answersHang(scenette)) {
-      if (!lit || dockDone || asked.scene.kind !== 'quai') return;
-      dockDone = true;
-      const success = quaySuccess(asked.scene, asked.scale);
-      const from = reactionMesh.visible ? reactionMesh.position.clone() : new THREE.Vector3(success.hold.x, success.hold.y, success.hold.z);
+      if (!lit || finaleShown) return;
+      const f = scenetteFinale(scenette, asked.scene, asked.scale);
+      if (!f) return;
+      finaleShown = true;
+      setGeometry(decorMesh, f.decor);
+      if (f.clearsItem) {
+        itemShown = false;
+        itemMesh.visible = false;
+      }
+      const from = reactionMesh.visible ? reactionMesh.position.clone() : new THREE.Vector3(f.from.x, f.from.y, f.from.z);
       reaction = null;
-      dock = { from, start: performance.now() / 1000, success };
-      stepDock(dock.start);
+      setGeometry(reactionMesh, f.moving);
+      finale = { from, start: performance.now() / 1000, f };
+      stepFinale(finale.start);
       return;
     }
     itemShown = false;
@@ -1155,29 +1208,33 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     stepLamp(lampStart);
   };
 
-  /** La descente de la caisse dans la barque à l'instant `t`, puis, posée, la lanterne de proue qui s'allume. */
-  const stepDock = (t: number) => {
-    if (!dock || !scenette) return;
-    const { from, start, success } = dock;
-    const u = reduceMotion ? 1 : Math.min(1, (t - start) / DOCK_DROP_SECONDS);
+  /** L'objet de la réussite qui va à sa place à l'instant `t`, puis, posé, la lumière qui s'allume. */
+  const stepFinale = (t: number) => {
+    if (!finale || !scenette) return;
+    const { from, start, f } = finale;
+    const u = reduceMotion ? 1 : Math.min(1, (t - start) / FINALE_MOVE_SECONDS);
     const e = u * u * (3 - 2 * u);
     reactionMesh.visible = true;
-    reactionMesh.position.set(mix(from.x, success.hold.x, e), mix(from.y, success.hold.y, e), mix(from.z, success.hold.z, e));
+    reactionMesh.position.set(mix(from.x, f.to.x, e), mix(from.y, f.to.y, e) + f.arc * Math.sin(Math.PI * e), mix(from.z, f.to.z, e));
     if (u < 1) return;
-    // Posée : elle rejoint le décor de près (aucun appel de plus), et le maillage de la réaction dessine la lanterne.
+    // Posé : il rejoint le décor de près (aucun appel de plus), et le maillage de la réaction dessine la lumière.
     const decor = new FacetBuilder();
-    decor.append(scenetteDecor(scenette));
-    decor.append(success.crate);
+    decor.append(f.decor);
+    decor.append(f.landed);
     setGeometry(decorMesh, decor.build());
-    setGeometry(reactionMesh, success.glass);
+    finale = null;
+    if (!f.glow) {
+      reactionMesh.visible = false;
+      return;
+    }
+    setGeometry(reactionMesh, f.glow);
     reactionMesh.material = lampMaterial;
     reactionMesh.position.set(0, 0, 0);
     lampLit = true;
-    lampSeconds = DOCK_LAMP_SECONDS;
+    lampSeconds = FINALE_LAMP_SECONDS;
     lampMaterial.color.copy(lampOff);
     lampStart = t;
     stepLamp(t);
-    dock = null;
   };
 
   // Les pièces durables des lieux (un maillage pour tous), et la Roue des Écluses qui tourne (à part).
@@ -1200,7 +1257,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (veilleurAwake(counts, PLACES.map((p) => p.id))) all.append(veilleurPiece());
     setGeometry(piecesMesh, all.build());
-    if (scenette && scenetteHidesPlace(scenette)) piecesMesh.visible = false;
+    if (scenette && scenetteHidesPieces(scenette)) piecesMesh.visible = false;
     mapDirty = true;
     if (wheel) {
       setGeometry(wheelMesh, wheel.facets);
@@ -1274,7 +1331,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // la réaction joue, puis la Roue tourne ; dans une scénette, Kéo se tient là, au repos, et la lampe s'allume.
       stepDescent(t);
       placeReaction(t);
-      stepDock(t);
+      stepFinale(t);
       stepLamp(t);
       if (scenette) body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
       options.onMark(null);

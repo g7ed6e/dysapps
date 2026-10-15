@@ -6,9 +6,9 @@ import { WORLD_FOG } from './camera';
 import { networkSamples, pathRibbons } from './paths';
 import { PLACES, type PlaceId } from './plan6e';
 import { modelOfPlace } from './places';
-import { answerObjects, itemScene, placePieces, quaySuccess, sceneSpot, veilleurPiece } from './questionScene';
+import { answerObjects, itemScene, placePieces, sceneSpot, veilleurPiece } from './questionScene';
 import type { ItemScene } from './questions';
-import { bellPlane, habitantHand, scenetteDecor, scenetteOf, scenetteSuccess } from './scenette';
+import { bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteOf, scenetteSuccess } from './scenette';
 import { buildHeightField, heightOnMesh, tileRings, tileTriangleCounts } from './terrain';
 import { veilFacets } from './veil';
 
@@ -53,27 +53,39 @@ function questionCost(): { triangles: number; calls: number } {
 }
 
 /**
- * Une scénette (lot 2, le Phare ; lot 3, les Quais), la plus chargée : le décor de près (la galerie, sa rambarde, la
- * gardienne ; le docker), un maillage fait à l'arrivée et libéré au départ, du matériau du terrain. La lampe de la
- * réussite passe par le maillage de la réaction (au Phare, quand les objets des réponses sont effacés ; aux Quais, une
- * fois la caisse descendue et rangée dans le décor) : ses triangles comptent ici, pas son appel. Kéo y reste, sans son anneau (son appel est compté quand même : le pire cas).
+ * Une scénette (lot 2, le Phare ; lot 3, les Quais ; lot 4, les Filets et les Écluses), la plus chargée : le décor de
+ * près (la galerie, sa rambarde, la gardienne ; le docker ; le plancher de séchage et la pêcheuse ; le quai du sas, son
+ * canal, sa porte et l'éclusier), un maillage fait à l'arrivée et libéré au départ, du matériau du terrain, au plus fort
+ * de la réussite. La lampe et l'objet de la réussite passent par le maillage de la réaction (au Phare, quand les objets
+ * des réponses sont effacés ; ailleurs, la réaction de l'item cède sa place à l'objet qui va se poser, puis à la
+ * lumière) : leurs triangles comptent ici, pas leur appel. Kéo y reste, sans son anneau (son appel est compté quand
+ * même : le pire cas).
  */
 function scenetteCost(): { triangles: number; calls: number } {
-  const triangles = Math.max(...SCENETTE_PLACES.map((p) => scenetteDecor(p).triangles + successTriangles(p)));
+  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p))));
   return { triangles, calls: 1 };
 }
 
+/** La scène d'item la plus chargée d'un lieu à scénette posée (celle que la réussite reprend). */
+const FINALE_SCENES: Partial<Record<PlaceId, ItemScene>> = {
+  quais: { kind: 'quai', op: 'moitie', before: 98, after: 49 },
+  filets: { kind: 'filets', catch: 'crabes', count: 4 },
+  ecluses: { kind: 'echelle', n: 24, d: 12 },
+};
+
 /**
- * Ce que la réussite ajoute à la scénette : la lampe du Phare ; aux Quais, la caisse posée dans la barque (dans le
- * décor) et la vitre allumée de la lanterne de proue (dans la réaction).
+ * La scénette à sa réussite : au Phare, le décor et la lampe ; ailleurs, le décor changé, l'objet posé et la lumière
+ * (la caisse dans la barque et la lanterne de proue des Quais ; le panier plein et le filet tendu des Filets ; le sas
+ * rempli, la porte ouverte et la barque passée des Écluses).
  */
 function successTriangles(place: PlaceId): number {
-  if (place !== 'quais') return scenetteSuccess(place)?.triangles ?? 0;
-  const s = quaySuccess({ kind: 'quai', op: 'moitie', before: 98, after: 49 }, 1);
-  return s.crate.triangles + s.glass.triangles;
+  const scene = FINALE_SCENES[place];
+  const f = scene ? scenetteFinale(place, scene, 1) : null;
+  if (!f) return scenetteDecor(place).triangles + (scenetteSuccess(place)?.triangles ?? 0);
+  return f.decor.triangles + f.landed.triangles + Math.max(f.moving.triangles, f.glow?.triangles ?? 0);
 }
 
-/** Les lieux qui ont leur scénette : le Phare (lot 2), les Quais (lot 3). */
+/** Les lieux qui ont leur scénette : le Phare (lot 2), les Quais (lot 3), les Filets et les Écluses (lot 4). */
 const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id).filter((id) => scenetteOf(id));
 
 /** Les pièces durables, toutes remises, et le Veilleur rallumé : un maillage pour les quatre lieux, et la Roue des Écluses. */

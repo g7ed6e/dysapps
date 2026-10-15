@@ -7,7 +7,8 @@
 // premier item), la règle à droite : rien ne défile. Rien à lire n'est peint dans la 3D. « Vue simple » rouvre l'écran
 // classique de la même mission. Au Phare, une scénette (piste 1, lot 2, ../../world/continu/scenette.ts) : le rôle de
 // l'habitant en tête du panneau, Kéo et la gardienne au milieu, les cloches en rangée en bas, « Valider » en bas à
-// droite sur tablette ; à la réussite, la lampe du Phare s'allume. Dans une scénette, « Vue simple » montre la même
+// droite sur tablette ; à la réussite, la lampe du Phare s'allume. Les Quais (lot 3), les Filets et les Écluses (lot 4)
+// ont la leur, la colonne à gauche (le docker, la pêcheuse, l'éclusier). Dans une scénette, « Vue simple » montre la même
 // question en liste sur fond uni, sans quitter la manche (les cloches choisies le restent), « Valider » sous la liste ;
 // « Scène », à la même place, y ramène.
 import { Fragment, createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
@@ -131,7 +132,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   const scenette = scenetteOf(place);
   const layout = useMemo(() => {
     const base = questionLayout({ count, bells: place === 'phare', aid: hasAid, widen }, size.w || 1, size.h || 1);
-    return scenette ? scenetteLayout({ count, widen, small: place === 'phare', words: place === 'phare', column: place !== 'phare' && !grandTexte, grand: grandTexte }, size.w || 1, size.h || 1, base) : base;
+    return scenette ? scenetteLayout({ count, widen, small: place === 'phare', words: place === 'phare', column: place !== 'phare' && !grandTexte, grand: grandTexte, aid: hasAid }, size.w || 1, size.h || 1, base) : base;
   }, [count, hasAid, place, size, widen, scenette, grandTexte]);
   // La rangée des réponses à droite de la colonne (les Quais sur un écran bas) : le résultat reste dans la colonne.
   const rowBeside = layout.low && layout.slots.length > 0 && Math.min(...layout.slots.map((sl) => sl.hit.left)) >= layout.panel.left + layout.panel.width;
@@ -523,9 +524,12 @@ function slotStyles(slot: AnswerSlot): { hit: CSSProperties; label: CSSPropertie
   };
 }
 
-/** La règle : sous la question dans la colonne, ou à droite sur un écran bas. */
-function PlaceAid({ aid, layout }: { aid: AidData; layout: QuestionLayout }) {
-  const box = layout.aid;
+/**
+ * La règle : sous la question dans la colonne, ou à droite sur un écran bas (en « Vue simple », toujours dans la liste,
+ * jamais posée sur elle).
+ */
+function PlaceAid({ aid, layout, simple }: { aid: AidData; layout: QuestionLayout; simple: boolean }) {
+  const box = simple ? null : layout.aid;
   const style: CSSProperties | undefined = box
     ? {
         left: `${Math.round(box.left)}px`,
@@ -661,7 +665,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
             <SpeakButton text={hint} compact />
           </p>
         )}
-        {aid && <PlaceAid aid={aid} layout={layout} />}
+        {aid && <PlaceAid aid={aid} layout={layout} simple={simple} />}
       </div>
       <div className="world-answers" role="group" aria-label="Réponses possibles">
         {choices.map((choice, i) => {
