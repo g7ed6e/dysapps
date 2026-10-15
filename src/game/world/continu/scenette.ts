@@ -418,7 +418,7 @@ export function scenetteHabitant(place: PlaceId, posed = true): Vec3 {
 export function scenetteExit(place: PlaceId, posed = true, mission?: string): { at: Vec2; keep: Vec3; view?: ExitView } | null {
   if (!posed) return null;
   if (place === 'phare') {
-    const exit = mission && mission in PHARE_EXITS ? PHARE_EXITS[mission as keyof typeof PHARE_EXITS] : null;
+    const exit = mission && Object.hasOwn(PHARE_EXITS, mission) ? PHARE_EXITS[mission] : null;
     if (!exit) return null;
     const c = placeById(place).center;
     const at = { x: c.x + exit.at.x, z: c.z + exit.at.z };
@@ -473,11 +473,11 @@ const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 } } 
  * que la caméra garde : les lampes de la galerie (la Chasse au son), devant la porte ; la corne de brume (l'Abattage
  * syllabique) et le mât de signaux (les Rimes-échelle), à quelques pas au sud de chacun.
  */
-const PHARE_EXITS = {
+const PHARE_EXITS: Readonly<Record<string, { at: Vec2; trace: 'galerie' | keyof typeof PHARE_TRACE_LIFT }>> = {
   'sound-hunt': { at: { x: 1.4, z: 6.6 }, trace: 'galerie' },
   syllables: { at: { x: 3.4, z: 5.6 }, trace: 'syllables' },
   rhymes: { at: { x: -2.6, z: 7.4 }, trace: 'rhymes' },
-} as const;
+};
 
 /** La hauteur du point gardé au-dessus du pied d'une trace du Phare : la mi-hauteur de la corne, du mât. */
 const PHARE_TRACE_LIFT = { syllables: 1.2, rhymes: 2.3 } as const;

@@ -14,13 +14,15 @@ import { modelOfPlace } from './places';
 import { heightAt, standingHeight } from './terrain';
 import PLACE_ITEMS from './placeItems.json';
 import { PLACES, placeById } from './plan6e';
-import { ANSWER_LAYOUT, ECLUSES_TRACE_SPOTS, PHARE_GALLERY, PHARE_TRACE_SPOTS, QUAIS_TRACE_SPOTS, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placeTrace, questionLayout, sceneSpot, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, ECLUSES_TRACE_SPOTS, GALLERY_LANTERN, PHARE_GALLERY, PHARE_TRACE_SPOTS, QUAIS_TRACE_SPOTS, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placeTrace, questionLayout, sceneSpot, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
 import {
   BELLS_PER_ROUND,
+  BELLS_PER_SMALL_ROUND,
   EXERCISES_WITH_TWINS,
   LOCK_COLUMN,
   LOCK_IDLE,
   PAIR_INSTRUCTION,
+  PHARE_SYLLABLES,
   SAS_HINT,
   answersInColumn,
   pairScene,
@@ -40,6 +42,7 @@ import {
 const reference = (
   id: string,
 ): {
+  instruction: string;
   items: (QuestionItem & {
     prompt: string;
     choices: string[];
@@ -186,6 +189,18 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
 
   it('une consigne par mission aux Écluses : Deux rives a la sienne, les autres gardent celle de référence (lot L2)', () => {
     expect(placeInstruction('ecluses', 'maths-6e-fractions-equivalence-1', 1, 'réf.')).toBe(PAIR_INSTRUCTION);
+    expect(PAIR_INSTRUCTION).toMatch(/égales/);
+    // Au Phare, l'Abattage syllabique dit la cloche à toucher ; la fin des niveaux 2 et 3 reste, les autres missions gardent la leur.
+    for (const def of CATALOG.filter((d) => d.biome === 'french-6e-phonology')) {
+      const { instruction } = reference(def.id);
+      const at = placeInstruction('phare', def.id, 1, instruction);
+      if (!missionIs(def.id, 'syllables')) expect(at).toBe(instruction);
+      else {
+        expect(at.startsWith(PHARE_SYLLABLES)).toBe(true);
+        expect(at).not.toMatch(/tape le nombre/);
+        expect(at.endsWith(instruction.slice(instruction.indexOf('.') + 1))).toBe(true);
+      }
+    }
     expect(placeInstruction('ecluses', 'maths-6e-fractions-equivalence-1', 1, 'réf.', { kind: 'lockPair', a: [1, 2], b: [2, 4] })).toBe(PAIR_INSTRUCTION);
     // Un item de Deux rives sans ses deux sas (`pairScene` rend `null`) se joue sur le sas au repos, avec la consigne de référence.
     const [alone] = placeItems('ecluses', 'maths-6e-fractions-equivalence-1', [{ key: 'k', prompt: 'réf.' }]);
@@ -204,12 +219,12 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     });
     const same = pairScene(item([3, 5], [2, 5], '3/5'), fractionWords)!;
     expect(same.scene).toEqual({ kind: 'lockPair', a: [3, 5], b: [2, 5] });
-    expect(same.prompt).toBe('Quelle fraction est la plus grande : 3/5 ou 2/5 ? Ou sont-elles égales ?');
-    expect(same.spoken).toBe('Quelle fraction est la plus grande : 3 cinquièmes ou 2 cinquièmes ? Ou sont-elles égales ?');
+    expect(same.prompt).toBe('Compare 3/5 et 2/5.');
+    expect(same.spoken).toBe('Compare 3 cinquièmes et 2 cinquièmes.');
     expect(same.hint).toMatch(/même nombre de parts égales/);
     expect(same.explanation).toBe('3 parts pleines sur 5, c’est plus que 2 parts pleines sur 5 : 3/5 est plus grande que 2/5.');
     const num = pairScene(item([1, 5], [1, 3], '1/3'))!;
-    expect(num.prompt).toBe('Quelle fraction est la plus grande : 1/5 ou 1/3 ? Ou sont-elles égales ?');
+    expect(num.prompt).toBe('Compare 1/5 et 1/3.');
     // Un numérateur 1 se lit « un cinquième », jamais « rempli à un demi » (contenu, relecture de L2).
     expect(pairScene(item([1, 5], [1, 3], '1/3'), fractionWords)!.spoken).not.toMatch(/rempli/);
     expect(num.explanation).toBe('Le même nombre de parts pleines, mais des parts plus grandes dans le sas coupé en 3 : 1/3 est plus grande que 1/5.');
@@ -217,7 +232,7 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     expect(equal.explanation).toBe('L’eau arrive à la même hauteur dans les deux sas : 2/3 et 4/6 sont égales.');
     expect(pairScene({ key: 'k' })).toBeNull();
     // Sans les mots de la vue, la phrase lue garde les fractions écrites.
-    expect(pairScene(item([3, 5], [2, 5], '3/5'))!.spoken).toBe('Quelle fraction est la plus grande : 3/5 ou 2/5 ? Ou sont-elles égales ?');
+    expect(pairScene(item([3, 5], [2, 5], '3/5'))!.spoken).toBe('Compare 3/5 et 2/5.');
     // Les items du générateur : chacun a ses deux sas, jamais « gauche » ni « droite », et garde sa clé, ses choix, sa réponse.
     const def = MATHS_EXERCISES.find((e) => e.id === 'maths-6e-fractions-equivalence-1')!;
     const items = def.generate!('graine') as QuestionItem[];
@@ -327,6 +342,14 @@ describe('Les cloches du Phare', () => {
           expect(r.length).toBeGreaterThanOrEqual(4);
           expect(r.length).toBeLessThanOrEqual(BELLS_PER_ROUND);
         }
+        // Au plus grand texte sur un écran bas : quatre au plus, des bons mots et des pièges dans chacune, chaque mot une fois.
+        const small = bellRounds(items, seeded(def.id), BELLS_PER_SMALL_ROUND);
+        for (const r of small) {
+          expect(r.length).toBeLessThanOrEqual(BELLS_PER_SMALL_ROUND);
+          expect(r.some((it) => it.correct)).toBe(true);
+          expect(r.some((it) => !it.correct)).toBe(true);
+        }
+        expect(small.flat().map((it) => it.key).sort()).toEqual(items.map((it) => it.key).sort());
       }
     }
   });
@@ -378,6 +401,11 @@ describe('Les traces des scénettes', () => {
     const y0 = standingHeight(heightAt(c));
     const lamps = placeTrace('phare', ['sound-hunt']);
     expect(boundsOf(lamps).min[1]).toBeCloseTo(y0 + PHARE_GALLERY, 6);
+    // Quatre lanternes à cage d'environ 0,6 unité, sur leur poteau, au-dessus de la rambarde, face au sud.
+    const L = GALLERY_LANTERN;
+    expect(L.base + L.glass + L.cap).toBeCloseTo(0.6, 6);
+    expect(boundsOf(lamps).max[1]).toBeCloseTo(y0 + PHARE_GALLERY + L.post + 0.6, 6);
+    expect(boundsOf(lamps).min[2]).toBeGreaterThan(c.z);
     const sizes = new Set<number>();
     for (const m of Object.keys(PHARE_TRACE_SPOTS) as (keyof typeof PHARE_TRACE_SPOTS)[]) {
       const t = placeTrace('phare', [m]);

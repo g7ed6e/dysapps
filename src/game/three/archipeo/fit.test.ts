@@ -1,4 +1,4 @@
-import { filledGap, overflows, wordsCut } from './fit';
+import { filledGap, inVisibleScene, overflows, wordsCut } from './fit';
 
 const box = (clientWidth: number, scrollWidth: number, clientHeight = 50, scrollHeight = 50) => ({ clientWidth, scrollWidth, clientHeight, scrollHeight });
 
@@ -28,5 +28,17 @@ describe('Le mot juste dans le trou', () => {
     expect(filledGap('Une … mouette.', 'petite', [{ correct: false }])).toBeNull();
     expect(filledGap('Une … mouette.', 'petite', undefined)).toBeNull();
     expect(filledGap('Combien de caisses ?', '17', [{ correct: true }])).toBeNull();
+  });
+
+  it('un repère de la scène se cache quand son point sort de la scène visible : hors de l’écran, au bord, sous le panneau', () => {
+    const panel = { left: 8, top: 100, right: 836, bottom: 380 };
+    expect(inVisibleScene({ x: 400, y: 60 }, 844, 390, panel)).toBe(true);
+    // Sous le panneau (« 1/4 » à 844 × 390), au bord de l'écran, hors de l'écran.
+    expect(inVisibleScene({ x: 820, y: 200 }, 844, 390, panel)).toBe(false);
+    expect(inVisibleScene({ x: 830, y: 60 }, 844, 390, panel)).toBe(false);
+    expect(inVisibleScene({ x: -5, y: 60 }, 844, 390, null)).toBe(false);
+    expect(inVisibleScene({ x: 400, y: 380 }, 844, 390, null)).toBe(false);
+    // Sans panneau mesuré, l'écran seul.
+    expect(inVisibleScene({ x: 820, y: 200 }, 844, 390, null)).toBe(true);
   });
 });

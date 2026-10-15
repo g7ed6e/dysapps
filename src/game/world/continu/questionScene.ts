@@ -70,6 +70,8 @@ const C = {
   paint: 0xd9a441,
   /** L'anneau des élingues, en fer sombre (la moufle de la grue est en ardoise). */
   iron: 0x4a555c,
+  /** Le gris d'ardoise de la toiture du Phare : la cage des lanternes de sa galerie. */
+  slate: 0x6f8089,
 } as const;
 
 /** La hauteur où l'on se tient en un point (le sol, ou le dessus de la digue sur l'eau). */
@@ -1215,13 +1217,8 @@ export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
     for (const mission of done) ECLUSES_TRACES[mission]?.(b, x, y0, z);
   }
   if (place === 'phare') {
-    if (done.includes('sound-hunt'))
-      for (let k = 0; k < 4; k++) {
-        // Face au sud (vers la caméra).
-        const a = Math.PI / 2 + ((k - 1.5) * Math.PI) / 4;
-        b.box({ x: x + 2.05 * Math.cos(a), y: y0 + PHARE_GALLERY, z: z + 2.05 * Math.sin(a) }, [0.3, 0.3, 0.3], C.lamp);
-      }
-    for (const mission of done) PHARE_TRACES[mission]?.(b, x, z);
+    if (done.includes('sound-hunt')) galleryLanterns(b, x, y0 + PHARE_GALLERY, z);
+    for (const mission of done) if (Object.hasOwn(PHARE_TRACES, mission)) PHARE_TRACES[mission](b, x, z);
   } else if (place === 'filets' && done.includes('plurals')) {
     mendedNet(b);
     fullBasket(b, filetsBasketAt());
@@ -1233,6 +1230,36 @@ export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
 
 /** Le dessus de la galerie du Phare (places.ts, ses abords), au-dessus du pied du lieu : ses lampes s'y posent. */
 export const PHARE_GALLERY = 11.55;
+
+/** Les lanternes de la galerie : leur poteau, puis la lanterne (socle, verre, chapeau), 0,6 unité de haut. */
+export const GALLERY_LANTERN = { post: 0.35, base: 0.06, glass: 0.34, cap: 0.2, width: 0.3 } as const;
+
+/**
+ * La trace de la Chasse au son (relecture de L3, directeur artistique) : quatre lanternes à cage sombre, montants et
+ * chapeau dans le gris de la toiture, verre jaune, chacune sur un poteau planté au milieu d'un pan de la rambarde face
+ * au sud ; plus hautes que la rambarde, elles se découpent sur le ciel, et leur cage les sépare de la lanterne du Phare.
+ */
+function galleryLanterns(b: FacetBuilder, x: number, top: number, z: number): void {
+  const L = GALLERY_LANTERN;
+  // Le milieu d'un pan de la rambarde (un prisme à huit pans de rayon 2, places.ts) : 2·cos(π/8).
+  const r = 2 * Math.cos(Math.PI / 8);
+  for (let k = 0; k < 4; k++) {
+    const a = Math.PI / 2 + ((k - 1.5) * Math.PI) / 4;
+    const [px, pz] = [x + r * Math.cos(a), z + r * Math.sin(a)];
+    let y = top;
+    b.box({ x: px, y, z: pz }, [0.08, L.post, 0.08], C.slate);
+    y += L.post;
+    b.box({ x: px, y, z: pz }, [L.width, L.base, L.width], C.slate);
+    y += L.base;
+    b.box({ x: px, y, z: pz }, [L.width - 0.08, L.glass, L.width - 0.08], C.lamp);
+    // Les quatre montants de la cage, aux coins du verre.
+    const h = L.width / 2 - 0.03;
+    for (const [dx, dz] of [[-h, -h], [h, -h], [-h, h], [h, h]] as const) b.box({ x: px + dx, y, z: pz + dz }, [0.05, L.glass, 0.05], C.slate);
+    y += L.glass;
+    // Le chapeau : une pyramide à quatre pans, ses arêtes sur les coins.
+    b.prism({ x: px, y, z: pz, yaw: Math.PI / 4 }, (L.width / 2 + 0.03) * Math.SQRT2, 0, L.cap, 4, C.slate);
+  }
+}
 
 /**
  * Où se pose la trace de chaque mission du Phare (hors de la Chasse au son, les lampes de la galerie), depuis le centre

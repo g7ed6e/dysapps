@@ -28,3 +28,23 @@ export function filledGap(prompt: string, answer: string, results: readonly { co
   if (at < 0 || !answer || !results?.length || !results.every((r) => r.correct)) return null;
   return { before: prompt.slice(0, at), after: prompt.slice(at + 1) };
 }
+
+/** Un rectangle à l'écran, en pixels. */
+export interface ScreenRect {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
+/**
+ * Un repère de la scène (une fraction sous un sas) ne se montre que si son point est dans la scène visible : dans
+ * l'écran, à `margin` pixels du bord au moins (l'étiquette y tient entière), hors du panneau de la question (relecture
+ * de L3 : « 1/4 » coupé au bord d'un téléphone, sous le panneau). Ce qu'il dit reste dans le panneau ou dans « Vue
+ * simple ».
+ */
+export function inVisibleScene(point: { x: number; y: number }, width: number, height: number, panel: ScreenRect | null, margin = 24): boolean {
+  const { x, y } = point;
+  if (x < margin || x > width - margin || y < 0 || y > height - margin) return false;
+  return !panel || x < panel.left || x > panel.right || y < panel.top || y > panel.bottom;
+}

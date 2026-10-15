@@ -1344,6 +1344,33 @@
 :root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers {
   order: 2;
 }
+/* Au Phare, la cible des cloches (« Le son [an] », « Rime avec chapeau ») sur la ligne de la consigne repliée, sous le
+   rôle, avant les mots : toujours affichée, jamais coupée (relecture de L3, référent dys : la règle toujours affichée) ;
+   « Écouter les cloches » à gauche de « Valider », dans sa bande. */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold:has(.world-consigne-cible) {
+  max-height: none;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold:has(.world-consigne-cible) .world-scenette-role {
+  display: block;
+  width: fit-content;
+}
+.world-question .in-world.simple-bas .world-consigne-cible {
+  display: inline-block;
+  white-space: nowrap;
+  font-weight: 400;
+}
+/* « Rime avec », « Le son » à la taille du rôle (18 px au moins) ; la cible à la taille du texte choisie. */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-cible .cible-mot {
+  font-size: max(18px, 0.57em);
+  font-weight: 700;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-cible strong {
+  line-height: 1.1;
+}
+.world-question .in-world.simple .world-simple-validate:has(.speak-button) {
+  align-items: center;
+  gap: 0.6rem;
+}
 :root[data-texte="grand"] .world-question .in-world.simple-bas .world-simple-validate {
   order: 3;
 }

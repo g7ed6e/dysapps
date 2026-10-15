@@ -13,7 +13,7 @@
 // « Scène », à la même place, y ramène. Une mission dont la scénette n'est pas encore faite (GD-20, point 8, le temps de la
 // transition) se joue ici aussi, sur l'écran habituel (`plain` : l'écran de la grille, sur un panneau uni), avec le même
 // bilan et le même retour au lieu.
-import { Fragment, createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
@@ -36,40 +36,17 @@ import { Aid } from '../../exercises/Aid';
 import { NoticeQuestion } from '../../exercises/CalculationScreen';
 import type { AidData } from '../../exercises/maths';
 import type { ScreenProps } from '../../exercises/registry';
-import { CARD_CLASS, cardState, sortSummary } from '../../exercises/sortCards';
 import type { ExerciseItem } from '../../exercises/types';
 import { exercisesToReview } from '../../review';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
-import { WIDEN_FULL, WIDEN_OFFER, questionLayout, type AnswerSlot, type QuestionLayout } from '../../world/continu/questionScene';
-import { scenetteLayout, scenetteOf, type ScenetteLayout } from '../../world/continu/scenette';
-import { answersInColumn, bellRounds, isItemScene, missionIs, phareGesture, placeInstruction, placeItems, type ItemScene } from '../../world/continu/questions';
+import { WIDEN_FULL, WIDEN_OFFER, questionLayout, type QuestionLayout } from '../../world/continu/questionScene';
+import { scenetteLayout, scenetteOf } from '../../world/continu/scenette';
+import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
+import { BellScreen, BellTarget } from './BellScreen';
+import { ConsigneIcon, IconLabel, QuestionContext, placeSceneOf, sameItem, slotStyles, useQuestion, useStopOnLeave, type ItemShown } from './placeScreen';
 import { WorldDone } from './WorldDone';
-import { filledGap, overflows, wordsCut } from './fit';
-
-/** Ce que l'écran d'un lieu demande à la scène : l'item à montrer, combien de réponses il a, s'il a une règle. */
-interface ItemShown {
-  /** La clé de l'item (la consigne repliée se replie quand elle change). */
-  key: string;
-  scene: ItemScene;
-  answered: boolean;
-  right: number[];
-  /** Les réponses choisies, pas encore validées (les cloches du Phare). */
-  picked: number[];
-  count: number;
-  aid: boolean;
-}
-
-interface QuestionContextValue {
-  layout: ScenetteLayout;
-  /** « Vue simple » dans une scénette : la question en liste, sur fond uni, sans quitter la manche en cours. */
-  simple: boolean;
-  /** La consigne du lieu : l'icône qui la lit, sur un écran bas. */
-  instruction: string;
-  show(item: ItemShown | null): void;
-}
-
-const QuestionContext = createContext<QuestionContextValue | null>(null);
+import { filledGap, inVisibleScene, overflows, wordsCut } from './fit';
 
 /** Le nombre de réponses tant que l'écran ne l'a pas dit. */
 const DEFAULT_COUNT = 3;
@@ -292,7 +269,12 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   }, [simple, finished, loaded]);
   useEffect(() => {
     if (plain || !size.w || !size.h || !item || finished) return;
-    setLabels(world.question({ place, mission, layout, item }));
+    const shown = world.question({ place, mission, layout, item });
+    // Un repère dont le point sort de la scène visible (sous le panneau, au bord de l'écran) ne se montre pas.
+    const r = box.current?.querySelector('.quiz.in-world')?.getBoundingClientRect();
+    const origin = box.current?.getBoundingClientRect();
+    const panel = r && origin ? { left: r.left - origin.left, top: r.top - origin.top, right: r.right - origin.left, bottom: r.bottom - origin.top } : null;
+    setLabels(shown.filter((l) => inVisibleScene(l, size.w, size.h, panel)));
   }, [world, place, mission, plain, layout, item, size, finished]);
   // La fin de la mission : la caméra revient au lieu, où la pièce remise en marche se voit derrière le bilan ; dans une
   // scénette, elle reste (au Phare, les cloches s'effacent ; ailleurs, la réussite se pose).
@@ -313,6 +295,19 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   const context = useMemo(() => ({ layout, show, instruction, simple }), [layout, show, instruction, simple]);
 
   const exerciseId = ready?.def.id;
+  const bellTarget = String(ready?.def.target ?? '');
+  // Au plus grand texte sur un écran bas, des manches de quatre cloches (relecture de L3 : la manche tient au-dessus de
+  // « Valider ») ; le nombre se fixe au premier découpage d'une partie : une rotation ne refait pas les manches en cours.
+  const smallBells = grandTexte && layout.low;
+  const roundCut = useRef<{ key: string; perRound: number } | null>(null);
+  const bellsPerRound = useCallback(
+    (seed: string): number => {
+      const key = `${run}:${seed}`;
+      if (roundCut.current?.key !== key) roundCut.current = { key, perRound: smallBells ? BELLS_PER_SMALL_ROUND : BELLS_PER_ROUND };
+      return roundCut.current.perRound;
+    },
+    [run, smallBells],
+  );
   const stage = useMemo<RunnerStage | null>(() => {
     if (!exerciseId) return null;
     // L'écran habituel (le temps de la transition) : l'écran de la grille, ses items, sa consigne, sur un panneau uni ;
@@ -360,11 +355,19 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     // tranché : la consigne reste la seule phrase, lue).
     // En « Vue simple » sur un écran bas : une seule ligne, le rôle puis le début de la consigne (la consigne entière
     // reste le titre du panneau pour les lecteurs d'écran), sa voix toujours visible.
+    // Au Phare, toutes les missions aux mêmes cloches (GD-20, point 8, lot L3) : marquer puis « Valider », en manches de
+    // six (la Chasse au son, les Rimes-échelle), ou toucher la cloche de sa réponse, un mot par item (l'Abattage
+    // syllabique). Ailleurs, un item par écran.
+    const marks = place === 'phare' && phareGesture(exerciseId) === 'marquer';
+    // Au plus grand texte sur un écran bas, la cible des cloches prend la ligne de la consigne repliée, sous le rôle :
+    // toujours affichée, avant les mots, sans ligne de plus (relecture de L3) ; la consigne reste dite, et dépliée, la
+    // cible après elle.
+    const target = marks && grandTexte ? bellTarget : '';
     const head: ReactNode = simpleLow ? (
         <div className="world-scenette-head world-consigne-line">
           <p className="world-consigne-fold" id="consigne-ligne">
             <strong className="world-scenette-role">{scenette.role}</strong>{' '}
-            <span aria-hidden="true">
+            <span aria-hidden="true" hidden={Boolean(target) && !consigneOpen}>
               {frenchTypography(instruction)
                 .split(' ')
                 .map((word, i) => (
@@ -379,6 +382,14 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
                 {' …'}
               </span>
             </span>
+            {target && (
+              <>
+                {' '}
+                <span className="sound-target world-consigne-cible">
+                  <BellTarget target={target} rhymes={missionIs(exerciseId ?? '', 'rhymes')} />
+                </span>
+              </>
+            )}
           </p>
           <SpeakButton text={frenchTypography(instruction)} label="Consigne" compact />
         </div>
@@ -388,14 +399,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
           {scenette.greeting && <p className="world-scenette-greeting">{scenette.greeting}</p>}
         </div>
       );
-    // Au Phare, toutes les missions aux mêmes cloches (GD-20, point 8, lot L3) : marquer puis « Valider », en manches de
-    // six (la Chasse au son, les Rimes-échelle), ou toucher la cloche de sa réponse, un mot par item (l'Abattage
-    // syllabique). Ailleurs, un item par écran.
-    const marks = place === 'phare' && phareGesture(exerciseId) === 'marquer';
     return {
       head,
       screens: marks
-        ? (items, seed) => bellRounds(placeItems(place, exerciseId, items), seeded(`${seed}:cloches`))
+        ? (items, seed) => bellRounds(placeItems(place, exerciseId, items), seeded(`${seed}:cloches`), bellsPerRound(seed))
         : (items) => placeItems(place, exerciseId, items, fractionWords).map((it) => [it]),
       Screen: marks ? BellScreen : PlaceChoiceScreen,
       instruction,
@@ -409,6 +416,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     };
   }, [
     exerciseId,
+    bellsPerRound,
+    bellTarget,
+    grandTexte,
     plain,
     instruction,
     place,
@@ -444,7 +454,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       line.classList.remove('role-seul');
       if (!ellipsis) return;
       ellipsis.hidden = true;
-      if (consigneOpen) return;
+      // La cible des cloches tient la ligne à la place de la consigne : rien à couper.
+      if (consigneOpen || line.querySelector('.world-consigne-cible')) return;
       const role = line.querySelector<HTMLElement>('.world-scenette-role');
       const ownLine = () => role !== null && getComputedStyle(role).display === 'block';
       // Coupe la consigne sur sa première ligne : celle du rôle, ou la suivante quand le rôle a sa ligne (au plus grand
@@ -554,30 +565,6 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   );
 }
 
-// L'écran refait ses items à chaque rendu : la scène se compare par valeur, pour ne pas la refaire pour rien.
-const sameItem = (a: ItemShown, b: ItemShown) =>
-  a.key === b.key &&
-  JSON.stringify(a.scene) === JSON.stringify(b.scene) &&
-  a.answered === b.answered &&
-  a.count === b.count &&
-  a.aid === b.aid &&
-  a.right.length === b.right.length &&
-  a.right.every((r, i) => r === b.right[i]) &&
-  a.picked.length === b.picked.length &&
-  a.picked.every((r, i) => r === b.picked[i]);
-
-function useQuestion(): QuestionContextValue {
-  const ctx = useContext(QuestionContext);
-  if (!ctx) throw new Error('Un écran de lieu se pose dans une question du monde ouvert.');
-  return ctx;
-}
-
-/** La scène d'un item posé dans un lieu (`placeItems`), ou `null` si l'item n'en a pas. */
-function placeSceneOf(item: ExerciseItem | undefined): ItemScene | null {
-  const scene = item?.placeScene;
-  return isItemScene(scene) ? scene : null;
-}
-
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 
 /** Une aide décrite en données (une carte de règle, une grille de points, une figure), ou `null`. */
@@ -594,15 +581,15 @@ const figureOf = (item: ExerciseItem | undefined): AidData | null => aidData(ite
 
 /**
  * Une fraction suivie d'un signe de ponctuation (« 2/8. », « 3/4 ? », l'espace avant « ? » devenue insécable) : ils ne
- * se séparent pas en fin de ligne. Deux fractions comparées (« 3/5 ou 3/10 ? », Deux rives) restent sur une seule ligne,
+ * se séparent pas en fin de ligne. Deux fractions comparées (« 3/5 et 3/10. », Deux rives) restent sur une seule ligne,
  * leur signe avec elles : les deux fractions en colonne ne prennent qu'une ligne haute (GD-20, point 8, lot L3 : une
  * ligne de la phrase de moins au plus grand texte sur téléphone). Un mot composé (« sont-elles ») ne se coupe pas à son
  * trait d'union.
  */
-const FRACTION_STUCK = /(\d+\/\d+ ou \d+\/\d+(?:[ \u00a0\u202f]?[.,;:!?])?|\d+\/\d+[ \u00a0\u202f]?[.,;:!?]|\p{L}+-\p{L}+)/u;
+const FRACTION_STUCK = /(\d+\/\d+ (?:ou|et) \d+\/\d+(?:[ \u00a0\u202f]?[.,;:!?])?|\d+\/\d+[ \u00a0\u202f]?[.,;:!?]|\p{L}+-\p{L}+)/u;
 
 /**
- * La phrase d'un lieu (Deux rives : « … : 3/5 ou 3/10 ? ») : le texte enrichi, sans que le point passe seul à la ligne
+ * La phrase d'un lieu (Deux rives : « Compare 3/5 et 3/10. ») : le texte enrichi, sans que le point passe seul à la ligne
  * après une fraction en colonne. Propre au monde ouvert : RichText, commun aux deux univers, ne change pas.
  */
 function PlaceText({ text }: { text: string }) {
@@ -619,15 +606,6 @@ function PlaceText({ text }: { text: string }) {
       )}
     </>
   );
-}
-
-/** La cible de toucher d'une réponse (l'étiquette et l'objet), et la place de l'étiquette dedans. */
-function slotStyles(slot: AnswerSlot): { hit: CSSProperties; label: CSSProperties } {
-  const { hit, label } = slot;
-  return {
-    hit: { left: `${Math.round(hit.left)}px`, top: `${Math.round(hit.top)}px`, width: `${Math.round(hit.right - hit.left)}px`, height: `${Math.round(hit.bottom - hit.top)}px` },
-    label: { top: `${Math.round(label.top - hit.top)}px`, height: `${Math.round(label.bottom - label.top)}px` },
-  };
 }
 
 /**
@@ -649,34 +627,6 @@ function PlaceAid({ aid, layout, simple }: { aid: AidData; layout: QuestionLayou
       <Aid aid={aid} />
     </div>
   );
-}
-
-/** Une icône d'action de 48 px, son mot dessous en grand texte (et toujours dit aux lecteurs d'écran). */
-function IconLabel({ children }: { children: string }) {
-  return (
-    <span className="world-icon-label" aria-hidden="true">
-      {children}
-    </span>
-  );
-}
-
-/** L'icône qui lit la consigne, à côté de la phrase, sur un écran bas. */
-function ConsigneIcon() {
-  const { instruction, layout, simple } = useQuestion();
-  // En « Vue simple », la consigne garde sa ligne et sa voix en tête du panneau.
-  if (!layout.low || simple) return null;
-  return (
-    <span className="world-icon world-consigne">
-      <SpeakButton text={frenchTypography(instruction)} label="Lire la consigne" compact />
-      <IconLabel>Consigne</IconLabel>
-    </span>
-  );
-}
-
-/** La voix se coupe quand l'écran change (la coupe entre deux items). */
-function useStopOnLeave(): void {
-  const { stop } = useSettings();
-  useEffect(() => () => stop(), [stop]);
 }
 
 /**
@@ -842,151 +792,3 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   );
 }
 
-/**
- * Le Phare : les mots d'une manche portés par des cloches (six au plus), en carillon au pied de la tour. Toucher une
- * cloche dit son mot et la marque (ou la démarque) ; « Valider » corrige la manche, comme la Chasse au son et les
- * Rimes-échelle (le même geste, GD-20, point 8, lot L3). Les mots sont écrits sans couleur de syllabes : une couleur
- * pourrait désigner le son demandé, ou la fin qui rime.
- */
-function BellScreen({ items, answered, onAnswer, target, exerciseId }: ScreenProps) {
-  const { layout, show, simple } = useQuestion();
-  const { speak } = useSettings();
-  useStopOnLeave();
-  const [picked, setPicked] = useState<Set<string>>(new Set());
-  const rhymes = missionIs(exerciseId, 'rhymes');
-  const scene = placeSceneOf(items[0]);
-  const right = useMemo(() => (answered ? items.flatMap((it, i) => (it.correct ? [i] : [])) : []), [items, answered]);
-  const chosen = useMemo(() => items.flatMap((it, i) => (picked.has(it.key) ? [i] : [])), [items, picked]);
-  const itemsKey = items.map((it) => it.key).join('|');
-  useEffect(() => {
-    if (!scene) return;
-    show({ key: itemsKey, scene, answered: Boolean(answered), right, picked: chosen, count: items.length, aid: false });
-  }, [show, itemsKey, scene, answered, right, chosen, items.length]);
-  if (!scene) return null;
-
-  const toggle = (it: ExerciseItem) => {
-    if (answered) return;
-    speak(String(it.word));
-    setPicked((prev) => {
-      const next = new Set(prev);
-      if (next.has(it.key)) next.delete(it.key);
-      else next.add(it.key);
-      return next;
-    });
-  };
-  const validate = () => {
-    const results = items.map((it) => ({ key: it.key, correct: picked.has(it.key) === Boolean(it.correct) }));
-    const firstWrong = items.find((_, i) => !results[i].correct);
-    // La correction de l'écran de la grille, mot pour mot (RhymesScreen, SoundHuntScreen) : toutes les erreurs nommées.
-    if (rhymes) {
-      const summary = sortSummary(
-        items,
-        picked,
-        {
-          missed: (words) => `Tu as oublié ${words} : ça rime aussi avec ${target}.`,
-          intruder: (word, ending) => `${word} finit par ${ending} : ça ne rime pas avec ${target}.`,
-        },
-        (it) => String(it.ending),
-      );
-      onAnswer({ results, detail: firstWrong ? { word: firstWrong.word, ending: firstWrong.ending, missed: !picked.has(firstWrong.key), summary } : {} });
-      return;
-    }
-    const summary = sortSummary(
-      items,
-      picked,
-      {
-        missed: (words) => `Tu as oublié ${words} : on y entend [${target}].`,
-        intruder: (word, heard) => `Dans ${word}, on entend ${heard}, pas [${target}].`,
-      },
-      (it) => String(it.heard),
-    );
-    onAnswer({ results, detail: firstWrong ? { word: firstWrong.word, heard: firstWrong.heard, missed: !picked.has(firstWrong.key), summary } : {} });
-  };
-  const words = items.map((it) => String(it.word));
-  // Les Rimes-échelle : la voix dit d'abord le mot repère, puis les cloches.
-  const heard = frenchTypography(rhymes ? `Rime avec ${target} : ${words.join(', ')}` : words.join(', '));
-  // Sa place vient de scenetteLayout (en bas à droite, 3 % du bord) ; la feuille de style la reprend.
-  const validateBox = simple ? null : layout.scenette.validate;
-
-  return (
-    <div className="question world-place">
-      <div className="world-question-prompt">
-        <div className="world-question-actions">
-          <p className="question-prompt sound-target">
-            {rhymes ? (
-              <>
-                Rime avec <strong>{target}</strong>
-              </>
-            ) : (
-              <>
-                Le son <strong>[{target}]</strong>
-              </>
-            )}
-          </p>
-          <ConsigneIcon />
-          {layout.low ? (
-            <span className="world-icon">
-              <SpeakButton text={heard} label="Écouter les cloches" compact />
-              <IconLabel>Cloches</IconLabel>
-            </span>
-          ) : (
-            <SpeakButton text={heard} label="Écouter les cloches" />
-          )}
-          {!answered && !validateBox && !simple && (
-            <button type="button" className="button primary validate-button" onClick={validate}>
-              <Icon name="check" /> Valider
-            </button>
-          )}
-        </div>
-      </div>
-      {/* Dans une scénette, sur tablette : « Valider » en bas à droite, sous la rangée des cloches. */}
-      {!answered && validateBox && (
-        <button type="button" className="button primary validate-button world-validate" onClick={validate}>
-          <Icon name="check" /> Valider
-        </button>
-      )}
-      <ul className="world-answers" aria-label="Cloches à trier">
-        {items.map((it, i) => {
-          const slot = layout.slots[i] ?? layout.slots[0];
-          // En « Vue simple », les cloches sont une liste qui passe à la ligne : rien n'est posé sur la scène.
-          const styles = simple ? { hit: undefined, label: undefined } : slotStyles(slot);
-          const on = picked.has(it.key);
-          const st = answered ? cardState(it, on) : null;
-          return (
-            <li key={it.key}>
-              <button
-                type="button"
-                style={styles.hit}
-                className={`word-card world-answer${on ? ' picked' : ''}${st ? CARD_CLASS[st] : ''}`}
-                aria-pressed={on}
-                disabled={Boolean(answered)}
-                onClick={() => toggle(it)}
-              >
-                <span className="world-answer-label" style={styles.label}>
-                  {typeof it.image === 'string' && it.image && (
-                    <span className="word-picto" aria-hidden="true">
-                      {it.image}
-                    </span>
-                  )}
-                  <span className="word-text">{String(it.word)}</span>
-                  {st === 'found' && <Icon name="check" className="word-mark" />}
-                  {st === 'missed' && <span className="word-note">oublié</span>}
-                  {st === 'intruder' && <span className="word-note">{rhymes ? 'ne rime pas' : `pas [${target}]`}</span>}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-      {/* En « Vue simple » : « Valider » sous la liste, comme sous la rangée dans la scène ; sa bande reste au bas du
-          panneau qui défile, toujours atteignable. */}
-      {!answered && simple && (
-        <div className="world-simple-validate">
-          <button type="button" className="button primary validate-button" onClick={validate}>
-            <Icon name="check" /> Valider
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}

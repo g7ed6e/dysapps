@@ -84,10 +84,20 @@ describe('La scénette du Phare', () => {
     const start = screen.queryByRole('button', { name: /Commencer/ });
     if (start) await user.click(start);
     await user.click(screen.getByRole('button', { name: /Vue simple/ }));
+    // La cible sur la ligne de la consigne repliée, avant les mots ; des manches de quatre (relecture de L3).
+    const target = () => document.querySelector('.world-consigne-fold .world-consigne-cible');
+    expect(target()?.textContent).toMatch(/^Le son \[\S+\]$/);
+    const list = screen.getByRole('list', { name: 'Cloches à trier' });
+    expect(within(list).getAllByRole('button').length).toBeLessThanOrEqual(4);
+    expect(target()!.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    // Une seule fois : la ligne de la cible au-dessus des mots ne s'ajoute pas.
+    expect(document.querySelectorAll('.sound-target')).toHaveLength(1);
     const more = screen.getByRole('button', { name: 'Lire la suite de la consigne' });
     expect(more).toHaveAttribute('aria-expanded', 'false');
     await user.click(more);
     expect(screen.getByRole('button', { name: 'Replier la consigne' })).toHaveAttribute('aria-expanded', 'true');
+    // Dépliée, la consigne entière, et la cible toujours là.
+    expect(target()).not.toBeNull();
   });
 });
 
@@ -106,6 +116,8 @@ describe('Les trois missions du Phare aux mêmes cloches (GD-20, point 8, lot L3
     // Aucune couleur de syllabes : elles donneraient la réponse.
     expect(word!.querySelector('.syllables')).toBeNull();
     expect(screen.queryByRole('button', { name: /Valider/ })).toBeNull();
+    // La consigne dit la cloche à toucher, jamais « tape » (relecture de L3, contenu).
+    expect(document.querySelector('.quiz.in-world')!.textContent).toContain('touche la cloche du nombre de syllabes');
   });
 
   it('les Rimes-échelle : le même geste que la Chasse au son, le mot repère en tête, « Valider »', async () => {
@@ -235,10 +247,10 @@ describe('Toutes les missions des Écluses en scénette (GD-20, point 8, lot L2)
     expect(request).toMatchObject({ place: 'ecluses', mission: 'equivalence', item: { scene: { kind: 'lockPair' }, count: 3 } });
     expect(document.querySelector('.quiz.in-world')!.textContent).toContain('Compare les deux sas');
     expect(document.querySelector('.quiz.in-world .world-question-aid')).toBeNull();
-    // Les deux fractions comparées et leur « ? » sur une seule ligne ; « sont-elles » jamais coupé à son trait d'union.
+    // La phrase courte du contenu ; les deux fractions comparées et leur point sur une seule ligne.
+    expect(document.querySelector('.question-prompt')!.textContent).toMatch(/^Compare /);
     const together = [...document.querySelectorAll('.question-prompt .world-nobreak')];
-    expect(together.some((n) => n.querySelectorAll('.frac').length === 2 && /\?$/.test(n.textContent ?? ''))).toBe(true);
-    expect(together.some((n) => n.textContent === 'sont-elles')).toBe(true);
+    expect(together.some((n) => n.querySelectorAll('.frac').length === 2 && (n.textContent ?? '').endsWith('.'))).toBe(true);
     await user.click(screen.getByRole('button', { name: /Vue simple/ }));
     expect(document.querySelector('.quiz.in-world.simple .world-question-aid')).not.toBeNull();
     // En « Vue simple », ses trois réponses sur une rangée.

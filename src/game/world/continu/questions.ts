@@ -85,16 +85,26 @@ export interface PlacedItem extends QuestionItem {
  */
 export const missionIs = (exerciseId: string, mission: string): boolean => exerciseId.includes(`-${mission}-`);
 
-/** La consigne de Deux rives aux Écluses (gabarit `compareFractions`, accord du directeur du contenu, 15 octobre 2026). */
-export const PAIR_INSTRUCTION = 'Compare les deux sas. Le plus rempli d’eau montre la plus grande fraction.';
+/**
+ * La consigne de Deux rives aux Écluses (gabarit `compareFractions`, accord du directeur du contenu, 15 octobre 2026) ;
+ * elle dit l'égalité, que la phrase courte de l'item ne dit plus (relecture de L3).
+ */
+export const PAIR_INSTRUCTION = 'Compare les deux sas. Le plus rempli d’eau montre la plus grande fraction. Remplis pareil : elles sont égales.';
+
+/** La première phrase de la consigne de l'Abattage syllabique au Phare (relecture de L3, contenu). */
+export const PHARE_SYLLABLES = 'Écoute le mot, puis touche la cloche du nombre de syllabes que tu entends.';
 
 /**
- * La consigne d'un lieu, quand elle change, mission par mission : aux Écluses, celle des Nénuphars parle du sas (niveau
+ * La consigne d'un lieu, quand elle change, mission par mission : au Phare, celle de l'Abattage syllabique dit la
+ * cloche à toucher ; aux Écluses, celle des Nénuphars parle du sas (niveau
  * 1) ou de l'échelle (niveau 2), celle de Deux rives des deux sas ; les autres missions gardent leur consigne de
  * référence. `scene` : la scène de l'item montré, quand il y en a un ; un item de Deux rives sans ses deux sas
  * (`pairScene` rend `null`, il se joue sur le sas au repos) garde la consigne de référence (contenu, relecture de L2).
  */
 export function placeInstruction(place: PlaceId, exerciseId: string, level: number, reference: string, scene?: ItemScene): string {
+  // Au Phare, l'Abattage syllabique se répond en touchant une cloche : « tape » s'y lirait « frappe la cloche une fois
+  // par syllabe » (relecture de L3, contenu). Sa première phrase change ; la fin des niveaux 2 et 3 reste.
+  if (place === 'phare' && missionIs(exerciseId, 'syllables')) return PHARE_SYLLABLES + reference.slice(reference.indexOf('.') + 1);
   if (place !== 'ecluses') return reference;
   if (missionIs(exerciseId, 'equivalence')) return !scene || scene.kind === 'lockPair' ? PAIR_INSTRUCTION : reference;
   if (!missionIs(exerciseId, 'number-line')) return reference;
@@ -183,9 +193,10 @@ export function pairScene(item: QuestionItem, say: SayFraction = written): PairI
   const b = aid?.props?.b;
   if (aid?.kind !== 'compare-bars' || !isPart(a) || !isPart(b)) return null;
   const [fa, fb] = [`${a[0]}/${a[1]}`, `${b[0]}/${b[1]}`];
-  // La phrase courte (contenu, relecture de L2 : 73 signes, deux lignes de moins au plus grand texte sur téléphone).
-  const prompt = `Quelle fraction est la plus grande : ${fa} ou ${fb} ? Ou sont-elles égales ?`;
-  const spoken = `Quelle fraction est la plus grande : ${say(a[0], a[1])} ou ${say(b[0], b[1])} ? Ou sont-elles égales ?`;
+  // La phrase B du contenu (relecture de L3) : la phrase A tenait sur trois lignes au plus grand texte sur téléphone.
+  // « Compare » ne suppose aucune issue ; la consigne (`PAIR_INSTRUCTION`) annonce l'égalité, pour ne pas piéger.
+  const prompt = `Compare ${fa} et ${fb}.`;
+  const spoken = `Compare ${say(a[0], a[1])} et ${say(b[0], b[1])}.`;
   const [va, vb] = [a[0] / a[1], b[0] / b[1]];
   const [big, small, fBig, fSmall] = va > vb ? [a, b, fa, fb] : [b, a, fb, fa];
   let hint: string;
@@ -324,7 +335,8 @@ export function placeItems(place: PlaceId, exerciseId: string, items: readonly Q
 
 /**
  * Le geste d'une mission du Phare (GD-20, point 8, lot L3 : toutes ses missions aux mêmes cloches) : la Chasse au son et
- * les Rimes-échelle se jouent en marquant des cloches, puis « Valider » (`marquer`, en manches de six au plus) ;
+ * les Rimes-échelle se jouent en marquant des cloches, puis « Valider » (`marquer`, en manches de six au plus, quatre au
+ * plus grand texte sur un écran bas) ;
  * l'Abattage syllabique, en touchant la cloche de sa réponse (`toucher`, un mot par item, trois cloches qui portent les
  * trois nombres de l'item de référence : 1, 2, 3 au premier niveau, jusqu'à 5, 6, 7 au troisième).
  */
@@ -334,11 +346,18 @@ export const phareGesture = (exerciseId: string): 'marquer' | 'toucher' => (miss
 export const BELLS_PER_ROUND = 6;
 
 /**
- * Les manches du Phare : les mots d'un niveau en manches de six au plus, chacune avec des bons mots et des pièges en
- * proportion (jamais une manche sans piège ni une manche sans bon mot, si le niveau en a), dans un ordre tiré de `rng`.
+ * Au plus grand texte sur un écran bas, quatre cloches par manche (relecture de L3, contenu et référent dys) : la
+ * référence joue déjà par quatre, et la manche tient entière au-dessus de « Valider ».
  */
-export function bellRounds<T extends QuestionItem>(items: readonly T[], rng: () => number): T[][] {
-  const rounds = Math.max(1, Math.ceil(items.length / BELLS_PER_ROUND));
+export const BELLS_PER_SMALL_ROUND = 4;
+
+/**
+ * Les manches du Phare : les mots d'un niveau en manches de `perRound` au plus (six, ou quatre au plus grand texte sur
+ * un écran bas), chacune avec des bons mots et des pièges en proportion (jamais une manche sans piège ni une manche sans
+ * bon mot, si le niveau en a), dans un ordre tiré de `rng`.
+ */
+export function bellRounds<T extends QuestionItem>(items: readonly T[], rng: () => number, perRound = BELLS_PER_ROUND): T[][] {
+  const rounds = Math.max(1, Math.ceil(items.length / perRound));
   const good = items.filter((it) => Boolean(it.correct));
   const traps = items.filter((it) => !it.correct);
   const out: T[][] = Array.from({ length: rounds }, () => []);
