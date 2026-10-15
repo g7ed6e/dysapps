@@ -49,11 +49,12 @@ it('les Quais : une ligne par mission de l’île, toutes dans le lieu ; la proc
   expect(onPlay).toHaveBeenCalledWith('word-problems');
 });
 
-it('un lieu en transition : le signe sur la seule mission qui s’y joue, le focus sur la ligne dont on revient', () => {
+it('les Filets complets (GD-20, point 8, lot L4) : le signe sur chacune de leurs missions, le focus sur la ligne dont on revient', () => {
   const { sheet } = renderPanel('filets', marks('french-6e-grammar-spelling'), null, 'e-er-ez');
   const rows = within(sheet).getAllByRole('button').filter((b) => b.classList.contains('app-card'));
   const signed = rows.filter((r) => within(r).queryByRole('img', { name: IN_PLACE_LABEL }));
-  expect(signed.map((r) => r.querySelector('.app-title')?.textContent)).toEqual(['Troupeau']);
+  expect(signed).toEqual(rows);
+  expect(rows).toHaveLength(4);
   expect(rows.some((r) => r.getAttribute('aria-current'))).toBe(false);
   expect(rows.find((r) => r.querySelector('.app-title')?.textContent === 'Récolte -é / -er / -ez')).toHaveFocus();
 });

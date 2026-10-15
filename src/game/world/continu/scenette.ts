@@ -23,6 +23,7 @@ import {
   LOCK,
   PHARE_GALLERY,
   PHARE_TRACE_SPOTS,
+  FILETS_TRACE_SPOTS,
   QUAIS_TRACE_SPOTS,
   QUAY,
   filetsBasketAt,
@@ -409,7 +410,7 @@ export function scenetteHabitant(place: PlaceId, posed = true): Vec3 {
  * artistique, lot 3) : la trace de la réussite. Aux Quais, sur le bord du quai, juste à l'est de la proue de la barque
  * chargée, qu'on voit au premier plan avec la grue et le hangar derrière lui ; la caméra garde la trace de la mission
  * jouée (`mission`, GD-20, point 8). Aux Filets (lot 4), devant le séchoir, le panier plein et le filet tendu à sa
- * gauche. Aux Écluses, sur la rive ouest, la caméra gardant la trace de la mission jouée (la porte d'amont ouverte et le
+ * gauche, ou la trace de la mission jouée (le vivier, les nasses, le carrelet, `FILETS_TRACE_SPOTS`, lot L4). Aux Écluses, sur la rive ouest, la caméra gardant la trace de la mission jouée (la porte d'amont ouverte et le
  * sas rempli des Nénuphars, ou une autre, `ECLUSES_TRACE_SPOTS`, lot L2). Au Phare (lot L3), au sud de la trace de la
  * mission jouée, sur l'îlot : les lampes de la galerie (la caméra lève alors les yeux vers elle, `view`), la corne de
  * brume, le mât de signaux. Rien quand l'étape qui porte la trace n'est pas posée (`posed`) : la trace attend ; la
@@ -439,7 +440,14 @@ export function scenetteExit(place: PlaceId, posed = true, mission?: string): { 
     return { at: { x: boat.at.x + boat.length / 2 + 0.9, z: f.z }, keep };
   }
   const c = placeById(place).center;
-  if (place === 'filets') return { at: { x: c.x + EXIT_SPOTS.filets.x, z: c.z + EXIT_SPOTS.filets.z }, keep: filetsBasketAt() };
+  if (place === 'filets') {
+    // La trace de la mission jouée (GD-20, point 8, lot L4) : le panier plein du Troupeau, ou le vivier, les nasses, le
+    // carrelet (la caméra garde le milieu de sa hauteur).
+    const at = { x: c.x + EXIT_SPOTS.filets.x, z: c.z + EXIT_SPOTS.filets.z };
+    if (!mission || !Object.hasOwn(FILETS_TRACE_SPOTS, mission)) return { at, keep: filetsBasketAt() };
+    const o = FILETS_TRACE_SPOTS[mission as keyof typeof FILETS_TRACE_SPOTS];
+    return { at, keep: { x: c.x + o.x, y: FILETS_TRACE_LIFT[mission as keyof typeof FILETS_TRACE_LIFT], z: c.z + o.z } };
+  }
   if (place === 'ecluses') {
     // La trace de la mission jouée (GD-20, point 8, lot L2) : la porte d'amont ouverte des Nénuphars (le milieu du lieu),
     // ou ce qu'une autre mission a laissé (la barque, la table, l'escalier, la lanterne du sas), à un pas au-dessus du pied du lieu.
@@ -464,6 +472,12 @@ const PLACE_KEEP_HEIGHT = 1.5;
 
 /** La hauteur du point gardé au-dessus du pied d'une trace des Quais. */
 const TRACE_LIFT = 1;
+
+/**
+ * La hauteur gardée par la caméra au retour d'une trace des Filets, au-dessus de l'eau (le vivier, le carrelet) ou du
+ * sable (les nasses) : le milieu de la trace.
+ */
+const FILETS_TRACE_LIFT = { 'word-classes': 0.3, sorting: 0.8, 'e-er-ez': 1.8 } as const;
 
 /** Où Kéo se tient au retour des Filets et des Écluses, depuis le centre du lieu. */
 const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 } } as const;

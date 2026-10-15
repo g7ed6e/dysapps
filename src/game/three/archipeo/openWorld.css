@@ -956,6 +956,44 @@
 .world-question .in-world.scenette .world-answer.picked .world-answer-label {
   border-width: 4px;
 }
+/* Le geste « ranger » (les Filets, lot L4) : l'objet tenu, une bordure épaisse, et une main et « tenu » au-dessus de
+   son étiquette (le mot garde toute sa largeur) ; un objet rangé, sur fond de sable, le nom de son panier au-dessus ; les paniers s'ouvrent (un trait
+   épais) quand un objet est tenu. La forme le dit, pas seulement la couleur ; le trait épais est une ombre portée, hors
+   de l'étiquette : le mot garde toute sa largeur, rien ne bouge dedans. */
+.world-question .world-sort .world-sort-prise.held .world-answer-label {
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px var(--text);
+}
+.world-answers .world-sort-tenu {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  white-space: nowrap;
+}
+.world-sort-main {
+  flex: 0 0 auto;
+  width: 1.1em;
+  height: 1.1em;
+}
+/* En « Vue simple », les étiquettes sont dans la liste : « tenu », le panier ou la correction suivent le mot, dans
+   l'étiquette (une note posée au-dessus n'aurait plus de place). */
+.world-question .in-world.simple .world-sort .word-note {
+  position: static;
+  transform: none;
+  padding: 0;
+  background: none;
+  margin-left: 0.4em;
+  font-size: inherit;
+  font-weight: 400;
+}
+.world-question .world-sort .world-sort-prise.placed:not(.right):not(.wrong) .world-answer-label {
+  background: var(--sand);
+  color: var(--on-sand);
+}
+.world-question .world-sort.tenu .world-sort-bin .world-answer-label {
+  border-color: var(--primary-bg);
+  box-shadow: 0 0 0 2px var(--primary-bg);
+}
 /* Le bilan d'une scénette sur tablette : en bas, sur la rangée des cloches effacées ; la lampe du Phare, en haut de la
    scène, reste visible. */
 .world-question .quiz.in-world.scenette.finished:not(.low) {
@@ -1343,6 +1381,12 @@
 }
 :root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers {
   order: 2;
+}
+/* Le geste « ranger » : la règle sous les paniers et les sujets, comme celle d'un item (lot L4). */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort > .world-question-aid {
+  flex: 0 0 100%;
+  order: 4;
+  margin: 0;
 }
 /* Au Phare, la cible des cloches (« Le son [an] », « Rime avec chapeau ») sur la ligne de la consigne repliée, sous le
    rôle, avant les mots : toujours affichée, jamais coupée (relecture de L3, référent dys : la règle toujours affichée) ;

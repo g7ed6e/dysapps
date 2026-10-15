@@ -22,6 +22,11 @@ type Catch = 'sardines' | 'filets' | 'mouette' | 'bocaux' | 'crabes' | 'pêche' 
 export type ItemScene =
   | { kind: 'cloches' }
   | { kind: 'filets'; catch: Catch; count: number }
+  /**
+   * Le filet au repos, sans pêche : l'Enclos aux Filets (GD-20, point 8, lot L4), où les objets à ranger et les paniers
+   * sont les objets des réponses.
+   */
+  | { kind: 'enclos' }
   /** Le sas (niveau 1) : `d` bandes égales, `n` pleines d'eau. */
   | { kind: 'sas'; n: number; d: number }
   /** L'échelle de hauteur (niveau 2), de 0 à 2 : `d` crans par unité, l'eau au cran `n`. */
@@ -55,6 +60,7 @@ export function isItemScene(v: unknown): v is ItemScene {
   if (typeof v !== 'object' || v === null || !('kind' in v)) return false;
   switch (v.kind) {
     case 'cloches':
+    case 'enclos':
       return true;
     case 'filets':
       return 'catch' in v && CATCHES.some((c) => c === v.catch) && 'count' in v && isCount(v.count);
@@ -95,7 +101,15 @@ export const PAIR_INSTRUCTION = 'Touche la plus grande fraction : c’est le sas
 export const PHARE_SYLLABLES = 'Écoute le mot, puis touche la cloche du nombre de syllabes que tu entends.';
 
 /**
- * La consigne d'un lieu, quand elle change, mission par mission : au Phare, celle de l'Abattage syllabique dit la
+ * La consigne de l'Enclos aux Filets (GD-20, point 8, lot L4) : elle dit le geste « ranger » (toucher un sujet, puis
+ * son panier) à la place du choix du verbe de l'écran de la grille ; le niveau 2 garde son début (« Attention aux
+ * pièges »). À relire par le directeur du contenu.
+ */
+export const ENCLOS_INSTRUCTION = ['Touche un sujet, puis son panier : Singulier pour un seul, Pluriel pour plusieurs. Puis valide.', 'Attention aux pièges : cherche qui fait l’action. Touche un sujet, puis son panier, puis valide.'] as const;
+
+/**
+ * La consigne d'un lieu, quand elle change, mission par mission : aux Filets, celle de l'Enclos dit le geste
+ * « ranger » ; au Phare, celle de l'Abattage syllabique dit la
  * cloche à toucher ; aux Écluses, celle des Nénuphars parle du sas (niveau
  * 1) ou de l'échelle (niveau 2), celle de Deux rives des deux sas ; les autres missions gardent leur consigne de
  * référence. `scene` : la scène de l'item montré, quand il y en a un ; un item de Deux rives sans ses deux sas
@@ -105,6 +119,7 @@ export function placeInstruction(place: PlaceId, exerciseId: string, level: numb
   // Au Phare, l'Abattage syllabique se répond en touchant une cloche : « tape » s'y lirait « frappe la cloche une fois
   // par syllabe » (relecture de L3, contenu). Sa première phrase change ; la fin des niveaux 2 et 3 reste.
   if (place === 'phare' && missionIs(exerciseId, 'syllables')) return PHARE_SYLLABLES + reference.slice(reference.indexOf('.') + 1);
+  if (rangeGesture(place, exerciseId)) return ENCLOS_INSTRUCTION[level >= 2 ? 1 : 0];
   if (place !== 'ecluses') return reference;
   if (missionIs(exerciseId, 'equivalence')) return !scene || scene.kind === 'lockPair' ? PAIR_INSTRUCTION : reference;
   if (!missionIs(exerciseId, 'number-line')) return reference;
@@ -258,6 +273,8 @@ export const QUAI_NU: ItemScene = { kind: 'quai', op: 'calcul', before: 0, after
 export function placeItems(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction = written): PlacedItem[] {
   if (place === 'phare') return items.map((it) => ({ ...it, placeScene: { kind: 'cloches' } }));
   if (place === 'filets') {
+    // L'Enclos (lot L4) : les items de référence, rangés par quatre ; le filet au repos.
+    if (rangeGesture(place, exerciseId)) return items.map((it) => ({ ...it, placeScene: ENCLOS }));
     const twins = twinsOf(exerciseId);
     return items.map((it) => {
       const twin = twins.get(it.key);
@@ -341,6 +358,48 @@ export function placeItems(place: PlaceId, exerciseId: string, items: readonly Q
  * trois nombres de l'item de référence : 1, 2, 3 au premier niveau, jusqu'à 5, 6, 7 au troisième).
  */
 export const phareGesture = (exerciseId: string): 'marquer' | 'toucher' => (missionIs(exerciseId, 'syllables') ? 'toucher' : 'marquer');
+
+/** Le filet au repos : la scène de l'Enclos (rien de l'item ne s'y montre). */
+export const ENCLOS: ItemScene = { kind: 'enclos' };
+
+/** Un panier du geste « ranger » : son identifiant (la réponse de l'item qu'il reçoit) et son étiquette. */
+export interface RangeBin {
+  id: string;
+  label: string;
+}
+
+/**
+ * Les paniers de l'Enclos (lot L4) : les catégories du contenu, les réponses de ses items (`answer` : `singulier`,
+ * `pluriel`), écrites comme la carte de règle du niveau 1 les nomme (« Un seul : singulier », « Plusieurs : pluriel »).
+ */
+export const ENCLOS_BINS: readonly RangeBin[] = [
+  { id: 'singulier', label: 'Singulier' },
+  { id: 'pluriel', label: 'Pluriel' },
+];
+
+/** Le nombre d'objets à ranger par manche : quatre sujets, comme l'Enclos de la grille. */
+export const RANGE_PER_ROUND = 4;
+
+/**
+ * Sur un écran bas (un téléphone couché), trois sujets par manche : avec les deux paniers, la rangée de cinq étiquettes
+ * garde la largeur de celles d'une tablette (lot L4 : « Des oiseaux » tient sans « Vue simple » à 844 px).
+ */
+export const RANGE_PER_SMALL_ROUND = 3;
+
+/**
+ * Le geste d'une mission quand c'est « ranger » (GD-20, point 8, lot L4 : toucher l'objet, puis le panier ; glisser
+ * n'est pas construit) : ses paniers ; `null` sinon. Aux Filets, l'Enclos.
+ */
+export function rangeGesture(place: PlaceId, exerciseId: string): readonly RangeBin[] | null {
+  return place === 'filets' && missionIs(exerciseId, 'word-classes') ? ENCLOS_BINS : null;
+}
+
+/** Les manches du geste « ranger » : les items dans leur ordre, par quatre. */
+export function rangeRounds<T>(items: readonly T[], perRound = RANGE_PER_ROUND): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < items.length; i += perRound) out.push(items.slice(i, i + perRound));
+  return out.length ? out : [[]];
+}
 
 /** Le nombre de cloches d'une manche au Phare : six au plus (quatre à six cibles, avis du référent dys). */
 export const BELLS_PER_ROUND = 6;

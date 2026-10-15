@@ -8,7 +8,8 @@
 // (la question vue de loin est retirée avec le lot 4 de la piste 1). Au Phare, une scénette (piste 1, lot 2, ../../world/continu/scenette.ts) : le rôle de
 // l'habitant en tête du panneau, Kéo et la gardienne au milieu, les cloches en rangée en bas, « Valider » en bas à
 // droite sur tablette quand on les marque (ses trois missions, GD-20, point 8, lot L3). Les Quais (lot 3), les Filets et les Écluses (lot 4)
-// ont la leur, la colonne à gauche (le docker, la pêcheuse, l'éclusier). Dans une scénette, « Vue simple » montre la même
+// ont la leur, la colonne à gauche (le docker, la pêcheuse, l'éclusier) ; aux Filets, l'Enclos se range (GD-20, point 8,
+// lot L4, SortScreen.tsx). Dans une scénette, « Vue simple » montre la même
 // question en liste sur fond uni, sans quitter la manche (les cloches choisies le restent), « Valider » sous la liste ;
 // « Scène », à la même place, y ramène. Une mission dont la scénette n'est pas encore faite (GD-20, point 8, le temps de la
 // transition) se joue ici aussi, sur l'écran habituel (`plain` : l'écran de la grille, sur un panneau uni), avec le même
@@ -34,17 +35,16 @@ import { ExerciseRunner, type RunnerStage } from '../../ExerciseRunner';
 import { loadExercise, pickExercise } from '../../exercises';
 import { Aid } from '../../exercises/Aid';
 import { NoticeQuestion } from '../../exercises/CalculationScreen';
-import type { AidData } from '../../exercises/maths';
 import type { ScreenProps } from '../../exercises/registry';
-import type { ExerciseItem } from '../../exercises/types';
 import { exercisesToReview } from '../../review';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
-import { WIDEN_FULL, WIDEN_OFFER, questionLayout, type QuestionLayout } from '../../world/continu/questionScene';
+import { WIDEN_FULL, WIDEN_OFFER, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf } from '../../world/continu/scenette';
-import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems } from '../../world/continu/questions';
+import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
-import { ConsigneIcon, IconLabel, QuestionContext, placeSceneOf, sameItem, slotStyles, useQuestion, useStopOnLeave, type ItemShown } from './placeScreen';
+import { SortScreen } from './SortScreen';
+import { ConsigneIcon, IconLabel, PlaceAid, QuestionContext, aidOf, figureOf, placeSceneOf, sameItem, slotStyles, useQuestion, useStopOnLeave, type ItemShown } from './placeScreen';
 import { WorldDone } from './WorldDone';
 import { filledGap, inVisibleScene, overflows, wordsCut } from './fit';
 
@@ -126,7 +126,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   const layout = useMemo(() => {
     const base = questionLayout({ count, bells: place === 'phare', aid: hasAid, widen }, size.w || 1, size.h || 1);
     // Les cloches portent des mots (la Chasse au son, les Rimes-échelle) ou un nombre (l'Abattage syllabique).
-    const words = place === 'phare' && mission !== 'syllables';
+    // Le geste « ranger » : les sujets sont des mots, et leurs étiquettes se mesurent comme celles des cloches.
+    const words = (place === 'phare' && mission !== 'syllables') || (place === 'filets' && mission === 'word-classes');
     return scenetteLayout({ count, widen, small: place === 'phare', words, column: place !== 'phare' && !grandTexte, grand: grandTexte, aid: hasAid, wideRow }, size.w || 1, size.h || 1, base);
   }, [count, hasAid, place, mission, size, widen, grandTexte, wideRow]);
   // La rangée des réponses à droite de la colonne (les Quais sur un écran bas) : le résultat reste dans la colonne.
@@ -292,7 +293,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
 
   const ready = loaded && picked ? { def: loaded, level: picked.level } : null;
   const instruction = ready ? placeInstruction(place, ready.def.id, ready.level, ready.def.instruction, item?.scene) : '';
-  const context = useMemo(() => ({ layout, show, instruction, simple }), [layout, show, instruction, simple]);
+  const context = useMemo(() => ({ place, layout, show, instruction, simple }), [place, layout, show, instruction, simple]);
 
   const exerciseId = ready?.def.id;
   const bellTarget = String(ready?.def.target ?? '');
@@ -307,6 +308,16 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       return roundCut.current.perRound;
     },
     [run, smallBells],
+  );
+  // Le geste « ranger » : quatre sujets par manche, trois sur un écran bas ; fixé de même au premier découpage.
+  const sortCut = useRef<{ key: string; perRound: number } | null>(null);
+  const sortsPerRound = useCallback(
+    (seed: string): number => {
+      const key = `${run}:${seed}`;
+      if (sortCut.current?.key !== key) sortCut.current = { key, perRound: layout.low ? RANGE_PER_SMALL_ROUND : RANGE_PER_ROUND };
+      return sortCut.current.perRound;
+    },
+    [run, layout.low],
   );
   const stage = useMemo<RunnerStage | null>(() => {
     if (!exerciseId) return null;
@@ -359,6 +370,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     // six (la Chasse au son, les Rimes-échelle), ou toucher la cloche de sa réponse, un mot par item (l'Abattage
     // syllabique). Ailleurs, un item par écran.
     const marks = place === 'phare' && phareGesture(exerciseId) === 'marquer';
+    // Aux Filets, l'Enclos se range (GD-20, point 8, lot L4) : toucher un sujet, puis son panier, par manches de quatre.
+    const ranges = rangeGesture(place, exerciseId) !== null;
     // Au plus grand texte sur un écran bas, la cible des cloches prend la ligne de la consigne repliée, sous le rôle :
     // toujours affichée, avant les mots, sans ligne de plus (relecture de L3) ; la consigne reste dite, et dépliée, la
     // cible après elle.
@@ -403,8 +416,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       head,
       screens: marks
         ? (items, seed) => bellRounds(placeItems(place, exerciseId, items), seeded(`${seed}:cloches`), bellsPerRound(seed))
-        : (items) => placeItems(place, exerciseId, items, fractionWords).map((it) => [it]),
-      Screen: marks ? BellScreen : PlaceChoiceScreen,
+        : ranges
+          ? (items, seed) => rangeRounds(placeItems(place, exerciseId, items), sortsPerRound(seed))
+          : (items) => placeItems(place, exerciseId, items, fractionWords).map((it) => [it]),
+      Screen: marks ? BellScreen : ranges ? SortScreen : PlaceChoiceScreen,
       instruction,
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
       extra,
@@ -417,6 +432,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   }, [
     exerciseId,
     bellsPerRound,
+    sortsPerRound,
     bellTarget,
     grandTexte,
     plain,
@@ -565,20 +581,6 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   );
 }
 
-const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
-
-/** Une aide décrite en données (une carte de règle, une grille de points, une figure), ou `null`. */
-function aidData(aid: unknown): AidData | null {
-  if (!isRecord(aid) || typeof aid.kind !== 'string' || !isRecord(aid.props)) return null;
-  return { kind: aid.kind, props: aid.props };
-}
-
-/** La règle d'un item (la carte de règle, une aide de calcul), comme sur l'écran classique. */
-const aidOf = (item: ExerciseItem | undefined): AidData | null => aidData(item?.aid);
-
-/** La figure d'un item (la figure exacte, le schéma coté), comme sur l'écran classique. */
-const figureOf = (item: ExerciseItem | undefined): AidData | null => aidData(item?.figure);
-
 /**
  * Une fraction suivie d'un signe de ponctuation (« 2/8. », « 3/4 ? », l'espace avant « ? » devenue insécable) : ils ne
  * se séparent pas en fin de ligne. Deux fractions comparées (« 3/5 et 3/10. », Deux rives) restent sur une seule ligne,
@@ -605,27 +607,6 @@ function PlaceText({ text }: { text: string }) {
         ),
       )}
     </>
-  );
-}
-
-/**
- * La règle : sous la question dans la colonne, ou à droite sur un écran bas (en « Vue simple », toujours dans la liste,
- * jamais posée sur elle).
- */
-function PlaceAid({ aid, layout, simple }: { aid: AidData; layout: QuestionLayout; simple: boolean }) {
-  const box = simple ? null : layout.aid;
-  const style: CSSProperties | undefined = box
-    ? {
-        left: `${Math.round(box.left)}px`,
-        top: `${Math.round(box.top)}px`,
-        width: `${Math.round(box.right - box.left)}px`,
-        maxHeight: `${Math.round(box.bottom - box.top)}px`,
-      }
-    : undefined;
-  return (
-    <div className={`aid world-question-aid${box ? ' beside' : ''}`} style={style}>
-      <Aid aid={aid} />
-    </div>
   );
 }
 

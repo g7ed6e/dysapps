@@ -275,3 +275,94 @@ describe('Toutes les missions des Écluses en scénette (GD-20, point 8, lot L2)
     for (const a of answers()) expect(a.style.left).toBe('');
   });
 });
+
+describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+  });
+  afterEach(() => vi.restoreAllMocks());
+
+  const begin = async () => {
+    const user = userEvent.setup();
+    expect(await screen.findByText('La pêcheuse')).toBeInTheDocument();
+    const go = screen.queryByRole('button', { name: /Commencer/ });
+    if (go) await user.click(go);
+    return user;
+  };
+  const lastRequest = () => vi.mocked(world.question).mock.calls.at(-1)![0]!;
+
+  it('l’Enclos se range au clavier : prendre, reposer (Échap, sans fermer le panneau), ranger, reprendre, puis « Valider »', async () => {
+    vi.mocked(world.question).mockClear();
+    renderPlace('filets', 'word-classes');
+    const user = await begin();
+    const subjects = () => within(screen.getByRole('list', { name: 'Sujets à ranger' })).getAllByRole('button');
+    const bins = () => within(screen.getByRole('list', { name: 'Paniers' })).getAllByRole('button');
+    await vi.waitFor(() => expect(subjects()).toHaveLength(4));
+    expect(bins().map((b) => b.textContent)).toEqual(['Singulier', 'Pluriel']);
+    // La consigne dit le geste ; « Valider » attend que tout soit rangé.
+    expect(document.querySelector('.quiz.in-world')!.textContent).toContain('Touche un sujet, puis son panier');
+    const validate = screen.getByRole('button', { name: /Valider/ });
+    expect(validate).toBeDisabled();
+    const status = screen.getByRole('status');
+
+    // Un panier touché sans rien tenir : une phrase douce, rien ne change.
+    await user.click(bins()[0]);
+    expect(status).toHaveTextContent('Touche d’abord un sujet');
+
+    // Prendre : le sujet est tenu, dit, et les paniers le nomment.
+    subjects()[0].focus();
+    await user.keyboard('{Enter}');
+    const first = subjects()[0].querySelector('.word-text')!.textContent!;
+    expect(subjects()[0]).toHaveAttribute('aria-pressed', 'true');
+    expect(status).toHaveTextContent(`Tu tiens : ${first}`);
+    expect(bins()[1]).toHaveAccessibleName(`Panier Pluriel : y ranger ${first}`);
+    expect(lastRequest().item).toMatchObject({ scene: { kind: 'enclos' }, count: 6, sort: { bins: [0, 5], held: 1 } });
+
+    // Échap repose le sujet ; le panneau n'entend pas Échap tant qu'un sujet est tenu.
+    const closes = vi.fn();
+    window.addEventListener('keydown', closes);
+    await user.keyboard('{Escape}');
+    expect(closes).not.toHaveBeenCalled();
+    expect(subjects()[0]).toHaveAttribute('aria-pressed', 'false');
+    expect(status).toHaveTextContent('Reposé');
+    await user.keyboard('{Escape}');
+    expect(closes).toHaveBeenCalledTimes(1);
+    window.removeEventListener('keydown', closes);
+
+    // Ranger les quatre : après chaque dépôt, le focus va au prochain sujet pas encore rangé, puis à « Valider ».
+    for (let i = 0; i < 4; i++) {
+      await user.click(subjects()[i]);
+      await user.click(bins()[i % 2]);
+      expect(status).toHaveTextContent('rangé dans');
+      if (i < 3) expect(subjects()[i + 1]).toHaveFocus();
+    }
+    expect(validate).toHaveFocus();
+    expect(validate).toBeEnabled();
+    expect(lastRequest().item.sort).toMatchObject({ held: null, placed: [null, 0, 5, 0, 5, null] });
+    // Un sujet rangé se reprend jusqu'à « Valider » : il sort de son panier.
+    await user.click(subjects()[1]);
+    expect(validate).toBeDisabled();
+    await user.click(bins()[0]);
+    expect(lastRequest().item.sort).toMatchObject({ placed: [null, 0, 0, 0, 5, null] });
+    const round = subjects().map((b) => b.textContent);
+    await user.click(validate);
+    // La manche est corrigée : la suivante s'ouvre, rien de tenu, rien de rangé.
+    await vi.waitFor(() => expect(subjects().map((b) => b.textContent)).not.toEqual(round));
+    expect(subjects().every((b) => b.getAttribute('aria-pressed') === 'false')).toBe(true);
+  });
+
+  it.each([
+    ['sorting', 2],
+    ['e-er-ez', 3],
+  ])('%s : la phrase dans le panneau, un panier par réponse, rien dans la scène ne désigne la réponse', async (mission, n) => {
+    vi.mocked(world.question).mockClear();
+    renderPlace('filets', mission);
+    await begin();
+    await vi.waitFor(() => expect(document.querySelectorAll('.world-answers .world-answer')).toHaveLength(n));
+    await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
+    // La pêche du jour sur le filet, la même pour tous les items : la scène ne dit pas la réponse.
+    expect(lastRequest()).toMatchObject({ place: 'filets', mission, item: { scene: { kind: 'filets', catch: 'pêche', count: 1 }, count: n } });
+    expect(document.querySelector('.question-prompt')!.textContent).not.toBe('');
+  });
+});

@@ -11,13 +11,17 @@ import { PROBLEMES_EXERCISES } from '../../exercises/problems';
 import { POSEES_EXERCISES } from '../../exercises/writtenOperations';
 import { boundsOf } from './facets';
 import { modelOfPlace } from './places';
+import { networkSamples } from './paths';
 import { heightAt, standingHeight } from './terrain';
 import PLACE_ITEMS from './placeItems.json';
 import { PLACES, placeById } from './plan6e';
-import { ANSWER_LAYOUT, ECLUSES_TRACE_SPOTS, GALLERY_LANTERN, PHARE_GALLERY, PHARE_TRACE_SPOTS, QUAIS_TRACE_SPOTS, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placeTrace, questionLayout, sceneSpot, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, ECLUSES_TRACE_SPOTS, FILETS_CARRELET, FILETS_TRACE_SPOTS, FILETS_VIVIER, GALLERY_LANTERN, PHARE_GALLERY, PHARE_TRACE_SPOTS, QUAIS_TRACE_SPOTS, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placeTrace, questionLayout, sceneSpot, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
 import {
   BELLS_PER_ROUND,
   BELLS_PER_SMALL_ROUND,
+  ENCLOS,
+  ENCLOS_BINS,
+  ENCLOS_INSTRUCTION,
   EXERCISES_WITH_TWINS,
   LOCK_COLUMN,
   LOCK_IDLE,
@@ -32,6 +36,8 @@ import {
   missionIs,
   placeInstruction,
   placeItems,
+  rangeGesture,
+  rangeRounds,
   QUAI_NU,
   quaiScene,
   sasExplanation,
@@ -174,6 +180,10 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     expect(placeInstruction('ecluses', 'maths-6e-fractions-number-line-1', 1, 'réf.')).toContain('sas');
     expect(placeInstruction('ecluses', 'maths-6e-fractions-number-line-2', 2, 'réf.')).toContain('échelle');
     expect(placeInstruction('filets', 'french-6e-grammar-spelling-plurals-1', 1, 'réf.')).toBe('réf.');
+    // L'Enclos dit le geste « ranger » (lot L4) ; le Tri des graines et la Récolte gardent la consigne de référence.
+    expect(placeInstruction('filets', 'french-6e-grammar-spelling-word-classes-1', 1, 'réf.')).toBe(ENCLOS_INSTRUCTION[0]);
+    expect(placeInstruction('filets', 'french-6e-grammar-spelling-word-classes-2', 2, 'réf.')).toBe(ENCLOS_INSTRUCTION[1]);
+    expect(placeInstruction('filets', 'french-6e-grammar-spelling-e-er-ez-1', 1, 'réf.')).toBe('réf.');
   });
 
   it('au sas, l’indice et la correction parlent du sas ; la clé et les choix restent ceux de la référence', () => {
@@ -297,6 +307,28 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     }
     // Une clé de Doubles et moitiés hors de sa mission ne change rien non plus.
     expect(placeItems('quais', 'maths-6e-calculation-make-ten-1', [{ key: 'half-34', prompt: 'p' }])[0]).toEqual({ key: 'half-34', prompt: 'p', placeScene: QUAI_NU });
+  });
+});
+
+describe('Le geste « ranger » aux Filets (GD-20, point 8, lot L4)', () => {
+  it('l’Enclos se range dans les paniers des catégories du contenu ; les autres missions des Filets touchent un panier', () => {
+    expect(rangeGesture('filets', 'french-6e-grammar-spelling-word-classes-1')).toBe(ENCLOS_BINS);
+    expect(rangeGesture('filets', 'french-6e-grammar-spelling-plurals-1')).toBeNull();
+    expect(rangeGesture('phare', 'french-6e-grammar-spelling-word-classes-1')).toBeNull();
+    // Les paniers sont les réponses du contenu, rien d'autre.
+    const items = reference('french-6e-grammar-spelling-word-classes-1').items;
+    expect(new Set(items.map((it) => it.answer))).toEqual(new Set(ENCLOS_BINS.map((b) => b.id)));
+    // Les items de référence, tels quels, sur l'Enclos.
+    const placed = placeItems('filets', 'french-6e-grammar-spelling-word-classes-1', items);
+    expect(placed.map((it) => it.key)).toEqual(items.map((it) => it.key));
+    expect(placed.every((it) => it.placeScene === ENCLOS && it.answer === items.find((r) => r.key === it.key)!.answer)).toBe(true);
+    expect(rangeRounds(placed).map((r) => r.length)).toEqual(Array.from({ length: Math.ceil(items.length / 4) }, (_, i) => Math.min(4, items.length - 4 * i)));
+    // La Récolte (et le Tri des graines, au même écran) : la pêche du jour, la même pour tous les items (rien ne dit la
+    // réponse).
+    for (const id of ['french-6e-grammar-spelling-e-er-ez-1', 'french-6e-grammar-spelling-e-er-ez-2']) {
+      const scenes = placeItems('filets', id, reference(id).items).map((it) => JSON.stringify(it.placeScene));
+      expect(new Set(scenes), id).toEqual(new Set([JSON.stringify({ kind: 'filets', catch: 'pêche', count: 1 })]));
+    }
   });
 });
 
@@ -428,6 +460,43 @@ describe('Les traces des scénettes', () => {
       expect(Math.abs(o.x) > 3 || o.z < door.z - 2, m).toBe(true);
     }
     expect(sizes.size).toBe(2);
+  });
+
+  it('aux Filets, le vivier dans l’eau, les nasses sur le sable contre le séchoir, le carrelet sur l’eau, le plus haut ; hors des chemins (lot L4)', () => {
+    const c = placeById('filets').center;
+    const traces = (Object.keys(FILETS_TRACE_SPOTS) as (keyof typeof FILETS_TRACE_SPOTS)[]).map((m) => [m, placeTrace('filets', [m])] as const);
+    // Environ 700 triangles pour les trois (directeur artistique), chacune la sienne.
+    const total = traces.reduce((t, [, f]) => t + f.triangles, 0);
+    expect(total).toBeLessThanOrEqual(700);
+    expect(new Set(traces.map(([, f]) => f.triangles)).size).toBe(3);
+    // Le vivier : ses pieux plantés dans l'eau, tout autour du cercle.
+    const v = FILETS_TRACE_SPOTS['word-classes'];
+    for (let k = 0; k < FILETS_VIVIER.stakes; k++) {
+      const a = (2 * Math.PI * k) / FILETS_VIVIER.stakes;
+      expect(heightAt({ x: c.x + v.x + FILETS_VIVIER.radius * Math.cos(a), z: c.z + v.z + FILETS_VIVIER.radius * Math.sin(a) })).toBeLessThan(-0.1);
+    }
+    // Les nasses sur le sable ; le carrelet sur l'eau.
+    const n = FILETS_TRACE_SPOTS.sorting;
+    expect(heightAt({ x: c.x + n.x, z: c.z + n.z })).toBeGreaterThan(0);
+    const k = FILETS_TRACE_SPOTS['e-er-ez'];
+    expect(heightAt({ x: c.x + k.x, z: c.z + k.z })).toBeLessThan(-0.1);
+    // Le carrelet, la trace la plus haute du lieu (le filet raccommodé du Troupeau compris).
+    const top = (f: ReturnType<typeof placeTrace>) => boundsOf(f).max[1];
+    const carrelet = top(placeTrace('filets', ['e-er-ez']));
+    expect(carrelet).toBeCloseTo(FILETS_CARRELET.tip + 0.06, 1);
+    for (const m of ['word-classes', 'sorting', 'plurals']) expect(top(placeTrace('filets', [m])), m).toBeLessThan(carrelet);
+    // Les trois ne se touchent pas, et aucune n'est sur un chemin.
+    const boxes = traces.map(([, f]) => boundsOf(f));
+    for (let i = 0; i < boxes.length; i++)
+      for (let j = i + 1; j < boxes.length; j++) {
+        const [a, b] = [boxes[i], boxes[j]];
+        expect(a.max[0] < b.min[0] || b.max[0] < a.min[0] || a.max[2] < b.min[2] || b.max[2] < a.min[2]).toBe(true);
+      }
+    const near = networkSamples(0.25).filter((p) => Math.hypot(p.x - c.x, p.z - c.z) < 16);
+    for (const [m, f] of traces) {
+      const b = boundsOf(f);
+      for (const p of near) expect(p.x > b.min[0] - 0.8 && p.x < b.max[0] + 0.8 && p.z > b.min[2] - 0.8 && p.z < b.max[2] + 0.8, m).toBe(false);
+    }
   });
 
   it('aux Écluses, chaque trace est la sienne, autour de son point, sans rien laisser au-delà du lieu (lot L2)', () => {

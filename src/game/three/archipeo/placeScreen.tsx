@@ -1,12 +1,16 @@
-// Ce que partagent les écrans des lieux du monde ouvert (WorldQuestion.tsx, BellScreen.tsx) : le contexte de la
+// Ce que partagent les écrans des lieux du monde ouvert (WorldQuestion.tsx, BellScreen.tsx, SortScreen.tsx) : le contexte de la
 // question (la place de la scène, « Vue simple », la consigne, l'item à montrer), la scène d'un item, la place d'une
-// réponse posée sur la scène, les icônes d'action d'un écran bas et la voix coupée entre deux items.
+// réponse posée sur la scène, la règle et la figure d'un item, les icônes d'action d'un écran bas et la voix coupée
+// entre deux items.
 import { createContext, useContext, useEffect, type CSSProperties } from 'react';
 import { frenchTypography } from '../../../components/math/RichText';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { useSettings } from '../../../core/SettingsContext';
 import type { ExerciseItem } from '../../exercises/types';
-import type { AnswerSlot } from '../../world/continu/questionScene';
+import { Aid } from '../../exercises/Aid';
+import type { AidData } from '../../exercises/maths';
+import type { AnswerSlot, QuestionLayout, SortLook } from '../../world/continu/questionScene';
+import type { PlaceId } from '../../world/continu/plan6e';
 import type { ScenetteLayout } from '../../world/continu/scenette';
 import { isItemScene, type ItemScene } from '../../world/continu/questions';
 
@@ -21,9 +25,13 @@ export interface ItemShown {
   picked: number[];
   count: number;
   aid: boolean;
+  /** Le geste « ranger » (lot L4) : les places des paniers, de l'objet tenu, et le panier de chaque objet rangé. */
+  sort?: SortLook;
 }
 
 export interface QuestionContextValue {
+  /** Le lieu de la question (le geste d'un écran en dépend : les paniers des Filets). */
+  place: PlaceId;
   layout: ScenetteLayout;
   /** « Vue simple » dans une scénette : la question en liste, sur fond uni, sans quitter la manche en cours. */
   simple: boolean;
@@ -44,7 +52,8 @@ export const sameItem = (a: ItemShown, b: ItemShown) =>
   a.right.length === b.right.length &&
   a.right.every((r, i) => r === b.right[i]) &&
   a.picked.length === b.picked.length &&
-  a.picked.every((r, i) => r === b.picked[i]);
+  a.picked.every((r, i) => r === b.picked[i]) &&
+  JSON.stringify(a.sort ?? null) === JSON.stringify(b.sort ?? null);
 
 export function useQuestion(): QuestionContextValue {
   const ctx = useContext(QuestionContext);
@@ -93,4 +102,39 @@ export function ConsigneIcon() {
 export function useStopOnLeave(): void {
   const { stop } = useSettings();
   useEffect(() => () => stop(), [stop]);
+}
+
+const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+
+/** Une aide décrite en données (une carte de règle, une grille de points, une figure), ou `null`. */
+function aidData(aid: unknown): AidData | null {
+  if (!isRecord(aid) || typeof aid.kind !== 'string' || !isRecord(aid.props)) return null;
+  return { kind: aid.kind, props: aid.props };
+}
+
+/** La règle d'un item (la carte de règle, une aide de calcul), comme sur l'écran classique. */
+export const aidOf = (item: ExerciseItem | undefined): AidData | null => aidData(item?.aid);
+
+/** La figure d'un item (la figure exacte, le schéma coté), comme sur l'écran classique. */
+export const figureOf = (item: ExerciseItem | undefined): AidData | null => aidData(item?.figure);
+
+/**
+ * La règle : sous la question dans la colonne, ou à droite sur un écran bas (en « Vue simple », toujours dans la liste,
+ * jamais posée sur elle).
+ */
+export function PlaceAid({ aid, layout, simple }: { aid: AidData; layout: QuestionLayout; simple: boolean }) {
+  const box = simple ? null : layout.aid;
+  const style: CSSProperties | undefined = box
+    ? {
+        left: `${Math.round(box.left)}px`,
+        top: `${Math.round(box.top)}px`,
+        width: `${Math.round(box.right - box.left)}px`,
+        maxHeight: `${Math.round(box.bottom - box.top)}px`,
+      }
+    : undefined;
+  return (
+    <div className={`aid world-question-aid${box ? ' beside' : ''}`} style={style}>
+      <Aid aid={aid} />
+    </div>
+  );
 }

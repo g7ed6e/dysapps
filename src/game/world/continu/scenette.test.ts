@@ -678,12 +678,16 @@ describe('le retour sans trace à garder', () => {
   });
 });
 
-describe('le retour d’une mission des Quais et des Écluses (GD-20, point 8)', () => {
+describe('le retour d’une mission des Quais, des Écluses et des Filets (GD-20, point 8)', () => {
   it('Kéo et la trace de la mission jouée dans le champ, la caméra au sud des deux, jamais d’aplomb', () => {
     const played = [
       ...['times-tables', 'make-ten', 'doubles-halves', 'word-problems', 'measures'].map((m) => ['quais', m] as const),
       ...['number-line', 'equivalence', 'sharing', 'place-value', 'fraction-sums'].map((m) => ['ecluses', m] as const),
+      ...['word-classes', 'sorting', 'e-er-ez', 'plurals'].map((m) => ['filets', m] as const),
     ];
+    // Aux Filets, chaque mission garde sa trace (lot L4), le Troupeau son panier plein.
+    const kept = new Set(['word-classes', 'sorting', 'e-er-ez', 'plurals'].map((m) => JSON.stringify(scenetteExit('filets', true, m)!.keep)));
+    expect(kept.size).toBe(4);
     for (const [place, mission] of played) {
       const exit = scenetteExit(place, true, mission)!;
       const feet = { x: exit.at.x, y: standingHeight(heightAt(exit.at)), z: exit.at.z };

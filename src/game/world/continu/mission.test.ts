@@ -23,7 +23,7 @@ describe('Un lieu porte toutes les missions de son île (GD-20, point 8)', () =>
     expect(missionsOfPlace(placeById('filets'), bornes.filter((b) => b.ile !== 'french-6e-grammar-spelling'))).toEqual([]);
   });
 
-  it('les Quais, les Écluses et le Phare jouent toutes leurs missions en scénette ; ailleurs, seule la mission déjà faite, le temps de la transition', () => {
+  it('les quatre lieux du 6e jouent toutes leurs missions en scénette (les Filets complets au lot L4)', () => {
     expect(placeById('quais').scenes).toEqual(['times-tables', 'make-ten', 'doubles-halves', 'word-problems', 'measures']);
     expect(playsInPlace(placeById('quais'), 'measures')).toBe(true);
     expect(playsInPlace(placeById('phare'), 'sound-hunt')).toBe(true);
@@ -31,10 +31,12 @@ describe('Un lieu porte toutes les missions de son île (GD-20, point 8)', () =>
     expect(playsInPlace(placeById('phare'), 'rhymes')).toBe(true);
     expect(playsInPlace(placeById('filets'), 'plurals')).toBe(true);
     expect(playsInPlace(placeById('ecluses'), 'equivalence')).toBe(true);
-    expect(playsInPlace(placeById('filets'), 'word-classes')).toBe(false);
+    expect(placeById('filets').scenes).toEqual(['word-classes', 'sorting', 'e-er-ez', 'plurals']);
+    expect(playsInPlace(placeById('filets'), 'word-classes')).toBe(true);
+    expect(playsInPlace(placeById('filets'), 'times-tables')).toBe(false);
   });
 
-  it('les missions en scénette des Quais, des Écluses et du Phare sont toutes celles de leur île, et chaque scénette est une mission de son île', () => {
+  it('les missions en scénette de chaque lieu sont toutes celles de leur île, et chaque scénette est une mission de son île', () => {
     for (const p of PLACES) {
       const island = getBiome(p.island);
       expect(island).toBeDefined();
@@ -43,6 +45,7 @@ describe('Un lieu porte toutes les missions de son île (GD-20, point 8)', () =>
     expect(getBiome('maths-6e-calculation')!.exercises.map((e) => e.id)).toEqual([...placeById('quais').scenes]);
     expect(getBiome('maths-6e-fractions')!.exercises.map((e) => e.id)).toEqual([...placeById('ecluses').scenes]);
     expect(getBiome('french-6e-phonology')!.exercises.map((e) => e.id)).toEqual([...placeById('phare').scenes]);
+    expect(getBiome('french-6e-grammar-spelling')!.exercises.map((e) => e.id)).toEqual([...placeById('filets').scenes]);
   });
 });
 

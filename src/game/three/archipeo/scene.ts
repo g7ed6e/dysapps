@@ -19,7 +19,7 @@ import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from
 import { PLACES, TERRAIN, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { LAMP_COLOR, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PORT_MAP_POINT, PORT_ROOFLINES, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
-import { answerObjects, answerScale, itemScene, placeTrace, sceneSpot, type Reaction } from '../../world/continu/questionScene';
+import { HELD_LIFT, SORT_IN_BASKET, answerObjects, answerScale, inBasket, itemScene, placeTrace, rankInBasket, sceneSpot, sortBinScale, sortPrise, type Reaction, type SortLook } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
 import {
   EXIT_VIEW,
@@ -164,7 +164,7 @@ interface QuestionRequest {
   place: PlaceId;
   mission: string;
   layout: ScenetteLayout;
-  item: { scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[] };
+  item: { scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook };
 }
 
 /** Le cadenas d'un lieu sous la brume, à l'écran : en pixels, et s'il se voit. */
@@ -1171,7 +1171,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   // La question posée dans un lieu (lot 4) : sa pose fixe, la scène de l'item et les objets des réponses (un maillage),
   // la réaction (un maillage qui bouge une à deux secondes). Refaits par item, jamais par image.
-  let asked: { place: PlaceId; pose: CameraPose; objectsKey: string; itemKey: string; answered: boolean; scene: ItemScene; scale: number } | null = null;
+  let asked: { place: PlaceId; pose: CameraPose; objectsKey: string; itemKey: string; answered: boolean; scene: ItemScene; scale: number; sort?: SortLook } | null = null;
   const itemMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
   const reactionMesh = new THREE.Mesh<THREE.BufferGeometry, THREE.Material>(new THREE.BufferGeometry(), landMaterial);
   itemMesh.visible = false;
@@ -1428,11 +1428,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       scale,
       posed,
     );
+    // « Ranger » (lot L4) : l'objet qu'on vient de ranger vole jusqu'à son panier, en arc, le temps de la réaction (d'un
+    // coup avec « Réduire les animations ») ; les objets restent dessinés à leur place.
+    const sort = item.sort;
+    let moving: number | null = null;
+    if (sort && !reduceMotion && !item.answered && asked?.place === place && asked.sort)
+      for (const [i, bin] of sort.placed.entries()) if (bin !== null && asked.sort.placed[i] !== bin) moving = i;
     // La scène de l'item et les objets des réponses : un seul maillage.
     const merged = new FacetBuilder();
     merged.append(facets.still);
     merged.append(
       answerObjects(place, points, scale, {
+        sort: sort ? { ...sort, moving } : undefined,
         // Une cloche choisie se balance jusqu'à la réponse ; une caisse tentée reste penchée.
         picked: hang && item.answered ? [] : item.picked,
         // La bonne caisse est partie au crochet avec la réaction.
@@ -1445,7 +1452,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     itemShown = itemMesh.visible;
     if (descent.active) itemMesh.visible = false;
     const before = asked && asked.place === place && asked.itemKey === itemKey ? asked : null;
-    if (!item.answered || !facets.reaction) {
+    const bin = moving !== null && sort ? sort.placed[moving] : null;
+    if (sort && moving !== null && bin !== null && points[moving] && points[bin]) {
+      const f = new FacetBuilder();
+      sortPrise(f, { x: 0, y: 0, z: 0 }, SORT_IN_BASKET * scale);
+      const flying = f.build();
+      setGeometry(reactionMesh, flying);
+      const from = { x: points[moving].x, y: points[moving].y + HELD_LIFT, z: points[moving].z };
+      const to = inBasket(points[bin], sortBinScale(points, scale), rankInBasket(sort.placed, moving));
+      reaction = { r: { facets: flying, from, to, arc: 1.2, stay: true }, start: performance.now() / 1000 };
+      placeReaction(performance.now() / 1000);
+    } else if (!item.answered || !facets.reaction) {
       reaction = null;
       reactionMesh.visible = false;
     } else if (!before?.answered || before.objectsKey !== objectsKey) {
@@ -1454,7 +1471,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       reaction = { r: facets.reaction, start: before?.answered ? -Infinity : performance.now() / 1000 };
       placeReaction(performance.now() / 1000);
     }
-    asked = { place, pose: qp.pose, objectsKey, itemKey, answered: item.answered, scene: item.scene, scale };
+    asked = { place, pose: qp.pose, objectsKey, itemKey, answered: item.answered, scene: item.scene, scale, sort };
     const labels = facets.labels.map((l) => {
       projected.set(l.at.x, l.at.y, l.at.z).project(camera);
       return { text: l.text, x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH, ...(l.center ? { center: true } : {}) };

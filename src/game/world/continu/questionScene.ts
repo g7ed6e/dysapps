@@ -406,6 +406,93 @@ export interface AnswerLook {
    * descend. Sans elle, le ponton flotte sur l'eau (les Quais).
    */
   ground?: number;
+  /** Le geste « ranger » (lot L4) : quels objets sont des paniers, l'objet tenu, et où chaque objet est rangé. */
+  sort?: SortLook;
+}
+
+/**
+ * Le geste « ranger » vu par la scène, en places de la rangée (la vue ne décide rien, elle dessine) : `bins`, les places
+ * des paniers ; `held`, la place de l'objet tenu ; `placed[i]`, la place du panier où l'objet de la place `i` est rangé
+ * (`null` : sur le ponton) ; `moving`, la place d'un objet qui vole vers son panier (la réaction le dessine).
+ */
+export interface SortLook {
+  bins: readonly number[];
+  held: number | null;
+  placed: readonly (number | null)[];
+  moving?: number | null;
+}
+
+/** Les paniers du geste « ranger » : une fois et demie ceux du Troupeau (directeur artistique, lot L4), au plus. */
+const SORT_BIN_SCALE = 1.5;
+/** L'objet tenu : soulevé de 0,3 unité et un peu penché, il reste à sa place (il ne va pas vers Kéo). */
+export const HELD_LIFT = 0.3;
+const HELD_TILT = 0.25;
+
+/**
+ * Un objet à ranger de l'Enclos : un ballot de filet de pêche roulé et lié d'une corde, avec son flotteur de liège. Tous
+ * les mêmes : rien ne dit un ou plusieurs (la réponse) ; seule l'étiquette les distingue. `tilt` : penché (tenu).
+ */
+export function sortPrise(b: FacetBuilder, at: Vec3, s: number, tilt = 0): void {
+  b.box({ x: at.x, y: at.y, z: at.z, yaw: tilt }, [0.62 * s, 0.32 * s, 0.42 * s], C.net, C.netLine);
+  b.box({ x: at.x, y: at.y - 0.01, z: at.z, yaw: tilt }, [0.08 * s, 0.35 * s, 0.45 * s], C.rope);
+  b.box({ x: at.x + 0.2 * s * Math.cos(tilt), y: at.y + 0.32 * s, z: at.z - 0.2 * s * Math.sin(tilt), yaw: tilt }, [0.16 * s, 0.1 * s, 0.12 * s], C.newWood);
+}
+
+/** La taille d'un objet rangé dans son panier : plus petit, pour que quatre y tiennent. */
+export const SORT_IN_BASKET = 0.62;
+
+/**
+ * L'échelle des paniers du geste « ranger » : une fois et demie celle des objets, sans jamais déborder de sa place dans
+ * la rangée (l'écart entre deux places voisines) ; leur étiquette reste sous eux.
+ */
+export function sortBinScale(points: readonly Vec3[], s: number): number {
+  let gap = Infinity;
+  for (let i = 1; i < points.length; i++) gap = Math.min(gap, Math.abs(points[i].x - points[i - 1].x));
+  return Math.min(SORT_BIN_SCALE * s, 0.52 * gap);
+}
+
+/** Où se pose le `k`-ième objet rangé dans le panier posé en `at` (de l'échelle `B`, `sortBinScale`), en deux rangs de deux. */
+export function inBasket(at: Vec3, B: number, k: number): Vec3 {
+  return { x: at.x + ((k % 2) - 0.5) * 0.4 * B, y: at.y + 0.22 * B + 0.12 * B * Math.floor(k / 4), z: at.z + ((Math.floor(k / 2) % 2) - 0.5) * 0.3 * B };
+}
+
+/** Le rang de l'objet de la place `i` dans son panier : combien d'objets rangés dans le même panier le précèdent. */
+export function rankInBasket(placed: readonly (number | null)[], i: number): number {
+  const bin = placed[i];
+  let k = 0;
+  for (let j = 0; j < i; j++) if (placed[j] === bin) k++;
+  return k;
+}
+
+/** Un panier de paille du geste « ranger » : ouvert (son couvercle relevé derrière lui) quand un objet est tenu. */
+function sortBin(b: FacetBuilder, p: Vec3, B: number, open: boolean): void {
+  const w = 0.9 * B,
+    d = 0.7 * B,
+    h = 0.5 * B,
+    t = 0.08 * B;
+  b.box({ x: p.x, y: p.y, z: p.z }, [w, 0.06 * B, d], C.strawDark);
+  b.box({ x: p.x, y: p.y, z: p.z + d / 2 }, [w, h, t], C.straw, C.strawDark);
+  b.box({ x: p.x, y: p.y, z: p.z - d / 2 }, [w, h, t], C.straw, C.strawDark);
+  b.box({ x: p.x - w / 2, y: p.y, z: p.z }, [t, h, d], C.straw, C.strawDark);
+  b.box({ x: p.x + w / 2, y: p.y, z: p.z }, [t, h, d], C.straw, C.strawDark);
+  // Le couvercle, toujours derrière le panier (les objets rangés se voient dedans) : couché à plat sur le sable, ou
+  // relevé debout contre le bord arrière quand un objet est tenu (le panier s'ouvre : on peut y ranger).
+  if (open) b.box({ x: p.x, y: p.y + h, z: p.z - d / 2 - t }, [w + 0.04 * B, 0.75 * d, t], C.strawDark, C.straw);
+  else b.box({ x: p.x, y: p.y, z: p.z - d - 0.1 * B }, [w + 0.04 * B, t, 0.75 * d], C.strawDark, C.straw);
+}
+
+/** Les paniers et les objets du geste « ranger », sur le ponton des réponses (hauteur `y`). */
+function sortObjects(b: FacetBuilder, points: readonly Vec3[], y: number, s: number, look: SortLook): void {
+  const open = look.held !== null;
+  const B = sortBinScale(points, s);
+  for (const i of look.bins) if (points[i]) sortBin(b, { x: points[i].x, y, z: points[i].z }, B, open);
+  for (const [i, p] of points.entries()) {
+    if (look.bins.includes(i) || look.moving === i) continue;
+    const bin = look.placed[i];
+    if (bin !== null && bin !== undefined && points[bin]) sortPrise(b, inBasket({ x: points[bin].x, y, z: points[bin].z }, B, rankInBasket(look.placed, i)), SORT_IN_BASKET * s);
+    else if (look.held === i) sortPrise(b, { x: p.x, y: y + HELD_LIFT, z: p.z }, s, HELD_TILT);
+    else sortPrise(b, { x: p.x, y, z: p.z }, s);
+  }
 }
 
 /**
@@ -442,6 +529,10 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     for (let i = 1; i < points.length; i++)
       b.box({ x: (points[i - 1].x + points[i].x) / 2, y: y - 0.02, z }, [0.05 * s, 0.035, depth - 2 * rim], C.ochreJoint);
   } else b.box({ x: mid, y: y - skirt, z }, [span, skirt, 0.8 * s], C.deckSide, C.deck);
+  if (look.sort) {
+    sortObjects(b, points, y, s, look.sort);
+    return b.build();
+  }
   for (const [i, p] of points.entries()) {
     if (gone.includes(i)) continue;
     if (kind === 'panier') {
@@ -571,6 +662,13 @@ export interface ItemSceneFacets {
   still: Facets;
   labels: SceneLabel[];
   reaction: Reaction | null;
+}
+
+/** Le grand filet étendu sur sa plate-forme, ses mailles en traits. */
+function restingNet(b: FacetBuilder, o: Vec3): void {
+  b.box({ x: o.x, y: o.y, z: o.z }, [4.6, 0.03, 2.6], C.net);
+  for (let k = -2; k <= 2; k++) b.box({ x: o.x + k * 0.9, y: o.y + 0.03, z: o.z }, [0.05, 0.01, 2.6], C.netLine);
+  for (let k = -1; k <= 1; k++) b.box({ x: o.x, y: o.y + 0.03, z: o.z + k * 0.85 }, [4.6, 0.01, 0.05], C.netLine);
 }
 
 /** Un petit poisson (une sardine), couché, sa tête vers l'est. */
@@ -892,12 +990,13 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     const z = o.z + (LOCK.front + LOCK.back) / 2;
     return { facets: r.build(), from: { x: o.x - LOCK.half + 1.5, y, z }, to: { x: o.x + LOCK.stop, y, z }, arc: 0, stay: true };
   };
-  if (scene.kind === 'filets') {
+  if (scene.kind === 'enclos') {
+    // L'Enclos (lot L4) : le filet étendu, au repos, sans pêche ; les objets à ranger et les paniers sont sur le ponton.
     platform(5.4, 3.2);
-    // Le grand filet étendu, ses mailles en traits.
-    b.box({ x: o.x, y: o.y, z: o.z }, [4.6, 0.03, 2.6], C.net);
-    for (let k = -2; k <= 2; k++) b.box({ x: o.x + k * 0.9, y: o.y + 0.03, z: o.z }, [0.05, 0.01, 2.6], C.netLine);
-    for (let k = -1; k <= 1; k++) b.box({ x: o.x, y: o.y + 0.03, z: o.z + k * 0.85 }, [4.6, 0.01, 0.05], C.netLine);
+    restingNet(b, o);
+  } else if (scene.kind === 'filets') {
+    platform(5.4, 3.2);
+    restingNet(b, o);
     const r = new FacetBuilder();
     catchObjects(r, scene, 0, 0, 0);
     const pecheFacets = placed(r.build(), CATCH_SCALE);
@@ -1200,8 +1299,8 @@ function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolea
  * devenues les parties de la construction du lieu, ./construction.ts ; les traces restent). Une trace par mission jouée en
  * scénette (GD-20, point 8 : d'une mission à l'autre, seule la trace de la réussite change), tirée de `done`, les missions
  * du lieu déjà réussies : au Phare, pour la Chasse au son, les lampes de la galerie, face au sud, et une chose par autre
- * mission (`PHARE_TRACES`, lot L3) ; aux Filets (le Troupeau),
- * le pan de filet raccommodé tendu sur le séchoir et le panier plein à côté ; aux Écluses, pour les Nénuphars, la porte
+ * mission (`PHARE_TRACES`, lot L3) ; aux Filets, pour le Troupeau, le pan de filet raccommodé tendu sur le séchoir et le
+ * panier plein à côté, et une chose par autre mission (`FILETS_TRACES`, lot L4) ; aux Écluses, pour les Nénuphars, la porte
  * d'amont ouverte et le sas rempli (fermée avant : elle est de la trace, pas du modèle, pour s'ouvrir), et une chose par
  * autre mission (`ECLUSES_TRACES`, lot L2) ; aux Quais, une chose remise en ordre sur le quai par mission
  * (`QUAIS_TRACES`). Rien avant la première réussite, sauf la porte fermée
@@ -1219,9 +1318,12 @@ export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
   if (place === 'phare') {
     if (done.includes('sound-hunt')) galleryLanterns(b, x, y0 + PHARE_GALLERY, z);
     for (const mission of done) if (Object.hasOwn(PHARE_TRACES, mission)) PHARE_TRACES[mission](b, x, z);
-  } else if (place === 'filets' && done.includes('plurals')) {
-    mendedNet(b);
-    fullBasket(b, filetsBasketAt());
+  } else if (place === 'filets') {
+    if (done.includes('plurals')) {
+      mendedNet(b);
+      fullBasket(b, filetsBasketAt());
+    }
+    for (const mission of done) if (Object.hasOwn(FILETS_TRACES, mission)) FILETS_TRACES[mission](b, x, z);
   } else if (place === 'quais') {
     for (const mission of done) QUAIS_TRACES[mission]?.(b, x, z);
   }
@@ -1317,6 +1419,128 @@ const PHARE_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => 
       b.beam({ x: g.x, y: top - 0.2, z: g.z }, { x: foot.x, y: foot.y + 0.2, z: foot.z }, 0.04, C.rope);
       b.box({ x: foot.x, y: foot.y - 0.2, z: foot.z }, [0.12, 0.45, 0.12], C.post);
     }
+  },
+};
+
+/**
+ * Où se pose la trace de chaque mission des Filets (hors du Troupeau, le filet raccommodé et le panier plein), depuis le
+ * centre du lieu, dans le champ du retour d'une scénette (Kéo devant le séchoir, au sud) : le vivier dans l'eau du bord,
+ * au sud-est du séchoir ; la pyramide de nasses contre le pan sud du séchoir, côté sable (le pan nord porte le filet
+ * raccommodé) ; le carrelet sur le replat de l'eau, à l'est du séchoir, son bras vers le large.
+ */
+export const FILETS_TRACE_SPOTS = {
+  'word-classes': { x: 5.6, z: 3.1 },
+  sorting: { x: 2.04, z: 2.71 },
+  'e-er-ez': { x: 4.0, z: 0.9 },
+} as const;
+
+/** Le vivier de l'Enclos : neuf pieux en cercle, de ce rayon, leur tête au-dessus de l'eau. */
+export const FILETS_VIVIER = { stakes: 9, radius: 0.85, top: 0.55 } as const;
+
+/** Le carrelet de la Récolte : son plancher sur pilotis, au-dessus de l'eau, et le bout de son bras, la trace la plus haute du lieu. */
+export const FILETS_CARRELET = { deck: 1.25, tip: 3.4, reach: 3.3, frame: 0.9 } as const;
+
+/** Le sol, ou le fond sous l'eau, en (x, z) : les pieux et les pilotis y plantent leur pied. */
+const bedAt = (x: number, z: number): number => Math.min(heightAt({ x, z }), 0) - 0.1;
+
+/**
+ * Les traces des Filets (GD-20, point 8, lot L4 : une par mission, au même lieu, en volumes du code aux couleurs du lieu,
+ * bois clair et sombre, cordes, paille ; sans rouge ni texte, rien qui se compte ou se lise comme une réponse ; posées
+ * avec les abords) :
+ * - Enclos : un vivier de neuf pieux en cercle dans l'eau du bord, un filet tendu de l'un à l'autre ;
+ * - Tri des graines : une pyramide de nasses d'osier (cônes couchés, trois, deux, une) contre le séchoir ;
+ * - Récolte : un carrelet, plancher sur pilotis, long bras levé vers le large et filet carré pendu au-dessus de l'eau,
+ *   la trace la plus haute du lieu.
+ * Le Troupeau garde la sienne : le filet raccommodé sur le séchoir et le panier plein.
+ */
+const FILETS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => void> = {
+  'word-classes': (b, x, z) => {
+    const o = FILETS_TRACE_SPOTS['word-classes'];
+    const { stakes, radius, top } = FILETS_VIVIER;
+    const at = (k: number) => {
+      const a = (2 * Math.PI * k) / stakes;
+      return { x: x + o.x + radius * Math.cos(a), z: z + o.z + radius * Math.sin(a) };
+    };
+    for (let k = 0; k < stakes; k++) {
+      const p = at(k);
+      const q = at(k + 1);
+      const bed = bedAt(p.x, p.z);
+      b.box({ x: p.x, y: bed, z: p.z }, [0.13, top - bed, 0.13], C.deckSide, C.deck);
+      // Le filet, de pieu en pieu, de sous l'eau à mi-hauteur des pieux.
+      const dx = q.x - p.x,
+        dz = q.z - p.z;
+      b.box({ x: (p.x + q.x) / 2, y: -0.15, z: (p.z + q.z) / 2, yaw: Math.atan2(-dz, dx) }, [Math.hypot(dx, dz) - 0.13, 0.5, 0.03], C.netLine);
+    }
+  },
+  sorting: (b, x, z) => {
+    const o = FILETS_TRACE_SPOTS.sorting;
+    const g = quaiGround(x + o.x, z + o.z);
+    // Le long du séchoir (`u`, dans le monde : le séchoir est tourné avec le lieu), et du pan sud vers le sable (`axis`).
+    const p = placeById('filets');
+    const rack = filetsRack();
+    const rackYaw = p.yaw + rack.yaw;
+    const u = { x: Math.cos(rackYaw), z: -Math.sin(rackYaw) };
+    const pan = rack.pans[1];
+    const c = Math.cos(p.yaw),
+      sn = Math.sin(p.yaw);
+    const away = { x: g.x - (x + pan.x * c + pan.z * sn), z: g.z - (z - pan.x * sn + pan.z * c) };
+    const side = away.x * -u.z + away.z * u.x > 0 ? 1 : -1;
+    const axis = { x: -u.z * side, z: u.x * side };
+    const r = 0.24,
+      len = 0.8;
+    const yaw = Math.atan2(axis.x, axis.z);
+    // Trois, deux, une : chaque cône couché, sa bouche vers le sable, sa pointe contre le pan du séchoir.
+    for (const [row, count] of [
+      [0, 3],
+      [1, 2],
+      [2, 1],
+    ] as const)
+      for (let i = 0; i < count; i++) {
+        const along = (i - (count - 1) / 2) * 2 * r;
+        const mouth = { x: g.x + u.x * along + axis.x * (len / 2), y: g.y + r + row * 1.7 * r, z: g.z + u.z * along + axis.z * (len / 2) };
+        // Le cône, de la bouche vers le séchoir ; la bouche fermée d'un disque d'osier sombre (le dedans de la nasse).
+        b.prism({ ...mouth, yaw: yaw + Math.PI, pitch: Math.PI / 2 }, r, 0.06, len, 8, C.newRope, C.deck);
+        b.prism({ ...mouth, yaw, pitch: Math.PI / 2 }, r, 0, 0.02, 8, C.deckSide);
+      }
+  },
+  'e-er-ez': (b, x, z) => {
+    const o = FILETS_TRACE_SPOTS['e-er-ez'];
+    const g = { x: x + o.x, z: z + o.z };
+    const { deck, tip: tipY, reach, frame } = FILETS_CARRELET;
+    // Le bras vers le large, au nord-est.
+    const d = { x: 0.55, z: -0.835 };
+    const q = { x: -d.z, z: d.x };
+    for (const [sx, sz] of [
+      [-1, -1],
+      [1, -1],
+      [-1, 1],
+      [1, 1],
+    ] as const) {
+      const px = g.x + sx * 0.55,
+        pz = g.z + sz * 0.55;
+      const bed = bedAt(px, pz);
+      b.box({ x: px, y: bed, z: pz }, [0.14, deck - bed, 0.14], C.deckSide);
+    }
+    b.box({ x: g.x, y: deck, z: g.z }, [1.4, 0.12, 1.4], C.deckSide, C.deck);
+    // Le poteau du pivot, et le bras qui passe dessus : son contrepoids au bout du plancher, sa pointe au-dessus de l'eau.
+    const pivot = { x: g.x + d.x * 0.5, z: g.z + d.z * 0.5 };
+    b.box({ x: pivot.x, y: deck + 0.12, z: pivot.z }, [0.16, 1.1, 0.16], C.deckSide);
+    const back = { x: g.x - d.x * 0.6, y: deck + 0.85, z: g.z - d.z * 0.6 };
+    const tip = { x: g.x + d.x * reach, y: tipY, z: g.z + d.z * reach };
+    b.beam(back, tip, 0.12, C.deck);
+    b.box({ x: back.x, y: back.y - 0.45, z: back.z }, [0.32, 0.36, 0.32], C.deckSide);
+    // Le filet carré pendu au bout du bras, à un pas au-dessus de l'eau : quatre cordes, son cadre, ses deux arceaux
+    // croisés et la nappe.
+    const y = 0.55;
+    const corner = (a: number, c: number) => ({ x: tip.x + (a * d.x + c * q.x) * frame, y, z: tip.z + (a * d.z + c * q.z) * frame });
+    const corners = [corner(-1, -1), corner(1, -1), corner(1, 1), corner(-1, 1)];
+    for (const [k, c] of corners.entries()) {
+      b.beam(tip, c, 0.03, C.netLine);
+      b.beam(c, corners[(k + 1) % 4], 0.06, C.deck);
+    }
+    b.beam({ ...corners[0], y: y + 0.05 }, { ...corners[2], y: y + 0.05 }, 0.05, C.deckSide);
+    b.beam({ ...corners[1], y: y + 0.05 }, { ...corners[3], y: y + 0.05 }, 0.05, C.deckSide);
+    b.box({ x: tip.x, y: y - 0.12, z: tip.z, yaw: Math.atan2(-d.z, d.x) }, [2 * frame, 0.02, 2 * frame], C.netLine);
   },
 };
 

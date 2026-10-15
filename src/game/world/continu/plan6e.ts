@@ -156,7 +156,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
     yaw: 0,
     touchRadius: 5.5,
   },
-  { id: 'filets', name: 'Les Filets', at: 'aux Filets', agree: 'mp', island: 'french-6e-grammar-spelling', scenes: ['plurals'], plan: [1061, 222], door: { x: -0.86, z: 3.29 }, yaw: 0.35, touchRadius: 5.5 },
+  { id: 'filets', name: 'Les Filets', at: 'aux Filets', agree: 'mp', island: 'french-6e-grammar-spelling', scenes: ['word-classes', 'sorting', 'e-er-ez', 'plurals'], plan: [1061, 222], door: { x: -0.86, z: 3.29 }, yaw: 0.35, touchRadius: 5.5 },
   { id: 'ecluses', name: 'Les Écluses', at: 'aux Écluses', agree: 'fp', island: 'maths-6e-fractions', scenes: ['number-line', 'equivalence', 'sharing', 'place-value', 'fraction-sums'], plan: [1226, 404], door: { x: -3.14, z: -0.71 }, yaw: 0, touchRadius: 5.5 },
 ];
 
