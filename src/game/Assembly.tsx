@@ -201,10 +201,22 @@ export function AssemblageBody({ back, stayInWorld }: WorldReturn = {}) {
   const { premiere, autres } = useRecettes();
   return (
     <div className="assemblage">
-      <p className="section-intro">
-        <Syllabified text={assemblage.presentation} />
-        <SpeakButton text={assemblage.presentation} label="Réécouter" compact />
-      </p>
+      {stayInWorld ? (
+        // Dans le monde continu (GD-20, lot 2), le panneau est bas : l'accueil passe dans un pli avec Écouter, comme
+        // celui de la salle des succès, et « Assembler » se voit sans défiler.
+        <details className="sheet-more">
+          <summary>En savoir plus</summary>
+          <p>
+            <Syllabified text={assemblage.presentation} />
+            <SpeakButton text={assemblage.presentation} label="Écouter" compact />
+          </p>
+        </details>
+      ) : (
+        <p className="section-intro">
+          <Syllabified text={assemblage.presentation} />
+          <SpeakButton text={assemblage.presentation} label="Réécouter" compact />
+        </p>
+      )}
       {premiere && <RecetteCarte key={premiere.bloc} recette={premiere} back={back} stayInWorld={stayInWorld} />}
       {autres.length > 0 && (
         <details className="assemblage-autres">

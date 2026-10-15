@@ -1,13 +1,14 @@
 // Les panneaux de l'Escale (GD-20, lot 2) : la fiche du Port et ses cinq « Y aller », une porte et ses missions qui
 // ramènent au monde, Échap qui ferme, l'adresse de retour lue sans rien inventer.
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
-import { ProgressProvider } from '../../../core/ProgressContext';
+import { Celebrations } from '../../../components/Celebrations';
+import { ProgressProvider, useProgress } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
-import { PortPanels, portFromParam, portReturn, type PortPanel } from './PortPanels';
+import { PortPanels, portFromParam, portResume, portReturn, type PortPanel } from './PortPanels';
 
 const NAMES = { nom: 'L’Escale', ecole: 'La Maison des Savoirs', succes: 'La Galerie des Merveilles', assemblage: 'Le Chantier de l’Escale' };
 
@@ -37,10 +38,11 @@ it('la fiche du Port a cinq lignes, chacune avec « Y aller », qui mènent à l
   expect(onGo).toHaveBeenCalledWith('chantier');
 });
 
-it('une porte montre ses missions, et chacune ramène à la porte du monde ; aucun lien ne sort du monde', () => {
+it('une porte montre ses missions, sans sous-titre (la façade se voit à côté) ; aucun lien ne sort du monde', () => {
   renderPanel('maths');
   const sheet = screen.getByRole('dialog', { name: 'Maths' });
-  expect(sheet.textContent).toContain('La Maison des Savoirs');
+  expect(sheet.textContent).not.toContain('La Maison des Savoirs');
+  expect(sheet.querySelector('.island-sheet-module')).toBeNull();
   const links = within(sheet).getAllByRole('link');
   expect(links.length).toBeGreaterThan(1);
   for (const a of links) expect(a.getAttribute('href')).toMatch(/^\/app\//);
@@ -62,4 +64,39 @@ it('l’adresse de retour se lit sans rien inventer', () => {
   expect(portFromParam('quai')).toBeNull();
   expect(portFromParam('ailleurs')).toBeNull();
   expect(portFromParam(null)).toBeNull();
+  // « Ma dernière mission » : une mission de l'école ramène à sa porte, une autre garde son retour.
+  expect(portResume('/app/tables')).toBe('/adventure?porte=maths');
+  expect(portResume('/app/homophones')).toBe('/adventure?porte=french');
+  expect(portResume('/adventure/french-6e-phonology/x')).toBeUndefined();
+});
+
+/** Finit un plan d'un coup : le niveau monte, une célébration arrive. */
+function Gain() {
+  const { completePlan } = useProgress();
+  return (
+    <button type="button" onClick={() => completePlan(230)}>
+      Gagner
+    </button>
+  );
+}
+
+it('un panneau ouvert retient les célébrations ; fermé, elles reviennent', () => {
+  const view = (open: boolean) => (
+    <SettingsProvider>
+      <ProgressProvider>
+        <BloclandProvider>
+          <MemoryRouter>
+            <Celebrations />
+            <Gain />
+            {open && <PortPanels panel="fiche" names={NAMES} onGo={vi.fn()} onClose={vi.fn()} />}
+          </MemoryRouter>
+        </BloclandProvider>
+      </ProgressProvider>
+    </SettingsProvider>
+  );
+  const { rerender } = render(view(true));
+  act(() => screen.getByRole('button', { name: 'Gagner' }).click());
+  expect(document.querySelector('.celebration')).toBeNull();
+  rerender(view(false));
+  expect(document.querySelector('.celebration')).not.toBeNull();
 });

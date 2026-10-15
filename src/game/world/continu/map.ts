@@ -125,6 +125,11 @@ export interface MapLabel {
   y: number;
   w: number;
   h: number;
+  /**
+   * Posé avant les autres lieux ouverts (l'Escale, le lieu de départ, GD-20, lot 2 : elle garde son nom, les autres se
+   * réduisent d'abord à leur icône).
+   */
+  first?: boolean;
 }
 
 /** Sa place : le coin haut gauche, et si son nom se montre (un lieu fermé peut n'en garder que le cadenas). */
@@ -173,7 +178,8 @@ const clash = (a: Rect, b: Rect) =>
 
 /**
  * Pose les étiquettes de la Carte sans qu'aucune en recouvre une autre (au moins `MAP_LABEL_GAP` entre elles), ni les
- * boutons de la page (`obstacles`) : d'abord Kéo et les cadenas, à leur place ; puis le nom de chaque lieu ouvert,
+ * boutons de la page (`obstacles`) : d'abord Kéo et les cadenas, à leur place ; puis le nom de chaque lieu ouvert (celui
+ * qui passe en premier, `first`, d'abord),
  * au-dessus de son point, sinon dessous, sinon décalé vers le haut ou vers le bas (une demi-hauteur, puis une autre),
  * sinon à droite ou à gauche, sinon à la place libre la plus proche, dans l'écran ; s'il ne trouve toujours pas de
  * place, sa pastille se réduit à son icône (`name: false`, le nom et l'état restent dits par le bouton) ; enfin le nom
@@ -212,8 +218,8 @@ function attemptLayout(
     }
   }
   const clear = (c: Rect) => onScreen(c) && free(c);
-  for (const l of labels) {
-    if (l.kind !== 'open') continue;
+  const open = labels.filter((l) => l.kind === 'open' && l.first).concat(labels.filter((l) => l.kind === 'open' && !l.first));
+  for (const l of open) {
     const places = (w: number, h: number) => {
       const above = rect(l.x - w / 2, l.y - h, w, h);
       const below = rect(l.x - w / 2, l.y + MAP_LABEL_GAP, w, h);

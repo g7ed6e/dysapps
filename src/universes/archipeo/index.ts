@@ -639,8 +639,9 @@ export const ARCHIPEO = {
     fini: 'La jetée est posée ! On passe à pied d’une île à l’autre.',
   },
   assemblage: lieuDAssemblage('archipeo'),
-  // Le lieu de départ du monde continu (GD-20, lot 2), derrière le drapeau : des noms par défaut, en attendant ceux du
-  // mainteneur (consultant d'Archipéo, 15 octobre 2026). Dans la grille, le lieu d'assemblage reste la Halle aux matériaux.
+  // Le lieu de départ du monde continu (GD-20, lot 2), derrière le drapeau : noms choisis par le mainteneur le 15 octobre
+  // 2026 (L'Escale, la Maison des Savoirs), et ceux de la salle des succès et du lieu d'assemblage proposés par le
+  // consultant d'Archipéo. Dans la grille, le lieu d'assemblage reste la Halle aux matériaux.
   depart: { nom: 'L’Escale', ecole: 'La Maison des Savoirs', succes: 'La Galerie des Merveilles', assemblage: 'Le Chantier de l’Escale' },
   // Les noms d'avant GD-1, ceux des données (world/archipelago.ts).
   archipels: { '6e': 'Premiers Rivages', '5e': 'Îles Brumeuses', '4e': 'Anciens Ateliers', '3e': 'Îles du Ciel' },

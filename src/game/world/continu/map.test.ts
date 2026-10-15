@@ -125,6 +125,26 @@ describe('Les étiquettes de la Carte', () => {
     }
   });
 
+  it('l’Escale passe en premier : serrée, elle garde son nom, les autres lieux se réduisent d’abord à leur icône', () => {
+    const screen = { width: 667, height: 375 };
+    const zones = [
+      { left: 0, top: 0, right: 72, bottom: 375 },
+      { left: 10, top: 280, right: 130, bottom: 365 },
+    ];
+    const crowd: MapLabel[] = [
+      { id: 'keo', kind: 'keo', x: 330, y: 300, w: 120, h: 50 },
+      { id: 'phare', kind: 'open', x: 330, y: 200, w: 260, h: 70 },
+      { id: 'quais', kind: 'open', x: 420, y: 240, w: 260, h: 70 },
+      { id: 'filets', kind: 'open', x: 300, y: 110, w: 260, h: 70 },
+      { id: 'ecluses', kind: 'open', x: 470, y: 120, w: 300, h: 70 },
+    ];
+    const port: MapLabel = { id: 'port', kind: 'open', x: 340, y: 330, w: 260, h: 70 };
+    const last = (first: boolean) => layoutMapLabels([...crowd, { ...port, first }], zones, screen).find((s) => s.id === 'port')!;
+    expect(last(true).name).toBe(true);
+    // Sans priorité, posée après les autres, elle n'aurait gardé que son icône : c'est bien l'ordre qui la sauve.
+    expect(last(false).name).toBe(false);
+  });
+
   it('au large, chaque nom se pose au-dessus de son lieu, Kéo et « Toi » à sa place, les noms des lieux fermés sous leur cadenas', () => {
     const labels: MapLabel[] = [
       { id: 'keo', kind: 'keo', x: 100, y: 300, w: 108, h: 44 },

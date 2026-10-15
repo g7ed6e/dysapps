@@ -1295,6 +1295,10 @@
   flex-direction: column;
   max-height: 55%;
 }
+/* Le lieu d'assemblage, sur tablette : un peu plus haut, pour que « Assembler » se voie sans défiler (consultant UX UI). */
+.open-world-panel-chantier {
+  max-height: 62%;
+}
 .open-world-panel > .island-sheet {
   max-height: 100%;
   padding-bottom: max(1.2rem, env(safe-area-inset-bottom, 0px));
@@ -1333,6 +1337,20 @@
   }
   :root[data-texte="grand"] .open-world-panel {
     width: 64%;
+  }
+  /* La fiche au plus grand texte : le nom et « Y aller » ne tiennent pas sur une ligne de la colonne (près de 500 px
+     pour 395) ; « Y aller » passe dessous, l'écart et le bouton resserrés, et la ligne coupée en bas du panneau montre
+     qu'il y en a d'autres. */
+  :root[data-texte="grand"] .port-row {
+    gap: 0.2rem 0.3rem;
+  }
+  :root[data-texte="grand"] .port-row-name {
+    gap: 0.3rem;
+    min-width: 0;
+  }
+  :root[data-texte="grand"] .port-row-go {
+    padding-inline: 0.5rem;
+    gap: 0.2rem;
   }
 }
 /* La fiche du Port : cinq lignes, l'icône et le nom à gauche, « Y aller » à droite, à la même place sur chaque ligne ;

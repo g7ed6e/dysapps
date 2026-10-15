@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
-import { LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, type CameraPose } from '../../world/continu/camera';
+import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, type CameraPose } from '../../world/continu/camera';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
@@ -18,7 +18,7 @@ import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from '../../world/continu/paths';
 import { PLACES, TERRAIN, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { LAMP_COLOR, lanternLight, modelOfPlace } from '../../world/continu/places';
-import { PORT_MAP_POINT, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
+import { PORT_MAP_POINT, PORT_ROOFLINES, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
 import { answerObjects, answerScale, itemScene, placeTrace, sceneSpot, type Reaction } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
 import {
@@ -138,6 +138,8 @@ export interface OpenWorld {
   map(open: readonly PlaceId[] | null): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number; mapMs: number };
+  /** Ce qu'un toucher en ce point de la fenêtre ouvrirait au Port, sans rien faire (la mesure des cibles). */
+  portAt(clientX: number, clientY: number): PortSpot | 'fiche' | null;
   dispose(): void;
 }
 
@@ -793,14 +795,40 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   // La marque de la prochaine mission : au-dessus du lieu, ou au bord, avec la distance en signe.
   const projected = new THREE.Vector3();
+  const roofA = new THREE.Vector3();
+  const roofB = new THREE.Vector3();
+  const sx = (v: THREE.Vector3) => ((v.x + 1) / 2) * viewW;
+  const sy = (v: THREE.Vector3) => ((1 - v.y) / 2) * viewH;
   const reportMark = () => {
     const mark = markPlace ? marks.get(markPlace) : undefined;
     if (!mark || !markPlace) return options.onMark(null);
     projected.copy(mark).project(camera);
     const far = distanceSign(here, placeById(markPlace).center);
-    options.onMark(
-      markOnScreen({ x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH, behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far, markBeside(markPlace) && whole(markPlace)),
-    );
+    const m = markOnScreen({ x: sx(projected), y: sy(projected), behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far, markBeside(markPlace) && whole(markPlace));
+    if (m.inside && portFloor(here.x, here.z) !== null) markAtPort(m);
+    options.onMark(m);
+  };
+  /**
+   * Au Port (GD-20, lot 2) : la ligne de toit sous laquelle la marque ne descend pas, là où elle se tient (le bas du toit
+   * de l'école, de la galerie, le faîte de la halle), et la place de Kéo à l'écran, qu'elle ne couvre pas.
+   */
+  const markAtPort = (m: MarkOnScreen) => {
+    let ceiling = Infinity;
+    for (const [a, b] of PORT_ROOFLINES) {
+      roofA.set(a.x, a.y, a.z).project(camera);
+      roofB.set(b.x, b.y, b.z).project(camera);
+      if (roofA.z > 1 || roofB.z > 1) continue;
+      const ax = sx(roofA),
+        bx = sx(roofB);
+      if (m.x < Math.min(ax, bx) || m.x > Math.max(ax, bx)) continue;
+      const u = (m.x - ax) / (bx - ax || 1);
+      ceiling = Math.min(ceiling, sy(roofA) + u * (sy(roofB) - sy(roofA)));
+    }
+    if (ceiling < Infinity) m.ceiling = ceiling;
+    roofA.copy(keo.position).project(camera);
+    roofB.set(keo.position.x, keo.position.y + KEO_HEIGHT, keo.position.z).project(camera);
+    const h = sy(roofA) - sy(roofB);
+    m.keo = { left: sx(roofB) - h * 0.3, top: sy(roofB), width: h * 0.6, height: h };
   };
 
   // Les cadenas des lieux sous la brume : leur point (au-dessus du lieu), refaits quand la brume change ; leur place à
@@ -903,6 +931,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     down = null;
     fingers.delete(e.pointerId);
   };
+  /** Le point du monde sous un toucher (au sol, ou sur un lieu), ou rien. */
+  const hitAt = (clientX: number, clientY: number): Vec2 | null => {
+    const r = renderer.domElement.getBoundingClientRect();
+    pointer.set(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
+    raycaster.setFromCamera(pointer, camera);
+    const hit = raycaster.intersectObjects(touchables, false)[0];
+    return hit ? { x: hit.point.x, z: hit.point.z } : null;
+  };
   const onUp = (e: PointerEvent) => {
     const d = down;
     down = null;
@@ -912,12 +948,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (poseRun.active) return finishPose();
     if (assembly) return finishAssembly();
     if (asked || !d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > TAP.pixels || performance.now() - d.t > TAP.ms) return;
-    const r = renderer.domElement.getBoundingClientRect();
-    pointer.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-    raycaster.setFromCamera(pointer, camera);
-    const hit = raycaster.intersectObjects(touchables, false)[0];
-    if (!hit) return;
-    const p = { x: hit.point.x, z: hit.point.z };
+    const p = hitAt(e.clientX, e.clientY);
+    if (!p) return;
     // L'Escale : une porte, la galerie ou le lieu d'assemblage y mène Kéo d'un coup et en ouvre le panneau ; le reste du
     // Port ouvre sa fiche (Kéo reste où il est).
     const atPort = portTouch(p);
@@ -1762,6 +1794,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     scenetteEnd,
     setPlaces,
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, mapMs }),
+    portAt: (clientX: number, clientY: number) => {
+      const p = hitAt(clientX, clientY);
+      return p ? portTouch(p) : null;
+    },
     dispose: () => {
       disposed = true;
       cancelAnimationFrame(frame);

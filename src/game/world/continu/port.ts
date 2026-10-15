@@ -48,7 +48,8 @@ const C = {
   frame: 0xc7bea9,
   // L'ardoise bleue de l'école (directeur artistique) : un gris-bleu franc, jamais presque noir.
   slate: 0x5b7c99,
-  tile: 0xb0583a,
+  // L'ardoise de la galerie : la même famille, plus claire que celle de l'école (directeur artistique).
+  paleSlate: 0x8aa3b8,
   shingle: 0x8a6440,
   wood: 0xa9784a,
   darkWood: 0x8a6440,
@@ -90,11 +91,13 @@ const SLOTS_AT_START = GALLERY.base * 6;
 const SLOTS_PER_BAY = 6;
 
 /** L'école : son milieu, sa largeur, la hauteur de ses murs ; le milieu de chaque porte, dans l'ordre des matières. */
-const SCHOOL = { x: 22.5, width: 10, wall: 5.2, doors: [19.3, 22.5, 25.7] } as const;
+const SCHOOL = { x: 22.5, width: 10, wall: 5.2, doors: [19.3, 22.5, 25.7], windows: [20.9, 24.1] } as const;
+/** Une fenêtre de la façade haute (entre deux cartouches) : sa largeur, sa hauteur ; chaque volet en couvre la moitié. */
+const WINDOW = { width: 0.6, height: 0.95 } as const;
 /** Une porte : sa largeur, sa hauteur sous l'arc. */
 const DOOR = { width: 2.2, height: 2.6, arch: 0.45 } as const;
 /** Le lieu d'assemblage : son milieu, ses dimensions, son établi, son râtelier, sa grue. */
-const HALL = { x: 32.5, width: 7, posts: 3.6 } as const;
+const HALL = { x: 32.5, width: 7, posts: 4.0, ridge: 1.9 } as const;
 const BENCH = { x: 32.5, z: 4.6, top: 0.85 } as const;
 const RACK = { x: 30.2, z0: 2.9, z1: 5.3, top: 0.7 } as const;
 /** Les madriers montrés sur le râtelier, au plus : deux par rang, cinq rangs. */
@@ -177,7 +180,7 @@ function gallery(b: FacetBuilder, trophies: readonly TrophyAccent[]): void {
   for (let k = 0; k <= n; k++) b.box({ x: x1 - k * GALLERY.arcade, y: PLINTH, z: FACADE_Z - 0.3 }, [0.45, 2.2, 0.45], C.white);
   for (let k = 0; k < n; k++) arch(b, x1 - (k + 1) * GALLERY.arcade + 0.2, x1 - k * GALLERY.arcade - 0.2, top - 0.1, FACADE_Z - 0.3, 0.45, 0.3, C.white);
   b.box({ x: (x0 + x1) / 2, y: top + 0.45, z: FACADE_Z - 0.3 }, [x1 - x0 + 0.45, 0.4, 0.5], C.frame);
-  b.box({ x: (x0 + x1) / 2, y: PLINTH + 3.0, z: (BACK_Z + FACADE_Z) / 2 }, [x1 - x0 + 0.7, 0.28, FACADE_Z - BACK_Z + 0.5], C.tile, C.tile);
+  b.box({ x: (x0 + x1) / 2, y: PLINTH + 3.0, z: (BACK_Z + FACADE_Z) / 2 }, [x1 - x0 + 0.7, 0.28, FACADE_Z - BACK_Z + 0.5], C.paleSlate, C.paleSlate);
   // Les socles : trois devant, trois sur le gradin du fond, par arcade.
   for (let i = 0; i < n * 6; i++) {
     const s = trophySlot(i);
@@ -300,7 +303,7 @@ function emblem(b: FacetBuilder, s: PortSubject, x: number, y: number, z: number
  * porte : fermée (son vantail), ouverte (le vantail rabattu, l'intérieur) avec sa lanterne allumée à côté, puis
  * pavoisée (une guirlande de fanions unis au-dessus de l'arche) ; aucun compteur.
  */
-function school(b: FacetBuilder, doors: PortState['doors']): void {
+function school(b: FacetBuilder, doors: PortState['doors'], degree: RegionDegree): void {
   const x0 = SCHOOL.x - SCHOOL.width / 2,
     x1 = SCHOOL.x + SCHOOL.width / 2;
   plinth(b, x0 - 0.2, x1 + 0.2);
@@ -347,32 +350,57 @@ function school(b: FacetBuilder, doors: PortState['doors']): void {
     }
     emblem(b, s, x, PLINTH + DOOR.height + DOOR.arch + 1.15, front + 0.05);
   }
+  for (const x of SCHOOL.windows) shutters(b, x, PLINTH + DOOR.height + DOOR.arch + 1.15, front, degree >= 1);
 }
 
 /**
- * Le lieu d'assemblage : une halle de charpente ouverte sur six poteaux, un toit à deux pentes, l'établi au milieu et
- * sur lui la recette (deux pièces de l'un, une de l'autre), une petite grue de bois, et le râtelier dont la pile montre
- * le stock (dix madriers au plus).
+ * Une fenêtre de la façade haute de l'école, entre deux cartouches : ses volets clos tant que la région est abandonnée
+ * (le Port endormi), ouverts et rabattus contre le mur dès qu'elle est réactivée (directeur artistique).
+ */
+function shutters(b: FacetBuilder, x: number, y: number, front: number, open: boolean): void {
+  const { width: w, height: h } = WINDOW;
+  const bottom = y - h / 2;
+  b.box({ x, y: bottom - 0.08, z: front + 0.03 }, [w + 0.2, h + 0.16, 0.06], C.frame, C.coping);
+  if (open) {
+    b.box({ x, y: bottom, z: front + 0.07 }, [w, h, 0.04], C.inside);
+    for (const side of [-1, 1]) b.box({ x: x + side * (w / 2 + 0.1 + w / 4), y: bottom, z: front + 0.08 }, [w / 2, h, 0.06], C.door);
+  } else for (const side of [-1, 1]) b.box({ x: x + side * (w / 4), y: bottom, z: front + 0.1 }, [w / 2 - 0.02, h, 0.08], C.door);
+}
+
+/**
+ * Le lieu d'assemblage : une halle de charpente ouverte sur six poteaux, un toit à deux pentes dont le faîte est
+ * perpendiculaire à la façade (son pignon regarde la place), l'établi au milieu et sur lui la recette (deux pièces de
+ * l'un, une de l'autre), une grue de bois dehors, côté est, dont la flèche entre sous le toit par le côté ouvert
+ * jusqu'au-dessus de l'établi, et le râtelier dont la pile montre le stock (dix madriers au plus).
  */
 function hall(b: FacetBuilder, state: PortState, shown: PortShown): void {
   const x0 = HALL.x - HALL.width / 2,
     x1 = HALL.x + HALL.width / 2;
-  plinth(b, x0 - 0.2, x1 + 0.2);
+  // Le socle s'étend à l'est sous le pied de la grue.
+  plinth(b, x0 - 0.2, x1 + 1.3);
   const top = PLINTH + HALL.posts;
+  const midZ = (BACK_Z + FACADE_Z) / 2;
   for (const x of [x0 + 0.3, HALL.x, x1 - 0.3]) for (const z of [BACK_Z + 0.5, FACADE_Z - 0.5]) b.box({ x, y: PLINTH, z }, [0.35, HALL.posts, 0.35], C.wood);
-  for (const z of [BACK_Z + 0.5, FACADE_Z - 0.5]) b.box({ x: HALL.x, y: top - 0.3, z }, [HALL.width - 0.4, 0.3, 0.3], C.darkWood);
-  b.gableRoof({ x: HALL.x, y: top, z: (BACK_Z + FACADE_Z) / 2 }, HALL.width + 0.6, FACADE_Z - BACK_Z + 0.9, 1.7, C.shingle, C.wood);
+  // Les sablières sous les deux pentes (est et ouest) ; côté place, rien sous le pignon : la flèche de la grue s'y voit.
+  for (const x of [x0 + 0.3, x1 - 0.3]) b.box({ x, y: top - 0.3, z: midZ }, [0.3, 0.3, FACADE_Z - BACK_Z - 0.6], C.darkWood);
+  // Le faîte perpendiculaire à la façade : le pignon triangulaire, en bois clair, regarde la place.
+  b.gableRoof({ x: HALL.x, y: top, z: midZ, yaw: Math.PI / 2 }, FACADE_Z - BACK_Z + 0.9, HALL.width + 0.6, HALL.ridge, C.shingle, C.newWood);
   // L'établi.
   const bench = PLINTH + BENCH.top;
   b.box({ x: BENCH.x, y: bench - 0.15, z: BENCH.z }, [2.6, 0.15, 1.0], C.darkWood, C.newWood);
   for (const dx of [-1.1, 1.1]) for (const dz of [-0.35, 0.35]) b.box({ x: BENCH.x + dx, y: PLINTH, z: BENCH.z + dz }, [0.14, BENCH.top - 0.15, 0.14], C.darkWood);
   if (!shown.assembling) b.append(benchPieces(state.recipe.pieces, { x: BENCH.x, y: bench, z: BENCH.z }));
-  // La grue, à l'est de l'établi : son mât, sa flèche au-dessus de lui, sa corde et son crochet.
-  const crane = { x: x1 - 0.9, z: 3.0 };
-  b.box({ x: crane.x, y: PLINTH, z: crane.z }, [0.24, 3.0, 0.24], C.wood);
-  b.beam({ x: crane.x, y: PLINTH + 2.9, z: crane.z }, { x: BENCH.x + 0.6, y: PLINTH + 2.9, z: BENCH.z - 0.2 }, 0.16, C.wood);
-  b.beam({ x: BENCH.x + 0.6, y: PLINTH + 2.9, z: BENCH.z - 0.2 }, { x: BENCH.x + 0.6, y: PLINTH + 2.05, z: BENCH.z - 0.2 }, 0.04, C.darkWood);
-  b.box({ x: BENCH.x + 0.6, y: PLINTH + 1.85, z: BENCH.z - 0.2 }, [0.16, 0.2, 0.16], C.bollard);
+  // La grue, dehors, côté est : son mât plus haut que le faîte, sa flèche qui entre sous la pente par le côté ouvert
+  // jusqu'au-dessus de l'établi, sa contre-flèche et son contrepoids, sa jambe de force ; sa corde et son crochet.
+  const crane = { x: x1 + 0.8, z: BENCH.z - 0.2, mast: HALL.posts + HALL.ridge + 0.5, jib: 2.8 };
+  const hook = { x: BENCH.x + 0.6, z: crane.z };
+  b.box({ x: crane.x, y: PLINTH, z: crane.z }, [0.3, crane.mast, 0.3], C.darkWood);
+  b.prism({ x: crane.x, y: PLINTH + crane.mast, z: crane.z }, 0.26, 0, 0.3, 4, C.darkWood);
+  b.beam({ x: crane.x + 1.1, y: PLINTH + crane.jib, z: crane.z }, { x: hook.x, y: PLINTH + crane.jib, z: hook.z }, 0.18, C.darkWood);
+  b.box({ x: crane.x + 1.0, y: PLINTH + crane.jib - 0.55, z: crane.z }, [0.4, 0.45, 0.4], C.bollard);
+  b.beam({ x: crane.x, y: PLINTH + crane.jib - 1.1, z: crane.z }, { x: x1 - 0.6, y: PLINTH + crane.jib, z: crane.z }, 0.1, C.darkWood);
+  b.beam({ x: hook.x, y: PLINTH + crane.jib, z: hook.z }, { x: hook.x, y: PLINTH + 2.05, z: hook.z }, 0.04, C.darkWood);
+  b.box({ x: hook.x, y: PLINTH + 1.85, z: hook.z }, [0.16, 0.2, 0.16], C.bollard);
   // Le râtelier : deux tréteaux, la pile des madriers couchés en travers.
   for (const z of [RACK.z0, RACK.z1]) {
     for (const dx of [-0.45, 0.45]) b.box({ x: RACK.x + dx, y: PLINTH, z }, [0.14, RACK.top, 0.14], C.darkWood);
@@ -381,7 +409,7 @@ function hall(b: FacetBuilder, state: PortState, shown: PortShown): void {
   const pile = Math.min(PILE_MOST, Math.max(0, state.pile - (shown.assembling ? 1 : 0)));
   for (let k = 0; k < pile; k++) {
     const p = rackSlotLocal(k);
-    b.box({ x: p.x, y: p.y, z: p.z }, MADRIER.size, darker(state.recipe.made), state.recipe.made);
+    b.box({ x: p.x, y: p.y, z: p.z }, MADRIER.size, state.recipe.made);
   }
 }
 
@@ -438,7 +466,7 @@ function portLocal(state: PortState, shown: PortShown): Facets {
   const b = new FacetBuilder();
   quayAndSquare(b);
   gallery(b, state.trophies);
-  school(b, state.doors);
+  school(b, state.doors, state.degree);
   hall(b, state, shown);
   wakes(b, state.degree);
   return b.build();
@@ -500,6 +528,17 @@ export function portSubject(spot: PortSpot, trophies = 0): Vec3 {
   return world3(doorX(spot), PLINTH + 2.0, FACADE_Z);
 }
 
+/**
+ * Les lignes de toit du Port, côté place, d'un bout à l'autre (dans le monde) : le bas du toit de l'école, celui de la
+ * galerie (allongée au plus), le faîte du pignon de la halle. L'étiquette de la marque ne descend jamais sous elles :
+ * elle ne passe ni sur un cartouche, ni sur une porte (directeur artistique).
+ */
+export const PORT_ROOFLINES: readonly (readonly [Vec3, Vec3])[] = [
+  [world3(SCHOOL.x - SCHOOL.width / 2 - 0.4, PLINTH + SCHOOL.wall, FACADE_Z + 0.5), world3(SCHOOL.x + SCHOOL.width / 2 + 0.4, PLINTH + SCHOOL.wall, FACADE_Z + 0.5)],
+  [world3(GALLERY.east - GALLERY.most * GALLERY.arcade - 0.35, PLINTH + 3.0, FACADE_Z + 0.25), world3(GALLERY.east + 0.35, PLINTH + 3.0, FACADE_Z + 0.25)],
+  [world3(HALL.x - HALL.width / 2 - 0.3, PLINTH + HALL.posts + HALL.ridge, FACADE_Z + 0.45), world3(HALL.x + HALL.width / 2 + 0.3, PLINTH + HALL.posts + HALL.ridge, FACADE_Z + 0.45)],
+];
+
 /** Sur la Carte, le point de l'Escale : au-dessus du toit de l'école. */
 export const PORT_MAP_POINT: Vec3 = world3(SCHOOL.x, PLINTH + SCHOOL.wall + 3.4, (BACK_Z + FACADE_Z) / 2);
 
@@ -510,7 +549,8 @@ export const PORT_MAP_POINT: Vec3 = world3(SCHOOL.x, PLINTH + SCHOOL.wall + 3.4,
 export function assemblyScene(state: PortState): { pieces: Facets; made: Facets; from: Vec3; to: Vec3 } {
   const bench = { x: 0, y: 0, z: 0 };
   const madrier = new FacetBuilder();
-  madrier.box({ x: 0, y: 0, z: 0, yaw: Math.PI / 2 }, MADRIER.size, darker(state.recipe.made), state.recipe.made);
+  // Le madrier de la teinte du bloc assemblé (celle de son icône), toutes ses faces : la halle garde son bois sombre.
+  madrier.box({ x: 0, y: 0, z: 0, yaw: Math.PI / 2 }, MADRIER.size, state.recipe.made);
   // Les pièces et le madrier, dans le repère de l'établi, tournés comme le Port (la vue les déplace en bloc).
   const turn = (f: Facets) => placeFacets(f, { x: 0, y: 0, z: 0, yaw: PORT.yaw });
   const slot = rackSlotLocal(Math.min(PILE_MOST - 1, Math.max(0, state.pile - 1)));

@@ -4,7 +4,8 @@
 // Un panneau à la fois, en bas sur tablette (le Port reste visible au-dessus), en colonne à gauche sur un écran bas (la
 // porte reste visible à droite) ; la croix, Échap, et rien n'est perdu. Aucun lien n'y sort du monde.
 import { useEffect } from 'react';
-import { SUBJECTS } from '../../../apps/registry';
+import { SUBJECTS, getApp } from '../../../apps/registry';
+import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon, type AnyIconName } from '../../../components/Icon';
 import { SubjectApps } from '../../../components/SubjectApps';
 import { AssemblageBody } from '../../Assembly';
@@ -26,6 +27,15 @@ interface PortNames {
 /** L'adresse où ramène une mission jouée depuis une porte, ou la question d'assemblage : le monde continu, à cet endroit. */
 export const portReturn = (spot: Exclude<PortSpot, 'quai'>) => `/adventure?porte=${spot}`;
 
+/**
+ * D'où ramène « Ma dernière mission » (accès direct), quand c'est une mission de l'école (le portail d'une matière) :
+ * sa porte, à l'Escale ; sinon rien (son retour habituel).
+ */
+export function portResume(path: string): string | undefined {
+  const subject = path.startsWith('/app/') ? getApp(path.slice('/app/'.length))?.subject : undefined;
+  return subject && PORT_SUBJECTS.includes(subject as PortSubject) ? portReturn(subject as PortSubject) : undefined;
+}
+
 /** Un endroit de l'Escale lu dans l'adresse de retour (`?porte=maths`), s'il en est un. */
 export function portFromParam(value: string | null): Exclude<PortSpot, 'quai'> | null {
   return value === 'succes' || value === 'chantier' || PORT_SUBJECTS.includes(value as PortSubject) ? (value as Exclude<PortSpot, 'quai'>) : null;
@@ -41,6 +51,8 @@ interface Props {
 
 /** Le panneau ouvert de l'Escale. */
 export function PortPanels({ panel, names, onGo, onClose }: Props) {
+  // Un panneau ouvert retient les célébrations : un bandeau ne tombe pas sur la liste qu'on lit ; rendues à la fermeture.
+  useHoldCelebrations(true);
   // Échap ferme le panneau, comme la croix.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -53,20 +65,22 @@ export function PortPanels({ panel, names, onGo, onClose }: Props) {
   if (panel === 'succes') return <TrophySheet title={names.succes} stayInWorld onClose={onClose} />;
   if (panel === 'chantier')
     return (
-      <Sheet id="panneau-assemblage" className="assemblage-sheet" titleId="assemblage-titre" icon="hammer" title={names.assemblage} subtitle={names.nom} onClose={onClose}>
+      // Sans sous-titre (le Port se voit au-dessus) : « Assembler » se voit sans défiler sur tablette.
+      <Sheet id="panneau-assemblage" className="assemblage-sheet" titleId="assemblage-titre" icon="hammer" title={names.assemblage} onClose={onClose}>
         <AssemblageBody back={portReturn('chantier')} stayInWorld />
       </Sheet>
     );
-  return <DoorSheet subject={panel} school={names.ecole} onClose={onClose} />;
+  return <DoorSheet subject={panel} onClose={onClose} />;
 }
 
 /**
- * Une porte de l'école : la matière, puis ses missions en lignes (icône, titre, Nouveau ou record), sans les trois
- * cartes de porte (la porte est déjà choisie par le toucher), ni l'accueil, ni « Les îles de… » (il sortirait du monde).
+ * Une porte de l'école : la matière, puis ses missions en lignes (icône, titre, Nouveau ou record), sans sous-titre (la
+ * façade se voit à côté), sans les trois cartes de porte (la porte est déjà choisie par le toucher), ni l'accueil, ni
+ * « Les îles de… » (il sortirait du monde).
  */
-function DoorSheet({ subject, school, onClose }: { subject: PortSubject; school: string; onClose(): void }) {
+function DoorSheet({ subject, onClose }: { subject: PortSubject; onClose(): void }) {
   return (
-    <Sheet id="panneau-porte" className={`school-sheet port-door-sheet subject-${subject}`} titleId="porte-titre" icon={SUBJECTS[subject].icon} title={SUBJECTS[subject].title} subtitle={school} onClose={onClose}>
+    <Sheet id="panneau-porte" className={`school-sheet port-door-sheet subject-${subject}`} titleId="porte-titre" icon={SUBJECTS[subject].icon} title={SUBJECTS[subject].title} onClose={onClose}>
       <SubjectApps subject={subject} from={portReturn(subject)} compact />
     </Sheet>
   );

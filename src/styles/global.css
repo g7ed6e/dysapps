@@ -472,6 +472,26 @@ button.app-card:active {
   min-width: 0;
   font-weight: 700;
 }
+/* Au plus grand texte, l'étiquette passe sous le titre, l'icône à gauche des deux, et la ligne se resserre : deux
+   lignes par mission dans la colonne d'un écran bas (consultant UX UI). */
+:root[data-texte="grand"] .apps-compact .app-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.6rem;
+  row-gap: 0.15rem;
+  padding: 0.3rem 0.6rem;
+}
+:root[data-texte="grand"] .apps-compact .app-icon {
+  grid-row: span 2;
+  width: 1.8rem;
+  height: 1.8rem;
+}
+:root[data-texte="grand"] .apps-compact .app-card > .tag {
+  grid-column: 2;
+  justify-self: start;
+  margin-top: 0;
+}
 .subject-icon,
 .app-icon {
   display: grid;

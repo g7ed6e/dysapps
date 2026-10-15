@@ -6,7 +6,8 @@ import { PORT_BUDGET } from './budget';
 import { boundsOf } from './facets';
 import { atNode, findRoute, pathNode, pathRibbons } from './paths';
 import { PATH_EDGES, PORT, PORT_PAVING, PORT_SUBJECTS, portFloor, portLevel, portNode, type PortSpot } from './plan6e';
-import { PORT_TROPHY_SLOTS, PORT_WORST, assemblyScene, galleryArcades, portFacets, portHeading, portTouch, trophyShape, trophySlot, type PortState } from './port';
+import { PORT_ROOFLINES, PORT_TROPHY_SLOTS, PORT_WORST, assemblyScene, galleryArcades, portFacets, portHeading, portTouch, trophyShape, trophySlot, type PortState } from './port';
+import { linearRgb } from './geometry';
 import { buildHeightField, heightOnMesh } from './terrain';
 
 const ASLEEP: PortState = {
@@ -16,6 +17,18 @@ const ASLEEP: PortState = {
   pile: 0,
   recipe: { pieces: [0xc29a5f, 0xc29a5f, 0xd98a5a], made: 0xdcba86 },
 };
+
+/** Les sommets d'une couleur, dans le repère du Port (pour situer un volume sans exporter son dessin). */
+function verticesOf(f: { positions: Float32Array; colors: Float32Array }, color: number): { x: number; y: number; z: number }[] {
+  const [r, g, b] = linearRgb(color);
+  const out: { x: number; y: number; z: number }[] = [];
+  for (let k = 0; k < f.colors.length; k += 3)
+    if (Math.abs(f.colors[k] - r) < 1e-6 && Math.abs(f.colors[k + 1] - g) < 1e-6 && Math.abs(f.colors[k + 2] - b) < 1e-6) {
+      const l = PORT.toLocal({ x: f.positions[k], z: f.positions[k + 2] });
+      out.push({ x: l.x, y: f.positions[k + 1], z: l.z });
+    }
+  return out;
+}
 
 const SPOTS: readonly PortSpot[] = ['quai', ...PORT_SUBJECTS, 'succes', 'chantier'];
 
@@ -136,5 +149,36 @@ describe('L’Escale', () => {
   it('Kéo se tient face à la caméra au quai, tourné vers la façade devant une porte', () => {
     expect(portHeading('quai')).toBe(Math.PI);
     for (const s of PORT_SUBJECTS) expect(portHeading(s)).toBe(PORT.yaw);
+  });
+
+  it('l’école endormie a ses volets clos ; réactivée, ses fenêtres s’ouvrent (l’intérieur se voit)', () => {
+    const INSIDE = 0x9c8a70;
+    const high = (degree: PortState['degree']) => verticesOf(portFacets({ ...ASLEEP, degree }), INSIDE).filter((v) => v.y > 3.5);
+    expect(high(0)).toHaveLength(0);
+    expect(high(1).length).toBeGreaterThan(0);
+  });
+
+  it('la halle tourne son pignon vers la place, et la grue se tient dehors, côté est, plus haut que le faîte', () => {
+    const f = portFacets(ASLEEP);
+    // Le pignon, en bois clair, monte jusqu'au faîte, au bord de la façade.
+    const gable = verticesOf(f, 0xc8955a).filter((v) => v.x > 29 && v.x < 36 && v.z > 6.5);
+    expect(Math.max(...gable.map((v) => v.y))).toBeGreaterThan(5);
+    const crane = verticesOf(f, 0x8a6440).filter((v) => v.x > 36.1);
+    expect(crane.length).toBeGreaterThan(0);
+    expect(Math.max(...crane.map((v) => v.y))).toBeGreaterThan(Math.max(...gable.map((v) => v.y)));
+  });
+
+  it('le madrier en vol et ceux de la pile sont de la teinte du bloc assemblé, toutes leurs faces', () => {
+    const made = 0x123456;
+    const scene = assemblyScene({ ...ASLEEP, pile: 1, recipe: { ...ASLEEP.recipe, made } });
+    expect(scene.made.colors.length).toBe(verticesOf(scene.made, made).length * 3);
+    expect(verticesOf(portFacets({ ...ASLEEP, pile: 2, recipe: { ...ASLEEP.recipe, made } }), made)).toHaveLength(2 * scene.made.triangles * 3);
+  });
+
+  it('les lignes de toit, côté place, sont au-dessus des portes et des cartouches', () => {
+    expect(PORT_ROOFLINES).toHaveLength(3);
+    const school = PORT_ROOFLINES[0];
+    expect(school[0].y).toBeGreaterThan(5);
+    expect(school[0].y).toBe(school[1].y);
   });
 });

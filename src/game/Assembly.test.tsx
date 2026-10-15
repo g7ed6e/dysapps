@@ -5,7 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
 import { BloclandProvider } from './BloclandContext';
-import { AssemblyPage } from './Assembly';
+import { AssemblageBody, AssemblyPage } from './Assembly';
 import { AssemblyQuestionPage } from './AssemblyQuestion';
 import { BRIDGES, VOYAGES } from './world/archipelago';
 import { prochaineQuestion, tirageNeuf, type TirageAssemblage } from './world/assembly';
@@ -276,4 +276,13 @@ it('les questions d’assemblage comptent dans l’horloge de séance : la pause
   await user.click(screen.getByRole('button', { name: 'Encore un peu' }));
   expect(screen.queryByText(/Belle séance/)).toBeNull();
   expect(screen.getByRole('link', { name: /Revenir à la Fabrique/ })).toHaveFocus();
+});
+
+it('dans le monde continu, l’accueil du lieu d’assemblage est dans un pli « En savoir plus » : « Assembler » se voit sans défiler', () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 4, 'maths-6e-calculation': 2 } }));
+  const { container } = renderIn(<AssemblageBody back="/adventure?porte=chantier" stayInWorld />);
+  const fold = container.querySelector('details.sheet-more');
+  expect(fold).not.toBeNull();
+  expect(within(fold as HTMLElement).getByText('En savoir plus')).toBeInTheDocument();
+  expect(container.querySelector('.assemblage > .section-intro')).toBeNull();
 });

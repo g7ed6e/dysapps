@@ -57,9 +57,10 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
       const size = sizes.current.get(s.id);
       if (!s.shown || !size) continue;
       const kind = s.id === 'keo' ? 'keo' : s.id === 'port' || openPlaces.includes(s.id) ? 'open' : 'closed';
-      items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h });
+      items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port' });
     }
-    // Kéo d'abord, puis les lieux ouverts, puis les fermés : l'ordre de `layoutMapLabels`.
+    // Kéo d'abord, puis l'Escale (elle garde son nom), les autres lieux ouverts, puis les fermés : l'ordre de
+    // `layoutMapLabels`.
     for (const spot of layoutMapLabels(items, obstacles.current, screen.current)) {
       const node = el.querySelector<HTMLElement>(`[data-lieu="${spot.id}"]`);
       if (!node) continue;

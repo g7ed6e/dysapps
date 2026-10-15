@@ -10,6 +10,8 @@ import { BloclandProvider } from './BloclandContext';
 import { EMPTY_STATE } from './engine/state';
 import { COMMANDES } from './world/requests';
 import { WorldShortcuts } from './WorldShortcuts';
+import { rememberPlace } from '../core/lastPlace';
+import { portResume } from './three/archipeo/PortPanels';
 
 function Where() {
   return <span data-testid="adresse">{useLocation().pathname}</span>;
@@ -53,4 +55,27 @@ it('les commandes plus tard (le monde continu) : à sa place, délavé, sans com
   await userEvent.setup().click(bouton);
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
   expect(colonne).toHaveTextContent('indisponible pour l’instant');
+});
+
+it('« Ma dernière mission » depuis le monde continu : une mission de l’école part avec son retour vers sa porte (GD-20, lot 2)', async () => {
+  rememberPlace({ path: '/app/tables', label: 'Tables' });
+  function State() {
+    return <span data-testid="retour">{(useLocation().state as { from?: string } | null)?.from ?? ''}</span>;
+  }
+  render(
+    <SettingsProvider>
+      <ProgressProvider>
+        <BloclandProvider>
+          <MemoryRouter initialEntries={['/adventure']}>
+            <WorldShortcuts a="6e" requestsOpen={false} requestsLater resumeFrom={portResume} />
+            <Where />
+            <State />
+          </MemoryRouter>
+        </BloclandProvider>
+      </ProgressProvider>
+    </SettingsProvider>,
+  );
+  await userEvent.setup().click(screen.getByRole('button', { name: 'Ma dernière mission : Tables' }));
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/app/tables');
+  expect(screen.getByTestId('retour')).toHaveTextContent('/adventure?porte=maths');
 });

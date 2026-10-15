@@ -58,7 +58,11 @@ export function WorldShortcuts({
   const commandes = textes.commandes && !requestsLater ? requestCount(state.world, a, Boolean(textes.quetes)) : 0;
   return (
     <nav className="world-shortcuts" data-couvre="bouton" data-tuto="raccourcis" aria-label="Reprendre">
-      <WorldButton icon="play" name={resume ? `Ma dernière mission : ${resume.label}` : 'Ma dernière mission'} empty={resume ? undefined : 'pas encore de mission'} onClick={() => {
+      <WorldButton
+        icon="play"
+        name={resume ? `Ma dernière mission : ${resume.label}` : 'Ma dernière mission'}
+        empty={resume ? undefined : 'pas encore de mission'}
+        onClick={() => {
           if (!resume) return;
           const from = resumeFrom?.(resume.path);
           navigate(resume.path, from ? { state: { from } } : undefined);

@@ -91,6 +91,12 @@ export interface MarkOnScreen {
   far: 1 | 2 | 3;
   /** Dans l'écran, la marque se pose à droite du point (à côté de la lanterne du Phare), pas au-dessus. */
   beside: boolean;
+  /**
+   * Au Port (GD-20, lot 2), dans l'écran : la ligne de toit sous laquelle la marque ne descend pas, en pixels depuis le
+   * haut (elle ne passe ni sur un cartouche ni sur une porte), et la place de Kéo, qu'elle ne couvre pas.
+   */
+  ceiling?: number;
+  keo?: ScreenRect;
 }
 
 /**

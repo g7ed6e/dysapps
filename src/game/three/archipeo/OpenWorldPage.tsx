@@ -9,7 +9,6 @@
 // Kéo. Chargé à la demande.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
-import { getApp } from '../../../apps/registry';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
@@ -25,13 +24,13 @@ import { mesuresDemandees, meterShown } from '../../rendering';
 import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import type { PartShape } from '../../world/continu/construction';
 import { keepClear, missionOfPlace, nextMission, veiledPlaces, type MarkOnScreen, type Obstacle } from '../../world/continu/mission';
-import { PLACES, PORT_SUBJECTS, placeById, placeOfIsland, type PlaceId, type PortSpot, type PortSubject } from '../../world/continu/plan6e';
+import { PLACES, placeById, placeOfIsland, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { constructionState, placeConstruction, posedShapes } from './constructionParts';
 import { MapLabels } from './MapLabels';
-import { PortPanels, portFromParam, portReturn, type PortPanel } from './PortPanels';
+import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
 import { portState } from './portState';
 import { createOpenWorld, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { WorldQuestion } from './WorldQuestion';
@@ -40,7 +39,7 @@ import './openWorld.css';
 declare global {
   interface Window {
     /** Le monde ouvert, pour les captures et les mesures (en développement, ou avec `?mesures`). */
-    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info'>;
+    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt'>;
   }
 }
 
@@ -109,7 +108,10 @@ export default function OpenWorldPage() {
   // Les célébrations (« Succès débloqué ») attendent la fin de la pose de la partie gagnée, pas seulement celle du bilan :
   // retenues dès qu'une question s'ouvre, rendues quand la pose est finie (ou quand rien ne se pose).
   const [posePending, setPosePending] = useState(false);
-  useHoldCelebrations(posePending);
+  // La scénette d'assemblage se joue (GD-20, lot 2) : les célébrations attendent qu'elle finisse, comme pendant une
+  // pose ; un panneau ouvert les retient aussi (PortPanels).
+  const [assembling, setAssembling] = useState(false);
+  useHoldCelebrations(posePending || assembling);
 
   // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
   // taille (jamais une mise en page forcée par image).
@@ -163,7 +165,10 @@ export default function OpenWorldPage() {
         setPanel(null);
       },
       onPort: (spot) => setPanel(spot === 'quai' ? 'fiche' : spot),
-      onAssembled: () => setPanel('chantier'),
+      onAssembled: () => {
+        setAssembling(false);
+        setPanel('chantier');
+      },
       onArrive: (placeId) => {
         setWalking(false);
         if (!placeId) return;
@@ -185,7 +190,7 @@ export default function OpenWorldPage() {
     });
     world.current = w;
     setReady((n) => n + 1);
-    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, goToPort: w.goToPort, assemble: w.assemble, skip: w.skip, info: w.info };
+    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, goToPort: w.goToPort, assemble: w.assemble, skip: w.skip, info: w.info, portAt: w.portAt };
     return () => {
       w.dispose();
       world.current = null;
@@ -209,8 +214,10 @@ export default function OpenWorldPage() {
     const w = world.current;
     if (!w || arrived.current || !arrival.spot) return;
     arrived.current = true;
-    if (arrival.spot === 'chantier' && arrival.assembled) w.assemble();
-    else setPanel(arrival.spot);
+    if (arrival.spot === 'chantier' && arrival.assembled) {
+      setAssembling(true);
+      w.assemble();
+    } else setPanel(arrival.spot);
   }, [arrival, ready]);
   // Le panneau ouvert : la caméra garde ce qu'il concerne dans la part de l'écran qu'il laisse (au-dessus de lui sur
   // tablette, à sa droite sur un écran bas), relue quand il change de taille.
@@ -400,12 +407,12 @@ export default function OpenWorldPage() {
         )}
         {/* Les accès directs (décision « Sans Menu », GD-20, lot 1) : la colonne du monde en grille, telle quelle ; les
             commandes délavées tant qu'elles ne se livrent pas dans le monde continu. Masquée pendant une question. */}
-        {!asking && !panel && <WorldShortcuts a="6e" requestsOpen={false} requestsLater resumeFrom={schoolReturn} />}
+        {!asking && !panel && <WorldShortcuts a="6e" requestsOpen={false} requestsLater resumeFrom={portResume} />}
         {!asking && !panel && <SettingsButton />}
         {/* Le panneau ouvert de l'Escale (GD-20, lot 2) : comme une question, il masque les accès directs, Réglages, la
             Carte et « Y aller » ; un seul panneau à la fois. */}
         {panel && !asking && textes.depart && (
-          <div ref={panelRef} className="open-world-panel">
+          <div ref={panelRef} className={`open-world-panel open-world-panel-${panel}`}>
             <PortPanels panel={panel} names={textes.depart} onGo={goPort} onClose={closePanel} />
           </div>
         )}
@@ -477,14 +484,6 @@ function placeLocks(root: HTMLElement | null, locks: readonly LockOnScreen[]): v
   }
 }
 
-/**
- * D'où ramène la dernière mission, quand c'est une mission de l'école (le portail d'une matière de l'école) : sa porte,
- * à l'Escale ; sinon son retour habituel.
- */
-function schoolReturn(path: string): string | undefined {
-  const subject = path.startsWith('/app/') ? getApp(path.slice('/app/'.length))?.subject : undefined;
-  return subject && PORT_SUBJECTS.includes(subject as PortSubject) ? portReturn(subject as PortSubject) : undefined;
-}
 
 /** Le temps où « Fermé pour l'instant » reste écrit, en millisecondes. */
 const CLOSED_NOTE_MS = 4000;
@@ -520,6 +519,12 @@ function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkO
     : m.beside
       ? { left: m.x + MARK_EDGE, top: m.y - h / 2, width: w, height: h }
       : { left: m.x - w / 2, top: m.y - h, width: w, height: h };
+  // Au Port : jamais sous la ligne de toit (ni sur un cartouche ni sur une porte), jamais sur Kéo ; elle remonte.
+  if (m.inside) {
+    let limit = m.ceiling ?? Infinity;
+    if (m.keo && box.left < m.keo.left + m.keo.width && m.keo.left < box.left + w) limit = Math.min(limit, m.keo.top - MARK_EDGE);
+    if (box.top + h > limit) box.top = limit - h;
+  }
   const r = keepClear(box, size.obstacles, size.width, size.height, MARK_EDGE, MARK_EDGE);
   mark.style.transform = `translate(${Math.round(r.left)}px, ${Math.round(r.top)}px)`;
   if (arrow) arrow.style.transform = m.inside ? '' : `rotate(${m.angle}rad)`;
