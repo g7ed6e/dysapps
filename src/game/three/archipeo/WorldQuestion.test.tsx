@@ -26,7 +26,7 @@ function renderPlace(place: 'phare' | 'quais', mission: string) {
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <WorldQuestion place={place} mission={mission} world={world} onClose={() => {}} onSimpleView={() => {}} />
+            <WorldQuestion place={place} mission={mission} world={world} onClose={() => {}} />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>

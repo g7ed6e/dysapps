@@ -3,15 +3,13 @@
 // environ un sixième de la hauteur de l'écran, un peu sous le milieu, et le haut de l'image garde l'horizon, où le
 // repère du lieu suivant dépasse la brume. Elle ne bouge pas tant que Kéo reste dans une petite zone morte, puis le
 // rattrape en douceur ; avec « Réduire les animations », elle le suit d'un bloc (coupe franche). Si le relief passe
-// entre elle et Kéo, elle monte juste assez pour le voir. Le cadrage d'une question (./questionScene.ts) garde l'angle
-// de toujours (`CAMERA_PITCH`, `CAMERA_FOV`). Code pur : la vue pose la caméra.
+// entre elle et Kéo, elle monte juste assez pour le voir. La caméra d'une scénette (./scenette.ts) garde le champ de
+// toujours (`CAMERA_FOV`). Code pur : la vue pose la caméra.
 import type { Vec3 } from './geometry';
 import type { PlaceId } from './plan6e';
 import { modelOfPlace } from './places';
 
-/** L'angle de la caméra d'une question sous l'horizon, en radians : le lieu vu d'en haut, de biais (le sud en bas). */
-export const CAMERA_PITCH = (52 * Math.PI) / 180;
-/** Le champ vertical de la caméra d'une question, en degrés. */
+/** Le champ vertical de la caméra d'une scénette, en degrés. */
 export const CAMERA_FOV = 40;
 
 /**
@@ -201,10 +199,9 @@ export function lookUpStep(current: number, wanted: 0 | 1, dt: number, reduceMot
 
 /**
  * La brume, en unités depuis la caméra : elle commence à `near` et couvre tout à `far` (le large et les lieux loin de
- * Kéo s'y fondent ; seul le repère du lieu suivant la dépasse). Pendant une question, la caméra est plus loin du lieu :
- * la brume s'écarte (`question`).
+ * Kéo s'y fondent ; seul le repère du lieu suivant la dépasse). Une scénette la garde : sa caméra est près.
  */
-export const WORLD_FOG = { near: 40, far: 115, question: { near: 160, far: 420 } } as const;
+export const WORLD_FOG = { near: 40, far: 115 } as const;
 
 /**
  * Les lieux dont la marque se pose à côté de leur sommet, à droite, plutôt qu'au-dessus : le Phare, dont la lanterne

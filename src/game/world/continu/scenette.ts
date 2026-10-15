@@ -13,7 +13,7 @@
 import { CAMERA_FOV, type CameraPose } from './camera';
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { DECK_HEIGHT, placeById, type PlaceId } from './plan6e';
+import { COLORS_6E, DECK_HEIGHT, placeById, type PlaceId } from './plan6e';
 import {
   ANSWER_LAYOUT,
   LOCK,
@@ -48,7 +48,7 @@ export interface Scenette {
   placement: 'rangee';
 }
 
-const SCENETTES: Partial<Record<PlaceId, Scenette>> = {
+const SCENETTES: Record<PlaceId, Scenette> = {
   // « du phare » : on ne la confond pas avec le Gardien de l'île (consultant Archipéo).
   phare: { role: 'La gardienne du phare', greeting: null, placement: 'rangee' },
   // Le rôle seul, sans prénom ni réplique (choix du mainteneur du 15 octobre 2026).
@@ -58,8 +58,8 @@ const SCENETTES: Partial<Record<PlaceId, Scenette>> = {
   ecluses: { role: 'L’éclusier', greeting: null, placement: 'rangee' },
 };
 
-/** La scénette d'un lieu, ou `null` s'il n'en a pas encore (la question s'y pose comme au lot 4). */
-export const scenetteOf = (place: PlaceId): Scenette | null => SCENETTES[place] ?? null;
+/** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
+export const scenetteOf = (place: PlaceId): Scenette => SCENETTES[place];
 
 // ---------- La place de la scénette à l'écran ----------
 
@@ -89,6 +89,11 @@ export const SCENETTE_LAYOUT = {
    * bas.
    */
   lowAid: 0.66,
+  /**
+   * Et la rangée y est décalée d'un cran vers la droite, en pixels : le premier panier, vu de biais, plus large que
+   * son étiquette, n'est pas rogné par le bord gauche (relecture du directeur artistique, lot 4).
+   */
+  lowAidInset: 28,
   /**
    * « Valider » en bas à droite : la place gardée, en pixels (le bouton peut être plus large en grand texte), et
    * l'écart au-dessus de lui, plus large que celui des réponses (retour UX UI).
@@ -142,17 +147,24 @@ function rowSlots(n: number, left: number, right: number, top: number, bottom: n
   return { slots, objectHeight };
 }
 
+/** La place d'une scénette : celle d'une question, et toujours la scène (`scenette`). */
+export type ScenetteLayout = QuestionLayout & { scenette: NonNullable<QuestionLayout['scenette']> };
+
 /**
  * B, sur un écran bas, quand l'item a sa règle (les Filets) : la colonne en haut à gauche, la rangée sous elle ; à
  * droite, la règle sous la barre du haut, et la scène dessous, jusqu'en bas. La règle ne tient pas dans la colonne avec la
  * phrase, et la scène ne tient pas sous elle avec la rangée.
  */
-function lowWithAid(n: number, width: number, height: number, base: QuestionLayout, sideLeft: number, share: number): QuestionLayout {
+function lowWithAid(n: number, width: number, height: number, base: QuestionLayout, sideLeft: number, share: number): ScenetteLayout {
   const S = SCENETTE_LAYOUT;
   const L = ANSWER_LAYOUT;
   const edge = L.edgeLow;
   const right = width - edge;
-  const { slots, objectHeight } = rowSlots(n, edge, sideLeft - edge, S.low.rowTop * height, height - edge, L.labelLow, share);
+  // La rangée glisse d'un cran vers la droite, ses étiquettes gardant leur largeur (un mot coupé mènerait à « Vue
+  // simple ») : elle passe d'autant sous le coin gauche de la scène, au bas, où Kéo ne se tient pas ; la règle garde
+  // toute sa largeur.
+  const inset = S.lowAidInset;
+  const { slots, objectHeight } = rowSlots(n, edge + inset, sideLeft - edge + inset, S.low.rowTop * height, height - edge, L.labelLow, share);
   const highest = Math.min(...slots.map((s) => s.hit.top));
   const split = S.lowAid * height;
   const stage = { left: sideLeft, top: split, right, bottom: height - edge };
@@ -173,7 +185,7 @@ function lowWithAid(n: number, width: number, height: number, base: QuestionLayo
  * tiennent ; `scenette.validate` : la place de « Valider » en bas à droite (A), `null` sur un écran bas (il reste dans
  * la colonne). L'ordre des réponses ne change jamais.
  */
-export function scenetteLayout(needs: ScenetteNeeds, width: number, height: number, base: QuestionLayout): QuestionLayout {
+export function scenetteLayout(needs: ScenetteNeeds, width: number, height: number, base: QuestionLayout): ScenetteLayout {
   const S = SCENETTE_LAYOUT;
   const L = ANSWER_LAYOUT;
   const n = Math.max(1, needs.count);
@@ -289,12 +301,12 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     pitch: (26 * Math.PI) / 180,
   },
   // Les Écluses (lot 4) : Kéo et l'éclusier sur le quai du sas, de part et d'autre de sa paroi ; le canal devant eux,
-  // sa porte à l'est.
+  // sa porte entre le sas et l'éclusier ; assez large pour la barque passée la porte.
   ecluses: {
     floor: () => sceneSpot('ecluses'),
     keo: { dx: -3.5, dz: 0.1, scale: 0.6, yaw: Math.PI - 0.4 },
-    habitant: { dx: 3.4, dz: 0.1 },
-    subject: { halfWidth: 5, bottom: -0.6, top: 3.5, depth: 0.6 },
+    habitant: { dx: 3.7, dz: 0.1 },
+    subject: { halfWidth: 5.3, bottom: -0.6, top: 3.5, depth: 0.6 },
     pitch: (22 * Math.PI) / 180,
   },
 };
@@ -421,10 +433,14 @@ export const answerLeaves = (place: PlaceId): boolean => place === 'quais';
 
 /**
  * La hauteur du ponton des réponses d'une scénette, quand elles sont posées : celle des pontons du monde, sur l'eau du
- * bassin des Quais ; aux Filets et aux Écluses, celle du plancher de la scène (le ponton descend jusqu'au sol, `ground`).
+ * bassin des Quais ; aux Filets et aux Écluses, un peu au-dessus du plancher de la scène (`LAND_DECK`, sans se confondre
+ * avec la berge du canal ; le ponton descend jusqu'au sol, `ground`).
  */
 export const scenetteDeck = (place: PlaceId): { y: number; onLand: boolean } =>
-  place === 'quais' ? { y: DECK_HEIGHT, onLand: false } : { y: floorOf(place).y, onLand: true };
+  place === 'quais' ? { y: DECK_HEIGHT, onLand: false } : { y: floorOf(place).y + LAND_DECK, onLand: true };
+
+/** La margelle des réponses à terre, au-dessus du plancher de la scène. */
+export const LAND_DECK = 0.08;
 
 /** Le plan où pendent les cloches : devant la rambarde, au sud (la vue y pose les objets sous chaque réponse). */
 export function bellPlane(place: PlaceId): { z: number; rail: Vec3 } {
@@ -463,6 +479,10 @@ const C = {
   stone: 0xb9b2a3,
   stoneSide: 0x8f897d,
   water: 0x2f8fc8,
+  // La berge du canal : l'herbe, le chemin et la roche des berges du monde (COLORS_6E).
+  grass: COLORS_6E.grass,
+  path: COLORS_6E.path,
+  rock: COLORS_6E.rock,
   // Le docker (consultant Archipéo, fiche du lot 2) : gilet vert lagon, tête sable, casquette jaune lanterne.
   vest: 0x178078,
   vestShade: 0x12695f,
@@ -594,8 +614,11 @@ const FILET_DECK = { inner: 2.7, outer: 5.8, depth: 3.2 } as const;
 
 /**
  * Le quai du sas des Écluses, de part et d'autre de la plate-forme du sas (la scène de l'item), à sa hauteur ; le canal
- * devant, sous le plancher, le parvis au sud (la rangée des leviers s'y pose) ; la porte qui le ferme à l'est, ses deux vantaux fermés (de bois
- * sombre) ou ouverts (neufs, rabattus vers l'aval) et leurs deux bornes de pierre.
+ * devant, sous le plancher ; au sud, sa berge (la rangée des leviers s'y pose) : une bordure de pierre le long de l'eau,
+ * le chemin de halage, puis l'herbe, ses flancs de roche comme les berges de la rivière (la pierre du quai en bordure
+ * seulement, directeur artistique). La porte qui ferme le canal, entre le sas et l'éclusier : deux bornes de pierre aux
+ * gonds, deux vantaux qui montent à son épaule, et leurs balanciers, qui prolongent les vantaux au-dessus des quais ;
+ * fermés (de bois sombre, en pointe vers l'amont) ou ouverts (neufs, rabattus vers l'aval, contre les bords).
  */
 function lockQuay(b: FacetBuilder, open: boolean): void {
   const o = floorOf('ecluses');
@@ -603,17 +626,34 @@ function lockQuay(b: FacetBuilder, open: boolean): void {
   for (const side of [-1, 1]) b.box({ x: o.x + side * 4.05, y: o.y - depth, z: o.z }, [3.5, depth, 1.6], C.stoneSide, C.stone);
   const width = LOCK.back - LOCK.front;
   const mid = o.z + (LOCK.front + LOCK.back) / 2;
-  b.box({ x: o.x, y: o.y - depth, z: mid }, [2 * LOCK.half, depth - LOCK.water, width], C.stoneSide, C.water);
-  b.box({ x: o.x, y: o.y - depth, z: o.z + LOCK.back + LOCK.forecourt / 2 }, [2 * LOCK.half, depth, LOCK.forecourt], C.stoneSide, C.stone);
+  const long = 2 * LOCK.half;
+  b.box({ x: o.x, y: o.y - depth, z: mid }, [long, depth - LOCK.water, width], C.stoneSide, C.water);
+  // La berge : la bordure de pierre, un peu plus haute, puis l'herbe ; le chemin de halage posé dessus.
+  const bank = o.z + LOCK.back;
+  b.box({ x: o.x, y: o.y - depth, z: bank + LOCK.kerb / 2 }, [long, depth + 0.04, LOCK.kerb], C.stoneSide, C.stone);
+  const grass = LOCK.forecourt - LOCK.kerb;
+  b.box({ x: o.x, y: o.y - depth, z: bank + LOCK.kerb + grass / 2 }, [long + 2 * LOCK.bank, depth, grass], C.rock, C.grass);
+  b.box({ x: o.x, y: o.y, z: bank + LOCK.kerb + LOCK.towpath / 2 }, [long, 0.02, LOCK.towpath], C.path);
   const gx = o.x + LOCK.gate;
   const bottom = o.y - LOCK.water - 0.35;
-  // Deux bornes de pierre aux gonds, et les vantaux, plus hauts que le quai : la porte se lit de loin.
-  for (const z of [o.z + LOCK.front, o.z + LOCK.back]) b.box({ x: gx, y: o.y, z }, [0.34, 0.7, 0.34], C.stoneSide, C.stone);
+  const top = o.y + LOCK.gateTop;
+  for (const z of [o.z + LOCK.front, bank]) b.box({ x: gx, y: o.y, z }, [0.34, 0.5, 0.34], C.stoneSide, C.stone);
   for (const k of [0, 1]) {
-    const hinge = k ? o.z + LOCK.back - 0.1 : o.z + LOCK.front + 0.1;
-    const sign = k ? -1 : 1;
-    if (open) b.box({ x: gx + LOCK.leaf / 2 + 0.1, y: bottom, z: hinge }, [LOCK.leaf, 1.05, 0.14], C.newWood, C.lightWood);
-    else b.box({ x: gx, y: bottom, z: hinge + (sign * LOCK.leaf) / 2 }, [0.14, 1.05, LOCK.leaf], C.lever);
+    const hinge = k ? bank - 0.1 : o.z + LOCK.front + 0.1;
+    if (open) {
+      b.box({ x: gx + LOCK.leaf / 2 + 0.1, y: bottom, z: hinge }, [LOCK.leaf, top - bottom, 0.14], C.newWood, C.lightWood);
+      b.beam({ x: gx + 0.1, y: top - 0.08, z: hinge }, { x: gx - LOCK.beam, y: top - 0.08, z: hinge }, 0.14, C.lever);
+    } else {
+      // Fermés, les deux vantaux se rejoignent en pointe vers l'amont (une porte busquée) : de biais, la caméra voit
+      // leur face, pas seulement leur tranche.
+      const dx = -LOCK.mitre,
+        dz = o.z + (LOCK.front + LOCK.back) / 2 - hinge;
+      const length = Math.hypot(dx, dz);
+      const yaw = Math.atan2(dx, dz);
+      b.box({ x: gx + dx / 2, y: bottom, z: hinge + dz / 2, yaw }, [0.2, top - bottom, length], C.lever, C.lightWood);
+      const back = LOCK.beam / length;
+      b.beam({ x: gx, y: top - 0.08, z: hinge }, { x: gx - dx * back, y: top - 0.08, z: hinge - dz * back }, 0.14, C.lever);
+    }
   }
 }
 
@@ -727,9 +767,9 @@ export function scenetteFinale(place: PlaceId, scene: ItemScene, scale: number):
     fullBasket(basket, { x: 0, y: 0, z: 0 });
     const moving = basket.build();
     const o = floorOf(place);
-    // Aux pieds de la pêcheuse, là où le panier reste ensuite dans le monde (les pièces du lieu).
-    const ground = filetsBasketAt();
-    const to = { x: ground.x, y: o.y, z: ground.z };
+    // Au pied du plancher, devant la pêcheuse, là où le panier reste ensuite dans le monde (les pièces du lieu), à la
+    // même hauteur : rien ne saute au retour.
+    const to = filetsBasketAt();
     return { decor: decor.build(), clearsItem: true, moving, from: { x: o.x, y: o.y, z: o.z }, to, arc: 1, landed: moved(moving, to), glow: null };
   }
   if (place === 'ecluses') {

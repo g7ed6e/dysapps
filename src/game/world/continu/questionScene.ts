@@ -4,7 +4,6 @@
 // marche. Tout en volumes simples, en aplats ; rien à lire n'est peint : les mots, les nombres et les repères de
 // l'échelle sont des panneaux de la page, accrochés aux points que donne ce fichier. Code pur : la vue dessine.
 import { boundsOf, FacetBuilder, type Facets } from './facets';
-import { CAMERA_FOV, CAMERA_PITCH, type CameraPose } from './camera';
 import type { Vec2, Vec3 } from './geometry';
 import { placeById, type PlaceId } from './plan6e';
 import type { ItemScene } from './questions';
@@ -39,6 +38,11 @@ const C = {
   waterTop: 0x5fb3e0,
   empty: 0xe4ddcf,
   level: 0xfff6dc,
+  /** Les traits entre les bandes du sas rempli : une eau très claire, qu'on voit sur l'eau. */
+  lockLine: 0xd6ecf5,
+  /** La margelle des leviers : une pierre ocre, ses joints plus sombres ; la pierre du quai en bordure. */
+  ochre: 0xc9a46c,
+  ochreJoint: 0xa8865a,
   // Le bronze des cloches, éclairci vers la paille, et son reflet chaud (directeur artistique) : rien de presque noir.
   bronze: 0xc8963c,
   bronzeLight: 0xe8c27a,
@@ -77,16 +81,15 @@ const groundAt = (p: Vec2): number => standingHeight(heightAt(p));
 export const QUAY = { dx: 0.5, front: 12, width: 12, depth: 5.6, strip: 1.6 } as const;
 
 /**
- * Le centre de la scène d'un item, devant son lieu (au sud : vers la caméra), le rayon du cadrage de la question, et la
- * demi-taille de sa plate-forme. Aux Filets et aux Écluses (lot 4 de la piste 1), la demi-taille est celle de toute la
- * scénette (la plate-forme de l'item, les planchers de Kéo et de l'habitant, le canal), relevée finement (`fine`) : son
- * sol ne s'enfonce nulle part. Les Filets se décalent vers la grève, à l'est, où le sol est plat.
+ * Le centre de la scène d'un item, devant son lieu (au sud : vers la caméra), et la demi-taille de sa plate-forme. Aux
+ * Filets et aux Écluses (lot 4 de la piste 1), la demi-taille est celle de toute la scénette (la plate-forme de l'item,
+ * les planchers de Kéo et de l'habitant, le canal), relevée finement (`fine`) : son sol ne s'enfonce nulle part. Les Filets se décalent vers la grève, à l'est, où le sol est plat.
  */
-const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; radius: number; half: [number, number]; fine?: true }> = {
-  phare: { dx: 0, dz: 0.5, radius: 12, half: [0, 0] },
-  filets: { dx: 2.5, dz: 5, radius: 4.2, half: [5.8, 1.6], fine: true },
-  ecluses: { dx: -0.5, dz: 5, radius: 3.6, half: [5.5, 1.2], fine: true },
-  quais: { dx: QUAY.dx, dz: QUAY.front - QUAY.depth / 2, radius: 7.6, half: [QUAY.width / 2, QUAY.depth / 2] },
+const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, number]; fine?: true }> = {
+  phare: { dx: 0, dz: 0.5, half: [0, 0] },
+  filets: { dx: 2.5, dz: 5, half: [5.8, 1.6], fine: true },
+  ecluses: { dx: -0.5, dz: 5, half: [5.5, 1.2], fine: true },
+  quais: { dx: QUAY.dx, dz: QUAY.front - QUAY.depth / 2, half: [QUAY.width / 2, QUAY.depth / 2] },
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -295,37 +298,6 @@ export function questionLayout(needs: QuestionNeeds, width: number, height: numb
   return { low, slots, objectHeight, panel, aid, view: { left: panelRight + edge, top, right: width - edge, bottom: Math.max(top + 48, viewBottom) } };
 }
 
-/**
- * La pose de la caméra pendant une question : la scène de l'item au milieu de la fenêtre `view` et assez loin pour que
- * son rayon y tienne, et le décalage de l'image (en pixels) qui l'y amène sans tourner la caméra. Fixe tant que la
- * question dure.
- */
-export function questionPose(place: PlaceId, view: ScreenBox, width: number, height: number): { pose: CameraPose; shift: { x: number; y: number } } {
-  const s = sceneSpot(place);
-  const radius = SCENE_SPOT[place].radius;
-  const focal = height / 2 / Math.tan(((CAMERA_FOV / 2) * Math.PI) / 180);
-  const half = Math.max(24, Math.min(view.right - view.left, view.bottom - view.top) / 2);
-  const dist = (radius * focal) / half;
-  const target = { x: s.x, y: s.y, z: s.z };
-  const pose: CameraPose = {
-    target,
-    position: {
-      x: target.x,
-      y: target.y + dist * Math.sin(CAMERA_PITCH),
-      z: target.z + dist * Math.cos(CAMERA_PITCH),
-    },
-    fov: CAMERA_FOV,
-    lens: 0,
-  };
-  return {
-    pose,
-    shift: {
-      x: width / 2 - (view.left + view.right) / 2,
-      y: height / 2 - (view.top + view.bottom) / 2,
-    },
-  };
-}
-
 // ---------- Les objets des réponses ----------
 
 /** L'objet qui porte une réponse dans chaque lieu. */
@@ -449,15 +421,21 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     return b.build();
   }
   const kind = ANSWER_OBJECT[place];
-  // Le ponton sous la rangée : jamais un objet posé sur l'eau ; à terre, il descend jusqu'au sol (une margelle de
-  // pierre sous les leviers des Écluses).
+  // Le ponton sous la rangée : jamais un objet posé sur l'eau ; à terre, il descend jusqu'au sol. Sous les leviers des
+  // Écluses, une margelle juste assez profonde pour eux : de pierre ocre, ses joints entre les leviers, la pierre du
+  // quai en bordure (directeur artistique).
   const skirt = look.ground === undefined ? 0.12 * s : Math.max(0.12 * s, y - look.ground + 0.1);
-  b.box(
-    { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: y - skirt, z },
-    [Math.max(...xs) - Math.min(...xs) + 1.4 * s, skirt, 0.8 * s],
-    kind === 'levier' ? C.stoneDark : C.deckSide,
-    kind === 'levier' ? C.stone : C.deck,
-  );
+  const mid = (Math.min(...xs) + Math.max(...xs)) / 2;
+  const span = Math.max(...xs) - Math.min(...xs) + 1.4 * s;
+  if (kind === 'levier') {
+    const depth = 0.9 * s,
+      rim = 0.12 * s;
+    b.box({ x: mid, y: y - skirt, z }, [span, skirt, depth], C.stoneDark, C.ochre);
+    for (const side of [-1, 1]) b.box({ x: mid, y: y - 0.02, z: z + (side * (depth - rim)) / 2 }, [span + 0.02, 0.04, rim], C.stone);
+    for (const side of [-1, 1]) b.box({ x: mid + (side * (span - rim)) / 2, y: y - 0.02, z }, [rim, 0.04, depth - 2 * rim], C.stone);
+    for (let i = 1; i < points.length; i++)
+      b.box({ x: (points[i - 1].x + points[i].x) / 2, y: y - 0.02, z }, [0.05 * s, 0.035, depth - 2 * rim], C.ochreJoint);
+  } else b.box({ x: mid, y: y - skirt, z }, [span, skirt, 0.8 * s], C.deckSide, C.deck);
   for (const [i, p] of points.entries()) {
     if (gone.includes(i)) continue;
     if (kind === 'panier') {
@@ -698,12 +676,32 @@ function boat(b: FacetBuilder, x: number, y: number, z: number, length = 2.4): v
 
 /**
  * Le canal des Écluses (piste 1, lot 4), dans le repère de la scène : devant le sas, de `front` à `back` unités au sud
- * de son milieu, son eau `water` sous le plancher, sur `half` unités de chaque côté ; la porte qui le ferme à l'est,
- * devant l'éclusier (`gate`, depuis le milieu du sas, ses deux vantaux de `leaf`), le milieu de la barque arrêtée
- * devant elle (`stop`, devant le sas), puis passée (`beyond`) ; le parvis de pierre au sud du canal, sous la rangée des
- * leviers (`forecourt`, sa profondeur).
+ * de son milieu, son eau `water` sous le plancher, sur `half` unités de chaque côté ; la porte qui le ferme, entre le sas
+ * et l'éclusier, qui ne la cache pas (`gate`, depuis le milieu du sas, ses deux vantaux de `leaf`, en pointe de `mitre`
+ * vers l'amont quand ils sont fermés, leur haut `gateTop` au-dessus du quai, à l'épaule de l'éclusier, et leurs
+ * balanciers de `beam`), le milieu de la barque arrêtée devant
+ * elle (`stop`, devant le sas), puis passée, dans le champ (`beyond`) ; au sud du canal, la berge (`forecourt`, sa
+ * profondeur, assez pour que son flanc sorte du cadre ; plus large que le canal de `bank` de chaque côté), bordée de
+ * pierre (`kerb`), puis le chemin de halage (`towpath`) et l'herbe, sous la rangée des leviers (retour du directeur
+ * artistique : la pierre en bordure seulement).
  */
-export const LOCK = { front: 0.8, back: 2.2, water: 0.3, half: 8, gate: 2.6, leaf: 0.7, stop: 0.9, beyond: 5.4, forecourt: 6 } as const;
+export const LOCK = {
+  front: 0.8,
+  back: 2.2,
+  water: 0.3,
+  half: 8,
+  gate: 2.1,
+  leaf: 0.7,
+  mitre: 0.3,
+  gateTop: 1,
+  beam: 1,
+  stop: 0.2,
+  beyond: 3.4,
+  forecourt: 11,
+  bank: 4,
+  kerb: 0.45,
+  towpath: 1.1,
+} as const;
 
 /** La barque des Écluses, sa coque vers l'est, au repère de la réaction (la vue la déplace). */
 export function lockBoat(): Facets {
@@ -713,18 +711,22 @@ export function lockBoat(): Facets {
 }
 
 /**
- * Le sas rempli, à la réussite de la mission aux Écluses : l'eau dans toutes les bandes de la paroi (niveau 1), ou
- * jusqu'en haut du bassin de l'échelle (niveau 2), et le trait clair du niveau en haut. Un voile posé juste devant la
- * scène de l'item, qui reste.
+ * Le sas rempli, à la réussite de la mission aux Écluses : l'eau dans toutes les bandes de la paroi, chacune la sienne,
+ * séparées par des traits clairs (le sas se lit « 6 parts sur 6 », pas en aplat ; niveau 1), ou jusqu'en haut du bassin
+ * de l'échelle (niveau 2), et le trait clair du niveau en haut. Un voile posé juste devant la scène de l'item, qui reste.
  */
 export function lockFull(scene: ItemScene): Facets {
   const b = new FacetBuilder();
   const o = sceneSpot('ecluses');
   const zf = o.z + 0.35;
   if (scene.kind === 'sas') {
-    const h = 3.2;
-    b.box({ x: o.x, y: o.y + 0.15, z: zf + 0.06 }, [3, h, 0.04], C.water);
-    b.box({ x: o.x, y: o.y + 0.15 + h - 0.06, z: zf + 0.1 }, [3.8, 0.12, 0.06], C.level);
+    const h = 3.2,
+      w = 3,
+      d = Math.max(1, scene.d),
+      band = h / d;
+    for (let k = 0; k < d; k++) b.box({ x: o.x, y: o.y + 0.15 + k * band + 0.05, z: zf + 0.06 }, [w, band - 0.1, 0.04], C.water);
+    for (let k = 1; k < d; k++) b.box({ x: o.x, y: o.y + 0.15 + k * band - 0.05, z: zf + 0.06 }, [w, 0.1, 0.04], C.lockLine);
+    b.box({ x: o.x, y: o.y + 0.15 + h - 0.06, z: zf + 0.1 }, [w + 0.8, 0.12, 0.06], C.level);
   } else if (scene.kind === 'echelle') {
     const top = 2 * 1.7;
     b.box({ x: o.x - 0.6, y: o.y + 0.1, z: zf + 0.12 }, [2, top, 0.04], C.water);
@@ -1045,16 +1047,17 @@ function firstWater(candidates: readonly Vec2[]): Vec2 {
 }
 
 /**
- * Le panier plein laissé aux Filets par la réussite de la scénette, depuis le centre du lieu : là où il s'est posé, aux
- * pieds de la pêcheuse, sur la grève.
+ * Le panier plein laissé aux Filets par la réussite de la scénette, depuis le centre du lieu : là où il s'est posé, au
+ * pied du plancher de séchage, devant la pêcheuse, sur la grève (hors du plancher : dans la scénette et dans le monde,
+ * il est à la même place, à la même hauteur, sans saut au retour).
  */
-const FILETS_BASKET: Vec2 = { x: 5.45, z: 6.25 };
+const FILETS_BASKET: Vec2 = { x: 5.2, z: 7.3 };
 
-/** Le panier plein des Filets, posé au sol dans le monde. */
+/** Le panier plein des Filets, posé sur le sable dans le monde (et dans la scénette, au pied du plancher). */
 export function filetsBasketAt(): Vec3 {
   const c = placeById('filets').center;
   const at = { x: c.x + FILETS_BASKET.x, z: c.z + FILETS_BASKET.z };
-  return { ...at, y: groundAt(at) };
+  return { ...at, y: heightAt(at) };
 }
 
 /**
@@ -1080,18 +1083,29 @@ export function mendedNet(b: FacetBuilder): void {
 
 /**
  * La porte d'amont des Écluses (entre le bassin du haut et le sas du milieu), dans le monde : fermée tant que la
- * mission n'est pas réussie (le bois sombre du modèle), puis ouverte, ses deux vantaux neufs rabattus contre les murs du
- * sas, l'eau du sas montée au niveau du bassin du haut (ses murs rehaussés).
+ * mission n'est pas réussie (le bois sombre du modèle, ses balanciers couchés sur les murs), puis ouverte, ses deux
+ * vantaux neufs rabattus contre les murs du sas, de l'eau jusqu'au-dessus du mur, leurs balanciers couchés sur le mur
+ * du bassin du haut, l'eau du sas montée au niveau du bassin du haut (ses murs rehaussés). Deux bornes de pierre aux
+ * gonds : la porte se lit comme une porte d'écluse, jamais comme une planche posée sur l'eau.
  */
 function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolean): void {
+  const hinge = z - 1.5;
+  for (const side of [-1, 1]) b.box({ x: x + side * 1.95, y: y + 1.6, z: hinge }, [0.4, 0.45, 0.4], C.stoneDark, C.stone);
   if (!open) {
-    b.box({ x, y: y + 0.7, z: z - 1.5 }, [3.6, 1.2, 0.3], C.lever);
+    b.box({ x, y: y + 0.7, z: hinge }, [3.6, 1.2, 0.3], C.lever);
+    for (const side of [-1, 1])
+      b.beam({ x: x + side * 1.5, y: y + 1.8, z: hinge }, { x: x + side * 2, y: y + 1.75, z: hinge - 1.6 }, 0.2, C.lever);
     return;
   }
-  for (const side of [-1, 1]) b.box({ x: x + side * 1.6, y: y + 0.7, z: z - 0.6 }, [0.22, 1.2, 1.8], C.newWood, C.paint);
   for (const side of [-1, 1]) b.box({ x: x + side * 1.95, y: y + 0.9, z }, [0.5, 0.7, 3], C.stoneDark, C.stone);
   b.box({ x, y: y + 0.9, z: z + 1.3 }, [4.4, 0.7, 0.4], C.stoneDark, C.stone);
   b.box({ x, y: y + 0.95, z: z - 0.1 }, [3.4, 0.55, 2.4], C.water, C.waterTop);
+  for (const side of [-1, 1]) {
+    // Le vantail, rangé contre le mur, son haut au ras du mur (rien ne dépasse de l'eau comme une planche) ; son
+    // balancier couché sur le mur du bassin du haut, d'où il part de la borne.
+    b.box({ x: x + side * 1.6, y: y + 1, z: hinge + 0.85 }, [0.18, 0.66, 1.5], C.newWood, C.lever);
+    b.beam({ x: x + side * 1.75, y: y + 1.75, z: hinge + 0.2 }, { x: x + side * 1.95, y: y + 1.75, z: hinge - 1.8 }, 0.26, C.lever);
+  }
 }
 
 /**

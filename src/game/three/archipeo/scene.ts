@@ -17,7 +17,7 @@ import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from '../../world/continu/paths';
 import { PLACES, TERRAIN, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { modelOfPlace } from '../../world/continu/places';
-import { answerObjects, answerScale, itemScene, placePieces, questionPose, sceneSpot, veilleurPiece, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
+import { answerObjects, answerScale, itemScene, placePieces, sceneSpot, veilleurPiece, type Reaction } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, veilleurAwake, type ItemScene } from '../../world/continu/questions';
 import {
   EXIT_VIEW,
@@ -35,10 +35,10 @@ import {
   scenetteHidesPieces,
   scenetteHidesPlace,
   scenetteKeo,
-  scenetteOf,
   scenettePose,
   scenetteSuccess,
   type ScenetteFinale,
+  type ScenetteLayout,
 } from '../../world/continu/scenette';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
 import { buildHeightField, heightOnMesh, standingHeight, tileRings } from '../../world/continu/terrain';
@@ -113,7 +113,7 @@ export interface OpenWorld {
 /** Une question à montrer : le lieu, la place à l'écran, l'item (sa scène, s'il a sa réponse, les rangs des bonnes réponses). */
 interface QuestionRequest {
   place: PlaceId;
-  layout: QuestionLayout;
+  layout: ScenetteLayout;
   item: { scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[] };
 }
 
@@ -1060,35 +1060,23 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       finaleShown = false;
       setGeometry(decorMesh, scenetteDecor(place));
     }
-    const stage = layout.scenette && scenetteOf(place) ? layout.scenette.stage : null;
-    let qp: { pose: CameraPose; shift: { x: number; y: number } };
-    if (stage) {
-      // La scénette : Kéo dans la galerie, à côté de l'habitant ; la brume reste celle du monde (la caméra est près).
-      const entering = scenette !== place;
-      if (entering) copyPose(current, descent.from);
-      const fromShift = { ...shift };
-      enterScenette(place);
-      fog.near = WORLD_FOG.near;
-      fog.far = WORLD_FOG.far;
-      qp = scenettePose(place, stage, viewW, viewH);
-      if (entering && !reduceMotion) {
-        copyPose(qp.pose, descent.to);
-        descent.fromShift = fromShift;
-        descent.toShift = { ...qp.shift };
-        descent.start = performance.now() / 1000;
-        descent.active = true;
-      } else if (descent.active) {
-        copyPose(qp.pose, descent.to);
-        descent.toShift = { ...qp.shift };
-      }
-    } else {
-      // Kéo s'efface le temps de la question : la scène de l'item est devant le lieu, là où il se tient.
-      keo.visible = false;
-      ring.visible = false;
-      // La caméra de la question est plus loin du lieu que celle qui suit Kéo : la brume s'écarte.
-      fog.near = WORLD_FOG.question.near;
-      fog.far = WORLD_FOG.question.far;
-      qp = questionPose(place, layout.view, viewW, viewH);
+    // La scénette : Kéo à côté de l'habitant ; la brume reste celle du monde (la caméra est près).
+    const entering = scenette !== place;
+    if (entering) copyPose(current, descent.from);
+    const fromShift = { ...shift };
+    enterScenette(place);
+    fog.near = WORLD_FOG.near;
+    fog.far = WORLD_FOG.far;
+    const qp = scenettePose(place, layout.scenette.stage, viewW, viewH);
+    if (entering && !reduceMotion) {
+      copyPose(qp.pose, descent.to);
+      descent.fromShift = fromShift;
+      descent.toShift = { ...qp.shift };
+      descent.start = performance.now() / 1000;
+      descent.active = true;
+    } else if (descent.active) {
+      copyPose(qp.pose, descent.to);
+      descent.toShift = { ...qp.shift };
     }
     // Les objets se posent sous leurs réponses avec la pose finale ; la descente reprend ensuite sa place.
     setShift(qp.shift);
@@ -1101,8 +1089,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Dans une scénette, les cloches pendent devant la rambarde ; les caisses sont posées sur un ponton du bassin ; les
     // paniers et les leviers sur une margelle à terre, à la hauteur du plancher de la scène, relevée si le sol monte
     // devant elle (elle ne s'y enfonce jamais), sa jupe jusqu'au sol.
-    const hang = stage && answersHang(place) ? bellPlane(place) : null;
-    const deck = stage ? scenetteDeck(place) : { y: spot.y, onLand: false };
+    const hang = answersHang(place) ? bellPlane(place) : null;
+    const deck = scenetteDeck(place);
     let deckY = deck.y;
     const pointsAt = (y: number) => slotFeet.map((o) => (hang ? planeUnder(o.x, o.y, hang.z) : groundUnder(o.x, o.y, y)) ?? spot);
     let points = pointsAt(deckY);
@@ -1140,7 +1128,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
         // Une cloche choisie se balance jusqu'à la réponse ; une caisse tentée reste penchée.
         picked: hang && item.answered ? [] : item.picked,
         // La bonne caisse est partie au crochet avec la réaction.
-        gone: stage && answerLeaves(place) && item.answered ? item.right : [],
+        gone: answerLeaves(place) && item.answered ? item.right : [],
         hanging: hang ? { hand: habitantHand(place), rail: hang.rail } : undefined,
         ground: landBelow,
       }),

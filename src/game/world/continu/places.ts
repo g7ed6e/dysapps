@@ -103,9 +103,14 @@ function ecluses(b: FacetBuilder): void {
     // L'eau du bassin, juste sous le bord.
     b.box({ x: 0, y: top - 0.25, z }, [3.4, 0.3, 2.2], C.stone, C.water);
   }
-  // La porte d'aval, entre le sas et le bassin du bas : des vantaux de bois sombre. Celle d'amont est des pièces du lieu
-  // (questionScene.ts, `placePieces`) : fermée, puis ouverte par la réussite de la scénette.
+  // La porte d'aval, entre le sas et le bassin du bas : des vantaux de bois sombre, leurs bornes de pierre aux gonds et
+  // leurs balanciers couchés sur les murs du sas (une porte d'écluse, pas une planche). Celle d'amont est des pièces du
+  // lieu (questionScene.ts, `placePieces`) : fermée, puis ouverte par la réussite de la scénette.
   b.box({ x: 0, y: 0, z: 1.5 }, [3.6, 1.2, 0.3], C.darkWood);
+  for (const side of [-1, 1]) {
+    b.box({ x: side * 1.95, y: 0.9, z: 1.5 }, [0.4, 0.45, 0.4], C.darkStone, C.stone);
+    b.beam({ x: side * 1.5, y: 1.05, z: 1.5 }, { x: side * 2, y: 1.02, z: 0.1 }, 0.18, C.darkWood);
+  }
   // La roue, debout sur le côté est, et son axe.
   b.prism({ x: 2.7, y: 1.5, z: -0.4, yaw: Math.PI / 2, pitch: Math.PI / 2 }, 1.4, 1.4, 0.4, 10, C.wood, C.darkWood);
   b.box({ x: 2.5, y: SINK, z: -0.4 }, [0.3, 2.3 - SINK, 0.3], C.darkWood);

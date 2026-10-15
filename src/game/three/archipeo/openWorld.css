@@ -1026,6 +1026,28 @@
 .world-question .quiz.in-world.simple[data-suite="deux"] .world-simple-validate {
   box-shadow: 0 -14px 12px -10px rgb(0 0 0 / 0.4);
 }
+/* Sans « Valider » (les paniers, les leviers, les caisses), le même repère au bas du panneau : un trait pointillé collé
+   au bord, sur une bande du fond, tant que des réponses restent plus bas (data-repere), comme le chemin de la Carte. */
+.world-question .quiz.in-world.simple[data-repere]::after {
+  content: '';
+  position: sticky;
+  bottom: -0.6rem;
+  z-index: 1;
+  order: 99;
+  flex: none;
+  width: 100%;
+  height: calc(10px + 0.6rem);
+  margin: calc(-10px - 0.6rem) 0 -0.6rem;
+  background: var(--surface);
+  border-bottom: 3px dashed currentColor;
+  pointer-events: none;
+}
+/* Sur un écran bas, le panneau n'a que 4 px de marge en haut et en bas : le trait s'y colle. */
+.world-question .quiz.in-world.simple.simple-bas[data-repere]::after {
+  bottom: -4px;
+  height: 14px;
+  margin: -14px 0 -4px;
+}
 /* L'ombre du haut, nette (référent dys) : un trait sombre sous le bord, puis une ombre courte. */
 .world-question .quiz.in-world.simple[data-suite="haut"],
 .world-question .quiz.in-world.simple[data-suite="deux"] {

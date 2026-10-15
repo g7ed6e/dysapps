@@ -8,7 +8,7 @@ import { PLACES, type PlaceId } from './plan6e';
 import { modelOfPlace } from './places';
 import { answerObjects, itemScene, placePieces, sceneSpot, veilleurPiece } from './questionScene';
 import type { ItemScene } from './questions';
-import { bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteOf, scenetteSuccess } from './scenette';
+import { bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSuccess } from './scenette';
 import { buildHeightField, heightOnMesh, tileRings, tileTriangleCounts } from './terrain';
 import { veilFacets } from './veil';
 
@@ -85,8 +85,8 @@ function successTriangles(place: PlaceId): number {
   return f.decor.triangles + f.landed.triangles + Math.max(f.moving.triangles, f.glow?.triangles ?? 0);
 }
 
-/** Les lieux qui ont leur scénette : le Phare (lot 2), les Quais (lot 3), les Filets et les Écluses (lot 4). */
-const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id).filter((id) => scenetteOf(id));
+/** Les lieux qui ont leur scénette : tous, le Phare (lot 2), les Quais (lot 3), les Filets et les Écluses (lot 4). */
+const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
 
 /** Les pièces durables, toutes remises, et le Veilleur rallumé : un maillage pour les quatre lieux, et la Roue des Écluses. */
 function piecesCost(): { triangles: number; calls: number } {

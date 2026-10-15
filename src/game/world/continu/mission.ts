@@ -161,12 +161,3 @@ export function keepClear(box: ScreenRect, obstacles: readonly ScreenRect[], wid
   }
   return r;
 }
-
-/**
- * Ce qui se passe quand Kéo arrive devant le lieu d'une mission : l'ouvrir. Aujourd'hui, l'écran de mission actuel
- * (../../three/archipeo/missionScreen.ts) ; demain, la mission jouée dans le monde (lot 4, selon la piste choisie par le
- * mainteneur), derrière la même interface.
- */
-export interface MissionInteraction {
-  open(placeId: PlaceId, missionId: string): void;
-}

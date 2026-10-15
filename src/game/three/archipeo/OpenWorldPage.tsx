@@ -3,12 +3,12 @@
 // n'importe où, Kéo rejoint le chemin le plus proche et y va ; une seule marque montre la prochaine mission (le nom de
 // son lieu), une flèche au bord de l'écran quand elle est hors champ, la distance en points dessous ; « Y aller »,
 // toujours à la même place, y mène d'un coup (piste 1 : le trajet est toujours sauté ; on marche en touchant le monde). À l'arrivée, la mission se joue dans le lieu (lot 4, ./WorldQuestion.tsx), avec le lanceur
-// d'exercice commun ; « Vue simple » rouvre l'écran classique de la même mission (./missionScreen.ts). Les pièces
+// d'exercice commun, dans la scénette du lieu ; « Vue simple » y montre la même question en liste. Les pièces
 // durables des lieux se tirent des étoiles gardées : rien de neuf dans la sauvegarde. La Carte des lieux ouverts (piste 1,
 // lot 3) s'ouvre du bouton « Carte », comme ailleurs dans le jeu : l'île vue de haut, un lieu ouvert touché y dépose
 // Kéo. Chargé à la demande.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
 import { frenchTypography } from '../../../components/math/RichText';
@@ -25,7 +25,6 @@ import { PLACES, placeById, placeOfIsland, type PlaceId } from '../../world/cont
 import { piecesOf } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
-import { missionScreenInteraction } from './missionScreen';
 import { MapLabels } from './MapLabels';
 import { createOpenWorld, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { WorldQuestion } from './WorldQuestion';
@@ -43,7 +42,6 @@ const missionTitle = (island: string, mission: string) => getBiome(island)?.exer
 
 export default function OpenWorldPage() {
   const { biomeId } = useParams();
-  const navigate = useNavigate();
   const { state } = useBlocland();
   const textes = useTextes();
   const { settings, speak } = useSettings();
@@ -113,7 +111,6 @@ export default function OpenWorldPage() {
   }, [layout, next, walking, asking]);
 
   // Ce que les rappels de la scène lisent au moment où ils sont appelés (la scène n'est pas refaite pour eux).
-  const interaction = useMemo(() => missionScreenInteraction(navigate), [navigate]);
   const latest = useRef({ next, bornes: modele.bornes });
   latest.current = { next, bornes: modele.bornes };
 
@@ -217,10 +214,6 @@ export default function OpenWorldPage() {
   }, [pieces, ready]);
 
   const closeQuestion = useCallback(() => setAsking(null), []);
-  const simpleView = useCallback(() => {
-    if (asking) interaction.open(asking.place, asking.mission);
-  }, [asking, interaction]);
-
   const goNext = () => {
     if (!next) return;
     const title = missionTitle(next.place.island, next.mission);
@@ -266,7 +259,7 @@ export default function OpenWorldPage() {
         {mapOpen && !asking && <MapLabels openPlaces={openPlaces} onPick={pickPlace} placer={mapPlacer} onClosed={showClosed} />}
         {!asking && <SettingsButton />}
         {asking && world.current && (
-          <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} world={world.current} onClose={closeQuestion} onSimpleView={simpleView} />
+          <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} world={world.current} onClose={closeQuestion} />
         )}
         {/* La Carte : le même bouton que dans le reste du jeu, dans la barre du bas, à gauche (« Y aller » tient le milieu). */}
         {!asking && (

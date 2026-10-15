@@ -4,12 +4,12 @@
 // Three.js.
 import { describe, expect, it } from 'vitest';
 import { FOLLOW, KEO_HEIGHT, LOOK_UP, followPose, lookUp, lookUpStep, screenOf } from './camera';
-import { boundsOf } from './facets';
+import { FacetBuilder, boundsOf } from './facets';
 import { distance } from './geometry';
 import { startOf } from './paths';
 import { placeById } from './plan6e';
 import { modelOfPlace } from './places';
-import { ANSWER_LAYOUT, LOCK, answerObjects, filetsBasketAt, itemScene, loadedBoat, placePieces, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, LOCK, answerObjects, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placePieces, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
 import {
   GALLERY,
   LANTERN,
@@ -33,6 +33,7 @@ import {
   scenetteSuccess,
   answerLeaves,
   scenetteDeck,
+  LAND_DECK,
 } from './scenette';
 import { heightAt, standingHeight } from './terrain';
 
@@ -72,7 +73,9 @@ describe('La place de la scénette à l’écran', () => {
         expect(stage.bottom, at).toBeLessThanOrEqual(h);
         expect(stage.bottom - stage.top, at).toBeGreaterThanOrEqual(100);
         for (const s of l.slots) {
-          expect(s.hit.right, at).toBeLessThanOrEqual(stage.left);
+          // Décalée d'un cran vers la droite (le premier panier n'est pas rogné), elle ne passe sous la scène que de ce cran.
+          expect(s.hit.right, at).toBeLessThanOrEqual(stage.left + SCENETTE_LAYOUT.lowAidInset);
+          expect(Math.min(...l.slots.map((o) => o.label.left)), at).toBeGreaterThanOrEqual(ANSWER_LAYOUT.edgeLow + SCENETTE_LAYOUT.lowAidInset);
           expect(s.hit.top, at).toBeGreaterThanOrEqual(panel.bottom);
           expect(s.label.bottom - s.label.top).toBeGreaterThanOrEqual(48);
           expect(s.label.right - s.label.left, at).toBeGreaterThanOrEqual(ANSWER_LAYOUT.minLabel);
@@ -443,13 +446,16 @@ describe('Les Filets et les Écluses (lot 4)', () => {
       expect(decor.triangles).toBeGreaterThan(0);
       expect(decor.triangles).toBeLessThan(1500);
       // Les paniers et les leviers sur une margelle à terre, à la hauteur du plancher ; la caisse des Quais seule part.
-      expect(scenetteDeck(place)).toEqual({ y: floor, onLand: true });
+      expect(scenetteDeck(place)).toEqual({ y: floor + LAND_DECK, onLand: true });
       expect(answerLeaves(place)).toBe(false);
-      expect(scenetteHidesPieces(place)).toBe(true);
     }
     expect(scenetteDeck('quais').onLand).toBe(false);
     expect(answerLeaves('quais')).toBe(true);
+  });
+
+  it('les pièces du lieu s’effacent le temps de la scénette partout sauf au Phare (ses lampes sont sur la galerie)', () => {
     expect(scenetteHidesPieces('phare')).toBe(false);
+    for (const place of ['quais', 'filets', 'ecluses'] as const) expect(scenetteHidesPieces(place), place).toBe(true);
   });
 
   it('aux Filets, la réussite tend le filet raccommodé et pose un panier plein aux pieds de la pêcheuse, où il reste', () => {
@@ -459,10 +465,18 @@ describe('Les Filets et les Écluses (lot 4)', () => {
     expect(f.arc).toBeGreaterThan(0);
     // Le décor gagne le milieu du plancher (le filet l'a quitté) et le pan tendu sur le séchoir.
     expect(f.decor.triangles).toBeGreaterThan(scenetteDecor('filets').triangles);
+    // Posé là où le panier des pièces du lieu reste dans le monde, à la même hauteur : rien ne saute au retour.
     const basket = filetsBasketAt();
-    expect(f.to).toEqual({ x: basket.x, y: sceneSpot('filets').y, z: basket.z });
+    expect(f.to).toEqual(basket);
     const landed = boundsOf(f.landed);
     expect(landed.min[1]).toBeCloseTo(f.to.y, 6);
+    const world = new FacetBuilder();
+    fullBasket(world, basket);
+    const placed = world.build();
+    expect(f.landed.triangles).toBe(placed.triangles);
+    for (const [k, v] of placed.positions.entries()) expect(f.landed.positions[k]).toBeCloseTo(v, 4);
+    // Hors du plancher de séchage, devant lui : pas posé en l'air sur le sable une fois le plancher parti.
+    expect(f.to.z).toBeGreaterThan(sceneSpot('filets').z + 1.6 + 0.35);
     expect(Math.abs(scenetteHabitant('filets').x - f.to.x)).toBeLessThan(1.5);
     // Le panier plein reste dans le monde, posé au sol, sur la terre.
     expect(heightAt(basket)).toBeGreaterThan(0);
@@ -481,17 +495,41 @@ describe('Les Filets et les Écluses (lot 4)', () => {
       expect(r.to.y).toBeLessThan(o.y);
       expect(r.to.z).toBeGreaterThan(o.z + LOCK.front);
       expect(r.to.z).toBeLessThan(o.z + LOCK.back);
-      expect(r.to.x + 1.5).toBeLessThan(o.x + LOCK.gate);
+      expect(r.to.x + 1.5).toBeLessThan(o.x + LOCK.gate - LOCK.mitre);
       const f = scenetteFinale('ecluses', scene, 1)!;
       expect(f.clearsItem).toBe(false);
       expect(f.from).toEqual(r.to);
-      expect(boundsOf(f.landed).min[0]).toBeGreaterThan(o.x + LOCK.gate + LOCK.leaf);
+      // Passée : toute la barque au-delà de la ligne de la porte, entre ses vantaux ouverts.
+      expect(boundsOf(f.landed).min[0]).toBeGreaterThan(o.x + LOCK.gate);
       // La porte ouverte n'est pas la porte fermée ; le sas rempli s'ajoute devant la scène de l'item.
       expect(Array.from(scenetteDecor('ecluses', true).positions)).not.toEqual(Array.from(scenetteDecor('ecluses').positions));
       expect(f.decor.triangles).toBeGreaterThan(scenetteDecor('ecluses', true).triangles);
     }
+    // Le sas rempli se lit part par part : une bande d'eau par part, un trait clair entre deux (5 boîtes de 10 triangles
+    // pour 6 parts, plus le trait du niveau).
+    expect(lockFull({ kind: 'sas', n: 6, d: 6 }).triangles).toBe((6 + 5 + 1) * 10);
     // Dans le monde, la porte d'amont fermée tant que la mission n'est pas réussie, puis ouverte, le sas rempli.
     expect(placePieces('ecluses', 1).still.triangles).toBeGreaterThan(placePieces('ecluses', 0).still.triangles);
+  });
+
+  it('aux Écluses, la porte monte à l’épaule de l’éclusier, à côté de lui ; la barque passée reste dans la scène', () => {
+    const o = sceneSpot('ecluses');
+    const habitant = scenetteHabitant('ecluses');
+    // La porte entre le sas et l'éclusier, à l'écart de son levier (0,62 à sa gauche) : il ne la cache pas.
+    expect(habitant.x - 0.62 - (o.x + LOCK.gate)).toBeGreaterThan(0.8);
+    expect(LOCK.gateTop).toBeGreaterThanOrEqual(0.9);
+    const f = scenetteFinale('ecluses', { kind: 'sas', n: 6, d: 6 }, 1)!;
+    const boat = boundsOf(f.landed);
+    for (const [w, h] of screens) {
+      const base = questionLayout({ count: 4 }, w, h);
+      const stage = scenetteLayout({ count: 4, column: true }, w, h, base).scenette.stage;
+      const { pose, shift } = scenettePose('ecluses', stage, w, h);
+      for (const x of [boat.min[0], boat.max[0]]) {
+        const p = screenOf(pose, { x, y: boat.max[1], z: (boat.min[2] + boat.max[2]) / 2 }, w, h);
+        expect(p.x - shift.x, `${w}×${h}`).toBeGreaterThanOrEqual(stage.left);
+        expect(p.x - shift.x, `${w}×${h}`).toBeLessThanOrEqual(stage.right);
+      }
+    }
   });
 
   it('un levier tenté est tiré vers l’élève ; à terre, la margelle descend jusqu’au sol', () => {

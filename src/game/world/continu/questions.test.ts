@@ -4,10 +4,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { seeded } from '../../../core/random';
-import { screenOf } from './camera';
 import { boundsOf } from './facets';
 import PLACE_ITEMS from './placeItems.json';
-import { ANSWER_LAYOUT, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placePieces, questionLayout, questionPose, sceneSpot, veilleurPiece, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placePieces, questionLayout, sceneSpot, veilleurPiece, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
 import {
   BELLS_PER_ROUND,
   EXERCISES_WITH_TWINS,
@@ -320,16 +319,6 @@ describe('La place de la question à l’écran', () => {
 
   it('la scène commence sous la barre du haut (« Vue simple » et la pause)', () => {
     for (const [w, h] of screens) expect(questionLayout({ count: 3 }, w, h).view.top).toBeGreaterThanOrEqual(ANSWER_LAYOUT.bar);
-  });
-
-  it('la caméra de la question met la scène de l’item au milieu de sa fenêtre', () => {
-    for (const [w, h] of screens) {
-      const l = questionLayout({ count: 4 }, w, h);
-      const { pose, shift } = questionPose('quais', l.view, w, h);
-      const p = screenOf(pose, sceneSpot('quais'), w, h);
-      expect(p.x - shift.x).toBeCloseTo((l.view.left + l.view.right) / 2, 3);
-      expect(p.y - shift.y).toBeCloseTo((l.view.top + l.view.bottom) / 2, 3);
-    }
   });
 });
 
